@@ -1,0 +1,51 @@
+# === EdgeLab .gitignore (F0A baseline) ===
+# Datos, caches y artefactos grandes quedan FUERA de Git.
+# Preservados en el backup inmutable + manifest de _baselines\.
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.nbc
+*.nbi
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# --- Entornos ---
+.venv/
+venv/
+env/
+
+# --- Configuración local y secretos ---
+.env
+.env.*
+config.local.*
+*.local.toml
+secrets.*
+credentials.*
+
+# --- Datos grandes (fuera de Git; ver manifest + Data Contract futuro) ---
+data/*.parquet
+data/**/*.parquet
+*.zip
+*.rar
+*.7z
+
+# --- Artefactos de runtime ---
+runs/
+cache/
+artifacts/
+logs/
+*.log
+
+# --- Artefactos generados grandes (regenerables) ---
+suspicious_trades.csv
+
+# --- SO / IDE ---
+Thumbs.db
+.DS_Store
+.idea/
+.vscode/
