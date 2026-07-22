@@ -1,0 +1,167 @@
+"""Bar builder canónico (tiempo y TICK) + footprint bid/ask con gate P1A.
+
+Barras de TIEMPO: `[inicio, fin)`; un tick con ts == fin pertenece a la barra
+SIGUIENTE; timestamp de barra = cierre (semántica Time[0] de NT8).
+Barras de TICK: N ticks por barra (BigTrap corre sobre charts de 5t/25t/...);
+membresía por `sequence` (orden del archivo); cierre = ts del último tick.
+Sin barras vacías (igual que NT8 con datos históricos).
+
+Clasificación buy/sell (idéntica a BigTrap2.AccumulateTick):
+  1) quote: ask>0, bid>0, ask>=bid -> price>=ask: buy; price<=bid: sell
+  2) tick-rule (fallback CONTADO en n_rule): >last buy; <last sell; ==last dir previa
+  3) primer tick sin info -> buy (declarado, cuenta como rule)
+NO hay fallback silencioso: si el feed no trae bid/ask, `has_quotes=False` y el
+gate P1A lo marca (no se reconstruye footprint fiel sin quotes).
+
+Gate P1A footprint: |Σ(ask_vol + bid_vol) - volumen_barra| <= 0.5 por barra,
+si no -> FOOTPRINT_MISMATCH (diagnóstico, nunca silenciado).
+"""
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Optional
+
+import numpy as np
+
+from .ticks import TickSeries
+
+NS = 1_000_000_000
+
+
+@dataclass
+class BarSeries:
+    start_ns: np.ndarray
+    end_ns: np.ndarray          # cierre (timestamp NT8 de la barra)
+    open_t: np.ndarray          # ticks enteros
+    high_t: np.ndarray
+    low_t: np.ndarray
+    close_t: np.ndarray
+    volume: np.ndarray          # float64
+    tick_size: float
+    kind: str                   # "time" | "tick"
+    param: int                  # minutos (time) o ticks_por_barra (tick)
+    tick_bar_idx: np.ndarray    # índice de barra de cada tick
+
+    def __len__(self):
+        return len(self.end_ns)
+
+
+def _ohlc(ticks: TickSeries, starts, ends):
+    n = len(starts)
+    o = np.empty(n, np.int64); h = np.empty(n, np.int64)
+    lo = np.empty(n, np.int64); c = np.empty(n, np.int64)
+    v = np.empty(n, np.float64)
+    tbi = np.empty(len(ticks), np.int64)
+    for b in range(n):
+        i0, i1 = int(starts[b]), int(ends[b])
+        p = ticks.price_ticks[i0:i1]
+        o[b] = p[0]; c[b] = p[-1]; h[b] = p.max(); lo[b] = p.min()
+        v[b] = ticks.volume[i0:i1].sum()
+        tbi[i0:i1] = b
+    return o, h, lo, c, v, tbi
+
+
+def build_time_bars(ticks: TickSeries, minutes: int) -> BarSeries:
+    period = int(minutes) * 60 * NS
+    bucket = ticks.ts_ns // period
+    change = np.flatnonzero(np.diff(bucket)) + 1
+    starts = np.concatenate(([0], change))
+    ends = np.concatenate((change, [len(bucket)]))
+    o, h, lo, c, v, tbi = _ohlc(ticks, starts, ends)
+    s_ns = (bucket[starts] * period).astype(np.int64)
+    e_ns = ((bucket[starts] + 1) * period).astype(np.int64)
+    return BarSeries(s_ns, e_ns, o, h, lo, c, v, ticks.tick_size, "time", int(minutes), tbi)
+
+
+def build_tick_bars(ticks: TickSeries, ticks_per_bar: int) -> BarSeries:
+    n = len(ticks)
+    N = int(ticks_per_bar)
+    if N < 1:
+        raise ValueError("ticks_per_bar debe ser >= 1")
+    bucket = np.arange(n) // N
+    change = np.flatnonzero(np.diff(bucket)) + 1
+    starts = np.concatenate(([0], change))
+    ends = np.concatenate((change, [n]))
+    o, h, lo, c, v, tbi = _ohlc(ticks, starts, ends)
+    s_ns = ticks.ts_ns[starts].astype(np.int64)
+    e_ns = ticks.ts_ns[ends - 1].astype(np.int64)   # cierre = ts del último tick
+    return BarSeries(s_ns, e_ns, o, h, lo, c, v, ticks.tick_size, "tick", N, tbi)
+
+
+@dataclass
+class Footprints:
+    ask: list       # list[dict[int, float]] volumen agresor comprador por tick de precio
+    bid: list       # list[dict[int, float]] volumen agresor vendedor
+    total: list
+    n_quote: np.ndarray
+    n_rule: np.ndarray
+    has_quotes: bool
+
+
+def build_footprints(ticks: TickSeries, bars: BarSeries) -> Footprints:
+    nb = len(bars)
+    ask = [dict() for _ in range(nb)]
+    bid = [dict() for _ in range(nb)]
+    total = [dict() for _ in range(nb)]
+    n_quote = np.zeros(nb, np.int64)
+    n_rule = np.zeros(nb, np.int64)
+    has_ba = ticks.bid_ticks is not None and ticks.ask_ticks is not None
+    last_price = None
+    last_dir = 0
+    for i in range(len(ticks)):
+        b = int(bars.tick_bar_idx[i])
+        p = int(ticks.price_ticks[i])
+        vol = float(ticks.volume[i])
+        side, by_quote = 0, False
+        if has_ba:
+            aq, bq = int(ticks.ask_ticks[i]), int(ticks.bid_ticks[i])
+            if aq > 0 and bq > 0 and aq >= bq:
+                if p >= aq:
+                    side, by_quote = 1, True
+                elif p <= bq:
+                    side, by_quote = -1, True
+        if side == 0:
+            if last_price is not None:
+                side = 1 if p > last_price else (-1 if p < last_price else last_dir)
+            if side == 0:
+                side = 1  # primer tick sin información (contrato BigTrap2)
+        last_price, last_dir = p, side
+        if by_quote:
+            n_quote[b] += 1
+        else:
+            n_rule[b] += 1
+        m = ask[b] if side > 0 else bid[b]
+        m[p] = m.get(p, 0.0) + vol
+        total[b][p] = total[b].get(p, 0.0) + vol
+    return Footprints(ask, bid, total, n_quote, n_rule, has_quotes=bool(has_ba))
+
+
+def footprint_volume_mismatches(bars: BarSeries, fps: Footprints, tol: float = 0.5):
+    """Lista de (bar_idx, sum_ask_bid, bar_volume, diff) con |diff| > tol.
+    Vacío = footprint consistente con el volumen de barra (P1A OK)."""
+    out = []
+    for b in range(len(bars)):
+        s = sum(fps.ask[b].values()) + sum(fps.bid[b].values())
+        diff = s - float(bars.volume[b])
+        if abs(diff) > tol:
+            out.append((b, s, float(bars.volume[b]), diff))
+    return out
+
+
+def p1a_gate(ticks: TickSeries, bars: BarSeries, fps: Footprints) -> dict:
+    """Gate P1A de barras/footprint. status PASS/FAIL + diagnósticos (nunca
+    silenciados). FAIL si faltan quotes o si hay FOOTPRINT_MISMATCH."""
+    diags = []
+    if not fps.has_quotes:
+        diags.append(dict(code="NO_QUOTES",
+                          detail="feed sin bid/ask: footprint no reconstruible fielmente"))
+    mism = footprint_volume_mismatches(bars, fps)
+    for b, s, v, diff in mism[:20]:
+        diags.append(dict(code="FOOTPRINT_MISMATCH", bar=b,
+                          detail=f"Σ(ask+bid)={s} vs vol={v} (diff={diff:+.4f})"))
+    nq = int(fps.n_quote.sum()); nr = int(fps.n_rule.sum())
+    quote_fraction = nq / max(nq + nr, 1)
+    status = "FAIL" if diags else "PASS"
+    return dict(status=status, n_bars=len(bars), n_ticks=len(ticks),
+                n_quote=nq, n_rule=nr, quote_fraction=round(quote_fraction, 4),
+                footprint_mismatches=len(mism), diagnostics=diags)
