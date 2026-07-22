@@ -1,0 +1,76 @@
+# Contrato de paridad NT8 ↔ Python — primer oráculo real: Gaps2
+
+> Objetivo: producir el `EventLogPath` de **Gaps2** en NT8 sobre un rango
+> idéntico al que corre el kernel Python, y pasar el gate **P2**:
+> PASS = cero zonas huérfanas y cero discrepancias geométricas (en ticks).
+
+## 1. Selección pre-registrada
+
+| Ítem | Valor |
+|---|---|
+| Indicador | Gaps2 v2.0 (el MISMO .cs que exporta EventLogPath) |
+| Instrumento/contrato | **6E 06-26** (contrato más denso: 5.56M ticks) |
+| Dataset Python | `data/nt8/6E/6E_06-26_ticks.parquet` (F2, UTC verificado) |
+| Rango UTC (2 sesiones CME completas consecutivas) | **2026-05-05T22:00:00Z → 2026-05-07T21:00:00Z** (sesiones del mié 6 y jue 7 de mayo; CDT: abren 17:00 CT, cierran 16:00 CT) |
+| Timeframe primario | **1 minuto** |
+| Parámetros | defaults del kernel (tabla abajo) — NO cambiar ninguno sin re-registrar |
+| Timezone del chart NT8 | la que tenga tu UI (ART); se pasa a la CLI como `--chart-tz America/Argentina/Buenos_Aires`. El matching de Gaps2 usa `unix_ms` (absoluto), así que la tz del chart solo afecta la columna legible `ts` |
+
+Parámetros default (deben coincidir 1:1 con la UI del indicador en NT8):
+`min_gap_ticks=5 · export_floor_ticks=2 · reopen_pause_minutes=60 ·
+reopen_warmup_minutes=30 · atr_period=14 · vol_baseline_ticks=2000 ·
+min_vol_baseline_samples=500 · partial_fill_pct=50 · reversal_confirm_ticks=2 ·
+max_age_bars=2000 · max_logged_touches=20`
+
+## 2. Pasos en NT8 (tu parte)
+
+1. Chart nuevo: **6E 06-26** (contrato individual, NO continuo ni rollover),
+   **1 minuto**, con datos históricos de tick completos para el rango
+   (el mismo feed del que salieron los `.Last.txt`).
+2. Rango del chart: que cubra **desde antes del 2026-05-05 17:00 CT hasta
+   después del 2026-05-07 16:00 CT** (dejá margen de 1 día a cada lado; el
+   kernel Python recorta exacto por UTC, NT8 puede tener warmup extra — los
+   eventos fuera de rango se excluyen del diff).
+3. Aplicar **Gaps2 v2.0** con TODOS los parámetros en default (tabla arriba) y
+   `EventLogPath = C:\ProyectosQuant\EdgeLab\oracles\Gaps2_6E_06-26_may.csv`
+   (crear la carpeta `oracles\` si no existe).
+4. Dejar que el indicador procese todo el histórico del chart (recalcular si
+   hace falta: F5). Cerrar el chart o refrescar para que el log se flushee.
+5. Verificar que el CSV tiene el header `event_seq,event_type,ts,unix_ms,...`
+   y me avisás.
+
+## 3. Corrida Python (mi parte, cuando exista el CSV)
+
+```bash
+.venv\Scripts\python tools\run_nt8_bridge.py ^
+  --data data\nt8\6E\6E_06-26_ticks.parquet --contract "6E 06-26" ^
+  --start-utc 2026-05-05T22:00:00 --end-utc 2026-05-07T21:00:00 ^
+  --bars time:1 --indicator Gaps2 ^
+  --chart-tz America/Argentina/Buenos_Aires ^
+  --oracle Gaps2=oracles\Gaps2_6E_06-26_may.csv ^
+  --out runs\nt8_bridge\parity_gaps2_0626_may
+```
+
+## 4. Gate P2 (pre-registrado)
+
+- **PASS**: 0 `MISSING_IN_*`, 0 `GEOMETRY_DIFF` (geometría exacta en ticks).
+- **WARN**: solo `TIMESTAMP_DIFF` ≤ 60 s, `STATE_ORDER_DIFF`, `FEATURE_DIFF`
+  (touches) o `CALIBRATION_DIFF` declarado → se revisan una por una en el visor
+  antes de promover.
+- **FAIL**: zonas faltantes o geometría distinta → el kernel NO entra a
+  vectorbt; se depura con el visor (modo "solo huérfanas") y se re-corre.
+
+Exclusiones declaradas del diff (documentadas en `nt8_bridge.md`):
+`SESSION_END` si el chart NT8 sigue vivo (no hubo OnTermination), y eventos
+NT8 anteriores al inicio del rango Python (warmup del chart).
+
+**Prohibido:** generar un CSV NT8 ficticio o editado. El oráculo es el export
+real del indicador corriendo en NT8. Sin ese archivo, ningún kernel se declara
+"paridad real confirmada".
+
+## 5. Protocolo para los kernels siguientes (F5+)
+
+El mismo contrato aplica a HFTZones2, VolTicksPOC2, aVolCellPOI2 y BigTrap2
+(BigTrap2 exporta formato pipe y corre sobre charts de N ticks: el rango y el
+`--bars tick:N` deben coincidir con el chart NT8). Un oráculo por indicador y
+por configuración paramétrica que se quiera promover.

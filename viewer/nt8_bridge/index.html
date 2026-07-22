@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>NT8 Bridge Viewer — paridad de zonas</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="vendor/lightweight-charts.standalone.production.js"></script>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:#0d1117; color:#c9d1d9; font:13px/1.45 -apple-system,Segoe UI,Roboto,sans-serif; }
+  header { padding:8px 14px; background:#161b22; border-bottom:1px solid #21262d; display:flex; gap:16px; flex-wrap:wrap; align-items:center; }
+  header h1 { font-size:15px; margin:0; color:#e6edf3; }
+  header .meta { color:#8b949e; }
+  #controls { padding:6px 14px; background:#10151c; border-bottom:1px solid #21262d; display:flex; gap:18px; flex-wrap:wrap; align-items:center; }
+  #controls fieldset { border:1px solid #21262d; border-radius:6px; margin:0; padding:3px 10px 5px; }
+  #controls legend { color:#8b949e; font-size:11px; padding:0 4px; }
+  #controls label { margin-right:10px; cursor:pointer; white-space:nowrap; }
+  #controls select { background:#161b22; color:#e6edf3; border:1px solid #30363d; border-radius:6px; padding:3px 6px; max-width:460px; }
+  .swatch { display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:4px; vertical-align:-1px; }
+  #wrap { position:relative; }
+  #chart { width:100%; height:52vh; }
+  #overlay { position:absolute; left:0; top:0; pointer-events:none; }
+  #panels { display:flex; gap:12px; padding:10px 14px; flex-wrap:wrap; align-items:flex-start; }
+  .panel { background:#161b22; border:1px solid #21262d; border-radius:8px; padding:10px 12px; }
+  .panel h2 { margin:0 0 8px; font-size:13px; color:#e6edf3; }
+  table { border-collapse:collapse; font-size:12px; }
+  th, td { padding:3px 8px; border-bottom:1px solid #21262d; text-align:left; }
+  th { color:#8b949e; font-weight:600; }
+  tr.zrow { cursor:pointer; }
+  tr.zrow:hover { background:#1c2531; }
+  .gate-PASS { color:#3fb950; font-weight:700; }
+  .gate-WARN { color:#d29922; font-weight:700; }
+  .gate-FAIL { color:#f85149; font-weight:700; }
+  .orphan { color:#f85149; }
+  #zonetable { max-height:32vh; overflow:auto; flex:1 1 560px; }
+  #parity, #paramsp { flex:0 0 auto; }
+  #paramsp pre { margin:0; font-size:11px; color:#a5d6ff; max-width:340px; white-space:pre-wrap; }
+  #drop { color:#8b949e; font-size:11px; }
+  .badge { padding:1px 6px; border-radius:8px; background:#21262d; font-size:11px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>NT8 → EdgeLab — visor de paridad</h1>
+  <span class="meta" id="metaline">sin datos</span>
+  <span id="drop">Tip: arrastrá un data.js aquí para cargar otro bundle</span>
+</header>
+<div id="controls">
+  <fieldset><legend>Run (indicador · parámetros · barras)</legend>
+    <select id="runsel"></select>
+  </fieldset>
+  <fieldset id="f-src"><legend>Fuente</legend>
+    <label><input type="checkbox" data-src="python" checked> Python (relleno)</label>
+    <label><input type="checkbox" data-src="nt8" checked> NT8 (contorno)</label>
+    <label><input type="checkbox" id="only-orphans"> solo huérfanas</label>
+  </fieldset>
+  <fieldset id="f-state"><legend>Estados</legend></fieldset>
+</div>
+<div id="wrap">
+  <div id="chart"></div>
+  <canvas id="overlay"></canvas>
+</div>
+<div id="panels">
+  <div class="panel" id="parity"><h2>Paridad / P1A</h2><div id="paritybody">—</div></div>
+  <div class="panel" id="paramsp"><h2>Parámetros del run</h2><pre id="paramsbody">—</pre></div>
+  <div class="panel" id="zonetable"><h2>Zonas <span class="badge" id="zcount"></span></h2><div id="ztbody">—</div></div>
+</div>
+<script src="data.js"></script>
+<script>
+(function () {
+  "use strict";
+  var COLORS = { Gaps2:"#58a6ff", HFTZones2:"#d2a8ff", VolTicksPOC2:"#ffa657", aVolCellPOI2:"#3fb950", BigTrap2:"#f778ba" };
+  var ORPHAN = "#f85149";
+  var state = { data:null, run:null, srcs:{python:true, nt8:true}, states:{}, onlyOrphans:false };
+
+  var chartEl = document.getElementById("chart");
+  var overlay = document.getElementById("overlay");
+  var chart = LightweightCharts.createChart(chartEl, {
+    layout:{ background:{ color:"#0d1117" }, textColor:"#8b949e" },
+    grid:{ vertLines:{ color:"#161b22" }, horzLines:{ color:"#161b22" } },
+    timeScale:{ timeVisible:true, secondsVisible:true },
+    crosshair:{ mode:0 }
+  });
+  var series = chart.addCandlestickSeries({
+    upColor:"#2ea043", downColor:"#da3633", wickUpColor:"#2ea043",
+    wickDownColor:"#da3633", borderVisible:false
+  });
+
+  function colorOf(z) {
+    var noMatch = !z.match && state.run.has_oracle;
+    return noMatch ? ORPHAN : (COLORS[state.run.indicator] || "#8b949e");
+  }
+  function visible(z) {
+    if (!state.srcs[z.source]) return false;
+    var st = (z.state || "ACTIVE").toUpperCase();
+    if (state.states[st] === false) return false;
+    if (state.onlyOrphans && (z.match || !state.run.has_oracle)) return false;
+    return true;
+  }
+
+  function sizeOverlay() {
+    var r = chartEl.getBoundingClientRect();
+    overlay.width = r.width * devicePixelRatio;
+    overlay.height = r.height * devicePixelRatio;
+    overlay.style.width = r.width + "px";
+    overlay.style.height = r.height + "px";
+  }
+  function drawZones() {
+    var ctx = overlay.getContext("2d");
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+    ctx.clearRect(0, 0, overlay.width, overlay.height);
+    if (!state.run) return;
+    var tsc = chart.timeScale();
+    var vr = tsc.getVisibleRange(); if (!vr) return;
+    var w = chartEl.clientWidth;
+    state.run.zones.forEach(function (z) {
+      if (!visible(z)) return;
+      if (z.t1 < vr.from || z.t0 > vr.to) return;
+      var x0 = tsc.timeToCoordinate(Math.max(z.t0, vr.from));
+      var x1 = tsc.timeToCoordinate(Math.min(z.t1, vr.to));
+      if (x0 === null) x0 = 0;
+      if (x1 === null) x1 = w;
+      var yT = series.priceToCoordinate(z.top);
+      var yB = series.priceToCoordinate(z.bottom);
+      if (yT === null || yB === null) return;
+      var col = colorOf(z);
+      var h = Math.max(1, yB - yT);
+      if (z.source === "python") {
+        ctx.fillStyle = col + "33";
+        ctx.fillRect(x0, yT, Math.max(1, x1 - x0), h);
+        ctx.strokeStyle = col + "aa";
+        ctx.setLineDash([]);
+        ctx.strokeRect(x0, yT, Math.max(1, x1 - x0), h);
+      } else {
+        ctx.strokeStyle = col;
+        ctx.setLineDash([5, 3]);
+        ctx.lineWidth = 1.4;
+        ctx.strokeRect(x0 + 0.5, yT + 0.5, Math.max(1, x1 - x0), h);
+        ctx.lineWidth = 1;
+        ctx.setLineDash([]);
+      }
+    });
+  }
+  var raf = null;
+  function requestDraw() {
+    if (raf) return;
+    raf = requestAnimationFrame(function () { raf = null; drawZones(); });
+  }
+  chart.timeScale().subscribeVisibleTimeRangeChange(requestDraw);
+  chart.timeScale().subscribeVisibleLogicalRangeChange(requestDraw);
+  window.addEventListener("resize", function () {
+    chart.applyOptions({ width: chartEl.clientWidth, height: chartEl.clientHeight });
+    sizeOverlay(); requestDraw();
+  });
+
+  function checkbox(label, checked, onchange) {
+    var l = document.createElement("label");
+    var c = document.createElement("input");
+    c.type = "checkbox"; c.checked = checked;
+    c.addEventListener("change", function () { onchange(c.checked); requestDraw(); renderTable(); });
+    l.appendChild(c);
+    l.appendChild(document.createTextNode(" " + label));
+    return l;
+  }
+  function buildStateFilters() {
+    var fs = document.getElementById("f-state");
+    fs.innerHTML = "<legend>Estados</legend>";
+    var sts = {};
+    state.run.zones.forEach(function (z) { sts[(z.state || "ACTIVE").toUpperCase()] = true; });
+    state.states = {};
+    Object.keys(sts).sort().forEach(function (st) {
+      state.states[st] = true;
+      fs.appendChild(checkbox(st, true, function (v) { state.states[st] = v; }));
+    });
+  }
+
+  function renderParity() {
+    var el = document.getElementById("paritybody");
+    var r = state.run;
+    var h = "";
+    if (r.p1a) {
+      h += "<div>P1A barras/footprint: <span class='gate-" + r.p1a.status + "'>" + r.p1a.status +
+           "</span> <span class='meta'>(quote_frac " + r.p1a.quote_fraction +
+           ", mismatches " + r.p1a.footprint_mismatches + ")</span></div>";
+    }
+    if (r.parity) {
+      var s = r.parity;
+      var diag = Object.keys(s.counts).map(function (c) { return c + "=" + s.counts[c]; }).join(", ");
+      h += "<table><tr><th>Gate</th><th>py</th><th>nt8</th><th>match</th><th>diagnósticos</th></tr>" +
+           "<tr><td class='gate-" + s.gate + "'>" + s.gate + "</td><td>" + s.py_zones +
+           "</td><td>" + s.nt8_zones + "</td><td>" + s.matched_pairs + "</td><td>" + diag + "</td></tr></table>";
+    } else {
+      h += "<div class='meta'>Sin oráculo NT8 en este run — correr la CLI con --oracle para comparar.</div>";
+    }
+    el.innerHTML = h;
+  }
+
+  function fmtT(t) {
+    var d = new Date(t * 1000);
+    return d.toISOString().replace("T", " ").slice(0, 19) + "Z";
+  }
+  function renderTable() {
+    var rows = state.run.zones.filter(visible);
+    document.getElementById("zcount").textContent = rows.length + " visibles / " + state.run.zones.length;
+    var h = "<table><tr><th>id</th><th>src</th><th>tipo</th><th>top</th><th>bottom</th><th>desde (UTC)</th><th>estado</th><th>touch</th><th>match</th></tr>";
+    rows.slice(0, 800).forEach(function (z) {
+      var orphan = !z.match && state.run.has_oracle;
+      h += "<tr class='zrow' data-i='" + state.run.zones.indexOf(z) + "'>" +
+        "<td>" + z.id + "</td><td>" + z.source + "</td><td>" + (z.kind || "") +
+        "</td><td>" + z.top.toFixed(5) + "</td><td>" + z.bottom.toFixed(5) +
+        "</td><td>" + fmtT(z.t0) + "</td><td>" + (z.state || "") + "</td><td>" + (z.touches || 0) +
+        "</td><td class='" + (orphan ? "orphan" : "") + "'>" + (z.match || (orphan ? "HUÉRFANA" : "—")) + "</td></tr>";
+    });
+    document.getElementById("ztbody").innerHTML = h + "</table>";
+    document.querySelectorAll("tr.zrow").forEach(function (tr) {
+      tr.addEventListener("click", function () {
+        var z = state.run.zones[+tr.dataset.i];
+        var span = Math.max(600, (z.t1 - z.t0) * 1.5);
+        chart.timeScale().setVisibleRange({ from: z.t0 - span * 0.2, to: z.t0 + span });
+      });
+    });
+  }
+
+  function selectRun(i) {
+    var d = state.data;
+    state.run = d.runs[i];
+    var bs = d.bar_series[state.run.bar_key];
+    series.setData(bs.candles.map(function (c) {
+      return { time: c.time, open: c.open, high: c.high, low: c.low, close: c.close };
+    }));
+    document.getElementById("paramsbody").textContent =
+      "bar: " + state.run.bar_key + "\nparam_set_id: " + state.run.param_set_id +
+      "\n" + JSON.stringify(state.run.params, null, 1);
+    buildStateFilters();
+    renderParity();
+    renderTable();
+    chart.timeScale().fitContent();
+    requestDraw();
+  }
+
+  function init(data) {
+    state.data = data;
+    var m = data.meta;
+    document.getElementById("metaline").textContent =
+      m.instrument + " " + m.contract + " · tick " + m.tick_size + " · " +
+      m.n_ticks + " ticks · tz " + m.chart_tz + " · rev " + (m.code_rev || "?");
+    var sel = document.getElementById("runsel");
+    sel.innerHTML = "";
+    data.runs.forEach(function (r, i) {
+      var o = document.createElement("option");
+      var gate = r.parity ? r.parity.gate : "sin oráculo";
+      o.value = i;
+      o.textContent = r.indicator + " · " + r.param_set_id + " · " + r.bar_key +
+        " · " + r.zones.length + " zonas · " + gate;
+      sel.appendChild(o);
+    });
+    sel.addEventListener("change", function () { selectRun(+sel.value); });
+    document.querySelectorAll("#f-src input[data-src]").forEach(function (c) {
+      c.addEventListener("change", function () {
+        state.srcs[c.dataset.src] = c.checked; requestDraw(); renderTable();
+      });
+    });
+    document.getElementById("only-orphans").addEventListener("change", function (e) {
+      state.onlyOrphans = e.target.checked; requestDraw(); renderTable();
+    });
+    chart.applyOptions({ width: chartEl.clientWidth, height: chartEl.clientHeight });
+    sizeOverlay();
+    if (data.runs.length) selectRun(0);
+  }
+
+  document.body.addEventListener("dragover", function (e) { e.preventDefault(); });
+  document.body.addEventListener("drop", function (e) {
+    e.preventDefault();
+    var f = e.dataTransfer.files[0]; if (!f) return;
+    var r = new FileReader();
+    r.onload = function () {
+      var txt = r.result.trim();
+      if (txt.indexOf("window.BRIDGE_DATA") === 0)
+        txt = txt.slice(txt.indexOf("=") + 1).replace(/;\s*$/, "");
+      init(JSON.parse(txt));
+    };
+    r.readAsText(f);
+  });
+
+  if (window.BRIDGE_DATA) init(window.BRIDGE_DATA);
+  else document.getElementById("metaline").textContent = "sin data.js — arrastrá un bundle";
+})();
+</script>
+</body>
+</html>
