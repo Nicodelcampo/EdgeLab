@@ -11,12 +11,13 @@ Los kernels aún no portados se agregan al REGISTRY cuando pasan su smoke
 sintético (protocolo F5+); el REGISTRY es la única fuente de verdad de qué
 indicadores existen para la CLI.
 """
-from . import bigtrap2, gaps2, voltickspoc2
+from . import bigtrap2, gaps2, hftzones2, voltickspoc2
 
 REGISTRY = {
     "Gaps2": gaps2,
     "VolTicksPOC2": voltickspoc2,
     "BigTrap2": bigtrap2,
+    "HFTZones2": hftzones2,
 }
 
 TICK_DRIVEN = {"Gaps2", "HFTZones2"}
