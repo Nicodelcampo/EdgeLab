@@ -41,50 +41,58 @@ timezone declarada y tick data). El PASS sintético solo valida infraestructura.
 | `parity_report.json` | diagnósticos y gate P2 por run (solo con `--oracle`) |
 | `viewer/` | visor offline (index.html + vendor local + data.js multi-run) |
 
-## Zone store formal (F6)
+## Store v2 (F6.2) — inmutable, content-addressed, tres niveles
 
-Producto de primer nivel: las coordenadas de zonas de cada configuración como
-features reutilizables, para que la fuerza bruta / vectorbt las consuma **sin
-re-correr indicadores**. Se activa con `--zone-store <raíz>` en la CLI (además
-del `zones.parquet` plano por run que alimenta el visor).
+Producto de primer nivel: EdgeLab consulta coordenadas de zonas por identidad
+(dataset + kernel + config) con garantía auditada de que lo consultado es
+exactamente lo que el kernel produjo, **sin re-correr indicadores**. Se activa
+con `--zone-store <raíz>` (`edgelab/bridge/store.py`).
 
-**Layout** (una carpeta por configuración, identidad estable):
+**Tres tablas por partición** (no solo zonas finales):
+- `observations.parquet` — observaciones continuas (OBS/TRAP) para auditoría y
+  re-filtrado offline de umbrales.
+- `events.parquet` — la timeline inmutable completa (fuente de verdad).
+- `zones.parquet` — proyección materializada para consulta rápida. **Regla:
+  zones debe reconstruirse desde events y dar el mismo digest de núcleo**; si
+  difiere, se localiza el evento donde nació la discrepancia (P3.1).
+
+**Layout content-addressed** (una carpeta por run; la ruta NO es identidad, el
+contenido sí):
 
 ```
-<raíz>/<indicator>/<param_set_id>/<bar_key>/<contract>/
-    zones.parquet   — una fila por zona (esquema fijo + features JSON)
-    manifest.json    — identidad completa de la partición
+<raíz>/catalog.duckdb
+<raíz>/runs/instrument=<I>/contract=<C>/indicator=<K>/kernel_id=<KID>/
+       bar_key=<BK>/config_id=<CID>/run_id=<RID>/
+           manifest.json  observations.parquet  events.parquet  zones.parquet
+           validation.json  parity.json
 ```
 
-**Esquema de zona** (columnas comunes a todos los kernels): `zone_id, indicator,
-param_set_id, bar_key, contract, instrument, kind, state, top, bottom,
-top_ticks, bottom_ticks, created_ms, ended_ms, touches, end_reason, features`.
-`features` es un JSON con los campos propios del kernel (Gaps2: `size_ticks,
-display, max_pen_pct`; HFTZones2: `dir, bucket, calib_id`; etc.) — suficiente
-para re-filtrar offline los umbrales legítimamente re-filtrables.
+**Identidades** (`edgelab/bridge/identity.py`): `dataset_id` (contenido de ticks),
+`kernel_id` (código + deps common/bars/sessions), `config_id` (params
+materializados + bar_spec + chart_tz + kernel_id), `run_id`, `zone_key` (global).
 
-**Manifest por partición**: `schema_version, params` (completos), `chart_tz,
-range_start/end_utc, source, source_sha256, code_rev, n_zones, parity_gate,
-parity_summary, trusted, generated_utc`.
+**Manifest**: las 4 identidades, params canónicos, fuente (ruta+sha256+filas+
+rango UTC), tz, conteos por estado, los **tres digests** (observation/event/zone
+sobre filas ordenadas canónicamente), entorno (Python + hash del lockfile), y
+los dos ejes de estado.
 
-**`trusted`**: flag a nivel de partición. **SOLO True cuando esa configuración
-pasó paridad real P2 (`parity_gate == "PASS"`)**. Sin oráculo NT8 → `trusted=
-False`. La fuerza bruta consume únicamente particiones trusted.
+**Dos ejes de estado ortogonales** (reemplazan el booleano `trusted`):
+- **integridad**: `computed → persisted → roundtrip_verified → recomputed_exact
+  → api_verified` | `stale` | `failed`.
+- **paridad**: `parity_pending | parity_exact | parity_covered | parity_failed`.
 
-**API de consulta** (`edgelab/bridge/zone_store.py`):
+**Reglas duras**: escribir a temp → validar (P3.1) → round-trip (P3.2) → publicar
+por rename atómico; partición publicada **inmutable**; reejecución idéntica con
+digests iguales = idempotencia (no duplica), con digests distintos =
+`DeterminismError` (no sobrescribe, frena); **cero zonas es un resultado válido**
+(`n_zones=0`, partición presente).
 
-```python
-from edgelab.bridge import zone_store
-zone_store.list_partitions(root)                      # manifests
-zone_store.query_zones(root, indicator="BigTrap2",    # tabla filtrada
-    bar_key="tick_25", state="ACTIVE",
-    created_after_ms=..., created_before_ms=...,
-    trusted_only=True)                                # solo P2 PASS
-```
+**Consumo** (fuerza bruta): exploratoria exige `integrity_state=api_verified`;
+formal exige además `parity_exact` o `parity_covered`; promover un edge a
+`EDGES_DISCOVERED.md` exige `parity_exact` PROPIO de la config ganadora.
 
-La reescritura de una partición reemplaza (no acumula): `param_set_id` +
-`bar_key` + `contract` es la identidad, así que re-correr la misma config
-actualiza en lugar de duplicar.
+**API**: `store.catalog_df(root)` (una fila por partición), `store.publish_run(...)`,
+`store.set_state(root, run_id, integrity_state=..., parity_state=...)`.
 
 ## Visor (offline)
 

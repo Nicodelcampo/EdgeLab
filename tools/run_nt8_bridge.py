@@ -37,7 +37,7 @@ sys.path.insert(0, REPO)
 import numpy as np  # noqa: E402
 
 from edgelab.bridge import bars as bars_mod  # noqa: E402
-from edgelab.bridge import identity, oracle, parity, viewer_export, zone_store  # noqa: E402
+from edgelab.bridge import identity, oracle, parity, store, viewer_export  # noqa: E402
 from edgelab.bridge import ticks as ticks_mod  # noqa: E402
 from edgelab.bridge.indicators import BAR_DRIVEN, REGISTRY  # noqa: E402
 
@@ -226,17 +226,20 @@ def main(argv=None):
                   f"P1A={p1a['status']} paridad={gate}")
 
             if args.zone_store:
-                bkey = viewer_export.bar_key_of(bars)
-                m = zone_store.write_partition(
-                    args.zone_store, indicator=n, param_set_id=psid, bar_key=bkey,
-                    contract=tk.contract, instrument=tk.instrument,
-                    tick_size=tk.tick_size, zones=res["zones"], params=res["params"],
-                    chart_tz=args.chart_tz, range_start_utc=args.start_utc,
-                    range_end_utc=args.end_utc, source=tk.source,
-                    source_sha256=src_sha, code_rev=code_rev,
-                    parity=(rep["summary"] if rep else None), generated_utc=gen_utc)
-                print(f"    zone-store: {m['n_zones']} zonas -> "
-                      f"{n}/{psid}/{bkey}/... (trusted={m['trusted']})")
+                src = dict(path=args.data, sha256=src_sha, rows=len(tk),
+                           range_start_utc=args.start_utc, range_end_utc=args.end_utc,
+                           kind=("synthetic" if args.synthetic else "parquet_f2"))
+                m = store.publish_run(
+                    args.zone_store, kernel_result=res, indicator=n,
+                    tick_size=tk.tick_size, instrument=tk.instrument,
+                    contract=tk.contract, bar_key=bkey_id, dataset_id=ds_id,
+                    kernel_id=kid, config_id=cid, run_id=rid, params=res["params"],
+                    source=src, chart_tz=args.chart_tz,
+                    parity=(rep["summary"] if rep else None),
+                    generated_utc=gen_utc, param_set_id=psid)
+                print(f"    store: {m['counts']['n_zones']} zonas -> "
+                      f"{n}/{cid} (integridad={m['integrity_state']}, "
+                      f"paridad={m['parity_state']})")
 
     # ---- artefactos ----
     n_store = viewer_export.write_zone_store(runs, tk, os.path.join(args.out, "zones.parquet"))

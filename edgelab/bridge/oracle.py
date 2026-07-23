@@ -50,20 +50,27 @@ def _parse_payload(payload):
     return out
 
 
-def parse_nt8_log(path, chart_tz="UTC", tick_size=None):
-    """Devuelve dict(indicator, meta, header, events, zones)."""
+def parse_records(lines, chart_tz="UTC", tick_size=None):
+    """Igual que parse_nt8_log pero desde líneas en memoria (mismo formato que
+    exporta el kernel Python: params_line + header + csv_lines). Usado por el
+    store para reconstruir zonas desde el propio EventLog del kernel."""
     tz = tz_of(chart_tz)
-    with open(path, "r", encoding="utf-8-sig") as fh:
-        raw = [ln.rstrip("\r\n") for ln in fh if ln.strip()]
+    raw = [ln.rstrip("\r\n") for ln in lines if ln and ln.strip()]
     meta_lines = [ln for ln in raw if ln.startswith("#")]
     body = [ln for ln in raw if not ln.startswith("#")]
     meta = " ".join(meta_lines)
-
     if body and body[0].count("|") >= 3 and "," not in body[0].split("|", 2)[0]:
         return _parse_pipe(body, meta, tz)
     if "indicator=BigTrap2" in meta:
         return _parse_pipe(body, meta, tz)
     return _parse_csv(body, meta, tz, tick_size)
+
+
+def parse_nt8_log(path, chart_tz="UTC", tick_size=None):
+    """Devuelve dict(indicator, meta, header, events, zones)."""
+    with open(path, "r", encoding="utf-8-sig") as fh:
+        lines = [ln.rstrip("\r\n") for ln in fh if ln.strip()]
+    return parse_records(lines, chart_tz=chart_tz, tick_size=tick_size)
 
 
 def _detect_indicator(meta, header):
