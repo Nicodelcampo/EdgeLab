@@ -41,6 +41,51 @@ timezone declarada y tick data). El PASS sintético solo valida infraestructura.
 | `parity_report.json` | diagnósticos y gate P2 por run (solo con `--oracle`) |
 | `viewer/` | visor offline (index.html + vendor local + data.js multi-run) |
 
+## Zone store formal (F6)
+
+Producto de primer nivel: las coordenadas de zonas de cada configuración como
+features reutilizables, para que la fuerza bruta / vectorbt las consuma **sin
+re-correr indicadores**. Se activa con `--zone-store <raíz>` en la CLI (además
+del `zones.parquet` plano por run que alimenta el visor).
+
+**Layout** (una carpeta por configuración, identidad estable):
+
+```
+<raíz>/<indicator>/<param_set_id>/<bar_key>/<contract>/
+    zones.parquet   — una fila por zona (esquema fijo + features JSON)
+    manifest.json    — identidad completa de la partición
+```
+
+**Esquema de zona** (columnas comunes a todos los kernels): `zone_id, indicator,
+param_set_id, bar_key, contract, instrument, kind, state, top, bottom,
+top_ticks, bottom_ticks, created_ms, ended_ms, touches, end_reason, features`.
+`features` es un JSON con los campos propios del kernel (Gaps2: `size_ticks,
+display, max_pen_pct`; HFTZones2: `dir, bucket, calib_id`; etc.) — suficiente
+para re-filtrar offline los umbrales legítimamente re-filtrables.
+
+**Manifest por partición**: `schema_version, params` (completos), `chart_tz,
+range_start/end_utc, source, source_sha256, code_rev, n_zones, parity_gate,
+parity_summary, trusted, generated_utc`.
+
+**`trusted`**: flag a nivel de partición. **SOLO True cuando esa configuración
+pasó paridad real P2 (`parity_gate == "PASS"`)**. Sin oráculo NT8 → `trusted=
+False`. La fuerza bruta consume únicamente particiones trusted.
+
+**API de consulta** (`edgelab/bridge/zone_store.py`):
+
+```python
+from edgelab.bridge import zone_store
+zone_store.list_partitions(root)                      # manifests
+zone_store.query_zones(root, indicator="BigTrap2",    # tabla filtrada
+    bar_key="tick_25", state="ACTIVE",
+    created_after_ms=..., created_before_ms=...,
+    trusted_only=True)                                # solo P2 PASS
+```
+
+La reescritura de una partición reemplaza (no acumula): `param_set_id` +
+`bar_key` + `contract` es la identidad, así que re-correr la misma config
+actualiza en lugar de duplicar.
+
 ## Visor (offline)
 
 `viewer/index.html` — Lightweight Charts v4.2.0 **vendorizado** (sin CDN/

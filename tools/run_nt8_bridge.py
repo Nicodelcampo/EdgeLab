@@ -37,7 +37,7 @@ sys.path.insert(0, REPO)
 import numpy as np  # noqa: E402
 
 from edgelab.bridge import bars as bars_mod  # noqa: E402
-from edgelab.bridge import oracle, parity, viewer_export  # noqa: E402
+from edgelab.bridge import oracle, parity, viewer_export, zone_store  # noqa: E402
 from edgelab.bridge import ticks as ticks_mod  # noqa: E402
 from edgelab.bridge.indicators import BAR_DRIVEN, REGISTRY  # noqa: E402
 
@@ -101,6 +101,9 @@ def main(argv=None):
     ap.add_argument("--tol-created-ms", type=int, default=60000)
     ap.add_argument("--tol-geom-ticks", type=int, default=0)
     ap.add_argument("--out", required=True)
+    ap.add_argument("--zone-store", default=None,
+                    help="raíz del zone store formal (F6): particiones "
+                         "indicator/param_set_id/bar_key/contract + manifest + trusted")
     args = ap.parse_args(argv)
 
     names = args.indicator or ["all"]
@@ -136,6 +139,9 @@ def main(argv=None):
     print(f"ticks: {len(tk):,} · {tk.instrument} {tk.contract} · tick_size {tk.tick_size}")
 
     os.makedirs(args.out, exist_ok=True)
+    gen_utc = datetime.now(timezone.utc).isoformat()
+    code_rev = git_rev()
+    src_sha = sha256_file(args.data) if args.data else None
     bars_cache, fps_cache, p1a_cache = {}, {}, {}
 
     def bars_for(spec):
@@ -196,6 +202,19 @@ def main(argv=None):
             print(f"[{run_id}] zonas={len(res['zones'])} eventos={len(res['events'])} "
                   f"P1A={p1a['status']} paridad={gate}")
 
+            if args.zone_store:
+                bkey = viewer_export.bar_key_of(bars)
+                m = zone_store.write_partition(
+                    args.zone_store, indicator=n, param_set_id=psid, bar_key=bkey,
+                    contract=tk.contract, instrument=tk.instrument,
+                    tick_size=tk.tick_size, zones=res["zones"], params=res["params"],
+                    chart_tz=args.chart_tz, range_start_utc=args.start_utc,
+                    range_end_utc=args.end_utc, source=tk.source,
+                    source_sha256=src_sha, code_rev=code_rev,
+                    parity=(rep["summary"] if rep else None), generated_utc=gen_utc)
+                print(f"    zone-store: {m['n_zones']} zonas -> "
+                      f"{n}/{psid}/{bkey}/... (trusted={m['trusted']})")
+
     # ---- artefactos ----
     n_store = viewer_export.write_zone_store(runs, tk, os.path.join(args.out, "zones.parquet"))
     with open(os.path.join(args.out, "p1a_report.json"), "w", encoding="utf-8") as fh:
@@ -206,9 +225,9 @@ def main(argv=None):
         with open(os.path.join(args.out, "parity_report.json"), "w", encoding="utf-8") as fh:
             json.dump(par, fh, indent=2, ensure_ascii=False)
     manifest = dict(
-        tool="run_nt8_bridge", generated_utc=datetime.now(timezone.utc).isoformat(),
-        code_rev=git_rev(), source=tk.source,
-        source_sha256=(sha256_file(args.data) if args.data else None),
+        tool="run_nt8_bridge", generated_utc=gen_utc,
+        code_rev=code_rev, source=tk.source,
+        source_sha256=src_sha,
         instrument=tk.instrument, contract=tk.contract, tick_size=tk.tick_size,
         chart_tz=args.chart_tz,
         filters=dict(contract=args.contract, start_utc=args.start_utc, end_utc=args.end_utc),
