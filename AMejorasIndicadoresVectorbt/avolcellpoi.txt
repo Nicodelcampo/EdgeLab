@@ -1,4 +1,4 @@
-// ============================================================================
+﻿// ============================================================================
 // aVolCellPOI2.cs — Anomaly Volume Cell POI v2 (perfil horario por sesiones)
 // ============================================================================
 //
@@ -149,8 +149,14 @@ namespace NinjaTrader.NinjaScript.Indicators
 		private long zoneCounter;
 
 		// ---------- infra ----------
-		private VolumetricBarsType vbt;
-		private bool vbtChecked;
+		// Footprint reconstruido desde la subserie de 1 tick (guia SS11/SS13):
+		// motor unico, sin dependencia de OrderFlow/Volumetric. Identico al port Python.
+		private Dictionary<long, double> pendingAsk = new Dictionary<long, double>(64);
+		private Dictionary<long, double> pendingBid = new Dictionary<long, double>(64);
+		private Dictionary<long, double> curAsk;   // footprint de la barra que cierra
+		private Dictionary<long, double> curBid;
+		private double lastTickPrice = double.NaN;
+		private int    lastTickDir;
 		private SessionIterator sessionIterator;
 		private StreamWriter writer;
 		private bool writerFailed;
@@ -227,6 +233,11 @@ namespace NinjaTrader.NinjaScript.Indicators
 				VisualExtendBars    = 500;
 				MaxRenderedZones    = 250;
 			}
+			else if (State == State.Configure)
+			{
+				// Motor unico: SIEMPRE la subserie de 1 tick (guia SS11/SS13).
+				AddDataSeries(BarsPeriodType.Tick, 1);
+			}
 			else if (State == State.DataLoaded)
 			{
 				history         = new Dictionary<int, Queue<List<double>>>();
@@ -250,7 +261,19 @@ namespace NinjaTrader.NinjaScript.Indicators
 
 		protected override void OnBarUpdate()
 		{
-			if (!EnsureVolumetric()) return;
+			if (BarsInProgress == 1) { AccumulateTick(); return; }
+			if (BarsInProgress != 0) return;
+
+			// take + reset del footprint reconstruido (tambien en warm-up: sin fuga)
+			curAsk = pendingAsk; curBid = pendingBid;
+			pendingAsk = new Dictionary<long, double>(64);
+			pendingBid = new Dictionary<long, double>(64);
+
+			if (CurrentBars.Length < 2 || CurrentBars[1] < 0)
+			{
+				EmitError("tick_series", "subserie de 1 tick sin datos; descargar tick data historico. Cero detecciones, nunca fallback.");
+				return;
+			}
 
 			// mantener la sesión actualizada (cubre inicio a mitad de sesión)
 			if (Bars.IsFirstBarOfSession || sessionIterator.ActualSessionEnd < Time[0])
@@ -433,14 +456,43 @@ namespace NinjaTrader.NinjaScript.Indicators
 			return (y - c.LogMedian) / c.MadScaled;
 		}
 
+		// ---------------- footprint reconstruido (subserie 1 tick) ----------------
+		private void AccumulateTick()
+		{
+			double price = Closes[1][0];
+			double vol   = Volumes[1][0];
+			int    idx   = CurrentBars[1];
+			double askQ  = BarsArray[1].GetAsk(idx);
+			double bidQ  = BarsArray[1].GetBid(idx);
+			int side = 0;
+			if (askQ > 0 && bidQ > 0 && askQ >= bidQ)
+			{
+				if      (price >= askQ) side =  1;
+				else if (price <= bidQ) side = -1;
+			}
+			if (side == 0) // dentro del spread o sin quotes -> tick rule (fallback declarado)
+			{
+				if (!double.IsNaN(lastTickPrice))
+				{
+					if      (price > lastTickPrice) side =  1;
+					else if (price < lastTickPrice) side = -1;
+					else                            side = lastTickDir;
+				}
+				if (side == 0) side = 1; // primer tick sin informacion (contrato)
+			}
+			lastTickPrice = price;
+			lastTickDir   = side;
+			long tick = (long)Math.Round(price / TickSize, MidpointRounding.AwayFromZero);
+			Dictionary<long, double> map = side > 0 ? pendingAsk : pendingBid;
+			double cur;
+			map[tick] = map.TryGetValue(tick, out cur) ? cur + vol : vol;
+		}
+
 		// ---------------- celdas ----------------
 
 		private List<Cell> CollectCells()
 		{
-			NinjaTrader.NinjaScript.BarsTypes.VolumetricBarsType.VolumetricBar vol;
-			try { vol = vbt.Volumes[CurrentBar]; }
-			catch (Exception ex) { EmitError("volumes_access", ex.Message); return null; }
-			if (vol == null) { EmitError("volumes_null", "Volumes[CurrentBar] == null"); return null; }
+			if (curAsk == null || curBid == null) return new List<Cell>();
 
 			long loTick = SnapToTick(Low[0]);
 			long hiTick = SnapToTick(High[0]);
@@ -448,18 +500,20 @@ namespace NinjaTrader.NinjaScript.Indicators
 
 			for (long t = loTick; t <= hiTick; t++)
 			{
-				double price = Instrument.MasterInstrument.RoundToTickSize(t * TickSize);
-				double total = vol.GetTotalVolumeForPrice(price);
+				double a, b;
+				double ask = curAsk.TryGetValue(t, out a) ? a : 0.0;
+				double bid = curBid.TryGetValue(t, out b) ? b : 0.0;
+				double total = ask + bid;
 				if (total <= 0) continue; // CONTRATO: distribución condicionada a volumen > 0
 
 				double value;
 				switch (DetectionSource)
 				{
 					case AVCP2DetectionSource.AbsDelta:
-						value = Math.Abs(vol.GetAskVolumeForPrice(price) - vol.GetBidVolumeForPrice(price));
+						value = Math.Abs(ask - bid);
 						break;
 					case AVCP2DetectionSource.MaxSide:
-						value = Math.Max(vol.GetAskVolumeForPrice(price), vol.GetBidVolumeForPrice(price));
+						value = Math.Max(ask, bid);
 						break;
 					default:
 						value = total;
@@ -637,17 +691,6 @@ namespace NinjaTrader.NinjaScript.Indicators
 		}
 
 		// ---------------- infra ----------------
-
-		private bool EnsureVolumetric()
-		{
-			if (vbt != null) return true;
-			if (vbtChecked) return false;
-			vbtChecked = true;
-			try { vbt = Bars.BarsType as VolumetricBarsType; } catch { }
-			if (vbt == null)
-				EmitError("bars_type", "Requiere barras Volumetric (OrderFlow).");
-			return vbt != null;
-		}
 
 		private void EmitError(string code, string message)
 		{
