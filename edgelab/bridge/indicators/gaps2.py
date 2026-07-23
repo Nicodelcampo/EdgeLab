@@ -26,6 +26,34 @@ DEFAULTS = dict(
     reversal_confirm_ticks=2, max_age_bars=2000, max_logged_touches=20,
 )
 
+# Espacio paramétrico declarado (F6.1). class: recompute|lifecycle|offline|
+# instrument|visual|forbidden. `branches` alimenta la matriz de cobertura (F7).
+PARAM_SPEC = {
+    "export_floor_ticks": {"type": "int", "default": 2, "min": 1, "class": "recompute",
+                           "branches": ["gap_detection"], "suggested_grid": [2, 3, 5]},
+    "min_gap_ticks": {"type": "int", "default": 5, "min": 1, "class": "offline",
+                      "branches": ["gap_display"], "requires_covered_by": "export_floor_ticks",
+                      "suggested_grid": [3, 5, 8]},
+    "reopen_pause_minutes": {"type": "float", "default": 60.0, "min": 0.0,
+                             "class": "recompute", "branches": ["session_gap"]},
+    "reopen_warmup_minutes": {"type": "float", "default": 30.0, "min": 0.0,
+                              "class": "recompute", "branches": ["session_gap"]},
+    "atr_period": {"type": "int", "default": 14, "min": 1, "class": "recompute",
+                   "branches": ["atr_feature"]},
+    "vol_baseline_ticks": {"type": "int", "default": 2000, "min": 1, "class": "recompute",
+                           "branches": ["vol_baseline"]},
+    "min_vol_baseline_samples": {"type": "int", "default": 500, "min": 0,
+                                 "class": "recompute", "branches": ["vol_baseline"]},
+    "partial_fill_pct": {"type": "float", "default": 50.0, "min": 0.0, "max": 100.0,
+                         "class": "lifecycle", "branches": ["lifecycle_partial"]},
+    "reversal_confirm_ticks": {"type": "int", "default": 2, "min": 0, "class": "lifecycle",
+                               "branches": ["lifecycle_invalidation"], "suggested_grid": [0, 2, 4]},
+    "max_age_bars": {"type": "int", "default": 2000, "min": 1, "class": "lifecycle",
+                     "branches": ["expiration"]},
+    "max_logged_touches": {"type": "int", "default": 20, "min": 0, "class": "offline",
+                           "branches": ["touch_logging"]},
+}
+
 HEADER = ("event_seq,event_type,ts,unix_ms,gap_id,created_unix_ms,top,bottom,"
           "size_ticks,is_bullish,atr_at_creation,vol_at_creation,vol_baseline,"
           "vol_ratio,state,max_pen_pct,touches,bars_since,price_at_event,extra")

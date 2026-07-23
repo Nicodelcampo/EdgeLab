@@ -6,8 +6,12 @@ cuantil ponderado sin interpolacion o robust-z log1p/MAD. La sesion actual
 nunca entra al perfil contra el que se compara (anti look-ahead). El roll
 replica RollSessionIntoHistory: el primer roll observado descarta pending.
 
-NT8 usa barras Volumetric; aqui las celdas salen del footprint reconstruido
-desde ticks con bid/ask (guia SS11/SS13): equivalencia validada en paridad.
+Footprint reconstruido desde la subserie de 1 tick con bid/ask (guia SS11/SS13),
+IDÉNTICO en ambos lados: el .cs de NT8 (aVolCellPOI2.cs) fue reescrito para usar
+el mismo motor de reconstrucción por subserie 1-tick (no barras Volumetric
+nativas de OrderFlow) — un solo motor de cálculo, sin dependencia de OrderFlow+,
+y sin el dual-path que la guia §13 prohíbe. Así la paridad de celdas (P1B) es
+exacta por construcción, no una equivalencia a validar.
 
 Fidelidad 1:1 verificada contra avolcellpoi.txt (AMejorasIndicadoresVectorbt/):
 - firstRollDone descarta la primera sesión observada (potencialmente parcial);
@@ -46,6 +50,51 @@ DEFAULTS = dict(
     export_floor_percentile=95.0, merge_gap_ticks=0, min_zone_cells=1,
     invalidation_mode="CloseThrough", max_age_bars=2000, max_touches=0,
 )
+
+# Espacio paramétrico declarado (F6.1).
+PARAM_SPEC = {
+    "bucket_anchor": {"type": "str", "default": "SessionRelative",
+                      "choices": ["SessionRelative", "WallClock"], "class": "recompute",
+                      "branches": ["bucket_anchor"]},
+    "time_bucket_minutes": {"type": "int", "default": 5, "min": 1, "class": "recompute",
+                            "branches": ["bucket_size"], "suggested_grid": [5, 15, 30]},
+    "lookback_sessions": {"type": "int", "default": 20, "min": 1, "class": "recompute",
+                          "branches": ["lookback"], "suggested_grid": [10, 20, 40]},
+    "profile_weighting": {"type": "str", "default": "EqualSessionWeight",
+                          "choices": ["EqualSessionWeight", "PooledCells"], "class": "recompute",
+                          "branches": ["weighting"]},
+    "detection_source": {"type": "str", "default": "TotalVolume",
+                         "choices": ["TotalVolume", "AbsDelta", "MaxSide"], "class": "recompute",
+                         "branches": ["detection_source"]},
+    "detection_method": {"type": "str", "default": "Quantile",
+                         "choices": ["Quantile", "RobustZ"], "class": "recompute",
+                         "branches": ["detection_method"]},
+    "export_floor_percentile": {"type": "float", "default": 95.0, "min": 0.0, "max": 100.0,
+                                "class": "recompute", "branches": ["export_floor"]},
+    "detection_percentile": {"type": "float", "default": 99.5, "min": 0.0, "max": 100.0,
+                             "class": "offline", "branches": ["quantile_cut"],
+                             "requires_covered_by": "export_floor_percentile",
+                             "suggested_grid": [99.0, 99.5, 99.75, 99.9]},
+    "robust_z_threshold": {"type": "float", "default": 4.0, "min": 0.0, "class": "offline",
+                           "branches": ["robustz_cut"], "suggested_grid": [3.0, 4.0, 5.0]},
+    "min_absolute_volume": {"type": "float", "default": 10.0, "min": 0.0, "class": "offline",
+                            "branches": ["min_vol"]},
+    "min_sessions": {"type": "int", "default": 15, "min": 1, "class": "recompute",
+                     "branches": ["profile_gate"]},
+    "min_cell_samples": {"type": "int", "default": 500, "min": 1, "class": "recompute",
+                         "branches": ["profile_gate"]},
+    "merge_gap_ticks": {"type": "int", "default": 0, "min": 0, "class": "offline",
+                        "branches": ["geometry_merge"]},
+    "min_zone_cells": {"type": "int", "default": 1, "min": 1, "class": "offline",
+                       "branches": ["geometry_min_cells"]},
+    "invalidation_mode": {"type": "str", "default": "CloseThrough",
+                          "choices": ["CloseThrough", "FirstTouch"], "class": "lifecycle",
+                          "branches": ["lifecycle_invalidation"]},
+    "max_age_bars": {"type": "int", "default": 2000, "min": 1, "class": "lifecycle",
+                     "branches": ["expiration"]},
+    "max_touches": {"type": "int", "default": 0, "min": 0, "class": "lifecycle",
+                    "branches": ["lifecycle_max_touches"]},
+}
 
 HEADER = ("event_seq,event_type,bar_index,bar_close_time,session_index,"
           "bucket,lower_tick,upper_tick,value,total_volume,threshold,empirical_pct,"

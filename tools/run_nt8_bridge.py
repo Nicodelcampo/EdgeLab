@@ -37,7 +37,7 @@ sys.path.insert(0, REPO)
 import numpy as np  # noqa: E402
 
 from edgelab.bridge import bars as bars_mod  # noqa: E402
-from edgelab.bridge import oracle, parity, viewer_export, zone_store  # noqa: E402
+from edgelab.bridge import identity, oracle, parity, viewer_export, zone_store  # noqa: E402
 from edgelab.bridge import ticks as ticks_mod  # noqa: E402
 from edgelab.bridge.indicators import BAR_DRIVEN, REGISTRY  # noqa: E402
 
@@ -123,6 +123,19 @@ def main(argv=None):
     for n in names:
         if not grids.get(n):
             grids[n] = [{}]
+
+    # Validación contra PARAM_SPEC (F6.1): rechaza parámetros inexistentes, tipos
+    # incorrectos, fuera de rango/choice, visual/forbidden, y filtros offline con
+    # piso de export no cubierto. La clave reservada "bars" se valida aparte.
+    val_errors = []
+    for n in names:
+        for pset in grids[n]:
+            checkable = {k: v for k, v in pset.items() if k != "bars"}
+            for e in identity.validate_params(n, checkable):
+                val_errors.append(f"{n}: {e}")
+    if val_errors:
+        ap.error("parámetros inválidos:\n  " + "\n  ".join(val_errors))
+
     oracle_by = {}
     for spec in args.oracle:
         k, _, v = spec.partition("=")
@@ -142,6 +155,11 @@ def main(argv=None):
     gen_utc = datetime.now(timezone.utc).isoformat()
     code_rev = git_rev()
     src_sha = sha256_file(args.data) if args.data else None
+    # Identidades canónicas (F6.1): dataset_id una vez; kernel_id cacheado.
+    tz_interp = "synthetic" if args.synthetic else "canonical_utc_verified"
+    ds_id = identity.dataset_id(tk, tz_interpretation=tz_interp, source_sha256=src_sha)
+    kid_cache = {}
+    print(f"dataset_id: {ds_id}")
     bars_cache, fps_cache, p1a_cache = {}, {}, {}
 
     def bars_for(spec):
@@ -170,7 +188,11 @@ def main(argv=None):
             res = (mod.run(tk, bars, fps, params=pset, chart_tz=args.chart_tz)
                    if n in BAR_DRIVEN else
                    mod.run(tk, bars, params=pset, chart_tz=args.chart_tz))
-            psid = viewer_export.param_set_id(res["params"], viewer_export.bar_key_of(bars))
+            bkey_id = viewer_export.bar_key_of(bars)
+            psid = viewer_export.param_set_id(res["params"], bkey_id)
+            kid = kid_cache.setdefault(n, identity.kernel_id(n))
+            cid = identity.config_id(n, res["params"], bkey_id, args.chart_tz, kid)
+            rid = identity.run_id(ds_id, cid, args.start_utc, args.end_utc)
             run_id = f"{n}_{psid}"
             csv_path = os.path.join(args.out, f"{run_id}_events_py.csv")
             with open(csv_path, "w", encoding="utf-8") as fh:
@@ -194,7 +216,8 @@ def main(argv=None):
             runs.append(run)
             manifest_runs.append(dict(
                 run_id=run_id, indicator=n, param_set_id=psid,
-                bar_key=viewer_export.bar_key_of(bars), params=res["params"],
+                dataset_id=ds_id, kernel_id=kid, config_id=cid, canonical_run_id=rid,
+                bar_key=bkey_id, params=res["params"],
                 n_zones=len(res["zones"]), n_events=len(res["events"]),
                 p1a=p1a["status"], parity_gate=(rep["gate"] if rep else None),
                 events_csv=os.path.basename(csv_path)))

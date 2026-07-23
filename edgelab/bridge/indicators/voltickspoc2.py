@@ -35,6 +35,31 @@ DEFAULTS = dict(
     invalidation_mode="CloseThrough", max_age_bars=2000, max_touches=0,
 )
 
+# Espacio paramétrico declarado (F6.1).
+PARAM_SPEC = {
+    "avg_period": {"type": "int", "default": 200, "min": 1, "class": "recompute",
+                   "branches": ["baseline_window"]},
+    "ratio_window_bars": {"type": "int", "default": 2000, "min": 1, "class": "recompute",
+                          "branches": ["ratio_window"]},
+    "min_ratio_samples": {"type": "int", "default": 500, "min": 1, "class": "recompute",
+                          "branches": ["ratio_window"]},
+    "export_floor_percentile": {"type": "float", "default": 95.0, "min": 0.0, "max": 100.0,
+                                "class": "recompute", "branches": ["export_floor"]},
+    "detection_percentile": {"type": "float", "default": 99.5, "min": 0.0, "max": 100.0,
+                             "class": "offline", "branches": ["detection_cut"],
+                             "requires_covered_by": "export_floor_percentile",
+                             "suggested_grid": [99.0, 99.5, 99.75, 99.9]},
+    "price_mark_ticks": {"type": "int", "default": 1, "min": 1, "class": "offline",
+                         "branches": ["geometry"]},
+    "invalidation_mode": {"type": "str", "default": "CloseThrough",
+                          "choices": ["CloseThrough", "FirstTouch"], "class": "lifecycle",
+                          "branches": ["lifecycle_invalidation"]},
+    "max_age_bars": {"type": "int", "default": 2000, "min": 1, "class": "lifecycle",
+                     "branches": ["expiration"]},
+    "max_touches": {"type": "int", "default": 0, "min": 0, "class": "lifecycle",
+                    "branches": ["lifecycle_max_touches"]},
+}
+
 HEADER = ("event_seq,event_type,bar_index,bar_close_time,poc_tick,ratio,"
           "baseline,bar_volume,tick_volume,poc_volume,poc_share,threshold,"
           "window_count,zone_id,touch_count,reason")

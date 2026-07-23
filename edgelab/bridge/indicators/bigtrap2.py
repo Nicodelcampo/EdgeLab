@@ -39,6 +39,47 @@ DEFAULTS = dict(
     invalidation_mode="CloseThrough", max_age_bars=2000, max_touches=0,
 )
 
+# Espacio paramétrico declarado (F6.1). Los params de renderer analítico del .cs
+# (TopPercentFilter/AutoScale/OutlierPercentile) son FORBIDDEN: look-ahead que
+# no existe en el kernel; la CLI los rechaza si alguien intenta barrerlos.
+PARAM_SPEC = {
+    "ticks_per_row": {"type": "int", "default": 1, "min": 1, "class": "recompute",
+                      "branches": ["row_anchor"], "suggested_grid": [1, 2, 4]},
+    "imbalance_mode": {"type": "str", "default": "Diagonal",
+                       "choices": ["Diagonal", "SameLevel"], "class": "recompute",
+                       "branches": ["imbalance_detection"]},
+    "trap_volume_source": {"type": "str", "default": "AggressiveSide",
+                           "choices": ["AggressiveSide", "TotalLevel"], "class": "recompute",
+                           "branches": ["trap_volume"]},
+    "imbalance_ratio": {"type": "float", "default": 3.0, "min": 1.0, "class": "recompute",
+                        "branches": ["imbalance_detection"], "suggested_grid": [1.5, 2.0, 3.0, 4.0]},
+    "use_wick_filter": {"type": "bool", "default": True, "class": "recompute",
+                        "branches": ["wick_filter"]},
+    "wick_zone_pct": {"type": "float", "default": 30.0, "min": 0.0, "max": 100.0,
+                      "class": "recompute", "branches": ["wick_filter"]},
+    "min_delta_filter": {"type": "float", "default": 0.0, "min": 0.0, "class": "recompute",
+                         "branches": ["delta_filter"]},
+    "min_export_volume": {"type": "float", "default": 1.0, "min": 0.0, "class": "recompute",
+                          "branches": ["export_floor"]},
+    "min_trap_volume": {"type": "float", "default": 30.0, "min": 0.0, "class": "offline",
+                        "branches": ["trap_selection"], "requires_covered_by": "min_export_volume",
+                        "suggested_grid": [20.0, 30.0, 50.0]},
+    "invalidation_mode": {"type": "str", "default": "CloseThrough",
+                          "choices": ["CloseThrough", "FirstTouch"], "class": "lifecycle",
+                          "branches": ["lifecycle_invalidation"]},
+    "max_age_bars": {"type": "int", "default": 2000, "min": 1, "class": "lifecycle",
+                     "branches": ["expiration"]},
+    "max_touches": {"type": "int", "default": 0, "min": 0, "class": "lifecycle",
+                    "branches": ["lifecycle_max_touches"]},
+    # Renderer analítico / look-ahead: PROHIBIDOS en cualquier grilla.
+    "TopPercentFilter": {"class": "forbidden", "optimizable": False,
+                         "reason": "renderer selecciona por percentil sobre historia acumulada (look-ahead)"},
+    "AutoScale": {"class": "forbidden", "optimizable": False,
+                  "reason": "escalado visual dependiente de la historia cargada"},
+    "OutlierPercentile": {"class": "forbidden", "optimizable": False,
+                          "reason": "corte visual retroactivo sobre todas las detecciones"},
+}
+
 
 def meta_line(p, instrument, tick_size):
     return ("# meta indicator=BigTrap2,version=2.0,footprint=reconstructed_1tick_subseries,"
