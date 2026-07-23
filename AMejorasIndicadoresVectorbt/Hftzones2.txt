@@ -1,0 +1,897 @@
+// ============================================================================
+// HFTZones2.cs — v2.0 — Detector de ráfagas HFT multi-instrumento ADAPTATIVO
+// Consolida: HFTZonesESPureV2 (motor + FIX#1-3) + HFTZonesNQPureV3 (retro relativo)
+// Piloto del puente NT8 → EdgeLab/vectorbt. Sigue la Guía reutilizable §1–14.
+//
+// ============================== CONTRATO ====================================
+// DEFINICIÓN DEL EVENTO
+//   Racha de trades consecutivos en una dirección sobre la subserie 1-tick.
+//   Un tick es válido si continúa la dirección o es plano (mismo precio).
+//   La racha NO se inicia en ticks planos (v1 iniciaba con isDown-first =
+//   sesgo bajista arbitrario — defecto corregido y declarado).
+//   Corta por: (a) fallos > FallosTolerados; (b) pausa > MaxPausaMs efectivo;
+//   (c) retroceso relativo > max(RetroFloorTicks, RetroPctHeight% × altura)
+//   (si UseRelativeRetro; el tick que viola queda INCLUIDO en la racha);
+//   (d) límite de sesión. Al cortar se evalúa y clasifica (Finalizar).
+//
+// FIXES DE V1 PRESERVADOS (declarados)
+//   FIX#1 duración con piso 1 ms para vol_rate (ráfagas sub-ms).
+//   FIX#2 avg_ms solo sobre intervalos INTERNOS de la racha (excluye el gap
+//         previo al primer tick).
+//   FIX#3 sweep vs absorción: sweep si altura >= MinSweepTicks; si no y
+//         DetectAbsorb, candidata ABSORB con MinAbsorbPasos.
+//
+// CALIBRACIÓN ADAPTATIVA (lo nuevo — multi-instrumento)
+//   Principio (guía §14): los parámetros ESTRUCTURALES (MinPasos, MinSweepTicks,
+//   FallosTolerados, retro) son la hipótesis y quedan FIJOS y declarados.
+//   Solo se adaptan las ESCALAS de instrumento: velocidad (ms) y volumen.
+//   - Ventana de calibración = la SESIÓN ANTERIOR completa. La calibración se
+//     CONGELA al inicio de cada sesión (causal, reproducible; nunca rolling
+//     intrabar — evita que la misma racha pase/falle según el momento del día).
+//   - Muestras: intervalos inter-tick en ms con 0 <= ms <= PauseExcludeMs
+//     (excluye pausas) y volumen por tick. Decimación DETERMINISTA por stride
+//     con duplicación al llegar a CalibSampleCap (nunca muestreo aleatorio).
+//   - Cuantiles EXACTOS sin interpolación: idx = ceil(q*n)-1 (igual que
+//     VolTicksPOC2) — replicable 1:1 en numpy.
+//   - FÓRMULAS (declaradas; todas exportadas en el evento CALIBRATION):
+//       eff_predator_ms = max(1, Q(QPredator))            [def q=0.02]
+//       eff_ultra_ms    = max(eff_predator_ms, Q(QUltra)) [def q=0.05]
+//       eff_max_avg_ms  = max(eff_ultra_ms, Q(QMaxAvg))   [def q=0.15]
+//       eff_max_pausa_ms= clamp(PauseMult × max(1,Q(0.50)), eff_max_avg_ms, 5000)
+//       eff_max_total_ms= eff_max_avg_ms × MinPasos × TotalMsMult
+//       eff_min_total_vol = VolMultMedianTick × median(vol_tick) × MinPasos
+//       eff_min_vol_rate  = eff_min_total_vol / (eff_max_total_ms/1000)
+//   - AUDITORÍA DE RESOLUCIÓN (gate P0): CALIBRATION exporta frac_zero_ms y
+//     n; si Q(0.50) <= 0 ⇒ resolution_limited=1 (los umbrales de velocidad
+//     quedan con piso 1 ms y NO son confiables — verificar timestamps ms
+//     reales del feed antes de usar buckets de velocidad).
+//   - Primera sesión del dataset: sin calibración ⇒ SIN detección (evento
+//     CALIBRATION_PENDING). Sin fallbacks silenciosos.
+//   - AdaptiveMode=false ⇒ usa los parámetros manuales del grupo C (para A/B
+//     contra las v1 por instrumento). calib_id=0.
+//   - Cada zona exporta el calib_id usado ⇒ la fuerza bruta offline puede
+//     reconstruir exactamente qué umbrales generaron cada zona.
+//
+// CLASIFICACIÓN (post-filtros, jerárquica, declarada)
+//   ABSORB si altura < MinSweepTicks; si no por velocidad:
+//   PREDATOR avg_ms <= eff_predator_ms; ULTRA <= eff_ultra_ms; FAST resto.
+//
+// GEOMETRÍA DE ZONA (corrige inconsistencia v1: la zona bear se dibujaba
+//   [swH-tick, swH] pero se mitigaba arriba de swH+tick)
+//   Racha alcista (barre hacia arriba): origen = swL → zona SOPORTE
+//     [swL − ZoneHeightTicks×TickSize, swL].
+//   Racha bajista: origen = swH → zona RESISTENCIA [swH, swH + ZoneHeightTicks×TickSize].
+//
+// CICLO DE VIDA (tick-exacto)
+//   ZONE_CREATED → ZONE_TOUCHED por época (precio entra a [lower,upper]
+//   estando afuera) → ZONE_INVALIDATED reason ∈ {first_touch, close_through,
+//   max_touches} según InvalidationMode/MaxTouches → ZONE_EXPIRED por
+//   MaxAgeBars (barras primarias; chart canónico). close_through: precio
+//   supera el borde distal en PenetrationTicks. Las zonas NO viven para
+//   siempre (v1: lista sin límite, sin expiración = defecto).
+//
+// EXPORT (stream de EVENTOS — nunca dump de estado final; v1 volcaba el CSV
+//   completo en Terminated con start_ms==end_ms — defecto)
+//   '# meta' + '# params' + filas: OBS (toda racha finalizada con
+//   valid_steps >= MinExportValidSteps, con flag pass=0/1 → permite barrer
+//   umbrales offline sin re-correr NT8), ZONE_CREATED/TOUCHED/INVALIDATED/
+//   EXPIRED, CALIBRATION, CALIBRATION_PENDING, SESSION_END, ERROR.
+//   Sin rutas hardcodeadas (v1: C:\AlgoNQ\..., C:\Users\nicoc\... — defecto);
+//   sin SQLite en el indicador: el Store ingiere el CSV.
+//
+// THREADING
+//   Detección en el hilo de la subserie tick; Draw.* SOLO al cierre de barra
+//   primaria (v1 dibujaba desde el hilo tick — defecto).
+//
+// LO QUE NO HACE (offline en EdgeLab): contexto de sesión/news, decaimiento
+//   por toques como señal (acá solo visual), joins con otras zonas.
+//
+// PARIDAD (gates): P0 ticks + resolución ms → P2A creación → P2B lifecycle.
+// ============================================================================
+​
+#region Using declarations
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
+using System.IO;
+using System.Text;
+using System.Windows.Media;
+using System.Xml.Serialization;
+using NinjaTrader.Cbi;
+using NinjaTrader.Data;
+using NinjaTrader.Gui;
+using NinjaTrader.Gui.Chart;
+using NinjaTrader.NinjaScript;
+using NinjaTrader.NinjaScript.DrawingTools;
+#endregion
+​
+namespace NinjaTrader.NinjaScript.Indicators
+{
+	public enum HZ2Bucket { Predator, Ultra, Fast, Absorb }
+	public enum HZ2InvalidationMode { None, FirstTouch, CloseThrough }
+​
+	public class HFTZones2 : Indicator
+	{
+		#region Tipos internos
+		private sealed class Zone
+		{
+			public int       Id;
+			public int       CalibId;
+			public int       CreatedPrimaryBar;
+			public DateTime  CreatedTime;
+			public double    Upper, Lower;
+			public int       Direction;      // +1 racha alcista (zona soporte), -1 bajista (resistencia)
+			public HZ2Bucket Bucket;
+			public double    AvgMs, TotalMs, VolRate, TotalVol, MaxRetroTicks;
+			public int       Pasos, ValidSteps, HeightTicks;
+			public int       Touches;
+			public bool      InsideEpoch;
+			public bool      Archived;
+			public bool      NeedsRedraw;
+			public string    Tag;
+		}
+		#endregion
+​
+		#region Estado
+		private readonly List<Zone> _zones = new List<Zone>(256);
+		private int _nextZoneId;
+​
+		// Máquina de estados de la racha
+		private int _dir, _streak, _validSteps, _fails;
+		private double _swH, _swL, _totalVol, _maxRetroTicks;
+		private readonly List<double> _msList = new List<double>(512);
+		private DateTime _tStart, _tLast;
+​
+		// Sesiones / calibración
+		private SessionIterator _sessIter;
+		private DateTime _sessEnd = DateTime.MinValue;
+		private bool _calibReady;
+		private int  _calibId;
+		private bool _resLimited;
+		private bool _pendingLogged;
+		private double _effPredMs, _effUltraMs, _effMaxAvgMs, _effMaxPausaMs, _effMaxTotalMs, _effMinTotalVol, _effMinVolRate;
+​
+		// Muestras de la sesión en curso (calibran la PRÓXIMA sesión)
+		private readonly List<double> _msSamples  = new List<double>(65536);
+		private readonly List<double> _volSamples = new List<double>(65536);
+		private int _msStride = 1, _volStride = 1;
+		private long _msSeen, _volSeen;
+​
+		// Logger
+		private StreamWriter _log;
+		private long _seq;
+		private int _sinceFlush;
+		#endregion
+​
+		protected override void OnStateChange()
+		{
+			if (State == State.SetDefaults)
+			{
+				Name                     = "HFTZones2";
+				Description              = "v2 adaptativa multi-instrumento: ráfagas HFT con calibración causal congelada por sesión y export de eventos. Contrato en el header del .cs.";
+				Calculate                = Calculate.OnBarClose;
+				IsOverlay                = true;
+				DisplayInDataBox         = false;
+				PaintPriceMarkers        = false;
+				IsSuspendedWhileInactive = false;
+​
+				// 0. Modo
+				AdaptiveMode        = true;
+​
+				// A. Estructura (hipótesis — fija, no se adapta)
+				MinPasos            = 8;
+				MinAbsorbPasos      = 6;
+				DetectAbsorb        = true;
+				FallosTolerados     = 1;
+				MinSweepTicks       = 4;
+				UseRelativeRetro    = true;
+				RetroFloorTicks     = 2;
+				RetroPctHeight      = 50;
+​
+				// B. Calibración adaptativa
+				QPredator           = 0.02;
+				QUltra              = 0.05;
+				QMaxAvg             = 0.15;
+				PauseMult           = 5;
+				TotalMsMult         = 2.0;
+				VolMultMedianTick   = 3.0;
+				PauseExcludeMs      = 1000;
+				MinCalibSamples     = 5000;
+				CalibSampleCap      = 262144;
+​
+				// C. Manual (solo si AdaptiveMode=false; defaults = calibración NQ v1-V3)
+				ManualPredatorMs    = 5;
+				ManualUltraMs       = 15;
+				ManualMaxAvgMs      = 25;
+				ManualMaxPausaMs    = 100;
+				ManualMaxTotalMs    = 500;
+				ManualMinVolRate    = 100;
+				ManualMinTotalVol   = 50;
+​
+				// D. Ciclo de vida
+				InvalidationMode    = HZ2InvalidationMode.CloseThrough;
+				PenetrationTicks    = 1;
+				MaxTouches          = 0;
+				MaxAgeBars          = 2000;
+				ZoneHeightTicks     = 1;
+				MaxLoggedTouches    = 20;
+​
+				// E. Export
+				EventLogPath        = "";
+				MinExportValidSteps = 5;
+​
+				// F. Visual
+				ShowZones           = true;
+				MaxZonesDrawn       = 200;
+				RectOpacity         = 30;
+				ColorSupport        = Brushes.MediumSeaGreen;
+				ColorResistance     = Brushes.IndianRed;
+				ColorAbsorb         = Brushes.SlateGray;
+			}
+			else if (State == State.Configure)
+			{
+				// Subserie fija 1-tick: motor único. (v1 tenía TickResolution y
+				// MaxRangoTickPorVela — removidos: en 1-tick H==L==precio siempre.)
+				AddDataSeries(BarsPeriodType.Tick, 1);
+			}
+			else if (State == State.DataLoaded)
+			{
+				// Validación de combinaciones (guía §5)
+				if (QPredator > QUltra)  { Print("[HFTZones2] QPredator > QUltra; se ajusta QPredator=QUltra"); QPredator = QUltra; }
+				if (QUltra > QMaxAvg)    { Print("[HFTZones2] QUltra > QMaxAvg; se ajusta QUltra=QMaxAvg");   QUltra = QMaxAvg; }
+				if (MinAbsorbPasos > MinPasos) { Print("[HFTZones2] MinAbsorbPasos > MinPasos; se ajusta."); MinAbsorbPasos = MinPasos; }
+​
+				_sessIter = new SessionIterator(BarsArray[1]);
+				_zones.Clear(); _nextZoneId = 0; _seq = 0;
+				ResetStreak();
+​
+				if (!AdaptiveMode)
+				{
+					_effPredMs      = ManualPredatorMs;
+					_effUltraMs     = ManualUltraMs;
+					_effMaxAvgMs    = ManualMaxAvgMs;
+					_effMaxPausaMs  = ManualMaxPausaMs;
+					_effMaxTotalMs  = ManualMaxTotalMs;
+					_effMinVolRate  = ManualMinVolRate;
+					_effMinTotalVol = ManualMinTotalVol;
+					_calibReady = true; _calibId = 0; _resLimited = false;
+				}
+​
+				OpenLog();
+			}
+			else if (State == State.Terminated)
+			{
+				CloseLog();
+			}
+		}
+​
+		protected override void OnBarUpdate()
+		{
+			// ── Subserie 1-tick ──
+			if (BarsInProgress == 1)
+			{
+				if (CurrentBars[1] < 1) return;
+​
+				DateTime t = Times[1][0];
+				CheckSession(t);
+​
+				double price = Closes[1][0];
+				double vol   = Volumes[1][0];
+				double ms    = (Times[1][0] - Times[1][1]).TotalMilliseconds;
+​
+				// Muestreo para calibrar la PRÓXIMA sesión (siempre activo)
+				if (AdaptiveMode)
+				{
+					if (ms >= 0 && ms <= PauseExcludeMs)
+						AddSample(_msSamples, ms, ref _msStride, ref _msSeen);
+					AddSample(_volSamples, vol, ref _volStride, ref _volSeen);
+				}
+​
+				// Ciclo de vida tick-exacto ANTES de detectar
+				UpdateZonesWithTick(price, t);
+​
+				if (_calibReady)
+					StepEngine(price, vol, ms, t);
+				else if (!_pendingLogged)
+				{
+					LogRow("CALIBRATION_PENDING", t, null, "first_session_no_calibration", "");
+					_pendingLogged = true;
+				}
+				return;
+			}
+​
+			// ── Serie primaria: expiración + render ──
+			if (BarsInProgress != 0) return;
+			if (CurrentBars[0] < 1) return;
+			ExpireZones();
+			DrawZones();
+		}
+​
+		#region Sesiones y calibración
+		private void CheckSession(DateTime t)
+		{
+			if (_sessEnd != DateTime.MinValue && t < _sessEnd) return;
+​
+			_sessIter.GetNextSession(t, true);
+			_sessEnd = _sessIter.ActualSessionEnd;
+​
+			// El límite de sesión corta cualquier racha en curso
+			FinalizeStreak(t);
+​
+			if (!AdaptiveMode) return;
+​
+			if (_msSamples.Count >= 100 && _volSamples.Count >= 100 && _msSeen >= MinCalibSamples)
+				Recalibrate(t);
+			// Si no alcanza: se mantiene la calibración anterior (o sigue pending)
+​
+			_msSamples.Clear();  _volSamples.Clear();
+			_msStride = 1; _volStride = 1; _msSeen = 0; _volSeen = 0;
+		}
+​
+		private void Recalibrate(DateTime t)
+		{
+			List<double> ms  = new List<double>(_msSamples);  ms.Sort();
+			List<double> vv  = new List<double>(_volSamples); vv.Sort();
+​
+			double qPred = Quantile(ms, QPredator);
+			double qUlt  = Quantile(ms, QUltra);
+			double qMax  = Quantile(ms, QMaxAvg);
+			double p50   = Quantile(ms, 0.50);
+			double medV  = Quantile(vv, 0.50);
+​
+			int zeroCount = 0;
+			for (int i = 0; i < ms.Count && ms[i] <= 0; i++) zeroCount++;
+			double fracZero = ms.Count > 0 ? (double)zeroCount / ms.Count : 1.0;
+​
+			_effPredMs      = Math.Max(1.0, qPred);
+			_effUltraMs     = Math.Max(_effPredMs, qUlt);
+			_effMaxAvgMs    = Math.Max(_effUltraMs, qMax);
+			_effMaxPausaMs  = Math.Min(5000.0, Math.Max(_effMaxAvgMs, PauseMult * Math.Max(1.0, p50)));
+			_effMaxTotalMs  = _effMaxAvgMs * MinPasos * TotalMsMult;
+			_effMinTotalVol = VolMultMedianTick * medV * MinPasos;
+			_effMinVolRate  = _effMinTotalVol / (_effMaxTotalMs / 1000.0);
+			_resLimited     = p50 <= 0.0;
+			_calibId++;
+			_calibReady     = true;
+​
+			string extra = string.Format(CultureInfo.InvariantCulture,
+				"n_ms={0};n_vol={1};stride_ms={2};frac_zero_ms={3:F4};p50_ms={4:F2};median_tick_vol={5:F2};eff_predator_ms={6:F2};eff_ultra_ms={7:F2};eff_max_avg_ms={8:F2};eff_max_pausa_ms={9:F2};eff_max_total_ms={10:F2};eff_min_total_vol={11:F2};eff_min_vol_rate={12:F2};resolution_limited={13}",
+				ms.Count, vv.Count, _msStride, fracZero, p50, medV,
+				_effPredMs, _effUltraMs, _effMaxAvgMs, _effMaxPausaMs, _effMaxTotalMs,
+				_effMinTotalVol, _effMinVolRate, _resLimited ? 1 : 0);
+			LogRow("CALIBRATION", t, null, "", extra);
+			if (_resLimited)
+				Print("[HFTZones2] ATENCIÓN: resolución de timestamps limitada (p50<=0ms). Buckets de velocidad NO confiables. Verificar gate P0.");
+		}
+​
+		// Cuantil exacto sin interpolación (replicable 1:1 offline)
+		private static double Quantile(List<double> sorted, double q)
+		{
+			int n = sorted.Count;
+			if (n == 0) return 0;
+			int idx = (int)Math.Ceiling(q * n) - 1;
+			if (idx < 0) idx = 0;
+			if (idx > n - 1) idx = n - 1;
+			return sorted[idx];
+		}
+​
+		// Decimación determinista por stride con duplicación al llegar al cap
+		private void AddSample(List<double> list, double v, ref int stride, ref long seen)
+		{
+			seen++;
+			if (seen % stride != 0) return;
+			if (list.Count >= CalibSampleCap)
+			{
+				List<double> half = new List<double>(list.Count / 2 + 1);
+				for (int i = 1; i < list.Count; i += 2) half.Add(list[i]);
+				list.Clear(); list.AddRange(half);
+				stride *= 2;
+			}
+			list.Add(v);
+		}
+		#endregion
+​
+		#region Motor de rachas
+		private void ResetStreak()
+		{
+			_dir = 0; _streak = 0; _validSteps = 0; _fails = 0;
+			_swH = 0; _swL = 0; _totalVol = 0; _maxRetroTicks = 0;
+			_msList.Clear();
+		}
+​
+		private void StartStreak(int dir, double price, double vol, DateTime t)
+		{
+			_dir = dir; _streak = 1; _validSteps = 1; _fails = 0;
+			_swH = price; _swL = price; _totalVol = vol; _maxRetroTicks = 0;
+			_msList.Clear();
+			_tStart = t; _tLast = t;
+		}
+​
+		private void ContinueStreak(double price, double vol, double ms, DateTime t, bool valid)
+		{
+			_streak++;
+			if (valid) _validSteps++;
+			if (price > _swH) _swH = price;
+			if (price < _swL) _swL = price;
+			_msList.Add(ms);   // FIX#2: solo intervalos internos
+			_totalVol += vol;
+			_tLast = t;
+		}
+​
+		private void StepEngine(double price, double vol, double ms, DateTime t)
+		{
+			double prev = Closes[1][1];
+​
+			// (b) pausa: corta la racha; NO re-siembra a través de la pausa
+			if (_dir != 0 && ms > _effMaxPausaMs)
+			{
+				FinalizeStreak(t);
+				return;
+			}
+​
+			if (_dir == 0)
+			{
+				// No iniciar en ticks planos (corrige sesgo isDown-first de v1)
+				if      (price < prev) StartStreak(-1, price, vol, t);
+				else if (price > prev) StartStreak(+1, price, vol, t);
+				return;
+			}
+​
+			bool valid = (_dir == 1) ? price >= prev : price <= prev;
+			if (valid)
+			{
+				ContinueStreak(price, vol, ms, t, true);
+				_fails = 0;
+			}
+			else
+			{
+				_fails++;
+				if (_fails <= FallosTolerados)
+					ContinueStreak(price, vol, ms, t, false);
+				else
+				{
+					// (a) fallos agotados: finalizar y re-sembrar con el tick actual
+					FinalizeStreak(t);
+					if      (price < prev) StartStreak(-1, price, vol, t);
+					else if (price > prev) StartStreak(+1, price, vol, t);
+					return;
+				}
+			}
+​
+			// (c) retroceso relativo (V3): allowed = max(piso, pct% de la altura)
+			if (UseRelativeRetro && _dir != 0)
+			{
+				double heightTicks = (_swH - _swL) / TickSize;
+				double retro = _dir == 1 ? (_swH - price) / TickSize : (price - _swL) / TickSize;
+				if (retro > _maxRetroTicks) _maxRetroTicks = retro;
+				double allowed = Math.Max(RetroFloorTicks, RetroPctHeight / 100.0 * heightTicks);
+				if (retro > allowed)
+					FinalizeStreak(t);   // el tick que viola queda incluido (declarado)
+			}
+		}
+​
+		private void FinalizeStreak(DateTime t)
+		{
+			if (_dir == 0) { ResetStreak(); return; }
+​
+			int    heightTicks = (int)Math.Round((_swH - _swL) / TickSize);
+			bool   isSweep     = heightTicks >= MinSweepTicks;   // FIX#3
+			double totalMs     = 0;
+			for (int i = 0; i < _msList.Count; i++) totalMs += _msList[i];
+			double avgMs   = _msList.Count > 0 ? totalMs / _msList.Count : 0;
+			double durSec  = Math.Max(totalMs, 1.0) / 1000.0;    // FIX#1
+			double volRate = _totalVol / durSec;
+​
+			int  minReq     = isSweep ? MinPasos : MinAbsorbPasos;
+			bool structural = _validSteps >= minReq && (isSweep || DetectAbsorb);
+			bool pass = structural
+				&& avgMs    <= _effMaxAvgMs
+				&& totalMs  <= _effMaxTotalMs
+				&& volRate  >= _effMinVolRate
+				&& _totalVol >= _effMinTotalVol;
+​
+			// OBS: piso de export para fuerza bruta offline (con flag pass)
+			if (_validSteps >= MinExportValidSteps && _log != null)
+			{
+				Zone obs = BuildZone(heightTicks, isSweep, avgMs, totalMs, volRate, assignId: false);
+				LogRow("OBS", _tLast, obs, pass ? "pass=1" : "pass=0", "");
+			}
+​
+			if (pass)
+			{
+				Zone z = BuildZone(heightTicks, isSweep, avgMs, totalMs, volRate, assignId: true);
+				_zones.Add(z);
+				LogRow("ZONE_CREATED", _tLast, z, "", "");
+			}
+​
+			ResetStreak();
+		}
+​
+		private Zone BuildZone(int heightTicks, bool isSweep, double avgMs, double totalMs, double volRate, bool assignId)
+		{
+			HZ2Bucket bucket = !isSweep            ? HZ2Bucket.Absorb
+				: avgMs <= _effPredMs              ? HZ2Bucket.Predator
+				: avgMs <= _effUltraMs             ? HZ2Bucket.Ultra
+				:                                     HZ2Bucket.Fast;
+​
+			Zone z = new Zone();
+			z.Id                = assignId ? ++_nextZoneId : 0;
+			z.CalibId           = _calibId;
+			z.CreatedPrimaryBar = (CurrentBars != null && CurrentBars.Length > 0) ? CurrentBars[0] : 0;
+			z.CreatedTime       = _tLast;
+			z.Direction         = _dir;
+			z.Bucket            = bucket;
+			z.AvgMs             = avgMs;
+			z.TotalMs           = totalMs;
+			z.VolRate           = volRate;
+			z.TotalVol          = _totalVol;
+			z.MaxRetroTicks     = _maxRetroTicks;
+			z.Pasos             = _streak;
+			z.ValidSteps        = _validSteps;
+			z.HeightTicks       = heightTicks;
+			// Geometría declarada: soporte bajo el origen alcista / resistencia sobre el bajista
+			if (_dir == 1) { z.Upper = _swL;                                     z.Lower = _swL - ZoneHeightTicks * TickSize; }
+			else           { z.Upper = _swH + ZoneHeightTicks * TickSize;        z.Lower = _swH; }
+			z.Tag = "HZ2_" + z.Id;
+			z.NeedsRedraw = true;
+			return z;
+		}
+		#endregion
+​
+		#region Ciclo de vida de zonas (tick-exacto)
+		private void UpdateZonesWithTick(double price, DateTime t)
+		{
+			for (int i = _zones.Count - 1; i >= 0; i--)
+			{
+				Zone z = _zones[i];
+				if (z.Archived) continue;
+​
+				bool inside = price >= z.Lower && price <= z.Upper;
+				if (inside && !z.InsideEpoch)
+				{
+					z.Touches++;
+					z.InsideEpoch = true;
+					z.NeedsRedraw = true;
+					if (z.Touches <= MaxLoggedTouches)
+						LogRow("ZONE_TOUCHED", t, z, "epoch=" + z.Touches, "");
+​
+					if (InvalidationMode == HZ2InvalidationMode.FirstTouch)
+					{ InvalidateZone(z, t, "first_touch"); continue; }
+					if (MaxTouches > 0 && z.Touches >= MaxTouches)
+					{ InvalidateZone(z, t, "max_touches"); continue; }
+				}
+				else if (!inside)
+					z.InsideEpoch = false;
+​
+				if (InvalidationMode == HZ2InvalidationMode.CloseThrough)
+				{
+					bool through = z.Direction == 1
+						? price <= z.Lower - PenetrationTicks * TickSize
+						: price >= z.Upper + PenetrationTicks * TickSize;
+					if (through) InvalidateZone(z, t, "close_through");
+				}
+			}
+		}
+​
+		private void InvalidateZone(Zone z, DateTime t, string reason)
+		{
+			z.Archived = true;
+			z.NeedsRedraw = true;
+			LogRow("ZONE_INVALIDATED", t, z, reason, "");
+		}
+​
+		private void ExpireZones()
+		{
+			for (int i = _zones.Count - 1; i >= 0; i--)
+			{
+				Zone z = _zones[i];
+				if (z.Archived) continue;
+				if (CurrentBar - z.CreatedPrimaryBar <= MaxAgeBars) continue;
+				z.Archived = true;
+				z.NeedsRedraw = true;
+				LogRow("ZONE_EXPIRED", Time[0], z, "", "");
+			}
+		}
+		#endregion
+​
+		#region Render (solo visual, solo hilo primario)
+		private void DrawZones()
+		{
+			if (!ShowZones) { PruneArchived(); return; }
+​
+			int drawn = 0;
+			for (int i = _zones.Count - 1; i >= 0; i--)
+			{
+				Zone z = _zones[i];
+				if (z.Id == 0) continue;
+				if (z.Archived && !z.NeedsRedraw) continue;
+				if (!z.Archived && drawn >= MaxZonesDrawn) continue;
+​
+				int startBA = CurrentBar - z.CreatedPrimaryBar;
+				if (startBA < 0 || startBA > CurrentBar) { z.NeedsRedraw = false; continue; }
+​
+				Brush fill = z.Bucket == HZ2Bucket.Absorb ? ColorAbsorb
+					: z.Direction == 1 ? ColorSupport : ColorResistance;
+				Brush border = z.Archived ? Brushes.DimGray
+					: z.Bucket == HZ2Bucket.Predator ? Brushes.Magenta
+					: z.Bucket == HZ2Bucket.Ultra    ? Brushes.Orange
+					: Brushes.Transparent;
+​
+				Draw.Rectangle(this, z.Tag, false, startBA, z.Upper, 0, z.Lower, border, fill, RectOpacity);
+				z.NeedsRedraw = false;
+				if (!z.Archived) drawn++;
+			}
+			PruneArchived();
+		}
+​
+		private void PruneArchived()
+		{
+			for (int i = _zones.Count - 1; i >= 0; i--)
+				if (_zones[i].Archived && !_zones[i].NeedsRedraw)
+					_zones.RemoveAt(i);
+		}
+		#endregion
+​
+		#region Logger CSV (stream de eventos)
+		private void OpenLog()
+		{
+			if (string.IsNullOrWhiteSpace(EventLogPath)) { _log = null; return; }
+			try
+			{
+				string dir = Path.GetDirectoryName(EventLogPath);
+				if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
+				_log = new StreamWriter(EventLogPath, false, new UTF8Encoding(false));
+				_log.WriteLine("# meta indicator=HFTZones2,version=2.0,engine=tick_streak_fix123_relative_retro,classification=absorb_then_speed_buckets,calibration=prev_session_frozen_exact_quantiles,zone_geometry=origin_side,lifecycle=tick_exact,units=ticks_and_ms,ts_note=chart_local_plus_unix_ms_verify_tz_in_P0");
+				_log.WriteLine(string.Format(CultureInfo.InvariantCulture,
+					"# params instrument={0},tick_size={1},adaptive={2},min_pasos={3},min_absorb_pasos={4},detect_absorb={5},fallos_tolerados={6},min_sweep_ticks={7},use_relative_retro={8},retro_floor_ticks={9},retro_pct_height={10},q_predator={11},q_ultra={12},q_max_avg={13},pause_mult={14},total_ms_mult={15},vol_mult_median_tick={16},pause_exclude_ms={17},min_calib_samples={18},calib_sample_cap={19},invalidation_mode={20},penetration_ticks={21},max_touches={22},max_age_bars={23},zone_height_ticks={24},min_export_valid_steps={25},manual_pred_ms={26},manual_ultra_ms={27},manual_max_avg_ms={28},manual_max_pausa_ms={29},manual_max_total_ms={30},manual_min_vol_rate={31},manual_min_total_vol={32},chart_period={33}",
+					Instrument.MasterInstrument.Name, TickSize, AdaptiveMode ? 1 : 0, MinPasos, MinAbsorbPasos,
+					DetectAbsorb ? 1 : 0, FallosTolerados, MinSweepTicks, UseRelativeRetro ? 1 : 0, RetroFloorTicks,
+					RetroPctHeight, QPredator, QUltra, QMaxAvg, PauseMult, TotalMsMult, VolMultMedianTick,
+					PauseExcludeMs, MinCalibSamples, CalibSampleCap, InvalidationMode, PenetrationTicks, MaxTouches,
+					MaxAgeBars, ZoneHeightTicks, MinExportValidSteps, ManualPredatorMs, ManualUltraMs, ManualMaxAvgMs,
+					ManualMaxPausaMs, ManualMaxTotalMs, ManualMinVolRate, ManualMinTotalVol, BarsPeriod.ToString()));
+				_log.WriteLine("event_seq,event_type,ts,unix_ms,zone_id,calib_id,dir,bucket,upper,lower,height_ticks,pasos,valid_steps,avg_ms,total_ms,vol_rate,total_vol,max_retro_ticks,touches,reason,extra");
+				_log.Flush();
+				Print("[HFTZones2] Log de eventos: " + EventLogPath);
+			}
+			catch (Exception ex) { Print("[HFTZones2] Error abriendo log: " + ex.Message); _log = null; }
+		}
+​
+		private void CloseLog()
+		{
+			try
+			{
+				if (_log == null) return;
+				DateTime t = (_tLast != DateTime.MinValue) ? _tLast : DateTime.Now;
+				foreach (Zone z in _zones)
+					if (!z.Archived && z.Id > 0) LogRow("SESSION_END", t, z, "snapshot", "");
+				_log.Flush(); _log.Close(); _log.Dispose(); _log = null;
+				Print("[HFTZones2] Log cerrado.");
+			}
+			catch (Exception ex) { Print("[HFTZones2] Error cerrando log: " + ex.Message); }
+		}
+​
+		private void LogRow(string type, DateTime t, Zone z, string reason, string extra)
+		{
+			if (_log == null) return;
+			try
+			{
+				CultureInfo inv = CultureInfo.InvariantCulture;
+				StringBuilder sb = new StringBuilder(256);
+				sb.Append(++_seq).Append(',');
+				sb.Append(type).Append(',');
+				sb.Append(t.ToString("yyyy-MM-dd HH:mm:ss.fff", inv)).Append(',');
+				sb.Append(new DateTimeOffset(t.ToUniversalTime()).ToUnixTimeMilliseconds()).Append(',');
+				if (z != null)
+				{
+					sb.Append(z.Id > 0 ? "Z" + z.Id.ToString("D6", inv) : "").Append(',');
+					sb.Append(z.CalibId.ToString(inv)).Append(',');
+					sb.Append(z.Direction.ToString(inv)).Append(',');
+					sb.Append(z.Bucket.ToString().ToUpperInvariant()).Append(',');
+					sb.Append(z.Upper.ToString("F6", inv)).Append(',');
+					sb.Append(z.Lower.ToString("F6", inv)).Append(',');
+					sb.Append(z.HeightTicks.ToString(inv)).Append(',');
+					sb.Append(z.Pasos.ToString(inv)).Append(',');
+					sb.Append(z.ValidSteps.ToString(inv)).Append(',');
+					sb.Append(z.AvgMs.ToString("F3", inv)).Append(',');
+					sb.Append(z.TotalMs.ToString("F1", inv)).Append(',');
+					sb.Append(z.VolRate.ToString("F2", inv)).Append(',');
+					sb.Append(z.TotalVol.ToString("F2", inv)).Append(',');
+					sb.Append(z.MaxRetroTicks.ToString("F1", inv)).Append(',');
+					sb.Append(z.Touches.ToString(inv)).Append(',');
+				}
+				else
+					sb.Append(",,,,,,,,,,,,,,,");
+				sb.Append(reason ?? "").Append(',');
+				sb.Append(extra ?? "");
+				_log.WriteLine(sb.ToString());
+​
+				if (type == "CALIBRATION" || type == "ZONE_INVALIDATED" || type == "ZONE_EXPIRED" || type == "SESSION_END" || ++_sinceFlush >= 500)
+				{ _log.Flush(); _sinceFlush = 0; }
+			}
+			catch (Exception ex) { Print("[HFTZones2] Error escribiendo log: " + ex.Message); }
+		}
+		#endregion
+​
+		#region Propiedades
+		// ── 0. Modo ──
+		[NinjaScriptProperty]
+		[Display(Name = "Modo adaptativo", Order = 1, GroupName = "0. Modo",
+			Description = "true: calibra velocidad/volumen desde la sesión anterior (congelado por sesión). false: usa el grupo C (manual).")]
+		public bool AdaptiveMode { get; set; }
+​
+		// ── A. Estructura (hipótesis, fija) ──
+		[NinjaScriptProperty] [Range(2, 200)]
+		[Display(Name = "Min pasos (sweep)", Order = 1, GroupName = "A. Estructura")]
+		public int MinPasos { get; set; }
+​
+		[NinjaScriptProperty] [Range(2, 200)]
+		[Display(Name = "Min pasos (absorción)", Order = 2, GroupName = "A. Estructura")]
+		public int MinAbsorbPasos { get; set; }
+​
+		[NinjaScriptProperty]
+		[Display(Name = "Detectar absorción", Order = 3, GroupName = "A. Estructura")]
+		public bool DetectAbsorb { get; set; }
+​
+		[NinjaScriptProperty] [Range(0, 10)]
+		[Display(Name = "Fallos tolerados", Order = 4, GroupName = "A. Estructura")]
+		public int FallosTolerados { get; set; }
+​
+		[NinjaScriptProperty] [Range(1, 100)]
+		[Display(Name = "Min sweep (ticks)", Order = 5, GroupName = "A. Estructura",
+			Description = "Altura mínima para sweep (FIX#3); por debajo, candidata a absorción.")]
+		public int MinSweepTicks { get; set; }
+​
+		[NinjaScriptProperty]
+		[Display(Name = "Retroceso relativo (V3)", Order = 6, GroupName = "A. Estructura")]
+		public bool UseRelativeRetro { get; set; }
+​
+		[NinjaScriptProperty] [Range(0, 50)]
+		[Display(Name = "Piso retro (ticks)", Order = 7, GroupName = "A. Estructura")]
+		public int RetroFloorTicks { get; set; }
+​
+		[NinjaScriptProperty] [Range(0, 100)]
+		[Display(Name = "Retro máx (% altura)", Order = 8, GroupName = "A. Estructura")]
+		public double RetroPctHeight { get; set; }
+​
+		// ── B. Calibración adaptativa ──
+		[NinjaScriptProperty] [Range(0.001, 0.5)]
+		[Display(Name = "Cuantil PREDATOR", Order = 1, GroupName = "B. Calibración adaptativa")]
+		public double QPredator { get; set; }
+​
+		[NinjaScriptProperty] [Range(0.001, 0.5)]
+		[Display(Name = "Cuantil ULTRA", Order = 2, GroupName = "B. Calibración adaptativa")]
+		public double QUltra { get; set; }
+​
+		[NinjaScriptProperty] [Range(0.001, 0.9)]
+		[Display(Name = "Cuantil avg_ms máx", Order = 3, GroupName = "B. Calibración adaptativa")]
+		public double QMaxAvg { get; set; }
+​
+		[NinjaScriptProperty] [Range(1, 50)]
+		[Display(Name = "Mult. pausa (× p50 ms)", Order = 4, GroupName = "B. Calibración adaptativa")]
+		public double PauseMult { get; set; }
+​
+		[NinjaScriptProperty] [Range(1, 10)]
+		[Display(Name = "Mult. total_ms (× avg×pasos)", Order = 5, GroupName = "B. Calibración adaptativa")]
+		public double TotalMsMult { get; set; }
+​
+		[NinjaScriptProperty] [Range(0.5, 100)]
+		[Display(Name = "Mult. volumen (× mediana tick)", Order = 6, GroupName = "B. Calibración adaptativa")]
+		public double VolMultMedianTick { get; set; }
+​
+		[NinjaScriptProperty] [Range(100, 600000)]
+		[Display(Name = "Excluir intervalos > (ms)", Order = 7, GroupName = "B. Calibración adaptativa",
+			Description = "Intervalos mayores se consideran pausas y no entran a los cuantiles.")]
+		public int PauseExcludeMs { get; set; }
+​
+		[NinjaScriptProperty] [Range(100, 10000000)]
+		[Display(Name = "Min ticks para calibrar", Order = 8, GroupName = "B. Calibración adaptativa")]
+		public int MinCalibSamples { get; set; }
+​
+		[NinjaScriptProperty] [Range(1024, 4194304)]
+		[Display(Name = "Cap de muestras (stride determinista)", Order = 9, GroupName = "B. Calibración adaptativa")]
+		public int CalibSampleCap { get; set; }
+​
+		// ── C. Manual (si AdaptiveMode=false) ──
+		[NinjaScriptProperty] [Range(1, 1000)]
+		[Display(Name = "PREDATOR avg_ms <=", Order = 1, GroupName = "C. Manual")]
+		public double ManualPredatorMs { get; set; }
+​
+		[NinjaScriptProperty] [Range(1, 1000)]
+		[Display(Name = "ULTRA avg_ms <=", Order = 2, GroupName = "C. Manual")]
+		public double ManualUltraMs { get; set; }
+​
+		[NinjaScriptProperty] [Range(1, 5000)]
+		[Display(Name = "avg_ms máx", Order = 3, GroupName = "C. Manual")]
+		public double ManualMaxAvgMs { get; set; }
+​
+		[NinjaScriptProperty] [Range(1, 60000)]
+		[Display(Name = "Pausa máx (ms)", Order = 4, GroupName = "C. Manual")]
+		public double ManualMaxPausaMs { get; set; }
+​
+		[NinjaScriptProperty] [Range(1, 600000)]
+		[Display(Name = "total_ms máx", Order = 5, GroupName = "C. Manual")]
+		public double ManualMaxTotalMs { get; set; }
+​
+		[NinjaScriptProperty] [Range(0, 1000000)]
+		[Display(Name = "vol_rate mín (contratos/s)", Order = 6, GroupName = "C. Manual")]
+		public double ManualMinVolRate { get; set; }
+​
+		[NinjaScriptProperty] [Range(0, 1000000)]
+		[Display(Name = "Volumen total mín", Order = 7, GroupName = "C. Manual")]
+		public double ManualMinTotalVol { get; set; }
+​
+		// ── D. Ciclo de vida ──
+		[NinjaScriptProperty]
+		[Display(Name = "Modo de invalidación", Order = 1, GroupName = "D. Ciclo de vida")]
+		public HZ2InvalidationMode InvalidationMode { get; set; }
+​
+		[NinjaScriptProperty] [Range(1, 100)]
+		[Display(Name = "Penetración (ticks)", Order = 2, GroupName = "D. Ciclo de vida",
+			Description = "CloseThrough: ticks más allá del borde distal para invalidar.")]
+		public int PenetrationTicks { get; set; }
+​
+		[NinjaScriptProperty] [Range(0, 1000)]
+		[Display(Name = "Max toques (0 = sin límite)", Order = 3, GroupName = "D. Ciclo de vida")]
+		public int MaxTouches { get; set; }
+​
+		[NinjaScriptProperty] [Range(1, 50000)]
+		[Display(Name = "Expiración (barras primarias)", Order = 4, GroupName = "D. Ciclo de vida")]
+		public int MaxAgeBars { get; set; }
+​
+		[NinjaScriptProperty] [Range(1, 100)]
+		[Display(Name = "Altura de zona (ticks)", Order = 5, GroupName = "D. Ciclo de vida")]
+		public int ZoneHeightTicks { get; set; }
+​
+		[NinjaScriptProperty] [Range(1, 1000)]
+		[Display(Name = "Max toques logueados", Order = 6, GroupName = "D. Ciclo de vida")]
+		public int MaxLoggedTouches { get; set; }
+​
+		// ── E. Export ──
+		[NinjaScriptProperty]
+		[Display(Name = "Ruta CSV de eventos (vacío = off)", Order = 1, GroupName = "E. Export")]
+		public string EventLogPath { get; set; }
+​
+		[NinjaScriptProperty] [Range(2, 200)]
+		[Display(Name = "Piso export OBS (valid_steps)", Order = 2, GroupName = "E. Export",
+			Description = "Toda racha finalizada con valid_steps >= piso se exporta con flag pass=0/1.")]
+		public int MinExportValidSteps { get; set; }
+​
+		// ── F. Visual (nunca decide) ──
+		[Display(Name = "Mostrar zonas", Order = 1, GroupName = "F. Visual")]
+		public bool ShowZones { get; set; }
+​
+		[Range(10, 5000)]
+		[Display(Name = "Max zonas dibujadas", Order = 2, GroupName = "F. Visual")]
+		public int MaxZonesDrawn { get; set; }
+​
+		[Range(0, 100)]
+		[Display(Name = "Opacidad (%)", Order = 3, GroupName = "F. Visual")]
+		public int RectOpacity { get; set; }
+​
+		[XmlIgnore]
+		[Display(Name = "Color soporte", Order = 4, GroupName = "F. Visual")]
+		public Brush ColorSupport { get; set; }
+		[Browsable(false)]
+		public string ColorSupportSerializable
+		{ get { return Serialize.BrushToString(ColorSupport); } set { ColorSupport = Serialize.StringToBrush(value); } }
+​
+		[XmlIgnore]
+		[Display(Name = "Color resistencia", Order = 5, GroupName = "F. Visual")]
+		public Brush ColorResistance { get; set; }
+		[Browsable(false)]
+		public string ColorResistanceSerializable
+		{ get { return Serialize.BrushToString(ColorResistance); } set { ColorResistance = Serialize.StringToBrush(value); } }
+​
+		[XmlIgnore]
+		[Display(Name = "Color absorción", Order = 6, GroupName = "F. Visual")]
+		public Brush ColorAbsorb { get; set; }
+		[Browsable(false)]
+		public string ColorAbsorbSerializable
+		{ get { return Serialize.BrushToString(ColorAbsorb); } set { ColorAbsorb = Serialize.StringToBrush(value); } }
+		#endregion
+	}
+}
+​

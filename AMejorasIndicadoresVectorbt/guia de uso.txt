@@ -1,0 +1,137 @@
+Checklist y principios de diseño acumulados durante la revisión de `aVolCellPOI` (v1 → v2). Aplicar a cada indicador NT8 que se quiera mejorar, traducir y someter a fuerza bruta en EdgeLab.
+
+# 1. Principio rector
+
+- Separar siempre tres capas: **detección** (estadística), **representación** (zonas/eventos) y **evaluación predictiva** (EdgeLab). No "mejorar el indicador para que prediga más" mezclando capas.
+- **Computar lo caro una sola vez, barrer lo barato offline**: los parámetros que cambian el estado histórico (semánticos) deben ser pocos; los umbrales de corte se barren en vectorbt sobre observaciones continuas exportadas, sin recomputar en NT8.
+- El dibujo es una representación del estado, **nunca la fuente de verdad**. La fuente de verdad son los eventos exportados.
+
+# 2. Migración en tres niveles (nunca reescribir de una)
+
+1. **Nivel A — Réplica Legacy**: congelar la v1 con hash y nombre (`_legacy_v1`). Reproducirla exactamente en Python, con todos sus defectos. Prueba el puente, no el indicador.
+2. **Nivel B — Correctness v1.1**: corregir solo lo inequívoco (ticks enteros, errores no silenciosos, salida estructurada, separación kernel/renderer, política temporal explícita). Sin tocar la hipótesis estadística.
+3. **Nivel C — Research v2**: cambios estadísticos como **variantes declaradas** (perfil por sesiones, ponderación, robust log-z, lifecycle). Si se cambia todo junto y el backtest mejora o empeora, no se sabe por qué.
+
+# 3. Contrato del indicador (obligatorio antes de traducir)
+
+- [ ]  `Calculate` fijo y declarado (`OnBarClose` preferido) + clase de repintado: `non_repainting` / `right_edge` / `retroactive`.
+- [ ]  Semántica de timestamps: `Time[0]` de NT8 es **cierre** de barra y está en la **timezone del chart** (registrarla en el data contract).
+- [ ]  Política de bucket/anclaje temporal explícita. Preferir `SessionRelative` (minutos desde `ActualSessionBegin` vía `SessionIterator`) sobre hora civil; anclar en "cierre − 1 segundo" para que una barra que cierra en el borde caiga en la ventana correcta.
+- [ ]  Precios en **ticks enteros**: snap oficial de NT8 y luego `Math.Round(price/TickSize, MidpointRounding.AwayFromZero)`. Nunca iterar precios con `double += TickSize`. Ojo: el `Math.Round` default de .NET usa banker's rounding.
+- [ ]  Método de percentil/cuantil declarado (interpolación lineal ≡ numpy `linear`; o cuantil ponderado sin interpolación, más fácil de ponderar y reproducir).
+- [ ]  Condiciones de la distribución declaradas (p. ej. "solo celdas con volumen > 0").
+- [ ]  Alcance por contrato: perfil y zonas **por contrato individual**; no usar series continuas con saltos de rollover; sesiones parciales/feriados/medias ruedas con `session_quality_flag`, no eliminadas en silencio.
+- [ ]  Qué es reconstruible desde ticks Last puros y qué requiere bid/ask histórico real (delta, imbalance) — verificar contra el data contract del feed.
+
+# 4. Estadística
+
+- **Percentiles extremos necesitan muestras**: heurística de alerta ~`10/(1−p)` observaciones (99.75 → ~4.000). Pero el problema real es la **dependencia**: celdas de una misma barra/sesión no son independientes. Exigir dos mínimos: `MinSessions` (sesiones independientes) **y** `MinCellSamples` (celdas), y guardar ambos conteos en cada evento.
+- **Excluir siempre la sesión actual del perfil** (anti-contaminación intradía). Bonus de eficiencia: el perfil queda congelado durante la sesión → cachés (arrays ordenados, umbrales, medianas) se computan una vez por bucket por sesión.
+- **FIFO por sesión, no por celda**: un lookback en "muestras" hace que los días de rango grande desplacen a los tranquilos y el lookback efectivo en días sea invisible.
+- **Ponderación como variante declarada**: `PooledCells` (cada celda pesa 1; sesgo a días volátiles) vs `EqualSessionWeight` (cada sesión pesa 1). Candidato default: EqualSessionWeight.
+- **Detector robusto alternativo**: `robust_z = (log1p(x) − mediana) / (1.4826·MAD)` para colas pesadas. Mantener percentil y robust-z como dos métodos comparables, no reemplazar de una.
+- La anomalía **no tiene dirección inherente**: no etiquetar soporte/resistencia en el detector; eso se decide con event studies en EdgeLab.
+- Descartar la primera sesión observada (potencialmente parcial).
+
+# 5. Parametrización para fuerza bruta (grupos)
+
+1. **Semánticos (entran en run_id; caros)**: anclaje temporal, tamaño de bucket, lookback, ponderación, fuente (total/delta/max-side), método. Barrer como pocas variantes discretas: cambiarlos crea "otro indicador".
+2. **Selección (baratos, offline)**: percentiles de corte, z-threshold, volúmenes mínimos, mínimos de muestras. Se barren filtrando el export de observaciones.
+3. **Geometría**: fusión de celdas (`MergeGapTicks`, default 0 = solo contiguas), tamaño mínimo de zona. Re-derivable offline desde las OBS.
+4. **Ciclo de vida**: modo de invalidación, edad máxima, touches máximos. Barrible offline con barras/ticks.
+5. **Visuales (NUNCA en run_id ni en optimización)**: opacidad, extensión, `MaxRenderedZones` (limita solo el dibujo, jamás el estado interno ni el export).
+
+**Clave**: exportar **observaciones continuas** (evento `OBS` con percentil empírico y robust-z por celda desde un `ExportFloorPercentile`, p. ej. 95), no solo las zonas que superan el corte. Así los umbrales se barren gratis en vectorbt.
+
+# 6. Arquitectura del código NT8
+
+- Separar: **kernel** (lógica pura, testeable, sin `Draw.*`), **estado** (perfil, zonas, contadores), **adaptador NT8** (lee Volumetric, convierte a ticks, llama al kernel), **renderer** (solo dibujo) y **exporter/oráculo** (mismos eventos que el renderer, sin duplicar lógica).
+- Salida analítica de solo lectura (`ActiveZones`, eventos tipados); nunca encapsular la información solo en objetos gráficos.
+- **Errores nunca silenciosos**: `catch {}` es inaceptable para paridad. Emitir evento `ERROR` + marcar el run como inválido.
+- `IsSuspendedWhileInactive = false` si el indicador alimenta decisiones/exports (el resultado no puede depender de si el chart estuvo visible).
+- IDs de dibujo son locales; la **identidad analítica** de una zona es `(created_at, geometría inicial en ticks)` — el matching de paridad es bipartito por esos campos, nunca por tag.
+- CSV de eventos con línea `# meta` (instrumento, tick size, todos los parámetros semánticos), `event_seq` monótono, `InvariantCulture`.
+
+# 7. Ciclo de vida de zonas
+
+- Eventos: `ZONE_CREATED`, `ZONE_BOUNDARY_CHANGED`, `ZONE_TOUCHED`, `ZONE_INVALIDATED` (con `reason`), `ZONE_EXPIRED`.
+- `available_at` = cierre de la barra creadora. **La barra creadora nunca toca ni invalida su propia zona** (anti look-ahead).
+- `CloseThrough`: lado de referencia = lado del close al crearse (si cierra dentro, lo fija el primer close externo); invalida el primer close en el lado opuesto.
+- Con OHLC solamente, el orden intrabar es ambiguo → marcar `INTRABAR_AMBIGUOUS`, nunca inventar orden favorable. La resolución definitiva del lifecycle la hace EdgeLab con ticks.
+- Purga de dibujos por límite visual ≠ purga de estado. Nunca purgar estado por FIFO ciego (elimina POIs fuertes vírgenes y deja débiles mitigados).
+
+# 8. Gates de paridad por indicador
+
+1. **P0 — ticks**: timestamp, price_ticks, volume, bid, ask, tick_type, sequence.
+2. **P1A — barras**: bar_id, start/end_ts, OHLC en ticks, volumen.
+3. **P1B — footprint**: bar_id × price_ticks × total/bid/ask volume (imprescindible para indicadores Volumetric; aísla la reconstrucción del footprint antes de culpar al indicador).
+4. **P2A — observaciones**: bucket, valor de celda, threshold, percentil empírico, robust-z, sample_count, session_count, is_anomaly.
+5. **P2B — eventos y zonas**: created_at, available_at, geometría en ticks, score, tipo de evento, reason. Matching bipartito; gate = cero huérfanos + diffs dentro de tolerancia declarada.
+
+Precondición de datos: export del oráculo y export de ticks desde la **misma instalación NT8, misma DB, mismo rango, sin recargas históricas** entre ambos.
+
+# 9. Defaults de referencia para pilotos (claros y defendibles, no optimizados)
+
+```
+Calculate            = OnBarClose (non_repainting)
+BucketAnchor         = SessionRelative
+TimeBucketMinutes    = 5
+LookbackSessions     = 20
+ProfileWeighting     = EqualSessionWeight
+DetectionSource      = TotalVolume (reconstruible desde ticks Last)
+DetectionMethod      = Quantile
+DetectionPercentile  = 99.5
+MinSessions          = 15
+MinCellSamples       = 500
+MinAbsoluteVolume    = 10
+MergeGapTicks        = 0
+InvalidationMode     = CloseThrough
+MaxAgeBars           = 2000
+ExportFloorPercentile= 95
+```
+
+Grillas iniciales sugeridas: `TimeBucketMinutes {5,15,30}`, `DetectionPercentile {99.0,99.5,99.75,99.9}`, `LookbackSessions {10,20,40}`; el resto fijo en la primera pasada.
+
+# 10. Errores comunes de NT8 a revisar en cada indicador heredado
+
+- Bucketear/indexar por `Time[0]` sin recordar que es hora de **cierre**.
+- Loops de precio en `double` con `+= TickSize` (drift acumulado).
+- `catch` silenciosos que ocultan huecos en el perfil.
+- Caches estáticas compartidas entre instancias sin necesidad (p. ej. brushes cacheados por una clave que no afecta el resultado).
+- Umbral percentil extremo con mínimos de muestra ridículos (50 muestras para p99.75 ≈ el máximo histórico).
+- Perfil contaminado por la sesión actual, por rollover de contrato o por feriados/medias ruedas.
+- Zonas que nunca se invalidan + purga FIFO por antigüedad.
+- Salida binaria (pasó/no pasó el corte) en vez de score continuo.
+- Parámetros visuales mezclados con analíticos en la misma "bolsa" (contaminan el run_id y la fuerza bruta).
+
+# 11. Patrón: footprint sin barras Volumetric (subserie de 1 tick)
+
+- Agregar `AddDataSeries(BarsPeriodType.Tick, 1)` y acumular en `BarsInProgress == 1` cada tick (volumen sumado a la celda `snap(Close)` en ticks enteros) en un footprint pendiente; al cerrar la barra primaria (`BarsInProgress == 0`), ese pendiente ES el footprint de la barra y se resetea SIEMPRE (incluso en warm-up).
+- Ventajas: funciona sobre cualquier serie primaria y usa la misma semántica de reconstrucción que EdgeLab desde el parquet → menos fuentes de divergencia en GATE P1B.
+- **Advertencia de contrato**: ticks con timestamp exactamente igual al cierre de la barra primaria pueden procesarse después del cierre y fugarse a la barra siguiente (divergencia posible vs Volumetric nativo). Declararlo; el footprint definitivo lo arbitra EdgeLab con la regla `[inicio, fin)`.
+- **Auto-auditoría obligatoria**: comparar `suma(footprint)` vs `Volume[0]` de la barra primaria y emitir `FOOTPRINT_MISMATCH` si difieren (omitir en la primera barra, que puede arrancar parcial). Es un mini-gate de paridad gratis en cada corrida.
+- Requiere tick data histórico descargado (no Tick Replay). Si falta: evento `ERROR` y cero detecciones — **nunca** fallback silencioso a un precio inventado (p. ej. midpoint), que produce zonas falsas indistinguibles de las reales.
+
+# 12. Reglas adicionales (de la revisión de VolTicksVolumetric)
+
+- **Prohibidos los estimadores streaming aproximados** (P², reservoir, sketches) en indicadores con paridad: su error depende del orden de llegada, son imprecisos en colas extremas y certificar su réplica exacta en Python es esfuerzo sin retorno. Usar estadística exacta sobre ventana declarada (cuantil sin interpolación sobre las últimas N observaciones); con N ≤ ~20.000, ordenar por barra es despreciable.
+- **El baseline debe excluir la barra actual** (`Volume[1..N]`): incluirla hace que una barra gigante infle su propio denominador y se auto-amortigüe justo cuando más importa detectarla.
+- **Prohibida toda lógica basada en `Count`** (total de barras cargadas): es look-ahead estructural y hace divergir histórico vs tiempo real. El filtrado "solo últimas N barras" pertenece al renderer, jamás a la detección/export.
+- Estado visual con memoria (p. ej. máximos con decay para escalar colores) es aceptable solo si queda confinado al renderer y declarado como no-analítico; mejor reemplazarlo por escalado determinista sobre el percentil.
+- Umbrales que conmutan entre dos estimadores (global ↔ sesión) crean discontinuidades no declaradas; si se quiere adaptación por sesión, usar perfil por sesiones completas (sección 4), no un reset con mínimos ridículos.
+- Desempates SIEMPRE declarados (p. ej. POC: en empate gana el tick más bajo, regla independiente del orden de iteración de diccionarios).
+
+# 13. Reglas adicionales (de la revisión de BigTrap)
+
+- **Un solo motor de cálculo por indicador**: prohibido el dual-path "si el chart es Volumetric uso la API nativa, si no reconstruyo con tick rule". Son dos clasificadores distintos → dos indicadores distintos bajo el mismo nombre, y la paridad se vuelve indefinible. Usar siempre la reconstrucción canónica por subserie de 1 tick (sección 11), aunque el chart sea Volumetric.
+- **Clasificación buy/sell declarada y jerárquica**: 1º por quote (`BarsArray[tick].GetAsk/GetBid`: trade ≥ ask → buy, trade ≤ bid → sell — mismo criterio que Volumetric), 2º tick rule solo como fallback para trades dentro del spread o sin quotes. Contar los ticks clasificados por cada método y exportar ambos conteos (`n_quote`, `n_rule`): si `n_rule` domina, el feed no tiene bid/ask por tick y el delta/imbalance NO es confiable.
+- **Claves de diccionario de precios: siempre índices enteros de tick.** Acumular con claves `double` crudas y consultar con precios generados por un loop `+= TickSize` produce misses silenciosos de niveles enteros (variante peor del drift de la sección 10).
+- **Guards de warm-up que retornan sin resetear acumuladores** fugan ticks de barras viejas hacia la primera barra procesada. El take+reset de la sección 11 va SIEMPRE, antes de cualquier `return`.
+- **El renderer nunca selecciona**: umbrales percentiles calculados en `OnRender` sobre todas las detecciones acumuladas (p. ej. "mostrar solo el top 15%") son look-ahead — lo que se ve depende de toda la historia cargada y cambia retroactivamente al llegar detecciones nuevas. Permitidos solo como filtro declarado 100% visual; la selección analítica vive en el kernel y el export es continuo.
+- **Estado compartido entre hilo de datos y `OnRender`**: colecciones pobladas en `OnBarUpdate` y leídas en `OnRender` corren en hilos distintos → lock + snapshot y tamaño acotado; si no, `Collection was modified` en tiempo real y memoria sin límite.
+- **Semántica de imbalance declarada como variantes barribles**: modo (same-level vs diagonal estándar de footprint), regla de denominador cero (`agresor / max(opuesto, 1)`, nunca "ratio := volumen" que mezcla unidades) y qué volumen suma la detección (lado agresor vs total del nivel). Ninguna es "detalle de implementación".
+- **`Range(min,max)` debe contener el default**: `[Range(1, N)]` con default 0 rompe la validación del property grid al editar el parámetro.
+- **Decoraciones → zonas**: burbujas/flechas/marcas sin ciclo de vida ni export son decoración; convertirlas en zonas con eventos (sección 7) es lo que las vuelve evaluables en EdgeLab.
+- Prohibido `dynamic` + `catch { return 0; }` para leer APIs: ceros falsos indistinguibles de niveles realmente vacíos (variante del catch silencioso de la sección 6), más costo enorme de dispatch por nivel por barra.
+
+Origen: revisión iterada de `aVolCellPOI`, `VolTicksVolumetric` y `BigTrap` (jul 2026). Pilotos del puente: `aVolCellPOI2`, `VolTicksPOC2` y `BigTrap2` (v2, contrato completo en el header de cada .cs).
