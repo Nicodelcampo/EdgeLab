@@ -68,9 +68,21 @@ NT8 anteriores al inicio del rango Python (warmup del chart).
 real del indicador corriendo en NT8. Sin ese archivo, ningún kernel se declara
 "paridad real confirmada".
 
-## 5. Protocolo para los kernels siguientes (F5+)
+## 5. Protocolo para los kernels siguientes (F5+ — integrados)
 
-El mismo contrato aplica a HFTZones2, VolTicksPOC2, aVolCellPOI2 y BigTrap2
-(BigTrap2 exporta formato pipe y corre sobre charts de N ticks: el rango y el
-`--bars tick:N` deben coincidir con el chart NT8). Un oráculo por indicador y
-por configuración paramétrica que se quiera promover.
+El mismo contrato aplica a VolTicksPOC2, BigTrap2, HFTZones2 y aVolCellPOI2 (los
+4 ya integrados: kernel + smoke + P1A real + soporte CLI/visor + parser de
+oráculo). Un oráculo por indicador y por configuración paramétrica que se quiera
+promover. Requisitos específicos de rango/historia por kernel:
+
+| Kernel | Barras | Requisito de rango / historia para el oráculo NT8 |
+|---|---|---|
+| **VolTicksPOC2** | time:N | ≥ `avg_period` barras para baseline y ≥ `min_ratio_samples` ratios antes de detectar; export continuo `OBS` desde `export_floor_percentile`. |
+| **BigTrap2** | **tick:N** (o time) | el `--bars tick:N` debe coincidir con la resolución del chart NT8; export **pipe** (`seq|iso|type|payload`). Cada resolución es un oráculo distinto. Barra 0 descartada. |
+| **HFTZones2** | time:N (tick-driven) | el rango DEBE arrancar en **borde de sesión** con **≥1 sesión completa previa** para tener calibración congelada; si no, la 1ª sesión sale `CALIBRATION_PENDING` y no crea zonas. Feriados → `CALIBRATION_DIFF` (WARN). |
+| **aVolCellPOI2** | time:N | pre-registrar que el chart NT8 tenga **≥ `lookback_sessions` + `min_sessions` sesiones** cargadas (con defaults: ≥ 35 sesiones ≈ 7 semanas) antes del rango a comparar; sobre historia pobre el kernel produce 0 zonas (correcto). |
+
+**Regla común:** el rango Python (`--start-utc/--end-utc`), los parámetros, la
+timezone del chart (`--chart-tz`) y la resolución de barras deben coincidir 1:1
+con el indicador corriendo en NT8. Sin el CSV real, ningún kernel se declara
+"paridad real confirmada" (§4).

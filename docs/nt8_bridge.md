@@ -57,7 +57,15 @@ Chrome; servir con `python -m http.server` si hace falta.
 | Kernel | Integrado | Smoke sintético | P1A real | Paridad real NT8 |
 |---|---|---|---|---|
 | Gaps2 | ✅ | ✅ | ✅ (6E 09-25) | **pendiente** (ver `nt8_indicator_parity_contract.md`) |
-| HFTZones2 / VolTicksPOC2 / aVolCellPOI2 / BigTrap2 | pendiente (F5+, mismo protocolo) | — | — | — |
+| VolTicksPOC2 (F5A) | ✅ | ✅ | ✅ (6E 09-25, time:1) | pendiente (mismo protocolo) |
+| BigTrap2 (F5B) | ✅ | ✅ | ✅ (6E 09-25, time:1 + tick:25) | pendiente (mismo protocolo) |
+| HFTZones2 (F5C) | ✅ | ✅ | ✅ (6E 09-25, 3 sesiones) | pendiente (mismo protocolo) |
+| aVolCellPOI2 (F5D) | ✅ | ✅ | ✅ (6E 09-25, 1 mes → 54 zonas) | pendiente (mismo protocolo) |
+
+Los 5 kernels comparten el contrato común `run(ticks, bars[, footprints],
+params, chart_tz)` y viven en `edgelab/bridge/indicators/`. Tick-driven: Gaps2,
+HFTZones2. Bar-driven (consumen footprint reconstruido): VolTicksPOC2, BigTrap2,
+aVolCellPOI2. El `oracle.py` ya parsea los 5 formatos (CSV coma + pipe BigTrap2).
 
 ## Límites conocidos (declarados)
 
@@ -65,3 +73,21 @@ Chrome; servir con `python -m http.server` si hace falta.
 - Footprint reconstruido: ticks con ts == cierre de barra pueden caer en barras
   distintas que NT8 (corte canónico `[inicio, fin)`).
 - Kernels en Python puro: correctitud primero; kernels Numba = fase posterior.
+
+### Desviaciones declaradas por kernel (F5)
+
+- **VolTicksPOC2**: baseline recomputado `sum(win)/len` en vez del `baselineSum`
+  incremental del .cs (misma media, solo orden de suma en float).
+- **BigTrap2**: cada resolución de barra (time:1, tick:5, tick:25, …) es una
+  configuración distinta; el `bar_key` entra al `param_set_id` y es columna del
+  zone store, así que las zonas no colisionan aunque compartan `zone_id`
+  `{bar}_{B|S}`. El POC es solo visual en el .cs y no entra al export analítico.
+- **HFTZones2**: la paridad real exige que el rango arranque en borde de sesión
+  con ≥1 sesión completa previa (calibración congelada); si no, la primera
+  sesión emite `CALIBRATION_PENDING` y no crea zonas. Feriados no modelados →
+  `CALIBRATION_DIFF`.
+- **aVolCellPOI2**: con `min_sessions=15` y `lookback_sessions=20` el oráculo
+  NT8 necesita **semanas** de historia cargada antes de que aparezcan zonas;
+  sobre muestras cortas produce 0 zonas (historia insuficiente), nunca
+  detecciones falsas. Celdas del footprint reconstruido ≡ barras Volumetric NT8
+  (validar en P1B). Roll de sesión modela `IsFirstBarOfSession` con `b==0`.
