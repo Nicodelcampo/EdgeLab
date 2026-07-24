@@ -1,5 +1,7 @@
 # Contrato de paridad NT8 ↔ Python — primer oráculo real: Gaps2
 
+> Este documento sirve al referente rector: ver [`NORTH_STAR.md`](NORTH_STAR.md).
+
 > Objetivo: producir el `EventLogPath` de **Gaps2** en NT8 sobre un rango
 > idéntico al que corre el kernel Python, y pasar el gate **P2**:
 > PASS = cero zonas huérfanas y cero discrepancias geométricas (en ticks).

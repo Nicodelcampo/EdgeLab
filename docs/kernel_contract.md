@@ -1,5 +1,7 @@
 # Contrato de kernel del bridge NT8 → EdgeLab
 
+> Este documento sirve al referente rector: ver [`NORTH_STAR.md`](NORTH_STAR.md).
+
 Este documento define TODO lo necesario para escribir un kernel válido sin leer
 otro archivo. Un kernel traduce un indicador NT8 a Python 1:1 y produce
 observaciones, eventos y zonas verificables contra el oráculo NT8 (paridad P2).

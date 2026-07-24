@@ -1,5 +1,7 @@
 # NT8 Bridge — kernels, visor de paridad y zone store
 
+> Este documento sirve al referente rector: ver [`NORTH_STAR.md`](NORTH_STAR.md).
+
 Pipeline: `parquet canónico F2 → selección contrato/rango → barras [inicio,fin)
 (tiempo o tick) → footprint (gate P1A) → kernels Python 1:1 de NT8 → zonas/
 eventos → matcher vs EventLog NT8 (gate P2) → visor + zones.parquet`.

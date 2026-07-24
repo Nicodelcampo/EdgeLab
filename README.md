@@ -1,5 +1,7 @@
 # EdgeLab
 
+> Este documento sirve al referente rector: ver [`docs/NORTH_STAR.md`](docs/NORTH_STAR.md).
+
 Infraestructura de investigación cuantitativa. Dos líneas de trabajo:
 
 1. **Legacy ES/NQ/EURUSD** (`strategies/`, `validation/`, `databuild/`) —
