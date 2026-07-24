@@ -10,6 +10,33 @@ eventos → matcher vs EventLog NT8 (gate P2) → visor + zones.parquet`.
 pasar paridad real contra NT8 (mismo contrato, rango, timeframe, parámetros,
 timezone declarada y tick data). El PASS sintético solo valida infraestructura.
 
+## Suite de tests canónica
+
+Comando único, reproducible, para toda verificación de regresión del bridge:
+
+```powershell
+.venv\Scripts\python -m pytest tests -m "not vectorbt" -q
+```
+
+Al 2026-07-24 (commit `f316b23` + reconciliación de esta sección):
+**141 passed, 3 deselected**. Los conteos "101 / 131 / 139" reportados en
+turnos previos correspondían a alcances distintos, no a regresiones — evidencia
+textual en los propios mensajes de commit:
+
+| Conteo reportado | Commit | Alcance real (evidencia) |
+|---|---|---|
+| 101 | `90fbe11` | **`tests/bridge` solamente** — el mensaje dice literalmente "Bridge suite 101 passed", un subconjunto (excluye `tests/foundation`, 30 tests). NO es la suite global. |
+| 131 | `0555e5d` | Suite global (`tests -m "not vectorbt"`) en ese punto del historial, ANTES de que F8 agregara `test_features.py` (6 tests) y `test_vectorbt_demo.py` (2 tests no-vectorbt + 1 deselected). |
+| 139 | `af48609` | Suite global tras F8. Verificación aritmética exacta: 131 + 6 + 2 = 139. |
+| **141** | (esta reconciliación) | Suite global tras agregar 2 tests de regresión de frontera de madurez (`test_boundary_created_exactly_at_frontier_is_mature`, `test_real_gaps2_pass_run_has_zero_mature_lifecycle_diffs`). |
+
+Verificación de la partición: `tests/bridge` (109) + `tests/foundation` (30) =
+**139** = conteo global de ese momento (antes de agregar los 2 tests de esta
+reconciliación). Los "2 skipped" de `tests/foundation` son runtime-skips vía
+`pytest.importorskip("vectorbt")` en `test_vectorbt_optional.py` (mecanismo
+distinto de la deselección por marker `-m`: corren y se auto-saltan porque
+vectorbt no está instalado).
+
 ## Uso
 
 ```bash
@@ -230,11 +257,68 @@ run; tz rotulada en el header. El visor es estrictamente pasivo (jamás computa
 señales): dibuja lo que el kernel produjo. Nota: `file://` puede fallar en
 Chrome; servir con `python -m http.server` si hace falta.
 
+## Estado del plan (reconciliado con artefactos, no con resúmenes de turno)
+
+Reconciliación mecánica (evidencia = código/tests/artefactos, no el resumen de
+un turno anterior):
+
+- **F6.4 (runner de campañas)** — EXISTE: `tools/run_campaign.py` (244 líneas).
+  Confirmado por inspección directa del código:
+  - formato declarativo `.toml`/`.json` (NO `.yaml`: pyyaml no está en el lock,
+    decisión de la fase original);
+  - expansión de grillas: SÍ (`_expand_grid`, producto cartesiano vía `itertools`);
+  - `max_configs` con abort si se excede (control de explosión) — es un TECHO
+    duro, no el concepto de "presupuesto de investigación / N_eff" de
+    `edge_validation_contract.md` (ese conteo de TODAS las hipótesis cobradas,
+    incluidas las abandonadas, no existe como mecanismo automático todavía);
+  - P3.0: SÍ (`campaign_manifest` con `expected_config_ids`, cierre vía
+    `audit.check_campaign`);
+  - reanudación idempotente: **NO existe optimización de reanudación**. El loop
+    de ejecución SIEMPRE recomputa el kernel de cada config planificada, sin
+    saltar las ya publicadas. Lo que SÍ es cierto: `store.publish_run` es
+    idempotente (mismos digests → no duplica), así que re-correr la misma
+    campaña completa es SEGURO (no corrompe el store), pero no es EFICIENTE
+    (no hay skip-ahead de trabajo ya hecho).
+
+- **F7 — separado en sub-fases** (no es una fase monolítica completa):
+  - **F7a (pre-registro de oráculos, matrices de cobertura por rama)**: HECHO.
+    `docs/parity_coverage/*.md` (5 archivos) + `docs/nt8_indicator_parity_contract.md`
+    §6-§7 con contrato/rango/params/EventLogPath exactos por oráculo.
+  - **F7b (oráculos NT8 recibidos)**: **PENDIENTE de Nico**, salvo uno. Único
+    CSV real en `oracles/`: `Gaps2_6E_0926.csv` (ya procesado, gate PASS). Los
+    9 oráculos de la tanda pre-registrada (Gaps2 25t, VolTicksPOC2 ×2, BigTrap2
+    ×2, HFTZones2 ×2, aVolCellPOI2) **no han llegado**: todas las filas de las
+    matrices de cobertura siguen marcadas `pendiente` (grep confirmado: 45
+    ocurrencias de "pendiente" en `docs/parity_coverage/*.md`).
+  - **F7c (gates y promoción automática por cobertura de ramas)**: **NO
+    implementado**. `edgelab/bridge/coverage.py` (branch-accounting:
+    `branches_of`, `config_branches`, `is_covered`) existe y tiene tests
+    propios, pero **no se llama desde ningún otro módulo** (`store.py`,
+    `audit.py`, `run_campaign.py`) — verificado por grep, cero referencias
+    fuera del propio archivo. `store._parity_state()` solo asigna
+    `parity_pending` / `parity_failed` / `parity_exact`; **nunca asigna
+    `parity_covered`**, aunque ese estado está definido en `PARITY_STATES`.
+    Es infraestructura declarada pero no conectada.
+
+- **F8 (API de features)** — separado por nivel de evidencia:
+  - API probada: SÍ (`test_features.py`, 6/6 tests, incluida la garantía de
+    digest `get_zones == manifest.zone_digest`).
+  - Contrato de dtypes y semántica as-of documentado: SÍ (`docs/nt8_bridge.md`
+    § "API de features para vectorbt (F8)").
+  - Demo vectorbt estructural (combina 2 indicadores sin importar kernels):
+    SÍ, probado (`test_build_signals_combines_two_indicators`).
+  - **Demo vectorbt EJECUTADA** (`vbt.Portfolio.from_signals` corriendo de
+    verdad): **NO**. `vectorbt` no está instalado en este entorno
+    (`ModuleNotFoundError`); `test_run_demo_portfolio` (marcado `@pytest.mark.vectorbt`)
+    se salta (`SKIPPED`, confirmado corriendo el archivo directamente). Para
+    ejecutarlo de verdad hace falta instalar el extra opcional
+    `research-vectorbt` (`requirements/full-research.lock`).
+
 ## Estado de kernels
 
 | Kernel | Integrado | Smoke sintético | P1A real | Paridad real NT8 |
 |---|---|---|---|---|
-| Gaps2 | ✅ | ✅ | ✅ (6E 09-25) | **pendiente** (ver `nt8_indicator_parity_contract.md`) |
+| Gaps2 | ✅ | ✅ | ✅ (6E 09-25) | ✅ **PASS** (6E 09-26, 07-13→16, 1316/1316, ver `nt8_indicator_parity_contract.md` §1) |
 | VolTicksPOC2 (F5A) | ✅ | ✅ | ✅ (6E 09-25, time:1) | pendiente (mismo protocolo) |
 | BigTrap2 (F5B) | ✅ | ✅ | ✅ (6E 09-25, time:1 + tick:25) | pendiente (mismo protocolo) |
 | HFTZones2 (F5C) | ✅ | ✅ | ✅ (6E 09-25, 3 sesiones) | pendiente (mismo protocolo) |
