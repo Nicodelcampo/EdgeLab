@@ -93,3 +93,43 @@ promover. Requisitos específicos de rango/historia por kernel:
 timezone del chart (`--chart-tz`) y la resolución de barras deben coincidir 1:1
 con el indicador corriendo en NT8. Sin el CSV real, ningún kernel se declara
 "paridad real confirmada" (§4).
+
+## 6. Pre-registro de oráculos — campaña mínima (F7)
+
+Generar en una sola sesión de NT8 (rev `.cs` **190ed59+**; registrar la rev en
+cada CSV). Contrato base **6E 06-26** (5.56M ticks). Timezone del chart: la de tu
+UI; pasarla a la CLI como `--chart-tz`. Matrices de ramas en
+`docs/parity_coverage/`. Todos con defaults salvo lo indicado.
+
+### Rango corto (2 sesiones CME) — reutiliza el de Gaps2
+`2026-05-05T22:00:00Z → 2026-05-07T21:00:00Z`, `--bars time:1` (salvo BigTrap2 O2).
+
+| Oráculo | Params NT8 (no-default) | Bars | EventLogPath sugerido |
+|---|---|---|---|
+| **Gaps2 O1** (ya en §1) | defaults | time:1 | `oracles\Gaps2_6E_06-26_may.csv` |
+| **Gaps2 O2** min_gap denso | MinGapTicks=3, ExportFloorTicks=2 | time:1 | `oracles\Gaps2_dense_6E_0626.csv` |
+| **VolTicksPOC2 O1** | defaults | time:1 | `oracles\VolTicksPOC2_6E_0626.csv` |
+| **VolTicksPOC2 O2** FirstTouch | InvalidationMode=FirstTouch | time:1 | `oracles\VolTicksPOC2_firsttouch_6E_0626.csv` |
+| **BigTrap2 O1** Diagonal | defaults | time:1 | `oracles\BigTrap2_diag_time1_6E_0626.csv` |
+| **BigTrap2 O2** SameLevel | ImbalanceMode=SameLevel | **tick:25** | `oracles\BigTrap2_samelevel_tick25_6E_0626.csv` |
+| **BigTrap2 O3** wick off | UseWickFilter=false | time:1 | `oracles\BigTrap2_nowick_time1_6E_0626.csv` |
+| **HFTZones2 O1** adaptativo | defaults (arrancar en borde de sesión) | time:1 | `oracles\HFTZones2_adaptive_6E_0626.csv` |
+| **HFTZones2 O2** manual | AdaptiveMode=false (params manuales default) | time:1 | `oracles\HFTZones2_manual_6E_0626.csv` |
+
+> Para HFTZones2 el chart debe cubrir ≥1 sesión CME completa ANTES del
+> 2026-05-05 17:00 CT (para calibrar) — dejar margen de 2 días a la izquierda.
+
+### Rango largo (≥ 7 semanas) — aVolCellPOI2
+El chart NT8 debe tener **≥ 35 sesiones** cargadas antes del rango a comparar.
+Rango de comparación sugerido: `2026-05-05T22:00:00Z → 2026-05-07T21:00:00Z`
+(las mismas 2 sesiones), con historia cargada desde **2026-03-09** (inicio del
+contrato). `--bars time:1`.
+
+| Oráculo | Params NT8 (no-default) | EventLogPath sugerido |
+|---|---|---|
+| **aVolCellPOI2 O1** | defaults (SessionRelative/TotalVolume/Quantile) | `oracles\aVolCellPOI2_default_6E_0626.csv` |
+| **aVolCellPOI2 O2** WallClock/AbsDelta | BucketAnchor=WallClock, DetectionSource=AbsDelta | `oracles\aVolCellPOI2_wallclock_absdelta_6E_0626.csv` |
+
+Corrida Python (mismo patrón que §3, ajustando indicador/params/bars/oráculo).
+`parity_covered` de una config se asigna solo cuando TODAS las ramas que activa
+(ver `docs/parity_coverage/<kernel>.md`) tienen un oráculo PASS.
