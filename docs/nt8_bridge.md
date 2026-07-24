@@ -220,6 +220,20 @@ aVolCellPOI2. El `oracle.py` ya parsea los 5 formatos (CSV coma + pipe BigTrap2)
   distintas que NT8 (corte canónico `[inicio, fin)`).
 - Kernels en Python puro: correctitud primero; kernels Numba = fase posterior.
 
+### Dibujo en el chart ≠ export (importante para paridad)
+
+El **dibujo on-chart** es un filtro VISUAL, distinto del **export** que alimenta
+la paridad. En Gaps2: se **exportan** al CSV todos los gaps `>= ExportFloorTicks`
+(default 2); se **dibujan** solo los `>= MinGapTicks` (default 5, `Display`). La
+paridad se confirma desde el CSV (`EventLogPath`), NO desde lo que se ve en el
+chart. En 6E los saltos tick-a-tick son de 2-3 ticks (medido: sobre 2 días,
+115 gaps de 2t + 2 de 3t + **0 de ≥5t**), así que con `MinGapTicks=5` el chart
+queda **vacío aunque el CSV tenga cientos de zonas** — es correcto, no un bug.
+`MinGapTicks=5` está calibrado para ES/NQ (tick 0.25 ≈ 1.25 pts); para 6E, bajar
+`MinGapTicks` a 2 solo para VER las zonas (no afecta el export ni la paridad).
+El mismo principio aplica a los otros kernels (piso de export vs corte de
+display/detección).
+
 ### Desviaciones declaradas por kernel (F5)
 
 - **VolTicksPOC2**: baseline recomputado `sum(win)/len` en vez del `baselineSum`
