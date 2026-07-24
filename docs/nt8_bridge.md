@@ -92,7 +92,38 @@ formal exige además `parity_exact` o `parity_covered`; promover un edge a
 `EDGES_DISCOVERED.md` exige `parity_exact` PROPIO de la config ganadora.
 
 **API**: `store.catalog_df(root)` (una fila por partición), `store.publish_run(...)`,
-`store.set_state(root, run_id, integrity_state=..., parity_state=...)`.
+`store.get_zones(root, indicator=..., config_id=..., integrity_state=..., state=...)`
+(consulta pública que consume la fuerza bruta), `store.set_state(...)`.
+
+## Gate P3 — auditor de materialización (F6.3)
+
+**Guardar una zona y demostrar que coincide con NT8 son dos pruebas distintas.**
+P3 valida la MATERIALIZACIÓN (que lo guardado es exactamente lo que el kernel
+produjo); la paridad NT8 es el otro eje. Siete subgates (`edgelab/bridge/audit.py`):
+
+- **P3.0** completitud de campaña — `expected == present + failed`, `missing=0`,
+  `duplicated=0` contra un `campaign_manifest`.
+- **P3.1** validación in-memory (inline al publicar): secuencias, unicidad,
+  geometría, y **zones reconstruibles desde events** (mismo digest de núcleo).
+- **P3.2** round-trip (inline + auditable): re-lee los 3 parquet, recalcula
+  digests, exige igualdad con el manifest.
+- **P3.3** determinismo por recomputación: reejecuta desde el manifest (fuente
+  por sha256, kernel_id, params, entorno) y exige los 3 digests. Código ausente
+  → `STALE`; entorno distinto → `ENV_DIFF` (≠ corrupción).
+- **P3.4** accesibilidad por API: `digest(get_zones(...))` == `zone_digest`.
+- **P3.5** integridad entre configs: una config jamás devuelve zonas de otra;
+  `(dataset, config)` en >1 run = `DUPLICATE_CONFIG`.
+- **P3.6** auditor adversarial: detecta las 9 corrupciones (zona borrada,
+  tick/estado mutado, manifest alterado, config duplicada/eliminada, fila de
+  otro contrato, parquet truncado, API con fila incorrecta) con exit != 0.
+- **P3.7** `tools/store_audit.py --all` — EL gate previo a toda campaña:
+  P3.2/P3.4/identidad al 100%, P3.3 por muestreo (`--recompute-sample`), reporte
+  por partición, exit != 0 ante cualquier falla. `--promote` eleva a
+  `api_verified` las particiones que pasan todo.
+
+```bash
+python tools/store_audit.py --store <root> --all --recompute-sample 1.0 --promote
+```
 
 ## Visor (offline)
 

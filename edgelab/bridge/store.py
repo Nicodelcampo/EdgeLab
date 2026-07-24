@@ -453,6 +453,57 @@ def catalog_df(root):
         con.close()
 
 
+def zone_rows_digest(rows):
+    """Digest de zonas sobre las columnas del store (mismo orden canónico que
+    usa el manifest). Base de P3.4 (API) y P3.6 (auditor)."""
+    return _digest([{k: r[k] for k in _ZONE_COLS} for r in rows],
+                   lambda r: (r["created_ms"], r["lower_tick"], r["upper_tick"], r["zone_key"]))
+
+
+def read_zone_rows(pdir):
+    return _read_parquet_rows(os.path.join(pdir, "zones.parquet"))
+
+
+def read_event_rows(pdir):
+    return _read_parquet_rows(os.path.join(pdir, "events.parquet"))
+
+
+_PART_FILTER_KEYS = ("indicator", "config_id", "contract", "instrument",
+                     "bar_key", "integrity_state", "parity_state", "run_id",
+                     "kernel_id", "dataset_id")
+
+
+def get_partitions(root, **filters):
+    """Filas del catálogo filtradas por identidad/estado (API pública)."""
+    unknown = set(filters) - set(_PART_FILTER_KEYS)
+    if unknown:
+        raise KeyError("filtros desconocidos: %s" % sorted(unknown))
+    out = []
+    for r in catalog_df(root):
+        if all(filters.get(k) in (None, r.get(k)) for k in _PART_FILTER_KEYS):
+            out.append(r)
+    return out
+
+
+def get_zones(root, *, state=None, created_after_ms=None, created_before_ms=None,
+              **pfilters):
+    """Zonas (filas del store) de las particiones que matchean, vía la API
+    pública (lee del catálogo + zones.parquet, nunca asume rutas). La fuerza
+    bruta consume esto. `pfilters` = filtros de partición (indicator, config_id,
+    contract, instrument, bar_key, integrity_state, parity_state, ...)."""
+    rows = []
+    for p in get_partitions(root, **pfilters):
+        for z in read_zone_rows(p["dir"]):
+            if state is not None and z["final_state"] != state:
+                continue
+            if created_after_ms is not None and z["created_ms"] < created_after_ms:
+                continue
+            if created_before_ms is not None and z["created_ms"] >= created_before_ms:
+                continue
+            rows.append(z)
+    return rows
+
+
 def set_state(root, run_id, *, integrity_state=None, parity_state=None):
     """Actualiza los ejes de estado de una particion (manifest + catalogo).
     NO toca los parquets publicados (inmutables)."""
