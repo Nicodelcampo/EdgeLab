@@ -123,6 +123,22 @@ def main(argv=None):
         if row["indicator"] in oracle_paths:
             orc = oracle.parse_nt8_log(oracle_paths[row["indicator"]],
                                        chart_tz=args.chart_tz, tick_size=tick_size)
+            # misma ventana que la CLI: excluir zonas NT8 fuera del rango de la
+            # partición (warmup a ambos lados), si no aparecen como huérfanas.
+            ws = _iso_ns(src.get("range_start_utc"))
+            we = _iso_ns(src.get("range_end_utc"))
+            ws_ms = ws // 1_000_000 if ws else None
+            we_ms = we // 1_000_000 if we else None
+            def _inwin(z):
+                c = z.get("created_ms")
+                if c is None:
+                    return True
+                if ws_ms is not None and c < ws_ms:
+                    return False
+                if we_ms is not None and c >= we_ms:
+                    return False
+                return True
+            orc["zones"] = [z for z in orc["zones"] if _inwin(z)]
             kernel_zones = [dict(id=z["zone_id"], top=z["top"], bottom=z["bottom"],
                                  created_ms=z["created_ms"], ended_ms=z["ended_ms"],
                                  state=z["final_state"], touches=z["touches"])
