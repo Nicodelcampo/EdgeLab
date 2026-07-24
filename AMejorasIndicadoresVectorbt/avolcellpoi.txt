@@ -123,14 +123,18 @@ using NinjaTrader.NinjaScript.BarsTypes;
 using NinjaTrader.NinjaScript.DrawingTools;
 #endregion
 
+// Enums a scope GLOBAL (no dentro del namespace Indicators): NT8 genera
+// wrappers en MarketAnalyzerColumns/Strategies que los referencian por
+// nombre simple; en scope global se resuelven desde cualquier namespace
+// (mismo patron que BigTrap2). En el namespace daban CS0246.
+public enum AVCP2BucketAnchor { SessionRelative = 0, WallClock = 1 }
+public enum AVCP2ProfileWeighting { EqualSessionWeight = 0, PooledCells = 1 }
+public enum AVCP2DetectionSource { TotalVolume = 0, AbsDelta = 1, MaxSide = 2 }
+public enum AVCP2DetectionMethod { Quantile = 0, RobustLogZ = 1 }
+public enum AVCP2InvalidationMode { None = 0, FirstTouch = 1, CloseThrough = 2 }
+
 namespace NinjaTrader.NinjaScript.Indicators
 {
-	public enum AVCP2BucketAnchor { SessionRelative = 0, WallClock = 1 }
-	public enum AVCP2ProfileWeighting { EqualSessionWeight = 0, PooledCells = 1 }
-	public enum AVCP2DetectionSource { TotalVolume = 0, AbsDelta = 1, MaxSide = 2 }
-	public enum AVCP2DetectionMethod { Quantile = 0, RobustLogZ = 1 }
-	public enum AVCP2InvalidationMode { None = 0, FirstTouch = 1, CloseThrough = 2 }
-
 	public class aVolCellPOI2 : Indicator
 	{
 		private const int HeatSteps = 9;

@@ -1,4 +1,4 @@
-// ============================================================================
+﻿// ============================================================================
 // VolTicksPOC2.cs — POC de barras con volumen anómalo (footprint reconstruido)
 // v2 de VolTicksVolumetric. NO requiere barras Volumetric: reconstruye el
 // footprint desde una subserie de 1 tick agregada con AddDataSeries.
@@ -90,10 +90,12 @@ using NinjaTrader.NinjaScript;
 using NinjaTrader.NinjaScript.DrawingTools;
 #endregion
 
+// Enums a scope GLOBAL (NT8 genera wrappers en MarketAnalyzerColumns/
+// Strategies que los referencian por nombre simple; en el namespace Indicators daban CS0246).
+public enum VTP2InvalidationMode { None = 0, FirstTouch = 1, CloseThrough = 2 }
+
 namespace NinjaTrader.NinjaScript.Indicators
 {
-	public enum VTP2InvalidationMode { None = 0, FirstTouch = 1, CloseThrough = 2 }
-
 	public class VolTicksPOC2 : Indicator
 	{
 		private const int HeatSteps = 9;
