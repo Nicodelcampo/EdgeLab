@@ -159,7 +159,35 @@ python tools/run_campaign.py --campaign campaign.toml --dry-run   # solo declara
 python tools/run_campaign.py --campaign campaign.toml --audit     # corre + P3.0 + audit
 ```
 
-## Visor (offline)
+## Visor v2 — tres modos sobre el store (F6.5)
+
+`tools/build_viewer.py --store <root> --out <dir>` exporta el store publicado a
+un bundle (`store_data.js`) que el visor v2 (`store_viewer.html`) consume. El
+visor sigue **estrictamente pasivo**: renderiza lo que el exportador volcó del
+store, jamás recalcula ni selecciona. Cambiar parámetros = correr otra campaña y
+regenerar el bundle. Servir por HTTP (`python -m http.server`), no `file://`.
+
+Tres modos sobre el mismo chart+overlay:
+- **Parity Review**: zonas Python rellenas vs NT8 punteadas; con oráculo
+  (`build_viewer --oracle Indicador=ruta.csv`) colorea huérfanas rojas,
+  GEOMETRY_DIFF naranja, TIMESTAMP_DIFF amarillo, MATCHED neutro; navegación
+  anterior/siguiente discrepancia que salta el chart a la zona con el detalle;
+  filtro por código; export CSV; rótulo permanente de dataset/contrato/config_id/
+  kernel_id/integridad/paridad; marca humana "investigada" con nota que **nunca**
+  cambia el gate automático.
+- **Parameter Atlas**: selector A/B de configs del mismo indicador; overlay de
+  "solo agregadas / solo removidas / geometría modificada / comunes"; diff de
+  parámetros resaltado y conteos comparados. La herramienta de "parámetros
+  sólidos": ver cómo la variación paramétrica mueve las zonas.
+- **Store Audit**: panel del catálogo (una fila por partición) con estados de
+  integridad y paridad; click lleva a esa config en Parity Review.
+
+```bash
+python tools/build_viewer.py --store runs/nt8_bridge/store --out runs/nt8_bridge/viewer
+python -m http.server -d runs/nt8_bridge/viewer 8770   # abrir http://127.0.0.1:8770
+```
+
+## Visor (offline, per-run legacy)
 
 `viewer/index.html` — Lightweight Charts v4.2.0 **vendorizado** (sin CDN/
 internet). Selector de run (indicador · param_set · barras) para cambiar de

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>NT8 Bridge — visor de store v2</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="vendor/lightweight-charts.standalone.production.js"></script>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:#0d1117; color:#c9d1d9; font:13px/1.45 -apple-system,Segoe UI,Roboto,sans-serif; }
+  header { padding:8px 14px; background:#161b22; border-bottom:1px solid #21262d; display:flex; gap:14px; flex-wrap:wrap; align-items:center; }
+  header h1 { font-size:15px; margin:0; color:#e6edf3; }
+  .meta { color:#8b949e; font-size:12px; }
+  .tabs { display:flex; gap:4px; margin-left:auto; }
+  .tab { padding:4px 12px; border:1px solid #30363d; border-radius:6px; background:#161b22; color:#8b949e; cursor:pointer; }
+  .tab.active { background:#1f6feb; color:#fff; border-color:#1f6feb; }
+  #controls { padding:6px 14px; background:#10151c; border-bottom:1px solid #21262d; display:flex; gap:16px; flex-wrap:wrap; align-items:center; }
+  #controls fieldset { border:1px solid #21262d; border-radius:6px; margin:0; padding:3px 10px 5px; }
+  #controls legend { color:#8b949e; font-size:11px; padding:0 4px; }
+  #controls label { margin-right:8px; cursor:pointer; white-space:nowrap; }
+  select, button { background:#161b22; color:#e6edf3; border:1px solid #30363d; border-radius:6px; padding:3px 8px; }
+  select { max-width:520px; }
+  button { cursor:pointer; }
+  button:hover { border-color:#1f6feb; }
+  .idlabel { padding:4px 14px; background:#0b0f14; border-bottom:1px solid #21262d; color:#8b949e; font-size:11px; font-family:ui-monospace,monospace; }
+  .idlabel b { color:#a5d6ff; font-weight:600; }
+  #wrap { position:relative; }
+  #chart { width:100%; height:48vh; }
+  #overlay { position:absolute; left:0; top:0; pointer-events:none; }
+  #panels { display:flex; gap:12px; padding:10px 14px; flex-wrap:wrap; align-items:flex-start; }
+  .panel { background:#161b22; border:1px solid #21262d; border-radius:8px; padding:10px 12px; flex:1 1 340px; }
+  .panel h2 { margin:0 0 8px; font-size:13px; color:#e6edf3; }
+  table { border-collapse:collapse; font-size:12px; width:100%; }
+  th, td { padding:3px 8px; border-bottom:1px solid #21262d; text-align:left; }
+  th { color:#8b949e; font-weight:600; }
+  tr.clickrow { cursor:pointer; }
+  tr.clickrow:hover { background:#1c2531; }
+  .gate-PASS,.st-parity_exact { color:#3fb950; font-weight:700; }
+  .gate-WARN { color:#d29922; font-weight:700; }
+  .gate-FAIL,.st-parity_failed { color:#f85149; font-weight:700; }
+  .st-api_verified { color:#3fb950; }
+  .st-roundtrip_verified { color:#58a6ff; }
+  .st-parity_pending,.st-parity_covered { color:#8b949e; }
+  pre { margin:0; font-size:11px; color:#a5d6ff; white-space:pre-wrap; max-width:360px; }
+  .swatch { display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:4px; vertical-align:-1px; }
+  .hidden { display:none; }
+  .add { color:#3fb950; } .rem { color:#f85149; } .mod { color:#d29922; }
+  .note { width:260px; background:#0d1117; color:#c9d1d9; border:1px solid #30363d; border-radius:6px; padding:4px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>NT8 → EdgeLab · store v2</h1>
+  <span class="meta" id="storemeta">sin store</span>
+  <div class="tabs">
+    <span class="tab active" data-mode="parity">Parity Review</span>
+    <span class="tab" data-mode="atlas">Parameter Atlas</span>
+    <span class="tab" data-mode="audit">Store Audit</span>
+  </div>
+</header>
+<div class="idlabel" id="idlabel">—</div>
+
+<!-- controles por modo -->
+<div id="controls">
+  <fieldset id="c-parity"><legend>Config (parity review)</legend>
+    <select id="cfgsel"></select>
+    <label><input type="checkbox" data-src="python" checked> Python (relleno)</label>
+    <label><input type="checkbox" data-src="nt8" checked> NT8 (punteado)</label>
+    <select id="codefilter"><option value="">todos los códigos</option></select>
+    <button id="prevdiff">◀ discrep.</button><button id="nextdiff">discrep. ▶</button>
+    <button id="exportcsv">export CSV</button>
+  </fieldset>
+  <fieldset id="c-atlas" class="hidden"><legend>A / B (mismo indicador)</legend>
+    <select id="atlasA"></select> vs <select id="atlasB"></select>
+    <label><input type="checkbox" id="a-added" checked> <span class="add">agregadas</span></label>
+    <label><input type="checkbox" id="a-removed" checked> <span class="rem">removidas</span></label>
+    <label><input type="checkbox" id="a-modified" checked> <span class="mod">geometría</span></label>
+    <label><input type="checkbox" id="a-common"> comunes</label>
+  </fieldset>
+</div>
+
+<div id="wrap"><div id="chart"></div><canvas id="overlay"></canvas></div>
+<div id="panels"></div>
+
+<script src="store_data.js"></script>
+<script>
+(function () {
+  "use strict";
+  var COLORS = { Gaps2:"#58a6ff", HFTZones2:"#d2a8ff", VolTicksPOC2:"#ffa657", aVolCellPOI2:"#3fb950", BigTrap2:"#f778ba" };
+  var DIFF = { MISSING:"#f85149", GEOMETRY_DIFF:"#f0883e", TIMESTAMP_DIFF:"#d29922", MATCHED:"#8b949e" };
+  var ATLAS = { add:"#3fb950", rem:"#f85149", mod:"#d29922", common:"#8b949e" };
+  var S = { data:null, mode:"parity", cfg:null, srcs:{python:true,nt8:true}, code:"",
+            diffs:[], diffi:-1, atlasA:null, atlasB:null, atlasZones:[] };
+
+  var chartEl = document.getElementById("chart"), overlay = document.getElementById("overlay");
+  var chart = LightweightCharts.createChart(chartEl, {
+    layout:{ background:{color:"#0d1117"}, textColor:"#8b949e" },
+    grid:{ vertLines:{color:"#161b22"}, horzLines:{color:"#161b22"} },
+    timeScale:{ timeVisible:true, secondsVisible:true }, crosshair:{ mode:0 }
+  });
+  var series = chart.addCandlestickSeries({ upColor:"#2ea043", downColor:"#da3633",
+    wickUpColor:"#2ea043", wickDownColor:"#da3633", borderVisible:false });
+
+  function sizeOverlay() {
+    var r = chartEl.getBoundingClientRect();
+    overlay.width = r.width*devicePixelRatio; overlay.height = r.height*devicePixelRatio;
+    overlay.style.width = r.width+"px"; overlay.style.height = r.height+"px";
+  }
+  function setCandles(ckey) {
+    var bs = S.data.bar_series[ckey];
+    series.setData(bs ? bs.candles.map(function(c){return {time:c.time,open:c.open,high:c.high,low:c.low,close:c.close};}) : []);
+  }
+  function rect(ctx, z, col, fill, dash) {
+    var tsc = chart.timeScale(), vr = tsc.getVisibleRange(); if (!vr) return;
+    if (z.t1 < vr.from || z.t0 > vr.to) return;
+    var x0 = tsc.timeToCoordinate(Math.max(z.t0,vr.from)), x1 = tsc.timeToCoordinate(Math.min(z.t1,vr.to));
+    if (x0===null) x0=0; if (x1===null) x1=chartEl.clientWidth;
+    var yT = series.priceToCoordinate(z.top), yB = series.priceToCoordinate(z.bottom);
+    if (yT===null||yB===null) return;
+    var h = Math.max(1, yB-yT), w = Math.max(1, x1-x0);
+    ctx.setLineDash(dash?[5,3]:[]);
+    if (fill) { ctx.fillStyle = col+"33"; ctx.fillRect(x0,yT,w,h); }
+    ctx.strokeStyle = fill ? col+"cc" : col; ctx.lineWidth = fill?1:1.4;
+    ctx.strokeRect(x0+0.5,yT+0.5,w,h); ctx.lineWidth=1; ctx.setLineDash([]);
+  }
+  var raf=null;
+  function requestDraw(){ if(raf)return; raf=requestAnimationFrame(function(){raf=null;draw();}); }
+  function draw() {
+    var ctx = overlay.getContext("2d");
+    ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+    ctx.clearRect(0,0,overlay.width,overlay.height);
+    if (S.mode==="atlas") return drawAtlas(ctx);
+    if (!S.cfg) return;
+    var base = COLORS[S.cfg.indicator]||"#8b949e";
+    S.cfg.zones.forEach(function(z){
+      if (!S.srcs[z.source]) return;
+      var col = base, dash = z.source==="nt8";
+      if (S.cfg.parity) col = z.source==="python" ? (z.match?base:DIFF.MISSING) : base;
+      rect(ctx, z, col, z.source==="python", dash);
+    });
+    if (S.diffi>=0 && S.diffs[S.diffi]) {
+      var d = S.diffs[S.diffi];
+      if (d.zone) { ctx.save(); rect(ctx, d.zone, "#ffffff", false, false); ctx.restore(); }
+    }
+  }
+  function drawAtlas(ctx) {
+    S.atlasZones.forEach(function(z){
+      var on = (z.cls==="add"&&document.getElementById("a-added").checked)
+            || (z.cls==="rem"&&document.getElementById("a-removed").checked)
+            || (z.cls==="mod"&&document.getElementById("a-modified").checked)
+            || (z.cls==="common"&&document.getElementById("a-common").checked);
+      if (on) rect(ctx, z, ATLAS[z.cls], z.cls!=="rem", z.cls==="rem");
+    });
+  }
+  chart.timeScale().subscribeVisibleTimeRangeChange(requestDraw);
+  chart.timeScale().subscribeVisibleLogicalRangeChange(requestDraw);
+  window.addEventListener("resize", function(){ chart.applyOptions({width:chartEl.clientWidth,height:chartEl.clientHeight}); sizeOverlay(); requestDraw(); });
+
+  function fmtT(t){ return new Date(t*1000).toISOString().replace("T"," ").slice(0,19)+"Z"; }
+
+  // ---------------- PARITY REVIEW ----------------
+  function loadCfg(i) {
+    S.cfg = S.data.configs[i];
+    setCandles(S.cfg.candles_key);
+    buildCodeFilter(); computeDiffs();
+    document.getElementById("idlabel").innerHTML =
+      "<b>"+S.cfg.indicator+"</b> · "+S.cfg.contract+" · bar <b>"+S.cfg.bar_key+"</b> · config_id <b>"+
+      S.cfg.config_id+"</b> · kernel_id "+S.cfg.kernel_id+" · integridad <span class='st-"+S.cfg.integrity_state+"'>"+
+      S.cfg.integrity_state+"</span> · paridad <span class='st-"+S.cfg.parity_state+"'>"+S.cfg.parity_state+"</span>";
+    renderParityPanels(); chart.timeScale().fitContent(); requestDraw();
+  }
+  function computeDiffs() {
+    S.diffs = []; S.diffi = -1;
+    if (!S.cfg.parity) return;
+    S.cfg.parity.diagnostics.forEach(function(d){
+      if (d.code==="MATCHED") return;
+      var zone = null;
+      if (d.py_id) zone = S.cfg.zones.find(function(z){return z.source==="python"&&String(z.zone_id)===String(d.py_id);});
+      if (!zone && d.nt8_id) zone = S.cfg.zones.find(function(z){return z.source==="nt8"&&String(z.zone_id)===String(d.nt8_id);});
+      if (S.code && d.code!==S.code) return;
+      S.diffs.push({code:d.code, detail:d.detail, zone:zone, py_id:d.py_id, nt8_id:d.nt8_id});
+    });
+  }
+  function gotoDiff(step) {
+    if (!S.diffs.length) return;
+    S.diffi = (S.diffi+step+S.diffs.length)%S.diffs.length;
+    var d = S.diffs[S.diffi];
+    if (d.zone) { var span=Math.max(600,(d.zone.t1-d.zone.t0)*1.5);
+      chart.timeScale().setVisibleRange({from:d.zone.t0-span*0.3, to:d.zone.t0+span}); }
+    renderParityPanels(); requestDraw();
+  }
+  function buildCodeFilter() {
+    var sel = document.getElementById("codefilter");
+    sel.innerHTML = "<option value=''>todos los códigos</option>";
+    if (!S.cfg.parity) return;
+    var codes = {}; S.cfg.parity.diagnostics.forEach(function(d){ if(d.code!=="MATCHED") codes[d.code]=1; });
+    Object.keys(codes).sort().forEach(function(c){ var o=document.createElement("option"); o.value=c; o.textContent=c; sel.appendChild(o); });
+  }
+  function renderParityPanels() {
+    var p = document.getElementById("panels");
+    var par = S.cfg.parity;
+    var gateH = par ? "<span class='gate-"+par.summary.gate+"'>"+par.summary.gate+"</span> · py "+par.summary.py_zones+
+        " nt8 "+par.summary.nt8_zones+" match "+par.summary.matched_pairs
+        : "<span class='meta'>sin oráculo NT8 — este config es "+S.cfg.parity_state+" (correr build_viewer --oracle)</span>";
+    var cur = (S.diffi>=0&&S.diffs[S.diffi]) ? S.diffs[S.diffi] : null;
+    var curH = cur ? "<b class='mod'>"+cur.code+"</b> "+(cur.detail||"")+
+        (cur.py_id?" · py="+cur.py_id:"")+(cur.nt8_id?" · nt8="+cur.nt8_id:"") : "—";
+    p.innerHTML =
+      "<div class='panel'><h2>Paridad</h2><div>"+gateH+"</div>"+
+        "<div style='margin-top:6px'>discrepancia "+(S.diffs.length?(S.diffi+1)+"/"+S.diffs.length:"0")+": "+curH+"</div>"+
+        "<div style='margin-top:6px'><textarea class='note' id='invnote' placeholder='nota de investigación (no cambia el gate)'></textarea>"+
+        "<div><button id='markinv'>marcar investigada</button> <span class='meta' id='invmsg'></span></div></div></div>"+
+      "<div class='panel'><h2>Parámetros</h2><pre>"+JSON.stringify(S.cfg.params,null,1)+"</pre>"+
+        "<div class='meta' style='margin-top:6px'>digests: zone "+S.cfg.digests.zone+" · event "+S.cfg.digests.event+"</div></div>"+
+      "<div class='panel' style='flex-basis:100%'><h2>Zonas <span class='meta'>"+S.cfg.zones.length+"</span></h2>"+zoneTable()+"</div>";
+    document.getElementById("markinv").addEventListener("click", function(){
+      var n=document.getElementById("invnote").value;
+      document.getElementById("invmsg").textContent = "marcada"+(n?" ("+n.length+" car)":"")+" — solo anotación local, el gate automático no cambia.";
+    });
+    bindZoneRows();
+  }
+  function zoneTable() {
+    var h="<table><tr><th>id</th><th>src</th><th>tipo</th><th>top</th><th>bottom</th><th>desde</th><th>estado</th><th>touch</th><th>match</th></tr>";
+    S.cfg.zones.slice(0,600).forEach(function(z,i){
+      var orphan = S.cfg.parity && z.source==="python" && !z.match;
+      h += "<tr class='clickrow' data-zt='"+i+"'><td>"+(z.zone_id||"")+"</td><td>"+z.source+"</td><td>"+(z.kind||"")+
+        "</td><td>"+(+z.top).toFixed(5)+"</td><td>"+(+z.bottom).toFixed(5)+"</td><td>"+fmtT(z.t0)+
+        "</td><td>"+(z.state||"")+"</td><td>"+(z.touches||0)+"</td><td class='"+(orphan?"rem":"")+"'>"+(z.match||(orphan?"HUÉRFANA":"—"))+"</td></tr>";
+    });
+    return h+"</table>";
+  }
+  function bindZoneRows() {
+    document.querySelectorAll("tr[data-zt]").forEach(function(tr){
+      tr.addEventListener("click", function(){
+        var z = S.cfg.zones[+tr.dataset.zt], span=Math.max(600,(z.t1-z.t0)*1.5);
+        chart.timeScale().setVisibleRange({from:z.t0-span*0.2, to:z.t0+span});
+      });
+    });
+  }
+  function exportCSV() {
+    if (!S.cfg) return;
+    var rows = [["zone_id","source","kind","top","bottom","t0_utc","t1_utc","state","touches","match"]];
+    S.cfg.zones.forEach(function(z){ rows.push([z.zone_id,z.source,z.kind,z.top,z.bottom,fmtT(z.t0),fmtT(z.t1),z.state,z.touches||0,z.match||""]); });
+    var csv = rows.map(function(r){return r.join(",");}).join("\n");
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
+    a.download = S.cfg.indicator+"_"+S.cfg.config_id+"_zones.csv"; a.click();
+  }
+
+  // ---------------- PARAMETER ATLAS ----------------
+  function atlasKey(z){ return z.t0 + "|" + z.side; }
+  function loadAtlas() {
+    var a = S.data.configs[+document.getElementById("atlasA").value];
+    var b = S.data.configs[+document.getElementById("atlasB").value];
+    S.atlasA = a; S.atlasB = b;
+    setCandles(a.candles_key);
+    var az = a.zones.filter(function(z){return z.source==="python";});
+    var bz = b.zones.filter(function(z){return z.source==="python";});
+    var bmap = {}; bz.forEach(function(z){ bmap[atlasKey(z)] = z; });
+    var amap = {}; az.forEach(function(z){ amap[atlasKey(z)] = z; });
+    var out = [];
+    az.forEach(function(z){
+      var m = bmap[atlasKey(z)];
+      if (!m) out.push(Object.assign({cls:"rem"}, z));
+      else if (Math.abs(m.top-z.top)>1e-9 || Math.abs(m.bottom-z.bottom)>1e-9) out.push(Object.assign({cls:"mod"}, m));
+      else out.push(Object.assign({cls:"common"}, z));
+    });
+    bz.forEach(function(z){ if (!amap[atlasKey(z)]) out.push(Object.assign({cls:"add"}, z)); });
+    S.atlasZones = out;
+    var c = {add:0,rem:0,mod:0,common:0}; out.forEach(function(z){c[z.cls]++;});
+    document.getElementById("idlabel").innerHTML =
+      "<b>"+a.indicator+"</b> · A config_id <b>"+a.config_id+"</b> ("+az.length+" zonas) vs B <b>"+b.config_id+"</b> ("+bz.length+" zonas)";
+    renderAtlasPanels(a,b,c); chart.timeScale().fitContent(); requestDraw();
+  }
+  function paramDiff(a,b) {
+    var keys = Object.keys(Object.assign({},a.params,b.params)).sort(), h="";
+    keys.forEach(function(k){
+      var va=a.params[k], vb=b.params[k];
+      if (JSON.stringify(va)!==JSON.stringify(vb))
+        h += "<tr><td>"+k+"</td><td class='rem'>"+JSON.stringify(va)+"</td><td class='add'>"+JSON.stringify(vb)+"</td></tr>";
+    });
+    return h || "<tr><td colspan=3 class='meta'>(mismos parámetros)</td></tr>";
+  }
+  function renderAtlasPanels(a,b,c) {
+    document.getElementById("panels").innerHTML =
+      "<div class='panel'><h2>Diferencia de zonas</h2><table>"+
+        "<tr><td><span class='swatch' style='background:"+ATLAS.add+"'></span>agregadas (solo B)</td><td class='add'>"+c.add+"</td></tr>"+
+        "<tr><td><span class='swatch' style='background:"+ATLAS.rem+"'></span>removidas (solo A)</td><td class='rem'>"+c.rem+"</td></tr>"+
+        "<tr><td><span class='swatch' style='background:"+ATLAS.mod+"'></span>geometría modificada</td><td class='mod'>"+c.mod+"</td></tr>"+
+        "<tr><td>comunes</td><td>"+c.common+"</td></tr></table></div>"+
+      "<div class='panel'><h2>Diff de parámetros (A→B)</h2><table><tr><th>param</th><th>A</th><th>B</th></tr>"+paramDiff(a,b)+"</table></div>";
+  }
+  function fillAtlasSelectors(indicator) {
+    var A=document.getElementById("atlasA"), B=document.getElementById("atlasB");
+    A.innerHTML=""; B.innerHTML="";
+    S.data.configs.forEach(function(cf,i){
+      if (cf.indicator!==indicator) return;
+      [A,B].forEach(function(sel){ var o=document.createElement("option"); o.value=i;
+        o.textContent=cf.config_id+" · "+cf.bar_key+" · "+cf.n_zones+"z"; sel.appendChild(o); });
+    });
+    if (B.options.length>1) B.selectedIndex=1;
+  }
+
+  // ---------------- STORE AUDIT ----------------
+  function renderAudit() {
+    var byI={}; S.data.catalog.forEach(function(r){ (byI[r.indicator]=byI[r.indicator]||[]).push(r); });
+    var h="<div class='panel' style='flex-basis:100%'><h2>Catálogo del store <span class='meta'>"+S.data.catalog.length+" particiones</span></h2>"+
+      "<table><tr><th>indicador</th><th>config_id</th><th>bar</th><th>contrato</th><th>zonas</th><th>eventos</th><th>obs</th><th>integridad</th><th>paridad</th></tr>";
+    S.data.catalog.forEach(function(r,i){
+      h += "<tr class='clickrow' data-au='"+i+"'><td>"+r.indicator+"</td><td>"+r.config_id+"</td><td>"+r.bar_key+
+        "</td><td>"+r.contract+"</td><td>"+r.n_zones+"</td><td>"+r.n_events+"</td><td>"+r.n_observations+
+        "</td><td class='st-"+r.integrity_state+"'>"+r.integrity_state+"</td><td class='st-"+r.parity_state+"'>"+r.parity_state+"</td></tr>";
+    });
+    document.getElementById("panels").innerHTML = h+"</table></div>";
+    document.getElementById("idlabel").innerHTML = "store: <b>"+S.data.meta.store+"</b> · generado "+S.data.meta.generated_utc;
+    document.querySelectorAll("tr[data-au]").forEach(function(tr){
+      tr.addEventListener("click", function(){
+        var r = S.data.catalog[+tr.dataset.au];
+        var idx = S.data.configs.findIndex(function(cf){return cf.run_id===r.run_id;});
+        if (idx>=0){ document.getElementById("cfgsel").value=idx; setMode("parity"); loadCfg(idx); }
+      });
+    });
+  }
+
+  // ---------------- modos ----------------
+  function setMode(m) {
+    S.mode = m;
+    document.querySelectorAll(".tab").forEach(function(t){ t.classList.toggle("active", t.dataset.mode===m); });
+    document.getElementById("c-parity").classList.toggle("hidden", m!=="parity");
+    document.getElementById("c-atlas").classList.toggle("hidden", m!=="atlas");
+    document.getElementById("wrap").classList.toggle("hidden", m==="audit");
+    var ctx = overlay.getContext("2d"); ctx.clearRect(0,0,overlay.width,overlay.height);
+    if (m==="parity") loadCfg(+document.getElementById("cfgsel").value||0);
+    else if (m==="atlas") { fillAtlasSelectors(S.data.configs[0].indicator); loadAtlas(); }
+    else renderAudit();
+  }
+
+  function init(data) {
+    S.data = data;
+    document.getElementById("storemeta").textContent =
+      data.meta.n_partitions+" particiones · tz "+data.meta.chart_tz+" · "+data.meta.generated_utc.slice(0,19);
+    var sel = document.getElementById("cfgsel"); sel.innerHTML="";
+    data.configs.forEach(function(cf,i){ var o=document.createElement("option"); o.value=i;
+      o.textContent=cf.indicator+" · "+cf.config_id+" · "+cf.bar_key+" · "+cf.n_zones+"z · "+cf.parity_state; sel.appendChild(o); });
+    sel.addEventListener("change", function(){ loadCfg(+sel.value); });
+    document.querySelectorAll("#c-parity input[data-src]").forEach(function(c){
+      c.addEventListener("change", function(){ S.srcs[c.dataset.src]=c.checked; requestDraw(); }); });
+    document.getElementById("codefilter").addEventListener("change", function(e){ S.code=e.target.value; computeDiffs(); renderParityPanels(); requestDraw(); });
+    document.getElementById("prevdiff").addEventListener("click", function(){ gotoDiff(-1); });
+    document.getElementById("nextdiff").addEventListener("click", function(){ gotoDiff(1); });
+    document.getElementById("exportcsv").addEventListener("click", exportCSV);
+    document.getElementById("atlasA").addEventListener("change", loadAtlas);
+    document.getElementById("atlasB").addEventListener("change", loadAtlas);
+    ["a-added","a-removed","a-modified","a-common"].forEach(function(id){
+      document.getElementById(id).addEventListener("change", requestDraw); });
+    document.querySelectorAll(".tab").forEach(function(t){ t.addEventListener("click", function(){ setMode(t.dataset.mode); }); });
+    chart.applyOptions({ width:chartEl.clientWidth, height:chartEl.clientHeight }); sizeOverlay();
+    if (data.configs.length) setMode("parity"); else document.getElementById("storemeta").textContent="store vacío";
+  }
+
+  if (window.STORE_DATA) init(window.STORE_DATA);
+  else document.getElementById("storemeta").textContent = "sin store_data.js";
+})();
+</script>
+</body>
+</html>
