@@ -159,6 +159,36 @@ python tools/run_campaign.py --campaign campaign.toml --dry-run   # solo declara
 python tools/run_campaign.py --campaign campaign.toml --audit     # corre + P3.0 + audit
 ```
 
+## API de features para vectorbt (F8)
+
+`edgelab/bridge/features.py` es la capa de consumo: la fuerza bruta lee zonas
+**verificadas** del store por identidad y las materializa as-of a cualquier serie
+de barras, **sin importar ningún módulo de kernel** (los kernels solo producen y
+publican). Todo point-in-time: en la barra `t` solo se ven zonas con
+`created_ms <= t` (cero look-ahead).
+
+- `resolve_config_id(indicator, params, bar_key, chart_tz)` → config_id canónico.
+- `get_zone_rows(root, …)` / `get_zones_df(root, …)` → zonas por identidad/estado
+  (filtros: indicator, config_id | params, contract, instrument, bar_key, state,
+  integrity_state, parity_state, rango). El digest de lo consultado ==
+  `zone_digest` del manifest (garantía P3.4, verificada sobre las filas crudas).
+- `materialize_features(zones_df, index_ms, price, features=[...])` → columnas
+  alineadas: `inside_zone`, `distance_to_nearest_zone`, `active_zone_count`,
+  `zone_age`, `nearest_zone_side`.
+
+Demo end-to-end: `tools/demo_vectorbt_zones.py` combina zonas de **2 indicadores**
+del store en una señal y corre una `vbt.Portfolio` — sin tocar ningún kernel
+(test lo verifica inspeccionando los imports). vectorbt es el extra opcional
+`research-vectorbt`; el test que lo ejecuta está detrás del marcador `vectorbt`.
+
+```python
+from edgelab.bridge import features
+za = features.get_zones_df(root, indicator="Gaps2", contract="6E 09-26",
+                           params={"min_gap_ticks": 2}, integrity_state="api_verified")
+f = features.materialize_features(za, bar_ms, price=close,
+                                  features=["inside_zone", "active_zone_count"])
+```
+
 ## Visor v2 — tres modos sobre el store (F6.5)
 
 `tools/build_viewer.py --store <root> --out <dir>` exporta el store publicado a
