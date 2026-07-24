@@ -191,11 +191,13 @@ def main(argv=None):
         return True
 
     runs, manifest_runs, any_fail = [], [], False
+    oracle_sha = {}
     for n in names:
         orc = None
         if n in oracle_by:
             orc = oracle.parse_nt8_log(oracle_by[n], chart_tz=args.chart_tz,
                                        tick_size=tk.tick_size)
+            oracle_sha[n] = sha256_file(oracle_by[n])
             n_all = len(orc["zones"])
             orc["zones"] = [z for z in orc["zones"] if in_window(z)]
             if n_all != len(orc["zones"]):
@@ -227,11 +229,26 @@ def main(argv=None):
                 extra = [dict(code="FOOTPRINT_MISMATCH", py_id=None, nt8_id=None,
                               detail=d["detail"]) for d in p1a["diagnostics"]
                          if d["code"] == "FOOTPRINT_MISMATCH"]
+                # frontera de madurez: zonas creadas a < max_age_bars del final de
+                # la ventana no pueden completar su ciclo -> lifecycle no comparable
+                # (geometría sí). Frontier = cierre de la barra (n-1-max_age).
+                frontier_ms = None
+                max_age = int(res["params"].get("max_age_bars", 0) or 0)
+                if max_age and len(bars) > max_age:
+                    frontier_ms = int(bars.end_ns[len(bars) - 1 - max_age]) // 1_000_000
                 rep = parity.match_zones(res["zones"], orc["zones"], tk.tick_size,
                                          tol_created_ms=args.tol_created_ms,
                                          tol_geom_ticks=args.tol_geom_ticks,
-                                         extra_diags=extra)
+                                         extra_diags=extra,
+                                         maturity_frontier_ms=frontier_ms)
                 any_fail |= rep["gate"] == "FAIL"
+                # evidencia completa en el summary (va a parity.json del store)
+                rep["summary"].update(
+                    oracle_path=os.path.abspath(oracle_by[n]),
+                    oracle_sha256=oracle_sha.get(n), config_id=cid,
+                    window_start_utc=args.start_utc, window_end_utc=args.end_utc,
+                    rule=("maturity_frontier" if frontier_ms is not None else "full"),
+                    n_nt8_in_window=len(orc["zones"]))
             run = viewer_export.build_run(run_id, n, bars, res, psid,
                                           oracle=orc, parity=rep, p1a=p1a)
             runs.append(run)

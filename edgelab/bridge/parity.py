@@ -26,10 +26,21 @@ def _geom_ticks(z, tick_size):
 
 
 def match_zones(py_zones, nt8_zones, tick_size, tol_created_ms=60_000,
-                tol_geom_ticks=0, strict_created_ms=1_000, extra_diags=None):
-    """Devuelve dict(pairs, diagnostics, summary, gate)."""
+                tol_geom_ticks=0, strict_created_ms=1_000, extra_diags=None,
+                maturity_frontier_ms=None):
+    """Devuelve dict(pairs, diagnostics, summary, gate).
+
+    Frontera de madurez (`maturity_frontier_ms`): NT8 exporta más rango que la
+    ventana Python, así que las zonas creadas cerca del final no pueden completar
+    su ciclo de vida (`max_age`) dentro de la ventana común. Para esas zonas
+    INMADURAS (created_ms > frontier) se compara SOLO geometría + timestamp de
+    creación; el estado final y touches se dejan fuera (su lifecycle está
+    truncado por la ventana, no por el kernel). NO es ampliar tolerancia: la
+    geometría se compara al 100%; una zona MADURA con STATE_ORDER_DIFF sigue
+    siendo WARN/FAIL. `None` = todas maduras (comportamiento previo)."""
     used = set()
     pairs, diags = [], list(extra_diags or [])
+    n_immature = 0
 
     def cand_cost(a, b):
         ca, cb = a.get("created_ms"), b.get("created_ms")
@@ -79,13 +90,33 @@ def match_zones(py_zones, nt8_zones, tick_size, tol_created_ms=60_000,
             if gd > tol_geom_ticks:
                 codes.append(("GEOMETRY_DIFF",
                               "py=%s nt8=%s diff=%d ticks" % (ga, gb, gd)))
-        sa, sb = (a.get("state") or "").upper(), (b.get("state") or "").upper()
-        if sa and sb and sa != sb:
-            codes.append(("STATE_ORDER_DIFF", "py=%s nt8=%s" % (sa, sb)))
-        if a.get("touches") is not None and b.get("touches") is not None \
-                and int(a["touches"]) != int(b["touches"]):
-            codes.append(("FEATURE_DIFF",
-                          "touches py=%s nt8=%s" % (a["touches"], b["touches"])))
+        immature = (maturity_frontier_ms is not None
+                    and a.get("created_ms") is not None
+                    and a["created_ms"] > maturity_frontier_ms)
+        if immature:
+            # zona en la cola: lifecycle/touches truncados por la ventana. Se
+            # registra informativo (no WARN/FAIL) lo que se suprimió, para
+            # trazabilidad; la geometría/timestamp de arriba SÍ cuentan.
+            sa, sb = (a.get("state") or "").upper(), (b.get("state") or "").upper()
+            supp = []
+            if sa and sb and sa != sb:
+                supp.append("state py=%s nt8=%s" % (sa, sb))
+            if a.get("touches") is not None and b.get("touches") is not None \
+                    and int(a["touches"]) != int(b["touches"]):
+                supp.append("touches py=%s nt8=%s" % (a["touches"], b["touches"]))
+            if supp:
+                n_immature += 1
+                diags.append(dict(code="MATURITY_TAIL", py_id=a["id"], nt8_id=b["id"],
+                                  detail="lifecycle no comparable (cola de ventana): "
+                                  + "; ".join(supp)))
+        else:
+            sa, sb = (a.get("state") or "").upper(), (b.get("state") or "").upper()
+            if sa and sb and sa != sb:
+                codes.append(("STATE_ORDER_DIFF", "py=%s nt8=%s" % (sa, sb)))
+            if a.get("touches") is not None and b.get("touches") is not None \
+                    and int(a["touches"]) != int(b["touches"]):
+                codes.append(("FEATURE_DIFF",
+                              "touches py=%s nt8=%s" % (a["touches"], b["touches"])))
         if not codes:
             diags.append(dict(code="MATCHED", py_id=a["id"], nt8_id=b["id"],
                               detail="dt=%sms" % (dt if dt is not None else "n/a")))
@@ -107,5 +138,7 @@ def match_zones(py_zones, nt8_zones, tick_size, tol_created_ms=60_000,
     summary = dict(py_zones=len(py_zones), nt8_zones=len(nt8_zones),
                    matched_pairs=len(pairs), counts=counts, gate=gate,
                    tol_created_ms=tol_created_ms, tol_geom_ticks=tol_geom_ticks,
-                   strict_created_ms=strict_created_ms)
+                   strict_created_ms=strict_created_ms,
+                   maturity_frontier_ms=maturity_frontier_ms,
+                   immature_tail=n_immature)
     return dict(pairs=pairs, diagnostics=diags, summary=summary, gate=gate)

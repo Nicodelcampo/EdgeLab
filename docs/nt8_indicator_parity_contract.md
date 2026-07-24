@@ -22,6 +22,26 @@ reopen_warmup_minutes=30 · atr_period=14 · vol_baseline_ticks=2000 ·
 min_vol_baseline_samples=500 · partial_fill_pct=50 · reversal_confirm_ticks=2 ·
 max_age_bars=2000 · max_logged_touches=20`
 
+### Desviación del pre-registro — primer oráculo real ✅ PASS
+
+El primer oráculo real NO fue el 06-26 de mayo de arriba, sino **6E 09-26**
+(el contrato que estaba cargado con tick data completa en la instalación):
+
+| Ítem | Valor |
+|---|---|
+| Oráculo | `oracles/Gaps2_6E_0926.csv` (export real, 1776 zonas) |
+| Contrato · barras | **6E 09-26** · **1 minuto** |
+| Ventana comparada (UTC) | **2026-07-13T22:00:00 → 2026-07-16T21:00:00** (borde de sesión CME) |
+| Params | defaults salvo **`min_gap_ticks=2`** (declarados por la línea `# params` del CSV) |
+| Dataset Python | `data/nt8/6E/6E_09-26_ticks.parquet` (cubre 2026-06-08 → 2026-07-21) |
+| **Gate P2** | **PASS** — 1316/1316 zonas, 0 `MISSING_*`, 0 `GEOMETRY_DIFF`; 15 `MATURITY_TAIL` (cola de ventana, lifecycle no comparable) |
+
+Motivo de la desviación: 6E 06-26 no tenía tick data cargada en esta
+instalación; 6E 09-26 sí (mismo feed). `min_gap_ticks=2` en vez de 5 es solo el
+umbral de **display** (para ver zonas en el chart); no afecta el export ni la
+paridad (ver `nt8_bridge.md` "Dibujo ≠ export"). Evidencia completa (oracle
+sha256, config_id, ventana, regla) en el `parity.json` de la partición del store.
+
 ## 2. Pasos en NT8 (tu parte)
 
 1. Chart nuevo: **6E 06-26** (contrato individual, NO continuo ni rollover),
@@ -63,6 +83,24 @@ max_age_bars=2000 · max_logged_touches=20`
 Exclusiones declaradas del diff (documentadas en `nt8_bridge.md`):
 `SESSION_END` si el chart NT8 sigue vivo (no hubo OnTermination), y eventos
 NT8 anteriores al inicio del rango Python (warmup del chart).
+
+### Regla de frontera de madurez (pre-declarada)
+
+NT8 exporta más rango que la ventana Python (warmup a ambos lados). Las zonas
+creadas a **menos de `max_age_bars` del cierre de la ventana** no pueden
+completar su ciclo de vida dentro de la ventana común Python∩NT8: Python las
+corta (SESSION_END) y NT8, que sigue procesando, las expira/invalida/toca más.
+Regla del matcher (`parity.match_zones(maturity_frontier_ms=...)`):
+
+- **Geometría (top/bottom en ticks) + timestamp de creación**: se comparan para
+  el **100%** de las zonas, maduras e inmaduras.
+- **Estado final + touches (lifecycle)**: se comparan **solo para zonas maduras**
+  (`created_ms <= cierre_barra[n-1-max_age]`). Para las inmaduras se registra
+  `MATURITY_TAIL` (informativo, no WARN/FAIL) con lo que se suprimió.
+
+**No es ampliar tolerancia**: es una regla de ventana con principio (la simétrica
+del warmup inicial). Una zona **madura** con `STATE_ORDER_DIFF`/`FEATURE_DIFF`
+sigue siendo WARN/FAIL — hay un test adversarial que lo fija.
 
 **Prohibido:** generar un CSV NT8 ficticio o editado. El oráculo es el export
 real del indicador corriendo en NT8. Sin ese archivo, ningún kernel se declara
@@ -133,3 +171,38 @@ contrato). `--bars time:1`.
 Corrida Python (mismo patrón que §3, ajustando indicador/params/bars/oráculo).
 `parity_covered` de una config se asigna solo cuando TODAS las ramas que activa
 (ver `docs/parity_coverage/<kernel>.md`) tienen un oráculo PASS.
+
+## 7. Próxima tanda de oráculos — 6E 09-26 (contrato ya cargado, tick data OK)
+
+Preferido sobre §6 (06-26 no tenía tick data en esta instalación). Todos sobre
+**6E 09-26**, dataset `data/nt8/6E/6E_09-26_ticks.parquet` (cubre 2026-06-08 →
+2026-07-21). Rev `.cs` **190ed59+**. Ventana corta reutilizable (borde de sesión
+CME): **2026-07-13T22:00:00 → 2026-07-16T21:00:00 UTC**.
+
+Pasos NT8 comunes: chart 6E 09-26, Days to load ≥ 10 (para aVolCellPOI2 ≥ 40),
+setear el `EventLogPath` del indicador, F5 para recalcular, cerrar/refrescar para
+flushear. Dejar los CSV en `E:\EdgeLab\oracles\`.
+
+| Oráculo | Bars | Params no-default | EventLogPath | Ventana Python |
+|---|---|---|---|---|
+| **Gaps2 25t** | **25 Tick** | `min_gap_ticks=2` | `Gaps2_6E_0926_tick25.csv` | 07-13→07-16 |
+| **VolTicksPOC2** | 1 Minute | defaults | `VolTicksPOC2_6E_0926.csv` | 07-13→07-16 |
+| **VolTicksPOC2 FirstTouch** | 1 Minute | `InvalidationMode=FirstTouch` | `VolTicksPOC2_ft_6E_0926.csv` | 07-13→07-16 |
+| **BigTrap2 Diagonal** | 1 Minute | defaults | `BigTrap2_diag_time1_6E_0926.csv` | 07-13→07-16 |
+| **BigTrap2 SameLevel** | **25 Tick** | `ImbalanceMode=SameLevel` | `BigTrap2_same_tick25_6E_0926.csv` | 07-13→07-16 |
+| **HFTZones2 adaptativo** | 1 Minute | defaults (arranca en borde de sesión) | `HFTZones2_adaptive_6E_0926.csv` | 07-13→07-16 |
+| **HFTZones2 manual** | 1 Minute | `AdaptiveMode=false` | `HFTZones2_manual_6E_0926.csv` | 07-13→07-16 |
+| **aVolCellPOI2** | 1 Minute | defaults (Days to load ≥ 40) | `aVolCellPOI2_6E_0926.csv` | **07-19→07-21** |
+
+- **Gaps2 25t**: el `--bars tick:25` de la corrida Python debe coincidir; es un
+  `config_id` distinto al de 1 minuto (el `bar_key` entra a la identidad).
+- **HFTZones2**: la ventana arranca en 07-13T22:00 (apertura CME) y trae ≥1
+  sesión previa cargada → calibración congelada antes de las detecciones.
+- **aVolCellPOI2**: necesita ~7 semanas de historia; cargá desde el inicio del
+  contrato (06-08) y comparamos las 2 últimas sesiones del parquet (07-19→07-21).
+  Requiere el `.cs` reescrito a subserie 1-tick (rev 190ed59+).
+
+Cada uno: me pasás el CSV y corro `run_nt8_bridge.py … --oracle <ind>=<csv>
+--zone-store runs/nt8_bridge/store` (con la frontera de madurez automática) →
+`parity_report.json` + gate + evidencia en el store. La ventana corta 07-13→07-16
+ya validó Gaps2 (PASS); el resto usa la misma para comparabilidad.
