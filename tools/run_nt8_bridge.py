@@ -174,12 +174,33 @@ def main(argv=None):
                   f"(quote_frac={g['quote_fraction']}, mismatches={g['footprint_mismatches']})")
         return bars_cache[spec], fps_cache[spec], p1a_cache[spec]
 
+    # ventana de comparación en unix_ms: NT8 exporta más rango del que se compara
+    # (warmup a ambos lados). Las zonas NT8 creadas fuera de [start, end) se
+    # excluyen del diff (no son huérfanas: son fuera-de-ventana).
+    win_start_ms = iso_to_ns(args.start_utc) // 1_000_000 if args.start_utc else None
+    win_end_ms = iso_to_ns(args.end_utc) // 1_000_000 if args.end_utc else None
+
+    def in_window(z):
+        cm = z.get("created_ms")
+        if cm is None:
+            return True
+        if win_start_ms is not None and cm < win_start_ms:
+            return False
+        if win_end_ms is not None and cm >= win_end_ms:
+            return False
+        return True
+
     runs, manifest_runs, any_fail = [], [], False
     for n in names:
         orc = None
         if n in oracle_by:
             orc = oracle.parse_nt8_log(oracle_by[n], chart_tz=args.chart_tz,
                                        tick_size=tk.tick_size)
+            n_all = len(orc["zones"])
+            orc["zones"] = [z for z in orc["zones"] if in_window(z)]
+            if n_all != len(orc["zones"]):
+                print(f"[oráculo {n}] {len(orc['zones'])}/{n_all} zonas NT8 en ventana "
+                      f"[{args.start_utc}, {args.end_utc}) (resto = warmup/fuera de rango)")
         for pset in grids[n]:
             pset = dict(pset)
             bar_spec = pset.pop("bars", args.bars)
