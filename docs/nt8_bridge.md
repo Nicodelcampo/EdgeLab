@@ -125,6 +125,40 @@ produjo); la paridad NT8 es el otro eje. Siete subgates (`edgelab/bridge/audit.p
 python tools/store_audit.py --store <root> --all --recompute-sample 1.0 --promote
 ```
 
+## Runner de campañas (F6.4)
+
+`tools/run_campaign.py` toma una campaña declarativa (`.toml` o `.json`; no se
+usa YAML porque pyyaml no está en el lock), deriva la grilla (producto cartesiano
+de la grilla × bar_specs), **declara el número de configs y el costo estimado
+ANTES de correr** y aborta si supera `max_configs` (control de explosión). Valida
+cada config contra PARAM_SPEC (no arranca a medias), genera el
+`campaign_manifest` con los `config_id` esperados, ejecuta publicando al store
+(P3.1/P3.2 inline) y **cierra con P3.0** (completitud: `expected == succeeded +
+failed`, `missing=0`, `duplicated=0`). Grilla gruesa primero y refinamiento
+local después = campañas pre-registradas sucesivas, nunca un barrido silencioso.
+
+```toml
+campaign_id = "gaps2_smoke"
+store       = "runs/nt8_bridge/store"
+max_configs = 40
+[data]
+  parquet = "data/nt8/6E/6E_09-25_ticks.parquet"
+  contract = "6E 09-25"
+  start_utc = "2025-08-01T00:00:00"
+  end_utc   = "2025-08-02T00:00:00"
+[[jobs]]
+  indicator = "Gaps2"
+  bars = ["time:1"]
+  [jobs.grid]
+    export_floor_ticks = [2, 3]
+    min_gap_ticks = [5, 8, 12]
+```
+
+```bash
+python tools/run_campaign.py --campaign campaign.toml --dry-run   # solo declara
+python tools/run_campaign.py --campaign campaign.toml --audit     # corre + P3.0 + audit
+```
+
 ## Visor (offline)
 
 `viewer/index.html` — Lightweight Charts v4.2.0 **vendorizado** (sin CDN/
