@@ -18,17 +18,23 @@ Comando único, reproducible, para toda verificación de regresión del bridge:
 .venv\Scripts\python -m pytest tests -m "not vectorbt" -q
 ```
 
+Nota de alcance: el comando corre **todo el repo** (`tests/`), no solo
+`tests/bridge/` — incluye `tests/foundation` (F0-F2) y `tests/research`
+(firewall del holdout, FASE 3b); es la suite canónica del PROYECTO, documentada
+acá por ser el punto de referencia histórico de esta reconciliación.
+
 Al 2026-07-24 (commit `f316b23` + reconciliación de esta sección):
-**141 passed, 3 deselected**. Los conteos "101 / 131 / 139" reportados en
+**152 passed, 3 deselected**. Los conteos "101 / 131 / 139" reportados en
 turnos previos correspondían a alcances distintos, no a regresiones — evidencia
 textual en los propios mensajes de commit:
 
-| Conteo reportado | Commit | Alcance real (evidencia) |
+| Conteo reportado | Commit / fase | Alcance real (evidencia) |
 |---|---|---|
 | 101 | `90fbe11` | **`tests/bridge` solamente** — el mensaje dice literalmente "Bridge suite 101 passed", un subconjunto (excluye `tests/foundation`, 30 tests). NO es la suite global. |
 | 131 | `0555e5d` | Suite global (`tests -m "not vectorbt"`) en ese punto del historial, ANTES de que F8 agregara `test_features.py` (6 tests) y `test_vectorbt_demo.py` (2 tests no-vectorbt + 1 deselected). |
 | 139 | `af48609` | Suite global tras F8. Verificación aritmética exacta: 131 + 6 + 2 = 139. |
-| **141** | (esta reconciliación) | Suite global tras agregar 2 tests de regresión de frontera de madurez (`test_boundary_created_exactly_at_frontier_is_mature`, `test_real_gaps2_pass_run_has_zero_mature_lifecycle_diffs`). |
+| 141 | FASE 1 (`d0a894e`) | Suite global tras agregar 2 tests de regresión de frontera de madurez (`test_boundary_created_exactly_at_frontier_is_mature`, `test_real_gaps2_pass_run_has_zero_mature_lifecycle_diffs`). |
+| **152** | FASE 3b (firewall del holdout) | Suite global tras agregar `tests/research/test_holdout_guard.py` (11 tests). Verificación aritmética: 141 + 11 = 152. |
 
 Verificación de la partición: `tests/bridge` (109) + `tests/foundation` (30) =
 **139** = conteo global de ese momento (antes de agregar los 2 tests de esta

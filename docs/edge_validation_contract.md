@@ -135,15 +135,36 @@ adverso < 0; DD neto de desarrollo > USD 2.500 por contrato; expectancy neta
 - **Prohibido reoptimizar** sobre el holdout; el resultado (positivo o
   negativo) se registra y la apertura se anota en el log de accesos.
 
-### Firewall del holdout (por código y por logs)
+### Firewall del holdout (por código y por logs) — IMPLEMENTADO (FASE 3b)
 
-- El pipeline de research **rechaza por assert** cualquier slice de datos que
-  cruce 2026-07-01, salvo flag explícito `target_free=True` (paridad,
-  determinismo, geometría, integridad, visor — únicos usos permitidos).
-- Todo acceso al holdout queda en un log append-only
-  (`docs/holdout_access_log.md`): fecha, campaign_id, candidato, motivo, hash
-  del protocolo. (Implementación: tarea pendiente de FASE 3; este contrato fija
-  la semántica.)
+- **Guard**: `edgelab/research/holdout_guard.py::check_holdout(start_utc,
+  end_utc, *, purpose, caller, log_path=None)`. Toda función de carga de datos
+  para research económico de estrategias debe llamarlo ANTES de tocar
+  cualquier rango. `purpose` es obligatorio, sin default, uno de:
+  - `"development"` — si el rango toca `HOLDOUT_START` (2026-07-01, única
+    fuente de verdad en `holdout_guard.HOLDOUT_START_ISO`, citada de este
+    documento y de `NORTH_STAR.md`) levanta `HoldoutViolation` (excepción
+    dura) y registra el intento denegado en el log. Si el rango es enteramente
+    anterior al holdout, permite sin loguear (no es un acceso al holdout).
+  - `"target_free_validation"` — único uso permitido (paridad, determinismo,
+    geometría, integridad, visor); SIEMPRE permitido, SIEMPRE logueado.
+  - Fail-safe: `end_utc=None` (sin cota superior) se trata como "toca el
+    holdout" — ante la duda, nunca se asume inocencia.
+- **Log append-only**: `docs/holdout_access_log.md` (tabla markdown: timestamp
+  UTC, purpose, outcome, ventana, caller). Se escribe siempre con `open(...,
+  "a")`, nunca se reescribe ni se borra una fila — una corrección se agrega
+  como fila nueva. Contiene la fila retroactiva del único acceso target-free
+  real anterior a la existencia de este guard: la validación de paridad
+  geométrica de Gaps2 (6E 09-26, ventana 2026-07-13→16, commit `0555e5d`).
+- **Tests**: `tests/research/test_holdout_guard.py` (11 tests) — development
+  pre-holdout OK sin log, development que pisa el holdout → excepción + log,
+  target-free siempre permitido y logueado (incluso con ventana enteramente
+  fuera del holdout), append-only verificado (múltiples llamadas solo agregan
+  filas, ninguna se pierde), casos límite (borde exacto de `HOLDOUT_START`,
+  rango sin cota superior).
+- **Alcance declarado**: el guard hace cumplir el límite INFERIOR
+  (`>= HOLDOUT_START`); no acota por el límite superior del rango cerrado
+  (2026-12-31) — ver la nota de alcance en el docstring del módulo.
 - Nota vigente: la partición de paridad de Gaps2 (6E 09-26, ventana
   2026-07-13→16) es un uso **target-free permitido** (paridad geométrica); sus
   datos NO pueden usarse para elegir dirección, thresholds ni candidatos.
