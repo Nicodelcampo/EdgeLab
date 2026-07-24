@@ -2,365 +2,493 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<title>NT8 Bridge — visor de store v2</title>
+<title>EdgeLab · NT8 Bridge — store</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="vendor/lightweight-charts.standalone.production.js"></script>
 <style>
-  :root { color-scheme: dark; }
-  * { box-sizing: border-box; }
-  body { margin:0; background:#0d1117; color:#c9d1d9; font:13px/1.45 -apple-system,Segoe UI,Roboto,sans-serif; }
-  header { padding:8px 14px; background:#161b22; border-bottom:1px solid #21262d; display:flex; gap:14px; flex-wrap:wrap; align-items:center; }
-  header h1 { font-size:15px; margin:0; color:#e6edf3; }
-  .meta { color:#8b949e; font-size:12px; }
-  .tabs { display:flex; gap:4px; margin-left:auto; }
-  .tab { padding:4px 12px; border:1px solid #30363d; border-radius:6px; background:#161b22; color:#8b949e; cursor:pointer; }
-  .tab.active { background:#1f6feb; color:#fff; border-color:#1f6feb; }
-  #controls { padding:6px 14px; background:#10151c; border-bottom:1px solid #21262d; display:flex; gap:16px; flex-wrap:wrap; align-items:center; }
-  #controls fieldset { border:1px solid #21262d; border-radius:6px; margin:0; padding:3px 10px 5px; }
-  #controls legend { color:#8b949e; font-size:11px; padding:0 4px; }
-  #controls label { margin-right:8px; cursor:pointer; white-space:nowrap; }
-  select, button { background:#161b22; color:#e6edf3; border:1px solid #30363d; border-radius:6px; padding:3px 8px; }
-  select { max-width:520px; }
-  button { cursor:pointer; }
-  button:hover { border-color:#1f6feb; }
-  .idlabel { padding:4px 14px; background:#0b0f14; border-bottom:1px solid #21262d; color:#8b949e; font-size:11px; font-family:ui-monospace,monospace; }
-  .idlabel b { color:#a5d6ff; font-weight:600; }
-  #wrap { position:relative; }
-  #chart { width:100%; height:48vh; }
-  #overlay { position:absolute; left:0; top:0; pointer-events:none; }
-  #panels { display:flex; gap:12px; padding:10px 14px; flex-wrap:wrap; align-items:flex-start; }
-  .panel { background:#161b22; border:1px solid #21262d; border-radius:8px; padding:10px 12px; flex:1 1 340px; }
-  .panel h2 { margin:0 0 8px; font-size:13px; color:#e6edf3; }
-  table { border-collapse:collapse; font-size:12px; width:100%; }
-  th, td { padding:3px 8px; border-bottom:1px solid #21262d; text-align:left; }
-  th { color:#8b949e; font-weight:600; }
-  tr.clickrow { cursor:pointer; }
-  tr.clickrow:hover { background:#1c2531; }
-  .gate-PASS,.st-parity_exact { color:#3fb950; font-weight:700; }
-  .gate-WARN { color:#d29922; font-weight:700; }
-  .gate-FAIL,.st-parity_failed { color:#f85149; font-weight:700; }
-  .st-api_verified { color:#3fb950; }
-  .st-roundtrip_verified { color:#58a6ff; }
-  .st-parity_pending,.st-parity_covered { color:#8b949e; }
-  pre { margin:0; font-size:11px; color:#a5d6ff; white-space:pre-wrap; max-width:360px; }
-  .swatch { display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:4px; vertical-align:-1px; }
-  .hidden { display:none; }
-  .add { color:#3fb950; } .rem { color:#f85149; } .mod { color:#d29922; }
-  .note { width:260px; background:#0d1117; color:#c9d1d9; border:1px solid #30363d; border-radius:6px; padding:4px; }
+  :root{
+    --bg:#0b0e14; --surface:#11151d; --surface2:#161b25; --surface3:#1c2230;
+    --border:#232a37; --border2:#2d3547;
+    --text:#e6edf3; --dim:#8b95a5; --dim2:#5c6675;
+    --accent:#3b82f6; --accent-dim:#1e3a5f;
+    --ok:#3fb950; --info:#58a6ff; --warn:#d9a441; --err:#f0616d; --cyan:#40c4c4;
+    --s1:4px; --s2:8px; --s3:12px; --s4:16px; --r:7px; --rs:5px;
+    --mono:ui-monospace,"Cascadia Code",Consolas,monospace;
+    --font:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;margin:0;}
+  body{background:var(--bg);color:var(--text);font:13px/1.45 var(--font);
+    display:grid;grid-template-rows:auto 1fr;overflow:hidden;}
+  .mono{font-family:var(--mono);}
+  button{font:inherit;color:var(--text);background:var(--surface2);border:1px solid var(--border2);
+    border-radius:var(--rs);padding:5px 10px;cursor:pointer;}
+  button:hover{border-color:var(--accent);}
+  button.icon{padding:4px 8px;line-height:1;}
+  ::-webkit-scrollbar{width:10px;height:10px;} ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:6px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+
+  /* topbar */
+  header{display:flex;align-items:center;gap:var(--s4);padding:0 var(--s4);height:46px;
+    background:var(--surface);border-bottom:1px solid var(--border);}
+  header .brand{font-weight:700;color:#fff;letter-spacing:.2px;white-space:nowrap;}
+  header .ctx{color:var(--dim);font-size:12px;display:flex;gap:var(--s3);flex-wrap:wrap;min-width:0;}
+  header .ctx b{color:var(--text);font-weight:600;}
+  header .tabs{margin-left:auto;display:flex;gap:var(--s1);background:var(--surface2);
+    padding:3px;border-radius:var(--r);border:1px solid var(--border);}
+  .tab{padding:5px 14px;border-radius:var(--rs);color:var(--dim);cursor:pointer;white-space:nowrap;user-select:none;}
+  .tab:hover{color:var(--text);}
+  .tab.active{background:var(--accent);color:#fff;}
+
+  /* body grid: sidebar | main */
+  .body{display:grid;grid-template-columns:auto 1fr;min-height:0;}
+  /* sidebar */
+  aside{width:290px;background:var(--surface);border-right:1px solid var(--border);
+    display:flex;flex-direction:column;min-height:0;transition:width .12s;}
+  aside.collapsed{width:0;overflow:hidden;border-right:none;}
+  .side-head{padding:var(--s2) var(--s3);border-bottom:1px solid var(--border);display:flex;gap:var(--s2);align-items:center;}
+  .filter{flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rs);
+    color:var(--text);padding:5px 8px;font:inherit;}
+  .filter::placeholder{color:var(--dim2);}
+  .tree{overflow:auto;flex:1;padding:var(--s2) 0;}
+  .grp{user-select:none;}
+  .grp>.row{display:flex;align-items:center;gap:6px;padding:4px var(--s3);color:var(--dim);cursor:pointer;font-weight:600;}
+  .grp>.row:hover{color:var(--text);background:var(--surface2);}
+  .grp .caret{width:10px;display:inline-block;transition:transform .1s;color:var(--dim2);}
+  .grp.open .caret{transform:rotate(90deg);}
+  .grp .kids{display:none;} .grp.open>.kids{display:block;}
+  .lvl2>.row{padding-left:24px;} .lvl3>.row{padding-left:36px;}
+  .cfg{display:flex;flex-direction:column;gap:2px;padding:6px var(--s3) 6px 40px;cursor:pointer;border-left:2px solid transparent;}
+  .cfg:hover{background:var(--surface2);}
+  .cfg.sel{background:var(--accent-dim);border-left-color:var(--accent);}
+  .cfg .lab{font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .cfg .sub{display:flex;gap:5px;align-items:center;font-size:11px;color:var(--dim2);}
+  .chip{display:inline-flex;align-items:center;gap:4px;padding:1px 7px;border-radius:10px;font-size:10.5px;
+    font-weight:600;line-height:1.5;white-space:nowrap;border:1px solid transparent;}
+  .chip.dot::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;}
+  .c-ok{color:var(--ok);background:rgba(63,185,80,.12);}
+  .c-info{color:var(--info);background:rgba(88,166,255,.12);}
+  .c-cyan{color:var(--cyan);background:rgba(64,196,196,.12);}
+  .c-warn{color:var(--warn);background:rgba(217,164,65,.12);}
+  .c-err{color:var(--err);background:rgba(240,97,109,.12);}
+  .c-gray{color:var(--dim);background:rgba(139,149,165,.1);}
+
+  /* main */
+  main{display:grid;grid-template-rows:1fr auto;min-width:0;min-height:0;}
+  .chartwrap{position:relative;min-height:0;}
+  #chart{position:absolute;inset:0;}
+  #overlay{position:absolute;inset:0;pointer-events:none;}
+  .sidetoggle{position:absolute;left:8px;top:8px;z-index:5;}
+  .legend{position:absolute;right:10px;top:8px;z-index:5;display:flex;gap:var(--s3);
+    background:rgba(17,21,29,.85);border:1px solid var(--border);border-radius:var(--rs);padding:5px 10px;font-size:11px;color:var(--dim);}
+  .legend i{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:4px;vertical-align:-1px;}
+
+  /* drawer */
+  .drawer{background:var(--surface);border-top:1px solid var(--border);display:flex;flex-direction:column;}
+  .drawer-tabs{display:flex;align-items:center;gap:2px;padding:0 var(--s2);border-bottom:1px solid var(--border);height:36px;}
+  .dtab{padding:6px 12px;color:var(--dim);cursor:pointer;font-size:12px;border-bottom:2px solid transparent;user-select:none;}
+  .dtab:hover{color:var(--text);}
+  .dtab.active{color:var(--text);border-bottom-color:var(--accent);}
+  .dtab .n{color:var(--dim2);font-size:11px;margin-left:4px;}
+  .drawer-body{overflow:auto;max-height:34vh;min-height:0;}
+  .drawer.collapsed .drawer-body{display:none;}
+  .drawer-body.pad{padding:var(--s3);}
+  table{border-collapse:collapse;width:100%;font-size:12px;}
+  th,td{padding:4px var(--s2);border-bottom:1px solid var(--border);text-align:left;white-space:nowrap;}
+  th{color:var(--dim);font-weight:600;position:sticky;top:0;background:var(--surface);cursor:default;}
+  tbody tr{cursor:pointer;} tbody tr:hover{background:var(--surface2);}
+  tbody tr.hl{background:var(--accent-dim);}
+  pre{margin:0;font-family:var(--mono);font-size:11.5px;color:#a9d3ff;white-space:pre-wrap;}
+  kbd{font-family:var(--mono);background:var(--surface3);border:1px solid var(--border2);border-radius:4px;padding:0 5px;font-size:11px;}
+
+  /* discrepancy nav */
+  .disc{display:grid;grid-template-columns:1fr 300px;gap:var(--s3);padding:var(--s3);}
+  .disc .nav{display:flex;align-items:center;gap:var(--s2);margin-bottom:var(--s2);}
+  .disc .counter{color:var(--dim);font-variant-numeric:tabular-nums;}
+  .disc .detail{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:var(--s3);align-self:start;}
+  .disc .detail h4{margin:0 0 var(--s2);font-size:12px;color:var(--text);}
+  .disc .detail .kv{display:grid;grid-template-columns:auto 1fr;gap:2px var(--s2);font-size:12px;}
+  .disc .detail .kv span:nth-child(odd){color:var(--dim);}
+
+  /* audit */
+  .audit{padding:var(--s4);overflow:auto;height:100%;}
+  .audit h3{margin:0 0 var(--s3);font-size:14px;}
+  .audit .grpcount{color:var(--dim);font-weight:400;font-size:12px;}
+
+  /* empty state */
+  .empty{display:flex;align-items:center;justify-content:center;height:100%;}
+  .empty .card{max-width:440px;text-align:center;background:var(--surface);border:1px solid var(--border);
+    border-radius:var(--r);padding:var(--s4);color:var(--dim);}
+  .empty .card b{color:var(--text);}
+
+  /* atlas controls */
+  .subbar{display:none;align-items:center;gap:var(--s3);padding:var(--s2) var(--s3);background:var(--surface2);border-bottom:1px solid var(--border);flex-wrap:wrap;}
+  .subbar.show{display:flex;}
+  .seg{display:flex;background:var(--surface);border:1px solid var(--border2);border-radius:var(--rs);overflow:hidden;}
+  .seg label{padding:4px 9px;color:var(--dim);cursor:pointer;font-size:12px;user-select:none;border-right:1px solid var(--border2);}
+  .seg label:last-child{border-right:none;}
+  .seg input{display:none;} .seg input:checked+span{color:var(--text);}
+  .seg label:has(input:checked){background:var(--surface3);}
+  .picker{background:var(--surface);border:1px solid var(--border2);border-radius:var(--rs);color:var(--text);padding:4px 8px;font:inherit;max-width:280px;}
+  .hidden{display:none!important;}
 </style>
 </head>
 <body>
 <header>
-  <h1>NT8 → EdgeLab · store v2</h1>
-  <span class="meta" id="storemeta">sin store</span>
+  <span class="brand">EdgeLab · store</span>
+  <div class="ctx" id="ctx"></div>
   <div class="tabs">
     <span class="tab active" data-mode="parity">Parity Review</span>
     <span class="tab" data-mode="atlas">Parameter Atlas</span>
     <span class="tab" data-mode="audit">Store Audit</span>
   </div>
 </header>
-<div class="idlabel" id="idlabel">—</div>
 
-<!-- controles por modo -->
-<div id="controls">
-  <fieldset id="c-parity"><legend>Config (parity review)</legend>
-    <select id="cfgsel"></select>
-    <label><input type="checkbox" data-src="python" checked> Python (relleno)</label>
-    <label><input type="checkbox" data-src="nt8" checked> NT8 (punteado)</label>
-    <select id="codefilter"><option value="">todos los códigos</option></select>
-    <button id="prevdiff">◀ discrep.</button><button id="nextdiff">discrep. ▶</button>
-    <button id="exportcsv">export CSV</button>
-  </fieldset>
-  <fieldset id="c-atlas" class="hidden"><legend>A / B (mismo indicador)</legend>
-    <select id="atlasA"></select> vs <select id="atlasB"></select>
-    <label><input type="checkbox" id="a-added" checked> <span class="add">agregadas</span></label>
-    <label><input type="checkbox" id="a-removed" checked> <span class="rem">removidas</span></label>
-    <label><input type="checkbox" id="a-modified" checked> <span class="mod">geometría</span></label>
-    <label><input type="checkbox" id="a-common"> comunes</label>
-  </fieldset>
+<div class="body">
+  <aside id="aside">
+    <div class="side-head">
+      <input class="filter" id="filter" placeholder="filtrar configs…">
+    </div>
+    <div class="tree" id="tree"></div>
+  </aside>
+
+  <main>
+    <div class="subbar" id="subbar">
+      <span class="mono" style="color:var(--dim)">A</span>
+      <select class="picker" id="atlasA"></select>
+      <span class="mono" style="color:var(--dim)">B</span>
+      <select class="picker" id="atlasB"></select>
+      <div class="seg">
+        <label><input type="checkbox" id="a-add" checked><span>agregadas</span></label>
+        <label><input type="checkbox" id="a-rem" checked><span>removidas</span></label>
+        <label><input type="checkbox" id="a-mod" checked><span>geometría</span></label>
+        <label><input type="checkbox" id="a-com"><span>comunes</span></label>
+      </div>
+    </div>
+    <div class="chartwrap" id="chartwrap">
+      <button class="icon sidetoggle" id="sidetoggle" title="sidebar">☰</button>
+      <div class="legend" id="legend"></div>
+      <div id="chart"></div>
+      <canvas id="overlay"></canvas>
+      <div class="empty hidden" id="empty"><div class="card" id="emptycard"></div></div>
+    </div>
+    <div class="drawer" id="drawer">
+      <div class="drawer-tabs" id="drawertabs"></div>
+      <div class="drawer-body" id="drawerbody"></div>
+    </div>
+    <div class="audit hidden" id="audit"></div>
+  </main>
 </div>
-
-<div id="wrap"><div id="chart"></div><canvas id="overlay"></canvas></div>
-<div id="panels"></div>
 
 <script src="store_data.js"></script>
 <script>
-(function () {
-  "use strict";
-  var COLORS = { Gaps2:"#58a6ff", HFTZones2:"#d2a8ff", VolTicksPOC2:"#ffa657", aVolCellPOI2:"#3fb950", BigTrap2:"#f778ba" };
-  var DIFF = { MISSING:"#f85149", GEOMETRY_DIFF:"#f0883e", TIMESTAMP_DIFF:"#d29922", MATCHED:"#8b949e" };
-  var ATLAS = { add:"#3fb950", rem:"#f85149", mod:"#d29922", common:"#8b949e" };
-  var S = { data:null, mode:"parity", cfg:null, srcs:{python:true,nt8:true}, code:"",
-            diffs:[], diffi:-1, atlasA:null, atlasB:null, atlasZones:[] };
+(function(){
+"use strict";
+var D=window.STORE_DATA;
+var IND_COLOR={Gaps2:"#58a6ff",HFTZones2:"#d2a8ff",VolTicksPOC2:"#e3a857",aVolCellPOI2:"#3fb950",BigTrap2:"#f778ba"};
+var DIFF={MISSING:"#f0616d",GEOMETRY_DIFF:"#f0883e",TIMESTAMP_DIFF:"#d9a441",MATCHED:"#7d8695",MATURITY_TAIL:"#40c4c4"};
+var ATL={add:"#3fb950",rem:"#f0616d",mod:"#d9a441",common:"#7d8695"};
+var INTEG={api_verified:"c-ok",recomputed_exact:"c-ok",roundtrip_verified:"c-info",persisted:"c-gray",computed:"c-gray",stale:"c-warn",failed:"c-err"};
+var PAR={parity_exact:"c-ok",parity_covered:"c-cyan",parity_pending:"c-warn",parity_failed:"c-err"};
 
-  var chartEl = document.getElementById("chart"), overlay = document.getElementById("overlay");
-  var chart = LightweightCharts.createChart(chartEl, {
-    layout:{ background:{color:"#0d1117"}, textColor:"#8b949e" },
-    grid:{ vertLines:{color:"#161b22"}, horzLines:{color:"#161b22"} },
-    timeScale:{ timeVisible:true, secondsVisible:true }, crosshair:{ mode:0 }
+var S={mode:"parity",cfg:null,drawerTab:"disc",diffs:[],di:-1,hl:null,atlasZones:[]};
+
+var chartEl=document.getElementById("chart"),overlay=document.getElementById("overlay");
+var chart=LightweightCharts.createChart(chartEl,{
+  layout:{background:{color:"#0b0e14"},textColor:"#8b95a5",fontFamily:"system-ui"},
+  grid:{vertLines:{color:"#161b25"},horzLines:{color:"#161b25"}},
+  timeScale:{timeVisible:true,secondsVisible:true},crosshair:{mode:0},
+  rightPriceScale:{borderColor:"#232a37"}});
+var series=chart.addCandlestickSeries({upColor:"#2ea043",downColor:"#d1414c",wickUpColor:"#2ea043",wickDownColor:"#d1414c",borderVisible:false});
+
+function el(id){return document.getElementById(id);}
+function fmtT(t){return new Date(t*1000).toISOString().replace("T"," ").slice(0,19)+"Z";}
+function esc(s){return String(s==null?"":s).replace(/[&<>]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;"}[c];});}
+
+// ---- human labels ----
+function cfgDiff(c){
+  var d=(D.defaults||{})[c.indicator]||{};var out=[];
+  Object.keys(c.params||{}).sort().forEach(function(k){
+    if(JSON.stringify(c.params[k])!==JSON.stringify(d[k])) out.push(k+"="+c.params[k]);
   });
-  var series = chart.addCandlestickSeries({ upColor:"#2ea043", downColor:"#da3633",
-    wickUpColor:"#2ea043", wickDownColor:"#da3633", borderVisible:false });
+  return out;
+}
+function cfgLabel(c){var diff=cfgDiff(c);return diff.length?diff.join(" · "):"defaults";}
+function chip(state,map){var cls=map[state]||"c-gray";return "<span class='chip dot "+cls+"'>"+esc(state)+"</span>";}
 
-  function sizeOverlay() {
-    var r = chartEl.getBoundingClientRect();
-    overlay.width = r.width*devicePixelRatio; overlay.height = r.height*devicePixelRatio;
-    overlay.style.width = r.width+"px"; overlay.style.height = r.height+"px";
-  }
-  function setCandles(ckey) {
-    var bs = S.data.bar_series[ckey];
-    series.setData(bs ? bs.candles.map(function(c){return {time:c.time,open:c.open,high:c.high,low:c.low,close:c.close};}) : []);
-  }
-  function rect(ctx, z, col, fill, dash) {
-    var tsc = chart.timeScale(), vr = tsc.getVisibleRange(); if (!vr) return;
-    if (z.t1 < vr.from || z.t0 > vr.to) return;
-    var x0 = tsc.timeToCoordinate(Math.max(z.t0,vr.from)), x1 = tsc.timeToCoordinate(Math.min(z.t1,vr.to));
-    if (x0===null) x0=0; if (x1===null) x1=chartEl.clientWidth;
-    var yT = series.priceToCoordinate(z.top), yB = series.priceToCoordinate(z.bottom);
-    if (yT===null||yB===null) return;
-    var h = Math.max(1, yB-yT), w = Math.max(1, x1-x0);
-    ctx.setLineDash(dash?[5,3]:[]);
-    if (fill) { ctx.fillStyle = col+"33"; ctx.fillRect(x0,yT,w,h); }
-    ctx.strokeStyle = fill ? col+"cc" : col; ctx.lineWidth = fill?1:1.4;
-    ctx.strokeRect(x0+0.5,yT+0.5,w,h); ctx.lineWidth=1; ctx.setLineDash([]);
-  }
-  var raf=null;
-  function requestDraw(){ if(raf)return; raf=requestAnimationFrame(function(){raf=null;draw();}); }
-  function draw() {
-    var ctx = overlay.getContext("2d");
-    ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
-    ctx.clearRect(0,0,overlay.width,overlay.height);
-    if (S.mode==="atlas") return drawAtlas(ctx);
-    if (!S.cfg) return;
-    var base = COLORS[S.cfg.indicator]||"#8b949e";
-    S.cfg.zones.forEach(function(z){
-      if (!S.srcs[z.source]) return;
-      var col = base, dash = z.source==="nt8";
-      if (S.cfg.parity) col = z.source==="python" ? (z.match?base:DIFF.MISSING) : base;
-      rect(ctx, z, col, z.source==="python", dash);
-    });
-    if (S.diffi>=0 && S.diffs[S.diffi]) {
-      var d = S.diffs[S.diffi];
-      if (d.zone) { ctx.save(); rect(ctx, d.zone, "#ffffff", false, false); ctx.restore(); }
-    }
-  }
-  function drawAtlas(ctx) {
-    S.atlasZones.forEach(function(z){
-      var on = (z.cls==="add"&&document.getElementById("a-added").checked)
-            || (z.cls==="rem"&&document.getElementById("a-removed").checked)
-            || (z.cls==="mod"&&document.getElementById("a-modified").checked)
-            || (z.cls==="common"&&document.getElementById("a-common").checked);
-      if (on) rect(ctx, z, ATLAS[z.cls], z.cls!=="rem", z.cls==="rem");
-    });
-  }
-  chart.timeScale().subscribeVisibleTimeRangeChange(requestDraw);
-  chart.timeScale().subscribeVisibleLogicalRangeChange(requestDraw);
-  window.addEventListener("resize", function(){ chart.applyOptions({width:chartEl.clientWidth,height:chartEl.clientHeight}); sizeOverlay(); requestDraw(); });
-
-  function fmtT(t){ return new Date(t*1000).toISOString().replace("T"," ").slice(0,19)+"Z"; }
-
-  // ---------------- PARITY REVIEW ----------------
-  function loadCfg(i) {
-    S.cfg = S.data.configs[i];
-    setCandles(S.cfg.candles_key);
-    buildCodeFilter(); computeDiffs();
-    document.getElementById("idlabel").innerHTML =
-      "<b>"+S.cfg.indicator+"</b> · "+S.cfg.contract+" · bar <b>"+S.cfg.bar_key+"</b> · config_id <b>"+
-      S.cfg.config_id+"</b> · kernel_id "+S.cfg.kernel_id+" · integridad <span class='st-"+S.cfg.integrity_state+"'>"+
-      S.cfg.integrity_state+"</span> · paridad <span class='st-"+S.cfg.parity_state+"'>"+S.cfg.parity_state+"</span>";
-    renderParityPanels(); chart.timeScale().fitContent(); requestDraw();
-  }
-  function computeDiffs() {
-    S.diffs = []; S.diffi = -1;
-    if (!S.cfg.parity) return;
-    S.cfg.parity.diagnostics.forEach(function(d){
-      if (d.code==="MATCHED") return;
-      var zone = null;
-      if (d.py_id) zone = S.cfg.zones.find(function(z){return z.source==="python"&&String(z.zone_id)===String(d.py_id);});
-      if (!zone && d.nt8_id) zone = S.cfg.zones.find(function(z){return z.source==="nt8"&&String(z.zone_id)===String(d.nt8_id);});
-      if (S.code && d.code!==S.code) return;
-      S.diffs.push({code:d.code, detail:d.detail, zone:zone, py_id:d.py_id, nt8_id:d.nt8_id});
-    });
-  }
-  function gotoDiff(step) {
-    if (!S.diffs.length) return;
-    S.diffi = (S.diffi+step+S.diffs.length)%S.diffs.length;
-    var d = S.diffs[S.diffi];
-    if (d.zone) { var span=Math.max(600,(d.zone.t1-d.zone.t0)*1.5);
-      chart.timeScale().setVisibleRange({from:d.zone.t0-span*0.3, to:d.zone.t0+span}); }
-    renderParityPanels(); requestDraw();
-  }
-  function buildCodeFilter() {
-    var sel = document.getElementById("codefilter");
-    sel.innerHTML = "<option value=''>todos los códigos</option>";
-    if (!S.cfg.parity) return;
-    var codes = {}; S.cfg.parity.diagnostics.forEach(function(d){ if(d.code!=="MATCHED") codes[d.code]=1; });
-    Object.keys(codes).sort().forEach(function(c){ var o=document.createElement("option"); o.value=c; o.textContent=c; sel.appendChild(o); });
-  }
-  function renderParityPanels() {
-    var p = document.getElementById("panels");
-    var par = S.cfg.parity;
-    var gateH = par ? "<span class='gate-"+par.summary.gate+"'>"+par.summary.gate+"</span> · py "+par.summary.py_zones+
-        " nt8 "+par.summary.nt8_zones+" match "+par.summary.matched_pairs
-        : "<span class='meta'>sin oráculo NT8 — este config es "+S.cfg.parity_state+" (correr build_viewer --oracle)</span>";
-    var cur = (S.diffi>=0&&S.diffs[S.diffi]) ? S.diffs[S.diffi] : null;
-    var curH = cur ? "<b class='mod'>"+cur.code+"</b> "+(cur.detail||"")+
-        (cur.py_id?" · py="+cur.py_id:"")+(cur.nt8_id?" · nt8="+cur.nt8_id:"") : "—";
-    p.innerHTML =
-      "<div class='panel'><h2>Paridad</h2><div>"+gateH+"</div>"+
-        "<div style='margin-top:6px'>discrepancia "+(S.diffs.length?(S.diffi+1)+"/"+S.diffs.length:"0")+": "+curH+"</div>"+
-        "<div style='margin-top:6px'><textarea class='note' id='invnote' placeholder='nota de investigación (no cambia el gate)'></textarea>"+
-        "<div><button id='markinv'>marcar investigada</button> <span class='meta' id='invmsg'></span></div></div></div>"+
-      "<div class='panel'><h2>Parámetros</h2><pre>"+JSON.stringify(S.cfg.params,null,1)+"</pre>"+
-        "<div class='meta' style='margin-top:6px'>digests: zone "+S.cfg.digests.zone+" · event "+S.cfg.digests.event+"</div></div>"+
-      "<div class='panel' style='flex-basis:100%'><h2>Zonas <span class='meta'>"+S.cfg.zones.length+"</span></h2>"+zoneTable()+"</div>";
-    document.getElementById("markinv").addEventListener("click", function(){
-      var n=document.getElementById("invnote").value;
-      document.getElementById("invmsg").textContent = "marcada"+(n?" ("+n.length+" car)":"")+" — solo anotación local, el gate automático no cambia.";
-    });
-    bindZoneRows();
-  }
-  function zoneTable() {
-    var h="<table><tr><th>id</th><th>src</th><th>tipo</th><th>top</th><th>bottom</th><th>desde</th><th>estado</th><th>touch</th><th>match</th></tr>";
-    S.cfg.zones.slice(0,600).forEach(function(z,i){
-      var orphan = S.cfg.parity && z.source==="python" && !z.match;
-      h += "<tr class='clickrow' data-zt='"+i+"'><td>"+(z.zone_id||"")+"</td><td>"+z.source+"</td><td>"+(z.kind||"")+
-        "</td><td>"+(+z.top).toFixed(5)+"</td><td>"+(+z.bottom).toFixed(5)+"</td><td>"+fmtT(z.t0)+
-        "</td><td>"+(z.state||"")+"</td><td>"+(z.touches||0)+"</td><td class='"+(orphan?"rem":"")+"'>"+(z.match||(orphan?"HUÉRFANA":"—"))+"</td></tr>";
-    });
-    return h+"</table>";
-  }
-  function bindZoneRows() {
-    document.querySelectorAll("tr[data-zt]").forEach(function(tr){
-      tr.addEventListener("click", function(){
-        var z = S.cfg.zones[+tr.dataset.zt], span=Math.max(600,(z.t1-z.t0)*1.5);
-        chart.timeScale().setVisibleRange({from:z.t0-span*0.2, to:z.t0+span});
+// ---- sidebar tree ----
+function buildTree(){
+  var q=(el("filter").value||"").toLowerCase();
+  var root={};
+  D.configs.forEach(function(c,i){
+    if(q){var hay=(c.indicator+" "+c.contract+" "+c.bar_key+" "+cfgLabel(c)+" "+c.config_id).toLowerCase();if(hay.indexOf(q)<0)return;}
+    (((root[c.indicator]=root[c.indicator]||{})[c.contract]=root[c.indicator][c.contract]||{})[c.bar_key]=root[c.indicator][c.contract][c.bar_key]||[]).push(i);
+  });
+  var h="";
+  Object.keys(root).sort().forEach(function(ind){
+    h+="<div class='grp lvl1 open'><div class='row'><span class='caret'>▶</span><span style='color:"+(IND_COLOR[ind]||"#fff")+"'>●</span> "+esc(ind)+"</div><div class='kids'>";
+    Object.keys(root[ind]).sort().forEach(function(ct){
+      h+="<div class='grp lvl2 open'><div class='row'><span class='caret'>▶</span>"+esc(ct)+"</div><div class='kids'>";
+      Object.keys(root[ind][ct]).sort().forEach(function(bk){
+        h+="<div class='grp lvl3 open'><div class='row'><span class='caret'>▶</span>"+esc(bk)+"</div><div class='kids'>";
+        root[ind][ct][bk].forEach(function(i){
+          var c=D.configs[i];
+          h+="<div class='cfg' data-i='"+i+"'><span class='lab'>"+esc(cfgLabel(c))+"</span>"+
+             "<span class='sub'><span class='mono'>"+c.config_id.slice(0,8)+"</span>"+chip(c.parity_state,PAR)+"<span class='mono'>"+c.n_zones+"z</span></span></div>";
+        });
+        h+="</div></div>";
       });
+      h+="</div></div>";
     });
-  }
-  function exportCSV() {
-    if (!S.cfg) return;
-    var rows = [["zone_id","source","kind","top","bottom","t0_utc","t1_utc","state","touches","match"]];
-    S.cfg.zones.forEach(function(z){ rows.push([z.zone_id,z.source,z.kind,z.top,z.bottom,fmtT(z.t0),fmtT(z.t1),z.state,z.touches||0,z.match||""]); });
-    var csv = rows.map(function(r){return r.join(",");}).join("\n");
-    var a = document.createElement("a");
-    a.href = URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
-    a.download = S.cfg.indicator+"_"+S.cfg.config_id+"_zones.csv"; a.click();
-  }
+    h+="</div></div>";
+  });
+  el("tree").innerHTML=h||"<div style='padding:12px;color:var(--dim2)'>sin resultados</div>";
+  el("tree").querySelectorAll(".grp>.row").forEach(function(r){r.onclick=function(){r.parentElement.classList.toggle("open");};});
+  el("tree").querySelectorAll(".cfg").forEach(function(d){d.onclick=function(){selectCfg(+d.dataset.i);};});
+  markSel();
+}
+function markSel(){el("tree").querySelectorAll(".cfg").forEach(function(d){d.classList.toggle("sel",S.cfg&&+d.dataset.i===S.cfgIndex);});}
 
-  // ---------------- PARAMETER ATLAS ----------------
-  function atlasKey(z){ return z.t0 + "|" + z.side; }
-  function loadAtlas() {
-    var a = S.data.configs[+document.getElementById("atlasA").value];
-    var b = S.data.configs[+document.getElementById("atlasB").value];
-    S.atlasA = a; S.atlasB = b;
-    setCandles(a.candles_key);
-    var az = a.zones.filter(function(z){return z.source==="python";});
-    var bz = b.zones.filter(function(z){return z.source==="python";});
-    var bmap = {}; bz.forEach(function(z){ bmap[atlasKey(z)] = z; });
-    var amap = {}; az.forEach(function(z){ amap[atlasKey(z)] = z; });
-    var out = [];
-    az.forEach(function(z){
-      var m = bmap[atlasKey(z)];
-      if (!m) out.push(Object.assign({cls:"rem"}, z));
-      else if (Math.abs(m.top-z.top)>1e-9 || Math.abs(m.bottom-z.bottom)>1e-9) out.push(Object.assign({cls:"mod"}, m));
-      else out.push(Object.assign({cls:"common"}, z));
-    });
-    bz.forEach(function(z){ if (!amap[atlasKey(z)]) out.push(Object.assign({cls:"add"}, z)); });
-    S.atlasZones = out;
-    var c = {add:0,rem:0,mod:0,common:0}; out.forEach(function(z){c[z.cls]++;});
-    document.getElementById("idlabel").innerHTML =
-      "<b>"+a.indicator+"</b> · A config_id <b>"+a.config_id+"</b> ("+az.length+" zonas) vs B <b>"+b.config_id+"</b> ("+bz.length+" zonas)";
-    renderAtlasPanels(a,b,c); chart.timeScale().fitContent(); requestDraw();
-  }
-  function paramDiff(a,b) {
-    var keys = Object.keys(Object.assign({},a.params,b.params)).sort(), h="";
-    keys.forEach(function(k){
-      var va=a.params[k], vb=b.params[k];
-      if (JSON.stringify(va)!==JSON.stringify(vb))
-        h += "<tr><td>"+k+"</td><td class='rem'>"+JSON.stringify(va)+"</td><td class='add'>"+JSON.stringify(vb)+"</td></tr>";
-    });
-    return h || "<tr><td colspan=3 class='meta'>(mismos parámetros)</td></tr>";
-  }
-  function renderAtlasPanels(a,b,c) {
-    document.getElementById("panels").innerHTML =
-      "<div class='panel'><h2>Diferencia de zonas</h2><table>"+
-        "<tr><td><span class='swatch' style='background:"+ATLAS.add+"'></span>agregadas (solo B)</td><td class='add'>"+c.add+"</td></tr>"+
-        "<tr><td><span class='swatch' style='background:"+ATLAS.rem+"'></span>removidas (solo A)</td><td class='rem'>"+c.rem+"</td></tr>"+
-        "<tr><td><span class='swatch' style='background:"+ATLAS.mod+"'></span>geometría modificada</td><td class='mod'>"+c.mod+"</td></tr>"+
-        "<tr><td>comunes</td><td>"+c.common+"</td></tr></table></div>"+
-      "<div class='panel'><h2>Diff de parámetros (A→B)</h2><table><tr><th>param</th><th>A</th><th>B</th></tr>"+paramDiff(a,b)+"</table></div>";
-  }
-  function fillAtlasSelectors(indicator) {
-    var A=document.getElementById("atlasA"), B=document.getElementById("atlasB");
-    A.innerHTML=""; B.innerHTML="";
-    S.data.configs.forEach(function(cf,i){
-      if (cf.indicator!==indicator) return;
-      [A,B].forEach(function(sel){ var o=document.createElement("option"); o.value=i;
-        o.textContent=cf.config_id+" · "+cf.bar_key+" · "+cf.n_zones+"z"; sel.appendChild(o); });
-    });
-    if (B.options.length>1) B.selectedIndex=1;
-  }
+// ---- chart / overlay ----
+function sizeOverlay(){var r=chartEl.getBoundingClientRect();overlay.width=r.width*devicePixelRatio;overlay.height=r.height*devicePixelRatio;overlay.style.width=r.width+"px";overlay.style.height=r.height+"px";}
+function setCandles(k){var bs=D.bar_series[k];series.setData(bs?bs.candles.map(function(c){return{time:c.time,open:c.open,high:c.high,low:c.low,close:c.close};}):[]);}
+function zRect(ctx,z,col,fill,dash){
+  var ts=chart.timeScale(),vr=ts.getVisibleRange();if(!vr)return;
+  if(z.t1<vr.from||z.t0>vr.to)return;
+  var x0=ts.timeToCoordinate(Math.max(z.t0,vr.from)),x1=ts.timeToCoordinate(Math.min(z.t1,vr.to));
+  if(x0==null)x0=0;if(x1==null)x1=chartEl.clientWidth;
+  var yT=series.priceToCoordinate(z.top),yB=series.priceToCoordinate(z.bottom);if(yT==null||yB==null)return;
+  var w=Math.max(1,x1-x0),ht=Math.max(1,yB-yT);
+  ctx.setLineDash(dash?[5,3]:[]);
+  if(fill){ctx.fillStyle=col+"2b";ctx.fillRect(x0,yT,w,ht);}
+  var hot=S.hl&&z.zone_key&&z.zone_key===S.hl;
+  ctx.strokeStyle=hot?"#ffffff":(fill?col+"cc":col);ctx.lineWidth=hot?2:(fill?1:1.4);
+  ctx.strokeRect(x0+.5,yT+.5,w,ht);ctx.lineWidth=1;ctx.setLineDash([]);
+}
+var raf=null;function draw(){if(raf)return;raf=requestAnimationFrame(function(){raf=null;paint();});}
+function paint(){
+  var ctx=overlay.getContext("2d");ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);ctx.clearRect(0,0,overlay.width,overlay.height);
+  if(S.mode==="atlas")return paintAtlas(ctx);
+  if(!S.cfg)return;var base=IND_COLOR[S.cfg.indicator]||"#8b95a5";
+  S.cfg.zones.forEach(function(z){
+    var col=base,dash=z.source==="nt8";
+    if(S.cfg.parity&&z.source==="python")col=z.match?base:DIFF.MISSING;
+    zRect(ctx,z,col,z.source==="python",dash);
+  });
+}
+function paintAtlas(ctx){
+  var f={add:el("a-add").checked,rem:el("a-rem").checked,mod:el("a-mod").checked,common:el("a-com").checked};
+  S.atlasZones.forEach(function(z){if(f[z.cls])zRect(ctx,z,ATL[z.cls],z.cls!=="rem",z.cls==="rem");});
+}
+chart.timeScale().subscribeVisibleTimeRangeChange(draw);
+chart.timeScale().subscribeVisibleLogicalRangeChange(draw);
+window.addEventListener("resize",function(){sizeOverlay();draw();});
 
-  // ---------------- STORE AUDIT ----------------
-  function renderAudit() {
-    var byI={}; S.data.catalog.forEach(function(r){ (byI[r.indicator]=byI[r.indicator]||[]).push(r); });
-    var h="<div class='panel' style='flex-basis:100%'><h2>Catálogo del store <span class='meta'>"+S.data.catalog.length+" particiones</span></h2>"+
-      "<table><tr><th>indicador</th><th>config_id</th><th>bar</th><th>contrato</th><th>zonas</th><th>eventos</th><th>obs</th><th>integridad</th><th>paridad</th></tr>";
-    S.data.catalog.forEach(function(r,i){
-      h += "<tr class='clickrow' data-au='"+i+"'><td>"+r.indicator+"</td><td>"+r.config_id+"</td><td>"+r.bar_key+
-        "</td><td>"+r.contract+"</td><td>"+r.n_zones+"</td><td>"+r.n_events+"</td><td>"+r.n_observations+
-        "</td><td class='st-"+r.integrity_state+"'>"+r.integrity_state+"</td><td class='st-"+r.parity_state+"'>"+r.parity_state+"</td></tr>";
+// ---- select config (Parity Review) ----
+function selectCfg(i){
+  S.cfg=D.configs[i];S.cfgIndex=i;S.mode="parity";applyMode();
+  setCandles(S.cfg.candles_key);computeDiffs();
+  renderCtx();renderDrawer();markSel();chart.timeScale().fitContent();draw();
+  el("empty").classList.toggle("hidden",true);
+}
+function computeDiffs(){
+  S.diffs=[];S.di=-1;if(!S.cfg||!S.cfg.parity)return;
+  S.cfg.parity.diagnostics.forEach(function(d){
+    if(d.code==="MATCHED")return;
+    var zone=null;
+    if(d.py_id)zone=S.cfg.zones.find(function(z){return z.source==="python"&&String(z.zone_id)===String(d.py_id);});
+    if(!zone&&d.nt8_id)zone=S.cfg.zones.find(function(z){return z.source==="nt8"&&String(z.zone_id)===String(d.nt8_id);});
+    S.diffs.push({code:d.code,detail:d.detail,zone:zone,py_id:d.py_id,nt8_id:d.nt8_id});
+  });
+}
+function gotoDiff(step){
+  if(!S.diffs.length)return;S.di=(S.di+step+S.diffs.length)%S.diffs.length;
+  var d=S.diffs[S.di];S.hl=d.zone?d.zone.zone_key:null;
+  if(d.zone){var sp=Math.max(600,(d.zone.t1-d.zone.t0)*1.6);chart.timeScale().setVisibleRange({from:d.zone.t0-sp*.3,to:d.zone.t0+sp});}
+  if(S.drawerTab!=="disc"){S.drawerTab="disc";}renderDrawer();draw();
+}
+
+// ---- context bar ----
+function renderCtx(){
+  var c=S.cfg;
+  if(!c){el("ctx").innerHTML="<span>"+D.meta.n_partitions+" particiones · "+esc(D.meta.chart_tz)+"</span>";return;}
+  el("ctx").innerHTML="<span><b>"+esc(c.indicator)+"</b> "+esc(cfgLabel(c))+"</span>"+
+    "<span>"+esc(c.contract)+" · <b>"+esc(c.bar_key)+"</b></span>"+
+    "<span class='mono'>"+c.config_id.slice(0,10)+"</span>"+chip(c.integrity_state,INTEG)+chip(c.parity_state,PAR);
+}
+
+// ---- drawer ----
+var DTABS_PARITY=[["disc","Discrepancias"],["zones","Zonas"],["params","Parámetros"],["manifest","Manifest"]];
+var DTABS_ATLAS=[["adiff","Diff de zonas"],["aparams","Diff de parámetros"]];
+function renderDrawer(){
+  var tabs=S.mode==="atlas"?DTABS_ATLAS:DTABS_PARITY;
+  if(!tabs.some(function(t){return t[0]===S.drawerTab;}))S.drawerTab=tabs[0][0];
+  var th="";tabs.forEach(function(t){
+    var n="";
+    if(t[0]==="disc"&&S.cfg&&S.cfg.parity)n="<span class='n'>"+S.diffs.length+"</span>";
+    if(t[0]==="zones"&&S.cfg)n="<span class='n'>"+S.cfg.zones.length+"</span>";
+    th+="<div class='dtab"+(t[0]===S.drawerTab?" active":"")+"' data-t='"+t[0]+"'>"+t[1]+n+"</div>";
+  });
+  th+="<button class='icon' id='drawercollapse' style='margin-left:auto'>▾</button>";
+  el("drawertabs").innerHTML=th;
+  el("drawertabs").querySelectorAll(".dtab").forEach(function(d){d.onclick=function(){S.drawerTab=d.dataset.t;renderDrawer();};});
+  el("drawercollapse").onclick=function(){el("drawer").classList.toggle("collapsed");};
+  var b=el("drawerbody");b.className="drawer-body";
+  if(S.mode==="atlas"){b.innerHTML=S.drawerTab==="adiff"?atlasDiffPanel():atlasParamPanel();b.classList.add("pad");return;}
+  if(!S.cfg){b.innerHTML="";return;}
+  if(S.drawerTab==="disc")b.innerHTML=discPanel();
+  else if(S.drawerTab==="zones")b.innerHTML=zonesTable();
+  else if(S.drawerTab==="params"){b.classList.add("pad");b.innerHTML=paramsPanel();}
+  else{b.classList.add("pad");b.innerHTML=manifestPanel();}
+  bindDrawer();
+}
+function discPanel(){
+  if(!S.cfg.parity)return "<div class='empty' style='height:auto;padding:24px'><div class='card'>Sin oráculo NT8 — <b>"+S.cfg.parity_state+"</b>.<br>Generá el export NT8 y corré <span class='mono'>build_viewer --oracle</span>.</div></div>";
+  var s=S.cfg.parity.summary,cur=(S.di>=0&&S.diffs[S.di])?S.diffs[S.di]:null;
+  var detail=cur?"<h4 style='color:"+(DIFF[cur.code]||"#fff")+"'>"+esc(cur.code)+"</h4><div class='kv'>"+
+    "<span>detalle</span><span>"+esc(cur.detail||"")+"</span>"+
+    (cur.py_id?"<span>py_id</span><span class='mono'>"+esc(cur.py_id)+"</span>":"")+
+    (cur.nt8_id?"<span>nt8_id</span><span class='mono'>"+esc(cur.nt8_id)+"</span>":"")+"</div>":
+    "<div style='color:var(--dim2)'>sin discrepancia seleccionada</div>";
+  var list=S.diffs.map(function(d,i){return "<tr data-di='"+i+"' class="+(i===S.di?"'hl'":"''")+"><td style='color:"+(DIFF[d.code]||"#fff")+"'>"+esc(d.code)+"</td><td>"+esc((d.detail||"").slice(0,60))+"</td></tr>";}).join("");
+  return "<div class='disc'><div><div class='nav'><button class='icon' id='dprev'>◀</button><button class='icon' id='dnext'>▶</button>"+
+    "<span class='counter'>"+(S.diffs.length?(S.di+1)+" / "+S.diffs.length:"0")+" discrepancias</span>"+
+    "<span style='margin-left:auto;color:var(--dim2)'>gate <b style='color:"+(s.gate==="PASS"?"var(--ok)":s.gate==="FAIL"?"var(--err)":"var(--warn)")+"'>"+s.gate+"</b> · "+s.matched_pairs+"/"+s.py_zones+" match · "+(s.immature_tail||0)+" cola</span></div>"+
+    "<table><thead><tr><th>código</th><th>detalle</th></tr></thead><tbody>"+(list||"<tr><td colspan=2 style='color:var(--dim2)'>sin discrepancias (todo MATCHED)</td></tr>")+"</tbody></table></div>"+
+    "<div class='detail'>"+detail+"<div style='margin-top:12px'><button id='exportcsv'>export CSV zonas</button></div>"+
+    "<div style='margin-top:8px;color:var(--dim2);font-size:11px'>◀ ▶ o flechas del teclado para navegar</div></div></div>";
+}
+function zonesTable(){
+  var rows=S.cfg.zones.slice(0,800).map(function(z,i){
+    var orphan=S.cfg.parity&&z.source==="python"&&!z.match;
+    return "<tr data-zk='"+esc(z.zone_key||"")+"' data-t0='"+z.t0+"' data-t1='"+z.t1+"'><td class='mono'>"+esc(z.zone_id)+"</td><td>"+z.source+"</td><td>"+esc(z.kind||"")+
+      "</td><td>"+(+z.top).toFixed(5)+"</td><td>"+(+z.bottom).toFixed(5)+"</td><td>"+fmtT(z.t0)+"</td><td>"+esc(z.state||"")+"</td><td>"+(z.touches||0)+
+      "</td><td style='color:"+(orphan?"var(--err)":"inherit")+"'>"+esc(z.match||(orphan?"HUÉRFANA":"—"))+"</td></tr>";
+  }).join("");
+  return "<table><thead><tr><th>id</th><th>src</th><th>tipo</th><th>top</th><th>bottom</th><th>desde</th><th>estado</th><th>touch</th><th>match</th></tr></thead><tbody>"+rows+"</tbody></table>";
+}
+function paramsPanel(){
+  var diff=cfgDiff(S.cfg);
+  return "<div style='display:flex;gap:24px;flex-wrap:wrap'><div><h4 style='margin:0 0 6px;color:var(--dim)'>Diff vs defaults</h4>"+
+    (diff.length?"<pre>"+esc(diff.join("\n"))+"</pre>":"<span style='color:var(--dim2)'>defaults</span>")+
+    "</div><div><h4 style='margin:0 0 6px;color:var(--dim)'>Params completos</h4><pre>"+esc(JSON.stringify(S.cfg.params,null,1))+"</pre></div></div>";
+}
+function manifestPanel(){
+  var c=S.cfg,d=c.digests||{};
+  return "<div class='kv' style='display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:12px'>"+
+    kv("run_id",c.run_id)+kv("config_id",c.config_id)+kv("kernel_id",c.kernel_id)+kv("dataset_id",c.dataset_id)+
+    kv("bar_key",c.bar_key)+kv("contrato",c.contract)+kv("integridad",c.integrity_state)+kv("paridad",c.parity_state)+
+    kv("digest zone",d.zone)+kv("digest event",d.event)+kv("digest obs",d.observation)+kv("zonas / eventos",c.n_zones+" / "+c.n_events)+"</div>";
+}
+function kv(k,v){return "<span style='color:var(--dim)'>"+k+"</span><span class='mono'>"+esc(v)+"</span>";}
+function bindDrawer(){
+  el("drawerbody").querySelectorAll("tr[data-zk]").forEach(function(tr){
+    tr.onclick=function(){var t0=+tr.dataset.t0,t1=+tr.dataset.t1,sp=Math.max(600,(t1-t0)*1.6);S.hl=tr.dataset.zk;chart.timeScale().setVisibleRange({from:t0-sp*.2,to:t0+sp});draw();};
+    tr.onmouseenter=function(){S.hl=tr.dataset.zk;draw();};
+  });
+  el("drawerbody").querySelectorAll("tr[data-di]").forEach(function(tr){tr.onclick=function(){S.di=+tr.dataset.di;gotoDiff(0);};});
+  var p=el("dprev"),n=el("dnext"),x=el("exportcsv");
+  if(p)p.onclick=function(){gotoDiff(-1);};if(n)n.onclick=function(){gotoDiff(1);};
+  if(x)x.onclick=exportCSV;
+}
+function exportCSV(){
+  var rows=[["zone_key","zone_id","source","kind","top","bottom","t0_utc","t1_utc","state","touches","match"]];
+  S.cfg.zones.forEach(function(z){rows.push([z.zone_key,z.zone_id,z.source,z.kind,z.top,z.bottom,fmtT(z.t0),fmtT(z.t1),z.state,z.touches||0,z.match||""]);});
+  var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([rows.map(function(r){return r.join(",");}).join("\n")],{type:"text/csv"}));
+  a.download=S.cfg.indicator+"_"+S.cfg.config_id.slice(0,8)+"_zones.csv";a.click();
+}
+
+// ---- Parameter Atlas ----
+function fillAtlas(){
+  var ind=S.cfg?S.cfg.indicator:D.configs[0].indicator;
+  var A=el("atlasA"),B=el("atlasB");A.innerHTML="";B.innerHTML="";
+  D.configs.forEach(function(c,i){if(c.indicator!==ind)return;
+    [A,B].forEach(function(sel){var o=document.createElement("option");o.value=i;o.textContent=cfgLabel(c)+" · "+c.bar_key+" · "+c.n_zones+"z";sel.appendChild(o);});});
+  if(S.cfg){A.value=S.cfgIndex;}
+  if(B.options.length>1&&B.value===A.value)B.selectedIndex=Math.min(1,B.options.length-1);
+  loadAtlas();
+}
+function akey(z){return z.t0+"|"+z.side;}
+function loadAtlas(){
+  var a=D.configs[+el("atlasA").value],b=D.configs[+el("atlasB").value];
+  if(!a||!b)return;setCandles(a.candles_key);
+  var az=a.zones.filter(function(z){return z.source==="python";}),bz=b.zones.filter(function(z){return z.source==="python";});
+  var bm={};bz.forEach(function(z){bm[akey(z)]=z;});var am={};az.forEach(function(z){am[akey(z)]=z;});
+  var out=[];az.forEach(function(z){var m=bm[akey(z)];if(!m)out.push(Object.assign({cls:"rem"},z));else if(Math.abs(m.top-z.top)>1e-9||Math.abs(m.bottom-z.bottom)>1e-9)out.push(Object.assign({cls:"mod"},m));else out.push(Object.assign({cls:"common"},z));});
+  bz.forEach(function(z){if(!am[akey(z)])out.push(Object.assign({cls:"add"},z));});
+  S.atlasZones=out;S.atlasA=a;S.atlasB=b;
+  el("ctx").innerHTML="<span><b>"+esc(a.indicator)+"</b> Atlas</span><span>A "+esc(cfgLabel(a))+"</span><span>B "+esc(cfgLabel(b))+"</span>";
+  renderDrawer();chart.timeScale().fitContent();draw();
+}
+function atlasCounts(){var c={add:0,rem:0,mod:0,common:0};S.atlasZones.forEach(function(z){c[z.cls]++;});return c;}
+function atlasDiffPanel(){var c=atlasCounts();
+  return "<table style='max-width:360px'><tbody>"+
+    row2(ATL.add,"agregadas (solo B)",c.add)+row2(ATL.rem,"removidas (solo A)",c.rem)+row2(ATL.mod,"geometría modificada",c.mod)+row2(ATL.common,"comunes",c.common)+"</tbody></table>";
+}
+function row2(col,lab,n){return "<tr><td><i style='display:inline-block;width:11px;height:11px;background:"+col+";border-radius:2px;margin-right:6px'></i>"+lab+"</td><td style='text-align:right'>"+n+"</td></tr>";}
+function atlasParamPanel(){
+  var a=S.atlasA,b=S.atlasB;if(!a||!b)return"";
+  var keys=Object.keys(Object.assign({},a.params,b.params)).sort(),h="";
+  keys.forEach(function(k){if(JSON.stringify(a.params[k])!==JSON.stringify(b.params[k]))h+="<tr><td>"+esc(k)+"</td><td style='color:var(--err)'>"+esc(JSON.stringify(a.params[k]))+"</td><td style='color:var(--ok)'>"+esc(JSON.stringify(b.params[k]))+"</td></tr>";});
+  return "<table><thead><tr><th>param</th><th>A</th><th>B</th></tr></thead><tbody>"+(h||"<tr><td colspan=3 style='color:var(--dim2)'>mismos parámetros</td></tr>")+"</tbody></table>";
+}
+
+// ---- Store Audit ----
+function renderAudit(){
+  var byI={};D.catalog.forEach(function(r){(byI[r.indicator]=byI[r.indicator]||[]).push(r);});
+  var h="<h3>Catálogo del store <span class='grpcount'>· "+D.catalog.length+" particiones · "+esc(D.meta.store)+"</span></h3>";
+  Object.keys(byI).sort().forEach(function(ind){
+    h+="<div style='margin-bottom:18px'><div style='color:"+(IND_COLOR[ind]||"#fff")+";font-weight:600;margin-bottom:6px'>"+esc(ind)+" <span class='grpcount'>"+byI[ind].length+"</span></div>";
+    h+="<table><thead><tr><th>config</th><th>contrato</th><th>bar</th><th>zonas</th><th>eventos</th><th>obs</th><th>integridad</th><th>paridad</th></tr></thead><tbody>";
+    byI[ind].forEach(function(r){
+      var ci=D.configs.findIndex(function(c){return c.run_id===r.run_id;});var c=D.configs[ci]||{};
+      h+="<tr data-i='"+ci+"'><td>"+esc(cfgLabel(c))+" <span class='mono' style='color:var(--dim2)'>"+r.config_id.slice(0,8)+"</span></td><td>"+esc(r.contract)+"</td><td>"+esc(r.bar_key)+
+        "</td><td>"+r.n_zones+"</td><td>"+r.n_events+"</td><td>"+r.n_observations+"</td><td>"+chip(r.integrity_state,INTEG)+"</td><td>"+chip(r.parity_state,PAR)+"</td></tr>";
     });
-    document.getElementById("panels").innerHTML = h+"</table></div>";
-    document.getElementById("idlabel").innerHTML = "store: <b>"+S.data.meta.store+"</b> · generado "+S.data.meta.generated_utc;
-    document.querySelectorAll("tr[data-au]").forEach(function(tr){
-      tr.addEventListener("click", function(){
-        var r = S.data.catalog[+tr.dataset.au];
-        var idx = S.data.configs.findIndex(function(cf){return cf.run_id===r.run_id;});
-        if (idx>=0){ document.getElementById("cfgsel").value=idx; setMode("parity"); loadCfg(idx); }
-      });
-    });
-  }
+    h+="</tbody></table></div>";
+  });
+  el("audit").innerHTML=h;
+  el("audit").querySelectorAll("tr[data-i]").forEach(function(tr){tr.onclick=function(){var i=+tr.dataset.i;if(i>=0)selectCfg(i);};});
+}
 
-  // ---------------- modos ----------------
-  function setMode(m) {
-    S.mode = m;
-    document.querySelectorAll(".tab").forEach(function(t){ t.classList.toggle("active", t.dataset.mode===m); });
-    document.getElementById("c-parity").classList.toggle("hidden", m!=="parity");
-    document.getElementById("c-atlas").classList.toggle("hidden", m!=="atlas");
-    document.getElementById("wrap").classList.toggle("hidden", m==="audit");
-    var ctx = overlay.getContext("2d"); ctx.clearRect(0,0,overlay.width,overlay.height);
-    if (m==="parity") loadCfg(+document.getElementById("cfgsel").value||0);
-    else if (m==="atlas") { fillAtlasSelectors(S.data.configs[0].indicator); loadAtlas(); }
-    else renderAudit();
-  }
+// ---- modes ----
+function applyMode(){
+  document.querySelectorAll(".tab").forEach(function(t){t.classList.toggle("active",t.dataset.mode===S.mode);});
+  el("audit").classList.toggle("hidden",S.mode!=="audit");
+  el("chartwrap").classList.toggle("hidden",S.mode==="audit");
+  el("drawer").classList.toggle("hidden",S.mode==="audit");
+  el("subbar").classList.toggle("show",S.mode==="atlas");
+  el("legend").innerHTML=S.mode==="atlas"
+    ?"<span><i style='background:"+ATL.add+"'></i>B</span><span><i style='background:"+ATL.rem+"'></i>A</span><span><i style='background:"+ATL.mod+"'></i>mod</span>"
+    :"<span><i style='background:#3fb95055;border:1px solid #3fb950'></i>Python</span><span><i style='border:1.4px dashed #8b95a5'></i>NT8</span>";
+  if(S.mode==="parity"){el("drawer").classList.remove("collapsed");}
+}
+function setMode(m){
+  S.mode=m;applyMode();
+  if(m==="audit"){renderAudit();return;}
+  if(m==="atlas"){fillAtlas();renderDrawer();return;}
+  if(!S.cfg){el("empty").classList.remove("hidden");el("emptycard").innerHTML="Elegí una config en el panel izquierdo para revisar su paridad.";}
+  else{selectCfg(S.cfgIndex);}
+}
 
-  function init(data) {
-    S.data = data;
-    document.getElementById("storemeta").textContent =
-      data.meta.n_partitions+" particiones · tz "+data.meta.chart_tz+" · "+data.meta.generated_utc.slice(0,19);
-    var sel = document.getElementById("cfgsel"); sel.innerHTML="";
-    data.configs.forEach(function(cf,i){ var o=document.createElement("option"); o.value=i;
-      o.textContent=cf.indicator+" · "+cf.config_id+" · "+cf.bar_key+" · "+cf.n_zones+"z · "+cf.parity_state; sel.appendChild(o); });
-    sel.addEventListener("change", function(){ loadCfg(+sel.value); });
-    document.querySelectorAll("#c-parity input[data-src]").forEach(function(c){
-      c.addEventListener("change", function(){ S.srcs[c.dataset.src]=c.checked; requestDraw(); }); });
-    document.getElementById("codefilter").addEventListener("change", function(e){ S.code=e.target.value; computeDiffs(); renderParityPanels(); requestDraw(); });
-    document.getElementById("prevdiff").addEventListener("click", function(){ gotoDiff(-1); });
-    document.getElementById("nextdiff").addEventListener("click", function(){ gotoDiff(1); });
-    document.getElementById("exportcsv").addEventListener("click", exportCSV);
-    document.getElementById("atlasA").addEventListener("change", loadAtlas);
-    document.getElementById("atlasB").addEventListener("change", loadAtlas);
-    ["a-added","a-removed","a-modified","a-common"].forEach(function(id){
-      document.getElementById(id).addEventListener("change", requestDraw); });
-    document.querySelectorAll(".tab").forEach(function(t){ t.addEventListener("click", function(){ setMode(t.dataset.mode); }); });
-    chart.applyOptions({ width:chartEl.clientWidth, height:chartEl.clientHeight }); sizeOverlay();
-    if (data.configs.length) setMode("parity"); else document.getElementById("storemeta").textContent="store vacío";
-  }
-
-  if (window.STORE_DATA) init(window.STORE_DATA);
-  else document.getElementById("storemeta").textContent = "sin store_data.js";
+// ---- wire ----
+function init(){
+  el("ctx").innerHTML="<span>"+D.meta.n_partitions+" particiones · tz "+esc(D.meta.chart_tz)+" · "+esc(D.meta.generated_utc.slice(0,19))+"</span>";
+  buildTree();
+  el("filter").oninput=buildTree;
+  el("sidetoggle").onclick=function(){el("aside").classList.toggle("collapsed");setTimeout(function(){sizeOverlay();draw();},130);};
+  document.querySelectorAll(".tab").forEach(function(t){t.onclick=function(){setMode(t.dataset.mode);};});
+  el("atlasA").onchange=loadAtlas;el("atlasB").onchange=loadAtlas;
+  ["a-add","a-rem","a-mod","a-com"].forEach(function(id){el(id).onchange=draw;});
+  document.addEventListener("keydown",function(e){if(S.mode==="parity"&&S.drawerTab==="disc"){if(e.key==="ArrowRight"){gotoDiff(1);e.preventDefault();}if(e.key==="ArrowLeft"){gotoDiff(-1);e.preventDefault();}}});
+  sizeOverlay();
+  // preferir la config con oráculo (parity_exact) para el arranque
+  var start=D.configs.findIndex(function(c){return c.parity;});
+  if(start<0)start=0;
+  if(D.configs.length){selectCfg(start);}else{el("empty").classList.remove("hidden");el("emptycard").innerHTML="Store vacío.";}
+}
+if(D&&D.configs)init();else document.getElementById("ctx").textContent="sin store_data.js";
 })();
 </script>
 </body>

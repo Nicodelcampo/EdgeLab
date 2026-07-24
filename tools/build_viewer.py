@@ -93,6 +93,7 @@ def main(argv=None):
 
     # candles por (contract, bar_key): cargar ticks del rango de cada partición
     bar_series = {}
+    bars_cache = {}
     tick_cache = {}
     configs = []
     for row in cat:
@@ -101,7 +102,8 @@ def main(argv=None):
         path = src.get("path")
         ckey = row["contract"] + "|" + row["bar_key"]
         tick_size = ticks_mod.instrument_spec(row["instrument"]).tick_size
-        if ckey not in bar_series and path and os.path.exists(path):
+        bars = bars_cache.get(ckey)
+        if bars is None and path and os.path.exists(path):
             tkey = (path, row["contract"], src.get("range_start_utc"), src.get("range_end_utc"))
             if tkey not in tick_cache:
                 tick_cache[tkey] = ticks_mod.load_canonical_parquet(
@@ -112,23 +114,24 @@ def main(argv=None):
             kind, _, val = row["bar_key"].partition("_")
             bars = (bars_mod.build_time_bars(tk, int(val)) if kind == "time"
                     else bars_mod.build_tick_bars(tk, int(val)))
+            bars_cache[ckey] = bars
             bar_series[ckey] = dict(candles=_candles(bars, tick_size))
 
         zrows = store.read_zone_rows(row["dir"])
         last_ms = max([int(z.get("ended_ms") or z["created_ms"]) for z in zrows], default=0)
         pyz = [_zone_view(z, tick_size, last_ms) for z in zrows]
 
-        # overlay NT8 + paridad si hay oráculo para este indicador
+        # overlay NT8 + paridad SOLO para configs con paridad real en el store
+        # (parity_state != pending), y con el oráculo de ese indicador dado.
         nt8z, par = [], None
-        if row["indicator"] in oracle_paths:
+        if row["indicator"] in oracle_paths and row["parity_state"] != "parity_pending":
             orc = oracle.parse_nt8_log(oracle_paths[row["indicator"]],
                                        chart_tz=args.chart_tz, tick_size=tick_size)
-            # misma ventana que la CLI: excluir zonas NT8 fuera del rango de la
-            # partición (warmup a ambos lados), si no aparecen como huérfanas.
             ws = _iso_ns(src.get("range_start_utc"))
             we = _iso_ns(src.get("range_end_utc"))
             ws_ms = ws // 1_000_000 if ws else None
             we_ms = we // 1_000_000 if we else None
+
             def _inwin(z):
                 c = z.get("created_ms")
                 if c is None:
@@ -143,7 +146,13 @@ def main(argv=None):
                                  created_ms=z["created_ms"], ended_ms=z["ended_ms"],
                                  state=z["final_state"], touches=z["touches"])
                             for z in zrows]
-            rep = parity.match_zones(kernel_zones, orc["zones"], tick_size)
+            # misma frontera de madurez que la CLI (lifecycle no comparable en la cola)
+            frontier_ms = None
+            max_age = int(man["params"].get("max_age_bars", 0) or 0)
+            if bars is not None and max_age and len(bars) > max_age:
+                frontier_ms = int(bars.end_ns[len(bars) - 1 - max_age]) // 1_000_000
+            rep = parity.match_zones(kernel_zones, orc["zones"], tick_size,
+                                     maturity_frontier_ms=frontier_ms)
             par = dict(summary=rep["summary"], diagnostics=rep["diagnostics"])
             by_py = {str(a): str(b) for a, b in rep["pairs"]}
             by_nt8 = {str(b): str(a) for a, b in rep["pairs"]}
@@ -166,11 +175,16 @@ def main(argv=None):
                     integrity_state=r["integrity_state"], parity_state=r["parity_state"])
                for r in cat]
 
+    # defaults por indicador -> el visor muestra cada config por su DIFF vs default
+    from edgelab.bridge.indicators import REGISTRY
+    defaults = {r["indicator"]: dict(getattr(REGISTRY[r["indicator"]], "DEFAULTS"))
+                for r in cat if r["indicator"] in REGISTRY}
+
     bundle = dict(
         meta=dict(store=os.path.abspath(args.store),
                   generated_utc=datetime.now(timezone.utc).isoformat(),
                   n_partitions=len(cat), chart_tz=args.chart_tz),
-        catalog=catalog, bar_series=bar_series, configs=configs)
+        catalog=catalog, bar_series=bar_series, configs=configs, defaults=defaults)
 
     os.makedirs(args.out, exist_ok=True)
     with open(os.path.join(args.out, "store_data.js"), "w", encoding="utf-8") as fh:
