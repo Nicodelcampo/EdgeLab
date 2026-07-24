@@ -68,6 +68,13 @@ NT8 anteriores al inicio del rango Python (warmup del chart).
 real del indicador corriendo en NT8. Sin ese archivo, ningún kernel se declara
 "paridad real confirmada".
 
+**Versión de los `.cs`:** los oráculos válidos deben generarse con la versión
+**190ed59 o posterior** de los `.cs` (en particular `aVolCellPOI2.cs` reescrito a
+subserie 1-tick, sin barras Volumetric nativas de OrderFlow — un solo motor de
+footprint, idéntico al port Python). Cualquier export de aVolCellPOI2 generado
+con la versión Volumetric anterior **NO es válido** como oráculo y debe
+regenerarse. Registrar en cada oráculo la rev de los `.cs` usada.
+
 ## 5. Protocolo para los kernels siguientes (F5+ — integrados)
 
 El mismo contrato aplica a VolTicksPOC2, BigTrap2, HFTZones2 y aVolCellPOI2 (los
