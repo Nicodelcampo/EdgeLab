@@ -86,6 +86,46 @@ Exclusiones declaradas del diff (documentadas en `nt8_bridge.md`):
 `SESSION_END` si el chart NT8 sigue vivo (no hubo OnTermination), y eventos
 NT8 anteriores al inicio del rango Python (warmup del chart).
 
+### Convención de ventana semiabierta (pre-declarada, regla de MEDICIÓN)
+
+La ventana de comparación es **`[W0, W1)`**: incluye `W0`, **excluye `W1`**. Se
+aplica igual a los eventos del oráculo y a los del kernel.
+
+Consecuencia declarada de antemano: un evento con `ts == W1` **exacto** queda
+fuera del lado que se filtra por ventana y puede aparecer como
+`MISSING_IN_NT8`/`MISSING_IN_PYTHON` de borde. **No es una discrepancia de
+kernel** y no se cuenta como causa raíz pendiente; se identifica verificando que
+el otro lado sí generó el evento fuera de la ventana. Caso observado: BigTrap2
+O1, zona `py 4033_B` con `ts == W1`, que NT8 sí generó (su barra 8081).
+
+Esta convención se declara **antes** de mirar resultados justamente para que un
+diff de borde no pueda usarse después como excusa para mover `W1`.
+
+### Semántica del EMPATE precio-vs-close (pre-declarada, regla SEMÁNTICA)
+
+Cuando un nivel de precio (fila de footprint, celda, POC) **coincide exactamente**
+con el precio de referencia contra el que se lo compara (típicamente el `close`
+de la barra), **el empate NO cuenta para ningún lado**.
+
+Fundamento, sellado por Nico el 2026-07-24:
+
+1. **Económico**: no hay volumen atrapado "más allá" del close si el volumen
+   está *en* el close. Una fila en el close no es agresión que quedó por encima
+   ni por debajo.
+2. **Lógico (decisivo)**: si el empate contara, habría que decidir *de qué lado*.
+   Con `>=` para buyers y `<=` para sellers la misma fila sería simultáneamente
+   `trapped_buyers` y `trapped_sellers` — incoherente. Y asignarla a un solo lado
+   por convención reintroduce exactamente el **sesgo direccional** que se quiere
+   eliminar. **Excluir el empate es la única regla simétrica y bien definida.**
+
+Refuerzo empírico: las 32 zonas espurias que produjo el empate en BigTrap2 eran
+**todas `n_rows=1`**, es decir zonas nacidas íntegramente de la fila del empate
+— económicamente vacías.
+
+**Implementación obligatoria**: la comparación se hace en **índices enteros de
+tick** (o medios ticks si el centro de fila puede caer en `x.5`), nunca entre
+`double`. Ver la lección de §5.
+
 ### Regla de frontera de madurez (pre-declarada)
 
 NT8 exporta más rango que la ventana Python (warmup a ambos lados). Las zonas
@@ -133,6 +173,34 @@ promover. Requisitos específicos de rango/historia por kernel:
 timezone del chart (`--chart-tz`) y la resolución de barras deben coincidir 1:1
 con el indicador corriendo en NT8. Sin el CSV real, ningún kernel se declara
 "paridad real confirmada" (§4).
+
+### Lección permanente: los precios se comparan en ENTEROS de tick
+
+**Toda comparación de precios se hace sobre índices enteros de tick; los `double`
+se usan solo para I/O (leer del feed, escribir al CSV, dibujar).** Convertir a
+entero **una sola vez**, con `Math.Round(precio / tickSize,
+MidpointRounding.AwayFromZero)` en C# — **nunca** `floor`, `truncate` ni cast
+directo, porque `precio/tickSize` puede dar `x.999999…` y el cast crearía un
+off-by-one. Si el valor puede caer en `x.5` (p. ej. el centro de una fila con
+`ticks_per_row` par), se usa la grilla de **medios ticks**, donde vuelve a ser
+entero exacto.
+
+Esta familia de bug ya costó **dos incidentes distintos** en el proyecto:
+
+| # | dónde | síntoma | causa |
+|---|---|---|---|
+| 1 | `parity._geom_ticks` | la misma zona medía 0, 1 o 2 ticks según la paridad del índice de fila | **banker's rounding** al medir en ticks enteros |
+| 2 | `BigTrap2.cs` L349 (pre-v2.1) | 101 `trapped_buyers` espurios, 12,5 % de las zonas | **1 ULP**: `r*TickSize` (reconstruido) vs `Close[0]` (feed) |
+
+Los dos son la misma raíz: aritmética de punto flotante decidiendo un empate que
+sobre la grilla de ticks es exacto. La auditoría completa de la familia en los 5
+`.cs` y los 5 kernels está en `docs/audits/AUDIT-001_comparaciones_en_grilla_de_ticks.md`
+— incluye **un hallazgo ALTO todavía sin corregir** en HFTZones2, que conviene
+resolver **antes** de gastar un export en su primer oráculo.
+
+Ojo con el caso simétrico: si un `.cs` y su kernel hacen la **misma** aritmética
+inexacta, la paridad da PASS *por bug compartido*. Eso satisface el gate pero no
+es corrección; se registra como deuda, no como validación.
 
 ## 6. Pre-registro de oráculos — campaña mínima (F7)
 

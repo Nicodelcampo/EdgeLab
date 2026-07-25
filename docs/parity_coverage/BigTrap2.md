@@ -148,26 +148,114 @@ aritméticamente correcto.
 Un síntoma directo del mismo fenómeno queda visible en el propio export de esa
 zona: `close` vale `1.14265` en NT8 y `1.1426500000000002` en Python.
 
-### 4) Veredicto y decisión PENDIENTE de Nico
+### 4) Veredicto
 
-**Gate P2 sobre O1: FAIL. No se relaja ninguna tolerancia** (`tol_geom_ticks=0`,
-`tol_created_ms=60000` intactos) ni se toca la semántica del matcher.
+**Gate P2 sobre O1: FAIL. No se relajó ninguna tolerancia** (`tol_geom_ticks=0`,
+`tol_created_ms=60000` intactos) ni se tocó la semántica del matcher.
+Impacto: **32 de 257 zonas NT8 en la ventana (12,5 %)** existen solo por el
+artefacto.
 
-Resolver esto **cambia la semántica de validación**, así que por la regla
-permanente queda **frenado y elevado a Nico**. Opciones, sin recomendación
-aplicada:
+### 5) Decisión de Nico (2026-07-24) — opción A con el empate declarado
 
-- **(A) Corregir el `.cs`** para comparar sobre la grilla entera de ticks
-  (`rowTick > closeTick`, enteros). Deja a NT8 aritméticamente correcto y alinea
-  con Python. Requiere recompilar y **regenerar todos los oráculos** de BigTrap2.
-- **(B) Reproducir el artefacto en Python.** Daría PASS, pero **propaga un bug de
-  punto flotante al research**: las 32 zonas afectadas son económicamente vacías
-  (una fila *en* el close no es agresión compradora que quedó *por encima* del
-  close), y el sesgo depende de la magnitud del precio, así que no es estable
-  entre instrumentos.
-- **(C) Declarar el empate explícitamente** en el contrato (p. ej. `>=` o `>` por
-  decisión pre-registrada) y fijar **ambos** lados a esa regla sobre enteros.
+**El empate (fila == close) NO es trap para ningún lado.** Fundamento sellado:
 
-Impacto para dimensionar la decisión: **32 de 257 zonas NT8 en la ventana
-(12,5 %)** existen solo por el artefacto.
+1. **Económico**: no hay volumen atrapado *más allá* del close si está *en* el close.
+2. **Lógico, decisivo**: si el empate contara, habría que asignarlo a un lado.
+   Con `>=` para buyers y `<=` para sellers la misma fila sería a la vez
+   `trapped_buyers` y `trapped_sellers` — incoherente; y elegir un lado por
+   convención reintroduce el sesgo direccional que se quiere eliminar. Excluirlo
+   es la **única regla simétrica y bien definida**. Esto cierra A vs C: no es una
+   preferencia, es la única semántica coherente.
+
+Refuerzo empírico: las 32 zonas espurias son **todas `n_rows=1`** — nacidas
+íntegramente de la fila del empate, económicamente vacías.
+
+**(B) queda descartada**: emular el artefacto daría PASS propagando un bug de
+punto flotante al research, con un sesgo que además depende de la magnitud del
+precio (no es estable entre instrumentos).
+
+**El kernel Python NO se toca**: su comportamiento actual ya es el correcto.
+
+#### Fix aplicado — `BigTrap2.cs` v2.1
+
+Solo aritmética de comparación:
+
+```csharp
+// una sola vez por barra
+long closeHalfTick = 2 * (long)Math.Round(close / TickSize, MidpointRounding.AwayFromZero);
+// centro de fila en medios ticks: entero exacto para todo rowTicks
+private long RowCenterHalfTick(long row, int rowTicks)
+    { return 2 * row * rowTicks + (rowTicks - 1); }
+// comparaciones
+rowHalfTick > closeHalfTick   // buyers
+rowHalfTick < closeHalfTick   // sellers
+```
+
+Detalles que quedan comentados en el `.cs` con su porqué:
+
+- **`AwayFromZero`, nunca `floor`/`truncate`/cast**: `close/TickSize` puede dar
+  `22816.999999…` y un `floor` cambiaría un bug de 1 ULP por un off-by-one nuevo
+  — la misma familia que el banker's rounding del matcher.
+- **Medios ticks, no ticks**: con `ticks_per_row` **par** el centro de fila cae
+  en `x.5`; en medios ticks vuelve a ser entero exacto para todo `rowTicks`.
+- `rowPrice` (double) se mantiene para el filtro de mecha y las sumas ponderadas:
+  `wickHiFloor` es un valor continuo, ahí no hay empate sobre grilla.
+- meta del export: `version=2.1`, `close_cmp=integer_half_ticks,tie_excluded_both_sides`.
+
+**Al recompilar, el chart en vivo cambia**: ~12,5 % menos zonas de buyers en
+BigTrap2. No es un error — es el ruido que se va.
+
+#### Predicción falsable pre-registrada (antes de que exista el v2)
+
+`docs/predictions/PRED-001_bigtrap2_ulp_fix.json` — generada **antes** del
+re-export, con la lista completa de los 101 eventos ULP (`bar`, `row_tick`,
+`close`, `centroid`, `vol`).
+
+| magnitud | baseline O1 | predicho v2 |
+|---|---|---|
+| TRAPs en ventana | 650 | **549** (−101) |
+| zonas NT8 en ventana | 257 | **225** (−32) |
+| `MATCHED` | 224 | **225** |
+| `GEOMETRY_DIFF` / `FEATURE_DIFF` | 1 / 1 | **0 / 0** |
+| `MISSING_IN_PYTHON` | 32 | **0** |
+| `MISSING_IN_NT8` | 1 | **1** (borde de ventana, no lo corrige el fix) |
+| `MATURITY_TAIL` | 6 | **6** (informativo; son anotación sobre pares ya `MATCHED`) |
+
+Reconciliación que ancla la predicción: los eventos ULP que generaron
+`ZONE_CREATED` en el oráculo son **exactamente 32**, y coinciden uno a uno con
+los 32 `MISSING_IN_PYTHON` — 0 sobrantes de cada lado. La zona `567_B`/`4615_B`
+debe pasar a `n_rows 2→1`, `zone_lo 1.142625→1.142675` y `touches 3→2`.
+
+**Criterio de falsación**: cualquier diferencia del v2 respecto del baseline que
+no esté en esa lista (ni sea la zona `567_B`) es una anomalía nueva ⇒
+investigación obligatoria. Esto es más fuerte que "el gate dio PASS".
+
+Pre-registro del export: BigTrap2, `time:1`, 6E 09-26, defaults, `.cs` post-fix
+(`version=2.1`), destino `oracles\BigTrap2_time1_6E_0926_v2.csv` (**nombre nuevo**:
+el `.cs` abre en modo append).
+
+#### Cabo cerrado: los 4 `FOOTPRINT_MISMATCH` residuales
+
+| bar | `fp_vol` | `bar_vol` | delta | ts UTC |
+|---|---|---|---|---|
+| 9032 | 261 | 260 | +1 | 2026-07-17 14:59 |
+| 9033 | 12646 | 64 | **+12582** | 2026-07-17 16:07 |
+| 9204 | 769 | 767 | +2 | 2026-07-17 19:00 |
+| 9318 | 83 | 85 | −2 | 2026-07-17 21:00 |
+
+**Los 4 caen fuera de la ventana comparada** (`07-13→07-16`) y Python tiene **0**
+mismatches dentro de ella. Verificado además que **ninguna zona comparada nace en
+esas barras ni las cruza durante su vida** (0 y 0). No afectan la paridad.
+
+Causa probable: tres son el caveat ya declarado (±1–2 de volumen en la frontera
+de barra, ticks con timestamp igual al cierre). El de la barra 9033 es un
+**backlog tras hueco de datos**: entre la barra 9032 (14:59) y la 9033 (16:07)
+hay 68 minutos con índices consecutivos en un chart de 1 minuto, o sea que no se
+formaron barras en el medio y la subserie BIP1 entregó el lote acumulado en la
+barra siguiente.
+
+#### Estado
+
+BigTrap2 queda **`parity_failed`** hasta el oráculo v2. **No bloquea CAMP-001**,
+que corre sobre Gaps2.
 
