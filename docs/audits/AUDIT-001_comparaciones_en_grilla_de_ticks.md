@@ -126,9 +126,9 @@ Reglas que quedan:
 4. Verificar con `python tools/check_nt8_cs.py <archivo> --version <v>` **antes**
    de instalar.
 
-**Deuda detectada por el checker, NO corregida a propósito:** `BigTrap2.cs`
-tiene 759 terminadores **CR CR LF** (doble CR), preexistentes. Hoy compila y
-tiene una sola región, así que el riesgo es latente, no activo. **No se toca
-antes del export del oráculo v2**, que es el que valida PRED-001: cambiar ese
-archivo justo antes de esa medición agrega riesgo sin beneficio. Normalizar
-después.
+**Deuda detectada por el checker — RESUELTA el 2026-07-25.** `BigTrap2.cs` tenía
+759 terminadores **CR CR LF** (doble CR), preexistentes. Se normalizó **después**
+del oráculo v2 que validó PRED-001, como exigía §B5, en commit aislado y con
+prueba de contenido lógico idéntico: quitando todos los CR, los dos archivos dan
+el mismo sha256 (`e6e4cf3f9c83b52f…`), o sea que no cambió ni un token. 40.701 →
+39.942 bytes, 759 → 0 dobles CR. El checker pasó de FAIL a OK.

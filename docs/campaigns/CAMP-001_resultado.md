@@ -23,6 +23,21 @@ Comando reproducible:
 python tools/camp001_preflight.py && python tools/camp001_run.py --attempt 1 && python tools/camp001_integrity.py --attempt 1 && python tools/camp001_report.py --attempt 1
 ```
 
+## Reproducibilidad VERIFICADA (2026-07-25)
+
+El intento 2, corrido con el simulador optimizado (búsqueda binaria en vez de
+escaneo lineal), produjo la **misma salida byte a byte**:
+
+| | intento 1 | intento 2 |
+|---|---|---|
+| sha256 de los crudos | `01cc1856d6cdc92c…` | **idéntico** |
+| digest | `a2f4f200e3ec34fd` | **idéntico** |
+| tiempo | 1h 35m | **1m 15s** (76×) |
+
+Prueba dos cosas a la vez: que la optimización es semánticamente neutral —no
+sólo pasan los 7 golden, coincide la salida completa sobre 209.738 trades— y que
+**este resultado negativo es reproducible**, no un artefacto de una corrida.
+
 ## La respuesta
 
 **No hay efecto bruto que supere la fricción en ninguna de las 48 hipótesis.**

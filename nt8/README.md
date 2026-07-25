@@ -37,7 +37,8 @@ versión esperada, llaves y paréntesis balanceados, y CRLF sin LF sueltos.
 | archivo | versión | sha256 (canónico, sin región generada) |
 |---|---|---|
 | `HFTZones2.cs` | v2.1 | `b8c8214cb1bbd203876886efd325e23617ec99202576dbb590091e80c77a5c6e` |
+| `BigTrap2.cs` | v2.1 | `77af06eed2bba5d5367ef41a68476d04b295039411ac124492d918c0a557fbf5` |
+| `TickBarDiag.cs` | v1.1 | *(instrumental de diagnóstico, no de trading)* |
 
-Los otros cuatro (`Gaps2`, `BigTrap2`, `VolTicksPOC2`, `aVolCellPOI2`) todavía no
-están versionados acá. **`Gaps2.cs` no se toca**: es la referencia que dio
+Faltan versionar `VolTicksPOC2` y `aVolCellPOI2`. **`Gaps2.cs` no se toca**: es la referencia que dio
 paridad 1316/1316; cualquier cambio exige digest nuevo y oráculo nuevo.
