@@ -46,7 +46,10 @@ OBS_EVENT_TYPES = ("OBS", "TRAP")     # observaciones continuas por indicador
 
 INTEGRITY_STATES = ("computed", "persisted", "roundtrip_verified",
                     "recomputed_exact", "api_verified", "stale", "failed")
-PARITY_STATES = ("parity_pending", "parity_exact", "parity_covered", "parity_failed")
+PARITY_STATES = ("parity_pending", "parity_exact", "parity_covered", "parity_failed",
+                 "parity_under_review")
+
+_UNSET = object()   # centinela: distingue "no pasado" de "pasado como None"
 
 
 class DeterminismError(RuntimeError):
@@ -299,7 +302,8 @@ def _validate_in_memory(event_rows, zone_rows, kernel_zones, csv_lines, header,
 
 def publish_run(root, *, kernel_result, indicator, tick_size, instrument, contract,
                 bar_key, dataset_id, kernel_id, config_id, run_id, params, source,
-                chart_tz="UTC", parity=None, generated_utc=None, param_set_id=None):
+                chart_tz="UTC", parity=None, generated_utc=None, param_set_id=None,
+                propagate_coverage=True):
     """Publica un run al store (inmutable, content-addressed). Idempotente si los
     digests coinciden; DeterminismError si difieren. Devuelve el manifest."""
     csv_lines = kernel_result["csv_lines"]
@@ -386,6 +390,17 @@ def publish_run(root, *, kernel_result, indicator, tick_size, instrument, contra
     os.makedirs(os.path.dirname(pdir), exist_ok=True)
     os.replace(tmp, pdir)                    # publicacion atomica
     _catalog_upsert(root, manifest, pdir)
+    if propagate_coverage:
+        # F7c: al publicar (partición nueva) y al promover a parity_exact, se
+        # reevalúa la cobertura del store. Idempotente: sin cambios, no escribe.
+        # Un fallo acá NO invalida la publicación (que ya está atómicamente
+        # completa); se reporta y la cobertura se puede recalcular aparte.
+        from . import coverage as _cov
+        try:
+            _cov.propagate_coverage(root)
+        except Exception as e:                # pragma: no cover - defensivo
+            print("[store] aviso: propagación de cobertura falló: %s: %s"
+                  % (type(e).__name__, e))
     return manifest
 
 
@@ -504,9 +519,13 @@ def get_zones(root, *, state=None, created_after_ms=None, created_before_ms=None
     return rows
 
 
-def set_state(root, run_id, *, integrity_state=None, parity_state=None):
+def set_state(root, run_id, *, integrity_state=None, parity_state=None, coverage=_UNSET):
     """Actualiza los ejes de estado de una particion (manifest + catalogo).
-    NO toca los parquets publicados (inmutables)."""
+    NO toca los parquets publicados (inmutables): solo metadatos de estado.
+
+    `coverage`: bloque de evidencia de cobertura (§8.6 del contrato de paridad).
+    Omitirlo deja el bloque como esta; pasar None lo borra (al degradar/revocar).
+    """
     import duckdb
     for m in catalog_df(root):
         if m["run_id"] != run_id:
@@ -522,13 +541,24 @@ def set_state(root, run_id, *, integrity_state=None, parity_state=None):
             if parity_state not in PARITY_STATES:
                 raise ValueError("parity_state invalido: %s" % parity_state)
             man["parity_state"] = parity_state
+        if coverage is not _UNSET:
+            if coverage is None:
+                man.pop("coverage", None)
+            else:
+                man["coverage"] = coverage
         with open(man_path, "w", encoding="utf-8") as fh:
             json.dump(man, fh, indent=2, ensure_ascii=False, default=str)
         con = duckdb.connect(catalog_path(root))
         try:
             con.execute(_CATALOG_DDL)
-            con.execute("UPDATE partitions SET integrity_state=?, parity_state=? WHERE run_id=?",
-                        [man["integrity_state"], man["parity_state"], run_id])
+            # manifest_json TAMBIEN se refresca: si no, el catalogo queda con una
+            # copia rancia del manifest (estados y bloque coverage desincronizados
+            # respecto del manifest.json en disco, que es el artefacto autoritativo).
+            con.execute(
+                "UPDATE partitions SET integrity_state=?, parity_state=?, manifest_json=? "
+                "WHERE run_id=?",
+                [man["integrity_state"], man["parity_state"],
+                 json.dumps(man, ensure_ascii=False, default=str), run_id])
         finally:
             con.close()
         return man

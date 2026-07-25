@@ -208,3 +208,169 @@ Cada uno: me pasás el CSV y corro `run_nt8_bridge.py … --oracle <ind>=<csv>
 --zone-store runs/nt8_bridge/store` (con la frontera de madurez automática) →
 `parity_report.json` + gate + evidencia en el store. La ventana corta 07-13→07-16
 ya validó Gaps2 (PASS); el resto usa la misma para comparabilidad.
+
+## 8. Semántica de `parity_covered` (F7c) — pre-declarada antes de implementar
+
+> Esta sección define QUÉ significa que una configuración quede cubierta por el
+> oráculo de OTRA. Se escribió **antes** de conectar `coverage.py` al flujo, y
+> toda afirmación de neutralidad está justificada con el código del matcher
+> (`edgelab/bridge/parity.py::match_zones`), no con intuición.
+
+### 8.1 Superficie comparada por el matcher (base de todo el razonamiento)
+
+`match_zones` compara **exactamente** estos campos y ningún otro (verificado
+línea por línea en `parity.py`):
+
+| Campo comparado | Diagnóstico que emite |
+|---|---|
+| pertenencia al conjunto de zonas | `MISSING_IN_NT8` / `MISSING_IN_PYTHON` |
+| `created_ms` | `TIMESTAMP_DIFF` |
+| `top` / `bottom` (en ticks) | `GEOMETRY_DIFF` |
+| `state` (solo zonas maduras) | `STATE_ORDER_DIFF` |
+| `touches` (solo zonas maduras) | `FEATURE_DIFF` |
+
+Todo lo demás que produce el kernel (`display`, `size_ticks`, `atr_at_creation`,
+`kind`, el resto de `features`) **no lo mira el matcher**. Un parámetro que solo
+mueve campos no comparados no puede cambiar el resultado de la paridad.
+
+### 8.2 Definición de la relación de cobertura
+
+Una partición **T** (target) queda `parity_covered` por una partición **S**
+(source) si y solo si se cumplen TODAS estas condiciones:
+
+1. `S.parity_state == "parity_exact"` (S tiene oráculo real propio que pasó P2).
+2. `T.run_id != S.run_id` — **anti-autootorgamiento** (§8.4).
+3. Mismo `indicator`.
+4. Mismo `kernel_id` — implica mismo código del kernel y de sus dependencias
+   semánticas (`common.py`, `bars.py`, `sessions.py`) y mismas versiones de
+   schema. Un cambio de código ⇒ otro `kernel_id` ⇒ cobertura NO se hereda.
+5. Mismo `instrument`.
+6. Mismo `bar_key` (bar_spec) — **decisión sellada**: el bar_spec es dimensión
+   externa de identidad, nunca se cruza.
+7. Params canónicos idénticos, **excepto** los declarados coverage-neutral para
+   ese kernel (§8.3).
+8. `chart_tz` idéntico, **excepto** si `chart_tz` está declarado como eje
+   neutral para ese kernel (§8.3).
+
+**`contract` y ventana temporal PUEDEN diferir.** Ese es justamente el contenido
+de la cobertura: el oráculo prueba una propiedad del **código con esos
+parámetros** (reproduce a NT8 tick a tick), no una propiedad de un tramo de
+datos. Con `kernel_id`, params y `bar_spec` fijos, el cómputo es el mismo
+programa; cambiar el contrato cambia la entrada, no el programa.
+
+**Riesgo residual declarado (honesto):** un tramo de datos distinto puede
+ejercitar ramas que la ventana del oráculo nunca tocó (feriados, huecos de
+sesión, bordes de calibración). Las matrices de `docs/parity_coverage/` razonan
+sobre ramas **por parámetro**, no sobre qué ramas activó realmente un tramo de
+datos concreto — `coverage.config_branches` deriva las ramas de los params, no
+de la data. Por eso `parity_covered` es **estrictamente más débil** que
+`parity_exact`, y por eso `edge_validation_contract.md` ya exige `parity_exact`
+**propio** de la config ganadora para promover a `EDGES_DISCOVERED.md`.
+
+### 8.3 Params y ejes coverage-neutral — lista blanca fail-closed
+
+Regla general por clase de `PARAM_SPEC`:
+
+| Clase | ¿Puede quedar cubierta si difiere? | Razón |
+|---|---|---|
+| `recompute` | **NUNCA** | cambia el estado histórico / el conjunto de zonas |
+| `lifecycle` | **NUNCA** | cambia `state`, `ended_ms` y `touches`: campos comparados |
+| `instrument` | **NUNCA** | cambia la escala de precio/tick |
+| `visual`, `forbidden` | irrelevante por construcción | no entran a `config_id` (`identity.ANALYTIC_CLASSES`), así que no pueden diferir entre dos `config_id` |
+| `offline` | **solo si está en la lista blanca** | la clase `offline` significa "re-filtrable desde el export continuo", que NO es lo mismo que "no afecta la paridad": son criterios distintos y conflarlos sería un error de diseño |
+
+**Lista blanca (fail-closed: lo que no está listado, bloquea la cobertura):**
+
+| Kernel | Params neutrales | Ejes neutrales | Evidencia |
+|---|---|---|---|
+| **Gaps2** | `min_gap_ticks` | `chart_tz` | ver §8.3.1 |
+| VolTicksPOC2, BigTrap2, HFTZones2, aVolCellPOI2 | *(ninguno)* | *(ninguno)* | sin verificar ⇒ bloquean cobertura |
+
+#### 8.3.1 Justificación de la lista blanca de Gaps2
+
+- **`min_gap_ticks` es neutral.** En `gaps2.py` solo alimenta
+  `g["display"] = gap_ticks >= min_gap_ticks`; `display` viaja a `features` del
+  zone store y el matcher nunca lo lee (§8.1). En el `.cs` de NT8 el efecto es
+  simétrico: gobierna únicamente el dibujo (`if (!g.Display) continue` en
+  `DrawZones`), mientras que `LogEvent("ZONE_CREATED", …)` se emite sin
+  condición para todo gap `>= ExportFloorTicks` — es decir, tampoco cambia el
+  CSV que consume el oráculo. Verificado empíricamente sobre 6E 09-25
+  (2025-08-01, 6 h, 174 zonas): con `min_gap_ticks` en {2,5,8,12} el conjunto
+  `(created_ms, top, bottom, state, touches)` es **idéntico**, y solo cambia el
+  conteo de zonas dibujables (174 a 0). Contraste de control: con
+  `export_floor_ticks=3` (clase `recompute`) el conjunto pasa de 174 a 20 zonas.
+- **`chart_tz` es eje neutral para Gaps2.** El matching usa `unix_ms`
+  (absoluto); `chart_tz` solo formatea la columna legible `ts`. Verificado:
+  mismas 174 zonas y mismos campos comparables con `UTC` y con
+  `America/Argentina/Buenos_Aires`; solo difiere el texto de `ts`
+  (`2025-08-01 00:00:01.012` vs `2025-07-31 21:00:01.012`, mismo `unix_ms`).
+  **No es generalizable**: un kernel que bucketea por hora civil (p.ej.
+  `aVolCellPOI2` con `BucketAnchor=WallClock`) sí cambia su cómputo con la tz,
+  por eso la lista es por kernel y arranca vacía para los demás.
+- **`max_logged_touches` NO es neutral** (aunque sea clase `offline`). Recorta
+  cuántos `ZONE_TOUCHED` se escriben al log. En Python el contador
+  `g["touches"]` avanza igual, y en la muestra probada la reconstrucción desde
+  el log coincidió; pero la garantía **no es universal**: §4 de este contrato
+  declara que `SESSION_END` puede faltar en el export NT8 si el chart sigue
+  vivo, y en ese caso el último evento de una zona viva podría ser un
+  `ZONE_TOUCHED` recortado, subreportando `touches` — un campo que el matcher SÍ
+  compara. Ante una garantía que no se sostiene en todos los casos, la regla es
+  bloquear.
+
+### 8.4 Anti-autootorgamiento
+
+La cobertura la asigna **exclusivamente** el proceso de propagación
+(`coverage.propagate_coverage`), comparando los campos de identidad de una
+partición contra los de un `parity_exact` **preexistente y distinto**. En
+particular:
+
+- ninguna corrida puede declararse `parity_covered` a sí misma (`T.run_id !=
+  S.run_id`, y una partición nunca es su propia fuente);
+- `store.publish_run` jamás escribe `parity_covered` (solo deriva
+  `parity_pending` / `parity_exact` / `parity_failed` de su propio gate);
+- una partición sin oráculo propio no puede "heredarse" cobertura de otra
+  partición que a su vez esté solo `parity_covered` (la fuente debe ser
+  `parity_exact`): la cobertura **no es transitiva**, para que no se propague en
+  cadena desde una única evidencia.
+
+### 8.5 Degradación: `parity_under_review`
+
+Si **cualquier** configuración con el mismo `kernel_id` que el oráculo fuente
+falla un gate de paridad posterior (`parity_failed`), todas las coberturas
+otorgadas por ese oráculo pasan a **`parity_under_review`**:
+
+- no es revocación silenciosa (la evidencia y la traza quedan registradas);
+- no es permanencia ciega (el estado deja de ser utilizable como
+  `parity_covered` a efectos de elegibilidad);
+- exige **revisión humana explícita**: analizar la causa raíz del FAIL y decidir
+  si la cobertura sigue siendo válida (queda `parity_covered`) o cae
+  (`parity_pending`). Esa decisión se consulta con Nico (cambio de semántica de
+  validación) y se registra.
+
+### 8.6 Auditabilidad
+
+Toda partición cubierta registra en su `manifest.json` un bloque `coverage` con:
+`source_config_id`, `source_run_id`, `source_contract`, `oracle_path`,
+`oracle_sha256`, `rule_version` (versión de esta sección), `neutral_params_used`
+y `granted_utc`. Sin ese bloque, un `parity_covered` es inválido por definición
+(no auditable ⇒ no otorgado).
+
+### 8.7 Aplicación al store vigente (2026-07-24)
+
+Resultado de `coverage.propagate_coverage` sobre `runs/nt8_bridge/campaign_store`
+(21 particiones), con la única fuente `parity_exact` disponible: **Gaps2
+`a6c32c0e9dbeb79a`** (6E 09-26, oráculo `oracles/Gaps2_6E_0926.csv`).
+
+| Resultado | Particiones | Justificación |
+|---|---|---|
+| `parity_exact` (fuente) | 1 — `a6c32c0e` | oráculo real propio, gate P2 PASS |
+| **`parity_covered`** | **3** — `d1289a36` (`min_gap_ticks=5`), `427ebe95` (`=8`), `9221a51d` (`=12`) | difieren de la fuente SOLO en `min_gap_ticks` (param neutral §8.3.1) y en `chart_tz` (eje neutral); mismo `kernel_id`, `bar_key=time_1`, instrumento 6E |
+| `parity_pending` (Gaps2) | 8 | 5 difieren en `export_floor_ticks` (clase `recompute`) y 3 en `reversal_confirm_ticks` (clase `lifecycle`) — ambas **nunca** cubiertas (§8.3) |
+| `parity_pending` (BigTrap2) | 8 | otro `indicator` y otro `kernel_id`: no hay oráculo de BigTrap2 (§8.2 puntos 3-4) |
+
+Nota de firewall: la fuente proviene de una ventana **dentro** del holdout
+(2026-07-13→16), usada bajo la excepción **target-free** de `edge_validation_contract.md`
+§G4 (paridad geométrica, sin mirar P&L ni elegir candidatos) y registrada en
+`docs/holdout_access_log.md`. Por eso esa evidencia **no sirve** como oráculo de
+promoción de un edge: la promoción exige `parity_exact` propio sobre una ventana
+del **período de desarrollo** (pre-holdout) — ver `CAMP-001` §11.
