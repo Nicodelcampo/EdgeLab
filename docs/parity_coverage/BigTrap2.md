@@ -77,3 +77,97 @@ mucho menor — es exactamente lo que mide el oráculo O1 (Diagonal/`time:1`) ya
 pre-registrado, y es el próximo experimento decisivo.
 
 **No se relaja el gate ni se amplían tolerancias**: FAIL queda registrado.
+
+## O1 (Diagonal / `time:1`, 2026-07-24) — hipótesis del footprint CONFIRMADA, pero **FAIL por una segunda causa**
+
+Oráculo: `oracles/BigTrap2_diag_time1_6E_0926.csv`, sha256
+`698eac589c7c4f3e7c717ea8766ed4396d97c566198d5df955482b5f0f270e92`, defaults,
+corrida única (0 resets de `seq`). Misma ventana: 2026-07-13T22:00 → 07-16T21:00
+UTC. Comparación por el árbol de decisión pre-registrado por Nico.
+
+### 1) El footprint sobre charts de TIEMPO es sano — hipótesis confirmada
+
+| chart | `FOOTPRINT_MISMATCH` | barras | tasa |
+|---|---|---|---|
+| 25 Tick (O4) | 26.661 | 29.916 | **89,12 %** |
+| 1 Minute (O1) | 4 | 15.939 | **0,03 %** |
+
+Factor ~3.000×. Queda demostrado que la corrupción del footprint de NT8 es
+**específica de charts de tick**, tal como predecía la sección anterior.
+
+### 2) Segunda causa raíz: artefacto de **1 ULP** en la comparación del `.cs`
+
+El gate sigue en **FAIL** (rama (b) del árbol: *mismatch bajo + FAIL ⇒ hay un
+segundo bug que el ruido del footprint tapaba*). Resultado:
+
+```
+py_zones 226 | nt8_zones 257 | matched 225
+MATCHED 224 · GEOMETRY_DIFF 1 · FEATURE_DIFF 1 · MATURITY_TAIL 6
+MISSING_IN_NT8 1 · MISSING_IN_PYTHON 32
+```
+
+Comparando los eventos `TRAP` barra a barra (offset de numeración NT8→Python
+constante = **4048**): **549 TRAPs comunes, 548 idénticos en `(vol, n_rows)`**.
+Los sobrantes tienen una firma exacta, no ruidosa:
+
+- **101 TRAPs solo-NT8, el 100 % `trapped_buyers` con `n_rows=1`.** Cero
+  `trapped_sellers` sobrantes (Python acierta 304/304 sellers).
+- En los 101, `close − centroid = 0,0 ticks` **exacto**. En los 245 buyers
+  comunes es siempre negativo (−1…−6) y en los 304 sellers siempre positivo
+  (+1…+6). Es decir: **el único caso que difiere es el empate `row_price == close`**.
+
+Los operadores son **idénticos** en ambos lados (`.cs` L349/L361 y
+`bigtrap2.py`: `row_price > close` / `row_price < close`, ambos estrictos). La
+discrepancia no es de regla sino de **aritmética**:
+
+| | expresión | `double` |
+|---|---|---|
+| `close` (NT8) | `Close[0]` del feed | `0x1.240ebedfa43fe p+0` = `1.14085` |
+| `rowPrice` (NT8) | `RowCenterPrice(r, rowTicks)` = `r * tickSize` | `0x1.240ebedfa43ff p+0` = `1.1408500000000001` |
+
+Difieren en **1 ULP** (2,22e-16 ≈ 4,4e-12 ticks). El error de redondeo de
+`r * tickSize` es **sistemáticamente hacia arriba** en esta magnitud de precio:
+de los 101 empates, **101 dan `rowPrice > close` y 0 dan `<`** — por eso el
+sesgo es puramente hacia `trapped_buyers` y nunca hacia `sellers`.
+
+Python compara dos valores construidos **ambos** desde la grilla entera de ticks
+(`close_t * tick_size` vs `r * row_ticks * tick_size`), así que el empate le da
+bit-exacto y lo descarta de los dos lados, que es el comportamiento
+aritméticamente correcto.
+
+### 3) Los 34 diffs residuales se explican por esa única causa
+
+| diff | n | explicación |
+|---|---|---|
+| `MISSING_IN_PYTHON` | 32 | **32/32** son zonas nacidas de los 101 TRAPs del artefacto (solo 32 superan `min_trap_volume`) |
+| `GEOMETRY_DIFF` | 1 | zona `py 567_B / nt8 4615_B`: NT8 arma 2 filas y Python 1; la fila extra está a **+0 ticks del close** y `22853*5e-05 > close` da `True`. Mismo artefacto |
+| `FEATURE_DIFF` | 1 | **misma zona**: `touches` 3 vs 2, consecuencia de que la zona quede 1 tick más alta |
+| `MISSING_IN_NT8` | 1 | **no es discrepancia de kernel**: TRAP de Python con `ts == W1` exacto, excluido por el filtro semiabierto `[W0, W1)` del lado NT8. NT8 sí lo generó (su bar 8081) |
+| `MATURITY_TAIL` | 6 | regla de frontera de madurez ya pre-registrada (§4) |
+
+Un síntoma directo del mismo fenómeno queda visible en el propio export de esa
+zona: `close` vale `1.14265` en NT8 y `1.1426500000000002` en Python.
+
+### 4) Veredicto y decisión PENDIENTE de Nico
+
+**Gate P2 sobre O1: FAIL. No se relaja ninguna tolerancia** (`tol_geom_ticks=0`,
+`tol_created_ms=60000` intactos) ni se toca la semántica del matcher.
+
+Resolver esto **cambia la semántica de validación**, así que por la regla
+permanente queda **frenado y elevado a Nico**. Opciones, sin recomendación
+aplicada:
+
+- **(A) Corregir el `.cs`** para comparar sobre la grilla entera de ticks
+  (`rowTick > closeTick`, enteros). Deja a NT8 aritméticamente correcto y alinea
+  con Python. Requiere recompilar y **regenerar todos los oráculos** de BigTrap2.
+- **(B) Reproducir el artefacto en Python.** Daría PASS, pero **propaga un bug de
+  punto flotante al research**: las 32 zonas afectadas son económicamente vacías
+  (una fila *en* el close no es agresión compradora que quedó *por encima* del
+  close), y el sesgo depende de la magnitud del precio, así que no es estable
+  entre instrumentos.
+- **(C) Declarar el empate explícitamente** en el contrato (p. ej. `>=` o `>` por
+  decisión pre-registrada) y fijar **ambos** lados a esa regla sobre enteros.
+
+Impacto para dimensionar la decisión: **32 de 257 zonas NT8 en la ventana
+(12,5 %)** existen solo por el artefacto.
+
