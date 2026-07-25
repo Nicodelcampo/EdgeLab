@@ -18,11 +18,26 @@ FAIL_CODES = ("MISSING_IN_NT8", "MISSING_IN_PYTHON", "GEOMETRY_DIFF")
 
 
 def _geom_ticks(z, tick_size):
+    """Geometría en MEDIO-ticks (enteros exactos).
+
+    Los bordes de zona caen en la grilla de tick entero O de medio-tick (p.ej.
+    BigTrap2 emite `fila ± 0.5 ticks`; VolTicksPOC2 `poc ± 0.5`). Midiendo en
+    ticks, esos bordes caen justo en el límite `.5` y `round()` aplica banker's
+    rounding: la MISMA geometría real se reportaba con ancho 0, 1 o 2 ticks
+    según la paridad del índice de fila, creando y ocultando GEOMETRY_DIFF
+    falsos. En medio-ticks todos los bordes son enteros ⇒ medición exacta.
+    (Mismo criterio ya aplicado en `store._core`.)"""
     top = z.get("top")
     bot = z.get("bottom")
     if top is None or bot is None or not tick_size:
         return None
-    return (round(top / tick_size), round(bot / tick_size))
+    half = tick_size * 0.5
+    return (int(round(top / half)), int(round(bot / half)))
+
+
+def _geom_diff_ticks(ga, gb):
+    """Diferencia geométrica en TICKS (puede ser 0.5) desde medio-ticks."""
+    return max(abs(ga[0] - gb[0]), abs(ga[1] - gb[1])) / 2.0
 
 
 def match_zones(py_zones, nt8_zones, tick_size, tol_created_ms=60_000,
@@ -52,7 +67,7 @@ def match_zones(py_zones, nt8_zones, tick_size, tol_created_ms=60_000,
                 return None
         ga, gb = _geom_ticks(a, tick_size), _geom_ticks(b, tick_size)
         if ga is not None and gb is not None:
-            gd = max(abs(ga[0] - gb[0]), abs(ga[1] - gb[1]))
+            gd = _geom_diff_ticks(ga, gb)
             if gd > max(tol_geom_ticks, 8):   # límite duro para candidatear
                 return None
         else:
@@ -86,10 +101,11 @@ def match_zones(py_zones, nt8_zones, tick_size, tol_created_ms=60_000,
                 codes.append(("TIMESTAMP_DIFF", "created_ms diff=%dms" % dt))
         ga, gb = _geom_ticks(a, tick_size), _geom_ticks(b, tick_size)
         if ga is not None and gb is not None:
-            gd = max(abs(ga[0] - gb[0]), abs(ga[1] - gb[1]))
+            gd = _geom_diff_ticks(ga, gb)
             if gd > tol_geom_ticks:
                 codes.append(("GEOMETRY_DIFF",
-                              "py=%s nt8=%s diff=%d ticks" % (ga, gb, gd)))
+                              "py=%s nt8=%s diff=%g ticks (medio-ticks)"
+                              % (ga, gb, gd)))
         immature = (maturity_frontier_ms is not None
                     and a.get("created_ms") is not None
                     and a["created_ms"] > maturity_frontier_ms)
