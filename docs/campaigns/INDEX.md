@@ -8,7 +8,7 @@
 | campaign_id | Estado | Sellado | Indicador · bar_spec | N_eff | sha256 del manifiesto | Resultado |
 |---|---|---|---|---|---|---|
 | [CAMP-001-gaps2-discovery](CAMP-001_gaps2_discovery_v1.0_SEALED.md) | SEALED v1.0 · *superseded por v1.1* | 2026-07-24 | Gaps2 · `time:1` | 48 | `124b33cdc39629f6d5112a872aacc5e7d32e4ac3df8055305a1d9dd2d9a6cfa3` | *sin correr* |
-| [CAMP-001-gaps2-discovery](CAMP-001_gaps2_discovery.md) | **SEALED v1.1** (E6) | 2026-07-25 | Gaps2 · `time:1` | 48 | `46533c0a4c6ff69ee0ddcb1435e47595a9b5ff86594c63019d5a6c7347b304be` | *ver A4* |
+| [CAMP-001-gaps2-discovery](CAMP-001_gaps2_discovery.md) | **CLOSED (negativo)** | 2026-07-25 | Gaps2 · `time:1` | 48 | `46533c0a4c6ff69ee0ddcb1435e47595a9b5ff86594c63019d5a6c7347b304be` | [**0/48** con E\[neto\]>0; E\[bruto\] agregado **−0,148 ticks**. Refutación estructural §2](CAMP-001_resultado.md) |
 | [TICKBAR-001](TICKBAR-001_paridad_en_barras_de_tick.md) | **ABIERTA** (diagnóstico) | 2026-07-25 | BigTrap2 · `tick:25` → `tick:10` | — | *(no es campaña de hipótesis: es desbloqueo de paridad)* | *sin clasificar* |
 
 ### Enmiendas registradas
