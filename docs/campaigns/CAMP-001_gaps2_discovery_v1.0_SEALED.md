@@ -1,18 +1,16 @@
 # CAMP-001 — Primera campaña de descubrimiento: Gaps2
 
 > Este documento sirve al referente rector: ver [`../NORTH_STAR.md`](../NORTH_STAR.md).
-> **ESTADO: SEALED v1.1 (2026-07-25).** v1.0 sellado por Nico el 2026-07-24 con
-> las enmiendas E1–E5; **E6** (§11) aprobada el 2026-07-25 **antes de cualquier
-> acceso a retornos**. El manifiesto es **inmutable**: cualquier cambio exige una
-> enmienda versionada aprobada ANTES de correr, o una campaña nueva. El cuerpo
-> v1.0 se preserva en `CAMP-001_gaps2_discovery_v1.0_SEALED.md`.
+> **ESTADO: SEALED v1.0 (2026-07-24).** Aprobado por Nico con las enmiendas
+> E1–E5 aplicadas. El manifiesto es **inmutable**: cualquier cambio exige una
+> enmienda versionada aprobada ANTES de correr, o una campaña nueva.
 >
-> **SELLADO ≠ AUTORIZACIÓN DE CORRIDA.** Bloqueos previos a la primera corrida
-> (§10): simulador verde ✅ (`edgelab/research/sim.py`, 23 tests), particiones de
-> 12-25/03-26/06-26 en `parity_covered` ✅, y **OK final de Nico** ⏳.
+> **SELLADO ≠ AUTORIZACIÓN DE CORRIDA.** Antes de la primera corrida faltan
+> (§10): simulador implementado y reproduciendo sus golden tests, particiones
+> de 12-25/03-26/06-26 materializadas en `parity_covered`, y OK final de Nico.
 
 - `campaign_id`: **CAMP-001-gaps2-discovery**
-- Fecha de draft: 2026-07-24 · **Sellado: 2026-07-24 (v1.0, E1–E5) · enmendado 2026-07-25 (v1.1, E6)**
+- Fecha de draft: 2026-07-24 · **Sellado: 2026-07-24 (v1.0, enmiendas E1–E5)**
 - Hash de `NORTH_STAR.md`: `21bb3b01a33e2b373859a38ac4615de376a6262f0aa7ced0e8f5dec33b5256a8`
 - Contrato de gates: `docs/edge_validation_contract.md` (G0–G5)
 - Hash del manifiesto: al pie (sha256 del cuerpo hasta el marcador)
@@ -215,17 +213,27 @@ conjunto de desarrollo **no puede ser seleccionada ganadora de su familia**,
 cualquiera sea su expectancy. Si TODAS las configs de una familia quedan por
 debajo, la familia se registra `insufficient_n` y no avanza a G2.
 
-**Calibración (target-free, solo frecuencia de zonas e interacciones precio-zona
-— sin mirar retornos).** *Sustituida por la enmienda **E6** (§11): la
-calibración original extrapolaba desde un solo día (2025-08-01) que resultó
-4–8× más activo que la media, sobreestimando entre 5× y 10×. Las mediciones
-reales, por fold y por celda de la grilla, están en E6.2 y E6.3.*
+**Calibración (target-free, solo frecuencia de zonas — sin mirar retornos).**
+Medido sobre la partición `parity_covered` de la config de campaña
+(`d1289a36`, 6E 09-25, 2025-08-01, 1 día completo, 2.130 zonas):
 
-**Umbral.** Se mantiene `min_trades_winner = 50` como **guard contra celdas
-degeneradas** (una combinación de filtros que por error casi no dispare). Se
-elige el extremo **superior** del rango de referencia (30–50) por ser el más
-conservador. E6.5 declara además que la suficiencia se decide con **trades
-ejecutados**, no con disparos.
+| Filtro | Zonas/día | Extrapolado a ~232 días hábiles de desarrollo |
+|---|---|---|
+| `zone_min_size ≥ 2` | 2.130 | ~494.000 |
+| `zone_min_size ≥ 3` | 370 | ~86.000 |
+| `zone_min_size ≥ 5` (celda **más rala**) | 87 | ~20.000 |
+
+En esa celda más rala, las señales por familia siguen siendo abundantes
+(F1 `touches≥1`: 70/día ≈ 16.200; F4 `touches≥2`: 47/día ≈ 10.900).
+
+**La restricción binding NO es la escasez de señales sino la regla de una sola
+posición simultánea**: con `time_stop = 240` barras m1 (4 h) y ~23 h de sesión
+CME, el piso teórico es ~6 trades/día aun si TODOS llegaran al time stop, o sea
+**≥ ~1.160 trades en desarrollo** para cualquier celda (y más si stops/targets
+pegan antes, que es lo normal). Por lo tanto **50 no cuesta poder estadístico**:
+es un guard contra celdas degeneradas (una combinación de filtros que por error
+casi no dispare), no un filtro real. Se elige el extremo **superior** del rango
+de referencia (30–50) por ser el más conservador sin costo.
 
 **Relación con G1:** `edge_validation_contract.md` §G1 exige `n_trades ≥ 100`
 para el candidato que avanza. Son controles de alcance distinto y deliberadamente
@@ -342,103 +350,6 @@ antes, para no gastar esfuerzo en configs que no lleguen a G2):
 Si ese oráculo diera WARN/FAIL, la promoción **se bloquea** y se analiza causa
 raíz (prohibido promover con `parity_covered` ni ampliar tolerancias).
 
-## 11. Enmienda E6 (2026-07-25, PRE-CORRIDA) — calibración real de E1
-
-> Aprobada por Nico **antes** de cualquier acceso a retornos o P&L. Todo lo que
-> sigue es **target-free**: frecuencias de zonas e interacciones precio-zona
-> medidas con `tools/camp001_dryrun.py`. El manifiesto v1.0 se preserva íntegro
-> en `CAMP-001_gaps2_discovery_v1.0_SEALED.md` (sha256
-> `124b33cdc39629f6d5112a872aacc5e7d32e4ac3df8055305a1d9dd2d9a6cfa3`).
-
-**E6.1 — Grilla intacta.** Se mantienen `zone_min_size = {2, 3, 5}` y
-**N_eff = 48**. No se agrega ni se quita ninguna hipótesis: sacar celdas después
-de medir sería data snooping, aunque fuese pre-corrida.
-
-**E6.2 — Motivo.** La calibración original de E1 extrapoló linealmente desde
-**un solo día**, el 2025-08-01, que tuvo 2.130 zonas contra promedios reales de
-253–475/día. Fue un día 4–8× más activo que la media. Comparación:
-
-| Filtro | E1 v1.0 (extrapolado) | Real (4 folds) | Sobreestimación |
-|---|---:|---:|---:|
-| `zone_min_size ≥ 2` | ~494.000 | **97.458** | 5,1× |
-| `zone_min_size ≥ 3` | ~86.000 | **9.801** | 8,8× |
-| `zone_min_size ≥ 5` | ~20.000 | **2.045** | 9,8× |
-
-**E6.3 — Mediciones reales POR FOLD.** Los folds son heterogéneos (03-26 tiene
-~50 % más zonas que 12-25), así que la calibración se declara por fold, no solo
-agregada. Zonas por fold y por umbral de tamaño:
-
-| Fold | días op. | zonas `≥2` | `≥3` | `≥5` |
-|---|---:|---:|---:|---:|
-| 6E 09-25 | 45 | 21.375 | 2.540 | 597 |
-| 6E 12-25 | 79 | 19.975 | 1.990 | 466 |
-| 6E 03-26 | 79 | 30.634 | 3.185 | 674 |
-| 6E 06-26 | 79 | 25.474 | 2.086 | 308 |
-
-**Disparos por fold y por celda** (familia × `zone_min_size`), cota superior de
-los trades:
-
-| `zmin` | familia | 09-25 | 12-25 | 03-26 | 06-26 | total |
-|---:|---|---:|---:|---:|---:|---:|
-| 2 | F1 | 12.420 | 12.960 | 19.838 | 15.372 | 60.590 |
-| 2 | F2 | 7.967 | 8.034 | 12.344 | 9.464 | 37.809 |
-| 2 | F3 | 4.949 | 4.932 | 7.598 | 5.820 | 23.299 |
-| 2 | F4 | 3.657 | 3.904 | 5.444 | 4.121 | 17.126 |
-| 3 | F1 | 971 | 857 | 1.644 | 1.072 | 4.544 |
-| 3 | F2 | 729 | 616 | 1.155 | 768 | 3.268 |
-| 3 | F3 | 502 | 415 | 753 | 481 | 2.151 |
-| 3 | F4 | 427 | 376 | 605 | 398 | 1.806 |
-| 5 | F1 | 144 | 135 | 207 | 143 | 629 |
-| 5 | F2 | 126 | 104 | 163 | 114 | 507 |
-| 5 | F3 | 94 | 80 | 111 | 73 | 358 |
-| 5 | F4 | 84 | 75 | 108 | 77 | 344 |
-
-**E6.4 — `zone_min_size = 5` es un estrato de BAJA POTENCIA, declarado de
-antemano.** Con 73–207 disparos por fold (cota superior), las 12 celdas con
-`zmin=5` tienen potencia estadística baja y **es esperable** que varias terminen
-en `insufficient_n`.
-
-*Justificación económica de conservarlo:* los gaps más grandes absorben mejor el
-costo round-turn de ~2,7 ticks (§7). Es el estrato donde un edge neto es *a
-priori* más plausible, aunque sea el más ralo. Sacarlo por escasez sería podar
-justo la zona de mayor plausibilidad económica.
-
-*Regla de interpretación, pre-declarada:* **la escasez de `zmin=5` NO se
-interpreta como evidencia contra la hipótesis.** Un `insufficient_n` significa
-"no hay muestra para decidir", nunca "no hay edge". Queda prohibido reportarlo
-como resultado negativo.
-
-**E6.5 — Disparos ≠ trades.** Los conteos de E6.3 son **cotas superiores**: la
-regla de una sola posición simultánea solo puede reducirlos. La suficiencia se
-decide con **trades efectivamente ejecutados**, reportados **en total y por
-fold**. Queda anulada la afirmación de E1 v1.0 de que "la restricción binding no
-es la escasez de señales sino la regla de una posición simultánea": para `zmin=5`
-la restricción binding **sí** es la escasez de señales.
-
-**E6.6 — Umbrales SIN relajar y reglas de veredicto.** `min_trades_winner = 50`
-(selección) y `n_trades ≥ 100` (G1, promoción) se mantienen intactos.
-
-| situación | veredicto |
-|---|---|
-| config con < 50 trades | **no elegible** como ganadora de su familia |
-| **todas** las configs de una familia < 50 | familia = `insufficient_n`, no avanza a G2 |
-| ganadora con 50–99 trades | **ganador exploratorio registrado**: NO pasa G1, y **no cuenta como evidencia en ningún sentido** — ni a favor ni en contra |
-
-**E6.7 — Identidad única de config.** El manifiesto v1.0 citaba `d1289a36` en la
-calibración de E1 y `a6c32c0e9dbeb79a` en §4. Verificado empíricamente: difieren
-**solo** en `min_gap_ticks` (5 vs 2), que es **display-only** (gobierna el flag
-`display`, no la exportación) y está declarado coverage-neutral en §8.3 del
-contrato de paridad. Restringidas a la ventana común dan **2.130 vs 2.130 zonas
-con geometría y `created_ms` idénticos**. Ambas exportan el mismo conjunto de
-zonas.
-
-A partir de esta enmienda, **la única identidad citada en todo el manifiesto es
-la del runner: `a6c32c0e9dbeb79a`**.
-
-**E6.8 — Registro.** Enmienda aplicada **antes** de cualquier acceso a retornos.
-Manifiesto v1.0 preservado, entrada nueva en el índice append-only, hash nuevo
-del cuerpo enmendado al pie.
-
 ## STOP
 
 Este manifiesto NO autoriza ninguna corrida. Ejecución solo tras aprobación
@@ -447,6 +358,6 @@ campañas).
 
 <!-- SHA256-BODY-ABOVE -->
 
-**sha256 del manifiesto (cuerpo hasta el marcador):** `46533c0a4c6ff69ee0ddcb1435e47595a9b5ff86594c63019d5a6c7347b304be`
+**sha256 del manifiesto (cuerpo hasta el marcador):** `124b33cdc39629f6d5112a872aacc5e7d32e4ac3df8055305a1d9dd2d9a6cfa3`
 
-**Estado:** SEALED v1.1 — 2026-07-25 (v1.0 sellado 2026-07-24 + enmienda E6).
+**Estado:** SEALED v1.0 — 2026-07-24.

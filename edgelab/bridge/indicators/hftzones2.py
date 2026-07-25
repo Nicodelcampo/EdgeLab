@@ -30,7 +30,8 @@ from __future__ import annotations
 import math
 
 from .. import sessions
-from ..common import fnum, ns_to_ms, quantile_exact, tick_and_bar_events, ts_str, tz_of
+from ..common import (fnum, ns_to_ms, quantile_exact, snap_to_tick,
+                      tick_and_bar_events, ts_str, tz_of)
 
 NAME = "HFTZones2"
 
@@ -300,7 +301,10 @@ def run(ticks, bars, params=None, chart_tz="UTC"):
         if st["dir"] == 0:
             reset_streak()
             return
-        height_ticks = int(round((st["swh"] - st["swl"]) / tick_size))
+        # v2.1: misma altura ENTERA que usa la deteccion, para que deteccion y
+        # clasificacion no puedan discrepar (espejo de FinalizeStreak del .cs).
+        height_ticks = (snap_to_tick(st["swh"], tick_size)
+                        - snap_to_tick(st["swl"], tick_size))
         is_sweep = height_ticks >= p["min_sweep_ticks"]           # FIX#3
         total_ms = float(sum(st["ms_list"]))
         avg_ms = total_ms / len(st["ms_list"]) if st["ms_list"] else 0.0
@@ -377,8 +381,18 @@ def run(ticks, bars, params=None, chart_tz="UTC"):
                     start_streak(1, price, vol, t_ns)
                 return
         if p["use_relative_retro"] and st["dir"] != 0:
-            height_ticks = (st["swh"] - st["swl"]) / tick_size
-            retro = (st["swh"] - price) / tick_size if st["dir"] == 1 else (price - st["swl"]) / tick_size
+            # v2.1 (espejo de BigTrap2.cs/HFTZones2.cs): toda distancia de precio
+            # se mide sobre indices ENTEROS de tick. Dividir doubles por tick_size
+            # NUNCA da el entero exacto (verificado: falla en el 100% de los pares
+            # del rango del 6E, con desvio en ambas direcciones), asi que el empate
+            # `retro == allowed` lo decidia el ULP. snap_to_tick es el espejo exacto
+            # de PriceToTick del .cs (AwayFromZero, jamas floor/truncate).
+            # El empate NO corta la racha: se conserva el operador estricto.
+            swh_t = snap_to_tick(st["swh"], tick_size)
+            swl_t = snap_to_tick(st["swl"], tick_size)
+            px_t = snap_to_tick(price, tick_size)
+            height_ticks = swh_t - swl_t
+            retro = (swh_t - px_t) if st["dir"] == 1 else (px_t - swl_t)
             if retro > st["max_retro"]:
                 st["max_retro"] = retro
             allowed = max(p["retro_floor_ticks"], p["retro_pct_height"] / 100.0 * height_ticks)

@@ -126,6 +126,35 @@ Refuerzo empírico: las 32 zonas espurias que produjo el empate en BigTrap2 eran
 tick** (o medios ticks si el centro de fila puede caer en `x.5`), nunca entre
 `double`. Ver la lección de §5.
 
+### Semántica del RETROCESO y la ALTURA (pre-declarada) — HFTZones2
+
+Misma familia, mismo criterio. En HFTZones2 la racha se corta cuando el
+retroceso **supera** el permitido:
+
+```
+allowed  = max(retro_floor_ticks, retro_pct_height/100 × altura)
+corta si  retro > allowed          ← estricto: el EMPATE no corta
+```
+
+- **Altura y retroceso se miden en índices ENTEROS de tick**, vía
+  `PriceToTick` en el `.cs` y `common.snap_to_tick` en el kernel — el mismo
+  `Math.Round(precio/tick, AwayFromZero)` de los dos lados.
+- **El empate `retro == allowed` NO corta la racha.** Es el mismo criterio que
+  el empate fila-vs-close: el operador estricto es el que ya estaba declarado;
+  lo que se corrige es que antes lo decidía el punto flotante, no la regla.
+- `FinalizeStreak` usa **la misma altura entera** que la detección, para que
+  detección y clasificación (`is_sweep`) no puedan discrepar.
+
+Por qué importa, medido: `(swh − price)/tick_size` **nunca** da el entero exacto
+en el rango del 6E (falla en el 100 % de los pares 20000–25000, con desvío en
+**ambas** direcciones). Con `allowed` entero, eso hacía que Python cortara donde
+el `.cs` v2.1 no corta en el **5,0 %** de los niveles de precio en la rama del
+piso y en el **22 %** en la rama porcentual con altura par.
+
+**Regla de cambio acoplado:** este par (`HFTZones2.cs` ↔ `hftzones2.py`) se
+modifica **junto, en el mismo commit**. Tocar un solo lado rompe la paridad de
+forma garantizada, no eventual.
+
 ### Regla de frontera de madurez (pre-declarada)
 
 NT8 exporta más rango que la ventana Python (warmup a ambos lados). Las zonas
