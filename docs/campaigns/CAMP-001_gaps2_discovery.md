@@ -57,11 +57,38 @@ test = {12-25, 03-26, 06-26}, entrenando solo con contratos anteriores.
 - `bar_spec` es dimensión EXTERNA de identidad (sellado). Esta campaña usa
   **solo `time:1`**: cada resolución extra consume presupuesto estadístico y
   exige su propio oráculo (el de 25t queda para una campaña futura).
-- Las zonas se consumen del store (`api_verified` mínimo; la config es
-  `parity_exact`). **Prohibido importar kernels en el research.**
+- Las zonas se consumen del store (`api_verified` mínimo). **Prohibido importar
+  kernels en el research.**
+  **Precisión de estado (corregida tras F7c):** `parity_exact` es un estado
+  **por partición**, no por `config_id`. La partición que tiene el oráculo
+  propio es la de **6E 09-26** (excluida del desarrollo, §3). Las particiones
+  de esta misma config sobre los contratos de **desarrollo** no tienen oráculo
+  propio: quedarán **`parity_covered`**, otorgado automáticamente al publicarse
+  (mismo `config_id`, `kernel_id`, `bar_key` e instrumento; solo cambia el
+  contrato, que la regla permite). Ver §4.1.
 - Detección de interacción (touch/ruptura) en research: derivada de **barras
   OHLC vs geometría as-of** de la zona (determinista e independiente del
   kernel); ventana de actividad de zona = `[created_ms, ended_ms)`.
+
+### 4.1 Elegibilidad de configs (regla dura)
+
+Solo se corren configuraciones cuyas particiones estén en estado
+**`parity_covered` o `parity_exact`**, bajo la semántica pre-declarada en
+`docs/nt8_indicator_parity_contract.md` **§8** (definición §8.2, lista blanca
+fail-closed §8.3, anti-autootorgamiento §8.4).
+
+- `parity_pending`, `parity_failed` y `parity_under_review` **NO son elegibles**
+  (una cobertura degradada a `under_review` **saca** a esa config de la campaña
+  hasta que se revise, §8.5).
+- La cobertura la otorga solo el proceso de propagación
+  (`coverage.propagate_coverage`); ninguna corrida se declara cubierta a sí misma.
+- Verificación al sellar y antes de cada corrida: listar el estado de paridad de
+  cada partición usada; si alguna no es `covered|exact`, la campaña **no corre**
+  sobre esa config.
+- Consecuencia práctica ya verificada (§8.7 del contrato): sobre el store
+  vigente, la config de esta campaña es elegible en 6E 09-25; para 12-25, 03-26
+  y 06-26 hay que **materializar** la partición (se cubrirá automáticamente al
+  publicarse, por identidad idéntica salvo el contrato).
 
 ## 5. Familias de estrategia (4, simétricas, interpretables)
 
@@ -155,6 +182,35 @@ diagnóstico, jamás para decidir.
    determinista mínimo (recomendación: propio mínimo, testeable, sin deps).
 3. Confirmación de Nico de: familias (§5), grilla y N_eff=48 (§6), regla de
    abandono (§8), y esta redacción de riesgos.
+
+## 11. Requisito de promoción y oráculo de promoción pre-registrado
+
+Promover un resultado de esta campaña a `EDGES_DISCOVERED.md` exige (regla dura
+de `edge_validation_contract.md`) **≥ `statistically_supported` (G2)** **y
+`parity_exact` PROPIO de la config ganadora**.
+
+**El oráculo actual (6E 09-26) NO sirve para promover.** Su ventana
+(2026-07-13→16) cae **dentro del holdout sellado** y se usó bajo la excepción
+*target-free* (paridad geométrica) registrada en `docs/holdout_access_log.md`.
+Un edge no puede apoyar su promoción en evidencia tomada del holdout, ni
+siquiera técnica: la config ganadora debe demostrar paridad exacta **sobre una
+ventana del período de desarrollo (pre-holdout)**.
+
+**Oráculo de promoción pre-registrado** (a exportar cuando haya un ganador; no
+antes, para no gastar esfuerzo en configs que no lleguen a G2):
+
+| Ítem | Valor |
+|---|---|
+| Indicador · barras | **Gaps2** · **1 minuto** (`time:1`) |
+| Contrato | **6E 06-26** (contrato de desarrollo, pre-holdout) |
+| Ventana UTC | **2026-05-05T22:00:00 → 2026-05-07T21:00:00** (2 sesiones CME completas; la ventana ya pre-registrada en el contrato de paridad §1) |
+| Params NT8 | los de la config **ganadora** (se fijan al cerrar G2, no antes) |
+| `EventLogPath` | `oracles\Gaps2_6E_0626_may_promo.csv` |
+| Rev `.cs` | 190ed59 o posterior |
+| Gate exigido | **P2 PASS** sobre esa ventana ⇒ la partición de desarrollo pasa a `parity_exact` propio |
+
+Si ese oráculo diera WARN/FAIL, la promoción **se bloquea** y se analiza causa
+raíz (prohibido promover con `parity_covered` ni ampliar tolerancias).
 
 ## STOP
 
