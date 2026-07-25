@@ -35,13 +35,35 @@ Compilar con **F5**. No debería dar errores; si da, pasarme el texto exacto.
 | `Barras a registrar` | **150** (default) |
 | `Ruta del CSV` | `E:\EdgeLab\oracles\tickbar_diag_25t_6E_0926.csv` |
 
-**El archivo se SOBREESCRIBE** (a diferencia de los oráculos, que abren en
-append). Es deliberado: este ledger debe contener una sola corrida. Aun así,
-**usar un nombre nuevo por captura** para no pisar una anterior.
+### Nombre del archivo — cambió en v1.1 (incidente 2026-07-25)
 
-Después, repetir **exactamente igual** con **10 Tick** y ruta
-`...\tickbar_diag_10t_6E_0926.csv`. Las dos capturas juntas permiten verificar
-que la causa —y luego el fix— son **generales** y no un parche atado a `N=25`.
+**El `.cs` decide el nombre final, no vos.** A la ruta que pongas le agrega la
+resolución resuelta del chart, y si ese archivo ya existe abre el índice
+siguiente:
+
+```
+ruta que ponés :  E:\EdgeLab\oracles\tickbar_diag_6E_0926.csv
+25 Tick escribe:  E:\EdgeLab\oracles\tickbar_diag_6E_0926__Tick25.csv
+10 Tick escribe:  E:\EdgeLab\oracles\tickbar_diag_6E_0926__Tick10.csv
+si repetís 25t :  ...__Tick25_2.csv
+```
+
+El indicador imprime la ruta real en la ventana **Output** de NT8 (`New → Output`).
+
+**Por qué.** La v1.0 sobrescribía la ruta tal cual. Al cambiar el chart de 25
+Tick a 10 Tick sin tocar la ruta, NT8 dispara `DataLoaded` y **pisó** la captura
+de 25t con datos de 10 ticks: quedaron dos archivos idénticos, uno mal rotulado,
+y el clasificador devolvió un `BAR_BUILDER_MISMATCH` **falso** (comparaba barras
+Python de 25 contra barras NT8 de 10). Con el sufijo automático eso es imposible.
+Tampoco se appendea nunca — el otro modo de falla, el que mezcló tres corridas
+en un oráculo el 2026-07-24. Los dos quedan cerrados.
+
+`tools/tickbar_diag.py` además **frena** si el ledger declara una resolución
+distinta de la que se le pide comparar, en vez de producir un resultado falso.
+
+Después, repetir **exactamente igual** con **10 Tick**. Las dos capturas juntas
+permiten verificar que la causa —y luego el fix— son **generales** y no un parche
+atado a `N=25`.
 
 ## Qué mirar antes de mandármelo
 

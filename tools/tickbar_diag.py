@@ -105,6 +105,25 @@ def main(argv=None):
     print("TICKBAR-001 — clasificacion de la causa del mismatch en barras de tick")
     print("=" * 78)
     print("ledger: %s" % a.ledger)
+
+    # --- El ledger DEBE declarar la misma resolucion que se pide comparar -----
+    # Incidente 2026-07-25: se corrio --tick-n 25 sobre un ledger de 10 ticks
+    # (el .cs v1.0 habia pisado la captura de 25t al cambiar el chart). El
+    # resultado fue un BAR_BUILDER_MISMATCH espurio: comparaba barras Python de
+    # 25 contra barras NT8 de 10. Sin este gate, un archivo mal rotulado se lee
+    # como un hallazgo.
+    per = meta.get("bars_period", "?")
+    val = meta.get("bars_value", "?")
+    if per != "Tick":
+        print("FRENAR: el ledger declara bars_period=%r; TICKBAR-001 compara "
+              "barras de TICK." % per)
+        return 1
+    if str(val) != str(a.tick_n):
+        print("FRENAR: el ledger declara bars_value=%s pero se pidio --tick-n %d."
+              % (val, a.tick_n))
+        print("        Un ledger mal rotulado produce una clasificacion FALSA.")
+        print("        Verificar la captura antes de reintentar; no forzar el parametro.")
+        return 1
     print("  meta: %s" % {k: meta[k] for k in list(meta)[:6]})
     print("  eventos NT8: %d   barras NT8: %d (bar %d..%d)"
           % (len(ev), len(ba), ba[0]["bar"], ba[-1]["bar"]))
@@ -188,10 +207,19 @@ def main(argv=None):
                             ("CONFIRMADA (drift monotono)" if monotone else "CONFIRMADA")))
 
     # ---------------- H3: ATRIBUCION del tick fronterizo -------------------- #
-    fps = bars_mod.build_footprints(tk, bars)
+    # Solo tiene sentido si los cortes coinciden: si las barras agrupan eventos
+    # distintos, el footprint difiere por construccion y no informa nada.
+    if not (stream_ok and cuts_ok):
+        print("\n[H3] ATRIBUCION DEL FOOTPRINT")
+        print("    NO EVALUABLE: requiere H1 y H2 descartadas (stream=%s, cortes=%s)."
+              % ("OK" if stream_ok else "MISMATCH", "OK" if cuts_ok else "MISMATCH"))
+        attr_ok, attr_diff, border_only = None, None, None
+        fps = None
+    else:
+        fps = bars_mod.build_footprints(tk, bars)
     attr_diff = 0
     border_only = 0
-    for i in range(m):
+    for i in range(m if fps is not None else 0):
         j = i + (off or 0)
         d_py = fp_digest(fps.ask[j], fps.bid[j])
         if d_py != ba[i]["digest_fp"]:
@@ -201,11 +229,15 @@ def main(argv=None):
             # firma de H3: la diferencia de volumen es la de UN solo evento
             if 0 < dv <= int(np.max(py_v[:200]) if len(py_v) else 10 ** 9):
                 border_only += 1
-    attr_ok = attr_diff == 0
-    print("\n[H3] ATRIBUCION DEL FOOTPRINT")
-    print("    barras con digest de footprint distinto: %d/%d" % (attr_diff, m))
-    print("    de esas, con diferencia del tamano de UN evento (borde): %d" % border_only)
-    print("    -> H3 %s" % ("DESCARTADA" if attr_ok else "CONFIRMADA"))
+    if fps is not None:
+        attr_ok = attr_diff == 0
+        print("\n[H3] ATRIBUCION DEL FOOTPRINT")
+        print("    barras con digest de footprint distinto: %d/%d" % (attr_diff, m))
+        print("    de esas, con diferencia del tamano de UN evento (borde): %d"
+              % border_only)
+        print("    -> H3 %s" % ("DESCARTADA" if attr_ok else "CONFIRMADA"))
+    else:
+        attr_ok = None
 
     # ---------------- clasificación ----------------------------------------- #
     firmas = []

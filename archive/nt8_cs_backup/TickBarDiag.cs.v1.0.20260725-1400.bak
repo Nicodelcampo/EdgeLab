@@ -1,5 +1,5 @@
 // ============================================================================
-// TickBarDiag.cs — v1.1 — Instrumental de diagnóstico TICKBAR-001
+// TickBarDiag.cs — v1.0 — Instrumental de diagnóstico TICKBAR-001
 // NO es un indicador de trading: no dibuja, no detecta, no crea zonas.
 // Vuelca DOS ledgers para distinguir H1/H2/H3/H4 de
 // docs/campaigns/TICKBAR-001_paridad_en_barras_de_tick.md
@@ -50,11 +50,6 @@ namespace NinjaTrader.NinjaScript.Indicators
 		private const ulong MIX       = 1000003UL;
 
 		private StreamWriter log;
-
-		private string resolvedPath = "";
-
-		private bool digestArmed = false;
-
 		private ulong  digestStream = FNV_BASIS;
 		private int    sessionIdx   = -1;
 		private int    loggedBars   = 0;
@@ -92,42 +87,14 @@ namespace NinjaTrader.NinjaScript.Indicators
 					string dir = Path.GetDirectoryName(EventLogPath);
 					if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
 						Directory.CreateDirectory(dir);
-					// El nombre lleva la RESOLUCION resuelta del chart y un contador. Motivo
-
-					// (incidente 2026-07-25): con sobrescritura a secas, cambiar el chart de
-
-					// 25 Tick a 10 Tick sin cambiar la ruta dispara DataLoaded y PISA la
-
-					// captura anterior. Con el sufijo eso es IMPOSIBLE: cada resolucion
-
-					// escribe su propio archivo, y si ya existe se abre el siguiente indice.
-
-					// Nunca se appendea (append fue lo que mezclo 3 corridas el 2026-07-24) y
-
-					// nunca se pisa: los dos modos de falla quedan cerrados.
-
-					string bs = BarsPeriod.BarsPeriodType.ToString() + BarsPeriod.Value.ToString(inv);
-
-					string baseName = Path.GetFileNameWithoutExtension(EventLogPath) + "__" + bs;
-
-					string ext = Path.GetExtension(EventLogPath);
-
-					if (string.IsNullOrEmpty(ext)) ext = ".csv";
-
-					resolvedPath = Path.Combine(dir, baseName + ext);
-
-					for (int k = 2; File.Exists(resolvedPath) && k < 1000; k++)
-
-						resolvedPath = Path.Combine(dir, baseName + "_" + k.ToString(inv) + ext);
-
-					log = new StreamWriter(resolvedPath, false, new UTF8Encoding(false));
-
-					Print("TickBarDiag: escribiendo " + resolvedPath);
-
+					// false = SOBREESCRIBE. Este archivo es de diagnostico y debe
+					// contener UNA sola corrida (el modo append fue el que mezclo
+					// tres corridas en el oraculo de BigTrap2 el 2026-07-24).
+					log = new StreamWriter(EventLogPath, false, new UTF8Encoding(false));
 					log.AutoFlush = true;
-					log.WriteLine("# meta indicator=TickBarDiag,version=1.1,purpose=TICKBAR-001,"
+					log.WriteLine("# meta indicator=TickBarDiag,version=1.0,purpose=TICKBAR-001,"
 						+ "digest=fnv_basis_mix1000003_ulong,price=integer_ticks_awayfromzero,"
-						+ "vol_int=round(vol*100),digest_scope=solo_eventos_de_la_ventana");
+						+ "vol_int=round(vol*100)");
 					log.WriteLine(string.Format(inv,
 						"# params instrument={0},tick_size={1},bars_period={2},bars_value={3},"
 						+ "skip_bars={4},max_bars={5}",
@@ -251,26 +218,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 			seqLast = idx;
 			nEvents++;
 
-			// El digest cubre SOLO los eventos de la ventana registrada. Antes
-
-			// acumulaba desde el primer tick del chart (incluido el warm-up), asi que
-
-			// Python -que solo ve la ventana- no podia reproducirlo jamas y la
-
-			// comparacion de H1 daba DIFIERE aunque los streams fueran identicos.
-
-			if (!digestArmed && InWindow()) { digestStream = FNV_BASIS; digestArmed = true; }
-
-			if (digestArmed)
-
-			{
-
-				digestStream = Mix(digestStream, tick);
-
-				digestStream = Mix(digestStream, volInt);
-
-			}
-
+			digestStream = Mix(digestStream, tick);
+			digestStream = Mix(digestStream, volInt);
 
 			if (log != null && InWindow())
 			{
