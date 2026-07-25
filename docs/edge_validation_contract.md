@@ -105,6 +105,36 @@ la mitad de los vecinos positivos); SPA/White cuando el nº de familias lo
 amerite. La corrección por múltiples hipótesis usa SIEMPRE el N_eff del
 manifiesto; añadir variantes después de correr = nueva campaña.
 
+### Implementación (2026-07-25)
+
+`edgelab/research/g2.py`, verificado en `tests/research/test_g2.py` (27 tests).
+
+Se construyó **antes** de tener ningún candidato positivo, a propósito: escribir
+el test estadístico después de ver un resultado bueno invita a ajustarlo hasta
+que lo apruebe. Los umbrales salen de esta sección, no del resultado.
+
+Cada prueba se verifica contra **datos sintéticos con verdad conocida**, en los
+dos sentidos: sobre ruido puro debe rechazar, y sobre un efecto plantado debe
+**aprobar**. Un gate que sólo sabe decir "no" no sirve para encontrar edges.
+
+| función | verificación |
+|---|---|
+| `mcpt` | ruido ⇒ p > 0.05 · efecto concentrado plantado ⇒ p ≤ 0.05 · determinista con la misma semilla · con una sola sesión devuelve p = 1 en vez de fingir significancia |
+| `pbo_cscv` | ruido ⇒ mediana ≈ 0.5 sobre 30 matrices · ventaja real y estable ⇒ PBO ≤ 0.50 · genera las 70 particiones C(8,4) |
+| `deflated_sharpe` | cae monótonamente al crecer N_eff · castiga cola izquierda gruesa |
+| `walk_forward` | **no** evalúa el primer fold (sin historia previa) · re-selecciona sólo con folds anteriores, verificado con un config trampa que es el mejor únicamente en el último fold |
+| `parameter_sensitivity` | detecta el pico aislado · acepta la meseta · sin vecinos devuelve `None`, no un valor inventado |
+
+**Regla de composición:** `evaluar()` trata todo gate **no evaluado** como
+**FAIL**. Un gate que no se corrió nunca cuenta como aprobado, y cada umbral es
+excluyente por separado.
+
+**Trampa de escala, documentada porque casi me come:** el `sharpe` que consume
+`deflated_sharpe` es **por observación**, no anualizado. Un SR/trade de 0.5 sobre
+500 trades satura el DSR en ~1.0 — si alguien ve `DSR = 1.0` y lo celebra, el
+problema está en la escala que le pasó, no en la estrategia. Valores realistas
+por trade están en el orden de 0.02–0.1.
+
 ## G3 — Robustez económica
 
 Modelo de costos **desglosado y pre-registrado** en el manifiesto (comisión
