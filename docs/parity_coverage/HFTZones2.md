@@ -100,5 +100,48 @@ La simetría descarta un sesgo sistemático, y la ausencia de casos en el tope d
 semántica real en **cuándo se cuenta una época de toque** en un indicador
 tick-driven.
 
-**El contrato exige causa raíz para todo WARN antes de promover** (§4). Hasta
-tenerla, HFTZones2 **no** pasa a `parity_exact` y no puede sembrar cobertura.
+### CAUSA RAÍZ ENCONTRADA (2026-07-25) — no es el conteo de toques
+
+La evidencia directa la dio comparar los timestamps de `ZONE_TOUCHED` de una zona
+afectada:
+
+```
+Z000127   NT8 = 32 toques      Python = 6
+  los 6 primeros coinciden AL MICROSEGUNDO; Python simplemente deja de contar.
+```
+
+Misma geometría, misma creación. **Python no cuenta distinto: deja de contar
+antes, porque invalida la zona antes.**
+
+| | |
+|---|---|
+| zonas cerradas en ambos lados | 2.078 |
+| con el **mismo** timestamp de cierre | 1.890 (**91,0 %**) |
+| con timestamp distinto | **188 (9,0 %)**, todas `close_through` |
+| dirección | **Python cierra primero, siempre** |
+
+La condición es **idéntica carácter por carácter** en los dos lados
+(`price <= z.Lower - PenetrationTicks * TickSize`). El problema es la
+**aritmética**: es la **tercera aparición de la familia de AUDIT-001**.
+
+- NT8 construye `z.Lower` desde `_swL`, que es el `double` **del feed**.
+- Python lo construye desde `st["swl"] = pticks × tick_size`, **reconstruido**.
+- Los dos difieren en 1 ULP en el **24,3 %** de los niveles del 6E, y —medido—
+  **el del feed está SIEMPRE por debajo** (1.215 casos por debajo, **0** por
+  encima).
+
+Como el umbral es `borde − penetration × tick`, el de Python queda 1 ULP **más
+arriba**, así que su condición `price <= umbral` se cumple **antes**. Predicción
+direccional: Python invalida primero y NT8 nunca. Verificado: 24,3 % de los
+niveles con Python más arriba, **0 %** al revés — y en el oráculo, las 188
+diferencias van todas en esa dirección.
+
+**Corrección a AUDIT-001:** esa auditoría marcó las comparaciones de borde de
+zona como riesgo **NULO** razonando que "ambos operandos son precios de grilla
+construidos igual en los dos lados". **Era falso** para HFTZones2: un lado usa el
+feed y el otro el reconstruido. La auditoría cubrió el retroceso y la altura pero
+**no** el borde de zona ni el umbral de penetración.
+
+**No se aplica ningún fix**: es un cambio de semántica en ambos lados y requiere
+OK de Nico, igual que los dos anteriores de esta familia. Hasta entonces
+HFTZones2 **no** pasa a `parity_exact` y no puede sembrar cobertura.
