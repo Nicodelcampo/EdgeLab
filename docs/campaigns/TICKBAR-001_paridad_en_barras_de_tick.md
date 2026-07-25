@@ -105,6 +105,61 @@ bit. Mismo estándar acá.
 v2 que valida `PRED-001` (§B5). Después, commit aislado con prueba de contenido
 lógico idéntico.
 
+## 6.bis CLASIFICACIÓN (2026-07-25) — **H2 BAR BUILDER**, confirmada en las dos resoluciones
+
+Capturas: `tickbar_diag_6E_0926__Tick25__Tick25.csv` y
+`tickbar_diag_6E_0926__Tick10.csv`, ambas del `.cs` v1.1, ventana 2026-07-19
+19:00 → 22:12 (hora chart).
+
+| | 25 Tick | 10 Tick |
+|---|---|---|
+| eventos NT8 vs Python | 4.229 = 4.229 | 1.679 = 1.679 |
+| divergencias elemento a elemento | **0** | **0** |
+| digest de 64 bits | **idénticos** (`9556815784282820219`) | **idénticos** (`156793164604331557`) |
+| barras con el conteo correcto | 53/150 | 28/150 |
+| drift acumulado | +12, **no** monótono | +0, **no** monótono |
+
+**H1 DESCARTADA con evidencia dura.** Dos implementaciones independientes del
+digest —C# con `ulong`, Python con máscara de 64 bits— llegan al mismo entero
+sobre 4.229 eventos. NT8 y Python **ven exactamente el mismo stream de trades**.
+
+**H3 NO EVALUABLE** (y así lo reporta la herramienta): con cortes distintos el
+footprint difiere por construcción y no informa nada.
+
+### Mecanismo exacto
+
+Los `sequence_id` de la subserie de 1 tick, que el ledger registra por barra,
+permiten ir más allá de "los cortes difieren":
+
+| medición | 25 Tick | 10 Tick |
+|---|---|---|
+| `span == n_events` (bloques contiguos) | **150/150** | **150/150** |
+| barra `i+1` arranca justo después de la `i` | **149/149** | **149/149** |
+| huecos o solapes entre barras | **0** | **0** |
+| `vol_fp == vol_bar` | **40/150** | **19/150** |
+| delta `vol_fp − vol_bar` | hasta ±51, **suma +33** | hasta ±49, **suma 0** |
+
+Las barras de NT8 **sí** particionan el stream de forma contigua, sin fugas ni
+duplicados, y el volumen total se conserva. Lo que falla es **dónde cae el
+corte**: el footprint acumulado para una barra no coincide con el volumen de
+**esa misma barra**.
+
+> **NT8 no está en desacuerdo con Python: está en desacuerdo consigo mismo.**
+
+El `take + reset` que se ejecuta en `OnBarUpdate(BarsInProgress==0)` captura un
+conjunto de eventos BIP1 que **no** es el que le corresponde a la barra primaria
+que acaba de cerrar. Los eventos de la subserie llegan **desfasados** respecto
+del callback de cierre: algunos de la barra que cierra todavía no fueron
+entregados, y/o ya llegaron algunos de la siguiente. Es la versión medida y
+cuantificada del caveat declarado en la guía §11.
+
+**Dueño del defecto: el `.cs`.** No es de los datos (H1 descartada con digest
+idéntico) ni del kernel Python (que particiona por índice de tick, exacto por
+construcción).
+
+**Prohibido diseñar el fix sin la decisión de Nico** (§B3, y su instrucción
+explícita: "esa decisión es mía").
+
 ## 7. Cierre pre-registrado (§B4)
 
 1. Causa **clasificada** y documentada con la firma que la identificó.
