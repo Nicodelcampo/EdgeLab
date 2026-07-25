@@ -167,6 +167,63 @@ def stop_tick_for(family, dirn, lo_t, hi_t, pad):
     return ref - dirn * pad
 
 
+def precompute_triggers(zones, bars):
+    """Resuelve los disparos de las 4 familias en UNA pasada por zona.
+
+    Los disparos no dependen de `stop_pad` ni de `target_R` (§6), y `zone_min_size`
+    sólo filtra zonas — así que este cache sirve para las 48 celdas sin recalcular
+    nada. El resultado es idéntico a llamar `triggers_for_zone` por celda.
+    """
+    end_ms = (bars.end_ns // 1_000_000).astype(np.int64)
+    n = len(bars)
+    out = []
+    for z in zones:
+        c0 = int(z["created_ms"])
+        c1 = int(z["ended_ms"]) if z["ended_ms"] is not None else int(end_ms[-1]) + 1
+        i0 = int(np.searchsorted(end_ms, c0, "left"))
+        i1 = min(int(np.searchsorted(end_ms, c1, "left")), n)
+        if i1 <= i0:
+            continue
+        trig = triggers_for_zone(z, bars, i0, i1)
+        if trig:
+            out.append((z, int(json.loads(z["features"]).get("size_ticks") or 0), trig))
+    return out
+
+
+def signals_from_cache(cache, bars, steps, family, zone_min_size, stop_pad,
+                       target_R, time_stop_bars, tick_size, scenario="base"):
+    """Señales de UNA celda a partir del cache de disparos. Ver `build_signals`."""
+    sc = get_scenario(scenario)
+    end_ms = (bars.end_ns // 1_000_000).astype(np.int64)
+    step_ts = np.array([s["ts"] for s in steps], dtype=np.int64)
+    sigs, skipped = [], {"invalid_stop": 0, "no_entry_step": 0}
+    for z, size_ticks, trig in cache:
+        if size_ticks < zone_min_size or family not in trig:
+            continue
+        bar_t, dirn = trig[family]
+        available_at = int(end_ms[bar_t])
+        e = int(np.searchsorted(step_ts, available_at, side="right"))
+        if e >= len(steps):
+            skipped["no_entry_step"] += 1
+            continue
+        book = steps[e]["ask"] if dirn == 1 else steps[e]["bid"]
+        entry_fill = round(book / tick_size) + dirn * sc.slip_entry
+        stop_t = stop_tick_for(family, dirn, int(z["lower_tick"]),
+                               int(z["upper_tick"]), stop_pad)
+        stop_ticks = int(dirn * (entry_fill - stop_t))
+        if stop_ticks <= 0:
+            skipped["invalid_stop"] += 1
+            continue
+        sigs.append(dict(
+            signal_id="%s|%s|%d" % (z["zone_id"], family, bar_t),
+            available_at=available_at, dir=dirn,
+            stop_ticks=stop_ticks, target_ticks=int(target_R * stop_ticks),
+            time_stop_ms=int(time_stop_bars) * 60_000,
+            zone_id=z["zone_id"], trigger_bar=int(bar_t)))
+    sigs.sort(key=lambda s: (s["available_at"], s["signal_id"]))
+    return sigs, skipped
+
+
 def build_signals(zones, bars, steps, family, zone_min_size, stop_pad, target_R,
                   time_stop_bars, tick_size, scenario="base"):
     """Señales ejecutables para UNA celda de la grilla.
