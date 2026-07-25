@@ -15,6 +15,7 @@ aditiva de costos.
 """
 from __future__ import annotations
 
+import bisect
 import hashlib
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -78,6 +79,7 @@ def simulate(signals, steps, *, scenario="base", tick_size=None, tick_value=None
         raise ValueError("tick_size y tick_value son obligatorios (del catálogo de instrumento)")
 
     st = _norm_steps(steps, tick_size)
+    ts_arr = [x["ts"] for x in st]          # para la busqueda binaria de entrada
 
     # --- firewall del holdout: el simulador declara su propia ventana ---
     if check_guard and st:
@@ -97,22 +99,20 @@ def simulate(signals, steps, *, scenario="base", tick_size=None, tick_value=None
             raise ValueError("dir debe ser +1 o -1, no %r" % (d,))
 
         # --- entrada: primer step con ts ESTRICTAMENTE > available_at ---
-        e = None
-        for s in st:
-            if s["ts"] > av:
-                e = s
-                break
-        if e is None:
+        # Búsqueda binaria sobre `ts_arr` (los steps son cronológicos). Antes era
+        # un escaneo lineal desde el inicio POR CADA señal: con ~130k señales y
+        # ~86k steps por fold, CAMP-001 tardó 1h35m. La semántica es idéntica
+        # -`bisect_right` devuelve el primer índice con ts > av, que es lo mismo
+        # que buscaba el `break`- y los 7 golden de la spec §9 lo prueban.
+        i = bisect.bisect_right(ts_arr, av)
+        if i >= len(st):
             rejected.append(dict(signal_id=sig["signal_id"], reason="no_execution_step"))
             continue
+        e = st[i]
 
-        # sesión de la señal = la del último step con ts <= available_at
-        sig_session = None
-        for s in st:
-            if s["ts"] <= av:
-                sig_session = s["session_id"]
-            else:
-                break
+        # sesión de la señal = la del último step con ts <= available_at,
+        # que es exactamente el anterior al de entrada.
+        sig_session = st[i - 1]["session_id"] if i > 0 else None
         if sig_session is not None and e["session_id"] != sig_session:
             rejected.append(dict(signal_id=sig["signal_id"],
                                  reason="session_boundary_no_fill"))
@@ -136,7 +136,9 @@ def simulate(signals, steps, *, scenario="base", tick_size=None, tick_value=None
         exit_ref = exit_kind = exit_reason = None
         x = None
         mfe = mae = 0.0
-        for s in st[e["i"]:]:                     # la barra de entrada TAMBIÉN puede salir
+        # Recorre por INDICE: `st[e["i"]:]` copiaba la lista entera por señal.
+        for j in range(e["i"], len(st)):          # la barra de entrada TAMBIÉN puede salir
+            s = st[j]
             fav = s["high"] if d == 1 else s["low"]
             adv = s["low"] if d == 1 else s["high"]
             mfe = max(mfe, d * (fav - entry_fill))

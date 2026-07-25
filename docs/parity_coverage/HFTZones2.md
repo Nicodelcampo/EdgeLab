@@ -49,3 +49,56 @@ Orden respecto de los otros exports: **BigTrap2 v2 va primero** (valida la
 predicción `PRED-001` bit a bit); HFTZones2 v2.1 va después. `VolTicksPOC2` y
 `aVolCellPOI2` no cambiaron de código y pueden salir en la misma sesión.
 **`Gaps2` no se toca**: es la referencia que ya dio 1316/1316.
+
+## RESULTADO del primer oráculo (2026-07-25) — **WARN**
+
+Oráculo: `oracles/HFTZones2_adaptive_6E_0926.csv`, `.cs` **v2.1**
+(`engine=…_integer_grid`), defaults, `adaptive_mode=true`.
+
+### Primer intento: FAIL por error MÍO de ventana, no del kernel
+
+Corrí la ventana estándar 07-13T22:00 → 07-16T21:00 UTC y dio **FAIL** con 652
+`MISSING_IN_PYTHON`. Causa raíz inmediata: **violé el requisito pre-declarado en
+§5** ("el rango DEBE arrancar en borde de sesión con **≥1 sesión completa
+previa**"). Python emitió `CALIBRATION_PENDING` el 13/07 19:00 y **no creó
+ninguna zona en toda su primera sesión**, mientras NT8 venía calibrado desde el
+12/07 porque el chart cargaba desde el 09/07.
+
+Lo delataba el propio reporte: `MISSING_IN_NT8 = 0` y `GEOMETRY_DIFF = 0` — todo
+lo que Python produjo, matcheó. No era un desacuerdo, era muestra faltante.
+
+### Segundo intento: warmup correcto ⇒ WARN
+
+Dándole a Python el mismo arranque que tuvo NT8 (`--start-utc
+2026-07-09T22:00:00`):
+
+```
+py_zones 2111 | nt8_zones 2111 | matched 2111
+MATCHED 2029 · FEATURE_DIFF 82 · MATURITY_TAIL 74
+MISSING_IN_PYTHON 0 · MISSING_IN_NT8 0 · GEOMETRY_DIFF 0
+gate: WARN
+```
+
+**Geometría y ciclo de vida exactos**, conteo de zonas idéntico. Es un resultado
+fuerte para un primer oráculo, y valida el fix simétrico v2.1 (grilla entera en
+retroceso y altura) aplicado en el `.cs` y el kernel a la vez.
+
+### Causa raíz PENDIENTE — los 82 `FEATURE_DIFF` de `touches`
+
+Caracterización hecha (no es todavía la causa):
+
+| medición | valor |
+|---|---|
+| zonas afectadas | 82 de 2111 (**3,9 %**) |
+| dirección | **simétrica**: Python cuenta más en 37, NT8 en 45 |
+| ¿truncamiento por `max_logged_touches=20`? | **NO** — 0 casos con `nt8 == 20` |
+| \|delta\| | mediana 3, máximo 30 |
+| delta de exactamente 1 toque | 24 de 82 |
+
+La simetría descarta un sesgo sistemático, y la ausencia de casos en el tope de
+20 descarta la hipótesis del truncamiento del export. Queda una diferencia
+semántica real en **cuándo se cuenta una época de toque** en un indicador
+tick-driven.
+
+**El contrato exige causa raíz para todo WARN antes de promover** (§4). Hasta
+tenerla, HFTZones2 **no** pasa a `parity_exact` y no puede sembrar cobertura.
