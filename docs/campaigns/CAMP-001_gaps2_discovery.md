@@ -156,9 +156,10 @@ diagnóstico, jamás para decidir.
 - Abandono (duro): si ninguna familia pasa G1 → la campaña cierra y se registra
   negativa (valor informativo real: los micro-gaps m1 de 6E no pagan costos).
 - Los 4 ganadores de familia que pasen G1 avanzan a G2; los FAIL se registran.
-- Promoción a `EDGES_DISCOVERED.md`: exige G2 + `parity_exact` propio (la
-  config de zonas ya lo es; la config GANADORA de estrategia hereda si no
-  altera la identidad de zonas).
+- Promoción a `EDGES_DISCOVERED.md`: exige G2 + `parity_exact` propio de la
+  config ganadora **sobre una ventana del período de desarrollo**. Detalle y
+  oráculo de promoción pre-registrado en **§11** (el oráculo 09-26 NO sirve:
+  cae dentro del holdout).
 
 ## 9. Riesgos declarados
 
@@ -171,17 +172,32 @@ diagnóstico, jamás para decidir.
 4. **Dependencia de la ventana del oráculo**: `parity_exact` se validó en una
    ventana de 3 días de 09-26; la cobertura por ramas (F7b) sigue pendiente de
    más oráculos — riesgo residual técnico declarado, no bloqueante para G0.
-5. **Simulador pendiente** (FASE 3): la política de fills/costos de G0/G3 aún
-   no tiene implementación probada (**dato faltante #2**: decidir vectorbt
-   instalado vs simulador propio mínimo).
+5. **Simulador sin implementar todavía**: la política de fills/costos de G0/G3
+   ya tiene **semántica cerrada y golden tests** en
+   `docs/execution_simulator_spec.md` (decisión de Nico: simulador propio
+   mínimo; `edgelab/engine.py` legacy NO se usa para evidencia formal), pero la
+   implementación es un turno mecánico pendiente. Riesgo: que la
+   implementación no reproduzca los golden ⇒ se bloquea la campaña hasta que lo
+   haga.
+6. **Cobertura de paridad más débil que paridad propia**: las particiones de
+   desarrollo corren con `parity_covered` (§4.1). El riesgo residual está
+   declarado en el contrato de paridad §8.2 (un tramo de datos distinto puede
+   ejercitar ramas que la ventana del oráculo no tocó). Mitigación: la promoción
+   exige `parity_exact` propio (§11).
 
 ## 10. Datos faltantes antes de sellar
 
 1. Costos reales por lado del broker (estados de cuenta) → §7.
-2. Decisión simulador: instalar extra `research-vectorbt` o simulador propio
-   determinista mínimo (recomendación: propio mínimo, testeable, sin deps).
-3. Confirmación de Nico de: familias (§5), grilla y N_eff=48 (§6), regla de
-   abandono (§8), y esta redacción de riesgos.
+2. ~~Decisión simulador~~ → **RESUELTO**: simulador propio mínimo
+   (`docs/execution_simulator_spec.md`). Queda pendiente su **implementación**
+   (turno mecánico) y que reproduzca los golden tests de esa spec.
+3. **Política `close_at_session_end`** (cerrar o no toda posición al cierre de
+   sesión): la spec del simulador lo expone como parámetro y **no asume un
+   default**; afecta el horizonte real de las 4 familias. Debe fijarlo Nico al
+   sellar.
+4. Confirmación de Nico de: familias (§5), grilla y N_eff=48 (§6), regla de
+   abandono (§8), elegibilidad y promoción (§4.1 y §11), y esta redacción de
+   riesgos.
 
 ## 11. Requisito de promoción y oráculo de promoción pre-registrado
 
