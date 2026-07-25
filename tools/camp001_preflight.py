@@ -134,14 +134,25 @@ def main(argv=None):
 
     # ---- 5. simulador y costo EXACTO --------------------------------------- #
     print("\n[4] SIMULADOR Y FRICCION")
-    rc = subprocess.run([sys.executable, "-m", "pytest", "tests/research", "-q"],
-                        cwd=REPO, capture_output=True, text=True)
-    tail = [l for l in rc.stdout.strip().splitlines() if "passed" in l or "failed" in l]
-    sim_line = tail[-1] if tail else "(sin salida)"
-    ck("simulador: tests/research verdes", rc.returncode == 0 and "23 passed" in sim_line,
-       sim_line, "23 passed")
+    def _pytest(target):
+        r = subprocess.run([sys.executable, "-m", "pytest", target, "-q"],
+                           cwd=REPO, capture_output=True, text=True)
+        tail = [l for l in r.stdout.strip().splitlines()
+                if "passed" in l or "failed" in l or "error" in l]
+        return r.returncode, (tail[-1] if tail else "(sin salida)")
+
+    # Los 7 golden de `docs/execution_simulator_spec.md` §9 son CONTRATO: se
+    # verifica ese número sellado, no un total de directorio (que crece al
+    # agregar tests y haría el check frágil).
+    g_rc, g_line = _pytest("tests/research/test_sim_golden.py")
+    ck("simulador: 7 golden de la spec §9", g_rc == 0 and "7 passed" in g_line,
+       g_line, "7 passed")
+    r_rc, sim_line = _pytest("tests/research")
+    ck("simulador: tests/research todos verdes",
+       r_rc == 0 and "failed" not in sim_line and "error" not in sim_line,
+       sim_line, "0 failed")
     cost = C.cost_round_turn("base")
-    print("    tests/research: %s" % sim_line)
+    print("    golden spec §9: %s   ·   tests/research: %s" % (g_line, sim_line))
     print("    close_at_session_end = True (E4) · una posicion simultanea (§5)")
     print("    FRICCION round-turn escenario 'base', RESUELTA:")
     print("       slippage      = %.0f ticks (2 patas x %.0f)" % (
