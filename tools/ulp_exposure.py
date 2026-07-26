@@ -73,7 +73,7 @@ KERNELS = {
     # DOMINIO ENTERO ("tick"): la comparacion NO se hace entre precios sino entre
     # indices de tick, en los dos lados. La exposicion es 0 si -y solo si- las dos
     # representaciones colapsan al MISMO entero; eso se VERIFICA aca, no se asume.
-    "HFTZones2 (v2.2, grilla entera)": [
+    "HFTZones2 (v2.3, ciclo de vida COMPLETO en enteros)": [
         ("inside (priceTick >= lowerTick)", -1, "ge", "tick"),
         ("inside (priceTick <= upperTick)", 0, "le", "tick"),
         ("close_through (priceTick <= lowerTick - pen)", -2, "le", "tick"),

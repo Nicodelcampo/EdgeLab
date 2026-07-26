@@ -337,11 +337,24 @@ def run(ticks, bars, params=None, chart_tz="UTC"):
         z["end_reason"] = reason
         log("ZONE_INVALIDATED", t_ns, z, reason, "")
 
+    def zones_reversed_view():
+        return reversed(zones)
+
     def update_zones(price, t_ns):
-        for z in reversed(zones):
+        # v2.3: el precio se lleva a indice de tick UNA vez por llamada y TODAS
+        # las comparaciones del ciclo de vida se hacen en enteros.
+        #
+        # Por que hizo falta un segundo paso: en v2.1 cada lado derivaba el borde
+        # con su propia representacion (feed vs reconstruido) y el error del
+        # borde CANCELABA al del precio, dejando `inside` en 0,00% de exposicion
+        # medida. Al unificar los bordes en v2.2 esa cancelacion se rompio y
+        # `inside` salto a 24,30%: 272 FEATURE_DIFF de touches. La exposicion no
+        # es propiedad de cada comparacion aislada sino del CONJUNTO.
+        px_t = snap_to_tick(price, tick_size)
+        for z in zones_reversed_view():
             if z["archived"]:
                 continue
-            inside = z["lower"] <= price <= z["upper"]
+            inside = z["lower_t"] <= px_t <= z["upper_t"]
             if inside and not z["inside_epoch"]:
                 z["touches"] += 1
                 z["inside_epoch"] = True
@@ -362,7 +375,6 @@ def run(ticks, bars, params=None, chart_tz="UTC"):
                 # encadenados que exponian la decision al ULP en el 9,90% de los
                 # niveles (lado inferior) y el 48,59% (superior). Medido: Python
                 # invalidaba ANTES que NT8 en 188 de 2.078 zonas.
-                px_t = snap_to_tick(price, tick_size)
                 through = (px_t <= z["lower_t"] - int(p["penetration_ticks"])
                            if z["dir"] == 1 else
                            px_t >= z["upper_t"] + int(p["penetration_ticks"]))
