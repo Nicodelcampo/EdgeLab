@@ -285,16 +285,23 @@ def run(ticks, bars, params=None, chart_tz="UTC"):
         if assign_id:
             next_zone_id += 1
         zid = next_zone_id if assign_id else 0
+        # v2.2: los bordes se derivan en ENTEROS de tick y los precios se
+        # reconstruyen desde ahi. `upper`/`lower` en double quedan solo para I/O;
+        # las DECISIONES usan `upper_t`/`lower_t` (AUDIT-002).
         if st["dir"] == 1:
-            upper, lower = st["swl"], st["swl"] - p["zone_height_ticks"] * tick_size
+            upper_t = snap_to_tick(st["swl"], tick_size)
+            lower_t = upper_t - int(p["zone_height_ticks"])
         else:
-            upper, lower = st["swh"] + p["zone_height_ticks"] * tick_size, st["swh"]
+            lower_t = snap_to_tick(st["swh"], tick_size)
+            upper_t = lower_t + int(p["zone_height_ticks"])
+        upper, lower = upper_t * tick_size, lower_t * tick_size
         return dict(id=zid, calib_id=calib_id, created_bar=closed_bar,
                     created_ms=ns_to_ms(st["t_last"]), dir=st["dir"], bucket=bucket,
                     avg_ms=avg_ms, total_ms=total_ms, vol_rate=vol_rate,
                     total_vol=st["total_vol"], max_retro=st["max_retro"],
                     pasos=st["streak"], valid_steps=st["valid"], height_ticks=height_ticks,
-                    upper=upper, lower=lower, touches=0, inside_epoch=False,
+                    upper=upper, lower=lower, upper_t=upper_t, lower_t=lower_t,
+                    touches=0, inside_epoch=False,
                     archived=False, ended_ms=None, end_reason=None, timeline=[])
 
     def finalize_streak(t_ns):
@@ -349,9 +356,16 @@ def run(ticks, bars, params=None, chart_tz="UTC"):
             elif not inside:
                 z["inside_epoch"] = False
             if p["invalidation_mode"] == "CloseThrough":
-                through = (price <= z["lower"] - p["penetration_ticks"] * tick_size
+                # v2.2 (AUDIT-002, autorizado por Nico): el umbral se arma en
+                # ENTEROS de tick. Antes era `z["lower"] - pen*tick_size` sobre
+                # doubles, con el borde ya restado una vez: dos redondeos
+                # encadenados que exponian la decision al ULP en el 9,90% de los
+                # niveles (lado inferior) y el 48,59% (superior). Medido: Python
+                # invalidaba ANTES que NT8 en 188 de 2.078 zonas.
+                px_t = snap_to_tick(price, tick_size)
+                through = (px_t <= z["lower_t"] - int(p["penetration_ticks"])
                            if z["dir"] == 1 else
-                           price >= z["upper"] + p["penetration_ticks"] * tick_size)
+                           px_t >= z["upper_t"] + int(p["penetration_ticks"]))
                 if through:
                     invalidate_zone(z, t_ns, "close_through")
 

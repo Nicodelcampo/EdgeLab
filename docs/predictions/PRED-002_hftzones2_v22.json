@@ -1,0 +1,62 @@
+{
+  "prediction_id": "PRED-002_hftzones2_v22_grilla_entera",
+  "created_utc": "2026-07-26",
+  "status": "PRE-REGISTRADA (antes de que exista el oraculo v2.2)",
+  "autorizacion": "Decision 2 de Nico, 2026-07-26",
+  "fix": "HFTZones2 v2.2 — bordes de zona y umbral de close_through en ENTEROS de tick, simetrico .cs + kernel. Sin tocar params, defaults ni lifecycle.",
+  "baseline_oraculo": "oracles/HFTZones2_adaptive_6E_0926.csv (.cs v2.1)",
+  "ventana": {
+    "start_utc": "2026-07-09T22:00:00",
+    "end_utc": "2026-07-16T21:00:00",
+    "nota": "arranca en borde de sesion con >=1 sesion previa (contrato §5)"
+  },
+  "medido_antes_del_fix": {
+    "counts": {
+      "MATCHED": 2029,
+      "FEATURE_DIFF": 82,
+      "MATURITY_TAIL": 74
+    },
+    "gate": "WARN",
+    "zonas_con_cierre_desalineado_vs_nt8": 188
+  },
+  "medido_kernel_v22_contra_oraculo_v21": {
+    "counts": {
+      "MATCHED": 1379,
+      "FEATURE_DIFF": 732,
+      "STATE_ORDER_DIFF": 5,
+      "MATURITY_TAIL": 534
+    },
+    "gate": "WARN",
+    "decisiones_de_cierre_que_cambiaron": 1818,
+    "direccion": "1818 cierran ANTES, 0 despues (unidireccional)",
+    "por_dir": {
+      "alcista": 894,
+      "bajista": 924
+    },
+    "zonas_desalineadas_vs_nt8": 1853,
+    "explicacion": "esperado: se comparo Python ARREGLADO contra NT8 SIN arreglar. No es el resultado de la prediccion."
+  },
+  "PREDICCION_para_el_oraculo_v22": {
+    "py_zones": 2111,
+    "nt8_zones": 2111,
+    "MATCHED": 2111,
+    "FEATURE_DIFF": 0,
+    "GEOMETRY_DIFF": 0,
+    "MISSING_IN_PYTHON": 0,
+    "MISSING_IN_NT8": 0,
+    "MATURITY_TAIL": 74,
+    "gate": "PASS",
+    "fundamento": "con los dos lados comparando ENTEROS de tick, la decision de close_through es identica por construccion: ulp_exposure da 0,00% en los cuatro umbrales. Las 1818 zonas que el kernel movio deben moverse IGUAL en el .cs v2.2."
+  },
+  "falsacion": "Cualquier FEATURE_DIFF > 0, o cualquier zona con timestamp de cierre distinto entre los dos lados, refuta el fix. No se ajusta ninguna tolerancia: si no da PASS, se reporta FAIL y se investiga.",
+  "requisitos_del_export": {
+    "cs_version": "2.2",
+    "cs_meta_debe_contener": "engine=...integer_grid_v22_zone_edges",
+    "instrumento": "6E 09-26",
+    "chart": "1 Minute",
+    "rango": "2026-07-09 -> 2026-07-17",
+    "params": "defaults (adaptive_mode=true)",
+    "ruta": "E:\\EdgeLab\\oracles\\HFTZones2_adaptive_6E_0926_v22.csv"
+  },
+  "n_zonas_con_cierre_registrado": 2091
+}

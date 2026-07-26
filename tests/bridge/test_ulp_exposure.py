@@ -25,8 +25,16 @@ DEC = 5
 LO, HI = 20000, 25000
 
 
+def _kernel_key(prefix):
+    """Match por PREFIJO: las claves llevan comentarios largos y un em-dash."""
+    for k in ulp.KERNELS:
+        if k.startswith(prefix):
+            return k
+    raise AssertionError("no hay kernel que empiece con %r" % prefix)
+
+
 def _exp(kernel, threshold_substr):
-    for name, off, op, thr in ulp.KERNELS[kernel]:
+    for name, off, op, thr in ulp.KERNELS[_kernel_key(kernel)]:
         if threshold_substr in name:
             pct, flips, total = ulp.exposure(off, op, thr, TS, LO, HI, DEC)
             return pct, flips
@@ -80,26 +88,33 @@ def test_gaps2_sin_exposicion(thr):
 # --------------------------------------------------------------------------- #
 # 4) HFTZones2 — exposición conocida, calibrada contra el oráculo real
 # --------------------------------------------------------------------------- #
-def test_hftzones2_close_through_inferior_calibrado_contra_el_oraculo():
-    """9,90 % predicho vs 9,0 % medido sobre 2.078 zonas del oráculo real."""
-    pct, flips = _exp("HFTZones2", "lower - pen")
-    assert 9.0 <= pct <= 11.0, (
-        "esta celda es la CALIBRACION del modelo: el oraculo real dio 9,0%% "
-        "(188 de 2.078 zonas). Obtenido %.2f%%" % pct)
+V21 = "HFTZones2 (v2.1, ANTES del fix"
+V22 = "HFTZones2 (v2.2, grilla entera)"
 
 
-def test_hftzones2_close_through_superior_sigue_expuesto():
-    pct, flips = _exp("HFTZones2", "upper + pen")
-    assert flips > 0, "si esto llega a 0 sin un fix aprobado, el modelo se rompio"
-    assert 45.0 <= pct <= 52.0, "exposicion inesperada: %.2f%%" % pct
+def test_v21_queda_como_referencia_historica_calibrada():
+    """Los numeros que motivaron el fix, conservados. El de abajo es la
+    CALIBRACION del modelo: el oraculo real dio 9,0% (188 de 2.078 zonas)."""
+    pct, _ = _exp(V21, "lower - pen")
+    assert 9.0 <= pct <= 11.0, "calibracion perdida: %.2f%%" % pct
+    pct, flips = _exp(V21, "upper + pen")
+    assert flips > 0 and 45.0 <= pct <= 52.0, "exposicion inesperada: %.2f%%" % pct
 
 
-def test_hftzones2_bordes_directos_sin_exposicion():
-    """`price >= lower` y `price <= upper` comparan borde contra precio, sin
-    aritmética extra: ahí no hay exposición y por eso los toques coincidían."""
-    for thr in ("price >= lower", "price <= upper"):
-        pct, flips = _exp("HFTZones2", thr)
-        assert flips == 0, "%s paso a %.2f%%" % (thr, pct)
+def test_v22_lleva_TODOS_los_umbrales_a_cero():
+    """Condicion 3 de la autorizacion de Nico. Cero por CONSTRUCCION: las dos
+    representaciones colapsan al mismo indice de tick antes de comparar."""
+    for thr in ("priceTick >= lowerTick", "priceTick <= upperTick",
+                "lowerTick - pen", "upperTick + pen"):
+        pct, flips = _exp(V22, thr)
+        assert flips == 0, "%s quedo en %.2f%%: el fix no cerro la exposicion" % (thr, pct)
+
+
+def test_el_fix_v22_reduce_la_exposicion_no_la_mueve_de_lugar():
+    """Compara las dos versiones del MISMO umbral: de expuesto a cero."""
+    antes, _ = _exp(V21, "upper + pen")
+    despues, _ = _exp(V22, "upperTick + pen")
+    assert antes > 45.0 and despues == 0.0
 
 
 # --------------------------------------------------------------------------- #

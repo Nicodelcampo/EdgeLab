@@ -101,6 +101,47 @@ O1, zona `py 4033_B` con `ts == W1`, que NT8 sí generó (su barra 8081).
 Esta convención se declara **antes** de mirar resultados justamente para que un
 diff de borde no pueda usarse después como excusa para mover `W1`.
 
+#### Aplicación SIMÉTRICA de la ventana (decisión de Nico, 2026-07-26)
+
+**Regla mecánica, sin listas manuales:**
+
+> Una zona queda **fuera del gate** —de **los dos lados**— si su `created_ms`
+> cae fuera de `[W0, W1)`. Formalmente: se excluye si `created_ms < W0` o
+> `created_ms >= W1`.
+
+Es la forma degenerada de la frontera de madurez: aquélla excluye zonas que no
+pueden **completar** su ciclo de vida dentro de la ventana; ésta excluye las que
+no pueden ni **empezarlo** —una zona creada exactamente en `W1` tiene cero barras
+de vida observable adentro—.
+
+Tres condiciones de aplicación, exigidas al autorizarla:
+
+1. **Mecánica**: es el predicado de arriba, evaluado sobre `created_ms`. No hay
+   lista de filas ni excepciones nombradas.
+2. **Simétrica**: se aplica al oráculo NT8 **y** a las zonas del kernel. Hasta el
+   2026-07-26 se aplicaba sólo al oráculo, y esa asimetría era la que producía
+   el `MISSING_IN_NT8` de borde.
+3. **Reportada siempre**: el runner imprime cuántas filas excluyó de cada lado y
+   **cuáles** (por `id`). Una exclusión silenciosa sería indistinguible de un
+   diff que no existe.
+
+**Prohibido** usar esta regla para excluir cualquier otra cosa. Si algo fuera del
+borde no coincide, el gate da **FAIL** y se reporta.
+
+##### Resultado de aplicarla a BigTrap2 `time:1` v2.1
+
+```
+[oráculo BigTrap2] 225/825 zonas NT8 en ventana
+[kernel  BigTrap2] 225/226 zonas en ventana; excluidas por borde: 4033_B
+MATCHED 225 · MATURITY_TAIL 6 · gate PASS
+tol_geom_ticks=0 · tol_created_ms=60000  (SIN modificar)
+```
+
+**Gate PASS con 0 diffs**, una sola fila excluida y nombrada, y **ninguna otra
+tolerancia tocada**. Junto con `PRED-001` —que predijo las 9 magnitudes exactas
+antes de que el oráculo existiera— BigTrap2 en `time:1` queda con paridad
+**demostrada**, no sólo aprobada.
+
 ### Semántica del EMPATE precio-vs-close (pre-declarada, regla SEMÁNTICA)
 
 Cuando un nivel de precio (fila de footprint, celda, POC) **coincide exactamente**

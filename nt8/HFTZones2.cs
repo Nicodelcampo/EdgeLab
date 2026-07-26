@@ -1,5 +1,5 @@
 // ============================================================================
-// HFTZones2.cs — v2.1 — Detector de ráfagas HFT multi-instrumento ADAPTATIVO
+// HFTZones2.cs — v2.2 — Detector de ráfagas HFT multi-instrumento ADAPTATIVO
 // Consolida: HFTZonesESPureV2 (motor + FIX#1-3) + HFTZonesNQPureV3 (retro relativo)
 // Piloto del puente NT8 → EdgeLab/vectorbt. Sigue la Guía reutilizable §1–14.
 //
@@ -125,6 +125,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 			public int       CreatedPrimaryBar;
 			public DateTime  CreatedTime;
 			public double    Upper, Lower;
+			public long      UpperTick, LowerTick;   // v2.2: bordes en grilla entera
 			public int       Direction;      // +1 racha alcista (zona soporte), -1 bajista (resistencia)
 			public HZ2Bucket Bucket;
 			public double    AvgMs, TotalMs, VolRate, TotalVol, MaxRetroTicks;
@@ -173,7 +174,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 			if (State == State.SetDefaults)
 			{
 				Name                     = "HFTZones2";
-				Description              = "v2.1 adaptativa multi-instrumento: ráfagas HFT con calibración causal congelada por sesión y export de eventos. Contrato en el header del .cs.";
+				Description              = "v2.2 adaptativa multi-instrumento: ráfagas HFT con calibración causal congelada por sesión y export de eventos. Contrato en el header del .cs.";
 				Calculate                = Calculate.OnBarClose;
 				IsOverlay                = true;
 				DisplayInDataBox         = false;
@@ -548,8 +549,13 @@ namespace NinjaTrader.NinjaScript.Indicators
 			z.ValidSteps        = _validSteps;
 			z.HeightTicks       = heightTicks;
 			// Geometría declarada: soporte bajo el origen alcista / resistencia sobre el bajista
-			if (_dir == 1) { z.Upper = _swL;                                     z.Lower = _swL - ZoneHeightTicks * TickSize; }
-			else           { z.Upper = _swH + ZoneHeightTicks * TickSize;        z.Lower = _swH; }
+			// v2.2 (AUDIT-002, autorizado por Nico): los bordes se derivan en ENTEROS de
+			// tick y el precio se reconstruye desde ahi. Los double quedan para dibujo e
+			// I/O; las DECISIONES usan UpperTick/LowerTick.
+			if (_dir == 1) { z.UpperTick = PriceToTick(_swL); z.LowerTick = z.UpperTick - ZoneHeightTicks; }
+			else           { z.LowerTick = PriceToTick(_swH); z.UpperTick = z.LowerTick + ZoneHeightTicks; }
+			z.Upper = z.UpperTick * TickSize;
+			z.Lower = z.LowerTick * TickSize;
 			z.Tag = "HZ2_" + z.Id;
 			z.NeedsRedraw = true;
 			return z;
@@ -584,8 +590,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 				if (InvalidationMode == HZ2InvalidationMode.CloseThrough)
 				{
 					bool through = z.Direction == 1
-						? price <= z.Lower - PenetrationTicks * TickSize
-						: price >= z.Upper + PenetrationTicks * TickSize;
+						? PriceToTick(price) <= z.LowerTick - PenetrationTicks
+						: PriceToTick(price) >= z.UpperTick + PenetrationTicks;
 					if (through) InvalidateZone(z, t, "close_through");
 				}
 			}
@@ -659,7 +665,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				string dir = Path.GetDirectoryName(EventLogPath);
 				if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
 				_log = new StreamWriter(EventLogPath, false, new UTF8Encoding(false));
-				_log.WriteLine("# meta indicator=HFTZones2,version=2.1,engine=tick_streak_fix123_relative_retro_integer_grid,classification=absorb_then_speed_buckets,calibration=prev_session_frozen_exact_quantiles,zone_geometry=origin_side,lifecycle=tick_exact,units=ticks_and_ms,ts_note=chart_local_plus_unix_ms_verify_tz_in_P0");
+				_log.WriteLine("# meta indicator=HFTZones2,version=2.2,engine=tick_streak_fix123_relative_retro_integer_grid_v22_zone_edges,classification=absorb_then_speed_buckets,calibration=prev_session_frozen_exact_quantiles,zone_geometry=origin_side,lifecycle=tick_exact,units=ticks_and_ms,ts_note=chart_local_plus_unix_ms_verify_tz_in_P0");
 				_log.WriteLine(string.Format(CultureInfo.InvariantCulture,
 					"# params instrument={0},tick_size={1},adaptive={2},min_pasos={3},min_absorb_pasos={4},detect_absorb={5},fallos_tolerados={6},min_sweep_ticks={7},use_relative_retro={8},retro_floor_ticks={9},retro_pct_height={10},q_predator={11},q_ultra={12},q_max_avg={13},pause_mult={14},total_ms_mult={15},vol_mult_median_tick={16},pause_exclude_ms={17},min_calib_samples={18},calib_sample_cap={19},invalidation_mode={20},penetration_ticks={21},max_touches={22},max_age_bars={23},zone_height_ticks={24},min_export_valid_steps={25},manual_pred_ms={26},manual_ultra_ms={27},manual_max_avg_ms={28},manual_max_pausa_ms={29},manual_max_total_ms={30},manual_min_vol_rate={31},manual_min_total_vol={32},chart_period={33}",
 					Instrument.MasterInstrument.Name, TickSize, AdaptiveMode ? 1 : 0, MinPasos, MinAbsorbPasos,

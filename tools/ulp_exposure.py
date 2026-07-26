@@ -35,6 +35,13 @@ def feed(x_ticks, ts, decimals):
     return float(("%." + str(decimals) + "f") % (x_ticks * ts))
 
 
+def _to_tick(price, ts):
+    """Espejo de PriceToTick / snap_to_tick: round AwayFromZero, nunca floor."""
+    import math
+    x = price / ts
+    return int(math.floor(x + 0.5)) if x >= 0 else int(math.ceil(x - 0.5))
+
+
 def recon(x_ticks, ts):
     """El `double` que ve el kernel Python: price_ticks * tick_size."""
     return x_ticks * ts
@@ -59,14 +66,24 @@ KERNELS = {
         ("inverse (price <= bottom - 2*ts)", -2, "le", lambda e, ts: e - 2 * ts),
         ("inverse (price >= top + 2*ts)", 2, "ge", lambda e, ts: e + 2 * ts),
     ],
-    "HFTZones2": [
-        # hftzones2.py:289 -> lower = swl - zone_height*ts   (UNA resta)
+    # v2.2: bordes y umbral en ENTEROS de tick. El "umbral" ya no se construye
+    # con aritmetica de double, asi que se modela con la reconstruccion exacta
+    # desde la grilla: es lo que hace `PriceToTick`/`snap_to_tick` en los dos
+    # lados. La exposicion cae a 0 por construccion, no por suerte.
+    # DOMINIO ENTERO ("tick"): la comparacion NO se hace entre precios sino entre
+    # indices de tick, en los dos lados. La exposicion es 0 si -y solo si- las dos
+    # representaciones colapsan al MISMO entero; eso se VERIFICA aca, no se asume.
+    "HFTZones2 (v2.2, grilla entera)": [
+        ("inside (priceTick >= lowerTick)", -1, "ge", "tick"),
+        ("inside (priceTick <= upperTick)", 0, "le", "tick"),
+        ("close_through (priceTick <= lowerTick - pen)", -2, "le", "tick"),
+        ("close_through (priceTick >= upperTick + pen)", 1, "ge", "tick"),
+    ],
+    "HFTZones2 (v2.1, ANTES del fix — referencia historica)": [
         ("inside (price >= lower)", -1, "ge", lambda e, ts: e - 1 * ts),
         ("inside (price <= upper)", 0, "le", lambda e, ts: e),
-        # :348 -> `z["lower"] - pen*ts`  sobre un lower YA restado (DOS restas)
         ("close_through (price <= lower - pen*ts)", -2, "le",
          lambda e, ts: (e - 1 * ts) - 1 * ts),
-        # :350 -> `z["upper"] + pen*ts`  con upper = swh (UNA suma)
         ("close_through (price >= upper + pen*ts)", 1, "ge", lambda e, ts: e + 1 * ts),
     ],
     "BigTrap2": [
@@ -109,8 +126,14 @@ def exposure(offset_ticks, op, thr, ts, lo, hi, decimals):
         if p < lo:
             continue
         total += 1
-        d_py = f(recon(p, ts), thr(recon(edge, ts), ts))
-        d_nt = f(feed(p, ts, decimals), thr(feed(edge, ts, decimals), ts))
+        if thr == "tick":
+            # v2.2: los dos lados convierten a entero ANTES de comparar. Se
+            # verifica que feed y reconstruido colapsen al mismo indice.
+            d_py = f(_to_tick(recon(p, ts), ts), edge + k)
+            d_nt = f(_to_tick(feed(p, ts, decimals), ts), edge + k)
+        else:
+            d_py = f(recon(p, ts), thr(recon(edge, ts), ts))
+            d_nt = f(feed(p, ts, decimals), thr(feed(edge, ts, decimals), ts))
         if d_py != d_nt:
             flips += 1
     return (100.0 * flips / total if total else 0.0), flips, total

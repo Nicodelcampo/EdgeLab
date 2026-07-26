@@ -211,6 +211,21 @@ def main(argv=None):
             res = (mod.run(tk, bars, fps, params=pset, chart_tz=args.chart_tz)
                    if n in BAR_DRIVEN else
                    mod.run(tk, bars, params=pset, chart_tz=args.chart_tz))
+            # REGLA DE VENTANA SIMETRICA (contrato de paridad §4, decision de
+            # Nico 2026-07-26). El filtro [W0, W1) se aplica IDENTICAMENTE a los
+            # dos lados. Antes solo se filtraba el oraculo, asi que una zona
+            # creada exactamente en W1 quedaba dentro del lado Python y fuera del
+            # de NT8, produciendo un MISSING_IN_NT8 que no era discrepancia de
+            # kernel sino un artefacto de medicion. La exclusion se REPORTA
+            # siempre, con cuantas filas y cuales.
+            _n_all_py = len(res["zones"])
+            _fuera = [z for z in res["zones"] if not in_window(z)]
+            if _fuera:
+                res["zones"] = [z for z in res["zones"] if in_window(z)]
+                print(f"[kernel {n}] {len(res['zones'])}/{_n_all_py} zonas en ventana "
+                      f"[{args.start_utc}, {args.end_utc}); excluidas por borde: "
+                      + ", ".join(str(z.get("id")) for z in _fuera[:10])
+                      + (" …" if len(_fuera) > 10 else ""))
             bkey_id = viewer_export.bar_key_of(bars)
             psid = viewer_export.param_set_id(res["params"], bkey_id)
             kid = kid_cache.setdefault(n, identity.kernel_id(n))

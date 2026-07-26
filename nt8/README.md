@@ -36,7 +36,7 @@ versión esperada, llaves y paréntesis balanceados, y CRLF sin LF sueltos.
 
 | archivo | versión | sha256 (canónico, sin región generada) |
 |---|---|---|
-| `HFTZones2.cs` | v2.1 | `b8c8214cb1bbd203876886efd325e23617ec99202576dbb590091e80c77a5c6e` |
+| `HFTZones2.cs` | v2.2 | `6f7c70dbca9ae7d49798c4b7cce134e3f84a236b9fa70d485c7393e9e454a541` |
 | `BigTrap2.cs` | v2.1 | `77af06eed2bba5d5367ef41a68476d04b295039411ac124492d918c0a557fbf5` |
 | `TickBarDiag.cs` | v1.1 | *(instrumental de diagnóstico, no de trading)* |
 | `VolTicksPOC2.cs` | v2.1 | `48e0718a055958f0b2a325cdee53517e449989c6b43ecfe50e7b4d634278845d` |
