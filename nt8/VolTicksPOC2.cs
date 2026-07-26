@@ -225,6 +225,32 @@ namespace NinjaTrader.NinjaScript.Indicators
 			}
 			if (BarsInProgress != 0) return;
 
+			// ESTADO VISIBLE. Mientras no se puede detectar, el indicador lo DICE y
+			// muestra cuanto falta. Un grafico vacio es indistinguible de 'no hubo
+			// senales', y esa ambiguedad ya costo una sesion de diagnostico
+			// (incidente 2026-07-26). El warmup es avg_period + min_ratio_samples
+			// barras: hasta ahi, cero detecciones garantizadas.
+			if (!configImposible)
+			{
+				int faltanBase  = Math.Max(0, AvgPeriod - baselineWindow.Count);
+				int faltanRatio = Math.Max(0, MinRatioSamples - ratioWindow.Count);
+				if (faltanBase > 0 || faltanRatio > 0)
+					Draw.TextFixed(this, "VTP2_CONFIG", string.Format(CultureInfo.InvariantCulture,
+						"VolTicksPOC2: EN WARMUP, todavia no puede detectar.\nbaseline {0}/{1}"
+						+ " | ratios {2}/{3}\nfaltan ~{4} barras de {5} ticks. Cargar mas dias.",
+						baselineWindow.Count, AvgPeriod, ratioWindow.Count, MinRatioSamples,
+						Math.Max(faltanBase, faltanRatio), BarsPeriod.Value),
+						TextPosition.TopLeft);
+				else if (zoneCounter == 0)
+					Draw.TextFixed(this, "VTP2_CONFIG", string.Format(CultureInfo.InvariantCulture,
+						"VolTicksPOC2: warmup COMPLETO, buscando. Percentil {0} => ~{1} de cada"
+						+ " 1000 barras califica; puede tardar cientos de barras en aparecer la primera.",
+						DetectionPercentile, (int)Math.Round((100.0 - DetectionPercentile) * 10)),
+						TextPosition.TopLeft);
+				else
+					RemoveDrawObject("VTP2_CONFIG");
+			}
+
 			// ---------- barra primaria: tomar y resetear el footprint SIEMPRE ----------
 			Dictionary<long, double> fp = pendingFootprint;
 			double fpVol = pendingTickVolume;

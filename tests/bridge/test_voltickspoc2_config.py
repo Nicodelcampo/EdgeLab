@@ -68,3 +68,33 @@ def test_la_ventana_de_baseline_si_es_alcanzable_por_construccion():
     assert d["avg_period"] == d["avg_period"]      # maxlen == umbral, siempre OK
     r = _run(avg_period=50)
     assert "zones" in r
+
+
+# --------------------------------------------------------------------------- #
+# Warmup: cero zonas por falta de datos != cero zonas por falta de señal
+# --------------------------------------------------------------------------- #
+def test_declara_cuando_no_hay_datos_ni_para_terminar_el_warmup():
+    """Con pocas barras el resultado es CERO zonas garantizado. El kernel lo
+    dice, en vez de dejar un `zones == []` ambiguo."""
+    tk = make_synthetic(n_sessions=1, ticks_per_session=2000)
+    bars = B.build_time_bars(tk, 1)
+    r = voltickspoc2.run(tk, bars, B.build_footprints(tk, bars),
+                         params=None, chart_tz="UTC")
+    assert r["warmup_bars"] == 700, "200 de baseline + 500 de ratios"
+    assert r["datos_insuficientes"] is True
+    assert r["zones"] == [], "sin warmup no puede haber deteccion"
+
+
+def test_no_marca_datos_insuficientes_cuando_alcanzan():
+    """El fixture sintetico da ~6 barras m1, asi que el warmup se baja a su
+    escala: lo que se verifica es la REGLA, no la magnitud."""
+    tk = make_synthetic(n_sessions=1, ticks_per_session=3000)
+    bars = B.build_time_bars(tk, 1)
+    assert len(bars) >= 5, "el fixture cambio de tamano; ajustar el warmup"
+    r = voltickspoc2.run(tk, bars, B.build_footprints(tk, bars),
+                         params=dict(avg_period=2, min_ratio_samples=2,
+                                     ratio_window_bars=10),
+                         chart_tz="UTC")
+    assert r["warmup_bars"] == 4
+    assert r["n_bars"] == len(bars)
+    assert r["datos_insuficientes"] is False

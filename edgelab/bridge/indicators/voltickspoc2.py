@@ -99,6 +99,13 @@ def run(ticks, bars, footprints, params=None, chart_tz="UTC"):
                int(p["ratio_window_bars"]), int(p["min_ratio_samples"]),
                int(p["ratio_window_bars"])))
 
+    # Warmup: hasta `avg_period + min_ratio_samples` barras el gate de detección
+    # NO puede abrir. Si la ventana no llega ni a eso, el resultado es CERO zonas
+    # garantizado — y un cero por falta de datos es indistinguible de un cero por
+    # ausencia de señal. Se declara en el resultado en vez de dejarlo implícito.
+    warmup_bars = int(p["avg_period"]) + int(p["min_ratio_samples"])
+    datos_insuficientes = len(bars) < warmup_bars
+
     rows, lines, all_zones, active = [], [], [], []
     seq = 0
     zone_seq = 0
@@ -221,4 +228,8 @@ def run(ticks, bars, footprints, params=None, chart_tz="UTC"):
 
     return dict(indicator=NAME, params=p, header=HEADER, csv_lines=lines,
                 events=rows, zones=zones,
-                params_line=meta_line(p, ticks.instrument, tick_size))
+                params_line=meta_line(p, ticks.instrument, tick_size),
+                # Diagnóstico explícito: un consumidor que vea `zones == []` puede
+                # distinguir "no hubo señal" de "no hubo datos para buscarla".
+                warmup_bars=warmup_bars, n_bars=len(bars),
+                datos_insuficientes=datos_insuficientes)
