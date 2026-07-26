@@ -47,6 +47,7 @@ _KERNEL_FILE = {
     "BigTrap2": "bigtrap2.py",
     "HFTZones2": "hftzones2.py",
     "aVolCellPOI2": "avolcellpoi2.py",
+    "AACloseOpenDiffs": "aacloseopendiffs.py",
 }
 _KERNEL_DEPS = {
     "Gaps2": _COMMON_DEPS,
@@ -54,6 +55,9 @@ _KERNEL_DEPS = {
     "BigTrap2": _COMMON_DEPS,
     "HFTZones2": _COMMON_DEPS + ("sessions.py",),
     "aVolCellPOI2": _COMMON_DEPS + ("sessions.py",),
+    # Arma su propia subserie M1 con bars.build_time_bars: bars.py es
+    # dependencia semantica aunque no reciba barras del primario.
+    "AACloseOpenDiffs": _COMMON_DEPS,
 }
 
 
