@@ -31,3 +31,43 @@ cargadas antes del rango a comparar. Los `.cs` deben ser rev **190ed59+**
 `detection_method=RobustLogZ` (rama `detection_method` camino alterno) y
 `robustz_cut` no están en la campaña mínima: una config que los use queda
 `parity_pending` hasta pre-registrar un tercer oráculo RobustLogZ.
+
+## Resultado del primer oráculo (2026-07-26) — FAIL por CALENDARIO DE SESIONES
+
+Oráculo `aVolCellPOI2_6E_0926.csv`, rango largo correcto (chart desde 08/06),
+params idénticos (`lookback_sessions=20`, `min_sessions=15`, percentil 99,5).
+
+```
+Python: 31 zonas · primera 29/06 sesion 16 · ultima 16/07 sesion 28
+NT8   :  5 zonas · primera 14/07 sesion 22 · ultima 17/07 sesion 25
+gate FAIL: MATCHED 2 · MISSING_IN_NT8 29
+```
+
+### Causa raíz: los dos lados NUMERAN las sesiones distinto
+
+Sobre el mismo tramo calendario Python cuenta **28** sesiones y NT8 **25**. Con
+`min_sessions=15`, Python empieza a detectar en la sesión **16** —lo que manda la
+regla— y NT8 recién en la **22**.
+
+No es aritmética ni configuración: es el caveat **ya declarado** en el contrato
+para los kernels con sesiones — calendario **CME ETH** de `sessions.py` contra el
+**`SessionIterator`** de NT8. En el tramo 08/06 → 17/07 de 2026 cae el feriado
+del **3 de julio** (Independence Day observado), exactamente el tipo de evento
+que produce este desfase.
+
+**No es un desacuerdo del kernel sobre qué es una celda anómala**: las 2 zonas
+que ambos ven, coinciden. El desacuerdo es sobre **cuándo empieza a haber
+suficiente historia**.
+
+### Qué NO es
+
+- **No** es "pocas zonas". Con percentil 99,5 y `min_cell_samples=500`, pocas
+  zonas es el diseño. 31 en seis semanas es lo esperable.
+- **No** es el rango: el export ya se hizo con el rango largo correcto.
+
+### Pendiente
+
+Resolver el desfase exige decidir cuál calendario es la referencia, y eso es
+**cambio de semántica**: se eleva a Nico. Las opciones son alinear `sessions.py`
+al `SessionIterator` de NT8 (incluyendo feriados), o declarar el desfase como
+tolerancia medida y comparar sólo desde la sesión donde ambos ya detectan.
