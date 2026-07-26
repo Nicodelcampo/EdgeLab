@@ -39,7 +39,7 @@ versión esperada, llaves y paréntesis balanceados, y CRLF sin LF sueltos.
 | `HFTZones2.cs` | v2.1 | `b8c8214cb1bbd203876886efd325e23617ec99202576dbb590091e80c77a5c6e` |
 | `BigTrap2.cs` | v2.1 | `77af06eed2bba5d5367ef41a68476d04b295039411ac124492d918c0a557fbf5` |
 | `TickBarDiag.cs` | v1.1 | *(instrumental de diagnóstico, no de trading)* |
-| `VolTicksPOC2.cs` | v2.1 | `a634fad3de9a7ae47da0b34a95ae701e27e07320bcd739b48477cb09b70227c0` |
+| `VolTicksPOC2.cs` | v2.1 | `fd47529c22914ddb67319f1f0066efe46880654403585472cb0c3a066d129c24` |
 
 Falta versionar `aVolCellPOI2`. **`Gaps2.cs` no se toca**: es la referencia que dio
 paridad 1316/1316; cualquier cambio exige digest nuevo y oráculo nuevo.

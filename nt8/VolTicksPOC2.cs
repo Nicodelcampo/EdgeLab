@@ -119,6 +119,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 		private StreamWriter writer;
 		private bool writerFailed;
 		private bool configImposible;
+		private bool sinDatosTick;
 		private long eventSeq;
 		private Brush[] heatBrushes;
 
@@ -230,7 +231,14 @@ namespace NinjaTrader.NinjaScript.Indicators
 			// senales', y esa ambiguedad ya costo una sesion de diagnostico
 			// (incidente 2026-07-26). El warmup es avg_period + min_ratio_samples
 			// barras: hasta ahi, cero detecciones garantizadas.
-			if (!configImposible)
+			if (sinDatosTick)
+				Draw.TextFixed(this, "VTP2_CONFIG",
+					"VolTicksPOC2: SIN TICK DATA HISTORICA para este instrumento.\n"
+					+ "El footprint se reconstruye desde una subserie de 1 tick; sin ella no\n"
+					+ "hay POC y NO se puede detectar nada. Descargar tick data historica\n"
+					+ "(Tools > Historical Data > Load) para el instrumento y el rango.",
+					TextPosition.TopLeft);
+			else if (!configImposible)
 			{
 				int faltanBase  = Math.Max(0, AvgPeriod - baselineWindow.Count);
 				int faltanRatio = Math.Max(0, MinRatioSamples - ratioWindow.Count);
@@ -262,6 +270,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				if (!tickSeriesWarned)
 				{
 					tickSeriesWarned = true;
+					sinDatosTick = true;
 					EmitError("tick_series", "Sin datos históricos de tick: no se puede reconstruir el footprint. Sin detecciones.");
 				}
 				UpdateBaselineWindows(); // mantener ventanas coherentes igualmente
