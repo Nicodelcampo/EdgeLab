@@ -1,7 +1,7 @@
 {
   "prediction_id": "PRED-002_hftzones2_v22_grilla_entera",
   "created_utc": "2026-07-26",
-  "status": "PRE-REGISTRADA (antes de que exista el oraculo v2.2)",
+  "status": "REFUTADA (2026-07-26) — el fix cerro lo que apuntaba pero destapo otra cosa",
   "autorizacion": "Decision 2 de Nico, 2026-07-26",
   "fix": "HFTZones2 v2.2 — bordes de zona y umbral de close_through en ENTEROS de tick, simetrico .cs + kernel. Sin tocar params, defaults ni lifecycle.",
   "baseline_oraculo": "oracles/HFTZones2_adaptive_6E_0926.csv (.cs v2.1)",
@@ -58,5 +58,33 @@
     "params": "defaults (adaptive_mode=true)",
     "ruta": "E:\\EdgeLab\\oracles\\HFTZones2_adaptive_6E_0926_v22.csv"
   },
-  "n_zonas_con_cierre_registrado": 2091
+  "n_zonas_con_cierre_registrado": 2091,
+  "resultado": {
+    "nota_de_ventana": "El oraculo v2.2 se exporto con UN DIA MAS de chart (desde 07-08 en vez de 07-09), asi que la sesion del 09/07 dejo de ser CALIBRATION_PENDING y produjo zonas: 2509 en ventana en vez de 2111. Se re-corrio Python con el MISMO arranque (--start-utc 2026-07-08T22:00). El conteo absoluto no era el contenido falsable de la prediccion.",
+    "obtenido": {
+      "py_zones": 2509,
+      "nt8_zones": 2509,
+      "MATCHED": 2237,
+      "FEATURE_DIFF": 272,
+      "GEOMETRY_DIFF": 0,
+      "MISSING_IN_PYTHON": 0,
+      "MISSING_IN_NT8": 0,
+      "MATURITY_TAIL": 161,
+      "gate": "WARN"
+    },
+    "cumplido": [
+      "GEOMETRY_DIFF=0",
+      "MISSING_IN_PYTHON=0",
+      "MISSING_IN_NT8=0",
+      "conteo de zonas identico en los dos lados"
+    ],
+    "refutado": [
+      "FEATURE_DIFF predicho 0, obtenido 272",
+      "gate predicho PASS, obtenido WARN"
+    ],
+    "lo_que_SI_arreglo": "Los timestamps de cierre pasaron de 1890/2078 iguales (91,0%) a 2489/2489 (100,0%). Las 188 zonas desalineadas por el ULP del close_through se fueron a CERO. El fix hizo exactamente lo que apuntaba.",
+    "causa_del_fallo": "Al unificar los bordes de zona en la grilla entera se ROMPIO una cancelacion de errores que existia sin querer. En v2.1 cada lado derivaba el borde con su propia representacion (feed vs reconstruido) y el error del borde cancelaba al del precio, dejando `inside` en 0,00% de exposicion. En v2.2 los bordes son identicos, deja de cancelar, y `price >= lower` queda expuesto al ULP del PRECIO: medido 24,30%. Los 272 FEATURE_DIFF son de TOUCHES, no de cierre, y van en las dos direcciones (118 Python mas, 154 NT8 mas).",
+    "leccion": "AUDIT-002 midio `inside` bajo la aritmetica de v2.1 y dio 0%. Arreglar una expresion CAMBIA la exposicion de otra: la exposicion no es una propiedad de cada comparacion aislada sino del conjunto. El medidor hay que re-correrlo DESPUES de cada fix, no solo antes.",
+    "completar_el_fix": "Llevar tambien `inside` a enteros: `lower_t <= price_t <= upper_t`. Es cambio de semantica y requiere OK de Nico; NO se aplica."
+  }
 }
