@@ -211,7 +211,7 @@ def _parse_csv(body, meta, tz, tick_size):
                 z["ended_ms"] = unix_ms
                 z["end_reason"] = col(parts, "reason") or None
     return dict(indicator=indicator, meta=meta, header=header, events=events,
-                session_starts_ns=_session_starts_ns(events, indicator),
+                session_starts_ns=_session_starts_ns(events, indicator, tz),
                 zones=[z for z in zones.values() if z.get("created_ms") is not None
                        or z.get("top") is not None])
 
@@ -222,36 +222,51 @@ def _parse_csv(body, meta, tz, tick_size):
 _INICIO_DE_SESION = {"CALIBRATION", "CALIBRATION_PENDING", "SESSION_START"}
 
 
-def _session_starts_ns(events, indicator):
+def _ns_de_evento(e, tz):
+    """ns UTC de un evento, por `unix_ms` si está y si no por `bar_close_time`.
+
+    `aVolCellPOI2` no exporta `unix_ms`: sólo `bar_close_time` en la timezone del
+    chart. Sin este fallback su calendario quedaría SIN VERIFICAR y haría falta
+    otra versión del `.cs` sólo para agregar una columna — un export de NT8 de más
+    por un dato que ya está ahí.
+    """
+    ms = _f(e.get("unix_ms"))
+    if ms is not None:
+        return int(ms) * 1_000_000
+    t = e.get("bar_close_time") or e.get("ts")
+    if not t:
+        return None
+    ms = _to_unix_ms(t, tz)
+    return int(ms) * 1_000_000 if ms is not None else None
+
+
+def _session_starts_ns(events, indicator, tz):
     """ts (ns) de los inicios de sesión que declara NT8, si el export los trae.
 
     HFTZones2 los emite explícitamente (congela la calibración al abrir). Los
     kernels que sólo exportan un `session_index` se resuelven por el cambio de
     ese índice: el primer evento de cada sesión acota la frontera aunque no la
-    marque exactamente, que es todo lo que el preflight necesita.
+    marque exactamente, que es todo lo que el preflight necesita — `preflight`
+    lleva cada instante a la frontera que lo contiene antes de comparar.
     """
     out = []
     for e in events:
         if e.get("event_type") in _INICIO_DE_SESION:
-            ms = _f(e.get("unix_ms"))
-            if ms is not None:
-                out.append(int(ms) * 1_000_000)
+            ns = _ns_de_evento(e, tz)
+            if ns is not None:
+                out.append(ns)
     if out:
         return sorted(set(out))
 
-    visto, ms_col = set(), None
+    visto = set()
     for e in events:
         si = e.get("session_index")
-        if si in (None, ""):
-            continue
-        if ms_col is None:
-            ms_col = "unix_ms" if _f(e.get("unix_ms")) is not None else None
-        if si in visto:
+        if si in (None, "") or si in visto:
             continue
         visto.add(si)
-        ms = _f(e.get(ms_col)) if ms_col else None
-        if ms is not None:
-            out.append(int(ms) * 1_000_000)
+        ns = _ns_de_evento(e, tz)
+        if ns is not None:
+            out.append(ns)
     return sorted(set(out))
 
 
