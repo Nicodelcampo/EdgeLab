@@ -89,7 +89,7 @@ def test_gaps2_sin_exposicion(thr):
 # 4) HFTZones2 — exposición conocida, calibrada contra el oráculo real
 # --------------------------------------------------------------------------- #
 V21 = "HFTZones2 (v2.1, ANTES del fix"
-V22 = "HFTZones2 (v2.2, grilla entera)"
+V23 = "HFTZones2 (v2.3"
 
 
 def test_v21_queda_como_referencia_historica_calibrada():
@@ -101,19 +101,20 @@ def test_v21_queda_como_referencia_historica_calibrada():
     assert flips > 0 and 45.0 <= pct <= 52.0, "exposicion inesperada: %.2f%%" % pct
 
 
-def test_v22_lleva_TODOS_los_umbrales_a_cero():
-    """Condicion 3 de la autorizacion de Nico. Cero por CONSTRUCCION: las dos
-    representaciones colapsan al mismo indice de tick antes de comparar."""
+def test_v23_lleva_TODOS_los_umbrales_a_cero():
+    """Cero por CONSTRUCCION: los dos lados colapsan al mismo indice de tick
+    antes de comparar. v2.3 incluye tambien `inside`, que la v2.2 habia
+    destapado al romper una cancelacion de errores."""
     for thr in ("priceTick >= lowerTick", "priceTick <= upperTick",
                 "lowerTick - pen", "upperTick + pen"):
-        pct, flips = _exp(V22, thr)
+        pct, flips = _exp(V23, thr)
         assert flips == 0, "%s quedo en %.2f%%: el fix no cerro la exposicion" % (thr, pct)
 
 
-def test_el_fix_v22_reduce_la_exposicion_no_la_mueve_de_lugar():
+def test_el_fix_reduce_la_exposicion_no_la_mueve_de_lugar():
     """Compara las dos versiones del MISMO umbral: de expuesto a cero."""
     antes, _ = _exp(V21, "upper + pen")
-    despues, _ = _exp(V22, "upperTick + pen")
+    despues, _ = _exp(V23, "upperTick + pen")
     assert antes > 45.0 and despues == 0.0
 
 
