@@ -1,0 +1,194 @@
+{
+  "nota": "Triaje sellado del barrido ULP del 2026-07-26. Cada clave es archivo + expresion normalizada (sin numero de linea, para que un comentario nuevo no reabra un triaje). Ver docs/audits/AUDIT-003_barrido_ulp.md.",
+  "regla": "ningun umbral de precio se compara en double; todo umbral de precio se compara en ticks enteros",
+  "triaje": {
+    "AACloseOpenDiffs.cs :: if (d.TopPrice < bot || d.BottomPrice > top) continue; // sin overlap de precio": {
+      "evidencia": "vive en la capa DetectarExpansiones, declarada explicitamente NO PORTADA a Python (docs/parity_coverage/AACloseOpenDiffs.md, 'Fuera de alcance'). No puede romper paridad hoy. Si algun dia se porta, ES un umbral en double y hay que pasarlo a enteros antes.",
+      "veredicto": "FUERA_DE_ALCANCE"
+    },
+    "AACloseOpenDiffs.cs :: if (existing.BottomPrice > nueva.TopPrice) continue;": {
+      "evidencia": "ambos operandos son precios de grilla llevados SIN aritmetica. feed() y ticks*tick_size son ambas estrictamente monotonas en el indice de tick, asi que preservan orden Y empates: feed(a)>feed(b) <=> a>b. Es el UNICO caso en que 'los dos son precios' alcanza como argumento.",
+      "veredicto": "INMUNE_MONOTONO"
+    },
+    "AACloseOpenDiffs.cs :: if (existing.TopPrice < nueva.BottomPrice) continue;": {
+      "evidencia": "ambos operandos son precios de grilla llevados SIN aritmetica. feed() y ticks*tick_size son ambas estrictamente monotonas en el indice de tick, asi que preservan orden Y empates: feed(a)>feed(b) <=> a>b. Es el UNICO caso en que 'los dos son precios' alcanza como argumento.",
+      "veredicto": "INMUNE_MONOTONO"
+    },
+    "AACloseOpenDiffs.cs :: if (gapPts <= thr) dibujar = false;": {
+      "evidencia": "FiltrarPorPercentil afecta SOLO el dibujo del .cs; el export de paridad se escribe antes del filtro y el kernel Python exporta todos los gaps. Clasificado 'offline' en PARAM_SPEC.",
+      "veredicto": "FUERA_DE_ALCANCE"
+    },
+    "AACloseOpenDiffs.cs :: if (hi - loPrice >= rev)": {
+      "evidencia": "vive en la capa DetectarExpansiones, declarada explicitamente NO PORTADA a Python (docs/parity_coverage/AACloseOpenDiffs.md, 'Fuera de alcance'). No puede romper paridad hoy. Si algun dia se porta, ES un umbral en double y hay que pasarlo a enteros antes.",
+      "veredicto": "FUERA_DE_ALCANCE"
+    },
+    "AACloseOpenDiffs.cs :: if (hi >= hiPrice) { hiPrice = hi; hiBar = bar; hiTime = t; }": {
+      "evidencia": "vive en la capa DetectarExpansiones, declarada explicitamente NO PORTADA a Python (docs/parity_coverage/AACloseOpenDiffs.md, 'Fuera de alcance'). No puede romper paridad hoy. Si algun dia se porta, ES un umbral en double y hay que pasarlo a enteros antes.",
+      "veredicto": "FUERA_DE_ALCANCE"
+    },
+    "AACloseOpenDiffs.cs :: if (hiPrice - lo >= rev)": {
+      "evidencia": "vive en la capa DetectarExpansiones, declarada explicitamente NO PORTADA a Python (docs/parity_coverage/AACloseOpenDiffs.md, 'Fuera de alcance'). No puede romper paridad hoy. Si algun dia se porta, ES un umbral en double y hay que pasarlo a enteros antes.",
+      "veredicto": "FUERA_DE_ALCANCE"
+    },
+    "AACloseOpenDiffs.cs :: if (lo <= loPrice) { loPrice = lo; loBar = bar; loTime = t; }": {
+      "evidencia": "vive en la capa DetectarExpansiones, declarada explicitamente NO PORTADA a Python (docs/parity_coverage/AACloseOpenDiffs.md, 'Fuera de alcance'). No puede romper paridad hoy. Si algun dia se porta, ES un umbral en double y hay que pasarlo a enteros antes.",
+      "veredicto": "FUERA_DE_ALCANCE"
+    },
+    "AACloseOpenDiffs.cs :: if (lo == hi) return sorted[lo];": {
+      "evidencia": "no compara precios: son indices de array / pesos acumulados dentro de un helper (busqueda binaria, percentil). Falso positivo del detector, que matchea los identificadores lo/hi/mid por nombre.",
+      "veredicto": "NO_ES_PRECIO"
+    },
+    "AACloseOpenDiffs.cs :: if (top - bot < ExpansionMinTicks * TickSize) return;": {
+      "evidencia": "vive en la capa DetectarExpansiones, declarada explicitamente NO PORTADA a Python (docs/parity_coverage/AACloseOpenDiffs.md, 'Fuera de alcance'). No puede romper paridad hoy. Si algun dia se porta, ES un umbral en double y hay que pasarlo a enteros antes.",
+      "veredicto": "FUERA_DE_ALCANCE"
+    },
+    "AACloseOpenDiffs.cs :: int gapDir = openCurr > closePrev ? 1 : -1; // +1 gap alcista, -1 bajista": {
+      "evidencia": "ambos operandos son precios de grilla llevados SIN aritmetica. feed() y ticks*tick_size son ambas estrictamente monotonas en el indice de tick, asi que preservan orden Y empates: feed(a)>feed(b) <=> a>b. Es el UNICO caso en que 'los dos son precios' alcanza como argumento. Solo define el SIGNO del gap; el UMBRAL de tamano se corrigio a enteros en v1.1.",
+      "veredicto": "INMUNE_MONOTONO"
+    },
+    "BigTrap2.cs :: && (!UseWickFilter || (range > 0 && rowPrice <= wickLoCeil)))": {
+      "evidencia": "EXPOSICION MEDIDA 0.0241% (710 flips en 2.952.000 decisiones; rangos 1..120 ticks, niveles 20000..20400 de 6E). El umbral wickHiFloor = hi - range*(pct/100) NO esta en la grilla de ticks y NO se puede pasar a enteros sin decidir una semantica de redondeo. Es una DECISION DE DISENO pendiente de Nico -> se documenta y se frena, no se corrige por cuenta propia. Ver docs/audits/AUDIT-003_barrido_ulp.md.",
+      "veredicto": "EXPUESTO_PENDIENTE"
+    },
+    "BigTrap2.cs :: && (!UseWickFilter || (range > 0 && rowPrice >= wickHiFloor)))": {
+      "evidencia": "EXPOSICION MEDIDA 0.0241% (710 flips en 2.952.000 decisiones; rangos 1..120 ticks, niveles 20000..20400 de 6E). El umbral wickHiFloor = hi - range*(pct/100) NO esta en la grilla de ticks y NO se puede pasar a enteros sin decidir una semantica de redondeo. Es una DECISION DE DISENO pendiente de Nico -> se documenta y se frena, no se corrige por cuenta propia. Ver docs/audits/AUDIT-003_barrido_ulp.md.",
+      "veredicto": "EXPUESTO_PENDIENTE"
+    },
+    "BigTrap2.cs :: bool adverseClose = z.IsBull ? close > zHi : close < zLo; // los atrapados dejaron de estarlo": {
+      "evidencia": "el umbral vive a medio tick de la grilla (borde = tick +/- 0.5*TickSize), asi que ningun precio negociable cae exactamente encima y el empate es imposible. Exposicion MEDIDA 0.00% en AUDIT-002.",
+      "veredicto": "INMUNE_MEDIOTICK"
+    },
+    "BigTrap2.cs :: bool touched = hi >= zLo && lo <= zHi;": {
+      "evidencia": "el umbral vive a medio tick de la grilla (borde = tick +/- 0.5*TickSize), asi que ningun precio negociable cae exactamente encima y el empate es imposible. Exposicion MEDIDA 0.00% en AUDIT-002.",
+      "veredicto": "INMUNE_MEDIOTICK"
+    },
+    "BigTrap2.cs :: else if (price < lastTickPrice) side = -1;": {
+      "evidencia": "ambos operandos son precios de grilla llevados SIN aritmetica. feed() y ticks*tick_size son ambas estrictamente monotonas en el indice de tick, asi que preservan orden Y empates: feed(a)>feed(b) <=> a>b. Es el UNICO caso en que 'los dos son precios' alcanza como argumento.",
+      "veredicto": "INMUNE_MONOTONO"
+    },
+    "BigTrap2.cs :: else if (price <= bidQ) { side = -1; byQuote = true; }": {
+      "evidencia": "ambos operandos son precios de grilla llevados SIN aritmetica. feed() y ticks*tick_size son ambas estrictamente monotonas en el indice de tick, asi que preservan orden Y empates: feed(a)>feed(b) <=> a>b. Es el UNICO caso en que 'los dos son precios' alcanza como argumento.",
+      "veredicto": "INMUNE_MONOTONO"
+    },
+    "BigTrap2.cs :: if (askQ > 0 && bidQ > 0 && askQ >= bidQ)": {
+      "evidencia": "guarda de validez del quote: compara ask contra bid y contra 0. ambos operandos son precios de grilla llevados SIN aritmetica. feed() y ticks*tick_size son ambas estrictamente monotonas en el indice de tick, asi que preservan orden Y empates: feed(a)>feed(b) <=> a>b. Es el UNICO caso en que 'los dos son precios' alcanza como argumento.",
+      "veredicto": "INMUNE_MONOTONO"
+    },
+    "BigTrap2.cs :: if (price > lastTickPrice) side = 1;": {
+      "evidencia": "ambos operandos son precios de grilla llevados SIN aritmetica. feed() y ticks*tick_size son ambas estrictamente monotonas en el indice de tick, asi que preservan orden Y empates: feed(a)>feed(b) <=> a>b. Es el UNICO caso en que 'los dos son precios' alcanza como argumento.",
+      "veredicto": "INMUNE_MONOTONO"
+    },
+    "BigTrap2.cs :: if (price >= askQ) { side = 1; byQuote = true; }": {
+      "evidencia": "ambos operandos son precios de grilla llevados SIN aritmetica. feed() y ticks*tick_size son ambas estrictamente monotonas en el indice de tick, asi que preservan orden Y empates: feed(a)>feed(b) <=> a>b. Es el UNICO caso en que 'los dos son precios' alcanza como argumento.",
+      "veredicto": "INMUNE_MONOTONO"
+    },
+    "HFTZones2.cs :: bool valid = (_dir == 1) ? price >= prev : price <= prev;": {
+      "evidencia": "ambos operandos son precios de grilla llevados SIN aritmetica. feed() y ticks*tick_size son ambas estrictamente monotonas en el indice de tick, asi que preservan orden Y empates: feed(a)>feed(b) <=> a>b. Es el UNICO caso en que 'los dos son precios' alcanza como argumento.",
+      "veredicto": "INMUNE_MONOTONO"
+    },
+    "HFTZones2.cs :: else if (price > prev) StartStreak(+1, price, vol, t);": {
+      "evidencia": "ambos operandos son precios de grilla llevados SIN aritmetica. feed() y ticks*tick_size son ambas estrictamente monotonas en el indice de tick, asi que preservan orden Y empates: feed(a)>feed(b) <=> a>b. Es el UNICO caso en que 'los dos son precios' alcanza como argumento.",
+      "veredicto": "INMUNE_MONOTONO"
+    },
+    "HFTZones2.cs :: if (price < _swL) _swL = price;": {
+      "evidencia": "ambos operandos son precios de grilla llevados SIN aritmetica. feed() y ticks*tick_size son ambas estrictamente monotonas en el indice de tick, asi que preservan orden Y empates: feed(a)>feed(b) <=> a>b. Es el UNICO caso en que 'los dos son precios' alcanza como argumento.",
+      "veredicto": "INMUNE_MONOTONO"
+    },
+    "HFTZones2.cs :: if (price < prev) StartStreak(-1, price, vol, t);": {
+      "evidencia": "ambos operandos son precios de grilla llevados SIN aritmetica. feed() y ticks*tick_size son ambas estrictamente monotonas en el indice de tick, asi que preservan orden Y empates: feed(a)>feed(b) <=> a>b. Es el UNICO caso en que 'los dos son precios' alcanza como argumento.",
+      "veredicto": "INMUNE_MONOTONO"
+    },
+    "HFTZones2.cs :: if (price > _swH) _swH = price;": {
+      "evidencia": "ambos operandos son precios de grilla llevados SIN aritmetica. feed() y ticks*tick_size son ambas estrictamente monotonas en el indice de tick, asi que preservan orden Y empates: feed(a)>feed(b) <=> a>b. Es el UNICO caso en que 'los dos son precios' alcanza como argumento.",
+      "veredicto": "INMUNE_MONOTONO"
+    },
+    "TickBarDiag.cs :: else if (price < lastTickPrice) side = -1;": {
+      "evidencia": "ambos operandos son precios de grilla llevados SIN aritmetica. feed() y ticks*tick_size son ambas estrictamente monotonas en el indice de tick, asi que preservan orden Y empates: feed(a)>feed(b) <=> a>b. Es el UNICO caso en que 'los dos son precios' alcanza como argumento. TickBarDiag ademas es una herramienta de diagnostico, no un kernel del puente.",
+      "veredicto": "INMUNE_MONOTONO"
+    },
+    "TickBarDiag.cs :: else if (price <= bidQ) side = -1;": {
+      "evidencia": "ambos operandos son precios de grilla llevados SIN aritmetica. feed() y ticks*tick_size son ambas estrictamente monotonas en el indice de tick, asi que preservan orden Y empates: feed(a)>feed(b) <=> a>b. Es el UNICO caso en que 'los dos son precios' alcanza como argumento. TickBarDiag ademas es una herramienta de diagnostico, no un kernel del puente.",
+      "veredicto": "INMUNE_MONOTONO"
+    },
+    "TickBarDiag.cs :: if (askQ > 0 && bidQ > 0 && askQ >= bidQ)": {
+      "evidencia": "guarda de validez del quote: compara ask contra bid y contra 0. ambos operandos son precios de grilla llevados SIN aritmetica. feed() y ticks*tick_size son ambas estrictamente monotonas en el indice de tick, asi que preservan orden Y empates: feed(a)>feed(b) <=> a>b. Es el UNICO caso en que 'los dos son precios' alcanza como argumento.",
+      "veredicto": "INMUNE_MONOTONO"
+    },
+    "TickBarDiag.cs :: if (price > lastTickPrice) side = 1;": {
+      "evidencia": "ambos operandos son precios de grilla llevados SIN aritmetica. feed() y ticks*tick_size son ambas estrictamente monotonas en el indice de tick, asi que preservan orden Y empates: feed(a)>feed(b) <=> a>b. Es el UNICO caso en que 'los dos son precios' alcanza como argumento. TickBarDiag ademas es una herramienta de diagnostico, no un kernel del puente.",
+      "veredicto": "INMUNE_MONOTONO"
+    },
+    "TickBarDiag.cs :: if (price >= askQ) side = 1;": {
+      "evidencia": "ambos operandos son precios de grilla llevados SIN aritmetica. feed() y ticks*tick_size son ambas estrictamente monotonas en el indice de tick, asi que preservan orden Y empates: feed(a)>feed(b) <=> a>b. Es el UNICO caso en que 'los dos son precios' alcanza como argumento. TickBarDiag ademas es una herramienta de diagnostico, no un kernel del puente.",
+      "veredicto": "INMUNE_MONOTONO"
+    },
+    "VolTicksPOC2.cs :: bool touched = High[0] >= z.LowerPrice && Low[0] <= z.UpperPrice;": {
+      "evidencia": "el umbral vive a medio tick de la grilla (borde = tick +/- 0.5*TickSize), asi que ningun precio negociable cae exactamente encima y el empate es imposible. Exposicion MEDIDA 0.00% en AUDIT-002.",
+      "veredicto": "INMUNE_MEDIOTICK"
+    },
+    "VolTicksPOC2.cs :: if (sorted[mid] <= x) { idx = mid; lo = mid + 1; } else hi = mid - 1;": {
+      "evidencia": "no compara precios: son indices de array / pesos acumulados dentro de un helper (busqueda binaria, percentil). Falso positivo del detector, que matchea los identificadores lo/hi/mid por nombre.",
+      "veredicto": "NO_ES_PRECIO"
+    },
+    "VolTicksPOC2.cs :: int s = Close[0] > z.UpperPrice ? 1 : (Close[0] < z.LowerPrice ? -1 : 0);": {
+      "evidencia": "el umbral vive a medio tick de la grilla (borde = tick +/- 0.5*TickSize), asi que ningun precio negociable cae exactamente encima y el empate es imposible. Exposicion MEDIDA 0.00% en AUDIT-002.",
+      "veredicto": "INMUNE_MEDIOTICK"
+    },
+    "VolTicksPOC2.cs :: while (lo <= hi)": {
+      "evidencia": "no compara precios: son indices de array / pesos acumulados dentro de un helper (busqueda binaria, percentil). Falso positivo del detector, que matchea los identificadores lo/hi/mid por nombre.",
+      "veredicto": "NO_ES_PRECIO"
+    },
+    "VolTicksPOC2.cs :: z.RefSide = Close[0] > z.UpperPrice ? 1 : (Close[0] < z.LowerPrice ? -1 : 0);": {
+      "evidencia": "el umbral vive a medio tick de la grilla (borde = tick +/- 0.5*TickSize), asi que ningun precio negociable cae exactamente encima y el empate es imposible. Exposicion MEDIDA 0.00% en AUDIT-002.",
+      "veredicto": "INMUNE_MEDIOTICK"
+    },
+    "aVolCellPOI2.cs :: bool touched = High[0] >= z.LowerPrice && Low[0] <= z.UpperPrice;": {
+      "evidencia": "el umbral vive a medio tick de la grilla (borde = tick +/- 0.5*TickSize), asi que ningun precio negociable cae exactamente encima y el empate es imposible. Exposicion MEDIDA 0.00% en AUDIT-002.",
+      "veredicto": "INMUNE_MEDIOTICK"
+    },
+    "aVolCellPOI2.cs :: else if (price < lastTickPrice) side = -1;": {
+      "evidencia": "ambos operandos son precios de grilla llevados SIN aritmetica. feed() y ticks*tick_size son ambas estrictamente monotonas en el indice de tick, asi que preservan orden Y empates: feed(a)>feed(b) <=> a>b. Es el UNICO caso en que 'los dos son precios' alcanza como argumento.",
+      "veredicto": "INMUNE_MONOTONO"
+    },
+    "aVolCellPOI2.cs :: else if (price <= bidQ) side = -1;": {
+      "evidencia": "ambos operandos son precios de grilla llevados SIN aritmetica. feed() y ticks*tick_size son ambas estrictamente monotonas en el indice de tick, asi que preservan orden Y empates: feed(a)>feed(b) <=> a>b. Es el UNICO caso en que 'los dos son precios' alcanza como argumento.",
+      "veredicto": "INMUNE_MONOTONO"
+    },
+    "aVolCellPOI2.cs :: if (askQ > 0 && bidQ > 0 && askQ >= bidQ)": {
+      "evidencia": "guarda de validez del quote: compara ask contra bid y contra 0. ambos operandos son precios de grilla llevados SIN aritmetica. feed() y ticks*tick_size son ambas estrictamente monotonas en el indice de tick, asi que preservan orden Y empates: feed(a)>feed(b) <=> a>b. Es el UNICO caso en que 'los dos son precios' alcanza como argumento.",
+      "veredicto": "INMUNE_MONOTONO"
+    },
+    "aVolCellPOI2.cs :: if (c.CumW[mid] >= target) hi = mid; else lo = mid + 1;": {
+      "evidencia": "no compara precios: son indices de array / pesos acumulados dentro de un helper (busqueda binaria, percentil). Falso positivo del detector, que matchea los identificadores lo/hi/mid por nombre.",
+      "veredicto": "NO_ES_PRECIO"
+    },
+    "aVolCellPOI2.cs :: if (c.Values[mid] <= x) { idx = mid; lo = mid + 1; } else hi = mid - 1;": {
+      "evidencia": "no compara precios: son indices de array / pesos acumulados dentro de un helper (busqueda binaria, percentil). Falso positivo del detector, que matchea los identificadores lo/hi/mid por nombre.",
+      "veredicto": "NO_ES_PRECIO"
+    },
+    "aVolCellPOI2.cs :: if (price > lastTickPrice) side = 1;": {
+      "evidencia": "ambos operandos son precios de grilla llevados SIN aritmetica. feed() y ticks*tick_size son ambas estrictamente monotonas en el indice de tick, asi que preservan orden Y empates: feed(a)>feed(b) <=> a>b. Es el UNICO caso en que 'los dos son precios' alcanza como argumento.",
+      "veredicto": "INMUNE_MONOTONO"
+    },
+    "aVolCellPOI2.cs :: if (price >= askQ) side = 1;": {
+      "evidencia": "ambos operandos son precios de grilla llevados SIN aritmetica. feed() y ticks*tick_size son ambas estrictamente monotonas en el indice de tick, asi que preservan orden Y empates: feed(a)>feed(b) <=> a>b. Es el UNICO caso en que 'los dos son precios' alcanza como argumento.",
+      "veredicto": "INMUNE_MONOTONO"
+    },
+    "aVolCellPOI2.cs :: int s = Close[0] > z.UpperPrice ? 1 : (Close[0] < z.LowerPrice ? -1 : 0);": {
+      "evidencia": "el umbral vive a medio tick de la grilla (borde = tick +/- 0.5*TickSize), asi que ningun precio negociable cae exactamente encima y el empate es imposible. Exposicion MEDIDA 0.00% en AUDIT-002.",
+      "veredicto": "INMUNE_MEDIOTICK"
+    },
+    "aVolCellPOI2.cs :: while (lo < hi)": {
+      "evidencia": "no compara precios: son indices de array / pesos acumulados dentro de un helper (busqueda binaria, percentil). Falso positivo del detector, que matchea los identificadores lo/hi/mid por nombre.",
+      "veredicto": "NO_ES_PRECIO"
+    },
+    "aVolCellPOI2.cs :: while (lo <= hi)": {
+      "evidencia": "no compara precios: son indices de array / pesos acumulados dentro de un helper (busqueda binaria, percentil). Falso positivo del detector, que matchea los identificadores lo/hi/mid por nombre.",
+      "veredicto": "NO_ES_PRECIO"
+    },
+    "aVolCellPOI2.cs :: z.RefSide = Close[0] > z.UpperPrice ? 1 : (Close[0] < z.LowerPrice ? -1 : 0);": {
+      "evidencia": "el umbral vive a medio tick de la grilla (borde = tick +/- 0.5*TickSize), asi que ningun precio negociable cae exactamente encima y el empate es imposible. Exposicion MEDIDA 0.00% en AUDIT-002.",
+      "veredicto": "INMUNE_MEDIOTICK"
+    }
+  }
+}

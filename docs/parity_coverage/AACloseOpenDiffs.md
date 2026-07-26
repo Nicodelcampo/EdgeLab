@@ -49,6 +49,46 @@ vieja **todavía cuenta**.
 - `DetectarExpansiones` es una capa visual aparte (ZigZag) que no produce zonas.
   **No se porta.**
 
+## HALLAZGO — defecto histórico del `.cs` v1.0 (corregido en v1.1)
+
+**Resultado del primer oráculo: FAIL, 1595 zonas apareadas.** Causa raíz: no era
+el kernel Python, era el `.cs`.
+
+```csharp
+if (gapPts < MinDiffTicks * TickSize) return;      // v1.0
+```
+
+NT8 entrega el precio como el `double` del decimal parseado del feed, que en el
+**24,3 %** de los niveles de 6E cae 1 ULP **por debajo** de la grilla. Al restar
+dos precios consecutivos la diferencia queda apenas por debajo de `1*TickSize` y
+el `<` la descarta.
+
+| | |
+|---|---|
+| predicho | **47,5 %** de los gaps de exactamente 1 tick descartados |
+| observado contra el oráculo | **43,5 %** |
+| corregido en | **v1.1**, sha256 `5a898da43812fd52bbcf26943a27cf20da0a1572dd318be96b9c42523ac5e9b6` |
+
+Corrección aprobada por Nico el 2026-07-26. La decisión ahora usa
+`gapTicks = |PriceToTick(closePrev) − PriceToTick(openCurr)|`; `gapPts` sobrevive
+sólo para I/O. Detalle completo en `docs/audits/AUDIT-003_barrido_ulp.md`.
+
+### Consecuencia sobre los datos ya generados — DECLARADA
+
+**Todo dato de `AACloseOpenDiffs` anterior al 2026-07-26 tiene ~47 % de los gaps
+de 1 tick faltantes.** No es ruido aleatorio:
+
+- es un sesgo **sistemático hacia los gaps grandes** — la distribución de tamaño
+  de gap calculada sobre esos datos está corrida hacia arriba;
+- está **correlacionado con el nivel de precio**, porque depende de qué niveles
+  caen 1 ULP por debajo de la grilla;
+- el logger de research (`D:\A Trading\loggers\AACloseOpenDiffs.csv`) **mergea**
+  con lo previo, así que arrastra el defecto en toda su parte histórica.
+
+Qué hacer con ese histórico —regenerarlo o marcarlo como sesgado— **queda
+pendiente de decisión de Nico**. Hasta entonces no se usa para estadística de
+tamaño de gap.
+
 ## Ramas y cobertura
 
 | Rama | Params | Cubierta por | Estado |

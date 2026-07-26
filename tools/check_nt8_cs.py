@@ -12,6 +12,7 @@ Salida: 0 si todo OK, 1 si hay algún hallazgo bloqueante.
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import sys
 
@@ -77,6 +78,9 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description="Verifica un .cs de NinjaScript")
     ap.add_argument("paths", nargs="+")
     ap.add_argument("--version", help="versión esperada en la línea meta")
+    ap.add_argument("--ulp", action="store_true",
+                    help="ademas, correr el barrido ULP en modo gate (regla de "
+                         "diseño: ningun umbral de precio se compara en double)")
     a = ap.parse_args(argv)
 
     rc = 0
@@ -91,6 +95,16 @@ def main(argv=None):
         for w in warns:
             print("   warn  " + w)
         if fails:
+            rc = 1
+
+    if a.ulp:
+        # El barrido vive aparte porque MIDE distinto (expresiones, no estructura),
+        # pero se puede exigir en la misma pasada. Falla solo ante expresiones que
+        # nunca se clasificaron: los 49 candidatos actuales estan sellados.
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import ulp_sweep
+        print()
+        if ulp_sweep.main(["--baseline"] + list(a.paths)) != 0:
             rc = 1
     return rc
 

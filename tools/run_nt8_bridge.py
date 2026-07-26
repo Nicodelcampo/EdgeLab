@@ -38,8 +38,15 @@ import numpy as np  # noqa: E402
 
 from edgelab.bridge import bars as bars_mod  # noqa: E402
 from edgelab.bridge import identity, oracle, parity, store, viewer_export  # noqa: E402
+from edgelab.bridge import session_preflight  # noqa: E402
 from edgelab.bridge import ticks as ticks_mod  # noqa: E402
 from edgelab.bridge.indicators import BAR_DRIVEN, REGISTRY  # noqa: E402
+
+# Kernels cuya salida depende del calendario de sesiones: les corre el preflight
+# antes de comparar zonas. `aVolCellPOI2` calcula umbrales por sesión y
+# `HFTZones2` congela su calibración al abrir cada sesión, así que en los dos una
+# frontera corrida cambia QUÉ se detecta, no sólo cuándo.
+SESSION_DRIVEN = {"aVolCellPOI2", "HFTZones2"}
 
 VIEWER_SRC = os.path.join(REPO, "viewer", "nt8_bridge")
 
@@ -203,6 +210,27 @@ def main(argv=None):
             if n_all != len(orc["zones"]):
                 print(f"[oráculo {n}] {len(orc['zones'])}/{n_all} zonas NT8 en ventana "
                       f"[{args.start_utc}, {args.end_utc}) (resto = warmup/fuera de rango)")
+
+            # PREFLIGHT DE CALENDARIO (decision de Nico 2026-07-26). Va ANTES de
+            # comparar zonas: un calendario desalineado produce diffs de zona que
+            # parecen diffs de geometria, y se gasta el oraculo persiguiendo la
+            # zona equivocada. Solo corre si el oraculo trae evidencia de sesion;
+            # si no la trae, se dice — no se asume que esta bien.
+            if n in SESSION_DRIVEN:
+                ev = orc.get("session_starts_ns") or []
+                if not ev:
+                    print(f"[preflight {n}] el oráculo NO exporta eventos de inicio "
+                          f"de sesión: la alineación de calendario queda SIN VERIFICAR. "
+                          f"Un FAIL de este kernel podría ser calendario y no geometría.")
+                else:
+                    b_nt8 = session_preflight.nt8_boundaries(ev)
+                    b_py = session_preflight.python_boundaries(ev)
+                    rep = session_preflight.preflight(b_nt8, b_py, strict=False)
+                    print("[preflight %s] %s" % (n, session_preflight.formatear(rep)))
+                    if not rep["ok"]:
+                        any_fail = True
+                        print(f"[preflight {n}] ABORTA la comparación de este kernel.")
+                        continue
         for pset in grids[n]:
             pset = dict(pset)
             bar_spec = pset.pop("bars", args.bars)

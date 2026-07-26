@@ -196,6 +196,83 @@ piso y en el **22 %** en la rama porcentual con altura par.
 modifica **junto, en el mismo commit**. Tocar un solo lado rompe la paridad de
 forma garantizada, no eventual.
 
+### Regla de VENTANA LLENA para kernels con historia rodante (Nico, 2026-07-26)
+
+**Aprobada como enmienda al pre-registro de VolTicksPOC2.**
+
+> Para todo kernel cuya decisión dependa de una ventana **rodante** de historia,
+> la región comparada exige que **los dos lados tengan la ventana completa**. Una
+> zona cuya ventana no esté llena en alguno de los dos lados **no entra a la
+> comparación**, y la exclusión se **reporta** — cuántas filas y cuáles.
+
+**El problema que resuelve.** `VolTicksPOC2` decide por percentil empírico sobre
+una ventana rodante de `ratio_window_bars` (default 2000) ratios, con
+`min_ratio_samples` (default 500) de piso. El percentil de la barra *b* depende
+de las 2000 barras previas. NT8 arranca esa ventana en la primera barra que
+**cargó el chart**; Python la arranca en la primera barra del **parquet**. Si los
+dos orígenes no coinciden, las dos ventanas contienen conjuntos de ratios
+distintos, y una barra cerca del umbral puede caer de lados opuestos **sin que
+haya ninguna discrepancia de kernel**.
+
+Es el mismo error de razonamiento que la ventana asimétrica de §4: se estaba
+midiendo el artefacto de medición, no el kernel.
+
+**Por qué no alcanza con la frontera de madurez.** Esa regla pide que la zona
+esté madura en el eje de *tiempo*; ésta pide que lo esté en el eje de *historia*,
+que es otro. Un kernel puede tener una zona perfectamente madura en tiempo cuya
+ventana de ratios todavía está a medio llenar.
+
+**Cómo se aplica**, en este orden:
+
+1. Se determina `b0` = la primera barra en que **ambos** lados tienen
+   `>= ratio_window_bars` ratios acumulados (no `min_ratio_samples`: ése es el
+   piso para *emitir*, no para que la ventana esté llena).
+2. La región comparada arranca en `b0`, y se aplica **idénticamente** a los dos
+   lados — igual que la ventana semiabierta.
+3. Las zonas excluidas se reportan siempre. Silenciarlas convertiría la regla en
+   una tolerancia encubierta, que es justo lo que no se hace acá.
+
+**Alcance.** Hoy aplica a `VolTicksPOC2` (ventana de ratios) y a `aVolCellPOI2`
+(`lookback_sessions=20`, ventana rodante de sesiones). `HFTZones2` **no** la
+necesita: congela su calibración por sesión contra la sesión anterior completa,
+así que su dependencia de historia está acotada a una sesión y ya la cubre el
+preflight de calendario.
+
+**Lo que la regla NO autoriza**: no amplía ninguna tolerancia numérica ni relaja
+ningún gate. Recorta la **región** comparada por una razón declarada *antes* de
+mirar los diffs, y sobre esa región el gate sigue exigiendo 0 diffs.
+
+### Preflight de calendario de sesiones (Nico, 2026-07-26)
+
+Para todo kernel dependiente de sesiones, **antes** de comparar zonas se comparan
+las fronteras de sesión de los dos lados. Si difieren, **se aborta con
+diagnóstico** (qué sesión, qué fecha) y no se comparan zonas: un calendario
+corrido produce diffs de zona que *parecen* diffs de geometría.
+
+Implementación en `edgelab/bridge/session_preflight.py`, conectado a
+`tools/run_nt8_bridge.py`. Aplica a `aVolCellPOI2`, `HFTZones2` y a todo
+indicador futuro basado en sesiones.
+
+**Lo que se midió al implementarlo** — contra el oráculo real
+`HFTZones2_adaptive_6E_0926_v22.csv`, las **7 fronteras de NT8 coinciden
+exactamente** con las de `sessions.py` (17:00 CT, DST-aware). El calendario **no**
+está desalineado, y el rango 2026-06-08 → 2026-07-21 **no contiene ningún feriado
+con cierre completo** (Juneteenth y el 3 de julio operaron con cierre temprano a
+las 15:00 CT, verificado sobre los ticks del parquet).
+
+Lo que sí difiere es el **origen del contador**: NT8 numera desde la primera
+barra que cargó el chart, Python desde el inicio del parquet — en 6E 09-26 da un
+offset constante de **4** (NT8 arranca en 2026-06-12, el parquet en 2026-06-08).
+Ése, y no una deriva de calendario, es el origen real del FAIL de `aVolCellPOI2`.
+
+> **Regla derivada**: un `session_index` de NT8 **no es** un índice de Python.
+> Se traduce por **trade-date**, nunca por ordinal. El offset se **declara** en el
+> reporte, no se absorbe: si cambia entre corridas es que el chart cargó otro
+> rango, y eso invalida la comparación igual que un desalineamiento real.
+
+Timezone del chart confirmada por la misma vía: los `ts` del `.cs` son
+`America/Argentina/Buenos_Aires` (19:00 local = 17:00 CT = 22:00 UTC).
+
 ### Regla de frontera de madurez (pre-declarada)
 
 NT8 exporta más rango que la ventana Python (warmup a ambos lados). Las zonas
@@ -244,6 +321,43 @@ timezone del chart (`--chart-tz`) y la resolución de barras deben coincidir 1:1
 con el indicador corriendo en NT8. Sin el CSV real, ningún kernel se declara
 "paridad real confirmada" (§4).
 
+### REGLA DE DISEÑO (sellada por Nico, 2026-07-26)
+
+> **Ningún umbral de precio se compara en `double`. Todo umbral de precio se
+> compara en índices ENTEROS de tick.**
+
+Deja de ser una lección y pasa a ser una regla que se **verifica sola**. Dejó de
+tratarse como bug recurrente porque ya lleva **cinco apariciones**, cada una en
+una expresión distinta, y **las cinco** se encontraron gastando un oráculo o
+midiendo a mano. Buscarlas leyendo código falló explícitamente una vez:
+`AUDIT-001` clasificó como riesgo NULO justamente la comparación que después
+resultó ser la causa raíz de los 82 `FEATURE_DIFF` de HFTZones2.
+
+**Cómo se hace cumplir**
+
+| capa | herramienta | qué hace |
+|---|---|---|
+| estática | `tools/ulp_sweep.py --baseline` | falla ante cualquier expresión de comparación de precios que **nunca se haya clasificado** |
+| medición | `tools/ulp_exposure.py` | cuenta, sobre el rango real del instrumento, cuántas decisiones **cambian de lado** entre la representación del feed y la reconstruida |
+| suite | `tests/bridge/test_ulp_sweep.py` | 12 tests, incluido uno que **inyecta la regresión** y exige que el barrido la marque |
+| pasada única | `tools/check_nt8_cs.py --ulp nt8/*.cs` | estructura + barrido en un solo comando |
+
+El barrido **no decide**: marca candidatos. Un candidato no es un bug — los
+bordes a medio tick son inmunes por construcción. Lo que la regla prohíbe es
+dejar un candidato **sin medir**. Cada uno de los 49 actuales está sellado con
+veredicto y evidencia en `tools/ulp_sweep_baseline.json`; los veredictos
+admitidos son `INMUNE_MONOTONO`, `INMUNE_MEDIOTICK`, `CORREGIDO`,
+`EXPUESTO_PENDIENTE`, `FUERA_DE_ALCANCE` y `NO_ES_PRECIO`.
+
+**El único argumento válido de inmunidad "porque los dos son precios"**:
+`feed()` y `ticks × tick_size` son ambas estrictamente monótonas en el índice de
+tick, así que preservan orden **y empates** — pero sólo si los dos operandos
+llegan a la comparación **sin aritmética intermedia**. En cuanto aparece un
+`± N * TickSize`, un `* pct` o una división, el argumento se cae. Ésa es
+exactamente la distinción que AUDIT-001 no hizo.
+
+Resultados del barrido completo en `docs/audits/AUDIT-003_barrido_ulp.md`.
+
 ### Lección permanente: los precios se comparan en ENTEROS de tick
 
 **Toda comparación de precios se hace sobre índices enteros de tick; los `double`
@@ -255,18 +369,25 @@ off-by-one. Si el valor puede caer en `x.5` (p. ej. el centro de una fila con
 `ticks_per_row` par), se usa la grilla de **medios ticks**, donde vuelve a ser
 entero exacto.
 
-Esta familia de bug ya costó **dos incidentes distintos** en el proyecto:
+Esta familia de bug ya costó **cinco incidentes distintos** en el proyecto:
 
-| # | dónde | síntoma | causa |
-|---|---|---|---|
-| 1 | `parity._geom_ticks` | la misma zona medía 0, 1 o 2 ticks según la paridad del índice de fila | **banker's rounding** al medir en ticks enteros |
-| 2 | `BigTrap2.cs` L349 (pre-v2.1) | 101 `trapped_buyers` espurios, 12,5 % de las zonas | **1 ULP**: `r*TickSize` (reconstruido) vs `Close[0]` (feed) |
+| # | dónde | síntoma | causa | estado |
+|---|---|---|---|---|
+| 1 | `parity._geom_ticks` | la misma zona medía 0, 1 o 2 ticks según la paridad del índice de fila | **banker's rounding** al medir en ticks enteros | corregido |
+| 2 | `BigTrap2.cs` L349 (pre-v2.1) | 101 `trapped_buyers` espurios, 12,5 % de las zonas | `r*TickSize` (reconstruido) vs `Close[0]` (feed) | corregido v2.1 |
+| 3 | `HFTZones2` bordes de zona (pre-v2.2) | 82 `FEATURE_DIFF` | cada lado derivaba el borde con su propia aritmética | corregido v2.2 |
+| 4 | `HFTZones2` `inside` (pre-v2.3) | 272 `FEATURE_DIFF`; **refutó PRED-002** | unificar los bordes en v2.2 rompió una cancelación accidental de error y dejó `inside` expuesto al 24,30 % | corregido v2.3 |
+| 5 | `AACloseOpenDiffs.cs` `MinDiffTicks` (pre-v1.1) | descartaba el **47,5 %** de los gaps de 1 tick (43,5 % observado contra el oráculo) | `gapPts < MinDiffTicks * TickSize` en points | corregido v1.1 |
 
-Los dos son la misma raíz: aritmética de punto flotante decidiendo un empate que
-sobre la grilla de ticks es exacto. La auditoría completa de la familia en los 5
-`.cs` y los 5 kernels está en `docs/audits/AUDIT-001_comparaciones_en_grilla_de_ticks.md`
-— incluye **un hallazgo ALTO todavía sin corregir** en HFTZones2, que conviene
-resolver **antes** de gastar un export en su primer oráculo.
+Todos son la misma raíz: aritmética de punto flotante decidiendo un empate que
+sobre la grilla de ticks es exacto. Vale mirar el **4** con atención: la
+corrección del **3** fue correcta y aun así *empeoró* el conteo de diffs, porque
+el bug convivía con un segundo error que lo cancelaba en parte. Una corrección
+parcial de esta familia puede subir los diffs sin ser un retroceso.
+
+Auditorías: `docs/audits/AUDIT-001_comparaciones_en_grilla_de_ticks.md` (leyendo
+código — falló), `AUDIT-002_exposicion_medida_ulp.md` (midiendo) y
+`AUDIT-003_barrido_ulp.md` (barrido estático completo de los 6 `.cs`).
 
 Ojo con el caso simétrico: si un `.cs` y su kernel hacen la **misma** aritmética
 inexacta, la paridad da PASS *por bug compartido*. Eso satisface el gate pero no

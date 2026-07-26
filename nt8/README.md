@@ -36,12 +36,21 @@ versión esperada, llaves y paréntesis balanceados, y CRLF sin LF sueltos.
 
 | archivo | versión | sha256 (canónico, sin región generada) |
 |---|---|---|
-| `HFTZones2.cs` | v2.2 | `6f7c70dbca9ae7d49798c4b7cce134e3f84a236b9fa70d485c7393e9e454a541` |
+| `HFTZones2.cs` | **v2.3** | `9bdbcc8108d8dc3248bf0b23b18e2bbf53765a8a7fdfbb86ebf9f0e35f04fd32` |
 | `BigTrap2.cs` | v2.1 | `77af06eed2bba5d5367ef41a68476d04b295039411ac124492d918c0a557fbf5` |
 | `TickBarDiag.cs` | v1.1 | *(instrumental de diagnóstico, no de trading)* |
 | `VolTicksPOC2.cs` | v2.1 | `48e0718a055958f0b2a325cdee53517e449989c6b43ecfe50e7b4d634278845d` |
 | `aVolCellPOI2.cs` | v2.0 | `4ad4c671333c0b5c214d3d2c3d4c75a6a7dd4f616ee26bc8aaa7d31bb0ead6ed` |
-| `AACloseOpenDiffs.cs` | v1.0 | `e85cad63fb0621df320955685d457763296b1908edfa48750dde0cfc5a0fccd6` |
+| `AACloseOpenDiffs.cs` | **v1.1** | `5a898da43812fd52bbcf26943a27cf20da0a1572dd318be96b9c42523ac5e9b6` |
+
+### Cambios del 2026-07-26 (barrido ULP, AUDIT-003)
+
+| archivo | de → a | qué cambió | por qué |
+|---|---|---|---|
+| `HFTZones2.cs` | v2.2 → **v2.3** | `inside` pasa a comparar `priceTick` contra `LowerTick`/`UpperTick`; el precio se convierte **una vez por llamada** | el `.cs` había quedado en v2.2 mientras `hftzones2.py` ya era v2.3 — los dos lados estaban desalineados **por construcción**. Exposición medida antes 24,30 %, después **0,00 %** |
+| `AACloseOpenDiffs.cs` | v1.0 → **v1.1** | `MinDiffTicks` se compara en enteros (`gapTicks`), no en points; se agrega el helper `PriceToTick` | v1.0 descartaba el **47,5 %** de los gaps de 1 tick (43,5 % observado). Aprobado por Nico |
+
+Verificación de los dos: `python tools/check_nt8_cs.py --ulp nt8/*.cs`.
 
 **`Gaps2.cs` no se toca**: es la referencia que dio
 paridad 1316/1316; cualquier cambio exige digest nuevo y oráculo nuevo.

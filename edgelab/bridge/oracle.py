@@ -211,8 +211,48 @@ def _parse_csv(body, meta, tz, tick_size):
                 z["ended_ms"] = unix_ms
                 z["end_reason"] = col(parts, "reason") or None
     return dict(indicator=indicator, meta=meta, header=header, events=events,
+                session_starts_ns=_session_starts_ns(events, indicator),
                 zones=[z for z in zones.values() if z.get("created_ms") is not None
                        or z.get("top") is not None])
+
+
+# Eventos con los que cada .cs declara que ABRE una sesión. Es la única evidencia
+# directa del calendario de NT8 que sale del export; sin ella la alineación de
+# calendario no se puede verificar y el preflight lo dice en vez de asumirla.
+_INICIO_DE_SESION = {"CALIBRATION", "CALIBRATION_PENDING", "SESSION_START"}
+
+
+def _session_starts_ns(events, indicator):
+    """ts (ns) de los inicios de sesión que declara NT8, si el export los trae.
+
+    HFTZones2 los emite explícitamente (congela la calibración al abrir). Los
+    kernels que sólo exportan un `session_index` se resuelven por el cambio de
+    ese índice: el primer evento de cada sesión acota la frontera aunque no la
+    marque exactamente, que es todo lo que el preflight necesita.
+    """
+    out = []
+    for e in events:
+        if e.get("event_type") in _INICIO_DE_SESION:
+            ms = _f(e.get("unix_ms"))
+            if ms is not None:
+                out.append(int(ms) * 1_000_000)
+    if out:
+        return sorted(set(out))
+
+    visto, ms_col = set(), None
+    for e in events:
+        si = e.get("session_index")
+        if si in (None, ""):
+            continue
+        if ms_col is None:
+            ms_col = "unix_ms" if _f(e.get("unix_ms")) is not None else None
+        if si in visto:
+            continue
+        visto.add(si)
+        ms = _f(e.get(ms_col)) if ms_col else None
+        if ms is not None:
+            out.append(int(ms) * 1_000_000)
+    return sorted(set(out))
 
 
 def _parse_pipe(body, meta, tz):

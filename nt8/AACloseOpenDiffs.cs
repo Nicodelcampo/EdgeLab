@@ -1,4 +1,6 @@
-// AACloseOpenDiffs.cs - Marca diferencias close-to-open entre velas M1 con heatmap.
+// AACloseOpenDiffs.cs - v1.1 - Marca diferencias close-to-open entre velas M1 con heatmap.
+// v1.1 (2026-07-26): umbral MinDiffTicks comparado en ENTEROS de tick.
+//   v1.0 descartaba el 47.5% de los gaps de 1 tick por el bug de 1 ULP del feed.
 // Cuanto MAS zonas se superpongan en precio + tiempo, mas roja se pone el area.
 // Usa sub-serie M1 para que funcione en CUALQUIER chart primario, incluido ticks (p.ej. 50t).
 //
@@ -126,6 +128,15 @@ namespace NinjaTrader.NinjaScript.Indicators
             return Math.Max(1, Math.Min(95, op));
         }
 
+        // Precio -> indice ENTERO de tick. Espejo exacto de snap_to_tick (Python) y
+        // de PriceToTick en los otros .cs del puente: redondeo AwayFromZero, NUNCA
+        // floor. El floor es lo que rompe cuando el feed entrega el precio 1 ULP por
+        // debajo de la grilla. Ver docs/nt8_indicator_parity_contract.md §5.
+        private long PriceToTick(double price)
+        {
+            return (long)Math.Round(price / TickSize, MidpointRounding.AwayFromZero);
+        }
+
         // Percentil con interpolacion lineal (pct en 0..100) sobre una copia ordenada.
         private double Percentile(List<double> data, double pct)
         {
@@ -206,7 +217,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 		parityWriter = new System.IO.StreamWriter(parityResolvedPath, false,
                 			new System.Text.UTF8Encoding(false));
                 		parityWriter.AutoFlush = true;
-                		parityWriter.WriteLine("# meta indicator=AACloseOpenDiffs,version=1.0,"
+                		parityWriter.WriteLine("# meta indicator=AACloseOpenDiffs,version=1.1,"
                 			+ "subseries=minute_1_always,anchor=boundary_prev_m1_close,"
                 			+ "overlap=point_in_time_at_birth,bar_spec_independent=true,instrument="
                 			+ Instrument.MasterInstrument.Name + ",tick_size="
@@ -247,8 +258,21 @@ namespace NinjaTrader.NinjaScript.Indicators
             double closePrev = Closes[1][1];
             double openCurr  = Opens[1][0];
 
+            // v1.1 (barrido ULP 2026-07-26, autorizado por Nico): el umbral de
+            // tamano se compara en ENTEROS de tick, nunca en points.
+            //
+            // El defecto que corrige: `gapPts < MinDiffTicks * TickSize` descartaba
+            // el 47.5% de los gaps de EXACTAMENTE 1 tick. NT8 entrega el precio como
+            // el double del decimal parseado del feed, que en el 24.3% de los
+            // niveles de 6E cae 1 ULP por DEBAJO de la grilla; al restar dos precios
+            // consecutivos la diferencia queda apenas por debajo de 1*TickSize y el
+            // `<` la mata. Medido contra el oraculo: 43.5% de perdida observada.
+            //
+            // gapPts sobrevive solo para I/O (dibujo, percentil visual y el logger
+            // de research). La DECISION usa gapTicks.
+            long gapTicks = Math.Abs(PriceToTick(closePrev) - PriceToTick(openCurr));
             double gapPts = Math.Abs(closePrev - openCurr);
-            if (gapPts < MinDiffTicks * TickSize) return;
+            if (gapTicks < MinDiffTicks) return;
 
             // --- Capa opcional: filtro por percentil de tamano ---
             // El umbral se calcula sobre los gaps PREVIOS (la ventana antes de
@@ -318,7 +342,7 @@ namespace NinjaTrader.NinjaScript.Indicators
             		"{0},ZONE_CREATED,{1},{2},D{3:000000},{4},{5},{6},{7},{8},{9},{10},{11}",
             		paritySeq, startTime.ToString("yyyy-MM-dd HH:mm:ss.fff", pci), unixMs,
             		paritySeq + 1, unixMs, endMs, top, bot,
-            		(int)Math.Round(gapPts / TickSize), gapDir,
+            		gapTicks, gapDir,
             		nueva.OverlapCount, CurrentBars[1]));
             	paritySeq++;
             }
