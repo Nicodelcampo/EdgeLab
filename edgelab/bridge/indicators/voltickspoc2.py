@@ -79,6 +79,26 @@ def run(ticks, bars, footprints, params=None, chart_tz="UTC"):
     tick_size = ticks.tick_size
     det_cut = p["detection_percentile"] / 100.0
 
+    # `ratio_win` es una ventana RODANTE acotada a `ratio_window_bars`: su
+    # longitud nunca supera ese tope. Si `min_ratio_samples` es mayor, el gate de
+    # detección (`len(ratio_win) >= min_ratio_samples`) NO PUEDE abrir nunca y el
+    # kernel devuelve cero zonas — sin error, sin aviso, para siempre.
+    #
+    # Se detecta y se grita en vez de resolverlo en silencio: ni clamp ni
+    # fallback. Un config imposible tiene que ser visible, no producir un
+    # "no hay señales" indistinguible de un resultado real. (Incidente 2026-07-26:
+    # un chart con ratio_window_bars=200 y min_ratio_samples=500 no marcaba nada
+    # y no había forma de saber por qué.)
+    if int(p["min_ratio_samples"]) > int(p["ratio_window_bars"]):
+        raise ValueError(
+            "config imposible: min_ratio_samples=%d > ratio_window_bars=%d. "
+            "La ventana de ratios esta acotada a %d, asi que el gate de deteccion "
+            "nunca abre y el kernel produciria CERO zonas en silencio. "
+            "Subir ratio_window_bars a >= %d, o bajar min_ratio_samples a <= %d."
+            % (int(p["min_ratio_samples"]), int(p["ratio_window_bars"]),
+               int(p["ratio_window_bars"]), int(p["min_ratio_samples"]),
+               int(p["ratio_window_bars"])))
+
     rows, lines, all_zones, active = [], [], [], []
     seq = 0
     zone_seq = 0

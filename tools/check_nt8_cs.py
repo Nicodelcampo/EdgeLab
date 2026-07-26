@@ -55,7 +55,7 @@ def check(path: str, version: str | None = None):
         fails.append("%d terminadores CR CR LF (doble CR)" % raw.count(b"\r\r\n"))
 
     # 4) meta de versión
-    metas = re.findall(r"meta indicator=(\w+),version=([\d.]+)", text)
+    metas = re.findall(r"meta[ ,]indicator=(\w+),version=([\d.]+)", text)
     if version:
         if not any(v == version for _, v in metas):
             fails.append("no se encontró `version=%s` en la línea meta (hallado: %s)"
