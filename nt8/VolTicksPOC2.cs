@@ -429,13 +429,27 @@ namespace NinjaTrader.NinjaScript.Indicators
 				if (reason != null)
 				{
 					EmitEvent("ZONE_INVALIDATED", z.PocTick, 0, 0, 0, 0, 0, 0, 0, 0, z.Id, z.TouchCount, reason);
-					RemoveDrawObject(z.Tag);
+					// NO se borra el dibujo. Antes se borraba al invalidar/expirar, asi
+					// que sobre datos historicos -donde para el final ya murieron casi
+					// todas- el grafico quedaba con las zonas VIVAS en la ultima barra:
+					// tipicamente una, o ninguna. Parecia que el indicador no detectaba
+					// (incidente 2026-07-26: MNQ mostro 1 zona, MES 0, mientras el mismo
+					// kernel sobre 6E detectaba 454). El dibujo es SOLO dibujo: el estado
+					// y los eventos exportados no cambian, y MaxRenderedZones sigue
+					// acotando cuantos rectangulos viven en el chart.
 					activeZones.RemoveAt(i);
 				}
 				else if (CurrentBar - z.CreatedBar >= MaxAgeBars)
 				{
 					EmitEvent("ZONE_EXPIRED", z.PocTick, 0, 0, 0, 0, 0, 0, 0, 0, z.Id, z.TouchCount, "max_age");
-					RemoveDrawObject(z.Tag);
+					// NO se borra el dibujo. Antes se borraba al invalidar/expirar, asi
+					// que sobre datos historicos -donde para el final ya murieron casi
+					// todas- el grafico quedaba con las zonas VIVAS en la ultima barra:
+					// tipicamente una, o ninguna. Parecia que el indicador no detectaba
+					// (incidente 2026-07-26: MNQ mostro 1 zona, MES 0, mientras el mismo
+					// kernel sobre 6E detectaba 454). El dibujo es SOLO dibujo: el estado
+					// y los eventos exportados no cambian, y MaxRenderedZones sigue
+					// acotando cuantos rectangulos viven en el chart.
 					activeZones.RemoveAt(i);
 				}
 			}
