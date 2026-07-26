@@ -74,7 +74,8 @@ def parse_nt8_log(path, chart_tz="UTC", tick_size=None):
 
 
 def _detect_indicator(meta, header):
-    for name in ("Gaps2", "HFTZones2", "VolTicksPOC2", "aVolCellPOI2", "BigTrap2"):
+    for name in ("Gaps2", "HFTZones2", "VolTicksPOC2", "aVolCellPOI2", "BigTrap2",
+                 "AACloseOpenDiffs"):
         if "indicator=" + name in meta:
             return name
     if "gap_id" in header:
@@ -85,6 +86,8 @@ def _detect_indicator(meta, header):
         return "VolTicksPOC2"
     if "bucket" in header and "lower_tick" in header:
         return "aVolCellPOI2"
+    if "overlap_at_birth" in header:
+        return "AACloseOpenDiffs"
     return "unknown"
 
 
@@ -105,6 +108,24 @@ def _parse_csv(body, meta, tz, tick_size):
         parts = ln.split(",")
         events.append(dict(zip(header, parts)))
         etype = col(parts, "event_type")
+        if indicator == "AACloseOpenDiffs":
+            # Una linea por zona, emitida AL NACER. No hay eventos de ciclo de
+            # vida: la zona vive `extend_bars` barras M1 y expira sola, asi que
+            # `ended_ms` viene ya calculado en la propia fila (`end_ms`).
+            zid = col(parts, "zone_id")
+            if not zid:
+                continue
+            zones[zid] = dict(
+                id=zid, indicator=indicator,
+                top=_f(col(parts, "upper")), bottom=_f(col(parts, "lower")),
+                created_ms=_f(col(parts, "start_ms")),
+                ended_ms=_f(col(parts, "end_ms")),
+                state="EXPIRED",
+                kind="gap_up" if _f(col(parts, "direction")) == 1 else "gap_down",
+                touches=0, end_reason="extend_bars",
+                diff_ticks=_f(col(parts, "diff_ticks")),
+                overlap_at_birth=_f(col(parts, "overlap_at_birth")))
+            continue
         if indicator == "Gaps2":
             zid = col(parts, "gap_id")
             if not zid:
