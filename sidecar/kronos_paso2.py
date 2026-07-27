@@ -82,6 +82,9 @@ def main(argv=None):
     ap.add_argument("--n-muestras", type=int, default=200)
     ap.add_argument("--threads", type=int, default=2)
     ap.add_argument("--minutos-max", type=int, default=120)
+    ap.add_argument("--solo-lote", action="store_true",
+                    help="modo hijo: procesa KRONOS_OFFSET..+KRONOS_N y escribe "
+                         "a KRONOS_JSONL. Un crash fatal solo cuesta ese lote.")
     a = ap.parse_args(argv)
     os.makedirs(a.out, exist_ok=True)
 
@@ -117,6 +120,14 @@ def main(argv=None):
     puntos = sorted(rng.choice(np.arange(lo, hi), size=min(a.n_muestras, hi - lo),
                                replace=False))
 
+    # modo hijo: recortar a la rebanada del lote. Los PUNTOS son los mismos
+    # (misma seed, mismo sorteo): solo cambia quien ejecuta cada tramo.
+    jsonl = os.environ.get("KRONOS_JSONL")
+    if a.solo_lote:
+        off = int(os.environ.get("KRONOS_OFFSET", 0))
+        nn = int(os.environ.get("KRONOS_N", 5))
+        puntos = puntos[off:off + nn]
+
     filas, t0 = [], time.time()
     for n, i in enumerate(puntos):
         if (time.time() - t0) / 60.0 > a.minutos_max:
@@ -148,9 +159,17 @@ def main(argv=None):
 
         filas.append(dict(i=int(i), ts=str(k.index[i]), sigma_pred=sigma_pred,
                           vol_rezagada=vol_rez, atr_rezagado=atr_rez))
+        if jsonl:
+            # se escribe FILA POR FILA: si el proceso muere en la siguiente
+            # muestra, lo ya calculado no se pierde.
+            with open(jsonl, "a", encoding="utf-8") as fh:
+                fh.write(json.dumps(filas[-1], ensure_ascii=False) + chr(10))
         if (n + 1) % 20 == 0:
             log("  %d muestras  (%.1f s/muestra)" % (n + 1, (time.time() - t0) / (n + 1)))
 
+    if a.solo_lote:
+        log("lote listo: %d filas" % len(filas))
+        return 0
     if len(filas) < 30:
         log("SKIP: solo %d muestras utiles" % len(filas))
         json.dump(dict(estado="SKIP", n=len(filas)),

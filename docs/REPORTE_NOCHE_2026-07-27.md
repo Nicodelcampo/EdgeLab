@@ -190,13 +190,49 @@ Hay 11 estratos (franja horaria × régimen de vol rezagada) en
 
 ## 6. Recursos
 
-*(sección completada al cierre)*
+| | |
+|---|---|
+| pico de RAM | **13,22 GB** de 16 (alerta a las 01:16) |
+| RAM en régimen | ~11,4 GB con atlas + Kronos corriendo |
+| CPU | atlas 5 workers (BLAS/OMP=1 c/u) + Kronos 2 hilos + sistema |
+| GPU | **no se usó** — como estaba pautado |
+| disco | censo 2 MB · atlas ~1 MB · sidecar 2,6 GB (fuera del repo, en `.gitignore`) |
+
+El pico se disparó cuando los gates cargaron 1,9 M de ticks **mientras** Kronos
+tenía el modelo en memoria. Se resolvió sin bajar workers: los restos muertos de
+Kronos se limpiaron y los gates liberaron al terminar. Hay un vigilante de RAM
+activo que avisa por encima de 13 GB.
+
+**Advertencia de suspensión**: no verifiqué la política de energía de Windows.
+Los procesos sobrevivieron toda la noche, así que en la práctica no hubo
+suspensión — pero queda sin comprobar formalmente.
 
 ---
 
-## 7. Decisiones pendientes
+## 7. Decisiones pendientes — sólo las reales
 
-*(sección completada al cierre)*
+1. **Regenerar F2 en 2026-06-19 → 2026-07-03.** Son 11 días con el bloque
+   duplicado. Sin ellos `aVolCellPOI2` **no se puede validar** (necesita 20
+   sesiones limpias de warmup, hay 8) y el universo pierde 11 días de 6E 09-26.
+   Es lo único que bloquea un veredicto de kernel hoy.
+
+2. **Portar el secuenciador causal a `VolTicksPOC2` y `aVolCellPOI2`.** Están
+   registrados como **expuestos** en el contrato. Sus PASS son sobre `time:1`,
+   donde el patrón no falla; en primaria de ticks estarían igual que BigTrap2.
+   No los porté: un cambio por vez, atribución limpia — primero validar el
+   secuenciador en BigTrap2 con los oráculos nuevos.
+
+3. **P/N/K de EXPLORE-001.** La tabla nula está lista (§4). La decisión de qué
+   combinación pre-registrar es tuya; lo que aporto es el denominador.
+
+4. **Unidad de observación de EXPLORE-001** (pendiente de la sesión anterior):
+   zona cruda (476), colapsada por solape dentro de (sesión, bucket) (**360**), o
+   bucket entero (204). La del medio es la que corresponde al argumento de
+   pseudo-réplica.
+
+5. **Umbral de mecha de BigTrap2** — sigue como `ESPEJADO_BIT_A_BIT` con 0,0241 %
+   documentado. No requiere acción; queda listado porque es una exposición
+   declarada y viva.
 
 ---
 
