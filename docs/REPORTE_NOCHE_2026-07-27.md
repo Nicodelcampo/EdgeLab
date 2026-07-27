@@ -128,8 +128,9 @@ Las duplicaciones ahora alimentan el veredicto diario. Antes el 19-jun caía por
 
 | | |
 |---|---|
-| anclas (N bruto) | ver `runs/atlas/atlas_null.json` |
+| anclas (N bruto) | **417.661** |
 | **N efectivo** | **163 días** |
+| rondas | 235 |
 | convergencia | alcanzada en la **ronda 4** |
 | config hash | `67288bfce87cd184` |
 
@@ -190,8 +191,28 @@ Y muestra dónde el azar es más fácil de batir: **horizontes cortos con objeti
 grandes** (L=13, H=5 → 3 %) dejan mucho margen; **objetivos chicos con horizontes
 largos** (L=2, H=120 → 49,9 %) son indistinguibles de tirar una moneda.
 
-Hay 11 estratos (franja horaria × régimen de vol rezagada) en
-`runs/atlas/atlas_null.json`; 1 quedó oculto por N insuficiente.
+### Intervalos — bootstrap por bloques de día
+
+Media de MFE con IC del 90 %, remuestreando **días** (no anclas):
+
+| horizonte | media | IC 90 % |
+|---|---:|---|
+| 5 min | 3,33 | [3,20 – 3,48] |
+| 15 min | 6,15 | [5,90 – 6,41] |
+| 30 min | 8,85 | [8,48 – 9,24] |
+| 60 min | 12,51 | [12,00 – 13,06] |
+| 120 min | 17,60 | [16,84 – 18,41] |
+
+Los intervalos son angostos porque hay 163 bloques, no porque haya 417 mil
+anclas. **Ésa es la diferencia que importa**: con 417 mil observaciones tratadas
+como independientes el IC sería ~15× más angosto y falso.
+
+### Estratos
+
+**12 visibles, ninguno oculto** — con el N final todos superan el piso de 200.
+Franja horaria × régimen de volatilidad rezagada, en `runs/atlas/atlas_null.json`.
+Sirven para ver si el nulo cambia de forma según la hora o el régimen, que es la
+pregunta natural antes de condicionar cualquier estudio por esas variables.
 
 ---
 
