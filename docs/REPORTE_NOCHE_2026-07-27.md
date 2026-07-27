@@ -128,11 +128,24 @@ Las duplicaciones ahora alimentan el veredicto diario. Antes el 19-jun caía por
 
 | | |
 |---|---|
-| rondas | 160+ |
-| anclas (N bruto) | **284.363** |
+| anclas (N bruto) | ver `runs/atlas/atlas_null.json` |
 | **N efectivo** | **163 días** |
-| convergencia | alcanzada en la ronda 4 |
+| convergencia | alcanzada en la **ronda 4** |
 | config hash | `67288bfce87cd184` |
+
+**El atlas se reinició una vez, a propósito.** El primer tramo llegó a la ronda
+188 con 333.209 anclas, pero el proceso padre acumula las filas en memoria y
+crecía lineal: proyectado al hard stop original de las 07:10 daba ~2,2 M de
+anclas y ~9,6 GB, o sea riesgo cierto de OOM **perdiendo la corrida entera**.
+Como el criterio de convergencia —declarado antes de ejecutar— ya estaba
+cumplido desde la ronda 4, seguir acumulando no compraba nada: el N efectivo son
+los **días**, y ésos son 163 desde la primera ronda.
+
+Se relanzó con hard stop a las 03:00, misma `CFG_HASH`. El checkpoint del primer
+tramo quedó en `runs/atlas/checkpoint_ronda188_prereinicio.json`.
+
+**Chequeo de reproducibilidad, gratis**: tras el reinicio, con otro sorteo de
+anclas, las medianas de MFE volvieron a dar **exactamente** `[2, 4, 6, 8, 12]`.
 
 **El N efectivo son los días, no las anclas**: las del mismo día comparten
 régimen, y el bootstrap remuestrea por bloques de día. Reportar 284.363 como si

@@ -27,6 +27,8 @@ class Secuenciador:
 
     def __init__(self, k):
         self.k = k
+        self.no_confiable = False
+        self.suprimidas = 0
         self.snaps = []          # cola de snapshots (barras cerradas)
         self.blocks = []         # cola de bloques completos
         self.cur = []            # bloque en construcción
@@ -42,6 +44,7 @@ class Secuenciador:
                 self.blocks.append(self.cur)
                 self.residuales += 1
                 self.cur = []
+            self.no_confiable = False          # la frontera resincroniza
             self.sess = sesion
         self.cur.append((tick, sesion))
         if len(self.cur) >= self.k:
@@ -60,6 +63,13 @@ class Secuenciador:
             b = self.blocks.pop(0)
             if not self.verificar(s, b):
                 continue
+            # POLITICA DE ROTURA: con la sesion marcada el ciclo de vida corre
+            # (depende del OHLC) pero NO se crean zonas. Una zona nacida de un
+            # footprint que no se pudo verificar es peor que ninguna: entra al
+            # store con la misma apariencia que una buena.
+            if self.no_confiable:
+                self.suprimidas += 1
+                continue
             self.procesados.append((s["bar"], b))
 
     def verificar(self, s, b):
@@ -67,8 +77,10 @@ class Secuenciador:
         ok = (px[0] == s["o"] and px[-1] == s["c"]
               and min(px) == s["lo"] and max(px) == s["h"])
         if not ok:
-            self.mismatch.append(dict(bar=s["bar"], n=len(b),
-                                      residual=len(b) < self.k))
+            residual = len(b) < self.k
+            self.mismatch.append(dict(bar=s["bar"], n=len(b), residual=residual))
+            if not residual:
+                self.no_confiable = True
         return ok
 
 
@@ -176,6 +188,51 @@ def test_el_verificador_acepta_el_residual_corto():
     s.cierre(0, 100, 101, 100, 101)
     assert len(s.procesados) == 1        # el residual de 2 valida contra su barra
     assert s.mismatch == []
+
+
+# ------------------------------------------------- la politica de rotura ACTUA
+def test_una_rotura_suprime_las_zonas_del_RESTO_de_la_sesion():
+    """La marca de sesión no confiable tiene que tener EFECTO.
+
+    En la primera versión el flag se escribía y nunca se leía — lógica muerta.
+    La política dice "marcar el resto de la sesión como no confiable", y eso
+    sólo significa algo si deja de crear zonas.
+    """
+    s = Secuenciador(5)
+    for e in [100, 101, 102, 103, 104]:
+        s.evento(e, 1)
+    s.cierre(0, 200, 204, 200, 204)      # snapshot de OTRA barra -> rotura
+    assert s.no_confiable is True
+    # los pares siguientes de la MISMA sesión ya no producen zonas
+    for e in [110, 111, 112, 113, 114]:
+        s.evento(e, 1)
+    s.cierre(1, 110, 114, 110, 114)
+    assert s.procesados == []
+    assert s.suprimidas == 1
+
+
+def test_la_frontera_de_sesion_resincroniza():
+    """Y sólo la frontera: no se reacomoda el buffer para salir antes."""
+    s = Secuenciador(5)
+    for e in [100, 101, 102, 103, 104]:
+        s.evento(e, 1)
+    s.cierre(0, 200, 204, 200, 204)      # rotura
+    assert s.no_confiable is True
+    for e in [300, 301, 302, 303, 304]:
+        s.evento(e, 2)                   # sesión NUEVA
+    assert s.no_confiable is False
+    s.cierre(1, 300, 304, 300, 304)
+    assert len(s.procesados) == 1        # vuelve a producir
+
+
+def test_el_cs_suprime_zonas_con_la_sesion_marcada():
+    s = _cs_codigo()
+    i = s.index("private void DrainReadyBars()")
+    j = s.index("private bool VerificarOHLC")
+    cuerpo = s[i:j]
+    assert "if (sesionNoConfiable)" in cuerpo
+    assert cuerpo.index("if (sesionNoConfiable)") < cuerpo.index("ProcessBar(s,")
+    assert "nSuprimidas++" in cuerpo
 
 
 # --------------------------------------------------- el .cs espeja el patrón

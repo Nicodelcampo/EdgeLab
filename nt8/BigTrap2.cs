@@ -134,7 +134,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 		private DateTime _sessEnd = DateTime.MinValue;
 		private int  fpTicksPerBar;        // K si el primario es de tick; 0 si es de tiempo
 		private bool sesionNoConfiable;    // politica de rotura; resincroniza en la frontera
-		private int  nResiduales, nMismatch, nPares;
+		private int  nResiduales, nMismatch, nPares, nSuprimidas;
 
 		// ── footprint pendiente (subserie de 1 tick) ──────────────────────
 		// v2.2: los baldes pendingAsk/pendingBid/pendingVolume/pendingQuoteTicks/
@@ -324,6 +324,12 @@ namespace NinjaTrader.NinjaScript.Indicators
 					curBlock.Clear();
 					nResiduales++;
 				}
+				if (sesionNoConfiable)
+				{
+					LogEvent("SESION_RESINCRONIZADA", string.Format(CultureInfo.InvariantCulture,
+						"zonas_suprimidas={0};mismatch_acumulado={1}", nSuprimidas, nMismatch));
+					nSuprimidas = 0;
+				}
 				sesionNoConfiable = false;   // la frontera resincroniza
 				_sessIter.GetNextSession(tEv, true);
 				_sessEnd = _sessIter.ActualSessionEnd;
@@ -366,7 +372,19 @@ namespace NinjaTrader.NinjaScript.Indicators
 
 				// ORDEN LOGICO: el ciclo de vida de N corre ANTES de crear las zonas de N,
 				// para que la barra creadora nunca toque su propia zona.
+				// El ciclo de vida SI corre aunque la sesion este marcada: depende del
+				// OHLC de la barra, que viene de NT8, no del footprint reconstruido.
 				UpdateZones(s);
+
+				// POLITICA DE ROTURA, en accion: con la sesion marcada NO se crean zonas.
+				// Una zona nacida de un footprint que no se pudo verificar es PEOR que
+				// ninguna zona: entra al store con la misma apariencia que una buena.
+				// Se resincroniza SOLO en la frontera de sesion siguiente.
+				if (sesionNoConfiable)
+				{
+					nSuprimidas++;
+					continue;
+				}
 				if (askMap.Count > 0 || bidMap.Count > 0)
 					ProcessBar(s, askMap, bidMap, fpVol, nQuote, nRule);
 			}
