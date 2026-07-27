@@ -93,8 +93,20 @@ def main(argv=None):
     ap.add_argument("--synthetic", action="store_true")
     ap.add_argument("--contract", default=None)
     ap.add_argument("--instrument", default=None)
-    ap.add_argument("--start-utc", default=None)
-    ap.add_argument("--end-utc", default=None)
+    ap.add_argument("--start-utc", default=None,
+                    help="inicio de la VENTANA DE COMPARACION")
+    ap.add_argument("--end-utc", default=None,
+                    help="fin de la VENTANA DE COMPARACION")
+    # La ventana de DATOS es otra cosa que la de comparacion. Un kernel con
+    # lookback largo (aVolCellPOI2 pide 10-20 sesiones; VolTicksPOC2, 2000 barras;
+    # HFTZones2 calibra contra la sesion anterior) necesita historia ANTES del
+    # primer instante que se compara. Cargar solo la ventana de comparacion lo
+    # deja sin warmup y produce cero detecciones -- que se leen como FAIL de
+    # kernel cuando en realidad es el arnes el que no le dio datos.
+    ap.add_argument("--data-start-utc", default=None,
+                    help="inicio de la ventana de DATOS (default: la de comparacion)")
+    ap.add_argument("--data-end-utc", default=None,
+                    help="fin de la ventana de DATOS (default: la de comparacion)")
     ap.add_argument("--bars", default="time:1", help="bar spec default: time:N | tick:N")
     ap.add_argument("--indicator", action="append", default=[],
                     help="kernel (repetible); 'all' = todos los del registry")
@@ -153,10 +165,15 @@ def main(argv=None):
     elif args.data:
         tk = ticks_mod.load_canonical_parquet(
             args.data, contract=args.contract, instrument=args.instrument,
-            start_utc_ns=iso_to_ns(args.start_utc), end_utc_ns=iso_to_ns(args.end_utc))
+            start_utc_ns=iso_to_ns(args.data_start_utc or args.start_utc),
+            end_utc_ns=iso_to_ns(args.data_end_utc or args.end_utc))
     else:
         ap.error("falta --data o --synthetic")
     print(f"ticks: {len(tk):,} · {tk.instrument} {tk.contract} · tick_size {tk.tick_size}")
+    if args.data_start_utc or args.data_end_utc:
+        print(f"  datos [{args.data_start_utc or args.start_utc}, "
+              f"{args.data_end_utc or args.end_utc}) · "
+              f"comparacion [{args.start_utc}, {args.end_utc})")
 
     os.makedirs(args.out, exist_ok=True)
     gen_utc = datetime.now(timezone.utc).isoformat()
@@ -337,7 +354,10 @@ def main(argv=None):
         source_sha256=src_sha,
         instrument=tk.instrument, contract=tk.contract, tick_size=tk.tick_size,
         chart_tz=args.chart_tz,
-        filters=dict(contract=args.contract, start_utc=args.start_utc, end_utc=args.end_utc),
+        filters=dict(contract=args.contract, start_utc=args.start_utc,
+                     end_utc=args.end_utc,
+                     data_start_utc=args.data_start_utc or args.start_utc,
+                     data_end_utc=args.data_end_utc or args.end_utc),
         n_ticks=len(tk), zone_store_rows=n_store, runs=manifest_runs)
     with open(os.path.join(args.out, "run_manifest.json"), "w", encoding="utf-8") as fh:
         json.dump(manifest, fh, indent=2, ensure_ascii=False)

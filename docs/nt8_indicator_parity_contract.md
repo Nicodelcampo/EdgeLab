@@ -404,6 +404,74 @@ demuestra que un reordenamiento algebraicamente válido **sí** rompe el espejad
 
 Resultados del barrido completo en `docs/audits/AUDIT-003_barrido_ulp.md`.
 
+### REGLA DE FAMILIA — el secuenciador causal (Nico, 2026-07-27)
+
+> **Ningún indicador con subserie de tick sobre primaria de ticks procesa el
+> footprint en el callback de cierre. Se usa el patrón SECUENCIADOR CAUSAL.**
+
+**Por qué es de familia y no de BigTrap2.** NT8 no garantiza que todos los
+eventos de la subserie de 1 tick lleguen antes del callback de cierre de la
+barra primaria. Cualquier `take + reset` en `OnBarUpdate(BarsInProgress == 0)`
+captura *los eventos que llegaron*, no *los que le corresponden a esa barra*.
+Medido en `tick:25`: el balde tenía entre **15 y 34** eventos donde debía tener
+25, y sólo el **27 %** de las barras cerraba con el volumen correcto.
+
+**El patrón**, una vez y reutilizable:
+
+1. Al cerrar cada barra primaria, **snapshot inmutable** con todo lo que el
+   kernel lee vía `[0]` o `CurrentBar`.
+2. Los eventos de la subserie van a un **FIFO**, agrupados en **bloques de
+   exactamente K** = `BarsPeriod.Value`.
+3. **Dos colas ordenadas** (snapshots, bloques) y un drenaje que empareja
+   snapshot N con bloque N **en orden cronológico estricto**, y sólo cuando las
+   dos piezas están. Nunca N+1 antes que N. **Tomar de menos desalinearía todo
+   hacia adelante** — que es exactamente el defecto que se corrige.
+4. **Bloque residual** de 1..K−1 en la frontera de sesión: NT8 cierra corta la
+   última barra de la sesión (medido: bar 3770 = 19 eventos, volumen idéntico).
+5. **Auto-verificación**: el conteo es la *regla de corte*, el OHLC es el
+   *verificador*. En ticks enteros: primer precio == Open, último == Close,
+   mínimo == Low, máximo == High. **Un secuenciador que no se auto-verifica es
+   el bug actual con más pasos.**
+6. **Política de rotura**: mismatch ruidoso + sesión marcada no confiable +
+   resincronización **sólo** en la frontera siguiente. Prohibido reacomodar el
+   buffer para forzar el cierre del par: la deriva silenciosa es el enemigo.
+
+#### Registro de exposición
+
+| indicador | patrón | expuesto en | estado |
+|---|---|---|---|
+| **BigTrap2** | `AddDataSeries(Tick,1)` + take/reset | `tick:N` | ✅ **corregido en v2.2** |
+| **VolTicksPOC2** | idéntico | `tick:N` | ⚠️ **expuesto, sin portar** |
+| **aVolCellPOI2** | idéntico | `tick:N` | ⚠️ **expuesto, sin portar** |
+
+Los dos últimos tienen su PASS sobre **`time:1`**, donde el corte es por
+timestamp y el patrón no falla. En primaria de ticks estarían expuestos igual
+que BigTrap2. `VolTicksPOC2` ya emitió 3 `FOOTPRINT_MISMATCH` en su oráculo de
+`time:1` —uno de 199 contratos— que es la firma de la familia asomando.
+
+**No se portan todavía**: un cambio por vez, atribución limpia. Primero se valida
+el secuenciador en BigTrap2 con oráculos nuevos.
+
+### REGLA DE FAMILIA — etiquetado entre series (Nico, 2026-07-27)
+
+> **Una señal que pertenece a la serie A no puede usarse para etiquetar datos de
+> la serie B. Cada serie se etiqueta con SU PROPIO timestamp contra el calendario
+> canónico.**
+
+Dos apariciones, y en las dos la señal era **correcta en su propia serie** y
+falsa en la otra:
+
+| # | señal | usada para | error medido |
+|---|---|---|---|
+| 1 | `session_index` de NT8 | indexar sesiones del lado Python | offset constante de **4** (NT8 numera desde la primera barra del chart, Python desde el inicio del parquet) |
+| 2 | `Bars.IsFirstBarOfSession` | etiquetar eventos de la **subserie** | hasta **K−1 eventos tarde**; medido 24 (hueco real entre seq 94268 y 94269, el flag cambia entre 94292 y 94293) |
+
+La segunda es la más traicionera porque el flag *existe* y *es verdadero* — sólo
+que describe la barra primaria, que recién cierra tras acumular sus K ticks. Un
+`session_index` de NT8 se traduce por **trade-date**, nunca por ordinal; y los
+eventos de una subserie se etiquetan por **su propio timestamp** contra
+`SessionIterator`, nunca por un flag de la primaria.
+
 ### Lección permanente: los precios se comparan en ENTEROS de tick
 
 **Toda comparación de precios se hace sobre índices enteros de tick; los `double`
