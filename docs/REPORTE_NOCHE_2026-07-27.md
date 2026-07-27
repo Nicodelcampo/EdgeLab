@@ -46,9 +46,47 @@ Commits: `3686d35` (secuenciador + kernel), `587ed91` (tests + reglas de familia
 
 ---
 
-## 2. Gates de los oráculos
+## 2. Gates de los oráculos — **7 de 8 en PASS**
 
-*(sección completada al cierre — ver §2-bis)*
+| oráculo | resultado | py / nt8 / matched |
+|---|---|---|
+| **Gaps2** | ✅ **PASS** | 1316 / 1316 / 1316 |
+| **BigTrap2** `time:1` (O1) | ✅ **PASS** | 225 / 225 / 225 |
+| **BigTrap2** `wick off` (O3) | ✅ **PASS** | 393 / 393 / 393 |
+| **BigTrap2** `SameLevel` (O2′) | ✅ **PASS** | 425 / 425 / 425 |
+| **HFTZones2 v2.3** | ✅ **PASS** | 1599 / 1599 / 1599 |
+| **AACloseOpenDiffs v1.2** | ✅ **PASS** | 1803 / 1803 / 1803 |
+| **VolTicksPOC2** (warmup) | ✅ **PASS** | 23 / 23 / 23 |
+| **aVolCellPOI2 v2.1** | ⛔ **DATA_INTEGRITY_FAIL** | 140 / 144 / 117 |
+
+### Lo que se ganó esta noche
+
+- **`AACloseOpenDiffs v1.2`**: el fix de enteros queda **validado con paridad
+  exacta**. Era el que descartaba el 47,6 % de los gaps de 1 tick.
+- **`HFTZones2 v2.3`**: PASS completo. El `.cs` había quedado en v2.2 mientras el
+  kernel ya era v2.3; corregido y validado.
+- **`BigTrap2` O3 y O2′**: las dos ramas que O1 no podía ejercitar
+  (`wick_filter` apagado, `imbalance_mode=SameLevel`) quedan **cubiertas**.
+- **`VolTicksPOC2`**: PASS **sin** necesitar la regla de ventana llena — con
+  warmup real, las 23 zonas coinciden. La regla queda como salvaguarda, no como
+  muleta.
+
+### El único FAIL, y por qué NO se le gasta el veredicto al indicador
+
+`aVolCellPOI2` necesita **20 sesiones limpias** de warmup y 6E 09-26 tiene
+**8**: el bloque duplicado de 06-22 → 07-02 cae **justo donde iría el warmup**.
+
+```
+sesiones aptas antes de la ventana: 06-15 06-16 06-17 06-18 07-06 07-07 07-08 07-09
+lookback_sessions = 20  ->  faltan 12
+```
+
+**No hay ningún rango limpio posible en este parquet** con su configuración por
+defecto. Es `DATA_INTEGRITY_FAIL`, no `KERNEL_FAIL`.
+
+> **Rango limpio que haría falta**: regenerar F2 en **2026-06-19 → 2026-07-03**.
+> Con esos 11 días recuperados habría 19–20 sesiones limpias de warmup y el gate
+> pasaría a ser informativo. **No se toca el parquet para conseguir un PASS.**
 
 ---
 

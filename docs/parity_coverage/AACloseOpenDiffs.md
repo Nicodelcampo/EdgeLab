@@ -188,6 +188,19 @@ Qué hacer con ese histórico —regenerarlo o marcarlo como sesgado— **queda
 pendiente de decisión de Nico**. Hasta entonces no se usa para estadística de
 tamaño de gap.
 
+## ✅ PARIDAD AFIRMADA — 2026-07-27
+
+| | |
+|---|---|
+| oráculo | `oracles/AACloseOpenDiffs_6E_0926_v12.csv` (`.cs` v1.2) |
+| resultado | **PASS — 1803 / 1803, 0 diffs** |
+| ventana | 2026-07-13T22:00 → 07-16T21:00 UTC |
+| tolerancias | **intactas** |
+
+El fix de enteros queda **validado con paridad exacta**. v1.0 descartaba el
+47,62 % de los gaps de 1 tick; v1.2 los recupera todos y coincide zona por zona
+con NT8.
+
 ## Ramas y cobertura
 
 | Rama | Params | Cubierta por | Estado |

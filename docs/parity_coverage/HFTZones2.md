@@ -1,5 +1,24 @@
 # Cobertura de paridad — HFTZones2
 
+## ✅ PARIDAD AFIRMADA — v2.3, 2026-07-27
+
+| | |
+|---|---|
+| oráculo | `oracles/HFTZones2_adaptive_6E_0926_v23.csv` |
+| `.cs` | v2.3, sha256 `9bdbcc8108d8dc32…` |
+| resultado | **PASS — 1599 / 1599, 0 diffs** |
+| preflight de calendario | **OK — 11 sesiones NT8 = 11 Python** |
+| tolerancias | **intactas** |
+
+El `.cs` había quedado en v2.2 (con `inside` comparando `double`) mientras el
+kernel Python ya era v2.3 en enteros: los dos lados estaban desalineados **por
+construcción**. Corregido y validado.
+
+Requirió **warmup real**: con la ventana de datos recortada a la de comparación
+el kernel daba 947 de 1599 zonas, porque su calibración adaptativa se congela
+por sesión y necesita la sesión anterior completa. Ver la regla "ventana de datos
+≠ ventana de comparación" en el contrato.
+
 Oráculos pre-registrados: **O1 adaptativo** (default), **O2 manual**
 (`adaptive_mode=false`). Especificación en
 `../nt8_indicator_parity_contract.md` §6. El rango DEBE arrancar en borde de
