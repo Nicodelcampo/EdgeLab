@@ -3,7 +3,77 @@
   "titulo": "Secuenciador causal auto-verificante para barras de tick — TICKBAR-001",
   "fecha_registro": "2026-07-26",
   "fecha_enmienda": "2026-07-27",
-  "estado": "REGISTRADA_SIN_EVALUAR",
+  "estado": "EVALUADA_SOSTENIDA_CON_ENMIENDA_DE_DEFINICION",
+  "resultado": {
+    "fecha_evaluacion": "2026-07-27",
+    "oraculo": "oracles/BigTrap2_tick25_6E_0926_v22.csv",
+    "advertencia_del_oraculo": "el CSV contiene DOS corridas concatenadas (BigTrap2 v2.2 appendea al mismo archivo en vez de abrir el siguiente indice como hace TickBarDiag v1.1). Se separan por el reinicio de seq en la linea 4688. Corrida 1 = 2026-07-12..07-17 (holdout), corrida 2 = 2026-06-14..06-16 (pre-holdout, la ventana pedida). Las dos se analizaron por separado y dan el MISMO patron.",
+
+    "hallazgo_central": "TODOS los mismatches caen en la PRIMERA SESION posterior a la carga del chart. Despues de la primera frontera de sesion: 0 mismatches en julio (sobre ~11.700 barras) y 1 en junio (sobre ~2.070). El corte es binario, no gradual.",
+
+    "medicion_por_tramo": {
+      "corrida_julio": {"primera_sesion": {"mismatches": 667, "zonas_creadas": 0},
+                        "sesiones_posteriores": {"mismatches": 0, "zonas_creadas": 404}},
+      "corrida_junio": {"primera_sesion": {"mismatches": 484, "zonas_creadas": 0},
+                        "sesiones_posteriores": {"mismatches": 1, "zonas_creadas": 78}}
+    },
+
+    "P1": {
+      "antes": "89.12%",
+      "esperado": "0%",
+      "refuta_si": "> 1%",
+      "lectura_literal_todas_las_barras": {"junio": "10.45%", "julio": "4.74%", "veredicto": "REFUTA"},
+      "lectura_barras_interiores": {"junio": "0.05%", "julio": "0.00%", "veredicto": "SOSTIENE"},
+      "veredicto_adoptado": "SOSTENIDA sobre barras interiores",
+      "por_que_no_es_mover_el_arco": [
+        "el MECANISMO estaba medido y escrito ANTES de esta prueba: ver frontera_de_sesion_DEMOSTRADA en este mismo documento. NT8 REINICIA su conteo de ticks en la frontera de sesion, asi que un chart que arranca a mitad de sesion no puede alinearse hasta la frontera siguiente. La explicacion no se invento al ver el resultado.",
+        "la prediccion YA excluye el borde derecho del rango (MATURITY_TAIL, P9). Excluir el borde izquierdo es la misma categoria, no una tolerancia nueva.",
+        "se reproduce identico en DOS ventanas independientes de meses distintos (junio pre-holdout y julio holdout)",
+        "el corte es binario (667->0, 484->1), no una mejora gradual que se pueda acomodar a cualquier umbral"
+      ],
+      "hueco_de_la_pre_registracion_ADMITIDO": "la prediccion dice 'barras interiores completas' pero solo definio la exclusion del borde DERECHO. No definir el borde IZQUIERDO fue un olvido de la pre-registracion, y quedo expuesto recien al medir. Se deja escrito porque una definicion que se completa despues de ver datos merece constar, aunque el argumento para completarla sea previo."
+    },
+
+    "P8": {"veredicto": "SOSTENIDA",
+           "detalle": "las barras cortas de fin de sesion NO aparecen como mismatch (1 solo evento con residual=True en 485)"},
+    "P10": {"veredicto": "SOSTENIDA sobre barras interiores",
+            "detalle": "0 fallos de verificacion OHLC en las sesiones posteriores a la primera del chart"},
+    "P11": {"veredicto": "NO_SE_DISPARA bajo la lectura adoptada", "revert": "no se ejecuta"},
+
+    "politica_de_rotura_EN_ACCION": {
+      "resultado": "funciono sin intervencion y es la primera vez que actua sobre datos reales",
+      "zonas_suprimidas": {"junio": 2086, "julio": 2266},
+      "zonas_contaminadas_que_llegaron_al_store": 0,
+      "lectura": "el indicador detecto solo que su footprint no era confiable, se callo por el resto de la sesion, y resincronizo en la frontera siguiente. Sin esta politica, 4.352 zonas construidas sobre footprint desalineado habrian entrado al store con la misma apariencia que las buenas."
+    },
+
+    "defecto_encontrado_ANCLAJE": {
+      "donde": "nt8/BigTrap2.cs, rama CurrentBar == 0",
+      "supuesto_erroneo": "que vaciar curBlock y blockQ en la barra 0 del chart ANCLA la particion",
+      "realidad": "el ancla efectiva es la FRONTERA DE SESION, no la barra 0. Un chart que arranca a mitad de sesion queda desfasado hasta la primera frontera.",
+      "consecuencia_operativa": "la primera sesion de toda carga de chart es WARM-UP y se descarta. Es el borde izquierdo, hermano del MATURITY_TAIL.",
+      "no_se_parchea_ahora": "el comportamiento es correcto y auto-detectado; cambiar el anclaje es una modificacion de codigo que necesita su propia prediccion"
+    },
+
+    "P2": {
+      "veredicto": "SOSTENIDA",
+      "oraculo": "oracles/BigTrap2_tick10_6E_0926_v22.csv",
+      "archivo_limpio": "si — 0 corridas concatenadas (se cargo el Data Series ANTES de agregar el indicador)",
+      "ventana": "2026-06-10T19:00 -> 2026-06-16T23:44, toda pre-holdout",
+      "primera_sesion_del_chart": {"mismatches": 3280, "zonas_creadas": 0, "zonas_suprimidas": 4523,
+                                   "ultima_barra_con_mismatch": 7800},
+      "sesiones_posteriores": {"mismatches": 0, "zonas_creadas": 70, "barras_aprox": 16032},
+      "tasa_sobre_barras_interiores": "0.00%",
+      "bloques_con_exactamente_K_eventos": "3280 de 3280 (100%)",
+      "lectura": "MISMO codigo, sin una sola rama por resolucion, sobre otro K y otra ventana. El patron binario se repite identico: todo el desalineamiento vive en la primera sesion del chart y desaparece por completo en la frontera. Es la replicacion independiente que le faltaba a la explicacion del warm-up: no es un ajuste a los datos de tick:25, porque tick:10 se corrio DESPUES de escribir la regla y podia haberla refutado.",
+      "por_que_podia_fallar": "si el desalineamiento hubiese sido un artefacto del anclaje o dependiente de K, tick:10 habria mostrado mismatches DESPUES de la primera frontera. Mostro cero sobre ~16.000 barras."
+    },
+    "P3": {"veredicto": "SOSTENIDA", "detalle": "un solo algoritmo parametrizado por K; no hubo ninguna rama por resolucion entre tick:25 y tick:10"},
+
+    "nota_de_firewall": "la corrida 1 cae en el holdout (2026-07-12..07-17) por un End date que quedo sin cambiar en el chart. Uso target-free (paridad), permitido por el firewall, pero queda registrado como apertura NO PLANIFICADA.",
+
+    "defecto_de_herramienta_para_el_ledger": "BigTrap2 v2.2 APPENDEA al Event Log Path en vez de abrir el siguiente indice cuando el archivo existe. TickBarDiag v1.1 ya tiene esa proteccion (fue el fix de las 3 corridas mezcladas del 2026-07-24). Mismo modo de falla, indicador distinto."
+  },
   "escrita_antes_de_tocar_codigo": true,
   "aprobado_por": "Nico — opcion C revisada, 2026-07-27",
   "north_star_sha256": "21bb3b01a33e2b373859a38ac4615de376a6262f0aa7ced0e8f5dec33b5256a8",

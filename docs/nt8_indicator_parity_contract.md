@@ -503,6 +503,43 @@ que describe la barra primaria, que recién cierra tras acumular sus K ticks. Un
 eventos de una subserie se etiquetan por **su propio timestamp** contra
 `SessionIterator`, nunca por un flag de la primaria.
 
+### REGLA — la primera sesión de toda carga de chart es WARM-UP (2026-07-27)
+
+**Ninguna barra de la primera sesión posterior a la carga del chart entra a una
+comparación de paridad.** Es el borde **izquierdo** del rango, hermano del
+`MATURITY_TAIL` que ya se excluía del derecho.
+
+**Causa raíz, medida**: NT8 **reinicia su conteo de ticks en cada frontera de
+sesión**. Un chart arranca en el medio de una sesión, así que un indicador que
+reconstruye el footprint contando eventos de una subserie de 1 tick **no puede
+alinearse hasta la frontera siguiente** — no importa cómo se ancle en la barra 0.
+
+Es una propiedad de NT8, no un defecto del indicador. Cualquier indicador de la
+**familia del secuenciador causal** la tiene.
+
+**Evidencia** (`BigTrap2` v2.2, dos ventanas independientes):
+
+| ventana | primera sesión | sesiones posteriores |
+|---|---:|---:|
+| 2026-07-12 → 07-17 | **667** mismatch, 0 zonas | **0** mismatch, 404 zonas |
+| 2026-06-14 → 06-16 | **484** mismatch, 0 zonas | **1** mismatch, 78 zonas |
+
+El corte es **binario**, no gradual — por eso se puede declarar una regla en vez
+de una tolerancia.
+
+> **Aviso de método.** Esta regla se escribió **después** de medir. Lo que la
+> salva de ser un arco movido es que el mecanismo (§ `IsFirstBarOfSession` no
+> sirve / reinicio por frontera) estaba **medido y escrito antes**, y que el
+> borde derecho ya estaba excluido por la misma lógica. La pre-registración de
+> PRED-003 definió un borde y se olvidó del otro; eso quedó admitido en el propio
+> `PRED-003_tickbar_fifo.json`, campo `hueco_de_la_pre_registracion_ADMITIDO`.
+> Cuando una definición se completa viendo datos, **se registra que se completó
+> así** — aunque el argumento sea anterior.
+
+**Consecuencia práctica para los pedidos de oráculo**: el chart tiene que cargar
+**al menos una sesión más** que la ventana a comparar. Es el mismo principio de
+*ventana de datos ≠ ventana de comparación*, ahora con una cota concreta.
+
 ### Lección permanente: los precios se comparan en ENTEROS de tick
 
 **Toda comparación de precios se hace sobre índices enteros de tick; los `double`
