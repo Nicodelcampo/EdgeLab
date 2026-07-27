@@ -42,11 +42,62 @@ from ..common import gnum, ns_to_ms, plain, ts_str, tz_of
 
 NAME = "aVolCellPOI2"
 
+# --- v2.1 (2026-07-26): recalibracion de defaults, autorizada por Nico ---------
+#
+# Los defaults de v2.0 eran INTERNAMENTE INCOHERENTES, con independencia de que
+# dibujaran poco. Para un cuantil empirico de nivel p sobre n muestras quedan
+# n*(1-p) observaciones por encima del umbral. Con p=99.5 y min_cell_samples=500
+# eso da **2,5**: el umbral lo definia practicamente un solo outlier.
+#
+# Regla estructural adoptada: pedir ~10 observaciones sobre el umbral, o sea
+#
+#       min_cell_samples  >=  10 / (1 - detection_percentile/100)
+#
+# p=98.0 con n=500 da exactamente 10. Ese es el ancla; el resto se deriva.
+#
+# | param                   | v2.0 | v2.1 | por que                                |
+# |-------------------------|------|------|----------------------------------------|
+# | detection_percentile    | 99.5 | 99.0 | con n=1000 da 10 obs sobre el umbral   |
+# | min_cell_samples        | 500  | 1000 | = 10/(1-0.99). Sube junto al percentil |
+# | time_bucket_minutes     |  5   | 30   | 6x muestras por bucket SIN tocar el    |
+# |                         |      |      | estimador: el gate deja de excluir     |
+# | min_sessions            | 15   | 10   | mitad de warmup; la calidad la sigue   |
+# |                         |      |      | protegiendo min_cell_samples           |
+# | lookback_sessions       | 20   | 20   | sin cambio                             |
+# | export_floor_percentile | 95.0 | 95.0 | sin cambio: permite barrer [95,100]    |
+#
+# EFECTO MEDIDO sobre 6E 09-26 (2,08M ticks, 33 sesiones, barras M1):
+#
+#   |            | zonas | z/sesion | buckets activos |
+#   |------------|-------|----------|-----------------|
+#   | v2.0       |    37 |      1.6 | 16 de ~276 (6%) |
+#   | v2.1       |   872 |     37.9 | 45 de 46  (98%) |
+#
+# El cuello de botella NO era el percentil sino el TAMANO DEL BUCKET. Una celda
+# es (bucket, tick) pero el gate min_cell_samples aplica al BUCKET: con 5 min un
+# bucket necesitaba ~25 ticks distintos visitados por sesion, y fuera de la
+# manana de EEUU 6E toca 5-15. El dia quedaba 94% ciego por construccion.
+#
+# La resolucion en PRECIO no cambia: el bucket agrupa el baseline en el tiempo,
+# no la celda. Se evaluo tambien bucket=15 (14,3 z/sesion) y se descarto: deja
+# el 60% del dia sin evaluar, y para un POI un agujero estructural de ese tamano
+# pesa mas que la resolucion temporal del baseline.
+#
+# Por que el cuello de botella era el bucket y no el percentil: una celda es
+# (bucket, tick) y el gate min_cell_samples aplica al BUCKET. Con buckets de
+# 5 min un bucket necesitaba ~25 ticks distintos visitados por sesion; fuera de
+# la manana de EEUU 6E toca 5-15, asi que **solo 9 de ~276 buckets del dia**
+# calificaban jamas. Medido sobre el oraculo denso del 2026-07-26.
+#
+# DECLARADO: la eleccion se hizo por el argumento estadistico de arriba, ANTES
+# de medir cuantas zonas produce. El conteo resultante se reporta como
+# consecuencia, no como criterio -- elegir parametros por "cuantas zonas
+# dibuja" es un proceso de seleccion y consume grados de libertad.
 DEFAULTS = dict(
-    bucket_anchor="SessionRelative", time_bucket_minutes=5, lookback_sessions=20,
+    bucket_anchor="SessionRelative", time_bucket_minutes=30, lookback_sessions=20,
     profile_weighting="EqualSessionWeight", detection_source="TotalVolume",
-    detection_method="Quantile", detection_percentile=99.5, robust_z_threshold=4.0,
-    min_absolute_volume=10.0, min_sessions=15, min_cell_samples=500,
+    detection_method="Quantile", detection_percentile=99.0, robust_z_threshold=4.0,
+    min_absolute_volume=10.0, min_sessions=10, min_cell_samples=1000,
     export_floor_percentile=95.0, merge_gap_ticks=0, min_zone_cells=1,
     invalidation_mode="CloseThrough", max_age_bars=2000, max_touches=0,
 )
@@ -56,8 +107,8 @@ PARAM_SPEC = {
     "bucket_anchor": {"type": "str", "default": "SessionRelative",
                       "choices": ["SessionRelative", "WallClock"], "class": "recompute",
                       "branches": ["bucket_anchor"]},
-    "time_bucket_minutes": {"type": "int", "default": 5, "min": 1, "class": "recompute",
-                            "branches": ["bucket_size"], "suggested_grid": [5, 15, 30]},
+    "time_bucket_minutes": {"type": "int", "default": 30, "min": 1, "class": "recompute",
+                            "branches": ["bucket_size"], "suggested_grid": [15, 30, 60]},
     "lookback_sessions": {"type": "int", "default": 20, "min": 1, "class": "recompute",
                           "branches": ["lookback"], "suggested_grid": [10, 20, 40]},
     "profile_weighting": {"type": "str", "default": "EqualSessionWeight",
@@ -71,17 +122,17 @@ PARAM_SPEC = {
                          "branches": ["detection_method"]},
     "export_floor_percentile": {"type": "float", "default": 95.0, "min": 0.0, "max": 100.0,
                                 "class": "recompute", "branches": ["export_floor"]},
-    "detection_percentile": {"type": "float", "default": 99.5, "min": 0.0, "max": 100.0,
+    "detection_percentile": {"type": "float", "default": 99.0, "min": 0.0, "max": 100.0,
                              "class": "offline", "branches": ["quantile_cut"],
                              "requires_covered_by": "export_floor_percentile",
-                             "suggested_grid": [99.0, 99.5, 99.75, 99.9]},
+                             "suggested_grid": [98.0, 99.0, 99.5, 99.75]},
     "robust_z_threshold": {"type": "float", "default": 4.0, "min": 0.0, "class": "offline",
                            "branches": ["robustz_cut"], "suggested_grid": [3.0, 4.0, 5.0]},
     "min_absolute_volume": {"type": "float", "default": 10.0, "min": 0.0, "class": "offline",
                             "branches": ["min_vol"]},
-    "min_sessions": {"type": "int", "default": 15, "min": 1, "class": "recompute",
+    "min_sessions": {"type": "int", "default": 10, "min": 1, "class": "recompute",
                      "branches": ["profile_gate"]},
-    "min_cell_samples": {"type": "int", "default": 500, "min": 1, "class": "recompute",
+    "min_cell_samples": {"type": "int", "default": 1000, "min": 1, "class": "recompute",
                          "branches": ["profile_gate"]},
     "merge_gap_ticks": {"type": "int", "default": 0, "min": 0, "class": "offline",
                         "branches": ["geometry_merge"]},
@@ -102,7 +153,7 @@ HEADER = ("event_seq,event_type,bar_index,bar_close_time,session_index,"
 
 
 def meta_line(p, instrument, tick_size):
-    return ("# meta,indicator=aVolCellPOI2,version=2.0,instrument={0},tick_size={1},"
+    return ("# meta,indicator=aVolCellPOI2,version=2.1,instrument={0},tick_size={1},"
             "bucket_anchor={2},bucket_minutes={3},lookback_sessions={4},weighting={5},"
             "source={6},method={7},percentile={8},robust_z={9},export_floor={10}").format(
         instrument, tick_size, p["bucket_anchor"], p["time_bucket_minutes"],

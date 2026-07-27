@@ -1,0 +1,128 @@
+{
+  "id": "PRED-003",
+  "titulo": "Secuenciador causal auto-verificante para barras de tick — TICKBAR-001",
+  "fecha_registro": "2026-07-26",
+  "fecha_enmienda": "2026-07-27",
+  "estado": "REGISTRADA_SIN_EVALUAR",
+  "escrita_antes_de_tocar_codigo": true,
+  "aprobado_por": "Nico — opcion C revisada, 2026-07-27",
+  "north_star_sha256": "21bb3b01a33e2b373859a38ac4615de376a6262f0aa7ced0e8f5dec33b5256a8",
+  "referencias": [
+    "docs/campaigns/TICKBAR-001_paridad_en_barras_de_tick.md",
+    "docs/predictions/PRED-001_bigtrap2_ulp.json",
+    "edgelab/bridge/universe.py"
+  ],
+
+  "alcance": "La prediccion cubre DOS defectos independientes y su criterio de exito aplica al SISTEMA COMPLETO, no a cada lado por separado. Corregir uno solo deja la paridad rota igual.",
+
+  "defecto_1_cs": {
+    "donde": "nt8/BigTrap2.cs — take+reset en OnBarUpdate(BarsInProgress==0)",
+    "clasificacion": "H2 BAR_BUILDER",
+    "mecanismo": "NT8 no garantiza que todos los eventos BIP1 de la barra N lleguen antes del callback de cierre de N. El balde capturado tiene entre 15 y 34 eventos donde deberia tener 25.",
+    "h1_descartada": "digest de stream identico sobre 4.229 eventos (C# ulong vs Python mascara de 64 bits)",
+    "evidencia": {
+      "tick_25": "vol_fp == vol_bar en 40/150 barras (27%)",
+      "tick_10": "19/150 (13%)",
+      "reparticion_por_conteo": "150/150 en ambas, en la region con ledger completo"
+    }
+  },
+
+  "defecto_2_kernel": {
+    "donde": "edgelab/bridge/bars.py — build_tick_bars",
+    "mecanismo": "bucket = arange(n)//N particiona GLOBAL sobre todo el rango y no recibe informacion de sesion. NT8 REINICIA el conteo en cada frontera de sesion; Python no.",
+    "evidencia": {
+      "desalineamiento_tras_la_primera_frontera": {"K10": "8 ticks", "K25": "23 ticks"},
+      "desalineamiento_tras_33_sesiones": {"K10": "132 ticks", "K25": "392 ticks"}
+    },
+    "nota": "Este defecto NO lo mide FOOTPRINT_MISMATCH (que es NT8 contra si mismo). Estaban superpuestos y solo uno estaba diagnosticado."
+  },
+
+  "frontera_de_sesion_DEMOSTRADA": {
+    "captura": "oracles/tickbar_frontera2_25t__Tick25.csv (bars 3620..4019)",
+    "hallazgos": [
+      "NT8 CIERRA la ultima barra de la sesion CORTA: bar 3770 = eventos 94250..94268 = 19 eventos, suma 2700 == vol_bar exacto",
+      "El conteo REINICIA en el primer evento posterior a la frontera (94269), no en el primer cierre de barra",
+      "Post-frontera: 30/30 barras exactas con bloques limpios de K desde el reinicio",
+      "Pre-frontera: 149/149 exactas",
+      "Doble conteo independiente: el parquet da 94.269 ticks entre el arranque del chart y el cierre; el ultimo evento del stream NT8 antes del hueco es seq 94268, el 94.269o"
+    ],
+    "IsFirstBarOfSession_NO_SIRVE": {
+      "medicion": "el hueco de 60 min esta entre seq 94268 y 94269; session_idx cambia recien entre 94292 y 94293",
+      "retraso": "24 eventos, hasta K-1",
+      "causa": "es una propiedad de la barra PRIMARIA, que recien cierra tras acumular sus K ticks",
+      "regla": "la frontera se determina por el TIMESTAMP DEL EVENTO contra SessionIterator"
+    }
+  },
+
+  "universo_declarado": {
+    "modulo": "edgelab/bridge/universe.py",
+    "front_month": "medido por volumen para los 4 contratos con contrato anterior comparable",
+    "integridad": "bateria: hueco de mantenimiento, cierre semanal, apertura dominical, monotonia, timestamps posibles, precios en grilla",
+    "por_que_entra_en_esta_prediccion": "los oraculos de validacion deben caer en dias APTOS; un FAIL sobre datos defectuosos es DATA_INTEGRITY_FAIL y no evalua esta prediccion"
+  },
+
+  "fix": {
+    "archivo": "nt8/BigTrap2.cs",
+    "version_destino": "2.2",
+    "patron": "secuenciador causal auto-verificante",
+    "piezas": [
+      "snapshot INMUTABLE al cierre de cada barra primaria: identidad, timestamp, OHLCV y todo lo que ProcessBar/UpdateZones leen hoy via [0] o CurrentBar (conjunto cerrado de 6 valores: Close, High, Low, Volume, CurrentBar, Time)",
+      "FIFO de eventos BIP1, agrupados en bloques consecutivos de exactamente K = BarsPeriod.Value",
+      "contador por sesion, etiquetado por el timestamp del evento contra SessionIterator",
+      "bloque residual explicito de 1..K-1 en la frontera, asignado a la ultima barra de la sesion",
+      "reinicio del contador en el primer evento post-frontera",
+      "dos colas ordenadas (snapshots, bloques); DrainReadyBars procesa en orden cronologico estricto; nunca N+1 antes que N",
+      "UpdateZones(snapshot N) antes de ProcessBar(snapshot N, bloque N)",
+      "verificacion OHLC en ticks ENTEROS antes de procesar cada par: primer precio del bloque == Open, ultimo == Close, min == Low, max == High"
+    ],
+    "kernel_python": "build_tick_bars re-versionado con reinicio por sesion, etiquetado por el timestamp del propio tick contra el calendario canonico. Misma convencion [inicio, fin).",
+    "no_aplica_a": "bar_spec de tiempo (time:N): el corte es por timestamp y el patron actual queda como esta"
+  },
+
+  "politica_de_rotura": {
+    "regla": "si un par (snapshot, bloque) no valida y NO es un caso declarado, se emite FOOTPRINT_MISMATCH con detalle, se marca el RESTO DE LA SESION como no confiable para footprint, y se resincroniza SOLO en la frontera de sesion siguiente",
+    "prohibido": "reacomodar el buffer para forzar el cierre del par. La deriva silenciosa es el enemigo; el mismatch ruidoso es el aliado.",
+    "casos_declarados": ["barra corta de fin de sesion (1..K-1)", "borde derecho del rango del oraculo (MATURITY_TAIL)"]
+  },
+
+  "predicciones": [
+    {"id": "P1", "magnitud": "FOOTPRINT_MISMATCH en tick:25, barras interiores completas",
+     "antes": "89.12%", "esperado": "0%", "refuta_si": "> 1%"},
+    {"id": "P2", "magnitud": "FOOTPRINT_MISMATCH en tick:10, barras interiores completas",
+     "esperado": "0%", "refuta_si": "> 1%",
+     "nota": "generalidad: el MISMO codigo, sin reajustar nada"},
+    {"id": "P3", "magnitud": "un solo algoritmo parametrizado por K",
+     "esperado": "sin ramas por resolucion en el codigo", "refuta_si": "aparece una rama if K==25"},
+    {"id": "P4", "magnitud": "orden total entre barras",
+     "esperado": "ninguna barra se procesa antes que su anterior", "refuta_si": "cualquier inversion"},
+    {"id": "P5", "magnitud": "orden logico preservado",
+     "esperado": "UpdateZones(N) antes de ProcessBar(N) para toda N", "refuta_si": "cualquier inversion"},
+    {"id": "P6", "magnitud": "ledger time:1 regenerado",
+     "esperado": "BIT-IDENTICO al oraculo actual (mismas zonas, mismas barras, mismos valores)",
+     "refuta_si": "cualquier diferencia",
+     "nota": "invariante CONDUCTUAL: el refactor de codigo compartido esta permitido; lo inamovible es la salida"},
+    {"id": "P7", "magnitud": "mezcla de sesiones en un bloque",
+     "esperado": "ningun bloque contiene eventos de dos sesiones", "refuta_si": "cualquier bloque mixto"},
+    {"id": "P8", "magnitud": "barras cortas de fin de sesion",
+     "esperado": "reportadas como categoria explicita, con su largo 1..K-1", "refuta_si": "aparecen como mismatch"},
+    {"id": "P9", "magnitud": "piezas huerfanas al final",
+     "esperado": "ninguna salvo el borde derecho (MATURITY_TAIL)", "refuta_si": "snapshots o bloques sin par en el interior"},
+    {"id": "P10", "magnitud": "verificacion OHLC",
+     "esperado": "0 fallos en barras interiores", "refuta_si": "cualquier fallo fuera de las categorias P8/P9"},
+    {"id": "P11", "magnitud": "criterio de refutacion global",
+     "esperado": "-", "refuta_si": "P1/P2 > 1%, o P6 falla, o P10 tiene fallos fuera de categoria -> revert y volver al ledger"}
+  ],
+
+  "condiciones_para_gastar_oraculo": [
+    "suite verde",
+    "time:1 bit-identico (P6)",
+    "tests sinteticos verdes: frontera, bloque residual, orden total, orden logico, verificacion OHLC"
+  ],
+
+  "riesgo_declarado": {
+    "nombre": "deficit del FIFO al cierre",
+    "medicion": {"tick_25": "0 de 150 cierres (0%)", "tick_10": "3 de 150 (2%)",
+                 "nivel_max_del_buffer": {"tick_25": 12, "tick_10": 30}},
+    "tratamiento": "el secuenciador NO toma de menos: la barra queda pendiente y se procesa cuando sus K eventos estan. Tomar lo que haya desalinearia todo hacia adelante, que es exactamente el defecto que se corrige."
+  }
+}

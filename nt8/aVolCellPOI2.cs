@@ -1,4 +1,13 @@
 // ============================================================================
+// v2.3 (2026-07-26): SOLO VISUAL. El export es byte-identico a v2.1.
+//   La banda termina por DISTANCIA (VisualExtendBars=750), no por ciclo de vida.
+//   MaxRenderedZones 250->1000: con 476 zonas la FIFO borraba las 226 mas viejas.
+//   (v2.2 acortaba la banda a la vida real: correcto pero ilegible, revertido.)
+// v2.1 (2026-07-26): recalibracion de defaults por coherencia estadistica.
+//   bucket 5->30 min, percentil 99.5->99.0, min_cell_samples 500->1000, min_sessions 15->10.
+//   Motivo: con p=99.5 y n=500 quedaban 2,5 observaciones sobre el umbral (n(1-p)), o sea
+//   un solo outlier lo definia. Regla: min_cell_samples >= 10/(1-p). p=99.0 con n=1000 da 10.
+//   Con buckets de 5 min solo 16 de ~276 calificaban (6% del dia); con 30 min son 45 de 46.
 // aVolCellPOI2.cs — Anomaly Volume Cell POI v2 (perfil horario por sesiones)
 // ============================================================================
 //
@@ -212,17 +221,17 @@ namespace NinjaTrader.NinjaScript.Indicators
 
 				// Grupo 1: semánticos
 				BucketAnchor        = AVCP2BucketAnchor.SessionRelative;
-				TimeBucketMinutes   = 5;
+				TimeBucketMinutes   = 30;
 				LookbackSessions    = 20;
 				ProfileWeighting    = AVCP2ProfileWeighting.EqualSessionWeight;
 				DetectionSource     = AVCP2DetectionSource.TotalVolume;
 				DetectionMethod     = AVCP2DetectionMethod.Quantile;
 				// Grupo 2: selección
-				DetectionPercentile = 99.5;
+				DetectionPercentile = 99.0;
 				RobustZThreshold    = 4.0;
 				MinAbsoluteVolume   = 10;
-				MinSessions         = 15;
-				MinCellSamples      = 500;
+				MinSessions         = 10;
+				MinCellSamples      = 1000;
 				ExportFloorPercentile = 95.0;
 				// Grupo 3: geometría
 				MergeGapTicks       = 0;
@@ -234,8 +243,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 				// Grupo 5: export y visual
 				EventLogPath        = "";
 				Opacity             = 20;
-				VisualExtendBars    = 500;
-				MaxRenderedZones    = 250;
+				VisualExtendBars    = 750;
+				MaxRenderedZones    = 1000;
 			}
 			else if (State == State.Configure)
 			{
@@ -589,7 +598,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 					EmitEvent("ZONE_CREATED", bucket, z.LowerTick, z.UpperTick, z.SumValue, 0,
 						cache.QuantileThreshold, z.MaxPct, z.MaxZ,
 						cache.SampleCount, cache.SessionCount, z.Id, 0, "cells=" + z.CellCount);
-					DrawZone(z);
+					DrawZone(z, 0, -Math.Abs(VisualExtendBars));   // proyeccion mientras vive
 				}
 				start = i;
 			}
@@ -629,22 +638,26 @@ namespace NinjaTrader.NinjaScript.Indicators
 				{
 					EmitEvent("ZONE_INVALIDATED", 0, z.LowerTick, z.UpperTick, 0, 0, 0, 0, 0, 0, 0,
 						z.Id, z.TouchCount, reason);
-					// NO se borra el dibujo (mismo fix que VolTicksPOC2 v2.1). Borrarlo
-					// al invalidar/expirar deja el chart historico casi vacio: solo se
-					// ven las zonas vivas en la ultima barra, y el indicador PARECE no
-					// detectar. El dibujo es solo dibujo: el estado y los eventos
-					// exportados no cambian, y MaxRenderedZones sigue acotando.
+					// v2.3: NO se borra NI se acorta. La banda termina por DISTANCIA
+					// (VisualExtendBars), no por el ciclo de vida -- decision de Nico.
+					// v2.2 la acortaba a la vida real y con vida mediana de 8 min las
+					// bandas quedaban de 8 barras: correcto pero ilegible. El nivel de
+					// precio sigue siendo referencia despues de que la zona muere, asi
+					// que dibujarlo largo es lo util. Solo dibujo: el estado y los
+					// eventos exportados no cambian.
 					activeZones.RemoveAt(i);
 				}
 				else if (CurrentBar - z.CreatedBar >= MaxAgeBars)
 				{
 					EmitEvent("ZONE_EXPIRED", 0, z.LowerTick, z.UpperTick, 0, 0, 0, 0, 0, 0, 0,
 						z.Id, z.TouchCount, "max_age");
-					// NO se borra el dibujo (mismo fix que VolTicksPOC2 v2.1). Borrarlo
-					// al invalidar/expirar deja el chart historico casi vacio: solo se
-					// ven las zonas vivas en la ultima barra, y el indicador PARECE no
-					// detectar. El dibujo es solo dibujo: el estado y los eventos
-					// exportados no cambian, y MaxRenderedZones sigue acotando.
+					// v2.3: NO se borra NI se acorta. La banda termina por DISTANCIA
+					// (VisualExtendBars), no por el ciclo de vida -- decision de Nico.
+					// v2.2 la acortaba a la vida real y con vida mediana de 8 min las
+					// bandas quedaban de 8 barras: correcto pero ilegible. El nivel de
+					// precio sigue siendo referencia despues de que la zona muere, asi
+					// que dibujarlo largo es lo util. Solo dibujo: el estado y los
+					// eventos exportados no cambian.
 					activeZones.RemoveAt(i);
 				}
 			}
@@ -656,7 +669,13 @@ namespace NinjaTrader.NinjaScript.Indicators
 
 		// ---------------- render (nunca fuente de verdad) ----------------
 
-		private void DrawZone(ActiveZone z)
+		// v2.2: el rango horizontal se pasa por parametro. Al nacer la zona se
+		// PROYECTA hacia adelante; al morir se REDIBUJA con su extension real
+		// (CreatedBar -> barra de muerte). Antes quedaba siempre con el largo
+		// fijo de VisualExtendBars, asi que en el chart no habia forma de
+		// distinguir una zona viva de una muerta: con vida mediana de 8 min y
+		// bandas de 500 barras, casi todo lo visible eran cadaveres.
+		private void DrawZone(ActiveZone z, int startBarsAgo, int endBarsAgo)
 		{
 			double t;
 			if (DetectionMethod == AVCP2DetectionMethod.Quantile)
@@ -674,7 +693,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 			int idx = Math.Max(0, Math.Min(HeatSteps - 1, (int)Math.Floor(t * HeatSteps)));
 
 			Draw.Rectangle(this, z.Tag, false,
-				0, z.UpperPrice, -Math.Abs(VisualExtendBars), z.LowerPrice,
+				startBarsAgo, z.UpperPrice, endBarsAgo, z.LowerPrice,
 				Brushes.Transparent, heatBrushes[idx], op);
 
 			renderedTags.Enqueue(z.Tag);
@@ -721,7 +740,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				if (writer == null)
 				{
 					writer = new StreamWriter(EventLogPath, false);
-					writer.WriteLine("# meta,indicator=aVolCellPOI2,version=2.0,instrument="
+					writer.WriteLine("# meta,indicator=aVolCellPOI2,version=2.3,instrument="
 						+ Instrument.FullName + ",tick_size=" + TickSize.ToString(CultureInfo.InvariantCulture)
 						+ ",bucket_anchor=" + BucketAnchor + ",bucket_minutes=" + TimeBucketMinutes
 						+ ",lookback_sessions=" + LookbackSessions + ",weighting=" + ProfileWeighting
