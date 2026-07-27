@@ -404,6 +404,37 @@ demuestra que un reordenamiento algebraicamente válido **sí** rompe el espejad
 
 Resultados del barrido completo en `docs/audits/AUDIT-003_barrido_ulp.md`.
 
+### VENTANA DE DATOS ≠ VENTANA DE COMPARACIÓN (2026-07-27)
+
+> **La ventana de DATOS es una propiedad del ORÁCULO: tiene que espejar lo que
+> cargó el chart que lo generó. La ventana de COMPARACIÓN es otra cosa.**
+
+Hasta ahora `run_nt8_bridge.py` recortaba los **ticks** a la ventana de
+comparación, así que los kernels corrían **sin warmup**. El efecto era brutal y
+se leía como culpa del kernel:
+
+| indicador | sin warmup | **con warmup** |
+|---|---|---|
+| `aVolCellPOI2` | **0 zonas** (lookback de 10–20 sesiones nunca se llena) | 140 |
+| `HFTZones2` v2.3 | 947 de 1599 | ✅ **1599 — PASS** |
+| `VolTicksPOC2` | 21 de 23 | ✅ **23 — PASS** |
+
+Dos gates dieron vuelta a PASS sin tocar una línea de kernel. **El defecto era del
+arnés.**
+
+**Pero un warmup común tampoco sirve**, y eso se vio en vivo con `Gaps2`: su
+oráculo se generó con el chart arrancando **en** la ventana, y darle un mes de
+historia hizo que Python dejara de reproducir las 8 primeras zonas — las que NT8
+crea en su primera barra (tres de ellas con geometría **y timestamp idénticos
+entre sí**, o sea NT8 duplicando en el arranque).
+
+**La regla**: cada oráculo declara su ventana de datos, y el arnés la respeta.
+`--data-start-utc` / `--data-end-utc`, separados de `--start-utc` / `--end-utc`.
+
+Corolario para el pre-registro: **el rango de carga del chart es parte de la
+identidad del oráculo** y debe quedar escrito junto al `.cs` y su hash. Un
+oráculo sin su rango declarado no es reproducible.
+
 ### REGLA DE FAMILIA — el secuenciador causal (Nico, 2026-07-27)
 
 > **Ningún indicador con subserie de tick sobre primaria de ticks procesa el

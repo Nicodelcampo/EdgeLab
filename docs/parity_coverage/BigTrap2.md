@@ -33,16 +33,38 @@ es un oráculo distinto (el `--bars tick:N` debe coincidir con el chart NT8).
 
 | Rama | Params | Cubierta por | Estado |
 |---|---|---|---|
-| `row_anchor` | ticks_per_row | O1 | pendiente |
-| `imbalance_detection` | imbalance_mode, imbalance_ratio | O1 (Diagonal), O2 (SameLevel) | pendiente |
-| `trap_volume` | trap_volume_source | O1 | pendiente |
-| `wick_filter` | use_wick_filter, wick_zone_pct | O1 (on), O3 (off) | pendiente |
-| `delta_filter` | min_delta_filter | O1 | pendiente |
-| `export_floor` | min_export_volume | O1 | pendiente |
-| `trap_selection` | min_trap_volume | O1 | pendiente |
-| `lifecycle_invalidation` | invalidation_mode | O1 | pendiente |
-| `lifecycle_max_touches` | max_touches | O1 | pendiente |
-| `expiration` | max_age_bars | O1 | pendiente |
+| `row_anchor` | ticks_per_row | O1 | ✅ **cubierta en su valor default** |
+| `imbalance_detection` | imbalance_mode, imbalance_ratio | O1 (Diagonal), **O2′ (SameLevel)** | ✅ **AMBOS modos ejercitados** |
+| `trap_volume` | trap_volume_source | O1 | ✅ default |
+| `wick_filter` | use_wick_filter, wick_zone_pct | O1 (on), **O3 (off)** | ✅ **AMBOS estados ejercitados** |
+| `delta_filter` | min_delta_filter | O1 | ✅ default |
+| `export_floor` | min_export_volume | O1 | ✅ default |
+| `trap_selection` | min_trap_volume | O1 | ✅ default |
+| `lifecycle_invalidation` | invalidation_mode | O1 | ✅ default |
+| `lifecycle_max_touches` | max_touches | O1 | ✅ default |
+| `expiration` | max_age_bars | O1 | ✅ default |
+
+### Resultado de los tres oráculos (2026-07-27)
+
+| oráculo | config | resultado |
+|---|---|---|
+| **O1** | defaults, `time:1` | ✅ **PASS 225/225** |
+| **O3** | `use_wick_filter=false`, `time:1` | ✅ **PASS 393/393** |
+| **O2′** | `imbalance_mode=SameLevel`, `time:1` | ✅ **PASS 425/425** |
+
+**O2′ es una desviación declarada del pre-registro.** El original acoplaba
+`SameLevel` con `tick:25` en un solo oráculo, pero son cosas independientes:
+`ImbalanceMode` no tiene relación con la resolución de barra. Correrlo en
+`time:1` cierra la rama `imbalance_detection` **sin depender** de que TICKBAR-001
+se resuelva. La versión `tick:25` queda como deuda separada, y bien separada:
+su bloqueo es del constructor de barras de NT8, no del kernel.
+
+> **Qué significa "cubierta en su valor default"** y qué no. El contrato §8 es
+> explícito: una rama está cubierta si el oráculo la **ejercita**. Un parámetro
+> corrido en su valor por defecto está ejercitado *en ese valor* — no en los
+> otros. Las ramas marcadas "default" son cobertura **real pero parcial**;
+> completarlas exige un barrido de params, que es una campaña aparte y no
+> bloquea nada hoy.
 
 Nota: O1 y O3 corren en `time:1`; O2 en `tick:25` — el bar_key entra al
 `config_id`, así que O2 cubre además el camino de reconstrucción sobre barras de

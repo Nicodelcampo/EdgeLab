@@ -41,9 +41,9 @@ sys.path.insert(0, os.path.join(AQUI, "Kronos"))
 CT = "America/Chicago"
 SEED = 20260727
 BAR_MIN = 5            # resolucion de las velas que ve el modelo
-LOOKBACK = 400         # recomendado por los autores; entra en el contexto de 512
+LOOKBACK = int(__import__('os').environ.get('KRONOS_LOOKBACK', 400))         # recomendado por los autores; entra en el contexto de 512
 PRED_LEN = 12          # 1 hora hacia adelante con velas de 5 min
-N_PATHS = 30           # muestreo Monte Carlo de la demo oficial
+N_PATHS = int(__import__('os').environ.get('KRONOS_PATHS', 30))           # muestreo Monte Carlo de la demo oficial
 VOL_LOOKBACK = 60      # barras para la vol realizada rezagada (baseline trivial)
 
 

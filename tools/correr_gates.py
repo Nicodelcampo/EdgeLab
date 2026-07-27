@@ -37,46 +37,78 @@ TZ = "America/Argentina/Buenos_Aires"
 
 # ventana de comparación común a todos (la del contrato de paridad)
 W0, W1 = "2026-07-13T22:00:00", "2026-07-16T21:00:00"
-# Ventana de DATOS: arranca en el inicio del universo del contrato (2026-06-12,
-# front month) para que los kernels con lookback largo tengan warmup. Sin esto
-# aVolCellPOI2 recibe 3 dias, su lookback de 10-20 sesiones no se llena nunca y
-# produce CERO zonas -- que se leerian como FAIL de kernel siendo del arnes.
+# La ventana de DATOS es una propiedad del ORACULO, no un ajuste global: tiene
+# que espejar lo que cargo el chart que lo genero. Un warmup comun para todos
+# rompe la correspondencia -- con Gaps2 se vio en vivo: su oraculo se genero con
+# el chart arrancando en la ventana, y darle un mes de historia hizo que Python
+# dejara de reproducir las 8 primeras zonas (que NT8 crea justo en su primera
+# barra, tres de ellas con geometria y timestamp IDENTICOS entre si).
+#
+# Warmup por defecto para los kernels con lookback largo; los que no lo necesitan
+# corren con datos == ventana de comparacion, igual que su chart.
 D0, D1 = "2026-06-12T00:00:00", "2026-07-17T00:00:00"
 
 CORRIDAS = [
-    dict(nombre="Gaps2", ind="Gaps2", bars="time:1",
+    dict(warmup=False, nombre="Gaps2", ind="Gaps2", bars="time:1",
          oraculo="oracles/Gaps2_6E_0926.csv"),
-    dict(nombre="BigTrap2_time1", ind="BigTrap2", bars="time:1",
+    dict(warmup=False, nombre="BigTrap2_time1", ind="BigTrap2", bars="time:1",
          oraculo="oracles/BigTrap2_time1_6E_0926_v2.csv"),
-    dict(nombre="BigTrap2_wickoff", ind="BigTrap2", bars="time:1",
+    dict(warmup=False, nombre="BigTrap2_wickoff", ind="BigTrap2", bars="time:1",
          oraculo="oracles/BigTrap2_time1_6E_0926_wickoff.csv",
          params='{"use_wick_filter": false}'),
-    dict(nombre="BigTrap2_samelevel", ind="BigTrap2", bars="time:1",
+    dict(warmup=False, nombre="BigTrap2_samelevel", ind="BigTrap2", bars="time:1",
          oraculo="oracles/BigTrap2_time1_6E_0926_samelevel.csv",
          params='{"imbalance_mode": "SameLevel"}'),
     dict(nombre="HFTZones2_v23", ind="HFTZones2", bars="time:1",
          oraculo="oracles/HFTZones2_adaptive_6E_0926_v23.csv"),
-    dict(nombre="AACloseOpenDiffs_v12", ind="AACloseOpenDiffs", bars="time:1",
+    dict(warmup=False, nombre="AACloseOpenDiffs_v12", ind="AACloseOpenDiffs", bars="time:1",
          oraculo="oracles/AACloseOpenDiffs_6E_0926_v12.csv"),
     dict(nombre="aVolCellPOI2_v21", ind="aVolCellPOI2", bars="time:1",
+         lookback_sesiones=20,
          oraculo="oracles/aVolCellPOI2_6E_0926_v21.csv"),
     dict(nombre="VolTicksPOC2_warmup", ind="VolTicksPOC2", bars="time:1",
          oraculo="oracles/VolTicksPOC2_6E_0926_warmup.csv"),
 ]
 
 
-def dias_aptos():
+def dias_aptos(archivo="6E_09-26_ticks.parquet"):
+    """Días aptos DEL PARQUET que se está evaluando.
+
+    Filtrar por archivo no es un detalle: el manifiesto tiene 164 días de cuatro
+    contratos, y contarlos todos haría creer que hay warmup limpio de sobra
+    cuando el contrato bajo prueba tiene 8 sesiones.
+    """
     p = os.path.join(REPO, "runs", "censo", "manifiesto_universo.json")
     if not os.path.exists(p):
         return set()
-    return {d["fecha"] for d in json.load(open(p, encoding="utf-8"))["dias"]}
+    return {d["fecha"] for d in json.load(open(p, encoding="utf-8"))["dias"]
+            if d["archivo"] == archivo}
 
 
-def clasificar(rep, aptos):
+def sesiones_limpias_antes(aptos, hasta="2026-07-13"):
+    """Cuántas sesiones APTAS hay disponibles como warmup antes de la ventana."""
+    return sorted(f for f in aptos if f < hasta)
+
+
+def clasificar(rep, aptos, c=None):
     """KERNEL_FAIL vs DATA_INTEGRITY_FAIL, por dónde caen las discrepancias."""
     s = rep["summary"]
     if s["gate"] == "PASS":
         return "PASS", ""
+
+    # Un kernel con lookback de SESIONES necesita esa cantidad de sesiones
+    # LIMPIAS antes de la ventana. Si no las hay, su FAIL no es del kernel: es
+    # que el universo no alcanza para evaluarlo. Gastarle el veredicto seria el
+    # error que el censo existe para evitar.
+    lb = (c or {}).get("lookback_sesiones")
+    if lb:
+        prev = sesiones_limpias_antes(aptos)
+        if len(prev) < lb:
+            return ("DATA_INTEGRITY_FAIL",
+                    "necesita %d sesiones limpias de warmup y solo hay %d "
+                    "(el bloque duplicado 06-22 -> 07-02 cae justo donde iria "
+                    "el warmup). Rango limpio que haria falta: regenerar F2 en "
+                    "2026-06-19 -> 2026-07-03" % (lb, len(prev)))
     if s["matched_pairs"] == 0 and s["nt8_zones"] == 0:
         return "SIN_REGION_COMPARABLE", "el oráculo no aporta zonas en la ventana"
     diag = [d for d in rep["diagnostics"] if d["code"] != "MATCHED"]
@@ -103,9 +135,10 @@ def main():
                "--data", DATA, "--contract", "6E 09-26",
                "--indicator", c["ind"], "--bars", c["bars"],
                "--oracle", "%s=%s" % (c["ind"], c["oraculo"]),
-               "--chart-tz", TZ, "--start-utc", W0, "--end-utc", W1,
-               "--data-start-utc", D0, "--data-end-utc", D1,
-               "--out", dest]
+               "--chart-tz", TZ, "--start-utc", W0, "--end-utc", W1]
+        if c.get("warmup", True):
+            cmd += ["--data-start-utc", D0, "--data-end-utc", D1]
+        cmd += ["--out", dest]
         if c.get("params"):
             cmd += ["--params", "%s=%s" % (c["ind"], c["params"])]  # formato JSON
         r = subprocess.run(cmd, cwd=REPO, capture_output=True, text=True, timeout=1800)
@@ -117,7 +150,7 @@ def main():
             continue
         rep = json.load(open(rp, encoding="utf-8"))
         for k, v in rep.items():
-            estado, det = clasificar(v, aptos)
+            estado, det = clasificar(v, aptos, c)
             s = v["summary"]
             out.append(dict(nombre=c["nombre"], config=k, estado=estado, detalle=det,
                             gate=s["gate"], py=s["py_zones"], nt8=s["nt8_zones"],
