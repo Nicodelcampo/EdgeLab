@@ -211,10 +211,31 @@ Hay 11 estratos (franja horaria × régimen de vol rezagada) en
 | GPU | **no se usó** — como estaba pautado |
 | disco | censo 2 MB · atlas ~1 MB · sidecar 2,6 GB (fuera del repo, en `.gitignore`) |
 
-El pico se disparó cuando los gates cargaron 1,9 M de ticks **mientras** Kronos
-tenía el modelo en memoria. Se resolvió sin bajar workers: los restos muertos de
-Kronos se limpiaron y los gates liberaron al terminar. Hay un vigilante de RAM
-activo que avisa por encima de 13 GB.
+### Incidente de memoria — error operativo mío
+
+A la 01:45 la RAM llegó a **15,95 GB de 16**: OOM inminente, que se habría
+llevado el atlas *y* Kronos.
+
+**Causa: dejé un atlas huérfano.** Relancé el proceso tres veces (00:24, 00:52,
+01:26) y sólo maté el primero. El de las 00:52 siguió acumulando filas en memoria
+durante una hora — llegó a **9,8 GB** — mientras yo miraba el consumo del que sí
+había relanzado y me parecía normal.
+
+Se resolvió preservando el checkpoint y matando al huérfano: la RAM pasó de
+1,67 GB libres a 11,58 GB **sin perder nada** — el atlas legítimo siguió
+corriendo y Kronos conservó sus 41 filas.
+
+**Lo que lo hizo detectable**: el vigilante de RAM que dejé armado. Sin él, el
+primer síntoma habría sido encontrar los tres procesos muertos a la mañana.
+
+**Lo que lo hizo evitable y no hice**: verificar que un relanzamiento realmente
+mata al anterior, en vez de asumirlo. Es la misma clase de error que el proyecto
+persigue en los datos —confiar en que algo pasó en vez de comprobarlo— aplicada
+a la operación.
+
+El pico previo (13,22 GB a la 01:16) fue distinto y benigno: los gates cargando
+1,9 M de ticks mientras Kronos tenía el modelo en memoria. Se resolvió solo al
+terminar los gates.
 
 **Advertencia de suspensión**: no verifiqué la política de energía de Windows.
 Los procesos sobrevivieron toda la noche, así que en la práctica no hubo
