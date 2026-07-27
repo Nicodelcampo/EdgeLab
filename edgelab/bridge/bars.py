@@ -73,12 +73,73 @@ def build_time_bars(ticks: TickSeries, minutes: int) -> BarSeries:
     return BarSeries(s_ns, e_ns, o, h, lo, c, v, ticks.tick_size, "time", int(minutes), tbi)
 
 
-def build_tick_bars(ticks: TickSeries, ticks_per_bar: int) -> BarSeries:
+def session_ids(ts_ns) -> np.ndarray:
+    """Índice de sesión CME ETH por tick, vectorizado y con DST.
+
+    Convención `[inicio, fin)`: un tick exactamente en la apertura (17:00 CT)
+    pertenece a la sesión que abre. Misma convención que `sessions.py`, que ya
+    está validada 7/7 contra el oráculo real — acá se replica vectorizada porque
+    llamar `session_key` por tick sobre millones de ticks es inviable.
+    """
+    import pandas as pd
+    idx = pd.to_datetime(np.asarray(ts_ns, dtype="int64"), unit="ns", utc=True)\
+            .tz_convert("America/Chicago")
+    # trade-date: el día del CIERRE. Un tick a las >= 17:00 pertenece a la sesión
+    # que cierra al día siguiente.
+    # normalize() vuelve a medianoche LOCAL; el entero de dia sale de ahi.
+    dias = np.asarray(idx.normalize().view("int64")) // 86_400_000_000_000
+    return dias + (np.asarray(idx.hour) >= 17).astype(np.int64)
+
+
+def build_tick_bars(ticks: TickSeries, ticks_per_bar: int,
+                    reiniciar_por_sesion: bool = True) -> BarSeries:
+    """Barras de N ticks, con el contador REINICIADO en cada frontera de sesión.
+
+    ## Por qué el reinicio (TICKBAR-001, defecto 2 de PRED-003)
+
+    La versión previa hacía `bucket = arange(n) // N`: un conteo **global** sobre
+    todo el rango, sin noción de sesión. **NT8 reinicia el conteo en cada
+    frontera** — está demostrado sobre la captura `tickbar_frontera2_25t`: la
+    última barra de la sesión cierra CORTA (bar 3770 = 19 eventos, volumen 2700
+    idéntico al que reporta NT8) y la siguiente arranca en el primer evento
+    posterior al hueco.
+
+    Sin reinicio, las dos particiones se separan **en la primera frontera** y no
+    vuelven a coincidir nunca:
+
+    | K  | tras 1 frontera | tras 33 sesiones |
+    |----|----------------:|-----------------:|
+    | 10 |        8 ticks  |       132 ticks  |
+    | 25 |       23 ticks  |       392 ticks  |
+
+    Este defecto es **independiente** del del `.cs` y no lo mide
+    `FOOTPRINT_MISMATCH` (que compara NT8 contra sí mismo). Estaban superpuestos
+    y sólo uno estaba diagnosticado.
+
+    `reiniciar_por_sesion=False` reproduce la semántica vieja; existe sólo para
+    los tests de regresión que documentan el defecto.
+    """
     n = len(ticks)
     N = int(ticks_per_bar)
     if N < 1:
         raise ValueError("ticks_per_bar debe ser >= 1")
-    bucket = np.arange(n) // N
+    if n == 0:
+        raise ValueError("serie de ticks vacía")
+
+    if not reiniciar_por_sesion:
+        bucket = np.arange(n) // N
+    else:
+        ses = session_ids(ticks.ts_ns)
+        # inicio de cada sesión dentro del array
+        ini_ses = np.concatenate(([0], np.flatnonzero(np.diff(ses)) + 1))
+        # posición del tick DENTRO de su sesión: ahí el conteo arranca de cero
+        base = np.repeat(ini_ses, np.diff(np.concatenate((ini_ses, [n]))))
+        local = (np.arange(n) - base) // N
+        # id global de barra: se desplaza para que no se mezclen entre sesiones
+        offs = np.concatenate(([0], np.cumsum(
+            (np.diff(np.concatenate((ini_ses, [n]))) + N - 1) // N)[:-1]))
+        bucket = local + np.repeat(offs, np.diff(np.concatenate((ini_ses, [n]))))
+
     change = np.flatnonzero(np.diff(bucket)) + 1
     starts = np.concatenate(([0], change))
     ends = np.concatenate((change, [n]))

@@ -86,12 +86,60 @@ namespace NinjaTrader.NinjaScript.Indicators
 			public int    Touches;
 		}
 
+		// v2.2 - SECUENCIADOR CAUSAL AUTO-VERIFICANTE (TICKBAR-001 / PRED-003)
+		//
+		// El take+reset de v2.1 capturaba, al cerrar la barra primaria, el conjunto de
+		// eventos BIP1 que HABIAN LLEGADO -- no el que le corresponde a esa barra. NT8
+		// no garantiza que todos los eventos de la subserie lleguen antes del callback
+		// de cierre. Medido en tick:25: el balde tenia entre 15 y 34 eventos donde
+		// deberia tener 25, y solo el 27% de las barras cerraba con el volumen correcto.
+		//
+		// El secuenciador desacopla las dos corrientes y las une por IDENTIDAD de barra,
+		// no por orden de llegada:
+		//   (a) al cerrar una barra primaria se guarda un SNAPSHOT INMUTABLE con todo lo
+		//       que el kernel lee via [0] o CurrentBar (conjunto cerrado de 7 valores);
+		//   (b) los eventos BIP1 se agrupan en BLOQUES de exactamente K = BarsPeriod.Value;
+		//   (c) DrainReadyBars() empareja snapshot N con bloque N, en orden cronologico
+		//       estricto, y SOLO cuando las dos piezas estan. Nunca N+1 antes que N.
+		//
+		// FRONTERA DE SESION por el TIMESTAMP DEL EVENTO contra SessionIterator. NO por
+		// Bars.IsFirstBarOfSession: es una propiedad de la barra PRIMARIA, que recien
+		// cierra tras acumular sus K ticks, y se midio que llega hasta 24 eventos TARDE
+		// (hueco real entre seq 94268 y 94269; el flag cambia entre 94292 y 94293).
+		// Etiquetar eventos de una serie con una senal de OTRA los asigna a la sesion
+		// equivocada durante hasta K-1 eventos.
+		//
+		// BLOQUE RESIDUAL: NT8 cierra la ultima barra de la sesion CORTA. Medido: bar
+		// 3770 = 19 eventos, suma 2700 == vol_bar exacto. El residual de 1..K-1 se emite
+		// en la frontera y el contador reinicia en el primer evento de la sesion nueva.
+		//
+		// AUTO-VERIFICACION: el conteo es la REGLA DE CORTE, el OHLC es el VERIFICADOR.
+		// Antes de procesar cada par se exige, en ticks ENTEROS: primer precio == Open,
+		// ultimo == Close, minimo == Low, maximo == High. Un secuenciador que no se
+		// auto-verifica es el bug actual con mas pasos.
+		//
+		// En bar_spec de TIEMPO no aplica (el corte es por timestamp): fpTicksPerBar
+		// queda en 0 y cada cierre drena lo acumulado, igual que v2.1.
+		private struct FpTick { public long Tick; public double Vol; public int Side; public bool ByQuote; }
+		private struct BarSnap
+		{
+			public int      Bar;
+			public double   Open, High, Low, Close, Volume;
+			public DateTime Time;
+		}
+		private readonly Queue<BarSnap>      snapQ    = new Queue<BarSnap>(64);
+		private readonly Queue<List<FpTick>> blockQ   = new Queue<List<FpTick>>(64);
+		private readonly List<FpTick>        curBlock = new List<FpTick>(64);
+		private SessionIterator _sessIter;
+		private DateTime _sessEnd = DateTime.MinValue;
+		private int  fpTicksPerBar;        // K si el primario es de tick; 0 si es de tiempo
+		private bool sesionNoConfiable;    // politica de rotura; resincroniza en la frontera
+		private int  nResiduales, nMismatch, nPares;
+
 		// ── footprint pendiente (subserie de 1 tick) ──────────────────────
-		private Dictionary<long, double> pendingAsk = new Dictionary<long, double>(64);
-		private Dictionary<long, double> pendingBid = new Dictionary<long, double>(64);
-		private double pendingVolume;
-		private int    pendingQuoteTicks;
-		private int    pendingRuleTicks;
+		// v2.2: los baldes pendingAsk/pendingBid/pendingVolume/pendingQuoteTicks/
+		// pendingRuleTicks desaparecieron: eran el take+reset. Ahora los eventos van
+		// al FIFO por bloques y los mapas se arman al emparejar, en DrainReadyBars.
 		private double lastTickPrice = double.NaN;
 		private int    lastTickDir;   // +1 buy, -1 sell, 0 sin información aún
 
@@ -166,9 +214,13 @@ namespace NinjaTrader.NinjaScript.Indicators
 			{
 				// Motor único: SIEMPRE la subserie de 1 tick, sea cual sea la serie primaria.
 				AddDataSeries(BarsPeriodType.Tick, 1);
+				// K de la particion por conteo. Solo si el primario es de tick.
+				fpTicksPerBar = (BarsPeriod.BarsPeriodType == BarsPeriodType.Tick)
+					? Math.Max(1, BarsPeriod.Value) : 0;
 			}
 			else if (State == State.DataLoaded)
 			{
+				_sessIter = new SessionIterator(BarsArray[1]);
 				dxBull = ToDx(BullColor);
 				dxBear = ToDx(BearColor);
 			}
@@ -193,18 +245,6 @@ namespace NinjaTrader.NinjaScript.Indicators
 			if (BarsInProgress != 0)
 				return;
 
-			// Take + reset SIEMPRE (también en warm-up): sin fuga entre barras.
-			Dictionary<long, double> askMap = pendingAsk;
-			Dictionary<long, double> bidMap = pendingBid;
-			double fpVol  = pendingVolume;
-			int    nQuote = pendingQuoteTicks;
-			int    nRule  = pendingRuleTicks;
-			pendingAsk        = new Dictionary<long, double>(64);
-			pendingBid        = new Dictionary<long, double>(64);
-			pendingVolume     = 0;
-			pendingQuoteTicks = 0;
-			pendingRuleTicks  = 0;
-
 			Values[0][0] = double.NaN;
 
 			if (CurrentBars.Length < 2 || CurrentBars[1] < 0)
@@ -213,21 +253,28 @@ namespace NinjaTrader.NinjaScript.Indicators
 				return;
 			}
 			if (CurrentBar == 0)
-				return; // primera barra primaria: footprint potencialmente parcial, se descarta
-
-			if (Math.Abs(fpVol - Volume[0]) > 0.5)
-				LogEvent("FOOTPRINT_MISMATCH", string.Format(CultureInfo.InvariantCulture,
-					"bar={0};fp_vol={1};bar_vol={2};n_quote={3};n_rule={4}",
-					CurrentBar, fpVol, Volume[0], nQuote, nRule));
-
-			// Lifecycle primero: la barra recién cerrada evalúa zonas de barras ANTERIORES,
-			// así la barra creadora nunca toca su propia zona.
-			UpdateZones();
-
-			if (askMap.Count == 0 && bidMap.Count == 0)
+			{
+				// Primera barra primaria: su footprint es potencialmente PARCIAL. Se
+				// descarta y se vacia lo acumulado -- eso ANCLA la particion, y de aca en
+				// adelante cada barra recibe exactamente su bloque.
+				curBlock.Clear();
+				blockQ.Clear();
 				return;
+			}
 
-			ProcessBar(askMap, bidMap, fpVol, nQuote, nRule);
+			// SNAPSHOT INMUTABLE: todo lo que ProcessBar/UpdateZones leen via [0].
+			snapQ.Enqueue(new BarSnap {
+				Bar = CurrentBar, Open = Open[0], High = High[0], Low = Low[0],
+				Close = Close[0], Volume = Volume[0], Time = Time[0] });
+
+			if (fpTicksPerBar <= 0)
+			{
+				// bar_spec de TIEMPO: el corte es por timestamp, cada cierre drena lo suyo.
+				blockQ.Enqueue(new List<FpTick>(curBlock));
+				curBlock.Clear();
+			}
+
+			DrainReadyBars();
 		}
 
 		// ── acumulación por tick ──────────────────────────────────────────
@@ -259,17 +306,110 @@ namespace NinjaTrader.NinjaScript.Indicators
 			}
 			lastTickPrice = price;
 			lastTickDir   = side;
-			if (byQuote) pendingQuoteTicks++; else pendingRuleTicks++;
-
 			long tick = (long)Math.Round(price / TickSize, MidpointRounding.AwayFromZero);
-			Dictionary<long, double> map = side > 0 ? pendingAsk : pendingBid;
-			double cur;
-			map[tick] = map.TryGetValue(tick, out cur) ? cur + vol : vol;
-			pendingVolume += vol;
+			FpTick ev = new FpTick { Tick = tick, Vol = vol, Side = side, ByQuote = byQuote };
+
+			if (fpTicksPerBar <= 0)          // bar_spec de TIEMPO: se drena todo al cierre
+			{
+				curBlock.Add(ev);
+				return;
+			}
+
+			DateTime tEv = Times[1][0];
+			if (_sessEnd == DateTime.MinValue || tEv >= _sessEnd)
+			{
+				if (curBlock.Count > 0)      // RESIDUAL: ultima barra de la sesion que cierra
+				{
+					blockQ.Enqueue(new List<FpTick>(curBlock));
+					curBlock.Clear();
+					nResiduales++;
+				}
+				sesionNoConfiable = false;   // la frontera resincroniza
+				_sessIter.GetNextSession(tEv, true);
+				_sessEnd = _sessIter.ActualSessionEnd;
+			}
+
+			curBlock.Add(ev);
+			if (curBlock.Count >= fpTicksPerBar)
+			{
+				blockQ.Enqueue(new List<FpTick>(curBlock));
+				curBlock.Clear();
+			}
 		}
 
+		// secuenciador: emparejar snapshot N con bloque N
+		private void DrainReadyBars()
+		{
+			// Solo avanza cuando LAS DOS piezas de la barra mas vieja estan. Tomar de
+			// menos desalinearia todo hacia adelante -- el defecto que esto corrige.
+			while (snapQ.Count > 0 && blockQ.Count > 0)
+			{
+				BarSnap      s   = snapQ.Dequeue();
+				List<FpTick> blk = blockQ.Dequeue();
+				nPares++;
+
+				if (!VerificarOHLC(s, blk))
+					continue;                // ya se reporto; la sesion quedo marcada
+
+				var askMap = new Dictionary<long, double>(64);
+				var bidMap = new Dictionary<long, double>(64);
+				double fpVol = 0; int nQuote = 0, nRule = 0;
+				for (int i = 0; i < blk.Count; i++)
+				{
+					FpTick e = blk[i];
+					Dictionary<long, double> m = e.Side > 0 ? askMap : bidMap;
+					double cur;
+					m[e.Tick] = m.TryGetValue(e.Tick, out cur) ? cur + e.Vol : e.Vol;
+					fpVol += e.Vol;
+					if (e.ByQuote) nQuote++; else nRule++;
+				}
+
+				// ORDEN LOGICO: el ciclo de vida de N corre ANTES de crear las zonas de N,
+				// para que la barra creadora nunca toque su propia zona.
+				UpdateZones(s);
+				if (askMap.Count > 0 || bidMap.Count > 0)
+					ProcessBar(s, askMap, bidMap, fpVol, nQuote, nRule);
+			}
+		}
+
+		// verificador: el conteo corta, el OHLC verifica
+		private bool VerificarOHLC(BarSnap s, List<FpTick> blk)
+		{
+			if (blk.Count == 0) return false;
+			long o = blk[0].Tick, c = blk[blk.Count - 1].Tick;
+			long mn = long.MaxValue, mx = long.MinValue;
+			for (int i = 0; i < blk.Count; i++)
+			{
+				if (blk[i].Tick < mn) mn = blk[i].Tick;
+				if (blk[i].Tick > mx) mx = blk[i].Tick;
+			}
+			long sO = PriceToTickI(s.Open), sH = PriceToTickI(s.High);
+			long sL = PriceToTickI(s.Low),  sC = PriceToTickI(s.Close);
+			if (o == sO && c == sC && mn == sL && mx == sH)
+				return true;
+
+			bool residual = fpTicksPerBar > 0 && blk.Count < fpTicksPerBar;
+			nMismatch++;
+			LogEvent("FOOTPRINT_MISMATCH", string.Format(CultureInfo.InvariantCulture,
+				"bar={0};n_eventos={1};k={2};residual={3};open_blk={4};open_bar={5};close_blk={6};close_bar={7};low_blk={8};low_bar={9};high_blk={10};high_bar={11}",
+				s.Bar, blk.Count, fpTicksPerBar, residual, o, sO, c, sC, mn, sL, mx, sH));
+			if (!residual)
+			{
+				// POLITICA DE ROTURA: no se reacomoda el buffer para forzar el par. La
+				// deriva silenciosa es el enemigo; el mismatch ruidoso es el aliado.
+				sesionNoConfiable = true;
+			}
+			return false;
+		}
+
+		private long PriceToTickI(double price)
+		{
+			return (long)Math.Round(price / TickSize, MidpointRounding.AwayFromZero);
+		}
+
+
 		// ── kernel de detección ───────────────────────────────────────────
-		private void ProcessBar(Dictionary<long, double> askMap, Dictionary<long, double> bidMap,
+		private void ProcessBar(BarSnap s, Dictionary<long, double> askMap, Dictionary<long, double> bidMap,
 		                        double fpVol, int nQuote, int nRule)
 		{
 			int rowTicks = Math.Max(1, TicksPerRow);
@@ -294,7 +434,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 			foreach (long k in rowBid.Keys) rowKeys.Add(k);
 			if (rowKeys.Count == 0) return;
 
-			double close = Close[0];
+			double close = s.Close;
 			// Indice entero del close en MEDIOS ticks, calculado UNA vez por barra.
 			// Toda comparacion fila-vs-close se hace sobre ENTEROS: comparar el precio
 			// RECONSTRUIDO (row*TickSize) contra el precio del FEED (Close[0]) en double
@@ -309,8 +449,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 			// geometria del matcher: las comparaciones de precio van en enteros de tick,
 			// los double solo para I/O.
 			long closeHalfTick = 2 * (long)Math.Round(close / TickSize, MidpointRounding.AwayFromZero);
-			double lo    = Low[0];
-			double hi    = High[0];
+			double lo    = s.Low;
+			double hi    = s.High;
 			double range = hi - lo;
 			double wickHiFloor = hi - range * (WickZonePct / 100.0);
 			double wickLoCeil  = lo + range * (WickZonePct / 100.0);
@@ -388,11 +528,11 @@ namespace NinjaTrader.NinjaScript.Indicators
 			if (ShowPOC && pocVol > 0)
 				Values[0][0] = RowCenterPrice(pocRow, rowTicks); // precio real, sin offset
 
-			EmitSide(true,  buyVol,  buyWSum,  buyLo,  buyHi,  buyRows,  buyMaxRatio,  fpVol, nQuote, nRule, rowTicks);
-			EmitSide(false, sellVol, sellWSum, sellLo, sellHi, sellRows, sellMaxRatio, fpVol, nQuote, nRule, rowTicks);
+			EmitSide(s, true,  buyVol,  buyWSum,  buyLo,  buyHi,  buyRows,  buyMaxRatio,  fpVol, nQuote, nRule, rowTicks);
+			EmitSide(s, false, sellVol, sellWSum, sellLo, sellHi, sellRows, sellMaxRatio, fpVol, nQuote, nRule, rowTicks);
 		}
 
-		private void EmitSide(bool isBull, double vol, double wSum, long loRow, long hiRow, int nRows,
+		private void EmitSide(BarSnap s, bool isBull, double vol, double wSum, long loRow, long hiRow, int nRows,
 		                      double maxRatio, double fpVol, int nQuote, int nRule, int rowTicks)
 		{
 			if (nRows == 0 || vol <= 0 || vol < MinExportVolume)
@@ -407,38 +547,38 @@ namespace NinjaTrader.NinjaScript.Indicators
 			// Export continuo: los umbrales de selección se barren offline sobre estos eventos.
 			LogEvent("TRAP", string.Format(CultureInfo.InvariantCulture,
 				"bar={0};side={1};vol={2};centroid={3};zone_lo={4};zone_hi={5};n_rows={6};max_ratio={7};close={8};bar_vol={9};fp_vol={10};n_quote={11};n_rule={12}",
-				CurrentBar, isBull ? "trapped_buyers" : "trapped_sellers",
-				vol, centroid, zoneLo, zoneHi, nRows, maxRatio, Close[0], Volume[0], fpVol, nQuote, nRule));
+				s.Bar, isBull ? "trapped_buyers" : "trapped_sellers",
+				vol, centroid, zoneLo, zoneHi, nRows, maxRatio, s.Close, s.Volume, fpVol, nQuote, nRule));
 
 			if (vol < MinTrapVolume)
 				return; // el evento TRAP ya quedó exportado; esto solo corta burbuja + zona
 
 			lock (bubbleLock)
 			{
-				bubbles.Add(new BT2Bubble { BarIndex = CurrentBar, Price = centroid, Volume = vol, IsBull = isBull });
+				bubbles.Add(new BT2Bubble { BarIndex = s.Bar, Price = centroid, Volume = vol, IsBull = isBull });
 				int excess = bubbles.Count - Math.Max(100, MaxBubblesStored);
 				if (excess > 0) bubbles.RemoveRange(0, excess);
 			}
 
-			var z = new BT2Zone { CreatedBar = CurrentBar, IsBull = isBull, LoTick = loTick, HiTick = hiTick, Volume = vol };
+			var z = new BT2Zone { CreatedBar = s.Bar, IsBull = isBull, LoTick = loTick, HiTick = hiTick, Volume = vol };
 			activeZones.Add(z);
 			LogEvent("ZONE_CREATED", ZoneDesc(z));
 		}
 
 		// ── ciclo de vida de zonas ────────────────────────────────────────
-		private void UpdateZones()
+		private void UpdateZones(BarSnap s)
 		{
 			if (activeZones.Count == 0) return;
 
-			double hi = High[0], lo = Low[0], close = Close[0];
+			double hi = s.High, lo = s.Low, close = s.Close;
 
 			for (int i = activeZones.Count - 1; i >= 0; i--)
 			{
 				BT2Zone z = activeZones[i];
 
-				if (MaxAgeBars > 0 && CurrentBar - z.CreatedBar > MaxAgeBars)
+				if (MaxAgeBars > 0 && s.Bar - z.CreatedBar > MaxAgeBars)
 				{
-					LogEvent("ZONE_EXPIRED", ZoneDesc(z) + ";bar=" + CurrentBar);
+					LogEvent("ZONE_EXPIRED", ZoneDesc(z) + ";bar=" + s.Bar);
 					activeZones.RemoveAt(i);
 					continue;
 				}
@@ -451,7 +591,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				{
 					z.Touches++;
 					LogEvent("ZONE_TOUCHED", ZoneDesc(z) + string.Format(CultureInfo.InvariantCulture,
-						";bar={0};touches={1}", CurrentBar, z.Touches));
+						";bar={0};touches={1}", s.Bar, z.Touches));
 				}
 
 				string reason = null;
@@ -461,7 +601,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 
 				if (reason != null)
 				{
-					LogEvent("ZONE_INVALIDATED", ZoneDesc(z) + ";reason=" + reason + ";bar=" + CurrentBar);
+					LogEvent("ZONE_INVALIDATED", ZoneDesc(z) + ";reason=" + reason + ";bar=" + s.Bar);
 					activeZones.RemoveAt(i);
 				}
 			}
@@ -510,7 +650,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 					bool exists = File.Exists(EventLogPath);
 					eventWriter = new StreamWriter(EventLogPath, true) { AutoFlush = true };
 					if (!exists)
-						eventWriter.WriteLine("# meta indicator=BigTrap2,version=2.1"
+						eventWriter.WriteLine("# meta indicator=BigTrap2,version=2.2"
 							+ ",footprint=reconstructed_1tick_subseries,classifier=bidask_then_tickrule"
 							+ ",row_anchor=absolute_grid,ratio_floor=max(opposite,1),poc_tiebreak=lowest_row"
 							+ ",close_cmp=integer_half_ticks,tie_excluded_both_sides"
