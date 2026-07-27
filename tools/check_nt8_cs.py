@@ -57,6 +57,15 @@ def check(path: str, version: str | None = None):
 
     # 4) meta de versión
     metas = re.findall(r"meta[ ,]indicator=(\w+),version=([\d.]+)", text)
+    # Un `.cs` puede declarar la versión en una constante en vez de literal, para
+    # que el meta del canal de paridad y la versión que va en cada fila del
+    # logger no se desincronicen. Es la forma CORRECTA —una sola fuente de
+    # verdad— así que el validador la resuelve en vez de exigir el literal.
+    if not metas:
+        const = re.search(r'const\s+string\s+IND_VERSION\s*=\s*"([\d.]+)"', text)
+        ind = re.search(r'meta indicator=(\w+),version=" \+ IND_VERSION', text)
+        if const and ind:
+            metas = [(ind.group(1), const.group(1))]
     if version:
         if not any(v == version for _, v in metas):
             fails.append("no se encontró `version=%s` en la línea meta (hallado: %s)"

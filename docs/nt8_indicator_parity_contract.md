@@ -323,8 +323,16 @@ con el indicador corriendo en NT8. Sin el CSV real, ningún kernel se declara
 
 ### REGLA DE DISEÑO (sellada por Nico, 2026-07-26)
 
-> **Ningún umbral de precio se compara en `double`. Todo umbral de precio se
-> compara en índices ENTEROS de tick.**
+> **Ningún umbral de PRECIO DE GRILLA se compara en `double`: todo umbral de
+> precio de grilla se compara en índices ENTEROS de tick.**
+>
+> **Los umbrales intrínsecamente fraccionarios** —los que por definición no caen
+> en la grilla, como un porcentaje de rango— **no se convierten**: se espejan
+> **bit a bit** (misma secuencia de operaciones en los dos lados) y su exposición
+> residual se **mide y se documenta**.
+
+*(La segunda mitad es la Decisión A de Nico, 2026-07-26. Ver §"Umbrales
+fraccionarios" más abajo.)*
 
 Deja de ser una lección y pasa a ser una regla que se **verifica sola**. Dejó de
 tratarse como bug recurrente porque ya lleva **cinco apariciones**, cada una en
@@ -355,6 +363,44 @@ tick, así que preservan orden **y empates** — pero sólo si los dos operandos
 llegan a la comparación **sin aritmética intermedia**. En cuanto aparece un
 `± N * TickSize`, un `* pct` o una división, el argumento se cae. Ésa es
 exactamente la distinción que AUDIT-001 no hizo.
+
+#### Umbrales fraccionarios — la excepción, y por qué no es una grieta
+
+**Decisión A de Nico, 2026-07-26.** Un umbral como el filtro de mecha de
+BigTrap2 —`hi − range × 30 %`— **no es un precio de grilla**. Convertirlo a
+enteros exigiría elegir una semántica de redondeo, y esa elección **cambia qué
+filas entran al cálculo**: sería redefinir el indicador, no corregirlo. Peor:
+invalidaría una paridad ya ganada (BigTrap2 `time:1`, PASS con 0 diffs) a cambio
+de un 0,0241 % bidireccional.
+
+El tratamiento es otro, y es exigente:
+
+1. **Espejado bit a bit**: los dos lados computan la **misma secuencia de
+   operaciones**, término a término. No basta con que el álgebra coincida —
+   `hi − (hi−lo)·k` y `hi·(1−k) + lo·k` son idénticos en álgebra y **distintos**
+   en `double`. Un refactor que "simplifica" la expresión rompe el espejado sin
+   cambiar ningún resultado visible en un test de valores redondos.
+2. **La exposición se mide**, y la medición tiene que separar sus dos fuentes:
+
+   | fuente | contribución medida |
+   |---|---|
+   | la **aritmética** (¿los dos lados computan igual?) | **0,000000 %** — 0 flips de 2.952.000 |
+   | la **representación de entrada** (feed `double` vs `ticks × tick_size`) | **0,024051 %** — 710 flips |
+
+   Ésa es la verificación que convierte "el espejo es exacto" en algo
+   falsable. Con `hi`/`lo` en la misma representación de los dos lados la
+   exposición es **exactamente cero**; todo el residual es la representación de
+   entrada, que es irreducible sin cambiar la semántica.
+3. **Se documenta como caveat**, no se esconde: `AUDIT-003` y
+   `docs/parity_coverage/BigTrap2.md`.
+
+El veredicto `ESPEJADO_BIT_A_BIT` del triaje **exige** el número medido en su
+evidencia. Sin él, la clase sería una puerta de escape para dejar cualquier cosa
+en `double` diciendo "es fraccionario". Con él, es una afirmación verificada.
+
+Fijado en `tests/bridge/test_espejo_bit_a_bit.py`, que incluye un test que
+demuestra que un reordenamiento algebraicamente válido **sí** rompe el espejado
+— o sea, que la exigencia textual no es paranoia.
 
 Resultados del barrido completo en `docs/audits/AUDIT-003_barrido_ulp.md`.
 

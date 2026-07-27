@@ -1,4 +1,5 @@
-// AACloseOpenDiffs.cs - v1.1 - Marca diferencias close-to-open entre velas M1 con heatmap.
+// AACloseOpenDiffs.cs - v1.2 - Marca diferencias close-to-open entre velas M1 con heatmap.
+// v1.2 (2026-07-26): cada fila del logger de research lleva ind_version (Decision B).
 // v1.1 (2026-07-26): umbral MinDiffTicks comparado en ENTEROS de tick.
 //   v1.0 descartaba el 47.5% de los gaps de 1 tick por el bug de 1 ULP del feed.
 // Cuanto MAS zonas se superpongan en precio + tiempo, mas roja se pone el area.
@@ -64,6 +65,10 @@ namespace NinjaTrader.NinjaScript.Indicators
             public double Upper, Lower, DiffTicks;
             public int    Direction, OverlapAtBirth, M1Bar;
         }
+        // Version del indicador. UNA sola fuente de verdad: la escriben el meta
+        // del canal de paridad y cada fila del logger de research (Decision B).
+        private const string IND_VERSION = "1.2";
+
         private readonly List<ZoneLogRecord> zoneLog = new List<ZoneLogRecord>();
         private string csvLogPath = @"D:\A  Trading\loggers\AACloseOpenDiffs.csv";
         
@@ -217,7 +222,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 		parityWriter = new System.IO.StreamWriter(parityResolvedPath, false,
                 			new System.Text.UTF8Encoding(false));
                 		parityWriter.AutoFlush = true;
-                		parityWriter.WriteLine("# meta indicator=AACloseOpenDiffs,version=1.1,"
+                		parityWriter.WriteLine("# meta indicator=AACloseOpenDiffs,version=" + IND_VERSION + ","
                 			+ "subseries=minute_1_always,anchor=boundary_prev_m1_close,"
                 			+ "overlap=point_in_time_at_birth,bar_spec_independent=true,instrument="
                 			+ Instrument.MasterInstrument.Name + ",tick_size="
@@ -427,13 +432,20 @@ namespace NinjaTrader.NinjaScript.Indicators
                 foreach (var z in zoneLog)
                 {
                     string key = string.Format(ci, "{0}|{1}|{2}", z.StartMs, z.Upper, z.Lower);
+                    // v1.2 (Decision B de Nico, 2026-07-26): cada fila lleva la
+                    // VERSION del indicador que la genero. Va por FILA y no en un
+                    // header porque este archivo MERGEA corridas distintas: una
+                    // version a nivel de archivo seria una afirmacion falsa sobre
+                    // el contenido mezclado. Sin este campo el logger de research
+                    // no se puede filtrar por version, que es exactamente lo que
+                    // dejo pasar el defecto de v1.0 durante todo su historico.
                     lines[key] = string.Format(ci,
-                        "{0},{1},{2},{3},{4},{5},{6},{7},{8},{9}",
+                        "{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10}",
                         inst, z.StartMs, z.EndMs, z.Upper, z.Lower, (z.Upper + z.Lower) / 2.0,
-                        z.Direction, z.DiffTicks, z.OverlapAtBirth, z.M1Bar);
+                        z.Direction, z.DiffTicks, z.OverlapAtBirth, z.M1Bar, IND_VERSION);
                 }
                 var sb = new System.Text.StringBuilder();
-                sb.AppendLine("instrument,start_ms,end_ms,upper,lower,mid,direction,diff_ticks,overlap_at_birth,m1_bar");
+                sb.AppendLine("instrument,start_ms,end_ms,upper,lower,mid,direction,diff_ticks,overlap_at_birth,m1_bar,ind_version");
                 foreach (var kv in lines) sb.AppendLine(kv.Value);
                 System.IO.File.WriteAllText(csvLogPath, sb.ToString());
             }

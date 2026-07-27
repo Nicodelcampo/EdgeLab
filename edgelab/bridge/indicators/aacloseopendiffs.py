@@ -63,7 +63,13 @@ HEADER = ("event_seq,event_type,ts,unix_ms,zone_id,start_ms,end_ms,upper,lower,"
 
 
 def meta_line(p, instrument, tick_size):
-    return ("# meta indicator=AACloseOpenDiffs,version=1.0,"
+    # v1.2: la versión del meta identifica la SEMÁNTICA, no el archivo. Este
+    # kernel siempre comparó el umbral en enteros de tick —nunca tuvo el defecto
+    # de `AACloseOpenDiffs.cs` v1.0— pero se etiquetaba `1.0` y por lo tanto la
+    # cuarentena de la Decisión B lo marcaba como contaminado. El dato estaba
+    # bien; la etiqueta estaba mal. Detectado por el propio escaneo de cuarentena,
+    # que es exactamente para lo que sirve.
+    return ("# meta indicator=AACloseOpenDiffs,version=1.2,"
             "subseries=minute_1_always,anchor=boundary_prev_m1_close,"
             "overlap=point_in_time_at_birth,bar_spec_independent=true"
             ",instrument={0},tick_size={1},min_diff_ticks={2},extend_bars={3}"

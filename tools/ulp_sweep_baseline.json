@@ -1,6 +1,6 @@
 {
   "nota": "Triaje sellado del barrido ULP del 2026-07-26. Cada clave es archivo + expresion normalizada (sin numero de linea, para que un comentario nuevo no reabra un triaje). Ver docs/audits/AUDIT-003_barrido_ulp.md.",
-  "regla": "ningun umbral de precio se compara en double; todo umbral de precio se compara en ticks enteros",
+  "regla": "ningun umbral de PRECIO DE GRILLA se compara en double; los umbrales intrinsecamente fraccionarios (p.ej. porcentaje de rango) se espejan bit a bit y su exposicion se mide y documenta",
   "triaje": {
     "AACloseOpenDiffs.cs :: if (d.TopPrice < bot || d.BottomPrice > top) continue; // sin overlap de precio": {
       "evidencia": "vive en la capa DetectarExpansiones, declarada explicitamente NO PORTADA a Python (docs/parity_coverage/AACloseOpenDiffs.md, 'Fuera de alcance'). No puede romper paridad hoy. Si algun dia se porta, ES un umbral en double y hay que pasarlo a enteros antes.",
@@ -47,12 +47,12 @@
       "veredicto": "INMUNE_MONOTONO"
     },
     "BigTrap2.cs :: && (!UseWickFilter || (range > 0 && rowPrice <= wickLoCeil)))": {
-      "evidencia": "EXPOSICION MEDIDA 0.0241% (710 flips en 2.952.000 decisiones; rangos 1..120 ticks, niveles 20000..20400 de 6E). El umbral wickHiFloor = hi - range*(pct/100) NO esta en la grilla de ticks y NO se puede pasar a enteros sin decidir una semantica de redondeo. Es una DECISION DE DISENO pendiente de Nico -> se documenta y se frena, no se corrige por cuenta propia. Ver docs/audits/AUDIT-003_barrido_ulp.md.",
-      "veredicto": "EXPUESTO_PENDIENTE"
+      "evidencia": "DECISION A de Nico (2026-07-26): NO se convierte a enteros. `hi - range*(pct/100)` es intrinsecamente fraccionario -- no es un precio de grilla -- y forzarlo a enteros cambiaria la DEFINICION del indicador e invalidaria una paridad ya ganada (BigTrap2 time:1 PASS con 0 diffs) por 0,0241%.\nESPEJADO VERIFICADO POR MEDICION, no por lectura: con hi/lo en la MISMA representacion en los dos lados la exposicion es 0,000000% (0 flips de 2.952.000). O sea que la ARITMETICA aporta 0% y el residual de 0,024051% es 100% atribuible a la representacion de entrada (feed double vs ticks*tick_size), que es irreducible sin cambiar la semantica.\nOrden de operaciones identico en los dos lados, termino a termino: range = hi-lo; thr = hi - range*(pct/100.0); rowPrice = (row*rowTicks + (rowTicks-1)/2.0)*tickSize. Fijado en tests/bridge/test_espejo_bit_a_bit.py. Caveat en AUDIT-003 y en docs/parity_coverage/BigTrap2.md.",
+      "veredicto": "ESPEJADO_BIT_A_BIT"
     },
     "BigTrap2.cs :: && (!UseWickFilter || (range > 0 && rowPrice >= wickHiFloor)))": {
-      "evidencia": "EXPOSICION MEDIDA 0.0241% (710 flips en 2.952.000 decisiones; rangos 1..120 ticks, niveles 20000..20400 de 6E). El umbral wickHiFloor = hi - range*(pct/100) NO esta en la grilla de ticks y NO se puede pasar a enteros sin decidir una semantica de redondeo. Es una DECISION DE DISENO pendiente de Nico -> se documenta y se frena, no se corrige por cuenta propia. Ver docs/audits/AUDIT-003_barrido_ulp.md.",
-      "veredicto": "EXPUESTO_PENDIENTE"
+      "evidencia": "DECISION A de Nico (2026-07-26): NO se convierte a enteros. `hi - range*(pct/100)` es intrinsecamente fraccionario -- no es un precio de grilla -- y forzarlo a enteros cambiaria la DEFINICION del indicador e invalidaria una paridad ya ganada (BigTrap2 time:1 PASS con 0 diffs) por 0,0241%.\nESPEJADO VERIFICADO POR MEDICION, no por lectura: con hi/lo en la MISMA representacion en los dos lados la exposicion es 0,000000% (0 flips de 2.952.000). O sea que la ARITMETICA aporta 0% y el residual de 0,024051% es 100% atribuible a la representacion de entrada (feed double vs ticks*tick_size), que es irreducible sin cambiar la semantica.\nOrden de operaciones identico en los dos lados, termino a termino: range = hi-lo; thr = hi - range*(pct/100.0); rowPrice = (row*rowTicks + (rowTicks-1)/2.0)*tickSize. Fijado en tests/bridge/test_espejo_bit_a_bit.py. Caveat en AUDIT-003 y en docs/parity_coverage/BigTrap2.md.",
+      "veredicto": "ESPEJADO_BIT_A_BIT"
     },
     "BigTrap2.cs :: bool adverseClose = z.IsBull ? close > zHi : close < zLo; // los atrapados dejaron de estarlo": {
       "evidencia": "el umbral vive a medio tick de la grilla (borde = tick +/- 0.5*TickSize), asi que ningun precio negociable cae exactamente encima y el empate es imposible. Exposicion MEDIDA 0.00% en AUDIT-002.",

@@ -73,6 +73,105 @@ Corrección aprobada por Nico el 2026-07-26. La decisión ahora usa
 `gapTicks = |PriceToTick(closePrev) − PriceToTick(openCurr)|`; `gapPts` sobrevive
 sólo para I/O. Detalle completo en `docs/audits/AUDIT-003_barrido_ulp.md`.
 
+## CUARENTENA TOTAL del histórico pre-v1.1 (Decisión B de Nico, 2026-07-26)
+
+**El histórico anterior a v1.1 no se mergea nunca más.**
+
+### El filtro es ESTRUCTURAL, no de memoria
+
+`edgelab/bridge/quarantine.py`, consultado por `oracle.parse_nt8_log()` **antes
+de parsear**. Un archivo de `AACloseOpenDiffs` con `version < 1.1` levanta
+`DatosEnCuarentena` con el motivo y el sesgo. No hay que acordarse de excluirlo:
+hay que **desactivarlo a propósito** (`allow_quarantined=True`), y eso deja rastro
+en el código que lo hace. El escape existe sólo para el forense — leer los datos
+sucios para *medir* el defecto es legítimo; usarlos como insumo no.
+
+**Fail-closed**: un archivo del indicador **sin `version=` legible** se trata como
+contaminado. La comparación de versiones es numérica por tupla, no lexicográfica
+(`"1.10" < "1.9"` como texto sería un bug silencioso el día que haya diez
+versiones menores).
+
+### El hueco que hacía falta cerrar en el `.cs` — v1.2
+
+El logger de research **no registraba con qué versión se generó cada fila**. Su
+header era `instrument,start_ms,…,m1_bar` y nada más: imposible de filtrar
+retroactivamente. Ése es el hueco que dejó pasar el defecto durante todo su
+histórico.
+
+**v1.2** agrega `ind_version` **por fila**, no en un header, porque ese archivo
+**mergea corridas distintas**: una versión a nivel de archivo sería una
+afirmación falsa sobre el contenido mezclado. La constante `IND_VERSION` es una
+sola fuente de verdad — la usan el meta del canal de paridad y cada fila del
+logger, así que no pueden desincronizarse.
+
+### Material en cuarentena
+
+`archive/cuarentena/aacloseopendiffs_pre_v1.1/` — **se conserva crudo, no se
+borra**: es la evidencia de la magnitud del defecto (43,5 % observado).
+
+| archivo | origen | tamaño |
+|---|---|---|
+| `logger_research_AACloseOpenDiffs_pre_v1.1.csv` | `D:\A  Trading\loggers\AACloseOpenDiffs.csv` | 2,24 MB, 28 055 filas |
+| `oracle_AACloseOpenDiffs_6E_0926_v1.0.csv` | `oracles/` | 272 KB |
+
+> El original en `oracles/` **no se pudo borrar**: está abierto por otro proceso
+> (NT8). La copia forense está completa y el filtro estructural lo bloquea igual.
+> Queda pendiente borrarlo con NT8 cerrado.
+
+### Auditoría de consumidores
+
+Qué consumió el histórico contaminado, hasta el 2026-07-26:
+
+| consumidor | veredicto | fundamento |
+|---|---|---|
+| `oracles/AACloseOpenDiffs_6E_0926.csv` | **CONTAMINADO** | generado por `.cs` v1.0. En cuarentena |
+| `D:\A  Trading\loggers\AACloseOpenDiffs.csv` | **CONTAMINADO** | mergeaba desde v1.0. En cuarentena |
+| `runs/nt8_bridge/parity_aacod/` (corrida de paridad) | **CONTAMINADO** | comparó contra el oráculo v1.0. Su `parity_report.json` (FAIL, 1595 apareadas) sólo vale como **evidencia forense del defecto**, no como medida de paridad |
+| store — particiones de `AACloseOpenDiffs` | **LIMPIO (vacío)** | **nunca se publicó ninguna**. Verificado: no existe `indicator=AACloseOpenDiffs` bajo `runs/nt8_bridge/campaign_store/` |
+| CAMP-001 | **LIMPIO** | corrió sobre **Gaps2**, no tocó este indicador |
+| features / vectorbt (F8) | **LIMPIO** | consumen el store por identidad, y el store nunca tuvo estas zonas |
+| visor | **LIMPIO** | se alimenta del store |
+| `docs/parity_coverage/AACloseOpenDiffs.md`, `AUDIT-003` | **LIMPIO** | citan los números **como defecto medido**, que es su uso correcto |
+
+**Conclusión de la auditoría: la contaminación no se propagó.** El defecto se
+detectó en el primer oráculo, antes de que nada se publicara al store, así que
+ningún análisis ni feature aguas abajo lo consumió. El único material afectado es
+el que ya está en cuarentena.
+
+### Hallazgo del propio escaneo: el kernel Python estaba MAL ETIQUETADO
+
+El escáner marcó `runs/nt8_bridge/parity_aacod/AACloseOpenDiffs_…_events_py.csv`
+como contaminado. **Falso positivo con causa real**: el kernel Python **siempre**
+comparó el umbral en enteros de tick —nunca tuvo el defecto del `.cs`— pero se
+etiquetaba `version=1.0`. El dato estaba bien; la etiqueta estaba mal.
+
+Corregido: el kernel declara **v1.2**, alineado con la semántica que implementa.
+
+> **Consecuencia de identidad**: `kernel_id` pasó de `f4fe171dffe1eff3` a
+> **`092df4763c9ebf64`**. Sin impacto — no había ninguna partición publicada con
+> el id anterior.
+
+Que el escaneo de cuarentena haya encontrado esto es exactamente para lo que
+sirve: un inventario que sólo confirma lo que ya se sabía no habría aportado nada.
+
+### El histórico limpio
+
+**Nace con el export 2 de la sesión de NT8 del 2026-07-26**
+(`docs/parity_coverage/SESION_NT8_2026-07-26.md`).
+
+| campo | valor |
+|---|---|
+| `.cs` | **v1.2**, sha256 `e4f5f17b7a2f29fe85299575a4c4ab45b88b29414cb3ef7547d9616775ed2557` |
+| kernel Python | **v1.2**, `kernel_id 092df4763c9ebf64` |
+| primer archivo limpio | `oracles/AACloseOpenDiffs_6E_0926_v12.csv` *(pendiente de generar)* |
+| logger de research limpio | `D:\A  Trading\loggers\AACloseOpenDiffs.csv`, recreado desde cero con la columna `ind_version` |
+| fecha | 2026-07-26 |
+
+Fijado en `tests/bridge/test_cuarentena.py` (13 tests), incluido uno que verifica
+que la versión declarada por el `.cs` esté **por encima** del umbral de cuarentena
+— si alguien la bajara, sus propios datos entrarían en cuarentena y el test lo
+diría antes de gastar un export.
+
 ### Consecuencia sobre los datos ya generados — DECLARADA
 
 **Todo dato de `AACloseOpenDiffs` anterior al 2026-07-26 tiene ~47 % de los gaps

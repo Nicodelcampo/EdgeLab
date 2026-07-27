@@ -11,6 +11,47 @@
 
 ---
 
+## 0. DECISIÓN DE NICO — 2026-07-26: NO APROBADA todavía
+
+La campaña **no está aprobada**. Secuencia obligatoria, con tres puertas:
+
+| | qué | estado | bajo STOP? |
+|---|---|---|---|
+| **(a)** | **Paso 2 — sanity target-free**: correlación de `sigma_pred` zero-shot contra vol realizada rezagada trivial. **Si > 0,95 la línea se cierra** y se documenta el negativo | ⏳ habilitado | **NO** — es target-free |
+| **(b)** | Si sobrevive (a): **enmienda con BASELINE TRIVIAL obligatorio** — filtro de régimen con vol realizada / ATR, **sin modelo**. El criterio de éxito pasa a ser lift **INCREMENTAL sobre ese baseline** | pendiente de (a) | — |
+| **(c)** | Recién entonces: manifiesto completo para revisión formal, como CAMP-001 | pendiente de (b) | **SÍ** |
+
+**Prioridad**: primero la sesión de NT8 (cuello de botella humano). El paso (a)
+corre en paralelo **sólo si no desplaza nada de lo anterior**.
+
+### Por qué el baseline trivial cambia la campaña, no la decora
+
+Sin él, la pregunta es *"¿el filtro de régimen mejora la estrategia base?"* — y
+casi cualquier filtro de volatilidad razonable la mejora un poco, porque reduce
+trades en los peores momentos. Un resultado positivo así **no dice nada sobre
+Kronos**: dice que filtrar por volatilidad ayuda, que es una hipótesis vieja y
+barata.
+
+Con baseline trivial la pregunta pasa a ser *"¿Kronos aporta **sobre** saber
+filtrar por ATR?"*, que es la única versión de la pregunta cuya respuesta
+justifica 2,5 GB de dependencias y un entorno sidecar.
+
+Es la misma lógica que R5, un paso más adelante: **R5 pregunta si `sigma_pred` es
+distinta de la vol trivial; el baseline pregunta si esa diferencia paga.** Se
+puede fallar R5 y cerrar barato, o pasarlo y fracasar igual en el baseline —
+`sigma_pred` puede ser numéricamente distinta y económicamente inútil.
+
+### Estado del entorno (Decisiones 1 y 2)
+
+- `torch`/`transformers` **no entran al lock**. Kronos corre en **sidecar** y el
+  repo principal sólo lee columnas cacheadas. Ver
+  `docs/external_model_contract.md` §0-bis.
+- **CPU y muestreo por evento exclusivamente.** Sin GPU, sin bar-a-bar. Eso fija
+  el presupuesto de cómputo en ~0,8 h para 6E y **elimina del diseño** cualquier
+  variante que exija predecir en todas las barras.
+
+---
+
 ## 1. Justificación económica
 
 *(campo obligatorio de toda plantilla generadora)*

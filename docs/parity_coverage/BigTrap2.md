@@ -1,5 +1,30 @@
 # Cobertura de paridad — BigTrap2
 
+> ## ⚠ CAVEAT MEDIDO — filtro de mecha: 0,0241 % de exposición residual
+>
+> **Decisión A de Nico, 2026-07-26.** El umbral `wickHiFloor = hi − range × 30 %`
+> es **intrínsecamente fraccionario**: no es un precio de grilla. NO se convierte
+> a enteros —eso cambiaría la definición del indicador e invalidaría el PASS de
+> `time:1`— sino que se **espeja bit a bit** y el residual se declara.
+>
+> | | |
+> |---|---|
+> | exposición residual | **0,0241 %** (710 flips de 2.952.000 decisiones de fila) |
+> | dirección | **bidireccional** — no se compensa con un offset |
+> | aporte de la **aritmética** | **0,000000 %** (medido: mismos operandos ⇒ 0 flips) |
+> | aporte de la **representación de entrada** | **0,024051 %** — irreducible |
+> | aplica con | `use_wick_filter=true` (default) |
+> | rangos afectados | los múltiplos de 10 ticks, donde `range × 0,30` cae en la grilla |
+>
+> **Si aparece UN diff inexplicable en BigTrap2, esto es lo primero que hay que
+> mirar.** No bloquea el oráculo: a 0,0241 % es improbable que produzca siquiera
+> un diff en una ventana de dos sesiones. El oráculo **O3 (`wick off`)** aísla
+> esta rama por construcción — con el filtro apagado la exposición es 0.
+>
+> Detalle en `docs/audits/AUDIT-003_barrido_ulp.md` §Hallazgo 3. Fijado en
+> `tests/bridge/test_espejo_bit_a_bit.py`.
+
+
 Oráculos pre-registrados: **O1 Diagonal/time:1** (default), **O2 SameLevel/tick:25**
 (`imbalance_mode=SameLevel`, `--bars tick:25`), **O3 wick off**
 (`use_wick_filter=false`). Especificación en

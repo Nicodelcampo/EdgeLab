@@ -125,10 +125,11 @@ datos está sesgada hacia arriba. El logger de research
 (`D:\A Trading\loggers\AACloseOpenDiffs.csv`), que **mergea** con lo previo,
 arrastra el defecto en su parte histórica.
 
-## Hallazgo 3 — `BigTrap2` filtro de mecha: 0,0241 % medido, EXPUESTO, sin corregir
+## Hallazgo 3 — `BigTrap2` filtro de mecha: 0,0241 % medido → RESUELTO como espejado bit a bit
 
-El único candidato que quedó expuesto y **no** se corrigió, porque corregirlo es
-una decisión de diseño que no está entre las tres que Nico cerró.
+> **Actualización 2026-07-26 — Decisión A de Nico: NO convertir a enteros.**
+> El umbral es intrínsecamente fraccionario. Se espeja bit a bit, se mide y se
+> documenta. Ver el cierre de esta sección.
 
 ```csharp
 double range = hi - lo;
@@ -151,18 +152,62 @@ eran unidireccionales porque el feed siempre cae por debajo. Acá el umbral se
 construye con una resta *y* una multiplicación, y el signo del error depende del
 rango.
 
-**Por qué no se corrigió**: `hi − range × 0,30` **no está en la grilla de ticks**
-y no se puede pasar a enteros sin elegir una semántica de redondeo. Las opciones
-—truncar hacia la mecha, redondear al tick más cercano, o redefinir el parámetro
-en ticks en vez de porcentaje— **cambian qué filas entran al cálculo**, o sea la
-definición del indicador. Eso es diseño, no corrección. Queda listado y frenado.
+**Por qué NO se convierte a enteros** (Decisión A): `hi − range × 0,30` **no está
+en la grilla de ticks**. Pasarlo a enteros exige elegir una semántica de
+redondeo, y las opciones —truncar hacia la mecha, redondear al tick más cercano,
+redefinir el parámetro en ticks— **cambian qué filas entran al cálculo**: es
+redefinir el indicador, no corregirlo. Y costaría invalidar una paridad ya ganada
+(BigTrap2 `time:1`, PASS con 0 diffs) a cambio de 0,0241 %.
 
-**Cuándo importa**: el empate exige que `range_ticks × 0,30` sea entero, o sea
-rangos múltiplos de 10 ticks. Son comunes, pero el efecto neto es chico: 0,0241 %
-de las decisiones de fila, y sólo con `UseWickFilter=true` (que es el default).
-No bloquea el oráculo de BigTrap2 — a 0,0241 % es improbable que produzca
-siquiera un diff en una ventana de dos sesiones. Se declara para que, si aparece
-**un** diff inexplicable en BigTrap2, esto sea lo primero que se mire.
+### El espejado, verificado por MEDICIÓN y no por lectura
+
+La afirmación "los dos lados computan lo mismo" es exactamente el tipo de
+afirmación que AUDIT-001 hizo leyendo código y erró. Acá se separa en dos fuentes
+y se mide cada una por separado:
+
+| fuente | experimento | resultado |
+|---|---|---|
+| **la aritmética** | `hi`/`lo` en la **misma** representación de los dos lados | **0 flips de 2.952.000 → 0,000000 %** |
+| **la representación de entrada** | `recon` de un lado, `feed` del otro (lo real) | **710 flips → 0,024051 %** |
+
+O sea: **la aritmética aporta exactamente cero**. El residual completo es la
+diferencia entre el `double` del feed y `ticks × tick_size`, que es irreducible
+sin cambiar la semántica del indicador.
+
+Orden de operaciones idéntico, término a término:
+
+| | C# | Python |
+|---|---|---|
+| rango | `double range = hi - lo;` | `rng = hi - lo` |
+| umbral | `hi - range * (WickZonePct / 100.0)` | `hi - rng * (p["wick_zone_pct"] / 100.0)` |
+| fila | `(row * rowTicks + (rowTicks - 1) / 2.0) * TickSize` | `(r * row_ticks + (row_ticks - 1) / 2.0) * tick_size` |
+
+**Por qué la exigencia es textual y no sólo funcional**: `hi − (hi−lo)·k` y
+`hi·(1−k) + lo·k` son álgebra idéntica y `double` **distintos**. Un refactor que
+"simplifica" la expresión rompería el espejado sin cambiar ningún resultado
+visible en un test de valores redondos. `tests/bridge/test_espejo_bit_a_bit.py`
+incluye un test que **demuestra** que ese reordenamiento produce valores
+distintos — o sea, que la exigencia no es paranoia.
+
+### Caveat medido, declarado
+
+**Exposición residual del filtro de mecha de BigTrap2: 0,0241 %,
+bidireccional.** La bidireccionalidad lo distingue del resto de la familia: los
+otros cuatro casos eran unidireccionales porque el feed siempre cae por debajo.
+Acá el umbral se arma con una resta *y* una multiplicación, y el signo del error
+depende del rango — por eso no se puede compensar con un offset.
+
+Aplica sólo con `UseWickFilter=true` (el default). El empate exige que
+`range_ticks × 0,30` sea entero, o sea rangos múltiplos de 10 ticks: comunes,
+pero el efecto neto es chico. No bloquea el oráculo — a 0,0241 % es improbable
+que produzca siquiera un diff en una ventana de dos sesiones.
+
+> **Si aparece UN diff inexplicable en BigTrap2, esto es lo primero que hay que
+> mirar.** Ése es el propósito de dejarlo escrito.
+
+Triaje: veredicto `ESPEJADO_BIT_A_BIT`, que **exige** el número medido en su
+evidencia. Sin esa exigencia la clase sería una puerta de escape para dejar
+cualquier cosa en `double` diciendo "es fraccionario".
 
 ## Hallazgo 4 — la capa de expansiones tiene la misma forma, sin portar
 

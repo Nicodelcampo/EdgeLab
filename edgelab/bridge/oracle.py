@@ -17,6 +17,8 @@ from datetime import datetime
 
 from .common import tz_of
 
+from . import quarantine
+
 
 def _to_unix_ms(s, tz):
     s = (s or "").strip()
@@ -66,10 +68,22 @@ def parse_records(lines, chart_tz="UTC", tick_size=None):
     return _parse_csv(body, meta, tz, tick_size)
 
 
-def parse_nt8_log(path, chart_tz="UTC", tick_size=None):
-    """Devuelve dict(indicator, meta, header, events, zones)."""
+def parse_nt8_log(path, chart_tz="UTC", tick_size=None, *, allow_quarantined=False):
+    """Devuelve dict(indicator, meta, header, events, zones).
+
+    **Filtro de cuarentena estructural (Decisión B de Nico, 2026-07-26).** Antes
+    de parsear nada se consulta `quarantine`: un archivo generado por una versión
+    en cuarentena levanta `DatosEnCuarentena`. No hay que acordarse de excluirlo —
+    hay que desactivarlo a propósito con `allow_quarantined=True`, y eso deja
+    rastro en el código que lo hace.
+
+    El escape existe sólo para el forense: leer los datos sucios para MEDIR el
+    defecto es legítimo; usarlos como insumo no.
+    """
     with open(path, "r", encoding="utf-8-sig") as fh:
         lines = [ln.rstrip("\r\n") for ln in fh if ln.strip()]
+    if not allow_quarantined:
+        quarantine.verificar(" ".join(l for l in lines if l.startswith("#")), path)
     return parse_records(lines, chart_tz=chart_tz, tick_size=tick_size)
 
 

@@ -94,6 +94,13 @@ def barrer(path: str):
 #                    negociable cae exactamente encima ⇒ empate imposible.
 #   CORREGIDO        estuvo expuesto y ya se pasó a enteros. Se deja sellado
 #                    para que un revert quede visible.
+#   ESPEJADO_BIT_A_BIT  el umbral es **intrínsecamente fraccionario** (no es un
+#                    precio de grilla: p.ej. un porcentaje de rango). Pasarlo a
+#                    enteros cambiaría la DEFINICIÓN del indicador, así que no se
+#                    convierte: se exige que los dos lados computen la misma
+#                    secuencia de operaciones en `double`, y la exposición
+#                    residual se MIDE y se DOCUMENTA. Decisión A de Nico,
+#                    2026-07-26. Exige evidencia con el número medido.
 #   EXPUESTO_PENDIENTE  exposición MEDIDA > 0 y la corrección exige una decisión
 #                    de diseño que Nico todavía no tomó.
 #   FUERA_DE_ALCANCE la expresión vive en una capa que NO se porta a Python
@@ -105,7 +112,8 @@ def barrer(path: str):
 BASELINE = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                         "ulp_sweep_baseline.json")
 VEREDICTOS = {"INMUNE_MONOTONO", "INMUNE_MEDIOTICK", "CORREGIDO",
-              "EXPUESTO_PENDIENTE", "FUERA_DE_ALCANCE", "NO_ES_PRECIO"}
+              "ESPEJADO_BIT_A_BIT", "EXPUESTO_PENDIENTE", "FUERA_DE_ALCANCE",
+              "NO_ES_PRECIO"}
 
 
 def clave(archivo, texto):

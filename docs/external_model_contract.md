@@ -11,6 +11,43 @@ que ninguno de los dos cubre.
 
 ---
 
+## 0-bis. REGLA DE AISLAMIENTO (Decisión 1 de Nico, 2026-07-26)
+
+> **Ningún modelo externo corre dentro del entorno principal.**
+
+`torch`/`transformers` **no entran al lock**. Kronos —y cualquier sucesor— corre
+en un **entorno sidecar**: un venv separado, fuera de
+`requirements/core-bridge-dev.lock`, documentado aparte. El repo principal
+**sólo lee columnas cacheadas** producidas vía `pit_store`, con `weights_sha256`
+y `seed` declarados.
+
+**Por qué esto es más que higiene de dependencias.** El entorno principal es hoy
+un lock liviano y auditable donde la suite corre en ~27 s sin GPU. Meter 2,5 GB de
+PyTorch lo convertiría en un entorno que hay que reproducir con cuidado, y —lo
+importante— **acoplaría la validación de paridad NT8 a la disponibilidad de un
+modelo**. El día que una versión de torch rompa algo, se caería la verificación
+del bridge, que no tiene nada que ver.
+
+El corte también es conceptual: el sidecar **produce**, el principal **valida**.
+Un artefacto cacheado con identidad content-addressed se puede auditar aunque el
+modelo que lo generó ya no exista.
+
+### Contrato del sidecar
+
+| | |
+|---|---|
+| entorno | venv separado, fuera del lock principal |
+| qué produce | JSONL de `PredictionRecord` vía `PITFeatureStore.to_jsonl()` |
+| qué debe declarar | `ModelIdentity` completa: `weights_sha256`, `seed`, `lookback`, `horizon`, `n_paths`, `bar_spec` |
+| qué lee el principal | **sólo** el JSONL cacheado, vía `PITFeatureStore.from_jsonl()` |
+| cómputo | **CPU, muestreo POR EVENTO exclusivamente** (Decisión 2). Sin GPU, sin bar-a-bar |
+| gates antes de consumir | X0–X4, en `edgelab/external/` — corren en el principal, sin torch |
+
+**Decisión 2 en concreto**: por evento, 6E, ~1500 nacimientos de zona ⇒ ~0,8 h en
+CPU. Bar-a-bar sobre 700k barras serían 16,2 días — descartado, no por costo sino
+porque predecir en todas las barras es pagar 466× por información que no se usa.
+La pregunta es sobre el régimen **cuando nace una zona**.
+
 ## 0. Por qué necesita contrato propio
 
 Un kernel del bridge y un modelo pre-entrenado se parecen en la salida y en nada

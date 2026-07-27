@@ -79,12 +79,31 @@ def test_el_baseline_no_tiene_veredictos_inventados():
         assert len(v["evidencia"]) > 40, k
 
 
-def test_los_expuestos_pendientes_estan_declarados():
-    """Lo medido >0 y no corregido tiene que estar visible, no enterrado."""
+def test_no_queda_ninguna_exposicion_sin_resolver():
+    """Tras la Decisión A de Nico (2026-07-26) no hay `EXPUESTO_PENDIENTE`.
+
+    El filtro de mecha de BigTrap2 —único caso que quedaba— se resolvió como
+    `ESPEJADO_BIT_A_BIT`: no se convierte a enteros porque el umbral es
+    intrínsecamente fraccionario, se exige el mismo orden de operaciones y se
+    documenta el residual medido.
+    """
     d = json.load(open(ulp_sweep.BASELINE, encoding="utf-8"))["triaje"]
     pend = [k for k, v in d.items() if v["veredicto"] == "EXPUESTO_PENDIENTE"]
-    # El filtro de mecha de BigTrap2: 0.0241% medido, corrección = decisión de Nico.
-    assert len(pend) == 2, pend
-    assert all("wick" in k for k in pend), pend
-    for k in pend:
-        assert "AUDIT-003" in d[k]["evidencia"], k
+    assert pend == [], pend
+
+
+def test_los_umbrales_fraccionarios_declaran_su_residual_MEDIDO():
+    """Un `ESPEJADO_BIT_A_BIT` sin el número medido sería una opinión.
+
+    Es toda la diferencia entre esta clase y "lo dejamos así": la clase sólo se
+    puede usar acompañada de la medición que prueba que la aritmética aporta 0.
+    """
+    d = json.load(open(ulp_sweep.BASELINE, encoding="utf-8"))["triaje"]
+    esp = {k: v for k, v in d.items() if v["veredicto"] == "ESPEJADO_BIT_A_BIT"}
+    assert len(esp) == 2, list(esp)
+    assert all("wick" in k for k in esp), list(esp)
+    for k, v in esp.items():
+        assert "AUDIT-003" in v["evidencia"], k
+        assert "0,024051%" in v["evidencia"] or "0.024051%" in v["evidencia"], k
+        # La medición que la justifica: la aritmética aporta 0.
+        assert "0,000000%" in v["evidencia"] or "0.000000%" in v["evidencia"], k
