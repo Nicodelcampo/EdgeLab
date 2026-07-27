@@ -195,9 +195,60 @@ Hay 11 estratos (franja horaria × régimen de vol rezagada) en
 
 ---
 
-## 5. Kronos — paso 2
+## 5. Kronos — paso 2: **corrió**, y R5 no lo mató
 
-*(sección completada al cierre — ver §5-bis)*
+**Target-free. No evalúa P&L, así que no cae bajo el STOP.**
+
+| | |
+|---|---|
+| muestras útiles | **121** |
+| lotes | 7 (**1 murió**) |
+| `corr(sigma_pred, vol_rezagada)` Pearson | **0,383** |
+| ídem Spearman | **0,563** |
+| `corr(sigma_pred, ATR rezagado)` | **0,522** |
+| umbral de refutación (pre-registrado) | 0,95 |
+| **veredicto** | **SOBREVIVE R5** |
+
+### Qué significa, y sobre todo qué NO
+
+R5 preguntaba una sola cosa: **¿`sigma_pred` es lo mismo que una vol realizada
+rezagada?** La respuesta es **no** — 0,38 de correlación lineal está muy lejos
+del 0,95 que habría cerrado la línea. Kronos aporta variación propia.
+
+**Eso no es evidencia de que sirva.** Una correlación baja con el baseline
+trivial es igual de compatible con *"aporta información distinta"* que con
+*"es ruido"*. R5 es un filtro de **redundancia**, no de utilidad: lo único que
+se puede afirmar es que el cierre barato no se activó.
+
+Lo que sí queda establecido: **el paso (b) tiene sentido correrlo**. Ahí es donde
+se decide si esa variación propia **paga**, contra el baseline trivial y con el
+criterio de lift incremental — y eso sí requiere tu OK, porque toca P&L.
+
+### Tres desviaciones declaradas
+
+**1. `lookback = 128` en vez de los 400 recomendados.** Forzado por un crash:
+`Fatal Python error: PyEval_SaveThread` dentro de la atención del modelo. Se
+descartaron por medición dos causas —la cantidad de hilos (falla igual con 1) y
+la versión de torch (2.13.0 y 2.5.1 fallan idéntico)— y se acotó la que sí
+manda: el **tamaño del tensor**. 400 crashea; 320 y 256 crashean con 30 caminos;
+128 con 30 caminos aguanta. **Es un Kronos más chico que el que recomiendan los
+autores**, y eso hay que tenerlo presente al leer el 0,383.
+
+**2. Cada lote corre en su propio proceso.** El error es *fatal*, no una
+excepción: `try/except` no lo atrapa, se lleva el proceso entero. Con hijos por
+lote y escritura fila por fila, el lote que murió costó 19 muestras en vez de
+las 140. **La metodología no cambió**: mismos puntos de muestreo (misma seed),
+mismo baseline, mismo criterio.
+
+**3. El contrato usado fue `6E 12-25`**, no 09-26: el runner elige el que más
+días aptos tiene (52 contra 14), porque más muestras de la **misma** pregunta es
+exactamente lo que el pre-registro autoriza cuando sobra tiempo.
+
+### Sobre el aislamiento
+
+Todo corrió en `sidecar/kronos_env`, **fuera del lock principal**. El repo
+principal nunca importó torch: lee el JSON y nada más. `sidecar/` está en
+`.gitignore` salvo los scripts.
 
 ---
 
@@ -256,15 +307,22 @@ suspensión — pero queda sin comprobar formalmente.
    No los porté: un cambio por vez, atribución limpia — primero validar el
    secuenciador en BigTrap2 con los oráculos nuevos.
 
-3. **P/N/K de EXPLORE-001.** La tabla nula está lista (§4). La decisión de qué
+3. **CAMP-002 paso (b): ¿se corre?** R5 no cerró la línea (0,383 contra un umbral
+   de 0,95), así que el paso siguiente tiene sentido. Pero **toca P&L** y por lo
+   tanto necesita tu OK, con el baseline trivial obligatorio y el criterio de
+   lift incremental. Mi lectura: el 0,383 dice que Kronos aporta variación
+   propia, **no** que esa variación sirva — una correlación baja con el trivial
+   es igual de compatible con "información distinta" que con "ruido".
+
+4. **P/N/K de EXPLORE-001.** La tabla nula está lista (§4). La decisión de qué
    combinación pre-registrar es tuya; lo que aporto es el denominador.
 
-4. **Unidad de observación de EXPLORE-001** (pendiente de la sesión anterior):
+5. **Unidad de observación de EXPLORE-001** (pendiente de la sesión anterior):
    zona cruda (476), colapsada por solape dentro de (sesión, bucket) (**360**), o
    bucket entero (204). La del medio es la que corresponde al argumento de
    pseudo-réplica.
 
-5. **Umbral de mecha de BigTrap2** — sigue como `ESPEJADO_BIT_A_BIT` con 0,0241 %
+6. **Umbral de mecha de BigTrap2** — sigue como `ESPEJADO_BIT_A_BIT` con 0,0241 %
    documentado. No requiere acción; queda listado porque es una exposición
    declarada y viva.
 
