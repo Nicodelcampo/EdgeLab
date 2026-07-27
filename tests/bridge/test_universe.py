@@ -125,6 +125,79 @@ def test_sin_ticks_es_INDETERMINADO_no_apto():
     assert r["estado"] == "INDETERMINADO"
 
 
+# ------------------------------------------- tipo de día (corrección 2026-07-27)
+def _viernes(y=2026, m=7, d=10):
+    """Viernes real: opera 00:00–15:59 CT y NO reabre."""
+    return sorted(_ns(y, m, d, hh, mm) for hh in range(0, 16) for mm in (0, 20, 40))
+
+
+def _domingo(y=2026, m=7, d=12):
+    """Domingo real: abre 17:00 CT y sigue hasta la medianoche."""
+    return sorted(_ns(y, m, d, hh, mm) for hh in range(17, 24) for mm in (0, 20, 40))
+
+
+def test_viernes_completo_es_APTO():
+    """REGRESIÓN: los 56 viernes del censo caían por SIN_HUECO_DE_MANTENIMIENTO.
+
+    Un viernes cierra 16:00 y no reabre, así que no PUEDE tener un hueco que
+    cubra las 16:00. El chequeo no le aplica.
+    """
+    r = U.evaluar_dia("6E 09-26", "2026-07-10", _viernes())
+    assert r["tipo_de_dia"] == U.CIERRE_SEMANAL
+    assert r["estado"] == "APTO", r["motivos"]
+    assert r["detalle"]["hueco_mantenimiento"]["code"] == "NO_APLICA"
+
+
+def test_domingo_completo_es_APTO():
+    """REGRESIÓN: los 60 domingos caían igual. Un domingo abre 17:00."""
+    r = U.evaluar_dia("6E 09-26", "2026-07-12", _domingo())
+    assert r["tipo_de_dia"] == U.APERTURA_SEMANAL
+    assert r["estado"] == "APTO", r["motivos"]
+
+
+def test_lunes_a_jueves_SIGUE_exigiendo_el_hueco():
+    """La corrección no puede aflojar el chequeo donde sí aplica."""
+    ts = sorted(_dia_normal() + [_ns(2026, 7, 14, 16, mm) for mm in (5, 25, 45)])
+    r = U.evaluar_dia("6E 09-26", "2026-07-14", ts)
+    assert r["tipo_de_dia"] == U.COMPLETO
+    assert any(m["code"] == "SIN_HUECO_DE_MANTENIMIENTO" for m in r["motivos"])
+
+
+def test_sabado_con_ticks_es_fallo_duro():
+    """El sábado 2025-09-13 con 10 ticks salía APTO. CME no opera los sábados."""
+    ts = sorted(_ns(2026, 7, 11, hh, 0) for hh in (14, 15, 18, 20, 21))
+    r = U.evaluar_dia("6E 09-26", "2026-07-11", ts)
+    assert r["estado"] == "DEFECTUOSO"
+    assert any(m["code"] == "SABADO_SIN_SESION" for m in r["motivos"])
+
+
+def test_dia_vacio_no_pasa_por_pocos_ticks():
+    """El otro modo de falla del sábado: con 10 ticks en 7 horas CUALQUIER hueco
+    cubre las 16:00, así que `hueco_mantenimiento` pasaba. La cobertura horaria
+    es la que lo atrapa."""
+    ts = sorted([_ns(2026, 7, 14, 14, 0), _ns(2026, 7, 14, 15, 0),
+                 _ns(2026, 7, 14, 21, 0), _ns(2026, 7, 14, 22, 0)])
+    r = U.evaluar_dia("6E 09-26", "2026-07-14", ts)
+    assert r["estado"] == "DEFECTUOSO"
+    assert any(m["code"] == "COBERTURA_HORARIA_INSUFICIENTE" for m in r["motivos"])
+
+
+def test_un_martes_sin_su_tarde_NO_se_hace_pasar_por_viernes():
+    """Fail-closed: el tipo se deriva del dato, pero tiene que ser posible en
+    ese día de la semana. Si no, faltarle 7 horas a un martes sería gratis."""
+    r = U.evaluar_dia("6E 09-26", "2026-07-14", _viernes(2026, 7, 14))
+    assert r["tipo_de_dia"] == U.CIERRE_SEMANAL
+    assert any(m["code"] == "TIPO_DE_DIA_IMPOSIBLE" for m in r["motivos"])
+
+
+def test_el_cierre_temprano_declarado_se_clasifica_solo():
+    """Derivar del dato y no del calendario hace que los feriados salgan solos."""
+    ts = sorted(_ns(2026, 7, 3, hh, mm) for hh in range(0, 15) for mm in (0, 20, 40))
+    r = U.evaluar_dia("6E 09-26", "2026-07-03", ts)
+    assert r["tipo_de_dia"] == U.CIERRE_SEMANAL
+    assert r["estado"] == "APTO", r["motivos"]
+
+
 def test_la_bateria_esta_completa():
     """Si alguien agrega un chequeo y olvida enchufarlo, esto lo dice."""
     r = U.evaluar_dia("6E 09-26", "2026-07-14", _dia_normal())

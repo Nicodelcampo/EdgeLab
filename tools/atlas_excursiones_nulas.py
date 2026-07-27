@@ -80,6 +80,27 @@ CFG = dict(
     franjas_horarias=[(17, 24), (0, 7), (7, 12), (12, 16)],   # hora CT
     min_n_estrato=200,                # por debajo, el estrato se oculta
     bootstrap_reps=400,
+    # ── FIREWALL DEL HOLDOUT, EN LA CONFIG CONGELADA ────────────────────────
+    # Estaba SOLO en el docstring, y la corrida del 2026-07-27 uso 10 dias del
+    # holdout (2026-07-06 .. 07-21) entre sus 163. El atlas mide MFE/MAE sobre
+    # horizontes futuros: eso es RETORNO, no es target-free, y la regla sellada
+    # dice que ningun placebo pisa el holdout. Ahora es un candado de codigo.
+    holdout_desde="2026-07-01",
+    # ── ALCANCE POR TIPO DE DIA (decision 2026-07-27) ───────────────────────
+    # Entra lunes-a-viernes. Se EXCLUYE el domingo (APERTURA_SEMANAL): son 7 h
+    # de sesion contra 23, con 7.544 ticks de mediana contra 62.857-77.775 --
+    # entre 8 y 10 veces mas fino. Dos razones, y las dos son estructurales:
+    #   1. el bootstrap resamplea POR DIA como bloque, y un fragmento de 7 h no
+    #      es intercambiable con un dia de 23 h: subestimaria la varianza;
+    #      pero (2) tiene un ancla: el spread y el slippage de una sesion tan
+    #   2. fina son otro regimen de EJECUCION (jerarquia #4 del referente), asi
+    #      que mezclarlo en la franja (17,24) haria un nulo de dos regimenes.
+    # Es una DECISION DECLARADA, no una exclusion accidental como la de los
+    # viernes que esto mismo vino a corregir. Entra al hash de la config, y el
+    # arnes de EXPLORE debe NEGARSE a evaluar una zona cuyo tipo de dia no este
+    # en este alcance -- si aparecen zonas de domingo, que falle ruidoso en vez
+    # de compararlas contra el nulo equivocado.
+    tipos_de_dia=["COMPLETO", "CIERRE_SEMANAL"],
     # convergencia declarada ANTES: los percentiles centrales de MFE deben
     # moverse menos que este margen (en ticks) durante N rondas seguidas
     conv_margen_ticks=0.25,
@@ -329,8 +350,35 @@ def main(argv=None):
 
     man = json.load(open(a.manifiesto, encoding="utf-8"))
     dias = man["dias"]
-    _log("ATLAS NULL — %d dias aptos, cfg=%s, workers=%d" % (len(dias), CFG_HASH,
-                                                             a.workers), LOG)
+    _log("ATLAS NULL — manifiesto: %d dias aptos" % len(dias), LOG)
+
+    # ── candados, en este orden y ruidosos ─────────────────────────────────
+    en_holdout = [d for d in dias if d["fecha"] >= CFG["holdout_desde"]]
+    if en_holdout:
+        _log("  FIREWALL: se descartan %d dias del holdout (>= %s): %s"
+             % (len(en_holdout), CFG["holdout_desde"],
+                sorted({d["fecha"] for d in en_holdout})), LOG)
+    dias = [d for d in dias if d["fecha"] < CFG["holdout_desde"]]
+
+    sin_tipo = [d for d in dias if not d.get("tipo_de_dia")]
+    if sin_tipo:
+        # fail-closed: un manifiesto viejo sin `tipo_de_dia` no se puede filtrar
+        # por alcance, y correr sin filtrar seria meter domingos sin declararlo.
+        raise SystemExit(
+            "manifiesto sin `tipo_de_dia` en %d dias: regenerar el censo "
+            "(tools/censo_integridad.py) antes de correr el atlas" % len(sin_tipo))
+    fuera = [d for d in dias if d["tipo_de_dia"] not in CFG["tipos_de_dia"]]
+    if fuera:
+        import collections as _c
+        _log("  ALCANCE: se descartan %d dias fuera de %s -> %s"
+             % (len(fuera), CFG["tipos_de_dia"],
+                dict(_c.Counter(d["tipo_de_dia"] for d in fuera))), LOG)
+    dias = [d for d in dias if d["tipo_de_dia"] in CFG["tipos_de_dia"]]
+
+    import collections as _c
+    _log("ATLAS NULL — %d dias EFECTIVOS %s, cfg=%s, workers=%d"
+         % (len(dias), dict(_c.Counter(d["tipo_de_dia"] for d in dias)),
+            CFG_HASH, a.workers), LOG)
     _log("  ESTO ES UN NULO DESCRIPTIVO. No es un edge ni una estrategia.", LOG)
 
     hh, mm = (int(x) for x in a.hard_stop.split(":"))

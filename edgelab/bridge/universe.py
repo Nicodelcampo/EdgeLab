@@ -68,6 +68,45 @@ CIERRES_TEMPRANOS = {
 VENTANA_CERRADA = (16, 17)      # [16:00, 17:00) CT — mantenimiento diario
 HUECO_MIN_MINUTOS = 55          # tolerancia: el hueco real es 60, se admite 55+
 
+# ---------------------------------------------------------------------------
+# TIPO DE DÍA (2026-07-27) — corrección de un defecto de la propia batería
+#
+# `chequeo_hueco_mantenimiento` exige un hueco que cubra las 16:00 CT. En un
+# VIERNES la sesión cierra 16:00 y no reabre; en un DOMINGO abre 17:00. Ninguno
+# de los dos **puede** tener ese hueco dentro de su día calendario, así que el
+# chequeo los rechazaba a los dos por construcción: **0 de 56 viernes y 0 de 60
+# domingos APTO**, contra 69–77 % de lunes a jueves.
+#
+# El efecto no era inocuo: los 163 días efectivos del atlas nulo eran
+# exactamente los 163 lun-jue APTO. El nulo estaba estimado **sin un solo
+# viernes**, o sea sobre una población distinta de la que cualquier estrategia
+# operaría.
+#
+# Y tenía el error simétrico: el sábado 2025-09-13 con **10 ticks** salió APTO,
+# porque con 10 ticks repartidos en 7 horas *cualquier* hueco cubre las 16:00.
+#
+# La corrección: el tipo de día se DERIVA DE LOS DATOS (no del día de la semana,
+# así los feriados y cierres tempranos salen solos) y cada chequeo se aplica
+# donde tiene sentido. La batería queda MÁS estricta, no menos: se agregan tres
+# chequeos que antes no existían (consistencia de tipo, cobertura horaria, y
+# sábado como fallo duro).
+#
+# Cotas MEDIDAS sobre los 5 parquets de 6E, no estipuladas:
+#   lun-jue  mediana 23 horas con ticks (p05 = 22)   -> se exige >= 20
+#   viernes  mediana 16 (p05 = 13)                   -> se exige >= 12
+#   domingo  mediana  7 (minimo 6)                   -> se exige >=  5
+#   sabado   mediana  1 hora, 2 ticks                -> CME no tiene sesion
+COMPLETO         = "COMPLETO"          # lun-jue: opera antes y despues del corte
+CIERRE_SEMANAL   = "CIERRE_SEMANAL"    # vie: opera hasta el cierre y no reabre
+APERTURA_SEMANAL = "APERTURA_SEMANAL"  # dom: abre 17:00 y sigue en el dia siguiente
+SIN_ESTRUCTURA   = "SIN_ESTRUCTURA"    # ni una cosa ni la otra
+
+HORAS_MINIMAS = {COMPLETO: 20, CIERRE_SEMANAL: 12, APERTURA_SEMANAL: 5}
+
+# Qué día de la semana puede tener cada tipo. Fail-closed: un martes sin su
+# tarde NO es un viernes, es un dia al que le faltan 7 horas.
+DOW_ESPERADO = {COMPLETO: {0, 1, 2, 3}, CIERRE_SEMANAL: {4}, APERTURA_SEMANAL: {6}}
+
 
 class IntegridadError(AssertionError):
     """Fail-loud: dato incompatible con el universo declarado."""
@@ -164,6 +203,72 @@ def chequeo_apertura_dominical(ts_ns, dow=None):
     return dict(ok=True, primero=d.strftime("%H:%M"))
 
 
+def _horas_ct(ts_ns, horas=None):
+    import numpy as _np
+    if horas is not None:
+        return _np.asarray(horas)
+    return _np.array([_ct(t).hour for t in ts_ns])
+
+
+def clasificar_dia(ts_ns, horas=None):
+    """Tipo de día DERIVADO DE LOS DATOS, no del día de la semana.
+
+    Derivarlo del dato y no del calendario hace que feriados, cierres tempranos
+    y medias sesiones se clasifiquen solos, sin lista que mantener.
+    """
+    import numpy as _np
+    h = _horas_ct(ts_ns, horas)
+    antes   = bool((h < VENTANA_CERRADA[0]).any())
+    despues = bool((h >= VENTANA_CERRADA[1]).any())
+    if antes and despues:
+        return COMPLETO
+    if antes:
+        return CIERRE_SEMANAL
+    if despues:
+        return APERTURA_SEMANAL
+    return SIN_ESTRUCTURA
+
+
+def chequeo_tipo_de_dia(tipo, dow):
+    """El tipo derivado tiene que ser posible en ese día de la semana.
+
+    Es el chequeo que atrapa dos cosas que antes pasaban:
+    - un **sábado** con ticks (CME no tiene sesión los sábados: 7 casos, de 1 a
+      10 ticks, uno de ellos declarado APTO);
+    - un lun-jue al que le falta la tarde, que se veria igual que un viernes.
+    """
+    if dow == 5:
+        return dict(ok=False, code="SABADO_SIN_SESION", tipo=tipo,
+                    detalle="CME no opera los sabados; cualquier tick aca es un defecto")
+    if tipo == SIN_ESTRUCTURA:
+        return dict(ok=False, code="DIA_SIN_ESTRUCTURA", tipo=tipo,
+                    detalle="sin ticks ni antes de las 16:00 ni despues de las 17:00 CT")
+    esperado = DOW_ESPERADO.get(tipo, set())
+    if dow is not None and dow not in esperado:
+        return dict(ok=False, code="TIPO_DE_DIA_IMPOSIBLE", tipo=tipo, dow=int(dow),
+                    detalle="el tipo derivado del dato no corresponde a ese dia de la semana")
+    return dict(ok=True, tipo=tipo)
+
+
+def chequeo_cobertura_horaria(ts_ns, tipo, horas=None):
+    """Horas distintas con ticks, contra la cota MEDIDA para ese tipo de día.
+
+    Sin esto, el sabado 2025-09-13 con **10 ticks** salia APTO: con tan pocos
+    ticks cualquier hueco cubre las 16:00 y `hueco_mantenimiento` pasa. Un
+    chequeo de forma sin uno de densidad se deja enganar por un dia vacio.
+    """
+    import numpy as _np
+    h = _horas_ct(ts_ns, horas)
+    n = int(len(_np.unique(h)))
+    minimo = HORAS_MINIMAS.get(tipo)
+    if minimo is None:
+        return dict(ok=False, code="COBERTURA_NO_EVALUABLE", horas=n, tipo=tipo)
+    if n < minimo:
+        return dict(ok=False, code="COBERTURA_HORARIA_INSUFICIENTE",
+                    horas=n, minimo=minimo, tipo=tipo)
+    return dict(ok=True, horas=n, minimo=minimo, tipo=tipo)
+
+
 def chequeo_monotonia(ts_ns):
     import numpy as _np
     t = _np.asarray(ts_ns, dtype="int64")
@@ -202,6 +307,7 @@ def es_front_month(contrato, fecha):
 
 
 BATERIA = ("front_month", "monotonia", "timestamps_posibles", "precios_en_grilla",
+           "tipo_de_dia", "cobertura_horaria",
            "hueco_mantenimiento", "ventana_cerrada_vacia", "cierre_semanal",
            "apertura_dominical")
 
@@ -216,6 +322,10 @@ def evaluar_dia(contrato, fecha, ts_ns, price_ticks=None, horas=None, dow=None):
         return dict(fecha=fecha, estado="INDETERMINADO", motivos=[
             dict(chequeo="datos", ok=False, code="SIN_TICKS")])
 
+    if dow is None:
+        dow = _ct(ts_ns[0]).weekday()
+    tipo = clasificar_dia(ts_ns, horas)
+
     res = {
         "front_month": es_front_month(contrato, fecha),
         "monotonia": chequeo_monotonia(ts_ns),
@@ -223,14 +333,20 @@ def evaluar_dia(contrato, fecha, ts_ns, price_ticks=None, horas=None, dow=None):
         "precios_en_grilla": (chequeo_precios_en_grilla(price_ticks)
                               if price_ticks is not None
                               else dict(ok=True, code="NO_EVALUADO")),
-        "hueco_mantenimiento": chequeo_hueco_mantenimiento(ts_ns),
+        "tipo_de_dia": chequeo_tipo_de_dia(tipo, dow),
+        "cobertura_horaria": chequeo_cobertura_horaria(ts_ns, tipo, horas),
+        # SOLO donde la ventana de mantenimiento EXISTE. En un viernes la sesion
+        # cierra 16:00 y no reabre; en un domingo abre 17:00. Exigirles un hueco
+        # que cubra las 16:00 los rechazaba a los dos por construccion.
+        "hueco_mantenimiento": (chequeo_hueco_mantenimiento(ts_ns) if tipo == COMPLETO
+                                else dict(ok=True, code="NO_APLICA", tipo=tipo)),
         "ventana_cerrada_vacia": chequeo_ventana_cerrada_vacia(ts_ns, horas),
         "cierre_semanal": chequeo_cierre_semanal(ts_ns, fecha, dow),
         "apertura_dominical": chequeo_apertura_dominical(ts_ns, dow),
     }
     fallos = [dict(chequeo=k, **v) for k, v in res.items() if not v["ok"]]
     estado = "APTO" if not fallos else "DEFECTUOSO"
-    return dict(fecha=fecha, contrato=contrato, estado=estado,
+    return dict(fecha=fecha, contrato=contrato, estado=estado, tipo_de_dia=tipo,
                 n_ticks=len(ts_ns), motivos=fallos, detalle=res)
 
 

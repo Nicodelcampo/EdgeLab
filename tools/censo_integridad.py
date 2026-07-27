@@ -252,7 +252,8 @@ def main(argv=None):
         for d in r.get("dias", []):
             if d["estado"] == "APTO":
                 universo.append(dict(archivo=r["archivo"], contrato=d.get("contrato"),
-                                     fecha=d["fecha"], n_ticks=d["n_ticks"]))
+                                     fecha=d["fecha"], n_ticks=d["n_ticks"],
+                                     tipo_de_dia=d.get("tipo_de_dia")))
     manifiesto = dict(
         generado_utc=datetime.now(timezone.utc).isoformat(),
         config_hash=cfg_hash, config=cfg,
