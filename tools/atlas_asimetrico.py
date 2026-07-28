@@ -67,13 +67,31 @@ CFG = dict(
     # Con barreras de 10-13 ticks la fricción se come el 21-34% del objetivo.
     # Esta grilla pregunta si la escala pagable está afuera de la que se venía
     # mirando. Sigue siendo NULO DESCRIPTIVO: no gasta hipótesis.
-    horizontes_min=[120, 180, 240, 360],
-    pares_pn=[(20, 20), (27, 27), (34, 34),                 # simétricos anchos
-              (20, 27), (20, 34), (27, 34),                 # objetivo CERCA
-              (27, 20), (34, 20), (34, 27),                 # objetivo LEJOS
-              (13, 21)],                                    # puente con la grilla previa
+    # Se elige con --grilla. Las dos son CONFIGS CONGELADAS distintas y cada una
+    # produce su propio CFG_HASH: no es un parametro que se pueda mover a gusto
+    # durante una corrida, es cual de dos preguntas declaradas se contesta.
+    **(dict(
+        # ANCHA: si la escala pagable esta afuera de la grilla original. La tabla
+        # de decision mostro que el break-even depende del ANCHO TOTAL de las
+        # barreras y no de la senal -- delta = 2,704/(P+N). P+N=21 pide 12,9
+        # puntos de tasa; P+N=54 pide 5,0.
+        horizontes_min=[120, 180, 240, 360],
+        pares_pn=[(20, 20), (27, 27), (34, 34),
+                  (20, 27), (20, 34), (27, 34),
+                  (27, 20), (34, 20), (34, 27),
+                  (13, 21)],
+        sep_min_minutos=360)
+       if os.environ.get("ATLAS_GRILLA", "ancha") == "ancha" else
+       dict(
+        # PNK: la grilla de decision original, para rehacer la tabla sobre el
+        # universo reconstruido.
+        horizontes_min=[30, 60, 90, 120],
+        pares_pn=[(5, 5), (8, 8), (10, 10),
+                  (8, 10), (8, 13), (10, 13),
+                  (10, 8), (12, 10), (13, 10), (13, 8)],
+        sep_min_minutos=120)),
+    grilla=os.environ.get("ATLAS_GRILLA", "ancha"),
     anclas_por_dia=A0.CFG["anclas_por_dia"],
-    sep_min_minutos=360,                       # = horizonte maximo de esta grilla
     vol_lookback_min=A0.CFG["vol_lookback_min"],
     vol_cortes=A0.CFG["vol_cortes"],
     franjas_horarias=A0.CFG["franjas_horarias"],

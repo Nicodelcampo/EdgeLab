@@ -128,14 +128,39 @@ def censar_parquet(path, contrato_hint=None):
         "select ts_utc_ns, price_ticks, volume, contract from read_parquet('%s') "
         "order by ts_utc_ns" % path.replace("\\", "/")).df()
     ts = df.ts_utc_ns.values.astype(np.int64)
+    contratos = sorted(set(df.contract.astype(str)))
     px = df.price_ticks.values.astype(np.int64)
     vol = df.volume.values.astype(np.int64)
-    contratos = sorted(set(df.contract.astype(str)))
     del df
+
+    # Digest y volumen total AHORA, para poder soltar `px` y `vol` enseguida.
+    #
+    # Con 6E (5 M de ticks) tener ts, px, vol, key, el hash rodante y su copia
+    # ordenada a la vez daba igual. Con MNQ 03-26 (115 M) cada array int64 son
+    # 920 MB y el pico llega a ~6,4 GB sobre 16 de RAM: falla o pagina. Soltando
+    # los dos que no se vuelven a usar, baja a ~3,6 GB. Misma aritmetica que
+    # obligo a reescribir el constructor de parquets en streaming.
+    #
+    # El hash va POR TROZOS: `tobytes()` sobre 920 MB duplica el pico justo en
+    # el momento que se quiere evitar. El digest resultante es IDENTICO al de la
+    # version anterior -- mismo orden, mismos bytes.
+    h = hashlib.sha256()
+    for arr in (ts, px, vol):
+        for i in range(0, len(arr), 8_000_000):
+            h.update(arr[i:i + 8_000_000].tobytes())
+    digest = h.hexdigest()[:32]
+    volumen_total = int(vol.sum())
+    # volumen POR DIA agregado en duckdb: traerlo a memoria para despues sumarlo
+    # por dia costaria otro array de 920 MB en el pico que se quiere evitar.
+    volday = {str(r[0]): int(r[1]) for r in con.execute(
+        "select strftime(make_timestamp(cast(ts_utc_ns/1000 as bigint)) "
+        "- interval 5 hour, '%Y-%m-%d'), sum(volume) from read_parquet('"
+        + path.replace("\\", "/") + "') group by 1").fetchall()}
 
     # clave de secuencia: precio y volumen juntos, sin colisión práctica
     key = (px.astype(np.uint64) * np.uint64(100000)
            + np.minimum(vol, 99999).astype(np.uint64))
+    del px, vol
 
     _log("  %d ticks, contratos=%s" % (len(ts), contratos))
 
@@ -169,7 +194,7 @@ def censar_parquet(path, contrato_hint=None):
                                 fechas[a] % 100)
         rep = U.evaluar_dia(contrato or "?", f, ts[a:b], price_ticks=None,
                             horas=horas[a:b], dow=int(dows[a]))
-        rep["volumen"] = int(vol[a:b].sum())
+        rep["volumen"] = volday.get(f, 0)
         rep["primer_tick_ct"] = datetime.fromtimestamp(int(ts[a]) / 1e9, tz=timezone.utc)\
             .astimezone(CT).strftime("%H:%M:%S")
         rep["ultimo_tick_ct"] = datetime.fromtimestamp(int(ts[b - 1]) / 1e9, tz=timezone.utc)\
@@ -207,11 +232,9 @@ def censar_parquet(path, contrato_hint=None):
     tk = np.sort(trio_key)
     n_dup_exactos = int(np.count_nonzero(tk[1:] == tk[:-1]))
 
-    h = hashlib.sha256()
-    h.update(ts.tobytes()); h.update(px.tobytes()); h.update(vol.tobytes())
     return dict(
         archivo=os.path.basename(path), contratos=contratos, n_ticks=int(len(ts)),
-        volumen=int(vol.sum()), digest=h.hexdigest()[:32],
+        volumen=volumen_total, digest=digest,
         rango=[str(dias[0]), str(dias[-1])] if dias else [],
         n_dias=len(out),
         n_aptos=sum(1 for d in out if d["estado"] == "APTO"),
