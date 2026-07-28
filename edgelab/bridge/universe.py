@@ -88,7 +88,54 @@ FRONT_MONTH = {
                      # vs 35129, con margen creciente todos los dias. Es un roll
                      # real que ocurrio en la apertura dominical, no un artefacto.
                      evidencia="2026-06-14: 31916 vs 20821; sostenido 06-15 a 06-19"),
-    # ES 09-25 y NQ 09-25 NO se declaran: sin contrato anterior en los datos.
+    # ── MES (micro del ES) ───────────────────────────────────────────────────
+    # Los micros NO heredan la fecha del grande: MES y NQ 09-26 rollan el 14-jun
+    # y ES el 15-jun. Un dia de diferencia, pero medido. Por eso cada contrato
+    # tiene su propia medicion y ninguna se estipula por analogia.
+    "MES 12-25": dict(desde="2025-09-14", criterio="volumen(12-25) > volumen(09-25)",
+                      # cruce en un dia MUY fino (20734 vs 18316). Verificado que
+                      # se sostiene: 09-15 530577 vs 242613 ... 09-18 1133708 vs
+                      # 116596, con margen creciente.
+                      evidencia="2025-09-14: 20734 vs 18316; sostenido hasta 09-19"),
+    "MES 03-26": dict(desde="2025-12-15", criterio="volumen(03-26) > volumen(12-25)",
+                      evidencia="2025-12-15: 997678 vs 518764"),
+    "MES 06-26": dict(desde="2026-03-16", criterio="volumen(06-26) > volumen(03-26)",
+                      evidencia="2026-03-16: 1122174 vs 836207"),
+    "MES 09-26": dict(desde="2026-06-14", criterio="volumen(09-26) > volumen(06-26)",
+                      evidencia="2026-06-14: 108370 vs 71644"),
+
+    # ── GC (oro) ─────────────────────────────────────────────────────────────
+    # Convencion distinta de los indices: el oro rolla ~2 MESES antes del
+    # vencimiento (el Feb-26 toma el liderazgo el 25-nov). Los meses activos son
+    # feb, abr, jun, ago y dic; octubre es menor y la cadena lo saltea.
+    "GC 02-26": dict(desde="2025-11-25", criterio="volumen(02-26) > volumen(12-25)",
+                     evidencia="2025-11-25: 146945 vs 45243"),
+    "GC 04-26": dict(desde="2026-01-28", criterio="volumen(04-26) > volumen(02-26)",
+                     evidencia="2026-01-28: 401758 vs 37813"),
+    "GC 06-26": dict(desde="2026-03-27", criterio="volumen(06-26) > volumen(04-26)",
+                     evidencia="2026-03-27: 129285 vs 16094"),
+    "GC 08-26": dict(desde="2026-05-27", criterio="volumen(08-26) > volumen(06-26)",
+                     evidencia="2026-05-27: 158458 vs 23161"),
+
+    # ── MNQ (micro del NQ) — INCOMPLETO por falta de datos en NT8 ────────────
+    "MNQ 12-25": dict(desde="2025-09-15", criterio="volumen(12-25) > volumen(09-25)",
+                      # margen del 2% en el cruce; verificado que se sostiene:
+                      # 09-16 763175 vs 215002 ... 09-19 1028708 vs 9533.
+                      evidencia="2025-09-15: 493068 vs 485476; sostenido hasta 09-19"),
+    "MNQ 03-26": dict(desde="2025-12-15", criterio="volumen(03-26) > volumen(12-25)",
+                      evidencia="2025-12-15: 971821 vs 894660; sostenido hasta 12-19"),
+    # MNQ 06-26 y MNQ 09-26 NO se declaran, y NO es una omision:
+    # NT8 no tiene los dias donde cae el cruce. Reexportados el 2026-07-28 dieron
+    # EXACTAMENTE el mismo rango -- 06-26 arranca 2026-04-06 (NQ arranca 03-12) y
+    # 09-26 arranca 2026-06-25 (NQ arranca 06-08). Faltan 25 y 17 dias al inicio,
+    # justo donde ocurre el roll.
+    #
+    # Se podria inferir la fecha de NQ, que es el mismo subyacente. NO se hace:
+    # los micros rollan distinto que los grandes (NQ 09-26 el 14-jun, ES el 15) y
+    # copiar la fecha seria estipular. Fail-closed: sin medicion, no entra.
+
+    # ES 09-25, NQ 09-25, MES 09-25, MNQ 09-25 y GC 12-25 NO se declaran:
+    # sin contrato anterior en los datos contra el cual medir el cruce.
 }
 
 # Cierres tempranos declarados (CME): el viernes cierra 15:00 CT en vez de 16:00.
