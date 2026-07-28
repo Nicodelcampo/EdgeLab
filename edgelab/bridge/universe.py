@@ -57,6 +57,38 @@ FRONT_MONTH = {
                      evidencia="2026-06-12: 139367 vs 19280"),
     # 6E 09-25 NO se declara: no hay contrato anterior en los datos contra el cual
     # medir el cruce. Fail-closed: sin medicion, no entra al universo.
+
+    # ── ES y NQ (medidos 2026-07-27 sobre los parquets canonicos nuevos) ──────
+    #
+    # Mismo criterio, misma evidencia: primer dia en que el volumen del contrato
+    # nuevo supera al del anterior. NO se estipula ninguna fecha.
+    #
+    # Hallazgo: **ES y NQ rollan los LUNES; 6E rolla los VIERNES.** Es una
+    # diferencia real de convencion entre productos, no un error de medicion --
+    # por eso el criterio se mide por instrumento y no se hereda.
+    "ES 12-25": dict(desde="2025-09-15", criterio="volumen(12-25) > volumen(09-25)",
+                     evidencia="2025-09-15: 709355 vs 430032"),
+    "ES 03-26": dict(desde="2025-12-15", criterio="volumen(03-26) > volumen(12-25)",
+                     evidencia="2025-12-15: 1013952 vs 591339"),
+    "ES 06-26": dict(desde="2026-03-16", criterio="volumen(06-26) > volumen(03-26)",
+                     evidencia="2026-03-16: 1037563 vs 733991"),
+    "ES 09-26": dict(desde="2026-06-15", criterio="volumen(09-26) > volumen(06-26)",
+                     evidencia="2026-06-15: 917332 vs 543911"),
+
+    "NQ 12-25": dict(desde="2025-09-15", criterio="volumen(12-25) > volumen(09-25)",
+                     evidencia="2025-09-15: 223514 vs 214326 (margen 4%, el mas fino)"),
+    "NQ 03-26": dict(desde="2025-12-15", criterio="volumen(03-26) > volumen(12-25)",
+                     evidencia="2025-12-15: 324064 vs 233961"),
+    "NQ 06-26": dict(desde="2026-03-16", criterio="volumen(06-26) > volumen(03-26)",
+                     evidencia="2026-03-16: 283359 vs 226772"),
+    "NQ 09-26": dict(desde="2026-06-14", criterio="volumen(09-26) > volumen(06-26)",
+                     # El cruce cae un DOMINGO y con volumen fino (31916 vs 20821),
+                     # donde un cruce podria ser casual. Se verifico que se SOSTIENE:
+                     # 06-15 341582 vs 133431, 06-16 479498 vs 71278, 06-17 647825
+                     # vs 35129, con margen creciente todos los dias. Es un roll
+                     # real que ocurrio en la apertura dominical, no un artefacto.
+                     evidencia="2026-06-14: 31916 vs 20821; sostenido 06-15 a 06-19"),
+    # ES 09-25 y NQ 09-25 NO se declaran: sin contrato anterior en los datos.
 }
 
 # Cierres tempranos declarados (CME): el viernes cierra 15:00 CT en vez de 16:00.
