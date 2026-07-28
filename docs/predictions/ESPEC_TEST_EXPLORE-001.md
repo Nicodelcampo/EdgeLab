@@ -135,15 +135,35 @@ un pool de anclas placebo (`n_pool_null(d) ≈ 120`). La MCPT no usa el pool com
 como muestra: para cada día sortea `k_d = n_eventos(d)` anclas de ese pool y las
 trata como la realización nula del día. Por lo tanto:
 
-  - `n_pool_null(d)` ≈ 120 son las anclas placebo disponibles;
+  - `n_pool_null(d)` ≈ 120 son las anclas placebo disponibles; **nunca entra
+    directamente al estimador diario**;
   - `k_d = n_eventos(d)` es la cantidad de eventos reales del día;
   - `n_null_selected(d) = k_d` en cada realización MCPT.
 
-El estimador diario (`edgelab.stats.estimando_diario`) recibe una **única** muestra
-de eventos por ejecución —la observada real o una realización concreta de la MCPT—
-con conteos `n_eventos(d)` y sumas `sum_objetivo(d)`. Nunca recibe el pool completo
-junto con los eventos reales; la construcción de la distribución nula vive fuera
-de ese módulo.
+En la **muestra real**, `n_eventos(d)` es la cantidad de eventos reales del día.
+En una **realización MCPT**, `n_eventos(d) = k_d = n_null_selected(d)` es la
+cantidad de controles sorteados ese día. El estimador diario usa la **misma
+interfaz** en ambas muestras y no necesita conocer su procedencia.
+
+`sum_objetivo(d)` es un **conteo entero** de eventos cuyo outcome fue OBJETIVO.
+No se admiten outcomes ponderados, probabilidades ni fracciones: el Diseño B
+estima una proporción de outcomes binarios.
+
+La construcción de la MCPT impone **simetría de conteos**: `k_d` debe ser igual
+a `n_eventos_real(d)`. Esa igualdad es una restricción del diseño, no una
+propiedad accidental de los datos. Si un día no tiene controles válidos
+suficientes para satisfacerla, la realización **falla explícitamente**; no se
+reduce `k_d` en silencio.
+
+El estimador diario (`edgelab.stats.estimando_diario`) recibe una **única**
+muestra de eventos por ejecución —la observada real o una realización concreta
+de la MCPT— con conteos `n_eventos(d)` y `sum_objetivo(d)`. Nunca recibe el pool
+completo junto con los eventos reales; la construcción de la distribución nula
+vive fuera de ese módulo.
+
+Las fechas `d` son **fechas de sesión en `America/Chicago`**. El universo se
+arma a partir de `cargar_dias_de_estudio`, que es la puerta única para decidir
+qué días son elegibles (mantenimiento, feriados, domingos, etc.).
 
 **Costo declarado**: no detecta efectos puramente *entre* días. La hipótesis es
 que el toque marca un **momento**, no un día.

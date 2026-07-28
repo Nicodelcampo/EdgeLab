@@ -22,7 +22,7 @@ from edgelab.stats.estimando_diario import (EstimandoDiarioError,
                                             serie_uv, theta_de_uv)
 
 
-def dia(fecha, n_eventos=0, sum_objetivo=0.0, tipo_de_dia="COMPLETO"):
+def dia(fecha, n_eventos=0, sum_objetivo=0, tipo_de_dia="COMPLETO"):
     """Un día ya agregado. Por defecto sin eventos (día cero)."""
     return dict(fecha=fecha, tipo_de_dia=tipo_de_dia,
                 n_eventos=n_eventos, sum_objetivo=sum_objetivo)
@@ -37,15 +37,15 @@ def test_igual_peso_por_dia_no_pooling_por_evento():
     que es una propiedad del feature y no del efecto.
     """
     reg = construir_registro([
-        dia("2026-01-05", n_eventos=1, sum_objetivo=1.0),   # p = 1,0
-        dia("2026-01-06", n_eventos=9, sum_objetivo=0.0),   # p = 0,0
+        dia("2026-01-05", n_eventos=1, sum_objetivo=1),   # p = 1,0
+        dia("2026-01-06", n_eventos=9, sum_objetivo=0),   # p = 0,0
     ])
     r = estimar(reg)
     assert r["theta"] == pytest.approx(0.5)
     assert r["theta"] != pytest.approx(0.1)
 
     # el pooling por evento, explícito, para dejar ver la diferencia
-    pooled = (1.0 + 0.0) / (1 + 9)
+    pooled = (1 + 0) / (1 + 9)
     assert pooled == pytest.approx(0.1)
 
 
@@ -53,9 +53,9 @@ def test_igual_peso_por_dia_no_pooling_por_evento():
 def test_dia_cero_queda_en_la_cronologia_y_no_diluye():
     """El día sin eventos mantiene su lugar en la secuencia pero no opina."""
     reg = construir_registro([
-        dia("2026-01-05", n_eventos=1, sum_objetivo=1.0),   # p = 1,0
-        dia("2026-01-06"),                                   # sin eventos
-        dia("2026-01-07", n_eventos=1, sum_objetivo=0.0),   # p = 0,0
+        dia("2026-01-05", n_eventos=1, sum_objetivo=1),   # p = 1,0
+        dia("2026-01-06"),                                 # sin eventos
+        dia("2026-01-07", n_eventos=1, sum_objetivo=0),   # p = 0,0
     ])
     assert len(reg) == 3
     assert [r.activo for r in reg] == [1, 0, 1]
@@ -73,15 +73,15 @@ def test_dia_cero_queda_en_la_cronologia_y_no_diluye():
 def test_dias_inactivos_no_cambian_p_global():
     """Agregar días sin eventos no altera theta, pero sí la longitud de la serie."""
     base = construir_registro([
-        dia("2026-01-05", n_eventos=1, sum_objetivo=1.0),
-        dia("2026-01-07", n_eventos=1, sum_objetivo=0.0),
+        dia("2026-01-05", n_eventos=1, sum_objetivo=1),
+        dia("2026-01-07", n_eventos=1, sum_objetivo=0),
     ])
     con_ceros = construir_registro([
-        dia("2026-01-05", n_eventos=1, sum_objetivo=1.0),
+        dia("2026-01-05", n_eventos=1, sum_objetivo=1),
         dia("2026-01-06"),
         dia("2026-01-07"),
         dia("2026-01-08"),
-        dia("2026-01-09", n_eventos=1, sum_objetivo=0.0),
+        dia("2026-01-09", n_eventos=1, sum_objetivo=0),
     ])
     assert estimar(base)["theta"] == pytest.approx(0.5)
     assert estimar(con_ceros)["theta"] == pytest.approx(0.5)
@@ -98,8 +98,8 @@ def test_el_calendario_canonico_materializa_los_dias_sin_eventos():
                   dict(fecha="2026-01-06", tipo_de_dia="COMPLETO"),
                   dict(fecha="2026-01-09", tipo_de_dia="CIERRE_SEMANAL")]
     reg = construir_registro(
-        [dia("2026-01-05", n_eventos=1, sum_objetivo=1.0),
-         dia("2026-01-09", n_eventos=3, sum_objetivo=3.0)],
+        [dia("2026-01-05", n_eventos=1, sum_objetivo=1),
+         dia("2026-01-09", n_eventos=3, sum_objetivo=3)],
         calendario=calendario)
     assert [r.fecha for r in reg] == ["2026-01-05", "2026-01-06", "2026-01-09"]
     assert [r.activo for r in reg] == [1, 0, 1]
@@ -109,8 +109,8 @@ def test_el_calendario_canonico_materializa_los_dias_sin_eventos():
 
 def test_sin_calendario_no_se_rellena_nada():
     """Sin la función canónica de calendario no se inventan días ausentes."""
-    reg = construir_registro([dia("2026-01-05", n_eventos=1, sum_objetivo=1.0),
-                              dia("2026-01-09", n_eventos=1, sum_objetivo=1.0)])
+    reg = construir_registro([dia("2026-01-05", n_eventos=1, sum_objetivo=1),
+                              dia("2026-01-09", n_eventos=1, sum_objetivo=1)])
     assert [r.fecha for r in reg] == ["2026-01-05", "2026-01-09"]
 
 
@@ -118,7 +118,7 @@ def test_dia_con_eventos_fuera_del_calendario_falla_ruidoso():
     """Un día con eventos que el calendario no autoriza no se usa."""
     with pytest.raises(EstimandoDiarioError, match="fuera del calendario"):
         construir_registro(
-            [dia("2026-01-04", n_eventos=1, sum_objetivo=1.0)],
+            [dia("2026-01-04", n_eventos=1, sum_objetivo=1)],
             calendario=[dict(fecha="2026-01-05", tipo_de_dia="COMPLETO")])
 
 
@@ -134,7 +134,7 @@ def test_sin_ningun_dia_activo_falla_explicito():
 # ------------------------------------------------ 4 · bloque sin días activos
 def test_bloque_remuestreado_sin_dias_activos_falla_explicito():
     """Ni 0, ni NaN, ni inf: un 0/0 que sigue viajando es un intervalo inventado."""
-    reg = construir_registro([dia("2026-01-05", n_eventos=1, sum_objetivo=1.0),
+    reg = construir_registro([dia("2026-01-05", n_eventos=1, sum_objetivo=1),
                               dia("2026-01-06"),
                               dia("2026-01-07")])
     u, v = serie_uv(reg)
@@ -149,36 +149,112 @@ def test_bloque_remuestreado_sin_dias_activos_falla_explicito():
 
 
 # ----------------------------------------------------------- 5 · validaciones
-def test_sum_objetivo_mayor_que_n_eventos_falla():
-    with pytest.raises(EstimandoDiarioError, match="excede n_eventos"):
-        construir_registro([dia("2026-01-05", n_eventos=3, sum_objetivo=4.0)])
+def test_conteos_enteros_ordinarios_funcionan():
+    """Los conteos de Python int pasan y producen el estimando correcto."""
+    reg = construir_registro([
+        dia("2026-01-05", n_eventos=2, sum_objetivo=1),
+        dia("2026-01-06", n_eventos=4, sum_objetivo=2),
+    ])
+    assert estimar(reg)["theta"] == pytest.approx(0.5)
 
 
-def test_sum_objetivo_negativo_falla():
-    with pytest.raises(EstimandoDiarioError, match="negativo"):
-        construir_registro([dia("2026-01-05", n_eventos=3, sum_objetivo=-1.0)])
+def test_conteos_numpy_int64_funcionan():
+    """Tipos enteros de NumPy son aceptados si representan enteros exactos."""
+    reg = construir_registro([
+        dia("2026-01-05", n_eventos=np.int64(2), sum_objetivo=np.int64(1)),
+        dia("2026-01-06", n_eventos=np.int64(4), sum_objetivo=np.int64(2)),
+    ])
+    assert estimar(reg)["theta"] == pytest.approx(0.5)
 
 
-def test_dia_sin_eventos_con_sum_objetivo_falla():
-    with pytest.raises(EstimandoDiarioError, match="n_eventos == 0"):
-        construir_registro([dia("2026-01-05", n_eventos=0, sum_objetivo=3.0)])
+def test_sum_objetivo_fraccionario_falla():
+    with pytest.raises(EstimandoDiarioError, match="debe ser entero"):
+        construir_registro([dia("2026-01-05", n_eventos=3, sum_objetivo=1.5)])
+
+
+def test_sum_objetivo_fraccionario_menor_que_uno_falla():
+    with pytest.raises(EstimandoDiarioError, match="debe ser entero"):
+        construir_registro([dia("2026-01-05", n_eventos=1, sum_objetivo=0.5)])
+
+
+def test_n_eventos_fraccionario_falla():
+    with pytest.raises(EstimandoDiarioError, match="debe ser entero"):
+        construir_registro([dia("2026-01-05", n_eventos=2.5, sum_objetivo=1)])
+
+
+def test_n_eventos_bool_true_falla():
+    with pytest.raises(EstimandoDiarioError, match="no acepta bool"):
+        construir_registro([dia("2026-01-05", n_eventos=True, sum_objetivo=1)])
+
+
+def test_n_eventos_bool_false_falla():
+    with pytest.raises(EstimandoDiarioError, match="no acepta bool"):
+        construir_registro([dia("2026-01-05", n_eventos=False, sum_objetivo=0)])
+
+
+def test_sum_objetivo_bool_true_falla():
+    with pytest.raises(EstimandoDiarioError, match="no acepta bool"):
+        construir_registro([dia("2026-01-05", n_eventos=1, sum_objetivo=True)])
+
+
+def test_sum_objetivo_bool_false_falla():
+    with pytest.raises(EstimandoDiarioError, match="no acepta bool"):
+        construir_registro([dia("2026-01-05", n_eventos=0, sum_objetivo=False)])
+
+
+def test_n_eventos_nan_falla():
+    with pytest.raises(EstimandoDiarioError, match="no es finito"):
+        construir_registro([dia("2026-01-05", n_eventos=float("nan"), sum_objetivo=0)])
+
+
+def test_sum_objetivo_nan_falla():
+    with pytest.raises(EstimandoDiarioError, match="no es finito"):
+        construir_registro([dia("2026-01-05", n_eventos=1, sum_objetivo=float("nan"))])
+
+
+def test_sum_objetivo_inf_falla():
+    with pytest.raises(EstimandoDiarioError, match="no es finito"):
+        construir_registro([dia("2026-01-05", n_eventos=1, sum_objetivo=float("inf"))])
 
 
 def test_n_eventos_negativo_falla():
-    with pytest.raises(EstimandoDiarioError, match="entero >= 0"):
-        construir_registro([dia("2026-01-05", n_eventos=-1, sum_objetivo=0.0)])
+    with pytest.raises(EstimandoDiarioError, match="debe ser >= 0"):
+        construir_registro([dia("2026-01-05", n_eventos=-1, sum_objetivo=0)])
+
+
+def test_sum_objetivo_negativo_falla():
+    with pytest.raises(EstimandoDiarioError, match="debe ser >= 0"):
+        construir_registro([dia("2026-01-05", n_eventos=3, sum_objetivo=-1)])
+
+
+def test_sum_objetivo_mayor_que_n_eventos_falla():
+    with pytest.raises(EstimandoDiarioError, match="excede n_eventos"):
+        construir_registro([dia("2026-01-05", n_eventos=3, sum_objetivo=4)])
+
+
+def test_dia_sin_eventos_con_sum_objetivo_falla():
+    with pytest.raises(EstimandoDiarioError, match="excede n_eventos"):
+        construir_registro([dia("2026-01-05", n_eventos=0, sum_objetivo=1)])
+
+
+def test_dia_sin_eventos_con_sum_objetivo_cero_funciona():
+    """Un día inactivo con sum_objetivo=0 es el día cero válido."""
+    reg = construir_registro([dia("2026-01-05", n_eventos=0, sum_objetivo=0)])
+    assert reg[0].activo == 0
+    assert reg[0].u == 0.0
+    assert reg[0].v == 0.0
 
 
 # ------------------------------------------------------------ 6 · recomputación
 def _registro_de_seis_dias():
     """activo(1,0) · cero · cero · activo(0,0) · cero · activo(1,0)."""
     return construir_registro([
-        dia("2026-01-05", n_eventos=1, sum_objetivo=1.0),   # p = 1,0
+        dia("2026-01-05", n_eventos=1, sum_objetivo=1),   # p = 1,0
         dia("2026-01-06"),
         dia("2026-01-07"),
-        dia("2026-01-08", n_eventos=2, sum_objetivo=0.0),   # p = 0,0
+        dia("2026-01-08", n_eventos=2, sum_objetivo=0),   # p = 0,0
         dia("2026-01-09"),
-        dia("2026-01-12", n_eventos=4, sum_objetivo=4.0),   # p = 1,0
+        dia("2026-01-12", n_eventos=4, sum_objetivo=4),   # p = 1,0
     ])
 
 
@@ -249,20 +325,20 @@ def test_dia_inactivo_con_efecto_es_incoherente():
 # -------------------------------------------------------------- 7 · orden temporal
 def test_fechas_duplicadas_fallan():
     with pytest.raises(EstimandoDiarioError, match="duplicadas o fuera de orden"):
-        construir_registro([dia("2026-01-05", n_eventos=1, sum_objetivo=1.0),
-                            dia("2026-01-05", n_eventos=1, sum_objetivo=1.0)])
+        construir_registro([dia("2026-01-05", n_eventos=1, sum_objetivo=1),
+                            dia("2026-01-05", n_eventos=1, sum_objetivo=1)])
 
 
 def test_fechas_fuera_de_orden_fallan():
     with pytest.raises(EstimandoDiarioError, match="duplicadas o fuera de orden"):
-        construir_registro([dia("2026-01-06", n_eventos=1, sum_objetivo=1.0),
-                            dia("2026-01-05", n_eventos=1, sum_objetivo=1.0)])
+        construir_registro([dia("2026-01-06", n_eventos=1, sum_objetivo=1),
+                            dia("2026-01-05", n_eventos=1, sum_objetivo=1)])
 
 
 def test_calendario_fuera_de_orden_falla():
     with pytest.raises(EstimandoDiarioError, match="duplicadas o fuera de orden"):
         construir_registro(
-            [dia("2026-01-05", n_eventos=1, sum_objetivo=1.0)],
+            [dia("2026-01-05", n_eventos=1, sum_objetivo=1)],
             calendario=[dict(fecha="2026-01-06", tipo_de_dia="COMPLETO"),
                         dict(fecha="2026-01-05", tipo_de_dia="COMPLETO")])
 
@@ -275,12 +351,12 @@ def test_real_y_mcpt_comparten_la_misma_interfaz():
     muestra de eventos con `n_eventos` y `sum_objetivo`.
     """
     observada = construir_registro([
-        dia("2026-01-05", n_eventos=3, sum_objetivo=2.0),
-        dia("2026-01-06", n_eventos=1, sum_objetivo=1.0),
+        dia("2026-01-05", n_eventos=3, sum_objetivo=2),
+        dia("2026-01-06", n_eventos=1, sum_objetivo=1),
     ])
     realizacion_mcpt = construir_registro([
-        dia("2026-01-05", n_eventos=3, sum_objetivo=1.0),
-        dia("2026-01-06", n_eventos=1, sum_objetivo=0.0),
+        dia("2026-01-05", n_eventos=3, sum_objetivo=1),
+        dia("2026-01-06", n_eventos=1, sum_objetivo=0),
     ])
 
     # día 1: 2/3; día 2: 1/1 -> mean = (2/3 + 1) / 2 = 5/6
@@ -300,6 +376,6 @@ def test_los_conteos_acompanan_al_estimador():
     assert r["n_dias_calendario"] == 6
     assert r["n_dias_activos"] == 3
     assert r["n_eventos"] == 7
-    assert r["sum_objetivo"] == 5.0
+    assert r["sum_objetivo"] == 5
     assert r["fecha_min"] == "2026-01-05" and r["fecha_max"] == "2026-01-12"
     assert r["theta"] == pytest.approx(2.0 / 3.0)

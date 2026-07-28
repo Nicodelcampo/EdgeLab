@@ -16,15 +16,18 @@ Representado sobre el calendario COMPLETO como un ratio de sumas:
 
 ## Dominio del outcome
 
-`p_dia(d)` es una **proporción**. Por lo tanto:
+`p_dia(d)` es una **proporción**, pero tanto el numerador como el denominador
+son **conteos enteros**:
 
   - `n_eventos` es entero >= 0;
-  - `sum_objetivo` es finito y 0 <= sum_objetivo <= n_eventos;
+  - `sum_objetivo` es entero >= 0 y <= `n_eventos`;
+  - `sum_objetivo` es la cantidad de eventos cuyo outcome fue OBJETIVO, no una
+    suma ponderada ni un outcome fraccional;
   - si `n_eventos == 0` entonces `sum_objetivo == 0`.
 
-Si algún día requiriera un outcome continuo (ticks, MFE, etc.) el estimando sería
-distinto: este módulo NO lo soporta y debe fallar ruidoso si se le pasa algo que
-no es un conteo de objetivos.
+Si algún día requiriera un outcome continuo (ticks, MFE, probabilidades, etc.)
+el estimando sería distinto: este módulo NO lo soporta y debe fallar ruidoso si
+se le pasa algo que no es un conteo entero de objetivos.
 
 ## Una sola muestra por ejecución
 
@@ -112,12 +115,17 @@ class RegistroDiario:
     `CIERRE_SEMANAL`, …), tal como lo trae el manifiesto del censo a través de
     `cargar_dias_de_estudio`. Puede ser `None` para callers sin calendario
     canónico, aunque en producción siempre debe venir poblado.
+
+    `n_eventos` y `sum_objetivo` son conteos enteros: `sum_objetivo` es la
+    cantidad de eventos cuyo outcome fue OBJETIVO, no una suma ponderada ni un
+    outcome fraccional. `p_dia(d)` es float porque la división de dos enteros en
+    Python devuelve float, pero ambos campos de entrada son enteros.
     """
 
     fecha: str
     tipo_de_dia: str | None
     n_eventos: int
-    sum_objetivo: float
+    sum_objetivo: int
 
     @property
     def activo(self) -> int:
@@ -142,30 +150,50 @@ class RegistroDiario:
         return self.sum_objetivo / self.n_eventos
 
 
-def _cuenta(valor, campo, fecha):
-    n = int(valor)
-    if n != valor or n < 0:
+def _entero(valor, campo, fecha):
+    """Conteo entero no negativo, con validación ordenada:
+
+      1. rechazar bool;
+      2. rechazar NaN / +inf / -inf;
+      3. rechazar no entero;
+      4. rechazar negativo.
+    """
+    if isinstance(valor, bool):
         raise EstimandoDiarioError(
-            "%s: `%s` debe ser entero >= 0, vino %r" % (fecha, campo, valor))
+            "%s: `%s` no acepta bool, vino %r" % (fecha, campo, valor))
+    s = float(valor)
+    if not np.isfinite(s):
+        raise EstimandoDiarioError(
+            "%s: `%s` no es finito, vino %r" % (fecha, campo, valor))
+    n = int(s)
+    if n != s:
+        raise EstimandoDiarioError(
+            "%s: `%s` debe ser entero, vino %r" % (fecha, campo, valor))
+    if n < 0:
+        raise EstimandoDiarioError(
+            "%s: `%s` debe ser >= 0, vino %r" % (fecha, campo, valor))
     return n
 
 
 def _suma_objetivo(valor, campo, fecha, n_eventos):
-    s = float(valor)
-    if not np.isfinite(s):
-        raise EstimandoDiarioError(
-            "%s: `%s` no es finito (%r)" % (fecha, campo, valor))
-    if s < 0:
-        raise EstimandoDiarioError(
-            "%s: `%s` no puede ser negativo (%r)" % (fecha, campo, valor))
-    if n_eventos == 0 and s != 0.0:
-        raise EstimandoDiarioError(
-            "%s: `%s` debe ser 0 cuando n_eventos == 0, vino %r"
-            % (fecha, campo, valor))
+    """Conteo entero de outcomes OBJETIVO, con validación ordenada:
+
+      1. rechazar bool;
+      2. rechazar NaN / +inf / -inf;
+      3. rechazar no entero;
+      4. rechazar negativo;
+      5. rechazar sum_objetivo > n_eventos;
+      6. si n_eventos == 0, exigir sum_objetivo == 0.
+    """
+    s = _entero(valor, campo, fecha)
     if s > n_eventos:
         raise EstimandoDiarioError(
-            "%s: `%s` = %r excede n_eventos = %d"
-            % (fecha, campo, valor, n_eventos))
+            "%s: `%s` = %d excede n_eventos = %d"
+            % (fecha, campo, s, n_eventos))
+    if n_eventos == 0 and s != 0:
+        raise EstimandoDiarioError(
+            "%s: `%s` debe ser 0 cuando n_eventos == 0, vino %d"
+            % (fecha, campo, s))
     return s
 
 
@@ -212,7 +240,7 @@ def construir_registro(dias, *, calendario=None):
     crudos = {}
     for d in dias:
         f = d["fecha"]
-        n_eventos = _cuenta(d["n_eventos"], "n_eventos", f)
+        n_eventos = _entero(d["n_eventos"], "n_eventos", f)
         sum_objetivo = _suma_objetivo(d["sum_objetivo"], "sum_objetivo", f,
                                       n_eventos)
         crudos[f] = (d.get("tipo_de_dia"), n_eventos, sum_objetivo)
@@ -241,7 +269,7 @@ def construir_registro(dias, *, calendario=None):
         else:
             # Día CERO explícito, autorizado por el calendario canónico. No es
             # una imputación: es un día elegible en el que el feature no disparó.
-            out.append(RegistroDiario(f, tipo, 0, 0.0))
+            out.append(RegistroDiario(f, tipo, 0, 0))
     return out
 
 
@@ -312,7 +340,7 @@ def estimar(registros):
         theta=theta_de_uv(u, v),
         n_dias_calendario=len(registros),
         n_dias_activos=int(v.sum()),
-        n_eventos=int(sum(r.n_eventos for r in registros)),
-        sum_objetivo=float(sum(r.sum_objetivo for r in registros)),
+        n_eventos=sum(r.n_eventos for r in registros),
+        sum_objetivo=sum(r.sum_objetivo for r in registros),
         fecha_min=registros[0].fecha,
         fecha_max=registros[-1].fecha)
