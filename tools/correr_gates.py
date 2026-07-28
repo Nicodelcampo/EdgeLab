@@ -77,12 +77,21 @@ def dias_aptos(archivo="6E_09-26_ticks.parquet"):
     Filtrar por archivo no es un detalle: el manifiesto tiene 164 días de cuatro
     contratos, y contarlos todos haría creer que hay warmup limpio de sobra
     cuando el contrato bajo prueba tiene 8 sesiones.
+
+    A diferencia de los estudios, la paridad **sí** es un uso permitido sobre el
+    holdout (§G4: `target_free_validation` — compara geometría contra el oráculo
+    NT8, no mira P&L). Por eso pasa por la puerta con `incluir_holdout=True` y
+    propósito declarado: la apertura queda registrada **sola** en
+    `docs/holdout_access_log.md`, que era la deuda anotada en su nota 2.
     """
+    from edgelab.research.universo_estudio import cargar_dias_de_estudio
     p = os.path.join(REPO, "runs", "censo", "manifiesto_universo.json")
     if not os.path.exists(p):
         return set()
-    return {d["fecha"] for d in json.load(open(p, encoding="utf-8"))["dias"]
-            if d["archivo"] == archivo}
+    dias, _ = cargar_dias_de_estudio(
+        p, incluir_holdout=True, purpose="target_free_validation",
+        caller="correr_gates:%s" % archivo)
+    return {d["fecha"] for d in dias if d["archivo"] == archivo}
 
 
 def sesiones_limpias_antes(aptos, hasta="2026-07-13"):

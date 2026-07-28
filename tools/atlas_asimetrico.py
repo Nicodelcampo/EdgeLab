@@ -49,11 +49,19 @@ import atlas_excursiones_nulas as A0   # noqa: E402  (anclas y utilidades)
 # ---------------------------------------------------------------------------
 CFG = dict(
     seed=A0.CFG["seed"],                       # MISMAS anclas que el atlas base
-    horizontes_min=[10, 15, 20, 30, 45, 60, 90],
-    # (objetivo, stop) en TICKS — los pares que pidió Nico, sin agregar ninguno
-    pares_pn=[(13, 8), (12, 8), (13, 10), (12, 10), (10, 8), (15, 10)],
+    # GRILLA DE DECISION P/N/K (2026-07-27, tras retirar la propuesta 13/8).
+    #
+    # Se agregan simetricos suaves y, sobre todo, la asimetria INVERSA
+    # (objetivo cerca / stop lejos): el test de razon de varianzas dio VR<1 en
+    # los 7 horizontes -- reversion -- y bajo reversion esa es la geometria
+    # favorecida. La grilla anterior tenia P>N en los seis pares, sin excepcion:
+    # exploraba solo el lado que el proceso desfavorece.
+    horizontes_min=[30, 60, 90, 120],
+    pares_pn=[(5, 5), (8, 8), (10, 10),                     # simetricos suaves
+              (8, 10), (8, 13), (10, 13),                   # objetivo CERCA
+              (10, 8), (12, 10), (13, 10), (13, 8)],        # objetivo LEJOS
     anclas_por_dia=A0.CFG["anclas_por_dia"],
-    sep_min_minutos=90,                        # = horizonte maximo de esta grilla
+    sep_min_minutos=120,                       # = horizonte maximo de esta grilla
     vol_lookback_min=A0.CFG["vol_lookback_min"],
     vol_cortes=A0.CFG["vol_cortes"],
     franjas_horarias=A0.CFG["franjas_horarias"],
@@ -280,23 +288,17 @@ def main(argv=None):
         os.environ[v] = "1"
 
     import collections as _c
-    man = json.load(open(a.manifiesto, encoding="utf-8"))
-    dias = [d for d in man["dias"]
-            if (a.solo_archivo is None or d["archivo"] == a.solo_archivo)]
-
-    en_hold = [d for d in dias if d["fecha"] >= CFG["holdout_desde"]]
-    if en_hold:
-        log("  FIREWALL: se descartan %d dias del holdout (>= %s)"
-            % (len(en_hold), CFG["holdout_desde"]), LOG)
-    dias = [d for d in dias if d["fecha"] < CFG["holdout_desde"]]
-
-    if any(not d.get("tipo_de_dia") for d in dias):
-        raise SystemExit("manifiesto sin `tipo_de_dia`: regenerar el censo primero")
-    fuera = [d for d in dias if d["tipo_de_dia"] not in CFG["tipos_de_dia"]]
-    if fuera:
-        log("  ALCANCE: se descartan %d dias -> %s"
-            % (len(fuera), dict(_c.Counter(d["tipo_de_dia"] for d in fuera))), LOG)
-    dias = [d for d in dias if d["tipo_de_dia"] in CFG["tipos_de_dia"]]
+    # PUERTA UNICA — ver edgelab/research/universo_estudio.py y el incidente
+    # del 2026-07-27. Este archivo tampoco filtraba: heredaba la regla de A0.
+    from edgelab.research.universo_estudio import cargar_dias_de_estudio
+    dias, info = cargar_dias_de_estudio(a.manifiesto,
+                                        tipos_de_dia=CFG["tipos_de_dia"],
+                                        caller="atlas_asimetrico")
+    if a.solo_archivo:
+        dias = [d for d in dias if d["archivo"] == a.solo_archivo]
+    if info["descartados_holdout"]:
+        log("  FIREWALL: %d dias del holdout descartados por la puerta"
+            % info["descartados_holdout"], LOG)
 
     log("ATLAS ASIMETRICO — NULL/DESCRIPTIVO. %d dias EFECTIVOS %s, cfg=%s, workers=%d"
         % (len(dias), dict(_c.Counter(d["tipo_de_dia"] for d in dias)),
@@ -363,6 +365,21 @@ def main(argv=None):
         nota_n="el N efectivo son los DIAS: las anclas del mismo dia comparten regimen",
         rondas=rondas, agregado=agregar(todas),
         por_estrato=agregar_por_estrato(todas), bootstrap=boot,
+        # (aciertos, total) POR DIA para cada combinación. Sin esto, el IC sólo
+        # se puede recalcular re-corriendo todo: la salida guardaba el agregado
+        # y las filas crudas morían con el proceso.
+        #
+        # Hace falta porque el bootstrap de bloque FIJO de 1 día subestima la
+        # incertidumbre — medido sobre la serie diaria real: b_opt de
+        # Politis-White da 13-18 días y el intervalo correcto es un 120-143%
+        # más ancho. Con estos dos números por día, el IC estacionario se
+        # recalcula sin volver a tocar los datos.
+        por_dia_tasas={
+            "H%d_P%d_N%d" % (H, P, N): {
+                d: [int(sum(1 for x in v if x.get("r_%d_%d_%d" % (H, P, N)) == 1)),
+                    int(sum(1 for x in v if ("r_%d_%d_%d" % (H, P, N)) in x))]
+                for d, v in por_dia.items()}
+            for H in CFG["horizontes_min"] for (P, N) in CFG["pares_pn"]},
         segundos=round(time.time() - t0, 1),
         generado_utc=datetime.now(timezone.utc).isoformat())
     json.dump(salida, open(os.path.join(a.out, "atlas_asimetrico.json"), "w",

@@ -348,32 +348,16 @@ def main(argv=None):
               "NUMEXPR_NUM_THREADS"):
         os.environ[v] = "1"
 
-    man = json.load(open(a.manifiesto, encoding="utf-8"))
-    dias = man["dias"]
-    _log("ATLAS NULL — manifiesto: %d dias aptos" % len(dias), LOG)
-
-    # ── candados, en este orden y ruidosos ─────────────────────────────────
-    en_holdout = [d for d in dias if d["fecha"] >= CFG["holdout_desde"]]
-    if en_holdout:
-        _log("  FIREWALL: se descartan %d dias del holdout (>= %s): %s"
-             % (len(en_holdout), CFG["holdout_desde"],
-                sorted({d["fecha"] for d in en_holdout})), LOG)
-    dias = [d for d in dias if d["fecha"] < CFG["holdout_desde"]]
-
-    sin_tipo = [d for d in dias if not d.get("tipo_de_dia")]
-    if sin_tipo:
-        # fail-closed: un manifiesto viejo sin `tipo_de_dia` no se puede filtrar
-        # por alcance, y correr sin filtrar seria meter domingos sin declararlo.
-        raise SystemExit(
-            "manifiesto sin `tipo_de_dia` en %d dias: regenerar el censo "
-            "(tools/censo_integridad.py) antes de correr el atlas" % len(sin_tipo))
-    fuera = [d for d in dias if d["tipo_de_dia"] not in CFG["tipos_de_dia"]]
-    if fuera:
-        import collections as _c
-        _log("  ALCANCE: se descartan %d dias fuera de %s -> %s"
-             % (len(fuera), CFG["tipos_de_dia"],
-                dict(_c.Counter(d["tipo_de_dia"] for d in fuera))), LOG)
-    dias = [d for d in dias if d["tipo_de_dia"] in CFG["tipos_de_dia"]]
+    # PUERTA UNICA. El filtro del holdout NO vive mas en este archivo: vivia en
+    # el docstring y por eso esta corrida consumio 10 dias sellados el
+    # 2026-07-27. Ahora es imposible pedirlos desde aca.
+    from edgelab.research.universo_estudio import cargar_dias_de_estudio
+    dias, info = cargar_dias_de_estudio(a.manifiesto,
+                                        tipos_de_dia=CFG["tipos_de_dia"],
+                                        caller="atlas_excursiones_nulas")
+    if info["descartados_holdout"]:
+        _log("  FIREWALL: %d dias del holdout descartados por la puerta: %s"
+             % (info["descartados_holdout"], info["fechas_holdout"]), LOG)
 
     import collections as _c
     _log("ATLAS NULL — %d dias EFECTIVOS %s, cfg=%s, workers=%d"
