@@ -1,0 +1,58 @@
+{
+  "schema_version": "canonical_tick_v1",
+  "tool": "build_nt8_ticks",
+  "generated_utc": "2026-07-21T23:17:01.019424+00:00",
+  "source_file": "C:\\ProyectosQuant\\EdgeLab\\TickData\\6E 03-26.Last.txt",
+  "source_sha256": "1d93a7478611bc590c7b10936907fb09aa34bdc47548f9db8c7a977c796deb2f",
+  "instrument": "6E",
+  "contract": "6E 03-26",
+  "rows": 5063517,
+  "tz": {
+    "declared_tz": "UTC",
+    "canonical_offset_s": 0,
+    "verified_utc": true,
+    "score_utc": 5e-06,
+    "min_offset_s": 0,
+    "min_score": 5e-06,
+    "art_score": 0.056035,
+    "note": "offset=0s score=0.00001; min@0s=0.00001; ART=0.05604; VERIFICADO",
+    "scores_s": {
+      "-43200": 0.17855,
+      "-39600": 0.166565,
+      "-36000": 0.167075,
+      "-32400": 0.19524,
+      "-28800": 0.1785,
+      "-25200": 0.183685,
+      "-21600": 0.12154,
+      "-18000": 0.079645,
+      "-14400": 0.057535,
+      "-10800": 0.056035,
+      "-7200": 0.044155,
+      "-3600": 0.013695,
+      "0": 5e-06,
+      "3600": 0.018125,
+      "7200": 0.028265,
+      "10800": 0.034665,
+      "14400": 0.03706,
+      "18000": 0.036095,
+      "21600": 0.03719,
+      "25200": 0.04159,
+      "28800": 0.053615,
+      "32400": 0.08106,
+      "36000": 0.10671,
+      "39600": 0.11494,
+      "43200": 0.117735
+    }
+  },
+  "transformations": [
+    "parseo .Last.txt (yyyyMMdd HHmmss fffffff;last;bid;ask;vol), frac 100ns",
+    "ts_utc_ns = ts_local_ns (offset 0; UTC verificado por schedule-fit CME DST-aware)",
+    "precios -> ticks enteros (/5e-05), alineación exacta validada",
+    "sequence/source_row = orden estable del archivo (sin dedup, sin reorden)",
+    "SIN empalme ni ajuste de precios (por contrato)"
+  ],
+  "known_deviations": [
+    "59 huecos 30min–6h (posible baja liquidez/feriado)"
+  ],
+  "parquet_sha256": "118016a6a01f95a51dbcf2fa2aad4d5693f45e1eca0b564406c6ec4bb9417bed"
+}

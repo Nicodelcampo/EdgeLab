@@ -73,3 +73,4 @@
 > que el firewall autoriza (§G4). Se registra acá con timestamp del commit
 > real para que quede trazado, tal como exige el firewall para todo acceso
 > `target_free_validation`.
+| 2026-07-28T00:47:12Z | target_free_validation | ALLOWED | 2026-07-01T00:00:00 | 2026-07-26T23:59:59 | correr_gates:6E_09-26_ticks.parquet |

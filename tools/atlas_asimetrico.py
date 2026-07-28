@@ -56,12 +56,24 @@ CFG = dict(
     # los 7 horizontes -- reversion -- y bajo reversion esa es la geometria
     # favorecida. La grilla anterior tenia P>N en los seis pares, sin excepcion:
     # exploraba solo el lado que el proceso desfavorece.
-    horizontes_min=[30, 60, 90, 120],
-    pares_pn=[(5, 5), (8, 8), (10, 10),                     # simetricos suaves
-              (8, 10), (8, 13), (10, 13),                   # objetivo CERCA
-              (10, 8), (12, 10), (13, 10), (13, 8)],        # objetivo LEJOS
+    # GRILLA ANCHA (2026-07-27, tercera iteración). La tabla de decisión mostró
+    # que el break-even depende del ANCHO TOTAL de las barreras y no de la
+    # señal: marcada a mercado la esperanza nula es 0 en toda geometría, así
+    # que hay que mover la tasa `delta = 2,704/(P+N)` puntos absolutos.
+    #
+    #   P+N = 21  ->  delta = 0,129   (lift 22% sobre una base de 0,57)
+    #   P+N = 54  ->  delta = 0,050   (lift  9% sobre la misma base)
+    #
+    # Con barreras de 10-13 ticks la fricción se come el 21-34% del objetivo.
+    # Esta grilla pregunta si la escala pagable está afuera de la que se venía
+    # mirando. Sigue siendo NULO DESCRIPTIVO: no gasta hipótesis.
+    horizontes_min=[120, 180, 240, 360],
+    pares_pn=[(20, 20), (27, 27), (34, 34),                 # simétricos anchos
+              (20, 27), (20, 34), (27, 34),                 # objetivo CERCA
+              (27, 20), (34, 20), (34, 27),                 # objetivo LEJOS
+              (13, 21)],                                    # puente con la grilla previa
     anclas_por_dia=A0.CFG["anclas_por_dia"],
-    sep_min_minutos=120,                       # = horizonte maximo de esta grilla
+    sep_min_minutos=360,                       # = horizonte maximo de esta grilla
     vol_lookback_min=A0.CFG["vol_lookback_min"],
     vol_cortes=A0.CFG["vol_cortes"],
     franjas_horarias=A0.CFG["franjas_horarias"],
