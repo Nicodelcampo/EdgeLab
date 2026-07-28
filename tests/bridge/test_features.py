@@ -91,8 +91,8 @@ def test_price_features_require_price():
 @pytest.mark.skipif(not os.path.exists(PARQUET), reason="parquet 6E no disponible")
 def test_get_zones_and_digest(tmp_path):
     import datetime as dt
-    s = int(dt.datetime(2025, 8, 1, tzinfo=dt.timezone.utc).timestamp() * 1e9)
-    e = int(dt.datetime(2025, 8, 1, 3, tzinfo=dt.timezone.utc).timestamp() * 1e9)
+    s = int(dt.datetime(2025, 8, 5, tzinfo=dt.timezone.utc).timestamp() * 1e9)
+    e = int(dt.datetime(2025, 8, 5, 3, tzinfo=dt.timezone.utc).timestamp() * 1e9)
     tk = load_canonical_parquet(PARQUET, contract="6E 09-25", start_utc_ns=s, end_utc_ns=e)
     bars = B.build_time_bars(tk, 1)
     res = gaps2.run(tk, bars, params={"min_gap_ticks": 5})

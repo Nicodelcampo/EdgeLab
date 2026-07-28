@@ -28,18 +28,18 @@ def _iso_ns(s):
 
 def _mini_store(root):
     tk = load_canonical_parquet(PARQUET, contract="6E 09-25",
-                                start_utc_ns=_iso_ns("2025-08-01T00:00:00"),
-                                end_utc_ns=_iso_ns("2025-08-01T03:00:00"))
+                                start_utc_ns=_iso_ns("2025-08-05T00:00:00"),
+                                end_utc_ns=_iso_ns("2025-08-05T03:00:00"))
     bars = B.build_time_bars(tk, 1)
     src = dict(path=PARQUET, sha256="x", rows=len(tk),
-               range_start_utc="2025-08-01T00:00:00", range_end_utc="2025-08-01T03:00:00",
+               range_start_utc="2025-08-05T00:00:00", range_end_utc="2025-08-05T03:00:00",
                kind="parquet_f2")
     kid = idy.kernel_id("Gaps2")
     dsid = idy.dataset_id(tk, tz_interpretation="canonical_utc_verified")
     for params in ({"min_gap_ticks": 5}, {"min_gap_ticks": 8}):
         res = gaps2.run(tk, bars, params=params)
         cid = idy.config_id("Gaps2", res["params"], "time_1", "UTC", kid)
-        rid = idy.run_id(dsid, cid, "2025-08-01T00:00:00", "2025-08-01T03:00:00")
+        rid = idy.run_id(dsid, cid, "2025-08-05T00:00:00", "2025-08-05T03:00:00")
         store.publish_run(root, kernel_result=res, indicator="Gaps2", tick_size=tk.tick_size,
                           instrument="6E", contract="6E 09-25", bar_key="time_1",
                           dataset_id=dsid, kernel_id=kid, config_id=cid, run_id=rid,

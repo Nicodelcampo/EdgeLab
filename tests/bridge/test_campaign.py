@@ -41,7 +41,7 @@ def _write_campaign(tmp_path, store, max_configs, grid):
     spec = dict(campaign_id="t", store=str(store), chart_tz="UTC",
                 max_configs=max_configs,
                 data=dict(parquet=PARQUET, contract="6E 09-25",
-                          start_utc="2025-08-01T00:00:00", end_utc="2025-08-01T02:00:00"),
+                          start_utc="2025-08-05T00:00:00", end_utc="2025-08-05T02:00:00"),
                 jobs=[dict(indicator="Gaps2", bars=["time:1"], grid=grid)])
     p = tmp_path / "campaign.json"
     p.write_text(json.dumps(spec), encoding="utf-8")
