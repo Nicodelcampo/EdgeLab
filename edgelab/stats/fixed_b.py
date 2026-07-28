@@ -26,7 +26,7 @@ Ver documentación completa en `docs/referencias/FIXED_B_SHAO_POLITIS.md`.
 - El browniano se aproxima con la suma parcial normalizada de `GRILLA`
   variables iid N(0,1), como describe la Sección 3.1 de Shao-Politis (2013).
 - Las constantes de simulación son congeladas y aparecen en mayúsculas:
-  `GRILLA = 5000`, `N_CAMINOS = 50000`, `TAMANO_CHUNK = 1000`, `SEMILLA =
+  `GRILLA = 14775`, `N_CAMINOS = 50000`, `TAMANO_CHUNK = 1000`, `SEMILLA =
   20260801`. `TAMANO_CHUNK` afecta el resultado numérico porque cambia cómo se
   consume el stream del generador: la misma semilla con distinto tamaño de chunk
   produce distintos caminos.
@@ -55,11 +55,24 @@ Ver documentación completa en `docs/referencias/FIXED_B_SHAO_POLITIS.md`.
 - El veredicto evalúa primero el caso "NO APTO" (`beta_puntual > alpha`), luego
   "APTO" (`_cdf_binomial(k, n, alpha) <= delta`), y en cualquier otro caso
   "INCONCLUSO". Los tres casos son mutuamente excluyentes y exhaustivos.
-- `GRILLA = 5000` está tomado del protocolo de simulación de los autores
-  (Sección 3.1 de Shao-Politis 2013). `N_CAMINOS = 50000` también sigue ese
-  protocolo en este módulo, pero las fuentes no lo exigen como invariante y
-  puede diferir en otros contextos. Si cambia `GRILLA`, los valores golden
-  dejan de ser válidos.
+- `GRILLA = 14775 = 197 * 75`. Con el n de muestra sellado en 197 días-bloque,
+  el b de producción es `b = 16/197` (`l = round(0.08*197) = 16`), y a esta
+  grilla `b * GRILLA = 1200` es entero exacto en IEEE double (verificado:
+  `_validar_b(16/197, 14775)` pasa). La exactitud NO vale para cualquier
+  múltiplo de 197: con `197 * 25 = 4925` el producto es 399.99999999999994 y
+  `_validar_b` rechaza; hay que verificar cada par (b, grilla). Efecto lateral
+  declarado: `0.1`, `0.05`, `0.25`, `0.5` y `0.02` dejan de ser b válidos a
+  grilla de módulo (sus productos con 14775 no son enteros); `0.08` sigue
+  válido (`0.08 * 14775 = 1182.0`). `N_CAMINOS = 50000` sigue el protocolo de
+  simulación de los autores (Sección 3.1 de Shao-Politis 2013) en este módulo,
+  pero las fuentes no lo exigen como invariante y puede diferir en otros
+  contextos. Si cambia `GRILLA`, los valores golden dejan de ser válidos.
+- La cota de cobertura y el veredicto exigen declarar el funcional de forma
+  explícita (parámetro `funcional`, SIN valor por defecto): `FUNCIONAL_UNA_COLA`
+  es el funcional de producción (la constante de calibración es `cuantil_G`,
+  nunca `cuantil_G_sim`); `FUNCIONAL_SIMETRICO` es sólo diagnóstico de
+  contraste: toda cifra suya se emite con el prefijo
+  "NO CITABLE - diagnóstico de contraste".
 - Todos los errores de dominio lanzan `FixedBError` (subclase de `RuntimeError`)
   en lugar de devolver `None` o usar `NaN` como señal de error.
 """
@@ -79,16 +92,24 @@ __all__ = [
     "cuantil_G_sim",
     "cota_de_cobertura",
     "veredicto_cota",
+    "FUNCIONAL_UNA_COLA",
+    "FUNCIONAL_SIMETRICO",
     "GRILLA",
     "N_CAMINOS",
     "TAMANO_CHUNK",
     "SEMILLA",
 ]
 
-GRILLA = 5000
+GRILLA = 14775
 N_CAMINOS = 50000
 TAMANO_CHUNK = 1000
 SEMILLA = 20260801
+
+# Funcional de inferencia. Producción: UNA COLA superior (la constante de
+# calibración es cuantil_G). El simétrico queda como diagnóstico de contraste:
+# sus cifras se emiten con el prefijo "NO CITABLE - diagnóstico de contraste".
+FUNCIONAL_UNA_COLA = "una_cola"
+FUNCIONAL_SIMETRICO = "simetrico"
 
 _DELTA_CP = 0.01
 _BISEC_TOL = 1e-12
@@ -169,10 +190,10 @@ def _cdf_binomial(k, n, p) -> float:
     return float(np.clip(s, 0.0, 1.0))
 
 
-def _clopper_pearson_upper(k, n) -> float:
+def _clopper_pearson_upper(k, n, delta=_DELTA_CP) -> float:
     """Límite superior de confianza Clopper-Pearson a nivel 0.99, una cola.
 
-    Resuelve F(p) = _DELTA_CP con F(p) = P(X <= k; n, p) por bisección.
+    Resuelve F(p) = delta con F(p) = P(X <= k; n, p) por bisección.
     Si k == n, U = 1.0.
     """
     if k == n:
@@ -183,7 +204,7 @@ def _clopper_pearson_upper(k, n) -> float:
         if (hi - lo) <= _BISEC_TOL:
             return mid
         fmid = _cdf_binomial(k, n, mid)
-        if fmid > _DELTA_CP:
+        if fmid > delta:
             lo = mid
         else:
             hi = mid
@@ -238,9 +259,12 @@ def simular_funcionales(
     semilla : int, opcional
         Semilla del generador. Default 20260801.
     _retornar_supremos : bool, privado
-        Si es True, cada entrada contiene además la clave "sup_D" con el
-        supremo de |D(t)| por camino, necesario para verificar la identidad
-        beta(b) = P(G_sim(b) = 0).
+        Si es True, cada entrada contiene además las claves "sup_D" (supremo
+        de |D(t)| por camino) y "W1_abs", necesarias para verificar la
+        identidad beta(b) = P(G_sim(b) = 0) del funcional simétrico, y las
+        claves "sup_D_una_cola" (supremo con SIGNO de D(t)) y "W1" (con
+        signo), para la identidad beta(b) = P(G(b) = 0) del funcional de
+        una cola: G(b) == 0  <=>  sup_t D(t) < W(1).
 
     Retorna
     -------
@@ -263,7 +287,9 @@ def simular_funcionales(
     acumuladores_G = {b: [] for b in bs}
     acumuladores_G_sim = {b: [] for b in bs}
     acumuladores_sup = {b: [] for b in bs}
+    acumuladores_sup_una_cola = {b: [] for b in bs}
     acumuladores_W1 = []
+    acumuladores_W1_signed = []
     for _ in range(n_chunks):
         chunk_size = min(TAMANO_CHUNK, n_caminos - _ * TAMANO_CHUNK)
         if chunk_size <= 0:
@@ -277,6 +303,7 @@ def simular_funcionales(
         W1 = W[:, grilla]
         if _retornar_supremos:
             acumuladores_W1.append(np.abs(W1))
+            acumuladores_W1_signed.append(W1)
         for b in bs:
             l = longitudes[b]
             sqrt_b = math.sqrt(b)
@@ -289,6 +316,7 @@ def simular_funcionales(
             acumuladores_G_sim[b].append(G_sim_chunk)
             if _retornar_supremos:
                 acumuladores_sup[b].append(np.abs(D).max(axis=1))
+                acumuladores_sup_una_cola[b].append(D.max(axis=1))
     resultado = {}
     for b in bs:
         G = np.concatenate(acumuladores_G[b])[:n_caminos]
@@ -297,8 +325,12 @@ def simular_funcionales(
         if _retornar_supremos:
             sup_D = np.concatenate(acumuladores_sup[b])[:n_caminos]
             item["sup_D"] = sup_D.astype(np.float64)
+            sup_D_una_cola = np.concatenate(acumuladores_sup_una_cola[b])[:n_caminos]
+            item["sup_D_una_cola"] = sup_D_una_cola.astype(np.float64)
             W1_abs = np.concatenate(acumuladores_W1)[:n_caminos]
             item["W1_abs"] = W1_abs.astype(np.float64)
+            W1_signed = np.concatenate(acumuladores_W1_signed)[:n_caminos]
+            item["W1"] = W1_signed.astype(np.float64)
         resultado[b] = item
     return resultado
 
@@ -329,35 +361,69 @@ def cuantil_G_sim(b, alpha, **kw) -> float:
     return float(quantile_exact(np.sort(G_sim), alpha))
 
 
-def cota_de_cobertura(b, **kw) -> dict:
+def _validar_funcional(funcional):
+    """El funcional es un parámetro EXPLÍCITO obligatorio: quien llama declara
+    cuál usa. No tiene valor por defecto a propósito."""
+    if funcional not in (FUNCIONAL_UNA_COLA, FUNCIONAL_SIMETRICO):
+        raise FixedBError(
+            "funcional debe ser %r o %r, vino %r"
+            % (FUNCIONAL_UNA_COLA, FUNCIONAL_SIMETRICO, funcional)
+        )
+    return funcional
+
+
+def cota_de_cobertura(b, funcional, **kw) -> dict:
     """Cota de cobertura beta(b) e intervalos de confianza de Clopper-Pearson.
+
+    Parámetros
+    ----------
+    b : float
+        Fracción de bloque. Debe cumplir b * grilla entero exacto.
+    funcional : str
+        OBLIGATORIO, sin default. `FUNCIONAL_UNA_COLA` (producción: beta sobre
+        G(b), la constante de calibración es `cuantil_G`) o
+        `FUNCIONAL_SIMETRICO` (diagnóstico de contraste: beta sobre G_sim(b);
+        toda cifra suya se emite con el prefijo
+        "NO CITABLE - diagnóstico de contraste").
 
     Retorna
     -------
     dict con claves:
         beta: float
-            Fracción de caminos con G_sim == 0 (igual a P(sup|D| < |W(1)|)).
+            Fracción de caminos con el funcional == 0. Para una cola es
+            P(G(b) = 0) = P(sup_t D(t) < W(1)); para el simétrico es
+            P(G_sim(b) = 0) = P(sup_t |D(t)| < |W(1)|).
         beta_por_supremo: float
-            Fracción calculada directamente por el supremo.
+            La misma fracción calculada directamente por el supremo (con
+            signo para una cola, en valor absoluto para el simétrico).
         ic_sup: float
             Límite superior de confianza 0.99 para beta.
         ic_inf: float
             Límite inferior de confianza 0.99 para beta.
         k: int
-            Cantidad de caminos con G_sim == 0 (el estadístico binomial).
+            Cantidad de caminos con el funcional == 0 (el estadístico binomial).
         n_caminos: int
             Cantidad de caminos simulados.
+        funcional: str
+            El funcional usado, para que el consumidor no pueda perder la
+            procedencia de la cifra.
     """
+    _validar_funcional(funcional)
     res = simular_funcionales(
         [b], _retornar_supremos=True, **kw
     )
-    G_sim = res[b]["G_sim"]
-    sup_D = res[b]["sup_D"]
-    W1_abs = res[b]["W1_abs"]
-    n_caminos = G_sim.size
-    ceros = int((G_sim == 0.0).sum())
+    if funcional == FUNCIONAL_UNA_COLA:
+        vals = res[b]["G"]
+        sup_D = res[b]["sup_D_una_cola"]
+        W1_ref = res[b]["W1"]
+    else:
+        vals = res[b]["G_sim"]
+        sup_D = res[b]["sup_D"]
+        W1_ref = res[b]["W1_abs"]
+    n_caminos = vals.size
+    ceros = int((vals == 0.0).sum())
     beta_puntual = ceros / n_caminos
-    beta_supremo = float((sup_D < W1_abs).mean())
+    beta_supremo = float((sup_D < W1_ref).mean())
     ic_sup = _clopper_pearson_upper(ceros, n_caminos)
     ic_inf = _clopper_pearson_lower(ceros, n_caminos)
     return {
@@ -367,11 +433,16 @@ def cota_de_cobertura(b, **kw) -> dict:
         "ic_inf": float(ic_inf),
         "k": ceros,
         "n_caminos": int(n_caminos),
+        "funcional": funcional,
     }
 
 
-def veredicto_cota(b, alpha, **kw) -> dict:
+def veredicto_cota(b, alpha, funcional, **kw) -> dict:
     """Veredicto sobre si un b es apto para inferencia fixed-b.
+
+    `funcional` es OBLIGATORIO, sin default: el de producción es
+    `FUNCIONAL_UNA_COLA` (la constante de calibración es `cuantil_G`, nunca
+    `cuantil_G_sim`).
 
     Regla:
         beta_puntual > alpha                -> "NO APTO"
@@ -380,10 +451,12 @@ def veredicto_cota(b, alpha, **kw) -> dict:
 
     Retorna
     -------
-    dict con claves b, alpha, beta, beta_por_supremo, ic_sup, ic_inf, veredicto.
+    dict con claves b, alpha, beta, beta_por_supremo, ic_sup, ic_inf,
+    veredicto, funcional.
     """
     alpha = _validar_alpha(alpha)
-    cota = cota_de_cobertura(b, **kw)
+    _validar_funcional(funcional)
+    cota = cota_de_cobertura(b, funcional, **kw)
     beta = cota["beta"]
     n_caminos = cota["n_caminos"]
     k = cota["k"]
@@ -400,4 +473,5 @@ def veredicto_cota(b, alpha, **kw) -> dict:
         "ic_sup": cota["ic_sup"],
         "ic_inf": cota["ic_inf"],
         "veredicto": veredicto,
+        "funcional": funcional,
     }

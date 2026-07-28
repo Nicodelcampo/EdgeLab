@@ -114,7 +114,7 @@ BATERIA = [
     ("arma11",       arma11()),
     ("garch11",      garch11()),
 ]
-TAMANOS = [160, 188, 250]
+TAMANOS = [160, 197, 250]
 NOMINALES = [0.90, 0.95]
 
 # Criterios de adopcion PREDECLARADOS (del pedido de Nico, 2026-07-28)

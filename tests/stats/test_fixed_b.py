@@ -3,7 +3,14 @@
 
 Los tests de propiedad usan un n_caminos reducido para mantener la suite
 ligera. Los tests de regresión (sección B) usan las constantes congeladas
-completas: GRILLA = 5000, N_CAMINOS = 50000, SEMILLA = 20260801.
+completas: GRILLA = 14775, N_CAMINOS = 50000, SEMILLA = 20260801.
+
+GRILLA = 14775 = 197 * 75: con el n sellado en 197 días-bloque, el b de
+producción b = 16/197 da b * GRILLA = 1200 entero exacto en IEEE double.
+La sección B corre UNA sola simulación congelada por fixture de módulo
+(antes re-simulaba la misma corrida ocho veces); las aserciones y los
+valores pineados no cambiaron de naturaleza: se regeneraron por el cambio
+de GRILLA (el stream aleatorio se re-alinea, ruido Monte Carlo esperado).
 """
 from __future__ import annotations
 
@@ -12,8 +19,11 @@ import re
 import numpy as np
 import pytest
 
+from edgelab.bridge.common import quantile_exact
 from edgelab.stats.fixed_b import (
     FixedBError,
+    FUNCIONAL_SIMETRICO,
+    FUNCIONAL_UNA_COLA,
     GRILLA,
     N_CAMINOS,
     SEMILLA,
@@ -30,6 +40,9 @@ from edgelab.stats.fixed_b import (
 # Constantes reducidas para tests de propiedad (no afectan regresión).
 N_CAMINOS_PROP = 2000
 GRILLA_PROP = 1000
+
+# b de producción: n sellado en 197 días-bloque, l = round(0.08*197) = 16.
+B_PRODUCCION = 16 / 197
 
 # --------------------------------------------------------------------- A) propiedades
 
@@ -92,6 +105,29 @@ def test_identidad_beta_exacta():
     assert ceros.mean() == supremo_evento.mean()
 
 
+def test_identidad_beta_exacta_una_cola():
+    """beta de producción: ceros de G == supremo con signo por debajo de W(1).
+
+    G == 0 para un camino  <=>  W(1) > D(t) para todo t  <=>  sup_t D(t) < W(1)
+    (con SIGNO, sin valor absoluto). Es la identidad análoga a la del
+    simétrico, sobre el funcional que usa la inferencia.
+    """
+    res = simular_funcionales(
+        [0.08],
+        n_caminos=N_CAMINOS_PROP,
+        grilla=GRILLA_PROP,
+        semilla=SEMILLA,
+        _retornar_supremos=True,
+    )
+    G = res[0.08]["G"]
+    sup_D_una_cola = res[0.08]["sup_D_una_cola"]
+    W1 = res[0.08]["W1"]
+    ceros = G == 0.0
+    supremo_evento = sup_D_una_cola < W1
+    assert np.array_equal(ceros, supremo_evento)
+    assert ceros.mean() == supremo_evento.mean()
+
+
 def test_convergencia_small_b():
     """Con b pequeño, el cuantil calibrado debe acercarse a alpha.
 
@@ -116,7 +152,10 @@ def test_monotonia_en_b():
         for b in bs
     ]
     betas = [
-        cota_de_cobertura(b, n_caminos=N_CAMINOS_PROP, grilla=GRILLA_PROP, semilla=SEMILLA)["beta"]
+        cota_de_cobertura(
+            b, FUNCIONAL_SIMETRICO,
+            n_caminos=N_CAMINOS_PROP, grilla=GRILLA_PROP, semilla=SEMILLA,
+        )["beta"]
         for b in bs
     ]
     for i in range(len(bs) - 1):
@@ -145,38 +184,117 @@ def test_errores_de_dominio_lanzan_fixed_b_error(func, args, msg_fragment):
 # --------------------------------------------------------------------- B) regresión golden
 
 
-def test_golden_b_008_05():
-    """Valores congelados con GRILLA=5000, N_CAMINOS=50000, SEMILLA=20260801."""
-    assert cuantil_G(0.08, 0.05) == pytest.approx(0.03108019995653119, abs=1e-9)
-    assert cuantil_G_sim(0.08, 0.05) == pytest.approx(0.02216909367528798, abs=1e-9)
+@pytest.fixture(scope="module")
+def sim_frozen():
+    """UNA sola corrida con las constantes congeladas para toda la sección.
+
+    Los dos b van en la misma llamada: los caminos se comparten (comparaciones
+    pareadas) y el RNG se paga una sola vez. Antes de esta fixture, la sección
+    re-simulaba la misma corrida congelada ocho veces (una por test).
+    """
+    return simular_funcionales(
+        [0.08, B_PRODUCCION],
+        n_caminos=N_CAMINOS,
+        grilla=GRILLA,
+        semilla=SEMILLA,
+        _retornar_supremos=True,
+    )
 
 
-def test_golden_b_008_10():
-    assert cuantil_G(0.08, 0.10) == pytest.approx(0.0838948054770702, abs=1e-9)
-    assert cuantil_G_sim(0.08, 0.10) == pytest.approx(0.06868072158226472, abs=1e-9)
+@pytest.fixture(scope="module")
+def veredicto_frozen():
+    """Una sola evaluación del camino público `veredicto_cota` a constantes
+    congeladas, compartida por los tests de veredicto de la sección."""
+    return veredicto_cota(0.08, 0.05, FUNCIONAL_UNA_COLA)
 
 
-def test_golden_beta_008():
-    cota = cota_de_cobertura(0.08)
-    assert cota["beta"] == pytest.approx(0.01664, abs=1e-9)
-    assert cota["beta_por_supremo"] == pytest.approx(0.01664, abs=1e-9)
+def _q(arr, alpha):
+    """Cuantil con la convención exacta del repo (la misma que usa el módulo)."""
+    return float(quantile_exact(np.sort(arr), alpha))
 
 
-def test_golden_veredicto_008_005():
-    v = veredicto_cota(0.08, 0.05)
-    assert v["veredicto"] == "APTO"
-    assert v["ic_sup"] == pytest.approx(0.018019588871084125, abs=1e-9)
+def test_golden_b_008_05(sim_frozen):
+    """Valores congelados con GRILLA=14775, N_CAMINOS=50000, SEMILLA=20260801.
+
+    Migrados desde GRILLA=5000: el cambio de grilla re-alinea el stream
+    aleatorio (ruido Monte Carlo esperado, no bug). El simétrico es
+    NO CITABLE - diagnóstico de contraste.
+    """
+    assert _q(sim_frozen[0.08]["G"], 0.05) == pytest.approx(0.031558040311902312, abs=1e-9)
+    assert _q(sim_frozen[0.08]["G_sim"], 0.05) == pytest.approx(0.02309842577607768, abs=1e-9)
+
+
+def test_golden_b_008_10(sim_frozen):
+    """Simétrico: NO CITABLE - diagnóstico de contraste."""
+    assert _q(sim_frozen[0.08]["G"], 0.10) == pytest.approx(0.084449021627188467, abs=1e-9)
+    assert _q(sim_frozen[0.08]["G_sim"], 0.10) == pytest.approx(0.07113432396645579, abs=1e-9)
+
+
+def test_golden_b_16_197_05(sim_frozen):
+    """b de producción (16/197, n = 197 días-bloque sellado).
+
+    cuantil_G ES la constante de producción. cuantil_G_sim:
+    NO CITABLE - diagnóstico de contraste.
+    """
+    assert _q(sim_frozen[B_PRODUCCION]["G"], 0.05) == pytest.approx(0.031305244549204476, abs=1e-9)
+    assert _q(sim_frozen[B_PRODUCCION]["G_sim"], 0.05) == pytest.approx(0.022834413671184443, abs=1e-9)
+
+
+def test_golden_b_16_197_10(sim_frozen):
+    """Simétrico: NO CITABLE - diagnóstico de contraste."""
+    assert _q(sim_frozen[B_PRODUCCION]["G"], 0.10) == pytest.approx(0.083971714790807311, abs=1e-9)
+    assert _q(sim_frozen[B_PRODUCCION]["G_sim"], 0.10) == pytest.approx(0.070271066588096648, abs=1e-9)
+
+
+def test_golden_beta_008(sim_frozen):
+    """beta a 0.08 sobre ambos funcionales. Simétrico: NO CITABLE - contraste."""
+    G = sim_frozen[0.08]["G"]
+    G_sim = sim_frozen[0.08]["G_sim"]
+    assert (G == 0.0).mean() == pytest.approx(0.01336, abs=1e-9)
+    assert (sim_frozen[0.08]["sup_D_una_cola"] < sim_frozen[0.08]["W1"]).mean() == pytest.approx(0.01336, abs=1e-9)
+    assert (G_sim == 0.0).mean() == pytest.approx(0.01474, abs=1e-9)
+    assert (sim_frozen[0.08]["sup_D"] < sim_frozen[0.08]["W1_abs"]).mean() == pytest.approx(0.01474, abs=1e-9)
+
+
+def test_golden_beta_16_197(sim_frozen):
+    """beta al b de producción. Simétrico: NO CITABLE - diagnóstico de contraste."""
+    G = sim_frozen[B_PRODUCCION]["G"]
+    G_sim = sim_frozen[B_PRODUCCION]["G_sim"]
+    k = int((G == 0.0).sum())
+    assert k == 675
+    assert (G == 0.0).mean() == pytest.approx(0.0135, abs=1e-9)
+    assert (sim_frozen[B_PRODUCCION]["sup_D_una_cola"] < sim_frozen[B_PRODUCCION]["W1"]).mean() == pytest.approx(0.0135, abs=1e-9)
+    assert _clopper_pearson_lower(k, N_CAMINOS) == pytest.approx(0.012327850803103502, abs=1e-9)
+    assert _clopper_pearson_upper(k, N_CAMINOS) == pytest.approx(0.01474971230572919, abs=1e-9)
+    k_sim = int((G_sim == 0.0).sum())
+    assert k_sim == 748
+    assert (G_sim == 0.0).mean() == pytest.approx(0.01496, abs=1e-9)
+
+
+def test_golden_veredicto_008_005(veredicto_frozen):
+    assert veredicto_frozen["veredicto"] == "APTO"
+    assert veredicto_frozen["ic_sup"] == pytest.approx(0.014603570989038417, abs=1e-9)
+
+
+def test_golden_veredicto_16_197_005(sim_frozen):
+    """APTO al b de producción, evaluado con la regla del módulo sobre la
+    corrida congelada compartida (el camino público `veredicto_cota` a
+    constantes congeladas queda cubierto por `veredicto_frozen` a 0.08)."""
+    k = int((sim_frozen[B_PRODUCCION]["G"] == 0.0).sum())
+    assert k / N_CAMINOS <= 0.05
+    assert _cdf_binomial(k, N_CAMINOS, 0.05) <= 0.01
 
 
 # --------------------------------------------------------------------- C) compuerta
 
 
-def test_veredicto_cota_devuelve_estructura_y_veredicto_valido():
-    v = veredicto_cota(0.08, 0.05)
-    assert set(v.keys()) == {"b", "alpha", "beta", "beta_por_supremo", "ic_sup", "ic_inf", "veredicto"}
+def test_veredicto_cota_devuelve_estructura_y_veredicto_valido(veredicto_frozen):
+    v = veredicto_frozen
+    assert set(v.keys()) == {"b", "alpha", "beta", "beta_por_supremo", "ic_sup", "ic_inf", "veredicto", "funcional"}
     assert v["veredicto"] in {"APTO", "NO APTO", "INCONCLUSO"}
     assert v["b"] == pytest.approx(0.08)
     assert v["alpha"] == pytest.approx(0.05)
+    assert v["funcional"] == FUNCIONAL_UNA_COLA
 
 
 # --------------------------------------------------------------------- D) CDF binomial exacta
@@ -259,13 +377,24 @@ def test_clopper_pearson_lower_k_cero_es_cero():
 
 
 def test_clopper_pearson_lower_k_igual_n():
-    v = _clopper_pearson_lower(100, 100)
-    assert 0.0 < v < 1.0
+    """k == n: L = delta**(1/n) EXACTO.
+
+    P(X <= n-1; n, p) = 1 - p**n = 1 - delta  =>  p = delta**(1/n).
+    """
+    delta = 0.01
+    n = 100
+    v = _clopper_pearson_lower(n, n, delta=delta)
+    assert v == pytest.approx(delta ** (1 / n))
 
 
-def test_clopper_pearson_monotonia_ic_inf_beta_ic_sup():
-    cota = cota_de_cobertura(0.08)
-    assert cota["ic_inf"] <= cota["beta"] <= cota["ic_sup"]
+@pytest.mark.parametrize("funcional", [FUNCIONAL_UNA_COLA, FUNCIONAL_SIMETRICO])
+def test_clopper_pearson_monotonia_ic_inf_beta_ic_sup(sim_frozen, funcional):
+    vals = (sim_frozen[0.08]["G"] if funcional == FUNCIONAL_UNA_COLA
+            else sim_frozen[0.08]["G_sim"])
+    k = int((vals == 0.0).sum())
+    n = vals.size
+    beta = k / n
+    assert _clopper_pearson_lower(k, n) <= beta <= _clopper_pearson_upper(k, n)
 
 
 def test_clopper_pearson_lower_golden():
