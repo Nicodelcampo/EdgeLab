@@ -19,10 +19,10 @@ independencia que `b_opt = 13–18` acaba de refutar. Si el intervalo se corrigi
 y el p-valor no, la sub-cobertura vuelve a entrar por la otra puerta.
 
 La solución obvia sería permutar **bloques** de ~`b_opt` días. Funciona, pero
-tiene un costo grande: con 188 días y bloques de 15, quedan ~12 unidades
-permutables. Un test de permutación con 12 unidades tiene una resolución mínima
-de p-valor de 1/12 ≈ 0,083 — no puede producir evidencia al 5 % ni aunque el
-efecto sea enorme.
+ tiene un costo grande: con 197 días y bloques de 15, quedan ~13 unidades
+ permutables. Un test de permutación con 13 unidades tiene una resolución mínima
+ de p-valor de 1/13 ≈ 0,077 — no puede producir evidencia al 5 % ni aunque el
+ efecto sea enorme.
 
 ### El esquema adoptado: permutación ESTRATIFICADA POR DÍA
 
@@ -106,20 +106,27 @@ p-valor se declara de baja resolución y no decide solo.
 
 ## §3 · Universo — el detalle que va declarado
 
-- **188 bloques de día**, no 191. Los tres días que están en alcance y no
-  aportan anclas son **2025-12-12, 2026-03-13 y 2026-06-12**: los tres viernes
-  de roll trimestral, con 6.791 / 13.216 / 9.812 ticks. Con `sep_min_minutos`
-  igual al horizonte máximo, no entra en ellos ninguna ancla que no comparta
-  futuro con otra. No es exclusión por defecto de dato: es la regla de
-  separación mínima haciendo su trabajo, y se declara para que el N no parezca
-  arbitrario.
+- **197 bloques de día**, no 191. Hay 200 entradas de contratos APTO en
+  alcance, pero **2025-12-12, 2026-03-13 y 2026-06-12** — los tres viernes de
+  roll trimestral — tienen DOS contratos APTO con parámetros distintos. El
+  atlas (`tools/atlas_excursiones_nulas.py:400`) fusiona sus anclas en un solo
+  bucket por fecha, así que el conteo efectivo de días-bloque cae de 200 a 197.
+  Esas tres fechas SÍ aportan anclas y SÍ registran tasas en `por_dia_tasas`;
+  la reducción es deduplicación por fecha, no exclusión de días. Los ticks
+  6.791 / 13.216 / 9.812 citados corresponden al contrato SALIENTE de cada
+  par, no al día.
+
+  > **PENDIENTE DE PREREGISTRO.** Cómo se trata `n_eventos(d)` en las fechas
+  > con doble contrato: si se suman ambos contratos o si se usa el contrato
+  > vigente al cierre. Esa decisión cambia el denominador del estimando
+  > diario y debe estar explicitada antes de correr el estudio.
 - **Alcance por tipo de día**: `COMPLETO` + `CIERRE_SEMANAL`. Sin domingos
   (`APERTURA_SEMANAL`). **El estudio y su nulo usan exactamente los mismos
   tipos.** Si aparecen zonas en días fuera del alcance, el arnés **falla
   ruidoso** en vez de compararlas contra un nulo que no las cubre.
 - **Estratos**: exactamente los del atlas — 4 franjas horarias × 3 terciles de
   volatilidad rezagada = **12**. No 6, no otros.
-- **N efectivo para potencia**: `188 / b_opt`. Con `b_opt` de 13–18, eso es
-  **entre 10 y 14 unidades verdaderamente independientes**. Ese es el número que
+- **N efectivo para potencia**: `197 / b_opt`. Con `b_opt` de 13–18, eso es
+  **entre 11 y 15 unidades verdaderamente independientes**. Ese es el número que
   gobierna lo que el estudio puede y no puede detectar, y va escrito en el
   pre-registro antes de correrlo.

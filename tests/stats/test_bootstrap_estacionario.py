@@ -14,7 +14,7 @@ from edgelab.stats.bootstrap_estacionario import (bootstrap_bloque_fijo,
                                                   bootstrap_estacionario,
                                                   largo_de_bloque_optimo)
 
-N_DIAS = 188          # el N efectivo real del atlas
+N_DIAS = 197          # el N efectivo real del atlas
 
 
 def ar1(phi, n, rng):
@@ -37,7 +37,7 @@ def test_iid_da_bloque_corto():
 def test_b_opt_crece_con_la_dependencia():
     """(b) del F-MET: monotonía en phi. Es la propiedad que justifica el método.
 
-    Se compara la MEDIANA sobre repeticiones, no una sola muestra: con 188
+    Se compara la MEDIANA sobre repeticiones, no una sola muestra: con 197
     puntos, una autocorrelación espuria de 3 sigma en un lag mueve `m` y con él
     el resultado. Concluir de una realización sería leer ruido.
     """

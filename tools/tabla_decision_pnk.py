@@ -7,7 +7,7 @@ Cruza tres cosas que hasta ahora estaban separadas:
 1. **La tasa nula** de tocar el objetivo antes que el stop (placebos del atlas).
 2. **La fricción** de 2,7040 ticks round-trip: cuánto tiene que subir esa tasa
    para que la esperanza NETA llegue a cero.
-3. **La potencia**: cuál es el corrimiento más chico que los 188 días-bloque
+3. **La potencia**: cuál es el corrimiento más chico que los 197 días-bloque
    permiten distinguir del azar.
 
 ## Por qué las tres juntas y no la tasa sola
@@ -137,9 +137,9 @@ def main(argv=None):
         lift_be = min(be["desde_perdida"], be["desde_timeout"]) / t["p_objetivo"] - 1
         mde_rel = mde_est / t["p_objetivo"]
         factible = bool(be["factible_perdida"] or be["factible_timeout"])
-        # N EFECTIVO: 188 dias no son 188 observaciones independientes. Con
+        # N EFECTIVO: 197 dias no son 197 observaciones independientes. Con
         # dependencia de b_opt dias, el numero de bloques verdaderamente
-        # independientes es ~188/b_opt. Es el N que gobierna la potencia.
+        # independientes es ~197/b_opt. Es el N que gobierna la potencia.
         n_ef = est["n_bloques"] / max(est["b"], 1)
         # INDETECTABLE: el corrimiento minimo que se distingue del azar es MAYOR
         # que el que haria falta para pagar la friccion. O sea que ni una

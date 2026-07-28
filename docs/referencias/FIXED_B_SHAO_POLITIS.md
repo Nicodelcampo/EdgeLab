@@ -337,7 +337,7 @@ rango.
      decisión debe estar en el preregistro. Descartarlas cambia N y por
      lo tanto cambia b efectivo.
 
-  5. b = 0.08 con n = 188 da l = 15 y N = 174. Cae dentro de la grilla
+  5. b = 0.08 con n = 197 da l = 16 y N = 182. Cae dentro de la grilla
      (0, 0.20] para la que SP2013 provee valores críticos.
 
   6. COMPUERTA OBLIGATORIA. Antes de implementar la inferencia hay que
