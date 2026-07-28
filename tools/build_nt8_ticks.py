@@ -71,78 +71,108 @@ def sha256(path, bloque=1 << 20):
     return h.hexdigest()
 
 
-def parsear(path):
-    """`.Last.txt` -> arrays. Una sola pasada, sin cargar el texto entero."""
-    ts, last, bid, ask, vol = [], [], [], [], []
-    malas = 0
-    with io.open(path, encoding="utf-8", errors="replace") as fh:
-        for linea in fh:
-            p = linea.rstrip("\r\n").split(";")
-            if len(p) < 5 or len(p[0]) < 16:
-                malas += 1
-                continue
-            t = p[0]
-            try:
-                # 'yyyyMMdd HHmmss fffffff' -> ns UTC. La fraccion son unidades
-                # de 100 ns: 7 digitos, no microsegundos.
-                ns = (int(np.datetime64("%s-%s-%sT%s:%s:%s" % (
-                    t[0:4], t[4:6], t[6:8], t[9:11], t[11:13], t[13:15]), "ns")
-                    .astype("int64")) + int(t[16:23].ljust(7, "0")) * 100)
-                ts.append(ns); last.append(float(p[1])); bid.append(float(p[2]))
-                ask.append(float(p[3])); vol.append(int(p[4]))
-            except (ValueError, IndexError):
-                malas += 1
-    return (np.array(ts, dtype=np.int64), np.array(last), np.array(bid),
-            np.array(ask), np.array(vol, dtype=np.int32), malas)
+def parsear_lote(df):
+    """Un lote crudo -> arrays canónicos. Todo vectorizado, sin bucles de Python.
+
+    El parseo por línea con `float()` y `np.datetime64()` uno por uno funcionaba
+    con los 5 M de ticks de 6E, pero un contrato de ES trae ~80 M en 3,4 GB: las
+    listas de Python son ~32 bytes por objeto, o sea del orden de 16 GB sólo en
+    overhead antes de convertir a numpy. Con 16 GB de RAM y un atlas corriendo,
+    eso no termina.
+    """
+    t = df[0].astype(str)
+    # 'yyyyMMdd HHmmss fffffff' -> ns UTC. La fraccion son unidades de 100 ns:
+    # 7 digitos, no microsegundos.
+    base = pd.to_datetime(t.str.slice(0, 15), format="%Y%m%d %H%M%S", errors="coerce")
+    frac = pd.to_numeric(t.str.slice(16, 23), errors="coerce")
+    ok = base.notna() & frac.notna() & df[1].notna() & df[4].notna()
+    malas = int((~ok).sum())
+    if malas:
+        df, base, frac = df[ok], base[ok], frac[ok]
+    ts = base.values.astype("datetime64[ns]").astype(np.int64) + frac.values.astype(np.int64) * 100
+    return (ts, df[1].values.astype(np.float64), df[2].values.astype(np.float64),
+            df[3].values.astype(np.float64), df[4].values.astype(np.int32), malas)
 
 
-def construir(source, instrument, contract, tick_size, out_dir):
-    ts, last, bid, ask, vol, malas = parsear(source)
-    n = len(ts)
-    if not n:
-        raise SystemExit("FAIL: el archivo no tiene ticks parseables")
+CATS = ["buy", "sell", "unclassified"]
 
-    def a_ticks(x):
-        t = np.round(x / tick_size)
-        err = np.abs(x / tick_size - t)
-        return t.astype(np.int64), float(err.max())
 
-    px, e1 = a_ticks(last)
-    bd, e2 = a_ticks(bid)
-    ak, e3 = a_ticks(ask)
-    max_err = max(e1, e2, e3)
-    # FAIL-LOUD: si un precio no cae en la grilla, el tick_size esta mal y todo
-    # lo que siga seria basura silenciosa.
-    if max_err > 1e-6:
-        raise SystemExit("FAIL: precio fuera de la grilla de %s (error max %.3e). "
-                         "tick_size equivocado?" % (tick_size, max_err))
-
-    # Regla del constructor ORIGINAL, verificada sobre los 5 parquets viejos:
-    # dentro del spread NO se adivina, se marca `unclassified`. En 6E 09-26 no
-    # habia ninguno; en los otros cuatro hay entre 10 y 70 sobre millones. La
-    # primera version de esto abortaba ante el caso porque el unico parquet que
-    # se habia inspeccionado era el que no lo tenia.
-    agresor = np.where(px >= ak, "buy", np.where(px <= bd, "sell", "unclassified"))
-    n_medio = int((agresor == "unclassified").sum())
-    cruzado = int((bd > ak).sum())
-    if cruzado:
-        raise SystemExit("FAIL: %d ticks con bid > ask. Eso no es un libro "
-                         "posible: el archivo esta corrupto." % cruzado)
-
-    seq = np.arange(n, dtype=np.int64)
-    df = pd.DataFrame(dict(
-        ts_utc_ns=ts, ts_local_ns=ts, sequence=seq,
-        price_ticks=px, bid_ticks=bd, ask_ticks=ak,
-        volume=vol, aggressor=agresor, tick_type="trade",
-        instrument=instrument, contract=contract,
-        source_file=os.path.abspath(source), source_row=seq))
+def construir(source, instrument, contract, tick_size, out_dir, filas_por_lote=2_000_000):
+    """Streaming: lote -> parquet, sin tener el archivo entero en memoria."""
+    import pyarrow as pa
+    import pyarrow.parquet as pq_
 
     os.makedirs(out_dir, exist_ok=True)
     base = contract.replace(" ", "_")
     pq_path = os.path.join(out_dir, "%s_ticks.parquet" % base)
-    df.to_parquet(pq_path, index=False)
+    src_abs = os.path.abspath(source)
 
-    desorden = int((np.diff(ts) < 0).sum())
+    n = malas = n_medio = desorden = 0
+    max_err = 0.0
+    ultimo_ts = None
+    escritor = None
+    lector = pd.read_csv(source, sep=";", header=None, dtype={0: str},
+                         chunksize=filas_por_lote, engine="c",
+                         names=list(range(5)), on_bad_lines="skip")
+    try:
+        for lote in lector:
+            ts, last, bid, ask, vol, m = parsear_lote(lote)
+            malas += m
+            k = len(ts)
+            if not k:
+                continue
+
+            def a_ticks(x):
+                t = np.round(x / tick_size)
+                return t.astype(np.int64), float(np.abs(x / tick_size - t).max())
+
+            px, e1 = a_ticks(last)
+            bd, e2 = a_ticks(bid)
+            ak, e3 = a_ticks(ask)
+            max_err = max(max_err, e1, e2, e3)
+            # FAIL-LOUD: si un precio no cae en la grilla, el tick_size esta mal
+            # y todo lo que siga seria basura silenciosa.
+            if max_err > 1e-6:
+                raise SystemExit("FAIL: precio fuera de la grilla de %s (error max "
+                                 "%.3e). tick_size equivocado?" % (tick_size, max_err))
+            cruzado = int((bd > ak).sum())
+            if cruzado:
+                raise SystemExit("FAIL: %d ticks con bid > ask. Eso no es un libro "
+                                 "posible: el archivo esta corrupto." % cruzado)
+
+            # Regla del constructor ORIGINAL, verificada sobre los 5 parquets
+            # viejos: dentro del spread NO se adivina, se marca `unclassified`.
+            # La primera version abortaba ante el caso porque el unico parquet
+            # inspeccionado (6E 09-26) era justo el que no tenia ninguno.
+            cod = np.where(px >= ak, 0, np.where(px <= bd, 1, 2)).astype(np.int8)
+            n_medio += int((cod == 2).sum())
+
+            if ultimo_ts is not None and ts[0] < ultimo_ts:
+                desorden += 1
+            desorden += int((np.diff(ts) < 0).sum())
+            ultimo_ts = ts[-1]
+
+            seq = np.arange(n, n + k, dtype=np.int64)
+            tabla = pa.table({
+                "ts_utc_ns": ts, "ts_local_ns": ts, "sequence": seq,
+                "price_ticks": px, "bid_ticks": bd, "ask_ticks": ak,
+                "volume": vol,
+                "aggressor": pa.DictionaryArray.from_arrays(
+                    pa.array(cod, pa.int8()), pa.array(CATS)).cast(pa.string()),
+                "tick_type": pa.array(["trade"] * k),
+                "instrument": pa.array([instrument] * k),
+                "contract": pa.array([contract] * k),
+                "source_file": pa.array([src_abs] * k),
+                "source_row": seq})
+            if escritor is None:
+                escritor = pq_.ParquetWriter(pq_path, tabla.schema, compression="snappy")
+            escritor.write_table(tabla)
+            n += k
+    finally:
+        if escritor is not None:
+            escritor.close()
+    if not n:
+        raise SystemExit("FAIL: el archivo no tiene ticks parseables")
     man = dict(
         schema_version="canonical_tick_v1", tool="build_nt8_ticks",
         generated_utc=datetime.now(timezone.utc).isoformat(),
