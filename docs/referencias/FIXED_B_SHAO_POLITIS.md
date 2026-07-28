@@ -349,7 +349,48 @@ rango.
   7. Preferir SUBSAMPLING sobre MBB: con b = 0.08, R_b = 12.5 no es
      entero, y H(b) es una integral de dimensión 12 o 13.
 
-  8. Declarar explícitamente en el preregistro CUÁL funcional se usa:
-     G(b) de una cola, G_tilde(b) simétrico, o el bilateral de colas
-     iguales con G_{alpha/2}(b). Son tres constantes distintas.
+  8. DEFINICIONES. Con D(t) = W(b+t) - W(t) - b*W(1), t en [0, 1-b]:
+
+        G_tilde(b) = (1-b)^-1 ∫ 1{ |W(1)| <= |D(t)|/sqrt(b) } dt   simétrico
+        G(b)       = (1-b)^-1 ∫ 1{  W(1) <=  D(t)/sqrt(b) } dt     una cola superior
+
+        La tercera opción, bilateral con colas iguales, requiere G_{alpha/2}(b).
+
+  9. DECLARACIÓN. EXPLORE-001 usa G(b), una cola superior. La constante de
+     calibración es cuantil_G(b, alpha). NO cuantil_G_sim.
+
+        Fundamento: la pregunta científica es "¿theta > theta_BE?", unilateral
+        por construcción, y el arnés inferencial ya declara p-valor de una cola.
+        La opción de colas iguales se rechaza además porque exige una constante
+        nunca computada ni validada contra la compuerta.
+
+  10. DESAJUSTE REGISTRADO. La compuerta de Huang-Shao se ejecutó en c009009
+      sobre beta = P(G_sim = 0), es decir sobre el funcional simétrico, que no
+      es el que usará la inferencia. Recomputado sobre el funcional correcto
+      (50.000 réplicas, semilla 20260801):
+
+        b=0.0800 (grilla 5000)  beta_sim=0.01664  beta_1cola=0.01492  ic_inf=0.013687
+        b=0.0761 (grilla 4925)  beta_sim=0.01546  beta_1cola=0.01352  ic_inf=0.012347
+        b=0.0812 (grilla 4925)  beta_sim=0.01720  beta_1cola=0.01440  ic_inf=0.013189
+
+      El funcional de una cola degenera MENOS. El APTO se mantiene contra
+      alpha=0.05 y la prohibición del intervalo al 99% se mantiene porque
+      ic_inf > 0.01 en los tres casos, por Clopper-Pearson exacto con delta=0.01.
+
+  11. ADVERTENCIA OBLIGATORIA. El margen relativo sobre 0.01 cae de 53% (valor
+      citado sobre el simétrico) a entre 23,5% y 36,9%. Queda PROHIBIDO seguir
+      citando el 53%. La prohibición del 99% es dependiente de b: una vez sellado
+      n, hay que recomputar ic_inf al b definitivo antes de preregistrar el nivel
+      de confianza.
+
+  12. PROCEDENCIA. Estos valores provienen de una verificación externa
+      independiente, NO del módulo edgelab/stats/fixed_b.py, que hoy sólo
+      computa el funcional simétrico. Marcalos explícitamente como "pendientes
+      de reproducción en módulo". La reproducción va en el commit de migración
+      de GRILLA.
+
+  13. DEUDA ABIERTA que debe quedar escrita: el commit 5 debe incluir un test
+      que falle si el intervalo se construye con cuantil_G_sim. Ambas funciones
+      seguirán existiendo -- G_sim es necesaria para la compuerta -- así que el
+      riesgo de tomar la equivocada es permanente.
 
