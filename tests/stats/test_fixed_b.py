@@ -18,6 +18,7 @@ from edgelab.stats.fixed_b import (
     N_CAMINOS,
     SEMILLA,
     _cdf_binomial,
+    _clopper_pearson_lower,
     _clopper_pearson_upper,
     cota_de_cobertura,
     cuantil_G,
@@ -161,12 +162,18 @@ def test_golden_beta_008():
     assert cota["beta_por_supremo"] == pytest.approx(0.01664, abs=1e-9)
 
 
+def test_golden_veredicto_008_005():
+    v = veredicto_cota(0.08, 0.05)
+    assert v["veredicto"] == "APTO"
+    assert v["ic_sup"] == pytest.approx(0.018019588871084125, abs=1e-9)
+
+
 # --------------------------------------------------------------------- C) compuerta
 
 
 def test_veredicto_cota_devuelve_estructura_y_veredicto_valido():
     v = veredicto_cota(0.08, 0.05)
-    assert set(v.keys()) == {"b", "alpha", "beta", "ic_sup", "veredicto"}
+    assert set(v.keys()) == {"b", "alpha", "beta", "beta_por_supremo", "ic_sup", "ic_inf", "veredicto"}
     assert v["veredicto"] in {"APTO", "NO APTO", "INCONCLUSO"}
     assert v["b"] == pytest.approx(0.08)
     assert v["alpha"] == pytest.approx(0.05)
@@ -245,3 +252,37 @@ def test_coherencia_biseccion_con_decision():
         U = _clopper_pearson_upper(k, n)
         F_alpha = _cdf_binomial(k, n, alpha)
         assert (U <= alpha) == (F_alpha <= delta)
+
+
+def test_clopper_pearson_lower_k_cero_es_cero():
+    assert _clopper_pearson_lower(0, 100) == pytest.approx(0.0)
+
+
+def test_clopper_pearson_lower_k_igual_n():
+    v = _clopper_pearson_lower(100, 100)
+    assert 0.0 < v < 1.0
+
+
+def test_clopper_pearson_monotonia_ic_inf_beta_ic_sup():
+    cota = cota_de_cobertura(0.08)
+    assert cota["ic_inf"] <= cota["beta"] <= cota["ic_sup"]
+
+
+def test_clopper_pearson_lower_golden():
+    ic_inf = _clopper_pearson_lower(832, 50000)
+    assert ic_inf == pytest.approx(0.015337389893375075, abs=1e-9)
+
+
+def test_clopper_pearson_lower_consistencia_upper():
+    """ic_inf + ic_sup encierran beta; ic_inf no excede ic_sup."""
+    casos = [
+        (0, 100),
+        (50, 500),
+        (832, 50000),
+    ]
+    for k, n in casos:
+        lo = _clopper_pearson_lower(k, n)
+        hi = _clopper_pearson_upper(k, n)
+        assert lo <= hi
+        beta = k / n
+        assert lo <= beta <= hi

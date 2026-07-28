@@ -172,7 +172,7 @@ def _cdf_binomial(k, n, p) -> float:
 def _clopper_pearson_upper(k, n) -> float:
     """Límite superior de confianza Clopper-Pearson a nivel 0.99, una cola.
 
-    Resuelve F(p) = _delta con F(p) = P(X <= k; n, p) por bisección.
+    Resuelve F(p) = _DELTA_CP con F(p) = P(X <= k; n, p) por bisección.
     Si k == n, U = 1.0.
     """
     if k == n:
@@ -189,6 +189,31 @@ def _clopper_pearson_upper(k, n) -> float:
             hi = mid
     raise FixedBError(
         "bisección de Clopper-Pearson no convergió: k=%d, n=%d" % (k, n)
+    )
+
+
+def _clopper_pearson_lower(k, n, delta=_DELTA_CP) -> float:
+    """Límite inferior de confianza Clopper-Pearson a nivel 0.99, una cola.
+
+    Resuelve P(X <= k-1; n, p) = 1 - delta por bisección.
+    Si k == 0, L = 0.0.
+    """
+    if k == 0:
+        return 0.0
+    k_m1 = k - 1
+    target = 1.0 - delta
+    lo, hi = 0.0, 1.0
+    for _ in range(_BISEC_MAX_ITER):
+        mid = (lo + hi) / 2.0
+        if (hi - lo) <= _BISEC_TOL:
+            return mid
+        fmid = _cdf_binomial(k_m1, n, mid)
+        if fmid > target:
+            lo = mid
+        else:
+            hi = mid
+    raise FixedBError(
+        "bisección de Clopper-Pearson (inferior) no convergió: k=%d, n=%d" % (k, n)
     )
 
 
@@ -305,7 +330,7 @@ def cuantil_G_sim(b, alpha, **kw) -> float:
 
 
 def cota_de_cobertura(b, **kw) -> dict:
-    """Cota de cobertura beta(b) y límite superior de confianza de Clopper-Pearson.
+    """Cota de cobertura beta(b) e intervalos de confianza de Clopper-Pearson.
 
     Retorna
     -------
@@ -316,6 +341,10 @@ def cota_de_cobertura(b, **kw) -> dict:
             Fracción calculada directamente por el supremo.
         ic_sup: float
             Límite superior de confianza 0.99 para beta.
+        ic_inf: float
+            Límite inferior de confianza 0.99 para beta.
+        k: int
+            Cantidad de caminos con G_sim == 0 (el estadístico binomial).
         n_caminos: int
             Cantidad de caminos simulados.
     """
@@ -330,10 +359,13 @@ def cota_de_cobertura(b, **kw) -> dict:
     beta_puntual = ceros / n_caminos
     beta_supremo = float((sup_D < W1_abs).mean())
     ic_sup = _clopper_pearson_upper(ceros, n_caminos)
+    ic_inf = _clopper_pearson_lower(ceros, n_caminos)
     return {
         "beta": float(beta_puntual),
         "beta_por_supremo": beta_supremo,
         "ic_sup": float(ic_sup),
+        "ic_inf": float(ic_inf),
+        "k": ceros,
         "n_caminos": int(n_caminos),
     }
 
@@ -348,13 +380,13 @@ def veredicto_cota(b, alpha, **kw) -> dict:
 
     Retorna
     -------
-    dict con claves b, alpha, beta, ic_sup, veredicto.
+    dict con claves b, alpha, beta, beta_por_supremo, ic_sup, ic_inf, veredicto.
     """
     alpha = _validar_alpha(alpha)
     cota = cota_de_cobertura(b, **kw)
     beta = cota["beta"]
     n_caminos = cota["n_caminos"]
-    k = int(round(beta * n_caminos))
+    k = cota["k"]
     veredicto = "INCONCLUSO"
     if beta > alpha:
         veredicto = "NO APTO"
@@ -364,6 +396,8 @@ def veredicto_cota(b, alpha, **kw) -> dict:
         "b": float(b),
         "alpha": float(alpha),
         "beta": beta,
+        "beta_por_supremo": cota["beta_por_supremo"],
         "ic_sup": cota["ic_sup"],
+        "ic_inf": cota["ic_inf"],
         "veredicto": veredicto,
     }
