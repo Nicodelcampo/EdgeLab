@@ -28,11 +28,10 @@ Se incluyen a propósito dos procesos que **no** son AR(1):
 ## Métodos comparados
 
 - `fijo_b1`  — bloque fijo de 1 día: lo que usa el arnés HOY.
-- `pw2004`   — Politis–White 2004, la implementación vigente.
-- `ppw2009`  — **NO DISPONIBLE**. El repo no contiene las ecuaciones de la
-               corrección de 2009 (sólo una mención en un docstring). Ver el
-               informe de bloqueo: implementarla adivinando la errata sería
-               inventar el método que se está auditando.
+- `ppw2009`  — Politis–White 2004 corregido por Patton–Politis–White 2009. La
+               implementación está en `edgelab.stats.bootstrap_estacionario`
+               (`largo_de_bloque_optimo`) y las ecuaciones en
+               `docs/referencias/PPW2009_BLOQUE_OPTIMO.md`.
 
 Uso:  .venv/Scripts/python tools/bateria_cobertura_bootstrap.py [--sims 1000]
 """
@@ -149,11 +148,11 @@ def main(argv=None):
     print("  procesos: %s" % [p for p, _ in BATERIA])
     print("  n: %s   nominales: %s   sims: %d   reps: %d   seed: %d"
           % (TAMANOS, NOMINALES, a.sims, a.reps, SEED_BASE))
-    print("  metodos: fijo_b1, pw2004   (ppw2009 NO DISPONIBLE: falta la errata)")
+    print("  metodos: fijo_b1, ppw2009")
     print()
 
     filas = []
-    print("%-12s %5s %6s %10s %10s   %s" % ("proceso", "n", "nominal", "fijo_b1", "pw2004", "b_opt mediana"))
+    print("%-12s %5s %6s %10s %10s   %s" % ("proceso", "n", "nominal", "fijo_b1", "ppw2009", "b_opt mediana"))
     for nombre, gen in BATERIA:
         for n in TAMANOS:
             r = np.random.default_rng(SEED_BASE)
@@ -163,14 +162,13 @@ def main(argv=None):
                 cf = cobertura(gen, n, bootstrap_bloque_fijo, a.sims, a.reps, al, b=1)
                 cp = cobertura(gen, n, bootstrap_estacionario, a.sims, a.reps, al)
                 filas.append(dict(proceso=nombre, n=n, nominal=nom,
-                                  cob_fijo_b1=cf, cob_pw2004=cp,
+                                  cob_fijo_b1=cf, cob_ppw2009=cp,
                                   b_opt_mediana=float(np.median(bs)),
                                   b_opt_media=float(bs.mean()),
                                   b_opt_pct_1=float((bs == 1).mean())))
                 print("%-12s %5d %6.2f %10.3f %10.3f   %.1f" % (nombre, n, nom, cf, cp, np.median(bs)))
     json.dump(dict(seed=SEED_BASE, sims=a.sims, reps=a.reps,
-                   criterios=CRITERIOS, filas=filas,
-                   ppw2009="NO DISPONIBLE - falta la errata de 2009 en el repo"),
+                   criterios=CRITERIOS, filas=filas),
               open(a.out, "w", encoding="utf-8"), indent=1, ensure_ascii=False)
     print()
     print("salida: %s" % a.out)
