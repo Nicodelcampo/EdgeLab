@@ -130,6 +130,21 @@ Cada permutación **preserva la identidad del día y su tasa base**, así que la
 dependencia entre días es idéntica en todas y no puede inflar la significancia.
 Permutar bloques de días dejaría ~12 unidades y un p-valor mínimo de 0,083.
 
+**Nota sobre el pool nulo vs. los controles sorteados.** El atlas genera por día
+un pool de anclas placebo (`n_pool_null(d) ≈ 120`). La MCPT no usa el pool completo
+como muestra: para cada día sortea `k_d = n_eventos(d)` anclas de ese pool y las
+trata como la realización nula del día. Por lo tanto:
+
+  - `n_pool_null(d)` ≈ 120 son las anclas placebo disponibles;
+  - `k_d = n_eventos(d)` es la cantidad de eventos reales del día;
+  - `n_null_selected(d) = k_d` en cada realización MCPT.
+
+El estimador diario (`edgelab.stats.estimando_diario`) recibe una **única** muestra
+de eventos por ejecución —la observada real o una realización concreta de la MCPT—
+con conteos `n_eventos(d)` y sumas `sum_objetivo(d)`. Nunca recibe el pool completo
+junto con los eventos reales; la construcción de la distribución nula vive fuera
+de ese módulo.
+
 **Costo declarado**: no detecta efectos puramente *entre* días. La hipótesis es
 que el toque marca un **momento**, no un día.
 
