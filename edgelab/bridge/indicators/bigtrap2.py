@@ -1,4 +1,4 @@
-"""BigTrap2 v2.0 — traduccion 1:1 del kernel NT8 (BigTrap2.cs).
+"""BigTrap2 v2.2 — traduccion del kernel NT8 (BigTrap2.cs), con desviaciones declaradas.
 
 Por cierre de barra primaria: barra 0 descartada (footprint potencialmente
 parcial) -> FOOTPRINT_MISMATCH -> UpdateZones (lifecycle ANTES de crear:
@@ -18,6 +18,41 @@ Fidelidad 1:1 verificada contra BigTrap.txt (AMejorasIndicadoresVectorbt/):
 - Imbalance Diagonal: buy = ask[r]/max(bid[r-1],1); sell = bid[r]/max(ask[r+1],1).
 - iso "o" de C# (DateTime Kind=Unspecified) = 7 decimales sin offset (100 ns).
 - seq post-incremento desde 0; barra 0 descartada (footprint parcial).
+
+## Desviaciones declaradas frente a `BigTrap2.cs` v2.2 (kernel_contract §2.8)
+
+El `.cs` v2.2 agrega dos piezas que este kernel **no implementa**, y no por
+omision: **corrigen un defecto que el kernel Python no tiene**.
+
+1. **Secuenciador causal auto-verificante.** En NT8 el footprint se acumula
+   desde una subserie de 1 tick (BIP1) que llega **desfasada** del callback de
+   cierre de la barra primaria (BIP0): al cerrar la barra, el balde contiene los
+   eventos que *habian llegado*, no los que *le corresponden*. Medido en
+   `tick:25`: baldes de 15 a 34 eventos donde debian ser 25. v2.2 lo arregla
+   desacoplando las dos corrientes y uniendolas por **identidad de barra**.
+   Aca no hay dos corrientes: `bars.build_footprints` recorre los ticks y los
+   asigna por `tick_bar_idx`, **el mismo slice** con el que `_ohlc` calculo el
+   volumen y el OHLC de esa barra. La correspondencia es exacta por
+   construccion, no por sincronizacion.
+
+2. **Politica de rotura (`sesionNoConfiable`).** Cuando el `.cs` no puede
+   verificar un par (snapshot, bloque), marca el **resto de la sesion** como no
+   confiable y **suprime la creacion de zonas** hasta la frontera siguiente. Es
+   la defensa correcta contra (1): una zona nacida de un footprint no verificado
+   entra al store con la misma apariencia que una buena. Aca ese estado es
+   inalcanzable si (1) vale, asi que la politica seria **codigo muerto**.
+
+**No se argumenta: se mide.** `tests/bridge/test_desviacion_rotura.py` verifica
+sobre una ventana REAL y en las dos resoluciones de tick que, barra por barra,
+`suma(footprint) == volumen_barra` y que el OHLC del slice de ticks coincide con
+el OHLC de la barra — las dos condiciones que el `.cs` v2.2 evalua para decidir
+si rompe. Si alguna vez fallan, la politica **deja de ser no-op** y hay algo que
+portar; la suite se entera en ese momento y no en una auditoria.
+
+**Cuidado con `FOOTPRINT_MISMATCH`**: el evento cambio de metrica entre v2.1
+(`|suma(footprint) - vol_barra| > 0.5`) y v2.2 (identidad OHLC del bloque)
+**sin cambiar de nombre**. Las tasas de una version no son comparables con las
+de la otra. Este kernel emite la metrica v2.1.
 
 Identidad multi-barra: cada resolución (time:1, tick:5, tick:25, …) es una
 configuración distinta. El bar_key entra al param_set_id (viewer_export) y es
@@ -82,7 +117,7 @@ PARAM_SPEC = {
 
 
 def meta_line(p, instrument, tick_size):
-    return ("# meta indicator=BigTrap2,version=2.0,footprint=reconstructed_1tick_subseries,"
+    return ("# meta indicator=BigTrap2,version=2.2,footprint=reconstructed_1tick_subseries,"
             "classifier=bidask_then_tickrule,row_anchor=absolute_grid,"
             "ratio_floor=max(opposite,1),poc_tiebreak=lowest_row,"
             "imbalance_mode={0},trap_volume={1},ticks_per_row={2},imbalance_ratio={3},"
