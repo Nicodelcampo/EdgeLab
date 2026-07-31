@@ -37,6 +37,14 @@ import pandas as pd
 AQUI = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(AQUI)
 sys.path.insert(0, os.path.join(AQUI, "Kronos"))
+# El repo va al FINAL del path: `Kronos` conserva prioridad y no se le sombrea
+# nada. Se agrega sólo para poder importar la puerta única del holdout, que es
+# stdlib pura (`os`, `json`, `datetime`) y no arrastra ninguna dependencia del
+# lock principal al venv del sidecar.
+if REPO not in sys.path:
+    sys.path.append(REPO)
+
+from edgelab.research.universo_estudio import cargar_dias_de_estudio  # noqa: E402
 
 CT = "America/Chicago"
 SEED = 20260727
@@ -93,14 +101,22 @@ def main(argv=None):
     log("torch %s  threads=%d  cuda=%s" % (torch.__version__, a.threads,
                                            torch.cuda.is_available()))
 
-    man = json.load(open(a.manifiesto, encoding="utf-8"))
+    # PUERTA UNICA del holdout (INC-002). Antes esto era
+    # `json.load(open(a.manifiesto))` SIN ningun filtro de fecha: el mismo patron
+    # que dejo entrar 10 dias del holdout al atlas nulo. No estaba causando dano
+    # por CASUALIDAD -- el contrato con dias de holdout (6E 09-26) es el que
+    # menos dias tiene, asi que el `max()` de abajo nunca lo elegia. Eso no es
+    # una proteccion, es una coincidencia que cualquier regeneracion de F2 puede
+    # dar vuelta sin que nadie lo note.
+    dias, info_holdout = cargar_dias_de_estudio(a.manifiesto)
     por_arch = {}
-    for d in man["dias"]:
+    for d in dias:
         por_arch.setdefault(d["archivo"], []).append(d["fecha"])
     # se usa el contrato con mas dias aptos: mas muestras de la MISMA pregunta
     archivo = max(por_arch, key=lambda k: len(por_arch[k]))
     fechas = set(por_arch[archivo])
-    log("universo: %s con %d dias aptos" % (archivo, len(fechas)))
+    log("universo: %s con %d dias aptos (holdout descartado: %d dias)"
+        % (archivo, len(fechas), info_holdout["descartados_holdout"]))
 
     k = cargar_barras(archivo, fechas)
     if k is None or len(k) < LOOKBACK + VOL_LOOKBACK + PRED_LEN + 10:

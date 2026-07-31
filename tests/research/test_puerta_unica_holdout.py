@@ -39,11 +39,37 @@ EXENTOS = {
 }
 
 
+# ALCANCE DEL ENFORCEMENT — leer antes de tocar.
+#
+# Esta tupla NO es "dónde suele haber consumidores del manifiesto": es la
+# superficie que este test vigila. **Lo que queda afuera es invisible**, y un
+# punto ciego de alcance es indistinguible de un test que pasa.
+#
+# `sidecar` se agregó el 2026-07-31. Estuvo fuera desde el principio porque
+# corre en un venv aislado (`sidecar/kronos_env`), y ese aislamiento se leyó
+# como si también aislara del firewall. No aisla: `sidecar/kronos_paso2.py`
+# venía leyendo el manifiesto con `json.load(open(...))` y **sin ningún filtro
+# de fecha** — exactamente el patrón de INC-002, en la carpeta que este test no
+# miraba. No causó daño por casualidad, no por diseño.
+#
+# REGLA: toda carpeta nueva con código que se ejecuta se agrega acá **en el
+# mismo commit** que la crea. Si el enforcement no la cubre, no existe.
+CARPETAS_VIGILADAS = ("tools", "edgelab", "sidecar")
+
+# Subcarpetas de terceros: venv aislado, pesos del modelo y repo vendorizado.
+# Están en `.gitignore`, no las escribimos nosotros, y recorrerlas haría que el
+# test crawlee miles de archivos ajenos.
+_NO_ES_CODIGO_NUESTRO = ("kronos_env", "Kronos", "pesos", "__pycache__",
+                         ".venv", "node_modules")
+
+
 def _fuentes():
-    for base in ("tools", "edgelab"):
-        for root, _dirs, files in os.walk(os.path.join(REPO, base)):
-            if "__pycache__" in root:
-                continue
+    for base in CARPETAS_VIGILADAS:
+        raiz = os.path.join(REPO, base)
+        if not os.path.isdir(raiz):
+            continue
+        for root, dirs, files in os.walk(raiz):
+            dirs[:] = [d for d in dirs if d not in _NO_ES_CODIGO_NUESTRO]
             for f in files:
                 if f.endswith(".py"):
                     p = os.path.join(root, f)
