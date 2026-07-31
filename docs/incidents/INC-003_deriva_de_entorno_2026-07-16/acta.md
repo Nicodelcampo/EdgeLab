@@ -45,7 +45,8 @@ Salidas finales de pytest verbatim. El baseline esperado era `510 passed, 3 dese
 | `C:\Freqtrade\...\venv` | 2.3.3 | 22.0.0 |
 | `C:\NicoEdgeFinder\...\venv` | 2.2.3 | 18.1.0 |
 | `C:\TradingPlayground\.venv` | 3.0.3 | 24.0.0 |
-| `E:\EdgeLab\.venv` (nuevo) | **3.0.3** | **25.x** ✅ |
+| `E:\EdgeLab\.venv` (canónico) | **3.0.3** | **25.0.0** ✅ |
+| `E:\EdgeLab\sidecar\kronos_env` | n/a | no instalado |
 
 ### Resultados de Verificación en `.venv`
 
