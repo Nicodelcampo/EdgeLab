@@ -228,3 +228,55 @@ multiplica `n` por 3, y cada uno tiene su propia estructura de fricción — el
 3. **El régimen de frecuencia objetivo** — no es estadístico (la frecuencia es
    aproximadamente neutra para detectar) sino operativo, pero el §2.4 muestra que
    f=1 está doblemente restringido.
+
+---
+
+## 2-bis. Régimen de signo — uno por hipótesis, declarado antes de correr
+
+El salto de potencia de 24× vino de pasar a un estadístico **con signo**, y un
+estadístico con signo necesita una dirección por ancla. Los candidatos no son
+iguales en eso.
+
+**Verificación previa (bloqueante para H1): PASA.** `oracles/BigTrap2_tick25_6E_0926_v22.csv`
+emite `side=` en las **482** `ZONE_CREATED`
+(`zone_id=3006_S;created_bar=3006;side=trapped_sellers;...`). Balance
+**260 `trapped_sellers` / 222 `trapped_buyers` = 54/46**, muy lejos del ~70/30 que
+lo descalificaría. El signo es información direccional real.
+
+**RÉGIMEN A — dirección nativa. Sólo H1 (BigTrap2).**
+Estadístico = expectativa **neta con signo contra 0**, con la dirección que emite
+el indicador. Es el régimen potente: no gasta datos estimando el signo.
+
+**RÉGIMEN B — dirección como salida. H2 y H3 (zonas).**
+Estadístico = `|excursión bruta|` contra la fricción 2,704; el signo se lee del
+resultado. Es **un** test bilateral, **no dos**: no consume multiplicidad extra.
+Razón registrada: con la fricción dentro del estadístico, fade y break no son
+espejos (`neto_fade = bruto − 2,704`; `neto_break = −bruto − 2,704`) y no pueden
+ser ambos positivos.
+
+**PROHIBIDO:** correr el régimen A con la dirección elegida **después** de ver el
+resultado. Es el régimen B con la potencia del A, y es inflación pura.
+
+## 2-ter. Barrido de resolución de BigTrap2
+
+**Grilla declarada hoy, cerrada, no ampliable después de ver resultados:**
+`10, 15, 25, 50, 100` ticks, más `time:1` como **control fuera de la familia**.
+
+**Costo ya pagado:** `M_eff` 21,2 → ~106, `z` 3,041 → 3,50, **MDE +11,8%**. El
+margen medido a f=10 es **1,60×**, así que entra con holgura. Bonferroni es
+conservador con la correlación fuerte entre resoluciones vecinas, así que el
+costo real es menor — **anotado, no aprovechado**.
+
+**Criterio de muerte específico de H1, más exigente que el general:**
+
+> H1 **VIVE** sólo si pasa una **banda contigua de ≥3 resoluciones adyacentes**.
+> Un pico aislado con los vecinos muertos se declara **MUERTO** aunque su IC
+> ajustado supere el umbral.
+
+Fundamento: si el efecto es real es un fenómeno de agregación y debe variar
+**suavemente** con la resolución. Esto compra robustez; no es cazar el mejor
+número. **Entregable: la curva completa resolución × expectativa neta con IC —
+la CURVA, nunca el argmax.**
+
+Si el barrido sale caro, se recorta la grilla **antes** de correr y se declara;
+nunca después de ver resultados.
