@@ -73,36 +73,67 @@ def cargar_dias_de_estudio(manifiesto, tipos_de_dia=None, *,
 
     validos = []
     en_holdout = []
+    en_cuarentena = []
     for d in dias:
         if not (all(k in d for k in ("fecha", "archivo", "n_ticks"))):
             raise UniversoError("Formato de manifiesto inválido.")
 
-        # --- CUARENTENA PERMANENTE (INC-005) ---
-        # 2026-07-01 a 2026-07-16 fueron quemados por contaminación cruzada manual.
-        # No pueden ser pre-holdout ni holdout. Se destruyen de manera silenciosa
-        # al nivel del estudio.
-        if "2026-07-01" <= d["fecha"] <= "2026-07-16":
-            continue
+        # --- CUARENTENA PERMANENTE (INC-005, ampliada) ---
+        # 2026-07-01 a 2026-07-24 fueron quemados por contaminación cruzada manual.
+        # El censo con min()/max() REALES (no primera/última línea del CSV)
+        # confirma que la extracción de oráculos alcanza 2026-07-24T17:59:20
+        # (BigTrap2_diag_tick25, BigTrap2_time1_v2, Gaps2). El censo anterior
+        # leía primera/última línea, que con corridas concatenadas o campos
+        # internos con timestamps futuros daba rangos incorrectos o invertidos.
+        # No pueden ser pre-holdout ni holdout.
+        #
+        # OJO: cuarentena y frontera son mecanismos DISTINTOS y ambos hacen
+        # falta. La cuarentena quema días por contaminación de procedencia; la
+        # frontera (`holdout_guard.HOLDOUT_START_ISO`) sella por metodología.
+        # Que un día caiga en cuarentena no dice nada sobre el sello, y
+        # viceversa. Colapsarlos en un solo mecanismo perdería una de las dos.
+        # El orden importa y no es cosmético. La versión previa hacía
+        # `continue` acá, ANTES de clasificar por el sello: eso hacía
+        # desaparecer los días quemados de la contabilidad del holdout, así que
+        # `descartados_holdout` daba 0 y la puerta ya no podía demostrar que
+        # estaba filtrando. Un día puede estar quemado Y sellado a la vez —de
+        # hecho hoy TODOS los quemados caen dentro del sello—, y cada mecanismo
+        # se contabiliza por separado.
+        quemado = "2026-07-01" <= d["fecha"] <= "2026-07-24"
+        if quemado:
+            en_cuarentena.append(d)
 
         if d["fecha"] >= HOLDOUT_DESDE:
-            en_holdout.append(d)
-        else:
+            en_holdout.append(d)      # contabilidad del sello, quemado o no
+        elif not quemado:
             validos.append(d)
+        # quemado y pre-holdout: no entra a `validos` ni a ningún otro lado.
 
     if not incluir_holdout:
         return validos, dict(
             descartados_holdout=len(en_holdout),
-            fechas_holdout=sorted({d["fecha"] for d in en_holdout}))
+            fechas_holdout=sorted({d["fecha"] for d in en_holdout}),
+            descartados_cuarentena=len(en_cuarentena),
+            fechas_cuarentena=sorted({d["fecha"] for d in en_cuarentena}))
 
     if not purpose:
         raise UniversoError(
             "incluir_holdout=True exige `purpose` explícito. El holdout no se "
             "abre por omisión: si de verdad hace falta, es decisión de Nico y "
             "queda registrada en docs/holdout_access_log.md")
-    if not en_holdout:
-        return dias, dict(descartados_holdout=0, fechas_holdout=[])
-    fechas = sorted({d["fecha"] for d in en_holdout})
+    # Ni siquiera una apertura sancionada entrega días quemados: la cuarentena
+    # es de PROCEDENCIA (el dato está contaminado y no sirve para nada), no de
+    # metodología. Antes esta rama devolvía `dias` crudo y los dejaba pasar.
+    quemadas = {d["fecha"] for d in en_cuarentena}
+    holdout_servible = [d for d in en_holdout if d["fecha"] not in quemadas]
+    info_cuarentena = dict(descartados_cuarentena=len(en_cuarentena),
+                           fechas_cuarentena=sorted(quemadas))
+    if not holdout_servible:
+        return validos, dict(descartados_holdout=0, fechas_holdout=[],
+                             **info_cuarentena)
+    fechas = sorted({d["fecha"] for d in holdout_servible})
     check_holdout(fechas[0] + "T00:00:00", fechas[-1] + "T23:59:59",
                   purpose=purpose, caller=caller)
-    return dias, dict(descartados_holdout=0, fechas_holdout=fechas,
-                      apertura_registrada=True)
+    return validos + holdout_servible, dict(
+        descartados_holdout=0, fechas_holdout=fechas,
+        apertura_registrada=True, **info_cuarentena)

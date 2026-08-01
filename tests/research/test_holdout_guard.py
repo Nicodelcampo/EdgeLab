@@ -104,6 +104,57 @@ def test_default_log_path_points_to_docs():
     assert DEFAULT_LOG_PATH.replace("\\", "/").endswith("docs/holdout_access_log.md")
 
 
+# --------------------------------------------------------------------------
+# REGLA 95 — la frontera es un sello, no un cursor. Regresión de INC-006.
+#
+# El 2026-08-01 03:16 un commit `chore` movió la frontera a 2026-08-01 y
+# des-selló julio entero. Los tests que había NO lo atajaron: sólo comparaban
+# contra `HOLDOUT_START_ISO`, o sea contra el valor ya corrompido. Un test que
+# lee la misma constante que el código bajo prueba no prueba nada.
+#
+# Por eso estos cuatro anclan contra el SELLO (literal, histórico) y contra el
+# RELOJ, que son las dos cosas que un editor del futuro no puede redefinir.
+# --------------------------------------------------------------------------
+
+def test_el_sello_original_es_el_literal_historico():
+    """Ancla dura. Si alguien edita el sello, esto falla y es lo correcto:
+    mover el sello es una decisión de Nico, no un refactor."""
+    from edgelab.research.holdout_guard import _SELLO_ORIGINAL_ISO
+    assert _SELLO_ORIGINAL_ISO == "2026-07-01T00:00:00"
+
+
+def test_la_frontera_no_se_puede_atrasar_ni_editando_la_declarada():
+    """El fix estructural: declarar una frontera POSTERIOR al sello no
+    des-sella nada. Es la reproducción exacta del edit de INC-006."""
+    from edgelab.research.holdout_guard import _resolver_frontera
+    # el edit que causó INC-006, ahora inocuo
+    assert _resolver_frontera("2026-08-01T00:00:00") == "2026-07-01T00:00:00"
+    assert _resolver_frontera("2026-12-31T00:00:00") == "2026-07-01T00:00:00"
+    # adelantarla SÍ se permite: sella MÁS material, nunca menos
+    assert _resolver_frontera("2026-06-01T00:00:00") == "2026-06-01T00:00:00"
+
+
+def test_el_sello_protege_algo_contra_la_fecha_del_sistema():
+    """Corre contra el reloj real, no contra un literal.
+
+    INC-006 no fue dañino el día que se escribió: venció solo cuando el reloj
+    cruzó la frontera. Un test con fecha fija no puede detectar eso; éste sí,
+    y va a fallar el día en que la frontera vuelva a quedar en el futuro."""
+    from edgelab.research.holdout_guard import verificar_sello
+    verificar_sello()          # levanta SelloInvalido si el holdout quedó vacío
+
+
+def test_frontera_en_el_futuro_es_sello_invalido():
+    """La condición que `verificar_sello` detecta, con la geometría de INC-006:
+    frontera 2026-08-01 evaluada el 2026-07-31 => cero días sellados."""
+    from datetime import datetime, timezone
+
+    from edgelab.research.holdout_guard import SelloInvalido, verificar_sello
+    with pytest.raises(SelloInvalido):
+        verificar_sello(datetime(2026, 7, 31, 12, 0, tzinfo=timezone.utc),
+                        frontera_iso="2026-08-01T00:00:00")
+
+
 def test_real_log_file_has_retroactive_gaps2_entry():
     # el log real del repo (no tmp_path) debe tener la fila retroactiva de la
     # validación de paridad de Gaps2 (F4C), append-only desde su creación.

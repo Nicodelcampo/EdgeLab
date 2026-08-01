@@ -75,7 +75,15 @@ detalle en `edge_validation_contract.md`):
 
 ## Firewall del holdout
 
-Holdout sellado: **2026-08-01 – 2026-12-31**. (El mes de julio de 2026 fue absorbido formalmente a la muestra pre-holdout tras las validaciones estructurales de INC-002 e INC-005, cuarentenando la primera quincena). Una sola apertura por candidato, conforme a protocolo pre-declarado.
+Holdout sellado: **2026-07-01 → 2026-12-31**. Una sola apertura por candidato,
+conforme a protocolo pre-declarado.
+
+> **La frontera es un sello, no un cursor (regla 95).** El 2026-08-01 un commit
+> etiquetado `chore` la movió a 2026-08-01 declarando que julio "fue absorbido
+> a la muestra pre-holdout". Eso no es una repartición: es des-sellar un mes ya
+> protegido, y además venció solo cuando el reloj cruzó la fecha. Revertido en
+> INC-006. La frontera efectiva hoy se calcula como `min(sello, declarada)`, de
+> modo que atrasarla es imposible por construcción, no por convención.
 - **Prohibido** usarlo para elegir dirección, entradas/salidas, thresholds,
   bar_spec, costos o candidatos.
 - **Permitido** solo para validaciones target-free (paridad, determinismo,

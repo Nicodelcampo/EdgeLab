@@ -7,11 +7,31 @@ tocar cualquier rango de fechas.
 
 Única fuente de verdad de la fecha de corte: `HOLDOUT_START_ISO` abajo,
 citada textualmente de `docs/NORTH_STAR.md` ("Holdout sellado: 2026-07-01 →
-2026-12-31") y `docs/edge_validation_contract.md` §G4. Verificado (grep) que
-NINGÚN otro archivo `.py` de este repo define esta fecha — no hay una segunda
-fuente en código con la que pueda entrar en conflicto. Si en el futuro
-aparece una segunda definición en código, ese conflicto se resuelve a mano
-(consultar a Nico), nunca promediando ni ignorando una de las dos.
+2026-12-31") y `docs/edge_validation_contract.md` §G4.
+
+AVISO (2026-08-01): existe una SEGUNDA definición de la fecha en código,
+`tools/censo_es_nq.py:91` (`HOLDOUT_DESDE = "2026-07-01"`, hardcodeada). Hoy
+coincide con el sello, así que no hay conflicto activo, pero la afirmación
+anterior de este docstring ("ningún otro archivo define esta fecha") era
+falsa. Unificarla es trabajo pendiente y se decide con Nico; mientras tanto
+queda declarada acá para que nadie la vuelva a dar por inexistente.
+
+## LA FRONTERA ES UN SELLO, NO UN CURSOR (regla 95)
+
+INC-006: el 2026-08-01 03:16 un commit etiquetado `chore` movió la frontera de
+2026-07-01 a 2026-08-01. Eso no "reparticiona" nada: **des-sella** el mes de
+julio, que estaba protegido. Y el daño no fue inmediato — la frontera quedó
+apuntando al futuro y **venció sola** cuando el reloj cruzó el 2026-08-01.
+
+Un sello sólo puede moverse en la dirección que protege MÁS. Por eso la
+frontera efectiva ya no es un literal editable sino `min(sello, declarada)`:
+adelantarla (sellar más data) es posible; atrasarla (des-sellar) es
+aritméticamente imposible, no "está prohibido por una convención".
+
+La segunda mitad del ataque es temporal y la cubre `verificar_sello()`: una
+frontera situada en el FUTURO deja cero material sellado — el holdout existe
+en el papel y está vacío en los hechos. Eso es exactamente lo que pasó el
+2026-07-31, y por eso el test lo evalúa contra la fecha del sistema.
 
 Nota de alcance: el contrato declara un rango cerrado (2026-07-01→2026-12-31),
 pero esta implementación (siguiendo la instrucción literal de la fase 3b)
@@ -26,10 +46,26 @@ from __future__ import annotations
 import os
 from datetime import datetime, timezone
 
-HOLDOUT_START_ISO = "2026-08-01T00:00:00"
+# EL SELLO. Este literal es HISTORIA, no configuración: es la fecha en que el
+# holdout se cerró. No se edita nunca, ni para "reparticionar", ni para
+# "absorber" meses a la muestra de desarrollo, ni por conveniencia de un
+# estudio. Si alguna vez hubiera que abrir holdout, se hace por el protocolo
+# de apertura (una por candidato, registrada en el log), no moviendo esto.
+_SELLO_ORIGINAL_ISO = "2026-07-01T00:00:00"
+
+# Frontera declarada por el contrato vigente. Un editor futuro puede tocar
+# ESTA línea; no puede con eso des-sellar nada, porque abajo se toma el
+# mínimo contra el sello.
+_FRONTERA_DECLARADA_ISO = "2026-07-01T00:00:00"
+
 HOLDOUT_END_ISO = "2026-12-31T23:59:59.999999"   # declarado, no forzado (ver nota arriba)
 
 _VALID_PURPOSES = ("development", "target_free_validation")
+
+
+class SelloInvalido(RuntimeError):
+    """El sello del holdout está en un estado que no protege nada."""
+
 
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 DEFAULT_LOG_PATH = os.path.join(_REPO_ROOT, "docs", "holdout_access_log.md")
@@ -58,6 +94,48 @@ def _iso_to_dt(s):
 
 def _now_iso():
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _resolver_frontera(declarada_iso=None, sello_iso=None):
+    """Frontera efectiva = la MÁS TEMPRANA entre el sello y la declarada.
+
+    `min()` no es una preferencia de estilo: es la mitad estructural de la
+    regla 95. Adelantar la frontera sella MÁS material (seguro y permitido);
+    atrasarla des-sella material ya protegido (INC-006). Tomando el mínimo,
+    editar `_FRONTERA_DECLARADA_ISO` hacia adelante no tiene ningún efecto —
+    no hay que confiar en que nadie lo haga.
+    """
+    declarada_iso = declarada_iso or _FRONTERA_DECLARADA_ISO
+    sello_iso = sello_iso or _SELLO_ORIGINAL_ISO
+    return sello_iso if _iso_to_dt(declarada_iso) > _iso_to_dt(sello_iso) else declarada_iso
+
+
+HOLDOUT_START_ISO = _resolver_frontera()
+
+
+def verificar_sello(ahora=None, *, frontera_iso=None):
+    """Levanta `SelloInvalido` si el sello no protege nada. Corre contra reloj.
+
+    La otra mitad de la regla 95, y la que hubiera atajado INC-006 el día que
+    se escribió: una frontera situada en el FUTURO respecto de ahora deja el
+    holdout **vacío** — todo lo realizado queda del lado de desarrollo. En el
+    papel el holdout sigue existiendo; en los hechos no hay ni un día adentro.
+
+    Por eso el chequeo es temporal y no puede ser un literal en un test: el
+    commit de INC-006 era inofensivo el 2026-07-31 y se volvió dañino solo,
+    sin que nadie tocara una línea, cuando el reloj cruzó la frontera.
+    """
+    ahora = ahora or datetime.now(timezone.utc)
+    if ahora.tzinfo is None:
+        ahora = ahora.replace(tzinfo=timezone.utc)
+    frontera = _iso_to_dt(frontera_iso or HOLDOUT_START_ISO)
+    if frontera > ahora:
+        raise SelloInvalido(
+            "la frontera del holdout (%s) está en el FUTURO respecto de %s: "
+            "no hay un solo día sellado y todo el material realizado quedó "
+            "del lado de desarrollo. Es el modo de falla de INC-006. La "
+            "frontera es un sello, no un cursor (regla 95)."
+            % (frontera.isoformat(), ahora.isoformat()))
 
 
 def _ensure_log(log_path):

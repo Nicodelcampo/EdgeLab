@@ -157,8 +157,10 @@ adverso < 0; DD neto de desarrollo > USD 2.500 por contrato; expectancy neta
 
 ## G4 — Confirmación OOS (holdout sellado)
 
-- Holdout: **2026-08-01 – 2026-12-31**. **Una sola apertura por candidato**,
+- Holdout: **2026-07-01 → 2026-12-31**. **Una sola apertura por candidato**,
   después de aprobar G3, con protocolo firmado antes de abrir.
+  (Movido indebidamente a 2026-08-01 el 2026-08-01; revertido en INC-006. La
+  frontera es un sello, no un cursor — regla 95.)
 - Duros, pre-declarados: **PASS** = expectancy neta base > 0 en el holdout con
   n ≥ 30 trades y ≥ **50%** de la expectancy de desarrollo. **FAIL** = neta ≤ 0.
   **WARN** = neta > 0 pero < 50% de desarrollo o n < 30 (revisión de Nico).
@@ -171,7 +173,7 @@ adverso < 0; DD neto de desarrollo > USD 2.500 por contrato; expectancy neta
   end_utc, *, purpose, caller, log_path=None)`. Toda función de carga de datos
   para research económico de estrategias debe llamarlo ANTES de tocar
   cualquier rango. `purpose` es obligatorio, sin default, uno de:
-  - `"development"` — si el rango toca `HOLDOUT_START` (2026-08-01, única
+  - `"development"` — si el rango toca `HOLDOUT_START` (2026-07-01, única
     fuente de verdad en `holdout_guard.HOLDOUT_START_ISO`, citada de este
     documento y de `NORTH_STAR.md`) levanta `HoldoutViolation` (excepción
     dura) y registra el intento denegado en el log. Si el rango es enteramente
