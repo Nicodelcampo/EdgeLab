@@ -75,8 +75,7 @@ detalle en `edge_validation_contract.md`):
 
 ## Firewall del holdout
 
-Holdout sellado: **2026-07-01 → 2026-12-31**. Una sola apertura por candidato,
-conforme a protocolo pre-declarado.
+Holdout sellado: **2026-08-01 – 2026-12-31**. (El mes de julio de 2026 fue absorbido formalmente a la muestra pre-holdout tras las validaciones estructurales de INC-002 e INC-005, cuarentenando la primera quincena). Una sola apertura por candidato, conforme a protocolo pre-declarado.
 - **Prohibido** usarlo para elegir dirección, entradas/salidas, thresholds,
   bar_spec, costos o candidatos.
 - **Permitido** solo para validaciones target-free (paridad, determinismo,

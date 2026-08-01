@@ -26,7 +26,7 @@ from __future__ import annotations
 import os
 from datetime import datetime, timezone
 
-HOLDOUT_START_ISO = "2026-07-01T00:00:00"
+HOLDOUT_START_ISO = "2026-08-01T00:00:00"
 HOLDOUT_END_ISO = "2026-12-31T23:59:59.999999"   # declarado, no forzado (ver nota arriba)
 
 _VALID_PURPOSES = ("development", "target_free_validation")
