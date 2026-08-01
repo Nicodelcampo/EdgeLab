@@ -71,9 +71,26 @@ def cargar_dias_de_estudio(manifiesto, tipos_de_dia=None, *,
                 "antes de usarlo en un estudio" % len(faltan))
         dias = [d for d in dias if d["tipo_de_dia"] in tipos_de_dia]
 
-    en_holdout = [d for d in dias if d["fecha"] >= HOLDOUT_DESDE]
+    validos = []
+    en_holdout = []
+    for d in dias:
+        if not (all(k in d for k in ("fecha", "archivo", "n_ticks"))):
+            raise UniversoError("Formato de manifiesto inválido.")
+
+        # --- CUARENTENA PERMANENTE (INC-005) ---
+        # 2026-07-01 a 2026-07-16 fueron quemados por contaminación cruzada manual.
+        # No pueden ser pre-holdout ni holdout. Se destruyen de manera silenciosa
+        # al nivel del estudio.
+        if "2026-07-01" <= d["fecha"] <= "2026-07-16":
+            continue
+
+        if d["fecha"] >= HOLDOUT_DESDE:
+            en_holdout.append(d)
+        else:
+            validos.append(d)
+
     if not incluir_holdout:
-        return [d for d in dias if d["fecha"] < HOLDOUT_DESDE], dict(
+        return validos, dict(
             descartados_holdout=len(en_holdout),
             fechas_holdout=sorted({d["fecha"] for d in en_holdout}))
 
