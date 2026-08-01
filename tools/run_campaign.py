@@ -18,7 +18,7 @@ Uso:
 Formato (.toml):
   campaign_id = "gaps2_smoke"
   store       = "runs/nt8_bridge/store"
-  chart_tz    = "UTC"
+  chart_tz    = "America/Argentina/Buenos_Aires"   # OBLIGATORIO, sin default
   max_configs = 50
   [data]
     parquet   = "data/nt8/6E/6E_09-25_ticks.parquet"
@@ -93,8 +93,16 @@ def _parse_bar_spec(spec):
 def _plan(camp):
     """Devuelve la lista de configs planificadas (sin correr): valida params,
     computa config_id. Aborta ante param inválido (no arranca a medias)."""
-    chart_tz = camp.get("chart_tz", "UTC")
+    # Obligatorio y sin default: ver la nota en run_nt8_bridge.py::--chart-tz.
+    # NT8 emite Time[0] en la tz del chart; los oráculos medidos salen en
+    # UTC-3. Un default silencioso desalinea `bar_close_time` 3 horas.
+    chart_tz = camp.get("chart_tz")
     planned, errors = [], []
+    if not chart_tz:
+        errors.append("`chart_tz` es obligatorio en el .toml de campaña: NT8 "
+                      "emite Time[0] en la tz del chart y heredar un default "
+                      "desalinea la paridad (medido: oráculos 6E en UTC-3).")
+        return planned, None, errors
     for job in camp["jobs"]:
         ind = job["indicator"]
         if ind not in REGISTRY:

@@ -16,6 +16,7 @@ def test_cli_synthetic_end_to_end(tmp_path):
     out = tmp_path / "demo"
     rc = cli.main(["--synthetic", "--indicator", "Gaps2", "--bars", "time:1",
                    "--param-grid", 'Gaps2=[{"min_gap_ticks":3},{"min_gap_ticks":8,"bars":"tick:50"}]',
+                   "--chart-tz", "America/Argentina/Buenos_Aires",
                    "--out", str(out)])
     assert rc == 0
     man = json.loads((out / "run_manifest.json").read_text(encoding="utf-8"))

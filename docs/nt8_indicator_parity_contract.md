@@ -540,6 +540,58 @@ de una tolerancia.
 **al menos una sesión más** que la ventana a comparar. Es el mismo principio de
 *ventana de datos ≠ ventana de comparación*, ahora con una cota concreta.
 
+### CLAVE DE ZONA ESTABLE (2026-08-01) — y `chart_tz` obligatorio
+
+**La clave de identidad de una zona, para aparear Python↔NT8, es:**
+
+```
+(bar_close_time del evento ZONE_CREATED, lower_tick, upper_tick)
+```
+
+**Calificada al evento de creación. No es un detalle.** Los eventos de ciclo de
+vida (`ZONE_TOUCHED`, `ZONE_INVALIDATED`, `ZONE_EXPIRED`) reemiten la geometría
+de la zona con el `bar_close_time` de la barra **en curso**, no el de su
+creación. Medido sobre `oracles/aVolCellPOI2_6E_0926_v21.csv`:
+
+| alcance | filas | claves únicas | |
+|---|---|---|---|
+| todos los eventos `ZONE_*` | 2827 | 2283 | **544 colisiones** |
+| sólo `ZONE_CREATED` | 478 | 478 | **única** |
+
+Cubierto por `tests/bridge/test_clave_de_zona.py`.
+
+**Por qué no lleva ordinal.** Ambos kernels ordenan las celdas anómalas por tick
+ascendente y las agrupan en corridas contiguas (`avolcellpoi2.py::create_zones`,
+`aVolCellPOI2.cs::CreateZones` — mismo algoritmo). Los grupos de una barra son
+intervalos de tick **disjuntos y crecientes**, así que `(lower_tick, upper_tick)`
+ya es única dentro de la barra. El ordinal que se había conjeturado es
+redundante, y hay test que lo verifica sobre datos.
+
+**Salvedad:** vale mientras `bar_close_time` sea único por barra, o sea para
+bar_specs de TIEMPO. En barras de TICK dos barras pueden cerrar en el mismo
+milisegundo; ahí la clave necesita el ordinal (= rango de `lower_tick`
+ascendente, determinista en ambos lados).
+
+**Campos que NO sirven como clave**, y por qué — todos dependen de cuánta
+historia cargó cada lado, o del calendario de sesiones:
+
+| campo | por qué no |
+|---|---|
+| `bar_index` / `CurrentBar` | el origen es la primera barra cargada en el chart |
+| `zone_id` / `++zoneCounter` | contador global; depende de cuántas zonas hubo antes |
+| `session_index` | mismo problema, **y además** el desacuerdo de calendario CME ETH vs `SessionIterator` |
+| `bucket` | `SessionRelative` se ancla en `sessions.session_begin_ns`: mismo defecto |
+
+**`chart_tz` es obligatorio y sin default.** NT8 emite `Time[0]` en la tz del
+**chart**, no en UTC. Medido por fingerprint de footprint contra el parquet
+(6 filas del oráculo 6E 09-26): **6/6 coinciden con `America/Argentina/Buenos_Aires`
+(UTC−3), 0/6 con UTC** — consistente con el `# tz_plataforma=Argentina Standard
+Time` del volcado del TickLoggerProbe. `tools/correr_gates.py:36` ya pasaba el
+valor correcto, así que el default `"UTC"` de `run_nt8_bridge.py` y
+`run_campaign.py` nunca causó daño; era una trampa latente que corría
+`bar_close_time` 3 horas en cualquier invocación directa, desalineando la clave
+entera. Ahora omitirlo es un error duro, no una suposición.
+
 ### Lección permanente: los precios se comparan en ENTEROS de tick
 
 **Toda comparación de precios se hace sobre índices enteros de tick; los `double`

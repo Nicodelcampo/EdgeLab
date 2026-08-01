@@ -116,7 +116,18 @@ def main(argv=None):
                     help="JSON: Indicador=[{...},{...}] (varios param sets)")
     ap.add_argument("--oracle", action="append", default=[],
                     help="EventLog NT8: Indicador=ruta (repetible)")
-    ap.add_argument("--chart-tz", default="UTC")
+    # SIN default, a propósito. NT8 emite `Time[0]` en la tz del CHART, no en
+    # UTC: medido contra el parquet, los oráculos de 6E 09-26 salen en
+    # America/Argentina/Buenos_Aires (UTC-3) — 6/6 filas de fingerprint de
+    # footprint coinciden con UTC-3 y 0/6 con UTC. El default "UTC" anterior
+    # nunca causó daño porque `tools/correr_gates.py:36` lo sobreescribe, pero
+    # cualquier invocación directa heredaba un corrimiento silencioso de 3 h,
+    # que desalinea `bar_close_time` y por lo tanto la clave de zona entera.
+    # Omitirlo ahora es un error, no una suposición.
+    ap.add_argument("--chart-tz", required=True,
+                    help="tz del CHART de NT8 (p.ej. America/Argentina/Buenos_Aires). "
+                         "Obligatorio: NT8 emite Time[0] en hora local de la "
+                         "plataforma y heredar un default desalinea la paridad.")
     ap.add_argument("--tol-created-ms", type=int, default=60000)
     ap.add_argument("--tol-geom-ticks", type=int, default=0)
     ap.add_argument("--out", required=True)

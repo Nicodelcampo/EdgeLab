@@ -23,18 +23,32 @@ def test_expand_grid_cartesian():
     assert rc._expand_grid({}) == [{}]
 
 
+TZ_CHART = "America/Argentina/Buenos_Aires"   # medido, no supuesto: ver 3.2
+
+
 def test_plan_rejects_invalid_params():
-    camp = dict(jobs=[dict(indicator="Gaps2", bars=["time:1"],
+    camp = dict(chart_tz=TZ_CHART,
+                jobs=[dict(indicator="Gaps2", bars=["time:1"],
                            grid={"min_gap_ticks": [0]})])   # 0 < min 1
     planned, tz, errors = rc._plan(camp)
     assert errors and any("min_gap_ticks" in e for e in errors)
 
 
 def test_plan_rejects_forbidden_param():
-    camp = dict(jobs=[dict(indicator="BigTrap2", bars=["time:1"],
+    camp = dict(chart_tz=TZ_CHART,
+                jobs=[dict(indicator="BigTrap2", bars=["time:1"],
                            grid={"TopPercentFilter": [10]})])
     _, _, errors = rc._plan(camp)
     assert errors and any("forbidden" in e for e in errors)
+
+
+def test_plan_exige_chart_tz():
+    """NT8 emite Time[0] en la tz del chart. Heredar un default corre
+    `bar_close_time` 3 h y desalinea la clave de zona sin avisar."""
+    camp = dict(jobs=[dict(indicator="Gaps2", bars=["time:1"], grid={})])
+    planned, tz, errors = rc._plan(camp)
+    assert errors and any("chart_tz" in e for e in errors)
+    assert tz is None and planned == []
 
 
 def _write_campaign(tmp_path, store, max_configs, grid):
