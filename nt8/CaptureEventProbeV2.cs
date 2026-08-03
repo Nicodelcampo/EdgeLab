@@ -1,24 +1,13 @@
 // ============================================================================
-// CaptureEventProbeV2.cs — instrumental de medición para EventIdentity v2.
+// CaptureEventProbeV2.cs — instrumental de medición EventIdentity v2.1.
 //
-// NO detecta zonas, NO opera y NO modifica indicadores existentes. Registra un
-// ledger crudo de OnMarketData para medir qué identidad y precisión expone NT8.
+// NO detecta zonas, NO opera y NO modifica indicadores existentes.
+// Un callback -> un registro; nunca deduplica. OnMarketData sólo toma un
+// snapshot y lo encola: el writer dedicado realiza todo el I/O.
 //
-// Reglas:
-// - un callback -> un registro; nunca deduplica;
-// - callback_seq se asigna al entrar al callback;
-// - OnMarketData NO hace I/O: encola un snapshot inmutable;
-// - capture_seq se asigna en el writer al persistir;
-// - cola acotada: toda pérdida local incrementa dropped_at_queue;
-// - source_time se conserva como DateTime.Ticks + Kind + texto, SIN fingir UTC;
-// - capture_utc viene de DateTime.UtcNow;
-// - monotonic_ticks viene de Stopwatch.GetTimestamp;
-// - no llama a callback_seq "exchange sequence": es orden local de NT8;
-// - cada instancia crea un archivo nuevo; nunca append ni overwrite.
-//
-// El archivo es TSV para evitar ambigüedad con decimales/campos de texto.
-// Una captura sólo es válida si el trailer declara dropped_at_queue=0 y
-// writer_errors=0.
+// v2.1 separa provider, entorno de cuenta y modo de captura; declara la zona
+// horaria de e.Time sin fingir UTC; y escribe vacío para quotes no aplicables
+// en vez de double.MinValue.
 // ============================================================================
 #region Using declarations
 using System;
@@ -51,10 +40,11 @@ namespace NinjaTrader.NinjaScript.Indicators
             public string Contract;
             public double Price;
             public double Volume;
-            public double Bid;
-            public double Ask;
+            public double? Bid;
+            public double? Ask;
             public string Aggressor;
             public string AggressorProvenance;
+            public string QuoteProvenance;
         }
 
         private readonly CultureInfo inv = CultureInfo.InvariantCulture;
@@ -66,22 +56,25 @@ namespace NinjaTrader.NinjaScript.Indicators
         private string resolvedPath = "";
         private long callbackSeq = -1;
         private long captureSeq = -1;
-        private long droppedAtQueue = 0;
-        private long writerErrors = 0;
-        private long rowsWritten = 0;
-        private volatile bool closing = false;
+        private long droppedAtQueue;
+        private long writerErrors;
+        private long rowsWritten;
+        private volatile bool closing;
 
         protected override void OnStateChange()
         {
             if (State == State.SetDefaults)
             {
                 Name = "CaptureEventProbeV2";
-                Description = "Captura cruda OnMarketData para EventIdentity v2. No opera.";
+                Description = "Captura cruda OnMarketData para EventIdentity v2.1. No opera.";
                 Calculate = Calculate.OnEachTick;
                 IsOverlay = true;
                 DrawOnPricePanel = false;
-                EventLogPath = @"E:\EdgeLab\oracles\capture_event_v2.tsv";
+                EventLogPath = @"C:\ProyectosQuant\EdgeLab\oracles\capture_event_v2.tsv";
                 CaptureModeLabel = "DECLARAR_historical_playback_live";
+                ProviderLabel = "DECLARAR_provider";
+                AccountEnvironmentLabel = "DECLARAR_simulation_or_live";
+                SourceTimezoneLabel = "DECLARAR_NT8_Tools_Options_General_TimeZone";
                 QueueCapacity = 250000;
             }
             else if (State == State.DataLoaded)
@@ -119,12 +112,15 @@ namespace NinjaTrader.NinjaScript.Indicators
                     throw new IOException("la ruta exclusiva ya existe: " + resolvedPath);
 
                 log = new StreamWriter(resolvedPath, false, new UTF8Encoding(false));
-                log.WriteLine("# schema=event_capture_raw_v2");
+                log.WriteLine("# schema=event_capture_raw_v2_1");
                 log.WriteLine("# capture_id=" + captureId);
                 log.WriteLine("# process_instance_id=" + processInstanceId);
                 log.WriteLine("# created_utc=" + DateTime.UtcNow.ToString("o", inv));
                 log.WriteLine("# stopwatch_frequency=" + Stopwatch.Frequency.ToString(inv));
                 log.WriteLine("# capture_mode_label=" + Safe(CaptureModeLabel));
+                log.WriteLine("# provider_label=" + Safe(ProviderLabel));
+                log.WriteLine("# account_environment_label=" + Safe(AccountEnvironmentLabel));
+                log.WriteLine("# source_timezone_label=" + Safe(SourceTimezoneLabel));
                 log.WriteLine("# queue_capacity=" + QueueCapacity.ToString(inv));
                 log.WriteLine("# source_sequence=NOT_EXPOSED_BY_THIS_NT8_CALLBACK");
                 log.WriteLine("capture_id\tprocess_instance_id\tcallback_seq\tcapture_seq\t"
@@ -132,13 +128,15 @@ namespace NinjaTrader.NinjaScript.Indicators
                     + "capture_utc_ticks\tcapture_utc_iso\tmonotonic_ticks\t"
                     + "stopwatch_frequency\tnt8_state\tevent_kind\tinstrument\tcontract\t"
                     + "price\tvolume\tbid\task\taggressor\taggressor_provenance\t"
-                    + "timestamp_provenance\tquote_provenance\tcapture_mode_label");
+                    + "timestamp_provenance\tquote_provenance\tcapture_mode_label\t"
+                    + "provider_label\taccount_environment_label\tsource_timezone_label");
                 log.Flush();
 
                 queue = new BlockingCollection<RawEvent>(QueueCapacity);
-                writerThread = new Thread(WriterLoop);
-                writerThread.IsBackground = true;
-                writerThread.Name = "EdgeLab-CaptureEventProbeV2-writer";
+                writerThread = new Thread(WriterLoop) {
+                    IsBackground = true,
+                    Name = "EdgeLab-CaptureEventProbeV2-writer"
+                };
                 writerThread.Start();
                 Print("CaptureEventProbeV2: escribiendo " + resolvedPath);
             }
@@ -161,8 +159,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                     long cap = Interlocked.Increment(ref captureSeq);
                     log.WriteLine(FormatRow(r, cap));
                     Interlocked.Increment(ref rowsWritten);
-                    sinceFlush++;
-                    if (sinceFlush >= 256)
+                    if (++sinceFlush >= 256)
                     {
                         log.Flush();
                         sinceFlush = 0;
@@ -187,13 +184,10 @@ namespace NinjaTrader.NinjaScript.Indicators
             }
             catch { }
 
-            if (writerThread != null && writerThread.IsAlive)
+            if (writerThread != null && writerThread.IsAlive && !writerThread.Join(30000))
             {
-                if (!writerThread.Join(30000))
-                {
-                    Interlocked.Increment(ref writerErrors);
-                    Print("CaptureEventProbeV2: writer no terminó dentro de 30 segundos");
-                }
+                Interlocked.Increment(ref writerErrors);
+                Print("CaptureEventProbeV2: writer no terminó dentro de 30 segundos");
             }
 
             if (log != null)
@@ -235,21 +229,25 @@ namespace NinjaTrader.NinjaScript.Indicators
             long monotonic = Stopwatch.GetTimestamp();
             DateTime captured = DateTime.UtcNow;
 
+            bool quoteRelevant = e.MarketDataType == MarketDataType.Last
+                || e.MarketDataType == MarketDataType.Bid
+                || e.MarketDataType == MarketDataType.Ask;
+            double? bid = quoteRelevant && IsUsableQuote(e.Bid) ? (double?)e.Bid : null;
+            double? ask = quoteRelevant && IsUsableQuote(e.Ask) ? (double?)e.Ask : null;
+            string quoteProvenance = bid.HasValue || ask.HasValue
+                ? "nt8_snapshot" : "missing";
+
             string aggressor = "unknown";
             string aggressorProvenance = "not_applicable";
             if (e.MarketDataType == MarketDataType.Last)
             {
-                aggressorProvenance = "quote_rule";
-                if (e.Ask > 0 && e.Bid > 0 && e.Ask >= e.Bid)
+                aggressorProvenance = "unknown";
+                if (bid.HasValue && ask.HasValue && ask.Value >= bid.Value)
                 {
-                    if (e.Price >= e.Ask) aggressor = "buy";
-                    else if (e.Price <= e.Bid) aggressor = "sell";
+                    aggressorProvenance = "quote_rule";
+                    if (e.Price >= ask.Value) aggressor = "buy";
+                    else if (e.Price <= bid.Value) aggressor = "sell";
                     else aggressor = "unclassified";
-                }
-                else
-                {
-                    aggressor = "unknown";
-                    aggressorProvenance = "unknown";
                 }
             }
 
@@ -267,10 +265,11 @@ namespace NinjaTrader.NinjaScript.Indicators
                 Contract = Safe(Instrument.FullName),
                 Price = e.Price,
                 Volume = Convert.ToDouble(e.Volume, inv),
-                Bid = e.Bid,
-                Ask = e.Ask,
+                Bid = bid,
+                Ask = ask,
                 Aggressor = aggressor,
-                AggressorProvenance = aggressorProvenance
+                AggressorProvenance = aggressorProvenance,
+                QuoteProvenance = quoteProvenance
             };
 
             if (closing || queue == null || queue.IsAddingCompleted)
@@ -294,33 +293,30 @@ namespace NinjaTrader.NinjaScript.Indicators
             // Deliberadamente vacío. La evidencia sale sólo de OnMarketData.
         }
 
+        private bool IsUsableQuote(double value)
+        {
+            return value > 0.0 && value != double.MinValue && value != double.MaxValue
+                && !double.IsNaN(value) && !double.IsInfinity(value);
+        }
+
+        private string FormatNullable(double? value)
+        {
+            return value.HasValue ? value.Value.ToString("R", inv) : "";
+        }
+
         private string FormatRow(RawEvent r, long cap)
         {
             return string.Join("\t", new string[] {
-                captureId,
-                processInstanceId,
-                r.CallbackSeq.ToString(inv),
-                cap.ToString(inv),
-                r.SourceTimeTicks.ToString(inv),
-                r.SourceTimeKind,
-                r.SourceTimeIso,
-                r.CaptureUtcTicks.ToString(inv),
-                r.CaptureUtcIso,
-                r.MonotonicTicks.ToString(inv),
-                Stopwatch.Frequency.ToString(inv),
-                r.Nt8State,
-                r.EventKind,
-                r.Instrument,
-                r.Contract,
-                r.Price.ToString("R", inv),
-                r.Volume.ToString("R", inv),
-                r.Bid.ToString("R", inv),
-                r.Ask.ToString("R", inv),
-                r.Aggressor,
-                r.AggressorProvenance,
-                "nt8_event_time",
-                "nt8_snapshot",
-                Safe(CaptureModeLabel)
+                captureId, processInstanceId, r.CallbackSeq.ToString(inv), cap.ToString(inv),
+                r.SourceTimeTicks.ToString(inv), r.SourceTimeKind, r.SourceTimeIso,
+                r.CaptureUtcTicks.ToString(inv), r.CaptureUtcIso,
+                r.MonotonicTicks.ToString(inv), Stopwatch.Frequency.ToString(inv),
+                r.Nt8State, r.EventKind, r.Instrument, r.Contract,
+                r.Price.ToString("R", inv), r.Volume.ToString("R", inv),
+                FormatNullable(r.Bid), FormatNullable(r.Ask), r.Aggressor,
+                r.AggressorProvenance, "nt8_event_time", r.QuoteProvenance,
+                Safe(CaptureModeLabel), Safe(ProviderLabel),
+                Safe(AccountEnvironmentLabel), Safe(SourceTimezoneLabel)
             });
         }
 
@@ -336,8 +332,20 @@ namespace NinjaTrader.NinjaScript.Indicators
         public string EventLogPath { get; set; }
 
         [NinjaScriptProperty]
-        [System.ComponentModel.DisplayName("Modo declarado: historical/playback/live")]
+        [System.ComponentModel.DisplayName("Modo: historical/playback/live")]
         public string CaptureModeLabel { get; set; }
+
+        [NinjaScriptProperty]
+        [System.ComponentModel.DisplayName("Proveedor de datos declarado")]
+        public string ProviderLabel { get; set; }
+
+        [NinjaScriptProperty]
+        [System.ComponentModel.DisplayName("Entorno de cuenta: simulation/live")]
+        public string AccountEnvironmentLabel { get; set; }
+
+        [NinjaScriptProperty]
+        [System.ComponentModel.DisplayName("Zona horaria configurada en NT8")]
+        public string SourceTimezoneLabel { get; set; }
 
         [NinjaScriptProperty]
         [System.ComponentModel.DisplayName("Capacidad de cola")]
