@@ -5,9 +5,11 @@
 // ledger crudo de OnMarketData para medir qué identidad y precisión expone NT8.
 //
 // Reglas:
-// - un callback -> una fila; nunca deduplica;
+// - un callback -> un registro; nunca deduplica;
 // - callback_seq se asigna al entrar al callback;
-// - capture_seq se asigna al persistir;
+// - OnMarketData NO hace I/O: encola un snapshot inmutable;
+// - capture_seq se asigna en el writer al persistir;
+// - cola acotada: toda pérdida local incrementa dropped_at_queue;
 // - source_time se conserva como DateTime.Ticks + Kind + texto, SIN fingir UTC;
 // - capture_utc viene de DateTime.UtcNow;
 // - monotonic_ticks viene de Stopwatch.GetTimestamp;
@@ -15,10 +17,12 @@
 // - cada instancia crea un archivo nuevo; nunca append ni overwrite.
 //
 // El archivo es TSV para evitar ambigüedad con decimales/campos de texto.
-// Estado: requiere compilación y prueba en la instalación NT8 de Nico.
+// Una captura sólo es válida si el trailer declara dropped_at_queue=0 y
+// writer_errors=0.
 // ============================================================================
 #region Using declarations
 using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -32,15 +36,40 @@ namespace NinjaTrader.NinjaScript.Indicators
 {
     public class CaptureEventProbeV2 : Indicator
     {
-        private readonly object writeLock = new object();
+        private sealed class RawEvent
+        {
+            public long CallbackSeq;
+            public long SourceTimeTicks;
+            public string SourceTimeKind;
+            public string SourceTimeIso;
+            public long CaptureUtcTicks;
+            public string CaptureUtcIso;
+            public long MonotonicTicks;
+            public string Nt8State;
+            public string EventKind;
+            public string Instrument;
+            public string Contract;
+            public double Price;
+            public double Volume;
+            public double Bid;
+            public double Ask;
+            public string Aggressor;
+            public string AggressorProvenance;
+        }
+
         private readonly CultureInfo inv = CultureInfo.InvariantCulture;
         private StreamWriter log;
+        private BlockingCollection<RawEvent> queue;
+        private Thread writerThread;
         private string captureId = "";
         private string processInstanceId = "";
         private string resolvedPath = "";
         private long callbackSeq = -1;
         private long captureSeq = -1;
-        private bool writeFailed = false;
+        private long droppedAtQueue = 0;
+        private long writerErrors = 0;
+        private long rowsWritten = 0;
+        private volatile bool closing = false;
 
         protected override void OnStateChange()
         {
@@ -53,6 +82,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 DrawOnPricePanel = false;
                 EventLogPath = @"E:\EdgeLab\oracles\capture_event_v2.tsv";
                 CaptureModeLabel = "DECLARAR_historical_playback_live";
+                QueueCapacity = 250000;
             }
             else if (State == State.DataLoaded)
             {
@@ -89,13 +119,13 @@ namespace NinjaTrader.NinjaScript.Indicators
                     throw new IOException("la ruta exclusiva ya existe: " + resolvedPath);
 
                 log = new StreamWriter(resolvedPath, false, new UTF8Encoding(false));
-                log.AutoFlush = true;
                 log.WriteLine("# schema=event_capture_raw_v2");
                 log.WriteLine("# capture_id=" + captureId);
                 log.WriteLine("# process_instance_id=" + processInstanceId);
                 log.WriteLine("# created_utc=" + DateTime.UtcNow.ToString("o", inv));
                 log.WriteLine("# stopwatch_frequency=" + Stopwatch.Frequency.ToString(inv));
                 log.WriteLine("# capture_mode_label=" + Safe(CaptureModeLabel));
+                log.WriteLine("# queue_capacity=" + QueueCapacity.ToString(inv));
                 log.WriteLine("# source_sequence=NOT_EXPOSED_BY_THIS_NT8_CALLBACK");
                 log.WriteLine("capture_id\tprocess_instance_id\tcallback_seq\tcapture_seq\t"
                     + "source_time_ticks\tsource_time_kind\tsource_time_iso\t"
@@ -103,24 +133,100 @@ namespace NinjaTrader.NinjaScript.Indicators
                     + "stopwatch_frequency\tnt8_state\tevent_kind\tinstrument\tcontract\t"
                     + "price\tvolume\tbid\task\taggressor\taggressor_provenance\t"
                     + "timestamp_provenance\tquote_provenance\tcapture_mode_label");
+                log.Flush();
+
+                queue = new BlockingCollection<RawEvent>(QueueCapacity);
+                writerThread = new Thread(WriterLoop);
+                writerThread.IsBackground = true;
+                writerThread.Name = "EdgeLab-CaptureEventProbeV2-writer";
+                writerThread.Start();
                 Print("CaptureEventProbeV2: escribiendo " + resolvedPath);
             }
             catch (Exception ex)
             {
-                writeFailed = true;
+                Interlocked.Increment(ref writerErrors);
                 Print("CaptureEventProbeV2: NO se pudo abrir el ledger: " + ex.Message);
+                try { if (log != null) log.Close(); } catch { }
+                log = null;
+            }
+        }
+
+        private void WriterLoop()
+        {
+            int sinceFlush = 0;
+            try
+            {
+                foreach (RawEvent r in queue.GetConsumingEnumerable())
+                {
+                    long cap = Interlocked.Increment(ref captureSeq);
+                    log.WriteLine(FormatRow(r, cap));
+                    Interlocked.Increment(ref rowsWritten);
+                    sinceFlush++;
+                    if (sinceFlush >= 256)
+                    {
+                        log.Flush();
+                        sinceFlush = 0;
+                    }
+                }
+                log.Flush();
+            }
+            catch (Exception ex)
+            {
+                Interlocked.Increment(ref writerErrors);
+                Print("CaptureEventProbeV2: writer abortado: " + ex.Message);
             }
         }
 
         private void CloseLedger()
         {
-            lock (writeLock)
+            closing = true;
+            try
             {
-                if (log == null) return;
-                log.Flush();
-                log.Close();
+                if (queue != null && !queue.IsAddingCompleted)
+                    queue.CompleteAdding();
+            }
+            catch { }
+
+            if (writerThread != null && writerThread.IsAlive)
+            {
+                if (!writerThread.Join(30000))
+                {
+                    Interlocked.Increment(ref writerErrors);
+                    Print("CaptureEventProbeV2: writer no terminó dentro de 30 segundos");
+                }
+            }
+
+            if (log != null)
+            {
+                try
+                {
+                    log.WriteLine(string.Format(inv,
+                        "# summary callbacks_seen={0},rows_written={1},dropped_at_queue={2},writer_errors={3}",
+                        Interlocked.Read(ref callbackSeq) + 1,
+                        Interlocked.Read(ref rowsWritten),
+                        Interlocked.Read(ref droppedAtQueue),
+                        Interlocked.Read(ref writerErrors)));
+                    log.Flush();
+                    log.Close();
+                }
+                catch (Exception ex)
+                {
+                    Interlocked.Increment(ref writerErrors);
+                    Print("CaptureEventProbeV2: error cerrando ledger: " + ex.Message);
+                }
                 log = null;
             }
+            if (queue != null)
+            {
+                queue.Dispose();
+                queue = null;
+            }
+            Print(string.Format(inv,
+                "CaptureEventProbeV2: cierre callbacks={0} rows={1} drops={2} writer_errors={3} path={4}",
+                Interlocked.Read(ref callbackSeq) + 1,
+                Interlocked.Read(ref rowsWritten),
+                Interlocked.Read(ref droppedAtQueue),
+                Interlocked.Read(ref writerErrors), resolvedPath));
         }
 
         protected override void OnMarketData(MarketDataEventArgs e)
@@ -129,10 +235,6 @@ namespace NinjaTrader.NinjaScript.Indicators
             long monotonic = Stopwatch.GetTimestamp();
             DateTime captured = DateTime.UtcNow;
 
-            if (log == null || writeFailed)
-                return;
-
-            string eventKind = e.MarketDataType.ToString();
             string aggressor = "unknown";
             string aggressorProvenance = "not_applicable";
             if (e.MarketDataType == MarketDataType.Last)
@@ -151,53 +253,75 @@ namespace NinjaTrader.NinjaScript.Indicators
                 }
             }
 
-            lock (writeLock)
+            RawEvent record = new RawEvent {
+                CallbackSeq = cb,
+                SourceTimeTicks = e.Time.Ticks,
+                SourceTimeKind = e.Time.Kind.ToString(),
+                SourceTimeIso = e.Time.ToString("yyyy-MM-ddTHH:mm:ss.fffffff", inv),
+                CaptureUtcTicks = captured.Ticks,
+                CaptureUtcIso = captured.ToString("o", inv),
+                MonotonicTicks = monotonic,
+                Nt8State = State.ToString(),
+                EventKind = e.MarketDataType.ToString(),
+                Instrument = Safe(Instrument.MasterInstrument.Name),
+                Contract = Safe(Instrument.FullName),
+                Price = e.Price,
+                Volume = Convert.ToDouble(e.Volume, inv),
+                Bid = e.Bid,
+                Ask = e.Ask,
+                Aggressor = aggressor,
+                AggressorProvenance = aggressorProvenance
+            };
+
+            if (closing || queue == null || queue.IsAddingCompleted)
             {
-                if (log == null || writeFailed)
-                    return;
-                long cap = Interlocked.Increment(ref captureSeq);
-                try
-                {
-                    log.WriteLine(string.Join("\t", new string[] {
-                        captureId,
-                        processInstanceId,
-                        cb.ToString(inv),
-                        cap.ToString(inv),
-                        e.Time.Ticks.ToString(inv),
-                        e.Time.Kind.ToString(),
-                        e.Time.ToString("yyyy-MM-ddTHH:mm:ss.fffffff", inv),
-                        captured.Ticks.ToString(inv),
-                        captured.ToString("o", inv),
-                        monotonic.ToString(inv),
-                        Stopwatch.Frequency.ToString(inv),
-                        State.ToString(),
-                        eventKind,
-                        Safe(Instrument.MasterInstrument.Name),
-                        Safe(Instrument.FullName),
-                        e.Price.ToString("R", inv),
-                        e.Volume.ToString("R", inv),
-                        e.Bid.ToString("R", inv),
-                        e.Ask.ToString("R", inv),
-                        aggressor,
-                        aggressorProvenance,
-                        "nt8_event_time",
-                        "nt8_snapshot",
-                        Safe(CaptureModeLabel)
-                    }));
-                }
-                catch (Exception ex)
-                {
-                    writeFailed = true;
-                    Print("CaptureEventProbeV2: escritura abortada en callback_seq="
-                        + cb.ToString(inv) + ": " + ex.Message);
-                    try { log.Flush(); } catch { }
-                }
+                Interlocked.Increment(ref droppedAtQueue);
+                return;
+            }
+            try
+            {
+                if (!queue.TryAdd(record))
+                    Interlocked.Increment(ref droppedAtQueue);
+            }
+            catch (InvalidOperationException)
+            {
+                Interlocked.Increment(ref droppedAtQueue);
             }
         }
 
         protected override void OnBarUpdate()
         {
             // Deliberadamente vacío. La evidencia sale sólo de OnMarketData.
+        }
+
+        private string FormatRow(RawEvent r, long cap)
+        {
+            return string.Join("\t", new string[] {
+                captureId,
+                processInstanceId,
+                r.CallbackSeq.ToString(inv),
+                cap.ToString(inv),
+                r.SourceTimeTicks.ToString(inv),
+                r.SourceTimeKind,
+                r.SourceTimeIso,
+                r.CaptureUtcTicks.ToString(inv),
+                r.CaptureUtcIso,
+                r.MonotonicTicks.ToString(inv),
+                Stopwatch.Frequency.ToString(inv),
+                r.Nt8State,
+                r.EventKind,
+                r.Instrument,
+                r.Contract,
+                r.Price.ToString("R", inv),
+                r.Volume.ToString("R", inv),
+                r.Bid.ToString("R", inv),
+                r.Ask.ToString("R", inv),
+                r.Aggressor,
+                r.AggressorProvenance,
+                "nt8_event_time",
+                "nt8_snapshot",
+                Safe(CaptureModeLabel)
+            });
         }
 
         private string Safe(string value)
@@ -214,6 +338,10 @@ namespace NinjaTrader.NinjaScript.Indicators
         [NinjaScriptProperty]
         [System.ComponentModel.DisplayName("Modo declarado: historical/playback/live")]
         public string CaptureModeLabel { get; set; }
+
+        [NinjaScriptProperty]
+        [System.ComponentModel.DisplayName("Capacidad de cola")]
+        public int QueueCapacity { get; set; }
         #endregion
     }
 }
