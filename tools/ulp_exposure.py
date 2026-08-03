@@ -103,6 +103,15 @@ KERNELS = {
         ("touch (hi >= lower)", None, "ge", lambda e, ts: (e / ts - 0.5) * ts),
         ("close > upper", None, "gt", lambda e, ts: (e / ts + 0.5) * ts),
     ],
+    # Probe de captura: clasifica el agresor comparando el precio negociado
+    # contra bid/ask del snapshot. El umbral ES un precio de grilla llevado SIN
+    # aritmetica, y el empate (trade exactamente al ask) no es un caso raro sino
+    # el caso NORMAL de un buy agresivo -> offset_ticks=0, no None. Por eso se
+    # mide en vez de declararlo inmune: es el escenario decisivo, no uno de borde.
+    "CaptureEventProbeV2 (clasificacion de agresor)": [
+        ("aggressor buy (price >= ask)", 0, "ge", lambda e, ts: e),
+        ("aggressor sell (price <= bid)", 0, "le", lambda e, ts: e),
+    ],
 }
 
 OPS = {"gt": lambda a, b: a > b, "lt": lambda a, b: a < b,
