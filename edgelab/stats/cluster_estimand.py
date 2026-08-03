@@ -28,8 +28,9 @@ class SessionAggregate:
             raise ClusterEstimandError("n_trades debe ser entero")
         if self.n_trades < 0:
             raise ClusterEstimandError("n_trades no puede ser negativo")
-        if not isinstance(self.pnl_net, (int, float)) or not isfinite(self.pnl_net):
-            raise ClusterEstimandError("pnl_net debe ser finito")
+        if (not isinstance(self.pnl_net, (int, float))
+                or isinstance(self.pnl_net, bool) or not isfinite(self.pnl_net)):
+            raise ClusterEstimandError("pnl_net debe ser numerico finito")
         if self.n_trades == 0 and self.pnl_net != 0:
             raise ClusterEstimandError("sesion sin trades debe tener pnl_net=0")
 
@@ -44,17 +45,23 @@ class ClusterBootstrapResult:
     seed: int
 
 
-class _Lcg:
-    """Muestreo determinista e independiente de numpy/random global."""
+class _SplitMix64:
+    """PRNG local: evita usar los bits bajos débiles del LCG histórico."""
+
+    _MASK = (1 << 64) - 1
 
     def __init__(self, seed: int):
         if not isinstance(seed, int) or isinstance(seed, bool):
             raise ClusterEstimandError("seed debe ser entero")
-        self.state = seed & 0xFFFFFFFF
+        self.state = seed & self._MASK
 
     def index(self, n: int) -> int:
-        self.state = (1664525 * self.state + 1013904223) & 0xFFFFFFFF
-        return self.state % n
+        self.state = (self.state + 0x9E3779B97F4A7C15) & self._MASK
+        z = self.state
+        z = ((z ^ (z >> 30)) * 0xBF58476D1CE4E5B9) & self._MASK
+        z = ((z ^ (z >> 27)) * 0x94D049BB133111EB) & self._MASK
+        z ^= z >> 31
+        return z % n
 
 
 def aggregate_sessions(
@@ -66,8 +73,8 @@ def aggregate_sessions(
     ``session_ids`` es el calendario preregistrado e incluye días sin trades.
     Claves de trades fuera del calendario son error: no se descartan en silencio.
     """
-    if not session_ids:
-        raise ClusterEstimandError("hace falta al menos una sesion elegible")
+    if isinstance(session_ids, (str, bytes)) or not session_ids:
+        raise ClusterEstimandError("hace falta una secuencia de sesiones elegibles")
     if len(set(session_ids)) != len(session_ids):
         raise ClusterEstimandError("session_ids contiene duplicados")
     unknown = set(trades_by_session) - set(session_ids)
@@ -77,8 +84,9 @@ def aggregate_sessions(
     out = []
     for session_id in session_ids:
         values = tuple(trades_by_session.get(session_id, ()))
-        if any(not isinstance(x, (int, float)) or not isfinite(x) for x in values):
-            raise ClusterEstimandError("trade PnL no finito en %s" % session_id)
+        if any(not isinstance(x, (int, float)) or isinstance(x, bool)
+               or not isfinite(x) for x in values):
+            raise ClusterEstimandError("trade PnL no numerico finito en %s" % session_id)
         out.append(SessionAggregate(session_id, float(sum(values)), len(values)))
     return tuple(out)
 
@@ -112,7 +120,7 @@ def resample_session_clusters(
     if not isinstance(n_replicates, int) or isinstance(n_replicates, bool) or n_replicates < 1:
         raise ClusterEstimandError("n_replicates debe ser entero >= 1")
     observed = trade_weighted_expectancy(rows)
-    rng = _Lcg(seed)
+    rng = _SplitMix64(seed)
     values = []
     invalid = 0
     for _ in range(n_replicates):

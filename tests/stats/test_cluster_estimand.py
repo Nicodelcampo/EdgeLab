@@ -91,5 +91,14 @@ def test_inputs_booleanos_no_pasan_por_enteros():
     with pytest.raises(ClusterEstimandError):
         SessionAggregate("d", 0.0, True)
     with pytest.raises(ClusterEstimandError):
+        SessionAggregate("d", True, 1)
+    with pytest.raises(ClusterEstimandError):
+        aggregate_sessions(["d"], {"d": [True]})
+    with pytest.raises(ClusterEstimandError):
         resample_session_clusters([SessionAggregate("d", 1.0, 1)],
                                   n_replicates=True, seed=1)
+
+
+def test_string_no_se_interpreta_como_calendario_de_caracteres():
+    with pytest.raises(ClusterEstimandError, match="secuencia"):
+        aggregate_sessions("d1", {})
