@@ -25,6 +25,12 @@ namespace NinjaTrader.NinjaScript.Indicators
 {
     public class CaptureEventProbeV2 : Indicator
     {
+        // Version del instrumental. UNA sola fuente de verdad: la escribe el
+        // encabezado de metadata de la captura. Acompana a `schema=`, que versiona
+        // el CONTRATO DE COLUMNAS: los dos se mueven por separado (una correccion
+        // de captura sin cambio de columnas sube version y deja schema quieto).
+        private const string IND_VERSION = "2.1";
+
         private sealed class RawEvent
         {
             public long CallbackSeq;
@@ -112,6 +118,8 @@ namespace NinjaTrader.NinjaScript.Indicators
                     throw new IOException("la ruta exclusiva ya existe: " + resolvedPath);
 
                 log = new StreamWriter(resolvedPath, false, new UTF8Encoding(false));
+                log.WriteLine("# indicator=CaptureEventProbeV2");
+                log.WriteLine("# version=" + IND_VERSION);
                 log.WriteLine("# schema=event_capture_raw_v2_1");
                 log.WriteLine("# capture_id=" + captureId);
                 log.WriteLine("# process_instance_id=" + processInstanceId);
