@@ -1,54 +1,77 @@
 # Promotion Registry — control ejecutable de estados
 
-> Referente: `docs/NORTH_STAR.md`. Incidente de origen:
+> Referente: `docs/NORTH_STAR.md`. Incidente:
 > `docs/incidents/INC-007_autoridades_estadisticas_incompatibles.md`.
 
 ## Propósito
 
 `edgelab/research/promotion.py` es la única superficie sancionada para
-materializar estados de candidatos. Un reporte Markdown, un print de gauntlet o
-un booleano suelto no promueven nada.
+materializar estados. Un Markdown, un print de gauntlet o un booleano suelto no
+promueven nada.
 
-El ledger canónico vive en `docs/promotion_registry.jsonl` cuando exista la
-primera entrada. Es append-only y cada fila queda encadenada por SHA-256.
-Alterar, borrar o reordenar una fila invalida el ledger completo y bloquea
-nuevas promociones.
+El ledger vive en `docs/promotion_registry.jsonl` cuando exista la primera
+entrada. Cada fila se agrega sin reescribir y queda encadenada por SHA-256.
 
-## Cadena
+### Alcance honesto de integridad
+
+La cadena detecta:
+- alteración de contenido;
+- reordenamiento;
+- eliminación de una fila que tenga sucesora;
+- ruptura de schema.
+
+No detecta por sí sola la eliminación de la **última** fila: no existe un hash
+posterior que la referencie. Ese truncado se detecta mediante el historial Git
+del ledger. Tampoco se afirma seguridad frente a dos writers concurrentes; el
+writer sancionado es local y de un solo proceso.
+
+## Cadena de estados
 
 ```text
 external_candidate | idea
-  -> technically_valid
-  -> exploratory_candidate
-  -> statistically_supported
-  -> economically_viable
-  -> holdout_confirmed
-  -> paper_validated
-  -> live_candidate
+        \              /
+         technically_valid
+           -> exploratory_candidate
+           -> statistically_supported
+           -> economically_viable
+           -> holdout_confirmed
+           -> paper_validated
+           -> live_candidate
 ```
 
-`failed` y `retired` son terminales. No se permiten regresiones ni saltos de
-gate. Un candidato nuevo sólo puede entrar como `external_candidate` o `idea`.
+`external_candidate` e `idea` son entradas alternativas. Ambas pasan luego por
+G0; convertir una externa en `idea` no permite esquivarlo. `failed` y `retired`
+son terminales. No hay regresiones ni saltos.
+
+## Contención vigente de INC-007
+
+`APPROVED_G2_CONTRACT_SHA256S` está vacío a propósito. Mientras no exista una
+enmienda G2 corregida y hasheada, **ningún candidato puede materializar
+`statistically_supported`**, aunque presente un objeto con `passed=true`.
+
+Cuando se apruebe la enmienda, su SHA-256 se agregará explícitamente. Cualquier
+otro hash seguirá bloqueado.
 
 ## Regla fail-closed G2
 
 Todo estado igual o posterior a `statistically_supported` exige:
 
-- `campaign_id`;
-- `run_id`;
-- `config_id`;
-- `validation_decision.gate = G2`;
-- `validation_decision.passed = true`;
-- SHA-256 completo del contrato;
-- digest completo de la evidencia;
-- lista explícita de gates requeridos;
-- resultado `passed=true` para cada gate, sin faltantes ni extras.
+- `campaign_id`, `run_id` y `config_id`;
+- decisión `gate=G2`, `passed=true`;
+- contrato en la allowlist aprobada;
+- digest SHA-256 de evidencia;
+- exactamente estos gates, en orden:
+  - `mcpt`;
+  - `pbo`;
+  - `dsr`;
+  - `walk_forward`;
+  - `parameter_sensitivity`;
+- un resultado `passed=true` para cada uno, sin faltantes ni extras.
 
-El registro no decide qué significa MCPT, PBO, DSR o walk-forward. Exige que la
-decisión cite el contrato versionado que sí lo define. Esto permite enmendar G2
-sin volver permisivo el ledger.
+El registro no decide la fórmula de los gates; exige el contrato versionado que
+la define. La lista estructural cambia sólo junto con una enmienda.
 
-## Ejemplo mínimo
+## Uso mínimo
 
 ```python
 from edgelab.research.promotion import append_record
@@ -63,31 +86,23 @@ append_record("docs/promotion_registry.jsonl", {
 })
 ```
 
-Los campos `previous_digest` y `record_digest` los genera el módulo. El caller
-no puede proporcionarlos.
+`previous_digest` y `record_digest` los genera el módulo.
 
 ## Alcance actual
 
-Este control impide promociones estadísticas inválidas. Todavía no valida los
-requisitos específicos de G0, G1, G3, G4 o G5; esos validadores se agregan sin
-relajar la regla G2. Hasta entonces, llegar a estados posteriores exige conservar
-la decisión G2, pero no implica que los demás gates ya tengan enforcement
-completo.
+Este commit impone secuencia y G2. Todavía no valida todos los campos específicos
+de G0, G1, G3, G4 y G5; se agregarán sin relajar G2. Por eso el ledger queda
+congelado antes de la primera promoción estadística hasta cerrar la enmienda.
 
-## Pruebas
+## Tests escritos
 
-`tests/research/test_promotion.py` cubre:
+`tests/research/test_promotion.py` cubre identidad, allowlist contractual, lista
+exacta de gates, todos en PASS, entradas alternativa, secuencia, terminales,
+append-only, duplicados, UTC y corrupción.
 
-- identidad obligatoria para G2;
-- gates completos y todos en PASS;
-- DSR/MCPT/PBO faltantes bloqueados por estructura;
-- secuencia sin saltos ni regresiones;
-- estados terminales;
-- append-only;
-- duplicados;
-- timestamps UTC;
-- alteración, borrado y ruptura de la cadena de hashes.
+**Importante:** que los tests estén escritos no significa que hayan sido
+ejecutados. Deben correrse en el entorno canónico antes del PR.
 
-**Aporte al referente:** un candidato no puede avanzar hacia despliegue por una
-etiqueta narrativa; debe dejar evidencia ligada a una campaña y una decisión
+**Aporte al referente:** ninguna narrativa puede saltar directamente a evidencia
+estadística; la promoción requiere identidad, contrato aprobado y evidencia
 reproducible.

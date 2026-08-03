@@ -1,20 +1,14 @@
 """Registro append-only y fail-closed de promociones de candidatos.
 
-Una etiqueta documental no es un control. Este módulo vuelve ejecutable la
-cadena de estados de ``docs/NORTH_STAR.md`` y, en particular, impide materializar
-``statistically_supported`` (o un estado posterior) sin una decisión G2 completa,
-ligada a campaña, run y config.
+Vuelve ejecutable la cadena de ``docs/NORTH_STAR.md`` e impide materializar
+``statistically_supported`` o estados posteriores sin una decisión G2 completa,
+ligada a campaña, run, config y un contrato explícitamente aprobado.
 
-El archivo es JSONL con cadena de hashes:
-
-- cada fila tiene ``previous_digest`` y ``record_digest``;
-- una fila alterada, borrada o reordenada invalida la lectura completa;
-- toda transición se agrega con ``open(..., "a")``; nunca se reescribe;
-- un registro corrupto bloquea nuevas promociones (fail-closed).
-
-Este módulo NO decide la estadística. Sólo valida que la evidencia decisoria
-exista y sea internamente completa. La semántica de cada gate vive en el contrato
-versionado que identifica ``validation_decision.contract_sha256``.
+El JSONL usa una cadena de hashes. Detecta alteraciones, reordenamientos y
+eliminaciones interiores; un registro corrupto bloquea nuevas promociones. La
+eliminación de la última fila no es detectable sólo con una cadena hacia atrás:
+la detecta el historial Git del ledger. El writer es local de un solo proceso;
+no se afirma seguridad ante escritores concurrentes.
 """
 from __future__ import annotations
 
@@ -26,30 +20,31 @@ from pathlib import Path
 from typing import Mapping
 
 __all__ = [
-    "PromotionError",
-    "RegistryIntegrityError",
-    "PROMOTION_STATES",
-    "DEFAULT_REGISTRY_PATH",
-    "validate_record",
-    "load_registry",
-    "append_record",
-    "current_status",
+    "PromotionError", "RegistryIntegrityError", "PROMOTION_STATES",
+    "G2_REQUIRED_GATES", "APPROVED_G2_CONTRACT_SHA256S",
+    "DEFAULT_REGISTRY_PATH", "validate_record", "load_registry",
+    "append_record", "current_status",
 ]
 
 PROMOTION_STATES = (
-    "external_candidate",
-    "idea",
-    "technically_valid",
-    "exploratory_candidate",
-    "statistically_supported",
-    "economically_viable",
-    "holdout_confirmed",
-    "paper_validated",
+    "external_candidate", "idea", "technically_valid",
+    "exploratory_candidate", "statistically_supported",
+    "economically_viable", "holdout_confirmed", "paper_validated",
     "live_candidate",
 )
 TERMINAL_STATES = ("failed", "retired")
 _STATE_RANK = {name: i for i, name in enumerate(PROMOTION_STATES)}
 _G2_MIN_RANK = _STATE_RANK["statistically_supported"]
+
+# Estructura del contrato vigente. Cambiarla exige una enmienda versionada.
+G2_REQUIRED_GATES = (
+    "mcpt", "pbo", "dsr", "walk_forward", "parameter_sensitivity",
+)
+
+# Contención de INC-007: vacío a propósito. Mientras el contrato G2 actual siga
+# semánticamente roto, NINGUNA decisión puede materializar statistically_supported.
+# El commit de enmienda agregará el SHA-256 del contrato corregido.
+APPROVED_G2_CONTRACT_SHA256S = frozenset()
 
 _REPO = Path(__file__).resolve().parents[2]
 DEFAULT_REGISTRY_PATH = str(_REPO / "docs" / "promotion_registry.jsonl")
@@ -81,8 +76,8 @@ def _required_text(mapping: Mapping, field: str, where: str) -> str:
     return value
 
 
-def _sha256(value, field, where):
-    value = _required_text(value, field, where)
+def _sha256(mapping: Mapping, field: str, where: str) -> str:
+    value = _required_text(mapping, field, where)
     if len(value) != 64 or any(c not in "0123456789abcdefABCDEF" for c in value):
         raise PromotionError("%s: `%s` debe ser un SHA-256 hexadecimal completo" %
                              (where, field))
@@ -101,41 +96,43 @@ def _utc_timestamp(value: str, where: str) -> None:
 def _validate_g2(decision: Mapping, where: str) -> None:
     if not isinstance(decision, Mapping):
         raise PromotionError("%s: `validation_decision` debe ser un objeto" % where)
-    _required_text(decision, "decision_id", where + ".validation_decision")
+    dwhere = where + ".validation_decision"
+    _required_text(decision, "decision_id", dwhere)
     if decision.get("gate") != "G2":
         raise PromotionError("%s: la decision requerida debe ser del gate G2" % where)
     if decision.get("passed") is not True:
         raise PromotionError("%s: G2 debe tener `passed=true` exacto" % where)
-    _sha256(decision, "contract_sha256", where + ".validation_decision")
-    _sha256(decision, "evidence_digest", where + ".validation_decision")
+
+    contract_sha = _sha256(decision, "contract_sha256", dwhere)
+    _sha256(decision, "evidence_digest", dwhere)
+    if contract_sha not in APPROVED_G2_CONTRACT_SHA256S:
+        raise PromotionError(
+            "%s: contrato G2 no aprobado `%s`; promociones congeladas" %
+            (where, contract_sha))
 
     required = decision.get("required_gates")
     results = decision.get("gate_results")
-    if (not isinstance(required, list) or not required or
-            any(not isinstance(x, str) or not x for x in required) or
-            len(required) != len(set(required))):
+    if not isinstance(required, list):
+        raise PromotionError("%s: `required_gates` debe ser una lista" % where)
+    if tuple(required) != G2_REQUIRED_GATES:
         raise PromotionError(
-            "%s: `required_gates` debe ser una lista no vacia, unica y explicita" % where)
+            "%s: gates G2 deben coincidir exactamente y en orden con %s" %
+            (where, G2_REQUIRED_GATES))
     if not isinstance(results, Mapping):
         raise PromotionError("%s: `gate_results` debe ser un objeto" % where)
-    if set(results) != set(required):
+    if set(results) != set(G2_REQUIRED_GATES):
         raise PromotionError(
-            "%s: `gate_results` debe coincidir exactamente con `required_gates`" % where)
-    failed = [name for name in required
+            "%s: `gate_results` debe coincidir exactamente con el contrato G2" % where)
+    failed = [name for name in G2_REQUIRED_GATES
               if not isinstance(results.get(name), Mapping)
               or results[name].get("passed") is not True]
     if failed:
         raise PromotionError("%s: gates requeridos sin PASS exacto: %s" %
-                             (where, ", ".join(sorted(failed))))
+                             (where, ", ".join(failed)))
 
 
 def validate_record(record: Mapping, *, allow_system_fields: bool = True) -> dict:
-    """Valida una fila sin persistirla. Devuelve una copia ordinaria.
-
-    Para inputs de ``append_record`` se usa ``allow_system_fields=False``: los
-    hashes son responsabilidad exclusiva del registro y no pueden ser provistos
-    por quien solicita una promoción.
-    """
+    """Valida una fila sin persistirla y devuelve una copia ordinaria."""
     if not isinstance(record, Mapping):
         raise PromotionError("promotion record debe ser un objeto")
     row = dict(record)
@@ -151,7 +148,6 @@ def validate_record(record: Mapping, *, allow_system_fields: bool = True) -> dic
     recorded = _required_text(row, "recorded_utc", where)
     _utc_timestamp(recorded, where)
     _required_text(row, "reason", where)
-
     refs = row.get("evidence_refs")
     if not isinstance(refs, list) or any(not isinstance(x, str) or not x for x in refs):
         raise PromotionError("%s: `evidence_refs` debe ser una lista de strings" % where)
@@ -160,12 +156,11 @@ def validate_record(record: Mapping, *, allow_system_fields: bool = True) -> dic
         for field in ("campaign_id", "run_id", "config_id"):
             _required_text(row, field, where)
         _validate_g2(row.get("validation_decision"), where)
-
     return row
 
 
 def load_registry(path=DEFAULT_REGISTRY_PATH) -> list[dict]:
-    """Lee y verifica JSON, schema, digests y encadenamiento completo."""
+    """Lee y verifica JSON, schema, digests y encadenamiento disponible."""
     path = str(path)
     if not os.path.exists(path):
         return []
@@ -208,24 +203,28 @@ def _check_transition(rows: list[dict], new: Mapping) -> None:
     new_status = new["status"]
     if old_status in TERMINAL_STATES:
         raise PromotionError("%s es terminal; no admite transiciones" % old_status)
-    if new_status in TERMINAL_STATES:
+    if new_status in TERMINAL_STATES or new_status == old_status:
         return
+
+    # external_candidate e idea son entradas alternativas al mismo pipeline.
+    if old_status in ("external_candidate", "idea"):
+        if new_status != "technically_valid":
+            raise PromotionError("transicion prohibida: %s -> %s" %
+                                 (old_status, new_status))
+        return
+
     old_rank = _STATE_RANK[old_status]
     new_rank = _STATE_RANK[new_status]
     if new_rank < old_rank:
         raise PromotionError("regresion de estado prohibida: %s -> %s" %
                              (old_status, new_status))
-    if new_rank > old_rank + 1:
+    if new_rank != old_rank + 1:
         raise PromotionError("salto de gate prohibido: %s -> %s" %
                              (old_status, new_status))
 
 
 def append_record(path, record: Mapping) -> dict:
-    """Agrega una transición atómica a nivel de fila, sin reescribir el archivo.
-
-    Valida primero el registro completo existente. Si hay corrupción, duplicado,
-    salto de gate o falta evidencia G2, no abre el archivo en modo append.
-    """
+    """Agrega una fila sin reescribir; valida todo antes de abrir en append."""
     path = str(path)
     row = validate_record(record, allow_system_fields=False)
     rows = load_registry(path)
@@ -236,16 +235,15 @@ def append_record(path, record: Mapping) -> dict:
     parent = os.path.dirname(path)
     if parent:
         os.makedirs(parent, exist_ok=True)
-    encoded = _canonical_json(row) + "\n"
     with open(path, "a", encoding="utf-8", newline="\n") as fh:
-        fh.write(encoded)
+        fh.write(_canonical_json(row) + "\n")
         fh.flush()
         os.fsync(fh.fileno())
     return row
 
 
 def current_status(path, candidate_id: str) -> str | None:
-    """Estado más reciente del candidato, después de verificar todo el ledger."""
+    """Estado más reciente, después de verificar todo el ledger disponible."""
     if not isinstance(candidate_id, str) or not candidate_id:
         raise PromotionError("candidate_id debe ser texto no vacio")
     matches = [r for r in load_registry(path) if r["candidate_id"] == candidate_id]
