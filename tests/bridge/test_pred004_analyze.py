@@ -6,9 +6,28 @@ instrumento tiene que quedar validado ANTES de que exista la captura que va a
 medir, o se estaría calibrando contra el resultado.
 
 Cada test corresponde a un ítem exigido por el auditor.
+
+## REGLA OBLIGATORIA — citar la línea del `.cs` que emite cada evento
+
+La batería v1 daba 30/30 y **validaba un emisor imaginario**: fabricaba un
+`ANCLAJE_VERIFICADO` por barra, algo que el emisor real NO hace (se emite dentro
+de `if (!anclado)`, `BigTrap2.cs:423`, o sea UNA VEZ POR SESIÓN). Por eso no vio
+que el denominador de P1/P2 no existía en el log.
+
+**Todo test que fabrique un evento debe citar la línea del `.cs` que lo emite.**
+Si no se puede citar, el test valida una ficción.
+
+| evento fabricado | lo emite | frecuencia real |
+|---|---|---|
+| `BARRA_PROCESADA` | `BigTrap2.cs:481` (v2.4) | **una por barra**, sólo camino de tick |
+| `ANCLAJE_VERIFICADO` | `BigTrap2.cs:449`, dentro de `if (!anclado)` (423) | **una por sesión** |
+| `ANCLAJE_AMBIGUO` | `BigTrap2.cs:493`, en `Abstener()` | por abstención |
+| `FOOTPRINT_MISMATCH` | `BigTrap2.cs:529` y `589` | por barra con desajuste |
+| `TRAP` / `ZONE_*` | `BigTrap2.cs:598+` | sólo con detección |
 """
 from __future__ import annotations
 
+import io
 import json
 import os
 import sys
@@ -169,14 +188,21 @@ def test_p6_resolucion_que_no_corresponde_es_FAIL(tmp_path):
 # ---------------------------------------------------------------- P1/P2
 
 
-def _sesiones(n_sesiones, por_sesion, tipo_gen):
-    """Genera `n_sesiones` sesiones de `por_sesion` barras. `tipo_gen(s,b)`
-    devuelve la lista de (tipo, payload_extra) de esa barra."""
+def _sesiones(n_sesiones, por_sesion, tipo_gen, anclaje_por_sesion=True):
+    """Log FIEL al emisor real.
+
+    `ANCLAJE_VERIFICADO` va UNA VEZ POR SESIÓN (`BigTrap2.cs:449`, dentro de
+    `if (!anclado)` en 423) — ése fue el error de la v1, que lo ponía por barra.
+    `BARRA_PROCESADA` va una por barra (`BigTrap2.cs:481`, v2.4)."""
     filas, seq, bar = [], 0, 0
     for s in range(n_sesiones):
         dia = 15 + s
         for b in range(por_sesion):
             ts = "2026-06-%02dT%02d:%02d:00.0000000" % (dia, 9 + (b // 60), b % 60)
+            if b == 0 and anclaje_por_sesion:
+                filas.append("%d|%s|ANCLAJE_VERIFICADO|bar=%d;offset=0;largo=25;k=25"
+                             % (seq, ts, bar))
+                seq += 1
             for tipo, extra in tipo_gen(s, b):
                 filas.append("%d|%s|%s|bar=%d;%s" % (seq, ts, tipo, bar, extra))
                 seq += 1
@@ -185,7 +211,7 @@ def _sesiones(n_sesiones, por_sesion, tipo_gen):
 
 
 def test_p1p2_todo_verificado_sin_mismatch_es_PASS(tmp_path):
-    g = lambda s, b: [("ANCLAJE_VERIFICADO", "k=25")]
+    g = lambda s, b: [("BARRA_PROCESADA", "largo=25;k=25;residual=False")]
     p = _log(tmp_path / "a__Tick25.csv", META_23, _sesiones(4, 30, g))
     r = P.modo_p1p2(p, TZ, "Tick25")
     assert r["estado"] == "PASS"
@@ -195,7 +221,7 @@ def test_p1p2_todo_verificado_sin_mismatch_es_PASS(tmp_path):
 
 def test_p1p2_mismatch_interior_se_cuenta(tmp_path):
     def g(s, b):
-        out = [("ANCLAJE_VERIFICADO", "k=25")]
+        out = [("BARRA_PROCESADA", "largo=25;k=25;residual=False")]
         if s == 1 and b < 15:            # 15 de 30 en una sesión interior
             out.append(("FOOTPRINT_MISMATCH", "n_eventos=25;k=25;open_blk=1;open_bar=2"))
         return out
@@ -211,7 +237,7 @@ def test_p1p2_candidato_cero_nunca_cuenta_como_procesada(tmp_path):
     def g(s, b):
         if s == 1 and b < 10:
             return [("ANCLAJE_AMBIGUO", "candidatos=0;disponibles=3;largo=25;k=25")]
-        return [("ANCLAJE_VERIFICADO", "k=25")]
+        return [("BARRA_PROCESADA", "largo=25;k=25;residual=False")]
     p = _log(tmp_path / "a__Tick25.csv", META_23, _sesiones(4, 30, g))
     r = P.modo_p1p2(p, TZ, "Tick25")
     assert r["candidatos_cero"] == 10
@@ -223,7 +249,7 @@ def test_p1p2_candidatos_multiples_nunca_cuenta_como_procesada(tmp_path):
     def g(s, b):
         if s == 2 and b < 5:
             return [("ANCLAJE_AMBIGUO", "candidatos=3;disponibles=9;largo=25;k=25")]
-        return [("ANCLAJE_VERIFICADO", "k=25")]
+        return [("BARRA_PROCESADA", "largo=25;k=25;residual=False")]
     p = _log(tmp_path / "a__Tick25.csv", META_23, _sesiones(4, 30, g))
     r = P.modo_p1p2(p, TZ, "Tick25")
     assert r["candidatos_multiples"] == 5
@@ -237,7 +263,7 @@ def test_p1p2_ambigua_con_mismatch_no_infla_el_denominador(tmp_path):
         if s == 1 and b < 10:
             return [("ANCLAJE_AMBIGUO", "candidatos=0;disponibles=2;largo=25;k=25"),
                     ("FOOTPRINT_MISMATCH", "n_eventos=25;k=25")]
-        return [("ANCLAJE_VERIFICADO", "k=25")]
+        return [("BARRA_PROCESADA", "largo=25;k=25;residual=False")]
     p = _log(tmp_path / "a__Tick25.csv", META_23, _sesiones(4, 30, g))
     r = P.modo_p1p2(p, TZ, "Tick25")
     assert r["barras_procesadas_interior"] == 110
@@ -250,12 +276,12 @@ def test_p1p2_denominador_cero_es_ABSTAIN_no_PASS(tmp_path):
     p = _log(tmp_path / "a__Tick25.csv", META_23, _sesiones(4, 10, g))
     r = P.modo_p1p2(p, TZ, "Tick25")
     assert r["estado"] == "ABSTAIN"
-    assert any("denominador 0" in d or "ANCLAJE_VERIFICADO" in d for d in r["diferencias"])
+    assert any("denominador 0" in d or "BARRA_PROCESADA" in d for d in r["diferencias"])
 
 
 def test_p1p2_K25_y_K10_usan_las_MISMAS_reglas(tmp_path):
     """El contrato no puede cambiar entre resoluciones: mismo `contrato_sha`."""
-    g = lambda s, b: [("ANCLAJE_VERIFICADO", "k=25")]
+    g = lambda s, b: [("BARRA_PROCESADA", "largo=25;k=25;residual=False")]
     a = _log(tmp_path / "a__Tick25.csv", META_23, _sesiones(4, 30, g))
     b = _log(tmp_path / "b__Tick10.csv", META_23, _sesiones(4, 30, g))
     ra = P.modo_p1p2(a, TZ, "Tick25")
@@ -318,7 +344,9 @@ def test_B2_CONTROL_NEGATIVO_defecto_real_de_v22_K25_da_FAIL(tmp_path):
     for b in range(N):
         ses = b // por
         ts = "2026-06-%02dT%02d:%02d:00.0000000" % (15 + ses, 9 + ((b % por) // 60) % 10, (b % por) % 60)
-        filas.append("%d|%s|ANCLAJE_VERIFICADO|bar=%d;offset=0;largo=25;k=25" % (seq, ts, b)); seq += 1
+        if b % por == 0:
+            filas.append("%d|%s|ANCLAJE_VERIFICADO|bar=%d;offset=0;largo=25;k=25" % (seq, ts, b)); seq += 1
+        filas.append("%d|%s|BARRA_PROCESADA|bar=%d;largo=25;k=25;residual=False" % (seq, ts, b)); seq += 1
         if b in malas:
             filas.append("%d|%s|FOOTPRINT_MISMATCH|bar=%d;n_eventos=25;k=25;open_blk=1;open_bar=2"
                          % (seq, ts, b)); seq += 1
@@ -331,7 +359,7 @@ def test_B2_CONTROL_NEGATIVO_defecto_real_de_v22_K25_da_FAIL(tmp_path):
     # documentado para K=25 en PRED-003, que es el control externo del control.
     assert r["tasa_mismatch_interior"] == r["tasa_mismatch_total"]
     assert abs(r["tasa_mismatch_total"] - 0.0391) < 0.0002
-    assert r["excluidos_por_warmup"] == 0
+    assert r["excluidos_por_warmup_barras"] == 0
 
 
 def test_B3_P4_barra_ambigua_que_igual_se_proceso_es_FAIL(tmp_path):
@@ -341,7 +369,7 @@ def test_B3_P4_barra_ambigua_que_igual_se_proceso_es_FAIL(tmp_path):
     filas, seq = [], 0
     for b in range(200):
         ts = "2026-06-15T%02d:%02d:00.0000000" % (9 + b // 60, b % 60)
-        filas.append("%d|%s|ANCLAJE_VERIFICADO|bar=%d;k=25" % (seq, ts, b)); seq += 1
+        filas.append("%d|%s|BARRA_PROCESADA|bar=%d;largo=25;k=25" % (seq, ts, b)); seq += 1
         if b == 100:
             filas.append("%d|%s|ANCLAJE_AMBIGUO|bar=%d;candidatos=3;disponibles=9;largo=25;k=25"
                          % (seq, ts, b)); seq += 1
@@ -357,7 +385,7 @@ def test_B3_P4_barra_ambigua_con_evento_economico_es_FAIL(tmp_path):
     filas, seq = [], 0
     for b in range(200):
         ts = "2026-06-15T%02d:%02d:00.0000000" % (9 + b // 60, b % 60)
-        filas.append("%d|%s|ANCLAJE_VERIFICADO|bar=%d;k=25" % (seq, ts, b)); seq += 1
+        filas.append("%d|%s|BARRA_PROCESADA|bar=%d;largo=25;k=25" % (seq, ts, b)); seq += 1
     ts = "2026-06-15T10:30:00.0000000"
     filas.append("%d|%s|ANCLAJE_AMBIGUO|bar=150;candidatos=0;disponibles=2;largo=25;k=25" % (seq, ts)); seq += 1
     filas.append("%d|%s|ZONE_CREATED|bar=150;zone_id=9;lo=1.1;hi=1.2" % (seq, ts)); seq += 1
@@ -372,7 +400,7 @@ def test_B4_P3_tiene_veredicto_propio_y_es_alcanzable(tmp_path):
     filas, seq = [], 0
     for b in range(200):
         ts = "2026-06-15T%02d:%02d:00.0000000" % (9 + b // 60, b % 60)
-        filas.append("%d|%s|ANCLAJE_VERIFICADO|bar=%d;k=25" % (seq, ts, b)); seq += 1
+        filas.append("%d|%s|BARRA_PROCESADA|bar=%d;largo=25;k=25" % (seq, ts, b)); seq += 1
         if b == 120:
             filas.append("%d|%s|FOOTPRINT_MISMATCH|bar=%d;n_eventos=25;k=25;open_blk=7;open_bar=9"
                          % (seq, ts, b)); seq += 1
@@ -391,7 +419,7 @@ def test_B4_P3_no_cuenta_mismatch_de_barras_no_procesadas(tmp_path):
     filas.append("%d|%s|FOOTPRINT_MISMATCH|bar=0;n_eventos=25;k=25;open_blk=1;open_bar=2" % (seq, ts0)); seq += 1
     for b in range(1, 200):
         ts = "2026-06-15T%02d:%02d:00.0000000" % (9 + b // 60, b % 60)
-        filas.append("%d|%s|ANCLAJE_VERIFICADO|bar=%d;k=25" % (seq, ts, b)); seq += 1
+        filas.append("%d|%s|BARRA_PROCESADA|bar=%d;largo=25;k=25" % (seq, ts, b)); seq += 1
     p = _log(tmp_path / "a__Tick25.csv", META_23, filas)
     r = P.modo_p1p2(p, TZ, "Tick25")
     assert r["p3_pares_procesados_sin_igualdad_ohlcv"] == 0
@@ -401,7 +429,7 @@ def test_B4_P3_no_cuenta_mismatch_de_barras_no_procesadas(tmp_path):
 def test_N3_sin_meta_es_ABSTAIN_nunca_medicion(tmp_path):
     p = str(tmp_path / "a__Tick25.csv")
     with open(p, "w", encoding="utf-8") as fh:
-        fh.write("0|2026-06-15T09:00:00.0000000|ANCLAJE_VERIFICADO|bar=0;k=25\n")
+        fh.write("0|2026-06-15T09:00:00.0000000|BARRA_PROCESADA|bar=0;largo=25;k=25\n")
     r = P.modo_p1p2(p, TZ, "Tick25")
     assert r["estado"] == "ABSTAIN"
 
@@ -411,9 +439,105 @@ def test_exigencia_transversal_publica_total_interior_y_exclusiones(tmp_path):
     filas, seq = [], 0
     for b in range(300):
         ts = "2026-06-15T%02d:%02d:00.0000000" % (9 + b // 60, b % 60)
-        filas.append("%d|%s|ANCLAJE_VERIFICADO|bar=%d;k=25" % (seq, ts, b)); seq += 1
+        filas.append("%d|%s|BARRA_PROCESADA|bar=%d;largo=25;k=25" % (seq, ts, b)); seq += 1
     p = _log(tmp_path / "a__Tick25.csv", META_23, filas)
     r = P.modo_p1p2(p, TZ, "Tick25")
-    for k in ("tasa_mismatch_total", "tasa_mismatch_interior", "excluidos_por_warmup",
-              "excluidos_por_tail", "desglose_por_sesion"):
+    for k in ("tasa_mismatch_total", "tasa_mismatch_interior",
+              "excluidos_por_warmup_barras", "excluidos_por_tail_barras",
+              "excluidos_por_warmup_eventos", "excluidos_por_tail_eventos",
+              "barras_procesadas_total", "desglose_por_sesion"):
         assert k in r, "falta %s en la salida" % k
+
+
+# ---------------------------------------------------------------- v2.4: H1 y H2
+
+def _cs():
+    return io.open(os.path.join(REPO, "nt8", "BigTrap2.cs"), encoding="utf-8").read()
+
+
+def test_H1_el_cs_no_tiene_identificadores_sin_declarar():
+    """H1: v2.3 tenia `if (!ok) { }` con `ok` sin declarar (CS0103): el archivo
+    NO COMPILABA. Sobrevivio porque el pin compara sha256, y un archivo que no
+    compila tiene un hash perfectamente valido. Ninguna verificacion del repo
+    ejercitaba el compilador."""
+    import re as _re
+    assert not _re.search(r"(^|[^A-Za-z_])ok([^A-Za-z0-9_]|$)", _cs()), \
+        "quedo un identificador `ok` sin declarar: el .cs no compila"
+
+
+def test_H2_el_cs_emite_BARRA_PROCESADA_en_el_camino_de_tick():
+    """H2: el denominador tiene que EXISTIR en el log. `BigTrap2.cs:481`."""
+    src = _cs()
+    assert 'LogEvent("BARRA_PROCESADA"' in src
+    assert src.index("private void DrenarPorOHLCV()") < src.index('LogEvent("BARRA_PROCESADA"'), \
+        "BARRA_PROCESADA quedo fuera de DrenarPorOHLCV (camino de tick)"
+
+
+def test_H2_el_camino_de_TIEMPO_no_emite_BARRA_PROCESADA():
+    """P5 exige time:1 bit-identico: el camino de tiempo NO se toca."""
+    src = _cs()
+    ini = src.index("if (fpTicksPerBar <= 0)")
+    fin = src.index("private void DrenarPorOHLCV()")
+    assert "BARRA_PROCESADA" not in src[ini:fin], \
+        "el camino de tiempo emite BARRA_PROCESADA: rompe P5"
+
+
+def test_H2_log_sin_BARRA_PROCESADA_es_ABSTAIN_no_PASS(tmp_path):
+    """Un log de v2.3 o anterior NO tiene denominador. Con la v1 del analizador
+    esto daba PASS con denominador 4-5; ahora tiene que abstenerse."""
+    filas, seq = [], 0
+    for b in range(300):
+        ts = "2026-06-15T%02d:%02d:00.0000000" % (9 + b // 60, b % 60)
+        if b == 0:
+            filas.append("%d|%s|ANCLAJE_VERIFICADO|bar=0;offset=0;largo=25;k=25" % (seq, ts))
+            seq += 1
+        filas.append("%d|%s|FOOTPRINT_MISMATCH|bar=%d;n_eventos=25;k=25;open_blk=1;open_bar=2"
+                     % (seq, ts, b))
+        seq += 1
+    p = _log(tmp_path / "v23__Tick25.csv", META_23, filas)
+    r = P.modo_p1p2(p, TZ, "Tick25")
+    assert r["estado"] == "ABSTAIN"
+    assert any("BARRA_PROCESADA" in d for d in r["diferencias"])
+
+
+def test_H2_denominador_es_por_barra_no_por_sesion(tmp_path):
+    """Con el emisor FIEL (un anclaje por sesion) el denominador es el numero de
+    BARRAS, no el de sesiones. Con la v1 esto daba 4."""
+    g = lambda s, b: [("BARRA_PROCESADA", "largo=25;k=25;residual=False")]
+    p = _log(tmp_path / "a__Tick25.csv", META_23, _sesiones(4, 30, g))
+    r = P.modo_p1p2(p, TZ, "Tick25")
+    assert r["barras_procesadas_interior"] == 120
+    assert r["anclajes_verificados"] == 4
+
+
+def test_menor1_P4_detecta_aunque_el_economico_preceda_al_ambiguo(tmp_path):
+    """El orden intra-barra no puede decidir si se ve la violacion: dos pasadas."""
+    filas, seq = [], 0
+    for b in range(200):
+        ts = "2026-06-15T%02d:%02d:00.0000000" % (9 + b // 60, b % 60)
+        filas.append("%d|%s|BARRA_PROCESADA|bar=%d;largo=25;k=25" % (seq, ts, b))
+        seq += 1
+    ts = "2026-06-15T10:30:00.0000000"
+    filas.append("%d|%s|ZONE_CREATED|bar=150;zone_id=9;lo=1.1;hi=1.2" % (seq, ts))
+    seq += 1
+    filas.append("%d|%s|ANCLAJE_AMBIGUO|bar=150;candidatos=0;disponibles=2;largo=25;k=25"
+                 % (seq, ts))
+    p = _log(tmp_path / "a__Tick25.csv", META_23, filas)
+    r = P.modo_p1p2(p, TZ, "Tick25")
+    assert r["p4_estado"] == "FAIL", "el economico precedia al ambiguo y se perdia"
+
+
+def test_menor5_p5_time_rechaza_resolucion_que_no_corresponde(tmp_path):
+    a = _log(tmp_path / "h__Minute1.csv", META_21, _eco_basico())
+    b = _log(tmp_path / "n__Tick25.csv", META_23, _eco_basico())
+    assert P.modo_p5(a, b, "Minute1")["estado"] == "ABSTAIN"
+
+
+def test_menor6_ABSTAIN_no_comparte_exit_code_con_PASS(tmp_path):
+    """Abstencion NO es aprobacion: 0=PASS, 1=FAIL, 2=ABSTAIN."""
+    ok = _log(tmp_path / "a__Tick25.csv", META_23, _eco_basico())
+    assert P.main(["p6-file", "--log", ok, "--resolucion", "Tick25"]) == 0
+    sin = str(tmp_path / "b__Tick25.csv")
+    with open(sin, "w", encoding="utf-8") as fh:
+        fh.write("0|2026-06-15T09:00:00.0000000|ANCLAJE_VERIFICADO|bar=0;largo=25;k=25\n")
+    assert P.main(["p1-p2-tick", "--log", sin, "--tz-chart", TZ, "--resolucion", "Tick25"]) == 2

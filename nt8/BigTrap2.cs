@@ -468,6 +468,19 @@ namespace NinjaTrader.NinjaScript.Indicators
 
 				snapQ.Dequeue();
 				nPares++;
+				// PRED-004 H2 (v2.4): el DENOMINADOR de P1/P2 no existia en el log.
+				// `ANCLAJE_VERIFICADO` se emite dentro de `if (!anclado)` y `anclado`
+				// solo vuelve a false en el roll de sesion: es UNA VEZ POR SESION,
+				// un marcador de anclaje, no de barra procesada. `nPares` contaba
+				// bien pero nunca se emitia. Sin este evento, P1/P2 daba PASS por
+				// construccion (denominador 4-5 en vez de 12.395).
+				//
+				// Va SOLO en el camino de tick: `DrenarPorOHLCV` se alcanza unicamente
+				// con `fpTicksPerBar > 0`. El camino de TIEMPO queda intacto porque
+				// P5 exige que time:1 salga bit-identico al oraculo previo.
+				LogEvent("BARRA_PROCESADA", string.Format(CultureInfo.InvariantCulture,
+					"bar={0};largo={1};k={2};residual={3}",
+					s.Bar, largo, fpTicksPerBar, largo < fpTicksPerBar));
 				EmitirBarra(s, curBlock, 0, largo);
 				curBlock.RemoveRange(0, largo);
 				if (pendCutAt >= 0)
@@ -481,7 +494,6 @@ namespace NinjaTrader.NinjaScript.Indicators
 						anclado   = false;
 					}
 				}
-				if (!ok) { }
 			}
 		}
 
@@ -858,7 +870,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 					eventWriter = new StreamWriter(resolvedEventLogPath, false) { AutoFlush = true };
 					Print("BigTrap2: escribiendo " + resolvedEventLogPath);
 					if (eventSeq == 0)
-						eventWriter.WriteLine("# meta indicator=BigTrap2,version=2.3"
+						eventWriter.WriteLine("# meta indicator=BigTrap2,version=2.4"
 							+ ",attribution=ohlcv_unique_match,anchor=bounded_verified"
 							+ ",footprint=reconstructed_1tick_subseries,classifier=bidask_then_tickrule"
 							+ ",row_anchor=absolute_grid,ratio_floor=max(opposite,1),poc_tiebreak=lowest_row"

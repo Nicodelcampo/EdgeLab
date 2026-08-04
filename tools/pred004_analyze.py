@@ -105,7 +105,17 @@ P5_TIPOS_ECONOMICOS = ("TRAP", "ZONE_CREATED", "ZONE_TOUCHED",
 #: `ANCLAJE_VERIFICADO` aparece recién cuando el anclaje acotado tuvo éxito
 #: (`BigTrap2.cs:453`). Se excluyen las barras ANTERIORES al primer
 #: `ANCLAJE_VERIFICADO`, con un tope duro como red de seguridad.
-WARMUP_MODO = "hasta_primer_anclaje_verificado"
+#: H2 (auditoria A2): el DENOMINADOR de P1/P2 NO EXISTIA en el log.
+#: `ANCLAJE_VERIFICADO` se emite dentro de `if (!anclado)` (BigTrap2.cs:423) y
+#: `anclado` solo vuelve a false en el roll de sesion (298) o cuando el OHLCV no
+#: cierra (481): es UNA VEZ POR SESION, un marcador de ANCLAJE, no de barra
+#: procesada. `nPares` contaba bien (398, 470) pero nunca se emitia.
+#: Con K=25 sobre 12.395 barras y 4-5 sesiones el denominador valia 4-5, los
+#: mismatch casi nunca caian sobre una barra de anclaje y P1/P2 daba PASS por
+#: construccion. Mismo modo de falla que B2, por otra puerta.
+#: v2.4 del .cs emite `BARRA_PROCESADA` por barra, SOLO en el camino de tick.
+EVENTO_BARRA_PROCESADA = "BARRA_PROCESADA"
+WARMUP_MODO = "hasta_primera_barra_procesada"
 WARMUP_TOPE_BARRAS = 500        # red de seguridad; si se supera => ABSTAIN
 
 #: MATURITY TAIL — declarado como DECISIÓN NUEVA post-oráculo.
@@ -137,6 +147,7 @@ CONTRATO_SHA_CAMPOS = dict(
     p5_meta_ignorable=sorted(P5_META_IGNORABLE),
     p5_payload_ignorable=sorted(P5_PAYLOAD_IGNORABLE),
     p5_tipos_economicos=list(P5_TIPOS_ECONOMICOS),
+    evento_barra_procesada=EVENTO_BARRA_PROCESADA,
     warmup_modo=WARMUP_MODO,
     warmup_tope_barras=WARMUP_TOPE_BARRAS,
     tail_barras=TAIL_BARRAS,
@@ -270,13 +281,21 @@ def sesion_de(ts_iso, tz_chart):
 # MODO p5-time
 # ---------------------------------------------------------------------------
 
-def modo_p5(hist_path, nuevo_path):
+def modo_p5(hist_path, nuevo_path, resolucion_esperada=None):
     """P5: el time:1 nuevo debe ser bit-idéntico al histórico salvo la metadata
     expresamente permitida. Cualquier otra diferencia = FAIL. Formatos no
     comparables = ABSTAIN, nunca PASS."""
     a = leer_log(hist_path)
     b = leer_log(nuevo_path)
     dif = []
+    # menor 5: sin esto nada impedia compararle un Tick25 contra el historico de
+    # minuto y llamarlo P5.
+    if resolucion_esperada:
+        for lado, lg in (("historico", a), ("nuevo", b)):
+            if resolucion_esperada.lower() not in os.path.basename(lg["path"]).lower():
+                return _res("p5-time", "ABSTAIN",
+                            ["el log %s (%s) no declara la resolucion %r"
+                             % (lado, os.path.basename(lg["path"]), resolucion_esperada)], a, b)
 
     if a["meta"] is None or b["meta"] is None:
         return _res("p5-time", "ABSTAIN", ["alguno de los dos logs no tiene línea # meta: formatos no comparables"],
@@ -364,12 +383,14 @@ def modo_p1p2(path, tz_chart, resolucion_esperada=None):
     # --- WARMUP por conteo acotado (B2): barras anteriores al primer ANCLAJE_VERIFICADO
     primera_ok = None
     for e in ev:
-        if e["tipo"] == "ANCLAJE_VERIFICADO":
+        if e["tipo"] == EVENTO_BARRA_PROCESADA:
             primera_ok = bar_de(e)
             break
     if primera_ok is None:
         return _res("p1-p2-tick", "ABSTAIN",
-                    ["ningun ANCLAJE_VERIFICADO en el log: el ancla nunca se establecio"], lg)
+                    ["ningun %s en el log. Si es v2.3 o anterior, el log NO tiene "
+                     "denominador y P1/P2 no es medible: hace falta v2.4."
+                     % EVENTO_BARRA_PROCESADA], lg)
     if primera_ok > WARMUP_TOPE_BARRAS:
         return _res("p1-p2-tick", "ABSTAIN",
                     ["el primer ANCLAJE_VERIFICADO cae en la barra %d, sobre el tope de "
@@ -381,23 +402,31 @@ def modo_p1p2(path, tz_chart, resolucion_esperada=None):
     def interior(b):
         return b is not None and lo_int <= b <= hi_int
 
-    verif, amb, mism = set(), set(), set()
+    # PASADA 1: construir `amb` completo. v2.3 del analizador evaluaba `b in amb`
+    # en la MISMA pasada en que `amb` se llenaba, asi que si el evento economico
+    # precedia al ANCLAJE_AMBIGUO de esa barra la violacion de P4 se perdia.
+    amb = {bar_de(e) for e in ev if e["tipo"] == "ANCLAJE_AMBIGUO" and bar_de(e) is not None}
+
+    procesadas, mism = set(), set()
     mism_todas = set()
     cand0 = candN = 0
-    amb_con_verificado, amb_con_economico = set(), set()
+    anclajes = set()
+    amb_con_economico = set()
     ohlc_desig_proc = set()
     excl_warmup = excl_tail = 0
     por_sesion = {}
     for e in ev:
         b = bar_de(e)
         t = e["tipo"]
-        if b is not None and t in ("ANCLAJE_VERIFICADO", "ANCLAJE_AMBIGUO", "FOOTPRINT_MISMATCH"):
+        if b is not None and t in (EVENTO_BARRA_PROCESADA, "ANCLAJE_VERIFICADO",
+                                   "ANCLAJE_AMBIGUO", "FOOTPRINT_MISMATCH"):
             ses = sesion_de(e["ts"], tz_chart)
             por_sesion.setdefault(ses, Counter())[t] += 1
-        if t == "ANCLAJE_VERIFICADO" and b is not None:
-            verif.add(b)
+        if t == EVENTO_BARRA_PROCESADA and b is not None:
+            procesadas.add(b)
+        elif t == "ANCLAJE_VERIFICADO" and b is not None:
+            anclajes.add(b)
         elif t == "ANCLAJE_AMBIGUO" and b is not None:
-            amb.add(b)
             try:
                 c = int(e["campos"].get("candidatos"))
                 if c == 0:
@@ -419,12 +448,13 @@ def modo_p1p2(path, tz_chart, resolucion_esperada=None):
 
     # --- P4 (B3): la abstencion se VERIFICA, no se asume.
     # v1 hacia `proc -= amb`, que ocultaba justo la violacion que P4 vigila.
-    amb_con_verificado = amb & verif
-    p4_violaciones = sorted(amb_con_verificado | amb_con_economico)
+    # P4: violacion = barra que abstuvo y IGUAL fue procesada, o que abstuvo y
+    # siguio emitiendo eventos economicos. Se verifica, no se asume.
+    p4_violaciones = sorted((amb & procesadas) | amb_con_economico)
     p4_estado = "PASS" if not p4_violaciones else "FAIL"
 
     # --- denominador: verificadas del interior que NO abstuvieron
-    proc = {b for b in verif if interior(b)} - amb
+    proc = {b for b in procesadas if interior(b)} - amb
     denom = len(proc)
     mism_int = mism & proc
 
@@ -442,7 +472,16 @@ def modo_p1p2(path, tz_chart, resolucion_esperada=None):
             if a_ in cm and b_ in cm and cm[a_] != cm[b_]:
                 ohlc_desig_proc.add(b)
                 break
-    p3_estado = "PASS" if not ohlc_desig_proc else "FAIL"
+    # menor 4: en el camino de TIEMPO, `VerificarOHLC` no emite vol_blk/vol_bar y
+    # el chequeo de abajo exige que AMBOS esten -> P3 daria PASS vacuo. Se declara
+    # como NO_APLICA en vez de aprobar por ausencia de evidencia.
+    campos_p3 = any(("open_blk" in e["campos"] and "open_bar" in e["campos"])
+                    for e in ev if e["tipo"] == "FOOTPRINT_MISMATCH")
+    hubo_mismatch = any(e["tipo"] == "FOOTPRINT_MISMATCH" for e in ev)
+    if hubo_mismatch and not campos_p3:
+        p3_estado = "NO_APLICA"
+    else:
+        p3_estado = "PASS" if not ohlc_desig_proc else "FAIL"
 
     if denom == 0:
         return _res("p1-p2-tick", "ABSTAIN",
@@ -451,7 +490,9 @@ def modo_p1p2(path, tz_chart, resolucion_esperada=None):
                     barras_ambiguas_interior=len(amb & {b for b in verif} | (amb & set(range(lo_int, hi_int + 1)))))
 
     tasa_int = len(mism_int) / denom
-    tasa_total = len(mism_todas) / len(verif | amb) if (verif | amb) else float("nan")
+    # menor 3: la tasa total sobre la MISMA poblacion (barras procesadas), no
+    # sobre una cuenta de anclajes.
+    tasa_total = len(mism_todas & procesadas) / len(procesadas) if procesadas else float("nan")
 
     difs = []
     if tasa_int > UMBRAL_MISMATCH:
@@ -473,8 +514,12 @@ def modo_p1p2(path, tz_chart, resolucion_esperada=None):
                 tasa_mismatch_interior=tasa_int,
                 footprint_mismatch_total=len(mism_todas),
                 tasa_mismatch_total=tasa_total,
-                excluidos_por_warmup=excl_warmup,
-                excluidos_por_tail=excl_tail,
+                excluidos_por_warmup_barras=len({b for b in mism_todas if b < lo_int}),
+                excluidos_por_tail_barras=len({b for b in mism_todas if b > hi_int}),
+                excluidos_por_warmup_eventos=excl_warmup,
+                excluidos_por_tail_eventos=excl_tail,
+                barras_procesadas_total=len(procesadas),
+                anclajes_verificados=len(anclajes),
                 barras_ambiguas=len(amb),
                 candidatos_cero=cand0, candidatos_multiples=candN,
                 p3_estado=p3_estado,
@@ -522,6 +567,8 @@ def main(argv=None):
     a = sub.add_parser("p5-time", help="histórico v2.1 vs nuevo v2.3, bit-identidad")
     a.add_argument("--historico", required=True)
     a.add_argument("--nuevo", required=True)
+    a.add_argument("--resolucion", default=None,
+                   help="p.ej. Minute1. Sin esto se puede comparar un Tick25 contra minuto.")
 
     b = sub.add_parser("p1-p2-tick", help="atribución sobre el EventLog de NT8")
     b.add_argument("--log", required=True)
@@ -541,7 +588,7 @@ def main(argv=None):
     args = ap.parse_args(argv)
 
     if args.modo == "p5-time":
-        res = modo_p5(args.historico, args.nuevo)
+        res = modo_p5(args.historico, args.nuevo, args.resolucion)
     elif args.modo == "p1-p2-tick":
         res = modo_p1p2(args.log, args.tz_chart, args.resolucion)
     else:
@@ -555,7 +602,10 @@ def main(argv=None):
         with open(args.out, "w", encoding="utf-8") as fh:
             fh.write(txt)
     print(txt)
-    return 0 if res["estado"] in ("PASS", "ABSTAIN") else 1
+    # menor 6: abstencion NO es aprobacion. Todo el diseno insiste en eso; el
+    # exit code las hacia indistinguibles.
+    #   0 = PASS · 1 = FAIL · 2 = ABSTAIN
+    return {"PASS": 0, "FAIL": 1}.get(res["estado"], 2)
 
 
 if __name__ == "__main__":

@@ -1,4 +1,77 @@
-# Contrato del analizador de PRED-004 — **v2**, re-congelado 2026-08-04
+# Contrato del analizador de PRED-004 — **v3**, re-congelado 2026-08-04
+
+> **v2 (`63d7ef3`) aprobado, pero con DOS HALLAZGOS AGUAS ARRIBA en el `.cs`.**
+> Los dos verificados en el código antes de conceder. `.cs` pasa a **v2.4**.
+>
+> `contrato_sha` **v1** `6d0e87b7…` · **v2** `109f41c1…` — los dos retirados
+> `contrato_sha` **v3** = **`a92c220debab56940bd747f4f34f6cd385e403d5f18571b32b69f31e03f25cd2`**
+> `sha256` de `nt8/BigTrap2.cs` **v2.4** = **`9b63959a62f08860a8114809078d53f16c60a0af8e8c7a743317fb68398258e3`**
+> (el v2.3 era `e5dd810a…684e977`; **cambia por diseño**, ver H1 y H2)
+
+## H1 · `BigTrap2.cs` v2.3 NO COMPILABA
+
+`if (!ok) { }` con `ok` **sin declarar** en el método, la clase ni el archivo.
+Verificado: `ok` aparecía en **exactamente una línea** de las 1.109. **CS0103.**
+
+**Por qué sobrevivió, que es lo grave:** el pin compara `sha256`, y **un archivo
+que no compila tiene un hash perfectamente válido**. Ninguna verificación del
+repo ejercitaba el compilador. El `.cs` estaba a punto de instalarse en NT8 con
+su hash “verificado”.
+
+**Arreglo:** línea eliminada. Y el preflight incorpora un **paso de compilación
+obligatorio ANTES de cualquier captura** — *un test que verifica el hash no
+verifica que el código sea válido.*
+
+## H2 · El denominador de P1/P2 no existía en el log
+
+`ANCLAJE_VERIFICADO` se emite dentro de `if (!anclado)` (`BigTrap2.cs:423`), y
+`anclado` sólo vuelve a `false` en el roll de sesión (298) o cuando el OHLCV no
+cierra (481). Es **una vez por sesión**: un marcador de **anclaje**, no de barra
+procesada. `nPares` contaba bien (398, 470) y **nunca se emitía**.
+
+Confirmado lo que el auditor preguntó: **ningún evento marcaba barra procesada.**
+`EmitirBarra` no registra nada por barra; `TRAP`/`ZONE_CREATED` sólo aparecen con
+detección.
+
+**Consecuencia:** con K=25 sobre 12.395 barras y 4-5 sesiones, `denom` valía
+**4 o 5**. Los `FOOTPRINT_MISMATCH` casi nunca caen sobre una barra de anclaje ⇒
+numerador 0 ⇒ **PASS por construcción**. Mismo modo de falla que B2, por otra
+puerta.
+
+**Por qué mis 30 tests no lo vieron:** el helper fabricaba un
+`ANCLAJE_VERIFICADO` **por barra**, que es algo que el emisor real no hace.
+**La alcanzabilidad se verificó contra una ficción.**
+
+**Arreglo:** `.cs` **v2.4** emite `BARRA_PROCESADA` (`bar`, `largo`, `k`,
+`residual`) en `DrenarPorOHLCV` (línea 481), que **sólo se alcanza con
+`fpTicksPerBar > 0`**. El camino de tiempo (389-403, guardado por
+`fpTicksPerBar <= 0`) **queda intacto**: P5 sigue siendo 2.1 → 2.3, verificado
+por `test_H2_el_camino_de_TIEMPO_no_emite_BARRA_PROCESADA`.
+
+Un log sin `BARRA_PROCESADA` (v2.3 o anterior) ahora es **ABSTAIN**, no PASS.
+
+### Regla nueva y obligatoria
+
+**Cada test sintético debe citar la línea del `.cs` que emite el evento que
+fabrica.** Si no se puede citar, el test valida un emisor imaginario. La tabla de
+correspondencia está al tope de `tests/bridge/test_pred004_analyze.py`.
+
+## Los seis menores
+
+| # | defecto | arreglo |
+|---|---|---|
+| 1 | P4 dependía del orden intra-barra: `b in amb` se evaluaba mientras `amb` se construía | **dos pasadas**; `amb` se arma completo primero |
+| 2 | unidades irreconciliables: exclusiones contaban EVENTOS, mismatches contaban BARRAS | se publican **las dos**: `..._barras` y `..._eventos` |
+| 3 | `tasa_mismatch_total` no era tasa sobre la misma población | numerador y denominador ahora sobre **barras procesadas** |
+| 4 | P3 sobre logs de tiempo daría PASS vacuo (`VerificarOHLC` no emite `vol_blk`/`vol_bar`) | **`NO_APLICA`** en vez de aprobar por ausencia de evidencia |
+| 5 | `p5-time` no tenía `--resolucion`: se le podía dar un Tick25 contra el histórico de minuto | `--resolucion`, ABSTAIN si no corresponde |
+| 6 | `main()` devolvía 0 en ABSTAIN igual que en PASS | **0=PASS · 1=FAIL · 2=ABSTAIN** |
+
+**N1 sigue abierto** y sin resolver: el corrimiento de `seq` por `eventSeq++`
+compartido con los diagnósticos que el contrato excluye.
+
+**Batería: 38/38**, con el control negativo ahora corriendo sobre el emisor fiel.
+Suite completa: **673 passed**, 2 failed (los dos rojos declarados).
 
 > **v1 (`52b0db7`) NO APROBADO.** Cuatro bloqueantes verificados por el auditor,
 > los cuatro reproducidos en mi propio código antes de conceder. Esta es la v2.
