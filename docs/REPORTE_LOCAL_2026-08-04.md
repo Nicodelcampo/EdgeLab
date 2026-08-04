@@ -152,6 +152,68 @@ programáticamente que **0 entradas históricas quedaron modificadas**, y se
 reescribió preservando CRLF, indent y ausencia de newline final. El diff final
 es **puramente aditivo: 8 inserciones, 0 borrados**.
 
+### 3.1 Tercer defecto: el `.cs` no era compilable (CRLF)
+
+Al correr el verificador obligatorio antes de pedir la compilación, `f4367a2`
+falló:
+
+```
+[FAIL] nt8/CaptureEventProbeV2.cs
+   FAIL  363 saltos LF sin CR: NT8 anexará una región duplicada
+```
+
+El archivo tenía **0 CRLF y 355 LF sueltos** y era el **único `.cs` del repo**
+en ese estado; los otros seis son CRLF puro (926, 918, 892, 748, 638, 299). Es
+el modo de falla que documenta `nt8/README.md`: NT8 no reconoce su propia región
+generada, **anexa una segunda** y la compilación revienta — así se rompió el
+2026-07-25.
+
+**El defecto era PREEXISTENTE**, no introducido por la rama correctiva: ya
+estaba en `f4367a2` antes de tocar el archivo. La hipótesis es que se escribió
+en sandbox (LF) y nunca hizo el viaje de ida y vuelta por NT8, que sí lo habría
+normalizado.
+
+Corregido en `2f300f7`, junto con el formato del meta: se había emitido como dos
+líneas `# indicator=` + `# version=`, y `check_nt8_cs.py` exige
+`meta indicator=X,version=Y` — el formato de los otros seis. Se unificó a esa
+forma; el parser de `capture_tsv.py` la tolera igual.
+
+### 3.2 Instalación y compilación en NT8 — VERIFICADAS
+
+La instalación real de NT8 en esta máquina está en
+`%USERPROFILE%\OneDrive\Documentos\NinjaTrader 8\` (carpeta **redirigida a
+OneDrive y en español**), no en `Documents\`. La ruta sin redirección existe
+pero contiene un solo `.cs` ajeno al proyecto; **apuntar ahí instala en el vacío
+y el indicador nunca se actualiza.** Queda anotado porque es una trampa
+silenciosa para cualquier instrucción futura.
+
+Procedimiento ejecutado, conforme a `nt8/README.md`:
+
+1. respaldo del instalado en
+   `C:\ProyectosQuant\_baselines\nt8_cs_backup\CaptureEventProbeV2.cs.20260804T032136Z.bak`,
+   **fuera de `bin\Custom`**;
+2. reemplazo in place por la copia canónica de `2f300f7`;
+3. compilación por el operador desde el NinjaScript Editor.
+
+Evidencia de que compiló (artefacto, no declaración):
+
+```
+NinjaTrader.Custom.dll   reconstruida 2026-08-04 00:26 local
+log del día              0 errores CS####
+verificador sobre el instalado:
+  [WARN] meta=CaptureEventProbeV2=2.1, 419 líneas CRLF, 1 clase
+  warn: trae 1 región generada  <- ESPERADO en la copia instalada;
+        el warn aplica a la copia canónica del repo, que tiene 0
+```
+
+El `WARN` es correcto y no es un problema: NT8 **regeneró su región al
+compilar**, que es exactamente lo que debe pasar del lado instalado.
+
+**Lo que esto todavía NO prueba:** que una captura nueva sea válida. La
+verificación pendiente es que el próximo `.tsv` traiga
+`# meta indicator=CaptureEventProbeV2,version=2.1` en el header y que audite sin
+deuda de schema.
+
 ## 4 · Contraste de la enmienda G2 con literatura externa
 
 Búsqueda hecha para asistir la decisión de aprobar o rechazar. Resultado por
@@ -211,8 +273,9 @@ investigación y al operador.
 - No ejecutó el censo de tasa de señales sobre las 200 sesiones.
 - No seleccionó H1–H3 ni propuso hipótesis.
 - No tocó holdout, gates, umbrales, resultados históricos ni el capture TSV.
-- No compiló los `.cs` en NT8: el cambio de `8d35807` es una constante y dos
-  `WriteLine`, pero **la compilación real está sin verificar**.
+- No afirma que exista una captura válida con el probe nuevo: el `.cs` compila
+  (§3.2), pero **el TSV que hay en `oracles/` sigue siendo el del build viejo**,
+  con 140 valores centinela y `schema_ok=False`. Hace falta re-capturar.
 - No afirma cobertura exacta 95% para el IC primario (§4.1).
 
 **Aporte al referente:** el stack estadístico reconstruido pasa de "escrito y
