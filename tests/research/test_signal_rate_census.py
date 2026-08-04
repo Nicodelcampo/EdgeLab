@@ -3,6 +3,11 @@ from __future__ import annotations
 import pytest
 
 from diag.tasa_senales.audit_post_sepmin import CensusAuditError, audit
+from diag.tasa_senales.census_plan import (
+    CensusPlanError,
+    build_full_plan,
+    build_run_manifest,
+)
 
 
 def contract(dates, counts, name="BigTrap2"):
@@ -48,3 +53,43 @@ def test_conteos_o_n_dias_inconsistentes_no_pasan():
     assert report["status"] == "INSUFFICIENT"
     assert any("n_dias" in x for x in report["problems"])
     assert any("conteos" in x for x in report["problems"])
+
+
+def test_plan_incluye_todas_las_sesiones_sin_muestreo_y_ordenadas():
+    days = [
+        {"fecha": "2026-02-02", "archivo": "b.parquet"},
+        {"fecha": "2026-01-03", "archivo": "a.parquet"},
+        {"fecha": "2026-01-02", "archivo": "a.parquet"},
+    ]
+    assert build_full_plan(days) == [
+        ("a.parquet", ["2026-01-02", "2026-01-03"]),
+        ("b.parquet", ["2026-02-02"]),
+    ]
+
+
+def test_plan_falla_si_una_sesion_aparece_en_dos_contratos():
+    days = [
+        {"fecha": "2026-01-02", "archivo": "a.parquet"},
+        {"fecha": "2026-01-02", "archivo": "b.parquet"},
+    ]
+    with pytest.raises(CensusPlanError, match="aparece en contratos"):
+        build_full_plan(days)
+
+
+def test_run_manifest_declara_cobertura_configuracion_y_cero_outcomes():
+    plan = [("a.parquet", ["d1", "d2"]), ("b.parquet", ["d3"])]
+    manifest = build_run_manifest(
+        plan=plan,
+        universe_sha256="a" * 64,
+        output_sha256="b" * 64,
+        code_commit="c" * 40,
+        universe_info={"descartados_holdout": 5,
+                       "descartados_cuarentena": 2},
+        indicators=["BigTrap2", "Gaps2"],
+        generated_utc="2026-08-04T03:00:00Z",
+    )
+    assert manifest["schema_version"] == "signal_rate_census_run_v1"
+    assert manifest["session_count"] == 3
+    assert manifest["configuration"]["outcomes_accessed"] is False
+    assert manifest["configuration"]["sep_min_minutes"] == 120
+    assert manifest["indicators"] == ["BigTrap2", "Gaps2"]
