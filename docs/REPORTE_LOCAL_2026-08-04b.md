@@ -76,6 +76,35 @@ Controles que descartan explicaciones alternativas:
 - El 2026-07-03 **no fue cierre total**: 33.405 ticks, 53% de la mediana. Fue
   cierre anticipado, que es un modo de falla distinto y más sutil.
 
+### 2.0-bis CAVEAT — el control tiene un outlier sin explicar
+
+Añadido después de escribir §2, al revisar un cabo suelto de la misma medición.
+La línea base "viernes normal = 15:59 CT" **no es uniforme**:
+
+```
+2026-06-26 (viernes)  ticks por hora CT:  15h=1870  16h=2315  17h=2748  18h=1869
+2026-06-19 (feriado)  ticks por hora CT:  14h=1612  (nada despues)
+```
+
+El 2026-06-26 operó hasta las **19:00 CT**, tres horas *después* del cierre
+normal de viernes. No tengo explicación: no es roll de este contrato (`09-26` ya
+era front month), no es DST, y el resto de los viernes cierra 15:59.
+
+**Qué sobrevive y qué no.** Los dos cierres anticipados siguen en pie y no
+dependen de la línea base: el 06-19 y el 07-03 muestran el último tick a las
+14:59 y **nada después**, lo cual es cierre, no baja actividad. Además ambos
+coinciden con feriados CME conocidos (Juneteenth y 4 de julio observado), que es
+evidencia independiente de la medición.
+
+**Lo que se debilita** es la limpieza del control: si un viernes puede extenderse
+tres horas sin causa conocida, el criterio "última hora del día ⇒ tipo de
+sesión" no es suficiente por sí solo para construir el calendario. Quien lo
+construya debe partir del **calendario CME publicado**, y usar esta medición sólo
+para verificarlo contra los datos — no al revés.
+
+El outlier del 06-26 queda como pregunta abierta sobre la integridad del export
+en ese día.
+
 ### 2.1 Consecuencia para el arreglo
 
 `edgelab/bridge/sessions.py` declara desde su primera línea: *"Feriados NO
