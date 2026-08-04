@@ -376,13 +376,46 @@ def chequeo_precios_en_grilla(price_ticks):
             else dict(ok=False, code="PRECIO_FUERA_DE_GRILLA", n=malos))
 
 
+def hasta_de_front_month(contrato):
+    """Fin de la ventana de front month: el `desde` del contrato SIGUIENTE del
+    MISMO instrumento. `None` para el más nuevo, que queda abierto.
+
+    Se DERIVA, no se estipula: no se agrega ni una fecha nueva a `FRONT_MONTH`.
+    La tabla ya declara cuándo cada contrato pasa a ser front month; que el
+    anterior deja de serlo ese mismo día es la otra mitad del mismo hecho
+    medido, no una medición nueva.
+
+    Por instrumento y no global: ES y NQ rollan los lunes y 6E los viernes
+    (declarado en `FRONT_MONTH`), así que un `desde` de otro producto no puede
+    cerrar esta ventana.
+    """
+    reg = FRONT_MONTH.get(contrato)
+    if reg is None:
+        return None
+    instrumento = contrato.split()[0]
+    posteriores = sorted(
+        r["desde"] for c, r in FRONT_MONTH.items()
+        if c.split()[0] == instrumento and r["desde"] > reg["desde"])
+    return posteriores[0] if posteriores else None
+
+
 def es_front_month(contrato, fecha):
+    """Ventana `[desde, hasta)`. El día del cruce pertenece al contrato NUEVO.
+
+    Sin el borde superior, una sesión de roll satisface el front month de dos
+    contratos a la vez y queda reclamada por ambos (`census_plan` falla cerrado
+    ante eso, que es como se detectó).
+    """
     reg = FRONT_MONTH.get(contrato)
     if reg is None:
         return dict(ok=False, code="CONTRATO_SIN_FRONT_MONTH_DECLARADO",
                     detalle="no se admite un contrato cuyo front month no se midió")
-    return (dict(ok=True) if fecha >= reg["desde"]
-            else dict(ok=False, code="PRE_FRONT_MONTH", desde=reg["desde"]))
+    if fecha < reg["desde"]:
+        return dict(ok=False, code="PRE_FRONT_MONTH", desde=reg["desde"])
+    hasta = hasta_de_front_month(contrato)
+    if hasta is not None and fecha >= hasta:
+        return dict(ok=False, code="POST_FRONT_MONTH", hasta=hasta)
+    return dict(ok=True)
 
 
 BATERIA = ("front_month", "monotonia", "timestamps_posibles", "precios_en_grilla",
