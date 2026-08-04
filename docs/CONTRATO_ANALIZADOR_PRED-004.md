@@ -1,13 +1,113 @@
-# Contrato del analizador de PRED-004 — congelado 2026-08-04
+# Contrato del analizador de PRED-004 — **v2**, re-congelado 2026-08-04
+
+> **v1 (`52b0db7`) NO APROBADO.** Cuatro bloqueantes verificados por el auditor,
+> los cuatro reproducidos en mi propio código antes de conceder. Esta es la v2.
+>
+> `contrato_sha` **v1** = `6d0e87b7…` (retirado)
+> `contrato_sha` **v2** = **`109f41c1cfcdca97848482f3c3cb956fe0ae49db411be239342cc30370366f0c`**
 
 > **Se congela ANTES de producir ningún EventLog nuevo.** Cambiar cualquiera de
 > estas definiciones después de una captura invalida la medición: el porcentaje
 > se podría mover sin tocar el `.cs`.
 >
-> `contrato_sha` = **`6d0e87b7cf43d1ca6d0c94aafae0d85ee3ad5deea1f41f052b2ff27e20f6f9e8`**
->
 > Implementación: `tools/pred004_analyze.py` · Batería: `tests/bridge/test_pred004_analyze.py`
-> (**24/24 en verde**). Suite completa: 659 passed, 2 failed (los dos rojos declarados).
+> (**30/30 en verde**, incluido el control negativo). Suite completa: 665 passed,
+> 2 failed (los dos rojos declarados).
+
+## Los cuatro bloqueantes de v1 — reproducidos y corregidos
+
+### B1 · `sesion_de()` no convertía timezone
+
+`SESION_TZ` estaba en el hash del contrato y **no aparecía en una sola línea de
+código ejecutable**: sólo en su definición y en `CONTRATO_SHA_CAMPOS`. El hash
+certificaba un parámetro inerte. Se leía `d.hour` directo de `Time[0]`, que viene
+en hora del chart; con chart en ART y junio en CDT la frontera caía 2 h antes.
+
+**v2:** conversión explícita a `America/Chicago` con `zoneinfo`, y `--tz-chart`
+es **argumento obligatorio sin default**. Sin tz determinable ⇒ ABSTAIN.
+Cubierto por `test_B1_la_tz_del_chart_cambia_la_sesion` y
+`test_B1_sesion_tz_esta_realmente_en_uso` (inspecciona el fuente).
+
+### B2 · `WARMUP_SESIONES=1` podía producir PASS por construcción
+
+Construí el control negativo con el defecto REAL de v2.2/K=25 (485 mismatch en
+las barras 1..2571 de 12.395) y medí la regla vieja:
+
+| sesiones | estado | tasa interior | evidencia borrada |
+|---|---|---|---|
+| 4 | FAIL | **1,0544 %** | **80 %** |
+| 5 | FAIL | 1,1799 % | 76 % |
+| 6 | FAIL | 1,7530 % | 63 % |
+| 8 | FAIL | 2,3241 % | 48 % |
+
+No llegó a dar PASS, **pero con 4 sesiones el margen es 0,05 puntos** y se borra
+el 80 % de la evidencia. El veredicto de un defecto conocido dependía de cuántas
+sesiones tuviera la captura. **Eso no es un criterio.**
+
+**v2:** warm-up por **conteo acotado de barras**, derivado del mecanismo y no de
+los datos: se excluyen las barras anteriores al **primer `ANCLAJE_VERIFICADO`**,
+que es cuando el `.cs` declara el ancla establecida (`BigTrap2.cs:453`), con tope
+duro de 500 barras (superarlo ⇒ ABSTAIN).
+
+Resultado sobre el mismo control: **FAIL, con `excluidos_por_warmup = 0` y tasa
+interior = tasa total = 3,91 %** — que reproduce exactamente el `K25 = 3,91 %`
+documentado en PRED-003. La regla nueva **no borra evidencia**, y ese 3,91 % es
+el control externo del control.
+
+### B3 · P4 era inalcanzable
+
+v1 hacía `proc -= amb`: **asumía** la abstención en vez de verificarla. Si el
+`.cs` procesaba una barra ambigua, v1 la quitaba del denominador y la reportaba
+como abstención — ocultando justo la violación que P4 vigila. Misma forma que el
+`ATTRIBUTION_MISMATCH` inalcanzable de `tickbar_diag.py`.
+
+**v2:** P4 tiene veredicto propio y FAIL alcanzable. Violación = barra ambigua
+que **además** emitió `ANCLAJE_VERIFICADO`, o que siguió emitiendo eventos
+económicos. Tests: `test_B3_P4_barra_ambigua_que_igual_se_proceso_es_FAIL`,
+`test_B3_P4_barra_ambigua_con_evento_economico_es_FAIL`.
+
+### B4 · P3 sin veredicto y con contador contaminado
+
+`pares_procesados_sin_igualdad_ohlcv` contaba **todos** los
+`FOOTPRINT_MISMATCH`, sin intersectar con `proc` ni excluir warmup/tail, y no
+afectaba el estado. Verificado en vivo: mi propio test de warmup daba **PASS con
+el contador en 30**.
+
+**v2:** P3 tiene `p3_estado` propio, población explícita (**sólo pares
+PROCESADOS**) y FAIL alcanzable. Tests:
+`test_B4_P3_tiene_veredicto_propio_y_es_alcanzable`,
+`test_B4_P3_no_cuenta_mismatch_de_barras_no_procesadas`.
+
+## No bloqueantes
+
+- **N1** — P5 compara `seq` absoluto, contaminado porque `eventSeq++` es
+  compartido con los diagnósticos que el contrato excluye. **Pendiente**: falta
+  agregar inventario de tipos y reportar el corrimiento de `seq` como hallazgo
+  separado. Declarado, no resuelto.
+- **N2** — **P6 no puede detectar overwrite** y queda declarado: cubre append,
+  meta única, monotonía de `seq` y filas malformadas. El overwrite se verifica
+  **por procedimiento**: inventario de `oracles\` antes y después, tres archivos
+  nuevos, ninguno preexistente. Es paso obligatorio del reporte de captura.
+- **N3** — sin `# meta` ahora es **ABSTAIN**, nunca medición
+  (`test_N3_sin_meta_es_ABSTAIN_nunca_medicion`).
+- **N4** — `TAIL_BARRAS` queda en **0** y se registra como **decisión nueva
+  post-oráculo**: `parity.py` define su frontera de madurez por `max_age_bars`,
+  que es ciclo de vida de ZONAS; una barra atribuida no tiene ciclo de vida, así
+  que no hay antecedente que reconciliar.
+- **N5 — P5 ABRE EL HOLDOUT, y es peor de lo señalado.** Medí la ventana real del
+  oráculo histórico: **`2026-07-07T19:04` → `2026-07-24T17:59`**. Está
+  **entero** dentro del holdout sellado (≥ 2026-07-01) **y entero dentro de la
+  cuarentena de INC-005** (07-01 → 07-24). Correr P5 exige registrar la apertura
+  en `docs/holdout_access_log.md` con propósito `target_free_validation` **antes**
+  de leerlo. **Gate duro, sin resolver.**
+
+## Exigencia transversal de reporte
+
+Toda salida de `p1-p2-tick` publica: `tasa_mismatch_total` (sin exclusiones),
+`tasa_mismatch_interior`, `footprint_mismatch_total`, `excluidos_por_warmup`,
+`excluidos_por_tail` y `desglose_por_sesion`. **La exclusión no puede ser
+invisible** — verificado por
+`test_exigencia_transversal_publica_total_interior_y_exclusiones`.
 
 ## 0. Por qué existe — los tres defectos del instrumento anterior
 

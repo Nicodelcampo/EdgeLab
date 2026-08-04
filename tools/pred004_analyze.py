@@ -93,28 +93,40 @@ P5_PAYLOAD_IGNORABLE = frozenset()
 P5_TIPOS_ECONOMICOS = ("TRAP", "ZONE_CREATED", "ZONE_TOUCHED",
                        "ZONE_INVALIDATED", "ZONE_EXPIRED")
 
-#: WARMUP — regla del contrato de paridad (`docs/nt8_indicator_parity_contract.md`:
-#: "Ninguna barra de la primera sesión posterior a la carga del chart entra a una
-#: comparación de paridad"). Operacionalizado: TODA barra cuya sesión sea la
-#: PRIMERA presente en el log queda excluida.
-WARMUP_SESIONES = 1
+#: WARMUP — POR CONTEO ACOTADO DE BARRAS, no por sesión.
+#: La versión 1 usaba "la primera sesión completa". Medido contra el defecto
+#: REAL de v2.2/K=25 (485 mismatch en las barras 1..2571 de 12.395), esa regla
+#: borraba entre el 48 % y el 80 % de la evidencia y dejaba el veredicto a
+#: 0,05 puntos del umbral con 4 sesiones: el resultado dependía de cuántas
+#: sesiones tuviera la captura, no del defecto. Eso no es un criterio.
+#:
+#: Regla nueva, derivada del MECANISMO y no de los datos: el warm-up es la
+#: región donde el ancla todavía no está establecida. El propio log lo declara:
+#: `ANCLAJE_VERIFICADO` aparece recién cuando el anclaje acotado tuvo éxito
+#: (`BigTrap2.cs:453`). Se excluyen las barras ANTERIORES al primer
+#: `ANCLAJE_VERIFICADO`, con un tope duro como red de seguridad.
+WARMUP_MODO = "hasta_primer_anclaje_verificado"
+WARMUP_TOPE_BARRAS = 500        # red de seguridad; si se supera => ABSTAIN
 
-#: MATURITY TAIL — simétrico y por el mismo motivo estructural: la ÚLTIMA sesión
-#: del log está truncada por donde terminó la captura, así que sus bloques de
-#: atribución pueden estar incompletos por la ventana, no por el kernel.
-TAIL_SESIONES = 1
+#: MATURITY TAIL — declarado como DECISIÓN NUEVA post-oráculo.
+#: `edgelab/bridge/parity.py` define su frontera de madurez por `max_age_bars`
+#: (ciclo de vida de ZONAS). Acá el objeto es otro: una barra atribuida no tiene
+#: ciclo de vida. Se excluyen las últimas `TAIL_BARRAS` barras porque su bloque
+#: puede estar truncado por dónde terminó la captura. No hay antecedente que
+#: reconcilie; queda registrado como decisión nueva.
+TAIL_BARRAS = 0                 # 0 = sin exclusión de cola por defecto
 
-#: frontera de sesión CME ETH: 17:00 hora de Chicago. Un evento a las >= 17:00
-#: pertenece a la sesión que cierra al día siguiente. Misma convención que
-#: `edgelab/bridge/bars.py:session_ids`.
+#: frontera de sesión CME ETH: 17:00 hora de Chicago. El EventLog trae
+#: `Time[0]` en la hora del CHART, así que hay que CONVERTIR antes de aplicar
+#: el corte. En v1 esto no se hacía: se leía `d.hour` directo y `SESION_TZ`
+#: entraba al hash sin que ningún código lo usara — el hash certificaba un
+#: parámetro inerte. La tz del chart es argumento OBLIGATORIO, sin default.
 SESION_HORA_CORTE = 17
 SESION_TZ = "America/Chicago"
 
-#: DENOMINADOR de la tasa interior de P1/P2:
-#:   barras PROCESADAS (atribuidas) dentro del interior.
-#: Una barra con ANCLAJE_AMBIGUO **no fue procesada**: no entra al numerador ni
-#: al denominador, y se reporta por separado como abstención. Contarla como
-#: procesada convertiría una abstención fail-closed en un acierto.
+#: DENOMINADOR de P1/P2: barras PROCESADAS (con `ANCLAJE_VERIFICADO`) del
+#: interior que NO abstuvieron. Una barra con `ANCLAJE_AMBIGUO` no fue
+#: procesada: no entra al numerador ni al denominador, y se reporta aparte.
 #: Denominador 0 => ABSTAIN, nunca PASS.
 DENOMINADOR = "barras_procesadas_interior"
 
@@ -125,8 +137,9 @@ CONTRATO_SHA_CAMPOS = dict(
     p5_meta_ignorable=sorted(P5_META_IGNORABLE),
     p5_payload_ignorable=sorted(P5_PAYLOAD_IGNORABLE),
     p5_tipos_economicos=list(P5_TIPOS_ECONOMICOS),
-    warmup_sesiones=WARMUP_SESIONES,
-    tail_sesiones=TAIL_SESIONES,
+    warmup_modo=WARMUP_MODO,
+    warmup_tope_barras=WARMUP_TOPE_BARRAS,
+    tail_barras=TAIL_BARRAS,
     sesion_hora_corte=SESION_HORA_CORTE,
     sesion_tz=SESION_TZ,
     denominador=DENOMINADOR,
@@ -228,25 +241,29 @@ def leer_log(path):
 # sesiones
 # ---------------------------------------------------------------------------
 
-def sesion_de(ts_iso):
-    """Índice de sesión CME ETH a partir del timestamp ISO del evento.
+def sesion_de(ts_iso, tz_chart):
+    """Índice de sesión CME ETH. CONVIERTE la tz del chart a America/Chicago.
 
-    El EventLog trae `Time[0]` en la hora del CHART. Se interpreta con la
-    convención de `bars.py:session_ids`: trade-date = día del cierre, y un
-    evento a las >= 17:00 pertenece a la sesión que cierra al día siguiente.
+    B1 de la auditoría: v1 leía `d.hour` directo del timestamp del chart. Con
+    chart en ART y junio en CDT la frontera caía 2 h antes. `SESION_TZ` estaba
+    en el hash del contrato sin que ningún código lo usara.
+
+    `tz_chart` es obligatorio y sin default: si no se puede determinar, el modo
+    devuelve ABSTAIN antes de llegar acá.
     """
     import datetime as _dt
+    from zoneinfo import ZoneInfo
     s = ts_iso.strip()
     if s.endswith("Z"):
         s = s[:-1]
-    if "+" in s[10:]:
-        s = s[:s.rindex("+")]
     try:
         d = _dt.datetime.fromisoformat(s)
     except ValueError:
         d = _dt.datetime.fromisoformat(s[:26])
-    dia = d.date().toordinal()
-    return dia + (1 if d.hour >= SESION_HORA_CORTE else 0)
+    if d.tzinfo is None:
+        d = d.replace(tzinfo=ZoneInfo(tz_chart))
+    ct = d.astimezone(ZoneInfo(SESION_TZ))
+    return ct.date().toordinal() + (1 if ct.hour >= SESION_HORA_CORTE else 0)
 
 
 # ---------------------------------------------------------------------------
@@ -319,103 +336,151 @@ def _res(modo, estado, difs, *logs, **extra):
 # MODO p1-p2-tick
 # ---------------------------------------------------------------------------
 
-def modo_p1p2(path, resolucion_esperada=None):
-    """P1/P2: mide la atribución LEYENDO EL EVENTLOG DE NT8, no el kernel Python.
-
-    Numerador  : FOOTPRINT_MISMATCH en barras procesadas del interior.
-    Denominador: barras PROCESADAS del interior (contrato: `DENOMINADOR`).
-    Abstención : ANCLAJE_AMBIGUO, contado y reportado APARTE, fuera de ambos.
-    """
+def modo_p1p2(path, tz_chart, resolucion_esperada=None):
+    """P1/P2/P3/P4 leyendo el EventLog de NT8. `tz_chart` OBLIGATORIO (B1)."""
     lg = leer_log(path)
     ev = lg["eventos"]
     if not ev:
         return _res("p1-p2-tick", "ABSTAIN", ["log sin eventos"], lg)
-
-    if resolucion_esperada and lg["meta"]:
-        # la resolución no viene en la meta: se verifica contra el nombre real
-        # del archivo, que el .cs compone con BarsPeriodType+Value.
+    if lg["meta"] is None:
+        # N3: sin `# meta` no se puede verificar procedencia => ABSTAIN, nunca medir
+        return _res("p1-p2-tick", "ABSTAIN",
+                    ["el log no tiene linea `# meta`: procedencia no verificable"], lg)
+    if not tz_chart:
+        return _res("p1-p2-tick", "ABSTAIN", ["tz del chart no determinada"], lg)
+    if resolucion_esperada:
         base = os.path.basename(path)
         if resolucion_esperada.lower() not in base.lower():
             return _res("p1-p2-tick", "ABSTAIN",
-                        ["el archivo %r no corresponde a la resolución esperada %r"
+                        ["el archivo %r no corresponde a la resolucion %r"
                          % (base, resolucion_esperada)], lg)
 
-    sesiones = sorted({sesion_de(e["ts"]) for e in ev})
-    if len(sesiones) <= WARMUP_SESIONES + TAIL_SESIONES:
-        return _res("p1-p2-tick", "ABSTAIN",
-                    ["sólo %d sesión(es) en el log: warmup(%d)+tail(%d) no dejan interior"
-                     % (len(sesiones), WARMUP_SESIONES, TAIL_SESIONES)], lg)
-    interior = set(sesiones[WARMUP_SESIONES:len(sesiones) - TAIL_SESIONES])
-
     def bar_de(e):
-        b = e["campos"].get("bar")
         try:
-            return int(b)
+            return int(e["campos"].get("bar"))
         except (TypeError, ValueError):
             return None
 
-    proc, mism, amb, cand0, candN, ohlc_desigual = set(), set(), set(), 0, 0, 0
-    fuera_interior = Counter()
+    # --- WARMUP por conteo acotado (B2): barras anteriores al primer ANCLAJE_VERIFICADO
+    primera_ok = None
     for e in ev:
-        ses = sesion_de(e["ts"])
+        if e["tipo"] == "ANCLAJE_VERIFICADO":
+            primera_ok = bar_de(e)
+            break
+    if primera_ok is None:
+        return _res("p1-p2-tick", "ABSTAIN",
+                    ["ningun ANCLAJE_VERIFICADO en el log: el ancla nunca se establecio"], lg)
+    if primera_ok > WARMUP_TOPE_BARRAS:
+        return _res("p1-p2-tick", "ABSTAIN",
+                    ["el primer ANCLAJE_VERIFICADO cae en la barra %d, sobre el tope de "
+                     "warmup declarado (%d)" % (primera_ok, WARMUP_TOPE_BARRAS)], lg)
+    barras = [b for b in (bar_de(e) for e in ev) if b is not None]
+    bmax = max(barras) if barras else 0
+    lo_int, hi_int = primera_ok, bmax - TAIL_BARRAS
+
+    def interior(b):
+        return b is not None and lo_int <= b <= hi_int
+
+    verif, amb, mism = set(), set(), set()
+    mism_todas = set()
+    cand0 = candN = 0
+    amb_con_verificado, amb_con_economico = set(), set()
+    ohlc_desig_proc = set()
+    excl_warmup = excl_tail = 0
+    por_sesion = {}
+    for e in ev:
         b = bar_de(e)
-        clave = (ses, b)
-        dentro = ses in interior
         t = e["tipo"]
-        if t == "ANCLAJE_VERIFICADO":
-            if dentro and b is not None:
-                proc.add(clave)
-            elif b is not None:
-                fuera_interior["ANCLAJE_VERIFICADO"] += 1
-        elif t == "ANCLAJE_AMBIGUO":
-            if dentro and b is not None:
-                amb.add(clave)
-            c = e["campos"].get("candidatos")
+        if b is not None and t in ("ANCLAJE_VERIFICADO", "ANCLAJE_AMBIGUO", "FOOTPRINT_MISMATCH"):
+            ses = sesion_de(e["ts"], tz_chart)
+            por_sesion.setdefault(ses, Counter())[t] += 1
+        if t == "ANCLAJE_VERIFICADO" and b is not None:
+            verif.add(b)
+        elif t == "ANCLAJE_AMBIGUO" and b is not None:
+            amb.add(b)
             try:
-                c = int(c)
+                c = int(e["campos"].get("candidatos"))
                 if c == 0:
                     cand0 += 1
                 elif c > 1:
                     candN += 1
             except (TypeError, ValueError):
                 pass
-        elif t == "FOOTPRINT_MISMATCH":
-            if dentro and b is not None:
-                mism.add(clave)
-            elif b is not None:
-                fuera_interior["FOOTPRINT_MISMATCH"] += 1
-            cm = e["campos"]
-            for a_, b_ in (("open_blk", "open_bar"), ("close_blk", "close_bar"),
-                           ("low_blk", "low_bar"), ("high_blk", "high_bar"),
-                           ("vol_blk", "vol_bar")):
-                if a_ in cm and b_ in cm and cm[a_] != cm[b_]:
-                    ohlc_desigual += 1
-                    break
+        elif t == "FOOTPRINT_MISMATCH" and b is not None:
+            mism_todas.add(b)
+            if interior(b):
+                mism.add(b)
+            elif b < lo_int:
+                excl_warmup += 1
+            else:
+                excl_tail += 1
+        elif t in P5_TIPOS_ECONOMICOS and b is not None and b in amb:
+            amb_con_economico.add(b)
 
-    # una barra ambigua NO fue procesada: no puede estar en el denominador
-    proc -= amb
-    mism_interior = mism & proc
+    # --- P4 (B3): la abstencion se VERIFICA, no se asume.
+    # v1 hacia `proc -= amb`, que ocultaba justo la violacion que P4 vigila.
+    amb_con_verificado = amb & verif
+    p4_violaciones = sorted(amb_con_verificado | amb_con_economico)
+    p4_estado = "PASS" if not p4_violaciones else "FAIL"
+
+    # --- denominador: verificadas del interior que NO abstuvieron
+    proc = {b for b in verif if interior(b)} - amb
     denom = len(proc)
+    mism_int = mism & proc
+
+    # --- P3 (B4): veredicto propio, poblacion explicita = pares PROCESADOS
+    for e in ev:
+        if e["tipo"] != "FOOTPRINT_MISMATCH":
+            continue
+        b = bar_de(e)
+        if b not in proc:
+            continue
+        cm = e["campos"]
+        for a_, b_ in (("open_blk", "open_bar"), ("close_blk", "close_bar"),
+                       ("low_blk", "low_bar"), ("high_blk", "high_bar"),
+                       ("vol_blk", "vol_bar")):
+            if a_ in cm and b_ in cm and cm[a_] != cm[b_]:
+                ohlc_desig_proc.add(b)
+                break
+    p3_estado = "PASS" if not ohlc_desig_proc else "FAIL"
 
     if denom == 0:
         return _res("p1-p2-tick", "ABSTAIN",
                     ["denominador 0: ninguna barra procesada en el interior"], lg,
-                    sesiones_totales=len(sesiones), sesiones_interior=len(interior),
-                    barras_ambiguas=len(amb))
+                    p3_estado=p3_estado, p4_estado=p4_estado,
+                    barras_ambiguas_interior=len(amb & {b for b in verif} | (amb & set(range(lo_int, hi_int + 1)))))
 
-    tasa = len(mism_interior) / denom
-    estado = "PASS" if tasa <= UMBRAL_MISMATCH else "FAIL"
-    difs = [] if estado == "PASS" else [
-        "FOOTPRINT_MISMATCH interior %.4f%% > umbral %.2f%%" % (100 * tasa, 100 * UMBRAL_MISMATCH)]
+    tasa_int = len(mism_int) / denom
+    tasa_total = len(mism_todas) / len(verif | amb) if (verif | amb) else float("nan")
+
+    difs = []
+    if tasa_int > UMBRAL_MISMATCH:
+        difs.append("P1/P2: mismatch interior %.4f%% > umbral %.2f%%"
+                    % (100 * tasa_int, 100 * UMBRAL_MISMATCH))
+    if p3_estado == "FAIL":
+        difs.append("P3: %d par(es) PROCESADO(s) sin igualdad OHLCV" % len(ohlc_desig_proc))
+    if p4_estado == "FAIL":
+        difs.append("P4: %d barra(s) ambigua(s) que igual fueron procesadas: %s"
+                    % (len(p4_violaciones), p4_violaciones[:10]))
+    estado = "PASS" if not difs else "FAIL"
+
     return _res("p1-p2-tick", estado, difs, lg,
-                sesiones_totales=len(sesiones), sesiones_interior=len(interior),
+                tz_chart=tz_chart,
+                warmup_primera_barra_anclada=primera_ok,
+                interior_barras=[lo_int, hi_int],
                 barras_procesadas_interior=denom,
-                footprint_mismatch_interior=len(mism_interior),
-                tasa_mismatch_interior=tasa,
-                barras_ambiguas_interior=len(amb),
+                footprint_mismatch_interior=len(mism_int),
+                tasa_mismatch_interior=tasa_int,
+                footprint_mismatch_total=len(mism_todas),
+                tasa_mismatch_total=tasa_total,
+                excluidos_por_warmup=excl_warmup,
+                excluidos_por_tail=excl_tail,
+                barras_ambiguas=len(amb),
                 candidatos_cero=cand0, candidatos_multiples=candN,
-                pares_procesados_sin_igualdad_ohlcv=ohlc_desigual,
-                excluidos_por_warmup_o_tail=dict(fuera_interior))
+                p3_estado=p3_estado,
+                p3_pares_procesados_sin_igualdad_ohlcv=len(ohlc_desig_proc),
+                p4_estado=p4_estado, p4_violaciones=p4_violaciones[:50],
+                desglose_por_sesion={str(k): dict(v) for k, v in sorted(por_sesion.items())})
 
 
 # ---------------------------------------------------------------------------
@@ -461,6 +526,8 @@ def main(argv=None):
     b = sub.add_parser("p1-p2-tick", help="atribución sobre el EventLog de NT8")
     b.add_argument("--log", required=True)
     b.add_argument("--resolucion", default=None, help="p.ej. Tick25 / Tick10 / Minute1")
+    b.add_argument("--tz-chart", dest="tz_chart", required=True,
+                   help="OBLIGATORIO, sin default: tz del CHART de NT8")
 
     c = sub.add_parser("p6-file", help="integridad del archivo de EventLog")
     c.add_argument("--log", required=True)
@@ -476,7 +543,7 @@ def main(argv=None):
     if args.modo == "p5-time":
         res = modo_p5(args.historico, args.nuevo)
     elif args.modo == "p1-p2-tick":
-        res = modo_p1p2(args.log, args.resolucion)
+        res = modo_p1p2(args.log, args.tz_chart, args.resolucion)
     else:
         res = modo_p6(args.log, args.resolucion)
 
