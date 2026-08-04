@@ -134,6 +134,63 @@ vez**.
 
 ---
 
+## 2.5 Selección de cuenta — `P(pasar)`, no `E[días]`
+
+**`E[días]` no es el filtro correcto.** LucidFlex no tiene límite de tiempo: con
+horizonte libre el profit target no ata, ata el **piso**. La cantidad que decide
+es `P(alcanzar +target antes de −MLL)` sobre la distribución empírica de trades.
+
+Insumo **medido**, no supuesto: `SD` por trade = **8,77 ticks** (mediana de las
+40 geometrías sobre `diag/spike_in/por_geom_nulo.json`, el mismo artefacto del
+que salen `SE`, `DEFF` y `M_eff`). Reproducible con
+`diag/spike_in/p_pasar_prop_firm.py`.
+
+### El ratio target/MLL es invariante a CONTRATOS, no a tamaño de cuenta
+
+| cuenta | target (t) | MLL (t) | ratio |
+|---|---|---|---|
+| 25K | 200 | 160 | **1,25** |
+| 50K | 480 | 320 | 1,50 |
+| 100K | 960 | 480 | 2,00 |
+| 150K | 1.440 | 720 | 2,00 |
+
+### `P(pasar)` con edge = 0,39 ticks/trade (el MDE a f=10)
+
+| cuenta | c=1 | c=2 | c=3 | c=4 |
+|---|---|---|---|---|
+| **25K** | **82,4 %** | 66,2 % | 59,3 % | 55,7 % |
+| **50K** | **96,1 %** | 81,7 % | 70,8 % | 64,0 % |
+| **100K** | **99,2 %** | 91,3 % | 80,9 % | 72,2 % |
+| **150K** | **99,9 %** | 97,4 % | 91,3 % | 84,2 % |
+
+### Dos lecturas, y la primera contradice una recomendación vigente
+
+**1. La 25K NO es la más pasable, es la PEOR** — aunque tenga el mejor ratio.
+
+El ratio dice cuánto hay que ganar respecto de lo que se puede perder. **Pero
+`P(pasar)` depende del tamaño ABSOLUTO en unidades de `SD` por trade.** La 25K
+tiene 200/160 ticks: apenas ~20 `SD` de margen, y el ruido resuelve la partida
+antes de que la deriva se exprese. La 150K tiene 1.440/720: cientos de `SD`, y
+ahí la ley de los grandes números trabaja a favor.
+
+**Un ratio peor con mucho más espacio absoluto pasa más que un ratio bueno sin
+espacio.** La recomendación de preferir la 25K por su ratio de 1,25 queda
+retirada.
+
+**2. Los contratos no compran margen.** `P(pasar)` cae monótonamente al escalar,
+en **todas** las celdas. Cambian probabilidad de pasar por tiempo hasta pasar.
+
+### Recomendación operativa
+
+**La cuenta más grande que se pueda, 1 contrato.** No 4.
+
+*Salvedad declarada:* es aproximación browniana a ruina del jugador
+(`P = (1−e^(−θb))/(1−e^(−θ(a+b)))`, `θ = 2μ/σ²`). Con barreras P/N discretas y
+cientos de trades es razonable, pero no exacta. Y supone el edge real y
+constante.
+
+---
+
 ## 3. El test
 
 ### 3.1 Estadístico primario — una sola formulación
@@ -280,3 +337,24 @@ la CURVA, nunca el argmax.**
 
 Si el barrido sale caro, se recorta la grilla **antes** de correr y se declara;
 nunca después de ver resultados.
+
+
+---
+
+## 5. Autorizaciones vigentes (PRED-004 / NT8)
+
+Dadas por Nico, **sin usar todavía**. Se registran acá para que no vivan sólo en
+un hilo de chat:
+
+| # | autorización | estado |
+|---|---|---|
+| 1 | copiar el oráculo histórico `BigTrap2_time1_6E_0926_v2.csv` con su SHA y procedencia | **sí**, sin ejecutar |
+| 2 | escribir dentro de la instalación de NT8 en `C:` | **sí**, sin ejecutar |
+| 3 | usar la referencia v2.1 para P5 | **sí**, sin ejecutar |
+| 4 | actualizar `TickBarDiag` | **no** — fuera de alcance |
+
+**Gate abierto que ninguna de las cuatro cubre:** la ventana real del oráculo
+histórico es `2026-07-07T19:04` → `2026-07-24T17:59`, **entera dentro del holdout
+sellado y entera dentro de la cuarentena de INC-005**. Correr P5 exige registrar
+la apertura en `docs/holdout_access_log.md` con propósito
+`target_free_validation` **antes** de leerlo.
