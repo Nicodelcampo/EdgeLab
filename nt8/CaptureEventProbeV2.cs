@@ -118,8 +118,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                     throw new IOException("la ruta exclusiva ya existe: " + resolvedPath);
 
                 log = new StreamWriter(resolvedPath, false, new UTF8Encoding(false));
-                log.WriteLine("# indicator=CaptureEventProbeV2");
-                log.WriteLine("# version=" + IND_VERSION);
+                log.WriteLine("# meta indicator=CaptureEventProbeV2,version=" + IND_VERSION);
                 log.WriteLine("# schema=event_capture_raw_v2_1");
                 log.WriteLine("# capture_id=" + captureId);
                 log.WriteLine("# process_instance_id=" + processInstanceId);
