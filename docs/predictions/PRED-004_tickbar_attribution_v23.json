@@ -1,0 +1,30 @@
+{
+  "id": "PRED-004",
+  "titulo": "Atribucion BIP1 a barra primaria con anclaje verificable",
+  "fecha_registro": "2026-08-04T13:25:11-03:00",
+  "estado": "PREREGISTRADA_POST_ORACULO_CON_ENMIENDA_EXPLICITA",
+  "autoriza": "Nico — realizar todo lo anterior",
+  "evidencia_ya_vista": {
+    "stream": "309939 eventos y digest identico",
+    "ohlc": "30994/30994 barras identicas",
+    "pred003": "REFUTADA: K25=3.91%, K10=81.78%"
+  },
+  "cambio_permitido": "solo atribucion BIP1->barra y rotacion de EventLog; Python y detector economico congelados",
+  "diseno": {
+    "regla": "la identidad de barra la arbitra el OHLCV primario; una ventana de eventos solo se consume si su OHLCV coincide de forma unica con el snapshot mas antiguo",
+    "anclaje": "al inicio y en cada frontera se permite buscar un offset acotado; cero o multiples candidatos implica abstencion fail-closed",
+    "orden": "FIFO de snapshots; nunca N+1 antes de N",
+    "fallo": "no reacomodar silenciosamente; marcar sesion no confiable y suprimir nuevas zonas",
+    "eventlog": "archivo nuevo por resolucion y por corrida; nunca append ni overwrite"
+  },
+  "predicciones": [
+    {"id":"P1","medida":"FOOTPRINT_MISMATCH K25","esperado":"<=1% fuera de warmup/maturity tail","refuta_si":">1%"},
+    {"id":"P2","medida":"FOOTPRINT_MISMATCH K10","esperado":"<=1% con el mismo codigo","refuta_si":">1%"},
+    {"id":"P3","medida":"OHLCV del bloque atribuido","esperado":"100% en barras procesadas","refuta_si":"cualquier par procesado sin igualdad"},
+    {"id":"P4","medida":"ambiguedad de anclaje","esperado":"0 barras procesadas cuando candidatos != 1","refuta_si":"seleccion arbitraria"},
+    {"id":"P5","medida":"time:1","esperado":"bit-identico al oracle previo","refuta_si":"cualquier diferencia"},
+    {"id":"P6","medida":"archivos de EventLog","esperado":"una corrida por archivo, meta propia, seq inicia una vez","refuta_si":"append, overwrite o dos reinicios de seq"}
+  ],
+  "orden_de_ejecucion": ["tests sinteticos", "compilacion NT8", "time:1", "K25", "K10"],
+  "outcomes_accessed": false
+}
