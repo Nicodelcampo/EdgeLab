@@ -541,3 +541,144 @@ def test_menor6_ABSTAIN_no_comparte_exit_code_con_PASS(tmp_path):
     with open(sin, "w", encoding="utf-8") as fh:
         fh.write("0|2026-06-15T09:00:00.0000000|ANCLAJE_VERIFICADO|bar=0;largo=25;k=25\n")
     assert P.main(["p1-p2-tick", "--log", sin, "--tz-chart", TZ, "--resolucion", "Tick25"]) == 2
+
+
+# ======================================================================== G0
+# Reproducciones de las tres iteraciones independientes. DEBEN FALLAR antes de
+# G1. Cada fixture declara si es `emisor_fiel` o `emisor_adversarial`.
+
+META_24 = META_23.replace("version=2.3", "version=2.4")
+
+
+def test_G0_H_GPT_1_rama_denom_cero_alcanzada_de_verdad(tmp_path):
+    """emisor_adversarial. H-GPT-1 / H-GROK-1 / F1.
+
+    La rama `denom == 0` usa `verif`, que NO esta definido en el modulo:
+    NameError. El test viejo que la nombra NO la alcanza -abstiene antes, en
+    `primera_ok is None`- asi que el nombre prometia una alcanzabilidad que el
+    fixture no entregaba. TERCERA instancia del modo de falla de B3 y H2.
+
+    Adversarial a proposito: el emisor fiel no emite ANCLAJE_AMBIGUO
+    (`BigTrap2.cs:493`) sobre una barra que ademas emitio BARRA_PROCESADA
+    (`481`). El analizador tiene que SOBREVIVIR igual, porque una rama de
+    defensa que explota no defiende.
+    """
+    filas, seq = [], 0
+    for b in range(300):
+        ts = "2026-06-15T%02d:%02d:00.0000000" % (9 + b // 60, b % 60)
+        filas.append("%d|%s|BARRA_PROCESADA|bar=%d;largo=25;k=25;residual=False"
+                     % (seq, ts, b)); seq += 1
+        filas.append("%d|%s|ANCLAJE_AMBIGUO|bar=%d;candidatos=0;disponibles=2;largo=25;k=25"
+                     % (seq, ts, b)); seq += 1
+    p = _log(tmp_path / "adv__Tick25.csv", META_24, filas)
+    r = P.modo_p1p2(p, TZ, "Tick25")          # hoy: NameError
+    assert r["estado"] == "ABSTAIN"
+    assert r["barras_procesadas_interior"] == 0
+
+
+def test_G0_H_GPT_1_la_rama_ABSTAIN_publica_los_mismos_campos(tmp_path):
+    """H-KIMI-1 aplicado a H-GPT-1: si la rama de abstencion publica menos
+    campos que la salida normal, el consumidor no puede distinguir un ABSTAIN
+    de una salida TRUNCADA. Contabilidad, no cosmetica."""
+    filas, seq = [], 0
+    for b in range(300):
+        ts = "2026-06-15T%02d:%02d:00.0000000" % (9 + b // 60, b % 60)
+        filas.append("%d|%s|BARRA_PROCESADA|bar=%d;largo=25;k=25" % (seq, ts, b)); seq += 1
+        filas.append("%d|%s|ANCLAJE_AMBIGUO|bar=%d;candidatos=2;disponibles=2;largo=25;k=25"
+                     % (seq, ts, b)); seq += 1
+    abst = P.modo_p1p2(_log(tmp_path / "a__Tick25.csv", META_24, filas), TZ, "Tick25")
+
+    g = lambda s_, b_: [("BARRA_PROCESADA", "largo=25;k=25;residual=False")]
+    ok = P.modo_p1p2(_log(tmp_path / "b__Tick25.csv", META_24, _sesiones(2, 200, g)),
+                     TZ, "Tick25")
+    faltantes = set(ok) - set(abst)
+    assert not faltantes, "la rama ABSTAIN no publica: %s" % sorted(faltantes)
+
+
+def test_G0_H_GPT_2_p5_sin_resolucion_no_puede_dar_PASS(tmp_path):
+    """emisor_fiel. H-GPT-2 / F4. `--resolucion` es `default=None` y cada modo
+    hace `if resolucion_esperada:`, asi que OMITIRLA saltea el chequeo entero.
+    Un Tick25 se puede comparar contra el historico de minuto sin acreditar
+    nada. Agregar la opcion no hizo obligatoria la precondicion."""
+    a = _log(tmp_path / "h__Minute1.csv", META_21, _eco_basico())
+    b = _log(tmp_path / "n__Minute1.csv", META_23, _eco_basico())
+    assert P.modo_p5(a, b)["estado"] != "PASS"
+
+
+def test_G0_H_GPT_2_cli_sin_resolucion_no_devuelve_cero(tmp_path):
+    """La CLI es la superficie real. Sin `--resolucion` no puede salir 0."""
+    a = _log(tmp_path / "h__Minute1.csv", META_21, _eco_basico())
+    b = _log(tmp_path / "n__Minute1.csv", META_23, _eco_basico())
+    assert P.main(["p5-time", "--historico", a, "--nuevo", b]) != 0
+
+
+def test_G0_H_KIMI_3_toda_tasa_publicada_declara_su_poblacion(tmp_path):
+    """H-KIMI-3. `footprint_mismatch_total` cuenta TODAS las barras con
+    mismatch; `tasa_mismatch_total` divide sobre las PROCESADAS. Poblaciones
+    distintas con nombres hermanos: quien reconcilie
+    `tasa_total x barras_procesadas_total` contra el contador va a obtener otro
+    numero. El contrato v3 declara este "menor 3" CORREGIDO -corregi la tasa y
+    no el contador-.
+
+    Misma familia que H2 y B1: un numero publicado cuyo denominador nadie puede
+    reconstruir.
+    """
+    def gen(s_, b_):
+        ev = [("BARRA_PROCESADA", "largo=25;k=25;residual=False")]
+        if b_ % 50 == 7:
+            ev.append(("FOOTPRINT_MISMATCH",
+                       "n_eventos=25;k=25;open_blk=1;open_bar=2"))
+        return ev
+    filas = _sesiones(2, 200, gen)
+    # mismatch en una barra del WARMUP -> queda fuera de `procesadas`? no: es
+    # procesada. Se fabrica ademas un mismatch SIN BARRA_PROCESADA, que es el
+    # caso que rompe la reconciliacion.
+    filas.append("999999|2026-06-16T11:30:00.0000000|FOOTPRINT_MISMATCH|"
+                 "bar=100000;n_eventos=25;k=25;open_blk=1;open_bar=2")
+    r = P.modo_p1p2(_log(tmp_path / "a__Tick25.csv", META_24, filas), TZ, "Tick25")
+
+    assert "barras_totales_en_log" in r, "no se publica el universo de barras"
+    assert "nota_poblaciones" in r, "ninguna nota advierte la no-reconciliacion"
+    # el contador que acompana a la tasa tiene que compartir su poblacion
+    assert r["mismatch_total_en_procesadas"] == round(
+        r["tasa_mismatch_total"] * r["barras_procesadas_total"])
+
+
+def test_G0_H_GROK_4_meta_de_version_incoherente_es_ABSTAIN(tmp_path):
+    """H-GROK-4 / H-KIMI-7 / K5. Un log `version=2.3` que trae BARRA_PROCESADA
+    -evento que solo existe en v2.4- se mide igual. Escenario real: una v2.4
+    mal instalada, o un binario viejo cacheado por NT8."""
+    g = lambda s_, b_: [("BARRA_PROCESADA", "largo=25;k=25;residual=False")]
+    p = _log(tmp_path / "a__Tick25.csv", META_23, _sesiones(2, 200, g))
+    r = P.modo_p1p2(p, TZ, "Tick25", exigir_version="2.4")
+    assert r["estado"] == "ABSTAIN"
+    assert any("2.4" in d for d in r["diferencias"])
+
+
+def test_G0_H_GPT_6_P3_no_certifica_OHLCV_sin_haber_visto_la_V(tmp_path):
+    """emisor_adversarial. H-GPT-6. Un FOOTPRINT_MISMATCH de barra procesada
+    con OHLC coincidente y SIN `vol_blk`/`vol_bar`: hoy `campos_p3` es True
+    -alcanza con que este `open_blk`- y P3 sale PASS. Estaria certificando
+    igualdad OHLC-V sin haber visto nunca la V."""
+    def gen(s_, b_):
+        ev = [("BARRA_PROCESADA", "largo=25;k=25;residual=False")]
+        if b_ == 100:
+            ev.append(("FOOTPRINT_MISMATCH",
+                       "n_eventos=25;k=25;open_blk=1;open_bar=1;close_blk=2;close_bar=2"))
+        return ev
+    p = _log(tmp_path / "a__Tick25.csv", META_24, _sesiones(2, 200, gen))
+    r = P.modo_p1p2(p, TZ, "Tick25")
+    assert r["p3_estado"] != "PASS", "P3 certifico OHLCV sin ver vol_blk/vol_bar"
+
+
+def test_G0_H_GROK_3_ningun_mensaje_habla_de_ANCLAJE_como_warmup():
+    """H-GROK-3. El warmup usa BARRA_PROCESADA desde v3, pero quedaron mensajes
+    y docstrings con la semantica vieja. No es nitpick: el proximo lector
+    reintroduce el denominador-por-anclaje leyendo el mensaje."""
+    src = io.open(os.path.join(REPO, "tools", "pred004_analyze.py"),
+                  encoding="utf-8").read()
+    import re as _re
+    malos = [l for l in src.splitlines()
+             if _re.search(r"(warm|warmup|interior)", l, _re.I)
+             and "ANCLAJE_VERIFICADO" in l]
+    assert not malos, "mensajes de warmup con semantica vieja: %s" % malos
