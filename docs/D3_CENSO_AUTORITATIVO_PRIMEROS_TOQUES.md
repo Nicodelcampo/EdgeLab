@@ -1,4 +1,17 @@
-# D3 y el censo autoritativo — **cuatro de seis indicadores no pueden entrar**
+# D3 y el censo autoritativo — **cinco de seis no pueden entrar; queda UNO**
+
+> **CORRECCIÓN (piloto de 30 sesiones, posterior a la primera versión de este
+> documento).** Escribí que entraban dos. **Entra uno.** Dos errores míos, los
+> dos por afirmar sin medir:
+>
+> 1. **`aVolCellPOI2` NO entra.** Vi que emitía `touch_count` y di por hecho el
+>    resto. Nunca verifiqué el **tipo** de su `zone_id`: `avolcellpoi2.py:229`
+>    hace `zone_id=zone_id` —el valor crudo, entero—; el `str()` está sólo en la
+>    línea del CSV. Rechazado igual que `VolTicksPOC2`.
+> 2. **`AACloseOpenDiffs` no es "rechazado": es peor.** Ver §3-bis.
+>
+> **Sólo `BigTrap2` produce la población autoritativa.** Y es el que está
+> bloqueado por PRED-004.
 
 **Fecha:** 2026-08-05 · **Tip:** `e1ee142` + este trabajo
 **Nada abierto:** sin outcomes, sin holdout, sin NT8. El universo sale de la
@@ -72,11 +85,11 @@ Medido sobre 6E 03-26, y verificado en la fuente de cada indicador:
 | indicador | `zone_id` | `touch_count` | ¿entra? | por qué |
 |---|---|---|---|---|
 | **BigTrap2** | `str` `'10_B'` | **sí** | **SÍ** | — |
-| **aVolCellPOI2** | `str` | **sí** (`avolcellpoi2.py:229`) | **SÍ** | 1.960 `ZONE_TOUCHED` con `touch_count` en ventana larga |
+| ~~aVolCellPOI2~~ | **`int`** | sí | **NO** | `avolcellpoi2.py:229` pasa el valor crudo; el `str()` está sólo en el CSV |
 | VolTicksPOC2 | **`int`** `1` | sí (`voltickspoc2.py:125`) | **NO** | `zone_id` entero, no string |
 | Gaps2 | `str` `'G000001'` | **NO** | **NO** | ordinal enterrado en `"epoch=" + str(...)`, `gaps2.py:141` |
 | HFTZones2 | `str` `'Z000001'` | **NO** | **NO** | idem, `hftzones2.py:362` |
-| AACloseOpenDiffs | `str` `'D000001'` | **NO** | **NO** | **no emite `ZONE_TOUCHED`** en absoluto |
+| AACloseOpenDiffs | `str` `'D000001'` | **NO** | **SIN POBLACIÓN** | no emite `ZONE_TOUCHED`: **no es rechazo, es un cero silencioso**. Ver §3-bis |
 
 Claves reales de `ZONE_TOUCHED`, medidas sobre 6E 03-26 (2025-12-12 → 2026-01-20):
 
@@ -94,8 +107,8 @@ Confirmado en fuente: `touch_count` lo emiten **sólo tres** de los seis
 
 ### Lo que esto significa
 
-**La población autoritativa se puede construir hoy para DOS de los seis:
-`BigTrap2` y `aVolCellPOI2`.**
+**La población autoritativa se puede construir hoy para UNO de los seis:
+`BigTrap2`.**
 
 Y hay que separar **dos clases de rechazo**, porque no se arreglan igual:
 
@@ -112,6 +125,34 @@ hábitat son las barras de tick, donde **la paridad sigue rota** (PRED-003
 refutada: 3,91 % en K=25, 81,78 % en K=10). Su tasa en `time:1` es la del
 laboratorio, no la de su hábitat.
 
+## 3-bis. Un FAIL-OPEN en el censo: el cero que parece un dato
+
+`AACloseOpenDiffs` emite **23.629 eventos, todos `ZONE_CREATED`, cero
+`ZONE_TOUCHED`**. `extract_first_touch_events` devuelve lista vacía, y el censo
+sale:
+
+```json
+{"status": "COMPLETE", "raw_count": 0, "post_sep_count": 0,
+ "zero_raw_sessions": 30, "session_count": 30}
+```
+
+**Eso es peor que un rechazo.** Un rechazo grita; un cero parece un dato. Quien
+lea `raw_count: 0` va a entender *"este indicador no produce señales"*, cuando la
+verdad es *"este indicador no tiene concepto de toque"*. Son dos afirmaciones
+completamente distintas y el JSON no las distingue.
+
+**Es la cuarta instancia del patrón de esta sesión** —B3, H2, H-GPT-1, y ahora
+ésta—: un número publicado cuyo significado nadie puede reconstruir. Acá con una
+vuelta de tuerca: no es que falte el denominador, es que **la ausencia de la
+población produce un resultado con formato de medición.**
+
+**Arreglo, sin tocar el módulo congelado:** el runner clasifica aparte. Cero
+toques **con** creaciones ⇒ `sin_poblacion`, no un censo de cero. Verificado en
+piloto: `AACloseOpenDiffs → SIN POBLACION (7.861 creaciones, 0 toques)`.
+
+`first_touch_census.py` **no se tocó** —tiene tests propios—; si conviene que la
+abstención viva ahí adentro en vez del runner, es decisión de Nico.
+
 ## 4. Qué NO hice, y por qué
 
 **No relajé el contrato del censo.** Habría bastado un `str(zone_id)` para que
@@ -124,8 +165,16 @@ look-ahead de EXPLORE-001 se apoya en poder **probar** cuál fue el primer toque
 ## 5. D3, revisada
 
 D3 preguntaba si `sep_min` sirve como criterio de selección. **La pregunta está
-mal planteada mientras cuatro de seis no puedan producir la población.** Con dos
-indicadores no hay selección que hacer: no se eligen 3 hipótesis entre 2.
+mal planteada mientras cinco de seis no puedan producir la población.** Con UN
+candidato no hay selección que hacer, y §3.3 pide **tres** hipótesis
+mecánicamente distintas.
+
+Y el único que entra, `BigTrap2`, es el que está bloqueado por PRED-004: su
+hábitat son las barras de tick, donde la paridad sigue rota. **Su censo en
+`time:1` es del laboratorio.**
+
+> **§3.3 no se puede llenar hoy por ningún camino.** No es que falte elegir: no
+> hay entre qué elegir.
 
 D3 se **suspende**, y en su lugar queda una decisión anterior y más concreta:
 
@@ -140,12 +189,13 @@ en la comparación de paridad antes de tocarlo.
 
 **B · Reducir el alcance de §3.3 a los indicadores que ya pueden.** Honesto e
 inmediato, pero deja la elección de hipótesis entre uno o dos candidatos, cuando
-la regla de selección de §3.3 pide **preferir mecánicamente distintos** — con dos
-no hay diversidad que preferir. Y `AACloseOpenDiffs` queda fuera en los dos
+la regla de selección de §3.3 pide **preferir mecánicamente distintos** — con uno
+no hay nada que preferir. Y `AACloseOpenDiffs` queda fuera en los dos
 caminos hasta que se decida qué es un toque para él.
 
-**Mi lectura:** **A**, pero por partes y empezando por `VolTicksPOC2`, que es el
-caso más barato (sólo el tipo de `zone_id`) y el único cuya tasa post-filtro
+**Mi lectura:** **A**, y ya no como preferencia sino porque **B no existe**: con
+un solo candidato no hay §3.3 reducida posible. Empezar por `VolTicksPOC2` y
+`aVolCellPOI2`, que son el mismo arreglo de una línea (el tipo de `zone_id`) y el único cuya tasa post-filtro
 **dice algo del indicador** —sobrevive el 46,6 % contra el 1,8 % de
 `AACloseOpenDiffs`—, así que es el que más aporta a la selección. Requiere
 verificar antes si `zone_id` participa de su comparación de paridad.

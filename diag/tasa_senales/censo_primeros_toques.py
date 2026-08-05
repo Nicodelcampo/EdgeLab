@@ -125,10 +125,10 @@ def main(argv=None):
              indicadores), flush=True)
 
     crudos = resultados_por_archivo(dias, indicadores)
-    censos, errores = {}, {}
+    censos, errores, sin_poblacion = {}, {}, {}
     for nombre in indicadores:
         try:
-            censos[nombre] = build_first_touch_census(
+            c = build_first_touch_census(
                 indicator_results_by_archive=crudos[nombre],
                 eligible_days=elegibles,
                 sep_minutes=FIRST_TOUCH_SEP_MINUTES)
@@ -138,6 +138,32 @@ def main(argv=None):
             # aproximacion. Se reporta el rechazo.
             errores[nombre] = "%s: %s" % (type(exc).__name__, exc)
             print("   %-18s RECHAZADO %s" % (nombre, exc), flush=True)
+            continue
+
+        # FAIL-OPEN del censo, detectado en el piloto de 30 sesiones:
+        # `AACloseOpenDiffs` emite 23.629 eventos, TODOS ZONE_CREATED y CERO
+        # ZONE_TOUCHED. `extract_first_touch_events` devuelve lista vacia y el
+        # censo sale `status=COMPLETE` con `raw_count=0`. Eso es PEOR que un
+        # rechazo: un rechazo grita, un cero parece un dato. Quien lea
+        # `raw_count: 0` va a entender "este indicador no produce senales",
+        # cuando la verdad es "este indicador NO TIENE concepto de toque".
+        #
+        # No se toca `first_touch_census.py` (modulo con tests propios): se
+        # clasifica aca. Cero toques CON creaciones no es una tasa de cero, es
+        # AUSENCIA DE POBLACION.
+        creados = sum(1 for lg in crudos[nombre].values()
+                      for e in lg["events"] if e.get("type") == "ZONE_CREATED")
+        tocados = sum(1 for lg in crudos[nombre].values()
+                      for e in lg["events"] if e.get("type") == "ZONE_TOUCHED")
+        if c["raw_count"] == 0 and creados > 0 and tocados == 0:
+            sin_poblacion[nombre] = (
+                "%d ZONE_CREATED y CERO ZONE_TOUCHED: el indicador no tiene "
+                "concepto de toque, asi que la entrada primaria de EXPLORE-001 "
+                "no esta definida. No es una tasa de 0." % creados)
+            print("   %-18s SIN POBLACION (%d creaciones, 0 toques)"
+                  % (nombre, creados), flush=True)
+            continue
+        censos[nombre] = c
 
     payload = {
         "schema_version": "first_touch_census_run_v1",
@@ -149,6 +175,7 @@ def main(argv=None):
         "universe_filter_report": info,
         "censos": censos,
         "rechazados": errores,
+        "sin_poblacion": sin_poblacion,
         "outcomes_accessed": False,
     }
     payload["output_sha256"] = hashlib.sha256(
@@ -162,7 +189,7 @@ def main(argv=None):
         print("%-18s %10.2f %10.2f %7.1f%%"
               % (nombre, cr, po, 100 * (1 - po / cr) if cr else 0))
     print("\n-> %s" % a.out)
-    return 0 if not errores else 1
+    return 0 if not (errores or sin_poblacion) else 1
 
 
 if __name__ == "__main__":
