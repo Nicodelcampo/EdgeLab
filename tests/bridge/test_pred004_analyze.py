@@ -697,3 +697,91 @@ def test_G0_H_GROK_3_ningun_mensaje_habla_de_ANCLAJE_como_warmup():
              if _re.search(r"(warm|warmup|interior)", l, _re.I)
              and "ANCLAJE_VERIFICADO" in l]
     assert not malos, "mensajes de warmup con semantica vieja: %s" % malos
+
+
+# ====================================================== N1 -- enmienda salida 2
+# Aprobada por Nico el 2026-08-05. Fundamento: docs/N1_INVENTARIO_SEQ.md.
+# El riesgo de esta enmienda es AFLOJAR P5. Estos tests existen para probar que
+# lo unico que deja de gritar es el corrimiento de `seq`, y que TODO lo demas
+# sigue siendo FAIL.
+
+def _eco_con_seq(base, corrimiento):
+    """Mismos eventos economicos, corridos `corrimiento` posiciones."""
+    out = []
+    for f in base:
+        p = f.split("|", 1)
+        out.append("%d|%s" % (int(p[0]) + corrimiento, p[1]))
+    return out
+
+
+def test_N1_seq_corrido_con_economia_identica_es_PASS(tmp_path):
+    """emisor_fiel. El caso REAL: v2.1 y v2.4 emiten distinta cantidad de
+    FOOTPRINT_MISMATCH -predicados disjuntos, .cs:218 vs VerificarOHLC- asi que
+    el seq de los economicos se corre. La economia es identica: tiene que PASAR.
+    Antes de la enmienda esto daba FAIL, y por el contador."""
+    base = _eco_basico()
+    a = _log(tmp_path / "h__Minute1.csv", META_21, base)
+    b = _log(tmp_path / "n__Minute1.csv", META_23, _eco_con_seq(base, 7))
+    r = P.modo_p5(a, b, "Minute1")
+    assert r["estado"] == "PASS"
+    assert r["seq_corrido"] is True
+    assert r["delta_seq_min"] == 7 and r["delta_seq_max"] == 7
+
+
+def test_N1_el_corrimiento_se_PUBLICA_no_se_borra(tmp_path):
+    """Lo que separa la enmienda de hacer trampa. Si el delta no se publicara,
+    esto seria meter `seq` en una lista ignorable y borrar la diferencia."""
+    base = _eco_basico()
+    a = _log(tmp_path / "h__Minute1.csv", META_21, base)
+    b = _log(tmp_path / "n__Minute1.csv", META_23, _eco_con_seq(base, 3))
+    r = P.modo_p5(a, b, "Minute1")
+    for k in ("delta_seq_min", "delta_seq_max", "delta_seq_distintos",
+              "seq_corrido", "footprint_mismatch_por_lado", "nota_seq"):
+        assert k in r, "la enmienda borro %s en vez de publicarlo" % k
+
+
+def test_N1_la_causa_del_corrimiento_queda_al_lado(tmp_path):
+    """El delta sin su causa es un numero hueco. Se publica el conteo de
+    FOOTPRINT_MISMATCH de cada lado, que es lo que lo explica."""
+    base = _eco_basico()
+    extra = ["99|2026-06-15T09:05:00.0000000|FOOTPRINT_MISMATCH|bar=5;n_eventos=1"]
+    a = _log(tmp_path / "h__Minute1.csv", META_21, base)
+    b = _log(tmp_path / "n__Minute1.csv", META_23, base + extra)
+    r = P.modo_p5(a, b, "Minute1")
+    assert r["footprint_mismatch_por_lado"] == [0, 1]
+    assert r["estado"] == "PASS", "un FOOTPRINT_MISMATCH de mas no es regresion economica"
+
+
+def test_N1_NO_afloja_payload(tmp_path):
+    """Control: cambiar un campo economico sigue siendo FAIL."""
+    base = _eco_basico()
+    mal = list(base); mal[1] = mal[1].replace("lo=1.1", "lo=9.9")
+    a = _log(tmp_path / "h__Minute1.csv", META_21, base)
+    b = _log(tmp_path / "n__Minute1.csv", META_23, _eco_con_seq(mal, 5))
+    assert P.modo_p5(a, b, "Minute1")["estado"] == "FAIL"
+
+
+def test_N1_NO_afloja_orden_ni_timestamp(tmp_path):
+    """Control: el ORDEN economico sigue siendo condicion. Un economico que
+    aparece o desaparece se caza igual, que es lo que garantiza que la enmienda
+    no pierde poder de deteccion."""
+    base = _eco_basico()
+    a = _log(tmp_path / "h__Minute1.csv", META_21, base)
+    faltante = _eco_con_seq(base, 4)[:-1]
+    assert P.modo_p5(a, _log(tmp_path / "n__Minute1.csv", META_23, faltante),
+                     "Minute1")["estado"] == "FAIL"
+    ts = _eco_con_seq(base, 4)
+    ts[1] = ts[1].replace("09:01:00", "09:47:00")
+    assert P.modo_p5(a, _log(tmp_path / "m__Minute1.csv", META_23, ts),
+                     "Minute1")["estado"] == "FAIL"
+
+
+def test_N1_delta_no_uniforme_queda_visible(tmp_path):
+    """Un delta que NO es constante no se explica por un contador compartido:
+    es un hallazgo. Tiene que quedar visible en delta_seq_distintos."""
+    base = _eco_basico()
+    b = _eco_con_seq(base, 2)
+    b[-1] = "%d|%s" % (int(b[-1].split("|")[0]) + 5, b[-1].split("|", 1)[1])
+    r = P.modo_p5(_log(tmp_path / "h__Minute1.csv", META_21, base),
+                  _log(tmp_path / "n__Minute1.csv", META_23, b), "Minute1")
+    assert len(r["delta_seq_distintos"]) > 1

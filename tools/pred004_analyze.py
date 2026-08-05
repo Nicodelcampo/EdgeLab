@@ -86,6 +86,19 @@ P5_META_IGNORABLE = frozenset({
 #: ACÁ y en el mismo commit que lo introduce, nunca después de ver un log.
 P5_PAYLOAD_IGNORABLE = frozenset()
 
+#: QUÉ COMPARA P5. Enmienda N1 aprobada por Nico el 2026-08-05; fundamento
+#: completo en `docs/N1_INVENTARIO_SEQ.md`.
+#: Antes: identidad bit a bit **incluyendo el `seq` absoluto**. Eso era
+#: incomparable por construcción — `eventSeq++` es un contador COMPARTIDO
+#: (`.cs:892`) y el predicado de `FOOTPRINT_MISMATCH` cambió entre versiones
+#: (v2.1 `.cs:218` mira VOLUMEN; v2.4 `VerificarOHLC` mira OHLC: **disjuntos**),
+#: así que el conteo difiere y corre el `seq` de todo evento posterior. P5 habría
+#: fallado por el contador, no por la regresión que busca.
+#: Ahora: identidad económica **en orden económico** (tipo · ts · payload). El
+#: corrimiento NO se borra: se publica como `delta_seq_*` junto a
+#: `footprint_mismatch_por_lado`, que es su causa.
+P5_COMPARACION = "identidad_economica_en_orden;seq_absoluto_reportado_no_juzgado"
+
 #: tipos de evento con contenido ECONÓMICO. Son los que P5 compara.
 #: Los diagnósticos quedan fuera porque v2.3 los introduce o los cambia por
 #: diseño (es el cambio autorizado), y compararlos haría fallar P5 por el
@@ -156,6 +169,7 @@ UMBRAL_MISMATCH = 0.01
 CONTRATO_SHA_CAMPOS = dict(
     p5_meta_ignorable=sorted(P5_META_IGNORABLE),
     p5_payload_ignorable=sorted(P5_PAYLOAD_IGNORABLE),
+    p5_comparacion=P5_COMPARACION,
     p5_tipos_economicos=list(P5_TIPOS_ECONOMICOS),
     evento_barra_procesada=EVENTO_BARRA_PROCESADA,
     warmup_modo=WARMUP_MODO,
@@ -341,8 +355,20 @@ def modo_p5(hist_path, nuevo_path, resolucion_esperada=None):
             dif.append("evento %d: tipo %s vs %s" % (i, x["tipo"], y["tipo"]))
         if x["ts"] != y["ts"]:
             dif.append("evento %d (%s): ts %s vs %s" % (i, x["tipo"], x["ts"], y["ts"]))
-        if x["seq"] != y["seq"]:
-            dif.append("evento %d (%s): seq %d vs %d" % (i, x["tipo"], x["seq"], y["seq"]))
+        # N1 (salida 2, aprobada por Nico 2026-08-05): el `seq` ABSOLUTO deja de
+        # ser condicion de FAIL. Ver docs/N1_INVENTARIO_SEQ.md. `eventSeq++` es
+        # un contador COMPARTIDO (.cs:892) y el predicado de FOOTPRINT_MISMATCH
+        # cambio entre versiones -v2.1 .cs:218 mira VOLUMEN, v2.4 VerificarOHLC
+        # mira OHLC: predicados DISJUNTOS-, asi que el conteo difiere y corre el
+        # seq de todo evento economico posterior. P5 habria fallado por el
+        # contador, no por lo que P5 mide. Y FOOTPRINT_MISMATCH ya estaba fuera
+        # de P5_TIPOS_ECONOMICOS: comparar su efecto sobre el seq contradecia esa
+        # decision del propio contrato.
+        #
+        # NO se silencia: el corrimiento se PUBLICA como `delta_seq`, junto al
+        # conteo de FOOTPRINT_MISMATCH de cada lado, que es su causa. Meter
+        # `seq` en P5_PAYLOAD_IGNORABLE habria sido borrar la diferencia; esto
+        # es separarla de la comparacion economica y reportarla.
         ca, cb = x["campos"], y["campos"]
         for k in sorted(set(ca) | set(cb)):
             if k in P5_PAYLOAD_IGNORABLE:
@@ -353,9 +379,27 @@ def modo_p5(hist_path, nuevo_path, resolucion_esperada=None):
             dif.append("... (truncado a 200 diferencias)")
             break
 
+    # --- N1: el corrimiento se REPORTA, con su causa al lado.
+    delta = [y["seq"] - x["seq"] for x, y in zip(ea, eb)]
+    fm = [sum(1 for e in lg["eventos"] if e["tipo"] == "FOOTPRINT_MISMATCH")
+          for lg in (a, b)]
+
     estado = "PASS" if not dif else "FAIL"
     return _res("p5-time", estado, dif, a, b,
-                n_eventos_economicos=[len(ea), len(eb)])
+                n_eventos_economicos=[len(ea), len(eb)],
+                # identidad economica: lo que P5 SI juzga
+                comparacion=P5_COMPARACION,
+                # corrimiento: lo que P5 ya NO juzga, pero publica
+                delta_seq_min=min(delta) if delta else 0,
+                delta_seq_max=max(delta) if delta else 0,
+                delta_seq_distintos=sorted(set(delta))[:20],
+                seq_corrido=bool(delta and set(delta) != {0}),
+                footprint_mismatch_por_lado=fm,
+                nota_seq=("el `seq` absoluto NO es condicion de FAIL (N1). "
+                          "Un delta != 0 se explica por la diferencia de "
+                          "footprint_mismatch_por_lado: eventSeq es un contador "
+                          "compartido. Un delta que NO se explique por esa "
+                          "diferencia es un hallazgo y hay que investigarlo."))
 
 
 def _res(modo, estado, difs, *logs, **extra):

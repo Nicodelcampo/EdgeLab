@@ -1,11 +1,12 @@
-# Contrato del analizador de PRED-004 — **v4**, re-congelado 2026-08-05
+# Contrato del analizador de PRED-004 — **v5**, re-congelado 2026-08-05
 
 > **G0 + G1 de las tres iteraciones independientes.** Ocho reproducciones en rojo
 > primero (`fd127f0`), después el parche. Ninguna corrección se aplicó sin haber
 > demostrado antes el estado defectuoso.
 >
 > `contrato_sha` **v1** `6d0e87b7…` · **v2** `109f41c1…` · **v3** `a92c220d…` — retirados
-> `contrato_sha` **v4** = **`8c7e692073aace31e1aeccf62c39907e70caf2c4ac7eb79e7b458307b9c8b4ee`**
+> `contrato_sha` **v4** `8c7e6920…` — retirado por la enmienda N1
+> `contrato_sha` **v5** = **`23981e56799b4f7f2dbbd889f0cc54011df5818b5d164e7f8d9e865c7a087dce`**
 > `sha256` de `nt8/BigTrap2.cs` **v2.4** = `9b63959a…398258e3` — **sin tocar en esta ronda**
 
 ## Lo que decide esta versión
@@ -97,3 +98,44 @@ anterior al parche.
 declara si su fixture es **`emisor_fiel`** o **`emisor_adversarial`**. La
 distinción no es cosmética — descubrir que el fixture "adversarial" de GPT-6 era
 en realidad fiel a `.cs:601` fue lo que destapó los dos esquemas.
+
+
+---
+
+## v5 — enmienda N1, **aprobada por Nico el 2026-08-05**
+
+Fundamento completo: [`N1_INVENTARIO_SEQ.md`](N1_INVENTARIO_SEQ.md).
+
+**Qué cambia.** P5 comparaba identidad bit a bit **incluyendo el `seq`
+absoluto**. Eso era incomparable por construcción: `eventSeq++` es un contador
+**compartido** (`.cs:892`) y el predicado de `FOOTPRINT_MISMATCH` cambió entre
+versiones —v2.1 (`.cs:218`) mira **volumen**, v2.4 (`VerificarOHLC`) mira
+**OHLC**: predicados **disjuntos**— así que el conteo difiere y corre el `seq`
+de todo evento económico posterior.
+
+**P5 habría dado FAIL por el contador, no por la regresión que busca.** Y el
+contrato ya había decidido que `FOOTPRINT_MISMATCH` no se compara
+(`P5_TIPOS_ECONOMICOS` lo excluye): juzgar su efecto sobre el `seq` contradecía
+esa decisión.
+
+**Qué NO cambia — y es lo que separa la enmienda de hacer trampa.** El
+corrimiento **no se borra**: se publica como `delta_seq_min/max/distintos`,
+`seq_corrido` y `footprint_mismatch_por_lado`, **que es su causa**. Meter `seq`
+en `P5_PAYLOAD_IGNORABLE` habría sido eliminar la diferencia; esto es separarla
+de la comparación económica **y reportarla**.
+
+Un `delta_seq` **no uniforme** no se explica por un contador compartido: es un
+hallazgo, y `delta_seq_distintos` lo deja visible.
+
+### Los seis tests existen para probar que la enmienda no afloja P5
+
+| test | qué prueba |
+|---|---|
+| `seq_corrido_con_economia_identica_es_PASS` | el caso real: antes daba FAIL, y por el contador |
+| `el_corrimiento_se_PUBLICA_no_se_borra` | los seis campos están; si faltaran, sería una lista ignorable disfrazada |
+| `la_causa_del_corrimiento_queda_al_lado` | el delta sin su causa es un número hueco |
+| `NO_afloja_payload` | cambiar un campo económico **sigue siendo FAIL** |
+| `NO_afloja_orden_ni_timestamp` | un económico que aparece o desaparece se caza igual |
+| `delta_no_uniforme_queda_visible` | lo que el contador **no** explica queda a la vista |
+
+**Batería: 52/52.**
