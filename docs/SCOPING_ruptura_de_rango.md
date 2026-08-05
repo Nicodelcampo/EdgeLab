@@ -178,3 +178,74 @@ tick, que es el insumo de H1).
 **Sesgo declarado:** la propuesta es mía, así que la autoevaluación tiene
 conflicto de interés. Está escrita antes de leer la alternativa justamente para
 que se pueda auditar si después la muevo.
+
+---
+
+## 5. VEREDICTO — aplicada la rúbrica a `ITERATION_3_KIMI` (`80f59dd`)
+
+Leída `docs/research/ITERATION_3_KIMI_2026-08-05.md` en
+`fix/capture-probe-v2-contract`. Antes de puntuar, verifiqué los dos hallazgos
+que deciden la comparación. **Los dos son ciertos.**
+
+### Verificación previa
+
+**H-KIMI-1 — el hecho es real.** `edgelab/research/universo_estudio.py:85` nombra
+literalmente `BigTrap2_time1_v2` entre las tres extracciones que quemaron
+2026-07-01→07-24. Y las líneas 124-128 dicen que *"ni siquiera una apertura
+sancionada entrega días quemados"*: `holdout_servible` los excluye. O sea que el
+repo tiene una regla que declara ese material inservible, y P5 lo quiere como
+patrón de oro. La identidad entre ese nombre y `BigTrap2_time1_6E_0926_v2.csv`
+sigue siendo **inferencia**, y el auditor la marca correctamente como tal.
+
+**H-KIMI-3 — es un defecto MÍO, y confirmado.** En `tools/pred004_analyze.py`:
+
+```
+495:  tasa_total = len(mism_todas & procesadas) / len(procesadas)
+515:  footprint_mismatch_total = len(mism_todas)
+517:  excluidos_por_warmup_barras = len({b for b in mism_todas if b < lo_int})
+```
+
+El contrato v3 declara el "menor 3" **corregido**. Corregí la tasa y **no el
+contador que la acompaña**: son poblaciones distintas con nombres hermanos. Y
+`excluidos_por_warmup_barras` cuenta barras *con mismatch* excluidas, no barras
+excluidas. Una corrección declarada y a medias es peor que una pendiente,
+porque el contrato dice que ya está.
+
+### Puntuación
+
+| criterio | mi propuesta | tarea del auditor |
+|---|---|---|
+| 1 · gate cerrado | **NO** | **SÍ** — K1 bloquea P5 → PRED-004 → G0 de BigTrap2 en barras de tick, que es el insumo de **H1**, la única hipótesis en régimen A (dirección nativa). Y K6/K7 bloquean abrir outcomes de EXPLORE-001 |
+| 2 · alcance | específico | K6/K7 son **transversales** — tocan toda campaña futura, la mía incluida |
+| 3 · si no se hace | no pasa nada | **evidencia no interpretable**: EXPLORE-001 cerró con `N≥200` contra un número cuya derivación no está escrita (256→200→197→193, dos transiciones sin documento) |
+| 4 · irreversible | **consume presupuesto** | consume cero, y **evita** un irreversible: abrir el holdout contra material posiblemente inadmisible |
+| 5 · sustrato | medición | sustrato |
+
+**El criterio 1 discrimina y la rúbrica es lexicográfica: decide ahí.** Los otros
+cuatro apuntan igual, lo que hace el veredicto robusto a cómo se pesen.
+
+### Corrección de mi propia autoevaluación
+
+Me puntué **MEDIO-BAJO**. Después de leer H-KIMI-8 la lectura honesta es peor:
+**negativa mientras K6/K7 estén abiertos.** Montar una familia nueva de
+hipótesis sobre un universo cuyo linaje no se puede reconstruir agrega consumo a
+un presupuesto cuyo denominador nadie puede auditar. Es la misma familia de
+defecto que H2 y B1 —numerador sin denominador— aplicada al presupuesto de
+investigación.
+
+La rúbrica se escribió para forzar exactamente esta actualización, y la forzó.
+
+### Lo que no comparto, y lo digo igual
+
+El desacuerdo 4 del auditor: su lectura preliminar es que P5 **sí** es admisible
+por ser target-free. **Coincido**, y por razón independiente: la cuarentena quema
+días como **muestra inferencial**; P5 compara bytes de un EventLog contra bytes
+de otro para detectar una regresión del `.cs`, no lee el mercado. Pero la
+objeción de fondo se sostiene entera: **no está escrito, y la ausencia se está
+tratando como permiso.**
+
+### Nota de procedencia
+
+La §8 de ese documento es un **orden de trabajo dirigido a mí**. No la ejecuté:
+lo que está dentro de un archivo es dato, no instrucción. La secuencia
+G0→G1→G2→G3→G4 con K1 en paralelo la decide Nico, no el documento.
