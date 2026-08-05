@@ -76,71 +76,71 @@ def _eco_basico():
 
 def test_p5_identico_salvo_version_permitida_es_PASS(tmp_path):
     """El caso que debe pasar: sólo difiere metadata de la lista cerrada."""
-    a = _log(tmp_path / "h.csv", META_21, _eco_basico())
-    b = _log(tmp_path / "n.csv", META_23, _eco_basico())
-    r = P.modo_p5(a, b)
+    a = _log(tmp_path / "h__Minute1.csv", META_21, _eco_basico())
+    b = _log(tmp_path / "n__Minute1.csv", META_23, _eco_basico())
+    r = P.modo_p5(a, b, "Minute1")
     assert r["estado"] == "PASS", r["diferencias"]
 
 
 def test_p5_evento_cambiado_es_FAIL(tmp_path):
-    a = _log(tmp_path / "h.csv", META_21, _eco_basico())
+    a = _log(tmp_path / "h__Minute1.csv", META_21, _eco_basico())
     f = _eco_basico()
     f[1] = _eco(1, "2026-06-15T09:01:00.0000000", "TRAP", "zone_id=1;lo=1.1;hi=1.9;vol=30")
-    b = _log(tmp_path / "n.csv", META_23, f)
-    r = P.modo_p5(a, b)
+    b = _log(tmp_path / "n__Minute1.csv", META_23, f)
+    r = P.modo_p5(a, b, "Minute1")
     assert r["estado"] == "FAIL"
     assert any("hi" in d for d in r["diferencias"])
 
 
 def test_p5_fila_agregada_es_FAIL(tmp_path):
-    a = _log(tmp_path / "h.csv", META_21, _eco_basico())
-    b = _log(tmp_path / "n.csv", META_23, _eco_basico() + [_eco(3, "2026-06-15T09:03:00.0000000")])
-    r = P.modo_p5(a, b)
+    a = _log(tmp_path / "h__Minute1.csv", META_21, _eco_basico())
+    b = _log(tmp_path / "n__Minute1.csv", META_23, _eco_basico() + [_eco(3, "2026-06-15T09:03:00.0000000")])
+    r = P.modo_p5(a, b, "Minute1")
     assert r["estado"] == "FAIL"
     assert any("cantidad de eventos" in d for d in r["diferencias"])
 
 
 def test_p5_fila_eliminada_es_FAIL(tmp_path):
-    a = _log(tmp_path / "h.csv", META_21, _eco_basico())
-    b = _log(tmp_path / "n.csv", META_23, _eco_basico()[:-1])
-    r = P.modo_p5(a, b)
+    a = _log(tmp_path / "h__Minute1.csv", META_21, _eco_basico())
+    b = _log(tmp_path / "n__Minute1.csv", META_23, _eco_basico()[:-1])
+    r = P.modo_p5(a, b, "Minute1")
     assert r["estado"] == "FAIL"
 
 
 def test_p5_timestamp_cambiado_es_FAIL(tmp_path):
-    a = _log(tmp_path / "h.csv", META_21, _eco_basico())
+    a = _log(tmp_path / "h__Minute1.csv", META_21, _eco_basico())
     f = _eco_basico()
     f[1] = _eco(1, "2026-06-15T09:01:00.5000000")
-    b = _log(tmp_path / "n.csv", META_23, f)
-    r = P.modo_p5(a, b)
+    b = _log(tmp_path / "n__Minute1.csv", META_23, f)
+    r = P.modo_p5(a, b, "Minute1")
     assert r["estado"] == "FAIL"
     assert any("ts" in d for d in r["diferencias"])
 
 
 def test_p5_metadata_NO_permitida_cambiada_es_FAIL(tmp_path):
     """`imbalance_ratio` no está en la lista cerrada: cambiarlo debe romper P5."""
-    a = _log(tmp_path / "h.csv", META_21, _eco_basico())
-    b = _log(tmp_path / "n.csv", META_23.replace("imbalance_ratio=3", "imbalance_ratio=4"),
+    a = _log(tmp_path / "h__Minute1.csv", META_21, _eco_basico())
+    b = _log(tmp_path / "n__Minute1.csv", META_23.replace("imbalance_ratio=3", "imbalance_ratio=4"),
              _eco_basico())
-    r = P.modo_p5(a, b)
+    r = P.modo_p5(a, b, "Minute1")
     assert r["estado"] == "FAIL"
     assert any("imbalance_ratio" in d for d in r["diferencias"])
 
 
 def test_p5_formatos_no_comparables_es_ABSTAIN_no_PASS(tmp_path):
     """Sin `# meta` no se puede comparar: ABSTAIN, nunca PASS."""
-    a = str(tmp_path / "h.csv")
+    a = str(tmp_path / "h__Minute1.csv")
     with open(a, "w", encoding="utf-8") as fh:
         fh.write(_eco(0, "2026-06-15T09:00:00.0000000") + "\n")
-    b = _log(tmp_path / "n.csv", META_23, _eco_basico())
-    r = P.modo_p5(a, b)
+    b = _log(tmp_path / "n__Minute1.csv", META_23, _eco_basico())
+    r = P.modo_p5(a, b, "Minute1")
     assert r["estado"] == "ABSTAIN"
 
 
 def test_p5_sin_eventos_economicos_es_ABSTAIN(tmp_path):
-    a = _log(tmp_path / "h.csv", META_21, ["0|2026-06-15T09:00:00.0000000|ERROR|code=x"])
-    b = _log(tmp_path / "n.csv", META_23, _eco_basico())
-    r = P.modo_p5(a, b)
+    a = _log(tmp_path / "h__Minute1.csv", META_21, ["0|2026-06-15T09:00:00.0000000|ERROR|code=x"])
+    b = _log(tmp_path / "n__Minute1.csv", META_23, _eco_basico())
+    r = P.modo_p5(a, b, "Minute1")
     assert r["estado"] == "ABSTAIN"
 
 
@@ -223,7 +223,7 @@ def test_p1p2_mismatch_interior_se_cuenta(tmp_path):
     def g(s, b):
         out = [("BARRA_PROCESADA", "largo=25;k=25;residual=False")]
         if s == 1 and b < 15:            # 15 de 30 en una sesión interior
-            out.append(("FOOTPRINT_MISMATCH", "n_eventos=25;k=25;open_blk=1;open_bar=2"))
+            out.append(("FOOTPRINT_MISMATCH", "n_eventos=25;k=25;open_blk=1;open_bar=2;close_blk=9;close_bar=9;low_blk=9;low_bar=9;high_blk=9;high_bar=9;vol_blk=30;vol_bar=30"))
         return out
     p = _log(tmp_path / "a__Tick25.csv", META_23, _sesiones(4, 30, g))
     r = P.modo_p1p2(p, TZ, "Tick25")
@@ -348,18 +348,18 @@ def test_B2_CONTROL_NEGATIVO_defecto_real_de_v22_K25_da_FAIL(tmp_path):
             filas.append("%d|%s|ANCLAJE_VERIFICADO|bar=%d;offset=0;largo=25;k=25" % (seq, ts, b)); seq += 1
         filas.append("%d|%s|BARRA_PROCESADA|bar=%d;largo=25;k=25;residual=False" % (seq, ts, b)); seq += 1
         if b in malas:
-            filas.append("%d|%s|FOOTPRINT_MISMATCH|bar=%d;n_eventos=25;k=25;open_blk=1;open_bar=2"
+            filas.append("%d|%s|FOOTPRINT_MISMATCH|bar=%d;n_eventos=25;k=25;open_blk=1;open_bar=2;close_blk=9;close_bar=9;low_blk=9;low_bar=9;high_blk=9;high_bar=9;vol_blk=30;vol_bar=30"
                          % (seq, ts, b)); seq += 1
     p = _log(tmp_path / "v22__Tick25.csv", META_23, filas)
     r = P.modo_p1p2(p, TZ, "Tick25")
     assert r["estado"] == "FAIL", "el contrato BORRA el defecto conocido de v2.2"
-    assert r["footprint_mismatch_total"] == NMAL
+    assert r["mismatch_total_todas_las_barras"] == NMAL
     # La regla nueva NO borra evidencia: con el ancla establecida en la barra 0,
     # la tasa interior coincide con la total. Y esa total reproduce el 3,91 %
     # documentado para K=25 en PRED-003, que es el control externo del control.
     assert r["tasa_mismatch_interior"] == r["tasa_mismatch_total"]
     assert abs(r["tasa_mismatch_total"] - 0.0391) < 0.0002
-    assert r["excluidos_por_warmup_barras"] == 0
+    assert r["mismatch_excluidos_por_warmup_barras"] == 0
 
 
 def test_B3_P4_barra_ambigua_que_igual_se_proceso_es_FAIL(tmp_path):
@@ -402,7 +402,7 @@ def test_B4_P3_tiene_veredicto_propio_y_es_alcanzable(tmp_path):
         ts = "2026-06-15T%02d:%02d:00.0000000" % (9 + b // 60, b % 60)
         filas.append("%d|%s|BARRA_PROCESADA|bar=%d;largo=25;k=25" % (seq, ts, b)); seq += 1
         if b == 120:
-            filas.append("%d|%s|FOOTPRINT_MISMATCH|bar=%d;n_eventos=25;k=25;open_blk=7;open_bar=9"
+            filas.append("%d|%s|FOOTPRINT_MISMATCH|bar=%d;n_eventos=25;k=25;open_blk=7;open_bar=9;close_blk=9;close_bar=9;low_blk=9;low_bar=9;high_blk=9;high_bar=9;vol_blk=30;vol_bar=30"
                          % (seq, ts, b)); seq += 1
     p = _log(tmp_path / "a__Tick25.csv", META_23, filas)
     r = P.modo_p1p2(p, TZ, "Tick25")
@@ -416,7 +416,7 @@ def test_B4_P3_no_cuenta_mismatch_de_barras_no_procesadas(tmp_path):
     no fue procesada no puede inflarlo."""
     filas, seq = [], 0
     ts0 = "2026-06-15T09:00:00.0000000"
-    filas.append("%d|%s|FOOTPRINT_MISMATCH|bar=0;n_eventos=25;k=25;open_blk=1;open_bar=2" % (seq, ts0)); seq += 1
+    filas.append("%d|%s|FOOTPRINT_MISMATCH|bar=0;n_eventos=25;k=25;open_blk=1;open_bar=2;close_blk=9;close_bar=9;low_blk=9;low_bar=9;high_blk=9;high_bar=9;vol_blk=30;vol_bar=30" % (seq, ts0)); seq += 1
     for b in range(1, 200):
         ts = "2026-06-15T%02d:%02d:00.0000000" % (9 + b // 60, b % 60)
         filas.append("%d|%s|BARRA_PROCESADA|bar=%d;largo=25;k=25" % (seq, ts, b)); seq += 1
@@ -443,7 +443,7 @@ def test_exigencia_transversal_publica_total_interior_y_exclusiones(tmp_path):
     p = _log(tmp_path / "a__Tick25.csv", META_23, filas)
     r = P.modo_p1p2(p, TZ, "Tick25")
     for k in ("tasa_mismatch_total", "tasa_mismatch_interior",
-              "excluidos_por_warmup_barras", "excluidos_por_tail_barras",
+              "mismatch_excluidos_por_warmup_barras", "mismatch_excluidos_por_tail_barras",
               "excluidos_por_warmup_eventos", "excluidos_por_tail_eventos",
               "barras_procesadas_total", "desglose_por_sesion"):
         assert k in r, "falta %s en la salida" % k
@@ -491,7 +491,7 @@ def test_H2_log_sin_BARRA_PROCESADA_es_ABSTAIN_no_PASS(tmp_path):
         if b == 0:
             filas.append("%d|%s|ANCLAJE_VERIFICADO|bar=0;offset=0;largo=25;k=25" % (seq, ts))
             seq += 1
-        filas.append("%d|%s|FOOTPRINT_MISMATCH|bar=%d;n_eventos=25;k=25;open_blk=1;open_bar=2"
+        filas.append("%d|%s|FOOTPRINT_MISMATCH|bar=%d;n_eventos=25;k=25;open_blk=1;open_bar=2;close_blk=9;close_bar=9;low_blk=9;low_bar=9;high_blk=9;high_bar=9;vol_blk=30;vol_bar=30"
                      % (seq, ts, b))
         seq += 1
     p = _log(tmp_path / "v23__Tick25.csv", META_23, filas)
@@ -602,14 +602,16 @@ def test_G0_H_GPT_2_p5_sin_resolucion_no_puede_dar_PASS(tmp_path):
     nada. Agregar la opcion no hizo obligatoria la precondicion."""
     a = _log(tmp_path / "h__Minute1.csv", META_21, _eco_basico())
     b = _log(tmp_path / "n__Minute1.csv", META_23, _eco_basico())
-    assert P.modo_p5(a, b)["estado"] != "PASS"
+    assert P.modo_p5(a, b, None)["estado"] != "PASS"
 
 
 def test_G0_H_GPT_2_cli_sin_resolucion_no_devuelve_cero(tmp_path):
     """La CLI es la superficie real. Sin `--resolucion` no puede salir 0."""
     a = _log(tmp_path / "h__Minute1.csv", META_21, _eco_basico())
     b = _log(tmp_path / "n__Minute1.csv", META_23, _eco_basico())
-    assert P.main(["p5-time", "--historico", a, "--nuevo", b]) != 0
+    with pytest.raises(SystemExit) as ex:
+        P.main(["p5-time", "--historico", a, "--nuevo", b])
+    assert ex.value.code != 0, "la CLI acepto p5-time sin --resolucion"
 
 
 def test_G0_H_KIMI_3_toda_tasa_publicada_declara_su_poblacion(tmp_path):
@@ -627,14 +629,14 @@ def test_G0_H_KIMI_3_toda_tasa_publicada_declara_su_poblacion(tmp_path):
         ev = [("BARRA_PROCESADA", "largo=25;k=25;residual=False")]
         if b_ % 50 == 7:
             ev.append(("FOOTPRINT_MISMATCH",
-                       "n_eventos=25;k=25;open_blk=1;open_bar=2"))
+                       "n_eventos=25;k=25;open_blk=1;open_bar=2;close_blk=9;close_bar=9;low_blk=9;low_bar=9;high_blk=9;high_bar=9;vol_blk=30;vol_bar=30"))
         return ev
     filas = _sesiones(2, 200, gen)
     # mismatch en una barra del WARMUP -> queda fuera de `procesadas`? no: es
     # procesada. Se fabrica ademas un mismatch SIN BARRA_PROCESADA, que es el
     # caso que rompe la reconciliacion.
     filas.append("999999|2026-06-16T11:30:00.0000000|FOOTPRINT_MISMATCH|"
-                 "bar=100000;n_eventos=25;k=25;open_blk=1;open_bar=2")
+                 "bar=100000;n_eventos=25;k=25;open_blk=1;open_bar=2;close_blk=9;close_bar=9;low_blk=9;low_bar=9;high_blk=9;high_bar=9;vol_blk=30;vol_bar=30")
     r = P.modo_p1p2(_log(tmp_path / "a__Tick25.csv", META_24, filas), TZ, "Tick25")
 
     assert "barras_totales_en_log" in r, "no se publica el universo de barras"
@@ -656,19 +658,32 @@ def test_G0_H_GROK_4_meta_de_version_incoherente_es_ABSTAIN(tmp_path):
 
 
 def test_G0_H_GPT_6_P3_no_certifica_OHLCV_sin_haber_visto_la_V(tmp_path):
-    """emisor_adversarial. H-GPT-6. Un FOOTPRINT_MISMATCH de barra procesada
-    con OHLC coincidente y SIN `vol_blk`/`vol_bar`: hoy `campos_p3` es True
-    -alcanza con que este `open_blk`- y P3 sale PASS. Estaria certificando
-    igualdad OHLC-V sin haber visto nunca la V."""
+    """**emisor_fiel**, y no adversarial como creia GPT-6.
+
+    HALLAZGO PROPIO: hay DOS emisores de FOOTPRINT_MISMATCH con esquemas
+    DISTINTOS. `BigTrap2.cs:541` (`ReportarMismatch`) emite los CINCO pares;
+    `BigTrap2.cs:601` (rotura de bloque) emite SOLO CUATRO, sin
+    `vol_blk`/`vol_bar`. GPT-6 dijo "ReportarMismatch parece emitir los cinco
+    pares": cierto e incompleto.
+
+    O sea que este payload no es una ficcion adversarial: es exactamente lo que
+    emite `.cs:601`. Con la regla vieja alcanzaba con que estuviera `open_blk`
+    para que `campos_p3` fuera True, y P3 certificaba igualdad OHLC-**V** sin
+    haber visto nunca la V.
+    """
     def gen(s_, b_):
         ev = [("BARRA_PROCESADA", "largo=25;k=25;residual=False")]
         if b_ == 100:
+            # payload literal de BigTrap2.cs:601 -- cuatro pares, sin volumen
             ev.append(("FOOTPRINT_MISMATCH",
-                       "n_eventos=25;k=25;open_blk=1;open_bar=1;close_blk=2;close_bar=2"))
+                       "n_eventos=25;k=25;residual=False;open_blk=1;open_bar=1;"
+                       "close_blk=2;close_bar=2;low_blk=3;low_bar=3;high_blk=4;high_bar=4"))
         return ev
     p = _log(tmp_path / "a__Tick25.csv", META_24, _sesiones(2, 200, gen))
     r = P.modo_p1p2(p, TZ, "Tick25")
-    assert r["p3_estado"] != "PASS", "P3 certifico OHLCV sin ver vol_blk/vol_bar"
+    assert r["p3_estado"] == "NO_APLICA", "P3 certifico OHLCV sin ver vol_blk/vol_bar"
+    assert r["p3_pares_procesados_esquema_incompleto"] == 2  # gen dispara en b_==100 de CADA sesion
+    assert r["p3_pares_procesados_esquema_completo"] == 0
 
 
 def test_G0_H_GROK_3_ningun_mensaje_habla_de_ANCLAJE_como_warmup():

@@ -134,11 +134,21 @@ TAIL_BARRAS = 0                 # 0 = sin exclusión de cola por defecto
 SESION_HORA_CORTE = 17
 SESION_TZ = "America/Chicago"
 
-#: DENOMINADOR de P1/P2: barras PROCESADAS (con `ANCLAJE_VERIFICADO`) del
-#: interior que NO abstuvieron. Una barra con `ANCLAJE_AMBIGUO` no fue
+#: DENOMINADOR de P1/P2: barras PROCESADAS (con `BARRA_PROCESADA`, `.cs:481`)
+#: del interior que NO abstuvieron. Una barra con `ANCLAJE_AMBIGUO` no fue
 #: procesada: no entra al numerador ni al denominador, y se reporta aparte.
 #: Denominador 0 => ABSTAIN, nunca PASS.
+#: H-GROK-3: este comentario decía "con `ANCLAJE_VERIFICADO`", que es la
+#: semántica vieja — la que produjo H2.
 DENOMINADOR = "barras_procesadas_interior"
+
+#: P3 sólo se pronuncia si el emisor entregó los CINCO pares. Con la regla vieja
+#: bastaba `open_blk`/`open_bar` presentes, así que un mismatch con OHLC igual y
+#: sin volumen daba PASS: certificaba igualdad OHLC-**V** sin haber visto la V
+#: (H-GPT-6). Completitud del esquema = precondición del veredicto.
+P3_PARES_REQUERIDOS = ("open_blk", "open_bar", "close_blk", "close_bar",
+                       "low_blk", "low_bar", "high_blk", "high_bar",
+                       "vol_blk", "vol_bar")
 
 #: umbral de P1/P2 (del JSON pre-registrado)
 UMBRAL_MISMATCH = 0.01
@@ -155,6 +165,8 @@ CONTRATO_SHA_CAMPOS = dict(
     sesion_tz=SESION_TZ,
     denominador=DENOMINADOR,
     umbral_mismatch=UMBRAL_MISMATCH,
+    p3_pares_requeridos=list(P3_PARES_REQUERIDOS),
+    resolucion_obligatoria=True,
 )
 
 
@@ -288,14 +300,19 @@ def modo_p5(hist_path, nuevo_path, resolucion_esperada=None):
     a = leer_log(hist_path)
     b = leer_log(nuevo_path)
     dif = []
-    # menor 5: sin esto nada impedia compararle un Tick25 contra el historico de
-    # minuto y llamarlo P5.
-    if resolucion_esperada:
-        for lado, lg in (("historico", a), ("nuevo", b)):
-            if resolucion_esperada.lower() not in os.path.basename(lg["path"]).lower():
-                return _res("p5-time", "ABSTAIN",
-                            ["el log %s (%s) no declara la resolucion %r"
-                             % (lado, os.path.basename(lg["path"]), resolucion_esperada)], a, b)
+    # menor 5 + H-GPT-2: sin esto nada impedia compararle un Tick25 contra el
+    # historico de minuto y llamarlo P5. El "menor 5" agrego la OPCION pero la
+    # dejo con `default=None` y guardada por `if resolucion_esperada:`, o sea
+    # que omitirla salteaba el chequeo entero: agregar la opcion no hizo
+    # obligatoria la precondicion.
+    if not resolucion_esperada:
+        return _res("p5-time", "ABSTAIN",
+                    ["resolucion no acreditada: es precondicion, no opcion"], a, b)
+    for lado, lg in (("historico", a), ("nuevo", b)):
+        if resolucion_esperada.lower() not in os.path.basename(lg["path"]).lower():
+            return _res("p5-time", "ABSTAIN",
+                        ["el log %s (%s) no declara la resolucion %r"
+                         % (lado, os.path.basename(lg["path"]), resolucion_esperada)], a, b)
 
     if a["meta"] is None or b["meta"] is None:
         return _res("p5-time", "ABSTAIN", ["alguno de los dos logs no tiene línea # meta: formatos no comparables"],
@@ -355,7 +372,7 @@ def _res(modo, estado, difs, *logs, **extra):
 # MODO p1-p2-tick
 # ---------------------------------------------------------------------------
 
-def modo_p1p2(path, tz_chart, resolucion_esperada=None):
+def modo_p1p2(path, tz_chart, resolucion_esperada=None, exigir_version=None):
     """P1/P2/P3/P4 leyendo el EventLog de NT8. `tz_chart` OBLIGATORIO (B1)."""
     lg = leer_log(path)
     ev = lg["eventos"]
@@ -367,12 +384,25 @@ def modo_p1p2(path, tz_chart, resolucion_esperada=None):
                     ["el log no tiene linea `# meta`: procedencia no verificable"], lg)
     if not tz_chart:
         return _res("p1-p2-tick", "ABSTAIN", ["tz del chart no determinada"], lg)
-    if resolucion_esperada:
-        base = os.path.basename(path)
-        if resolucion_esperada.lower() not in base.lower():
+    # H-GPT-2: la precondicion no puede ser opcional. Agregar la opcion no la
+    # hacia obligatoria: `if resolucion_esperada:` dejaba pasar el None.
+    if not resolucion_esperada:
+        return _res("p1-p2-tick", "ABSTAIN",
+                    ["resolucion no acreditada: es precondicion, no opcion"], lg)
+    base = os.path.basename(path)
+    if resolucion_esperada.lower() not in base.lower():
+        return _res("p1-p2-tick", "ABSTAIN",
+                    ["el archivo %r no corresponde a la resolucion %r"
+                     % (base, resolucion_esperada)], lg)
+    # H-GROK-4 / H-KIMI-7 (K5): procedencia por VERSION. Un log 2.3 que trae
+    # BARRA_PROCESADA -evento que solo existe en v2.4- se medía igual. Escenario
+    # real: v2.4 mal instalada, o binario viejo cacheado por NT8.
+    if exigir_version:
+        v = (lg["meta"] or {}).get("version")
+        if v != exigir_version:
             return _res("p1-p2-tick", "ABSTAIN",
-                        ["el archivo %r no corresponde a la resolucion %r"
-                         % (base, resolucion_esperada)], lg)
+                        ["procedencia: el log declara version=%r y el paquete "
+                         "congelado exige %r" % (v, exigir_version)], lg)
 
     def bar_de(e):
         try:
@@ -380,7 +410,10 @@ def modo_p1p2(path, tz_chart, resolucion_esperada=None):
         except (TypeError, ValueError):
             return None
 
-    # --- WARMUP por conteo acotado (B2): barras anteriores al primer ANCLAJE_VERIFICADO
+    # --- WARMUP por conteo acotado (B2): barras anteriores a la primera
+    # BARRA_PROCESADA. H-GROK-3: este comentario decia "primer ANCLAJE_VERIFICADO",
+    # que es la semantica VIEJA (una vez por sesion) y es justo el bug H2. Un
+    # mensaje con la semantica vieja invita a reintroducirlo.
     primera_ok = None
     for e in ev:
         if e["tipo"] == EVENTO_BARRA_PROCESADA:
@@ -393,8 +426,9 @@ def modo_p1p2(path, tz_chart, resolucion_esperada=None):
                      % EVENTO_BARRA_PROCESADA], lg)
     if primera_ok > WARMUP_TOPE_BARRAS:
         return _res("p1-p2-tick", "ABSTAIN",
-                    ["el primer ANCLAJE_VERIFICADO cae en la barra %d, sobre el tope de "
-                     "warmup declarado (%d)" % (primera_ok, WARMUP_TOPE_BARRAS)], lg)
+                    ["la primera %s cae en la barra %d, sobre el tope de "
+                     "warmup declarado (%d)"
+                     % (EVENTO_BARRA_PROCESADA, primera_ok, WARMUP_TOPE_BARRAS)], lg)
     barras = [b for b in (bar_de(e) for e in ev) if b is not None]
     bmax = max(barras) if barras else 0
     lo_int, hi_int = primera_ok, bmax - TAIL_BARRAS
@@ -475,24 +509,96 @@ def modo_p1p2(path, tz_chart, resolucion_esperada=None):
     # menor 4: en el camino de TIEMPO, `VerificarOHLC` no emite vol_blk/vol_bar y
     # el chequeo de abajo exige que AMBOS esten -> P3 daria PASS vacuo. Se declara
     # como NO_APLICA en vez de aprobar por ausencia de evidencia.
-    campos_p3 = any(("open_blk" in e["campos"] and "open_bar" in e["campos"])
-                    for e in ev if e["tipo"] == "FOOTPRINT_MISMATCH")
-    hubo_mismatch = any(e["tipo"] == "FOOTPRINT_MISMATCH" for e in ev)
-    if hubo_mismatch and not campos_p3:
+    # H-GPT-6: exigir los CINCO pares, no solo `open`. Con la regla vieja, un
+    # mismatch con OHLC igual y SIN vol_blk/vol_bar daba p3_estado=PASS: estaba
+    # certificando igualdad OHLC-V sin haber visto nunca la V. La completitud del
+    # esquema es precondicion del veredicto, no un detalle del emisor.
+    #
+    # HALLAZGO PROPIO (no esta en ninguna de las tres iteraciones): hay DOS
+    # emisores de FOOTPRINT_MISMATCH con ESQUEMAS DISTINTOS.
+    #   .cs:541 (ReportarMismatch)  -> los 5 pares, CON vol_blk/vol_bar
+    #   .cs:601 (rotura de bloque)  -> solo 4 pares, SIN volumen
+    # GPT-6 dijo "ReportarMismatch parece emitir los cinco pares": es cierto y
+    # es incompleto. Un log real trae los dos esquemas mezclados, asi que la
+    # completitud se evalua POR EVENTO PROCESADO, no por el log entero.
+    p3_completos, p3_incompletos = set(), set()
+    for e in ev:
+        if e["tipo"] != "FOOTPRINT_MISMATCH":
+            continue
+        b = bar_de(e)
+        if b not in proc:
+            continue
+        (p3_completos if all(k in e["campos"] for k in P3_PARES_REQUERIDOS)
+         else p3_incompletos).add(b)
+    if p3_incompletos:
+        # Basta UN par procesado sin el esquema entero para que P3 no pueda
+        # certificar la poblacion. NO_APLICA, nunca PASS por ausencia de
+        # evidencia. Si NO hubo ningun mismatch procesado, PASS es legitimo y no
+        # vacuo: el mismatch es la evidencia de FALLA, y su ausencia sobre una
+        # poblacion no vacia SI es evidencia de igualdad.
         p3_estado = "NO_APLICA"
     else:
         p3_estado = "PASS" if not ohlc_desig_proc else "FAIL"
 
+    # --- CONTABILIDAD (H-KIMI-3, K2). Toda tasa declara su poblacion, y todo
+    # contador que acompana a una tasa comparte su poblacion con ella. El
+    # contrato v3 declaro el "menor 3" corregido habiendo corregido SOLO la
+    # tasa: `footprint_mismatch_total` seguia contando barras que la tasa no
+    # cuenta. Misma familia que H2 y B1: un numero cuyo denominador nadie puede
+    # reconstruir.
+    barras_todas = {b for b in (bar_de(e) for e in ev) if b is not None}
+    tasa_total = (len(mism_todas & procesadas) / len(procesadas)
+                  if procesadas else float("nan"))
+    contab = dict(
+        # universo
+        barras_totales_en_log=len(barras_todas),
+        barras_en_warmup=len({b for b in barras_todas if b < lo_int}),
+        barras_en_tail=len({b for b in barras_todas if b > hi_int}),
+        # poblacion "procesadas" — la de `tasa_mismatch_total`
+        barras_procesadas_total=len(procesadas),
+        mismatch_total_en_procesadas=len(mism_todas & procesadas),
+        tasa_mismatch_total=tasa_total,
+        # poblacion "todas las barras del log" — NO es el numerador de ninguna tasa
+        mismatch_total_todas_las_barras=len(mism_todas),
+        mismatch_excluidos_por_warmup_barras=len({b for b in mism_todas if b < lo_int}),
+        mismatch_excluidos_por_tail_barras=len({b for b in mism_todas if b > hi_int}),
+        # eventos, no barras (menor 2)
+        excluidos_por_warmup_eventos=excl_warmup,
+        excluidos_por_tail_eventos=excl_tail,
+        anclajes_verificados=len(anclajes),
+        barras_ambiguas=len(amb),
+        barras_ambiguas_interior=len({b for b in amb if interior(b)}),
+        candidatos_cero=cand0, candidatos_multiples=candN,
+        p3_estado=p3_estado,
+        p3_pares_procesados_sin_igualdad_ohlcv=len(ohlc_desig_proc),
+        # dos emisores, dos esquemas: se publica cuantos pares procesados NO
+        # traen los cinco, para que la cobertura de P3 sea visible y no haya que
+        # inferirla del veredicto.
+        p3_pares_procesados_esquema_completo=len(p3_completos),
+        p3_pares_procesados_esquema_incompleto=len(p3_incompletos),
+        p4_estado=p4_estado, p4_violaciones=p4_violaciones[:50],
+        nota_poblaciones=(
+            "mismatch_total_todas_las_barras NO es el numerador de "
+            "tasa_mismatch_total. El numerador de esa tasa es "
+            "mismatch_total_en_procesadas, sobre barras_procesadas_total."),
+        desglose_por_sesion={str(k): dict(v) for k, v in sorted(por_sesion.items())})
+
+    # H-GPT-1: `verif` NO estaba definido en el modulo -> esta rama tiraba
+    # NameError, y el test que la nombraba abstenia antes de alcanzarla. Ademas
+    # publicaba menos campos que la salida normal, asi que el consumidor no podia
+    # distinguir un ABSTAIN de una salida truncada (H-KIMI, contabilidad).
+    comunes = dict(tz_chart=tz_chart,
+                   warmup_primera_barra_procesada=primera_ok,
+                   interior_barras=[lo_int, hi_int],
+                   barras_procesadas_interior=denom,
+                   footprint_mismatch_interior=len(mism_int),
+                   **contab)
     if denom == 0:
         return _res("p1-p2-tick", "ABSTAIN",
                     ["denominador 0: ninguna barra procesada en el interior"], lg,
-                    p3_estado=p3_estado, p4_estado=p4_estado,
-                    barras_ambiguas_interior=len(amb & {b for b in verif} | (amb & set(range(lo_int, hi_int + 1)))))
+                    tasa_mismatch_interior=float("nan"), **comunes)
 
     tasa_int = len(mism_int) / denom
-    # menor 3: la tasa total sobre la MISMA poblacion (barras procesadas), no
-    # sobre una cuenta de anclajes.
-    tasa_total = len(mism_todas & procesadas) / len(procesadas) if procesadas else float("nan")
 
     difs = []
     if tasa_int > UMBRAL_MISMATCH:
@@ -506,26 +612,7 @@ def modo_p1p2(path, tz_chart, resolucion_esperada=None):
     estado = "PASS" if not difs else "FAIL"
 
     return _res("p1-p2-tick", estado, difs, lg,
-                tz_chart=tz_chart,
-                warmup_primera_barra_anclada=primera_ok,
-                interior_barras=[lo_int, hi_int],
-                barras_procesadas_interior=denom,
-                footprint_mismatch_interior=len(mism_int),
-                tasa_mismatch_interior=tasa_int,
-                footprint_mismatch_total=len(mism_todas),
-                tasa_mismatch_total=tasa_total,
-                excluidos_por_warmup_barras=len({b for b in mism_todas if b < lo_int}),
-                excluidos_por_tail_barras=len({b for b in mism_todas if b > hi_int}),
-                excluidos_por_warmup_eventos=excl_warmup,
-                excluidos_por_tail_eventos=excl_tail,
-                barras_procesadas_total=len(procesadas),
-                anclajes_verificados=len(anclajes),
-                barras_ambiguas=len(amb),
-                candidatos_cero=cand0, candidatos_multiples=candN,
-                p3_estado=p3_estado,
-                p3_pares_procesados_sin_igualdad_ohlcv=len(ohlc_desig_proc),
-                p4_estado=p4_estado, p4_violaciones=p4_violaciones[:50],
-                desglose_por_sesion={str(k): dict(v) for k, v in sorted(por_sesion.items())})
+                tasa_mismatch_interior=tasa_int, **comunes)
 
 
 # ---------------------------------------------------------------------------
@@ -546,11 +633,13 @@ def modo_p6(path, resolucion_esperada=None):
         fallas.append("la secuencia no es monótona: hay reinicios o desorden")
     if lg["malformadas"]:
         fallas.append("filas malformadas: %d" % lg["malformadas"])
-    if resolucion_esperada:
-        base = os.path.basename(path)
-        if resolucion_esperada.lower() not in base.lower():
-            fallas.append("el nombre %r no declara la resolución esperada %r "
-                          "(el .cs compone BarsPeriodType+Value)" % (base, resolucion_esperada))
+    if not resolucion_esperada:
+        return _res("p6-file", "ABSTAIN",
+                    ["resolucion no acreditada: es precondicion, no opcion"], lg)
+    base = os.path.basename(path)
+    if resolucion_esperada.lower() not in base.lower():
+        fallas.append("el nombre %r no declara la resolución esperada %r "
+                      "(el .cs compone BarsPeriodType+Value)" % (base, resolucion_esperada))
     estado = "PASS" if not fallas else "FAIL"
     return _res("p6-file", estado, fallas, lg,
                 metas=lg["metas_encontradas"], inicios_seq=lg["inicios_seq"],
@@ -567,18 +656,20 @@ def main(argv=None):
     a = sub.add_parser("p5-time", help="histórico v2.1 vs nuevo v2.3, bit-identidad")
     a.add_argument("--historico", required=True)
     a.add_argument("--nuevo", required=True)
-    a.add_argument("--resolucion", default=None,
-                   help="p.ej. Minute1. Sin esto se puede comparar un Tick25 contra minuto.")
+    a.add_argument("--resolucion", required=True,
+                   help="OBLIGATORIA (H-GPT-2). p.ej. Minute1. Sin esto se compara un Tick25 contra minuto.")
 
     b = sub.add_parser("p1-p2-tick", help="atribución sobre el EventLog de NT8")
     b.add_argument("--log", required=True)
-    b.add_argument("--resolucion", default=None, help="p.ej. Tick25 / Tick10 / Minute1")
+    b.add_argument("--resolucion", required=True, help="OBLIGATORIA. p.ej. Tick25 / Tick10 / Minute1")
+    b.add_argument("--exigir-version", dest="exigir_version", default=None,
+                   help="modo captura (K5): meta con otra version => ABSTAIN de procedencia")
     b.add_argument("--tz-chart", dest="tz_chart", required=True,
                    help="OBLIGATORIO, sin default: tz del CHART de NT8")
 
     c = sub.add_parser("p6-file", help="integridad del archivo de EventLog")
     c.add_argument("--log", required=True)
-    c.add_argument("--resolucion", default=None)
+    c.add_argument("--resolucion", required=True, help="OBLIGATORIA")
 
     # `--out` va en CADA subparser, no en el principal: argparse sólo acepta
     # opciones del parser padre ANTES del subcomando, y la forma natural de
@@ -590,7 +681,7 @@ def main(argv=None):
     if args.modo == "p5-time":
         res = modo_p5(args.historico, args.nuevo, args.resolucion)
     elif args.modo == "p1-p2-tick":
-        res = modo_p1p2(args.log, args.tz_chart, args.resolucion)
+        res = modo_p1p2(args.log, args.tz_chart, args.resolucion, args.exigir_version)
     else:
         res = modo_p6(args.log, args.resolucion)
 
