@@ -165,6 +165,14 @@ def main(argv=None):
         ses = sum(len(v.get("fechas", [])) for v in d.values())
         ind = len({i for v in d.values() for i in v.get("ind", {})})
         print("  censo creaciones   %d sesiones, %d indicadores" % (ses, ind))
+    uni = REPO / "runs" / "censo" / "manifiesto_universo.json"
+    if uni.exists():
+        import hashlib
+        raw = uni.read_bytes()
+        d = json.loads(raw)
+        print("  universo           %d dias  generado %s  sha256 %s"
+              % (len(d.get("dias") or []), (d.get("generado_utc") or "?")[:10],
+                 hashlib.sha256(raw).hexdigest()[:16]))
     an = REPO / "tools" / "pred004_analyze.py"
     if an.exists():
         sys.path.insert(0, str(REPO / "tools"))

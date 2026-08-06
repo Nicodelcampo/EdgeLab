@@ -44,7 +44,53 @@ TickData/
 *.7z
 
 # --- Artefactos de runtime ---
-runs/
+# `runs/*` y NO `runs/`: con el directorio excluido git no desciende y la
+# negacion de abajo seria inerte ("no se puede re-incluir un archivo si un
+# directorio padre esta excluido").
+runs/*
+# EXCEPCION: el manifiesto del universo DEFINE LA MUESTRA del estudio. El
+# 2026-08-06 los dos clones de esta maquina tenian versiones distintas -252
+# dias del 27-jul contra 256 del 4-ago- y el gate de muestra minima daba
+# BLOQUEADO en uno y PASS en el otro. Nadie podia notarlo. 45 KB que tienen
+# que ser reproducibles.
+!runs/censo/
+runs/censo/*
+!runs/censo/manifiesto_universo.json
+cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# --- Entornos ---
+.venv/
+.venv-*/
+venv/
+env/
+_env_probes/
+
+# --- Configuración local y secretos ---
+.env
+.env.*
+config.local.*
+*.local.toml
+config/local.toml
+secrets.*
+credentials.*
+
+# --- Datos grandes (fuera de Git; ver manifest + Data Contract futuro) ---
+# `data/` ENTERO. Antes solo se ignoraban *.parquet y data/nt8/, y el
+# 2026-08-05 aparecio data/nt8_logger/6E_20260731_*.csv -un EventLog de
+# NT8 fechado DENTRO del holdout sellado- sin regla que lo cubriera: un
+# `git add -A` lo habria commiteado. Nada de data/ esta trackeado, asi
+# que la regla amplia no desversiona nada.
+data/
+TickData/
+*.Last.txt
+*.zip
+*.rar
+*.7z
+
 cache/
 artifacts/
 logs/
