@@ -17,6 +17,7 @@
 |---|---|---|---|---|
 | E1–E5 | CAMP-001 | 2026-07-24 | pre-sellado (v1.0) | ninguno |
 | **E6** | CAMP-001 | 2026-07-25 | reemplaza la calibración de E1 por mediciones reales por fold; declara `zone_min_size=5` como estrato de baja potencia con veredicto posible `insufficient_n`; disparos = cota superior, suficiencia por trades; identidad única `a6c32c0e9dbeb79a`. **Grilla y N_eff=48 intactos; ningún umbral relajado.** | **ninguno** |
+| **E-R1** | EXPLORE-001 | 2026-08-06 | **DRAFT** espacio de reglas de entrada (umbral T, arquetipos, misma-barra, banda contigua). Archivo: [`../amendments/EXPLORE-001-2026-08-06_espacio_reglas_entrada.md`](../amendments/EXPLORE-001-2026-08-06_espacio_reglas_entrada.md). **Pendiente sello Nico.** | **ninguno** |
 
 ## Estados
 
@@ -29,12 +30,16 @@
 
 ## Bloqueos vigentes de CAMP-001 antes de la primera corrida
 
-1. ✅ **RESUELTO** (2026-07-25) — Simulador implementado en `edgelab/research/sim.py`,
-   reproduciendo los 7 golden tests de `docs/execution_simulator_spec.md` §9 con
-   números idénticos (23 tests verdes con los de propiedad).
-2. ✅ **RESUELTO** (2026-07-25) — Particiones de 6E 12-25, 03-26 y 06-26
-   materializadas; las 4 de desarrollo en `parity_covered`, propagadas desde
-   6E 09-26 (`parity_exact`, oráculo sha `df045241…`).
+1. ✅ **RESUELTO** (2026-07-25) — Simulador implementado en `edgelab/research/sim.py`.
+2. ✅ **RESUELTO** (2026-07-25) — Particiones desarrollo en `parity_covered`.
 3. ⏳ **PENDIENTE** — OK final de Nico.
 
-Costos reales del broker: pendientes; bloquean **G3**, no el sellado.
+Costos reales del broker: ✅ resueltos 2026-08-06 (Lucid $2,40/lado → 2,768 ticks).
+CAMP-001 no se reabre (negativo con costos subestimados).
+
+## Camino crítico EXPLORE-001 (2026-08-06)
+
+1. Sellar E-R1 (espacio de reglas).
+2. Censo autoritativo primeros toques + §3.3.
+3. Manifiesto de campaña formal que cite hash E-R1 + NORTH_STAR.
+4. OK de Nico para corrida.
