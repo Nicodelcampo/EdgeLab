@@ -165,3 +165,66 @@ hasta pasar el pipeline estándar»*.
 Cuando F9 se reabra, **éste es el primer candidato** — es el único que llega con
 el contrato de eventos, la disciplina anti look-ahead y un eje de resolución ya
 construido.
+
+
+---
+
+## HP-004 — `aVolZonePOI` — **NO. Ya está superado, y una de sus fallas es descalificante**
+
+**Fecha:** 2026-08-06 · **Estado:** evaluado, descartado
+
+Es el **predecesor** de HP-003: `aVolClusterPOI` se declara *«reescritura desde
+cero de `aVolZonePOI.cs` rescatando sus dos ideas útiles»*. Su encabezado lista
+cinco cosas que le eliminó. **Verificadas una por una en el fuente, no aceptadas
+por palabra del sucesor:**
+
+| # | lo que el sucesor dice que eliminó | verificado en `aVolZonePOI.cs` |
+|---|---|---|
+| 1 | SQLite y «mitigación» por proceso externo | **sí** — `using System.Data.SQLite` (23); línea 136: cada 30 s en tiempo real llama `CheckAndRemoveMitigatedZones()` |
+| 2 | precios `double` como clave de diccionario | **sí** — `Dictionary<double, double>` en 33, 56, 95, 103 |
+| 3 | fallback a cola global mezclando horas | **sí** — `Queue<double> globalQueue` (35), usado en 283 |
+| 4 | bloques anclados al punto de carga del chart | **sí** — cero apariciones de `IsFirstBarOfSession` o `SessionIterator` |
+| 5 | percentil con interpolación lineal | **sí** — `sorted[lo] + (rank-lo)*(sorted[hi]-sorted[lo])` (452) |
+
+### La primera es descalificante por sí sola
+
+```csharp
+// línea 135-139
+// Check for mitigated zones in SQLite every 30 seconds (real-time only)
+if (State == State.Realtime && (DateTime.UtcNow - lastMitigationCheck).TotalSeconds >= 30)
+{
+    CheckAndRemoveMitigatedZones();
+    ...
+}
+```
+
+**El conjunto de zonas en una barra depende de lo que un proceso externo escribió
+en una base de datos, consultado por reloj de pared.** Eso no es un defecto de
+precisión: es **irreproducible por construcción**. No se puede repetir la corrida
+y obtener lo mismo, porque el estado no vive en el indicador.
+
+G0 exige lo contrario, literal: *«re-ejecutar la campaña con el mismo manifiesto
+produce los mismos digests»*. Ningún indicador que consulte un proceso externo
+por reloj puede satisfacer eso, con cualquier cantidad de trabajo de traducción.
+
+### Las otras cuatro, en el orden en que importan acá
+
+- **`Dictionary<double, double>`** es la familia de bugs ULP de **AUDIT-002**: dos
+  precios que deberían ser la misma celda pueden diferir en el último bit y
+  fabricar dos claves. El sucesor usa ticks enteros y declara «exposición ULP = 0
+  por construcción».
+- **El fallback global** mezcla horas cuando falta historia del bucket, y
+  reintroduce el sesgo de estacionalidad intradiaria que el perfil por bucket
+  existe para eliminar. El sucesor prefiere **no detectar**: *«sin historial del
+  bucket ⇒ no detecta»*. Fail-closed contra fail-open.
+- **Sin anclaje a sesión**, los bloques dependen de dónde arrancó el chart: dos
+  personas con la misma configuración ven zonas distintas.
+- **La interpolación** del percentil inventa un valor que no está en la muestra.
+  Los tres kernels del proyecto usan cuantil empírico **sin interpolar**.
+
+### Veredicto
+
+**No hay nada que rescatar que HP-003 no haya rescatado ya**, y lo hizo
+explicitando qué tiraba y por qué. Lo útil de este archivo es servir de **control
+negativo documentado**: cinco decisiones de diseño que el proyecto ya rechazó,
+con el fuente al lado para mostrar cómo se ven cuando están mal.
