@@ -114,5 +114,33 @@ indicadores. Si §3.3 va a usar la tasa como criterio de selección, conviene
 hacerlo **antes** del anti-solapamiento o con un `sep_min` que no sature.
 
 Esto está registrado como decisión **D3** en
-`docs/SESION_2026-08-04_PARA_AUDITOR.md` y **no fue resuelta**. Por eso no
-llené §3.3 acá: la medición ya no bloquea, pero el criterio de selección sí.
+`docs/SESION_2026-08-04_PARA_AUDITOR.md` y **no fue resuelta**.
+
+**(c) CORRECCIÓN — esto NO desbloquea §3.3.** *(agregada 2026-08-06, tras leer
+`efe0397` de la otra máquina.)*
+
+Escribí más arriba que *"la medición ya no bloquea, pero el criterio de
+selección sí"*. **Es falso, y la corrección es importante.**
+
+Este censo mide **creaciones de zona**, no primeros toques. Está declarado en
+el manifiesto desde el principio —`event_anchor_policy: zone_created_ms`,
+`population_note: "cuenta creaciones; no equivale automaticamente a
+first_touch"`— pero mi redacción no cargó esa distinción con la fuerza que
+correspondía. La población autoritativa para §3.3 es el **primer toque**, y ésa
+es **otra medición**.
+
+El censo de primeros toques de la otra máquina encontró además que cuatro de
+los seis indicadores no pueden entrar por contrato de evento, y que
+`AACloseOpenDiffs` produce un **fail-open**: emite 23.629 `ZONE_CREATED` y
+**cero** `ZONE_TOUCHED`, con lo cual el censo salía `status=COMPLETE` y
+`raw_count=0`. Un cero con formato de medición, cuando la verdad es que el
+indicador no tiene concepto de toque.
+
+**Lo que este documento sí sostiene**: el censo de tasa de señales
+*outcome-free* está completo sobre el universo entero, y la saturación de
+`sep_min` está medida y confirmada en los seis indicadores.
+
+**Lo que NO sostiene**: que §3.3 pueda llenarse. Por `efe0397`, hoy no puede
+llenarse por ningún camino — solo `BigTrap2` produce la población autoritativa
+y está bloqueado por PRED-004, cuyo hábitat son las barras de tick donde la
+paridad sigue rota.
