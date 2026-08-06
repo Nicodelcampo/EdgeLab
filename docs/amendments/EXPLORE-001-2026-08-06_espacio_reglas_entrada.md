@@ -1,268 +1,356 @@
 # Enmienda pre-outcome — espacio de reglas de entrada (EXPLORE-001)
 
-> **ESTADO: DRAFT v0.1 — 2026-08-06.** Escrito por el auditor a pedido de Nico.
-> **NO ESTÁ SELLADO.** Nico sella, recorta o rechaza **antes** de cualquier corrida
-> que mire retornos. Outcomes: **prohibidos** al redactar y al sellar.
+> **ESTADO: DRAFT v0.2 — 2026-08-06. NO SELLADO.**
+>
+> **Decisión de Nico registrada:** devolver la v0.1 a DRAFT v0.2 tras una segunda
+> auditoría. Esto **no adopta** ninguna opción técnica S1–S6, no autoriza corridas
+> y no abre outcomes, holdout ni oráculos económicos.
 >
 > Referente: `docs/NORTH_STAR.md` sha256 `21bb3b01a33e2b373859a38ac4615de376a6262f0aa7ced0e8f5dec33b5256a8`
 > Gates: `docs/edge_validation_contract.md`
-> ESPEC: `docs/ESPEC_TEST_EXPLORE-001.md` (§2-ter, §3.1–3.2)
-> Decongestión ya congelada: `docs/amendments/EXPLORE-001-2026-08-04_first_touch_decongestion.md`
-> Contrato de población: `docs/D3_CENSO_AUTORITATIVO_PRIMEROS_TOQUES.md`
+> ESPEC: `docs/ESPEC_TEST_EXPLORE-001.md`
+> Decongestión previa: `docs/amendments/EXPLORE-001-2026-08-04_first_touch_decongestion.md`
+> Contrato histórico del censo: `docs/D3_CENSO_AUTORITATIVO_PRIMEROS_TOQUES.md`
 >
-> **SELLADO ≠ AUTORIZACIÓN DE CORRIDA.** Tras el sello falta: (i) OK final de
-> Nico, (ii) censo autoritativo de primeros toques sobre el universo de la puerta
-> única, (iii) llenar §3.3 de la ESPEC con las 3 hipótesis, (iv) manifiesto de
-> campaña que cite el hash de **esta** enmienda sellada.
+> **SELLADO ≠ AUTORIZACIÓN DE CORRIDA.** Antes de un SEALED v1.0 faltan un
+> contrato ejecutable por arquetipo, la curva completa outcome-free, las
+> decisiones de Nico y un método único de multiplicidad.
 
-## Justificación económica
+## 0. Por qué la v0.1 fue devuelta
 
-Sin un espacio de reglas de entrada **cerrado y declarado antes de ver
-resultados**, el primer gate de EXPLORE-001 no puede empezar: cualquier umbral
-elegido después de mirar la curva o el censo sería data snooping. Esta enmienda
-declara el espacio **ancho y cerrado** —no elige un umbral ganador— y cobra el
-presupuesto de multiplicidad por adelantado.
+La v0.1 no era sellable. La segunda auditoría encontró cinco defectos materiales:
 
-Buscar ancho **no** es lo que el pre-registro prohíbe. Lo prohibido es: decidir el
-espacio después de ver resultados; no contar lo buscado; reportar el ganador sin
-corrección. Una grilla grande es pre-registro válido si se declara antes y se
-paga (`ESPEC` §2-ter ya lo hizo para resoluciones de BigTrap2).
+1. copiaba un estado de elegibilidad anterior a la normalización de eventos;
+2. decía a la vez que `AACloseOpenDiffs` tenía toque de misma barra y que no
+   emitía ningún `ZONE_TOUCHED`;
+3. trataba retorno y ruptura como si compartieran el mismo instante de entrada;
+4. proponía `T=1,2,3,5,8,13,21` sin una regla documentada y retiraba `T=34`, que
+   sí estaba en el piloto outcome-free;
+5. publicaba un conteo nominal de 168 celdas que mezclaba `kind`, la familia tick
+   y el control `time:1`, sin un procedimiento de multiplicidad elegido.
 
-## Cómo podría refutarse esta enmienda (antes de sellar)
-
-- Si algún eje de la grilla no es operable con el contrato de eventos actual
-  (p.ej. un indicador sin `ZONE_TOUCHED`), ese eje **no entra** al sello — se
-  recorta acá, no después de ver tasas.
-- Si Nico reduce la grilla, el `N_eff` baja y se reescribe **antes** del sello.
-- Si se descubre que un valor de la grilla es inalcanzable por construcción
-  (p.ej. T=0 en gaps donde el open es borde), se **excluye del espacio** con
-  motivo escrito, no se deja y se descarta ex-post al ver resultados.
+También se retira esta frase de la v0.1: «cada vecino es réplica». Las celdas de
+T y resolución son anidadas y dependientes; una banda contigua puede ser un gate
+de robustez, **no evidencia independiente**.
 
 ---
 
-## 1. Qué sella y qué no
+## 1. Frontera epistemológica
 
-| Sella (inmutable tras OK de Nico) | No sella (sigue abierto) |
-|---|---|
-| Definición de **evento de entrada** | Cuáles 3 hipótesis llenan §3.3 |
-| Grilla cerrada de umbrales T y arquetipos | Resultado de la curva de excursión |
-| Regla de banda contigua / anti-argmax | `M_eff` numérico final (ver §6) |
-| Política de toque misma-barra | Captura PRED-004 en tick |
-| Herencia de decongestión 120 min | Apertura holdout / P5 económico |
-| Fricción 2,768 dentro del estadístico | Manifiesto de campaña completo |
+### 1.1 Lo permitido antes del sello
 
-**La curva de excursión informa dónde cae `f` por celda; no bloquea el sello ni
-autoriza ampliar la grilla después.**
+- contar zonas y eventos;
+- reconstruir el orden temporal previo a una entrada candidata;
+- medir frecuencia, cobertura de sesiones y supervivencia a T;
+- verificar contratos, tipos, paridad e invariantes;
+- reemitir MDE/geometrías usando datos nulos o placebo.
+
+### 1.2 Lo prohibido
+
+- retornos después del instante de entrada candidato;
+- PnL, TP/SL, expectativa económica o selección del ganador;
+- abrir holdout o correr P5 sin autorización y log;
+- modificar la grilla después de mirar outcomes;
+- correr `time:1` como adelanto económico de H1 tick.
+
+La curva de diseño es outcome-free sólo si termina su lectura en el instante de
+entrada candidato. Esa curva **sí puede y debe informar** la grilla final: fue
+construida justamente para evitar que Nico tenga que adivinar T.
 
 ---
 
-## 2. Evento de entrada (definición única)
+## 2. Estado real del contrato de eventos en el tip de devolución
 
-### 2.1 Población
+`docs/D3_CENSO_AUTORITATIVO_PRIMEROS_TOQUES.md` describe correctamente el estado
+**anterior** a los commits de normalización `1f0f62d` y `ff59472`; no es una foto
+suficiente del tip actual.
 
-La entrada primaria de EXPLORE-001 es el **primer toque operable** de una zona,
-**no** la creación de la zona.
+| Indicador | Campos básicos del censo | Invariante temporal actual | Estado para censo básico |
+|---|---|---|---|
+| `BigTrap2` | completos | pasa | **elegible** |
+| `VolTicksPOC2` | completos tras `1f0f62d` | la barra creadora no interactúa | **elegible** |
+| `aVolCellPOI2` | completos tras `1f0f62d` | lifecycle empieza en barras posteriores | **elegible** |
+| `Gaps2` | completos tras `1f0f62d` + `ff59472` | puede emitir `touch_count=1` en barra creadora | **rechazado por el extractor actual** |
+| `HFTZones2` | completos tras `1f0f62d` + `ff59472` | puede emitir `touch_count=1` en barra creadora | **rechazado por el extractor actual** |
+| `AACloseOpenDiffs` | no tiene lifecycle de toque | emite `ZONE_CREATED`, cero `ZONE_TOUCHED` | **sin población de primer toque** |
 
-Contrato de extracción (ya implementado, no se relaja):
+Consecuencia: hoy hay **tres**, no uno, candidatos para el censo básico. Pero el
+censo básico de `touch_count==1` todavía **no es** el censo autoritativo de una
+regla T-qualified; primero hay que definir y materializar los dos relojes de §3.
 
-- un evento por zona: el `ZONE_TOUCHED` con `touch_count == 1`;
-- campos exigidos para entrar al censo autoritativo: `zone_id` string no vacío,
-  `touch_count` int, `bar_index` int, `unix_ms` int;
-- invariantes anti look-ahead: `touch_bar > created_bar` **y**
-  `first_touch_ms > created_ms`.
+---
 
-Fuente de autoridad de tasas para congelar H1–H3: censo de primeros toques +
-política de decongestión de §2.3. Las tasas de **creaciones** siguen siendo
-**solo diagnósticas** (enmienda 2026-08-04).
+## 3. Dos arquetipos, dos relojes de entrada
 
-### 2.2 Definición de «toque» / alejamiento (Nico)
+La creación de una zona nunca es por sí sola una entrada.
 
-Un primer toque **no basta** como disparo de estrategia si el precio no se ha
-alejado. La regla de entrada exige un **umbral de alejamiento previo T**
-(ticks), medido desde el borde relevante de la zona según arquetipo y `kind`.
+### 3.1 Retorno
 
-**Dos arquetipos, siempre desglosados por `kind` del indicador** (nunca colapsar
-arquetipos ni kinds al reportar):
+Definición propuesta:
 
-| arquetipo | tesis | qué mide la supervivencia a T |
-|---|---|---|
-| **retorno** | el precio se aleja ≥ T y **vuelve** hacia la zona | fade / mean-reversion |
-| **ruptura** | el precio se aleja ≥ T **de** la zona en la dirección de break | continuación |
+1. la zona se crea en `created_ms`;
+2. después de la creación, el precio alcanza una distancia ≥ T desde el borde
+   relevante;
+3. sólo después de (2), el precio reingresa a la banda;
+4. `entry_ms_retorno` es el primer reingreso que satisface ese orden.
 
-Fundamento (corrección de Nico a la curva v1): no es lo mismo un gap (volver es
-natural) que una burbuja de absorción / BigTrap (si hay atrapados, el precio se
-va **de** la zona). Medir un solo arquetipo en todos los indicadores es el
-evento equivocado para la mitad del espacio.
+Orden exigido:
 
-### 2.3 Toque en la misma barra de creación — regla fail-closed
+```text
+created_ms < reached_T_ms < entry_ms_retorno
+```
 
-Hallazgo de código (no parcheado a propósito): `Gaps2`, `HFTZones2` y
-`AACloseOpenDiffs` pueden registrar un «toque» en la **misma barra** que creó la
-zona.
+### 3.2 Ruptura
 
-**Regla sellada propuesta:**
+Definición propuesta:
 
-> Todo evento con `touch_bar <= created_bar` o `first_touch_ms <= created_ms`
-> **queda fuera de la población de entrada**. No se reinterpreta como señal. No
-> se «arregla» el kernel en silencio para pasar el censo.
+1. la zona se crea en `created_ms`;
+2. se fija **antes de outcomes** una dirección de break a partir de información
+   nativa del indicador o un régimen bilateral ya declarado;
+3. `entry_ms_ruptura` es el primer cruce de distancia ≥ T desde el borde
+   relevante en esa dirección.
 
-Consecuencia: si un indicador solo produce esos eventos, su tasa autoritativa es
-cero o `sin_poblacion` — eso es un resultado de diseño, no un bug a ocultar.
+Orden exigido:
 
-`AACloseOpenDiffs` (cero `ZONE_TOUCHED` con creaciones > 0) se clasifica
-`sin_poblacion`, **nunca** como censo COMPLETE de tasa 0
-(`D3_CENSO_…` §3-bis).
+```text
+created_ms < entry_ms_ruptura
+```
 
-### 2.4 Decongestión (ya congelada — se hereda sin cambio)
+Ruptura no exige volver a la zona. Retorno sí. Por eso no se permite usar
+`first_touch_ms` como ancla universal.
 
-De `EXPLORE-001-2026-08-04_first_touch_decongestion.md`:
+### 3.3 Misma barra e intrabar
 
-- ancla: `first_touch_ms`;
+Propuesta revisada, todavía no sellada:
+
+- un contacto simultáneo a la creación no cuenta como entrada;
+- ese contacto tampoco descalifica automáticamente la zona para siempre;
+- si el feed permite demostrar el orden temporal completo, puede existir una
+  entrada posterior en la misma barra;
+- si sólo hay OHLC y no puede probarse el orden `creación → alcanza T → entrada`,
+  la observación es **ABSTAIN/ineligible**, no se infiere el camino intrabar;
+- el evento de entrada final se reconstruye desde geometría + camino canónico de
+  precios; `touch_count==1` queda como diagnóstico de lifecycle, no como autoridad
+  suficiente para las reglas T-qualified.
+
+Esto evita dos errores opuestos: aceptar la barra creadora por construcción y
+matar una zona aunque luego produzca un evento temporalmente demostrable.
+
+---
+
+## 4. Decongestión
+
+Se conserva lo ya congelado:
+
 - separación: **120 minutos**;
-- alcance: por fecha de sesión `America/Chicago`;
-- algoritmo: greedy cronológico, conserva el primer elegible;
+- alcance: fecha de sesión `America/Chicago`;
+- algoritmo: greedy cronológico;
 - frontera de sesión reinicia la separación;
-- empate de timestamp: `created_ms` más antiguo; luego `zone_id`;
-- outcomes: prohibidos.
+- empate: creación más antigua y luego `zone_id`;
+- outcomes prohibidos.
 
----
-
-## 3. Grilla cerrada del espacio de reglas de entrada
-
-**Declarada hoy. Cerrada. No ampliable después de ver resultados.** Si sobra,
-recortar **antes** del sello.
-
-### 3.1 Ejes
-
-| Eje | Valores | Notas |
-|---|---|---|
-| **Indicador** (elegibilidad) | Solo los que pasen el contrato de §2.1 al momento del censo autoritativo | Hoy sin duda: `BigTrap2`. Otros entran **solo** tras normalizar eventos (camino A de D3), verificado que no rompe paridad |
-| **Arquetipo** | `retorno`, `ruptura` | siempre cruzado con `kind` |
-| **`kind`** | el que emite el indicador (p.ej. `trapped_buyers` / `trapped_sellers` en BigTrap2) | no se inventan kinds; no se agregan lados a mano |
-| **Umbral T (ticks de alejamiento)** | **`1, 2, 3, 5, 8, 13, 21`** | grilla anidada; T=0 **excluido** (mediría que un gap «empieza donde empieza», p50=0 en AACloseOpenDiffs) |
-| **bar_spec (familia BigTrap2 / H1)** | `tick:10,15,25,50,100` + control `time:1` | ya declarado en ESPEC §2-ter; **no se reabre** |
-| **Separación** | 120 min fijo | §2.4 |
-| **Dirección** | régimen A nativo si el indicador emite side usable; si no, régimen B bilateral (`ESPEC` §2-bis) | **prohibido** elegir dirección después de ver resultado |
-
-### 3.2 Qué cuenta como celda cobrada al presupuesto
-
-Toda tupla
+Corrección necesaria para una futura v1.0:
 
 ```text
-(indicador, arquetipo, kind, T[, bar_spec si aplica])
+ancla retorno  = entry_ms_retorno
+ancla ruptura  = entry_ms_ruptura
 ```
 
-que se **evalúe** (aunque se abandone) se cobra. Celdas no corridas porque el
-indicador fue `rechazado` / `sin_poblacion` en el censo **no** se cobran como
-hipótesis económicas; se registran como no elegibles.
+La frase previa `ancla = first_touch_ms` sólo puede conservarse como alias si el
+artefacto define de forma inequívoca cuál de estos dos eventos representa. Esta
+re-vinculación es una enmienda semántica y necesita sello de Nico.
 
-### 3.3 Criterio anti-pico (specification curve) — obligatorio
+---
 
-Generaliza ESPEC §2-ter a **todo eje ordenado** de esta grilla (T y, en H1,
-resolución):
+## 5. Diseño de T: todavía no sellado
 
-> Una hipótesis sobre un eje ordenado **VIVE** sólo si pasa una **banda contigua
-> de ≥ 3 valores adyacentes** del eje. Un pico aislado con vecinos muertos se
-> declara **MUERTO** aunque su celda aislada pase el umbral estadístico.
->
-> **Entregable: la CURVA completa del eje × expectativa neta con IC — nunca el
-> argmax.**
+### 5.1 Grilla de medición outcome-free propuesta
 
-Fundamento: si el efecto es real, varía con suavidad en el eje. Buscar ancho con
-esta regla **aumenta** la confianza: cada vecino es réplica.
-
-### 3.4 N_eff de referencia (pre-sello, no definitivo)
-
-Conteo **bruto de celdas nominales** si solo BigTrap2 es elegible y se cruzan
-ambos arquetipos × kinds nativos (2) × T (7) × resoluciones de familia (5) +
-control time:1 separado:
+Para terminar la curva de diseño, no para correr outcomes:
 
 ```text
-familia tick:  2 arquetipos × 2 kinds × 7 T × 5 resoluciones = 140
-control time:1: 2 × 2 × 7 = 28
-nominal ≈ 168 celdas anidadas
+T_design = {1, 2, 3, 5, 8, 13, 21, 34}
 ```
 
-La grilla es **anidada** (no partición): casi todas las celdas comparten trades
-con sus vecinas; el `n` por celda no se divide como en un grid disjunto.
+- T=0 se excluye: no exige alejamiento;
+- 34 se conserva porque estaba en el piloto outcome-free y no hay razón
+  documentada para retirarlo;
+- agregar o retirar valores de la **grilla confirmatoria** se decide después de
+  la curva de frecuencia, pero antes de cualquier retorno económico.
 
-**`N_eff` efectivo para corrección de multiplicidad NO se sella en este DRAFT.**
-Ver §6 (D43 abierto: `M_eff=21,2` asertado es inadmisible como umbral de muerte).
-Al sellar, Nico elige una de las opciones de §6; el número queda escrito en el
-manifiesto de campaña, no se improvisa al ver resultados.
+### 5.2 Qué puede decidir la curva
 
----
+Sólo puede usarse para:
 
-## 4. Estadístico y muerte (hereda ESPEC; no se reabre)
+- frecuencia por sesión;
+- cobertura de sesiones;
+- cantidad de eventos elegibles;
+- capacidad de formar una banda de especificaciones;
+- factibilidad computacional y operativa.
 
-- Estadístico primario: **expectativa NETA por trade en ticks**, fricción
-  **2,768 ya restada dentro** del estadístico; umbral = 0
-  (`ESPEC` §3.1). Prohibido restar fricción otra vez a la derecha.
-- Fricción: comisión real Lucid **$2,40/lado** + slippage base 1 tick/lado →
-  **2,768 ticks RT**. Desglose broker/exchange/NFA **no acreditable** desde la
-  fuente; total sí. CAMP-001 **no se reabre** (negativo con costos subestimados).
-- Muerte: VIVE / MUERE / GRIS=muere por defecto (`ESPEC` §3.2), más banda
-  contigua §3.3 de **esta** enmienda.
-- Holdout: una sola apertura por candidato tras G3; frontera sello 2026-07-01
-  (regla 95).
+No puede usarse para elegir el T con mejor retorno, expectativa o win rate.
 
----
+### 5.3 Qué falta antes de cerrar S1
 
-## 5. Relación con PRED-004 y la primera campaña
+1. terminar la curva outcome-free en el universo research autorizado;
+2. reemitir la tabla de 40 geometrías con fricción 2,768;
+3. resolver el MDE 1,14 no reproducible;
+4. escribir una regla mecánica de recorte basada sólo en frecuencia/cobertura.
 
-| Hecho (tip `626877f`+) | Efecto |
-|---|---|
-| Política ABSTAIN + `contrato_sha` **`4ac53dba…`** alineado | instrumento no puede PASS con `seq_corrido=true` |
-| T3a SATISFECHO — oráculo P5 sha **`7d0f464f…`** | identidad del artefacto OK |
-| K1 ADMISIBLE (regresión acotada) | P5 usable como referencia, no limpia cuarentena |
-| Paridad `BigTrap2` `time:1` en PASS | **PRED-004 no bloquea la primera campaña sobre time:1** |
-| PRED-004 sigue bloqueando H1 en **barras de tick** | tick:10/25/… exigen captura autorizada + fila holdout |
-
-**Correr P5 (contenido económico del oráculo) sigue exigiendo** fila en
-`holdout_access_log.md` con `purpose=target_free_validation` **antes** de leer
-zonas/precios — T3a solo verificó identidad estructural.
+Por lo tanto, **S1 queda PENDIENTE**. La lista `T_design` no es todavía la grilla
+confirmatoria sellada.
 
 ---
 
-## 6. Abierto al sellar — decisiones de Nico (menú corto)
+## 6. Arquetipo y `kind`
 
-Marcar una por fila al sellar:
+### 6.1 Arquetipos
 
-| # | Decisión | Opciones |
+Ambos arquetipos pueden medirse en la etapa outcome-free. En la etapa
+confirmatoria:
+
+- cada hipótesis H1–H3 debe fijar retorno, ruptura o una familia que cobre ambas;
+- evaluar ambas políticas cuenta como dos especificaciones económicas;
+- está prohibido elegir el arquetipo después de ver cuál gana.
+
+### 6.2 `kind`
+
+`kind` es desglose obligatorio. No multiplica automáticamente la cantidad de
+hipótesis si sólo se usa para diagnóstico y se emite un único veredicto agregado.
+
+Sí cuenta por separado cuando:
+
+- existe un veredicto por kind;
+- cambia la dirección o regla de entrada;
+- se permite promover un kind y matar otro;
+- se reporta como candidato independiente.
+
+La v0.1 multiplicaba por dos los kinds de BigTrap2 sin declarar cuál de estos
+usos aplicaba; ese conteo queda retirado.
+
+---
+
+## 7. Barras tick y control `time:1`
+
+La familia confirmatoria preexistente de BigTrap2 es:
+
+```text
+tick:{10,15,25,50,100}
+```
+
+`time:1` sigue siendo control fuera de esa familia. Política propuesta:
+
+- puede usarse antes para ingeniería, paridad ya acreditada y censos target-free;
+- **no** puede mirarse como campaña económica formal antes de H1 tick;
+- si se decide evaluar económicamente `time:1`, se preregistra como test separado,
+  se corre en la misma pasada y entra a la familia de multiplicidad de campaña.
+
+PRED-004, por lo tanto, bloquea H1 tick y también bloquea usar `time:1` como
+adelanto económico de la misma tesis. No bloquea trabajo target-free.
+
+---
+
+## 8. Multiplicidad y robustez
+
+### 8.1 Retirado
+
+Se retira el conteo `≈168` de la v0.1 y no se publica un `M_eff` numérico sin
+método reproducible.
+
+### 8.2 Método recomendado para decisión de Nico
+
+Propuesta del auditor, todavía pendiente de Nico:
+
+- FWER de campaña = 0,05;
+- Romano–Wolf stepdown / max-T;
+- remuestreo por bloques de fecha de sesión, preservando dependencia diaria;
+- familia = todas las especificaciones económicas realmente evaluadas en la
+  pasada confirmatoria, incluido `time:1` si se mira económicamente;
+- código y tests del ajuste listos antes del manifiesto SEALED.
+
+No se deja «autovalores / Romano–Wolf» como menú para elegir después de ver
+resultados. Si Nico prefiere otro método, debe quedar fijado antes de la corrida.
+
+### 8.3 Banda contigua
+
+Puede conservarse como gate adicional:
+
+> una tesis sobre un eje ordenado sólo puede VIVIR si existe una banda de al
+> menos tres valores adyacentes cuyos IC ajustados cumplen el criterio.
+
+Pero:
+
+- la banda no reemplaza el ajuste de multiplicidad;
+- sus miembros son dependientes y no se llaman réplicas;
+- un pico aislado muere aunque pase individualmente;
+- se entrega la curva completa, nunca sólo el argmax.
+
+---
+
+## 9. Qué puede ejecutarse mientras sigue DRAFT
+
+Permitido, sin outcomes:
+
+1. instrumentar y terminar la curva `T_design` con progreso visible;
+2. implementar un extractor de eventos candidatos separado por arquetipo;
+3. probar orden temporal y ABSTAIN intrabar con fixtures sintéticos;
+4. correr un censo **diagnóstico** de contrato en BigTrap2, VolTicksPOC2 y
+   aVolCellPOI2;
+5. reemitir MDE/geometrías con fricción 2,768;
+6. verificar G4/PRED-004 sin consumir P5 económico.
+
+No permitido:
+
+- llamar “autoritativo” al censo T-qualified hasta que §3 esté implementado;
+- llenar H1–H3 con retornos;
+- correr una campaña económica;
+- sellar automáticamente esta v0.2.
+
+---
+
+## 10. Decisiones de Nico que siguen abiertas
+
+La devolución a v0.2 **no responde** estas filas:
+
+| # | Decisión pendiente | Recomendación auditada, no sellada |
 |---|---|---|
-| S1 | Grilla T | **(a)** aceptar `1,2,3,5,8,13,21` · **(b)** recortar a: _______ · **(c)** rechazar enmienda |
-| S2 | Arquetipos | **(a)** ambos obligatorios en todo indicador elegible · **(b)** otro: _______ |
-| S3 | Misma-barra | **(a)** fail-closed §2.3 · **(b)** otro: _______ |
-| S4 | Multiplicidad | **(a)** posponer `M_eff` numérico al manifiesto de campaña con método de autovalores / Romano-Wolf declarado · **(b)** fijar método ahora: _______ |
-| S5 | Indicadores en el primer censo autoritativo | **(a)** solo los que pasen §2.1 hoy · **(b)** esperar normalización de contrato (D3 camino A) antes de cualquier gate |
-| S6 | Primera campaña formal | **(a)** puede arrancar en `BigTrap2` `time:1` bajo esta enmienda + ESPEC · **(b)** no arrancar hasta PRED-004 tick cerrado |
+| S1 | grilla confirmatoria T | terminar curva outcome-free; usar `T_design` sólo para diseño |
+| S2 | uso de ambos arquetipos | ambos en diseño; uno por hipótesis, o cobrar ambos explícitamente |
+| S3 | misma barra / orden | aceptar sólo orden demostrable; ambigüedad intrabar = ABSTAIN |
+| S4 | multiplicidad | Romano–Wolf/max-T por bloques de sesión |
+| S5 | primer censo | diagnóstico en los tres elegibles; autoritativo tras extractor T-qualified |
+| S6 | `time:1` económico antes de tick | no; sólo trabajo target-free hasta PRED-004 |
 
-**Propuesta del auditor (no es sello):** S1a, S2a, S3a, S4a, S5a, S6a.
+Próxima instancia de decisión: v0.3 con evidencia outcome-free y diff explícito
+contra esta v0.2. Recién entonces Nico puede sellar v1.0.
 
 ---
 
-## 7. Checklist de sello (Nico)
+## 11. Checklist para una futura v1.0
 
-- [ ] Leí §2–§3 y las opciones de §6
-- [ ] No miré outcomes / holdout / retornos de estrategia al decidir
-- [ ] Recortes a la grilla (si hay) están escritos **arriba**, no en un chat
-- [ ] Firmo: estado pasa a **SEALED v1.0** con fecha y hash al pie
-- [ ] Se agrega fila en `docs/campaigns/INDEX.md` (enmiendas) y se cita el hash
-      en el próximo manifiesto de campaña
+- [ ] Curva outcome-free completa y huellada
+- [ ] Dos relojes de entrada implementados y testeados
+- [ ] Política intrabar decidida
+- [ ] Grilla T confirmatoria cerrada
+- [ ] Arquetipo por hipótesis o familia cobrada explícitamente
+- [ ] Método único de multiplicidad fijado
+- [ ] Tabla de elegibilidad actualizada
+- [ ] H1–H3 escritas sin outcomes
+- [ ] Manifiesto cita el hash del cuerpo sellado
+- [ ] Firma y fecha UTC de Nico
 
-```
-SELLADO POR: __________________  FECHA (UTC): __________________
+```text
+SELLADO POR: —
+FECHA (UTC): —
 ```
 
 ## STOP
 
-Este DRAFT **no autoriza ninguna corrida económica**. No llena §3.3. No abre el
-holdout. No instala `.cs`. Tras SEALED, el implementador puede: (1) correr el
-censo autoritativo de primeros toques, (2) proponer H1–H3 en una pasada, (3)
-redactar el manifiesto de campaña que herede este hash.
+Esta v0.2 documenta una devolución, no un permiso. No hay grilla confirmatoria,
+hipótesis ni campaña autorizadas.
 
 <!-- SHA256-BODY-ABOVE -->
 
-**sha256 del cuerpo (hasta el marcador):** *(se calcula al sellar; en DRAFT no se publica un hash de identidad para no fingir inmutabilidad)*
+**sha256 del cuerpo:** no aplica mientras sea DRAFT.
 
-**Estado:** DRAFT v0.1 — 2026-08-06 — pendiente de Nico.
+**Estado:** DRAFT v0.2 — 2026-08-06 — v0.1 devuelta por decisión de Nico.

@@ -17,7 +17,7 @@
 |---|---|---|---|---|
 | E1–E5 | CAMP-001 | 2026-07-24 | pre-sellado (v1.0) | ninguno |
 | **E6** | CAMP-001 | 2026-07-25 | reemplaza la calibración de E1 por mediciones reales por fold; declara `zone_min_size=5` como estrato de baja potencia con veredicto posible `insufficient_n`; disparos = cota superior, suficiencia por trades; identidad única `a6c32c0e9dbeb79a`. **Grilla y N_eff=48 intactos; ningún umbral relajado.** | **ninguno** |
-| **E-R1** | EXPLORE-001 | 2026-08-06 | **DRAFT** espacio de reglas de entrada (umbral T, arquetipos, misma-barra, banda contigua). Archivo: [`../amendments/EXPLORE-001-2026-08-06_espacio_reglas_entrada.md`](../amendments/EXPLORE-001-2026-08-06_espacio_reglas_entrada.md). **Pendiente sello Nico.** | **ninguno** |
+| **E-R1** | EXPLORE-001 | 2026-08-06 | **DRAFT v0.2 — v0.1 devuelta por Nico.** Separa relojes de retorno/ruptura; corrige elegibilidad; retira grilla y N_eff no sustentados. Archivo: [`../amendments/EXPLORE-001-2026-08-06_espacio_reglas_entrada.md`](../amendments/EXPLORE-001-2026-08-06_espacio_reglas_entrada.md). **No sellable aún.** | **ninguno** |
 
 ## Estados
 
@@ -39,7 +39,9 @@ CAMP-001 no se reabre (negativo con costos subestimados).
 
 ## Camino crítico EXPLORE-001 (2026-08-06)
 
-1. Sellar E-R1 (espacio de reglas).
-2. Censo autoritativo primeros toques + §3.3.
-3. Manifiesto de campaña formal que cite hash E-R1 + NORTH_STAR.
-4. OK de Nico para corrida.
+1. Terminar curva outcome-free de diseño + implementar dos relojes de entrada.
+2. Emitir DRAFT v0.3 con grilla y método de multiplicidad cerrables.
+3. Nico decide S1–S6 y recién entonces sella E-R1 v1.0.
+4. Censo T-qualified autoritativo + §3.3 H1–H3.
+5. Manifiesto formal que cite hash E-R1 + NORTH_STAR.
+6. OK de Nico para corrida; H1 tick requiere PRED-004 cerrado.
