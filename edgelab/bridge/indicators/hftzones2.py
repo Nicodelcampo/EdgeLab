@@ -213,6 +213,10 @@ def run(ticks, bars, params=None, chart_tz="UTC"):
         #
         rows.append(dict(seq=seq, type=etype, ts_ns=int(t_ns), unix_ms=ns_to_ms(t_ns),
                          zone_id=zid if (z is not None and z["id"] > 0) else None,
+                         # tercer requisito del censo: sin bar_index no se puede
+                         # probar `touch_bar > created_bar`, que ES la regla anti
+                         # look-ahead de EXPLORE-001. `closed_bar` ya estaba en scope.
+                         bar_index=int(closed_bar),
                          touch_count=int(z["touches"]) if z is not None else 0,
                          reason=reason, extra=extra))
         if z is not None and z["id"] > 0:

@@ -120,6 +120,11 @@ def run(ticks, bars, params=None, chart_tz="UTC"):
         rows.append(dict(seq=seq, type=etype, ts_ns=int(t_ns), unix_ms=ns_to_ms(t_ns),
                          zone_id=("G" + format(g["id"], "06d")) if g else None,
                          price=price, extra=extra,
+                         # `bar_index` es el tercer requisito del censo de primeros toques: sin el
+                         # no se puede probar `touch_bar > created_bar`, que ES la regla anti
+                         # look-ahead de EXPLORE-001. `closed_bar` ya estaba en scope.
+                         #
+                         bar_index=int(closed_bar),
                          touch_count=int(g["touches"]) if g is not None else 0,
                          state=g["state"] if g else None))
         if g is not None:
