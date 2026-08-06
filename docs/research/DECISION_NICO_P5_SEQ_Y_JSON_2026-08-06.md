@@ -61,7 +61,7 @@ Si economía idéntica Y seq_corrido=false:
 
 | Artefacto | Qué cambia |
 |---|---|
-| `tools/pred004_analyze.py` | `seq_corrido` + sin dif económicas ⇒ `ABSTAIN`; `p5_seq_corrido_politica` en contrato |
+| `tools/pred004_analyze.py` | `seq_corrido` + sin dif económicas ⇒ `ABSTAIN`; campos de contrato v6 |
 | `tests/bridge/test_pred004_analyze.py` | caso N1 de seq corrido espera ABSTAIN; FAIL económico sigue mandando |
 | `docs/CONTRATO_ANALIZADOR_PRED-004.md` | **v6** |
 | `docs/predictions/PRED-004_tickbar_attribution_v23.json` | P5 enmendado |
@@ -71,9 +71,52 @@ Si economía idéntica Y seq_corrido=false:
 
 ---
 
+## 3.1 Valores exactos del contrato v6 (reconstruibles)
+
+> **Enmienda del auditor 2026-08-06.** El implementador (`3c7419b`) implementó
+> la política correctamente y **no forzó el hash** cuando no coincidía. Hizo
+> bien: un hash publicado sin el valor del campo es la misma familia que el
+> MDE 1,14. Acá se publica lo que faltaba.
+
+Cómo se calcula (idéntico a `contrato_sha()` en el analizador):
+
+```python
+import json, hashlib
+s = json.dumps(CONTRATO_SHA_CAMPOS, sort_keys=True, ensure_ascii=False)
+contrato_sha = hashlib.sha256(s.encode("utf-8")).hexdigest()
+```
+
+**Campos nuevos / cambiados respecto de v5** (los dos que faltaban en el acta):
+
+```text
+p5_seq_corrido_politica = "ABSTAIN"
+p5_comparacion = "identidad_economica_en_orden;seq_absoluto_reportado;seq_corrido_implica_ABSTAIN_politica"
+```
+
+**No** es la cadena descriptiva
+`"abstain_si_seq_corrido_con_economia_identica"` (eso produce
+`13444ebf…` si además se deja `p5_comparacion` en el string v5).
+
+**JSON canónico completo** de `CONTRATO_SHA_CAMPOS` (bytes exactos del hash):
+
+```json
+{"denominador": "barras_procesadas_interior", "evento_barra_procesada": "BARRA_PROCESADA", "p3_pares_requeridos": ["open_blk", "open_bar", "close_blk", "close_bar", "low_blk", "low_bar", "high_blk", "high_bar", "vol_blk", "vol_bar"], "p5_comparacion": "identidad_economica_en_orden;seq_absoluto_reportado;seq_corrido_implica_ABSTAIN_politica", "p5_meta_ignorable": ["anchor", "attribution", "version"], "p5_payload_ignorable": [], "p5_seq_corrido_politica": "ABSTAIN", "p5_tipos_economicos": ["TRAP", "ZONE_CREATED", "ZONE_TOUCHED", "ZONE_INVALIDATED", "ZONE_EXPIRED"], "resolucion_obligatoria": true, "sesion_hora_corte": 17, "sesion_tz": "America/Chicago", "tail_barras": 0, "umbral_mismatch": 0.01, "warmup_modo": "hasta_primera_barra_procesada", "warmup_tope_barras": 500}
+```
+
+Control: `sha256` de esa línea (UTF-8, sin newline final en el dump del
+`json.dumps`) = `4ac53dba7fee2022a3873543abbeb3eb204e260f28b6e04dfb750da67949278d`.
+El control v5 (`23981e56…`) se reproduce quitando `p5_seq_corrido_politica` y
+restaurando `p5_comparacion` a
+`identidad_economica_en_orden;seq_absoluto_reportado_no_juzgado`.
+
+**Adjudicación del desvío `3c7419b`:** política OK · hash no alineado por dos
+strings. Alinear código a estos valores; no aceptar `13444ebf…` como v6.
+
+---
+
 ## 4. Checklist operativo post-decisión (captura)
 
-1. `git pull` tip con esta decisión.
+1. `git pull` tip con esta decisión **y** `contrato_sha` == `4ac53dba…`.
 2. T3a: copiar `oracles/BigTrap2_time1_6E_0926_v2.csv` y verificar sha
    `7d0f464fd4e1c90301799e2f854d7b5fb5a17d84f4f6600f082f2d4c0e17de27`.
 3. **No** usar `run_nt8_bridge` para P5 (preflight §8 obsoleto hasta G4).
