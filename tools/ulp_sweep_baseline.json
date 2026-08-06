@@ -189,6 +189,14 @@
     "aVolCellPOI2.cs :: z.RefSide = Close[0] > z.UpperPrice ? 1 : (Close[0] < z.LowerPrice ? -1 : 0);": {
       "evidencia": "el umbral vive a medio tick de la grilla (borde = tick +/- 0.5*TickSize), asi que ningun precio negociable cae exactamente encima y el empate es imposible. Exposicion MEDIDA 0.00% en AUDIT-002.",
       "veredicto": "INMUNE_MEDIOTICK"
+    },
+    "CaptureEventProbeV2.cs :: if (e.Price >= ask.Value) aggressor = \"buy\";": {
+      "evidencia": "MEDIDO (AUDIT-002, tools/ulp_exposure.py, caso 'CaptureEventProbeV2 (clasificacion de agresor)', 6E ts=5e-05, niveles 20000-25000): exposicion 0.00%, 0 flips de 5001 niveles en cada uno de los dos umbrales. El empate NO es un caso de borde aqui: un trade exactamente al ask es el caso NORMAL de un buy agresivo, por eso se midio con offset_ticks=0 en vez de declararlo inmune por medio tick. price, bid y ask son los TRES precios de grilla del mismo snapshot del feed, llevados SIN aritmetica; feed() y ticks*tick_size son estrictamente monotonas en el indice de tick, asi que preservan orden Y empates. No se modifican las comparaciones: no hay exposicion que corregir.",
+      "veredicto": "INMUNE_MONOTONO"
+    },
+    "CaptureEventProbeV2.cs :: else if (e.Price <= bid.Value) aggressor = \"sell\";": {
+      "evidencia": "MEDIDO (AUDIT-002, tools/ulp_exposure.py, caso 'CaptureEventProbeV2 (clasificacion de agresor)', 6E ts=5e-05, niveles 20000-25000): exposicion 0.00%, 0 flips de 5001 niveles en cada uno de los dos umbrales. El empate NO es un caso de borde aqui: un trade exactamente al ask es el caso NORMAL de un buy agresivo, por eso se midio con offset_ticks=0 en vez de declararlo inmune por medio tick. price, bid y ask son los TRES precios de grilla del mismo snapshot del feed, llevados SIN aritmetica; feed() y ticks*tick_size son estrictamente monotonas en el indice de tick, asi que preservan orden Y empates. No se modifican las comparaciones: no hay exposicion que corregir.",
+      "veredicto": "INMUNE_MONOTONO"
     }
   }
 }

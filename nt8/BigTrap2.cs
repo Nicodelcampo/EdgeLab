@@ -86,6 +86,27 @@ namespace NinjaTrader.NinjaScript.Indicators
 			public int    Touches;
 		}
 
+		// v2.3 - ATRIBUCION POR OHLCV UNICO (TICKBAR-001 / PRED-004)
+		//
+		// El secuenciador v2.2 (abajo) arreglo el CONTEO pero no la ATRIBUCION: cortaba
+		// bloques de exactamente K por orden de llegada y estipulaba que el vaciado en
+		// CurrentBar==0 anclaba la particion. El oraculo lo refuto -- 3,91% de mismatch
+		// en K=25 y 81,78% en K=10 -- y la medicion mostro por que: el stream de ticks
+		// es IDENTICO (digest 9639232233418205644, 309.939 eventos) y los cortes de
+		// barra son IDENTICOS (OHLC 30.994/30.994), asi que lo unico mal era a que
+		// barra se asignaba cada evento. Con un solo evento de desfase todos los
+		// bloques siguientes quedan mal, y el conteo no lo delata porque sigue dando K.
+		//
+		// v2.3: los eventos quedan PLANOS y el corte lo arbitra el OHLCV del snapshot.
+		// Una ventana se consume solo si coincide de forma UNICA. El ancla se busca en
+		// un offset ACOTADO (4*K) al arranque y en cada frontera; cero o multiples
+		// candidatos => abstencion fail-closed, sesion marcada, zonas suprimidas.
+		// Nunca se re-ancla en el medio: reacomodar el buffer en silencio es el defecto
+		// original, no la solucion.
+		//
+		// El camino de TIEMPO no se toca: su corte es por timestamp, O1 esta en PASS
+		// 225/225 y PRED-004 P5 exige que time:1 salga bit-identico.
+		//
 		// v2.2 - SECUENCIADOR CAUSAL AUTO-VERIFICANTE (TICKBAR-001 / PRED-003)
 		//
 		// El take+reset de v2.1 capturaba, al cerrar la barra primaria, el conjunto de
@@ -134,6 +155,13 @@ namespace NinjaTrader.NinjaScript.Indicators
 		private DateTime _sessEnd = DateTime.MinValue;
 		private int  fpTicksPerBar;        // K si el primario es de tick; 0 si es de tiempo
 		private bool sesionNoConfiable;    // politica de rotura; resincroniza en la frontera
+		// PRED-004: el ancla se VERIFICA, no se estipula. `pendCutAt` marca cuantos
+		// eventos de `curBlock` pertenecen a la sesion que cierra (-1 = ninguno
+		// pendiente); `anclado` dice si la cabeza del buffer ya coincide con la
+		// barra mas vieja sin consumir.
+		private int  pendCutAt = -1;
+		private bool anclado;
+		private int  nAbstenciones;
 		private int  nResiduales, nMismatch, nPares, nSuprimidas;
 
 		// ── footprint pendiente (subserie de 1 tick) ──────────────────────
@@ -150,6 +178,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 
 		// ── export ────────────────────────────────────────────────────────
 		private StreamWriter eventWriter;
+		private string       resolvedEventLogPath;
 		private bool         eventWriterFailed;
 		private long         eventSeq;
 
@@ -254,11 +283,19 @@ namespace NinjaTrader.NinjaScript.Indicators
 			}
 			if (CurrentBar == 0)
 			{
-				// Primera barra primaria: su footprint es potencialmente PARCIAL. Se
-				// descarta y se vacia lo acumulado -- eso ANCLA la particion, y de aca en
-				// adelante cada barra recibe exactamente su bloque.
+				// Primera barra primaria: su footprint es potencialmente PARCIAL, se
+				// descarta.
+				//
+				// v2.3 / PRED-004: vaciar el buffer aca NO ancla nada. La v2.2 lo
+				// estipulaba ("de aca en adelante cada barra recibe exactamente su
+				// bloque") y el oraculo lo refuto: 3,91% de mismatch en K=25 y 81,78%
+				// en K=10 con el stream IDENTICO y los cortes de barra IDENTICOS
+				// (OHLC 30.994/30.994). El ancla ahora se busca y se VERIFICA contra
+				// el OHLCV del snapshot, en AnclarOMatchear.
 				curBlock.Clear();
 				blockQ.Clear();
+				pendCutAt = -1;
+				anclado   = false;
 				return;
 			}
 
@@ -318,10 +355,14 @@ namespace NinjaTrader.NinjaScript.Indicators
 			DateTime tEv = Times[1][0];
 			if (_sessEnd == DateTime.MinValue || tEv >= _sessEnd)
 			{
-				if (curBlock.Count > 0)      // RESIDUAL: ultima barra de la sesion que cierra
+				// RESIDUAL: los eventos que siguen en el buffer son de la sesion que
+				// cierra, y su ultima barra puede ser CORTA (1..K-1). Se MARCA el
+				// corte en vez de pre-cortar el bloque: el largo lo arbitra el OHLCV
+				// del snapshot, no el contador. Si ya habia un corte sin drenar, el
+				// viejo manda -- pisarlo perderia la frontera anterior.
+				if (curBlock.Count > 0 && pendCutAt < 0)
 				{
-					blockQ.Enqueue(new List<FpTick>(curBlock));
-					curBlock.Clear();
+					pendCutAt = curBlock.Count;
 					nResiduales++;
 				}
 				if (sesionNoConfiable)
@@ -335,59 +376,208 @@ namespace NinjaTrader.NinjaScript.Indicators
 				_sessEnd = _sessIter.ActualSessionEnd;
 			}
 
+			// v2.3: NO se pre-corta a K por orden de llegada. Ese corte era el
+			// defecto: bastaba un evento de desfase para que TODOS los bloques
+			// siguientes quedaran mal, y el conteo no lo delataba porque seguia
+			// dando K. Los eventos quedan planos y el corte lo decide el OHLCV.
 			curBlock.Add(ev);
-			if (curBlock.Count >= fpTicksPerBar)
+		}
+
+		// secuenciador
+		private void DrainReadyBars()
+		{
+			if (fpTicksPerBar <= 0)
 			{
-				blockQ.Enqueue(new List<FpTick>(curBlock));
-				curBlock.Clear();
+				// bar_spec de TIEMPO: el corte es por timestamp y no tiene el defecto
+				// de atribucion (el oraculo O1 esta en PASS 225/225). Camino INTACTO:
+				// PRED-004 P5 exige que time:1 salga bit-identico al oraculo previo.
+				while (snapQ.Count > 0 && blockQ.Count > 0)
+				{
+					BarSnap      s   = snapQ.Dequeue();
+					List<FpTick> blk = blockQ.Dequeue();
+					nPares++;
+					if (!VerificarOHLC(s, blk))
+						continue;            // ya se reporto; la sesion quedo marcada
+					EmitirBarra(s, blk, 0, blk.Count);
+				}
+				return;
+			}
+			DrenarPorOHLCV();
+		}
+
+		// PRED-004: la identidad de barra la arbitra el OHLCV primario. Una ventana
+		// de eventos se consume SOLO si coincide de forma UNICA con el snapshot mas
+		// antiguo. Cero o multiples candidatos => abstencion fail-closed; no se
+		// elige un offset por conveniencia.
+		private void DrenarPorOHLCV()
+		{
+			int K = fpTicksPerBar;
+			while (snapQ.Count > 0)
+			{
+				// `disp` son los eventos utilizables para esta barra: si hay un corte
+				// de sesion pendiente, la barra no puede cruzarlo.
+				int disp  = pendCutAt >= 0 ? pendCutAt : curBlock.Count;
+				int largo = pendCutAt >= 0 ? Math.Min(K, pendCutAt) : K;
+				BarSnap s = snapQ.Peek();
+
+				if (!anclado)
+				{
+					// ANCLAJE ACOTADO: se permite saltar eventos huerfanos (los de
+					// barras sin snapshot: la barra 0 descartada, o el arranque de
+					// chart). El tope es 4*K -- si hiciera falta mas, no es un
+					// desfase de arranque y no corresponde adivinar.
+					int maxOff = 4 * K;
+					int tope   = Math.Min(maxOff, disp - largo);
+					if (tope < 0) return;                    // falta stream; se espera
+					int hallados = 0, dHit = -1;
+					for (int d = 0; d <= tope; d++)
+					{
+						if (CoincideOHLCV(s, d, largo)) { hallados++; dHit = d; }
+						if (hallados > 1) break;
+					}
+					if (hallados != 1)
+					{
+						// Sin candidato todavia puede ser falta de stream, no ambiguedad.
+						if (hallados == 0 && pendCutAt < 0 && disp < largo + maxOff)
+							return;
+						Abstener(s, hallados, disp, largo);
+						return;
+					}
+					if (dHit > 0)
+					{
+						curBlock.RemoveRange(0, dHit);
+						if (pendCutAt >= 0) pendCutAt -= dHit;
+						disp -= dHit;
+					}
+					anclado = true;
+					LogEvent("ANCLAJE_VERIFICADO", string.Format(CultureInfo.InvariantCulture,
+						"bar={0};offset={1};largo={2};k={3}", s.Bar, dHit, largo, K));
+				}
+				else
+				{
+					if (disp < largo) return;                // falta stream; se espera
+					if (!CoincideOHLCV(s, 0, largo))
+					{
+						// Ya anclado y el OHLCV no cierra: se reporta y se marca la
+						// sesion. NO se re-ancla en el medio -- reacomodar el buffer
+						// en silencio es el defecto original, no la solucion.
+						ReportarMismatch(s, 0, largo);
+						sesionNoConfiable = true;
+					}
+				}
+
+				snapQ.Dequeue();
+				nPares++;
+				// PRED-004 H2 (v2.4): el DENOMINADOR de P1/P2 no existia en el log.
+				// `ANCLAJE_VERIFICADO` se emite dentro de `if (!anclado)` y `anclado`
+				// solo vuelve a false en el roll de sesion: es UNA VEZ POR SESION,
+				// un marcador de anclaje, no de barra procesada. `nPares` contaba
+				// bien pero nunca se emitia. Sin este evento, P1/P2 daba PASS por
+				// construccion (denominador 4-5 en vez de 12.395).
+				//
+				// Va SOLO en el camino de tick: `DrenarPorOHLCV` se alcanza unicamente
+				// con `fpTicksPerBar > 0`. El camino de TIEMPO queda intacto porque
+				// P5 exige que time:1 salga bit-identico al oraculo previo.
+				LogEvent("BARRA_PROCESADA", string.Format(CultureInfo.InvariantCulture,
+					"bar={0};largo={1};k={2};residual={3}",
+					s.Bar, largo, fpTicksPerBar, largo < fpTicksPerBar));
+				EmitirBarra(s, curBlock, 0, largo);
+				curBlock.RemoveRange(0, largo);
+				if (pendCutAt >= 0)
+				{
+					pendCutAt -= largo;
+					if (pendCutAt <= 0)
+					{
+						// La sesion drenó entera: el ancla de la proxima se vuelve a
+						// verificar desde cero, que es lo que la frontera resincroniza.
+						pendCutAt = -1;
+						anclado   = false;
+					}
+				}
 			}
 		}
 
-		// secuenciador: emparejar snapshot N con bloque N
-		private void DrainReadyBars()
+		// abstencion fail-closed: ni se procesa la barra ni se elige un candidato
+		private void Abstener(BarSnap s, int candidatos, int disponibles, int largo)
 		{
-			// Solo avanza cuando LAS DOS piezas de la barra mas vieja estan. Tomar de
-			// menos desalinearia todo hacia adelante -- el defecto que esto corrige.
-			while (snapQ.Count > 0 && blockQ.Count > 0)
+			nAbstenciones++;
+			sesionNoConfiable = true;
+			LogEvent("ANCLAJE_AMBIGUO", string.Format(CultureInfo.InvariantCulture,
+				"bar={0};candidatos={1};disponibles={2};largo={3};k={4}",
+				s.Bar, candidatos, disponibles, largo, fpTicksPerBar));
+		}
+
+		// ¿la ventana [desde, desde+largo) de curBlock reproduce el OHLCV del snapshot?
+		private bool CoincideOHLCV(BarSnap s, int desde, int largo)
+		{
+			if (largo <= 0 || desde < 0 || desde + largo > curBlock.Count) return false;
+			long o = curBlock[desde].Tick, c = curBlock[desde + largo - 1].Tick;
+			long mn = long.MaxValue, mx = long.MinValue;
+			double vol = 0;
+			for (int i = desde; i < desde + largo; i++)
 			{
-				BarSnap      s   = snapQ.Dequeue();
-				List<FpTick> blk = blockQ.Dequeue();
-				nPares++;
-
-				if (!VerificarOHLC(s, blk))
-					continue;                // ya se reporto; la sesion quedo marcada
-
-				var askMap = new Dictionary<long, double>(64);
-				var bidMap = new Dictionary<long, double>(64);
-				double fpVol = 0; int nQuote = 0, nRule = 0;
-				for (int i = 0; i < blk.Count; i++)
-				{
-					FpTick e = blk[i];
-					Dictionary<long, double> m = e.Side > 0 ? askMap : bidMap;
-					double cur;
-					m[e.Tick] = m.TryGetValue(e.Tick, out cur) ? cur + e.Vol : e.Vol;
-					fpVol += e.Vol;
-					if (e.ByQuote) nQuote++; else nRule++;
-				}
-
-				// ORDEN LOGICO: el ciclo de vida de N corre ANTES de crear las zonas de N,
-				// para que la barra creadora nunca toque su propia zona.
-				// El ciclo de vida SI corre aunque la sesion este marcada: depende del
-				// OHLC de la barra, que viene de NT8, no del footprint reconstruido.
-				UpdateZones(s);
-
-				// POLITICA DE ROTURA, en accion: con la sesion marcada NO se crean zonas.
-				// Una zona nacida de un footprint que no se pudo verificar es PEOR que
-				// ninguna zona: entra al store con la misma apariencia que una buena.
-				// Se resincroniza SOLO en la frontera de sesion siguiente.
-				if (sesionNoConfiable)
-				{
-					nSuprimidas++;
-					continue;
-				}
-				if (askMap.Count > 0 || bidMap.Count > 0)
-					ProcessBar(s, askMap, bidMap, fpVol, nQuote, nRule);
+				long t = curBlock[i].Tick;
+				if (t < mn) mn = t;
+				if (t > mx) mx = t;
+				vol += curBlock[i].Vol;
 			}
+			return o  == PriceToTickI(s.Open)  && c  == PriceToTickI(s.Close)
+				&& mn == PriceToTickI(s.Low)   && mx == PriceToTickI(s.High)
+				&& Math.Abs(vol - s.Volume) <= 0.5;
+		}
+
+		private void ReportarMismatch(BarSnap s, int desde, int largo)
+		{
+			long o = curBlock[desde].Tick, c = curBlock[desde + largo - 1].Tick;
+			long mn = long.MaxValue, mx = long.MinValue; double vol = 0;
+			for (int i = desde; i < desde + largo; i++)
+			{
+				long t = curBlock[i].Tick;
+				if (t < mn) mn = t;
+				if (t > mx) mx = t;
+				vol += curBlock[i].Vol;
+			}
+			nMismatch++;
+			LogEvent("FOOTPRINT_MISMATCH", string.Format(CultureInfo.InvariantCulture,
+				"bar={0};n_eventos={1};k={2};residual={3};open_blk={4};open_bar={5};close_blk={6};close_bar={7};low_blk={8};low_bar={9};high_blk={10};high_bar={11};vol_blk={12};vol_bar={13}",
+				s.Bar, largo, fpTicksPerBar, largo < fpTicksPerBar, o, PriceToTickI(s.Open),
+				c, PriceToTickI(s.Close), mn, PriceToTickI(s.Low), mx, PriceToTickI(s.High),
+				vol.ToString(CultureInfo.InvariantCulture), s.Volume.ToString(CultureInfo.InvariantCulture)));
+		}
+
+		// arma los mapas y dispara ciclo de vida + deteccion para UNA barra
+		private void EmitirBarra(BarSnap s, List<FpTick> src, int desde, int largo)
+		{
+			var askMap = new Dictionary<long, double>(64);
+			var bidMap = new Dictionary<long, double>(64);
+			double fpVol = 0; int nQuote = 0, nRule = 0;
+			for (int i = desde; i < desde + largo; i++)
+			{
+				FpTick e = src[i];
+				Dictionary<long, double> m = e.Side > 0 ? askMap : bidMap;
+				double cur;
+				m[e.Tick] = m.TryGetValue(e.Tick, out cur) ? cur + e.Vol : e.Vol;
+				fpVol += e.Vol;
+				if (e.ByQuote) nQuote++; else nRule++;
+			}
+
+			// ORDEN LOGICO: el ciclo de vida de N corre ANTES de crear las zonas de N,
+			// para que la barra creadora nunca toque su propia zona.
+			// El ciclo de vida SI corre aunque la sesion este marcada: depende del
+			// OHLC de la barra, que viene de NT8, no del footprint reconstruido.
+			UpdateZones(s);
+
+			// POLITICA DE ROTURA, en accion: con la sesion marcada NO se crean zonas.
+			// Una zona nacida de un footprint que no se pudo verificar es PEOR que
+			// ninguna zona: entra al store con la misma apariencia que una buena.
+			// Se resincroniza SOLO en la frontera de sesion siguiente.
+			if (sesionNoConfiable)
+			{
+				nSuprimidas++;
+				return;
+			}
+			if (askMap.Count > 0 || bidMap.Count > 0)
+				ProcessBar(s, askMap, bidMap, fpVol, nQuote, nRule);
 		}
 
 		// verificador: el conteo corta, el OHLC verifica
@@ -665,10 +855,23 @@ namespace NinjaTrader.NinjaScript.Indicators
 			{
 				if (eventWriter == null)
 				{
-					bool exists = File.Exists(EventLogPath);
-					eventWriter = new StreamWriter(EventLogPath, true) { AutoFlush = true };
-					if (!exists)
-						eventWriter.WriteLine("# meta indicator=BigTrap2,version=2.2"
+					// TICKBAR-001 / PRED-004 P6: un archivo por resolucion y por
+					// corrida. Nunca append (mezclo tres corridas en un oraculo el
+					// 2026-08-04) ni overwrite (piso una captura de 25t con datos de
+					// 10t el 2026-07-25). El sufijo lo decide el .cs, no el operador.
+					string dir = Path.GetDirectoryName(EventLogPath);
+					if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
+					string bs = BarsPeriod.BarsPeriodType.ToString() + BarsPeriod.Value.ToString(CultureInfo.InvariantCulture);
+					string baseName = Path.GetFileNameWithoutExtension(EventLogPath) + "__" + bs;
+					string ext = Path.GetExtension(EventLogPath); if (string.IsNullOrEmpty(ext)) ext = ".csv";
+					resolvedEventLogPath = Path.Combine(dir, baseName + ext);
+					for (int k = 2; File.Exists(resolvedEventLogPath) && k < 1000; k++)
+						resolvedEventLogPath = Path.Combine(dir, baseName + "_" + k.ToString(CultureInfo.InvariantCulture) + ext);
+					eventWriter = new StreamWriter(resolvedEventLogPath, false) { AutoFlush = true };
+					Print("BigTrap2: escribiendo " + resolvedEventLogPath);
+					if (eventSeq == 0)
+						eventWriter.WriteLine("# meta indicator=BigTrap2,version=2.4"
+							+ ",attribution=ohlcv_unique_match,anchor=bounded_verified"
 							+ ",footprint=reconstructed_1tick_subseries,classifier=bidask_then_tickrule"
 							+ ",row_anchor=absolute_grid,ratio_floor=max(opposite,1),poc_tiebreak=lowest_row"
 							+ ",close_cmp=integer_half_ticks,tie_excluded_both_sides"
@@ -844,7 +1047,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 		// ── 4. Export ──
 		[NinjaScriptProperty]
 		[Display(Name = "Event Log Path (vacío = off)", Order = 1, GroupName = "4. Export")]
-		public string EventLogPath { get; set; }
+		public string EventLogPath { get; set; } // base; se resuelve a __<bar_spec>[_N].ext, nunca append
 
 		// ── 5. Visual ──
 		[NinjaScriptProperty]

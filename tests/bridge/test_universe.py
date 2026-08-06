@@ -83,6 +83,34 @@ def test_contrato_sin_front_month_medido_no_se_admite():
     assert any(m["code"] == "CONTRATO_SIN_FRONT_MONTH_DECLARADO" for m in r["motivos"])
 
 
+def test_un_contrato_deja_de_ser_front_cuando_arranca_el_siguiente():
+    """La ventana tiene DOS bordes. Sin el de arriba, el 2026-03-13 satisface el
+    front month de `03-26` (desde 2025-12-12) Y el de `06-26` (desde 2026-03-13)
+    a la vez, y la misma sesión queda reclamada por dos contratos."""
+    r = U.evaluar_dia("6E 03-26", "2026-03-13", _dia_normal(2026, 3, 13))
+    assert any(m["code"] == "POST_FRONT_MONTH" for m in r["motivos"])
+
+
+def test_el_contrato_entrante_si_es_front_ese_mismo_dia():
+    """El borde es [desde, hasta): el día del cruce pertenece al NUEVO."""
+    r = U.evaluar_dia("6E 06-26", "2026-03-13", _dia_normal(2026, 3, 13))
+    assert not any(m["code"] in ("PRE_FRONT_MONTH", "POST_FRONT_MONTH")
+                   for m in r["motivos"])
+
+
+def test_el_contrato_mas_nuevo_queda_abierto():
+    """No hay un `desde` posterior contra el cual cerrarlo: no se inventa uno."""
+    r = U.evaluar_dia("6E 09-26", "2026-07-20", _dia_normal(2026, 7, 20))
+    assert not any(m["code"] == "POST_FRONT_MONTH" for m in r["motivos"])
+
+
+def test_el_cierre_se_deriva_por_INSTRUMENTO_no_global():
+    """ES y NQ rollan distinto que 6E. Un `desde` de otro instrumento no puede
+    cerrar la ventana de éste."""
+    hasta_6e = U.hasta_de_front_month("6E 03-26")
+    assert hasta_6e == U.FRONT_MONTH["6E 06-26"]["desde"]
+
+
 # ----------------------------------------------------------- bordes de la semana
 def test_viernes_con_cierre_tardio_cae():
     """El viernes 2026-06-26 real cerró 18:59 en vez de 15:59."""
