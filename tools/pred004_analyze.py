@@ -308,9 +308,23 @@ def sesion_de(ts_iso, tz_chart):
 # ---------------------------------------------------------------------------
 
 def modo_p5(hist_path, nuevo_path, resolucion_esperada=None):
-    """P5: el time:1 nuevo debe ser bit-idéntico al histórico salvo la metadata
-    expresamente permitida. Cualquier otra diferencia = FAIL. Formatos no
-    comparables = ABSTAIN, nunca PASS."""
+    """P5: **igualdad de la SUBSECUENCIA ECONÓMICA ordenada**, no bit-identidad.
+
+    Este docstring decía *"bit-idéntico al histórico… cualquier otra diferencia
+    = FAIL"*, y **era un overclaim** — lo levantó la adjudicación adversarial de
+    Grok (`docs/research/ITERATION_4_GROK_2026-08-06.md`). Lo que P5 compara, y
+    lo único:
+
+        proyección a P5_TIPOS_ECONOMICOS · en ORDEN · tipo · ts · payload
+
+    **Qué NO cubre, y no lo cubría tampoco antes de la enmienda N1:** una
+    regresión que altere sólo diagnósticos, `ANCLAJE_*`, `BARRA_PROCESADA`,
+    `SESION_RESINCRONIZADA` o `ERROR`, o que reordene no-económicos sin mutar la
+    subsecuencia económica. Eso **ya daba PASS** con el `seq` adentro del
+    criterio; sacar el `seq` no abre ese hueco ni lo cierra.
+
+    Formatos no comparables = ABSTAIN, nunca PASS.
+    """
     a = leer_log(hist_path)
     b = leer_log(nuevo_path)
     dif = []
@@ -393,6 +407,21 @@ def modo_p5(hist_path, nuevo_path, resolucion_esperada=None):
                 delta_seq_min=min(delta) if delta else 0,
                 delta_seq_max=max(delta) if delta else 0,
                 delta_seq_distintos=sorted(set(delta))[:20],
+                # `[:20]` trunca el CATALOGO: con mas de 20 deltas distintos la
+                # cola alta no se lista. La no-uniformidad no se pierde -min y
+                # max son globales- pero SI se perdia la cardinalidad, o sea la
+                # diferencia entre "2 modos de corrimiento" y "200". Se publica
+                # sin truncar. Hallazgo de Grok, sexta instancia del patron:
+                # un numero publicado que no se puede reconstruir.
+                n_delta_seq_distintos=len(set(delta)),
+                # `footprint_mismatch_por_lado` es un conteo GLOBAL por tipo, no
+                # emparejado con el zip economico: alcanza como alarma gruesa, no
+                # como prueba de que el corrimiento se explica por FM. Se agrega
+                # el total de no-economicos, que es el denominador real del
+                # corrimiento. Tambien de Grok.
+                n_no_economicos=[sum(1 for e in lg["eventos"]
+                                     if e["tipo"] not in P5_TIPOS_ECONOMICOS)
+                                 for lg in (a, b)],
                 seq_corrido=bool(delta and set(delta) != {0}),
                 footprint_mismatch_por_lado=fm,
                 nota_seq=("el `seq` absoluto NO es condicion de FAIL (N1). "
