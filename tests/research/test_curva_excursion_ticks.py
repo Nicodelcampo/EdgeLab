@@ -315,3 +315,60 @@ def test_clase_el_manifiesto_declara_la_clase_de_cada_indicador():
     src = io.open(os.path.join(REPO, "diag", "tasa_senales",
                                "curva_excursion_ticks.py"), encoding="utf-8").read()
     assert '"por_indicador": dict(CLASE_KERNEL)' in src
+
+
+# ------------------------------------------------------ 13.63: checkpoints
+def test_ckpt_la_clave_incluye_CLASE_KERNEL():
+    """Reclasificar un indicador de `tick_create` a `bar_close` mueve sus
+    señales un 20 % — medido. Un checkpoint de antes de la reclasificación NO es
+    reutilizable, y la clave tiene que detectarlo."""
+    src = io.open(os.path.join(REPO, "diag", "tasa_senales",
+                               "curva_excursion_ticks.py"), encoding="utf-8").read()
+    cuerpo = src.split("def clave_de_corrida")[1][:1400]
+    for campo in ("clase_kernel", "universo_sha256", "code_commit", "t_design",
+                  "firewall_corte_utc_ns", "lead_days", "indicadores"):
+        assert campo in cuerpo, "la clave de corrida ignora %s" % campo
+
+
+def test_ckpt_mismatch_CONSERVA_el_checkpoint_ajeno():
+    """No se descarta en silencio: esa discrepancia **es información** —alguien
+    cambió el universo, el código o la clasificación a mitad de camino—."""
+    src = io.open(os.path.join(REPO, "diag", "tasa_senales",
+                               "curva_excursion_ticks.py"), encoding="utf-8").read()
+    cuerpo = src.split("def leer_checkpoint")[1][:900]
+    assert "raise CheckpointMismatch" in cuerpo
+    assert "CONSERVA" in cuerpo or "conserva" in cuerpo
+
+
+def test_ckpt_escritura_atomica():
+    """`.tmp` → `replace`. Una interrupción a mitad de escritura no puede dejar
+    un checkpoint truncado que después se lea como válido."""
+    src = io.open(os.path.join(REPO, "diag", "tasa_senales",
+                               "curva_excursion_ticks.py"), encoding="utf-8").read()
+    cuerpo = src.split("def escribir_checkpoint")[1][:900]
+    assert "tmp.replace(path)" in cuerpo
+    assert '"outcomes_accessed": False' in cuerpo
+
+
+def test_ckpt_el_grano_es_contrato_por_indicador():
+    """Después de CADA `(contrato, indicador)`, que es el grano más fino."""
+    src = io.open(os.path.join(REPO, "diag", "tasa_senales",
+                               "curva_excursion_ticks.py"), encoding="utf-8").read()
+    assert "on_unidad(nombre, res[nombre])" in src
+
+
+def test_acum_NO_se_publica_un_cuantil_global_mentiroso():
+    """Fusionar el p50 de cuatro contratos promediándolos no da el p50 del
+    universo. O se recomputa sobre la muestra unida, o no se publica."""
+    src = io.open(os.path.join(REPO, "diag", "tasa_senales",
+                               "curva_excursion_ticks.py"), encoding="utf-8").read()
+    assert 'ac["alejamiento_global"] = None' in src
+    assert "Los cuantiles no se promedian" in src
+
+
+def test_acum_los_descartes_se_suman_entre_contratos():
+    src = io.open(os.path.join(REPO, "diag", "tasa_senales",
+                               "curva_excursion_ticks.py"), encoding="utf-8").read()
+    for c in ("zonas_sin_created_bar", "zonas_sin_clase_declarada",
+              "zonas_sin_tramo_de_ticks"):
+        assert 'ac["%s"] +=' % c in src, c

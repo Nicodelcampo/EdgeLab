@@ -86,8 +86,10 @@ propio tick que creó la zona**. Avanzar al milisegundo siguiente garantiza
 - Universo: sólo sesiones que entrega la **puerta research**.
 - **Máximo `ts_ns` cargado ≤ 2026-06-30**, verificado y publicado. La ventana
   sellada no se lee ni se escanea.
-- La entrada empieza en el instante en que la zona está **disponible**
-  (`available_ns` = cierre de la barra creadora), no en su timestamp de anclaje.
+- La entrada empieza en el instante en que la zona está **disponible**, que
+  **depende de la clase del kernel** (ver «Reloj de disponibilidad»):
+  `bar_end[created_bar]` para `bar_close`, `(created_ms+1)` para `tick_create`.
+  Nunca el timestamp de anclaje a secas.
 - Se mide en `(disponible, primera resolución]`. Nada posterior.
 - `outcomes_accessed: false` en el manifiesto y en cada checkpoint.
 
@@ -160,6 +162,74 @@ def corte_del_sello():
     return d.tz_convert("UTC")
 
 SALIDA = Path(__file__).resolve().parent / "curva_excursion_ticks.json"
+CHECKPOINT = Path(__file__).resolve().parent / "curva_excursion_ticks.checkpoint.json"
+
+
+class CheckpointMismatch(RuntimeError):
+    """El checkpoint no corresponde a esta corrida. Fail-closed a propósito."""
+
+
+def clave_de_corrida(plan, indicadores):
+    """Identidad de lo que se está midiendo.
+
+    Misma disciplina que `post_sepmin.clave_de_corrida`: si cualquiera de estos
+    cambia, el checkpoint viejo **no se puede mezclar** — sería juntar dos
+    configuraciones distintas dentro de una misma curva.
+
+    Incluye `CLASE_KERNEL` a propósito: reclasificar un indicador de
+    `tick_create` a `bar_close` mueve sus señales un 20 %, así que un checkpoint
+    de antes de la reclasificación **no es reutilizable**.
+    """
+    from edgelab.research.universo_estudio import huella_del_universo, ruta_por_defecto
+    try:
+        uni = huella_del_universo(str(ruta_por_defecto()))["sha256"]
+    except Exception:
+        uni = None
+    payload = json.dumps({
+        "schema_version": "curva_excursion_ticks_v1",
+        "plan": [[a, list(f)] for a, f in plan],
+        "indicadores": sorted(indicadores),
+        "universo_sha256": uni,
+        "code_commit": git_head(),
+        "t_design": list(T_DESIGN),
+        "lead_days": LEAD_DAYS,
+        "firewall_corte_utc_ns": int(corte_del_sello().value),
+        "clase_kernel": dict(sorted(CLASE_KERNEL.items())),
+    }, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(payload.encode()).hexdigest()
+
+
+def leer_checkpoint(path, clave):
+    """Resultados ya calculados, o `{}`. **Falla cerrado** si el checkpoint es de
+    otra corrida: no se descarta en silencio porque esa discrepancia **es
+    información** — alguien cambió el universo, el código o la clasificación."""
+    if not path.exists():
+        return {}
+    ck = json.loads(path.read_text(encoding="utf-8"))
+    if ck.get("clave_de_corrida") != clave:
+        raise CheckpointMismatch(
+            "el checkpoint %s es de OTRA corrida (universo, commit, T_design, "
+            "firewall o CLASE_KERNEL distintos). Se CONSERVA sin tocar. Para "
+            "empezar de cero: --fresh." % path.name)
+    return ck.get("hecho", {})
+
+
+def escribir_checkpoint(path, clave, hecho, plan, indicadores):
+    """Se reescribe entero después de CADA `(contrato, indicador)`, con
+    escritura atómica `.tmp` → `replace`. Es el grano más fino disponible."""
+    faltan = sum(1 for a, _ in plan for i in indicadores
+                 if i not in hecho.get(a, {}))
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(json.dumps({
+        "complete": faltan == 0,
+        "aviso": "CURVA PARCIAL — checkpoint de reanudación, NO es una curva "
+                 "cerrada ni autoritativa.",
+        "clave_de_corrida": clave,
+        "unidades_pendientes": faltan,
+        "outcomes_accessed": False,
+        "hecho": hecho,
+    }, indent=1, ensure_ascii=False, allow_nan=False) + "\n", encoding="utf-8")
+    tmp.replace(path)
 SUPERSEDE = "diag/tasa_senales/curva_excursion.py (M1) — 91,4 % de ABSTAIN"
 
 
@@ -213,7 +283,8 @@ def eventos_de_zona(px, lo_t, hi_t, i0, i1, umbrales):
     return rup_up, rup_dn, retorno, primera
 
 
-def medir(archivo, fechas, indicadores, lead=LEAD_DAYS, verbose=True):
+def medir(archivo, fechas, indicadores, lead=LEAD_DAYS, verbose=True,
+          on_unidad=None):
     ini = (pd.Timestamp(fechas[0] + " 00:00:00", tz="America/Chicago")
            - pd.Timedelta(days=lead))
     # FIREWALL: el fin de carga se recorta al minimo entre el ultimo dia del
@@ -347,6 +418,9 @@ def medir(archivo, fechas, indicadores, lead=LEAD_DAYS, verbose=True):
         if verbose:
             print("   %-18s %6d zonas  sin_tramo=%d  (%.0fs)"
                   % (nombre, len(zonas), n_sin_tramo, time.time() - t1), flush=True)
+        # checkpoint DESPUES de cada (contrato, indicador): es el grano mas fino
+        if on_unidad is not None:
+            on_unidad(nombre, res[nombre])
     return res
 
 
@@ -359,6 +433,10 @@ def main(argv=None):
                          "pero apagada por defecto: primero hay que demostrar "
                          "equivalencia exacta 1-worker vs N-workers.")
     ap.add_argument("--out", default=str(SALIDA))
+    ap.add_argument("--checkpoint", default=str(CHECKPOINT))
+    ap.add_argument("--fresh", action="store_true",
+                    help="descarta el checkpoint. NO borra: lo ignora y lo pisa "
+                         "al terminar la primera unidad.")
     a = ap.parse_args(argv)
 
     dias, info = dias_research()
@@ -381,11 +459,31 @@ def main(argv=None):
              a.workers), flush=True)
 
     tareas = [(arch, sorted(f)) for arch, f in sorted(por_arch.items())]
+    clave = clave_de_corrida(tareas, inds)
+    ckpt = Path(a.checkpoint)
+    hecho = {} if a.fresh else leer_checkpoint(ckpt, clave)
+    if hecho:
+        n_ok = sum(len(v) for v in hecho.values())
+        print("checkpoint: %d unidad(es) ya calculadas, se saltean" % n_ok, flush=True)
+
     acum, crudo = {}, {}
     if a.workers <= 1:
         for arch, f in tareas:
-            print("== %s : %d sesiones ==" % (arch, len(f)), flush=True)
-            crudo[arch] = medir(arch, f, inds)
+            faltan = [i for i in inds if i not in hecho.get(arch, {})]
+            if not faltan:
+                print("== %s : [checkpoint completo] ==" % arch, flush=True)
+                crudo[arch] = hecho[arch]
+                continue
+            print("== %s : %d sesiones | %d indicador(es) pendiente(s) =="
+                  % (arch, len(f), len(faltan)), flush=True)
+
+            def guardar(nombre, resultado, _a=arch):
+                hecho.setdefault(_a, {})[nombre] = resultado
+                escribir_checkpoint(ckpt, clave, hecho, tareas, inds)
+
+            r = medir(arch, f, faltan, on_unidad=guardar)
+            crudo[arch] = dict(hecho.get(arch, {}))
+            crudo[arch].update(r)
     else:
         from concurrent.futures import ProcessPoolExecutor
         with ProcessPoolExecutor(max_workers=a.workers) as ex:
@@ -413,6 +511,14 @@ def main(argv=None):
             # Sobrescribirlos publicaba los del ultimo contrato como si fueran
             # los del universo.
             ac["alejamiento_por_contrato"][arch] = d["alejamiento_en_primera_reentrada"]
+            # NO se publica un cuantil global: fusionar cuantiles ya calculados
+            # promediandolos daria un numero que no es el cuantil de nada. Se
+            # publica por contrato y se declara que no hay global.
+            ac["alejamiento_global"] = None
+            ac["nota_alejamiento"] = (
+                "NO hay cuantil global. Los cuantiles no se promedian: fusionar "
+                "p50 de cuatro contratos no da el p50 del universo. Se publica "
+                "`alejamiento_por_contrato` y punto.")
             for k, v in d["kinds"].items():
                 ac["kinds"][k] = ac["kinds"].get(k, 0) + v
             for campo in ("por_umbral", "por_kind"):
@@ -439,6 +545,7 @@ def main(argv=None):
 
     payload = dict(
         schema_version="curva_excursion_ticks_v1",
+        clave_de_corrida=clave,
         supersede=SUPERSEDE,
         autoritativo=not piloto, workers=a.workers,
         code_commit=git_head(), umbrales=list(T_DESIGN),
