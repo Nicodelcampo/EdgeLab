@@ -191,3 +191,65 @@ la identidad del hash.**
 **Batería: 55/55**, con tres tests nuevos de la política — que el FAIL económico
 manda sobre el corrimiento, que sin corrimiento sigue siendo PASS, y que el
 ABSTAIN sale por exit code 2.
+
+
+---
+
+## Los dos tests rojos declarados — a qué apuntan, verificado 2026-08-06
+
+Llevan toda la sesión en rojo y se venían reportando como «los dos declarados»
+**sin haber verificado nunca por qué fallan**. Un test que lleva días en rojo es
+un test que nadie lee: si uno se pusiera rojo por un motivo **nuevo**, seguiría
+pasando por «declarado». Verificados:
+
+### `test_el_cs_canonico_es_el_declarado`
+
+```
+pin       75910484b7d87510…   (en el test)
+actual    9b63959a62f08860…   (nt8/BigTrap2.cs, v2.4)
+```
+
+**El pin no coincide con ningún archivo en disco** — ni el actual, ni los dos
+`BigTrap2_v2.1*` de `archive/nt8_cs_backup/`, ni el `.bak`.
+
+**Sí está en git.** Recorriendo la historia del archivo:
+
+| commit | version | sha256 |
+|---|---|---|
+| `a0087b9` | 2.4 | `9b63959a…` ← actual |
+| `4a1ba55` | 2.3 | `e5dd810a…` |
+| **`e1987ca`** | **2.2** | **`75910484…`** ← **el pin** |
+| `3686d35` | 2.2 | `ffc1ed7d…` |
+| `0e12d9f` | 2.1 | `77af06ee…` |
+
+> **El pin apunta a `e1987ca`, la v2.2 — la versión que produjo la refutación de
+> PRED-003** (K25 = 3,91 %, K10 = 81,78 %).
+
+Eso **no estaba escrito en ninguna parte**: el test guarda un hash pelado, sin
+decir de qué versión ni de qué commit. Recuperarlo exigió recorrer la historia.
+Queda anotado acá para que la próxima adjudicación no tenga que hacerlo de nuevo.
+
+Y hay dos versiones **2.2** distintas (`3686d35` y `e1987ca`): el pin es la
+segunda. Elegir «la v2.2» por nombre habría agarrado la equivocada.
+
+### `test_la_version_del_kernel_coincide_con_la_del_cs`
+
+```
+kernel Python  version=2.2   (bigtrap2.py:120, meta_line)
+.cs canonico   version=2.4
+```
+
+Es la **asimetría 2.2/2.4** que `CLAUDE.md` y el preflight declaran, con la
+instrucción explícita de no resolverla antes de completar los oráculos.
+
+**Consecuencia que conviene tener presente y no estaba dicha:** la curva de
+diseño usa el **kernel Python en 2.2**, no el `.cs` reparado. Es coherente —el
+fix v2.3/v2.4 es de atribución en barras de **tick**, y la curva corre sobre
+**M1**, donde ese defecto no aplica— pero **hay que decirlo**, porque «BigTrap2»
+a secas hoy nombra dos cosas con comportamiento distinto según la resolución.
+
+### Veredicto
+
+**Los dos siguen rojos por el motivo declarado.** El reporte era exacto. Lo que
+faltaba no era el motivo: era **poder reconstruirlo sin recorrer la historia de
+git**, y eso ahora está escrito.
