@@ -138,14 +138,45 @@ oracles\BigTrap2_v23_6E_0926__Tick10.csv
 ```bash
 cd E:\ProyectosQuant\EdgeLab-sync-desktop
 
-# P5 — time:1 bit-idéntico contra el oráculo previo
-.\.venv\Scripts\python tools\run_nt8_bridge.py --indicator BigTrap2 --bars time:1 \
-  --chart-tz America/Argentina/Buenos_Aires \
-  --oracle "BigTrap2=oracles\BigTrap2_v23_6E_0926__time1.csv" \
-  --out runs\pred004\p5_time1
+# ==========================================================================
+# CORREGIDO 2026-08-06 (D6 del auditor). Lo que habia aca mandaba P5 a
+# `run_nt8_bridge.py`, y esta VERIFICADO EN CODIGO que ese comando NO mide
+# PRED-004: `run_nt8_bridge.py:233` hace parse_nt8_log + match_zones, o sea
+# compara zonas del kernel Python contra zonas de NT8 con tolerancia temporal.
+# P5 exige comparar el EventLog HISTORICO v2.1 contra el NUEVO. Son dos cosas
+# distintas, y la segunda no la hace ese programa.
+#
+# Y hay una colision de nombres que lo empeora: el FOOTPRINT_MISMATCH que
+# reporta run_nt8_bridge viene de `bars.p1a_gate`, que compara Python contra
+# Python. Habria devuelto un numero con la etiqueta correcta.
+# ==========================================================================
 
-# P1 — K=25   (idem con --bars tick:25 y --out runs\pred004\p1_k25)
-# P2 — K=10   (idem con --bars tick:10 y --out runs\pred004\p2_k10)
+# P0 — COMPILAR. Sin esto no se instala nada. El .cs v2.3 no compilaba y el pin
+#      no lo delataba: un archivo roto tiene un sha256 perfectamente valido.
+.\.venv\Scripts\python tools\compilar_nt8_cs.py nt8\BigTrap2.cs ^
+  --out runs\pred004\compila_v24.json
+#      exit 0 COMPILA / 1 NO_COMPILA / 2 ABSTAIN / 3 INSTRUMENTO_ROTO
+
+# P5 — identidad de la subsecuencia ECONOMICA (contrato v5, enmienda N1).
+#      NO es bit-identidad: el `seq` se reporta y no se juzga.
+#      BLOQUEADO hasta tener el CSV historico con su sha verificado (T3a) —
+#      `oracles/*.csv` NO esta versionado (D2 del auditor).
+.\.venv\Scripts\python tools\pred004_analyze.py p5-time ^
+  --historico oracles\BigTrap2_time1_6E_0926_v2.csv ^
+  --nuevo <ruta del EventLog nuevo>__Minute1.csv ^
+  --resolucion Minute1 --out runs\pred004\p5_time1.json
+
+# P1/P2 — atribucion sobre el EventLog. `--tz-chart` y `--resolucion` son
+#         OBLIGATORIAS; sin ellas el analizador ABSTIENE, no mide.
+.\.venv\Scripts\python tools\pred004_analyze.py p1-p2-tick ^
+  --log <EventLog>__Tick25.csv --tz-chart America/Argentina/Buenos_Aires ^
+  --resolucion Tick25 --exigir-version 2.4 --out runs\pred004\p1_k25.json
+#         idem con Tick10 -> p2_k10.json
+
+# P6 — integridad de archivo, uno por corrida.
+.\.venv\Scripts\python tools\pred004_analyze.py p6-file ^
+  --log <EventLog>__Tick25.csv --resolucion Tick25 ^
+  --out runs\pred004\p6_k25.json
 
 # estado del pin y de la asimetría 2.3/2.2
 .\.venv\Scripts\python -m pytest tests\bridge\test_desviacion_rotura.py -q

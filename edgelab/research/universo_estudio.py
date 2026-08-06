@@ -137,3 +137,35 @@ def cargar_dias_de_estudio(manifiesto, tipos_de_dia=None, *,
     return validos + holdout_servible, dict(
         descartados_holdout=0, fechas_holdout=fechas,
         apertura_registrada=True, **info_cuarentena)
+
+
+#: La puerta es duena de la RUTA, no solo de la lectura. Si el consumidor
+#: escribe el literal por su cuenta, `test_nadie_lee_el_manifiesto_por_fuera_de_
+#: la_puerta` lo caza -y bien: cada archivo con su copia de la ruta es la primera
+#: mitad de "cada archivo con su copia de la regla de filtrado".
+def ruta_por_defecto():
+    from pathlib import Path
+    return Path(__file__).resolve().parents[2] / "runs" / "censo" / "manifiesto_universo.json"
+
+
+def huella_del_universo(path=None):
+    """Huella del manifiesto: sha256, fecha de generacion y cantidad de dias.
+
+    Vive ACA y no en el consumidor por la regla de la puerta unica. El 2026-08-06
+    `tools/estado.py` empezo a leer el manifiesto por su cuenta para publicar
+    esta huella, y `test_nadie_lee_el_manifiesto_por_fuera_de_la_puerta` lo cazo
+    con el mensaje correcto: *"filtrar por su cuenta es el patron que dejo entrar
+    10 dias del holdout el 2026-07-27"*.
+
+    La intencion era buena -el manifiesto NO estaba versionado y los dos clones
+    daban veredictos opuestos sobre si el estudio puede empezar- pero el camino
+    era el prohibido. Esto NO filtra dias ni los entrega: devuelve una huella. El
+    modulo que es dueno del manifiesto es el unico que lo abre.
+    """
+    import hashlib
+    import json as _json
+    raw = open(str(path or ruta_por_defecto()), "rb").read()
+    d = _json.loads(raw.decode("utf-8"))
+    return dict(sha256=hashlib.sha256(raw).hexdigest(),
+                generado_utc=d.get("generado_utc"),
+                n_dias=len(d.get("dias") or []))

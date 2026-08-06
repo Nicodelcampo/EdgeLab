@@ -39,17 +39,24 @@ MANIFIESTO = os.path.join(REPO, "runs", "censo", "manifiesto_universo.json")
 # vigente ya no entrega. Cada una con su causa. Agregar una entrada acá es una
 # decisión consciente que queda en el diff; que aparezca una fecha NUEVA sin
 # declarar es exactamente lo que este test tiene que atrapar.
-DISCREPANCIA_DECLARADA = {
-    # censo.json la marca DEFECTUOSO: TIPO_DE_DIA_IMPOSIBLE (COMPLETO con
-    # dow=4), COBERTURA_HORARIA_INSUFICIENTE (17 h < 20 h),
-    # CIERRE_SEMANAL_TARDIO (23:37 > 16:00). Materialidad medida: 0,00%.
-    "2025-10-31",
-    # presentes en manifiesto_PREVIO_2026-07-27.json, ausentes del vigente:
-    # el censo se regeneró el 2026-07-28T00:47Z, 5 h 16 min DESPUÉS de que
-    # corriera el atlas (2026-07-27T19:31Z).
-    "2025-11-19",
-    "2025-12-15",
-}
+DISCREPANCIA_DECLARADA = set()
+# VACIA desde 2026-08-06. Las tres entradas que habia se RESOLVIERON al pasar el
+# manifiesto del universo del 2026-07-28 (252 dias) al del 2026-08-04 (256): las
+# tres fechas volvieron a estar en el censo, asi que ya no discrepan. Este mismo
+# test lo exigio -"una entrada obsoleta es tan peligrosa como una faltante:
+# enmascara la proxima discrepancia real en esa misma fecha"-.
+#
+# Lo que decian, para que quede el rastro y no haya que reconstruirlo:
+#
+#   2025-10-31  censo.json la marcaba DEFECTUOSO: TIPO_DE_DIA_IMPOSIBLE
+#               (COMPLETO con dow=4), COBERTURA_HORARIA_INSUFICIENTE (17 h < 20),
+#               CIERRE_SEMANAL_TARDIO (23:37 > 16:00). Materialidad 0,00%.
+#   2025-11-19  presentes en manifiesto_PREVIO_2026-07-27.json y ausentes del
+#   2025-12-15  vigente entonces: el censo se regenero el 2026-07-28T00:47Z,
+#               5 h 16 min DESPUES de que corriera el atlas (2026-07-27T19:31Z).
+#
+# Agregar una entrada aca sigue siendo una decision consciente que queda en el
+# diff; que aparezca una fecha NUEVA sin declarar es lo que el test debe atrapar.
 
 TIPOS = ["COMPLETO", "CIERRE_SEMANAL"]
 

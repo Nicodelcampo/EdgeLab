@@ -165,14 +165,21 @@ def main(argv=None):
         ses = sum(len(v.get("fechas", [])) for v in d.values())
         ind = len({i for v in d.values() for i in v.get("ind", {})})
         print("  censo creaciones   %d sesiones, %d indicadores" % (ses, ind))
-    uni = REPO / "runs" / "censo" / "manifiesto_universo.json"
-    if uni.exists():
-        import hashlib
-        raw = uni.read_bytes()
-        d = json.loads(raw)
-        print("  universo           %d dias  generado %s  sha256 %s"
-              % (len(d.get("dias") or []), (d.get("generado_utc") or "?")[:10],
-                 hashlib.sha256(raw).hexdigest()[:16]))
+    # La huella se pide a la PUERTA UNICA, que es duena de la ruta Y de la
+    # lectura. Este archivo no nombra el manifiesto ni lo abre:
+    # `test_nadie_lee_el_manifiesto_por_fuera_de_la_puerta` caza a cualquier
+    # consumidor nuevo, y tiene razon -filtrar por fuera es el patron que dejo
+    # entrar 10 dias del holdout el 2026-07-27-.
+    sys.path.insert(0, str(REPO))
+    try:
+        from edgelab.research.universo_estudio import (huella_del_universo,
+                                                       ruta_por_defecto)
+        if ruta_por_defecto().exists():
+            h = huella_del_universo()
+            print("  universo           %d dias  generado %s  sha256 %s"
+                  % (h["n_dias"], (h["generado_utc"] or "?")[:10], h["sha256"][:16]))
+    except Exception as exc:
+        print("  universo           no evaluable: %s" % exc)
     an = REPO / "tools" / "pred004_analyze.py"
     if an.exists():
         sys.path.insert(0, str(REPO / "tools"))
