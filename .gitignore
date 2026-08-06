@@ -104,6 +104,14 @@ logs/
 suspicious_trades.csv
 
 # --- Oráculos NT8 (EventLogs reales; data fuera de Git, ver oracles/README.md) ---
+#  y no : el patron viejo NO matcheaba subdirectorios, asi que
+# oracles/split/*.csv quedo versionado sin que nadie lo decidiera. Esos
+# tres son de 2026-06-14/18 -anteriores al holdout- asi que no hubo fuga,
+# pero fue suerte: una captura de julio en un subdirectorio se habria
+# commiteado sin aviso, y git no olvida. Ver docs/D2_VERSIONAR_ORACULOS_ANALISIS.md
+oracles/**/*.csv
+oracles/**/*.txt
+oracles/**/*.bak
 oracles/*.csv
 oracles/*.txt
 oracles/*.bak
