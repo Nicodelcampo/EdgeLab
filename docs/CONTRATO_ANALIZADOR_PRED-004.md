@@ -139,3 +139,55 @@ hallazgo, y `delta_seq_distintos` lo deja visible.
 | `delta_no_uniforme_queda_visible` | lo que el contador **no** explica queda a la vista |
 
 **Batería: 52/52.**
+
+---
+
+## v6 — política de `seq_corrido`, decidida por Nico el 2026-08-06
+
+Acta: [`research/DECISION_NICO_P5_SEQ_Y_JSON_2026-08-06.md`](research/DECISION_NICO_P5_SEQ_Y_JSON_2026-08-06.md).
+Opción elegida: **B, ABSTAIN de política.**
+
+```text
+economía idéntica  Y  seq_corrido=true   ->  ABSTAIN
+diferencia económica                     ->  FAIL   (manda sobre el corrimiento)
+economía idéntica  Y  seq_corrido=false  ->  PASS
+```
+
+**Qué cierra.** El hueco que levantó Grok en la iteración 4: publicar el
+corrimiento no alcanzaba si nada obligaba a mirarlo — *«si el ritual de captura
+sólo mira PASS/FAIL, el corrimiento es invisible en la práctica»*. Lo llamó
+**trampa de proceso**, y tenía razón. Ahora el gate es **enforceable por exit
+code** (`2`).
+
+**Qué NO deshace.** No es FAIL de regresión económica: N1 sigue en pie. El
+corrimiento por contador compartido no vuelve a ser motivo de fallo — vuelve a
+ser motivo de **no aprobar solo**.
+
+Un humano puede aceptar el ABSTAIN con acta que cite `delta_seq_*`,
+`footprint_mismatch_por_lado` y `n_no_economicos`, **antes** de promover captura,
+pin o cierre.
+
+### ⚠ El `contrato_sha` de v6 NO coincide, y no lo fuerzo
+
+| | |
+|---|---|
+| el acta declara | `4ac53dba7fee2022a3873543abbeb3eb204e260f28b6e04dfb750da67949278d` |
+| este código produce | `13444ebf81eef7d51e80085c341508c0122e82b755e85d00aa6421d3e5058eda` |
+
+**Causa:** el acta nombra el campo nuevo (`p5_seq_corrido_politica`) pero **no
+publica su valor**, y el hash depende de ese valor. Acá se usó
+`"abstain_si_seq_corrido_con_economia_identica"`; el auditor usó otra cadena.
+
+**No busqué una cadena que hiciera coincidir el hash.** Sería fabricar acuerdo
+con un número cuya derivación no tengo — exactamente el modo de falla que este
+expediente persigue. Es la misma familia que el MDE de 1,14: **un número
+publicado que no se puede reconstruir desde lo documentado.**
+
+**Se resuelve de una de dos formas, y las dos son de otro:** el auditor publica
+el valor exacto del campo, o acepta el de acá y actualiza el acta. Hasta
+entonces **la política está implementada y verificada; lo que no está cerrado es
+la identidad del hash.**
+
+**Batería: 55/55**, con tres tests nuevos de la política — que el FAIL económico
+manda sobre el corrimiento, que sin corrimiento sigue siendo PASS, y que el
+ABSTAIN sale por exit code 2.

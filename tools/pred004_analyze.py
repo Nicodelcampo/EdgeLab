@@ -99,6 +99,19 @@ P5_PAYLOAD_IGNORABLE = frozenset()
 #: `footprint_mismatch_por_lado`, que es su causa.
 P5_COMPARACION = "identidad_economica_en_orden;seq_absoluto_reportado_no_juzgado"
 
+#: POLITICA DE `seq_corrido` — decision de Nico del 2026-08-06, opcion B.
+#: Acta: `docs/research/DECISION_NICO_P5_SEQ_Y_JSON_2026-08-06.md`.
+#:
+#:   economia identica  Y  seq_corrido=true   -> ABSTAIN
+#:   diferencia economica                     -> FAIL  (manda sobre el corrimiento)
+#:   economia identica  Y  seq_corrido=false  -> PASS
+#:
+#: Cierra el hueco que levanto Grok: publicar el corrimiento no alcanzaba si
+#: nada obligaba a mirarlo -"si el ritual solo mira PASS/FAIL, el corrimiento es
+#: invisible en la practica"-. Ahora el gate es enforceable por exit code (2).
+#: NO deshace N1: no es FAIL de regresion economica, es abstencion de politica.
+P5_SEQ_CORRIDO_POLITICA = "abstain_si_seq_corrido_con_economia_identica"
+
 #: tipos de evento con contenido ECONÓMICO. Son los que P5 compara.
 #: Los diagnósticos quedan fuera porque v2.3 los introduce o los cambia por
 #: diseño (es el cambio autorizado), y compararlos haría fallar P5 por el
@@ -170,6 +183,7 @@ CONTRATO_SHA_CAMPOS = dict(
     p5_meta_ignorable=sorted(P5_META_IGNORABLE),
     p5_payload_ignorable=sorted(P5_PAYLOAD_IGNORABLE),
     p5_comparacion=P5_COMPARACION,
+    p5_seq_corrido_politica=P5_SEQ_CORRIDO_POLITICA,
     p5_tipos_economicos=list(P5_TIPOS_ECONOMICOS),
     evento_barra_procesada=EVENTO_BARRA_PROCESADA,
     warmup_modo=WARMUP_MODO,
@@ -398,7 +412,20 @@ def modo_p5(hist_path, nuevo_path, resolucion_esperada=None):
     fm = [sum(1 for e in lg["eventos"] if e["tipo"] == "FOOTPRINT_MISMATCH")
           for lg in (a, b)]
 
-    estado = "PASS" if not dif else "FAIL"
+    # El FAIL economico MANDA sobre el corrimiento; recien si la economia es
+    # identica el corrimiento decide entre PASS y ABSTAIN.
+    corrido = bool(delta and set(delta) != {0})
+    if dif:
+        estado = "FAIL"
+    elif corrido:
+        estado = "ABSTAIN"
+        dif = ["seq_corrido=true con economia identica: ABSTAIN de politica "
+               "(decision de Nico 2026-08-06). El instrumento NO aprueba solo "
+               "cuando el contador compartido corrio. Un humano puede aceptarlo "
+               "con acta que cite delta_seq_*, footprint_mismatch_por_lado y "
+               "n_no_economicos, ANTES de promover captura, pin o cierre."]
+    else:
+        estado = "PASS"
     return _res("p5-time", estado, dif, a, b,
                 n_eventos_economicos=[len(ea), len(eb)],
                 # identidad economica: lo que P5 SI juzga
@@ -422,7 +449,7 @@ def modo_p5(hist_path, nuevo_path, resolucion_esperada=None):
                 n_no_economicos=[sum(1 for e in lg["eventos"]
                                      if e["tipo"] not in P5_TIPOS_ECONOMICOS)
                                  for lg in (a, b)],
-                seq_corrido=bool(delta and set(delta) != {0}),
+                seq_corrido=corrido,
                 footprint_mismatch_por_lado=fm,
                 nota_seq=("el `seq` absoluto NO es condicion de FAIL (N1). "
                           "Un delta != 0 se explica por la diferencia de "

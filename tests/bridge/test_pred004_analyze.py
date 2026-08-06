@@ -714,16 +714,24 @@ def _eco_con_seq(base, corrimiento):
     return out
 
 
-def test_N1_seq_corrido_con_economia_identica_es_PASS(tmp_path):
+def test_N1_seq_corrido_con_economia_identica_es_ABSTAIN(tmp_path):
     """emisor_fiel. El caso REAL: v2.1 y v2.4 emiten distinta cantidad de
     FOOTPRINT_MISMATCH -predicados disjuntos, .cs:218 vs VerificarOHLC- asi que
-    el seq de los economicos se corre. La economia es identica: tiene que PASAR.
-    Antes de la enmienda esto daba FAIL, y por el contador."""
+    el seq de los economicos se corre.
+
+    HISTORIA DE ESTE TEST, que es el punto:
+      - antes de N1 daba FAIL, y por el CONTADOR, no por una regresion;
+      - con N1 paso a PASS;
+      - Grok objeto que publicar el corrimiento no alcanza si nada obliga a
+        mirarlo -"si el ritual solo mira PASS/FAIL, es invisible en la practica";
+      - Nico decidio (2026-08-06, opcion B): **ABSTAIN de politica**.
+    No deshace N1 -no es FAIL de regresion economica- y hace el gate enforceable
+    por exit code."""
     base = _eco_basico()
     a = _log(tmp_path / "h__Minute1.csv", META_21, base)
     b = _log(tmp_path / "n__Minute1.csv", META_23, _eco_con_seq(base, 7))
     r = P.modo_p5(a, b, "Minute1")
-    assert r["estado"] == "PASS"
+    assert r["estado"] == "ABSTAIN"
     assert r["seq_corrido"] is True
     assert r["delta_seq_min"] == 7 and r["delta_seq_max"] == 7
 
@@ -749,7 +757,9 @@ def test_N1_la_causa_del_corrimiento_queda_al_lado(tmp_path):
     b = _log(tmp_path / "n__Minute1.csv", META_23, base + extra)
     r = P.modo_p5(a, b, "Minute1")
     assert r["footprint_mismatch_por_lado"] == [0, 1]
-    assert r["estado"] == "PASS", "un FOOTPRINT_MISMATCH de mas no es regresion economica"
+    # un FOOTPRINT_MISMATCH de mas NO es regresion economica: no puede ser FAIL.
+    # Con seq corrido es ABSTAIN de politica; sin corrimiento seria PASS.
+    assert r["estado"] != "FAIL"
 
 
 def test_N1_NO_afloja_payload(tmp_path):
@@ -785,3 +795,33 @@ def test_N1_delta_no_uniforme_queda_visible(tmp_path):
     r = P.modo_p5(_log(tmp_path / "h__Minute1.csv", META_21, base),
                   _log(tmp_path / "n__Minute1.csv", META_23, b), "Minute1")
     assert len(r["delta_seq_distintos"]) > 1
+
+
+def test_politica_el_FAIL_economico_MANDA_sobre_el_corrimiento(tmp_path):
+    """El orden del acta: si hay diferencia economica es FAIL, aunque ademas el
+    seq este corrido. El ABSTAIN no puede tapar una regresion real."""
+    base = _eco_basico()
+    mal = list(base); mal[1] = mal[1].replace("lo=1.1", "lo=9.9")
+    a = _log(tmp_path / "h__Minute1.csv", META_21, base)
+    b = _log(tmp_path / "n__Minute1.csv", META_23, _eco_con_seq(mal, 9))
+    r = P.modo_p5(a, b, "Minute1")
+    assert r["estado"] == "FAIL"
+    assert r["seq_corrido"] is True
+
+
+def test_politica_sin_corrimiento_y_economia_identica_sigue_siendo_PASS(tmp_path):
+    """El ABSTAIN es POR el corrimiento. Sin corrimiento, PASS."""
+    base = _eco_basico()
+    a = _log(tmp_path / "h__Minute1.csv", META_21, base)
+    b = _log(tmp_path / "n__Minute1.csv", META_23, list(base))
+    r = P.modo_p5(a, b, "Minute1")
+    assert r["estado"] == "PASS" and r["seq_corrido"] is False
+
+
+def test_politica_el_ABSTAIN_sale_por_exit_code_2(tmp_path):
+    """Lo que hace el gate ENFORCEABLE, que era el hueco que levanto Grok."""
+    base = _eco_basico()
+    a = _log(tmp_path / "h__Minute1.csv", META_21, base)
+    b = _log(tmp_path / "n__Minute1.csv", META_23, _eco_con_seq(base, 4))
+    assert P.main(["p5-time", "--historico", a, "--nuevo", b,
+                   "--resolucion", "Minute1"]) == 2
