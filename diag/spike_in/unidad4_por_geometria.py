@@ -31,10 +31,14 @@ from spike_in import (A0, CFG, DATA_DIR, dias_del_atlas_sellado,  # noqa: E402
                       geometrias)
 
 RONDAS = int(os.environ.get("SPIKE_RONDAS", "25"))
-# FUENTE UNICA (2026-08-06): antes era `2.704` hardcodeado, y actualizar la
-# comision real de Lucid no lo tocaba. Da 2,768 con $2,40/pata.
+# CODIGO MUERTO, verificado: `FRICCION` aparece UNA sola vez en este archivo -su
+# propia definicion- y no se usa en ninguna linea. Este script emite excursiones
+# nulas por geometria y por dia (`por_geom_nulo.json`), que NO dependen de la
+# friccion. Se deja apuntando a la fuente unica igual, para que si alguien lo
+# empieza a usar no herede un valor viejo, pero NO se reemite nada al cambiar la
+# comision: la tabla que SI depende es `tools/tabla_decision_pnk.py`.
 from edgelab.research.costs import friccion_rt_ticks  # noqa: E402
-FRICCION = friccion_rt_ticks()
+FRICCION = friccion_rt_ticks()  # no consumido; ver nota de arriba
 
 
 def procesar(args):
