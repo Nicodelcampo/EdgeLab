@@ -3,12 +3,16 @@
 La spec está SELLADA: estos números son CONTRATO. Si un golden no sale, se
 frena y se reporta — está PROHIBIDO ajustar el golden para que pase.
 
-6E: tick = 0.00005, tick_value = $6.25, comisión $2.20/pata (RT $4.40).
+6E: tick = 0.00005, tick_value = $6.25, comisión $2.20/pata (RT $4.40)
+-- el valor que la SPEC declara para sus goldens, no el de producción
+(que desde 2026-08-06 es $2,40/pata, confirmado en la fuente de Lucid).
 Escenario `base` (slippage 1 tick/pata). Precios expresados en TICKS enteros.
 """
 import pytest
 
 from edgelab.research.sim import simulate
+from edgelab.research.costs import (CostScenario,
+                                    GOLDEN_SPEC_COMMISSION_PER_SIDE_USD)
 
 TICK = 0.00005
 TV = 6.25
@@ -27,9 +31,18 @@ def _sig(av, tgt=10, stp=5, tstop=0, sid="S1", d=1):
                 target_ticks=tgt, stop_ticks=stp, time_stop_ms=tstop)
 
 
+#: Escenario `base` de la spec SELLADA, con la comisión que la propia spec
+#: declara para sus goldens ($2,20/pata). Antes esto pasaba `scenario="base"`,
+#: que resuelve contra `COMMISSION_PER_SIDE_USD` — la constante de PRODUCCIÓN.
+#: O sea que un hecho de mercado -la comisión real de Lucid, confirmada en
+#: $2,40 el 2026-08-06- rompía los goldens de un contrato sellado. Los goldens
+#: prueban la ARITMÉTICA del simulador, no cuánto cobra el broker hoy.
+BASE_SPEC = CostScenario("base", 1, 1, 1, 1, GOLDEN_SPEC_COMMISSION_PER_SIDE_USD)
+
+
 def _run(signals, steps, **kw):
     kw.setdefault("close_at_session_end", True)   # CAMP-001 E4
-    return simulate(signals, steps, scenario="base", tick_size=TICK,
+    return simulate(signals, steps, scenario=BASE_SPEC, tick_size=TICK,
                     tick_value=TV, check_guard=False, **kw)
 
 

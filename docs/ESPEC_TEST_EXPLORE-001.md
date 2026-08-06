@@ -70,7 +70,35 @@ requisito independiente. La restricción que ata es el **50% de consistencia**.
 
 ### 2.2 Conversión a ticks
 
-`1 tick 6E = $6,25` · fricción = 2,704 ticks = **$16,90 round turn**.
+`1 tick 6E = $6,25` · fricción = **2,768 ticks = $17,30 round turn**.
+
+> **Actualizado 2026-08-06 — la comisión dejó de ser una estimación.**
+> Confirmada en la fuente oficial de Lucid («Approved Products and Commissions»,
+> artículo del 2026-02-09): `6E · Euro FX Futures · **2.40 per side** · CME`.
+> El manifiesto de CAMP-001 llevaba **$2,20 pre-registrada como estimación** —el
+> «dato faltante #1»—, o sea que la fricción estaba **subestimada**.
+>
+> | | comisión RT | + slippage 2t | total RT | ticks |
+> |---|---|---|---|---|
+> | estimado | $4,40 | $12,50 | $16,90 | 2,7040 |
+> | **real** | **$4,80** | $12,50 | **$17,30** | **2,7680** |
+>
+> **+$0,40 por round turn = +0,064 ticks = +2,37 %.**
+>
+> **Qué NO cambia:** el MDE (1,14 a f=1 · 0,39 a f=10) y el margen medido de
+> 1,60× — dependen del error estándar, no de la fricción. **Qué SÍ cambia:** toda
+> excursión bruta tiene que superar **2,768** en vez de 2,704, y toda expectativa
+> neta medida con el valor viejo estaba **sobreestimada en 0,064 ticks/trade**.
+>
+> **CAMP-001 no se re-abre y su veredicto se sostiene:** dio **negativo** con los
+> costos **subestimados**, y corregirlos hacia arriba sólo puede hacerlo más
+> negativo. El manifiesto sellado **no se toca** — la corrección rige de acá en
+> adelante.
+>
+> **Límite declarado:** `edge_validation_contract.md` §G3 pide el modelo
+> **desglosado** (broker + exchange/clearing + NFA). Lucid publica **un solo
+> número all-in por pata** y no lo abre. El total es real; el desglose por
+> componente **no es acreditable desde esta fuente**, y no se inventa.
 
 | | dólares | ticks (1 contrato) |
 |---|---|---|
@@ -195,11 +223,11 @@ constante.
 
 ### 3.1 Estadístico primario — una sola formulación
 
-> **Expectativa NETA por trade, en ticks, con la fricción de 2,704 ya restada
+> **Expectativa NETA por trade, en ticks, con la fricción de 2,768 ya restada
 > DENTRO del estadístico. Umbral = 0.**
 
 **PROHIBIDO** volver a restar la fricción del lado derecho de la comparación
-(sería contarla dos veces). **PROHIBIDO** reintroducir `2,704/(P+N)`: ése es el
+(sería contarla dos veces). **PROHIBIDO** reintroducir `2,768/(P+N)`: ése es el
 umbral del estadístico de **tasa**, no del de expectativa, y confundirlos fue un
 error real de este expediente.
 
@@ -273,7 +301,7 @@ en disco (`data/nt8/ES_parquet/`, `NQ_parquet/`).
 
 Advertencia: los instrumentos están correlacionados, así que la replicación **no**
 multiplica `n` por 3, y cada uno tiene su propia estructura de fricción — el
-2,704 es de 6E y hay que recalcularlo por instrumento antes de usarlo como umbral.
+2,768 es de 6E y hay que recalcularlo por instrumento antes de usarlo como umbral.
 
 ---
 
@@ -305,10 +333,10 @@ Estadístico = expectativa **neta con signo contra 0**, con la dirección que em
 el indicador. Es el régimen potente: no gasta datos estimando el signo.
 
 **RÉGIMEN B — dirección como salida. H2 y H3 (zonas).**
-Estadístico = `|excursión bruta|` contra la fricción 2,704; el signo se lee del
+Estadístico = `|excursión bruta|` contra la fricción 2,768; el signo se lee del
 resultado. Es **un** test bilateral, **no dos**: no consume multiplicidad extra.
 Razón registrada: con la fricción dentro del estadístico, fade y break no son
-espejos (`neto_fade = bruto − 2,704`; `neto_break = −bruto − 2,704`) y no pueden
+espejos (`neto_fade = bruto − 2,768`; `neto_break = −bruto − 2,768`) y no pueden
 ser ambos positivos.
 
 **PROHIBIDO:** correr el régimen A con la dirección elegida **después** de ver el
