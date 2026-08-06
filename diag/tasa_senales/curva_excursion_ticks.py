@@ -43,18 +43,43 @@ total y la corrida es reproducible. Lo que **no** se afirma es que ése sea el
 orden económico verdadero — para eso haría falta el libro, que no está. Y el
 guard sigue: si `sequence` no fuera orden total en la ventana, la unidad ABSTIENE.
 
-## REGLA DE IDENTIDAD DE BARRAS (obligatoria)
+## RELOJ DE DISPONIBILIDAD — **una regla por CLASE de kernel, no una sola**
 
-`available_ns = bar_end[created_bar]` **sólo es válido si `created_bar` indexa el
-mismo array de barras con el que corrió el kernel.**
+`available_ns = bar_end[created_bar]` es correcto **sólo para kernels que crean
+al CIERRE de la barra**. Aplicarlo a los que crean **a mitad de barra** mete en
+la ventana ticks anteriores a que la zona existiera.
 
-Este path construye **siempre M1** (`build_time_bars(tk, 1)`) y corre los kernels
-sobre esas mismas barras, así que `created_bar` es índice M1 por construcción.
+**Medido** sobre 6E 03-26 (10 días), fracción de zonas con
+`created_ms > bar_end[created_bar]` y retraso mediano:
 
-> **Prohibido** mezclar un `created_bar` producido con otra `bar_spec` —tick:25,
-> tick:10— contra `bar_end` de M1. Sería anclar la disponibilidad a un instante
-> que no existe. Este path de diseño es **`time:1` / M1**, y así se declara en el
-> manifiesto.
+| indicador | clase | zonas afectadas | retraso mediano |
+|---|---|---|---|
+| `BigTrap2` | `bar_close` | **0 %** | — |
+| `VolTicksPOC2` | `bar_close` | **0 %** | — |
+| `aVolCellPOI2` | `bar_close` | — | — |
+| **`Gaps2`** | **`tick_create`** | **99 %** | **21,5 s** |
+| **`HFTZones2`** | **`tick_create`** | **97 %** | **27,5 s** |
+
+En una barra de un minuto, 21-27 s son **~35-45 % de la barra** contaminando la
+ventana. Misma familia que el `-1`: **no explota, miente**.
+
+```text
+bar_close   (BigTrap2, VolTicksPOC2, aVolCellPOI2):
+    available_ns = bar_end[created_bar]          # path M1
+
+tick_create (Gaps2, HFTZones2):
+    available_ns = (created_ms + 1) en ns        # NO bar_end[created_bar]
+    i0 = primer tick ESTRICTAMENTE posterior a la creación
+```
+
+**El `+1 ms` no es un margen arbitrario.** `created_ms` es una **truncación** del
+`ts_ns` del tick creador, así que `ts > created_ms·10⁶` podría incluir **al
+propio tick que creó la zona**. Avanzar al milisegundo siguiente garantiza
+«estrictamente posterior» al costo de descartar, como mucho, 1 ms. Fail-closed.
+
+> **Prohibido unificar las dos clases bajo una sola regla**, y prohibido mezclar
+> un `created_bar` de otra `bar_spec` contra `bar_end` de M1. Este path es
+> **`time:1` / M1**; la clase de cada indicador se declara en el manifiesto.
 
 ## Frontera outcome-free
 
@@ -100,6 +125,17 @@ CT = ZoneInfo("America/Chicago")
 #: ella misma la grilla que se va a testear. Sin el 0: «alejarse 0 ticks» no es
 #: un alejamiento, es la regla de hoy.
 T_DESIGN = (1, 2, 3, 5, 8, 13, 21, 34)
+
+#: CLASE DE KERNEL: decide de dónde sale el reloj de disponibilidad. Fail-closed:
+#: un indicador que no esté acá NO se estima — se descarta y se cuenta.
+CLASE_KERNEL = {
+    "BigTrap2": "bar_close",
+    "VolTicksPOC2": "bar_close",
+    "aVolCellPOI2": "bar_close",
+    "Gaps2": "tick_create",
+    "HFTZones2": "tick_create",
+    # AACloseOpenDiffs no entra: no exporta `created_bar` ni tiene ZONE_TOUCHED.
+}
 
 #: FIREWALL. `MAX_FECHA` es una fecha de **SESIÓN CT**, no un corte civil UTC.
 #:
@@ -214,6 +250,7 @@ def medir(archivo, fechas, indicadores, lead=LEAD_DAYS, verbose=True):
     res = {}
     for nombre in indicadores:
         t1 = time.time()
+        clase_ind = CLASE_KERNEL.get(nombre)
         mod = REGISTRY[nombre]
         if nombre in BAR_DRIVEN:
             if fp is None:
@@ -227,6 +264,7 @@ def medir(archivo, fechas, indicadores, lead=LEAD_DAYS, verbose=True):
         por = {a: {t: Counter() for t in T_DESIGN} for a in ARQ}
         por_kind = {a: {t: Counter() for t in T_DESIGN} for a in ARQ}
         alej, n_sin_tramo, n_sin_campos, n_sin_created_bar = [], 0, 0, 0
+        n_sin_clase = 0
         for z in zonas:
             if z.get("created_ms") is None or z.get("top") is None:
                 n_sin_campos += 1
@@ -240,6 +278,10 @@ def medir(archivo, fechas, indicadores, lead=LEAD_DAYS, verbose=True):
             #
             # FAIL-CLOSED: sin `created_bar` la zona NO se estima con heuristica.
             # Se cuenta aparte y se abstiene.
+            clase = CLASE_KERNEL.get(nombre)
+            if clase is None:
+                n_sin_clase += 1
+                continue
             cb = z.get("created_bar")
             if cb is None or not isinstance(cb, (int, np.integer)):
                 n_sin_created_bar += 1
@@ -252,7 +294,16 @@ def medir(archivo, fechas, indicadores, lead=LEAD_DAYS, verbose=True):
             if cb < 0 or cb >= len(bar_end):
                 n_sin_created_bar += 1
                 continue
-            disp_ns = int(bar_end[int(cb)])
+            if clase == "bar_close":
+                disp_ns = int(bar_end[int(cb)])
+            else:
+                # tick_create: la zona nace a MITAD de la barra siguiente al
+                # ultimo cierre. `bar_end[created_bar]` arrancaria la ventana
+                # ~21-27 s ANTES de que la zona existiera -medido: 99% de las
+                # zonas de Gaps2 y 97% de HFTZones2-.
+                # `+1 ms` porque `created_ms` TRUNCA el ts_ns del tick creador:
+                # sin eso, `ts > created_ms*1e6` podria incluir ese mismo tick.
+                disp_ns = (int(z["created_ms"]) + 1) * 1_000_000
             i0 = int(np.searchsorted(ts, disp_ns, side="right"))
             fin_ms = z.get("ended_ms")
             i1 = (int(np.searchsorted(ts, int(fin_ms) * 1_000_000, side="right"))
@@ -278,6 +329,8 @@ def medir(archivo, fechas, indicadores, lead=LEAD_DAYS, verbose=True):
             zonas_sin_tramo_de_ticks=n_sin_tramo,
             zonas_sin_campos=n_sin_campos,
             zonas_sin_created_bar=n_sin_created_bar,
+            zonas_sin_clase_declarada=n_sin_clase,
+            clase_kernel=clase_ind,
             zonas_abstenidas_por_ambiguedad_intrabar=0,   # imposible con orden total
             segundos=round(time.time() - t1, 1),
             por_umbral={a: {str(T): dict(c) for T, c in d.items()}
@@ -348,11 +401,14 @@ def main(argv=None):
             ac = acum.setdefault(nombre, dict(zonas=0, kinds={},
                                               zonas_sin_tramo_de_ticks=0,
                                               zonas_sin_created_bar=0,
+                                              zonas_sin_clase_declarada=0,
                                               alejamiento_por_contrato={},
                                               por_umbral={}, por_kind={}))
             ac["zonas"] += d["zonas"]
             ac["zonas_sin_tramo_de_ticks"] += d["zonas_sin_tramo_de_ticks"]
             ac["zonas_sin_created_bar"] += d["zonas_sin_created_bar"]
+            ac["zonas_sin_clase_declarada"] += d["zonas_sin_clase_declarada"]
+            ac["clase_kernel"] = d.get("clase_kernel")
             # los cuantiles NO se pisan entre contratos: se guardan por contrato.
             # Sobrescribirlos publicaba los del ultimo contrato como si fueran
             # los del universo.
@@ -373,11 +429,13 @@ def main(argv=None):
             print("%-18s %s" % (nombre, "".join(
                 "%8.2f" % (sum(d.get(str(T), {}).values()) / ns) for T in T_DESIGN)))
     print("\nDESCARTES  (un descarte no reportado es un numero que nadie puede reconstruir)")
-    print("  %-18s %8s %16s %10s" % ("indicador", "zonas", "sin_created_bar", "sin_tramo"))
+    print("  %-18s %-12s %8s %16s %10s %12s"
+          % ("indicador", "clase", "zonas", "sin_created_bar", "sin_tramo", "sin_clase"))
     for nombre, r in sorted(acum.items()):
-        print("  %-18s %8d %16d %10d" % (nombre, r["zonas"],
-                                         r["zonas_sin_created_bar"],
-                                         r["zonas_sin_tramo_de_ticks"]))
+        print("  %-18s %-12s %8d %16d %10d %12d"
+              % (nombre, r.get("clase_kernel") or "-", r["zonas"],
+                 r["zonas_sin_created_bar"], r["zonas_sin_tramo_de_ticks"],
+                 r["zonas_sin_clase_declarada"]))
 
     payload = dict(
         schema_version="curva_excursion_ticks_v1",
@@ -387,8 +445,13 @@ def main(argv=None):
         session_count=ns, max_fecha_universo=peor, firewall_max_fecha=MAX_FECHA,
         firewall_corte_utc_ns=int(corte_del_sello().value),
         firewall_corte_iso=str(corte_del_sello()),
-        identidad_de_barras="created_bar indexa M1 (build_time_bars(tk,1)); "
-                            "prohibido mezclar con otra bar_spec",
+        identidad_de_barras={
+            "path": "time:1 / M1 -- build_time_bars(tk, 1)",
+            "bar_close": "available_ns = bar_end[created_bar]",
+            "tick_create": "available_ns = (created_ms + 1) en ns; NO bar_end[]",
+            "por_indicador": dict(CLASE_KERNEL),
+            "prohibido": "una sola regla para las dos clases, o mezclar "
+                         "created_bar de otra bar_spec con bar_end de M1"},
         universe_filter_report=info,
         ventana="(zona disponible, primera resolucion] -- nada posterior",
         orden="(ts_ns, sequence_de_archivo) -- orden de FILA del F2, determinista y "

@@ -201,7 +201,7 @@ def test_sistema_la_identidad_de_barras_esta_declarada():
     MISMO array con el que corrió el kernel. Este path es M1 y lo declara."""
     src = io.open(os.path.join(REPO, "diag", "tasa_senales",
                                "curva_excursion_ticks.py"), encoding="utf-8").read()
-    assert "REGLA DE IDENTIDAD DE BARRAS" in src
+    assert "RELOJ DE DISPONIBILIDAD" in src
     assert "build_time_bars(tk, 1)" in src
 
 
@@ -263,3 +263,55 @@ def test_sistema_el_manifiesto_publica_el_corte_del_firewall():
     src = io.open(os.path.join(REPO, "diag", "tasa_senales",
                                "curva_excursion_ticks.py"), encoding="utf-8").read()
     assert "firewall_corte_utc_ns" in src and "firewall_corte_iso" in src
+
+
+# --------------------------------------------------------------- 13.62: clases
+def test_clase_las_dos_familias_estan_declaradas_y_separadas():
+    """Prohibido una sola regla para las dos. Medido: `Gaps2` crea a mitad de
+    barra en el 99 % de sus zonas, con 21,5 s de retraso mediano respecto del
+    cierre; `HFTZones2` el 97 % con 27,5 s. `BigTrap2` y `VolTicksPOC2`, 0 %."""
+    from diag.tasa_senales.curva_excursion_ticks import CLASE_KERNEL
+    assert CLASE_KERNEL["BigTrap2"] == "bar_close"
+    assert CLASE_KERNEL["VolTicksPOC2"] == "bar_close"
+    assert CLASE_KERNEL["aVolCellPOI2"] == "bar_close"
+    assert CLASE_KERNEL["Gaps2"] == "tick_create"
+    assert CLASE_KERNEL["HFTZones2"] == "tick_create"
+    assert "AACloseOpenDiffs" not in CLASE_KERNEL, "no entra al path"
+
+
+def test_clase_tick_create_NO_usa_bar_end():
+    """Usar `bar_end[created_bar]` en un kernel tick-driven mete ticks
+    ANTERIORES a la creación. No explota: ensucia la ventana."""
+    src = io.open(os.path.join(REPO, "diag", "tasa_senales",
+                               "curva_excursion_ticks.py"), encoding="utf-8").read()
+    cuerpo = src.split('if clase == "bar_close":')[1][:900]
+    assert 'disp_ns = (int(z["created_ms"]) + 1) * 1_000_000' in cuerpo
+    # lo que importa es la ASIGNACION, no las menciones en comentarios: la rama
+    # tick_create no puede DERIVAR disp_ns de bar_end.
+    asigs = [l for l in cuerpo.splitlines() if "disp_ns =" in l]
+    assert len(asigs) == 2, asigs
+    assert "bar_end" in asigs[0] and "bar_end" not in asigs[1]
+
+
+def test_clase_el_mas_uno_ms_no_es_arbitrario():
+    """`created_ms` TRUNCA el `ts_ns` del tick creador, así que
+    `ts > created_ms*1e6` podría incluir ese mismo tick. Avanzar un ms garantiza
+    estrictamente posterior al costo de descartar 1 ms como mucho."""
+    src = io.open(os.path.join(REPO, "diag", "tasa_senales",
+                               "curva_excursion_ticks.py"), encoding="utf-8").read()
+    assert "TRUNCA el ts_ns del tick creador" in src or "TRUNCA" in src
+
+
+def test_clase_indicador_sin_clase_se_descarta_no_se_estima():
+    """Fail-closed: si mañana entra un kernel nuevo sin clase declarada, no se
+    le inventa un reloj. Se cuenta en `zonas_sin_clase_declarada`."""
+    src = io.open(os.path.join(REPO, "diag", "tasa_senales",
+                               "curva_excursion_ticks.py"), encoding="utf-8").read()
+    assert "n_sin_clase += 1" in src
+    assert "zonas_sin_clase_declarada" in src
+
+
+def test_clase_el_manifiesto_declara_la_clase_de_cada_indicador():
+    src = io.open(os.path.join(REPO, "diag", "tasa_senales",
+                               "curva_excursion_ticks.py"), encoding="utf-8").read()
+    assert '"por_indicador": dict(CLASE_KERNEL)' in src
