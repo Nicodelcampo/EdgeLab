@@ -49,7 +49,9 @@ sys.path.insert(0, REPO)
 from edgelab.stats.bootstrap_estacionario import (bootstrap_estacionario,  # noqa: E402
                                                   largo_de_bloque_optimo)
 
-FRICCION_RT = 2.7040          # ticks round-trip, 6E — valor del proyecto
+# FUENTE UNICA (2026-08-06): antes `2.7040` hardcodeado. Ver costs.py.
+from edgelab.research.costs import friccion_rt_ticks  # noqa: E402
+FRICCION_RT = friccion_rt_ticks()          # ticks round-trip, 6E
 LIFT_IMPLAUSIBLE = 0.30       # umbral declarado ANTES de ver la tabla
 
 

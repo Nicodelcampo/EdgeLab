@@ -66,3 +66,28 @@ def get_scenario(name):
         raise KeyError("escenario desconocido: %r (validos: %s)"
                        % (name, sorted(SCENARIOS)))
     return SCENARIOS[name]
+
+
+# --- FUENTE UNICA de la friccion round-turn -------------------------------
+#: 6E: 1 tick = $6,25. El escenario `base` cobra 1 tick de slippage por pata.
+TICK_VALUE_USD_6E = 6.25
+
+
+def friccion_rt_ticks(scenario="base", tick_value_usd=TICK_VALUE_USD_6E):
+    """Friccion round-turn en TICKS: comision + slippage de entrada y salida.
+
+    Existe porque el 2026-08-06, al confirmar la comision real, aparecieron
+    TRES copias hardcodeadas del 2,704 fuera de este modulo
+    (`diag/spike_in/unidad4_por_geometria.py:34`, `tools/tabla_decision_pnk.py:52`,
+    y comentarios en `tools/atlas_asimetrico.py`). Actualizar la comision no las
+    tocaba: cada una habria seguido publicando numeros con la friccion vieja, sin
+    que nada lo delatara. Es el mismo modo de falla que persigue todo este
+    expediente -un numero en uso cuya procedencia nadie rastrea-.
+
+    Con la comision real ($2,40/pata) da **2,768**; con la estimacion vieja
+    ($2,20) daba 2,704.
+    """
+    sc = scenario if isinstance(scenario, CostScenario) else get_scenario(scenario)
+    comision_rt = 2 * sc.commission_per_side_usd
+    slippage_rt_ticks = sc.slip_entry + sc.slip_exit
+    return comision_rt / tick_value_usd + slippage_rt_ticks

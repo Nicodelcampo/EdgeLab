@@ -31,7 +31,10 @@ from spike_in import (A0, CFG, DATA_DIR, dias_del_atlas_sellado,  # noqa: E402
                       geometrias)
 
 RONDAS = int(os.environ.get("SPIKE_RONDAS", "25"))
-FRICCION = 2.704
+# FUENTE UNICA (2026-08-06): antes era `2.704` hardcodeado, y actualizar la
+# comision real de Lucid no lo tocaba. Da 2,768 con $2,40/pata.
+from edgelab.research.costs import friccion_rt_ticks  # noqa: E402
+FRICCION = friccion_rt_ticks()
 
 
 def procesar(args):
