@@ -23,7 +23,13 @@ En 6E el **66,1 %** de los ticks consecutivos comparte `ts_ns` — el intervalo
 mediano entre ticks es 0 ms, que es lo que `HIPOTESIS_PENDIENTES.md` ya
 documentaba. Así que `ts_ns` **solo** no ordena.
 
-Pero el esquema F2 trae `sequence`, el **orden estable del archivo fuente**.
+Pero el esquema F2 trae `sequence`, el **orden estable del ARCHIVO**.
+
+> **`sequence` NO es verdad de mercado.** Es el orden de fila del F2, no el orden
+> del matching engine del exchange. Sirve para **determinismo reproducible** —dos
+> corridas sobre el mismo archivo dan lo mismo— y **no** para afirmar qué pasó
+> primero en el libro. La formulación correcta del orden es
+> **`(ts_ns, sequence_de_archivo)`**, y así se declara en el manifiesto.
 Verificado sobre datos reales (6E 03-26, 317.064 ticks):
 
     sequence estrictamente creciente ..... sí
@@ -32,9 +38,10 @@ Verificado sobre datos reales (6E 03-26, 317.064 ticks):
     mayor grupo de ts_ns empatado ........ 185 ticks
 
 Un tick es un **punto**: está dentro de la banda o afuera. Con orden total no hay
-"hizo las dos cosas". **La ambigüedad desaparece por construcción, no por
-supuesto** — y el guard sigue: si `sequence` no fuera orden total en la ventana
-cargada, la zona ABSTIENE.
+"hizo las dos cosas". La ambigüedad **de lectura** desaparece: sobre `(ts_ns, sequence)` el orden es
+total y la corrida es reproducible. Lo que **no** se afirma es que ése sea el
+orden económico verdadero — para eso haría falta el libro, que no está. Y el
+guard sigue: si `sequence` no fuera orden total en la ventana, la unidad ABSTIENE.
 
 ## Frontera outcome-free
 
@@ -81,8 +88,27 @@ CT = ZoneInfo("America/Chicago")
 #: un alejamiento, es la regla de hoy.
 T_DESIGN = (1, 2, 3, 5, 8, 13, 21, 34)
 
-#: FIREWALL: ningún tick posterior a esta fecha entra, ni siquiera a escanearse.
+#: FIREWALL. `MAX_FECHA` es una fecha de **SESIÓN CT**, no un corte civil UTC.
+#:
+#: La v1 cortaba en `2026-06-30 23:59:59 UTC`, que son las **18:59 CT** — y la
+#: sesión `2026-07-01`, primer día del holdout, **arranca a las 17:00 CT**. O sea
+#: que dejaba entrar **2 horas de la primera sesión sellada**. Fuga latente: los
+#: pilotos corrieron sobre diciembre 2025 y nunca la dispararon, pero la corrida
+#: completa sí la habría disparado.
+#:
+#: El corte correcto es el INICIO de la sesión siguiente a `MAX_FECHA`, con la
+#: misma convención que usa todo el proyecto (17:00 America/Chicago,
+#: `[inicio, fin)`; ver `SESION_HORA_CORTE` en `pred004_analyze.py` y
+#: `bars.py::session_ids`).
 MAX_FECHA = "2026-06-30"
+SESION_HORA_CORTE = 17
+SESION_TZ = "America/Chicago"
+
+
+def corte_del_sello():
+    """Primer instante EXCLUIDO: el inicio de la sesión siguiente a MAX_FECHA."""
+    d = pd.Timestamp(MAX_FECHA, tz=SESION_TZ) + pd.Timedelta(hours=SESION_HORA_CORTE)
+    return d.tz_convert("UTC")
 
 SALIDA = Path(__file__).resolve().parent / "curva_excursion_ticks.json"
 SUPERSEDE = "diag/tasa_senales/curva_excursion.py (M1) — 91,4 % de ABSTAIN"
@@ -144,8 +170,7 @@ def medir(archivo, fechas, indicadores, lead=LEAD_DAYS, verbose=True):
     # FIREWALL: el fin de carga se recorta al minimo entre el ultimo dia del
     # contrato y MAX_FECHA. No se escanea un tick del holdout.
     fin_contrato = pd.Timestamp(fechas[-1] + " 00:00:00", tz="America/Chicago") + pd.Timedelta(days=1)
-    fin_sello = pd.Timestamp(MAX_FECHA + " 23:59:59.999999999", tz="UTC")
-    fin = min(fin_contrato.tz_convert("UTC"), fin_sello)
+    fin = min(fin_contrato.tz_convert("UTC"), corte_del_sello())
 
     t0 = time.time()
     tk = ticks_mod.load_canonical_parquet(
@@ -188,18 +213,28 @@ def medir(archivo, fechas, indicadores, lead=LEAD_DAYS, verbose=True):
         ARQ = ("retorno", "ruptura_arriba", "ruptura_abajo")
         por = {a: {t: Counter() for t in T_DESIGN} for a in ARQ}
         por_kind = {a: {t: Counter() for t in T_DESIGN} for a in ARQ}
-        alej, n_sin_tramo, n_sin_campos = [], 0, 0
+        alej, n_sin_tramo, n_sin_campos, n_sin_created_bar = [], 0, 0, 0
         for z in zonas:
             if z.get("created_ms") is None or z.get("top") is None:
                 n_sin_campos += 1
                 continue
             lo_t, hi_t = z["bottom"] / tick_size, z["top"] / tick_size
-            c_ns = int(z["created_ms"]) * 1_000_000
             # DISPONIBLE, no anclado: la entrada empieza al CIERRE de la barra
-            # creadora. Usar `created_ms` a secas dejaria entrar ticks de la
-            # propia barra que creo la zona.
-            ib = int(np.searchsorted(bar_end, c_ns, side="left"))
-            disp_ns = int(bar_end[ib]) if ib < len(bar_end) else c_ns
+            # creadora. Se toma de `created_bar` EXPORTADO por el kernel, no se
+            # reconstruye desde `created_ms`: esa reconstruccion truncaba ns,
+            # podia anclar la barra equivocada, y trataba distinto a kernels con
+            # semanticas de `created_ms` distintas.
+            #
+            # FAIL-CLOSED: sin `created_bar` la zona NO se estima con heuristica.
+            # Se cuenta aparte y se abstiene.
+            cb = z.get("created_bar")
+            if cb is None or not isinstance(cb, (int, np.integer)):
+                n_sin_created_bar += 1
+                continue
+            if cb >= len(bar_end):
+                n_sin_tramo += 1
+                continue
+            disp_ns = int(bar_end[int(cb)])
             i0 = int(np.searchsorted(ts, disp_ns, side="right"))
             fin_ms = z.get("ended_ms")
             i1 = (int(np.searchsorted(ts, int(fin_ms) * 1_000_000, side="right"))
@@ -224,6 +259,7 @@ def medir(archivo, fechas, indicadores, lead=LEAD_DAYS, verbose=True):
             kinds=dict(Counter(z.get("kind") for z in zonas)),
             zonas_sin_tramo_de_ticks=n_sin_tramo,
             zonas_sin_campos=n_sin_campos,
+            zonas_sin_created_bar=n_sin_created_bar,
             zonas_abstenidas_por_ambiguedad_intrabar=0,   # imposible con orden total
             segundos=round(time.time() - t1, 1),
             por_umbral={a: {str(T): dict(c) for T, c in d.items()}
@@ -325,7 +361,8 @@ def main(argv=None):
         session_count=ns, max_fecha_universo=peor, firewall_max_fecha=MAX_FECHA,
         universe_filter_report=info,
         ventana="(zona disponible, primera resolucion] -- nada posterior",
-        orden="ts_ns + `sequence` (orden estable del archivo); un tick es un punto",
+        orden="(ts_ns, sequence_de_archivo) -- orden de FILA del F2, determinista y "
+              "reproducible. NO es el orden del matching engine ni verdad de mercado.",
         outcomes_accessed=False, curvas=acum, por_contrato=crudo)
     payload["output_sha256"] = hashlib.sha256(
         json.dumps(payload, sort_keys=True, ensure_ascii=False).encode()).hexdigest()

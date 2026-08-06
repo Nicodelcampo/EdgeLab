@@ -307,7 +307,8 @@ def run(ticks, bars, footprints, params=None, chart_tz="UTC"):
         process_bar(ask_map, bid_map, fp_vol, n_quote, n_rule, b, t_ns)
 
     zones = [dict(id=z["id"], indicator=NAME, top=z["hi"], bottom=z["lo"],
-                  created_ms=z["created_ms"], ended_ms=z["ended_ms"], state=z["state"],
+                  created_ms=z["created_ms"], created_bar=z["created_bar"],
+                  ended_ms=z["ended_ms"], state=z["state"],
                   kind="trapped_buyers" if z["is_bull"] else "trapped_sellers",
                   touches=z["touches"], end_reason=z["end_reason"], timeline=[])
              for z in all_zones]
