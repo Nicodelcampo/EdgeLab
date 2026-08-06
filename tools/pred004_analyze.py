@@ -86,31 +86,25 @@ P5_META_IGNORABLE = frozenset({
 #: ACÁ y en el mismo commit que lo introduce, nunca después de ver un log.
 P5_PAYLOAD_IGNORABLE = frozenset()
 
-#: QUÉ COMPARA P5. Enmienda N1 aprobada por Nico el 2026-08-05; fundamento
-#: completo en `docs/N1_INVENTARIO_SEQ.md`.
-#: Antes: identidad bit a bit **incluyendo el `seq` absoluto**. Eso era
-#: incomparable por construcción — `eventSeq++` es un contador COMPARTIDO
-#: (`.cs:892`) y el predicado de `FOOTPRINT_MISMATCH` cambió entre versiones
-#: (v2.1 `.cs:218` mira VOLUMEN; v2.4 `VerificarOHLC` mira OHLC: **disjuntos**),
-#: así que el conteo difiere y corre el `seq` de todo evento posterior. P5 habría
-#: fallado por el contador, no por la regresión que busca.
-#: Ahora: identidad económica **en orden económico** (tipo · ts · payload). El
-#: corrimiento NO se borra: se publica como `delta_seq_*` junto a
-#: `footprint_mismatch_por_lado`, que es su causa.
-P5_COMPARACION = "identidad_economica_en_orden;seq_absoluto_reportado_no_juzgado"
+#: QUÉ COMPARA P5. Enmienda N1 (Nico 2026-08-05) + política seq v6 (Nico
+#: 2026-08-06). Fundamento: docs/N1_INVENTARIO_SEQ.md y
+#: docs/research/DECISION_NICO_P5_SEQ_Y_JSON_2026-08-06.md §3.1.
+#: Identidad económica en orden; seq absoluto reportado; seq_corrido con
+#: economía idéntica => ABSTAIN de política (no PASS).
+P5_COMPARACION = "identidad_economica_en_orden;seq_absoluto_reportado;seq_corrido_implica_ABSTAIN_politica"
 
 #: POLITICA DE `seq_corrido` — decision de Nico del 2026-08-06, opcion B.
-#: Acta: `docs/research/DECISION_NICO_P5_SEQ_Y_JSON_2026-08-06.md`.
+#: Acta §3.1 publica el valor EXACTO que entra al hash (no una descripción):
+#:   p5_seq_corrido_politica = "ABSTAIN"
 #:
 #:   economia identica  Y  seq_corrido=true   -> ABSTAIN
 #:   diferencia economica                     -> FAIL  (manda sobre el corrimiento)
 #:   economia identica  Y  seq_corrido=false  -> PASS
 #:
 #: Cierra el hueco que levanto Grok: publicar el corrimiento no alcanzaba si
-#: nada obligaba a mirarlo -"si el ritual solo mira PASS/FAIL, el corrimiento es
-#: invisible en la practica"-. Ahora el gate es enforceable por exit code (2).
+#: nada obligaba a mirarlo. Ahora el gate es enforceable por exit code (2).
 #: NO deshace N1: no es FAIL de regresion economica, es abstencion de politica.
-P5_SEQ_CORRIDO_POLITICA = "abstain_si_seq_corrido_con_economia_identica"
+P5_SEQ_CORRIDO_POLITICA = "ABSTAIN"
 
 #: tipos de evento con contenido ECONÓMICO. Son los que P5 compara.
 #: Los diagnósticos quedan fuera porque v2.3 los introduce o los cambia por
@@ -338,6 +332,9 @@ def modo_p5(hist_path, nuevo_path, resolucion_esperada=None):
     criterio; sacar el `seq` no abre ese hueco ni lo cierra.
 
     Formatos no comparables = ABSTAIN, nunca PASS.
+
+    v6 (Nico 2026-08-06): si la economia es identica y seq_corrido=true, el
+    estado es ABSTAIN de politica (no PASS). FAIL economico manda. Exit 2.
     """
     a = leer_log(hist_path)
     b = leer_log(nuevo_path)
@@ -414,6 +411,7 @@ def modo_p5(hist_path, nuevo_path, resolucion_esperada=None):
 
     # El FAIL economico MANDA sobre el corrimiento; recien si la economia es
     # identica el corrimiento decide entre PASS y ABSTAIN.
+    # v6 / Nico 2026-08-06: ABSTAIN de politica si seq_corrido (exit 2).
     corrido = bool(delta and set(delta) != {0})
     if dif:
         estado = "FAIL"
@@ -430,7 +428,7 @@ def modo_p5(hist_path, nuevo_path, resolucion_esperada=None):
                 n_eventos_economicos=[len(ea), len(eb)],
                 # identidad economica: lo que P5 SI juzga
                 comparacion=P5_COMPARACION,
-                # corrimiento: lo que P5 ya NO juzga, pero publica
+                # corrimiento: lo que P5 ya NO juzga como FAIL, pero publica
                 delta_seq_min=min(delta) if delta else 0,
                 delta_seq_max=max(delta) if delta else 0,
                 delta_seq_distintos=sorted(set(delta))[:20],
@@ -452,10 +450,11 @@ def modo_p5(hist_path, nuevo_path, resolucion_esperada=None):
                 seq_corrido=corrido,
                 footprint_mismatch_por_lado=fm,
                 nota_seq=("el `seq` absoluto NO es condicion de FAIL (N1). "
-                          "Un delta != 0 se explica por la diferencia de "
-                          "footprint_mismatch_por_lado: eventSeq es un contador "
-                          "compartido. Un delta que NO se explique por esa "
-                          "diferencia es un hallazgo y hay que investigarlo."))
+                          "Si seq_corrido=true y no hay dif economicas, el "
+                          "estado es ABSTAIN de politica (v6 / Nico 2026-08-06), "
+                          "no PASS. Un delta no explicado por "
+                          "footprint_mismatch_por_lado / n_no_economicos es "
+                          "hallazgo y hay que investigarlo."))
 
 
 def _res(modo, estado, difs, *logs, **extra):
@@ -753,7 +752,7 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description="Analizador de PRED-004 sobre EventLogs de BigTrap2 v2.3")
     sub = ap.add_subparsers(dest="modo", required=True)
 
-    a = sub.add_parser("p5-time", help="histórico v2.1 vs nuevo v2.3, bit-identidad")
+    a = sub.add_parser("p5-time", help="histórico v2.1 vs nuevo: subsecuencia economica (v6)")
     a.add_argument("--historico", required=True)
     a.add_argument("--nuevo", required=True)
     a.add_argument("--resolucion", required=True,
