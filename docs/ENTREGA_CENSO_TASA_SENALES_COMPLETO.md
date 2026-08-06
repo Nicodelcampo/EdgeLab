@@ -3,9 +3,16 @@
 **Para la otra máquina / el auditor.** Responde al bloqueo #1
 (*"Falta el 90% de la medición de tasa de señales. Hay 20 días medidos de 200"*).
 
-**Ya no falta.** La medición está hecha sobre **201 sesiones en 4 contratos**,
-no 20 días. Cinco de los seis indicadores están completos; `HFTZones2` va por
-137/201 sesiones (3 de 4 contratos) y el cuarto sigue corriendo.
+**Ya no falta, y ya no falta nada.** La medición está hecha sobre **201 sesiones
+en 4 contratos**, con los **seis** indicadores completos.
+
+> **Actualización 2026-08-06 01:16 UTC — la corrida terminó.** 44,1 h de
+> cómputo (158.721 s). `diag/tasa_senales/post_sepmin.json` ahora tiene el
+> detalle **por día** de los 6 indicadores sobre las 201 sesiones.
+> Manifiesto: `session_count=201`, sin `indicadores_parciales`,
+> `outcomes_accessed: false`, `output_sha256 c1e1601a33e1877d`.
+> Ese archivo **reemplaza** la versión de 20 sesiones que estaba publicada; la
+> anterior sigue en el historial de git.
 
 Datos: parquets F2 reexportados y limpios (`dup_bloque=0` en los cinco).
 `sep_min=120`, `lead_days=20`, `outcomes_accessed: false`.
@@ -17,8 +24,8 @@ Datos: parquets F2 reexportados y limpios (`dup_bloque=0` en los cinco).
 | indicador | cru 20d | post 20d | col 20d | **cru 201** | **post 201** | **col 201** | ses |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | AACloseOpenDiffs | 632 | 12,0 | 98 % | **603,6** | **11,06** | **98,2 %** | 201 |
-| Gaps2 | 358 | 11,0 | 97 % | **360,7** | **10,07** | **97,2 %** | 201 |
-| HFTZones2 | 515 | 11,0 | 98 % | **536,0** | **10,26** | **98,1 %** | 137 |
+| Gaps2 | 358 | 11,0 | 97 % | **360,7** | **10,06** | **97,2 %** | 201 |
+| HFTZones2 | 515 | 11,0 | 98 % | **508,6** | **10,22** | **98,0 %** | 201 |
 | BigTrap2 | 75 | 9,0 | 88 % | **79,4** | **8,84** | **88,9 %** | 201 |
 | aVolCellPOI2 | 44 | 7,5 | 83 % | **42,3** | **6,50** | **84,6 %** | 201 |
 | VolTicksPOC2 | 7 | 3,0 | 57 % | **7,3** | **3,41** | **53,4 %** | 201 |
@@ -51,13 +58,25 @@ interpretar).
 | | c1 `03-26` (60) | c2 `06-26` (64) | c3 `09-26` (13) | c4 `12-25` (64) |
 |---|---:|---:|---:|---:|
 | **Gaps2** cruda | 440,0 | 381,6 | 219,9 | 294,1 |
-| **Gaps2** post | 10,20 | 10,05 | 9,69 | **10,03** |
-| **HFTZones2** cruda | 521,1 | 549,3 | 539,2 | *corriendo* |
-| **HFTZones2** post | 10,15 | 10,41 | 10,08 | *corriendo* |
+| **Gaps2** post | 10,20 | 10,05 | 9,69 | 10,03 |
+| **HFTZones2** cruda | 521,1 | 549,3 | 539,2 | 450,0 |
+| **HFTZones2** post | 10,15 | 10,41 | 10,08 | 10,14 |
 
-`Gaps2` está **completo en los cuatro** y se mueve entre 9,69 y 10,20 con
-crudas que varían casi 2×. Eso es el techo mecánico visto de la forma más
-limpia: la tasa cruda cambia de contrato a contrato, la post-filtro no.
+**Los dos caros están completos en los cuatro contratos.** `Gaps2` se mueve
+entre 9,69 y 10,20 con crudas que varían **2×** (219,9 a 440,0); `HFTZones2`
+entre 10,08 y 10,41 con crudas de 450,0 a 549,3. Es el techo mecánico visto de
+la forma más limpia que hay: la tasa cruda cambia de contrato a contrato, la
+post-filtro no se mueve.
+
+### Sesiones con al menos una señal (para `MIN_STUDENTIZED_SESSIONS=160`)
+
+| indicador | sesiones con señal | días en cero |
+|---|---:|---:|
+| AACloseOpenDiffs · HFTZones2 · Gaps2 · BigTrap2 | **201** | 0 |
+| VolTicksPOC2 | 199 | 2 |
+| aVolCellPOI2 | **177** | 24 |
+
+Los seis superan el mínimo. Cuatro no tienen un solo día en cero.
 
 ## 4. Artefactos
 
