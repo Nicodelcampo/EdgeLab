@@ -43,6 +43,19 @@ total y la corrida es reproducible. Lo que **no** se afirma es que ése sea el
 orden económico verdadero — para eso haría falta el libro, que no está. Y el
 guard sigue: si `sequence` no fuera orden total en la ventana, la unidad ABSTIENE.
 
+## REGLA DE IDENTIDAD DE BARRAS (obligatoria)
+
+`available_ns = bar_end[created_bar]` **sólo es válido si `created_bar` indexa el
+mismo array de barras con el que corrió el kernel.**
+
+Este path construye **siempre M1** (`build_time_bars(tk, 1)`) y corre los kernels
+sobre esas mismas barras, así que `created_bar` es índice M1 por construcción.
+
+> **Prohibido** mezclar un `created_bar` producido con otra `bar_spec` —tick:25,
+> tick:10— contra `bar_end` de M1. Sería anclar la disponibilidad a un instante
+> que no existe. Este path de diseño es **`time:1` / M1**, y así se declara en el
+> manifiesto.
+
 ## Frontera outcome-free
 
 - Universo: sólo sesiones que entrega la **puerta research**.
@@ -231,8 +244,13 @@ def medir(archivo, fechas, indicadores, lead=LEAD_DAYS, verbose=True):
             if cb is None or not isinstance(cb, (int, np.integer)):
                 n_sin_created_bar += 1
                 continue
-            if cb >= len(bar_end):
-                n_sin_tramo += 1
+            # `cb < 0` NO es un detalle: `gaps2.py:12` declara que antes del
+            # primer cierre primario vale -1, y en Python `bar_end[-1]` es la
+            # ULTIMA barra. Sin este guard la zona no fallaba: anclaba su
+            # disponibilidad al final de la serie, en silencio. Es el peor modo
+            # de falla -no explota, miente-.
+            if cb < 0 or cb >= len(bar_end):
+                n_sin_created_bar += 1
                 continue
             disp_ns = int(bar_end[int(cb)])
             i0 = int(np.searchsorted(ts, disp_ns, side="right"))
@@ -329,10 +347,16 @@ def main(argv=None):
                 continue
             ac = acum.setdefault(nombre, dict(zonas=0, kinds={},
                                               zonas_sin_tramo_de_ticks=0,
+                                              zonas_sin_created_bar=0,
+                                              alejamiento_por_contrato={},
                                               por_umbral={}, por_kind={}))
             ac["zonas"] += d["zonas"]
             ac["zonas_sin_tramo_de_ticks"] += d["zonas_sin_tramo_de_ticks"]
-            ac["alejamiento_en_primera_reentrada"] = d["alejamiento_en_primera_reentrada"]
+            ac["zonas_sin_created_bar"] += d["zonas_sin_created_bar"]
+            # los cuantiles NO se pisan entre contratos: se guardan por contrato.
+            # Sobrescribirlos publicaba los del ultimo contrato como si fueran
+            # los del universo.
+            ac["alejamiento_por_contrato"][arch] = d["alejamiento_en_primera_reentrada"]
             for k, v in d["kinds"].items():
                 ac["kinds"][k] = ac["kinds"].get(k, 0) + v
             for campo in ("por_umbral", "por_kind"):
@@ -348,10 +372,12 @@ def main(argv=None):
             d = r["por_umbral"].get(arq, {})
             print("%-18s %s" % (nombre, "".join(
                 "%8.2f" % (sum(d.get(str(T), {}).values()) / ns) for T in T_DESIGN)))
-    print("\nDESCARTES")
+    print("\nDESCARTES  (un descarte no reportado es un numero que nadie puede reconstruir)")
+    print("  %-18s %8s %16s %10s" % ("indicador", "zonas", "sin_created_bar", "sin_tramo"))
     for nombre, r in sorted(acum.items()):
-        print("  %-18s zonas=%-7d sin_tramo=%-6d ambiguas=0 (orden total por `sequence`)"
-              % (nombre, r["zonas"], r["zonas_sin_tramo_de_ticks"]))
+        print("  %-18s %8d %16d %10d" % (nombre, r["zonas"],
+                                         r["zonas_sin_created_bar"],
+                                         r["zonas_sin_tramo_de_ticks"]))
 
     payload = dict(
         schema_version="curva_excursion_ticks_v1",
@@ -359,6 +385,10 @@ def main(argv=None):
         autoritativo=not piloto, workers=a.workers,
         code_commit=git_head(), umbrales=list(T_DESIGN),
         session_count=ns, max_fecha_universo=peor, firewall_max_fecha=MAX_FECHA,
+        firewall_corte_utc_ns=int(corte_del_sello().value),
+        firewall_corte_iso=str(corte_del_sello()),
+        identidad_de_barras="created_bar indexa M1 (build_time_bars(tk,1)); "
+                            "prohibido mezclar con otra bar_spec",
         universe_filter_report=info,
         ventana="(zona disponible, primera resolucion] -- nada posterior",
         orden="(ts_ns, sequence_de_archivo) -- orden de FILA del F2, determinista y "

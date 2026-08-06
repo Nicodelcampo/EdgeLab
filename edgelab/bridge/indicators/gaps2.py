@@ -258,6 +258,7 @@ def run(ticks, bars, params=None, chart_tz="UTC"):
 
     zones = [dict(id="G" + format(g["id"], "06d"), indicator=NAME,
                   top=g["top"], bottom=g["bottom"], created_ms=g["created_ms"],
+                  created_bar=g["created_bar"],
                   ended_ms=g["ended_ms"], state=g["state"],
                   kind=("bull_gap" if g["is_bullish"] else "bear_gap"),
                   display=g["display"], size_ticks=g["size_ticks"],

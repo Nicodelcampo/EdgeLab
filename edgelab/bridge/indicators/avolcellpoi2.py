@@ -425,7 +425,8 @@ def run(ticks, bars, footprints, params=None, chart_tz="UTC"):
                 dst.append(c["value"])
 
     zones = [dict(id=str(z["id"]), indicator=NAME, top=z["upper"], bottom=z["lower"],
-                  created_ms=z["created_ms"], ended_ms=z["ended_ms"], state=z["state"],
+                  created_ms=z["created_ms"], created_bar=z["created_bar"],
+                  ended_ms=z["ended_ms"], state=z["state"],
                   kind="vol_cell_poi", touches=z["touches"], end_reason=z["end_reason"],
                   timeline=[]) for z in all_zones]
 

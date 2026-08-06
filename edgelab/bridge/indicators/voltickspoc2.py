@@ -224,7 +224,13 @@ def run(ticks, bars, footprints, params=None, chart_tz="UTC"):
         baseline_win.append(bar_vol)
 
     zones = [dict(id=str(z["id"]), indicator=NAME, top=z["upper"], bottom=z["lower"],
-                  created_ms=z["created_ms"], ended_ms=z["ended_ms"], state=z["state"],
+                  # `created_bar` EXPORTADO (13.61). Existia en el dict interno y se
+                  # perdia al exportar, asi que el consumidor tenia que
+                  # reconstruir la barra desde `created_ms`: truncaba ns y
+                  # podia anclar mal. parity.py NO lo lee -match_zones usa
+                  # created_ms + geometria-, asi que no toca los oraculos.
+                  created_ms=z["created_ms"], created_bar=z["created_bar"],
+                  ended_ms=z["ended_ms"], state=z["state"],
                   kind="poc_anomaly", touches=z["touches"], end_reason=z["end_reason"],
                   timeline=[]) for z in all_zones]
 

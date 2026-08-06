@@ -479,6 +479,7 @@ def run(ticks, bars, params=None, chart_tz="UTC"):
 
     viewer_zones = [dict(id="Z" + format(z["id"], "06d"), indicator=NAME,
                          top=z["upper"], bottom=z["lower"], created_ms=z["created_ms"],
+                         created_bar=z["created_bar"],
                          ended_ms=z["ended_ms"],
                          state=("ACTIVE" if not z["archived"] else
                                 "EXPIRED" if z["end_reason"] == "expired" else "INVALIDATED"),
