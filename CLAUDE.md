@@ -96,3 +96,25 @@ faltantes**, y esperar aprobación. No correr la búsqueda sin ese OK.
 `.venv` (Python 3.12) desde `requirements/core-bridge-dev.lock`. Suite:
 `.venv\Scripts\python -m pytest tests -m "not vectorbt" -q`. Branch de trabajo:
 `foundation/f0b-compatibility-probe` (main = baseline original, no mergear).
+
+## PRIMER COMANDO DE CADA SESIÓN
+
+```
+.venv\Scripts\python tools\estado.py
+```
+
+Dice en qué rama estás, si coincide con la declarada arriba, si estás
+sincronizado con el remoto, **y si otra rama tiene trabajo que la tuya no
+tiene**. Sale 1 si algo requiere atención. Correlo ANTES de medir cualquier cosa.
+
+**Regla de una sola rama.** Todo el trabajo va a `foundation/f0b-compatibility-probe`.
+Si hace falta una rama auxiliar, se mergea de vuelta **el mismo día**. El
+2026-08-05 dos máquinas midieron cosas distintas creyendo mirar lo mismo: 70
+commits vivían en una rama que este archivo no mencionaba, y cada lado leyó la
+suya. Las dos lecturas eran internamente coherentes. Ver `docs/AVISO_DIVERGENCIA_DE_RAMAS_2026-08-06.md`.
+
+Excepciones que divergen a propósito y `estado.py` no marca: `main`, `backup/*`,
+`preserve/*`.
+
+**Dos clones en esta máquina** — `E:\EdgeLab` y `E:\ProyectosQuant\EdgeLab-sync-desktop`.
+Los dos apuntan al mismo remoto. Correr `estado.py` en el que vayas a usar.

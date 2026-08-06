@@ -75,3 +75,6 @@
 > `target_free_validation`.
 | 2026-07-28T00:47:12Z | target_free_validation | ALLOWED | 2026-07-01T00:00:00 | 2026-07-26T23:59:59 | correr_gates:6E_09-26_ticks.parquet |
 | 2026-07-29T04:50:11Z | target_free_validation | ALLOWED | 2026-07-12T00:00:00 | 2026-07-13T23:59:59 | manual: lectura **ESTRUCTURAL** del oráculo `BigTrap2` v2.2 `tick:25` (`oracles/BigTrap2_tick25_6E_0926_v22.csv`) — línea `# meta`, histograma de tipos de evento, `seq` y timestamps, para decidir si el oráculo es apto ANTES de correr el matcher. **No se corrió paridad, no se leyeron zonas, geometría, P&L ni outcomes.** Resultado: oráculo **RECHAZADO como insumo** (dos corridas concatenadas — `seq` reinicia 4685→0 — y 4.352 zonas suprimidas por la política de rotura del `.cs` v2.2). La ventana de julio ya estaba registrada en la fila del 2026-07-27 como apertura no planificada; ésta es la lectura posterior de ese mismo archivo |
+| 2026-07-31T22:27:06Z | target_free_validation | ALLOWED | 2026-07-01T00:00:00 | 2026-07-26T23:59:59 | correr_gates:6E_09-26_ticks.parquet |
+| 2026-07-31T23:46:56Z | target_free_validation | ALLOWED | 2026-07-01T00:00:00 | 2026-07-26T23:59:59 | correr_gates:6E_09-26_ticks.parquet |
+| 2026-08-01T00:13:46Z | target_free_validation | ALLOWED | 2026-07-01T00:00:00 | 2026-07-26T23:59:59 | diag |

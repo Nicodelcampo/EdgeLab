@@ -31,9 +31,12 @@ secrets.*
 credentials.*
 
 # --- Datos grandes (fuera de Git; ver manifest + Data Contract futuro) ---
-data/*.parquet
-data/**/*.parquet
-data/nt8/
+# `data/` ENTERO. Antes solo se ignoraban *.parquet y data/nt8/, y el
+# 2026-08-05 aparecio data/nt8_logger/6E_20260731_*.csv -un EventLog de
+# NT8 fechado DENTRO del holdout sellado- sin regla que lo cubriera: un
+# `git add -A` lo habria commiteado. Nada de data/ esta trackeado, asi
+# que la regla amplia no desversiona nada.
+data/
 TickData/
 *.Last.txt
 *.zip
