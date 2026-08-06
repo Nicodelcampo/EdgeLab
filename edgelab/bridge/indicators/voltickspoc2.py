@@ -122,7 +122,9 @@ def run(ticks, bars, footprints, params=None, chart_tz="UTC"):
             plain(tick_vol), plain(poc_vol), gnum(poc_share, 6), gnum(threshold, 6),
             str(window_count), str(zone_id), str(touch_count), reason or ""]))
         rows.append(dict(seq=seq, type=etype, bar_index=bar, ts_ns=int(t_ns),
-                         unix_ms=ns_to_ms(t_ns), poc_tick=poc_tick, zone_id=zone_id,
+                         unix_ms=ns_to_ms(t_ns), poc_tick=poc_tick,
+                         # normalizacion 2026-08-06: STRING, no entero (ver gaps2.py)
+                         zone_id=str(zone_id) if zone_id else "",
                          touch_count=touch_count, reason=reason))
 
     def lifecycle(b, t_ns):

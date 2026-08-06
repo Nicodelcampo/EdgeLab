@@ -226,7 +226,9 @@ def run(ticks, bars, footprints, params=None, chart_tz="UTC"):
             str(n_samp), str(n_sess), str(zone_id), str(touches), reason or ""]))
         rows.append(dict(seq=seq, type=etype, bar_index=b, ts_ns=int(t_ns),
                          unix_ms=ns_to_ms(t_ns), bucket=bucket, lower_tick=lo_t,
-                         upper_tick=hi_t, zone_id=zone_id, touch_count=touches,
+                         upper_tick=hi_t, touch_count=touches,
+                         # normalizacion 2026-08-06: STRING, no entero (ver gaps2.py)
+                         zone_id=str(zone_id) if zone_id else "",
                          reason=reason))
 
     def roll_session_into_history():

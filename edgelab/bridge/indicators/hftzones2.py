@@ -204,8 +204,16 @@ def run(ticks, bars, params=None, chart_tz="UTC"):
             zone_fields = [""] * 15
         lines.append(",".join([str(seq), etype, ts_str(t_ns, tz), str(ns_to_ms(t_ns))]
                               + zone_fields + [reason or "", extra or ""]))
+        # Normalizacion 2026-08-06: el censo de primeros toques exige `touch_count`
+        # ENTERO y `zone_id` STRING para poder PROBAR la regla anti look-ahead de
+        # EXPLORE-001. Solo se toca el dict de `events`; la linea del CSV queda
+        # intacta. Verificado que no puede romper paridad: parity.py::match_zones
+        # consume `zones`, no `events`, y empareja por created_ms + geometria
+        # (grep -c zone_id parity.py -> 0; grep -c touch_count -> 0).
+        #
         rows.append(dict(seq=seq, type=etype, ts_ns=int(t_ns), unix_ms=ns_to_ms(t_ns),
                          zone_id=zid if (z is not None and z["id"] > 0) else None,
+                         touch_count=int(z["touches"]) if z is not None else 0,
                          reason=reason, extra=extra))
         if z is not None and z["id"] > 0:
             z["timeline"].append(dict(ms=ns_to_ms(t_ns), type=etype, extra=extra or reason))
