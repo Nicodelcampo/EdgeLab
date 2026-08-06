@@ -22,8 +22,38 @@
     {"id":"P2","medida":"FOOTPRINT_MISMATCH K10","esperado":"<=1% con el mismo codigo","refuta_si":">1%"},
     {"id":"P3","medida":"OHLCV del bloque atribuido","esperado":"100% en barras procesadas","refuta_si":"cualquier par procesado sin igualdad"},
     {"id":"P4","medida":"ambiguedad de anclaje","esperado":"0 barras procesadas cuando candidatos != 1","refuta_si":"seleccion arbitraria"},
-    {"id":"P5","medida":"time:1","esperado":"bit-identico al oracle previo","refuta_si":"cualquier diferencia"},
+    {
+      "id": "P5",
+      "medida": "time:1 camino de tiempo vs oraculo historico v2.1",
+      "esperado": "subsecuencia economica ordenada identica (tipo, ts, payload) segun contrato analizador v6; seq no es condicion de FAIL",
+      "refuta_si": "diferencia en tipo, orden, timestamp o payload economico",
+      "abstiene_si": "seq_corrido=true con economia identica (ABSTAIN de politica Nico 2026-08-06); o procedencia/archivo no acreditable (T3a/K1)",
+      "no_significa_pass": [
+        "EventLog bit-identico",
+        "captura historica correcta",
+        "julio rehabilitado",
+        "pin movible sin acta",
+        "P1/P2/P3 aprobados"
+      ],
+      "contrato_sha_vigente": "4ac53dba7fee2022a3873543abbeb3eb204e260f28b6e04dfb750da67949278d",
+      "oraculo_referencia_sha256": "7d0f464fd4e1c90301799e2f854d7b5fb5a17d84f4f6600f082f2d4c0e17de27",
+      "admisibilidad": "docs/research/K1_T3c_ADMISIBILIDAD_ORACULO_P5_2026-08-06.md",
+      "decision_seq": "docs/research/DECISION_NICO_P5_SEQ_Y_JSON_2026-08-06.md"
+    },
     {"id":"P6","medida":"archivos de EventLog","esperado":"una corrida por archivo, meta propia, seq inicia una vez","refuta_si":"append, overwrite o dos reinicios de seq"}
+  ],
+  "enmiendas": [
+    {
+      "fecha": "2026-08-06",
+      "autor": "Nico Buttaro",
+      "motivo": "Alinear P5 al contrato v5/v6 del analizador y cerrar la doble verdad bit-identico vs identidad economica; adoptar ABSTAIN de politica si seq_corrido=true",
+      "antes_P5": {
+        "esperado": "bit-identico al oracle previo",
+        "refuta_si": "cualquier diferencia"
+      },
+      "decision_ref": "docs/research/DECISION_NICO_P5_SEQ_Y_JSON_2026-08-06.md",
+      "k1_ref": "docs/research/K1_T3c_ADMISIBILIDAD_ORACULO_P5_2026-08-06.md"
+    }
   ],
   "orden_de_ejecucion": ["tests sinteticos", "compilacion NT8", "time:1", "K25", "K10"],
   "outcomes_accessed": false
