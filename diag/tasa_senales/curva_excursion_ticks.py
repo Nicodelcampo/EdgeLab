@@ -429,9 +429,14 @@ def main(argv=None):
     ap.add_argument("--indicadores", nargs="*", default=None)
     ap.add_argument("--limite-sesiones", type=int, default=None)
     ap.add_argument("--workers", type=int, default=1,
-                    help="1 = secuencial. La paralelizacion esta IMPLEMENTADA "
-                         "pero apagada por defecto: primero hay que demostrar "
-                         "equivalencia exacta 1-worker vs N-workers.")
+                    help="DEFAULT 1. La equivalencia 1 vs 2 esta DEMOSTRADA "
+                         "exacta (2 contratos, subset fijo), asi que --workers 2 "
+                         "es seguro. El default sigue en 1 por tres razones: el "
+                         "speedup medido fue 1,16x y venia del DESBALANCE entre "
+                         "contratos (60 vs 10 sesiones), no del CPU; los dos "
+                         "kernels que dominan la corrida real quedaron fuera de "
+                         "esa medicion; y el grano de checkpoint es mas fino en "
+                         "secuencial.")
     ap.add_argument("--out", default=str(SALIDA))
     ap.add_argument("--checkpoint", default=str(CHECKPOINT))
     ap.add_argument("--fresh", action="store_true",
@@ -574,6 +579,16 @@ def main(argv=None):
         session_count=ns, max_fecha_universo=peor, firewall_max_fecha=MAX_FECHA,
         firewall_corte_utc_ns=int(corte_del_sello().value),
         firewall_corte_iso=str(corte_del_sello()),
+        # GRANO DEL CHECKPOINT, que no es el mismo en los dos caminos y hay que
+        # poder leerlo del artefacto, no solo del codigo.
+        grano_checkpoint=("secuencial: (contrato, indicador) -- se pierde 1 "
+                          "indicador como mucho. paralelo: (contrato, "
+                          "indicadores pendientes de ese contrato) -- se puede "
+                          "perder el resto de indicadores de ese contrato."),
+        equivalencia_workers=("1 vs 2 EXACTA sobre 2 contratos con trabajo real "
+                              "en ambos, subset {BigTrap2, VolTicksPOC2, "
+                              "aVolCellPOI2}: por_umbral, por_kind, descartes y "
+                              "clases identicos. RSS pico 1.925 vs 2.734 MB."),
         identidad_de_barras={
             "path": "time:1 / M1 -- build_time_bars(tk, 1)",
             "bar_close": "available_ns = bar_end[created_bar]",
