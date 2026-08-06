@@ -86,47 +86,55 @@ def sesion_ct(ms):
 
 
 def eventos_de_zona(lo_t, hi_t, hi_arr, lo_arr, ns_arr, i0, i_fin, umbrales):
-    """Una sola pasada, DOS arquetipos de entrada por umbral.
+    """Una pasada. Dos arquetipos con RELOJES SEPARADOS. Ambiguo => ABSTAIN.
 
-    **La correccion que pidio Nico:** *"no es lo mismo una entrada en un gap que
-    en una burbuja de absorcion"*. La v1 medía UN solo arquetipo -alejarse y
-    VOLVER- y lo aplicaba a los seis indicadores. Para un gap eso es natural: la
-    hipotesis clasica es el relleno. Para `BigTrap2` es **el evento equivocado**:
-    si hay vendedores atrapados, la hipotesis es que tienen que recomprar y el
-    precio se va DE la zona. La entrada seria la ruptura, no el retorno.
+    Devuelve `(ruptura_arriba, ruptura_abajo, retorno, primera, ambigua)`.
 
-    Se devuelven los dos, por umbral:
+    - `ruptura_*[T]`: ms en que el alejamiento alcanzo T ticks, POR LADO. No
+      exige que el precio vuelva. La direccion importa: un `trapped_sellers` que
+      rompe hacia abajo contradice el mecanismo, y la v2 los sumaba juntos.
+    - `retorno[T]`: ms de la primera reentrada habiendose alejado >= T. Reloj
+      distinto: exige el regreso.
+    - `ambigua`: la barra hizo LAS DOS COSAS -su rango solapa la banda Y se aleja
+      >= 1 tick-. Desde OHLC el ORDEN INTRABAR es indemostrable: pudo alejarse y
+      volver (retorno) o volver y alejarse (ruptura). **Son eventos distintos y
+      no se puede elegir uno.** La zona se ABSTIENE.
 
-    - `ruptura[T]` = ms en que el alejamiento alcanzo T por primera vez. Entrada
-      de continuacion; NO exige que el precio vuelva.
-    - `retorno[T]` = ms de la primera reentrada a la banda habiendose alejado
-      >= T. Entrada de fade/relleno. Es lo que medía la v1.
-
-    `lejos` es monotono no decreciente, asi que una pasada resuelve toda la
-    grilla. Arranca en `i0` = barra creadora + 1: la barra creadora no interactua
-    (`voltickspoc2.py:133`) y el censo lo exige como invariante
-    (`touch_bar > created_bar`).
+    La v2 no lo veia porque evaluaba en dos ramas excluyentes: si la barra
+    solapaba, nunca actualizaba el alejamiento, y la ambiguedad quedaba resuelta
+    por construccion a favor del retorno.
     """
-    ruptura, retorno, lejos, primera = {}, {}, 0.0, None
+    rup_up, rup_dn, retorno = {}, {}, {}
+    lejos, primera, ambigua = 0.0, None, False
     for i in range(i0, i_fin):
         h, l = hi_arr[i], lo_arr[i]
-        if h >= lo_t and l <= hi_t:                 # solapa la banda
+        solapa = (h >= lo_t and l <= hi_t)
+        d_up = h - hi_t if h > hi_t else 0.0     # cuanto salio por arriba
+        d_dn = lo_t - l if l < lo_t else 0.0     # y por abajo
+        d = max(d_up, d_dn)
+
+        if solapa and d >= 1.0:
+            # HACE LAS DOS COSAS EN LA MISMA BARRA. Indemostrable desde OHLC.
+            ambigua = True
+            break
+
+        if solapa:
             if primera is None:
-                primera = lejos                     # alejamiento en la 1ra reentrada
+                primera = lejos
             for T in umbrales:
                 if T not in retorno and lejos >= T:
                     retorno[T] = int(ns_arr[i] // 1_000_000)
-        else:
-            d = (l - hi_t) if l > hi_t else (lo_t - h)
-            if d > lejos:
-                lejos = d
-                ms = int(ns_arr[i] // 1_000_000)
-                for T in umbrales:
-                    if T not in ruptura and lejos >= T:
-                        ruptura[T] = ms
-        if len(retorno) == len(umbrales) and len(ruptura) == len(umbrales):
+        elif d > lejos:
+            lejos = d
+            ms = int(ns_arr[i] // 1_000_000)
+            dst = rup_up if d_up >= d_dn else rup_dn
+            for T in umbrales:
+                if T not in dst and d >= T:
+                    dst[T] = ms
+        if (len(retorno) == len(umbrales)
+                and len(rup_up) + len(rup_dn) >= len(umbrales)):
             break
-    return ruptura, retorno, primera
+    return rup_up, rup_dn, retorno, primera, ambigua
 
 
 def medir(archivo, fechas, indicadores, lead=LEAD_DAYS):
@@ -163,10 +171,11 @@ def medir(archivo, fechas, indicadores, lead=LEAD_DAYS):
         # BigTrap2 -> trapped_buyers/trapped_sellers; Gaps2 -> bull_gap/bear_gap;
         # AACloseOpenDiffs -> gap_up/gap_down; VolTicksPOC2 -> poc_anomaly.
         # La v1 los agregaba a todos juntos: promediaba mecanismos opuestos.
-        ARQ = ("retorno", "ruptura")
+        ARQ = ("retorno", "ruptura_arriba", "ruptura_abajo")
         por = {a_: {t: Counter() for t in UMBRALES} for a_ in ARQ}
         por_kind = {a_: {t: Counter() for t in UMBRALES} for a_ in ARQ}
         alejamientos = []
+        n_ambiguas = 0
         for z in zonas:
             if z.get("created_ms") is None or z.get("top") is None:
                 continue
@@ -176,12 +185,18 @@ def medir(archivo, fechas, indicadores, lead=LEAD_DAYS):
             fin_ms = z.get("ended_ms")
             i_fin = (int(_np.searchsorted(ns_arr, int(fin_ms) * 1_000_000,
                                           side="right")) if fin_ms else n)
-            rup, ret, primera = eventos_de_zona(lo_t, hi_t, hi_a, lo_a, ns, i0,
-                                                min(i_fin, n), UMBRALES)
+            rup_up, rup_dn, ret, primera, ambigua = eventos_de_zona(
+                lo_t, hi_t, hi_a, lo_a, ns, i0, min(i_fin, n), UMBRALES)
+            if ambigua:
+                # ABSTAIN por orden intrabar indemostrable. NO se cuenta en
+                # ningun arquetipo: contarla en uno seria elegir el orden.
+                n_ambiguas += 1
+                continue
             if primera is not None:
                 alejamientos.append(primera)
             k = z.get("kind") or "?"
-            for a_, d in (("retorno", ret), ("ruptura", rup)):
+            for a_, d in (("retorno", ret), ("ruptura_arriba", rup_up),
+                          ("ruptura_abajo", rup_dn)):
                 for T in UMBRALES:
                     ms = d.get(T)
                     if ms is None:
@@ -192,6 +207,8 @@ def medir(archivo, fechas, indicadores, lead=LEAD_DAYS):
                         por_kind[a_][T][k + "|" + f] += 1
         res[nombre] = dict(
             zonas=len(zonas),
+            # descartes con motivo, exigido por el auditor en la v0.2
+            zonas_abstenidas_por_ambiguedad_intrabar=n_ambiguas,
             kinds=dict(Counter(z.get("kind") for z in zonas)),
             por_umbral={a_: {str(T): dict(c) for T, c in d.items()}
                         for a_, d in por.items()},
@@ -234,8 +251,11 @@ def main(argv=None):
         print("== %s : %d sesiones ==" % (arch, len(por_arch[arch])), flush=True)
         for nombre, r in medir(arch, sorted(por_arch[arch]), inds).items():
             ac = acum.setdefault(nombre, dict(zonas=0, kinds={},
+                                              zonas_abstenidas_por_ambiguedad_intrabar=0,
                                               por_umbral={}, por_kind={}))
             ac["zonas"] += r["zonas"]
+            ac["zonas_abstenidas_por_ambiguedad_intrabar"] += r[
+                "zonas_abstenidas_por_ambiguedad_intrabar"]
             ac["alejamiento_en_primera_reentrada"] = r["alejamiento_en_primera_reentrada"]
             for k, v in r["kinds"].items():
                 ac["kinds"][k] = ac["kinds"].get(k, 0) + v
@@ -245,7 +265,7 @@ def main(argv=None):
                         ac[campo].setdefault(a_, {}).setdefault(T, {}).update(c)
 
     ns = len(dias)
-    for a_ in ("retorno", "ruptura"):
+    for a_ in ("retorno", "ruptura_arriba", "ruptura_abajo"):
         print("\nARQUETIPO %s -- senales/sesion por umbral de alejamiento (ticks)"
               % a_.upper())
         print("%-18s %s" % ("indicador", "".join("%8s" % T for T in UMBRALES)))
@@ -257,6 +277,11 @@ def main(argv=None):
     print("\nkinds por indicador (semantica y direccion, desglose en el JSON)")
     for nombre, r in sorted(acum.items()):
         print("  %-18s %s" % (nombre, r.get("kinds")))
+    print("\nDESCARTES -- zonas ABSTENIDAS por orden intrabar indemostrable")
+    for nombre, r in sorted(acum.items()):
+        z, amb = r["zonas"], r["zonas_abstenidas_por_ambiguedad_intrabar"]
+        print("  %-18s %6d de %6d  (%.1f%%)" % (nombre, amb, z,
+                                                100.0 * amb / z if z else 0))
     print("\nalejamiento en la PRIMERA reentrada (ticks) — qué umbrales son alcanzables")
     for nombre, r in sorted(acum.items()):
         d = r.get("alejamiento_en_primera_reentrada")
