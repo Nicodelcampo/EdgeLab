@@ -485,12 +485,34 @@ def main(argv=None):
             crudo[arch] = dict(hecho.get(arch, {}))
             crudo[arch].update(r)
     else:
-        from concurrent.futures import ProcessPoolExecutor
+        # CHECKPOINT TAMBIEN EN PARALELO. La v1 llamaba a `medir` sin
+        # `on_unidad` y sin consultar `hecho`: el path paralelo ni reanudaba ni
+        # checkpointeaba, asi que una corrida larga con N workers no sobrevivia
+        # una interrupcion aunque la de 1 worker si. Asimetria silenciosa.
+        #
+        # Los WORKERS no escriben el checkpoint -serian escrituras concurrentes
+        # sobre el mismo archivo-. Escribe el PADRE, serialmente, a medida que
+        # llegan los futuros. El grano es (contrato, indicadores pendientes de
+        # ese contrato): mas grueso que en secuencial, y se declara.
+        from concurrent.futures import ProcessPoolExecutor, as_completed
+        pend = [(arch, f, [i for i in inds if i not in hecho.get(arch, {})])
+                for arch, f in tareas]
+        listos = [(arch, f) for arch, f, faltan in pend if not faltan]
+        for arch, _ in listos:
+            print("== %s : [checkpoint completo] ==" % arch, flush=True)
+            crudo[arch] = hecho[arch]
+        pend = [(arch, f, faltan) for arch, f, faltan in pend if faltan]
         with ProcessPoolExecutor(max_workers=a.workers) as ex:
-            futs = {ex.submit(medir, arch, f, inds, LEAD_DAYS, False): arch
-                    for arch, f in tareas}
-            for fu in futs:
-                crudo[futs[fu]] = fu.result()
+            futs = {ex.submit(medir, arch, f, faltan, LEAD_DAYS, False): arch
+                    for arch, f, faltan in pend}
+            for fu in as_completed(futs):
+                arch = futs[fu]
+                r = fu.result()
+                hecho.setdefault(arch, {}).update(r)
+                escribir_checkpoint(ckpt, clave, hecho, tareas, inds)
+                crudo[arch] = dict(hecho[arch])
+                print("== %s : %d indicador(es) [checkpoint]" % (arch, len(r)),
+                      flush=True)
 
     for arch, r in crudo.items():
         for nombre, d in r.items():

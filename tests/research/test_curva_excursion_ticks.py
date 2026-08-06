@@ -372,3 +372,24 @@ def test_acum_los_descartes_se_suman_entre_contratos():
     for c in ("zonas_sin_created_bar", "zonas_sin_clase_declarada",
               "zonas_sin_tramo_de_ticks"):
         assert 'ac["%s"] +=' % c in src, c
+
+
+def test_ckpt_el_path_PARALELO_tambien_checkpointea():
+    """Asimetría que tenía la v1: `workers=1` reanudaba y `workers=N` no. Una
+    corrida larga en paralelo no sobrevivía una interrupción, aunque la
+    secuencial sí. Silenciosa: nada lo delataba hasta perder horas."""
+    src = io.open(os.path.join(REPO, "diag", "tasa_senales",
+                               "curva_excursion_ticks.py"), encoding="utf-8").read()
+    par = src.split("from concurrent.futures import")[1][:1600]
+    assert "escribir_checkpoint(ckpt, clave, hecho, tareas, inds)" in par
+    assert "i not in hecho.get(arch, {})" in par, "el path paralelo no reanuda"
+
+
+def test_ckpt_los_workers_NO_escriben_el_checkpoint():
+    """Escribe el PADRE, serialmente, al llegar cada futuro. Que escribieran los
+    workers serían escrituras concurrentes sobre el mismo archivo."""
+    src = io.open(os.path.join(REPO, "diag", "tasa_senales",
+                               "curva_excursion_ticks.py"), encoding="utf-8").read()
+    par = src.split("from concurrent.futures import")[1][:1600]
+    assert "ex.submit(medir, arch, f, faltan, LEAD_DAYS, False)" in par
+    assert "on_unidad" not in par, "los workers no deben recibir el callback"
