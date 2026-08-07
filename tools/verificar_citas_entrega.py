@@ -52,6 +52,11 @@ ENTREGA = (
     "docs/research/ENTREGA_CURVA_DISENO_2026-08-07.md",
     "docs/research/CORRECCION_MDE_REPRODUCE_2026-08-07.md",
     "docs/SCRATCHPAD_PROVENANCE_AUDIT_2026-08-07.md",
+    # El documento de traspaso entre maquinas es el que MAS necesita esta
+    # puerta: es lo primero que lee la sesion siguiente, y una ruta colgada ahi
+    # es un callejon sin salida en el peor momento -- cuando nadie tiene el
+    # contexto de la sesion anterior para desambiguar.
+    "docs/ESTADO_2026-08-07_TRASPASO.md",
 )
 
 #: Rutas citadas: dentro de backticks o de un link markdown.
