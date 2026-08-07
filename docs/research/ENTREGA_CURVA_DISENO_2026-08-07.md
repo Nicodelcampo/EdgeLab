@@ -313,7 +313,7 @@ importa— **qué campos se excluyen y por qué** (`segundos`, `workers`,
 `clave_de_corrida`, `code_commit`, `output_sha256`). Una comparación que no dice
 qué ignoró no es una comparación.
 
-### 8.2 El 99 %/97 % del reloj — **REPRODUCE**
+### 8.2 El 99 %/97 % del reloj — definición reproducible, resultado replicado
 
 > **Rectificación (2026-08-07).** Una versión anterior de esta sección decía que
 > las cifras «no reproducen» y que la medición original «nunca registró su
@@ -329,11 +329,13 @@ Con la definición correcta a la vista:
 | | muestra | definición | `Gaps2` | `HFTZones2` |
 |---|---|---|---:|---:|
 | **original** | 6E 03-26, 10 días | cualquier adelanto | **99 %** (21,5 s) | **97 %** (27,5 s) |
-| **corroboración** | 6E 09-26, 8 ses. | **la misma** | **100 %** (27,7 s) | **96,4 %** (28,2 s) |
-| corroboración | 6E 09-26, 8 ses. | umbral > 1 s | 96,7 % | 92,9 % |
+| **réplica** | 6E 09-26, 8 ses. | **la misma** | **100 %** (27,7 s) | **96,4 %** (28,2 s) |
+| réplica | 6E 09-26, 8 ses. | umbral > 1 s | 96,7 % | 92,9 % |
 | control `bar_close` | 6E 09-26, 8 ses. | umbral > 1 s | — | **0,0 %** (los tres) |
 
-**Reproduce sobre otro contrato y otro trimestre.** Lo que yo había leído como
+**Replica sobre otro contrato y otro trimestre** — la muestra original no se
+volvió a correr, así que es réplica independiente, no reproducción exacta. Lo
+que yo había leído como
 «no reproduce» era comparar el renglón con umbral contra el original sin umbral:
 **dos definiciones distintas**. Eso no es una falla de reproducción.
 

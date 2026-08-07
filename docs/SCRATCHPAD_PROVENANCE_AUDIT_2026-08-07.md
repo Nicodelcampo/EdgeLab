@@ -145,7 +145,7 @@ escrito al lado del código, con la función renombrada a
 > reescribe**: es el registro de lo medido, y tocarlo invalidaría su
 > `output_sha256`. Mismo tratamiento que `autoritativo`.
 
-## 4. El 99 % / 97 % — REPRODUCE, y mi diagnóstico anterior era erróneo
+## 4. El 99 % / 97 % — definición reproducible, resultado replicado
 
 > **SEGUNDA RECTIFICACIÓN, del mismo tipo que la §3.** Yo afirmé que la medición
 > original «no registró muestra ni definición operacional». **Sí las registró**,
@@ -154,15 +154,17 @@ escrito al lado del código, con la función renombrada a
 > Miré sólo el comentario suelto de la línea 411 y no la tabla que lo documenta.
 
 Con la muestra y la definición a la vista, la comparación se puede hacer bien — y
-**la medición original reproduce**:
+el resultado **replica en otra muestra**. Que no es lo mismo que «reproduce»:
+**la muestra original no se volvió a correr**, y para decir «reproducida
+exactamente» habría que rerunear 6E 03-26, 10 días, con la definición original.
 
 | | muestra | definición | `Gaps2` | `HFTZones2` |
 |---|---|---|---:|---:|
 | **original** | 6E 03-26, 10 días | cualquier adelanto | **99 %** (21,5 s) | **97 %** (27,5 s) |
-| **corroboración** | 6E 09-26, 8 sesiones | **la misma** | **100 %** (27,7 s) | **96,4 %** (28,2 s) |
-| corroboración | 6E 09-26, 8 sesiones | umbral > 1 s | 96,7 % | 92,9 % |
+| **réplica** | 6E 09-26, 8 sesiones | **la misma** | **100 %** (27,7 s) | **96,4 %** (28,2 s) |
+| réplica | 6E 09-26, 8 sesiones | umbral > 1 s | 96,7 % | 92,9 % |
 
-Las fracciones reproducen sobre **otro contrato y otro trimestre**. Lo que yo
+Las fracciones replican sobre **otro contrato y otro trimestre**. Lo que yo
 había leído como «no reproduce» era el renglón de abajo comparado contra el de
 arriba: **una métrica con umbral material contra una sin umbral**. Dos
 definiciones distintas dando números distintos no es una falla de reproducción.
@@ -174,8 +176,8 @@ explico; es una diferencia entre períodos, y queda registrada como tal.
 ### Por qué NO se marcó la tabla como «histórica no reproducible»
 
 El punto 6 del auditor pedía anotarla así. **No se hizo, porque la premisa era
-mía y era falsa.** Se anotó lo que la evidencia dice: **`Estatus (2026-08-07):
-REPRODUCE`**, con la muestra, la definición y las dos corroboraciones.
+mía y era falsa.** Se anotó lo que la evidencia dice: **`DEFINICIÓN REPRODUCIBLE Y RESULTADO
+REPLICADO EN OTRA MUESTRA`**, con la muestra, la definición y las dos réplicas.
 
 Y se agregó el matiz que sí importa: el `0 %` de los tres `bar_close` **sólo vale
 con umbral material**. Sin umbral dan 100 %, porque para un kernel que crea al
@@ -316,7 +318,7 @@ lectura, y no lo hace un script.
 | dos citas abreviadas en los documentos de entrega | **real** — corregidas |
 | notación MB/GB donde el instrumento produce MiB/GiB | **real** — corregida |
 | «RSS sin origen recuperable, quizá de la corrida de 12 sesiones» | **RETIRADO** (§3) |
-| «99 %/97 % no reproducible» | **RETIRADO** (§4) |
+| «99 %/97 % no reproducible» | **RETIRADO** (§4) — está especificada y replicada |
 | rebanadas de ventana sellada fuera del store | **higiene** — borradas; no era brecha |
 
 Cuatro reales, **dos retirados**. Los dos retirados eran del mismo tipo: yo leí

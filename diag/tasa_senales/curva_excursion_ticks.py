@@ -61,11 +61,18 @@ y retraso mediano:
 | **`Gaps2`** | **`tick_create`** | **99 %** | **21,5 s** |
 | **`HFTZones2`** | **`tick_create`** | **97 %** | **27,5 s** |
 
-> **Estatus (2026-08-07): REPRODUCE.** Se replicó con
-> `sonda_alejamiento_cero.py` sobre **8 sesiones de 6E 09-26** —otro contrato,
-> otro trimestre— **bajo la misma definición**: `Gaps2` **100 %** (p50 27,7 s) y
-> `HFTZones2` **96,4 %** (p50 28,2 s). Las fracciones reproducen. El p50 de
-> `Gaps2` difiere ~6 s entre contratos (21,5 → 27,7); el de `HFTZones2` no.
+> **Estatus (2026-08-07): DEFINICIÓN REPRODUCIBLE Y RESULTADO REPLICADO EN OTRA
+> MUESTRA.** No es lo mismo que «reproducida»: **la muestra original no se
+> volvió a correr**. Para decir «reproducida exactamente» habría que rerunear
+> 6E 03-26, 10 días, con la definición original.
+>
+> Lo que sí hay: la medición **declara su muestra y su definición**, así que es
+> reproducible; y se replicó con `sonda_alejamiento_cero.py` sobre **8 sesiones
+> de 6E 09-26** —otro contrato, otro trimestre— **bajo la misma definición**:
+> `Gaps2` **100 %** (p50 27,7 s) y `HFTZones2` **96,4 %** (p50 28,2 s). Las
+> fracciones y el orden de magnitud replican. El p50 de `Gaps2` difiere ~6 s
+> entre períodos (21,5 → 27,7) y **no se explica sin evidencia adicional**; el
+> de `HFTZones2` no se mueve.
 >
 > El `0 %` de los tres `bar_close` **sólo vale con un umbral material**: sin
 > umbral dan 100 %, porque para un kernel que crea al cierre el `created_ms + 1`
@@ -152,7 +159,11 @@ CLASE_KERNEL = {
     "aVolCellPOI2": "bar_close",
     "Gaps2": "tick_create",
     "HFTZones2": "tick_create",
-    # AACloseOpenDiffs no entra: no exporta `created_bar` ni tiene ZONE_TOUCHED.
+    # AACloseOpenDiffs NO entra -- EXPLORE-001 v0.3 §4. El motivo YA NO es la
+    # barra creadora: la tiene, se llama `m1_bar` y desde 617ae90 se exporta
+    # como `created_bar`. El motivo vigente es que no emite ZONE_TOUCHED, no hay
+    # definicion canonica de primer toque, y meterla ahora seria agregar una
+    # semantica nueva DESPUES de haber visto la curva de los demas.
 }
 
 #: FIREWALL. `MAX_FECHA` es una fecha de **SESIÓN CT**, no un corte civil UTC.
@@ -427,20 +438,22 @@ def medir(archivo, fechas, indicadores, lead=LEAD_DAYS, verbose=True,
                 # ultimo cierre. `bar_end[created_bar]` arrancaria la ventana
                 # ANTES de que la zona existiera.
                 #
-                # LA CIFRA Y SU ESTATUS -- REPRODUCE. Ver la tabla del docstring
-                # de este archivo para la medicion original y su muestra.
+                # LA CIFRA Y SU ESTATUS: definicion reproducible, resultado
+                # REPLICADO EN OTRA MUESTRA. La muestra original NO se volvio a
+                # correr. Ver la tabla del docstring de este archivo.
                 #
                 #   ORIGINAL: 6E 03-26, 10 dias, definicion `created_ms >
                 #   bar_end[created_bar]` = CUALQUIER adelanto, sin umbral.
                 #       Gaps2 99%  (p50 21,5 s)   HFTZones2 97%  (p50 27,5 s)
                 #
-                #   CORROBORACION (2026-08-07), sonda_alejamiento_cero.py,
-                #   8 sesiones de 6E_09-26 -otro contrato, otro trimestre-,
+                #   REPLICA (2026-08-07), sonda_alejamiento_cero.py,
+                #   8 sesiones de 6E_09-26 -OTRO contrato, OTRO trimestre-,
                 #   BAJO LA MISMA DEFINICION:
                 #       Gaps2 100% (p50 27,7 s)   HFTZones2 96,4% (p50 28,2 s)
                 #
-                # Las fracciones reproducen. El p50 de Gaps2 difiere ~6 s entre
-                # contratos (21,5 vs 27,7); el de HFTZones2 no (27,5 vs 28,2).
+                # Las fracciones replican. El p50 de Gaps2 difiere ~6 s entre
+                # periodos (21,5 vs 27,7) y NO se explica sin evidencia
+                # adicional; el de HFTZones2 no se mueve (27,5 vs 28,2).
                 #
                 # Con un umbral MATERIAL de >1 s da 96,7% / 92,9%, y los tres
                 # `bar_close` caen a 0,0% -sin umbral dan 100%, porque para un

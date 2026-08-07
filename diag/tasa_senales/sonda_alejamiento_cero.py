@@ -59,6 +59,7 @@ Uso:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 from collections import Counter
@@ -71,12 +72,42 @@ sys.path.insert(0, str(REPO_PATH))
 
 from diag.tasa_senales.curva_excursion_ticks import (  # noqa: E402
     CLASE_KERNEL, LEAD_DAYS, MAX_FECHA, REGISTRY, T_DESIGN, TZ_CHART, BAR_DRIVEN,
-    bars_mod, corte_del_sello, dias_research, pd, ticks_mod,
+    bars_mod, corte_del_sello, dias_research, git_head, huella_del_codigo,
+    pd, ticks_mod,
 )
+
+#: Sube cuando cambia el CONJUNTO DE CAMPOS o la semántica de alguno. Dos
+#: artefactos con `schema_version` distinto **no se comparan**: `comparar_sondas.py`
+#: falla en vez de alinear campos que no significan lo mismo.
+SCHEMA_VERSION = "sonda_alejamiento_cero_v2"
 
 #: La misma grilla que la curva. Si la curva cambia, esta sonda la sigue: medir
 #: la contaminación en umbrales que nadie usa no dice nada.
 T_SONDA = T_DESIGN
+
+#: Un adelanto de 1 ms **no** es fuga: para un kernel `bar_close` la zona nace
+#: EN el cierre, así que `created_ms + 1` deja siempre esa diferencia por la
+#: propia convención. Sin este umbral los tres controles dan 100 % — cierto y
+#: vacío. Con él caen a 0,0 %, y ese cero es lo que prueba que el efecto es de
+#: CLASE y no de medición.
+UMBRAL_MATERIAL_NS = 1_000_000_000
+
+#: Qué mide cada cifra, adentro del artefacto. Un número cuya definición hay que
+#: ir a buscar al código es un número que se va a citar mal.
+DEFINICIONES = {
+    "frac_dentro":
+        "fraccion de zonas cuyo precio esta DENTRO de la banda en el primer "
+        "tick posterior a `available_ns`",
+    "frac_cualquier_adelanto":
+        "fraccion con `bar_end[created_bar] < (created_ms+1)*1e6`, SIN umbral. "
+        "Es la definicion de la medicion historica 99%/97%",
+    "frac_adelanto_mayor_1s":
+        "lo mismo, pero exigiendo un adelanto MATERIAL > `umbral_material_ns`",
+    "frac_vacua_por_umbral":
+        "fraccion de zonas ya a T ticks o mas del borde en el primer tick de la "
+        "ventana: su `k_T` valdria 0, o sea que el alejamiento NO lo produjo el "
+        "precio despues de la disponibilidad",
+}
 
 def ruta_de_salida(contrato, n_sesiones):
     """Un archivo POR CORRIDA, no uno fijo.
@@ -269,14 +300,39 @@ def main(argv=None):
               % (n, d["clase_kernel"],
                  " ".join("%7s" % f.get(str(t)) for t in T_SONDA)))
 
+    # IDENTIDAD DEL ARTEFACTO. Dos corridas de esta sonda tienen que poder
+    # compararse SIN adivinar: la primera version emitia sólo `contrato`,
+    # `sesiones` y `por_indicador`, y cuando se le agregó la medición del reloj
+    # quedaron dos artefactos versionados del MISMO script con conjuntos de
+    # campos distintos y nada que lo explicara. Ese es el defecto que estos
+    # campos cierran — y lo cierra `comparar_sondas.py`, que falla si el
+    # `schema_version` no coincide en vez de comparar peras con manzanas.
+    payload = dict(
+        schema_version=SCHEMA_VERSION,
+        pregunta="posicion del precio y del reloj de disponibilidad al inicio "
+                 "de la ventana de cada zona",
+        contrato=a.contrato, sesiones=len(fechas), max_fecha=peor,
+        firewall_max_fecha=MAX_FECHA,
+        firewall_corte_utc_ns=int(corte_del_sello().value),
+        firewall_corte_iso=str(corte_del_sello()),
+        umbrales=list(T_SONDA),
+        definiciones=DEFINICIONES,
+        umbral_material_ns=UMBRAL_MATERIAL_NS,
+        clase_kernel=dict(CLASE_KERNEL),
+        huella_del_codigo=huella_del_codigo(sorted(CLASE_KERNEL)),
+        code_commit=git_head(),
+        outcomes_accessed=False,
+        por_indicador=res)
+    payload["output_sha256"] = hashlib.sha256(
+        json.dumps(payload, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+
     salida = ruta_de_salida(a.contrato, len(fechas))
-    salida.write_text(json.dumps(
-        dict(pregunta="fraccion de zonas cuyo precio ya esta DENTRO de la banda "
-                      "en el instante de disponibilidad",
-             contrato=a.contrato, sesiones=len(fechas), max_fecha=peor,
-             outcomes_accessed=False, por_indicador=res),
-        indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
-    print("\n-> %s" % salida)
+    salida.write_text(json.dumps(payload, indent=1, ensure_ascii=False) + "\n",
+                      encoding="utf-8")
+    print("\nschema %s | huella %s | sha %s"
+          % (SCHEMA_VERSION, payload["huella_del_codigo"][:12],
+             payload["output_sha256"][:12]))
+    print("-> %s" % salida)
     return 0
 
 

@@ -1,5 +1,19 @@
 # Especificación del test primario de EXPLORE-001
 
+> ## SUPERSEDED — no usar aisladamente para ejecutar EXPLORE-001
+>
+> Para trabajo futuro este documento queda reemplazado por:
+> **`docs/predictions/ESPEC_TEST_EXPLORE-001_v0.3.md`** (2026-08-07).
+>
+> **Se conserva como registro histórico.** Su contenido NO se reescribe: las
+> decisiones que tomó, y las que después cambiaron, son parte del expediente.
+> Toda decisión futura de EXPLORE-001 parte de v0.3; ningún borrador anterior
+> —este incluido— puede invocarse para reemplazar una regla de v0.3.
+>
+> Motivo del reemplazo: editar cualquiera de las dos especificaciones existentes
+> habría mezclado **registro histórico con reglas actuales**. Ver v0.3 §0.
+
+
 **Escrita 2026-07-28, ANTES de calibrar y ANTES de elegir geometría.**
 Estado: **BORRADOR** — no sellado, no ejecutado.
 

@@ -1,8 +1,38 @@
 {
- "pregunta": "fraccion de zonas cuyo precio ya esta DENTRO de la banda en el instante de disponibilidad",
+ "schema_version": "sonda_alejamiento_cero_v2",
+ "pregunta": "posicion del precio y del reloj de disponibilidad al inicio de la ventana de cada zona",
  "contrato": "6E_09-26_ticks.parquet",
  "sesiones": 8,
  "max_fecha": "2026-06-23",
+ "firewall_max_fecha": "2026-06-30",
+ "firewall_corte_utc_ns": 1782856800000000000,
+ "firewall_corte_iso": "2026-06-30 22:00:00+00:00",
+ "umbrales": [
+  1,
+  2,
+  3,
+  5,
+  8,
+  13,
+  21,
+  34
+ ],
+ "definiciones": {
+  "frac_dentro": "fraccion de zonas cuyo precio esta DENTRO de la banda en el primer tick posterior a `available_ns`",
+  "frac_cualquier_adelanto": "fraccion con `bar_end[created_bar] < (created_ms+1)*1e6`, SIN umbral. Es la definicion de la medicion historica 99%/97%",
+  "frac_adelanto_mayor_1s": "lo mismo, pero exigiendo un adelanto MATERIAL > `umbral_material_ns`",
+  "frac_vacua_por_umbral": "fraccion de zonas ya a T ticks o mas del borde en el primer tick de la ventana: su `k_T` valdria 0, o sea que el alejamiento NO lo produjo el precio despues de la disponibilidad"
+ },
+ "umbral_material_ns": 1000000000,
+ "clase_kernel": {
+  "BigTrap2": "bar_close",
+  "VolTicksPOC2": "bar_close",
+  "aVolCellPOI2": "bar_close",
+  "Gaps2": "tick_create",
+  "HFTZones2": "tick_create"
+ },
+ "huella_del_codigo": "0526d93d8fd57a74d7d8c2f59594a0b12e154f03a1557ef1cd783ec84c583a75",
+ "code_commit": "d5a4a2edcb3a3f4e4fd47df69b2395d601ec1275",
  "outcomes_accessed": false,
  "por_indicador": {
   "BigTrap2": {
@@ -152,5 +182,6 @@
     "34": 0.0
    }
   }
- }
+ },
+ "output_sha256": "0f8e5bedf5a1d5740a24c6f0679a2c1be5d7780592519a4751a286d223c53c67"
 }
