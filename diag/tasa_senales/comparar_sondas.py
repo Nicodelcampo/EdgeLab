@@ -1,35 +1,42 @@
 # -*- coding: utf-8 -*-
-"""Compara dos artefactos de la sonda. **Falla si no son comparables.**
+"""Compara dos artefactos de la sonda. **Fail-closed por allowlist.**
 
 ## Por qué existe
 
-Los dos artefactos versionados de `sonda_alejamiento_cero.py` —8 sesiones de
-`6E 09-26` y 40 de `6E 12-25`— se emitieron **con conjuntos de campos
-distintos**: el de 40 salió antes de que se agregara la medición del reloj, así
-que ese campo venía en `null`. Dos artefactos del mismo script, versionados
-juntos, y **nada en ellos decía por qué diferían**.
+Los dos artefactos versionados de `sonda_alejamiento_cero.py` se emitieron **con
+conjuntos de campos distintos**: el de 40 sesiones salió antes de que se
+agregara la medición del reloj, así que ese campo venía en `null`. Dos
+artefactos del mismo script, versionados juntos, y **nada en ellos decía por qué
+diferían**. Un lector razonable habría concluido que en `6E 12-25` el reloj no
+aplicaba. La conclusión habría sido falsa.
 
-Un lector razonable habría concluido que en `6E 12-25` el reloj no aplicaba. La
-conclusión habría sido falsa y el artefacto no daba con qué desmentirla.
+## Allowlist, no denylist
 
-## Las cuatro puertas, en orden
+Cada clave de nivel superior tiene que estar **declarada** en
+`DEBEN_COINCIDIR` o en `PUEDEN_DIFERIR`. Una clave **nueva**, **faltante** o no
+contemplada ⇒ **exit 1**.
 
-1. **`schema_version` idéntico.** Distinto ⇒ NO se comparan. No se alinean los
-   campos comunes: alinear lo que coincide es justamente cómo un cambio de
-   semántica pasa desapercibido.
-2. **Estructura completa.** Compartir `schema_version` no garantiza que los
-   campos estén ni que tengan el tipo correcto. Se valida el esquema entero,
-   incluido `frac_vacua_por_umbral` y **que su grilla sea la declarada**.
-3. **Campos que deben coincidir**, incluidos **`pregunta` y `definiciones`**.
-   Estos dos estaban en la lista de «pueden diferir», lo cual contradecía el
-   propósito: **dos artefactos no miden lo mismo si cambia la definición de una
-   métrica**, aunque el número tenga el mismo nombre.
-4. **Integridad.** Se **recalcula** `payload_sha256` —antes sólo se imprimía— y
-   se verifica el sidecar `.sha256` contra los bytes del archivo.
+Una denylist —«estos campos pueden diferir, el resto se compara»— falla en
+silencio justo cuando importa: alguien agrega un campo, nadie lo declara, y el
+comparador lo ignora porque no está en ninguna lista. La allowlist obliga a
+decidir para cada campo nuevo si es muestra o es contrato.
 
-Lo que **sí** se espera que difiera son la **muestra y el período**: contrato,
-sesiones, fechas, ventana, parquet de entrada. Que difieran es el objeto de la
-comparación.
+## Las cinco puertas, en orden
+
+1. **`schema_version` idéntico.** Distinto ⇒ no se comparan. No se alinean los
+   campos comunes: alinear lo que coincide es cómo un cambio de semántica pasa
+   desapercibido.
+2. **Cobertura de la allowlist.** Ninguna clave sin declarar, en ninguno de los
+   dos.
+3. **Estructura y dominio.** Campos presentes, del tipo correcto, valores
+   **finitos**, fracciones en `[0, 1]`, conteos enteros `>= 0`, la grilla `T`
+   **exacta y completa**, `outcomes_accessed == false`, y coherencia entre
+   `sesiones`, `session_dates` y `session_dates_sha256`.
+4. **Integridad.** Se **recalcula** `payload_sha256` y se verifica el sidecar
+   `.sha256` contra los bytes del archivo.
+5. **Campos que deben coincidir**, incluidos `pregunta` y `definiciones`: dos
+   artefactos no miden lo mismo si cambia la definición de una métrica, aunque
+   el número se llame igual.
 
 Uso:
     python diag/tasa_senales/comparar_sondas.py A.json B.json [--reporte R.json]
@@ -41,113 +48,180 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import sys
 from pathlib import Path
 
 #: Tienen que coincidir: si difieren, los números no miden lo mismo.
 DEBEN_COINCIDIR = ("schema_version", "pregunta", "definiciones", "umbrales",
                    "umbral_material_ns", "firewall_max_fecha",
-                   "firewall_corte_utc_ns", "clase_kernel", "outcomes_accessed")
+                   "firewall_corte_utc_ns", "firewall_corte_iso",
+                   "clase_kernel", "outcomes_accessed",
+                   "diagnostico_arbol_sucio")
 
-#: Dentro de `identidad`: el CÓDIGO tiene que ser el mismo; la MUESTRA no.
+#: Se ESPERA que difieran: son la muestra y los resultados. Que difieran es el
+#: objeto de la comparación.
+PUEDEN_DIFERIR = ("contrato", "sesiones", "max_fecha", "identidad",
+                  "por_indicador", "payload_sha256")
+
+#: Dentro de `identidad`: el CÓDIGO y el ENTORNO deben coincidir; la MUESTRA no.
 IDENTIDAD_DEBE_COINCIDIR = ("code_commit_start", "generator_sha256",
                             "measurement_code_sha256",
+                            "dependency_set_repo_sha256",
+                            "dependency_set_entorno_sha256",
                             "universe_manifest_sha256")
-IDENTIDAD_PUEDE_DIFERIR = ("session_dates", "session_dates_sha256",
-                           "input_parquet", "input_parquet_sha256",
-                           "working_tree_dirty_start")
+IDENTIDAD_PUEDE_DIFERIR = ("git_worktree_dirty_start",
+                           "dependency_set_dirty_start",
+                           "ignored_generated_outputs",
+                           "worktree_sucio_sin_clasificar",
+                           "dependency_set_repo", "dependency_set_repo_n",
+                           "dependency_set_entorno_n", "dependency_set_n",
+                           "dependencias_repo_fuera_de_py",
+                           "session_dates", "session_dates_sha256",
+                           "input_parquet", "input_parquet_sha256")
 
-#: Esquema mínimo obligatorio: campo -> tipo(s). Si falta o no tipa, se falla.
 ESQUEMA = {
     "schema_version": str, "pregunta": str, "definiciones": dict,
     "contrato": str, "sesiones": int, "max_fecha": str,
     "firewall_max_fecha": str, "firewall_corte_utc_ns": int,
     "firewall_corte_iso": str, "umbrales": list, "umbral_material_ns": int,
     "clase_kernel": dict, "identidad": dict, "outcomes_accessed": bool,
-    "por_indicador": dict, "payload_sha256": str,
+    "diagnostico_arbol_sucio": bool, "por_indicador": dict,
+    "payload_sha256": str,
 }
-ESQUEMA_INDICADOR = {
-    "clase_kernel": str, "zonas": int, "frac_dentro": float,
-    "frac_vacua_por_umbral": dict, "reloj_de_barra_abriria_antes": dict,
-}
+ESQUEMA_INDICADOR = {"clase_kernel": str, "zonas": int, "frac_dentro": float,
+                     "frac_vacua_por_umbral": dict,
+                     "reloj_de_barra_abriria_antes": dict}
 METRICAS_RELOJ = ("frac_cualquier_adelanto", "frac_adelanto_mayor_1s",
                   "adelanto_s_p50")
+#: Campos cuyo valor es una FRACCIÓN: fuera de [0, 1] es un defecto, no un dato.
+FRACCIONES = ("frac_dentro", "frac_cualquier_adelanto", "frac_adelanto_mayor_1s")
 
 
 def cargar(p):
     return json.loads(Path(p).read_text(encoding="utf-8"))
 
 
-def validar_estructura(d, etiqueta):
-    """Campos presentes, con el tipo correcto, y la grilla `T` completa."""
+def _finito(v):
+    return not isinstance(v, float) or math.isfinite(v)
+
+
+def validar_allowlist(d, et):
+    """Ninguna clave sin declarar. Es la puerta que atrapa un campo nuevo."""
+    declaradas = set(DEBEN_COINCIDIR) | set(PUEDEN_DIFERIR)
+    fallos = [("%s: clave NO DECLARADA `%s` -- decidir si es muestra o contrato"
+               % (et, k)) for k in sorted(set(d) - declaradas)]
+    fallos += ["%s: falta la clave declarada `%s`" % (et, k)
+               for k in sorted(declaradas - set(d))]
+    ident = d.get("identidad")
+    if isinstance(ident, dict):
+        dec_i = set(IDENTIDAD_DEBE_COINCIDIR) | set(IDENTIDAD_PUEDE_DIFERIR)
+        fallos += ["%s: `identidad.%s` NO DECLARADA" % (et, k)
+                   for k in sorted(set(ident) - dec_i)]
+        fallos += ["%s: falta `identidad.%s`" % (et, k)
+                   for k in sorted(dec_i - set(ident))]
+    return fallos
+
+
+def validar_estructura(d, et):
+    """Tipos, dominios, grilla completa, firewall y coherencia de la muestra."""
     fallos = []
     for k, t in sorted(ESQUEMA.items()):
         if k not in d:
-            fallos.append("%s: falta `%s`" % (etiqueta, k))
-        elif not isinstance(d[k], t) or (t is int and isinstance(d[k], bool)):
+            continue                       # ya lo reporta la allowlist
+        v = d[k]
+        if t is int and isinstance(v, bool):
+            fallos.append("%s: `%s` es bool, se esperaba int" % (et, k))
+        elif not isinstance(v, t):
             fallos.append("%s: `%s` es %s, se esperaba %s"
-                          % (etiqueta, k, type(d[k]).__name__, t.__name__))
-    ident = d.get("identidad")
-    if isinstance(ident, dict):
-        for k in IDENTIDAD_DEBE_COINCIDIR + IDENTIDAD_PUEDE_DIFERIR:
-            if k not in ident:
-                fallos.append("%s: falta `identidad.%s`" % (etiqueta, k))
+                          % (et, k, type(v).__name__, t.__name__))
+
+    if d.get("outcomes_accessed") is not False:
+        fallos.append("%s: `outcomes_accessed` no es false" % et)
     if d.get("diagnostico_arbol_sucio"):
-        fallos.append("%s: generado con ARBOL SUCIO -- es diagnostico, no "
-                      "puede ser canonico" % etiqueta)
+        fallos.append("%s: generado con DEPENDENCIAS SUCIAS -- es diagnostico, "
+                      "no puede ser canonico" % et)
+
+    ident = d.get("identidad") or {}
+    if ident.get("dependency_set_dirty_start"):
+        fallos.append("%s: `dependency_set_dirty_start` no vacio: %s"
+                      % (et, ident["dependency_set_dirty_start"]))
+    fechas = ident.get("session_dates")
+    if isinstance(fechas, list):
+        if len(fechas) != d.get("sesiones"):
+            fallos.append("%s: `sesiones`=%s pero hay %d fechas"
+                          % (et, d.get("sesiones"), len(fechas)))
+        sha = hashlib.sha256(json.dumps(fechas, sort_keys=True).encode()).hexdigest()
+        if sha != ident.get("session_dates_sha256"):
+            fallos.append("%s: `session_dates_sha256` no recalcula" % et)
+        if fechas and max(fechas) != d.get("max_fecha"):
+            fallos.append("%s: `max_fecha`=%s pero la ultima fecha es %s"
+                          % (et, d.get("max_fecha"), max(fechas)))
+        if fechas and max(fechas) > (d.get("firewall_max_fecha") or ""):
+            fallos.append("%s: FIREWALL -- fecha %s > %s"
+                          % (et, max(fechas), d.get("firewall_max_fecha")))
 
     umbrales = [str(t) for t in (d.get("umbrales") or [])]
     for n, r in sorted((d.get("por_indicador") or {}).items()):
         if not isinstance(r, dict):
-            fallos.append("%s/%s: no es un objeto" % (etiqueta, n))
+            fallos.append("%s/%s: no es un objeto" % (et, n))
             continue
         for k, t in sorted(ESQUEMA_INDICADOR.items()):
-            if k not in r:
-                fallos.append("%s/%s: falta `%s`" % (etiqueta, n, k))
-            elif r[k] is None:
-                fallos.append("%s/%s: `%s` es null" % (etiqueta, n, k))
-            elif t is float and not isinstance(r[k], (int, float)):
-                fallos.append("%s/%s: `%s` no es numerico" % (etiqueta, n, k))
-            elif t is not float and not isinstance(r[k], t):
+            v = r.get(k)
+            if k not in r or v is None:
+                fallos.append("%s/%s: `%s` ausente o null" % (et, n, k))
+            elif t is float and not isinstance(v, (int, float)):
+                fallos.append("%s/%s: `%s` no es numerico" % (et, n, k))
+            elif t is not float and not isinstance(v, t):
                 fallos.append("%s/%s: `%s` es %s, se esperaba %s"
-                              % (etiqueta, n, k, type(r[k]).__name__, t.__name__))
-        # la grilla T tiene que estar ENTERA: un umbral faltante es un agujero
-        # silencioso en la tabla que despues se lee como "no aplica".
+                              % (et, n, k, type(v).__name__, t.__name__))
+        if isinstance(r.get("zonas"), int) and r["zonas"] < 0:
+            fallos.append("%s/%s: `zonas` negativo" % (et, n))
+        for k in FRACCIONES:
+            v = r.get(k, (r.get("reloj_de_barra_abriria_antes") or {}).get(k))
+            if v is None:
+                continue
+            if not _finito(v):
+                fallos.append("%s/%s: `%s` no es finito" % (et, n, k))
+            elif not (0.0 <= v <= 1.0):
+                fallos.append("%s/%s: `%s`=%s fuera de [0,1]" % (et, n, k, v))
+        # la grilla T tiene que estar ENTERA y sin sobrantes: un umbral faltante
+        # es un agujero silencioso que despues se lee como "no aplica".
         fv = r.get("frac_vacua_por_umbral") or {}
-        faltan = [t for t in umbrales if t not in fv]
-        if faltan:
-            fallos.append("%s/%s: `frac_vacua_por_umbral` no cubre la grilla: "
-                          "faltan %s" % (etiqueta, n, faltan))
-        nulos = [t for t in umbrales if fv.get(t) is None]
-        if nulos:
-            fallos.append("%s/%s: `frac_vacua_por_umbral` en null para %s"
-                          % (etiqueta, n, nulos))
+        if sorted(fv) != sorted(umbrales):
+            fallos.append("%s/%s: `frac_vacua_por_umbral` no es la grilla T: "
+                          "faltan %s, sobran %s"
+                          % (et, n, sorted(set(umbrales) - set(fv)),
+                             sorted(set(fv) - set(umbrales))))
+        for t, v in sorted(fv.items()):
+            if v is None or not _finito(v) or not (0.0 <= v <= 1.0):
+                fallos.append("%s/%s: `frac_vacua_por_umbral[%s]`=%s invalido"
+                              % (et, n, t, v))
         rel = r.get("reloj_de_barra_abriria_antes") or {}
         for m in METRICAS_RELOJ:
-            if rel.get(m) is None:
-                fallos.append("%s/%s: `%s` ausente o null" % (etiqueta, n, m))
+            if rel.get(m) is None or not _finito(rel.get(m)):
+                fallos.append("%s/%s: `%s` ausente, null o no finito" % (et, n, m))
     return fallos
 
 
-def verificar_integridad(ruta, d, etiqueta):
-    """Recalcula `payload_sha256` y valida el sidecar de bytes."""
+def verificar_integridad(ruta, d, et):
+    """Recalcula `payload_sha256` y valida el sidecar contra los bytes."""
     fallos = []
     sin = {k: v for k, v in d.items() if k != "payload_sha256"}
     calc = hashlib.sha256(
         json.dumps(sin, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
     if calc != d.get("payload_sha256"):
-        fallos.append("%s: `payload_sha256` NO recalcula\n    declarado %s\n"
-                      "    calculado %s" % (etiqueta, d.get("payload_sha256"), calc))
+        fallos.append("%s: `payload_sha256` NO recalcula\n      declarado %s\n"
+                      "      calculado %s" % (et, d.get("payload_sha256"), calc))
     side = Path(str(ruta) + ".sha256")
     if not side.exists():
-        fallos.append("%s: falta el sidecar %s" % (etiqueta, side.name))
+        fallos.append("%s: falta el sidecar %s" % (et, side.name))
     else:
         esperado = side.read_text(encoding="utf-8").split()[0]
         real = hashlib.sha256(Path(ruta).read_bytes()).hexdigest()
         if esperado != real:
             fallos.append("%s: el sidecar NO coincide con los bytes\n"
-                          "    sidecar %s\n    archivo %s"
-                          % (etiqueta, esperado, real))
+                          "      sidecar %s\n      archivo %s" % (et, esperado, real))
     return fallos
 
 
@@ -164,25 +238,23 @@ def main(argv=None):
         print("no se pudo leer: %s" % e)
         return 2
 
-    # (1) esquema
     sa, sb = A.get("schema_version"), B.get("schema_version")
     if sa != sb or sa is None:
         print("NO COMPARABLES: schema_version %r vs %r" % (sa, sb))
-        print("\nNo se alinean los campos comunes a proposito. Alinear lo que")
+        print("\nNo se alinean los campos comunes a proposito: alinear lo que")
         print("coincide es como un cambio de semantica pasa desapercibido.")
-        print("Regenerar el artefacto viejo con el script actual.")
         return 1
 
-    # (2) estructura y (4) integridad
-    fallos = (validar_estructura(A, "A") + validar_estructura(B, "B")
-              + verificar_integridad(x.a, A, "A") + verificar_integridad(x.b, B, "B"))
+    fallos = (validar_allowlist(A, "A") + validar_allowlist(B, "B")
+              + validar_estructura(A, "A") + validar_estructura(B, "B")
+              + verificar_integridad(x.a, A, "A")
+              + verificar_integridad(x.b, B, "B"))
     if fallos:
-        print("NO COMPARABLES: %d problema(s) de estructura o integridad\n" % len(fallos))
+        print("NO COMPARABLES: %d problema(s)\n" % len(fallos))
         for f in fallos:
             print("  %s" % f)
         return 1
 
-    # (3) campos que deben coincidir
     difs = [(k, A.get(k), B.get(k)) for k in DEBEN_COINCIDIR if A.get(k) != B.get(k)]
     ia, ib = A["identidad"], B["identidad"]
     difs += [("identidad." + k, ia.get(k), ib.get(k))
@@ -193,21 +265,24 @@ def main(argv=None):
             print("  %s\n    A  %.100s\n    B  %.100s\n" % (k, va, vb))
         return 1
 
-    print("schema  %s" % sa)
-    print("codigo  generador %s | medicion %s | commit %s"
-          % (ia["generator_sha256"][:12], ia["measurement_code_sha256"][:12],
-             (ia["code_commit_start"] or "?")[:12]))
-    print("grilla  %s | umbral material %d ns"
-          % (A["umbrales"], A["umbral_material_ns"]))
+    print("schema   %s" % sa)
+    print("codigo   commit %s | generador %s | medicion %s"
+          % ((ia["code_commit_start"] or "?")[:12], ia["generator_sha256"][:12],
+             ia["measurement_code_sha256"][:12]))
+    print("deps     repo %s (%d) | entorno %s (%d)"
+          % (ia["dependency_set_repo_sha256"][:12], ia["dependency_set_repo_n"],
+             ia["dependency_set_entorno_sha256"][:12], ia["dependency_set_entorno_n"]))
+    print("         mutables fuera de .py: %s" % ia["dependencias_repo_fuera_de_py"])
+    print("grilla   %s | umbral material %d ns" % (A["umbrales"], A["umbral_material_ns"]))
     print("firewall %s | outcomes_accessed %s"
           % (A["firewall_corte_iso"], A["outcomes_accessed"]))
 
     print("\nMUESTRA -- se espera que difiera; es el objeto de la comparacion")
     for et, d in (("A", A), ("B", B)):
         i = d["identidad"]
-        print("  %s  %-26s %3d ses  hasta %s  fechas %s  parquet %s"
-              % (et, d["contrato"], d["sesiones"], d["max_fecha"],
-                 (i["session_dates_sha256"] or "?")[:10],
+        print("  %s  %-26s %3d ses  %s..%s  fechas %s  parquet %s"
+              % (et, d["contrato"], d["sesiones"], i["session_dates"][0],
+                 i["session_dates"][-1], i["session_dates_sha256"][:10],
                  (i["input_parquet_sha256"] or "?")[:10]))
 
     pa, pb = A["por_indicador"], B["por_indicador"]
@@ -216,16 +291,15 @@ def main(argv=None):
               % sorted(set(pa) ^ set(pb)))
         return 1
 
-    METRICAS = ("frac_dentro", "frac_cualquier_adelanto", "frac_adelanto_mayor_1s")
     print("\n%-15s %-12s %s" % ("indicador", "clase",
-                                " ".join("%21s" % m[:21] for m in METRICAS)))
+                                " ".join("%21s" % m[:21] for m in FRACCIONES)))
     print("%-15s %-12s %s" % ("", "", " ".join("%10s %10s" % ("A", "B")
-                                               for _ in METRICAS)))
+                                               for _ in FRACCIONES)))
     filas = []
     for n in sorted(pa, key=lambda k: (pa[k]["clase_kernel"], k)):
         ra, rb = pa[n], pb[n]
         celdas, fila = [], {"indicador": n, "clase": ra["clase_kernel"]}
-        for m in METRICAS:
+        for m in FRACCIONES:
             va = ra.get(m, (ra.get("reloj_de_barra_abriria_antes") or {}).get(m))
             vb = rb.get(m, (rb.get("reloj_de_barra_abriria_antes") or {}).get(m))
             fila[m] = {"A": va, "B": vb}
@@ -234,22 +308,26 @@ def main(argv=None):
         filas.append(fila)
 
     print("\nCOMPARABLES: mismo esquema, misma pregunta, mismas definiciones,")
-    print("misma grilla, mismo firewall, mismo codigo. Estructura e integridad")
-    print("verificadas. Lo que queda son diferencias de MUESTRA y PERIODO.")
+    print("misma grilla, mismo firewall, mismo codigo y mismo entorno.")
+    print("Allowlist, estructura, dominio e integridad verificados.")
+    print("Lo que queda son diferencias de MUESTRA y PERIODO.")
 
     if x.reporte:
         Path(x.reporte).write_text(json.dumps(dict(
-            veredicto="COMPARABLES",
-            schema_version=sa,
-            codigo=dict(generador=ia["generator_sha256"],
+            veredicto="COMPARABLES", schema_version=sa,
+            codigo=dict(commit=ia["code_commit_start"],
+                        generador=ia["generator_sha256"],
                         medicion=ia["measurement_code_sha256"],
-                        commit=ia["code_commit_start"]),
+                        deps_repo=ia["dependency_set_repo_sha256"],
+                        deps_entorno=ia["dependency_set_entorno_sha256"]),
             muestras=[dict(etiqueta=e, contrato=d["contrato"],
                            sesiones=d["sesiones"], max_fecha=d["max_fecha"],
                            session_dates_sha256=d["identidad"]["session_dates_sha256"],
                            input_parquet_sha256=d["identidad"]["input_parquet_sha256"],
-                           payload_sha256=d["payload_sha256"])
-                      for e, d in (("A", A), ("B", B))],
+                           payload_sha256=d["payload_sha256"],
+                           archivo_sha256=hashlib.sha256(
+                               Path(p).read_bytes()).hexdigest())
+                      for e, d, p in (("A", A, x.a), ("B", B, x.b))],
             metricas=filas, outcomes_accessed=False),
             indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
         print("-> %s" % x.reporte)

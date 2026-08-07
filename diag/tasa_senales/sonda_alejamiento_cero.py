@@ -61,8 +61,10 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import subprocess
 import sys
+import tempfile
 from collections import Counter
 from pathlib import Path
 
@@ -80,10 +82,17 @@ from diag.tasa_senales.curva_excursion_ticks import (  # noqa: E402
 #: Sube cuando cambia el CONJUNTO DE CAMPOS o la semántica de alguno. Dos
 #: artefactos con `schema_version` distinto **no se comparan**: `comparar_sondas.py`
 #: falla en vez de alinear campos que no significan lo mismo.
-#: v3: identidad al INICIO -commit, arbol sucio, huellas separadas del
-#: generador y del codigo de medicion, fechas exactas, hashes de universo y
-#: parquet-, `payload_sha256` con su nombre correcto y sidecar de bytes.
-SCHEMA_VERSION = "sonda_alejamiento_cero_v3"
+#: v3: identidad al INICIO -commit, huellas separadas del generador y del
+#:     codigo de medicion, fechas exactas, hashes de universo y parquet-,
+#:     `payload_sha256` con su nombre correcto y sidecar de bytes.
+#: v4: el gate deja de ser "los .py estan limpios" y pasa a ser un CONJUNTO
+#:     EXPLICITO DE DEPENDENCIAS derivado de `sys.modules` + manifiesto +
+#:     parquet + lockfile. Tres campos separados en vez de uno que mentia:
+#:     `git_worktree_dirty_start` (el status COMPLETO),
+#:     `dependency_set_dirty_start` (lo unico que bloquea) e
+#:     `ignored_generated_outputs` (por ruta exacta, no por extension).
+#:     Mas promocion atomica del JSON y sidecar escrito DESPUES.
+SCHEMA_VERSION = "sonda_alejamiento_cero_v4"
 
 #: La pregunta va en una constante para que el comparador pueda EXIGIR que
 #: coincida: dos artefactos no miden lo mismo si cambia lo que preguntan.
@@ -265,37 +274,117 @@ def sha_de_archivo(p):
     return h.hexdigest()
 
 
-def arbol_de_fuentes_sucio():
-    """**Código** modificado y sin commitear en `diag/`, `edgelab/`, `tools/`.
-    Vacío = limpio.
+def _rel(p):
+    try:
+        return Path(p).resolve().relative_to(REPO_PATH).as_posix()
+    except Exception:
+        return None
 
-    ## Sólo `.py`, y la distinción es la que importa
 
-    La primera versión miraba esas carpetas **enteras**, y eso la volvía
-    inservible por una razón que no se ve hasta correrla dos veces: **la propia
-    sonda escribe su artefacto dentro de `diag/tasa_senales/`**, así que después
-    de la primera corrida el árbol queda sucio y la segunda **nunca puede
-    pasar**. La puerta se bloqueaba a sí misma.
+def salidas_generadas():
+    """Rutas **exactas** que este script escribe. Enumeradas, no filtradas.
 
-    El criterio correcto es el que sostiene el gate: **un artefacto generado sin
-    commitear no puede cambiar un número; el código sí.** Un `.json` de salida,
-    un `.log` o un sidecar `.sha256` en el working tree no afectan lo que la
-    próxima corrida mide. Un `.py` sí.
+    La regla de nombres es determinista (`ruta_de_salida`), así que la familia
+    se puede enumerar de disco en vez de describirse por extensión. Excluir por
+    extensión —`*.json`— habría tapado también cualquier `.json` de
+    configuración que sí es dependencia.
+    """
+    d = Path(__file__).resolve().parent
+    out = set()
+    for p in sorted(d.glob("sonda_alejamiento_cero__*.json")):
+        r = _rel(p)
+        if r:
+            out.add(r)
+            out.add(r + ".sha256")
+    return out
 
-    Y no es fail-open: los artefactos ya están cubiertos por otra vía —el
-    `payload_sha256`, el sidecar de bytes y las huellas de código— mientras que
-    el código sin commitear no tenía ninguna.
+
+def conjunto_de_dependencias(contrato):
+    """Todo lo que puede cambiar el número, con su `sha256`. **Derivado, no
+    escrito a mano.**
+
+    ## Por qué no es una lista
+
+    Una lista de dependencias mantenida a mano envejece: alguien agrega un
+    `import` y nadie actualiza la lista. Acá los módulos salen de `sys.modules`
+    —lo que el proceso **realmente importó**— filtrado a los que viven dentro
+    del repo. Si mañana la sonda importa un módulo nuevo, entra solo.
+
+    A eso se suman las dependencias que **no son módulos** y que ningún
+    `sys.modules` iba a delatar: el manifiesto de universo (define la muestra),
+    el parquet de entrada (son los datos) y el lockfile del entorno (define las
+    versiones de numpy/pandas con las que se calculó).
+
+    ## Lo que esto corrige
+
+    La versión anterior filtraba el `git status` por extensión `.py` y llamaba
+    a eso «árbol limpio». **No era lo mismo**: un `.py` limpio no dice nada del
+    manifiesto, del parquet ni del lock. Y el campo se llamaba
+    `working_tree_dirty_start`, que prometía el worktree entero.
+    """
+    ## Repo y entorno van SEPARADOS, y el motivo no es estético
+    ##
+    ## Los dos pueden mover un número, pero por causas distintas y con distinto
+    ## remedio. Un `.py` del repo que cambia es **código**: se commitea. Un
+    ## `.pyd` de `numpy` que cambia es **entorno**: se reinstala desde el lock.
+    ## Mezclarlos en un solo hash haría que dos corridas de la misma máquina y
+    ## el mismo commit parezcan incomparables por una actualización de pandas
+    ## —y, peor, que un cambio de código quede escondido detrás de eso—.
+    repo, entorno = {}, {}
+    for m in list(sys.modules.values()):
+        f = getattr(m, "__file__", None)
+        if not f or "__pycache__" in str(f):
+            continue
+        r = _rel(f)
+        if not r or not Path(f).is_file():
+            continue
+        (entorno if r.startswith(".venv/") else repo)[r] = sha_de_archivo(f)
+
+    extras = [REPO_PATH / "data" / "nt8" / "6E" / contrato,
+              REPO_PATH / "requirements" / "core-bridge-dev.lock"]
+    try:
+        from edgelab.research.universo_estudio import ruta_por_defecto
+        extras.append(Path(ruta_por_defecto()))
+    except Exception:
+        pass
+    for p in extras:
+        r = _rel(p)
+        if r and Path(p).is_file():
+            repo[r] = sha_de_archivo(p)
+    return repo, entorno
+
+
+def estado_del_worktree(dependencias):
+    """Clasifica **todo** lo sucio en tres cubetas, sin llamarle «limpio» a nada.
+
+    - `git_worktree_dirty_start`  — el `git status` COMPLETO, sin filtrar. Es el
+      dato honesto: si el worktree está sucio, el campo lo dice.
+    - `dependency_set_dirty_start` — la intersección con el conjunto de
+      dependencias. **Es lo único que bloquea**, porque es lo único que puede
+      mover un número.
+    - `ignored_generated_outputs` — lo sucio que son salidas de este mismo
+      script, por ruta exacta.
+    - `sin_clasificar` — el resto. **No bloquea, pero se publica**: es la
+      superficie que el gate declara no cubrir, y esconderla sería fingir un
+      alcance que no tiene.
     """
     try:
-        out = subprocess.run(["git", "status", "--porcelain", "--",
-                              "diag", "edgelab", "tools"],
+        out = subprocess.run(["git", "status", "--porcelain"],
                              cwd=str(REPO_PATH), capture_output=True,
                              text=True, timeout=60).stdout
     except Exception:
-        return ["(no se pudo consultar git)"]
-    return sorted(r for r in (l[3:].strip().strip('"') for l in out.splitlines()
-                              if l.strip())
-                  if r.endswith(".py"))
+        return dict(git_worktree_dirty_start=["(no se pudo consultar git)"],
+                    dependency_set_dirty_start=["(no se pudo consultar git)"],
+                    ignored_generated_outputs=[], sin_clasificar=[])
+    sucio = sorted(l[3:].strip().strip('"') for l in out.splitlines() if l.strip())
+    salidas = salidas_generadas()
+    return dict(
+        git_worktree_dirty_start=sucio,
+        dependency_set_dirty_start=sorted(r for r in sucio if r in dependencias),
+        ignored_generated_outputs=sorted(r for r in sucio if r in salidas),
+        sin_clasificar=sorted(r for r in sucio
+                              if r not in dependencias and r not in salidas),
+    )
 
 
 def identidad_de_corrida(contrato, fechas):
@@ -330,9 +419,32 @@ def identidad_de_corrida(contrato, fechas):
         uni = huella_del_universo(str(ruta_por_defecto()))["sha256"]
     except Exception:
         uni = None
+    dep_repo, dep_entorno = conjunto_de_dependencias(contrato)
+    est = estado_del_worktree(dep_repo)
+    h = lambda d: hashlib.sha256(json.dumps(d, sort_keys=True).encode()).hexdigest()
     return dict(
         code_commit_start=git_head(),
-        working_tree_dirty_start=arbol_de_fuentes_sucio(),
+        # TRES campos, no uno: el nombre de cada uno dice exactamente qué mira.
+        git_worktree_dirty_start=est["git_worktree_dirty_start"],
+        dependency_set_dirty_start=est["dependency_set_dirty_start"],
+        ignored_generated_outputs=est["ignored_generated_outputs"],
+        worktree_sucio_sin_clasificar=est["sin_clasificar"],
+        # El conjunto completo con su hash: no hay que creerle al gate, se
+        # puede recomputar. REPO y ENTORNO por separado -ver el docstring-.
+        dependency_set_repo=dep_repo,
+        dependency_set_repo_sha256=h(dep_repo),
+        dependency_set_repo_n=len(dep_repo),
+        # El entorno NO se lista entero -son ~440 binarios de .venv y ninguna
+        # persona los va a leer-: va el hash agregado, que es lo que permite
+        # detectar que cambio, mas el lock que lo declara.
+        dependency_set_entorno_sha256=h(dep_entorno),
+        dependency_set_entorno_n=len(dep_entorno),
+        dependency_set_n=len(dep_repo) + len(dep_entorno),
+        # DEMOSTRACION pedida por el auditor: que dependencias mutables hay
+        # FUERA de los `.py` del repo. Si esta lista esta vacia, el gate viejo
+        # -que miraba solo .py- habria sido suficiente; si no, no lo era.
+        dependencias_repo_fuera_de_py=sorted(
+            r for r in dep_repo if not r.endswith(".py")),
         generator_sha256=sha_de_archivo(Path(__file__).resolve()),
         measurement_code_sha256=huella_del_codigo(sorted(CLASE_KERNEL)),
         session_dates=list(fechas),
@@ -431,7 +543,9 @@ def main(argv=None):
     fin = identidad_de_corrida(a.contrato, fechas)
     movidos = [k for k in ("code_commit_start", "generator_sha256",
                            "measurement_code_sha256", "universe_manifest_sha256",
-                           "input_parquet_sha256")
+                           "input_parquet_sha256",
+                           "dependency_set_repo_sha256",
+                           "dependency_set_entorno_sha256")
                if ident[k] != fin[k]]
     if movidos:
         print("\nEL CODIGO CAMBIO DURANTE LA CORRIDA -- no se publica.")
@@ -451,7 +565,7 @@ def main(argv=None):
         umbral_material_ns=UMBRAL_MATERIAL_NS,
         clase_kernel=dict(CLASE_KERNEL),
         identidad=ident,
-        diagnostico_arbol_sucio=bool(ident["working_tree_dirty_start"]),
+        diagnostico_arbol_sucio=bool(ident["dependency_set_dirty_start"]),
         outcomes_accessed=False,
         por_indicador=res)
 
