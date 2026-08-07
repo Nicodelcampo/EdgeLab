@@ -14,9 +14,24 @@ la otra máquina.
 
 ```
 .venv\Scripts\python tools\estado.py
+.venv\Scripts\python tools\manifiesto_datos.py
 ```
 
-Sale 1 si algo requiere atención. **Correlo antes de medir cualquier cosa.**
+El primero sale 1 si algo requiere atención. El segundo verifica que **esta
+máquina tenga los MISMOS datos**, no sólo datos.
+
+> **`data/` no viaja con el repo.** Está gitignoreado por política: son **31
+> parquets, 16,9 GB**. Hay que copiarlos por fuera de git. El manifiesto no los
+> transporta — da la certeza de estar copiando los mismos.
+>
+> Sin eso, dos máquinas pueden tener archivos distintos con el mismo nombre y
+> nadie se entera. Es exactamente la falla que produjo **dos veredictos
+> opuestos** con `manifiesto_universo.json` el 2026-08-05.
+>
+> La sonda ya publica `input_parquet_sha256`, así que una discrepancia se
+> detecta igual — pero **después** de gastar el cómputo. Esto la detecta antes.
+
+**Correlos antes de medir cualquier cosa.**
 
 ## 1. Qué quedó a medias, y por qué importa
 
