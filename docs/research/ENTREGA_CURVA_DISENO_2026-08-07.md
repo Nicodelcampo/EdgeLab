@@ -305,9 +305,9 @@ quedaron en un directorio temporal que se borra solo**. La corrida de 201
 sesiones usó `workers=4` **confiando en esa equivalencia**: no es trazabilidad,
 es el permiso de la corrida entera.
 
-Ahora están versionados como `equivalencia_workers__w1_70s.json` y `__w2_70s.json`,
-y `verificar_equivalencia_workers.py` **rehace la comparación y falla si no son
-idénticos**. Re-verificado desde el repo: **12 campos × 6 unidades, EXACTA**. El
+Ahora están versionados como `equivalencia_workers__w1_70s.json` y
+`equivalencia_workers__w2_70s.json`, y `verificar_equivalencia_workers.py`
+**rehace la comparación y falla si no son idénticos**. Re-verificado desde el repo: **12 campos × 6 unidades, EXACTA**. El
 acta (`equivalencia_workers.json`) declara el `sha256` de cada entrada y —esto
 importa— **qué campos se excluyen y por qué** (`segundos`, `workers`,
 `clave_de_corrida`, `code_commit`, `output_sha256`). Una comparación que no dice
