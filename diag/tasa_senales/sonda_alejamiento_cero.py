@@ -266,11 +266,25 @@ def sha_de_archivo(p):
 
 
 def arbol_de_fuentes_sucio():
-    """Rutas de código modificadas y sin commitear. **Vacío = limpio.**
+    """**Código** modificado y sin commitear en `diag/`, `edgelab/`, `tools/`.
+    Vacío = limpio.
 
-    Sólo mira código —`diag/`, `edgelab/`, `tools/`—: un documento sin commitear
-    no puede cambiar un número, y exigir el repo entero limpio haría el gate
-    inusable sin hacerlo más seguro.
+    ## Sólo `.py`, y la distinción es la que importa
+
+    La primera versión miraba esas carpetas **enteras**, y eso la volvía
+    inservible por una razón que no se ve hasta correrla dos veces: **la propia
+    sonda escribe su artefacto dentro de `diag/tasa_senales/`**, así que después
+    de la primera corrida el árbol queda sucio y la segunda **nunca puede
+    pasar**. La puerta se bloqueaba a sí misma.
+
+    El criterio correcto es el que sostiene el gate: **un artefacto generado sin
+    commitear no puede cambiar un número; el código sí.** Un `.json` de salida,
+    un `.log` o un sidecar `.sha256` en el working tree no afectan lo que la
+    próxima corrida mide. Un `.py` sí.
+
+    Y no es fail-open: los artefactos ya están cubiertos por otra vía —el
+    `payload_sha256`, el sidecar de bytes y las huellas de código— mientras que
+    el código sin commitear no tenía ninguna.
     """
     try:
         out = subprocess.run(["git", "status", "--porcelain", "--",
@@ -279,7 +293,9 @@ def arbol_de_fuentes_sucio():
                              text=True, timeout=60).stdout
     except Exception:
         return ["(no se pudo consultar git)"]
-    return sorted(l[3:].strip() for l in out.splitlines() if l.strip())
+    return sorted(r for r in (l[3:].strip().strip('"') for l in out.splitlines()
+                              if l.strip())
+                  if r.endswith(".py"))
 
 
 def identidad_de_corrida(contrato, fechas):
