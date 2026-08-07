@@ -67,10 +67,19 @@ PUEDEN_DIFERIR = ("contrato", "sesiones", "max_fecha", "identidad",
 #: Dentro de `identidad`: el CÓDIGO y el ENTORNO deben coincidir; la MUESTRA no.
 IDENTIDAD_DEBE_COINCIDIR = ("code_commit_start", "generator_sha256",
                             "measurement_code_sha256",
-                            "dependency_set_repo_sha256",
-                            "dependency_set_entorno_sha256",
-                            "universe_manifest_sha256")
-IDENTIDAD_PUEDE_DIFERIR = ("dependency_set_entorno",
+                            "repo_dependencies_sha256",
+                            "environment_dependencies_sha256",
+                            "dependency_manifest_sha256",
+                            "frozen_dependencies_n",
+                            "known_uncovered_runtime_surface",
+                            "universe_manifest_sha256", "modo")
+#: `input_dependencies_sha256` PUEDE diferir -las muestras usan inputs
+#: distintos- pero cada input queda identificado individualmente en
+#: `dependency_set_inputs` y su coherencia con contrato y sesiones se valida en
+#: `validar_estructura`.
+IDENTIDAD_PUEDE_DIFERIR = ("dependency_set_inputs", "input_dependencies_sha256",
+                           "modulos_por_ruta", "new_unfrozen_dependency_files",
+                           "dependency_set_entorno",
                            "dependency_set_entorno_n_fin",
                            "dependency_set_entorno_sha256_fin",
                            "entorno_importado_durante_la_corrida",

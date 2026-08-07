@@ -92,7 +92,11 @@ from diag.tasa_senales.curva_excursion_ticks import (  # noqa: E402
 #:     `dependency_set_dirty_start` (lo unico que bloquea) e
 #:     `ignored_generated_outputs` (por ruta exacta, no por extension).
 #:     Mas promocion atomica del JSON y sidecar escrito DESPUES.
-SCHEMA_VERSION = "sonda_alejamiento_cero_v4"
+#: v5: conjunto CONGELADO. Se PREHASHEA el manifiesto sin importarlo -importar
+#:     en orden artificial puede disparar efectos laterales y alterar lo que se
+#:     mide- y la regla canonica pasa a ser new_unfrozen_dependency_files == [].
+#:     Ambitos canonicos repo:/venv:/stdlib:/otro:, con la stdlib adentro.
+SCHEMA_VERSION = "sonda_alejamiento_cero_v5"
 
 #: La pregunta va en una constante para que el comparador pueda EXIGIR que
 #: coincida: dos artefactos no miden lo mismo si cambia lo que preguntan.
@@ -274,11 +278,64 @@ def sha_de_archivo(p):
     return h.hexdigest()
 
 
+#: Prefijos de ámbito. La AUTORIDAD es la ruta canónica del archivo, no el
+#: nombre del módulo: varios nombres pueden apuntar al mismo archivo, existen
+#: namespace packages, y hay módulos sin archivo propio.
+VENV = (REPO_PATH / ".venv").resolve()
+STDLIB = Path(sys.base_prefix).resolve()
+
+
 def _rel(p):
     try:
         return Path(p).resolve().relative_to(REPO_PATH).as_posix()
     except Exception:
         return None
+
+
+def _ident(f):
+    """`(ambito, identificador)` canónico y **relativo**, o `None`.
+
+    Un manifiesto con `E:\\EdgeLab\\...` adentro no sirve en otra máquina y
+    convierte una diferencia de entorno en un falso positivo de código. Por eso
+    cada ruta se expresa relativa a su raíz: el repo, el venv o el `base_prefix`
+    del intérprete.
+
+    El ámbito `otro:` queda absoluto a propósito — es la señal de que apareció
+    algo fuera de las tres raíces conocidas, y esconderlo detrás de un basename
+    lo volvería incomparable sin avisar.
+    """
+    try:
+        q = Path(f).resolve()
+    except Exception:
+        return None
+    if not q.is_file():
+        return None
+    try:
+        return "venv", "venv:" + q.relative_to(VENV).as_posix()
+    except ValueError:
+        pass
+    try:
+        return "repo", "repo:" + q.relative_to(REPO_PATH).as_posix()
+    except ValueError:
+        pass
+    try:
+        return "stdlib", "stdlib:" + q.relative_to(STDLIB).as_posix()
+    except ValueError:
+        pass
+    return "otro", "otro:" + q.as_posix()
+
+
+def _resolver(ident):
+    """Inverso de `_ident`: identificador canónico -> ruta absoluta."""
+    if ident.startswith("venv:"):
+        return VENV / ident[5:]
+    if ident.startswith("repo:"):
+        return REPO_PATH / ident[5:]
+    if ident.startswith("stdlib:"):
+        return STDLIB / ident[7:]
+    if ident.startswith("otro:"):
+        return Path(ident[5:])
+    return None
 
 
 def salidas_generadas():
@@ -299,7 +356,7 @@ def salidas_generadas():
     return out
 
 
-def conjunto_de_dependencias(contrato):
+def conjunto_de_dependencias(contrato):   # -> repo, inputs, entorno, modulos
     """Todo lo que puede cambiar el número, con su `sha256`. **Derivado, no
     escrito a mano.**
 
@@ -330,28 +387,119 @@ def conjunto_de_dependencias(contrato):
     ## Mezclarlos en un solo hash haría que dos corridas de la misma máquina y
     ## el mismo commit parezcan incomparables por una actualización de pandas
     ## —y, peor, que un cambio de código quede escondido detrás de eso—.
-    repo, entorno = {}, {}
-    for m in list(sys.modules.values()):
+    repo, entorno, inputs, modulos = {}, {}, {}, {}
+    for nombre, m in sorted(sys.modules.items()):
         f = getattr(m, "__file__", None)
         if not f or "__pycache__" in str(f):
             continue
-        r = _rel(f)
-        if not r or not Path(f).is_file():
+        par = _ident(f)
+        if not par:
             continue
-        (entorno if r.startswith(".venv/") else repo)[r] = sha_de_archivo(f)
+        ambito, ident = par
+        modulos.setdefault(ident, []).append(nombre)
+        # ENTORNO = todo lo importado fuera del repo: `.venv`, la BIBLIOTECA
+        # ESTANDAR y cualquier otra raiz. Limitarlo a `.venv` dejaba afuera la
+        # stdlib, que tambien puede mover un numero -`statistics`, `zoneinfo`,
+        # `decimal`-.
+        (repo if ambito == "repo" else entorno)[ident] = sha_de_archivo(f)
 
-    extras = [REPO_PATH / "data" / "nt8" / "6E" / contrato,
-              REPO_PATH / "requirements" / "core-bridge-dev.lock"]
+    # REPO: codigo y configuracion versionable. El lockfile va aca -declara la
+    # INTENCION de instalacion- y NO reemplaza al hash del entorno, que declara
+    # lo que efectivamente se cargo. Son dos evidencias distintas.
+    for p in [REPO_PATH / "requirements" / "core-bridge-dev.lock",
+              MANIFIESTO_CONGELADO]:
+        par = _ident(p)
+        if par:
+            repo[par[1]] = sha_de_archivo(p)
+
+    # INPUTS: datos. Separados del codigo porque un cambio aca no se arregla
+    # commiteando ni reinstalando: cambia la muestra.
+    entradas = [REPO_PATH / "data" / "nt8" / "6E" / contrato]
     try:
         from edgelab.research.universo_estudio import ruta_por_defecto
-        extras.append(Path(ruta_por_defecto()))
+        entradas.append(Path(ruta_por_defecto()))
     except Exception:
         pass
-    for p in extras:
-        r = _rel(p)
-        if r and Path(p).is_file():
-            repo[r] = sha_de_archivo(p)
-    return repo, entorno
+    for p in entradas:
+        par = _ident(p)
+        if par:
+            inputs[par[1]] = sha_de_archivo(p)
+    return repo, inputs, entorno, {k: sorted(v) for k, v in modulos.items()}
+
+
+MANIFIESTO_CONGELADO = (Path(__file__).resolve().parent
+                        / "dependencias_congeladas.json")
+
+#: Lo que este metodo NO cubre. Un `[]` aca seria una afirmacion universal
+#: falsa: `sys.modules` no prueba que se haya inventariado el sistema. El hash
+#: de entorno NO son "todos los bytes ejecutados": son los ARCHIVOS OBSERVABLES
+#: asociados a las dependencias de runtime dentro del alcance declarado.
+SUPERFICIE_NO_CUBIERTA = [
+    "librerias nativas transitivas cargadas por un .pyd o .dll: no aparecen "
+    "en sys.modules y no se pueden enumerar desde Python",
+    "modulos built-in y frozen: no tienen archivo propio; quedan cubiertos "
+    "parcialmente por la version del interprete",
+    "el binario del interprete y las flags con que fue compilado",
+    "variables de entorno, locale y la base tzdata del sistema",
+    "configuracion externa al repo",
+]
+
+
+def prehashear(manifiesto):
+    """Hashea **todas** las rutas congeladas **sin importarlas**.
+
+    ## Por qué prehashear y no preimportar
+
+    La versión anterior de este diseño pre-importaba el manifiesto entero antes
+    de medir. Parecía equivalente y no lo es: importar en un orden artificial
+    puede **ejecutar efectos laterales**, inicializar pools de threads, tocar
+    registros globales, cambiar seeds o alterar el orden natural de imports —y
+    producir un resultado distinto del que da el programa normal—.
+
+    No hace falta importar para congelar: el manifiesto ya trae las rutas, y un
+    archivo se hashea sin ejecutarlo. La medición corre después con su **orden
+    natural** de imports, y lo único que se exige es que ningún archivo usado
+    quede fuera del conjunto ya hasheado.
+
+    Una ruta del manifiesto que hoy no existe **aborta**: el conjunto congelado
+    dejó de ser alcanzable y la corrida no sería la misma.
+    """
+    faltan, hashes = [], {}
+    for ident in sorted(manifiesto.get("dependencias") or []):
+        p = _resolver(ident)
+        if p is None or not Path(p).is_file():
+            faltan.append(ident)
+        else:
+            hashes[ident] = sha_de_archivo(p)
+    return hashes, faltan
+
+
+def dependencias_no_congeladas(observadas, congeladas):
+    """Archivos usados durante la medicion que NO estaban en el conjunto
+    congelado. **La regla canonica es que esto sea vacio.**
+
+    No es «modulos importados despues del arranque»: un modulo prehasheado
+    puede importarse naturalmente mas tarde y eso esta bien, porque sus bytes
+    ya fueron identificados antes de medir. Lo que invalida la corrida es que
+    aparezca un ARCHIVO que nadie hasheo.
+
+    La autoridad es la ruta canonica, no el nombre del modulo: varios nombres
+    pueden apuntar al mismo archivo, existen namespace packages, y hay modulos
+    sin archivo propio.
+    """
+    return sorted(set(observadas) - set(congeladas))
+
+
+def hashes_que_cambiaron(antes, despues):
+    """`[(ident, sha_antes, sha_despues)]` de lo que cambio durante la corrida.
+
+    Solo mira lo que estaba en `antes`: que aparezca una clave nueva es asunto
+    de `dependencias_no_congeladas`, no de esta funcion. Separarlas evita el
+    error de la version anterior, que comparaba conjuntos enteros y abortaba
+    siempre porque `sys.modules` crece.
+    """
+    return [(k, antes[k], despues[k]) for k in sorted(antes)
+            if k in despues and antes[k] != despues[k]]
 
 
 def estado_del_worktree(dependencias):
@@ -419,7 +567,7 @@ def identidad_de_corrida(contrato, fechas):
         uni = huella_del_universo(str(ruta_por_defecto()))["sha256"]
     except Exception:
         uni = None
-    dep_repo, dep_entorno = conjunto_de_dependencias(contrato)
+    dep_repo, dep_inputs, dep_entorno, modulos = conjunto_de_dependencias(contrato)
     est = estado_del_worktree(dep_repo)
     h = lambda d: hashlib.sha256(json.dumps(d, sort_keys=True).encode()).hexdigest()
     return dict(
@@ -432,15 +580,20 @@ def identidad_de_corrida(contrato, fechas):
         # El conjunto completo con su hash: no hay que creerle al gate, se
         # puede recomputar. REPO y ENTORNO por separado -ver el docstring-.
         dependency_set_repo=dep_repo,
-        dependency_set_repo_sha256=h(dep_repo),
+        repo_dependencies_sha256=h(dep_repo),
         dependency_set_repo_n=len(dep_repo),
+        dependency_set_inputs=dep_inputs,
+        input_dependencies_sha256=h(dep_inputs),
+        # nombres de modulo por ruta: DIAGNOSTICO. La autoridad es la ruta.
+        modulos_por_ruta=modulos,
         # El entorno NO se lista entero -son ~440 binarios de .venv y ninguna
         # persona los va a leer-: va el hash agregado, que es lo que permite
         # detectar que cambio, mas el lock que lo declara.
         dependency_set_entorno=dep_entorno,
-        dependency_set_entorno_sha256=h(dep_entorno),
+        environment_dependencies_sha256=h(dep_entorno),
         dependency_set_entorno_n=len(dep_entorno),
-        dependency_set_n=len(dep_repo) + len(dep_entorno),
+        dependency_set_n=len(dep_repo) + len(dep_inputs) + len(dep_entorno),
+        known_uncovered_runtime_surface=list(SUPERFICIE_NO_CUBIERTA),
         # DEMOSTRACION pedida por el auditor: que dependencias mutables hay
         # FUERA de los `.py` del repo. Si esta lista esta vacia, el gate viejo
         # -que miraba solo .py- habria sido suficiente; si no, no lo era.
@@ -462,6 +615,9 @@ def main(argv=None):
     ap.add_argument("--sesiones", type=int, default=8,
                     help="cuántas sesiones del contrato (muestra chica a propósito)")
     ap.add_argument("--contrato", default="6E_09-26_ticks.parquet")
+    ap.add_argument("--descubrimiento", action="store_true",
+                    help="ignora el manifiesto congelado: la corrida sirve para "
+                         "OBSERVAR dependencias, no es canonica")
     ap.add_argument("--permitir-arbol-sucio", action="store_true",
                     help="SOLO para diagnóstico: el artefacto sale marcado y no "
                          "puede usarse como canónico")
@@ -493,6 +649,29 @@ def main(argv=None):
         print("contiene. Con --permitir-arbol-sucio sale MARCADO como diagnostico")
         print("y el comparador lo rechaza como canonico.")
         return 2
+
+    # CONJUNTO CONGELADO. Sin manifiesto la corrida es de DESCUBRIMIENTO: mide
+    # igual, pero se marca y el comparador la rechaza como canónica. Con
+    # manifiesto se PREHASHEA todo antes de medir -- sin importarlo, para no
+    # alterar el orden natural de imports ni disparar efectos laterales.
+    modo_canonico = MANIFIESTO_CONGELADO.is_file() and not a.descubrimiento
+    manifiesto, prehash = None, {}
+    if modo_canonico:
+        manifiesto = json.loads(MANIFIESTO_CONGELADO.read_text(encoding="utf-8"))
+        prehash, faltan = prehashear(manifiesto)
+        if faltan:
+            print("EL CONJUNTO CONGELADO NO ES ALCANZABLE -- no se publica.")
+            print("faltan %d ruta(s) del manifiesto:" % len(faltan))
+            for r in faltan[:20]:
+                print("   %s" % r)
+            print("\nRegenerar el manifiesto con congelar_dependencias.py, en su")
+            print("propio commit, y volver a correr las DOS sondas.")
+            return 2
+        print("congelado %d dependencias prehasheadas | manifiesto %s"
+              % (len(prehash), sha_de_archivo(MANIFIESTO_CONGELADO)[:12]))
+    else:
+        print("MODO DESCUBRIMIENTO -- sin manifiesto congelado. El artefacto NO "
+              "es canonico.")
 
     print("contrato %s | %d sesiones | max %s <= %s"
           % (a.contrato, len(fechas), peor, MAX_FECHA))
@@ -574,13 +753,53 @@ def main(argv=None):
             print("   %-30s %.16s -> %.16s" % (k, va, vb))
         return 2
 
-    # Lo que se importó DESPUÉS del arranque: no es un error, pero es parte de
-    # la identidad y se publica en vez de desaparecer.
+    # Lo que se importó DESPUÉS del arranque: no es un error por sí mismo — lo
+    # decide la regla del conjunto congelado, abajo — pero es parte de la
+    # identidad y se publica en vez de desaparecer.
     nuevos = sorted(set(ent_fin) - set(ent_ini))
     ident["entorno_importado_durante_la_corrida"] = nuevos
     ident["dependency_set_entorno_n_fin"] = len(ent_fin)
     ident["dependency_set_entorno_sha256_fin"] = hashlib.sha256(
         json.dumps(ent_fin, sort_keys=True).encode()).hexdigest()
+
+    # ------------------------------------------- LA REGLA CANONICA
+    # `new_unfrozen_dependency_files == []`: TODO archivo usado durante la
+    # medicion tiene que haber estado identificado y hasheado ANTES de medir.
+    #
+    # No es «modulos importados despues del arranque»: un modulo prehasheado
+    # puede importarse naturalmente mas tarde y eso esta bien, porque sus bytes
+    # ya fueron cubiertos. Lo que invalida la corrida es que aparezca un ARCHIVO
+    # que nadie hasheo. La autoridad es la ruta canonica, no el nombre.
+    observadas = sorted(set(fin["dependency_set_repo"])
+                        | set(fin["dependency_set_inputs"])
+                        | set(ent_fin))
+    if modo_canonico:
+        tardias = dependencias_no_congeladas(observadas, prehash)
+        if tardias:
+            print("\nDEPENDENCIAS NO CONGELADAS -- no se publica. %d archivo(s) "
+                  "usados que\nno estaban en el manifiesto:" % len(tardias))
+            for r in tardias[:20]:
+                print("   %s" % r)
+            print("\nNO se amplia el manifiesto automaticamente: eso convertiria")
+            print("el gate en un registro. Correr una discovery nueva, regenerar")
+            print("el manifiesto en su propio commit, y relanzar LAS DOS sondas.")
+            return 2
+
+        cambiadas = hashes_que_cambiaron(
+            prehash, {r: sha_de_archivo(_resolver(r)) for r in prehash
+                      if _resolver(r) and Path(_resolver(r)).is_file()})
+        if cambiadas:
+            print("\nUNA DEPENDENCIA CONGELADA CAMBIO DURANTE LA MEDICION -- "
+                  "no se publica.")
+            for k, va, vb in cambiadas:
+                print("   %-40s %.16s -> %.16s" % (k, va, vb))
+            return 2
+
+        ident["dependency_manifest_sha256"] = sha_de_archivo(MANIFIESTO_CONGELADO)
+        ident["frozen_dependencies_n"] = len(prehash)
+    ident["new_unfrozen_dependency_files"] = (
+        dependencias_no_congeladas(observadas, prehash) if modo_canonico else None)
+    ident["modo"] = "canonico" if modo_canonico else "descubrimiento"
 
     payload = dict(
         schema_version=SCHEMA_VERSION,
