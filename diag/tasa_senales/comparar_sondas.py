@@ -156,6 +156,25 @@ def validar_estructura(d, et):
                       "no puede ser canonico" % et)
 
     ident = d.get("identidad") or {}
+
+    # LAS DOS CONDICIONES QUE HACEN CANONICO A UN ARTEFACTO, exigidas aca.
+    # La version anterior sólo pedía que `modo` COINCIDIERA entre los dos —así
+    # que dos corridas de descubrimiento daban exit 0— y tenía
+    # `new_unfrozen_dependency_files` en «pueden diferir», sin exigir nunca que
+    # fuera vacío. O sea que el exit 0 del comparador NO probaba ninguna de las
+    # dos propiedades que el commit de evidencia afirmaba.
+    if ident.get("modo") != "canonico":
+        fallos.append("%s: `modo` es %r, se exige 'canonico'. Una corrida de "
+                      "descubrimiento no es evidencia." % (et, ident.get("modo")))
+    nuevas = ident.get("new_unfrozen_dependency_files")
+    if nuevas != []:
+        fallos.append("%s: `new_unfrozen_dependency_files` es %r, se exige []. "
+                      "Es LA regla: todo archivo usado tenia que estar "
+                      "hasheado antes de medir." % (et, nuevas))
+    if not ident.get("dependency_manifest_sha256"):
+        fallos.append("%s: sin `dependency_manifest_sha256` -- no hay conjunto "
+                      "congelado que respalde la corrida" % et)
+
     if ident.get("dependency_set_dirty_start"):
         fallos.append("%s: `dependency_set_dirty_start` no vacio: %s"
                       % (et, ident["dependency_set_dirty_start"]))

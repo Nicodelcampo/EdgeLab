@@ -430,6 +430,17 @@ def conjunto_de_dependencias(contrato):   # -> repo, inputs, entorno, modulos
 MANIFIESTO_CONGELADO = (Path(__file__).resolve().parent
                         / "dependencias_congeladas.json")
 
+#: Campos que se re-verifican al cerrar. **Constante compartida, no una lista
+#: escrita a mano adentro de `main()`.** El test que la validaba parseaba el
+#: fuente con `src.split("movidos = [")[1].split("]")[0]` — y el primer `]` es
+#: el de `ident[k]`, así que extraía una lista vacía y **pasaba sin validar
+#: nada**. Un test vacuo es peor que ninguno: ocupa el lugar del que faltaba.
+CAMPOS_REVERIFICADOS = (
+    "code_commit_start", "generator_sha256", "measurement_code_sha256",
+    "universe_manifest_sha256", "input_parquet_sha256",
+    "repo_dependencies_sha256", "input_dependencies_sha256",
+)
+
 #: Lo que este metodo NO cubre. Un `[]` aca seria una afirmacion universal
 #: falsa: `sys.modules` no prueba que se haya inventariado el sistema. El hash
 #: de entorno NO son "todos los bytes ejecutados": son los ARCHIVOS OBSERVABLES
@@ -502,6 +513,77 @@ def hashes_que_cambiaron(antes, despues):
             if k in despues and antes[k] != despues[k]]
 
 
+def dependencias_desaparecidas(antes, despues):
+    """Dependencias que existían al prehashear y **ya no están** al cerrar.
+
+    `hashes_que_cambiaron` sólo mira `k in despues`, así que un archivo borrado
+    durante la corrida quedaba fuera de las dos comprobaciones y **no abortaba
+    nada**. Un `.py` que se borra a mitad de la medición es tan grave como uno
+    que cambia —más, porque significa que el conjunto congelado ya no existe—.
+
+    Se separa de `hashes_que_cambiaron` a propósito: son dos condiciones
+    distintas y las dos tienen que abortar, pero mezclarlas volvería a esconder
+    una detrás de la otra.
+    """
+    return sorted(set(antes) - set(despues))
+
+
+def publicar_atomico(salida, sidecar, texto):
+    """Escribe JSON y sidecar por temporal + `os.replace`. **Implementado, no
+    sólo declarado.**
+
+    La versión anterior de este bloque hacía `salida.write_text(...)` directo,
+    mientras el comentario de al lado y el mensaje del commit afirmaban que
+    había promoción atómica. `tempfile` estaba importado y **no se usaba**. Una
+    interrupción a mitad de escritura podía truncar el artefacto anterior — que
+    es exactamente lo que la promoción atómica evita.
+
+    Que un texto afirme una propiedad no se la da al código.
+
+    ## Tres condiciones, y una advertencia
+
+    1. El temporal va **en el directorio de destino**: `tempfile` por defecto
+       usa `%TEMP%`, que acá está en `C:` mientras el repo está en `E:`, y
+       `os.replace` entre volúmenes **no es atómico**.
+    2. Los dos temporales se **cierran** antes del `replace`: en Windows falla
+       sobre un handle abierto.
+    3. **No se borra el artefacto anterior.** Eso destruiría la ventaja
+       principal: conservar el último válido si la corrida nueva falla. Sólo se
+       limpian temporales abandonados.
+
+    > **JSON y sidecar NO son una transacción conjunta.** Son dos `os.replace`
+    > consecutivos: si el proceso cae entre los dos, queda un JSON nuevo con el
+    > sidecar viejo. Por eso la regla del consumidor es que **una discordancia
+    > invalida la pareja** — no que se pueda confiar en el JSON solo.
+    """
+    for viejo in list(salida.parent.glob(salida.name + ".tmp*")) + \
+            list(sidecar.parent.glob(sidecar.name + ".tmp*")):
+        try:
+            viejo.unlink()
+        except OSError:
+            pass
+
+    with tempfile.NamedTemporaryFile("w", encoding="utf-8", delete=False,
+                                     dir=str(salida.parent),
+                                     prefix=salida.name + ".tmp") as fh:
+        fh.write(texto)
+        fh.flush()
+        os.fsync(fh.fileno())
+        tmp_json = Path(fh.name)
+    os.replace(str(tmp_json), str(salida))
+
+    # El sidecar SOLO despues de que el JSON final esta en su lugar: escrito
+    # antes, describiria bytes que todavia no existen.
+    with tempfile.NamedTemporaryFile("w", encoding="utf-8", delete=False,
+                                     dir=str(sidecar.parent),
+                                     prefix=sidecar.name + ".tmp") as fh:
+        fh.write("%s  %s\n" % (sha_de_archivo(salida), salida.name))
+        fh.flush()
+        os.fsync(fh.fileno())
+        tmp_side = Path(fh.name)
+    os.replace(str(tmp_side), str(sidecar))
+
+
 def estado_del_worktree(dependencias):
     """Clasifica **todo** lo sucio en tres cubetas, sin llamarle «limpio» a nada.
 
@@ -524,14 +606,29 @@ def estado_del_worktree(dependencias):
         return dict(git_worktree_dirty_start=["(no se pudo consultar git)"],
                     dependency_set_dirty_start=["(no se pudo consultar git)"],
                     ignored_generated_outputs=[], sin_clasificar=[])
+    # NORMALIZACION AL MISMO ESPACIO DE NOMBRES. `git status --porcelain` emite
+    # rutas DESNUDAS -`diag/tasa_senales/x.py`- y el conjunto de dependencias
+    # usa identificadores con ambito -`repo:diag/tasa_senales/x.py`-. La version
+    # anterior comparaba `r in dependencias` sin convertir, asi que la
+    # interseccion era SIEMPRE VACIA y `dependency_set_dirty_start` nunca podia
+    # dispararse: el gate estaba completamente FAIL-OPEN mientras el commit
+    # afirmaba que "commit declarado = codigo que produjo el artefacto".
+    #
+    # Un gate que no puede fallar y un gate que pasa se ven identicos desde
+    # afuera. Por eso hay una prueba negativa que ensucia una dependencia real y
+    # exige que bloquee.
     sucio = sorted(l[3:].strip().strip('"') for l in out.splitlines() if l.strip())
     salidas = salidas_generadas()
+    def _como_dep(r):
+        return "repo:" + r
     return dict(
         git_worktree_dirty_start=sucio,
-        dependency_set_dirty_start=sorted(r for r in sucio if r in dependencias),
+        dependency_set_dirty_start=sorted(r for r in sucio
+                                          if _como_dep(r) in dependencias),
         ignored_generated_outputs=sorted(r for r in sucio if r in salidas),
         sin_clasificar=sorted(r for r in sucio
-                              if r not in dependencias and r not in salidas),
+                              if _como_dep(r) not in dependencias
+                              and r not in salidas),
     )
 
 
@@ -568,7 +665,11 @@ def identidad_de_corrida(contrato, fechas):
     except Exception:
         uni = None
     dep_repo, dep_inputs, dep_entorno, modulos = conjunto_de_dependencias(contrato)
-    est = estado_del_worktree(dep_repo)
+    # El gate mira repo Y inputs versionados: el manifiesto de universo esta
+    # trackeado y define la MUESTRA, asi que modificarlo sin commitear cambia el
+    # numero igual que modificar codigo. La version anterior pasaba solo
+    # `dep_repo`.
+    est = estado_del_worktree({**dep_repo, **dep_inputs})
     h = lambda d: hashlib.sha256(json.dumps(d, sort_keys=True).encode()).hexdigest()
     return dict(
         code_commit_start=git_head(),
@@ -667,6 +768,22 @@ def main(argv=None):
             print("\nRegenerar el manifiesto con congelar_dependencias.py, en su")
             print("propio commit, y volver a correr las DOS sondas.")
             return 2
+        # FAIL-CLOSED sobre el manifiesto de universo. `identidad_de_corrida`
+        # lo envuelve en `try/except -> uni = None`, que en modo descubrimiento
+        # es tolerable pero en modo canonico NO: el manifiesto DEFINE LA MUESTRA,
+        # y "no lo pude resolver" se convertiria en silencio en "input ausente".
+        # Un artefacto canonico sin identidad de su propia muestra no es
+        # evidencia de nada.
+        if not ident.get("universe_manifest_sha256"):
+            print("NO SE PUDO RESOLVER EL MANIFIESTO DE UNIVERSO -- no se "
+                  "publica en modo canonico.")
+            print("Define la muestra: sin su hash el artefacto no puede decir "
+                  "sobre que dias se midio.")
+            return 2
+        if not ident.get("input_parquet_sha256"):
+            print("NO SE PUDO HASHEAR EL PARQUET DE ENTRADA -- no se publica "
+                  "en modo canonico.")
+            return 2
         print("congelado %d dependencias prehasheadas | manifiesto %s"
               % (len(prehash), sha_de_archivo(MANIFIESTO_CONGELADO)[:12]))
     else:
@@ -737,11 +854,7 @@ def main(argv=None):
     # Un gate que aborta siempre no es estricto: es un gate que alguien va a
     # desactivar.
     fin = identidad_de_corrida(a.contrato, fechas)
-    movidos = [(k, ident[k], fin[k])
-               for k in ("code_commit_start", "generator_sha256",
-                         "measurement_code_sha256", "universe_manifest_sha256",
-                         "input_parquet_sha256", "repo_dependencies_sha256",
-                         "input_dependencies_sha256")
+    movidos = [(k, ident[k], fin[k]) for k in CAMPOS_REVERIFICADOS
                if ident[k] != fin[k]]
     # entorno: sólo los que ya estaban, y sólo si cambió su contenido
     ent_ini = ident["dependency_set_entorno"]
@@ -786,9 +899,21 @@ def main(argv=None):
             print("el manifiesto en su propio commit, y relanzar LAS DOS sondas.")
             return 2
 
-        cambiadas = hashes_que_cambiaron(
-            prehash, {r: sha_de_archivo(_resolver(r)) for r in prehash
-                      if _resolver(r) and Path(_resolver(r)).is_file()})
+        posthash = {r: sha_de_archivo(_resolver(r)) for r in prehash
+                    if _resolver(r) and Path(_resolver(r)).is_file()}
+
+        # DOS condiciones separadas, y las DOS abortan. Antes solo se miraba el
+        # cambio de bytes, con `k in despues`: un archivo BORRADO durante la
+        # corrida quedaba fuera de las dos comprobaciones y no abortaba nada.
+        desaparecidas = dependencias_desaparecidas(prehash, posthash)
+        if desaparecidas:
+            print("\nDESAPARECIERON %d DEPENDENCIAS CONGELADAS DURANTE LA "
+                  "MEDICION -- no se publica." % len(desaparecidas))
+            for r in desaparecidas[:20]:
+                print("   %s" % r)
+            return 2
+
+        cambiadas = hashes_que_cambiaron(prehash, posthash)
         if cambiadas:
             print("\nUNA DEPENDENCIA CONGELADA CAMBIO DURANTE LA MEDICION -- "
                   "no se publica.")
@@ -828,11 +953,9 @@ def main(argv=None):
         json.dumps(payload, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
 
     salida = ruta_de_salida(a.contrato, len(fechas))
-    salida.write_text(json.dumps(payload, indent=1, ensure_ascii=False) + "\n",
-                      encoding="utf-8")
     sidecar = salida.with_suffix(salida.suffix + ".sha256")
-    sidecar.write_text("%s  %s\n" % (sha_de_archivo(salida), salida.name),
-                       encoding="utf-8")
+    publicar_atomico(salida, sidecar,
+                     json.dumps(payload, indent=1, ensure_ascii=False) + "\n")
 
     print("\nschema  %s" % SCHEMA_VERSION)
     print("payload %s   (hash de contenido, excluye este campo)"

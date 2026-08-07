@@ -324,15 +324,114 @@ def test_las_claves_de_identidad_coinciden_con_lo_que_el_comparador_declara():
         "  declarado y no se produce: %s" % (sin_declarar, declaradas_de_mas))
 
 
-def test_la_reverificacion_de_cierre_solo_mira_campos_que_existen():
-    """Mismo defecto, otro sitio: la lista de campos re-verificados al cerrar
-    esta escrita a mano en `main()` y no la valida nada."""
+def test_la_reverificacion_de_cierre_usa_una_constante_no_parsing_textual():
+    """El test anterior era VACUO y por eso pasaba.
+
+    Extraia el bloque con `src.split("movidos = [")[1].split("]")[0]`, y el
+    primer `]` del fuente es el de `ident[k]` — no el cierre de la tupla. Asi
+    que `campos` quedaba en `[]` y el assert no validaba nada. Un test vacuo es
+    peor que ninguno: ocupa el lugar del que faltaba.
+
+    Ahora la lista vive en una constante y se compara contra las claves reales.
+    """
+    ident = S.identidad_de_corrida("6E_09-26_ticks.parquet", ["2026-06-12"])
+    assert S.CAMPOS_REVERIFICADOS, "la constante no puede estar vacia"
+    faltan = [c for c in S.CAMPOS_REVERIFICADOS if c not in ident]
+    assert not faltan, "la re-verificacion mira campos inexistentes: %s" % faltan
+
     import inspect
     src = inspect.getsource(S.main)
-    bloque = src.split("movidos = [")[1].split("]")[0]
-    campos = [x.strip().strip('"').strip("'") for x in bloque.split(",")]
-    campos = [c for c in campos if c and c.replace("_", "").isalnum()
-              and not c.startswith("for") and c not in ("k", "ident", "fin")]
-    ident = S.identidad_de_corrida("6E_09-26_ticks.parquet", ["2026-06-12"])
-    faltan = [c for c in campos if c not in ident]
-    assert not faltan, "la re-verificacion mira campos inexistentes: %s" % faltan
+    assert "CAMPOS_REVERIFICADOS" in src, "main() dejo de usar la constante"
+    assert 'for k in ("code_commit_start"' not in src, \
+        "volvio la lista escrita a mano adentro de main()"
+
+
+def test_una_dependencia_versionada_sucia_BLOQUEA(monkeypatch):
+    """El defecto mas grave que encontro la auditoria: `git status` emite rutas
+    DESNUDAS y el conjunto de dependencias usa `repo:`. Sin normalizar, la
+    interseccion era SIEMPRE VACIA y `dependency_set_dirty_start` **nunca podia
+    dispararse**. El gate estaba fail-open mientras el commit afirmaba
+    "commit declarado = codigo que produjo el artefacto".
+
+    Un gate que no puede fallar y un gate que pasa se ven identicos desde
+    afuera. Por eso esto ensucia una dependencia REAL y exige que bloquee.
+    """
+    sucia = "diag/tasa_senales/sonda_alejamiento_cero.py"
+    monkeypatch.setattr(S.subprocess, "run",
+                        lambda *a, **k: type("R", (), {"stdout": " M %s\n" % sucia})())
+    dep = {"repo:" + sucia: "abc", "repo:otro.py": "def"}
+    est = S.estado_del_worktree(dep)
+    assert est["dependency_set_dirty_start"] == [sucia], \
+        "una dependencia versionada modificada NO bloqueo: %s" % est
+    assert est["sin_clasificar"] == [], \
+        "quedo clasificada como 'sin clasificar' en vez de bloquear"
+
+
+def test_el_gate_cubre_los_INPUTS_versionados(monkeypatch):
+    """El manifiesto de universo esta trackeado y DEFINE LA MUESTRA: modificarlo
+    sin commitear cambia el numero igual que modificar codigo. La version
+    anterior pasaba solo `dep_repo` al gate."""
+    inp = "runs/censo/manifiesto_universo.json"
+    monkeypatch.setattr(S.subprocess, "run",
+                        lambda *a, **k: type("R", (), {"stdout": " M %s\n" % inp})())
+    est = S.estado_del_worktree({"repo:" + inp: "abc"})
+    assert est["dependency_set_dirty_start"] == [inp]
+
+
+def test_una_dependencia_BORRADA_al_cierre_aborta():
+    """`hashes_que_cambiaron` sólo mira `k in despues`: un archivo borrado
+    durante la corrida quedaba fuera de las dos comprobaciones."""
+    antes = {"repo:a.py": "h1", "repo:b.py": "h2"}
+    despues = {"repo:a.py": "h1"}
+    assert S.dependencias_desaparecidas(antes, despues) == ["repo:b.py"]
+    assert S.hashes_que_cambiaron(antes, despues) == [], \
+        "la desaparicion NO debe reportarse como cambio de hash: son dos cosas"
+    assert S.dependencias_desaparecidas(antes, antes) == []
+
+
+def test_la_publicacion_es_realmente_atomica(tmp_path):
+    """El commit afirmaba promocion atomica y el codigo hacia `write_text`
+    directo; `tempfile` estaba importado y no se usaba. Que un texto afirme una
+    propiedad no se la da al codigo."""
+    import inspect, hashlib
+    src = inspect.getsource(S.publicar_atomico)
+    assert "os.replace" in src and "NamedTemporaryFile" in src
+    assert "dir=str(salida.parent)" in src, "el temporal tiene que ir al destino"
+
+    main_src = inspect.getsource(S.main)
+    assert "publicar_atomico" in main_src
+    assert "salida.write_text" not in main_src, "volvio la escritura directa"
+
+    j = tmp_path / "a.json"
+    sc = tmp_path / "a.json.sha256"
+    prev = "{\"viejo\": 1}\n"
+    j.write_text(prev, encoding="utf-8")
+    S.publicar_atomico(j, sc, "{\"nuevo\": 2}\n")
+    assert j.read_text(encoding="utf-8") == "{\"nuevo\": 2}\n"
+    assert sc.read_text(encoding="utf-8").split()[0] == \
+        hashlib.sha256(j.read_bytes()).hexdigest()
+    assert not list(tmp_path.glob("*.tmp*")), "quedaron temporales sin limpiar"
+
+
+def test_el_comparador_EXIGE_canonico_y_cero_no_congeladas(tmp_path):
+    """El comparador pedia que `modo` COINCIDIERA, no que fuera 'canonico': dos
+    corridas de descubrimiento daban exit 0. Y `new_unfrozen_dependency_files`
+    estaba en «pueden diferir», sin exigirse nunca vacio. O sea que su exit 0 NO
+    probaba ninguna de las dos propiedades que el commit afirmaba."""
+    base = {"identidad": {"modo": "canonico",
+                          "new_unfrozen_dependency_files": [],
+                          "dependency_manifest_sha256": "x"},
+            "outcomes_accessed": False, "umbrales": [], "por_indicador": {}}
+    assert not [f for f in C.validar_estructura(base, "A")
+                if "modo" in f or "unfrozen" in f]
+
+    d = json.loads(json.dumps(base)); d["identidad"]["modo"] = "descubrimiento"
+    assert any("canonico" in f for f in C.validar_estructura(d, "A"))
+
+    d = json.loads(json.dumps(base))
+    d["identidad"]["new_unfrozen_dependency_files"] = ["stdlib:Lib/x.py"]
+    assert any("unfrozen" in f for f in C.validar_estructura(d, "A"))
+
+    d = json.loads(json.dumps(base))
+    d["identidad"]["new_unfrozen_dependency_files"] = None
+    assert any("unfrozen" in f for f in C.validar_estructura(d, "A"))
