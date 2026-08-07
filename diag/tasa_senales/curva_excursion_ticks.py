@@ -50,7 +50,8 @@ al CIERRE de la barra**. Aplicarlo a los que crean **a mitad de barra** mete en
 la ventana ticks anteriores a que la zona existiera.
 
 **Medido** sobre 6E 03-26 (10 días), fracción de zonas con
-`created_ms > bar_end[created_bar]` y retraso mediano:
+`created_ms > bar_end[created_bar]` —o sea **cualquier** adelanto, sin umbral—
+y retraso mediano:
 
 | indicador | clase | zonas afectadas | retraso mediano |
 |---|---|---|---|
@@ -59,6 +60,20 @@ la ventana ticks anteriores a que la zona existiera.
 | `aVolCellPOI2` | `bar_close` | — | — |
 | **`Gaps2`** | **`tick_create`** | **99 %** | **21,5 s** |
 | **`HFTZones2`** | **`tick_create`** | **97 %** | **27,5 s** |
+
+> **Estatus (2026-08-07): REPRODUCE.** Se replicó con
+> `sonda_alejamiento_cero.py` sobre **8 sesiones de 6E 09-26** —otro contrato,
+> otro trimestre— **bajo la misma definición**: `Gaps2` **100 %** (p50 27,7 s) y
+> `HFTZones2` **96,4 %** (p50 28,2 s). Las fracciones reproducen. El p50 de
+> `Gaps2` difiere ~6 s entre contratos (21,5 → 27,7); el de `HFTZones2` no.
+>
+> El `0 %` de los tres `bar_close` **sólo vale con un umbral material**: sin
+> umbral dan 100 %, porque para un kernel que crea al cierre el `created_ms + 1`
+> deja 1 ms de diferencia **por la propia convención**. Con umbral > 1 s los
+> tres caen a 0,0 % y los `tick_create` a 96,7 % / 92,9 %. Ese control a cero es
+> lo que confirma que el efecto es **de clase**, no de medición.
+>
+> Artefactos: los dos `sonda_alejamiento_cero__*.json`.
 
 En una barra de un minuto, 21-27 s son **~35-45 % de la barra** contaminando la
 ventana. Misma familia que el `-1`: **no explota, miente**.
@@ -412,24 +427,28 @@ def medir(archivo, fechas, indicadores, lead=LEAD_DAYS, verbose=True,
                 # ultimo cierre. `bar_end[created_bar]` arrancaria la ventana
                 # ANTES de que la zona existiera.
                 #
-                # LA CIFRA Y SU ESTATUS -- no borrar el registro historico:
+                # LA CIFRA Y SU ESTATUS -- REPRODUCE. Ver la tabla del docstring
+                # de este archivo para la medicion original y su muestra.
                 #
-                #   MEDICION ORIGINAL (historica): "~21-27 s antes, 99% de las
-                #   zonas de Gaps2 y 97% de HFTZones2". NO ES REPRODUCIBLE
-                #   EXACTAMENTE: no registro su muestra -que contrato, cuantas
-                #   sesiones- ni su definicion operacional -que contaba como
-                #   "antes"-, asi que no hay contra que compararla.
+                #   ORIGINAL: 6E 03-26, 10 dias, definicion `created_ms >
+                #   bar_end[created_bar]` = CUALQUIER adelanto, sin umbral.
+                #       Gaps2 99%  (p50 21,5 s)   HFTZones2 97%  (p50 27,5 s)
                 #
-                #   CORROBORACION VERSIONADA (2026-08-07), con
-                #   sonda_alejamiento_cero.py sobre 8 sesiones de 6E_09-26 y
-                #   umbral material >1 s:
-                #       Gaps2       96,7%   adelanto p50 27,7 s
-                #       HFTZones2   92,9%   adelanto p50 28,2 s
-                #       bar_close    0,0%   (los tres: control)
+                #   CORROBORACION (2026-08-07), sonda_alejamiento_cero.py,
+                #   8 sesiones de 6E_09-26 -otro contrato, otro trimestre-,
+                #   BAJO LA MISMA DEFINICION:
+                #       Gaps2 100% (p50 27,7 s)   HFTZones2 96,4% (p50 28,2 s)
                 #
-                # La CONCLUSION se sostiene y el split por clase esta
-                # justificado. Las cifras 99/97 NO deben volver a citarse como
-                # medicion reproducible. Ver docs/SCRATCHPAD_PROVENANCE_AUDIT_2026-08-07.md
+                # Las fracciones reproducen. El p50 de Gaps2 difiere ~6 s entre
+                # contratos (21,5 vs 27,7); el de HFTZones2 no (27,5 vs 28,2).
+                #
+                # Con un umbral MATERIAL de >1 s da 96,7% / 92,9%, y los tres
+                # `bar_close` caen a 0,0% -sin umbral dan 100%, porque para un
+                # kernel que crea AL CIERRE el `created_ms + 1` deja 1 ms de
+                # diferencia por la propia convencion-. Ese control a 0% es lo
+                # que confirma que el efecto es de clase, no de medicion.
+                #
+                # Ver docs/SCRATCHPAD_PROVENANCE_AUDIT_2026-08-07.md §4.
                 #
                 # `+1 ms` porque `created_ms` TRUNCA el ts_ns del tick creador:
                 # sin eso, `ts > created_ms*1e6` podria incluir ese mismo tick.
@@ -661,13 +680,15 @@ def main(argv=None):
             "artefactos versionados (equivalencia_workers__w1/w2_70s.json): 12 "
             "campos x 6 unidades, con verificar_equivalencia_workers.py."),
         rss_pico=(
-            "1,88 GB (1 worker) vs 2,67 GB (2 workers), medicion de 70 sesiones "
-            "preservada en rss_y_equivalencia_70s.log. CORRIGE la cifra que "
-            "versiones anteriores publicaban dentro de `equivalencia_workers` "
-            "-'1.925 vs 2.734 MB'-, que estaba en la UNIDAD EQUIVOCADA (el "
-            "instrumento divide por 2**30: son GB, no MB) y ademas no coincide "
-            "con la unica medicion preservada. El origen de esas dos cifras NO "
-            "es recuperable. Ver docs/SCRATCHPAD_PROVENANCE_AUDIT_2026-08-07.md"),
+            "1925 MiB = 1,88 GiB (1 worker) vs 2734 MiB = 2,67 GiB (2 workers). "
+            "Medicion de 70 sesiones preservada en rss_y_equivalencia_70s.log. "
+            "Son LOS MISMOS numeros que `equivalencia_workers` publicaba como "
+            "'1.925 vs 2.734 MB' -punto de MILES, notacion es-AR-: 1,88 x 1024 "
+            "= 1925,1. Lo unico que estaba mal era la NOMENCLATURA: el "
+            "instrumento divide por 2**30, asi que son unidades binarias (MiB / "
+            "GiB), no MB / GB. Se publican las dos representaciones para que no "
+            "haya que convertir ni adivinar el separador decimal. "
+            "Ver docs/SCRATCHPAD_PROVENANCE_AUDIT_2026-08-07.md §3."),
         identidad_de_barras={
             "path": "time:1 / M1 -- build_time_bars(tk, 1)",
             "bar_close": "available_ns = bar_end[created_bar]",

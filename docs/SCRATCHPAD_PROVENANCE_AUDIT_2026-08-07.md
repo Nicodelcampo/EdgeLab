@@ -8,6 +8,12 @@
 > ya había encontrado **dos afirmaciones publicadas cuya evidencia vivía sólo en
 > un directorio temporal**. Encontrar dos eleva la probabilidad de que haya más,
 > no la baja. Este es el barrido completo.
+>
+> **Y el barrido tuvo que ser auditado a su vez.** Reportó dos hallazgos —«RSS
+> sin origen recuperable» y «99/97 no reproducible»— que **el auditor rechazó y
+> con razón**: los dos eran errores de lectura míos, no defectos del registro.
+> Están rectificados en §3 y §4, **con el error a la vista**. Borrarlos sería
+> exactamente lo que esta acta persigue.
 
 ## 0. Criterio de cierre
 
@@ -45,7 +51,9 @@ artefacto publica. El instrumento está ahora versionado como
 
 ## 2. Lo que NO se encontró, y conviene decirlo
 
-**No apareció ninguna otra afirmación viva sin respaldo.** Los 43 de clase C son
+**No apareció ninguna afirmación viva sin respaldo.** El RSS y el 99/97 parecían
+serlo y **no lo eran** (§3 y §4): en los dos casos el error fue de lectura mío,
+no del registro. Los 43 de clase C son
 pilotos supersedidos por la corrida de 201 sesiones, checkpoints de reanudación
 y scripts de parche cuyo efecto ya está commiteado. Los 35 de clase D son
 borradores con gemelo exacto versionado, material de la delegación a Grok
@@ -70,60 +78,113 @@ temporal. No es una brecha —el original está declarado y gateado— pero el s
 dejó de ser el único lugar donde vive ese material. Destino: **borrar del
 temporal**, no versionar.
 
-## 3. El defecto que encontró el barrido — el RSS publicado
+## 3. El RSS publicado — nomenclatura, no medición fantasma
+
+> **RECTIFICACIÓN.** La primera versión de esta sección afirmaba que los valores
+> publicados «no coinciden» con la medición preservada y que su **origen no era
+> recuperable**, con la hipótesis de que vinieran de una corrida inválida de 12
+> sesiones. **Eso era falso, y lo corrigió el auditor.** Se deja el error a la
+> vista: borrarlo sería exactamente lo que esta acta persigue.
 
 `curva_excursion_ticks.json` publica, dentro de `equivalencia_workers`:
 
 > `"… RSS pico 1.925 vs 2.734 MB."`
 
-La única medición preservada dice otra cosa:
+Y la medición preservada dice:
 
 ```
 workers=1: rss_pico_gb 1.88     workers=2: rss_pico_gb 2.67
 ```
 
-**Dos defectos, y el primero es seguro:**
+**Son los mismos números.** El punto es separador de **miles** —notación es-AR,
+la misma que usa todo el repo («84.000 s de CPU», «144.511 zonas»)—:
 
-1. **La unidad está mal.** El instrumento calcula `round(pico / 2**30, 2)`: son
-   **gigabytes**. «1.925 MB» sería un consumo trivial; 1,88 GB no lo es. Esto no
-   es interpretable — está en el código.
-2. **Los valores no coinciden** con la única medición preservada, y **el origen
-   de `1.925` / `2.734` no es recuperable.** La hipótesis más probable es que
-   vengan de la primera corrida —12 sesiones, que caen enteras dentro de
-   `6E_03-26`, o sea **un solo contrato**— que el propio `tmp:rss2.py` declara
-   inválida porque el segundo worker no tenía trabajo. Si es así, la frase
-   describía la corrida de 70 sesiones mientras los números venían de la de 12.
-   **No lo puedo confirmar: esa corrida no dejó log.**
+```
+1,88 GiB x 1024 = 1925,1 MiB  ->  1.925
+2,67 GiB x 1024 = 2734,1 MiB  ->  2.734
+```
 
-**Qué cambia y qué no.** El **veredicto de equivalencia no se toca**: está
-re-verificado desde artefactos versionados, 12 campos × 6 unidades. Lo que se
-corrige es la cifra de memoria, que es un dato de operación, no de validez.
+**El defecto real es uno solo: nomenclatura.** El instrumento divide por `2**30`,
+así que son unidades **binarias** — **GiB**, no GB; **MiB**, no MB. Nada más.
 
-Corregido en la fuente (`curva_excursion_ticks.py`): `equivalencia_workers`
-conserva el veredicto y remite al verificador, y un campo nuevo `rss_pico`
-publica **1,88 / 2,67 GB** declarando explícitamente que corrige la cifra
-anterior y que el origen de la vieja no es recuperable.
+### Qué salió mal en mi diagnóstico, que es lo que hay que registrar
+
+Leí `1.925` como un decimal inglés —1,925 MB— y de ahí saqué que el valor era
+mil veces menor que la medición, que por lo tanto no coincidían, y que el origen
+era irrecuperable. **Una sola cifra mal leída produjo tres conclusiones falsas
+encadenadas**, y ninguna de las tres era verificable sin releer el número.
+
+Es exactamente el modo de falla que esta sesión persigue —**dos notaciones que
+se leen igual**— cometido por mí, sobre mi propia convención, dentro de la
+auditoría que lo persigue.
+
+### Qué se corrige, entonces
+
+| | |
+|---|---|
+| veredicto de equivalencia | **intacto** — re-verificado, 12 campos × 6 unidades |
+| valores de RSS | **intactos** — 1925 MiB y 2734 MiB, la misma medición |
+| nomenclatura | **corregida** — MiB/GiB, y se publican **las dos** representaciones |
+| hipótesis de las 12 sesiones | **retirada** |
+
+En la fuente, el campo `rss_pico` publica `1925 MiB = 1,88 GiB` y
+`2734 MiB = 2,67 GiB`, y dice por qué existen las dos: para que nadie tenga que
+convertir ni adivinar qué separador es el punto.
+
+### Y una limitación del medidor, que sí hay que declarar
+
+`medir_rss_y_equivalencia.py` suma el `WorkingSet64` de **todos** los procesos
+`python` de la máquina y le resta una línea de base. **No es el árbol del PID.**
+Si durante la medición arranca o termina cualquier otro Python, contamina el
+pico. La corrida preservada se hizo sin nada más corriendo, pero eso fue una
+**condición del entorno, no una garantía del instrumento** — y ahora está
+escrito al lado del código, con la función renombrada a
+`rss_de_todos_los_python()` para que el nombre no prometa lo que no hace.
 
 > El artefacto ya emitido (`76e1c876…`) conserva el texto viejo. **No se
 > reescribe**: es el registro de lo medido, y tocarlo invalidaría su
 > `output_sha256`. Mismo tratamiento que `autoritativo`.
 
-## 4. El 99 % / 97 % — anotado donde nace
+## 4. El 99 % / 97 % — REPRODUCE, y mi diagnóstico anterior era erróneo
 
-Punto 6 del auditor. `curva_excursion_ticks.py` ya no cita esas cifras sin
-estatus. Ahora dice, en el mismo lugar:
+> **SEGUNDA RECTIFICACIÓN, del mismo tipo que la §3.** Yo afirmé que la medición
+> original «no registró muestra ni definición operacional». **Sí las registró**,
+> en la tabla del docstring de `curva_excursion_ticks.py`: *«Medido sobre 6E
+> 03-26 (10 días), fracción de zonas con `created_ms > bar_end[created_bar]`»*.
+> Miré sólo el comentario suelto de la línea 411 y no la tabla que lo documenta.
 
-- **medición original (histórica):** ~21-27 s, 99 % `Gaps2` / 97 % `HFTZones2`;
-  **no reproducible exactamente**, porque no registró muestra ni definición
-  operacional;
-- **corroboración versionada (2026-08-07):** `Gaps2` 96,7 %, `HFTZones2` 92,9 %,
-  controles `bar_close` 0,0 %, sobre 8 sesiones de `6E_09-26`, umbral material
-  > 1 s;
-- **la conclusión se sostiene**, el split por clase está justificado, y las
-  cifras 99/97 **no deben volver a citarse como medición reproducible**.
+Con la muestra y la definición a la vista, la comparación se puede hacer bien — y
+**la medición original reproduce**:
 
-El registro histórico **no se borra**. Se le marca el estatus en el mismo lugar
-para que nadie lo vuelva a citar como si fuera reproducible.
+| | muestra | definición | `Gaps2` | `HFTZones2` |
+|---|---|---|---:|---:|
+| **original** | 6E 03-26, 10 días | cualquier adelanto | **99 %** (21,5 s) | **97 %** (27,5 s) |
+| **corroboración** | 6E 09-26, 8 sesiones | **la misma** | **100 %** (27,7 s) | **96,4 %** (28,2 s) |
+| corroboración | 6E 09-26, 8 sesiones | umbral > 1 s | 96,7 % | 92,9 % |
+
+Las fracciones reproducen sobre **otro contrato y otro trimestre**. Lo que yo
+había leído como «no reproduce» era el renglón de abajo comparado contra el de
+arriba: **una métrica con umbral material contra una sin umbral**. Dos
+definiciones distintas dando números distintos no es una falla de reproducción.
+
+Lo único que difiere de verdad es el **p50 de `Gaps2`**: 21,5 s contra 27,7 s,
+~6 s entre contratos. El de `HFTZones2` no se mueve (27,5 → 28,2). No lo
+explico; es una diferencia entre períodos, y queda registrada como tal.
+
+### Por qué NO se marcó la tabla como «histórica no reproducible»
+
+El punto 6 del auditor pedía anotarla así. **No se hizo, porque la premisa era
+mía y era falsa.** Se anotó lo que la evidencia dice: **`Estatus (2026-08-07):
+REPRODUCE`**, con la muestra, la definición y las dos corroboraciones.
+
+Y se agregó el matiz que sí importa: el `0 %` de los tres `bar_close` **sólo vale
+con umbral material**. Sin umbral dan 100 %, porque para un kernel que crea al
+cierre el `created_ms + 1` deja 1 ms de diferencia **por la propia convención**.
+Ese control cayendo a 0,0 % con umbral es lo que confirma que el efecto es **de
+clase**, no de medición.
+
+El registro histórico **no se borra**: la tabla original queda con sus cifras, y
+el estatus se marca al lado.
 
 ## 5. Puerta permanente de citas
 
@@ -246,11 +307,27 @@ lectura, y no lo hace un script.
 | **D** | `tmp:x4_control_generador.py` | 2429 | `75ca114af471` | diagnosticos de julio ya cerrados en su acta o expediente correspondiente | descartable |
 | **D** | `tmp:x4_sensibilidad.py` | 4865 | `7df02c5a7f72` | diagnosticos de julio ya cerrados en su acta o expediente correspondiente | descartable |
 
+## 7. Lo que el barrido encontró, ya rectificado
+
+| hallazgo | veredicto final |
+|---|---|
+| `tmp:rss.log` / `tmp:rss2.py` sin versionar | **real** — clase A, rescatados |
+| el log rescatado **no se versionó**: lo bloqueaba `*.log` del `.gitignore` | **real** — lo detectó la puerta de citas, no una lectura |
+| dos citas abreviadas en los documentos de entrega | **real** — corregidas |
+| notación MB/GB donde el instrumento produce MiB/GiB | **real** — corregida |
+| «RSS sin origen recuperable, quizá de la corrida de 12 sesiones» | **RETIRADO** (§3) |
+| «99 %/97 % no reproducible» | **RETIRADO** (§4) |
+| rebanadas de ventana sellada fuera del store | **higiene** — borradas; no era brecha |
+
+Cuatro reales, **dos retirados**. Los dos retirados eran del mismo tipo: yo leí
+mal un registro que estaba completo, y publiqué la mala lectura como defecto
+ajeno.
+
 ## Aporte al referente
 
 Cierra la última reserva de traspaso: ninguna afirmación viva del expediente
-depende de un archivo que se borra solo. Un edge que no se puede verificar de
-forma independiente no es un edge — y el barrido encontró, además de las dos ya
-conocidas, **una cifra publicada en la unidad equivocada** que ninguna lectura
-del documento habría detectado, porque sólo el instrumento sabía que dividía por
-2³⁰.
+depende de un archivo que se borra solo. Pero el resultado más útil no es ese —
+es que **un barrido de procedencia también necesita ser auditado**. Este produjo
+dos falsos positivos y los dos apuntaban a que alguien más había sido descuidado.
+Un edge que no se puede verificar de forma independiente no es un edge; una
+auditoría que no se puede refutar tampoco es una auditoría.

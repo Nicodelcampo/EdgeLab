@@ -313,35 +313,46 @@ importa— **qué campos se excluyen y por qué** (`segundos`, `workers`,
 `clave_de_corrida`, `code_commit`, `output_sha256`). Una comparación que no dice
 qué ignoró no es una comparación.
 
-### 8.2 El 99 %/97 % del reloj — corrobora la conclusión, **no reproduce las cifras**
+### 8.2 El 99 %/97 % del reloj — **REPRODUCE**
 
-`curva_excursion_ticks.py` justifica el split por clase de kernel diciendo que
-`bar_end[created_bar]` abriría la ventana «~21-27 s antes de que la zona
-existiera — medido: **99 % de las zonas de `Gaps2` y 97 % de `HFTZones2`**».
+> **Rectificación (2026-08-07).** Una versión anterior de esta sección decía que
+> las cifras «no reproducen» y que la medición original «nunca registró su
+> muestra». **Las dos cosas eran falsas y las corrigió el auditor.**
 
-Ese número sostiene la reclasificación, que **movió las señales un 20 %**. Su
-evidencia tampoco estaba versionada. Remedido (8 sesiones de `6E_09-26`):
+`curva_excursion_ticks.py` justifica el split por clase con esta medición, que
+**sí** declara su muestra y su definición: *«sobre 6E 03-26 (10 días), fracción
+de zonas con `created_ms > bar_end[created_bar]`»* — o sea **cualquier** adelanto,
+sin umbral. Yo había mirado sólo el comentario suelto, no la tabla que lo documenta.
 
-| indicador | clase | frac. con adelanto > 1 s | adelanto p50 | p90 |
-|---|---|---:|---:|---:|
-| Gaps2 | tick_create | **96,7 %** | **27,7 s** | 55,6 s |
-| HFTZones2 | tick_create | **92,9 %** | **28,2 s** | 52,8 s |
-| los tres `bar_close` | bar_close | **0,0 %** | 0,0 s | 0,0 s |
+Con la definición correcta a la vista:
 
-**La conclusión se sostiene**: entre el 93 % y el 97 % de las zonas
-`tick_create` verían su ventana abierta ~28 s antes de existir, y en los
-`bar_close` el efecto es exactamente cero. El split está justificado.
+| | muestra | definición | `Gaps2` | `HFTZones2` |
+|---|---|---|---:|---:|
+| **original** | 6E 03-26, 10 días | cualquier adelanto | **99 %** (21,5 s) | **97 %** (27,5 s) |
+| **corroboración** | 6E 09-26, 8 ses. | **la misma** | **100 %** (27,7 s) | **96,4 %** (28,2 s) |
+| corroboración | 6E 09-26, 8 ses. | umbral > 1 s | 96,7 % | 92,9 % |
+| control `bar_close` | 6E 09-26, 8 ses. | umbral > 1 s | — | **0,0 %** (los tres) |
 
-**Las cifras exactas no reproducen** — 96,7 % vs 99 %, 92,9 % vs 97 %, y el p50
-queda por encima del rango «21-27 s». **No puedo decir por qué**, y esa es la
-parte que importa: la medición original **nunca registró su muestra** —qué
-contrato, cuántas sesiones, qué contaba como «antes»—, así que no hay contra qué
-comparar. Se puede corroborar; no se puede reproducir.
+**Reproduce sobre otro contrato y otro trimestre.** Lo que yo había leído como
+«no reproduce» era comparar el renglón con umbral contra el original sin umbral:
+**dos definiciones distintas**. Eso no es una falla de reproducción.
 
-> Y el umbral de 1 s no es cosmético. Sin él la métrica daba **100 % para los
-> tres `bar_close`** con adelanto mediano de 0,0 s: cierto y vacío, porque
-> contaba el milisegundo de la propia convención `created_ms + 1` como si fuera
-> fuga. Una métrica que da 1,00 en el grupo de control está mal planteada.
+Lo único que difiere de verdad es el **p50 de `Gaps2`** —21,5 s vs 27,7 s, ~6 s
+entre contratos—; el de `HFTZones2` no se mueve. Queda registrado sin explicar.
+
+> El umbral de 1 s sigue importando para **el control**: sin él los tres
+> `bar_close` dan 100 %, porque para un kernel que crea al cierre el
+> `created_ms + 1` deja 1 ms de diferencia **por la propia convención**. Con
+> umbral caen a 0,0 %, y ese cero es lo que confirma que el efecto es **de
+> clase**, no de medición.
+
+### 8.3 El RSS — era nomenclatura, no una medición fantasma
+
+También reporté mal que las cifras de RSS publicadas no coincidían con la
+medición preservada. **Coinciden.** `1.925` lleva punto de **miles**:
+`1,88 GiB × 1024 = 1925,1 MiB`. El único defecto era **MB/GB donde el
+instrumento produce MiB/GiB**. La hipótesis de que vinieran de una corrida
+inválida queda **retirada**. Ver el acta §3.
 
 ## 9. Lo que esta entrega **no** habilita
 

@@ -13,9 +13,11 @@ estar en un directorio que se borra solo.
 
 ## Dos cosas que este instrumento hace bien y conviene no perder
 
-**1. Mide el proceso Y sus hijos.** Con `ProcessPoolExecutor` el pico real es la
-suma: medir sólo el padre daría un número tranquilizador y falso. Se resta el
-RSS que ya había antes de arrancar, así que el número es el costo *marginal*.
+**1. No mide sólo el proceso padre.** Con `ProcessPoolExecutor` el pico real
+incluye a los hijos: mirar sólo al padre daría un número tranquilizador y falso.
+Se resta el RSS que ya había antes de arrancar, así que el número es el costo
+*marginal*. **Cómo lo hace tiene un límite que conviene leer**: suma *todos* los
+`python` de la máquina, no el árbol del PID. Ver el comentario sobre `PS`.
 
 **2. Usa 70 sesiones = DOS contratos, a propósito.** La primera medición usó
 `--limite-sesiones 12`, que cae entero dentro de `6E_03-26`: **un solo
@@ -25,10 +27,21 @@ corrida está declarada inválida y **no** es la que sostiene la afirmación.
 
 ## Unidades — el defecto que encontró la auditoría
 
-`rss_pico_gb` divide por `2**30`: son **GIGABYTES**. El artefacto publica «RSS
-pico 1.925 vs 2.734 **MB**», que además de estar en la unidad equivocada **no
-coincide** con la única medición preservada (1,88 vs 2,67 GB). Ver
-`docs/SCRATCHPAD_PROVENANCE_AUDIT_2026-08-07.md` §3.
+El pico se divide por `2**20` y por `2**30`: son unidades **binarias**, o sea
+**MiB** y **GiB**, no MB ni GB.
+
+Ese era el defecto —y **sólo** ese—. El artefacto publicaba «RSS pico 1.925 vs
+2.734 MB», que con el punto como separador de **miles** son **1925 y 2734 MiB**,
+o sea exactamente los 1,88 y 2,67 GiB del log preservado: `1,88 x 1024 = 1925,1`.
+Los números siempre fueron los mismos.
+
+> Yo lo diagnostiqué mal: leí «1.925» como decimal inglés y reporté que las
+> cifras «no coincidían» y que su origen «no era recuperable». Coinciden, y el
+> origen es esta misma corrida de 70 sesiones. Lo corrigió el auditor.
+> Ver `docs/SCRATCHPAD_PROVENANCE_AUDIT_2026-08-07.md` §3.
+
+Ahora se emiten **las dos representaciones**, para que nadie tenga que convertir
+ni adivinar qué separador es el punto.
 
 Uso:
     python diag/tasa_senales/medir_rss_y_equivalencia.py --sesiones 70
@@ -53,6 +66,20 @@ PY = REPO / ".venv" / "Scripts" / "python.exe"
 #: que ambos tengan trabajo real.
 INDICADORES = ["BigTrap2", "VolTicksPOC2", "aVolCellPOI2"]
 
+#: QUÉ MIDE, exactamente: la suma de `WorkingSet64` de **todos** los procesos
+#: llamados `python` de la máquina. NO es el árbol del PID. El costo de la
+#: corrida se obtiene restando una línea de base tomada justo antes de arrancar.
+#:
+#: **Cuándo miente, y hay que decirlo:** si durante la medición arranca o
+#: termina **cualquier otro** proceso Python —otra sesión, un editor, un test—
+#: su memoria entra o sale del total y contamina el pico. La corrida preservada
+#: en `rss_y_equivalencia_70s.log` se hizo sin nada más corriendo, pero eso fue
+#: una condición del entorno, **no una garantía del instrumento**.
+#:
+#: Se deja así y se documenta, en vez de reescribirlo a un recorrido de árbol
+#: por PID: cambiar el método haría que el número nuevo no fuera comparable con
+#: el preservado, y el RSS es un dato de operación —cuánta RAM hace falta— no
+#: de validez. El veredicto de equivalencia no depende de esto.
 PS = ("Get-Process python -ErrorAction SilentlyContinue | "
       "Measure-Object -Property WorkingSet64 -Sum | "
       "Select-Object -ExpandProperty Sum")
@@ -61,7 +88,12 @@ PS = ("Get-Process python -ErrorAction SilentlyContinue | "
 NEUTRALIZAR = ("workers", "output_sha256", "clave_de_corrida", "code_commit")
 
 
-def rss_total_python():
+def rss_de_todos_los_python():
+    """Suma de WorkingSet64 de TODOS los `python` de la máquina. Ver `PS`.
+
+    El nombre dice lo que hace. La versión anterior se llamaba
+    `rss_total_python()`, que se leía como «el total de este python».
+    """
     try:
         r = subprocess.run(["powershell", "-NoProfile", "-Command", PS],
                            capture_output=True, text=True, timeout=10)
@@ -72,7 +104,7 @@ def rss_total_python():
 
 
 def correr(workers, sesiones, out, tmp):
-    base = rss_total_python()          # lo que ya había corriendo, se resta
+    base = rss_de_todos_los_python()   # lo que ya había corriendo, se resta
     cmd = [str(PY), "-u", r"diag\tasa_senales\curva_excursion_ticks.py",
            "--limite-sesiones", str(sesiones), "--workers", str(workers),
            "--fresh", "--checkpoint", os.path.join(tmp, "ck_%d.json" % workers),
@@ -82,11 +114,13 @@ def correr(workers, sesiones, out, tmp):
                          stderr=subprocess.STDOUT)
     pico = 0
     while p.poll() is None:
-        pico = max(pico, rss_total_python() - base)
+        pico = max(pico, rss_de_todos_los_python() - base)
         time.sleep(1.0)
     p.wait()
     return dict(workers=workers, segundos=round(time.time() - t0, 1),
-                rss_pico_GB=round(max(0, pico) / 2 ** 30, 2), exit=p.returncode)
+                rss_pico_MiB=round(max(0, pico) / 2 ** 20),
+                rss_pico_GiB=round(max(0, pico) / 2 ** 30, 2),
+                exit=p.returncode)
 
 
 def limpiar(d):
@@ -123,9 +157,11 @@ def main(argv=None):
     B = limpiar(json.loads(Path(oN).read_text(encoding="utf-8")))
     igual = json.dumps(A, sort_keys=True) == json.dumps(B, sort_keys=True)
 
-    print("\n%-10s %10s %14s" % ("workers", "segundos", "RSS pico GB"))
+    print("\n%-10s %10s %13s %10s" % ("workers", "segundos", "RSS pico MiB",
+                                      "= GiB"))
     for r in (r1, rN):
-        print("%-10d %10.1f %14.2f" % (r["workers"], r["segundos"], r["rss_pico_GB"]))
+        print("%-10d %10.1f %13d %10.2f" % (r["workers"], r["segundos"],
+                                            r["rss_pico_MiB"], r["rss_pico_GiB"]))
     if r1["segundos"] and rN["segundos"]:
         print("speedup: %.2fx" % (r1["segundos"] / rN["segundos"]))
     print("EQUIVALENCIA:", "EXACTA" if igual else "*** DIFIEREN ***")
