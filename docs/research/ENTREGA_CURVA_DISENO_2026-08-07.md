@@ -24,8 +24,9 @@ Dos hallazgos, y **el segundo contradice lo que yo esperaba**:
    «ruptura» no la produjo el precio, la produjo la zona, que nació detrás de
    donde el precio ya estaba.
 
-El (2) cae rápido con `T` y es ~0 desde `T=8`. Los dos juntos apuntan al mismo
-lado de la grilla, lo cual es una suerte que conviene no confundir con un
+El (2) cae rápido con `T` y es ~0 desde `T=8`, y **replica sobre otro contrato
+y otro trimestre con 5-25× más zonas** (§3.3). Los dos hallazgos apuntan al
+mismo lado de la grilla, lo cual es una suerte que conviene no confundir con un
 diseño: la banda de frecuencia útil cae justo donde la contaminación se apaga.
 
 ## 1. Condiciones de la corrida
@@ -71,8 +72,15 @@ una decisión distinta y **con otro costo de multiplicidad**. No la tomo yo.
 
 ## 3. El segundo hallazgo — eventos vacuos en los umbrales bajos
 
-`diag/tasa_senales/sonda_alejamiento_cero.py` · salida
-`sonda_alejamiento_cero.json`
+`diag/tasa_senales/sonda_alejamiento_cero.py` · salidas
+`sonda_alejamiento_cero__6E_09-26_08s.json` y `__6E_12-25_40s.json`
+
+> **Un archivo por corrida, y eso también salió de un error.** La primera
+> versión escribía siempre el mismo nombre, así que la corrida de 40 sesiones
+> **pisó en silencio** la de 8 — y las dos son evidencia: la chica es la que
+> expuso el plateau espurio que la grande después descartó (§3.3). Perder la
+> corrida anterior es perder la comparación, que acá es justamente el control.
+> Es el mismo modo de falla que la spec duplicada del §7.
 
 ### 3.1 De dónde salió
 
@@ -131,7 +139,34 @@ Las dos mediciones no se contradicen: **son la misma causa vista desde los dos
 lados**. El reloj de disponibilidad decide dónde está el precio cuando empieza
 la ventana, y eso contamina un arquetipo u otro según la clase.
 
-### 3.3 Qué se puede decir con esto, y qué no
+### 3.3 Réplica sobre otro contrato, otra ventana y 5-25× más zonas
+
+La tabla de arriba salió de **8 sesiones de `6E_09-26`** (junio 2026). Se repitió
+sobre **40 sesiones de `6E_12-25`** (noviembre 2025) — otro contrato, otro
+trimestre, sin solape:
+
+| indicador | zonas 8s | zonas 40s | T=1 (8s) | T=1 (40s) | T=8 (8s) | T=8 (40s) |
+|---|---:|---:|---:|---:|---:|---:|
+| BigTrap2 | 710 | **3.161** | 58,2 % | **62,7 %** | 2,7 % | 3,0 % |
+| VolTicksPOC2 | 71 | **325** | 53,5 % | **50,2 %** | 9,9 % | 7,7 % |
+| aVolCellPOI2 | 55 | **1.850** | 40,0 % | **32,9 %** | 5,5 % | 1,4 % |
+| HFTZones2 | 4.360 | **18.854** | 24,3 % | **26,6 %** | 0,1 % | 0,1 % |
+| Gaps2 | 4.415 | **17.675** | 18,8 % | **18,9 %** | 0,2 % | 0,9 % |
+
+**El patrón replica.** `Gaps2` da 18,8 % y 18,9 % en dos trimestres sin solape;
+el orden entre los cinco indicadores se conserva entero; la separación
+`bar_close` (33-63 %) vs `tick_create` (19-27 %) a `T=1` se mantiene.
+
+**Y resuelve la reserva que había quedado abierta.** En §3.2 marqué el plateau
+de `VolTicksPOC2` —2,8 % en `T=21` y `T=34`— como no distinguible de dos zonas
+sueltas, porque con 71 zonas eso es exactamente lo que era. Con 325 zonas da
+**0,0 % en los dos**. Era ruido, como estaba declarado.
+
+`aVolCellPOI2` también se movió con la muestra —`frac_dentro` 23,6 % → 32,6 %,
+`borde_p50` 1,5 → 0,5— confirmando que sus 55 zonas no alcanzaban. **Las cifras
+de la corrida grande son las que valen** para esos dos indicadores.
+
+### 3.4 Qué se puede decir con esto, y qué no
 
 **Se puede decir:**
 
@@ -148,17 +183,16 @@ la ventana, y eso contamina un arquetipo u otro según la clase.
 
 **No se puede decir:**
 
-- Que `VolTicksPOC2` y `aVolCellPOI2` decaigan como muestra la tabla. En esa
-  corrida tienen **71 y 55 zonas**: la cola es ruido. `VolTicksPOC2` aparece
-  plateando en 2,8 % entre `T=21` y `T=34` — con 71 zonas eso son **2 zonas**, y
-  no distingo un plateau real de dos casos sueltos. Hay una corrida sobre 40
-  sesiones para eso; hasta que cierre, esas dos filas son indicativas.
+- **Nada sobre `T` a partir de la corrida chica para `VolTicksPOC2` y
+  `aVolCellPOI2`.** Ahí tenían 71 y 55 zonas y la cola era ruido — el plateau
+  aparente de `VolTicksPOC2` eran **2 zonas**, y con 325 desaparece (§3.3). Para
+  esos dos, las cifras que valen son las de la corrida de 40 sesiones.
 - Que la curva publicada esté mal. **Está bien medida**; lo que este hallazgo
   dice es **cómo hay que leerla**, y que los dos umbrales más bajos miden otra
   cosa.
 - Nada sobre rentabilidad. No se tocó un outcome.
 
-### 3.4 La pregunta que queda, y es de contrato
+### 3.5 La pregunta que queda, y es de contrato
 
 Una zona que nace **detrás** del precio y después lo ve volver: ¿eso es un
 retorno a la zona, o es otro evento? Hoy el extractor cuenta las dos cosas
@@ -225,22 +259,56 @@ que no está tomada**. `CLASE_KERNEL` lo sigue excluyendo, y el test ahora avisa
 si algún día aparece `ZONE_TOUCHED`, para que el motivo caducado se lleve a Nico
 en vez de reactivarse por defecto.
 
-## 7. Lo que esta entrega **no** habilita
+## 7. Hallazgo colateral — la spec de EXPLORE-001 existe **dos veces**
+
+Salió de `tools/reportes.py`, un índice de los 103 documentos de `docs/`
+generado del disco (un índice a mano se pudre en cuanto alguien agrega un
+archivo). Detecta nombres que compiten por el mismo referente:
+
+```
+docs/ESPEC_TEST_EXPLORE-001.md              17.972 b   último toque 2026-08-05
+docs/predictions/ESPEC_TEST_EXPLORE-001.md  11.181 b   último toque 2026-07-28
+```
+
+**No son dos copias: son dos documentos distintos.** El de `docs/` dice
+«INCOMPLETA» y es el que carga el **MDE 1,14**. El de `docs/predictions/` dice
+«BORRADOR», es del 28-jul y **no menciona el MDE en ninguna línea**.
+
+O sea que el vigente está en la ubicación **menos** canónica: quien busque «la
+spec pre-registrada de EXPLORE-001» va a mirar `docs/predictions/` —que es
+exactamente donde debería vivir un pre-registro— y va a encontrar el borrador
+viejo, sin MDE.
+
+**No lo toqué.** Mover o anotar un documento de pre-registro es materia de
+enmienda y es de Nico.
+
+El índice también reporta que `ITERATION_2`, `ITERATION_3` e `ITERATION_4`
+tienen **dos versiones cada una**, de agentes y días distintos: pedir «la
+iteración 3» es ambiguo, y hasta ahora nada lo avisaba.
+
+## 8. Lo que esta entrega **no** habilita
 
 - No autoriza correr nada sobre outcomes ni P&L.
 - No sella E-R1 ni elige candidatos.
 - No adjudica la curva: eso es del auditor.
-- No resuelve el MDE de 1,14, que **sigue sin ser reproducible** desde lo
-  documentado (`diag/multiplicidad/reconstruir_mde.py` da 2,41 a `f=1`, ratio
-  2,11). Si el MDE real fuera 2,41, la banda «detectable y operable» a `f=1`
-  estaría vacía — y eso cambia qué umbral tiene sentido pedir.
+- No cierra `N_eff(f)`, que sigue **tabulado y no reconstruido** (ver abajo).
 
-## 8. Lo que le toca a Nico
+> **Corrección de algo que yo había publicado mal.** En una versión anterior
+> este párrafo decía que el MDE de 1,14 «sigue sin ser reproducible» y daba
+> 2,41. **Reproduce**: los cuatro renglones publicados salen con diferencia
+> máxima de 0,0047 ticks. Yo usaba `SD/sqrt(N_eff)` en vez del `SE` medido por
+> bootstrap, y el cociente entre los dos —2,12— **era el «factor 2,11
+> inexplicado» que había reportado**. La derivación estaba en
+> `docs/spike_in/MDE_EXPLORE-001.md` y nunca busqué ahí.
+> Ver `docs/research/CORRECCION_MDE_REPRODUCE_2026-08-07.md`.
+
+## 9. Lo que le toca a Nico
 
 1. **Qué es un toque para `AACloseOpenDiffs`** (bloquea su entrada al estudio).
 2. **§3.4**: si una zona que nace detrás del precio y lo ve volver cuenta como
    retorno, o es otro evento.
-3. **D2** — versionar los oráculos: el manifiesto ya está construido
+3. **La spec duplicada del §7**: cuál gobierna, y qué pasa con la otra.
+4. **D2** — versionar los oráculos: el manifiesto ya está construido
    (`docs/oraculos_manifiesto.json`), la política es su decisión.
 
 ## Aporte al referente

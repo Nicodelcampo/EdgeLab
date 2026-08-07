@@ -1,134 +1,157 @@
 # -*- coding: utf-8 -*-
-"""Reconstruccion del MDE de 1,14 -- y por que NO da.
+"""Reconstruccion del MDE de EXPLORE-001 -- REPRODUCE. Y la version anterior no.
 
-## Que se intenta
+## Correccion de un resultado que publique mal
 
-`docs/ESPEC_TEST_EXPLORE-001.md` usa **MDE = 1,14 ticks a f=1** y **0,39 a
-f=10** como el numero que sostiene toda la discusion de factibilidad: de ahi
-sale la banda entre lo detectable y lo operable, el margen de 1,60x que
-justifico el barrido de resolucion, y el costo en MDE de ampliar la grilla.
+La version anterior de este archivo concluia **NO REPRODUCIBLE**: decia que el
+MDE de 1,14 ticks a f=1 daba 2,41 con los insumos documentados, un factor 2,11
+sin explicar, y listaba tres hipotesis sin elegir ninguna.
 
-**Ningun script del repo lo calcula.** `unidad4_por_geometria.py` emite
-varianzas por geometria pero no un MDE; `unidad2_grilla.py` y
-`unidad3_deflacion.py` lo nombran en sus docstrings y no lo computan. Verificado
-con `grep` de `norm.ppf`, `z_beta`, `potencia` y `0.8416` sobre todo `diag/`.
+**El numero publicado esta bien. El que estaba mal era este script.**
 
-## Como deberia salir, con los insumos que SI estan persistidos
+### Que hice mal, exactamente
 
-De `diag/spike_in/neff.json` (control interno: `anclas/DEFF` reproduce
-`N_eff` exacto):
+Calcule el error estandar como `SD / sqrt(N_eff)` con `SD = 8,77 ticks/trade`,
+la mediana de las 40 geometrias. Pero el MDE no usa esa SD: usa un **`SE`
+medido por bootstrap**, que el propio expediente publica.
 
-    DEFF = 4,864 · N_eff_placebo = 9.707 · anclas/dia = 255,2 · dias = 185
+    SD/sqrt(N_eff) = 8,77 / sqrt(9.707) = 0,0890 ticks/ancla   <- lo que use
+    SE medida por bootstrap             = 0,0420 ticks/ancla   <- lo correcto
 
-De `docs/ESPEC_TEST_EXPLORE-001.md` y `p_pasar_prop_firm.py`:
+    0,0890 / 0,0420 = 2,12
 
-    SD = 8,77 ticks/trade · M_eff = 21,2 · potencia 80% · alfa 0,05 bilateral
+**Ese cociente ES el factor 2,11 que reporte como inexplicado.** No era un
+misterio: era mi insumo.
 
-Y la formula de deflacion que declara `unidad3_deflacion.py`:
+Y no son la misma cantidad. `SD = 8,77` es dispersion **por trade** entre
+geometrias; `SE = 0,0420` es el error estandar **por ancla** del estimando, con
+la dependencia entre dias ya adentro. Dividir la primera por `sqrt(n)` supone
+independencia y supone que el estimando es la media de esa variable. Ninguna de
+las dos cosas es cierta acá.
 
-    MDE_real = MDE_placebo · sqrt(N_eff_placebo / N_eff_real)
+### Como lo encontre, que es la parte que importa
 
-## El resultado
+La version anterior afirmaba: «**Ningun script del repo lo calcula**», y lo
+verificaba con `grep` de `norm.ppf`, `z_beta`, `potencia` y `0.8416` sobre todo
+`diag/`.
 
-    z(21,2) = 3,0409   z_beta = 0,8416   k = 3,8826
-    MDE_placebo = k · SD / sqrt(9707) = 0,3456
+Eso era **cierto y completamente irrelevante**. La derivacion no esta en un
+script: esta en `docs/spike_in/MDE_EXPLORE-001.md` -- un documento de 25 KB
+**cuyo nombre es exactamente el numero que yo estaba tratando de reconstruir**.
+Nunca busque en `docs/`.
 
-    f       N_eff_real   calculado   ESPEC   ratio
-    1              200      2,4077    1,14    2,11
-    10           2.000      0,7614    0,39    1,95
+Busque donde esperaba que estuviera la respuesta, no la encontre, y **publique
+la ausencia como hallazgo**. Es el mismo modo de falla que este expediente
+persigue en los demas, con la carga invertida.
 
-**Da entre 1,95x y 2,11x el valor publicado.** La razon se mantiene aprox.
-constante entre f=1 y f=10, o sea que el escalado con `n` es correcto y lo que
-difiere es un factor global — no un error de exponente.
+Aparecio recien cuando `tools/reportes.py` listo los 103 documentos de `docs/`
+por carpeta. No lo encontre razonando: lo encontre porque un indice lo puso
+adelante.
 
-## Que puede explicar el factor ~2, y por que no lo elijo
+## La reconstruccion, ahora
 
-Hipotesis que **no** puedo confirmar sin el codigo original:
+Insumos, todos de `docs/spike_in/MDE_EXPLORE-001.md`:
 
-1. **`SD` no es 8,77 en las unidades del estimando.** Si el estadistico fuera la
-   media POR DIA en vez de por trade, la varianza relevante seria otra.
-2. **`N_eff_real` no es `f x 200`.** Si a `f=1` tambien se aplicara un DEFF, o
-   si el universo fueran mas dias que 200.
-3. **`z` sin correccion.** Con `z=1,96` da 1,74 a f=1: mas cerca, pero tampoco
-   1,14, y contradiria que el MDE este corregido por multiplicidad.
+    SE placebo medida (bootstrap de bloques de dia) = 0,0420 ticks/ancla
+    N_eff placebo                                   = 9.707
+    M_eff (Li-Ji sobre autovalores)                 = 21,2
+    potencia 80%, alfa 0,05 bilateral
 
-**No elijo ninguna.** Cualquiera de las tres se puede ajustar hasta dar 1,14, y
-elegir la que cuadra es exactamente fabricar acuerdo con un numero cuya
-derivacion no tengo. Es el mismo modo de falla que este expediente persigue.
+    MDE(f) = [z(alfa/M_eff) + z_beta] . SE . sqrt(N_eff_placebo / N_eff(f))
 
-## Por que importa, y no es academico
+Los cuatro renglones publicados reproducen a la precision con que estan escritos.
 
-El MDE **no es un dato de color**: es el que decide si una hipotesis es
-detectable. Si el verdadero fuera 2,41 en vez de 1,14 a f=1:
+## Lo que SIGUE abierto, y no lo cierra esto
 
-- la banda «detectable pero no operable» se ensancha mucho (el minimo operable
-  a f=1 es 1,92, o sea que **2,41 quedaria por ENCIMA**: a f=1 no habria nada
-  detectable que ademas sea operable);
-- el margen de 1,60x a f=10 quedaria en ~0,8x, y **el barrido de resolucion no
-  entraria**;
-- el costo en MDE de ampliar la grilla se leeria distinto.
+`N_eff(f)` esta tabulado -197, 574, 1.733, 4.102- y **no reconstruido**: sale de
+un bootstrap que este script no vuelve a correr. Que el MDE reproduzca dado ese
+insumo no valida el insumo.
 
-**No estoy afirmando que 1,14 este mal.** Estoy afirmando que **no es
-reproducible desde lo documentado y persistido**, y que la diferencia con lo que
-sale de esos insumos es un factor 2, no un redondeo.
+Y el `197` de `f=1` son los **dias de research de entonces**. El universo hoy
+tiene **201 sesiones**, asi que el MDE a f=1 se mueve por `sqrt(197/201)`: menos
+de 1%, pero el numero publicado es de un universo que ya no es el vigente.
 
 Reproducible: `python diag/multiplicidad/reconstruir_mde.py`
 """
 from __future__ import annotations
 
-import json
 import sys
 from pathlib import Path
 from statistics import NormalDist
 
 REPO = Path(__file__).resolve().parents[2]
 N = NormalDist()
-SD_TICKS = 8.77          # mediana de las 40 geometrias, por_geom_nulo.json
-M_EFF = 21.2             # registrado en la ESPEC
+
+FUENTE = "docs/spike_in/MDE_EXPLORE-001.md"
+SE_PLACEBO = 0.0420      # ticks/ancla, MEDIDA por bootstrap -- no SD/sqrt(n)
+N_EFF_PLACEBO = 9707
+M_EFF = 21.2
 POTENCIA = 0.80
-PUBLICADO = {1: 1.14, 10: 0.39}
-DIAS_RESEARCH = 200
+ALFA = 0.05
+
+#: `f` -> (N_eff tabulado, MDE publicado). El `N_eff` NO se reconstruye: sale de
+#: un bootstrap que este script no vuelve a correr.
+PUBLICADO = {1: (197, 1.14), 3: (574, 0.67), 10: (1733, 0.39), 30: (4102, 0.25)}
+
+#: El error de la version anterior, para que la correccion sea verificable y no
+#: haya que creerme.
+SD_POR_TRADE_QUE_USE_MAL = 8.77
+DIAS_UNIVERSO_HOY = 201
 
 
-def z(m, alpha=0.05):
+def z(m, alpha=ALFA):
     return N.inv_cdf(1 - (alpha / m) / 2)
 
 
 def main():
-    p = REPO / "diag" / "spike_in" / "neff.json"
-    if not p.exists():
-        print("falta %s" % p)
+    doc = REPO / FUENTE
+    if not doc.exists():
+        print("falta %s -- es la fuente de los insumos" % FUENTE)
         return 2
-    d = json.loads(p.read_text(encoding="utf-8"))
-    deff, neff_p = d["deff_mediana"], d["n_eff_mediana"]
-    apd, nd = d["anclas_por_dia"], d["n_dias"]
-
-    ctrl = apd * nd / deff
-    assert abs(ctrl - neff_p) < 1, "el artefacto no es internamente consistente"
-    print("artefacto  DEFF=%.3f  N_eff_placebo=%.0f  anclas/dia=%.1f  dias=%d"
-          % (deff, neff_p, apd, nd))
-    print("control    anclas/DEFF = %.0f  == N_eff persistido  OK" % ctrl)
 
     k = z(M_EFF) + N.inv_cdf(POTENCIA)
-    mde_p = k * SD_TICKS / neff_p ** 0.5
-    print("\nz(%.1f)=%.4f  z_beta=%.4f  k=%.4f" % (M_EFF, z(M_EFF),
-                                                   N.inv_cdf(POTENCIA), k))
-    print("MDE_placebo = k*SD/sqrt(N_eff) = %.4f" % mde_p)
+    mde_p = k * SE_PLACEBO
+    print("fuente     %s" % FUENTE)
+    print("insumos    SE=%.4f t/ancla (MEDIDA)  N_eff_placebo=%d  M_eff=%.1f"
+          % (SE_PLACEBO, N_EFF_PLACEBO, M_EFF))
+    print("           z(%.1f)=%.4f  z_beta=%.4f  k=%.4f"
+          % (M_EFF, z(M_EFF), N.inv_cdf(POTENCIA), k))
+    print("           MDE_placebo = k*SE = %.5f" % mde_p)
 
-    print("\n%-4s %12s %12s %10s %8s" % ("f", "N_eff_real", "calculado",
-                                         "publicado", "ratio"))
+    print("\n%-4s %9s %10s %11s %10s %8s" % ("f", "N_eff", "deflacion",
+                                             "calculado", "publicado", "dif"))
     peor = 0.0
-    for f, pub in sorted(PUBLICADO.items()):
-        nr = f * DIAS_RESEARCH
-        calc = mde_p * (neff_p / nr) ** 0.5
-        peor = max(peor, calc / pub)
-        print("%-4d %12d %12.4f %10.2f %8.2f" % (f, nr, calc, pub, calc / pub))
+    for f, (neff, pub) in sorted(PUBLICADO.items()):
+        defl = (N_EFF_PLACEBO / neff) ** 0.5
+        calc = mde_p * defl
+        peor = max(peor, abs(calc - pub))
+        print("%-4d %9d %10.3f %11.4f %10.2f %8.4f"
+              % (f, neff, defl, calc, pub, calc - pub))
 
-    print("\nNO REPRODUCIBLE: el calculo da hasta %.2fx el valor publicado." % peor)
-    print("La razon se mantiene entre f=1 y f=10, asi que el escalado con n es")
-    print("correcto y lo que difiere es un FACTOR GLOBAL. Ver el docstring para")
-    print("las tres hipotesis que podrian explicarlo, y por que no se elige una.")
-    return 1
+    ok = peor <= 0.005
+    print("\n%s: la diferencia maxima es %.4f ticks -- dentro del redondeo con "
+          "que estan\npublicados (2 decimales)." % ("REPRODUCE" if ok else "NO CIERRA", peor))
+
+    # Contraste explicito con el error anterior: que sea verificable, no creible.
+    se_mal = SD_POR_TRADE_QUE_USE_MAL / N_EFF_PLACEBO ** 0.5
+    print("\ncontrol del error anterior")
+    print("  SD/sqrt(N_eff) = %.4f/sqrt(%d) = %.4f t/ancla   <- lo que usaba"
+          % (SD_POR_TRADE_QUE_USE_MAL, N_EFF_PLACEBO, se_mal))
+    print("  SE medida                      = %.4f t/ancla   <- lo correcto"
+          % SE_PLACEBO)
+    print("  cociente = %.2f  == el factor '2,11 inexplicado' que reporte"
+          % (se_mal / SE_PLACEBO))
+
+    print("\nsigue abierto")
+    print("  - N_eff(f) esta TABULADO, no reconstruido: sale de un bootstrap que")
+    print("    este script no vuelve a correr. Reproducir dado el insumo no")
+    print("    valida el insumo.")
+    print("  - el 197 de f=1 son los dias de research de entonces; el universo")
+    print("    hoy tiene %d. El MDE se mueve por sqrt(197/%d) = %.4f (%.1f%%)."
+          % (DIAS_UNIVERSO_HOY, DIAS_UNIVERSO_HOY,
+             (197 / DIAS_UNIVERSO_HOY) ** 0.5,
+             100 * (1 - (197 / DIAS_UNIVERSO_HOY) ** 0.5)))
+    return 0 if ok else 1
 
 
 if __name__ == "__main__":

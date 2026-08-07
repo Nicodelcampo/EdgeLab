@@ -78,7 +78,21 @@ from diag.tasa_senales.curva_excursion_ticks import (  # noqa: E402
 #: la contaminación en umbrales que nadie usa no dice nada.
 T_SONDA = T_DESIGN
 
-SALIDA = Path(__file__).resolve().parent / "sonda_alejamiento_cero.json"
+def ruta_de_salida(contrato, n_sesiones):
+    """Un archivo POR CORRIDA, no uno fijo.
+
+    La primera versión escribía siempre `sonda_alejamiento_cero.json`, así que
+    la corrida de 40 sesiones **pisó en silencio** la de 8 — y las dos eran
+    evidencia: la chica es la que expuso el plateau espurio de `VolTicksPOC2`
+    que la grande después descartó. Perder la corrida anterior es perder la
+    comparación, que acá es justamente el control.
+
+    Es el mismo modo de falla que `ESPEC_TEST_EXPLORE-001.md`, que existe dos
+    veces con el mismo nombre y contenidos distintos.
+    """
+    base = contrato.replace("_ticks.parquet", "").replace(".parquet", "")
+    return (Path(__file__).resolve().parent
+            / ("sonda_alejamiento_cero__%s_%02ds.json" % (base, n_sesiones)))
 
 
 def sondear(archivo, fechas, indicadores):
@@ -209,7 +223,8 @@ def main(argv=None):
               % (n, d["clase_kernel"],
                  " ".join("%7s" % f.get(str(t)) for t in T_SONDA)))
 
-    SALIDA.write_text(json.dumps(
+    salida = ruta_de_salida(a.contrato, len(fechas))
+    salida.write_text(json.dumps(
         dict(pregunta="fraccion de zonas cuyo precio ya esta DENTRO de la banda "
                       "en el instante de disponibilidad",
              contrato=a.contrato, sesiones=len(fechas), max_fecha=peor,
