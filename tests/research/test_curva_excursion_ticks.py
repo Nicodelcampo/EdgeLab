@@ -180,12 +180,43 @@ def test_sistema_los_kernels_elegibles_exportan_created_bar():
     assert not faltan, "no exportan created_bar: %s" % faltan
 
 
-def test_sistema_AACloseOpenDiffs_NO_lo_tiene_y_debe_quedar_afuera():
-    """No es un olvido: ese indicador no tiene concepto de barra creadora en su
-    ciclo de vida. Tiene que quedar en `sin_created_bar`, no estimado."""
+def test_sistema_AACloseOpenDiffs_queda_afuera_pero_YA_NO_por_falta_de_barra():
+    """Queda afuera de la curva — pero el motivo que decía este test era falso.
+
+    La versión anterior afirmaba que «no tiene concepto de barra creadora en su
+    ciclo de vida» y lo verificaba con `"created_bar" not in src`. **Las dos
+    cosas estaban mal.**
+
+    El kernel **siempre** tuvo la barra creadora: se llama `m1_bar`, y la
+    identidad está verificada — `_m1_bars(ticks)` == `build_time_bars(ticks, 1)`,
+    6.703 barras con `end_ns` idéntico. Lo único que faltaba era el **nombre
+    canónico**, así que el reloj de disponibilidad no lo encontraba y mandaba las
+    144.511 zonas enteras al descarte. Un campo con otro nombre se leía como una
+    propiedad ausente del indicador.
+
+    Y el test era un proxy de substring: habría pasado igual con el indicador
+    metido en la curva, porque no miraba la curva.
+
+    **El motivo real por el que queda afuera es otro y sigue en pie:** no emite
+    `ZONE_TOUCHED`, así que no hay censo de primer toque, y qué cuenta como
+    toque para un gap **es una decisión de Nico que no está tomada**. Hasta que
+    lo esté, no puede ser hipótesis de EXPLORE-001.
+
+    Se verifica contra el gate REAL —`CLASE_KERNEL`, que es lo que el extractor
+    consulta— y no contra el texto de un archivo ajeno.
+    """
+    import importlib
+    m = importlib.import_module("diag.tasa_senales.curva_excursion_ticks")
+    assert "AACloseOpenDiffs" not in m.CLASE_KERNEL, (
+        "entró a la curva sin que nadie definiera qué es un toque para un gap")
+
     src = io.open(os.path.join(REPO, "edgelab", "bridge", "indicators",
                                "aacloseopendiffs.py"), encoding="utf-8").read()
-    assert "created_bar" not in src
+    assert "created_bar=z[\"m1_bar\"]" in src, (
+        "se perdió el alias canónico; volvería a descartarse por el motivo falso")
+    assert "ZONE_TOUCHED" not in src, (
+        "si ahora emite toques, el motivo para dejarlo afuera caducó: hay que "
+        "llevarle la definición de toque a Nico, no reactivarlo por defecto")
 
 
 def test_sistema_parity_no_consume_created_bar():
@@ -318,16 +349,88 @@ def test_clase_el_manifiesto_declara_la_clase_de_cada_indicador():
 
 
 # ------------------------------------------------------ 13.63: checkpoints
-def test_ckpt_la_clave_incluye_CLASE_KERNEL():
-    """Reclasificar un indicador de `tick_create` a `bar_close` mueve sus
-    señales un 20 % — medido. Un checkpoint de antes de la reclasificación NO es
-    reutilizable, y la clave tiene que detectarlo."""
+def _curva():
+    import importlib
+    return importlib.import_module("diag.tasa_senales.curva_excursion_ticks")
+
+
+PLAN_FIJO = [("a.parquet", ["2026-06-01"])]
+INDS_FIJOS = ["BigTrap2", "Gaps2"]
+
+
+def test_ckpt_la_clave_reacciona_a_todo_lo_que_puede_mover_un_numero(monkeypatch):
+    """Se prueba la CLAVE, no el texto que la escribe.
+
+    La versión anterior cortaba el fuente en `[:1400]` caracteres después de
+    `def clave_de_corrida` y buscaba nombres de campo ahí adentro. Dos defectos:
+    **agrandar el docstring empujaba a `clase_kernel` fuera de la ventana y el
+    test fallaba sin que la clave hubiera cambiado**, y —al revés— un campo
+    presente en el texto pero mal usado habría pasado igual.
+
+    Acá se varía cada entrada y se exige que el hash se mueva.
+    """
+    m = _curva()
+    base = m.clave_de_corrida(PLAN_FIJO, INDS_FIJOS)
+
+    assert m.clave_de_corrida([("a.parquet", ["2026-06-02"])], INDS_FIJOS) != base, \
+        "otro día en el plan da la misma clave"
+    assert m.clave_de_corrida([("b.parquet", ["2026-06-01"])], INDS_FIJOS) != base, \
+        "otro contrato da la misma clave"
+    assert m.clave_de_corrida(PLAN_FIJO, ["BigTrap2"]) != base, \
+        "otro conjunto de indicadores da la misma clave"
+
+    # reclasificar mueve las senales un 20 % -medido-: un checkpoint de antes
+    # de la reclasificacion NO es reutilizable.
+    monkeypatch.setitem(m.CLASE_KERNEL, "Gaps2", "bar_close")
+    assert m.clave_de_corrida(PLAN_FIJO, INDS_FIJOS) != base, "CLASE_KERNEL ignorada"
+    monkeypatch.undo()
+
+    monkeypatch.setattr(m, "T_DESIGN", (1, 2))
+    assert m.clave_de_corrida(PLAN_FIJO, INDS_FIJOS) != base, "T_DESIGN ignorada"
+    monkeypatch.undo()
+
+    monkeypatch.setattr(m, "LEAD_DAYS", m.LEAD_DAYS + 1)
+    assert m.clave_de_corrida(PLAN_FIJO, INDS_FIJOS) != base, "LEAD_DAYS ignorado"
+    monkeypatch.undo()
+
+    monkeypatch.setattr(m, "MAX_FECHA", "2026-05-31")
+    assert m.clave_de_corrida(PLAN_FIJO, INDS_FIJOS) != base, "el firewall es ignorado"
+    monkeypatch.undo()
+
+    assert m.clave_de_corrida(PLAN_FIJO, INDS_FIJOS) == base, \
+        "no es determinista: dos llamadas iguales dan claves distintas"
+
+
+def test_ckpt_la_clave_declara_el_universo():
+    """`universo_sha256` no se puede variar desde el test —sale de la puerta—
+    así que acá sí se verifica que esté en el payload."""
     src = io.open(os.path.join(REPO, "diag", "tasa_senales",
                                "curva_excursion_ticks.py"), encoding="utf-8").read()
-    cuerpo = src.split("def clave_de_corrida")[1][:1400]
-    for campo in ("clase_kernel", "universo_sha256", "code_commit", "t_design",
-                  "firewall_corte_utc_ns", "lead_days", "indicadores"):
-        assert campo in cuerpo, "la clave de corrida ignora %s" % campo
+    cuerpo = src.split("def clave_de_corrida")[1].split("return hashlib")[0]
+    assert '"universo_sha256"' in cuerpo
+    assert '"huella_del_codigo"' in cuerpo
+    assert '"code_commit"' not in cuerpo, (
+        "volvió `git_head()` a la clave: invalida el checkpoint por commits que "
+        "no pueden mover un número, y NO lo invalida por ediciones sin commitear")
+
+
+def test_ckpt_la_huella_ve_un_kernel_editado_SIN_COMMITEAR(tmp_path, monkeypatch):
+    """El agujero que tenía `git_head()`, y es el que importa.
+
+    En un árbol sucio el HEAD **no se mueve**: se podía editar `bigtrap2.py`,
+    relanzar, y el checkpoint viejo pasaba como válido — mezclando resultados de
+    dos kernels distintos dentro de una misma curva sin un solo aviso.
+    """
+    import types
+    m = _curva()
+    f = tmp_path / "kernel_falso.py"
+    f.write_text("x = 1\n", encoding="utf-8")
+    monkeypatch.setitem(m.REGISTRY, "KernelFalso",
+                        types.SimpleNamespace(__file__=str(f)))
+    antes = m.huella_del_codigo(["KernelFalso"])
+    f.write_text("x = 2\n", encoding="utf-8")      # editado, sin commitear
+    assert m.huella_del_codigo(["KernelFalso"]) != antes, \
+        "la huella no ve una edición sin commitear: es el agujero de git_head()"
 
 
 def test_ckpt_mismatch_CONSERVA_el_checkpoint_ajeno():

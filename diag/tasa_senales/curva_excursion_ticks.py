@@ -115,6 +115,7 @@ import numpy as np
 REPO_PATH = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_PATH))
 
+from diag.tasa_senales import post_sepmin as post_sepmin_mod  # noqa: E402
 from diag.tasa_senales.post_sepmin import (  # noqa: E402
     BAR_DRIVEN, LEAD_DAYS, REGISTRY, TZ_CHART, bars_mod, dias_research,
     git_head, pd, ticks_mod,
@@ -169,6 +170,38 @@ class CheckpointMismatch(RuntimeError):
     """El checkpoint no corresponde a esta corrida. Fail-closed a propósito."""
 
 
+def huella_del_codigo(indicadores):
+    """sha256 de las fuentes que realmente pueden mover un resultado.
+
+    Reemplaza a `git_head()` dentro de la clave. **`git_head()` era demasiado
+    grueso y eso lo volvía inútil:** devuelve el HEAD del repo, así que
+    commitear un README invalidaba un checkpoint de 24 h de cómputo. Fail-closed
+    sobre cambios que no pueden afectar el número no es prudencia — es tirar el
+    checkpoint por ruido.
+
+    Y era demasiado FINO en el otro sentido, que es peor: en un árbol sucio el
+    HEAD no cambia aunque se edite el kernel, así que editar `bigtrap2.py` sin
+    commitear dejaba el checkpoint pasando como válido.
+
+    Se hashean los BYTES de: este script, `post_sepmin` (de donde salen las
+    barras, el universo y el registro) y el módulo de cada indicador medido.
+    Cambió algo que puede mover un número → cambia la clave, commiteado o no.
+    """
+    fuentes = [Path(__file__).resolve(),
+               Path(post_sepmin_mod.__file__).resolve()]
+    for n in sorted(indicadores):
+        m = REGISTRY.get(n)
+        f = getattr(m, "__file__", None)
+        if f:
+            fuentes.append(Path(f).resolve())
+    h = hashlib.sha256()
+    for p in fuentes:
+        # el nombre entra al hash: mover un archivo ES un cambio de identidad
+        h.update(p.name.encode())
+        h.update(p.read_bytes())
+    return h.hexdigest()
+
+
 def clave_de_corrida(plan, indicadores):
     """Identidad de lo que se está midiendo.
 
@@ -179,6 +212,13 @@ def clave_de_corrida(plan, indicadores):
     Incluye `CLASE_KERNEL` a propósito: reclasificar un indicador de
     `tick_create` a `bar_close` mueve sus señales un 20 %, así que un checkpoint
     de antes de la reclasificación **no es reutilizable**.
+
+    **Limitación conocida, y no es un detalle:** `indicadores` está en la clave,
+    así que AGREGAR un indicador invalida el checkpoint entero y obliga a
+    recalcular los que ya estaban. El checkpoint sirve para reanudar una corrida
+    interrumpida, **nunca** para extender una corrida cerrada. Es correcto
+    —mezclar dos universos de indicadores dentro de una curva sería falsear el
+    denominador— pero conviene saberlo antes de planificar un «le agrego uno».
     """
     from edgelab.research.universo_estudio import huella_del_universo, ruta_por_defecto
     try:
@@ -190,7 +230,7 @@ def clave_de_corrida(plan, indicadores):
         "plan": [[a, list(f)] for a, f in plan],
         "indicadores": sorted(indicadores),
         "universo_sha256": uni,
-        "code_commit": git_head(),
+        "huella_del_codigo": huella_del_codigo(indicadores),
         "t_design": list(T_DESIGN),
         "lead_days": LEAD_DAYS,
         "firewall_corte_utc_ns": int(corte_del_sello().value),
@@ -574,7 +614,15 @@ def main(argv=None):
         schema_version="curva_excursion_ticks_v1",
         clave_de_corrida=clave,
         supersede=SUPERSEDE,
-        autoritativo=not piloto, workers=a.workers,
+        # NOMBRE CORREGIDO (antes `autoritativo`). El campo sólo dice si el
+        # universo se recortó con `--limite-sesiones`; NO dice que alguien haya
+        # aceptado la curva. Llamarlo `autoritativo` invitaba a leer un booleano
+        # de completitud como un sello de adjudicación, que es justo lo que el
+        # auditor prohibió. La adjudicación es un acto de una persona y va en un
+        # campo aparte que este script NO puede poner en `si`.
+        universo_completo=not piloto,
+        estado_de_adjudicacion="no_adjudicada",
+        workers=a.workers,
         code_commit=git_head(), umbrales=list(T_DESIGN),
         session_count=ns, max_fecha_universo=peor, firewall_max_fecha=MAX_FECHA,
         firewall_corte_utc_ns=int(corte_del_sello().value),
