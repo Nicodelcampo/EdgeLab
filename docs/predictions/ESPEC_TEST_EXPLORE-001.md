@@ -10,8 +10,9 @@
 > Toda decisión futura de EXPLORE-001 parte de v0.3; ningún borrador anterior
 > —este incluido— puede invocarse para reemplazar una regla de v0.3.
 >
-> Motivo del reemplazo: editar cualquiera de las dos especificaciones existentes
-> habría mezclado **registro histórico con reglas actuales**. Ver v0.3 §0.
+> Motivo del reemplazo: editar cualquiera de las dos especificaciones
+> existentes habría mezclado **registro histórico con reglas actuales**.
+> Ver v0.3 §0.
 
 
 **Escrita 2026-07-28, ANTES de calibrar y ANTES de elegir geometría.**

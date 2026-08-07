@@ -61,6 +61,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import subprocess
 import sys
 from collections import Counter
 from pathlib import Path
@@ -79,7 +80,15 @@ from diag.tasa_senales.curva_excursion_ticks import (  # noqa: E402
 #: Sube cuando cambia el CONJUNTO DE CAMPOS o la semántica de alguno. Dos
 #: artefactos con `schema_version` distinto **no se comparan**: `comparar_sondas.py`
 #: falla en vez de alinear campos que no significan lo mismo.
-SCHEMA_VERSION = "sonda_alejamiento_cero_v2"
+#: v3: identidad al INICIO -commit, arbol sucio, huellas separadas del
+#: generador y del codigo de medicion, fechas exactas, hashes de universo y
+#: parquet-, `payload_sha256` con su nombre correcto y sidecar de bytes.
+SCHEMA_VERSION = "sonda_alejamiento_cero_v3"
+
+#: La pregunta va en una constante para que el comparador pueda EXIGIR que
+#: coincida: dos artefactos no miden lo mismo si cambia lo que preguntan.
+PREGUNTA = ("posicion del precio y del reloj de disponibilidad al inicio "
+            "de la ventana de cada zona")
 
 #: La misma grilla que la curva. Si la curva cambia, esta sonda la sigue: medir
 #: la contaminación en umbrales que nadie usa no dice nada.
@@ -248,11 +257,85 @@ def sondear(archivo, fechas, indicadores):
     return res
 
 
+def sha_de_archivo(p):
+    h = hashlib.sha256()
+    with open(p, "rb") as fh:
+        for bloque in iter(lambda: fh.read(1 << 20), b""):
+            h.update(bloque)
+    return h.hexdigest()
+
+
+def arbol_de_fuentes_sucio():
+    """Rutas de código modificadas y sin commitear. **Vacío = limpio.**
+
+    Sólo mira código —`diag/`, `edgelab/`, `tools/`—: un documento sin commitear
+    no puede cambiar un número, y exigir el repo entero limpio haría el gate
+    inusable sin hacerlo más seguro.
+    """
+    try:
+        out = subprocess.run(["git", "status", "--porcelain", "--",
+                              "diag", "edgelab", "tools"],
+                             cwd=str(REPO_PATH), capture_output=True,
+                             text=True, timeout=60).stdout
+    except Exception:
+        return ["(no se pudo consultar git)"]
+    return sorted(l[3:].strip() for l in out.splitlines() if l.strip())
+
+
+def identidad_de_corrida(contrato, fechas):
+    """Todo lo que hace falta para reconstruir ESTA corrida. **Se toma al INICIO.**
+
+    ## Por qué al inicio y no al final
+
+    La versión anterior armaba la identidad **después** de medir, hasheando
+    archivos que pudieron cambiar mientras el proceso corría. Y el `code_commit`
+    salía de `git_head()`, que en un árbol sucio **no se mueve**: el artefacto de
+    8 sesiones quedó declarando `d5a4a2e` cuando el código que lo generó recién
+    se commiteó en `bf8c995`. **El commit declarado no permitía reconstruir el
+    generador** — que es exactamente lo que un campo de procedencia promete.
+
+    ## Qué cubre, y qué cubría de menos
+
+    `huella_del_codigo()` hashea la curva, `post_sepmin` y los indicadores —pero
+    **no esta sonda**—, así que se podía cambiar la lógica de la sonda sin que la
+    huella se moviera. Por eso van separados y los dos:
+
+      - `generator_sha256`        — esta sonda
+      - `measurement_code_sha256` — curva + post_sepmin + indicadores
+
+    Y la muestra: contrato + cantidad de sesiones + fecha máxima **no identifica
+    qué ocho sesiones se usaron**. Van las fechas exactas, su hash, el hash del
+    manifiesto de universo y el del parquet de entrada.
+    """
+    parquet = REPO_PATH / "data" / "nt8" / "6E" / contrato
+    try:
+        from edgelab.research.universo_estudio import (huella_del_universo,
+                                                       ruta_por_defecto)
+        uni = huella_del_universo(str(ruta_por_defecto()))["sha256"]
+    except Exception:
+        uni = None
+    return dict(
+        code_commit_start=git_head(),
+        working_tree_dirty_start=arbol_de_fuentes_sucio(),
+        generator_sha256=sha_de_archivo(Path(__file__).resolve()),
+        measurement_code_sha256=huella_del_codigo(sorted(CLASE_KERNEL)),
+        session_dates=list(fechas),
+        session_dates_sha256=hashlib.sha256(
+            json.dumps(list(fechas), sort_keys=True).encode()).hexdigest(),
+        universe_manifest_sha256=uni,
+        input_parquet=contrato,
+        input_parquet_sha256=sha_de_archivo(parquet) if parquet.exists() else None,
+    )
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--sesiones", type=int, default=8,
                     help="cuántas sesiones del contrato (muestra chica a propósito)")
     ap.add_argument("--contrato", default="6E_09-26_ticks.parquet")
+    ap.add_argument("--permitir-arbol-sucio", action="store_true",
+                    help="SOLO para diagnóstico: el artefacto sale marcado y no "
+                         "puede usarse como canónico")
     a = ap.parse_args(argv)
 
     dias, info = dias_research()
@@ -263,8 +346,27 @@ def main(argv=None):
         return 2
     peor = max(fechas)
     assert peor <= MAX_FECHA, "FIREWALL: %s > %s" % (peor, MAX_FECHA)
+
+    # IDENTIDAD AL INICIO. Fail-closed sobre árbol sucio: un artefacto generado
+    # desde código sin commitear declara un commit que NO lo contiene, y eso es
+    # peor que no declarar nada -- promete una reconstrucción que no existe.
+    ident = identidad_de_corrida(a.contrato, fechas)
+    if ident["working_tree_dirty_start"] and not a.permitir_arbol_sucio:
+        print("ARBOL DE FUENTES SUCIO -- no se publica:")
+        for r in ident["working_tree_dirty_start"]:
+            print("   %s" % r)
+        print("\nCommitear primero. El artefacto declararia `code_commit` = %s,"
+              % (ident["code_commit_start"] or "?")[:12])
+        print("que NO contiene el codigo que lo genero. Con --permitir-arbol-sucio")
+        print("sale marcado como diagnostico y no puede ser canonico.")
+        return 2
+
     print("contrato %s | %d sesiones | max %s <= %s"
           % (a.contrato, len(fechas), peor, MAX_FECHA))
+    print("commit %s | generador %s | medicion %s"
+          % ((ident["code_commit_start"] or "?")[:12],
+             ident["generator_sha256"][:12],
+             ident["measurement_code_sha256"][:12]))
 
     res = sondear(a.contrato, fechas, sorted(CLASE_KERNEL))
 
@@ -307,10 +409,23 @@ def main(argv=None):
     # campos distintos y nada que lo explicara. Ese es el defecto que estos
     # campos cierran — y lo cierra `comparar_sondas.py`, que falla si el
     # `schema_version` no coincide en vez de comparar peras con manzanas.
+    # RE-VERIFICACION AL CIERRE. Si el código cambió MIENTRAS la corrida estaba
+    # viva, el artefacto describiría un generador que ya no existe. Se aborta
+    # sin publicar: un artefacto a medias es recuperable, uno que miente no.
+    fin = identidad_de_corrida(a.contrato, fechas)
+    movidos = [k for k in ("code_commit_start", "generator_sha256",
+                           "measurement_code_sha256", "universe_manifest_sha256",
+                           "input_parquet_sha256")
+               if ident[k] != fin[k]]
+    if movidos:
+        print("\nEL CODIGO CAMBIO DURANTE LA CORRIDA -- no se publica.")
+        for k in movidos:
+            print("   %-26s %.16s -> %.16s" % (k, ident[k], fin[k]))
+        return 2
+
     payload = dict(
         schema_version=SCHEMA_VERSION,
-        pregunta="posicion del precio y del reloj de disponibilidad al inicio "
-                 "de la ventana de cada zona",
+        pregunta=PREGUNTA,
         contrato=a.contrato, sesiones=len(fechas), max_fecha=peor,
         firewall_max_fecha=MAX_FECHA,
         firewall_corte_utc_ns=int(corte_del_sello().value),
@@ -319,19 +434,32 @@ def main(argv=None):
         definiciones=DEFINICIONES,
         umbral_material_ns=UMBRAL_MATERIAL_NS,
         clase_kernel=dict(CLASE_KERNEL),
-        huella_del_codigo=huella_del_codigo(sorted(CLASE_KERNEL)),
-        code_commit=git_head(),
+        identidad=ident,
+        diagnostico_arbol_sucio=bool(ident["working_tree_dirty_start"]),
         outcomes_accessed=False,
         por_indicador=res)
-    payload["output_sha256"] = hashlib.sha256(
+
+    # `payload_sha256`, NO `output_sha256`. El nombre viejo prometia el hash del
+    # ARCHIVO y era otra cosa: se calcula sobre el payload ANTES de agregar este
+    # mismo campo y con una serializacion canonica -sort_keys, sin indent- que
+    # no es la de escritura. Es un hash de CONTENIDO sin autorreferencia, util y
+    # valido, pero hay que llamarlo por su nombre. El sha256 de los BYTES del
+    # archivo va aparte, en el sidecar `.sha256`.
+    payload["payload_sha256"] = hashlib.sha256(
         json.dumps(payload, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
 
     salida = ruta_de_salida(a.contrato, len(fechas))
     salida.write_text(json.dumps(payload, indent=1, ensure_ascii=False) + "\n",
                       encoding="utf-8")
-    print("\nschema %s | huella %s | sha %s"
-          % (SCHEMA_VERSION, payload["huella_del_codigo"][:12],
-             payload["output_sha256"][:12]))
+    sidecar = salida.with_suffix(salida.suffix + ".sha256")
+    sidecar.write_text("%s  %s\n" % (sha_de_archivo(salida), salida.name),
+                       encoding="utf-8")
+
+    print("\nschema  %s" % SCHEMA_VERSION)
+    print("payload %s   (hash de contenido, excluye este campo)"
+          % payload["payload_sha256"][:16])
+    print("bytes   %s   (sha256 real del archivo -> %s)"
+          % (sha_de_archivo(salida)[:16], sidecar.name))
     print("-> %s" % salida)
     return 0
 
