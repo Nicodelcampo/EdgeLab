@@ -161,8 +161,17 @@ def run(ticks, bars=None, params=None, chart_tz="UTC"):
             vivas = [v for v in vivas if v[2] >= b][-max_zones:]
         log("ZONE_CREATED", start_ns, z)
 
+    # `created_bar` EXPORTADO (13.63). Este kernel ya lo tenía —se llama
+    # `m1_bar`— pero con OTRO nombre, así que el reloj de disponibilidad de la
+    # curva de diseño no lo encontraba y descartaba las 144.511 zonas enteras.
+    # La identidad está verificada: `_m1_bars(ticks)` == `build_time_bars(ticks, 1)`
+    # (6.703 barras, `end_ns` idéntico), o sea que `m1_bar` indexa exactamente la
+    # misma grilla que el `created_bar` de los otros cinco kernels.
+    # Se exporta con el nombre canónico y se DEJA `m1_bar` en `features`: hay
+    # oráculos y goldens que lo nombran así, y renombrar rompería paridad.
     out = [dict(id=z["id"], indicator=NAME, top=z["upper"], bottom=z["lower"],
                 created_ms=z["start_ms"], ended_ms=z["end_ms"], state="EXPIRED",
+                created_bar=z["m1_bar"],
                 kind="gap_up" if z["direction"] == 1 else "gap_down",
                 touches=0, end_reason="extend_bars", timeline=[],
                 lower_tick=z["lower_tick"], upper_tick=z["upper_tick"],
