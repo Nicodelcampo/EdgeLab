@@ -293,3 +293,46 @@ def test_importar_la_sonda_no_toca_inputs_ni_muta_outputs():
     assert not (nuevos or faltantes or mutados), (
         "el contenido del directorio de salida cambio: nuevos=%s faltantes=%s "
         "mutados=%s" % (nuevos, faltantes, mutados))
+
+
+def test_las_claves_de_identidad_coinciden_con_lo_que_el_comparador_declara():
+    """El defecto que se repitio CUATRO veces en este archivo: renombrar un
+    campo y dejar una referencia al nombre viejo. Las cuatro reventaron al
+    primer uso real -KeyError despues de minutos de computo- y ninguna a la
+    lectura, porque un `replace` de string que no matchea no avisa.
+
+    Esto lo caza sin correr la sonda: se compara el conjunto de claves que
+    `identidad_de_corrida` produce contra el que el comparador declara. Si
+    alguien renombra en un lado y no en el otro, falla en 2 segundos.
+    """
+    ident = S.identidad_de_corrida("6E_09-26_ticks.parquet", ["2026-06-12"])
+    declaradas = set(C.IDENTIDAD_DEBE_COINCIDIR) | set(C.IDENTIDAD_PUEDE_DIFERIR)
+
+    # las que solo existen en modo canonico se agregan al terminar de medir
+    solo_canonico = {"dependency_manifest_sha256", "frozen_dependencies_n",
+                     "new_unfrozen_dependency_files", "modo",
+                     "entorno_importado_durante_la_corrida",
+                     "dependency_set_entorno_n_fin",
+                     "dependency_set_entorno_sha256_fin"}
+    producidas = set(ident) | solo_canonico
+
+    sin_declarar = sorted(producidas - declaradas)
+    declaradas_de_mas = sorted(declaradas - producidas)
+    assert not sin_declarar and not declaradas_de_mas, (
+        "el comparador y la sonda no hablan del mismo esquema.\n"
+        "  produce y nadie declara: %s\n"
+        "  declarado y no se produce: %s" % (sin_declarar, declaradas_de_mas))
+
+
+def test_la_reverificacion_de_cierre_solo_mira_campos_que_existen():
+    """Mismo defecto, otro sitio: la lista de campos re-verificados al cerrar
+    esta escrita a mano en `main()` y no la valida nada."""
+    import inspect
+    src = inspect.getsource(S.main)
+    bloque = src.split("movidos = [")[1].split("]")[0]
+    campos = [x.strip().strip('"').strip("'") for x in bloque.split(",")]
+    campos = [c for c in campos if c and c.replace("_", "").isalnum()
+              and not c.startswith("for") and c not in ("k", "ident", "fin")]
+    ident = S.identidad_de_corrida("6E_09-26_ticks.parquet", ["2026-06-12"])
+    faltan = [c for c in campos if c not in ident]
+    assert not faltan, "la re-verificacion mira campos inexistentes: %s" % faltan

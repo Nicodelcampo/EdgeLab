@@ -283,8 +283,8 @@ def main(argv=None):
           % ((ia["code_commit_start"] or "?")[:12], ia["generator_sha256"][:12],
              ia["measurement_code_sha256"][:12]))
     print("deps     repo %s (%d) | entorno %s (%d)"
-          % (ia["dependency_set_repo_sha256"][:12], ia["dependency_set_repo_n"],
-             ia["dependency_set_entorno_sha256"][:12], ia["dependency_set_entorno_n"]))
+          % (ia["repo_dependencies_sha256"][:12], ia["dependency_set_repo_n"],
+             ia["environment_dependencies_sha256"][:12], ia["dependency_set_entorno_n"]))
     print("         mutables fuera de .py: %s" % ia["dependencias_repo_fuera_de_py"])
     print("grilla   %s | umbral material %d ns" % (A["umbrales"], A["umbral_material_ns"]))
     print("firewall %s | outcomes_accessed %s"
@@ -331,8 +331,8 @@ def main(argv=None):
             codigo=dict(commit=ia["code_commit_start"],
                         generador=ia["generator_sha256"],
                         medicion=ia["measurement_code_sha256"],
-                        deps_repo=ia["dependency_set_repo_sha256"],
-                        deps_entorno=ia["dependency_set_entorno_sha256"]),
+                        deps_repo=ia["repo_dependencies_sha256"],
+                        deps_entorno=ia["environment_dependencies_sha256"]),
             muestras=[dict(etiqueta=e, contrato=d["contrato"],
                            sesiones=d["sesiones"], max_fecha=d["max_fecha"],
                            session_dates_sha256=d["identidad"]["session_dates_sha256"],

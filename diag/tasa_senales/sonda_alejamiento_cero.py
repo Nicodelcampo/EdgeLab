@@ -740,7 +740,8 @@ def main(argv=None):
     movidos = [(k, ident[k], fin[k])
                for k in ("code_commit_start", "generator_sha256",
                          "measurement_code_sha256", "universe_manifest_sha256",
-                         "input_parquet_sha256", "dependency_set_repo_sha256")
+                         "input_parquet_sha256", "repo_dependencies_sha256",
+                         "input_dependencies_sha256")
                if ident[k] != fin[k]]
     # entorno: sólo los que ya estaban, y sólo si cambió su contenido
     ent_ini = ident["dependency_set_entorno"]
