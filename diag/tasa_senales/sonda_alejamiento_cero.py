@@ -475,18 +475,22 @@ def main(argv=None):
     peor = max(fechas)
     assert peor <= MAX_FECHA, "FIREWALL: %s > %s" % (peor, MAX_FECHA)
 
-    # IDENTIDAD AL INICIO. Fail-closed sobre árbol sucio: un artefacto generado
-    # desde código sin commitear declara un commit que NO lo contiene, y eso es
-    # peor que no declarar nada -- promete una reconstrucción que no existe.
+    # IDENTIDAD AL INICIO. Fail-closed sobre DEPENDENCIAS sucias: un artefacto
+    # generado desde código sin commitear declara un commit que NO lo contiene,
+    # y eso es peor que no declarar nada -- promete una reconstrucción que no
+    # existe. Bloquea el conjunto de dependencias, no el worktree entero: ver
+    # `estado_del_worktree` para por qué son cosas distintas.
     ident = identidad_de_corrida(a.contrato, fechas)
-    if ident["working_tree_dirty_start"] and not a.permitir_arbol_sucio:
-        print("ARBOL DE FUENTES SUCIO -- no se publica:")
-        for r in ident["working_tree_dirty_start"]:
+    if ident["dependency_set_dirty_start"] and not a.permitir_arbol_sucio:
+        print("DEPENDENCIAS SUCIAS -- no se publica. Sin commitear:")
+        for r in ident["dependency_set_dirty_start"]:
             print("   %s" % r)
-        print("\nCommitear primero. El artefacto declararia `code_commit` = %s,"
+        print("\nEstan en el conjunto de %d dependencias de repo que pueden mover"
+              % ident["dependency_set_repo_n"])
+        print("el numero. El artefacto declararia `code_commit` = %s, que NO las"
               % (ident["code_commit_start"] or "?")[:12])
-        print("que NO contiene el codigo que lo genero. Con --permitir-arbol-sucio")
-        print("sale marcado como diagnostico y no puede ser canonico.")
+        print("contiene. Con --permitir-arbol-sucio sale MARCADO como diagnostico")
+        print("y el comparador lo rechaza como canonico.")
         return 2
 
     print("contrato %s | %d sesiones | max %s <= %s"
