@@ -71,23 +71,41 @@ def test_dependencia_NUEVA_invalida_la_corrida(tmp_path):
 
 
 # ------------------------------------------------------------------ 3
-def test_un_OUTPUT_modificado_NO_bloquea():
+def test_un_OUTPUT_modificado_NO_bloquea(monkeypatch):
     """La contracara. Un artefacto generado sin commitear no puede cambiar un
     número — y el gate que miraba `diag/` entera se bloqueaba con su propia
-    salida, que es cómo se descubrió."""
-    salidas = S.salidas_generadas()
-    if not salidas:
-        pytest.skip("no hay artefactos de la sonda en disco todavia")
-    dep_repo, _inputs, _ent, _mods = S.conjunto_de_dependencias(
-        "6E_09-26_ticks.parquet")
-    assert not (salidas & set(
-        r.replace("repo:", "") for r in dep_repo)), \
-        "una salida de la sonda entro al conjunto de dependencias"
+    salida, que es cómo se descubrió.
 
-    est = S.estado_del_worktree(dep_repo)
-    for r in est["ignored_generated_outputs"]:
-        assert r not in est["dependency_set_dirty_start"], \
-            "una salida generada esta bloqueando el gate"
+    **Antes este test podía pasar sin probar nada.** Dependía de que hubiera
+    artefactos en disco —si no, `skip`— y su bucle recorría
+    `ignored_generated_outputs`, que estaba vacío en el caso normal: el cuerpo
+    no se ejecutaba nunca y el test daba verde igual. Ahora se inyecta un
+    `git status` con una salida sucia y se exige la clasificación, sin depender
+    del estado del disco.
+    """
+    salida = "diag/tasa_senales/sonda_alejamiento_cero__6E_09-26_08s.json"
+    monkeypatch.setattr(
+        S, "salidas_generadas", lambda: {salida, salida + ".sha256"})
+    monkeypatch.setattr(
+        S.subprocess, "run",
+        lambda *a, **k: type("R", (), {"stdout": "?? %s\n" % salida})())
+
+    est = S.estado_del_worktree({"repo:diag/tasa_senales/sonda_alejamiento_cero.py": "x"})
+    assert est["ignored_generated_outputs"] == [salida], \
+        "la salida generada no se clasifico como output: %s" % est
+    assert est["dependency_set_dirty_start"] == [], \
+        "una salida generada esta BLOQUEANDO el gate"
+    assert est["sin_clasificar"] == [], \
+        "la salida quedo sin clasificar en vez de reconocerse como output"
+
+    # y el control que sigue dependiendo del disco: ninguna salida real puede
+    # haberse colado al conjunto de dependencias.
+    monkeypatch.undo()
+    reales = S.salidas_generadas()
+    if reales:
+        dep_repo, _i, _e, _m = S.conjunto_de_dependencias("6E_09-26_ticks.parquet")
+        assert not (reales & {r.replace("repo:", "") for r in dep_repo}), \
+            "una salida de la sonda entro al conjunto de dependencias"
 
 
 # ------------------------------------------------------------------ 4
@@ -435,3 +453,23 @@ def test_el_comparador_EXIGE_canonico_y_cero_no_congeladas(tmp_path):
     d = json.loads(json.dumps(base))
     d["identidad"]["new_unfrozen_dependency_files"] = None
     assert any("unfrozen" in f for f in C.validar_estructura(d, "A"))
+
+
+def test_los_inputs_declarados_estan_en_el_conjunto():
+    """`universe_manifest_sha256` y `dependency_set_inputs` resuelven el
+    manifiesto de universo por `try/except` SEPARADOS. Hoy coinciden, pero nada
+    lo garantizaba: si uno tuviera exito y el otro no, el artefacto declararia
+    el hash de una muestra que no esta en su conjunto de inputs -- y las dos
+    cifras pareceran respaldarse entre si.
+
+    Lo encontro una pasada adversarial propia, no una corrida fallida.
+    """
+    ident = S.identidad_de_corrida("6E_09-26_ticks.parquet", ["2026-06-12"])
+    inputs = ident["dependency_set_inputs"]
+    if ident.get("universe_manifest_sha256"):
+        assert any("manifiesto_universo" in k for k in inputs), \
+            "declara el hash del universo pero no lo tiene entre sus inputs"
+    if ident.get("input_parquet_sha256"):
+        assert any("6E_09-26" in k for k in inputs), \
+            "declara el hash del parquet pero no lo tiene entre sus inputs"
+    assert inputs, "el conjunto de inputs no puede estar vacio"

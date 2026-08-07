@@ -784,6 +784,24 @@ def main(argv=None):
             print("NO SE PUDO HASHEAR EL PARQUET DE ENTRADA -- no se publica "
                   "en modo canonico.")
             return 2
+        # COHERENCIA ENTRE LOS DOS CAMINOS. `universe_manifest_sha256` y
+        # `dependency_set_inputs` resuelven el manifiesto de universo por
+        # `try/except` SEPARADOS. Hoy coinciden, pero nada lo garantizaba: si
+        # uno tuviera exito y el otro no, el artefacto declararia el hash de una
+        # muestra que no esta en su conjunto de inputs -- y las dos cifras
+        # parecerian respaldarse entre si.
+        faltan_inputs = [n for n, ok in (
+            ("manifiesto de universo",
+             any("manifiesto_universo" in k for k in ident["dependency_set_inputs"])),
+            ("parquet de entrada",
+             any(a.contrato in k for k in ident["dependency_set_inputs"])),
+        ) if not ok]
+        if faltan_inputs:
+            print("INPUTS DECLARADOS PERO AUSENTES DEL CONJUNTO -- no se "
+                  "publica: %s" % ", ".join(faltan_inputs))
+            print("`universe_manifest_sha256` y `dependency_set_inputs` se "
+                  "resuelven por caminos distintos y quedaron incoherentes.")
+            return 2
         print("congelado %d dependencias prehasheadas | manifiesto %s"
               % (len(prehash), sha_de_archivo(MANIFIESTO_CONGELADO)[:12]))
     else:
