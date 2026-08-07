@@ -73,7 +73,8 @@ una decisión distinta y **con otro costo de multiplicidad**. No la tomo yo.
 ## 3. El segundo hallazgo — eventos vacuos en los umbrales bajos
 
 `diag/tasa_senales/sonda_alejamiento_cero.py` · salidas
-`sonda_alejamiento_cero__6E_09-26_08s.json` y `__6E_12-25_40s.json`
+`sonda_alejamiento_cero__6E_09-26_08s.json` y
+`sonda_alejamiento_cero__6E_12-25_40s.json`
 
 > **Un archivo por corrida, y eso también salió de un error.** La primera
 > versión escribía siempre el mismo nombre, así que la corrida de 40 sesiones
@@ -286,7 +287,63 @@ El índice también reporta que `ITERATION_2`, `ITERATION_3` e `ITERATION_4`
 tienen **dos versiones cada una**, de agentes y días distintos: pedir «la
 iteración 3» es ambiguo, y hasta ahora nada lo avisaba.
 
-## 8. Lo que esta entrega **no** habilita
+## 8. Procedencia de la evidencia — dos afirmaciones publicadas vivían en un temporal
+
+Al preparar el traspaso revisé si **todo lo que estos documentos citan está en el
+repo**. Dos afirmaciones que la curva publica **adentro del artefacto** no lo
+estaban.
+
+### 8.1 Equivalencia de workers — evidencia archivada y verificación **reproducible**
+
+`curva_excursion_ticks.json` publica:
+
+> `"equivalencia_workers": "1 vs 2 EXACTA sobre 2 contratos … por_umbral,
+> por_kind, descartes y clases identicos. RSS pico 1.925 vs 2.734 MB."`
+
+La comparación se hizo y dio EXACTA, pero **los dos artefactos de 687 KB
+quedaron en un directorio temporal que se borra solo**. La corrida de 201
+sesiones usó `workers=4` **confiando en esa equivalencia**: no es trazabilidad,
+es el permiso de la corrida entera.
+
+Ahora están versionados como `equivalencia_workers__w1_70s.json` y `__w2_70s.json`,
+y `verificar_equivalencia_workers.py` **rehace la comparación y falla si no son
+idénticos**. Re-verificado desde el repo: **12 campos × 6 unidades, EXACTA**. El
+acta (`equivalencia_workers.json`) declara el `sha256` de cada entrada y —esto
+importa— **qué campos se excluyen y por qué** (`segundos`, `workers`,
+`clave_de_corrida`, `code_commit`, `output_sha256`). Una comparación que no dice
+qué ignoró no es una comparación.
+
+### 8.2 El 99 %/97 % del reloj — corrobora la conclusión, **no reproduce las cifras**
+
+`curva_excursion_ticks.py` justifica el split por clase de kernel diciendo que
+`bar_end[created_bar]` abriría la ventana «~21-27 s antes de que la zona
+existiera — medido: **99 % de las zonas de `Gaps2` y 97 % de `HFTZones2`**».
+
+Ese número sostiene la reclasificación, que **movió las señales un 20 %**. Su
+evidencia tampoco estaba versionada. Remedido (8 sesiones de `6E_09-26`):
+
+| indicador | clase | frac. con adelanto > 1 s | adelanto p50 | p90 |
+|---|---|---:|---:|---:|
+| Gaps2 | tick_create | **96,7 %** | **27,7 s** | 55,6 s |
+| HFTZones2 | tick_create | **92,9 %** | **28,2 s** | 52,8 s |
+| los tres `bar_close` | bar_close | **0,0 %** | 0,0 s | 0,0 s |
+
+**La conclusión se sostiene**: entre el 93 % y el 97 % de las zonas
+`tick_create` verían su ventana abierta ~28 s antes de existir, y en los
+`bar_close` el efecto es exactamente cero. El split está justificado.
+
+**Las cifras exactas no reproducen** — 96,7 % vs 99 %, 92,9 % vs 97 %, y el p50
+queda por encima del rango «21-27 s». **No puedo decir por qué**, y esa es la
+parte que importa: la medición original **nunca registró su muestra** —qué
+contrato, cuántas sesiones, qué contaba como «antes»—, así que no hay contra qué
+comparar. Se puede corroborar; no se puede reproducir.
+
+> Y el umbral de 1 s no es cosmético. Sin él la métrica daba **100 % para los
+> tres `bar_close`** con adelanto mediano de 0,0 s: cierto y vacío, porque
+> contaba el milisegundo de la propia convención `created_ms + 1` como si fuera
+> fuga. Una métrica que da 1,00 en el grupo de control está mal planteada.
+
+## 9. Lo que esta entrega **no** habilita
 
 - No autoriza correr nada sobre outcomes ni P&L.
 - No sella E-R1 ni elige candidatos.
@@ -302,7 +359,7 @@ iteración 3» es ambiguo, y hasta ahora nada lo avisaba.
 > `docs/spike_in/MDE_EXPLORE-001.md` y nunca busqué ahí.
 > Ver `docs/research/CORRECCION_MDE_REPRODUCE_2026-08-07.md`.
 
-## 9. Lo que le toca a Nico
+## 10. Lo que le toca a Nico
 
 1. **Qué es un toque para `AACloseOpenDiffs`** (bloquea su entrada al estudio).
 2. **§3.4**: si una zona que nace detrás del precio y lo ve volver cuenta como

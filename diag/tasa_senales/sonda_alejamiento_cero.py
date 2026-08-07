@@ -126,6 +126,7 @@ def sondear(archivo, fechas, indicadores):
 
         c = Counter()
         distancia_al_borde = []
+        adelanto_s = []        # cuanto ANTES abriria la ventana el reloj de barra
         # Segunda pregunta, que salio de la primera: un evento cuyo "alejamiento"
         # ES LA POSICION DE PARTIDA no es una excursion. Ver el bloque de abajo.
         vacuo = {t: Counter() for t in T_SONDA}
@@ -139,8 +140,33 @@ def sondear(archivo, fechas, indicadores):
                 continue
             lo_t = z["bottom"] / tk.tick_size
             hi_t = z["top"] / tk.tick_size
-            disp_ns = (int(bar_end[int(cb)]) if clase == "bar_close"
-                       else (int(z["created_ms"]) + 1) * 1_000_000)
+
+            # SEGUNDA MEDICION, y esta reproduce una afirmacion PUBLICADA.
+            #
+            # `curva_excursion_ticks.py` declara, para justificar el split por
+            # clase de kernel, que usar `bar_end[created_bar]` en un kernel
+            # `tick_create` abriria la ventana "~21-27 s ANTES de que la zona
+            # existiera -medido: 99% de las zonas de Gaps2 y 97% de HFTZones2-".
+            #
+            # Ese numero sostiene la reclasificacion, que movio las senales un
+            # 20%. Estaba publicado y su evidencia NO estaba versionada: vivia
+            # en un script de un directorio temporal. Se remide aca, gratis,
+            # porque los dos relojes salen de datos que este loop ya tiene.
+            ns_cierre = int(bar_end[int(cb)])
+            ns_creacion = (int(z["created_ms"]) + 1) * 1_000_000
+            if ns_cierre < ns_creacion:
+                c["cierre_de_barra_ANTES_de_existir"] += 1
+                adelanto_s.append((ns_creacion - ns_cierre) / 1e9)
+                # UMBRAL MATERIAL. Sin esto la metrica enganaba: para un kernel
+                # `bar_close` la zona nace EN el cierre, asi que `created_ms` es
+                # ese mismo instante truncado a ms y el `+1 ms` lo deja siempre
+                # 1 ms despues. Resultado: frac = 1,00 para los tres bar_close,
+                # con adelanto mediano de 0,0 s. Cierto y vacio -contaba el
+                # milisegundo de la propia convencion como si fuera fuga-.
+                if ns_creacion - ns_cierre > 1_000_000_000:
+                    c["adelanto_mayor_a_1s"] += 1
+
+            disp_ns = ns_cierre if clase == "bar_close" else ns_creacion
             i0 = int(np.searchsorted(ts, disp_ns, side="right"))
             if i0 >= len(ts):
                 c["sin_tramo"] += 1
@@ -175,6 +201,15 @@ def sondear(archivo, fechas, indicadores):
         if distancia_al_borde:
             q = np.percentile(distancia_al_borde, [50, 90])
             d["dist_al_borde_si_fuera"] = dict(p50=float(q[0]), p90=float(q[1]))
+        if adelanto_s:
+            q = np.percentile(adelanto_s, [50, 90])
+            d["reloj_de_barra_abriria_antes"] = dict(
+                n=len(adelanto_s),
+                frac_cualquier_adelanto=round(len(adelanto_s) / n, 4) if n else None,
+                frac_adelanto_mayor_1s=(round(d.get("adelanto_mayor_a_1s", 0) / n, 4)
+                                        if n else None),
+                adelanto_s_p50=round(float(q[0]), 1),
+                adelanto_s_p90=round(float(q[1]), 1))
         d["frac_vacua_por_umbral"] = {
             str(t): (round(vacuo[t]["ya_afuera_por_T_o_mas"] / n, 4) if n else None)
             for t in T_SONDA}
@@ -211,6 +246,17 @@ def main(argv=None):
         print("  %-16s %-12s %8d %10s %12s"
               % (n, d["clase_kernel"], d.get("zonas", 0),
                  d.get("frac_dentro"), round(db.get("p50", 0), 1)))
+
+    print("\nreproduce la afirmacion PUBLICADA que justifica el split por clase:")
+    print("usar bar_end[created_bar] en un kernel tick_create abriria la ventana")
+    print("ANTES de que la zona existiera")
+    print("  %-16s %-12s %12s %13s %13s" % ("indicador", "clase", "frac_>1s",
+                                            "adelanto_p50", "adelanto_p90"))
+    for n, d in sorted(res.items(), key=lambda kv: (kv[1]["clase_kernel"], kv[0])):
+        r = d.get("reloj_de_barra_abriria_antes") or {}
+        print("  %-16s %-12s %12s %13s %13s"
+              % (n, d["clase_kernel"], r.get("frac_adelanto_mayor_1s", 0.0),
+                 r.get("adelanto_s_p50", "-"), r.get("adelanto_s_p90", "-")))
 
     print("\nfraccion de zonas YA a T ticks o mas del borde en el primer tick de "
           "su ventana\n(el alejamiento no lo produjo el precio: lo produjo la "
