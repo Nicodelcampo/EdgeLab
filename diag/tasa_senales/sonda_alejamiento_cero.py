@@ -230,7 +230,7 @@ def main(argv=None):
              contrato=a.contrato, sesiones=len(fechas), max_fecha=peor,
              outcomes_accessed=False, por_indicador=res),
         indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
-    print("\n-> %s" % SALIDA)
+    print("\n-> %s" % salida)
     return 0
 
 
