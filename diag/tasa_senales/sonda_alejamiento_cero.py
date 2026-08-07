@@ -437,6 +437,7 @@ def identidad_de_corrida(contrato, fechas):
         # El entorno NO se lista entero -son ~440 binarios de .venv y ninguna
         # persona los va a leer-: va el hash agregado, que es lo que permite
         # detectar que cambio, mas el lock que lo declara.
+        dependency_set_entorno=dep_entorno,
         dependency_set_entorno_sha256=h(dep_entorno),
         dependency_set_entorno_n=len(dep_entorno),
         dependency_set_n=len(dep_repo) + len(dep_entorno),
@@ -544,18 +545,42 @@ def main(argv=None):
     # RE-VERIFICACION AL CIERRE. Si el código cambió MIENTRAS la corrida estaba
     # viva, el artefacto describiría un generador que ya no existe. Se aborta
     # sin publicar: un artefacto a medias es recuperable, uno que miente no.
+    #
+    # SE COMPARAN HASHES DE LOS ARCHIVOS QUE YA ESTABAN, NO LOS CONJUNTOS.
+    # La primera versión comparaba `dependency_set_*_sha256` de punta a punta y
+    # **abortaba siempre**: `sys.modules` CRECE durante la corrida —`pyarrow`
+    # importa submódulos recién al leer el parquet—, así que el conjunto final
+    # nunca es el inicial. Eso confundía dos cosas distintas:
+    #
+    #   - que un archivo CAMBIE       -> peligroso, aborta
+    #   - que se importe uno NUEVO    -> esperado, se registra y sigue
+    #
+    # Un gate que aborta siempre no es estricto: es un gate que alguien va a
+    # desactivar.
     fin = identidad_de_corrida(a.contrato, fechas)
-    movidos = [k for k in ("code_commit_start", "generator_sha256",
-                           "measurement_code_sha256", "universe_manifest_sha256",
-                           "input_parquet_sha256",
-                           "dependency_set_repo_sha256",
-                           "dependency_set_entorno_sha256")
+    movidos = [(k, ident[k], fin[k])
+               for k in ("code_commit_start", "generator_sha256",
+                         "measurement_code_sha256", "universe_manifest_sha256",
+                         "input_parquet_sha256", "dependency_set_repo_sha256")
                if ident[k] != fin[k]]
+    # entorno: sólo los que ya estaban, y sólo si cambió su contenido
+    ent_ini = ident["dependency_set_entorno"]
+    ent_fin = fin["dependency_set_entorno"]
+    movidos += [("entorno:" + r, ent_ini[r], ent_fin[r])
+                for r in sorted(ent_ini) if r in ent_fin and ent_ini[r] != ent_fin[r]]
     if movidos:
-        print("\nEL CODIGO CAMBIO DURANTE LA CORRIDA -- no se publica.")
-        for k in movidos:
-            print("   %-26s %.16s -> %.16s" % (k, ident[k], fin[k]))
+        print("\nCAMBIO UNA DEPENDENCIA DURANTE LA CORRIDA -- no se publica.")
+        for k, va, vb in movidos:
+            print("   %-30s %.16s -> %.16s" % (k, va, vb))
         return 2
+
+    # Lo que se importó DESPUÉS del arranque: no es un error, pero es parte de
+    # la identidad y se publica en vez de desaparecer.
+    nuevos = sorted(set(ent_fin) - set(ent_ini))
+    ident["entorno_importado_durante_la_corrida"] = nuevos
+    ident["dependency_set_entorno_n_fin"] = len(ent_fin)
+    ident["dependency_set_entorno_sha256_fin"] = hashlib.sha256(
+        json.dumps(ent_fin, sort_keys=True).encode()).hexdigest()
 
     payload = dict(
         schema_version=SCHEMA_VERSION,
