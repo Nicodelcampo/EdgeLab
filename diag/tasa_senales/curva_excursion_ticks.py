@@ -410,8 +410,27 @@ def medir(archivo, fechas, indicadores, lead=LEAD_DAYS, verbose=True,
             else:
                 # tick_create: la zona nace a MITAD de la barra siguiente al
                 # ultimo cierre. `bar_end[created_bar]` arrancaria la ventana
-                # ~21-27 s ANTES de que la zona existiera -medido: 99% de las
-                # zonas de Gaps2 y 97% de HFTZones2-.
+                # ANTES de que la zona existiera.
+                #
+                # LA CIFRA Y SU ESTATUS -- no borrar el registro historico:
+                #
+                #   MEDICION ORIGINAL (historica): "~21-27 s antes, 99% de las
+                #   zonas de Gaps2 y 97% de HFTZones2". NO ES REPRODUCIBLE
+                #   EXACTAMENTE: no registro su muestra -que contrato, cuantas
+                #   sesiones- ni su definicion operacional -que contaba como
+                #   "antes"-, asi que no hay contra que compararla.
+                #
+                #   CORROBORACION VERSIONADA (2026-08-07), con
+                #   sonda_alejamiento_cero.py sobre 8 sesiones de 6E_09-26 y
+                #   umbral material >1 s:
+                #       Gaps2       96,7%   adelanto p50 27,7 s
+                #       HFTZones2   92,9%   adelanto p50 28,2 s
+                #       bar_close    0,0%   (los tres: control)
+                #
+                # La CONCLUSION se sostiene y el split por clase esta
+                # justificado. Las cifras 99/97 NO deben volver a citarse como
+                # medicion reproducible. Ver docs/SCRATCHPAD_PROVENANCE_AUDIT_2026-08-07.md
+                #
                 # `+1 ms` porque `created_ms` TRUNCA el ts_ns del tick creador:
                 # sin eso, `ts > created_ms*1e6` podria incluir ese mismo tick.
                 disp_ns = (int(z["created_ms"]) + 1) * 1_000_000
@@ -633,10 +652,22 @@ def main(argv=None):
                           "indicador como mucho. paralelo: (contrato, "
                           "indicadores pendientes de ese contrato) -- se puede "
                           "perder el resto de indicadores de ese contrato."),
-        equivalencia_workers=("1 vs 2 EXACTA sobre 2 contratos con trabajo real "
-                              "en ambos, subset {BigTrap2, VolTicksPOC2, "
-                              "aVolCellPOI2}: por_umbral, por_kind, descartes y "
-                              "clases identicos. RSS pico 1.925 vs 2.734 MB."),
+        # EQUIVALENCIA: el veredicto esta VERIFICADO y es reproducible; las
+        # cifras de RSS que se publicaron con el, NO. Ver el acta de procedencia.
+        equivalencia_workers=(
+            "1 vs 2 EXACTA sobre 2 contratos con trabajo real en ambos, subset "
+            "{BigTrap2, VolTicksPOC2, aVolCellPOI2}: por_umbral, por_kind, "
+            "descartes y clases identicos. Re-verificado 2026-08-07 desde "
+            "artefactos versionados (equivalencia_workers__w1/w2_70s.json): 12 "
+            "campos x 6 unidades, con verificar_equivalencia_workers.py."),
+        rss_pico=(
+            "1,88 GB (1 worker) vs 2,67 GB (2 workers), medicion de 70 sesiones "
+            "preservada en rss_y_equivalencia_70s.log. CORRIGE la cifra que "
+            "versiones anteriores publicaban dentro de `equivalencia_workers` "
+            "-'1.925 vs 2.734 MB'-, que estaba en la UNIDAD EQUIVOCADA (el "
+            "instrumento divide por 2**30: son GB, no MB) y ademas no coincide "
+            "con la unica medicion preservada. El origen de esas dos cifras NO "
+            "es recuperable. Ver docs/SCRATCHPAD_PROVENANCE_AUDIT_2026-08-07.md"),
         identidad_de_barras={
             "path": "time:1 / M1 -- build_time_bars(tk, 1)",
             "bar_close": "available_ns = bar_end[created_bar]",

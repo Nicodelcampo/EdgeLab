@@ -1,0 +1,18 @@
+# Salida original de la medicion de RSS y equivalencia (70 sesiones, 2 contratos).
+# Producida por lo que hoy es diag/tasa_senales/medir_rss_y_equivalencia.py
+# Rescatada del directorio temporal por la auditoria de procedencia 2026-08-07.
+# Los artefactos que compara estan versionados como equivalencia_workers__w1/w2_70s.json
+#
+# ATENCION: rss_pico_gb esta en GIGABYTES (el script divide por 2**30).
+# El artefacto publica 'RSS pico 1.925 vs 2.734 MB', que ni es la unidad
+# correcta ni coincide con estos numeros. Ver el acta de procedencia.
+#
+universo: 70 sesiones = 2 contratos | indicadores: ['BigTrap2', 'VolTicksPOC2', 'aVolCellPOI2']
+workers=1: {'workers': 1, 'segundos': 46.3, 'rss_pico_gb': 1.88, 'exit': 0}
+workers=2: {'workers': 2, 'segundos': 39.8, 'rss_pico_gb': 2.67, 'exit': 0}
+
+workers      segundos    RSS pico GB
+1                46.3           1.88
+2                39.8           2.67
+speedup: 1.16x
+EQUIVALENCIA: EXACTA

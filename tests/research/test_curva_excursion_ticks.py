@@ -312,10 +312,18 @@ def test_clase_las_dos_familias_estan_declaradas_y_separadas():
 
 def test_clase_tick_create_NO_usa_bar_end():
     """Usar `bar_end[created_bar]` en un kernel tick-driven mete ticks
-    ANTERIORES a la creación. No explota: ensucia la ventana."""
+    ANTERIORES a la creación. No explota: ensucia la ventana.
+
+    El corte del bloque es SEMÁNTICO —desde el `if` de clase hasta el
+    `searchsorted` que consume `disp_ns`— y no una ventana de N caracteres.
+    La versión anterior cortaba en `[:900]` y **se puso roja al agrandar un
+    comentario**, sin que el código cambiara. Es el mismo defecto que ya había
+    aparecido en `test_ckpt_...`: un test que mide el largo de la prosa se
+    rompe cuando alguien documenta mejor, y eso enseña a documentar menos.
+    """
     src = io.open(os.path.join(REPO, "diag", "tasa_senales",
                                "curva_excursion_ticks.py"), encoding="utf-8").read()
-    cuerpo = src.split('if clase == "bar_close":')[1][:900]
+    cuerpo = src.split('if clase == "bar_close":')[1].split("i0 = int(np.searchsorted")[0]
     assert 'disp_ns = (int(z["created_ms"]) + 1) * 1_000_000' in cuerpo
     # lo que importa es la ASIGNACION, no las menciones en comentarios: la rama
     # tick_create no puede DERIVAR disp_ns de bar_end.
