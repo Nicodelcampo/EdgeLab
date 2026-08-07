@@ -99,26 +99,52 @@ frecuencia corregida **no se mueve más de ~0,2 %** en las celdas candidatas. Si
 sale muy distinto, la lectura correcta es **buscar un defecto en ese código**,
 no anunciar un hallazgo.
 
-## 5. Lo que está esperando una decisión de Nico
+## 5. Qué está decidido, qué es bifurcación y qué está abierto
 
-Esto es lo que bloquea el camino a probar edges. No lo destraba más código.
+> **Corrección (2026-08-07, después de releer la spec).** Una versión anterior de
+> esta sección decía que estos ítems «bloquean el camino a probar edges» e
+> incluía la definición de toque de `AACloseOpenDiffs`. **Las dos cosas estaban
+> mal** y se dejan corregidas acá en vez de reescritas.
 
-1. **Dirección target-free para el segundo y tercer candidato.** `BigTrap2`
-   tiene dirección nativa; los otros no. v0.3 §5.3: sin una regla direccional
-   derivable de la semántica **antes** de outcomes, no pueden ser hipótesis
-   confirmatorias. Análisis completo en el hilo; resumen:
-   - `Gaps2` — **sí, condicional** a que el recuento muestre que sus retornos
-     vienen de gaps genuinamente vacíos.
-   - `aVolCellPOI2` — `ref_side` es una **posición, no una dirección**. Da un
-     estratificador, y §5.2 dice que los estratos no rescatan un global muerto.
-     Además **muta durante la vida de la zona**: exportar el campo final sería
-     lookahead. Si se exporta, tiene que ser el valor **de creación**.
-   - `HFTZones2` — **no**, salvo que se conozca la intención de diseño:
-     absorción y iniciativa son lecturas opuestas y las dos plausibles.
-2. **Qué es un toque para `AACloseOpenDiffs`** (v0.3 §4.3).
-3. **`T = 34` es el borde de la grilla**: no hay vecino superior, así que la
-   regla de banda contigua no se puede evaluar completa ahí. Extender la grilla
-   o aceptar el borde declarándolo.
+### 5.1 Lo que el auditor YA resolvió — no vuelve a abrirse
+
+- **`AACloseOpenDiffs`**: v0.3 §4.1 dice **«queda fuera de EXPLORE-001 v1»**.
+  La definición de toque figura en §4.3 sólo como **una de ocho condiciones para
+  una entrada futura vía enmienda**. No bloquea nada. Listarlo como pendiente
+  fue arrastrar un ítem de una lista vieja sin releer la spec posterior.
+
+### 5.2 Lo que el auditor dejó como bifurcación, no como bloqueo
+
+- **La regla direccional** de los candidatos 2 y 3. v0.3 §5.3 fija el
+  **criterio** —una regla target-free derivada de la semántica, antes de
+  outcomes— y también el **default** si no aparece: *el candidato sigue como
+  fenómeno exploratorio, pero NO como hipótesis confirmatoria*.
+
+  **Consecuencia que conviene tener clara: el camino a E-R1 no está bloqueado.**
+  Con `BigTrap2` solo —dirección nativa— se puede avanzar. Los otros dos entran
+  si hay regla defendible, y si no, no entran. Menos hipótesis, no menos camino.
+
+  Análisis por candidato:
+  - `Gaps2` — **sí, condicional** a que el recuento muestre que sus retornos
+    vienen de gaps genuinamente vacíos. El 75 % de sus zonas contienen al precio
+    al quedar disponibles, y un gap con el precio adentro no es un vacío.
+  - `aVolCellPOI2` — `ref_side` es **posición, no dirección**: da un
+    estratificador, y §5.2 dice que los estratos no rescatan un global muerto.
+    Además **muta durante la vida de la zona**, así que exportar el valor final
+    sería lookahead. Si se exporta, tiene que ser el de **creación**.
+  - `HFTZones2` — **no**, salvo que se conozca la intención de diseño:
+    absorción e iniciativa son lecturas opuestas y las dos plausibles.
+
+  Cualquiera de las tres es **material** y exige enmienda fechada (§0.3).
+
+### 5.3 Lo que está genuinamente abierto y no lo cubre la spec
+
+- **`T = 34` es el último punto de `T_DESIGN`.** §7 paso 3 exige «estabilidad
+  entre puntos adyacentes», pero para `BigTrap2` y `Gaps2` **no hay vecino
+  superior**, así que la regla de banda contigua no se puede evaluar completa en
+  esa celda. O se extiende la grilla, o se acepta el borde declarándolo.
+
+  Hallazgo de la pasada adversarial propia, no un pendiente del auditor.
 
 **Consecuencia probable: dos hipótesis, no tres.** v0.3 §6.4 lo autoriza
 explícitamente — completar «tres» no justifica admitir una hipótesis mal
@@ -135,5 +161,7 @@ la lista completa.
 
 Deja el traspaso sin la ambigüedad que costó el incidente anterior: qué commit
 es el vigente, qué artefactos son de qué versión, qué quedó a medias y qué hay
-que rehacer. Lo que separa hoy de correr outcomes no es código — son las tres
-decisiones del §5.
+que rehacer. Y corrige una lectura mía que habría frenado la sesión siguiente
+sin motivo: **el camino a E-R1 no está bloqueado por ninguna decisión
+pendiente** — con `BigTrap2` alcanza para avanzar, y las reglas direccionales de
+los otros dos deciden cuántas hipótesis entran, no si se puede empezar.
