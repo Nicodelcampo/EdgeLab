@@ -70,7 +70,12 @@ CSC_CANDIDATOS = (
     r"C:\Windows\Microsoft.NET\Framework\v4.0.30319\csc.exe",
 )
 NT8_BIN = Path(os.environ.get("NT8_BIN", r"C:\Program Files\NinjaTrader 8\bin"))
-NT8_CUSTOM = Path(os.path.expandvars(r"%USERPROFILE%\Documents\NinjaTrader 8\bin\Custom"))
+#: `Documents` no es universal: con OneDrive y Windows en español la carpeta real
+#: es `OneDrive\Documentos`, y ahí vive el csproj. Cableado, el gate ABSTAIN-eaba
+#: en esta máquina — correcto, pero inservible. Se sobreescribe con NT8_CUSTOM,
+#: simétrico a NT8_BIN, en vez de asumir una convención de carpetas.
+NT8_CUSTOM = Path(os.path.expandvars(os.environ.get(
+    "NT8_CUSTOM", r"%USERPROFILE%\Documents\NinjaTrader 8\bin\Custom")))
 CSPROJ = NT8_CUSTOM / "NinjaTrader.Custom.csproj"
 #: Reference assemblies del framework que el csproj declara (`net48`). csc no
 #: las encuentra solo: WindowsBase/PresentationCore/PresentationFramework viven
