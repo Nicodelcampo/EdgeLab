@@ -179,15 +179,40 @@ Si los filtros fueran independientes, aplicar ambos daría del orden de
 menos**. No se sabe si son independientes, y **el producto de marginales no es una
 medición**.
 
-### 9.3 Lo que falta y por qué no lo estimo
+### 9.3 MEDIDO — y la celda no entra con la holgura declarada
 
-Un recuento de excursión + retorno **sobre la población de primeros toques
-post-`sep_min`**. Ese módulo no existe.
+Medido dos veces, por Claude (`f_ambos_filtros.py`) y por Codex
+(`recuento_kT_primer_toque_run.py`), de forma independiente. **Discrepan en un
+factor ~2** por la condición de validez; el desacuerdo está registrado sin
+resolver en [`DESACUERDO_001`](../audits/DESACUERDO_001_condicion_de_validez.md).
 
-`f` entra directo al MDE, y el MDE decide si la celda es ciega. §6.2 exige
-*«descartar geometrías ciegas al MDE de su frecuencia real»* — con `f`
-indeterminada esa comprobación no se puede hacer. **Y si `f` resulta ser ~0,87/ses
-en vez de ~8,3, la celda muy probablemente sea ciega**, lo que cambiaría H1 entera.
+| `f` medida | orden | quién | `N_eff`~ | `MDE`~ | margen~ | veredicto |
+|---:|---|---|---:|---:|---:|---|
+| 8,23 | *(sin `sep_min`)* | §6.3 publicada | 1.440 | 0,423 | **1,46** | entra |
+| **3,64** | B | Codex | 680 | 0,616 | **1,00** | **MARGINAL** |
+| **2,13** | B | Claude | 410 | 0,794 | **0,78** | **CIEGA** |
+| 0,79 | A | Codex | 156 | 1,288 | 0,48 | CIEGA |
+| 0,35 | A | Claude | 69 | 1,935 | 0,32 | CIEGA |
+
+> **Con ninguno de los valores medidos la celda entra con el margen 1,60×
+> declarado.** El mejor caso —la medición de Codex bajo el orden B— la deja
+> **exactamente en el límite**.
+
+**Advertencia sobre estos MDE.** `reconstruir_mde.py` reproduce la tabla publicada
+(dif. máx. 0,0047 ticks), pero el propio script declara que **`N_eff(f)` está
+TABULADO, no reconstruido**: sale de un bootstrap que no vuelve a correr. Los
+`N_eff` de arriba salen de **interpolar** esa tabla. **Son estimaciones, no
+mediciones.** El número exacto exige rehacer el bootstrap a la `f` medida.
+
+### 9.4 Qué queda abierto
+
+1. **Cuál condición de validez es la correcta** — `DESACUERDO_001`. Decide si el
+   mejor caso es 3,64 o 2,13, y por lo tanto si la celda es marginal o ciega.
+2. **Cuál orden de composición** — A o B. Difieren en factor 5-6.
+3. **El `N_eff` real a la `f` medida**, con bootstrap, no interpolación.
+
+Hasta cerrar los tres, **§6.2 no se puede aplicar** —*«descartar geometrías ciegas
+al MDE de su frecuencia real»*— y **E-R1 no se puede sellar**.
 
 ## 10. Artefactos y hashes esperados
 
