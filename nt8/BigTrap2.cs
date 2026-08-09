@@ -429,6 +429,32 @@ namespace NinjaTrader.NinjaScript.Indicators
 					int maxOff = 4 * K;
 					int tope   = Math.Min(maxOff, disp - largo);
 					if (tope < 0) return;                    // falta stream; se espera
+
+					// v2.5 / PRED-006: EL RANGO TIENE QUE ESTAR COMPLETO PARA JUZGAR
+					// UNICIDAD. Con `tope` truncado por lo que hay en buffer, "unico"
+					// significa "unico entre los offsets que alcance a probar", que no
+					// es unicidad.
+					//
+					// Medido en K=50: la barra de anclaje era MONOTONA descendente
+					// (open=high=23296, close=low=23292) con precio repetido en los dos
+					// bordes y volumenes iguales -px[49]==px[50], px[98]==px[99],
+					// vol[49]==vol[99]-. Las ventanas [49,99) y [50,100) dan el MISMO
+					// OHLCV, vol=215 las dos. Con el rango completo eso da hallados==2
+					// y dispara abstencion; con el rango corto se probo un solo offset,
+					// anclo corrido un evento y arrastro 1.285 barras hasta la frontera.
+					//
+					// El criterio OHLCV no fallo: fallo la ventana sobre la que se lo
+					// evaluo. Por eso se corrige el rango y no el criterio.
+					if (tope < maxOff)
+					{
+						// Todavia puede llegar stream: se espera en vez de juzgar corto.
+						if (pendCutAt < 0) return;
+						// La sesion cierra y no va a llegar mas: la unicidad es
+						// INVERIFICABLE. No se adivina.
+						Abstener(s, -1, disp, largo);
+						return;
+					}
+
 					int hallados = 0, dHit = -1;
 					for (int d = 0; d <= tope; d++)
 					{
@@ -437,9 +463,6 @@ namespace NinjaTrader.NinjaScript.Indicators
 					}
 					if (hallados != 1)
 					{
-						// Sin candidato todavia puede ser falta de stream, no ambiguedad.
-						if (hallados == 0 && pendCutAt < 0 && disp < largo + maxOff)
-							return;
 						Abstener(s, hallados, disp, largo);
 						return;
 					}
@@ -450,8 +473,11 @@ namespace NinjaTrader.NinjaScript.Indicators
 						disp -= dHit;
 					}
 					anclado = true;
+					// disp/tope/maxOff van al payload: esta vez la truncacion hubo que
+					// INFERIRLA desde afuera. Con estos campos se mide.
 					LogEvent("ANCLAJE_VERIFICADO", string.Format(CultureInfo.InvariantCulture,
-						"bar={0};offset={1};largo={2};k={3}", s.Bar, dHit, largo, K));
+						"bar={0};offset={1};largo={2};k={3};disp={4};tope={5};max_off={6}",
+						s.Bar, dHit, largo, K, disp, tope, maxOff));
 				}
 				else
 				{
@@ -502,9 +528,16 @@ namespace NinjaTrader.NinjaScript.Indicators
 		{
 			nAbstenciones++;
 			sesionNoConfiable = true;
+			// `candidatos = -1` es el caso NUEVO de v2.5: no es que hubiera cero o
+			// varios candidatos, es que el rango de busqueda quedo incompleto y la
+			// unicidad no se pudo verificar. Se distingue en el log porque exige una
+			// lectura distinta: cero/varios es una propiedad de los datos, rango
+			// corto es una limitacion del momento en que se juzgo.
 			LogEvent("ANCLAJE_AMBIGUO", string.Format(CultureInfo.InvariantCulture,
-				"bar={0};candidatos={1};disponibles={2};largo={3};k={4}",
-				s.Bar, candidatos, disponibles, largo, fpTicksPerBar));
+				"bar={0};candidatos={1};motivo={2};disponibles={3};largo={4};k={5};max_off={6}",
+				s.Bar, candidatos,
+				candidatos < 0 ? "rango_incompleto" : (candidatos == 0 ? "sin_candidato" : "multiples"),
+				disponibles, largo, fpTicksPerBar, 4 * fpTicksPerBar));
 		}
 
 		// ¿la ventana [desde, desde+largo) de curBlock reproduce el OHLCV del snapshot?
@@ -870,7 +903,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 					eventWriter = new StreamWriter(resolvedEventLogPath, false) { AutoFlush = true };
 					Print("BigTrap2: escribiendo " + resolvedEventLogPath);
 					if (eventSeq == 0)
-						eventWriter.WriteLine("# meta indicator=BigTrap2,version=2.4"
+						eventWriter.WriteLine("# meta indicator=BigTrap2,version=2.5"
 							+ ",attribution=ohlcv_unique_match,anchor=bounded_verified"
 							+ ",footprint=reconstructed_1tick_subseries,classifier=bidask_then_tickrule"
 							+ ",row_anchor=absolute_grid,ratio_floor=max(opposite,1),poc_tiebreak=lowest_row"
