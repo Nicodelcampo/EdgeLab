@@ -179,7 +179,17 @@ Si los filtros fueran independientes, aplicar ambos daría del orden de
 menos**. No se sabe si son independientes, y **el producto de marginales no es una
 medición**.
 
-### 9.3 MEDIDO — y la celda no entra con la holgura declarada
+### 9.3 MEDIDO — ⚠ el veredicto «ciega» de esta sección quedó RETIRADO
+
+> **Leí mal «margen».** No es *efecto/MDE*: la tabla canónica del spike-in lo
+> define como **fricción/MDE**. Con la definición correcta **ninguna celda es
+> ciega** — a `f = 2,13` el margen es **3,49×**.
+> → [`CORRECCION_2026-08-09`](../research/CORRECCION_2026-08-09_el_margen_y_la_celda_no_es_ciega.md)
+>
+> Las **`f` medidas de abajo siguen siendo válidas**; lo retirado es la columna
+> «margen» y su veredicto.
+
+### 9.3-bis Lo medido (la tabla de margen de abajo NO vale — ver arriba)
 
 Medido dos veces, por Claude (`f_ambos_filtros.py`) y por Codex
 (`recuento_kT_primer_toque_run.py`), de forma independiente. **Discrepan en un
