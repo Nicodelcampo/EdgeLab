@@ -125,15 +125,31 @@ enmienda `first_touch_decongestion` declara la entrada primaria — **9,08/sesi�
 | **primeros toques post-`sep_min`** | **9,08** | censo autoritativo, PRED-007 |
 | retornos válidos `T=34` (censo) | 8,23 | `recuento_kT` |
 
-> **`f` para E-R1 no está determinada.** Los 8,23 retornos/sesión salen de las
-> 85,5 zonas/sesión, no de los 9,08 eventos autoritativos. Si el estimando se
-> define sobre la población autoritativa, `f` es **mucho menor** que 8,23 — y `f`
-> entra directo al MDE.
+**Formulación precisa, después de leer la enmienda.** No es un conflicto de
+definición de evento: la enmienda fija la entrada en el primer toque, y para el
+94,7 % de los retornos válidos de `T=34` la zona estaba vacía en `i0`, así que
+**el retorno tras la excursión ES el primer toque**. Los dos coinciden.
+
+El problema es otro: **nadie aplicó los dos filtros juntos.**
+
+| medición | `sep_min` | excursión `T=34` | eventos |
+|---|:-:|:-:|---:|
+| censo autoritativo | **sí** | no | 1.825 |
+| `recuento_kT` | no | **sí** | 1.655 |
+| **lo que E-R1 necesita** | **sí** | **sí** | **no medido** |
+
+> **Trampa numérica.** 1.825 y 1.655 se parecen, y §6.3 publica ≈ 8,3 que coincide
+> con 8,23. **Es coincidencia entre dos filtros distintos**, no confirmación.
+> Si fueran independientes, aplicar ambos daría del orden de 176 eventos —
+> **~0,87/sesión, un orden de magnitud menos**. Y el producto de marginales no es
+> una medición.
 
 **No lo resuelvo por inferencia.** Es exactamente el tipo de decisión que §5.3
 manda congelar en E-R1 con el número delante, y el número correcto todavía no
 está medido: haría falta un recuento de excursión+retorno **sobre la población de
-primeros toques post-`sep_min`**, que es un módulo que no existe.
+primeros toques post-`sep_min`**, que es un módulo que no existe. Y si `f` resulta
+ser ~0,87/ses en vez de ~8,3, **la celda muy probablemente sea ciega al MDE**, lo
+que cambiaría H1 entera.
 
 ## 6. Qué decido y qué no
 

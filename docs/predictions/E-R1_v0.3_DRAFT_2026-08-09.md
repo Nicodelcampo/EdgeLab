@@ -148,25 +148,46 @@ muerta no vuelve con parámetros retocados.
 
 **Esto bloquea el sello.**
 
-`f` no está determinada, porque las dos poblaciones disponibles difieren en un
-orden de magnitud:
+### 9.1 Primero, la buena noticia: la entrada del §6 **es** el primer toque
 
-| población | eventos/ses | fuente |
-|---|---:|---|
-| zonas del censo (sin `sep_min`) | 85,5 | `recuento_kT` |
-| **primeros toques post-`sep_min`** | **9,08** | censo autoritativo |
-| retornos válidos `T=34`, población del censo | 8,23 | `recuento_kT` |
+La enmienda `first_touch_decongestion` fija *«la entrada primaria en el primer
+toque posterior»*, ancla `first_touch_ms`. El §6 define la entrada como el retorno
+a la banda tras la excursión. **Coinciden en la mayoría abrumadora de los casos**:
+si la zona estaba vacía al quedar disponible, la primera vez que el precio entra a
+la banda después de la excursión **es** su primer toque.
 
-§6.3 publica `f ≈ 8,3` para esta celda, y coincide con **8,23** — que sale de la
-población **sin `sep_min`**, no de la autoritativa. Verificado: `recuento_kT.py`
-no menciona `sep_min` en ninguna línea.
+Medido: **94,7 %** de los retornos válidos de `BigTrap2` a `T=34` vienen de zonas
+que no contenían al precio en `i0`. No hay conflicto de definición.
 
-**Lo que falta:** un recuento de excursión + retorno **sobre la población de
-primeros toques post-`sep_min`**. Ese módulo no existe.
+### 9.2 El problema real: **nadie aplicó los dos filtros juntos**
 
-**Por qué no lo estimo:** `f` entra directo al MDE, y el MDE decide si la celda es
-ciega. §6.2 exige *«descartar geometrías ciegas al MDE de su frecuencia real»* —
-con `f` indeterminada esa comprobación no se puede hacer.
+| medición | `sep_min` | excursión `T=34` | eventos |
+|---|:-:|:-:|---:|
+| censo autoritativo | **sí** | no | **1.825** (9,08/ses) |
+| `recuento_kT` | **no** | **sí** | **1.655** (8,23/ses) |
+| **lo que E-R1 necesita** | **sí** | **sí** | **no medido** |
+
+Verificado: `recuento_kT.py` no menciona `sep_min` en ninguna línea.
+
+> **⚠ Trampa numérica.** 1.825 y 1.655 se parecen, y §6.3 publica `f ≈ 8,3` que
+> coincide con 8,23. **Es coincidencia entre dos filtros distintos**, no
+> confirmación. Tomar cualquiera de los dos como `f` sería tomar una población a
+> la que le falta un filtro.
+
+Si los filtros fueran independientes, aplicar ambos daría del orden de
+`1.825 × (1.655 / 17.192) ≈ 176` eventos — **~0,87/sesión, un orden de magnitud
+menos**. No se sabe si son independientes, y **el producto de marginales no es una
+medición**.
+
+### 9.3 Lo que falta y por qué no lo estimo
+
+Un recuento de excursión + retorno **sobre la población de primeros toques
+post-`sep_min`**. Ese módulo no existe.
+
+`f` entra directo al MDE, y el MDE decide si la celda es ciega. §6.2 exige
+*«descartar geometrías ciegas al MDE de su frecuencia real»* — con `f`
+indeterminada esa comprobación no se puede hacer. **Y si `f` resulta ser ~0,87/ses
+en vez de ~8,3, la celda muy probablemente sea ciega**, lo que cambiaría H1 entera.
 
 ## 10. Artefactos y hashes esperados
 
