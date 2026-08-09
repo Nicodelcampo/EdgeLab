@@ -103,9 +103,53 @@ zona disponible
 quedaron los atrapados, y ahí ellos obtienen su salida —los largos bajo el agua
 venden— empujando en contra del retorno.
 
-**Salida y censura:** *(pendiente de cerrar junto con §9 — depende de la misma
-medición)*. La zona muere por `ended_ms` del `lifecycle`; la censura por fin de
-sesión debe declararse explícitamente antes de sellar.
+### 6.1 Salida y censura — CERRADA, con cero parámetros nuevos
+
+```
+salida = lo que ocurra PRIMERO de:
+  (a) muerte de la zona    -> ended_ms del lifecycle del kernel
+  (b) cierre de sesion CT  -> sin exposicion overnight
+```
+
+**Ningún parámetro nuevo.** Las dos ramas ya existen: (a) está en `PARAM_SPEC`
+bajo `class: "lifecycle"` y (b) es el bloque de dependencia que §5.2 ya declara
+como mínimo. Cualquier horizonte fijo —«N barras después de la entrada»— sería un
+parámetro elegido **después** de ver la tabla de frecuencias.
+
+**Qué es (a) en concreto.** `invalidation = "CloseThrough"` (default) y
+`max_age_bars = 2000`. Sobre barras de 1 minuto, 2.000 barras son ~33 h, así que
+**`max_age` casi nunca liga**: en la práctica la salida es *CloseThrough* o cierre
+de sesión.
+
+### 6.2 ⚠ La salida es ASIMÉTRICA respecto de la dirección, y se declara
+
+`CloseThrough` significa que el precio **cierra atravesando la zona**. Para una
+zona `trapped_buyers` —resistencia arriba, operación corta— eso es el precio
+cerrando **por encima**: exactamente el lado en contra del trade.
+
+```
+pérdida  -> acotada por la altura de la zona + deslizamiento  (stop del kernel)
+ganancia -> abierta hasta el cierre de sesión
+```
+
+**La distribución por evento queda sesgada a la derecha**: pérdidas chicas y
+frecuentes, ganancias grandes y raras. Consecuencias que se declaran **antes** de
+outcomes:
+
+1. **Un `win rate` bajo no refuta la hipótesis.** El estimando es expectativa
+   neta, no proporción de aciertos. §5.4 no cambia.
+2. **El sesgo afecta la cobertura del IC bootstrap.** El remuestreo por sesión de
+   §5.2 y la sensibilidad equal-weight diaria mitigan, pero **la asimetría se
+   reporta junto al resultado**, no se promedia.
+
+**Es el stop del propio indicador, no uno elegido por nosotros.** Está congelado
+en `PARAM_SPEC` desde antes de esta medición.
+
+### 6.3 Censura
+
+Los eventos truncados por cierre de sesión **entran con su resultado realizado al
+cierre**. No se descartan y no se extrapolan: descartarlos sería sesgo de
+supervivencia. Se publica cuántos fueron y qué fracción del total representan.
 
 ## 7. Estimando y fricción
 
