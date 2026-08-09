@@ -43,22 +43,34 @@ Exit: 0 = todo coincide · 1 = hay discrepancias · 2 = no se pudo evaluar
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO))
+
+from tools._manifiesto_comun import (  # noqa: E402
+    declarado_en_git, emitir, informar, sha_de,
+)
+
 RAIZ = REPO / "data" / "nt8"
+CABECERA = dict(
+    schema_version="datos_manifiesto_v2",
+    que_es="identidad de los parquets de ticks: ruta, bytes y sha256. NO "
+           "contiene una sola fila de datos.",
+    por_que="data/ esta gitignoreado por politica, asi que los parquets no "
+            "viajan con el repo. Sin esto dos maquinas pueden tener archivos "
+            "distintos con el mismo nombre y nadie se entera.",
+    v2="--emitir FUSIONA en vez de reemplazar. La v1 reescribia el manifiesto "
+       "entero con lo que hubiera en disco, asi que una maquina parcial "
+       "BORRABA las declaraciones de la otra: el 2026-08-09 cayo de 31 a 11 y "
+       "ES/NQ -- los de la replicacion -- dejaron de estar declarados.",
+    no_transporta="los datos hay que copiarlos por fuera de git. Esto solo da "
+                  "la certeza de estar copiando los mismos.",
+    outcomes_accessed=False)
+
 MANIFIESTO = REPO / "docs" / "datos_manifiesto.json"
-
-
-def sha_de(p):
-    h = hashlib.sha256()
-    with open(p, "rb") as fh:
-        for bloque in iter(lambda: fh.read(1 << 22), b""):
-            h.update(bloque)
-    return h.hexdigest()
 
 
 def escanear():
@@ -74,62 +86,55 @@ def escanear():
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--emitir", action="store_true",
-                    help="reescribe el manifiesto con lo que hay en disco")
+                    help="FUSIONA lo que hay en disco con lo ya declarado. "
+                         "Nunca borra una declaracion en silencio.")
+    ap.add_argument("--retirar", nargs="*", default=[],
+                    help="retirar declaraciones POR RUTA, explicito y a proposito")
     a = ap.parse_args(argv)
 
-    if not RAIZ.is_dir():
-        print("no existe %s -- esta maquina no tiene los datos" % RAIZ)
+    if not RAIZ.exists():
+        print("no existe %s -- esta maquina no tiene archivos" % RAIZ)
         return 2
     actual = escanear()
 
+    previo = {}
+    if MANIFIESTO.exists():
+        try:
+            previo = json.loads(MANIFIESTO.read_text(encoding="utf-8"))["archivos"]
+        except Exception:
+            previo = {}
+
     if a.emitir:
         MANIFIESTO.parent.mkdir(parents=True, exist_ok=True)
-        MANIFIESTO.write_text(json.dumps(
-            {"schema_version": "datos_manifiesto_v1",
-             "que_es": "identidad de los parquets de ticks: ruta, bytes y "
-                       "sha256. NO contiene una sola fila de datos.",
-             "por_que": "data/ esta gitignoreado por politica, asi que los "
-                        "parquets no viajan con el repo. Sin esto, dos maquinas "
-                        "pueden tener archivos distintos con el mismo nombre y "
-                        "nadie se entera -- que es la falla que ya produjo dos "
-                        "veredictos opuestos con el manifiesto de universo.",
-             "no_transporta": "los datos hay que copiarlos por fuera de git. "
-                              "Esto solo da la certeza de estar copiando los "
-                              "mismos.",
-             "outcomes_accessed": False,
-             "n_archivos": len(actual),
-             "bytes_totales": sum(v["bytes"] for v in actual.values()),
-             "archivos": actual},
-            indent=1, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8")
-        print("emitido: %s  (%d archivos, %.1f MB)"
-              % (MANIFIESTO.name, len(actual),
-                 sum(v["bytes"] for v in actual.values()) / 1e6))
+        fus, solo_previo, cambiados, retirados = emitir(
+            MANIFIESTO, CABECERA, actual, previo, a.retirar)
+        print("emitido: %s  (%d declarados)" % (MANIFIESTO.name, len(fus)))
+        print("  en este disco        %d" % len(actual))
+        if cambiados:
+            print("  ACTUALIZADOS -- mismo nombre, otros bytes: %d" % len(cambiados))
+            for k in cambiados[:10]:
+                print("     %s" % k)
+        if solo_previo:
+            print("  CONSERVADOS de la declaracion previa -- no estan en este")
+            print("  disco, casi seguro los tiene la otra maquina: %d" % len(solo_previo))
+            for k in solo_previo[:10]:
+                print("     %s" % k)
+            print("  (para sacarlos de verdad: --retirar <ruta>)")
+        if retirados:
+            print("  RETIRADOS explicitamente: %s" % retirados)
         return 0
 
-    if not MANIFIESTO.exists():
+    if not previo:
         print("no existe %s -- correr con --emitir" % MANIFIESTO.name)
         return 2
-    esperado = json.loads(MANIFIESTO.read_text(encoding="utf-8"))["archivos"]
 
-    faltan = sorted(set(esperado) - set(actual))
-    sobran = sorted(set(actual) - set(esperado))
-    distintos = sorted(k for k in set(esperado) & set(actual)
-                       if esperado[k]["sha256"] != actual[k]["sha256"])
-
-    print("manifiesto: %d archivos | en disco: %d" % (len(esperado), len(actual)))
-    for k in faltan:
-        print("  FALTA        %s  (sha %s...)" % (k, esperado[k]["sha256"][:16]))
-    for k in sobran:
-        print("  SIN DECLARAR %s  (sha %s...)" % (k, actual[k]["sha256"][:16]))
-    for k in distintos:
-        print("  DIFIERE      %s\n    manifiesto %s...\n    en disco   %s..."
-              % (k, esperado[k]["sha256"][:16], actual[k]["sha256"][:16]))
-    if not (faltan or sobran or distintos):
-        print("  todo coincide -- esta maquina tiene los MISMOS datos")
-        return 0
-    # `sobran` no es error: alguien capturo un contrato nuevo y no lo declaro.
-    # `FALTA` y `DIFIERE` si lo son: la medicion no seria comparable.
-    return 1 if (faltan or distintos) else 0
+    # CONTROL DE ANGOSTAMIENTO: comparar contra la version COMMITEADA. Comparar
+    # solo contra el disco no alcanza -- una maquina parcial se ve identica a un
+    # conjunto que encogio.
+    rel = "docs/datos_manifiesto.json"
+    en_git = declarado_en_git(REPO, rel)
+    perdidas = sorted(set(en_git) - set(previo))
+    return informar(previo, actual, "archivos", perdidas)
 
 
 if __name__ == "__main__":
