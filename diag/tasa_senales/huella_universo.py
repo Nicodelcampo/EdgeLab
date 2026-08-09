@@ -135,14 +135,27 @@ def huella_contrato(archivo, fechas):
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("--out", default=str(SALIDA))
+    ap.add_argument("--out", default=None,
+                    help="por defecto se nombra por la huella: dos maquinas no "
+                         "se pisan el artefacto")
+    ap.add_argument("--permitir-entorno-ajeno", action="store_true",
+                    help="SOLO a proposito: el artefacto sale MARCADO y no es "
+                         "comparable entre maquinas")
     a = ap.parse_args(argv)
 
     ent = identidad_entorno()
-    if not ent["es_el_venv_del_repo"]:
-        print("AVISO: no estas en el .venv del repo. La huella se calcula igual, "
-              "pero la comparacion entre maquinas solo es concluyente si las dos "
-              "corren con el mismo entorno declarado.", file=sys.stderr)
+    if not ent["es_el_venv_del_repo"] and not a.permitir_entorno_ajeno:
+        print("NO ES EL .venv DEL REPO -- no se emite huella.")
+        print("  ejecutable: %s" % ent.get("ejecutable"))
+        print("\nUn AVISO no alcanza, y hay evidencia: el 2026-08-09 un test "
+              "aviso\nexactamente esto y el aviso se paso por alto TODA la "
+              "sesion -- recuento_kT,\nf_ambos_filtros, concordancia_lado y el "
+              "barrido de T corrieron con el\ninterprete global. Los numeros no "
+              "cambiaron porque las versiones\ncoincidian, pero eso fue suerte "
+              "del entorno, no una garantia del gate.")
+        print("\nCorrer con ./.venv/Scripts/python.exe, o --permitir-entorno-ajeno")
+        print("si es a proposito: el artefacto sale MARCADO y no es comparable.")
+        return 2
 
     dias, info = dias_research()
     por_arch = {}
@@ -189,9 +202,11 @@ def main(argv=None):
         huella_universo=huella)
     payload["payload_sha256"] = hashlib.sha256(
         json.dumps(payload, sort_keys=True, default=str).encode()).hexdigest()
-    Path(a.out).write_text(json.dumps(payload, indent=2, default=str),
+    salida = Path(a.out) if a.out else (
+        SALIDA.parent / ("huella_universo__%s.json" % payload["huella_universo"][:12]))
+    Path(salida).write_text(json.dumps(payload, indent=2, default=str),
                            encoding="utf-8")
-    print(f"\n-> {a.out}")
+    print(f"\n-> {salida}")
     print("EXIT=0")
     return 0
 
