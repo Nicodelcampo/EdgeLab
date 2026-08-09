@@ -26,12 +26,14 @@ sys.path.insert(0, str(REPO_PATH))
 
 from diag.tasa_senales.curva_excursion_ticks import (  # noqa: E402
     BAR_DRIVEN, CLASE_KERNEL, LEAD_DAYS, MAX_FECHA, REGISTRY, TZ_CHART,
-    bars_mod, corte_del_sello, dias_research, git_head, huella_del_codigo,
+    bars_mod, corte_del_sello, dias_research, git_head,
     pd, sesion_ct, ticks_mod,
 )
 from diag.tasa_senales.recuento_kT import eventos_kT  # noqa: E402
 from diag.tasa_senales.recuento_kT_primer_toque import seleccionar_dos_ordenes  # noqa: E402
-from edgelab.research.first_touch_decongestion import FIRST_TOUCH_SEP_MINUTES  # noqa: E402
+from edgelab.research.first_touch_decongestion import (  # noqa: E402
+    FIRST_TOUCH_SEP_MINUTES, decongest_first_touch_events,
+)
 from edgelab.research.first_touch_population import extract_first_touch_events  # noqa: E402
 
 INDICADOR = "BigTrap2"
@@ -152,6 +154,8 @@ def sources_medicion():
         Path(eventos_kT.__code__.co_filename).resolve(),
         Path(seleccionar_dos_ordenes.__code__.co_filename).resolve(),
         Path(extract_first_touch_events.__code__.co_filename).resolve(),
+        Path(decongest_first_touch_events.__code__.co_filename).resolve(),
+        Path(dias_research.__code__.co_filename).resolve(),
         indicator_file,
     ]
 

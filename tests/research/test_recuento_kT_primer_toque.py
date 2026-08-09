@@ -3,6 +3,7 @@ from __future__ import annotations
 from diag.tasa_senales.recuento_kT_primer_toque import seleccionar_dos_ordenes
 from diag.tasa_senales.recuento_kT_primer_toque_run import resumen_archivo
 from diag.tasa_senales.recuento_kT_primer_toque_run import hash_sources
+from diag.tasa_senales.recuento_kT_primer_toque_run import sources_medicion
 
 
 def _event(zone_id: str, touch_ms: int, created_ms: int, valid: bool) -> dict:
@@ -93,3 +94,20 @@ def test_hash_sources_cambia_si_cambia_el_runner(tmp_path):
     source.write_text("b", encoding="utf-8")
 
     assert first != hash_sources([source])
+
+
+def test_fuentes_de_medicion_incluyen_los_dos_filtros_y_el_universo():
+    names = {path.name for path in sources_medicion()}
+
+    assert {
+        "recuento_kT_primer_toque_run.py",
+        "recuento_kT_primer_toque.py",
+        "recuento_kT.py",
+        "first_touch_population.py",
+        "first_touch_decongestion.py",
+        # El universo lo define `dias_research`, que VIVE en post_sepmin.py
+        # (post_sepmin.py:109). `curva_excursion_ticks` solo lo reexporta, asi
+        # que `__code__.co_filename` apunta aca y no alla.
+        "post_sepmin.py",
+        "bigtrap2.py",
+    } <= names
