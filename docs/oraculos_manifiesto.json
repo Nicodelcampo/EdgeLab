@@ -120,6 +120,21 @@
    "meta": "# meta indicator=BigTrap2,version=2.1,footprint=reconstructed_1tick_subseries,classifier=bidask_then_tickrule,row_anchor=absolute_grid,ratio_floor=max(opposite,1),poc_tiebreak=lowest_row,close_cmp=integer_half_ticks,tie_excluded_both_sides,imbalance_mode=Diagonal,trap_volume=AggressiveSide,ticks_per_row=1,imbalance_ratio=3,wick_filter=False,wick_zone_pct=30,min_delta=0,invalidation=CloseThrough,max_age_bars=2000,max_touches=0,tick_size=5E-05,instrument=6E 09-26",
    "sha256": "8c5db4565a787b5113b574d16aa304442c7aa9ec96155d210e3c7abb8087e911"
   },
+  "oracles/BigTrap2_v22_6E_0926__Tick10_run2.csv": {
+   "bytes": 5456818,
+   "meta": "# meta indicator=BigTrap2,version=2.2,footprint=reconstructed_1tick_subseries,classifier=bidask_then_tickrule,row_anchor=absolute_grid,ratio_floor=max(opposite,1),poc_tiebreak=lowest_row,close_cmp=integer_half_ticks,tie_excluded_both_sides,imbalance_mode=Diagonal,trap_volume=AggressiveSide,ticks_per_row=1,imbalance_ratio=3,wick_filter=True,wick_zone_pct=30,min_delta=0,invalidation=CloseThrough,max_age_bars=2000,max_touches=0,tick_size=5E-05,instrument=6E 09-26",
+   "sha256": "103ae35d7227254d6b02cdaa30ba94a08c8c8401a7f0a57103bd29128454fcdb"
+  },
+  "oracles/BigTrap2_v22_6E_0926__Tick10_run3.csv": {
+   "bytes": 5456818,
+   "meta": "# meta indicator=BigTrap2,version=2.2,footprint=reconstructed_1tick_subseries,classifier=bidask_then_tickrule,row_anchor=absolute_grid,ratio_floor=max(opposite,1),poc_tiebreak=lowest_row,close_cmp=integer_half_ticks,tie_excluded_both_sides,imbalance_mode=Diagonal,trap_volume=AggressiveSide,ticks_per_row=1,imbalance_ratio=3,wick_filter=True,wick_zone_pct=30,min_delta=0,invalidation=CloseThrough,max_age_bars=2000,max_touches=0,tick_size=5E-05,instrument=6E 09-26",
+   "sha256": "103ae35d7227254d6b02cdaa30ba94a08c8c8401a7f0a57103bd29128454fcdb"
+  },
+  "oracles/BigTrap2_v22_6E_0926__Tick25_run1.csv": {
+   "bytes": 643410,
+   "meta": "# meta indicator=BigTrap2,version=2.2,footprint=reconstructed_1tick_subseries,classifier=bidask_then_tickrule,row_anchor=absolute_grid,ratio_floor=max(opposite,1),poc_tiebreak=lowest_row,close_cmp=integer_half_ticks,tie_excluded_both_sides,imbalance_mode=Diagonal,trap_volume=AggressiveSide,ticks_per_row=1,imbalance_ratio=3,wick_filter=True,wick_zone_pct=30,min_delta=0,invalidation=CloseThrough,max_age_bars=2000,max_touches=0,tick_size=5E-05,instrument=6E 09-26",
+   "sha256": "d249d201d6d0c4b89c19432acb2223d1923c36815e9252b17c62e454a6e793f6"
+  },
   "oracles/Gaps2_6E_0926.csv": {
    "bytes": 1690398,
    "meta": "# meta indicator=Gaps2,version=2.0,detector=tick_jump,lifecycle=tick_exact,penetration=proximal_edge_monotonic,invalidation=full_fill_then_inverse,touch=strict_inside_epochs,units=ticks,ts_note=chart_local_plus_unix_ms_verify_tz_in_P0",
@@ -221,10 +236,11 @@
    "sha256": "1852949709507ae851e1e79b6bb943884319d32c89dae85bc9112e88222de56e"
   }
  },
- "bytes_totales": 96311529,
- "n_archivos": 44,
+ "bytes_totales": 107868575,
+ "n_archivos": 47,
  "outcomes_accessed": false,
- "por_que": "oracles/ no esta versionado; sin esto dos maquinas pueden tener archivos distintos con el mismo nombre y nadie se entera. T3a se contesta con un hash.",
+ "por_que": "oracles/ no esta versionado; sin esto dos maquinas pueden tener archivos distintos con el mismo nombre y nadie se entera.",
  "que_es": "identidad de los oraculos: nombre, bytes, sha256 y la linea `# meta`. NO contiene una sola fila de eventos.",
- "schema_version": "oraculos_manifiesto_v1"
+ "schema_version": "oraculos_manifiesto_v2",
+ "v2": "--emitir FUSIONA en vez de reemplazar. La v1 reescribia el manifiesto entero, asi que una maquina parcial BORRABA las declaraciones de la otra: el 2026-08-09 cayo de 28 a 19."
 }
