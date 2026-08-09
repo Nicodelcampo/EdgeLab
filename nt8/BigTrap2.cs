@@ -162,6 +162,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 		private int  pendCutAt = -1;
 		private bool anclado;
 		private int  nAbstenciones;
+		private int  nSnapsSalteados;   // barras descartadas por no poder anclar sin adivinar
 		private int  nResiduales, nMismatch, nPares, nSuprimidas;
 
 		// ── footprint pendiente (subserie de 1 tick) ──────────────────────
@@ -450,9 +451,12 @@ namespace NinjaTrader.NinjaScript.Indicators
 						// Todavia puede llegar stream: se espera en vez de juzgar corto.
 						if (pendCutAt < 0) return;
 						// La sesion cierra y no va a llegar mas: la unicidad es
-						// INVERIFICABLE. No se adivina.
+						// INVERIFICABLE. No se adivina. Misma politica que arriba: se
+						// saltea la barra y se avanza, nunca se bloquea el drenaje.
 						Abstener(s, -1, disp, largo);
-						return;
+						snapQ.Dequeue();
+						nSnapsSalteados++;
+						continue;
 					}
 
 					int hallados = 0, dHit = -1;
@@ -463,8 +467,25 @@ namespace NinjaTrader.NinjaScript.Indicators
 					}
 					if (hallados != 1)
 					{
+						// v2.5.1: la abstencion SALTEA la barra, no bloquea el drenaje.
+						//
+						// La v2.5 marcaba la sesion y hacia `return` sin sacar el
+						// snapshot ni consumir eventos, asi que reintentaba la MISMA
+						// barra indefinidamente: medido en K=50, 6.194 abstenciones
+						// todas en bar=1, con `disponibles` creciendo 296->549->... y
+						// BARRA_PROCESADA en cero. Una abstencion que no avanza no es
+						// fail-closed: es un cuelgue.
+						//
+						// Correcto: se descarta el SNAPSHOT -esa barra no produce zonas-
+						// y se deja el buffer INTACTO, sin consumir. No se adivina un
+						// offset. Se reintenta el ancla contra la barra siguiente, cuya
+						// firma probablemente no sea degenerada; el rango de 4*K absorbe
+						// los K eventos de la barra salteada. Si tampoco ancla, se sigue
+						// salteando hasta que la frontera de sesion resincronice.
 						Abstener(s, hallados, disp, largo);
-						return;
+						snapQ.Dequeue();
+						nSnapsSalteados++;
+						continue;
 					}
 					if (dHit > 0)
 					{
@@ -903,7 +924,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 					eventWriter = new StreamWriter(resolvedEventLogPath, false) { AutoFlush = true };
 					Print("BigTrap2: escribiendo " + resolvedEventLogPath);
 					if (eventSeq == 0)
-						eventWriter.WriteLine("# meta indicator=BigTrap2,version=2.5"
+						eventWriter.WriteLine("# meta indicator=BigTrap2,version=2.5.1"
 							+ ",attribution=ohlcv_unique_match,anchor=bounded_verified"
 							+ ",footprint=reconstructed_1tick_subseries,classifier=bidask_then_tickrule"
 							+ ",row_anchor=absolute_grid,ratio_floor=max(opposite,1),poc_tiebreak=lowest_row"
