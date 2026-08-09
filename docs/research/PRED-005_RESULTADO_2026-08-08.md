@@ -61,6 +61,31 @@ sextos del chart: `[619, 171, 0, 0, 0, 0]`.
 el mismo perfil que tenía K=25 con v2.2: falla en la primera sesión, se recupera
 en la frontera.
 
+## 4-bis. Reproducido byte por byte — no fue la captura
+
+Nico recapturó K=50 con todo idéntico, 50 minutos después. v2.4 rotó a
+`..._v24__Tick50_2.csv` sin pisar la primera.
+
+```
+BigTrap2_tick50_6E_0926_v24__Tick50.csv     sha256 481251ea6c1d2862...  1.035.358 B
+BigTrap2_tick50_6E_0926_v24__Tick50_2.csv   sha256 481251ea6c1d2862...  1.035.358 B
+```
+
+**Los dos archivos son idénticos byte por byte.** El analizador sobre la
+recaptura devuelve lo mismo: 790 mismatches, 6.198 barras, 12,75 %, `p3` FAIL,
+`p4` PASS.
+
+Descarta tres explicaciones alternativas de una sola vez:
+
+- **no es aleatoriedad de captura** — sería imposible reproducir el sha256;
+- **no es que NT8 haya bajado datos distintos** — un tick de más o de menos
+  cambiaría el archivo;
+- **no es contaminación ni append** — la rotación creó el `_2` limpio, con su
+  propio `# meta` y su `seq` desde cero.
+
+El defecto es **determinista**. Lo que queda por clasificar es la causa, no si
+existe.
+
 ## 5. Lo que NO falló, y conviene no perderlo de vista
 
 **`ANCLAJE_AMBIGUO` = 0.** El ancla nunca se abstuvo: encontró candidato único en
