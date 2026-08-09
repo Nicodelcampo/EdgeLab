@@ -1,5 +1,13 @@
 # E-R1 v0.3 — pre-registro de EXPLORE-001
 
+> # SELLO SUSPENDIDO -- DEFECTO 001
+> El precio de entrada NO era ejecutable: `first_touch_ms` es **fin de barra**,
+> no el instante del toque. `f = 2,13` es **cota superior**, no medida.
+> **No construir el runner de outcomes hasta cerrarlo.**
+> -> [`DEFECTO_001`](E-R1_v0.3_DEFECTO_001_precio_de_entrada.md)
+
+
+
 **Estado:** **SELLADO** el 2026-08-09 por autorizacion explicita de Nico.
 → [`E-R1_v0.3_SELLO_2026-08-09.md`](E-R1_v0.3_SELLO_2026-08-09.md)
 **Sin parametros libres. No se retoca despues del primer outcome.**
