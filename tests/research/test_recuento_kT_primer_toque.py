@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from diag.tasa_senales.recuento_kT_primer_toque import seleccionar_dos_ordenes
 from diag.tasa_senales.recuento_kT_primer_toque_run import resumen_archivo
+from diag.tasa_senales.recuento_kT_primer_toque_run import hash_sources
 
 
 def _event(zone_id: str, touch_ms: int, created_ms: int, valid: bool) -> dict:
@@ -64,3 +65,31 @@ def test_resumen_archivo_no_serializa_las_filas_individuales():
 
     assert result["candidate_count"] == 1
     assert "candidates" not in result
+
+
+def test_resumen_archivo_publica_ambos_ordenes_por_contrato():
+    measured = {
+        "estado": "OK",
+        "candidates": [
+            _event("invalid", 1_000, 1, False),
+            _event("valid", 2_000, 2, True),
+        ],
+        "counters": {}, "violations": [], "zones": 2, "first_touches": 2,
+    }
+    selected = seleccionar_dos_ordenes(
+        measured["candidates"], session_date_of_ms=lambda _ms: "d", sep_minutes=120
+    )
+
+    result = resumen_archivo(measured, selected, session_count=1)
+
+    assert result["orden_a"]["events"] == 0
+    assert result["orden_b"]["events"] == 1
+
+
+def test_hash_sources_cambia_si_cambia_el_runner(tmp_path):
+    source = tmp_path / "runner.py"
+    source.write_text("a", encoding="utf-8")
+    first = hash_sources([source])
+    source.write_text("b", encoding="utf-8")
+
+    assert first != hash_sources([source])

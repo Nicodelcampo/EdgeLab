@@ -136,9 +136,29 @@ def _summary(selection, session_count):
     }
 
 
-def resumen_archivo(measured):
+def hash_sources(paths):
+    """Huella estable de todas las fuentes que pueden cambiar esta medición."""
+    digest = hashlib.sha256()
+    for source in sorted((Path(p).resolve() for p in paths), key=lambda p: str(p)):
+        digest.update(str(source).encode("utf-8"))
+        digest.update(source.read_bytes())
+    return digest.hexdigest()
+
+
+def sources_medicion():
+    indicator_file = Path(REGISTRY[INDICADOR].__file__).resolve()
+    return [
+        Path(__file__).resolve(),
+        Path(eventos_kT.__code__.co_filename).resolve(),
+        Path(seleccionar_dos_ordenes.__code__.co_filename).resolve(),
+        Path(extract_first_touch_events.__code__.co_filename).resolve(),
+        indicator_file,
+    ]
+
+
+def resumen_archivo(measured, selection=None, *, session_count=None):
     """Conserva conteos auditables sin volcar cada zona al artefacto Git."""
-    return {
+    summary = {
         "estado": measured["estado"],
         "candidate_count": len(measured["candidates"]),
         "valid_before_sep_count": sum(row["valid"] for row in measured["candidates"]),
@@ -147,6 +167,12 @@ def resumen_archivo(measured):
         "zones": measured["zones"],
         "first_touches": measured["first_touches"],
     }
+    if selection is not None:
+        if session_count is None:
+            raise ValueError("session_count es obligatorio con selection")
+        summary["orden_a"] = _summary(selection["orden_a"], session_count)
+        summary["orden_b"] = _summary(selection["orden_b"], session_count)
+    return summary
 
 
 def main(argv=None):
@@ -175,7 +201,14 @@ def main(argv=None):
         measured = _cargar_y_candidatos(archive, fechas)
         if measured["estado"] != "OK":
             raise RuntimeError("%s: %s" % (archive, measured["motivo"]))
-        per_archive[archive] = resumen_archivo(measured)
+        selection_archive = seleccionar_dos_ordenes(
+            measured["candidates"],
+            session_date_of_ms=lambda ms: sesion_ct(ms * 1_000_000),
+            sep_minutes=FIRST_TOUCH_SEP_MINUTES,
+        )
+        per_archive[archive] = resumen_archivo(
+            measured, selection_archive, session_count=len(fechas)
+        )
         all_candidates.extend(measured["candidates"])
         all_violations.extend(measured["violations"])
         print("   primeros=%d validos=%d (%.1fs)" % (
@@ -203,7 +236,8 @@ def main(argv=None):
         "firewall_max_fecha": MAX_FECHA, "firewall_corte_iso": str(corte_del_sello()),
         "universe_filter_report": universe_report, "outcomes_accessed": False,
         "code_commit": git_head(),
-        "measurement_code_sha256": huella_del_codigo([INDICADOR]),
+        "measurement_code_sha256": hash_sources(sources_medicion()),
+        "measurement_sources": [str(p.relative_to(REPO_PATH)) for p in sources_medicion()],
         "candidate_count": len(all_candidates),
         "valid_before_sep_count": sum(x["valid"] for x in all_candidates),
         "orden_a": _summary(both["orden_a"], session_count),
