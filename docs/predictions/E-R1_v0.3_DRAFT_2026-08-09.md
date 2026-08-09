@@ -4,9 +4,10 @@
 **Fecha de redacción:** 2026-08-09 · Outcome-free · Holdout no tocado
 **Redactado por:** Claude, bajo *«avanzá con el paso 3 y redactá E-R1»*.
 
-> **Una celda queda ABIERTA y bloquea el sello: `f` y el MDE (§9).** Todo lo
-> demás está cerrado. La celda abierta no es una omisión: es un hallazgo del
-> Paso 3 que exige una medición que hoy no existe.
+> **`f` y el MDE quedaron CERRADOS** el 2026-08-09b: `f = 2,13/sesión`,
+> margen 3,49×, **la celda no es ciega**.
+> **Queda un solo parámetro libre: salida y censura (§6).** Cerrado eso, E-R1
+> está listo para el acto humano de sello.
 
 ---
 
@@ -144,9 +145,20 @@ GRIS:   el IC contiene 0  →  MUERE POR DEFECTO
 Sin excepción escrita **antes** de outcomes, gris significa muerta. Una hipótesis
 muerta no vuelve con parámetros retocados.
 
-## 9. ⛔ CELDA ABIERTA — `f` y el MDE
+## 9. `f` y el MDE — **CERRADA** (2026-08-09b)
 
-**Esto bloquea el sello.**
+```
+f = 2,13 eventos/sesion     MDE ~ 0,794     margen = 2,768/0,794 = 3,49x
+                            NO es ciega; pasa tambien con el +11,8% del barrido
+```
+
+Condicion de validez: **el primer toque debe ser posterior a la excursion**.
+Orden de composicion: **B**. Margen: **friccion/MDE**, definicion del spike-in.
+Fundamento de las tres → [`DECISION_2026-08-09b`](../research/DECISION_2026-08-09b_condicion_orden_y_margen.md).
+
+**Queda abierta una sola cosa para sellar: salida y censura (§6).**
+
+El material de diagnostico que llevo a esta decision se conserva abajo.
 
 ### 9.1 Primero, la buena noticia: la entrada del §6 **es** el primer toque
 
