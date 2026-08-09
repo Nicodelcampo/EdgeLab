@@ -202,8 +202,11 @@ def poblacion_y_outcomes(archivo, fechas, fase):
 
     b = bars_mod.build_time_bars(tk, 1)
     bar_end = np.asarray(b.end_ns)
-    bar_close = np.asarray(b.close_ticks).astype(np.float64) \
-        if hasattr(b, "close_ticks") else None
+    # `close_t`, NO `close_ticks`: es el nombre real del campo de BarSeries
+    # (bars.py:38). Un arreglo anterior no matcheo y quedo la referencia muerta
+    # -- la fase 1 lo habia detectado y el arreglo nunca llego al archivo-.
+    bar_close = np.asarray(b.close_t).astype(np.float64) \
+        if hasattr(b, "close_t") else None
     fp = bars_mod.build_footprints(tk, b) if INDICADOR in BAR_DRIVEN else None
     mod = REGISTRY[INDICADOR]
     r = mod.run(tk, b, fp, chart_tz=TZ_CHART) if fp is not None \
@@ -284,9 +287,15 @@ def poblacion_y_outcomes(archivo, fechas, fase):
     # ------------------------------------------------------------- OUTCOMES
     # A PARTIR DE ACA SE MIRAN RESULTADOS.
     if bar_close is None:
-        return dict(estado="ABORTA",
-                    motivo="las barras no exponen `close_t`: sin precio de "
-                           "entrada no hay evento ejecutable")
+        # NO se descarta lo ya calculado. La version anterior devolvia un dict
+        # NUEVO y perdia la poblacion, que era correcta: el artefacto mostraba
+        # 0 eventos y 0 con excursion, como si hubiera fallado la medicion
+        # cuando lo que faltaba era el precio. Un aborto que borra el
+        # diagnostico convierte un defecto localizado en uno indistinguible.
+        out.update(estado="ABORTA", precios_leidos=0,
+                   motivo="las barras no exponen `close_t`: sin precio de "
+                          "entrada no hay evento ejecutable")
+        return out
     ev = []
     for e, z, fb, bs, motivo in filas:
         signo = -1 if e["kind"] == "trapped_buyers" else +1
@@ -300,7 +309,7 @@ def poblacion_y_outcomes(archivo, fechas, fase):
                        entrada_ticks=entrada, salida_ticks=salida,
                        bruto_ticks=round(bruto, 4),
                        neto_ticks=round(bruto - FRICCION_TICKS, 4)))
-    out.update(eventos=ev, n_eventos=len(ev))
+    out.update(eventos=ev, n_eventos=len(ev), precios_leidos=2 * len(ev))
     return out
 
 
@@ -357,6 +366,7 @@ def main(argv=None):
                   if r.get("estado") == "OK")
     total_X = sum(r.get("con_excursion", 0) for r in crudo.values()
                   if r.get("estado") == "OK")
+    precios_leidos_total = sum(r.get("precios_leidos", 0) for r in crudo.values())
     f = total_B / ns if ns else 0.0
 
     # El control vale SOLO sobre el universo completo: 755 eventos son los de
@@ -440,7 +450,14 @@ def main(argv=None):
                            coincide=control_ok),
         identidad_entorno=ent, code_commit=git_head(),
         universe_filter_report=info,
-        outcomes_accessed=bool(con_outcomes),
+        # `outcomes_accessed` registra un HECHO, no una intencion. La version
+        # anterior lo derivaba de la fase pedida, asi que una corrida que
+        # ABORTO antes de leer un solo precio declaraba `true`. Un campo que
+        # dice "se miraron resultados" cuando no se miro ninguno es peor que no
+        # tenerlo: es el unico registro de haber cruzado la puerta.
+        outcomes_accessed=bool(precios_leidos_total > 0),
+        fase_pedida=a.fase,
+        precios_leidos=precios_leidos_total,
         segundos=round(time.time() - t0, 1),
         por_contrato=crudo)
     payload["payload_sha256"] = hashlib.sha256(
