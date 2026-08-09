@@ -1,5 +1,8 @@
 # E-R1 v0.3 — SELLADO
 
+> ## → REEMPLAZADO por [`E-R1 v0.3.1`](E-R1_v0.3.1_SELLO_2026-08-09.md)
+> DEFECTO 001 cerrado ahi. **Este documento es registro historico: NO ejecutar.**
+
 > # SELLO SUSPENDIDO -- DEFECTO 001
 > El precio de entrada NO era ejecutable: `first_touch_ms` es **fin de barra**,
 > no el instante del toque. `f = 2,13` es **cota superior**, no medida.

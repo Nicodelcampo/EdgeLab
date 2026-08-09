@@ -1,5 +1,8 @@
 # ⛔ DEFECTO 001 sobre E-R1 v0.3 — el precio de entrada no era ejecutable
 
+> ## → REEMPLAZADO por [`E-R1 v0.3.1`](E-R1_v0.3.1_SELLO_2026-08-09.md)
+> DEFECTO 001 cerrado ahi. **Este documento es registro historico: NO ejecutar.**
+
 **Fecha:** 2026-08-09, horas después del sello · **CERO OUTCOMES OBSERVADOS.**
 Holdout intacto.
 **Hallado por:** revisión pedida por Nico — *«revisá todo bien»*.

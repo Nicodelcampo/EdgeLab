@@ -146,11 +146,15 @@ def medir(archivo, fechas, T):
         k = k_excursion(px, lo_t, hi_t, i0, i1, T)
         if k is None or k == 0:
             continue
-        # indice del primer toque, relativo al mismo origen `i0`
-        i_toque = int(np.searchsorted(ts, int(e["first_touch_ms"]) * 1_000_000,
-                                      side="left")) - i0
-        # EL RETORNO TIENE QUE SER POSTERIOR A LA EXCURSION.
-        e["excursion_ok"] = bool(i_toque > k)
+        # DEFECTO_001. `first_touch_ms` es FIN DE BARRA, no el instante del
+        # toque: bigtrap2.py:174 compara el rango de la barra cerrada contra la
+        # zona. Comparar ese ms contra `k` en indices de tick contaba como valido
+        # el caso en que excursion y toque caen en la MISMA barra, aunque el
+        # toque real precediera a la excursion.
+        #
+        # La comparacion tiene que ser POR BARRA, y estricta.
+        bar_de_k = int(np.searchsorted(bar_end, ts[i0 + k], side="left"))
+        e["excursion_ok"] = bool(e["first_touch_bar"] > bar_de_k)
 
     # ORDEN A: decongestionar todo, despues exigir excursion.
     dA = decongest_first_touch_events(eventos, session_date_of_ms=session_date_ct,
