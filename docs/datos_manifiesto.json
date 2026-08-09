@@ -48,6 +48,26 @@
    "bytes": 168196042,
    "sha256": "8b144a54a85b1fb75b2a068bc5ae0171f846aa5c084070685770770687780f46"
   },
+  "data/nt8/6E_prev_20260803_captura_rala/6E_03-26_ticks.parquet": {
+   "bytes": 85682539,
+   "sha256": "425a1f27f53853fa703ea7270598efa638f90f4a2d88b833d8a291ef3ccbf312"
+  },
+  "data/nt8/6E_prev_20260803_captura_rala/6E_06-26_ticks.parquet": {
+   "bytes": 92468163,
+   "sha256": "fd2e358d2b9b5ffa7a48057b6b90e94211c56db252ca884b161b9606e7fab83d"
+  },
+  "data/nt8/6E_prev_20260803_captura_rala/6E_09-25_ticks.parquet": {
+   "bytes": 33663124,
+   "sha256": "f8959d958815b6b8196aed203e6db187398d286cb95b27ee8d660e88d8a37adb"
+  },
+  "data/nt8/6E_prev_20260803_captura_rala/6E_09-26_ticks.parquet": {
+   "bytes": 37559162,
+   "sha256": "654e006e483f62727dd2d52680e41b0c4c03531a3763471a1ba3532497883a06"
+  },
+  "data/nt8/6E_prev_20260803_captura_rala/6E_12-25_ticks.parquet": {
+   "bytes": 76830938,
+   "sha256": "fa0ee010af08edc6e95242e5ebacc55954e64e23b778862a61c34505cc62c8b0"
+  },
   "data/nt8/ES_parquet/ES_03-26_ticks.parquet": {
    "bytes": 991106327,
    "sha256": "948067cfb66a6c7cd19bed1c6f87c2a0877b1764740a00714e23edd1749a9c35"
@@ -149,11 +169,12 @@
    "sha256": "6e0cea584fbe88ebf64451cac2601e55bb5cf289ff199b7cd4bd6d42e8a45da5"
   }
  },
- "bytes_totales": 17293314529,
- "n_archivos": 37,
+ "bytes_totales": 17619518455,
+ "n_archivos": 42,
  "no_transporta": "los datos hay que copiarlos por fuera de git. Esto solo da la certeza de estar copiando los mismos.",
  "outcomes_accessed": false,
- "por_que": "data/ esta gitignoreado por politica, asi que los parquets no viajan con el repo. Sin esto, dos maquinas pueden tener archivos distintos con el mismo nombre y nadie se entera -- que es la falla que ya produjo dos veredictos opuestos con el manifiesto de universo.",
+ "por_que": "data/ esta gitignoreado por politica, asi que los parquets no viajan con el repo. Sin esto dos maquinas pueden tener archivos distintos con el mismo nombre y nadie se entera.",
  "que_es": "identidad de los parquets de ticks: ruta, bytes y sha256. NO contiene una sola fila de datos.",
- "schema_version": "datos_manifiesto_v1"
+ "schema_version": "datos_manifiesto_v2",
+ "v2": "--emitir FUSIONA en vez de reemplazar. La v1 reescribia el manifiesto entero con lo que hubiera en disco, asi que una maquina parcial BORRABA las declaraciones de la otra: el 2026-08-09 cayo de 31 a 11 y ES/NQ -- los de la replicacion -- dejaron de estar declarados."
 }

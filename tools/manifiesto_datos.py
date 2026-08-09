@@ -88,6 +88,9 @@ def main(argv=None):
     ap.add_argument("--emitir", action="store_true",
                     help="FUSIONA lo que hay en disco con lo ya declarado. "
                          "Nunca borra una declaracion en silencio.")
+    ap.add_argument("--exigir-completo", action="store_true",
+                    help="que FALTA tambien falle: para cuando SI hace falta el "
+                         "conjunto entero en esta maquina")
     ap.add_argument("--retirar", nargs="*", default=[],
                     help="retirar declaraciones POR RUTA, explicito y a proposito")
     a = ap.parse_args(argv)
@@ -134,7 +137,8 @@ def main(argv=None):
     rel = "docs/datos_manifiesto.json"
     en_git = declarado_en_git(REPO, rel)
     perdidas = sorted(set(en_git) - set(previo))
-    return informar(previo, actual, "archivos", perdidas)
+    return informar(previo, actual, "archivos", perdidas,
+                    exigir_completo=a.exigir_completo)
 
 
 if __name__ == "__main__":

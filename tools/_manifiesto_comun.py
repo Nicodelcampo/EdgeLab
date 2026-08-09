@@ -116,11 +116,37 @@ def verificar(esperado, actual):
     return faltan, sobran, distintos
 
 
-def informar(esperado, actual, etiqueta, perdidas=()):
+def informar(esperado, actual, etiqueta, perdidas=(), exigir_completo=False):
     """Imprime el veredicto y devuelve el exit code.
 
-    `DIFIERE` y `FALTA` son error. `SIN DECLARAR` no: alguien capturó algo nuevo
-    y todavía no lo declaró, y eso no pone en riesgo ninguna medición.
+    ## Qué es error y qué no, y por qué cambió
+
+    - **`DIFIERE`** — mismo nombre, otros bytes. **Siempre error.** Es el caso
+      peligroso: dos máquinas midiendo sobre archivos distintos y creyendo que
+      son el mismo.
+    - **`perdidas`** — una declaración que estaba y ya no. **Siempre error**: es
+      identidad que se perdió, no un archivo que falta.
+    - **`SIN DECLARAR`** — archivo nuevo todavía sin declarar. No es error.
+    - **`FALTA`** — declarado y ausente. **No es error por defecto**, y esto es
+      un cambio deliberado.
+
+    ## Por qué `FALTA` dejó de fallar
+
+    La primera versión lo trataba como error, con el argumento «lo declaraste,
+    deberías tenerlo». En un setup de **dos máquinas donde ninguna tiene todo**
+    —una tiene `ES`/`NQ`, la otra el archivo `6E_dirty`— eso deja el gate en
+    **rojo permanente**. Y un gate que siempre falla es un gate que alguien va a
+    dejar de mirar: es el mismo defecto que ya apareció una vez, cuando la
+    re-verificación de la sonda abortaba siempre porque `sys.modules` crece.
+
+    El trabajo de este gate es **«¿los archivos que tengo son los correctos?»**,
+    no «¿tengo todos los archivos». La segunda pregunta se contesta abajo, donde
+    sí se sabe cuáles hacen falta: `huella_universo.py` falla si un parquet que
+    va a medir está `AUSENTE`, y cada artefacto publica el `sha256` de su propia
+    entrada.
+
+    Con `exigir_completo=True` vuelve a fallar — para el caso en que sí se
+    necesita el conjunto entero.
     """
     faltan, sobran, distintos = verificar(esperado, actual)
     print("manifiesto: %d %s | en disco: %d" % (len(esperado), etiqueta, len(actual)))
@@ -143,13 +169,17 @@ def informar(esperado, actual, etiqueta, perdidas=()):
     if not (faltan or sobran or distintos or perdidas):
         print("  todo coincide")
         return 0
+    if faltan and not (distintos or perdidas):
+        print("\n  Los %d declarados que faltan NO son error: esta maquina no los"
+              % len(faltan))
+        print("  tiene, y el conjunto se declara entre las dos. Lo que importa es")
+        print("  que NINGUNO de los que si estan DIFIERA -- y ninguno difiere.")
     if distintos:
         print("\n  DIFIERE es el caso grave: mismo nombre, otros bytes. Dos "
               "maquinas\n  midiendo sobre archivos distintos y creyendo que son "
               "el mismo.")
     if faltan:
-        print("\n  FALTA puede ser simplemente que esta maquina no tenga ese "
-              "archivo.\n  NO se arregla re-emitiendo: eso BORRA la declaracion "
-              "en vez de\n  conseguir el archivo, y es exactamente como se "
-              "perdieron ES y NQ.")
-    return 1 if (faltan or distintos or perdidas) else 0
+        print("\n  FALTA no se arregla re-emitiendo: eso BORRA la declaracion en "
+              "vez de\n  conseguir el archivo, y es exactamente como se "
+              "perdieron ES y NQ\n  el 2026-08-09.")
+    return 1 if (distintos or perdidas or (faltan and exigir_completo)) else 0

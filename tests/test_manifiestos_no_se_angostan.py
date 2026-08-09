@@ -104,11 +104,27 @@ def test_DIFIERE_es_error_y_SIN_DECLARAR_no():
         "un archivo nuevo sin declarar no deberia ser error"
 
 
-def test_FALTA_sigue_siendo_error():
-    """Declarado y ausente es error: o se consigue el archivo o se retira la
-    declaración a propósito. Lo que NO se hace es re-emitir para taparlo."""
+def test_FALTA_no_falla_por_defecto_pero_si_con_exigir_completo():
+    """`FALTA` dejo de ser error, y es un cambio deliberado.
+
+    Tratarlo como error dejaba el gate en ROJO PERMANENTE en un setup de dos
+    maquinas donde ninguna tiene todo -- una tiene ES/NQ, la otra el archivo
+    6E_dirty-. Un gate que siempre falla es un gate que alguien va a dejar de
+    mirar: el mismo defecto que ya aparecio cuando la re-verificacion de la
+    sonda abortaba siempre porque `sys.modules` crece.
+
+    El trabajo de este gate es "los archivos que tengo son los correctos", no
+    "tengo todos". La segunda pregunta se contesta donde SI se sabe cuales
+    hacen falta.
+    """
     decl = {"a.parquet": _e("a" * 64), "b.parquet": _e("b" * 64)}
-    assert informar(decl, {"a.parquet": _e("a" * 64)}, "archivos", []) == 1
+    solo_a = {"a.parquet": _e("a" * 64)}
+    assert informar(decl, solo_a, "archivos", []) == 0
+    assert informar(decl, solo_a, "archivos", [], exigir_completo=True) == 1
+
+    # pero un DIFIERE falla igual, con o sin el flag
+    distinto = {"a.parquet": _e("z" * 64)}
+    assert informar(decl, distinto, "archivos", []) == 1
 
 
 def test_fusionar_es_idempotente():
