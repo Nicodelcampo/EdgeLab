@@ -66,6 +66,35 @@ estimando es expectativa neta.
 | 4 | `min_sessions=10` contra 6 sesiones de warm-up en `aVolCellPOI2` | `PASO1_RECUENTO_kT` |
 | 5 | `Gaps2`: cae por mecanismo o por estadística — **sin responder** | ídem §5 |
 
+## 4-bis. ⚠ USAR EL `.venv` DEL REPO — hallado al cerrar la sesión
+
+Todo lo que corrí el 2026-08-09 usó el **Python global**, no el `.venv` del repo,
+que **existe y nunca se activó**. Lo detectó
+`test_sonda_identidad.py::test_venv_tiene_precedencia_sobre_repo`, que falla
+exactamente por eso.
+
+**Los números NO están afectados** — verificado, las dos instalaciones tienen
+versiones idénticas:
+
+```
+             global        .venv
+python       3.12.10       3.12.10
+numpy        2.4.6         2.4.6
+pandas       3.0.3         3.0.3
+```
+
+Y bajo el venv la suite de identidad pasa entera: **17 passed**.
+
+Así que es un problema de **procedimiento, no de resultado**. Pero en la otra
+máquina las versiones podrían no coincidir, y ahí sí cambiaría:
+
+```bash
+./.venv/Scripts/python.exe -m pytest tests/research -q
+./.venv/Scripts/python.exe diag/tasa_senales/f_ambos_filtros.py --T 34
+```
+
+**Correr el Paso 6 con el `.venv`, no con el intérprete global.**
+
 ## 5. Configuración específica de máquina
 
 ```bash
