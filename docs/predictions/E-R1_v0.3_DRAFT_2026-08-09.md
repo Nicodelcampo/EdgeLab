@@ -1,6 +1,8 @@
 # E-R1 v0.3 — pre-registro de EXPLORE-001
 
-**Estado:** **DRAFT. NO SELLADO.** Sellar es acto humano (§7 Paso 5).
+**Estado:** **SELLADO** el 2026-08-09 por autorizacion explicita de Nico.
+→ [`E-R1_v0.3_SELLO_2026-08-09.md`](E-R1_v0.3_SELLO_2026-08-09.md)
+**Sin parametros libres. No se retoca despues del primer outcome.**
 **Fecha de redacción:** 2026-08-09 · Outcome-free · Holdout no tocado
 **Redactado por:** Claude, bajo *«avanzá con el paso 3 y redactá E-R1»*.
 
