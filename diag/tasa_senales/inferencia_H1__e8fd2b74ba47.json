@@ -1,0 +1,34 @@
+{
+ "schema_version": "inferencia_H1_v1",
+ "hipotesis": "H1",
+ "sello": "docs/predictions/E-R1_v0.3.1_SELLO_2026-08-09.md",
+ "artefacto_outcomes": "runner_H1_outcomes__92e16c4fe51d.json",
+ "outcomes_payload_sha256": "92e16c4fe51d4e2cc2683ded48c811410c9311adf557644a2574e961847a352c",
+ "sesiones": 201,
+ "sesiones_con_eventos": 178,
+ "eventos": 424,
+ "estimando": "trade_weighted_expectancy = sum(pnl_net)/sum(n_trades)",
+ "theta_ticks": -2.468472,
+ "ic": {
+  "metodo": "studentized_stationary_interval (bootstrap-t, bloque PPW, SE HAC)",
+  "confianza": 0.999535,
+  "z_multiplicidad": 3.5,
+  "bloque_ppw": 2,
+  "replicas": 20000,
+  "semilla": 20260809,
+  "lower": -5.236961,
+  "upper": 4.978047
+ },
+ "sensibilidad_equal_weight": -2.94172,
+ "diferencia_equal_weight_menos_trade_weighted": -0.473249,
+ "veredicto": "MUERE",
+ "motivo": "GRIS: el IC contiene 0, y el sello declara que gris MUERE por defecto",
+ "regla": "VIVE: IC>0 | MUERE: IC<0 | GRIS: contiene 0 -> MUERE",
+ "outcomes_accessed": true,
+ "code_commit": "889c04845ea8c7096114d97200dba9dd40662c7d",
+ "entorno": {
+  "python": "3.12.7",
+  "plataforma": "Windows-10-10.0.19045-SP0"
+ },
+ "payload_sha256": "e8fd2b74ba47b7fd42476623b0615a069afadd57060d8953d1ac85d8659d0a9b"
+}
