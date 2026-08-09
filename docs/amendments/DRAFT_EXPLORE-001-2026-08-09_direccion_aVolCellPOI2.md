@@ -137,18 +137,26 @@ de cambio que `1f0f62d`: toca sólo `events`, no la línea del CSV, así que **l
 paridad no se ve afectada** (verificado de forma independiente: `parity.py`
 consume `zones`, no `events`; `grep zone_id parity.py` → 0).
 
-## 7. Recomendación
+## 7. Recomendación — ~~A~~ **RETIRADA. Ver la decisión.**
 
-**A**, con el control del §6 corrido antes, **si** el presupuesto de multiplicidad
-lo absorbe. Es el único camino que deja a H2 como confirmatoria **sin que nadie
-invente un mecanismo**, y respeta que el indicador —como dijo Nico— no está
-pensado para sugerir dirección.
+> **Esta sección quedó obsoleta el mismo día.** Recomendaba **A**. Al ir a buscar
+> el estimando de §5.1 para calcular la multiplicidad, resultó que los dos brazos
+> **no son dos hipótesis**: con la fricción restada dentro de cada evento,
+> `neto_fade + neto_break = −5,536` constante, así que como máximo uno puede ser
+> positivo y alguno lo es **si y sólo si** `|E[r]| > 2,768`. Eso **es** la prueba
+> bilateral que §5.3 prohíbe.
+>
+> Camino adoptado: **C**.
+> → [`DECISION_2026-08-09_direccion_y_alcance_de_EXPLORE-001.md`](../research/DECISION_2026-08-09_direccion_y_alcance_de_EXPLORE-001.md)
 
-**B** es mejor que A si Nico tiene una tesis de mecanismo genuina y previa, porque
-cuesta la mitad de multiplicidad. Pero tiene que ser suya y enunciada como tal.
+El resto del documento —§1 a §6, la separación de las tres afirmaciones de Nico,
+`R-DIR-1` y el control de balance— **sigue vigente**. Lo único retirado es esta
+recomendación.
 
-**C** es la salida honesta si ninguna de las dos convence, y no bloquea el
-proyecto.
+**B** sigue disponible si Nico enuncia una tesis de mecanismo genuina y previa.
+
+**C** es lo adoptado, y con la lectura del chat externo dejó de ser una etiqueta
+vacía: tiene programa (curva de respuesta, MFE/MAE, vida media, sin dirección).
 
 ## 8. Advertencia de momento
 
