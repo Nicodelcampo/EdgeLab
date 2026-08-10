@@ -41,6 +41,8 @@ Recordatorios:
 - F4 constitucional (información condicional) NO ejecutada — bloqueada por el STOP de abajo.
 - Holdout intacto.
 - Incidente de procedencia Git del 2026-08-10 (`docs/incidents/INCIDENTE_PROCEDENCIA_2026-08-10.md`) **cerrado** — ver `docs/incidents/RESOLUCION_INCIDENTE_PROCEDENCIA_2026-08-10.md`. Las reglas 15–18 de abajo son la práctica permanente que deja como saldo.
+- **Dos familias nuevas registradas** (observación de Nico, no ejecutadas): `docs/research/H-COND-1_LUX-IMB_PROTOCOLO.md` (indicador LuxAlgo Imbalance Detector sobre ES; **bloqueada** — su render elimina zonas mitigadas del gráfico, así que "ver reaccionar el precio" puede ser sesgo de supervivencia del dibujo, no señal) y `docs/research/H-SWEEP-1_YM_PRERANGE.md` (ventana 08:12–09:12 ET sobre YM; 5-de-6 no rechaza ni una moneda; `edgelab/sessions.py` sólo ve RTH 09:30–16:00 y devolvería vacío en silencio sobre esta ventana — hace falta constructor de sesión parametrizable antes de tocarla).
+- **Defecto crítico verificado en el gate G2** (`edgelab/research/g2.py` / `g2_decision.py`): el MCPT implementado no testea lo que su contrato promete, y estructuralmente favorece al edge que decae y penaliza al estable (contradice a G1). El umbral DSR tiene dos rutas contradictorias en el repo: una vacua (`>0`, pasa con ruido) y otra imposible (`AUTHORIZED_DSR_METHOD_SHA256S` vacío, nunca aprueba). Auditoría completa sólo en Notion por ahora; **no se toca el código sin decisión de Nico** (enmienda `G2-A1` propuesta, 3 preguntas abiertas). No bloquea nada de hoy —G2 se usa recién en la etapa de economía— pero si alguna campaña llega ahí antes de resolverlo, el gate no es confiable.
 
 ## Decisión de prioridad vigente (sellada por Nico)
 
@@ -103,6 +105,32 @@ amplía el espacio de búsqueda y el data snooping sin evidencia de que haga fal
   6E no es la de ES/NQ/YM; cada instrumento estima la suya.
 - **`ticks_per_row` y `bar_spec` son ejes distintos** — no confundir un
   parámetro del indicador con la resolución de barra sobre la que corre.
+- **Fuente antes que recuerdo.** Toda afirmación que sostenga una decisión de
+  diseño se verifica contra código, artefacto o fuente primaria en el momento.
+  Recordar una conclusión de un turno anterior no es verificarla.
+- **Integridad precede a interpretación.** Drift de versiones, nulos
+  defectuosos, calendarios no habilitados o artefactos no publicados bloquean
+  la promoción de un resultado. Un resultado así se conserva como provisional;
+  nunca se eleva por urgencia.
+- **Toda muerte tiene alcance preciso.** Una hipótesis muerta invalida
+  exactamente su mecanismo, población, estimand y ejecución declarados.
+  Ampliar la muerte a toda una familia requiere evidencia adicional propia;
+  reducirla para rescatarla, también.
+- **Cada familia de indicador/zona se registra antes de estudiarse**: declara
+  indicador, subfamilias habilitadas, parámetros congelados y ledger propio.
+  No se transportan resultados, poblaciones, costos, oráculos ni presupuesto
+  de multiplicidad entre familias (BigTrap2, LUX-IMB, YM-PRERANGE y las que
+  sigan son independientes). **Si el render de un indicador elimina zonas al
+  ser mitigadas/atravesadas, el estado dibujado en pantalla NO es evidencia
+  admisible** — lo que se ve reaccionar puede ser el sesgo de supervivencia de
+  la regla de dibujo, no el mercado. Exige censo as-of que incluya las zonas
+  muertas y una auditoría antirepintado antes de interpretar cualquier
+  observación visual sobre ese indicador.
+- **Todo nulo publica su MDE, y todo efecto se mide en dos canales**: el
+  direccional Y el no direccional, más la distribución completa. Un resultado
+  nulo sin MDE mínimo detectable no distingue ausencia de efecto de falta de
+  poder; un efecto real bidireccional puede promediar exactamente cero si sólo
+  se mira el canal direccional.
 - No mirar el holdout para diseñar o elegir. No seleccionar por P&L máximo
   aislado. No ocultar resultados negativos. No ejecutar fills imposibles.
 - Tests con fixtures chicos y deterministas; sin dependencias pesadas nuevas
