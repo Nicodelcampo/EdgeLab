@@ -36,6 +36,7 @@ estados del que se la extrae.
 | M12 | **F1.3** depleción por índice de toque | 30,3 % (toque 1) → 16,7 % (>10); plano en 1–4 (77 % de la masa) | ídem |
 | M13 | **F1.1** nulo contra zonas aleatorias, dos diseños (posición libre / desplazamiento local) | **tocar: real 97,9 % vs nulo-B 51,4 % — 201/201 sesiones.** Romper: casi igual (0,8 pp) | `F1_nulo_zonas_aleatorias__ac9d001dc815.json` |
 | M14 | **F0.3** features de estado (`materialize_features`, primer uso en research) | cobertura 99,3 % · `inside_zone` 7,95 % · pico intradía 11-13h CT | `F0.3_features_estado__37db8426120d.json` |
+| M15 | **YM** ingesta y habilitación en el bridge (5 contratos, 23,2M ticks) | 0 líneas no parseadas, 0 desorden; huso horario verificado por gap de fin de semana | `data/nt8/YM_parquet/`, `YM_INGESTA_Y_HABILITACION_2026-08-10.md` |
 
 ---
 
@@ -113,16 +114,19 @@ mecánica de cambiar **qué cuenta como ruptura**, no cuántas zonas hay.
 
 ### 2.5 Instrumentos — investigado, sigue bloqueado, y ahora se sabe por qué
 
-Sólo **6E** (4 contratos, 201 sesiones). Se verificó hoy el estado real de ES y
-NQ: **los parquets canónicos ya existen** (`data/nt8/ES_parquet/`,
-`data/nt8/NQ_parquet/`, con sus manifiestos) — no es un problema de datos
-faltantes. **El bloqueo es que `dias_research()` lee el calendario de estudio
-desde un archivo de universo que enumera exclusivamente nombres de contrato
-6E** (`post_sepmin.py:109-113`, `cargar_dias_de_estudio`). Extender el
-calendario a ES/NQ es, por la regla nueva de `CLAUDE.md` §Reglas permanentes,
-una decisión de población que **se enumera y justifica por escrito antes de
-tomarse** — no algo para resolver al margen de otra tarea. Queda como el
-siguiente paso concreto, con el bloqueo identificado y no sólo nombrado.
+Sólo **6E** (4 contratos, 201 sesiones) entra a los análisis de research. Se
+verificó el estado real de ES, NQ **y ahora YM**: **los parquets canónicos ya
+existen para los tres** (`data/nt8/ES_parquet/`, `data/nt8/NQ_parquet/`,
+`data/nt8/YM_parquet/` — este último ingerido y habilitado en el catálogo del
+bridge hoy mismo, ver `YM_INGESTA_Y_HABILITACION_2026-08-10.md`) — no es un
+problema de datos faltantes. **El bloqueo es que `dias_research()` lee el
+calendario de estudio desde un archivo de universo que enumera exclusivamente
+nombres de contrato 6E** (`post_sepmin.py:109-113`, `cargar_dias_de_estudio`).
+Extender el calendario a ES/NQ/YM es, por la regla nueva de `CLAUDE.md`
+§Reglas permanentes, una decisión de población que **se enumera y justifica
+por escrito antes de tomarse** — no algo para resolver al margen de otra
+tarea. Los tres esperan en la misma cola, con el bloqueo identificado y no
+sólo nombrado.
 
 Es F3, y sigue siendo la mejora de potencia más barata disponible una vez
 habilitada: `SE ∝ 1/√n`.
