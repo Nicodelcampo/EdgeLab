@@ -1,39 +1,69 @@
-"""G2 — Robustez estadística. Implementa `docs/edge_validation_contract.md` §G2.
+"""Primitivas estadísticas de G2 bajo la enmienda G2-A1.
 
-Se construye **antes** de tener un candidato positivo, a propósito: escribir el
-test estadístico después de ver un resultado bueno invita a ajustarlo hasta que
-lo apruebe. Acá los umbrales vienen del contrato sellado y las funciones se
-verifican contra datos sintéticos con verdad conocida.
+La persistencia y la decisión canónica viven en ``g2_decision.py``. Este módulo
+no pretende fabricar un nulo universal: cada campaña debe generar réplicas que
+rompan exactamente la relación bajo prueba y preserven sus nuisance variables.
 
-Cinco pruebas duras (§G2):
+Cambios centrales de G2-A1:
 
-1. `mcpt`             — permutación por bloques de sesión, p ≤ 0.05, ≥1000 perms.
-2. `pbo_cscv`         — PBO ≤ 0.50 vía CSCV con S = 8.
-3. `deflated_sharpe`  — DSR > 0 con nº de trials = N_eff del manifiesto.
-4. `walk_forward`     — re-selección por contrato; agregado WF-OOS neto > 0.
-5. `parameter_sensitivity` — vecinos ±1 paso: mediana de expectancies netas > 0.
-
-Sin dependencias nuevas: `statistics.NormalDist` (stdlib) cubre Φ y Φ⁻¹.
+* ``mcpt`` legado queda retirado de decisiones: medía concentración temporal,
+  no expectativa positiva.
+* ``campaign_null_pvalue`` sólo reduce un nulo ya generado y preregistrado.
+* PBO y walk-forward usan el ratio canónico ``sum_pnl_net / n_trades``.
+* DSR requiere probabilidad >= 0.95 y una corrección HAC por sesión versionada.
+* El IC bootstrap-t por sesión es un sexto requisito duro de composición.
 """
 from __future__ import annotations
 
-import itertools
+import hashlib
+import json
 import math
 from dataclasses import dataclass
+from math import isfinite
 from statistics import NormalDist
 
-# --- umbrales DUROS del contrato (no se tocan sin enmienda aprobada) --------
+from edgelab.research.g2_ratio import (
+    CSCV_S,
+    PBO_MAX,
+    pbo_ratio_cscv,
+    walk_forward_ratio,
+)
+
 MCPT_MAX_P = 0.05
 MCPT_MIN_PERMS = 1000
-PBO_MAX = 0.50
-CSCV_S = 8
-DSR_MIN = 0.0
+DSR_MIN = 0.95
+PRIMARY_CI_MIN_LOWER = 0.0
+
+DSR_DEPENDENCE_METHOD = "session_hac_bartlett_v1"
+_DSR_METHOD_SPEC = {
+    "id": DSR_DEPENDENCE_METHOD,
+    "observational_unit": "session",
+    "scale": "non_annualized",
+    "sharpe": "mean(session_return)/population_sd(session_return)",
+    "dependence": "Bartlett HAC long-run variance of centered session returns",
+    "effective_n": "max(2,n/max(1,HAC_variance/sample_variance))",
+    "lag_default": "floor(cuberoot(n)), bounded to [1,n-1]",
+    "multiplicity": "expected maximum Sharpe with manifest N_eff",
+    "tail": "P(SR_observed > expected_max_SR_under_null)",
+}
+DSR_METHOD_SHA256_V1 = hashlib.sha256(
+    json.dumps(
+        _DSR_METHOD_SPEC,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+).hexdigest()
 
 _N = NormalDist()
 _EULER = 0.5772156649015329
 
 
-@dataclass
+class G2SemanticError(ValueError):
+    """La operación no representa la semántica G2 aprobable."""
+
+
+@dataclass(frozen=True)
 class G2Result:
     name: str
     value: float
@@ -42,18 +72,36 @@ class G2Result:
     detail: str = ""
 
     def __str__(self):
-        return "%-22s %10.4f  (umbral %.4f)  %s%s" % (
-            self.name, self.value, self.threshold,
+        return "%-26s %10.4f  (umbral %.4f)  %s%s" % (
+            self.name,
+            self.value,
+            self.threshold,
             "PASS" if self.passed else "FAIL",
-            ("  — " + self.detail) if self.detail else "")
+            ("  — " + self.detail) if self.detail else "",
+        )
 
 
-# --------------------------------------------------------------------------- #
-# 1. MCPT — permutación por bloques de SESIÓN
-# --------------------------------------------------------------------------- #
+@dataclass(frozen=True)
+class SessionDSRResult:
+    probability: float
+    sharpe: float
+    n_observations: int
+    n_effective: float
+    n_trials_effective: float
+    skew: float
+    kurtosis: float
+    hac_lag: int
+    dependence_method: str = DSR_DEPENDENCE_METHOD
+    method_sha256: str = DSR_METHOD_SHA256_V1
+
+
+# ---------------------------------------------------------------------------
+# Utilidades deterministas
+# ---------------------------------------------------------------------------
 def _lcg(seed):
-    """Generador determinista propio: el resultado no puede depender de la
-    versión de numpy ni del estado global de random."""
+    """PRNG histórico, conservado para fixtures y reproducibilidad."""
+    if not isinstance(seed, int) or isinstance(seed, bool):
+        raise G2SemanticError("seed debe ser entero")
     x = seed & 0xFFFFFFFF
     while True:
         x = (1664525 * x + 1013904223) & 0xFFFFFFFF
@@ -61,205 +109,342 @@ def _lcg(seed):
 
 
 def _shuffle(seq, rng):
-    """Fisher-Yates con el LCG: reproducible entre corridas y máquinas."""
-    a = list(seq)
-    for i in range(len(a) - 1, 0, -1):
-        j = next(rng) % (i + 1)
-        a[i], a[j] = a[j], a[i]
-    return a
+    """Fisher-Yates determinista."""
+    values = list(seq)
+    for index in range(len(values) - 1, 0, -1):
+        other = next(rng) % (index + 1)
+        values[index], values[other] = values[other], values[index]
+    return values
 
 
-def mcpt(returns, session_ids, n_perm=MCPT_MIN_PERMS, seed=12345):
-    """p-valor por permutación de BLOQUES DE SESIÓN (§G2).
+def _number(value, field):
+    if (
+        not isinstance(value, (int, float))
+        or isinstance(value, bool)
+        or not isfinite(value)
+    ):
+        raise G2SemanticError("%s debe ser numérico finito" % field)
+    return float(value)
 
-    `returns[i]` es el neto del trade i y `session_ids[i]` su sesión. La hipótesis
-    nula permuta el orden de las **sesiones completas**, no de los trades
-    individuales: eso preserva la autocorrelación intradía, que es justamente lo
-    que una permutación ingenua destruiría (inflando la significancia).
 
-    El estadístico es la **suma neta**. p = (1 + #{perm ≥ observado}) / (1 + n_perm),
-    la forma sesgada-conservadora: nunca devuelve p = 0.
+# ---------------------------------------------------------------------------
+# 1. Nulo de campaña; el generador es externo y preregistrado
+# ---------------------------------------------------------------------------
+def campaign_null_pvalue(observed, null_statistics):
+    """Reduce estadísticas nulas preregistradas a un p-valor unilateral.
+
+    Esta función NO genera el nulo. La campaña debe persistir ``null_id``,
+    hipótesis, supuesto de intercambiabilidad, semilla, generador y digest. El
+    estadístico observado y cada réplica deben usar el mismo estimando.
     """
-    if n_perm < MCPT_MIN_PERMS:
-        raise ValueError("el contrato exige >= %d permutaciones, no %d"
-                         % (MCPT_MIN_PERMS, n_perm))
+    observed = _number(observed, "observed")
+    values = tuple(_number(value, "null_statistics") for value in null_statistics)
+    if len(values) < MCPT_MIN_PERMS:
+        raise G2SemanticError(
+            "G2 exige al menos %d réplicas nulas; recibió %d"
+            % (MCPT_MIN_PERMS, len(values))
+        )
+    worse_or_equal = sum(value >= observed for value in values)
+    return (1.0 + worse_or_equal) / (1.0 + len(values)), observed
+
+
+def _ordered_session_blocks(returns, session_ids):
     if len(returns) != len(session_ids):
-        raise ValueError("returns y session_ids deben tener el mismo largo")
+        raise G2SemanticError("returns y session_ids deben tener el mismo largo")
     if not returns:
-        return 1.0, 0.0
+        return (), ()
+    order = []
+    blocks = {}
+    closed = set()
+    sentinel = object()
+    previous = sentinel
+    for raw_return, session_id in zip(returns, session_ids):
+        try:
+            hash(session_id)
+        except TypeError as exc:
+            raise G2SemanticError("session_id debe ser hashable") from exc
+        if session_id != previous:
+            if previous is not sentinel:
+                closed.add(previous)
+            if session_id in closed:
+                raise G2SemanticError(
+                    "cada sesión debe ocupar un bloque contiguo y ordenado"
+                )
+            order.append(session_id)
+            blocks[session_id] = []
+            previous = session_id
+        blocks[session_id].append(_number(raw_return, "return"))
+    return tuple(order), blocks
 
-    bloques = {}
-    for r, s in zip(returns, session_ids):
-        bloques.setdefault(s, []).append(r)
-    claves = sorted(bloques)
-    if len(claves) < 2:
-        # Con una sola sesión no hay nada que permutar: se declara, no se finge.
-        return 1.0, float(sum(returns))
 
-    # Estadístico observado. Bajo permutación de bloques la SUMA total no cambia,
-    # así que el estadístico es la suma de los k primeros bloques (la mitad
-    # temporal): mide si el resultado se concentra donde realmente ocurrió.
-    k = max(1, len(claves) // 2)
-    obs = sum(sum(bloques[c]) for c in claves[:k])
+def temporal_concentration_test(
+    returns, session_ids, n_perm=MCPT_MIN_PERMS, seed=12345
+):
+    """Diagnóstico histórico: concentración en la primera mitad de sesiones.
 
-    rng = _lcg(seed)
-    peores = 0
-    for _ in range(n_perm):
-        perm = _shuffle(claves, rng)
-        stat = sum(sum(bloques[c]) for c in perm[:k])
-        if stat >= obs:
-            peores += 1
-    return (1.0 + peores) / (1.0 + n_perm), float(obs)
-
-
-# --------------------------------------------------------------------------- #
-# 2. PBO vía CSCV
-# --------------------------------------------------------------------------- #
-def pbo_cscv(matrix, s=CSCV_S):
-    """Probability of Backtest Overfitting (Bailey et al.), CSCV con S bloques.
-
-    `matrix[t][c]` = performance del config `c` en el sub-período `t`.
-
-    Para cada partición del tiempo en mitad train / mitad test: se elige el mejor
-    config **in-sample** y se mide su **rango relativo out-of-sample**. Si el
-    ganador in-sample cae sistemáticamente por debajo de la mediana OOS, el
-    procedimiento de selección está sobreajustando.
-
-    PBO = fracción de particiones con logit λ ≤ 0.
+    No prueba expectativa positiva y está prohibido como gate. Se conserva sólo
+    para reproducir artefactos anteriores a G2-A1 y demostrar por qué fallaban.
     """
-    T = len(matrix)
-    if T < s:
-        raise ValueError("hacen falta al menos S=%d filas de tiempo, hay %d" % (s, T))
-    n_cfg = len(matrix[0])
-    if n_cfg < 2:
-        raise ValueError("PBO necesita al menos 2 configs para rankear")
-
-    corte = [round(i * T / s) for i in range(s + 1)]
-    bloques = [list(range(corte[i], corte[i + 1])) for i in range(s)]
-
-    lambdas = []
-    for comb in itertools.combinations(range(s), s // 2):
-        tr = [i for b in comb for i in bloques[b]]
-        te = [i for b in range(s) if b not in comb for i in bloques[b]]
-        if not tr or not te:
-            continue
-        perf_tr = [sum(matrix[t][c] for t in tr) for c in range(n_cfg)]
-        perf_te = [sum(matrix[t][c] for t in te) for c in range(n_cfg)]
-        best = max(range(n_cfg), key=lambda c: perf_tr[c])
-        # rango relativo OOS del ganador in-sample (1 = el mejor)
-        orden = sorted(range(n_cfg), key=lambda c: perf_te[c])
-        rango = orden.index(best) + 1
-        w = rango / (n_cfg + 1.0)
-        w = min(max(w, 1e-9), 1 - 1e-9)
-        lambdas.append(math.log(w / (1 - w)))
-
-    if not lambdas:
-        raise ValueError("no se generaron particiones CSCV")
-    pbo = sum(1 for x in lambdas if x <= 0) / len(lambdas)
-    return pbo, lambdas
+    if (
+        not isinstance(n_perm, int)
+        or isinstance(n_perm, bool)
+        or n_perm < MCPT_MIN_PERMS
+    ):
+        raise G2SemanticError(
+            "el diagnóstico exige >= %d permutaciones" % MCPT_MIN_PERMS
+        )
+    order, blocks = _ordered_session_blocks(returns, session_ids)
+    if not order:
+        return 1.0, 0.0
+    if len(order) < 2:
+        return 1.0, float(sum(returns))
+    k = max(1, len(order) // 2)
+    observed = sum(sum(blocks[session]) for session in order[:k])
+    rng = _lcg(seed)
+    worse_or_equal = 0
+    for _ in range(n_perm):
+        permuted = _shuffle(order, rng)
+        statistic = sum(sum(blocks[session]) for session in permuted[:k])
+        if statistic >= observed:
+            worse_or_equal += 1
+    return (1.0 + worse_or_equal) / (1.0 + n_perm), float(observed)
 
 
-# --------------------------------------------------------------------------- #
+def mcpt(*_args, **_kwargs):
+    """Retirado: el MCPT anterior no era un test de edge."""
+    raise G2SemanticError(
+        "mcpt() fue retirado por G2-A1: use un NullGenerator específico de "
+        "campaña y campaign_null_pvalue(); para reproducibilidad histórica use "
+        "temporal_concentration_test()"
+    )
+
+
+# ---------------------------------------------------------------------------
+# 2. PBO por ratio canónico
+# ---------------------------------------------------------------------------
+def pbo_cscv(matrix, s=CSCV_S):
+    """Compatibilidad de nombre; exige ``RatioCell`` y rankea por expectativa."""
+    result = pbo_ratio_cscv(matrix, s=s)
+    return result.pbo, list(result.lambdas)
+
+
+# ---------------------------------------------------------------------------
 # 3. Deflated Sharpe Ratio
-# --------------------------------------------------------------------------- #
+# ---------------------------------------------------------------------------
 def expected_max_sharpe(n_trials, var_sharpe):
-    """SR esperado del MEJOR de `n_trials` intentos bajo la nula (Bailey/LdP)."""
+    """Sharpe esperado del mejor de ``n_trials`` intentos bajo la nula."""
+    n_trials = _number(n_trials, "n_trials")
+    var_sharpe = _number(var_sharpe, "var_sharpe")
+    if n_trials < 1:
+        raise G2SemanticError("n_trials debe ser >= 1")
+    if var_sharpe < 0:
+        raise G2SemanticError("var_sharpe no puede ser negativa")
     if n_trials < 2:
         return 0.0
-    sd = math.sqrt(max(var_sharpe, 0.0))
-    a = _N.inv_cdf(1 - 1.0 / n_trials)
-    b = _N.inv_cdf(1 - 1.0 / (n_trials * math.e))
-    return sd * ((1 - _EULER) * a + _EULER * b)
+    standard_deviation = math.sqrt(var_sharpe)
+    first = _N.inv_cdf(1 - 1.0 / n_trials)
+    second = _N.inv_cdf(1 - 1.0 / (n_trials * math.e))
+    return standard_deviation * (
+        (1 - _EULER) * first + _EULER * second
+    )
 
 
-def deflated_sharpe(sharpe, n_obs, n_trials, skew=0.0, kurt=3.0,
-                    var_sharpe=None):
-    """DSR: probabilidad de que el Sharpe observado supere al esperado por azar
-    tras cobrar **todas** las variantes probadas (`n_trials` = N_eff, §G2).
-
-    Corrige por el número de intentos y por los momentos de orden superior: una
-    estrategia con cola izquierda gruesa necesita más Sharpe para el mismo DSR.
-    """
+def deflated_sharpe(
+    sharpe,
+    n_obs,
+    n_trials,
+    skew=0.0,
+    kurt=3.0,
+    var_sharpe=None,
+):
+    """Probabilidad DSR; ``sharpe`` siempre es por observación, no anualizado."""
+    sharpe = _number(sharpe, "sharpe")
+    n_obs = _number(n_obs, "n_obs")
+    n_trials = _number(n_trials, "n_trials")
+    skew = _number(skew, "skew")
+    kurt = _number(kurt, "kurt")
     if n_obs < 2:
         return 0.0
+    if n_trials < 1:
+        raise G2SemanticError("n_trials debe ser >= 1")
     if var_sharpe is None:
-        # varianza del estimador de Sharpe bajo no-normalidad
-        var_sharpe = (1 - skew * sharpe + (kurt - 1) / 4.0 * sharpe ** 2) / (n_obs - 1)
-    sr0 = expected_max_sharpe(n_trials, var_sharpe)
-    den = math.sqrt(max(var_sharpe, 1e-18))
-    return _N.cdf((sharpe - sr0) / den)
+        var_sharpe = (
+            1 - skew * sharpe + (kurt - 1) / 4.0 * sharpe**2
+        ) / (n_obs - 1)
+    var_sharpe = _number(var_sharpe, "var_sharpe")
+    if var_sharpe <= 0:
+        raise G2SemanticError("var_sharpe debe ser positiva")
+    expected = expected_max_sharpe(n_trials, var_sharpe)
+    return _N.cdf((sharpe - expected) / math.sqrt(var_sharpe))
 
 
-# --------------------------------------------------------------------------- #
-# 4. Walk-forward por contrato
-# --------------------------------------------------------------------------- #
+def deflated_sharpe_sessions(session_returns, n_trials, hac_lag=None):
+    """DSR formal sobre retornos de sesión con tamaño efectivo HAC conservador."""
+    values = tuple(_number(value, "session_return") for value in session_returns)
+    n = len(values)
+    if n < 3:
+        raise G2SemanticError("DSR formal requiere al menos 3 sesiones")
+    mean = sum(values) / n
+    centered = tuple(value - mean for value in values)
+    second = sum(value * value for value in centered) / n
+    if second <= 0:
+        raise G2SemanticError("DSR indefinido: varianza de sesión no positiva")
+    standard_deviation = math.sqrt(second)
+    sharpe = mean / standard_deviation
+    third = sum(value**3 for value in centered) / n
+    fourth = sum(value**4 for value in centered) / n
+    skew = third / second**1.5
+    kurtosis = fourth / second**2
+
+    if hac_lag is None:
+        hac_lag = max(1, int(n ** (1.0 / 3.0)))
+    if (
+        not isinstance(hac_lag, int)
+        or isinstance(hac_lag, bool)
+        or not 0 <= hac_lag < n
+    ):
+        raise G2SemanticError("hac_lag debe estar entre 0 y n_sessions-1")
+
+    long_run_variance = second
+    for lag in range(1, hac_lag + 1):
+        covariance = sum(
+            centered[index] * centered[index - lag]
+            for index in range(lag, n)
+        ) / n
+        weight = 1.0 - lag / (hac_lag + 1.0)
+        long_run_variance += 2.0 * weight * covariance
+    if not isfinite(long_run_variance):
+        raise G2SemanticError("varianza HAC no finita")
+
+    dependence_factor = max(1.0, long_run_variance / second)
+    n_effective = max(2.0, n / dependence_factor)
+    var_sharpe = (
+        1 - skew * sharpe + (kurtosis - 1) / 4.0 * sharpe**2
+    ) / (n_effective - 1)
+    if var_sharpe <= 0 or not isfinite(var_sharpe):
+        raise G2SemanticError("varianza del Sharpe no positiva")
+    probability = deflated_sharpe(
+        sharpe,
+        n_effective,
+        n_trials,
+        skew=skew,
+        kurt=kurtosis,
+        var_sharpe=var_sharpe,
+    )
+    return SessionDSRResult(
+        probability=probability,
+        sharpe=sharpe,
+        n_observations=n,
+        n_effective=n_effective,
+        n_trials_effective=float(n_trials),
+        skew=skew,
+        kurtosis=kurtosis,
+        hac_lag=hac_lag,
+    )
+
+
+# ---------------------------------------------------------------------------
+# 4. Walk-forward por ratio canónico
+# ---------------------------------------------------------------------------
 def walk_forward(per_fold, folds_ordenados, seleccionar=None):
-    """WF-OOS por contrato (§G2).
-
-    `per_fold[config][fold]` = neto de ese config en ese fold. Para cada fold `k`
-    (k ≥ 1) se re-elige el ganador usando **sólo** los folds anteriores y se
-    evalúa en `k`. El fold 0 no es evaluable: no tiene historia previa.
-
-    Devuelve (agregado_oos, detalle_por_fold).
-    """
-    if seleccionar is None:
-        def seleccionar(cands):
-            return max(cands, key=lambda kv: kv[1])[0]
-
-    detalle, total = [], 0.0
-    for i in range(1, len(folds_ordenados)):
-        prev = folds_ordenados[:i]
-        test = folds_ordenados[i]
-        cands = [(c, sum(per_fold[c].get(f, 0.0) for f in prev)) for c in per_fold]
-        gan = seleccionar(cands)
-        oos = per_fold[gan].get(test, 0.0)
-        total += oos
-        detalle.append(dict(fold=test, ganador_in_sample=gan, oos_neto=oos,
-                            entrenado_con=list(prev)))
-    return total, detalle
-
-
-# --------------------------------------------------------------------------- #
-# 5. Sensibilidad paramétrica
-# --------------------------------------------------------------------------- #
-def parameter_sensitivity(expectancies, ganador, vecinos):
-    """Mediana de las expectancies netas de los vecinos ±1 paso de grilla (§G2).
-
-    Un ganador rodeado de vecinos negativos es un pico aislado — la firma de un
-    acantilado de sobreajuste, no de un efecto real.
-    """
-    vals = [expectancies[v] for v in vecinos if v in expectancies]
-    if not vals:
-        return None, 0, 0
-    vals.sort()
-    n = len(vals)
-    mediana = vals[n // 2] if n % 2 else (vals[n // 2 - 1] + vals[n // 2]) / 2.0
-    return mediana, sum(1 for v in vals if v > 0), n
-
-
-# --------------------------------------------------------------------------- #
-# Evaluación conjunta
-# --------------------------------------------------------------------------- #
-def evaluar(*, mcpt_p=None, pbo=None, dsr=None, wf_oos=None,
-            sensibilidad_mediana=None):
-    """Aplica los umbrales DUROS del contrato. Todo lo que falte queda FAIL:
-    un gate no evaluado nunca cuenta como aprobado."""
-    out = [
-        G2Result("MCPT p", mcpt_p if mcpt_p is not None else 1.0,
-                 MCPT_MAX_P, mcpt_p is not None and mcpt_p <= MCPT_MAX_P,
-                 "" if mcpt_p is not None else "no evaluado"),
-        G2Result("PBO", pbo if pbo is not None else 1.0,
-                 PBO_MAX, pbo is not None and pbo <= PBO_MAX,
-                 "" if pbo is not None else "no evaluado"),
-        G2Result("DSR", dsr if dsr is not None else -1.0,
-                 DSR_MIN, dsr is not None and dsr > DSR_MIN,
-                 "" if dsr is not None else "no evaluado"),
-        G2Result("WF-OOS neto", wf_oos if wf_oos is not None else -1.0,
-                 0.0, wf_oos is not None and wf_oos > 0.0,
-                 "" if wf_oos is not None else "no evaluado"),
-        G2Result("sensibilidad (mediana)",
-                 sensibilidad_mediana if sensibilidad_mediana is not None else -1.0,
-                 0.0, sensibilidad_mediana is not None and sensibilidad_mediana > 0.0,
-                 "" if sensibilidad_mediana is not None else "no evaluado"),
+    """Compatibilidad de nombre; selecciona y agrega por ratio de totales."""
+    if seleccionar is not None:
+        raise G2SemanticError(
+            "G2-A1 no admite selectores ad-hoc; la métrica canónica está sellada"
+        )
+    result = walk_forward_ratio(per_fold, folds_ordenados)
+    detail = [
+        {
+            "fold": row.fold,
+            "ganador_in_sample": row.selected_config,
+            "oos_neto": row.oos_pnl,
+            "oos_n_trades": row.oos_n_trades,
+            "oos_expectancy": row.oos_ratio,
+            "entrenado_con": list(row.trained_with),
+        }
+        for row in result.selections
     ]
-    return out, all(r.passed for r in out)
+    return result.observed, detail
+
+
+# ---------------------------------------------------------------------------
+# 5. Sensibilidad paramétrica
+# ---------------------------------------------------------------------------
+def parameter_sensitivity(expectancies, ganador, vecinos):
+    """Mediana de expectancies netas por trade de vecinos ±1 paso."""
+    del ganador  # el ganador nunca se incluye en su propia vecindad
+    values = [
+        _number(expectancies[neighbor], "expectancy")
+        for neighbor in vecinos
+        if neighbor in expectancies
+    ]
+    if not values:
+        return None, 0, 0
+    values.sort()
+    n = len(values)
+    median = (
+        values[n // 2]
+        if n % 2
+        else (values[n // 2 - 1] + values[n // 2]) / 2.0
+    )
+    return median, sum(value > 0 for value in values), n
+
+
+# ---------------------------------------------------------------------------
+# Composición diagnóstica; la autoridad persistida es G2ValidationDecision
+# ---------------------------------------------------------------------------
+def evaluar(
+    *,
+    null_p=None,
+    pbo=None,
+    dsr=None,
+    wf_oos=None,
+    sensibilidad_mediana=None,
+    primary_ci_lower=None,
+):
+    """Aplica los seis requisitos de G2-A1; todo faltante falla cerrado."""
+    results = [
+        G2Result(
+            "nulo de campaña p",
+            null_p if null_p is not None else 1.0,
+            MCPT_MAX_P,
+            null_p is not None and null_p <= MCPT_MAX_P,
+            "" if null_p is not None else "no evaluado",
+        ),
+        G2Result(
+            "PBO",
+            pbo if pbo is not None else 1.0,
+            PBO_MAX,
+            pbo is not None and pbo <= PBO_MAX,
+            "" if pbo is not None else "no evaluado",
+        ),
+        G2Result(
+            "DSR",
+            dsr if dsr is not None else -1.0,
+            DSR_MIN,
+            dsr is not None and dsr >= DSR_MIN,
+            "" if dsr is not None else "no evaluado",
+        ),
+        G2Result(
+            "WF-OOS expectancy",
+            wf_oos if wf_oos is not None else -1.0,
+            0.0,
+            wf_oos is not None and wf_oos > 0.0,
+            "" if wf_oos is not None else "no evaluado",
+        ),
+        G2Result(
+            "sensibilidad (mediana)",
+            sensibilidad_mediana if sensibilidad_mediana is not None else -1.0,
+            0.0,
+            sensibilidad_mediana is not None and sensibilidad_mediana > 0.0,
+            "" if sensibilidad_mediana is not None else "no evaluado",
+        ),
+        G2Result(
+            "IC primario (cota inferior)",
+            primary_ci_lower if primary_ci_lower is not None else -1.0,
+            PRIMARY_CI_MIN_LOWER,
+            primary_ci_lower is not None and primary_ci_lower > 0.0,
+            "" if primary_ci_lower is not None else "no evaluado",
+        ),
+    ]
+    return results, all(result.passed for result in results)
