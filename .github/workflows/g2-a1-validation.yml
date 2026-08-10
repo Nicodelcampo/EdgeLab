@@ -15,16 +15,14 @@ on:
       - "tests/research/test_promotion.py"
       - "tests/stats/**"
       - "pyproject.toml"
-  push:
-    branches:
-      - fix/g2-a1-statistical-semantics
   workflow_dispatch:
 
 permissions:
   contents: read
+  pull-requests: write
 
 concurrency:
-  group: g2-a1-${{ github.workflow }}-${{ github.ref }}
+  group: g2-a1-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -87,5 +85,48 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e ".[dev,validation]"
 
-      - name: Run complete suite
-        run: python -m pytest -q
+      - name: Run complete suite and capture output
+        id: full_tests
+        shell: bash
+        run: |
+          set +e
+          python -m pytest -q 2>&1 | tee full-suite.log
+          status=${PIPESTATUS[0]}
+          echo "exit_code=${status}" >> "${GITHUB_OUTPUT}"
+          exit 0
+
+      - name: Publish diagnostic as PR comment
+        if: always() && github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          TEST_EXIT_CODE: ${{ steps.full_tests.outputs.exit_code }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+
+          exit_code = os.environ.get("TEST_EXIT_CODE", "missing")
+          status = "PASS" if exit_code == "0" else "FAIL"
+          log_path = Path("full-suite.log")
+          lines = log_path.read_text(encoding="utf-8", errors="replace").splitlines()
+          tail = "\n".join(lines[-300:])
+          body = (
+              "<!-- g2-a1-full-suite -->\n"
+              f"## G2-A1 full-suite: {status}\n\n"
+              f"Commit: `{os.environ['GITHUB_SHA']}` · exit code: `{exit_code}`\n\n"
+              "<details><summary>Últimas 300 líneas</summary>\n\n"
+              "```text\n" + tail + "\n```\n\n</details>\n"
+          )
+          Path("full-suite-comment.md").write_text(body, encoding="utf-8")
+          PY
+          gh pr comment "${PR_NUMBER}" --body-file full-suite-comment.md
+
+      - name: Enforce full-suite result
+        if: steps.full_tests.outputs.exit_code != '0'
+        env:
+          TEST_EXIT_CODE: ${{ steps.full_tests.outputs.exit_code }}
+        run: |
+          echo "Full suite failed with exit code ${TEST_EXIT_CODE}"
+          exit 1
