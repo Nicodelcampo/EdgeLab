@@ -1,8 +1,8 @@
-# === EdgeLab .gitignore (F0A baseline) ===
-# Datos, caches y artefactos grandes quedan FUERA de Git.
-# Preservados en el backup inmutable + manifest de _baselines\.
+# === EdgeLab .gitignore ===
+# Datos, caches, secretos y artefactos regenerables quedan fuera de Git.
+# IMPORTANTE: /data/ está anclado a la raíz. edgelab/data/ contiene código.
 
-# --- Python ---
+# Python
 __pycache__/
 *.py[cod]
 *.pyo
@@ -14,14 +14,14 @@ __pycache__/
 .coverage
 htmlcov/
 
-# --- Entornos ---
+# Entornos
 .venv/
 .venv-*/
 venv/
 env/
 _env_probes/
 
-# --- Configuración local y secretos ---
+# Configuración local y secretos
 .env
 .env.*
 config.local.*
@@ -30,91 +30,30 @@ config/local.toml
 secrets.*
 credentials.*
 
-# --- Datos grandes (fuera de Git; ver manifest + Data Contract futuro) ---
-# `data/` ENTERO. Antes solo se ignoraban *.parquet y data/nt8/, y el
-# 2026-08-05 aparecio data/nt8_logger/6E_20260731_*.csv -un EventLog de
-# NT8 fechado DENTRO del holdout sellado- sin regla que lo cubriera: un
-# `git add -A` lo habria commiteado. Nada de data/ esta trackeado, asi
-# que la regla amplia no desversiona nada.
-data/
-TickData/
+# Datos grandes — SOLO raíz
+/data/
+/TickData/
 *.Last.txt
 *.zip
 *.rar
 *.7z
 
-# checkpoints de reanudacion: artefactos PARCIALES de una corrida en curso.
-# Commitear uno seria publicar una curva a medias como si fuera un resultado.
+# Checkpoints parciales
 diag/**/*.checkpoint.json
 
-# --- Artefactos de runtime ---
-# `runs/*` y NO `runs/`: con el directorio excluido git no desciende y la
-# negacion de abajo seria inerte ("no se puede re-incluir un archivo si un
-# directorio padre esta excluido").
+# Runtime
 runs/*
-# EXCEPCION: el manifiesto del universo DEFINE LA MUESTRA del estudio. El
-# 2026-08-06 los dos clones de esta maquina tenian versiones distintas -252
-# dias del 27-jul contra 256 del 4-ago- y el gate de muestra minima daba
-# BLOQUEADO en uno y PASS en el otro. Nadie podia notarlo. 45 KB que tienen
-# que ser reproducibles.
 !runs/censo/
 runs/censo/*
 !runs/censo/manifiesto_universo.json
 cache/
-.mypy_cache/
-.ruff_cache/
-.coverage
-htmlcov/
-
-# --- Entornos ---
-.venv/
-.venv-*/
-venv/
-env/
-_env_probes/
-
-# --- Configuración local y secretos ---
-.env
-.env.*
-config.local.*
-*.local.toml
-config/local.toml
-secrets.*
-credentials.*
-
-# --- Datos grandes (fuera de Git; ver manifest + Data Contract futuro) ---
-# `data/` ENTERO. Antes solo se ignoraban *.parquet y data/nt8/, y el
-# 2026-08-05 aparecio data/nt8_logger/6E_20260731_*.csv -un EventLog de
-# NT8 fechado DENTRO del holdout sellado- sin regla que lo cubriera: un
-# `git add -A` lo habria commiteado. Nada de data/ esta trackeado, asi
-# que la regla amplia no desversiona nada.
-data/
-TickData/
-*.Last.txt
-*.zip
-*.rar
-*.7z
-
-cache/
 artifacts/
 logs/
 *.log
-# EXCEPCION: un log que es la UNICA evidencia preservada de una afirmacion
-# publicada deja de ser un log descartable y pasa a ser un artefacto. Este
-# sostiene el RSS pico y el veredicto de equivalencia que publica la curva, y
-# el `*.log` de arriba lo estaba dejando afuera EN SILENCIO -lo detecto la
-# puerta de citas, no una lectura-. Ver docs/SCRATCHPAD_PROVENANCE_AUDIT_2026-08-07.md
 !diag/tasa_senales/rss_y_equivalencia_70s.log
-
-# --- Artefactos generados grandes (regenerables) ---
 suspicious_trades.csv
 
-# --- Oráculos NT8 (EventLogs reales; data fuera de Git, ver oracles/README.md) ---
-#  y no : el patron viejo NO matcheaba subdirectorios, asi que
-# oracles/split/*.csv quedo versionado sin que nadie lo decidiera. Esos
-# tres son de 2026-06-14/18 -anteriores al holdout- asi que no hubo fuga,
-# pero fue suerte: una captura de julio en un subdirectorio se habria
-# commiteado sin aviso, y git no olvida. Ver docs/D2_VERSIONAR_ORACULOS_ANALISIS.md
+# Oráculos reales
 oracles/**/*.csv
 oracles/**/*.txt
 oracles/**/*.bak
@@ -122,20 +61,16 @@ oracles/*.csv
 oracles/*.txt
 oracles/*.bak
 
-# --- SO / IDE ---
+# SO / IDE
 Thumbs.db
 .DS_Store
 .idea/
 .vscode/
 
-# sidecar de modelos externos: venv aislado + pesos descargados (no entran al repo)
+# Modelos externos
 sidecar/kronos_env/
 sidecar/Kronos/
 sidecar/pesos/
 
-# Backups locales de indicadores NT8 restaurados durante migraciones.
-# NO se ignora todo archive/: hay material trackeado a proposito en
-# archive/cuarentena/, archive/parquets_v1_export_20260721/ y
-# archive/tickbar_invalidadas/, y 7 backups .cs ya versionados aca dentro
-# (git no desversiona lo ya trackeado por agregar una regla).
+# Backups locales NT8
 archive/nt8_cs_backup/

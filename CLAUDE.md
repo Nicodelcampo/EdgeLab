@@ -1,120 +1,67 @@
 # EdgeLab — instrucciones permanentes de sesión
 
-> Este archivo se carga en cada sesión de Claude Code. El documento canónico
-> versionado es **`docs/NORTH_STAR.md`** (sha256 `21bb3b01a33e2b37…`); si hay
-> conflicto, manda ese doc.
+> Fuente rectora: `docs/NORTH_STAR.md`. Punto de entrada: `docs/ESTADO_2026-08-10_EMPEZAR_ACA.md`.
 
-## NORTH STAR — referente rector (gobierna todo)
+## Objetivo
 
-**EL OBJETIVO FINAL DEL PROYECTO ES ENCONTRAR EDGES VÁLIDOS Y APLICABLES EN EL
-MERCADO A TRAVÉS DE ALGORITMOS QUE, A TRAVÉS DE LA RENTABILIDAD, PERMITAN
-OBTENER GANANCIAS EN LAS CUENTAS DE TRADING DONDE SE APLICAN.**
+Encontrar edges válidos y aplicables con expectativa económica neta, validación fuera de muestra y ejecución controlable. Paridad, infraestructura, zonas, información y backtests son niveles intermedios, no edges.
 
-Jerarquía de objetivos (para priorizar cualquier tarea o trade-off):
-1. Expectativa económica NETA (después de comisiones, spread y slippage).
-2. Validez fuera de muestra (holdout sellado, sin data snooping).
-3. Robustez estadística (MCPT, PBO, DSR/SPA, walk-forward, sensibilidad).
-4. Ejecutabilidad real (feed en vivo, fills realistas, latencia, reglas
-   completas de entrada/salida/sizing/kill switch).
-5. Control de riesgo (drawdown tolerable, despliegue con riesgo mínimo).
-6. Paridad, determinismo, trazabilidad y visor COMO MEDIOS para 1–5.
+## Estado vigente
 
-Recordatorios:
-- Un indicador con paridad exacta no es un edge. Una zona bien almacenada no
-  es un edge. Un backtest positivo no es un edge si no sobrevive selección,
-  costos, OOS y ejecución.
-- Target-free aplica a la construcción técnica de indicadores; el research de
-  estrategias SÍ usa retornos y P&L, pero bajo pre-registro, presupuesto de
-  investigación, corrección por múltiples pruebas y holdout sellado.
-- El progreso NO se mide por infraestructura terminada sino por cuánto reduce
-  la distancia hacia un edge neto, robusto y operable.
-- No prometer rentabilidad futura: el objetivo metodológico es maximizar la
-  probabilidad de detectar edges reales y rechazar falsos antes de arriesgar
-  capital.
+- H1 está muerta y fue 6E.
+- Resistencia BigTrap2 está refutada.
+- Atracción/revisita permanece provisional en cuarentena.
+- Reruns corregidos y generalización ES fueron reportados localmente, no adjudicados.
+- F4 constitucional no fue ejecutada.
+- Holdout intacto.
 
-## Decisión de prioridad vigente (sellada por Nico)
+## Regla P0 por incidente de procedencia
 
-**F9 (nuevos indicadores) PAUSADA** hasta ejecutar al menos una campaña formal
-de descubrimiento sobre los 5 indicadores existentes. Agregar indicadores hoy
-amplía el espacio de búsqueda y el data snooping sin evidencia de que haga falta.
+Hasta cerrar `docs/incidents/INCIDENTE_PROCEDENCIA_2026-08-10.md`:
 
-## Rituales permanentes
+- no interpretar artefactos afectados;
+- no correr dos sesiones sobre la misma worktree mutable;
+- no considerar `code_commit` suficiente si el árbol estaba dirty;
+- no mezclar el fix de `.gitignore` del proceso separado con commits de research;
+- reemitir desde un commit limpio cualquier salida sin identidad unívoca.
 
-- Todo **checkpoint de turno termina con "Aporte al referente: …"** (1–2 líneas:
-  qué distancia se redujo hacia un edge neto y operable). Obligatorio.
-- Todo **manifiesto de campaña cita el hash de `docs/NORTH_STAR.md`**.
-- Toda **plantilla generadora** (scaffold, spec LLM, reportes) incluye los
-  campos obligatorios **"justificación económica"** y **"cómo podría refutarse"**.
+## Primer comando de cada sesión
 
-## Firewall del holdout (2026-07-01 → 2026-12-31)
-
-- **Prohibido** usar el holdout para elegir dirección, entradas/salidas,
-  thresholds, bar_spec, costos o candidatos.
-- **Permitido** solo para validaciones target-free (paridad, determinismo,
-  geometría, integridad, visor). Una sola apertura por candidato, por protocolo.
-
-## Reglas permanentes
-
-- **Referente rector primero**: toda tarea se justifica por su aporte al edge
-  neto, robusto y operable.
-- No tocar F0–F2 ni el schema canónico; no modificar parquets reales; no editar
-  particiones publicadas (son inmutables).
-- **Causa raíz obligatoria** para todo WARN/FAIL; prohibido ampliar tolerancias
-  o relajar gates después de ver resultados; cambios de semántica de validación
-  se **consultan con Nico**.
-- No mirar el holdout para diseñar o elegir. No seleccionar por P&L máximo
-  aislado. No ocultar resultados negativos. No ejecutar fills imposibles.
-- Tests con fixtures chicos y deterministas; sin dependencias pesadas nuevas
-  (duckdb/polars/pyarrow ya están); sin CUDA.
-- Commits chicos por fase, push al cierre. Si git pide credenciales: frenar y
-  pedir a Nico. Al pushear, usar el token que Nico provea sin persistirlo en
-  `.git/config` y redactarlo de los logs.
-
-## Interrupción por oráculos (prioridad máxima permanente)
-
-Si aparecen CSVs en `oracles\`: interrumpir en punto seguro → validar
-versión/hash del `.cs` y ventana/params → correr gates → **causa raíz de todo
-WARN/FAIL** → promover particiones → regenerar visor → registrar cobertura →
-retomar la tarea anterior.
-
-## STOP antes de correr búsqueda sobre retornos
-
-Antes de ejecutar CUALQUIER búsqueda sobre P&L/retornos: presentar a Nico el
-**manifiesto de campaña + número efectivo de hipótesis + riesgos + datos
-faltantes**, y esperar aprobación. No correr la búsqueda sin ese OK.
-
-## Punteros
-
-- `docs/NORTH_STAR.md` — referente canónico (fuente de verdad).
-- `docs/edge_validation_contract.md` — gates G0–G5 de "edge válido y aplicable".
-- `docs/kernel_contract.md` — construcción técnica target-free de kernels.
-- `docs/nt8_indicator_parity_contract.md` — protocolo de paridad NT8↔Python.
-- `docs/nt8_bridge.md` — store, gate P3, campañas, visor, API de features.
-
-## Entorno
-
-`.venv` (Python 3.12) desde `requirements/core-bridge-dev.lock`. Suite:
-`.venv\Scripts\python -m pytest tests -m "not vectorbt" -q`. Branch de trabajo:
-`foundation/f0b-compatibility-probe` (main = baseline original, no mergear).
-
-## PRIMER COMANDO DE CADA SESIÓN
-
-```
+```powershell
 .venv\Scripts\python tools\estado.py
 ```
 
-Dice en qué rama estás, si coincide con la declarada arriba, si estás
-sincronizado con el remoto, **y si otra rama tiene trabajo que la tuya no
-tiene**. Sale 1 si algo requiere atención. Correlo ANTES de medir cualquier cosa.
+Después verificar raíz, HEAD, worktree y dirty state antes de ejecutar research.
 
-**Regla de una sola rama.** Todo el trabajo va a `foundation/f0b-compatibility-probe`.
-Si hace falta una rama auxiliar, se mergea de vuelta **el mismo día**. El
-2026-08-05 dos máquinas midieron cosas distintas creyendo mirar lo mismo: 70
-commits vivían en una rama que este archivo no mencionaba, y cada lado leyó la
-suya. Las dos lecturas eran internamente coherentes. Ver `docs/AVISO_DIVERGENCIA_DE_RAMAS_2026-08-06.md`.
+## Reglas permanentes
 
-Excepciones que divergen a propósito y `estado.py` no marca: `main`, `backup/*`,
-`preserve/*`.
+1. Fuente antes que recuerdo.
+2. Una worktree por sesión/campaña; un solo escritor por directorio.
+3. Procedencia dirty-aware: `repo_root`, `git_dir`, worktree, `head_start/end`, status, diff hash, fuentes cargadas, datos, entorno y run ID.
+4. Enumerar creación, aproximación, primer toque, toque n-ésimo, invalidación, expiración, confluencia y estado continuo antes de congelar población.
+5. Separar evento de estado.
+6. Separar geometría/lifecycle → información → P&L bruto → edge neto/replicado.
+7. Target-free publica landscapes completos, semillas y nulos; no selecciona por P&L.
+8. STOP antes de retornos/P&L: manifiesto + `M_eff` + riesgos + datos faltantes + aprobación explícita.
+9. No transportar costos entre instrumentos o ejecuciones.
+10. `ticks_per_row` y `bar_spec` son ejes distintos.
+11. Integridad precede a interpretación.
+12. Toda muerte tiene alcance preciso.
+13. Holdout sellado.
+14. Independencia material entre simuladores.
+15. Registro MEDIDO/NO MEDIDO en el mismo commit que cada resultado.
+16. El barrido local `F4_PARAMETROS_RESTANTES` es target-free y no debe confundirse con la F4 constitucional de información condicional.
 
-**Dos clones en esta máquina** — `E:\EdgeLab` y `E:\ProyectosQuant\EdgeLab-sync-desktop`.
-Los dos apuntan al mismo remoto. Correr `estado.py` en el que vayas a usar.
+## Rituales
+
+- Todo checkpoint termina con `Aporte al referente: ...`.
+- Toda campaña cita el hash vigente de `docs/NORTH_STAR.md`.
+- Toda hipótesis declara justificación económica y condición de refutación.
+- Toda población declara el event-space del que fue extraída.
+
+## Entorno y rama
+
+- Usar `.venv` del repo.
+- Rama canónica: `foundation/f0b-compatibility-probe`.
+- No tocar holdout, F4 constitucional ni P&L sin autorización.
+- `/data/` es dato local; `edgelab/data/` es código.

@@ -1,47 +1,49 @@
-# Edge Record: Asian Range Breakout (ARB) + SMA 200
+# EdgeLab — registro de edges promovidos
 
-## 1. Ficha Técnica
-* **Activo:** EURUSD (Spot y Futuros 6E)
-* **Timeframe:** 15 Minutos (M15)
-* **Estilo:** Momentum / Breakout Intradiario
-* **Frecuencia:** ~1.3 trades por día (combinando ventanas)
-* **Validación:** Completada en VectorBT y JForex4 (Tick-Data Real)
-* **Walk-Forward:** Positivo (Sharpe > 0.7 en Train y Test)
+## Estado actual: ninguno
 
-## 2. Lógica del Sistema
-El edge explota la ruptura del rango de consolidación que se forma durante la sesión asiática (baja liquidez), buscando atrapar el flujo de capital institucional que entra con la apertura de Londres y el pre-market de Nueva York, filtrando falsos rompimientos a favor de la tendencia a corto plazo.
+No existe hoy un edge promovido que cumpla la cadena completa de validez técnica, estadística, económica, OOS y aplicabilidad.
 
-### 2.1 Variables Core
-* **Asian Range:** Máximo y mínimo formados entre las `00:00 UTC` y las `08:00 UTC`.
-* **Filtro de Tendencia:** SMA 200 aplicada en gráficos de M15 (representa la tendencia de los últimos ~2.5 días).
+### H1 / BigTrap2 T=34
 
-### 2.2 Condiciones de Entrada
-Se evalúa la ruptura exclusivamente al **cierre** de 4 ventanas horarias clave: `08:45, 09:00, 11:00 y 12:00 UTC`.
+**Estado:** MUERTA.
 
-* **LONG:** El precio de cierre rompe por encima del *Asian High* Y el precio está por encima de la *SMA 200*.
-* **SHORT:** El precio de cierre rompe por debajo del *Asian Low* Y el precio está por debajo de la *SMA 200*.
+- universo: 6E, 201 sesiones pre-holdout;
+- población final: 424 eventos;
+- bruto: `+0,2995 ticks/evento`;
+- fricción: `−2,7680 ticks`;
+- neto: `−2,4685 ticks/evento`;
+- IC 99,9535%: `[-5,2370; +4,9780]`;
+- regla: GRIS → MUERE.
 
-*Nota: Solo se permite 1 trade por ventana por día, con un máximo teórico de 4 trades simultáneos.*
+Esta muerte adjudica la regla de primer toque y su monetización. No convierte automáticamente a toda la familia BigTrap2 en nula.
 
-### 2.3 Gestión de Riesgo (Salidas)
-* **Take Profit:** 20 pips (40 ticks en 6E)
-* **Stop Loss:** 50 pips (100 ticks en 6E)
-* **Time-Stop:** Cierre incondicional de todas las posiciones a las `16:00 UTC` (fin de la sesión líquida, evita el overnight y reduce el drawdown drásticamente).
+### BigTrap2 — función soporte/resistencia
 
-## 3. Estadísticas Consolidadas (JForex 18 Meses)
-* **Capital Inicial:** $50,000 (1 Lote Estándar por señal / $10 el pip)
-* **Net Profit:** +$9,802.71 (+19.6%)
-* **Total Trades:** 473
-* **Frecuencia Mensual:** ~25.5 trades / mes
-* **Resultado Auditoría de Bugs:** Limpio (Sin look-ahead bias, indexación correcta de OHLC, no-repainting).
+**Estado:** FUERTEMENTE REFUTADA.
 
-## 4. Archivos de Implementación
-* **VectorBT (Python):** `validation/vectorbt_eurusd_portfolio.py`
-* **JForex4 (Java):** Implementado en el entorno local (AsianRangeBreakout.java)
-* **NinjaTrader 8 (C#):** `AsianRangeBreakout6E.cs` (Soporta contratos de futuros con conversiones DST dinámicas a Central Time).
+La ruptura permanece alrededor de 96% y prácticamente invariante en la grilla target-free estudiada.
 
-## 5. Observaciones Finales
-La diversificación con otras estrategias en este mismo activo (Mean Reversion, Friday Fade) demostró ser subóptima (Sharpes negativos). El Edge en el EURUSD es fuertemente de Momentum intradiario, y este sistema captura eficientemente ese fenómeno.
+### BigTrap2 — atracción/revisita
 
----
-*Documento autogenerado tras validación exitosa del modelo. Fecha: Julio 2026.*
+**Estado:** HIPÓTESIS PROVISIONAL; NO ES EDGE.
+
+El primer nulo mostró 97,9% de revisita real frente a ~51,4% nula, pero se detectaron dos defectos en la geometría de los nulos. La promoción está bloqueada hasta cerrar la procedencia de los reruns y, luego, F4 constitucional.
+
+### Asian Range Breakout / ARB
+
+**Estado:** LEGACY, NO PROMOVIDO EN EL REGISTRO ACTUAL.
+
+El documento histórico anterior reportaba una validación positiva, pero el README y el contrato vigente lo mantenían pausado y fuera del ledger científico central. Se conserva en el historial de Git; no se presenta como edge activo sin reconstruir su cadena de promoción bajo el contrato actual.
+
+## Regla de inclusión
+
+Una entrada solo puede aparecer como edge promovido si:
+
+1. tiene lineage, paridad y disponibilidad técnica;
+2. supera robustez estadística y múltiples pruebas;
+3. conserva expectativa neta con costos y stress;
+4. confirma OOS/holdout según protocolo;
+5. demuestra aplicabilidad research↔live.
+
+Información descriptiva, una señal target-free, un backtest positivo o una hipótesis publicada no cumplen esta definición.
