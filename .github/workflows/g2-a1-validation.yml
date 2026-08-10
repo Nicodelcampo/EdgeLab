@@ -1,0 +1,91 @@
+name: G2-A1 validation
+
+on:
+  pull_request:
+    branches:
+      - foundation/f0b-compatibility-probe
+    paths:
+      - ".github/workflows/g2-a1-validation.yml"
+      - "edgelab/research/g2.py"
+      - "edgelab/research/g2_decision.py"
+      - "edgelab/research/g2_ratio.py"
+      - "edgelab/research/promotion.py"
+      - "edgelab/stats/**"
+      - "tests/research/test_g2*.py"
+      - "tests/research/test_promotion.py"
+      - "tests/stats/**"
+      - "pyproject.toml"
+  push:
+    branches:
+      - fix/g2-a1-statistical-semantics
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: g2-a1-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  targeted-g2:
+    name: Targeted G2-A1 tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact commit
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install minimal test environment
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "pytest>=9,<10" "numpy>=2.4.6,<2.5"
+
+      - name: Compile changed modules
+        run: |
+          python -m compileall -q \
+            edgelab/research/g2.py \
+            edgelab/research/g2_decision.py \
+            edgelab/research/g2_ratio.py \
+            edgelab/research/promotion.py \
+            edgelab/stats
+
+      - name: Run targeted G2 and estimand suite
+        run: |
+          python -m pytest \
+            tests/research/test_g2.py \
+            tests/research/test_g2_decision.py \
+            tests/research/test_g2_ratio.py \
+            tests/research/test_promotion.py \
+            tests/stats/test_cluster_estimand.py \
+            -q
+
+  full-suite:
+    name: Full repository suite
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout exact commit
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install canonical dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev,validation]"
+
+      - name: Run complete suite
+        run: python -m pytest -q
