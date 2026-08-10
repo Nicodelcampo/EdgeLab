@@ -187,6 +187,20 @@ denominador durante todo el programa.** Si la mayoría de las zonas nunca se
 toca, la población de H1 era una minoría no representativa del objeto que el
 indicador produce.
 
+> **MEDIDO EL MISMO DÍA (F0.2) — la hipótesis de este párrafo es FALSA.**
+> Hay **15.947 zonas** y **el 97,9 % se toca**. No había ninguna mayoría
+> intocada. La población de H1 sí era una minoría (2,7 % de las zonas), pero por
+> el filtro de excursión `T=34`, no por falta de toques.
+>
+> Lo que el censo sí encontró es otra cosa, y más grande: de **48.768 eventos de
+> toque** totales, H1 midió sólo los primeros — **32 %**. Los **33.160**
+> restantes (68 %) nunca se midieron. Y la altura mediana de zona es **1 tick**,
+> lo que explica la muerte de H1 mecánicamente.
+>
+> Ver `F0.2_CENSO_ZONAS_RESULTADO_2026-08-10.md`. El párrafo se conserva sin
+> editar: una hipótesis equivocada que la medición corrigió es evidencia de que
+> el método funciona, no algo que haya que tapar.
+
 ---
 
 ## 7. Corrección permanente de método

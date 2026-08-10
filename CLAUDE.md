@@ -62,6 +62,18 @@ amplía el espacio de búsqueda y el data snooping sin evidencia de que haga fal
 - **Causa raíz obligatoria** para todo WARN/FAIL; prohibido ampliar tolerancias
   o relajar gates después de ver resultados; cambios de semántica de validación
   se **consultan con Nico**.
+- **Ninguna población se congela sin enumerar antes, por escrito, el espacio de
+  eventos y estados del que se la extrae**, con su justificación y su condición
+  de refutación. Una población elegida sin alternativas escritas no es una
+  elección: es una herencia. Extiende el campo obligatorio «cómo podría
+  refutarse» de la hipótesis **a la población sobre la que se define**.
+  El 2026-08-10 se descubrió que TODO el corpus sobre BigTrap2 medía una sola
+  familia de entradas —el toque— porque una premisa dentro de un condicional de
+  la enmienda del 2026-08-04 pasó a axioma, y el marco alternativo (zona como
+  estado, `features.py`) llevaba trece días construido sin que research lo
+  usara. Ningún gate podía cazarlo: **lo único que nadie auditó es lo que nadie
+  escribió como decisión.** Ver
+  `docs/SESGO_DE_DISENO_2026-08-10_EL_TOQUE_COMO_UNICA_ENTRADA.md`.
 - No mirar el holdout para diseñar o elegir. No seleccionar por P&L máximo
   aislado. No ocultar resultados negativos. No ejecutar fills imposibles.
 - Tests con fixtures chicos y deterministas; sin dependencias pesadas nuevas
