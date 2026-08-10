@@ -34,6 +34,12 @@ SIX_E = InstrumentSpec(symbol="6E", tick_size=0.00005, tick_value=6.25, multipli
 # igual que 6E (1.0 * 5.0 = 5.00): consistente con la formula, no un dato suelto.
 YM = InstrumentSpec(symbol="YM", tick_size=1.0, tick_value=5.00, multiplier=5.0)
 
+# ES — futuros E-mini S&P 500 (CME). tick_value = 0.25 * 50.0 = 12.50.
+ES = InstrumentSpec(symbol="ES", tick_size=0.25, tick_value=12.50, multiplier=50.0)
+
+# NQ — futuros E-mini Nasdaq-100 (CME). tick_value = 0.25 * 20.0 = 5.00.
+NQ = InstrumentSpec(symbol="NQ", tick_size=0.25, tick_value=5.00, multiplier=20.0)
+
 
 class Nt8TickContract(BaseModel):
     """Contrato del formato. `declared_tz` es OBLIGATORIA (sin default) → una
