@@ -1,5 +1,21 @@
 # Qué análisis conviene hacer sobre BigTrap2 — literatura y mapeo a lo medible
 
+> **SUPERSEDIDO POR `PLAN_ANALISIS_v2_2026-08-10.md` el mismo día.**
+>
+> **Qué sigue vigente:** la revisión de literatura (§1), el mapeo de
+> discriminantes a campos del dict de zona (§2) y las descripciones de cada
+> análisis.
+>
+> **Qué está mal:** el **ordenamiento**, y por una razón de fondo. Este
+> documento razona íntegramente dentro del marco del toque —hasta A1, el test
+> nulo, está formulado como «tasa de ruptura **al primer toque**»—, así que
+> reintroduce por la ventana el sesgo que `SESGO_DE_DISENO_2026-08-10_EL_TOQUE_
+> COMO_UNICA_ENTRADA.md` documenta. Le falta el eje estado-vs-evento entero, y
+> con él la palanca de potencia más grande disponible.
+>
+> Se conserva sin editar el cuerpo, por la misma razón por la que los incidentes
+> van a cuarentena y no al tacho.
+
 **Fecha** 2026-08-10 · Posterior a `ACTA_MUERTE_H1_2026-08-09.md`
 **NORTH_STAR** sha256 `21bb3b01a33e2b37…`
 **Motivo** determinar, con base en literatura, los análisis más informativos
