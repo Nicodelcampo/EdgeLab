@@ -2,7 +2,8 @@
 
 > Este archivo se carga en cada sesión de Claude Code. El documento canónico
 > versionado es **`docs/NORTH_STAR.md`** (sha256 `21bb3b01a33e2b37…`); si hay
-> conflicto, manda ese doc.
+> conflicto, manda ese doc. Punto de entrada operativo del día:
+> `docs/ESTADO_2026-08-10_EMPEZAR_ACA.md`.
 
 ## NORTH STAR — referente rector (gobierna todo)
 
@@ -32,6 +33,15 @@ Recordatorios:
   probabilidad de detectar edges reales y rechazar falsos antes de arriesgar
   capital.
 
+## Estado vigente (2026-08-10)
+
+- H1 está muerta; el veredicto fue sobre **6E**, no se transporta a otros instrumentos.
+- BigTrap2 como función de soporte/resistencia: refutado (~96% de ruptura, invariante a los 12 parámetros del indicador).
+- BigTrap2 como marcador de atracción/revisita: hipótesis provisional con evidencia fuerte y convergente (6E `time:1`, 6E `tick:25`, ES `time:1` — las tres ~47pp de brecha pareada, 201/201 sesiones), pero **no es edge todavía**.
+- F4 constitucional (información condicional) NO ejecutada — bloqueada por el STOP de abajo.
+- Holdout intacto.
+- Incidente de procedencia Git del 2026-08-10 (`docs/incidents/INCIDENTE_PROCEDENCIA_2026-08-10.md`) **cerrado** — ver `docs/incidents/RESOLUCION_INCIDENTE_PROCEDENCIA_2026-08-10.md`. Las reglas 15–18 de abajo son la práctica permanente que deja como saldo.
+
 ## Decisión de prioridad vigente (sellada por Nico)
 
 **F9 (nuevos indicadores) PAUSADA** hasta ejecutar al menos una campaña formal
@@ -45,6 +55,10 @@ amplía el espacio de búsqueda y el data snooping sin evidencia de que haga fal
 - Todo **manifiesto de campaña cita el hash de `docs/NORTH_STAR.md`**.
 - Toda **plantilla generadora** (scaffold, spec LLM, reportes) incluye los
   campos obligatorios **"justificación económica"** y **"cómo podría refutarse"**.
+- Toda **población** declara, en el mismo documento que la congela, el
+  event-space del que fue extraída (ver regla de población abajo).
+- **Registro MEDIDO/NO MEDIDO actualizado en el mismo commit** que cualquier
+  resultado nuevo — no en un commit aparte, no "después".
 
 ## Firewall del holdout (2026-07-01 → 2026-12-31)
 
@@ -73,7 +87,22 @@ amplía el espacio de búsqueda y el data snooping sin evidencia de que haga fal
   estado, `features.py`) llevaba trece días construido sin que research lo
   usara. Ningún gate podía cazarlo: **lo único que nadie auditó es lo que nadie
   escribió como decisión.** Ver
-  `docs/SESGO_DE_DISENO_2026-08-10_EL_TOQUE_COMO_UNICA_ENTRADA.md`.
+  `docs/SESGO_DE_DISENO_2026-08-10_EL_TOQUE_COMO_UNICA_ENTRADA.md`. En la
+  práctica, esto exige enumerar por separado: creación, aproximación, primer
+  toque, toque n-ésimo, invalidación, expiración, confluencia y estado
+  continuo — antes de congelar cuál de esas familias se mide.
+- **Separar evento de estado.** Un evento (un toque, una creación) da una
+  población de N observaciones; un estado (zonas activas, distancia al precio)
+  vale en cada barra y suele tener mucha más potencia estadística. Elegir uno
+  sin considerar el otro es la misma clase de herencia sin decisión que la
+  regla anterior prohíbe.
+- **La cadena de un candidato es geometría/lifecycle → información → P&L bruto
+  → edge neto/replicado**, en ese orden. No saltar directo a P&L porque el
+  lifecycle target-free "se ve bien".
+- **No transportar costos de ejecución entre instrumentos.** La fricción de
+  6E no es la de ES/NQ/YM; cada instrumento estima la suya.
+- **`ticks_per_row` y `bar_spec` son ejes distintos** — no confundir un
+  parámetro del indicador con la resolución de barra sobre la que corre.
 - No mirar el holdout para diseñar o elegir. No seleccionar por P&L máximo
   aislado. No ocultar resultados negativos. No ejecutar fills imposibles.
 - Tests con fixtures chicos y deterministas; sin dependencias pesadas nuevas
@@ -81,6 +110,26 @@ amplía el espacio de búsqueda y el data snooping sin evidencia de que haga fal
 - Commits chicos por fase, push al cierre. Si git pide credenciales: frenar y
   pedir a Nico. Al pushear, usar el token que Nico provea sin persistirlo en
   `.git/config` y redactarlo de los logs.
+- **Verificar todo commit con `git show --stat` inmediatamente después de
+  crearlo** — `git status` antes de commitear no basta como evidencia de qué
+  quedó adentro, sobre todo si un `git add`/`git mv` previo falló en la misma
+  sesión de comandos sin dejar rastro obvio. Ver
+  `docs/incidents/RESOLUCION_INCIDENTE_PROCEDENCIA_2026-08-10.md`.
+- **Una worktree por sesión/campaña que escribe código; un solo escritor por
+  directorio de trabajo.** Dos procesos con acceso de escritura al mismo árbol
+  (aunque uno sea una tarea delegada) es el escenario que produjo el incidente
+  de procedencia del 2026-08-10.
+- **Procedencia dirty-aware en todo artefacto de medición**: además de
+  `code_commit`, publicar si el árbol estaba limpio al momento de correr
+  (`head_start`/`head_end`, dirty/clean). Un `code_commit` sobre árbol dirty no
+  garantiza que ese commit contenga el código que realmente corrió.
+- **No confundir un barrido target-free llamado "F4" con la F4 constitucional**
+  (información condicional, bajo STOP). `F4_PARAMETROS_RESTANTES` del
+  2026-08-10 es un barrido de parámetros del indicador, target-free — un
+  nombre de conveniencia, no la fase F4 del plan.
+- **`/data/` es dato local (gitignorado); `edgelab/data/` es código fuente
+  trackeado.** El patrón de `.gitignore` está anclado a la raíz para no
+  confundir los dos.
 
 ## Interrupción por oráculos (prioridad máxima permanente)
 
@@ -93,15 +142,19 @@ retomar la tarea anterior.
 
 Antes de ejecutar CUALQUIER búsqueda sobre P&L/retornos: presentar a Nico el
 **manifiesto de campaña + número efectivo de hipótesis + riesgos + datos
-faltantes**, y esperar aprobación. No correr la búsqueda sin ese OK.
+faltantes**, y esperar aprobación. No correr la búsqueda sin ese OK. Target-free
+publica el landscape completo (todas las celdas, semillas y nulos) — nunca
+selecciona por P&L máximo aislado.
 
 ## Punteros
 
 - `docs/NORTH_STAR.md` — referente canónico (fuente de verdad).
+- `docs/ESTADO_2026-08-10_EMPEZAR_ACA.md` — punto de entrada operativo vigente.
 - `docs/edge_validation_contract.md` — gates G0–G5 de "edge válido y aplicable".
 - `docs/kernel_contract.md` — construcción técnica target-free de kernels.
 - `docs/nt8_indicator_parity_contract.md` — protocolo de paridad NT8↔Python.
 - `docs/nt8_bridge.md` — store, gate P3, campañas, visor, API de features.
+- `docs/incidents/` — incidentes de procedencia/integridad, abiertos y cerrados.
 
 ## Entorno
 
@@ -119,11 +172,19 @@ Dice en qué rama estás, si coincide con la declarada arriba, si estás
 sincronizado con el remoto, **y si otra rama tiene trabajo que la tuya no
 tiene**. Sale 1 si algo requiere atención. Correlo ANTES de medir cualquier cosa.
 
+**Después, y antes de research**: verificar raíz (`git rev-parse
+--show-toplevel`), HEAD, worktree (`git worktree list`) y árbol limpio — el
+mismo chequeo que el incidente de procedencia del 2026-08-10 dejó como
+protocolo forense, ahora preventivo.
+
 **Regla de una sola rama.** Todo el trabajo va a `foundation/f0b-compatibility-probe`.
 Si hace falta una rama auxiliar, se mergea de vuelta **el mismo día**. El
 2026-08-05 dos máquinas midieron cosas distintas creyendo mirar lo mismo: 70
 commits vivían en una rama que este archivo no mencionaba, y cada lado leyó la
 suya. Las dos lecturas eran internamente coherentes. Ver `docs/AVISO_DIVERGENCIA_DE_RAMAS_2026-08-06.md`.
+El 2026-08-10 se repitió la misma familia de falla en otra forma: no ramas
+distintas, sino **procesos concurrentes sobre el mismo árbol** — ver
+`docs/incidents/RESOLUCION_INCIDENTE_PROCEDENCIA_2026-08-10.md`.
 
 Excepciones que divergen a propósito y `estado.py` no marca: `main`, `backup/*`,
 `preserve/*`.
