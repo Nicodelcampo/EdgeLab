@@ -34,7 +34,7 @@ estados del que se la extrae.
 | M10 | **F2** barrido `ticks_per_row` × `imbalance_ratio` × `min_trap_volume` | tasa de ruptura **invariante**: 95,8–96,9 % en las 12 celdas | `barrido_F2_altura.json` |
 | M11 | **F1.2** supervivencia con riesgos competitivos | CIF ruptura 0,9628 · vida mediana ~6 barras · estratificado por altura/volumen/toques | `F1_superv_depletion__b107bf368c08.json` |
 | M12 | **F1.3** depleción por índice de toque | 30,3 % (toque 1) → 16,7 % (>10); plano en 1–4 (77 % de la masa) | ídem |
-| M13 | **F1.1** nulo contra zonas aleatorias, dos diseños (posición libre / desplazamiento local) | en curso | `F1_nulo_zonas_aleatorias__*.json` |
+| M13 | **F1.1** nulo contra zonas aleatorias, dos diseños (posición libre / desplazamiento local) | **tocar: real 97,9 % vs nulo-B 51,4 % — 201/201 sesiones.** Romper: casi igual (0,8 pp) | `F1_nulo_zonas_aleatorias__ac9d001dc815.json` |
 
 ---
 
@@ -129,9 +129,19 @@ ni por volatilidad.
 
 ## 3. NO EXPLORADO — preguntas que nadie formuló
 
-1. **¿La zona aporta algo sobre una línea horizontal al azar?** Es F1.1, el gate
-   de muerte de la familia. **En curso al momento de escribir esta línea** —
-   ver `F1_nulo_zonas_aleatorias.py` y su resultado cuando cierre.
+1. **¿La zona aporta algo sobre una línea horizontal al azar?** **Contestado
+   por F1.1: sí, y grande** — en tocar (97,9 % vs 51,4 %), no en romper. Deja
+   tres sub-preguntas nuevas, sin urgencia para el plan pero registradas:
+   - **¿Es distancia pura o algo más?** La tasa de toque del nulo-B no se
+     estratificó por su propia distancia real al precio de creación —no quedó
+     ligada zona-a-zona en el artefacto—. Contestaría si alcanza con "estar
+     cerca" o si el nivel de imbalance específico aporta algo más.
+   - **¿La atracción es inmediata o acumulada?** Se midió con horizonte de
+     2.000 barras (~33 h); no se probó con horizontes cortos (20–60 barras).
+   - **¿Es imbalance o es simplemente nodo de volumen?** Un nulo anclado
+     también en volumen comparable —no sólo en tiempo— aislaría lo que
+     BigTrap2 aporta de lo que aporta cualquier zona de alto volumen (fenómeno
+     de microestructura ya documentado y distinto).
 2. **¿La distribución de retornos cambia dado el estado de zonas?** El test de
    información condicional (F4). Máxima potencia, una sola hipótesis. Requiere
    STOP.
