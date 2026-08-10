@@ -1,7 +1,7 @@
 # EMPEZAR ACÁ — estado canónico al 2026-08-10
 
-**Remoto verificado antes de este PR:** `foundation/f0b-compatibility-probe` → `5f1b65d`  
-**Trabajo posterior:** local, todavía no publicado en la rama canónica  
+**Documentación remota:** sincronizada en `foundation/f0b-compatibility-probe` mediante los PR #1 y #2  
+**Código y artefactos de research posteriores:** locales, todavía no publicados  
 **Holdout:** intacto  
 **P0:** incidente de procedencia Git/worktree
 
@@ -47,11 +47,12 @@ Posibilidades abiertas: árbol dirty ejecutado antes del commit, `git_head()` us
 
 **Consecuencia:** reruns corregidos, barrido de 11 celdas y salida ES quedan en cuarentena hasta reconciliar bytes de código, datos, entorno, timestamps y run ID.
 
-## 5. Verificación independiente de GitHub
+## 5. Estado de sincronización
 
-- La rama canónica continúa en `5f1b65d40d0ef683aac3fbcc5e37b1425c814289` al preparar este reemplazo.
-- Ningún commit local del 10 de agosto estaba publicado.
-- `.gitignore` canónico todavía usaba `data/`, no `/data/`.
+- El reemplazo documental fue publicado mediante PR #1.
+- La corrección de estado post-merge fue publicada mediante PR #2.
+- `.gitignore` canónico ya usa `/data/`, por lo que no oculta `edgelab/data/`.
+- Los commits, fuentes y artefactos locales de research del 10 de agosto todavía no están en GitHub.
 
 ## 6. Próximo paso obligatorio
 
