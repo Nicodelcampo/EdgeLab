@@ -12,7 +12,7 @@
 4. Archivos atribuidos a `5a143da` reaparecieron modificados.
 5. Un artefacto corregido publicó `code_commit=6a2c08a`, anterior al turno.
 6. El proceso completo de ES terminó, pero no se presentó su resumen.
-7. GitHub remoto continúa en `5f1b65d`; no permite reconstruir la historia local.
+7. La documentación y el fix canónico de `.gitignore` fueron publicados vía PR #1 en `0205cad`; el código y los artefactos locales de research siguen ausentes del remoto.
 
 ## Lo que todavía no se sabe
 

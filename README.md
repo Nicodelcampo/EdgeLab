@@ -8,11 +8,12 @@ Infraestructura de investigación cuantitativa orientada a encontrar edges netos
 
 ## Estado actual
 
-- **Remoto verificado:** `foundation/f0b-compatibility-probe` continúa en `5f1b65d` (muerte de H1).
+- **Documentación remota:** sincronizada mediante PR #1; commit canónico `0205cad`.
+- **Código y artefactos posteriores:** siguen locales y todavía no están publicados ni adjudicados.
 - **H1:** muerta; corrió sobre 6E, no NQ/ES.
 - **BigTrap2 como soporte/resistencia:** fuertemente refutado.
 - **Atracción/revisita:** hipótesis provisional en cuarentena.
-- **Trabajo local posterior:** se reportaron reruns corregidos, réplica `tick:25`, barrido target-free de 11 celdas y una generalización ES, pero todavía no están en GitHub.
+- **Trabajo local posterior:** se reportaron reruns corregidos, réplica `tick:25`, barrido target-free de 11 celdas y una generalización ES.
 - **Incidente:** un artefacto declaró `code_commit=6a2c08a` mientras el fix se referencia como `5a143da`, y hubo procesos concurrentes sobre el mismo directorio.
 - **F4 constitucional (información condicional):** no ejecutada.
 - **Holdout 2026-07-01 → 2026-12-31:** intacto.
@@ -32,8 +33,8 @@ Infraestructura de investigación cuantitativa orientada a encontrar edges netos
 1. Congelar interpretación y reconciliar repo/worktree/procesos/artefactos.
 2. Reemitir desde una worktree limpia cualquier resultado cuya procedencia no sea unívoca.
 3. Resolver drift BigTrap2 `.cs` v2.5.1 ↔ Python v2.2.
-4. Publicar y verificar los commits locales.
-5. Integrar el fix `/data/` sin mezclar la sesión separada de `.gitignore`.
+4. Publicar y verificar los commits y artefactos locales de research.
+5. Reconciliar el cambio local concurrente de `.gitignore` con el fix canónico `/data/`.
 
 ## Regla de interpretación
 
