@@ -1,6 +1,6 @@
 # EMPEZAR ACÁ — estado canónico al 2026-08-10
 
-**Rama canónica verificada:** `foundation/f0b-compatibility-probe` → `0205cad` (sincronización documental)  
+**Documentación remota:** sincronizada en `foundation/f0b-compatibility-probe` mediante los PR #1 y #2  
 **Código y artefactos de research posteriores:** locales, todavía no publicados  
 **Holdout:** intacto  
 **P0:** incidente de procedencia Git/worktree
@@ -49,8 +49,8 @@ Posibilidades abiertas: árbol dirty ejecutado antes del commit, `git_head()` us
 
 ## 5. Estado de sincronización
 
-- La documentación fue publicada mediante PR #1.
-- Commit canónico de la sincronización documental: `0205cad124ebf44ee5ddffee30c763cc6bad8cef`.
+- El reemplazo documental fue publicado mediante PR #1.
+- La corrección de estado post-merge fue publicada mediante PR #2.
 - `.gitignore` canónico ya usa `/data/`, por lo que no oculta `edgelab/data/`.
 - Los commits, fuentes y artefactos locales de research del 10 de agosto todavía no están en GitHub.
 

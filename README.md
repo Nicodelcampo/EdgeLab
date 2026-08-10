@@ -8,7 +8,7 @@ Infraestructura de investigación cuantitativa orientada a encontrar edges netos
 
 ## Estado actual
 
-- **Documentación remota:** sincronizada mediante PR #1; commit canónico `0205cad`.
+- **Documentación remota:** sincronizada en la rama canónica mediante los PR #1 y #2.
 - **Código y artefactos posteriores:** siguen locales y todavía no están publicados ni adjudicados.
 - **H1:** muerta; corrió sobre 6E, no NQ/ES.
 - **BigTrap2 como soporte/resistencia:** fuertemente refutado.
