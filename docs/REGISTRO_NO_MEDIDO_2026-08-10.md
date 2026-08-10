@@ -37,36 +37,35 @@ estados del que se la extrae.
 | M13 | **F1.1** nulo contra zonas aleatorias, dos diseños (posición libre / desplazamiento local) | **tocar: real 97,9 % vs nulo-B 51,4 % — 201/201 sesiones.** Romper: casi igual (0,8 pp) | `F1_nulo_zonas_aleatorias__ac9d001dc815.json` |
 | M14 | **F0.3** features de estado (`materialize_features`, primer uso en research) | cobertura 99,3 % · `inside_zone` 7,95 % · pico intradía 11-13h CT | `F0.3_features_estado__37db8426120d.json` |
 | M15 | **YM** ingesta y habilitación en el bridge (5 contratos, 23,2M ticks) | 0 líneas no parseadas, 0 desorden; huso horario verificado por gap de fin de semana | `data/nt8/YM_parquet/`, `YM_INGESTA_Y_HABILITACION_2026-08-10.md` |
+| M16 | **F1.1 seguimiento**: distancia propia, horizonte corto, nulo por volumen | ni distancia (86,6 % a 0-2 ticks), ni tiempo (brecha ya a 20 barras), ni volumen genérico (NULO-C toca *menos*) cierran la brecha | `F1.1_SEGUIMIENTO_RESULTADO_2026-08-10.md` |
+| M17 | **`bar_spec` tick:25**: censo + nulo replicados | número por número igual que `time:1` — el hallazgo no depende de la resolución elegida | `F_BARSPEC_TICK25_RESULTADO_2026-08-10.md` |
 
 ---
 
 ## 2. NO MEDIDO — dimensiones congeladas por herencia
 
-### 2.1 ⚠️ Resolución de barra (`bar_spec`) — **la más grande sin explorar**
+### 2.1 Resolución de barra (`bar_spec`) — ✅ PARCIALMENTE MEDIDO (`tick:25`)
 
-**Valor único usado: `time:1` (M1).** `build_time_bars(tk, 1)` está
-**hardcodeado** en siete módulos de research: `censo_primeros_toques.py:88`,
-`curva_excursion.py:148`, `curva_excursion_ticks.py:383`,
-`f_ambos_filtros.py:107`, `concordancia_lado_bigtrap2.py:129`,
-`censo_zonas_completo.py:257`, `F1_supervivencia_y_depletion.py:173`.
+**`time:1` seguía siendo el único valor usado** en siete módulos de research
+hasta hoy. `build_tick_bars` existía (`bars.py:94`) y research jamás lo había
+usado.
 
-**`build_tick_bars` existe** (`bars.py:94`) **y research jamás lo usó.** Sólo
-`medir_tasa.py:70` acepta un `bar_spec` parametrizable, y no se usó para esto.
+**Corrido: `tick:25`**, la resolución histórica real de BigTrap2 en NT8
+(`docs/nt8_bridge.md`, «charts de 5t/25t»). `build_footprints` se verificó
+agnóstico al tipo de barra leyendo el código (opera sobre `bars.tick_bar_idx`,
+sin rama de `time`). Censo y nulo local de F1.1 replicados **número por
+número**: tocada real 97,9→98,8 %, nulo-B 50,6→51,9 %, brecha pareada
+47,1→46,8 pp, 201/201 sesiones en ambos. Ver
+`F_BARSPEC_TICK25_RESULTADO_2026-08-10.md`.
 
-**Por qué es la dimensión más grande:** BigTrap2 es *bar-driven* + footprint.
-Cambiar la barra cambia **toda la agregación del footprint**, o sea el imbalance,
-el volumen atrapado, la geometría y el ciclo de vida. Produce zonas
-**completamente distintas** — un efecto mayor que el de cualquier parámetro del
-indicador.
+**Caveat de paridad declarado**: "BigTrap2 defaults + tick:25" no tiene
+oráculo NT8 sellado (sólo Diagonal@time:1 y SameLevel@tick:25 lo están) — es
+evidencia interna Python, suficiente para decidir dónde mirar, no para
+sustituir un oráculo si se necesita apoyar una hipótesis de outcomes en esto.
 
-**Riesgo conocido y no resuelto:** `curva_excursion_ticks.py:103` documenta el
-peligro de comparar un `created_bar` de otra `bar_spec` contra `bar_end` de M1.
-Alguien vio el riesgo; la respuesta fue **fijar M1**, no explorarlo. Barrer esta
-dimensión exige que cada corrida use su propio `bar_end`, que es justamente lo
-que ese comentario advierte.
-
-> **No hay ninguna justificación escrita de por qué M1 y no tick-bars, ni M5, ni
-> volumen-bars.**
+**Sigue sin explorar: `tick:5`** (la otra resolución histórica mencionada) y
+cualquier `volume:N`. No urgente — `tick:25` ya contestó la pregunta de
+robustez que motivaba explorar el eje.
 
 ### 2.2 Familias de entrada distintas del toque
 
@@ -194,6 +193,7 @@ ni por volatilidad.
 | **Hipótesis del denominador** (F0.2) | escribí que la mayoría de las zonas no se tocaba. **Es al revés: 97,9 % se toca.** Corregido con el original a la vista |
 | **«El primer toque selecciona rupturas»** (acta de muerte §4) | F1.2 midió que **todas** las zonas rompen eventualmente (96,3 %) — la población de H1 (92,9 % rota) está **por debajo** de la tasa base, no por encima. Corregido en `F1_SUPERVIVENCIA_DEPLECION_RESULTADO_2026-08-10.md` §2 |
 | **Hipótesis mecánica «la altura domina el hazard»** (`PLAN_ANALISIS_v2` §F1.2) | pre-declarada, **refutada por F2**: 4× altura, misma tasa de ruptura (95,8–96,9 %) |
+| **Geometría del nulo de F1.1** | dos defectos de redondeo propios (banker's rounding + off-by-one) construían un nulo sistemáticamente más ancho de lo debido. Corregidos y re-verificados con universo completo: la brecha real-nulo se **ensancha** (46,5→47,3 pp), no se debilita. `CORRECCION_ALTURA_ZONA_2026-08-10.md` |
 
 ---
 
