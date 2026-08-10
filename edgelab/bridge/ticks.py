@@ -13,10 +13,10 @@ from typing import Optional
 
 import numpy as np
 
-from edgelab.data.nt8_contract import SIX_E, InstrumentSpec
+from edgelab.data.nt8_contract import SIX_E, YM, InstrumentSpec
 
 # Catálogo de instrumentos soportados por el bridge (tick_size del contrato F1).
-INSTRUMENT_CATALOG = {"6E": SIX_E}
+INSTRUMENT_CATALOG = {"6E": SIX_E, "YM": YM}
 
 _REQUIRED = ("ts_utc_ns", "price_ticks", "volume", "bid_ticks", "ask_ticks",
              "sequence", "instrument", "contract")

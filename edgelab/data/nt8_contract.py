@@ -30,6 +30,10 @@ class InstrumentSpec(BaseModel):
 # 6E — futuros EUR/USD (CME). Precios internos en ticks enteros.
 SIX_E = InstrumentSpec(symbol="6E", tick_size=0.00005, tick_value=6.25, multiplier=125000.0)
 
+# YM — futuros Mini Dow ($5) (CBOT/CME). tick_value = tick_size * multiplier,
+# igual que 6E (1.0 * 5.0 = 5.00): consistente con la formula, no un dato suelto.
+YM = InstrumentSpec(symbol="YM", tick_size=1.0, tick_value=5.00, multiplier=5.0)
+
 
 class Nt8TickContract(BaseModel):
     """Contrato del formato. `declared_tz` es OBLIGATORIA (sin default) → una
