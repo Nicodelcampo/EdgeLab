@@ -89,6 +89,45 @@ def resumen(xs):
     return d
 
 
+def altura_ticks_exacta(top, bottom, tick_size):
+    """Altura de zona en ticks enteros, SIN ruido de redondeo.
+
+    ## El defecto que esto corrige (encontrado 2026-08-10, DESPUÉS de haber
+    ## publicado F0.2/F1.2/F2/F0.3 con la fórmula ingenua)
+
+    `round(top/tick_size) - round(bottom/tick_size)` parece razonable pero
+    `bigtrap2.py:202-203` construye la geometría con relleno de MEDIO tick:
+
+        zone_lo = lo_tick * tick_size - tick_size / 2.0
+        zone_hi = hi_tick * tick_size + tick_size / 2.0
+
+    Para una zona de una sola fila (`lo_tick == hi_tick == T`), eso da
+    `top/tick_size = T + 0.5` y `bottom/tick_size = T - 0.5` — **exactamente**
+    en el límite de redondeo. `round()` de Python usa banker's rounding
+    (redondea al par más cercano), así que el resultado depende de la paridad
+    de `T` **y** del error de punto flotante al representar `T ± 0.5` en la
+    escala de `tick_size` (verificado empíricamente: da 0, 1 **o** 2 para una
+    altura que es SIEMPRE exactamente 1 tick por construcción).
+
+    `store.py::_core()` ya conocía este problema y lo evita midiendo en
+    unidades de MEDIO-tick, donde `zone_lo`/`zone_hi` caen siempre en un
+    entero exacto, sin redondeo:
+
+        ht = tick_size / 2
+        lo_ht = round(zone_lo / ht)   # exacto, no hay .5 que resolver
+        hi_ht = round(zone_hi / ht)
+        altura_ticks = (hi_ht - lo_ht) / 2
+
+    Esta función replica exactamente esa técnica. Usarla en vez de la resta de
+    `round()` directos siempre que la altura se use para CONSTRUIR geometría
+    (no sólo para reportarla) — es el caso de los nulos de F1.1 y afines.
+    """
+    ht = tick_size / 2.0
+    lo_ht = round(bottom / ht)
+    hi_ht = round(top / ht)
+    return (hi_ht - lo_ht) / 2.0
+
+
 def vol_por_zona(csv_lines):
     """`vol` (volumen atrapado) por `zone_id`, parseado de las líneas ZONE_CREATED.
 

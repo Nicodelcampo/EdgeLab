@@ -92,7 +92,9 @@ from diag.tasa_senales.curva_excursion_ticks import (  # noqa: E402
     BAR_DRIVEN, LEAD_DAYS, MAX_FECHA, REGISTRY, TZ_CHART, bars_mod,
     corte_del_sello, dias_research, git_head, huella_del_codigo, pd, ticks_mod,
 )
-from diag.tasa_senales.censo_zonas_completo import resumen  # noqa: E402
+from diag.tasa_senales.censo_zonas_completo import (  # noqa: E402
+    altura_ticks_exacta, resumen,
+)
 from diag.tasa_senales.F1_supervivencia_y_depletion import aalen_johansen  # noqa: E402
 from edgelab.bridge.indicators.bigtrap2 import DEFAULTS  # noqa: E402
 from edgelab.research.first_touch_census import session_date_ct  # noqa: E402
@@ -194,9 +196,7 @@ def medir(arch, fechas):
         cb = int(z["created_bar"])
         if not (0 <= cb < n):
             continue
-        lo_t = int(round(float(z["bottom"]) / tk.tick_size))
-        hi_t = int(round(float(z["top"]) / tk.tick_size))
-        alto = hi_t - lo_t
+        alto = int(altura_ticks_exacta(float(z["top"]), float(z["bottom"]), tk.tick_size))
         is_bull = (z.get("kind") == "trapped_buyers")
         j0, j1 = rango_sesion[ses]
 
@@ -239,7 +239,7 @@ def medir(arch, fechas):
 def _acumular_nulo(filas_out, sesion_out, ses, centro, alto, is_bull, cb,
                    high_t, low_t, close_t, n):
     lo_n = centro - alto // 2
-    hi_n = lo_n + alto
+    hi_n = lo_n + alto - 1     # rango INCLUSIVO de `alto` ticks: [lo_n, lo_n+alto-1]
     bar_fin, razon, touches, tocada = vida_de_zona(
         lo_n, hi_n, is_bull, cb, high_t, low_t, close_t, n)
     fila = dict(causa=str(razon), censurado=(razon is None),
