@@ -8,12 +8,13 @@ Infraestructura de investigación cuantitativa orientada a encontrar edges netos
 
 ## Estado actual
 
-- **Documentación remota:** sincronizada en la rama canónica mediante los PR #1, #2 y #3.
+- **Documentación remota:** sincronizada en la rama canónica mediante los PR #1, #2, #3 y #4.
 - **Código y artefactos posteriores:** siguen locales y todavía no están publicados ni adjudicados.
 - **H1:** muerta; corrió sobre 6E, no NQ/ES.
 - **BigTrap2 como soporte/resistencia:** fuertemente refutado.
 - **Atracción/revisita:** hipótesis provisional en cuarentena.
 - **Familia LUX-IMB (OG/VI):** registrada como línea independiente de BigTrap2. Protocolo escrito, nada ejecutado, bloqueada por P0.
+- **Familia YM-PRERANGE:** registrada como tercera línea independiente. Protocolo escrito, nada ejecutado, bloqueada por P0 y por la falta de calendario de research para YM.
 - **Trabajo local posterior:** se reportaron reruns corregidos, réplica `tick:25`, barrido target-free de 11 celdas y una generalización ES.
 - **Incidente:** un artefacto declaró `code_commit=6a2c08a` mientras el fix se referencia como `5a143da`, y hubo procesos concurrentes sobre el mismo directorio.
 - **F4 constitucional (información condicional):** no ejecutada.
@@ -28,16 +29,18 @@ Infraestructura de investigación cuantitativa orientada a encontrar edges netos
 5. [`PLAN.md`](PLAN.md)
 6. [`docs/research/FUTURAS_INVESTIGACIONES_E_IMPLEMENTACIONES_2026-08-10.md`](docs/research/FUTURAS_INVESTIGACIONES_E_IMPLEMENTACIONES_2026-08-10.md)
 7. [`docs/research/H-COND-1_LUX-IMB_PROTOCOLO.md`](docs/research/H-COND-1_LUX-IMB_PROTOCOLO.md)
-8. [`docs/edge_validation_contract.md`](docs/edge_validation_contract.md)
+8. [`docs/research/H-SWEEP-1_YM_PRERANGE.md`](docs/research/H-SWEEP-1_YM_PRERANGE.md)
+9. [`docs/edge_validation_contract.md`](docs/edge_validation_contract.md)
 
-## Familias de zonas registradas
+## Familias registradas
 
 | Familia | Alcance | Estado |
 | --- | --- | --- |
 | BigTrap2 | Indicador propio, 6E | H1 muerta; soporte/resistencia refutado; atracción en cuarentena |
 | LUX-IMB | `Imbalance Detector [LuxAlgo]`, solo OG y VI, ES 1m | Protocolo escrito, nada ejecutado |
+| YM-PRERANGE | Ventana temporal 08:12–09:12 sobre YM, sin indicador | Protocolo escrito, nada ejecutado |
 
-Las familias no comparten resultados, poblaciones, costos, oráculos ni presupuesto de multiplicidad.
+Las familias no comparten resultados, poblaciones, costos, oráculos ni presupuesto de multiplicidad. YM-PRERANGE no es una familia de zonas: es una ventana temporal fija, y se registra igual porque las mismas reglas de adjudicación aplican.
 
 ## P0 actual
 
@@ -50,6 +53,8 @@ Las familias no comparten resultados, poblaciones, costos, oráculos ni presupue
 ## Regla de interpretación
 
 H1 muerta ≠ BigTrap2 muerto. Proceso terminado ≠ resultado válido. SHA de `HEAD` ≠ identidad del código si el árbol estaba dirty. Zona visible en pantalla ≠ zona que existió: si el indicador borra las zonas mitigadas, lo que queda dibujado son las que funcionaron.
+
+Una racha observada ≠ evidencia: antes de comparar cualquier conteo hay que derivar la tasa esperada bajo el nulo apropiado, porque casi ningún baseline relevante es 50%. Y justificar una **medición** no es lo mismo que justificar una **operación**: las dos decisiones se registran por separado.
 
 ## Rama
 
