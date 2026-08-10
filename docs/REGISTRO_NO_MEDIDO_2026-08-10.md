@@ -92,24 +92,22 @@ un artefacto propio documentado: `zone_age` de la más cercana tiene sesgo de
 longitud (mediana 54 barras, muy por encima de la vida mediana de una zona
 cualquiera, ~7) — no leer esa mediana como "la zona típica".
 
-### 2.4 Parámetros del indicador nunca variados
+### 2.4 Parámetros del indicador — ✅ MEDIDO, los 12 de 12
 
-De los 12 de `PARAM_SPEC`, el barrido F2 movió **tres** —
-`ticks_per_row`/`imbalance_ratio`/`min_trap_volume`— y **la tasa de ruptura no
-se movió con ninguno de los tres**: 95,8–96,9 % en las 12 celdas
-(`F2_BARRIDO_ALTURA_RESULTADO_2026-08-10.md`). Nunca se varió ninguno de:
+F2 movió tres (`ticks_per_row`/`imbalance_ratio`/`min_trap_volume`): tasa de
+ruptura invariante, 95,8–96,9 %. Los otros nueve —
+`imbalance_mode`/`trap_volume_source`/`use_wick_filter`/`wick_zone_pct`(×2)/
+`min_delta_filter`/`min_export_volume`/`invalidation_mode`/`max_age_bars`/
+`max_touches`— barridos hoy (`F4_PARAMETROS_RESTANTES_RESULTADO_2026-08-10.md`):
+la invariancia se confirma en los siete de "detección" (96,1–96,6 %), y los
+dos controles que SÍ debían moverla (`invalidation_mode=FirstTouch` →
+rota=0 %; `max_age_bars` corto → más expiración) se movieron exactamente como
+se predijo — confirma que la medición detecta efecto cuando lo hay.
 
-`imbalance_mode` (Diagonal/SameLevel) · `trap_volume_source`
-(AggressiveSide/TotalLevel) · `use_wick_filter` · `wick_zone_pct` ·
-`min_delta_filter` · `min_export_volume` · `invalidation_mode`
-(CloseThrough/FirstTouch) · `max_age_bars` · `max_touches`
-
-`invalidation_mode` y `max_touches` merecen nota: **son los que gobiernan cuándo
-muere la zona**, o sea la salida — que el acta de muerte identificó como el lugar
-donde H1 perdía, y que F1.2 confirmó como propiedad casi universal del objeto
-(96,3 % de ruptura, invariante a altura/volumen/toques). Siguen sin tocarse, y
-ahora con más motivo: son los únicos parámetros de los 12 con posibilidad
-mecánica de cambiar **qué cuenta como ruptura**, no cuántas zonas hay.
+Hallazgo colateral: `max_touches=1` da rota=29,9 %, que coincide casi exacto
+con el 30,3 % que F1.3 midió por un camino totalmente distinto (cruce de
+eventos por barra) para la tasa de ruptura del toque nº 1 — validación
+cruzada entre dos métodos independientes de medir lo mismo.
 
 ### 2.5 Instrumentos — investigado, sigue bloqueado, y ahora se sabe por qué
 
