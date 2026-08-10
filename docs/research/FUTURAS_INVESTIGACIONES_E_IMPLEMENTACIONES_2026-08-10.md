@@ -22,6 +22,26 @@ Nada de este documento afirma un edge ni autoriza outcomes.
 - run ID, PID, timestamps y comando;
 - una worktree por sesión y un writer por directorio.
 
+## Familia LUX-IMB (OG/VI) — línea independiente
+
+El indicador `Imbalance Detector [LuxAlgo]`, restringido a **Opening Gap** y **Volume Imbalance** y **sin** Fair Value Gap, constituye una familia distinta de BigTrap2. No hereda resultados, poblaciones, costos, oráculos ni presupuesto de multiplicidad.
+
+**Protocolo completo:** [`docs/research/H-COND-1_LUX-IMB_PROTOCOLO.md`](H-COND-1_LUX-IMB_PROTOCOLO.md)
+
+- **Origen:** el operador reporta reacción visual del precio en estas zonas sobre ES en 1 minuto. La pregunta admitida no es si la intuición es correcta, sino si es distinguible de un sesgo de observación.
+- **Amenaza dominante:** las zonas mitigadas desaparecen automáticamente del gráfico, por lo que el conjunto visible está compuesto casi por construcción de zonas no atravesadas. Ningún análisis puede usar el estado dibujado: se exige ledger as-of con zonas muertas y auditoría antirepintado.
+- **Separación de subfamilias:** OG es un intervalo sin negociación, concentrado en horarios delgados y cortes de sesión, por lo que es casi colineal con la fase de sesión. VI implica negociación sin consenso y es mucho más denso. Se estiman por separado.
+- **H-COND-1:** ¿existe una función de efecto condicional no trivial, aprendida fuera de muestra, que prediga dónde las zonas hacen algo?
+- **H-PERCEPT-1:** test ciego de dos brazos que mide directamente cuánto de la intuición proviene del sesgo de supervivencia.
+- **Gate:** bloqueado hasta cerrar P0, porque ES está en cuarentena y ES es el contrato observado.
+
+## Reglas transversales nuevas
+
+- **MDE obligatorio:** todo resultado nulo publica su efecto mínimo detectable. Un nulo sin MDE no distingue "no hay efecto" de "no podíamos verlo".
+- **Canal no direccional siempre presente:** además del efecto con signo se mide magnitud absoluta, volatilidad realizada y distribución completa, porque un efecto bidireccional real puede promediar exactamente cero.
+- **Ledger as-of por familia de zonas:** censo que incluya las zonas muertas y distinga fin por mitigación de fin por vencimiento de dibujo.
+- **Registro de familia previo al estudio:** indicador, subfamilias habilitadas, parámetros congelados y presupuesto de multiplicidad propio.
+
 ## H-ATTR-1 — atracción/revisita
 
 Nulos emparejados por sesión, hora, cercanía, altura y liquidez. Adjudicar solo después de reemisión verificable.
