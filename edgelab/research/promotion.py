@@ -2,7 +2,8 @@
 
 La promoción a ``statistically_supported`` o estados posteriores sólo acepta
 una ``G2ValidationDecision`` canónica reconstruida, ligada a la misma campaña,
-run y configuración del registro, y a un contrato explícitamente aprobado.
+run y configuración del registro, a un contrato aprobado y a la implementación
+DSR exacta que fue revisada.
 """
 from __future__ import annotations
 
@@ -22,8 +23,8 @@ from edgelab.research.g2_decision import (
 __all__ = [
     "PromotionError", "RegistryIntegrityError", "PROMOTION_STATES",
     "G2_REQUIRED_GATES", "APPROVED_G2_CONTRACT_SHA256S",
-    "DEFAULT_REGISTRY_PATH", "validate_record", "load_registry",
-    "append_record", "current_status",
+    "APPROVED_G2_IMPLEMENTATION_SHA256S", "DEFAULT_REGISTRY_PATH",
+    "validate_record", "load_registry", "append_record", "current_status",
 ]
 
 PROMOTION_STATES = (
@@ -36,6 +37,7 @@ TERMINAL_STATES = ("failed", "retired")
 _STATE_RANK = {name: i for i, name in enumerate(PROMOTION_STATES)}
 _G2_MIN_RANK = _STATE_RANK["statistically_supported"]
 APPROVED_G2_CONTRACT_SHA256S = frozenset()
+APPROVED_G2_IMPLEMENTATION_SHA256S = frozenset()
 _REPO = Path(__file__).resolve().parents[2]
 DEFAULT_REGISTRY_PATH = str(_REPO / "docs" / "promotion_registry.jsonl")
 _SYSTEM_FIELDS = {"previous_digest", "record_digest"}
@@ -83,6 +85,12 @@ def _validate_g2(decision: Mapping, row: Mapping, where: str) -> None:
     if contract_sha not in APPROVED_G2_CONTRACT_SHA256S:
         raise PromotionError("%s: contrato G2 no aprobado `%s`; promociones congeladas" %
                              (where, contract_sha))
+    implementation_sha = rebuilt.dsr_evidence.implementation_sha256.lower()
+    if implementation_sha not in APPROVED_G2_IMPLEMENTATION_SHA256S:
+        raise PromotionError(
+            "%s: implementacion G2 no aprobada `%s`; promociones congeladas" %
+            (where, implementation_sha)
+        )
     for field in ("campaign_id", "run_id", "config_id"):
         if getattr(rebuilt, field) != row[field]:
             raise PromotionError("%s: `%s` no coincide entre promotion record y decision G2" %

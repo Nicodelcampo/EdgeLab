@@ -2,7 +2,8 @@ import pytest
 
 from edgelab.research.g2 import (
     DSR_DEPENDENCE_METHOD,
-    DSR_METHOD_SHA256_V1,
+    DSR_IMPLEMENTATION_SHA256,
+    DSR_METHOD_SHA256_V2,
     DSR_MIN,
 )
 from edgelab.research.g2_decision import (
@@ -20,6 +21,7 @@ from edgelab.research.g2_decision import (
 
 A = "a" * 64
 B = "b" * 64
+C = "c" * 64
 
 PASS_VALUES = {
     "mcpt": (0.01, 0.05),
@@ -35,19 +37,32 @@ FAIL_VALUES = {
 }
 
 
-def dsr(probability=0.96, method_sha=DSR_METHOD_SHA256_V1,
-        dependence_method=DSR_DEPENDENCE_METHOD):
+def dsr(
+    probability=0.96,
+    method_sha=DSR_METHOD_SHA256_V2,
+    dependence_method=DSR_DEPENDENCE_METHOD,
+    implementation_sha=DSR_IMPLEMENTATION_SHA256,
+    calendar_sha=C,
+):
     return DSREvidence(
-        probability,
-        "session",
-        "non_annualized",
-        197,
-        120.0,
-        48.0,
-        -0.2,
-        4.0,
-        dependence_method,
-        method_sha,
+        probability=probability,
+        sharpe=0.2,
+        observational_unit="session",
+        scale="non_annualized",
+        n_observations=197,
+        n_effective=120.0,
+        n_trials_effective=48.0,
+        skew=-0.2,
+        kurtosis=4.0,
+        hac_lag=15,
+        sample_variance=1.0,
+        hac_variance=197 / 120,
+        dependence_factor=197 / 120,
+        zero_trade_sessions=7,
+        calendar_sha256=calendar_sha,
+        dependence_method=dependence_method,
+        method_sha256=method_sha,
+        implementation_sha256=implementation_sha,
     )
 
 
@@ -60,8 +75,11 @@ def gate(name, passed=True):
     return GateResult(name, passed, value, threshold, B)
 
 
-def primary(lower=0.1):
-    return PrimaryCI(lower, 0.5, 0.95, "stationary_bootstrap_t", 197, B)
+def primary(lower=0.1, calendar_sha=C):
+    return PrimaryCI(
+        lower, 0.5, 0.95, "stationary_bootstrap_t", 197,
+        calendar_sha, B,
+    )
 
 
 def complete(**overrides):
@@ -83,7 +101,7 @@ def complete(**overrides):
         cluster_unit=CLUSTER_UNIT,
         null_id="null",
         gate_results=gates,
-        primary_ci=primary(),
+        primary_ci=primary(calendar_sha=evidence.calendar_sha256),
         dsr_evidence=evidence,
         multiplicity_method=MULTIPLICITY_METHOD,
         n_effective=evidence.n_effective,
@@ -97,7 +115,7 @@ def test_dsr_umbral_y_autorizacion():
     assert not dsr(DSR_MIN - 0.001).passed
     assert dsr(DSR_MIN).passed
     assert not dsr(0.99, B).passed
-    assert not dsr(0.99, DSR_METHOD_SHA256_V1, "otro_metodo").passed
+    assert not dsr(0.99, DSR_METHOD_SHA256_V2, "otro_metodo").passed
 
 
 def test_gate_no_confia_en_bool_ni_umbral_recibidos():
@@ -163,4 +181,16 @@ def test_rechaza_semantica_incompatible():
     with pytest.raises(G2DecisionError, match="UTC"):
         complete(created_utc="2026-08-03T21:30:00-03:00")
     with pytest.raises(G2DecisionError, match="160 sesiones"):
-        PrimaryCI(0.1, 0.5, 0.95, "stationary_bootstrap_t", 159, B)
+        PrimaryCI(0.1, 0.5, 0.95, "stationary_bootstrap_t", 159, C, B)
+
+
+def test_dsr_e_ic_deben_compartir_calendario():
+    with pytest.raises(G2DecisionError, match="mismo calendario"):
+        complete(primary_ci=primary(calendar_sha=A))
+
+
+def test_fingerprint_de_implementacion_es_evidencia_obligatoria():
+    raw = complete().to_dict()
+    del raw["dsr_evidence"]["implementation_sha256"]
+    with pytest.raises(G2DecisionError, match="incompleta"):
+        validate_decision_dict(raw)

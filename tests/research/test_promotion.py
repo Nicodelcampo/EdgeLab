@@ -5,7 +5,11 @@ import json
 import pytest
 
 import edgelab.research.promotion as promotion
-from edgelab.research.g2 import DSR_DEPENDENCE_METHOD, DSR_METHOD_SHA256_V1
+from edgelab.research.g2 import (
+    DSR_DEPENDENCE_METHOD,
+    DSR_IMPLEMENTATION_SHA256,
+    DSR_METHOD_SHA256_V2,
+)
 from edgelab.research.g2_decision import (
     CLUSTER_UNIT,
     ESTIMAND_ID,
@@ -27,11 +31,17 @@ from edgelab.research.promotion import (
 
 A = "a" * 64
 B = "b" * 64
+C = "c" * 64
 
 
 @pytest.fixture(autouse=True)
 def approved(monkeypatch):
     monkeypatch.setattr(promotion, "APPROVED_G2_CONTRACT_SHA256S", frozenset({A}))
+    monkeypatch.setattr(
+        promotion,
+        "APPROVED_G2_IMPLEMENTATION_SHA256S",
+        frozenset({DSR_IMPLEMENTATION_SHA256}),
+    )
 
 
 def record(record_id, candidate="edge-1", status="idea", **extra):
@@ -49,16 +59,24 @@ def record(record_id, candidate="edge-1", status="idea", **extra):
 
 def _dsr(probability=0.96):
     return DSREvidence(
-        probability,
-        "session",
-        "non_annualized",
-        197,
-        120.0,
-        48.0,
-        -0.2,
-        4.0,
-        DSR_DEPENDENCE_METHOD,
-        DSR_METHOD_SHA256_V1,
+        probability=probability,
+        sharpe=0.2,
+        observational_unit="session",
+        scale="non_annualized",
+        n_observations=197,
+        n_effective=120.0,
+        n_trials_effective=48.0,
+        skew=-0.2,
+        kurtosis=4.0,
+        hac_lag=15,
+        sample_variance=1.0,
+        hac_variance=197 / 120,
+        dependence_factor=197 / 120,
+        zero_trade_sessions=7,
+        calendar_sha256=C,
+        dependence_method=DSR_DEPENDENCE_METHOD,
+        method_sha256=DSR_METHOD_SHA256_V2,
+        implementation_sha256=DSR_IMPLEMENTATION_SHA256,
     )
 
 
@@ -105,7 +123,7 @@ def canonical_decision(
         null_id="null-1",
         gate_results=gates,
         primary_ci=PrimaryCI(
-            lower, 0.5, 0.95, "stationary_bootstrap_t", 197, B
+            lower, 0.5, 0.95, "stationary_bootstrap_t", 197, C, B
         ),
         dsr_evidence=evidence,
         multiplicity_method=MULTIPLICITY_METHOD,
@@ -192,6 +210,14 @@ def test_identidad_de_registro_y_decision_debe_coincidir(field, kwargs):
 def test_contrato_no_aprobado_congela(monkeypatch):
     monkeypatch.setattr(promotion, "APPROVED_G2_CONTRACT_SHA256S", frozenset())
     with pytest.raises(PromotionError, match="no aprobado"):
+        validate_record(supported())
+
+
+def test_implementacion_no_aprobada_congela(monkeypatch):
+    monkeypatch.setattr(
+        promotion, "APPROVED_G2_IMPLEMENTATION_SHA256S", frozenset()
+    )
+    with pytest.raises(PromotionError, match="implementacion G2 no aprobada"):
         validate_record(supported())
 
 

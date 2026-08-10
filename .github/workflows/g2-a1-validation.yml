@@ -45,7 +45,16 @@ jobs:
           python -m compileall -q edgelab/research/g2.py edgelab/research/g2_decision.py edgelab/research/g2_ratio.py edgelab/research/promotion.py edgelab/stats
       - name: Run targeted suite
         run: |
-          python -m pytest tests/research/test_g2.py tests/research/test_g2_decision.py tests/research/test_g2_ratio.py tests/research/test_promotion.py tests/stats/test_cluster_estimand.py -q
+          python -m pytest tests/research/test_g2.py tests/research/test_g2_dsr_calibration.py tests/research/test_g2_decision.py tests/research/test_g2_ratio.py tests/research/test_promotion.py tests/stats/test_cluster_estimand.py -q
+      - name: Publish synthetic calibration
+        run: |
+          python tests/research/test_g2_dsr_calibration.py | tee g2-dsr-calibration.json
+          {
+            echo "### G2 DSR-HAC synthetic calibration"
+            echo '```json'
+            cat g2-dsr-calibration.json
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
   differential-suite:
     name: Full-suite differential vs base

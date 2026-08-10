@@ -9,9 +9,10 @@ from math import isfinite
 
 from edgelab.research.g2 import (
     DSR_DEPENDENCE_METHOD,
-    DSR_METHOD_SHA256_V1,
+    DSR_METHOD_SHA256_V2,
     DSR_MIN,
     MCPT_MAX_P,
+    MIN_DSR_SESSIONS,
     PBO_MAX,
     SessionDSRResult,
 )
@@ -26,7 +27,7 @@ G2_REQUIRED_GATES = (
 ESTIMAND_ID = "theta_trade=sum_pnl_net/n_trades"
 CLUSTER_UNIT = "session"
 MULTIPLICITY_METHOD = "dsr_manifest_n_eff"
-AUTHORIZED_DSR_METHOD_SHA256S = frozenset({DSR_METHOD_SHA256_V1})
+AUTHORIZED_DSR_METHOD_SHA256S = frozenset({DSR_METHOD_SHA256_V2})
 _GATE_THRESHOLDS = {
     "mcpt": MCPT_MAX_P,
     "pbo": PBO_MAX,
@@ -131,6 +132,7 @@ class GateResult:
 @dataclass(frozen=True)
 class DSREvidence:
     probability: float
+    sharpe: float
     observational_unit: str
     scale: str
     n_observations: int
@@ -138,13 +140,21 @@ class DSREvidence:
     n_trials_effective: float
     skew: float
     kurtosis: float
+    hac_lag: int
+    sample_variance: float
+    hac_variance: float
+    dependence_factor: float
+    zero_trade_sessions: int
+    calendar_sha256: str
     dependence_method: str
     method_sha256: str
+    implementation_sha256: str
 
     def __post_init__(self):
         probability = _finite(self.probability, "DSR probability")
         if not 0 <= probability <= 1:
             raise G2DecisionError("DSR probability debe estar entre 0 y 1")
+        _finite(self.sharpe, "DSR sharpe")
         if self.observational_unit != CLUSTER_UNIT:
             raise G2DecisionError("DSR observational_unit debe ser session")
         if self.scale != "non_annualized":
@@ -152,9 +162,11 @@ class DSREvidence:
         if (
             not isinstance(self.n_observations, int)
             or isinstance(self.n_observations, bool)
-            or self.n_observations < 3
+            or self.n_observations < MIN_DSR_SESSIONS
         ):
-            raise G2DecisionError("DSR n_observations debe ser entero >=3")
+            raise G2DecisionError(
+                "DSR n_observations debe ser entero >=%d" % MIN_DSR_SESSIONS
+            )
         n_effective = _finite(self.n_effective, "DSR n_effective")
         n_trials = _finite(self.n_trials_effective, "DSR n_trials_effective")
         if n_effective < 2 or n_effective > self.n_observations:
@@ -163,8 +175,34 @@ class DSREvidence:
             raise G2DecisionError("DSR n_trials_effective debe ser >=1")
         _finite(self.skew, "DSR skew")
         _finite(self.kurtosis, "DSR kurtosis")
+        if (
+            not isinstance(self.hac_lag, int)
+            or isinstance(self.hac_lag, bool)
+            or not 0 <= self.hac_lag < self.n_observations
+        ):
+            raise G2DecisionError("DSR hac_lag fuera de rango")
+        sample_variance = _finite(self.sample_variance, "DSR sample_variance")
+        hac_variance = _finite(self.hac_variance, "DSR hac_variance")
+        dependence_factor = _finite(
+            self.dependence_factor, "DSR dependence_factor"
+        )
+        if sample_variance <= 0 or hac_variance <= 0 or dependence_factor < 1:
+            raise G2DecisionError("DSR varianzas o dependencia inválidas")
+        expected_factor = max(1.0, hac_variance / sample_variance)
+        if abs(dependence_factor - expected_factor) > 1e-12 * max(
+            1.0, expected_factor
+        ):
+            raise G2DecisionError("DSR dependence_factor no reconstruible")
+        if (
+            not isinstance(self.zero_trade_sessions, int)
+            or isinstance(self.zero_trade_sessions, bool)
+            or not 0 <= self.zero_trade_sessions <= self.n_observations
+        ):
+            raise G2DecisionError("DSR zero_trade_sessions fuera de rango")
+        _sha(self.calendar_sha256, "calendar_sha256")
         _text(self.dependence_method, "dependence_method")
         _sha(self.method_sha256, "method_sha256")
+        _sha(self.implementation_sha256, "implementation_sha256")
 
     @classmethod
     def from_session_result(cls, result: SessionDSRResult):
@@ -172,6 +210,7 @@ class DSREvidence:
             raise G2DecisionError("result debe ser SessionDSRResult")
         return cls(
             probability=result.probability,
+            sharpe=result.sharpe,
             observational_unit=CLUSTER_UNIT,
             scale="non_annualized",
             n_observations=result.n_observations,
@@ -179,8 +218,15 @@ class DSREvidence:
             n_trials_effective=result.n_trials_effective,
             skew=result.skew,
             kurtosis=result.kurtosis,
+            hac_lag=result.hac_lag,
+            sample_variance=result.sample_variance,
+            hac_variance=result.hac_variance,
+            dependence_factor=result.dependence_factor,
+            zero_trade_sessions=result.zero_trade_sessions,
+            calendar_sha256=result.calendar_sha256,
             dependence_method=result.dependence_method,
             method_sha256=result.method_sha256,
+            implementation_sha256=result.implementation_sha256,
         )
 
     @property
@@ -212,6 +258,7 @@ class PrimaryCI:
     confidence: float
     method: str
     n_sessions: int
+    calendar_sha256: str
     evidence_digest: str
 
     def __post_init__(self):
@@ -227,9 +274,12 @@ class PrimaryCI:
         if (
             not isinstance(self.n_sessions, int)
             or isinstance(self.n_sessions, bool)
-            or self.n_sessions < 160
+            or self.n_sessions < MIN_DSR_SESSIONS
         ):
-            raise G2DecisionError("primary_ci requiere al menos 160 sesiones")
+            raise G2DecisionError(
+                "primary_ci requiere al menos %d sesiones" % MIN_DSR_SESSIONS
+            )
+        _sha(self.calendar_sha256, "primary_ci calendar_sha256")
         _sha(self.evidence_digest, "primary_ci evidence_digest")
 
     @property
@@ -272,6 +322,8 @@ class G2ValidationDecision:
             raise G2DecisionError("gate dsr no coincide con DSREvidence embebida")
         if self.dsr_evidence.n_observations != self.primary_ci.n_sessions:
             raise G2DecisionError("DSR e IC primario deben usar las mismas sesiones")
+        if self.dsr_evidence.calendar_sha256 != self.primary_ci.calendar_sha256:
+            raise G2DecisionError("DSR e IC primario deben usar el mismo calendario")
         n_effective = _finite(self.n_effective, "n_effective")
         if n_effective != self.dsr_evidence.n_effective:
             raise G2DecisionError("n_effective no coincide con DSREvidence")

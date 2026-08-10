@@ -10,14 +10,17 @@ Cambios centrales de G2-A1:
   no expectativa positiva.
 * ``campaign_null_pvalue`` sólo reduce un nulo ya generado y preregistrado.
 * PBO y walk-forward usan el ratio canónico ``sum_pnl_net / n_trades``.
-* DSR requiere probabilidad >= 0.95 y una corrección HAC por sesión versionada.
+* DSR requiere probabilidad >= 0.95, calendario completo y HAC por sesión.
 * El IC bootstrap-t por sesión es un sexto requisito duro de composición.
 """
 from __future__ import annotations
 
+import ast
 import hashlib
+import inspect
 import json
 import math
+import textwrap
 from dataclasses import dataclass
 from math import isfinite
 from statistics import NormalDist
@@ -28,15 +31,18 @@ from edgelab.research.g2_ratio import (
     pbo_ratio_cscv,
     walk_forward_ratio,
 )
+from edgelab.stats.cluster_estimand import MIN_STUDENTIZED_SESSIONS
 
 MCPT_MAX_P = 0.05
 MCPT_MIN_PERMS = 1000
 DSR_MIN = 0.95
 PRIMARY_CI_MIN_LOWER = 0.0
+MIN_DSR_SESSIONS = MIN_STUDENTIZED_SESSIONS
 
-DSR_DEPENDENCE_METHOD = "session_hac_bartlett_v1"
-_DSR_METHOD_SPEC = {
-    "id": DSR_DEPENDENCE_METHOD,
+# V1 se conserva para identificar artefactos históricos, pero no queda
+# autorizado por G2-A1 después de incorporar calendario, lag y fingerprint.
+_DSR_METHOD_SPEC_V1 = {
+    "id": "session_hac_bartlett_v1",
     "observational_unit": "session",
     "scale": "non_annualized",
     "sharpe": "mean(session_return)/population_sd(session_return)",
@@ -48,12 +54,44 @@ _DSR_METHOD_SPEC = {
 }
 DSR_METHOD_SHA256_V1 = hashlib.sha256(
     json.dumps(
-        _DSR_METHOD_SPEC,
+        _DSR_METHOD_SPEC_V1,
         ensure_ascii=False,
         sort_keys=True,
         separators=(",", ":"),
     ).encode("utf-8")
 ).hexdigest()
+
+DSR_DEPENDENCE_METHOD = "session_hac_bartlett_v2"
+_DSR_METHOD_SPEC_V2 = {
+    "id": DSR_DEPENDENCE_METHOD,
+    "observational_unit": "eligible_session_calendar",
+    "calendar": (
+        "complete preregistered eligible-session calendar; no-trade sessions "
+        "are exact zero and calendar_sha256 is persisted"
+    ),
+    "minimum_sessions": MIN_DSR_SESSIONS,
+    "scale": "non_annualized session return with one fixed risk denominator",
+    "sharpe": "mean(session_return)/population_sd(session_return)",
+    "dependence": "Bartlett HAC long-run variance of centered session returns",
+    "effective_n": "max(2,n/max(1,HAC_variance/sample_variance))",
+    "lag_default": "ceil(sqrt(n)), bounded to [1,n-1]",
+    "negative_dependence": "never permits effective_n above n",
+    "multiplicity": "expected maximum Sharpe with preregistered manifest N_eff",
+    "tail": "P(SR_observed > expected_max_SR_under_null)",
+    "implementation_identity": (
+        "separate SHA-256 of canonical Python AST for "
+        "deflated_sharpe_sessions"
+    ),
+}
+DSR_METHOD_SHA256_V2 = hashlib.sha256(
+    json.dumps(
+        _DSR_METHOD_SPEC_V2,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+).hexdigest()
+DSR_METHOD_SHA256 = DSR_METHOD_SHA256_V2
 
 _N = NormalDist()
 _EULER = 0.5772156649015329
@@ -91,8 +129,14 @@ class SessionDSRResult:
     skew: float
     kurtosis: float
     hac_lag: int
+    sample_variance: float
+    hac_variance: float
+    dependence_factor: float
+    zero_trade_sessions: int
+    calendar_sha256: str
+    implementation_sha256: str
     dependence_method: str = DSR_DEPENDENCE_METHOD
-    method_sha256: str = DSR_METHOD_SHA256_V1
+    method_sha256: str = DSR_METHOD_SHA256_V2
 
 
 # ---------------------------------------------------------------------------
@@ -125,6 +169,30 @@ def _number(value, field):
     ):
         raise G2SemanticError("%s debe ser numérico finito" % field)
     return float(value)
+
+
+def _sha256(value, field):
+    if (
+        not isinstance(value, str)
+        or len(value) != 64
+        or any(character not in "0123456789abcdefABCDEF" for character in value)
+    ):
+        raise G2SemanticError("%s debe ser SHA-256 completo" % field)
+    return value.lower()
+
+
+def _implementation_ast_sha256(function):
+    """Fingerprint semántico aproximado: AST sin posiciones ni comentarios."""
+    try:
+        source = textwrap.dedent(inspect.getsource(function))
+    except (OSError, TypeError) as exc:
+        raise G2SemanticError("no se pudo identificar la implementación DSR") from exc
+    canonical = ast.dump(
+        ast.parse(source),
+        annotate_fields=True,
+        include_attributes=False,
+    )
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
 # ---------------------------------------------------------------------------
@@ -278,12 +346,41 @@ def deflated_sharpe(
     return _N.cdf((sharpe - expected) / math.sqrt(var_sharpe))
 
 
-def deflated_sharpe_sessions(session_returns, n_trials, hac_lag=None):
-    """DSR formal sobre retornos de sesión con tamaño efectivo HAC conservador."""
+def deflated_sharpe_sessions(
+    session_returns,
+    n_trials,
+    hac_lag=None,
+    *,
+    calendar_sha256=None,
+    zero_trade_sessions=None,
+):
+    """DSR formal sobre el calendario completo de sesiones elegibles.
+
+    ``session_returns`` debe contener una observación por sesión elegible y un
+    cero exacto por sesión sin trades. El digest del calendario y el número de
+    sesiones sin trades son obligatorios para impedir que se filtren días
+    inactivos después de ver los resultados.
+    """
     values = tuple(_number(value, "session_return") for value in session_returns)
     n = len(values)
-    if n < 3:
-        raise G2SemanticError("DSR formal requiere al menos 3 sesiones")
+    if n < MIN_DSR_SESSIONS:
+        raise G2SemanticError(
+            "DSR formal requiere al menos %d sesiones" % MIN_DSR_SESSIONS
+        )
+    calendar_sha256 = _sha256(calendar_sha256, "calendar_sha256")
+    if (
+        not isinstance(zero_trade_sessions, int)
+        or isinstance(zero_trade_sessions, bool)
+        or not 0 <= zero_trade_sessions <= n
+    ):
+        raise G2SemanticError(
+            "zero_trade_sessions debe ser entero entre 0 y n_sessions"
+        )
+    if zero_trade_sessions > sum(value == 0.0 for value in values):
+        raise G2SemanticError(
+            "cada sesión sin trades debe estar representada por retorno cero"
+        )
+
     mean = sum(values) / n
     centered = tuple(value - mean for value in values)
     second = sum(value * value for value in centered) / n
@@ -297,7 +394,7 @@ def deflated_sharpe_sessions(session_returns, n_trials, hac_lag=None):
     kurtosis = fourth / second**2
 
     if hac_lag is None:
-        hac_lag = max(1, int(n ** (1.0 / 3.0)))
+        hac_lag = min(n - 1, max(1, int(math.ceil(math.sqrt(n)))))
     if (
         not isinstance(hac_lag, int)
         or isinstance(hac_lag, bool)
@@ -313,8 +410,8 @@ def deflated_sharpe_sessions(session_returns, n_trials, hac_lag=None):
         ) / n
         weight = 1.0 - lag / (hac_lag + 1.0)
         long_run_variance += 2.0 * weight * covariance
-    if not isfinite(long_run_variance):
-        raise G2SemanticError("varianza HAC no finita")
+    if not isfinite(long_run_variance) or long_run_variance <= 0:
+        raise G2SemanticError("varianza HAC no positiva o no finita")
 
     dependence_factor = max(1.0, long_run_variance / second)
     n_effective = max(2.0, n / dependence_factor)
@@ -340,7 +437,18 @@ def deflated_sharpe_sessions(session_returns, n_trials, hac_lag=None):
         skew=skew,
         kurtosis=kurtosis,
         hac_lag=hac_lag,
+        sample_variance=second,
+        hac_variance=long_run_variance,
+        dependence_factor=dependence_factor,
+        zero_trade_sessions=zero_trade_sessions,
+        calendar_sha256=calendar_sha256,
+        implementation_sha256=DSR_IMPLEMENTATION_SHA256,
     )
+
+
+# Se calcula fuera de la función: el pin aprobable vive en Promotion Registry.
+# Un cambio semántico del cuerpo cambia este digest aunque el spec no cambie.
+DSR_IMPLEMENTATION_SHA256 = _implementation_ast_sha256(deflated_sharpe_sessions)
 
 
 # ---------------------------------------------------------------------------

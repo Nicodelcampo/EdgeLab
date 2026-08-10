@@ -6,6 +6,8 @@ import pytest
 from edgelab.research import g2
 from edgelab.research.g2_ratio import RatioCell
 
+CALENDAR = "c" * 64
+
 
 def _noise(n, seed=7, amplitude=1.0):
     rng = g2._lcg(seed)
@@ -76,27 +78,69 @@ def test_dsr_bajo_para_sharpe_mediocre_no_aprueba():
     assert probability < 0.5 < g2.DSR_MIN
 
 
-def test_dsr_formal_persiste_metodo_versionado():
+def test_dsr_formal_persiste_metodo_calendario_y_fingerprint():
     values = [0.20 + (((index * 17) % 11) - 5) / 10.0 for index in range(240)]
-    result = g2.deflated_sharpe_sessions(values, n_trials=8, hac_lag=4)
+    result = g2.deflated_sharpe_sessions(
+        values,
+        n_trials=8,
+        hac_lag=4,
+        calendar_sha256=CALENDAR,
+        zero_trade_sessions=0,
+    )
     assert result.n_observations == 240
     assert 2 <= result.n_effective <= 240
     assert result.dependence_method == g2.DSR_DEPENDENCE_METHOD
-    assert result.method_sha256 == g2.DSR_METHOD_SHA256_V1
-    assert len(result.method_sha256) == 64
+    assert result.method_sha256 == g2.DSR_METHOD_SHA256_V2
+    assert result.implementation_sha256 == g2.DSR_IMPLEMENTATION_SHA256
+    assert result.calendar_sha256 == CALENDAR
+    assert len(result.method_sha256) == len(result.implementation_sha256) == 64
 
 
 def test_dsr_hac_reduce_n_efectivo_con_clustering_positivo():
-    clustered = [-1.0] * 60 + [1.0] * 60
-    alternating = [-1.0, 1.0] * 60
-    first = g2.deflated_sharpe_sessions(clustered, n_trials=2, hac_lag=10)
-    second = g2.deflated_sharpe_sessions(alternating, n_trials=2, hac_lag=10)
+    clustered = [-1.0] * 80 + [1.0] * 80
+    alternating = [-1.0, 1.0] * 80
+    first = g2.deflated_sharpe_sessions(
+        clustered, n_trials=2, hac_lag=10,
+        calendar_sha256=CALENDAR, zero_trade_sessions=0,
+    )
+    second = g2.deflated_sharpe_sessions(
+        alternating, n_trials=2, hac_lag=10,
+        calendar_sha256=CALENDAR, zero_trade_sessions=0,
+    )
     assert first.n_effective < second.n_effective
 
 
 def test_dsr_rechaza_serie_sin_varianza():
     with pytest.raises(g2.G2SemanticError, match="varianza"):
-        g2.deflated_sharpe_sessions([1.0] * 20, n_trials=2)
+        g2.deflated_sharpe_sessions(
+            [1.0] * 160, n_trials=2,
+            calendar_sha256=CALENDAR, zero_trade_sessions=0,
+        )
+
+
+def test_dsr_exige_calendario_completo_y_sesiones_sin_trades_explicitas():
+    values = _noise(160)
+    with pytest.raises(g2.G2SemanticError, match="calendar_sha256"):
+        g2.deflated_sharpe_sessions(values, n_trials=1, zero_trade_sessions=0)
+    with pytest.raises(g2.G2SemanticError, match="retorno cero"):
+        g2.deflated_sharpe_sessions(
+            values, n_trials=1, calendar_sha256=CALENDAR,
+            zero_trade_sessions=1,
+        )
+    values[0] = 0.0
+    result = g2.deflated_sharpe_sessions(
+        values, n_trials=1, calendar_sha256=CALENDAR,
+        zero_trade_sessions=1,
+    )
+    assert result.zero_trade_sessions == 1
+
+
+def test_dsr_y_bootstrap_t_comparten_piso_de_sesiones():
+    with pytest.raises(g2.G2SemanticError, match="160 sesiones"):
+        g2.deflated_sharpe_sessions(
+            _noise(159), n_trials=1,
+            calendar_sha256=CALENDAR, zero_trade_sessions=0,
+        )
 
 
 # Walk-forward canónico por ratio
