@@ -1,83 +1,44 @@
 # EdgeLab
 
-> Este documento sirve al referente rector: ver [`docs/NORTH_STAR.md`](docs/NORTH_STAR.md).
+> **Estado canónico:** [`docs/ESTADO_2026-08-10_EMPEZAR_ACA.md`](docs/ESTADO_2026-08-10_EMPEZAR_ACA.md)
+>
+> **Incidente P0 abierto:** [`docs/incidents/INCIDENTE_PROCEDENCIA_2026-08-10.md`](docs/incidents/INCIDENTE_PROCEDENCIA_2026-08-10.md)
 
-Infraestructura de investigación cuantitativa. Dos líneas de trabajo:
+Infraestructura de investigación cuantitativa orientada a encontrar edges netos, robustos y ejecutables sin confundir paridad, información descriptiva o un backtest positivo con un edge.
 
-1. **Legacy ES/NQ/EURUSD** (`strategies/`, `validation/`, `databuild/`) —
-   motor tick + gauntlet estadístico. **EURUSD/ARB pausado** (candidato no
-   validado, sin experimento en el ledger científico central). Ver
-   `EDGES_DISCOVERED.md`, `PLAN.md`.
-2. **NT8 Indicator Bridge** (`edgelab/bridge/`, activo) — traduce indicadores
-   NT8 a Python, verifica paridad numérica contra NT8 real, y guarda las
-   coordenadas de zonas en un store reutilizable para vectorbt/fuerza bruta.
+## Estado actual
 
-Para retomar el trabajo (humano o sesión de Claude nueva), leer en este orden:
+- **Remoto verificado:** `foundation/f0b-compatibility-probe` continúa en `5f1b65d` (muerte de H1).
+- **H1:** muerta; corrió sobre 6E, no NQ/ES.
+- **BigTrap2 como soporte/resistencia:** fuertemente refutado.
+- **Atracción/revisita:** hipótesis provisional en cuarentena.
+- **Trabajo local posterior:** se reportaron reruns corregidos, réplica `tick:25`, barrido target-free de 11 celdas y una generalización ES, pero todavía no están en GitHub.
+- **Incidente:** un artefacto declaró `code_commit=6a2c08a` mientras el fix se referencia como `5a143da`, y hubo procesos concurrentes sobre el mismo directorio.
+- **F4 constitucional (información condicional):** no ejecutada.
+- **Holdout 2026-07-01 → 2026-12-31:** intacto.
 
-1. **`docs/foundation/SCOPE.md`** — charter: qué está pausado, qué es
-   prioridad, roadmap de fases (F0–F9+) y gates (P0/P1/P2).
-2. **`CONTRATO_LLM.md`** — reglas para proponer/tocar estrategias legacy.
-3. **`ENVIRONMENT.md`** — cómo reconstruir el entorno (abajo, resumido).
-4. **`docs/nt8_bridge.md`** — cómo usar el bridge (CLI, visor, zone store).
-5. **`docs/nt8_indicator_parity_contract.md`** — protocolo de paridad real
-   contra NT8, con el primer oráculo pre-registrado (Gaps2, 6E 06-26).
-6. **`docs/foundation/F0B_COMPATIBILITY_REPORT.md`** — por qué el stack de
-   dependencias es el que es.
+## Leer en este orden
 
-## Estado (branch `foundation/f0b-compatibility-probe`)
+1. [`docs/ESTADO_2026-08-10_EMPEZAR_ACA.md`](docs/ESTADO_2026-08-10_EMPEZAR_ACA.md)
+2. [`docs/incidents/INCIDENTE_PROCEDENCIA_2026-08-10.md`](docs/incidents/INCIDENTE_PROCEDENCIA_2026-08-10.md)
+3. [`docs/NORTH_STAR.md`](docs/NORTH_STAR.md)
+4. [`CLAUDE.md`](CLAUDE.md)
+5. [`PLAN.md`](PLAN.md)
+6. [`docs/research/FUTURAS_INVESTIGACIONES_E_IMPLEMENTACIONES_2026-08-10.md`](docs/research/FUTURAS_INVESTIGACIONES_E_IMPLEMENTACIONES_2026-08-10.md)
+7. [`docs/edge_validation_contract.md`](docs/edge_validation_contract.md)
 
-```
-cde6d93 baseline (tag baseline-pre-foundation) — snapshot original preservado
-49289a1 entorno reproducible (.venv vía lockfiles, sin tocar Python global)
-b702515 configuración portable (config/default.toml + local.toml + EDGELAB_*)
-ceece76 charter de scope
-1af710e contrato de datos NT8 .Last.txt (F1)
-5a4da89 conversor NT8 → parquet canónico con auditor P0 (F2)
-04e24bb bridge: reader F2 + barras tiempo/tick + footprint (gate P1A)
-b030e4a bridge: kernel Gaps2 + oráculo NT8 + matcher de paridad (gate P2)
-da28b8b bridge: CLI + zone store + visor offline multi-run
-```
+## P0 actual
 
-`main` sigue apuntando al baseline original (`cde6d93`); todo el trabajo de
-foundation vive en `foundation/f0b-compatibility-probe`, sin mergear.
+1. Congelar interpretación y reconciliar repo/worktree/procesos/artefactos.
+2. Reemitir desde una worktree limpia cualquier resultado cuya procedencia no sea unívoca.
+3. Resolver drift BigTrap2 `.cs` v2.5.1 ↔ Python v2.2.
+4. Publicar y verificar los commits locales.
+5. Integrar el fix `/data/` sin mezclar la sesión separada de `.gitignore`.
 
-## Bootstrap en una máquina nueva
+## Regla de interpretación
 
-```powershell
-# 1. entorno (NO se versiona .venv/; se reconstruye desde el lock)
-python -m venv .venv
-.\.venv\Scripts\python -m pip install --require-hashes --no-deps -r requirements\core-bridge-dev.lock
+H1 muerta ≠ BigTrap2 muerto. Proceso terminado ≠ resultado válido. SHA de `HEAD` ≠ identidad del código si el árbol estaba dirty.
 
-# 2. config local (rutas de ESTA máquina; gitignored)
-copy config\local.toml.example config\local.toml
-# editar config\local.toml si vas a usar CerebroSSRN / VectorBTecosistema
+## Rama
 
-# 3. verificar
-.\.venv\Scripts\python -m pytest tests -m "not vectorbt" -q
-```
-
-Si `config/local.toml` viajó pegado desde otra máquina, sus rutas
-(`vectorbt_ecosystem_root`, `cerebro_root`, etc.) casi seguro NO son válidas
-acá — son opcionales (`None` si no se configuran) y solo hacen falta para el
-research legacy ES/NQ, no para el bridge NT8.
-
-## Datos incluidos en este paquete
-
-- `TickData/` — exports crudos NT8 `.Last.txt` de 6E (fuente irremplazable
-  salvo reexport desde el broker).
-- `data/nt8/6E/` — parquets canónicos ya convertidos (F2). Regenerables desde
-  `TickData/` con `python -m databuild.build_nt8_ticks` (~1 min) si hiciera
-  falta.
-- `data/eurusd_ticks.parquet`, `data/nq_m1_clean.parquet` — ticks del research
-  legacy EURUSD/ES (pausado, preservado).
-- `runs/nt8_bridge/` — corridas de ejemplo del bridge (demo sintética + una
-  muestra real de 6E 09-25 con grid de parámetros).
-
-## Bridge NT8 — uso rápido
-
-```powershell
-.\.venv\Scripts\python tools\run_nt8_bridge.py --synthetic --indicator Gaps2 --out runs\nt8_bridge\demo
-# abrir runs\nt8_bridge\demo\viewer\index.html (servido por HTTP, no file://)
-```
-
-Detalle completo en `docs/nt8_bridge.md`.
+El trabajo canónico continúa en `foundation/f0b-compatibility-probe`; `main` conserva el baseline histórico.
