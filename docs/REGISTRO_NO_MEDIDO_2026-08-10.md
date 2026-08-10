@@ -35,6 +35,7 @@ estados del que se la extrae.
 | M11 | **F1.2** supervivencia con riesgos competitivos | CIF ruptura 0,9628 · vida mediana ~6 barras · estratificado por altura/volumen/toques | `F1_superv_depletion__b107bf368c08.json` |
 | M12 | **F1.3** depleción por índice de toque | 30,3 % (toque 1) → 16,7 % (>10); plano en 1–4 (77 % de la masa) | ídem |
 | M13 | **F1.1** nulo contra zonas aleatorias, dos diseños (posición libre / desplazamiento local) | **tocar: real 97,9 % vs nulo-B 51,4 % — 201/201 sesiones.** Romper: casi igual (0,8 pp) | `F1_nulo_zonas_aleatorias__ac9d001dc815.json` |
+| M14 | **F0.3** features de estado (`materialize_features`, primer uso en research) | cobertura 99,3 % · `inside_zone` 7,95 % · pico intradía 11-13h CT | `F0.3_features_estado__37db8426120d.json` |
 
 ---
 
@@ -79,12 +80,17 @@ Enumeradas en `PLAN_ANALISIS_v2` §2 y **ninguna evaluada**:
 | E6 | aproximación sin toque | no medido |
 | E7 | confluencia / apilamiento de zonas | no medido |
 
-### 2.3 La zona como ESTADO continuo
+### 2.3 La zona como ESTADO continuo — ✅ MEDIDO (F0.3)
 
 `materialize_features()` (`features.py`, **2026-07-24**) expone `inside_zone`,
 `distance_to_nearest_zone`, `active_zone_count`, `zone_age`,
-`nearest_zone_side`. Consumidores en todo el repo: su propio test, un demo, y el
-archivo mismo. **Cero código de research.** Es F0.3 y sigue pendiente.
+`nearest_zone_side`. Hasta hoy: cero código de research la usaba. **F0.3 la
+corrió por primera vez**, sobre 254.323 barras: cobertura de zona activa
+99,3 %, `inside_zone` 7,95 %, patrón intradía coherente con liquidez real
+(pico 11-13h CT). Ver `F0.3_FEATURES_ESTADO_RESULTADO_2026-08-10.md`. Deja
+un artefacto propio documentado: `zone_age` de la más cercana tiene sesgo de
+longitud (mediana 54 barras, muy por encima de la vida mediana de una zona
+cualquiera, ~7) — no leer esa mediana como "la zona típica".
 
 ### 2.4 Parámetros del indicador nunca variados
 
@@ -105,10 +111,21 @@ donde H1 perdía, y que F1.2 confirmó como propiedad casi universal del objeto
 ahora con más motivo: son los únicos parámetros de los 12 con posibilidad
 mecánica de cambiar **qué cuenta como ruptura**, no cuántas zonas hay.
 
-### 2.5 Instrumentos
+### 2.5 Instrumentos — investigado, sigue bloqueado, y ahora se sabe por qué
 
-Sólo **6E** (4 contratos, 201 sesiones). **ES y NQ tienen oráculos y no se
-usaron.** Es F3, y es la mejora de potencia más barata que hay: `SE ∝ 1/√n`.
+Sólo **6E** (4 contratos, 201 sesiones). Se verificó hoy el estado real de ES y
+NQ: **los parquets canónicos ya existen** (`data/nt8/ES_parquet/`,
+`data/nt8/NQ_parquet/`, con sus manifiestos) — no es un problema de datos
+faltantes. **El bloqueo es que `dias_research()` lee el calendario de estudio
+desde un archivo de universo que enumera exclusivamente nombres de contrato
+6E** (`post_sepmin.py:109-113`, `cargar_dias_de_estudio`). Extender el
+calendario a ES/NQ es, por la regla nueva de `CLAUDE.md` §Reglas permanentes,
+una decisión de población que **se enumera y justifica por escrito antes de
+tomarse** — no algo para resolver al margen de otra tarea. Queda como el
+siguiente paso concreto, con el bloqueo identificado y no sólo nombrado.
+
+Es F3, y sigue siendo la mejora de potencia más barata disponible una vez
+habilitada: `SE ∝ 1/√n`.
 
 ### 2.6 Reglas de trade nunca variadas (fuera del alcance target-free)
 
@@ -151,8 +168,10 @@ ni por volatilidad.
 4. **¿Cuánto de la fricción de 2,768 ticks es evitable?** El número se tomó como
    dado. Nunca se descompuso en spread, comisión y slippage, ni se evaluó entrada
    pasiva.
-5. **¿El indicador funciona distinto según el régimen?** Sin condicionamiento por
-   volatilidad, tendencia ni hora.
+5. **¿El indicador funciona distinto según el régimen?** **Parcial** — F0.3
+   midió estacionalidad intradía (pico de densidad 11-13h CT, coherente con
+   solape Londres-NY) pero nada de eso se cruzó todavía con ruptura ni con
+   toque. Sin condicionamiento por volatilidad, tendencia ni día de la semana.
 6. **¿Los otros 4 indicadores?** F9 está PAUSADA por decisión sellada, y los
    4 existentes distintos de BigTrap2 no se investigaron como generadores de
    hipótesis.

@@ -1,0 +1,910 @@
+{
+ "schema_version": "F0.3_features_de_estado_v1",
+ "fase": "F0.3",
+ "que_es": "features de ESTADO (materialize_features) sobre la serie de barras -- primer uso en research. Sin retornos.",
+ "plan": "docs/PLAN_ANALISIS_v2_2026-08-10.md",
+ "motivo": "F1.1 mostro que BigTrap2 distingue del azar en ATRACCION (tocar) no en RESISTENCIA (romper); estas features miden confluencia/cercania, el eje que importa segun ese resultado.",
+ "session_count": 201,
+ "max_fecha_universo": "2026-06-30",
+ "firewall_max_fecha": "2026-06-30",
+ "firewall_corte_iso": "2026-06-30 22:00:00+00:00",
+ "universe_filter_report": {
+  "descartados_holdout": 24,
+  "fechas_holdout": [
+   "2026-07-01",
+   "2026-07-02",
+   "2026-07-03",
+   "2026-07-06",
+   "2026-07-07",
+   "2026-07-08",
+   "2026-07-09",
+   "2026-07-10",
+   "2026-07-13",
+   "2026-07-14",
+   "2026-07-15",
+   "2026-07-16",
+   "2026-07-17",
+   "2026-07-20",
+   "2026-07-21",
+   "2026-07-22",
+   "2026-07-23",
+   "2026-07-24",
+   "2026-07-27",
+   "2026-07-28",
+   "2026-07-29",
+   "2026-07-30",
+   "2026-07-31",
+   "2026-08-03"
+  ],
+  "descartados_cuarentena": 18,
+  "fechas_cuarentena": [
+   "2026-07-01",
+   "2026-07-02",
+   "2026-07-03",
+   "2026-07-06",
+   "2026-07-07",
+   "2026-07-08",
+   "2026-07-09",
+   "2026-07-10",
+   "2026-07-13",
+   "2026-07-14",
+   "2026-07-15",
+   "2026-07-16",
+   "2026-07-17",
+   "2026-07-20",
+   "2026-07-21",
+   "2026-07-22",
+   "2026-07-23",
+   "2026-07-24"
+  ]
+ },
+ "outcomes_accessed": false,
+ "n_barras": 254323,
+ "active_zone_count": {
+  "n": 254323,
+  "media": 8.4527,
+  "min": 0.0,
+  "max": 34.0,
+  "p10": 3.0,
+  "p25": 5.2987,
+  "p50": 7.619,
+  "p75": 11.1762,
+  "p90": 15.0321
+ },
+ "cobertura_con_zona_activa": 0.993127,
+ "inside_zone_frac": 0.079462,
+ "distance_to_nearest_zone_ticks": {
+  "n": 252575,
+  "media": 11.6038,
+  "min": 0.0,
+  "max": 187.0,
+  "p10": 1.0,
+  "p25": 2.938,
+  "p50": 7.0,
+  "p75": 15.0,
+  "p90": 27.3585
+ },
+ "zone_age_barras": {
+  "n": 252575,
+  "media": 306.4842,
+  "min": 0.0,
+  "max": 5322.0,
+  "p10": 2.0,
+  "p25": 10.0851,
+  "p50": 54.2764,
+  "p75": 281.4283,
+  "p90": 773.2409
+ },
+ "nearest_zone_side": {
+  "trapped_buyers": 131898,
+  "trapped_sellers": 120677
+ },
+ "estacionalidad_por_hora_ct": {
+  "0": {
+   "n": 11771,
+   "azc_sum": 75892,
+   "inside_n": 508
+  },
+  "1": {
+   "n": 12046,
+   "azc_sum": 78932,
+   "inside_n": 740
+  },
+  "2": {
+   "n": 12058,
+   "azc_sum": 82605,
+   "inside_n": 927
+  },
+  "3": {
+   "n": 12055,
+   "azc_sum": 85619,
+   "inside_n": 1023
+  },
+  "4": {
+   "n": 12041,
+   "azc_sum": 89250,
+   "inside_n": 1082
+  },
+  "5": {
+   "n": 12044,
+   "azc_sum": 92538,
+   "inside_n": 1032
+  },
+  "6": {
+   "n": 12050,
+   "azc_sum": 94026,
+   "inside_n": 1042
+  },
+  "7": {
+   "n": 12059,
+   "azc_sum": 99601,
+   "inside_n": 1107
+  },
+  "8": {
+   "n": 12059,
+   "azc_sum": 106941,
+   "inside_n": 1190
+  },
+  "9": {
+   "n": 12047,
+   "azc_sum": 112988,
+   "inside_n": 1214
+  },
+  "10": {
+   "n": 12055,
+   "azc_sum": 115656,
+   "inside_n": 1148
+  },
+  "11": {
+   "n": 12040,
+   "azc_sum": 119878,
+   "inside_n": 1211
+  },
+  "12": {
+   "n": 11907,
+   "azc_sum": 118326,
+   "inside_n": 1191
+  },
+  "13": {
+   "n": 11908,
+   "azc_sum": 115563,
+   "inside_n": 1152
+  },
+  "14": {
+   "n": 11840,
+   "azc_sum": 113750,
+   "inside_n": 1116
+  },
+  "15": {
+   "n": 11364,
+   "azc_sum": 111566,
+   "inside_n": 1074
+  },
+  "16": {
+   "n": 200,
+   "azc_sum": 1988,
+   "inside_n": 14
+  },
+  "17": {
+   "n": 8357,
+   "azc_sum": 83103,
+   "inside_n": 743
+  },
+  "18": {
+   "n": 8839,
+   "azc_sum": 84039,
+   "inside_n": 589
+  },
+  "19": {
+   "n": 9439,
+   "azc_sum": 84262,
+   "inside_n": 543
+  },
+  "20": {
+   "n": 9374,
+   "azc_sum": 78508,
+   "inside_n": 441
+  },
+  "21": {
+   "n": 9065,
+   "azc_sum": 72036,
+   "inside_n": 426
+  },
+  "22": {
+   "n": 8834,
+   "azc_sum": 67450,
+   "inside_n": 306
+  },
+  "23": {
+   "n": 8871,
+   "azc_sum": 65215,
+   "inside_n": 390
+  }
+ },
+ "limitacion_percentiles_agregados": "percentiles del agregado son promedio ponderado por contrato, no recalculo exacto sobre el pool completo",
+ "por_contrato": {
+  "6E_03-26_ticks.parquet": {
+   "estado": "OK",
+   "sesiones": 60,
+   "n_barras": 75971,
+   "active_zone_count": {
+    "n": 75971,
+    "media": 9.1574,
+    "sd": 5.2717,
+    "min": 0.0,
+    "max": 34.0,
+    "p10": 3.0,
+    "p25": 6.0,
+    "p50": 8.0,
+    "p75": 12.0,
+    "p90": 17.0
+   },
+   "inside_zone_frac": 0.07878006081267852,
+   "distance_to_nearest_zone": {
+    "n": 74900,
+    "media": 12.1078,
+    "sd": 15.3538,
+    "min": 0.0,
+    "max": 187.0,
+    "p10": 1.0,
+    "p25": 3.0,
+    "p50": 7.0,
+    "p75": 15.0,
+    "p90": 28.0
+   },
+   "zone_age_barras": {
+    "n": 74900,
+    "media": 272.5168,
+    "sd": 644.8626,
+    "min": 0.0,
+    "max": 5022.0,
+    "p10": 2.0,
+    "p25": 9.0,
+    "p50": 50.0,
+    "p75": 244.0,
+    "p90": 665.0
+   },
+   "nearest_zone_side": {
+    "trapped_buyers": 36189,
+    "trapped_sellers": 38711
+   },
+   "por_hora_ct": {
+    "0": {
+     "n": 3536,
+     "azc_sum": 23206,
+     "inside_n": 183
+    },
+    "1": {
+     "n": 3597,
+     "azc_sum": 24586,
+     "inside_n": 229
+    },
+    "2": {
+     "n": 3600,
+     "azc_sum": 26274,
+     "inside_n": 260
+    },
+    "3": {
+     "n": 3596,
+     "azc_sum": 28121,
+     "inside_n": 307
+    },
+    "4": {
+     "n": 3595,
+     "azc_sum": 30137,
+     "inside_n": 344
+    },
+    "5": {
+     "n": 3592,
+     "azc_sum": 30952,
+     "inside_n": 317
+    },
+    "6": {
+     "n": 3597,
+     "azc_sum": 31059,
+     "inside_n": 311
+    },
+    "7": {
+     "n": 3600,
+     "azc_sum": 32423,
+     "inside_n": 321
+    },
+    "8": {
+     "n": 3600,
+     "azc_sum": 35097,
+     "inside_n": 359
+    },
+    "9": {
+     "n": 3600,
+     "azc_sum": 36527,
+     "inside_n": 373
+    },
+    "10": {
+     "n": 3597,
+     "azc_sum": 38108,
+     "inside_n": 303
+    },
+    "11": {
+     "n": 3595,
+     "azc_sum": 39559,
+     "inside_n": 370
+    },
+    "12": {
+     "n": 3559,
+     "azc_sum": 38999,
+     "inside_n": 358
+    },
+    "13": {
+     "n": 3556,
+     "azc_sum": 36698,
+     "inside_n": 316
+    },
+    "14": {
+     "n": 3537,
+     "azc_sum": 36306,
+     "inside_n": 330
+    },
+    "15": {
+     "n": 3381,
+     "azc_sum": 35949,
+     "inside_n": 356
+    },
+    "16": {
+     "n": 60,
+     "azc_sum": 639,
+     "inside_n": 3
+    },
+    "17": {
+     "n": 2538,
+     "azc_sum": 27938,
+     "inside_n": 205
+    },
+    "18": {
+     "n": 2742,
+     "azc_sum": 28778,
+     "inside_n": 179
+    },
+    "19": {
+     "n": 2781,
+     "azc_sum": 27102,
+     "inside_n": 117
+    },
+    "20": {
+     "n": 2755,
+     "azc_sum": 24618,
+     "inside_n": 154
+    },
+    "21": {
+     "n": 2691,
+     "azc_sum": 22201,
+     "inside_n": 125
+    },
+    "22": {
+     "n": 2596,
+     "azc_sum": 20448,
+     "inside_n": 68
+    },
+    "23": {
+     "n": 2670,
+     "azc_sum": 19973,
+     "inside_n": 97
+    }
+   },
+   "cobertura_con_zona_activa": 0.9859025154335207
+  },
+  "6E_06-26_ticks.parquet": {
+   "estado": "OK",
+   "sesiones": 64,
+   "n_barras": 81445,
+   "active_zone_count": {
+    "n": 81445,
+    "media": 8.9664,
+    "sd": 4.9241,
+    "min": 0.0,
+    "max": 28.0,
+    "p10": 3.0,
+    "p25": 5.0,
+    "p50": 8.0,
+    "p75": 12.0,
+    "p90": 16.0
+   },
+   "inside_zone_frac": 0.08029958867947695,
+   "distance_to_nearest_zone": {
+    "n": 81275,
+    "media": 11.4469,
+    "sd": 14.3702,
+    "min": 0.0,
+    "max": 125.0,
+    "p10": 1.0,
+    "p25": 3.0,
+    "p50": 7.0,
+    "p75": 15.0,
+    "p90": 27.0
+   },
+   "zone_age_barras": {
+    "n": 81275,
+    "media": 322.0234,
+    "sd": 733.3993,
+    "min": 0.0,
+    "max": 5322.0,
+    "p10": 2.0,
+    "p25": 10.0,
+    "p50": 53.0,
+    "p75": 291.5,
+    "p90": 819.0
+   },
+   "nearest_zone_side": {
+    "trapped_sellers": 37983,
+    "trapped_buyers": 43292
+   },
+   "por_hora_ct": {
+    "0": {
+     "n": 3726,
+     "azc_sum": 26920,
+     "inside_n": 138
+    },
+    "1": {
+     "n": 3833,
+     "azc_sum": 27116,
+     "inside_n": 217
+    },
+    "2": {
+     "n": 3840,
+     "azc_sum": 28220,
+     "inside_n": 308
+    },
+    "3": {
+     "n": 3840,
+     "azc_sum": 29375,
+     "inside_n": 357
+    },
+    "4": {
+     "n": 3834,
+     "azc_sum": 30829,
+     "inside_n": 367
+    },
+    "5": {
+     "n": 3833,
+     "azc_sum": 31835,
+     "inside_n": 312
+    },
+    "6": {
+     "n": 3837,
+     "azc_sum": 32423,
+     "inside_n": 333
+    },
+    "7": {
+     "n": 3840,
+     "azc_sum": 33911,
+     "inside_n": 353
+    },
+    "8": {
+     "n": 3840,
+     "azc_sum": 35825,
+     "inside_n": 368
+    },
+    "9": {
+     "n": 3827,
+     "azc_sum": 38163,
+     "inside_n": 411
+    },
+    "10": {
+     "n": 3840,
+     "azc_sum": 37603,
+     "inside_n": 389
+    },
+    "11": {
+     "n": 3839,
+     "azc_sum": 38299,
+     "inside_n": 339
+    },
+    "12": {
+     "n": 3822,
+     "azc_sum": 38468,
+     "inside_n": 338
+    },
+    "13": {
+     "n": 3821,
+     "azc_sum": 38677,
+     "inside_n": 369
+    },
+    "14": {
+     "n": 3806,
+     "azc_sum": 38533,
+     "inside_n": 341
+    },
+    "15": {
+     "n": 3681,
+     "azc_sum": 37659,
+     "inside_n": 400
+    },
+    "16": {
+     "n": 64,
+     "azc_sum": 677,
+     "inside_n": 7
+    },
+    "17": {
+     "n": 2682,
+     "azc_sum": 27663,
+     "inside_n": 276
+    },
+    "18": {
+     "n": 2760,
+     "azc_sum": 27476,
+     "inside_n": 187
+    },
+    "19": {
+     "n": 3056,
+     "azc_sum": 28967,
+     "inside_n": 166
+    },
+    "20": {
+     "n": 3078,
+     "azc_sum": 27822,
+     "inside_n": 126
+    },
+    "21": {
+     "n": 2996,
+     "azc_sum": 26170,
+     "inside_n": 151
+    },
+    "22": {
+     "n": 2928,
+     "azc_sum": 24536,
+     "inside_n": 110
+    },
+    "23": {
+     "n": 2822,
+     "azc_sum": 23104,
+     "inside_n": 177
+    }
+   },
+   "cobertura_con_zona_activa": 0.9979127018233164
+  },
+  "6E_09-26_ticks.parquet": {
+   "estado": "OK",
+   "sesiones": 13,
+   "n_barras": 15703,
+   "active_zone_count": {
+    "n": 15703,
+    "media": 6.9499,
+    "sd": 2.876,
+    "min": 0.0,
+    "max": 15.0,
+    "p10": 3.0,
+    "p25": 5.0,
+    "p50": 7.0,
+    "p75": 9.0,
+    "p90": 11.0
+   },
+   "inside_zone_frac": 0.09068330892186206,
+   "distance_to_nearest_zone": {
+    "n": 15654,
+    "media": 11.8414,
+    "sd": 15.6727,
+    "min": 0.0,
+    "max": 121.0,
+    "p10": 1.0,
+    "p25": 2.0,
+    "p50": 7.0,
+    "p75": 15.0,
+    "p90": 28.0
+   },
+   "zone_age_barras": {
+    "n": 15654,
+    "media": 353.4324,
+    "sd": 877.8692,
+    "min": 0.0,
+    "max": 5196.0,
+    "p10": 2.0,
+    "p25": 11.0,
+    "p50": 57.0,
+    "p75": 266.0,
+    "p90": 735.0
+   },
+   "nearest_zone_side": {
+    "trapped_buyers": 8889,
+    "trapped_sellers": 6765
+   },
+   "por_hora_ct": {
+    "0": {
+     "n": 758,
+     "azc_sum": 3948,
+     "inside_n": 30
+    },
+    "1": {
+     "n": 780,
+     "azc_sum": 4446,
+     "inside_n": 47
+    },
+    "2": {
+     "n": 780,
+     "azc_sum": 4697,
+     "inside_n": 62
+    },
+    "3": {
+     "n": 780,
+     "azc_sum": 4492,
+     "inside_n": 58
+    },
+    "4": {
+     "n": 777,
+     "azc_sum": 4542,
+     "inside_n": 68
+    },
+    "5": {
+     "n": 780,
+     "azc_sum": 5495,
+     "inside_n": 108
+    },
+    "6": {
+     "n": 780,
+     "azc_sum": 5508,
+     "inside_n": 64
+    },
+    "7": {
+     "n": 779,
+     "azc_sum": 5469,
+     "inside_n": 77
+    },
+    "8": {
+     "n": 780,
+     "azc_sum": 5897,
+     "inside_n": 91
+    },
+    "9": {
+     "n": 780,
+     "azc_sum": 5880,
+     "inside_n": 94
+    },
+    "10": {
+     "n": 780,
+     "azc_sum": 6071,
+     "inside_n": 78
+    },
+    "11": {
+     "n": 777,
+     "azc_sum": 6854,
+     "inside_n": 110
+    },
+    "12": {
+     "n": 721,
+     "azc_sum": 5926,
+     "inside_n": 111
+    },
+    "13": {
+     "n": 719,
+     "azc_sum": 5633,
+     "inside_n": 80
+    },
+    "14": {
+     "n": 719,
+     "azc_sum": 5525,
+     "inside_n": 54
+    },
+    "15": {
+     "n": 698,
+     "azc_sum": 5647,
+     "inside_n": 49
+    },
+    "16": {
+     "n": 12,
+     "azc_sum": 97,
+     "inside_n": 2
+    },
+    "17": {
+     "n": 460,
+     "azc_sum": 3653,
+     "inside_n": 63
+    },
+    "18": {
+     "n": 441,
+     "azc_sum": 3363,
+     "inside_n": 40
+    },
+    "19": {
+     "n": 533,
+     "azc_sum": 3623,
+     "inside_n": 52
+    },
+    "20": {
+     "n": 535,
+     "azc_sum": 3455,
+     "inside_n": 20
+    },
+    "21": {
+     "n": 508,
+     "azc_sum": 3184,
+     "inside_n": 19
+    },
+    "22": {
+     "n": 518,
+     "azc_sum": 3001,
+     "inside_n": 31
+    },
+    "23": {
+     "n": 508,
+     "azc_sum": 2728,
+     "inside_n": 16
+    }
+   },
+   "cobertura_con_zona_activa": 0.9968795771508628
+  },
+  "6E_12-25_ticks.parquet": {
+   "estado": "OK",
+   "sesiones": 64,
+   "n_barras": 81204,
+   "active_zone_count": {
+    "n": 81204,
+    "media": 7.5689,
+    "sd": 3.9452,
+    "min": 0.0,
+    "max": 26.0,
+    "p10": 3.0,
+    "p25": 5.0,
+    "p50": 7.0,
+    "p75": 10.0,
+    "p90": 13.0
+   },
+   "inside_zone_frac": 0.07708979853209201,
+   "distance_to_nearest_zone": {
+    "n": 80746,
+    "media": 11.2482,
+    "sd": 13.5093,
+    "min": 0.0,
+    "max": 134.0,
+    "p10": 1.0,
+    "p25": 3.0,
+    "p50": 7.0,
+    "p75": 15.0,
+    "p90": 27.0
+   },
+   "zone_age_barras": {
+    "n": 80746,
+    "media": 313.2495,
+    "sd": 680.3557,
+    "min": 0.0,
+    "max": 5057.0,
+    "p10": 2.0,
+    "p25": 11.0,
+    "p50": 59.0,
+    "p75": 309.0,
+    "p90": 835.0
+   },
+   "nearest_zone_side": {
+    "trapped_buyers": 43528,
+    "trapped_sellers": 37218
+   },
+   "por_hora_ct": {
+    "0": {
+     "n": 3751,
+     "azc_sum": 21818,
+     "inside_n": 157
+    },
+    "1": {
+     "n": 3836,
+     "azc_sum": 22784,
+     "inside_n": 247
+    },
+    "2": {
+     "n": 3838,
+     "azc_sum": 23414,
+     "inside_n": 297
+    },
+    "3": {
+     "n": 3839,
+     "azc_sum": 23631,
+     "inside_n": 301
+    },
+    "4": {
+     "n": 3835,
+     "azc_sum": 23742,
+     "inside_n": 303
+    },
+    "5": {
+     "n": 3839,
+     "azc_sum": 24256,
+     "inside_n": 295
+    },
+    "6": {
+     "n": 3836,
+     "azc_sum": 25036,
+     "inside_n": 334
+    },
+    "7": {
+     "n": 3840,
+     "azc_sum": 27798,
+     "inside_n": 356
+    },
+    "8": {
+     "n": 3839,
+     "azc_sum": 30122,
+     "inside_n": 372
+    },
+    "9": {
+     "n": 3840,
+     "azc_sum": 32418,
+     "inside_n": 336
+    },
+    "10": {
+     "n": 3838,
+     "azc_sum": 33874,
+     "inside_n": 378
+    },
+    "11": {
+     "n": 3829,
+     "azc_sum": 35166,
+     "inside_n": 392
+    },
+    "12": {
+     "n": 3805,
+     "azc_sum": 34933,
+     "inside_n": 384
+    },
+    "13": {
+     "n": 3812,
+     "azc_sum": 34555,
+     "inside_n": 387
+    },
+    "14": {
+     "n": 3778,
+     "azc_sum": 33386,
+     "inside_n": 391
+    },
+    "15": {
+     "n": 3604,
+     "azc_sum": 32311,
+     "inside_n": 269
+    },
+    "16": {
+     "n": 64,
+     "azc_sum": 575,
+     "inside_n": 2
+    },
+    "17": {
+     "n": 2677,
+     "azc_sum": 23849,
+     "inside_n": 199
+    },
+    "18": {
+     "n": 2896,
+     "azc_sum": 24422,
+     "inside_n": 183
+    },
+    "19": {
+     "n": 3069,
+     "azc_sum": 24570,
+     "inside_n": 208
+    },
+    "20": {
+     "n": 3006,
+     "azc_sum": 22613,
+     "inside_n": 141
+    },
+    "21": {
+     "n": 2870,
+     "azc_sum": 20481,
+     "inside_n": 131
+    },
+    "22": {
+     "n": 2792,
+     "azc_sum": 19465,
+     "inside_n": 97
+    },
+    "23": {
+     "n": 2871,
+     "azc_sum": 19410,
+     "inside_n": 100
+    }
+   },
+   "cobertura_con_zona_activa": 0.994359883749569
+  }
+ },
+ "code_commit": "2a98e4d8bb51c2f5815e1bbdfd3f6b15584dea36",
+ "measurement_code_sha256": "79d784e132f0a2b5c0a9b84613c145f818b03ac64062b1d5222ee4ec4f46a1bd",
+ "entorno": {
+  "python": "3.12.7",
+  "plataforma": "Windows-10-10.0.19045-SP0"
+ },
+ "payload_sha256": "37db8426120d046735ce8cc04c2d73df903a5c077f7f9f9eabd2d54895bfedb3"
+}
