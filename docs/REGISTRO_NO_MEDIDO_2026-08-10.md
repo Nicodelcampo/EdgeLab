@@ -43,6 +43,7 @@ estados del que se la extrae.
 | M19 | **Incidente de procedencia Git** diagnosticado y cerrado | causa raíz: `git add` con pathspec obsoleto abortó silenciosamente; 2 commits recuperados y verificados | `docs/incidents/RESOLUCION_INCIDENTE_PROCEDENCIA_2026-08-10.md` |
 | M20 | **Enmienda G2-A1**: gate MCPT corregido | reemplazado por `PrimaryCI` (ya existía); DSR unificado 0,95; `evaluar()` eliminado | `docs/incidents/AMENDMENT_G2-A1_2026-08-10.md` |
 | M21 | **F1.1 × grilla de parámetros** + MDE publicado | brecha de atracción invariante (43,8–47,3 pp) en las 5 celdas que F2/F4 señalaron; MDE 20-40× menor que el efecto | `F1.1_GRILLA_PARAMETROS_RESULTADO_2026-08-10.md` |
+| M22 | **F1.1 × régimen**: día de semana y volatilidad de sesión | brecha de atracción pareja: 8/8 celdas con 100 % sesiones REAL&gt;NULO, rango 45,5–48,8 pp alrededor del 46,8 pp global, dentro del MDE de cada celda | `F1.1_regimen_dow_vol__405ea0117c28.json`, `F1.1_REGIMEN_DOW_VOL_RESULTADO_2026-08-10.md` |
 
 ---
 
@@ -173,10 +174,16 @@ ni por volatilidad.
 4. **¿Cuánto de la fricción de 2,768 ticks es evitable?** El número se tomó como
    dado. Nunca se descompuso en spread, comisión y slippage, ni se evaluó entrada
    pasiva.
-5. **¿El indicador funciona distinto según el régimen?** **Parcial** — F0.3
-   midió estacionalidad intradía (pico de densidad 11-13h CT, coherente con
-   solape Londres-NY) pero nada de eso se cruzó todavía con ruptura ni con
-   toque. Sin condicionamiento por volatilidad, tendencia ni día de la semana.
+5. **¿El indicador funciona distinto según el régimen?** **Parcial, menos
+   abierto que antes.** F0.3 midió estacionalidad intradía (pico de densidad
+   11-13h CT, coherente con solape Londres-NY). La brecha de atracción de
+   F1.1 ya se cruzó con **día de semana** y **volatilidad de sesión**
+   (terciles de rango realizado): pareja en las 8 celdas, sin ninguna
+   excepción al patrón 100 % REAL>NULO — ver M22. **Sigue sin condicionar
+   por tendencia** (no hay definición de "tendencia" por sesión todavía, no
+   se quiso inventar una sin registrarla primero) y **sigue sin cruzar
+   régimen con ruptura** (deliberado: romper ya es ~nulo en el agregado,
+   F1.1 §2 — estratificar un efecto casi nulo no iba a ser informativo).
 6. **¿Los otros 4 indicadores?** F9 está PAUSADA por decisión sellada, y los
    4 existentes distintos de BigTrap2 no se investigaron como generadores de
    hipótesis.
