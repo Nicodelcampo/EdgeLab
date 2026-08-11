@@ -39,6 +39,10 @@ estados del que se la extrae.
 | M15 | **YM** ingesta y habilitación en el bridge (5 contratos, 23,2M ticks) | 0 líneas no parseadas, 0 desorden; huso horario verificado por gap de fin de semana | `data/nt8/YM_parquet/`, `YM_INGESTA_Y_HABILITACION_2026-08-10.md` |
 | M16 | **F1.1 seguimiento**: distancia propia, horizonte corto, nulo por volumen | ni distancia (86,6 % a 0-2 ticks), ni tiempo (brecha ya a 20 barras), ni volumen genérico (NULO-C toca *menos*) cierran la brecha | `F1.1_SEGUIMIENTO_RESULTADO_2026-08-10.md` |
 | M17 | **`bar_spec` tick:25**: censo + nulo replicados | número por número igual que `time:1` — el hallazgo no depende de la resolución elegida | `F_BARSPEC_TICK25_RESULTADO_2026-08-10.md` |
+| M18 | **ES generaliza** (F3): censo + nulo replicados en clase de activo distinta | brecha 47,75 pp, 201/201 — tercera confirmación convergente | `F3_GENERALIZACION_ES_RESULTADO_2026-08-10.md` |
+| M19 | **Incidente de procedencia Git** diagnosticado y cerrado | causa raíz: `git add` con pathspec obsoleto abortó silenciosamente; 2 commits recuperados y verificados | `docs/incidents/RESOLUCION_INCIDENTE_PROCEDENCIA_2026-08-10.md` |
+| M20 | **Enmienda G2-A1**: gate MCPT corregido | reemplazado por `PrimaryCI` (ya existía); DSR unificado 0,95; `evaluar()` eliminado | `docs/incidents/AMENDMENT_G2-A1_2026-08-10.md` |
+| M21 | **F1.1 × grilla de parámetros** + MDE publicado | brecha de atracción invariante (43,8–47,3 pp) en las 5 celdas que F2/F4 señalaron; MDE 20-40× menor que el efecto | `F1.1_GRILLA_PARAMETROS_RESULTADO_2026-08-10.md` |
 
 ---
 
