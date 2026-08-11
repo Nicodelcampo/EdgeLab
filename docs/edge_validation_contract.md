@@ -82,58 +82,145 @@ bruta y neta (en ticks y USD/contrato), nº de trades, distribución de retornos
 por trade (p5/p25/p50/p75/p95), top-1/5/10 concentración, MAE/MFE, y P&L por
 subperiodo.
 
-## G2 — Robustez estadística
+## G2 — Robustez estadística (G2-A1)
 
-Aplicado a cada **ganador por familia** (la selección se hace con la métrica
-primaria única del manifiesto; prohibido el metric-shopping). Duros:
+Aplicado a cada **ganador por familia**. La selección usa una única métrica
+primaria declarada en el manifiesto; queda prohibido elegir la métrica después
+de mirar resultados.
 
-- **MCPT**: p ≤ **0.05** (`MCPT_MAX_P`), ≥ 1000 permutaciones. Método
-  pre-declarado: permutación por **bloques de sesión** de la serie de señales
-  sobre los retornos reales (preserva autocorrelación intradía).
-- **PBO ≤ 0.50** (`PBO_MAX`) vía CSCV (S = 8 particiones) sobre la matriz
-  completa configs × tiempo de la campaña.
-- **DSR > 0** con nº de trials = **N_eff del manifiesto** (TODAS las variantes
-  cobradas al presupuesto, incluidas las abandonadas).
-- **Walk-forward por contrato**: para cada fold k (test = contrato k), se
-  re-selecciona el ganador por familia usando SOLO contratos < k y se evalúa en
-  k; el **agregado WF-OOS neto debe ser > 0**.
-- **Sensibilidad paramétrica**: vecinos ±1 paso de grilla del ganador: la
-  **mediana de sus expectancies netas > 0** (sin acantilados).
+### 2.1 Estimando e inferencia primaria
 
-Blandos: signo consistente del WF en < 2/3 de folds; ganador aislado (menos de
-la mitad de los vecinos positivos); SPA/White cuando el nº de familias lo
-amerite. La corrección por múltiples hipótesis usa SIEMPRE el N_eff del
-manifiesto; añadir variantes después de correr = nueva campaña.
+El estimando canónico es la expectativa neta ponderada por trade:
 
-### Implementación (2026-07-25)
+```text
+theta_trade = sum_d(pnl_net_d) / sum_d(n_trades_d)
+```
 
-`edgelab/research/g2.py`, verificado en `tests/research/test_g2.py` (27 tests).
+La unidad de dependencia es la **sesión elegible**. El universo se toma de un
+calendario pre-registrado y completo, incluyendo sesiones con cero trades como
+`(pnl_net=0, n_trades=0)`. No se permite inferir el calendario desde los días en
+los que la estrategia operó.
 
-Se construyó **antes** de tener ningún candidato positivo, a propósito: escribir
-el test estadístico después de ver un resultado bueno invita a ajustarlo hasta
-que lo apruebe. Los umbrales salen de esta sección, no del resultado.
+El requisito primario y duro es:
 
-Cada prueba se verifica contra **datos sintéticos con verdad conocida**, en los
-dos sentidos: sobre ruido puro debe rechazar, y sobre un efecto plantado debe
-**aprobar**. Un gate que sólo sabe decir "no" no sirve para encontrar edges.
+- IC bilateral 95% **bootstrap-t estacionario** sobre pares de sesión
+  `(pnl_net_d, n_trades_d)`;
+- cada réplica recalcula el ratio de totales, nunca la media de ratios diarios;
+- longitud de bloque Politis–White sobre la influencia del ratio;
+- studentización HAC sobre la misma serie ordenada;
+- al menos **160 sesiones elegibles**;
+- al menos 90% de réplicas studentizadas válidas;
+- la cota inferior del IC debe ser **> 0**.
 
-| función | verificación |
-|---|---|
-| `mcpt` | ruido ⇒ p > 0.05 · efecto concentrado plantado ⇒ p ≤ 0.05 · determinista con la misma semilla · con una sola sesión devuelve p = 1 en vez de fingir significancia |
-| `pbo_cscv` | ruido ⇒ mediana ≈ 0.5 sobre 30 matrices · ventaja real y estable ⇒ PBO ≤ 0.50 · genera las 70 particiones C(8,4) |
-| `deflated_sharpe` | cae monótonamente al crecer N_eff · castiga cola izquierda gruesa |
-| `walk_forward` | **no** evalúa el primer fold (sin historia previa) · re-selecciona sólo con folds anteriores, verificado con un config trampa que es el mejor únicamente en el último fold |
-| `parameter_sensitivity` | detecta el pico aislado · acepta la meseta · sin vecinos devuelve `None`, no un valor inventado |
+El IC es la inferencia de expectativa positiva. Los cinco componentes restantes
+son vetos complementarios y no lo reemplazan.
 
-**Regla de composición:** `evaluar()` trata todo gate **no evaluado** como
-**FAIL**. Un gate que no se corrió nunca cuenta como aprobado, y cada umbral es
-excluyente por separado.
+### 2.2 Nulo específico de campaña — campo estructural `mcpt`
 
-**Trampa de escala, documentada porque casi me come:** el `sharpe` que consume
-`deflated_sharpe` es **por observación**, no anualizado. Un SR/trade de 0.5 sobre
-500 trades satura el DSR en ~1.0 — si alguien ve `DSR = 1.0` y lo celebra, el
-problema está en la escala que le pasó, no en la estrategia. Valores realistas
-por trade están en el orden de 0.02–0.1.
+No existe un MCPT universal defendible para todas las familias. Cada campaña
+debe persistir antes de correr:
+
+- `null_id` y la hipótesis exacta que rompe;
+- generador y digest de su implementación;
+- nuisance variables preservadas y supuesto de intercambiabilidad;
+- semilla y número de réplicas;
+- estadístico observado y estadístico idéntico por réplica.
+
+El núcleo únicamente aplica el p-valor unilateral finito:
+
+```text
+p = (1 + count(T_null >= T_observed)) / (1 + B), con B >= 1000
+```
+
+Gate duro: **p ≤ 0.05**. El nombre `mcpt` se conserva en el esquema persistido
+por compatibilidad histórica; significa **nulo de campaña**, no la función
+retirada `mcpt()` ni el diagnóstico de concentración temporal.
+
+### 2.3 PBO
+
+- **PBO ≤ 0.50** vía CSCV con `S=8` particiones.
+- La matriz completa es configs × tiempo de la campaña.
+- Ranking in-sample y evaluación out-of-sample usan exclusivamente
+  `sum_pnl_net / n_trades`; los escalares de P&L total son inválidos.
+
+### 2.4 DSR por sesión y multiplicidad
+
+Gate duro: **DSR ≥ 0.95** con:
+
+- retorno de sesión no anualizado y un denominador de riesgo fijo,
+  pre-registrado e idéntico entre variantes;
+- calendario completo de sesiones elegibles; una sesión sin trades se codifica
+  como retorno exactamente cero;
+- mínimo de 160 sesiones, las mismas usadas por el IC primario;
+- `N_eff` de intentos tomado del manifiesto completo, incluidas variantes
+  abandonadas;
+- dependencia `session_hac_bartlett_v2`;
+- lag por defecto `ceil(sqrt(n_sessions))`, acotado a `[1,n-1]`;
+- `n_effective = max(2, n / max(1, hac_variance/sample_variance))`;
+- la autocorrelación negativa nunca puede autorizar `n_effective > n`.
+
+La evidencia persiste: Sharpe observado, probabilidad DSR, `n`, `n_effective`,
+`N_eff` de intentos, skew, kurtosis, lag, varianza muestral, varianza HAC,
+factor de dependencia, nº de sesiones sin trades, digest del calendario,
+digest de la especificación y digest AST de la implementación ejecutada.
+
+### 2.5 Walk-forward por contrato
+
+Para cada fold `k` (test = contrato `k`) se re-selecciona el ganador usando
+solo contratos anteriores. Selección y agregado OOS usan el ratio de totales.
+Gate duro: **expectancy WF-OOS neta > 0**. El primer fold sin historia no se
+presenta como evidencia OOS.
+
+### 2.6 Sensibilidad paramétrica
+
+Vecinos ±1 paso de la grilla del ganador, sin incluir al ganador en su propia
+vecindad. Gate duro: **mediana de expectancies netas > 0**. Sin vecinos, el gate
+queda no evaluado y falla cerrado.
+
+### 2.7 Composición, multiplicidad y calibración
+
+La autoridad persistida es `G2ValidationDecision`. Deben pasar simultáneamente
+el IC primario y los cinco gates, con evidencia completa y reconstruible. Un
+gate ausente nunca cuenta como aprobado. `GateResult.passed` se deriva y valida
+contra valor y umbral; no se confía en un booleano recibido.
+
+La multiplicidad de la grilla se cobra una sola vez mediante DSR con `N_eff`
+del manifiesto. SPA/White puede usarse como diagnóstico o para una pregunta
+pre-registrada distinta, pero no se suma automáticamente como segundo cobro de
+la misma familia.
+
+`session_hac_bartlett_v2` tiene una calibración sintética determinista previa a
+activación sobre:
+
+- nulo gaussiano IID;
+- nulo AR(1) con `rho=0.50`;
+- nulo Student-t con 5 grados de libertad;
+- nulo con 40% de sesiones sin trades;
+- multiplicidad `N_eff=48` sobre el mismo panel;
+- efectos plantados IID y AR(1).
+
+Los sobres se fijan en `tests/research/test_g2_dsr_calibration.py` antes de ver
+el resultado de CI. Esta calibración busca fallos gruesos; no convierte DSR en
+inferencia primaria ni prueba validez universal para cualquier proceso.
+
+### 2.8 Gobernanza de activación
+
+La promoción exige simultáneamente:
+
+1. SHA-256 exacto de este contrato en `APPROVED_G2_CONTRACT_SHA256S`;
+2. fingerprint exacto de la implementación DSR en
+   `APPROVED_G2_IMPLEMENTATION_SHA256S`;
+3. decisión G2 ligada a la misma campaña, run, config y calendario;
+4. aprobación explícita de Nico para poblar ambas allowlists.
+
+Mientras cualquiera de las allowlists esté vacía, G2 permanece congelado aunque
+los tests pasen. Cambiar el cuerpo de la implementación altera su digest AST y
+vuelve a congelar promociones aunque el texto de la especificación no cambie.
+
+**Implementación G2-A1:** `edgelab/research/g2.py`,
+`edgelab/research/g2_decision.py`, `edgelab/research/promotion.py`,
+`edgelab/stats/cluster_estimand.py` y tests `test_g2*.py`/
+`test_cluster_estimand.py`.
 
 ## G3 — Robustez económica
 
