@@ -1,287 +1,334 @@
-# H-SWEEP-1 — Familia YM-PRERANGE: doble barrido del rango pre-apertura
+# H-SWEEP-1 — YM-PRERANGE: rango 08:12–09:12 y barrido del extremo opuesto
 
-> **Fecha de registro:** 2026-08-10
-> **Estado:** protocolo escrito. Nada ejecutado.
-> **Gate:** bloqueada por el incidente P0 de procedencia y por la ausencia de calendario de research y oráculos para YM.
+**Fecha:** 2026-08-10  
+**Corrección y formalización:** 2026-08-11  
+**Estado:** hipótesis registrada; extractor implementado; outcomes no ejecutados.  
+**Familia:** independiente de BigTrap2 y LUX-IMB.
 
-**Familia registrada:** `YM-PRERANGE`. Rango de la ventana **08:12–09:12** sobre YM, y comportamiento del precio **después** de esa ventana.
+> Observación inicial del operador: en seis jornadas consecutivas de YM, el
+> precio pareció tomar un extremo del rango 08:12–09:12 y luego el opuesto en
+> cinco de seis casos. La racha justifica construir una medición; no constituye
+> evidencia de edge.
 
-Es una familia nueva. No es BigTrap2 y no es LUX-IMB. No es una zona derivada de un indicador: es una **ventana temporal fija**. No hereda resultados, poblaciones, costos, oráculos ni presupuesto de multiplicidad de ninguna familia previa.
-
-## Afirmación del operador
-
-> El precio toma un extremo del rango y luego toma el otro.
-
-Observado en 6 días consecutivos sobre YM, con 5 casos a favor.
+Nada de este documento autoriza abrir el holdout ni operar.
 
 ---
 
-## 1. Resultado principal
+## 0. Correcciones de procedencia visual
 
-**Con 5 de 6 solo se podría rechazar una tasa base por debajo de 41,8%, y la tasa base estimada del doble toque está entre 54% y 76%. El intervalo de confianza de la observación contiene por completo al baseline.**
-
-Traducción: 5 de 6 no es sorprendente, es aproximadamente lo esperado. Eso no es un argumento para no medir. Es un argumento para no operar todavía.
-
-### 1.1 Por qué medir igual es la decisión correcta
-
-Hay dos preguntas distintas y solo una está cerrada:
-
-- **¿Es evidencia?** No. Y ningún análisis adicional sobre estos seis días lo va a cambiar.
-- **¿Justifica gastar presupuesto de medición?** Sí.
-
-La segunda es una decisión de asignación de recursos, no una inferencia, y se sostiene por tres razones:
-
-1. **El test decisivo es barato.** El emparejamiento cruzado de días no requiere infraestructura nueva y puede cerrar la hipótesis en una sola corrida.
-2. **Los datos ya están.** YM tiene 23,2 millones de ticks ingeridos. La muestra necesaria, de 50 a 120 días, probablemente ya existe en disco.
-3. **Hay un mecanismo documentado detrás.** El agrupamiento de stops apenas más allá de niveles visibles predice exactamente este comportamiento.
-
-La regla no es esperar significancia antes de investigar. Es **no confundir una razón para mirar con una razón para operar**.
-
-### 1.2 El día que falló es la observación más informativa
-
-De los seis, uno no cumplió el patrón. Esa única observación vale más que las cinco que sí, porque es el primer candidato a moderador. Si el día que falló fue la observación 6 —la del rango de 188 puntos que no es un rango sino una tendencia— la hipótesis se afina sola: el doble barrido ocurriría en ventanas de consolidación y no en ventanas de tendencia. Eso convierte una corazonada en una predicción con signo, registrable antes de medir.
+1. **“Tokyo” no identifica una sesión de mercado.** Era un indicador cualquiera
+   usado sólo para colorear la ventana temporal en TradingView. No se lo trata
+   como variable, causa ni confusor.
+2. **TradingView fue un bloc de observación.** Las capturas registran la idea de
+   rango y toma de extremos; no son el dataset de investigación.
+3. **No se adjudica cuál día falló.** El registro válido es 5/6. En el caso
+   fallido, el precio quedó cerca del segundo extremo y reaccionó en una zona
+   LUX; eso se registra como pista para una interacción futura, no como excusa
+   para reclasificar el día.
+4. La hora se define con `America/New_York`, no con un offset EST fijo. El código
+   debe resolver EST/EDT por calendario.
 
 ---
 
-## 2. Datos observados
+## 1. Observación semilla
 
-| Obs. | Rango (puntos) | Punto medio | Nota |
-| --- | --- | --- | --- |
-| 1 | 104 | 54.073 | — |
-| 2 | 153 | 54.122 | 07 ago 2026 visible en el eje |
-| 3 | 79 | 54.600 | Rango limpio, lateral |
-| 4 | 94 | 54.500 | Rango limpio, lateral |
-| 5 | 121 | 53.974 | — |
-| 6 | 188 | 53.247 | **No es un rango: es una tendencia alcista continua** |
+- Instrumento visual: `YM1!`, CBOT, barras de 1 minuto.
+- Ventana declarada: 08:12–09:12 hora de Nueva York.
+- Racha visual: 5/6.
+- Rangos aproximados anotados en las capturas, en puntos:
+  `104, 153, 79, 94, 121, 188`.
+- Media descriptiva: 123,2 puntos.
+- Mediana descriptiva: 112,5 puntos.
+- Especificación económica de YM: tick de 1 punto; USD 5 por punto/contrato.
 
-Media 123,2 puntos. Mediana 112,5. El rango más grande es 2,4 veces el más chico. En YM, 1 punto es 1 tick y vale 5 dólares, así que la muestra va de 395 a 940 dólares de amplitud por contrato.
-
-Las capturas originales están adjuntas en la página de Notion correspondiente.
+Los seis valores no se usan para seleccionar thresholds, horizonte ni stop.
+Son procedencia de la hipótesis y control de que la extracción automatizada
+esté midiendo la misma geometría.
 
 ---
 
-## 3. Por qué "toma ambos extremos" es casi gratis
+## 2. Ventana candidata y decisión de endpoint
 
-Un movimiento browniano sin deriva que arranca dentro de un intervalo **toca ambos bordes con probabilidad 1** si se lo deja correr. La pregunta solo tiene contenido con un horizonte finito declarado.
+La implementación propone como contrato primario:
 
-### 3.1 Estimación de la volatilidad desde los propios datos
-
-El rango esperado de un movimiento browniano en `[0,T]` es `E[rango] = sigma * sqrt(8T/pi) ≈ 1,596 * sigma * sqrt(T)`.
-
-Con rango medio observado de 123,2 puntos y `T = 60` minutos:
-
-```
-sigma_hat = 123,2 / (1,596 * sqrt(60)) ≈ 9,97 puntos por minuto
+```text
+W_d = [08:12, 09:12) America/New_York
 ```
 
-### 3.2 Probabilidad del segundo toque
+Son 60 barras M1, desde 08:12 hasta 09:11, equivalentes a offsets RTH
+`m_rth = -78,...,-19` respecto de 09:30.
 
-Una vez tocado el primer extremo, el precio está a distancia `R` del otro. Por el principio de reflexión:
+La captura podría haber contado también la barra 09:12. Por eso, antes de
+recontar las seis jornadas se debe hacer una reconciliación **sin outcomes**:
 
-```
-P_2 = 2 * Phi(-R / (sigma * sqrt(t)))
-```
+- especificación A: `[08:12,09:12)`, 60 barras;
+- especificación B: `[08:12,09:13)`, 61 barras, si la convención visual incluía
+  la barra rotulada 09:12.
 
-De 09:12 al cierre de la sesión regular hay unos 408 minutos. Con `sigma = 10` y `R = 123`:
-
-```
-P_2 = 2 * Phi(-0,610) ≈ 0,54
-```
-
-**Esta cifra subestima el baseline.** La volatilidad se estimó en la ventana previa a la apertura, que es la parte más tranquila del día. Si la volatilidad efectiva post-apertura duplica a la del pre-mercado, `P_2 = 2 * Phi(-0,305) ≈ 0,76`.
-
-> **Baseline del doble toque: entre 54% y 76%.** No es 50%. Cualquier test que use 50% como nulo está mal planteado y va a "encontrar" el patrón aunque no exista.
+Se elige la que reproduzca la geometría dibujada en las seis capturas. La otra
+queda como sensibilidad declarada; no se escoge según cuál eleve 5/6.
 
 ---
 
-## 4. Poder estadístico con el registro real de 5 de 6
+## 3. Geometría formal
 
-La probabilidad exacta de observar 5 aciertos o más en 6 intentos bajo una tasa base `p0` es `P(X >= 5) = 6*p0^5 - 5*p0^6`.
+Para cada sesión elegible `d`:
 
-| Tasa base supuesta | p-valor con 5 de 6 | ¿Rechaza a 5%? |
-| --- | --- | --- |
-| 0,50 — una moneda | 0,109 | No |
-| 0,54 — extremo bajo del baseline | 0,152 | No |
-| 0,70 | 0,420 | No |
-| 0,76 — extremo alto del baseline | 0,558 | No |
-
-Resolviendo `6*p0^5 - 5*p0^6 = 0,05` se obtiene `p0_max ≈ 0,418`. **Con 5 de 6 solo se podría rechazar un baseline por debajo de 41,8%**, y el baseline estimado es 54% a 76%. No se rechaza ni siquiera una moneda.
-
-### 4.1 Intervalo de confianza
-
-El intervalo de Wilson al 95% para 5 de 6 es aproximadamente `[0,437 ; 0,970]`. Ese intervalo **contiene por completo** el rango de baseline estimado. Los datos son compatibles con que no exista ningún efecto y también con que exista uno grande. Eso es precisamente lo que significa no tener poder.
-
-### 4.2 MDE declarado
-
-Usando `n ≈ [z_alfa*sqrt(p0*q0) + z_beta*sqrt(p1*q1)]^2 / (p1-p0)^2` con alfa 0,05 a una cola y 80% de poder:
-
-- Exceso de 15 puntos porcentuales sobre un baseline de 0,70: **unos 50 días.**
-- Exceso de 10 puntos porcentuales: **unos 119 días.**
-
----
-
-## 5. El nulo correcto para la versión operable
-
-La versión negociable no es "se tocan los dos extremos", es: **después del primer barrido, operar en contra**. Eso es una carrera entre objetivo y stop, y tiene nulo exacto.
-
-Después de tocar el extremo superior `U`, con objetivo en `L = U - R` y stop en `U + s`, la ruina del jugador da `p0 = s / (R + s)`.
-
-### 5.1 La consecuencia incómoda
-
-```
-EV = [s/(R+s)] * R - [R/(R+s)] * s = 0
+```text
+H_d = max(high_t : t in W_d)
+L_d = min(low_t  : t in W_d)
+R_d = H_d - L_d
 ```
 
-**Exactamente cero.** Ninguna combinación de objetivo y stop genera valor sobre un paseo sin deriva. La pregunta entera se reduce a si la tasa observada supera `s/(R+s)`.
+Un día sólo es válido si:
 
-### 5.2 El umbral de costos
+- pertenece al calendario elegible congelado;
+- tiene la primera barra de la ventana;
+- tiene las 60 barras esperadas para el análisis primario;
+- no tiene minutos duplicados;
+- instrumento, contrato y rollover cumplen el manifiesto.
 
-Con costo de ida y vuelta `c`, la tasa necesaria es `(s+c)/(R+s)` y el exceso requerido es `delta_p = c/(R+s)`.
-
-Con `R = 123`, `s = 30` y `c = 3` puntos: nulo 19,6%, necesario 21,6%, exceso requerido **1,96 puntos porcentuales**.
-
-### 5.3 Cuántos días hacen falta
-
-| Escenario | Tasa real | Días para 80% de poder |
-| --- | --- | --- |
-| Edge marginal, apenas paga costos | 0,216 | ≈ 2.500 |
-| Edge grande | 0,300 | ≈ 100 |
-
-> Un edge que apenas cubre costos requiere unos diez años de datos para verificarse. Solo un efecto grande es verificable en un plazo razonable. Si al medirlo la tasa queda cerca de `s/(R+s)`, la respuesta correcta es cerrar, no aumentar la muestra.
+Los días elegibles sin datos no desaparecen: permanecen como fila `NaN`. El
+resultado persiste el SHA-256 del calendario completo.
 
 ---
 
-## 6. Confusores identificados
+## 4. Evento de dos extremos
 
-### C1 — La apertura del efectivo a las 09:30
+Después del cierre de la ventana, sean:
 
-La ventana termina 18 minutos antes de la apertura de la sesión regular. La literatura sobre rangos de apertura documenta que volumen y fluctuación de retornos alcanzan su pico exactamente en la apertura y el cierre del mercado subyacente. Es probable que ambos extremos se tomen por la explosión de volatilidad de la apertura y no por los niveles. Eso sería un efecto de régimen de volatilidad, no de nivel.
+```text
+T_H = primer t elegible con high_t >= H_d
+T_L = primer t elegible con low_t  <= L_d
+T_1 = min(T_H, T_L)
+```
 
-### C2 — Los datos macro de las 08:30
+El primer extremo es `H` si `T_H < T_L`, `L` si `T_L < T_H`. Si ambos se tocan
+en la misma barra M1, el orden es ambiguo y se aplica una de estas reglas,
+congelada antes de outcomes:
 
-La ventana **contiene** el horario estándar de publicación de datos en Estados Unidos. El ancho del rango es entonces endógeno al calendario económico: probablemente por eso hay un rango de 79 y otro de 188 en la misma muestra. Obliga a estratificar por calendario.
+1. resolver con ticks point-in-time si están disponibles;
+2. si no, clasificar `simultáneo/ambiguo`, sin imponer un orden favorable.
 
-### C3 — Zona horaria y etiqueta del indicador
+El segundo evento es el primer toque del extremo opuesto después de `T_1`:
 
-- En agosto rige horario de verano. "08:12 EST" y "08:12 EDT" difieren en una hora.
-- El recuadro del gráfico dice "Tokyo". O el indicador conserva el nombre de un preajuste reconfigurado, o la ventana real no es la declarada. Hay que resolverlo antes de definir la población.
+```text
+T_2 = inf{t > T_1 : low_t <= L_d}   si H fue primero
+T_2 = inf{t > T_1 : high_t >= H_d}  si L fue primero
+```
 
-### C4 — La observación 6 no es un rango
+**Éxito primario:** `T_2` ocurre antes del horizonte `tau_d`.  
+**Censura:** la sesión termina o vence `tau_d` sin segundo toque.  
+**Fallo:** no se alcanza el extremo opuesto; “quedó cerca” no se recodifica.
 
-La sexta captura muestra una tendencia alcista sostenida dentro de la ventana. Tomar ambos extremos de un tramo de tendencia significa algo distinto que tomarlos de un lateral. La población mezcla dos estructuras incompatibles y hay que estratificar por eficiencia interna del recorrido.
-
-### C5 — Seis días consecutivos
-
-Es la muestra con más autocorrelación posible: un solo régimen de volatilidad, una sola semana de calendario macro. El tamaño efectivo es menor que 6.
-
-### C6 — Selección posterior de la ventana
-
-08:12 es un horario inusual. Si salió de mirar el gráfico, la multiplicidad implícita es enorme. Con 50 combinaciones exploradas informalmente, la probabilidad de al menos un falso positivo es `1 - 0,95^50 ≈ 0,92`.
-
----
-
-## 7. Controles
-
-### Control decisivo — emparejamiento cruzado de días
-
-Aplicar el rango del día `d` al recorrido posterior del día `d' != d`. Preserva ambas distribuciones marginales y destruye únicamente el vínculo causal.
-
-> Si la tasa de doble toque **no cambia** al cruzar días, los niveles no contienen información: lo único que importa es el ancho del rango y la volatilidad posterior. Ese solo test puede cerrar la hipótesis entera.
-
-### Controles adicionales
-
-- **Ventanas placebo:** misma duración a las 06:12, 07:12, 10:12, 11:12.
-- **Bootstrap de bloques:** preservando la estacionalidad intradiaria de la volatilidad.
-- **Barrido de ventana:** inicios de 07:30 a 09:00 y duraciones de 30 a 90 minutos. Un efecto real es una región suave, no un pico aislado en 08:12.
+El horizonte todavía no está congelado porque faltan las seis fechas y la
+convención exacta de las capturas. Ningún recuento formal comienza antes de
+registrar `tau_d` (por ejemplo, fin de RTH o una hora fija) en el manifiesto.
 
 ---
 
-## 8. Descomposición en hipótesis separadas
+## 5. Dos estimandos distintos
 
-1. **H-SWEEP-1a — doble toque.** ¿La tasa de tocar ambos extremos dentro del horizonte `H` supera al nulo emparejado?
-2. **H-SWEEP-1b — secuencia.** Dado el primer toque, ¿el segundo llega antes que una extensión adicional?
-3. **H-SWEEP-1c — asimetría temporal.** ¿El primer toque se concentra en un horario, por ejemplo la apertura?
-4. **H-SWEEP-1d — falso quiebre.** ¿El primer toque es rechazo más seguido que continuación?
+### 5.1 Probabilidad geométrica
 
-Solo 1b y 1d son directamente operables. 1a y 1c son descriptivas.
+```text
+p2 = P(T_2 <= tau_d | T_1 observado)
+```
 
-**Tensión con la literatura:** los estudios de ruptura del rango de apertura reportan rentabilidad de la **continuación**, mientras que este patrón implica que el primer quiebre es falso. Son afirmaciones opuestas y no pueden ser ambas ciertas en la misma población. Esa contradicción define un test discriminante.
+Pregunta si el extremo opuesto se alcanza más que en controles comparables.
+No implica por sí sola una estrategia.
 
----
+### 5.2 Resultado económico
 
-## 9. Mecanismo candidato
+Una operación exige entrada, `available_at`, fill, stop, target, vencimiento y
+costos. Se registra como hipótesis posterior y separada. Una tasa alta de doble
+toque puede ser inoperable si la excursión adversa o el tiempo hasta `T_2` son
+demasiado grandes.
 
-Osler mostró, con datos de órdenes reales, que las órdenes de toma de ganancia se agrupan en números redondos mientras que los stops se agrupan apenas más allá de ellos, lo que produce reversiones en niveles predecibles y aceleraciones al cruzarlos.
-
-Si los stops se acumulan justo fuera de los extremos del rango pre-apertura, el barrido de un extremo libera liquidez y el precio puede viajar hacia el otro. Es un mecanismo plausible y falsable: predice que el efecto debe ser más fuerte cuando los extremos coinciden con números redondos, y ese es un moderador pre-registrable.
-
----
-
-## 10. Regla de toque — la definición ausente
-
-Hasta acá, "tomar el extremo" se adjudicó mirando el gráfico. Esa es la fuente de falsos positivos más barata que existe, porque la regla se mueve sin que nadie lo note. Antes de medir hay que fijar por escrito cinco cosas:
-
-1. **Nivel exacto.** ¿El extremo es el máximo y mínimo de mecha dentro de la ventana, o de cuerpo? Hay que exportar cuál dibuja el indicador.
-2. **Criterio de contacto.** ¿Alcanza con negociar al precio exacto, o hace falta superarlo por al menos un tick? Con tick de 1 punto en YM la diferencia es material y no es simétrica entre los dos lados.
-3. **Fuente del dato.** ¿La mecha del gráfico o el tick real? El máximo de una vela de un minuto puede provenir de una sola operación de un lote, que no es liquidez tomable.
-4. **Horizonte `H`.** Hasta el cierre de la sesión regular, hasta el mediodía, hasta la apertura del día siguiente. Sin `H` declarado la afirmación es trivialmente verdadera.
-5. **Orden estricto.** ¿El segundo toque debe ocurrir después del primero, o cuenta si una misma vela barre ambos extremos? Una vela de expansión que atraviesa el rango entero no es el patrón que se quiere explotar, es lo contrario.
-
-> Cada una de estas cinco elecciones puede mover el conteo de 6 sobre 6 a 3 sobre 6 sobre los mismos seis días. Ninguna se decide mirando las capturas: se declaran antes, se aplican por código, y el conteo resultante es el que sea.
-
-**Corolario:** el conteo observado de 5 sobre 6 no es un dato de entrada del estudio. Es una motivación. El primer entregable de la medición será recontar esos mismos seis días con la regla escrita, y es esperable que el número cambie.
+**Regla constitucional:** justificar una medición no justifica una operación.
 
 ---
 
-## 11. Ledger de sesión
+## 6. Por qué 5/6 no alcanza
 
-Por día: fecha, contrato, `bar_spec`, huso horario declarado y verificado, límites `L` y `U`, ancho, punto medio, precio al cierre de la ventana, eficiencia del recorrido interno, volumen de la ventana, indicador de publicación macro y su hora, primer extremo tocado con marca temporal, segundo extremo tocado o no con marca temporal, excursión máxima más allá de cada extremo, distancia de los extremos al número redondo más cercano, y volatilidad realizada antes y después de la apertura.
+Bajo un baseline binomial con probabilidad `p0`:
 
----
+```text
+P(X >= 5 | n=6,p0) = 6*p0^5*(1-p0) + p0^6
+```
 
-## 12. Presupuesto de multiplicidad
+Con `p0=0,5`, la cola es `7/64 = 10,94%`: ni siquiera rechaza una moneda al 5%.
+Y 0,5 no es el nulo natural: al condicionar en que un extremo ya fue tomado,
+la probabilidad de alcanzar el otro puede ser alta por pura volatilidad y por
+un horizonte largo.
 
-- **Primario: 1.** H-SWEEP-1b contra el nulo de ruina del jugador, en el horizonte y con el stop declarados de antemano.
-- **Secundarios: 6** bajo Romano–Wolf: ancho normalizado, día con publicación macro, eficiencia interna, proximidad a número redondo, dirección del primer barrido, régimen de volatilidad.
-- Barridos de ventana y horizonte: exploratorios, publicados como superficie completa, sin capacidad de adjudicar.
+Para un paseo sin drift entre `L` y `H`, partiendo de `x`:
 
----
+```text
+P_x(tocar H antes que L) = (x-L)/(H-L)
+P_x(tocar L antes que H) = (H-x)/(H-L)
+```
 
-## 13. Criterios de muerte
-
-- El emparejamiento cruzado de días reproduce la tasa observada: los niveles no informan.
-- La tasa de doble toque no supera `2*Phi(-R/(sigma*sqrt(t)))` con volatilidad emparejada.
-- La tasa de la carrera no supera `s/(R+s)` más el umbral de costos.
-- El efecto existe solo en 08:12 y desaparece en ventanas vecinas.
-- El efecto desaparece al excluir los días con publicación macro.
-- El efecto se explica enteramente por la volatilidad de la apertura de las 09:30.
-
----
-
-## 14. Qué hace falta antes de medir
-
-- [ ] Confirmar huso horario: EST o EDT, y en qué referencia está el gráfico
-- [ ] Resolver la etiqueta "Tokyo" del recuadro y exportar la configuración real del indicador
-- [ ] Recuperar las seis fechas exactas y su orden
-- [ ] Declarar el horizonte `H` antes de mirar los datos
-- [ ] Declarar el stop `s` antes de mirar los datos
-- [ ] Medir el costo real de ida y vuelta en YM en ese horario, con su liquidez propia
-- [ ] Construir el calendario de sesiones de YM, que todavía no existe
+Esas fórmulas ilustran que el baseline depende de ubicación, rango, horizonte y
+volatilidad; no prueban el fenómeno intradía real. La decisión sale de nulos
+condicionados y datos fuera de las seis capturas.
 
 ---
 
-## 15. Gate de ejecución
+## 7. Nulos obligatorios
 
-YM tiene 23,2 millones de ticks ingeridos y `InstrumentSpec` cargado, pero **no tiene calendario de research ni oráculos propios**. Además sigue vigente el gate del incidente P0 de procedencia. Nada de esto se ejecuta hasta cerrar ambos.
+### N0 — días emparejados
 
-Orden: cerrar P0, resolver huso horario y etiqueta, construir el calendario de YM, contar los días disponibles, y recién entonces correr el emparejamiento cruzado, que es el test más barato y el que más rápido puede matar la hipótesis.
+Misma ventana aplicada a días de desarrollo no seleccionados, emparejados por:
+
+- contrato/roll;
+- día de semana;
+- volatilidad pre-08:12;
+- ancho de rango normalizado;
+- overnight gap;
+- fase de calendario macro si se dispone de fuente ex ante.
+
+### N1 — ventanas placebo dentro del día
+
+Desplazar la ventana preservando duración, separación respecto de RTH y
+cobertura. Publicar toda la superficie de offsets; no elegir un horario porque
+funcionó.
+
+### N2 — puente/proceso condicionado
+
+Simular trayectorias condicionadas en `R_d`, volatilidad y estado al cierre de
+la ventana. El nulo debe preservar las variables que por sí solas elevan la
+probabilidad de doble toque.
+
+### N3 — etiquetas/permutaciones por sesión
+
+Permutar la identidad 08:12–09:12 entre días emparejados, conservando sesiones
+completas. Es el test decisivo contra “cualquier rango de una hora hace lo
+mismo”.
+
+Cada nulo se versiona y usa al menos 1.000 réplicas. No existe un MCPT universal.
 
 ---
 
-## 16. Referencias externas
+## 8. Resultados a publicar
 
-- Osler, C. (2003). Currency orders and exchange rate dynamics: an explanation for the predictive success of technical analysis. *Journal of Finance*. <https://onlinelibrary.wiley.com/doi/full/10.1111/1540-6261.00588>
-- Osler, C. Stop-loss orders and price cascades in currency markets. Federal Reserve Bank of New York Staff Report 150. <https://www.newyorkfed.org/medialibrary/media/research/staff_reports/sr150.pdf>
-- Holmberg, Lönnbark y Lundström. Assessing the profitability of intraday opening range breakout strategies. <https://www.sciencedirect.com/science/article/pii/S1544612312000438>
-- Timely opening range breakout sobre futuros de índices con datos de un minuto. <https://ieeexplore.ieee.org/document/8641124/>
-- Zarattini y Aziz. Can day trading really be profitable? Estudio práctico, tratar con escepticismo alto. <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4416622>
+Por sesión:
+
+- `H_d`, `L_d`, `R_d` y cobertura;
+- extremo tomado primero y `T_1`;
+- indicador de segundo toque y `T_2-T_1`;
+- MAE/MFE desde `T_1`;
+- distancia mínima al extremo opuesto en censurados;
+- zonas LUX concurrentes, sólo como covariable registrada as-of;
+- razón de exclusión, nunca eliminación silenciosa.
+
+Agregados:
+
+- incidencia acumulada de segundo toque;
+- curvas por tiempo desde `T_1`;
+- bootstrap cluster por sesión;
+- comparación pareada contra N0–N3;
+- MDE publicado;
+- canal direccional y no direccional.
+
+Si se modelan eventos competidores (segundo toque, stop económico, fin de
+sesión), usar Aalen–Johansen; no tratar el competidor como censura independiente.
+
+---
+
+## 9. Potencia y tamaño de muestra
+
+Para comparar `p1` contra `p0`, una aproximación inicial es:
+
+```text
+n ~= [z_(1-alpha/2)*sqrt(2*pbar*(1-pbar))
+      + z_power*sqrt(p0*(1-p0)+p1*(1-p1))]^2 / (p1-p0)^2
+```
+
+El cálculo final usa diferencia pareada por sesión y bootstrap/permutación del
+estimando real. El objetivo no es “llegar a significancia”, sino declarar qué
+diferencia mínima podría detectar el calendario disponible. Seis días no
+permiten esa adjudicación.
+
+---
+
+## 10. Interacción futura con LUX-IMB
+
+El día visualmente fallido pareció reaccionar a una zona LUX antes del segundo
+extremo. Esto genera una hipótesis **nueva**:
+
+```text
+H-SWEEP-1e:
+la incidencia de segundo toque cambia cuando existe exposición OG/VI as-of
+entre T_1 y el extremo opuesto.
+```
+
+No convierte el fallo en éxito y no se prueba hasta que LUX-IMB tenga paridad
+Pine→NT8. Requiere omnibus de heterogeneidad, positividad y multiplicidad.
+
+---
+
+## 11. Implementación disponible
+
+`edgelab/sessions.py` incorpora:
+
+- `minute_window_matrices()` con `America/New_York`;
+- calendario explícito y `calendar_sha256`;
+- preservación de días faltantes como matrices `NaN`;
+- detección de timestamps duplicados y barras fuera del calendario;
+- soporte UTC naive/aware y ventanas cruzando medianoche;
+- `ym_prerange_matrices()` para `[08:12,09:12)`;
+- compatibilidad con `build_session_matrices()` y `rth_matrices()`.
+
+Los tests cubren enero/EST, agosto/EDT, calendario incompleto, duplicados,
+compatibilidad RTH y cruce de medianoche.
+
+---
+
+## 12. Calendario YM
+
+La lista elegible debe provenir de una fuente CME Equity/CBOT verificable. No se
+sustituye por un calendario federal aproximado. Candidatos de implementación:
+
+- calendario oficial CME del E-mini Dow;
+- `pandas_market_calendars` si su `CME_Equity` reproduce exactamente cierres,
+  feriados y sesiones parciales de YM;
+- `exchange_calendars`/`CMES` sólo después de una prueba de equivalencia.
+
+La fuente, versión, rango y digest quedan en el manifiesto.
+
+---
+
+## 13. Gates antes de medir
+
+- [ ] recuperar las seis fechas exactas;
+- [ ] reconciliar endpoint 60/61 barras sin mirar el recuento resultante;
+- [ ] congelar `tau_d`;
+- [ ] congelar igualdad/inclusión del toque y resolución intrabar;
+- [ ] seleccionar calendario oficial y persistir su SHA-256;
+- [ ] congelar roll de contrato y días parciales;
+- [ ] registrar nulos, matching, MDE y multiplicidad;
+- [ ] completar tests de paridad contra fixtures manuales;
+- [ ] mantener holdout cerrado.
+
+Hasta completar la lista, 5/6 sigue siendo **motivación para medir**, no evidencia.
+
+---
+
+## 14. Criterios de muerte
+
+- la incidencia no supera días/ventanas placebo;
+- el efecto desaparece al condicionar en rango, volatilidad y horizonte;
+- depende de una convención de endpoint elegida ex post;
+- no replica fuera de las seis jornadas;
+- sobrevive geométricamente pero MAE/tiempo/costos lo vuelven inoperable;
+- aparece sólo al reclasificar “casi llegó” como éxito;
+- la interacción LUX carece de positividad o paridad.
+
+---
+
+## 15. Próxima acción legítima
+
+Cerrar los metadatos de las seis capturas y el calendario. Después, ejecutar
+únicamente extracción y paridad geométrica sobre desarrollo. La primera corrida
+de outcomes ocurre una sola vez con protocolo y digests congelados.
