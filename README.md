@@ -13,7 +13,7 @@ Infraestructura de investigación cuantitativa orientada a encontrar edges netos
 - **H1:** muerta; corrió sobre 6E, no NQ/ES.
 - **BigTrap2 como soporte/resistencia:** fuertemente refutado.
 - **Atracción/revisita:** hipótesis provisional en cuarentena.
-- **Familia LUX-IMB (OG/VI):** registrada como línea independiente de BigTrap2. Protocolo escrito, nada ejecutado, bloqueada por P0.
+- **Familia LUX-IMB (OG/VI):** registrada como línea independiente de BigTrap2. Protocolo corregido: las zonas no desaparecen por mitigación y no existe input `Mitigation Method`; nada ejecutado.
 - **Familia YM-PRERANGE:** registrada como tercera línea independiente. Protocolo escrito, nada ejecutado, bloqueada por P0 y por la falta de calendario de research para YM.
 - **Trabajo local posterior:** se reportaron reruns corregidos, réplica `tick:25`, barrido target-free de 11 celdas y una generalización ES.
 - **Incidente:** un artefacto declaró `code_commit=6a2c08a` mientras el fix se referencia como `5a143da`, y hubo procesos concurrentes sobre el mismo directorio.
@@ -37,7 +37,7 @@ Infraestructura de investigación cuantitativa orientada a encontrar edges netos
 | Familia | Alcance | Estado |
 | --- | --- | --- |
 | BigTrap2 | Indicador propio, 6E | H1 muerta; soporte/resistencia refutado; atracción en cuarentena |
-| LUX-IMB | `Imbalance Detector [LuxAlgo]`, solo OG y VI, ES 1m | Protocolo escrito, nada ejecutado |
+| LUX-IMB | `Imbalance Detector [LuxAlgo]`, solo OG y VI, ES 1m | Protocolo corregido, parámetros y paridad pendientes |
 | YM-PRERANGE | Ventana temporal 08:12–09:12 sobre YM, sin indicador | Protocolo escrito, nada ejecutado |
 
 Las familias no comparten resultados, poblaciones, costos, oráculos ni presupuesto de multiplicidad. YM-PRERANGE no es una familia de zonas: es una ventana temporal fija, y se registra igual porque las mismas reglas de adjudicación aplican.
@@ -52,7 +52,7 @@ Las familias no comparten resultados, poblaciones, costos, oráculos ni presupue
 
 ## Regla de interpretación
 
-H1 muerta ≠ BigTrap2 muerto. Proceso terminado ≠ resultado válido. SHA de `HEAD` ≠ identidad del código si el árbol estaba dirty. Zona visible en pantalla ≠ zona que existió: si el indicador borra las zonas mitigadas, lo que queda dibujado son las que funcionaron.
+H1 muerta ≠ BigTrap2 muerto. Proceso terminado ≠ resultado válido. SHA de `HEAD` ≠ identidad del código si el árbol estaba dirty. Zona visible en pantalla ≠ evidencia: incluso cuando el indicador conserva las zonas, las capturas permiten hindsight, selección de ejemplos y tolerancias móviles.
 
 Una racha observada ≠ evidencia: antes de comparar cualquier conteo hay que derivar la tasa esperada bajo el nulo apropiado, porque casi ningún baseline relevante es 50%. Y justificar una **medición** no es lo mismo que justificar una **operación**: las dos decisiones se registran por separado.
 
