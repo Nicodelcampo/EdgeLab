@@ -27,20 +27,35 @@ def sha256(data: bytes) -> str:
 
 def load_artifact(path: str | Path, *, gzip_base64: bool = False) -> bytes:
     source = Path(path)
+    manifest = None
     if source.suffix == ".json":
         manifest = json.loads(source.read_text(encoding="utf-8"))
         if manifest.get("format") != "gzip+base64-split-v1":
             raise ValueError("unsupported source manifest format")
-        data = b"".join((source.parent / part).read_bytes().strip() for part in manifest["parts"])
+        parts = manifest.get("parts")
+        if not isinstance(parts, list) or not parts:
+            raise ValueError("source manifest must list at least one part")
+        chunks = []
+        for part in parts:
+            if not isinstance(part, str) or Path(part).name != part or Path(part).is_absolute():
+                raise ValueError(f"unsafe source part path: {part!r}")
+            chunks.append((source.parent / part).read_bytes().strip())
+        data = b"".join(chunks)
+        expected_encoded = manifest.get("encoded_sha256")
+        if expected_encoded and sha256(data) != expected_encoded:
+            raise ValueError("encoded source artifact sha256 mismatch")
         gzip_base64 = True
     else:
         data = source.read_bytes()
     if not gzip_base64:
         return data
     try:
-        return gzip.decompress(base64.b64decode(data, validate=False))
+        raw = gzip.decompress(base64.b64decode(data, validate=True))
     except Exception as exc:
         raise ValueError(f"invalid gzip+base64 source artifact: {exc}") from exc
+    if manifest and manifest.get("raw_sha256") and sha256(raw) != manifest["raw_sha256"]:
+        raise ValueError("decoded source artifact sha256 mismatch")
+    return raw
 
 
 def _without_literals(text: str) -> str:
