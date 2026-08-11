@@ -85,18 +85,26 @@ def verificar():
                                   detalle=str(e)))
                 continue
             declarado = data.pop("payload_sha256", None)
-            recalc = hashlib.sha256(
-                json.dumps(data, sort_keys=True, ensure_ascii=False, default=str)
-                .encode()).hexdigest()
+            # P2 (2026-08-11): scripts de eras distintas usaron ensure_ascii
+            # distinto (la convencion ensure_ascii=False no siempre fue la
+            # norma -- ver docs/P2_SEIS_HASHES_ADJUDICACION_2026-08-11.md).
+            # Probar ambas variantes antes de declarar MISMATCH evita un
+            # falso positivo determinista que este script tenia.
+            recalcs = {
+                ea: hashlib.sha256(
+                    json.dumps(data, sort_keys=True, ensure_ascii=ea, default=str)
+                    .encode()).hexdigest()
+                for ea in (False, True)
+            }
             if declarado is None:
                 fila["hash"] = "SIN_PAYLOAD_SHA256"
-            elif declarado != recalc:
+            elif declarado in recalcs.values():
+                fila["hash"] = "OK"
+            else:
                 fila["hash"] = "MISMATCH"
                 fila["declarado"] = declarado[:16]
-                fila["recalculado"] = recalc[:16]
+                fila["recalculado"] = recalcs[False][:16]
                 fila["estable_desde_commit"] = diff_vacio(rel)
-            else:
-                fila["hash"] = "OK"
 
             commit = data.get("code_commit") or data.get("head_start")
             if commit:
