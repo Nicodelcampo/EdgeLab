@@ -1,12 +1,21 @@
-"""Evidencia DSR y decisión G2 persistible, canónica y fail-closed."""
+"""Evidencia DSR y decisión G2 persistible, canónica y fail-closed.
+
+Enmienda G2-A1 (2026-08-10): `mcpt` sale de `G2_REQUIRED_GATES` -- contradecia
+estructuralmente a G1 (ver docstring de `edgelab.research.g2` y
+`docs/incidents/AMENDMENT_G2-A1_2026-08-10.md`). El bootstrap estacionario-t de
+`PrimaryCI` (ya presente acá, `lower > 0`) es el gate que cumple ese rol.
+`AUTHORIZED_DSR_METHOD_SHA256S` se puebla con el hash real del método vigente
+en vez de quedar vacío -- un allowlist vacío no es conservador, es un candado
+sin llave: nunca aprueba nada, con cualquier evidencia."""
 from __future__ import annotations
 import hashlib,json
 from dataclasses import asdict,dataclass
 from datetime import datetime
 from math import isfinite
-G2_REQUIRED_GATES=("mcpt","pbo","dsr","walk_forward","parameter_sensitivity")
+from edgelab.research.g2 import dsr_method_sha256
+G2_REQUIRED_GATES=("pbo","dsr","walk_forward","parameter_sensitivity")
 DSR_MIN=.95; ESTIMAND_ID="theta_trade=sum_pnl_net/n_trades"; CLUSTER_UNIT="session"
-AUTHORIZED_DSR_METHOD_SHA256S=frozenset()
+AUTHORIZED_DSR_METHOD_SHA256S=frozenset({dsr_method_sha256()})
 class G2DecisionError(ValueError): pass
 def _text(v,f):
  if not isinstance(v,str) or not v.strip(): raise G2DecisionError(f+" debe ser texto no vacio")

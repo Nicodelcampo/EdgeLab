@@ -10,12 +10,24 @@ Los dos casos que importan en cada prueba:
 
 Un gate que solo pasa el primero es un gate que dice "no" a todo, y no sirve
 para encontrar edges.
+
+## Enmienda G2-A1 (2026-08-10)
+
+`mcpt()` se renombró `temporal_concentration_test()` y salió de los gates
+duros — ver el docstring de `edgelab.research.g2` y
+`docs/incidents/AMENDMENT_G2-A1_2026-08-10.md`. La clase de fixture que
+faltaba (auditoría, ítem 6) está al final de este archivo: un edge
+**genuinamente estable**, el caso que el viejo `evaluar()` rechazaba y que
+`g2_decision.PrimaryCI` aprueba correctamente.
 """
 import math
 
 import pytest
 
 from edgelab.research import g2
+from edgelab.stats.cluster_estimand import (
+    SessionAggregate, aggregate_sessions, studentized_stationary_interval,
+)
 
 
 def _ruido(n, seed=7, amp=1.0):
@@ -25,22 +37,22 @@ def _ruido(n, seed=7, amp=1.0):
 
 
 # --------------------------------------------------------------------------- #
-# 1. MCPT
+# 1. Concentración temporal (ex-MCPT) — DIAGNÓSTICO, no gate. Ver enmienda G2-A1.
 # --------------------------------------------------------------------------- #
-def test_mcpt_exige_el_minimo_de_permutaciones_del_contrato():
+def test_concentracion_exige_el_minimo_de_permutaciones_del_contrato():
     with pytest.raises(ValueError):
-        g2.mcpt([1.0, -1.0], ["s1", "s2"], n_perm=999)
+        g2.temporal_concentration_test([1.0, -1.0], ["s1", "s2"], n_perm=999)
 
 
-def test_mcpt_sobre_ruido_no_declara_significancia():
+def test_concentracion_sobre_ruido_no_declara_significancia():
     r = _ruido(400)
     ses = ["s%03d" % (i // 20) for i in range(400)]
-    p, _ = g2.mcpt(r, ses, n_perm=1000)
-    assert p > g2.MCPT_MAX_P, (
-        "sobre ruido puro el MCPT dio p=%.4f: estaria aprobando azar" % p)
+    p, _ = g2.temporal_concentration_test(r, ses, n_perm=1000)
+    assert p > 0.05, (
+        "sobre ruido puro dio p=%.4f: estaria marcando concentracion en azar" % p)
 
 
-def test_mcpt_detecta_un_efecto_concentrado_y_real():
+def test_concentracion_detecta_un_efecto_concentrado_y_real():
     # el efecto vive en la primera mitad de las sesiones: la permutación de
     # bloques debe encontrar improbable esa concentración
     r, ses = [], []
@@ -48,22 +60,43 @@ def test_mcpt_detecta_un_efecto_concentrado_y_real():
         for i in range(20):
             r.append(1.0 if s < 10 else -1.0)
             ses.append("s%03d" % s)
-    p, obs = g2.mcpt(r, ses, n_perm=1000)
-    assert p <= g2.MCPT_MAX_P, "no detecto un efecto plantado (p=%.4f)" % p
+    p, obs = g2.temporal_concentration_test(r, ses, n_perm=1000)
+    assert p <= 0.05, "no detecto un efecto concentrado plantado (p=%.4f)" % p
     assert obs > 0
 
 
-def test_mcpt_es_reproducible():
+def test_concentracion_es_reproducible():
     r = _ruido(200)
     ses = ["s%03d" % (i // 10) for i in range(200)]
-    a, _ = g2.mcpt(r, ses, n_perm=1000, seed=42)
-    b, _ = g2.mcpt(r, ses, n_perm=1000, seed=42)
+    a, _ = g2.temporal_concentration_test(r, ses, n_perm=1000, seed=42)
+    b, _ = g2.temporal_concentration_test(r, ses, n_perm=1000, seed=42)
     assert a == b, "el p-valor debe ser determinista con la misma semilla"
 
 
-def test_mcpt_con_una_sola_sesion_no_finge_significancia():
-    p, _ = g2.mcpt([1.0] * 50, ["unica"] * 50, n_perm=1000)
+def test_concentracion_con_una_sola_sesion_no_finge_significancia():
+    p, _ = g2.temporal_concentration_test([1.0] * 50, ["unica"] * 50, n_perm=1000)
     assert p == 1.0, "sin bloques que permutar no se puede afirmar nada"
+
+
+def test_concentracion_sobre_edge_ESTABLE_no_es_significativa_YESO_ESTA_BIEN():
+    """El caso que la enmienda G2-A1 existe para documentar.
+
+    Un edge parejo en el tiempo -exactamente lo que G1 exige, cero
+    concentración- da p ALTO acá, porque el estadístico mide concentración,
+    no presencia de señal. Si esto todavía fuera un gate duro, RECHAZARÍA a
+    un candidato que cumple G1. Ver `test_edge_estable_...` en la sección de
+    fixtures cruzados: la MISMA serie, evaluada con el gate real (PrimaryCI),
+    aprueba.
+    """
+    r, ses = [], []
+    for s in range(200):
+        # parejo en el tiempo, con ruido -- sin concentracion en ninguna mitad
+        r.append(1.0 + (((s * 2654435761) % 1000) - 500) / 2000.0)
+        ses.append("s%03d" % s)
+    p, _ = g2.temporal_concentration_test(r, ses, n_perm=1000)
+    assert p > 0.30, (
+        "un edge parejo en el tiempo dio p=%.4f: si esto gateara, rechazaria "
+        "casi cualquier edge que cumpla la estabilidad de G1" % p)
 
 
 # --------------------------------------------------------------------------- #
@@ -215,27 +248,54 @@ def test_sensibilidad_sin_vecinos_no_inventa_un_valor():
 
 
 # --------------------------------------------------------------------------- #
-# Evaluación conjunta
+# Fixture cruzado — el hallazgo central de la enmienda G2-A1, verificado
 # --------------------------------------------------------------------------- #
-def test_un_gate_no_evaluado_NUNCA_cuenta_como_aprobado():
-    res, ok = g2.evaluar(mcpt_p=0.01, pbo=0.2, dsr=0.9, wf_oos=5.0)
-    assert not ok, "faltaba sensibilidad y aun asi aprobo"
-    assert any(r.name.startswith("sensibilidad") and not r.passed for r in res)
-    assert any("no evaluado" in r.detail for r in res)
+def _edge_estable_200_sesiones():
+    """200 sesiones, 2 trades c/u, expectativa positiva pareja en el tiempo —
+    ni concentrada en la primera mitad ni en la segunda. Exactamente el perfil
+    que G1 exige (ningún fold aporta > 80% del P&L).
+
+    La varianza tiene que estar ENTRE sesiones, no sólo adentro de cada una:
+    un primer intento con `(0.5+j, 0.5-j)` sumaba siempre 1.0 exacto por
+    sesión -- varianza HAC nula, degenerado, no "estable". Acá el total por
+    sesión varía de verdad (positivo en promedio, con sesiones perdedoras
+    incluidas, como cualquier edge real).
+    """
+    trades = {}
+    for s in range(200):
+        # determinista, en aprox [-1.5, 1.5), sin tendencia con s
+        total = 0.5 + (((s * 2654435761) % 3000) - 1500) / 1000.0
+        intra = 0.1                                    # como se reparte entre los 2 trades
+        sid = "s%03d" % s
+        trades[sid] = (total / 2 + intra, total / 2 - intra)
+    return trades
 
 
-def test_aprueba_solo_con_las_cinco_pruebas_en_verde():
-    _, ok = g2.evaluar(mcpt_p=0.01, pbo=0.2, dsr=0.9, wf_oos=5.0,
-                       sensibilidad_mediana=1.2)
-    assert ok
+def test_edge_estable_lo_rechazaria_la_concentracion_pero_PrimaryCI_lo_aprueba():
+    """El hallazgo central de la auditoría, como regresión permanente.
 
+    Misma serie que `test_concentracion_sobre_edge_ESTABLE...`: acá se prueba
+    el otro lado. El gate REAL (bootstrap estacionario-t por sesión,
+    `lower > 0`, la máquina de `g2_decision.PrimaryCI`) sobre este edge
+    genuinamente estable debe APROBAR — al revés de lo que el viejo
+    `evaluar()` habría hecho con un p de concentración alto.
+    """
+    trades = _edge_estable_200_sesiones()
+    calendario = sorted(trades)
+    clusters = aggregate_sessions(calendario, trades)
 
-@pytest.mark.parametrize("kw", [
-    dict(mcpt_p=0.06), dict(pbo=0.51), dict(dsr=0.0), dict(wf_oos=0.0),
-    dict(sensibilidad_mediana=0.0)])
-def test_cada_umbral_del_contrato_es_excluyente(kw):
-    base = dict(mcpt_p=0.01, pbo=0.2, dsr=0.9, wf_oos=5.0,
-                sensibilidad_mediana=1.2)
-    base.update(kw)
-    _, ok = g2.evaluar(**base)
-    assert not ok, "un solo umbral en rojo debe reprobar todo G2: %r" % kw
+    # el mismo dato, visto como concentracion temporal: p alto, "no significativo"
+    returns = [v for sid in calendario for v in trades[sid]]
+    session_ids = [sid for sid in calendario for _ in trades[sid]]
+    p_concentracion, _ = g2.temporal_concentration_test(returns, session_ids, n_perm=1000)
+    assert p_concentracion > 0.30, "el fixture no es estable como se pretendia"
+
+    # el mismo dato, visto con el gate real: aprueba
+    ic = studentized_stationary_interval(clusters, n_replicates=2000, seed=20260810,
+                                         confidence=0.95)
+    assert ic.lower > 0, (
+        "PrimaryCI deberia aprobar un edge parejo y positivo -- lower=%.4f" % ic.lower)
+
+# La exclusividad de cada umbral (un solo gate en rojo reprueba todo G2) ya
+# esta cubierta -para la definicion UNICA vigente tras la enmienda G2-A1- por
+# `test_ic_y_gate_bloquean` en test_g2_decision.py.

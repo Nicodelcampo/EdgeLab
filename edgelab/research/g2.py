@@ -5,11 +5,43 @@ test estadístico después de ver un resultado bueno invita a ajustarlo hasta qu
 lo apruebe. Acá los umbrales vienen del contrato sellado y las funciones se
 verifican contra datos sintéticos con verdad conocida.
 
-Cinco pruebas duras (§G2):
+## Enmienda G2-A1 (2026-08-10) — leer antes de usar este módulo
 
-1. `mcpt`             — permutación por bloques de sesión, p ≤ 0.05, ≥1000 perms.
-2. `pbo_cscv`         — PBO ≤ 0.50 vía CSCV con S = 8.
-3. `deflated_sharpe`  — DSR > 0 con nº de trials = N_eff del manifiesto.
+Auditoría adversarial encontró que `mcpt()`, tal como estaba, **contradice a
+G1**: G1 exige que ningún subperiodo aporte >80% del P&L (estabilidad); el
+estadístico real de la permutación de bloques —pese a lo que decía su
+docstring— no es la suma neta, es la concentración temporal del P&L. Un edge
+que satisface G1 (P&L parejo en el tiempo) da, por construcción,
+`obs ≈ total/2 ≈ media de la permutación`, o sea `p ≈ 0.5` y **FAIL**. El gate
+premiaba al edge que decae y bloqueaba al que se sostiene — exactamente lo
+opuesto de lo que el proyecto busca. Detalle completo:
+`docs/incidents/AMENDMENT_G2-A1_2026-08-10.md`.
+
+Cambios de esta enmienda, aprobada por Nico el 2026-08-10:
+
+1. `mcpt()` → renombrada `temporal_concentration_test()`, y **sacada de los
+   gates duros**. Sigue siendo útil como diagnóstico —detecta EN QUÉ MITAD se
+   concentra el resultado—, pero no decide aprobar/rechazar.
+2. El gate que reemplaza su rol es el que ya existía y nunca se usaba como
+   tal: `g2_decision.PrimaryCI`, bootstrap estacionario-t por sesión con
+   `lower > 0`. Es la MISMA máquina de inferencia que usó H1
+   (`edgelab.stats.cluster_estimand.studentized_stationary_interval`).
+3. El umbral DSR se unifica en **0,95** (antes: `g2.py` tenía `> 0`, vacuo —
+   pasa con puro ruido—, y `g2_decision.py` tenía un allowlist vacío —nunca
+   aprueba nada—. Dos definiciones contradictorias de "G2 aprobado" en el
+   mismo repo).
+4. `AUTHORIZED_DSR_METHOD_SHA256S` se puebla con el hash real del método
+   (`dsr_method_sha256()` abajo), no queda vacío.
+5. `evaluar()` —la ruta vacua, cuyo único poder discriminante real era "hubo
+   al menos 2 observaciones"— **se elimina**. Una sola definición ejecutable
+   de "G2 aprobado": `g2_decision.G2ValidationDecision.passed`.
+
+Pruebas duras vigentes (§G2, tras la enmienda):
+
+1. `deflated_sharpe`  — DSR ≥ 0.95 con nº de trials = N_eff del manifiesto,
+   vía `g2_decision.DSREvidence` con método autorizado.
+2. `PrimaryCI`        — bootstrap estacionario-t por sesión, `lower > 0`.
+3. `pbo_cscv`         — PBO ≤ 0.50 vía CSCV con S = 8.
 4. `walk_forward`     — re-selección por contrato; agregado WF-OOS neto > 0.
 5. `parameter_sensitivity` — vecinos ±1 paso: mediana de expectancies netas > 0.
 
@@ -17,39 +49,23 @@ Sin dependencias nuevas: `statistics.NormalDist` (stdlib) cubre Φ y Φ⁻¹.
 """
 from __future__ import annotations
 
+import hashlib
+import inspect
 import itertools
 import math
-from dataclasses import dataclass
 from statistics import NormalDist
 
 # --- umbrales DUROS del contrato (no se tocan sin enmienda aprobada) --------
-MCPT_MAX_P = 0.05
-MCPT_MIN_PERMS = 1000
 PBO_MAX = 0.50
 CSCV_S = 8
-DSR_MIN = 0.0
+TEMPORAL_CONCENTRATION_MIN_PERMS = 1000   # diagnostico, no gate -- ver enmienda G2-A1
 
 _N = NormalDist()
 _EULER = 0.5772156649015329
 
 
-@dataclass
-class G2Result:
-    name: str
-    value: float
-    threshold: float
-    passed: bool
-    detail: str = ""
-
-    def __str__(self):
-        return "%-22s %10.4f  (umbral %.4f)  %s%s" % (
-            self.name, self.value, self.threshold,
-            "PASS" if self.passed else "FAIL",
-            ("  — " + self.detail) if self.detail else "")
-
-
 # --------------------------------------------------------------------------- #
-# 1. MCPT — permutación por bloques de SESIÓN
+# 1. Concentración temporal — DIAGNÓSTICO, no gate (ver enmienda G2-A1)
 # --------------------------------------------------------------------------- #
 def _lcg(seed):
     """Generador determinista propio: el resultado no puede depender de la
@@ -69,20 +85,29 @@ def _shuffle(seq, rng):
     return a
 
 
-def mcpt(returns, session_ids, n_perm=MCPT_MIN_PERMS, seed=12345):
-    """p-valor por permutación de BLOQUES DE SESIÓN (§G2).
+def temporal_concentration_test(returns, session_ids,
+                                n_perm=TEMPORAL_CONCENTRATION_MIN_PERMS, seed=12345):
+    """p-valor de CONCENTRACIÓN TEMPORAL por permutación de bloques de sesión.
 
-    `returns[i]` es el neto del trade i y `session_ids[i]` su sesión. La hipótesis
-    nula permuta el orden de las **sesiones completas**, no de los trades
-    individuales: eso preserva la autocorrelación intradía, que es justamente lo
-    que una permutación ingenua destruiría (inflando la significancia).
+    **NO es un gate duro** (enmienda G2-A1, 2026-08-10) — antes se llamaba
+    `mcpt()` y se usaba como tal; el gate de robustez estadística que
+    reemplaza su rol es `g2_decision.PrimaryCI`.
 
-    El estadístico es la **suma neta**. p = (1 + #{perm ≥ observado}) / (1 + n_perm),
+    `returns[i]` es el neto del trade i y `session_ids[i]` su sesión. La
+    hipótesis nula permuta el orden de las **sesiones completas**, no de los
+    trades individuales: eso preserva la autocorrelación intradía.
+
+    El estadístico **NO es la suma neta** —eso no cambia bajo permutación de
+    bloques, por construcción— es la suma de los primeros k bloques (la mitad
+    temporal): mide DÓNDE se concentró el P&L, no SI hay P&L. Un p bajo dice
+    "el resultado no está parejo en el tiempo", que es información real, pero
+    es la pregunta de G1 (estabilidad) mirada desde el otro lado — no una
+    prueba de que la señal informa. p = (1 + #{perm ≥ observado}) / (1 + n_perm),
     la forma sesgada-conservadora: nunca devuelve p = 0.
     """
-    if n_perm < MCPT_MIN_PERMS:
+    if n_perm < TEMPORAL_CONCENTRATION_MIN_PERMS:
         raise ValueError("el contrato exige >= %d permutaciones, no %d"
-                         % (MCPT_MIN_PERMS, n_perm))
+                         % (TEMPORAL_CONCENTRATION_MIN_PERMS, n_perm))
     if len(returns) != len(session_ids):
         raise ValueError("returns y session_ids deben tener el mismo largo")
     if not returns:
@@ -96,9 +121,9 @@ def mcpt(returns, session_ids, n_perm=MCPT_MIN_PERMS, seed=12345):
         # Con una sola sesión no hay nada que permutar: se declara, no se finge.
         return 1.0, float(sum(returns))
 
-    # Estadístico observado. Bajo permutación de bloques la SUMA total no cambia,
-    # así que el estadístico es la suma de los k primeros bloques (la mitad
-    # temporal): mide si el resultado se concentra donde realmente ocurrió.
+    # Estadístico observado: suma de los k primeros bloques (la mitad
+    # temporal). Bajo permutación de bloques la suma TOTAL no cambia -- por
+    # eso este estadístico mide concentración, no presencia de efecto.
     k = max(1, len(claves) // 2)
     obs = sum(sum(bloques[c]) for c in claves[:k])
 
@@ -190,6 +215,22 @@ def deflated_sharpe(sharpe, n_obs, n_trials, skew=0.0, kurt=3.0,
     return _N.cdf((sharpe - sr0) / den)
 
 
+def dsr_method_sha256():
+    """sha256 del MÉTODO de cómputo del DSR (`deflated_sharpe` +
+    `expected_max_sharpe`), no de un resultado.
+
+    `g2_decision.AUTHORIZED_DSR_METHOD_SHA256S` exige que el `method_sha256`
+    declarado en cada `DSREvidence` coincida con esto — así, cambiar la
+    fórmula del DSR sin pasar por acá invalida automáticamente cualquier
+    decisión que dependa de la versión vieja, en vez de aprobar en silencio
+    con matemática distinta a la auditada. Mismo principio que
+    `curva_excursion_ticks.huella_del_codigo`: hashear las fuentes que pueden
+    mover el número, no confiar en que "no cambió nada importante".
+    """
+    fuente = inspect.getsource(deflated_sharpe) + inspect.getsource(expected_max_sharpe)
+    return hashlib.sha256(fuente.encode("utf-8")).hexdigest()
+
+
 # --------------------------------------------------------------------------- #
 # 4. Walk-forward por contrato
 # --------------------------------------------------------------------------- #
@@ -236,30 +277,9 @@ def parameter_sensitivity(expectancies, ganador, vecinos):
     mediana = vals[n // 2] if n % 2 else (vals[n // 2 - 1] + vals[n // 2]) / 2.0
     return mediana, sum(1 for v in vals if v > 0), n
 
-
-# --------------------------------------------------------------------------- #
-# Evaluación conjunta
-# --------------------------------------------------------------------------- #
-def evaluar(*, mcpt_p=None, pbo=None, dsr=None, wf_oos=None,
-            sensibilidad_mediana=None):
-    """Aplica los umbrales DUROS del contrato. Todo lo que falte queda FAIL:
-    un gate no evaluado nunca cuenta como aprobado."""
-    out = [
-        G2Result("MCPT p", mcpt_p if mcpt_p is not None else 1.0,
-                 MCPT_MAX_P, mcpt_p is not None and mcpt_p <= MCPT_MAX_P,
-                 "" if mcpt_p is not None else "no evaluado"),
-        G2Result("PBO", pbo if pbo is not None else 1.0,
-                 PBO_MAX, pbo is not None and pbo <= PBO_MAX,
-                 "" if pbo is not None else "no evaluado"),
-        G2Result("DSR", dsr if dsr is not None else -1.0,
-                 DSR_MIN, dsr is not None and dsr > DSR_MIN,
-                 "" if dsr is not None else "no evaluado"),
-        G2Result("WF-OOS neto", wf_oos if wf_oos is not None else -1.0,
-                 0.0, wf_oos is not None and wf_oos > 0.0,
-                 "" if wf_oos is not None else "no evaluado"),
-        G2Result("sensibilidad (mediana)",
-                 sensibilidad_mediana if sensibilidad_mediana is not None else -1.0,
-                 0.0, sensibilidad_mediana is not None and sensibilidad_mediana > 0.0,
-                 "" if sensibilidad_mediana is not None else "no evaluado"),
-    ]
-    return out, all(r.passed for r in out)
+# NOTA (enmienda G2-A1, 2026-08-10): existía acá una función `evaluar()` que
+# ofrecía una segunda definición de "G2 aprobado", con un umbral de DSR vacuo
+# (`> 0`, aprobaba con puro ruido) contradictorio con el umbral real de
+# `g2_decision.py` (`>= 0.95`). Eliminada — la única definición ejecutable de
+# "G2 aprobado" es `g2_decision.G2ValidationDecision.passed`. Ver
+# `docs/incidents/AMENDMENT_G2-A1_2026-08-10.md`.

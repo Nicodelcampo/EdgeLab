@@ -84,34 +84,56 @@ subperiodo.
 
 ## G2 — Robustez estadística
 
+> **Enmienda G2-A1 (2026-08-10), aprobada por Nico.** Auditoría adversarial
+> encontró que el MCPT implementado no testeaba lo que este texto prometía —
+> ver `docs/incidents/AMENDMENT_G2-A1_2026-08-10.md` para el detalle completo
+> y la demostración. Los cambios están integrados en el texto que sigue, no
+> en un addendum aparte, porque el texto anterior estaba objetivamente
+> equivocado (ver §2 del incidente): mantenerlo habría sido preservar un
+> error, no una decisión.
+
 Aplicado a cada **ganador por familia** (la selección se hace con la métrica
 primaria única del manifiesto; prohibido el metric-shopping). Duros:
 
-- **MCPT**: p ≤ **0.05** (`MCPT_MAX_P`), ≥ 1000 permutaciones. Método
-  pre-declarado: permutación por **bloques de sesión** de la serie de señales
-  sobre los retornos reales (preserva autocorrelación intradía).
+- **Inferencia primaria de expectativa positiva**: bootstrap estacionario-t
+  agrupado por sesión, `lower > 0` del intervalo de confianza (
+  `g2_decision.PrimaryCI`, `method="stationary_bootstrap_t"`, `n_sessions ≥
+  160`). Es la misma máquina de inferencia que usó H1
+  (`edgelab.stats.cluster_estimand.studentized_stationary_interval`).
 - **PBO ≤ 0.50** (`PBO_MAX`) vía CSCV (S = 8 particiones) sobre la matriz
   completa configs × tiempo de la campaña.
-- **DSR > 0** con nº de trials = **N_eff del manifiesto** (TODAS las variantes
-  cobradas al presupuesto, incluidas las abandonadas).
+- **DSR ≥ 0.95** con nº de trials = **N_eff del manifiesto** (TODAS las
+  variantes cobradas al presupuesto, incluidas las abandonadas), método de
+  cómputo autorizado por hash (`g2.dsr_method_sha256()` en
+  `AUTHORIZED_DSR_METHOD_SHA256S`).
 - **Walk-forward por contrato**: para cada fold k (test = contrato k), se
   re-selecciona el ganador por familia usando SOLO contratos < k y se evalúa en
   k; el **agregado WF-OOS neto debe ser > 0**.
 - **Sensibilidad paramétrica**: vecinos ±1 paso de grilla del ganador: la
   **mediana de sus expectancies netas > 0** (sin acantilados).
 
+**Diagnóstico, no gate**: `temporal_concentration_test()` (`ex-mcpt`,
+permutación por bloques de sesión) sigue disponible para preguntar DÓNDE se
+concentró un resultado — información real, pero no una prueba de que la señal
+informa, y un edge estable (el que G1 exige) da `p≈0,5` ahí por construcción.
+Usarla como gate duro es exactamente el error que corrigió esta enmienda.
+
 Blandos: signo consistente del WF en < 2/3 de folds; ganador aislado (menos de
 la mitad de los vecinos positivos); SPA/White cuando el nº de familias lo
 amerite. La corrección por múltiples hipótesis usa SIEMPRE el N_eff del
 manifiesto; añadir variantes después de correr = nueva campaña.
 
-### Implementación (2026-07-25)
+### Implementación (2026-07-25, enmendada 2026-08-10)
 
-`edgelab/research/g2.py`, verificado en `tests/research/test_g2.py` (27 tests).
+`edgelab/research/g2.py` + `edgelab/research/g2_decision.py`, verificado en
+`tests/research/test_g2.py` (28 tests) y `tests/research/test_g2_decision.py`
+(6 tests).
 
 Se construyó **antes** de tener ningún candidato positivo, a propósito: escribir
 el test estadístico después de ver un resultado bueno invita a ajustarlo hasta
-que lo apruebe. Los umbrales salen de esta sección, no del resultado.
+que lo apruebe. Los umbrales salen de esta sección, no del resultado. La
+enmienda del 2026-08-10 se aprobó en la misma ventana, por el mismo motivo:
+**ningún candidato había pasado G2 todavía** cuando se corrigió.
 
 Cada prueba se verifica contra **datos sintéticos con verdad conocida**, en los
 dos sentidos: sobre ruido puro debe rechazar, y sobre un efecto plantado debe
@@ -119,15 +141,18 @@ dos sentidos: sobre ruido puro debe rechazar, y sobre un efecto plantado debe
 
 | función | verificación |
 |---|---|
-| `mcpt` | ruido ⇒ p > 0.05 · efecto concentrado plantado ⇒ p ≤ 0.05 · determinista con la misma semilla · con una sola sesión devuelve p = 1 en vez de fingir significancia |
+| `temporal_concentration_test` | ruido ⇒ p > 0.05 · efecto concentrado plantado ⇒ p ≤ 0.05 · **edge estable plantado ⇒ p > 0.30 (documenta por qué no es gate)** · determinista con la misma semilla · con una sola sesión devuelve p = 1 en vez de fingir significancia |
+| `studentized_stationary_interval` (`PrimaryCI`) | sobre el mismo edge estable que `temporal_concentration_test` rechazaría, `lower > 0` — el fixture cruzado que fija la enmienda como regresión |
 | `pbo_cscv` | ruido ⇒ mediana ≈ 0.5 sobre 30 matrices · ventaja real y estable ⇒ PBO ≤ 0.50 · genera las 70 particiones C(8,4) |
 | `deflated_sharpe` | cae monótonamente al crecer N_eff · castiga cola izquierda gruesa |
 | `walk_forward` | **no** evalúa el primer fold (sin historia previa) · re-selecciona sólo con folds anteriores, verificado con un config trampa que es el mejor únicamente en el último fold |
 | `parameter_sensitivity` | detecta el pico aislado · acepta la meseta · sin vecinos devuelve `None`, no un valor inventado |
 
-**Regla de composición:** `evaluar()` trata todo gate **no evaluado** como
-**FAIL**. Un gate que no se corrió nunca cuenta como aprobado, y cada umbral es
-excluyente por separado.
+**Regla de composición:** `G2ValidationDecision.passed` exige `primary_ci.passed`
+**y** los cuatro `gate_results` (`pbo`, `dsr`, `walk_forward`,
+`parameter_sensitivity`) en verde. Es la **única** definición ejecutable de
+"G2 aprobado" — la ruta paralela `g2.py::evaluar()` (vacua: sólo exigía
+`DSR > 0`) se eliminó en la enmienda G2-A1.
 
 **Trampa de escala, documentada porque casi me come:** el `sharpe` que consume
 `deflated_sharpe` es **por observación**, no anualizado. Un SR/trade de 0.5 sobre
