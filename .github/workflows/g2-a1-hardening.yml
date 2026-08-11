@@ -22,7 +22,6 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write
 
 concurrency:
   group: g2-a1-hardening-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -64,7 +63,7 @@ jobs:
             tests/research/test_g2_ratio.py \
             tests/research/test_promotion.py \
             tests/stats/test_cluster_estimand.py -q
-      - name: Generate synthetic calibration evidence
+      - name: Generate calibration evidence
         run: |
           python tests/research/test_g2_dsr_calibration.py | tee g2-dsr-calibration.json
           {
@@ -73,45 +72,6 @@ jobs:
             cat g2-dsr-calibration.json
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
-      - name: Publish calibration evidence to PR
-        if: github.event_name == 'pull_request'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-        run: |
-          if test -f docs/edge_validation_contract.md; then
-            export CONTRACT_SHA256="$(sha256sum docs/edge_validation_contract.md | awk '{print $1}')"
-          else
-            export CONTRACT_SHA256="not-yet-integrated"
-          fi
-          python - <<'PY'
-          import json
-          import os
-          from pathlib import Path
-
-          report = json.loads(Path("g2-dsr-calibration.json").read_text())
-          body = """<!-- g2-a1-hardening-calibration -->
-          ## G2-A1 hardening: calibración sintética PASS
-
-          **Head:** `{head}`  
-          **Contrato SHA-256:** `{contract}`  
-          **Spec DSR SHA-256:** `{method}`  
-          **Implementación DSR SHA-256:** `{implementation}`
-
-          ```json
-          {payload}
-          ```
-          """.format(
-              head=os.environ["HEAD_SHA"],
-              contract=os.environ["CONTRACT_SHA256"],
-              method=report["method_sha256"],
-              implementation=report["implementation_sha256"],
-              payload=json.dumps(report, indent=2, sort_keys=True),
-          )
-          Path("calibration-comment.md").write_text(body, encoding="utf-8")
-          PY
-          gh pr comment "${PR_NUMBER}" --body-file calibration-comment.md
 
   differential:
     name: Full-suite differential vs base
@@ -172,73 +132,30 @@ jobs:
           base = failures("base-suite.xml")
           new = sorted(head - base)
           resolved = sorted(base - head)
-          values = {
-              "head_exit": Path("head-exit.txt").read_text().strip(),
-              "base_exit": Path("base-exit.txt").read_text().strip(),
-              "head_failures": len(head),
-              "base_failures": len(base),
-              "new_failures": len(new),
-              "resolved_failures": len(resolved),
-              "regression": str(bool(new)).lower(),
-          }
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as stream:
-              for key, value in values.items():
-                  stream.write(f"{key}={value}\n")
-          Path("new-failures.txt").write_text("\n".join(new), encoding="utf-8")
-          Path("resolved-failures.txt").write_text("\n".join(resolved), encoding="utf-8")
+              stream.write("regression=%s\n" % str(bool(new)).lower())
+              stream.write("head_failures=%d\n" % len(head))
+              stream.write("base_failures=%d\n" % len(base))
+          summary = [
+              "### Full-suite differential",
+              "",
+              "- Head failures/errors: `%d`" % len(head),
+              "- Base failures/errors: `%d`" % len(base),
+              "- New failures: `%d`" % len(new),
+              "- Resolved failures: `%d`" % len(resolved),
+              "",
+              "#### New identities",
+              "```text",
+              *(new or ["(none)"]),
+              "```",
+              "#### Resolved identities",
+              "```text",
+              *(resolved or ["(none)"]),
+              "```",
+          ]
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as stream:
+              stream.write("\n".join(summary) + "\n")
           PY
-      - name: Publish differential diagnostic
-        if: always() && github.event_name == 'pull_request'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          HEAD_EXIT: ${{ steps.compare.outputs.head_exit }}
-          BASE_EXIT: ${{ steps.compare.outputs.base_exit }}
-          HEAD_FAILURES: ${{ steps.compare.outputs.head_failures }}
-          BASE_FAILURES: ${{ steps.compare.outputs.base_failures }}
-          NEW_FAILURES: ${{ steps.compare.outputs.new_failures }}
-          RESOLVED_FAILURES: ${{ steps.compare.outputs.resolved_failures }}
-          REGRESSION: ${{ steps.compare.outputs.regression }}
-        run: |
-          python - <<'PY'
-          import os
-          from pathlib import Path
-
-          verdict = (
-              "FAIL — nuevas regresiones"
-              if os.environ.get("REGRESSION") == "true"
-              else "PASS diferencial — sin fallos nuevos"
-          )
-          new = Path("new-failures.txt").read_text(encoding="utf-8") or "(ninguno)"
-          resolved = Path("resolved-failures.txt").read_text(encoding="utf-8") or "(ninguno)"
-          body = f"""<!-- g2-a1-hardening-differential -->
-          ## G2-A1 hardening full-suite: {verdict}
-
-          | Métrica | PR | Base |
-          |---|---:|---:|
-          | exit code | {os.environ.get('HEAD_EXIT')} | {os.environ.get('BASE_EXIT')} |
-          | tests fallidos/error | {os.environ.get('HEAD_FAILURES')} | {os.environ.get('BASE_FAILURES')} |
-
-          **Fallos nuevos:** {os.environ.get('NEW_FAILURES')}  
-          **Fallos resueltos:** {os.environ.get('RESOLVED_FAILURES')}
-
-          <details><summary>Identidades nuevas</summary>
-
-          ```text
-          {new}
-          ```
-          </details>
-
-          <details><summary>Identidades resueltas</summary>
-
-          ```text
-          {resolved}
-          ```
-          </details>
-          """
-          Path("differential-comment.md").write_text(body, encoding="utf-8")
-          PY
-          gh pr comment "${PR_NUMBER}" --body-file differential-comment.md
       - name: Enforce no new failures
         if: steps.compare.outputs.regression == 'true'
         run: exit 1
