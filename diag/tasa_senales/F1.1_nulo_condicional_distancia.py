@@ -25,13 +25,26 @@ Sin direccion, sin P&L, sin stop/target, sin holdout, sin tick:25.
    covariable aporta 0), desempate (score, session_date, bar_index).
 5. `calcular_balance_cobertura` -- cobertura de zonas con >=5 controles, SMD
    por covariable.
-6. `zone_lifecycle` -- funcion pura, PRECEDENCIA IDENTICA al kernel
-   (bigtrap2.py::update_zones): expiracion (con `continue`: el toque de esa
-   misma barra NO cuenta) -> toque -> invalidacion (FirstTouch/CloseThrough/
-   max_touches). Corrige el bug A de F1_nulo_zonas_aleatorias.py (max_age
-   nunca alcanzable) usando b1 = created_bar + max_age_bars + 1. Corrige el
-   bug B de F1.1_seguimiento.py (tocada_en_horizonte no respeta lifecycle)
-   evaluando el lifecycle completo y truncando en el primer evento terminal.
+6. `reanclar_geometria` + `zone_lifecycle`. `reanclar_geometria` reancla
+   rel_lo/rel_hi (calculados UNA vez contra el anchor de la zona fuente,
+   close_t en su propia barra de creacion) sobre el anchor PROPIO de cada
+   control (close_t en su propia barra J) -- protocolo Seccion 6. Cada
+   control se evalua con SU PROPIA geometria reanclada, nunca con los
+   limites absolutos de la zona fuente (bug real encontrado por el smoke del
+   2026-08-11 y corregido antes de aceptar ningun resultado: la version
+   original pasaba lo_tick/hi_tick de la fuente sin reanclar a
+   `zone_lifecycle` para los controles). `zone_lifecycle` es una funcion
+   pura, PRECEDENCIA IDENTICA al kernel (bigtrap2.py::update_zones):
+   expiracion (con `continue`: el toque de esa misma barra NO cuenta) ->
+   toque -> invalidacion (FirstTouch/CloseThrough/max_touches). Corrige el
+   bug A de F1_nulo_zonas_aleatorias.py (max_age nunca alcanzable) usando
+   b1 = created_bar + max_age_bars + 1. Corrige el bug B de
+   F1.1_seguimiento.py (tocada_en_horizonte no respeta lifecycle) evaluando
+   el lifecycle completo y truncando en el primer evento terminal. No hay
+   truncamiento por frontera de sesion: `bigtrap2.py::update_zones` no tiene
+   ninguna nocion de sesion (verificado leyendo el kernel completo de nuevo);
+   una zona real y sus controles se evaluan sobre el array continuo de
+   barras, igual que el kernel.
 7. `agregar_por_sesion` -- R_s = mean(r_i) por sesion, peso igual por sesion.
 8. `hac_bartlett_ic` -- SE/IC95%/MDE, lag=ceil(sqrt(n_sesiones)).
 9. `construir_payload` -- serializacion del artefacto content-addressed.
@@ -428,6 +441,24 @@ def zone_lifecycle(lo_tick, hi_tick, is_bull, created_bar, high_t, low_t, close_
         touched_before_removal=bool(touched.any()), censored=True)
 
 
+def reanclar_geometria(lo_tick, hi_tick, source_anchor_tick, target_anchor_tick):
+    """Protocolo Seccion 6 -- geometria relativa EXACTA. rel_lo/rel_hi se
+    computan UNA vez contra el anchor de la zona fuente (close_t en su propia
+    barra de creacion); el control usa el MISMO desplazamiento relativo sobre
+    SU PROPIO anchor (close_t en su propia barra J), nunca los limites
+    absolutos de la zona fuente:
+
+        rel_lo = source_lo_tick - source_anchor_tick
+        rel_hi = source_hi_tick - source_anchor_tick
+        control_lo_tick = control_anchor_tick + rel_lo
+        control_hi_tick = control_anchor_tick + rel_hi
+
+    Devuelve (rel_lo, rel_hi, target_lo_tick, target_hi_tick)."""
+    rel_lo = lo_tick - source_anchor_tick
+    rel_hi = hi_tick - source_anchor_tick
+    return rel_lo, rel_hi, target_anchor_tick + rel_lo, target_anchor_tick + rel_hi
+
+
 def endpoint_binario(lifecycle_result):
     """y_i = 1 si la zona toca antes de remocion/censura dentro de H_i
     (protocolo Seccion 9.1). `touched_before_removal` ya es exactamente eso."""
@@ -528,15 +559,28 @@ def procesar_zonas_de_archivo(kernel_zones, high_t, low_t, close_t, bar_volume,
     for z in zonas_matched:
         if z["match"]["estado"] != "OK":
             continue
+        source_anchor_tick = int(close_t[z["created_bar"]])
+        rel_lo_tick = z["lo_tick"] - source_anchor_tick
+        rel_hi_tick = z["hi_tick"] - source_anchor_tick
         lc_real = zone_lifecycle(z["lo_tick"], z["hi_tick"], z["is_bull"], z["created_bar"],
                                  high_t, low_t, close_t, n_bars, horizon_cap=z["horizon_i"])
         y_i = endpoint_binario(lc_real)
         p0_controles = []
+        controles_ledger = []
         for ctrl in z["match"]["elegidos"]:
             j = ctrl["bar_index"]
-            lc_ctrl = zone_lifecycle(z["lo_tick"], z["hi_tick"], z["is_bull"], j,
+            control_anchor_tick = int(close_t[j])
+            _rl, _rh, control_lo_tick, control_hi_tick = reanclar_geometria(
+                z["lo_tick"], z["hi_tick"], source_anchor_tick, control_anchor_tick)
+            lc_ctrl = zone_lifecycle(control_lo_tick, control_hi_tick, z["is_bull"], j,
                                      high_t, low_t, close_t, n_bars, horizon_cap=z["horizon_i"])
-            p0_controles.append(endpoint_binario(lc_ctrl))
+            y_ctrl = endpoint_binario(lc_ctrl)
+            p0_controles.append(y_ctrl)
+            controles_ledger.append(dict(
+                session_date=ctrl["session_date"], bar_index=j, score=ctrl["score"],
+                control_anchor_tick=control_anchor_tick,
+                control_lo_tick=control_lo_tick, control_hi_tick=control_hi_tick,
+                y_ctrl=y_ctrl))
         p0_i = float(np.mean(p0_controles))
         r_i = y_i - p0_i
         secundarios = {}
@@ -548,8 +592,11 @@ def procesar_zonas_de_archivo(kernel_zones, high_t, low_t, close_t, bar_volume,
         resultados.append(dict(
             zone_id=z["zone_id"], session_date=z["session_date"],
             created_bar=z["created_bar"], k_efectivo=z["match"]["k_efectivo"],
+            source_anchor_tick=source_anchor_tick,
+            rel_lo_tick=rel_lo_tick, rel_hi_tick=rel_hi_tick,
             y_i=y_i, p0_i=p0_i, r_i=r_i,
-            lifecycle_real=lc_real, secundarios_touch_by_horizon=secundarios,
+            lifecycle_real=lc_real, controles_ledger=controles_ledger,
+            secundarios_touch_by_horizon=secundarios,
         ))
 
     return dict(universo=universo, zonas_matched=zonas_matched, resultados=resultados,

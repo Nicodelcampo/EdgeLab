@@ -11,6 +11,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import sys
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import numpy as np
@@ -24,6 +25,8 @@ _spec = importlib.util.spec_from_file_location("f11_ncd", MOD_PATH)
 m = importlib.util.module_from_spec(_spec)
 sys.modules["f11_ncd"] = m
 _spec.loader.exec_module(m)
+
+from edgelab.research.first_touch_census import session_date_ct  # noqa: E402
 
 
 # ======================================================================
@@ -53,6 +56,156 @@ def _sesiones_sinteticas(n_sesiones, bars_por_sesion):
         ses_de_barra.extend([fecha] * bars_por_sesion)
         j += bars_por_sesion
     return np.array(ses_de_barra, dtype=object), rango, list(rango.keys())
+
+
+def _bar_end_ns_real_por_sesion(n_sesiones, bpp, dia_offset_inicial=0, hora_utc=14):
+    """bar_end_ns con timestamps REALES (no fechas inventadas): cada sesion
+    son `bpp` barras de 1 minuto consecutivas arrancando en un dia calendario
+    distinto (un dia UTC de diferencia por sesion, hora fija a media tarde
+    UTC para no rozar ningun limite de rollover), para que `session_date_ct`
+    (la funcion REAL de produccion, no un mock) resuelva cada sesion a una
+    fecha CT propia y estable. Necesario para tests que atraviesan
+    `construir_universo_zonas`/`procesar_zonas_de_archivo`, que llaman a
+    `session_date_ct(created_ms)` de verdad."""
+    base = datetime(2026, 3, 2, hora_utc, 0, 0, tzinfo=timezone.utc)
+    bar_end_ns = []
+    for s in range(n_sesiones):
+        inicio = base + timedelta(days=dia_offset_inicial + s)
+        for k in range(bpp):
+            t = inicio + timedelta(minutes=k + 1)
+            bar_end_ns.append(int(t.timestamp() * 1e9))
+    return np.array(bar_end_ns, dtype=np.int64)
+
+
+# ======================================================================
+# Reanclaje: el control se evalua con SU PROPIA geometria reanclada, nunca
+# con los limites absolutos de la zona fuente (bug real del smoke 2026-08-11,
+# corregido antes de aceptar ningun resultado sobre datos reales).
+# ======================================================================
+
+def test_reanclaje_geometria_tick_por_tick():
+    """Punto 5 pedido: aserciones tick por tick sobre reanclar_geometria."""
+    source_lo, source_hi = 101, 103
+    source_anchor = 100
+    control_anchor = 1000
+    rel_lo, rel_hi, control_lo, control_hi = m.reanclar_geometria(
+        source_lo, source_hi, source_anchor, control_anchor)
+    assert rel_lo == source_lo - source_anchor == 1
+    assert rel_hi == source_hi - source_anchor == 3
+    assert control_lo - control_anchor == rel_lo
+    assert control_hi - control_anchor == rel_hi
+    assert control_hi - control_lo == source_hi - source_lo
+    assert (control_lo, control_hi) == (1001, 1003)  # exactamente el ejemplo pedido
+
+
+def test_integracion_control_usa_geometria_reanclada_no_la_absoluta():
+    """Punto 4 pedido, end-to-end via procesar_zonas_de_archivo (el helper
+    productivo real, no un bypass manual):
+
+    - precio fuente = 100; zona fuente = [101,103];
+    - precio del control = 1000; zona ESPERADA del control = [1001,1003];
+    - se inyecta un toque UNICAMENTE en el precio absoluto 1002 (dentro de
+      [1001,1003], fuera por completo de [101,103]);
+    - el control debe registrar el toque (prueba que se reancla);
+    - si el bug original siguiera presente (evaluar el control con los
+      limites ABSOLUTOS [101,103] de la fuente), el control jamas tocaria,
+      porque el precio en esa sesion nunca pasa por 101-103 -- se verifica
+      exactamente eso llamando zone_lifecycle a mano con los limites viejos.
+    """
+    # Sesiones REALES cortas (200 min, muy dentro de un dia calendario CT --
+    # nada de cruce de medianoche) para que session_date_ct() las resuelva
+    # limpio a una fecha por sesion. procesar_zonas_de_archivo usa el
+    # max_age_bars de PRODUCCION (2000, sin override), asi que cada candidato
+    # necesita >=2000 barras futuras disponibles -- eso lo da un PADDING sin
+    # etiqueta de sesion al final del array (indexar_por_minuto solo itera
+    # las sesiones que estan en rango_sesion, asi que el padding nunca se
+    # vuelve un candidato: solo aporta "barras futuras" para el horizonte).
+    n_sesiones, bpp = 6, 200
+    bar_end_ns = _bar_end_ns_real_por_sesion(n_sesiones, bpp)
+    fechas_reales = [session_date_ct(int(bar_end_ns[s * bpp]) // 1_000_000) for s in range(n_sesiones)]
+    assert len(set(fechas_reales)) == n_sesiones  # 6 fechas CT distintas, sin colisiones
+
+    n_activo = n_sesiones * bpp
+    padding = 2100  # > max_age_bars=2000, con margen
+    n = n_activo + padding
+    high_t = np.empty(n, dtype=np.int64)
+    low_t = np.empty(n, dtype=np.int64)
+    close_t = np.empty(n, dtype=np.int64)
+    bar_volume = np.full(n, 100.0, dtype=np.float64)
+    for s in range(n_sesiones):
+        precio = 100 if s == 0 else 1000  # sesion 0 = fuente; 1-5 = pool de controles, MISMO precio
+        sl = slice(s * bpp, (s + 1) * bpp)
+        high_t[sl] = precio
+        low_t[sl] = precio
+        close_t[sl] = precio
+    high_t[n_activo:] = 1000  # padding: mismo precio que los controles, sin toques
+    low_t[n_activo:] = 1000
+    close_t[n_activo:] = 1000
+
+    minuto_creacion = 70  # >=60: sigma60 causal disponible
+    cb_fuente = 0 * bpp + minuto_creacion
+    # el "toque" de cada control va en la barra siguiente a su propio minuto de
+    # creacion espejada -- precio ABSOLUTO 1002, que cae en [1001,1003]
+    # (reanclado) pero NO en [101,103] (absoluto de la fuente).
+    for s in range(1, n_sesiones):
+        bar_control = s * bpp + minuto_creacion
+        high_t[bar_control + 1] = 1002
+
+    # rango_sesion cubre SOLO las 6 sesiones activas -- el padding no tiene
+    # etiqueta de sesion y por eso jamas se ofrece como candidato.
+    ses_de_barra, rango_sesion = m.sesiones_de_barras(bar_end_ns, fechas_reales)
+    created_ms_fuente = int(bar_end_ns[cb_fuente]) // 1_000_000
+    tick_size = 1.0  # ticks enteros=precios enteros en este fixture, mas simple de leer
+    kernel_zones = [dict(
+        id="zsrc", top=103 * tick_size + tick_size / 2.0, bottom=101 * tick_size - tick_size / 2.0,
+        created_bar=cb_fuente, created_ms=created_ms_fuente, kind="trapped_buyers")]
+
+    res = m.procesar_zonas_de_archivo(
+        kernel_zones, high_t, low_t, close_t, bar_volume,
+        ses_de_barra, rango_sesion, fechas_reales, tick_size, n)
+
+    assert len(res["resultados"]) == 1
+    fila = res["resultados"][0]
+    assert fila["source_anchor_tick"] == 100
+    assert fila["rel_lo_tick"] == 1 and fila["rel_hi_tick"] == 3
+    assert fila["k_efectivo"] == 5  # sesiones 1-5, las 5 disponibles (el padding no cuenta)
+    for ctrl in fila["controles_ledger"]:
+        assert ctrl["control_anchor_tick"] == 1000
+        assert (ctrl["control_lo_tick"], ctrl["control_hi_tick"]) == (1001, 1003)
+        assert ctrl["y_ctrl"] == 1.0  # el toque inyectado en 1002 SI se detecta reanclado
+    assert fila["p0_i"] == 1.0  # los 5 controles tocan: prueba que el reanclaje esta conectado
+
+    # Prueba negativa explicita: evaluar esos MISMOS controles con los limites
+    # ABSOLUTOS de la fuente (el bug original) da CERO toques -- confirma que
+    # [101,103] en la sesion de control "no se usa" porque GEOMETRICAMENTE no
+    # puede tocar ahi (precio siempre ~1000).
+    for ctrl in fila["controles_ledger"]:
+        j = ctrl["bar_index"]
+        lc_con_bug = m.zone_lifecycle(101, 103, True, j, high_t, low_t, close_t, n)
+        assert m.endpoint_binario(lc_con_bug) == 0.0
+
+
+def test_zonas_cruzan_frontera_de_sesion_sin_truncar():
+    """Punto 6 pedido: bigtrap2.py::update_zones no tiene NINGUNA nocion de
+    sesion (verificado leyendo el kernel completo) -- una zona sigue viva y
+    evaluable mas alla del final de su propia sesion, acotada solo por
+    max_age_bars/horizonte, igual que el kernel. Si alguien truncara por
+    error al final de la sesion, este test lo atraparia: el toque vive varias
+    sesiones despues de la creacion y sigue contando."""
+    n_sesiones, bpp = 4, 50
+    high_t, low_t, close_t, _v = _flat_bars(n_sesiones * bpp, base_close=100)
+    created_bar = 10  # sesion 0
+    # zona [101,103]: NO contiene el close plano=100 (evita que la zona toque
+    # desde la primera barra por overlap con el baseline, ver tests 02-05b).
+    # el toque ocurre en la sesion 2 (bar 2*bpp+5=105), muy despues de que la
+    # sesion 0 (barras 0-49) haya terminado.
+    bar_toque = 2 * bpp + 5
+    high_t[bar_toque] = 102
+    lc = m.zone_lifecycle(101, 103, True, created_bar, high_t, low_t, close_t,
+                          n_sesiones * bpp, max_age_bars=2000)
+    assert lc["touched_before_removal"] is True
+    assert lc["first_touch_age"] == bar_toque - created_bar
+    assert lc["first_touch_age"] > bpp  # estrictamente mas alla de una sesion de distancia
 
 
 # ======================================================================
