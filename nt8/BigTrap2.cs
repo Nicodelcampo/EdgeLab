@@ -256,6 +256,18 @@ namespace NinjaTrader.NinjaScript.Indicators
 			}
 			else if (State == State.Terminated)
 			{
+				// v2.5.2: ultimo intento de drenaje antes de cerrar. Sin esto, un
+				// snapshot ya cerrado con bloque ya verificable que no alcanzo a
+				// emparejarse porque no hay "barra siguiente" que dispare otro
+				// OnBarUpdate quedaba atrapado para siempre en snapQ/curBlock --
+				// medido: BARRA_PROCESADA se detenia en bar=12397 con n_bars=12400
+				// (Python, misma ventana), 3 residuales nunca exportados, y el unico
+				// TRAP exclusivo de Python (bar=12398) cae justo en ese tramo.
+				// DrainReadyBars/DrenarPorOHLCV ya abstienen fail-closed ante datos
+				// incompletos o ambiguos (ver Abstener): esta llamada no cambia esa
+				// politica, solo le da una ultima oportunidad de correr antes de que
+				// el stream termine -- no fabrica ni procesa una barra incompleta.
+				DrainReadyBars();
 				if (eventWriter != null)
 				{
 					try { eventWriter.Flush(); eventWriter.Dispose(); } catch { }
@@ -368,7 +380,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				}
 				if (sesionNoConfiable)
 				{
-					LogEvent("SESION_RESINCRONIZADA", string.Format(CultureInfo.InvariantCulture,
+					LogEventAt(tEv, "SESION_RESINCRONIZADA", string.Format(CultureInfo.InvariantCulture,
 						"zonas_suprimidas={0};mismatch_acumulado={1}", nSuprimidas, nMismatch));
 					nSuprimidas = 0;
 				}
@@ -382,6 +394,15 @@ namespace NinjaTrader.NinjaScript.Indicators
 			// siguientes quedaran mal, y el conteo no lo delataba porque seguia
 			// dando K. Los eventos quedan planos y el corte lo decide el OHLCV.
 			curBlock.Add(ev);
+
+			// v2.5.2: drenaje FIFO oportunista. Antes, un snapshot con bloque ya
+			// completo esperaba al PROXIMO cierre de barra primaria (BIP0) para
+			// drenar -- eso es lo que corria Time[0] antes de que LogEvent se
+			// invocara (ver el defecto de atribucion temporal, mas arriba). No
+			// reancla ni adivina: DrenarPorOHLCV ya decide con su propia logica de
+			// ancla/abstencion si hay algo listo; llamarla aca solo adelanta el
+			// momento en que corre, nunca cambia QUE hace.
+			DrainReadyBars();
 		}
 
 		// secuenciador
@@ -496,7 +517,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 					anclado = true;
 					// disp/tope/maxOff van al payload: esta vez la truncacion hubo que
 					// INFERIRLA desde afuera. Con estos campos se mide.
-					LogEvent("ANCLAJE_VERIFICADO", string.Format(CultureInfo.InvariantCulture,
+					LogEventAt(s.Time, "ANCLAJE_VERIFICADO", string.Format(CultureInfo.InvariantCulture,
 						"bar={0};offset={1};largo={2};k={3};disp={4};tope={5};max_off={6}",
 						s.Bar, dHit, largo, K, disp, tope, maxOff));
 				}
@@ -525,7 +546,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				// Va SOLO en el camino de tick: `DrenarPorOHLCV` se alcanza unicamente
 				// con `fpTicksPerBar > 0`. El camino de TIEMPO queda intacto porque
 				// P5 exige que time:1 salga bit-identico al oraculo previo.
-				LogEvent("BARRA_PROCESADA", string.Format(CultureInfo.InvariantCulture,
+				LogEventAt(s.Time, "BARRA_PROCESADA", string.Format(CultureInfo.InvariantCulture,
 					"bar={0};largo={1};k={2};residual={3}",
 					s.Bar, largo, fpTicksPerBar, largo < fpTicksPerBar));
 				EmitirBarra(s, curBlock, 0, largo);
@@ -807,7 +828,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 			double zoneHi   = hiTick * TickSize + TickSize / 2.0;
 
 			// Export continuo: los umbrales de selección se barren offline sobre estos eventos.
-			LogEvent("TRAP", string.Format(CultureInfo.InvariantCulture,
+			LogEventAt(s.Time, "TRAP", string.Format(CultureInfo.InvariantCulture,
 				"bar={0};side={1};vol={2};centroid={3};zone_lo={4};zone_hi={5};n_rows={6};max_ratio={7};close={8};bar_vol={9};fp_vol={10};n_quote={11};n_rule={12}",
 				s.Bar, isBull ? "trapped_buyers" : "trapped_sellers",
 				vol, centroid, zoneLo, zoneHi, nRows, maxRatio, s.Close, s.Volume, fpVol, nQuote, nRule));
@@ -824,7 +845,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 
 			var z = new BT2Zone { CreatedBar = s.Bar, IsBull = isBull, LoTick = loTick, HiTick = hiTick, Volume = vol };
 			activeZones.Add(z);
-			LogEvent("ZONE_CREATED", ZoneDesc(z));
+			LogEventAt(s.Time, "ZONE_CREATED", ZoneDesc(z));
 		}
 
 		// ── ciclo de vida de zonas ────────────────────────────────────────
@@ -840,7 +861,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 
 				if (MaxAgeBars > 0 && s.Bar - z.CreatedBar > MaxAgeBars)
 				{
-					LogEvent("ZONE_EXPIRED", ZoneDesc(z) + ";bar=" + s.Bar);
+					LogEventAt(s.Time, "ZONE_EXPIRED", ZoneDesc(z) + ";bar=" + s.Bar);
 					activeZones.RemoveAt(i);
 					continue;
 				}
@@ -852,7 +873,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				if (touched)
 				{
 					z.Touches++;
-					LogEvent("ZONE_TOUCHED", ZoneDesc(z) + string.Format(CultureInfo.InvariantCulture,
+					LogEventAt(s.Time, "ZONE_TOUCHED", ZoneDesc(z) + string.Format(CultureInfo.InvariantCulture,
 						";bar={0};touches={1}", s.Bar, z.Touches));
 				}
 
@@ -863,7 +884,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 
 				if (reason != null)
 				{
-					LogEvent("ZONE_INVALIDATED", ZoneDesc(z) + ";reason=" + reason + ";bar=" + s.Bar);
+					LogEventAt(s.Time, "ZONE_INVALIDATED", ZoneDesc(z) + ";reason=" + reason + ";bar=" + s.Bar);
 					activeZones.RemoveAt(i);
 				}
 			}
@@ -903,6 +924,33 @@ namespace NinjaTrader.NinjaScript.Indicators
 
 		private void LogEvent(string type, string payload)
 		{
+			LogEventAt(Time[0], type, payload);
+		}
+
+		// v2.5.2 - DEFECTO DE ATRIBUCION TEMPORAL EN EL EXPORT (TICKBAR-001)
+		//
+		// LogEvent estampaba SIEMPRE Time[0] -- el reloj VIVO del callback donde se
+		// invoca --, nunca el de la barra que el evento describe. En tick:25 el
+		// drenaje puede diferirse varios OnBarUpdate(BIP0) mientras DrenarPorOHLCV
+		// espera ancla o bloque completo (ver DrenarPorOHLCV): para cuando LogEvent
+		// corria, Time[0] ya habia avanzado N barras. Medido contra el oraculo
+		// v2.5.1: 253/322 TIMESTAMP_DIFF en (1s,60s], 29/322 >60s, maximo 460.340ms,
+		// todos positivos (NT8 siempre despues de Python) -- y el matcher de
+		// paridad, que empareja por cercania temporal, cruzo 6095_S con 6093_S
+		// (misma geometria, timestamps corridos). En time:1 el drenaje es sincronico
+		// dentro del mismo OnBarUpdate que encola el snapshot, asi que Time[0] no
+		// alcanza a moverse: el bug quedaba dormido (230/230 dt=0ms, oraculo v2.5.1).
+		//
+		// Fix: todo evento derivado de un BarSnap ya cerrado usa el s.Time capturado
+		// en ese snapshot (LogEventAt), nunca el reloj vivo. El unico diagnostico
+		// nacido de un tick -- SESION_RESINCRONIZADA, en AccumulateTick -- usa `tEv`,
+		// el timestamp propio de ese tick. Diagnosticos de error/mismatch que no
+		// estan en el camino semantico medido por paridad (ERROR, ANCLAJE_AMBIGUO,
+		// FOOTPRINT_MISMATCH) quedan con Time[0] via LogEvent: comparten la misma
+		// exposicion estructural pero no estaban nombrados en el alcance del fix
+		// minimo -- ver docs/BIGTRAP2_V252_PREREGISTRO_FIX_2026-08-11.md.
+		private void LogEventAt(DateTime eventTime, string type, string payload)
+		{
 			if (string.IsNullOrEmpty(EventLogPath) || eventWriterFailed)
 				return;
 			try
@@ -924,7 +972,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 					eventWriter = new StreamWriter(resolvedEventLogPath, false) { AutoFlush = true };
 					Print("BigTrap2: escribiendo " + resolvedEventLogPath);
 					if (eventSeq == 0)
-						eventWriter.WriteLine("# meta indicator=BigTrap2,version=2.5.1"
+						eventWriter.WriteLine("# meta indicator=BigTrap2,version=2.5.2"
 							+ ",attribution=ohlcv_unique_match,anchor=bounded_verified"
 							+ ",footprint=reconstructed_1tick_subseries,classifier=bidask_then_tickrule"
 							+ ",row_anchor=absolute_grid,ratio_floor=max(opposite,1),poc_tiebreak=lowest_row"
@@ -943,7 +991,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 							+ ",instrument=" + Instrument.FullName);
 				}
 				eventWriter.WriteLine(string.Format(CultureInfo.InvariantCulture,
-					"{0}|{1:o}|{2}|{3}", eventSeq++, Time[0], type, payload));
+					"{0}|{1:o}|{2}|{3}", eventSeq++, eventTime, type, payload));
 			}
 			catch (Exception ex)
 			{

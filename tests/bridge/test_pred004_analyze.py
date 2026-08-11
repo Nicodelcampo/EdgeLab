@@ -466,10 +466,17 @@ def test_H1_el_cs_no_tiene_identificadores_sin_declarar():
 
 
 def test_H2_el_cs_emite_BARRA_PROCESADA_en_el_camino_de_tick():
-    """H2: el denominador tiene que EXISTIR en el log. `BigTrap2.cs:481`."""
+    """H2: el denominador tiene que EXISTIR en el log. `BigTrap2.cs:481`.
+
+    v2.5.2 (docs/BIGTRAP2_V252_PREREGISTRO_FIX_2026-08-11.md, defecto D1):
+    BARRA_PROCESADA paso de `LogEvent("BARRA_PROCESADA", ...)` a
+    `LogEventAt(s.Time, "BARRA_PROCESADA", ...)` -- ya no estampa el Time[0]
+    vivo del callback, usa el s.Time del snapshot que describe. La propiedad
+    que este test verifica (el evento EXISTE y vive en el camino de tick) no
+    cambio; solo el literal de la llamada."""
     src = _cs()
-    assert 'LogEvent("BARRA_PROCESADA"' in src
-    assert src.index("private void DrenarPorOHLCV()") < src.index('LogEvent("BARRA_PROCESADA"'), \
+    assert 'LogEventAt(s.Time, "BARRA_PROCESADA"' in src
+    assert src.index("private void DrenarPorOHLCV()") < src.index('LogEventAt(s.Time, "BARRA_PROCESADA"'), \
         "BARRA_PROCESADA quedo fuera de DrenarPorOHLCV (camino de tick)"
 
 
