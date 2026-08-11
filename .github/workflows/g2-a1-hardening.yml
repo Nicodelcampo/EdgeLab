@@ -69,6 +69,7 @@ jobs:
         env:
           HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           WORKFLOW_SHA: ${{ github.sha }}
+          PYTHONPATH: ${{ github.workspace }}
         run: |
           python tests/research/test_g2_dsr_calibration.py | tee g2-dsr-calibration.json
           python - <<'PY'
