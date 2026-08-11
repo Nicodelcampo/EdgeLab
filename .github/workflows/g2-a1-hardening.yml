@@ -7,6 +7,7 @@ on:
       - ".github/workflows/g2-a1-hardening.yml"
       - "docs/edge_validation_contract.md"
       - "docs/amendments/G2-A1-2026-08-10_semantica_estadistica.md"
+      - "docs/amendments/G2-A1-2026-08-11_calibracion_semantica.md"
       - "edgelab/research/g2.py"
       - "edgelab/research/g2_dsr.py"
       - "edgelab/research/g2_protocol.py"
@@ -22,6 +23,7 @@ on:
 
 permissions:
   contents: read
+  issues: write
 
 concurrency:
   group: g2-a1-hardening-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -63,15 +65,88 @@ jobs:
             tests/research/test_g2_ratio.py \
             tests/research/test_promotion.py \
             tests/stats/test_cluster_estimand.py -q
-      - name: Generate calibration evidence
+      - name: Generate exact calibration evidence
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          WORKFLOW_SHA: ${{ github.sha }}
         run: |
           python tests/research/test_g2_dsr_calibration.py | tee g2-dsr-calibration.json
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          from edgelab.research.g2_dsr import (
+              DSR_DEPENDENCE_METHOD,
+              DSR_IMPLEMENTATION_SHA256,
+              DSR_METHOD_SHA256_V2,
+          )
+
+          calibration = json.loads(
+              Path("g2-dsr-calibration.json").read_text(encoding="utf-8")
+          )
+          contract_path = Path("docs/edge_validation_contract.md")
+          evidence = {
+              "schema_version": "g2-a1-evidence-v1",
+              "head_sha": os.environ["HEAD_SHA"],
+              "workflow_sha": os.environ["WORKFLOW_SHA"],
+              "contract_path": str(contract_path),
+              "contract_sha256": hashlib.sha256(
+                  contract_path.read_bytes()
+              ).hexdigest(),
+              "dsr_dependence_method": DSR_DEPENDENCE_METHOD,
+              "dsr_method_sha256": DSR_METHOD_SHA256_V2,
+              "dsr_implementation_sha256": DSR_IMPLEMENTATION_SHA256,
+              "calibration": calibration,
+          }
+          Path("g2-a1-evidence.json").write_text(
+              json.dumps(evidence, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
           {
-            echo "### G2 DSR-HAC synthetic calibration"
+            echo "### G2-A1 exact evidence"
             echo '```json'
-            cat g2-dsr-calibration.json
+            cat g2-a1-evidence.json
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload exact evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: g2-a1-evidence
+          path: g2-a1-evidence.json
+          if-no-files-found: error
+      - name: Publish idempotent evidence comment
+        if: github.event_name == 'pull_request'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          evidence = Path("g2-a1-evidence.json").read_text(encoding="utf-8")
+          body = """<!-- g2-a1-exact-evidence -->
+          ## G2-A1 exact calibration evidence
+
+          ```json
+          %s```
+
+          The allowlists remain empty; this evidence does not authorize promotion.
+          """ % evidence
+          Path("g2-a1-evidence-comment.md").write_text(body, encoding="utf-8")
+          PY
+          COMMENT_ID="$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments?per_page=100" --paginate --jq '.[] | select(.body | contains("<!-- g2-a1-exact-evidence -->")) | .id' | tail -n 1)"
+          if [ -n "${COMMENT_ID}" ]; then
+            gh api --method PATCH "repos/${REPO}/issues/comments/${COMMENT_ID}" \
+              -f body="$(cat g2-a1-evidence-comment.md)" >/dev/null
+          else
+            gh api --method POST "repos/${REPO}/issues/${PR_NUMBER}/comments" \
+              -f body="$(cat g2-a1-evidence-comment.md)" >/dev/null
+          fi
 
   differential:
     name: Full-suite differential vs base
