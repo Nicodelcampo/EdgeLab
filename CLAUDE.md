@@ -1,9 +1,11 @@
 # EdgeLab — instrucciones permanentes de sesión
 
 > Este archivo se carga en cada sesión de Claude Code. El documento canónico
-> versionado es **`docs/NORTH_STAR.md`** (sha256 `21bb3b01a33e2b37…`); si hay
-> conflicto, manda ese doc. Punto de entrada operativo del día:
-> `docs/ESTADO_2026-08-10_EMPEZAR_ACA.md`.
+> versionado es **`docs/NORTH_STAR.md`** — sha256 del cuerpo anterior al
+> marcador `SHA256-BODY-ABOVE`: `d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1`
+> (no es el hash del archivo completo; el archivo se autocita a su propio pie,
+> ver `tests/test_north_star_hash.py`). Si hay conflicto, manda ese doc. Punto
+> de entrada operativo del día: `docs/ESTADO_2026-08-10_EMPEZAR_ACA.md`.
 
 ## NORTH STAR — referente rector (gobierna todo)
 
