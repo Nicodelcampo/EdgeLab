@@ -4,8 +4,19 @@
 **Fecha:** 2026-08-11  
 **Rama:** `research/bigtrap2-distance-matched-null`  
 **Base fijada:** `audit/p0-bigtrap2-drift@ef83794d9b6c074cbeeee6ce8f4715c9f907f060`  
-**NORTH_STAR:** el ejecutor debe calcular y publicar el SHA-256 completo de `docs/NORTH_STAR.md`; prefijo esperado `21bb3b01a33e2b37`  
+**NORTH_STAR:** el ejecutor debe calcular y publicar el SHA-256 del **cuerpo** de `docs/NORTH_STAR.md` — bytes anteriores al marcador `<!-- SHA256-BODY-ABOVE -->`, NO el archivo completo; esperado `d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1`  
 **Outcomes/P&L/holdout:** prohibidos; `outcomes_accessed=false`
+
+> **Errata de procedencia (2026-08-11, detectada antes de implementación,
+> smoke o resultados).** La redacción original de este campo decía "SHA-256
+> completo" citando el prefijo `21bb3b01a33e2b37…` — ese valor es la autocita
+> del **cuerpo** de `NORTH_STAR.md` (no del archivo completo), y además había
+> quedado stale desde el 2026-08-01 (INC-006, revert del corrimiento indebido
+> del holdout) sin que nadie refrescara la autocita del pie. Corregido en
+> `fix(governance): refresh NORTH_STAR body hash` (commit `9474bc6`), que
+> actualiza únicamente esa línea del pie — cero bytes del cuerpo tocados.
+> Esta errata corrige procedencia, no metodología: `K`, población, matching,
+> gates, horizontes e inferencia **no cambiaron**.
 
 ## 1. Decisión que motiva esta campaña
 
@@ -222,7 +233,9 @@ No se elige horizonte ni subconjunto después de mirar resultados.
 
 El JSON publica como mínimo:
 
-- spec y NORTH_STAR SHA-256 completos;
+- SHA-256 completo de la spec; SHA-256 del **cuerpo** de NORTH_STAR (bytes
+  anteriores al marcador `SHA256-BODY-ABOVE`, no el archivo completo — ver
+  errata de procedencia arriba);
 - `head_start`, `head_end`, `dirty_start`, `dirty_end`;
 - hashes de kernel, script, universo y datos/particiones;
 - P0.1 WARN y estado de paridad;
