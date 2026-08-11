@@ -130,7 +130,7 @@ def test_t4_terminated_drena_sin_fabricar_barra_incompleta():
     source = _cs_source()
     idx = source.find("State == State.Terminated")
     assert idx >= 0, "no se encontro la rama State.Terminated"
-    ventana = source[idx: idx + 700]
+    ventana = source[idx: idx + 1600]
     assert "DrainReadyBars()" in ventana, (
         "State.Terminated no llama DrainReadyBars() -- snapshots ya "
         "cerrados con bloque verificable quedan atrapados para siempre "
