@@ -1,9 +1,14 @@
 """Matrices de ventanas intradía en hora de Nueva York.
 
-El contrato histórico ``rth_matrices`` se conserva. La primitiva general
-``minute_window_matrices`` permite ventanas pre-RTH y exige un calendario
-explícito para uso formal. Los timestamps de entrada son UTC (naive o aware) y
-la conversión usa ``America/New_York``; nunca se fija manualmente EST/EDT.
+Se conservan sin romper los contratos públicos existentes:
+
+- ``build_session_matrices(df, start_h, start_m, duration_min)``;
+- ``rth_matrices(df)`` para RTH ``[09:30,16:00)``.
+
+La primitiva adicional ``minute_window_matrices`` permite ligar una ventana a
+un calendario explícito, preservar días sin barras y hashear el denominador.
+Los timestamps de entrada son UTC (naive o aware) y la conversión usa
+``America/New_York``; nunca se fija manualmente EST/EDT.
 """
 from __future__ import annotations
 
@@ -90,21 +95,15 @@ def _calendar_digest(days, start, end):
 def minute_window_matrices(df, *, start, end, session_days=None):
     """Convierte OHLCV M1 a matrices día × minuto para ``[start,end)``.
 
-    Parameters
-    ----------
-    df:
-        DataFrame OHLCV M1. Un índice naive se interpreta como UTC, preservando
-        el contrato histórico. También se acepta un índice UTC aware.
-    start, end:
-        Minutos locales de Nueva York, como ``HH:MM`` o enteros. Se admiten
-        ventanas que cruzan medianoche. La semántica es siempre half-open.
-    session_days:
-        Calendario local elegible, ordenado y sin duplicados. Si se omite, los
-        días se infieren de los datos y ``calendar_complete`` queda en False;
-        ese resultado sirve para diagnóstico, no para inferencia formal.
+    ``session_days`` es el calendario local elegible, ordenado y sin
+    duplicados. Si se omite, los días se infieren de los datos y
+    ``calendar_complete`` queda en False: sirve para compatibilidad/diagnóstico,
+    no como denominador formal.
 
     Los días explícitos sin barras se preservan como filas NaN. Barras de una
     fecha no incluida en el calendario explícito son error, no se descartan.
+    Se admiten ventanas que cruzan medianoche; la fecha asignada es la del
+    inicio de la ventana.
     """
     if not isinstance(df, pd.DataFrame):
         raise ValueError("df debe ser DataFrame")
@@ -145,7 +144,7 @@ def minute_window_matrices(df, *, start, end, session_days=None):
     else:
         days = pd.DatetimeIndex(sorted(pd.unique(bar_days)))
         if len(days) == 0:
-            raise ValueError("sin datos en la ventana")
+            raise ValueError("sin datos en la ventana solicitada")
 
     shape = (len(days), span)
     out = {}
@@ -182,24 +181,14 @@ def minute_window_matrices(df, *, start, end, session_days=None):
     return out
 
 
-def _last_finite_per_row(matrix):
-    values = np.full(len(matrix), np.nan)
-    for index, row in enumerate(matrix):
+def _legacy_result(window):
+    """Restaura exactamente las claves históricas y encadena cierres."""
+    out = {key: window[key] for key in ("O", "H", "L", "C", "V", "days")}
+    last_close = np.full(len(out["days"]), np.nan)
+    for index, row in enumerate(out["C"]):
         finite = np.flatnonzero(~np.isnan(row))
         if len(finite):
-            values[index] = row[finite[-1]]
-    return values
-
-
-def rth_matrices(df, *, session_days=None):
-    """Contrato histórico RTH: matrices ``[09:30,16:00)`` de 390 minutos."""
-    out = minute_window_matrices(
-        df,
-        start="09:30",
-        end="16:00",
-        session_days=session_days,
-    )
-    last_close = _last_finite_per_row(out["C"])
+            last_close[index] = row[finite[-1]]
     previous_close = np.full(len(out["days"]), np.nan)
     previous = np.nan
     for index, close in enumerate(last_close):
@@ -209,6 +198,35 @@ def rth_matrices(df, *, session_days=None):
     out["prev_close"] = previous_close
     out["rth_close"] = last_close
     return out
+
+
+def build_session_matrices(df, start_h=9, start_m=30, duration_min=RTH_MIN):
+    """API existente: ventana ET configurable con resultado histórico.
+
+    Se conservan firma y claves. Internamente usa la primitiva general y, como
+    antes, infiere días desde los datos; quien necesite inferencia formal debe
+    usar ``minute_window_matrices(..., session_days=...)`` o el wrapper YM.
+    """
+    for value, field in (
+        (start_h, "start_h"),
+        (start_m, "start_m"),
+        (duration_min, "duration_min"),
+    ):
+        if not isinstance(value, int) or isinstance(value, bool):
+            raise ValueError("%s debe ser entero" % field)
+    if not 0 <= start_h <= 23 or not 0 <= start_m <= 59:
+        raise ValueError("hora de inicio fuera de rango")
+    if not 1 <= duration_min < 24 * 60:
+        raise ValueError("duration_min fuera de rango")
+    start = start_h * 60 + start_m
+    end = (start + duration_min) % (24 * 60)
+    window = minute_window_matrices(df, start=start, end=end)
+    return _legacy_result(window)
+
+
+def rth_matrices(df):
+    """RTH ``[09:30,16:00)`` — alias compatible de 390 minutos."""
+    return build_session_matrices(df, start_h=9, start_m=30, duration_min=RTH_MIN)
 
 
 def valid_days_mask(O, min_minutes=300):
