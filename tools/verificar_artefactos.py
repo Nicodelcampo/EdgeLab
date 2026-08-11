@@ -16,10 +16,21 @@ artefacto PRE-corrección de F1.1 (`ac9d001dc815`), no al corregido
 ## Qué NO hace
 
 No corrige nada solo. No decide si un hash-mismatch importa — lo publica
-como señal para revisión humana. Un `payload_sha256` que no verifica pero
-con `git diff` vacío desde su único commit no es evidencia de tampereo (no
-cambió desde que se generó); es evidencia de que el hash declarado nunca
-coincidió con su propio contenido, algo distinto y anterior al commit.
+como señal para revisión humana.
+
+**Sobre `working_tree_clean` — leer antes de interpretarlo como prueba de
+integridad.** `git diff HEAD -- <archivo>` vacío sólo demuestra que el
+árbol de trabajo ACTUAL coincide con lo que HEAD tiene registrado ahora. NO
+demuestra que ese commit nunca se reescribió (`commit --amend`, rebase,
+force-push) entre su creación y hoy — este repo no hace eso como práctica,
+pero el comando en sí no lo descarta. `unico_commit_en_su_historia` (via
+`git log --follow`) es una segunda señal, independiente, de que el archivo
+tiene un solo punto de entrada en el historial — más fuerte que
+`working_tree_clean` sola, pero tampoco es una prueba criptográfica de
+inmutabilidad pre-commit. La conclusión defendible con estas dos señales es:
+**"no se detectó mutación posterior al commit; la procedencia exacta
+pre-commit no es reconstruible desde acá"** — nunca "no hubo tampereo".
+(Corrección del auditor, 2026-08-11, sobre la v1 de este script.)
 
 Uso:
     ./.venv/Scripts/python.exe tools/verificar_artefactos.py
@@ -50,8 +61,42 @@ def es_commit_real(h):
     return r.returncode == 0
 
 
-def diff_vacio(ruta_relativa):
+def working_tree_clean(ruta_relativa):
+    """Arbol de trabajo == HEAD para esta ruta. NO prueba inmutabilidad
+    pre-commit -- ver el caveat en el docstring del modulo."""
     return sh("diff", "HEAD", "--", ruta_relativa) == ""
+
+
+def unico_commit_en_su_historia(ruta_relativa):
+    """Cuantos commits tocaron esta ruta alguna vez (--follow, renames
+    incluidos). Senal independiente de working_tree_clean: un archivo con
+    un solo commit en su historia y arbol limpio es mas dificil de explicar
+    por una reescritura silenciosa que uno con muchos commits."""
+    log = sh("log", "--oneline", "--follow", "--", ruta_relativa)
+    lineas = [l for l in log.splitlines() if l.strip()]
+    return len(lineas)
+
+
+def calcular_hash(data, ensure_ascii):
+    return hashlib.sha256(
+        json.dumps(data, sort_keys=True, ensure_ascii=ensure_ascii, default=str)
+        .encode()).hexdigest()
+
+
+def clasificar_hash(data, declarado):
+    """Funcion pura, testeable sin filesystem/git: dado un payload SIN
+    `payload_sha256` y el hash declarado, devuelve (hash, serialization|None,
+    recalculado_canonico). No toca disco ni git -- eso lo hace `verificar()`
+    solo para el caso MISMATCH, donde SI importa la procedencia."""
+    recalc_canonico = calcular_hash(data, ensure_ascii=False)
+    if declarado is None:
+        return "SIN_PAYLOAD_SHA256", None, recalc_canonico
+    if declarado == recalc_canonico:
+        return "OK", "json_sort_keys_ensure_ascii_false", recalc_canonico
+    recalc_legacy = calcular_hash(data, ensure_ascii=True)
+    if declarado == recalc_legacy:
+        return "OK_LEGACY", "json_sort_keys_ensure_ascii_true", recalc_canonico
+    return "MISMATCH", None, recalc_canonico
 
 
 def artefactos_citados():
@@ -86,25 +131,21 @@ def verificar():
                 continue
             declarado = data.pop("payload_sha256", None)
             # P2 (2026-08-11): scripts de eras distintas usaron ensure_ascii
-            # distinto (la convencion ensure_ascii=False no siempre fue la
-            # norma -- ver docs/P2_SEIS_HASHES_ADJUDICACION_2026-08-11.md).
-            # Probar ambas variantes antes de declarar MISMATCH evita un
-            # falso positivo determinista que este script tenia.
-            recalcs = {
-                ea: hashlib.sha256(
-                    json.dumps(data, sort_keys=True, ensure_ascii=ea, default=str)
-                    .encode()).hexdigest()
-                for ea in (False, True)
-            }
-            if declarado is None:
-                fila["hash"] = "SIN_PAYLOAD_SHA256"
-            elif declarado in recalcs.values():
-                fila["hash"] = "OK"
-            else:
-                fila["hash"] = "MISMATCH"
+            # distinto -- ver docs/P2_SEIS_HASHES_ADJUDICACION_2026-08-11.md.
+            # CANONICO (convencion vigente desde el 2026-08-10): ensure_ascii=False.
+            # LEGACY (E-R1 y anterior, entorno vacio en el payload): ensure_ascii=True.
+            # Se reporta CUAL convencion hizo match -- un OK indiferenciado
+            # esconde justamente el dato que motivo la revision. (Correccion
+            # del auditor sobre la v1 de este script, que devolvia OK liso.)
+            clasif, serial, recalc_canonico = clasificar_hash(data, declarado)
+            fila["hash"] = clasif
+            if serial:
+                fila["serialization"] = serial
+            elif clasif == "MISMATCH":
                 fila["declarado"] = declarado[:16]
-                fila["recalculado"] = recalcs[False][:16]
-                fila["estable_desde_commit"] = diff_vacio(rel)
+                fila["recalculado"] = recalc_canonico[:16]
+                fila["working_tree_clean"] = working_tree_clean(rel)
+                fila["commits_en_su_historia"] = unico_commit_en_su_historia(rel)
 
             commit = data.get("code_commit") or data.get("head_start")
             if commit:
@@ -121,12 +162,13 @@ def main(argv=None):
     filas = verificar()
     faltan = [f for f in filas if f["estado"] in ("FALTA_EN_DISCO", "NO_TRACKEADO", "NO_PARSEA")]
     sin_hash = [f for f in filas if f.get("hash") == "SIN_PAYLOAD_SHA256"]
+    legacy = [f for f in filas if f.get("hash") == "OK_LEGACY"]
     mismatch = [f for f in filas if f.get("hash") == "MISMATCH"]
     commit_falso = [f for f in filas if f.get("code_commit_real") is False]
 
     print("Artefactos citados en REGISTRO %s1 MEDIDO: %d" % (chr(167), len(filas)))
-    print("  limpios (existen, trackeados, hash OK donde aplica): %d"
-          % (len(filas) - len(faltan) - len(mismatch)))
+    print("  limpios (existen, trackeados, hash OK canonico donde aplica): %d"
+          % (len(filas) - len(faltan) - len(mismatch) - len(legacy)))
 
     if faltan:
         print("\nFALTAN / NO TRACKEADOS / NO PARSEAN (%d):" % len(faltan))
@@ -137,13 +179,22 @@ def main(argv=None):
               % len(sin_hash))
         for f in sin_hash:
             print("  - %s" % f["nombre"])
+    if legacy:
+        print("\nOK_LEGACY -- hash valido bajo serializacion no-canonica (%d):" % len(legacy))
+        for f in legacy:
+            print("  - %-55s serialization=%s" % (f["nombre"], f["serialization"]))
     if mismatch:
-        print("\nHASH NO COINCIDE (%d) -- ver 'estable_desde_commit':" % len(mismatch))
+        print("\nHASH NO COINCIDE (%d) -- 'working_tree_clean' NO prueba ausencia de"
+              % len(mismatch))
+        print("tampereo, solo que el arbol actual coincide con HEAD (ver docstring):")
         for f in mismatch:
-            estable = "estable desde su commit (no tamperado)" if f["estable_desde_commit"] \
-                else "*** CAMBIO DESPUES DEL COMMIT -- revisar ***"
+            if f["working_tree_clean"]:
+                senal = ("arbol==HEAD, %d commit(s) en su historia -- procedencia "
+                        "pre-commit no reconstruible desde aca" % f["commits_en_su_historia"])
+            else:
+                senal = "*** ARBOL DE TRABAJO != HEAD -- revisar antes que nada ***"
             print("  - %-55s decl=%s recalc=%s  %s"
-                  % (f["nombre"], f["declarado"], f["recalculado"], estable))
+                  % (f["nombre"], f["declarado"], f["recalculado"], senal))
     if commit_falso:
         print("\nCODE_COMMIT NO ES UN COMMIT REAL (%d):" % len(commit_falso))
         for f in commit_falso:
@@ -154,7 +205,7 @@ def main(argv=None):
                                 encoding="utf-8")
         print("\n-> %s" % a.json)
 
-    critico = [f for f in mismatch if not f.get("estable_desde_commit")] + \
+    critico = [f for f in mismatch if not f.get("working_tree_clean")] + \
         [f for f in faltan if f["estado"] == "NO_TRACKEADO"] + commit_falso
     return 1 if critico else 0
 

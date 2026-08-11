@@ -3,6 +3,7 @@
 **Fecha** 2026-08-11 · **Worktree** `audit/p0-bigtrap2-drift`
 **Herramientas** `tools/verificar_artefactos.py` (corregido acá), `tools/auditar_procedencia.py`
 **Fuente de la lista** `docs/REGISTRO_NO_MEDIDO_2026-08-10.md` §1, corrida 2026-08-10 (turno anterior)
+**Revisado por el auditor** el 2026-08-11 sobre `ffe523d` — correcciones de lenguaje/clasificación incorporadas.
 
 ---
 
@@ -10,18 +11,23 @@
 
 | artefacto | veredicto | mecanismo |
 |---|---|---|
-| `f_ambos_filtros.json` | **PASS** (con `ensure_ascii=True`) | serialización de una era anterior — resuelto abajo |
+| `f_ambos_filtros.json` | **OK_LEGACY** (`serialization=json_sort_keys_ensure_ascii_true`) | serialización de una era anterior — resuelto abajo |
 | `F1_nulo_zonas_aleatorias__260757be9e71.json` | **WARN** | árbol dirty al generarse — el script ganó el fix de redondeo en un commit posterior al declarado |
 | `censo_zonas_completo__21b7f3512158.json` | **WARN** | árbol dirty al generarse — el script no existía committeado en el commit declarado |
 | `F1_superv_depletion__b107bf368c08.json` | **WARN** | mismo mecanismo, mismo commit declarado |
 | `barrido_F2_altura.json` | **WARN** | mismo mecanismo; el script que lo generó ya no existe en el repo con ese nombre |
 | `INCIDENTE_altura_de_zona_con_ruido_de_redondeo__ac9d001dc815.json` | **WARN** | mismo mecanismo, mismo commit declarado (es el artefacto pre-fix, archivado) |
 
-**Ninguno es FAIL.** Los cinco WARN están confirmados estables desde su único
-commit (`git diff` vacío) — no cambiaron después de commitearse. Lo que no se
-puede es reproducir su `payload_sha256` desde NINGUNA versión de su script
-generador que exista en el historial de git, por la razón de §2, no por
-tampereo.
+**Ninguno es FAIL.** Para los cinco WARN, el árbol de trabajo actual coincide
+con HEAD para ese archivo (`git diff HEAD` vacío) y cada uno tiene un único
+commit en su historia (`git log --follow`). Eso demuestra que el archivo no
+cambió *después* de commitearse — **no demuestra que ese commit nunca se haya
+reescrito** (amend/rebase/force-push; este repo no lo hace como práctica,
+pero el comando no lo descarta por sí solo). La formulación defendible es:
+**no se detectó mutación posterior al commit; la procedencia exacta
+pre-commit no es reconstruible desde acá.** No "no hubo tampereo" —
+corrección del auditor sobre la primera versión de este documento, que usaba
+esa frase más fuerte de lo que la evidencia sostiene.
 
 ---
 
@@ -102,13 +108,15 @@ Los módulos escritos después de esa fecha (`F1.1_grilla_parametros.py`,
 
 ---
 
-## 3. Por qué esto no es tampereo, y por qué tampoco es descartable sin más
+## 3. Por qué esto no es evidencia de mutación posterior, y por qué tampoco es descartable sin más
 
-`git diff HEAD -- <artefacto>` da vacío en los cinco, para el único commit
-que cada uno tiene en su historia — confirmado en el turno anterior y
-reconfirmado acá. El archivo no cambió una sola vez desde que se
-commiteó. El self-hash nunca coincidió, ni siquiera el día que se generó —
-no es que se haya corrompido después.
+`git diff HEAD -- <artefacto>` da vacío en los cinco, y cada uno tiene un
+único commit en su historia — confirmado en el turno anterior y reconfirmado
+acá con `unico_commit_en_su_historia()`. Eso es todo lo que se puede afirmar
+con estas herramientas: **no hay evidencia de que el archivo haya cambiado
+después de commitearse.** El self-hash nunca coincidió, ni siquiera el día
+que se generó — no es que se haya corrompido después; es que el código que
+lo produjo nunca quedó capturado en git en su forma exacta (§2).
 
 **No se puede clasificar como PASS** porque el mecanismo de integridad que el
 propio campo `payload_sha256` promete (recomputable desde el código
@@ -125,9 +133,16 @@ artefactos específicamente no es una prueba criptográfica válida.
 
 ## 4. Cambios aplicados
 
-- `tools/verificar_artefactos.py`: prueba `ensure_ascii` en dos valores antes
-  de declarar `MISMATCH` (defecto determinista de la herramienta, demostrado
-  con `f_ambos_filtros.json`, corregido).
+- `tools/verificar_artefactos.py`: reporta `OK` (canónico,
+  `ensure_ascii=False`) vs `OK_LEGACY` (`ensure_ascii=True`) por separado, con
+  el campo `serialization` explícito — ya no un `OK` indiferenciado. Renombra
+  `estable_desde_commit` → `working_tree_clean` y agrega
+  `commits_en_su_historia`, con el lenguaje corregido (§3). Lógica de
+  clasificación extraída a `clasificar_hash()`, función pura.
+- `tests/test_verificar_artefactos.py` (nuevo): 5 tests —
+  canónico/legacy/mismatch real/sin-hash/caso-ASCII-puro.
+- `docs/REGISTRO_NO_MEDIDO_2026-08-10.md` M1: re-etiquetado de "Paridad
+  NT8↔Python" a lo que realmente mide (ver P0.1 §1.3 y el commit de M1).
 - Este documento.
 - **No se tocó ningún artefacto histórico.** No se re-generó ningún JSON, no
   se movió ningún hash de archivo, no se re-corrió F1.1 ni ninguna medición
