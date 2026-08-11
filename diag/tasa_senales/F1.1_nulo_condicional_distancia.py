@@ -108,6 +108,34 @@ def spec_sha256():
     return hashlib.sha256(SPEC_PATH.read_bytes()).hexdigest()
 
 
+def data_root():
+    """`data/` esta gitignoreado (CLAUDE.md: dato local) y por eso NINGUNA
+    worktree lo tiene -- solo el checkout principal. `REPO_PATH` es correcto
+    para todo archivo TRACKEADO (spec, protocolo, git de esta rama), pero no
+    para datos. Se prueba primero `REPO_PATH/data` (por si algun dia corre
+    desde el checkout principal directamente); si no existe, se resuelve el
+    checkout principal via `git worktree list --porcelain` (su primera linea
+    es siempre el worktree principal -- comportamiento documentado de git,
+    no una convencion de este repo) y se usa su `data/`."""
+    local = REPO_PATH / "data"
+    if local.exists():
+        return local
+    out = subprocess.check_output(
+        ["git", "-C", str(REPO_PATH), "worktree", "list", "--porcelain"], text=True)
+    primera_worktree = None
+    for line in out.splitlines():
+        if line.startswith("worktree "):
+            primera_worktree = Path(line[len("worktree "):].strip())
+            break
+    if primera_worktree is None:
+        raise RuntimeError("no se pudo resolver el checkout principal via `git worktree list`")
+    candidato = primera_worktree / "data"
+    if not candidato.exists():
+        raise RuntimeError("`data/` no existe ni en esta worktree ni en el checkout "
+                           "principal resuelto (%s)" % candidato)
+    return candidato
+
+
 # ======================================================================
 # Capa 1 -- universo de zonas (geometria en TICKS ENTEROS)
 # ======================================================================
@@ -579,7 +607,7 @@ def main(argv=None):
                         + pd.Timedelta(days=1))
         fin = min(fin_contrato.tz_convert("UTC"), corte_del_sello())
         tk = ticks_mod.load_canonical_parquet(
-            str(REPO_PATH / "data" / "nt8" / "6E" / arch),
+            str(data_root() / "nt8" / "6E" / arch),
             start_utc_ns=int(ini.value), end_utc_ns=int(fin.value))
         if not bool((np.diff(np.asarray(tk.sequence)) > 0).all()):
             crudo[arch] = dict(estado="ABSTAIN", motivo="`sequence` no es orden total")

@@ -610,6 +610,20 @@ def test_controles_no_duplicados_dentro_de_la_misma_zona():
     assert len(bar_indices) == len(set(bar_indices))  # sin repetidos dentro de la misma zona
 
 
+def test_data_root_resuelve_data_gitignoreado_desde_una_worktree():
+    """Regresion del smoke 2026-08-11: `data/` esta gitignoreado (CLAUDE.md) y
+    por eso NINGUNA worktree lo tiene, solo el checkout principal. `data_root()`
+    debe encontrarlo igual, resolviendolo via `git worktree list` cuando la
+    worktree local no lo tiene -- no debe asumir que vive junto al codigo."""
+    root = m.data_root()
+    assert root.exists() and root.is_dir()
+    assert root.name == "data"
+    # el checkout resuelto tiene que tener de verdad los parquets 6E que el
+    # universo de research necesita -- si no, data_root() encontro un
+    # directorio "data" equivocado (falso positivo silencioso).
+    assert (root / "nt8" / "6E" / "6E_09-26_ticks.parquet").exists()
+
+
 def test_un_control_puede_servir_a_varias_zonas_distintas():
     """Protocolo 7.3: 'Un control puede servir a varias zonas' -- NO es una
     prohibicion, es una propiedad explicitamente permitida. Este test la
