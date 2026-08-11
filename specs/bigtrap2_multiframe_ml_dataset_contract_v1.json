@@ -1,0 +1,183 @@
+{
+  "schema_version": "bigtrap2_multiframe_ml_dataset_contract_v1",
+  "supersedes": "bigtrap2_multiframe_ml_dataset_contract_v0",
+  "errata_reference": "docs/research/BIGTRAP2_MULTIFRAME_ML_AUDIT_OPUS_2026-08-11.md",
+  "status": "DRAFT_NON_EXECUTABLE",
+  "dataset_visibility": "private",
+  "raw_ticks_included": false,
+  "holdout_included": false,
+  "secrets_allowed": false,
+
+  "firewall": {
+    "research_end_date": "2026-06-30",
+    "holdout_start_date": "2026-07-01",
+    "holdout_end_date": "2026-12-31",
+    "max_allowed_timestamp_utc": "2026-07-01T00:00:00Z",
+    "holdout_rows_allowed": 0
+  },
+
+  "identity": {
+    "required_manifest_fields": [
+      "dataset_id",
+      "dataset_schema_version",
+      "code_commit",
+      "code_dirty",
+      "builder_id",
+      "source_dataset_sha256",
+      "feature_set_id",
+      "target_set_id",
+      "fold_plan_id",
+      "cutoff_policy_id",
+      "created_at_utc"
+    ],
+    "dataset_id_policy": "content_addressed",
+    "code_dirty_allowed": false
+  },
+
+  "session_key": {
+    "definition": "instrument|contract|session_date",
+    "required_in": ["events_long", "windows_ml", "targets_long", "folds_outer", "folds_inner"],
+    "rationale": "session_date alone collides across contracts and can leak between partitions"
+  },
+
+  "cutoff_policy": {
+    "required": true,
+    "primary_mode": "regular_time_grid",
+    "grid_seconds_catalog": [10, 30, 60],
+    "grid_is_signal_independent": true,
+    "optional_event_driven_cutoffs": true,
+    "cutoff_origin_values": ["grid", "event"],
+    "event_rows_must_be_flagged": true,
+    "min_null_window_fraction": 0.20,
+    "rationale": "without signal-independent cutoffs there is no control group and no estimable contrast"
+  },
+
+  "tables": {
+    "events_long": {
+      "primary_key": ["session_key", "bar_key", "event_id"],
+      "required_columns": [
+        "session_key", "instrument", "contract", "session_date",
+        "event_id", "zone_id", "bar_key", "ticks_per_bar",
+        "event_type", "side",
+        "event_time_ns", "available_at_ns", "bar_end_ns",
+        "anchor_price_tick", "zone_lo_tick", "zone_hi_tick",
+        "relative_lo_tick", "relative_hi_tick",
+        "strength", "aggressive_volume", "bar_volume",
+        "oracle_parity_status", "source_run_id"
+      ]
+    },
+    "windows_ml": {
+      "primary_key": ["session_key", "cutoff_ns", "window_spec_id"],
+      "required_columns": [
+        "session_key", "instrument", "contract", "session_date",
+        "cutoff_ns", "cutoff_origin", "window_spec_id",
+        "retrospective_window_seconds",
+        "reference_price_tick",
+        "active_frame_count", "frame_set_hash",
+        "same_side_count", "opposite_side_count",
+        "temporal_dispersion_ms", "overlap_ticks", "containment_ratio",
+        "strength_sum", "strength_max", "volume_sum",
+        "distance_to_price_ticks",
+        "realized_volatility", "volume_regime", "time_of_session_minute"
+      ],
+      "dynamic_feature_prefixes": ["frame__", "pair__", "triple__", "regime__", "history__", "quality__"],
+      "forbidden_prefixes_in_features": ["target__", "y_", "future_", "outcome_"]
+    },
+    "targets_long": {
+      "primary_key": ["session_key", "cutoff_ns", "window_spec_id", "target_id"],
+      "required_columns": [
+        "session_key", "cutoff_ns", "window_spec_id",
+        "target_id", "target_family",
+        "target_start_ns", "target_end_ns", "label_horizon_ns",
+        "y_value", "censored"
+      ]
+    },
+    "folds_outer": {
+      "primary_key": ["fold_plan_id", "outer_fold", "session_key"],
+      "required_columns": ["fold_plan_id", "outer_fold", "session_key", "role"],
+      "allowed_roles": ["train", "test", "purged", "embargoed", "excluded"]
+    },
+    "folds_inner": {
+      "primary_key": ["fold_plan_id", "outer_fold", "inner_fold", "session_key"],
+      "required_columns": ["fold_plan_id", "outer_fold", "inner_fold", "session_key", "role"],
+      "allowed_roles": ["train", "test", "purged", "embargoed", "excluded"]
+    },
+    "frame_set_dictionary": {
+      "primary_key": ["frame_set_hash"],
+      "required_columns": ["frame_set_hash", "frame_set_canonical", "frame_count", "row_count"],
+      "min_rows_per_frame_set": 30,
+      "rare_set_policy": "collapse_to_other"
+    }
+  },
+
+  "causality_invariants": [
+    "events_long.available_at_ns <= events_long.bar_end_ns is not required, but any event used in a window requires available_at_ns <= cutoff_ns",
+    "windows_ml features may only aggregate events with available_at_ns <= cutoff_ns and bar_end_ns <= cutoff_ns",
+    "targets_long.target_start_ns > windows_ml.cutoff_ns",
+    "targets_long.target_end_ns > targets_long.target_start_ns",
+    "normalizers, imputers and feature selection fit on training folds only"
+  ],
+
+  "fold_invariants": [
+    "a session_key cannot be train and test in the same outer_fold",
+    "every outer_fold must contain at least one test session_key",
+    "embargo_ns >= max(targets_long.label_horizon_ns)",
+    "folds group by session_key, never by row",
+    "holdout sessions must be absent from every fold table"
+  ],
+
+  "statistical_power": {
+    "cluster_unit": "session_key",
+    "expected_research_sessions": 201,
+    "mde_formula": "(z_{1-alpha/2} + z_{power}) * sigma_session / sqrt(n_sessions)",
+    "mde_unadjusted_sigma_units": 0.197,
+    "combinatorial_catalog": {"singles": 17, "pairs": 136, "triples": 680, "total": 833},
+    "mde_bonferroni_833_sigma_units": 0.34,
+    "mde_bonferroni_6664_sigma_units": 0.375,
+    "staged_screening_required": true,
+    "min_positive_events_per_cell": 30,
+    "publish_base_rate_per_cell": true
+  },
+
+  "nuisance_parameters": {
+    "retrospective_window_seconds": {
+      "treatment": "nuisance",
+      "plateau_required": true,
+      "min_neighbor_agreement": 2
+    }
+  },
+
+  "complexity_gate": {
+    "primary_metric": "out_of_fold_log_loss",
+    "must_beat_simplest_baseline": true,
+    "bootstrap": "cluster_bootstrap_by_session_key",
+    "confidence_interval_must_exclude_zero": true,
+    "min_outer_folds_won": 4,
+    "total_outer_folds_reference": 5
+  },
+
+  "quality_gates": {
+    "duplicate_primary_keys": 0,
+    "causality_violations": 0,
+    "holdout_rows": 0,
+    "fold_role_conflicts": 0,
+    "unmanifested_columns": 0,
+    "missing_hashes": 0,
+    "target_leakage_columns_in_features": 0,
+    "null_window_fraction_below_minimum": false
+  },
+
+  "kaggle_layout": {
+    "input_is_read_only": true,
+    "expected_root": "/kaggle/input/edgelab-bigtrap2-multiframe-research",
+    "working_root": "/kaggle/working",
+    "required_outputs": [
+      "run_manifest.json",
+      "contract_validation_report.json",
+      "oof_predictions.parquet",
+      "metric_landscape.parquet",
+      "candidate_cards/",
+      "audit_report.json"
+    ]
+  }
+}
