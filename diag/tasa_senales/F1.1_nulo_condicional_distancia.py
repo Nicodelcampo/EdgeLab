@@ -165,10 +165,28 @@ def tick_bounds_from_price(top, bottom, tick_size):
 
 def construir_universo_zonas(kernel_zones, ses_de_barra, rango_sesion, fechas_universo, tick_size, n_bars):
     """Todas las zonas creadas por BigTrap2 en sesiones del universo, sin
-    sep_min, sin condicionar por toque ni desenlace (protocolo Seccion 4)."""
+    sep_min, sin condicionar por toque ni desenlace (protocolo Seccion 4).
+
+    `creadoras` (F1, fix 2026-08-11): se puebla en un paso INDEPENDIENTE de
+    los filtros de `universo`, con TODA zona del kernel que tenga
+    `created_bar` valido (0<=cb<n_bars) -- sin importar `top`/`created_ms`
+    faltantes ni si su sesion cae fuera de `fechas_universo`. Antes,
+    `creadoras.add(cb)` vivia DESPUES de esos filtros: una zona excluida del
+    universo (p.ej. `top is None`, o de una sesion que este archivo no
+    cubre) no marcaba su propia barra, asi que esa barra podia colarse como
+    candidato de control -- contaminando la definicion de 'barra sin evento
+    BigTrap2' que el protocolo (Seccion 7.1) exige."""
     setf = set(fechas_universo)
-    universo = []
     creadoras = set()
+    for z in kernel_zones:
+        cb_raw = z.get("created_bar")
+        if cb_raw is None:
+            continue
+        cb = int(cb_raw)
+        if 0 <= cb < n_bars:
+            creadoras.add(cb)
+
+    universo = []
     for z in kernel_zones:
         if z.get("top") is None or z.get("created_ms") is None:
             continue
@@ -186,7 +204,6 @@ def construir_universo_zonas(kernel_zones, ses_de_barra, rango_sesion, fechas_un
             minute_of_session=cb - j0, is_bull=is_bull,
             lo_tick=lo_tick, hi_tick=hi_tick,
         ))
-        creadoras.add(cb)
     return universo, creadoras
 
 
