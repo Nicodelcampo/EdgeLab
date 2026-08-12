@@ -63,6 +63,7 @@ import platform
 import subprocess
 import sys
 import zlib
+from collections import Counter
 from pathlib import Path
 
 import numpy as np
@@ -545,7 +546,17 @@ def decidir_etiqueta(ic):
 
 def procesar_zonas_de_archivo(kernel_zones, high_t, low_t, close_t, bar_volume,
                               ses_de_barra, rango_sesion, fechas_universo, tick_size,
-                              n_bars, horizontes_secundarios=(1, 2, 5, 10, 20, 60, 120)):
+                              n_bars, horizontes_secundarios=(1, 2, 5, 10, 20, 60, 120),
+                              calcular_endpoint=True):
+    """`calcular_endpoint=False` (F0, modo `--solo-estructural`): la
+    geometria reanclada (source_anchor_tick, rel_lo/hi_tick,
+    control_anchor_tick/control_lo_tick/control_hi_tick por control) SIEMPRE
+    se calcula -- es diagnostico de matching, no el estimand. Lo que se
+    OMITE por completo cuando es False es `zone_lifecycle`/`endpoint_binario`
+    (y_i, p0_i, r_i, y_ctrl, secundarios_touch_by_horizon): eso es
+    literalmente el efecto que el pre-registro exige no mirar antes de que
+    pasen los gates de balance/cobertura. No se computa -- no es que se
+    calcule y se oculte despues."""
     universo, creadoras = construir_universo_zonas(
         kernel_zones, ses_de_barra, rango_sesion, fechas_universo, tick_size, n_bars)
     cov = calcular_covariables_causales(close_t, bar_volume)
@@ -572,16 +583,16 @@ def procesar_zonas_de_archivo(kernel_zones, high_t, low_t, close_t, bar_volume,
         zonas_matched.append(dict(**zona, horizon_i=horizon_i,
                                   covariables_fuente=zona_cov, match=match))
 
+    sesion_idx = {f: i for i, f in enumerate(sorted(set(fechas_universo)))}
     resultados = []
     for z in zonas_matched:
         if z["match"]["estado"] != "OK":
             continue
+        # Geometria reanclada: SIEMPRE se calcula (diagnostico de matching,
+        # no el estimand -- F3 la necesita en modo estructural tambien).
         source_anchor_tick = int(close_t[z["created_bar"]])
         rel_lo_tick = z["lo_tick"] - source_anchor_tick
         rel_hi_tick = z["hi_tick"] - source_anchor_tick
-        lc_real = zone_lifecycle(z["lo_tick"], z["hi_tick"], z["is_bull"], z["created_bar"],
-                                 high_t, low_t, close_t, n_bars, horizon_cap=z["horizon_i"])
-        y_i = endpoint_binario(lc_real)
         p0_controles = []
         controles_ledger = []
         for ctrl in z["match"]["elegidos"]:
@@ -589,35 +600,98 @@ def procesar_zonas_de_archivo(kernel_zones, high_t, low_t, close_t, bar_volume,
             control_anchor_tick = int(close_t[j])
             _rl, _rh, control_lo_tick, control_hi_tick = reanclar_geometria(
                 z["lo_tick"], z["hi_tick"], source_anchor_tick, control_anchor_tick)
-            lc_ctrl = zone_lifecycle(control_lo_tick, control_hi_tick, z["is_bull"], j,
-                                     high_t, low_t, close_t, n_bars, horizon_cap=z["horizon_i"])
-            y_ctrl = endpoint_binario(lc_ctrl)
-            p0_controles.append(y_ctrl)
-            controles_ledger.append(dict(
+            # F3: diagnosticos de matching, siempre presentes (target-free).
+            entry = dict(
                 session_date=ctrl["session_date"], bar_index=j, score=ctrl["score"],
                 control_anchor_tick=control_anchor_tick,
                 control_lo_tick=control_lo_tick, control_hi_tick=control_hi_tick,
-                y_ctrl=y_ctrl))
-        p0_i = float(np.mean(p0_controles))
-        r_i = y_i - p0_i
-        secundarios = {}
-        for k in horizontes_secundarios:
-            hc = min(k, z["horizon_i"])
-            lc_k = zone_lifecycle(z["lo_tick"], z["hi_tick"], z["is_bull"], z["created_bar"],
-                                  high_t, low_t, close_t, n_bars, horizon_cap=hc)
-            secundarios[k] = 1.0 if (lc_k["first_touch_age"] is not None and lc_k["first_touch_age"] <= hc) else 0.0
-        resultados.append(dict(
+                session_offset=sesion_idx.get(ctrl["session_date"], None) - sesion_idx.get(z["session_date"], 0)
+                if ctrl["session_date"] in sesion_idx and z["session_date"] in sesion_idx else None,
+                anchor_distance_ticks=abs(control_anchor_tick - source_anchor_tick),
+                bounds_igual_a_fuente=(control_lo_tick == z["lo_tick"] and control_hi_tick == z["hi_tick"]),
+            )
+            if calcular_endpoint:
+                lc_ctrl = zone_lifecycle(control_lo_tick, control_hi_tick, z["is_bull"], j,
+                                         high_t, low_t, close_t, n_bars, horizon_cap=z["horizon_i"])
+                y_ctrl = endpoint_binario(lc_ctrl)
+                entry["y_ctrl"] = y_ctrl
+                p0_controles.append(y_ctrl)
+            controles_ledger.append(entry)
+
+        fila = dict(
             zone_id=z["zone_id"], session_date=z["session_date"],
             created_bar=z["created_bar"], k_efectivo=z["match"]["k_efectivo"],
             source_anchor_tick=source_anchor_tick,
             rel_lo_tick=rel_lo_tick, rel_hi_tick=rel_hi_tick,
-            y_i=y_i, p0_i=p0_i, r_i=r_i,
-            lifecycle_real=lc_real, controles_ledger=controles_ledger,
-            secundarios_touch_by_horizon=secundarios,
-        ))
+            controles_ledger=controles_ledger,
+        )
+        # Endpoint (F0): el efecto en si -- SOLO si calcular_endpoint=True.
+        # No se calcula y se esconde: directamente no se llama.
+        if calcular_endpoint:
+            lc_real = zone_lifecycle(z["lo_tick"], z["hi_tick"], z["is_bull"], z["created_bar"],
+                                     high_t, low_t, close_t, n_bars, horizon_cap=z["horizon_i"])
+            y_i = endpoint_binario(lc_real)
+            p0_i = float(np.mean(p0_controles))
+            r_i = y_i - p0_i
+            secundarios = {}
+            for k in horizontes_secundarios:
+                hc = min(k, z["horizon_i"])
+                lc_k = zone_lifecycle(z["lo_tick"], z["hi_tick"], z["is_bull"], z["created_bar"],
+                                      high_t, low_t, close_t, n_bars, horizon_cap=hc)
+                secundarios[k] = 1.0 if (lc_k["first_touch_age"] is not None and lc_k["first_touch_age"] <= hc) else 0.0
+            fila.update(y_i=y_i, p0_i=p0_i, r_i=r_i, lifecycle_real=lc_real,
+                       secundarios_touch_by_horizon=secundarios)
+        resultados.append(fila)
 
     return dict(universo=universo, zonas_matched=zonas_matched, resultados=resultados,
                 cobertura=calcular_balance_cobertura(zonas_matched, cov_por_barra))
+
+
+def instrumentacion_f3(zonas_matched, resultados):
+    """Diagnosticos target-free de matching, INDEPENDIENTES del estimand:
+    histograma de n_pool, histograma de k_efectivo, desglose de abstenciones
+    por motivo, distribucion del offset de sesion control-fuente, distancia
+    de anclaje |control_anchor_tick - source_anchor_tick|, y el centinela
+    frac_control_bounds_iguales_a_fuente (debe ser ~0, y solo distinto de 0
+    cuando el anchor del control coincide exactamente con el de la fuente --
+    si se dispara sin esa coincidencia, el reanclaje se rompio de nuevo)."""
+    hist_n_pool = Counter(z["match"].get("n_pool", 0) for z in zonas_matched)
+    hist_k_efectivo = Counter(z["match"]["k_efectivo"] for z in zonas_matched if z["match"]["estado"] == "OK")
+    abstenciones_por_motivo = Counter(
+        z["match"].get("motivo", "sin_motivo_declarado")
+        for z in zonas_matched if z["match"]["estado"] != "OK")
+
+    offsets, distancias, bounds_iguales, bounds_total = [], [], 0, 0
+    for fila in resultados:
+        for ctrl in fila["controles_ledger"]:
+            if ctrl["session_offset"] is not None:
+                offsets.append(ctrl["session_offset"])
+            distancias.append(ctrl["anchor_distance_ticks"])
+            bounds_total += 1
+            if ctrl["bounds_igual_a_fuente"]:
+                bounds_iguales += 1
+                # el centinela solo es INOCENTE si el anchor coincide -- si no,
+                # es exactamente el bug de reanclaje reapareciendo.
+                assert ctrl["anchor_distance_ticks"] == 0, (
+                    "centinela: control_lo_tick==z.lo_tick con anchors DISTINTOS -- "
+                    "el reanclaje no esta conectado (regresion del bug corregido en 6b76e34)")
+
+    def resumen_num(xs):
+        if not xs:
+            return dict(n=0, p50=None, p90=None, media=None, min=None, max=None)
+        arr = np.asarray(xs, dtype=np.float64)
+        return dict(n=len(arr), p50=float(np.percentile(arr, 50)), p90=float(np.percentile(arr, 90)),
+                   media=float(np.mean(arr)), min=float(arr.min()), max=float(arr.max()))
+
+    return dict(
+        histograma_n_pool=dict(sorted(hist_n_pool.items())),
+        histograma_k_efectivo=dict(sorted(hist_k_efectivo.items())),
+        abstenciones_por_motivo=dict(abstenciones_por_motivo),
+        offset_sesion_control_menos_fuente=resumen_num(offsets),
+        distancia_anclaje_ticks=resumen_num(distancias),
+        frac_control_bounds_iguales_a_fuente=(bounds_iguales / bounds_total) if bounds_total else None,
+        n_controles_evaluados=bounds_total,
+    )
 
 
 def main(argv=None):
@@ -625,7 +699,15 @@ def main(argv=None):
     ap.add_argument("--out", default=None)
     ap.add_argument("--smoke-archivo", default=None,
                     help="si se da, corre SOLO ese archivo (smoke pre-interpretacion)")
+    ap.add_argument("--solo-estructural", action="store_true",
+                    help="F0: suprime el estimand por completo -- no se llama "
+                         "agregar_por_sesion/hac_bartlett_ic/decidir_etiqueta, no se "
+                         "imprime mean/se/ic/mde/etiqueta, y el payload omite "
+                         "y_i/p0_i/r_i/y_ctrl/secundarios_touch_by_horizon. Para smoke "
+                         "pre-interpretacion: valida universo/matching/cobertura/SMD "
+                         "sin exponer el efecto.")
     a = ap.parse_args(argv)
+    calcular_endpoint = not a.solo_estructural
 
     if sys.prefix == sys.base_prefix or Path(sys.prefix).resolve() != (REPO_PATH / ".venv").resolve():
         print("NO ES EL .venv DEL REPO -- no se ejecuta.")
@@ -659,6 +741,7 @@ def main(argv=None):
 
     residuales = []  # (session_date, r_i)
     todos_resultados = []
+    todos_zonas_matched = []
     cobertura_acumulada = dict(n_total_zonas=0, n_zonas_ok=0)
     smd_s60_vals, smd_lv_vals = [], []
     crudo = {}
@@ -689,11 +772,14 @@ def main(argv=None):
         ses_de_barra, rango_sesion = sesiones_de_barras(bar_end, fechas)
         res = procesar_zonas_de_archivo(
             r.get("zones") or [], high_t, low_t, close_t, bar_volume,
-            ses_de_barra, rango_sesion, fechas, tk.tick_size, n_bars)
+            ses_de_barra, rango_sesion, fechas, tk.tick_size, n_bars,
+            calcular_endpoint=calcular_endpoint)
 
-        for fila in res["resultados"]:
-            residuales.append((fila["session_date"], fila["r_i"]))
+        if calcular_endpoint:
+            for fila in res["resultados"]:
+                residuales.append((fila["session_date"], fila["r_i"]))
         todos_resultados.extend(res["resultados"])
+        todos_zonas_matched.extend(res["zonas_matched"])
         cobertura_acumulada["n_total_zonas"] += res["cobertura"]["n_total_zonas"]
         cobertura_acumulada["n_zonas_ok"] += res["cobertura"]["n_zonas_ok"]
         if res["cobertura"]["smd_log1p_sigma60_ticks"] is not None:
@@ -711,7 +797,11 @@ def main(argv=None):
     smd_s60 = float(np.mean(smd_s60_vals)) if smd_s60_vals else None
     smd_lv = float(np.mean(smd_lv_vals)) if smd_lv_vals else None
 
-    sesiones_con_zona = len(set(ses for ses, _r in residuales))
+    # sesiones_con_al_menos_una_zona: de zonas_matched (SIEMPRE tiene
+    # session_date), no de `residuales` -- residuales queda vacio a proposito
+    # en modo --solo-estructural, y este conteo tiene que seguir siendo
+    # correcto en los dos modos.
+    sesiones_con_zona = len(set(z["session_date"] for z in todos_zonas_matched))
     gates = dict(
         cobertura_global=cobertura_global, cobertura_ok=cobertura_global >= MIN_ZONE_COVERAGE,
         smd_log1p_sigma60_ticks=smd_s60, smd_sigma60_ok=(smd_s60 is not None and abs(smd_s60) <= MAX_ABS_SMD),
@@ -724,20 +814,10 @@ def main(argv=None):
     for k, v in gates.items():
         print("  %s: %r" % (k, v))
 
-    abstain = (not gates["cobertura_ok"] or not gates["smd_sigma60_ok"] or not gates["smd_bar_volume_ok"]
-              or (gates["sesiones_ok"] is False))
-
-    por_sesion = agregar_por_sesion(residuales)
-    r_s_cronologico = [por_sesion[ses] for ses in sorted(por_sesion)]
-    ic = hac_bartlett_ic(r_s_cronologico) if not abstain else dict(
-        n_sessions=len(por_sesion), mean=None, se_hac=None, ci95_lower=None,
-        ci95_upper=None, mde=None, lag=None)
-    etiqueta = "ABSTAIN_MATCHING" if abstain else decidir_etiqueta(ic)
-
-    print("\nESTIMAND: Delta_matched (mean_s(R_s), peso igual por sesion)")
-    print("  n_sesiones_con_zona=%d  mean=%s  se_hac=%s  ic95=[%s, %s]  mde=%s"
-          % (ic["n_sessions"], ic["mean"], ic["se_hac"], ic["ci95_lower"], ic["ci95_upper"], ic["mde"]))
-    print("  ETIQUETA: %s" % etiqueta)
+    instrumentacion = instrumentacion_f3(todos_zonas_matched, todos_resultados)
+    print("\nINSTRUMENTACION (F3, target-free -- matching, no efecto)")
+    for k, v in instrumentacion.items():
+        print("  %s: %r" % (k, v))
 
     payload = dict(
         schema_version=SCHEMA_VERSION, fase="F1.1_nulo_condicional_distancia",
@@ -752,17 +832,37 @@ def main(argv=None):
         max_age_bars=MAX_AGE_BARS, invalidation_mode=INVALIDATION_MODE, max_touches=MAX_TOUCHES,
         session_count=ns_sesiones, max_fecha_universo=peor, firewall_max_fecha=MAX_FECHA,
         firewall_corte_iso=str(corte_del_sello()), universe_filter_report=info,
-        outcomes_accessed=False, holdout_opened=False,
+        outcomes_accessed=False, holdout_opened=False, estimand_suppressed=(not calcular_endpoint),
         n_zonas_universo=cobertura_acumulada["n_total_zonas"],
         n_zonas_matched_ok=cobertura_acumulada["n_zonas_ok"],
-        gates=gates, etiqueta=etiqueta,
-        estimand_primario=ic,
-        por_sesion=por_sesion,
+        gates=gates, instrumentacion=instrumentacion,
         resultados_por_zona=todos_resultados,
         por_contrato=crudo,
         code_commit=git_head(),
         measurement_code_sha256=huella_del_codigo([INDICADOR]),
         entorno=dict(python=sys.version.split()[0], plataforma=platform.platform()))
+
+    # F0: el estimand (agregacion por sesion + HAC + etiqueta de decision) NO
+    # se calcula ni se imprime ni se serializa si --solo-estructural. No es
+    # "se calcula y no se muestra": la funcion directamente no se llama.
+    if calcular_endpoint:
+        abstain = (not gates["cobertura_ok"] or not gates["smd_sigma60_ok"] or not gates["smd_bar_volume_ok"]
+                  or (gates["sesiones_ok"] is False))
+        por_sesion = agregar_por_sesion(residuales)
+        r_s_cronologico = [por_sesion[ses] for ses in sorted(por_sesion)]
+        ic = hac_bartlett_ic(r_s_cronologico) if not abstain else dict(
+            n_sessions=len(por_sesion), mean=None, se_hac=None, ci95_lower=None,
+            ci95_upper=None, mde=None, lag=None)
+        etiqueta = "ABSTAIN_MATCHING" if abstain else decidir_etiqueta(ic)
+        print("\nESTIMAND: Delta_matched (mean_s(R_s), peso igual por sesion)")
+        print("  n_sesiones_con_zona=%d  mean=%s  se_hac=%s  ic95=[%s, %s]  mde=%s"
+              % (ic["n_sessions"], ic["mean"], ic["se_hac"], ic["ci95_lower"], ic["ci95_upper"], ic["mde"]))
+        print("  ETIQUETA: %s" % etiqueta)
+        payload["etiqueta"] = etiqueta
+        payload["estimand_primario"] = ic
+        payload["por_sesion"] = por_sesion
+    else:
+        print("\nESTIMAND: SUPRIMIDO (--solo-estructural) -- no calculado, no impreso, no serializado.")
     payload["payload_sha256"] = hashlib.sha256(
         json.dumps(payload, sort_keys=True, ensure_ascii=False, default=str).encode()).hexdigest()
 
