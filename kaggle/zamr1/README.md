@@ -1,102 +1,48 @@
 # ZAMR-1 en Kaggle — runbook del operador
 
-## Modelo por fase
+## Responsabilidad
 
-- Implementación, empaquetado y corrección de tests: **GPT/Codex**.
-- Auditoría del contrato antes del piloto real: **Opus**.
-- Optimización de sharding si falla el presupuesto: **Kimi**.
-- Red-team de leakage/claims antes de promover: **Grok**.
+Notion AI/GPT implementa, prueba, empaqueta y audita los artefactos. La intervención humana se limita a acciones de cuenta que no pueden delegarse: crear el Dataset/Notebook privado en Kaggle y cargar el bundle entregado.
 
-No se cambia de modelo por una opinión distinta sobre el resultado. Cada modelo tiene un rol y los desacuerdos se resuelven con tests o abstención.
+## Etapa actual: Z0 sintético
 
-## Regla de hoy
+- No contiene mercado real, outcomes, retornos, P&L ni holdout.
+- Usa `transport_format=csv_truth_known` porque es un chequeo de contrato y entorno.
+- CSV queda prohibido fuera de `pilot_stage=Z0_SYNTHETIC_ENVIRONMENT`.
+- El piloto real Z1 seguirá exigiendo Parquet.
 
-El primer viaje a Kaggle es **sintético**. No subir ticks, outcomes, retornos, P&L ni holdout. El objetivo es demostrar que Kaggle reproduce el contrato y los hashes.
+## Dataset Kaggle
 
-## Prerrequisitos locales
+1. Datasets → New Dataset.
+2. Nombre: `edgelab-zamr1-z0-synthetic`.
+3. Visibilidad: Private.
+4. Descomprimir y subir todos los archivos del ZIP entregado.
+5. No añadir colaboradores ni otras fuentes.
+6. Versión `v1`: `Z0 synthetic contract test; no market data`.
 
-1. Checkout de `research/zamr1-zone-atlas`.
-2. Árbol limpio.
-3. Ejecutar:
+## Notebook Kaggle
 
-```bash
-python -m pytest tests/research/test_zamr1_contracts.py -q
-```
+1. Code → New Notebook.
+2. Nombre: `edgelab-zamr1-00-contract`.
+3. Private; accelerator None/CPU; Internet Off.
+4. Adjuntar únicamente el Dataset Z0.
+5. Ejecutar `00_validate_contract.py` incluido en el Dataset.
+6. No agregar EDA ni celdas experimentales.
 
-4. Si hay un FAIL, detenerse y conservar el log completo.
-5. Construir un directorio de bundle sintético con exactamente estos archivos:
-
-```text
-contract.json
-parameter_registry.json
-instrument_manifest.json
-dataset_manifest.json
-hashes.sha256
-events_long.parquet
-zones_long.parquet
-structural_contract.py
-```
-
-`contract.json` debe ser copia byte-idéntica de `specs/zamr1_structural_contract_v0.json`; `parameter_registry.json`, de `specs/zamr1_parameter_registry_v0.json`; y `structural_contract.py`, de `edgelab/research/zamr1/structural_contract.py`.
-
-El bundle sintético debe contener 20 sesiones truth-known, únicamente BigTrap2 default y los seis frames permitidos. No debe simular un edge: sólo filas válidas y casos de contrato.
-
-## Crear el Dataset Kaggle
-
-1. Ir a **Datasets → New Dataset**.
-2. Nombre sugerido: `edgelab-zamr1-z0-synthetic`.
-3. Visibilidad: **Private**.
-4. Subir los ocho archivos del bundle sin renombrarlos.
-5. No agregar colaboradores ni hacerlo público.
-6. Crear versión `v1` con nota: `Z0 synthetic contract test; no market data`.
-
-## Crear el Notebook
-
-1. Ir a **Code → New Notebook**.
-2. Nombre sugerido: `edgelab-zamr1-00-contract`.
-3. Visibilidad: **Private**.
-4. Agregar como input únicamente `edgelab-zamr1-z0-synthetic`.
-5. Accelerator: **None/CPU**.
-6. Internet: **Off**.
-7. Copiar o subir `notebooks/00_validate_contract.py` y ejecutarlo completo.
-8. No agregar otro dataset, modelo ni celda exploratoria.
-
-El script encuentra automáticamente el único Dataset cuyo `contract.json` declara `zamr1_structural_contract_v0`. Si hay cero o más de uno, falla de forma cerrada.
-
-## Resultado esperado
-
-La última salida debe decir:
+Resultado obligatorio:
 
 ```text
 PASS — contrato ZAMR-1 verificado
 ```
 
-Y debe existir:
+Artefacto obligatorio:
 
 ```text
 /kaggle/working/contract_validation_report.json
 ```
 
-Guardar una versión del Notebook y descargar ese JSON. El reporte, la URL/versión del Notebook y el log completo son el artefacto de Z0-Kaggle.
+Si falla, no corregir en Kaggle ni continuar. Guardar log/reporte y devolverlos al agente para corregir en Git.
 
-## Si aparece FAIL
+## Después del PASS
 
-- no corregir archivos a mano dentro de Kaggle;
-- no quitar checks;
-- no continuar a EDA;
-- descargar `contract_validation_report.json` y el log;
-- volver a GPT/Codex con ambos artefactos;
-- corregir en Git, generar un bundle nuevo y crear una nueva versión del Dataset.
-
-## Después del PASS sintético
-
-Todavía no se ejecuta el barrido formal. El orden es:
-
-1. auditoría Opus del contrato y Notebook 00;
-2. decisión de licencia `RAW_ALLOWED`, `DERIVED_ONLY` o `NO_UPLOAD`;
-3. construcción local del piloto real derivado de 20–30 sesiones;
-4. Dataset privado nuevo `edgelab-zamr1-z1-6e-derived`;
-5. Notebook 00 sobre ese dataset;
-6. sólo si vuelve a dar PASS, habilitar el builder/benchmark Z1.
-
-El holdout permanece físicamente ausente en todas estas etapas.
+Opus audita contrato y Notebook 00. Luego se resuelve M0 de licencia y se construye Z1 con 20–30 sesiones derivadas en Parquet. El holdout permanece físicamente ausente.
