@@ -1042,6 +1042,28 @@ def test_f0_solo_estructural_conserva_geometria_omite_endpoint():
     assert len(res_full["zonas_matched"]) == len(res_estructural["zonas_matched"])
 
 
+def test_f4_secundarios_touch_by_horizon_marcado_no_adjudicable():
+    """F4 (multiplicidad, auditoria 2026-08-11): secundarios_touch_by_horizon
+    no tiene contraparte de control en esos horizontes (1,2,5,10,20,60,120
+    barras) -- p0_controles/y_ctrl solo se calculan al horizonte PRIMARIO. Sin
+    control no hay residual que adjudicar, solo la tasa de toque cruda de la
+    zona real. Tiene que venir envuelto con adjudicable=False y un motivo
+    explicito, para que nadie lo cuente como un test adicional (inflaria el
+    numero efectivo de hipotesis sin la comparacion pareada que lo haria
+    valido)."""
+    fx = _fixture_reanclaje_end_to_end()
+    res = m.procesar_zonas_de_archivo(
+        fx["kernel_zones"], fx["high_t"], fx["low_t"], fx["close_t"], fx["bar_volume"],
+        fx["ses_de_barra"], fx["rango_sesion"], fx["fechas_reales"], fx["tick_size"], fx["n"],
+        calcular_endpoint=True)
+    assert len(res["resultados"]) == 1
+    sec = res["resultados"][0]["secundarios_touch_by_horizon"]
+    assert sec["adjudicable"] is False
+    assert isinstance(sec["motivo"], str) and sec["motivo"]
+    assert set(sec["valores"].keys()) == {1, 2, 5, 10, 20, 60, 120}
+    assert all(v in (0.0, 1.0) for v in sec["valores"].values())
+
+
 def test_f3_instrumentacion_histogramas_offsets_distancias_y_centinela():
     """instrumentacion_f3 sobre un escenario sintetico con valores conocidos
     a mano -- no solo 'no crashea'. 3 zonas_matched (2 OK con n_pool/k_efectivo
