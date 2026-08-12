@@ -622,7 +622,12 @@ def test_11_dataset_sintetico_sin_efecto_da_residual_compatible_con_cero():
     assert all(v == 0.0 for v in por_sesion.values())
     ic = m.hac_bartlett_ic([por_sesion[s] for s in sorted(por_sesion)])
     assert ic["mean"] == 0.0
-    assert m.decidir_etiqueta(ic) == "COMPATIBLE_WITH_ZERO"
+    # F2.2: una serie perfectamente constante (varianza empirica exactamente
+    # 0, por construccion de este fixture) no tiene informacion para una SE
+    # HAC real -- abstiene en vez de fabricar SE=0.
+    assert ic["abstain_inferencia"] is True
+    assert ic["se_hac"] is None
+    assert m.decidir_etiqueta(ic) == "ABSTAIN_INFERENCE"
 
 
 def test_12_dataset_sintetico_con_toque_acelerado_da_residual_positivo():
@@ -678,8 +683,15 @@ def test_12_dataset_sintetico_con_toque_acelerado_da_residual_positivo():
     assert all(v == 1.0 for v in por_sesion.values())
     ic = m.hac_bartlett_ic([por_sesion[s] for s in sorted(por_sesion)])
     assert ic["mean"] == 1.0
-    assert ic["ci95_lower"] > 0
-    assert m.decidir_etiqueta(ic) == "RESIDUAL_POSITIVE"
+    # F2.2: mismo motivo que test_11 -- serie perfectamente constante (aca en
+    # 1.0) tampoco tiene varianza empirica para una SE HAC real. ANTES de
+    # F2.2 esto daba SE=0 y RESIDUAL_POSITIVE "gratis" -- exactamente el
+    # artefacto de precision fabricada que motivo el fix (ver
+    # test_hac_bartlett_etiquetas_con_varianza_real_no_degenerada para el
+    # caso RESIDUAL_POSITIVE genuino, con varianza real).
+    assert ic["abstain_inferencia"] is True
+    assert ic["se_hac"] is None
+    assert m.decidir_etiqueta(ic) == "ABSTAIN_INFERENCE"
 
 
 # ======================================================================
@@ -691,6 +703,7 @@ def test_13_cero_zonas_no_puede_pasar_gates():
     assert cobertura["n_total_zonas"] == 0
     assert cobertura["cobertura"] == 0.0
     assert cobertura["cobertura"] < m.MIN_ZONE_COVERAGE
+    assert cobertura["estado"] == "SIN_ZONAS"  # F2.2: distinto de ABSTAIN
     ic_vacio = m.hac_bartlett_ic([])
     assert ic_vacio["n_sessions"] == 0
     assert m.decidir_etiqueta(ic_vacio) == "ABSTAIN_MATCHING"
@@ -770,196 +783,274 @@ def test_gate_falla_por_smd_fuera_de_tolerancia():
 #     esta ausente, en ABSTAIN, o con un SMD no finito.
 # ======================================================================
 
-def test_smd_ponderado_valores_conocidos():
-    # sin pesos (None) -> peso 1 cada uno, coincide con smd() sin ponderar.
-    r, c = [1.0, 3.0], [0.0, 2.0]
-    assert m.smd_ponderado(r, c) == pytest.approx(m.smd(r, c))
-    # con pesos dispares: 2 controles en 0.0 (peso 0.25 c/u) + 1 control en
-    # 4.0 (peso 1.0) -- el de peso 1.0 domina la media ponderada del lado
-    # control, no el conteo de valores.
-    r2, c2, w2 = [2.0], [0.0, 0.0, 4.0], [0.25, 0.25, 1.0]
-    media_c = (0.0 * 0.25 + 0.0 * 0.25 + 4.0 * 1.0) / sum(w2)
-    assert media_c == pytest.approx(8.0 / 3.0)
-    valor = m.smd_ponderado(r2, c2, w2)
-    # verificacion independiente a mano (no solo re-llamar a la funcion): la
-    # varianza ponderada del lado control, poblacional, con esos mismos pesos.
-    var_c = sum(w * (x - media_c) ** 2 for x, w in zip(c2, w2)) / sum(w2)
-    var_pool = (0.0 + var_c) / 2.0  # var_r=0.0: un solo valor
-    assert valor == pytest.approx((2.0 - media_c) / math.sqrt(var_pool))
-    # peso total 0 -> None (division por cero evitada, no un 0.0 enganoso)
-    assert m.smd_ponderado([1.0], [1.0], [0.0]) is None
-    assert m.smd_ponderado([], [1.0], [1.0]) is None
+def test_smd_con_sd_ref_valores_conocidos():
+    assert m.smd_con_sd_ref(1.0, 0.0, None) is None
+    assert m.smd_con_sd_ref(1.0, 0.0, 0.0) is None  # sd_ref<=0 -> None, nunca division por cero
+    assert m.smd_con_sd_ref(None, 0.0, 1.0) is None
+    assert m.smd_con_sd_ref(1.0, 0.0, 2.0) == pytest.approx(0.5)
+    assert m.smd_con_sd_ref(0.0, 1.0, 2.0) == pytest.approx(-0.5)
+    assert m.smd_con_sd_ref(1.0, 0.0, float("nan")) is None
+    assert m.smd_con_sd_ref(1.0, 0.0, float("inf")) is None
 
 
-def test_smd_matched_sets_valores_conocidos():
-    """smd_matched_sets NO es Cohen's d_z (mean(diff)/sd(diff)) -- es smd()
-    estandar entre fuente y promedio_de_controles por zona. Ejemplo donde las
-    dos formulas divergen: diffs constantes (sd(diff)=0) haria que el viejo
-    smd_pareado devolviera None (indefinido), mientras que smd_matched_sets
-    da un valor finito porque mira la varianza de cada lado por separado, no
-    la de la diferencia."""
-    fuente = [1.0, 3.0]
-    control_mean = [0.0, 2.0]  # diffs=[1,1]: constante, sd(diff)=0
-    assert m.smd_matched_sets(fuente, control_mean) == m.smd(fuente, control_mean)
-    # a mano: media(fuente)=2.0, media(control_mean)=1.0, var poblacional de
-    # cada lado (ambos [x-2,x] centrados) = 1.0, var_pool=1.0 -> smd=1.0.
-    assert m.smd_matched_sets(fuente, control_mean) == pytest.approx(1.0)
+def test_muestra_pre_matching_separa_fuentes_y_pool_sin_creadoras():
+    """fuentes = covariable de cada zona del universo (por created_bar).
+    pool = covariable de TODA barra que NO sea creadora de NINGUNA zona --
+    independiente de sesion/minuto/horizonte (esas restricciones las aplica
+    el matcher despues; sd_ref se congela ANTES, con el pool mas amplio
+    posible)."""
+    universo = [dict(created_bar=10), dict(created_bar=20)]
+    cov_por_barra = {10: (1.0, 5.0), 20: (2.0, 6.0), 30: (3.0, 7.0), 40: (4.0, 8.0)}
+    creadoras = {10, 20}
+    mu = m.muestra_pre_matching(universo, cov_por_barra, creadoras)
+    assert sorted(mu["fuentes_s60"]) == [1.0, 2.0]
+    assert sorted(mu["fuentes_lv"]) == [5.0, 6.0]
+    assert sorted(mu["pool_s60"]) == [3.0, 4.0]  # 10 y 20 excluidos: son creadoras
+    assert sorted(mu["pool_lv"]) == [7.0, 8.0]
 
 
-def test_calcular_balance_cobertura_expone_crudo_pesos_y_matched_sets():
-    """calcular_balance_cobertura tiene que devolver, ademas del SMD
-    ponderado por-archivo, las listas crudas CON su peso (1/k_efectivo por
-    control) y los pares (fuente, promedio_de_sus_controles) por zona para
-    smd_matched_sets -- sin agregar entre zonas (F2.1). Valores conocidos a
-    mano: 2 zonas OK (K=2 y K=1), 1 ABSTAIN (que no debe aportar nada)."""
+def test_muestra_pre_matching_zona_sin_covariable_fuente_no_aporta():
+    universo = [dict(created_bar=10), dict(created_bar=99)]  # 99 no esta en cov_por_barra
+    mu = m.muestra_pre_matching(universo, {10: (1.0, 5.0)}, {10})
+    assert mu["fuentes_s60"] == [1.0]
+    assert mu["fuentes_lv"] == [5.0]
+
+
+def test_calcular_balance_cobertura_expone_insumos_sin_calcular_smd():
+    """F2.2: calcular_balance_cobertura ya NO calcula ningun SMD -- solo
+    expone las listas crudas CON su peso (1/k_efectivo por control) y los
+    pares (fuente, promedio_de_sus_controles, session_date) por zona, sin
+    agregar entre zonas. El SMD se calcula GLOBALMENTE en
+    agregar_balance_global(), con un sd_ref pooleado entre archivos que ya no
+    puede vivir aca (depende de TODOS los archivos, no de uno solo)."""
     zonas_matched = [
-        dict(covariables_fuente=(1.0, 5.0),
+        dict(covariables_fuente=(1.0, 5.0), session_date="2026-01-01",
             match=dict(estado="OK", elegidos=[dict(bar_index=10), dict(bar_index=11)])),
-        dict(covariables_fuente=(2.0, 6.0),
+        dict(covariables_fuente=(2.0, 6.0), session_date="2026-01-02",
             match=dict(estado="OK", elegidos=[dict(bar_index=20)])),
-        dict(covariables_fuente=(9.0, 9.0), match=dict(estado="ABSTAIN", elegidos=[])),
+        dict(covariables_fuente=(9.0, 9.0), session_date="2026-01-03",
+            match=dict(estado="ABSTAIN", elegidos=[])),
     ]
     cov_por_barra = {10: (0.5, 4.0), 11: (1.5, 6.0), 20: (1.0, 5.0)}
     res = m.calcular_balance_cobertura(zonas_matched, cov_por_barra)
 
+    assert res["estado"] == "OK"
+    assert "smd_log1p_sigma60_ticks" not in res
+    assert "smd_log1p_bar_volume" not in res
     assert res["crudo_reales_s60"] == [1.0, 2.0]
     assert res["crudo_reales_lv"] == [5.0, 6.0]
-    # los 3 controles de las 2 zonas OK, sin promediar por zona (bar 10 y 11
-    # de la zona 1 con K=2, bar 20 de la zona 2 con K=1 -- ABSTAIN no aporta).
     assert res["crudo_controles_s60"] == [0.5, 1.5, 1.0]
     assert res["crudo_controles_lv"] == [4.0, 6.0, 5.0]
-    # peso 1/K_i por control: zona 1 (K=2) -> 0.5 cada uno, zona 2 (K=1) -> 1.0.
     assert res["pesos_controles"] == [pytest.approx(0.5), pytest.approx(0.5), pytest.approx(1.0)]
     assert sum(res["pesos_controles"][:2]) == pytest.approx(1.0)  # peso total 1 por zona, sea K=2...
     assert sum(res["pesos_controles"][2:]) == pytest.approx(1.0)  # ...o K=1
-
-    # matched-sets: un par (fuente, promedio_de_sus_controles) por zona OK.
     assert res["fuente_matched_sets_s60"] == [1.0, 2.0]
-    assert res["control_mean_s60"] == [pytest.approx(1.0), pytest.approx(1.0)]  # (0.5+1.5)/2=1.0 | 1.0
+    assert res["control_mean_s60"] == [pytest.approx(1.0), pytest.approx(1.0)]
     assert res["fuente_matched_sets_lv"] == [5.0, 6.0]
-    assert res["control_mean_lv"] == [pytest.approx(5.0), pytest.approx(5.0)]  # (4.0+6.0)/2=5.0 | 5.0
-
-    # el SMD por-archivo que devuelve tiene que ser EXACTAMENTE smd_ponderado
-    # sobre sus propias listas crudas+pesos expuestas -- no otra cosa.
-    assert res["smd_log1p_sigma60_ticks"] == pytest.approx(
-        m.smd_ponderado(res["crudo_reales_s60"], res["crudo_controles_s60"], res["pesos_controles"]))
+    assert res["control_mean_lv"] == [pytest.approx(5.0), pytest.approx(5.0)]
+    assert res["fuente_matched_sets_session"] == ["2026-01-01", "2026-01-02"]
 
 
-def test_f21_peso_por_control_neutraliza_diferencia_de_k():
-    """K=5 vs K=8 tiene que aportar el MISMO peso total (1.0) del lado
-    control -- una zona con 8 controles no puede pesar mas que una con 5
-    solo por tener mas valores individuales en la lista cruda. zona A: 8
-    controles en 1.0. zona B: 5 controles en 3.0. La media ponderada del lado
-    control tiene que ser (1.0+3.0)/2=2.0 (una zona, un voto) -- NO 23/13
-    (la media si se pondera por CANTIDAD de controles, que domina la zona de
-    8)."""
-    zonas_matched = [
-        dict(covariables_fuente=(0.0, 0.0),
-            match=dict(estado="OK", elegidos=[dict(bar_index=i) for i in range(8)])),
-        dict(covariables_fuente=(0.0, 0.0),
-            match=dict(estado="OK", elegidos=[dict(bar_index=100 + i) for i in range(5)])),
-    ]
-    cov_por_barra = {i: (1.0, 0.0) for i in range(8)}
-    cov_por_barra.update({100 + i: (3.0, 0.0) for i in range(5)})
-    res = m.calcular_balance_cobertura(zonas_matched, cov_por_barra)
+def test_f22_sd_ref_invariante_ante_cambio_de_k():
+    """sd_ref depende SOLO de muestra_pre_matching (fuentes+pool, fijos
+    ANTES de matchear) -- tiene que dar EXACTAMENTE el mismo valor (y el
+    mismo hash) sin importar que controles selecciono el matcher despues,
+    aunque cambie K/el resultado del matching por completo (F2.2, auditoria
+    2026-08-11: F2.1 estandarizaba con la varianza del conjunto YA
+    matcheado, que si se movia con K)."""
+    muestra = dict(fuentes_s60=[1.0, 2.0, 3.0], pool_s60=[0.5, 1.5, 2.5, 3.5],
+                   fuentes_lv=[5.0, 6.0, 7.0], pool_lv=[4.5, 5.5, 6.5, 7.5])
+    muestra_por_archivo = {"arch1": muestra}
 
-    assert res["pesos_controles"][:8] == [pytest.approx(1.0 / 8)] * 8
-    assert res["pesos_controles"][8:] == [pytest.approx(1.0 / 5)] * 5
-    media_ponderada = np.average(res["crudo_controles_s60"], weights=res["pesos_controles"])
-    assert media_ponderada == pytest.approx(2.0)  # (1.0+3.0)/2, NO 23/13≈1.77
+    cobertura_k_chico = dict(
+        estado="OK", crudo_reales_s60=[1.0], crudo_controles_s60=[0.5, 1.5, 2.5, 3.5, 4.5],
+        pesos_controles=[0.2] * 5, crudo_reales_lv=[5.0], crudo_controles_lv=[4.5, 5.5, 6.5, 7.5, 8.5],
+        fuente_matched_sets_s60=[1.0], control_mean_s60=[2.6],
+        fuente_matched_sets_lv=[5.0], control_mean_lv=[6.6], fuente_matched_sets_session=["2026-01-01"])
+    cobertura_k_grande = dict(
+        estado="OK", crudo_reales_s60=[1.0], crudo_controles_s60=[0.5, 1.5],
+        pesos_controles=[0.5, 0.5], crudo_reales_lv=[5.0], crudo_controles_lv=[4.5, 5.5],
+        fuente_matched_sets_s60=[1.0], control_mean_s60=[1.0],
+        fuente_matched_sets_lv=[5.0], control_mean_lv=[5.0], fuente_matched_sets_session=["2026-01-01"])
+
+    agg_chico = m.agregar_balance_global({"arch1": cobertura_k_chico}, muestra_por_archivo, ["arch1"])
+    agg_grande = m.agregar_balance_global({"arch1": cobertura_k_grande}, muestra_por_archivo, ["arch1"])
+
+    assert agg_chico["sd_ref_log1p_sigma60_ticks"] == agg_grande["sd_ref_log1p_sigma60_ticks"]
+    assert agg_chico["sd_ref_log1p_bar_volume"] == agg_grande["sd_ref_log1p_bar_volume"]
+    assert agg_chico["sd_ref_sha256"] == agg_grande["sd_ref_sha256"]
 
 
-def test_f2_agregar_smd_global_no_cancela_signo_entre_archivos():
-    """El escenario exacto que motivo F2: un archivo con SMD=+0.5 y otro con
-    SMD=-0.5 (mismo |SMD|, signo opuesto). Promediar los dos SMD por-archivo
-    (el codigo pre-F2) da 0.0 y pasaria el gate |SMD|<=0.10 de golpe, sin que
-    NINGUN archivo individual este balanceado. agregar_smd_global() no puede
-    cancelarse asi: max_abs_por_archivo es un MAXIMO, no un promedio, y por
-    construccion nunca puede dar menos que el peor |SMD| individual -- ni el
-    pool global ni el matched-sets alcanzan a cazar esta cancelacion
-    simetrica especifica por si solos (verificado abajo, K=1 por zona para
-    que el pool ponderado y el matched-sets coincidan exactamente con el
-    calculo a mano), asi que el gate depende de max_abs_por_archivo para
-    este caso exacto."""
-    # archivo A: 2 zonas, K=1 cada una. fuente=[-0.5,1.5] control=[-1.0,1.0]
-    # -> media_fuente=0.5, media_control=0.0, var=1.0 ambos lados -> SMD=+0.5.
-    reales_a, controles_a, pesos_a = [-0.5, 1.5], [-1.0, 1.0], [1.0, 1.0]
-    assert m.smd_ponderado(reales_a, controles_a, pesos_a) == pytest.approx(0.5)
-    # archivo B: fuente=[-1.5,0.5], mismos controles -> media_fuente=-0.5 -> SMD=-0.5.
-    reales_b, controles_b, pesos_b = [-1.5, 0.5], [-1.0, 1.0], [1.0, 1.0]
-    assert m.smd_ponderado(reales_b, controles_b, pesos_b) == pytest.approx(-0.5)
-    # documentacion del bug pre-F2: el promedio naive cancela a ~0 y pasaria.
-    assert (0.5 + (-0.5)) / 2 == pytest.approx(0.0)
-    # el pool global ponderado (union) Y el matched-sets TAMBIEN cancelan en
-    # este caso simetrico -- no son los que salvan el gate aca, max_abs_por_archivo si.
-    assert m.smd_ponderado(reales_a + reales_b, controles_a + controles_b,
-                           pesos_a + pesos_b) == pytest.approx(0.0)
-    assert m.smd_matched_sets(reales_a + reales_b, controles_a + controles_b) == pytest.approx(0.0)
+def test_f22_smd_post_menor_que_smd_pre_por_una_cantidad_conocida():
+    """Demuestra 'lo que compro el matching': smd_pre (fuentes vs pool
+    COMPLETO, sin seleccionar) tiene que ser mayor que smd_post (fuentes vs
+    los controles que el matcher SI selecciono), con el MISMO sd_ref en los
+    dos. 3 zonas fuente en 10.0, pool completo de 9 candidatos (6 en 0.0, 3
+    en 10.0); el matcher selecciona los 3 candidatos en 10.0 (1 por zona) --
+    balance perfecto post-matching, desbalance real pre-matching."""
+    fuentes = [10.0, 10.0, 10.0]
+    pool = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 10.0, 10.0]
+    muestra_por_archivo = {"arch1": dict(fuentes_s60=fuentes, pool_s60=pool,
+                                         fuentes_lv=[0.0] * 3, pool_lv=[0.0] * 9)}
+    cobertura = dict(
+        estado="OK", crudo_reales_s60=fuentes, crudo_controles_s60=[10.0, 10.0, 10.0],
+        pesos_controles=[1.0, 1.0, 1.0],
+        crudo_reales_lv=[0.0] * 3, crudo_controles_lv=[0.0] * 3,
+        fuente_matched_sets_s60=fuentes, control_mean_s60=[10.0, 10.0, 10.0],
+        fuente_matched_sets_lv=[0.0] * 3, control_mean_lv=[0.0] * 3,
+        fuente_matched_sets_session=["2026-01-01", "2026-01-02", "2026-01-03"])
+    agg = m.agregar_balance_global({"arch1": cobertura}, muestra_por_archivo, ["arch1"])
 
-    cobertura_a = dict(
-        crudo_reales_s60=reales_a, crudo_controles_s60=controles_a, pesos_controles=pesos_a,
-        crudo_reales_lv=[0.0, 0.0], crudo_controles_lv=[0.0, 0.0],
-        fuente_matched_sets_s60=reales_a, control_mean_s60=controles_a,
-        fuente_matched_sets_lv=[0.0, 0.0], control_mean_lv=[0.0, 0.0],
-        smd_log1p_sigma60_ticks=0.5, smd_log1p_bar_volume=0.0)
-    cobertura_b = dict(
-        crudo_reales_s60=reales_b, crudo_controles_s60=controles_b, pesos_controles=pesos_b,
-        crudo_reales_lv=[0.0, 0.0], crudo_controles_lv=[0.0, 0.0],
-        fuente_matched_sets_s60=reales_b, control_mean_s60=controles_b,
-        fuente_matched_sets_lv=[0.0, 0.0], control_mean_lv=[0.0, 0.0],
-        smd_log1p_sigma60_ticks=-0.5, smd_log1p_bar_volume=0.0)
-    agg = m.agregar_smd_global({"archivoA": cobertura_a, "archivoB": cobertura_b},
-                               ["archivoA", "archivoB"])
-
-    assert agg["smd_log1p_sigma60_ticks_global_pooled"] == pytest.approx(0.0)
+    assert agg["sd_ref_log1p_sigma60_ticks"] == pytest.approx(5.0)
+    assert agg["smd_log1p_sigma60_ticks_pre"] == pytest.approx((10.0 - 30.0 / 9.0) / 5.0)
+    assert agg["smd_log1p_sigma60_ticks_pre"] == pytest.approx(4.0 / 3.0)
     assert agg["smd_log1p_sigma60_ticks_matched_sets"] == pytest.approx(0.0)
-    # el centinela que NO puede cancelarse: el peor |SMD| individual sigue
-    # siendo 0.5, sin importar cuantos archivos balanceados haya alrededor.
-    assert agg["smd_log1p_sigma60_ticks_max_abs_por_archivo"] == pytest.approx(0.5)
-    assert agg["smd_por_archivo"]["log1p_sigma60_ticks"] == {"archivoA": 0.5, "archivoB": -0.5}
-    assert agg["smd_sigma60_ok"] is False  # el gate tiene que FALLAR, no cancelarse a "OK"
-    assert agg["smd_log1p_sigma60_ticks_archivos_invalidos"] == []  # no es un fail-closed, es max_abs
+    assert agg["smd_log1p_sigma60_ticks_matched_sets"] < agg["smd_log1p_sigma60_ticks_pre"]
 
-    # log1p_bar_volume: los dos archivos SI estan balanceados (reales=controles
-    # constante en 0.0) -> ese gate especifico tiene que pasar -- prueba que
-    # el fallo de sigma60 no contamina el gate de la otra covariable.
+
+def test_f22_peso_sesion_diverge_de_matched_sets_cuando_una_sesion_tiene_mas_zonas():
+    """peso_sesion (cada zona pesa 1/n_zonas_de_su_sesion) tiene que dar un
+    numero DISTINTO de matched_sets (cada zona pesa 1) cuando las zonas no
+    se reparten parejo entre sesiones -- sesion A con 1 zona, sesion B con 3
+    zonas: matched_sets deja que las 3 zonas de B dominen el promedio;
+    peso_sesion las diluye a 1/3 cada una, dandole a B el mismo voto total
+    que a A -- la MISMA medida en la que agregar_por_sesion pesa el
+    estimand primario."""
+    fuente_ms = [0.0, 10.0, 10.0, 10.0]
+    control_mean_ms = [0.0, 0.0, 0.0, 0.0]
+    sesiones = ["A", "B", "B", "B"]
+    muestra_por_archivo = {"arch1": dict(fuentes_s60=fuente_ms, pool_s60=fuente_ms,
+                                         fuentes_lv=[0.0] * 4, pool_lv=[0.0] * 4)}
+    cobertura = dict(
+        estado="OK", crudo_reales_s60=fuente_ms, crudo_controles_s60=control_mean_ms,
+        pesos_controles=[1.0] * 4,
+        crudo_reales_lv=[0.0] * 4, crudo_controles_lv=[0.0] * 4,
+        fuente_matched_sets_s60=fuente_ms, control_mean_s60=control_mean_ms,
+        fuente_matched_sets_lv=[0.0] * 4, control_mean_lv=[0.0] * 4,
+        fuente_matched_sets_session=sesiones)
+    agg = m.agregar_balance_global({"arch1": cobertura}, muestra_por_archivo, ["arch1"])
+
+    sd_ref_esperado = float(np.std(np.asarray(fuente_ms + fuente_ms), ddof=0))
+    assert agg["sd_ref_log1p_sigma60_ticks"] == pytest.approx(sd_ref_esperado)
+    # matched_sets: cada zona pesa 1 -> media_fuente = (0+10+10+10)/4 = 7.5
+    assert agg["smd_log1p_sigma60_ticks_matched_sets"] == pytest.approx((7.5 - 0.0) / sd_ref_esperado)
+    # peso_sesion: A pesa 1.0, cada zona de B pesa 1/3 -> media ponderada =
+    # (0*1.0 + 10*1/3*3) / (1.0+1.0) = 10.0/2.0 = 5.0
+    assert agg["smd_log1p_sigma60_ticks_peso_sesion"] == pytest.approx((5.0 - 0.0) / sd_ref_esperado)
+    assert agg["smd_log1p_sigma60_ticks_peso_sesion"] != pytest.approx(agg["smd_log1p_sigma60_ticks_matched_sets"])
+
+
+def test_f22_agregar_balance_global_no_cancela_signo_entre_archivos():
+    """El escenario exacto que motivo F2: un archivo con SMD positivo y otro
+    con SMD negativo de igual magnitud. Promediar los dos SMD por-archivo
+    (el codigo pre-F2) cancela a 0.0 y pasaria el gate. agregar_balance_global()
+    no puede cancelarse asi: max_abs_por_archivo es un MAXIMO, nunca un
+    promedio -- y ahora ademas usa el mismo sd_ref congelado en todo (F2.2),
+    asi que el pool global y el matched-sets tambien quedan en la misma
+    escala que el SMD por-archivo."""
+    reales_a, controles_a = [-0.5, 1.5], [-1.0, 1.0]
+    reales_b, controles_b = [-1.5, 0.5], [-1.0, 1.0]
+    # bar_volume: fuente==control con varianza REAL (no todo 0.0) en los dos
+    # archivos -- sd_ref_lv tiene que ser > 0 para que este gate pueda
+    # siquiera evaluarse; "balanceado" significa smd==0 con un denominador
+    # valido, no "sin datos" (que daria sd_ref=None y el gate fallaria por
+    # falta de referencia, no por desbalance).
+    lv_balanceado = [9.0, 11.0]
+    muestra_por_archivo = {
+        "archivoA": dict(fuentes_s60=reales_a, pool_s60=controles_a,
+                         fuentes_lv=lv_balanceado, pool_lv=lv_balanceado),
+        "archivoB": dict(fuentes_s60=reales_b, pool_s60=controles_b,
+                         fuentes_lv=lv_balanceado, pool_lv=lv_balanceado),
+    }
+
+    def _cobertura(reales, controles, sesiones):
+        return dict(estado="OK", crudo_reales_s60=reales, crudo_controles_s60=controles,
+                   pesos_controles=[1.0, 1.0], crudo_reales_lv=lv_balanceado, crudo_controles_lv=lv_balanceado,
+                   fuente_matched_sets_s60=reales, control_mean_s60=controles,
+                   fuente_matched_sets_lv=lv_balanceado, control_mean_lv=lv_balanceado,
+                   fuente_matched_sets_session=sesiones)
+
+    cobertura_por_archivo = {
+        "archivoA": _cobertura(reales_a, controles_a, ["A1", "A2"]),
+        "archivoB": _cobertura(reales_b, controles_b, ["B1", "B2"]),
+    }
+    agg = m.agregar_balance_global(cobertura_por_archivo, muestra_por_archivo, ["archivoA", "archivoB"])
+
+    sd_ref_esperado = float(np.std(np.asarray(reales_a + reales_b + controles_a + controles_b), ddof=0))
+    assert agg["sd_ref_log1p_sigma60_ticks"] == pytest.approx(sd_ref_esperado)
+    smd_a_esperado = (float(np.mean(reales_a)) - float(np.mean(controles_a))) / sd_ref_esperado
+    smd_b_esperado = (float(np.mean(reales_b)) - float(np.mean(controles_b))) / sd_ref_esperado
+    assert smd_a_esperado == pytest.approx(-smd_b_esperado)  # misma magnitud, signo opuesto
+
+    assert agg["smd_por_archivo"]["log1p_sigma60_ticks"]["archivoA"] == pytest.approx(smd_a_esperado)
+    assert agg["smd_por_archivo"]["log1p_sigma60_ticks"]["archivoB"] == pytest.approx(smd_b_esperado)
+    assert agg["smd_log1p_sigma60_ticks_max_abs_por_archivo"]["valor"] == pytest.approx(abs(smd_a_esperado))
+    assert agg["smd_log1p_sigma60_ticks_max_abs_por_archivo"]["completo"] is True
+    assert agg["smd_log1p_sigma60_ticks_max_abs_por_archivo"]["archivos_excluidos"] == []
+    assert abs(smd_a_esperado) > m.MAX_ABS_SMD  # el desbalance es real, no un artefacto de escala
+    assert agg["smd_sigma60_ok"] is False  # el gate tiene que FALLAR, no cancelarse a "OK"
+
+    # log1p_bar_volume: los dos archivos SI estan balanceados (todo 0.0) ->
+    # ese gate especifico tiene que pasar -- prueba que el fallo de sigma60
+    # no contamina el gate de la otra covariable.
     assert agg["smd_bar_volume_ok"] is True
 
 
-def test_f21_fail_closed_archivo_invalido_hace_fallar_el_gate():
-    """Un archivo con SMD invalido (None por ABSTAIN, ausente por completo
-    del dict, o NaN explicito) tiene que hacer FALLAR el gate de esa
-    covariable aunque el resto de los archivos esten perfectamente
-    balanceados -- no se filtra antes de max_abs_por_archivo, se registra
-    como invalido explicitamente (F2.1, auditoria 2026-08-11)."""
+def test_f22_fail_closed_archivo_invalido_ausente_sin_zonas_o_sin_datos():
+    """Un archivo con cobertura invalida (None por ABSTAIN, ausente por
+    completo del dict, o con estado SIN_ZONAS) tiene que hacer FALLAR el
+    gate de esa covariable aunque el resto de los archivos esten
+    perfectamente balanceados -- registrado explicitamente en
+    *_archivos_invalidos y en max_abs_por_archivo.archivos_excluidos, nunca
+    filtrado en silencio (F2/F2.1/F2.2, tres auditorias independientes,
+    todas 2026-08-11)."""
+    muestra_valida = dict(fuentes_s60=[1.0, 2.0], pool_s60=[1.0, 2.0],
+                          fuentes_lv=[1.0, 2.0], pool_lv=[1.0, 2.0])
     cobertura_valida = dict(
-        crudo_reales_s60=[0.0, 0.0], crudo_controles_s60=[0.0, 0.0], pesos_controles=[1.0, 1.0],
-        crudo_reales_lv=[0.0, 0.0], crudo_controles_lv=[0.0, 0.0],
-        fuente_matched_sets_s60=[0.0], control_mean_s60=[0.0],
-        fuente_matched_sets_lv=[0.0], control_mean_lv=[0.0],
-        smd_log1p_sigma60_ticks=0.0, smd_log1p_bar_volume=0.0)
+        estado="OK", crudo_reales_s60=[1.0, 2.0], crudo_controles_s60=[1.0, 2.0], pesos_controles=[1.0, 1.0],
+        crudo_reales_lv=[1.0, 2.0], crudo_controles_lv=[1.0, 2.0],
+        fuente_matched_sets_s60=[1.0, 2.0], control_mean_s60=[1.0, 2.0],
+        fuente_matched_sets_lv=[1.0, 2.0], control_mean_lv=[1.0, 2.0], fuente_matched_sets_session=["S1", "S2"])
+    cobertura_sin_zonas = dict(
+        estado="SIN_ZONAS", n_total_zonas=0, n_zonas_ok=0, cobertura=0.0,
+        crudo_reales_s60=[], crudo_controles_s60=[], pesos_controles=[],
+        crudo_reales_lv=[], crudo_controles_lv=[],
+        fuente_matched_sets_s60=[], control_mean_s60=[],
+        fuente_matched_sets_lv=[], control_mean_lv=[], fuente_matched_sets_session=[])
 
     # Caso 1: archivo B explicitamente None (ABSTAIN, p.ej. `sequence` invalida).
-    agg1 = m.agregar_smd_global({"archivoA": cobertura_valida, "archivoB": None},
-                                ["archivoA", "archivoB"])
+    agg1 = m.agregar_balance_global(
+        {"archivoA": cobertura_valida, "archivoB": None},
+        {"archivoA": muestra_valida, "archivoB": muestra_valida}, ["archivoA", "archivoB"])
     assert agg1["smd_sigma60_ok"] is False
-    assert agg1["smd_bar_volume_ok"] is False
-    assert [a for a, _motivo in agg1["smd_log1p_sigma60_ticks_archivos_invalidos"]] == ["archivoB"]
+    assert [a for a, _mot in agg1["smd_log1p_sigma60_ticks_archivos_invalidos"]] == ["archivoB"]
+    assert agg1["smd_log1p_sigma60_ticks_max_abs_por_archivo"]["completo"] is False
+    assert agg1["smd_log1p_sigma60_ticks_max_abs_por_archivo"]["archivos_excluidos"] == ["archivoB"]
 
-    # Caso 2: archivo B directamente AUSENTE del dict (archivo planificado que
-    # nunca se registro -- bug del caller, no un ABSTAIN declarado).
-    agg2 = m.agregar_smd_global({"archivoA": cobertura_valida}, ["archivoA", "archivoB"])
+    # Caso 2: archivo B directamente AUSENTE del dict (archivo planificado
+    # que nunca se registro -- bug del caller, no un ABSTAIN declarado).
+    agg2 = m.agregar_balance_global(
+        {"archivoA": cobertura_valida}, {"archivoA": muestra_valida}, ["archivoA", "archivoB"])
     assert agg2["smd_sigma60_ok"] is False
-    assert agg2["smd_bar_volume_ok"] is False
+    assert agg2["smd_log1p_sigma60_ticks_max_abs_por_archivo"]["archivos_excluidos"] == ["archivoB"]
 
-    # Caso 3: archivo B con SMD de sigma60 explicitamente NaN, pero
-    # bar_volume valido -- el gate de sigma60 falla, el de bar_volume NO se
-    # contamina (son covariables independientes).
-    cobertura_nan = dict(cobertura_valida, smd_log1p_sigma60_ticks=float("nan"))
-    agg3 = m.agregar_smd_global({"archivoA": cobertura_valida, "archivoB": cobertura_nan},
-                                ["archivoA", "archivoB"])
+    # Caso 3: archivo B con estado SIN_ZONAS (contrato sin ningun evento BigTrap2).
+    agg3 = m.agregar_balance_global(
+        {"archivoA": cobertura_valida, "archivoB": cobertura_sin_zonas},
+        {"archivoA": muestra_valida, "archivoB": muestra_valida}, ["archivoA", "archivoB"])
     assert agg3["smd_sigma60_ok"] is False
-    assert agg3["smd_bar_volume_ok"] is True
+    assert any(a == "archivoB" and "SIN_ZONAS" in motivo
+              for a, motivo in agg3["smd_log1p_sigma60_ticks_archivos_invalidos"])
+
+    # Caso 4: los DOS archivos validos y balanceados (fuente==control) -> el
+    # gate SI pasa -- confirma que los casos 1-3 fallaban por la invalidez,
+    # no por otra razon (p.ej. un sd_ref roto).
+    agg4 = m.agregar_balance_global(
+        {"archivoA": cobertura_valida, "archivoB": cobertura_valida},
+        {"archivoA": muestra_valida, "archivoB": muestra_valida}, ["archivoA", "archivoB"])
+    assert agg4["smd_log1p_sigma60_ticks_archivos_invalidos"] == []
+    assert agg4["smd_log1p_sigma60_ticks_max_abs_por_archivo"]["completo"] is True
+    assert agg4["smd_sigma60_ok"] is True
 
 
 def test_ponderacion_igual_por_sesion_no_por_cantidad_de_zonas():
@@ -996,6 +1087,40 @@ def test_hac_bartlett_lag_es_techo_de_raiz_de_n():
         if n == 0:
             continue
         assert ic["lag"] == max(1, int(np.ceil(np.sqrt(n))))
+
+
+def test_hac_bartlett_abstain_inferencia_si_var_lr_no_es_positiva():
+    """F2.2 (auditoria 2026-08-11): var_lr<=0 (serie perfectamente constante,
+    sin varianza empirica) tiene que abstenerse -- NO devolver SE=0. Antes,
+    `var_lr = max(var_lr, 0.0)` dejaba pasar un IC degenerado (ci95_lower ==
+    mean), y si mean>0 eso clasificaba RESIDUAL_POSITIVE sin evidencia real,
+    solo un artefacto de clamping numerico."""
+    ic = m.hac_bartlett_ic([3.0] * 10)  # constante, no cero -- mean>0 igual
+    assert ic["abstain_inferencia"] is True
+    assert ic["se_hac"] is None
+    assert ic["ci95_lower"] is None and ic["ci95_upper"] is None
+    assert ic["mean"] == 3.0  # la media SI se puede calcular, solo la SE no
+    assert ic["lag"] is not None  # el lag no depende de la varianza
+    assert m.decidir_etiqueta(ic) == "ABSTAIN_INFERENCE"
+
+
+def test_hac_bartlett_etiquetas_con_varianza_real_no_degenerada():
+    """decidir_etiqueta todavia tiene que dar RESIDUAL_POSITIVE/
+    COMPATIBLE_WITH_ZERO cuando la serie SI tiene varianza empirica real (a
+    diferencia del caso constante/degenerado de arriba, que ahora abstiene).
+    Numeros elegidos a mano, no derivados de la pipeline completa de
+    matching/lifecycle -- separa la aritmetica de HAC del resto del sistema."""
+    positivos = [0.9, 1.1, 0.95, 1.05, 1.0, 0.85]  # media~0.99, con variacion real
+    ic_pos = m.hac_bartlett_ic(positivos)
+    assert ic_pos["abstain_inferencia"] is False
+    assert ic_pos["ci95_lower"] > 0
+    assert m.decidir_etiqueta(ic_pos) == "RESIDUAL_POSITIVE"
+
+    compatibles = [0.1, -0.1, 0.05, -0.05, 0.02, -0.02]  # media~0, con variacion real
+    ic_cero = m.hac_bartlett_ic(compatibles)
+    assert ic_cero["abstain_inferencia"] is False
+    assert ic_cero["ci95_lower"] < 0 < ic_cero["ci95_upper"]
+    assert m.decidir_etiqueta(ic_cero) == "COMPATIBLE_WITH_ZERO"
 
 
 def test_determinismo_mismo_input_mismo_hash():
@@ -1220,20 +1345,31 @@ def test_f3_instrumentacion_histogramas_offsets_distancias_y_centinela():
     assert dist["media"] == pytest.approx((10 + 20 + 0 + 30) / 4)
 
 
-def test_f0_main_cli_solo_estructural_omite_claves_del_payload_y_del_stdout(tmp_path, monkeypatch, capsys):
-    """Contrato pedido por el auditor: con --solo-estructural, ninguna clave
-    del efecto aparece en el JSON de salida y el stdout no contiene 'mean' ni
-    'ETIQUETA'. Corre main() end-to-end de verdad (dias_research/ticks_mod/
-    bars_mod/REGISTRY fakeados con el mismo fixture de reanclaje, sin tocar
-    datos reales ni el .venv/git/NORTH_STAR reales -- esos siguen siendo los
-    de verdad) -- a diferencia de test_f0_solo_estructural_conserva_geometria_omite_endpoint
-    (que prueba procesar_zonas_de_archivo directamente), esto cubre el
-    ENSAMBLADO del payload dentro de main(), que es donde vivia el defecto
-    real que el auditor senalo (una clave dejada afuera del `if` por error no
-    la detectaria un test que no pasa por main())."""
-    fx = _fixture_reanclaje_end_to_end()
-    archivo = "FAKE_TEST_F0_SOLO_ESTRUCTURAL.parquet"
+def test_f22_centinela_reanclaje_usa_raise_no_assert():
+    """F2.2 (auditoria 2026-08-11): el centinela de reanclaje en
+    instrumentacion_f3 tiene que ser un `raise` explicito, no un `assert` --
+    un `assert` se elimina del bytecode con `python -O`, dejando el
+    centinela anti-regresion completamente inerte sin ningun aviso.
+    Disparado con la firma exacta del bug que 6b76e34 corrigio:
+    bounds_igual_a_fuente=True con anchor_distance_ticks!=0 (geometricamente
+    imposible si el reanclaje esta conectado)."""
+    zonas_matched = [dict(match=dict(estado="OK", n_pool=5, k_efectivo=5, elegidos=[]))]
+    resultados = [dict(controles_ledger=[
+        dict(session_offset=0, anchor_distance_ticks=7, bounds_igual_a_fuente=True),
+    ])]
+    with pytest.raises(ValueError, match="reanclaje no esta conectado"):
+        m.instrumentacion_f3(zonas_matched, resultados)
 
+
+def _instalar_pipeline_cli_fake(monkeypatch, fx, archivo, dirty_start=False, dirty_end=False, head_movido=False):
+    """Instala los mocks que main() necesita para correr end-to-end sin
+    datos reales: dias_research/ticks_mod/bars_mod/REGISTRY (el mismo
+    fixture de reanclaje que procesar_zonas_de_archivo usa directamente en
+    otros tests) mas git_dirty/git_head (F2.2: el gate de procedencia real
+    llama a las dos, hay que aislar el test del arbol git de verdad, que
+    puede estar sucio durante desarrollo activo). `dirty_start`/`dirty_end`/
+    `head_movido` parametrizan el gate de procedencia para los tests que
+    necesitan probarlo disparando."""
     class _FakeTk:
         sequence = np.arange(10, dtype=np.int64)
         tick_size = fx["tick_size"]
@@ -1273,11 +1409,33 @@ def test_f0_main_cli_solo_estructural_omite_claves_del_payload_y_del_stdout(tmp_
     monkeypatch.setattr(m, "ticks_mod", _FakeTicksMod)
     monkeypatch.setattr(m, "bars_mod", _FakeBarsMod)
     monkeypatch.setattr(m, "REGISTRY", {m.INDICADOR: _FakeIndicatorMod})
+    dirty_calls = iter([dirty_start] + [dirty_end] * 10)  # start se lee 1 vez, end al final
+    heads = iter((["cccc" * 10, "dddd" * 10] if head_movido else ["f" * 40] * 10))
+    monkeypatch.setattr(m, "git_dirty", lambda: next(dirty_calls))
+    monkeypatch.setattr(m, "git_head", lambda: next(heads))
+
+
+def test_f0_main_cli_solo_estructural_omite_claves_del_payload_y_del_stdout(tmp_path, monkeypatch, capsys):
+    """Contrato pedido por el auditor: con --solo-estructural, ninguna clave
+    del efecto aparece en el JSON de salida y el stdout no contiene 'mean' ni
+    'ETIQUETA'. Corre main() end-to-end de verdad (dias_research/ticks_mod/
+    bars_mod/REGISTRY fakeados con el mismo fixture de reanclaje, sin tocar
+    datos reales ni el .venv/NORTH_STAR reales -- esos siguen siendo los de
+    verdad) -- a diferencia de test_f0_solo_estructural_conserva_geometria_omite_endpoint
+    (que prueba procesar_zonas_de_archivo directamente), esto cubre el
+    ENSAMBLADO del payload dentro de main(), que es donde vivia el defecto
+    real que el auditor senalo (una clave dejada afuera del `if` por error no
+    la detectaria un test que no pasa por main())."""
+    fx = _fixture_reanclaje_end_to_end()
+    archivo = "FAKE_TEST_F0_SOLO_ESTRUCTURAL.parquet"
+    _instalar_pipeline_cli_fake(monkeypatch, fx, archivo)
 
     out_full = tmp_path / "full.json"
     out_est = tmp_path / "estructural.json"
 
-    rc_full = m.main(["--smoke-archivo", archivo, "--out", str(out_full)])
+    # "full" = SIN --smoke-archivo (formal, calcula el estimand). dias_research
+    # esta fakeado a un solo archivo de todos modos, asi que el plan no cambia.
+    rc_full = m.main(["--out", str(out_full)])
     stdout_full = capsys.readouterr().out
     rc_est = m.main(["--smoke-archivo", archivo, "--solo-estructural", "--out", str(out_est)])
     stdout_est = capsys.readouterr().out
@@ -1318,3 +1476,55 @@ def test_f0_main_cli_solo_estructural_omite_claves_del_payload_y_del_stdout(tmp_
     assert "instrumentacion" in payload_est
     assert payload_full["instrumentacion"]["n_controles_evaluados"] == \
         payload_est["instrumentacion"]["n_controles_evaluados"]
+
+
+def test_f22_smoke_archivo_implica_solo_estructural(tmp_path, monkeypatch, capsys):
+    """F2.2 (auditoria 2026-08-11): --smoke-archivo SOLO, SIN pasar
+    --solo-estructural explicito, tiene que seguir suprimiendo el estimand
+    por completo. Antes de este fix, un archivo de smoke que pasara los
+    gates de balance podia filtrar el estimand sobre pocas sesiones --
+    sesiones_ok queda en None en modo smoke (no False), y la condicion de
+    abstencion original chequeaba `is False`, no falsy, asi que solo el azar
+    de que los gates de SMD fallaran lo tapaba."""
+    fx = _fixture_reanclaje_end_to_end()
+    archivo = "FAKE_TEST_F22_SMOKE_IMPLICA_ESTRUCTURAL.parquet"
+    _instalar_pipeline_cli_fake(monkeypatch, fx, archivo)
+
+    out = tmp_path / "smoke_sin_flag_explicito.json"
+    rc = m.main(["--smoke-archivo", archivo, "--out", str(out)])
+    stdout = capsys.readouterr().out
+
+    assert rc == 0
+    payload = json.loads(out.read_text(encoding="utf-8"))
+    assert payload["estimand_suppressed"] is True
+    assert "etiqueta" not in payload
+    assert "estimand_primario" not in payload
+    assert "por_sesion" not in payload
+    assert "ETIQUETA" not in stdout
+    assert "mean" not in stdout
+    assert "SUPRIMIDO" in stdout
+
+
+def test_f22_gate_de_procedencia_aborta_si_arbol_sucio_o_head_se_mueve(tmp_path, monkeypatch, capsys):
+    """F2.2 (auditoria 2026-08-11): dirty_start/dirty_end/head_start/
+    head_end se registraban en el payload desde el principio pero NUNCA se
+    evaluaban -- solo el hash de NORTH_STAR.md abortaba la corrida. Un arbol
+    sucio (al empezar o al terminar) o un HEAD que se mueve durante la
+    corrida tiene que abortar con ABSTAIN_PROVENANCE y exit!=0, SIN escribir
+    ningun payload -- exactamente el mismo criterio que
+    specs/.../v1.json::decision_labels.ABSTAIN_PROVENANCE ya declaraba."""
+    fx = _fixture_reanclaje_end_to_end()
+    archivo = "FAKE_TEST_F22_GATE_PROCEDENCIA.parquet"
+
+    for kwargs, motivo in (
+        (dict(dirty_start=True), "dirty_start"),
+        (dict(dirty_end=True), "dirty_end"),
+        (dict(head_movido=True), "head_start != head_end"),
+    ):
+        out = tmp_path / ("provenance_%s.json" % motivo.replace(" ", "_").replace("!", ""))
+        _instalar_pipeline_cli_fake(monkeypatch, fx, archivo, **kwargs)
+        rc = m.main(["--smoke-archivo", archivo, "--out", str(out)])
+        stdout = capsys.readouterr().out
+        assert rc == 5, motivo
+        assert "ABSTAIN_PROVENANCE" in stdout, motivo
+        assert not out.exists(), "no debe escribir payload si la procedencia es invalida (%s)" % motivo

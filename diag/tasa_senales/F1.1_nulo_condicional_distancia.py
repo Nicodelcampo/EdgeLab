@@ -79,10 +79,14 @@ from diag.tasa_senales.F1_nulo_zonas_aleatorias import sesiones_de_barras  # noq
 from edgelab.bridge.indicators.bigtrap2 import DEFAULTS  # noqa: E402
 from edgelab.research.first_touch_census import session_date_ct  # noqa: E402
 
-SCHEMA_VERSION = "F1.1_nulo_condicional_distancia_v2"  # v2 = F2.1: SMD ponderado
-# por-control (1/k_efectivo) + smd_matched_sets (reemplaza a smd_pareado, que
-# era un Cohen's d_z no comparable al umbral 0.10) + fail-closed por archivo
-# invalido/ausente/ABSTAIN (auditoria 2026-08-11).
+SCHEMA_VERSION = "F1.1_nulo_condicional_distancia_v3"  # v3 = F2.2: sd_ref
+# congelado pre-matching (pooleado GLOBAL, con su propio hash) reemplaza la
+# varianza del conjunto matcheado en TODAS las variantes de SMD; smd_pre vs
+# smd_post con el mismo sd_ref; variante peso_sesion (misma medida que el
+# estimand); max_abs_por_archivo -> {valor,completo,archivos_excluidos};
+# estado SIN_ZONAS explicito; gate de procedencia real (dirty/HEAD movido);
+# centinela de reanclaje con raise (no assert); ABSTAIN_INFERENCE si la
+# varianza HAC de largo plazo no es positiva (auditoria 2026-08-11).
 INDICADOR = "BigTrap2"
 SEMILLA = 20260811  # solo para desempates deterministas si hiciera falta; el
                      # matching en si es determinista (sin sorteo aleatorio).
@@ -100,7 +104,7 @@ SIGMA60_WINDOW = 60
 
 NORTH_STAR_BODY_SHA256_EXPECTED = (
     "d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1")
-SPEC_PATH = REPO_PATH / "specs" / "bigtrap2_distance_matched_null_v1.json"
+SPEC_PATH = REPO_PATH / "specs" / "bigtrap2_distance_matched_null_v2.json"
 
 
 # ======================================================================
@@ -342,69 +346,77 @@ def smd(real_values, control_values):
     return float((np.mean(r) - np.mean(c)) / math.sqrt(var_pool))
 
 
-def smd_ponderado(real_values, control_values, pesos_control=None):
-    """SMD con las fuentes en peso 1 cada una y los controles ponderados
-    (por defecto 1 si no se da `pesos_control`, igual que smd()). F2.1
-    (auditoria 2026-08-11): F2 pooleaba controles individuales SIN ponderar
-    -- una zona con K_i=8 controles aportaba 8 valores crudos al pool
-    mientras una con K_i=5 aportaba 5, dandole a la primera el doble de peso
-    efectivo del lado control aunque las dos fuentes pesen 1 cada una. Cada
-    control debe pesar 1/K_i de su propio matched set para que cada zona
-    aporte peso total 1 de cada lado. Media y varianza POBLACIONALES
-    ponderadas (equivalente a smd() cuando todos los pesos son iguales)."""
-    r = np.asarray(real_values, dtype=np.float64)
-    c = np.asarray(control_values, dtype=np.float64)
-    w = np.ones(len(c), dtype=np.float64) if pesos_control is None else np.asarray(pesos_control, dtype=np.float64)
-    if len(r) == 0 or len(c) == 0 or len(w) != len(c) or w.sum() <= 0:
+def smd_con_sd_ref(media_a, media_b, sd_ref):
+    """SMD con denominador CONGELADO externamente (sd_ref), NUNCA la varianza
+    del conjunto que se esta comparando. F2.2 (tercera auditoria
+    independiente, 2026-08-11, sobre el propio fix de F2.1): F2.1 pedia
+    smd_matched_sets(fuente, promedio_de_controles) estandarizado con la
+    varianza de ESE MISMO conjunto ya matcheado -- promediar K controles
+    encoge Var(promedio) respecto a Var(control individual) en un factor
+    entre 1/K y 1 (segun correlacion intra-set), asi que el denominador se
+    achica y el SMD reportado se infla de una forma que depende de
+    K/caliper/pool, no solo del desbalance real. Si mañana cambia el
+    matcher, cambian numerador Y denominador, y las variantes dejan de ser
+    comparables entre si o contra otra corrida. sd_ref viene de
+    calcular_sd_ref_insumos()/agregar_balance_global(): la muestra
+    PRE-matching completa (fuentes del universo union pool completo de
+    candidatos, pooleada globalmente), fija ANTES de que ningun matcher
+    seleccione nada -- la misma vara para smd_pre, las tres variantes de
+    smd_post y el SMD por-archivo."""
+    if sd_ref is None or not math.isfinite(sd_ref) or sd_ref <= 0:
         return None
-    media_r = np.mean(r)
-    media_c = np.average(c, weights=w)
-    var_r = np.mean((r - media_r) ** 2)
-    var_c = np.average((c - media_c) ** 2, weights=w)
-    var_pool = (var_r + var_c) / 2.0
-    if var_pool <= 0:
-        return 0.0 if media_r == media_c else None
-    return float((media_r - media_c) / math.sqrt(var_pool))
+    if media_a is None or media_b is None:
+        return None
+    return float((media_a - media_b) / sd_ref)
 
 
-def smd_matched_sets(source_values, control_mean_values):
-    """SMD estandar (no pareado) entre las fuentes y el PROMEDIO de los
-    controles de cada matched set: source_values[i] vs
-    control_mean_values[i] = mean_j(control_ij). Cada zona aporta
-    exactamente UNA observacion de cada lado, asi que no hace falta ponderar
-    aca (a diferencia de smd_ponderado(), que poolea controles individuales
-    con K_i dispar). Reemplaza a smd_pareado() (F2.1, auditoria 2026-08-11):
-    mean(diff)/sd(diff) es un Cohen's d_z (efecto pareado, escala de la SD de
-    las DIFERENCIAS) -- una magnitud distinta, no comparable al umbral
-    convencional 0.10 de SMD. Esta es la definicion estandar de SMD de
-    matched-sets (Stuart 2010): la misma formula de smd(), aplicada a
-    (fuente_i) vs (promedio_de_sus_controles_i)."""
-    return smd(source_values, control_mean_values)
+def muestra_pre_matching(universo, cov_por_barra, creadoras):
+    """F2.2: la muestra CRUDA pre-matching de un archivo -- fuentes del
+    universo (covariable de TODA zona con fuente disponible, sin filtrar por
+    resultado de matching) y pool completo de candidatos (covariable de TODA
+    barra causal-valida que no sea creadora de NINGUNA zona) -- ANTES de que
+    ningun matcher seleccione nada. Insumo de sd_ref: no cambia si cambia
+    K/caliper/pool de un matcher, porque no depende de que selecciono el
+    matcher."""
+    fuentes_s60, fuentes_lv = [], []
+    for z in universo:
+        cov = cov_por_barra.get(z["created_bar"])
+        if cov is not None:
+            fuentes_s60.append(cov[0])
+            fuentes_lv.append(cov[1])
+    pool_s60, pool_lv = [], []
+    for bar_idx, (s60, lv) in cov_por_barra.items():
+        if bar_idx in creadoras:
+            continue
+        pool_s60.append(s60)
+        pool_lv.append(lv)
+    return dict(fuentes_s60=fuentes_s60, fuentes_lv=fuentes_lv, pool_s60=pool_s60, pool_lv=pool_lv)
 
 
 def calcular_balance_cobertura(zonas_matched, cov_por_barra):
     """cobertura = fraccion de zonas del universo con >=MIN_CONTROLS
-    controles. SMD compara la covariable de las barras FUENTE contra el
-    promedio PONDERADO (1/k_efectivo por control, F2.1) de covariables de sus
-    controles elegidos, agregado sobre todas las zonas con match OK --
-    DENTRO de este archivo (diagnostico por archivo). Ademas de ese SMD
-    por-archivo, devuelve las listas crudas (reales/controles) CON sus pesos,
-    y los pares (fuente, promedio_de_sus_controles) por zona para
-    smd_matched_sets -- todo SIN agregar entre zonas. main() los poolea
-    globalmente entre archivos antes de decidir ningun gate. F2 (auditoria
-    2026-08-11): promediar el smd_log1p_* por-archivo entre archivos (lo que
-    este mismo dict devolvia antes de F2 como si fuera la cifra final) puede
-    cancelarse en signo -- +0.5 en un archivo y -0.5 en otro promedian 0.0 y
-    pasarian el gate sin que ningun archivo individual este balanceado. Ese
-    numero ahora es solo diagnostico por-archivo, nunca la base de un gate."""
+    controles. `estado`: "SIN_ZONAS" si este archivo no tiene NINGUNA zona
+    BigTrap2 (n_total_zonas==0 -- un contrato sin eventos no es lo mismo que
+    un archivo con datos rotos: ver agregar_balance_global) o "OK" en
+    cualquier otro caso, incluido cobertura baja.
+
+    Ya NO calcula ningun SMD (F2.2, tercera auditoria independiente
+    2026-08-11): expone las listas crudas (reales/controles) CON sus pesos
+    (1/k_efectivo por control), los pares (fuente, promedio_de_sus_controles)
+    por zona con su session_date, SIN agregar entre zonas -- porque el SMD ya
+    no se calcula por-archivo con la varianza de este archivo, se calcula
+    GLOBALMENTE en agregar_balance_global() con un sd_ref congelado pooleado
+    entre TODOS los archivos ANTES de que ningun matcher seleccione nada."""
     n_total = len(zonas_matched)
     n_ok = sum(1 for z in zonas_matched if z["match"]["estado"] == "OK")
     cobertura = (n_ok / n_total) if n_total else 0.0
+    estado = "SIN_ZONAS" if n_total == 0 else "OK"
 
     reales_s60, reales_lv = [], []
     controles_s60, controles_lv, pesos_controles = [], [], []
     fuente_ms_s60, control_mean_s60 = [], []
     fuente_ms_lv, control_mean_lv = [], []
+    fuente_ms_session = []  # sesion de cada par matched-set -- insumo del peso_sesion
     for z in zonas_matched:
         if z["match"]["estado"] != "OK":
             continue
@@ -430,60 +442,102 @@ def calcular_balance_cobertura(zonas_matched, cov_por_barra):
             control_mean_s60.append(float(np.mean(ctrl_s60)))
             fuente_ms_lv.append(zlv)
             control_mean_lv.append(float(np.mean(ctrl_lv)))
+            fuente_ms_session.append(z["session_date"])
 
     return dict(
-        n_total_zonas=n_total, n_zonas_ok=n_ok, cobertura=cobertura,
-        smd_log1p_sigma60_ticks=smd_ponderado(reales_s60, controles_s60, pesos_controles),
-        smd_log1p_bar_volume=smd_ponderado(reales_lv, controles_lv, pesos_controles),
+        estado=estado, n_total_zonas=n_total, n_zonas_ok=n_ok, cobertura=cobertura,
         crudo_reales_s60=reales_s60, crudo_controles_s60=controles_s60,
         crudo_reales_lv=reales_lv, crudo_controles_lv=controles_lv,
         pesos_controles=pesos_controles,
         fuente_matched_sets_s60=fuente_ms_s60, control_mean_s60=control_mean_s60,
         fuente_matched_sets_lv=fuente_ms_lv, control_mean_lv=control_mean_lv,
+        fuente_matched_sets_session=fuente_ms_session,
     )
 
 
 _ARCHIVO_AUSENTE = object()  # centinela: distinto de None (None = ABSTAIN explicito)
 
 
-def agregar_smd_global(cobertura_por_archivo, archivos_planificados):
-    """F2 (auditoria 2026-08-11) + F2.1 (segunda auditoria independiente,
-    misma fecha): agrega SMD ENTRE archivos sin promediar SMDs por-archivo --
-    ese promedio puede cancelarse en signo (+0.5 en un archivo, -0.5 en otro,
-    promedio 0.0, pasa el gate sin que ningun archivo individual este
-    balanceado).
+def agregar_balance_global(cobertura_por_archivo, muestra_por_archivo, archivos_planificados):
+    """F2 -> F2.1 -> F2.2 (tres auditorias independientes, todas 2026-08-11,
+    cada una sobre el fix anterior): agrega balance ENTRE archivos sin
+    promediar SMDs ya reducidos, y con un denominador CONGELADO que no
+    depende del matcher.
 
-    `cobertura_por_archivo`: {archivo: cobertura_dict} (salida de
-    calcular_balance_cobertura) o {archivo: None} para un archivo procesado
-    pero sin observaciones comparables (p.ej. ABSTAIN por `sequence` invalida).
-    `archivos_planificados`: TODOS los archivos que el plan de research
-    incluia -- para detectar un archivo omitido por completo (ni siquiera una
-    entrada None en el dict), no solo los que llegaron al pooling.
+    Paso 1 -- sd_ref: desvio poblacional de la muestra PRE-matching completa
+    (fuentes del universo union pool completo de candidatos de
+    muestra_por_archivo), pooleada globalmente entre TODOS los archivos, con
+    su propio hash. Este es el denominador de TODO lo que sigue -- nunca la
+    varianza de un conjunto ya matcheado (F2.1 estandarizaba
+    smd_matched_sets con la varianza del propio conjunto matcheado, que se
+    encoge al promediar K controles y hace que el numero dependa de
+    K/caliper/pool en vez de solo del desbalance real).
 
-    Devuelve tres variantes de SMD que NUNCA pasan por un promedio de
-    razones:
-    - global_pooled: smd_ponderado() sobre la UNION ponderada de valores
-      crudos (reales/controles, con 1/k_efectivo por control) de TODOS los
-      archivos.
-    - matched_sets: smd_matched_sets() sobre los pares (fuente,
-      promedio_de_sus_controles) por zona, ya pooleados globalmente -- cada
-      zona aporta una observacion de cada lado, sin ponderar aca.
-    - max_abs_por_archivo: el peor |SMD| individual (ya ponderado dentro de
-      cada archivo) de un solo archivo -- capta un archivo desbalanceado que
-      el pool global podria diluir si el resto son muchos y estan bien
-      balanceados.
+    Paso 2 -- smd_pre: fuentes del universo vs pool completo de candidatos,
+    con sd_ref. Es el desbalance ANTES de matchear.
 
-    Fail-closed (F2.1): cualquier archivo planificado que este ausente del
-    dict, tenga cobertura None (ABSTAIN), o cuyo SMD por-archivo no sea un
-    numero finito (NaN/Inf), hace fallar el gate de esa covariable con un
-    motivo explicito en *_archivos_invalidos -- sin filtrarlo antes de
-    max_abs_por_archivo. El gate exige ademas que las tres variantes pasen la
-    tolerancia: el escenario que motivo F2 (dos archivos +0.5/-0.5) falla por
-    max_abs_por_archivo aunque el pool global y el matched-sets dieran ~0."""
+    Paso 3 -- smd_post, tres variantes, TODAS con el mismo sd_ref:
+    - global_pooled: fuentes (peso 1) vs controles individuales pooleados
+      (peso 1/k_efectivo cada uno) de TODOS los archivos.
+    - matched_sets: fuentes vs promedio_de_sus_propios_controles por zona.
+    - peso_sesion: igual que matched_sets, pero cada zona pesa
+      1/n_zonas_de_su_sesion -- la MISMA medida en la que pesa el estimand
+      primario (agregar_por_sesion), para que el gate de balance no pueda
+      pasar con pesos-zona mientras el estimand esta desbalanceado con
+      pesos-sesion.
+
+    Paso 4 -- SMD por-archivo (diagnostico + max_abs_por_archivo), con el
+    MISMO sd_ref global -- nunca la varianza propia del archivo.
+
+    Fail-closed: cualquier archivo planificado ausente del dict, con
+    cobertura None (ABSTAIN), con estado SIN_ZONAS, o con un SMD por-archivo
+    no finito, hace fallar el gate de esa covariable con motivo explicito en
+    *_archivos_invalidos. max_abs_por_archivo devuelve
+    {valor, completo, archivos_excluidos} -- nunca un maximo silenciosamente
+    filtrado presentado como escalar suelto."""
+    # ---- sd_ref: pooleado GLOBALMENTE, antes de cualquier seleccion. ----
+    muestra_fuentes_s60_g, muestra_pool_s60_g = [], []
+    muestra_fuentes_lv_g, muestra_pool_lv_g = [], []
+    for arch in archivos_planificados:
+        mu = muestra_por_archivo.get(arch)
+        if mu is None:
+            continue
+        muestra_fuentes_s60_g.extend(mu["fuentes_s60"])
+        muestra_pool_s60_g.extend(mu["pool_s60"])
+        muestra_fuentes_lv_g.extend(mu["fuentes_lv"])
+        muestra_pool_lv_g.extend(mu["pool_lv"])
+
+    def _sd_ref(fuentes, pool):
+        todo = fuentes + pool
+        if not todo:
+            return None
+        sd = float(np.std(np.asarray(todo, dtype=np.float64), ddof=0))
+        return sd if sd > 0 else None
+
+    sd_ref_s60 = _sd_ref(muestra_fuentes_s60_g, muestra_pool_s60_g)
+    sd_ref_lv = _sd_ref(muestra_fuentes_lv_g, muestra_pool_lv_g)
+    sd_ref_sha256 = hashlib.sha256(json.dumps(dict(
+        sd_ref_log1p_sigma60_ticks=sd_ref_s60, sd_ref_log1p_bar_volume=sd_ref_lv,
+        n_muestra_fuentes=len(muestra_fuentes_s60_g), n_muestra_pool=len(muestra_pool_s60_g),
+    ), sort_keys=True).encode()).hexdigest()
+
+    def _media(xs):
+        return float(np.mean(xs)) if xs else None
+
+    def _media_ponderada(xs, ws):
+        if not xs or len(xs) != len(ws) or sum(ws) <= 0:
+            return None
+        return float(np.average(xs, weights=ws))
+
+    smd_pre_s60 = smd_con_sd_ref(_media(muestra_fuentes_s60_g), _media(muestra_pool_s60_g), sd_ref_s60)
+    smd_pre_lv = smd_con_sd_ref(_media(muestra_fuentes_lv_g), _media(muestra_pool_lv_g), sd_ref_lv)
+
+    # ---- insumos post-matching, globales y por-archivo. ----
     reales_s60_g, controles_s60_g, pesos_s60_g = [], [], []
     reales_lv_g, controles_lv_g, pesos_lv_g = [], [], []
     fuente_ms_s60_g, control_mean_ms_s60_g = [], []
     fuente_ms_lv_g, control_mean_ms_lv_g = [], []
+    fuente_ms_session_g = []
     smd_s60_por_archivo, smd_lv_por_archivo = {}, {}
     invalidos_s60, invalidos_lv = [], []
 
@@ -501,9 +555,21 @@ def agregar_smd_global(cobertura_por_archivo, archivos_planificados):
             invalidos_s60.append((arch, "archivo sin observaciones comparables (ABSTAIN)"))
             invalidos_lv.append((arch, "archivo sin observaciones comparables (ABSTAIN)"))
             continue
+        if cob["estado"] == "SIN_ZONAS":
+            smd_s60_por_archivo[arch] = None
+            smd_lv_por_archivo[arch] = None
+            invalidos_s60.append((arch, "archivo sin ninguna zona BigTrap2 (SIN_ZONAS) -- "
+                                        "decision de tratamiento pendiente, ver PENDIENTE.md"))
+            invalidos_lv.append((arch, "archivo sin ninguna zona BigTrap2 (SIN_ZONAS) -- "
+                                       "decision de tratamiento pendiente, ver PENDIENTE.md"))
+            continue
 
-        s60_arch = cob["smd_log1p_sigma60_ticks"]
-        lv_arch = cob["smd_log1p_bar_volume"]
+        s60_arch = smd_con_sd_ref(
+            _media(cob["crudo_reales_s60"]), _media_ponderada(cob["crudo_controles_s60"], cob["pesos_controles"]),
+            sd_ref_s60)
+        lv_arch = smd_con_sd_ref(
+            _media(cob["crudo_reales_lv"]), _media_ponderada(cob["crudo_controles_lv"], cob["pesos_controles"]),
+            sd_ref_lv)
         smd_s60_por_archivo[arch] = s60_arch
         smd_lv_por_archivo[arch] = lv_arch
         if s60_arch is None or not math.isfinite(s60_arch):
@@ -521,33 +587,56 @@ def agregar_smd_global(cobertura_por_archivo, archivos_planificados):
         control_mean_ms_s60_g.extend(cob["control_mean_s60"])
         fuente_ms_lv_g.extend(cob["fuente_matched_sets_lv"])
         control_mean_ms_lv_g.extend(cob["control_mean_lv"])
+        fuente_ms_session_g.extend(cob["fuente_matched_sets_session"])
 
-    smd_s60_global = smd_ponderado(reales_s60_g, controles_s60_g, pesos_s60_g)
-    smd_lv_global = smd_ponderado(reales_lv_g, controles_lv_g, pesos_lv_g)
-    smd_s60_ms = smd_matched_sets(fuente_ms_s60_g, control_mean_ms_s60_g)
-    smd_lv_ms = smd_matched_sets(fuente_ms_lv_g, control_mean_ms_lv_g)
-    smd_s60_max_abs = max((abs(v) for v in smd_s60_por_archivo.values() if v is not None and math.isfinite(v)),
-                          default=None)
-    smd_lv_max_abs = max((abs(v) for v in smd_lv_por_archivo.values() if v is not None and math.isfinite(v)),
-                         default=None)
+    smd_s60_global = smd_con_sd_ref(_media(reales_s60_g), _media_ponderada(controles_s60_g, pesos_s60_g), sd_ref_s60)
+    smd_lv_global = smd_con_sd_ref(_media(reales_lv_g), _media_ponderada(controles_lv_g, pesos_lv_g), sd_ref_lv)
+    smd_s60_ms = smd_con_sd_ref(_media(fuente_ms_s60_g), _media(control_mean_ms_s60_g), sd_ref_s60)
+    smd_lv_ms = smd_con_sd_ref(_media(fuente_ms_lv_g), _media(control_mean_ms_lv_g), sd_ref_lv)
+
+    # peso_sesion: cada zona pesa 1/n_zonas_de_su_sesion -- la misma medida
+    # en la que agregar_por_sesion() promedia el estimand primario.
+    conteo_sesion = Counter(fuente_ms_session_g)
+    pesos_sesion_g = [1.0 / conteo_sesion[s] for s in fuente_ms_session_g]
+    smd_s60_peso_sesion = smd_con_sd_ref(
+        _media_ponderada(fuente_ms_s60_g, pesos_sesion_g),
+        _media_ponderada(control_mean_ms_s60_g, pesos_sesion_g), sd_ref_s60)
+    smd_lv_peso_sesion = smd_con_sd_ref(
+        _media_ponderada(fuente_ms_lv_g, pesos_sesion_g),
+        _media_ponderada(control_mean_ms_lv_g, pesos_sesion_g), sd_ref_lv)
+
+    def _max_abs_dict(smd_por_archivo):
+        excluidos = sorted(a for a, v in smd_por_archivo.items() if v is None or not math.isfinite(v))
+        validos = [abs(v) for v in smd_por_archivo.values() if v is not None and math.isfinite(v)]
+        return dict(valor=(max(validos) if validos else None),
+                   completo=(len(excluidos) == 0), archivos_excluidos=excluidos)
+
+    max_abs_s60 = _max_abs_dict(smd_s60_por_archivo)
+    max_abs_lv = _max_abs_dict(smd_lv_por_archivo)
 
     def _finito_y_dentro(v):
         return v is not None and math.isfinite(v) and abs(v) <= MAX_ABS_SMD
 
     smd_sigma60_ok = (not invalidos_s60 and _finito_y_dentro(smd_s60_global) and _finito_y_dentro(smd_s60_ms)
-                      and smd_s60_max_abs is not None and smd_s60_max_abs <= MAX_ABS_SMD)
+                      and _finito_y_dentro(smd_s60_peso_sesion) and max_abs_s60["completo"]
+                      and max_abs_s60["valor"] is not None and max_abs_s60["valor"] <= MAX_ABS_SMD)
     smd_bar_volume_ok = (not invalidos_lv and _finito_y_dentro(smd_lv_global) and _finito_y_dentro(smd_lv_ms)
-                         and smd_lv_max_abs is not None and smd_lv_max_abs <= MAX_ABS_SMD)
+                         and _finito_y_dentro(smd_lv_peso_sesion) and max_abs_lv["completo"]
+                         and max_abs_lv["valor"] is not None and max_abs_lv["valor"] <= MAX_ABS_SMD)
 
     return dict(
+        sd_ref_log1p_sigma60_ticks=sd_ref_s60, sd_ref_log1p_bar_volume=sd_ref_lv, sd_ref_sha256=sd_ref_sha256,
+        smd_log1p_sigma60_ticks_pre=smd_pre_s60, smd_log1p_bar_volume_pre=smd_pre_lv,
         smd_log1p_sigma60_ticks_global_pooled=smd_s60_global,
         smd_log1p_sigma60_ticks_matched_sets=smd_s60_ms,
-        smd_log1p_sigma60_ticks_max_abs_por_archivo=smd_s60_max_abs,
+        smd_log1p_sigma60_ticks_peso_sesion=smd_s60_peso_sesion,
+        smd_log1p_sigma60_ticks_max_abs_por_archivo=max_abs_s60,
         smd_log1p_sigma60_ticks_archivos_invalidos=invalidos_s60,
         smd_sigma60_ok=smd_sigma60_ok,
         smd_log1p_bar_volume_global_pooled=smd_lv_global,
         smd_log1p_bar_volume_matched_sets=smd_lv_ms,
-        smd_log1p_bar_volume_max_abs_por_archivo=smd_lv_max_abs,
+        smd_log1p_bar_volume_peso_sesion=smd_lv_peso_sesion,
+        smd_log1p_bar_volume_max_abs_por_archivo=max_abs_lv,
         smd_log1p_bar_volume_archivos_invalidos=invalidos_lv,
         smd_bar_volume_ok=smd_bar_volume_ok,
         smd_por_archivo=dict(log1p_sigma60_ticks=smd_s60_por_archivo, log1p_bar_volume=smd_lv_por_archivo),
@@ -690,12 +779,18 @@ def agregar_por_sesion(residuales_por_zona):
 def hac_bartlett_ic(r_s_cronologico, alpha=0.05, power=0.80):
     """SE HAC (kernel Bartlett), lag = ceil(sqrt(n)). IC 95% bilateral y MDE
     = (z_alpha/2 + z_power) * SE_HAC. `r_s_cronologico` ya debe venir
-    ordenado por fecha de sesion (orden causal, no aleatorio)."""
+    ordenado por fecha de sesion (orden causal, no aleatorio).
+
+    `abstain_inferencia=True` (F2.2, auditoria 2026-08-11) si la varianza
+    HAC de largo plazo (var_lr, antes de recortar a >=0 por ruido numerico)
+    da <=0: devolver SE=0 en ese caso produciria un IC degenerado
+    (ci95_lower == mean), y si mean>0 eso clasificaria RESIDUAL_POSITIVE de
+    forma espuria -- una precision que la serie no tiene, no evidencia real."""
     x = np.asarray(r_s_cronologico, dtype=np.float64)
     n = len(x)
     if n == 0:
         return dict(n_sessions=0, mean=None, se_hac=None, ci95_lower=None,
-                    ci95_upper=None, mde=None, lag=None)
+                    ci95_upper=None, mde=None, lag=None, abstain_inferencia=None)
     mean = float(np.mean(x))
     resid = x - mean
     lag = max(1, int(math.ceil(math.sqrt(n))))
@@ -705,7 +800,9 @@ def hac_bartlett_ic(r_s_cronologico, alpha=0.05, power=0.80):
         w = 1.0 - L / (lag + 1.0)  # kernel de Bartlett
         gamma_l = float(np.mean(resid[L:] * resid[:-L]))
         var_lr += 2.0 * w * gamma_l
-    var_lr = max(var_lr, 0.0)
+    if var_lr <= 0:
+        return dict(n_sessions=n, mean=mean, se_hac=None, ci95_lower=None,
+                    ci95_upper=None, mde=None, lag=lag, abstain_inferencia=True)
     se_hac = math.sqrt(var_lr / n)
     z_alpha = 1.959963984540054  # qnorm(0.975)
     z_power = 0.8416212335729143  # qnorm(0.80)
@@ -713,12 +810,15 @@ def hac_bartlett_ic(r_s_cronologico, alpha=0.05, power=0.80):
     ci_upper = mean + z_alpha * se_hac
     mde = (z_alpha + z_power) * se_hac
     return dict(n_sessions=n, mean=mean, se_hac=se_hac,
-                ci95_lower=ci_lower, ci95_upper=ci_upper, mde=mde, lag=lag)
+                ci95_lower=ci_lower, ci95_upper=ci_upper, mde=mde, lag=lag,
+                abstain_inferencia=False)
 
 
 def decidir_etiqueta(ic):
     if ic["n_sessions"] == 0:
         return "ABSTAIN_MATCHING"
+    if ic.get("abstain_inferencia"):
+        return "ABSTAIN_INFERENCE"
     if ic["ci95_lower"] > 0:
         return "RESIDUAL_POSITIVE"
     if ic["ci95_upper"] < 0:
@@ -841,7 +941,8 @@ def procesar_zonas_de_archivo(kernel_zones, high_t, low_t, close_t, bar_volume,
         resultados.append(fila)
 
     return dict(universo=universo, zonas_matched=zonas_matched, resultados=resultados,
-                cobertura=calcular_balance_cobertura(zonas_matched, cov_por_barra))
+                cobertura=calcular_balance_cobertura(zonas_matched, cov_por_barra),
+                muestra_pre_matching=muestra_pre_matching(universo, cov_por_barra, creadoras))
 
 
 def instrumentacion_f3(zonas_matched, resultados):
@@ -868,10 +969,14 @@ def instrumentacion_f3(zonas_matched, resultados):
             if ctrl["bounds_igual_a_fuente"]:
                 bounds_iguales += 1
                 # el centinela solo es INOCENTE si el anchor coincide -- si no,
-                # es exactamente el bug de reanclaje reapareciendo.
-                assert ctrl["anchor_distance_ticks"] == 0, (
-                    "centinela: control_lo_tick==z.lo_tick con anchors DISTINTOS -- "
-                    "el reanclaje no esta conectado (regresion del bug corregido en 6b76e34)")
+                # es exactamente el bug de reanclaje reapareciendo. `raise`
+                # explicito (F2.2, auditoria 2026-08-11), no `assert`: un
+                # centinela anti-regresion no puede depender de correr sin
+                # `python -O` (que elimina los `assert` del bytecode).
+                if ctrl["anchor_distance_ticks"] != 0:
+                    raise ValueError(
+                        "centinela: control_lo_tick==z.lo_tick con anchors DISTINTOS -- "
+                        "el reanclaje no esta conectado (regresion del bug corregido en 6b76e34)")
 
     def resumen_num(xs):
         if not xs:
@@ -895,7 +1000,12 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--out", default=None)
     ap.add_argument("--smoke-archivo", default=None,
-                    help="si se da, corre SOLO ese archivo (smoke pre-interpretacion)")
+                    help="si se da, corre SOLO ese archivo (smoke pre-interpretacion). "
+                         "IMPLICA --solo-estructural (F2.2, auditoria 2026-08-11): antes, "
+                         "un archivo balanceado en modo smoke podia filtrar el estimand "
+                         "sobre pocas sesiones -- sesiones_ok queda en None en smoke y la "
+                         "condicion de abstencion chequea `is False`, no falsy, asi que "
+                         "solo los gates de SMD lo tapaban por casualidad.")
     ap.add_argument("--solo-estructural", action="store_true",
                     help="F0: suprime el estimand por completo -- no se llama "
                          "agregar_por_sesion/hac_bartlett_ic/decidir_etiqueta, no se "
@@ -904,7 +1014,7 @@ def main(argv=None):
                          "pre-interpretacion: valida universo/matching/cobertura/SMD "
                          "sin exponer el efecto.")
     a = ap.parse_args(argv)
-    calcular_endpoint = not a.solo_estructural
+    calcular_endpoint = not (a.solo_estructural or a.smoke_archivo)
 
     if sys.prefix == sys.base_prefix or Path(sys.prefix).resolve() != (REPO_PATH / ".venv").resolve():
         print("NO ES EL .venv DEL REPO -- no se ejecuta.")
@@ -941,7 +1051,8 @@ def main(argv=None):
     todos_resultados = []
     todos_zonas_matched = []
     cobertura_acumulada = dict(n_total_zonas=0, n_zonas_ok=0)
-    coberturas_por_archivo = {}  # F2: agregar_smd_global() poolea esto DESPUES del loop
+    coberturas_por_archivo = {}  # F2/F2.2: agregar_balance_global() poolea esto DESPUES del loop
+    muestras_pre_matching_por_archivo = {}  # F2.2: insumo de sd_ref, tambien pooleado despues
     crudo = {}
 
     for arch, fechas in plan:
@@ -982,6 +1093,7 @@ def main(argv=None):
         cobertura_acumulada["n_total_zonas"] += res["cobertura"]["n_total_zonas"]
         cobertura_acumulada["n_zonas_ok"] += res["cobertura"]["n_zonas_ok"]
         coberturas_por_archivo[arch] = res["cobertura"]
+        muestras_pre_matching_por_archivo[arch] = res["muestra_pre_matching"]
         crudo[arch] = dict(estado="OK", sesiones=len(fechas),
                            n_zonas=res["cobertura"]["n_total_zonas"],
                            n_zonas_ok=res["cobertura"]["n_zonas_ok"])
@@ -990,7 +1102,9 @@ def main(argv=None):
 
     cobertura_global = (cobertura_acumulada["n_zonas_ok"] / cobertura_acumulada["n_total_zonas"]
                         if cobertura_acumulada["n_total_zonas"] else 0.0)
-    smd_agregado = agregar_smd_global(coberturas_por_archivo, archivos_planificados)  # F2/F2.1: fail-closed
+    # F2/F2.1/F2.2: nunca promedio de SMDs por-archivo, sd_ref congelado pre-matching, fail-closed.
+    smd_agregado = agregar_balance_global(coberturas_por_archivo, muestras_pre_matching_por_archivo,
+                                          archivos_planificados)
 
     # sesiones_con_al_menos_una_zona: de zonas_matched (SIEMPRE tiene
     # session_date), no de `residuales` -- residuales queda vacio a proposito
@@ -1013,13 +1127,30 @@ def main(argv=None):
     for k, v in instrumentacion.items():
         print("  %s: %r" % (k, v))
 
+    # F2.2 (auditoria 2026-08-11): gate de procedencia REAL, no solo
+    # registrado. dirty_start/dirty_end/head_start/head_end se guardaban en
+    # el payload desde el principio pero nunca se evaluaban -- solo el hash
+    # de NORTH_STAR.md abortaba la corrida. Un arbol que se ensucia o un HEAD
+    # que se mueve MIENTRAS la corrida esta en curso (otro proceso
+    # commiteando, por ejemplo) invalida la procedencia igual que un hash
+    # que no coincide -- mismo criterio que ya declaraba
+    # specs/.../v1.json::decision_labels.ABSTAIN_PROVENANCE
+    # ("dirty_or_head_changed_or_hash_missing"), nunca implementado del todo.
+    head_end = git_head()
+    dirty_end = git_dirty()
+    if dirty_start or dirty_end or head_start != head_end:
+        print("\nABSTAIN_PROVENANCE: arbol sucio o HEAD se movio durante la corrida "
+              "(dirty_start=%r dirty_end=%r head_start=%s head_end=%s)"
+              % (dirty_start, dirty_end, head_start, head_end))
+        return 5
+
     payload = dict(
         schema_version=SCHEMA_VERSION, fase="F1.1_nulo_condicional_distancia",
         status="SMOKE" if a.smoke_archivo else "FORMAL_RUN",
         protocolo="docs/research/BIGTRAP2_DISTANCE_MATCHED_NULL_PROTOCOL_2026-08-11.md",
         spec_path=str(SPEC_PATH.relative_to(REPO_PATH)), spec_sha256=spec_sha256(),
         north_star_body_sha256=ns_hash,
-        head_start=head_start, head_end=git_head(), dirty_start=dirty_start, dirty_end=git_dirty(),
+        head_start=head_start, head_end=head_end, dirty_start=dirty_start, dirty_end=dirty_end,
         k_controls=K_CONTROLS, min_controls=MIN_CONTROLS,
         min_zone_coverage=MIN_ZONE_COVERAGE, max_abs_smd=MAX_ABS_SMD,
         required_source_sessions=REQUIRED_SOURCE_SESSIONS,
@@ -1032,7 +1163,7 @@ def main(argv=None):
         gates=gates, instrumentacion=instrumentacion,
         resultados_por_zona=todos_resultados,
         por_contrato=crudo,
-        code_commit=git_head(),
+        code_commit=head_end,  # ya verificado == head_start arriba (gate de procedencia)
         measurement_code_sha256=huella_del_codigo([INDICADOR]),
         entorno=dict(python=sys.version.split()[0], plataforma=platform.platform()))
 
@@ -1046,7 +1177,7 @@ def main(argv=None):
         r_s_cronologico = [por_sesion[ses] for ses in sorted(por_sesion)]
         ic = hac_bartlett_ic(r_s_cronologico) if not abstain else dict(
             n_sessions=len(por_sesion), mean=None, se_hac=None, ci95_lower=None,
-            ci95_upper=None, mde=None, lag=None)
+            ci95_upper=None, mde=None, lag=None, abstain_inferencia=None)
         etiqueta = "ABSTAIN_MATCHING" if abstain else decidir_etiqueta(ic)
         print("\nESTIMAND: Delta_matched (mean_s(R_s), peso igual por sesion)")
         print("  n_sesiones_con_zona=%d  mean=%s  se_hac=%s  ic95=[%s, %s]  mde=%s"
