@@ -738,8 +738,19 @@ def procesar_zonas_de_archivo(kernel_zones, high_t, low_t, close_t, bar_volume,
                 lc_k = zone_lifecycle(z["lo_tick"], z["hi_tick"], z["is_bull"], z["created_bar"],
                                       high_t, low_t, close_t, n_bars, horizon_cap=hc)
                 secundarios[k] = 1.0 if (lc_k["first_touch_age"] is not None and lc_k["first_touch_age"] <= hc) else 0.0
+            # F4 (multiplicidad, auditoria 2026-08-11): estos horizontes NO
+            # tienen contraparte de control -- p0_controles/y_ctrl solo se
+            # calculan al horizonte PRIMARIO (z["horizon_i"]), nunca a
+            # 1/2/5/10/20/60/120 barras. Sin control no hay residual (y_i-p0_i)
+            # que adjudicar, solo la tasa de toque cruda de la zona real.
+            # Marcado explicito para que nadie lo trate como un test
+            # adicional (inflaria el numero efectivo de hipotesis sin la
+            # comparacion pareada que lo haria valido).
             fila.update(y_i=y_i, p0_i=p0_i, r_i=r_i, lifecycle_real=lc_real,
-                       secundarios_touch_by_horizon=secundarios)
+                       secundarios_touch_by_horizon=dict(
+                           valores=secundarios, adjudicable=False,
+                           motivo="solo zona real, sin contraparte de control en estos "
+                                  "horizontes -- descriptivo, no un residual"))
         resultados.append(fila)
 
     return dict(universo=universo, zonas_matched=zonas_matched, resultados=resultados,
