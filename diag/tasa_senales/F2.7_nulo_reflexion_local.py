@@ -733,7 +733,7 @@ def correr_formal():
     per_session_race_counts = {}
     r_por_lado_por_sesion = {}
 
-    todas_sesiones_investigacion = sorted(info["sesiones_investigacion"])
+    todas_sesiones_investigacion = sorted(set(d["fecha"] for d in dias))
     for s in todas_sesiones_investigacion:
         res_s = [r for r in race_results if r["zona"]["session_date"] == s]
         all_u_s = [u for u in universo_todas if u["zona"]["session_date"] == s]
@@ -760,7 +760,7 @@ def correr_formal():
         n_sesiones_con_zonas=n_sesiones_con_zonas, cobertura=cobertura_elegibilidad)
 
     if n_sesiones_con_zonas != REQUIRED_SOURCE_SESSIONS:
-        missing = sorted(set(info["sesiones_investigacion"]) - sesiones_con_zonas_set)
+        missing = sorted(set(d["fecha"] for d in dias) - sesiones_con_zonas_set)
         print(f"GATE FAIL: sesiones con zonas ({n_sesiones_con_zonas}) != {REQUIRED_SOURCE_SESSIONS}.")
         print(f"Sesiones faltantes: {missing}")
         etiqueta = "ABSTAIN_REFLECTION_COVERAGE"
