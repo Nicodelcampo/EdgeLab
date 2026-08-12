@@ -91,13 +91,21 @@ rebase sobre `1916ffa` y drop de ese commit.
 
 ---
 
-## P-05 · No hay CI
+## P-05 · CI declarada, verificación remota pendiente
 
-**Estado**: ABIERTA.
+**Estado**: ABIERTA — parcialmente resuelta en código.
 
-La suite de 826 tests corre sólo localmente. No hay ninguna garantía mecánica de
-que un commit pusheado esté verde. Todo el reporte de estado depende de que quien
-corre la suite reporte fielmente.
+La rama incorpora `.github/workflows/ci.yml`: instala
+`requirements/core-bridge-dev.lock` y ejecuta `pytest -q` en `push` y
+`pull_request`. Eso elimina la ausencia de automatización en el árbol.
+
+Todavía falta confirmar desde GitHub que el workflow ejecutó correctamente con
+el lock exacto (en particular, que los pins resuelven en el runner). No se deben
+relajar los pins para forzar un verde: un fallo de instalación sería evidencia
+sobre el lock, no sobre la semántica del workflow.
+
+**Criterio de cierre**: un run remoto visible de CI que instale el lock y termine
+la suite sin fallos; registrar el enlace/commit verificado.
 
 ---
 
@@ -127,3 +135,23 @@ diseño específico.
 **Criterio para decidir**: no aplica todavía — este ítem queda registrado para
 que se decida, en un turno futuro y con pre-registro propio, si vale la pena
 construir el panel antes o después de la corrida formal de 201 sesiones.
+
+---
+
+## P-07 · M0 — decisión de licencia de los datos locales
+
+**Referenciada desde**: gate M0 del estado operativo y la ausencia de
+`DATA_LICENSE_DECISION.md` en el árbol versionado.
+
+**Estado**: ABIERTA — bloqueo legal/operativo, no técnico.
+
+No hay una decisión versionada que identifique el proveedor, los términos
+aplicables, el alcance permitido (research interno, publicación de artefactos,
+redistribución de datos derivados) y el responsable que acepta ese riesgo.
+El repositorio puede verificar hashes y procedencia, pero no puede inferir una
+licencia a partir de parquets locales ni crearla unilateralmente.
+
+**Criterio de cierre**: Nico o el responsable autorizado aporta la fuente de los
+términos y aprueba una `DATA_LICENSE_DECISION.md` con alcance, restricciones y
+fecha. Hasta entonces no se declara este gate satisfecho ni se publican datos
+brutos o derivados que los términos no permitan.
