@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import importlib.util
+import json
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -75,6 +76,60 @@ def _bar_end_ns_real_por_sesion(n_sesiones, bpp, dia_offset_inicial=0, hora_utc=
             t = inicio + timedelta(minutes=k + 1)
             bar_end_ns.append(int(t.timestamp() * 1e9))
     return np.array(bar_end_ns, dtype=np.int64)
+
+
+def _fixture_reanclaje_end_to_end(n_sesiones=6, bpp=200, padding=2100):
+    """Mismo escenario que test_integracion_control_usa_geometria_reanclada_no_la_absoluta
+    (sesion 0 = fuente a precio 100, sesiones 1..n-1 = pool de controles a
+    precio 1000, toque reanclado inyectado en 1002 el minuto siguiente a cada
+    creacion), factorizado para que los tests F0/F3 end-to-end no repitan el
+    fixture completo. `bar_end_ns` devuelto es SIEMPRE de largo
+    n_activo+padding (a diferencia del test original, que solo lo necesitaba
+    sin padding para `sesiones_de_barras`): los tests que corren `main()` de
+    punta a punta necesitan que `bar_end_ns` tenga el mismo largo que
+    high_t/low_t/close_t/bar_volume, porque ahi es main() quien llama a
+    sesiones_de_barras con el `b.end_ns` que devuelve el bars_mod fakeado. El
+    padding (misma duracion de barra, ningun `fecha` real lo reclama) da las
+    >=max_age_bars=2000 barras futuras que el default de produccion exige,
+    sin cruzar medianoche CT."""
+    bar_end_ns = _bar_end_ns_real_por_sesion(n_sesiones, bpp)
+    fechas_reales = [session_date_ct(int(bar_end_ns[s * bpp]) // 1_000_000) for s in range(n_sesiones)]
+    assert len(set(fechas_reales)) == n_sesiones  # sin colisiones de fecha CT
+    n_activo = n_sesiones * bpp
+    n = n_activo + padding
+    cola = bar_end_ns[-1] + (np.arange(1, padding + 1, dtype=np.int64) * 60_000_000_000)
+    bar_end_ns_full = np.concatenate([bar_end_ns, cola])
+
+    high_t = np.empty(n, dtype=np.int64)
+    low_t = np.empty(n, dtype=np.int64)
+    close_t = np.empty(n, dtype=np.int64)
+    bar_volume = np.full(n, 100.0, dtype=np.float64)
+    for s in range(n_sesiones):
+        precio = 100 if s == 0 else 1000  # sesion 0 = fuente; 1..n-1 = pool de controles
+        sl = slice(s * bpp, (s + 1) * bpp)
+        high_t[sl] = precio
+        low_t[sl] = precio
+        close_t[sl] = precio
+    high_t[n_activo:] = 1000  # padding: mismo precio que los controles, sin toques
+    low_t[n_activo:] = 1000
+    close_t[n_activo:] = 1000
+
+    minuto_creacion = 70  # >=60: sigma60 causal disponible
+    cb_fuente = minuto_creacion
+    for s in range(1, n_sesiones):
+        # toque SOLO en el precio absoluto 1002 (dentro de [1001,1003]
+        # reanclado, fuera de [101,103] absoluto de la fuente).
+        high_t[s * bpp + minuto_creacion + 1] = 1002
+
+    ses_de_barra, rango_sesion = m.sesiones_de_barras(bar_end_ns_full, fechas_reales)
+    created_ms_fuente = int(bar_end_ns[cb_fuente]) // 1_000_000
+    tick_size = 1.0
+    kernel_zones = [dict(
+        id="zsrc", top=103 * tick_size + tick_size / 2.0, bottom=101 * tick_size - tick_size / 2.0,
+        created_bar=cb_fuente, created_ms=created_ms_fuente, kind="trapped_buyers")]
+    return dict(kernel_zones=kernel_zones, high_t=high_t, low_t=low_t, close_t=close_t,
+               bar_volume=bar_volume, ses_de_barra=ses_de_barra, rango_sesion=rango_sesion,
+               fechas_reales=fechas_reales, tick_size=tick_size, n=n, bar_end_ns=bar_end_ns_full)
 
 
 # ======================================================================
@@ -825,3 +880,204 @@ def test_un_control_puede_servir_a_varias_zonas_distintas():
     bars_a = {c["bar_index"] for c in res_a["elegidos"]}
     bars_b = {c["bar_index"] for c in res_b["elegidos"]}
     assert bars_a == bars_b  # comparten controles: permitido, no un bug
+
+
+# ======================================================================
+# F0 (BLOQUEANTE, pedido por el auditor tras la auditoria independiente del
+# fix de reanclaje 2026-08-11): modo --solo-estructural tiene que OMITIR el
+# estimand por completo -- no calcularlo y esconderlo, directamente no
+# llamarlo -- para que un smoke pre-interpretacion no pueda filtrar el efecto
+# ni por accidente. F3: instrumentacion target-free de matching (n_pool,
+# k_efectivo, abstenciones, offset de sesion, distancia de anclaje, y el
+# centinela frac_control_bounds_iguales_a_fuente que detecta una regresion
+# del bug de reanclaje).
+# ======================================================================
+
+def test_f0_solo_estructural_conserva_geometria_omite_endpoint():
+    """calcular_endpoint=False tiene que dar EXACTAMENTE el mismo universo,
+    matching y geometria reanclada que calcular_endpoint=True (el matching es
+    target-free, no depende de si se mide el efecto) -- pero las claves del
+    efecto (y_i, p0_i, r_i, lifecycle_real, secundarios_touch_by_horizon a
+    nivel fila; y_ctrl a nivel control) tienen que estar AUSENTES del dict,
+    no en None: ausentes."""
+    fx = _fixture_reanclaje_end_to_end()
+    kwargs = dict(kernel_zones=fx["kernel_zones"], high_t=fx["high_t"], low_t=fx["low_t"],
+                 close_t=fx["close_t"], bar_volume=fx["bar_volume"], ses_de_barra=fx["ses_de_barra"],
+                 rango_sesion=fx["rango_sesion"], fechas_universo=fx["fechas_reales"],
+                 tick_size=fx["tick_size"], n_bars=fx["n"])
+    res_full = m.procesar_zonas_de_archivo(**kwargs, calcular_endpoint=True)
+    res_estructural = m.procesar_zonas_de_archivo(**kwargs, calcular_endpoint=False)
+
+    assert len(res_full["resultados"]) == 1
+    assert len(res_estructural["resultados"]) == 1
+    fila_full = res_full["resultados"][0]
+    fila_est = res_estructural["resultados"][0]
+
+    claves_geometria = ["zone_id", "session_date", "created_bar", "k_efectivo",
+                        "source_anchor_tick", "rel_lo_tick", "rel_hi_tick"]
+    for k in claves_geometria:
+        assert fila_full[k] == fila_est[k], k
+    assert len(fila_full["controles_ledger"]) == len(fila_est["controles_ledger"]) == 5
+    claves_ctrl_geometria = ["session_date", "bar_index", "score", "control_anchor_tick",
+                             "control_lo_tick", "control_hi_tick", "session_offset",
+                             "anchor_distance_ticks", "bounds_igual_a_fuente"]
+    for c_full, c_est in zip(fila_full["controles_ledger"], fila_est["controles_ledger"]):
+        for k in claves_ctrl_geometria:
+            assert c_full[k] == c_est[k], k
+
+    claves_efecto_fila = ["y_i", "p0_i", "r_i", "lifecycle_real", "secundarios_touch_by_horizon"]
+    for k in claves_efecto_fila:
+        assert k in fila_full, k
+    for k in claves_efecto_fila:
+        assert k not in fila_est, k
+    assert "y_ctrl" in fila_full["controles_ledger"][0]
+    assert all("y_ctrl" not in c for c in fila_est["controles_ledger"])
+
+    # cobertura/universo/zonas_matched: F0 no toca esa parte, tienen que
+    # quedar bit-identicas entre los dos modos.
+    assert res_full["cobertura"] == res_estructural["cobertura"]
+    assert len(res_full["universo"]) == len(res_estructural["universo"])
+    assert len(res_full["zonas_matched"]) == len(res_estructural["zonas_matched"])
+
+
+def test_f3_instrumentacion_histogramas_offsets_distancias_y_centinela():
+    """instrumentacion_f3 sobre un escenario sintetico con valores conocidos
+    a mano -- no solo 'no crashea'. 3 zonas_matched (2 OK con n_pool/k_efectivo
+    distintos, 1 ABSTAIN con motivo declarado) y 2 resultados con 2 controles
+    cada uno (offsets/distancias/bounds elegidos para calcular histogramas,
+    resumenes numericos y el centinela a mano)."""
+    zonas_matched = [
+        dict(match=dict(estado="OK", n_pool=8, k_efectivo=5, elegidos=[])),
+        dict(match=dict(estado="OK", n_pool=6, k_efectivo=5, elegidos=[])),
+        dict(match=dict(estado="ABSTAIN", motivo="pool_insuficiente", n_pool=2, elegidos=[])),
+    ]
+    resultados = [
+        dict(controles_ledger=[
+            dict(session_offset=1, anchor_distance_ticks=10, bounds_igual_a_fuente=False),
+            dict(session_offset=2, anchor_distance_ticks=20, bounds_igual_a_fuente=False),
+        ]),
+        dict(controles_ledger=[
+            dict(session_offset=-1, anchor_distance_ticks=0, bounds_igual_a_fuente=True),
+            dict(session_offset=None, anchor_distance_ticks=30, bounds_igual_a_fuente=False),
+        ]),
+    ]
+    inst = m.instrumentacion_f3(zonas_matched, resultados)
+
+    assert inst["histograma_n_pool"] == {8: 1, 6: 1, 2: 1}
+    assert inst["histograma_k_efectivo"] == {5: 2}  # solo cuenta zonas OK
+    assert inst["abstenciones_por_motivo"] == {"pool_insuficiente": 1}
+    assert inst["n_controles_evaluados"] == 4
+    # 1 de 4 controles tiene bounds identicos a la fuente -- y ese mismo
+    # control tiene distancia 0 (coincidencia legitima, no la regresion que
+    # el assert interno de instrumentacion_f3 vigila).
+    assert inst["frac_control_bounds_iguales_a_fuente"] == pytest.approx(0.25)
+
+    off = inst["offset_sesion_control_menos_fuente"]
+    assert off["n"] == 3  # el offset None (session_date fuera de sesion_idx) se excluye
+    assert off["min"] == -1.0 and off["max"] == 2.0
+    assert off["media"] == pytest.approx((1 + 2 - 1) / 3)
+
+    dist = inst["distancia_anclaje_ticks"]
+    assert dist["n"] == 4  # la distancia SI la aportan los 4 controles, incluso con offset None
+    assert dist["min"] == 0.0 and dist["max"] == 30.0
+    assert dist["media"] == pytest.approx((10 + 20 + 0 + 30) / 4)
+
+
+def test_f0_main_cli_solo_estructural_omite_claves_del_payload_y_del_stdout(tmp_path, monkeypatch, capsys):
+    """Contrato pedido por el auditor: con --solo-estructural, ninguna clave
+    del efecto aparece en el JSON de salida y el stdout no contiene 'mean' ni
+    'ETIQUETA'. Corre main() end-to-end de verdad (dias_research/ticks_mod/
+    bars_mod/REGISTRY fakeados con el mismo fixture de reanclaje, sin tocar
+    datos reales ni el .venv/git/NORTH_STAR reales -- esos siguen siendo los
+    de verdad) -- a diferencia de test_f0_solo_estructural_conserva_geometria_omite_endpoint
+    (que prueba procesar_zonas_de_archivo directamente), esto cubre el
+    ENSAMBLADO del payload dentro de main(), que es donde vivia el defecto
+    real que el auditor senalo (una clave dejada afuera del `if` por error no
+    la detectaria un test que no pasa por main())."""
+    fx = _fixture_reanclaje_end_to_end()
+    archivo = "FAKE_TEST_F0_SOLO_ESTRUCTURAL.parquet"
+
+    class _FakeTk:
+        sequence = np.arange(10, dtype=np.int64)
+        tick_size = fx["tick_size"]
+
+    class _FakeBars:
+        end_ns = fx["bar_end_ns"]
+        high_t = fx["high_t"]
+        low_t = fx["low_t"]
+        close_t = fx["close_t"]
+        volume = fx["bar_volume"]
+
+        def __len__(self):
+            return len(self.end_ns)
+
+    class _FakeTicksMod:
+        @staticmethod
+        def load_canonical_parquet(path, start_utc_ns=None, end_utc_ns=None):
+            return _FakeTk()
+
+    class _FakeBarsMod:
+        @staticmethod
+        def build_time_bars(tk, interval):
+            return _FakeBars()
+
+        @staticmethod
+        def build_footprints(tk, b):
+            return object()  # no None -- fuerza la rama con fp; el run fake la ignora igual
+
+    class _FakeIndicatorMod:
+        @staticmethod
+        def run(*args, **kwargs):
+            return {"zones": fx["kernel_zones"]}
+
+    monkeypatch.setattr(m, "dias_research",
+                        lambda: ([{"archivo": archivo, "fecha": f} for f in fx["fechas_reales"]],
+                                {"nota": "fixture sintetico de test, no universo real"}))
+    monkeypatch.setattr(m, "ticks_mod", _FakeTicksMod)
+    monkeypatch.setattr(m, "bars_mod", _FakeBarsMod)
+    monkeypatch.setattr(m, "REGISTRY", {m.INDICADOR: _FakeIndicatorMod})
+
+    out_full = tmp_path / "full.json"
+    out_est = tmp_path / "estructural.json"
+
+    rc_full = m.main(["--smoke-archivo", archivo, "--out", str(out_full)])
+    stdout_full = capsys.readouterr().out
+    rc_est = m.main(["--smoke-archivo", archivo, "--solo-estructural", "--out", str(out_est)])
+    stdout_est = capsys.readouterr().out
+
+    assert rc_full == 0
+    assert rc_est == 0
+
+    payload_full = json.loads(out_full.read_text(encoding="utf-8"))
+    payload_est = json.loads(out_est.read_text(encoding="utf-8"))
+
+    # Modo completo: el estimand SI esta, tanto en el payload como en stdout.
+    assert payload_full["estimand_suppressed"] is False
+    assert "etiqueta" in payload_full
+    assert "estimand_primario" in payload_full
+    assert "por_sesion" in payload_full
+    assert all("y_i" in fila for fila in payload_full["resultados_por_zona"])
+    assert "mean" in stdout_full
+    assert "ETIQUETA" in stdout_full
+
+    # Modo estructural: NADA de eso -- ni en el payload ni en stdout.
+    assert payload_est["estimand_suppressed"] is True
+    assert "etiqueta" not in payload_est
+    assert "estimand_primario" not in payload_est
+    assert "por_sesion" not in payload_est
+    assert payload_est["resultados_por_zona"], "el fixture tiene que producir al menos 1 zona OK"
+    for fila in payload_est["resultados_por_zona"]:
+        for k in ("y_i", "p0_i", "r_i", "lifecycle_real", "secundarios_touch_by_horizon"):
+            assert k not in fila
+        for ctrl in fila["controles_ledger"]:
+            assert "y_ctrl" not in ctrl
+    assert "ETIQUETA" not in stdout_est
+    assert "mean" not in stdout_est
+    assert "SUPRIMIDO" in stdout_est
+
+    # F3: la instrumentacion target-free (matching, no efecto) esta presente
+    # en los DOS modos -- no depende de calcular_endpoint.
+    assert "instrumentacion" in payload_full
+    assert "instrumentacion" in payload_est
+    assert payload_full["instrumentacion"]["n_controles_evaluados"] == \
+        payload_est["instrumentacion"]["n_controles_evaluados"]
