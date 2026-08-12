@@ -552,7 +552,7 @@ def validar_entorno_venv():
     Acepta únicamente:
     1) REPO_PATH/.venv (checkout local o principal)
     2) <main_checkout>/.venv (worktree principal)
-    3) <data_root>.parent/.venv (entorno gobernado de datos donde habita data/, p.ej. E:\\EdgeLab\\.venv)
+    3) <data_root().parent>/.venv (entorno gobernado de datos)
     """
     if sys.prefix == sys.base_prefix:
         print("ABSTAIN_PROVENANCE: no se está ejecutando dentro de un entorno virtual (.venv)")
@@ -562,10 +562,16 @@ def validar_entorno_venv():
     local_venv = (REPO_PATH / ".venv").resolve()
     main_venv = (main_checkout_path() / ".venv").resolve()
 
-    # Valida si la raíz del .venv contiene la estructura de datos EdgeLab (`data/`)
-    es_entorno_datos = (prefix_path.name == ".venv" and (prefix_path.parent / "data").exists())
+    try:
+        data_venv = (data_root().parent / ".venv").resolve()
+    except Exception:
+        data_venv = None
 
-    if prefix_path in (local_venv, main_venv) or es_entorno_datos:
+    permitidos = {local_venv, main_venv}
+    if data_venv is not None:
+        permitidos.add(data_venv)
+
+    if prefix_path in permitidos:
         return True
 
     print(f"ABSTAIN_PROVENANCE: entorno virtual no autorizado ({prefix_path})")

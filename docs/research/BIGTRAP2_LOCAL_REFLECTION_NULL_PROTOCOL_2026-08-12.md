@@ -48,9 +48,7 @@ Real y reflejo corren con la función pura que replica la precedencia de `bigtra
 2. toque por intersección;
 3. invalidación con el cierre de esa misma barra.
 
-*Nota editorial pre-corrida*: El horizonte efectivo de seguimiento para cada brazo es H_i = min(max_age_bars, barras futuras disponibles), donde max_age_bars = 2000 barras (horizonte cap de 2000 barras futuras tras la barra de creación, equivalente a b1 = min(created_bar + 2000, n - 1)). El kernel y las funciones de lifecycle operan dentro de esta ventana H_i.
-
-Con defaults, el horizonte natural permite la barra de expiración: `H_i = min(max_age_bars + 1, barras_preholdout_disponibles)`. La lectura de datos termina mecánicamente en 2026-06-30; jamás se carga julio ni el holdout. Una zona truncada por esa frontera se reporta censurada, no se elimina ni se le imputa un toque.
+*Nota editorial pre-corrida*: La ventana de exposición donde cuentan los toques es min(max_age_bars, disponibles); la barra created+max_age_bars+1 sólo chequea expiración y su toque no cuenta (precedencia del kernel). La lectura de datos termina mecánicamente en 2026-06-30; jamás se carga julio ni el holdout. Una zona truncada por esa frontera se reporta censurada, no se elimina ni se le imputa un toque.
 
 ## 5. Estimand e inferencia
 
