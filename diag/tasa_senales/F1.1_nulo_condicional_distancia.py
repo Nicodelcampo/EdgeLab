@@ -426,6 +426,114 @@ def muestra_pre_matching(zonas_matched, por_minuto, creadoras, cov_por_barra, n_
     return estratos
 
 
+_COVARIABLES_SOPORTE_COMUN = ("log1p_sigma60_ticks", "log1p_bar_volume")
+
+
+def diagnostico_soporte_comun(zonas_matched, por_minuto, creadoras, cov_por_barra, n_bars):
+    """F2.4 (auditoria 2026-08-12, sobre la interpretacion del diagnostico
+    F2.3): smd_pre_within_estrato ~= smd_post NO distingue "no hay
+    solapamiento" de "K es demasiado grande para el pool". Si el matcher
+    selecciona una fraccion alta del pool disponible (pool tipico ~9.6,
+    K=8 -> ~83% seleccionado), mean(controles) ~= mean(pool) queda forzado
+    ARITMETICAMENTE por la seleccion casi-censal, haya o no solapamiento
+    real -- las dos hipotesis predicen el mismo numero.
+
+    Este diagnostico mide directamente donde cae CADA fuente relativo al
+    RANGO de su propio pool real (via construir_pool_candidatos -- la MISMA
+    funcion que usa el matcher, no una aproximacion): por-encima-del-maximo,
+    por-debajo-del-minimo, o el percentil (pct = fraccion de valores del
+    pool estrictamente menores que la fuente) dentro del pool. Target-free:
+    solo geometria de covariables, ningun endpoint.
+
+    Devuelve CRUDO (conteos y listas, sin fracciones/percentiles todavia) --
+    main() lo poolea entre archivos con resumir_soporte_comun() antes de
+    reducir a ninguna fraccion, mismo principio que sd_ref/smd (F2/F2.1/
+    F2.2/F2.3): nunca promediar resumenes ya reducidos por archivo."""
+    def _nuevo():
+        return dict(n_zonas=0, n_sin_pool=0, tamanos_pool=[],
+                   por_covariable={c: dict(above=0, below=0, pcts=[]) for c in _COVARIABLES_SOPORTE_COMUN})
+
+    crudo_todas, crudo_ok = _nuevo(), _nuevo()
+    for z in zonas_matched:
+        zona_cov = z["covariables_fuente"]
+        if zona_cov[0] is None:
+            continue
+        destinos = [crudo_todas] + ([crudo_ok] if z["match"]["estado"] == "OK" else [])
+        for d in destinos:
+            d["n_zonas"] += 1
+
+        candidatos = construir_pool_candidatos(z, por_minuto, creadoras, n_bars, z["horizon_i"])
+        pool_covs = [cov_por_barra[bar_idx] for _ses, bar_idx in candidatos
+                    if cov_por_barra.get(bar_idx) is not None]
+        for d in destinos:
+            d["tamanos_pool"].append(len(pool_covs))
+        if not pool_covs:
+            for d in destinos:
+                d["n_sin_pool"] += 1
+            continue
+
+        for idx, nombre in enumerate(_COVARIABLES_SOPORTE_COMUN):
+            x = zona_cov[idx]
+            vals = [c[idx] for c in pool_covs]
+            above = x > max(vals)
+            below = x < min(vals)
+            pct = sum(1 for v in vals if v < x) / len(vals)
+            for d in destinos:
+                dc = d["por_covariable"][nombre]
+                if above:
+                    dc["above"] += 1
+                if below:
+                    dc["below"] += 1
+                dc["pcts"].append(pct)
+
+    return dict(todas_las_zonas=crudo_todas, solo_ok=crudo_ok)
+
+
+def resumir_soporte_comun(diagnosticos_por_archivo):
+    """F2.4: poolea los crudos de diagnostico_soporte_comun entre TODOS los
+    archivos ANTES de calcular ninguna fraccion/percentil."""
+    def _nuevo():
+        return dict(n_zonas=0, n_sin_pool=0, tamanos_pool=[],
+                   por_covariable={c: dict(above=0, below=0, pcts=[]) for c in _COVARIABLES_SOPORTE_COMUN})
+
+    total_todas, total_ok = _nuevo(), _nuevo()
+    for diag in diagnosticos_por_archivo:
+        for total, crudo in ((total_todas, diag["todas_las_zonas"]), (total_ok, diag["solo_ok"])):
+            total["n_zonas"] += crudo["n_zonas"]
+            total["n_sin_pool"] += crudo["n_sin_pool"]
+            total["tamanos_pool"].extend(crudo["tamanos_pool"])
+            for c in _COVARIABLES_SOPORTE_COMUN:
+                total["por_covariable"][c]["above"] += crudo["por_covariable"][c]["above"]
+                total["por_covariable"][c]["below"] += crudo["por_covariable"][c]["below"]
+                total["por_covariable"][c]["pcts"].extend(crudo["por_covariable"][c]["pcts"])
+
+    def _resumen(total):
+        out = dict(n_zonas=total["n_zonas"], n_sin_pool=total["n_sin_pool"])
+        tam = total["tamanos_pool"]
+        out["tamano_pool_p50"] = float(np.percentile(tam, 50)) if tam else None
+        out["tamano_pool_p90"] = float(np.percentile(tam, 90)) if tam else None
+        out["por_covariable"] = {}
+        for c in _COVARIABLES_SOPORTE_COMUN:
+            dc = total["por_covariable"][c]
+            pcts = dc["pcts"]
+            n = len(pcts)
+            deciles = [0] * 10
+            for p in pcts:
+                deciles[min(9, int(p * 10))] += 1
+            out["por_covariable"][c] = dict(
+                frac_above_max=(dc["above"] / n) if n else None,
+                frac_below_min=(dc["below"] / n) if n else None,
+                frac_fuera_de_rango=((dc["above"] + dc["below"]) / n) if n else None,
+                frac_pct_mayor_o_igual_0_90=(sum(1 for p in pcts if p >= 0.90) / n) if n else None,
+                pct_p50=float(np.percentile(pcts, 50)) if pcts else None,
+                pct_p90=float(np.percentile(pcts, 90)) if pcts else None,
+                histograma_pct_deciles=deciles,
+            )
+        return out
+
+    return dict(todas_las_zonas=_resumen(total_todas), solo_ok=_resumen(total_ok))
+
+
 def calcular_balance_cobertura(zonas_matched, cov_por_barra):
     """cobertura = fraccion de zonas del universo con >=MIN_CONTROLS
     controles. `estado`: "SIN_ZONAS" si este archivo no tiene NINGUNA zona
@@ -1066,6 +1174,8 @@ def procesar_zonas_de_archivo(kernel_zones, high_t, low_t, close_t, bar_volume,
     return dict(universo=universo, zonas_matched=zonas_matched, resultados=resultados,
                 cobertura=calcular_balance_cobertura(zonas_matched, cov_por_barra),
                 muestra_pre_matching=muestra_pre_matching(
+                    zonas_matched, por_minuto, creadoras, cov_por_barra, n_bars),
+                diagnostico_soporte_comun=diagnostico_soporte_comun(
                     zonas_matched, por_minuto, creadoras, cov_por_barra, n_bars))
 
 
@@ -1186,6 +1296,7 @@ def main(argv=None):
     cobertura_acumulada = dict(n_total_zonas=0, n_zonas_ok=0)
     coberturas_por_archivo = {}  # F2/F2.2: agregar_balance_global() poolea esto DESPUES del loop
     muestras_pre_matching_por_archivo = {}  # F2.2: insumo de sd_ref, tambien pooleado despues
+    diagnosticos_soporte_comun_por_archivo = []  # F2.4: resumir_soporte_comun() poolea esto despues
     crudo = {}
 
     for arch, fechas in plan:
@@ -1227,6 +1338,7 @@ def main(argv=None):
         cobertura_acumulada["n_zonas_ok"] += res["cobertura"]["n_zonas_ok"]
         coberturas_por_archivo[arch] = res["cobertura"]
         muestras_pre_matching_por_archivo[arch] = res["muestra_pre_matching"]
+        diagnosticos_soporte_comun_por_archivo.append(res["diagnostico_soporte_comun"])
         crudo[arch] = dict(estado="OK", sesiones=len(fechas),
                            n_zonas=res["cobertura"]["n_total_zonas"],
                            n_zonas_ok=res["cobertura"]["n_zonas_ok"])
@@ -1256,6 +1368,9 @@ def main(argv=None):
         print("  %s: %r" % (k, v))
 
     instrumentacion = instrumentacion_f3(todos_zonas_matched, todos_resultados)
+    # F2.4: soporte comun -- pooleado entre archivos ANTES de reducir a
+    # ninguna fraccion/percentil, mismo principio que sd_ref/smd.
+    instrumentacion["soporte_comun"] = resumir_soporte_comun(diagnosticos_soporte_comun_por_archivo)
     print("\nINSTRUMENTACION (F3, target-free -- matching, no efecto)")
     for k, v in instrumentacion.items():
         print("  %s: %r" % (k, v))

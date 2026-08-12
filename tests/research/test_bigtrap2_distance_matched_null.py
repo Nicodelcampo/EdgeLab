@@ -1339,6 +1339,85 @@ def test_f4_secundarios_touch_by_horizon_marcado_no_adjudicable():
     assert all(v in (0.0, 1.0) for v in sec["valores"].values())
 
 
+def test_diagnostico_soporte_comun_clasifica_above_below_pct_a_mano():
+    """F2.4 (auditoria 2026-08-12): smd_pre_within_estrato~=smd_post no
+    distingue 'sin solapamiento' de 'K demasiado grande para el pool' -- este
+    diagnostico ubica cada fuente relativo al RANGO de su propio pool real.
+    4 zonas, mismo minuto, pool comun {10.0, 20.0, 30.0}: A (100.0, por
+    encima del maximo), B (-5.0, por debajo del minimo, ABSTAIN), C (15.0,
+    dentro del rango, pct=1/3 -- solo 10.0 es menor), D (minuto sin ningun
+    candidato -> n_sin_pool)."""
+    zonas_matched = [
+        dict(covariables_fuente=(100.0, 0.0), created_bar=1, minute_of_session=5,
+            session_date="SA", horizon_i=1000, match=dict(estado="OK")),
+        dict(covariables_fuente=(-5.0, 0.0), created_bar=2, minute_of_session=5,
+            session_date="SB", horizon_i=1000, match=dict(estado="ABSTAIN")),
+        dict(covariables_fuente=(15.0, 0.0), created_bar=3, minute_of_session=5,
+            session_date="SC", horizon_i=1000, match=dict(estado="OK")),
+        dict(covariables_fuente=(50.0, 0.0), created_bar=4, minute_of_session=99,
+            session_date="SD", horizon_i=1000, match=dict(estado="OK")),
+    ]
+    por_minuto = {5: [("S_pool", 10), ("S_pool", 20), ("S_pool", 30)]}  # minuto 99: sin entradas
+    cov_por_barra = {10: (10.0, 0.0), 20: (20.0, 0.0), 30: (30.0, 0.0)}
+    n_bars = 10000
+
+    diag = m.diagnostico_soporte_comun(zonas_matched, por_minuto, set(), cov_por_barra, n_bars)
+    todas, ok = diag["todas_las_zonas"], diag["solo_ok"]
+
+    assert todas["n_zonas"] == 4
+    assert todas["n_sin_pool"] == 1  # D
+    assert todas["tamanos_pool"] == [3, 3, 3, 0]
+    d0 = todas["por_covariable"]["log1p_sigma60_ticks"]
+    assert d0["above"] == 1  # A
+    assert d0["below"] == 1  # B
+    assert d0["pcts"] == [pytest.approx(1.0), pytest.approx(0.0), pytest.approx(1.0 / 3)]
+
+    assert ok["n_zonas"] == 3  # A, C, D (no B -- ABSTAIN)
+    assert ok["n_sin_pool"] == 1  # D
+    d0_ok = ok["por_covariable"]["log1p_sigma60_ticks"]
+    assert d0_ok["above"] == 1
+    assert d0_ok["below"] == 0  # B (below) es ABSTAIN, no entra a solo_ok
+    assert d0_ok["pcts"] == [pytest.approx(1.0), pytest.approx(1.0 / 3)]
+
+
+def test_resumir_soporte_comun_poolea_crudo_entre_archivos_sin_promediar_fracciones():
+    """F2.4: poolea conteos y pcts CRUDOS entre archivos antes de calcular
+    ninguna fraccion/percentil/decil -- mismo principio que sd_ref/smd
+    (F2-F2.3). 2 archivos con crudo conocido a mano."""
+    covs = m._COVARIABLES_SOPORTE_COMUN
+
+    def _crudo(n_zonas, n_sin_pool, tam, above, below, pcts):
+        return dict(n_zonas=n_zonas, n_sin_pool=n_sin_pool, tamanos_pool=tam,
+                   por_covariable={c: dict(above=above, below=below, pcts=list(pcts)) for c in covs})
+
+    diag_a = dict(todas_las_zonas=_crudo(3, 0, [5, 6, 7], 1, 0, [0.95, 0.5, 0.15]),
+                 solo_ok=_crudo(2, 0, [5, 6], 1, 0, [0.95, 0.5]))
+    diag_b = dict(todas_las_zonas=_crudo(2, 1, [4, 0], 0, 1, [0.05]),
+                 solo_ok=_crudo(1, 0, [4], 0, 0, [0.4]))
+
+    resumen = m.resumir_soporte_comun([diag_a, diag_b])
+    todas = resumen["todas_las_zonas"]
+
+    assert todas["n_zonas"] == 5
+    assert todas["n_sin_pool"] == 1
+    assert todas["tamano_pool_p50"] == pytest.approx(float(np.percentile([5, 6, 7, 4, 0], 50)))
+    assert todas["tamano_pool_p90"] == pytest.approx(float(np.percentile([5, 6, 7, 4, 0], 90)))
+
+    d0 = todas["por_covariable"][covs[0]]
+    # pcts pooleados en orden: [0.95, 0.5, 0.15] (A) + [0.05] (B) -- 4 valores.
+    # above/below pooleados: 1 (A) + 0 (B) y 0 (A) + 1 (B) -- NUNCA un
+    # promedio de fracciones ya reducidas por archivo.
+    assert d0["frac_above_max"] == pytest.approx(1 / 4)
+    assert d0["frac_below_min"] == pytest.approx(1 / 4)
+    assert d0["frac_fuera_de_rango"] == pytest.approx(2 / 4)
+    assert d0["frac_pct_mayor_o_igual_0_90"] == pytest.approx(1 / 4)  # solo 0.95
+    pcts_esperados = [0.95, 0.5, 0.15, 0.05]
+    assert d0["pct_p50"] == pytest.approx(float(np.percentile(pcts_esperados, 50)))
+    assert d0["pct_p90"] == pytest.approx(float(np.percentile(pcts_esperados, 90)))
+    # deciles: 0.05->indice 0 | 0.15->indice 1 | 0.5->indice 5 | 0.95->indice 9
+    assert d0["histograma_pct_deciles"] == [1, 1, 0, 0, 0, 1, 0, 0, 0, 1]
+
+
 def test_f3_instrumentacion_histogramas_offsets_distancias_y_centinela():
     """instrumentacion_f3 sobre un escenario sintetico con valores conocidos
     a mano -- no solo 'no crashea'. 3 zonas_matched (2 OK con n_pool/k_efectivo
