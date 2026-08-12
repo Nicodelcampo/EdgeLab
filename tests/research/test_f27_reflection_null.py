@@ -285,3 +285,47 @@ def test_10_hac_y_arbol_dirty():
     assert isinstance(dirty, bool)
 
 
+def test_11_wiring_desempate_bar_start_ends():
+    """Test 11: Wiring del desempate por tick usando construir_bar_start_ends."""
+    tk_ts_ns = np.array([100, 150, 210, 250, 310], dtype=np.int64)
+    tk_price_ticks = np.array([1000, 1000, 1025, 975, 1000], dtype=np.int64)
+
+    bar_start_ns = np.array([100, 200, 300], dtype=np.int64)
+    bar_end_ns = np.array([199, 299, 399], dtype=np.int64)
+
+    bar_start_ends = f27.construir_bar_start_ends(tk_ts_ns, bar_start_ns, bar_end_ns)
+    assert len(bar_start_ends) == 3
+    assert bar_start_ends[0] == (0, 2)
+    assert bar_start_ends[1] == (2, 4)
+    assert bar_start_ends[2] == (4, 5)
+
+    zona = dict(lo_tick=1020, hi_tick=1030, created_bar=0, is_bull=True)
+    high_t, low_t, close_t = _flat_bars(3, base_close=1000)
+    high_t[1] = 1025
+    low_t[1] = 975
+
+    reflejo = f27.construir_reflejo(zona, close_t)
+    carrera = f27.first_passage_race(
+        zona, reflejo, 0, high_t, low_t, close_t, 3,
+        tk_price_ticks=tk_price_ticks, bar_start_ends=bar_start_ends
+    )
+    assert carrera["r_i"] == 1.0
+    assert carrera["category"] == "real_first"
+
+
+def test_12_determinismo_runner():
+    """Test 12: Determinismo del runner — mismo input produce el mismo payload_sha256."""
+    h1 = f27.script_sha256()
+    h2 = f27.script_sha256()
+    assert h1 == h2
+
+    ts = np.array([10, 20, 30, 40, 50], dtype=np.int64)
+    b_starts = np.array([10, 30], dtype=np.int64)
+    b_ends = np.array([25, 55], dtype=np.int64)
+
+    res1 = f27.construir_bar_start_ends(ts, b_starts, b_ends)
+    res2 = f27.construir_bar_start_ends(ts, b_starts, b_ends)
+    assert res1 == res2
+
+
+

@@ -307,8 +307,12 @@ def first_passage_race(zona, reflejo, created_bar, high_t, low_t, close_t, n,
 # Capa 4 -- decisión y etiquetas
 # ======================================================================
 
-def decidir_etiqueta_reflexion(ic, frac_resueltos, frac_empate_tecnico):
+def decidir_etiqueta_reflexion(ic, frac_resueltos, frac_empate_tecnico, n_sesiones_con_zonas=None, cobertura=None):
     """Decision labels per spec v2."""
+    if n_sesiones_con_zonas is not None and n_sesiones_con_zonas != REQUIRED_SOURCE_SESSIONS:
+        return "ABSTAIN_REFLECTION_COVERAGE"
+    if cobertura is not None and cobertura < REFLECTION_COVERAGE_MIN:
+        return "ABSTAIN_REFLECTION_COVERAGE"
     if ic["n_sessions"] == 0:
         return "ABSTAIN_REFLECTION_COVERAGE"
     if ic.get("abstain_inferencia"):
@@ -534,6 +538,319 @@ def smoke_estructural(archivo_parquet, solo_estructural=True):
     return payload
 
 
+def parquet_file_sha256(filepath: Path) -> str:
+    h = hashlib.sha256()
+    with open(filepath, "rb") as f:
+        while chunk := f.read(65536):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def pip_freeze_sha256() -> str | None:
+    try:
+        out = subprocess.check_output([sys.executable, "-m", "pip", "freeze"], text=True)
+        return hashlib.sha256(out.encode("utf-8")).hexdigest()
+    except Exception:
+        return None
+
+
+def script_sha256() -> str:
+    raw = Path(__file__).read_bytes()
+    normalized = raw.replace(b"\r\n", b"\n")
+    return hashlib.sha256(normalized).hexdigest()
+
+
+def construir_bar_start_ends(tk_ts_ns, bar_start_ns, bar_end_ns):
+    bar_starts = np.searchsorted(tk_ts_ns, bar_start_ns, side="left")
+    bar_ends = np.searchsorted(tk_ts_ns, bar_end_ns, side="right")
+    return list(zip(bar_starts, bar_ends))
+
+
+def correr_formal():
+    head_start = git_head()
+    dirty_start = git_dirty()
+    if dirty_start:
+        print("ABSTAIN_PROVENANCE: el árbol de trabajo está sucio antes de empezar la corrida formal")
+        return 5
+
+    ns_hash = north_star_body_sha256()
+    if ns_hash != NORTH_STAR_BODY_SHA256_EXPECTED:
+        print(f"ABSTAIN_PROVENANCE: hash de NORTH_STAR.md no coincide ({ns_hash} != {NORTH_STAR_BODY_SHA256_EXPECTED})")
+        return 3
+
+    sp_hash = spec_sha256()
+    if sp_hash != SPEC_SHA256_EXPECTED:
+        print(f"ABSTAIN_PROVENANCE: hash de spec v2 no coincide ({sp_hash} != {SPEC_SHA256_EXPECTED})")
+        return 4
+
+    print("=== F2.7 CORRIDA FORMAL (201 SESIONES) ===")
+    dias, info = dias_research()
+    por_arch = {}
+    for d in dias:
+        por_arch.setdefault(d["archivo"], []).append(d["fecha"])
+    plan = [(x, sorted(f)) for x, f in sorted(por_arch.items())]
+
+    corte_utc = corte_del_sello()
+    corte_utc_ns = int(corte_utc.value)
+
+    total_zonas_excluidas = 0
+    total_zonas_elegibles = 0
+    exclusion_reasons = Counter()
+    distancias_elegibles = []
+    widths_elegibles = []
+    all_zone_intervals = []
+    file_hashes = {}
+    file_max_timestamps = {}
+    file_max_timestamps_iso = {}
+    race_results = []
+    universo_todas = []
+    sesiones_con_zonas_set = set()
+
+    for arch, fechas in plan:
+        fechas_research = [f for f in fechas if f <= RESEARCH_END_INCLUSIVE]
+        if not fechas_research:
+            continue
+        print(f"\nProcesando {arch} ({len(fechas_research)} sesiones)...", flush=True)
+
+        ini = (pd.Timestamp(fechas_research[0] + " 00:00:00", tz="America/Chicago")
+               - pd.Timedelta(days=LEAD_DAYS))
+        fin_contrato = (pd.Timestamp(fechas_research[-1] + " 00:00:00", tz="America/Chicago")
+                        + pd.Timedelta(days=1))
+        fin = min(fin_contrato.tz_convert("UTC"), corte_utc)
+
+        pq_path = data_root() / "nt8" / "6E" / arch
+        file_hashes[arch] = parquet_file_sha256(pq_path)
+
+        tk = ticks_mod.load_canonical_parquet(
+            str(pq_path),
+            start_utc_ns=int(ini.value), end_utc_ns=int(fin.value))
+
+        max_ts = int(np.max(tk.ts_ns))
+        assert max_ts < corte_utc_ns, f"FIREWALL VIOLATED in {arch}: max ts {max_ts} >= {corte_utc_ns}"
+        file_max_timestamps[arch] = max_ts
+        file_max_timestamps_iso[arch] = pd.Timestamp(max_ts, unit="ns", tz="UTC").isoformat()
+
+        print(f"  Max timestamp cargado: {file_max_timestamps_iso[arch]} (< {corte_utc.isoformat()})")
+
+        b = bars_mod.build_time_bars(tk, 1)
+        n_bars = len(b)
+        bar_end = np.asarray(b.end_ns)
+        high_t = np.asarray(b.high_t)
+        low_t = np.asarray(b.low_t)
+        close_t = np.asarray(b.close_t)
+
+        bar_start_ends = construir_bar_start_ends(
+            np.asarray(tk.ts_ns), np.asarray(b.start_ns), np.asarray(b.end_ns))
+        tk_price_ticks = np.asarray(tk.price_ticks, dtype=np.int64)
+
+        fp = bars_mod.build_footprints(tk, b) if INDICADOR in BAR_DRIVEN else None
+        mod = REGISTRY[INDICADOR]
+        r = mod.run(tk, b, fp, chart_tz=TZ_CHART) if fp is not None else mod.run(tk, b, chart_tz=TZ_CHART)
+        kernel_zones = r.get("zones") or []
+
+        fechas_disponibles = sorted(set(session_date_ct(int(ns // 1_000_000)) for ns in b.start_ns))
+        ses_de_barra, rango_sesion = sesiones_de_barras(bar_end, fechas_disponibles)
+
+        universo, _creadoras = construir_universo_zonas(
+            kernel_zones, ses_de_barra, rango_sesion, fechas_research,
+            tk.tick_size, n_bars)
+
+        print(f"  Zonas universo en archivo: {len(universo)}")
+
+        for z in universo:
+            sesiones_con_zonas_set.add(z["session_date"])
+            reflejo = construir_reflejo(z, close_t)
+            universo_todas.append(dict(zona=z, reflejo=reflejo, archivo=arch))
+            all_zone_intervals.append((z["lo_tick"], z["hi_tick"], z["created_bar"], arch))
+
+            if not reflejo["is_eligible"]:
+                total_zonas_excluidas += 1
+                exclusion_reasons[reflejo["exclusion_reason"]] += 1
+                continue
+
+            total_zonas_elegibles += 1
+            distancias_elegibles.append(reflejo["distance_ticks"])
+            widths_elegibles.append(reflejo["width_ticks"])
+
+            carrera = first_passage_race(
+                z, reflejo, z["created_bar"], high_t, low_t, close_t, n_bars,
+                tk_price_ticks=tk_price_ticks, bar_start_ends=bar_start_ends)
+            race_results.append(dict(zona=z, reflejo=reflejo, carrera=carrera, archivo=arch))
+
+    # Overlap diagnostic
+    mirror_overlaps_with_other_zones = 0
+    for res in race_results:
+        z = res["zona"]
+        m_lo, m_hi = res["reflejo"]["mirror_lo_tick"], res["reflejo"]["mirror_hi_tick"]
+        arch = res["archivo"]
+        for (lo_o, hi_o, cb_o, arch_o) in all_zone_intervals:
+            if arch_o == arch and cb_o == z["created_bar"]:
+                continue
+            if m_lo <= hi_o and m_hi >= lo_o:
+                mirror_overlaps_with_other_zones += 1
+                break
+
+    total_zonas_universo = len(universo_todas)
+    cobertura_elegibilidad = (total_zonas_elegibles / total_zonas_universo) if total_zonas_universo > 0 else 0.0
+    n_sesiones_con_zonas = len(sesiones_con_zonas_set)
+
+    n_real_first = sum(1 for res in race_results if res["carrera"]["category"] == "real_first")
+    n_mirror_first = sum(1 for res in race_results if res["carrera"]["category"] == "mirror_first")
+    n_empate_tecnico = sum(1 for res in race_results if res["carrera"]["category"] == "empate_tecnico")
+    n_doble_censura = sum(1 for res in race_results if res["carrera"]["category"] == "double_censoring")
+
+    frac_resueltos = (n_real_first + n_mirror_first) / total_zonas_elegibles if total_zonas_elegibles > 0 else 0.0
+    frac_doble_censura = n_doble_censura / total_zonas_elegibles if total_zonas_elegibles > 0 else 0.0
+    frac_empate_tecnico = n_empate_tecnico / total_zonas_elegibles if total_zonas_elegibles > 0 else 0.0
+
+    n_real_touched_v1 = sum(1 for res in race_results if res["carrera"]["real_lifecycle"]["touched_before_removal"])
+    n_mirror_touched_v1 = sum(1 for res in race_results if res["carrera"]["mirror_lifecycle"]["touched_before_removal"])
+    frac_real_touched_v1 = n_real_touched_v1 / total_zonas_elegibles if total_zonas_elegibles > 0 else 0.0
+    frac_mirror_touched_v1 = n_mirror_touched_v1 / total_zonas_elegibles if total_zonas_elegibles > 0 else 0.0
+
+    residuales = [(res["zona"]["session_date"], res["carrera"]["r_i"]) for res in race_results]
+    por_sesion = agregar_por_sesion(residuales)
+    r_s_cronologico = [por_sesion[ses] for ses in sorted(por_sesion)]
+
+    ic = hac_bartlett_ic(r_s_cronologico)
+
+    per_session_race_counts = {}
+    r_por_lado_por_sesion = {}
+
+    todas_sesiones_investigacion = sorted(info["sesiones_investigacion"])
+    for s in todas_sesiones_investigacion:
+        res_s = [r for r in race_results if r["zona"]["session_date"] == s]
+        all_u_s = [u for u in universo_todas if u["zona"]["session_date"] == s]
+        per_session_race_counts[s] = dict(
+            n_zonas=len(all_u_s),
+            n_elegibles=len(res_s),
+            n_real_first=sum(1 for r in res_s if r["carrera"]["category"] == "real_first"),
+            n_mirror_first=sum(1 for r in res_s if r["carrera"]["category"] == "mirror_first"),
+            n_empate_tecnico=sum(1 for r in res_s if r["carrera"]["category"] == "empate_tecnico"),
+            n_doble_censura=sum(1 for r in res_s if r["carrera"]["category"] == "double_censoring"),
+            mean_r_s=por_sesion.get(s),
+        )
+        bull_r = [r["carrera"]["r_i"] for r in race_results if r["zona"]["session_date"] == s and r["zona"]["is_bull"]]
+        bear_r = [r["carrera"]["r_i"] for r in race_results if r["zona"]["session_date"] == s and not r["zona"]["is_bull"]]
+        r_por_lado_por_sesion[s] = dict(
+            mean_r_bull=float(np.mean(bull_r)) if bull_r else None,
+            n_bull=len(bull_r),
+            mean_r_bear=float(np.mean(bear_r)) if bear_r else None,
+            n_bear=len(bear_r),
+        )
+
+    etiqueta = decidir_etiqueta_reflexion(
+        ic, frac_resueltos, frac_empate_tecnico,
+        n_sesiones_con_zonas=n_sesiones_con_zonas, cobertura=cobertura_elegibilidad)
+
+    if n_sesiones_con_zonas != REQUIRED_SOURCE_SESSIONS:
+        missing = sorted(set(info["sesiones_investigacion"]) - sesiones_con_zonas_set)
+        print(f"GATE FAIL: sesiones con zonas ({n_sesiones_con_zonas}) != {REQUIRED_SOURCE_SESSIONS}.")
+        print(f"Sesiones faltantes: {missing}")
+        etiqueta = "ABSTAIN_REFLECTION_COVERAGE"
+
+    head_end = git_head()
+    dirty_end = git_dirty()
+    if dirty_start or dirty_end or head_start != head_end:
+        print("ABSTAIN_PROVENANCE: el árbol de trabajo está sucio o HEAD se movió durante la corrida")
+        return 5
+
+    payload = dict(
+        schema_version=SCHEMA_VERSION,
+        status="FORMAL_RUN",
+        protocolo="docs/research/BIGTRAP2_LOCAL_REFLECTION_NULL_PROTOCOL_2026-08-12.md",
+        spec_path=str(SPEC_PATH.relative_to(REPO_PATH)),
+        spec_sha256=SPEC_SHA256_EXPECTED,
+        north_star_body_sha256=NORTH_STAR_BODY_SHA256_EXPECTED,
+        kernel_sha256=huella_del_codigo([INDICADOR]),
+        script_sha256=script_sha256(),
+        pip_freeze_sha256=pip_freeze_sha256(),
+        sys_prefix=sys.prefix,
+        data_file_hashes=file_hashes,
+        data_max_timestamps=file_max_timestamps,
+        data_max_timestamps_iso=file_max_timestamps_iso,
+        firewall_corte_iso=str(corte_utc),
+        head_start=head_start,
+        head_end=head_end,
+        dirty_start=dirty_start,
+        dirty_end=dirty_end,
+        n_sesiones_con_zonas=n_sesiones_con_zonas,
+        required_source_sessions=REQUIRED_SOURCE_SESSIONS,
+        n_zonas_universo=total_zonas_universo,
+        n_zonas_elegibles=total_zonas_elegibles,
+        n_zonas_excluidas=total_zonas_excluidas,
+        exclusion_reasons=dict(exclusion_reasons),
+        cobertura_elegibilidad=cobertura_elegibilidad,
+        cobertura_min_gate=REFLECTION_COVERAGE_MIN,
+        cobertura_gate_pass=cobertura_elegibilidad >= REFLECTION_COVERAGE_MIN,
+        mde_delta=MDE_DELTA,
+        etiqueta=etiqueta,
+        estimand_primario=dict(
+            delta_reflection=ic["mean"],
+            se_hac=ic["se_hac"],
+            ci95_lower=ic["ci95_lower"],
+            ci95_upper=ic["ci95_upper"],
+            mde=ic["mde"],
+            hac_lag=ic["lag"],
+            n_sessions=ic["n_sessions"],
+            abstain_inferencia=ic["abstain_inferencia"],
+        ),
+        secundarios_declarados=dict(
+            binary_touch_before_removal_v1_descriptivo=dict(
+                frac_real_touched=frac_real_touched_v1,
+                frac_mirror_touched=frac_mirror_touched_v1,
+                n_real_touched=n_real_touched_v1,
+                n_mirror_touched=n_mirror_touched_v1,
+                n_elegibles=total_zonas_elegibles,
+            ),
+            frac_resueltos=frac_resueltos,
+            frac_doble_censura=frac_doble_censura,
+            frac_empate_tecnico=frac_empate_tecnico,
+            denominadores=dict(
+                n_real_first=n_real_first,
+                n_mirror_first=n_mirror_first,
+                n_empate_tecnico=n_empate_tecnico,
+                n_doble_censura=n_doble_censura,
+                n_elegibles=total_zonas_elegibles,
+            ),
+        ),
+        diagnostics=dict(
+            mirror_overlap_with_other_zones_count=mirror_overlaps_with_other_zones,
+            distancia_ticks_distribution=dict(
+                min=int(min(distancias_elegibles)) if distancias_elegibles else None,
+                p25=float(np.percentile(distancias_elegibles, 25)) if distancias_elegibles else None,
+                p50=float(np.percentile(distancias_elegibles, 50)) if distancias_elegibles else None,
+                p75=float(np.percentile(distancias_elegibles, 75)) if distancias_elegibles else None,
+                max=int(max(distancias_elegibles)) if distancias_elegibles else None,
+                frac_le_2=float((np.array(distancias_elegibles) <= 2).mean()) if distancias_elegibles else None,
+                frac_le_3=float((np.array(distancias_elegibles) <= 3).mean()) if distancias_elegibles else None,
+                frac_le_5=float((np.array(distancias_elegibles) <= 5).mean()) if distancias_elegibles else None,
+            ) if distancias_elegibles else None,
+            per_session_race_counts=per_session_race_counts,
+            r_por_lado_por_sesion=r_por_lado_por_sesion,
+        ),
+        por_sesion=por_sesion,
+        outcomes_accessed=False,
+    )
+
+    payload_raw = json.dumps(payload, sort_keys=True, ensure_ascii=False, default=str).encode("utf-8")
+    payload_sha256 = hashlib.sha256(payload_raw).hexdigest()
+    payload["payload_sha256"] = payload_sha256
+
+    out_filename = f"F2.7_formal_{payload_sha256[:12]}.json"
+    out_path = REPO_PATH / "diag" / "tasa_senales" / out_filename
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2, ensure_ascii=False, default=str)
+
+    print(f"\n[CORRIDA FORMAL REPORTE]")
+    print(f"Artefacto: {out_path}")
+    print(f"Etiqueta: {etiqueta}")
+    print(f"Delta_reflection: {ic['mean']} (SE_HAC: {ic['se_hac']}, IC95: [{ic['ci95_lower']}, {ic['ci95_upper']}])")
+    print(f"Sesiones con zonas: {n_sesiones_con_zonas} / {REQUIRED_SOURCE_SESSIONS}")
+    print(f"Payload SHA256: {payload_sha256}")
+    return 0
+
+
 def main_checkout_path():
     """Resuelve la ruta del checkout principal usando `git worktree list --porcelain`."""
     try:
@@ -589,10 +906,15 @@ def main(argv=None):
                         help="Path to parquet file for structural smoke test")
     parser.add_argument("--solo-estructural", action="store_true",
                         help="Structural-only smoke (no touches computed)")
+    parser.add_argument("--formal", action="store_true",
+                        help="Ejecución formal adjudicadora de 201 sesiones")
     args = parser.parse_args(argv)
 
     if not validar_entorno_venv():
         return 2
+
+    if args.formal:
+        return correr_formal()
 
     if git_dirty():
         print("ABSTAIN_PROVENANCE: el árbol de trabajo está sucio")
@@ -626,3 +948,4 @@ def main(argv=None):
 
 if __name__ == "__main__":
     main()
+
