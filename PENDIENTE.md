@@ -98,3 +98,32 @@ rebase sobre `1916ffa` y drop de ese commit.
 La suite de 826 tests corre sólo localmente. No hay ninguna garantía mecánica de
 que un commit pusheado esté verde. Todo el reporte de estado depende de que quien
 corre la suite reporte fielmente.
+
+---
+
+## P-06 · El gate `MAX_ABS_SMD ≤ 0.10` no tiene panel de calibración sintético
+
+**Referenciada desde**: `docs/research/F2.6_NOTA_ESTIMAND_SUCESOR_2026-08-12.md`
+§3; `MAX_ABS_SMD` en `diag/tasa_senales/F1.1_nulo_condicional_distancia.py` y
+`diag/tasa_senales/F2.5_curva_soporte_balance.py`.
+
+**Estado**: ABIERTA — anotada, no construida (instrucción explícita: no
+construir el panel ahora).
+
+El umbral `0.10` sobre SMD balanceado es un valor convencional de la literatura
+de matching observacional. No existe en este repo un panel de calibración
+sintético (datos simulados con desbalance conocido) que mida, para este
+matcher concreto (K-NN MAD-estandarizado, caliper, `k_efectivo`, tamaños de
+pool reales del archivo), la tasa de error tipo I (¿con cuánta frecuencia el
+gate declara "balanceado" un desbalance real?) ni la potencia (¿con cuánta
+frecuencia detecta un desbalance que sí existe?) en función de `n`, tamaño de
+pool y magnitud del desbalance inyectado.
+
+Sin ese panel, `celda_pasa_gates=True` en la curva de F2.5 (o en el resultado
+formal de F1.1) es una afirmación calibrada por convención de la literatura,
+no por evidencia propia de que el umbral discrimina correctamente para este
+diseño específico.
+
+**Criterio para decidir**: no aplica todavía — este ítem queda registrado para
+que se decida, en un turno futuro y con pre-registro propio, si vale la pena
+construir el panel antes o después de la corrida formal de 201 sesiones.
