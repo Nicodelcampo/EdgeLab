@@ -1,11 +1,12 @@
 # BigTrap2 — nulo local por reflexión de geometría
 
 **Estado:** `PREREGISTERED_NOT_RUN`
-**Fecha:** 2026-08-12
+**Fecha de sellado:** 2026-08-12
 **Rama:** `research/bigtrap2-local-displacement-null`
-**Spec congelada:** `specs/bigtrap2_local_reflection_null_v1.json`
-**SHA-256 de spec:** `301be316dc2e3fe3c8d7272b479aae56fe54eaa815374fca27c3fee15c699ae5`
+**Spec congelada:** `specs/bigtrap2_local_reflection_null_v2.json`
+**SHA-256 de spec (LF):** `7868ff327b240a9e3a8c5a2dc2412f8605f3bd91b371dc828a677755a5e0993b`
 **NORTH_STAR (cuerpo):** `d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1`
+**Enmienda:** Enmendado por F2.7 (`docs/research/F2.7_ENMIENDA_V2_REFLEXION_2026-08-12.md`) antes de cualquier corrida; v1 superada por defectos D1 (endpoint binario saturado) y D2 (espejo muerto en B+1).
 **Alcance de datos:** research interno local; M0 sigue abierto. No se versionan ni redistribuyen parquets, filas ni artefactos derivados hasta una decisión de licencia explícita.
 
 ## 1. Pregunta y motivación
@@ -22,6 +23,8 @@ Esto adjudica una asimetría de ubicación local. No identifica una estrategia, 
 
 Se enumeran antes de elegir la población: creación, zona activa, primer toque, toque n-ésimo, invalidación, expiración y censura administrativa. La población fuente son **todas** las zonas BigTrap2 creadas en 6E/time:1 hasta 2026-06-30, sin condicionar por toque, volumen observado posterior ni outcome.
 
+El filtro de creación es por fecha de sesión (America/Chicago) ≤ 2026-06-30, nunca por rango del archivo: el archivo de smoke contiene sesiones de holdout (medido 2026-08-12).
+
 Una zona es elegible para el par reflejado sólo si, al cierre de su barra creadora, su reflexión es distinta y disjunta de la geometría real. Las exclusiones se contabilizan por motivo y no se sustituyen post hoc. Si la cobertura elegible es menor que 95 % de todas las creaciones, la campaña termina `ABSTAIN_REFLECTION_COVERAGE`.
 
 ## 3. Construcción causal y exacta del reflejo
@@ -33,7 +36,7 @@ mirror_lo_i = 2 * a_i - hi_i
 mirror_hi_i = 2 * a_i - lo_i
 ```
 
-La construcción se efectúa sólo con datos disponibles al cierre de `B_i`. Preserva exactamente ancho, distancia absoluta al ancla y grilla de ticks. El campo `is_bull` se conserva: el pseudo-objeto difiere únicamente en ubicación; no se le asigna una nueva semántica de detector. La zona y su reflejo están disponibles desde `B_i + 1`; la barra creadora nunca cuenta como toque.
+La construcción se efectúa sólo con datos disponibles al cierre de `B_i`. Preserva exactamente ancho, distancia absoluta al ancla y grilla de ticks. El campo `is_bull` se conserva como etiqueta semántica del par; las **reglas de lifecycle** del espejo son la reflexión geométrica de las de la zona: la invalidación del espejo es por cierre a través del espejo en la dirección que se aleja del ancla (equivale a invertir `is_bull` SÓLO para el lifecycle). Sin esto, con CloseThrough, el espejo bull ubicado bajo el precio muere en B+1 casi siempre y E[r] > 0 bajo el nulo por construcción (defecto D2 de v1, medido por Monte Carlo — ver F2.7). La zona y su reflejo están disponibles desde `B_i + 1`; la barra creadora nunca cuenta como toque.
 
 No hay pool, K, caliper, matching, selección de vecinos ni parámetro de desplazamiento. La reflexión es la única transformación primaria.
 
@@ -49,23 +52,13 @@ Con defaults, el horizonte natural permite la barra de expiración: `H_i = min(m
 
 ## 5. Estimand e inferencia
 
-Para cada par elegible:
-
-```text
-y_real_i   = 1 si la zona real toca antes de remoción/censura dentro de H_i
-y_mirror_i = 1 si el reflejo toca antes de remoción/censura dentro de H_i
-r_i        = y_real_i - y_mirror_i
-R_s        = mean(r_i) en la sesión creadora s
-Delta_reflection = mean_s(R_s)
-```
-
-Cada sesión pesa una vez. La inferencia primaria usa HAC Bartlett sobre la serie cronológica de `R_s`, con lag `ceil(sqrt(n_sessions))`, IC bilateral 95 % y MDE con potencia 0,80. No se inspecciona ni selecciona por resultados secundarios.
-
-Etiquetas pre-registradas: `REFLECTION_POSITIVE` si el límite inferior del IC es mayor que cero; `COMPATIBLE_WITH_ZERO` si contiene cero; `REFLECTION_NEGATIVE` si el límite superior es menor que cero; `ABSTAIN_PROVENANCE`, `ABSTAIN_REFLECTION_COVERAGE` o `ABSTAIN_INFERENCE` si falla el gate correspondiente.
+Para cada par elegible, la carrera de primer pasaje dentro del par: r_i = +1 si la zona real toca antes que el espejo (dentro de H_i, antes de remoción/censura), −1 si el espejo toca primero, 0 en empate técnico o doble censura. R_s = mean(r_i) en la sesión creadora; Delta_reflection = mean_s(R_s). Toques en la misma barra se resuelven por timestamp de tick. Las categorías de cero se publican por separado con sus denominadores (frac_resueltos, frac_doble_censura, frac_empate_tecnico). El espejo corre el lifecycle geométricamente reflejado (§3). Bajo el nulo de ubicaciones intercambiables dadas geometría y horizonte, P(real primero) = P(espejo primero) exactamente, sin estimar σ. Inferencia: HAC Bartlett sobre la serie cronológica de R_s, lag ceil(sqrt(n_sessions)), IC bilateral 95 %, MDE fijado en 0,05. Etiquetas pre-registradas: REFLECTION_POSITIVE / COMPATIBLE_WITH_ZERO / REFLECTION_NEGATIVE / ABSTAIN_*. El binario de v1 queda como secundario declarado y descriptivo.
 
 ## 6. Gates, auditoría y pruebas obligatorias
 
-Antes de datos reales deben existir tests truth-known para: reflexión exacta; ancho/distancia conservados; no-overlap; disponibilidad desde `B+1`; precedencia touch/invalidation/expiration; cutoff pre-holdout; side preservado; determinismo; igualdad del horizonte; exclusiones y cobertura; ponderación igual por sesión; HAC con serie sintética; nulo sintético; señal sintética conocida; y rechazo de árbol dirty o cambio de HEAD.
+Gates adicionales (v2): `frac_resueltos < 0,30` → `ABSTAIN_RESOLUTION` (un IC ancho se leería como ausencia de efecto cuando sería ausencia de resolución); `frac_empate_tecnico > 0,01` → `ABSTAIN_TIE_RULE` y revisar granularidad de timestamps. El gate de cobertura ≥ 95 % se mantiene como trampa de seguridad aunque la evidencia dice que pasa por construcción.
+
+Antes de datos reales deben existir tests truth-known para: reflexión exacta; ancho/distancia conservados; no-overlap; disponibilidad desde `B+1`; precedencia touch/invalidation/expiration; cutoff pre-holdout; side preservado; determinismo; igualdad del horizonte; exclusiones y cobertura; ponderación igual por sesión; HAC con serie sintética; nulo sintético; señal sintética conocida; rechazo de árbol dirty o cambio de HEAD; **regresión de D2** (espejo NO muere en B+1 en path ascendente); y **empates a nivel barra resueltos por tick**.
 
 El artefacto debe registrar hashes de spec, NORTH_STAR, kernel, script y dataset; `head_start/end`, `dirty_start/end`; todos los denominadores; exclusiones; lifecycle de ambos lados; resultados por sesión; y `outcomes_accessed=false`. Una auditoría read-only debe recalcular pares, denominadores, estimador y HAC antes de cualquier interpretación.
 

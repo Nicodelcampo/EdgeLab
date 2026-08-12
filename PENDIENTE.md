@@ -62,21 +62,9 @@ del tope de edad.
 
 **Referenciada desde**: PR #11, sección de defectos abiertos.
 
-**Estado**: ABIERTA — bloquea la corrida formal.
+**Estado**: RESUELTA (2026-08-12).
 
-El pool típico es de 9–11 candidatos y se eligen K=8: es casi un censo del
-minuto, no un matching selectivo. Las zonas BigTrap2 tienen volumen extremo por
-diseño del indicador, y los controles excluyen exactamente esas barras.
-
-**Ramas pre-registradas** (elegir UNA, con los números estructurales a la vista
-y sin haber abierto ningún endpoint):
-
-- **A — Recorte al soporte común.** El estimand pasa a ser la región de
-  solapamiento. La cobertura cae por debajo de 95% y eso requiere enmienda
-  explícita del gate, no relajación silenciosa.
-- **B — Pesos de solapamiento o entropy balancing** en lugar de K-NN.
-- **C — Controles de casi-evento**: barras que casi disparan BigTrap2. Separan
-  el efecto de la geometría del efecto del volumen.
+Cerrada por decisión de la enmienda F2.7. La curva F2.5 demostró que el estimand `v3-local` de matching condicional por distancia no posee soporte común medible bajo K-NN sin deflactar la varianza de referencia. Se declara dicho estimand como no medible según lo pre-registrado. Su campaña sucesora es la enmienda F2.7 (Nulo Local por Reflexión de Geometría, spec v2), que elimina el matching selectivo y los controles K-NN en favor de una transformación reflectiva exacta de la geometría sobre el ancla.
 
 ---
 
