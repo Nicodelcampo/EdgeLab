@@ -79,7 +79,10 @@ from diag.tasa_senales.F1_nulo_zonas_aleatorias import sesiones_de_barras  # noq
 from edgelab.bridge.indicators.bigtrap2 import DEFAULTS  # noqa: E402
 from edgelab.research.first_touch_census import session_date_ct  # noqa: E402
 
-SCHEMA_VERSION = "F1.1_nulo_condicional_distancia_v1"
+SCHEMA_VERSION = "F1.1_nulo_condicional_distancia_v2"  # v2 = F2.1: SMD ponderado
+# por-control (1/k_efectivo) + smd_matched_sets (reemplaza a smd_pareado, que
+# era un Cohen's d_z no comparable al umbral 0.10) + fail-closed por archivo
+# invalido/ausente/ABSTAIN (auditoria 2026-08-11).
 INDICADOR = "BigTrap2"
 SEMILLA = 20260811  # solo para desempates deterministas si hiciera falta; el
                      # matching en si es determinista (sin sorteo aleatorio).
@@ -339,130 +342,214 @@ def smd(real_values, control_values):
     return float((np.mean(r) - np.mean(c)) / math.sqrt(var_pool))
 
 
-def smd_pareado(diffs):
-    """SMD de diferencias PAREADAS por zona: cada diff ya es
-    (covariable_fuente - promedio_de_SUS_PROPIOS_controles), calculada ANTES
-    de agregar entre zonas/archivos. A diferencia de smd() (que compara dos
-    poblaciones separadas -- reales vs controles -- y por lo tanto puede
-    promediarse mal entre archivos con sesgo de signo opuesto), esta
-    diferencia ya lleva el signo de CADA zona: no hay agregacion intermedia
-    por archivo que pueda cancelarlo (F2, auditoria 2026-08-11)."""
-    d = np.asarray(diffs, dtype=np.float64)
-    if len(d) == 0:
+def smd_ponderado(real_values, control_values, pesos_control=None):
+    """SMD con las fuentes en peso 1 cada una y los controles ponderados
+    (por defecto 1 si no se da `pesos_control`, igual que smd()). F2.1
+    (auditoria 2026-08-11): F2 pooleaba controles individuales SIN ponderar
+    -- una zona con K_i=8 controles aportaba 8 valores crudos al pool
+    mientras una con K_i=5 aportaba 5, dandole a la primera el doble de peso
+    efectivo del lado control aunque las dos fuentes pesen 1 cada una. Cada
+    control debe pesar 1/K_i de su propio matched set para que cada zona
+    aporte peso total 1 de cada lado. Media y varianza POBLACIONALES
+    ponderadas (equivalente a smd() cuando todos los pesos son iguales)."""
+    r = np.asarray(real_values, dtype=np.float64)
+    c = np.asarray(control_values, dtype=np.float64)
+    w = np.ones(len(c), dtype=np.float64) if pesos_control is None else np.asarray(pesos_control, dtype=np.float64)
+    if len(r) == 0 or len(c) == 0 or len(w) != len(c) or w.sum() <= 0:
         return None
-    sd = np.std(d, ddof=0)
-    if sd <= 0:
-        return 0.0 if np.mean(d) == 0.0 else None
-    return float(np.mean(d) / sd)
+    media_r = np.mean(r)
+    media_c = np.average(c, weights=w)
+    var_r = np.mean((r - media_r) ** 2)
+    var_c = np.average((c - media_c) ** 2, weights=w)
+    var_pool = (var_r + var_c) / 2.0
+    if var_pool <= 0:
+        return 0.0 if media_r == media_c else None
+    return float((media_r - media_c) / math.sqrt(var_pool))
+
+
+def smd_matched_sets(source_values, control_mean_values):
+    """SMD estandar (no pareado) entre las fuentes y el PROMEDIO de los
+    controles de cada matched set: source_values[i] vs
+    control_mean_values[i] = mean_j(control_ij). Cada zona aporta
+    exactamente UNA observacion de cada lado, asi que no hace falta ponderar
+    aca (a diferencia de smd_ponderado(), que poolea controles individuales
+    con K_i dispar). Reemplaza a smd_pareado() (F2.1, auditoria 2026-08-11):
+    mean(diff)/sd(diff) es un Cohen's d_z (efecto pareado, escala de la SD de
+    las DIFERENCIAS) -- una magnitud distinta, no comparable al umbral
+    convencional 0.10 de SMD. Esta es la definicion estandar de SMD de
+    matched-sets (Stuart 2010): la misma formula de smd(), aplicada a
+    (fuente_i) vs (promedio_de_sus_controles_i)."""
+    return smd(source_values, control_mean_values)
 
 
 def calcular_balance_cobertura(zonas_matched, cov_por_barra):
     """cobertura = fraccion de zonas del universo con >=MIN_CONTROLS
     controles. SMD compara la covariable de las barras FUENTE contra el
-    promedio de covariables de sus controles elegidos, agregado sobre todas
-    las zonas con match OK -- DENTRO de este archivo (diagnostico por
-    archivo). Ademas de ese SMD por-archivo, devuelve las listas crudas
-    (reales/controles) y los diffs pareados por zona (fuente menos el
-    promedio de SUS controles) SIN agregar -- main() los poolea globalmente
-    entre archivos antes de decidir ningun gate. F2 (auditoria 2026-08-11):
-    promediar el smd_log1p_* por-archivo entre archivos (lo que este mismo
-    dict devolvia antes de F2 como si fuera la cifra final) puede cancelarse
-    en signo -- +0.5 en un archivo y -0.5 en otro promedian 0.0 y pasarian el
-    gate sin que ningun archivo individual este balanceado. Ese numero ahora
-    es solo diagnostico por-archivo, nunca la base de un gate."""
+    promedio PONDERADO (1/k_efectivo por control, F2.1) de covariables de sus
+    controles elegidos, agregado sobre todas las zonas con match OK --
+    DENTRO de este archivo (diagnostico por archivo). Ademas de ese SMD
+    por-archivo, devuelve las listas crudas (reales/controles) CON sus pesos,
+    y los pares (fuente, promedio_de_sus_controles) por zona para
+    smd_matched_sets -- todo SIN agregar entre zonas. main() los poolea
+    globalmente entre archivos antes de decidir ningun gate. F2 (auditoria
+    2026-08-11): promediar el smd_log1p_* por-archivo entre archivos (lo que
+    este mismo dict devolvia antes de F2 como si fuera la cifra final) puede
+    cancelarse en signo -- +0.5 en un archivo y -0.5 en otro promedian 0.0 y
+    pasarian el gate sin que ningun archivo individual este balanceado. Ese
+    numero ahora es solo diagnostico por-archivo, nunca la base de un gate."""
     n_total = len(zonas_matched)
     n_ok = sum(1 for z in zonas_matched if z["match"]["estado"] == "OK")
     cobertura = (n_ok / n_total) if n_total else 0.0
 
     reales_s60, reales_lv = [], []
-    controles_s60, controles_lv = [], []
-    pareado_s60, pareado_lv = [], []
+    controles_s60, controles_lv, pesos_controles = [], [], []
+    fuente_ms_s60, control_mean_s60 = [], []
+    fuente_ms_lv, control_mean_lv = [], []
     for z in zonas_matched:
         if z["match"]["estado"] != "OK":
             continue
         zs60, zlv = z["covariables_fuente"]
         reales_s60.append(zs60)
         reales_lv.append(zlv)
+        elegidos = z["match"]["elegidos"]
+        k_i = len(elegidos)
+        peso_i = (1.0 / k_i) if k_i else 0.0
         ctrl_s60, ctrl_lv = [], []
-        for ctrl in z["match"]["elegidos"]:
+        for ctrl in elegidos:
             cs60, clv = cov_por_barra[ctrl["bar_index"]]
             controles_s60.append(cs60)
             controles_lv.append(clv)
+            pesos_controles.append(peso_i)
             ctrl_s60.append(cs60)
             ctrl_lv.append(clv)
         if ctrl_s60:  # "OK" implica elegidos no vacio en produccion (igual
             # que asume p0_i mas abajo); guardia solo para no ensuciar con
             # NaN los fixtures sinteticos de test que construyen OK a mano
             # con elegidos=[].
-            pareado_s60.append(zs60 - float(np.mean(ctrl_s60)))
-            pareado_lv.append(zlv - float(np.mean(ctrl_lv)))
+            fuente_ms_s60.append(zs60)
+            control_mean_s60.append(float(np.mean(ctrl_s60)))
+            fuente_ms_lv.append(zlv)
+            control_mean_lv.append(float(np.mean(ctrl_lv)))
 
     return dict(
         n_total_zonas=n_total, n_zonas_ok=n_ok, cobertura=cobertura,
-        smd_log1p_sigma60_ticks=smd(reales_s60, controles_s60),
-        smd_log1p_bar_volume=smd(reales_lv, controles_lv),
+        smd_log1p_sigma60_ticks=smd_ponderado(reales_s60, controles_s60, pesos_controles),
+        smd_log1p_bar_volume=smd_ponderado(reales_lv, controles_lv, pesos_controles),
         crudo_reales_s60=reales_s60, crudo_controles_s60=controles_s60,
         crudo_reales_lv=reales_lv, crudo_controles_lv=controles_lv,
-        pareado_s60=pareado_s60, pareado_lv=pareado_lv,
+        pesos_controles=pesos_controles,
+        fuente_matched_sets_s60=fuente_ms_s60, control_mean_s60=control_mean_s60,
+        fuente_matched_sets_lv=fuente_ms_lv, control_mean_lv=control_mean_lv,
     )
 
 
-def agregar_smd_global(cobertura_por_archivo):
-    """F2 (auditoria 2026-08-11, defecto que sobrevivio al fix de reanclaje):
-    agrega SMD ENTRE archivos sin promediar SMDs por-archivo -- ese promedio
-    puede cancelarse en signo (+0.5 en un archivo, -0.5 en otro, promedio
-    0.0, pasa el gate sin que ningun archivo individual este balanceado).
+_ARCHIVO_AUSENTE = object()  # centinela: distinto de None (None = ABSTAIN explicito)
 
-    Recibe {archivo: cobertura_dict} (la salida de calcular_balance_cobertura
-    de cada archivo, con sus listas crudas y diffs pareados) y devuelve tres
-    variantes de SMD que NUNCA pasan por un promedio de razones:
-    - global_pooled: una sola smd() sobre la UNION de valores crudos
-      (reales/controles) de TODOS los archivos.
-    - pareado: smd_pareado() sobre los diffs por-zona (fuente - promedio de
-      SUS controles), ya pooleados globalmente -- el signo de cada zona se
-      fija ANTES de agregar, asi que no hay paso intermedio que lo cancele.
-    - max_abs_por_archivo: el peor |SMD| individual de un solo archivo --
-      capta un archivo desbalanceado que el pool global podria diluir si el
-      resto son muchos y estan bien balanceados.
 
-    El gate exige que las TRES pasen la tolerancia: el escenario que motivo
-    F2 (dos archivos +0.5/-0.5) falla por max_abs_por_archivo aunque el pool
-    global y el pareado dieran ~0."""
-    reales_s60_g, controles_s60_g = [], []
-    reales_lv_g, controles_lv_g = [], []
-    pareado_s60_g, pareado_lv_g = [], []
+def agregar_smd_global(cobertura_por_archivo, archivos_planificados):
+    """F2 (auditoria 2026-08-11) + F2.1 (segunda auditoria independiente,
+    misma fecha): agrega SMD ENTRE archivos sin promediar SMDs por-archivo --
+    ese promedio puede cancelarse en signo (+0.5 en un archivo, -0.5 en otro,
+    promedio 0.0, pasa el gate sin que ningun archivo individual este
+    balanceado).
+
+    `cobertura_por_archivo`: {archivo: cobertura_dict} (salida de
+    calcular_balance_cobertura) o {archivo: None} para un archivo procesado
+    pero sin observaciones comparables (p.ej. ABSTAIN por `sequence` invalida).
+    `archivos_planificados`: TODOS los archivos que el plan de research
+    incluia -- para detectar un archivo omitido por completo (ni siquiera una
+    entrada None en el dict), no solo los que llegaron al pooling.
+
+    Devuelve tres variantes de SMD que NUNCA pasan por un promedio de
+    razones:
+    - global_pooled: smd_ponderado() sobre la UNION ponderada de valores
+      crudos (reales/controles, con 1/k_efectivo por control) de TODOS los
+      archivos.
+    - matched_sets: smd_matched_sets() sobre los pares (fuente,
+      promedio_de_sus_controles) por zona, ya pooleados globalmente -- cada
+      zona aporta una observacion de cada lado, sin ponderar aca.
+    - max_abs_por_archivo: el peor |SMD| individual (ya ponderado dentro de
+      cada archivo) de un solo archivo -- capta un archivo desbalanceado que
+      el pool global podria diluir si el resto son muchos y estan bien
+      balanceados.
+
+    Fail-closed (F2.1): cualquier archivo planificado que este ausente del
+    dict, tenga cobertura None (ABSTAIN), o cuyo SMD por-archivo no sea un
+    numero finito (NaN/Inf), hace fallar el gate de esa covariable con un
+    motivo explicito en *_archivos_invalidos -- sin filtrarlo antes de
+    max_abs_por_archivo. El gate exige ademas que las tres variantes pasen la
+    tolerancia: el escenario que motivo F2 (dos archivos +0.5/-0.5) falla por
+    max_abs_por_archivo aunque el pool global y el matched-sets dieran ~0."""
+    reales_s60_g, controles_s60_g, pesos_s60_g = [], [], []
+    reales_lv_g, controles_lv_g, pesos_lv_g = [], [], []
+    fuente_ms_s60_g, control_mean_ms_s60_g = [], []
+    fuente_ms_lv_g, control_mean_ms_lv_g = [], []
     smd_s60_por_archivo, smd_lv_por_archivo = {}, {}
-    for arch, cob in cobertura_por_archivo.items():
+    invalidos_s60, invalidos_lv = [], []
+
+    for arch in archivos_planificados:
+        cob = cobertura_por_archivo.get(arch, _ARCHIVO_AUSENTE)
+        if cob is _ARCHIVO_AUSENTE:
+            smd_s60_por_archivo[arch] = None
+            smd_lv_por_archivo[arch] = None
+            invalidos_s60.append((arch, "archivo planificado ausente de cobertura_por_archivo"))
+            invalidos_lv.append((arch, "archivo planificado ausente de cobertura_por_archivo"))
+            continue
+        if cob is None:
+            smd_s60_por_archivo[arch] = None
+            smd_lv_por_archivo[arch] = None
+            invalidos_s60.append((arch, "archivo sin observaciones comparables (ABSTAIN)"))
+            invalidos_lv.append((arch, "archivo sin observaciones comparables (ABSTAIN)"))
+            continue
+
+        s60_arch = cob["smd_log1p_sigma60_ticks"]
+        lv_arch = cob["smd_log1p_bar_volume"]
+        smd_s60_por_archivo[arch] = s60_arch
+        smd_lv_por_archivo[arch] = lv_arch
+        if s60_arch is None or not math.isfinite(s60_arch):
+            invalidos_s60.append((arch, "smd_log1p_sigma60_ticks no finito (None/NaN/Inf)"))
+        if lv_arch is None or not math.isfinite(lv_arch):
+            invalidos_lv.append((arch, "smd_log1p_bar_volume no finito (None/NaN/Inf)"))
+
         reales_s60_g.extend(cob["crudo_reales_s60"])
         controles_s60_g.extend(cob["crudo_controles_s60"])
+        pesos_s60_g.extend(cob["pesos_controles"])
         reales_lv_g.extend(cob["crudo_reales_lv"])
         controles_lv_g.extend(cob["crudo_controles_lv"])
-        pareado_s60_g.extend(cob["pareado_s60"])
-        pareado_lv_g.extend(cob["pareado_lv"])
-        smd_s60_por_archivo[arch] = cob["smd_log1p_sigma60_ticks"]
-        smd_lv_por_archivo[arch] = cob["smd_log1p_bar_volume"]
+        pesos_lv_g.extend(cob["pesos_controles"])
+        fuente_ms_s60_g.extend(cob["fuente_matched_sets_s60"])
+        control_mean_ms_s60_g.extend(cob["control_mean_s60"])
+        fuente_ms_lv_g.extend(cob["fuente_matched_sets_lv"])
+        control_mean_ms_lv_g.extend(cob["control_mean_lv"])
 
-    smd_s60_global = smd(reales_s60_g, controles_s60_g)
-    smd_lv_global = smd(reales_lv_g, controles_lv_g)
-    smd_s60_pareado = smd_pareado(pareado_s60_g)
-    smd_lv_pareado = smd_pareado(pareado_lv_g)
-    smd_s60_max_abs = max((abs(v) for v in smd_s60_por_archivo.values() if v is not None), default=None)
-    smd_lv_max_abs = max((abs(v) for v in smd_lv_por_archivo.values() if v is not None), default=None)
+    smd_s60_global = smd_ponderado(reales_s60_g, controles_s60_g, pesos_s60_g)
+    smd_lv_global = smd_ponderado(reales_lv_g, controles_lv_g, pesos_lv_g)
+    smd_s60_ms = smd_matched_sets(fuente_ms_s60_g, control_mean_ms_s60_g)
+    smd_lv_ms = smd_matched_sets(fuente_ms_lv_g, control_mean_ms_lv_g)
+    smd_s60_max_abs = max((abs(v) for v in smd_s60_por_archivo.values() if v is not None and math.isfinite(v)),
+                          default=None)
+    smd_lv_max_abs = max((abs(v) for v in smd_lv_por_archivo.values() if v is not None and math.isfinite(v)),
+                         default=None)
 
-    def _ok(g, p, mx):
-        return (g is not None and abs(g) <= MAX_ABS_SMD
-                and p is not None and abs(p) <= MAX_ABS_SMD
-                and mx is not None and mx <= MAX_ABS_SMD)
+    def _finito_y_dentro(v):
+        return v is not None and math.isfinite(v) and abs(v) <= MAX_ABS_SMD
+
+    smd_sigma60_ok = (not invalidos_s60 and _finito_y_dentro(smd_s60_global) and _finito_y_dentro(smd_s60_ms)
+                      and smd_s60_max_abs is not None and smd_s60_max_abs <= MAX_ABS_SMD)
+    smd_bar_volume_ok = (not invalidos_lv and _finito_y_dentro(smd_lv_global) and _finito_y_dentro(smd_lv_ms)
+                         and smd_lv_max_abs is not None and smd_lv_max_abs <= MAX_ABS_SMD)
 
     return dict(
         smd_log1p_sigma60_ticks_global_pooled=smd_s60_global,
-        smd_log1p_sigma60_ticks_pareado=smd_s60_pareado,
+        smd_log1p_sigma60_ticks_matched_sets=smd_s60_ms,
         smd_log1p_sigma60_ticks_max_abs_por_archivo=smd_s60_max_abs,
-        smd_sigma60_ok=_ok(smd_s60_global, smd_s60_pareado, smd_s60_max_abs),
+        smd_log1p_sigma60_ticks_archivos_invalidos=invalidos_s60,
+        smd_sigma60_ok=smd_sigma60_ok,
         smd_log1p_bar_volume_global_pooled=smd_lv_global,
-        smd_log1p_bar_volume_pareado=smd_lv_pareado,
+        smd_log1p_bar_volume_matched_sets=smd_lv_ms,
         smd_log1p_bar_volume_max_abs_por_archivo=smd_lv_max_abs,
-        smd_bar_volume_ok=_ok(smd_lv_global, smd_lv_pareado, smd_lv_max_abs),
+        smd_log1p_bar_volume_archivos_invalidos=invalidos_lv,
+        smd_bar_volume_ok=smd_bar_volume_ok,
         smd_por_archivo=dict(log1p_sigma60_ticks=smd_s60_por_archivo, log1p_bar_volume=smd_lv_por_archivo),
     )
 
@@ -844,6 +931,7 @@ def main(argv=None):
     peor = max(f for _x, fs in plan for f in fs)
     assert peor <= MAX_FECHA, "FIREWALL: %s > %s" % (peor, MAX_FECHA)
     ns_sesiones = sum(len(fs) for _x, fs in plan)
+    archivos_planificados = [x for x, _fs in plan]  # F2.1: fail-closed necesita el plan COMPLETO
 
     print("F1.1 NULO CONDICIONAL POR DISTANCIA -- adjudicacion geometrica exacta")
     print("  universo %d sesiones | K=%d min_controls=%d | max_age_bars=%d"
@@ -868,6 +956,7 @@ def main(argv=None):
             start_utc_ns=int(ini.value), end_utc_ns=int(fin.value))
         if not bool((np.diff(np.asarray(tk.sequence)) > 0).all()):
             crudo[arch] = dict(estado="ABSTAIN", motivo="`sequence` no es orden total")
+            coberturas_por_archivo[arch] = None  # F2.1: registrar el ABSTAIN, no dejarlo ausente
             continue
 
         b = bars_mod.build_time_bars(tk, 1)
@@ -901,7 +990,7 @@ def main(argv=None):
 
     cobertura_global = (cobertura_acumulada["n_zonas_ok"] / cobertura_acumulada["n_total_zonas"]
                         if cobertura_acumulada["n_total_zonas"] else 0.0)
-    smd_agregado = agregar_smd_global(coberturas_por_archivo)  # F2: nunca promedio de SMDs por-archivo
+    smd_agregado = agregar_smd_global(coberturas_por_archivo, archivos_planificados)  # F2/F2.1: fail-closed
 
     # sesiones_con_al_menos_una_zona: de zonas_matched (SIEMPRE tiene
     # session_date), no de `residuales` -- residuales queda vacio a proposito

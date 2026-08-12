@@ -11,6 +11,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import math
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -751,29 +752,66 @@ def test_gate_falla_por_smd_fuera_de_tolerancia():
 # F2 (bloqueante para la corrida formal, auditoria 2026-08-11): el SMD
 # agregado entre archivos NUNCA puede ser un promedio de SMDs por-archivo --
 # +0.5 en un archivo y -0.5 en otro promedian 0.0 y pasarian el gate sin que
-# ningun archivo individual este balanceado. calcular_balance_cobertura()
-# ahora expone las listas crudas y los diffs pareados sin agregar;
-# agregar_smd_global() poolea eso entre archivos con tres variantes
-# (global_pooled, pareado, max_abs_por_archivo) y exige que las tres pasen.
+# ningun archivo individual este balanceado.
+#
+# F2.1 (segunda auditoria independiente, misma fecha, sobre el propio fix de
+# F2): tres desviaciones mas.
+# (a) pooling de controles SIN ponderar por 1/k_efectivo -- una zona con
+#     K=8 pesaba mas del lado control que una con K=5 solo por tener mas
+#     valores crudos en la lista;
+# (b) "SMD pareado" (mean(diff)/sd(diff)) es en realidad un Cohen's d_z
+#     (efecto pareado, escala de la SD de las diferencias), no un SMD
+#     comparable al umbral 0.10 -- reemplazado por smd_matched_sets()
+#     (smd() estandar entre fuente y promedio_de_sus_controles por zona);
+# (c) max_abs_por_archivo filtraba los None antes de tomar el maximo, y un
+#     archivo omitido del pooling (ausente del dict, o ABSTAIN) no dejaba
+#     ningun rastro -- ahora agregar_smd_global() recibe el plan COMPLETO de
+#     archivos y falla el gate (con motivo explicito) si cualquiera de ellos
+#     esta ausente, en ABSTAIN, o con un SMD no finito.
 # ======================================================================
 
-def test_smd_pareado_valores_conocidos():
-    assert m.smd_pareado([]) is None
-    # sd=0, media!=0 -> None (mismo criterio que smd(), no confundir con balance perfecto)
-    assert m.smd_pareado([1.0, 1.0, 1.0, 1.0]) is None
-    # sd=0, media=0 -> balance perfecto, 0.0 explicito (no None)
-    assert m.smd_pareado([0.0, 0.0, 0.0]) == 0.0
-    # media=1.0, sd poblacional de [0,2] = 1.0 -> smd_pareado=1.0
-    assert m.smd_pareado([0.0, 2.0]) == pytest.approx(1.0)
+def test_smd_ponderado_valores_conocidos():
+    # sin pesos (None) -> peso 1 cada uno, coincide con smd() sin ponderar.
+    r, c = [1.0, 3.0], [0.0, 2.0]
+    assert m.smd_ponderado(r, c) == pytest.approx(m.smd(r, c))
+    # con pesos dispares: 2 controles en 0.0 (peso 0.25 c/u) + 1 control en
+    # 4.0 (peso 1.0) -- el de peso 1.0 domina la media ponderada del lado
+    # control, no el conteo de valores.
+    r2, c2, w2 = [2.0], [0.0, 0.0, 4.0], [0.25, 0.25, 1.0]
+    media_c = (0.0 * 0.25 + 0.0 * 0.25 + 4.0 * 1.0) / sum(w2)
+    assert media_c == pytest.approx(8.0 / 3.0)
+    valor = m.smd_ponderado(r2, c2, w2)
+    # verificacion independiente a mano (no solo re-llamar a la funcion): la
+    # varianza ponderada del lado control, poblacional, con esos mismos pesos.
+    var_c = sum(w * (x - media_c) ** 2 for x, w in zip(c2, w2)) / sum(w2)
+    var_pool = (0.0 + var_c) / 2.0  # var_r=0.0: un solo valor
+    assert valor == pytest.approx((2.0 - media_c) / math.sqrt(var_pool))
+    # peso total 0 -> None (division por cero evitada, no un 0.0 enganoso)
+    assert m.smd_ponderado([1.0], [1.0], [0.0]) is None
+    assert m.smd_ponderado([], [1.0], [1.0]) is None
 
 
-def test_calcular_balance_cobertura_expone_crudo_y_pareado_sin_agregar():
-    """calcular_balance_cobertura tiene que devolver las listas CRUDAS (no
-    solo el SMD ya reducido) y los diffs pareados por zona (fuente - promedio
-    de SUS PROPIOS controles), sin agregar entre zonas -- eso es lo que
-    agregar_smd_global() necesita para poolear entre archivos sin pasar por
-    un promedio de SMDs. Valores conocidos a mano: 2 zonas OK, 1 ABSTAIN
-    (que no debe aportar nada)."""
+def test_smd_matched_sets_valores_conocidos():
+    """smd_matched_sets NO es Cohen's d_z (mean(diff)/sd(diff)) -- es smd()
+    estandar entre fuente y promedio_de_controles por zona. Ejemplo donde las
+    dos formulas divergen: diffs constantes (sd(diff)=0) haria que el viejo
+    smd_pareado devolviera None (indefinido), mientras que smd_matched_sets
+    da un valor finito porque mira la varianza de cada lado por separado, no
+    la de la diferencia."""
+    fuente = [1.0, 3.0]
+    control_mean = [0.0, 2.0]  # diffs=[1,1]: constante, sd(diff)=0
+    assert m.smd_matched_sets(fuente, control_mean) == m.smd(fuente, control_mean)
+    # a mano: media(fuente)=2.0, media(control_mean)=1.0, var poblacional de
+    # cada lado (ambos [x-2,x] centrados) = 1.0, var_pool=1.0 -> smd=1.0.
+    assert m.smd_matched_sets(fuente, control_mean) == pytest.approx(1.0)
+
+
+def test_calcular_balance_cobertura_expone_crudo_pesos_y_matched_sets():
+    """calcular_balance_cobertura tiene que devolver, ademas del SMD
+    ponderado por-archivo, las listas crudas CON su peso (1/k_efectivo por
+    control) y los pares (fuente, promedio_de_sus_controles) por zona para
+    smd_matched_sets -- sin agregar entre zonas (F2.1). Valores conocidos a
+    mano: 2 zonas OK (K=2 y K=1), 1 ABSTAIN (que no debe aportar nada)."""
     zonas_matched = [
         dict(covariables_fuente=(1.0, 5.0),
             match=dict(estado="OK", elegidos=[dict(bar_index=10), dict(bar_index=11)])),
@@ -787,12 +825,48 @@ def test_calcular_balance_cobertura_expone_crudo_y_pareado_sin_agregar():
     assert res["crudo_reales_s60"] == [1.0, 2.0]
     assert res["crudo_reales_lv"] == [5.0, 6.0]
     # los 3 controles de las 2 zonas OK, sin promediar por zona (bar 10 y 11
-    # de la zona 1, bar 20 de la zona 2 -- el ABSTAIN no aporta nada).
+    # de la zona 1 con K=2, bar 20 de la zona 2 con K=1 -- ABSTAIN no aporta).
     assert res["crudo_controles_s60"] == [0.5, 1.5, 1.0]
     assert res["crudo_controles_lv"] == [4.0, 6.0, 5.0]
-    # zona 1: 1.0 - media(0.5,1.5) = 0.0 | zona 2: 2.0 - 1.0 = 1.0
-    assert res["pareado_s60"] == [pytest.approx(0.0), pytest.approx(1.0)]
-    assert res["pareado_lv"] == [pytest.approx(0.0), pytest.approx(1.0)]
+    # peso 1/K_i por control: zona 1 (K=2) -> 0.5 cada uno, zona 2 (K=1) -> 1.0.
+    assert res["pesos_controles"] == [pytest.approx(0.5), pytest.approx(0.5), pytest.approx(1.0)]
+    assert sum(res["pesos_controles"][:2]) == pytest.approx(1.0)  # peso total 1 por zona, sea K=2...
+    assert sum(res["pesos_controles"][2:]) == pytest.approx(1.0)  # ...o K=1
+
+    # matched-sets: un par (fuente, promedio_de_sus_controles) por zona OK.
+    assert res["fuente_matched_sets_s60"] == [1.0, 2.0]
+    assert res["control_mean_s60"] == [pytest.approx(1.0), pytest.approx(1.0)]  # (0.5+1.5)/2=1.0 | 1.0
+    assert res["fuente_matched_sets_lv"] == [5.0, 6.0]
+    assert res["control_mean_lv"] == [pytest.approx(5.0), pytest.approx(5.0)]  # (4.0+6.0)/2=5.0 | 5.0
+
+    # el SMD por-archivo que devuelve tiene que ser EXACTAMENTE smd_ponderado
+    # sobre sus propias listas crudas+pesos expuestas -- no otra cosa.
+    assert res["smd_log1p_sigma60_ticks"] == pytest.approx(
+        m.smd_ponderado(res["crudo_reales_s60"], res["crudo_controles_s60"], res["pesos_controles"]))
+
+
+def test_f21_peso_por_control_neutraliza_diferencia_de_k():
+    """K=5 vs K=8 tiene que aportar el MISMO peso total (1.0) del lado
+    control -- una zona con 8 controles no puede pesar mas que una con 5
+    solo por tener mas valores individuales en la lista cruda. zona A: 8
+    controles en 1.0. zona B: 5 controles en 3.0. La media ponderada del lado
+    control tiene que ser (1.0+3.0)/2=2.0 (una zona, un voto) -- NO 23/13
+    (la media si se pondera por CANTIDAD de controles, que domina la zona de
+    8)."""
+    zonas_matched = [
+        dict(covariables_fuente=(0.0, 0.0),
+            match=dict(estado="OK", elegidos=[dict(bar_index=i) for i in range(8)])),
+        dict(covariables_fuente=(0.0, 0.0),
+            match=dict(estado="OK", elegidos=[dict(bar_index=100 + i) for i in range(5)])),
+    ]
+    cov_por_barra = {i: (1.0, 0.0) for i in range(8)}
+    cov_por_barra.update({100 + i: (3.0, 0.0) for i in range(5)})
+    res = m.calcular_balance_cobertura(zonas_matched, cov_por_barra)
+
+    assert res["pesos_controles"][:8] == [pytest.approx(1.0 / 8)] * 8
+    assert res["pesos_controles"][8:] == [pytest.approx(1.0 / 5)] * 5
+    media_ponderada = np.average(res["crudo_controles_s60"], weights=res["pesos_controles"])
+    assert media_ponderada == pytest.approx(2.0)  # (1.0+3.0)/2, NO 23/13≈1.77
 
 
 def test_f2_agregar_smd_global_no_cancela_signo_entre_archivos():
@@ -802,51 +876,90 @@ def test_f2_agregar_smd_global_no_cancela_signo_entre_archivos():
     NINGUN archivo individual este balanceado. agregar_smd_global() no puede
     cancelarse asi: max_abs_por_archivo es un MAXIMO, no un promedio, y por
     construccion nunca puede dar menos que el peor |SMD| individual -- ni el
-    pool global ni el pareado alcanzan a cazar esta cancelacion simetrica
-    especifica por si solos (verificado abajo), asi que el gate depende de
-    max_abs_por_archivo para este caso exacto."""
-    # archivo A: reales media 0.5 var 1.0, controles media 0.0 var 1.0 -> SMD=+0.5
-    reales_a = [-0.5, 1.5] * 20
-    controles_a = [-1.0, 1.0] * 20
-    assert m.smd(reales_a, controles_a) == pytest.approx(0.5)
-    # archivo B: reales media -0.5 var 1.0, mismos controles -> SMD=-0.5
-    reales_b = [-1.5, 0.5] * 20
-    controles_b = [-1.0, 1.0] * 20
-    assert m.smd(reales_b, controles_b) == pytest.approx(-0.5)
+    pool global ni el matched-sets alcanzan a cazar esta cancelacion
+    simetrica especifica por si solos (verificado abajo, K=1 por zona para
+    que el pool ponderado y el matched-sets coincidan exactamente con el
+    calculo a mano), asi que el gate depende de max_abs_por_archivo para
+    este caso exacto."""
+    # archivo A: 2 zonas, K=1 cada una. fuente=[-0.5,1.5] control=[-1.0,1.0]
+    # -> media_fuente=0.5, media_control=0.0, var=1.0 ambos lados -> SMD=+0.5.
+    reales_a, controles_a, pesos_a = [-0.5, 1.5], [-1.0, 1.0], [1.0, 1.0]
+    assert m.smd_ponderado(reales_a, controles_a, pesos_a) == pytest.approx(0.5)
+    # archivo B: fuente=[-1.5,0.5], mismos controles -> media_fuente=-0.5 -> SMD=-0.5.
+    reales_b, controles_b, pesos_b = [-1.5, 0.5], [-1.0, 1.0], [1.0, 1.0]
+    assert m.smd_ponderado(reales_b, controles_b, pesos_b) == pytest.approx(-0.5)
     # documentacion del bug pre-F2: el promedio naive cancela a ~0 y pasaria.
     assert (0.5 + (-0.5)) / 2 == pytest.approx(0.0)
+    # el pool global ponderado (union) Y el matched-sets TAMBIEN cancelan en
+    # este caso simetrico -- no son los que salvan el gate aca, max_abs_por_archivo si.
+    assert m.smd_ponderado(reales_a + reales_b, controles_a + controles_b,
+                           pesos_a + pesos_b) == pytest.approx(0.0)
+    assert m.smd_matched_sets(reales_a + reales_b, controles_a + controles_b) == pytest.approx(0.0)
 
-    pareado_a = [0.5] * 20   # cada zona de A: fuente - promedio de sus controles = +0.5
-    pareado_b = [-0.5] * 20  # cada zona de B: -0.5
-    # el pool global (union de crudos) TAMBIEN cancela en este caso simetrico
-    # -- no es el que salva el gate aca, max_abs_por_archivo si.
-    assert m.smd(reales_a + reales_b, controles_a + controles_b) == pytest.approx(0.0)
-    assert m.smd_pareado(pareado_a + pareado_b) == pytest.approx(0.0)
-
-    cobertura_por_archivo = {
-        "archivoA": dict(crudo_reales_s60=reales_a, crudo_controles_s60=controles_a,
-                         crudo_reales_lv=[0.0] * 40, crudo_controles_lv=[0.0] * 40,
-                         pareado_s60=pareado_a, pareado_lv=[0.0] * 20,
-                         smd_log1p_sigma60_ticks=0.5, smd_log1p_bar_volume=0.0),
-        "archivoB": dict(crudo_reales_s60=reales_b, crudo_controles_s60=controles_b,
-                         crudo_reales_lv=[0.0] * 40, crudo_controles_lv=[0.0] * 40,
-                         pareado_s60=pareado_b, pareado_lv=[0.0] * 20,
-                         smd_log1p_sigma60_ticks=-0.5, smd_log1p_bar_volume=0.0),
-    }
-    agg = m.agregar_smd_global(cobertura_por_archivo)
+    cobertura_a = dict(
+        crudo_reales_s60=reales_a, crudo_controles_s60=controles_a, pesos_controles=pesos_a,
+        crudo_reales_lv=[0.0, 0.0], crudo_controles_lv=[0.0, 0.0],
+        fuente_matched_sets_s60=reales_a, control_mean_s60=controles_a,
+        fuente_matched_sets_lv=[0.0, 0.0], control_mean_lv=[0.0, 0.0],
+        smd_log1p_sigma60_ticks=0.5, smd_log1p_bar_volume=0.0)
+    cobertura_b = dict(
+        crudo_reales_s60=reales_b, crudo_controles_s60=controles_b, pesos_controles=pesos_b,
+        crudo_reales_lv=[0.0, 0.0], crudo_controles_lv=[0.0, 0.0],
+        fuente_matched_sets_s60=reales_b, control_mean_s60=controles_b,
+        fuente_matched_sets_lv=[0.0, 0.0], control_mean_lv=[0.0, 0.0],
+        smd_log1p_sigma60_ticks=-0.5, smd_log1p_bar_volume=0.0)
+    agg = m.agregar_smd_global({"archivoA": cobertura_a, "archivoB": cobertura_b},
+                               ["archivoA", "archivoB"])
 
     assert agg["smd_log1p_sigma60_ticks_global_pooled"] == pytest.approx(0.0)
-    assert agg["smd_log1p_sigma60_ticks_pareado"] == pytest.approx(0.0)
+    assert agg["smd_log1p_sigma60_ticks_matched_sets"] == pytest.approx(0.0)
     # el centinela que NO puede cancelarse: el peor |SMD| individual sigue
     # siendo 0.5, sin importar cuantos archivos balanceados haya alrededor.
     assert agg["smd_log1p_sigma60_ticks_max_abs_por_archivo"] == pytest.approx(0.5)
     assert agg["smd_por_archivo"]["log1p_sigma60_ticks"] == {"archivoA": 0.5, "archivoB": -0.5}
     assert agg["smd_sigma60_ok"] is False  # el gate tiene que FALLAR, no cancelarse a "OK"
+    assert agg["smd_log1p_sigma60_ticks_archivos_invalidos"] == []  # no es un fail-closed, es max_abs
 
     # log1p_bar_volume: los dos archivos SI estan balanceados (reales=controles
     # constante en 0.0) -> ese gate especifico tiene que pasar -- prueba que
     # el fallo de sigma60 no contamina el gate de la otra covariable.
     assert agg["smd_bar_volume_ok"] is True
+
+
+def test_f21_fail_closed_archivo_invalido_hace_fallar_el_gate():
+    """Un archivo con SMD invalido (None por ABSTAIN, ausente por completo
+    del dict, o NaN explicito) tiene que hacer FALLAR el gate de esa
+    covariable aunque el resto de los archivos esten perfectamente
+    balanceados -- no se filtra antes de max_abs_por_archivo, se registra
+    como invalido explicitamente (F2.1, auditoria 2026-08-11)."""
+    cobertura_valida = dict(
+        crudo_reales_s60=[0.0, 0.0], crudo_controles_s60=[0.0, 0.0], pesos_controles=[1.0, 1.0],
+        crudo_reales_lv=[0.0, 0.0], crudo_controles_lv=[0.0, 0.0],
+        fuente_matched_sets_s60=[0.0], control_mean_s60=[0.0],
+        fuente_matched_sets_lv=[0.0], control_mean_lv=[0.0],
+        smd_log1p_sigma60_ticks=0.0, smd_log1p_bar_volume=0.0)
+
+    # Caso 1: archivo B explicitamente None (ABSTAIN, p.ej. `sequence` invalida).
+    agg1 = m.agregar_smd_global({"archivoA": cobertura_valida, "archivoB": None},
+                                ["archivoA", "archivoB"])
+    assert agg1["smd_sigma60_ok"] is False
+    assert agg1["smd_bar_volume_ok"] is False
+    assert [a for a, _motivo in agg1["smd_log1p_sigma60_ticks_archivos_invalidos"]] == ["archivoB"]
+
+    # Caso 2: archivo B directamente AUSENTE del dict (archivo planificado que
+    # nunca se registro -- bug del caller, no un ABSTAIN declarado).
+    agg2 = m.agregar_smd_global({"archivoA": cobertura_valida}, ["archivoA", "archivoB"])
+    assert agg2["smd_sigma60_ok"] is False
+    assert agg2["smd_bar_volume_ok"] is False
+
+    # Caso 3: archivo B con SMD de sigma60 explicitamente NaN, pero
+    # bar_volume valido -- el gate de sigma60 falla, el de bar_volume NO se
+    # contamina (son covariables independientes).
+    cobertura_nan = dict(cobertura_valida, smd_log1p_sigma60_ticks=float("nan"))
+    agg3 = m.agregar_smd_global({"archivoA": cobertura_valida, "archivoB": cobertura_nan},
+                                ["archivoA", "archivoB"])
+    assert agg3["smd_sigma60_ok"] is False
+    assert agg3["smd_bar_volume_ok"] is True
 
 
 def test_ponderacion_igual_por_sesion_no_por_cantidad_de_zonas():
