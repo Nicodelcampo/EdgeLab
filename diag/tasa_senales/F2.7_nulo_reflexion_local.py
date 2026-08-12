@@ -68,7 +68,23 @@ agregar_por_sesion = f11.agregar_por_sesion
 hac_bartlett_ic = f11.hac_bartlett_ic
 git_dirty = f11.git_dirty
 north_star_body_sha256 = f11.north_star_body_sha256
-data_root = f11.data_root
+def resolve_data_root():
+    try:
+        dr = f11.data_root()
+        if dr.exists():
+            return dr
+    except Exception:
+        pass
+    p_venv = Path(sys.prefix).resolve()
+    if (p_venv.parent / "data").exists():
+        return p_venv.parent / "data"
+    local = REPO_PATH / "data"
+    if local.exists():
+        return local
+    raise RuntimeError("data_root not found")
+
+
+data_root = resolve_data_root
 MAX_AGE_BARS = f11.MAX_AGE_BARS
 INVALIDATION_MODE = f11.INVALIDATION_MODE
 MAX_TOUCHES = f11.MAX_TOUCHES
