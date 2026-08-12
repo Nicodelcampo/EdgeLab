@@ -330,9 +330,16 @@ def _pct(valor, total):
 
 
 def resumir_soporte(soporte_total):
+    """F2.5 fix (encontrado al correr el smoke, no lo atrapo la suite): las
+    claves de `out` tienen que ser SIEMPRE string. Con `etiqueta = w` para
+    `w` entero, `out` terminaba con claves mixtas (0, 1, 5, 15 como int,
+    "todo_el_archivo" como str) -- json.dumps(..., sort_keys=True) no puede
+    comparar str con int para ordenar y el payload nunca llegaba a
+    escribirse (TypeError al final de main(), despues de correr TODA la
+    curva)."""
     out = {}
     for w, s in soporte_total.items():
-        etiqueta = _ETIQUETA_VENTANA_TODO if w is None else w
+        etiqueta = _ETIQUETA_VENTANA_TODO if w is None else str(w)
         fila = dict(n_zonas=s["n_zonas"], n_sin_pool=s["n_sin_pool"],
                     tamano_pool_medio=_pct(s["suma_n_pool"], s["n_zonas"]),
                     por_covariable={})

@@ -196,7 +196,10 @@ def test_fusionar_no_promedia_fracciones_ya_reducidas_por_archivo():
     f25.fusionar_crudos(total, crudo(2, 1))
     f25.fusionar_crudos(total, crudo(10, 2))
     resumen = f25.resumir_soporte(total["soporte"])
-    frac = resumen[0]["por_covariable"]["log1p_bar_volume"]["frac_above_max"]
+    # F2.5 fix: la clave de ventana en el resumen es SIEMPRE string (incluso
+    # para ventanas enteras) -- json.dumps(sort_keys=True) no puede comparar
+    # una clave int contra "todo_el_archivo" (str) al ordenar el payload.
+    frac = resumen["0"]["por_covariable"]["log1p_bar_volume"]["frac_above_max"]
     assert frac == pytest.approx(3.0 / 12.0)
 
 
