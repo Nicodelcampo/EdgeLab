@@ -185,10 +185,50 @@ def construir_reflejo(zona, close_t):
 # Capa 3 -- carrera de primer pasaje dentro del par
 # ======================================================================
 
+def resolver_empate_por_tick(zona, reflejo, bar_idx, tk_price_ticks, bar_start_ends):
+    """Resuelve empates a nivel barra inspeccionando la secuencia de ticks dentro de la barra de primer toque.
+    
+    `bar_start_ends`: tupla (i0, i1) o callable bar_idx -> (i0, i1) de la barra en tk_price_ticks.
+    Devuelve (r_i, category): (+1.0 'real_first', -1.0 'mirror_first', 0.0 'empate_tecnico').
+    """
+    if callable(bar_start_ends):
+        i0, i1 = bar_start_ends(bar_idx)
+    elif isinstance(bar_start_ends, dict):
+        i0, i1 = bar_start_ends[bar_idx]
+    else:
+        i0, i1 = bar_start_ends[bar_idx]
+
+    prices = np.asarray(tk_price_ticks[i0:i1], dtype=np.int64)
+
+    real_lo, real_hi = zona["lo_tick"], zona["hi_tick"]
+    mirror_lo, mirror_hi = reflejo["mirror_lo_tick"], reflejo["mirror_hi_tick"]
+
+    real_touches = (prices >= real_lo) & (prices <= real_hi)
+    mirror_touches = (prices >= mirror_lo) & (prices <= mirror_hi)
+
+    k_real = int(np.argmax(real_touches)) if real_touches.any() else None
+    k_mirror = int(np.argmax(mirror_touches)) if mirror_touches.any() else None
+
+    if k_real is not None and k_mirror is not None:
+        if k_real < k_mirror:
+            return 1.0, "real_first"
+        elif k_mirror < k_real:
+            return -1.0, "mirror_first"
+        else:
+            return 0.0, "empate_tecnico"
+    elif k_real is not None:
+        return 1.0, "real_first"
+    elif k_mirror is not None:
+        return -1.0, "mirror_first"
+    else:
+        return 0.0, "empate_tecnico"
+
+
 def first_passage_race(zona, reflejo, created_bar, high_t, low_t, close_t, n,
                        max_age_bars=MAX_AGE_BARS,
                        invalidation_mode=INVALIDATION_MODE,
-                       max_touches=MAX_TOUCHES, horizon_cap=None):
+                       max_touches=MAX_TOUCHES, horizon_cap=None,
+                       tk_price_ticks=None, bar_start_ends=None):
     """Computes the first-passage race between the real zone and its mirror.
 
     r_i = +1 if real touches first, -1 if mirror touches first,
@@ -197,7 +237,7 @@ def first_passage_race(zona, reflejo, created_bar, high_t, low_t, close_t, n,
     Both arms run with the SAME horizon (spec v2: same_horizon_for_real_and_mirror).
 
     The mirror uses the REFLECTED lifecycle (is_bull inverted for lifecycle rules),
-    fixing defect D2.
+    fixing defect D2. Same-bar ties are resolved at the tick level if tick arrays are provided.
 
     Returns dict with r_i, category, real/mirror lifecycle results, etc."""
     # Compute horizon (same for both arms)
@@ -233,11 +273,13 @@ def first_passage_race(zona, reflejo, created_bar, high_t, low_t, close_t, n,
             r_i = -1.0
             category = "mirror_first"
         elif real_fta == mirror_fta:
-            # Same bar: would need tick-level tie-break
-            # In the structural smoke we don't resolve this -- mark as
-            # "same_bar_tie" for now. The formal run adds tick timestamps.
-            r_i = 0.0
-            category = "same_bar_needs_tick_tiebreak"
+            b_touch = created_bar + real_fta
+            if tk_price_ticks is not None and bar_start_ends is not None:
+                r_i, category = resolver_empate_por_tick(
+                    zona, reflejo, b_touch, tk_price_ticks, bar_start_ends)
+            else:
+                r_i = 0.0
+                category = "same_bar_needs_tick_tiebreak"
         else:
             r_i = 0.0
             category = "unexpected"
@@ -492,26 +534,42 @@ def smoke_estructural(archivo_parquet, solo_estructural=True):
     return payload
 
 
+def main_checkout_path():
+    """Resuelve la ruta del checkout principal usando `git worktree list --porcelain`."""
+    try:
+        out = subprocess.check_output(
+            ["git", "-C", str(REPO_PATH), "worktree", "list", "--porcelain"], text=True)
+        for line in out.splitlines():
+            if line.startswith("worktree "):
+                return Path(line[len("worktree "):].strip())
+    except Exception:
+        pass
+    return REPO_PATH
+
+
 def validar_entorno_venv():
     """Verifica que el script corra dentro de un entorno virtual (.venv) gobernado.
-    Soporta el checkout local (REPO_PATH/.venv) y la ejecución desacoplada sobre
-    worktrees donde el .venv gobernado reside en el checkout principal (ej. E:\\EdgeLab\\.venv).
+    Acepta únicamente:
+    1) REPO_PATH/.venv (checkout local o principal)
+    2) <main_checkout>/.venv (worktree principal)
+    3) <data_root>.parent/.venv (entorno gobernado de datos donde habita data/, p.ej. E:\\EdgeLab\\.venv)
     """
     if sys.prefix == sys.base_prefix:
         print("ABSTAIN_PROVENANCE: no se está ejecutando dentro de un entorno virtual (.venv)")
         return False
 
     prefix_path = Path(sys.prefix).resolve()
-    repo_venv = (REPO_PATH / ".venv").resolve()
+    local_venv = (REPO_PATH / ".venv").resolve()
+    main_venv = (main_checkout_path() / ".venv").resolve()
 
-    es_local = (prefix_path == repo_venv)
-    es_gobernado = (prefix_path.name == ".venv" and (
-        (prefix_path / "Scripts" / "python.exe").exists() or (prefix_path / "bin" / "python").exists()))
+    # Valida si la raíz del .venv contiene la estructura de datos EdgeLab (`data/`)
+    es_entorno_datos = (prefix_path.name == ".venv" and (prefix_path.parent / "data").exists())
 
-    if not (es_local or es_gobernado):
-        print(f"ABSTAIN_PROVENANCE: entorno virtual no autorizado ({prefix_path})")
-        return False
-    return True
+    if prefix_path in (local_venv, main_venv) or es_entorno_datos:
+        return True
+
+    print(f"ABSTAIN_PROVENANCE: entorno virtual no autorizado ({prefix_path})")
+    return False
 
 
 # ======================================================================

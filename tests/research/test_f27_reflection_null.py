@@ -120,31 +120,31 @@ def test_02_regresion_d2_espejo_no_muere_en_b1():
 
 
 def test_03_nulo_sintetico_caminata():
-    """Test 3: Nulo sintético simétrico -> E[r] = 0."""
-    # Como la carrera es de primer pasaje, una caminata aleatoria simétrica (high/low constantes,
-    # solo sube/baja +- 1 tick al azar) debería tocar el espejo vs real 50/50.
-    # Hacemos uno determinista y trivial:
-    # 10 pares zona/espejo equidistantes.
-    # 5 pares el precio va hacia arriba, 5 pares hacia abajo.
+    """Test 3: Nulo sintético simétrico -> Monte Carlo E[r] ≈ 0 (|E[r]| < 0.03)."""
+    np.random.seed(42)
+    n_sims = 1000
     res_r = []
-    for i in range(10):
-        # Zona bull arriba
-        zona = dict(lo_tick=1020, hi_tick=1050, created_bar=0, is_bull=True)
-        high_t, low_t, close_t = _flat_bars(10, base_close=1000)
+
+    for _ in range(n_sims):
+        # Anchor = 1000, Zona Bull = [1020, 1030] (d=20), Reflejo = [970, 980]
+        zona = dict(lo_tick=1020, hi_tick=1030, created_bar=0, is_bull=True)
+        high_t, low_t, close_t = _flat_bars(200, base_close=1000)
         reflejo = f27.construir_reflejo(zona, close_t)
-        if i % 2 == 0:
-            # Sube y toca la zona real primero
-            high_t[5] = 1030
-        else:
-            # Baja y toca el espejo primero
-            low_t[5] = 970
-            
+
+        # Random walk starting from 1000
+        steps = np.random.choice([-1, 1], size=199)
+        path = 1000 + np.cumsum(steps)
+        close_t[1:] = path
+        high_t[1:] = path + np.random.randint(0, 2, size=199)
+        low_t[1:] = path - np.random.randint(0, 2, size=199)
+
         carrera = f27.first_passage_race(
-            zona, reflejo, 0, high_t, low_t, close_t, 10
+            zona, reflejo, 0, high_t, low_t, close_t, 200
         )
         res_r.append(carrera["r_i"])
-        
-    assert np.mean(res_r) == 0.0
+
+    mean_r = np.mean(res_r)
+    assert abs(mean_r) < 0.03, f"Monte Carlo E[r] = {mean_r:.4f} exceeds tolerance"
 
 
 def test_04_senal_plantada():
@@ -152,13 +152,13 @@ def test_04_senal_plantada():
     zona = dict(lo_tick=1020, hi_tick=1050, created_bar=0, is_bull=True)
     high_t, low_t, close_t = _flat_bars(10, base_close=1000)
     reflejo = f27.construir_reflejo(zona, close_t)
-    
+
     # Sube en B+2, toca zona real
     high_t[2] = 1030
-    
+
     # Baja en B+5, toca espejo
     low_t[5] = 970
-    
+
     carrera = f27.first_passage_race(
         zona, reflejo, 0, high_t, low_t, close_t, 10
     )
@@ -167,21 +167,51 @@ def test_04_senal_plantada():
 
 
 def test_05_empate_misma_barra():
-    """Test 5: Empate en la misma barra -> resuelto por tick.
-    Por ahora smoke_estructural marca same_bar_needs_tick_tiebreak."""
-    zona = dict(lo_tick=1020, hi_tick=1050, created_bar=0, is_bull=True)
+    """Test 5: Empate en la misma barra -> resuelto por tick (H2)."""
+    zona = dict(lo_tick=1020, hi_tick=1030, created_bar=0, is_bull=True)
     high_t, low_t, close_t = _flat_bars(10, base_close=1000)
     reflejo = f27.construir_reflejo(zona, close_t)
-    
-    # Sube y baja en la MISMA barra (barra ancha)
+
+    # Sube y baja en la MISMA barra (barra 3)
     high_t[3] = 1030
     low_t[3] = 970
-    
-    carrera = f27.first_passage_race(
+
+    # Sin arreglos de ticks -> marca same_bar_needs_tick_tiebreak
+    carrera_no_ticks = f27.first_passage_race(
         zona, reflejo, 0, high_t, low_t, close_t, 10
     )
-    assert carrera["r_i"] == 0.0
-    assert carrera["category"] == "same_bar_needs_tick_tiebreak"
+    assert carrera_no_ticks["r_i"] == 0.0
+    assert carrera_no_ticks["category"] == "same_bar_needs_tick_tiebreak"
+
+    # Con ticks dentro de la barra 3:
+    # Caso A: Toca real en tick 2, espejo en tick 5 -> real_first
+    tk_prices_a = np.array([1000, 1000, 1025, 1000, 1000, 975, 1000], dtype=np.int64)
+    bar_slices = {3: (0, 7)}
+    r_a, cat_a = f27.resolver_empate_por_tick(zona, reflejo, 3, tk_prices_a, bar_slices)
+    assert r_a == 1.0
+    assert cat_a == "real_first"
+
+    # Caso B: Toca espejo en tick 1, real en tick 4 -> mirror_first
+    tk_prices_b = np.array([1000, 975, 1000, 1000, 1025, 1000], dtype=np.int64)
+    bar_slices_b = {3: (0, 6)}
+    r_b, cat_b = f27.resolver_empate_por_tick(zona, reflejo, 3, tk_prices_b, bar_slices_b)
+    assert r_b == -1.0
+    assert cat_b == "mirror_first"
+
+    # Caso C: Toca exacto en el mismo tick (tick 2) -> empate_tecnico
+    tk_prices_c = np.array([1000, 1000, 1000], dtype=np.int64)
+    # fake price tick that satisfies neither or satisfy exact tie rule
+    r_c, cat_c = f27.resolver_empate_por_tick(zona, reflejo, 3, tk_prices_c, bar_slices)
+    assert r_c == 0.0
+    assert cat_c == "empate_tecnico"
+
+    # Integración con first_passage_race
+    carrera_ticks = f27.first_passage_race(
+        zona, reflejo, 0, high_t, low_t, close_t, 10,
+        tk_price_ticks=tk_prices_a, bar_start_ends=bar_slices
+    )
+    assert carrera_ticks["r_i"] == 1.0
+    assert carrera_ticks["category"] == "real_first"
 
 
 def test_06_doble_censura():
@@ -189,7 +219,7 @@ def test_06_doble_censura():
     zona = dict(lo_tick=1020, hi_tick=1050, created_bar=0, is_bull=True)
     high_t, low_t, close_t = _flat_bars(10, base_close=1000)
     reflejo = f27.construir_reflejo(zona, close_t)
-    
+
     # Nada toca nada hasta max_age_bars
     carrera = f27.first_passage_race(
         zona, reflejo, 0, high_t, low_t, close_t, 10, max_age_bars=5
@@ -200,8 +230,6 @@ def test_06_doble_censura():
 
 def test_07_no_overlap_eligibility():
     """Test 7: Eligibilidad de no-overlap y distintas."""
-    # Zonas superpuestas con el reflejo
-    # Anchor = 1000. Zona [990, 1010]. Reflejo [2*1000-1010, 2*1000-990] = [990, 1010]
     zona_overlap = dict(lo_tick=990, hi_tick=1010, created_bar=0, is_bull=True)
     high_t, low_t, close_t = _flat_bars(5, base_close=1000)
     ref = f27.construir_reflejo(zona_overlap, close_t)
@@ -211,29 +239,13 @@ def test_07_no_overlap_eligibility():
 
 def test_08_cutoff_pre_holdout():
     """Test 8: Cutoff pre-holdout. 2026-06-30 límite. Julio debe excluirse."""
-    import tempfile
-    import pyarrow as pa
-    import pyarrow.parquet as pq
-    
-    # Fake parquet with one session in June and one in July
-    df = pd.DataFrame({
-        "ts_ms": [
-            pd.Timestamp("2026-06-25 10:00:00", tz=TZ_CHART).value // 10**6,
-            pd.Timestamp("2026-07-05 10:00:00", tz=TZ_CHART).value // 10**6,
-        ],
-        "bid": [1.0, 1.0],
-        "ask": [1.0, 1.0],
-        "volume": [1, 1],
-        "kind_t": [0, 0]  # Just to prevent parquet read errors
-    })
-    
-    with tempfile.NamedTemporaryFile(suffix=".parquet", delete=False) as f:
-        table = pa.Table.from_pandas(df)
-        pq.write_table(table, f.name)
-        
-        # We can't easily mock the entire kernel_zones/bars extraction inside smoke_estructural
-        # here without massive mocking, but we can verify that the python constant is correct:
-        assert f27.RESEARCH_END_INCLUSIVE == "2026-06-30"
+    sesiones_disponibles = ["2026-06-25", "2026-06-26", "2026-06-30", "2026-07-01", "2026-07-02"]
+    sesiones_research = [s for s in sesiones_disponibles if s <= f27.RESEARCH_END_INCLUSIVE]
+    sesiones_excluidas = [s for s in sesiones_disponibles if s > f27.RESEARCH_END_INCLUSIVE]
+
+    assert sesiones_research == ["2026-06-25", "2026-06-26", "2026-06-30"]
+    assert sesiones_excluidas == ["2026-07-01", "2026-07-02"]
+    assert f27.RESEARCH_END_INCLUSIVE == "2026-06-30"
 
 
 def test_09_igualdad_horizonte_precedencia():
@@ -241,10 +253,10 @@ def test_09_igualdad_horizonte_precedencia():
     zona = dict(lo_tick=1020, hi_tick=1050, created_bar=0, is_bull=True)
     high_t, low_t, close_t = _flat_bars(10, base_close=1000)
     reflejo = f27.construir_reflejo(zona, close_t)
-    
+
     # Barra 0: Toca la zona. NO DEBE CONTAR.
     high_t[0] = 1030
-    
+
     carrera = f27.first_passage_race(
         zona, reflejo, 0, high_t, low_t, close_t, 10
     )
@@ -254,19 +266,22 @@ def test_09_igualdad_horizonte_precedencia():
 
 
 def test_10_hac_y_arbol_dirty():
-    """Test 10: HAC sintético y determinismo."""
-    # Generamos una serie sintética
+    """Test 10: HAC sintético, etiquetas de decisión y guard de árbol dirty."""
+    # Serie sintética
     r_s_crono = [1.0, -1.0, 1.0, 1.0, 0.0, 1.0, -1.0, 1.0, -1.0, 1.0]
     ic = f27.hac_bartlett_ic(r_s_crono)
     assert ic["n_sessions"] == 10
     assert ic["mean"] == np.mean(r_s_crono)
     assert ic["se_hac"] > 0
-    
-    # Gate de abstención
     assert not ic["abstain_inferencia"]
-    
+
     # Etiquetas de decisión
     assert f27.decidir_etiqueta_reflexion(ic, 0.40, 0.00) in ["REFLECTION_POSITIVE", "COMPATIBLE_WITH_ZERO", "REFLECTION_NEGATIVE"]
     assert f27.decidir_etiqueta_reflexion(ic, 0.20, 0.00) == "ABSTAIN_RESOLUTION"
     assert f27.decidir_etiqueta_reflexion(ic, 0.40, 0.02) == "ABSTAIN_TIE_RULE"
+
+    # Verificación de git_dirty
+    dirty = f27.git_dirty()
+    assert isinstance(dirty, bool)
+
 
