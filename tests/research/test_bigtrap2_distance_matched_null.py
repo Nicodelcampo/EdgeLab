@@ -12,6 +12,7 @@ import hashlib
 import importlib.util
 import json
 import math
+import subprocess
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -77,6 +78,21 @@ def _bar_end_ns_real_por_sesion(n_sesiones, bpp, dia_offset_inicial=0, hora_utc=
             t = inicio + timedelta(minutes=k + 1)
             bar_end_ns.append(int(t.timestamp() * 1e9))
     return np.array(bar_end_ns, dtype=np.int64)
+
+
+def _sd_pooled_within(*grupos):
+    """Referencia independiente (F2.3) del estimador pooled-within-group
+    (ANOVA MSE) que agregar_balance_global usa para sd_ref -- escrita aparte
+    de la implementacion, no copiada, para que los tests que la usan crucen
+    contra una segunda derivacion de la misma formula, no contra si misma."""
+    ss, gl = 0.0, 0
+    for g in grupos:
+        arr = np.asarray(g, dtype=np.float64)
+        if len(arr) < 2:
+            continue
+        ss += float(np.sum((arr - arr.mean()) ** 2))
+        gl += len(arr) - 1
+    return math.sqrt(ss / gl) if gl > 0 else None
 
 
 def _fixture_reanclaje_end_to_end(n_sesiones=6, bpp=200, padding=2100):
@@ -793,27 +809,42 @@ def test_smd_con_sd_ref_valores_conocidos():
     assert m.smd_con_sd_ref(1.0, 0.0, float("inf")) is None
 
 
-def test_muestra_pre_matching_separa_fuentes_y_pool_sin_creadoras():
-    """fuentes = covariable de cada zona del universo (por created_bar).
-    pool = covariable de TODA barra que NO sea creadora de NINGUNA zona --
-    independiente de sesion/minuto/horizonte (esas restricciones las aplica
-    el matcher despues; sd_ref se congela ANTES, con el pool mas amplio
-    posible)."""
-    universo = [dict(created_bar=10), dict(created_bar=20)]
-    cov_por_barra = {10: (1.0, 5.0), 20: (2.0, 6.0), 30: (3.0, 7.0), 40: (4.0, 8.0)}
-    creadoras = {10, 20}
-    mu = m.muestra_pre_matching(universo, cov_por_barra, creadoras)
-    assert sorted(mu["fuentes_s60"]) == [1.0, 2.0]
-    assert sorted(mu["fuentes_lv"]) == [5.0, 6.0]
-    assert sorted(mu["pool_s60"]) == [3.0, 4.0]  # 10 y 20 excluidos: son creadoras
-    assert sorted(mu["pool_lv"]) == [7.0, 8.0]
+def test_muestra_pre_matching_pool_es_el_real_de_construir_pool_candidatos():
+    """F2.3: el pool ya NO es 'toda barra no creadora del archivo' (F2.2) --
+    es la UNION real de construir_pool_candidatos() para las zonas de cada
+    estrato (minuto de sesion), la MISMA funcion que usa el matcher. Zona en
+    minuto 5, sesion S0: la barra 30 (sesion S1, minuto 5, no creadora,
+    horizonte suficiente) SI es candidata real y entra al pool del estrato
+    5. La barra 9 (minuto 9, mismo archivo) nunca se toca -- ningun matcher
+    la veria como candidata de una zona del minuto 5, asi que F2.3 no la
+    mete en la vara de ESE estrato (a diferencia de F2.2, que la hubiera
+    incluido igual por no filtrar minuto)."""
+    zonas_matched = [dict(created_bar=5, minute_of_session=5, session_date="S0", horizon_i=100)]
+    por_minuto = {5: [("S0", 5), ("S1", 30)], 9: [("S0", 9)]}
+    creadoras = {5}
+    cov_por_barra = {5: (1.0, 5.0), 30: (2.0, 6.0), 9: (99.0, 99.0)}
+    n_bars = 1000
+
+    mu = m.muestra_pre_matching(zonas_matched, por_minuto, creadoras, cov_por_barra, n_bars)
+
+    assert set(mu.keys()) == {5}  # el minuto 9 nunca se visita: ninguna zona esta ahi
+    estrato = mu[5]
+    assert estrato["fuentes_s60"] == [1.0]
+    assert estrato["fuentes_lv"] == [5.0]
+    assert estrato["pool_s60"] == [2.0]  # SOLO la barra 30 (candidato real) -- nunca la 9
+    assert estrato["pool_lv"] == [6.0]
 
 
-def test_muestra_pre_matching_zona_sin_covariable_fuente_no_aporta():
-    universo = [dict(created_bar=10), dict(created_bar=99)]  # 99 no esta en cov_por_barra
-    mu = m.muestra_pre_matching(universo, {10: (1.0, 5.0)}, {10})
-    assert mu["fuentes_s60"] == [1.0]
-    assert mu["fuentes_lv"] == [5.0]
+def test_muestra_pre_matching_zona_sin_covariable_fuente_no_aporta_pero_estrato_existe():
+    """Una zona sin covariable de fuente disponible no aporta a `fuentes`,
+    pero su estrato (minuto de sesion) igual queda registrado -- con
+    fuentes/pool vacios si no hay ningun candidato real tampoco."""
+    zonas_matched = [dict(created_bar=99, minute_of_session=5, session_date="S0", horizon_i=100)]
+    por_minuto = {5: [("S0", 99)]}  # el unico candidato de ese minuto es la propia zona -- se excluye por sesion
+    mu = m.muestra_pre_matching(zonas_matched, por_minuto, {99}, {}, 1000)  # cov_por_barra vacio: 99 sin covariable
+    assert mu[5]["fuentes_s60"] == []
+    assert mu[5]["fuentes_lv"] == []
+    assert mu[5]["pool_s60"] == []
 
 
 def test_calcular_balance_cobertura_expone_insumos_sin_calcular_smd():
@@ -852,15 +883,15 @@ def test_calcular_balance_cobertura_expone_insumos_sin_calcular_smd():
 
 
 def test_f22_sd_ref_invariante_ante_cambio_de_k():
-    """sd_ref depende SOLO de muestra_pre_matching (fuentes+pool, fijos
-    ANTES de matchear) -- tiene que dar EXACTAMENTE el mismo valor (y el
-    mismo hash) sin importar que controles selecciono el matcher despues,
-    aunque cambie K/el resultado del matching por completo (F2.2, auditoria
-    2026-08-11: F2.1 estandarizaba con la varianza del conjunto YA
-    matcheado, que si se movia con K)."""
+    """sd_ref depende SOLO de muestra_pre_matching (fuentes+pool por
+    estrato, fijos ANTES de matchear) -- tiene que dar EXACTAMENTE el mismo
+    valor (y el mismo hash) sin importar que controles selecciono el
+    matcher despues, aunque cambie K/el resultado del matching por
+    completo (F2.2, auditoria 2026-08-11: F2.1 estandarizaba con la
+    varianza del conjunto YA matcheado, que si se movia con K)."""
     muestra = dict(fuentes_s60=[1.0, 2.0, 3.0], pool_s60=[0.5, 1.5, 2.5, 3.5],
                    fuentes_lv=[5.0, 6.0, 7.0], pool_lv=[4.5, 5.5, 6.5, 7.5])
-    muestra_por_archivo = {"arch1": muestra}
+    muestra_por_archivo = {"arch1": {"M0": muestra}}  # un solo estrato (F2.3)
 
     cobertura_k_chico = dict(
         estado="OK", crudo_reales_s60=[1.0], crudo_controles_s60=[0.5, 1.5, 2.5, 3.5, 4.5],
@@ -890,8 +921,8 @@ def test_f22_smd_post_menor_que_smd_pre_por_una_cantidad_conocida():
     balance perfecto post-matching, desbalance real pre-matching."""
     fuentes = [10.0, 10.0, 10.0]
     pool = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 10.0, 10.0]
-    muestra_por_archivo = {"arch1": dict(fuentes_s60=fuentes, pool_s60=pool,
-                                         fuentes_lv=[0.0] * 3, pool_lv=[0.0] * 9)}
+    muestra_por_archivo = {"arch1": {"M0": dict(fuentes_s60=fuentes, pool_s60=pool,
+                                                fuentes_lv=[0.0] * 3, pool_lv=[0.0] * 9)}}
     cobertura = dict(
         estado="OK", crudo_reales_s60=fuentes, crudo_controles_s60=[10.0, 10.0, 10.0],
         pesos_controles=[1.0, 1.0, 1.0],
@@ -901,9 +932,11 @@ def test_f22_smd_post_menor_que_smd_pre_por_una_cantidad_conocida():
         fuente_matched_sets_session=["2026-01-01", "2026-01-02", "2026-01-03"])
     agg = m.agregar_balance_global({"arch1": cobertura}, muestra_por_archivo, ["arch1"])
 
-    assert agg["sd_ref_log1p_sigma60_ticks"] == pytest.approx(5.0)
-    assert agg["smd_log1p_sigma60_ticks_pre"] == pytest.approx((10.0 - 30.0 / 9.0) / 5.0)
-    assert agg["smd_log1p_sigma60_ticks_pre"] == pytest.approx(4.0 / 3.0)
+    # F2.3: sd_ref es pooled-within-stratum -- con UN solo estrato se reduce
+    # a la SD muestral (ddof=1, no poblacional) de fuentes union pool.
+    sd_ref_esperado = _sd_pooled_within(fuentes + pool)
+    assert agg["sd_ref_log1p_sigma60_ticks"] == pytest.approx(sd_ref_esperado)
+    assert agg["smd_log1p_sigma60_ticks_pre"] == pytest.approx((10.0 - 30.0 / 9.0) / sd_ref_esperado)
     assert agg["smd_log1p_sigma60_ticks_matched_sets"] == pytest.approx(0.0)
     assert agg["smd_log1p_sigma60_ticks_matched_sets"] < agg["smd_log1p_sigma60_ticks_pre"]
 
@@ -919,8 +952,8 @@ def test_f22_peso_sesion_diverge_de_matched_sets_cuando_una_sesion_tiene_mas_zon
     fuente_ms = [0.0, 10.0, 10.0, 10.0]
     control_mean_ms = [0.0, 0.0, 0.0, 0.0]
     sesiones = ["A", "B", "B", "B"]
-    muestra_por_archivo = {"arch1": dict(fuentes_s60=fuente_ms, pool_s60=fuente_ms,
-                                         fuentes_lv=[0.0] * 4, pool_lv=[0.0] * 4)}
+    muestra_por_archivo = {"arch1": {"M0": dict(fuentes_s60=fuente_ms, pool_s60=fuente_ms,
+                                                fuentes_lv=[0.0] * 4, pool_lv=[0.0] * 4)}}
     cobertura = dict(
         estado="OK", crudo_reales_s60=fuente_ms, crudo_controles_s60=control_mean_ms,
         pesos_controles=[1.0] * 4,
@@ -930,7 +963,7 @@ def test_f22_peso_sesion_diverge_de_matched_sets_cuando_una_sesion_tiene_mas_zon
         fuente_matched_sets_session=sesiones)
     agg = m.agregar_balance_global({"arch1": cobertura}, muestra_por_archivo, ["arch1"])
 
-    sd_ref_esperado = float(np.std(np.asarray(fuente_ms + fuente_ms), ddof=0))
+    sd_ref_esperado = _sd_pooled_within(fuente_ms + fuente_ms)  # F2.3: un solo estrato
     assert agg["sd_ref_log1p_sigma60_ticks"] == pytest.approx(sd_ref_esperado)
     # matched_sets: cada zona pesa 1 -> media_fuente = (0+10+10+10)/4 = 7.5
     assert agg["smd_log1p_sigma60_ticks_matched_sets"] == pytest.approx((7.5 - 0.0) / sd_ref_esperado)
@@ -957,10 +990,10 @@ def test_f22_agregar_balance_global_no_cancela_signo_entre_archivos():
     # falta de referencia, no por desbalance).
     lv_balanceado = [9.0, 11.0]
     muestra_por_archivo = {
-        "archivoA": dict(fuentes_s60=reales_a, pool_s60=controles_a,
-                         fuentes_lv=lv_balanceado, pool_lv=lv_balanceado),
-        "archivoB": dict(fuentes_s60=reales_b, pool_s60=controles_b,
-                         fuentes_lv=lv_balanceado, pool_lv=lv_balanceado),
+        "archivoA": {"M0": dict(fuentes_s60=reales_a, pool_s60=controles_a,
+                                fuentes_lv=lv_balanceado, pool_lv=lv_balanceado)},
+        "archivoB": {"M0": dict(fuentes_s60=reales_b, pool_s60=controles_b,
+                                fuentes_lv=lv_balanceado, pool_lv=lv_balanceado)},
     }
 
     def _cobertura(reales, controles, sesiones):
@@ -976,7 +1009,11 @@ def test_f22_agregar_balance_global_no_cancela_signo_entre_archivos():
     }
     agg = m.agregar_balance_global(cobertura_por_archivo, muestra_por_archivo, ["archivoA", "archivoB"])
 
-    sd_ref_esperado = float(np.std(np.asarray(reales_a + reales_b + controles_a + controles_b), ddof=0))
+    # F2.3: sd_ref es pooled-within-stratum -- 2 estratos (uno por archivo,
+    # cada uno con su propia media), NO la SD de la union de los 4 archivos
+    # (eso incluiria la varianza ENTRE archivos, que es exactamente lo que
+    # F2.3 corrigio).
+    sd_ref_esperado = _sd_pooled_within(reales_a + controles_a, reales_b + controles_b)
     assert agg["sd_ref_log1p_sigma60_ticks"] == pytest.approx(sd_ref_esperado)
     smd_a_esperado = (float(np.mean(reales_a)) - float(np.mean(controles_a))) / sd_ref_esperado
     smd_b_esperado = (float(np.mean(reales_b)) - float(np.mean(controles_b))) / sd_ref_esperado
@@ -1004,8 +1041,8 @@ def test_f22_fail_closed_archivo_invalido_ausente_sin_zonas_o_sin_datos():
     *_archivos_invalidos y en max_abs_por_archivo.archivos_excluidos, nunca
     filtrado en silencio (F2/F2.1/F2.2, tres auditorias independientes,
     todas 2026-08-11)."""
-    muestra_valida = dict(fuentes_s60=[1.0, 2.0], pool_s60=[1.0, 2.0],
-                          fuentes_lv=[1.0, 2.0], pool_lv=[1.0, 2.0])
+    muestra_valida = {"M0": dict(fuentes_s60=[1.0, 2.0], pool_s60=[1.0, 2.0],
+                                 fuentes_lv=[1.0, 2.0], pool_lv=[1.0, 2.0])}  # un solo estrato (F2.3)
     cobertura_valida = dict(
         estado="OK", crudo_reales_s60=[1.0, 2.0], crudo_controles_s60=[1.0, 2.0], pesos_controles=[1.0, 1.0],
         crudo_reales_lv=[1.0, 2.0], crudo_controles_lv=[1.0, 2.0],
@@ -1361,7 +1398,7 @@ def test_f22_centinela_reanclaje_usa_raise_no_assert():
         m.instrumentacion_f3(zonas_matched, resultados)
 
 
-def _instalar_pipeline_cli_fake(monkeypatch, fx, archivo, dirty_start=False, dirty_end=False, head_movido=False):
+def _instalar_pipeline_cli_fake(monkeypatch, fx, archivo, *, dirty_start, dirty_end, head_movido):
     """Instala los mocks que main() necesita para correr end-to-end sin
     datos reales: dias_research/ticks_mod/bars_mod/REGISTRY (el mismo
     fixture de reanclaje que procesar_zonas_de_archivo usa directamente en
@@ -1369,7 +1406,10 @@ def _instalar_pipeline_cli_fake(monkeypatch, fx, archivo, dirty_start=False, dir
     llama a las dos, hay que aislar el test del arbol git de verdad, que
     puede estar sucio durante desarrollo activo). `dirty_start`/`dirty_end`/
     `head_movido` parametrizan el gate de procedencia para los tests que
-    necesitan probarlo disparando."""
+    necesitan probarlo disparando -- keyword-only y SIN default (F2.3,
+    auditoria 2026-08-12): cada call site tiene que decidir su procedencia
+    explicitamente, en vez de heredar un `False` silencioso que podria
+    esconder un caso no considerado."""
     class _FakeTk:
         sequence = np.arange(10, dtype=np.int64)
         tick_size = fx["tick_size"]
@@ -1415,6 +1455,22 @@ def _instalar_pipeline_cli_fake(monkeypatch, fx, archivo, dirty_start=False, dir
     monkeypatch.setattr(m, "git_head", lambda: next(heads))
 
 
+def test_f23_camino_de_produccion_evalua_git_dirty_real():
+    """F2.3 (auditoria 2026-08-12): fuera de cualquier monkeypatch, git_dirty
+    y git_head en el modulo tienen que seguir siendo las funciones REALES --
+    llaman al repo de verdad, no quedan permanentemente parcheadas por algun
+    test anterior con un monkeypatch mal escopeado (pytest revierte
+    monkeypatch al final de cada test, pero este test lo confirma en vez de
+    asumirlo: recalcula el mismo estado con un subprocess `git` propio,
+    independiente de las funciones bajo prueba, y compara)."""
+    esperado_dirty = bool(subprocess.check_output(
+        ["git", "-C", str(m.REPO_PATH), "status", "--porcelain"], text=True).strip())
+    assert m.git_dirty() == esperado_dirty
+    esperado_head = subprocess.check_output(
+        ["git", "-C", str(m.REPO_PATH), "rev-parse", "HEAD"], text=True).strip()
+    assert m.git_head() == esperado_head
+
+
 def test_f0_main_cli_solo_estructural_omite_claves_del_payload_y_del_stdout(tmp_path, monkeypatch, capsys):
     """Contrato pedido por el auditor: con --solo-estructural, ninguna clave
     del efecto aparece en el JSON de salida y el stdout no contiene 'mean' ni
@@ -1428,7 +1484,8 @@ def test_f0_main_cli_solo_estructural_omite_claves_del_payload_y_del_stdout(tmp_
     la detectaria un test que no pasa por main())."""
     fx = _fixture_reanclaje_end_to_end()
     archivo = "FAKE_TEST_F0_SOLO_ESTRUCTURAL.parquet"
-    _instalar_pipeline_cli_fake(monkeypatch, fx, archivo)
+    _instalar_pipeline_cli_fake(monkeypatch, fx, archivo,
+                                dirty_start=False, dirty_end=False, head_movido=False)
 
     out_full = tmp_path / "full.json"
     out_est = tmp_path / "estructural.json"
@@ -1488,7 +1545,8 @@ def test_f22_smoke_archivo_implica_solo_estructural(tmp_path, monkeypatch, capsy
     de que los gates de SMD fallaran lo tapaba."""
     fx = _fixture_reanclaje_end_to_end()
     archivo = "FAKE_TEST_F22_SMOKE_IMPLICA_ESTRUCTURAL.parquet"
-    _instalar_pipeline_cli_fake(monkeypatch, fx, archivo)
+    _instalar_pipeline_cli_fake(monkeypatch, fx, archivo,
+                                dirty_start=False, dirty_end=False, head_movido=False)
 
     out = tmp_path / "smoke_sin_flag_explicito.json"
     rc = m.main(["--smoke-archivo", archivo, "--out", str(out)])
@@ -1517,9 +1575,9 @@ def test_f22_gate_de_procedencia_aborta_si_arbol_sucio_o_head_se_mueve(tmp_path,
     archivo = "FAKE_TEST_F22_GATE_PROCEDENCIA.parquet"
 
     for kwargs, motivo in (
-        (dict(dirty_start=True), "dirty_start"),
-        (dict(dirty_end=True), "dirty_end"),
-        (dict(head_movido=True), "head_start != head_end"),
+        (dict(dirty_start=True, dirty_end=False, head_movido=False), "dirty_start"),
+        (dict(dirty_start=False, dirty_end=True, head_movido=False), "dirty_end"),
+        (dict(dirty_start=False, dirty_end=False, head_movido=True), "head_start != head_end"),
     ):
         out = tmp_path / ("provenance_%s.json" % motivo.replace(" ", "_").replace("!", ""))
         _instalar_pipeline_cli_fake(monkeypatch, fx, archivo, **kwargs)

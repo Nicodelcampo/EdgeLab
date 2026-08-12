@@ -79,14 +79,17 @@ from diag.tasa_senales.F1_nulo_zonas_aleatorias import sesiones_de_barras  # noq
 from edgelab.bridge.indicators.bigtrap2 import DEFAULTS  # noqa: E402
 from edgelab.research.first_touch_census import session_date_ct  # noqa: E402
 
-SCHEMA_VERSION = "F1.1_nulo_condicional_distancia_v3"  # v3 = F2.2: sd_ref
-# congelado pre-matching (pooleado GLOBAL, con su propio hash) reemplaza la
-# varianza del conjunto matcheado en TODAS las variantes de SMD; smd_pre vs
-# smd_post con el mismo sd_ref; variante peso_sesion (misma medida que el
-# estimand); max_abs_por_archivo -> {valor,completo,archivos_excluidos};
-# estado SIN_ZONAS explicito; gate de procedencia real (dirty/HEAD movido);
-# centinela de reanclaje con raise (no assert); ABSTAIN_INFERENCE si la
-# varianza HAC de largo plazo no es positiva (auditoria 2026-08-11).
+SCHEMA_VERSION = "F1.1_nulo_condicional_distancia_v4"  # v4 = F2.3: sd_ref
+# recalculado POOLED WITHIN-STRATUM (archivo x minuto_de_sesion, estimador
+# ANOVA-MSE) en vez de pooleado globalmente entre estratos -- v3/F2.2 metia
+# varianza ENTRE minutos en el denominador mientras el numerador es
+# intra-estrato, deflactando todos los SMD; muestra_pre_matching ahora
+# reusa construir_pool_candidatos() (la MISMA funcion del matcher) en vez de
+# "toda barra no creadora del archivo", que inyectaba estacionalidad
+# intradiaria entera; smd_pre_within_estrato como diagnostico decisivo de
+# soporte comun; gate de procedencia fail-fast en dirty_start (auditoria
+# 2026-08-12, cuarta ronda -- los dos defectos de fondo son ambiguedad de la
+# propia instruccion F2.2 del auditor, no bugs de implementacion).
 INDICADOR = "BigTrap2"
 SEMILLA = 20260811  # solo para desempates deterministas si hiciera falta; el
                      # matching en si es determinista (sin sorteo aleatorio).
@@ -104,7 +107,7 @@ SIGMA60_WINDOW = 60
 
 NORTH_STAR_BODY_SHA256_EXPECTED = (
     "d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1")
-SPEC_PATH = REPO_PATH / "specs" / "bigtrap2_distance_matched_null_v2.json"
+SPEC_PATH = REPO_PATH / "specs" / "bigtrap2_distance_matched_null_v3.json"
 
 
 # ======================================================================
@@ -370,27 +373,57 @@ def smd_con_sd_ref(media_a, media_b, sd_ref):
     return float((media_a - media_b) / sd_ref)
 
 
-def muestra_pre_matching(universo, cov_por_barra, creadoras):
-    """F2.2: la muestra CRUDA pre-matching de un archivo -- fuentes del
-    universo (covariable de TODA zona con fuente disponible, sin filtrar por
-    resultado de matching) y pool completo de candidatos (covariable de TODA
-    barra causal-valida que no sea creadora de NINGUNA zona) -- ANTES de que
-    ningun matcher seleccione nada. Insumo de sd_ref: no cambia si cambia
-    K/caliper/pool de un matcher, porque no depende de que selecciono el
-    matcher."""
-    fuentes_s60, fuentes_lv = [], []
-    for z in universo:
-        cov = cov_por_barra.get(z["created_bar"])
-        if cov is not None:
-            fuentes_s60.append(cov[0])
-            fuentes_lv.append(cov[1])
-    pool_s60, pool_lv = [], []
-    for bar_idx, (s60, lv) in cov_por_barra.items():
-        if bar_idx in creadoras:
-            continue
-        pool_s60.append(s60)
-        pool_lv.append(lv)
-    return dict(fuentes_s60=fuentes_s60, fuentes_lv=fuentes_lv, pool_s60=pool_s60, pool_lv=pool_lv)
+def muestra_pre_matching(zonas_matched, por_minuto, creadoras, cov_por_barra, n_bars):
+    """F2.3 -- muestra CRUDA pre-matching, ESTRATIFICADA por minuto de sesion.
+
+    El estrato es (archivo, minuto_de_sesion): exactamente la celda dentro de
+    la cual el matcher puede elegir. construir_pool_candidatos exige mismo
+    minuto de sesion, otra sesion, no creadora y >= H_i barras futuras; nada
+    fuera de esa celda es alcanzable por ningun matcher, asi que nada de eso
+    puede entrar en la vara con la que se mide el desbalance.
+
+    F2.2 llamaba "pool completo de candidatos" a TODA barra no creadora del
+    archivo -- sin el filtro de minuto, sin el de sesion y sin el de
+    horizonte. Eso metia la estacionalidad intradiaria entera en sd_ref
+    (varianza ENTRE minutos, inexplotable por construccion) y hacia que
+    smd_pre midiera composicion horaria en vez de desbalance. Consecuencia
+    doble: sd_ref inflado (deflactando TODOS los SMD, siempre en la direccion
+    de pasar el gate) y smd_pre - smd_post sobreestimando lo que compro el
+    matching.
+
+    Se reusa `construir_pool_candidatos` -- la MISMA funcion que usa el
+    matcher -- para que la muestra pre-matching no pueda derivar de lo que el
+    matcher realmente ve. Barras deduplicadas dentro del estrato.
+
+    Fuentes: TODA zona del universo con covariables finitas, sin filtrar por
+    el resultado del matching (una zona que abstuvo por pool<min_controls
+    sigue perteneciendo a la poblacion cuyo balance se esta midiendo).
+
+    (F2.3, cuarta auditoria independiente 2026-08-12, sobre la propia
+    instruccion F2.2 del auditor -- ambiguedad de pre-registro, no bug de
+    implementacion: "pool completo de candidatos" nunca definio el alcance
+    del pooling ni que cuenta como pool.)"""
+    estratos = {}
+    for z in zonas_matched:
+        e = estratos.setdefault(z["minute_of_session"], dict(
+            fuentes_s60=[], fuentes_lv=[], pool_s60=[], pool_lv=[], _barras=set()))
+        cov_f = cov_por_barra.get(z["created_bar"])
+        if cov_f is not None:
+            e["fuentes_s60"].append(cov_f[0])
+            e["fuentes_lv"].append(cov_f[1])
+        for _ses, bar_idx in construir_pool_candidatos(
+                z, por_minuto, creadoras, n_bars, z["horizon_i"]):
+            if bar_idx in e["_barras"]:
+                continue
+            cov_c = cov_por_barra.get(bar_idx)
+            if cov_c is None:
+                continue
+            e["_barras"].add(bar_idx)
+            e["pool_s60"].append(cov_c[0])
+            e["pool_lv"].append(cov_c[1])
+    for e in estratos.values():
+        del e["_barras"]
+    return estratos
 
 
 def calcular_balance_cobertura(zonas_matched, cov_por_barra):
@@ -495,31 +528,89 @@ def agregar_balance_global(cobertura_por_archivo, muestra_por_archivo, archivos_
     *_archivos_invalidos. max_abs_por_archivo devuelve
     {valor, completo, archivos_excluidos} -- nunca un maximo silenciosamente
     filtrado presentado como escalar suelto."""
-    # ---- sd_ref: pooleado GLOBALMENTE, antes de cualquier seleccion. ----
-    muestra_fuentes_s60_g, muestra_pool_s60_g = [], []
-    muestra_fuentes_lv_g, muestra_pool_lv_g = [], []
-    for arch in archivos_planificados:
-        mu = muestra_por_archivo.get(arch)
-        if mu is None:
-            continue
-        muestra_fuentes_s60_g.extend(mu["fuentes_s60"])
-        muestra_pool_s60_g.extend(mu["pool_s60"])
-        muestra_fuentes_lv_g.extend(mu["fuentes_lv"])
-        muestra_pool_lv_g.extend(mu["pool_lv"])
+    # ---- sd_ref: POOLED WITHIN-STRATUM (F2.3), no global. ----
+    # El matching es intra-archivo e intra-minuto. Con un denominador que
+    # incluye la varianza ENTRE estratos, el numerador es intra-estrato y el
+    # denominador no: todos los SMD quedan deflactados, siempre en la
+    # direccion de pasar el gate. El umbral convencional 0.10 (Stuart 2010,
+    # Austin 2009) esta definido sobre la SD DENTRO del estrato de
+    # comparacion; con otra vara el numero deja de significar lo que se cree
+    # que significa. Estimador: pooled within-group (ANOVA MSE),
+    # sqrt(SS_within / (N - G)), que generaliza el pooled SD de dos grupos
+    # que usa smd().
+    def _acumular_within(clave):
+        ss, gl, n_obs, n_estratos, n_singleton = 0.0, 0, 0, 0, 0
+        for arch in archivos_planificados:
+            for _m, e in (muestra_por_archivo.get(arch) or {}).items():
+                xs = [x for x in (list(e["fuentes_" + clave]) + list(e["pool_" + clave]))
+                      if math.isfinite(x)]
+                n_obs += len(xs)
+                n_estratos += 1
+                if len(xs) < 2:
+                    n_singleton += 1
+                    continue
+                arr = np.asarray(xs, dtype=np.float64)
+                ss += float(np.sum((arr - arr.mean()) ** 2))
+                gl += len(arr) - 1
+        sd = math.sqrt(ss / gl) if gl > 0 else None
+        return (sd if (sd is not None and sd > 0) else None), dict(
+            n_estratos=n_estratos, n_estratos_singleton=n_singleton,
+            n_obs=n_obs, grados_libertad=gl)
 
-    def _sd_ref(fuentes, pool):
-        todo = fuentes + pool
-        if not todo:
+    sd_ref_s60, diag_sd_s60 = _acumular_within("s60")
+    sd_ref_lv, diag_sd_lv = _acumular_within("lv")
+
+    # Diagnostico, NO denominador: la SD global (definicion F2.2). Se reporta
+    # solo para dejar MEDIDO cuanto deflactaba la version anterior.
+    def _sd_global(clave):
+        todo = []
+        for arch in archivos_planificados:
+            for _m, e in (muestra_por_archivo.get(arch) or {}).items():
+                todo.extend(e["fuentes_" + clave])
+                todo.extend(e["pool_" + clave])
+        todo = [x for x in todo if math.isfinite(x)]
+        if len(todo) < 2:
             return None
         sd = float(np.std(np.asarray(todo, dtype=np.float64), ddof=0))
         return sd if sd > 0 else None
 
-    sd_ref_s60 = _sd_ref(muestra_fuentes_s60_g, muestra_pool_s60_g)
-    sd_ref_lv = _sd_ref(muestra_fuentes_lv_g, muestra_pool_lv_g)
+    sd_global_s60, sd_global_lv = _sd_global("s60"), _sd_global("lv")
+
+    def _ratio(g, w):
+        return float(g / w) if (g is not None and w is not None and w > 0) else None
+
+    def _sd_within_de_archivo(arch, clave):
+        ss, gl = 0.0, 0
+        for _m, e in (muestra_por_archivo.get(arch) or {}).items():
+            xs = [x for x in (list(e["fuentes_" + clave]) + list(e["pool_" + clave]))
+                  if math.isfinite(x)]
+            if len(xs) < 2:
+                continue
+            arr = np.asarray(xs, dtype=np.float64)
+            ss += float(np.sum((arr - arr.mean()) ** 2))
+            gl += len(arr) - 1
+        return math.sqrt(ss / gl) if gl > 0 else None
+
+    sd_ref_por_archivo = {
+        a: dict(log1p_sigma60_ticks=_sd_within_de_archivo(a, "s60"),
+                log1p_bar_volume=_sd_within_de_archivo(a, "lv"))
+        for a in archivos_planificados}
+
     sd_ref_sha256 = hashlib.sha256(json.dumps(dict(
+        definicion="pooled_within_stratum(archivo x minuto_de_sesion)",
         sd_ref_log1p_sigma60_ticks=sd_ref_s60, sd_ref_log1p_bar_volume=sd_ref_lv,
-        n_muestra_fuentes=len(muestra_fuentes_s60_g), n_muestra_pool=len(muestra_pool_s60_g),
+        diag_log1p_sigma60_ticks=diag_sd_s60, diag_log1p_bar_volume=diag_sd_lv,
     ), sort_keys=True).encode()).hexdigest()
+
+    def _plano(clave, campo):
+        xs = []
+        for arch in archivos_planificados:
+            for _m, e in (muestra_por_archivo.get(arch) or {}).items():
+                xs.extend(e[campo + "_" + clave])
+        return [x for x in xs if math.isfinite(x)]
+
+    muestra_fuentes_s60_g, muestra_pool_s60_g = _plano("s60", "fuentes"), _plano("s60", "pool")
+    muestra_fuentes_lv_g, muestra_pool_lv_g = _plano("lv", "fuentes"), _plano("lv", "pool")
 
     def _media(xs):
         return float(np.mean(xs)) if xs else None
@@ -531,6 +622,29 @@ def agregar_balance_global(cobertura_por_archivo, muestra_por_archivo, archivos_
 
     smd_pre_s60 = smd_con_sd_ref(_media(muestra_fuentes_s60_g), _media(muestra_pool_s60_g), sd_ref_s60)
     smd_pre_lv = smd_con_sd_ref(_media(muestra_fuentes_lv_g), _media(muestra_pool_lv_g), sd_ref_lv)
+
+    # smd_pre_within_estrato: el desbalance pre-matching que NO es composicion
+    # de estratos -- promedio de (media_fuentes_estrato - media_pool_estrato)
+    # ponderado por el numero de fuentes del estrato. Es la parte que el
+    # matching NO puede comprar reordenando minutos. Diagnostico decisivo:
+    # si smd_pre_within ~= smd_post, el problema es falta de solapamiento
+    # DENTRO del estrato y ningun matcher lo va a arreglar -- ahi hay que ir
+    # a A) recorte a soporte comun, B) pesos de solapamiento o C) controles
+    # de casi-evento, no a otra vuelta de tuning.
+    def _pre_within(clave):
+        num, den = 0.0, 0.0
+        for arch in archivos_planificados:
+            for _m, e in (muestra_por_archivo.get(arch) or {}).items():
+                f = [x for x in e["fuentes_" + clave] if math.isfinite(x)]
+                p = [x for x in e["pool_" + clave] if math.isfinite(x)]
+                if not f or not p:
+                    continue
+                num += len(f) * (float(np.mean(f)) - float(np.mean(p)))
+                den += len(f)
+        return (num / den) if den > 0 else None
+
+    smd_pre_within_s60 = smd_con_sd_ref(_pre_within("s60"), 0.0, sd_ref_s60)
+    smd_pre_within_lv = smd_con_sd_ref(_pre_within("lv"), 0.0, sd_ref_lv)
 
     # ---- insumos post-matching, globales y por-archivo. ----
     reales_s60_g, controles_s60_g, pesos_s60_g = [], [], []
@@ -626,7 +740,16 @@ def agregar_balance_global(cobertura_por_archivo, muestra_por_archivo, archivos_
 
     return dict(
         sd_ref_log1p_sigma60_ticks=sd_ref_s60, sd_ref_log1p_bar_volume=sd_ref_lv, sd_ref_sha256=sd_ref_sha256,
+        sd_ref_definicion="pooled_within_stratum(archivo x minuto_de_sesion)",
+        sd_ref_diagnostico=dict(log1p_sigma60_ticks=diag_sd_s60, log1p_bar_volume=diag_sd_lv),
+        sd_ref_por_archivo=sd_ref_por_archivo,
+        sd_global_log1p_sigma60_ticks=sd_global_s60, sd_global_log1p_bar_volume=sd_global_lv,
+        sd_ratio_global_sobre_within=dict(
+            log1p_sigma60_ticks=_ratio(sd_global_s60, sd_ref_s60),
+            log1p_bar_volume=_ratio(sd_global_lv, sd_ref_lv)),
         smd_log1p_sigma60_ticks_pre=smd_pre_s60, smd_log1p_bar_volume_pre=smd_pre_lv,
+        smd_log1p_sigma60_ticks_pre_within_estrato=smd_pre_within_s60,
+        smd_log1p_bar_volume_pre_within_estrato=smd_pre_within_lv,
         smd_log1p_sigma60_ticks_global_pooled=smd_s60_global,
         smd_log1p_sigma60_ticks_matched_sets=smd_s60_ms,
         smd_log1p_sigma60_ticks_peso_sesion=smd_s60_peso_sesion,
@@ -942,7 +1065,8 @@ def procesar_zonas_de_archivo(kernel_zones, high_t, low_t, close_t, bar_volume,
 
     return dict(universo=universo, zonas_matched=zonas_matched, resultados=resultados,
                 cobertura=calcular_balance_cobertura(zonas_matched, cov_por_barra),
-                muestra_pre_matching=muestra_pre_matching(universo, cov_por_barra, creadoras))
+                muestra_pre_matching=muestra_pre_matching(
+                    zonas_matched, por_minuto, creadoras, cov_por_barra, n_bars))
 
 
 def instrumentacion_f3(zonas_matched, resultados):
@@ -1022,6 +1146,15 @@ def main(argv=None):
 
     head_start = git_head()
     dirty_start = git_dirty()
+    if dirty_start:
+        print("ABSTAIN_PROVENANCE: el arbol de trabajo esta sucio ANTES de empezar "
+              "(`git status --porcelain` no vacio) -- se aborta ACA, sin computar ni "
+              "imprimir ningun diagnostico. F2.2 registraba dirty_start al inicio pero "
+              "recien lo evaluaba al final de main(), despues de imprimir GATES DE "
+              "BALANCE/COBERTURA e INSTRUMENTACION: una corrida con procedencia "
+              "invalida no debe producir numeros mirables, por el mismo motivo por el "
+              "que el hash de NORTH_STAR.md ya abortaba de entrada (return 3).")
+        return 5
     ns_hash = north_star_body_sha256()
     if ns_hash != NORTH_STAR_BODY_SHA256_EXPECTED:
         print("ABSTAIN_PROVENANCE: hash de NORTH_STAR.md no coincide (%s != %s)"
