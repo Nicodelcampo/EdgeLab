@@ -226,6 +226,29 @@ def test_resumir_celdas_usa_sd_ref_congelado_y_marca_gates():
     assert fila["celda_pasa_gates"] is False
 
 
+def test_advertencia_confound_atricion_reporta_evidencia_de_interseccion_vacia():
+    """F2.6 SS1 (decision documentada, no implementada como medicion): el
+    split propio/comun no se implementa porque la interseccion literal sobre
+    TODAS las celdas de la rejilla es vacia apenas una sola celda tenga
+    cobertura cero -- lo que ya pasa en la corrida real (38/120). La funcion
+    tiene que reportar esa evidencia, no solo afirmarla."""
+    celdas = [
+        dict(celda="a", n_zonas_ok=0),
+        dict(celda="b", n_zonas_ok=5),
+        dict(celda="c", n_zonas_ok=0),
+    ]
+    adv = f25.advertencia_confound_atricion(celdas)
+    assert adv["implementado"] is False
+    assert adv["evidencia"]["n_celdas_totales"] == 3
+    assert adv["evidencia"]["n_celdas_con_cobertura_cero"] == 2
+    assert "no comparable" in adv["advertencia"].lower() or "no es comparable" in adv["advertencia"].lower()
+
+    # sin ninguna celda en cero, la evidencia tiene que decirlo tambien
+    # (la funcion no afirma "vacio" quando no lo es -- reporta el conteo real).
+    sin_ceros = f25.advertencia_confound_atricion([dict(celda="x", n_zonas_ok=3)])
+    assert sin_ceros["evidencia"]["n_celdas_con_cobertura_cero"] == 0
+
+
 # ----------------------------------------------------------------------
 # Pre-registro: gates estructurales
 # ----------------------------------------------------------------------

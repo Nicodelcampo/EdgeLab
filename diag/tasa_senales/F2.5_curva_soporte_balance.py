@@ -401,6 +401,47 @@ def resumir_celdas(celdas_total, sd_ref_s60, sd_ref_lv,
     return filas
 
 
+def advertencia_confound_atricion(celdas):
+    """F2.6 SS1 (confound de atricion): decision documentada, NO implementada
+    como medicion (2026-08-12).
+
+    El problema es real: una celda con caliper angosto descarta MAS zonas que
+    una con caliper ancho, y descarta justamente las que no encontraban
+    controles cercanos -- las mas desbalanceadas. Comparar smd_post entre
+    celdas sin controlar por esto compara poblaciones distintas, sesgado
+    siempre a favor de la celda mas restrictiva.
+
+    F2.6 SS1 propone que cada celda reporte la metrica sobre la INTERSECCION
+    de conjuntos admisibles de TODAS las celdas de la rejilla ("comun"), ademas
+    de su propio conjunto ("propio"). No se implemento: para ESTA rejilla es
+    degenerado por construccion. La rejilla incluye celdas con
+    n_zonas_ok=0 (cobertura cero -- ninguna zona alcanza min_controls_efectivo
+    dentro del caliper mas angosto en la ventana mas angosta). La
+    interseccion sobre las 120 celdas incluye esas celdas, asi que la
+    interseccion es el conjunto vacio: CADA celda terminaria reportando
+    ABSTAIN_POBLACION, sin informacion util -- no es una aproximacion
+    conservadora, es cero senal.
+
+    Se documenta la advertencia en el payload en su lugar (Nico, 2026-08-12:
+    'que salga con la advertencia escrita que con un parche apurado'). No
+    requiere bump de la spec/schema_version: no cambia que se mide (la rejilla
+    congelada sigue intacta), solo agrega una advertencia sobre como leer lo
+    que ya se mide."""
+    n_total = len(celdas)
+    n_cobertura_cero = sum(1 for c in celdas if c["n_zonas_ok"] == 0)
+    return dict(
+        implementado=False,
+        motivo=("interseccion literal de conjuntos admisibles sobre las 120 celdas de la rejilla "
+                "es el conjunto vacio para esta corrida -- ver evidencia"),
+        evidencia=dict(n_celdas_totales=n_total, n_celdas_con_cobertura_cero=n_cobertura_cero),
+        advertencia=("smd_post NO es comparable entre celdas sin mirar cobertura/n_zonas_ok junto con "
+                     "ese numero: una celda con caliper angosto descarta las zonas que no encontraban "
+                     "controles cercanos -- las mas desbalanceadas -- mejorando smd_post por atricion de "
+                     "poblacion, no por matching. Ninguna lectura de esta curva debe elegir 'la celda que "
+                     "mejor queda' comparando smd_post crudo entre celdas de cobertura distinta."),
+        referencia="docs/research/F2.6_NOTA_ESTIMAND_SUCESOR_2026-08-12.md#1-accionable-antes-del-smoke--confound-de-atricion-en-la-curva")
+
+
 # ======================================================================
 # Orquestacion por archivo
 # ======================================================================
@@ -614,6 +655,11 @@ def main(argv=None):
                  fila["smd_log1p_sigma60_ticks"], fila["smd_log1p_bar_volume"],
                  fila["celda_pasa_gates"]))
 
+    adv = advertencia_confound_atricion(celdas)
+    print("\nCONFOUND DE ATRICION (F2.6 SS1) -- %d/%d celdas con cobertura cero"
+          % (adv["evidencia"]["n_celdas_con_cobertura_cero"], adv["evidencia"]["n_celdas_totales"]))
+    print("  %s" % adv["advertencia"])
+
     head_end = f11.git_head()
     dirty_end = f11.git_dirty()
     if dirty_start or dirty_end or head_start != head_end:
@@ -638,6 +684,7 @@ def main(argv=None):
                                                log1p_bar_volume=diag_lv)),
         max_abs_smd=f11.MAX_ABS_SMD, min_zone_coverage=f11.MIN_ZONE_COVERAGE,
         soporte_por_ventana=soporte, curva_de_balance=celdas,
+        confound_de_atricion=adv,
         session_count=ns_sesiones, max_fecha_universo=peor,
         firewall_max_fecha=f11.MAX_FECHA, universe_filter_report=info,
         outcomes_accessed=False, holdout_opened=False, estimand_suppressed=True,
