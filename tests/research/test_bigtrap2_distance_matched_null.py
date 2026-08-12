@@ -394,6 +394,42 @@ def test_06_07_control_otra_sesion_mismo_minuto_sin_creacion_bigtrap():
     assert sesiones_candidatas == {fechas[2], fechas[3], fechas[4]}
 
 
+def test_f1_creadoras_incluye_zonas_excluidas_del_universo_por_top_none():
+    """F1 (fix 2026-08-11): una zona con top=None (o created_ms=None, o de
+    una sesion fuera de este archivo) queda fuera de `universo`, pero su
+    `created_bar` DEBE seguir marcado en `creadoras` -- si no, esa barra se
+    cuela como candidato de control aunque BigTrap2 si haya creado una zona
+    ahi. Antes del fix, `creadoras.add(cb)` vivia despues de los filtros y
+    esto fallaba."""
+    n_sesiones, bpp = 3, 100
+    bar_end_ns = _bar_end_ns_real_por_sesion(n_sesiones, bpp)
+    fechas = [session_date_ct(int(bar_end_ns[s * bpp]) // 1_000_000) for s in range(n_sesiones)]
+    ses_de_barra, rango_sesion = m.sesiones_de_barras(bar_end_ns, fechas)
+    n = n_sesiones * bpp
+
+    cb_valida = 0 * bpp + 10
+    cb_top_none = 1 * bpp + 10  # mismo minuto (10), otra sesion -- candidato natural
+    kernel_zones = [
+        dict(id="zvalida", top=101 * 1.0 + 0.5, bottom=101 * 1.0 - 0.5,
+            created_bar=cb_valida, created_ms=int(bar_end_ns[cb_valida]) // 1_000_000,
+            kind="trapped_buyers"),
+        dict(id="ztop_none", top=None, bottom=None,
+            created_bar=cb_top_none, created_ms=None, kind="trapped_buyers"),
+    ]
+    universo, creadoras = m.construir_universo_zonas(
+        kernel_zones, ses_de_barra, rango_sesion, fechas, 1.0, n)
+
+    assert len(universo) == 1 and universo[0]["zone_id"] == "zvalida"  # top=None excluida del universo
+    assert cb_top_none in creadoras  # pero SI marca su barra como creadora
+    assert cb_valida in creadoras
+
+    # Verificacion cruzada: construir_pool_candidatos debe EXCLUIR cb_top_none
+    # como candidato de la zona valida (mismo minuto=10, sesion 1).
+    por_minuto = m.indexar_por_minuto(ses_de_barra, rango_sesion, n)
+    candidatos = m.construir_pool_candidatos(universo[0], por_minuto, creadoras, n, horizon_i=5)
+    assert cb_top_none not in {b for _s, b in candidatos}
+
+
 def test_08_covariables_causales_nunca_leen_barras_futuras():
     n = 200
     close_t = np.arange(n, dtype=np.float64)  # tendencia conocida, sin ruido
