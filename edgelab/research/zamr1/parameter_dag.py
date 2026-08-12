@@ -10,7 +10,7 @@ from dataclasses import dataclass
 import hashlib
 import json
 import math
-from typing import Any, Dict, Mapping, Sequence
+from typing import Any, Dict, Mapping
 
 from edgelab.bridge.indicators import avolcellpoi2, bigtrap2
 
@@ -96,6 +96,11 @@ def validate_param_set(indicator: str, overrides: Mapping[str, Any]) -> list[Par
     issues = _generic_issues(indicator, overrides)
     if indicator not in _MODULES:
         return issues
+    # Las restricciones cruzadas hacen operaciones numéricas. Si un tipo es
+    # inválido, no intentamos continuar y convertir un FAIL esperado en crash.
+    if any(item.code == "INVALID_TYPE" for item in issues):
+        return issues
+
     merged: Dict[str, Any] = dict(_MODULES[indicator].DEFAULTS)
     merged.update(overrides)
 
@@ -131,8 +136,9 @@ def validate_param_set(indicator: str, overrides: Mapping[str, Any]) -> list[Par
                     "EXPORT_FLOOR_ABOVE_DETECTION", "export_floor_percentile",
                     "debe ser <= detection_percentile",
                 ))
-            tail = 1.0 - p / 100.0
-            required = math.ceil((10.0 / tail) - 1e-12) if tail > 0 else math.inf
+            # Forma algebraicamente equivalente pero estable para percentiles
+            # decimales registrados: 10/(1-p/100) = 1000/(100-p).
+            required = math.ceil(1000.0 / (100.0 - p)) if p < 100.0 else math.inf
             if merged["min_cell_samples"] < required:
                 issues.append(ParamIssue(
                     "INSUFFICIENT_TAIL_SUPPORT", "min_cell_samples",
