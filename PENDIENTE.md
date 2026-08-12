@@ -82,12 +82,17 @@ y sin haber abierto ningún endpoint):
 
 ## P-04 · Duplicado de gobernanza en la rama
 
-**Estado**: ABIERTA — mecánica.
+**Estado**: RESUELTA (2026-08-12).
 
 `research/bigtrap2-distance-matched-null` arrastra su propia copia de
 `CLAUDE.md`, `docs/NORTH_STAR.md` y `tests/test_north_star_hash.py` (commit
-`9474bc6`) de lo que en `audit/p0-bigtrap2-drift` es `1916ffa`. Se resuelve con
-rebase sobre `1916ffa` y drop de ese commit.
+`9474bc6`) de lo que en `audit/p0-bigtrap2-drift` es `1916ffa`.
+
+La rama sucesora `research/bigtrap2-soporte-balance-curve` fue rehecha sobre
+`audit/p0-bigtrap2-drift@1916ffa`, omitiendo sólo `9474bc6`. La rebase de
+prueba y la aplicada produjeron un árbol idéntico al previo; el primer commit
+publicado de la historia corregida es `9fcdd9c` y el ancestro de auditoría es
+verificable mecánicamente.
 
 ---
 
