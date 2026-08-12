@@ -339,32 +339,131 @@ def smd(real_values, control_values):
     return float((np.mean(r) - np.mean(c)) / math.sqrt(var_pool))
 
 
+def smd_pareado(diffs):
+    """SMD de diferencias PAREADAS por zona: cada diff ya es
+    (covariable_fuente - promedio_de_SUS_PROPIOS_controles), calculada ANTES
+    de agregar entre zonas/archivos. A diferencia de smd() (que compara dos
+    poblaciones separadas -- reales vs controles -- y por lo tanto puede
+    promediarse mal entre archivos con sesgo de signo opuesto), esta
+    diferencia ya lleva el signo de CADA zona: no hay agregacion intermedia
+    por archivo que pueda cancelarlo (F2, auditoria 2026-08-11)."""
+    d = np.asarray(diffs, dtype=np.float64)
+    if len(d) == 0:
+        return None
+    sd = np.std(d, ddof=0)
+    if sd <= 0:
+        return 0.0 if np.mean(d) == 0.0 else None
+    return float(np.mean(d) / sd)
+
+
 def calcular_balance_cobertura(zonas_matched, cov_por_barra):
     """cobertura = fraccion de zonas del universo con >=MIN_CONTROLS
     controles. SMD compara la covariable de las barras FUENTE contra el
     promedio de covariables de sus controles elegidos, agregado sobre todas
-    las zonas con match OK."""
+    las zonas con match OK -- DENTRO de este archivo (diagnostico por
+    archivo). Ademas de ese SMD por-archivo, devuelve las listas crudas
+    (reales/controles) y los diffs pareados por zona (fuente menos el
+    promedio de SUS controles) SIN agregar -- main() los poolea globalmente
+    entre archivos antes de decidir ningun gate. F2 (auditoria 2026-08-11):
+    promediar el smd_log1p_* por-archivo entre archivos (lo que este mismo
+    dict devolvia antes de F2 como si fuera la cifra final) puede cancelarse
+    en signo -- +0.5 en un archivo y -0.5 en otro promedian 0.0 y pasarian el
+    gate sin que ningun archivo individual este balanceado. Ese numero ahora
+    es solo diagnostico por-archivo, nunca la base de un gate."""
     n_total = len(zonas_matched)
     n_ok = sum(1 for z in zonas_matched if z["match"]["estado"] == "OK")
     cobertura = (n_ok / n_total) if n_total else 0.0
 
     reales_s60, reales_lv = [], []
     controles_s60, controles_lv = [], []
+    pareado_s60, pareado_lv = [], []
     for z in zonas_matched:
         if z["match"]["estado"] != "OK":
             continue
         zs60, zlv = z["covariables_fuente"]
         reales_s60.append(zs60)
         reales_lv.append(zlv)
+        ctrl_s60, ctrl_lv = [], []
         for ctrl in z["match"]["elegidos"]:
             cs60, clv = cov_por_barra[ctrl["bar_index"]]
             controles_s60.append(cs60)
             controles_lv.append(clv)
+            ctrl_s60.append(cs60)
+            ctrl_lv.append(clv)
+        if ctrl_s60:  # "OK" implica elegidos no vacio en produccion (igual
+            # que asume p0_i mas abajo); guardia solo para no ensuciar con
+            # NaN los fixtures sinteticos de test que construyen OK a mano
+            # con elegidos=[].
+            pareado_s60.append(zs60 - float(np.mean(ctrl_s60)))
+            pareado_lv.append(zlv - float(np.mean(ctrl_lv)))
 
     return dict(
         n_total_zonas=n_total, n_zonas_ok=n_ok, cobertura=cobertura,
         smd_log1p_sigma60_ticks=smd(reales_s60, controles_s60),
         smd_log1p_bar_volume=smd(reales_lv, controles_lv),
+        crudo_reales_s60=reales_s60, crudo_controles_s60=controles_s60,
+        crudo_reales_lv=reales_lv, crudo_controles_lv=controles_lv,
+        pareado_s60=pareado_s60, pareado_lv=pareado_lv,
+    )
+
+
+def agregar_smd_global(cobertura_por_archivo):
+    """F2 (auditoria 2026-08-11, defecto que sobrevivio al fix de reanclaje):
+    agrega SMD ENTRE archivos sin promediar SMDs por-archivo -- ese promedio
+    puede cancelarse en signo (+0.5 en un archivo, -0.5 en otro, promedio
+    0.0, pasa el gate sin que ningun archivo individual este balanceado).
+
+    Recibe {archivo: cobertura_dict} (la salida de calcular_balance_cobertura
+    de cada archivo, con sus listas crudas y diffs pareados) y devuelve tres
+    variantes de SMD que NUNCA pasan por un promedio de razones:
+    - global_pooled: una sola smd() sobre la UNION de valores crudos
+      (reales/controles) de TODOS los archivos.
+    - pareado: smd_pareado() sobre los diffs por-zona (fuente - promedio de
+      SUS controles), ya pooleados globalmente -- el signo de cada zona se
+      fija ANTES de agregar, asi que no hay paso intermedio que lo cancele.
+    - max_abs_por_archivo: el peor |SMD| individual de un solo archivo --
+      capta un archivo desbalanceado que el pool global podria diluir si el
+      resto son muchos y estan bien balanceados.
+
+    El gate exige que las TRES pasen la tolerancia: el escenario que motivo
+    F2 (dos archivos +0.5/-0.5) falla por max_abs_por_archivo aunque el pool
+    global y el pareado dieran ~0."""
+    reales_s60_g, controles_s60_g = [], []
+    reales_lv_g, controles_lv_g = [], []
+    pareado_s60_g, pareado_lv_g = [], []
+    smd_s60_por_archivo, smd_lv_por_archivo = {}, {}
+    for arch, cob in cobertura_por_archivo.items():
+        reales_s60_g.extend(cob["crudo_reales_s60"])
+        controles_s60_g.extend(cob["crudo_controles_s60"])
+        reales_lv_g.extend(cob["crudo_reales_lv"])
+        controles_lv_g.extend(cob["crudo_controles_lv"])
+        pareado_s60_g.extend(cob["pareado_s60"])
+        pareado_lv_g.extend(cob["pareado_lv"])
+        smd_s60_por_archivo[arch] = cob["smd_log1p_sigma60_ticks"]
+        smd_lv_por_archivo[arch] = cob["smd_log1p_bar_volume"]
+
+    smd_s60_global = smd(reales_s60_g, controles_s60_g)
+    smd_lv_global = smd(reales_lv_g, controles_lv_g)
+    smd_s60_pareado = smd_pareado(pareado_s60_g)
+    smd_lv_pareado = smd_pareado(pareado_lv_g)
+    smd_s60_max_abs = max((abs(v) for v in smd_s60_por_archivo.values() if v is not None), default=None)
+    smd_lv_max_abs = max((abs(v) for v in smd_lv_por_archivo.values() if v is not None), default=None)
+
+    def _ok(g, p, mx):
+        return (g is not None and abs(g) <= MAX_ABS_SMD
+                and p is not None and abs(p) <= MAX_ABS_SMD
+                and mx is not None and mx <= MAX_ABS_SMD)
+
+    return dict(
+        smd_log1p_sigma60_ticks_global_pooled=smd_s60_global,
+        smd_log1p_sigma60_ticks_pareado=smd_s60_pareado,
+        smd_log1p_sigma60_ticks_max_abs_por_archivo=smd_s60_max_abs,
+        smd_sigma60_ok=_ok(smd_s60_global, smd_s60_pareado, smd_s60_max_abs),
+        smd_log1p_bar_volume_global_pooled=smd_lv_global,
+        smd_log1p_bar_volume_pareado=smd_lv_pareado,
+        smd_log1p_bar_volume_max_abs_por_archivo=smd_lv_max_abs,
+        smd_bar_volume_ok=_ok(smd_lv_global, smd_lv_pareado, smd_lv_max_abs),
+        smd_por_archivo=dict(log1p_sigma60_ticks=smd_s60_por_archivo, log1p_bar_volume=smd_lv_por_archivo),
     )
 
 
@@ -743,7 +842,7 @@ def main(argv=None):
     todos_resultados = []
     todos_zonas_matched = []
     cobertura_acumulada = dict(n_total_zonas=0, n_zonas_ok=0)
-    smd_s60_vals, smd_lv_vals = [], []
+    coberturas_por_archivo = {}  # F2: agregar_smd_global() poolea esto DESPUES del loop
     crudo = {}
 
     for arch, fechas in plan:
@@ -782,10 +881,7 @@ def main(argv=None):
         todos_zonas_matched.extend(res["zonas_matched"])
         cobertura_acumulada["n_total_zonas"] += res["cobertura"]["n_total_zonas"]
         cobertura_acumulada["n_zonas_ok"] += res["cobertura"]["n_zonas_ok"]
-        if res["cobertura"]["smd_log1p_sigma60_ticks"] is not None:
-            smd_s60_vals.append(res["cobertura"]["smd_log1p_sigma60_ticks"])
-        if res["cobertura"]["smd_log1p_bar_volume"] is not None:
-            smd_lv_vals.append(res["cobertura"]["smd_log1p_bar_volume"])
+        coberturas_por_archivo[arch] = res["cobertura"]
         crudo[arch] = dict(estado="OK", sesiones=len(fechas),
                            n_zonas=res["cobertura"]["n_total_zonas"],
                            n_zonas_ok=res["cobertura"]["n_zonas_ok"])
@@ -794,8 +890,7 @@ def main(argv=None):
 
     cobertura_global = (cobertura_acumulada["n_zonas_ok"] / cobertura_acumulada["n_total_zonas"]
                         if cobertura_acumulada["n_total_zonas"] else 0.0)
-    smd_s60 = float(np.mean(smd_s60_vals)) if smd_s60_vals else None
-    smd_lv = float(np.mean(smd_lv_vals)) if smd_lv_vals else None
+    smd_agregado = agregar_smd_global(coberturas_por_archivo)  # F2: nunca promedio de SMDs por-archivo
 
     # sesiones_con_al_menos_una_zona: de zonas_matched (SIEMPRE tiene
     # session_date), no de `residuales` -- residuales queda vacio a proposito
@@ -804,8 +899,7 @@ def main(argv=None):
     sesiones_con_zona = len(set(z["session_date"] for z in todos_zonas_matched))
     gates = dict(
         cobertura_global=cobertura_global, cobertura_ok=cobertura_global >= MIN_ZONE_COVERAGE,
-        smd_log1p_sigma60_ticks=smd_s60, smd_sigma60_ok=(smd_s60 is not None and abs(smd_s60) <= MAX_ABS_SMD),
-        smd_log1p_bar_volume=smd_lv, smd_bar_volume_ok=(smd_lv is not None and abs(smd_lv) <= MAX_ABS_SMD),
+        **smd_agregado,
         sesiones_con_al_menos_una_zona=sesiones_con_zona,
         sesiones_ok=(sesiones_con_zona >= REQUIRED_SOURCE_SESSIONS) if not a.smoke_archivo else None,
     )
