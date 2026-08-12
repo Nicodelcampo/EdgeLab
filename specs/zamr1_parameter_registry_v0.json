@@ -1,0 +1,85 @@
+{
+  "schema_version": "zamr1_parameter_registry_v0",
+  "status": "Z0_EXECUTABLE_GRID_DEFINITION",
+  "campaign_id": "ZAMR-1",
+  "search_policy": "exhaustive_materialization_hierarchical_promotion",
+  "bar_specs": {
+    "pilot": [5, 10, 25, 50, 100, 200],
+    "full_catalog": [5, 8, 10, 13, 16, 21, 25, 32, 40, 50, 64, 75, 100, 128, 150, 200, 256],
+    "tick_1_excluded": true
+  },
+  "indicators": {
+    "BigTrap2": {
+      "pilot_enabled": true,
+      "pilot_mode": "defaults_only",
+      "families": {
+        "footprint": {
+          "ticks_per_row": [1, 2, 4]
+        },
+        "detection": {
+          "imbalance_mode": ["Diagonal", "SameLevel"],
+          "trap_volume_source": ["AggressiveSide", "TotalLevel"],
+          "imbalance_ratio": [1.5, 2.0, 3.0, 4.0],
+          "use_wick_filter": [true, false],
+          "wick_zone_pct": {"status": "PENDING_TARGET_FREE_GRID", "default": 30.0},
+          "min_delta_filter": {"status": "PENDING_TARGET_FREE_GRID", "default": 0.0}
+        },
+        "selection": {
+          "min_export_volume": [1.0],
+          "min_trap_volume": [20.0, 30.0, 50.0]
+        },
+        "lifecycle": {
+          "status": "SEPARATE_CAMPAIGN",
+          "invalidation_mode": ["CloseThrough", "FirstTouch"],
+          "max_age_bars": {"status": "PENDING_PHYSICAL_TIME_RULE", "default": 2000},
+          "max_touches": {"status": "PENDING_TARGET_FREE_GRID", "default": 0}
+        }
+      },
+      "forbidden": ["TopPercentFilter", "AutoScale", "OutlierPercentile"]
+    },
+    "aVolCellPOI2": {
+      "pilot_enabled": false,
+      "activation_gate": "independent_structural_protocol_and_parity",
+      "families": {
+        "profile": {
+          "bucket_anchor": ["SessionRelative", "WallClock"],
+          "time_bucket_minutes": [15, 30, 60],
+          "lookback_sessions": [10, 20, 40],
+          "profile_weighting": ["EqualSessionWeight", "PooledCells"]
+        },
+        "source": {
+          "detection_source": ["TotalVolume", "AbsDelta", "MaxSide"]
+        },
+        "threshold": {
+          "quantile_pairs": [
+            {"detection_percentile": 98.0, "min_cell_samples": 500},
+            {"detection_percentile": 99.0, "min_cell_samples": 1000},
+            {"detection_percentile": 99.5, "min_cell_samples": 2000},
+            {"detection_percentile": 99.75, "min_cell_samples": 4000}
+          ],
+          "robust_z_threshold": [3.0, 4.0, 5.0],
+          "branch_rule": "Quantile XOR RobustZ"
+        },
+        "geometry": {
+          "merge_gap_ticks": {"status": "PENDING_TARGET_FREE_GRID", "default": 0},
+          "min_zone_cells": {"status": "PENDING_TARGET_FREE_GRID", "default": 1}
+        },
+        "lifecycle": {
+          "status": "SEPARATE_CAMPAIGN",
+          "invalidation_mode": ["CloseThrough", "FirstTouch"],
+          "max_age_bars": {"status": "PENDING_PHYSICAL_TIME_RULE", "default": 2000},
+          "max_touches": {"status": "PENDING_TARGET_FREE_GRID", "default": 0}
+        }
+      }
+    }
+  },
+  "promotion": {
+    "singles_before_pairs": true,
+    "pairs_before_triples": true,
+    "strong_heredity": true,
+    "max_promoted_single_frames": 5,
+    "max_frame_count_per_combination": 3,
+    "plateau_required": true,
+    "failed_and_null_cells_retained": true
+  }
+}
