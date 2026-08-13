@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-"""aVolClusterPOI research kernel.
+"""aVolClusterPOI research kernel v0.5.
 
-Cluster-mass anomaly versus the same session-relative time bucket.
-No QualityScore gate, no LONG/SHORT, no target/stop, no BigTrap2.
+One max-mass cluster per block. OFF_PRICE is the level object.
+AT_PRICE is occupation, not support/resistance. No QualityScore gate,
+no target/stop, no BigTrap2.
 """
 from __future__ import annotations
 
@@ -10,6 +11,7 @@ import math
 from collections import defaultdict, deque
 
 NAME = "aVolClusterPOI"
+VERSION = "0.5"
 RESEARCH_DEFAULTS = dict(
     window_bars=10,
     median_multiplier=2.0,
@@ -19,6 +21,8 @@ RESEARCH_DEFAULTS = dict(
     lookback_sessions=20,
     detection_percentile=98.0,
     min_samples_per_bucket=20,
+    max_age_bars=0,
+    one_cluster_per_block=True,
 )
 
 
@@ -40,7 +44,6 @@ def median_upper(values):
 
 
 def cluster_hot_ticks(cells, median_multiplier, max_gap_ticks, min_cluster_ticks):
-    """cells: dict[tick -> volume]. Returns list of (ticks, score)."""
     if len(cells) < 3:
         return []
     med = median_upper(cells.values())
@@ -66,7 +69,18 @@ def cluster_hot_ticks(cells, median_multiplier, max_gap_ticks, min_cluster_ticks
     return clusters
 
 
-def detect_block(cells, history_scores, params=None):
+def classify_kind(close_tick, lower_tick, upper_tick):
+    if close_tick is None:
+        return "OFF_PRICE", None, None
+    close_tick = int(close_tick)
+    if close_tick > upper_tick:
+        return "OFF_PRICE", 1, close_tick - upper_tick
+    if close_tick < lower_tick:
+        return "OFF_PRICE", -1, lower_tick - close_tick
+    return "AT_PRICE", 0, 0
+
+
+def detect_block(cells, history_scores, params=None, close_tick=None):
     p = {**RESEARCH_DEFAULTS, **(params or {})}
     clusters = cluster_hot_ticks(
         cells, p["median_multiplier"], p["max_gap_ticks"], p["min_cluster_ticks"]
@@ -76,12 +90,25 @@ def detect_block(cells, history_scores, params=None):
     if len(hist) < int(p["min_samples_per_bucket"]):
         return dict(best_score=best, threshold=None, zones=[], abstain="warmup")
     thresh = empirical_quantile(hist, p["detection_percentile"] / 100.0)
-    zones = []
+    passing = []
     if thresh is not None and thresh > 0:
-        for ticks, score in clusters:
-            if score >= thresh:
-                zones.append(dict(lower_tick=ticks[0], upper_tick=ticks[-1], score=score, threshold=thresh))
-    return dict(best_score=best, threshold=thresh, zones=zones, abstain=None)
+        passing = [(ticks, score) for ticks, score in clusters if score >= thresh]
+    if not passing:
+        return dict(best_score=best, threshold=thresh, zones=[], abstain=None)
+    ticks, score = max(passing, key=lambda item: item[1])
+    kind, direction, distance = classify_kind(close_tick, ticks[0], ticks[-1])
+    zone = dict(
+        lower_tick=ticks[0],
+        upper_tick=ticks[-1],
+        score=score,
+        threshold=thresh,
+        kind=kind,
+        event_type="AT_PRICE_CREATED" if kind == "AT_PRICE" else "ZONE_CREATED",
+    )
+    if direction is not None:
+        zone["direction"] = direction
+        zone["distance_ticks"] = distance
+    return dict(best_score=best, threshold=thresh, zones=[zone], abstain=None)
 
 
 class SessionProfile:
