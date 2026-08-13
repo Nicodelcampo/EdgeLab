@@ -58,4 +58,25 @@ def trade_stats(x):
     return {"n": n, "exp": mean, "sharpe": mean / sd,
             "skew": float(((x - mean) ** 3).mean() / sd ** 3),
             "kurt": float(((x - mean) ** 4).mean() / sd ** 4),
-            "win": float((x > 0).mean())}
+            "pnl_ticks_sum": float(x.sum())}
+
+
+def validar_entorno_venv(repo_path=None) -> bool:
+    """Verifica que el script corra dentro de un entorno virtual (.venv) gobernado.
+    Acepta entornos locales del repo o los entornos estándar de EdgeLab (D: / E:)."""
+    import sys
+    from pathlib import Path
+    if sys.prefix == sys.base_prefix:
+        print("ABSTAIN_PROVENANCE: no se esta ejecutando dentro de un entorno virtual (.venv)")
+        return False
+    prefix_path = Path(sys.prefix).resolve()
+    repo_root = Path(repo_path).resolve() if repo_path else Path(__file__).resolve().parents[1]
+    permitidos = {
+        (repo_root / ".venv").resolve(),
+        Path("E:/EdgeLab/.venv").resolve(),
+        Path("D:/EdgeLab/.venv").resolve(),
+    }
+    if prefix_path in permitidos:
+        return True
+    print(f"ABSTAIN_PROVENANCE: entorno virtual no autorizado ({prefix_path})")
+    return False

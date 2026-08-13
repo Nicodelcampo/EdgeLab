@@ -36,7 +36,7 @@ def test_la_autocita_del_pie_coincide_con_el_cuerpo_actual():
     """Si el cuerpo cambia (como en INC-006) sin refrescar la autocita, esto
     falla. No relajar el test para que pase: refrescar la autocita."""
     raw = NORTH_STAR.read_bytes()
-    body = raw.split(MARKER, 1)[0]
+    body = raw.split(MARKER, 1)[0].replace(b"\r\n", b"\n")
     body_sha256 = hashlib.sha256(body).hexdigest()
 
     text = raw.decode("utf-8")
@@ -50,7 +50,7 @@ def test_la_autocita_del_pie_coincide_con_el_cuerpo_actual():
         "docs/NORTH_STAR.md cambio de cuerpo sin refrescar su autocita.\n"
         "  autocita en el pie: %s\n"
         "  cuerpo actual:      %s\n"
-        "Recalcular con: hashlib.sha256(raw.split(MARKER, 1)[0]).hexdigest() "
+        "Recalcular con: hashlib.sha256(raw.split(MARKER, 1)[0].replace(b'\\r\\n', b'\\n')).hexdigest() "
         "y actualizar la linea del pie -- no relajar este test."
         % (declarado, body_sha256))
 
@@ -60,7 +60,7 @@ def test_el_hash_del_cuerpo_no_es_el_hash_del_archivo_completo():
     autocita (que es sha256(cuerpo)) da un falso mismatch aunque la autocita
     este perfectamente al dia. Documentado para que no se repita la
     confusion de dominios."""
-    raw = NORTH_STAR.read_bytes()
+    raw = NORTH_STAR.read_bytes().replace(b"\r\n", b"\n")
     body = raw.split(MARKER, 1)[0]
     assert hashlib.sha256(body).hexdigest() != hashlib.sha256(raw).hexdigest(), (
         "el cuerpo y el archivo completo coincidieron -- revisar si el "

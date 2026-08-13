@@ -125,22 +125,19 @@ def north_star_body_sha256():
     data = p.read_bytes()
     marker = b"<!-- SHA256-BODY-ABOVE -->"
     idx = data.index(marker)
-    return hashlib.sha256(data[:idx]).hexdigest()
+    return hashlib.sha256(data[:idx].replace(b"\r\n", b"\n")).hexdigest()
 
 
 def spec_sha256():
-    return hashlib.sha256(SPEC_PATH.read_bytes()).hexdigest()
+    return hashlib.sha256(SPEC_PATH.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
 
 
 def data_root():
     """`data/` esta gitignoreado (CLAUDE.md: dato local) y por eso NINGUNA
-    worktree lo tiene -- solo el checkout principal. `REPO_PATH` es correcto
-    para todo archivo TRACKEADO (spec, protocolo, git de esta rama), pero no
-    para datos. Se prueba primero `REPO_PATH/data` (por si algun dia corre
-    desde el checkout principal directamente); si no existe, se resuelve el
-    checkout principal via `git worktree list --porcelain` (su primera linea
-    es siempre el worktree principal -- comportamiento documentado de git,
-    no una convencion de este repo) y se usa su `data/`."""
+    worktree lo tiene -- solo el checkout principal o DATA_DIR resuelto."""
+    from edgelab.config import DATA_DIR
+    if Path(DATA_DIR).exists():
+        return Path(DATA_DIR)
     local = REPO_PATH / "data"
     if local.exists():
         return local
@@ -1250,8 +1247,8 @@ def main(argv=None):
     a = ap.parse_args(argv)
     calcular_endpoint = not (a.solo_estructural or a.smoke_archivo)
 
-    if sys.prefix == sys.base_prefix or Path(sys.prefix).resolve() != (REPO_PATH / ".venv").resolve():
-        print("NO ES EL .venv DEL REPO -- no se ejecuta.")
+    from edgelab.audit import validar_entorno_venv
+    if not validar_entorno_venv(REPO_PATH):
         return 2
 
     head_start = git_head()

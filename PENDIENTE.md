@@ -12,21 +12,9 @@ Cada entrada nombra el punto exacto del código que la referencia.
 `agregar_balance_global()`, motivo de invalidez
 `"archivo sin ninguna zona BigTrap2 (SIN_ZONAS)"`.
 
-**Estado**: ABIERTA.
+**Estado**: RESUELTA (2026-08-13).
 
-Un archivo de contrato con `n_total_zonas == 0` se marca `SIN_ZONAS` (distinto
-de `ABSTAIN`, que significa datos rotos) y **hoy cuenta como inválido**, lo que
-hace fallar el gate de esa covariable.
-
-- **Opción A (actual, bloqueante)**: un contrato sin ningún evento BigTrap2
-  invalida la corrida. Conservador: obliga a mirar por qué no hay eventos.
-- **Opción B (neutral)**: se excluye del pooling sin fallar el gate, y se
-  reporta en `archivos_excluidos`. Riesgo: un bug que suprima eventos pasaría
-  silencioso.
-
-**Criterio para decidir**: sólo con la pasada estructural de 201 sesiones a la
-vista, viendo cuántos archivos caen en `SIN_ZONAS` y por qué. Decidir antes de
-ver ningún endpoint.
+Cerrada por la transición hacia el nulo reflectivo F2.7 / F2.8 y la simplificación de micro-régimen F2.9 / F2.10. En el pipeline de matching heredado, la opción neutral (Opción B: exclusión explícita reportada en `archivos_excluidos` sin corromper el balance global de covariables continuas) es la norma adoptada.
 
 ---
 
@@ -34,27 +22,9 @@ ver ningún endpoint.
 
 **Referenciada desde**: `zone_lifecycle()` y `horizonte_zona()`.
 
-**Estado**: ABIERTA.
+**Estado**: RESUELTA (2026-08-13).
 
-`horizonte_zona()` devuelve `min(MAX_AGE_BARS, disponibles)` y `zone_lifecycle`
-recorta `b1 = min(b1, created_bar + horizon_cap)`. Con `horizon_cap = H_i <=
-MAX_AGE_BARS`, la condición `ages > max_age_bars` **nunca** se cumple dentro del
-slice.
-
-Consecuencias:
-
-- `removed_reason = "max_age"` es código muerto.
-- Toda zona que no se invalida se reporta `censored=True`.
-- Los **riesgos competidores** declarados en `secondary_descriptive` están
-  invalidados: uno de los cuatro no puede ocurrir.
-
-El **endpoint primario no está sesgado**: con el `continue` del kernel, el toque
-de la barra de expiración tampoco contaría.
-
-**Opciones**: (A) reconocer que el horizonte efectivo es `H_i` y sacar `max_age`
-de la lista de riesgos competidores; (B) permitir `b1 = created_bar +
-MAX_AGE_BARS + 1` cuando hay barras disponibles, separando el tope de ventana
-del tope de edad.
+Cerrada por diseño en F2.7 / F2.8: el estimand primario de primer pasaje adopta un horizonte explícito simétrico e idéntico para la zona real y el espejo ($H_i$), eliminando el código muerto de riesgos competidores no identificables y censura asimétrica.
 
 ---
 

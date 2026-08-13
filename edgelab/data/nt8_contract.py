@@ -40,6 +40,18 @@ ES = InstrumentSpec(symbol="ES", tick_size=0.25, tick_value=12.50, multiplier=50
 # NQ — futuros E-mini Nasdaq-100 (CME). tick_value = 0.25 * 20.0 = 5.00.
 NQ = InstrumentSpec(symbol="NQ", tick_size=0.25, tick_value=5.00, multiplier=20.0)
 
+# ZB — futuros 30-Year U.S. Treasury Bond (CBOT/CME). Precios en 32avos (tick_size=1/32=0.03125).
+# tick_value = 0.03125 * 1000.0 = 31.25 USD por contrato.
+ZB = InstrumentSpec(symbol="ZB", tick_size=0.03125, tick_value=31.25, multiplier=1000.0)
+
+INSTRUMENT_SPECS: dict[str, InstrumentSpec] = {
+    "6E": SIX_E,
+    "YM": YM,
+    "ES": ES,
+    "NQ": NQ,
+    "ZB": ZB,
+}
+
 
 class Nt8TickContract(BaseModel):
     """Contrato del formato. `declared_tz` es OBLIGATORIA (sin default) → una

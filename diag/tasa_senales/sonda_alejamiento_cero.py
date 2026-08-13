@@ -281,7 +281,7 @@ def sha_de_archivo(p):
 #: Prefijos de ámbito. La AUTORIDAD es la ruta canónica del archivo, no el
 #: nombre del módulo: varios nombres pueden apuntar al mismo archivo, existen
 #: namespace packages, y hay módulos sin archivo propio.
-VENV = (REPO_PATH / ".venv").resolve()
+VENV = Path(sys.prefix).resolve() if sys.prefix != sys.base_prefix else (REPO_PATH / ".venv").resolve()
 STDLIB = Path(sys.base_prefix).resolve()
 
 
