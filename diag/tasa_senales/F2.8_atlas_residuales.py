@@ -691,13 +691,27 @@ def correr_formal_f28():
         "pnl_accessed": False,
     }
 
-    payload_json = json.dumps(payload, indent=2, sort_keys=True)
+    def make_serializable(obj):
+        if isinstance(obj, (np.integer, np.int64, np.int32)):
+            return int(obj)
+        elif isinstance(obj, (np.floating, np.float64, np.float32)):
+            return float(obj)
+        elif isinstance(obj, (np.bool_, bool)):
+            return bool(obj)
+        elif isinstance(obj, dict):
+            return {k: make_serializable(v) for k, v in obj.items()}
+        elif isinstance(obj, (list, tuple)):
+            return [make_serializable(x) for x in obj]
+        return obj
+
+    serializable_payload = make_serializable(payload)
+    payload_json = json.dumps(serializable_payload, indent=2, sort_keys=True)
     payload_hash = hashlib.sha256(payload_json.encode("utf-8")).hexdigest()[:12]
     out_json_path = REPO_PATH / "diag" / "tasa_senales" / f"F2.8_formal_{payload_hash}.json"
     out_json_path.write_text(payload_json, encoding="utf-8")
     print(f"\nArtefacto formal guardado en: {out_json_path}")
 
-    return 0, payload
+    return 0, serializable_payload
 
 
 def main():
