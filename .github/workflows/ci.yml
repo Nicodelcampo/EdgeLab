@@ -1,6 +1,6 @@
 name: CI
 
-# Suite remota verificable. No ejecuta mediciones de research ni accede a data/.
+# Suite remota verificable. No ejecuta mediciones de research ni accede a datos reales.
 on:
   push:
     branches: ['**']
@@ -30,22 +30,24 @@ jobs:
           python-version: '3.12'
           cache: pip
 
-      - name: Install locked dependencies
+      - name: Create governed repository environment
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements/core-bridge-dev.lock
+          python -m venv .venv
+          .venv/bin/python -m pip install --upgrade pip
+          .venv/bin/pip install -r requirements/core-bridge-dev.lock
+          mkdir -p data
 
       - name: Environment fingerprint
         run: |
-          python -c "import sys, platform; print(sys.version); print(platform.platform())"
-          pip freeze | sha256sum
+          .venv/bin/python -c "import sys, platform; print(sys.version); print(sys.prefix); print(platform.platform())"
+          .venv/bin/pip freeze | sha256sum
 
       - name: Run test suite
         id: pytest
         shell: bash
         run: |
           set +e
-          python -m pytest -q --durations=10 2>&1 | tee pytest.log
+          .venv/bin/python -m pytest -q --durations=10 2>&1 | tee pytest.log
           status=${PIPESTATUS[0]}
           echo "status=$status" >> "$GITHUB_OUTPUT"
           exit 0
