@@ -1,19 +1,20 @@
 {
-  "schema_version": "avolcluster_poi_v0",
-  "status": "PREREGISTERED_KERNEL_ONLY",
+  "schema_version": "avolcluster_poi_v0.5",
+  "status": "DETECTOR_FROZEN_PENDING_P2",
   "date": "2026-08-13",
-  "title": "aVolClusterPOI as cluster-mass anomaly, not a cell and not a trade",
+  "title": "aVolClusterPOI v0.5: one max-mass cluster per block, at-price split",
   "complements": "edgelab/bridge/indicators/avolcellpoi2.py",
-  "nt8_source": "aVolClusterPOI.cs v0.4",
-  "object": "A contiguous hot-price cluster whose summed volume is extreme versus the same session-relative time bucket in prior complete sessions.",
+  "nt8_source": "nt8/aVolClusterPOI.cs v0.5",
+  "kernel": "edgelab/bridge/indicators/avolclusterpoi.py",
+  "object_off_price": "Best-mass hot cluster whose close is outside the band. This is the level object for later first-passage vs mirror.",
+  "object_at_price": "Same detector, close inside the band. Occupation/congestion. Not S/R. Event AT_PRICE_CREATED. No FIRST_TOUCH lifecycle.",
   "not_the_object": [
     "BigTrap2 zones",
     "single-cell aVolCellPOI2",
     "QualityScore",
-    "LONG/SHORT",
-    "target/stop/MFE/MAE"
+    "target/stop/MFE/MAE",
+    "ZONE_TOUCHED spam"
   ],
-  "why_now": "F2.7–F2.10 closed BigTrap2-as-magnet. aVol is the next independent family. Cluster mass is a different question than a single hot tick.",
   "research_defaults": {
     "window_bars": 10,
     "median_multiplier": 2.0,
@@ -24,8 +25,15 @@
     "lookback_sessions": 20,
     "detection_percentile": 98.0,
     "min_samples_per_bucket": 20,
-    "note": "v0.4 exploration used percentile 95 and min_samples 5. That lets a handful of blocks set the threshold. Research defaults ask ~20 prior block scores in the same bucket before detecting."
+    "max_age_bars": 0,
+    "one_cluster_per_block": true
   },
+  "export_events": [
+    "ZONE_CREATED",
+    "AT_PRICE_CREATED",
+    "FIRST_TOUCH",
+    "ZONE_INVALIDATED"
+  ],
   "forbidden_in_kernel": [
     "enable_predictive_filter",
     "min_quality_score_gate",
@@ -35,6 +43,5 @@
     "pnl",
     "bigtrap2_intersection"
   ],
-  "nt8_overlay": "Direction, QualityScore, burst, target/stop may remain visual in the .cs. They must not create, drop, or rank zones in the research kernel.",
-  "first_success": "Python kernel matches the declared cluster/quantile/no-lookahead contract on fixtures. Not a chart that looks busy."
+  "next": "P2 parity NT8 CSV vs Python on the same 6E 09-26 window. Then formal first-passage vs mirror on OFF_PRICE only."
 }
