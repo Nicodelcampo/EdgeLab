@@ -1,0 +1,40 @@
+{
+  "schema_version": "avolcluster_poi_v0",
+  "status": "PREREGISTERED_KERNEL_ONLY",
+  "date": "2026-08-13",
+  "title": "aVolClusterPOI as cluster-mass anomaly, not a cell and not a trade",
+  "complements": "edgelab/bridge/indicators/avolcellpoi2.py",
+  "nt8_source": "aVolClusterPOI.cs v0.4",
+  "object": "A contiguous hot-price cluster whose summed volume is extreme versus the same session-relative time bucket in prior complete sessions.",
+  "not_the_object": [
+    "BigTrap2 zones",
+    "single-cell aVolCellPOI2",
+    "QualityScore",
+    "LONG/SHORT",
+    "target/stop/MFE/MAE"
+  ],
+  "why_now": "F2.7–F2.10 closed BigTrap2-as-magnet. aVol is the next independent family. Cluster mass is a different question than a single hot tick.",
+  "research_defaults": {
+    "window_bars": 10,
+    "median_multiplier": 2.0,
+    "max_gap_ticks": 1,
+    "min_cluster_ticks": 2,
+    "time_bucket_minutes": 30,
+    "bucket_anchor": "SessionRelative",
+    "lookback_sessions": 20,
+    "detection_percentile": 98.0,
+    "min_samples_per_bucket": 20,
+    "note": "v0.4 exploration used percentile 95 and min_samples 5. That lets a handful of blocks set the threshold. Research defaults ask ~20 prior block scores in the same bucket before detecting."
+  },
+  "forbidden_in_kernel": [
+    "enable_predictive_filter",
+    "min_quality_score_gate",
+    "reaction_target_ticks",
+    "reaction_stop_ticks",
+    "holdout",
+    "pnl",
+    "bigtrap2_intersection"
+  ],
+  "nt8_overlay": "Direction, QualityScore, burst, target/stop may remain visual in the .cs. They must not create, drop, or rank zones in the research kernel.",
+  "first_success": "Python kernel matches the declared cluster/quantile/no-lookahead contract on fixtures. Not a chart that looks busy."
+}
