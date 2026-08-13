@@ -11,6 +11,7 @@ from .parameter_dag import (  # noqa: F401
     validate_param_set,
     validate_single_family,
 )
+from .session_clock import session_date_cme, session_date_from_unix_ms  # noqa: F401
 from .structural_contract import (  # noqa: F401
     CheckResult,
     ValidationReport,
