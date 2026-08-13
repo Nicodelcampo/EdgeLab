@@ -699,11 +699,14 @@ def correr_formal_f28():
         if isinstance(obj, (np.integer, np.int64, np.int32)):
             return int(obj)
         elif isinstance(obj, (np.floating, np.float64, np.float32)):
-            return float(obj)
+            v = float(obj)
+            return 0.0 if math.isnan(v) or math.isinf(v) else v
+        elif isinstance(obj, float):
+            return 0.0 if math.isnan(obj) or math.isinf(obj) else obj
         elif isinstance(obj, (np.bool_, bool)):
             return bool(obj)
         elif isinstance(obj, dict):
-            return {k: make_serializable(v) for k, v in obj.items()}
+            return {str(k): make_serializable(v) for k, v in obj.items()}
         elif isinstance(obj, (list, tuple)):
             return [make_serializable(x) for x in obj]
         return obj
@@ -713,6 +716,7 @@ def correr_formal_f28():
     payload_hash = hashlib.sha256(payload_json.encode("utf-8")).hexdigest()[:12]
     out_json_path = REPO_PATH / "diag" / "tasa_senales" / f"F2.8_formal_{payload_hash}.json"
     out_json_path.write_text(payload_json, encoding="utf-8")
+    assert out_json_path.exists(), f"Failed to write artifact: {out_json_path}"
     print(f"\nArtefacto formal guardado en: {out_json_path}")
 
     return 0, serializable_payload
