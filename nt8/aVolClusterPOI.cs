@@ -1,4 +1,4 @@
-// ============================================================================
+﻿// ============================================================================
 // aVolClusterPOI.cs - Anomaly Volume Cluster POI (v0.5, research freeze)
 // ============================================================================
 //
@@ -1068,60 +1068,3 @@ namespace NinjaTrader.NinjaScript.Indicators
 		#endregion
 	}
 }
-
-#region NinjaScript generated code. Neither change nor remove.
-
-namespace NinjaTrader.NinjaScript.Indicators
-{
-	public partial class Indicator : NinjaTrader.Gui.NinjaScript.IndicatorRenderBase
-	{
-		private aVolClusterPOI[] cacheaVolClusterPOI;
-		public aVolClusterPOI aVolClusterPOI(int windowBars, double medianMultiplier, int maxGapTicks, int minClusterTicks, bool useSessionBuckets, int timeBucketMinutes, int lookbackSessions, double detectionPercentile, int minSamplesPerBucket, bool enablePredictiveFilter, double minQualityScore, int maxDistanceFromZoneTicks, int rejectionFullScoreTicks, int reactionHorizonBars, int reactionTargetTicks, int reactionStopTicks, AVCLPInvalidationMode invalidationMode, int maxAgeBars, int maxTouches, int burstMinZones, int burstWindowBars, int burstRangeTicks, string eventLogPath, int opacity, int visualExtendBars, int maxRenderedZones, bool removeInvalidatedZones, bool showScoreLabel, bool showOutcomeLabels, bool showDashboard, AVCLPDashboardCorner dashboardCorner)
-		{
-			return aVolClusterPOI(Input, windowBars, medianMultiplier, maxGapTicks, minClusterTicks, useSessionBuckets, timeBucketMinutes, lookbackSessions, detectionPercentile, minSamplesPerBucket, enablePredictiveFilter, minQualityScore, maxDistanceFromZoneTicks, rejectionFullScoreTicks, reactionHorizonBars, reactionTargetTicks, reactionStopTicks, invalidationMode, maxAgeBars, maxTouches, burstMinZones, burstWindowBars, burstRangeTicks, eventLogPath, opacity, visualExtendBars, maxRenderedZones, removeInvalidatedZones, showScoreLabel, showOutcomeLabels, showDashboard, dashboardCorner);
-		}
-
-		public aVolClusterPOI aVolClusterPOI(ISeries<double> input, int windowBars, double medianMultiplier, int maxGapTicks, int minClusterTicks, bool useSessionBuckets, int timeBucketMinutes, int lookbackSessions, double detectionPercentile, int minSamplesPerBucket, bool enablePredictiveFilter, double minQualityScore, int maxDistanceFromZoneTicks, int rejectionFullScoreTicks, int reactionHorizonBars, int reactionTargetTicks, int reactionStopTicks, AVCLPInvalidationMode invalidationMode, int maxAgeBars, int maxTouches, int burstMinZones, int burstWindowBars, int burstRangeTicks, string eventLogPath, int opacity, int visualExtendBars, int maxRenderedZones, bool removeInvalidatedZones, bool showScoreLabel, bool showOutcomeLabels, bool showDashboard, AVCLPDashboardCorner dashboardCorner)
-		{
-			if (cacheaVolClusterPOI != null)
-				for (int idx = 0; idx < cacheaVolClusterPOI.Length; idx++)
-					if (cacheaVolClusterPOI[idx] != null && cacheaVolClusterPOI[idx].WindowBars == windowBars && cacheaVolClusterPOI[idx].MedianMultiplier == medianMultiplier && cacheaVolClusterPOI[idx].MaxGapTicks == maxGapTicks && cacheaVolClusterPOI[idx].MinClusterTicks == minClusterTicks && cacheaVolClusterPOI[idx].UseSessionBuckets == useSessionBuckets && cacheaVolClusterPOI[idx].TimeBucketMinutes == timeBucketMinutes && cacheaVolClusterPOI[idx].LookbackSessions == lookbackSessions && cacheaVolClusterPOI[idx].DetectionPercentile == detectionPercentile && cacheaVolClusterPOI[idx].MinSamplesPerBucket == minSamplesPerBucket && cacheaVolClusterPOI[idx].EnablePredictiveFilter == enablePredictiveFilter && cacheaVolClusterPOI[idx].MinQualityScore == minQualityScore && cacheaVolClusterPOI[idx].MaxDistanceFromZoneTicks == maxDistanceFromZoneTicks && cacheaVolClusterPOI[idx].RejectionFullScoreTicks == rejectionFullScoreTicks && cacheaVolClusterPOI[idx].ReactionHorizonBars == reactionHorizonBars && cacheaVolClusterPOI[idx].ReactionTargetTicks == reactionTargetTicks && cacheaVolClusterPOI[idx].ReactionStopTicks == reactionStopTicks && cacheaVolClusterPOI[idx].InvalidationMode == invalidationMode && cacheaVolClusterPOI[idx].MaxAgeBars == maxAgeBars && cacheaVolClusterPOI[idx].MaxTouches == maxTouches && cacheaVolClusterPOI[idx].BurstMinZones == burstMinZones && cacheaVolClusterPOI[idx].BurstWindowBars == burstWindowBars && cacheaVolClusterPOI[idx].BurstRangeTicks == burstRangeTicks && cacheaVolClusterPOI[idx].EventLogPath == eventLogPath && cacheaVolClusterPOI[idx].Opacity == opacity && cacheaVolClusterPOI[idx].VisualExtendBars == visualExtendBars && cacheaVolClusterPOI[idx].MaxRenderedZones == maxRenderedZones && cacheaVolClusterPOI[idx].RemoveInvalidatedZones == removeInvalidatedZones && cacheaVolClusterPOI[idx].ShowScoreLabel == showScoreLabel && cacheaVolClusterPOI[idx].ShowOutcomeLabels == showOutcomeLabels && cacheaVolClusterPOI[idx].ShowDashboard == showDashboard && cacheaVolClusterPOI[idx].DashboardCorner == dashboardCorner && cacheaVolClusterPOI[idx].EqualsInput(input))
-						return cacheaVolClusterPOI[idx];
-			return CacheIndicator<aVolClusterPOI>(new aVolClusterPOI(){ WindowBars = windowBars, MedianMultiplier = medianMultiplier, MaxGapTicks = maxGapTicks, MinClusterTicks = minClusterTicks, UseSessionBuckets = useSessionBuckets, TimeBucketMinutes = timeBucketMinutes, LookbackSessions = lookbackSessions, DetectionPercentile = detectionPercentile, MinSamplesPerBucket = minSamplesPerBucket, EnablePredictiveFilter = enablePredictiveFilter, MinQualityScore = minQualityScore, MaxDistanceFromZoneTicks = maxDistanceFromZoneTicks, RejectionFullScoreTicks = rejectionFullScoreTicks, ReactionHorizonBars = reactionHorizonBars, ReactionTargetTicks = reactionTargetTicks, ReactionStopTicks = reactionStopTicks, InvalidationMode = invalidationMode, MaxAgeBars = maxAgeBars, MaxTouches = maxTouches, BurstMinZones = burstMinZones, BurstWindowBars = burstWindowBars, BurstRangeTicks = burstRangeTicks, EventLogPath = eventLogPath, Opacity = opacity, VisualExtendBars = visualExtendBars, MaxRenderedZones = maxRenderedZones, RemoveInvalidatedZones = removeInvalidatedZones, ShowScoreLabel = showScoreLabel, ShowOutcomeLabels = showOutcomeLabels, ShowDashboard = showDashboard, DashboardCorner = dashboardCorner }, input, ref cacheaVolClusterPOI);
-		}
-	}
-}
-
-namespace NinjaTrader.NinjaScript.MarketAnalyzerColumns
-{
-	public partial class MarketAnalyzerColumn : MarketAnalyzerColumnBase
-	{
-		public Indicators.aVolClusterPOI aVolClusterPOI(int windowBars, double medianMultiplier, int maxGapTicks, int minClusterTicks, bool useSessionBuckets, int timeBucketMinutes, int lookbackSessions, double detectionPercentile, int minSamplesPerBucket, bool enablePredictiveFilter, double minQualityScore, int maxDistanceFromZoneTicks, int rejectionFullScoreTicks, int reactionHorizonBars, int reactionTargetTicks, int reactionStopTicks, AVCLPInvalidationMode invalidationMode, int maxAgeBars, int maxTouches, int burstMinZones, int burstWindowBars, int burstRangeTicks, string eventLogPath, int opacity, int visualExtendBars, int maxRenderedZones, bool removeInvalidatedZones, bool showScoreLabel, bool showOutcomeLabels, bool showDashboard, AVCLPDashboardCorner dashboardCorner)
-		{
-			return indicator.aVolClusterPOI(Input, windowBars, medianMultiplier, maxGapTicks, minClusterTicks, useSessionBuckets, timeBucketMinutes, lookbackSessions, detectionPercentile, minSamplesPerBucket, enablePredictiveFilter, minQualityScore, maxDistanceFromZoneTicks, rejectionFullScoreTicks, reactionHorizonBars, reactionTargetTicks, reactionStopTicks, invalidationMode, maxAgeBars, maxTouches, burstMinZones, burstWindowBars, burstRangeTicks, eventLogPath, opacity, visualExtendBars, maxRenderedZones, removeInvalidatedZones, showScoreLabel, showOutcomeLabels, showDashboard, dashboardCorner);
-		}
-
-		public Indicators.aVolClusterPOI aVolClusterPOI(ISeries<double> input , int windowBars, double medianMultiplier, int maxGapTicks, int minClusterTicks, bool useSessionBuckets, int timeBucketMinutes, int lookbackSessions, double detectionPercentile, int minSamplesPerBucket, bool enablePredictiveFilter, double minQualityScore, int maxDistanceFromZoneTicks, int rejectionFullScoreTicks, int reactionHorizonBars, int reactionTargetTicks, int reactionStopTicks, AVCLPInvalidationMode invalidationMode, int maxAgeBars, int maxTouches, int burstMinZones, int burstWindowBars, int burstRangeTicks, string eventLogPath, int opacity, int visualExtendBars, int maxRenderedZones, bool removeInvalidatedZones, bool showScoreLabel, bool showOutcomeLabels, bool showDashboard, AVCLPDashboardCorner dashboardCorner)
-		{
-			return indicator.aVolClusterPOI(input, windowBars, medianMultiplier, maxGapTicks, minClusterTicks, useSessionBuckets, timeBucketMinutes, lookbackSessions, detectionPercentile, minSamplesPerBucket, enablePredictiveFilter, minQualityScore, maxDistanceFromZoneTicks, rejectionFullScoreTicks, reactionHorizonBars, reactionTargetTicks, reactionStopTicks, invalidationMode, maxAgeBars, maxTouches, burstMinZones, burstWindowBars, burstRangeTicks, eventLogPath, opacity, visualExtendBars, maxRenderedZones, removeInvalidatedZones, showScoreLabel, showOutcomeLabels, showDashboard, dashboardCorner);
-		}
-	}
-}
-
-namespace NinjaTrader.NinjaScript.Strategies
-{
-	public partial class Strategy : NinjaTrader.Gui.NinjaScript.StrategyRenderBase
-	{
-		public Indicators.aVolClusterPOI aVolClusterPOI(int windowBars, double medianMultiplier, int maxGapTicks, int minClusterTicks, bool useSessionBuckets, int timeBucketMinutes, int lookbackSessions, double detectionPercentile, int minSamplesPerBucket, bool enablePredictiveFilter, double minQualityScore, int maxDistanceFromZoneTicks, int rejectionFullScoreTicks, int reactionHorizonBars, int reactionTargetTicks, int reactionStopTicks, AVCLPInvalidationMode invalidationMode, int maxAgeBars, int maxTouches, int burstMinZones, int burstWindowBars, int burstRangeTicks, string eventLogPath, int opacity, int visualExtendBars, int maxRenderedZones, bool removeInvalidatedZones, bool showScoreLabel, bool showOutcomeLabels, bool showDashboard, AVCLPDashboardCorner dashboardCorner)
-		{
-			return indicator.aVolClusterPOI(Input, windowBars, medianMultiplier, maxGapTicks, minClusterTicks, useSessionBuckets, timeBucketMinutes, lookbackSessions, detectionPercentile, minSamplesPerBucket, enablePredictiveFilter, minQualityScore, maxDistanceFromZoneTicks, rejectionFullScoreTicks, reactionHorizonBars, reactionTargetTicks, reactionStopTicks, invalidationMode, maxAgeBars, maxTouches, burstMinZones, burstWindowBars, burstRangeTicks, eventLogPath, opacity, visualExtendBars, maxRenderedZones, removeInvalidatedZones, showScoreLabel, showOutcomeLabels, showDashboard, dashboardCorner);
-		}
-
-		public Indicators.aVolClusterPOI aVolClusterPOI(ISeries<double> input , int windowBars, double medianMultiplier, int maxGapTicks, int minClusterTicks, bool useSessionBuckets, int timeBucketMinutes, int lookbackSessions, double detectionPercentile, int minSamplesPerBucket, bool enablePredictiveFilter, double minQualityScore, int maxDistanceFromZoneTicks, int rejectionFullScoreTicks, int reactionHorizonBars, int reactionTargetTicks, int reactionStopTicks, AVCLPInvalidationMode invalidationMode, int maxAgeBars, int maxTouches, int burstMinZones, int burstWindowBars, int burstRangeTicks, string eventLogPath, int opacity, int visualExtendBars, int maxRenderedZones, bool removeInvalidatedZones, bool showScoreLabel, bool showOutcomeLabels, bool showDashboard, AVCLPDashboardCorner dashboardCorner)
-		{
-			return indicator.aVolClusterPOI(input, windowBars, medianMultiplier, maxGapTicks, minClusterTicks, useSessionBuckets, timeBucketMinutes, lookbackSessions, detectionPercentile, minSamplesPerBucket, enablePredictiveFilter, minQualityScore, maxDistanceFromZoneTicks, rejectionFullScoreTicks, reactionHorizonBars, reactionTargetTicks, reactionStopTicks, invalidationMode, maxAgeBars, maxTouches, burstMinZones, burstWindowBars, burstRangeTicks, eventLogPath, opacity, visualExtendBars, maxRenderedZones, removeInvalidatedZones, showScoreLabel, showOutcomeLabels, showDashboard, dashboardCorner);
-		}
-	}
-}
-
-#endregion
