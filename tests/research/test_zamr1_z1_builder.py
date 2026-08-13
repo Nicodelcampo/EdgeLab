@@ -3,6 +3,7 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 from edgelab.bridge.ticks import TickSeries
+from edgelab.research.first_touch_census import session_date_ct
 from edgelab.research.zamr1.z1_builder import CUTOFF, payloads, transform
 
 
@@ -29,5 +30,6 @@ def test_transform_target_free_and_no_false_parity_claim():
 
 def test_firewall_fails_closed():
     b,tk,r=fixture(CUTOFF); r["events"][0]["ts_ns"]=CUTOFF
+    session=session_date_ct(CUTOFF//1_000_000)
     with pytest.raises(RuntimeError,match="FIREWALL"):
-        transform(r,b,tk,{"2026-07-01"},"run","params")
+        transform(r,b,tk,{session},"run","params")
