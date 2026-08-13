@@ -32,6 +32,12 @@ import numpy as np
 REPO_PATH = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_PATH))
 
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 # Import F2.7 runner via importlib
 _F27_PATH = REPO_PATH / "diag" / "tasa_senales" / "F2.7_nulo_reflexion_local.py"
 _f27_spec = importlib.util.spec_from_file_location("f27_nrl", _F27_PATH)
