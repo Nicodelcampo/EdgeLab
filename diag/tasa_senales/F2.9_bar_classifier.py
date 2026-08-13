@@ -427,6 +427,7 @@ def correr_formal():
     digest = hashlib.sha256(raw.encode("utf-8")).hexdigest()[:12]
     out = REPO_PATH / "diag" / "tasa_senales" / ("F2.9_formal_%s.json" % digest)
     out.write_text(raw + "\n", encoding="utf-8")
+    assert out.exists(), f"Failed to write artifact: {out}"
     print(json.dumps({"labels": labels, "rungs": {k: {"n": v["n_bars"], "delta": v["delta"], "ci": [v["ci95_lower"], v["ci95_upper"]]} for k, v in rungs.items()}, "artifact": str(out)}, indent=2))
     return 0
 
