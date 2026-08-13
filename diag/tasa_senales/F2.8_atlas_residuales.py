@@ -328,10 +328,10 @@ def correr_formal_f28():
                 )
 
                 real_lc = race["real_lifecycle"]
-                touch_age = real_lc["first_touch_age"] if real_lc["touched_before_removal"] else 999999
-                inval_age = real_lc["invalidation_age"] if real_lc["invalidation_age"] is not None else 999999
+                touch_age = real_lc["first_touch_age"] if real_lc["touched_before_removal"] and real_lc["first_touch_age"] is not None else 999999
+                rem_age = real_lc["removed_age"] if real_lc["removed_age"] is not None else 999999
                 horiz_age = real_lc["horizon_cap"]
-                active_bars_count = min(touch_age, inval_age, horiz_age)
+                active_bars_count = min(touch_age, rem_age, horiz_age)
                 removal_bar = cb + active_bars_count
 
                 info = dict(
