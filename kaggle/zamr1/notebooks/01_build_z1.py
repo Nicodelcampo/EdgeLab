@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-"""ZAMR-1 Notebook 01 — construir el piloto Z1 target-free.
+"""ZAMR-1 Notebook 01 — runner dormido hasta que M0 permita ticks en terceros.
 
-No calcula outcomes, retornos, P&L ni lee el holdout.
-Requiere el código EdgeLab y los dos Parquet con hashes congelados.
+Con la decisión vigente NO_UPLOAD este notebook debe fallar antes de buscar o
+leer Parquet. Z1 se construye localmente; un override de riesgo no es licencia.
 """
 from __future__ import annotations
 
@@ -58,6 +58,13 @@ def main() -> int:
     repo = find_repo_root()
     if str(repo) not in sys.path:
         sys.path.insert(0, str(repo))
+    plan_path = repo / "specs/zamr1_z1_pilot_plan_2026-08-12.json"
+    plan = json.loads(plan_path.read_text("utf-8"))
+
+    # Debe ejecutarse antes de buscar los archivos de mercado.
+    from edgelab.research.zamr1.upload_gate import require_raw_third_party_upload
+    require_raw_third_party_upload(plan)
+
     os.environ.setdefault(
         "EDGELAB_CODE_COMMIT",
         (repo / "CODE_COMMIT").read_text("utf-8").strip() if (repo / "CODE_COMMIT").is_file() else "",
@@ -65,10 +72,8 @@ def main() -> int:
     os.environ.setdefault("EDGELAB_CODE_DIRTY", "false")
     from edgelab.research.zamr1.z1_builder import build
 
-    plan = repo / "specs/zamr1_z1_pilot_plan_2026-08-12.json"
     data_root = find_data_root(repo)
-    out_dir = WORKING / "z1"
-    result = build(plan, data_root, out_dir, repo)
+    result = build(plan_path, data_root, WORKING / "z1", repo)
     print(json.dumps(result, indent=2))
     if not result.get("passed"):
         print("FAIL — no continuar")
