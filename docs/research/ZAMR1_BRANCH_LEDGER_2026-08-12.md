@@ -1,6 +1,6 @@
-# ZAMR-1 — branch ledger (2026-08-12)
+# ZAMR-1 — branch ledger (actualizado 2026-08-13)
 
-Leer con `ZAMR1_HANDOFF_2026-08-12.md` y `ZAMR1_GROK_REDTEAM_2026-08-12.md`.
+Leer con `ZAMR1_HANDOFF_2026-08-12.md`, `ZAMR1_GROK_REDTEAM_2026-08-12.md` y `ZAMR1_Z1_ENGINEERING_PILOT_2026-08-13.md`.
 
 ## Commits
 
@@ -14,25 +14,30 @@ Leer con `ZAMR1_HANDOFF_2026-08-12.md` y `ZAMR1_GROK_REDTEAM_2026-08-12.md`.
 8. `2064720` — tests mínimos v1 y ledger inicial.
 9. `e4340a6` — CI remoto PASS con limitaciones.
 10. `c994af6` — reloj CME, revisión Grok y conftest.
-11. `20777ce` — builder v2: reloj CME, geometría half-tick, procedencia Kaggle.
-12. `b1f0a56` — plan pinneado a `cme_eth_1700_america_chicago` y warmup 09-26.
-13. `a7cdf92` — tests de reloj, geometría y procedencia offline.
-14. `a7959f8` — licencia `NO_UPLOAD` con override separado.
-15. `28460b9` — CI sin `-k`; skip por conftest.
-16. `ba3b40b` — exports del paquete ZAMR-1.
+11. `20777ce` — builder v2.
+12. `b1f0a56` — plan pinneado y warmup 09-26.
+13. `a7cdf92` — tests reloj/geometría/procedencia.
+14. `a7959f8` — licencia `NO_UPLOAD`.
+15. `28460b9` — CI sin `-k`.
+16. `ba3b40b` — exports del paquete.
 17. `de27ae5` — Notebook Kaggle 01.
-18. `aaf4544` — runbook Z1 y advertencia de licencia.
-19. Este commit — ledger actualizado.
+18. `aaf4544` — runbook Z1.
+19. `283462b` — handoff canónico.
+20. `93e4931` — ledger Grok v2.
+21. `8a586f5` — gate legal fail-closed; Notebook 01 bloqueado bajo `NO_UPLOAD`.
+22. Este commit — acta y payload de la corrida local Z1 provisional; handoff y ledger actualizados.
 
 ## Estado
 
 - Z0: PASS con hardening.
 - Builder v1: REJECTED_FOR_EXECUTION.
-- Builder v2: HARDENED_NOT_EXECUTED.
+- Builder v2: HARDENED_NOT_EXECUTED formalmente.
+- Corrida local equivalente: ENGINEERING_PASS_PROVISIONAL.
+- Determinismo byte a byte: NOT_ADJUDICATED.
 - Paridad: NOT_ESTABLISHED.
-- Licencia: NO_UPLOAD; override del usuario no es permiso.
+- Licencia: NO_UPLOAD.
 - Z2: NOT AUTHORIZED.
 
 ## Continuación
 
-No ejecutar v1. No usar `session_date_ct` en Z1. No relajar R-01/R-02/R-03. Primero CI, después builder v2 contra los hashes congelados. No abrir Z2 ni outcomes/P&L/holdout.
+Endurecer procedencia/contrato/bundle/determinismo del builder v2, ejecutar dos veces el builder exacto sobre los hashes congelados y adjudicar recursos. No abrir Z2 ni outcomes/P&L/holdout.
