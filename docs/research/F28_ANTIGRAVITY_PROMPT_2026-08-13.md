@@ -1,29 +1,64 @@
 # Prompt para Google Antigravity — F2.8
 
-Copiá todo el bloque. No improvises fuera de él.
+Paso 0 obligatorio: **fetch**. El ABSTAIN de las 03:02 ART fue correcto para un checkout en `1b8e168`, pero incorrecto como diagnóstico del remoto. Los prerrequisitos ya están en `origin/research/bigtrap2-local-displacement-null`.
+
+## Paso 0 — alinear el grafo
+
+```text
+git fetch origin research/bigtrap2-local-displacement-null
+git checkout research/bigtrap2-local-displacement-null
+git merge --ff-only origin/research/bigtrap2-local-displacement-null
+git rev-parse HEAD
+git cat-file -t 4d522320a3ef3663ecfa9ad92a13f2dbda9175fb
+```
+
+HEAD esperado después del ff-only:
+
+```text
+4d522320a3ef3663ecfa9ad92a13f2dbda9175fb
+```
+
+Cadena sobre `1b8e168`:
+
+```text
+1b8e168  F2.7 formal artifact
+00eec6d  docs(f28): preregister protocol
+49d0e36  feat(f28): residual labels
+0ee1ed5  feat(f28): interruption, controls
+4d52232  test(f28): interruption/control geometry
+```
+
+Si `git cat-file -t 4d52232` falla **después** del fetch, ahí sí ABSTAIN_PROVENANCE. Si falla antes del fetch, el árbol local está atrasado: no reescribir nada.
+
+Archivos que deben existir después del fetch:
+
+```text
+specs/bigtrap2_f28_distance_coverage_v0.json
+docs/research/BIGTRAP2_F28_DISTANCE_COVERAGE_PROTOCOL_2026-08-13.md
+docs/research/F28_ANTIGRAVITY_PROMPT_2026-08-13.md
+edgelab/research/f28/__init__.py
+edgelab/research/f28/residual_atlas.py
+edgelab/research/f28/interruption.py
+edgelab/research/f28/controls.py
+tests/research/test_f28_residual_atlas.py
+tests/research/test_f28_interruption.py
+```
+
+Verificación remota independiente:
+https://github.com/Nicodelcampo/EdgeLab/commit/4d522320a3ef3663ecfa9ad92a13f2dbda9175fb
 
 ---
 
 Sos el implementador local de EdgeLab. No sos un auditor informal y no estás autorizando Z2.
 
-Trabajá **sólo** en:
-
-```text
-research/bigtrap2-local-displacement-null
-```
-
-HEAD esperado al empezar: incluye `49d0e36` o posterior en esa rama. Si el árbol está sucio, parar.
+Trabajá **sólo** en `research/bigtrap2-local-displacement-null`. Si el árbol está sucio, parar.
 
 ## Qué ya está hecho. No lo reescribas
 
-- Spec: `specs/bigtrap2_f28_distance_coverage_v0.json`
-- Protocolo: `docs/research/BIGTRAP2_F28_DISTANCE_COVERAGE_PROTOCOL_2026-08-13.md`
-- Labels: `edgelab/research/f28/residual_atlas.py`
-- Interrupción: `edgelab/research/f28/interruption.py`
-- Controles: `edgelab/research/f28/controls.py`
-- Tests: `tests/research/test_f28_residual_atlas.py`
-- F2.7 formal: `diag/tasa_senales/F2.7_formal_93c2e3f3ac44.json`
-- F2.7 runner: `diag/tasa_senales/F2.7_nulo_reflexion_local.py`
+Los archivos de arriba. También F2.7 formal y runner:
+
+- `diag/tasa_senales/F2.7_formal_93c2e3f3ac44.json`
+- `diag/tasa_senales/F2.7_nulo_reflexion_local.py`
 
 F2.7 ya adjudicó:
 
@@ -40,8 +75,6 @@ Eso es un hecho geométrico. F2.8 localiza el mecanismo y mapea residuales. No e
 
 ## Datos canónicos. No uses los Parquet de Z1
 
-La formal F2.7 usó estos hashes, no los exports extendidos de ZAMR-1:
-
 ```text
 6E_12-25_ticks.parquet  ea8b9f211929658494d952677fe302c33db66086ec1a21731f1f5d7ff74f7336
 6E_03-26_ticks.parquet  b54120bfd99b97f218d73a1fe132bd111b997eab6095a529699473131f57cf76
@@ -50,48 +83,29 @@ La formal F2.7 usó estos hashes, no los exports extendidos de ZAMR-1:
 ```
 
 Si el hash no coincide, **ABSTAIN_PROVENANCE**. No sustituyas por `fd2e358…` ni `654e006…`.
-
-Rutas esperadas: `data/nt8/6E/<archivo>` vía el `data_root()` de F2.7.
+Rutas: `data/nt8/6E/<archivo>` vía `data_root()` de F2.7.
 
 ## Tarea
 
 Implementá de forma **aditiva** `diag/tasa_senales/F2.8_atlas_residuales.py`.
 
-Reusá, no copies divergente:
-
-- `construir_reflejo`
-- `first_passage_race`
-- `zone_lifecycle`
-- `agregar_por_sesion`
-- `hac_bartlett_ic`
-- `dias_research` / carga canónica / firewall de F2.7
+Reusá, no copies divergente: `construir_reflejo`, `first_passage_race`, `zone_lifecycle`, `agregar_por_sesion`, `hac_bartlett_ic`, `dias_research`, carga canónica y firewall de F2.7.
 
 No toques `bigtrap2.py`, F1.1, holdout, tick:25, P&L, retornos, dirección, Z2 ni Kaggle.
 
 ### Orden de corrida
 
 1. Reproducir totales F2.7 (201, 15947, Δ global compatible).
-2. Familia A: curva de `Δ(d)` con cortes `d<=2`, `3<=d<=5`, `d>=6`, más `d>3` y `d>5`.
+2. Familia A: curva de `Δ(d)` con `d<=2`, `3<=d<=5`, `d>=6`, más `d>3` y `d>5`.
 3. Familia C: ocupación activa precio × tiempo. Unión de zonas **vivas** sobre `[low,high]` de cada barra. 200 colocaciones aleatorias/sesión, semilla `20260813`.
 4. Familia B: controles de barra creadora.
-   - geometría emparejada en barra sin BigTrap2;
-   - placebo en la misma barra si existe ubicación disjunta.
-   - contrastar `Δ_BT2 − Δ_control` por sesión.
-   - si `match_rate < 0.40` en un corte: abstener ese contraste.
 5. Familia E: tras primer contacto, 5 barras: `through` / `bounce` / `stay`. Sin P&L.
 6. Familia D: etiquetar residuales con `decide_labels`.
-7. Escribir artefacto `diag/tasa_senales/F2.8_formal_<sha12>.json` y un markdown de reporte.
+7. Escribir `diag/tasa_senales/F2.8_formal_<sha12>.json` y un markdown de reporte.
 
-### Gates
+### Gates y etiquetas
 
-- 201 sesiones
-- cobertura ≥ 0.95
-- resolución global ≥ 0.30
-- empates técnicos ≤ 0.01
-- estrato: ≥30 sesiones y ≥200 pares resueltos, si no `CONTINUE_AMBIGUOUS` para ese corte
-- árbol limpio, HEAD estable, `outcomes_accessed=false`
-
-### Etiquetas. Pueden convivir
+201 sesiones; cobertura ≥ 0.95; resolución global ≥ 0.30; empates técnicos ≤ 0.01; estrato ≥30 sesiones y ≥200 pares resueltos o `CONTINUE_AMBIGUOUS`; árbol limpio; `outcomes_accessed=false`.
 
 ```text
 OPEN_FAR_ZONE_FAMILY
@@ -104,19 +118,9 @@ CLOSE_ZONE_ATTRACTION
 CONTINUE_AMBIGUOUS
 ```
 
-Cualquier `OPEN_*` produce **una** spec de seguimiento, no un atlas de 17 frames. No autorices Z2.
+Cualquier `OPEN_*` produce **una** spec de seguimiento. No autorices Z2.
 
-## Tests que tenés que agregar y pasar
-
-Además de los existentes:
-
-- interrupción: through vs bounce vs stay en paths sintéticos;
-- control: intervalo al mismo `d` y ancho, disjunto del ancla;
-- ocupación: merge de intervalos y zona aislada;
-- labels: los casos ya cubiertos no deben romperse;
-- reproducción de los totales F2.7 o fail-closed.
-
-Correr:
+## Tests y ejecución
 
 ```text
 ./.venv/Scripts/python.exe -m pytest tests/research/test_f28_residual_atlas.py tests/research/test_f28_interruption.py -q
@@ -127,16 +131,12 @@ Si el venv está en otra ruta gobernada, usala. Si no hay venv, no ejecutes.
 
 ## Qué devolver
 
-1. Commits en la misma rama, árbol limpio.
+1. `git rev-parse HEAD` después del fetch.
 2. Totales F2.7 reproducidos sí/no.
-3. Tabla `Δ(d)` con n, sesiones, resolución, IC.
+3. Tabla `Δ(d)`.
 4. Ocupación p50/p90 y isolated_rate.
-5. Match rate de controles y contraste.
-6. through/bounce/stay vs controles.
-7. Lista de labels.
-8. Qué familia única abrirías después, si hay `OPEN_*`.
-9. Confirmación explícita: no holdout, no P&L, no Z2.
-
-## Prohibido
-
-Inventar cortes primarios después de ver números. Relajar hashes. Subir ticks. Tocar el kernel. Interpretar rentabilidad. Abrir PIT/Kaplan–Meier en esta corrida.
+5. Match rate y contraste de controles.
+6. through/bounce/stay.
+7. Labels.
+8. Una sola familia siguiente, si hay `OPEN_*`.
+9. Confirmación: no holdout, no P&L, no Z2.
