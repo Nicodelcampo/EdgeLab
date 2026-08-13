@@ -1,37 +1,30 @@
 # aVolClusterPOI — Gate P2 (2026-08-13)
 
-Estado: `CSV_ORACLE_OK` / `P2_REPLAY_BLOCKED` (sandbox sin motor parquet).
-Formal primer pasaje vs espejo: **bloqueada** hasta `P2_PASS`.
+Estado: `CSV_ORACLE_OK` / `P2_REPLAY_BLOCKED` (sandbox sin pyarrow).
+Formal: runner listo; falta OHLC M1 del mismo chart.
 
-Archivo: `avolcluster_v05_20260813.csv` (504 filas).
-Meta: v0.5, `6E 09-26`, p=98, min_samples=20, filter=0, max_age=0, one_cluster_per_block=1, CloseThrough.
+Archivo: `avolcluster_v05_20260813.csv` (504 filas). Meta v0.5 OK.
 
-## Oracle verificado
+## Oracle
 
-| Evento | n |
-|---|---|
-| ZONE_CREATED (OFF_PRICE) | 133 (74 SHORT / 59 LONG) |
-| AT_PRICE_CREATED | 112 (todos NEUTRAL) |
-| FIRST_TOUCH | 130 |
-| ZONE_INVALIDATED | 129 (70 up / 59 down) |
-| prohibidos | 0 |
-| multi-create en la misma barra | 0 |
+133 OFF_PRICE (74 SHORT / 59 LONG). 112 AT_PRICE. 130 FIRST_TOUCH. 129 CloseThrough.
+Cero eventos prohibidos. Cero dobles en la misma barra.
 
-Ancho OFF: min 2, p50 4, max 13.
-3 OFF_PRICE sin FIRST_TOUCH: zone_id 6, 82, 198.
-Fechas de creación: 2026-04-10 → 2026-06-30 (62 días calendario).
+Densidad OFF / 48 sesiones con nivel: **2.771**.
+OFF / 56 sesiones del export: **2.375**.
 
-## Densidad (confirmada)
+## Forma extra (CSV)
 
-- OFF_PRICE / 48 sesiones con ≥1 nivel: **2.771**
-- OFF_PRICE / 56 sesiones con cualquier evento: **2.375**
-- 245 creaciones / 55 sesiones con alguna zona: **4.455**
-- 245 / 56 sesiones del export: **4.375**
+- Lag a primer toque: min 1, p50 **4**, p90 73, max 7331. 41/130 en la misma o siguiente barra.
+- Sin FIRST_TOUCH: zone_id 6, 82, 198.
+- Sin invalidar: 82, 193, 194, 198.
+- Abril 28 / mayo 35 / junio 70 OFF_PRICE. El roll de 09-26 sigue inflando junio.
 
-2.77 es solo OFF_PRICE sobre sesiones que tuvieron nivel. Correcto.
+## Formal
 
-## Match pendiente
+`diag/tasa_senales/avolcluster_formal.py`
+Solo OFF_PRICE. Primer pasaje vs espejo del mismo ancho, misma distancia al close.
+Ceros adentro no cuentan. Toque doble en la misma barra = empate/censor.
+No P&L. No AT_PRICE.
 
-Clave: `(bar_close_time, lower_tick, upper_tick, kind)`.
-P2 mira solo creaciones. Replay Python vs ticks 09-26: no corrido aquí.
-`P2_PASS` exige ese replay. No se abre formal OFF_PRICE vs espejo antes.
+Para correrlo acá: exportar del **mismo** chart NT8 6E 09-26 1m (2026-04-10 → 2026-06-30) un CSV con Time, High, Low, Close.
