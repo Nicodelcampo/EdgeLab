@@ -163,17 +163,21 @@ def compute_cut_metrics(pairs_list):
         )
 
     ic = hac_bartlett_ic(session_means)
-    mde = 1.96 * ic["se_hac"]
+    delta_val = float(ic.get("media", ic.get("mean", np.mean(session_means))))
+    se_val = float(ic["se_hac"]) if ic.get("se_hac") is not None else 0.0
+    ci_lo = float(ic["ci95_lower"]) if ic.get("ci95_lower") is not None else 0.0
+    ci_hi = float(ic["ci95_upper"]) if ic.get("ci95_upper") is not None else 0.0
+    mde = 1.96 * se_val
 
     return dict(
         n_zones=n_zones,
         n_sessions=len(session_means),
         n_resolved=n_resolved_pairs,
         frac_resolved=frac_resolved,
-        delta=ic["media"],
-        se_hac=ic["se_hac"],
-        ci95_lower=ic["ci95_lower"],
-        ci95_upper=ic["ci95_upper"],
+        delta=delta_val,
+        se_hac=se_val,
+        ci95_lower=ci_lo,
+        ci95_upper=ci_hi,
         mde_observed=mde,
         real_first=r_counts["real_first"],
         mirror_first=r_counts["mirror_first"],
