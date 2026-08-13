@@ -47,7 +47,12 @@ jobs:
         shell: bash
         run: |
           set +e
-          .venv/bin/python -m pytest -q --durations=10 2>&1 | tee pytest.log
+          # Este único test comprueba que exista un parquet real gitignoreado en el
+          # checkout local. En CI no hay ni debe haber market data; no prueba código
+          # sin ese artefacto. Todo el resto de la suite corre en el .venv gobernado.
+          .venv/bin/python -m pytest -q --durations=10 \
+            -k 'not test_data_root_resuelve_data_gitignoreado_desde_una_worktree' \
+            2>&1 | tee pytest.log
           status=${PIPESTATUS[0]}
           echo "status=$status" >> "$GITHUB_OUTPUT"
           exit 0
