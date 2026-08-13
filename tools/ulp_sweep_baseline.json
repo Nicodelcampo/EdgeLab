@@ -197,6 +197,14 @@
     "CaptureEventProbeV2.cs :: else if (e.Price <= bid.Value) aggressor = \"sell\";": {
       "evidencia": "MEDIDO (AUDIT-002, tools/ulp_exposure.py, caso 'CaptureEventProbeV2 (clasificacion de agresor)', 6E ts=5e-05, niveles 20000-25000): exposicion 0.00%, 0 flips de 5001 niveles en cada uno de los dos umbrales. El empate NO es un caso de borde aqui: un trade exactamente al ask es el caso NORMAL de un buy agresivo, por eso se midio con offset_ticks=0 en vez de declararlo inmune por medio tick. price, bid y ask son los TRES precios de grilla del mismo snapshot del feed, llevados SIN aritmetica; feed() y ticks*tick_size son estrictamente monotonas en el indice de tick, asi que preservan orden Y empates. No se modifican las comparaciones: no hay exposicion que corregir.",
       "veredicto": "INMUNE_MONOTONO"
+    },
+    "aVolClusterPOI.cs :: bool offPrice = direction != 0;": {
+      "evidencia": "no compara precios: direction es un entero (-1, 0, +1) derivado de comparaciones en ticks enteros que clasifica si el cierre quedo arriba, dentro o abajo de la zona. Falso positivo del scanner ULP.",
+      "veredicto": "NO_ES_PRECIO"
+    },
+    "aVolClusterPOI.cs :: bool passes = offPrice && quality >= MinQualityScore;": {
+      "evidencia": "no compara precios: quality es un score heuristico continuo 0..100 y MinQualityScore es su umbral de corte de ranking. Falso positivo del scanner ULP.",
+      "veredicto": "NO_ES_PRECIO"
     }
   }
 }

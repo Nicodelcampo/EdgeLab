@@ -10,7 +10,7 @@ def test_empirical_quantile_has_no_interpolation():
 
 
 def test_hot_ticks_cluster_by_integer_gap():
-    cells = {10: 1, 11: 10, 12: 10, 13: 1, 20: 10, 21: 10}
+    cells = {7: 1, 8: 1, 9: 1, 10: 1, 11: 10, 12: 10, 13: 1, 14: 1, 20: 10, 21: 10}
     clusters = cluster_hot_ticks(cells, median_multiplier=2.0, max_gap_ticks=1, min_cluster_ticks=2)
     spans = [(ticks[0], ticks[-1], score) for ticks, score in clusters]
     assert (11, 12, 20) in spans
@@ -18,7 +18,7 @@ def test_hot_ticks_cluster_by_integer_gap():
 
 
 def test_warmup_does_not_detect():
-    cells = {11: 10, 12: 10, 13: 10}
+    cells = {1: 1, 2: 1, 3: 1, 4: 1, 11: 10, 12: 10, 13: 10}
     out = detect_block(cells, history_scores=[1, 2, 3], params={"min_samples_per_bucket": 20})
     assert out["abstain"] == "warmup"
     assert out["zones"] == []
