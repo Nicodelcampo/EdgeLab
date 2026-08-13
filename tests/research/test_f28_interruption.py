@@ -31,9 +31,32 @@ def test_stay_if_neither_happens():
     assert classify_after_contact(1000, 1020, 1030, True, 1, close_t, high_t, low_t, 12) == "stay"
 
 
+def test_bear_zone_interruption_categories():
+    close_t, high_t, low_t = _flat()
+    # Bear zone below anchor: anchor=1000, lo=970, hi=980 (width=10).
+    # Through for bear zone: close drops below lo (970).
+    close_t[3] = 965
+    assert classify_after_contact(1000, 970, 980, False, 1, close_t, high_t, low_t, 12) == "through"
+
+    # Bounce for bear zone: high reaches anchor + width (1000 + 10 = 1010).
+    close_t, high_t, low_t = _flat()
+    high_t[4] = 1015
+    assert classify_after_contact(1000, 970, 980, False, 1, close_t, high_t, low_t, 12) == "bounce"
+
+
 def test_same_side_interval_preserves_d_and_width():
     lo, hi = same_side_interval(1000, 20, 11, True)
     assert lo == 1020
     assert hi == 1030
     assert eligible_control(1000, lo, hi, [])
     assert not eligible_control(1000, 990, 1010, [])
+
+
+def test_bear_control_geometry_disjoint_from_anchor():
+    lo, hi = same_side_interval(1000, 15, 6, False)
+    # Bear zone: hi = 1000 - 15 = 985, lo = 985 - 6 + 1 = 980.
+    assert hi == 985
+    assert lo == 980
+    assert eligible_control(1000, lo, hi, [])
+    # Must be disjoint from anchor and occupied
+    assert not eligible_control(1000, 975, 1005, [])
