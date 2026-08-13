@@ -1,31 +1,32 @@
 {
   "schema_version": "zamr1_license_decision_v0",
   "campaign_id": "ZAMR-1",
-  "status": "PENDING_SOURCE_TERMS",
-  "decision": null,
+  "status": "DECIDED_NO_UPLOAD",
+  "decision": "NO_UPLOAD",
   "allowed_decisions": ["RAW_ALLOWED", "DERIVED_ONLY", "NO_UPLOAD"],
+  "operational_override": "USER_RISK_ACCEPTANCE_NOT_LICENSE_PERMISSION",
   "source": {
-    "provider": null,
-    "dataset_or_product": null,
-    "account_holder": null,
-    "acquisition_method": null,
-    "terms_url_or_document": null,
-    "terms_version_or_date": null
+    "provider": "CQG",
+    "dataset_or_product": "LucidFlex 25K TDV/NT via NinjaTrader 8",
+    "account_holder": "user-declared",
+    "acquisition_method": "NT8 Last.txt export converted to F2 parquet",
+    "terms_url_or_document": "https://www.cqg.com/marketdataterms",
+    "terms_version_or_date": "researched-2026-08-12"
   },
   "permissions": {
-    "cloud_processing": null,
-    "private_third_party_upload": null,
-    "derived_artifacts_retention": null,
-    "raw_redistribution": null
+    "cloud_processing": false,
+    "private_third_party_upload": false,
+    "derived_artifacts_retention": "case_by_case",
+    "raw_redistribution": false
   },
   "scope": {
     "instrument": "6E",
-    "contracts": [],
+    "contracts": ["06-26", "09-26"],
     "research_cutoff_utc": "2026-06-30T22:00:00Z",
     "holdout_upload_allowed": false
   },
   "evidence_sha256": null,
-  "decided_by": null,
-  "decided_at_utc": null,
-  "notes": "Fail-closed: no real-data upload while status is pending. DERIVED_ONLY is not assumed automatically."
+  "decided_by": "Notion AI auditor + user operational override",
+  "decided_at_utc": "2026-08-12T23:00:00Z",
+  "notes": "Contractual conclusion remains NO_UPLOAD absent written CQG/CME approval. User accepted operational risk; that is not RAW_ALLOWED and must stay in operational_override."
 }
