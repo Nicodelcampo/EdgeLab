@@ -1,10 +1,56 @@
 {
-  "schema_version":"zamr1_z1_pilot_plan_v1","status":"READY_FOR_BUILDER_EXECUTION","campaign":"ZAMR-1","stage":"Z1_BIGTRAP2_DEFAULTS","research_cutoff_utc":"2026-06-30T22:00:00Z","bar_specs_ticks":[5,10,25,50,100,200],"indicator":"BigTrap2","parameters":{},
-  "roll_rule":{"method":"single_contract_per_session_by_observed_tick_activity","last_6E_06_26_session":"2026-06-11","first_6E_09_26_session":"2026-06-12","reason":"Tick activity switches decisively on 2026-06-12; overlap rows are not duplicated."},
-  "instrument_manifest":{"instrument":"6E","exchange":"CME","tick_size":0.00005,"tick_value_usd":6.25,"session_timezone":"America/Chicago","session_cutover_local":"17:00","platform":"NinjaTrader 8","connectivity_provider":"CQG","account_product":"LucidFlex 25K TDV/NT","aggressor_method":"bidask_then_tickrule"},
-  "sources":[
-    {"filename":"6E_06-26_ticks.parquet","sha256":"fd2e358d2b9b5ffa7a48057b6b90e94211c56db252ca884b161b9606e7fab83d","dataset_identity":"uploaded_extended_noncanonical_export","load_start_utc_ns":1778536800000000000,"load_end_utc_ns":1781215200000000000,"selected_sessions":["2026-06-01","2026-06-02","2026-06-03","2026-06-04","2026-06-05","2026-06-08","2026-06-09","2026-06-10","2026-06-11"]},
-    {"filename":"6E_09-26_ticks.parquet","sha256":"654e006e483f62727dd2d52680e41b0c4c03531a3763471a1ba3532497883a06","dataset_identity":"uploaded_extended_noncanonical_export","load_start_utc_ns":1780887792260000000,"load_end_utc_ns":1782856800000000000,"selected_sessions":["2026-06-12","2026-06-15","2026-06-16","2026-06-17","2026-06-18","2026-06-19","2026-06-22","2026-06-23","2026-06-24","2026-06-25","2026-06-26","2026-06-29","2026-06-30"]}
+  "schema_version": "zamr1_z1_pilot_plan_v1",
+  "status": "READY_FOR_BUILDER_V2",
+  "campaign": "ZAMR-1",
+  "stage": "Z1_BIGTRAP2_DEFAULTS",
+  "research_cutoff_utc": "2026-06-30T22:00:00Z",
+  "session_definition": "cme_eth_1700_america_chicago",
+  "bar_specs_ticks": [5, 10, 25, 50, 100, 200],
+  "indicator": "BigTrap2",
+  "parameters": {},
+  "roll_rule": {
+    "method": "single_contract_per_session_by_observed_tick_activity",
+    "last_6E_06_26_session": "2026-06-11",
+    "first_6E_09_26_session": "2026-06-12",
+    "reason": "Tick activity switches decisively on 2026-06-12; overlap rows are not duplicated."
+  },
+  "instrument_manifest": {
+    "instrument": "6E",
+    "exchange": "CME",
+    "tick_size": 0.00005,
+    "tick_value_usd": 6.25,
+    "session_timezone": "America/Chicago",
+    "session_cutover_local": "17:00",
+    "platform": "NinjaTrader 8",
+    "connectivity_provider": "CQG",
+    "account_product": "LucidFlex 25K TDV/NT",
+    "aggressor_method": "bidask_then_tickrule"
+  },
+  "sources": [
+    {
+      "filename": "6E_06-26_ticks.parquet",
+      "sha256": "fd2e358d2b9b5ffa7a48057b6b90e94211c56db252ca884b161b9606e7fab83d",
+      "dataset_identity": "uploaded_extended_noncanonical_export",
+      "warmup_note": "lead-in from 2026-05-11T22:00:00Z covers ~20 days before 2026-06-01",
+      "load_start_utc_ns": 1778536800000000000,
+      "load_end_utc_ns": 1781215200000000000,
+      "selected_sessions": ["2026-06-01", "2026-06-02", "2026-06-03", "2026-06-04", "2026-06-05", "2026-06-08", "2026-06-09", "2026-06-10", "2026-06-11"]
+    },
+    {
+      "filename": "6E_09-26_ticks.parquet",
+      "sha256": "654e006e483f62727dd2d52680e41b0c4c03531a3763471a1ba3532497883a06",
+      "dataset_identity": "uploaded_extended_noncanonical_export",
+      "warmup_note": "LIMITATION: file starts 2026-06-08; same-contract lead-in before 2026-06-12 is only ~4 sessions",
+      "load_start_utc_ns": 1780887792260000000,
+      "load_end_utc_ns": 1782856800000000000,
+      "selected_sessions": ["2026-06-12", "2026-06-15", "2026-06-16", "2026-06-17", "2026-06-18", "2026-06-19", "2026-06-22", "2026-06-23", "2026-06-24", "2026-06-25", "2026-06-26", "2026-06-29", "2026-06-30"]
+    }
   ],
-  "session_count":22,"raw_tick_count_selected_sessions":1651076,"license_decision":"NO_UPLOAD","operational_override":"USER_RISK_ACCEPTANCE_NOT_LICENSE_PERMISSION","outcomes_accessed":false,"pnl_accessed":false,"holdout_included":false
+  "session_count": 22,
+  "raw_tick_count_selected_sessions": 1651076,
+  "license_decision": "NO_UPLOAD",
+  "operational_override": "USER_RISK_ACCEPTANCE_NOT_LICENSE_PERMISSION",
+  "outcomes_accessed": false,
+  "pnl_accessed": false,
+  "holdout_included": false
 }
