@@ -1,38 +1,34 @@
 # aVolClusterPOI — Protocolo de reparación P2 v0.1
 
-**Estado:** `ORACLE_JUNIO_V2_LISTO_P2_NO_CORRIDO`  
-**Fuente de verdad:** `nt8/aVolClusterPOI.cs` v0.5, blob `d512d91a…`  
-**Runner:** `diag/tasa_senales/avolcluster_p2_replay_v01.py`  
-**Spec:** `specs/avolcluster_p2_repair_v0_1.json`
+**Estado:** `ABSTAIN_P2`  
+**Run:** `diag/tasa_senales/AVOL_P2_replay_v01.json` (`e7602fe6`)  
+**Sello:** `feaa9cc9361019c867531ea50e177235436b85528bacf487e37d6caa84eea43c`
 
-No hay `P2_PASS`. No se corre formal.
+Hash canónico OK. P1A PASS (2 784 986 ticks, 54 112 barras, quote 100%). Formal no ejecutada.
 
-## Oráculo junio v2 (commit `0483c4ae`)
+## Resultado
 
-Archivo: `data/nt8_oracles/avolcluster_v05_junio2026.csv`  
-Origen: `6E 09-26` `DoNotMerge`, date picker NT8 **08/06/2026–30/06/2026** (día completo). Timestamps **ART (UTC-3)**.
+53 vs 53 OFF_PRICE. **50 matcheadas.** 3 NT8 solas + 3 Python solas.  
+`ABSTAIN_P2` es la etiqueta correcta. **No se baja el 100% a 94%.** 50/53 prueba que el reloj ART→CT y el objeto son los mismos; no autoriza formal ni A/B.
 
-171 eventos. 53 `ZONE_CREATED` OFF_PRICE. 19 `AT_PRICE_CREATED`.  
-Primera zona: `2026-06-17T04:34` ART, `session_index=7`, `samples=21`, ticks `23295–23299`.  
-Última invalidación: `2026-06-30T12:59` ART.
+No es un desfase global de bloques: si la grilla de 10 barras estuviera corrida, caerían casi todas.
 
-`samples=21` = 7 sesiones previas × 3 bloques. Coincide con min_samples=20 recién superado. El date picker del 8-jun ART 00:00 ≈ 7-jun 22:00 CT; el parquet canónico empieza 7-jun **22:03** CT. Residual: ~3 minutos de la sesión parcial inicial.
+## Las 6 zonas no son gemelas
 
-## Reloj
+NT8 sola (hora Chicago del runner = ART−2h):
 
-El runner (commit `994a20f6`) convierte ART → `America/Chicago` antes de matchear.  
-`2026-06-17T04:34` ART = `2026-06-17T02:34` CDT. Test en `7e9dcdbc`.
+1. `2026-06-17T13:26` `[23184,23185]` SHORT — CSV 15:26 ART, score 1107 / umbral 750, 2 ticks, `cluster_share` 0.17, tercer bloque del bucket 40.
+2. `2026-06-17T20:03` `[23107,23110]` LONG — CSV 22:03 ART, score 1437 / 434. No es un flip de umbral.
+3. `2026-06-17T23:39` `[23125,23127]` LONG — CSV 18-jun 01:39 ART.
 
-Hash canónico completo:
-`6ffcdf041f8d77a2d6fb7cfe85d63bd8b176a081caa8ad8cd0aaae57c6f178f4`
+Las tres caen el primer día de detección (sesiones 7–8). Sospecha: residual de ~3 min al inicio del parquet + `one_cluster_per_block`.
 
-## Comando (máquina con PyArrow + parquet canónico)
+Python sola (no son las mismas zonas corridas en el tiempo):
 
-```bash
-python diag/tasa_senales/avolcluster_p2_replay_v01.py \
-  --parquet "RUTA_CANONICA/6E_09-26_ticks.parquet" \
-  --oracle data/nt8_oracles/avolcluster_v05_junio2026.csv \
-  --out diag/tasa_senales/AVOL_P2_replay_v01.json
-```
+1. `2026-06-18T12:01` `[23005,23008]` LONG — el oráculo tiene `[23005,23007]` a las 08:31 ART; otro objeto.
+2. `2026-06-25T09:08` `[22827,22837]` SHORT
+3. `2026-06-30T21:35` `[22880,22882]` SHORT
 
-`sha256sum` del parquet debe ser exactamente el hash de arriba. Formal, A/B, GC y concatenación: no.
+## Siguiente paso
+
+Autopsia de esas 6 barras: celdas, mediana, clusters, umbral, `close_tick`, kind. No relajar matching. No formal.
