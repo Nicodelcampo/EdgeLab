@@ -15,6 +15,9 @@ Repairs derived from nt8/aVolClusterPOI.cs (blob d512d91a...):
 - fail closed on input hash or P1A.
 - NT8 CSV timestamps on the operator machine are ART; match after converting
   America/Argentina/Buenos_Aires -> America/Chicago.
+- If the first replay session starts mid-clock, discard leading bars until the
+  next 10-minute session boundary. Full sessions that open at 17:00 CT are
+  unchanged. This undoes the 3-minute parquet/NT8 phase shift in session 0.
 """
 from __future__ import annotations
 
@@ -111,13 +114,20 @@ def parse_oracle(path: str | Path) -> tuple[dict, list[dict]]:
             raise ValueError(f"timestamp de oráculo inválido: {raw_time!r}") from exc
         direction_raw = (row.get("direction") or "").upper()
         direction = 1 if direction_raw == "LONG" else (-1 if direction_raw == "SHORT" else 0)
-        out.append({
+        item = {
             "time": art_naive_to_chicago_naive(dt),
             "lower_tick": int(row["lower_tick"]),
             "upper_tick": int(row["upper_tick"]),
             "direction": direction,
             "zone_id": int(row.get("zone_id") or 0),
-        })
+        }
+        if row.get("score"):
+            item["score"] = float(row["score"])
+        if row.get("threshold"):
+            item["threshold"] = float(row["threshold"])
+        if row.get("samples"):
+            item["history_samples"] = int(float(row["samples"]))
+        out.append(item)
     return meta, sorted(out, key=lambda z: (z["time"], z["lower_tick"], z["upper_tick"]))
 
 
@@ -137,6 +147,28 @@ def local_naive_from_ns(ns: int) -> datetime:
     return pd.Timestamp(int(ns), unit="ns", tz="UTC").tz_convert(TZ).to_pydatetime().replace(tzinfo=None)
 
 
+def session_minute_index(bar_end_ns: int, session_begin_ns: int) -> int:
+    """Minute of the bar start relative to session begin."""
+    bar_start_ns = int(bar_end_ns) - 60 * NS
+    return int((bar_start_ns - int(session_begin_ns)) // (60 * NS))
+
+
+def trim_leading_partial_clock_block(indices, end_ns, session_begin_ns, window_bars=10):
+    """Drop leading bars until the next 10-minute session boundary.
+
+    NT8 packs the first 10 bars it sees. If the chart starts on a 10-minute
+    boundary (22:00 CT = minute 300), that equals clock-aligned blocks. A
+    parquet that starts at 22:03 would otherwise shift every session-0 block.
+    Complete sessions that open at 17:00 CT already sit on a boundary.
+    """
+    window_bars = int(window_bars)
+    for offset, bar_idx in enumerate(indices):
+        minute = session_minute_index(int(end_ns[int(bar_idx)]), session_begin_ns)
+        if minute % window_bars == 0:
+            return indices[offset:], int(offset), int(minute)
+    return indices, 0, None
+
+
 def replay_python_zones(ticks) -> tuple[list[dict], dict, dict]:
     bars = build_time_bars(ticks, minutes=1)
     fps = build_footprints(ticks, bars)
@@ -147,12 +179,26 @@ def replay_python_zones(ticks) -> tuple[list[dict], dict, dict]:
     profile = SessionProfile(lookback_sessions=RESEARCH_DEFAULTS["lookback_sessions"])
     zones = []
     session_diag = []
+    first_session = True
+    first_trim = {"applied": False, "bars_dropped": 0, "aligned_minute": None}
 
     for sid in np.unique(ses):
         indices = np.flatnonzero(ses == sid)
         if len(indices) < RESEARCH_DEFAULTS["window_bars"]:
             continue
         begin_ns = session_begin_utc_ns(int(bars.end_ns[indices[0]]))
+        if first_session:
+            indices, dropped, aligned_minute = trim_leading_partial_clock_block(
+                indices, bars.end_ns, begin_ns, RESEARCH_DEFAULTS["window_bars"],
+            )
+            first_trim = {
+                "applied": True,
+                "bars_dropped": int(dropped),
+                "aligned_minute": aligned_minute,
+            }
+            first_session = False
+            if len(indices) < RESEARCH_DEFAULTS["window_bars"]:
+                continue
         n_blocks = len(indices) // RESEARCH_DEFAULTS["window_bars"]
         n_before = len(zones)
 
@@ -206,18 +252,23 @@ def replay_python_zones(ticks) -> tuple[list[dict], dict, dict]:
         "n_ticks": int(len(ticks)),
         "n_bars": int(len(bars)),
         "n_sessions_processed": int(len(session_diag)),
+        "first_session_clock_trim": first_trim,
         "sessions": session_diag,
     }
     return zones, p1a, diagnostics
 
 
 def _brief(row: dict) -> dict:
-    return {
+    out = {
         "time": row["time"].isoformat(timespec="seconds"),
         "lower_tick": int(row["lower_tick"]),
         "upper_tick": int(row["upper_tick"]),
         "direction": int(row.get("direction", 0)),
     }
+    for key in ("score", "threshold", "history_samples", "bucket"):
+        if key in row and row[key] is not None:
+            out[key] = row[key]
+    return out
 
 
 def match_one_to_one(oracle: list[dict], python: list[dict], tolerance_seconds=60) -> dict:
@@ -289,6 +340,7 @@ def run(parquet_path: str | Path, oracle_path: str | Path) -> dict:
             "start_inclusive": WINDOW_START.isoformat(),
             "end_exclusive": WINDOW_END.isoformat(),
             "warmup": "all complete sessions available before first compared zone",
+            "first_session_trim": "drop leading bars until session-minute % 10 == 0",
         },
         "oracle_rows": None,
         "outcomes_accessed": False,
