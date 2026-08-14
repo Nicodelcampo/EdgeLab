@@ -147,3 +147,20 @@ El replay aVol sobre ES 09-26 diverge en fase de bloques **solo el 11-jun** (ses
 También documentado (mismo replay, cosmético): `direction=NEUTRAL` del oráculo vs `None` del kernel en AT_PRICE_CREATED (unificar), y drift de `session_index` desde la frontera domingo 21-jun → lunes 22 (convención de conteo del SessionIterator en domingos; etiqueta, no entra a la matemática).
 
 **Criterio de cierre**: comparación nativo-vs-parquet minuto a minuto del 06-11 en local (misma batería que P-14: "0 minutos faltantes en horario activo"), regeneración del mensual de junio ES, y re-run del replay esperando ≥ 465/467 con los mismos criterios.
+
+---
+
+## P-16 · Réplica de paridad de `AACloseOpenDiffs`, `VolTicksPOC2` y `Gaps2`
+
+**Estado**: ABIERTA — validación local ejecutada (Antigravity), réplica formal de auditoría pendiente.
+
+Se incorporaron los 3 oráculos de 90 días en `data/nt8_oracles/` y se ejecutaron las mediciones de paridad en el entorno local gobernado (ver `docs/research/PARIDADES_LOCALES_ANTIGRAVITY_2026-08-14.md`):
+
+1. **`AACloseOpenDiffs` (v1.2)**: 18.004 / 18.020 (99.91 % EXACT) sobre `gaps2_v22_6E_0926_90d.csv`.
+2. **`VolTicksPOC2` (v2.1)**: 151 / 152 (98.68 % EXACT) sobre `voltickspoc2_v22_6E_0926_90d.csv`.
+3. **`Gaps2` (v2.0)**: 11.435 / 11.442 (99.94 % EXACT) sobre `Gaps2_events_nt8_6E_0926_90d.csv`.
+
+**Aclaración de gobernanza**: Estas mediciones fueron validadas localmente por Antigravity. El auditor externo debe correr su réplica independiente en el sandbox para emitir el veredicto oficial y sellar el pase formal.
+
+**Criterio de cierre**: Réplica target-free del auditor en sandbox sobre los 3 oráculos con reporte de paridad formal.
+
