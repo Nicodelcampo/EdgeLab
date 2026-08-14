@@ -13,6 +13,8 @@ Repairs derived from nt8/aVolClusterPOI.cs (blob d512d91a...):
 - warmup uses all data before the oracle comparison window;
 - one-to-one matching; both missing oracle rows and extra Python rows fail;
 - fail closed on input hash or P1A.
+- NT8 CSV timestamps on the operator machine are ART; match after converting
+  America/Argentina/Buenos_Aires -> America/Chicago.
 """
 from __future__ import annotations
 
@@ -45,8 +47,9 @@ SCHEMA_VERSION = "avolcluster_p2_replay_v0_1"
 EXPECTED_6E_09_26_SHA256 = "6ffcdf041f8d77a2d6fb7cfe85d63bd8b176a081caa8ad8cd0aaae57c6f178f4"
 EXPECTED_INSTRUMENT_META = "6E 09-26"
 TZ = "America/Chicago"
-WINDOW_START = datetime(2026, 4, 10, 0, 0, 0)
-WINDOW_END = datetime(2026, 7, 1, 0, 0, 0)  # exclusive
+ORACLE_TZ = "America/Argentina/Buenos_Aires"
+WINDOW_START = datetime(2026, 6, 8, 0, 0, 0)
+WINDOW_END = datetime(2026, 7, 1, 0, 0, 0)  # exclusive, Chicago naive
 
 
 def sha256_file(path: str | Path) -> str:
@@ -63,6 +66,22 @@ def seal_payload(payload: dict) -> dict:
     raw = json.dumps(out, sort_keys=True, separators=(",", ":"), default=str).encode("utf-8")
     out["payload_sha256"] = hashlib.sha256(raw).hexdigest()
     return out
+
+
+def art_naive_to_chicago_naive(dt: datetime) -> datetime:
+    """NT8 on the operator PC exports naive local ART. Python bars are Chicago."""
+    if dt.tzinfo is not None:
+        ts = pd.Timestamp(dt)
+        if ts.tz is None:
+            ts = ts.tz_localize(ORACLE_TZ)
+        return ts.tz_convert(TZ).to_pydatetime().replace(tzinfo=None)
+    return (
+        pd.Timestamp(dt)
+        .tz_localize(ORACLE_TZ)
+        .tz_convert(TZ)
+        .to_pydatetime()
+        .replace(tzinfo=None)
+    )
 
 
 def parse_oracle(path: str | Path) -> tuple[dict, list[dict]]:
@@ -93,7 +112,7 @@ def parse_oracle(path: str | Path) -> tuple[dict, list[dict]]:
         direction_raw = (row.get("direction") or "").upper()
         direction = 1 if direction_raw == "LONG" else (-1 if direction_raw == "SHORT" else 0)
         out.append({
-            "time": dt.replace(tzinfo=None),
+            "time": art_naive_to_chicago_naive(dt),
             "lower_tick": int(row["lower_tick"]),
             "upper_tick": int(row["upper_tick"]),
             "direction": direction,
@@ -255,6 +274,7 @@ def run(parquet_path: str | Path, oracle_path: str | Path) -> dict:
             "nt8_git_blob": "d512d91a606d41609b21ef244c896ead1dc52a10",
             "oracle": str(oracle_path),
             "oracle_meta_instrument": None,
+            "oracle_timezone": ORACLE_TZ,
         },
         "input": {
             "parquet": str(parquet_path),
@@ -265,9 +285,10 @@ def run(parquet_path: str | Path, oracle_path: str | Path) -> dict:
         },
         "window": {
             "timezone": TZ,
+            "oracle_timezone": ORACLE_TZ,
             "start_inclusive": WINDOW_START.isoformat(),
             "end_exclusive": WINDOW_END.isoformat(),
-            "warmup": "all complete sessions available before window start",
+            "warmup": "all complete sessions available before first compared zone",
         },
         "oracle_rows": None,
         "outcomes_accessed": False,
@@ -275,8 +296,6 @@ def run(parquet_path: str | Path, oracle_path: str | Path) -> dict:
         "holdout_included": False,
         "formal_race_executed": False,
     }
-    # Primary-input mismatch is sufficient for ABSTAIN_INPUT. Do not make the
-    # abstention depend on a secondary oracle file, PyArrow, P1A, or any result.
     if not hash_ok:
         return seal_payload(base)
 
@@ -290,8 +309,6 @@ def run(parquet_path: str | Path, oracle_path: str | Path) -> dict:
         return seal_payload(base)
     base["input"]["oracle_instrument_ok"] = True
 
-    # IMPORTANT: load the full contract. Filtering before replay would remove
-    # the history that NT8 had before the first exported zone.
     ticks = load_canonical_parquet(parquet_path, instrument="6E")
     python_all, p1a, diagnostics = replay_python_zones(ticks)
     python = [z for z in python_all if WINDOW_START <= z["time"] < WINDOW_END]
@@ -303,7 +320,7 @@ def run(parquet_path: str | Path, oracle_path: str | Path) -> dict:
         "python_rows": len(python),
         "p2_gate": {
             "p2_pass": label == "P2_PASS",
-            "match_rule": "one-to-one exact (lower_tick,upper_tick), |dt|<=60s",
+            "match_rule": "one-to-one exact (lower_tick,upper_tick), |dt|<=60s after ART->CT",
             "pass_rule": "P1A PASS AND zero unmatched oracle AND zero unmatched Python",
             "matched": diff["matched"],
             "match_rate_oracle": diff["matched"] / max(1, len(oracle)),
