@@ -1,7 +1,8 @@
 {
   "spec_id": "prerange_sweep_v0",
-  "schema_version": "prerange_sweep_formal_v0",
+  "schema_version": "prerange_sweep_formal_v0_1",
   "created": "2026-08-14",
+  "revised": "2026-08-14",
   "status": "PREREGISTERED",
   "line": "L3_PRERANGE_DOUBLE_SWEEP",
 
@@ -14,9 +15,18 @@
       "El split por compresion es la misma tautologia amplificada: rango angosto => fronteras mas cerca => mas cruces. 80.6% vs 63.7% es geometria, no absorcion.",
       "Martes 83.7% con N=43: IC ~ +/-12 puntos y 5 dias testeados sin correccion de multiplicidad. ~1.2 sigma.",
       "La sincronizacion 51% vs ~36% esperado bajo independencia refleja un factor comun de regimen diario (dias de tendencia macro), no barridos sincronizados.",
-      "La ventana 08:12-09:12 fue elegida mirando datos: su p-value no es interpretable sin absorber la seleccion.",
       "No se midio ningun estimando post-barrido. 'Doble barrido' es una frecuencia de toques, no una afirmacion transable."
     ]
+  },
+
+  "window_provenance": {
+    "declarado_por_el_usuario": "a_priori_external",
+    "literal": "a priori, lo vi en internet",
+    "fecha_de_la_declaracion": "2026-08-14",
+    "que_habilita": "La ventana NO fue elegida mirando este dataset. Por lo tanto el rank contra la familia de placebos SI es interpretable sobre datos <= 2026-08-13, y PRERANGE_EDGE deja de estar vedado por seleccion propia.",
+    "que_NO_resuelve": "Ver T5. Una ventana publicada es el sobreviviente de una busqueda hecha por un tercero sobre datos que no podemos ver, con un numero desconocido de alternativas probadas y sesgo de publicacion. La seleccion no desaparece: se terceriza.",
+    "implementacion": "apply_provenance_cap() en el runner. Valores: a_priori_external, a_priori_mechanism, chosen_from_this_data, unknown. Solo los dos primeros habilitan PRERANGE_EDGE. El cap solo BAJA etiquetas, nunca las sube. Default = unknown (se asume lo peor).",
+    "pendiente": "Registrar la fuente concreta (URL/autor) y si declara un MECANISMO. Si lo declara, la procedencia sube a a_priori_mechanism y el mecanismo genera predicciones falsables sobre la familia de placebos, que es una prueba mucho mas fuerte que un rank."
   },
 
   "estimand": {
@@ -42,11 +52,26 @@
   "agregacion": "una observacion por sesion (ceros adentro), media por sesion, HAC Bartlett con lag=ceil(sqrt(n)), IC95",
 
   "seleccion_de_ventana": {
-    "problema": "08:12-09:12 fue elegida a ojo. Un p-value sobre una ventana elegida post-hoc no vale.",
+    "problema": "Una ventana elegida mirando datos no admite p-value interpretable.",
     "solucion": "familia de placebos declarada: offsets de 30 en 30 minutos desde -480 a +330, excluyendo |offset| < 60 para que ningun placebo se solape con la ventana primaria. 25 placebos.",
-    "test": "p_perm = rank(media primaria entre las 25+1 medias) / (n_usables+1). La ventana elegida debe GANARLE a todos sus placebos.",
+    "test": "p_perm = rank(media primaria entre las 25+1 medias) / (n_usables+1). La ventana debe GANARLE a todos sus placebos.",
     "piso": "con 19 placebos utilizables el piso de p_perm es 1/20 = 0.05. Si hay menos, PRERANGE_EDGE es inalcanzable y el runner NO puede emitirlo.",
-    "gate": "MIN_USABLE_PLACEBOS = 19"
+    "gate": "MIN_USABLE_PLACEBOS = 19",
+    "defecto_propio_corregido": "La primera version usaba 8 placebos: piso 1/9 = 0.111, o sea que NINGUN resultado, ni perfecto, podia ser significativo. El test estaba muerto antes de empezar."
+  },
+
+  "lema_de_identificacion": {
+    "enunciado": "Ninguna ventana placebo puede contener la publicacion de 08:30.",
+    "demostracion": "Una ventana de 60m que contenga las 08:30 debe arrancar entre 07:31 y 08:30. Todos esos arranques estan a menos de 60 minutos de la primaria (08:12), o sea que se solapan con ella y por definicion estan excluidos de la familia de placebos.",
+    "consecuencia": "La ventana primaria es la UNICA de su estrato estructural. La familia de placebos NO puede separar 'absorcion de liquidez' de 'reaccion al dato macro de 08:30'. Un rank 1 es compatible con ambas explicaciones y el test de permutacion no las distingue. Esto es geometrico, no empirico: no se arregla con mas datos.",
+    "identificacion_correcta": "Split de la PROPIA ventana primaria por dia con/sin evento programado (--macro-dates). Si el subconjunto SIN evento mantiene IC95 > 0 con n >= 30, el efecto no es la reaccion al dato. Si solo aparece en dias con evento, es el dato.",
+    "estratos_declarados_a_priori": {
+      "contains_0830_macro": "solo la primaria",
+      "contains_0930_cash_open": "placebos que contienen la apertura del cash (estructuralmente distintos)",
+      "overnight": "arranque antes de 07:00, liquidez overnight",
+      "rth_quiet": "resto"
+    },
+    "uso_de_los_estratos": "Reportados en placebo_strata para poder recomputar subfamilias (p.ej. solo rth_quiet). El p_perm de la familia completa queda como primario; los subfamiliares son secundarios declarados."
   },
 
   "gates": {
@@ -54,16 +79,23 @@
     "resolution": "decididos/n >= 0.30",
     "ties": "empates en la misma barra <= 0.10 (si falla, la resolucion M1 no alcanza y hay que ir a ticks)",
     "coverage": "sesiones con doble barrido / sesiones validas >= 0.40",
-    "placebo_family": "placebos utilizables >= 19 (requisito solo para PRERANGE_EDGE)"
+    "placebo_family": "placebos utilizables >= 19 (requisito solo para PRERANGE_EDGE)",
+    "provenance": "window_provenance en (a_priori_external, a_priori_mechanism) (requisito solo para PRERANGE_EDGE)"
   },
 
   "labels": {
-    "PRERANGE_EDGE": "IC95 HAC > 0 AND familia de placebos suficiente AND rank 1 contra todos los placebos",
-    "PRERANGE_WINDOW_UNSPECIFIC": "IC95 > 0 pero la ventana no le gana a sus placebos, o la familia es insuficiente. Hay reversion post-doble-barrido, pero NO es propiedad de esta ventana.",
+    "PRERANGE_EDGE": "IC95 HAC > 0 AND familia de placebos suficiente AND rank 1 contra todos los placebos AND procedencia que lo habilita",
+    "PRERANGE_WINDOW_UNSPECIFIC": "IC95 > 0 pero la ventana no le gana a sus placebos, o la familia es insuficiente, o la procedencia no habilita EDGE. Hay reversion post-doble-barrido, pero NO esta demostrado que sea propiedad de esta ventana.",
     "PRERANGE_NO_EDGE": "IC95 cruza cero",
-    "PRERANGE_FADE": "IC95 < 0: continuacion, no reversion. Falsa la hipotesis en direccion opuesta.",
+    "PRERANGE_FADE": "IC95 < 0: continuacion, no reversion. Falsa la hipotesis en direccion opuesta. No requiere familia ni procedencia: es falsacion, no promocion.",
     "PRERANGE_UNDERPOWERED": "algun gate de datos falla",
     "ABSTAIN_DATA": "parsing o cobertura insuficiente"
+  },
+
+  "potencia": {
+    "mde_aprox": "Con ~210 sesiones y fraccion resuelta ~0.6, sd(r) ~ 0.76 y SE ~ 0.054. MDE a 80% de potencia ~ 0.15 en |mean r|, equivalente a un split de ~63/37 entre carreras resueltas.",
+    "consecuencia": "Un edge real de 55/45 requeriria ~1250 sesiones (~5 anios). La potencia es el constraint, igual que en aVol.",
+    "pooling_multiactivo": "Sumar YM+NQ+ES NO triplica n. La propia sincronizacion reportada (51% en 3 indices vs ~36% esperado bajo independencia) demuestra un factor comun de regimen diario: valen como ~1.3 activos independientes, no 3. Si se poolea, el clustering por dia debe manejarse explicitamente."
   },
 
   "descriptivos_no_adjudican": [
@@ -73,18 +105,20 @@
   ],
 
   "firewall": {
-    "quemado": "El barrido kaggle_multiverse_sweep.py evaluo 921.600 combinaciones de (hora de inicio x duracion x stop x target x modo) sobre YM, NQ, ES, GC con datos M1 hasta 2026-08-13, optimizando profit factor. Eso quema TODA la superficie (start x duration) para esos 4 activos, incluida la ventana primaria Y la familia de placebos.",
-    "consecuencia": "Sobre datos <= 2026-08-13 el test de rank tambien esta contaminado: si 08:12 se eligio por su P&L en esa superficie y el P&L correlaciona con el estimando de reversion, la ventana fue seleccionada PARA ser rank 1.",
-    "regla": "Corridas sobre datos <= 2026-08-13 son EXPLORATORIAS. El payload marca seen_data=true y la etiqueta maxima promovible es PRERANGE_WINDOW_UNSPECIFIC. PRERANGE_EDGE solo puede emitirse sobre el set de confirmacion.",
-    "set_de_confirmacion": "forward-only, sesiones >= 2026-08-14, minimo 60 sesiones antes de adjudicar",
+    "quemado": "El barrido kaggle_multiverse_sweep.py evaluo 921.600 combinaciones de (hora de inicio x duracion x stop x target x modo) sobre YM, NQ, ES, GC con datos M1 hasta 2026-08-13, optimizando profit factor. La sesion fue detenida por el usuario sin completar.",
+    "por_que_importa_menos_ahora": "El quemado solo contamina si informacion fluyo de los datos hacia la eleccion de la ventana. La ventana es a_priori_external, asi que ese flujo no existio. Ademas la superficie del sweep no llego a producir salida observada.",
+    "lo_que_si_se_vio_de_estos_datos": "El analisis previo computo, sobre 210 sesiones YM, la TASA de doble barrido, el split por compresion y el split por dia de semana. Eso es un funcional distinto del estimando de reversion, que nunca se computo sobre estos datos.",
+    "regla_revisada": "Primera corrida sobre datos <= 2026-08-13: CONFIRMATORY_WITH_CAVEATS, condicionada a que (a) la procedencia externa se registre con su fuente, (b) no se reporten los descriptivos como hallazgos, (c) se reporte el split macro. Etiqueta maxima: PRERANGE_EDGE con T5 declarada en el mismo parrafo.",
+    "set_de_confirmacion": "forward-only, sesiones >= 2026-08-14, minimo 60 sesiones. Sigue siendo el unico set limpio de T5.",
     "6E": "parquet corta 2026-06-30, firewall previo respetado; sirve como replicacion independiente aunque su microestructura difiere de los indices"
   },
 
   "amenazas_declaradas_sin_resolver": {
-    "T1_evento_macro_dentro_de_la_ventana": "08:12-09:12 EST CONTIENE la publicacion de datos de 08:30 EST. Los placebos que no contienen un evento programado no son intercambiables con la primaria. Un rank 1 podria reflejar 'esta ventana tiene noticias' y no 'esta ventana tiene absorcion'. Sin calendario economico no se puede separar. Declarado como confusor abierto.",
+    "T1_evento_macro_dentro_de_la_ventana": "08:12-09:12 EST CONTIENE la publicacion de datos de 08:30 EST. Por el lema de identificacion, los placebos NO pueden controlar esto. Requiere --macro-dates. Sin calendario, el confusor queda abierto.",
     "T2_zona_horaria": "El reloj debe declararse explicitamente. Si los parquets estan en hora del exchange y no en EST, la ventana no es la que se cree. Verificar antes de correr.",
-    "T3_DST": "08:12 EST fijo vs horario de verano: el offset cambia dos veces al ano respecto de la hora del exchange.",
-    "T4_empates_M1": "si el gate de ties falla, M1 no resuelve el orden intra-barra y hay que reconstruir con ticks (usar tick_first_touch de F2.7)"
+    "T3_DST": "08:12 EST fijo vs horario de verano: el offset cambia dos veces al anio respecto de la hora del exchange.",
+    "T4_empates_M1": "si el gate de ties falla, M1 no resuelve el orden intra-barra y hay que reconstruir con ticks (usar tick_first_touch de F2.7)",
+    "T5_seleccion_lavada_y_publication_bias": "NUEVA. La ventana viene de una publicacion. Es el sobreviviente de una busqueda de tamanio desconocido sobre datos desconocidos: las ventanas que 'funcionaron' en alguna muestra historica se publican, las que no, no. Un rank 1 sobre datos <= 2026-08-13 es compatible con 'esto funciono en 2015-2020 y se publico'. El unico test limpio de T5 es forward-only desde 2026-08-14. Registrar la fuente y su muestra original es el mitigante parcial."
   },
 
   "prohibiciones": {
@@ -96,11 +130,13 @@
 
   "runner": "diag/tasa_senales/prerange_sweep_formal.py",
   "tests": "tests/research/test_prerange_sweep_formal.py",
+  "protocolo": "docs/research/PRERANGE_SWEEP_PROTOCOL_2026-08-14.md",
   "herramientas_reutilizadas": [
     "HAC Bartlett (F2.7)",
     "carrera de primer pasaje espejada (F2.7 construir_reflejo)",
     "ceros adentro / media por sesion (F2.7)",
     "price_to_tick half-tick-safe (aVol v2)",
-    "familia de placebos como calibrador de seleccion (nuevo en esta linea)"
+    "familia de placebos como calibrador de seleccion (nuevo en esta linea)",
+    "procedencia de la ventana como techo de etiqueta (nuevo en esta linea)"
   ]
 }

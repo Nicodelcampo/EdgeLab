@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-08-14
 **Spec:** `specs/prerange_sweep_v0.json`
-**Runner:** `diag/tasa_senales/prerange_sweep_formal.py`
+**Runner:** `diag/tasa_senales/prerange_sweep_formal.py` (`prerange_sweep_formal_v0_1`)
 **Tests:** `tests/research/test_prerange_sweep_formal.py`
 **Estado:** `PREREGISTERED` (sin correr sobre datos reales)
 
@@ -41,8 +41,6 @@ clara de que la metrica esta midiendo distancia, no comportamiento.
 
 ### Error 3: seleccion sin costo
 
-- La ventana `08:12-09:12` fue elegida mirando resultados. Un p-value sobre una
-  ventana elegida post-hoc no es interpretable.
 - Martes 83,7% con N=43: IC de ~+/-12 puntos, 5 dias testeados, sin correccion
   de multiplicidad. ~1,2 sigma. No es un hallazgo.
 - El barrido `edgelab/research/kaggle_multiverse_sweep.py` evalua
@@ -101,10 +99,6 @@ habria producido un "edge" del 60% sin que nada ocurra en el mercado.
 
 ## 4. El fix 2: la familia de placebos absorbe la seleccion de ventana
 
-Medir bien el estimando no arregla que la ventana haya sido elegida a ojo. Fix:
-declarar una familia de **ventanas placebo** que corren el mismo estimando en
-otros horarios de arranque.
-
 ```
 PLACEBO_OFFSETS = [o for o in range(-480, 331, 30) if abs(o) >= 60]   # 25 placebos
 p_perm = rank(media primaria entre todas las medias) / (n_usables + 1)
@@ -120,111 +114,182 @@ alcanzable es `1/9 = 0,111`: **ningun resultado, ni uno perfecto, podia ser
 significativo.** El test estaba muerto antes de empezar. La grilla de 30
 minutos da 25 placebos y un piso de `1/26 = 0,038`.
 
-Ademas se agrego el gate `MIN_USABLE_PLACEBOS = 19` (piso `1/20 = 0,05`)
-**dentro de `decide()`**: si menos de 19 placebos tienen datos suficientes,
-`PRERANGE_EDGE` es inalcanzable y el runner se **niega** a emitirlo. Este gate
-se agrego porque el propio test lo caza: en la primera corrida el runner emitio
-`PRERANGE_EDGE` con `p_perm=0,1` cuando el piso era `0,0833`.
+Ademas el gate `MIN_USABLE_PLACEBOS = 19` (piso `1/20 = 0,05`) vive **dentro de
+`decide()`**: si menos de 19 placebos tienen datos suficientes, `PRERANGE_EDGE`
+es inalcanzable y el runner se **niega** a emitirlo. Este gate se agrego porque
+el propio test lo caza: en la primera corrida el runner emitio `PRERANGE_EDGE`
+con `p_perm=0,1` cuando el piso era `0,0833`.
 
 ---
 
-## 5. Etiquetas (las emite `decide()`, no la narrativa)
+## 5. El fix 3: la procedencia de la ventana es el techo de la etiqueta
+
+El usuario declaro (2026-08-14) que `08:12-09:12` es **a priori, visto en
+internet**: no salio de mirar este dataset ni del barrido de Kaggle.
+
+`apply_provenance_cap()` implementa el techo:
+
+| `window_provenance` | Habilita `PRERANGE_EDGE` |
+| --- | --- |
+| `a_priori_external` | si |
+| `a_priori_mechanism` | si |
+| `chosen_from_this_data` | **no** -> degrada a `WINDOW_UNSPECIFIC` |
+| `unknown` (default) | **no** -> degrada a `WINDOW_UNSPECIFIC` |
+
+El cap **solo baja** etiquetas, nunca las sube, y el default asume lo peor.
+
+**Lo que esto habilita:** el rank contra los placebos pasa a ser interpretable
+sobre datos `<= 2026-08-13`, porque no hubo flujo de informacion desde esos
+datos hacia la eleccion de la ventana.
+
+**Lo que esto NO resuelve (T5):** una ventana publicada es el **sobreviviente de
+una busqueda ajena**, de tamanio desconocido, sobre datos desconocidos, con
+sesgo de publicacion. La seleccion no desaparecio: se terceriza. Un rank 1 sobre
+datos historicos sigue siendo compatible con "esto funciono en alguna muestra y
+por eso se publico". El unico test limpio de T5 es forward-only.
+
+---
+
+## 6. LEMA DE IDENTIFICACION: los placebos no pueden salvar el confusor macro
+
+**Enunciado.** Ninguna ventana placebo puede contener la publicacion de 08:30.
+
+**Demostracion.** Una ventana de 60 minutos que contenga las 08:30 debe arrancar
+entre 07:31 y 08:30. Todos esos arranques estan a menos de 60 minutos de la
+primaria (08:12), o sea que **se solapan** con ella, y por definicion de la
+familia (`|offset| >= 60`) estan excluidos.
+
+**Consecuencia.** La ventana primaria es la **unica de su estrato estructural**.
+Un rank 1 es igual de compatible con "esta ventana absorbe liquidez" que con
+"esta ventana contiene el dato macro de 08:30". El test de permutacion **no las
+distingue**, y esto es geometrico: **no se arregla con mas datos**.
+
+Esto invalida la mitigacion que yo mismo habia propuesto para T1. La
+identificacion correcta no pasa por los placebos:
+
+**Split de la propia ventana primaria por dia con/sin evento programado.**
+
+```bash
+--macro-dates macro_2025_2026.csv   # una fecha YYYY-MM-DD por linea
+```
+
+- Si el subconjunto **sin** evento mantiene `IC95 > 0` con `n >= 30`, el efecto
+  no es la reaccion al dato.
+- Si solo aparece en dias con evento, **es** el dato, y la linea cambia de
+  hipotesis (deja de ser liquidez y pasa a ser event-response).
+
+Adicionalmente, `classify_window()` etiqueta cada ventana con su estrato
+estructural declarado a priori (`contains_0830_macro`, `contains_0930_cash_open`,
+`overnight`, `rth_quiet`) y el payload guarda `placebo_strata` para permitir
+recomputar subfamilias sin post-hoc encubierto.
+
+---
+
+## 7. Etiquetas (las emite el codigo, no la narrativa)
 
 | Etiqueta | Condicion |
 | --- | --- |
-| `PRERANGE_EDGE` | IC95 HAC > 0 **Y** familia suficiente (>=19) **Y** rank 1 contra todos los placebos |
-| `PRERANGE_WINDOW_UNSPECIFIC` | IC95 > 0 pero no gana a sus placebos, o familia insuficiente. Hay reversion, pero **no es propiedad de esta ventana** |
+| `PRERANGE_EDGE` | IC95 HAC > 0 **Y** familia >= 19 **Y** rank 1 **Y** procedencia habilitante |
+| `PRERANGE_WINDOW_UNSPECIFIC` | IC95 > 0 pero falla familia, rank o procedencia |
 | `PRERANGE_NO_EDGE` | IC95 cruza cero |
-| `PRERANGE_FADE` | IC95 < 0: continuacion, no reversion. Falsa la hipotesis en direccion opuesta |
+| `PRERANGE_FADE` | IC95 < 0: continuacion. Falsacion, no promocion: no exige familia ni procedencia |
 | `PRERANGE_UNDERPOWERED` | algun gate de datos falla |
 | `ABSTAIN_DATA` | parsing o cobertura insuficiente |
 
-Gates de datos: `sessions_ge_30` (n>=30), `resolution` (decididos/n >= 0,30),
-`ties` (empates misma barra <= 0,10), `coverage` (>= 0,40).
-El requisito de familia aplica **solo** a `PRERANGE_EDGE`: `FADE` es una
-falsacion, no una promocion, y no necesita defenderse de la seleccion.
-
-Agregacion: **una observacion por sesion** (ceros adentro), media por sesion,
+Gates de datos: `sessions_ge_30`, `resolution` (>=0,30), `ties` (<=0,10),
+`coverage` (>=0,40). Agregacion: una observacion por sesion (ceros adentro),
 HAC Bartlett con `lag = ceil(sqrt(n))`, IC95. Igual que F2.7.
 
 ---
 
-## 6. Firewall de quemado
+## 8. Potencia: el constraint real
 
-El barrido de Kaggle cubrio YM, NQ, ES y GC con M1 hasta **2026-08-13**
-(NQ 674.848 barras / 598 dias; YM 667.390 / 600; GC 660.784 / 587;
-ES 656.069 / 584), optimizando `profit_factor` sobre toda la superficie
-`(hora de inicio x duracion)`. Eso quema la ventana primaria **y la familia de
-placebos** en esos cuatro activos.
+Con ~210 sesiones y fraccion resuelta ~0,6: `sd(r) ~ 0,76`, `SE ~ 0,054`, y el
+**MDE a 80% de potencia es `|mean r| ~ 0,15`**, equivalente a un split de
+**~63/37** entre carreras resueltas.
 
-**Consecuencia dura:** sobre datos `<= 2026-08-13` el propio test de rank esta
-contaminado. Si `08:12` se eligio por su P&L en esa superficie y el P&L
-correlaciona con el estimando de reversion, la ventana fue seleccionada **para**
-ser rank 1.
+Un edge real de **55/45 necesitaria ~1.250 sesiones (~5 anios)**.
 
-**Regla:** corridas sobre datos `<= 2026-08-13` son **EXPLORATORIAS**; la
-etiqueta maxima promovible es `PRERANGE_WINDOW_UNSPECIFIC`. `PRERANGE_EDGE`
-solo puede emitirse sobre el set de confirmacion **forward-only** (sesiones
-`>= 2026-08-14`, minimo 60 sesiones).
-
-`6E` corta en 2026-06-30 (firewall previo respetado) y sirve como replicacion
-independiente, aunque su microestructura difiere de los indices.
+Y sumar YM+NQ+ES **no triplica el n**: la propia sincronizacion reportada (51%
+en 3 indices vs ~36% esperado bajo independencia) demuestra un factor comun de
+regimen diario. Valen como **~1,3 activos independientes**, no 3.
 
 ---
 
-## 7. Amenazas declaradas y sin resolver
+## 9. Firewall de quemado (revisado)
 
-- **T1 - evento macro dentro de la ventana.** `08:12-09:12 EST` **contiene la
-  publicacion de datos de 08:30 EST**. Los placebos sin evento programado no son
-  intercambiables con la primaria. Un rank 1 podria significar "esta ventana
-  tiene noticias", no "esta ventana tiene absorcion". Sin calendario economico
-  no se puede separar. **Confusor abierto.**
-- **T2 - zona horaria.** El reloj debe declararse. Si los parquets estan en hora
-  del exchange y no en EST, la ventana no es la que se cree.
-- **T3 - DST.** `08:12 EST` fijo vs horario de verano: el offset cambia dos
-  veces al ano respecto de la hora del exchange.
-- **T4 - empates en M1.** Si el gate de `ties` falla, M1 no resuelve el orden
-  intra-barra y hay que reconstruir con ticks (`tick_first_touch` de F2.7).
-- **Placebos overnight.** Los offsets de madrugada caen en liquidez overnight.
-  Mitigacion: el payload guarda **todas** las medias de placebos para poder
-  recomputar subfamilias (p. ej. solo RTH); el `p_perm` de la familia completa
-  queda como primario.
+El barrido de Kaggle cubrio YM, NQ, ES y GC con M1 hasta 2026-08-13 optimizando
+`profit_factor` sobre la superficie `(hora de inicio x duracion)`, y **fue
+detenido sin completar**.
+
+El quemado solo contamina si informacion fluyo **de los datos hacia la eleccion
+de la ventana**. Con `a_priori_external` ese flujo no existio. De estos datos si
+se observo la **tasa** de doble barrido y sus splits sobre 210 sesiones YM, pero
+ese es un funcional distinto: el estimando de reversion **nunca se computo**
+sobre estos datos.
+
+**Regla revisada.** Primera corrida sobre datos `<= 2026-08-13`:
+`CONFIRMATORY_WITH_CAVEATS`, condicionada a (a) registrar la fuente externa,
+(b) no reportar descriptivos como hallazgos, (c) reportar el split macro.
+Set limpio de T5: **forward-only desde 2026-08-14, minimo 60 sesiones**.
 
 ---
 
-## 8. Validacion sintetica (antes de tocar datos reales)
+## 10. Amenazas declaradas
 
-`python3 tests/research/test_prerange_sweep_formal.py` -> **9 bloques, todos PASS**
+- **T1 - evento macro en la ventana.** Contiene 08:30 EST. **Los placebos no lo
+  pueden controlar (ver lema).** Requiere `--macro-dates`.
+- **T2 - zona horaria.** Declarar el reloj del archivo antes de correr.
+- **T3 - DST.** `08:12 EST` fijo vs horario de verano.
+- **T4 - empates en M1.** Si falla el gate `ties`, ir a ticks
+  (`tick_first_touch` de F2.7).
+- **T5 - seleccion lavada / publication bias.** La ventana viene de una
+  publicacion: sobreviviente de una busqueda ajena de tamanio desconocido.
+  Unico test limpio: forward-only.
+
+---
+
+## 11. Validacion sintetica (antes de tocar datos reales)
+
+`python3 tests/research/test_prerange_sweep_formal.py` -> **12 bloques, todos PASS**
 
 | Bloque | Resultado |
 | --- | --- |
 | Nulo random walk, 160 sesiones | `n=97`, `coverage=0,606`, `mean=-0,0206`, IC `[-0,199,+0,158]`, `p_rev=0,489` -> **`PRERANGE_NO_EDGE`** |
 | Reversion plantada (bias 0,45) | `mean=+0,9868`, IC `[+0,963,+1,011]` -> detecta el efecto |
 | Continuacion plantada | `mean=-1,0000` -> **`PRERANGE_FADE`** |
-| Familia insuficiente (11 de 25 placebos) | se **niega** a emitir EDGE -> `PRERANGE_WINDOW_UNSPECIFIC`, `family_ok=False` |
+| Familia insuficiente (11 de 25) | se **niega** a emitir EDGE, `family_ok=False` |
 | 12 sesiones | `PRERANGE_UNDERPOWERED` |
+| Cap de procedencia | `unknown` y `chosen_from_this_data` degradan EDGE; el cap nunca sube una etiqueta |
+| Lema de identificacion | verificado por enumeracion: toda ventana que contiene 08:30 se solapa con la primaria |
+| Split macro | suma exacta de eventos, IC HAC propio por subconjunto, `None` sin calendario |
 
 El bloque del nulo es el importante por dos razones: (1) el estimando da ~0 sin
 simular nada, confirmando la simetria; (2) en ese **mismo** dataset sintetico la
-tasa de doble barrido es **60,6%** con cero edge, **reproduciendo la tautologia
+tasa de doble barrido es **60,6% con cero edge**, **reproduciendo la tautologia
 original en un random walk puro**.
 
 ---
 
-## 9. Como correrlo
+## 12. Como correrlo
 
 ```bash
 python3 diag/tasa_senales/prerange_sweep_formal.py YM_M1.csv \
-    --tick 1.0 --asset YM --out payload_ym.json
+    --tick 1.0 --asset YM \
+    --window-provenance a_priori_external \
+    --macro-dates macro_2025_2026.csv \
+    --out payload_ym.json
 ```
 
 Tick sizes: YM 1.0, ES 0.25, NQ 0.25, GC 0.1, 6E 0.00005.
 CSV con header `Time,Open,High,Low,Close[,Volume]` o export NT8 headerless.
 Antes de correr: **declarar la zona horaria del archivo** (T2/T3).
+Sin `--window-provenance` el default es `unknown` y `PRERANGE_EDGE` no es
+emitible.
 
 ---
 
-## 10. Que NO hace este protocolo
+## 13. Que NO hace este protocolo
 
 - No mide P&L (`pnl_accessed=false`, `outcomes_accessed=false`). No hay stops,
   targets ni costos. Un edge en `r` es condicion **necesaria y no suficiente**
@@ -233,4 +298,4 @@ Antes de correr: **declarar la zona horaria del archivo** (T2/T3).
 - No barre parametros. `d_frac`, duracion, horizonte y familia de placebos
   quedan fijos por el spec. Cualquier variante es una linea nueva con spec nuevo.
 - No promueve descriptivos: `by_weekday`, `by_range` y `by_second_side` se
-  calculan y se guardan, pero **no adjudican** (multiplicidad no corregida).
+  calculan y se guardan, pero **no adjudican**.

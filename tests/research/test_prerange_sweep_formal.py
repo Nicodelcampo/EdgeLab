@@ -263,6 +263,83 @@ def test_placebos_and_gates(null_out):
           tiny["label"] == "PRERANGE_UNDERPOWERED", tiny["label"])
 
 
+# ------------------------------------------------ 8. procedencia (techo de etiqueta)
+def test_provenance_cap():
+    print("\n[10] Procedencia de la ventana: techo de etiqueta")
+    for prov in ("unknown", "chosen_from_this_data"):
+        lab, cap = M.apply_provenance_cap("PRERANGE_EDGE", prov)
+        check("%s degrada EDGE" % prov,
+              lab == "PRERANGE_WINDOW_UNSPECIFIC" and cap is True, "%s/%s" % (lab, cap))
+    for prov in ("a_priori_external", "a_priori_mechanism"):
+        lab, cap = M.apply_provenance_cap("PRERANGE_EDGE", prov)
+        check("%s permite EDGE" % prov,
+              lab == "PRERANGE_EDGE" and cap is False, "%s/%s" % (lab, cap))
+    for lab0 in ("PRERANGE_NO_EDGE", "PRERANGE_FADE", "PRERANGE_UNDERPOWERED",
+                 "PRERANGE_WINDOW_UNSPECIFIC"):
+        lab, cap = M.apply_provenance_cap(lab0, "a_priori_external")
+        check("el cap nunca sube %s" % lab0, lab == lab0 and cap is False)
+    check("'unknown' no habilita EDGE", "unknown" not in M.PROVENANCE_ALLOWING_EDGE)
+    check("'chosen_from_this_data' no habilita EDGE",
+          "chosen_from_this_data" not in M.PROVENANCE_ALLOWING_EDGE)
+
+
+# ------------------------------------------------ 9. lema de identificacion
+def test_identification_lemma():
+    print("\n[11] LEMA: ningun placebo puede contener las 08:30")
+    prim = M.classify_window(M.PRIMARY_START_MIN)
+    check("la ventana primaria contiene el dato de 08:30",
+          prim == "contains_0830_macro", prim)
+    offenders = [o for o in M.PLACEBO_OFFSETS
+                 if M.classify_window(M.PRIMARY_START_MIN + o) == "contains_0830_macro"]
+    check("ningun placebo contiene 08:30", offenders == [], str(offenders))
+    # y no es casualidad de la grilla elegida: es geometrico
+    starts = [s for s in range(0, M.SESSION_END_MIN)
+              if M.classify_window(s) == "contains_0830_macro"]
+    check("TODA ventana que contiene 08:30 se solapa con la primaria",
+          all(abs(s - M.PRIMARY_START_MIN) < M.WINDOW_DUR_MIN for s in starts),
+          "%s..%s" % (starts[0], starts[-1]))
+    check("=> los placebos NO pueden identificar el confusor macro",
+          offenders == [] and prim == "contains_0830_macro")
+    strata = {M.classify_window(M.PRIMARY_START_MIN + o) for o in M.PLACEBO_OFFSETS}
+    check("estratos de la familia declarados",
+          strata <= {"overnight", "rth_quiet", "contains_0930_cash_open"}, str(strata))
+    check("la familia incluye la apertura del cash como estrato aparte",
+          "contains_0930_cash_open" in strata, str(strata))
+
+
+# ------------------------------------------------ 10. split macro (identificacion correcta)
+def test_macro_split():
+    print("\n[12] Split por dia con/sin evento macro")
+    p = write_csv("_syn_macro.csv", 160, seed=20260814)
+    dates = sorted({ln.split(",")[0][:10]
+                    for ln in Path(p).read_text(encoding="utf-8").splitlines()[1:]})
+    mp = TMP / "_macro_dates.csv"
+    mp.write_text("\n".join(dates[::2]), "utf-8")
+    md = M.load_macro_dates(str(mp))
+    check("fechas macro parseadas", len(md) == len(dates[::2]),
+          "%s vs %s" % (len(md), len(dates[::2])))
+    out = M.run(p, tick=1.0, asset="SYN_MACRO", macro_dates=md)
+    ms = out["identification"]["macro_split"]
+    print("    n_macro=%s n_no_macro=%s" % (ms["n_macro"], ms["n_no_macro"]))
+    check("el split suma el total de eventos",
+          ms["n_macro"] + ms["n_no_macro"] == out["primary"]["n_events"],
+          "%s+%s vs %s" % (ms["n_macro"], ms["n_no_macro"], out["primary"]["n_events"]))
+    check("el subset SIN macro tiene su propio IC HAC", "ci95_lower" in ms["ic_no_macro"])
+    check("el subset CON macro tiene su propio IC HAC", "ci95_lower" in ms["ic_macro"])
+    check("sin --macro-dates el split es None",
+          M.run(p, tick=1.0)["identification"]["macro_split"] is None)
+    check("el lema queda registrado en el payload",
+          out["identification"]["no_placebo_contains_0830"] is True)
+    check("estrato de la primaria en el payload",
+          out["identification"]["primary_stratum"] == "contains_0830_macro")
+    check("placebo_strata reportado por estrato",
+          set(out["placebo_strata"]) <= {"overnight", "rth_quiet",
+                                         "contains_0930_cash_open"},
+          str(set(out["placebo_strata"])))
+    check("provenance por defecto = unknown (se asume lo peor)",
+          out["window_provenance"] == "unknown", out["window_provenance"])
+
+
 if __name__ == "__main__":
     test_tick()
     test_race_symmetry()
@@ -270,6 +347,9 @@ if __name__ == "__main__":
     null_out = test_null()
     test_planted()
     test_placebos_and_gates(null_out)
+    test_provenance_cap()
+    test_identification_lemma()
+    test_macro_split()
     print("\n" + "=" * 60)
     if FAILURES:
         print("FALLARON %d test(s): %s" % (len(FAILURES), ", ".join(FAILURES)))

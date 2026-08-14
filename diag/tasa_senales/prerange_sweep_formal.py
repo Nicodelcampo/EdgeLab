@@ -40,7 +40,7 @@ import math
 from datetime import datetime
 from pathlib import Path
 
-SCHEMA_VERSION = "prerange_sweep_formal_v0"
+SCHEMA_VERSION = "prerange_sweep_formal_v0_1"
 
 # ---- parametros preregistrados (NO se barren) ----
 PRIMARY_START_MIN = 8 * 60 + 12      # 08:12 en el reloj declarado
@@ -62,6 +62,29 @@ COVERAGE_MIN = 0.40                  # sesiones con doble barrido / sesiones val
 # demasiado alto y PRERANGE_EDGE seria inalcanzable o, peor, se emitiria con un
 # p_perm que nunca pudo bajar de 0.05. 19 placebos -> piso 1/20 = 0.05.
 MIN_USABLE_PLACEBOS = 19
+
+# ---- procedencia de la ventana: determina el TECHO de la etiqueta ----
+#   a_priori_external  : publicada / vista antes de tocar estos datos. La
+#                        seleccion la hizo un tercero sobre datos desconocidos,
+#                        asi que el rank contra placebos SI es interpretable
+#                        sobre estos datos (pero ver T5: publication bias).
+#   a_priori_mechanism : derivada de un mecanismo declarado antes de mirar datos.
+#   chosen_from_this_data : elegida mirando estos mismos datos. El rank ya esta
+#                        comprometido -> techo PRERANGE_WINDOW_UNSPECIFIC.
+#   unknown            : se asume lo peor.
+PROVENANCE_ALLOWING_EDGE = ("a_priori_external", "a_priori_mechanism")
+
+# ---- estratos estructurales de la familia, declarados ANTES de correr ----
+# LEMA DE IDENTIFICACION (geometrico, no empirico): una ventana de 60m que
+# contenga las 08:30 debe arrancar entre 07:31 y 08:30, o sea a MENOS de 60m de
+# la primaria (08:12), o sea que se solapa y por lo tanto esta excluida de la
+# familia de placebos. Conclusion: NINGUN placebo puede contener la publicacion
+# de 08:30. La familia de placebos NO puede separar "absorcion de liquidez" de
+# "reaccion al dato macro". Eso se identifica con el split por dia con/sin
+# evento programado (--macro-dates), nunca con los placebos.
+MACRO_RELEASE_MIN = 8 * 60 + 30      # 08:30
+CASH_OPEN_MIN = 9 * 60 + 30          # 09:30 apertura del cash
+RTH_START_MIN = 7 * 60               # antes de esto: liquidez overnight
 
 
 def price_to_tick(price, tick):
@@ -135,6 +158,33 @@ def group_sessions(bars):
     for b in bars:
         ses.setdefault(b["date"], []).append(b)
     return [(d, ses[d]) for d in sorted(ses)]
+
+
+def load_macro_dates(path):
+    """CSV/txt con una fecha YYYY-MM-DD por linea (o en la primera columna)."""
+    out = set()
+    for ln in Path(path).read_text(encoding="utf-8", errors="replace").splitlines():
+        tok = ln.split(",")[0].strip()
+        if not tok or any(c.isalpha() for c in tok):
+            continue
+        try:
+            out.add(datetime.strptime(tok, "%Y-%m-%d").date())
+        except ValueError:
+            continue
+    return out
+
+
+def classify_window(start_min, dur_min=WINDOW_DUR_MIN):
+    """Estrato estructural de una ventana. Declarado a priori, no elegido
+    mirando resultados. Ver LEMA DE IDENTIFICACION arriba."""
+    end = start_min + dur_min
+    if start_min <= MACRO_RELEASE_MIN < end:
+        return "contains_0830_macro"
+    if start_min <= CASH_OPEN_MIN < end:
+        return "contains_0930_cash_open"
+    if start_min < RTH_START_MIN:
+        return "overnight"
+    return "rth_quiet"
 
 
 # ---------------------------------------------------------------- estimand
@@ -322,8 +372,21 @@ def decide(primary, placebos, gates_ok):
     return "PRERANGE_NO_EDGE", p_perm
 
 
+def apply_provenance_cap(label, window_provenance):
+    """Techo de etiqueta por procedencia de la ventana.
+
+    Si la ventana se eligio mirando ESTOS datos (o no se sabe de donde salio),
+    PRERANGE_EDGE no es emitible: el rank contra los placebos ya estaba
+    comprometido por la seleccion. El cap solo BAJA etiquetas, nunca las sube.
+    """
+    if label == "PRERANGE_EDGE" and window_provenance not in PROVENANCE_ALLOWING_EDGE:
+        return "PRERANGE_WINDOW_UNSPECIFIC", True
+    return label, False
+
+
 def run(m1_csv, tick, asset="UNKNOWN", start_min=PRIMARY_START_MIN,
-        dur_min=WINDOW_DUR_MIN, d_frac=D_FRAC, out_path=None):
+        dur_min=WINDOW_DUR_MIN, d_frac=D_FRAC, out_path=None,
+        window_provenance="unknown", macro_dates=None):
     bars = load_m1(m1_csv, tick)
     sessions = group_sessions(bars)
 
@@ -339,7 +402,32 @@ def run(m1_csv, tick, asset="UNKNOWN", start_min=PRIMARY_START_MIN,
         coverage=primary["coverage"] >= COVERAGE_MIN,
     )
     label, p_perm = decide(primary, placebos, all(gates.values()))
+    label, cap_applied = apply_provenance_cap(label, window_provenance)
     n_usable = sum(1 for p in placebos if p["ic"]["mean"] is not None)
+
+    # estratos estructurales de la familia (declarados a priori)
+    strata = {}
+    for p in placebos:
+        strata.setdefault(classify_window(p["start_min"], dur_min), []).append(p)
+    strata_out = {}
+    for name, group in strata.items():
+        ms = [g["ic"]["mean"] for g in group if g["ic"]["mean"] is not None]
+        strata_out[name] = dict(
+            n_windows=len(group), n_usable=len(ms),
+            mean_of_means=(sum(ms) / len(ms)) if ms else None,
+            starts=[g["start_hhmm"] for g in group],
+        )
+
+    # El confusor macro NO se resuelve con placebos (ver LEMA): se resuelve
+    # partiendo la propia ventana primaria por dia con/sin evento programado.
+    macro_split = None
+    if macro_dates:
+        rr = primary["rows"]
+        no_m = [r["r"] for r in rr if r["date"] not in macro_dates]
+        wi_m = [r["r"] for r in rr if r["date"] in macro_dates]
+        macro_split = dict(n_macro=len(wi_m), n_no_macro=len(no_m),
+                           ic_macro=hac_bartlett_ci(wi_m),
+                           ic_no_macro=hac_bartlett_ci(no_m))
 
     payload = dict(
         schema_version=SCHEMA_VERSION,
@@ -365,6 +453,16 @@ def run(m1_csv, tick, asset="UNKNOWN", start_min=PRIMARY_START_MIN,
         ),
         gates=gates,
         n_sessions_total=len(sessions),
+        window_provenance=window_provenance,
+        label_cap_applied=cap_applied,
+        placebo_strata=strata_out,
+        identification=dict(
+            primary_stratum=classify_window(start_min, dur_min),
+            no_placebo_contains_0830=all(
+                classify_window(p["start_min"], dur_min) != "contains_0830_macro"
+                for p in placebos),
+            macro_split=macro_split,
+        ),
         outcomes_accessed=False, pnl_accessed=False, holdout_included=False,
     )
     raw = json.dumps(payload, sort_keys=True, default=str).encode()
@@ -383,9 +481,16 @@ def main():
     ap.add_argument("--duration", type=int, default=WINDOW_DUR_MIN)
     ap.add_argument("--d-frac", type=float, default=D_FRAC)
     ap.add_argument("--out", default=None)
+    ap.add_argument("--window-provenance", default="unknown",
+                    choices=["a_priori_external", "a_priori_mechanism",
+                             "chosen_from_this_data", "unknown"])
+    ap.add_argument("--macro-dates", default=None,
+                    help="CSV/txt con una fecha YYYY-MM-DD por linea: dias con evento programado")
     a = ap.parse_args()
+    md = load_macro_dates(a.macro_dates) if a.macro_dates else None
     print(json.dumps(run(a.m1_csv, a.tick, a.asset, a.start_min, a.duration,
-                         a.d_frac, a.out), indent=2, default=str))
+                         a.d_frac, a.out, a.window_provenance, md),
+                     indent=2, default=str))
 
 
 if __name__ == "__main__":
