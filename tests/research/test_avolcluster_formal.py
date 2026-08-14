@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
-"""Synthetic tests for the hardened aVolClusterPOI formal runner (v2).
+"""Synthetic tests for the hardened aVolClusterPOI formal runner (v2.1).
 
 Worlds: null (no planted edge), planted (zone always hit first),
 misaligned zone log (must abstain). No real data, no outcomes.
+v2.1 adds: control pad keeps controls out of the forming block and the
+random-control diagnostic family is deterministic.
 """
 import importlib.util
 import random
@@ -106,6 +108,8 @@ def test_null_world_no_spurious_edge(tmp_path):
     assert out["zones"]["ic"]["n_sessions"] >= 30
     lo, hi = out["zones"]["ic"]["ci95_lower"], out["zones"]["ic"]["ci95_upper"]
     assert lo <= 0 <= hi
+    assert "control_random" in out and "contrast_zone_minus_control_random" in out
+    assert out["by_side"]["above"]["n"] == len(creators)
 
 
 def test_planted_signal_detected(tmp_path):
@@ -126,3 +130,18 @@ def test_misaligned_log_abstains(tmp_path):
     _write_zones(bars, creators, tmp_path / "zones_bad.csv", time_shift=timedelta(hours=7))
     out = af.run(str(tmp_path / "zones_bad.csv"), str(tmp_path / "m1.csv"))
     assert out["label"] == "ABSTAIN_ALIGNMENT"
+
+
+def test_control_pad_and_random_determinism(tmp_path):
+    bars, creators = _world(tmp_path)
+    b1 = af.load_m1(tmp_path / "m1.csv")
+    ses = af.split_sessions(b1)
+    creator_set = set(creators)
+    geo = {"bar": creators[5]}
+    j = af.pick_control_bar(geo, ses, creator_set, len(b1))
+    assert j is not None
+    assert all(abs(j - c) > af.CONTROL_PAD_BARS for c in creator_set)
+    r1 = af.pick_random_control_bar(geo, ses, creator_set, len(b1))
+    r2 = af.pick_random_control_bar(geo, ses, creator_set, len(b1))
+    assert r1 == r2 and r1 is not None
+    assert all(abs(r1 - c) > af.CONTROL_PAD_BARS for c in creator_set)

@@ -15,6 +15,18 @@ Bars: NT8 1-minute export. Both headerless NT8 format
   yyyyMMdd HHmmss;Open;High;Low;Close;Volume
 and headered CSV (Time,Open,High,Low,Close[,Volume]) are accepted.
 
+v2.1 (2026-08-13, tras auditar el primer output real):
+  - DEFECTO DE CONSTRUCCION del control en v2: search_pad=3 dejaba controles
+    DENTRO del bloque formador de 10 barras (la barra creadora es el cierre del
+    bloque; barras a 4-10 de distancia son del mismo bloque, previas al
+    desplazamiento). El espejo del control caia sobre el precio actual y el
+    control salia sistematicamente mirror_first (-0.40, IC que excluye cero).
+    Un control sano debe ser ~0 bajo el nulo. Fix: pad=12 (bloque + margen).
+  - Nueva familia de control aleatorio (misma sesion, semilla deterministica)
+    como diagnostico: si nearest ~ 0 y random ~ 0, el defecto esta cerrado.
+  - Split descriptivo por lado (above/below) del brazo zona.
+  No es tuning de outcome: el brazo zona, los gates y las etiquetas no cambian.
+
 outcomes_accessed=False, pnl_accessed=False, holdout_included=False.
 """
 from __future__ import annotations
@@ -24,10 +36,11 @@ import csv
 import hashlib
 import json
 import math
+import random
 from datetime import datetime, timedelta
 from pathlib import Path
 
-SCHEMA_VERSION = "avolcluster_formal_v2"
+SCHEMA_VERSION = "avolcluster_formal_v2_1"
 TICK = 5e-5
 HORIZON_BARS = 2000
 SESSION_GAP_MINUTES = 30
@@ -37,6 +50,7 @@ MATCH_RATE_MIN = 0.40
 ALIGN_MATCH_MIN = 0.95
 ALIGN_ADJACENCY_MIN = 0.80
 MIN_SESSIONS = 30
+CONTROL_PAD_BARS = 12  # bloque formador (10) + margen
 
 
 def price_to_tick(price):
@@ -225,16 +239,18 @@ def zone_geometry(zone, bars, by_time, offset_min):
     return dict(bar=i, lo=lo, hi=hi, d=d, w=w, side=side, anchor=close_t, m_lo=m_lo, m_hi=m_hi)
 
 
-def pick_control_bar(geo, ses, creator_bars, n_bars, search_pad=3):
-    """Nearest non-creator bar in the same gap-session, >= 3 bars away from any
-    creator bar. Same-session pool, no imputation."""
+def pick_control_bar(geo, ses, creator_bars, n_bars, pad=CONTROL_PAD_BARS):
+    """Nearest non-creator bar in the same gap-session, more than `pad` bars away
+    from any creator bar. pad=12 clears the 10-bar forming block plus margin:
+    v2's pad=3 let controls sit inside the block that formed the cluster,
+    which put the control mirror on top of current price."""
     s = ses[geo["bar"]]
     best = None
     lo_i, hi_i = bars_ses_lo_hi(ses, s)
     for j in range(lo_i, hi_i + 1):
         if j in creator_bars:
             continue
-        if any(abs(j - c) <= search_pad for c in creator_bars):
+        if any(abs(j - c) <= pad for c in creator_bars):
             continue
         if j + 5 >= n_bars:
             continue
@@ -242,6 +258,27 @@ def pick_control_bar(geo, ses, creator_bars, n_bars, search_pad=3):
         if best is None or dist < best[0]:
             best = (dist, j)
     return None if best is None else best[1]
+
+
+def pick_random_control_bar(geo, ses, creator_bars, n_bars, pad=CONTROL_PAD_BARS):
+    """Deterministic uniform pick among eligible bars of the same gap-session.
+    Diagnostic family: if the nearest-control contrast were an artifact of
+    nearest-selection, this family shows it. Seeded by (session, bar)."""
+    s = ses[geo["bar"]]
+    lo_i, hi_i = bars_ses_lo_hi(ses, s)
+    eligible = []
+    for j in range(lo_i, hi_i + 1):
+        if j in creator_bars:
+            continue
+        if any(abs(j - c) <= pad for c in creator_bars):
+            continue
+        if j + 5 >= n_bars:
+            continue
+        eligible.append(j)
+    if not eligible:
+        return None
+    rng = random.Random((s + 1) * 1000003 + geo["bar"])
+    return eligible[rng.randrange(len(eligible))]
 
 
 _session_span_cache = {}
@@ -361,28 +398,52 @@ def run(nt8_csv, m1_csv, horizon=HORIZON_BARS, out_path=None):
         geo_rows.append(g)
         creator_bars.add(g["bar"])
 
-    zone_rows, ctrl_rows, matched_ctrl = [], [], 0
-    for g in geo_rows:
-        s = ses[g["bar"]]
-        r, cat = race(bars, g["bar"], g["lo"], g["hi"], g["m_lo"], g["m_hi"], horizon)
-        zone_rows.append(dict(session=s, r=r, category=cat, d=g["d"], w=g["w"], side=g["side"]))
-        j = pick_control_bar(g, ses, creator_bars, len(bars))
-        if j is None:
-            continue
+    def _control_race(g, j):
         anchor_c = bars[j]["close_t"]
         if g["side"] == "above":
             c_lo, c_hi = anchor_c + g["d"], anchor_c + g["d"] + g["w"] - 1
         else:
             c_hi, c_lo = anchor_c - g["d"], anchor_c - g["d"] - g["w"] + 1
         cm_lo, cm_hi = 2 * anchor_c - c_hi, 2 * anchor_c - c_lo
-        rc, catc = race(bars, j, c_lo, c_hi, cm_lo, cm_hi, horizon)
-        ctrl_rows.append(dict(session=s, r=rc, category=catc))
-        matched_ctrl += 1
+        return race(bars, j, c_lo, c_hi, cm_lo, cm_hi, horizon)
+
+    zone_rows, ctrl_rows, rand_rows = [], [], []
+    matched_ctrl, matched_rand = 0, 0
+    ctrl_dists = []
+    for g in geo_rows:
+        s = ses[g["bar"]]
+        r, cat = race(bars, g["bar"], g["lo"], g["hi"], g["m_lo"], g["m_hi"], horizon)
+        zone_rows.append(dict(session=s, r=r, category=cat, d=g["d"], w=g["w"], side=g["side"]))
+        j = pick_control_bar(g, ses, creator_bars, len(bars))
+        if j is not None:
+            rc, catc = _control_race(g, j)
+            ctrl_rows.append(dict(session=s, r=rc, category=catc))
+            ctrl_dists.append(abs(j - g["bar"]))
+            matched_ctrl += 1
+        jr = pick_random_control_bar(g, ses, creator_bars, len(bars))
+        if jr is not None:
+            rr, catr = _control_race(g, jr)
+            rand_rows.append(dict(session=s, r=rr, category=catr))
+            matched_rand += 1
 
     zones_sum = summarize(zone_rows)
     match_rate = matched_ctrl / len(geo_rows) if geo_rows else 0.0
+    match_rate_rand = matched_rand / len(geo_rows) if geo_rows else 0.0
     ctrl_sum = summarize(ctrl_rows)
+    rand_sum = summarize(rand_rows)
     contrast = paired_contrast(zone_rows, ctrl_rows)
+    contrast_rand = paired_contrast(zone_rows, rand_rows)
+
+    by_side = {}
+    for side in ("above", "below"):
+        sub = [row["r"] for row in zone_rows if row["side"] == side]
+        if sub:
+            by_side[side] = dict(n=len(sub), mean_r=sum(sub) / len(sub))
+    ctrl_dists.sort()
+    ctrl_diag = dict(
+        median_bar_distance=ctrl_dists[len(ctrl_dists) // 2] if ctrl_dists else None,
+        min_bar_distance=ctrl_dists[0] if ctrl_dists else None,
+    )
 
     gates = dict(
         sessions_ge_30=zones_sum["n_sessions"] >= MIN_SESSIONS,
@@ -400,9 +461,14 @@ def run(nt8_csv, m1_csv, horizon=HORIZON_BARS, out_path=None):
         skipped=skipped,
         horizon_bars=horizon,
         zones=zones_sum,
+        by_side=by_side,
         control=ctrl_sum,
+        control_random=rand_sum,
         contrast_zone_minus_control=contrast,
+        contrast_zone_minus_control_random=contrast_rand,
         match_rate_control=match_rate,
+        match_rate_control_random=match_rate_rand,
+        control_diagnostics=ctrl_diag,
         gates=gates,
         outcomes_accessed=False,
         pnl_accessed=False,

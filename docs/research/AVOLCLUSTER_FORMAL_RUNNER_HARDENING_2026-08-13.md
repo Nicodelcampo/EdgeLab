@@ -1,6 +1,6 @@
 # Hardening del runner formal aVol (2026-08-13)
 
-Estado: `RUNNER_V2_TESTED_SYNTHETIC`
+Estado: `RUNNER_V2_1_TESTED_SYNTHETIC`
 Archivo: `diag/tasa_senales/avolcluster_formal.py` (reemplaza al v1, mismo path).
 Tests: `tests/research/test_avolcluster_formal.py` (sintéticos, sin datos reales).
 
@@ -19,6 +19,29 @@ defectos se descubrieron después de publicar el informe).
 | Ceros fuera del denominador | Infla p | `r_i = 0` (empate, doble censura) entra a la media por sesión; categorías separadas |
 | Formato de export rígido (asumía header) | El export nativo de NT8 no trae header | Acepta `yyyyMMdd HHmmss;O;H;L;C;V` y CSV con header |
 | Sesiones por timezone asumida | Depende del reloj del chart | Split por gaps > 30 min (pausa diaria CME), agnóstico de timezone |
+
+## v2.1 — defecto encontrado auditando el primer output real
+
+La primera corrida real (6E 09-26, 133 zonas, 48 sesiones) salió con el gate
+de ties en FAIL y con el control en **−0,40, IC que excluye cero**. Un control
+sano bajo el nulo debe ser ~0; esa asimetría era la alarma.
+
+Causa raíz (defecto de construcción de `pick_control_bar` v2, no del mercado):
+`search_pad=3` admitía controles **dentro del bloque formador de 10 barras**.
+La creadora es el cierre del bloque; una barra a 4–10 de distancia está dentro
+del mismo bloque, antes del desplazamiento que define el lado. El espejo del
+control caía sobre el precio actual → `mirror_first` sistemático. El contraste
++0,55 medía "zona vs benchmark roto", no "zona vs azar".
+
+Fix v2.1:
+- `CONTROL_PAD_BARS = 12` (bloque de 10 + margen).
+- Nueva familia `control_random` (misma sesión, elegida uniforme con semilla
+  determinística) como diagnóstico: si ambos controles quedan ~0, el defecto
+  está cerrado; si `nearest` y `random` difieren mucho, queda selección.
+- Split descriptivo `by_side` (above/below) del brazo zona.
+- `control_diagnostics`: distancia en barras del control a la creadora.
+
+No es tuning de outcome: el brazo zona, los gates y las etiquetas no cambian.
 
 ## Etiquetas
 
@@ -42,8 +65,9 @@ por ticks), match de controles ≥ 0.40. Holdout, P&L y outcomes fuera.
 4. Mundo nulo → `AVOL_NO_EDGE` con IC que cruza cero.
 5. Señal plantada (la zona siempre toca primero) → `AVOL_ZONE_EDGE`.
 6. Log corrido 7 horas → `ABSTAIN_ALIGNMENT`.
+7. (v2.1) Pad del control fuera del bloque formador; control aleatorio determinístico.
 
-## Qué NO hace v2 (declarado)
+## Qué NO hace v2.1 (declarado)
 
 - No reusa `hac_bartlett_ic` de F2.7 por import: el runner es stdlib-only para
   correr también en sandboxes sin el repo. La fórmula Bartlett es la misma y
