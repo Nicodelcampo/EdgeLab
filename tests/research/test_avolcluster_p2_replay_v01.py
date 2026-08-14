@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
-import json
 import sys
 import tempfile
 
@@ -11,6 +10,7 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 from diag.tasa_senales.avolcluster_p2_replay_v01 import (
     TZ,
+    art_naive_to_chicago_naive,
     decide_p2,
     match_one_to_one,
     parse_oracle,
@@ -73,7 +73,6 @@ def test_input_and_p1a_fail_closed():
 
 
 def test_session_begin_matches_cme_eth_and_dst():
-    # 2026-04-10 06:22 CT belongs to session beginning 2026-04-09 17:00 CT.
     local = pd.Timestamp("2026-04-10 06:22:00", tz=TZ)
     got_ns = session_begin_utc_ns(int(local.tz_convert("UTC").value))
     got = pd.Timestamp(got_ns, unit="ns", tz="UTC").tz_convert(TZ)
@@ -92,6 +91,12 @@ def test_oracle_parser_reads_meta_and_zone_created_only():
     meta, rows = parse_oracle(p)
     assert meta["instrument"] == "6E 09-26"
     assert len(rows) == 1 and rows[0]["direction"] == -1
+    # 06:22 ART -> 04:22 CDT
+    assert rows[0]["time"] == datetime(2026, 4, 10, 4, 22)
+
+
+def test_june_art_converts_to_chicago_cdt():
+    assert art_naive_to_chicago_naive(datetime(2026, 6, 17, 4, 34)) == datetime(2026, 6, 17, 2, 34)
 
 
 def test_payload_seal_is_deterministic_and_self_excluding():
