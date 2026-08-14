@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
+from datetime import datetime, time
 from pathlib import Path
 import sys
 import tempfile
 
+import numpy as np
 import pandas as pd
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 from diag.tasa_senales.avolcluster_p2_replay_v01 import (
+    NS,
     TZ,
     art_naive_to_chicago_naive,
     decide_p2,
@@ -17,6 +19,8 @@ from diag.tasa_senales.avolcluster_p2_replay_v01 import (
     run,
     seal_payload,
     session_begin_utc_ns,
+    session_minute_index,
+    trim_leading_partial_clock_block,
 )
 
 
@@ -104,6 +108,31 @@ def test_payload_seal_is_deterministic_and_self_excluding():
     b = seal_payload({"a": 1, "b": 2, "payload_sha256": "old"})
     assert a["payload_sha256"] == b["payload_sha256"]
     assert len(a["payload_sha256"]) == 64
+
+
+def test_trim_skips_to_next_ten_minute_boundary():
+    begin = pd.Timestamp("2026-06-07 17:00:00", tz=TZ)
+    begin_ns = int(begin.tz_convert("UTC").value)
+    # Bars [22:03,22:04) ... [22:14,22:15): first aligned start is 22:10.
+    starts = pd.date_range("2026-06-07 22:03:00", periods=12, freq="min", tz=TZ)
+    end_ns = np.asarray([(ts + pd.Timedelta(minutes=1)).tz_convert("UTC").value for ts in starts], dtype=np.int64)
+    indices = np.arange(len(end_ns))
+    assert session_minute_index(int(end_ns[0]), begin_ns) == 303
+    trimmed, dropped, aligned = trim_leading_partial_clock_block(indices, end_ns, begin_ns, 10)
+    assert dropped == 7
+    assert aligned == 310
+    assert list(trimmed) == list(range(7, 12))
+
+
+def test_trim_keeps_full_session_opening_at_1700():
+    begin = pd.Timestamp("2026-06-08 17:00:00", tz=TZ)
+    begin_ns = int(begin.tz_convert("UTC").value)
+    starts = pd.date_range("2026-06-08 17:00:00", periods=20, freq="min", tz=TZ)
+    end_ns = np.asarray([(ts + pd.Timedelta(minutes=1)).tz_convert("UTC").value for ts in starts], dtype=np.int64)
+    trimmed, dropped, aligned = trim_leading_partial_clock_block(np.arange(20), end_ns, begin_ns, 10)
+    assert dropped == 0
+    assert aligned == 0
+    assert list(trimmed) == list(range(20))
 
 
 if __name__ == "__main__":
