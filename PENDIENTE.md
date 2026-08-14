@@ -140,7 +140,9 @@ Residuales no bloqueantes que quedan registrados: (a) el delta semántico contra
 `dbf22613` (la v2.5.2 de `fix/bigtrap2-v252-tick-export`) no quedó documentado —
 la canónica es ahora la del repo por definición, pero conviene leer el diff una
 vez; (b) `nt8/README.md` sigue listando BigTrap2 como v2.1 — actualizar el
-inventario con el blob nuevo.
+inventario con el blob nuevo. (Nota 2026-08-14 tarde: el `.cs` canónico pasó a
+ser el blob `62b0c951` tras el fix de frontera de P-13 — actualizar el README
+con ESE blob.)
 
 ---
 
@@ -190,61 +192,93 @@ Tres líneas remotas sin mergear tocan semántica o premisas vigentes:
 **Referenciada desde**: verificación del auditor externo 2026-08-14
 (`docs/research/W1_PARIDAD_SANDBOX_2026-08-14.md` §5).
 
-**Estado**: ABIERTA — defecto de export.
+**Estado**: RESUELTA (2026-08-14, commit `78de4d6`) — verificada.
 
-`data/nt8_oracles/avolcluster_v05_ES_0926.csv` es byte-idéntico a
-`avolcluster_v05_ES_0626.csv` (mismo blob `2d2328cf`) y su meta declara
-`instrument=ES 06-26`. Dos contratos distintos no pueden producir el mismo
-event-log: la exportación de ES 09-26 faltó o se pisó con la del 06-26.
+El archivo re-exportado tiene blob `bd8b72652dbf5e6d73686f4014d5cad108353b0d`
+(150.734 bytes), meta `instrument=ES 09-26` correcta, 1.066 eventos,
+ventana 01-may→30-jun y `session_index` arrancando en 22 (instancia cargada
+~01-abr: 21 sesiones completas antes del primer evento → perfil caliente, sin
+el defecto H3 del dictamen). El duplicado viejo quedó atrás.
 
-**Criterio de cierre**: re-exportar el oráculo aVol v0.5 sobre ES 09-26 (misma
-carga/ventana declarada, meta `instrument=ES 09-26` verificada contra el
-contenido) y recommitear; borrar o renombrar el duplicado para que el nombre
-no mienta.
+Bloqueo residual (no es esta P): para el replay de ES falta el parquet ES 09-26
+en el sandbox — 453 MB no entra como adjunto; ventanear abr→jun + warmup o
+partir por mes. Ver `docs/research/W1_PARIDAD_SANDBOX_R2_2026-08-14.md` §2.
 
 ---
 
-## P-12 · El parquet W1 de 6E 09-26 cubre solo junio y su manifiesto no lo describe
+## P-12 · Falta el parquet 6E 09-26 de 90 días (abril incluido)
 
 **Referenciada desde**: verificación del auditor externo 2026-08-14
-(`docs/research/W1_PARIDAD_SANDBOX_2026-08-14.md` §1 y §5).
+(`docs/research/W1_PARIDAD_SANDBOX_2026-08-14.md` §5; veredicto medido en
+`W1_PARIDAD_SANDBOX_R2_2026-08-14.md` §3).
 
 **Estado**: ABIERTA — paquete de datos.
 
-El paquete W1 pedía 90 días (04-01→06-30); el parquet entregado cubre
-05-31 17:00 CT → 06-30 15:59 CT (1.103.973 filas). El manifiesto empaquetado
-(`6E_09-26_manifest.json`) declara 3.182.270 filas y `parquet_sha256=
-2377b076…`, que no coincide con el archivo (`46413432…`): describe otro build.
-Por la regla del proyecto esto era cuarentena directa; se procesó igual bajo
-la etiqueta de réplica diagnóstica verificando el dato de forma independiente
-(estructura OK). Consecuencias medidas: los 9 TRAPs de abril del oráculo BT2
-quedaron sin cobertura, y el warmup de aVol tuvo que reconstruirse por
-evidencia (session_index/samples del propio oráculo).
+El paquete W1 pedía 90 días (04-01→06-30); el parquet entregado cubre solo
+junio (manifiesto ya regenerado y coincidente ✓). El paquete posterior trajo el
+parquet 06-26 (`becc5625…`, verificado OK) "para validar los 9 TRAPs de abril",
+pero **no puede**: los TRAPs son del contrato 09-26 (back-month en abril) y el
+06-26 operaba 40–48 ticks abajo (01-abr: rango [1,1643; 1,1666] vs zona
+[1,170025; 1,170075] del TRAP#0 — sin solape); el control negativo del kernel
+sobre abril del 06-26 (2.985 TRAPs) no reproduce ninguno de los 9. Mismo
+contrato + misma ventana (H2 del dictamen AVOLT) no admite sustitución por
+"front-month natural".
 
-**Criterio de cierre**: re-empaquetar con el parquet de 90 días y el manifiesto
-regenerado desde el archivo final (hash recomputado sobre lo empaquetado);
-declarar la ventana real en el manifiesto del paquete.
+**Criterio de cierre**: empaquetar el parquet **09-26 de 90 días** — el primer
+manifiesto recibido declaraba 3.182.270 filas / hash `2377b076…`: casi seguro
+ese build completo ya existe local; partirlo por mes si hace falta, con el
+manifiesto regenerado desde el archivo final.
 
 ---
 
 ## P-13 · BigTrap2 time:1 — silencio de TRAPs del oráculo después del 16-abr
 
 **Referenciada desde**: verificación del auditor externo 2026-08-14
-(`docs/research/W1_PARIDAD_SANDBOX_2026-08-14.md` §3).
+(`W1_PARIDAD_SANDBOX_2026-08-14.md` §3; cierre medido en
+`W1_PARIDAD_SANDBOX_R2_2026-08-14.md` §1).
 
-**Estado**: ABIERTA — bloquea el cierre de paridad de BT2 (W1).
+**Estado**: RESUELTA (2026-08-14, commits `f77a3be` + `c899970`) — con la
+etiqueta formal pendiente de la corrida local gobernada.
 
-El oráculo v2.5.2 (90d) trae 9 TRAPs (04-01→04-16) y después cero; el kernel
-Python byte-verificado emite 3.759 TRAPs sobre junio con datos verificados.
-Lectura del `.cs`: la política `sesionNoConfiable` corta también el export de
-TRAP (`EmitirBarra` retorna con la sesión marcada) y se resetea solo en la
-frontera de sesión; el patrón es compatible con supresión persistente o con
-deriva del pareo FIFO tras el primer mismatch, pero el CSV no trae los eventos
-de control (`SESION_RESINCRONIZADA`, `ANCLAJE_*`, `BARRA_PROCESADA`) que
-permitirían distinguirlo — posiblemente filtrados al exportar.
+Raíz medida: en `AccumulateTick()` el `return` del camino de tiempo dejaba
+inalcanzable el bloque de frontera de sesión → `sesionNoConfiable` nunca se
+reseteaba en time:1 → supresión permanente tras el primer mismatch (17-abr).
+Fix verificado sobre el patch: reubicación exacta de la frontera antes del
+return. Oráculo nuevo con identidad verificada (blob `0837ef7e`, sha256
+`4c76a0f2…`): 3.807 TRAPs, 9 `SESION_RESINCRONIZADA` con contadores (uno por
+cada sesión marcada del oráculo viejo — cierra la cadena causal).
+Comparación 1:1 junio (sandbox, diagnóstica): **3.628/3.638 EXACT (99,73 %)**;
+resto atribuido con causa medida: 128 colas suprimidas documentadas, 1 barra de
+borde de ventana, 2 field_diff de 1 tick entre las dos rutas de datos, 8 del
+lado Python (7 = defecto del parquet 25-jun → P-14; 1 = anomalía de barra
+idéntica a investigar local).
 
-**Criterio de cierre**: re-exportar el oráculo BT2 con el log de eventos
-COMPLETO (todos los tipos) + corrida local gobernada del comparador; y decidir
-explícitamente si la supresión del export bajo `sesionNoConfiable` es el
-comportamiento deseado para oráculos (hoy un oráculo "suprimido" es
-indistinguible de uno "sin detecciones").
+Decisiones y residuales registrados: (a) Nico decidió que en futuras versiones
+`sesionNoConfiable` marque los eventos en el log en vez de suprimirlos (un
+oráculo suprimido es indistinguible de uno sin detecciones); (b) el meta sigue
+declarando `version=2.5.2` con el código ya cambiado (blob `62b0c951`) — subir
+el string en la próxima edición; (c) borrar la copia vieja
+`BigTrap2_v252_6E_0926_time1_90d_completo__Minute1.csv` (blob `fb41f33a`, la
+filtrada) para que el nombre no mienta; (d) divergencia semántica medida a
+decidir en la campaña: la supresión por sesión hace que el universo de traps de
+junio del oráculo sea 3,4 % menor que el del kernel (que no puede desincronizar
+por construcción).
+
+---
+
+## P-14 · Defecto del 25-jun en el parquet de junio de 6E 09-26 (`46413432…`)
+
+**Referenciada desde**: comparación 1:1 del auditor externo 2026-08-14
+(`W1_PARIDAD_SANDBOX_R2_2026-08-14.md` §4).
+
+**Estado**: ABIERTA — defecto de datos.
+
+Al parquet W1 le faltan los minutos 11:02–11:10 ART del 25-jun (el nativo NT8
+tiene barras activas de 314 a 1.893 de volumen ahí) y la barra 12:48 ART
+aparece inflada (vol 227 vs 37). Escapó a la batería estructural (que miraba
+duplicados en mantenimiento, no minutos faltantes intra-sesión). Es la causa de
+7 de los 8 MISSING_IN_PYTHON de la comparación de junio.
+
+**Criterio de cierre**: regenerar el parquet desde el `.Last.txt` exigiendo
+cobertura por minuto contra la serie nativa (extender el chequeo barras-propias
+vs `6E_1min.csv` a "0 minutos faltantes en horario activo"), o auditar la fuente.
