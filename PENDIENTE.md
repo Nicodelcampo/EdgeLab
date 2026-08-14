@@ -152,15 +152,14 @@ También documentado (mismo replay, cosmético): `direction=NEUTRAL` del orácul
 
 ## P-16 · Réplica de paridad de `AACloseOpenDiffs`, `VolTicksPOC2` y `Gaps2`
 
-**Estado**: ABIERTA — validación local ejecutada (Antigravity), réplica formal de auditoría pendiente.
+**Estado**: RESUELTA (2026-08-14) — réplica del auditor ejecutada en sandbox; mediciones locales confirmadas al detalle.
 
-Se incorporaron los 3 oráculos de 90 días en `data/nt8_oracles/` y se ejecutaron las mediciones de paridad en el entorno local gobernado (ver `docs/research/PARIDADES_LOCALES_ANTIGRAVITY_2026-08-14.md`):
+Se incorporaron los 3 oráculos de 90 días en `data/nt8_oracles/` y Antigravity ejecutó las mediciones de paridad en el entorno local gobernado (`docs/research/PARIDADES_LOCALES_ANTIGRAVITY_2026-08-14.md`). El auditor externo corrió luego la réplica target-free independiente en sandbox sobre el parquet canónico 90d (sha256 `1311bc5e…`, 1.131.047 filas, P1A PASS), con kernels byte-verificados por git-blob y el matcher del repo:
 
-1. **`AACloseOpenDiffs` (v1.2)**: 18.004 / 18.020 (99.91 % EXACT) sobre `gaps2_v22_6E_0926_90d.csv`.
-2. **`VolTicksPOC2` (v2.1)**: 151 / 152 (98.68 % EXACT) sobre `voltickspoc2_v22_6E_0926_90d.csv`.
-3. **`Gaps2` (v2.0)**: 11.435 / 11.442 (99.94 % EXACT) sobre `Gaps2_events_nt8_6E_0926_90d.csv`.
+1. **`AACloseOpenDiffs` (v1.2)**: 18.004 MATCHED / 18.020 NT8 — **idéntico al local**, incluidos los residuos (GEOMETRY_DIFF 4, TIMESTAMP_DIFF 1, MISSING_IN_NT8 60, MISSING_IN_PYTHON 11).
+2. **`VolTicksPOC2` (v2.1)**: 151 MATCHED + 1 FEATURE_DIFF / 153 NT8 en ventana — reproduce el local (151/152); la zona 153 (creada 30-jun 05:01) es la diferencia de contabilidad documentada en el reporte.
+3. **`Gaps2` (v2.0)**: 11.435 MATCHED / 11.442 NT8 — **idéntico al local** (FEATURE_DIFF 2, MISSING_IN_NT8 6, MISSING_IN_PYTHON 5; MATURITY_TAIL 4 vs 3 declaradas).
 
-**Aclaración de gobernanza**: Estas mediciones fueron validadas localmente por Antigravity. El auditor externo debe correr su réplica independiente en el sandbox para emitir el veredicto oficial y sellar el pase formal.
+**Nota de gobernanza**: el gate estructural estricto del repo (`parity.py`: PASS exige cero huérfanas y cero diffs de geometría) etiqueta los tres FAIL; los residuos son los mismos que la medición local documentó (colas de borde, frontera de warmup, cola inmadura). La réplica confirma la **reproducibilidad** de las mediciones por tercero independiente; declarar los indicadores con paridad representativa bajo esos residuos es decisión de Nico.
 
-**Criterio de cierre**: Réplica target-free del auditor en sandbox sobre los 3 oráculos con reporte de paridad formal.
-
+Evidencia: `docs/research/P16_REPLICA_AUDITOR_2026-08-14.md`.
