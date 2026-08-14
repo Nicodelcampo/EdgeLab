@@ -1,0 +1,106 @@
+{
+  "spec_id": "prerange_sweep_v0",
+  "schema_version": "prerange_sweep_formal_v0",
+  "created": "2026-08-14",
+  "status": "PREREGISTERED",
+  "line": "L3_PRERANGE_DOUBLE_SWEEP",
+
+  "origin": {
+    "claim_recibido": "Doble barrido del rango pre-mercado 08:12-09:12 EST: 72.4% YM / 71.6% NQ / 69.5% ES; 80.6% en rango comprimido; 83.7% los martes; 51% de sincronizacion en los 3 indices.",
+    "veredicto_del_claim_original": "NO_ADJUDICABLE",
+    "motivos": [
+      "El propio test reporto Z=1.26, p=0.103 contra el nulo browniano (68.33%): NO significativo.",
+      "La tasa de doble barrido es una tautologia geometrica: una difusion cruza dos fronteras cercanas con alta frecuencia. Medir esa tasa no informa sobre liquidez.",
+      "El split por compresion es la misma tautologia amplificada: rango angosto => fronteras mas cerca => mas cruces. 80.6% vs 63.7% es geometria, no absorcion.",
+      "Martes 83.7% con N=43: IC ~ +/-12 puntos y 5 dias testeados sin correccion de multiplicidad. ~1.2 sigma.",
+      "La sincronizacion 51% vs ~36% esperado bajo independencia refleja un factor comun de regimen diario (dias de tendencia macro), no barridos sincronizados.",
+      "La ventana 08:12-09:12 fue elegida mirando datos: su p-value no es interpretable sin absorber la seleccion.",
+      "No se midio ningun estimando post-barrido. 'Doble barrido' es una frecuencia de toques, no una afirmacion transable."
+    ]
+  },
+
+  "estimand": {
+    "NO_es": "la tasa de doble barrido",
+    "es": "carrera de primer pasaje simetrica por construccion, iniciada DESPUES del segundo barrido",
+    "definicion": {
+      "ventana": "[start, start+60) minutos en el reloj declarado; w_high=max(High), w_low=min(Low), rango=w_high-w_low en enteros de tick",
+      "primer_barrido": "primera barra post-ventana con High>=w_high (upper) o Low<=w_low (lower)",
+      "segundo_barrido": "primera barra posterior que toca el lado OPUESTO",
+      "anchor": "close de la barra del segundo barrido, en enteros de tick",
+      "d": "round(rango * 0.5) ticks",
+      "revert": "anchor - d si el segundo barrido fue arriba; anchor + d si fue abajo",
+      "cont": "anchor + d si el segundo barrido fue arriba; anchor - d si fue abajo",
+      "r": "+1 si revert se toca primero, -1 si cont se toca primero, 0 si empate en la misma barra o si ninguno se toca antes del fin del horizonte",
+      "horizonte": "hasta 16:00 del reloj declarado"
+    },
+    "por_que_esto_arregla_la_tautologia": "revert y cont son equidistantes del anchor. Bajo difusion sin drift P(revert primero)=P(cont primero) EXACTAMENTE, asi que E[r]=0 por geometria. No hay que simular brownianos ni estimar volatilidad. d escala con el rango, asi que la compresion sale del numerador. Cualquier asimetria observada es el efecto.",
+    "anchor_es_el_close_no_el_extremo": "Anclar en el High de la barra del barrido sesgaria la carrera a favor de la reversion, porque al cierre el precio ya esta por debajo de ese High y 'revert' quedaria mas cerca. Se ancla en el close para que la simetria sea exacta."
+  },
+
+  "non_repainting": true,
+  "available_at": "close de la barra del segundo barrido",
+  "agregacion": "una observacion por sesion (ceros adentro), media por sesion, HAC Bartlett con lag=ceil(sqrt(n)), IC95",
+
+  "seleccion_de_ventana": {
+    "problema": "08:12-09:12 fue elegida a ojo. Un p-value sobre una ventana elegida post-hoc no vale.",
+    "solucion": "familia de placebos declarada: offsets de 30 en 30 minutos desde -480 a +330, excluyendo |offset| < 60 para que ningun placebo se solape con la ventana primaria. 25 placebos.",
+    "test": "p_perm = rank(media primaria entre las 25+1 medias) / (n_usables+1). La ventana elegida debe GANARLE a todos sus placebos.",
+    "piso": "con 19 placebos utilizables el piso de p_perm es 1/20 = 0.05. Si hay menos, PRERANGE_EDGE es inalcanzable y el runner NO puede emitirlo.",
+    "gate": "MIN_USABLE_PLACEBOS = 19"
+  },
+
+  "gates": {
+    "sessions_ge_30": "n_events >= 30",
+    "resolution": "decididos/n >= 0.30",
+    "ties": "empates en la misma barra <= 0.10 (si falla, la resolucion M1 no alcanza y hay que ir a ticks)",
+    "coverage": "sesiones con doble barrido / sesiones validas >= 0.40",
+    "placebo_family": "placebos utilizables >= 19 (requisito solo para PRERANGE_EDGE)"
+  },
+
+  "labels": {
+    "PRERANGE_EDGE": "IC95 HAC > 0 AND familia de placebos suficiente AND rank 1 contra todos los placebos",
+    "PRERANGE_WINDOW_UNSPECIFIC": "IC95 > 0 pero la ventana no le gana a sus placebos, o la familia es insuficiente. Hay reversion post-doble-barrido, pero NO es propiedad de esta ventana.",
+    "PRERANGE_NO_EDGE": "IC95 cruza cero",
+    "PRERANGE_FADE": "IC95 < 0: continuacion, no reversion. Falsa la hipotesis en direccion opuesta.",
+    "PRERANGE_UNDERPOWERED": "algun gate de datos falla",
+    "ABSTAIN_DATA": "parsing o cobertura insuficiente"
+  },
+
+  "descriptivos_no_adjudican": [
+    "by_range (comprimido/expandido por mediana)",
+    "by_weekday (5 dias, multiplicidad NO corregida)",
+    "by_second_side (arriba/abajo)"
+  ],
+
+  "firewall": {
+    "quemado": "El barrido kaggle_multiverse_sweep.py evaluo 921.600 combinaciones de (hora de inicio x duracion x stop x target x modo) sobre YM, NQ, ES, GC con datos M1 hasta 2026-08-13, optimizando profit factor. Eso quema TODA la superficie (start x duration) para esos 4 activos, incluida la ventana primaria Y la familia de placebos.",
+    "consecuencia": "Sobre datos <= 2026-08-13 el test de rank tambien esta contaminado: si 08:12 se eligio por su P&L en esa superficie y el P&L correlaciona con el estimando de reversion, la ventana fue seleccionada PARA ser rank 1.",
+    "regla": "Corridas sobre datos <= 2026-08-13 son EXPLORATORIAS. El payload marca seen_data=true y la etiqueta maxima promovible es PRERANGE_WINDOW_UNSPECIFIC. PRERANGE_EDGE solo puede emitirse sobre el set de confirmacion.",
+    "set_de_confirmacion": "forward-only, sesiones >= 2026-08-14, minimo 60 sesiones antes de adjudicar",
+    "6E": "parquet corta 2026-06-30, firewall previo respetado; sirve como replicacion independiente aunque su microestructura difiere de los indices"
+  },
+
+  "amenazas_declaradas_sin_resolver": {
+    "T1_evento_macro_dentro_de_la_ventana": "08:12-09:12 EST CONTIENE la publicacion de datos de 08:30 EST. Los placebos que no contienen un evento programado no son intercambiables con la primaria. Un rank 1 podria reflejar 'esta ventana tiene noticias' y no 'esta ventana tiene absorcion'. Sin calendario economico no se puede separar. Declarado como confusor abierto.",
+    "T2_zona_horaria": "El reloj debe declararse explicitamente. Si los parquets estan en hora del exchange y no en EST, la ventana no es la que se cree. Verificar antes de correr.",
+    "T3_DST": "08:12 EST fijo vs horario de verano: el offset cambia dos veces al ano respecto de la hora del exchange.",
+    "T4_empates_M1": "si el gate de ties falla, M1 no resuelve el orden intra-barra y hay que reconstruir con ticks (usar tick_first_touch de F2.7)"
+  },
+
+  "prohibiciones": {
+    "pnl_accessed": false,
+    "outcomes_accessed": false,
+    "no_barrer_parametros": "d_frac, duracion, horizonte y familia de placebos quedan fijos por este spec. Cualquier variante es una linea nueva con spec nuevo.",
+    "no_promover_descriptivos": "by_weekday y by_range son descriptivos; no se citan como hallazgos"
+  },
+
+  "runner": "diag/tasa_senales/prerange_sweep_formal.py",
+  "tests": "tests/research/test_prerange_sweep_formal.py",
+  "herramientas_reutilizadas": [
+    "HAC Bartlett (F2.7)",
+    "carrera de primer pasaje espejada (F2.7 construir_reflejo)",
+    "ceros adentro / media por sesion (F2.7)",
+    "price_to_tick half-tick-safe (aVol v2)",
+    "familia de placebos como calibrador de seleccion (nuevo en esta linea)"
+  ]
+}
