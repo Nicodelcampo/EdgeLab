@@ -4,6 +4,11 @@
 One max-mass cluster per block. OFF_PRICE is the level object.
 AT_PRICE is occupation, not support/resistance. No QualityScore gate,
 no target/stop, no BigTrap2.
+
+Parity note (2026-08-14): SessionProfile mirrors nt8/aVolClusterPOI.cs:
+LookbackSessions is FIFO by complete SESSION, not by individual score, and the
+first complete session is retained. Buckets use (bar close - 1 second), exactly
+as GetTimeBucket() in the C# contract.
 """
 from __future__ import annotations
 
@@ -25,6 +30,8 @@ RESEARCH_DEFAULTS = dict(
     one_cluster_per_block=True,
 )
 
+NS = 1_000_000_000
+
 
 def empirical_quantile(sorted_asc, p):
     values = list(sorted_asc)
@@ -41,6 +48,18 @@ def median_upper(values):
         return None
     ordered = sorted(values)
     return ordered[len(ordered) // 2]
+
+
+def session_relative_bucket(block_end_ns, session_begin_ns, bucket_minutes=30):
+    """Mirror of C# GetTimeBucket(Time[0]) for SessionRelative mode.
+
+    NT8 anchors the bucket at ``barCloseTime.AddSeconds(-1)``. Without the
+    subtraction, blocks closing exactly at :30/:00 are assigned to the next
+    bucket in Python and parity is impossible.
+    """
+    span = int(bucket_minutes) * 60 * NS
+    anchor_ns = int(block_end_ns) - NS
+    return int((anchor_ns - int(session_begin_ns)) // span)
 
 
 def cluster_hot_ticks(cells, median_multiplier, max_gap_ticks, min_cluster_ticks):
@@ -112,28 +131,42 @@ def detect_block(cells, history_scores, params=None, close_tick=None):
 
 
 class SessionProfile:
-    """Prior complete sessions only. Current session stays pending until roll."""
+    """Prior complete sessions only; FIFO is by SESSION, matching the C#.
+
+    ``history[bucket]`` stores one list per complete session. A 30-minute
+    bucket normally receives three scores (three disjoint 10-bar blocks) per
+    session. The previous Python implementation flattened scores into a deque
+    capped at ``lookback``, retaining only ~6-7 sessions when lookback=20; it
+    also discarded the first complete session. Both behaviors contradicted
+    ``nt8/aVolClusterPOI.cs::CommitSession``.
+    """
 
     def __init__(self, lookback_sessions=20):
         self.lookback = int(lookback_sessions)
+        # bucket -> deque[(global_session_index, list[score])]
         self.history = defaultdict(deque)
         self.pending = defaultdict(list)
-        self.first_roll_done = False
+        self.session_index = 0
 
     def commit(self):
-        if not self.first_roll_done:
-            self.pending.clear()
-            self.first_roll_done = True
-            return
+        current = self.session_index
         for bucket, scores in self.pending.items():
-            q = self.history[bucket]
-            q.extend(scores)
-            while len(q) > self.lookback:
+            self.history[int(bucket)].append((current, list(map(float, scores))))
+        # C# prunes EVERY bucket by global Session index, even when that bucket
+        # was absent in the session just committed.
+        min_session = current - self.lookback + 1
+        for q in self.history.values():
+            while q and q[0][0] < min_session:
                 q.popleft()
         self.pending = defaultdict(list)
+        self.session_index += 1
 
     def add_block(self, bucket, best_score):
         self.pending[int(bucket)].append(float(best_score))
 
     def history_scores(self, bucket):
-        return list(self.history.get(int(bucket), ()))
+        sessions = self.history.get(int(bucket), ())
+        return [score for _session, session_scores in sessions for score in session_scores]
+
+    def history_session_count(self, bucket):
+        return len(self.history.get(int(bucket), ()))

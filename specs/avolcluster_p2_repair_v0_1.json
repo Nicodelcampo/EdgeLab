@@ -1,0 +1,63 @@
+{
+  "schema_version": "avolcluster_p2_repair_v0_1",
+  "status": "IMPLEMENTED_NOT_RUN_ON_CANONICAL",
+  "date": "2026-08-14",
+  "purpose": "Cerrar paridad NT8-Python antes de mejorar o medir aVolClusterPOI.",
+  "source_of_truth": {
+    "nt8": "nt8/aVolClusterPOI.cs",
+    "git_blob": "d512d91a606d41609b21ef244c896ead1dc52a10",
+    "version": "0.5",
+    "oracle": "data/nt8_oracles/avolcluster_v05_20260813.csv",
+    "oracle_meta_instrument": "6E 09-26"
+  },
+  "repairs_derived_from_cs": [
+    "Bloques disjuntos de 10 barras, reiniciados al inicio de sesión; el parcial final se descarta.",
+    "LookbackSessions=20 significa FIFO por sesiones completas. Cada bucket conserva ~3 scores por sesión; no se limita a 20 scores.",
+    "La primera sesión completa del replay entra al historial. Solo se descartan datos previos al primer inicio de sesión visto.",
+    "Bucket SessionRelative anclado en bar_close_time - 1 segundo.",
+    "La sesión de una barra [start,end) se determina con end-1 segundo.",
+    "El replay usa toda la historia disponible anterior a la ventana de comparación; no recorta antes de calentar.",
+    "Matching uno-a-uno: 100% de filas del oráculo y cero zonas Python sobrantes.",
+    "P2 FAIL detiene el pipeline. La carrera formal no se ejecuta ni se reporta."
+  ],
+  "retractions": {
+    "H4_sliding_window": "RETRACTED. El C# confirma explícitamente bloques disjuntos; el runner original acertaba en este punto.",
+    "continuous_contract_excuse": "UNSUPPORTED. El oráculo declara instrument=6E 09-26; cualquier afirmación de continuo exige reexport o corrección explícita del meta."
+  },
+  "input_gate": {
+    "file": "6E_09-26_ticks.parquet",
+    "sha256": "6ffcdf041f8d77a2d6fb7cfe85d63bd8b176a081caa8ad8cd0aaae57c6f178f4",
+    "mismatch_label": "ABSTAIN_INPUT"
+  },
+  "p2": {
+    "window_timezone": "America/Chicago",
+    "window": "[2026-04-10T00:00:00, 2026-07-01T00:00:00)",
+    "match": "one-to-one exact lower_tick+upper_tick and |bar_close_time delta| <= 60 seconds",
+    "pass": "input hash PASS AND oracle meta instrument PASS AND P1A PASS AND unmatched_oracle=0 AND unmatched_python=0",
+    "fail_label": "ABSTAIN_P2",
+    "pass_label": "P2_PASS"
+  },
+  "runner": "diag/tasa_senales/avolcluster_p2_replay_v01.py",
+  "tests": [
+    "tests/research/test_avolcluster_kernel_parity.py",
+    "tests/research/test_avolcluster_p2_replay_v01.py"
+  ],
+  "post_p2_order": [
+    "Formal baseline v0.5, por contrato separado; ninguna barra mezcla contratos y ninguna carrera cruza el roll.",
+    "Agregación por sesión-calendario para que contratos solapados no inflen n.",
+    "Mejora A: absorción bid/ask preregistrada y aislada.",
+    "Mejora B: rechazo/mecha preregistrada y aislada.",
+    "Solo después, combinación A+B con regla declarada antes de mirar resultados.",
+    "Replicación GC tras gates de datos y spec/firewall propios."
+  ],
+  "prohibitions": [
+    "No usar el JSON AVOLT d5c41684 como baseline: sello roto y P2 FAIL.",
+    "No medir filtros v1.0 hasta P2_PASS.",
+    "No barrer thresholds/QualityScore.",
+    "No abrir P&L, outcomes del indicador ni holdout.",
+    "No usar GC como segundo intento si 6E decepciona; GC es replicación preregistrada, no rescate post-hoc."
+  ],
+  "outcomes_accessed": false,
+  "pnl_accessed": false,
+  "holdout_included": false
+}
