@@ -1,8 +1,7 @@
-# aVolClusterPOI — Protocolo P2 / baseline (2026-08-14)
+# aVolClusterPOI — Protocolo (puntero)
 
-**P2:** `ABSTAIN_P2` (50/53). No es identidad NT8.  
-**Baseline:** `BASELINE_PYTHON_V05` — `docs/research/AVOL_BASELINE_FP_PYTHON_V05_2026-08-14.md` (`3eb47785`).
+Estado vivo: `docs/research/AVOL_HANDOFF_2026-08-14.md` (`c0de5a9d`).
 
-Universo: 53 OFF_PRICE de Python (no las 50 matcheadas).  
-Primer pasaje vs espejo: **27–20** en 47 decididas, p=0.574, binomial ≈0.38.  
-No hay evidencia de imán. No formal NT8. No A/B. No QualityScore.
+- 6E P2: `ABSTAIN_P2` 50/53. Baseline Python 27–20, p=0.574. No imán.
+- ES: oráculo NT8 recibido; parquet 09-26 cubre 8-jun→28-jul. P2 ES = `ABSTAIN_ALIGNMENT`.
+- Baseline ES: no corrido (decoder RG10). Kaggle/ticks: no.
