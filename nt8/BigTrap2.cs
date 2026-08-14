@@ -359,12 +359,6 @@ namespace NinjaTrader.NinjaScript.Indicators
 			long tick = (long)Math.Round(price / TickSize, MidpointRounding.AwayFromZero);
 			FpTick ev = new FpTick { Tick = tick, Vol = vol, Side = side, ByQuote = byQuote };
 
-			if (fpTicksPerBar <= 0)          // bar_spec de TIEMPO: se drena todo al cierre
-			{
-				curBlock.Add(ev);
-				return;
-			}
-
 			DateTime tEv = Times[1][0];
 			if (_sessEnd == DateTime.MinValue || tEv >= _sessEnd)
 			{
@@ -373,7 +367,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				// corte en vez de pre-cortar el bloque: el largo lo arbitra el OHLCV
 				// del snapshot, no el contador. Si ya habia un corte sin drenar, el
 				// viejo manda -- pisarlo perderia la frontera anterior.
-				if (curBlock.Count > 0 && pendCutAt < 0)
+				if (fpTicksPerBar > 0 && curBlock.Count > 0 && pendCutAt < 0)
 				{
 					pendCutAt = curBlock.Count;
 					nResiduales++;
@@ -387,6 +381,12 @@ namespace NinjaTrader.NinjaScript.Indicators
 				sesionNoConfiable = false;   // la frontera resincroniza
 				_sessIter.GetNextSession(tEv, true);
 				_sessEnd = _sessIter.ActualSessionEnd;
+			}
+
+			if (fpTicksPerBar <= 0)          // bar_spec de TIEMPO: se drena todo al cierre
+			{
+				curBlock.Add(ev);
+				return;
 			}
 
 			// v2.3: NO se pre-corta a K por orden de llegada. Ese corte era el
@@ -1222,59 +1222,3 @@ namespace NinjaTrader.NinjaScript.Indicators
 	}
 }
 
-#region NinjaScript generated code. Neither change nor remove.
-
-namespace NinjaTrader.NinjaScript.Indicators
-{
-	public partial class Indicator : NinjaTrader.Gui.NinjaScript.IndicatorRenderBase
-	{
-		private BigTrap2[] cacheBigTrap2;
-		public BigTrap2 BigTrap2(int ticksPerRow, BT2ImbalanceMode imbalanceMode, BT2TrapVolumeSource trapVolumeSource, bool useWickFilter, double wickZonePct, double imbalanceRatio, int minDeltaFilter, int minTrapVolume, int minExportVolume, BT2InvalidationMode invalidationMode, int maxTouches, int maxAgeBars, string eventLogPath, bool showPOC, BT2VisualMode visualMode, bool autoScale, double outlierPercentile, double topPercentFilter, int manualMaxVol, int fixedTransparency, int fixedBubbleRadius, int transpStart, int transpEnd, int maxBubblesStored)
-		{
-			return BigTrap2(Input, ticksPerRow, imbalanceMode, trapVolumeSource, useWickFilter, wickZonePct, imbalanceRatio, minDeltaFilter, minTrapVolume, minExportVolume, invalidationMode, maxTouches, maxAgeBars, eventLogPath, showPOC, visualMode, autoScale, outlierPercentile, topPercentFilter, manualMaxVol, fixedTransparency, fixedBubbleRadius, transpStart, transpEnd, maxBubblesStored);
-		}
-
-		public BigTrap2 BigTrap2(ISeries<double> input, int ticksPerRow, BT2ImbalanceMode imbalanceMode, BT2TrapVolumeSource trapVolumeSource, bool useWickFilter, double wickZonePct, double imbalanceRatio, int minDeltaFilter, int minTrapVolume, int minExportVolume, BT2InvalidationMode invalidationMode, int maxTouches, int maxAgeBars, string eventLogPath, bool showPOC, BT2VisualMode visualMode, bool autoScale, double outlierPercentile, double topPercentFilter, int manualMaxVol, int fixedTransparency, int fixedBubbleRadius, int transpStart, int transpEnd, int maxBubblesStored)
-		{
-			if (cacheBigTrap2 != null)
-				for (int idx = 0; idx < cacheBigTrap2.Length; idx++)
-					if (cacheBigTrap2[idx] != null && cacheBigTrap2[idx].TicksPerRow == ticksPerRow && cacheBigTrap2[idx].ImbalanceMode == imbalanceMode && cacheBigTrap2[idx].TrapVolumeSource == trapVolumeSource && cacheBigTrap2[idx].UseWickFilter == useWickFilter && cacheBigTrap2[idx].WickZonePct == wickZonePct && cacheBigTrap2[idx].ImbalanceRatio == imbalanceRatio && cacheBigTrap2[idx].MinDeltaFilter == minDeltaFilter && cacheBigTrap2[idx].MinTrapVolume == minTrapVolume && cacheBigTrap2[idx].MinExportVolume == minExportVolume && cacheBigTrap2[idx].InvalidationMode == invalidationMode && cacheBigTrap2[idx].MaxTouches == maxTouches && cacheBigTrap2[idx].MaxAgeBars == maxAgeBars && cacheBigTrap2[idx].EventLogPath == eventLogPath && cacheBigTrap2[idx].ShowPOC == showPOC && cacheBigTrap2[idx].VisualMode == visualMode && cacheBigTrap2[idx].AutoScale == autoScale && cacheBigTrap2[idx].OutlierPercentile == outlierPercentile && cacheBigTrap2[idx].TopPercentFilter == topPercentFilter && cacheBigTrap2[idx].ManualMaxVol == manualMaxVol && cacheBigTrap2[idx].FixedTransparency == fixedTransparency && cacheBigTrap2[idx].FixedBubbleRadius == fixedBubbleRadius && cacheBigTrap2[idx].TranspStart == transpStart && cacheBigTrap2[idx].TranspEnd == transpEnd && cacheBigTrap2[idx].MaxBubblesStored == maxBubblesStored && cacheBigTrap2[idx].EqualsInput(input))
-						return cacheBigTrap2[idx];
-			return CacheIndicator<BigTrap2>(new BigTrap2(){ TicksPerRow = ticksPerRow, ImbalanceMode = imbalanceMode, TrapVolumeSource = trapVolumeSource, UseWickFilter = useWickFilter, WickZonePct = wickZonePct, ImbalanceRatio = imbalanceRatio, MinDeltaFilter = minDeltaFilter, MinTrapVolume = minTrapVolume, MinExportVolume = minExportVolume, InvalidationMode = invalidationMode, MaxTouches = maxTouches, MaxAgeBars = maxAgeBars, EventLogPath = eventLogPath, ShowPOC = showPOC, VisualMode = visualMode, AutoScale = autoScale, OutlierPercentile = outlierPercentile, TopPercentFilter = topPercentFilter, ManualMaxVol = manualMaxVol, FixedTransparency = fixedTransparency, FixedBubbleRadius = fixedBubbleRadius, TranspStart = transpStart, TranspEnd = transpEnd, MaxBubblesStored = maxBubblesStored }, input, ref cacheBigTrap2);
-		}
-	}
-}
-
-namespace NinjaTrader.NinjaScript.MarketAnalyzerColumns
-{
-	public partial class MarketAnalyzerColumn : MarketAnalyzerColumnBase
-	{
-		public Indicators.BigTrap2 BigTrap2(int ticksPerRow, BT2ImbalanceMode imbalanceMode, BT2TrapVolumeSource trapVolumeSource, bool useWickFilter, double wickZonePct, double imbalanceRatio, int minDeltaFilter, int minTrapVolume, int minExportVolume, BT2InvalidationMode invalidationMode, int maxTouches, int maxAgeBars, string eventLogPath, bool showPOC, BT2VisualMode visualMode, bool autoScale, double outlierPercentile, double topPercentFilter, int manualMaxVol, int fixedTransparency, int fixedBubbleRadius, int transpStart, int transpEnd, int maxBubblesStored)
-		{
-			return indicator.BigTrap2(Input, ticksPerRow, imbalanceMode, trapVolumeSource, useWickFilter, wickZonePct, imbalanceRatio, minDeltaFilter, minTrapVolume, minExportVolume, invalidationMode, maxTouches, maxAgeBars, eventLogPath, showPOC, visualMode, autoScale, outlierPercentile, topPercentFilter, manualMaxVol, fixedTransparency, fixedBubbleRadius, transpStart, transpEnd, maxBubblesStored);
-		}
-
-		public Indicators.BigTrap2 BigTrap2(ISeries<double> input , int ticksPerRow, BT2ImbalanceMode imbalanceMode, BT2TrapVolumeSource trapVolumeSource, bool useWickFilter, double wickZonePct, double imbalanceRatio, int minDeltaFilter, int minTrapVolume, int minExportVolume, BT2InvalidationMode invalidationMode, int maxTouches, int maxAgeBars, string eventLogPath, bool showPOC, BT2VisualMode visualMode, bool autoScale, double outlierPercentile, double topPercentFilter, int manualMaxVol, int fixedTransparency, int fixedBubbleRadius, int transpStart, int transpEnd, int maxBubblesStored)
-		{
-			return indicator.BigTrap2(input, ticksPerRow, imbalanceMode, trapVolumeSource, useWickFilter, wickZonePct, imbalanceRatio, minDeltaFilter, minTrapVolume, minExportVolume, invalidationMode, maxTouches, maxAgeBars, eventLogPath, showPOC, visualMode, autoScale, outlierPercentile, topPercentFilter, manualMaxVol, fixedTransparency, fixedBubbleRadius, transpStart, transpEnd, maxBubblesStored);
-		}
-	}
-}
-
-namespace NinjaTrader.NinjaScript.Strategies
-{
-	public partial class Strategy : NinjaTrader.Gui.NinjaScript.StrategyRenderBase
-	{
-		public Indicators.BigTrap2 BigTrap2(int ticksPerRow, BT2ImbalanceMode imbalanceMode, BT2TrapVolumeSource trapVolumeSource, bool useWickFilter, double wickZonePct, double imbalanceRatio, int minDeltaFilter, int minTrapVolume, int minExportVolume, BT2InvalidationMode invalidationMode, int maxTouches, int maxAgeBars, string eventLogPath, bool showPOC, BT2VisualMode visualMode, bool autoScale, double outlierPercentile, double topPercentFilter, int manualMaxVol, int fixedTransparency, int fixedBubbleRadius, int transpStart, int transpEnd, int maxBubblesStored)
-		{
-			return indicator.BigTrap2(Input, ticksPerRow, imbalanceMode, trapVolumeSource, useWickFilter, wickZonePct, imbalanceRatio, minDeltaFilter, minTrapVolume, minExportVolume, invalidationMode, maxTouches, maxAgeBars, eventLogPath, showPOC, visualMode, autoScale, outlierPercentile, topPercentFilter, manualMaxVol, fixedTransparency, fixedBubbleRadius, transpStart, transpEnd, maxBubblesStored);
-		}
-
-		public Indicators.BigTrap2 BigTrap2(ISeries<double> input , int ticksPerRow, BT2ImbalanceMode imbalanceMode, BT2TrapVolumeSource trapVolumeSource, bool useWickFilter, double wickZonePct, double imbalanceRatio, int minDeltaFilter, int minTrapVolume, int minExportVolume, BT2InvalidationMode invalidationMode, int maxTouches, int maxAgeBars, string eventLogPath, bool showPOC, BT2VisualMode visualMode, bool autoScale, double outlierPercentile, double topPercentFilter, int manualMaxVol, int fixedTransparency, int fixedBubbleRadius, int transpStart, int transpEnd, int maxBubblesStored)
-		{
-			return indicator.BigTrap2(input, ticksPerRow, imbalanceMode, trapVolumeSource, useWickFilter, wickZonePct, imbalanceRatio, minDeltaFilter, minTrapVolume, minExportVolume, invalidationMode, maxTouches, maxAgeBars, eventLogPath, showPOC, visualMode, autoScale, outlierPercentile, topPercentFilter, manualMaxVol, fixedTransparency, fixedBubbleRadius, transpStart, transpEnd, maxBubblesStored);
-		}
-	}
-}
-
-#endregion
