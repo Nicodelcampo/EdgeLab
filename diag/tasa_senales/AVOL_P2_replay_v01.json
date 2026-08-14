@@ -20,7 +20,8 @@
     "oracle_timezone": "America/Argentina/Buenos_Aires",
     "start_inclusive": "2026-06-08T00:00:00",
     "end_exclusive": "2026-07-01T00:00:00",
-    "warmup": "all complete sessions available before first compared zone"
+    "warmup": "all complete sessions available before first compared zone",
+    "first_session_trim": "drop leading bars until session-minute % 10 == 0"
   },
   "oracle_rows": 53,
   "outcomes_accessed": false,
@@ -51,19 +52,28 @@
         "time": "2026-06-17T13:26:00",
         "lower_tick": 23184,
         "upper_tick": 23185,
-        "direction": -1
+        "direction": -1,
+        "score": 1107.0,
+        "threshold": 750.0,
+        "history_samples": 20
       },
       {
         "time": "2026-06-17T20:03:00",
         "lower_tick": 23107,
         "upper_tick": 23110,
-        "direction": 1
+        "direction": 1,
+        "score": 1437.0,
+        "threshold": 434.0,
+        "history_samples": 21
       },
       {
         "time": "2026-06-17T23:39:00",
         "lower_tick": 23125,
         "upper_tick": 23127,
-        "direction": 1
+        "direction": 1,
+        "score": 478.0,
+        "threshold": 164.0,
+        "history_samples": 20
       }
     ],
     "unmatched_python": [
@@ -71,19 +81,31 @@
         "time": "2026-06-18T12:01:00",
         "lower_tick": 23005,
         "upper_tick": 23008,
-        "direction": 1
+        "direction": 1,
+        "score": 1093.0,
+        "threshold": 740.0,
+        "history_samples": 24,
+        "bucket": 38
       },
       {
         "time": "2026-06-25T09:08:00",
         "lower_tick": 22827,
         "upper_tick": 22837,
-        "direction": -1
+        "direction": -1,
+        "score": 3584.0,
+        "threshold": 3232.0,
+        "history_samples": 39,
+        "bucket": 32
       },
       {
         "time": "2026-06-30T21:35:00",
         "lower_tick": 22880,
         "upper_tick": 22882,
-        "direction": -1
+        "direction": -1,
+        "score": 220.0,
+        "threshold": 174.0,
+        "history_samples": 41,
+        "bucket": 9
       }
     ]
   },
@@ -91,11 +113,16 @@
     "n_ticks": 2784986,
     "n_bars": 54112,
     "n_sessions_processed": 42,
+    "first_session_clock_trim": {
+      "applied": true,
+      "bars_dropped": 10,
+      "aligned_minute": 320
+    },
     "sessions": [
       {
         "session_id": 20612,
-        "bars": 934,
-        "complete_blocks": 93,
+        "bars": 924,
+        "complete_blocks": 92,
         "off_price_zones": 0
       },
       {
@@ -346,5 +373,5 @@
       }
     ]
   },
-  "payload_sha256": "feaa9cc9361019c867531ea50e177235436b85528bacf487e37d6caa84eea43c"
+  "payload_sha256": "1c829eeb22d3548e4a2ed946496c5c4d34c9a82e5b4f450cd9044b81362fd1f3"
 }
