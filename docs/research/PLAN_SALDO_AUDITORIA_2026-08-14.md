@@ -10,26 +10,21 @@
 
 ## Cola ordenada por dependencia
 
-### W1 — Identidad del kernel NT8 y paridad (cierra D3, P-08, P-09) — CERRADA (diagnóstico, 2026-08-14)
-
-Resultados medidos (evidencia: `W1_PARIDAD_SANDBOX_2026-08-14.md`, `W1_PARIDAD_SANDBOX_R2_2026-08-14.md`, `HANDOFF_AUDITORIA_2026-08-14.md`):
+### W1 — Identidad del kernel NT8 y paridad 6E (cierra D3, P-08, P-09) — CERRADA (diagnóstico, 2026-08-14)
 
 1. Identidad del `.cs`: **P-08 RESUELTA** (blob `ee984f6e` → luego `62b0c951` con el fix de frontera).
 2. P-09 (JSON AVOLT): sigue ABIERTA (regenerar desde el runner).
-3. Oráculos: BT2 time:1 90d completo ✓, aVol 6E ✓, aVol ES 06-26 ✓, aVol ES 09-26 ✓ (P-11). Faltan los bar_specs tick:5/10 del plan vigente.
-4. Réplicas sandbox con identidad sellada punta a punta:
-   - aVol 6E junio: **72/72 exactas** (Δscore = 0), 4 extras marginales con causa medida.
-   - BT2 junio (post-fix): **3.628/3.638 EXACT (99,73 %)**, resto atribuido 100 %.
-   - BT2 abril+mayo (P-12): **171/171 EXACT (100 %)**, los 9 originales uno por uno.
-   - P-13 RESUELTA (raíz + fix verificado + paridad medida); P-14 ABIERTA con causa raíz identificada (defecto del build junio-only, no de la fuente).
+3. Réplicas sandbox con identidad sellada: aVol 6E junio **72/72 exactas**; BT2 junio (post-fix) **3.628/3.638 EXACT (99,73 %)**; BT2 abril+mayo (P-12) **171/171 EXACT (100 %)**. P-13 RESUELTA (raíz + fix verificado + paridad medida); P-14 ABIERTA con causa raíz identificada (defecto del build junio-only, no de la fuente).
+
+### W3 — ES: replay aVol ES 09-26 — CERRADA (diagnóstico, 2026-08-14)
+
+Paquete mensual verificado (3 parquets + oráculo genuino). Replay con kernel byte-exacto: **100 % exacta antes del defecto de datos del 11-jun (119/119, todos los campos), 98,7 % después (307/311)**; global 442/467 con Δtiempo/Δbucket/Δdistance = 0 en todas las emparejadas. Warmup replicado sin ajuste (session_index 22 / samples 25 del oráculo reproducidos). **P-15 ABIERTA**: defecto del 11-jun en el parquet ES de junio (fase de bloques corrida ~2 barras; regenerar + chequeo de minutos faltantes, misma batería que P-14). Cosméticos registrados: `direction=NEUTRAL` en AT_PRICE; conteo de sesiones en la frontera dominical. Evidencia: `docs/research/W3_PARIDAD_SANDBOX_2026-08-14.md`.
+
+Queda de la pata ES: la ruta del dictamen AVOLT (H2/H3/H4) y la verificación estructural de "mayo = ES_06-26 como historia, no concatenar", cuando haya ventana.
 
 ### W2 — Curva de especificación descriptiva (cierra D4)
 
 Corre en local (o réplica diagnóstica en sandbox si llegan los parquets). ~500 celdas, ~2 h en 4 cores, `outcomes_accessed=false`. Insumo para decidir A/B/C/D del soporte común con números.
-
-### W3 — ES: P2 honesto y baseline con identidad (cierra D2)
-
-Oráculo aVol ES 09-26 listo y verificado (P-11). **Bloqueo**: falta el parquet ES 09-26 ventaneado (abr→jun + warmup; partir por mes). Luego: la ruta del dictamen AVOLT (H2/H3/H4) y la verificación estructural de "mayo = ES_06-26 como historia, no concatenar".
 
 ### W4 — Visibilidad y CI (cierra D9, P-05)
 
@@ -42,7 +37,7 @@ Tres decisiones de Nico (`fix/g2-a1-*`, `research/ym-prerange-session-window`, `
 
 ### W6 — Licencia de datos (cierra P-07/M0)
 
-Decisión humana: `DATA_LICENSE_DECISION.md`. Insumo nuevo: docs de política CME/Kaggle commiteados en `bda944a`.
+Decisión humana: `DATA_LICENSE_DECISION.md`. Insumo: docs de política CME/Kaggle commiteados en `bda944a`.
 
 ### W7 — Capa de costos + reglas prop (cierra D7)
 
@@ -51,7 +46,7 @@ Decisión humana: `DATA_LICENSE_DECISION.md`. Insumo nuevo: docs de política CM
 
 ### W8 — F4 constitucional (cierra D1) ← último a propósito
 
-Manifiesto de campaña + número efectivo de hipótesis + riesgos + datos faltantes → OK explícito de Nico (regla STOP) → primera medición de información condicional. Depende de W1 (ya cerrada a nivel diagnóstico) y de que exista un objeto con sello.
+Manifiesto de campaña + número efectivo de hipótesis + riesgos + datos faltantes → OK explícito de Nico (regla STOP) → primera medición de información condicional. Depende de W1/W3 (ya cerradas a nivel diagnóstico) y de que exista un objeto con sello.
 
 *Nota:* D8 (potencia) no es tarea: es convención de diseño, ya adoptada en L3.
 
@@ -62,9 +57,9 @@ Manifiesto de campaña + número efectivo de hipótesis + riesgos + datos faltan
 Para cada contrato × bar_spec:
 
 1. **El `.cs` exacto que generó el oráculo, commiteado y pusheado** (la verificación es contra el blob del repo).
-2. **El CSV del oráculo tal cual lo escribe el indicador**: meta intacta; un archivo por resolución por corrida; nunca append ni merge. Para BT2 en bar_spec de ticks el log ya trae los eventos de control.
-3. **El parquet del contrato, con sha256 declarado y manifiesto regenerado desde el archivo final.** Mismatch → cuarentena.
-4. **Ventana declarada + timezone + arranque exacto de la instancia NT8** (W1 midió que el warmup es de primer orden: ×18 en emisiones espurias si se arranca mal).
+2. **El CSV del oráculo tal cual lo escribe el indicador**: meta intacta; un archivo por resolución por corrida; nunca append ni merge. Ojo: el formato difiere por indicador (BT2 = pipe; aVol = CSV coma con header — documentado en W3 §5).
+3. **El parquet del contrato, con sha256 declarado y manifiesto regenerado desde el archivo final.** Mismatch → cuarentena. Nuevo gate adoptado (tras P-14/P-15): **0 minutos faltantes en horario activo contra la serie nativa**.
+4. **Ventana declarada + timezone + arranque exacto de la instancia NT8** (W1/W3 midieron que el warmup es de primer orden).
 
 ---
 
@@ -74,4 +69,4 @@ Cada W cierra con: etiqueta (`PASS` / `FAIL` / `BLOCKED`), evidencia referenciad
 
 ---
 
-Aporte al referente: la lista de debilidades quedó convertida en una cola ordenada por dependencia; W1 ya cerró con tres mediciones de paridad al nivel más fino que el proyecto tuvo, y el camino quedó pavimentado (datos certificados, oráculos sellados, harness de comparación, réplica sandbox con lector propio versionado en `tools/sandbox_pqread.py`).
+Aporte al referente: la lista de debilidades quedó convertida en una cola ordenada por dependencia; W1 y W3 cerraron con cuatro mediciones de paridad al nivel más fino que el proyecto tuvo — dos instrumentos, dos indicadores, cuatro ventanas — y cada divergencia quedó clasificada entre defecto de datos a regenerar y artefacto cosmético a unificar.

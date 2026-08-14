@@ -44,7 +44,7 @@ La rama sucesora fue rehecha sobre `audit/p0-bigtrap2-drift@1916ffa`; el primer 
 
 **Estado**: ABIERTA — parcialmente resuelta en código.
 
-La rama incorpora `.github/workflows/ci.yml` (instala `requirements/core-bridge-dev.lock`, ejecuta `pytest -q` en push/PR). Falta confirmar en la pestaña Actions que el workflow ejecutó con el lock exacto y terminó verde (los pushes `03d1104`, `84dcfcd`, `2ad04ec`, `c899970` ya lo dispararon). No relajar pins para forzar un verde.
+La rama incorpora `.github/workflows/ci.yml` (instala `requirements/core-bridge-dev.lock`, ejecuta `pytest -q` en push/PR). Falta confirmar en la pestaña Actions que el workflow ejecutó con el lock exacto y terminó verde (los pushes del 2026-08-14 lo dispararon). No relajar pins para forzar un verde.
 
 **Criterio de cierre**: run remoto visible, verde, con el lock exacto; registrar el enlace.
 
@@ -62,7 +62,7 @@ El umbral 0.10 es convención de la literatura; no existe panel propio que mida 
 
 **Estado**: ABIERTA — bloqueo legal/operativo, no técnico.
 
-Falta `DATA_LICENSE_DECISION.md` (proveedor, términos, alcance, responsable). Insumos nuevos del 2026-08-14: docs de política CME/Kaggle commiteados en `bda944a`.
+Falta `DATA_LICENSE_DECISION.md` (proveedor, términos, alcance, responsable). Insumos del 2026-08-14: docs de política CME/Kaggle commiteados en `bda944a`.
 
 **Criterio de cierre**: Nico aporta la fuente de los términos y aprueba el documento.
 
@@ -100,7 +100,7 @@ La copia canónica vive en `nt8/BigTrap2.cs` y es byte-idéntica a la que corre 
 
 **Estado**: RESUELTA (2026-08-14, commit `78de4d6`) — verificada.
 
-Archivo re-exportado: blob `bd8b72652dbf5e6d73686f4014d5cad108353b0d`, meta `instrument=ES 09-26` correcta, 1.066 eventos, ventana 01-may→30-jun, `session_index` arranca en 22 (perfil caliente, sin el defecto H3). Residual (no es esta P): para el replay ES falta el parquet ES 09-26 ventaneado (abr→jun + warmup; partir por mes).
+Archivo re-exportado: blob `bd8b72652dbf5e6d73686f4014d5cad108353b0d`, meta `instrument=ES 09-26` correcta, 1.066 eventos, ventana 01-may→30-jun, `session_index` arranca en 22 (perfil caliente, sin el defecto H3). Cerrada además por el replay W3 (ver `W3_PARIDAD_SANDBOX_2026-08-14.md`).
 
 ---
 
@@ -114,7 +114,7 @@ Llegó el parquet genuino 04-01→06-30 (sha256 `1311bc5ea91a111d…`, 1.131.047
 - **Los 9 TRAPs pre-rotura (01→16-abr), uno por uno: 9/9 EXACT.**
 - P1A PASS (5.638 barras, quote_fraction 0,9999, 0 mismatches); ciclo de vida idéntico en conteos (15 creadas / 15 invalidadas / 8 tocadas en ambos lados).
 
-Evidencia completa: `docs/research/W1_PARIDAD_SANDBOX_R2_2026-08-14.md` §3 y el resultado registrado en el HANDOFF §0.
+Evidencia completa: `docs/research/W1_PARIDAD_SANDBOX_R2_2026-08-14.md` §3 y el HANDOFF §0.
 
 ---
 
@@ -132,6 +132,18 @@ Decisiones registradas: (a) Nico decidió que futuras versiones del `.cs` MARCAR
 
 **Estado**: ABIERTA — causa raíz identificada (2026-08-14), fix pendiente en local.
 
-Al build junio-only le faltan minutos activos del 25-jun (11:02–11:10 ART; el nativo tiene barras de 314–1.893 ahí) y la barra 12:48 ART viene inflada (227 vs 37). **La causa está en el build, no en la fuente**: el build 90d (`1311bc5e…`) SÍ trae esos minutos (sonda medida: 245/849/389 ticks en 11:02/11:05/11:08). 
+Al build junio-only le faltan minutos activos del 25-jun (11:02–11:10 ART; el nativo tiene barras de 314–1.893 ahí) y la barra 12:48 ART viene inflada (227 vs 37). **La causa está en el build, no en la fuente**: el build 90d (`1311bc5e…`) SÍ trae esos minutos (sonda medida: 245/849/389 ticks en 11:02/11:05/11:08).
 
 **Criterio de cierre**: adoptar el build 90d (o re-cortar junio desde él), agregar a la batería el chequeo "0 minutos faltantes en horario activo contra la serie nativa", y auditar por qué el build junio-only perdió ese bloque.
+
+---
+
+## P-15 · Defecto del 11-jun en el parquet de junio de ES 09-26 (`e11d664d…`)
+
+**Estado**: ABIERTA (2026-08-14) — detectada por el replay W3.
+
+El replay aVol sobre ES 09-26 diverge en fase de bloques **solo el 11-jun** (sesión 51): mis bloques cierran ~2 min antes que los del oráculo desde la mañana, offset estable durante el RTH → mi serie tiene ~2 barras menos que la de NT8 ese día. El parquet no muestra hueco propio en RTH (19 gaps de 60–93 s, todos en la madrugada ilquida del 10→11 CT). Consecuencia medida: 21 missing + 21 extras ese día y contaminación del historial aVol posterior (Δthreshold/Δsamples en 20 sesiones siguientes). Fuera de eso la paridad es exacta (pre: 119/119; post: 307/311).
+
+También documentado (mismo replay, cosmético): `direction=NEUTRAL` del oráculo vs `None` del kernel en AT_PRICE_CREATED (unificar), y drift de `session_index` desde la frontera domingo 21-jun → lunes 22 (convención de conteo del SessionIterator en domingos; etiqueta, no entra a la matemática).
+
+**Criterio de cierre**: comparación nativo-vs-parquet minuto a minuto del 06-11 en local (misma batería que P-14: "0 minutos faltantes en horario activo"), regeneración del mensual de junio ES, y re-run del replay esperando ≥ 465/467 con los mismos criterios.
