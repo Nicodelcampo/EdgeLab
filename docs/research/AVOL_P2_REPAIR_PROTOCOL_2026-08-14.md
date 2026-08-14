@@ -1,37 +1,38 @@
 # aVolClusterPOI — Protocolo de reparación P2 v0.1
 
-**Estado:** `ORACLE_JUNIO_RECIBIDO_NO_ALINEADO`  
+**Estado:** `ORACLE_JUNIO_V2_LISTO_P2_NO_CORRIDO`  
 **Fuente de verdad:** `nt8/aVolClusterPOI.cs` v0.5, blob `d512d91a…`  
 **Runner:** `diag/tasa_senales/avolcluster_p2_replay_v01.py`  
 **Spec:** `specs/avolcluster_p2_repair_v0_1.json`
 
 No hay `P2_PASS`. No se corre formal.
 
-## Oráculo junio (commit `4c74b148`)
+## Oráculo junio v2 (commit `0483c4ae`)
 
 Archivo: `data/nt8_oracles/avolcluster_v05_junio2026.csv`  
-Origen declarado: `6E 09-26` `DoNotMerge`, 30 días hasta 2026-06-30, timestamps **ART (UTC-3)**.  
-309 eventos. Primera zona `2026-06-10T11:32` `session_index=7` `samples=20`. Última invalidación `2026-06-30T12:59`. `zone_id` 1–135.
+Origen: `6E 09-26` `DoNotMerge`, date picker NT8 **08/06/2026–30/06/2026** (día completo). Timestamps **ART (UTC-3)**.
 
-El contrato único sin merge es el camino correcto. **No alcanza para P2.**
+171 eventos. 53 `ZONE_CREATED` OFF_PRICE. 19 `AT_PRICE_CREATED`.  
+Primera zona: `2026-06-17T04:34` ART, `session_index=7`, `samples=21`, ticks `23295–23299`.  
+Última invalidación: `2026-06-30T12:59` ART.
 
-## Por qué esta pareja todavía no adjudica
+`samples=21` = 7 sesiones previas × 3 bloques. Coincide con min_samples=20 recién superado. El date picker del 8-jun ART 00:00 ≈ 7-jun 22:00 CT; el parquet canónico empieza 7-jun **22:03** CT. Residual: ~3 minutos de la sesión parcial inicial.
 
-1. **Reloj.** El runner compara el oráculo como datetime naive contra barras convertidas a `America/Chicago`. En junio ART−CDT = 2 h. La tolerancia es 60 s. Correr P2 ahora produce un falso `ABSTAIN_P2` por huso, no por el kernel.
-2. **Warmup.** `LookbackSessions=20` es FIFO de sesiones completas. `session_index=7` el 10-jun implica historia NT8 desde ~31-may / 1-jun. El parquet canónico `6ffcdf04…` empieza **7-jun 22:03 CT**. Faltan ~5 sesiones que el umbral del oráculo sí usó. Eso contamina **toda** la ventana 10–30 jun, no solo el arranque.
-3. El bucket 33 a las 11:32 ART es coherente con sesión CME 17:00 CT. El C# está bien; el matching del runner no.
+## Reloj
 
-## Re-export que falta
+El runner (commit `994a20f6`) convierte ART → `America/Chicago` antes de matchear.  
+`2026-06-17T04:34` ART = `2026-06-17T02:34` CDT. Test en `7e9dcdbc`.
 
-Mismo chart `6E 09-26` `DoNotMerge`. Cargar **solo** historia que el parquet tiene:
+Hash canónico completo:
+`6ffcdf041f8d77a2d6fb7cfe85d63bd8b176a081caa8ad8cd0aaae57c6f178f4`
 
-- desde **2026-06-08 17:00 CT** (19:00 ART) — primera sesión completa compartida;
-- hasta **2026-06-30 16:00 CT** (18:00 ART).
+## Comando (máquina con PyArrow + parquet canónico)
 
-No cargar 30 días atrás. No empezar el domingo 7-jun 17:00 CT: el parquet no tiene 17:00–22:03.
+```bash
+python diag/tasa_senales/avolcluster_p2_replay_v01.py \
+  --parquet "RUTA_CANONICA/6E_09-26_ticks.parquet" \
+  --oracle data/nt8_oracles/avolcluster_v05_junio2026.csv \
+  --out diag/tasa_senales/AVOL_P2_replay_v01.json
+```
 
-Después: timestamps del CSV en ART se convierten a CT **antes** de matchear. El runner hay que parchearlo; hoy asume Chicago naive.
-
-## Qué no hacer
-
-No concatenar `12-25`/`03-26`/`06-26`. No cambiar el hash canónico. No formal. No mejora A/B. No GC.
+`sha256sum` del parquet debe ser exactamente el hash de arriba. Formal, A/B, GC y concatenación: no.
