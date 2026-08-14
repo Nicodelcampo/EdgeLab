@@ -118,3 +118,68 @@ licencia a partir de parquets locales ni crearla unilateralmente.
 términos y aprueba una `DATA_LICENSE_DECISION.md` con alcance, restricciones y
 fecha. Hasta entonces no se declara este gate satisfecho ni se publican datos
 brutos o derivados que los términos no permitan.
+
+---
+
+## P-08 · Identidad del `BigTrap2.cs` local (v2.5.2) vs blobs del repo
+
+**Referenciada desde**: verificación git-blob del 2026-08-14 (auditoría externa,
+`docs/research/AUDITORIA_EXTERNA_2026-08-14.md` §1).
+
+**Estado**: ABIERTA — bloquea la exportación de oráculos CSV con identidad sellada.
+
+El `.cs` que corre en la máquina local (62.401 bytes, CRLF puro, marcadores
+v2.5.2: meta `version=2.5.2`, `LogEventAt` en los 7 sitios, drenaje en
+`Terminated`) tiene sha1 git-blob `ee984f6ef4d92827101eaf56a8a60d0a43ab53f6`,
+que no coincide con ningún blob del repo: `fix/bigtrap2-v252-tick-export` tiene
+`dbf226138af813bb035e08e339ba5dadc4b3a910` (v2.5.2 completa) y las ramas
+research/audit tienen `78f6909dcb75f8aa78dafb354ca4cf851eaa2093` (era v2.5.1,
+con el helper `LogEventAt` presente pero los sitios de export sin cambiar).
+Hay una diferencia de contenido real, de localización desconocida desde afuera.
+
+**Criterio de cierre**: `git status` + `git diff` local contra
+`fix/bigtrap2-v252-tick-export`; decidir cuál copia es la canónica; commitear
+la que genere oráculos y registrar su blob en `nt8/README.md` (cuyo inventario
+además quedó desactualizado: lista BigTrap2 como v2.1). Ningún CSV exportado
+antes de esto tiene procedencia completa.
+
+---
+
+## P-09 · El JSON formal AVOLT no cierra contra su propio sello
+
+**Referenciada desde**: `docs/research/AVOLT_AUDITORIA_DICTAMEN_2026-08-14.md`,
+hallazgo H1.
+
+**Estado**: ABIERTA — mecánica.
+
+`diag/tasa_senales/AVOLT_formal_d5c41684e162.json`: el sha256 declarado no
+cierra sobre una recomputación independiente, y `zones.session_means` trae 176
+valores contra `n_sessions=188` declarado (media/SE recomputados difieren de
+los declarados). El archivo commiteado no es el payload que produjo la corrida.
+
+**Criterio de cierre**: regenerar el JSON desde el runner y recommitear;
+verificación de una línea en el dictamen H1.
+
+---
+
+## P-10 · Merges que cambian semántica de validación, pendientes de decisión
+
+**Referenciada desde**: `CLAUDE.md` (estado vigente 2026-08-10) y commit
+`70d2ed4` de `audit/p0-bigtrap2-drift`.
+
+**Estado**: ABIERTA — decisión de Nico, nadie más.
+
+Tres líneas remotas sin mergear tocan semántica o premisas vigentes:
+
+1. `fix/g2-a1-statistical-semantics` + `fix/g2-a1-calibration-hardening`:
+   reescriben `g2_decision.py`/`promotion.py` con calendario obligatorio,
+   `MIN_DSR_SESSIONS` y DSR V1/V2 — más riguroso que la enmienda G2-A1
+   mergeada. Cambio de semántica de validación: requiere decisión explícita.
+2. `research/ym-prerange-session-window`: `minute_window_matrices` con
+   calendario explícito y cruce de medianoche — más completo que
+   `build_session_matrices`. Revisar antes de tocar `edgelab/sessions.py`.
+3. `docs/lux-imb-source-correction`: retracta la premisa de H-COND-1 (el
+   indicador LUX-IMB no borra zonas mitigadas). La versión vigente en el repo
+   sigue describiendo el bloqueo por la razón vieja.
+
+**Criterio de cierre**: una decisión merge/no-merge por rama, registrada acá.
