@@ -246,8 +246,6 @@ def run(parquet_path: str | Path, oracle_path: str | Path) -> dict:
     oracle_path = Path(oracle_path)
     actual_hash = sha256_file(parquet_path)
     hash_ok = actual_hash == EXPECTED_6E_09_26_SHA256
-    meta, oracle_all = parse_oracle(oracle_path)
-    oracle = [z for z in oracle_all if WINDOW_START <= z["time"] < WINDOW_END]
 
     base = {
         "schema_version": SCHEMA_VERSION,
@@ -256,13 +254,14 @@ def run(parquet_path: str | Path, oracle_path: str | Path) -> dict:
             "nt8_cs": "nt8/aVolClusterPOI.cs",
             "nt8_git_blob": "d512d91a606d41609b21ef244c896ead1dc52a10",
             "oracle": str(oracle_path),
-            "oracle_meta_instrument": meta.get("instrument"),
+            "oracle_meta_instrument": None,
         },
         "input": {
             "parquet": str(parquet_path),
             "expected_sha256": EXPECTED_6E_09_26_SHA256,
             "actual_sha256": actual_hash,
             "hash_ok": hash_ok,
+            "oracle_instrument_ok": None,
         },
         "window": {
             "timezone": TZ,
@@ -270,19 +269,26 @@ def run(parquet_path: str | Path, oracle_path: str | Path) -> dict:
             "end_exclusive": WINDOW_END.isoformat(),
             "warmup": "all complete sessions available before window start",
         },
-        "oracle_rows": len(oracle),
+        "oracle_rows": None,
         "outcomes_accessed": False,
         "pnl_accessed": False,
         "holdout_included": False,
         "formal_race_executed": False,
     }
+    # Primary-input mismatch is sufficient for ABSTAIN_INPUT. Do not make the
+    # abstention depend on a secondary oracle file, PyArrow, P1A, or any result.
+    if not hash_ok:
+        return seal_payload(base)
+
+    meta, oracle_all = parse_oracle(oracle_path)
+    oracle = [z for z in oracle_all if WINDOW_START <= z["time"] < WINDOW_END]
+    base["source_of_truth"]["oracle_meta_instrument"] = meta.get("instrument")
+    base["oracle_rows"] = len(oracle)
     if meta.get("instrument") != EXPECTED_INSTRUMENT_META:
         base["label"] = "ABSTAIN_INPUT"
         base["input"]["oracle_instrument_ok"] = False
         return seal_payload(base)
     base["input"]["oracle_instrument_ok"] = True
-    if not hash_ok:
-        return seal_payload(base)
 
     # IMPORTANT: load the full contract. Filtering before replay would remove
     # the history that NT8 had before the first exported zone.

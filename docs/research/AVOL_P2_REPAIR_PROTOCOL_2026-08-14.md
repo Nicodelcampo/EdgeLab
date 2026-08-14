@@ -37,7 +37,8 @@ los números posteriores no deben usarse.
 ## Gate nuevo
 
 1. Hash exacto del `6E_09-26_ticks.parquet` preregistrado. Mismatch →
-   `ABSTAIN_INPUT` antes de abrir Parquet.
+   `ABSTAIN_INPUT` antes de leer el oráculo, abrir Parquet, importar PyArrow,
+   ejecutar P1A o calcular cualquier resultado.
 2. Meta del oráculo = `6E 09-26`.
 3. Cargar el contrato completo para conservar historia anterior.
 4. Barras M1, P1A, bloques y buckets espejo del C#.

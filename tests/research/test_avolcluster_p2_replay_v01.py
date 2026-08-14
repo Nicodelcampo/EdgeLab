@@ -14,6 +14,7 @@ from diag.tasa_senales.avolcluster_p2_replay_v01 import (
     decide_p2,
     match_one_to_one,
     parse_oracle,
+    run,
     seal_payload,
     session_begin_utc_ns,
 )
@@ -46,6 +47,23 @@ def test_exact_bijection_passes_and_60_seconds_is_inclusive():
     assert diff["matched"] == 1
     assert not diff["unmatched_oracle"] and not diff["unmatched_python"]
     assert decide_p2(True, "PASS", diff) == "P2_PASS"
+
+
+def test_hash_mismatch_short_circuits_before_oracle_and_pyarrow():
+    root = Path(tempfile.mkdtemp())
+    bad_parquet = root / "not_canonical.parquet"
+    bad_parquet.write_bytes(b"PAR1-not-the-canonical-file-PAR1")
+    missing_oracle = root / "does_not_exist.csv"
+    payload = run(bad_parquet, missing_oracle)
+    assert payload["label"] == "ABSTAIN_INPUT"
+    assert payload["input"]["hash_ok"] is False
+    assert payload["input"]["oracle_instrument_ok"] is None
+    assert payload["source_of_truth"]["oracle_meta_instrument"] is None
+    assert payload["oracle_rows"] is None
+    assert payload["formal_race_executed"] is False
+    assert payload["outcomes_accessed"] is False
+    assert payload["pnl_accessed"] is False
+    assert "p1a_gate" not in payload
 
 
 def test_input_and_p1a_fail_closed():
