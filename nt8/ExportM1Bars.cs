@@ -1,5 +1,7 @@
 #region Using declarations
 using System;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using NinjaTrader.Cbi;
 using NinjaTrader.Gui;
@@ -12,22 +14,42 @@ namespace NinjaTrader.NinjaScript.Indicators
 	public class ExportM1Bars : Indicator
 	{
 		private StreamWriter writer;
-		private string exportPath = @"C:\EdgeLab\6E_1min_2026.csv";
+		private string exportPath = "";
+
+		[NinjaScriptProperty]
+		[Display(Name = "CSV Export Path", Description = "Ruta del CSV. Si se deja vacio, se guarda automaticamente como C:\\EdgeLab\\<Instrumento>_1min.csv", Order = 1, GroupName = "Configuracion")]
+		public string ExportPath
+		{
+			get { return exportPath; }
+			set { exportPath = value; }
+		}
 
 		protected override void OnStateChange()
 		{
 			if (State == State.SetDefaults)
 			{
-				Description = "Export exact 1-minute bars seen by chart to CSV";
+				Description = "Exporta automaticamente las barras exactas de 1 minuto del grafico a CSV";
 				Name = "ExportM1Bars";
 				Calculate = Calculate.OnBarClose;
 				IsOverlay = true;
+				ExportPath = "";
 			}
 			else if (State == State.DataLoaded)
 			{
 				try
 				{
-					writer = new StreamWriter(exportPath, false);
+					string targetPath = ExportPath;
+					if (string.IsNullOrWhiteSpace(targetPath))
+					{
+						string inst = (Instrument != null) ? Instrument.MasterInstrument.Name : "Data";
+						targetPath = string.Format(@"C:\EdgeLab\{0}_1min.csv", inst);
+					}
+
+					string dir = Path.GetDirectoryName(targetPath);
+					if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+						Directory.CreateDirectory(dir);
+
+					writer = new StreamWriter(targetPath, false);
 					writer.WriteLine("Time,Open,High,Low,Close,Volume");
 				}
 				catch { }
@@ -36,9 +58,16 @@ namespace NinjaTrader.NinjaScript.Indicators
 			{
 				if (writer != null)
 				{
-					writer.Flush();
-					writer.Close();
-					writer = null;
+					try
+					{
+						writer.Flush();
+						writer.Close();
+					}
+					catch { }
+					finally
+					{
+						writer = null;
+					}
 				}
 			}
 		}
