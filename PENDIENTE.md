@@ -68,7 +68,9 @@ relajar los pins para forzar un verde: un fallo de instalación sería evidencia
 sobre el lock, no sobre la semántica del workflow.
 
 **Criterio de cierre**: un run remoto visible de CI que instale el lock y termine
-la suite sin fallos; registrar el enlace/commit verificado.
+la suite sin fallos; registrar el enlace/commit verificado. (Nota 2026-08-14:
+los pushes `03d1104`, `84dcfcd` y `2ad04ec` ya dispararon el workflow tres
+veces; falta la confirmación en la pestaña Actions.)
 
 ---
 
@@ -117,7 +119,8 @@ licencia a partir de parquets locales ni crearla unilateralmente.
 **Criterio de cierre**: Nico o el responsable autorizado aporta la fuente de los
 términos y aprueba una `DATA_LICENSE_DECISION.md` con alcance, restricciones y
 fecha. Hasta entonces no se declara este gate satisfecho ni se publican datos
-brutos o derivados que los términos no permitan.
+brutos o derivados que los términos no permitan. (Insumo nuevo 2026-08-14: los
+docs de política CME/Kaggle commiteados en `bda944a`.)
 
 ---
 
@@ -126,22 +129,18 @@ brutos o derivados que los términos no permitan.
 **Referenciada desde**: verificación git-blob del 2026-08-14 (auditoría externa,
 `docs/research/AUDITORIA_EXTERNA_2026-08-14.md` §1).
 
-**Estado**: ABIERTA — bloquea la exportación de oráculos CSV con identidad sellada.
+**Estado**: RESUELTA (2026-08-14, commit `2ad04ec`).
 
-El `.cs` que corre en la máquina local (62.401 bytes, CRLF puro, marcadores
-v2.5.2: meta `version=2.5.2`, `LogEventAt` en los 7 sitios, drenaje en
-`Terminated`) tiene sha1 git-blob `ee984f6ef4d92827101eaf56a8a60d0a43ab53f6`,
-que no coincide con ningún blob del repo: `fix/bigtrap2-v252-tick-export` tiene
-`dbf226138af813bb035e08e339ba5dadc4b3a910` (v2.5.2 completa) y las ramas
-research/audit tienen `78f6909dcb75f8aa78dafb354ca4cf851eaa2093` (era v2.5.1,
-con el helper `LogEventAt` presente pero los sitios de export sin cambiar).
-Hay una diferencia de contenido real, de localización desconocida desde afuera.
+La copia local quedó commiteada como canónica: `nt8/BigTrap2.cs` en HEAD
+`2ad04ec` tiene blob `ee984f6ef4d92827101eaf56a8a60d0a43ab53f6` (62.401 bytes),
+byte-idéntico al archivo que corre en NT8 (verificado por el auditor externo
+contra el archivo subido por chat: mismo sha1 git-blob en crudo CRLF).
 
-**Criterio de cierre**: `git status` + `git diff` local contra
-`fix/bigtrap2-v252-tick-export`; decidir cuál copia es la canónica; commitear
-la que genere oráculos y registrar su blob en `nt8/README.md` (cuyo inventario
-además quedó desactualizado: lista BigTrap2 como v2.1). Ningún CSV exportado
-antes de esto tiene procedencia completa.
+Residuales no bloqueantes que quedan registrados: (a) el delta semántico contra
+`dbf22613` (la v2.5.2 de `fix/bigtrap2-v252-tick-export`) no quedó documentado —
+la canónica es ahora la del repo por definición, pero conviene leer el diff una
+vez; (b) `nt8/README.md` sigue listando BigTrap2 como v2.1 — actualizar el
+inventario con el blob nuevo.
 
 ---
 
@@ -183,3 +182,69 @@ Tres líneas remotas sin mergear tocan semántica o premisas vigentes:
    sigue describiendo el bloqueo por la razón vieja.
 
 **Criterio de cierre**: una decisión merge/no-merge por rama, registrada acá.
+
+---
+
+## P-11 · El oráculo aVol de ES 09-26 no existe (archivo duplicado del 06-26)
+
+**Referenciada desde**: verificación del auditor externo 2026-08-14
+(`docs/research/W1_PARIDAD_SANDBOX_2026-08-14.md` §5).
+
+**Estado**: ABIERTA — defecto de export.
+
+`data/nt8_oracles/avolcluster_v05_ES_0926.csv` es byte-idéntico a
+`avolcluster_v05_ES_0626.csv` (mismo blob `2d2328cf`) y su meta declara
+`instrument=ES 06-26`. Dos contratos distintos no pueden producir el mismo
+event-log: la exportación de ES 09-26 faltó o se pisó con la del 06-26.
+
+**Criterio de cierre**: re-exportar el oráculo aVol v0.5 sobre ES 09-26 (misma
+carga/ventana declarada, meta `instrument=ES 09-26` verificada contra el
+contenido) y recommitear; borrar o renombrar el duplicado para que el nombre
+no mienta.
+
+---
+
+## P-12 · El parquet W1 de 6E 09-26 cubre solo junio y su manifiesto no lo describe
+
+**Referenciada desde**: verificación del auditor externo 2026-08-14
+(`docs/research/W1_PARIDAD_SANDBOX_2026-08-14.md` §1 y §5).
+
+**Estado**: ABIERTA — paquete de datos.
+
+El paquete W1 pedía 90 días (04-01→06-30); el parquet entregado cubre
+05-31 17:00 CT → 06-30 15:59 CT (1.103.973 filas). El manifiesto empaquetado
+(`6E_09-26_manifest.json`) declara 3.182.270 filas y `parquet_sha256=
+2377b076…`, que no coincide con el archivo (`46413432…`): describe otro build.
+Por la regla del proyecto esto era cuarentena directa; se procesó igual bajo
+la etiqueta de réplica diagnóstica verificando el dato de forma independiente
+(estructura OK). Consecuencias medidas: los 9 TRAPs de abril del oráculo BT2
+quedaron sin cobertura, y el warmup de aVol tuvo que reconstruirse por
+evidencia (session_index/samples del propio oráculo).
+
+**Criterio de cierre**: re-empaquetar con el parquet de 90 días y el manifiesto
+regenerado desde el archivo final (hash recomputado sobre lo empaquetado);
+declarar la ventana real en el manifiesto del paquete.
+
+---
+
+## P-13 · BigTrap2 time:1 — silencio de TRAPs del oráculo después del 16-abr
+
+**Referenciada desde**: verificación del auditor externo 2026-08-14
+(`docs/research/W1_PARIDAD_SANDBOX_2026-08-14.md` §3).
+
+**Estado**: ABIERTA — bloquea el cierre de paridad de BT2 (W1).
+
+El oráculo v2.5.2 (90d) trae 9 TRAPs (04-01→04-16) y después cero; el kernel
+Python byte-verificado emite 3.759 TRAPs sobre junio con datos verificados.
+Lectura del `.cs`: la política `sesionNoConfiable` corta también el export de
+TRAP (`EmitirBarra` retorna con la sesión marcada) y se resetea solo en la
+frontera de sesión; el patrón es compatible con supresión persistente o con
+deriva del pareo FIFO tras el primer mismatch, pero el CSV no trae los eventos
+de control (`SESION_RESINCRONIZADA`, `ANCLAJE_*`, `BARRA_PROCESADA`) que
+permitirían distinguirlo — posiblemente filtrados al exportar.
+
+**Criterio de cierre**: re-exportar el oráculo BT2 con el log de eventos
+COMPLETO (todos los tipos) + corrida local gobernada del comparador; y decidir
+explícitamente si la supresión del export bajo `sesionNoConfiable` es el
+comportamiento deseado para oráculos (hoy un oráculo "suprimido" es
+indistinguible de uno "sin detecciones").
