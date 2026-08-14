@@ -1,6 +1,6 @@
 {
-  "schema_version": "gex_bulletin_extract_v0",
-  "status": "SOURCE_TEXT_EXTRACTED_COLUMNS_NOT_SEALED",
+  "schema_version": "gex_bulletin_extract_v0.1",
+  "status": "COLUMNS_SEALED_PENDING_D1_CROSSCHECK",
   "bulletin_date": "2026-08-12",
   "bulletin_no": 154,
   "final": true,
@@ -9,7 +9,13 @@
   "binary_pdf_stored": false,
   "sources": {
     "01B": "https://www.cmegroup.com/daily_bulletin/current/Section01B_Summary_Volume_And_Open_Interest_FX_Futures_And_Options.pdf",
-    "01C": "https://www.cmegroup.com/daily_bulletin/current/Section01C_Summary_Volume_And_Open_Interest_Equity_Index_Futures_And_Options.pdf"
+    "01C": "https://www.cmegroup.com/daily_bulletin/current/Section01C_Summary_Volume_And_Open_Interest_Equity_Index_Futures_And_Options.pdf",
+    "glossary": "https://www.cmegroup.com/tools-information/files/CME-Group-Daily-Bulletin-Glossary.pdf"
+  },
+  "column_map_01B_futures": {
+    "evidence": "arithmetic identities EC/NQ/ES (globex + venue_complement = total) + known magnitudes (ES OI ~2.1M, NQ ~291k)",
+    "fields": ["open_interest", "product_name", "total_volume", "oi_net_change", "globex_volume", "oi_52wk_ago", "volume_52wk_ago", "venue_complement"],
+    "pending": "D1 cross-check: OI(t) - OI(t-1) == oi_net_change"
   },
   "raw_rows": {
     "EC": "803339 EURO FX FUTURES 127840 + 1455 125584 819728 135019 2256 EC",
@@ -19,5 +25,10 @@
     "NQ": "291056 E-MINI NASDAQ 100 FUTURES 413290 + 8394 410608 299408 454736 2682 NQ",
     "MES": "273851 MICRO E-MINI S&P 500 FUTURES 798912 + 1129 798912 229725 802922 MES"
   },
-  "note": "Do not treat these integers as named volume/OI until a column map is sealed against the CME glossary. GEX-M0 is extract, not interpretation."
+  "parsed": {
+    "EC": {"open_interest": 803339, "total_volume": 127840, "oi_net_change": 1455, "globex_volume": 125584, "oi_52wk_ago": 819728, "volume_52wk_ago": 135019},
+    "ES": {"open_interest": 2103868, "total_volume": 947632, "oi_net_change": -15638, "globex_volume": 940765, "oi_52wk_ago": 1954137, "volume_52wk_ago": 1114487},
+    "NQ": {"open_interest": 291056, "total_volume": 413290, "oi_net_change": 8394, "globex_volume": 410608, "oi_52wk_ago": 299408, "volume_52wk_ago": 454736}
+  },
+  "note": "01B gives product-level volume/OI, not per-strike. GEX levels need a per-strike source (GEX-M1). Do not interpret gamma from this fixture."
 }
