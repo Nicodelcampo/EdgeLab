@@ -1,25 +1,25 @@
 # aVolClusterPOI — Protocolo de reparación P2 v0.1
 
-**Estado:** `ABSTAIN_P2` — parche de grilla de sesión 0 listo, P2 no recorido.  
-**Run previo:** `e7602fe6` — 50/53, sello `feaa9cc9…`  
-**Parche:** `d89b3a7e` runner + `eaaa55c5` tests.
+**Estado:** `ABSTAIN_P2`  
+**Runs:** `e7602fe6` (50/53) y `6f05e947` (50/53 tras clock-trim).  
+Sello nuevo: `1c829eeb22d3548e4a2ed946496c5c4d34c9a82e5b4f450cd9044b81362fd1f3`
 
-Autopsia local (parquet `6ffcdf04…`): los 3 clusters NT8 existen en las celdas.  
-Dos caen por warmup Python (18 y 19 muestras). Uno por umbral (1107 vs 1550).  
-Causa: el parquet arranca 22:03 CT y NT8 a las 22:00; el first-10-seen desfasaba toda la sesión 0.
+Hash canónico OK. P1A PASS. Formal no ejecutada. Gate 100% intacto.
 
-## Parche
+## Clock-trim: no sirvió
 
-Si la primera sesión no abre en un múltiplo de 10 minutos desde las 17:00 CT, se descartan barras hasta el próximo borde (22:10). Las sesiones completas que abren 17:00 no cambian. El gate sigue siendo 100% uno-a-uno. Formal bloqueada.
+`first_session_clock_trim`: applied, `bars_dropped=10`, `aligned_minute=320`.  
+Se esperaba ~7 barras hasta el minuto 310 (22:10 CT). Se recortó de más (22:20).  
+Sesión 0: 934 → 924 barras. Las 3+3 zonas no se movieron: mismos ticks, mismas horas.
 
-## Recorrer P2
+No hay más parches de grilla. El desfase de historial no se adivina desde Python.
 
-```bash
-git pull
-python diag/tasa_senales/avolcluster_p2_replay_v01.py \
-  --parquet "D:\EdgeLab\data\nt8\6E\6E_09-26_ticks.parquet" \
-  --oracle data/nt8_oracles/avolcluster_v05_junio2026.csv \
-  --out diag/tasa_senales/AVOL_P2_replay_v01.json
-```
+## Las 6 siguen iguales
 
-Mandar `label`, matched, unmatched y `first_session_clock_trim`. No formal hasta `P2_PASS`.
+NT8 sola (Chicago): 17-jun 13:26 `[23184,23185]` 1107/750 n=20; 20:03 `[23107,23110]` 1437/434 n=21; 23:39 `[23125,23127]` 478/164 n=20.
+
+Python sola: 18-jun 12:01 `[23005,23008]` 1093/740 n=24; 25-jun 09:08 `[22827,22837]` 3584/3232 n=39; 30-jun 21:35 `[22880,22882]` 220/174 n=41.
+
+## Qué queda
+
+Un solo insumo, si se quiere otro intento de P2: reexport NT8 `DoNotMerge` desde **2026-06-08 00:03 ART** (22:03 CT del 7-jun, primer tick del parquet) hasta 30-jun. Sin eso, este par oráculo/parquet queda en `ABSTAIN_P2`. No formal. No A/B.
