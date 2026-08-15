@@ -50,6 +50,14 @@ namespace NinjaTrader.NinjaScript.Indicators
 						Directory.CreateDirectory(dir);
 
 					writer = new StreamWriter(targetPath, false);
+					// Primera declaracion de version de este .cs (2026-08-15). No tenia
+					// ninguna: la regla permanente pide que cada correccion viaje con su
+					// version, y sin meta en el CSV un export no se puede trazar al codigo
+					// que lo produjo. Arranca en 1.0 porque no hay version previa que
+					// continuar. Al tocar este archivo, subirla aca Y en el meta.
+					writer.WriteLine(string.Format(
+						"# meta indicator=ExportM1Bars,version=1.0,instrument={0},bar_spec=time:1,ts_note=chart_local",
+						Instrument.MasterInstrument.Name));
 					writer.WriteLine("Time,Open,High,Low,Close,Volume");
 				}
 				catch { }

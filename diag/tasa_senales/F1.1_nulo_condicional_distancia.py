@@ -132,29 +132,46 @@ def spec_sha256():
     return hashlib.sha256(SPEC_PATH.read_bytes().replace(b"\r\n", b"\n")).hexdigest()
 
 
+def _tiene_parquets(d):
+    """Un `data/` sirve solo si trae los parquets. Desde que se commitearon los 11
+    CSV de `data/nt8_oracles/`, TODA worktree tiene un `data/` -- con oraculos y sin
+    `nt8/`. La premisa de `CLAUDE.md` ("`/data/` es dato local, gitignoreado") dejo
+    de ser cierta el dia que `.gitignore` gano `!/data/nt8_oracles/`, y este
+    resolvedor la seguia asumiendo: devolvia el primer directorio llamado `data` que
+    encontraba y el research corria contra un arbol sin datos. Existir no alcanza."""
+    return (d / "nt8").is_dir()
+
+
 def data_root():
-    """`data/` esta gitignoreado (CLAUDE.md: dato local) y por eso NINGUNA
-    worktree lo tiene -- solo el checkout principal o DATA_DIR resuelto."""
+    """Resuelve el `data/` que de verdad tiene los parquets.
+
+    Antes bastaba con que el directorio existiera. Eso producia un falso positivo
+    silencioso desde cualquier worktree (ver `_tiene_parquets`). Ahora cada
+    candidato se valida por contenido y, si ninguno sirve, falla cerrado nombrando
+    todo lo que se probo -- un resolvedor de datos que adivina es peor que uno que
+    aborta."""
     from edgelab.config import DATA_DIR
-    if Path(DATA_DIR).exists():
-        return Path(DATA_DIR)
-    local = REPO_PATH / "data"
-    if local.exists():
-        return local
+    probados = []
+
+    candidatos = [Path(DATA_DIR), REPO_PATH / "data"]
     out = subprocess.check_output(
         ["git", "-C", str(REPO_PATH), "worktree", "list", "--porcelain"], text=True)
-    primera_worktree = None
     for line in out.splitlines():
         if line.startswith("worktree "):
-            primera_worktree = Path(line[len("worktree "):].strip())
-            break
-    if primera_worktree is None:
-        raise RuntimeError("no se pudo resolver el checkout principal via `git worktree list`")
-    candidato = primera_worktree / "data"
-    if not candidato.exists():
-        raise RuntimeError("`data/` no existe ni en esta worktree ni en el checkout "
-                           "principal resuelto (%s)" % candidato)
-    return candidato
+            candidatos.append(Path(line[len("worktree "):].strip()) / "data")
+
+    for c in candidatos:
+        probados.append(str(c))
+        if c.exists() and _tiene_parquets(c):
+            return c
+
+    existen_pero_vacios = [p for p in probados if Path(p).exists()]
+    raise RuntimeError(
+        "no se encontro ningun `data/` con `nt8/` adentro.\n"
+        "  probados : %s\n"
+        "  existen pero sin `nt8/` : %s\n"
+        "Si el checkout principal tiene los parquets, corre desde ahi o exporta "
+        "DATA_DIR apuntando al arbol correcto." % (probados, existen_pero_vacios or "ninguno"))
 
 
 # ======================================================================

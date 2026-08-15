@@ -155,6 +155,14 @@ namespace NinjaTrader.NinjaScript.Indicators
 					Directory.CreateDirectory(dir);
 
 				writer = new StreamWriter(EventLogPath, false);
+				// Primera declaracion de version de este .cs (2026-08-15). No tenia
+				// ninguna. La ventana va en el meta a proposito: P-19..P-22 registran una
+				// discrepancia de procedencia (el spec corre 08:12-09:12 y el resumen
+				// operativo decia 08:30-09:30), y un export que no declara su ventana no
+				// permite distinguir cual de las dos produjo el archivo.
+				writer.WriteLine(string.Format(
+					"# meta indicator=YMPreRangeSweep,version=1.0,instrument={0},window={1:00}:{2:00}-{3:00}:{4:00},ts_note=chart_local",
+					Instrument.MasterInstrument.Name, StartHour, StartMinute, EndHour, EndMinute));
 				writer.WriteLine("session_date,window_start,window_end,window_high,window_low,range_pts,first_sweep_side,first_sweep_time,first_sweep_lag_bars,second_sweep_occurred,second_sweep_time,second_sweep_lag_bars,max_ext_first_pts,outcome");
 				writer.Flush();
 			}

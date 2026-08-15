@@ -40,6 +40,10 @@ declaró explícitamente no tocar el board «para no pisarlo a ciegas» — corr
 coordinación, pero deja la entrada huérfana hasta que alguien la asienta. Es la
 tercera vez en el día.
 
+**P-33 y P-34** salieron del intake de los oráculos de `HFTZones2` / `aVolCellPOI2`
+del 15-ago. P-34 documenta una cuarentena que **se levantó con prueba de equivalencia**,
+no con un supuesto: los oráculos quedaron habilitados.
+
 **Inventario de ramas**: `docs/INVENTARIO_DE_RAMAS_2026-08-15.md` distingue las ramas
 *superadas* (contenido ya aplicado, mergearlas duplicaría historia) de las *pendientes*
 (traen algo que no está en ningún lado). `tools/estado.py` las marca todas igual.
@@ -547,3 +551,56 @@ layout, no de integridad.
    pasa a aviso sólo si ningún candidato cierra por hash.
 2. Las carpetas `*_prev_*` salen de `data/nt8/` a un árbol de cuarentena, y el acta de
    exports prohibidos se hace cumplir por ubicación además de por hash.
+
+---
+
+## P-34 · Las etiquetas de versión no se derivan del contenido
+
+**Estado**: ABIERTA (2026-08-15) — medido. La cuarentena que disparó **se levantó con prueba**.
+
+Al hacer el intake de los oráculos de `HFTZones2` y `aVolCellPOI2` aparecieron tres
+etiquetas distintas para el mismo indicador. Se investigó en vez de asumir, y **las
+tres describen el mismo comportamiento**:
+
+| Artefacto | Etiqueta declarada | Comportamiento real |
+| --- | --- | --- |
+| `edgelab/bridge/indicators/hftzones2.py` (blob `8886d51c…`) | docstring «v2.1» | **v2.3** |
+| `nt8/HFTZones2.cs` del repo (blob `64f1db87…`) | `engine=…v23_lifecycle_all_integer` | **v2.3** |
+| `HFTZones2.cs` instalado en NT8 (blob `700ecdb4…`) | `engine=…v22_zone_edges` | **v2.3** |
+
+**Prueba de equivalencia** (por lectura de código, no por analogía). Quitando las 53
+líneas de `#region NinjaScript generated code` que NT8 autogenera, el diff entre el
+`.cs` del repo y el instalado es **un solo bloque**: el repo saca
+`long priceTick = PriceToTick(price);` **fuera** del `for` sobre zonas; el de NT8 lo
+calcula **dentro**. `price` es un parámetro que no cambia en el loop y `PriceToTick`
+es pura (`Math.Round(price / TickSize, AwayFromZero)`, sin estado): es un **hoist de
+invariante de loop**. Mismo valor, mismas comparaciones enteras
+(`priceTick >= z.LowerTick && priceTick <= z.UpperTick`), mismo resultado.
+
+El kernel Python hace lo mismo que el repo: `px_t = snap_to_tick(price, tick_size)`
+fuera del loop y `z["lower_t"] <= px_t <= z["upper_t"]` adentro
+(`hftzones2.py:365-369`). Su docstring «v2.1» es etiqueta vieja, no código viejo.
+
+`aVolCellPOI2`: el `.cs` del repo (`d43c686f…`) y el instalado (`91d186a6…`) **no
+tienen ninguna diferencia real** — sólo el boilerplate autogenerado.
+
+### Por qué queda abierta si todo dio bien
+
+Porque el resultado favorable es accidental. **Ninguna de las tres etiquetas se deriva
+del contenido**: son strings escritos a mano que se actualizan por disciplina. Esta vez
+tres etiquetas distintas cubrían un mismo comportamiento; la falla simétrica —dos
+artefactos con la **misma** etiqueta y comportamiento distinto— es P-08 otra vez, y no
+hay nada en el sistema que la impida.
+
+Consecuencia que importa: **cualquier paridad previa validada mirando sólo el string de
+versión hereda esta duda.** El blob sí se deriva del contenido; la etiqueta no.
+
+**Criterio de cierre**: la verificación de identidad de un oráculo compara **blobs**
+(`.cs` del repo vs el que produjo el CSV), no strings de versión — y si el `.cs` que
+corrió no está en el repo, el oráculo entra en cuarentena hasta que se commitee. Como
+mínimo: subir el `version` del meta cuando cambia el engine, y sincronizar el docstring
+del kernel Python.
+
+**Residual inmediato**: los tres artefactos siguen mal etiquetados. Corregir las
+etiquetas es barato; hacerlo **antes** de la próxima corrida formal evita que alguien
+repita esta investigación desde cero.
