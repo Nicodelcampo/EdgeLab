@@ -134,8 +134,10 @@ namespace NinjaTrader.NinjaScript.Strategies
 			// Control de riesgo diario (Prop Firm Safety Guard)
 			if (dailyPnL <= -Math.Abs(MaxDailyLoss) || tradesToday >= MaxDailyTrades)
 			{
-				if (Position.MarketPosition != MarketPosition.Flat)
-					ExitPosition("Daily Risk Limit Reached");
+				if (Position.MarketPosition == MarketPosition.Long)
+					ExitLong("Daily Risk Limit Reached");
+				else if (Position.MarketPosition == MarketPosition.Short)
+					ExitShort("Daily Risk Limit Reached");
 				return;
 			}
 
