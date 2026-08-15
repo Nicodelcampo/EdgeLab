@@ -25,21 +25,16 @@ using NinjaTrader.NinjaScript.DrawingTools;
 #endregion
 
 // ============================================================================
-// SchermanQuantReversion.cs — Estrategia Cuantitativa de Reversión y Agotamiento
+// SchermanQuantReversion.cs — Estrategia Cuantitativa Adaptativa (Multi-Timeframe)
+// Optimizada para alta frecuencia: Gráficos de Segundos (15s, 30s), Minutos o Ticks.
 // Inspirada en la metodología de trading algorítmico de Iván Scherman
 // (Ganador World Cup Championship of Futures Trading 2023, +491.4%).
 //
-// PILARES DEL SISTEMA:
-// 1. Filtro de Régimen: Ratio de Eficiencia de Kaufman (KER) para operar solo en
-//    mercados de absorción y rango, evitando tendencias explosivas.
-// 2. Disparador de Agotamiento: Bollinger Bands extremas (2.5 std) + RSI(3)
-//    ultra-corto en zonas de sobreventa (< 12) / sobrecompra (> 88).
-// 3. Confirmación de Volumen: Spike de volumen relativo respecto a su media móvil.
-// 4. Salidas Cuantitativas:
-//    - Take Profit: Reversión exacta a la media central (SMA 20).
-//    - Stop Loss Dinámico: 1.75x ATR(14) adaptativo a la volatilidad.
-//    - Time Stop: Cierre obligatorio tras N barras si la reversión no madura.
-//    - Control de Riesgo Diario para Prop Firms (Max Daily Loss & Trades).
+// CARACTERÍSTICAS DE ALTA FRECUENCIA:
+// 1. Detección Ágil de Agotamiento: Bollinger Bands ajustables (2.0 std) + RSI(3).
+// 2. Filtro de Régimen Dinámico: Kaufman Efficiency Ratio (KER).
+// 3. Protección de Ganancias: Break-Even automático tras avance inicial.
+// 4. Salidas Rápidas: Reversión al centro (SMA 20), Time Stop o Stop ATR dinámico.
 // ============================================================================
 
 namespace NinjaTrader.NinjaScript.Strategies
@@ -56,13 +51,15 @@ namespace NinjaTrader.NinjaScript.Strategies
 		private double dailyPnL = 0;
 		private int tradesToday = 0;
 		private DateTime currentDay = DateTime.MinValue;
+		private double entryPrice = 0;
+		private bool beTriggered = false;
 		#endregion
 
 		protected override void OnStateChange()
 		{
 			if (State == State.SetDefaults)
 			{
-				Description									= @"Estrategia Cuantitativa de Reversión a la Media y Agotamiento de Volatilidad (Metodología Iván Scherman).";
+				Description									= @"Estrategia Cuantitativa Adaptativa de Reversión y Agotamiento (Alta Frecuencia / Segundos / Minutos).";
 				Name										= "SchermanQuantReversion";
 				Calculate									= Calculate.OnBarClose;
 				EntriesPerDirection							= 1;
@@ -78,27 +75,32 @@ namespace NinjaTrader.NinjaScript.Strategies
 				TraceOrders									= false;
 				RealtimeErrorHandling						= RealtimeErrorHandling.StopCancelClose;
 				StopTargetHandling							= StopTargetHandling.PerEntryExecution;
-				BarsRequiredToTrade							= 50;
+				BarsRequiredToTrade							= 30;
 
-				// Parámetros de Detección Cuantitativa
+				// 1. Detección Ágil de Agotamiento (Optimizado para Segundos / 1 Minuto)
 				BbPeriod									= 20;
-				BbStdDev									= 2.5;
+				BbStdDev									= 2.0;   // 2.0 para mayor frecuencia de disparo
 				RsiPeriod									= 3;
-				RsiOversold									= 12.0;
-				RsiOverbought								= 88.0;
+				RsiOversold									= 18.0;  // 18.0 para capturar más zonas de sobreventa
+				RsiOverbought								= 82.0;  // 82.0 para capturar más zonas de sobrecompra
+
+				// 2. Filtro de Régimen y Volumen
 				KerPeriod									= 10;
-				MaxKerThreshold								= 0.45; // Solo operar si KER < 0.45 (mercado en rango/absorción)
-				VolFactor									= 1.15; // Volumen >= 115% de su media de 20 barras
+				MaxKerThreshold								= 0.60;  // 0.60 permite operar en más regímenes
+				UseVolumeFilter								= false; // Desactivable en gráficos de segundos
+				VolFactor									= 1.0;
 
-				// Parámetros de Salida y Gestión de Riesgo
+				// 3. Salidas Cuantitativas y Gestión de Riesgo
 				AtrPeriod									= 14;
-				AtrStopMultiplier							= 1.75;
-				MaxBarsInTrade								= 8;   // Time Stop: Salir si no revierte en 8 barras
-				ExitAtMiddleBand							= true; // Tomar beneficio en la media central
+				AtrStopMultiplier							= 1.5;
+				MaxBarsInTrade								= 15;    // Más barras para permitir maduración en segundos
+				ExitAtMiddleBand							= true;  // Salida natural en la media central
+				EnableBreakEven								= true;  // Mover Stop a Break-Even
+				BreakEvenAtrMultiplier						= 0.8;   // Cuando avance 0.8x ATR, asegurar entrada
 
-				// Parámetros de Prop Firm
-				MaxDailyLoss								= 800.0;
-				MaxDailyTrades								= 6;
+				// 4. Parámetros de Prop Firm
+				MaxDailyLoss								= 1000.0;
+				MaxDailyTrades								= 20;    // Apto para más operaciones por día
 				EnableLong									= true;
 				EnableShort									= true;
 			}
@@ -112,7 +114,6 @@ namespace NinjaTrader.NinjaScript.Strategies
 				atr = ATR(AtrPeriod);
 				smaVol = SMA(Volume, 20);
 
-				// Visualización en gráfico
 				AddChartIndicator(bollinger);
 				AddChartIndicator(rsi);
 			}
@@ -120,7 +121,7 @@ namespace NinjaTrader.NinjaScript.Strategies
 
 		protected override void OnBarUpdate()
 		{
-			if (CurrentBar < Math.Max(50, Math.Max(BbPeriod, Math.Max(RsiPeriod, KerPeriod))))
+			if (CurrentBar < Math.Max(30, Math.Max(BbPeriod, Math.Max(RsiPeriod, KerPeriod))))
 				return;
 
 			// Reseteo de métricas diarias
@@ -150,20 +151,30 @@ namespace NinjaTrader.NinjaScript.Strategies
 			}
 			double ker = (totalVolPath > 0) ? (netDirection / totalVolPath) : 0;
 
-			// 2. Condición de Régimen: Mercado en absorción / oscilación (KER bajo)
-			bool isMeanRevertingRegime = ker <= MaxKerThreshold;
+			// 2. Condición de Régimen
+			bool isAllowedRegime = ker <= MaxKerThreshold;
 
-			// 3. Confirmación de Volumen
-			bool isHighVolume = Volume[0] >= (smaVol[0] * VolFactor);
+			// 3. Confirmación de Volumen (opcional)
+			bool isVolumeOk = !UseVolumeFilter || (Volume[0] >= (smaVol[0] * VolFactor));
 
 			// ================================================================
-			// LÓGICA DE GESTIÓN DE POSICIÓN ACTIVA
+			// GESTIÓN DE POSICIÓN ACTIVA
 			// ================================================================
 			if (Position.MarketPosition == MarketPosition.Long)
 			{
 				barsInPosition++;
 
-				// A. Take Profit: Reversión al Centro (Media Central Bollinger)
+				// A. Break-Even Dinámico
+				if (EnableBreakEven && !beTriggered)
+				{
+					if (Close[0] >= entryPrice + (atr[0] * BreakEvenAtrMultiplier))
+					{
+						SetStopLoss(CalculationMode.Price, entryPrice + (TickSize * 1));
+						beTriggered = true;
+					}
+				}
+
+				// B. Take Profit: Reversión al Centro (Media Central)
 				if (ExitAtMiddleBand && Close[0] >= bollinger.Middle[0])
 				{
 					ExitLong("TP_MiddleBand_L");
@@ -171,7 +182,7 @@ namespace NinjaTrader.NinjaScript.Strategies
 					return;
 				}
 
-				// B. Time Stop: Salida obligatoria si la reversión no madura
+				// C. Time Stop: Salida tras N barras
 				if (barsInPosition >= MaxBarsInTrade)
 				{
 					ExitLong("TimeStop_L");
@@ -183,7 +194,17 @@ namespace NinjaTrader.NinjaScript.Strategies
 			{
 				barsInPosition++;
 
-				// A. Take Profit: Reversión al Centro (Media Central Bollinger)
+				// A. Break-Even Dinámico
+				if (EnableBreakEven && !beTriggered)
+				{
+					if (Close[0] <= entryPrice - (atr[0] * BreakEvenAtrMultiplier))
+					{
+						SetStopLoss(CalculationMode.Price, entryPrice - (TickSize * 1));
+						beTriggered = true;
+					}
+				}
+
+				// B. Take Profit: Reversión al Centro (Media Central)
 				if (ExitAtMiddleBand && Close[0] <= bollinger.Middle[0])
 				{
 					ExitShort("TP_MiddleBand_S");
@@ -191,7 +212,7 @@ namespace NinjaTrader.NinjaScript.Strategies
 					return;
 				}
 
-				// B. Time Stop: Salida obligatoria si la reversión no madura
+				// C. Time Stop: Salida tras N barras
 				if (barsInPosition >= MaxBarsInTrade)
 				{
 					ExitShort("TimeStop_S");
@@ -203,25 +224,27 @@ namespace NinjaTrader.NinjaScript.Strategies
 			// ================================================================
 			// LÓGICA DE ENTRADA CUANTITATIVA
 			// ================================================================
-			if (Position.MarketPosition == MarketPosition.Flat && isMeanRevertingRegime && isHighVolume)
+			if (Position.MarketPosition == MarketPosition.Flat && isAllowedRegime && isVolumeOk)
 			{
 				double stopDistance = atr[0] * AtrStopMultiplier;
 
-				// --- ENTRADA LARGA (Agotamiento Bajista + Absorción) ---
-				// Precio perfora la banda inferior + RSI en extrema sobreventa (< 12)
+				// --- ENTRADA LARGA (Sobreventa Extrema) ---
 				if (EnableLong && Close[0] < bollinger.Lower[0] && rsi[0] <= RsiOversold)
 				{
+					entryPrice = Close[0];
+					beTriggered = false;
 					SetStopLoss(CalculationMode.Price, Close[0] - stopDistance);
-					EnterLong(1, "Long_Scherman_Exhaustion");
+					EnterLong(1, "Long_Exhaustion");
 					barsInPosition = 0;
 					tradesToday++;
 				}
-				// --- ENTRADA CORTA (Agotamiento Alcista + Absorción) ---
-				// Precio perfora la banda superior + RSI en extrema sobrecompra (> 88)
+				// --- ENTRADA CORTA (Sobrecompra Extrema) ---
 				else if (EnableShort && Close[0] > bollinger.Upper[0] && rsi[0] >= RsiOverbought)
 				{
+					entryPrice = Close[0];
+					beTriggered = false;
 					SetStopLoss(CalculationMode.Price, Close[0] + stopDistance);
-					EnterShort(1, "Short_Scherman_Exhaustion");
+					EnterShort(1, "Short_Exhaustion");
 					barsInPosition = 0;
 					tradesToday++;
 				}
@@ -233,12 +256,13 @@ namespace NinjaTrader.NinjaScript.Strategies
 			if (marketPosition == MarketPosition.Flat)
 			{
 				barsInPosition = 0;
+				beTriggered = false;
 			}
 		}
 
 		#region Propiedades Configurables en NinjaTrader
 
-		// ── 1. Parámetros Cuantitativos de Entrada ──
+		// ── 1. Detección de Agotamiento ──
 		[NinjaScriptProperty]
 		[Range(5, 100)]
 		[Display(Name = "Período Bollinger", Order = 1, GroupName = "1. Detección de Agotamiento")]
@@ -255,12 +279,12 @@ namespace NinjaTrader.NinjaScript.Strategies
 		public int RsiPeriod { get; set; }
 
 		[NinjaScriptProperty]
-		[Range(1.0, 30.0)]
+		[Range(1.0, 40.0)]
 		[Display(Name = "Umbral Sobreventa RSI", Order = 4, GroupName = "1. Detección de Agotamiento")]
 		public double RsiOversold { get; set; }
 
 		[NinjaScriptProperty]
-		[Range(70.0, 99.0)]
+		[Range(60.0, 99.0)]
 		[Display(Name = "Umbral Sobrecompra RSI", Order = 5, GroupName = "1. Detección de Agotamiento")]
 		public double RsiOverbought { get; set; }
 
@@ -272,15 +296,19 @@ namespace NinjaTrader.NinjaScript.Strategies
 
 		[NinjaScriptProperty]
 		[Range(0.1, 1.0)]
-		[Display(Name = "Máximo Umbral KER (Absorción)", Order = 2, GroupName = "2. Filtro de Régimen (Kaufman)", Description = "Valores bajos (<0.45) filtran mercados en rango/absorción")]
+		[Display(Name = "Máximo Umbral KER", Order = 2, GroupName = "2. Filtro de Régimen (Kaufman)")]
 		public double MaxKerThreshold { get; set; }
 
 		[NinjaScriptProperty]
+		[Display(Name = "Usar Filtro de Volumen", Order = 3, GroupName = "2. Filtro de Régimen (Kaufman)")]
+		public bool UseVolumeFilter { get; set; }
+
+		[NinjaScriptProperty]
 		[Range(0.5, 3.0)]
-		[Display(Name = "Factor de Volumen Relativo", Order = 3, GroupName = "2. Filtro de Régimen (Kaufman)")]
+		[Display(Name = "Factor de Volumen Relativo", Order = 4, GroupName = "2. Filtro de Régimen (Kaufman)")]
 		public double VolFactor { get; set; }
 
-		// ── 3. Salidas y Gestión de Riesgo ──
+		// ── 3. Salidas Cuantitativas y Break-Even ──
 		[NinjaScriptProperty]
 		[Range(5, 50)]
 		[Display(Name = "Período ATR (Stop Dinámico)", Order = 1, GroupName = "3. Salidas Cuantitativas")]
@@ -292,7 +320,7 @@ namespace NinjaTrader.NinjaScript.Strategies
 		public double AtrStopMultiplier { get; set; }
 
 		[NinjaScriptProperty]
-		[Range(1, 50)]
+		[Range(1, 100)]
 		[Display(Name = "Time Stop (Max Barras en Trade)", Order = 3, GroupName = "3. Salidas Cuantitativas")]
 		public int MaxBarsInTrade { get; set; }
 
@@ -300,14 +328,23 @@ namespace NinjaTrader.NinjaScript.Strategies
 		[Display(Name = "Take Profit en Media Central", Order = 4, GroupName = "3. Salidas Cuantitativas")]
 		public bool ExitAtMiddleBand { get; set; }
 
-		// ── 4. Control de Riesgo Prop Firm ──
 		[NinjaScriptProperty]
-		[Range(100.0, 5000.0)]
+		[Display(Name = "Habilitar Break-Even Dinámico", Order = 5, GroupName = "3. Salidas Cuantitativas")]
+		public bool EnableBreakEven { get; set; }
+
+		[NinjaScriptProperty]
+		[Range(0.2, 3.0)]
+		[Display(Name = "Avance ATR para Break-Even", Order = 6, GroupName = "3. Salidas Cuantitativas")]
+		public double BreakEvenAtrMultiplier { get; set; }
+
+		// ── 4. Reglas Prop Firm ──
+		[NinjaScriptProperty]
+		[Range(100.0, 10000.0)]
 		[Display(Name = "Máxima Pérdida Diaria ($)", Order = 1, GroupName = "4. Reglas Prop Firm")]
 		public double MaxDailyLoss { get; set; }
 
 		[NinjaScriptProperty]
-		[Range(1, 20)]
+		[Range(1, 100)]
 		[Display(Name = "Máximo Trades por Día", Order = 2, GroupName = "4. Reglas Prop Firm")]
 		public int MaxDailyTrades { get; set; }
 
