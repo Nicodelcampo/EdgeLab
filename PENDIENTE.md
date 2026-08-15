@@ -6,6 +6,16 @@ Cada entrada nombra el punto exacto del código que la referencia.
 
 **Punto de entrada para continuidad**: `docs/research/HANDOFF_AUDITORIA_2026-08-14.md`.
 
+> **Ocho decisiones del 2026-08-15**: `docs/DECISIONES_2026-08-15.md`. Afectan a
+> P-07, P-10, P-18, P-25, P-28, P-31, P-32 y P-33. En una línea cada una:
+> Kaggle sale del programa (cierra P-07 por reducción de alcance y acota P-18);
+> las columnas duplicadas son podables — verificado en **56/56 archivos,
+> 1.015.587.419 filas, cero diferencias**; P-28 pasa de indicio a hecho medido;
+> `BARRA_PROCESADA` nunca se quitó (era el test el que caducó); P-33 se resuelve
+> por hash y no moviendo carpetas; el conjunto de P-32 quedó nombrado con paridad
+> representativa para el trío P-16; y de los tres merges de P-10 se mergeó sólo
+> `docs/lux-imb-source-correction`.
+
 **Procedencia de P-24…P-29 (asentadas 2026-08-15)**: ninguna de las seis existía en
 este board aunque los documentos ya las referenciaban como si existieran —
 P-24/P-25/P-26 desde la página de Notion del auditor «Auditoría de los índices

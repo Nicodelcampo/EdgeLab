@@ -466,10 +466,28 @@ def test_H1_el_cs_no_tiene_identificadores_sin_declarar():
 
 
 def test_H2_el_cs_emite_BARRA_PROCESADA_en_el_camino_de_tick():
-    """H2: el denominador tiene que EXISTIR en el log. `BigTrap2.cs:481`."""
+    """H2: el denominador tiene que EXISTIR en el log, y emitirse DENTRO de
+    `DrenarPorOHLCV()` (camino de tick).
+
+    2026-08-15: este test asertaba el literal `LogEvent("BARRA_PROCESADA"`. El fix
+    de frontera de sesion (`f77a3be`, P-13) cambio la emisora a
+    `LogEventAt(s.Time, "BARRA_PROCESADA", ...)` -- estampa el evento con la hora de
+    la barra en vez de "ahora". El evento nunca se quito y el invariante nunca se
+    rompio; lo que caducaba era el nombre de la funcion. Ahora se verifica el
+    invariante que el docstring declara y no un detalle de implementacion: cualquier
+    emisora vale mientras el evento salga desde el camino de tick. Es mas estricto
+    que antes, no menos: sigue exigiendo posicion, y ademas exige que la llamada sea
+    a una familia `LogEvent*` y no texto suelto."""
+    import re as _re
     src = _cs()
-    assert 'LogEvent("BARRA_PROCESADA"' in src
-    assert src.index("private void DrenarPorOHLCV()") < src.index('LogEvent("BARRA_PROCESADA"'), \
+    m = _re.search(r'LogEvent\w*\s*\([^)]*"BARRA_PROCESADA"', src)
+    assert m, "no hay ninguna llamada LogEvent* que emita BARRA_PROCESADA"
+
+    ini = src.index("private void DrenarPorOHLCV()")
+    # fin del metodo = el proximo `private void` declarado despues de su apertura
+    sig = _re.search(r"\n\t*private void ", src[ini + 1:])
+    fin = ini + 1 + sig.start() if sig else len(src)
+    assert ini < m.start() < fin, \
         "BARRA_PROCESADA quedo fuera de DrenarPorOHLCV (camino de tick)"
 
 
