@@ -44,6 +44,18 @@ tercera vez en el día.
 del 15-ago. P-34 documenta una cuarentena que **se levantó con prueba de equivalencia**,
 no con un supuesto: los oráculos quedaron habilitados.
 
+**P-35, P-36 y P-37** vienen de la auditoría de debilidades del 15-ago
+(`docs/research/AUDITORIA_DEBILIDADES_Y_GATES_2026-08-15.md`). Las reportó el auditor y
+**se re-verificaron contra el código** antes de asentarlas: las tres citan archivo y
+línea. **P-35 y P-37 son decisiones de semántica de gating — de Nico, nadie más.**
+
+> **Lo que esa auditoría dice del referente, y no conviene enterrar entre P-NN**: el
+> proyecto es **fuerte en no engañarse y débil en acercarse a una cuenta**.
+> `EDGES_DISCOVERED.md` sigue diciendo *ninguno*; H1 murió en −2,47 ticks/evento; G2
+> nunca se ejerció contra una campaña real; no hay costos propios por instrumento (W7);
+> F4 constitucional nunca se corrió. **Ninguno de los P-25…P-37 mueve el ítem 1 de la
+> jerarquía.** Cerrarlos es higiene, no distancia recorrida.
+
 **Inventario de ramas**: `docs/INVENTARIO_DE_RAMAS_2026-08-15.md` distingue las ramas
 *superadas* (contenido ya aplicado, mergearlas duplicaría historia) de las *pendientes*
 (traen algo que no está en ningún lado). `tools/estado.py` las marca todas igual.
@@ -604,3 +616,73 @@ del kernel Python.
 **Residual inmediato**: los tres artefactos siguen mal etiquetados. Corregir las
 etiquetas es barato; hacerlo **antes** de la próxima corrida formal evita que alguien
 repita esta investigación desde cero.
+
+---
+
+## P-35 · Una paridad con `WARN` se registra como `parity_exact`
+
+**Estado**: ABIERTA — **decisión de semántica de gating, de Nico. Nadie más la toca.**
+
+**Verificado** en `edgelab/bridge/store.py:268-276`:
+
+```python
+if gate == "FAIL":
+    return "parity_failed"
+if gate in ("PASS", "WARN"):
+    return "parity_exact"
+```
+
+`WARN` y `PASS` colapsan al mismo estado: una paridad con advertencias queda sellada como
+`parity_exact` e **indistinguible de una limpia**.
+
+**Caso concreto del mismo día**: la paridad de HFTZones2 dio `WARN` sin frontera de
+madurez (31 `STATE_ORDER_DIFF` + 4 `FEATURE_DIFF`) y `PASS` con ella — las dos corridas
+están publicadas en `docs/research/paridad_hftzones2_12d_2026-08-15.json`. **Si se
+hubiera publicado la primera al store, habría quedado marcada `parity_exact`.**
+
+Es la misma familia que P-34: **la etiqueta no se deriva del contenido**. Acá el
+colapso es de dos veredictos distintos en una sola etiqueta.
+
+**Criterio de cierre**: o `WARN` tiene su propio estado, o se documenta por escrito por
+qué un WARN es equivalente a un PASS para el consumo formal en G2+.
+
+---
+
+## P-36 · Dos semánticas de «covered» conviven en `coverage.py`
+
+**Estado**: ABIERTA — mecánica, sin decisión de semántica.
+
+**Verificado** en `edgelab/bridge/coverage.py`: el docstring y las matrices dicen que
+`parity_covered` exige que **todas las ramas** estén cubiertas, vía `branches_of` (l. 24),
+`config_branches` (l. 35) e `is_covered` (l. 50). Pero `propagate_coverage` (l. 131+) **no
+usa ninguna de las tres**: decide con `coverage_blockers()` (l. 176-180), que compara
+identidad dura + igualdad de params salvo los coverage-neutral.
+
+`is_covered` sólo aparece referenciada **dentro de su propia definición** (l. 53): la
+contabilidad de ramas es **código muerto respecto de la propagación**.
+
+Riesgo: alguien lee el docstring, cree que las ramas se verifican, y no.
+
+**Criterio de cierre**: o `propagate_coverage` usa la contabilidad de ramas, o el
+docstring y las matrices dejan de prometerla.
+
+---
+
+## P-37 · `parity_covered` es inalcanzable para 4 de los 5 kernels
+
+**Estado**: ABIERTA — **decisión de Nico**: ampliar la lista blanca es ampliar qué
+diferencias se declaran irrelevantes para la paridad.
+
+**Verificado** en `edgelab/bridge/coverage.py:64-71`: `COVERAGE_NEUTRAL` tiene **una sola
+entrada**, `Gaps2`. Para los otros cuatro kernels `_neutral()` devuelve conjuntos vacíos,
+así que **cualquier** diferencia de params bloquea la cobertura.
+
+**Consecuencia dura**: la decisión **D-6** («paridad representativa» para el trío P-16)
+**no tiene camino ejecutable** para 4 de 5. No por falta de cableado —`store.publish_run()`
+sí llama a `propagate_coverage` (`store.py:393-400`)— sino por falta de entradas
+justificadas en la lista blanca. El consumo formal en G2+ exige `parity_exact` o
+`parity_covered`; hoy los «representativos» quedan fuera.
+
+**Criterio de cierre**: cada entrada nueva en `COVERAGE_NEUTRAL` viene con justificación
+escrita **por parámetro**, al nivel de la de `Gaps2` (que cita §8.3.1 campo por campo).
+O se declara por escrito que D-6 no es ejecutable y se elige otro camino.
