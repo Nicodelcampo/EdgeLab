@@ -48,6 +48,8 @@ La rama incorpora `.github/workflows/ci.yml` (instala `requirements/core-bridge-
 
 **Criterio de cierre**: run remoto visible, verde, con el lock exacto; registrar el enlace.
 
+**Nota (2026-08-14)**: el Contrato Kaggle v2 considera que un `Save & Run All` reproducible cumple la función de CI para los notebooks. Eso NO sustituye este punto: los scripts de sandbox que dependen de `/data/p16` viven en `tools/sandbox/` y quedan deliberadamente fuera de `tests/` para no romper `pytest -q`.
+
 ---
 
 ## P-06 · El gate `MAX_ABS_SMD ≤ 0.10` no tiene panel de calibración sintético
@@ -65,6 +67,8 @@ El umbral 0.10 es convención de la literatura; no existe panel propio que mida 
 Falta `DATA_LICENSE_DECISION.md` (proveedor, términos, alcance, responsable). Insumos del 2026-08-14: docs de política CME/Kaggle commiteados en `bda944a`.
 
 **Criterio de cierre**: Nico aporta la fuente de los términos y aprueba el documento.
+
+**Agravante (2026-08-14)**: la Versión 1 del dataset de Kaggle ya contiene ticks crudos subidos antes de cerrar M0, contra la prohibición explícita del contrato ("no subir ticks crudos hasta resolver licencia y política de datos"). El dataset es privado, lo que limita la exposición a terceros, pero no cierra el gate. Ver P-18 y `docs/research/KAGGLE_M1_SELLO_Y_VALIDACION_2026-08-14.md` §4.
 
 ---
 
@@ -136,6 +140,8 @@ Al build junio-only le faltan minutos activos del 25-jun (11:02–11:10 ART; el 
 
 **Criterio de cierre**: adoptar el build 90d (o re-cortar junio desde él), agregar a la batería el chequeo "0 minutos faltantes en horario activo contra la serie nativa", y auditar por qué el build junio-only perdió ese bloque.
 
+**Generalización (2026-08-14)**: la batería quedó implementada y generalizada a los 11 activos en `edgelab/kaggle/integrity.py` (`session_activity`, `missing_active_minutes`, `weekday_histogram`), y la corre `notebooks/kaggle/01_dataset_validation.py` por archivo y por sesión. Aplicar el umbral de sesión completa (1.380 minutos) sólo al front month: en back month la baja cobertura es liquidez, no defecto (medido en 6E 09-26: 11 sesiones completas / 28 parciales / 27 escasas).
+
 ---
 
 ## P-15 · Defecto del 11-jun en el parquet de junio de ES 09-26 (`e11d664d…`)
@@ -163,3 +169,50 @@ Se incorporaron los 3 oráculos de 90 días en `data/nt8_oracles/` y Antigravity
 **Nota de gobernanza**: el gate estructural estricto del repo (`parity.py`: PASS exige cero huérfanas y cero diffs de geometría) etiqueta los tres FAIL; los residuos son los mismos que la medición local documentó (colas de borde, frontera de warmup, cola inmadura). La réplica confirma la **reproducibilidad** de las mediciones por tercero independiente; declarar los indicadores con paridad representativa bajo esos residuos es decisión de Nico.
 
 Evidencia: `docs/research/P16_REPLICA_AUDITOR_2026-08-14.md`.
+
+---
+
+## P-17 · El corte UTC del holdout filtra la sesión del 1-jul (leak medido)
+
+**Estado**: RESUELTA EN CÓDIGO (2026-08-14) — pendiente de ratificación normativa de la enmienda v2.1.
+
+El Contrato Kaggle v2 exige bloquear el holdout "por `session_key` y `session_date` en America/Chicago, no sólo por un timestamp UTC". Un corte por timestamp en `2026-07-01T00:00:00Z` equivale a 2026-06-30 19:00 CT, es decir **dos horas después** de que abriera la sesión del trade date 2026-07-01 (Globex abre a las 17:00 CT del día anterior). Esas filas son holdout y el corte UTC las conserva.
+
+**Medición sobre el parquet canónico `6E_09-26_ticks.parquet`** (sha256 `1311bc5e…`, 1.131.047 ticks):
+
+| Regla | Filas conservadas |
+|---|---|
+| corte UTC ingenuo (`ts_utc_ns < 2026-07-01T00:00Z`) | 1.128.049 |
+| regla de sesión de Chicago (`trade_date ≤ 2026-06-30`) | 1.127.178 |
+| **leak del corte UTC** | **871** |
+
+Un solo contrato de 1,13 M ticks filtra 871 filas de holdout. El contrato tipifica "cualquier fila holdout" como causal de invalidación de la versión completa, así que el corte UTC habría contaminado el análisis entero de forma silenciosa.
+
+**Resolución en código**: `edgelab/kaggle/sessions_cme.py` (trade date derivado de la tzdata del sistema, transiciones DST por bisección al segundo, sin reglas hardcodeadas) + `edgelab/kaggle/seal.py` (corte por trade date, conteo de filas cortadas por fecha, métrica explícita `rows_leaked_by_naive_utc_cut`, y apertura del holdout sólo con el token `M8_HOLDOUT_OPENED_ONCE`; sin token, `assert_no_leak` levanta excepción — fail-closed).
+
+**Verificación**: self-test de 7 casos de frontera de trade date + paridad exacta streaming↔batch en 4 tamaños de batch (28 claves de integridad, 594 claves de actividad, 66 trade dates, sello idéntico). Evidencia: `tools/sandbox/kaggle_streaming_parity.py` y `docs/research/KAGGLE_M1_SELLO_Y_VALIDACION_2026-08-14.md` §1 y §5.
+
+**Criterio de cierre**: Nico ratifica la cláusula 1 de `docs/research/KAGGLE_ENMIENDA_V2_1_2026-08-14.md` y ningún artefacto formal usa un corte por timestamp UTC.
+
+---
+
+## P-18 · La Versión 1 del dataset de Kaggle incumple la Fase 0 del contrato
+
+**Estado**: ABIERTA — bloqueante para el pipeline formal. Decisión de Nico.
+
+El dataset privado `nicolasbuttaro/edgelab-cme-futures-universe` Versión 1 (17,97 GB, 57 archivos, 728 columnas declaradas por Kaggle) no puede ser el **dataset exploratorio** del contrato. Cuatro incumplimientos, ninguno inferido:
+
+1. **Holdout físicamente presente**. El contrato exige que "el holdout esté FÍSICAMENTE ausente del dataset exploratorio" y tipifica el STOP "cualquier fila holdout: invalidar toda la versión". Los contratos `*_09-26` incluyen julio y agosto de 2026, dentro del holdout 2026-07-01→2026-12-31. El sello en código evita el leak en el análisis, pero no satisface la ausencia física.
+2. **Presupuesto de tamaño**: 17,97 GB contra el límite contractual de 10 GB para el input privado v1 → veredicto `ABSTAIN_CAPACITY` (el contrato prohíbe resolverlo partiendo la corrida hasta que entre).
+3. **Presupuesto de archivos**: 57 archivos top-level contra el límite contractual de 20. Además, la documentación de Kaggle indica un máximo de 50 archivos de nivel superior; el upload existe con 57, así que se registra la **discrepancia observada** entre documentación y comportamiento, sin afirmar cuál es la regla vigente.
+4. **Gate legal M0**: ticks crudos subidos sin `DATA_LICENSE_DECISION.md` (ver P-07).
+
+**Pendiente de reconciliación con dato duro, no con inferencia**: el censo local declara 56 contratos / 16,74 GB / 1.078.414.656 ticks; Kaggle muestra 57 archivos / 17,97 GB. `728 = 56 × 13` sugiere 13 columnas contadas por archivo (contra las 8 del esquema canónico) más un archivo extra. `notebooks/kaggle/00_contract_and_environment.py` identifica el archivo 57 por censo de footer y hash, no por suposición.
+
+**Remediación propuesta** (recomendada, a decidir):
+
+- V1 pasa a **`raw_custody`**: privada, no analítica, en cuarentena documentada; no se adjunta a ningún notebook formal.
+- Se construye **`edgelab-cme-research-v2`**: sólo tablas derivadas (`events_long`, `windows_ml`, `targets_long`, `folds_outer`/`folds_inner`, diccionarios), con el sello aplicado en la construcción, ≤ 10 GB, ≤ 20 entradas top-level, particiones Parquet de 128–512 MB.
+- El holdout se materializa aparte y **no se sube** hasta M8.
+
+**Criterio de cierre**: existe un dataset de Kaggle cuyo `00_contract_and_environment` devuelve `PASS` en los gates G1 (reconciliación), G2 (presupuesto), G3 (pre-screen de holdout) y G4 (M0).
