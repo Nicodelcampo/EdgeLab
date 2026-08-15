@@ -26,19 +26,23 @@ using NinjaTrader.NinjaScript.DrawingTools;
 
 // ============================================================================
 // SchermanQuantReversion.cs — Estrategia Cuantitativa Adaptativa (Multi-Timeframe)
-// Optimizada para alta frecuencia: Gráficos de Segundos (15s, 30s), Minutos o Ticks.
-// Inspirada en la metodología de trading algorítmico de Iván Scherman
-// (Ganador World Cup Championship of Futures Trading 2023, +491.4%).
+// Optimizada para alta frecuencia y máxima captura de beneficio por trade.
 //
-// CARACTERÍSTICAS DE ALTA FRECUENCIA:
-// 1. Detección Ágil de Agotamiento: Bollinger Bands ajustables (2.0 std) + RSI(3).
-// 2. Filtro de Régimen Dinámico: Kaufman Efficiency Ratio (KER).
-// 3. Protección de Ganancias: Break-Even automático tras avance inicial.
-// 4. Salidas Rápidas: Reversión al centro (SMA 20), Time Stop o Stop ATR dinámico.
+// MODOS DE TOMA DE BENEFICIOS (Evita la trampa de comisiones en segundos/minutos):
+// 1. OppositeBand: Deja correr el trade de banda a banda (3x a 5x más ganancia).
+// 2. TrailingStop: Asegura ganancias y persigue la micro-tendencia.
+// 3. FixedAtrTarget: Ratio Riesgo/Beneficio asimétrico pre-fijado (2.0x ATR).
 // ============================================================================
 
 namespace NinjaTrader.NinjaScript.Strategies
 {
+	public enum TargetModeType
+	{
+		MiddleBand,      // Conservador: Cierre en la media central
+		OppositeBand,    // Agresivo/Swing: Cierre en la banda opuesta (Banda a Banda)
+		FixedAtrTarget   // Asimétrico: Objetivo fijo en múltiplos de ATR
+	}
+
 	public class SchermanQuantReversion : Strategy
 	{
 		#region Variables & Indicadores
@@ -53,13 +57,15 @@ namespace NinjaTrader.NinjaScript.Strategies
 		private DateTime currentDay = DateTime.MinValue;
 		private double entryPrice = 0;
 		private bool beTriggered = false;
+		private double highestPriceSinceEntry = 0;
+		private double lowestPriceSinceEntry = double.MaxValue;
 		#endregion
 
 		protected override void OnStateChange()
 		{
 			if (State == State.SetDefaults)
 			{
-				Description									= @"Estrategia Cuantitativa Adaptativa de Reversión y Agotamiento (Alta Frecuencia / Segundos / Minutos).";
+				Description									= @"Estrategia Cuantitativa de Reversión y Agotamiento con Captura de Rango Completo.";
 				Name										= "SchermanQuantReversion";
 				Calculate									= Calculate.OnBarClose;
 				EntriesPerDirection							= 1;
@@ -77,30 +83,33 @@ namespace NinjaTrader.NinjaScript.Strategies
 				StopTargetHandling							= StopTargetHandling.PerEntryExecution;
 				BarsRequiredToTrade							= 30;
 
-				// 1. Detección Ágil de Agotamiento (Optimizado para Segundos / 1 Minuto)
+				// 1. Detección de Agotamiento
 				BbPeriod									= 20;
-				BbStdDev									= 2.0;   // 2.0 para mayor frecuencia de disparo
+				BbStdDev									= 2.0;
 				RsiPeriod									= 3;
-				RsiOversold									= 18.0;  // 18.0 para capturar más zonas de sobreventa
-				RsiOverbought								= 82.0;  // 82.0 para capturar más zonas de sobrecompra
+				RsiOversold									= 18.0;
+				RsiOverbought								= 82.0;
 
 				// 2. Filtro de Régimen y Volumen
 				KerPeriod									= 10;
-				MaxKerThreshold								= 0.60;  // 0.60 permite operar en más regímenes
-				UseVolumeFilter								= false; // Desactivable en gráficos de segundos
+				MaxKerThreshold								= 0.60;
+				UseVolumeFilter								= false;
 				VolFactor									= 1.0;
 
-				// 3. Salidas Cuantitativas y Gestión de Riesgo
+				// 3. Salidas y Maximización de Beneficio (Evita la fricción en segundos)
+				TargetMode									= TargetModeType.OppositeBand; // Banda a Banda para capturar $150-$400 por trade
+				TargetAtrMultiplier							= 2.2;   // Multiplicador si se usa FixedAtrTarget
 				AtrPeriod									= 14;
 				AtrStopMultiplier							= 1.5;
-				MaxBarsInTrade								= 15;    // Más barras para permitir maduración en segundos
-				ExitAtMiddleBand							= true;  // Salida natural en la media central
-				EnableBreakEven								= true;  // Mover Stop a Break-Even
-				BreakEvenAtrMultiplier						= 0.8;   // Cuando avance 0.8x ATR, asegurar entrada
+				MaxBarsInTrade								= 25;    // Más barras para permitir que el swing madure
+				EnableBreakEven								= true;
+				BreakEvenAtrMultiplier						= 0.8;
+				EnableTrailingStop							= true;  // Trailing Stop dinámico
+				TrailingAtrMultiplier						= 1.2;
 
 				// 4. Parámetros de Prop Firm
 				MaxDailyLoss								= 1000.0;
-				MaxDailyTrades								= 20;    // Apto para más operaciones por día
+				MaxDailyTrades								= 25;
 				EnableLong									= true;
 				EnableShort									= true;
 			}
@@ -132,7 +141,7 @@ namespace NinjaTrader.NinjaScript.Strategies
 				tradesToday = 0;
 			}
 
-			// Control de riesgo diario (Prop Firm Safety Guard)
+			// Control de riesgo diario
 			if (dailyPnL <= -Math.Abs(MaxDailyLoss) || tradesToday >= MaxDailyTrades)
 			{
 				if (Position.MarketPosition == MarketPosition.Long)
@@ -142,7 +151,7 @@ namespace NinjaTrader.NinjaScript.Strategies
 				return;
 			}
 
-			// 1. Cálculo del Kaufman Efficiency Ratio (KER)
+			// 1. Kaufman Efficiency Ratio (KER)
 			double netDirection = Math.Abs(Close[0] - Close[KerPeriod]);
 			double totalVolPath = 0;
 			for (int i = 0; i < KerPeriod; i++)
@@ -151,10 +160,7 @@ namespace NinjaTrader.NinjaScript.Strategies
 			}
 			double ker = (totalVolPath > 0) ? (netDirection / totalVolPath) : 0;
 
-			// 2. Condición de Régimen
 			bool isAllowedRegime = ker <= MaxKerThreshold;
-
-			// 3. Confirmación de Volumen (opcional)
 			bool isVolumeOk = !UseVolumeFilter || (Volume[0] >= (smaVol[0] * VolFactor));
 
 			// ================================================================
@@ -163,6 +169,7 @@ namespace NinjaTrader.NinjaScript.Strategies
 			if (Position.MarketPosition == MarketPosition.Long)
 			{
 				barsInPosition++;
+				highestPriceSinceEntry = Math.Max(highestPriceSinceEntry, High[0]);
 
 				// A. Break-Even Dinámico
 				if (EnableBreakEven && !beTriggered)
@@ -174,15 +181,37 @@ namespace NinjaTrader.NinjaScript.Strategies
 					}
 				}
 
-				// B. Take Profit: Reversión al Centro (Media Central)
-				if (ExitAtMiddleBand && Close[0] >= bollinger.Middle[0])
+				// B. Trailing Stop Dinámico tras superar el Break-Even
+				if (EnableTrailingStop && beTriggered)
+				{
+					double trailStop = highestPriceSinceEntry - (atr[0] * TrailingAtrMultiplier);
+					if (trailStop > entryPrice)
+					{
+						SetStopLoss(CalculationMode.Price, trailStop);
+					}
+				}
+
+				// C. Salidas por Objetivo (Take Profit)
+				if (TargetMode == TargetModeType.MiddleBand && Close[0] >= bollinger.Middle[0])
 				{
 					ExitLong("TP_MiddleBand_L");
 					barsInPosition = 0;
 					return;
 				}
+				else if (TargetMode == TargetModeType.OppositeBand && Close[0] >= bollinger.Upper[0])
+				{
+					ExitLong("TP_OppositeBand_L");
+					barsInPosition = 0;
+					return;
+				}
+				else if (TargetMode == TargetModeType.FixedAtrTarget && Close[0] >= entryPrice + (atr[0] * TargetAtrMultiplier))
+				{
+					ExitLong("TP_FixedATR_L");
+					barsInPosition = 0;
+					return;
+				}
 
-				// C. Time Stop: Salida tras N barras
+				// D. Time Stop: Salida si no madura
 				if (barsInPosition >= MaxBarsInTrade)
 				{
 					ExitLong("TimeStop_L");
@@ -193,6 +222,7 @@ namespace NinjaTrader.NinjaScript.Strategies
 			else if (Position.MarketPosition == MarketPosition.Short)
 			{
 				barsInPosition++;
+				lowestPriceSinceEntry = Math.Min(lowestPriceSinceEntry, Low[0]);
 
 				// A. Break-Even Dinámico
 				if (EnableBreakEven && !beTriggered)
@@ -204,15 +234,37 @@ namespace NinjaTrader.NinjaScript.Strategies
 					}
 				}
 
-				// B. Take Profit: Reversión al Centro (Media Central)
-				if (ExitAtMiddleBand && Close[0] <= bollinger.Middle[0])
+				// B. Trailing Stop Dinámico
+				if (EnableTrailingStop && beTriggered)
+				{
+					double trailStop = lowestPriceSinceEntry + (atr[0] * TrailingAtrMultiplier);
+					if (trailStop < entryPrice)
+					{
+						SetStopLoss(CalculationMode.Price, trailStop);
+					}
+				}
+
+				// C. Salidas por Objetivo (Take Profit)
+				if (TargetMode == TargetModeType.MiddleBand && Close[0] <= bollinger.Middle[0])
 				{
 					ExitShort("TP_MiddleBand_S");
 					barsInPosition = 0;
 					return;
 				}
+				else if (TargetMode == TargetModeType.OppositeBand && Close[0] <= bollinger.Lower[0])
+				{
+					ExitShort("TP_OppositeBand_S");
+					barsInPosition = 0;
+					return;
+				}
+				else if (TargetMode == TargetModeType.FixedAtrTarget && Close[0] <= entryPrice - (atr[0] * TargetAtrMultiplier))
+				{
+					ExitShort("TP_FixedATR_S");
+					barsInPosition = 0;
+					return;
+				}
 
-				// C. Time Stop: Salida tras N barras
+				// D. Time Stop
 				if (barsInPosition >= MaxBarsInTrade)
 				{
 					ExitShort("TimeStop_S");
@@ -232,6 +284,8 @@ namespace NinjaTrader.NinjaScript.Strategies
 				if (EnableLong && Close[0] < bollinger.Lower[0] && rsi[0] <= RsiOversold)
 				{
 					entryPrice = Close[0];
+					highestPriceSinceEntry = High[0];
+					lowestPriceSinceEntry = Low[0];
 					beTriggered = false;
 					SetStopLoss(CalculationMode.Price, Close[0] - stopDistance);
 					EnterLong(1, "Long_Exhaustion");
@@ -242,6 +296,8 @@ namespace NinjaTrader.NinjaScript.Strategies
 				else if (EnableShort && Close[0] > bollinger.Upper[0] && rsi[0] >= RsiOverbought)
 				{
 					entryPrice = Close[0];
+					highestPriceSinceEntry = High[0];
+					lowestPriceSinceEntry = Low[0];
 					beTriggered = false;
 					SetStopLoss(CalculationMode.Price, Close[0] + stopDistance);
 					EnterShort(1, "Short_Exhaustion");
@@ -257,6 +313,8 @@ namespace NinjaTrader.NinjaScript.Strategies
 			{
 				barsInPosition = 0;
 				beTriggered = false;
+				highestPriceSinceEntry = 0;
+				lowestPriceSinceEntry = double.MaxValue;
 			}
 		}
 
@@ -308,34 +366,48 @@ namespace NinjaTrader.NinjaScript.Strategies
 		[Display(Name = "Factor de Volumen Relativo", Order = 4, GroupName = "2. Filtro de Régimen (Kaufman)")]
 		public double VolFactor { get; set; }
 
-		// ── 3. Salidas Cuantitativas y Break-Even ──
+		// ── 3. Salidas Cuantitativas y Maximización de Ganancia ──
+		[NinjaScriptProperty]
+		[Display(Name = "Modo de Take Profit", Order = 1, GroupName = "3. Salidas y Captura de Beneficio")]
+		public TargetModeType TargetMode { get; set; }
+
+		[NinjaScriptProperty]
+		[Range(1.0, 10.0)]
+		[Display(Name = "Multiplicador ATR Objetivo (si FixedATR)", Order = 2, GroupName = "3. Salidas y Captura de Beneficio")]
+		public double TargetAtrMultiplier { get; set; }
+
 		[NinjaScriptProperty]
 		[Range(5, 50)]
-		[Display(Name = "Período ATR (Stop Dinámico)", Order = 1, GroupName = "3. Salidas Cuantitativas")]
+		[Display(Name = "Período ATR (Stop Dinámico)", Order = 3, GroupName = "3. Salidas y Captura de Beneficio")]
 		public int AtrPeriod { get; set; }
 
 		[NinjaScriptProperty]
 		[Range(0.5, 5.0)]
-		[Display(Name = "Multiplicador ATR Stop Loss", Order = 2, GroupName = "3. Salidas Cuantitativas")]
+		[Display(Name = "Multiplicador ATR Stop Loss", Order = 4, GroupName = "3. Salidas y Captura de Beneficio")]
 		public double AtrStopMultiplier { get; set; }
 
 		[NinjaScriptProperty]
 		[Range(1, 100)]
-		[Display(Name = "Time Stop (Max Barras en Trade)", Order = 3, GroupName = "3. Salidas Cuantitativas")]
+		[Display(Name = "Time Stop (Max Barras en Trade)", Order = 5, GroupName = "3. Salidas y Captura de Beneficio")]
 		public int MaxBarsInTrade { get; set; }
 
 		[NinjaScriptProperty]
-		[Display(Name = "Take Profit en Media Central", Order = 4, GroupName = "3. Salidas Cuantitativas")]
-		public bool ExitAtMiddleBand { get; set; }
-
-		[NinjaScriptProperty]
-		[Display(Name = "Habilitar Break-Even Dinámico", Order = 5, GroupName = "3. Salidas Cuantitativas")]
+		[Display(Name = "Habilitar Break-Even Dinámico", Order = 6, GroupName = "3. Salidas y Captura de Beneficio")]
 		public bool EnableBreakEven { get; set; }
 
 		[NinjaScriptProperty]
 		[Range(0.2, 3.0)]
-		[Display(Name = "Avance ATR para Break-Even", Order = 6, GroupName = "3. Salidas Cuantitativas")]
+		[Display(Name = "Avance ATR para Break-Even", Order = 7, GroupName = "3. Salidas y Captura de Beneficio")]
 		public double BreakEvenAtrMultiplier { get; set; }
+
+		[NinjaScriptProperty]
+		[Display(Name = "Habilitar Trailing Stop Dinámico", Order = 8, GroupName = "3. Salidas y Captura de Beneficio")]
+		public bool EnableTrailingStop { get; set; }
+
+		[NinjaScriptProperty]
+		[Range(0.5, 5.0)]
+		[Display(Name = "Distancia ATR Trailing Stop", Order = 9, GroupName = "3. Salidas y Captura de Beneficio")]
+		public double TrailingAtrMultiplier { get; set; }
 
 		// ── 4. Reglas Prop Firm ──
 		[NinjaScriptProperty]
