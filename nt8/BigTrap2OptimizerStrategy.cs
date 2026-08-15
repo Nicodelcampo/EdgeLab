@@ -106,8 +106,10 @@ namespace NinjaTrader.NinjaScript.Strategies
 			{
 				double tickPrice = Closes[1][0];
 				double tickVol = Volumes[1][0];
-				double bid = Bids[1][0];
-				double ask = Asks[1][0];
+				int idx = CurrentBars[1];
+
+				double ask = (BarsArray.Length > 1 && idx >= 0) ? BarsArray[1].GetAsk(idx) : double.NaN;
+				double bid = (BarsArray.Length > 1 && idx >= 0) ? BarsArray[1].GetBid(idx) : double.NaN;
 
 				if (!double.IsNaN(lastTickPrice))
 				{
@@ -118,7 +120,7 @@ namespace NinjaTrader.NinjaScript.Strategies
 
 				// Clasificación Buy / Sell
 				bool isBuy = false;
-				if (!double.IsNaN(ask) && !double.IsNaN(bid) && ask > bid)
+				if (!double.IsNaN(ask) && !double.IsNaN(bid) && ask > 0 && bid > 0 && ask >= bid)
 				{
 					if (tickPrice >= ask) isBuy = true;
 					else if (tickPrice <= bid) isBuy = false;
