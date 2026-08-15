@@ -23,7 +23,12 @@ commit — es la regla de «registro MEDIDO/NO MEDIDO en el mismo commit» aplic
 board.
 
 P-30 y P-31 se numeraron después de P-29 justamente para no pisar la numeración que
-el auditor ya había publicado en `RECUT_EXECUTION_2026-08-15.md`.
+el auditor ya había publicado en `RECUT_EXECUTION_2026-08-15.md`. **P-32** se asentó
+acá el mismo día, desde `docs/research/PROGRAMA_ANALISIS_FEATURES_2026-08-15.md`
+(`32fcc271b3f494bcd7fc673ab3b4963604a22b75`): el auditor la abrió en el informe y
+declaró explícitamente no tocar el board «para no pisarlo a ciegas» — correcto como
+coordinación, pero deja la entrada huérfana hasta que alguien la asienta. Es la
+tercera vez en el día.
 
 **Inventario de ramas**: `docs/INVENTARIO_DE_RAMAS_2026-08-15.md` distingue las ramas
 *superadas* (contenido ya aplicado, mergearlas duplicaría historia) de las *pendientes*
@@ -451,3 +456,84 @@ sólo pida `data_root()` y liste lo que encuentre puede quedarse en silencio.
 **Criterio de cierre**: `data_root()` valida que el directorio elegido contenga de
 verdad `nt8/` antes de devolverlo (falla cerrado si no), o los oráculos salen de
 `data/`. Decidir cuál, no las dos a medias.
+
+---
+
+## P-32 · Nombrar el conjunto de indicadores del programa de análisis
+
+**Estado**: ABIERTA — decisión de Nico, nadie más.
+
+Abierta en `docs/research/PROGRAMA_ANALISIS_FEATURES_2026-08-15.md`
+(commit `32fcc271b3f494bcd7fc673ab3b4963604a22b75`, 137 líneas, estado
+`PROGRAM_REGISTERED` — no ejecutado). Es el paso 2 de su orden de ejecución.
+
+**No hay «6 indicadores con paridad comprobada» como bloque homogéneo.** Cada uno
+entra con su estado, y mezclarlos junta tres cosas distintas: P2 formal, réplica
+P-16 con residuos, y P1A/warmup.
+
+| Indicador | Medido | Falta |
+| --- | --- | --- |
+| BigTrap2 | 3.628/3.638 EXACT junio; 171/171 abr+may. Imán cerrado. | `tick:5/10`. Cruce con aVol prohibido. |
+| aVolClusterPOI v0.5 | 6E 72/72, Δscore=0. ES 100 % pre-11-jun. | Nulo propio. P-15. |
+| Gaps2 v2.0 | P-16: 11.435/11.442. P2 histórico 1.316/1.316. | Esa ventana corta cae en el holdout. Gate estructural FAIL por bordes. |
+| AACloseOpenDiffs v1.2 | P-16: 18.004/18.020, idéntico al local. | FAIL estructural. «Paridad representativa» es decisión de Nico. |
+| VolTicksPOC2 v2.1 | P-16: 151 MATCHED + 1 FEATURE_DIFF. | Mismo FAIL. Secuenciador causal no portado en `tick:N`. |
+| HFTZones2 v2.3 | P1A + PASS 1.599 con warmup. | No está en P-16. |
+| aVolCellPOI2 v2.0 | P1A, 140 zonas con warmup. | Paridad NT8 formal. |
+| YMPreRangeSweep | 72,5 % doble barrido; nulo 54–76 % → no es edge. | P-19…P-22 bloquean L3 real. |
+
+**Criterio de cierre**: Nico nombra el conjunto y, si corresponde, declara por escrito
+«paridad representativa» del trío P-16 (`Gaps2`, `AACloseOpenDiffs`, `VolTicksPOC2`),
+cuyos residuos son de borde/warmup pero hacen fallar el gate estructural estricto.
+
+---
+
+## P-33 · `verify_tree.py` resuelve la fuente por nombre de archivo y da `FAIL_FUENTE` en 6E
+
+**Estado**: ABIERTA (2026-08-15) — **medido, no parcheado**. La herramienta se comportó
+bien; lo que falta es decidir la resolución.
+
+Corrida real del paso 1 del programa, desde la máquina gobernada:
+
+```
+python tools/verify_tree.py --recut E:/EdgeLab/data/nt8_research_v2/recut_index.json \
+                            --maxts --columns --no-source-hash
+```
+
+`15 ok | 1 falla | 2 avisos | 1 omitido` · 17.067.000.969 B re-hasheados ·
+**`VEREDICTO: FAIL_FUENTE`**, por un único chequeo:
+
+```
+[FALLA] fuente.intacta   6E_09-26_ticks.parquet: ambiguo en el origen
+```
+
+**Causa raíz**: hay dos archivos con ese nombre bajo `E:/EdgeLab/data/nt8/`.
+
+| Ruta | sha256 | Bytes |
+| --- | --- | --- |
+| `6E/6E_09-26_ticks.parquet` | `6ffcdf041f8d77a2d6fb7cfe85d63bd8b176a081caa8ad8cd0aaae57c6f178f4` | 45.439.347 |
+| `6E_prev_20260803_captura_rala/6E_09-26_ticks.parquet` | `654e006e483f62727dd2d52680e41b0c4c03531a3763471a1ba3532497883a06` | 37.559.162 |
+
+El primero es el canónico: coincide con `source_sha256` del manifiesto **y** con uno de
+los cinco parquets canónicos declarados. El segundo es una captura rala previa, y su
+hash **`654e006e…` es uno de los dos exports Z1 que
+`docs/research/F27_F210_CIERRE_Y_HERRAMIENTAS_2026-08-13.md` §1 prohíbe explícitamente
+usar** («No usar los exports Z1 (`fd2e358…` / `654e006…`)»).
+
+Así que la procedencia está intacta — el archivo correcto es el correcto — pero el
+resolvedor **busca por nombre de archivo en el árbol** y encuentra dos candidatos, uno
+de ellos en la lista negra del proyecto. Falla cerrado, que es lo correcto; el problema
+es que el árbol de origen tiene una carpeta `*_prev_*` con un artefacto prohibido y
+mismo nombre.
+
+Antecedente relevante: el builder v1 de Kaggle tenía el filtro silencioso
+`"all" not in f.name and "prev" not in f.name` (defecto D-4). Filtrarlas en silencio era
+peor; **flaggearlas es mejor**, pero deja el veredicto global en rojo por un tema de
+layout, no de integridad.
+
+**Criterio de cierre** — elegir una, no las dos a medias:
+1. `verify_tree.py` resuelve la fuente por la **carpeta declarada en el manifiesto** (o
+   por coincidencia de `source_sha256`) en vez de por búsqueda de nombre; la ambigüedad
+   pasa a aviso sólo si ningún candidato cierra por hash.
+2. Las carpetas `*_prev_*` salen de `data/nt8/` a un árbol de cuarentena, y el acta de
+   exports prohibidos se hace cumplir por ubicación además de por hash.
