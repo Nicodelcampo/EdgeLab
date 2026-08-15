@@ -26,12 +26,13 @@ using NinjaTrader.NinjaScript.DrawingTools;
 
 // ============================================================================
 // SchermanQuantReversion.cs — Estrategia Cuantitativa Adaptativa (Multi-Timeframe)
-// Optimizada para alta frecuencia y máxima captura de beneficio por trade.
+// Con Filtro Anti-Noticias de Alto Impacto y Detector de Slippage / ATR Spikes.
 //
-// MODOS DE TOMA DE BENEFICIOS (Evita la trampa de comisiones en segundos/minutos):
-// 1. OppositeBand: Deja correr el trade de banda a banda (3x a 5x más ganancia).
-// 2. TrailingStop: Asegura ganancias y persigue la micro-tendencia.
-// 3. FixedAtrTarget: Ratio Riesgo/Beneficio asimétrico pre-fijado (2.0x ATR).
+// PROTECCIÓN ANTI-NOTICIAS (Evita la ilusión óptica de slippage falso):
+// 1. News Blackout Filter: Bloquea entradas durante 08:28-08:35 ET y 13:58-14:35 ET
+//    (CPI, NFP, PPI, FOMC, etc.).
+// 2. ATR Spike Filter: Bloquea si la vela actual es > 2.5x el ATR normal.
+// 3. Stress-Test Ready: Soporta simulación con slippage penalizado (3-5 ticks).
 // ============================================================================
 
 namespace NinjaTrader.NinjaScript.Strategies
@@ -65,7 +66,7 @@ namespace NinjaTrader.NinjaScript.Strategies
 		{
 			if (State == State.SetDefaults)
 			{
-				Description									= @"Estrategia Cuantitativa de Reversión y Agotamiento con Captura de Rango Completo.";
+				Description									= @"Estrategia Cuantitativa con Filtro Anti-Noticias de Alto Impacto.";
 				Name										= "SchermanQuantReversion";
 				Calculate									= Calculate.OnBarClose;
 				EntriesPerDirection							= 1;
@@ -75,7 +76,7 @@ namespace NinjaTrader.NinjaScript.Strategies
 				IsFillLimitOnTouch							= false;
 				MaximumBarsLookBack							= MaximumBarsLookBack.TwoHundredFiftySix;
 				OrderFillResolution							= OrderFillResolution.Standard;
-				Slippage									= 1;
+				Slippage									= 2;    // Slippage prudente de 2 ticks por defecto
 				StartBehavior								= StartBehavior.WaitUntilFlat;
 				TimeInForce									= TimeInForce.Gtc;
 				TraceOrders									= false;
@@ -96,18 +97,22 @@ namespace NinjaTrader.NinjaScript.Strategies
 				UseVolumeFilter								= false;
 				VolFactor									= 1.0;
 
-				// 3. Salidas y Maximización de Beneficio (Evita la fricción en segundos)
-				TargetMode									= TargetModeType.OppositeBand; // Banda a Banda para capturar $150-$400 por trade
-				TargetAtrMultiplier							= 2.2;   // Multiplicador si se usa FixedAtrTarget
+				// 3. Filtro Anti-Noticias y Spikes de Volatilidad
+				BlockNewsWindows							= true;  // Bloquea ventanas de CPI, NFP, FOMC
+				MaxBarAtrMultiplier							= 2.2;   // Si la barra actual es > 2.2x ATR, es un spike de noticia -> NO entrar
+
+				// 4. Salidas y Captura de Beneficio
+				TargetMode									= TargetModeType.OppositeBand;
+				TargetAtrMultiplier							= 2.2;
 				AtrPeriod									= 14;
 				AtrStopMultiplier							= 1.5;
-				MaxBarsInTrade								= 25;    // Más barras para permitir que el swing madure
+				MaxBarsInTrade								= 25;
 				EnableBreakEven								= true;
 				BreakEvenAtrMultiplier						= 0.8;
-				EnableTrailingStop							= true;  // Trailing Stop dinámico
+				EnableTrailingStop							= true;
 				TrailingAtrMultiplier						= 1.2;
 
-				// 4. Parámetros de Prop Firm
+				// 5. Parámetros de Prop Firm
 				MaxDailyLoss								= 1000.0;
 				MaxDailyTrades								= 25;
 				EnableLong									= true;
@@ -151,6 +156,28 @@ namespace NinjaTrader.NinjaScript.Strategies
 				return;
 			}
 
+			// ================================================================
+			// FILTRO ANTI-NOTICIAS (NEWS BLACKOUT)
+			// ================================================================
+			if (BlockNewsWindows)
+			{
+				int timeNum = ToTime(Time[0]);
+				// 08:28 a 08:35 ET (Apertura macro: CPI, NFP, PPI, Retail Sales)
+				if (timeNum >= 82800 && timeNum <= 83500)
+					return;
+				// 09:58 a 10:05 ET (ISM / Confianza del Consumidor)
+				if (timeNum >= 95800 && timeNum <= 100500)
+					return;
+				// 13:58 a 14:35 ET (FOMC Rate Decision & Press Conference)
+				if (timeNum >= 135800 && timeNum <= 143500)
+					return;
+			}
+
+			// Filtro de Spike Anómalo de Barra (Evita entrar en velas descontroladas)
+			double barRange = High[0] - Low[0];
+			if (barRange > (atr[0] * MaxBarAtrMultiplier))
+				return;
+
 			// 1. Kaufman Efficiency Ratio (KER)
 			double netDirection = Math.Abs(Close[0] - Close[KerPeriod]);
 			double totalVolPath = 0;
@@ -181,7 +208,7 @@ namespace NinjaTrader.NinjaScript.Strategies
 					}
 				}
 
-				// B. Trailing Stop Dinámico tras superar el Break-Even
+				// B. Trailing Stop Dinámico
 				if (EnableTrailingStop && beTriggered)
 				{
 					double trailStop = highestPriceSinceEntry - (atr[0] * TrailingAtrMultiplier);
@@ -191,7 +218,7 @@ namespace NinjaTrader.NinjaScript.Strategies
 					}
 				}
 
-				// C. Salidas por Objetivo (Take Profit)
+				// C. Salidas por Objetivo
 				if (TargetMode == TargetModeType.MiddleBand && Close[0] >= bollinger.Middle[0])
 				{
 					ExitLong("TP_MiddleBand_L");
@@ -211,7 +238,7 @@ namespace NinjaTrader.NinjaScript.Strategies
 					return;
 				}
 
-				// D. Time Stop: Salida si no madura
+				// D. Time Stop
 				if (barsInPosition >= MaxBarsInTrade)
 				{
 					ExitLong("TimeStop_L");
@@ -244,7 +271,7 @@ namespace NinjaTrader.NinjaScript.Strategies
 					}
 				}
 
-				// C. Salidas por Objetivo (Take Profit)
+				// C. Salidas por Objetivo
 				if (TargetMode == TargetModeType.MiddleBand && Close[0] <= bollinger.Middle[0])
 				{
 					ExitShort("TP_MiddleBand_S");
@@ -366,66 +393,76 @@ namespace NinjaTrader.NinjaScript.Strategies
 		[Display(Name = "Factor de Volumen Relativo", Order = 4, GroupName = "2. Filtro de Régimen (Kaufman)")]
 		public double VolFactor { get; set; }
 
-		// ── 3. Salidas Cuantitativas y Maximización de Ganancia ──
+		// ── 3. Filtro Anti-Noticias (Protección Real de Slippage) ──
 		[NinjaScriptProperty]
-		[Display(Name = "Modo de Take Profit", Order = 1, GroupName = "3. Salidas y Captura de Beneficio")]
+		[Display(Name = "Bloquear Horarios de Noticias (CPI/NFP/FOMC)", Order = 1, GroupName = "3. Filtro Anti-Noticias")]
+		public bool BlockNewsWindows { get; set; }
+
+		[NinjaScriptProperty]
+		[Range(1.0, 5.0)]
+		[Display(Name = "Máximo Spike de Vela (x ATR)", Order = 2, GroupName = "3. Filtro Anti-Noticias", Description = "Si la vela actual es mayor a este múltiplo de ATR, bloquea entrada por spike anómalo")]
+		public double MaxBarAtrMultiplier { get; set; }
+
+		// ── 4. Salidas Cuantitativas y Maximización de Ganancia ──
+		[NinjaScriptProperty]
+		[Display(Name = "Modo de Take Profit", Order = 1, GroupName = "4. Salidas y Captura de Beneficio")]
 		public TargetModeType TargetMode { get; set; }
 
 		[NinjaScriptProperty]
 		[Range(1.0, 10.0)]
-		[Display(Name = "Multiplicador ATR Objetivo (si FixedATR)", Order = 2, GroupName = "3. Salidas y Captura de Beneficio")]
+		[Display(Name = "Multiplicador ATR Objetivo (si FixedATR)", Order = 2, GroupName = "4. Salidas y Captura de Beneficio")]
 		public double TargetAtrMultiplier { get; set; }
 
 		[NinjaScriptProperty]
 		[Range(5, 50)]
-		[Display(Name = "Período ATR (Stop Dinámico)", Order = 3, GroupName = "3. Salidas y Captura de Beneficio")]
+		[Display(Name = "Período ATR (Stop Dinámico)", Order = 3, GroupName = "4. Salidas y Captura de Beneficio")]
 		public int AtrPeriod { get; set; }
 
 		[NinjaScriptProperty]
 		[Range(0.5, 5.0)]
-		[Display(Name = "Multiplicador ATR Stop Loss", Order = 4, GroupName = "3. Salidas y Captura de Beneficio")]
+		[Display(Name = "Multiplicador ATR Stop Loss", Order = 4, GroupName = "4. Salidas y Captura de Beneficio")]
 		public double AtrStopMultiplier { get; set; }
 
 		[NinjaScriptProperty]
 		[Range(1, 100)]
-		[Display(Name = "Time Stop (Max Barras en Trade)", Order = 5, GroupName = "3. Salidas y Captura de Beneficio")]
+		[Display(Name = "Time Stop (Max Barras en Trade)", Order = 5, GroupName = "4. Salidas y Captura de Beneficio")]
 		public int MaxBarsInTrade { get; set; }
 
 		[NinjaScriptProperty]
-		[Display(Name = "Habilitar Break-Even Dinámico", Order = 6, GroupName = "3. Salidas y Captura de Beneficio")]
+		[Display(Name = "Habilitar Break-Even Dinámico", Order = 6, GroupName = "4. Salidas y Captura de Beneficio")]
 		public bool EnableBreakEven { get; set; }
 
 		[NinjaScriptProperty]
 		[Range(0.2, 3.0)]
-		[Display(Name = "Avance ATR para Break-Even", Order = 7, GroupName = "3. Salidas y Captura de Beneficio")]
+		[Display(Name = "Avance ATR para Break-Even", Order = 7, GroupName = "4. Salidas y Captura de Beneficio")]
 		public double BreakEvenAtrMultiplier { get; set; }
 
 		[NinjaScriptProperty]
-		[Display(Name = "Habilitar Trailing Stop Dinámico", Order = 8, GroupName = "3. Salidas y Captura de Beneficio")]
+		[Display(Name = "Habilitar Trailing Stop Dinámico", Order = 8, GroupName = "4. Salidas y Captura de Beneficio")]
 		public bool EnableTrailingStop { get; set; }
 
 		[NinjaScriptProperty]
 		[Range(0.5, 5.0)]
-		[Display(Name = "Distancia ATR Trailing Stop", Order = 9, GroupName = "3. Salidas y Captura de Beneficio")]
+		[Display(Name = "Distancia ATR Trailing Stop", Order = 9, GroupName = "4. Salidas y Captura de Beneficio")]
 		public double TrailingAtrMultiplier { get; set; }
 
-		// ── 4. Reglas Prop Firm ──
+		// ── 5. Reglas Prop Firm ──
 		[NinjaScriptProperty]
 		[Range(100.0, 10000.0)]
-		[Display(Name = "Máxima Pérdida Diaria ($)", Order = 1, GroupName = "4. Reglas Prop Firm")]
+		[Display(Name = "Máxima Pérdida Diaria ($)", Order = 1, GroupName = "5. Reglas Prop Firm")]
 		public double MaxDailyLoss { get; set; }
 
 		[NinjaScriptProperty]
 		[Range(1, 100)]
-		[Display(Name = "Máximo Trades por Día", Order = 2, GroupName = "4. Reglas Prop Firm")]
+		[Display(Name = "Máximo Trades por Día", Order = 2, GroupName = "5. Reglas Prop Firm")]
 		public int MaxDailyTrades { get; set; }
 
 		[NinjaScriptProperty]
-		[Display(Name = "Habilitar Compras (Long)", Order = 3, GroupName = "4. Reglas Prop Firm")]
+		[Display(Name = "Habilitar Compras (Long)", Order = 3, GroupName = "5. Reglas Prop Firm")]
 		public bool EnableLong { get; set; }
 
 		[NinjaScriptProperty]
-		[Display(Name = "Habilitar Ventas (Short)", Order = 4, GroupName = "4. Reglas Prop Firm")]
+		[Display(Name = "Habilitar Ventas (Short)", Order = 4, GroupName = "5. Reglas Prop Firm")]
 		public bool EnableShort { get; set; }
 
 		#endregion
