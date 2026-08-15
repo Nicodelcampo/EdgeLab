@@ -6,6 +6,29 @@ Cada entrada nombra el punto exacto del código que la referencia.
 
 **Punto de entrada para continuidad**: `docs/research/HANDOFF_AUDITORIA_2026-08-14.md`.
 
+**Procedencia de P-24…P-29 (asentadas 2026-08-15)**: ninguna de las seis existía en
+este board aunque los documentos ya las referenciaban como si existieran —
+P-24/P-25/P-26 desde la página de Notion del auditor «Auditoría de los índices
+sellados y GO para el re-corte físico (15-ago)» y desde
+`docs/research/PRECHECK_HOLDOUT_2026-08-15.md` §2 y §8; P-27/P-28/P-29 desde
+`docs/research/RECUT_EXECUTION_2026-08-15.md` §H-5, §H-7, §H-8 y su tabla final.
+
+El patrón se repitió dos veces en el mismo día, así que conviene nombrarlo: **el
+auditor numera puntos dentro del informe que escribe, y el board no se entera.**
+Un doc que apunta a una entrada inexistente se lee como si la decisión estuviera
+registrada cuando no lo está. Regla operativa: **el board es el registro auditable;
+Notion y los informes son publicación. Si divergen, manda el board**, y el commit
+que introduce un `P-NN` nuevo en un informe asienta la entrada acá en el mismo
+commit — es la regla de «registro MEDIDO/NO MEDIDO en el mismo commit» aplicada al
+board.
+
+P-30 y P-31 se numeraron después de P-29 justamente para no pisar la numeración que
+el auditor ya había publicado en `RECUT_EXECUTION_2026-08-15.md`.
+
+**Inventario de ramas**: `docs/INVENTARIO_DE_RAMAS_2026-08-15.md` distingue las ramas
+*superadas* (contenido ya aplicado, mergearlas duplicaría historia) de las *pendientes*
+(traen algo que no está en ningún lado). `tools/estado.py` las marca todas igual.
+
 ---
 
 ## P-01 · Tratamiento de `SIN_ZONAS` en el gate de balance
@@ -272,3 +295,159 @@ Y lo que faltaba por completo: el builder no sabía nada del sello del holdout (
 - Existe `--no-hash` para diagnóstico y está prohibido para publicar (sin sha256, `G-IDENTITY` falla).
 
 **Criterio de cierre**: (a) una corrida del builder v2 desde la máquina local gobernada sobre `E:/EdgeLab/data/nt8`, con su `bundle_index.json` commiteado — cualquier veredicto, y si es `ABSTAIN_*` se registra tal cual; y (b) que lo que quede en Kaggle sea **exactamente** el staging que produjo el script, verificable con `sha256sum -c files.sha256`.
+
+**Criterio (a): CERRADO (2026-08-15)**. `docs/research/bundle_index.json` está commiteado (`69eb269`, `index_sha256 6d46269c7e35a8a7…`) y su veredicto `ABSTAIN_LICENSE` es reproducible desde el repo. El criterio (b) sigue abierto. Ver `docs/research/PRECHECK_HOLDOUT_2026-08-15.md` §8.
+
+---
+
+## P-24 · `edgelab/kaggle/streaming.py` está sin revisar y sin sellar
+
+**Estado**: ABIERTA (2026-08-15).
+
+El módulo apareció en el repo pero **`load_repo_modules` no lo carga**, así que no entra en el bloque `code_identity` de los manifiestos. Es código que participa del pipeline de Kaggle sin quedar cubierto por la verificación de identidad que sí cubre a `identity.py`, `inventory.py`, `sessions_cme.py` e `instruments.py`.
+
+Identidad al momento de abrir el punto: blob `08e3cee410f9d92b3a11df0405254b7956efbc18`, 11.100 B en LF (11.371 B en working tree con CRLF — ver P-26).
+
+**Criterio de cierre**: auditoría línea por línea del módulo, y o bien se agrega a `load_repo_modules` para que quede sellado, o se documenta por escrito por qué queda deliberadamente fuera.
+
+---
+
+## P-25 · Decisión humana de presupuesto para `research-v2`
+
+**Estado**: ABIERTA — decisión de Nico, nadie más.
+
+Medido en `docs/research/PRECHECK_HOLDOUT_2026-08-15.md` §5: el árbol post-re-corte tendrá **60 archivos top-level y ≈15,7 GiB**, contra límites contractuales de 20 archivos / 10 GiB (y 50 archivos del lado de Kaggle). **El re-corte mejora la legalidad del holdout y empeora el cuadro de capacidad**: el gate `top_level_files_kaggle` pasa de `pass` (49 ≤ 50) a fallar (60 > 50).
+
+Y un corolario que cambia el orden de prioridades: como `VERDICT_PRECEDENCE` es un `if/elif` con `ABSTAIN_LICENSE` antes que `ABSTAIN_HOLDOUT` y `ABSTAIN_CAPACITY`, **aprobar la licencia (P-07) no produce un `PASS`** — produce el siguiente veredicto de la cadena. Los tres gates fallan hoy; el veredicto sólo muestra el primero.
+
+Cuatro opciones, ninguna gratis, y las cuatro cambian el objeto de estudio:
+
+1. **Enmendar el presupuesto** del Contrato Kaggle v2 (subir los 10 GiB / 20 archivos), con justificación escrita y firmada.
+2. **Publicar sólo el front month por activo** — menos archivos y menos GiB, a costa de cobertura. Ojo: recortar por contrato **no** equivale a recortar por solapamiento con el holdout (dos de los 11 en cuarentena son `GC_08-26` y `MBT_07-26`, no 09-26).
+3. **Pre-registrar un subconjunto de activos** y publicar sólo esos.
+4. **Podar columnas** del esquema para bajar bytes por tick.
+
+**Criterio de cierre**: Nico elige una y queda escrita acá antes de cualquier publicación.
+
+---
+
+## P-26 · Normalización de fin de línea y aviso de pausa en los manifiestos
+
+**Estado**: ABIERTA — mecánica, aditiva.
+
+Dos campos que faltan, medidos en `docs/research/PRECHECK_HOLDOUT_2026-08-15.md` §2 y §4:
+
+1. **`git_blob_sha1_lf` en `edgelab/kaggle/identity.py`**, de forma **aditiva** (sin mutar la clave existente). `identity.git_blob_sha1` hashea los bytes del working tree, así que en un checkout Windows con `core.autocrlf` **nunca** iguala el blob commiteado: el manifiesto acusaba deriva de código en cuatro módulos donde no la había. Se probó con hash, no con hipótesis (LF → CRLF sobre `sessions_cme.py` reproduce exactamente el blob declarado). `tools/verify_indices.py` ya tolera esto clasificando `LF_EXACTO` / `CRLF_NORMALIZADO` / `DERIVA`; falta que el manifiesto lo traiga de fábrica.
+2. **`rows_in_maintenance_break` por archivo en `tools/recut_holdout.py`**. Dos de los 11 archivos conservan ticks dentro de la pausa diaria 16:00–17:00 CT (`NQ_09-26` y `MBT_07-26`). No es leak —por la regla congelada esos ticks son del trade date 20260630— pero son impresiones de pre-apertura, settlement o skew de reloj, y hoy ningún chequeo de integridad las cuenta.
+
+---
+
+## P-27 · `verify_indices.py` extrapola bytes en vez de leer los medidos
+
+**Estado**: ABIERTA (2026-08-15) — defecto de herramienta, no de corrida.
+
+Post-corrida, `verify_indices.py` sigue estimando el tamaño del árbol como
+`source_bytes × keep/total` en lugar de leer `output_bytes`, que el manifiesto real
+**ya trae medido**. Error sobre el total: 0,9 % (15,752 GiB estimados vs 15,895
+medidos); sobre la porción re-cortada: **+18,8 %** (816.834.273 estimados vs
+970.254.030 medidos). Ver `docs/research/RECUT_EXECUTION_2026-08-15.md` H-5.
+
+**Criterio de cierre**: la herramienta usa `output_bytes` cuando existe, y reporta
+estimación vs medición cuando las dos están disponibles.
+
+---
+
+## P-28 · Columnas redundantes y semántica de `sequence`
+
+**Estado**: ABIERTA (2026-08-15) — afecta qué análisis están soportados por estos datos.
+
+Los digestos por columna del manifiesto prueban, en **11/11 archivos** (22 igualdades
+de sha256 independientes):
+
+- `digest(ts_utc_ns) == digest(ts_local_ns)` — `ts_local_ns` es un duplicado; si fuera
+  hora de Chicago diferiría en 5–6 h.
+- `digest(sequence) == digest(source_row)` — **`sequence` no es un número de secuencia
+  del exchange**, es casi con certeza el índice de fila del origen.
+
+La consecuencia que importa para research, no para el presupuesto: **cualquier análisis
+de microestructura que asuma secuenciación del mercado** (orden de eventos dentro del
+mismo timestamp, detección de huecos) **no está soportado por estos datos** y debe
+pre-registrarse como limitación. El esquema tiene 11 columnas informativas de 13
+(`instrument` y `contract` son constantes por archivo, ya presentes en ruta y nombre).
+
+**Criterio de cierre**: confirmar con `verify_tree.py --columns` (los digestos prueban
+indistinguibilidad bajo la función de digesto, la comparación directa lo zanja),
+documentar el esquema real y pre-registrar la limitación. Ver `RECUT_EXECUTION_2026-08-15.md` H-7.
+
+---
+
+## P-29 · Los 45 archivos limpios comparten inodo con el árbol de origen inmutable
+
+**Estado**: ABIERTA (2026-08-15) — riesgo de integridad, no defecto actual.
+
+`linked_clean[*].method = "hardlink"` en 45/45. El árbol `research-v2` no es una copia
+física: ocupa ~0,97 GiB de datos nuevos, no 15,9 GiB. **Cualquier escritura in-place
+sobre uno de esos 45 archivos mutaría el parquet inmutable de origen.** Hoy la
+inmutabilidad depende de que nadie escriba in-place, no de una barrera.
+
+**Criterio de cierre**: quitar el bit de escritura en los dos árboles y verificarlo
+(`verify_tree.py` ya lo chequea y avisa). Ver `RECUT_EXECUTION_2026-08-15.md` H-8.
+
+---
+
+## P-30 · `nt8/BigTrap2OptimizerStrategy.cs` — optimizador de SL/TP sin decisión previa
+
+**Estado**: RESUELTA (2026-08-15, commit `438ef1b`) — asentada para que quede el registro, no para reabrirla.
+
+El 2026-08-14 entraron dos commits (`d1133c1` "add BigTrap2OptimizerStrategy for pure SL and TP optimization", `7a8a6c8` "fix GetAsk/GetBid syntax") con un archivo nuevo que **optimiza stop-loss y take-profit**. Eso es búsqueda sobre P&L, no sobre estructura, y choca con dos cosas del marco: la regla STOP (nada sobre retornos sin manifiesto de campaña y OK explícito) y el hecho de que una grilla de SL/TP sobre histórico es la máquina de sobreajuste más clásica que existe — sin corrección por multiplicidad ni placebos, cualquier máximo que encuentre es indistinguible de ruido.
+
+El defecto de gobernanza no era la estrategia en sí (puede tener un propósito legítimo, p. ej. medir sensibilidad en vez de elegir parámetros): era que **entró por un commit de sintaxis, sin quedar nombrada ni decidida**.
+
+**Resolución**: `438ef1b` ("chore(nt8): remove SchermanQuantReversion and BigTrap2OptimizerStrategy to keep repo strictly scoped to EdgeLab research") borró los dos archivos, −791 líneas. Si alguna vez se reintroduce, entra con su propósito declarado por escrito y su decisión previa, no en un commit de otra cosa.
+
+---
+
+## P-31 · La rama viva no está verde: 6 fallas + 1 error en la suite
+
+**Estado**: ABIERTA (2026-08-15) — medido, con causa raíz por ítem, **nada parcheado**.
+
+Corrida completa sobre `research/bigtrap2-local-displacement-null@4b9611a`
+(`pytest tests -m "not vectorbt" -q`, `.venv` del clon principal):
+**6 failed, 940 passed, 33 skipped, 3 deselected, 2 xfailed, 1 error en 172 s.**
+
+Ninguna la causó el commit de ordenamiento del board (ese diff es sólo `.md`).
+Se listan con causa raíz porque la regla permanente es **causa raíz obligatoria para
+todo WARN/FAIL**, y porque P-05 pide un verde con el lock exacto: hoy ese verde no
+existe ni local ni remotamente.
+
+| # | Test | Causa raíz |
+| --- | --- | --- |
+| 1 | `test_data_root_resuelve_data_gitignoreado_desde_una_worktree` | **Regresión real.** Ver abajo. |
+| 2 | `test_selftest_verify_tree` | `PermissionError [WinError 5]` en `verify_tree.py::_fixture` (línea ~659): hace `os.remove()` sobre un archivo que el propio fixture dejó **read-only** para ejercitar la auditoría de protección de escritura (P-29). En Windows no se puede borrar un read-only; falta `os.chmod(p, stat.S_IWRITE)` antes del `remove`. Es incompatibilidad de plataforma del fixture, **no** de la lógica de verificación. |
+| 3 | `test_cada_cs_declara_version_en_el_meta[ExportM1Bars.cs]` | El `.cs` no declara `version=`. Regla permanente («cada corrección de `.cs` viaja con su versión»). |
+| 4 | `test_cada_cs_declara_version_en_el_meta[YMPreRangeSweep.cs]` | Idem. |
+| 5 | `test_todo_candidato_actual_esta_triajeado` | `YMPreRangeSweep.cs` introduce comparaciones de precio (`High[0] >= rangeHigh`, `Low[0] <= rangeLow`) que son candidatos ULP sin medir ni sellar en `tools/ulp_sweep_baseline.json`. Un candidato no es un bug — los bordes a medio tick son inmunes por construcción — pero el que no se mide, no se sabe. |
+| 6 | `test_H2_el_cs_emite_BARRA_PROCESADA_en_el_camino_de_tick` | `nt8/BigTrap2.cs` ya no contiene `LogEvent("BARRA_PROCESADA"`. El `.cs` cambió 83 líneas en el fix de frontera de sesión (`f77a3be`, P-13). **Hay que decidir cuál de las dos cosas es cierta**: el evento se quitó (y entonces el denominador de esa medición desapareció, que es lo que el test existe para impedir) o el test quedó viejo. No son intercambiables. |
+| E | `test_placebos_and_gates` (ERROR) | `tests/research/test_prerange_sweep_formal.py` pide la fixture `null_out`, que no está definida en ninguna parte. El mismo archivo además tiene dos tests que hacen `return dict` en vez de `assert` (`PytestReturnNotNoneWarning`), así que **no evalúan nada**: pasan siempre. El módulo no es un test válido de pytest. |
+
+### Detalle del ítem 1 — la regresión
+
+`data_root()` devuelve el `data/` de la worktree en vez de resolver el del checkout
+principal vía `git worktree list`, y el test lo caza exactamente como fue escrito para
+hacerlo («si no, `data_root()` encontró un directorio `data` equivocado — falso
+positivo silencioso»).
+
+La causa es un cambio de invariante, no un cambio de código: `.gitignore` líneas 34–36
+son `/data/*` + `!/data/nt8_oracles/`, y desde que se commitearon los 11 CSV de
+`data/nt8_oracles/`, **toda worktree tiene un `data/`** — con los oráculos, sin
+`data/nt8/`. `data_root()` lo encuentra, lo da por bueno y devuelve un árbol sin los
+parquets. `CLAUDE.md` declara «`/data/` es dato local (gitignorado)»; esa premisa dejó
+de ser cierta y el resolvedor la seguía asumiendo.
+
+**Consecuencia que importa**: cualquier medición corrida desde una worktree puede
+resolver a un `data/` sin parquets. Falla ruidosamente en este test, pero un script que
+sólo pida `data_root()` y liste lo que encuentre puede quedarse en silencio.
+
+**Criterio de cierre**: `data_root()` valida que el directorio elegido contenga de
+verdad `nt8/` antes de devolverlo (falla cerrado si no), o los oráculos salen de
+`data/`. Decidir cuál, no las dos a medias.
