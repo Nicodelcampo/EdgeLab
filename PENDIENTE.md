@@ -50,6 +50,8 @@ La rama incorpora `.github/workflows/ci.yml` (instala `requirements/core-bridge-
 
 **Nota (2026-08-14)**: el Contrato Kaggle v2 considera que un `Save & Run All` reproducible cumple la función de CI para los notebooks. Eso NO sustituye este punto: los scripts de sandbox que dependen de `/data/p16` viven en `tools/sandbox/` y quedan deliberadamente fuera de `tests/` para no romper `pytest -q`.
 
+**Nota (2026-08-14, builder de Kaggle)**: `tests/test_kaggle_bundle_builder.py` corre el self-test de `tools/build_kaggle_bundle.py` por subproceso. Usa `pytest.importorskip("numpy")` y no toca datos reales ni pyarrow: si el runner de CI no trae numpy, el test se saltea en vez de fallar en falso.
+
 ---
 
 ## P-06 · El gate `MAX_ABS_SMD ≤ 0.10` no tiene panel de calibración sintético
@@ -62,13 +64,15 @@ El umbral 0.10 es convención de la literatura; no existe panel propio que mida 
 
 ## P-07 · M0 — decisión de licencia de los datos locales
 
-**Estado**: ABIERTA — bloqueo legal/operativo, no técnico.
+**Estado**: ABIERTA — bloqueo legal/operativo, no técnico. Con **gate de código activo** desde 2026-08-14.
 
-Falta `DATA_LICENSE_DECISION.md` (proveedor, términos, alcance, responsable). Insumos del 2026-08-14: docs de política CME/Kaggle commiteados en `bda944a`.
+La plantilla ya existe: `docs/research/DATA_LICENSE_DECISION.md` (2026-08-14), con `status: PENDING`, cuatro campos `<por completar>` (proveedor, responsable, fecha de aprobación, sha256 de los términos) y las cuatro preguntas que hay que responder (§1). Lo que falta es **la decisión**, no el documento. Insumos del 2026-08-14: docs de política CME/Kaggle commiteados en `bda944a`.
 
 **Criterio de cierre**: Nico aporta la fuente de los términos y aprueba el documento.
 
 **Agravante (2026-08-14)**: la Versión 1 del dataset de Kaggle ya contiene ticks crudos subidos antes de cerrar M0, contra la prohibición explícita del contrato ("no subir ticks crudos hasta resolver licencia y política de datos"). El dataset es privado, lo que limita la exposición a terceros, pero no cierra el gate. Ver P-18 y `docs/research/KAGGLE_M1_SELLO_Y_VALIDACION_2026-08-14.md` §4.
+
+**Gate de código (2026-08-14)**: `tools/build_kaggle_bundle.py` lee el bloque legible por máquina `EDGELAB-LICENSE-GATE` de ese documento en cada corrida. Sin `status: APPROVED` el veredicto es `ABSTAIN_LICENSE`: no emite `dataset-metadata.json`, no stagea un solo byte y sale con código 2. Si el documento declarara un nombre de licencia que afirme derechos de redistribución (`CC0-1.0`, `CC-BY-*`, `PDDL`, `ODbL`, `MIT`, `Apache-2.0`, `Unlicense`) el tool **aborta**, no abstiene. El punto sigue ABIERTO: un gate impide publicar por accidente, no reemplaza la decisión humana. Ver P-23.
 
 ---
 
@@ -192,6 +196,8 @@ Un solo contrato de 1,13 M ticks filtra 871 filas de holdout. El contrato tipifi
 
 **Verificación**: self-test de 7 casos de frontera de trade date + paridad exacta streaming↔batch en 4 tamaños de batch (28 claves de integridad, 594 claves de actividad, 66 trade dates, sello idéntico). Evidencia: `tools/sandbox/kaggle_streaming_parity.py` y `docs/research/KAGGLE_M1_SELLO_Y_VALIDACION_2026-08-14.md` §1 y §5.
 
+**Refuerzo (2026-08-14)**: el sello dejó de ser sólo una biblioteca. `tools/build_kaggle_bundle.py` v2 lo aplica como gate de publicación (`G-HOLDOUT`): un archivo cuyo `ts_max` alcanza `2026-06-30T22:00:00Z` no es elegible, y el corte ingenuo se sigue calculando sólo para reportar el leak que produciría (7.200 s). Verificado al nanosegundo en el self-test (T1, T1b, T1c, T6d).
+
 **Criterio de cierre**: Nico ratifica la cláusula 1 de `docs/research/KAGGLE_ENMIENDA_V2_1_2026-08-14.md` y ningún artefacto formal usa un corte por timestamp UTC.
 
 ---
@@ -215,4 +221,54 @@ El dataset privado `nicolasbuttaro/edgelab-cme-futures-universe` Versión 1 (17,
 - Se construye **`edgelab-cme-research-v2`**: sólo tablas derivadas (`events_long`, `windows_ml`, `targets_long`, `folds_outer`/`folds_inner`, diccionarios), con el sello aplicado en la construcción, ≤ 10 GB, ≤ 20 entradas top-level, particiones Parquet de 128–512 MB.
 - El holdout se materializa aparte y **no se sube** hasta M8.
 
+**Mitigación en código (2026-08-14)**: `tools/build_kaggle_bundle.py` v2 ya no puede producir un upload con estos cuatro defectos. Todo archivo cuyo `ts_max` alcance la apertura de la sesión 2026-07-01 queda marcado `RECUT_REQUIRED`, sale del staging y fuerza `ABSTAIN_HOLDOUT` (punto 1); el presupuesto se evalúa con `inventory.budget_gates` y devuelve `ABSTAIN_CAPACITY` (puntos 2 y 3, verificado con una fixture de 12 GiB); y el gate M0 pasó a ser mecánico (punto 4, ver P-07). Lo que **no** resuelve: la V1 ya está subida y no la produjo este script, y falta la herramienta de **re-corte físico** de los parquets que contienen holdout. Ver P-23.
+
 **Criterio de cierre**: existe un dataset de Kaggle cuyo `00_contract_and_environment` devuelve `PASS` en los gates G1 (reconciliación), G2 (presupuesto), G3 (pre-screen de holdout) y G4 (M0).
+
+---
+
+## P-19 · a · P-22 · Defectos medidos del barrido L3 PreRange
+
+**Estado**: ABIERTAS (2026-08-14) — abiertas en el informe de auditoría del barrido L3 (commit `0cf68a0a`), con su evidencia y su aritmética completa ahí. Acá quedan **asentadas para que la numeración no se pise**; el detalle no se duplica.
+
+Los cuatro defectos, medidos y no inferidos, sobre 72.962 sesiones sintéticas en cinco regímenes adversariales:
+
+1. **Inanición de la familia de placebos (bloqueante)**: 14 de los 25 placebos arrancan entre 00:12 y 07:12. Con un M1 sólo-RTH quedan 11 usables contra el mínimo de 19 → `PRERANGE_EDGE` es **inemitible** y el runner reporta `WINDOW_UNSPECIFIC`, que se lee como resultado científico y es cobertura de archivo. Reemplazo propuesto: grilla de 15 min en RTH (23 miembros, piso 0,042).
+2. **Regla de toque por contención en vez de cruce**: 0,78 % de misclasificación cuando el rango se comprime — justo el estrato que el análisis original celebraba, así que censura la muestra donde el efecto se buscaba.
+3. **Redondeo bancario en `d`**: sesga el empate en la carrera simétrica.
+4. **Agrupación por fecha calendario en vez de trade date CME**: vuelve el `p_perm` **anti-conservador** porque mezcla ventanas overnight no exchangeables con la primaria.
+
+Además, discrepancia material de procedencia: el spec corre **08:12–09:12** y el resumen operativo dice **08:30–09:30**. No son la misma ventana (una tiene el dato macro adentro, la otra en el borde de arranque) y cambiarla "porque suena mejor" quema la procedencia — `apply_provenance_cap()` degrada a `WINDOW_UNSPECIFIC` toda ventana elegida mirando estos datos.
+
+Lo que **resistió** la auditoría: el estimand de la carrera simétrica. |E[r]| ≤ 0,008, ningún z sobre 1,07, sesgo del nulo acotado a 0,023 = 15 % del MDE, incluso con saltos asimétricos de 8 vs 1 tick y con `d` menor al recorrido de una barra.
+
+**Criterio de cierre**: los dos fixes de tres líneas aplicados, la familia de placebos reemplazada por la grilla RTH, una sola ventana fijada con su fuente escrita, y **nada corrido sobre datos reales antes de eso** (hoy no cuesta nada; en una semana ya sería p-hacking).
+
+---
+
+## P-23 · El builder del bundle de Kaggle declaraba CC0 y era fail-open
+
+**Estado**: RESUELTA EN CÓDIGO (2026-08-14, commits `50a5881` + `fb3ab8f` + `b68a548`) — con residual explícito.
+
+Artefacto auditado: `tools/build_kaggle_bundle.py` en `56184a3`, blob `df383c0685e5e46a806fb9b650a370bf529928c3`. Cinco defectos, cada uno verificable en ese blob:
+
+1. **`licenses: [{"name": "CC0-1.0"}]`** — dedicación al dominio público declarada por código sobre datos de mercado de terceros, con P-07 abierta y el dataset ya subido.
+2. **Identidad prometida y no calculada** — el encabezado anunciaba sha256 y rangos de fechas; el código escribía `num_rows` y bytes. Sin sha256 no se verifica lo subido; sin min/max de `ts_utc_ns` no se certifica ausencia de holdout.
+3. **`id` y `OUT_DIR` desalineados del upload real** — `nicodelcampo/edgelab-cme-futures-ticks` vs el dataset existente `nicolasbuttaro/edgelab-cme-futures-universe`, y en `OUT_DIR` sólo se escribía el JSON: **ningún parquet se copiaba ahí**. Los 57 archivos de la v1 los subió otro procedimiento, no versionado (patrón D9, esta vez del lado de los datos).
+4. **Fail-open** — `if not folder_path.exists(): continue` y `except Exception as e: print(...)`: un activo entero podía faltar sin cambiar el resultado. Más el filtro silencioso `"all" not in f.name and "prev" not in f.name`.
+5. **Tabla de `tick_size`/`multiplier` duplicada a mano** frente a `edgelab/instruments.py`.
+
+Y lo que faltaba por completo: el builder no sabía nada del sello del holdout (ver P-17).
+
+**Reemplazo (v2, blob `33b39364afb31da576a26500ea90dde5a2a9954f`, 47.692 B)**: seis gates —`G-INSTRUMENT`, `G-LAYOUT`, `G-IDENTITY`, `G-HOLDOUT`, `G-BUDGET`, `G-LIC`— con veredictos `PASS` / `FAIL_INSTRUMENTS` / `FAIL_LAYOUT` / `FAIL_INTEGRITY` / `ABSTAIN_LICENSE` / `ABSTAIN_HOLDOUT` / `ABSTAIN_CAPACITY` y exit codes 0 / 1 / 2. Cuarentena con causa nombrada por archivo. `bundle_index.json` se escribe siempre (rastro de auditoría) y sella su propio contenido con `index_sha256`; el staging, `dataset-metadata.json` (`isPrivate: True`, `--dataset-id` obligatorio), el `README.md` con la restricción de uso y la hoja `files.sha256` sólo existen con `PASS`. Cantidades de una sola fuente: `edgelab/instruments.py::CME_UNIVERSE`.
+
+**Evidencia**: self-test de 26 checks, 0 fallas (`python tools/build_kaggle_bundle.py --selftest`, cableado en `tests/test_kaggle_bundle_builder.py`). Los bytes commiteados son los mismos que pasaron el self-test: blob verificado contra el commit. Informe completo: `docs/research/KAGGLE_BUNDLE_BUILDER_AUDITORIA_2026-08-14.md`.
+
+**Residual, que el código no cierra**:
+
+- La **V1 ya está subida y no la produjo un script versionado**: su identidad sigue sin cerrar.
+- Falta la herramienta de **re-corte físico** de los parquets con holdout (P-18); v2 los detecta y excluye, no los corta.
+- **57 vs 56 archivos** sin reconciliar.
+- Existe `--no-hash` para diagnóstico y está prohibido para publicar (sin sha256, `G-IDENTITY` falla).
+
+**Criterio de cierre**: (a) una corrida del builder v2 desde la máquina local gobernada sobre `E:/EdgeLab/data/nt8`, con su `bundle_index.json` commiteado — cualquier veredicto, y si es `ABSTAIN_*` se registra tal cual; y (b) que lo que quede en Kaggle sea **exactamente** el staging que produjo el script, verificable con `sha256sum -c files.sha256`.
