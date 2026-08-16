@@ -109,7 +109,7 @@ El acceso a la zona compite con retirada sin toque, invalidación de la zona, ci
 ### 2.5 Lo que sigue siendo inobservable, y ahora con cita
 
 - **Metaórdenes**: identificarlas requiere históricamente identificadores de trader/broker; el intento reciente de hacerlo con **datos públicos** (Goliath y Gebbie, 2026) usa clustering de estrategias, no reconstrucción. ⇒ `M` (metaorden/información) queda **latente**. Prohibido escribir «se recargaron inventarios» como dato.
-- **Liquidez oculta en CME**: existe metodología específica —Christensen y Woodmansey (2013), *Prediction of Hidden Liquidity in the LOB of GLOBEX Futures*; y detección/predicción de icebergs CME vía **Kaplan–Meier sobre MBO** (Zotikov, 2019)—. Es implementable, pero exige **MBO**, no L2 agregado. Entra en M3, detrás de su propio gate.
+- **Liquidez oculta en CME**: existe metodología específica —Christensen y Woodmansey (2013), *Prediction of Hidden Liquidity in the Limit Order Book of GLOBEX Futures*; y detección/predicción de icebergs CME vía **Kaplan–Meier sobre MBO** (Zotikov, 2019)—. Es implementable, pero exige **MBO**, no L2 agregado. Entra en M3, detrás de su propio gate.
 - **Fills**: en libros reales **~99,9 % de las órdenes límite se cancelan**, **>90 % de las ejecuciones ocurren en los mejores precios** y las profundidades mayores a 1 tick aportan marginalmente. Coincide con G0.4 del contrato (*«un limit tocado NO es un fill»*) y **mata de entrada** cualquier diseño de entrada pasiva dentro de la zona.
 
 ---
@@ -436,3 +436,75 @@ estado              = HYPOTHESIS_DEFINED_NOT_RUN
 ## Aporte al referente
 
 La pasada multimodelo convirtió una hipótesis narrativa en un objeto con población contable, estimand de landmark, riesgos competitivos, nulos ya existentes y un criterio numérico de muerte por potencia (`N < 403`) que puede matarla **antes** de gastar un outcome. Y corrigió tres afirmaciones propias con evidencia del repositorio: aVol no está lista, el agotamiento está en tensión con F1.3, y la pregunta «¿la zona informa?» ya tiene respuesta parcial (atracción sí, resistencia no). Además dejó seis defectos concretos de `features.py` documentados con su impacto, que era la pieza que el documento del sesgo de diseño pedía usar y nadie había ejercitado.
+
+## Incorporación de la opinión de Nico (Sun 16 Aug 2026, 7:35 PM)
+
+**Opinión verbatim del usuario (citada exactamente):**
+
+> mi opinion: no hay manera de matarla rápido. en todo caso lo que se mataría rápido es una variante. pero hay muchos activos, muchos indicadores, formas de determinar un cluster de interes (densidad de indicadores, direcciones, configuraciones, parámetros) muchas features, distancias, variables, sesiones, horarios.
+
+**Interpretación y ajuste del diseño (integrado a la pasada multimodelo):**
+
+- El núcleo de la hipótesis H-Z2A (la dinámica `near-miss → rechazo → reset → re-acceso` a una zona de interés) **no tiene kill rápido**. Solo se matan rápido **variantes** específicas (combinaciones particulares dentro del espacio).
+
+- El espacio de búsqueda es **altamente dimensional** (exactamente como Nico describe):
+  - Muchos activos (análisis cruzado multiactivo).
+  - Muchos indicadores (los 6 con paridad comprobada + herramientas Kaggle prefabricadas; más adelante GEX y data L2).
+  - Formas de determinar un cluster de interés: densidad de indicadores, direcciones, configuraciones, parámetros.
+  - Muchas features, distancias, variables.
+  - Sesiones, horarios.
+
+- **Estructura requerida para el programa (staged / pre-registered):**
+  - Presupuesto de multiplicidad **explícito por cada eje** (activo × indicador × definición de cluster × feature × etc.).
+  - Reutilizar los nulls apareados de F1.1 (semilla nueva declarada).
+  - **Censo outcome-free como primer gate**: permite matar brazos/variantes específicos de forma **barata** (sin leer ningún outcome, sin gastar el presupuesto del core) mientras la hipótesis core permanece viva.
+  - Reframing del criterio de potencia: «N < 403 por brazo ⇒ esa variante/familia muere barato». El core de la hipótesis **sobrevive** al mapear y controlar sistemáticamente el espacio multi-dimensional sin incurrir en data-mining.
+
+- Refinamiento de refutación (§13):
+  - Distinguir explícitamente **kill de variante** vs **kill de la hipótesis core**.
+  - La refutación por potencia ahora se aplica a nivel de variante/familia.
+  - El diseño debe permitir matar variantes baratas sin comprometer el core.
+
+- La decisión de Phase-A carrier (A/B/C) sigue abierta para Nico.
+
+**Actualizaciones propagadas:**
+- Sección 8 (Q-POBLACIÓN / potencia): criterio ahora a nivel de variante.
+- Sección 9 (multiplicidad): énfasis en presupuesto por eje y staged search.
+- Sección 13 (cómo se refuta): versión refinada con la distinción variante/core y la alta dimensionalidad.
+- Sección 12 (reparto): censo outcome-free priorizado para mapear el espacio y matar variantes baratas.
+
+**Próximos pasos (actualizados con la opinión):**
+- Nico elige portador (B para instrumentación + A para hipótesis recomendado).
+- Fijar manifiesto F4 con umbrales + presupuesto explícito por eje (antes de ver outcomes).
+- Implementar censo outcome-free para contar elegibles por combinación y matar variantes baratas.
+- Registrar todo en repo + Notion (esta iteración).
+- Volver al orden del proyecto: reparar chapter 0, completar W7 (comisión real del bróker), preparar F4 manifest → STOP.
+
+**Recordatorio de canal:** evidencia ≠ orders; Nico aprueba acciones.
+
+---
+
+## Fuentes (actualizado)
+
+**Internas** (mismo commit base `7e5f341e85dbf37f6b5ca1dfc754406c8dd212ce`): `docs/SESGO_DE_DISENO_2026-08-10_EL_TOQUE_COMO_UNICA_ENTRADA.md` · `docs/F1.1_NULO_ZONAS_ALEATORIAS_RESULTADO_2026-08-10.md` · `docs/F1_SUPERVIVENCIA_DEPLECION_RESULTADO_2026-08-10.md` · `docs/F0.3_FEATURES_ESTADO_RESULTADO_2026-08-10.md` · `docs/HIPOTESIS_PENDIENTES.md` · `docs/NORTH_STAR.md` · `docs/edge_validation_contract.md` · `docs/event_identity_v2.md` · `edgelab/bridge/features.py` · `tools/avolcluster_census.py`
+
+**Externas**
+- Osler, *Support for Resistance: Technical Analysis and Intraday Exchange Rates*, FRBNY Economic Policy Review 6(2), 2000.
+- van Houwelingen y Putter, *Dynamic Prediction in Clinical Survival Analysis*, 2011 (landmarking).
+- Austin y Fine, *Practical recommendations for reporting Fine–Gray model analyses*; Putter et al., *Why you should avoid using multiple Fine–Gray models*, JRSS-A 187(3), 2024.
+- Xu, Chen, Xiong, Zhang, Zhou y Stanley, *Limit-order book resiliency after effective market orders: spread, depth and intensity*, arXiv:1602.00731.
+- Lo y Hall, *Resiliency of the Limit Order Book*, JEDC 2015.
+- Fishe, Haynes y Onur, *Resiliency in the E-mini futures market*, JFM 42(1), 2022.
+- Tóth, Kertész y Farmer, *Studies of the limit order book around large price changes*, EPJ B 71, 2009 (arXiv:0901.0495).
+- Degryse et al., *Aggressive Orders and the Resiliency of a Limit Order Market*, Review of Finance 2005.
+- Christensen y Woodmansey, *Prediction of Hidden Liquidity in the Limit Order Book of GLOBEX Futures*, Journal of Trading 8(3), 2013; Zotikov, *CME Iceberg Order Detection and Prediction*, 2019.
+- Goliath y Gebbie, *Metaorder modelling and identification from public data*, arXiv:2602.19590.
+- Cont, Kukanov y Stoikov, *The Price Impact of Order Book Events*; Gould y Bonart, *Queue Imbalance as a One-Tick-Ahead Price Predictor*; Bouchaud et al., *Price Impact*.
+
+---
+
+## Aporte al referente (actualizado con opinión de Nico)
+
+La pasada multimodelo convirtió una hipótesis narrativa en un objeto con población contable, estimand de landmark, riesgos competitivos, nulos ya existentes y un criterio numérico de muerte por potencia (`N < 403`) que puede matarla **antes** de gastar un outcome. Y corrigió tres afirmaciones propias con evidencia del repositorio: aVol no está lista, el agotamiento está en tensión con F1.3, y la pregunta «¿la zona informa?» ya tiene respuesta parcial (atracción sí, resistencia no). Además dejó seis defectos concretos de `features.py` documentados con su impacto.
+
+**Con la opinión de Nico incorporada:** el core de H-Z2A ahora se trata explícitamente como **no matable rápido**. El diseño se ajusta para permitir matar **variantes** baratas (vía censo outcome-free y presupuesto por eje) sin comprometer el core. El espacio de alta dimensionalidad (activos, indicadores, clusters por densidad/direcciones/configs/params, features, distancias, variables, sesiones, horarios) se mapea sistemáticamente. Esto hace que el programa sea más robusto y alineado con la realidad del mercado real. Se mantiene el registro detallado en repo y Notion.
