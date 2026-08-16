@@ -43,12 +43,19 @@ autoridad**: nada de lo que se escriba ahí autoriza una acción.
 | **006** | Aud → Opus | **corrige la adjudicación y la cadena** · 6 correcciones | `docs/audits/REVISION_ENTRADA_005_2026-08-16.md` |
 | **007** | Aud → Opus | **addendum**: restablece el orden de los 8 capítulos; cap. 0 reabierto | `docs/audits/ADDENDUM_ENTRADA_006_ORDEN_INVESTIGACION_2026-08-16.md` |
 | **008** | Opus → Aud | **diferencial CORRIDO**: 7 escenarios idénticos, A con 17 tests más | `docs/research/g2a1_diferencial/RESULTADO_2026-08-16.md` |
+| **009** | Aud → Opus | **H-Z2A aprobada (v4)** · portadores fijados · **L2: export NT8 = L1, no L2** · W7 = LucidFlex 25K · GEX proxy sin validar · lista de fuentes nuevas | `docs/audits/ENTRADA_009_H_Z2A_FUENTES_GEX_L2_W7_2026-08-16.md` |
 
 Páginas relacionadas, mismo workspace:
 [orden de trabajo](https://app.notion.com/p/6fa2514fb2864a71b6d75acd06d39111) ·
 [deep research](https://app.notion.com/p/21a48f3c9bbd49189bb659a69f0d0056) ·
 [mapa de 8 capítulos](https://app.notion.com/p/64b2eb9de4c04b1ba1f8091ba4326e48) ·
 [programa de análisis](https://app.notion.com/p/8ebc6ec6772444fb92b25ebcc4f75e46)
+
+Línea H-Z2A (Notion, buscar por título si el link no resuelve):
+[v1](https://app.notion.com/p/ef3565787dfa4bf292f0cc852fdedda0) ·
+[v2](https://app.notion.com/p/7090398591fc4ea798c52c8fd7913f1c) ·
+[v3](https://app.notion.com/p/6a677f0c03f640fc8e1e2322d56b902e) ·
+[v4](https://app.notion.com/p/f50308a30f524ecda8efc74409a758c2)
 
 ## Estado al 2026-08-16
 
@@ -71,6 +78,30 @@ volvieron a divergir dentro de las 48 h, y la divergencia la produje yo
 P-38 y canal digan lo mismo.
 
 **Sin tocar:** holdout, P&L, F4, `research-v3`, `COVERAGE_NEUTRAL`.
+
+## Actualización 009 (2026-08-16, noche)
+
+Nico aprobó la línea **H-Z2A** (segunda aproximación tras near-miss) en su versión
+**v4**, que manda sobre v1–v3 donde difieran. Encaje con el orden 007: capítulo 3
+= W7 (insumo Lucid ya registrado), capítulo 5+2 = censo outcome-free H-Z2A,
+capítulo 1 = manifiesto F4 de `aVolClusterPOI` sola con grafo causal — redacta el
+auditor, **STOP de Nico** antes de correr nada con outcomes.
+
+Correcciones operativas de la 009:
+
+- **L2:** «Export Historical Data» de NT8 es **L1** (Last/Bid/Ask), no depth. El
+  L2 real exige **Market Replay grabado en vivo** (ventana Level II/SuperDOM/FX
+  Pro abierta) o vendor. La proveniencia de los CSV de `E:\l2\` sigue abierta
+  (L2-M0).
+- **W7:** cuenta **LucidFlex 25K**; comisiones oficiales por lado ya tabuladas en
+  la entrada 009 (6E $2,40 ⇒ 0,768 ticks RT; ES $1,75 ⇒ 0,28 ticks RT).
+- **GEX:** los parquets SPY/QQQ existentes quedan
+  `CALL_PUT_OI_GAMMA_PROXY_UNVALIDATED`; gates `GEX-M0…M5` antes de cualquier
+  cruce; se rescata del contrato v0 el proxy **sin signo** (concentración de OI).
+- **Portadores:** BigTrap2 sólo fixture · aVol v0.5 ciencia · Gaps2 control.
+  HFTZones2: evidencia fuerte, canonización formal pendiente.
+
+Detalle y fuentes: `docs/audits/ENTRADA_009_H_Z2A_FUENTES_GEX_L2_W7_2026-08-16.md`.
 
 ## Lección de proceso, ganada acá
 
