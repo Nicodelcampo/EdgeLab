@@ -1,4 +1,11 @@
-# Adjudicación de `fix/g2-a1-*` — gana `calibration-hardening` (B)
+# Adjudicación de `fix/g2-a1-*` — ~~gana B~~ **NO CERRADA**
+
+> ## ⛔ CORREGIDO EL 2026-08-16 — el diferencial SE CORRIÓ y **no los distingue**
+> Siete escenarios sintéticos, **idénticos al dígito**. Y B tiene **17 tests
+> menos** que A en la superficie G2. **B es candidato preferido, no ganador.**
+> El §4 de este documento —«P-31 ítem 1 bloquea el diferencial»— **era falso**.
+> → [`docs/research/g2a1_diferencial/RESULTADO_2026-08-16.md`](g2a1_diferencial/RESULTADO_2026-08-16.md)
+
 
 **Fecha:** 2026-08-15 · Sin outcomes · Holdout intacto · Sin datos de mercado
 **Autoriza:** Nico — *«avanzá con el capítulo 0 y la adjudicación de g2-a1»*.

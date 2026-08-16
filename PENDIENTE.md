@@ -368,8 +368,10 @@ Identidad al momento de abrir el punto: blob `08e3cee410f9d92b3a11df0405254b7956
 publicación no hay compuertas de capacidad que satisfacer. La poda de columnas
 queda como **higiene local** (D-2), no como gate.
 
-**Medición que sobrevive**: 41,70 % de bytes duplicados exactos; RAM por contrato
-9,67 → ~5,8 GiB. Eso sí importa: era el único cuello real del programa local.
+**Medición que sobrevive**: 41,70 % de bytes duplicados exactos; RAM por contrato 9,67 →
+**~5,64 GiB estimados** (`9,67 × (1 − 0,4170)`). El «~5,80» que circulaba **no
+cierra aritmeticamente** — correccion del auditor aceptada; el propio auditor ya
+lo habia marcado en su entrada 003 y la correccion no habia llegado al board. Eso sí importa: era el único cuello real del programa local.
 
 Medido en `docs/research/PRECHECK_HOLDOUT_2026-08-15.md` §5: el árbol post-re-corte tendrá **60 archivos top-level y ≈15,7 GiB**, contra límites contractuales de 20 archivos / 10 GiB (y 50 archivos del lado de Kaggle). **El re-corte mejora la legalidad del holdout y empeora el cuadro de capacidad**: el gate `top_level_files_kaggle` pasa de `pass` (49 ≤ 50) a fallar (60 > 50).
 
@@ -482,9 +484,12 @@ inexistente y dos tests que hacen `return dict` en vez de `assert`.
 
 **El conteo de la suite NO es transportable.** En el sandbox del auditor da 2
 failed / 952 passed; en esta máquina, sobre `tests/ --ignore=tests/research`, da
-**539 passed, 26 failed, 13 errors**. Las 39 rojas son **todas** de `tests/bridge/`
-y `verify_tree`, y **todas dependen del store**, que no existe acá. «La suite está
-verde» es una afirmación sobre una máquina, no sobre el repo.
+**539 passed, 26 failed, 13 errors**. Las 39 rojas caen todas en `tests/bridge/` y
+`verify_tree`, y **se atribuyen al store ausente segun diagnostico local** — el
+desglose sale del cache de pytest, **no de un artefacto versionado**. Correccion
+del auditor aceptada (`REVISION_ENTRADA_005` §5): sin JUnit commiteado esto es
+evidencia de maquina resumida, no un hecho reproducible del repo. Lo que si se
+sostiene sin artefacto: «la suite esta verde» es una afirmacion sobre una maquina.
 
 Corrida completa sobre `research/bigtrap2-local-displacement-null@4b9611a`
 (`pytest tests -m "not vectorbt" -q`, `.venv` del clon principal):
@@ -777,7 +782,7 @@ O se declara por escrito que D-6 no es ejecutable y se elige otro camino.
 
 ---
 
-## P-38 · La allowlist de G2 sigue vacia por un paso nunca ejecutado, no por una decision
+## P-38 · La allowlist de G2 sigue vacia: implementacion canonica no adjudicada
 
 **Estado**: ABIERTA — **hallazgo, con causa raiz identificada**. Abierta 2026-08-15
 desde la maquina local (Claude), leyendo codigo y las dos fuentes que la gobiernan.
@@ -806,8 +811,11 @@ de Nico en sus 3 preguntas abiertas (CLAUDE.md). El paso 9 nunca se ejecuto.
 **Consecuencia dura**: hoy **ningun candidato puede materializar
 `statistically_supported`**, y el motivo no es una decision que alguien tomo — es
 un paso que nadie dio. El capitulo 6 de la investigacion pide *"registrar el hash
-de G2-A1 en la allowlist **o** documentar por que sigue vacia"*; la respuesta a la
-segunda mitad, hoy, seria «por olvido», que no es una justificacion.
+de G2-A1 en la allowlist **o** documentar por que sigue vacia"*; la respuesta correcta es
+**«implementacion canonica no adjudicada»**, no «por olvido». (Correccion del
+auditor, `REVISION_ENTRADA_005_2026-08-16.md` §3, aceptada: Nico aprobo la
+SEMANTICA de la enmienda, pero hay dos implementaciones rivales sin adjudicacion
+medida, y eso basta para mantener la lista vacia fail-closed.)
 
 **Pero no se ejecuta el paso 9 todavia, y por una razon nueva.** El paso 9 dice
 «el SHA-256 **del archivo aprobado**». Hay **dos contratos canonicos rivales sin
@@ -815,9 +823,11 @@ adjudicar** (`fix/g2-a1-*`, ver P-10): conflictuan en `edge_validation_contract.
 `g2.py`, `g2_decision.py` y `promotion.py`. **No se puede hashear el contrato
 mientras existan dos versiones rivales de el.**
 
-**Criterio de cierre**: adjudicar P-10.3 primero — validacion diferencial de las dos
-ramas contra casos de verdad conocida — y recien entonces hashear el archivo
-ganador. Hasta eso, la allowlist queda vacia **por este motivo escrito**, no por
+**Criterio de cierre**: adjudicar P-10.3 primero y recien entonces hashear el
+archivo ganador. **El diferencial YA SE CORRIO (2026-08-16) y NO los distingue**:
+7 escenarios identicos al digito, A con 17 tests mas. Ver
+`docs/research/g2a1_diferencial/RESULTADO_2026-08-16.md`. Sigue faltando la lista
+estadistica del addendum §4. Hasta eso, la allowlist queda vacia **por este motivo escrito**, no por
 INC-007 ni por olvido.
 
 **Nota de alcance**: esto no autoriza agregar ningun hash. Lo unico que hace es
