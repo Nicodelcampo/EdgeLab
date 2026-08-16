@@ -237,6 +237,9 @@ selecciona por P&L máximo aislado.
 - `docs/nt8_indicator_parity_contract.md` — protocolo de paridad NT8↔Python.
 - `docs/nt8_bridge.md` — store, gate P3, campañas, visor, API de features.
 - `docs/incidents/` — incidentes de procedencia/integridad, abiertos y cerrados.
+- `docs/audits/CANAL_AUDITOR.md` — **índice del canal Opus 5 ↔ Auditor**: reglas,
+  entradas 001-005 con sus URLs de Notion y el estado de la cadena que gobierna
+  el capítulo 6. El canal vivía sólo en Notion, contra su propia regla 1.
 
 ## Entorno
 
