@@ -666,6 +666,23 @@ Riesgo: alguien lee el docstring, cree que las ramas se verifican, y no.
 **Criterio de cierre**: o `propagate_coverage` usa la contabilidad de ramas, o el
 docstring y las matrices dejan de prometerla.
 
+**Evidencia completa (2026-08-15, maquina local).** La orden de trabajo pedia el grep
+de repo entero para probar A2. Corrido sobre todos los `*.py`:
+
+```
+edgelab/bridge/coverage.py        4 ocurrencias
+tests/bridge/test_coverage.py    10 ocurrencias
+                                 --
+total                            14, en 2 archivos
+```
+
+`is_covered`, `branches_of` y `config_branches` **no aparecen en ningun otro modulo del
+repo**. No es solo que `is_covered` se referencie a si misma: los tres simbolos estan
+aislados en su archivo y su propio test. **A2 queda probado a nivel repo**, no solo por
+lectura local de `coverage.py`.
+
+Lo que falta para cerrar sigue siendo la **decision de semantica**, que es de Nico.
+
 ---
 
 ## P-37 · `parity_covered` es inalcanzable para 4 de los 5 kernels
