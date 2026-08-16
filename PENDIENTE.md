@@ -118,7 +118,12 @@ El umbral 0.10 es convención de la literatura; no existe panel propio que mida 
 
 ## P-07 · M0 — decisión de licencia de los datos locales
 
-**Estado**: ABIERTA — bloqueo legal/operativo, no técnico. Con **gate de código activo** desde 2026-08-14.
+**Estado**: **CERRADA POR ALCANCE (2026-08-15, D-1)** — no por dictamen legal. Kaggle sale del
+programa: si no se publica nada, no hay distribución. El gate `ABSTAIN_LICENSE`
+**se conserva** como red contra publicar por accidente. Acta: [`docs/DECISIONES_2026-08-15.md`](DECISIONES_2026-08-15.md) D-1.
+
+**RESIDUAL VIVO, y no lo cierra D-1**: la pregunta legal sobre los datos *locales*
+sigue sin respuesta, y la V1 sigue subida (ver P-18).
 
 La plantilla ya existe: `docs/research/DATA_LICENSE_DECISION.md` (2026-08-14), con `status: PENDING`, cuatro campos `<por completar>` (proveedor, responsable, fecha de aprobación, sha256 de los términos) y las cuatro preguntas que hay que responder (§1). Lo que falta es **la decisión**, no el documento. Insumos del 2026-08-14: docs de política CME/Kaggle commiteados en `bda944a`.
 
@@ -269,7 +274,10 @@ Un solo contrato de 1,13 M ticks filtra 871 filas de holdout. El contrato tipifi
 
 ## P-18 · La Versión 1 del dataset de Kaggle incumple la Fase 0 del contrato
 
-**Estado**: ABIERTA — bloqueante para el pipeline formal. Decisión de Nico.
+**Estado**: **ABIERTA — acotada por D-1, no cerrada.** Ya no bloquea el pipeline local (Kaggle
+sale del programa), pero **el residual es intacto**: la V1 con ticks crudos y
+holdout físico sigue publicada. **Acción humana de Nico: borrar el dataset.**
+Ninguna herramienta lo hace.
 
 El dataset privado `nicolasbuttaro/edgelab-cme-futures-universe` Versión 1 (17,97 GB, 57 archivos, 728 columnas declaradas por Kaggle) no puede ser el **dataset exploratorio** del contrato. Cuatro incumplimientos, ninguno inferido:
 
@@ -356,7 +364,12 @@ Identidad al momento de abrir el punto: blob `08e3cee410f9d92b3a11df0405254b7956
 
 ## P-25 · Decisión humana de presupuesto para `research-v2`
 
-**Estado**: ABIERTA — decisión de Nico, nadie más.
+**Estado**: **CERRADA POR ALCANCE (2026-08-15, D-1/D-2)** como requisito de publicación: sin
+publicación no hay compuertas de capacidad que satisfacer. La poda de columnas
+queda como **higiene local** (D-2), no como gate.
+
+**Medición que sobrevive**: 41,70 % de bytes duplicados exactos; RAM por contrato
+9,67 → ~5,8 GiB. Eso sí importa: era el único cuello real del programa local.
 
 Medido en `docs/research/PRECHECK_HOLDOUT_2026-08-15.md` §5: el árbol post-re-corte tendrá **60 archivos top-level y ≈15,7 GiB**, contra límites contractuales de 20 archivos / 10 GiB (y 50 archivos del lado de Kaggle). **El re-corte mejora la legalidad del holdout y empeora el cuadro de capacidad**: el gate `top_level_files_kaggle` pasa de `pass` (49 ≤ 50) a fallar (60 > 50).
 
@@ -401,7 +414,14 @@ estimación vs medición cuando las dos están disponibles.
 
 ## P-28 · Columnas redundantes y semántica de `sequence`
 
-**Estado**: ABIERTA (2026-08-15) — afecta qué análisis están soportados por estos datos.
+**Estado**: **MEDIDA Y PRE-REGISTRADA (2026-08-15, D-3)** — sube de indicio a hecho. Verificado
+columna a columna en **56/56 archivos, 1.015.587.419 filas, 0 diferencias**
+(`docs/research/verif_columnas_duplicadas_2026-08-15.json`).
+
+**Queda como LIMITACIÓN PERMANENTE, no como tarea**: `sequence` **no es secuencia
+del exchange** sino índice de fila del origen, y `ts_local_ns` duplica a
+`ts_utc_ns`. Cualquier análisis de microestructura que asuma orden intra-timestamp
+**no está soportado por estos datos**.
 
 Los digestos por columna del manifiesto prueban, en **11/11 archivos** (22 igualdades
 de sha256 independientes):
@@ -451,7 +471,20 @@ El defecto de gobernanza no era la estrategia en sí (puede tener un propósito 
 
 ## P-31 · La rama viva no está verde: 6 fallas + 1 error en la suite
 
-**Estado**: ABIERTA (2026-08-15) — medido, con causa raíz por ítem, **nada parcheado**.
+**Estado**: **ABIERTA — parcialmente cerrada.** Ítem 6 (`BARRA_PROCESADA`) **cerrado por D-4**:
+el evento nunca se quitó, cambió la emisora a `LogEventAt(s.Time, …)`; era el test
+el que caducó, y se reescribió para verificar el invariante en vez del literal.
+
+**Siguen abiertos** (2026-08-15, medido desde la máquina local con el `.venv` del
+repo): 6 candidatos ULP de `Gaps2` sin medir; `verify_tree.py --selftest` con
+`PermissionError` de Windows; `test_prerange_sweep_formal.py` con fixture `null_out`
+inexistente y dos tests que hacen `return dict` en vez de `assert`.
+
+**El conteo de la suite NO es transportable.** En el sandbox del auditor da 2
+failed / 952 passed; en esta máquina, sobre `tests/ --ignore=tests/research`, da
+**539 passed, 26 failed, 13 errors**. Las 39 rojas son **todas** de `tests/bridge/`
+y `verify_tree`, y **todas dependen del store**, que no existe acá. «La suite está
+verde» es una afirmación sobre una máquina, no sobre el repo.
 
 Corrida completa sobre `research/bigtrap2-local-displacement-null@4b9611a`
 (`pytest tests -m "not vectorbt" -q`, `.venv` del clon principal):
@@ -498,7 +531,21 @@ verdad `nt8/` antes de devolverlo (falla cerrado si no), o los oráculos salen d
 
 ## P-32 · Nombrar el conjunto de indicadores del programa de análisis
 
-**Estado**: ABIERTA — decisión de Nico, nadie más.
+**Estado**: **NOMBRADA (2026-08-15, D-6)** — Nico declaró el conjunto y aceptó **paridad
+representativa** para el trío P-16. Acta: [`docs/DECISIONES_2026-08-15.md`](DECISIONES_2026-08-15.md) D-6.
+
+`BigTrap2` y `aVolClusterPOI` v0.5 entran como **paridad exacta**; `Gaps2` v2.0,
+`AACloseOpenDiffs` v1.2 y `VolTicksPOC2` v2.1 como **representativa**;
+`HFTZones2` v2.3 y `aVolCellPOI2` v2.0 **pendientes de paridad NT8 formal**.
+`YMPreRangeSweep` **no entra**.
+
+**Marca vigente**: las configs `tick:N` de `VolTicksPOC2` y `aVolCellPOI2` entran
+como features fijadas pero **no se promueve nada desde ellas** sin resolver el
+secuenciador causal.
+
+**Advertencia que P-37 agrega**: «representativa» **no es consumible en G2+**.
+Hoy `parity_covered` es inalcanzable para 4 de 5 kernels, así que el trío
+representativo queda fuera del consumo formal aunque esté nombrado.
 
 Abierta en `docs/research/PROGRAMA_ANALISIS_FEATURES_2026-08-15.md`
 (commit `32fcc271b3f494bcd7fc673ab3b4963604a22b75`, 137 líneas, estado
@@ -527,7 +574,14 @@ cuyos residuos son de borde/warmup pero hacen fallar el gate estructural estrict
 
 ## P-33 · `verify_tree.py` resuelve la fuente por nombre de archivo y da `FAIL_FUENTE` en 6E
 
-**Estado**: ABIERTA (2026-08-15) — **medido, no parcheado**. La herramienta se comportó
+**Estado**: **DECIDIDA POR (a) (2026-08-15, D-5), IMPLEMENTACIÓN PENDIENTE.** Se resuelve la
+fuente por carpeta declarada o por `source_sha256`, **no** moviendo carpetas: (b)
+dejaría el resolvedor buscando por nombre y volvería a fallar con el próximo par de
+homónimos. (a) es además más estricto — sólo acepta el candidato que cierra por
+hash contra el manifiesto.
+
+**Falta aplicarlo a `tools/verify_tree.py`.** Requiere la máquina con el árbol
+`research-v2`; no se puede hacer desde acá. Original medido — la herramienta se comportó
 bien; lo que falta es decidir la resolución.
 
 Corrida real del paso 1 del programa, desde la máquina gobernada:
