@@ -720,3 +720,51 @@ justificadas en la lista blanca. El consumo formal en G2+ exige `parity_exact` o
 **Criterio de cierre**: cada entrada nueva en `COVERAGE_NEUTRAL` viene con justificación
 escrita **por parámetro**, al nivel de la de `Gaps2` (que cita §8.3.1 campo por campo).
 O se declara por escrito que D-6 no es ejecutable y se elige otro camino.
+
+---
+
+## P-38 · La allowlist de G2 sigue vacia por un paso nunca ejecutado, no por una decision
+
+**Estado**: ABIERTA — **hallazgo, con causa raiz identificada**. Abierta 2026-08-15
+desde la maquina local (Claude), leyendo codigo y las dos fuentes que la gobiernan.
+
+**Medido**: `edgelab/research/promotion.py:38` -> `APPROVED_G2_CONTRACT_SHA256S =
+frozenset()`. Confirmado en ejecucion. (No se contradice con CLAUDE.md: la que "ya
+no esta vacia" es `AUTHORIZED_DSR_METHOD_SHA256S`, en `g2_decision.py:18`, que tiene
+1 entrada. Son constantes distintas y las dos afirmaciones son correctas.)
+
+**Lo que cambia el cuadro.** El vacio no es una prohibicion permanente: es una
+**contencion condicional cuya condicion ya se cumplio**.
+
+`docs/promotion_registry.md:48-53`:
+> `APPROVED_G2_CONTRACT_SHA256S` esta vacio a proposito. Mientras **no exista una
+> enmienda G2 corregida y hasheada**, ningun candidato puede materializar
+> `statistically_supported`. **Cuando se apruebe la enmienda, su SHA-256 se
+> agregara explicitamente.**
+
+`docs/amendments/G2-2026-08-03_estimando_y_autoridad.md:324-326`, pasos 8 y 9:
+> Nico aprueba el cambio semantico antes de una campana real; se calcula el
+> SHA-256 exacto del archivo aprobado y **recien entonces se agrega**.
+
+**La enmienda existe y fue aprobada**: `G2-A1`, commit `62ac28c`, con OK explicito
+de Nico en sus 3 preguntas abiertas (CLAUDE.md). El paso 9 nunca se ejecuto.
+
+**Consecuencia dura**: hoy **ningun candidato puede materializar
+`statistically_supported`**, y el motivo no es una decision que alguien tomo — es
+un paso que nadie dio. El capitulo 6 de la investigacion pide *"registrar el hash
+de G2-A1 en la allowlist **o** documentar por que sigue vacia"*; la respuesta a la
+segunda mitad, hoy, seria «por olvido», que no es una justificacion.
+
+**Pero no se ejecuta el paso 9 todavia, y por una razon nueva.** El paso 9 dice
+«el SHA-256 **del archivo aprobado**». Hay **dos contratos canonicos rivales sin
+adjudicar** (`fix/g2-a1-*`, ver P-10): conflictuan en `edge_validation_contract.md`,
+`g2.py`, `g2_decision.py` y `promotion.py`. **No se puede hashear el contrato
+mientras existan dos versiones rivales de el.**
+
+**Criterio de cierre**: adjudicar P-10.3 primero — validacion diferencial de las dos
+ramas contra casos de verdad conocida — y recien entonces hashear el archivo
+ganador. Hasta eso, la allowlist queda vacia **por este motivo escrito**, no por
+INC-007 ni por olvido.
+
+**Nota de alcance**: esto no autoriza agregar ningun hash. Lo unico que hace es
+reemplazar una omision por una razon.
