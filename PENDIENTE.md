@@ -148,7 +148,18 @@ La copia canónica vive en `nt8/BigTrap2.cs` y es byte-idéntica a la que corre 
 
 ## P-10 · Merges que cambian semántica de validación, pendientes de decisión
 
-**Estado**: ABIERTA — decisión de Nico, nadie más.
+**Estado**: **DECIDIDA (2026-08-15)**, delegada por Nico. Fundamento:
+[`docs/research/DECISIONES_P35_P37_P10_2026-08-15.md`](research/DECISIONES_P35_P37_P10_2026-08-15.md).
+
+1. `docs/lux-imb-source-correction` — **ya estaba mergeada** (`830f79e`). El board
+   la listaba de mas.
+2. `research/ym-prerange-session-window` — **MERGEADA** (`d6e0e2c`). Cero conflictos,
+   no toca semantica de gates, 12/12 en `tests/test_sessions.py`.
+3. `fix/g2-a1-*` — **NINGUNA de las dos**. No son dos merges: son **dos contratos
+   canonicos rivales** que conflictuan en 8 archivos. Se adjudican corriendo la
+   validacion diferencial que la propia rama A ya trae
+   (`.github/workflows/g2-a1-validation.yml`) contra casos de verdad conocida.
+   **Disparador: la primera campana que ejercite G2.** Hoy no hay candidato.
 
 1. `fix/g2-a1-statistical-semantics` + `fix/g2-a1-calibration-hardening` (calendario obligatorio, `MIN_DSR_SESSIONS`, DSR V1/V2).
 2. `research/ym-prerange-session-window` (`minute_window_matrices` con calendario explícito).
@@ -621,7 +632,11 @@ repita esta investigación desde cero.
 
 ## P-35 · Una paridad con `WARN` se registra como `parity_exact`
 
-**Estado**: ABIERTA — **decisión de semántica de gating, de Nico. Nadie más la toca.**
+**Estado**: **DECIDIDA (2026-08-15)** — `WARN` **NO** es `parity_exact`; necesita estado
+propio. Delegada por Nico. Fundamento: [`docs/research/DECISIONES_P35_P37_P10_2026-08-15.md`](research/DECISIONES_P35_P37_P10_2026-08-15.md).
+**Implementacion PENDIENTE**: no se hizo en la maquina local porque
+`test_coverage_propagation.py` esta en 12 fallas por falta de store — no se cambia
+semantica de gates sin poder correr su test.
 
 **Verificado** en `edgelab/bridge/store.py:268-276`:
 
@@ -687,8 +702,10 @@ Lo que falta para cerrar sigue siendo la **decision de semantica**, que es de Ni
 
 ## P-37 · `parity_covered` es inalcanzable para 4 de los 5 kernels
 
-**Estado**: ABIERTA — **decisión de Nico**: ampliar la lista blanca es ampliar qué
-diferencias se declaran irrelevantes para la paridad.
+**Estado**: **DECIDIDA (2026-08-15)** — **NO se amplia** `COVERAGE_NEUTRAL`. D-6 queda
+declarada NO EJECUTABLE para 4 de 5; cada kernel se gana su `parity_exact` con
+oraculo propio. El camino real ya se demostro: HFTZones2 PASS 4821/4821 (`7596a78`).
+Fundamento: [`docs/research/DECISIONES_P35_P37_P10_2026-08-15.md`](research/DECISIONES_P35_P37_P10_2026-08-15.md).
 
 **Verificado** en `edgelab/bridge/coverage.py:64-71`: `COVERAGE_NEUTRAL` tiene **una sola
 entrada**, `Gaps2`. Para los otros cuatro kernels `_neutral()` devuelve conjuntos vacíos,
