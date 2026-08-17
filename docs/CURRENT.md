@@ -16,6 +16,10 @@
 2. **P-41 resuelta (entrada 015).** Leak medido: **5.319 ticks**, 7,0 h. Corte por
    trade date vía `sessions_cme`. El censo-superficie ya no está bloqueado por eso.
    `docs/audits/ENTRADA_015_P41_RESUELTA_Y_MEDIDA_2026-08-17.md`
+2b. **P-42 abierta: `aVolCellPOI2` NO tiene paridad.** 16 divergencias reales sobre
+   678 zonas en 6E (warmup ya descontado). Es el único de los 7 kernels con paridad
+   formal medida y fallada. `HFTZones2` sí pasó: 4.821/4.821. No transportar
+   `aVolCellPOI2` a otros activos hasta cerrarla.
 3. **Orden:** censo-superficie (60 celdas × 2 predicados) → manifiesto numérico →
    STOP de Nico → F4. G2-A1 sanea **en paralelo**, no es la ruta crítica.
 4. **Board:** `PENDIENTE.md`. El board es el registro; Notion es publicación.

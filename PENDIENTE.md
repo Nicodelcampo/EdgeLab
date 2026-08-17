@@ -1011,3 +1011,61 @@ los parquets y por lo tanto no podía verificar el fix).
 — exactamente las filas del `6E_09-26_ticks.parquet` de `research-v2`. Dos caminos de
 código que nunca se hablaron (`tools/recut_holdout.py` y este runner) coinciden **al
 tick**. Los 5.319 de diferencia son los que P-41 denunciaba.
+
+---
+
+## P-42 · `aVolCellPOI2` no tiene paridad: 16 divergencias reales sobre 678 zonas
+
+**Estado**: ABIERTA — **bloquea que el conjunto de P-32 quede canonizado**. Medido, no
+inferido.
+
+Primera paridad formal de `aVolCellPOI2` contra su oráculo
+(`avolcellpoi2_v23_6E_0626_time1_100d.csv`, sha256 `5683d2e3…`), 6E 06-26, `time:1`,
+30 días. Informe: `runs/paridad_avolcellpoi2_30d_w12.json`.
+
+```
+kernel 671   vs   oraculo 678          gate: FAIL
+
+MISSING_IN_PYTHON  9    el oraculo tiene zonas que el kernel no produce
+MISSING_IN_NT8     2    y al reves
+GEOMETRY_DIFF      2
+FEATURE_DIFF       2    touches py=2/nt8=4 · py=3/nt8=9
+TIMESTAMP_DIFF     1    created_ms diff = 60.000 ms = exactamente 1 barra
+```
+
+### Warmup descontado, no confundido con el defecto
+
+Con 1 sesión de warmup los `MISSING_IN_PYTHON` eran 14; con **12** (por
+`MinSessions=10`) bajan a **9**. O sea **5 eran warmup y 9 son reales**. El resto de
+los códigos no se mueve entre las dos corridas: no son artefacto de ventana.
+
+### La pista más rica
+
+La zona 118/113 difiere en **geometría, timestamp y touches a la vez**:
+
+```
+py  = (46663, 46661)   ->  alto 2 medio-ticks = 1 tick
+nt8 = (46665, 46661)   ->  alto 4 medio-ticks = 2 ticks
+```
+
+Mismo borde inferior, distinto superior: **NT8 fusionó dos celdas donde Python fusionó
+una**, y la creó una barra antes.
+
+**Descartado**: la lógica de fusión es idéntica en los dos lados — misma condición de
+corte (`tick[i] - tick[i-1] > merge_gap + 1`, `.cs` l. 568 vs `.py` l. 346) y mismo
+`min_zone_cells`. Con `MergeGapTicks=0` y `MinZoneCells=1` no hay margen de
+interpretación ahí.
+
+**Por lo tanto la causa está aguas arriba**: en qué celdas se marcan como anómalas, es
+decir en el umbral del perfil (`is_anomaly`, `.py` l. 412 — cuantil / robust-z sobre el
+perfil por bucket). Si el umbral difiere aunque sea marginalmente, una celda de borde
+entra de un lado y no del otro, y eso explica los tres síntomas juntos: menos celdas →
+zona más baja, creada más tarde, con menos toques.
+
+**Criterio de cierre**: comparar el umbral por bucket y sesión entre kernel y oráculo
+—el oráculo exporta `threshold`, `empirical_pct`, `robust_z`, `sample_count` y
+`session_count` por evento `OBS`, así que la comparación es directa y no requiere
+instrumentar nada nuevo— y localizar en qué punto del perfil divergen.
+
+**No transportar a otros activos hasta cerrarla**: correr un kernel que ya se sabe
+divergente sobre otro instrumento sólo agrega ruido.
