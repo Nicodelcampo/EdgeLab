@@ -3,7 +3,9 @@
 
 Implements specs/avolcluster_tick_formal_v0.json and docs/research/AVOL_TICK_FORMAL_PROTOCOL_2026-08-14.md:
 1. P2 Gate Replay: verifies Python kernel parity against NT8 oracle (avolcluster_v05_20260813.csv).
-2. 4-Contract Tick Race: runs across 6E_12-25, 6E_03-26, 6E_06-26, 6E_09-26 (firewall <= 2026-06-30).
+2. 4-Contract Tick Race: runs across 6E_12-25, 6E_03-26, 6E_06-26, 6E_09-26
+   (firewall por TRADE DATE CME: se corta en la apertura de la sesion del 2026-07-01,
+   o sea 17:00 CT del 06-30 -- NO en la fecha calendario del 06-30. Ver P-41).
 3. Disambiguates ties via tick_first_touch from F2.7.
 4. Primary benchmark is control_random (deterministic seed), with control_nearest as diagnostic.
 5. Computes session-level HAC Bartlett IC95 and paired contrasts.
@@ -34,12 +36,24 @@ sys.path.insert(0, str(REPO_PATH))
 from edgelab.bridge.ticks import TickSeries, load_canonical_parquet, instrument_spec
 from edgelab.bridge.bars import build_time_bars, build_footprints, p1a_gate, session_ids, BarSeries, Footprints
 from edgelab.bridge.indicators.avolclusterpoi import SessionProfile, detect_block, RESEARCH_DEFAULTS
+from edgelab.kaggle.sessions_cme import session_bounds_utc_ns
 
 SCHEMA_VERSION = "avolcluster_tick_formal_v0"
 TICK_SIZE = 0.00005
 HORIZON_BARS = 2000
 CONTROL_PAD_BARS = 12
-FIREWALL_CUTOFF = "2026-06-30"
+# P-41 (2026-08-17). El corte era `ts_chicago <= "2026-06-30 23:59:59"`, es decir
+# fecha CALENDARIO de Chicago. La sesion CME del trade date 2026-07-01 abre a las
+# 17:00 CT del 06-30, asi que ese filtro dejaba pasar 7,0 horas de holdout: 5.319
+# ticks medidos en 6E_09-26 (el auditor habia estimado ">871" extrapolando P-17,
+# que midio 871 solo en la franja 17:00-19:00 CT).
+#
+# El corte correcto es el PRIMER NANOSEGUNDO de la sesion del primer trade date de
+# holdout, que es exactamente lo que sella el re-corte fisico (tools/recut_holdout.py)
+# y lo que ya calcula sessions_cme desde la tzdata del sistema. Se conserva un unico
+# origen de verdad: si cambia la regla de sesion, cambia en un solo lugar.
+HOLDOUT_FIRST_TRADE_DATE = 20260701
+FIREWALL_CUTOFF_NS = session_bounds_utc_ns(HOLDOUT_FIRST_TRADE_DATE)[0]
 
 CANONICAL_HASHES = {
     "6E_12-25_ticks.parquet": "ea8b9f211929658494d952677fe302c33db66086ec1a21731f1f5d7ff74f7336",
@@ -315,7 +329,9 @@ def run_avolcluster_tick_formal(
     
     # Filter window in America/Chicago
     ts_chi = pd.to_datetime(ticks_09.ts_ns, unit="ns", utc=True).tz_convert("America/Chicago")
-    mask_p2 = (ts_chi >= "2026-04-09 17:00:00") & (ts_chi <= "2026-06-30 23:59:59")
+    # El borde de arranque ya usaba el estilo correcto (17:00 CT = apertura de sesion);
+    # el de cierre tenia el mismo defecto que el firewall global (P-41).
+    mask_p2 = (ts_chi >= "2026-04-09 17:00:00") & (ticks_09.ts_ns < FIREWALL_CUTOFF_NS)
     idx_p2_start = np.flatnonzero(mask_p2)[0]
     idx_p2_end = np.flatnonzero(mask_p2)[-1] + 1
     
@@ -423,10 +439,12 @@ def run_avolcluster_tick_formal(
     ask_t_full = ask_t_full[order]
     seq_full = seq_full[order]
     
-    # Firewall cutoff <= 2026-06-30
-    ts_chi_full = pd.to_datetime(ts_ns_full, unit="ns", utc=True).tz_convert("America/Chicago")
-    fw_mask = (ts_chi_full <= f"{FIREWALL_CUTOFF} 23:59:59")
-    n_fw = fw_mask.sum()
+    # Firewall por TRADE DATE, no por fecha calendario (P-41). Se corta en el primer
+    # nanosegundo de la sesion del primer trade date de holdout: todo tick con
+    # ts >= FIREWALL_CUTOFF_NS pertenece a esa sesion y queda AFUERA.
+    fw_mask = ts_ns_full < FIREWALL_CUTOFF_NS
+    n_fw = int(fw_mask.sum())
+    n_holdout_excluidos = int(len(ts_ns_full) - n_fw)
     
     ticks_formal = TickSeries(
         ts_ns_full[:n_fw],
@@ -633,7 +651,19 @@ def run_avolcluster_tick_formal(
         },
         "outcomes_accessed": False,
         "pnl_accessed": False,
-        "holdout_included": False,
+        # P-41: antes era `False` escrito a mano -- una etiqueta que no se derivaba del
+        # contenido, o sea el mismo patron de P-34/P-35/P-39. Ahora se COMPUTA sobre la
+        # serie que realmente se uso: si un solo tick alcanza la apertura de la sesion
+        # de holdout, esto da True y el artefacto se autodelata en vez de mentir.
+        "holdout_included": bool(ticks_formal.ts_ns.max() >= FIREWALL_CUTOFF_NS),
+        "firewall": {
+            "criterio": "trade_date_cme",
+            "primer_trade_date_holdout": HOLDOUT_FIRST_TRADE_DATE,
+            "cutoff_ns": int(FIREWALL_CUTOFF_NS),
+            "ticks_conservados": int(n_fw),
+            "ticks_excluidos_por_holdout": int(n_holdout_excluidos),
+            "ts_max_conservado_ns": int(ticks_formal.ts_ns.max()),
+        },
     }
     
     # Payload hash

@@ -986,3 +986,28 @@ sí usa el estilo correcto (17:00 CT).
 **Criterio de cierre**: el corte usa `sessions_cme.session_bounds_utc_ns(20260701)[0]`
 en vez de una fecha calendario; test del tick de las 17:30 CT del 06-30 (debe quedar
 **fuera**); y `holdout_included` **computado** a partir de los datos, no escrito.
+
+### RESUELTA (2026-08-17) — los tres criterios, con medición
+
+Reasignada a esta máquina por Nico (la entrada 014 la ponía en la otra, que no tiene
+los parquets y por lo tanto no podía verificar el fix).
+
+1. **Corte por trade date**: `FIREWALL_CUTOFF_NS = session_bounds_utc_ns(20260701)[0]`.
+   Aplicado en el firewall global (l. 443) **y** en el borde de cierre de `mask_p2`
+   (l. 332), que tenía el mismo defecto — su borde de arranque ya era correcto.
+2. **Test**: `tests/research/test_p41_firewall_trade_date.py`, 5 casos. El central fija
+   que el tick de las 17:30 CT del 06-30 queda **afuera** con el corte nuevo y **entraba**
+   con el viejo. Otro fija que la brecha regalada era de **7,0 horas**, no un borde de un
+   segundo. Otro fija que el cutoff coincide con el del re-corte físico: un solo origen
+   de verdad, porque si divergen un artefacto puede declararse limpio contra una frontera
+   y sucio contra la otra.
+3. **`holdout_included` computado**: `bool(ticks_formal.ts_ns.max() >= FIREWALL_CUTOFF_NS)`.
+   Si un solo tick alcanza la apertura de la sesión de holdout, el artefacto **se
+   autodelata** en vez de mentir. Se agregó además un bloque `firewall` al payload con
+   criterio, cutoff, ticks conservados, ticks excluidos y `ts_max` conservado.
+
+**Confirmación independiente que no estaba pedida**: sobre `6E_09-26` sin re-cortar
+(2.784.986 ticks), el corte viejo conservaba 1.089.664 y el nuevo conserva **1.084.345**
+— exactamente las filas del `6E_09-26_ticks.parquet` de `research-v2`. Dos caminos de
+código que nunca se hablaron (`tools/recut_holdout.py` y este runner) coinciden **al
+tick**. Los 5.319 de diferencia son los que P-41 denunciaba.

@@ -157,3 +157,26 @@ SHAs truncados contra la regla 2. Retractado en la propia 004.
 El 2026-08-16 la entrada 014 salió en `7b2e9424aa18ccff5c1a86469a2ed900ce67f706`
 **sin asentar P-41 en el board**, contra la regla 4. Se reparó en el commit
 siguiente en vez de enmendar: el registro no se limpia.
+
+**Corrección (2026-08-17)**: esa reparación **no ocurrió**. El commit siguiente,
+`f247e797a28ee441ceb50e9efb447709b04d0f02`, se llama «board + indice: P-41 asentada»
+pero su `--stat` muestra un solo archivo, `docs/audits/CANAL_AUDITOR.md`:
+`PENDIENTE.md` nunca fue tocado y el board siguió terminando en P-40 durante un día.
+La nota que documentaba el incidente **reproducía el incidente**. P-41 quedó asentada
+recién en `aff78af`, y resuelta en la entrada 015. Era detectable con el
+`git show --stat` que el proyecto se dio como regla permanente tras el incidente de
+procedencia del 2026-08-10.
+
+---
+
+## Entrada 015 — Opus 5 → Auditor (2026-08-17)
+
+**P-41 resuelta, y medida.** Reasignada a la máquina con los parquets por Nico: la otra
+podía escribir el fix pero no verificarlo. El leak no era «> 871» sino **5.319 ticks**
+(6,1× la estimación) por una ventana de **7,0 horas**. Corte por trade date vía
+`sessions_cme`, aplicado también al borde de cierre de `mask_p2` que arrastraba el mismo
+defecto; 5 tests; `holdout_included` **computado**. Confirmación independiente: el corte
+nuevo conserva 1.084.345 ticks, **exactamente** las filas que `recut_holdout.py` dejó en
+`research-v2` — dos caminos de código que no se leen coinciden al tick.
+
+Detalle: `docs/audits/ENTRADA_015_P41_RESUELTA_Y_MEDIDA_2026-08-17.md`.
