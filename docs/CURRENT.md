@@ -16,6 +16,10 @@
 2. **P-41 resuelta (entrada 015).** Leak medido: **5.319 ticks**, 7,0 h. Corte por
    trade date vía `sessions_cme`. El censo-superficie ya no está bloqueado por eso.
    `docs/audits/ENTRADA_015_P41_RESUELTA_Y_MEDIDA_2026-08-17.md`
+2c. **`HFTZones2` transporta entre exchanges (P-43).** Primera paridad fuera de 6E:
+   GC 06-26 (COMEX, `tick_size=0.1` no binario) da **3.626/3.630 = 99,89 %**, y el
+   residual **no escala** con la ventana. El kernel no ramifica por instrumento:
+   un segundo activo no re-testea el porteo, testea el calendario.
 2b. **P-42 abierta: `aVolCellPOI2` NO tiene paridad.** 16 divergencias reales sobre
    678 zonas en 6E (warmup ya descontado). Es el único de los 7 kernels con paridad
    formal medida y fallada. `HFTZones2` sí pasó: 4.821/4.821. No transportar

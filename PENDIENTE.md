@@ -1069,3 +1069,48 @@ instrumentar nada nuevo— y localizar en qué punto del perfil divergen.
 
 **No transportar a otros activos hasta cerrarla**: correr un kernel que ya se sabe
 divergente sobre otro instrumento sólo agrega ruido.
+
+---
+
+## P-43 · Residual de `HFTZones2` en GC: 4 zonas de 3.630, localizadas
+
+**Estado**: ABIERTA — residual chico y **acotado**, no bloqueante.
+
+Primera paridad de un kernel fuera de 6E. `HFTZones2`, GC 06-26, `time:1`, oráculo
+`0034a61da8d8e41b44edef707169fdc8cdc101b96d4685b1eb01a07f6de9201a`.
+
+| ventana | kernel | oráculo | MATCHED | MISSING_IN_NT8 | FEATURE_DIFF |
+| --- | --- | --- | --- | --- | --- |
+| 12 días | 1.520 | 1.518 | 1.518 | 2 | — |
+| 30 días | 3.630 | 3.628 | 3.626 | 2 | 2 |
+
+**Lo importante es que no escala.** Con 2,4× más zonas las huérfanas siguen siendo
+**exactamente 2** — las mismas. Si fuera un defecto sistemático del porteo crecerían
+proporcionalmente. **99,89 % exacto.**
+
+### Lo que esto establece
+
+El kernel **transporta entre instrumentos y entre exchanges**. GC es COMEX (no CME),
+`tick_size = 0.1` (decimal no representable en binario, el caso duro), y el porteo
+sobrevive. Ningún kernel del bridge ramifica por instrumento — verificado — así que
+esto era lo esperado, y ahora está **medido**.
+
+### El residual
+
+`Z001500` y `Z001501`, ambas `bucket=ABSORB`, `dir=-1`, creadas el **2026-04-02 16:34
+UTC** (11:34 CT), contiguas en id, geometrías `4686.90/4686.80` y `4686.60/4686.50`.
+Sus vecinas inmediatas **sí** emparejaron (`Z001499` ABSORB 16:22, `Z001502` PREDATOR
+16:41): no es «todo ABSORB» ni «todo ese minuto».
+
+**Hipótesis del feriado, NO establecida.** El 2026-04-03 es Viernes Santo y GC tiene
+**cero ticks** el 03 y el 04; `sessions.py` no modela feriados y cree que se abrió una
+sesión el 02 a las 17:00 CT que nunca existió. Pero **las zonas nacen a las 11:34 CT,
+en mitad de sesión, no en un borde** — así que el vínculo es circunstancial y queda
+como hipótesis, no como causa. Podría ser igual de bien un caso de borde de la lógica
+de absorción (`DetectAbsorb`, `MinAbsorbPasos=6`).
+
+**Criterio de cierre**: reproducir esas dos zonas aisladas y comparar `pasos`,
+`valid_steps` y la traza de absorción contra las filas del oráculo — que exporta
+`pasos`, `valid_steps`, `avg_ms`, `total_ms` y `max_retro_ticks` por evento, así que
+la comparación es directa. Y decidir si `sessions.py` necesita calendario de feriados
+por exchange, que es una pregunta más grande que estas dos zonas.
