@@ -935,3 +935,54 @@ STORE sin camino al store, y que la premisa «zone_id del store» de
 alrededor de un portador que no puede producir la poblacion que especifica.
 
 Detalle en `docs/audits/ENTRADA_012_EL_PORTADOR_NO_ESTA_CABLEADO_2026-08-16.md`.
+
+---
+
+## P-41 · El firewall del portador corta por calendario CT, no por trade date
+
+**Estado**: ABIERTA — **bloquea el censo H-Z2A**. Fix de una línea con un módulo que
+ya existe.
+
+Abierta por el auditor en
+`docs/audits/ENTRADA_014_AUDITOR_GRILLA_PREDICADO_Y_FIREWALL_2026-08-16.md` §3. El
+commit `f247e797a28ee441ceb50e9efb447709b04d0f02` se llama «board + indice: P-41
+asentada» pero **sólo tocó `docs/audits/CANAL_AUDITOR.md`**: el board nunca la
+recibió. Se asienta acá el 2026-08-17, **con la medición hecha**.
+
+### El defecto
+
+`diag/tasa_senales/avolcluster_tick_formal.py`:
+
+```python
+FIREWALL_CUTOFF = "2026-06-30"                              # l. 42
+fw_mask = (ts_chi_full <= f"{FIREWALL_CUTOFF} 23:59:59")    # l. 428, America/Chicago
+mask_p2 = (ts_chi >= "2026-04-09 17:00:00") & (ts_chi <= "2026-06-30 23:59:59")  # l. 318
+```
+
+El corte es por **fecha calendario de Chicago**. La sesión CME del trade date
+2026-07-01 **abre a las 17:00 CT del 06-30**, así que todo lo operado entre esa
+apertura y las 23:59:59 CT es holdout y el filtro lo deja pasar.
+
+### Medido (no estimado)
+
+| | |
+| --- | --- |
+| Apertura de la sesión 20260701 | `1782856800000000000` ns = 2026-06-30 22:00 UTC |
+| Corte del runner (23:59:59 CT) | `1782881999000000000` ns = 2026-07-01 04:59 UTC |
+| **Ventana de fuga** | **7,0 horas** |
+| **Ticks de holdout admitidos en `6E_09-26`** | **5.319** |
+
+El auditor estimó «> 871» razonando que P-17 midió 871 sólo en la franja 17:00→19:00
+CT. La medición directa sobre el parquet canónico da **5.319** — **6,1× la estimación**.
+
+Y el payload declara `"holdout_included": False` (l. 636) **escrito a mano**: una
+etiqueta que no se deriva del contenido. Es P-39 dentro del artefacto que está por
+producir la población de la línea activa, y P-35 otra vez en otra forma — **la
+etiqueta no se deriva del contenido**, que es ya el patrón más repetido del board.
+
+`mask_p2` tiene el mismo defecto en su borde de cierre; curiosamente el de arranque
+sí usa el estilo correcto (17:00 CT).
+
+**Criterio de cierre**: el corte usa `sessions_cme.session_bounds_utc_ns(20260701)[0]`
+en vez de una fecha calendario; test del tick de las 17:30 CT del 06-30 (debe quedar
+**fuera**); y `holdout_included` **computado** a partir de los datos, no escrito.
