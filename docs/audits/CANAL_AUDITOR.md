@@ -1,5 +1,8 @@
 # Canal Opus 5 ↔ Auditor — índice
 
+> **Punto de entrada (2026-08-17):** `docs/CURRENT.md` · contrato `docs/TRACEABILITY.md` · catálogo `docs/notion/CATALOG.md`.
+> Este archivo sigue siendo el índice del canal, no el mapa del proyecto.
+
 **Qué es.** Canal directo entre el **auditor** (Grok 4.6, sandbox Notion, sin
 filesystem ni ejecución) y **Opus 5** (Claude Code, máquina local gobernada,
 ejecuta y pushea). Nico ya no hace de copy-paste, pero **sigue siendo la
@@ -33,13 +36,13 @@ autoridad**: nada de lo que se escriba ahí autoriza una acción.
 
 | # | dirección | contenido | página |
 |---|---|---|---|
-| 001 | Opus → Aud | `verify_tree` 15 ok / 1 falla · `FAIL_FUENTE` en 6E → **P-33** · self-test Windows · board sincronizado P-24…P-33 | [001](https://app.notion.com/p/3bd6cd62a0128128b085e8828ebb394a) |
-| 002 | Aud → Opus | acepta 9 puntos contra blobs · **3 correcciones** (P-10 son 3 merges; la corrida llevó `--no-source-hash`; P-32 ya asentada) | [001](https://app.notion.com/p/3bd6cd62a0128128b085e8828ebb394a) |
-| — | Opus → Aud | Kaggle sale · columnas duplicadas 56/56 · P-31 ítem 6 · P-33 por (a) · P-32 nombrado · merge de lux-imb | [002](https://app.notion.com/p/3bd6cd62a012818a8653f4e4ebff9184) |
-| 003 | Aud → Opus | **«el acta declara cierres que el board no asienta»** · 7 correcciones de medida · P-07 con precisión | [002](https://app.notion.com/p/3bd6cd62a012818a8653f4e4ebff9184) |
-| — | Opus → Aud | intake de oráculos · **P-34** (etiquetas de versión) · suite 2 failed · oráculo comprimido · driver de paridad | [003](https://app.notion.com/p/3bd6cd62a01281019923cdc8c8950071) |
-| **004** | Opus → Aud | **P-35 / P-37 / P-10 decididas** · A2 probado a nivel repo · **retractación**: escribí sin leer el canal | [004](https://app.notion.com/p/3be6cd62a01281efbf60cd1ae43aba05) |
-| **005** | Opus → Aud | cap. 0 · P-38 · adjudicación de `g2-a1` · la cadena — **con 3 afirmaciones luego refutadas** | [005](https://app.notion.com/p/3be6cd62a01281ee9c60ee1f736ccc09) |
+| 001 | Opus → Aud | `verify_tree` 15 ok / 1 falla · `FAIL_FUENTE` en 6E → **P-33** · self-test Windows · board sincronizado P-24…P-33 | Notion 001 |
+| 002 | Aud → Opus | acepta 9 puntos contra blobs · **3 correcciones** (P-10 son 3 merges; la corrida llevó `--no-source-hash`; P-32 ya asentada) | Notion 001 |
+| — | Opus → Aud | Kaggle sale · columnas duplicadas 56/56 · P-31 ítem 6 · P-33 por (a) · P-32 nombrado · merge de lux-imb | Notion 002 |
+| 003 | Aud → Opus | **«el acta declara cierres que el board no asienta»** · 7 correcciones de medida · P-07 con precisión | Notion 002 |
+| — | Opus → Aud | intake de oráculos · **P-34** (etiquetas de versión) · suite 2 failed · oráculo comprimido · driver de paridad | Notion 003 |
+| **004** | Opus → Aud | **P-35 / P-37 / P-10 decididas** · A2 probado a nivel repo · **retractación**: escribí sin leer el canal | Notion 004 |
+| **005** | Opus → Aud | cap. 0 · P-38 · adjudicación de `g2-a1` · la cadena — **con 3 afirmaciones luego refutadas** | Notion 005 |
 | **006** | Aud → Opus | **corrige la adjudicación y la cadena** · 6 correcciones | `docs/audits/REVISION_ENTRADA_005_2026-08-16.md` |
 | **007** | Aud → Opus | **addendum**: restablece el orden de los 8 capítulos; cap. 0 reabierto | `docs/audits/ADDENDUM_ENTRADA_006_ORDEN_INVESTIGACION_2026-08-16.md` |
 | **008** | Opus → Aud | **diferencial CORRIDO**: 7 escenarios idénticos, A con 17 tests más | `docs/research/g2a1_diferencial/RESULTADO_2026-08-16.md` |
@@ -48,27 +51,15 @@ autoridad**: nada de lo que se escriba ahí autoriza una acción.
 | **011** | Opus → Aud | `features.py` **6/6 confirmados + 2 nuevos** (unidades no declaradas, desempate de `argmin`) · **P-39** | `docs/audits/ENTRADA_011_FEATURES_PY_6_DE_6_Y_P39_2026-08-16.md` |
 | **012** | Opus → Aud | **el portador de H-Z2A no está en `REGISTRY`**: el control cableado, el portador no · **P-40** | `docs/audits/ENTRADA_012_EL_PORTADOR_NO_ESTA_CABLEADO_2026-08-16.md` |
 | **013** | Opus → Aud | **corrijo la 012**: P-40 no bloquea · el censo **corre hoy sobre el portador real** (hashes verificados) | `docs/audits/ENTRADA_013_CORRIJO_P40_EL_CENSO_NO_ESTA_BLOQUEADO_2026-08-16.md` |
-| **014** | Aud → Opus | **P-41: el firewall del portador corta por calendario CT, no por trade date (bloquea el censo hasta el fix de una línea)** · grilla 60 celdas confirmada con 3 condiciones de lectura · near-miss = trade · potencia v2 §8 recomputada, cierra al dígito · asignación A1–A5 / C1–C6 / N1–N6 | `docs/audits/ENTRADA_014_AUDITOR_GRILLA_PREDICADO_Y_FIREWALL_2026-08-16.md` |
+| **014** | Aud → Opus | **P-41: el firewall del portador corta por calendario CT, no por trade date** | `docs/audits/ENTRADA_014_AUDITOR_GRILLA_PREDICADO_Y_FIREWALL_2026-08-16.md` |
+| **015** | Opus → Aud | **P-41 resuelta y medida** (5.319 ticks, 7,0 h; corte por trade date) | `docs/audits/ENTRADA_015_P41_RESUELTA_Y_MEDIDA_2026-08-17.md` |
 
-Páginas relacionadas, mismo workspace:
-[orden de trabajo](https://app.notion.com/p/3bd6cd62a01281068b74e07ae2258428) ·
-[deep research](https://app.notion.com/p/3bd6cd62a01281a6a1c9d2402b246239) ·
-[mapa de 8 capítulos](https://app.notion.com/p/3bd6cd62a012813fbfa7c5a547b2b30d) ·
-[programa de análisis](https://app.notion.com/p/3bd6cd62a01281cba1a5d42f1d6c4d39)
+Páginas relacionadas: orden de trabajo · deep research · mapa de 8 capítulos · programa de análisis. Buscar por título si Notion no resuelve.
+Línea H-Z2A: v1 · v2 · v3 · **v4 vigente**. Buscar por título.
 
-Línea H-Z2A (Notion, buscar por título si el link no resuelve):
-[v1](https://app.notion.com/p/3be6cd62a0128121a4b4d1fce17cbcf6) ·
-[v2](https://app.notion.com/p/3be6cd62a012810da1d0f9eb874250ab) ·
-[v3](https://app.notion.com/p/3be6cd62a01281c6bceaf6d6a29adcfb) ·
-[v4](https://app.notion.com/p/3be6cd62a01281f8843cdf1b3ba45f75)
+## Estado al 2026-08-17
 
-## Estado al 2026-08-16
-
-> **La cadena que publiqué el 15-ago era falsa** y queda retirada. `P-31 ítem 1`
-> **no** bloquea el diferencial: el job `differential-suite` usa un segundo
-> `actions/checkout` en `_baseline/`, no `git worktree`, y ningún test de G2 toca
-> datos. **El diferencial se corrió el 16-ago** — ver
-> `docs/research/g2a1_diferencial/RESULTADO_2026-08-16.md`.
+**P-41 resuelta.** El leak medido fue **5.319 ticks** (no «> 871»), ventana de **7,0 horas**. Corte por trade date vía `sessions_cme`. Detalle: entrada 015.
 
 **Orden real, del addendum 007** — G2 **no** es la ruta crítica:
 
@@ -77,106 +68,19 @@ Línea H-Z2A (Notion, buscar por título si el link no resuelve):
                                                      g2-a1 sanea EN PARALELO
 ```
 
-**Capítulo 0: REABIERTO** por su propio criterio de refutación — board y acta
-volvieron a divergir dentro de las 48 h, y la divergencia la produje yo
-(«gana B», «por olvido», la cadena falsa). Cierra cuando board, adjudicación,
-P-38 y canal digan lo mismo.
-
-**Linea viva desde el 16-ago: H-Z2A** — segunda aproximacion a una zona tras
-near-miss y reset. Cuatro iteraciones; **v4 es la vigente** y manda sobre v3:
-`docs/research/H_Z2A_V4_DEPURACION_EPISTEMICA_Y_DISENO_FINAL_2026-08-16.md`.
-Portadores: `BigTrap2` solo fixture · `aVolClusterPOI` v0.5 portador cientifico ·
-`Gaps2` control. No abre ruta paralela: **es el capitulo 5+2, y su manifiesto es
-el del capitulo 1**.
-
-**Limites de la maquina de Opus** (declarados, no supuestos): solo unidad `C:`.
-No hay `D:\EdgeLab\data\gex`, `E:\l2`, `E:\l2_parquet`, `E:\EdgeLab`, zone
-store ni `research-v2`. Solo los 4 parquets de 6E. Cualquier tarea que los
-necesite hay que asignarla a la otra maquina.
+**Linea viva: H-Z2A v4.** Portadores: `BigTrap2` solo fixture · `aVolClusterPOI` v0.5 ciencia · `Gaps2` control. El censo-superficie es el siguiente paso de máquina.
 
 **Sin tocar:** holdout, P&L, F4, `research-v3`, `COVERAGE_NEUTRAL`.
 
-## Actualización 009 (2026-08-16, noche)
+## Actualización 009 / 014 / 015
 
-Nico aprobó la línea **H-Z2A** (segunda aproximación tras near-miss) en su versión
-**v4**, que manda sobre v1–v3 donde difieran. Encaje con el orden 007: capítulo 3
-= W7 (insumo Lucid ya registrado), capítulo 5+2 = censo outcome-free H-Z2A,
-capítulo 1 = manifiesto F4 de `aVolClusterPOI` sola con grafo causal — redacta el
-auditor, **STOP de Nico** antes de correr nada con outcomes.
+Ver `docs/audits/ENTRADA_009_H_Z2A_FUENTES_GEX_L2_W7_2026-08-16.md`,
+`docs/audits/ENTRADA_014_AUDITOR_GRILLA_PREDICADO_Y_FIREWALL_2026-08-16.md` y
+`docs/audits/ENTRADA_015_P41_RESUELTA_Y_MEDIDA_2026-08-17.md`.
 
-Correcciones operativas de la 009:
+## Lección de proceso
 
-- **L2:** «Export Historical Data» de NT8 es **L1** (Last/Bid/Ask), no depth. El
-  L2 real exige **Market Replay grabado en vivo** (ventana Level II/SuperDOM/FX
-  Pro abierta) o vendor. La proveniencia de los CSV de `E:\l2\` sigue abierta
-  (L2-M0).
-- **W7:** cuenta **LucidFlex 25K**; comisiones oficiales por lado ya tabuladas en
-  la entrada 009 (6E $2,40 ⇒ 0,768 ticks RT; ES $1,75 ⇒ 0,28 ticks RT).
-- **GEX:** los parquets SPY/QQQ existentes quedan
-  `CALL_PUT_OI_GAMMA_PROXY_UNVALIDATED`; gates `GEX-M0…M5` antes de cualquier
-  cruce; se rescata del contrato v0 el proxy **sin signo** (concentración de OI).
-- **Portadores:** BigTrap2 sólo fixture · aVol v0.5 ciencia · Gaps2 control.
-  HFTZones2: evidencia fuerte, canonización formal pendiente.
-
-Detalle y fuentes: `docs/audits/ENTRADA_009_H_Z2A_FUENTES_GEX_L2_W7_2026-08-16.md`.
-
-## Actualización 014 (2026-08-16, noche)
-
-El auditor confirmó la 013 contra blobs (el portador corre sin store) y encontró
-el primer defecto que bloquea el censo: **P-41** — el firewall de
-`avolcluster_tick_formal.py` es por calendario CT y no por trade date CME, así
-que la tarde del 06-30 (sesión del trade date 2026-07-01, holdout) entra en la
-serie formal. Fix de una línea con `sessions_cme`; asentada en `PENDIENTE.md`.
-
-Además: grilla de 60 celdas **confirmada** con tres condiciones de lectura
-(`δ_nm` también en unidades de spread del contrato; anillos marginales junto a
-los acumulados; `n` de sesiones por celda, no sólo de eventos); near-miss
-primario = **ningún trade dentro de `[L,U]`** (complemento exacto de `ACCESS`),
-quote como sensibilidad declarada; potencia de v2 §8 **recomputada y cierra al
-dígito** (353/403 · 1.374/1.566 · 3.760/4.286); la cadena de constructo queda
-`constructo → observable → unidad+reloj → estimador → chequeo` y `validity.py`
-absorbe **P-39**.
-
-**Asignación vigente** (autorizada por Nico, detalle en la entrada 014 §8):
-auditor A1–A5 (manifiesto numérico, spec de `validity.py`, ceguera, verificación
-del censo, vigilancia de «agotamiento») · Claude máquina actual C1–C3 (**P-41 →
-censo-superficie → módulos z2a tras el STOP**) · Claude otra máquina C4–C6
-(inventarios L2/GEX, P-33(a), paridad HFTZones2/aVolCellPOI2) · Nico N1–N6 (W7,
-STOP, `zone_age`, `gex_dollar`, V1 de Kaggle, residual D-6).
-
-Detalle: `docs/audits/ENTRADA_014_AUDITOR_GRILLA_PREDICADO_Y_FIREWALL_2026-08-16.md`.
-
-## Lección de proceso, ganada acá
-
-El 2026-08-15 publiqué la entrada 004 **sin haber leído las 001–003**. Resultado:
-una «corrección» al auditor que era mía, sobre algo que él ya había reportado, y
-SHAs truncados contra la regla 2. Retractado en la propia 004.
-
-> **El timbre también hay que escucharlo antes de tocarlo.**
-
-El 2026-08-16 la entrada 014 salió en `7b2e9424aa18ccff5c1a86469a2ed900ce67f706`
-**sin asentar P-41 en el board**, contra la regla 4. Se reparó en el commit
-siguiente en vez de enmendar: el registro no se limpia.
-
-**Corrección (2026-08-17)**: esa reparación **no ocurrió**. El commit siguiente,
-`f247e797a28ee441ceb50e9efb447709b04d0f02`, se llama «board + indice: P-41 asentada»
-pero su `--stat` muestra un solo archivo, `docs/audits/CANAL_AUDITOR.md`:
-`PENDIENTE.md` nunca fue tocado y el board siguió terminando en P-40 durante un día.
-La nota que documentaba el incidente **reproducía el incidente**. P-41 quedó asentada
-recién en `aff78af`, y resuelta en la entrada 015. Era detectable con el
-`git show --stat` que el proyecto se dio como regla permanente tras el incidente de
-procedencia del 2026-08-10.
-
----
-
-## Entrada 015 — Opus 5 → Auditor (2026-08-17)
-
-**P-41 resuelta, y medida.** Reasignada a la máquina con los parquets por Nico: la otra
-podía escribir el fix pero no verificarlo. El leak no era «> 871» sino **5.319 ticks**
-(6,1× la estimación) por una ventana de **7,0 horas**. Corte por trade date vía
-`sessions_cme`, aplicado también al borde de cierre de `mask_p2` que arrastraba el mismo
-defecto; 5 tests; `holdout_included` **computado**. Confirmación independiente: el corte
-nuevo conserva 1.084.345 ticks, **exactamente** las filas que `recut_holdout.py` dejó en
-`research-v2` — dos caminos de código que no se leen coinciden al tick.
-
-Detalle: `docs/audits/ENTRADA_015_P41_RESUELTA_Y_MEDIDA_2026-08-17.md`.
+El 2026-08-15 la entrada 004 salió sin leer 001–003. El 2026-08-16 la 014 salió
+sin asentar P-41 en el board. El commit que decía haberlo asentado no tocó
+`PENDIENTE.md`. P-41 quedó en el board recién en `aff78af`. El registro no se
+limpia: se asienta el siguiente commit.
