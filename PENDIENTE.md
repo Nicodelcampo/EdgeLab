@@ -1114,3 +1114,67 @@ de absorción (`DetectAbsorb`, `MinAbsorbPasos=6`).
 `pasos`, `valid_steps`, `avg_ms`, `total_ms` y `max_retro_ticks` por evento, así que
 la comparación es directa. Y decidir si `sessions.py` necesita calendario de feriados
 por exchange, que es una pregunta más grande que estas dos zonas.
+
+---
+
+## P-44 · Dos catálogos de instrumentos, y los parámetros no transportan
+
+**Estado**: ABIERTA. Dos hallazgos de la misma corrida, uno mecánico y uno de diseño.
+Evidencia: `runs/kernels_activos.json` (7 kernels × 11 activos, ventana de 5 días).
+
+### (a) El bridge conoce 6 instrumentos; el proyecto declara 11
+
+| Fuente | Instrumentos |
+| --- | --- |
+| `edgelab/instruments.py::CME_UNIVERSE` | **11** — 6B, 6E, 6J, ES, GC, MBT, MES, MNQ, NQ, YM, ZB |
+| `edgelab/bridge/ticks.py::instrument_spec` | **6** — 6E, ES, GC, NQ, YM, ZB |
+
+`load_canonical_parquet` levanta `KeyError` en los otros cinco, así que **6B, 6J, MBT,
+MES y MNQ no pueden correr ningún kernel**. No es que fallen: no cargan.
+
+Es otra vez **dos fuentes de verdad para el mismo hecho** — la familia de P-34, P-35,
+P-39 y P-41. Acá el costo es directo: el re-corte, el sello del holdout y el censo
+tratan a los 11 como el universo, y el bridge sólo puede tocar 6.
+
+**Criterio de cierre**: `instrument_spec` deriva de `CME_UNIVERSE` en vez de mantener
+su propia lista, o se declara por escrito por qué el bridge cubre un subconjunto y
+cuál es.
+
+### (b) El código transporta entre activos; los PARÁMETROS no
+
+Con **los mismos params y la misma ventana de 5 días**, las poblaciones difieren en
+órdenes de magnitud:
+
+| kernel | 6E | ES | GC | NQ | YM | ZB |
+| --- | --- | --- | --- | --- | --- | --- |
+| `gaps2` | 6.687 | 21.202 | 31.538 | **113.298** | 20.956 | **10** |
+| `hftzones2` | 1.023 | 3.963 | 609 | 205 | **14** | 676 |
+| `bigtrap2` | 251 | 236 | 255 | 178 | **14** | 338 |
+| `voltickspoc2` | 25 | 9 | 15 | 10 | 15 | 26 |
+
+`gaps2` va de **10 zonas en ZB a 113.298 en NQ**: cuatro órdenes de magnitud. La causa
+es que los umbrales son **absolutos en ticks** (`min_gap_ticks`, `MinSweepTicks=4`,
+`RetroFloorTicks=2`, `min_trap_volume=30`, `MinAbsoluteVolume=10`) y un tick significa
+cosas distintas según el instrumento — `tick_size` va de `5e-07` (6J) a `5.0` (MBT).
+
+**Esto NO contradice P-43.** Son cosas distintas y conviene no confundirlas:
+
+- **El porteo transporta**: mismo código, mismo oráculo, 99,89 % en GC. Medido.
+- **La configuración no transporta**: los mismos números producen poblaciones
+  incomparables entre activos.
+
+**Consecuencia para la línea activa**: correr H-Z2A multiactivo con params fijos no
+compara el mismo fenómeno en seis mercados — compara seis poblaciones de tamaños
+incomparables, y el brazo con 113.298 eventos domina cualquier agregado. Antes de
+cualquier corrida multiactivo hay que decidir si los umbrales se normalizan (por
+volatilidad, por rango de sesión, por percentil propio) o si cada activo se
+pre-registra por separado con su propio presupuesto.
+
+**Nota de método**: `avolcellpoi2` da 0 zonas en los seis. **No es un defecto**: con
+`LookbackSessions=20` y `MinSessions=10`, una ventana de 5 días no alcanza para que el
+perfil se forme. Esa columna es no informativa, no alarmante.
+
+**Nota de herramienta**: `avolclusterpoi` figura como FALLA en los seis porque no
+expone `run()` — se consume vía `SessionProfile`/`detect_block`/`RESEARCH_DEFAULTS`.
+Es el supuesto de `tools/kernels_todos_los_activos.py` el que está mal, no el kernel;
+y es otra cara de **P-40** (el portador no está cableado como los demás).

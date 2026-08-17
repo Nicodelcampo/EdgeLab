@@ -20,6 +20,10 @@
    GC 06-26 (COMEX, `tick_size=0.1` no binario) da **3.626/3.630 = 99,89 %**, y el
    residual **no escala** con la ventana. El kernel no ramifica por instrumento:
    un segundo activo no re-testea el porteo, testea el calendario.
+2d. **P-44: el bridge conoce 6 instrumentos, el proyecto declara 11.** 6B, 6J, MBT,
+   MES y MNQ **no cargan** (`instrument_spec` vs `CME_UNIVERSE`). Y con params fijos
+   las poblaciones difieren hasta 4 órdenes de magnitud entre activos: el **código**
+   transporta (P-43), la **configuración** no.
 2b. **P-42 abierta: `aVolCellPOI2` NO tiene paridad.** 16 divergencias reales sobre
    678 zonas en 6E (warmup ya descontado). Es el único de los 7 kernels con paridad
    formal medida y fallada. `HFTZones2` sí pasó: 4.821/4.821. No transportar
