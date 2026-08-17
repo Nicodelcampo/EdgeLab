@@ -874,3 +874,54 @@ por que se acepta que los nombres no sean verificables.
 **No parcheo nada**: `features.py` es la API que H-Z2A v4 va a consumir, y cambiarla
 mientras se redacta su manifiesto es cambiar el instrumento durante la medicion.
 Detalle en `docs/audits/VERIFICACION_FEATURES_PY_2026-08-16.md`.
+
+---
+
+## P-40 · El portador cientifico de H-Z2A no esta cableado al store
+
+**Estado**: ABIERTA — **bloquea el paso 5 de H-Z2A v4 §10**. Abierta 2026-08-16
+desde la maquina local, verificando el portador contra el codigo.
+
+**Medido** (`edgelab/bridge/indicators/__init__.py`, confirmado por import):
+
+```
+REGISTRY = [AACloseOpenDiffs, BigTrap2, Gaps2, HFTZones2, VolTicksPOC2, aVolCellPOI2]
+aVolClusterPOI en REGISTRY : False
+aVolClusterPOI tiene run() : False
+```
+
+`avolclusterpoi.py` **existe** con `VERSION = "0.5"` —v4 §7 tiene razon contra v2,
+la falta de kernel era de v0.4— pero es un **kernel de research**, no un indicador
+del bridge. Su API publica son primitivas (`SessionProfile`, `detect_block`,
+`classify_kind`, `cluster_hot_ticks`) y sus unicos consumidores son scripts de
+`diag/tasa_senales/` que las importan directo.
+
+**La cadena que se rompe.** El store se alimenta solo por `publish_run()`, cuyos
+dos invocadores resuelven el kernel por `REGISTRY[n]`
+(`run_nt8_bridge.py:266`, `run_campaign.py`). Sin entrada en `REGISTRY` no hay
+publicacion; sin publicacion no hay `zone_id`; y `zone_panel.py` —primer modulo de
+la arquitectura v4 §10— se define como «distancia por `zone_id`».
+
+**La asimetria**: el paso 5 pide «censo en aVol v0.5 fijo + Gaps2 control».
+**`Gaps2` esta cableado (REGISTRY si, run() si) y el portador no.** El censo tal
+como esta escrito no puede correr.
+
+**Toca a D-6**: asigna a `aVolClusterPOI` v0.5 «paridad exacta» PARA EL STORE, o
+sea un estado de store a un indicador sin camino al store. No discute la paridad
+medida (72/72 en 6E, Δscore=0); discute que el estado presupone una via inexistente.
+
+**Riesgo de nombre — P-39 otra vez**: `aVolClusterPOI` (portador, no cableado) y
+`aVolCellPOI2` (cableado, bar-driven, con `run()`) difieren en una palabra y D-6
+los lista a los dos con estados distintos en la misma tabla. Cablear el equivocado
+no daria error: daria un censo del objeto que no es.
+
+**Criterio de cierre**: o (a) se promueve `aVolClusterPOI` a indicador del bridge
+—`run()`, `REGISTRY`, `kernel_id`, camino de paridad formal—, o (b) se declara por
+escrito que `zone_panel.py` lee el portador fuera del store, aceptando que quede
+fuera de `config_id`, `DeterminismError` y `parity_state` que el control si tiene.
+
+**Recomendacion de secuencia**: resolver esto ANTES de redactar el manifiesto
+(v4 §10 lo pone en el paso 2 y el censo en el 5). Si no, el manifiesto se escribe
+alrededor de un portador que no puede producir la poblacion que especifica.
+
+Detalle en `docs/audits/ENTRADA_012_EL_PORTADOR_NO_ESTA_CABLEADO_2026-08-16.md`.
