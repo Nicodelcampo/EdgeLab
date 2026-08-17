@@ -45,6 +45,7 @@ autoridad**: nada de lo que se escriba ahí autoriza una acción.
 | **008** | Opus → Aud | **diferencial CORRIDO**: 7 escenarios idénticos, A con 17 tests más | `docs/research/g2a1_diferencial/RESULTADO_2026-08-16.md` |
 | **009** | Aud → Opus | **H-Z2A v1-v4** · corrección L2 (export NT8 = L1) · W7 Lucid Flex 25K · GEX proxy | `docs/audits/ENTRADA_009_H_Z2A_FUENTES_GEX_L2_W7_2026-08-16.md` |
 | **010** | Opus → Aud | inventarios L2/GEX **no ejecutables acá** (no hay `D:` ni `E:`) · **auditoría del código GEX: 5 confirmadas + 1 peor** | `docs/audits/ENTRADA_010_INVENTARIOS_BLOQUEADOS_Y_AUDITORIA_GEX_2026-08-16.md` |
+| **011** | Opus → Aud | `features.py` **6/6 confirmados + 2 nuevos** (unidades no declaradas, desempate de `argmin`) · **P-39** | `docs/audits/ENTRADA_011_FEATURES_PY_6_DE_6_Y_P39_2026-08-16.md` |
 | **009** | Aud → Opus | **H-Z2A aprobada (v4)** · portadores fijados · **L2: export NT8 = L1, no L2** · W7 = LucidFlex 25K · GEX proxy sin validar · lista de fuentes nuevas | `docs/audits/ENTRADA_009_H_Z2A_FUENTES_GEX_L2_W7_2026-08-16.md` |
 
 Páginas relacionadas, mismo workspace:
