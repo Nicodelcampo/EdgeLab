@@ -96,6 +96,11 @@ y `L3` (H-Z2A v2). Son ejes distintos a propósito: “¿manda?” ≠ “¿la l
    cambia la fila del catálogo (`currency` / `relevance`), no la ruta.
 7. **Una sesión rezagada recibe `CURRENT.md` + el handoff**, no un tour de
    40 páginas.
+8. **`CURRENT.md` es manuscrito y eso se declara.** `tests/test_current_md.py`
+   falla si cita un P-NN ausente del board, si su Fecha queda más de un día
+   atrás del HEAD, o si un path entre backticks no existe. No convierte el
+   archivo en computado: convierte «quedó viejo» de invisible en ruidoso.
+   No relajar el test: actualizar CURRENT o asentar el P-NN.
 
 ## 6 · Qué queda para después (no bloquea esto)
 
@@ -103,8 +108,6 @@ y `L3` (H-Z2A v2). Son ejes distintos a propósito: “¿manda?” ≠ “¿la l
 - Espejo markdown de 001–005 en `docs/audits/` (hoy sólo viven en Notion).
 - Un chequeo mecánico que falle si `CANAL_AUDITOR.md` vuelve a guardar
   placeholders de sesión.
-- Actualizar `docs/CURRENT.md` en el mismo commit que cierre P-41 o publique
-  el censo.
 
 **Aporte al referente:** convierte “¿dónde está la verdad?” en un contrato
 con capas, dos ejes (actualidad / relevancia) y una prohibición explícita de
