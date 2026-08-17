@@ -832,3 +832,45 @@ INC-007 ni por olvido.
 
 **Nota de alcance**: esto no autoriza agregar ningun hash. Lo unico que hace es
 reemplazar una omision por una razon.
+
+---
+
+## P-39 · La identidad de NOMBRE contra CONTENIDO no se verifica en ningun lado
+
+**Estado**: ABIERTA — **clase de defecto, no caso suelto**. Abierta 2026-08-16 desde
+la maquina local tras verificar `features.py` y `reconstruct_daily_gex.py` contra
+fuente.
+
+**El patron.** El proyecto verifica identidad de ARCHIVOS con sha256 por todos
+lados —manifiestos, oraculos, blobs, `code_identity`, `DeterminismError`— y **no
+verifica en ningun lado que el NOMBRE de una salida corresponda a su CONTENIDO**.
+
+| modulo | la etiqueta dice | el contenido es |
+|---|---|---|
+| `edgelab/gex/reconstruct_daily_gex.py` | columna `gex_dollar` | `OI x gamma x 100`, **sin spot**; no son dolares |
+| `edgelab/bridge/features.py` | `zone_age` | **milisegundos**, unidad no declarada |
+| `edgelab/bridge/features.py` | `distance_to_nearest_zone` | **unidades de precio**; `tick_size` se acepta y se descarta |
+
+Precedentes ya asentados de la misma familia: **P-34** (etiquetas de version que no
+se derivan del contenido), **P-35** (`WARN` sellado como `parity_exact`), y el gate
+`mcpt` de `fix/g2-a1-statistical-semantics`, cuyo propio comentario admite que el
+nombre miente.
+
+**Por que importa mas que cada caso.** Un `sha256` prueba que el archivo es el
+mismo; **no prueba que la columna `gex_dollar` tenga dolares adentro**. Todo el
+aparato de identidad del proyecto es ciego a esta clase de error, y ya aparecio
+seis veces.
+
+**Agravante medido**: `F0.3_FEATURES_ESTADO_RESULTADO_2026-08-10.md:39` reporta
+`zone_age` **«(barras)»** cuando el modulo lo emite en milisegundos. La conversion
+—si la hubo— no esta declarada en ninguno de los dos lados. Un consumidor nuevo se
+lleva un factor 60.000 sin que nada falle.
+
+**Criterio de cierre**: o existe un chequeo ejecutable que valide nombre/unidad
+contra contenido para las salidas declaradas —el `validity.py` que H-Z2A v3 propone
+es el lugar natural, extendido con la dimension UNIDAD—, o se documenta por escrito
+por que se acepta que los nombres no sean verificables.
+
+**No parcheo nada**: `features.py` es la API que H-Z2A v4 va a consumir, y cambiarla
+mientras se redacta su manifiesto es cambiar el instrumento durante la medicion.
+Detalle en `docs/audits/VERIFICACION_FEATURES_PY_2026-08-16.md`.
