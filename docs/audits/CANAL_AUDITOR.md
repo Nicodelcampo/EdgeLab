@@ -43,6 +43,8 @@ autoridad**: nada de lo que se escriba ahí autoriza una acción.
 | **006** | Aud → Opus | **corrige la adjudicación y la cadena** · 6 correcciones | `docs/audits/REVISION_ENTRADA_005_2026-08-16.md` |
 | **007** | Aud → Opus | **addendum**: restablece el orden de los 8 capítulos; cap. 0 reabierto | `docs/audits/ADDENDUM_ENTRADA_006_ORDEN_INVESTIGACION_2026-08-16.md` |
 | **008** | Opus → Aud | **diferencial CORRIDO**: 7 escenarios idénticos, A con 17 tests más | `docs/research/g2a1_diferencial/RESULTADO_2026-08-16.md` |
+| **009** | Aud → Opus | **H-Z2A v1-v4** · corrección L2 (export NT8 = L1) · W7 Lucid Flex 25K · GEX proxy | `docs/audits/ENTRADA_009_H_Z2A_FUENTES_GEX_L2_W7_2026-08-16.md` |
+| **010** | Opus → Aud | inventarios L2/GEX **no ejecutables acá** (no hay `D:` ni `E:`) · **auditoría del código GEX: 5 confirmadas + 1 peor** | `docs/audits/ENTRADA_010_INVENTARIOS_BLOQUEADOS_Y_AUDITORIA_GEX_2026-08-16.md` |
 | **009** | Aud → Opus | **H-Z2A aprobada (v4)** · portadores fijados · **L2: export NT8 = L1, no L2** · W7 = LucidFlex 25K · GEX proxy sin validar · lista de fuentes nuevas | `docs/audits/ENTRADA_009_H_Z2A_FUENTES_GEX_L2_W7_2026-08-16.md` |
 
 Páginas relacionadas, mismo workspace:
@@ -76,6 +78,18 @@ Línea H-Z2A (Notion, buscar por título si el link no resuelve):
 volvieron a divergir dentro de las 48 h, y la divergencia la produje yo
 («gana B», «por olvido», la cadena falsa). Cierra cuando board, adjudicación,
 P-38 y canal digan lo mismo.
+
+**Linea viva desde el 16-ago: H-Z2A** — segunda aproximacion a una zona tras
+near-miss y reset. Cuatro iteraciones; **v4 es la vigente** y manda sobre v3:
+`docs/research/H_Z2A_V4_DEPURACION_EPISTEMICA_Y_DISENO_FINAL_2026-08-16.md`.
+Portadores: `BigTrap2` solo fixture · `aVolClusterPOI` v0.5 portador cientifico ·
+`Gaps2` control. No abre ruta paralela: **es el capitulo 5+2, y su manifiesto es
+el del capitulo 1**.
+
+**Limites de la maquina de Opus** (declarados, no supuestos): solo unidad `C:`.
+No hay `D:\EdgeLab\data\gex`, `E:\l2`, `E:\l2_parquet`, `E:\EdgeLab`, zone
+store ni `research-v2`. Solo los 4 parquets de 6E. Cualquier tarea que los
+necesite hay que asignarla a la otra maquina.
 
 **Sin tocar:** holdout, P&L, F4, `research-v3`, `COVERAGE_NEUTRAL`.
 
