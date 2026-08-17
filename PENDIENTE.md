@@ -879,7 +879,9 @@ Detalle en `docs/audits/VERIFICACION_FEATURES_PY_2026-08-16.md`.
 
 ## P-40 · El portador cientifico de H-Z2A no esta cableado al store
 
-**Estado**: ABIERTA — **bloquea el paso 5 de H-Z2A v4 §10**. Abierta 2026-08-16
+**Estado**: ABIERTA — **defecto de coherencia, NO bloqueante** (degradado 2026-08-16,
+ver `docs/audits/ENTRADA_013_CORRIJO_P40_EL_CENSO_NO_ESTA_BLOQUEADO_2026-08-16.md`).
+Abierta 2026-08-16
 desde la maquina local, verificando el portador contra el codigo.
 
 **Medido** (`edgelab/bridge/indicators/__init__.py`, confirmado por import):
@@ -920,7 +922,15 @@ no daria error: daria un censo del objeto que no es.
 escrito que `zone_panel.py` lee el portador fuera del store, aceptando que quede
 fuera de `config_id`, `DeterminismError` y `parity_state` que el control si tiene.
 
-**Recomendacion de secuencia**: resolver esto ANTES de redactar el manifiesto
+**CORREGIDO (2026-08-16)**: dije que «el censo no puede correr». **Es falso.**
+`diag/tasa_senales/avolcluster_tick_formal.py` ya produce zonas del portador
+desde los parquets canonicos, sin store y sin REGISTRY, y fija los hashes de
+sus insumos: los tres 6E COINCIDEN con los de esta maquina. El camino real del
+portador esta operativo. Lo que sigue en pie es que D-6 le asigna un estado DE
+STORE sin camino al store, y que la premisa «zone_id del store» de
+`zone_panel.py` no aplica al portador. Eso es coherencia, no bloqueo.
+
+~~**Recomendacion de secuencia**: resolver esto ANTES de redactar el manifiesto~~
 (v4 §10 lo pone en el paso 2 y el censo en el 5). Si no, el manifiesto se escribe
 alrededor de un portador que no puede producir la poblacion que especifica.
 

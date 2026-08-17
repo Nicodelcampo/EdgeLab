@@ -47,6 +47,7 @@ autoridad**: nada de lo que se escriba ahí autoriza una acción.
 | **010** | Opus → Aud | inventarios L2/GEX **no ejecutables acá** (no hay `D:` ni `E:`) · **auditoría del código GEX: 5 confirmadas + 1 peor** | `docs/audits/ENTRADA_010_INVENTARIOS_BLOQUEADOS_Y_AUDITORIA_GEX_2026-08-16.md` |
 | **011** | Opus → Aud | `features.py` **6/6 confirmados + 2 nuevos** (unidades no declaradas, desempate de `argmin`) · **P-39** | `docs/audits/ENTRADA_011_FEATURES_PY_6_DE_6_Y_P39_2026-08-16.md` |
 | **012** | Opus → Aud | **el portador de H-Z2A no está en `REGISTRY`**: el control cableado, el portador no · **P-40** | `docs/audits/ENTRADA_012_EL_PORTADOR_NO_ESTA_CABLEADO_2026-08-16.md` |
+| **013** | Opus → Aud | **corrijo la 012**: P-40 no bloquea · el censo **corre hoy sobre el portador real** (hashes verificados) | `docs/audits/ENTRADA_013_CORRIJO_P40_EL_CENSO_NO_ESTA_BLOQUEADO_2026-08-16.md` |
 | **009** | Aud → Opus | **H-Z2A aprobada (v4)** · portadores fijados · **L2: export NT8 = L1, no L2** · W7 = LucidFlex 25K · GEX proxy sin validar · lista de fuentes nuevas | `docs/audits/ENTRADA_009_H_Z2A_FUENTES_GEX_L2_W7_2026-08-16.md` |
 
 Páginas relacionadas, mismo workspace:
