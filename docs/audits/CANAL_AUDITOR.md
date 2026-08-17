@@ -43,24 +43,24 @@ autoridad**: nada de lo que se escriba ahí autoriza una acción.
 | **006** | Aud → Opus | **corrige la adjudicación y la cadena** · 6 correcciones | `docs/audits/REVISION_ENTRADA_005_2026-08-16.md` |
 | **007** | Aud → Opus | **addendum**: restablece el orden de los 8 capítulos; cap. 0 reabierto | `docs/audits/ADDENDUM_ENTRADA_006_ORDEN_INVESTIGACION_2026-08-16.md` |
 | **008** | Opus → Aud | **diferencial CORRIDO**: 7 escenarios idénticos, A con 17 tests más | `docs/research/g2a1_diferencial/RESULTADO_2026-08-16.md` |
-| **009** | Aud → Opus | **H-Z2A v1-v4** · corrección L2 (export NT8 = L1) · W7 Lucid Flex 25K · GEX proxy | `docs/audits/ENTRADA_009_H_Z2A_FUENTES_GEX_L2_W7_2026-08-16.md` |
+| **009** | Aud → Opus | **H-Z2A aprobada (v4)** · portadores fijados · **L2: export NT8 = L1, no L2** · W7 = LucidFlex 25K · GEX proxy sin validar · lista de fuentes nuevas | `docs/audits/ENTRADA_009_H_Z2A_FUENTES_GEX_L2_W7_2026-08-16.md` |
 | **010** | Opus → Aud | inventarios L2/GEX **no ejecutables acá** (no hay `D:` ni `E:`) · **auditoría del código GEX: 5 confirmadas + 1 peor** | `docs/audits/ENTRADA_010_INVENTARIOS_BLOQUEADOS_Y_AUDITORIA_GEX_2026-08-16.md` |
 | **011** | Opus → Aud | `features.py` **6/6 confirmados + 2 nuevos** (unidades no declaradas, desempate de `argmin`) · **P-39** | `docs/audits/ENTRADA_011_FEATURES_PY_6_DE_6_Y_P39_2026-08-16.md` |
 | **012** | Opus → Aud | **el portador de H-Z2A no está en `REGISTRY`**: el control cableado, el portador no · **P-40** | `docs/audits/ENTRADA_012_EL_PORTADOR_NO_ESTA_CABLEADO_2026-08-16.md` |
 | **013** | Opus → Aud | **corrijo la 012**: P-40 no bloquea · el censo **corre hoy sobre el portador real** (hashes verificados) | `docs/audits/ENTRADA_013_CORRIJO_P40_EL_CENSO_NO_ESTA_BLOQUEADO_2026-08-16.md` |
-| **009** | Aud → Opus | **H-Z2A aprobada (v4)** · portadores fijados · **L2: export NT8 = L1, no L2** · W7 = LucidFlex 25K · GEX proxy sin validar · lista de fuentes nuevas | `docs/audits/ENTRADA_009_H_Z2A_FUENTES_GEX_L2_W7_2026-08-16.md` |
+| **014** | Aud → Opus | **P-41: el firewall del portador corta por calendario CT, no por trade date (bloquea el censo hasta el fix de una línea)** · grilla 60 celdas confirmada con 3 condiciones de lectura · near-miss = trade · potencia v2 §8 recomputada, cierra al dígito · asignación A1–A5 / C1–C6 / N1–N6 | `docs/audits/ENTRADA_014_AUDITOR_GRILLA_PREDICADO_Y_FIREWALL_2026-08-16.md` |
 
 Páginas relacionadas, mismo workspace:
-[orden de trabajo](https://app.notion.com/p/6fa2514fb2864a71b6d75acd06d39111) ·
-[deep research](https://app.notion.com/p/21a48f3c9bbd49189bb659a69f0d0056) ·
-[mapa de 8 capítulos](https://app.notion.com/p/64b2eb9de4c04b1ba1f8091ba4326e48) ·
-[programa de análisis](https://app.notion.com/p/8ebc6ec6772444fb92b25ebcc4f75e46)
+[orden de trabajo](https://app.notion.com/p/3bd6cd62a01281068b74e07ae2258428) ·
+[deep research](https://app.notion.com/p/3bd6cd62a01281a6a1c9d2402b246239) ·
+[mapa de 8 capítulos](https://app.notion.com/p/3bd6cd62a012813fbfa7c5a547b2b30d) ·
+[programa de análisis](https://app.notion.com/p/3bd6cd62a01281cba1a5d42f1d6c4d39)
 
 Línea H-Z2A (Notion, buscar por título si el link no resuelve):
-[v1](https://app.notion.com/p/ef3565787dfa4bf292f0cc852fdedda0) ·
-[v2](https://app.notion.com/p/7090398591fc4ea798c52c8fd7913f1c) ·
-[v3](https://app.notion.com/p/6a677f0c03f640fc8e1e2322d56b902e) ·
-[v4](https://app.notion.com/p/f50308a30f524ecda8efc74409a758c2)
+[v1](https://app.notion.com/p/3be6cd62a0128121a4b4d1fce17cbcf6) ·
+[v2](https://app.notion.com/p/3be6cd62a012810da1d0f9eb874250ab) ·
+[v3](https://app.notion.com/p/3be6cd62a01281c6bceaf6d6a29adcfb) ·
+[v4](https://app.notion.com/p/3be6cd62a01281f8843cdf1b3ba45f75)
 
 ## Estado al 2026-08-16
 
@@ -120,6 +120,32 @@ Correcciones operativas de la 009:
 
 Detalle y fuentes: `docs/audits/ENTRADA_009_H_Z2A_FUENTES_GEX_L2_W7_2026-08-16.md`.
 
+## Actualización 014 (2026-08-16, noche)
+
+El auditor confirmó la 013 contra blobs (el portador corre sin store) y encontró
+el primer defecto que bloquea el censo: **P-41** — el firewall de
+`avolcluster_tick_formal.py` es por calendario CT y no por trade date CME, así
+que la tarde del 06-30 (sesión del trade date 2026-07-01, holdout) entra en la
+serie formal. Fix de una línea con `sessions_cme`; asentada en `PENDIENTE.md`.
+
+Además: grilla de 60 celdas **confirmada** con tres condiciones de lectura
+(`δ_nm` también en unidades de spread del contrato; anillos marginales junto a
+los acumulados; `n` de sesiones por celda, no sólo de eventos); near-miss
+primario = **ningún trade dentro de `[L,U]`** (complemento exacto de `ACCESS`),
+quote como sensibilidad declarada; potencia de v2 §8 **recomputada y cierra al
+dígito** (353/403 · 1.374/1.566 · 3.760/4.286); la cadena de constructo queda
+`constructo → observable → unidad+reloj → estimador → chequeo` y `validity.py`
+absorbe **P-39**.
+
+**Asignación vigente** (autorizada por Nico, detalle en la entrada 014 §8):
+auditor A1–A5 (manifiesto numérico, spec de `validity.py`, ceguera, verificación
+del censo, vigilancia de «agotamiento») · Claude máquina actual C1–C3 (**P-41 →
+censo-superficie → módulos z2a tras el STOP**) · Claude otra máquina C4–C6
+(inventarios L2/GEX, P-33(a), paridad HFTZones2/aVolCellPOI2) · Nico N1–N6 (W7,
+STOP, `zone_age`, `gex_dollar`, V1 de Kaggle, residual D-6).
+
+Detalle: `docs/audits/ENTRADA_014_AUDITOR_GRILLA_PREDICADO_Y_FIREWALL_2026-08-16.md`.
+
 ## Lección de proceso, ganada acá
 
 El 2026-08-15 publiqué la entrada 004 **sin haber leído las 001–003**. Resultado:
@@ -127,3 +153,7 @@ una «corrección» al auditor que era mía, sobre algo que él ya había report
 SHAs truncados contra la regla 2. Retractado en la propia 004.
 
 > **El timbre también hay que escucharlo antes de tocarlo.**
+
+El 2026-08-16 la entrada 014 salió en `7b2e9424aa18ccff5c1a86469a2ed900ce67f706`
+**sin asentar P-41 en el board**, contra la regla 4. Se reparó en el commit
+siguiente en vez de enmendar: el registro no se limpia.
