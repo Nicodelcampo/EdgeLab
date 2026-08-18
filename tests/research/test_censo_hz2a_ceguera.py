@@ -205,3 +205,67 @@ def test_un_toque_antes_del_giro_mata_el_near_miss(censo):
     clave = (10, 2, 5, "trade")
     assert _contar(censo, con_toque)[clave][1] == 0, (
         "un toque antes del giro deberia invalidar el near-miss y no lo hace")
+
+
+# ---------------------------------------------------------------------------
+# Parte 3 -- geometria de la grilla. Agregado 2026-08-18 tras la entrada 025.
+#
+# El auditor pidio "declarar que las celdas ya no anidan en delta". No se declara:
+# se computa, y al computarlo aparecieron DOS causas distintas, una de las cuales
+# era un bug mio.
+# ---------------------------------------------------------------------------
+
+def test_un_ciclo_que_no_separa_no_mata_a_los_que_siguen(censo):
+    """EL segundo bug, de la misma familia que el `argmin`.
+
+    El escaneo por ciclos tenia un `break` cuando un minimo no alcanzaba a separarse
+    R ticks: abandonaba el corredor ENTERO. Pero un minimo posterior mas profundo
+    tiene un umbral mas bajo (`d_min' + R`) y puede alcanzarlo de sobra.
+
+    Caso: D_far=10, R=5. Un minimo d=5 es INOBSERVABLE --exige llegar a d>=10, y
+    d>=10 cierra el corredor por definicion-- seguido de un minimo d=2 que separa
+    sin problema. Con el `break`, delta=5 y delta=8 daban 0 mientras delta=3 daba 1:
+    ampliar la ventana PERDIA el evento."""
+    serie = [12, 8, 6, 5, 6, 7, 8, 6, 4, 2, 4, 6, 8, 9, 7, 5, 6, 11]
+    for dl in (3, 5, 8):
+        nm = _contar(censo, serie)[(10, dl, 5, "trade")][1]
+        assert nm == 1, (
+            "con delta=%d el minimo profundo d=2 deberia contar 1 near-miss, dio %d "
+            "-- un ciclo que no separa esta abandonando el corredor" % (dl, nm))
+
+
+def test_la_degeneracion_de_la_grilla_es_aritmetica_no_empirica(censo):
+    """17 de las 60 celdas de la grilla congelada no pueden producir un near-miss por
+    aritmetica pura: si `delta + R >= D_far`, la separacion exigida cae fuera del
+    corredor. No hace falta un tick para saberlo, y por eso tiene que estar computado
+    en el artefacto y no razonado por el lector."""
+    degeneradas = [(D, dl, R) for D in censo.D_FAR for dl in censo.DELTA_NM
+                   for R in censo.R_MIN if dl + R >= D]
+    assert len(degeneradas) == 17, (
+        "la grilla congelada deberia tener 17 celdas degeneradas, tiene %d -- si la "
+        "grilla cambio, esta cuenta cambia con ella" % len(degeneradas))
+
+    # Las estructuralmente nulas: ni el minimo mas profundo posible (d_min=1) separa.
+    nulas = [(D, dl, R) for (D, dl, R) in degeneradas if D - R - 1 < 1]
+    assert len(nulas) == 15
+
+
+def test_los_anillos_NO_anidan_y_el_censo_lo_dice(censo):
+    """Documenta la segunda causa, que NO es un bug sino una decision de estimand sin
+    tomar (P-45): la segmentacion es golosa y depende de delta. Con delta grande un
+    minimo poco profundo califica primero, consume el corredor hasta su rechazo y
+    saltea minimos mas profundos que un delta chico si habria contado aparte.
+
+    El conjunto de EVENTOS anida --un near-miss de d_min=2 califica para todo
+    delta>=2-- pero el CONTEO no. Este test fija que el fenomeno existe, para que
+    nadie lea el anillo marginal de la entrada 014 como si anidara."""
+    serie = ([25] + [16, 17, 15, 12, 9, 13, 16, 18, 15, 19, 12, 10, 13, 17, 13,
+                     15, 12, 8, 12, 9, 6, 3, 5, 4, 8, 4, 8, 11, 9, 11, 14, 17,
+                     13, 10, 15, 19] + [25])
+    d = np.array(serie, dtype=np.int64)
+    toca = d == 0
+    c = censo.censar_zona(d, toca, toca.copy())
+    por_delta = [c[(20, dl, 5, "trade")][1] for dl in censo.DELTA_NM]
+    assert any(y < x for x, y in zip(por_delta, por_delta[1:])), (
+        "esta serie deberia exhibir el conteo NO monotono en delta; dio %s. Si dejo "
+        "de pasar, la segmentacion cambio y P-45 hay que releerla" % por_delta)

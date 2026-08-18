@@ -52,7 +52,7 @@ from edgelab.bridge.indicators.avolclusterpoi import (  # noqa: E402
 from edgelab.bridge.ticks import TickSeries, load_canonical_parquet  # noqa: E402
 from edgelab.kaggle.sessions_cme import session_bounds_utc_ns  # noqa: E402
 
-SCHEMA_VERSION = "censo_hz2a_superficie_v1"
+SCHEMA_VERSION = "censo_hz2a_superficie_v2"
 
 # --- grilla CONGELADA (entrada 014) ------------------------------------------
 D_FAR = (10, 20, 40, 80)
@@ -216,7 +216,16 @@ def censar_zona(d, toca_trade, toca_quote):
                             post, toca_post = dd[k:], tt[k:]
                             alcanza_R = np.flatnonzero(post >= d_min + R)
                             if len(alcanza_R) == 0:
-                                break          # ya no separa mas en este corredor
+                                # Este ciclo no llega a separarse. NO se abandona el
+                                # corredor: un minimo POSTERIOR mas profundo tiene un
+                                # umbral de separacion mas bajo (d_min' + R) y puede
+                                # alcanzarlo. El `break` que habia aca --introducido
+                                # con el escaneo por ciclos el 2026-08-18-- mataba
+                                # esos near-miss legitimos. Es la MISMA falla que el
+                                # `argmin`: un fracaso local borrando eventos validos
+                                # que vienen despues.
+                                i = k + 1
+                                continue
                             r = k + int(alcanza_R[0])
                             primer_toque = np.flatnonzero(toca_post)
                             if len(primer_toque) and primer_toque[0] < alcanza_R[0]:
@@ -340,8 +349,19 @@ def main(argv=None):
             if nm:
                 sesiones[clave].add(z["session_id"])
 
-    # anillos: acumulado (delta <= X) y MARGINAL (delta == X exacto). Los anillos
-    # anidan, asi que publicar solo el acumulado sobre-cuenta la superficie.
+    # anillos: acumulado (delta <= X) y MARGINAL (delta == X exacto).
+    #
+    # ATENCION -- los anillos NO anidan, contra lo que decia este comentario y contra
+    # lo que la entrada 014 asumia al pedirlos. El conjunto de EVENTOS si anida (un
+    # near-miss con d_min=2 califica para todo delta >= 2), pero el conteo no, porque
+    # la segmentacion es GOLOSA: con delta grande un minimo poco profundo califica
+    # primero, consume el corredor hasta su punto de rechazo y saltea minimos mas
+    # profundos que un delta chico si habria contado por separado. Por eso
+    # `n_near_miss_marginal` puede ser NEGATIVO, y por eso cada celda publica
+    # `anillo_anida` computado en vez de que el lector lo asuma.
+    #
+    # Que la segmentacion dependa de delta es una DECISION DE ESTIMAND que nadie tomo
+    # por escrito (P-45). No se resuelve aca.
     celdas = []
     for D in D_FAR:
         for R in R_MIN:
@@ -356,6 +376,16 @@ def main(argv=None):
                         n_A2_marginal=a2 - prev_a2,
                         n_sesiones=len(sesiones.get((D, dl, R, pr), ())),
                         delta_nm_en_spreads=round(dl / SPREAD_MEDIO_TICKS, 3),
+                        # La separacion exige llegar a d >= d_min + R, pero el
+                        # corredor TERMINA en d >= D_far. Si d_min + R >= D_far la
+                        # separacion es inobservable POR ARITMETICA, sin mirar un
+                        # solo tick. delta efectivo = min(delta, D_far - R - 1).
+                        # 17 de las 60 celdas de la grilla congelada (entrada 014)
+                        # estan en esa condicion; 15 no pueden dar mas que cero.
+                        delta_efectivo=min(dl, D - R - 1),
+                        celda_degenerada=bool(dl + R >= D),
+                        separacion_observable=bool(D - R - 1 >= 1),
+                        anillo_anida=bool(nm >= prev_nm),
                         vive_por_N=bool(nm >= N_MINIMO_VARIANTE)))
                     prev_nm, prev_a2 = nm, a2
 

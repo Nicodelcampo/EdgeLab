@@ -63,6 +63,8 @@ autoridad**: nada de lo que se escriba ahí autoriza una acción.
 | **023** | Aud → Opus | **bug real en el censo** (`argmin` sobre todo el corredor: un toque posterior mata un near-miss legítimo anterior — lo encontró el gate C-A) · **manifiesto v1 SUSPENDIDO** hasta censo v2 · orden: pushear el fix **antes** de re-correr · el crash fue la matriz de kernels, no el censo | `docs/audits/ENTRADA_023_CENSO_V1_CON_BUG_Y_MANIFIESTO_SUSPENDIDO_2026-08-18.md` |
 | **024** | Aud → canal | **el push del fix no llegó a origin** (HEAD = `d2a37f3a`, ninguna rama lo tiene) — cuando vuelva: pushear · inventario GEX: sirve como procedencia (los 4 docs ya commiteados), no cambia la ruta (es SPY/QQQ, no 6E) | `docs/audits/ENTRADA_024_FIX_NO_ESTA_EN_ORIGIN_E_INVENTARIO_GEX_2026-08-18.md` |
 
+| **026** | Opus → Aud | **la no-anidacion tenia dos causas**: un `break` que abandonaba el corredor (bug mio, misma familia que el `argmin`) y la segmentacion golosa dependiente de δ (**P-45**, sin decidir) · **P-46: 17 de 60 celdas muertas por aritmetica** (`δ+R >= D_far`), grilla efectiva 43 · schema v2 · retiro el «205 → 345» | `docs/audits/ENTRADA_026_DOS_CAUSAS_DE_LA_NO_ANIDACION_2026-08-18.md` |
+
 Páginas relacionadas: orden de trabajo · deep research · mapa de 8 capítulos · programa de análisis. Buscar por título si Notion no resuelve.
 Línea H-Z2A: v1 · v2 · v3 · **v4 vigente** · manifiesto numérico (**SUSPENDIDO** hasta censo v2).
 

@@ -1203,3 +1203,60 @@ perfil se forme. Esa columna es no informativa, no alarmante.
 expone `run()` — se consume vía `SessionProfile`/`detect_block`/`RESEARCH_DEFAULTS`.
 Es el supuesto de `tools/kernels_todos_los_activos.py` el que está mal, no el kernel;
 y es otra cara de **P-40** (el portador no está cableado como los demás).
+
+---
+
+## P-45 — la segmentación del corredor depende de δ, y nadie lo decidió por escrito
+
+**Abierta 2026-08-18** (entrada 025 del canal). **Bloquea el censo v2.**
+
+El auditor pidió «declarar que las celdas ya no anidan en δ». Al computarlo en vez
+de declararlo aparecieron **dos causas distintas**, y sólo una era un defecto.
+
+**Causa 1 — bug, ya corregido.** El escaneo por ciclos tenía un `break` cuando un
+mínimo no lograba separarse `R` ticks: abandonaba **el corredor entero**. Pero un
+mínimo posterior más profundo tiene un umbral más bajo (`d_min' + R`) y puede
+alcanzarlo. Misma familia que el `argmin`: un fracaso local borrando eventos válidos
+posteriores. Sobre 400 series sintéticas con semilla fija, las violaciones de
+anidación bajan de **135 a 21**.
+
+**Causa 2 — decisión de estimand, SIN TOMAR.** La segmentación es **golosa**: con δ
+grande un mínimo poco profundo califica primero, consume el corredor hasta su punto
+de rechazo y **saltea** mínimos más profundos que un δ chico sí habría contado por
+separado. El conjunto de **eventos** anida (un near-miss de `d_min=2` califica para
+todo δ≥2); el **conteo** no. Caso mínimo fijado en
+`tests/research/test_censo_hz2a_ceguera.py`.
+
+**Las dos opciones**, para que sea una elección y no una herencia:
+
+- **(a) segmentación dependiente de δ** (lo que hay hoy): «episodios de aproximación
+  a escala δ». Coherente, pero el anillo marginal de la entrada 014 no se puede leer
+  como anidado y `n_near_miss_marginal` puede ser negativo.
+- **(b) segmentación independiente de δ**: enumerar los ciclos **una vez** por
+  mínimos locales y recién después filtrar cada ciclo por (δ, R). Restituye la
+  anidación exacta en δ. Sigue dependiendo de `R` para el punto de rechazo.
+
+**Quién decide:** Nico, con el auditor. Es el estimand, no una tolerancia.
+
+## P-46 — 17 de las 60 celdas de la grilla congelada son degeneradas por aritmética
+
+**Abierta 2026-08-18** (entrada 025). **No bloquea; obliga a releer «8 de 60».**
+
+La separación exige llegar a `d >= d_min + R`, pero el corredor **termina** en
+`d >= D_far`. Si `δ + R >= D_far` la separación es **inobservable por construcción**,
+sin mirar un solo tick. δ efectivo = `min(δ, D_far − R − 1)`.
+
+| condición | celdas | comportamiento |
+|---|---|---|
+| `D_far − R − 1 < 1` | **15** | no pueden dar más que 0, nunca |
+| `δ + R >= D_far` pero `D_far − R − 1 >= 1` | **2** | δ efectivo recortado (D=10, R=5, δ∈{5,8} → δ_ef = 4) |
+
+Verificado contra el artefacto del 18-ago: las 15 dan exactamente 0.
+
+**Consecuencia**: la grilla efectiva es de **43 celdas, no 60**. El «8 de 60 vivas»
+de la entrada 020 se leyó sobre una grilla donde el **28 %** estaba aritméticamente
+muerto antes de tocar los datos. El presupuesto de multiplicidad del manifiesto se
+calcula sobre 43.
+
+Ahora cada celda publica `delta_efectivo`, `celda_degenerada`,
+`separacion_observable` y `anillo_anida` — **computados**, no declarados.
