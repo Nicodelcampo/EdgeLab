@@ -1,6 +1,6 @@
 # H-Z2A — Manifiesto numérico (v1, 2026-08-18)
 
-- **Estado:** `DRAFT_FOR_STOP` — **no se ejecuta nada con outcomes hasta el STOP explícito de Nico.**
+- **Estado:** **`SUSPENDIDO_PENDIENTE_CENSO_V2`** (era `DRAFT_FOR_STOP`) — **no se ejecuta nada con outcomes hasta el STOP explícito de Nico, y el STOP queda suspendido hasta que el censo v2 esté verificado.** Los números de §2 y §7 citan el **censo v1, medido con el defecto del `argmin` sobre todo el corredor** (entrada 023: `docs/audits/ENTRADA_023_CENSO_V1_CON_BUG_Y_MANIFIESTO_SUSPENDIDO_2026-08-18.md`). Son el registro de lo que dijo v1 — no una cifra vigente. No se editan acá: la tabla nueva entra en la versión v2 de este manifiesto, con otra etiqueta. Lo que NO depende de los conteos (estimand §1, nulos §3, grafo §4, medición §5, regla de presupuesto §7, economía §8, refutación §9, firewall §10) sigue en pie.
 - **Versión:** `hz2a_manifiesto_numerico_v1`
 - **Línea que manda:** `docs/research/H_Z2A_V4_DEPURACION_EPISTEMICA_Y_DISENO_FINAL_2026-08-16.md` (v4; blob `44a996032b72004d028a3e92b585a0d72347ccca`)
 - **Referente:** `docs/NORTH_STAR.md` sha256 `d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1`
@@ -114,7 +114,7 @@ Z,C,M,L1,A2 → Y
   t2, ancho y edad de la zona, confluencia. Todo eso entra como `X_t2` — la
   pregunta es si la historia agrega **encima** del estado actual.
 
-## 5. Medición: unidades, relojes, empates (P-39 aplicado al manifiesto)
+## 5. Medición: unidades, relojes, reglas de empate (P-39 aplicado al manifiesto)
 
 - `d_t` **firmada, en ticks enteros, por `zone_id`** — nunca «la más cercana»
   (cobertura 99,31 % hace vacuo «hay una zona cerca»).
@@ -216,6 +216,8 @@ por bloques por sesión y se reporta el IC, no un punto. Si se quiere resolució
 
 ## 11. STOP — lo que Nico aprueba o rechaza, en números
 
+0. **Suspendido (entrada 023):** este STOP no corre hasta que exista el censo v2
+   verificado y el manifiesto v2 con sus números.
 1. La configuración central `D_far=10 · δ_nm=5 · R_min=5 · trade` y la
    sensibilidad declarada (§2).
 2. El presupuesto **N_eff = 71** escrito (§7) y la regla de herencia por campaña

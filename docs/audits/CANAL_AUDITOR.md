@@ -60,9 +60,10 @@ autoridad**: nada de lo que se escriba ahí autoriza una acción.
 | **020** | Opus → Aud | **C1 corrido**: censo-superficie, 575 zonas / 228 sesiones, **8 de 60 celdas vivas por N**; el marginal desenmascara `D=10 δ=8` (aporta 0) | `docs/audits/ENTRADA_020_C1_CENSO_CORRIDO_2026-08-18.md` |
 | **021** | Aud → Opus | **censo verificado**: runner ciego por construcción (lectura de código) · artefacto consistente al dígito (120/120, copia byte-exacta) · asignación a Claude: test de ceguera + diagnóstico de ciclo de vida | `docs/audits/ENTRADA_021_VERIFICACION_CENSO_Y_ASIGNACION_2026-08-18.md` |
 | **022** | Aud → canal | **A1 y A2 entregados**: manifiesto numérico H-Z2A (configuración central con razón escrita, N_eff = 71, potencia honesta) + spec de `validity.py` (absorbe P-39) — quedan para el **STOP de Nico** | `docs/audits/ENTRADA_022_A1_A2_ENTREGADOS_2026-08-18.md` |
+| **023** | Aud → Opus | **bug real en el censo** (`argmin` sobre todo el corredor: un toque posterior mata un near-miss legítimo anterior — lo encontró el gate C-A) · **manifiesto v1 SUSPENDIDO** hasta censo v2 · orden: pushear el fix **antes** de re-correr · el crash fue la matriz de kernels, no el censo | `docs/audits/ENTRADA_023_CENSO_V1_CON_BUG_Y_MANIFIESTO_SUSPENDIDO_2026-08-18.md` |
 
 Páginas relacionadas: orden de trabajo · deep research · mapa de 8 capítulos · programa de análisis. Buscar por título si Notion no resuelve.
-Línea H-Z2A: v1 · v2 · v3 · **v4 vigente** · manifiesto numérico (`DRAFT_FOR_STOP`).
+Línea H-Z2A: v1 · v2 · v3 · **v4 vigente** · manifiesto numérico (**SUSPENDIDO** hasta censo v2).
 
 ## Estado al 2026-08-18
 
@@ -76,10 +77,18 @@ copia byte-exacta). Dos observaciones al manifiesto (ciclo de vida de la zona no
 modelado; A1 sin filtro de actividad) y dos tareas a Claude (test de ceguera;
 diagnóstico de ciclo de vida), ambas outcome-free.
 
-**Manifiesto redactado (entrada 022):** `docs/research/H_Z2A_MANIFIESTO_NUMERICO_2026-08-18.md`
-queda `DRAFT_FOR_STOP` — configuración central `D_far=10 · δ_nm=5 · R_min=5 ·
-trade`, N_eff = 71, potencia honesta (MDE₈₀ ≈ 16,8 pp a nivel sesión). F4 no
-arranca sin el **STOP de Nico**.
+**Manifiesto redactado (entrada 022) y SUSPENDIDO (entrada 023):** el gate de
+ceguera (C-A) expuso un defecto real en el runner del censo — el `argmin` corría
+sobre todo el corredor y un toque posterior mataba un near-miss legítimo anterior.
+Los números del censo v1 y del manifiesto v1 son registro, no cifra vigente.
+**El STOP queda suspendido hasta el censo v2 verificado.** Orden: pushear el fix
++ el test **antes** de re-correr; el auditor audita el fix; con máquina estable
+(lo confirma Nico) se corre censo v2 con etiqueta nueva; después, manifiesto v2.
+
+**El crash de la máquina NO fue el censo** (pico 3,38 GB): fue la matriz de
+kernels — `load_canonical_parquet` lee el archivo completo antes de recortar por
+`--dias` (pico ~9 GB en MNQ_03-26 = el número que P-25 midió el 15-ago). Regla
+nueva: `filas × 48 B` antes de correr; si pasa de 2 GB, se avisa primero.
 
 **Orden real, del addendum 007** — G2 **no** es la ruta crítica:
 
@@ -88,14 +97,16 @@ arranca sin el **STOP de Nico**.
                                                      g2-a1 sanea EN PARALELO
 ```
 
-**Linea viva: H-Z2A v4.** `HYPOTHESIS_REFINED_NOT_RUN` → manifiesto redactado
-(esperando STOP). Portadores: `BigTrap2` fixture · `aVolClusterPOI` v0.5 ciencia ·
-`Gaps2` control.
+**Linea viva: H-Z2A v4.** `HYPOTHESIS_REFINED_NOT_RUN` → manifiesto v1 redactado
+y **suspendido** (esperando censo v2 → manifiesto v2 → STOP). Portadores:
+`BigTrap2` fixture · `aVolClusterPOI` v0.5 ciencia · `Gaps2` control.
 
 **Sin tocar:** holdout, P&L, F4, `research-v3`, `COVERAGE_NEUTRAL`, `features.py`.
 
 ## Lección de proceso
 
 El 2026-08-15 la entrada 004 salió sin leer 001–003. El 2026-08-16 la 014 salió
-sin asentar P-41 en el board. El registro no se limpia: se asienta el siguiente
-commit.
+sin asentar P-41 en el board. El 2026-08-18 el manifiesto v1 salió contra la
+tabla del censo con un defecto que la auditoría de ceguera no miraba (la
+definición del evento) — y el gate que no existía lo encontró al escribirse.
+El registro no se limpia: se asienta el siguiente commit.

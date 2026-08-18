@@ -3,7 +3,7 @@
 Índice aditivo. **No mueve** archivos existentes de `docs/`. Si este archivo y una página de Notion divergen, **manda el repo**.
 
 Generado: 2026-08-17 · HEAD de referencia: `f247e797a28ee441ceb50e9efb447709b04d0f02`
-Actualizado: 2026-08-18 (entradas 015–022 y artefactos de la línea H-Z2A)
+Actualizado: 2026-08-18 (entradas 015–023 y artefactos de la línea H-Z2A)
 
 ## Niveles
 
@@ -18,13 +18,14 @@ Actualizado: 2026-08-18 (entradas 015–022 y artefactos de la línea H-Z2A)
 
 | Fecha | Actualidad | Nivel | Categoría | Título | Repo | Snapshot |
 |---|---|---|---|---|---|---|
-| 2026-08-18 | vigente | L0_entrada | hipotesis | H-Z2A · Manifiesto numérico (DRAFT_FOR_STOP) | `docs/research/H_Z2A_MANIFIESTO_NUMERICO_2026-08-18.md` | — |
+| 2026-08-18 | vigente | L1_linea | canal | Entrada 023 — bug del censo confirmado; manifiesto suspendido | `docs/audits/ENTRADA_023_CENSO_V1_CON_BUG_Y_MANIFIESTO_SUSPENDIDO_2026-08-18.md` | — |
+| 2026-08-18 | **suspendida** | L0_entrada | hipotesis | H-Z2A · Manifiesto numérico v1 (SUSPENDIDO hasta censo v2 — entrada 023) | `docs/research/H_Z2A_MANIFIESTO_NUMERICO_2026-08-18.md` | — |
 | 2026-08-18 | vigente | L1_linea | programa | Spec de `validity.py` (unidad+reloj; absorbe P-39) | `docs/research/VALIDITY_PY_SPEC_2026-08-18.md` | — |
 | 2026-08-18 | vigente | L1_linea | canal | Entrada 022 — A1 y A2 entregados (manifiesto para STOP) | `docs/audits/ENTRADA_022_A1_A2_ENTREGADOS_2026-08-18.md` | — |
 | 2026-08-18 | vigente | L1_linea | canal | Entrada 021 — censo verificado y asignación | `docs/audits/ENTRADA_021_VERIFICACION_CENSO_Y_ASIGNACION_2026-08-18.md` | — |
 | 2026-08-18 | vigente | L1_linea | canal | Entrada 020 — C1 corrido (censo-superficie) | `docs/audits/ENTRADA_020_C1_CENSO_CORRIDO_2026-08-18.md` | — |
 | 2026-08-18 | vigente | L1_linea | canal | Entrada 019 — orden: censo H-Z2A primero | `docs/audits/ENTRADA_019_ORDEN_CLAUDE_CENSO_HZ2A_2026-08-18.md` | — |
-| 2026-08-18 | vigente | L2_contexto | medicion | Censo H-Z2A superficie (artefacto, verificado) | `docs/research/censo_hz2a_superficie_2026-08-18.json` | — |
+| 2026-08-18 | con defecto | L2_contexto | medicion | Censo H-Z2A superficie **v1** (medido con el defecto del `argmin`; queda como evidencia etiquetada — entrada 023) | `docs/research/censo_hz2a_superficie_2026-08-18.json` | — |
 | 2026-08-18 | vigente | L1_linea | programa | Plan · ruta a una cuenta (debilidad → capítulo → estado) | `docs/PLAN_RUTA_A_UNA_CUENTA_2026-08-18.md` | — |
 | 2026-08-17 | vigente | L1_linea | canal | Entrada 015 — P-41 resuelta y medida | `docs/audits/ENTRADA_015_P41_RESUELTA_Y_MEDIDA_2026-08-17.md` | — |
 | 2026-08-17 | vigente | L1_linea | canal | Entrada 016 — P-42 aVolCellPOI2 sin paridad | `docs/audits/ENTRADA_016_P42_AVOLCELLPOI2_SIN_PARIDAD_2026-08-17.md` | — |
