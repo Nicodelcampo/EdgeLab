@@ -27,7 +27,13 @@
 4. **P-42 abierta.** `aVolCellPOI2` FAIL. Higiene del conjunto, no la ruta crítica.
 5. **P-43 medida.** HFTZones2 en GC: 3.626/3.630. El porteo transporta.
 6. **P-44 abierta.** No hacer H-Z2A multiactivo con params fijos.
-7. **Procedencia dirty-aware.** Las 4 paridades re-corridas con árbol limpio:
+7. **Cambio de auditor (18-ago).** Las entradas 001-005 del canal vivian SOLO en
+   Notion; estan rescatadas en `docs/audits/ESPEJO_ENTRADAS_001_005_NOTION_2026-08-18.md`
+   (origen Notion, **sin blob verificable** — la regla 3 no se puede cumplir con
+   ellas). La cadena `P-31 -> diferencial -> merge B -> P-38 -> G2` quedo asentada en
+   el board; no estaba en ningun lado. Sin respaldo aun: «Handoff al 14-ago», «Orden
+   de trabajo 15-ago» y los 12 snapshots del zip.
+7b. **Procedencia dirty-aware.** Las 4 paridades re-corridas con árbol limpio:
    `medicion_comprometida: false` en las cuatro, y se versionaron **las dos**
    ventanas de warmup de aVolCellPOI2 (w=1 y w=12) para que la resta la pueda
    hacer un tercero. El driver registra **qué** estaba sucio, no un booleano.

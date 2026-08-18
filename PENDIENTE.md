@@ -784,6 +784,26 @@ O se declara por escrito que D-6 no es ejecutable y se elige otro camino.
 
 ## P-38 · La allowlist de G2 sigue vacia: implementacion canonica no adjudicada
 
+**LA CADENA QUE DESBLOQUEA ESTO** (rescatada de la entrada 005, que vivía sólo en
+Notion — cero menciones en el repo hasta el 2026-08-18):
+
+```
+P-31 item 1  ->  diferencial A vs B  ->  merge de B  ->  P-38 (hashear)  ->  G2 promueve
+(data_root)      (la medicion)          (un contrato)    (allowlist)
+```
+
+El capítulo 6 no podía cerrar **ni pasando G2**, y su primer eslabón —`data_root()`
+fail-closed— era **lo más barato del proyecto** y se trabajaba último.
+
+Estado al 2026-08-18: el eslabón 1 **está cerrado** (`data_root()` valida por contenido
+y falla cerrado, con test). El diferencial **se corrió** (entrada 008: los dos contratos
+dan resultados estadísticamente idénticos, A trae 17 tests más, adjudicación **NO
+cerrada**). **P-38 sigue bloqueada por lo que la 005 nombró**: el paso 9 pide el sha256
+«del archivo aprobado», y **no se puede hashear un contrato mientras existan dos
+versiones rivales de él**.
+
+Rescate completo: `docs/audits/ESPEJO_ENTRADAS_001_005_NOTION_2026-08-18.md`.
+
 **Estado**: ABIERTA — **hallazgo, con causa raiz identificada**. Abierta 2026-08-15
 desde la maquina local (Claude), leyendo codigo y las dos fuentes que la gobiernan.
 

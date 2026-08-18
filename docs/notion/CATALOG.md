@@ -51,3 +51,18 @@ Generado: 2026-08-17 · HEAD de referencia: `f247e797a28ee441ceb50e9efb447709b04
 El export **no** incluye: H-Z2A v4, handoff 17-ago, entradas 003–005, ni las entradas 008–014 (esas últimas ya viven en `docs/audits/`).
 
 Próximo snapshot: exportar v4 + 003–005 + handoff y asentarlos acá con sha256, **sin** borrar este lote.
+
+## Respaldo: qué está y qué no (2026-08-18)
+
+Nico cambia de auditor, así que se auditó el respaldo real de cada fila.
+
+| Situación | Filas | Riesgo |
+|---|---|---|
+| Espejo de un archivo canónico del repo | la mayoría | **ninguno** — si divergen, manda el repo |
+| **Entradas 001–005 del canal** | 5 | **rescatadas** en `docs/audits/ESPEJO_ENTRADAS_001_005_NOTION_2026-08-18.md`. Origen Notion, **sin blob verificable** |
+| «Handoff · Sesión Claude (al 14-ago)» | 1 | **sin respaldo** |
+| «Orden de trabajo · Claude (15-ago)» | 1 | **sin respaldo** |
+| Los 12 snapshots de texto del zip del 16-ago | — | **NO commiteados**. `docs/notion/` tiene sólo este catálogo y su README |
+
+**El catálogo tiene 28 filas y cero snapshots que respalden su contenido.** Eso queda
+dicho acá para que el hueco sea visible en vez de implícito.
