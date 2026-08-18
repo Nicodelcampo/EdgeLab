@@ -14,7 +14,12 @@
    `docs/research/H_Z2A_V4_DEPURACION_EPISTEMICA_Y_DISENO_FINAL_2026-08-16.md`
    Portadores: BigTrap2 = fixture · aVolClusterPOI v0.5 = ciencia · Gaps2 = control.
    Estado: `HYPOTHESIS_REFINED_NOT_RUN`.
-2. **Orden vigente (entrada 019):** **C1 censo-superficie ahora** → manifiesto
+2. **C1 CORRIDO (entrada 020).** Censo-superficie: 228 sesiones, 575 zonas,
+   **8 de 60 celdas viven por N (>= 403)**; 52 mueren. `holdout_included` false
+   computado, `medicion_comprometida` false, 4 parquets canonicos verificados.
+   `docs/research/censo_hz2a_superficie_2026-08-18.json`
+   Siguiente: manifiesto (auditor, con este N) -> STOP de Nico -> F4.
+2b. **Orden vigente (entrada 019):** **C1 censo-superficie ahora** → manifiesto
    (auditor, con el N del censo) → STOP de Nico → F4.
    P-42 en paralelo **solo si no retrasa C1**. G2-A1 sanea en paralelo.
    `docs/audits/ENTRADA_019_ORDEN_CLAUDE_CENSO_HZ2A_2026-08-18.md`

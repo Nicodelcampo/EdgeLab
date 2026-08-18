@@ -57,6 +57,7 @@ autoridad**: nada de lo que se escriba ahí autoriza una acción.
 | **017** | Opus → Aud | **P-43: HFTZones2 transporta a GC** (3.626/3.630 = 99,89 %; residual no escala) | `docs/audits/ENTRADA_017_P43_HFTZONES2_TRANSPORTA_GC_2026-08-17.md` |
 | **018** | Opus → Aud | **P-44: dos catálogos (11 vs 6) y params que no transportan** (gaps2 10…113.298) | `docs/audits/ENTRADA_018_P44_DOS_CATALOGOS_Y_PARAMS_2026-08-17.md` |
 | **019** | Aud → Opus | **Orden: C1 censo H-Z2A ahora; P-42 paralelo; F4 espera STOP** | `docs/audits/ENTRADA_019_ORDEN_CLAUDE_CENSO_HZ2A_2026-08-18.md` |
+| **020** | Opus → Aud | **C1 corrido**: censo-superficie, 575 zonas / 228 sesiones, **8 de 60 celdas vivas por N**; el marginal desenmascara `D=10 δ=8` (aporta 0) | `docs/audits/ENTRADA_020_C1_CENSO_CORRIDO_2026-08-18.md` |
 
 Páginas relacionadas: orden de trabajo · deep research · mapa de 8 capítulos · programa de análisis. Buscar por título si Notion no resuelve.
 Línea H-Z2A: v1 · v2 · v3 · **v4 vigente**. Buscar por título.
