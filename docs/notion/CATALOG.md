@@ -3,7 +3,7 @@
 Índice aditivo. **No mueve** archivos existentes de `docs/`. Si este archivo y una página de Notion divergen, **manda el repo**.
 
 Generado: 2026-08-17 · HEAD de referencia: `f247e797a28ee441ceb50e9efb447709b04d0f02`
-Actualizado: 2026-08-18 (entradas 015–023 y artefactos de la línea H-Z2A)
+Actualizado: 2026-08-18 (entradas 015–023, artefactos de la línea H-Z2A, y la pasada de orientación: README de raíz + mapa de docs/)
 
 ## Niveles
 
@@ -18,6 +18,9 @@ Actualizado: 2026-08-18 (entradas 015–023 y artefactos de la línea H-Z2A)
 
 | Fecha | Actualidad | Nivel | Categoría | Título | Repo | Snapshot |
 |---|---|---|---|---|---|---|
+| 2026-08-18 | vigente | L0_entrada | orientacion | README de raíz — punto de entrada frío (chat de Notion o sesión nueva) | `README.md` | — |
+| 2026-08-18 | vigente | L0_entrada | orientacion | Mapa de `docs/` — qué está vivo y qué es archivo | `docs/README.md` | — |
+| 2026-08-18 | vigente | L0_entrada | orientacion | Guía de lectura del proyecto (página Notion para cualquier chat nuevo) | `README.md` | — |
 | 2026-08-18 | vigente | L1_linea | canal | Entrada 023 — bug del censo confirmado; manifiesto suspendido | `docs/audits/ENTRADA_023_CENSO_V1_CON_BUG_Y_MANIFIESTO_SUSPENDIDO_2026-08-18.md` | — |
 | 2026-08-18 | **suspendida** | L0_entrada | hipotesis | H-Z2A · Manifiesto numérico v1 (SUSPENDIDO hasta censo v2 — entrada 023) | `docs/research/H_Z2A_MANIFIESTO_NUMERICO_2026-08-18.md` | — |
 | 2026-08-18 | vigente | L1_linea | programa | Spec de `validity.py` (unidad+reloj; absorbe P-39) | `docs/research/VALIDITY_PY_SPEC_2026-08-18.md` | — |
