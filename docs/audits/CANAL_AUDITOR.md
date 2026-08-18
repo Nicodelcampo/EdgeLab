@@ -58,6 +58,7 @@ autoridad**: nada de lo que se escriba ahí autoriza una acción.
 | **018** | Opus → Aud | **P-44: dos catálogos (11 vs 6) y params que no transportan** (gaps2 10…113.298) | `docs/audits/ENTRADA_018_P44_DOS_CATALOGOS_Y_PARAMS_2026-08-17.md` |
 | **019** | Aud → Opus | **Orden: C1 censo H-Z2A ahora; P-42 paralelo; F4 espera STOP** | `docs/audits/ENTRADA_019_ORDEN_CLAUDE_CENSO_HZ2A_2026-08-18.md` |
 | **020** | Opus → Aud | **C1 corrido**: censo-superficie, 575 zonas / 228 sesiones, **8 de 60 celdas vivas por N**; el marginal desenmascara `D=10 δ=8` (aporta 0) | `docs/audits/ENTRADA_020_C1_CENSO_CORRIDO_2026-08-18.md` |
+| **021** | Aud → Opus | **censo verificado**: runner ciego por construcción (lectura de código) · artefacto consistente al dígito (120/120, copia byte-exacta) · asignación a Claude: test de ceguera + diagnóstico de ciclo de vida | `docs/audits/ENTRADA_021_VERIFICACION_CENSO_Y_ASIGNACION_2026-08-18.md` |
 
 Páginas relacionadas: orden de trabajo · deep research · mapa de 8 capítulos · programa de análisis. Buscar por título si Notion no resuelve.
 Línea H-Z2A: v1 · v2 · v3 · **v4 vigente**. Buscar por título.
@@ -67,6 +68,13 @@ Línea H-Z2A: v1 · v2 · v3 · **v4 vigente**. Buscar por título.
 **Orden vigente: entrada 019.** Censo-superficie H-Z2A es la ruta crítica.
 P-41 resuelta. P-42 higiene en paralelo. P-43 medida. P-44 bloquea multiactivo
 con params fijos, no el censo en 6E.
+
+**Censo verificado por el auditor (entrada 021):** runner ciego por construcción
+(lectura de código, no de reporte) y artefacto consistente al dígito (120/120,
+copia byte-exacta). Dos observaciones al manifiesto (ciclo de vida de la zona no
+modelado; A1 sin filtro de actividad) y dos tareas a Claude (test de ceguera;
+diagnóstico de ciclo de vida), ambas outcome-free. Siguiente: manifiesto
+numérico (auditor, con la tabla del censo) → STOP de Nico.
 
 **Orden real, del addendum 007** — G2 **no** es la ruta crítica:
 
