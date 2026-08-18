@@ -32,6 +32,7 @@ ENTEROS, sin float.
 from __future__ import annotations
 
 import argparse
+import gc
 import hashlib
 import json
 import pathlib
@@ -155,13 +156,25 @@ def censar_zona(d, toca_trade, toca_quote):
     60 celdas sobre la MISMA serie.
 
     Outcome-free por construccion: cuenta cuantos A1 / near-miss / A2 existen. Lo que
-    pasa DESPUES de A2 no se mira -- ni acceso, ni penetracion, ni nada."""
+    pasa DESPUES de A2 no se mira -- ni acceso, ni penetracion, ni nada.
+
+    ESCANEO POR CICLOS, no por minimo global (corregido 2026-08-18, C-A). La version
+    anterior tomaba `argmin` sobre TODO el corredor, y el corredor se extiende hasta
+    que el precio vuelve a `d >= D_far`. Si no vuelve, un acceso posterior se
+    convertia en el `d_min` y MATABA un near-miss legitimo anterior. v4 condicion 3
+    dice literal que la separacion tiene que ocurrir "antes de cualquier acceso": si
+    ocurrio, el near-miss existe, y lo que pase despues no lo borra.
+
+    Lo detecto el gate de ceguera (`tests/research/test_censo_hz2a_ceguera.py`):
+    truncar la serie despues del A2 cambiaba los conteos, que es justamente la
+    dependencia del futuro que el censo no debe tener.
+    """
     n = len(d)
     out = {}
     for D in D_FAR:
         lejos = d >= D
         entradas = np.flatnonzero(lejos[:-1] & ~lejos[1:]) + 1
-        # fin del corredor para cada entrada: primer indice donde vuelve a d >= D
+        # un corredor por entrada: hasta que el precio vuelve a d >= D_far
         tramos = []
         for e in entradas:
             j = e
@@ -177,25 +190,43 @@ def censar_zona(d, toca_trade, toca_quote):
                         dd = d[e:j]
                         if len(dd) == 0:
                             continue
-                        n_a1 += 1
                         tt = toca[e:j]
-                        k = int(np.argmin(dd))
-                        d_min = int(dd[k])
-                        if not (1 <= d_min <= dl):
-                            continue
-                        if tt[:k + 1].any():
-                            continue
-                        post, toca_post = dd[k:], tt[k:]
-                        alcanza_R = np.flatnonzero(post >= d_min + R)
-                        if len(alcanza_R) == 0:
-                            continue
-                        primer_toque = np.flatnonzero(toca_post)
-                        if len(primer_toque) and primer_toque[0] < alcanza_R[0]:
-                            continue
-                        n_nm += 1
-                        r = k + int(alcanza_R[0])
-                        if (dd[r:] <= dl).any():
-                            n_a2 += 1
+                        # A1 = una entrada al corredor desde d >= D_far (v4).
+                        n_a1 += 1
+                        i = 0
+                        while i < len(dd):
+                            # descender hasta el minimo local (atraviesa plateaus)
+                            k = i
+                            while k + 1 < len(dd) and dd[k + 1] <= dd[k]:
+                                k += 1
+                            d_min = int(dd[k])
+                            # cond 1: 1 <= d_min <= delta
+                            if not (1 <= d_min <= dl):
+                                i = k + 1
+                                continue
+                            # cond 2: ningun toque ANTES del giro. Se mide desde la
+                            # entrada al corredor, no desde el ciclo: si la zona ya
+                            # fue accedida en este corredor, un giro posterior no es
+                            # un near-miss en el sentido de H-Z2A.
+                            if tt[:k + 1].any():
+                                i = k + 1
+                                continue
+                            # cond 3: separacion >= R despues de d_min, ANTES de
+                            # cualquier acceso
+                            post, toca_post = dd[k:], tt[k:]
+                            alcanza_R = np.flatnonzero(post >= d_min + R)
+                            if len(alcanza_R) == 0:
+                                break          # ya no separa mas en este corredor
+                            r = k + int(alcanza_R[0])
+                            primer_toque = np.flatnonzero(toca_post)
+                            if len(primer_toque) and primer_toque[0] < alcanza_R[0]:
+                                i = k + 1      # toco antes de separarse: no es rechazo
+                                continue
+                            n_nm += 1
+                            # A2 = primer retorno elegible al corredor tras el rechazo
+                            if (dd[r:] <= dl).any():
+                                n_a2 += 1
+                            i = r + 1          # seguir buscando ciclos despues del rechazo
                     out[(D, dl, R, pr)] = (n_a1, n_nm, n_a2)
     return out
 
@@ -216,8 +247,22 @@ def main(argv=None):
           % (len(D_FAR), len(DELTA_NM), len(R_MIN), n_celdas, PREDICADOS, PREDICADO_PRIMARIO))
 
     # --- serie formal: 4 contratos, verificados por sha256, ordenados -----------
+    #
+    # MEMORIA (2026-08-18). La version anterior sostenia simultaneamente: los 4
+    # TickSeries, las 6 columnas concatenadas, el indice de orden, las 6 columnas
+    # reordenadas y las 5 filtradas. Pico medido analiticamente: 3,38 GB para 17,9M
+    # ticks a 48 B/tick. No fue lo que crasheo la maquina --eso fue la matriz de
+    # kernels, que lee 103M filas de MNQ-- pero no hay razon para pagarlo.
+    #
+    # Ahora se libera a medida que se avanza: cada columna se concatena y su lista de
+    # trozos se descarta en el acto, y el reorden reemplaza columna por columna. El
+    # pico pasa a ser "todo lo ya hecho + una columna en transito" en vez de "dos
+    # copias completas". El RESULTADO es identico por construccion: misma
+    # concatenacion, mismo `argsort` estable, misma mascara.
     d_in = pathlib.Path(a.dir)
-    hashes, partes = {}, []
+    hashes = {}
+    crudo = {k: [] for k in ("ts", "px", "vol", "bid", "ask", "seq")}
+    tick_size = None
     for fn, esperado in CONTRATOS_6E:
         ruta = d_in / fn
         real = sha256_archivo(ruta)
@@ -225,31 +270,49 @@ def main(argv=None):
         if real != esperado:
             print("  ABORTA: %s tiene sha256 %s, esperado %s" % (fn, real, esperado))
             return 3
-        partes.append(load_canonical_parquet(ruta, instrument="6E"))
-        print("  %-26s %9d ticks  sha256 CANONICO" % (fn, len(partes[-1].ts_ns)))
+        parte = load_canonical_parquet(ruta, instrument="6E")
+        print("  %-26s %9d ticks  sha256 CANONICO" % (fn, len(parte.ts_ns)))
+        crudo["ts"].append(parte.ts_ns)
+        crudo["px"].append(parte.price_ticks)
+        crudo["vol"].append(parte.volume)
+        crudo["bid"].append(parte.bid_ticks)
+        crudo["ask"].append(parte.ask_ticks)
+        crudo["seq"].append(parte.sequence)
+        tick_size = parte.tick_size
+        del parte                      # el TickSeries se va; las columnas quedan
 
-    ts_f = np.concatenate([p.ts_ns for p in partes])
-    px_f = np.concatenate([p.price_ticks for p in partes])
-    vol_f = np.concatenate([p.volume for p in partes])
-    bid_f = np.concatenate([p.bid_ticks for p in partes])
-    ask_f = np.concatenate([p.ask_ticks for p in partes])
-    seq_f = np.concatenate([p.sequence for p in partes])
-    orden = np.argsort(ts_f, kind="stable")
-    ts_f, px_f, vol_f = ts_f[orden], px_f[orden], vol_f[orden]
-    bid_f, ask_f, seq_f = bid_f[orden], ask_f[orden], seq_f[orden]
+    col = {}
+    for k in ("ts", "px", "vol", "bid", "ask", "seq"):
+        col[k] = np.concatenate(crudo.pop(k))   # `pop` suelta los trozos en el acto
+    del crudo
+    gc.collect()
 
-    n_bruto = len(ts_f)
-    keep = ts_f < FIREWALL_CUTOFF_NS
+    orden = np.argsort(col["ts"], kind="stable")
+    for k in ("ts", "px", "vol", "bid", "ask", "seq"):
+        previo = col[k]
+        col[k] = previo[orden]
+        del previo                     # una columna en transito, no seis
+    del orden
+    gc.collect()
+
+    n_bruto = len(col["ts"])
+    keep = col["ts"] < FIREWALL_CUTOFF_NS
     if a.dias:
-        keep = keep & (ts_f < int(ts_f[0]) + a.dias * 86_400_000_000_000)
+        keep = keep & (col["ts"] < int(col["ts"][0]) + a.dias * 86_400_000_000_000)
     n_fw = int(keep.sum())
-    ts, px = ts_f[keep], px_f[keep]
-    bid, ask = bid_f[keep], ask_f[keep]
+    for k in ("ts", "px", "vol", "bid", "ask", "seq"):
+        previo = col[k]
+        col[k] = previo[keep]
+        del previo
+    del keep
+    gc.collect()
     print("  ticks   %d brutos -> %d tras firewall (excluidos %d)"
           % (n_bruto, n_fw, n_bruto - n_fw))
 
-    tkf = TickSeries(ts, px, vol_f[keep], bid, ask, seq_f[keep],
-                     partes[0].tick_size, "6E", "6E_FORMAL_4C")
+    ts, px = col["ts"], col["px"]
+    bid, ask = col["bid"], col["ask"]
+    tkf = TickSeries(ts, px, col["vol"], bid, ask, col["seq"],
+                     tick_size, "6E", "6E_FORMAL_4C")
     bars = build_time_bars(tkf, minutes=1)
     fps = build_footprints(tkf, bars)
     zonas = producir_zonas(bars, fps)
