@@ -56,19 +56,16 @@ autoridad**: nada de lo que se escriba ahí autoriza una acción.
 | **016** | Opus → Aud | **P-42: aVolCellPOI2 no tiene paridad** (671 vs 678, 16 reales; causa acotada al umbral) | `docs/audits/ENTRADA_016_P42_AVOLCELLPOI2_SIN_PARIDAD_2026-08-17.md` |
 | **017** | Opus → Aud | **P-43: HFTZones2 transporta a GC** (3.626/3.630 = 99,89 %; residual no escala) | `docs/audits/ENTRADA_017_P43_HFTZONES2_TRANSPORTA_GC_2026-08-17.md` |
 | **018** | Opus → Aud | **P-44: dos catálogos (11 vs 6) y params que no transportan** (gaps2 10…113.298) | `docs/audits/ENTRADA_018_P44_DOS_CATALOGOS_Y_PARAMS_2026-08-17.md` |
+| **019** | Aud → Opus | **Orden: C1 censo H-Z2A ahora; P-42 paralelo; F4 espera STOP** | `docs/audits/ENTRADA_019_ORDEN_CLAUDE_CENSO_HZ2A_2026-08-18.md` |
 
 Páginas relacionadas: orden de trabajo · deep research · mapa de 8 capítulos · programa de análisis. Buscar por título si Notion no resuelve.
 Línea H-Z2A: v1 · v2 · v3 · **v4 vigente**. Buscar por título.
 
 ## Estado al 2026-08-18
 
-**P-41 resuelta.** Leak medido: **5.319 ticks**, 7,0 h. Corte por trade date.
-**P-42 abierta.** `aVolCellPOI2` FAIL — único kernel con paridad formal medida y
-fallada. Camino corto del conjunto.
-**P-43 medida.** HFTZones2 en GC: 3.626/3.630 = 99,89 %. Residual localizado (2
-ABSORB). El porteo transporta entre exchanges.
-**P-44 abierta.** Bridge conoce 6 instrumentos; el proyecto declara 11. Params
-absolutos producen poblaciones incomparables (no contradice P-43).
+**Orden vigente: entrada 019.** Censo-superficie H-Z2A es la ruta crítica.
+P-41 resuelta. P-42 higiene en paralelo. P-43 medida. P-44 bloquea multiactivo
+con params fijos, no el censo en 6E.
 
 **Orden real, del addendum 007** — G2 **no** es la ruta crítica:
 
@@ -77,15 +74,13 @@ absolutos producen poblaciones incomparables (no contradice P-43).
                                                      g2-a1 sanea EN PARALELO
 ```
 
-**Linea viva: H-Z2A v4.** Portadores: `BigTrap2` fixture · `aVolClusterPOI` v0.5
-ciencia · `Gaps2` control. Censo-superficie desbloqueado por P-41. P-42 es lo que
-rompe «los 6». P-44 bloquea el multiactivo con params fijos.
+**Linea viva: H-Z2A v4.** `HYPOTHESIS_REFINED_NOT_RUN`. Portadores: `BigTrap2`
+fixture · `aVolClusterPOI` v0.5 ciencia · `Gaps2` control.
 
-**Sin tocar:** holdout, P&L, F4, `research-v3`, `COVERAGE_NEUTRAL`.
+**Sin tocar:** holdout, P&L, F4, `research-v3`, `COVERAGE_NEUTRAL`, `features.py`.
 
 ## Lección de proceso
 
 El 2026-08-15 la entrada 004 salió sin leer 001–003. El 2026-08-16 la 014 salió
-sin asentar P-41 en el board. El commit que decía haberlo asentado no tocó
-`PENDIENTE.md`. P-41 quedó en el board recién en `aff78af`. El registro no se
-limpia: se asienta el siguiente commit.
+sin asentar P-41 en el board. El registro no se limpia: se asienta el siguiente
+commit.
