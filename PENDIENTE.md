@@ -1021,7 +1021,9 @@ inferido.
 
 Primera paridad formal de `aVolCellPOI2` contra su oráculo
 (`avolcellpoi2_v23_6E_0626_time1_100d.csv`, sha256 `5683d2e3…`), 6E 06-26, `time:1`,
-30 días. Informe: `runs/paridad_avolcellpoi2_30d_w12.json`.
+30 días. Informe versionado: `docs/research/paridad_avolcellpoi2_30d_2026-08-17.json`.
+(La cita original apuntaba a `runs/…`, que está **gitignoreado** — un path que no
+resuelve fuera de esta máquina. Corregido tras la entrada 016 del auditor.)
 
 ```
 kernel 671   vs   oraculo 678          gate: FAIL

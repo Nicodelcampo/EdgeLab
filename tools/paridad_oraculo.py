@@ -137,9 +137,25 @@ def main(argv=None):
         bar_spec=a.barras,
         head_commit=subprocess.check_output(
             ["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True).strip(),
-        arbol_limpio=subprocess.check_output(
-            ["git", "-C", str(REPO), "status", "--porcelain"], text=True).strip() == "",
+        arbol_limpio=None,   # se completa abajo
     )
+
+    # Procedencia dirty-aware (regla permanente): un `code_commit` sobre arbol dirty
+    # NO garantiza que ese commit contenga el codigo que realmente corrio. El booleano
+    # solo no alcanza: si esta sucio hay que poder decir QUE estaba sucio, porque no es
+    # lo mismo un README sin commitear que el kernel que se esta midiendo.
+    _porcelain = subprocess.check_output(
+        ["git", "-C", str(REPO), "status", "--porcelain"], text=True).splitlines()
+    _sucios = [l[3:].strip() for l in _porcelain if l[:2] != "??"]
+    _sin_seguimiento = [l[3:].strip() for l in _porcelain if l[:2] == "??"]
+    proc["arbol_limpio"] = not _porcelain
+    proc["archivos_sucios"] = sorted(_sucios)
+    proc["archivos_sin_seguimiento"] = sorted(_sin_seguimiento)
+    # lo unico que puede alterar la MEDICION es el codigo que participa de ella
+    _criticos = [f for f in _sucios
+                 if f.startswith(("edgelab/", "tools/paridad_oraculo.py", "diag/"))]
+    proc["sucios_criticos"] = sorted(_criticos)
+    proc["medicion_comprometida"] = bool(_criticos)
     print("  cs blob : %s" % proc["cs_blob"])
 
     # ---- 2. datos --------------------------------------------------------------
