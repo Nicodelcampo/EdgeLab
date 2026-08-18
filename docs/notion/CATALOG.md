@@ -3,7 +3,7 @@
 Índice aditivo. **No mueve** archivos existentes de `docs/`. Si este archivo y una página de Notion divergen, **manda el repo**.
 
 Generado: 2026-08-17 · HEAD de referencia: `f247e797a28ee441ceb50e9efb447709b04d0f02`
-Actualizado: 2026-08-18 (entradas 015–024, artefactos de la línea H-Z2A, y la pasada de orientación: README de raíz + mapa de docs/)
+Actualizado: 2026-08-18 (entradas 015–024, artefactos de la línea H-Z2A, la pasada de orientación: README de raíz + mapa de docs/, y el ledger de costos del capítulo 3)
 
 ## Niveles
 
@@ -18,6 +18,7 @@ Actualizado: 2026-08-18 (entradas 015–024, artefactos de la línea H-Z2A, y la
 
 | Fecha | Actualidad | Nivel | Categoría | Título | Repo | Snapshot |
 |---|---|---|---|---|---|---|
+| 2026-08-18 | vigente | L1_linea | programa | Ledger de costos — capítulo 3 (comisión RT en ticks por instrumento; pendientes de Nico numerados) | `docs/research/LEDGER_COSTOS_CAP3_2026-08-18.md` | — |
 | 2026-08-18 | vigente | L1_linea | canal | Entrada 024 — el push del fix no llegó a origin; inventario GEX registrado | `docs/audits/ENTRADA_024_FIX_NO_ESTA_EN_ORIGIN_E_INVENTARIO_GEX_2026-08-18.md` | — |
 | 2026-08-18 | vigente | L0_entrada | orientacion | Guía de lectura del proyecto (página Notion para cualquier chat nuevo) | `README.md` | — |
 | 2026-08-18 | vigente | L0_entrada | orientacion | README de raíz — punto de entrada frío (chat de Notion o sesión nueva) | `README.md` | — |
