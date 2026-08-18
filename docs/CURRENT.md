@@ -26,7 +26,10 @@
    `medicion_comprometida: false` en las cuatro, y se versionaron **las dos**
    ventanas de warmup de aVolCellPOI2 (w=1 y w=12) para que la resta la pueda
    hacer un tercero. El driver registra **qué** estaba sucio, no un booleano.
-8. **Board:** `PENDIENTE.md`. **Canal:** `docs/audits/CANAL_AUDITOR.md`.
+8. **Plan que conecta todo:** `docs/PLAN_RUTA_A_UNA_CUENTA_2026-08-18.md` —
+   debilidad → capítulo → estado → qué la mueve, el grafo de qué bloquea a qué,
+   y la grilla de C1 congelada antes de correr.
+9. **Board:** `PENDIENTE.md`. **Canal:** `docs/audits/CANAL_AUDITOR.md`.
 
 ## Qué no tocar
 
