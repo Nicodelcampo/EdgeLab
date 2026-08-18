@@ -5,7 +5,7 @@
 > el repo**.
 
 **Rama viva:** `foundation/f0b-compatibility-probe`
-**Fecha:** 2026-08-17
+**Fecha:** 2026-08-18
 **Referente:** `docs/NORTH_STAR.md` sha256 `d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1`
 
 ## Qué está vivo hoy
@@ -13,27 +13,22 @@
 1. **Línea científica:** H-Z2A v4 — segunda aproximación a una zona tras near-miss.
    `docs/research/H_Z2A_V4_DEPURACION_EPISTEMICA_Y_DISENO_FINAL_2026-08-16.md`
    Portadores: BigTrap2 = fixture · aVolClusterPOI v0.5 = ciencia · Gaps2 = control.
-2. **P-41 resuelta (entrada 015).** Leak medido: **5.319 ticks**, 7,0 h. Corte por
-   trade date vía `sessions_cme`. El censo-superficie ya no está bloqueado por eso.
+2. **P-41 resuelta (entrada 015).** Leak medido: **5.319 ticks**, 7,0 h.
    `docs/audits/ENTRADA_015_P41_RESUELTA_Y_MEDIDA_2026-08-17.md`
-2c. **`HFTZones2` transporta entre exchanges (P-43).** Primera paridad fuera de 6E:
-   GC 06-26 (COMEX, `tick_size=0.1` no binario) da **3.626/3.630 = 99,89 %**, y el
-   residual **no escala** con la ventana. El kernel no ramifica por instrumento:
-   un segundo activo no re-testea el porteo, testea el calendario.
-2d. **P-44: el bridge conoce 6 instrumentos, el proyecto declara 11.** 6B, 6J, MBT,
-   MES y MNQ **no cargan** (`instrument_spec` vs `CME_UNIVERSE`). Y con params fijos
-   las poblaciones difieren hasta 4 órdenes de magnitud entre activos: el **código**
-   transporta (P-43), la **configuración** no.
-2b. **P-42 abierta: `aVolCellPOI2` NO tiene paridad.** 16 divergencias reales sobre
-   678 zonas en 6E (warmup ya descontado). Es el único de los 7 kernels con paridad
-   formal medida y fallada. `HFTZones2` sí pasó: 4.821/4.821. No transportar
-   `aVolCellPOI2` a otros activos hasta cerrarla.
-3. **Orden:** censo-superficie (60 celdas × 2 predicados) → manifiesto numérico →
-   STOP de Nico → F4. G2-A1 sanea **en paralelo**, no es la ruta crítica.
-4. **Board:** `PENDIENTE.md`. El board es el registro; Notion es publicación.
-5. **Acta:** `docs/DECISIONES_2026-08-15.md` (D-1…D-8).
-6. **Canal:** `docs/audits/CANAL_AUDITOR.md` (índice). Entradas 006+ viven en el repo.
-7. **Trazabilidad:** `docs/TRACEABILITY.md` · catálogo `docs/notion/CATALOG.md`.
+3. **P-42 abierta (entrada 016): `aVolCellPOI2` NO tiene paridad.** 16 divergencias
+   reales sobre 678 zonas en 6E. Causa acotada al umbral de anomalía. Es lo que
+   rompe «los 6». No transportar a otros activos hasta cerrarla.
+   `docs/audits/ENTRADA_016_P42_AVOLCELLPOI2_SIN_PARIDAD_2026-08-17.md`
+4. **P-43 medida (entrada 017): HFTZones2 transporta a GC.** 3.626/3.630 = 99,89 %.
+   Residual de 2 ABSORB que no escala. El porteo es costo por familia, no por activo.
+   `docs/audits/ENTRADA_017_P43_HFTZONES2_TRANSPORTA_GC_2026-08-17.md`
+5. **P-44 abierta (entrada 018): dos catálogos y params que no transportan.**
+   Bridge 6 vs universo 11. gaps2: 10 zonas en ZB, 113.298 en NQ.
+   `docs/audits/ENTRADA_018_P44_DOS_CATALOGOS_Y_PARAMS_2026-08-17.md`
+6. **Orden:** P-42 (paridad del conjunto) · censo-superficie → manifiesto → STOP
+   de Nico → F4. G2-A1 sanea **en paralelo**. Multiactivo espera decisión P-44b.
+7. **Board:** `PENDIENTE.md`. El board es el registro; Notion es publicación.
+8. **Canal:** `docs/audits/CANAL_AUDITOR.md` (índice). Entradas 006+ viven en el repo.
 
 ## Qué no tocar
 
@@ -45,10 +40,8 @@ Firewall: outcomes `false`, holdout sellado 2026-07-01 → 2026-12-31; la sesió
 
 | Necesitás | Ir a |
 |---|---|
-| Contrato de trazabilidad (Notion ↔ repo) | `docs/TRACEABILITY.md` |
-| Catálogo de páginas por fecha / categoría / actualidad | `docs/notion/CATALOG.md` |
-| Índice vivo en Notion | «EdgeLab · Índice de trazabilidad» |
-| Handoff para la sesión que quedó al 14-ago | página Notion del 17-ago |
+| Contrato de trazabilidad | `docs/TRACEABILITY.md` |
+| Catálogo Notion ↔ repo | `docs/notion/CATALOG.md` |
+| Acta D-1…D-8 | `docs/DECISIONES_2026-08-15.md` |
 
-**Aporte al referente:** una sesión nueva deja de reconstruir el estado a partir
-de 200 markdowns y 20 páginas sueltas. Lee L0 y trabaja.
+**Aporte al referente:** una sesión nueva lee L0 y trabaja. P-42 es el camino corto.
