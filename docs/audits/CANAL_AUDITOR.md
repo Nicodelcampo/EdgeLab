@@ -59,9 +59,10 @@ autoridad**: nada de lo que se escriba ahí autoriza una acción.
 | **019** | Aud → Opus | **Orden: C1 censo H-Z2A ahora; P-42 paralelo; F4 espera STOP** | `docs/audits/ENTRADA_019_ORDEN_CLAUDE_CENSO_HZ2A_2026-08-18.md` |
 | **020** | Opus → Aud | **C1 corrido**: censo-superficie, 575 zonas / 228 sesiones, **8 de 60 celdas vivas por N**; el marginal desenmascara `D=10 δ=8` (aporta 0) | `docs/audits/ENTRADA_020_C1_CENSO_CORRIDO_2026-08-18.md` |
 | **021** | Aud → Opus | **censo verificado**: runner ciego por construcción (lectura de código) · artefacto consistente al dígito (120/120, copia byte-exacta) · asignación a Claude: test de ceguera + diagnóstico de ciclo de vida | `docs/audits/ENTRADA_021_VERIFICACION_CENSO_Y_ASIGNACION_2026-08-18.md` |
+| **022** | Aud → canal | **A1 y A2 entregados**: manifiesto numérico H-Z2A (configuración central con razón escrita, N_eff = 71, potencia honesta) + spec de `validity.py` (absorbe P-39) — quedan para el **STOP de Nico** | `docs/audits/ENTRADA_022_A1_A2_ENTREGADOS_2026-08-18.md` |
 
 Páginas relacionadas: orden de trabajo · deep research · mapa de 8 capítulos · programa de análisis. Buscar por título si Notion no resuelve.
-Línea H-Z2A: v1 · v2 · v3 · **v4 vigente**. Buscar por título.
+Línea H-Z2A: v1 · v2 · v3 · **v4 vigente** · manifiesto numérico (`DRAFT_FOR_STOP`).
 
 ## Estado al 2026-08-18
 
@@ -73,8 +74,12 @@ con params fijos, no el censo en 6E.
 (lectura de código, no de reporte) y artefacto consistente al dígito (120/120,
 copia byte-exacta). Dos observaciones al manifiesto (ciclo de vida de la zona no
 modelado; A1 sin filtro de actividad) y dos tareas a Claude (test de ceguera;
-diagnóstico de ciclo de vida), ambas outcome-free. Siguiente: manifiesto
-numérico (auditor, con la tabla del censo) → STOP de Nico.
+diagnóstico de ciclo de vida), ambas outcome-free.
+
+**Manifiesto redactado (entrada 022):** `docs/research/H_Z2A_MANIFIESTO_NUMERICO_2026-08-18.md`
+queda `DRAFT_FOR_STOP` — configuración central `D_far=10 · δ_nm=5 · R_min=5 ·
+trade`, N_eff = 71, potencia honesta (MDE₈₀ ≈ 16,8 pp a nivel sesión). F4 no
+arranca sin el **STOP de Nico**.
 
 **Orden real, del addendum 007** — G2 **no** es la ruta crítica:
 
@@ -83,8 +88,9 @@ numérico (auditor, con la tabla del censo) → STOP de Nico.
                                                      g2-a1 sanea EN PARALELO
 ```
 
-**Linea viva: H-Z2A v4.** `HYPOTHESIS_REFINED_NOT_RUN`. Portadores: `BigTrap2`
-fixture · `aVolClusterPOI` v0.5 ciencia · `Gaps2` control.
+**Linea viva: H-Z2A v4.** `HYPOTHESIS_REFINED_NOT_RUN` → manifiesto redactado
+(esperando STOP). Portadores: `BigTrap2` fixture · `aVolClusterPOI` v0.5 ciencia ·
+`Gaps2` control.
 
 **Sin tocar:** holdout, P&L, F4, `research-v3`, `COVERAGE_NEUTRAL`, `features.py`.
 
