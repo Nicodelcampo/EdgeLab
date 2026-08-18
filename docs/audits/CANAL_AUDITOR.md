@@ -61,6 +61,7 @@ autoridad**: nada de lo que se escriba ahí autoriza una acción.
 | **021** | Aud → Opus | **censo verificado**: runner ciego por construcción (lectura de código) · artefacto consistente al dígito (120/120, copia byte-exacta) · asignación a Claude: test de ceguera + diagnóstico de ciclo de vida | `docs/audits/ENTRADA_021_VERIFICACION_CENSO_Y_ASIGNACION_2026-08-18.md` |
 | **022** | Aud → canal | **A1 y A2 entregados**: manifiesto numérico H-Z2A (configuración central con razón escrita, N_eff = 71, potencia honesta) + spec de `validity.py` (absorbe P-39) — quedan para el **STOP de Nico** | `docs/audits/ENTRADA_022_A1_A2_ENTREGADOS_2026-08-18.md` |
 | **023** | Aud → Opus | **bug real en el censo** (`argmin` sobre todo el corredor: un toque posterior mata un near-miss legítimo anterior — lo encontró el gate C-A) · **manifiesto v1 SUSPENDIDO** hasta censo v2 · orden: pushear el fix **antes** de re-correr · el crash fue la matriz de kernels, no el censo | `docs/audits/ENTRADA_023_CENSO_V1_CON_BUG_Y_MANIFIESTO_SUSPENDIDO_2026-08-18.md` |
+| **024** | Aud → canal | **el push del fix no llegó a origin** (HEAD = `d2a37f3a`, ninguna rama lo tiene) — cuando vuelva: pushear · inventario GEX: sirve como procedencia (los 4 docs ya commiteados), no cambia la ruta (es SPY/QQQ, no 6E) | `docs/audits/ENTRADA_024_FIX_NO_ESTA_EN_ORIGIN_E_INVENTARIO_GEX_2026-08-18.md` |
 
 Páginas relacionadas: orden de trabajo · deep research · mapa de 8 capítulos · programa de análisis. Buscar por título si Notion no resuelve.
 Línea H-Z2A: v1 · v2 · v3 · **v4 vigente** · manifiesto numérico (**SUSPENDIDO** hasta censo v2).
@@ -85,6 +86,13 @@ Los números del censo v1 y del manifiesto v1 son registro, no cifra vigente.
 + el test **antes** de re-correr; el auditor audita el fix; con máquina estable
 (lo confirma Nico) se corre censo v2 con etiqueta nueva; después, manifiesto v2.
 
+**Pausa de créditos (entrada 024, 18-ago ~15:18 ART):** el último flujo de Opus
+(fix del `argmin` + gate C-A + merge del README del auditor, suite local 1.008
+passed) **quedó local — no está en origin** (verificado: HEAD = `d2a37f3a`,
+ninguna rama lo contiene). Cuando vuelva: **pushear**, y la orden de la 023
+sigue. Inventario GEX registrado en la 024: sirve como procedencia (los 4 docs
+ya commiteados), no cambia la ruta.
+
 **El crash de la máquina NO fue el censo** (pico 3,38 GB): fue la matriz de
 kernels — `load_canonical_parquet` lee el archivo completo antes de recortar por
 `--dias` (pico ~9 GB en MNQ_03-26 = el número que P-25 midió el 15-ago). Regla
@@ -98,8 +106,9 @@ nueva: `filas × 48 B` antes de correr; si pasa de 2 GB, se avisa primero.
 ```
 
 **Linea viva: H-Z2A v4.** `HYPOTHESIS_REFINED_NOT_RUN` → manifiesto v1 redactado
-y **suspendido** (esperando censo v2 → manifiesto v2 → STOP). Portadores:
-`BigTrap2` fixture · `aVolClusterPOI` v0.5 ciencia · `Gaps2` control.
+y **suspendido** (esperando: push del fix → auditoría → censo v2 → manifiesto v2
+→ STOP). Portadores: `BigTrap2` fixture · `aVolClusterPOI` v0.5 ciencia ·
+`Gaps2` control.
 
 **Sin tocar:** holdout, P&L, F4, `research-v3`, `COVERAGE_NEUTRAL`, `features.py`.
 
@@ -109,4 +118,6 @@ El 2026-08-15 la entrada 004 salió sin leer 001–003. El 2026-08-16 la 014 sal
 sin asentar P-41 en el board. El 2026-08-18 el manifiesto v1 salió contra la
 tabla del censo con un defecto que la auditoría de ceguera no miraba (la
 definición del evento) — y el gate que no existía lo encontró al escribirse.
+Y el mismo 18-ago: «pusheado» resultó ser una afirmación sobre la máquina, no
+sobre origin — la etiqueta se deriva del contenido.
 El registro no se limpia: se asienta el siguiente commit.
