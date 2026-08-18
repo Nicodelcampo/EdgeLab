@@ -27,8 +27,13 @@
    `docs/audits/ENTRADA_018_P44_DOS_CATALOGOS_Y_PARAMS_2026-08-17.md`
 6. **Orden:** P-42 (paridad del conjunto) · censo-superficie → manifiesto → STOP
    de Nico → F4. G2-A1 sanea **en paralelo**. Multiactivo espera decisión P-44b.
-7. **Board:** `PENDIENTE.md`. El board es el registro; Notion es publicación.
-8. **Canal:** `docs/audits/CANAL_AUDITOR.md` (índice). Entradas 006+ viven en el repo.
+7. **Procedencia dirty-aware.** Las cuatro paridades se re-corrieron con el árbol
+   limpio y se re-versionaron: `medicion_comprometida: false` en las cuatro. El
+   driver ahora registra **qué** estaba sucio, no un booleano suelto — el campo
+   que hay que mirar se **deriva** de si hay `edgelab/`, `diag/` o el propio
+   driver sin commitear, no de la presencia de un README sin trackear.
+8. **Board:** `PENDIENTE.md`. El board es el registro; Notion es publicación.
+9. **Canal:** `docs/audits/CANAL_AUDITOR.md` (índice). Entradas 006+ viven en el repo.
 
 ## Qué no tocar
 
