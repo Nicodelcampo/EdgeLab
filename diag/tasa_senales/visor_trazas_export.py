@@ -207,7 +207,13 @@ def main():
                corredores=elegidos)
     destino = REPO / "viewer" / "hz2a" / "trazas.json"
     destino.parent.mkdir(parents=True, exist_ok=True)
-    destino.write_text(json.dumps(out), encoding="utf-8")
+    destino.write_text(json.dumps(out, indent=1), encoding="utf-8")
+    # Y el MISMO contenido como .js asignable. `fetch()` de un archivo relativo esta
+    # bloqueado sobre `file://` en todos los navegadores, y la spec pide "HTML estatico
+    # + JSON chico, sin servidor": un <script src> si carga. El .json queda igual como
+    # artefacto de datos, para leerlo o auditarlo sin abrir el visor.
+    destino.with_suffix(".js").write_text(
+        "window.TRAZAS = " + json.dumps(out) + ";", encoding="utf-8")
     if not elegidos:
         print("  NINGUN corredor cumple el filtro. El visor debe mostrar empty state,")
         print("  no un spinner: el JSON se escribe igual, con `corredores: []`.")
