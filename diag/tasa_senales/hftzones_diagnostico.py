@@ -56,7 +56,7 @@ from edgelab.bridge.indicators.hftzones2 import DEFAULTS, _Sampler  # noqa: E402
 from edgelab.data.nt8_contract import INSTRUMENT_SPECS  # noqa: E402
 from edgelab.kaggle.sessions_cme import session_bounds_utc_ns, trade_date_ymd  # noqa: E402
 
-SCHEMA_VERSION = "hftzones_diagnostico_v2_trade_date"
+SCHEMA_VERSION = "hftzones_diagnostico_v2_1_sampler_completo"
 
 # CONGELADOS. Se citan para poder reproducir la cuenta, NO se tocan (P-47 / §4.4).
 H_FLOOR = 2
@@ -213,10 +213,24 @@ def main():
         pct = lambda f, q: float(np.percentile([f(s) for s in ses], q))            # noqa: E731
         lim = [s for s in ses if s["completo"]["_resolution_limited"]]
         floor = [s for s in ses if s["pegada_a_floor"]]
-        difs = [abs(s["completo"]["eff_max_avg_ms"] - s["muestreado"]["eff_max_avg_ms"])
-                for s in ses if s["muestreado"]]
-        difs_vol = [abs(s["completo"]["eff_min_total_vol"] - s["muestreado"]["eff_min_total_vol"])
-                    for s in ses if s["muestreado"]]
+        # EQUIVALENCIA DEL SAMPLER SOBRE TODO EL VECTOR (v2.1).
+        #
+        # v2 comparaba solo `eff_max_avg_ms` y `eff_min_total_vol` -- justamente los dos
+        # campos SATURADOS por sus pisos, que coinciden casi por construccion. De ahi
+        # concluir "muestra completa y sampler son identicos" era una sobreafirmacion:
+        # no se miraba `eff_max_pausa_ms`, que es donde YM conserva variacion, ni `p50`,
+        # ni `resolution_limited`.
+        CAMPOS_EFF = ("eff_predator_ms", "eff_ultra_ms", "eff_max_avg_ms",
+                      "eff_max_pausa_ms", "eff_max_total_ms", "eff_min_total_vol",
+                      "eff_min_vol_rate", "_p50_ms", "_median_vol")
+        dif_por_campo, discrepan = {}, {}
+        for c in CAMPOS_EFF:
+            xs = [abs(s["completo"][c] - s["muestreado"][c]) for s in ses if s["muestreado"]]
+            dif_por_campo[c] = round(float(max(xs)), 6) if xs else None
+            discrepan[c] = int(sum(1 for x in xs if x > 0))
+        rl = [(s["completo"]["_resolution_limited"], s["muestreado"]["_resolution_limited"])
+              for s in ses if s["muestreado"]]
+        dif_rl = int(sum(1 for a_, b_ in rl if a_ != b_))
 
         salida[inst] = dict(
             n_sesiones=n,
@@ -247,9 +261,13 @@ def main():
                 stride_mediano=int(med(lambda s: s["stride_ms"])),
                 n_muestra_mediana=int(med(lambda s: s["n_muestra_ms"])),
                 n_total_mediana=int(med(lambda s: s["n_total_ms"])),
-                dif_max_avg_ms_max=round(float(max(difs)) if difs else 0.0, 4),
-                dif_min_total_vol_max=round(float(max(difs_vol)) if difs_vol else 0.0, 4),
-                identicos=bool(difs and max(difs) == 0 and max(difs_vol) == 0)),
+                dif_max_por_campo=dif_por_campo,
+                sesiones_que_discrepan_por_campo=discrepan,
+                sesiones_que_discrepan_resolution_limited=dif_rl,
+                campos_comparados=len(CAMPOS_EFF) + 1,
+                identicos_vector_completo=bool(
+                    all(v == 0 for v in dif_por_campo.values() if v is not None)
+                    and dif_rl == 0)),
             # --- eff_* con la muestra completa, para el diff viejo->nuevo ---------
             eff_completo={k: round(med(lambda s, k=k: s["completo"][k]), 4)
                           for k in ("eff_predator_ms", "eff_ultra_ms", "eff_max_avg_ms",
@@ -266,6 +284,7 @@ def main():
     porcelain = subprocess.check_output(
         ["git", "-C", str(REPO), "status", "--porcelain"], text=True).splitlines()
     sucios = [l[3:].strip() for l in porcelain if l[:2] != "??"]
+    no_trackeados = [l[3:].strip() for l in porcelain if l[:2] == "??"]
     out = dict(
         schema_version=SCHEMA_VERSION,
         reemplaza="docs/research/hftzones_calib_catalog.json (19e8713, SUPERSEDED)",
@@ -280,10 +299,16 @@ def main():
         instrumentos_sin_datos=faltan,
         procedencia=dict(head_commit=subprocess.check_output(
             ["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True).strip(),
-            archivos_sucios=sorted(sucios),
+            archivos_sucios=sorted(sucios), archivos_no_trackeados=sorted(no_trackeados),
+            alcance_comprometida=["edgelab/", "diag/"],
             medicion_comprometida=bool([f for f in sucios if f.startswith(("edgelab/", "diag/"))]),
-            nota_medicion=("medicion_comprometida=false significa arbol limpio; NO "
-                           "significa que la medicion sea metodologicamente valida")),
+            nota_medicion=(
+                "medicion_comprometida=false significa: NINGUN archivo sucio dentro del "
+                "alcance declarado (edgelab/, diag/). NO significa arbol limpio -- puede "
+                "haber sucios fuera de ese alcance, y estan listados en "
+                "`archivos_sucios`. Tampoco significa que la medicion sea "
+                "metodologicamente valida: el catalogo de 19e8713 tenia este campo en "
+                "false y estaba mal segmentado.")),
         diagnostico=salida)
     pathlib.Path(a.out).write_text(json.dumps(out, indent=2), encoding="utf-8")
     print("  escrito %s" % a.out)
