@@ -23,6 +23,7 @@
 7. **Ledger v1:** `docs/research/LEDGER_COSTOS_CAP3_2026-08-18.md`.
 8. **Canal:** `docs/audits/CANAL_AUDITOR.md` (001→032).
    Intake: `docs/research/INTAKE_NICO_HZ2A_EXPLORATORIO_2026-08-18.md`.
+   Research en frío: `docs/research/LEER.md` (no abrir el directorio).
 
 ## Qué no tocar
 

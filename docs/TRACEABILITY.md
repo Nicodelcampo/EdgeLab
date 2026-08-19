@@ -3,6 +3,8 @@
 > Decisión de diseño, no una moda de carpetas. Asentada 2026-08-17.
 > **Aditiva:** no se mueven archivos existentes de `docs/`. Moverlos rompería
 > las citas por path + blob que el canal ya selló (regla 3).
+> **Enmienda 2026-08-19:** L3 es `docs/notion/CATALOG.md`. `catalog.json` y
+> `docs/notion/snapshots/` **no existen** — no se citan como si existieran.
 
 ## 1 · El problema que esto cierra
 
@@ -45,15 +47,18 @@ L1  PENDIENTE.md                 ← board = registro de decisiones
     docs/DECISIONES_*.md         ← actas
     docs/NORTH_STAR.md           ← referente (hasheado)
     docs/audits/CANAL_AUDITOR.md ← índice del canal
+    docs/research/LEER.md        ← 8 paths de research, no el directorio
 L2  docs/audits/ENTRADA_*.md     ← canal 006+ (texto canónico)
     docs/research/H_Z2A_V4_*.md  ← línea viva
-L3  docs/notion/catalog.json     ← mapa Notion ↔ repo, por fecha/categoría/actualidad
-    docs/notion/snapshots/       ← export PDF → texto + sha256 (evidencia, no fuente)
+L3  docs/notion/CATALOG.md       ← mapa Notion ↔ repo (markdown, no catalog.json)
 L4  páginas Notion               ← timbre / redacción / lectura humana
 ```
 
 Si L4 y L1 divergen, manda L1. Si L3 y L2 divergen, manda L2 (el markdown
-commiteado). Un PDF de L3 **nunca** adjudica.
+commiteado). Un PDF de Notion **nunca** adjudica.
+
+`catalog.json` y `docs/notion/snapshots/` se nombraron acá el 17-ago y **no se
+crearon**. No se inventan para que el contrato cierre: el contrato se enmienda.
 
 ## 4 · Niveles de actualidad y relevancia
 
@@ -80,22 +85,19 @@ y `L3` (H-Z2A v2). Son ejes distintos a propósito: “¿manda?” ≠ “¿la l
 ## 5 · Reglas operativas
 
 1. **Toda página nueva de Notion que gobierne trabajo entra al catálogo en el
-   mismo turno** (`catalog.json` + fila). Si abre un `P-NN`, también
+   mismo turno** (`CATALOG.md` + fila). Si abre un `P-NN`, también
    `PENDIENTE.md` (regla 4 del canal).
 2. **Entradas de canal 015+ nacen en `docs/audits/`**, no sólo en Notion.
    Notion puede espejar; el repo es la fuente.
-3. **Snapshots:** un export (PDF o markdown) se hashea y se guarda en
-   `docs/notion/snapshots/YYYY-MM-DD/`. El UUID del export **no es** el ID
-   vivo de la página — el zip del 16-ago lo demostró. Se anotan los dos.
+3. **Snapshots:** si algún día hay export, se hashea. Hoy **no hay** carpeta
+   `docs/notion/snapshots/`. No se cita como existente.
 4. **No se commitean PDF binarios** si ya hay texto extraído + sha256 del PDF.
-   El PDF es evidencia de procedencia; el texto es lo reutilizable
-   (Wilson: extraer datos de PDF es hostil).
 5. **URLs de Notion en el repo se escriben con el UUID vivo de la página**
    (`www.notion.so/` + uuid). Nunca placeholders de una sesión.
 6. **No se mueven paths ya citados.** Si un documento cambia de rol, se le
    cambia la fila del catálogo (`currency` / `relevance`), no la ruta.
-7. **Una sesión rezagada recibe `CURRENT.md` + el handoff**, no un tour de
-   40 páginas.
+7. **Una sesión rezagada recibe `CURRENT.md` + `docs/research/LEER.md`**, no un
+   tour de 40 páginas.
 8. **`CURRENT.md` es manuscrito y eso se declara.** `tests/test_current_md.py`
    falla si cita un P-NN ausente del board, si su Fecha queda más de un día
    atrás del HEAD, o si un path entre backticks no existe. No convierte el

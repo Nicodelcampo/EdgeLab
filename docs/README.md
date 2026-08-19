@@ -13,6 +13,7 @@
 | L0 | Estado vivo, una página, con gate | `CURRENT.md` |
 | L1 | Board de decisiones | `../PENDIENTE.md` |
 | L1 | Contrato Notion ↔ repo | `TRACEABILITY.md` |
+| L1 | Research en frío (8 paths) | `research/LEER.md` |
 | L2 | Canal y auditorías | `audits/` |
 | L2 | Research: hipótesis y mediciones | `research/` |
 | L3 | Catálogo Notion ↔ repo | `notion/CATALOG.md` |
@@ -22,9 +23,9 @@
 
 | Dir | Contenido |
 |---|---|
-| `audits/` | Canal Opus ↔ Auditor (`CANAL_AUDITOR.md` = índice, entradas 001→023), auditorías |
-| `research/` | Hipótesis (H-Z2A v1→v4 + manifiesto), censo, paridades, programas, handoffs |
-| `notion/` | `CATALOG.md` + README del catálogo |
+| `audits/` | Canal Opus ↔ Auditor (`CANAL_AUDITOR.md` = índice, entradas 001→032), auditorías |
+| `research/` | Hipótesis (H-Z2A v1→v4 + manifiesto), censo, paridades, programas. Empezar en `LEER.md` |
+| `notion/` | `CATALOG.md` + README del catálogo. No hay `catalog.json` ni `snapshots/` |
 | `amendments/` | Enmiendas de contratos (G2-A1 y otras) |
 | `bridge/` | Docs del puente NT8 ↔ Python |
 | `campaigns/` | Manifiestos de campaña |
@@ -56,4 +57,4 @@ si algo de ahí contradice a `CURRENT.md`, manda `CURRENT.md`.
 
 Sin respaldo en el repo: «Handoff · Sesión Claude (al 14-ago)», «Orden de trabajo
 15-ago» y los 12 snapshots de texto del zip del 16-ago. Detalle en
-`notion/CATALOG.md` § Respaldo.
+`notion/CATALOG.md`.
