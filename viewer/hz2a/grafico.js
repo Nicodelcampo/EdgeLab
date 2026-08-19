@@ -233,12 +233,14 @@ function pintarG() {
 }
 
 function zoomG(e) {
-  // El zoom tampoco clampea contra [0, n-1]: si lo hiciera, acercarse cerca del borde
-  // arrastraria la vista de vuelta adentro y el aire de los costados desapareceria.
-  const r = e.currentTarget.getBoundingClientRect();
+  const S = serieG(), r = e.currentTarget.getBoundingClientRect();
   const f = (e.clientX - r.left) / r.width, c = gVista.a + f * (gVista.b - gVista.a);
   const w = Math.max(12, (gVista.b - gVista.a) * (e.deltaY > 0 ? 1.25 : 0.8));
-  gVista = { a: Math.round(c - f * w), b: Math.round(c + (1 - f) * w) };
+  let a = Math.round(c - f * w), b = Math.round(c + (1 - f) * w);
+  // Mismo tope que el paneo: la serie llega hasta el borde y no se sale.
+  if (a < 0) { b -= a; a = 0; }
+  if (b > S.n - 1) { a -= (b - (S.n - 1)); b = S.n - 1; }
+  gVista = { a: Math.max(0, a), b: Math.min(S.n - 1, b) };
   pintarG();
 }
 
@@ -282,13 +284,20 @@ function arrastreG(ev) {
   const e0 = gEscala ? { k: gEscala.k, c: gEscala.c }
                      : { k: 1, c: (gEje_area.lo + gEje_area.hi) / 2 };
   const alto0 = gEje_area.hi - gEje_area.lo, H0 = gEje_area.H;
-  const holgura = Math.round(span * 0.5);
+  // TOPE HORIZONTAL: el desplazamiento termina cuando la ultima barra llega al BORDE
+  // del area de dibujo, no media pantalla despues.
+  //
+  // Antes la holgura era media ventana a cada lado, asi que al llegar al tope el
+  // precio quedaba terminando en la mitad del chart con el resto vacio -- que es
+  // exactamente lo que Nico mostro ("100 de 1440" con mil pixeles en blanco). El aire
+  // a la derecha ya lo da `GAP_DER` (156 px), que es espacio de LAYOUT y no de scroll:
+  // por eso no hace falta holgura de indices encima.
   const mover = e => {
     const dx = Math.round((e.clientX - x0) / r.width * span);
     let a = v0.a - dx, b = v0.b - dx;
-    if (a < -holgura) { b += (-holgura - a); a = -holgura; }
-    if (b > S.n - 1 + holgura) { a -= (b - (S.n - 1 + holgura)); b = S.n - 1 + holgura; }
-    gVista = { a: a, b: b };
+    if (a < 0) { b -= a; a = 0; }
+    if (b > S.n - 1) { a -= (b - (S.n - 1)); b = S.n - 1; }
+    gVista = { a: Math.max(0, a), b: Math.min(S.n - 1, b) };
     // Signo, derivado y no adivinado. `Y(p) = pad.t + H - (p - lo)/(hi - lo) * H`, o
     // sea que la pantalla crece hacia ABAJO y el precio hacia ARRIBA. Para que un
     // precio P se dibuje `dy` pixeles mas abajo hace falta que `Y(P)` aumente, y eso
