@@ -106,9 +106,40 @@ sí discrepa. Lo que importa es que NQ tiene sesiones con `p50` justo en la fron
 prueba:** los otros ocho campos coinciden en 6 de 7 instrumentos, y **NQ no**. La
 afirmación «es la misma calibración» queda **retirada**.
 
-*Límite declarado:* el artefacto registra **cuántas** sesiones discrepan, no en qué
-dirección (si el sampler declara `limited` donde la muestra completa no, o al revés).
-Se puede agregar si hace falta.
+### La dirección, y el mecanismo exacto (v2.2)
+
+| trade_date | | muestra completa | sampler |
+|---|---|---|---|
+| **20260309** | `frac(dt = 0)` | **0,4845** | **0,5010** |
+| | `p50` | 4,00 ms | **0,00** |
+| | `eff_max_pausa_ms` | 20,00 | **5,00** |
+| | `resolution_limited` | `False` | **`True`** |
+| | stride · muestra | 4 · 155.679 de 622.714 | |
+| **20260618** | `frac(dt = 0)` | **0,4803** | **0,5003** |
+| | `p50` | 4,00 ms | **0,00** |
+| | `eff_max_pausa_ms` | 20,00 | **5,00** |
+| | `resolution_limited` | `False` | **`True`** |
+| | stride · muestra | 2 · 255.065 de 510.128 | |
+
+**«NQ está justo en la frontera» deja de ser una explicación plausible y pasa a estar
+demostrada dentro del artefacto.** La mediana de `dt` es 0 **si y sólo si más del 50 %
+de los valores son 0**. La muestra completa tiene **48,0–48,5 %** de ceros; la decimada,
+**50,0–50,1 %**. La frontera es literalmente `frac(dt = 0) = 0,5`, y las dos sesiones
+caen a **menos de 0,2 puntos porcentuales** de ella.
+
+La decimación empuja la fracción de ceros al otro lado de la línea, la mediana salta de
+4 ms a 0, y `eff_max_pausa` se aprieta **4×** — de 20 ms a 5. Ése es el umbral que corta
+una racha (`hftzones2.py` l. 397).
+
+**Dirección:** en los dos casos el **sampler** declara `limited` donde la muestra
+completa **no**. Nunca al revés.
+
+### Reproducibilidad
+
+Corrida limpia desde `99e786619cc0084eb3f5b1f1c8e19e67464e2202`, sin modificaciones en
+`edgelab/` ni `diag/`: **`medicion_comprometida = false`** y los descriptivos por
+instrumento salen **idénticos** a v2.1. Artefacto:
+`docs/research/hftzones_diagnostico_v2_2.json`.
 
 ## 4. Timestamps repetidos: la escala del problema
 
