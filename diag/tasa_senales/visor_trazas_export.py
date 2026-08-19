@@ -39,7 +39,11 @@ from edgelab.bridge.bars import build_footprints, build_time_bars, session_ids  
 from edgelab.bridge.ticks import TickSeries, load_canonical_parquet  # noqa: E402
 
 D_FAR, R = 10, 5
-DELTAS = (3, 8)          # los dos que exhiben el doble rol
+# El par correcto es (5, 8), NO (3, 8). En el artefacto v2, D=10 R=5 da
+# [438, 914, 1463, 2091, 1991] para delta = 1,2,3,5,8: el conteo BAJA recien entre
+# 5 y 8. Con delta=3 sube, asi que ese par no exhibe el doble rol -- primer intento
+# de este exportador eligio (3,8) por "angosto vs ancho" y devolvio 0 corredores.
+DELTAS = (5, 8)
 MAX_PUNTOS = 700         # corredores mas largos se descartan para que el visor se lea
 
 
