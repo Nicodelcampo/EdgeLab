@@ -21,6 +21,8 @@ function abrirPanelInd() {
   if (p.classList.contains("on") && !IND) cargarCatalogo();
 }
 
+document.querySelector("#volverInd").addEventListener("click", volverALista);
+
 function cargarCatalogo() {
   const cont = document.querySelector("#listaInd");
   cont.innerHTML = '<div style="padding:10px;color:var(--dim)">cargando…</div>';
@@ -52,6 +54,7 @@ function pintarLista() {
         v.paridad === "PARCIAL" || v.paridad === "SIN DATO" ? "warn" : "ok") +
       '" title="' + (v.paridad_nota || "") + '">' + (v.paridad || "?") + "</span>" +
       (off ? '<span class="chip warn">no cableado</span>' : "") + "</div>" +
+      (OVERLAYS.some(o => o.indicador === n) ? '<span class="chip ok">en el gráfico</span>' : "") +
       (v.paridad_nota ? '<div class="ind-m">' + v.paridad_nota + "</div>" : "") +
       (v.motivo ? '<div class="ind-m">' + v.motivo + "</div>" : "") + "</div>";
   }).join("");
@@ -64,7 +67,18 @@ function elegirInd(n) {
   INDparams = { ...IND[n].defaults };
   document.querySelectorAll(".ind").forEach(e =>
     e.classList.toggle("sel", e.dataset.ind === n));
+  // Acordeon: al elegir, la lista se colapsa y el formulario ocupa el panel entero.
+  document.querySelector("#panelInd").classList.add("elegido");
+  document.querySelector("#nomInd").textContent = n;
+  document.querySelector("#formInd").style.display = "block";
   pintarParams();
+}
+
+function volverALista() {
+  // No se toca `OVERLAYS`: volver a la lista es navegacion, no "quitar del grafico".
+  INDsel = null;
+  document.querySelector("#panelInd").classList.remove("elegido");
+  document.querySelector("#formInd").style.display = "none";
 }
 
 function pintarParams() {
@@ -108,30 +122,38 @@ function pintarParams() {
     INDparams = { ...IND[INDsel].defaults }; pintarParams();
   });
   document.querySelector("#btnQuitar").addEventListener("click", () => {
-    OVERLAYS = OVERLAYS.filter(o => o.indicador !== INDsel);
+    const ind = INDsel;
+    OVERLAYS = OVERLAYS.filter(o => o.indicador !== ind);
     document.querySelector("#estadoInd").textContent = "quitado del gráfico";
+    pintarLista();
     if (typeof pintarG === "function") pintarG();
   });
 }
 
 function aplicarInd() {
+  // El indicador y los parametros se CONGELAN al disparar el pedido, no se leen cuando
+  // llega la respuesta. Un kernel puede tardar un minuto; si en el medio se cambia de
+  // indicador, leer el global al volver atribuye el resultado al equivocado -- o a
+  // `null` si el panel se cerro. Paso de verdad y dejo un overlay con indicador null.
+  const ind = INDsel, params = { ...INDparams };
   const est = document.querySelector("#estadoInd");
   est.textContent = "corriendo el kernel…";
   fetch("/api/run", {
     method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      indicador: INDsel, params: INDparams,
+      indicador: ind, params: params,
       instrumento: (window.BARRAS && window.BARRAS.instrumento) || "6E",
       sesiones: parseInt(document.querySelector("#nSes").value, 10) || 2
     })
   }).then(r => r.json()).then(d => {
     if (!d.ok) { est.textContent = "error: " + d.error; return; }
-    OVERLAYS = OVERLAYS.filter(o => o.indicador !== INDsel);
-    OVERLAYS.push({ indicador: INDsel, zonas: d.zonas });
+    OVERLAYS = OVERLAYS.filter(o => o.indicador !== ind);
+    OVERLAYS.push({ indicador: ind, zonas: d.zonas });
     // Un 0 sin explicacion parece un indicador roto. El servidor devuelve el aviso
     // derivado del parametro declarado del kernel, y se muestra tal cual.
     est.innerHTML = "<b>" + d.n_zonas + "</b> zonas · " + d.n_eventos + " eventos" +
       (d.aviso ? '<br><span style="color:var(--warn)">⚠ ' + d.aviso + "</span>" : "");
+    pintarLista();   // refresca el chip "en el grafico" para que se vea al volver
     if (typeof pintarG === "function") pintarG();
   }).catch(e => { est.textContent = "sin backend: " + e; });
 }

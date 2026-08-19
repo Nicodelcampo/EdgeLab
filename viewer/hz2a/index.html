@@ -97,21 +97,30 @@
   .grupo button.on{background:var(--accent-dim);border-color:var(--accent);color:var(--text);}
   .sep{width:1px;height:18px;background:var(--border2);}
   #wrapG{position:relative;min-height:0;}
-  #panelInd{position:absolute;top:0;right:0;bottom:0;width:330px;background:var(--surface);
-    border-left:1px solid var(--border2);display:none;grid-template-rows:auto auto 1fr;
-    z-index:5;box-shadow:-8px 0 24px rgba(0,0,0,.35);}
+  #panelInd{position:absolute;top:0;right:0;bottom:0;width:340px;background:var(--surface);
+    border-left:1px solid var(--border2);display:none;grid-template-rows:auto 1fr;
+    z-index:5;box-shadow:-8px 0 24px rgba(0,0,0,.35);min-height:0;}
   #panelInd.on{display:grid;}
+  /* Acordeon: con un indicador elegido la lista se esconde y el formulario toma todo
+     el alto. Sin esto las dos listas se reparten la altura y las dos quedan cortadas. */
+  #panelInd.elegido #listaInd{display:none;}
+  #cuerpoInd{display:grid;grid-template-rows:auto 1fr;min-height:0;}
+  .volver{display:none;align-items:center;gap:6px;padding:6px var(--s3);
+    border-bottom:1px solid var(--border);background:var(--surface2);cursor:pointer;}
+  #panelInd.elegido .volver{display:flex;}
+  .volver b{font-family:var(--mono);font-size:12px;}
+  .volver span{color:var(--dim2);font-size:11px;margin-left:auto;}
   #panelInd h3{margin:0;padding:8px var(--s3);font-size:12px;color:var(--dim);
     border-bottom:1px solid var(--border);font-weight:600;
     text-transform:uppercase;letter-spacing:.06em;}
-  #listaInd{max-height:34%;overflow:auto;border-bottom:1px solid var(--border);}
+  #listaInd{overflow:auto;min-height:0;}
   .ind{padding:7px var(--s3);border-bottom:1px solid var(--border);cursor:pointer;}
   .ind:hover{background:var(--surface2);}
   .ind.sel{background:var(--accent-dim);border-left:2px solid var(--accent);padding-left:10px;}
   .ind.off{opacity:.5;cursor:not-allowed;}
   .ind-h{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12px;}
   .ind-m{color:var(--dim2);font-size:11px;padding:4px var(--s3) 0;line-height:1.5;}
-  #formInd{overflow:auto;padding:var(--s2) var(--s3) var(--s4);}
+  #formInd{overflow:auto;min-height:0;padding:var(--s2) var(--s3) var(--s4);}
   .campo{display:grid;grid-template-columns:1fr 96px;gap:var(--s2);align-items:center;
     padding:3px 0;font-family:var(--mono);font-size:11px;}
   .campo span{color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -195,8 +204,11 @@
     <div class="leyenda" id="legG"></div>
     <div id="panelInd">
       <h3>indicadores del proyecto</h3>
-      <div id="listaInd"></div>
-      <div id="formInd" style="color:var(--dim2);font-size:11px">
+      <div id="cuerpoInd">
+        <div class="volver" id="volverInd">← <b id="nomInd"></b><span>cambiar</span></div>
+        <div id="listaInd"></div>
+      </div>
+      <div id="formInd" style="display:none;color:var(--dim2);font-size:11px">
         Elegí un indicador. Los parámetros se generan desde su
         <code>PARAM_SPEC</code>, el espacio paramétrico declarado del kernel.
       </div>

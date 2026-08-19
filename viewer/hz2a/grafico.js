@@ -123,32 +123,29 @@ function pintarG() {
   // `gEscala.k` = zoom vertical (arrastre sobre el eje); `gEscala.c` = centro, que
   // el arrastre vertical mueve. Con `gEscala` en null la escala sigue al dato.
   if (gEscala) {
-    const autoLo = lo, autoHi = hi;
-    const semi = Math.max(1, (autoHi - autoLo) / 2 * gEscala.k);
-
-    // TOPE DEL PANEO VERTICAL. Se puede desplazar hasta llevar el precio al borde,
-    // pero NO hasta perderlo: al menos `VISIBLE_MIN` de la altura de la vista tiene
-    // que seguir conteniendo dato. Sin esto el arrastre dejaba la pantalla vacia con
-    // dos lineas de grilla, que es lo que Nico mostro en la segunda captura.
-    //
-    // Derivacion: la vista muestra [c-semi, c+semi]. Para que el dato siga entrando
-    // por abajo hace falta `autoHi >= (c-semi) + margen`; por arriba,
-    // `autoLo <= (c+semi) - margen`.
-    const VISIBLE_MIN = 0.15;
-    const margen = semi * 2 * VISIBLE_MIN;
-    const cMin = autoLo + margen - semi;
-    const cMax = autoHi - margen + semi;
-    gEscala.c = Math.max(cMin, Math.min(cMax, gEscala.c));
+    // SIN TOPE VERTICAL (Nico, 2026-08-19). El limite anterior frenaba el paneo con el
+    // precio todavia adentro, y lo que se veia en el borde parecia un corte.
+    const semi = Math.max(1, (hi - lo) / 2 * gEscala.k);
     lo = gEscala.c - semi; hi = gEscala.c + semi;
   }
+
   const X = i => pad.l + (i - a + 0.5) / m * W;
   const Y = p => pad.t + H - (p - lo) / (hi - lo) * H;
   gEje_area = { pad: pad, W: W, H: H, lo: lo, hi: hi, w: w, xEje: xEje };
 
   g.strokeStyle = cssv("--border"); g.lineWidth = 1;
   g.fillStyle = cssv("--dim2"); g.font = "10px ui-monospace,monospace"; g.textAlign = "left";
+  // Cota defensiva del numero de lineas de grilla. NO es la causa del "se corta" que
+  // reporto Nico: lo medi despues de escribirlo y con el tope puesto `lo`/`hi` estaban
+  // acotados, asi que este bucle nunca podia dispararse. Queda como guarda barata
+  // ahora que el paneo es libre y `lo`/`hi` no tienen limite, no como diagnostico.
+  //
+  // La causa real del corte era el TOPE: frenaba el paneo con parte del precio ya
+  // fuera de la pantalla, y lo que quedaba se leia como una serie cortada.
   const paso = Math.max(1, Math.round((hi - lo) / 6));
-  for (let p = Math.ceil(lo / paso) * paso; p <= hi; p += paso) {
+  const p0 = Math.ceil(lo / paso) * paso;
+  const nLineas = Math.min(40, Math.floor((hi - p0) / paso) + 1);
+  for (let k = 0, p = p0; k < nLineas; k++, p = p0 + k * paso) {
     const y = Y(p); g.beginPath(); g.moveTo(pad.l, y); g.lineTo(xEje, y); g.stroke();
     g.fillText((p * B.tick_size).toFixed(5), xEje + 6, y + 3);
   }

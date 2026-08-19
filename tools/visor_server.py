@@ -32,6 +32,7 @@ Target-free: dibuja zonas y eventos. Sin MAE/MFE, sin P&L. Holdout excluido.
 from __future__ import annotations
 
 import argparse
+import inspect
 import json
 import pathlib
 import sys
@@ -135,9 +136,13 @@ def cargar(instrumento, sesiones):
     tk = TickSeries(cols["ts"], cols["px"], cols["vol"], cols["bid"], cols["ask"],
                     cols["seq"], tick_size, instrumento, "%s_VISOR" % instrumento)
     bars = build_time_bars(tk, minutes=1)
+    # Los footprints se construyen UNA vez y viajan con la ventana: tres de los seis
+    # kernels los piden como argumento posicional y sin ellos tiran TypeError.
+    from edgelab.bridge.bars import build_footprints
+    fps = build_footprints(tk, bars)
     with _lock:
-        _cache[clave] = (tk, bars)
-    return tk, bars
+        _cache[clave] = (tk, bars, fps)
+    return tk, bars, fps
 
 
 def catalogo():
@@ -183,10 +188,8 @@ def catalogo():
     return out
 
 
-def correr_avolcluster(tk, bars, params):
+def correr_avolcluster(tk, bars, fps, params):
     """Zonas de `aVolClusterPOI` con la funcion del censo, no con una copia."""
-    from edgelab.bridge.bars import build_footprints
-    fps = build_footprints(tk, bars)
     zonas = _censo.producir_zonas(bars, fps)
     ts_ = tk.tick_size
     return [dict(id=z["zone_id"],
@@ -218,11 +221,11 @@ def aviso_de_warmup(params, sesiones):
 def correr(cuerpo):
     nombre = cuerpo["indicador"]
     sesiones = int(cuerpo.get("sesiones", 2))
-    tk, bars = cargar(cuerpo.get("instrumento", "6E"), sesiones)
+    tk, bars, fps = cargar(cuerpo.get("instrumento", "6E"), sesiones)
     if nombre == "aVolClusterPOI":
         from edgelab.bridge.indicators.avolclusterpoi import RESEARCH_DEFAULTS
         pp = {**RESEARCH_DEFAULTS, **(cuerpo.get("params") or {})}
-        zonas = correr_avolcluster(tk, bars, pp)
+        zonas = correr_avolcluster(tk, bars, fps, pp)
         return dict(indicador=nombre, n_zonas=len(zonas), n_eventos=0,
                     aviso=aviso_de_warmup(pp, sesiones),
                     params_line="# aVolClusterPOI via producir_zonas del censo H-Z2A",
@@ -232,7 +235,16 @@ def correr(cuerpo):
     if mod is None or not hasattr(mod, "run"):
         raise ValueError("indicador '%s' no esta en el REGISTRY o no expone run()" % nombre)
     params = {**getattr(mod, "DEFAULTS", {}), **(cuerpo.get("params") or {})}
-    res = mod.run(tk, bars, params=params, chart_tz=cuerpo.get("chart_tz", "UTC"))
+    # QUE ARGUMENTOS PIDE, LEIDO DE LA FIRMA -- no de una lista escrita a mano.
+    # `bigtrap2`, `avolcellpoi2` y `voltickspoc2` declaran `run(ticks, bars, footprints,
+    # ...)`; los otros tres, `run(ticks, bars, ...)`. Llamarlos a todos igual producia
+    # "TypeError: run() missing 1 required positional argument: 'footprints'", que es el
+    # error que Nico vio en pantalla. Con `inspect` un kernel nuevo funciona solo.
+    posicionales = [n for n, prm in inspect.signature(mod.run).parameters.items()
+                    if prm.kind in (prm.POSITIONAL_ONLY, prm.POSITIONAL_OR_KEYWORD)
+                    and prm.default is prm.empty]
+    args = [tk, bars] + ([fps] if "footprints" in posicionales else [])
+    res = mod.run(*args, params=params, chart_tz=cuerpo.get("chart_tz", "UTC"))
     # Los kernels devuelven `top`/`bottom` en PRECIO. El chart trabaja en TICKS
     # ENTEROS. La conversion se hace ACA y no en la pagina: las unidades son
     # exactamente donde se cuelan los errores, y el servidor es el unico lado que
