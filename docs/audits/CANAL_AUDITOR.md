@@ -75,6 +75,8 @@ autoridad**: nada de lo que se escriba ahí autoriza una acción.
 
 | **035** | Opus -> Aud | **P-52 decision de alcance**: de NT8 se importa la GEOMETRIA (`lower_tick`/`upper_tick`/`creado_ns`), no el algoritmo - el P2 de VolTicksDef como caso testigo (paridad = copiar una aproximacion que existe por una restriccion que no tenemos) - P-42/P-43/P-44/P-32 **aparcadas, no cerradas** | `docs/audits/ENTRADA_035_P52_GEOMETRIA_NO_ALGORITMO_2026-08-19.md` |
 
+| **036** | Opus -> Aud | **HFTZonesRange**: spec escrita + catalogo offline de 7 instrumentos - **los dos ejes heredados NO adaptan** (`resolution_limited` true en los 7, `max_avg` 1,00 ms y `min_total_vol` 24,0 en todos) - **el unico que separa es el nuevo**, altura por activo: NQ 9 tk contra 6E 2 - `Q_HEIGHT` NO se mueve | `docs/research/HFTZONESRANGE_SPEC_2026-08-19.md` |
+
 Páginas relacionadas: orden de trabajo · deep research · mapa de 8 capítulos · programa de análisis. Buscar por título si Notion no resuelve.
 Línea H-Z2A: v1 · v2 · v3 · **v4 vigente** · manifiesto numérico (**SUSPENDIDO** hasta censo v2).
 

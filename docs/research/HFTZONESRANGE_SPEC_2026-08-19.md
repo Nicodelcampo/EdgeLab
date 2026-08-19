@@ -177,3 +177,65 @@ observación.
 
 **Aporte al referente:** adaptar es congelar escalas del activo. Elegir umbrales
 mirando el dibujo no es calibrar.
+
+
+---
+
+# Resultado del catálogo offline — 2026-08-19
+
+`docs/research/hftzones_calib_catalog.json` · 7 instrumentos, 289–331 sesiones cada uno.
+
+| inst | `eff_min_sweep_ticks` | p25–p75 | `eff_max_avg_ms` | `eff_min_total_vol` | `resolution_limited` |
+|---|---|---|---|---|---|
+| 6E | **2** | 2–2 | 1,00 | 24,0 | **True** |
+| 6J | **2** | 2–2 | 1,00 | 24,0 | **True** |
+| ES | **2** | 2–2 | 1,00 | 24,0 | **True** |
+| ZB | **2** | 2–2 | 1,00 | 24,0 | **True** |
+| YM | 3 | 2–3 | 1,00 | 24,0 | **True** |
+| GC | 5 | 4–6 | 1,00 | 24,0 | **True** |
+| NQ | **9** | 7–11 | 1,00 | 24,0 | **True** |
+
+## Los dos ejes heredados NO adaptan nada
+
+**`eff_max_avg_ms = 1,00` en los siete.** `resolution_limited = True` en todos: la
+mediana del intervalo inter-tick es **0 ms**, así que los tres cuantiles de velocidad
+colapsan contra el piso `max(1.0, …)`. El kernel ya declara esta condición — lo nuevo
+es su consecuencia: **la compuerta de velocidad queda en «≤ 1 ms» para todo, que es lo
+contrario de adaptarse.**
+
+**`eff_min_total_vol = 24,0` en los siete**, porque la mediana de volumen por tick es
+**1 contrato** en todos: `3,0 × 1 × 8 = 24`. El multiplicador de mediana no discrimina
+cuando la mediana es la unidad mínima en todos lados.
+
+## El único eje que adapta es el nuevo
+
+`eff_min_sweep_ticks` va de **2 (6E, 6J, ES, ZB)** a **9 (NQ)**, con p25–p75 que no se
+pisan entre NQ (7–11) y el resto. Es exactamente lo que la observación *«5 ticks de ES
+≠ 5 ticks de 6J»* predecía, y es lo único que separa instrumentos en este store.
+
+**El piso `H_FLOOR = 2` liga en 4 de 7.** `Q(h1s, 0,90) ≤ 2` para 6E, 6J, ES y ZB.
+
+## Lo que NO se hace con esto
+
+**No se mueve `Q_HEIGHT` para que los otros se separen.** Está declarado en §4.2 de
+esta misma spec, escrita antes de correr el calibrador. Bajarlo ahora porque el
+resultado «quedó chato» es elegir el umbral después de ver el número — literalmente la
+prohibición de §4.4.
+
+**Tampoco se toca la fórmula de velocidad.** Que `resolution_limited` sea universal es
+un hecho **del store**, no del criterio: los timestamps de estos parquets no separan
+por debajo del milisegundo (concuerda con P-28, donde `sequence` resultó ser índice de
+fila y no secuencia del exchange).
+
+## La pregunta que queda abierta, para Nico y el auditor
+
+Si la velocidad no discrimina en este store, hay tres caminos y **ninguno es mío**:
+
+1. **Aceptarlo**: la compuerta de velocidad queda efectivamente desactivada y el
+   indicador se apoya en altura + volumen. Declararlo, no disimularlo.
+2. **Cambiar la unidad**: medir velocidad en **ticks por unidad de tiempo** en vez de
+   ms entre ticks, que no depende de la resolución del timestamp.
+3. **Conseguir timestamps con resolución real**, que toca el frente de datos y no el
+   del indicador.
+
+Es una decisión de definición, igual que P-45. **No se resuelve bajando un cuantil.**
