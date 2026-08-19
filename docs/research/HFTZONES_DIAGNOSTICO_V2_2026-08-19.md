@@ -1,7 +1,7 @@
 # Diagnóstico v2 del store — HFTZonesRange
 
 - **2026-08-19** · reemplaza `hftzones_calib_catalog.json` (`19e8713`, **SUPERSEDED**)
-- Artefacto: `docs/research/hftzones_diagnostico_v2.json`
+- Artefactos: `hftzones_diagnostico_v2.json` · **`hftzones_diagnostico_v2_1.json`** (vector completo del sampler + procedencia corregida)
 - **HFTZonesRange congelado**: no se tocó `Q_HEIGHT`, `H_FLOOR`, `MinPasos` ni ningún
   umbral. El indicador **no** se implementó.
 
@@ -40,17 +40,66 @@ de la mitad de sus sesiones con resolución utilizable.**
 `max(1, …)` lo fija en 1 ms **incluso en YM**, donde `p50 = 4`. La causa del «1,00
 universal» estaba en el cuantil 15, no en la mediana.
 
+### 1.b El eje temporal **no** es enteramente constante
+
+| | 6E | 6J | ES | GC | NQ | **YM** | ZB |
+|---|---|---|---|---|---|---|---|
+| `eff_max_avg_ms` | 1 | 1 | 1 | 1 | 1 | 1 | 1 |
+| `eff_max_total_ms` | 16 | 16 | 16 | 16 | 16 | 16 | 16 |
+| **`eff_max_pausa_ms`** | 5 | 5 | 5 | 5 | 5 | **20** | 5 |
+
+**Conclusión precisa:** los umbrales derivados de `q2`/`q5`/`q15` **colapsan** contra su
+piso `max(1, …)`; el umbral de **pausa**, derivado de `p50`, **conserva adaptación
+parcial en YM** (20 ms contra 5). Decir que «todo el eje temporal es constante» era
+demasiado amplio.
+
 ## 2. Integridad: limpia
 
 **0 `dt` negativos** y **0 sesiones no monótonas** sobre 1.793 sesiones. El filtro del
 kernel (`0 <= ms <= …`) y el que usaba el calibrador (`ms <= …`) coinciden **en estos
 datos** — pero eso había que medirlo, no suponerlo.
 
-## 3. Muestra completa vs sampler del kernel: idénticos en los 7
+## 3. Muestra completa vs sampler — **NO son idénticos: NQ discrepa**
 
-`dif_max_avg_ms_max = 0` y `dif_min_total_vol_max = 0` en todos. La decimación por
-stride no cambia estos cuantiles en este store. Ahora **sí** se puede decir «la misma
-calibración», porque se comparó.
+v2 declaró `identicos = true` comparando **sólo** `eff_max_avg_ms` y
+`eff_min_total_vol` — **justamente los dos campos saturados por sus pisos**, que
+coinciden casi por construcción. No miraba `eff_max_pausa_ms`, ni `p50`, ni
+`resolution_limited`: precisamente donde YM conserva variación.
+
+**v2.1 compara los 10 campos, y aparece la discrepancia** (`hftzones_diagnostico_v2_1.json`):
+
+| campo | 6E | 6J | ES | GC | **NQ** | YM | ZB |
+|---|---|---|---|---|---|---|---|
+| `eff_predator/ultra/max_avg/max_total` | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| `eff_min_total_vol` · `eff_min_vol_rate` · `_median_vol` | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| **`_p50_ms`** | 0 | 0 | 0 | 0 | **4** | 0 | 0 |
+| **`eff_max_pausa_ms`** | 0 | 0 | 0 | 0 | **15** | 0 | 0 |
+| **sesiones con `resolution_limited` distinto** | 0 | 0 | 0 | 0 | **2** | 0 | 0 |
+
+**En 2 de 263 sesiones de NQ (0,76 %), la decimación cambia `p50` hasta 4 ms, mueve
+`eff_max_pausa_ms` hasta 15 ms, y llega a invertir el flag `resolution_limited`.**
+
+Consecuencia concreta: **el indicador en vivo y una calibración offline con muestra
+completa pueden estar en desacuerdo sobre si una sesión está limitada por resolución.**
+No es un detalle de precisión — es un flag que decide comportamiento.
+
+**Y no es «más decimación, más divergencia».** ES tiene el stride más agresivo
+(4, con 182.654 muestras de 922.342 ticks) y **cero** discrepancias; NQ tiene stride 2 y
+sí discrepa. Lo que importa es que NQ tiene sesiones con `p50` justo en la frontera
+`0 / no-0`, y la decimación la cruza.
+
+| | 6E | 6J | ES | GC | NQ | YM | ZB |
+|---|---|---|---|---|---|---|---|
+| stride mediano | 1 | 1 | **4** | 1 | 2 | 1 | 1 |
+| muestra / total | 57k/57k | 44k/44k | 183k/**922k** | 116k/116k | 191k/464k | 72k/72k | 106k/106k |
+
+**Lo que v2 probó realmente:** los dos umbrales saturados coinciden. **Lo que v2.1
+prueba:** los otros ocho campos coinciden en 6 de 7 instrumentos, y **NQ no**. La
+afirmación «es la misma calibración» queda **retirada**.
+
+*Límite declarado:* el artefacto registra **cuántas** sesiones discrepan, no en qué
+dirección (si el sampler declara `limited` donde la muestra completa no, o al revés).
+Se puede agregar si hace falta.
 
 ## 4. Timestamps repetidos: la escala del problema
 
@@ -63,31 +112,42 @@ calibración», porque se comparó.
 intervalos son exactamente 0. Cualquier medida de velocidad sobre este reloj está
 midiendo la resolución del registro, no el mercado.
 
-## 5. Volumen: la estadística es degenerada
+## 5. Volumen: lo degenerado es **la fórmula**, no la distribución
 
-`frac(volume == 1)` va de **67 % (ZB, 6J)** a **96 % (NQ, YM)**, y los cuantiles altos
-separan poco: `q99` va de 3 (NQ, YM) a 37 (ZB).
+`frac(volume == 1)` va de **67 % (ZB, 6J)** a **96 % (NQ, YM)**; `q99` va de **3**
+(NQ, YM) a **37** (ZB).
 
-Que la impresión mediana sea 1 contrato en todos los futuros **es plausible** — el flujo
-viene fragmentado. El error fue esperar que `3 × mediana × 8` distinguiera instrumentos:
-el tamaño contractual de ES o 6E no implica que su **impresión** mediana difiera. Los
-siete dan 24 y **no es un error de cálculo: es una estadística que no sirve para este
-fin.**
+**Conclusión acotada:** `3 × mediana(volume) × 8` no discrimina **porque la mediana
+queda en 1 en todos**. Eso **no demuestra** que otros estadísticos de volumen tampoco
+discriminen — la distribución sí cambia entre instrumentos, y decir «separa poco» sin
+una prueba adicional sería afirmar de más.
 
-## 6. Altura: el único eje que separa, con su letra chica
+**Y los dos «pisos» no son equivalentes**: el de tiempo es un piso **explícito de
+código** (`max(1, q15)`); el de volumen es una **masa empírica en la unidad mínima**, no
+un `max()`. La invariancia ante el cambio de segmentación es un **resultado observado en
+esta corrida**, no una propiedad del método.
+
+## 6. Altura: variación cross-asset visible, pero **adaptación parcial y saturada**
 
 | inst | `sweep` | sesiones pegadas a `H_FLOOR` |
 |---|---|---|
 | 6E · 6J · ZB | 2 | **100 %** |
 | ES | 2 | 83 % |
-| YM | 3 | 37 % |
+| **YM** | **3** | **37 %** |
 | GC | 5 | 9 % |
 | NQ | **9** | **0 %** |
 
-Sólo **GC y NQ** están genuinamente por encima del piso. En 6E, 6J y ZB el valor es
-`H_FLOOR` en **todas** las sesiones: el eje no está midiendo la escala del activo, está
-devolviendo la constante. **Eso no se arregla bajando `Q_HEIGHT`** — sería elegir el
-umbral después de ver el resultado.
+**Redacción corregida (auditor, 2026-08-19).** La altura es el único eje con variación
+cross-asset visible, pero su adaptación es **parcial y está saturada en parte del
+universo**. La configuración mediana forma **cuatro grupos**: 2 para 6E/6J/ES/ZB, 3 para
+YM, 5 para GC y 9 para NQ. **No distingue** 6E, 6J, ES y ZB por su valor final;
+6E/6J/ZB están pegados al piso en **todas** las sesiones, mientras que **YM, GC y NQ sí
+quedan mayoritariamente por encima**.
+
+> **Retracto mi propia corrección anterior.** Después de publicar esto escribí que la
+> altura «separa sólo GC y NQ». Es falso y **el propio artefacto lo contradice**: YM
+> está en el piso en el 37 % de sus sesiones, o sea **mayoritariamente por encima**.
+> Me pasé primero por exceso y después por defecto sobre el mismo número.
 
 ## 7. Diff viejo → v2
 
@@ -112,6 +172,11 @@ detector «HFT»**.
 
 ## 9. Nota de método
 
-`medicion_comprometida = false` significa **árbol de trabajo limpio**. No significa que
-la medición sea metodológicamente válida — el catálogo viejo lo tenía en `false` y
-estaba mal segmentado. El artefacto v2 lo dice en su propia procedencia.
+**Corregido.** `medicion_comprometida = false` **no** significa árbol limpio: significa
+que no hay archivos sucios **dentro del alcance declarado** (`edgelab/`, `diag/`). Esta
+misma corrida tenía `archivos_sucios: ["viewer/hz2a/grafico.js"]` con el flag en
+`false` — o sea que la nota original del artefacto **se contradecía con el campo de al
+lado**. Ahora el artefacto declara su alcance y lista también los no trackeados.
+
+Y sigue valiendo lo otro: tampoco significa que la medición sea metodológicamente
+válida. El catálogo viejo lo tenía en `false` y estaba mal segmentado.

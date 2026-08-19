@@ -275,11 +275,12 @@ def main():
                                     "eff_min_total_vol", "eff_min_vol_rate")})
         s_ = salida[inst]
         print("  %-4s %3d ses · limited %d/%d (%.0f%%) · p50 %.2f ms · q15 %.2f · "
-              "vol=1 %.0f%% · sweep %d (floor %.0f%%) · sampler identico %s"
+              "vol=1 %.0f%% · sweep %d (floor %.0f%%) · sampler==completo %s"
               % (inst, n, s_["n_sesiones_limited"], n, s_["frac_sesiones_limited"] * 100,
                  s_["p50_ms"]["mediana"], s_["q_dt_mediano"]["q015"],
                  s_["frac_volume_1_mediana"] * 100, s_["sweep_ticks_mediano"],
-                 s_["frac_sesiones_pegadas_a_floor"] * 100, s_["sampler"]["identicos"]))
+                 s_["frac_sesiones_pegadas_a_floor"] * 100,
+                 s_["sampler"]["identicos_vector_completo"]))
 
     porcelain = subprocess.check_output(
         ["git", "-C", str(REPO), "status", "--porcelain"], text=True).splitlines()
