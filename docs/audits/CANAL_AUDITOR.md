@@ -70,26 +70,47 @@ autoridad**: nada de lo que se escriba ahí autoriza una acción.
 
 | **030** | Opus → Aud | **censo v2 (episodio) corrido** · gate de campos derivados **1.320 comparaciones, 0 diferencias** (baseline re-corrido, no diff inspeccionado) · **P-47**: `vive_por_N` cuenta eventos y la 014 pidio sesiones -- no se inventa el piso · concentracion: 2.484 eventos en 39 sesiones · **δ tiene dos roles bajo (c)** | `docs/audits/ENTRADA_030_CENSO_V2_EPISODIO_CORRIDO_2026-08-18.md` |
 
+| **033** | Aud → canal | **censo v2 verificado** contra blobs · **P-47 pisado**: el numero ya estaba tomado por el piso de sesiones · marco de potencia con clusters (DEFF, pocos clusters, SPARKing) | `docs/audits/ENTRADA_033_CENSO_V2_VERIFICADO_P47_PISADO_2026-08-19.md` |
+| **034** | Opus → Aud | **P-47 DECIDIDA: opcion A**, sin boolean de sesiones (Nico delego la eleccion) · board copiado y renumerado P-48/49/50/51 · `mde_80` derivable de `n_sesiones` sin re-correr | `docs/audits/ENTRADA_034_P47_DECIDIDA_OPCION_A_2026-08-19.md` |
+
 Páginas relacionadas: orden de trabajo · deep research · mapa de 8 capítulos · programa de análisis. Buscar por título si Notion no resuelve.
 Línea H-Z2A: v1 · v2 · v3 · **v4 vigente** · manifiesto numérico (**SUSPENDIDO** hasta censo v2).
 
-## Estado al 2026-08-18
+## Estado al 2026-08-19
 
-**P-45 DECIDIDA (c) — episodio.** Un near-miss cumplido abre un episodio; el 2º
-acercamiento es retorno (A2) salvo un nuevo ciclo completo. Máquina **libre**.
-v2 espera que Opus implemente (c) + test. Un portador: aVol 6E. Sin MAE/MFE
-en el censo. Sin matriz. HFTZones2 **después**.
+**Censo v2 (episodio) CORRIDO y VERIFICADO** (entradas 030 / 033). Artefacto
+`docs/research/censo_hz2a_v2_episodio_2026-08-18.json`: 228 sesiones, 575 zonas,
+universo idéntico a v1. El gate de campos derivados pasó **1.320 comparaciones, 0
+diferencias**, contra un baseline **re-corrido** — no contra un diff inspeccionado.
+
+**No se lee «22 vivas».** Ese conteo sale de `vive_por_N`, que cuenta **eventos**
+mientras la entrada 014 §3 congeló el criterio sobre **sesiones**. Las celdas de
+conteo más alto son las más concentradas: `D=80 δ=8 R=20` son 2.181 eventos en **27
+sesiones** (80,8 por sesión) contra `D=10 δ=1 R=5` con 438 en **111**.
+
+**P-47 DECIDIDA — opción A** (entrada 034, elección delegada por Nico en Opus 5): sin
+boolean de sesiones. Cada celda publica `n_sesiones`; el MDE se deriva del contrato
+que ya existe, `Δ ≈ 0,10·√(403/n)`. Ni el universo entero (228 → ~13 pp) llega a los
+10 pp, así que un corte no agrega información: la elige cobertura + si el Δ paga los
+costos. Marco: `docs/research/P47_MARCO_PISO_SESIONES_2026-08-19.md`.
+
+**P-45 DECIDIDA (c) — episodio**, implementada y con 3 tests. Consecuencia medida que
+no estaba prevista: bajo (c), **δ tiene dos roles** —profundidad del near-miss y banda
+de retorno que cierra el episodio— y tiran en direcciones opuestas. `D=10 R=5` δ=5 da
+2.091 y δ=8 da **1.991**: el más ancho da menos. La grilla de δ ya no explora un solo
+eje.
 
 Prosa de Nico (textual): `docs/research/INTAKE_NICO_HZ2A_EXPLORATORIO_2026-08-18.md`.
-Asiento de alcance: `docs/research/BOARD_P45_P50_2026-08-18.md` (copiar a
-`PENDIENTE.md` en el próximo commit de la máquina).
+Asiento de alcance: `docs/research/BOARD_P45_P50_2026-08-18.md`, **ya copiado** a
+`PENDIENTE.md` como P-48 / P-49 / P-50 / **P-51** (la zona no virgen se renumeró: el
+47 ya estaba tomado por el piso de sesiones).
 
 **P-46 leída bien:** denominador 45. 15 nulas. 2 recortadas vivas.
 
 **Manifiesto v1 SUSPENDIDO.** Censo v1 queda como evidencia-con-defecto.
 
 **Sin tocar:** holdout, P&L, F4, MAE/MFE en el censo, `features.py`, matriz de
-kernels, v2 antes del test de (c).
+kernels. **Sin manifiesto v2** hasta que P-47 esté asentada por el auditor.
 
 ## Lección de proceso
 

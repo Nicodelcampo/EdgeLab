@@ -1351,3 +1351,87 @@ publica `criterio_N="eventos"` y `eventos_por_sesion` por celda, y nada más.
 
 **Qué hace falta:** pre-registrar el piso de sesiones **antes** de volver a mirar la
 tabla, con su derivación, como se hizo con el 403. Decide Nico con el auditor.
+
+
+---
+
+## P-47 — DECISIÓN: **opción A, sin boolean de sesiones**
+
+**Decidida 2026-08-19.** Nico delegó explícitamente esta elección en Opus 5
+(«con respecto a las opciones, quiero que elijas vos»). Marco:
+`docs/research/P47_MARCO_PISO_SESIONES_2026-08-19.md`.
+
+**Elijo A.** No hay «celda viva» por sesiones. Cada celda publica `n_sesiones`, y el
+MDE se deriva del contrato que ya existe: `Δ ≈ 0,10 × √(403 / n_sesiones)`. La
+configuración central se elige por **cobertura** y por si el Δ detectable **paga los
+costos** (~3,9 ticks RT en 6E), no por un corte.
+
+**Las cuatro razones, en orden de peso:**
+
+1. **B exige inventar un Δ, y eso no me lo delegó nadie.** Nico delegó elegir entre A
+   y B, no fijar el objetivo científico del proyecto. Escribir un Δ ahora sería el
+   mismo pecado que P-47 existe para impedir, un nivel más arriba.
+2. **Un boolean no agrega información; la destruye.** Con `Δ ≈ 0,10·√(403/n)`, ni el
+   universo entero (228 sesiones → **~13 pp**) llega a los 10 pp del contrato. Un
+   corte trazado en cualquier lado entre 20 y 228 no dice nada que `n_sesiones` no
+   diga ya, y colapsa un continuo en pasa/no-pasa.
+3. **Un boolean nuevo duplicaría el defecto que estamos arreglando.** `vive_por_N` ya
+   es una etiqueta derivada que se lee **en vez de** la cantidad, y viaja sola. Sumar
+   una segunda multiplica el problema en vez de resolverlo.
+4. **La pregunta económica no es «vive la celda»**, es si el Δ detectable paga la
+   fricción. Eso es una comparación contra un costo —un número— no un umbral sobre N.
+
+**Consecuencia operativa.** `vive_por_N` queda como está (`eventos >= 403`) con su
+`criterio_N="eventos"` al lado, y **no se lee como veredicto**. El MDE por celda es
+función determinística de `n_sesiones`, que el artefacto ya publica: se puede derivar
+sin re-correr. Bakear `mde_80` en el runner queda para la próxima corrida, no
+justifica una hoy.
+
+**Lo que esto NO decide:** el Δ objetivo del proyecto, el presupuesto de multiplicidad
+(`N_eff = 71`, ya escrito) y la configuración central del manifiesto v2. Siguen siendo
+de Nico.
+
+---
+
+## P-48 — abrir `HFTZones2` como segundo portador
+
+**Estado:** DECIDIDA la apertura; **secuenciada después** del censo v2 en aVol 6E.
+
+v4 lo dejó fuera del portador inicial (paridad fuerte, canon formal pendiente).
+Nico: «abramos hftzones2». El criterio de cómputo impide hacerlo en la misma corrida
+que v2. P-43 (residual GC) y P-32 (canon formal) siguen abiertas.
+
+---
+
+## P-49 — «firma»: near-miss + el resto, en conjunto
+
+**Estado:** ABIERTA. Campaña **posterior** a tener población.
+
+Primero capa 1 (geometría). Después se pregunta en qué zonas coinciden imbalance,
+saldado, tendencia, no-virgen. **No se busca la firma eligiendo gráficos.**
+
+---
+
+## P-50 — tendencia «saludable»: spec ahora, no corrida
+
+**Estado:** ABIERTA. F9 sigue **pausada** para correr detectores nuevos.
+
+Nico: «que empiece ahora». Empieza el **spec** — definición falsable de escalón /
+liquidación / fakeout — no un barrido sobre datos. Correrlo ahora compite con v2 y
+reabre F9.
+
+---
+
+## P-51 — la zona no tiene que ser virgen (umbrales de invalidación)
+
+**Estado:** ABIERTA. **No entra en la primera corrida de v2.**
+
+*(Era el «P-47» de `docs/research/BOARD_P45_P50_2026-08-18.md`. Renumerada acá porque
+P-47 ya es el piso de sesiones — dos cosas distintas no comparten número.)*
+
+Nico: un atravesamiento corto en tiempo, distancia o volumen podría no invalidar. Hoy
+v4 cond. 2 y el censo exigen **cero trades** en `[L,U]` antes del giro.
+
+**La primera corrida de v2 sigue virgen.** Relajar el predicado **cambia la
+población**, así que se revisa después, con alternativas escritas (tiempo / ticks /
+volumen) antes de tocar nada.
