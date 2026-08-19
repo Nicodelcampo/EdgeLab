@@ -3,7 +3,7 @@
 Índice aditivo. **No mueve** archivos existentes de `docs/`. Si este archivo y una página de Notion divergen, **manda el repo**.
 
 Generado: 2026-08-17 · HEAD de referencia: `f247e797a28ee441ceb50e9efb447709b04d0f02`
-Actualizado: 2026-08-18 (entradas 015–025)
+Actualizado: 2026-08-18 (entradas 015–027)
 
 ## Niveles
 
@@ -18,6 +18,8 @@ Actualizado: 2026-08-18 (entradas 015–025)
 
 | Fecha | Actualidad | Nivel | Categoría | Título | Repo | Snapshot |
 |---|---|---|---|---|---|---|
+| 2026-08-18 | vigente | L1_linea | canal | Entrada 027 — el break cierra; P-45 bloquea v2; P-46 son 15 nulas | `docs/audits/ENTRADA_027_AUDITORIA_026_P45_P46_2026-08-18.md` | — |
+| 2026-08-18 | vigente | L1_linea | canal | Entrada 026 — dos causas de la no-anidación; P-45 y P-46 | `docs/audits/ENTRADA_026_DOS_CAUSAS_DE_LA_NO_ANIDACION_2026-08-18.md` | — |
 | 2026-08-18 | vigente | L1_linea | canal | Entrada 025 — auditoría del fix: GO condicional a censo v2 | `docs/audits/ENTRADA_025_AUDITORIA_FIX_GO_CONDICIONAL_2026-08-18.md` | — |
 | 2026-08-18 | vigente | L1_linea | programa | Ledger de costos — capítulo 3 **v1** | `docs/research/LEDGER_COSTOS_CAP3_2026-08-18.md` | — |
 | 2026-08-18 | vigente | L1_linea | canal | Entrada 024 — el push del fix no llegó a origin; inventario GEX | `docs/audits/ENTRADA_024_FIX_NO_ESTA_EN_ORIGIN_E_INVENTARIO_GEX_2026-08-18.md` | — |
@@ -32,7 +34,7 @@ Actualizado: 2026-08-18 (entradas 015–025)
 | 2026-08-18 | con defecto | L2_contexto | medicion | Censo H-Z2A superficie **v1** (defecto del `argmin`) | `docs/research/censo_hz2a_superficie_2026-08-18.json` | — |
 | 2026-08-18 | vigente | L2_contexto | medicion | Neutralidad de memoria del censo (antes / después) | `docs/research/censo_neutralidad_memoria_despues_2026-08-18.json` | — |
 | 2026-08-18 | vigente | L1_linea | programa | Plan · ruta a una cuenta | `docs/PLAN_RUTA_A_UNA_CUENTA_2026-08-18.md` | — |
-| 2026-08-17 | vigente | L0_entrada | board | PENDIENTE — decisiones abiertas (P-01…P-44) | `PENDIENTE.md` | — |
+| 2026-08-18 | vigente | L0_entrada | board | PENDIENTE — decisiones abiertas (P-01…P-46) | `PENDIENTE.md` | — |
 | 2026-08-17 | vigente | L0_entrada | canal | Canal Opus 5 ↔ Auditor — índice | `docs/audits/CANAL_AUDITOR.md` | — |
 | 2026-08-17 | vigente | L0_entrada | trazabilidad | TRACEABILITY / CURRENT | `docs/CURRENT.md` | — |
 | 2026-08-16 | vigente | L0_entrada | referente | NORTH STAR | `docs/NORTH_STAR.md` | — |

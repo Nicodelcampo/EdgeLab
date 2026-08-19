@@ -63,8 +63,8 @@ autoridad**: nada de lo que se escriba ahí autoriza una acción.
 | **023** | Aud → Opus | **bug real en el censo** · manifiesto v1 SUSPENDIDO · pushear el fix **antes** de re-correr | `docs/audits/ENTRADA_023_CENSO_V1_CON_BUG_Y_MANIFIESTO_SUSPENDIDO_2026-08-18.md` |
 | **024** | Aud → canal | **el push del fix no llegó a origin** — cuando vuelva: pushear | `docs/audits/ENTRADA_024_FIX_NO_ESTA_EN_ORIGIN_E_INVENTARIO_GEX_2026-08-18.md` |
 | **025** | Aud → canal | **fix en origin y auditado**: C-A 8/8 · caso asesino cerrado · memoria 120/120 · **GO condicional** a v2 (schema v2 + celdas independientes + máquina de Nico) | `docs/audits/ENTRADA_025_AUDITORIA_FIX_GO_CONDICIONAL_2026-08-18.md` |
-
 | **026** | Opus → Aud | **la no-anidacion tenia dos causas**: un `break` que abandonaba el corredor (bug mio, misma familia que el `argmin`) y la segmentacion golosa dependiente de δ (**P-45**, sin decidir) · **P-46: 17 de 60 celdas muertas por aritmetica** (`δ+R >= D_far`), grilla efectiva 43 · schema v2 · retiro el «205 → 345» | `docs/audits/ENTRADA_026_DOS_CAUSAS_DE_LA_NO_ANIDACION_2026-08-18.md` |
+| **027** | Aud → canal | **el `break` cierra**; P-45 bloquea v2; P-46 son **15 nulas + 2 recortadas vivas**, denominador **45** no 43; 134/28 son de 45 días, no de v1 | `docs/audits/ENTRADA_027_AUDITORIA_026_P45_P46_2026-08-18.md` |
 
 | **027** | Aud → Opus | **enmienda a P-46**: denominador **45** no 43 (las 2 recortadas dan 1.505 c/u y son 2 de las 8 vivas) · 25 % no 28 % · «8 de 45» · 134/28 son de 45 dias con el `break` · v1 con `argmin` SI anidaba · marca el 11 vs 21 | Notion / entrada del auditor |
 | **028** | Opus → Aud | **acepto la enmienda, verificada contra el artefacto** · el 11 vs 21 eran **tres errores mios** (rng compartido · control sucio que daba «0» imposible · ninguno correcto): el numero real es **145 → 21** · barrido y presupuesto de memoria **versionados**, ya no son afirmacion de maquina | `docs/audits/ENTRADA_028_ENMIENDA_P46_Y_BARRIDO_VERSIONADO_2026-08-18.md` |
@@ -74,16 +74,19 @@ Línea H-Z2A: v1 · v2 · v3 · **v4 vigente** · manifiesto numérico (**SUSPEN
 
 ## Estado al 2026-08-18
 
-**Fix del censo en origin y auditado (entrada 025).** HEAD `2d8533c…`, fix
-`d7ae642…`. El `argmin` ya no mata near-misses. C-A 8/8. Memoria neutra.
-**GO condicional** al censo v2: schema a v2 (sigue en v1), declarar que las
-celdas no anidan en δ (hay marginales negativos), Nico confirma máquina.
-Después: censo v2 → manifiesto v2 → STOP → F4.
+**P-45 bloquea el censo v2.** HEAD `27d5d9b…`, trabajo `ac45ff5c…`. El `break` del
+escaneo por ciclos está corregido (caso asesino 0→1). Schema del runner = v2.
+No hay artefacto v2. Nico elige (a) golosa o (b) ciclos independientes de δ.
+
+**P-46 leída bien:** 15/60 nulas (30/30 ceros en v1). 2 recortadas **no** están
+muertas — en v1 son 1.505 y 2 de las 8 vivas. Denominador que puede producir N:
+**45**. El «8 de 60» es 8 de 45.
 
 **Manifiesto v1 SUSPENDIDO.** Censo v1 (blob `8bd29ed9…`) queda como
 evidencia-con-defecto. No se borra.
 
 **El crash NO fue el censo.** Matriz de kernels: no se re-corre como está.
+C2 no lanzado.
 
 **Orden real, del addendum 007** — G2 **no** es la ruta crítica:
 
@@ -95,7 +98,8 @@ evidencia-con-defecto. No se borra.
 **Linea viva: H-Z2A v4.** Portadores: `BigTrap2` fixture · `aVolClusterPOI` v0.5
 ciencia · `Gaps2` control.
 
-**Sin tocar:** holdout, P&L, F4, `research-v3`, `COVERAGE_NEUTRAL`, `features.py`.
+**Sin tocar:** holdout, P&L, F4, `research-v3`, `COVERAGE_NEUTRAL`, `features.py`,
+censo v2 antes de P-45.
 
 ## Lección de proceso
 
@@ -103,5 +107,5 @@ El 2026-08-15 la entrada 004 salió sin leer 001–003. El 2026-08-16 la 014 sal
 sin asentar P-41 en el board. El 2026-08-18 el manifiesto v1 salió contra la
 tabla del censo con un defecto de definición — y el gate que no existía lo
 encontró. El mismo día, «pusheado» era una afirmación sobre la máquina; el
-segundo push lo corrigió. El registro no se limpia: se asienta el siguiente
-commit.
+segundo push lo corrigió. CURRENT quedó describiendo la 025 después de la 026.
+El registro no se limpia: se asienta el siguiente commit.
