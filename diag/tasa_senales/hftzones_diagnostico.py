@@ -56,7 +56,7 @@ from edgelab.bridge.indicators.hftzones2 import DEFAULTS, _Sampler  # noqa: E402
 from edgelab.data.nt8_contract import INSTRUMENT_SPECS  # noqa: E402
 from edgelab.kaggle.sessions_cme import session_bounds_utc_ns, trade_date_ymd  # noqa: E402
 
-SCHEMA_VERSION = "hftzones_diagnostico_v2_2_discrepancias_con_direccion"
+SCHEMA_VERSION = "hftzones_diagnostico_v2_3_denominador_homogeneo"
 
 # CONGELADOS. Se citan para poder reproducir la cuenta, NO se tocan (P-47 / §4.4).
 H_FLOOR = 2
@@ -169,8 +169,22 @@ def diagnosticar_sesion(ts, px, vol, min_pasos):
 
     return dict(
         n_ticks=len(ts), n_dt_negativos=n_neg, monotona=bool(n_neg == 0),
-        frac_dt_cero_muestreada=float(np.mean([1.0 if x == 0 else 0.0 for x in sm.vals])
-                                      if sm.vals else 0.0),
+        # DENOMINADOR HOMOGENEO (v2.3). `frac_dt_cero` se calculaba sobre TODOS los dt,
+        # incluidos los > pause_exclude_ms, mientras `p50` sale de `ms`, que ya esta
+        # filtrado. Comparar 0,4845 contra 0,5010 era comparar dos denominadores
+        # distintos. Se publican las dos fracciones sobre `ms`, con numerador y
+        # denominador explicitos.
+        frac_ms_cero_completa=float(np.mean(ms == 0)) if len(ms) else 0.0,
+        n_ms_cero_completa=int((ms == 0).sum()), n_ms_completa=int(len(ms)),
+        frac_ms_cero_sampler=(float(sum(1 for x in sm.vals if x == 0)) / len(sm.vals))
+        if sm.vals else 0.0,
+        n_ms_cero_sampler=int(sum(1 for x in sm.vals if x == 0)),
+        n_ms_sampler=int(len(sm.vals)),
+        # criterio EXACTO de `quantile_exact`: idx = ceil(q*n)-1, o sea que la mediana es
+        # 0 cuando n_ceros >= ceil(n/2). NO es "mas del 50%": con n par, exactamente la
+        # mitad ya alcanza.
+        umbral_ceros_p50_cero_completa=int(-(-len(ms) // 2)),
+        umbral_ceros_p50_cero_sampler=int(-(-len(sm.vals) // 2)) if sm.vals else 0,
         frac_dt_cero=float((dt == 0).mean()),
         q_dt={("q%03d" % int(q * 100)): quantile_exact(ms_ord, q) for q in CUANTILES_DT},
         frac_vol_1=float((vol == 1).mean()),
@@ -251,8 +265,14 @@ def main():
                 max_pausa_sampler=m_["eff_max_pausa_ms"],
                 resolution_limited_completo=c_["_resolution_limited"],
                 resolution_limited_sampler=m_["_resolution_limited"],
-                frac_dt_cero_completa=round(s["frac_dt_cero"], 6),
-                frac_dt_cero_muestreada=round(s["frac_dt_cero_muestreada"], 6),
+                frac_ms_cero_completa=round(s["frac_ms_cero_completa"], 6),
+                frac_ms_cero_sampler=round(s["frac_ms_cero_sampler"], 6),
+                n_ms_cero_completa=s["n_ms_cero_completa"],
+                n_ms_completa=s["n_ms_completa"],
+                n_ms_cero_sampler=s["n_ms_cero_sampler"],
+                n_ms_sampler=s["n_ms_sampler"],
+                umbral_ceros_completa=s["umbral_ceros_p50_cero_completa"],
+                umbral_ceros_sampler=s["umbral_ceros_p50_cero_sampler"],
                 stride=s["stride_ms"],
                 n_total=s["n_total_ms"], n_muestra=s["n_muestra_ms"]))
 

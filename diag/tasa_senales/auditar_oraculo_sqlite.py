@@ -54,7 +54,7 @@ from edgelab.kaggle.sessions_cme import session_bounds_utc_ns, trade_date_ymd  #
 
 import numpy as np  # noqa: E402
 
-SCHEMA_VERSION = "auditar_oraculo_sqlite_v1"
+SCHEMA_VERSION = "auditar_oraculo_sqlite_v2_end_ts_e_inventario"
 ORIGEN = pathlib.Path(r"C:\LoggerHFT\data\hft_logger.sqlite")
 NT8_DIR = pathlib.Path(r"C:\Users\Usuario\Documents\NinjaTrader 8\bin\Custom\Indicators")
 ESCRIBEN_LA_MISMA_BASE = ("HFTZonesESPureV2", "HFTZonesNQPureV2", "HFTZonesNQPureV3")
@@ -108,10 +108,16 @@ def auditar(copia, contrato):
     tick_res = Counter(r[7] for r in filas)
 
     st = np.array([r[1] for r in filas], dtype=np.int64)
-    en = np.array([r[2] if r[2] is not None else r[1] for r in filas], dtype=np.int64)
+    # `end_ts` NULL: la version anterior lo reemplazaba por `start_ts`, o sea que una
+    # zona ABIERTA quedaba clasificada como terminada al instante, y de ahi "0 vivas al
+    # corte" no estaba probado. Ahora NULL se trata como +infinito --lo conservador-- y
+    # se publica cuantos hay, para que la afirmacion sea verificable y no confiada.
+    n_end_null = sum(1 for r in filas if r[2] is None)
+    INF = np.iinfo(np.int64).max
+    en = np.array([r[2] if r[2] is not None else INF for r in filas], dtype=np.int64)
     pre = st < CUTOFF_MS
-    # EL PUNTO DEL AUDITOR: zonas que empiezan antes y terminan despues del corte
     vivas_al_corte = int(((st < CUTOFF_MS) & (en >= CUTOFF_MS)).sum())
+    dur = en[en != INF] - st[en != INF]
 
     ses = trade_date_ymd(st[pre] * 1_000_000) if pre.any() else np.array([], dtype=np.int64)
     por_sesion = Counter(int(x) for x in ses)
@@ -126,8 +132,19 @@ def auditar(copia, contrato):
             zonas_involucradas=int(sum(dups.values())),
             nota="firma = (start_ts, price_upper, price_lower, dir)"),
         retrocesos_de_start_ts=retrocesos,
-        nota_retrocesos=("un `start_ts` que retrocede al avanzar el id indica reinicio "
-                         "del indicador o recarga historica sobre la misma base"),
+        nota_retrocesos=("demuestra ORDEN TEMPORAL NO MONOTONO por id. Es compatible "
+                         "con recargas historicas, reinicios del indicador o varios "
+                         "escritores concurrentes: no distingue cual, y decir 'indica "
+                         "reinicio o recarga' era afirmar de mas."),
+        end_ts=dict(
+            n_null=n_end_null,
+            dur_ms_min=int(dur.min()) if len(dur) else None,
+            dur_ms_max=int(dur.max()) if len(dur) else None,
+            dur_ms_mediana=float(np.median(dur)) if len(dur) else None,
+            nota=("NULL se trata como +inf para el chequeo del cutoff. Las duraciones "
+                  "de 0-500 ms muestran que `hft_zones` registra el BARRIDO, no el "
+                  "ciclo de vida de la zona: en esta tabla no hay toques ni "
+                  "invalidacion.")),
         tick_res=dict(tick_res),
         firewall=dict(
             cutoff_ms=int(CUTOFF_MS),
@@ -145,9 +162,56 @@ def auditar(copia, contrato):
                       detalle={str(k): v for k, v in sorted(por_sesion.items())}))
 
 
+def inventario_familia(copia, prefijo):
+    """Sesiones pre-firewall por contrato de una familia, VERSIONADO en el artefacto.
+
+    v1 dejaba estos numeros solo en el acta, asi que N=23 no era verificable contra un
+    archivo. Ademas chequea ALIAS: dos etiquetas distintas para el mismo contrato
+    (`ES 09-26` y `ES SEP26`) comparten fechas, y sumar sus sesiones sin unir seria
+    doble conteo.
+    """
+    con = sqlite3.connect("file:%s?mode=ro" % copia.as_posix(), uri=True)
+    insts = [r[0] for r in con.execute(
+        "SELECT DISTINCT instrument FROM hft_zones WHERE instrument LIKE ?",
+        (prefijo + "%",)).fetchall()]
+    por_contrato, union = {}, set()
+    INF = np.iinfo(np.int64).max
+    for inst in insts:
+        rows = con.execute(
+            "SELECT start_ts, end_ts FROM hft_zones WHERE instrument=?", (inst,)).fetchall()
+        st = np.array([r[0] for r in rows], dtype=np.int64)
+        en = np.array([r[1] if r[1] is not None else INF for r in rows], dtype=np.int64)
+        pre = st < CUTOFF_MS
+        ses = sorted(set(int(x) for x in trade_date_ymd(st[pre] * 1_000_000))) if pre.any() else []
+        por_contrato[inst] = dict(
+            zonas=len(rows), zonas_pre_firewall=int(pre.sum()),
+            n_end_ts_null=int(sum(1 for r in rows if r[1] is None)),
+            zonas_vivas_al_corte=int(((st < CUTOFF_MS) & (en >= CUTOFF_MS)).sum()),
+            n_sesiones=len(ses), trade_dates=ses)
+        if inst.startswith(prefijo + " "):
+            union |= set(ses)
+    alias = []
+    nombres = list(por_contrato)
+    for i, x in enumerate(nombres):
+        for y in nombres[i + 1:]:
+            sx = set(por_contrato[x]["trade_dates"])
+            sy = set(por_contrato[y]["trade_dates"])
+            if sx and sy and len(sx & sy) / min(len(sx), len(sy)) > 0.5:
+                alias.append(dict(a=x, b=y, fechas_compartidas=len(sx & sy),
+                                  fechas_de_a=len(sx), fechas_de_b=len(sy)))
+    con.close()
+    return dict(prefijo=prefijo, por_contrato=por_contrato,
+                union_sesiones=sorted(union), n_union=len(union),
+                posibles_alias=alias,
+                nota_alias=("dos etiquetas que comparten mas de la mitad de sus fechas "
+                            "pueden ser el MISMO contrato con distinto nombre de "
+                            "display; sumarlas sin unir seria doble conteo"))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--contrato", default="ES 06-26")
+    ap.add_argument("--familia", default="ES")
     ap.add_argument("--out", default=str(REPO / "docs" / "research" / "oraculo_es_auditoria.json"))
     a = ap.parse_args()
 
@@ -160,6 +224,7 @@ def main():
     print("  congelado  %.1f MB  sha256 %s" % (snap["bytes"] / 2 ** 20, snap["sha256"][:16]))
 
     aud = auditar(copia, a.contrato)
+    inv = inventario_familia(copia, a.familia)
     print("  contrato %s: %d zonas  (%d pre-firewall, %d post, %d VIVAS AL CORTE)"
           % (a.contrato, aud["zonas_totales"], aud["firewall"]["zonas_pre"],
              aud["firewall"]["zonas_post"], aud["firewall"]["zonas_vivas_al_corte"]))
@@ -201,12 +266,15 @@ def main():
         ],
         outcomes_accessed=False, pnl_accessed=False,
         snapshot=snap, fuentes_que_comparten_la_base=fuentes,
-        auditoria=aud,
+        auditoria=aud, inventario_familia=inv,
         procedencia=dict(head_commit=subprocess.check_output(
             ["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True).strip(),
             archivos_sucios=sorted(sucios), alcance_comprometida=["edgelab/", "diag/"],
             medicion_comprometida=bool([f for f in sucios if f.startswith(("edgelab/", "diag/"))])))
     pathlib.Path(a.out).write_text(json.dumps(out, indent=2), encoding="utf-8")
+    print("  familia %s: %d contratos, union %d sesiones pre-firewall, alias %d"
+          % (a.familia, len(inv["por_contrato"]), inv["n_union"],
+             len(inv["posibles_alias"])))
     print("  escrito %s" % a.out)
     return 0
 
