@@ -1,4 +1,4 @@
-# Censo target-free del rango de Asia — 6E (210 sesiones) y YM (226)
+# Censo target-free del rango de Asia — 6E (210), YM (226) y 6J (235)
 
 - **Fecha:** 2026-08-19 · **Instrumento:** 6E · **Firewall:** holdout intacto
 - **Artefacto:** `docs/research/censo_rango_asia_2026-08-19.json`
@@ -184,3 +184,57 @@ que se infiere — así que **no se agregó**.
 
 **MDE**: 13,9 pp con 210 sesiones (6E) y 13,4 pp con 226 (YM). Cualquier subpoblación
 tiene menos sesiones y peor MDE. Es P-53.
+
+
+---
+
+# Extensión a 6J — 2026-08-19
+
+`6J` entró al catálogo del bridge (`tick_size = 5e-07`, **verificado contra los
+manifiestos** de los parquets, no aceptado de palabra). Es el instrumento donde la
+sesión asiática **es** la sesión principal, y era el test que faltaba.
+
+| | días | rango~ | med. min hasta 1ª ruptura | **rompe algún extremo** | **ambos extremos** | MDE |
+|---|---|---|---|---|---|---|
+| **6E** | 210 | 55 | 47 | 99,5 % [98,6 – 100] | 37,1 % [30,6 – 43,7] | 13,9 pp |
+| **YM** | 226 | 180 | 53 | **100,0 %** | 56,6 % [50,2 – 63,1] | 13,4 pp |
+| **6J** | 235 | 53 | **85** | **94,9 %** [92,1 – 97,7] | **18,7 %** [13,7 – 23,7] | 13,1 pp |
+
+## El instrumento sí importa — y ordena como debería
+
+`6J` es el único de los tres donde **la ruptura no es universal**: 12 sesiones de 235
+no rompieron ningún extremo, la primera ruptura tarda casi el doble (mediana **85 min**
+contra 47 y 53), y la tasa de ambos extremos es **menos de un tercio** de la de YM.
+
+Los intervalos **no se pisan** entre YM (50,2–63,1) y 6J (13,7–23,7): la diferencia es
+real, no ruido.
+
+Lectura estructural, coherente con el orden de los tres: **cuanto más participa el
+instrumento en la sesión asiática, más significativo es su rango asiático.**
+
+- **YM** — Asia es su zona muerta: el «rango» es una deriva nocturna angosta, se rompe
+  **siempre** y se toca de los dos lados más de la mitad de las veces.
+- **6J** — Asia es su sesión: el rango se construye con participación real, aguanta más
+  y se rompe menos.
+- **6E** — intermedio, como corresponde.
+
+## Lo que esto NO autoriza a concluir
+
+**El 18,7 % de 6J no es evidencia de «tendencia» ni de «no reversión».** Post-Asia, 6J
+simplemente **se mueve menos**: 12 sesiones sin ruptura y una mediana de 85 minutos
+dicen que la ventana posterior es más quieta. Tocar menos los dos extremos es lo que
+hace un instrumento tranquilo, con o sin comportamiento.
+
+**El nulo de reflexión hay que construirlo por instrumento**, calibrado a su propia
+volatilidad. La banda 54–76 % de `H-SWEEP-1` es de otra ventana y otro activo: sirve
+para saber que el nulo no es 50 %, no para clasificar a estos tres. Que YM caiga
+«dentro» y 6J «debajo» **es sugerente y nada más**.
+
+## Consecuencia práctica
+
+Si la línea de la sesión asiática se sigue, **6J es el instrumento donde el objeto
+existe**. YM es donde el rango asiático se rompe siempre por geometría y no hay nada
+que condicionar.
+
+Eso también corrige el orden de la pregunta original: el estudio del rango asiático
+sobre índices americanos empieza con una población degenerada.
