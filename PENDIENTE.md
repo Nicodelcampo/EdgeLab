@@ -1667,3 +1667,24 @@ donde el objeto existe** (94,9 %, mediana 85 min).
 
 **Potencia**: MDE 13,1–13,9 pp sin estratificar; con terciles de magnitud, ~23 pp. Es
 P-53.
+
+### RESULTADO (2026-08-19) — `HYPOTHESIS_NOT_SUPPORTED`
+
+Acta: `docs/research/H-ASIA-1_RESULTADO_6J_2026-08-19.md`. 6J, **222 sesiones**.
+
+- **La tendencia no existe.** Doce lecturas (3 magnitudes × 4 bandas), **ninguna
+  monótona decreciente**; planas o en «V». Diferencias máximas ~9 pp contra un **MDE de
+  23,3 pp** por tercil.
+- **El confundidor de volatilidad quedó resuelto** por el control dentro de la sesión, y
+  el chequeo construido para la posición **pasó** (corr magnitud↔posición = −0,01).
+- **Hubo un efecto aparente fuerte y era geometría.** `asia_close` con percentil de
+  dwell 0,667 y **z = 5,2** contra el nulo. Pero el espejo estaba **anti-emparejado**
+  por distancia al extremo roto (reflejar invierte el lado): `asia_close` está más cerca
+  del extremo roto en el **76,6 %** de las sesiones. Condicionando, el subconjunto donde
+  está **lejos** (n = 52) da percentil **0,472** y contraste **−0,059** — cruza cero.
+- **Control correcto para una v2**: condicionar por distancia al extremo roto, no
+  reflejar sobre el punto medio.
+
+**Nota de integridad**: la primera corrida midió la ventana posterior del **día
+equivocado** (cinco horas *antes* de que Asia empezara). Ningún número de esa corrida se
+publicó. Síntoma visible que no se leyó como alarma: 52 descartes `sin_post` de 243.
