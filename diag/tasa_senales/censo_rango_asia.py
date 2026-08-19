@@ -125,6 +125,22 @@ def _contratos(d_in, instrumento):
     return [(f.name, None) for f in fs], False
 
 
+def _resolver_dir(instrumento, explicito):
+    """El arbol tiene DOS layouts: `data/nt8/<INST>` guarda los .txt crudos y a veces
+    tambien parquets (6E), mientras que `data/nt8/<INST>_parquet` guarda los parquets.
+    Se prueban los dos y se elige el que tenga ticks; si no hay ninguno, se aborta
+    diciendo donde se busco -- no se adivina."""
+    if explicito:
+        return pathlib.Path(explicito)
+    base = REPO / "data" / "nt8"
+    for cand in (base / instrumento, base / ("%s_parquet" % instrumento)):
+        if cand.is_dir() and any(cand.glob("%s_*ticks*.parquet" % instrumento)):
+            return cand
+    raise SystemExit("ABORTA: sin parquets de %s en %s ni %s"
+                     % (instrumento, base / instrumento,
+                        base / ("%s_parquet" % instrumento)))
+
+
 def cargar_barras(d_in, instrumento):
     contratos, canon = _contratos(d_in, instrumento)
     hashes, col = {}, {k: [] for k in ("ts", "px", "vol", "bid", "ask", "seq")}
@@ -136,7 +152,8 @@ def cargar_barras(d_in, instrumento):
         if canon and real != esperado:
             raise SystemExit("ABORTA: %s no es canonico" % fn)
         p = load_canonical_parquet(d_in / fn, instrument=instrumento)
-        print("  %-26s %9d ticks  sha256 CANONICO" % (fn, len(p.ts_ns)))
+        print("  %-26s %9d ticks  sha256 %s"
+              % (fn, len(p.ts_ns), "CANONICO" if canon else "declarado (sin canon)"))
         for k, v in (("ts", p.ts_ns), ("px", p.price_ticks), ("vol", p.volume),
                      ("bid", p.bid_ticks), ("ask", p.ask_ticks), ("seq", p.sequence)):
             col[k].append(v)
@@ -171,7 +188,7 @@ def main():
     ap.add_argument("--out", required=True)
     a = ap.parse_args()
 
-    d_in = pathlib.Path(a.dir) if a.dir else (REPO / "data" / "nt8" / a.instrumento)
+    d_in = _resolver_dir(a.instrumento, a.dir)
     print("censo rango Asia (TARGET-FREE)  ·  %s  ·  %s" % (SCHEMA_VERSION, a.instrumento))
     print("  ventana %s -> %s NY   Asia = primeros %d min   posterior = %d min"
           % (VENTANA_INICIO, VENTANA_FIN, MIN_ASIA, MIN_POST))
