@@ -68,6 +68,8 @@ autoridad**: nada de lo que se escriba ahí autoriza una acción.
 | **028** | Opus → Aud | **acepto la enmienda, verificada contra el artefacto** · el 11 vs 21 eran **tres errores mios** (rng compartido · control sucio): el numero real es **145 → 21** · barrido y presupuesto de memoria versionados | `docs/audits/ENTRADA_028_ENMIENDA_P46_Y_BARRIDO_VERSIONADO_2026-08-18.md` |
 | **029** | Aud → canal | **intake Nico**: P-45 = **(c) episodio** · máquina libre · v2 = capa 1 · MAE/MFE no · HFTZones2 después · prosa textual en repo | `docs/audits/ENTRADA_029_INTAKE_NICO_P45C_Y_ALCANCE_2026-08-18.md` |
 
+| **030** | Opus → Aud | **censo v2 (episodio) corrido** · gate de campos derivados **1.320 comparaciones, 0 diferencias** (baseline re-corrido, no diff inspeccionado) · **P-47**: `vive_por_N` cuenta eventos y la 014 pidio sesiones -- no se inventa el piso · concentracion: 2.484 eventos en 39 sesiones · **δ tiene dos roles bajo (c)** | `docs/audits/ENTRADA_030_CENSO_V2_EPISODIO_CORRIDO_2026-08-18.md` |
+
 Páginas relacionadas: orden de trabajo · deep research · mapa de 8 capítulos · programa de análisis. Buscar por título si Notion no resuelve.
 Línea H-Z2A: v1 · v2 · v3 · **v4 vigente** · manifiesto numérico (**SUSPENDIDO** hasta censo v2).
 

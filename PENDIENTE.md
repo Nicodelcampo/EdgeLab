@@ -1327,3 +1327,27 @@ la misma corrida) · «tendencia saludable» (empieza el escrito; F9 sigue en pa
 zona no virgen (se revisa; **la primera v2 sigue virgen** — cambiarlo cambia qué se
 cuenta) · la «firma» conjunta (después de tener N: primero la población, después qué
 coincidió).
+
+
+---
+
+## P-47 — `vive_por_N` cuenta eventos; la 014 congeló el criterio sobre sesiones
+
+**Abierta 2026-08-18** (entrada 030). **Bloquea leer «celdas vivas» como resultado.**
+
+La entrada 014 §3 dice, textual: «`n` de sesiones con ≥ 1 evento por celda, no sólo
+`n` de eventos. Una celda con 500 eventos en 3 sesiones no es 500 observaciones.»
+Pero `vive_por_N` se computa `nm >= 403`, o sea **sobre eventos**.
+
+En v2 no es teórico: las celdas de conteo más alto son **las más concentradas**.
+`D=80 δ=8 R=20` tiene 2.181 eventos en **27 sesiones** (80,8 por sesión), contra
+`D=10 δ=1 R=5` con 438 en **111**. Un criterio por eventos premia exactamente la celda
+con menos información real.
+
+**Qué NO se hizo, a propósito:** no se agregó un boolean de sesiones. El 403 se derivó
+a nivel variante sobre eventos; su equivalente en sesiones no existe, y escribirlo
+después de ver la tabla es **elegir el umbral mirando el resultado**. El artefacto
+publica `criterio_N="eventos"` y `eventos_por_sesion` por celda, y nada más.
+
+**Qué hace falta:** pre-registrar el piso de sesiones **antes** de volver a mirar la
+tabla, con su derivación, como se hizo con el 403. Decide Nico con el auditor.
