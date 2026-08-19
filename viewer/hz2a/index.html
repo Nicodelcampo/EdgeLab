@@ -96,6 +96,31 @@
   .grupo button.on{background:var(--accent-dim);border-color:var(--accent);color:var(--text);}
   .sep{width:1px;height:18px;background:var(--border2);}
   #wrapG{position:relative;min-height:0;}
+  #panelInd{position:absolute;top:0;right:0;bottom:0;width:330px;background:var(--surface);
+    border-left:1px solid var(--border2);display:none;grid-template-rows:auto auto 1fr;
+    z-index:5;box-shadow:-8px 0 24px rgba(0,0,0,.35);}
+  #panelInd.on{display:grid;}
+  #panelInd h3{margin:0;padding:8px var(--s3);font-size:12px;color:var(--dim);
+    border-bottom:1px solid var(--border);font-weight:600;
+    text-transform:uppercase;letter-spacing:.06em;}
+  #listaInd{max-height:34%;overflow:auto;border-bottom:1px solid var(--border);}
+  .ind{padding:7px var(--s3);border-bottom:1px solid var(--border);cursor:pointer;}
+  .ind:hover{background:var(--surface2);}
+  .ind.sel{background:var(--accent-dim);border-left:2px solid var(--accent);padding-left:10px;}
+  .ind.off{opacity:.5;cursor:not-allowed;}
+  .ind-h{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12px;}
+  .ind-m{color:var(--dim2);font-size:11px;padding:4px var(--s3) 0;line-height:1.5;}
+  #formInd{overflow:auto;padding:var(--s2) var(--s3) var(--s4);}
+  .campo{display:grid;grid-template-columns:1fr 96px;gap:var(--s2);align-items:center;
+    padding:3px 0;font-family:var(--mono);font-size:11px;}
+  .campo span{color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .campo span i{color:var(--dim2);font-style:normal;margin-left:5px;font-size:10px;}
+  .campo input[type=number],.campo select{width:100%;background:var(--surface2);
+    border:1px solid var(--border2);color:var(--text);border-radius:4px;padding:3px 6px;
+    font:inherit;font-family:var(--mono);}
+  .campo input[type=checkbox]{justify-self:start;}
+  .acciones{display:flex;flex-wrap:wrap;gap:var(--s1);margin-top:var(--s3);}
+  .acciones button{font-size:11px;}
   kbd{font-family:var(--mono);font-size:11px;background:var(--surface3);
     border:1px solid var(--border2);border-radius:3px;padding:1px 5px;color:var(--dim);}
 </style>
@@ -154,6 +179,8 @@
       <button data-tipo="linea">línea + tick</button>
     </div>
     <div class="sep"></div>
+    <div class="grupo"><button id="btnInd">indicadores</button></div>
+    <div class="sep"></div>
     <!-- Dos ejes DISTINTOS, no dos unidades del mismo: CLAUDE.md pide no confundir
          `ticks_per_row` (parametro) con `bar_spec` (resolucion de barra). Por eso van
          en dos grupos separados y no en un desplegable unico. -->
@@ -165,6 +192,14 @@
   </div>
   <div id="wrapG"><canvas id="cg"></canvas>
     <div class="leyenda" id="legG"></div>
+    <div id="panelInd">
+      <h3>indicadores del proyecto</h3>
+      <div id="listaInd"></div>
+      <div id="formInd" style="color:var(--dim2);font-size:11px">
+        Elegí un indicador. Los parámetros se generan desde su
+        <code>PARAM_SPEC</code>, el espacio paramétrico declarado del kernel.
+      </div>
+    </div>
   </div>
 </section>
 
@@ -396,3 +431,4 @@ function csv(){
 }
 </script>
 <script src="grafico.js"></script>
+<script src="indicadores.js"></script>

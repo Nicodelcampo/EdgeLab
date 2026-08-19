@@ -11,6 +11,9 @@
 // por eso van en dos grupos de botones separados y no en un desplegable unico.
 // ===========================================================================
 let B = null, gTipo = "velas", gEje = "tiempo", gRes = null, gVista = null, TICKS = null;
+// Escala vertical MANUAL: null = automatica al rango visible. Arrastrar sobre el eje de
+// precios la fija y la comprime/expande, como en NT8 y en cualquier plataforma.
+let gEscala = null;
 
 function iniGrafico() {
   B = window.BARRAS;
@@ -41,7 +44,23 @@ function iniGrafico() {
   }));
   const cg = document.querySelector("#cg");
   cg.addEventListener("wheel", e => { e.preventDefault(); zoomG(e); }, { passive: false });
-  cg.addEventListener("mousedown", arrastreG);
+  cg.addEventListener("mousedown", ev => {
+    // Si el click cae sobre el eje de precios, arrastra la ESCALA; si no, paneo.
+    const r = ev.currentTarget.getBoundingClientRect();
+    if (gEje_area && (ev.clientX - r.left) > gEje_area.pad.l + gEje_area.W) arrastreEscala(ev);
+    else arrastreG(ev);
+  });
+  cg.addEventListener("dblclick", ev => {
+    const r = ev.currentTarget.getBoundingClientRect();
+    if (gEje_area && (ev.clientX - r.left) > gEje_area.pad.l + gEje_area.W) {
+      gEscala = null; pintarG();     // doble clic en el eje = volver a automatica
+    }
+  });
+  cg.addEventListener("mousemove", ev => {
+    const r = ev.currentTarget.getBoundingClientRect();
+    const enEje = gEje_area && (ev.clientX - r.left) > gEje_area.pad.l + gEje_area.W;
+    ev.currentTarget.style.cursor = enEje ? "ns-resize" : "grab";
+  });
   pintarG();
 }
 
@@ -75,8 +94,13 @@ function pintarG() {
   if (S.tipo === "velas") { for (let i = a; i <= b; i++) { lo = Math.min(lo, S.b.l[i]); hi = Math.max(hi, S.b.h[i]); } }
   else { for (let i = a; i <= b; i++) { lo = Math.min(lo, TICKS.px[i]); hi = Math.max(hi, TICKS.px[i]); } }
   const marg = Math.max(1, (hi - lo) * 0.08); lo -= marg; hi += marg;
+  if (gEscala) {                       // escala fija por arrastre sobre el eje
+    const c = (lo + hi) / 2, semi = Math.max(1, (hi - lo) / 2 * gEscala.k);
+    lo = gEscala.c - semi; hi = gEscala.c + semi;
+  }
   const X = i => pad.l + (i - a + 0.5) / m * W;
   const Y = p => pad.t + H - (p - lo) / (hi - lo) * H;
+  gEje_area = { pad: pad, W: W, H: H, lo: lo, hi: hi, w: w };
 
   g.strokeStyle = cssv("--border"); g.lineWidth = 1;
   g.fillStyle = cssv("--dim2"); g.font = "10px ui-monospace,monospace"; g.textAlign = "left";
@@ -113,6 +137,20 @@ function pintarG() {
     }
   }
 
+  // overlays de indicadores, ANTES del ultimo precio para que no los tape
+  if (typeof dibujarOverlays === "function") {
+    const tsDe = ms => {
+      // ms -> x, buscando la barra/tick mas cercano en el tramo visible
+      const leer = i => (S.tipo === "velas" ? S.b.end_ns[i] : TICKS.ts[i]) / 1e6;
+      if (ms <= leer(a)) return pad.l;
+      if (ms >= leer(b)) return pad.l + W;
+      let x = a, y = b;
+      while (y - x > 1) { const md = (x + y) >> 1; if (leer(md) < ms) x = md; else y = md; }
+      return X(x);
+    };
+    dibujarOverlays(g, X, Y, pad, W, tsDe);
+  }
+
   const ult = S.tipo === "velas" ? S.b.c[b] : TICKS.px[b];
   g.strokeStyle = cssv("--accent"); g.setLineDash([3, 3]);
   g.beginPath(); g.moveTo(pad.l, Y(ult)); g.lineTo(pad.l + W, Y(ult)); g.stroke(); g.setLineDash([]);
@@ -144,6 +182,24 @@ function zoomG(e) {
   pintarG();
 }
 
+let gEje_area = null;
+
+function arrastreEscala(ev) {
+  // Arrastrar sobre el eje de precios comprime o expande el rango vertical, anclado
+  // al centro visible. Doble clic vuelve a la escala automatica.
+  ev.preventDefault();
+  const y0 = ev.clientY;
+  const base = gEscala ? gEscala.k : 1;
+  const centro = gEscala ? gEscala.c : (gEje_area.lo + gEje_area.hi) / 2;
+  const mover = e => {
+    const f = Math.exp((e.clientY - y0) / 220);
+    gEscala = { k: Math.max(0.05, Math.min(20, base * f)), c: centro };
+    pintarG();
+  };
+  const soltar = () => { removeEventListener("mousemove", mover); removeEventListener("mouseup", soltar); };
+  addEventListener("mousemove", mover); addEventListener("mouseup", soltar);
+}
+
 function arrastreG(ev) {
   const S = serieG(), r = ev.currentTarget.getBoundingClientRect();
   const x0 = ev.clientX, v0 = { a: gVista.a, b: gVista.b }, span = v0.b - v0.a;
@@ -172,3 +228,7 @@ function tab(g) {
 document.querySelector("#tabCorr").addEventListener("click", () => tab(false));
 document.querySelector("#tabGraf").addEventListener("click", () => tab(true));
 addEventListener("resize", () => { if (tabG) pintarG(); });
+
+document.querySelector("#btnInd").addEventListener("click", () => {
+  if (typeof abrirPanelInd === "function") abrirPanelInd();
+});
