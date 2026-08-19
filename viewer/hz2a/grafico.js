@@ -11,8 +11,13 @@
 // por eso van en dos grupos de botones separados y no en un desplegable unico.
 // ===========================================================================
 let B = null, gTipo = "velas", gEje = "tiempo", gRes = null, gVista = null, TICKS = null;
-// Escala vertical MANUAL: null = automatica al rango visible. Arrastrar sobre el eje de
-// precios la fija y la comprime/expande, como en NT8 y en cualquier plataforma.
+// Escala vertical manual: `null` = automatica al rango visible; si no, {lo, hi} en
+// TICKS ABSOLUTOS.
+//
+// Antes guardaba {k, c} relativo al rango del dato visible, y eso acoplaba los dos
+// ejes: al hacer zoom horizontal cambiaba el rango visible, cambiaba el `semi`
+// derivado, y el precio se expandia o contraia solo. Con lo/hi absolutos el vertical
+// no se entera de lo que hace el horizontal.
 let gEscala = null;
 let arrastrando = false;
 let gHolgura = 0;
@@ -146,16 +151,11 @@ function pintarG() {
   if (bv >= av) {
     if (S.tipo === "velas") { for (let i = av; i <= bv; i++) { lo = Math.min(lo, S.b.l[i]); hi = Math.max(hi, S.b.h[i]); } }
     else { for (let i = av; i <= bv; i++) { lo = Math.min(lo, TICKS.px[i]); hi = Math.max(hi, TICKS.px[i]); } }
-  } else { lo = hi = (gEscala ? gEscala.c : 0); }
+  } else { lo = hi = (gEscala ? (gEscala.lo + gEscala.hi) / 2 : 0); }
   const marg = Math.max(1, (hi - lo) * 0.08); lo -= marg; hi += marg;
-  // `gEscala.k` = zoom vertical (arrastre sobre el eje); `gEscala.c` = centro, que
-  // el arrastre vertical mueve. Con `gEscala` en null la escala sigue al dato.
-  if (gEscala) {
-    // SIN TOPE VERTICAL (Nico, 2026-08-19). El limite anterior frenaba el paneo con el
-    // precio todavia adentro, y lo que se veia en el borde parecia un corte.
-    const semi = Math.max(1, (hi - lo) / 2 * gEscala.k);
-    lo = gEscala.c - semi; hi = gEscala.c + semi;
-  }
+  // `gEscala` = {lo, hi} en ticks absolutos. Con `null` la escala sigue al dato.
+  // Sin tope vertical: lo/hi salen tal cual de la escala manual.
+  if (gEscala) { lo = gEscala.lo; hi = gEscala.hi; }
 
   const X = i => pad.l + (i - a + 0.5) / m * W;
   const Y = p => pad.t + H - (p - lo) / (hi - lo) * H;
@@ -258,7 +258,14 @@ function pintarG() {
 }
 
 function zoomG(e) {
-  const S = serieG(), r = e.currentTarget.getBoundingClientRect();
+  // La rueda expande o contrae SOLO en horizontal (Nico, 2026-08-19).
+  //
+  // Con la escala vertical en automatica, cambiar la ventana horizontal cambia el
+  // rango de datos visible y el eje de precios se re-escala solo -- que es lo que se
+  // veia como "tambien estira en vertical". Por eso, antes de tocar `gVista`, la
+  // escala vertical se CONGELA en los valores que estaba mostrando.
+  if (!gEscala && gEje_area) gEscala = { lo: gEje_area.lo, hi: gEje_area.hi };
+  const r = e.currentTarget.getBoundingClientRect();
   const f = (e.clientX - r.left) / r.width, c = gVista.a + f * (gVista.b - gVista.a);
   const w = Math.max(12, (gVista.b - gVista.a) * (e.deltaY > 0 ? 1.25 : 0.8));
   gVista = acotar({ a: Math.round(c - f * w), b: Math.round(c + (1 - f) * w) });
@@ -272,12 +279,14 @@ function arrastreEscala(ev) {
   // al centro visible. Doble clic vuelve a la escala automatica.
   ev.preventDefault();
   const y0 = ev.clientY;
-  const base = gEscala ? gEscala.k : 1;
-  const centro = gEscala ? gEscala.c : (gEje_area.lo + gEje_area.hi) / 2;
+  const lo0 = gEscala ? gEscala.lo : gEje_area.lo;
+  const hi0 = gEscala ? gEscala.hi : gEje_area.hi;
+  const c0 = (lo0 + hi0) / 2, semi0 = (hi0 - lo0) / 2;
   arrastrando = true;
   const mover = e => {
     const f = Math.exp((e.clientY - y0) / 220);
-    gEscala = { k: Math.max(0.05, Math.min(20, base * f)), c: centro };
+    const semi = Math.max(0.5, semi0 * f);
+    gEscala = { lo: c0 - semi, hi: c0 + semi };
     pintarG();
   };
   const soltar = () => {
@@ -302,9 +311,9 @@ function arrastreG(ev) {
   const v0 = { a: gVista.a, b: gVista.b }, span = v0.b - v0.a;
   // Si la escala venia en automatica, el primer arrastre vertical la fija en el rango
   // que se estaba viendo, para que el paneo arranque justo donde esta el ojo.
-  const e0 = gEscala ? { k: gEscala.k, c: gEscala.c }
-                     : { k: 1, c: (gEje_area.lo + gEje_area.hi) / 2 };
-  const alto0 = gEje_area.hi - gEje_area.lo, H0 = gEje_area.H;
+  const lo0 = gEscala ? gEscala.lo : gEje_area.lo;
+  const hi0 = gEscala ? gEscala.hi : gEje_area.hi;
+  const alto0 = hi0 - lo0, H0 = gEje_area.H;
   // TOPE HORIZONTAL: el desplazamiento termina cuando la ultima barra llega al BORDE
   // del area de dibujo, no media pantalla despues.
   //
@@ -316,15 +325,12 @@ function arrastreG(ev) {
   const mover = e => {
     const dx = Math.round((e.clientX - x0) / r.width * span);
     gVista = acotar({ a: v0.a - dx, b: v0.b - dx });
-    // Signo, derivado y no adivinado. `Y(p) = pad.t + H - (p - lo)/(hi - lo) * H`, o
-    // sea que la pantalla crece hacia ABAJO y el precio hacia ARRIBA. Para que un
-    // precio P se dibuje `dy` pixeles mas abajo hace falta que `Y(P)` aumente, y eso
-    // exige que `lo` aumente: el centro SUBE cuando el mouse baja.
-    //
-    // Estaba al reves --restaba-- y el contenido se iba para arriba al arrastrar hacia
-    // abajo. El error era mio en la derivacion, no en el gesto.
+    // Signo derivado: `Y(p) = pad.t + H - (p - lo)/(hi - lo) * H`, o sea que la
+    // pantalla crece hacia ABAJO y el precio hacia ARRIBA. Para que un precio P se
+    // dibuje `dy` pixeles mas abajo hace falta que `Y(P)` aumente, y eso exige que
+    // `lo` aumente: el rango SUBE cuando el mouse baja.
     const dy = (e.clientY - y0) / H0 * alto0;
-    gEscala = { k: e0.k, c: e0.c + dy };
+    gEscala = { lo: lo0 + dy, hi: hi0 + dy };
     pintarG();
   };
   const soltar = () => {
