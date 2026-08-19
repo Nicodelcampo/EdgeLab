@@ -73,6 +73,8 @@ autoridad**: nada de lo que se escriba ahí autoriza una acción.
 | **033** | Aud → canal | **censo v2 verificado** contra blobs · **P-47 pisado**: el numero ya estaba tomado por el piso de sesiones · marco de potencia con clusters (DEFF, pocos clusters, SPARKing) | `docs/audits/ENTRADA_033_CENSO_V2_VERIFICADO_P47_PISADO_2026-08-19.md` |
 | **034** | Opus → Aud | **P-47 DECIDIDA: opcion A**, sin boolean de sesiones (Nico delego la eleccion) · board copiado y renumerado P-48/49/50/51 · `mde_80` derivable de `n_sesiones` sin re-correr | `docs/audits/ENTRADA_034_P47_DECIDIDA_OPCION_A_2026-08-19.md` |
 
+| **035** | Opus -> Aud | **P-52 decision de alcance**: de NT8 se importa la GEOMETRIA (`lower_tick`/`upper_tick`/`creado_ns`), no el algoritmo - el P2 de VolTicksDef como caso testigo (paridad = copiar una aproximacion que existe por una restriccion que no tenemos) - P-42/P-43/P-44/P-32 **aparcadas, no cerradas** | `docs/audits/ENTRADA_035_P52_GEOMETRIA_NO_ALGORITMO_2026-08-19.md` |
+
 Páginas relacionadas: orden de trabajo · deep research · mapa de 8 capítulos · programa de análisis. Buscar por título si Notion no resuelve.
 Línea H-Z2A: v1 · v2 · v3 · **v4 vigente** · manifiesto numérico (**SUSPENDIDO** hasta censo v2).
 

@@ -1435,3 +1435,126 @@ v4 cond. 2 y el censo exigen **cero trades** en `[L,U]` antes del giro.
 **La primera corrida de v2 sigue virgen.** Relajar el predicado **cambia la
 población**, así que se revisa después, con alternativas escritas (tiempo / ticks /
 volumen) antes de tocar nada.
+
+
+---
+
+## P-52 — DECISIÓN DE ALCANCE: de un indicador de NT8 se importa la **geometría**, no el **algoritmo**
+
+**Asentada 2026-08-19.** Origen: pregunta de Nico —*«¿la complicamos mucho intentando
+replicar indicadores de NT8 en lugar de crearlos de una manera útil y provechosa pero
+no necesariamente copiándole a la lógica de otra plataforma?»*—. La respuesta corta es
+**sí, en parte**, y esta entrada fija dónde exactamente, para que no haya que
+re-litigarlo.
+
+### La regla
+
+> **El indicador de NT8 es un generador de hipótesis, no un instrumento de medición.**
+>
+> De él se importa **dónde está la zona**. El resto —cómo la calculó— se define
+> nativo, en el repo, con su propia definición falsable.
+
+**La interfaz son tres números por zona**: `lower_tick`, `upper_tick`, `creado_ns`.
+Todo lo demás del `.cs` (estimadores, acumuladores, dibujo, colores, expiración,
+series MTF) es implementación de un graficador, no del mercado.
+
+### El test, para aplicarla sin discutir caso por caso
+
+Ante cualquier pieza de un `.cs`, preguntar: **¿existiría esto si el indicador no
+tuviera que dibujarse en tiempo real sobre una plataforma?**
+
+- **No existiría** → es un accidente de plataforma. **No se replica.**
+- **Sí existiría** → es parte de la definición del objeto. **Se importa o se
+  reescribe explícitamente.**
+
+### Qué compra la paridad (una sola cosa) y qué cuesta
+
+**Compra:** la garantía de que el objeto que Nico señala en el chart es el objeto que
+la máquina mide. Sin eso, un resultado negativo es ambiguo — «capaz mediste otra
+zona». Es **el puente entre una intuición visual y una afirmación testeable**, y es
+un puente real: la paridad de BigTrap2 (3.628/3.638 EXACT, abril+mayo 171/171) no
+encontró ningún edge, pero **hizo que su muerte sirviera**. Matar una hipótesis sólo
+vale si mataste la correcta.
+
+**Cuesta:** cada rareza de NT8 se vuelve requisito nuestro. Dos ejemplos medidos, no
+hipotéticos:
+
+- **`sesionNoConfiable` no reseteaba** porque el bloque de frontera quedó detrás de un
+  `return` (fix `f77a3be`). Semanas de silencio de TRAPs por un orden de sentencias
+  en otro programa.
+- **El estimador P² de `VolTicksDef`** (Jain–Chlamtac) aproxima un percentil sin
+  guardar la muestra. Existe **porque NT8 no puede re-ordenar 200.000 barras en cada
+  tick**. Nosotros tenemos la serie entera en memoria y podríamos calcular el cuantil
+  **exacto**. La disyuntiva es nítida: cuantil exacto = más correcto y **sin
+  paridad**; replicar P² = paridad y **copiar un error de aproximación que existe sólo
+  por una restricción que no tenemos**. Eso no es medir el mercado: es medir
+  NinjaTrader.
+
+Se suman a la lista: orden de acumulación de un `double` que nunca se resetea,
+calendarios de sesión, interleaving de `BarsInProgress` en MTF, y efectos laterales
+(el LuxAlgo escribe SQLite a `D:\AlgoProject\`).
+
+### El patrón correcto ya está en producción
+
+`diag/tasa_senales/censo_hz2a_superficie.py` **no llama al runner del portador**. Trae
+su propia distancia, en **ticks enteros y por `zone_id`** (porque `features.py` usa
+`argmin` sin `zone_id` — P-39). Define corredor, `d_min`, separación `R` y episodio
+**nativamente**: nada de eso viene de NT8. Del indicador usa exactamente los tres
+números de la interfaz.
+
+Se llegó ahí medio sin querer, empujado por la orden 019 (si el runner toca outcomes,
+el artefacto no entra). Esta entrada lo convierte en política.
+
+### Consecuencias — qué cambia y qué no
+
+**Paridad se paga sólo donde un indicador (a) carga una hipótesis viva **y** (b) la
+evidencia que la originó es visual.** Hoy eso es **`aVolClusterPOI`**, y nada más.
+`HFTZones2` entra cuando P-48 lo abra.
+
+**Deuda de paridad que queda DECLARADA y APARCADA, no perseguida** — ninguna hipótesis
+depende hoy de estos:
+
+| ítem | estado |
+|---|---|
+| **P-42** `aVolCellPOI2` sin paridad (671 vs 678) | aparcada — no hay hipótesis detrás |
+| **P-43** residual de `HFTZones2` en GC (3.626/3.630) | aparcada hasta P-48 |
+| **P-44** dos catálogos (11 vs 6) y params que no transportan | aparcada; sigue bloqueando multiactivo |
+| **P-32** conjunto de indicadores | se reabre sólo si una hipótesis lo pide |
+
+> **Esto no las cierra.** Aparcar ≠ resolver: siguen en el board con su estado real.
+> **Reactivar cualquiera exige una hipótesis que la necesite**, escrita antes.
+
+**Lo que NO cambia:** el contrato de paridad (`docs/nt8_indicator_parity_contract.md`)
+sigue vigente **para lo que sí se mide**; no se relaja ningún gate; `aVolClusterPOI`
+mantiene su paridad medida; y nada de esto toca el firewall del holdout ni el STOP.
+
+### Cómo se aplica a un indicador nuevo
+
+1. **¿Qué hipótesis lo necesita?** Si no hay una escrita, no se porta. (F9 sigue
+   pausada por decisión sellada.)
+2. **¿La evidencia que la originó es visual?** Si Nico lo vio en el chart, hay que
+   importar **esa** geometría. Si la idea es analítica, se define nativa y **no se
+   busca un `.cs` que copiar**.
+3. **Importar sólo `lower_tick` / `upper_tick` / `creado_ns`** (o el equivalente).
+4. **Todo lo demás se reescribe nativo**, y cada decisión de reescritura se documenta
+   con su alternativa —como hace `edgelab/research/lux_imb.py`, que declara su
+   divergencia de OG (wick-a-wick contra el body-a-body del `.cs`) en vez de esconderla.
+5. **P-50 («tendencia saludable») es el caso testigo**: no hay `.cs` que copiar, y eso
+   es una **ventaja** — la definición se escribe falsable desde el principio, sin
+   heredar accidentes de nadie.
+
+### El límite honesto de esta decisión
+
+Es fácil decirlo hoy. Hace dos meses, sin saber si la intuición sobre BigTrap2 se
+sostenía, la paridad era **la única forma de descartar «mediste otra cosa»** como
+explicación de un resultado negativo. El error no fue empezar por ahí: fue **no parar
+cuando quedó claro que la hipótesis se define sobre geometría de precio y no sobre el
+interior del indicador**.
+
+Corolario para el futuro: **la paridad tiene fecha de vencimiento por hipótesis.**
+Cumple su función el día que la hipótesis queda escrita como afirmación medible sobre
+el precio. Desde ahí, seguir persiguiéndola es deuda técnica disfrazada de rigor.
+
+**Qué falta decidir (de Nico):** confirmar el aparcamiento de P-42 / P-43 / P-44 /
+P-32. La regla la puedo asentar; **sacar ítems de la cola de trabajo es decisión
+suya**, y por eso quedan marcados «aparcada» y no «cerrada».
