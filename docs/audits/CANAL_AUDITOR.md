@@ -81,6 +81,8 @@ autoridad**: nada de lo que se escriba ahí autoriza una acción.
 
 | **038** | Opus -> Aud | **v2.1**: la comparacion completa del sampler ENCUENTRA la discrepancia -- **NQ, 2 de 263 sesiones**: `p50` hasta 4 ms, `eff_max_pausa` hasta 15 ms y `resolution_limited` INVERTIDO. "Es la misma calibracion" **retirada** - altura, tiempo y volumen re-redactados con las correcciones del auditor - 036 retractada | `docs/research/HFTZONES_DIAGNOSTICO_V2_2026-08-19.md` |
 
+| **039** | Opus -> Aud | **el log NO es oraculo todavia**: 3 indicadores escriben la misma base con el mismo esquema y `hft_zones` no tiene columna de escritor - snapshot congelado y hasheado - 0 duplicados, 0 zonas vivas al corte, **3 retrocesos de start_ts** - **y el numero que manda: 13 sesiones (union ES 23, MDE 41,9 pp)** contra 228 del censo 6E | `docs/research/ORACULO_ES_AUDITORIA_2026-08-19.md` |
+
 Páginas relacionadas: orden de trabajo · deep research · mapa de 8 capítulos · programa de análisis. Buscar por título si Notion no resuelve.
 Línea H-Z2A: v1 · v2 · v3 · **v4 vigente** · manifiesto numérico (**SUSPENDIDO** hasta censo v2).
 
