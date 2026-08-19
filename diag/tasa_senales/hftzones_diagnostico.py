@@ -56,7 +56,7 @@ from edgelab.bridge.indicators.hftzones2 import DEFAULTS, _Sampler  # noqa: E402
 from edgelab.data.nt8_contract import INSTRUMENT_SPECS  # noqa: E402
 from edgelab.kaggle.sessions_cme import session_bounds_utc_ns, trade_date_ymd  # noqa: E402
 
-SCHEMA_VERSION = "hftzones_diagnostico_v2_1_sampler_completo"
+SCHEMA_VERSION = "hftzones_diagnostico_v2_2_discrepancias_con_direccion"
 
 # CONGELADOS. Se citan para poder reproducir la cuenta, NO se tocan (P-47 / §4.4).
 H_FLOOR = 2
@@ -169,6 +169,8 @@ def diagnosticar_sesion(ts, px, vol, min_pasos):
 
     return dict(
         n_ticks=len(ts), n_dt_negativos=n_neg, monotona=bool(n_neg == 0),
+        frac_dt_cero_muestreada=float(np.mean([1.0 if x == 0 else 0.0 for x in sm.vals])
+                                      if sm.vals else 0.0),
         frac_dt_cero=float((dt == 0).mean()),
         q_dt={("q%03d" % int(q * 100)): quantile_exact(ms_ord, q) for q in CUANTILES_DT},
         frac_vol_1=float((vol == 1).mean()),
@@ -232,6 +234,28 @@ def main():
               for s in ses if s["muestreado"]]
         dif_rl = int(sum(1 for a_, b_ in rl if a_ != b_))
 
+        # DIRECCION Y SESIONES de cada discrepancia (v2.2). Sin esto, "NQ esta justo en
+        # la frontera" es una explicacion plausible pero no demostrada DENTRO del
+        # artefacto: se publicaba cuantas sesiones discrepan, no en que sentido.
+        detalle = []
+        for s in ses:
+            if not s["muestreado"]:
+                continue
+            c_, m_ = s["completo"], s["muestreado"]
+            if all(c_[k] == m_[k] for k in CAMPOS_EFF) and                c_["_resolution_limited"] == m_["_resolution_limited"]:
+                continue
+            detalle.append(dict(
+                trade_date=s["trade_date"],
+                p50_completo=c_["_p50_ms"], p50_sampler=m_["_p50_ms"],
+                max_pausa_completo=c_["eff_max_pausa_ms"],
+                max_pausa_sampler=m_["eff_max_pausa_ms"],
+                resolution_limited_completo=c_["_resolution_limited"],
+                resolution_limited_sampler=m_["_resolution_limited"],
+                frac_dt_cero_completa=round(s["frac_dt_cero"], 6),
+                frac_dt_cero_muestreada=round(s["frac_dt_cero_muestreada"], 6),
+                stride=s["stride_ms"],
+                n_total=s["n_total_ms"], n_muestra=s["n_muestra_ms"]))
+
         salida[inst] = dict(
             n_sesiones=n,
             # --- lo que el `any()` escondia -------------------------------------
@@ -264,6 +288,7 @@ def main():
                 dif_max_por_campo=dif_por_campo,
                 sesiones_que_discrepan_por_campo=discrepan,
                 sesiones_que_discrepan_resolution_limited=dif_rl,
+                discrepancias=detalle,
                 campos_comparados=len(CAMPOS_EFF) + 1,
                 identicos_vector_completo=bool(
                     all(v == 0 for v in dif_por_campo.values() if v is not None)
@@ -294,6 +319,15 @@ def main():
                 "negativos; y su `resolution_limited_en_alguna` es un any() que se "
                 "leyo como universal"),
         outcomes_accessed=False, pnl_accessed=False, holdout_included=False,
+        fuente_canonica=("el SAMPLER VIVO es la fuente canonica de la calibracion "
+                         "automatica: es lo que corre el indicador. La muestra completa "
+                         "queda como analisis de SENSIBILIDAD, no como configuracion."),
+        nota_resolution_limited=("`resolution_limited` NO gobierna ninguna rama del "
+                                 "motor: se calcula (hftzones2.py l.248) y solo se emite "
+                                 "en el log de CALIBRATION (l.258). El que SI puede "
+                                 "cambiar comportamiento es `eff_max_pausa_ms`, porque "
+                                 "el motor corta una racha con "
+                                 "`ms > eff[\"max_pausa\"]` (l.397)."),
         congelado=dict(H_FLOOR=H_FLOOR, Q_HEIGHT=Q_HEIGHT,
                        min_pasos=DEFAULTS["min_pasos"],
                        nota="citados para reproducir; NO se tocan"),

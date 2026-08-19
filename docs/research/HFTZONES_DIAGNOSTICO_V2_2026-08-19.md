@@ -79,9 +79,18 @@ coinciden casi por construcción. No miraba `eff_max_pausa_ms`, ni `p50`, ni
 **En 2 de 263 sesiones de NQ (0,76 %), la decimación cambia `p50` hasta 4 ms, mueve
 `eff_max_pausa_ms` hasta 15 ms, y llega a invertir el flag `resolution_limited`.**
 
-Consecuencia concreta: **el indicador en vivo y una calibración offline con muestra
-completa pueden estar en desacuerdo sobre si una sesión está limitada por resolución.**
-No es un detalle de precisión — es un flag que decide comportamiento.
+**Consecuencia, con la corrección del auditor.** `resolution_limited` **no gobierna
+ninguna rama del motor**: se calcula (`hftzones2.py` l. 248) y sólo se emite en el log
+de `CALIBRATION` (l. 258). Mi frase «es un flag que decide comportamiento» era falsa.
+
+Lo que **sí** puede cambiar comportamiento es **`eff_max_pausa_ms`**: el motor corta una
+racha cuando `ms > eff["max_pausa"]` (l. 397). En esas 2 sesiones de NQ la decimación
+mueve ese umbral hasta 15 ms, o sea **puede cambiar dónde termina una racha**.
+`resolution_limited` también se invierte, pero hoy es diagnóstico.
+
+**Y la conclusión operativa:** para reproducir el indicador vivo, el catálogo offline
+debe usar **el mismo sampler**. La muestra completa queda como **análisis de
+sensibilidad**, no como configuración canónica.
 
 **Y no es «más decimación, más divergencia».** ES tiene el stride más agresivo
 (4, con 182.654 muestras de 922.342 ticks) y **cero** discrepancias; NQ tiene stride 2 y
@@ -109,8 +118,12 @@ Se puede agregar si hace falta.
 | `dt = 0` (mediana) | 65 % | 69 % | 80 % | 48 % | 52 % | 41 % | 86 % |
 
 **14.837 trades de NQ comparten un mismo timestamp.** Entre el 41 % y el 86 % de los
-intervalos son exactamente 0. Cualquier medida de velocidad sobre este reloj está
-midiendo la resolución del registro, no el mercado.
+intervalos son exactamente 0.
+
+**Acotado (auditor).** Eso afecta a los **cuantiles bajos** (`q2`, `q5`, `q15`) y a lo
+que deriva de ellos —`eff_max_avg` y `eff_max_total`—, que quedan contra su piso. **No
+afecta por igual a `eff_max_pausa`**, que deriva de `p50` y sí adapta en YM. Decir
+«cualquier medida de velocidad» era demasiado amplio.
 
 ## 5. Volumen: lo degenerado es **la fórmula**, no la distribución
 
@@ -157,8 +170,10 @@ significan** y sobre qué sesiones se calcularon.
 
 ## 8. Lo que sigue abierto — y no es mío
 
-Con `q15 = 0` en los siete y hasta 14.837 trades por timestamp, la compuerta de
-velocidad no discrimina. Tres caminos, y ninguno se resuelve bajando un cuantil:
+Con `q15 = 0` en los siete y hasta 14.837 trades por timestamp, **los umbrales
+derivados de cuantiles bajos** (`eff_max_avg`, `eff_max_total`) no discriminan. **El de
+pausa sí adapta parcialmente** (YM: 20 ms contra 5). Tres caminos para esa parte, y
+ninguno se resuelve bajando un cuantil:
 
 1. **Aceptarlo** y declarar la compuerta desactivada.
 2. **Ventanas muy superiores a la resolución** (100 ms, 1 s) o **event-time** en vez de
