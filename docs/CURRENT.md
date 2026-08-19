@@ -11,30 +11,26 @@
 ## Qué está vivo hoy
 
 1. **Línea científica:** H-Z2A v4. Manifiesto v1 **SUSPENDIDO**.
-2. **Ruta crítica:** censo v2 **en origin y verificado**
-   (`docs/research/censo_hz2a_v2_episodio_2026-08-18.json`,
-   commit `a27e121f5b35413c5311f708f16310b52056142f`). Universo = v1
-   (228 / 575 / 281.703). `vive_por_N` = eventos ≥ 403. No hay boolean de
-   sesiones. **No se reportan «22 vivas».** δ bajo (c) tiene dos roles
-   (profundidad + cierre de episodio). Entrada 033.
-3. **De Nico, antes de mirar la tabla otra vez:** piso de sesiones (**P-47**).
-   Sin eso no hay manifiesto v2 ni STOP. Opciones en la 033: sin boolean, o
-   MDE escrito *antes* de volver a los números.
-4. **Ciclo cerebro:** idea, no a construir. `docs/research/CICLO_CEREBRO_Y_SESION_2026-08-19.md`.
-5. **Camino a PASS:** `docs/research/CAMINO_A_PASS_PARIDAD_2026-08-19.md`.
-6. **Board:** P-41 resuelta. P-42 abierta. P-45 (c). P-46 denominador 45.
-   P-47 = piso de sesiones (el P-47 del BOARD era zona no virgen → falta
-   copiar P-48…P-51). `PENDIENTE.md`.
-7. **Ledger v1:** `docs/research/LEDGER_COSTOS_CAP3_2026-08-18.md`.
-8. **Canal:** `docs/audits/CANAL_AUDITOR.md` (001→033).
-   Research en frío: `docs/research/LEER.md`.
+2. **Censo v2** en origin y verificado. Universo = v1. No se leen «22 vivas».
+3. **P-47 DECIDIDA: A** — sin boolean de sesiones (`6760736a…`). Cada celda
+   publica `n_sesiones`; el MDE se deriva. No hay manifiesto v2 todavía.
+4. **Visor:** spec práctico/estético en
+   `docs/research/VISOR_PRACTICO_ESTETICO_2026-08-19.md`. Reusa el idioma de
+   `viewer/nt8_bridge/store_viewer.html`. No es F4.
+5. **Board:** P-41 resuelta. P-42 abierta. P-45 (c). P-46 denominador 45.
+   P-47 = A. P-48…P-51 copiados. `PENDIENTE.md`.
+6. **Ledger v1:** `docs/research/LEDGER_COSTOS_CAP3_2026-08-18.md`.
+7. **Canal:** `docs/audits/CANAL_AUDITOR.md`. Research en frío: `docs/research/LEER.md`.
+
+Hay una línea paralela **H-ASIA-1** en 6J (HEAD reciente). No reemplaza H-Z2A.
 
 ## Qué no tocar
 
 Holdout · P&L · F4 sin STOP · MAE/MFE · `features.py` · `fix/g2-a1-*` ·
 `COVERAGE_NEUTRAL` · matriz de kernels · Optuna/CatBoost · cambiar el 403 ·
-elegir celda por `vive_por_N` · inventar un piso de sesiones mirando la tabla.
+boolean de sesiones · semáforo de «vive» en el visor.
 Firewall: outcomes `false`, holdout 2026-07-01 → 2026-12-31
 (`1782856800000000000` ns).
 
-**Aporte al referente:** la celda más gorda en eventos es la más pobre en sesiones.
+**Aporte al referente:** A evita convertir la potencia en una etiqueta. El visor
+acorta el tiempo entre «esto huele mal» y el corredor, sin mirar el resultado.
