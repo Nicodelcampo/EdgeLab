@@ -1558,3 +1558,78 @@ el precio. Desde ahí, seguir persiguiéndola es deuda técnica disfrazada de ri
 **Qué falta decidir (de Nico):** confirmar el aparcamiento de P-42 / P-43 / P-44 /
 P-32. La regla la puedo asentar; **sacar ítems de la cola de trabajo es decisión
 suya**, y por eso quedan marcados «aparcada» y no «cerrada».
+
+
+---
+
+## P-53 — lo que **sí** movería la aguja: sesiones, no modelos
+
+**Asentada 2026-08-19.** Origen: Nico preguntó si se puede entrenar un algoritmo que
+aprenda qué características tiene un movimiento tras el cual el precio se mueve X
+ticks, y que aprenda regímenes. **Se puede, y es la parte fácil.** Esta entrada fija
+por qué eso no es la restricción, y cuál es.
+
+### La restricción real es N, y es una sola
+
+| cantidad | valor |
+|---|---|
+| ticks tras firewall (6E) | 16.215.330 |
+| barras M1 | 281.703 |
+| **sesiones** | **228** |
+
+Con etiquetas de ventana futura, las filas contiguas comparten casi toda su etiqueta:
+**el N efectivo se parece a las sesiones, no a las barras.** Un modelo va a ver
+281.703 filas y a reportar intervalos angostísimos que son mentira — el mismo error
+que P-47 cazó en el censo (2.484 eventos en 39 sesiones no son 2.484 observaciones).
+
+Con `Δ ≈ 0,10 · √(403 / n_sesiones)`:
+
+| sesiones | MDE |
+|---|---|
+| 228 (universo entero) | ~13 pp |
+| 76 (un régimen de tres) | ~23 pp |
+
+Un edge real en futuros vive en **2–5 pp**. **No se detecta con 228 sesiones**, y
+partirlas en regímenes empeora el problema. **Ningún modelo afloja esto.**
+
+### Orden de inversión, de mayor a menor retorno
+
+1. **Ganar sesiones.** `research-v2` tiene 56 contratos y 1.015.587.419 ticks. El
+   cuello es **P-44**: los parámetros no transportan entre instrumentos (`gaps2` da
+   10 zonas en un activo y 113.298 en otro). Resolver P-44 —normalizar por volatilidad
+   / rango / percentil propio, o pre-registrar cada activo por separado— es lo que
+   convierte 228 sesiones en miles. **Es la inversión de mayor retorno del proyecto.**
+2. **Costos primero, no último.** 6E round-trip ≈ **3,9 ticks**. Con etiqueta «+10
+   ticks», el edge bruto debe superar el **39 %** del objetivo sólo para empatar.
+   Cap. 3 (ledger de costos) ya está abierto y va antes que F4 en el addendum 007.
+3. **Etiqueta de barrera, no de retorno.** «Sube 10 ticks después» lo cumple un camino
+   que primero bajó 30: se predice bien y se pierde plata. La etiqueta operable es
+   **primer pasaje con dos barreras** (`+X` / `−Y`, horizonte máximo).
+4. **Regímenes DECLARADOS, no aprendidos.** Tipo de sesión, bucket de volatilidad por
+   cuantil de ventana expansiva, hora del día: computables en `t` sin mirar adelante,
+   con N interpretable por bucket. Un HMM ajustado sobre toda la muestra **mete el
+   futuro en el pasado** (la etiqueta de régimen en `t` usa datos posteriores a `t`),
+   y a 228 sesiones agrega parámetros y fuga a cambio de nada.
+5. **ML como estimador condicional sobre población pre-registrada**, no como buscador
+   sobre todas las barras. La pregunta bien puesta es: *dado un episodio near-miss,
+   ¿qué features medibles ANTES de que el evento se complete predicen el resultado de
+   barrera?* Eso es **F4** en el addendum 007, y es la **«firma»** que Nico ya
+   registró como **P-49**.
+
+### Por qué el orden importa
+
+Con ML la multiplicidad **deja de ser contable**. Una grilla de 60 celdas tiene un
+`N_eff` que se escribe (el nuestro es 71). Un modelo con búsqueda de hiperparámetros y
+selección de features tiene un número efectivo de hipótesis difícil hasta de acotar —
+por eso existen DSR y SPA, y por eso acá se pre-registra.
+
+### La frase que resume la entrada
+
+> **Un modelo mediocre con 2.000 sesiones vence a un modelo excelente con 228.**
+
+### Compuerta
+
+Cualquier búsqueda sobre retornos o P&L cruza el **STOP**: manifiesto de campaña +
+número efectivo de hipótesis + riesgos + datos faltantes, y OK explícito de Nico. Y el
+addendum 007 pone **F4 después** de ledgers, costos y población — que es exactamente
+donde está parado el proyecto hoy.
