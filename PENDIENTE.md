@@ -1277,3 +1277,53 @@ son celdas independientes de δ=5 y δ=8, son la misma celda repetida.
 
 Ahora cada celda publica `delta_efectivo`, `celda_degenerada`,
 `separacion_observable` y `anillo_anida` — **computados**, no declarados.
+
+
+---
+
+## P-45 — DECIDIDA: **(c) episodio**. Asiento de la decisión de Nico
+
+**Decidida 2026-08-18.** Fuente textual:
+`docs/research/INTAKE_NICO_HZ2A_EXPLORATORIO_2026-08-18.md`.
+
+> «Una vez que se cumplió el near miss, el 2do, si cumple las condiciones de
+> excursión, distancia, tiempo, volumen, (o lo que esté descrito como
+> umbral/parámetro para el análisis) se consideraría simplemente parte del retorno a
+> la zona, y si luego se dieran las condiciones para considerarlo como otro near
+> miss, entonces ahí sí se lo consideraría.» — Nico
+
+**No es (a) ni (b). Es (c).** Un near-miss cumplido **abre un episodio**. El
+acercamiento siguiente, si es el retorno, es **A2** — no un segundo near-miss. Otro
+near-miss sólo si, **después** de cerrado ese episodio, se cumplen otra vez las
+condiciones. **δ sigue siendo un parámetro de la grilla** (explorar cuál funciona
+mejor), no un tipo de evento distinto.
+
+**Implementada** en `censar_zona`, con tres tests en
+`tests/research/test_censo_hz2a_ceguera.py`. Detalle que ya falló una vez y quedó
+fijado: **no alcanza con reanudar un índice después del retorno** — si el escaneo se
+reanuda dentro de la banda δ, vuelve a descender por la misma aproximación de vuelta
+y la cuenta igual. El episodio se cierra consumiendo el retorno **entero**, o sea
+recién cuando el precio sale de la banda.
+
+**Consecuencia que (c) NO resuelve, medida y declarada.** El auditor prefería (b)
+porque comparar celdas entre δ sólo tiene sentido si miden la misma población
+filtrada. **(c) no restituye la anidación** — la aumenta:
+
+| estimand | pares no monótonos sobre 19.200 |
+|---|---|
+| (a) golosa | 21 |
+| **(c) episodio** | **49** |
+
+La segmentación en episodios sigue dependiendo de δ: con δ grande el retorno se
+absorbe antes y el corredor se consume distinto. **El anillo marginal de la entrada
+014 no se lee como anidado** y `n_near_miss_marginal` puede ser negativo. No reabre
+la decisión — el estimand lo eligió Nico — pero se declara, no se descubre leyendo
+una tabla. La advertencia del auditor sobre **A2** vale igual: aunque NM anidara, A2
+puede no hacerlo.
+
+**Fuera de v2, por decisión explícita:** MAE/MFE y todo lo que mire qué pasó después
+de llegar (es resultado — espera manifiesto + STOP) · HFTZones2 (después de v2, no en
+la misma corrida) · «tendencia saludable» (empieza el escrito; F9 sigue en pausa) ·
+zona no virgen (se revisa; **la primera v2 sigue virgen** — cambiarlo cambia qué se
+cuenta) · la «firma» conjunta (después de tener N: primero la población, después qué
+coincidió).

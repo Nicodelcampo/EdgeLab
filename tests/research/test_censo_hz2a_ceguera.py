@@ -188,14 +188,15 @@ def test_la_geometria_base_produce_el_evento_esperado(censo):
     assert nm == 1, "BASE deberia producir exactamente 1 near-miss, dio %d" % nm
     assert a2 == 1, "BASE deberia producir exactamente 1 A2, dio %d" % a2
 
-    # Y con la cola que se aleja aparece un SEGUNDO ciclo: la serie vuelve a d_min=2 y
-    # se separa de nuevo. Dos near-miss es la lectura correcta de v4 --dos
-    # aproximaciones, cada una con su rechazo-- no un doble conteo. Se fija para que
-    # nadie lo "arregle" al valor viejo.
-    nm_con_cola = _contar(censo, BASE + COLAS["nunca_vuelve"])[clave][1]
-    assert nm_con_cola == 2, (
-        "la cola que se aleja deberia habilitar un 2do ciclo (2 near-miss), dio %d"
-        % nm_con_cola)
+    # ENMENDADO 2026-08-18 por P-45 (c). Antes de la decision de Nico este test fijaba
+    # 2 near-miss: la serie vuelve a d_min=2 y se separa, y eso se leia como un segundo
+    # ciclo. Bajo (c) ese segundo acercamiento es el RETORNO del episodio que abrio el
+    # primero -- es A2, no un near-miss nuevo. El valor correcto pasa a ser 1, y el
+    # cambio es la decision del estimand, no un arreglo de conteo.
+    a1c, nmc, a2c = _contar(censo, BASE + COLAS["nunca_vuelve"])[clave]
+    assert (nmc, a2c) == (1, 1), (
+        "bajo (c) la cola que se aleja deja 1 near-miss + 1 A2, dio %d y %d"
+        % (nmc, a2c))
 
 
 def test_un_toque_antes_del_giro_mata_el_near_miss(censo):
@@ -251,21 +252,95 @@ def test_la_degeneracion_de_la_grilla_es_aritmetica_no_empirica(censo):
 
 
 def test_los_anillos_NO_anidan_y_el_censo_lo_dice(censo):
-    """Documenta la segunda causa, que NO es un bug sino una decision de estimand sin
-    tomar (P-45): la segmentacion es golosa y depende de delta. Con delta grande un
-    minimo poco profundo califica primero, consume el corredor hasta su rechazo y
-    saltea minimos mas profundos que un delta chico si habria contado aparte.
+    """Documenta la consecuencia que la decision de P-45 (c) NO resuelve.
 
-    El conjunto de EVENTOS anida --un near-miss de d_min=2 califica para todo
-    delta>=2-- pero el CONTEO no. Este test fija que el fenomeno existe, para que
-    nadie lea el anillo marginal de la entrada 014 como si anidara."""
-    serie = ([25] + [16, 17, 15, 12, 9, 13, 16, 18, 15, 19, 12, 10, 13, 17, 13,
-                     15, 12, 8, 12, 9, 6, 3, 5, 4, 8, 4, 8, 11, 9, 11, 14, 17,
-                     13, 10, 15, 19] + [25])
-    d = np.array(serie, dtype=np.int64)
-    toca = d == 0
-    c = censo.censar_zona(d, toca, toca.copy())
-    por_delta = [c[(20, dl, 5, "trade")][1] for dl in censo.DELTA_NM]
-    assert any(y < x for x, y in zip(por_delta, por_delta[1:])), (
-        "esta serie deberia exhibir el conteo NO monotono en delta; dio %s. Si dejo "
-        "de pasar, la segmentacion cambio y P-45 hay que releerla" % por_delta)
+    El auditor prefirio (b) justamente porque comparar celdas entre delta solo tiene
+    sentido si miden la misma poblacion filtrada. Nico eligio (c). Medido: bajo (c)
+    la no-anidacion PERSISTE --y aumenta-- porque la segmentacion en episodios sigue
+    dependiendo de delta: con delta grande el retorno se absorbe antes y el corredor
+    se consume distinto.
+
+        con (a) golosa : 21 pares no monotonos sobre 19.200
+        con (c) episodio: 49
+
+    Numeros en `diag/tasa_senales/barrido_anidacion.py`, deterministico.
+
+    Consecuencia vigente: el anillo marginal de la entrada 014 NO se lee como anidado
+    y `n_near_miss_marginal` puede ser negativo. No reabre la decision --el estimand
+    lo eligio Nico-- pero tiene que estar fijado y no descubrirse leyendo una tabla.
+
+    El testigo se BUSCA con semilla fija en vez de cablear una serie: una serie
+    cableada deja de exhibir el fenomeno en cuanto cambia el estimand, y entonces el
+    test miente diciendo que el fenomeno desaparecio."""
+    rng = np.random.default_rng(20260818)
+    violaciones = 0
+    for _ in range(120):
+        d = (np.abs(np.cumsum(rng.integers(-4, 5, 120))) % 90).astype(np.int64)
+        toca = d == 0
+        c = censo.censar_zona(d, toca, toca.copy())
+        for D in censo.D_FAR:
+            for R in censo.R_MIN:
+                s = [c[(D, dl, R, "trade")][1] for dl in censo.DELTA_NM]
+                violaciones += sum(1 for x, y in zip(s, s[1:]) if y < x)
+    assert violaciones > 0, (
+        "no se encontro ninguna violacion de anidacion: si la segmentacion dejo de "
+        "depender de delta, esto es una BUENA noticia pero cambia lo que P-45 dice y "
+        "hay que releerla, no borrar el test")
+
+
+# ---------------------------------------------------------------------------
+# Parte 4 -- P-45 (c): EPISODIO. Decision de Nico, 2026-08-18.
+#
+# «Una vez que se cumplio el near miss, el 2do [acercamiento] ... se consideraria
+# simplemente parte del retorno a la zona, y si luego se dieran las condiciones para
+# considerarlo como otro near miss, entonces ahi si se lo consideraria.»
+#   -- docs/research/INTAKE_NICO_HZ2A_EXPLORATORIO_2026-08-18.md
+#
+# Sin este test la implementacion de (c) seria otra propiedad declarada y no derivada.
+# ---------------------------------------------------------------------------
+
+# Tres bajadas identicas a d=2 con separacion a d=8. D=10, delta=2, R=5.
+#   bajada 1 -> near-miss                    (abre el episodio)
+#   bajada 2 -> A2, el RETORNO               (NO es un segundo near-miss)
+#   bajada 3 -> near-miss, episodio nuevo    (el anterior ya cerro)
+TRES_BAJADAS = [12, 8, 5, 2, 4, 6, 8, 5, 2, 4, 6, 8, 5, 2, 4, 6, 8, 11]
+
+
+def test_el_retorno_NO_se_cuenta_como_segundo_near_miss(censo):
+    """EL test que pidio el auditor.
+
+    La version anterior reanudaba con `i = r + 1`, o sea DENTRO de la aproximacion de
+    vuelta: esa misma vuelta bajaba a d_min, se separaba, y se contaba como near-miss
+    nuevo. Bajo (c) el retorno pertenece al episodio abierto.
+
+    Con 3 bajadas iguales: 2 near-miss (la 1ra y la 3ra) y 1 A2 (la 2da). Si diera 3
+    near-miss, el retorno se esta contando dos veces."""
+    a1, nm, a2 = _contar(censo, TRES_BAJADAS)[(10, 2, 5, "trade")]
+    assert nm == 2, (
+        "3 bajadas bajo (c) son 2 near-miss (1ra y 3ra) -- dio %d. Si dio 3, el "
+        "retorno se esta contando como near-miss nuevo, que es justo lo que (c) "
+        "prohibe" % nm)
+    assert a2 == 1, "la 2da bajada es el retorno del 1er episodio: 1 A2, dio %d" % a2
+    assert a1 == 1, "un solo corredor, dio %d entradas" % a1
+
+
+def test_el_episodio_se_cierra_recien_al_salir_de_la_banda(censo):
+    """Detalle de implementacion que ya fallo una vez: no alcanza con saltar UN indice
+    despues del retorno. Si el escaneo se reanuda dentro de la banda delta, vuelve a
+    descender por la MISMA aproximacion de vuelta y la cuenta.
+
+    Retorno largo --el precio se queda varias barras dentro de delta antes de salir--
+    y una sola bajada posterior. Sigue siendo 2 near-miss, no 3."""
+    serie = [12, 8, 5, 2, 4, 6, 8, 5, 2, 2, 1, 2, 2, 4, 6, 8, 5, 2, 4, 6, 8, 11]
+    nm = _contar(censo, serie)[(10, 2, 5, "trade")][1]
+    assert nm == 2, (
+        "un retorno que se queda dentro de delta no puede generar near-miss extra; "
+        "dio %d" % nm)
+
+
+def test_un_near_miss_sin_retorno_sigue_siendo_near_miss(censo):
+    """(c) cambia cuando se cuenta el SEGUNDO, no invalida el primero. Si el precio se
+    va y no vuelve, el near-miss existe y el A2 no."""
+    serie = [12, 8, 5, 2, 4, 6, 8, 9, 8, 9, 8, 9, 11]
+    a1, nm, a2 = _contar(censo, serie)[(10, 2, 5, "trade")]
+    assert (nm, a2) == (1, 0), "esperado 1 near-miss y 0 A2, dio %d y %d" % (nm, a2)

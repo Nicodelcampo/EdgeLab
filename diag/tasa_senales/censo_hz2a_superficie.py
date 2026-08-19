@@ -52,7 +52,7 @@ from edgelab.bridge.indicators.avolclusterpoi import (  # noqa: E402
 from edgelab.bridge.ticks import TickSeries, load_canonical_parquet  # noqa: E402
 from edgelab.kaggle.sessions_cme import session_bounds_utc_ns  # noqa: E402
 
-SCHEMA_VERSION = "censo_hz2a_superficie_v2"
+SCHEMA_VERSION = "censo_hz2a_superficie_v2_episodio"
 
 # --- grilla CONGELADA (entrada 014) ------------------------------------------
 D_FAR = (10, 20, 40, 80)
@@ -232,10 +232,33 @@ def censar_zona(d, toca_trade, toca_quote):
                                 i = k + 1      # toco antes de separarse: no es rechazo
                                 continue
                             n_nm += 1
-                            # A2 = primer retorno elegible al corredor tras el rechazo
-                            if (dd[r:] <= dl).any():
-                                n_a2 += 1
-                            i = r + 1          # seguir buscando ciclos despues del rechazo
+                            # ---- P-45 (c): EPISODIO. Decision de Nico, 2026-08-18 ----
+                            # Un near-miss cumplido ABRE UN EPISODIO. El acercamiento
+                            # siguiente, si es el retorno, es A2 -- NO un segundo
+                            # near-miss. Otro near-miss solo si, DESPUES de cerrado
+                            # ese episodio, se cumplen otra vez las condiciones.
+                            #
+                            # Por eso no alcanza con `i = r + 1`: eso reanudaba el
+                            # escaneo dentro de la misma aproximacion de vuelta, que
+                            # volvia a bajar a d_min y a separarse, y el retorno se
+                            # contaba como near-miss nuevo. El episodio se cierra
+                            # consumiendo el retorno ENTERO: se reanuda recien cuando
+                            # el precio vuelve a salir de la banda delta.
+                            vuelve = np.flatnonzero(dd[r:] <= dl)
+                            if len(vuelve) == 0:
+                                # Sin retorno no puede haber otro near-miss: un
+                                # near-miss exige d_min <= delta, o sea al menos un
+                                # punto con d <= delta. Este `break` SI es seguro --
+                                # a diferencia del que estaba en la rama de
+                                # separacion, que abandonaba el corredor por un
+                                # fracaso local y borraba eventos posteriores validos.
+                                break
+                            a = r + int(vuelve[0])
+                            n_a2 += 1
+                            sale = np.flatnonzero(dd[a:] > dl)
+                            if len(sale) == 0:
+                                break          # el corredor termina dentro de delta
+                            i = a + int(sale[0])
                     out[(D, dl, R, pr)] = (n_a1, n_nm, n_a2)
     return out
 
