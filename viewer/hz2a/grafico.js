@@ -54,8 +54,11 @@ function iniGrafico() {
   cg.addEventListener("dblclick", ev => {
     const r = ev.currentTarget.getBoundingClientRect();
     if (gEje_area && (ev.clientX - r.left) > gEje_area.xEje) {
-      gEscala = null; pintarG();     // doble clic en el eje = volver a automatica
+      gEscala = null;                // doble clic en el EJE: escala vertical a auto
+    } else {
+      gEscala = null; gVista = null; // doble clic en el CHART: encuadra todo de nuevo
     }
+    pintarG();
   });
   // Cursor: `crosshair` en el area del chart (lo que usa cualquier plataforma),
   // `ns-resize` sobre el eje de precios, y `grabbing` SOLO mientras se arrastra.
@@ -91,28 +94,37 @@ function pintarG() {
 
   const S = serieG();
   if (!gVista) gVista = { a: Math.max(0, S.n - (gTipo === "linea" ? 1500 : 160)), b: S.n - 1 };
-  gVista.a = Math.max(0, Math.min(gVista.a, S.n - 2));
-  gVista.b = Math.min(S.n - 1, Math.max(gVista.b, gVista.a + 1));
+  if (gVista.b - gVista.a < 8) gVista.b = gVista.a + 8;
 
   const cv = document.querySelector("#cg"), dpr = devicePixelRatio || 1;
   const w = cv.clientWidth, h = cv.clientHeight;
   cv.width = w * dpr; cv.height = h * dpr;
   const g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
   // `pad.r` es el ancho de las etiquetas de precio; `GAP_DER` es aire entre la ultima
-  // barra y el eje, como el "right margin" de NT8. Sin el, la vela mas reciente queda
-  // pegada al borde y no se ve hacia donde va.
-  const GAP_DER = 52;
+  // barra y el eje, como el "right margin" de NT8 / TradingView. Sin el, la vela mas
+  // reciente queda pegada al borde y no se ve hacia donde va.
+  const GAP_DER = 156;
   const pad = { l: 12, r: 66 + GAP_DER, t: 12, b: 22 };
   const W = w - pad.l - pad.r, H = h - pad.t - pad.b;
   const xEje = pad.l + W + GAP_DER;        // donde arranca la columna de precios
   const a = gVista.a, b = gVista.b, m = b - a + 1;
 
+  // La vista puede salirse del rango de datos: TradingView deja seguir scrolleando
+  // hacia el vacio a los costados. Los recorridos se acotan a [0, n-1] pero el mapeo
+  // X() sigue usando [a, b], asi que el espacio de mas queda vacio en vez de estirar
+  // la serie.
+  const av = Math.max(0, a), bv = Math.min(S.n - 1, b);
   let lo = Infinity, hi = -Infinity;
-  if (S.tipo === "velas") { for (let i = a; i <= b; i++) { lo = Math.min(lo, S.b.l[i]); hi = Math.max(hi, S.b.h[i]); } }
-  else { for (let i = a; i <= b; i++) { lo = Math.min(lo, TICKS.px[i]); hi = Math.max(hi, TICKS.px[i]); } }
+  if (bv >= av) {
+    if (S.tipo === "velas") { for (let i = av; i <= bv; i++) { lo = Math.min(lo, S.b.l[i]); hi = Math.max(hi, S.b.h[i]); } }
+    else { for (let i = av; i <= bv; i++) { lo = Math.min(lo, TICKS.px[i]); hi = Math.max(hi, TICKS.px[i]); } }
+  } else { lo = hi = (gEscala ? gEscala.c : 0); }
   const marg = Math.max(1, (hi - lo) * 0.08); lo -= marg; hi += marg;
-  if (gEscala) {                       // escala fija por arrastre sobre el eje
-    const c = (lo + hi) / 2, semi = Math.max(1, (hi - lo) / 2 * gEscala.k);
+  // `gEscala.k` = zoom vertical (arrastre sobre el eje); `gEscala.c` = centro, que
+  // el arrastre vertical mueve. Con `gEscala` en null la escala sigue al dato, que es
+  // el comportamiento por defecto.
+  if (gEscala) {
+    const semi = Math.max(1, (hi - lo) / 2 * gEscala.k);
     lo = gEscala.c - semi; hi = gEscala.c + semi;
   }
   const X = i => pad.l + (i - a + 0.5) / m * W;
@@ -131,7 +143,7 @@ function pintarG() {
     // Verde sube / rojo baja: convencion universal de velas, y la de la captura que
     // paso Nico. No colisiona con los chips de estado, que son otra superficie.
     const celda = W / m, cuerpo = Math.max(1, Math.min(14, celda * 0.68));
-    for (let i = a; i <= b; i++) {
+    for (let i = av; i <= bv; i++) {
       const sube = S.b.c[i] >= S.b.o[i], col = cssv(sube ? "--ok" : "--err"), x = X(i);
       g.strokeStyle = col; g.lineWidth = 1;
       g.beginPath(); g.moveTo(x, Y(S.b.h[i])); g.lineTo(x, Y(S.b.l[i])); g.stroke();
@@ -141,13 +153,13 @@ function pintarG() {
   } else {
     // Linea escalonada con un PUNTO por tick, como el chart de la captura.
     g.strokeStyle = cssv("--dim"); g.lineWidth = 1; g.beginPath();
-    for (let i = a; i <= b; i++) {
+    for (let i = av; i <= bv; i++) {
       const x = X(i), y = Y(TICKS.px[i]);
-      if (i === a) g.moveTo(x, y); else { g.lineTo(x, Y(TICKS.px[i - 1])); g.lineTo(x, y); }
+      if (i === av) g.moveTo(x, y); else { g.lineTo(x, Y(TICKS.px[i - 1])); g.lineTo(x, y); }
     }
     g.stroke();
     const r = Math.max(0.8, Math.min(2.4, W / m * 0.32));
-    for (let i = a; i <= b; i++) {
+    for (let i = av; i <= bv; i++) {
       const d = i > 0 ? TICKS.px[i] - TICKS.px[i - 1] : 0;
       g.fillStyle = cssv(d > 0 ? "--ok" : d < 0 ? "--err" : "--dim2");
       g.beginPath(); g.arc(X(i), Y(TICKS.px[i]), r, 0, 6.283); g.fill();
@@ -159,16 +171,30 @@ function pintarG() {
     const tsDe = ms => {
       // ms -> x, buscando la barra/tick mas cercano en el tramo visible
       const leer = i => (S.tipo === "velas" ? S.b.end_ns[i] : TICKS.ts[i]) / 1e6;
-      if (ms <= leer(a)) return pad.l;
-      if (ms >= leer(b)) return pad.l + W;
-      let x = a, y = b;
+      if (ms <= leer(av)) return X(av);
+      if (ms >= leer(bv)) return X(bv);
+      let x = av, y = bv;
       while (y - x > 1) { const md = (x + y) >> 1; if (leer(md) < ms) x = md; else y = md; }
       return X(x);
     };
     dibujarOverlays(g, X, Y, pad, W, tsDe);
   }
 
-  const ult = S.tipo === "velas" ? S.b.c[b] : TICKS.px[b];
+  // Con paneo libre la vista puede quedar ENTERA fuera de los datos. Ahi no hay
+  // ultimo precio ni horas que mostrar: se dibuja el marco vacio y se sale.
+  // (Sin esto `hora()` leia un indice inexistente y tiraba "Invalid time value" --
+  // un caso que el paneo con clamp no podia alcanzar y el libre si.)
+  if (bv < av) {
+    g.fillStyle = cssv("--dim2"); g.font = "11px ui-monospace,monospace";
+    g.textAlign = "center";
+    g.fillText("sin datos en esta ventana — doble clic para reencuadrar",
+               pad.l + W / 2, pad.t + H / 2);
+    document.querySelector("#infoG").textContent =
+      B.instrumento + " · fuera del rango de datos";
+    return;
+  }
+
+  const ult = S.tipo === "velas" ? S.b.c[bv] : TICKS.px[bv];
   g.strokeStyle = cssv("--accent"); g.setLineDash([3, 3]);
   g.beginPath(); g.moveTo(pad.l, Y(ult)); g.lineTo(xEje, Y(ult)); g.stroke(); g.setLineDash([]);
   g.fillStyle = cssv("--accent"); g.fillRect(xEje + 2, Y(ult) - 8, 62, 16);
@@ -179,11 +205,12 @@ function pintarG() {
     const t = S.tipo === "velas" ? S.b.end_ns[i] : TICKS.ts[i];
     return new Date(t / 1e6).toISOString().slice(11, 19);
   };
-  g.fillStyle = cssv("--dim2"); g.textAlign = "left"; g.fillText(hora(a), pad.l, h - 6);
-  g.textAlign = "right"; g.fillText(hora(b), pad.l + W, h - 6);
+  g.fillStyle = cssv("--dim2"); g.textAlign = "left"; g.fillText(hora(av), X(av), h - 6);
+  g.textAlign = "right"; g.fillText(hora(bv), Math.min(pad.l + W, X(bv)), h - 6);
 
   document.querySelector("#infoG").textContent =
-    B.instrumento + " · " + (gTipo === "linea" ? "tick a tick" : gRes) + " · " + m + " de " + S.n;
+    B.instrumento + " · " + (gTipo === "linea" ? "tick a tick" : gRes) + " · " +
+    (bv - av + 1) + " de " + S.n + (gEscala ? "  · escala manual" : "");
   document.querySelector("#legG").innerHTML = gTipo === "velas"
     ? "<div><b>" + gRes + "</b> · eje <b>" + gEje + "</b></div>" +
       '<div style="color:var(--dim2)">barras del motor, no de la página</div>'
@@ -192,10 +219,12 @@ function pintarG() {
 }
 
 function zoomG(e) {
-  const S = serieG(), r = e.currentTarget.getBoundingClientRect();
+  // El zoom tampoco clampea contra [0, n-1]: si lo hiciera, acercarse cerca del borde
+  // arrastraria la vista de vuelta adentro y el aire de los costados desapareceria.
+  const r = e.currentTarget.getBoundingClientRect();
   const f = (e.clientX - r.left) / r.width, c = gVista.a + f * (gVista.b - gVista.a);
   const w = Math.max(12, (gVista.b - gVista.a) * (e.deltaY > 0 ? 1.25 : 0.8));
-  gVista = { a: Math.max(0, Math.round(c - f * w)), b: Math.min(S.n - 1, Math.round(c + (1 - f) * w)) };
+  gVista = { a: Math.round(c - f * w), b: Math.round(c + (1 - f) * w) };
   pintarG();
 }
 
@@ -222,16 +251,33 @@ function arrastreEscala(ev) {
 }
 
 function arrastreG(ev) {
+  // Desplazamiento LIBRE en los dos ejes, como TradingView: dx mueve el tiempo, dy
+  // mueve el precio. Antes el arrastre solo paneaba en horizontal y el eje vertical
+  // quedaba clavado al rango del dato.
+  //
+  // El limite horizontal deja salirse hasta MEDIA ventana a cada lado en vez de
+  // clavarse en la ultima barra: sin eso no se puede mirar el borde de los datos con
+  // aire alrededor.
   const S = serieG(), r = ev.currentTarget.getBoundingClientRect();
   const cv = ev.currentTarget;
   arrastrando = true; cv.style.cursor = "grabbing";
-  const x0 = ev.clientX, v0 = { a: gVista.a, b: gVista.b }, span = v0.b - v0.a;
+  const x0 = ev.clientX, y0 = ev.clientY;
+  const v0 = { a: gVista.a, b: gVista.b }, span = v0.b - v0.a;
+  // Si la escala venia en automatica, el primer arrastre vertical la fija en el rango
+  // que se estaba viendo, para que el paneo arranque justo donde esta el ojo.
+  const e0 = gEscala ? { k: gEscala.k, c: gEscala.c }
+                     : { k: 1, c: (gEje_area.lo + gEje_area.hi) / 2 };
+  const alto0 = gEje_area.hi - gEje_area.lo, H0 = gEje_area.H;
+  const holgura = Math.round(span * 0.5);
   const mover = e => {
     const dx = Math.round((e.clientX - x0) / r.width * span);
     let a = v0.a - dx, b = v0.b - dx;
-    if (a < 0) { b -= a; a = 0; }
-    if (b > S.n - 1) { a -= (b - (S.n - 1)); b = S.n - 1; }
-    gVista = { a: Math.max(0, a), b: Math.min(S.n - 1, b) }; pintarG();
+    if (a < -holgura) { b += (-holgura - a); a = -holgura; }
+    if (b > S.n - 1 + holgura) { a -= (b - (S.n - 1 + holgura)); b = S.n - 1 + holgura; }
+    gVista = { a: a, b: b };
+    const dy = (e.clientY - y0) / H0 * alto0;   // el contenido sigue al mouse
+    gEscala = { k: e0.k, c: e0.c - dy };
+    pintarG();
   };
   const soltar = () => {
     arrastrando = false; cv.style.cursor = "crosshair";
