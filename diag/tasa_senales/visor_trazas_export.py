@@ -134,7 +134,16 @@ def main():
             j = e
             while j < len(d) and d[j] < D_FAR:
                 j += 1
-            corredores.append((int(j - e), z, int(e), int(j), d, tt))
+            # La rebanada arranca en e-1, NO en e. `censar_zona` DETECTA el corredor
+            # por su cuenta: busca la transicion de `d >= D_far` a `d < D_far`. Una
+            # rebanada que empieza YA ADENTRO no tiene esa transicion, asi que no
+            # produce A1 y no puede producir ningun near-miss: cero por construccion.
+            #
+            # Este era el bug de fondo de los tres "0 corredores" del 2026-08-19. Los
+            # otros dos diagnosticos --el par (3,8) y el filtro por largo-- eran ciertos
+            # pero secundarios: aunque los hubiera acertado, el resultado habria sido 0
+            # igual.
+            corredores.append((int(j - e), z, int(max(e - 1, 0)), int(j), d, tt))
     largos = np.array([c[0] for c in corredores])
     print("corredores D_far=%d: %d" % (D_FAR, len(largos)))
     print("  largo en TICKS  min %d  p25 %d  mediana %d  p75 %d  p95 %d  max %d"
@@ -156,7 +165,9 @@ def main():
         if not (MIN_PUNTOS <= ln <= MAX_PUNTOS):
             continue
         dd = d[e:j]
-        if dd.min() > max(DELTAS) or (dd.max() - dd.min()) < R:
+        if dd[0] < D_FAR:          # sin la barra de entrada no hay A1 posible
+            continue
+        if dd[1:].min() > max(DELTAS) or (dd.max() - dd[1:].min()) < R:
             continue
         aptos.append((ln, z, e, j, d, tt))
     print("  con largo en [%d, %d] y minimo <= %d: %d"
