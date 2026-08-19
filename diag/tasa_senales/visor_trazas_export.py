@@ -44,24 +44,50 @@ D_FAR, R = 10, 5
 # 5 y 8. Con delta=3 sube, asi que ese par no exhibe el doble rol -- primer intento
 # de este exportador eligio (3,8) por "angosto vs ancho" y devolvio 0 corredores.
 DELTAS = (5, 8)
-MAX_PUNTOS = 700         # corredores mas largos se descartan para que el visor se lea
+# La serie de distancia es POR TICK, no por barra: un corredor puede tener decenas de
+# miles de puntos. El primer intento capaba en 700 y descarto los 575 corredores sin
+# que ninguno pudiera calificar. Los limites de abajo estan puestos por COSTO, no por
+# estetica, y el exportador publica la distribucion real para que se vean.
+MIN_PUNTOS = 200
+MAX_PUNTOS = 4000        # censar_zona es O(n x 120) en Python puro
+MAX_CANDIDATOS = 200     # cuantos corredores se evaluan antes de rankear
+
+
+def _cuenta(d, toca, dl, k=None):
+    """Conteo (nm, a2) sobre el prefijo de largo k."""
+    if k is None:
+        k = len(d)
+    _, nm, a2 = C.censar_zona(d[:k], toca[:k], toca[:k].copy())[(D_FAR, dl, R, "trade")]
+    return nm, a2
 
 
 def marcas(d, toca, dl):
-    """Indices donde se completa cada near-miss y cada A2, derivados de `censar_zona`
-    sobre prefijos. No se replica la maquina de estados."""
-    clave = (D_FAR, dl, R, "trade")
-    nm_prev = a2_prev = 0
-    nm_en, a2_en = [], []
-    for k in range(2, len(d) + 1):
-        a1, nm, a2 = C.censar_zona(d[:k], toca[:k], toca[:k].copy())[clave]
-        if nm > nm_prev:
-            nm_en += [k - 1] * (nm - nm_prev)
-            nm_prev = nm
-        if a2 > a2_prev:
-            a2_en += [k - 1] * (a2 - a2_prev)
-            a2_prev = a2
-    return dict(delta=dl, near_miss=nm_en, a2=a2_en, n_nm=nm_prev, n_a2=a2_prev)
+    """Indices donde se completa cada near-miss y cada A2, derivados de `censar_zona`.
+
+    BUSQUEDA BINARIA, no barrido. El gate C-A prueba que apendear datos nunca baja un
+    conteo, o sea que `conteo(prefijo)` es NO DECRECIENTE en el largo del prefijo. Eso
+    habilita bisectar: el indice del k-esimo evento es el prefijo mas corto cuyo conteo
+    llega a k. Son ~log2(n) llamadas por evento en vez de n.
+
+    El barrido lineal era inviable: la serie es por tick y `censar_zona` es O(n x 120)
+    en Python puro."""
+    n = len(d)
+    nm_tot, a2_tot = _cuenta(d, toca, dl)
+
+    def primer_prefijo(objetivo, cual):
+        lo, hi = 2, n
+        while lo < hi:
+            mid = (lo + hi) // 2
+            if _cuenta(d, toca, dl, mid)[cual] >= objetivo:
+                hi = mid
+            else:
+                lo = mid + 1
+        return lo - 1
+
+    return dict(delta=dl,
+                near_miss=[primer_prefijo(k, 0) for k in range(1, nm_tot + 1)],
+                a2=[primer_prefijo(k, 1) for k in range(1, a2_tot + 1)],
+                n_nm=nm_tot, n_a2=a2_tot)
 
 
 def main():
@@ -94,7 +120,8 @@ def main():
            for s in np.unique(ses)}
     print("zonas del portador: %d" % len(zonas))
 
-    elegidos = []
+    # --- 1) enumerar corredores y publicar su distribucion REAL de largo ----------
+    corredores = []
     for z in zonas:
         rec = C.recorrido_de_zona(z, col["ts"], col["px"], col["bid"], col["ask"],
                                   fin[z["session_id"]])
@@ -102,26 +129,47 @@ def main():
             continue
         d, tt, _ = rec
         lejos = d >= D_FAR
-        ent = np.flatnonzero(lejos[:-1] & ~lejos[1:]) + 1
-        for e in ent:
+        for e in np.flatnonzero(lejos[:-1] & ~lejos[1:]) + 1:
             j = e
             while j < len(d) and d[j] < D_FAR:
                 j += 1
-            if not (40 <= j - e <= MAX_PUNTOS):
-                continue
-            dd, ttt = d[e:j].copy(), tt[e:j].copy()
-            m = [marcas(dd, ttt, dl) for dl in DELTAS]
-            # se busca el contraste: los dos roles se ven cuando delta ancho da MENOS
-            if m[1]["n_nm"] < m[0]["n_nm"] and m[0]["n_nm"] >= 1:
-                elegidos.append(dict(zone_id=z["zone_id"], session_id=z["session_id"],
-                                     lower_tick=z["lower_tick"], upper_tick=z["upper_tick"],
-                                     d=[int(x) for x in dd],
-                                     toca=[bool(x) for x in ttt], marcas=m))
-                print("  corredor %s  n=%d  nm(d=3)=%d  nm(d=8)=%d"
-                      % (z["zone_id"], len(dd), m[0]["n_nm"], m[1]["n_nm"]))
-                break
-        if len(elegidos) == 3:
-            break
+            corredores.append((int(j - e), z, int(e), int(j), d, tt))
+    largos = np.array([c[0] for c in corredores])
+    print("corredores D_far=%d: %d" % (D_FAR, len(largos)))
+    if len(largos):
+        print("  largo en TICKS  min %d  p25 %d  mediana %d  p75 %d  p95 %d  max %d"
+              % (largos.min(), np.percentile(largos, 25), np.median(largos),
+                 np.percentile(largos, 75), np.percentile(largos, 95), largos.max()))
+        print("  dentro de [%d, %d]: %d" % (MIN_PUNTOS, MAX_PUNTOS,
+              int(((largos >= MIN_PUNTOS) & (largos <= MAX_PUNTOS)).sum())))
+
+    # --- 2) evaluar los mas baratos y rankear por contraste ----------------------
+    aptos = sorted([c for c in corredores if MIN_PUNTOS <= c[0] <= MAX_PUNTOS],
+                   key=lambda c: c[0])[:MAX_CANDIDATOS]
+    print("evaluando %d candidatos" % len(aptos))
+    puntuados = []
+    for (ln, z, e, j, d, tt) in aptos:
+        dd, ttt = d[e:j].copy(), tt[e:j].copy()
+        n5 = _cuenta(dd, ttt, DELTAS[0])[0]
+        n8 = _cuenta(dd, ttt, DELTAS[1])[0]
+        if n5 == 0 and n8 == 0:
+            continue
+        puntuados.append((n5 - n8, n5, n8, z, dd, ttt))
+    baja = sum(1 for p in puntuados if p[0] > 0)
+    print("candidatos con eventos: %d   de ellos con delta=8 MENOR que delta=5: %d"
+          % (len(puntuados), baja))
+
+    # se prefiere el contraste que exhibe el doble rol (delta ancho da MENOS)
+    puntuados.sort(key=lambda p: (-p[0], -p[1]))
+    elegidos = []
+    for (dif, n5, n8, z, dd, ttt) in puntuados[:3]:
+        m = [marcas(dd, ttt, dl) for dl in DELTAS]
+        elegidos.append(dict(zone_id=z["zone_id"], session_id=z["session_id"],
+                             lower_tick=z["lower_tick"], upper_tick=z["upper_tick"],
+                             d=[int(x) for x in dd], toca=[bool(x) for x in ttt],
+                             marcas=m))
+        print("  %s  n=%d  nm(d=5)=%d  nm(d=8)=%d" % (z["zone_id"], len(dd),
+                                                      m[0]["n_nm"], m[1]["n_nm"]))
 
     out = dict(schema="visor_trazas_delta_v1", D_far=D_FAR, R_min=R, deltas=list(DELTAS),
                instrumento="6E", predicado="trade",
