@@ -91,6 +91,10 @@ MIN_BARRAS_ASIA = 120         # cobertura mínima para considerar el rango defin
 HOLDOUT_FIRST_TRADE_DATE = 20260701
 FIREWALL_CUTOFF_NS = session_bounds_utc_ns(HOLDOUT_FIRST_TRADE_DATE)[0]
 
+# Canon verificado SOLO para 6E. Para cualquier otro instrumento no existe tabla de
+# hashes canonicos todavia, asi que el sha256 se COMPUTA Y SE DECLARA -- no se puede
+# decir "verificado" de algo contra lo que no hay canon. El artefacto lo distingue con
+# `canon_disponible`.
 CONTRATOS_6E = (
     ("6E_12-25_ticks.parquet", "ea8b9f211929658494d952677fe302c33db66086ec1a21731f1f5d7ff74f7336"),
     ("6E_03-26_ticks.parquet", "b54120bfd99b97f218d73a1fe132bd111b997eab6095a529699473131f57cf76"),
@@ -107,15 +111,31 @@ def sha256_archivo(p):
     return h.hexdigest()
 
 
-def cargar_barras(d_in):
+def _contratos(d_in, instrumento):
+    """6E usa la serie formal de 4 contratos (la misma del portador). Cualquier otro
+    instrumento toma todos sus parquets de ticks, ordenados cronologicamente despues de
+    cargarlos. Si dos contratos se solapan en el tiempo, `minute_window_matrices` corta
+    con 'mas de una barra para el mismo dia/minuto': el chequeo de solape es el propio
+    error, no un supuesto."""
+    if instrumento == "6E":
+        return [(fn, esperado) for fn, esperado in CONTRATOS_6E], True
+    fs = sorted(d_in.glob("%s_*ticks*.parquet" % instrumento))
+    if not fs:
+        raise SystemExit("ABORTA: sin parquets de %s en %s" % (instrumento, d_in))
+    return [(f.name, None) for f in fs], False
+
+
+def cargar_barras(d_in, instrumento):
+    contratos, canon = _contratos(d_in, instrumento)
     hashes, col = {}, {k: [] for k in ("ts", "px", "vol", "bid", "ask", "seq")}
     tick_size = None
-    for fn, esperado in CONTRATOS_6E:
+    for fn, esperado in contratos:
         real = sha256_archivo(d_in / fn)
-        hashes[fn] = dict(sha256=real, canonico=real == esperado)
-        if real != esperado:
+        hashes[fn] = dict(sha256=real, canonico=(real == esperado) if canon else None,
+                          canon_disponible=canon)
+        if canon and real != esperado:
             raise SystemExit("ABORTA: %s no es canonico" % fn)
-        p = load_canonical_parquet(d_in / fn, instrument="6E")
+        p = load_canonical_parquet(d_in / fn, instrument=instrumento)
         print("  %-26s %9d ticks  sha256 CANONICO" % (fn, len(p.ts_ns)))
         for k, v in (("ts", p.ts_ns), ("px", p.price_ticks), ("vol", p.volume),
                      ("bid", p.bid_ticks), ("ask", p.ask_ticks), ("seq", p.sequence)):
@@ -135,7 +155,8 @@ def cargar_barras(d_in):
         col[k] = col[k][keep]
     print("  ticks   %d brutos -> %d tras firewall" % (n_bruto, len(col["ts"])))
     tkf = TickSeries(col["ts"], col["px"], col["vol"], col["bid"], col["ask"],
-                     col["seq"], tick_size, "6E", "6E_FORMAL_4C")
+                     col["seq"], tick_size, instrumento,
+                     "%s_%dC" % (instrumento, len(contratos)))
     bars = build_time_bars(tkf, minutes=1)
     del col, tkf
     gc.collect()
@@ -144,14 +165,17 @@ def cargar_barras(d_in):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--dir", default="E:/EdgeLab/data/nt8/6E")
+    ap.add_argument("--instrumento", default="6E")
+    ap.add_argument("--dir", default=None,
+                    help="por defecto data/nt8/<instrumento>")
     ap.add_argument("--out", required=True)
     a = ap.parse_args()
 
-    print("censo rango Asia (TARGET-FREE)  ·  %s" % SCHEMA_VERSION)
+    d_in = pathlib.Path(a.dir) if a.dir else (REPO / "data" / "nt8" / a.instrumento)
+    print("censo rango Asia (TARGET-FREE)  ·  %s  ·  %s" % (SCHEMA_VERSION, a.instrumento))
     print("  ventana %s -> %s NY   Asia = primeros %d min   posterior = %d min"
           % (VENTANA_INICIO, VENTANA_FIN, MIN_ASIA, MIN_POST))
-    bars, hashes, tick_size = cargar_barras(pathlib.Path(a.dir))
+    bars, hashes, tick_size = cargar_barras(d_in, a.instrumento)
 
     # M1 en ticks ENTEROS: el rango de Asia y sus rupturas se comparan sin float.
     idx = pd.to_datetime(bars.end_ns, unit="ns", utc=True)
@@ -235,6 +259,7 @@ def main():
 
     payload = dict(
         schema_version=SCHEMA_VERSION,
+        instrumento=a.instrumento,
         outcomes_accessed=False, pnl_accessed=False,
         advertencia=("la tasa de 'ambos extremos' NO es evidencia de reversion: el nulo "
                      "de un paseo aleatorio que toco un borde es alto por reflexion. "
@@ -253,7 +278,9 @@ def main():
                       cutoff_ns=int(FIREWALL_CUTOFF_NS),
                       holdout_included=False),
         procedencia=dict(
-            contratos=hashes, todos_canonicos=all(v["canonico"] for v in hashes.values()),
+            contratos=hashes,
+            todos_canonicos=(all(v["canonico"] for v in hashes.values())
+                             if a.instrumento == "6E" else None),
             tick_size=tick_size,
             runner_blob=subprocess.check_output(
                 ["git", "-C", str(REPO), "hash-object", str(pathlib.Path(__file__))],
