@@ -275,8 +275,15 @@ function arrastreG(ev) {
     if (a < -holgura) { b += (-holgura - a); a = -holgura; }
     if (b > S.n - 1 + holgura) { a -= (b - (S.n - 1 + holgura)); b = S.n - 1 + holgura; }
     gVista = { a: a, b: b };
-    const dy = (e.clientY - y0) / H0 * alto0;   // el contenido sigue al mouse
-    gEscala = { k: e0.k, c: e0.c - dy };
+    // Signo, derivado y no adivinado. `Y(p) = pad.t + H - (p - lo)/(hi - lo) * H`, o
+    // sea que la pantalla crece hacia ABAJO y el precio hacia ARRIBA. Para que un
+    // precio P se dibuje `dy` pixeles mas abajo hace falta que `Y(P)` aumente, y eso
+    // exige que `lo` aumente: el centro SUBE cuando el mouse baja.
+    //
+    // Estaba al reves --restaba-- y el contenido se iba para arriba al arrastrar hacia
+    // abajo. El error era mio en la derivacion, no en el gesto.
+    const dy = (e.clientY - y0) / H0 * alto0;
+    gEscala = { k: e0.k, c: e0.c + dy };
     pintarG();
   };
   const soltar = () => {
