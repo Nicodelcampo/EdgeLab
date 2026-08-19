@@ -66,6 +66,9 @@ autoridad**: nada de lo que se escriba ahí autoriza una acción.
 
 | **026** | Opus → Aud | **la no-anidacion tenia dos causas**: un `break` que abandonaba el corredor (bug mio, misma familia que el `argmin`) y la segmentacion golosa dependiente de δ (**P-45**, sin decidir) · **P-46: 17 de 60 celdas muertas por aritmetica** (`δ+R >= D_far`), grilla efectiva 43 · schema v2 · retiro el «205 → 345» | `docs/audits/ENTRADA_026_DOS_CAUSAS_DE_LA_NO_ANIDACION_2026-08-18.md` |
 
+| **027** | Aud → Opus | **enmienda a P-46**: denominador **45** no 43 (las 2 recortadas dan 1.505 c/u y son 2 de las 8 vivas) · 25 % no 28 % · «8 de 45» · 134/28 son de 45 dias con el `break` · v1 con `argmin` SI anidaba · marca el 11 vs 21 | Notion / entrada del auditor |
+| **028** | Opus → Aud | **acepto la enmienda, verificada contra el artefacto** · el 11 vs 21 eran **tres errores mios** (rng compartido · control sucio que daba «0» imposible · ninguno correcto): el numero real es **145 → 21** · barrido y presupuesto de memoria **versionados**, ya no son afirmacion de maquina | `docs/audits/ENTRADA_028_ENMIENDA_P46_Y_BARRIDO_VERSIONADO_2026-08-18.md` |
+
 Páginas relacionadas: orden de trabajo · deep research · mapa de 8 capítulos · programa de análisis. Buscar por título si Notion no resuelve.
 Línea H-Z2A: v1 · v2 · v3 · **v4 vigente** · manifiesto numérico (**SUSPENDIDO** hasta censo v2).
 

@@ -1253,10 +1253,27 @@ sin mirar un solo tick. δ efectivo = `min(δ, D_far − R − 1)`.
 
 Verificado contra el artefacto del 18-ago: las 15 dan exactamente 0.
 
-**Consecuencia**: la grilla efectiva es de **43 celdas, no 60**. El «8 de 60 vivas»
-de la entrada 020 se leyó sobre una grilla donde el **28 %** estaba aritméticamente
-muerto antes de tocar los datos. El presupuesto de multiplicidad del manifiesto se
-calcula sobre 43.
+**ENMIENDA 2026-08-18 (entrada 027 del auditor, aceptada).** La primera redacción de
+esta consecuencia estaba mal por citar la ventana equivocada.
+
+- **El denominador es 45, no 43.** Las 2 celdas recortadas **sí producen**: son
+  `D=10 R=5 δ∈{5,8}`, con **1.505 near-miss cada una** sobre 228 sesiones, y son **2
+  de las 8 vivas** — las más ricas de v1. Sacarlas del presupuesto era sacar
+  justamente las más pobladas. Muertas son 15. `60 − 15 = 45`.
+- **15/60 = 25 %**, no 28 %.
+- **El «8 de 60» es «8 de 45»**.
+- **134 y 28 no son el censo.** Salen de la ventana de 45 días **con el `break`
+  todavía puesto**. En las 228 sesiones, `D=10 R=5 trade` da **268 · 579 · 977 ·
+  1.505 · 1.505 y ANIDA** — verificado contra
+  `docs/research/censo_hz2a_superficie_2026-08-18.json`. El marginal en δ=8 es
+  **exactamente 0**, que es el recorte de δ_efectivo a 4 visible en los datos.
+- **v1 con `argmin` sí anidaba.** La no-anidación la introdujo el escaneo por ciclos,
+  mezclada con el `break`. El instinto de la 025 era correcto; el número que citaba
+  estaba contaminado.
+
+**Consecuencia vigente**: el presupuesto de multiplicidad del manifiesto se calcula
+sobre **45 celdas**. Las 2 recortadas se conservan, declarando su δ efectivo = 4: no
+son celdas independientes de δ=5 y δ=8, son la misma celda repetida.
 
 Ahora cada celda publica `delta_efectivo`, `celda_degenerada`,
 `separacion_observable` y `anillo_anida` — **computados**, no declarados.
