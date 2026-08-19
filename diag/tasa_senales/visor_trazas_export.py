@@ -48,9 +48,10 @@ DELTAS = (5, 8)
 # miles de puntos. El primer intento capaba en 700 y descarto los 575 corredores sin
 # que ninguno pudiera calificar. Los limites de abajo estan puestos por COSTO, no por
 # estetica, y el exportador publica la distribucion real para que se vean.
-MIN_PUNTOS = 200
+MIN_PUNTOS = 40
 MAX_PUNTOS = 4000        # censar_zona es O(n x 120) en Python puro
-MAX_CANDIDATOS = 200     # cuantos corredores se evaluan antes de rankear
+MAX_CANDIDATOS = 900     # cuantos corredores se evaluan antes de rankear
+N_CORREDORES = 12        # 3-20 en un JSON chico, no 575 zonas
 
 
 def _cuenta(d, toca, dl, k=None):
@@ -136,19 +137,33 @@ def main():
             corredores.append((int(j - e), z, int(e), int(j), d, tt))
     largos = np.array([c[0] for c in corredores])
     print("corredores D_far=%d: %d" % (D_FAR, len(largos)))
-    if len(largos):
-        print("  largo en TICKS  min %d  p25 %d  mediana %d  p75 %d  p95 %d  max %d"
-              % (largos.min(), np.percentile(largos, 25), np.median(largos),
-                 np.percentile(largos, 75), np.percentile(largos, 95), largos.max()))
-        print("  dentro de [%d, %d]: %d" % (MIN_PUNTOS, MAX_PUNTOS,
-              int(((largos >= MIN_PUNTOS) & (largos <= MAX_PUNTOS)).sum())))
+    print("  largo en TICKS  min %d  p25 %d  mediana %d  p75 %d  p95 %d  max %d"
+          % (largos.min(), np.percentile(largos, 25), np.median(largos),
+             np.percentile(largos, 75), np.percentile(largos, 95), largos.max()))
 
-    # --- 2) evaluar los mas baratos y rankear por contraste ----------------------
-    aptos = sorted([c for c in corredores if MIN_PUNTOS <= c[0] <= MAX_PUNTOS],
-                   key=lambda c: c[0])[:MAX_CANDIDATOS]
-    print("evaluando %d candidatos" % len(aptos))
+    # --- 2) SELECCION POR EVENTO, no por largo -----------------------------------
+    #
+    # Los dos intentos anteriores filtraron por largo y devolvieron 0 corredores. La
+    # razon es que los near-miss son RAROS: 1.463 sobre 142.023 corredores, ~1%.
+    # Elegir "los 200 mas cortos de tal ventana" es sortear 200 y esperar 2 eventos.
+    #
+    # Prefiltro barato en numpy antes de gastar `censar_zona` (que es O(n x 120) en
+    # Python puro): un near-miss exige un minimo <= delta_max y una separacion posterior
+    # de al menos R. Eso descarta la enorme mayoria --la mediana de corredor son 7
+    # ticks-- sin evaluar nada.
+    aptos = []
+    for (ln, z, e, j, d, tt) in corredores:
+        if not (MIN_PUNTOS <= ln <= MAX_PUNTOS):
+            continue
+        dd = d[e:j]
+        if dd.min() > max(DELTAS) or (dd.max() - dd.min()) < R:
+            continue
+        aptos.append((ln, z, e, j, d, tt))
+    print("  con largo en [%d, %d] y minimo <= %d: %d"
+          % (MIN_PUNTOS, MAX_PUNTOS, max(DELTAS), len(aptos)))
+
     puntuados = []
-    for (ln, z, e, j, d, tt) in aptos:
+    for (ln, z, e, j, d, tt) in aptos[:MAX_CANDIDATOS]:
         dd, ttt = d[e:j].copy(), tt[e:j].copy()
         n5 = _cuenta(dd, ttt, DELTAS[0])[0]
         n8 = _cuenta(dd, ttt, DELTAS[1])[0]
@@ -156,20 +171,22 @@ def main():
             continue
         puntuados.append((n5 - n8, n5, n8, z, dd, ttt))
     baja = sum(1 for p in puntuados if p[0] > 0)
-    print("candidatos con eventos: %d   de ellos con delta=8 MENOR que delta=5: %d"
-          % (len(puntuados), baja))
+    print("  evaluados %d  con eventos %d  con delta=8 MENOR que delta=5: %d"
+          % (min(len(aptos), MAX_CANDIDATOS), len(puntuados), baja))
 
-    # se prefiere el contraste que exhibe el doble rol (delta ancho da MENOS)
+    # se prefiere el contraste que exhibe el doble rol (delta ancho da MENOS), y si no
+    # hay, se toman los de mas eventos -- diciendolo, no en silencio
     puntuados.sort(key=lambda p: (-p[0], -p[1]))
     elegidos = []
-    for (dif, n5, n8, z, dd, ttt) in puntuados[:3]:
+    for (dif, n5, n8, z, dd, ttt) in puntuados[:N_CORREDORES]:
         m = [marcas(dd, ttt, dl) for dl in DELTAS]
         elegidos.append(dict(zone_id=z["zone_id"], session_id=z["session_id"],
                              lower_tick=z["lower_tick"], upper_tick=z["upper_tick"],
+                             contraste=int(dif),
                              d=[int(x) for x in dd], toca=[bool(x) for x in ttt],
                              marcas=m))
-        print("  %s  n=%d  nm(d=5)=%d  nm(d=8)=%d" % (z["zone_id"], len(dd),
-                                                      m[0]["n_nm"], m[1]["n_nm"]))
+        print("  %s  n=%4d  nm(d=5)=%d  nm(d=8)=%d  contraste %+d"
+              % (z["zone_id"], len(dd), m[0]["n_nm"], m[1]["n_nm"], dif))
 
     out = dict(schema="visor_trazas_delta_v1", D_far=D_FAR, R_min=R, deltas=list(DELTAS),
                instrumento="6E", predicado="trade",
@@ -177,8 +194,12 @@ def main():
                outcomes_accessed=False, pnl_accessed=False,
                nota="marcas derivadas de censar_zona sobre prefijos; sin reimplementar",
                corredores=elegidos)
-    destino = REPO / "runs" / "visor_trazas_delta.json"
+    destino = REPO / "viewer" / "hz2a" / "trazas.json"
+    destino.parent.mkdir(parents=True, exist_ok=True)
     destino.write_text(json.dumps(out), encoding="utf-8")
+    if not elegidos:
+        print("  NINGUN corredor cumple el filtro. El visor debe mostrar empty state,")
+        print("  no un spinner: el JSON se escribe igual, con `corredores: []`.")
     print("escrito %s  (%d corredores)" % (destino, len(elegidos)))
     return 0
 
