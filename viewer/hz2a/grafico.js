@@ -121,10 +121,24 @@ function pintarG() {
   } else { lo = hi = (gEscala ? gEscala.c : 0); }
   const marg = Math.max(1, (hi - lo) * 0.08); lo -= marg; hi += marg;
   // `gEscala.k` = zoom vertical (arrastre sobre el eje); `gEscala.c` = centro, que
-  // el arrastre vertical mueve. Con `gEscala` en null la escala sigue al dato, que es
-  // el comportamiento por defecto.
+  // el arrastre vertical mueve. Con `gEscala` en null la escala sigue al dato.
   if (gEscala) {
-    const semi = Math.max(1, (hi - lo) / 2 * gEscala.k);
+    const autoLo = lo, autoHi = hi;
+    const semi = Math.max(1, (autoHi - autoLo) / 2 * gEscala.k);
+
+    // TOPE DEL PANEO VERTICAL. Se puede desplazar hasta llevar el precio al borde,
+    // pero NO hasta perderlo: al menos `VISIBLE_MIN` de la altura de la vista tiene
+    // que seguir conteniendo dato. Sin esto el arrastre dejaba la pantalla vacia con
+    // dos lineas de grilla, que es lo que Nico mostro en la segunda captura.
+    //
+    // Derivacion: la vista muestra [c-semi, c+semi]. Para que el dato siga entrando
+    // por abajo hace falta `autoHi >= (c-semi) + margen`; por arriba,
+    // `autoLo <= (c+semi) - margen`.
+    const VISIBLE_MIN = 0.15;
+    const margen = semi * 2 * VISIBLE_MIN;
+    const cMin = autoLo + margen - semi;
+    const cMax = autoHi - margen + semi;
+    gEscala.c = Math.max(cMin, Math.min(cMax, gEscala.c));
     lo = gEscala.c - semi; hi = gEscala.c + semi;
   }
   const X = i => pad.l + (i - a + 0.5) / m * W;
