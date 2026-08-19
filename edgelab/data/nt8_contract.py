@@ -40,6 +40,18 @@ ZB = InstrumentSpec(symbol="ZB", tick_size=0.03125, tick_value=31.25, multiplier
 # contrato; no adjudica que un parquet sea canónico (eso requiere hash/P0/P1A).
 GC = InstrumentSpec(symbol="GC", tick_size=0.1, tick_value=10.0, multiplier=100.0)
 
+# 6J — CME Japanese Yen futures. Contrato de 12.500.000 JPY, cotizado en USD por JPY.
+#
+# `tick_size` NO se acepta de palabra: 5e-07 está declarado en los manifiestos de los
+# parquets (`data/nt8/6J_parquet/6J_*_manifest.json`, campo `tick_size`), generados por
+# `build_nt8_ticks` desde los .Last.txt. Coincide con lo que informó Nico.
+#
+# La aritmética se auto-verifica: 0,0000005 × 12.500.000 = 6,25 USD por tick, el mismo
+# tick_value que 6E (0,00005 × 125.000 = 6,25). Si alguno de los tres números estuviera
+# mal, el producto no cerraría — ver `tests/data/test_nt8_contract_6j.py`.
+SIX_J = InstrumentSpec(symbol="6J", tick_size=0.0000005, tick_value=6.25,
+                       multiplier=12_500_000.0)
+
 INSTRUMENT_SPECS: dict[str, InstrumentSpec] = {
     "6E": SIX_E,
     "YM": YM,
@@ -47,6 +59,7 @@ INSTRUMENT_SPECS: dict[str, InstrumentSpec] = {
     "NQ": NQ,
     "ZB": ZB,
     "GC": GC,
+    "6J": SIX_J,
 }
 
 
