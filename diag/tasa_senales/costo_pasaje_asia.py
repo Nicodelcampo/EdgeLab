@@ -204,7 +204,26 @@ def main():
     en_asia = (minuto >= ASIA_INI_MIN) | (minuto < ASIA_FIN_MIN)
     en_post = (minuto >= ASIA_FIN_MIN) & (minuto < POST_FIN_MIN)
     etiqueta = np.where(minuto < ASIA_FIN_MIN, fecha - UN_DIA, fecha)
-    etiqueta_post = fecha
+    # BUG CORREGIDO 2026-08-19, verificado contra los datos y no razonado.
+    #
+    # La ventana de Asia va de las 18:00 del dia d a las 03:00 del dia d+1, asi que su
+    # POSTERIOR (03:00-17:00) cae en el dia calendario d+1, NO en el d. La version
+    # anterior etiquetaba el posterior con `fecha` y seleccionaba `fecha == d`, o sea
+    # las 03:00-17:00 del dia d -- que terminan CINCO HORAS ANTES de que la ventana de
+    # Asia empiece. Medido en 6J_12-25, dia 2025-10-05:
+    #
+    #   ASIA            2025-10-05 18:00 -> 2025-10-06 02:59   51.405 ticks
+    #   POST (mal)      2025-10-05 13:40 -> 2025-10-05 15:50        2 ticks
+    #   POST (bien)     2025-10-06 03:00 -> 2025-10-06 16:59   66.415 ticks
+    #
+    # O sea: se detectaban "rupturas del rango asiatico" sobre ticks ANTERIORES al
+    # rango. Los 52 descartes por `sin_post` eran el sintoma visible.
+    #
+    # El censo de rango de Asia NO tiene este defecto porque usa UNA sola llamada a
+    # `minute_window_matrices` partida por indice de minuto, justamente para que Asia y
+    # su posterior sean la misma fila. Ese diseno se abandono al escribir este runner a
+    # mano, y el error volvio por la puerta que ese diseno cerraba.
+    etiqueta_post = fecha - UN_DIA
     del minuto, fecha
 
     dias = np.unique(etiqueta[en_asia])
