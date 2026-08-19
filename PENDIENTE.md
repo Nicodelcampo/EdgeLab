@@ -1633,3 +1633,37 @@ Cualquier búsqueda sobre retornos o P&L cruza el **STOP**: manifiesto de campa�
 número efectivo de hipótesis + riesgos + datos faltantes, y OK explícito de Nico. Y el
 addendum 007 pone **F4 después** de ledgers, costos y población — que es exactamente
 donde está parado el proyecto hoy.
+
+
+---
+
+## P-54 — familia nueva registrada: **H-ASIA-1**, costo de pasaje por `asia_close`
+
+**Registrada 2026-08-19.** Protocolo:
+`docs/research/H-ASIA-1_COSTO_DE_PASAJE_PROTOCOLO.md`. Estado
+`PROTOCOL_WRITTEN_NOT_RUN`.
+
+Observación de Nico: *«cuanto más rompió el precio —por tiempo, por volumen, por
+ticks—, el camino a través del último precio comerciado en la sesión asiática ofrece
+menos resistencia»*.
+
+**Familia nueva**: no hereda población, costos, oráculos ni presupuesto de
+multiplicidad de BigTrap2, H-Z2A, LUX-IMB ni YM-PRERANGE.
+
+**El confundidor, escrito antes de medir.** Las tres magnitudes de ruptura están
+correlacionadas con **volatilidad**, y la volatilidad **reduce mecánicamente el dwell en
+cualquier nivel**. «Rompió fuerte → cruzó rápido» es la predicción de un modelo **sin
+ninguna hipótesis**. Por eso el estimando es el **contraste contra controles**
+(espejo + placebo emparejado), nunca el valor absoluto — la lección de F2.7–F2.9, donde
+el control sin zona dio casi lo mismo y el contraste cruzó cero.
+
+**Línea target-free / STOP**: se miden `dwell_minutos`, `dwell_volumen`,
+`n_reentradas`, `llega`. **No** se mide si atraviesa o rebota (eso es dirección: es la
+pregunta de reversión con otro nombre), ni MFE/MAE/retornos.
+
+**Instrumento**: el censo de Asia (`CENSO_RANGO_ASIA_2026-08-19.md`) mostró que sobre
+índices americanos la población arranca **degenerada** (YM rompe el 100 %). **6J es
+donde el objeto existe** (94,9 %, mediana 85 min).
+
+**Potencia**: MDE 13,1–13,9 pp sin estratificar; con terciles de magnitud, ~23 pp. Es
+P-53.
