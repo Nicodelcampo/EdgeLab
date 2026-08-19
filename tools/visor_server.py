@@ -50,6 +50,29 @@ from edgelab.bridge.indicators import (BAR_DRIVEN, M1_DRIVEN, REGISTRY,  # noqa:
 from edgelab.bridge.ticks import TickSeries, load_canonical_parquet  # noqa: E402
 from edgelab.kaggle.sessions_cme import session_bounds_utc_ns  # noqa: E402
 
+# `aVolClusterPOI` no expone `run()` (P-40). Se consume via SessionProfile /
+# detect_block, y el censo de H-Z2A YA tiene esa secuencia escrita y auditada en
+# `producir_zonas`. Se IMPORTA de ahi en vez de reescribirla: el visor tiene que
+# mostrar exactamente las zonas que el censo mide, no una segunda version parecida.
+import importlib.util as _ilu  # noqa: E402
+_spec_censo = _ilu.spec_from_file_location(
+    "censo_hz2a_visor", REPO / "diag" / "tasa_senales" / "censo_hz2a_superficie.py")
+_censo = _ilu.module_from_spec(_spec_censo)
+_spec_censo.loader.exec_module(_censo)
+
+# Estado de paridad, CITADO del board -- no inventado. Nico pidio ver todos los
+# indicadores "aunque no este 100% la paridad": mostrarlos sin decir cual esta en
+# falla seria peor que no mostrarlos.
+PARIDAD = {
+    "aVolCellPOI2": ("FAIL", "P-42: 671 vs 678, 16 diferencias reales; causa acotada al umbral"),
+    "HFTZones2": ("PARCIAL", "P-43: 6E PASS 4.821/4.821; GC 3.626/3.630 = 99,89 %, residual abierto"),
+    "BigTrap2": ("EXACT", "junio 3.628/3.638 EXACT (99,73 %); abril+mayo 171/171"),
+    "aVolClusterPOI": ("MEDIDA", "6E 72/72 creaciones, delta score 0 exacto; sin run() (P-40)"),
+    "Gaps2": ("SIN DATO", "P-44: params no transportan entre activos (10 vs 113.298 zonas)"),
+    "VolTicksPOC2": ("SIN DATO", "hay doc de cobertura; no hay veredicto reciente en el board"),
+    "AACloseOpenDiffs": ("SIN DATO", "hay doc de cobertura; no hay veredicto reciente en el board"),
+}
+
 RAIZ = REPO / "viewer" / "hz2a"
 HOLDOUT_FIRST_TRADE_DATE = 20260701
 FIREWALL_CUTOFF_NS = session_bounds_utc_ns(HOLDOUT_FIRST_TRADE_DATE)[0]
@@ -132,22 +155,82 @@ def catalogo():
                     "bar" if nombre in BAR_DRIVEN else
                     "m1" if nombre in M1_DRIVEN else "?"),
             defaults=getattr(mod, "DEFAULTS", {}),
+            paridad=PARIDAD.get(nombre, ("SIN DATO", ""))[0],
+            paridad_nota=PARIDAD.get(nombre, ("", ""))[1],
+            doc_paridad=("docs/parity_coverage/%s.md" % nombre
+                         if (REPO / "docs" / "parity_coverage" / ("%s.md" % nombre)).exists()
+                         else None),
             params=spec or {})
-    # avolclusterpoi NO esta en REGISTRY y NO expone run(): se declara, no se esconde.
+    # `aVolClusterPOI` no esta en REGISTRY y no expone `run()` (P-40), pero SI se puede
+    # dibujar: el censo de H-Z2A produce sus zonas con SessionProfile / detect_block, y
+    # esa funcion se importa tal cual. Sus parametros salen de RESEARCH_DEFAULTS, que es
+    # lo unico declarado que tiene -- no hay PARAM_SPEC que generar.
+    from edgelab.bridge.indicators.avolclusterpoi import RESEARCH_DEFAULTS
     out["aVolClusterPOI"] = dict(
-        disponible=False, driven="bar", defaults={}, params={},
-        motivo=("no expone run() ni PARAM_SPEC; se consume via SessionProfile / "
-                "detect_block. Es P-40: el portador de H-Z2A no esta cableado como "
-                "los demas."))
+        disponible=True, driven="bar",
+        defaults=dict(RESEARCH_DEFAULTS),
+        paridad=PARIDAD["aVolClusterPOI"][0], paridad_nota=PARIDAD["aVolClusterPOI"][1],
+        doc_paridad=None,
+        params={k: {"type": ("int" if isinstance(v, int) and not isinstance(v, bool)
+                             else "float" if isinstance(v, float)
+                             else "bool" if isinstance(v, bool) else "str"),
+                    "default": v, "class": "recompute",
+                    "branches": ["research_defaults"]}
+                for k, v in RESEARCH_DEFAULTS.items()},
+        motivo=("no expone run() ni PARAM_SPEC (P-40). Se dibuja con la MISMA "
+                "`producir_zonas` que usa el censo de H-Z2A; los parametros salen de "
+                "RESEARCH_DEFAULTS, lo unico declarado que tiene."))
     return out
+
+
+def correr_avolcluster(tk, bars, params):
+    """Zonas de `aVolClusterPOI` con la funcion del censo, no con una copia."""
+    from edgelab.bridge.bars import build_footprints
+    fps = build_footprints(tk, bars)
+    zonas = _censo.producir_zonas(bars, fps)
+    ts_ = tk.tick_size
+    return [dict(id=z["zone_id"],
+                 top=z["upper_tick"] * ts_, bottom=z["lower_tick"] * ts_,
+                 top_t=int(z["upper_tick"]), bottom_t=int(z["lower_tick"]),
+                 created_ms=int(z["creado_ns"] // 1_000_000), ended_ms=None,
+                 state="ACTIVE", kind="off_price")
+            for z in zonas]
+
+
+def aviso_de_warmup(params, sesiones):
+    """Un 0 puede ser 'no hay nada' o 'no alcanzaste el warmup'. Son cosas distintas y
+    el visor tiene que distinguirlas, o cada indicador mal configurado parece roto.
+
+    El chequeo NO adivina: lee el propio parametro declarado del kernel.
+    """
+    lb = params.get("lookback_sessions")
+    if lb and sesiones < int(lb):
+        return ("este indicador declara lookback_sessions=%d y se cargaron %d sesiones: "
+                "el perfil no llega a formarse y por eso no crea zonas. Subi las "
+                "sesiones a >= %d." % (int(lb), sesiones, int(lb)))
+    ms = params.get("min_sessions") or params.get("min_calib_samples")
+    if params.get("min_sessions") and sesiones < int(params["min_sessions"]):
+        return ("min_sessions=%s y se cargaron %d sesiones."
+                % (params["min_sessions"], sesiones))
+    return None
 
 
 def correr(cuerpo):
     nombre = cuerpo["indicador"]
+    sesiones = int(cuerpo.get("sesiones", 2))
+    tk, bars = cargar(cuerpo.get("instrumento", "6E"), sesiones)
+    if nombre == "aVolClusterPOI":
+        from edgelab.bridge.indicators.avolclusterpoi import RESEARCH_DEFAULTS
+        pp = {**RESEARCH_DEFAULTS, **(cuerpo.get("params") or {})}
+        zonas = correr_avolcluster(tk, bars, pp)
+        return dict(indicador=nombre, n_zonas=len(zonas), n_eventos=0,
+                    aviso=aviso_de_warmup(pp, sesiones),
+                    params_line="# aVolClusterPOI via producir_zonas del censo H-Z2A",
+                    tick_size=tk.tick_size, zonas=zonas,
+                    outcomes_accessed=False, pnl_accessed=False)
     mod = REGISTRY.get(nombre)
     if mod is None or not hasattr(mod, "run"):
         raise ValueError("indicador '%s' no esta en el REGISTRY o no expone run()" % nombre)
-    tk, bars = cargar(cuerpo.get("instrumento", "6E"), cuerpo.get("sesiones", 2))
     params = {**getattr(mod, "DEFAULTS", {}), **(cuerpo.get("params") or {})}
     res = mod.run(tk, bars, params=params, chart_tz=cuerpo.get("chart_tz", "UTC"))
     # Los kernels devuelven `top`/`bottom` en PRECIO. El chart trabaja en TICKS
@@ -164,6 +247,7 @@ def correr(cuerpo):
              for z in (res.get("zones") or [])]
     return dict(indicador=nombre, n_zonas=len(zonas),
                 n_eventos=len(res.get("events") or []),
+                aviso=aviso_de_warmup(params, sesiones),
                 params_line=res.get("params_line", ""),
                 tick_size=tk.tick_size, zonas=zonas,
                 outcomes_accessed=False, pnl_accessed=False)

@@ -45,8 +45,15 @@ function pintarLista() {
     return '<div class="ind ' + (off ? "off" : "") + '" data-ind="' + n + '">' +
       '<div class="ind-h"><b>' + n + "</b>" +
       '<span class="chip">' + v.driven + "</span>" +
+      // El estado de paridad se MUESTRA, no se esconde: Nico pidio ver todos los
+      // indicadores aunque la paridad no este al 100 %, y mostrarlos sin decir cual
+      // esta en falla seria peor que no mostrarlos.
+      '<span class="chip ' + (v.paridad === "FAIL" ? "err" :
+        v.paridad === "PARCIAL" || v.paridad === "SIN DATO" ? "warn" : "ok") +
+      '" title="' + (v.paridad_nota || "") + '">' + (v.paridad || "?") + "</span>" +
       (off ? '<span class="chip warn">no cableado</span>' : "") + "</div>" +
-      (off && v.motivo ? '<div class="ind-m">' + v.motivo + "</div>" : "") + "</div>";
+      (v.paridad_nota ? '<div class="ind-m">' + v.paridad_nota + "</div>" : "") +
+      (v.motivo ? '<div class="ind-m">' + v.motivo + "</div>" : "") + "</div>";
   }).join("");
   cont.querySelectorAll(".ind:not(.off)").forEach(el =>
     el.addEventListener("click", () => elegirInd(el.dataset.ind)));
@@ -83,6 +90,8 @@ function pintarParams() {
       k + '<i>' + (s.class || "") + "</i></span>" + control + "</label>";
   }).join("");
   cont.innerHTML = campos +
+    '<label class="campo" style="margin-top:8px"><span>sesiones a cargar<i>ventana</i></span>' +
+    '<input type="number" id="nSes" value="2" min="1" max="60" step="1"></label>' +
     '<div class="acciones"><button id="btnAplicar">aplicar y dibujar</button>' +
     '<button id="btnReset">volver a defaults</button>' +
     '<button id="btnQuitar">quitar del gráfico</button></div>' +
@@ -112,13 +121,17 @@ function aplicarInd() {
     method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       indicador: INDsel, params: INDparams,
-      instrumento: (window.BARRAS && window.BARRAS.instrumento) || "6E", sesiones: 2
+      instrumento: (window.BARRAS && window.BARRAS.instrumento) || "6E",
+      sesiones: parseInt(document.querySelector("#nSes").value, 10) || 2
     })
   }).then(r => r.json()).then(d => {
     if (!d.ok) { est.textContent = "error: " + d.error; return; }
     OVERLAYS = OVERLAYS.filter(o => o.indicador !== INDsel);
     OVERLAYS.push({ indicador: INDsel, zonas: d.zonas });
-    est.textContent = d.n_zonas + " zonas · " + d.n_eventos + " eventos";
+    // Un 0 sin explicacion parece un indicador roto. El servidor devuelve el aviso
+    // derivado del parametro declarado del kernel, y se muestra tal cual.
+    est.innerHTML = "<b>" + d.n_zonas + "</b> zonas · " + d.n_eventos + " eventos" +
+      (d.aviso ? '<br><span style="color:var(--warn)">⚠ ' + d.aviso + "</span>" : "");
     if (typeof pintarG === "function") pintarG();
   }).catch(e => { est.textContent = "sin backend: " + e; });
 }

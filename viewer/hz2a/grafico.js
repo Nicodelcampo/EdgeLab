@@ -14,6 +14,7 @@ let B = null, gTipo = "velas", gEje = "tiempo", gRes = null, gVista = null, TICK
 // Escala vertical MANUAL: null = automatica al rango visible. Arrastrar sobre el eje de
 // precios la fija y la comprime/expande, como en NT8 y en cualquier plataforma.
 let gEscala = null;
+let arrastrando = false;
 
 function iniGrafico() {
   B = window.BARRAS;
@@ -47,19 +48,30 @@ function iniGrafico() {
   cg.addEventListener("mousedown", ev => {
     // Si el click cae sobre el eje de precios, arrastra la ESCALA; si no, paneo.
     const r = ev.currentTarget.getBoundingClientRect();
-    if (gEje_area && (ev.clientX - r.left) > gEje_area.pad.l + gEje_area.W) arrastreEscala(ev);
+    if (gEje_area && (ev.clientX - r.left) > gEje_area.xEje) arrastreEscala(ev);
     else arrastreG(ev);
   });
   cg.addEventListener("dblclick", ev => {
     const r = ev.currentTarget.getBoundingClientRect();
-    if (gEje_area && (ev.clientX - r.left) > gEje_area.pad.l + gEje_area.W) {
+    if (gEje_area && (ev.clientX - r.left) > gEje_area.xEje) {
       gEscala = null; pintarG();     // doble clic en el eje = volver a automatica
     }
   });
+  // Cursor: `crosshair` en el area del chart (lo que usa cualquier plataforma),
+  // `ns-resize` sobre el eje de precios, y `grabbing` SOLO mientras se arrastra.
+  //
+  // La version anterior ponia `grab` en reposo y la manito quedaba pegada: si el
+  // mouse salia del canvas durante un arrastre, o si el puntero terminaba sobre el
+  // panel, nadie la reseteaba. Con `grabbing` solo durante el arrastre el estado
+  // pegado no puede existir -- se elimina la causa, no se la limpia despues.
   cg.addEventListener("mousemove", ev => {
+    if (arrastrando) return;
     const r = ev.currentTarget.getBoundingClientRect();
-    const enEje = gEje_area && (ev.clientX - r.left) > gEje_area.pad.l + gEje_area.W;
-    ev.currentTarget.style.cursor = enEje ? "ns-resize" : "grab";
+    const enEje = gEje_area && (ev.clientX - r.left) > gEje_area.xEje;
+    ev.currentTarget.style.cursor = enEje ? "ns-resize" : "crosshair";
+  });
+  cg.addEventListener("mouseleave", ev => {
+    if (!arrastrando) ev.currentTarget.style.cursor = "default";
   });
   pintarG();
 }
@@ -86,8 +98,13 @@ function pintarG() {
   const w = cv.clientWidth, h = cv.clientHeight;
   cv.width = w * dpr; cv.height = h * dpr;
   const g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
-  const pad = { l: 12, r: 66, t: 12, b: 22 };
+  // `pad.r` es el ancho de las etiquetas de precio; `GAP_DER` es aire entre la ultima
+  // barra y el eje, como el "right margin" de NT8. Sin el, la vela mas reciente queda
+  // pegada al borde y no se ve hacia donde va.
+  const GAP_DER = 52;
+  const pad = { l: 12, r: 66 + GAP_DER, t: 12, b: 22 };
   const W = w - pad.l - pad.r, H = h - pad.t - pad.b;
+  const xEje = pad.l + W + GAP_DER;        // donde arranca la columna de precios
   const a = gVista.a, b = gVista.b, m = b - a + 1;
 
   let lo = Infinity, hi = -Infinity;
@@ -100,14 +117,14 @@ function pintarG() {
   }
   const X = i => pad.l + (i - a + 0.5) / m * W;
   const Y = p => pad.t + H - (p - lo) / (hi - lo) * H;
-  gEje_area = { pad: pad, W: W, H: H, lo: lo, hi: hi, w: w };
+  gEje_area = { pad: pad, W: W, H: H, lo: lo, hi: hi, w: w, xEje: xEje };
 
   g.strokeStyle = cssv("--border"); g.lineWidth = 1;
   g.fillStyle = cssv("--dim2"); g.font = "10px ui-monospace,monospace"; g.textAlign = "left";
   const paso = Math.max(1, Math.round((hi - lo) / 6));
   for (let p = Math.ceil(lo / paso) * paso; p <= hi; p += paso) {
-    const y = Y(p); g.beginPath(); g.moveTo(pad.l, y); g.lineTo(pad.l + W, y); g.stroke();
-    g.fillText((p * B.tick_size).toFixed(5), pad.l + W + 6, y + 3);
+    const y = Y(p); g.beginPath(); g.moveTo(pad.l, y); g.lineTo(xEje, y); g.stroke();
+    g.fillText((p * B.tick_size).toFixed(5), xEje + 6, y + 3);
   }
 
   if (S.tipo === "velas") {
@@ -153,10 +170,10 @@ function pintarG() {
 
   const ult = S.tipo === "velas" ? S.b.c[b] : TICKS.px[b];
   g.strokeStyle = cssv("--accent"); g.setLineDash([3, 3]);
-  g.beginPath(); g.moveTo(pad.l, Y(ult)); g.lineTo(pad.l + W, Y(ult)); g.stroke(); g.setLineDash([]);
-  g.fillStyle = cssv("--accent"); g.fillRect(pad.l + W + 2, Y(ult) - 8, 62, 16);
+  g.beginPath(); g.moveTo(pad.l, Y(ult)); g.lineTo(xEje, Y(ult)); g.stroke(); g.setLineDash([]);
+  g.fillStyle = cssv("--accent"); g.fillRect(xEje + 2, Y(ult) - 8, 62, 16);
   g.fillStyle = "#fff"; g.textAlign = "left";
-  g.fillText((ult * B.tick_size).toFixed(5), pad.l + W + 6, Y(ult) + 3);
+  g.fillText((ult * B.tick_size).toFixed(5), xEje + 6, Y(ult) + 3);
 
   const hora = i => {
     const t = S.tipo === "velas" ? S.b.end_ns[i] : TICKS.ts[i];
@@ -191,17 +208,23 @@ function arrastreEscala(ev) {
   const y0 = ev.clientY;
   const base = gEscala ? gEscala.k : 1;
   const centro = gEscala ? gEscala.c : (gEje_area.lo + gEje_area.hi) / 2;
+  arrastrando = true;
   const mover = e => {
     const f = Math.exp((e.clientY - y0) / 220);
     gEscala = { k: Math.max(0.05, Math.min(20, base * f)), c: centro };
     pintarG();
   };
-  const soltar = () => { removeEventListener("mousemove", mover); removeEventListener("mouseup", soltar); };
+  const soltar = () => {
+    arrastrando = false;
+    removeEventListener("mousemove", mover); removeEventListener("mouseup", soltar);
+  };
   addEventListener("mousemove", mover); addEventListener("mouseup", soltar);
 }
 
 function arrastreG(ev) {
   const S = serieG(), r = ev.currentTarget.getBoundingClientRect();
+  const cv = ev.currentTarget;
+  arrastrando = true; cv.style.cursor = "grabbing";
   const x0 = ev.clientX, v0 = { a: gVista.a, b: gVista.b }, span = v0.b - v0.a;
   const mover = e => {
     const dx = Math.round((e.clientX - x0) / r.width * span);
@@ -210,7 +233,10 @@ function arrastreG(ev) {
     if (b > S.n - 1) { a -= (b - (S.n - 1)); b = S.n - 1; }
     gVista = { a: Math.max(0, a), b: Math.min(S.n - 1, b) }; pintarG();
   };
-  const soltar = () => { removeEventListener("mousemove", mover); removeEventListener("mouseup", soltar); };
+  const soltar = () => {
+    arrastrando = false; cv.style.cursor = "crosshair";
+    removeEventListener("mousemove", mover); removeEventListener("mouseup", soltar);
+  };
   addEventListener("mousemove", mover); addEventListener("mouseup", soltar);
 }
 
