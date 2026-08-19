@@ -106,40 +106,42 @@ sí discrepa. Lo que importa es que NQ tiene sesiones con `p50` justo en la fron
 prueba:** los otros ocho campos coinciden en 6 de 7 instrumentos, y **NQ no**. La
 afirmación «es la misma calibración» queda **retirada**.
 
-### La dirección, y el mecanismo exacto (v2.2)
+### La dirección y el mecanismo — **corregido con denominador homogéneo (v2.3)**
 
-| trade_date | | muestra completa | sampler |
-|---|---|---|---|
-| **20260309** | `frac(dt = 0)` | **0,4845** | **0,5010** |
-| | `p50` | 4,00 ms | **0,00** |
-| | `eff_max_pausa_ms` | 20,00 | **5,00** |
-| | `resolution_limited` | `False` | **`True`** |
-| | stride · muestra | 4 · 155.679 de 622.714 | |
-| **20260618** | `frac(dt = 0)` | **0,4803** | **0,5003** |
-| | `p50` | 4,00 ms | **0,00** |
-| | `eff_max_pausa_ms` | 20,00 | **5,00** |
-| | `resolution_limited` | `False` | **`True`** |
-| | stride · muestra | 2 · 255.065 de 510.128 | |
+v2.2 comparaba `frac_dt_cero` (sobre **todos** los `dt`, incluidos los
+`> pause_exclude_ms`) contra la fracción del sampler (sobre `ms`, ya filtrado), mientras
+`p50` sale de `ms`. **Eran dos denominadores distintos.** Los números 0,4845 / 0,4803
+quedan **retirados**.
 
-**«NQ está justo en la frontera» deja de ser una explicación plausible y pasa a estar
-demostrada dentro del artefacto.** La mediana de `dt` es 0 **si y sólo si más del 50 %
-de los valores son 0**. La muestra completa tiene **48,0–48,5 %** de ceros; la decimada,
-**50,0–50,1 %**. La frontera es literalmente `frac(dt = 0) = 0,5`, y las dos sesiones
-caen a **menos de 0,2 puntos porcentuales** de ella.
+Y el criterio tampoco es «más del 50 %»: `quantile_exact` usa `idx = ceil(q·n) − 1`, o
+sea que la mediana es 0 cuando **`n_ceros ≥ ceil(n/2)`** — con `n` par, exactamente la
+mitad ya alcanza.
 
-La decimación empuja la fracción de ceros al otro lado de la línea, la mediana salta de
-4 ms a 0, y `eff_max_pausa` se aprieta **4×** — de 20 ms a 5. Ése es el umbral que corta
-una racha (`hftzones2.py` l. 397).
+Con el denominador correcto y el umbral exacto:
 
-**Dirección:** en los dos casos el **sampler** declara `limited` donde la muestra
-completa **no**. Nunca al revés.
+| trade_date | | ceros / total (`ms`) | fracción | umbral `ceil(n/2)` | distancia |
+|---|---|---|---|---|---|
+| **20260309** | completa | 310.691 / 622.714 | 0,498930 | 311.357 | **−0,107 pp** |
+| | sampler | 77.998 / 155.679 | 0,501018 | 77.840 | **+0,102 pp** |
+| **20260618** | completa | 254.474 / 510.128 | 0,498843 | 255.064 | **−0,116 pp** |
+| | sampler | 127.602 / 255.065 | 0,500272 | 127.533 | **+0,027 pp** |
+
+**La corrección fortalece la explicación en vez de debilitarla.** Los dos lados caen
+dentro de **0,12 puntos porcentuales** del umbral exacto — mis números viejos hacían
+parecer que la muestra completa estaba 1,5–2 pp abajo, y en realidad está a **0,11 pp**.
+
+En `20260618` el sampler cruza el umbral por **69 ceros sobre 255.065**.
+
+Consecuencia: `p50` salta de 4 ms a 0, y `eff_max_pausa` se aprieta **4×** (20 → 5 ms).
+Ése es el umbral que corta una racha (`hftzones2.py` l. 397). **Dirección:** en los dos
+casos el **sampler** declara `limited` donde la completa no; nunca al revés.
 
 ### Reproducibilidad
 
 Corrida limpia desde `99e786619cc0084eb3f5b1f1c8e19e67464e2202`, sin modificaciones en
 `edgelab/` ni `diag/`: **`medicion_comprometida = false`** y los descriptivos por
 instrumento salen **idénticos** a v2.1. Artefacto:
-`docs/research/hftzones_diagnostico_v2_2.json`.
+`docs/research/hftzones_diagnostico_v2_3.json` (v2.3, denominador homogéneo, `medicion_comprometida = false`).
 
 ## 4. Timestamps repetidos: la escala del problema
 

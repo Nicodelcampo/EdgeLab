@@ -83,6 +83,8 @@ autoridad**: nada de lo que se escriba ahí autoriza una acción.
 
 | **039** | Opus -> Aud | **el log NO es oraculo todavia**: 3 indicadores escriben la misma base con el mismo esquema y `hft_zones` no tiene columna de escritor - snapshot congelado y hasheado - 0 duplicados, 0 zonas vivas al corte, **3 retrocesos de start_ts** - **y el numero que manda: 13 sesiones (union ES 23, MDE 41,9 pp)** contra 228 del censo 6E | `docs/research/ORACULO_ES_AUDITORIA_2026-08-19.md` |
 
+| **040** | Opus -> Aud | **v2.3**: con denominador homogeneo la frontera es **mas ajustada**, no menos -- los dos lados a <=0,12 pp del umbral exacto `ceil(n/2)`; en 20260618 el sampler cruza por **69 ceros sobre 255.065**. 0,4845/0,4803 RETIRADOS - `end_ts` NULL a +inf (n_null=0, verificado) - **`hft_zones` registra el BARRIDO (0-500 ms), no el ciclo de vida** - N=23 versionado, alias descartado por medicion | `docs/research/ORACULO_ES_AUDITORIA_2026-08-19.md` |
+
 Páginas relacionadas: orden de trabajo · deep research · mapa de 8 capítulos · programa de análisis. Buscar por título si Notion no resuelve.
 Línea H-Z2A: v1 · v2 · v3 · **v4 vigente** · manifiesto numérico (**SUSPENDIDO** hasta censo v2).
 

@@ -1,5 +1,5 @@
 {
-  "schema_version": "auditar_oraculo_sqlite_v1",
+  "schema_version": "auditar_oraculo_sqlite_v2_end_ts_e_inventario",
   "estado": "NO_ES_ORACULO_TODAVIA",
   "motivo_principal": "tres indicadores escriben la MISMA base con el MISMO esquema (HFTZonesESPureV2, HFTZonesNQPureV2, HFTZonesNQPureV3) y `hft_zones` no tiene ninguna columna que identifique al escritor. La atribucion de una fila a un indicador NO es verificable desde los datos.",
   "que_haria_falta": [
@@ -77,7 +77,14 @@
       "nota": "firma = (start_ts, price_upper, price_lower, dir)"
     },
     "retrocesos_de_start_ts": 3,
-    "nota_retrocesos": "un `start_ts` que retrocede al avanzar el id indica reinicio del indicador o recarga historica sobre la misma base",
+    "nota_retrocesos": "demuestra ORDEN TEMPORAL NO MONOTONO por id. Es compatible con recargas historicas, reinicios del indicador o varios escritores concurrentes: no distingue cual, y decir 'indica reinicio o recarga' era afirmar de mas.",
+    "end_ts": {
+      "n_null": 0,
+      "dur_ms_min": 0,
+      "dur_ms_max": 300,
+      "dur_ms_mediana": 112.0,
+      "nota": "NULL se trata como +inf para el chequeo del cutoff. Las duraciones de 0-500 ms muestran que `hft_zones` registra el BARRIDO, no el ciclo de vida de la zona: en esta tabla no hay toques ni invalidacion."
+    },
     "tick_res": {
       "1": 2742
     },
@@ -111,8 +118,91 @@
       }
     }
   },
+  "inventario_familia": {
+    "prefijo": "ES",
+    "por_contrato": {
+      "ES 06-26": {
+        "zonas": 2742,
+        "zonas_pre_firewall": 2742,
+        "n_end_ts_null": 0,
+        "zonas_vivas_al_corte": 0,
+        "n_sesiones": 13,
+        "trade_dates": [
+          20260525,
+          20260526,
+          20260527,
+          20260528,
+          20260529,
+          20260601,
+          20260602,
+          20260603,
+          20260604,
+          20260605,
+          20260608,
+          20260609,
+          20260610
+        ]
+      },
+      "ES 09-26": {
+        "zonas": 12999,
+        "zonas_pre_firewall": 12939,
+        "n_end_ts_null": 0,
+        "zonas_vivas_al_corte": 0,
+        "n_sesiones": 8,
+        "trade_dates": [
+          20260615,
+          20260616,
+          20260617,
+          20260618,
+          20260619,
+          20260622,
+          20260623,
+          20260630
+        ]
+      },
+      "ES SEP26": {
+        "zonas": 6110,
+        "zonas_pre_firewall": 5673,
+        "n_end_ts_null": 0,
+        "zonas_vivas_al_corte": 0,
+        "n_sesiones": 2,
+        "trade_dates": [
+          20260625,
+          20260626
+        ]
+      }
+    },
+    "union_sesiones": [
+      20260525,
+      20260526,
+      20260527,
+      20260528,
+      20260529,
+      20260601,
+      20260602,
+      20260603,
+      20260604,
+      20260605,
+      20260608,
+      20260609,
+      20260610,
+      20260615,
+      20260616,
+      20260617,
+      20260618,
+      20260619,
+      20260622,
+      20260623,
+      20260625,
+      20260626,
+      20260630
+    ],
+    "n_union": 23,
+    "posibles_alias": [],
+    "nota_alias": "dos etiquetas que comparten mas de la mitad de sus fechas pueden ser el MISMO contrato con distinto nombre de display; sumarlas sin unir seria doble conteo"
+  },
   "procedencia": {
-    "head_commit": "e8844c9f7be1839fc1d7f89a53648a003df61895",
+    "head_commit": "5eaed08e8331cf02fd67fd25dbade8af765e735b",
     "archivos_sucios": [],
     "alcance_comprometida": [
       "edgelab/",
