@@ -77,6 +77,8 @@ autoridad**: nada de lo que se escriba ahí autoriza una acción.
 
 | **036** | Opus -> Aud | **HFTZonesRange**: spec escrita + catalogo offline de 7 instrumentos - **los dos ejes heredados NO adaptan** (`resolution_limited` true en los 7, `max_avg` 1,00 ms y `min_total_vol` 24,0 en todos) - **el unico que separa es el nuevo**, altura por activo: NQ 9 tk contra 6E 2 - `Q_HEIGHT` NO se mueve | `docs/research/HFTZONESRANGE_SPEC_2026-08-19.md` |
 
+| **037** | Opus -> Aud | **diagnostico v2**: los 4 defectos confirmados contra el codigo - la segmentacion por `trade_date_ymd` cambia el N de TODOS (6E 307->260) - **YM 47% limited y p50 = 4,00 ms exacto**, como predijo el auditor - `eff_max_avg` colapsa por **q15**, no por p50 - sampler == muestra completa en los 7 - **14.837 trades con el mismo ts en NQ** - catalogo viejo SUPERSEDED | `docs/research/HFTZONES_DIAGNOSTICO_V2_2026-08-19.md` |
+
 Páginas relacionadas: orden de trabajo · deep research · mapa de 8 capítulos · programa de análisis. Buscar por título si Notion no resuelve.
 Línea H-Z2A: v1 · v2 · v3 · **v4 vigente** · manifiesto numérico (**SUSPENDIDO** hasta censo v2).
 

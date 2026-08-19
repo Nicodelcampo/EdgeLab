@@ -15,6 +15,21 @@ let B = null, gTipo = "velas", gEje = "tiempo", gRes = null, gVista = null, TICK
 // precios la fija y la comprime/expande, como en NT8 y en cualquier plataforma.
 let gEscala = null;
 let arrastrando = false;
+let gHolgura = 0;
+const GAP_DER = 156;   // margen por defecto despues de la ultima barra, en pixeles
+
+// SIN TOPE EN NINGUN EJE (Nico, 2026-08-19). La vista se desplaza libre en horizontal
+// y en vertical: no hay clamp de indices ni de precio.
+//
+// Lo que evita que eso rompa el dibujo es la guarda de "sin datos en esta ventana" mas
+// abajo, que ya existe: los recorridos se acotan a [0, n-1] mientras el mapeo X() usa
+// [a, b], asi que salirse del dato produce espacio VACIO, no un error.
+//
+// Esta funcion queda como unico punto de paso para que paneo, zoom y encuadre no
+// vuelvan a tener tres cuentas distintas -- que es como empezaron a contradecirse.
+function acotar(v) {
+  return { a: v.a, b: v.b };
+}
 
 function iniGrafico() {
   B = window.BARRAS;
@@ -93,20 +108,33 @@ function pintarG() {
     b.classList.toggle("on", b.dataset.tipo === gTipo));
 
   const S = serieG();
-  if (!gVista) gVista = { a: Math.max(0, S.n - (gTipo === "linea" ? 1500 : 160)), b: S.n - 1 };
+  // `w` todavia no existe en este punto (se declara con el canvas mas abajo), asi que
+  // el ancho util se lee del elemento. Usarlo antes tiraba "Cannot access 'w' before
+  // initialization" y dejaba el chart sin pintar.
+  const anchoUtil = Math.max(1, document.querySelector("#cg").clientWidth - 12 - 66);
+  const nVis = (gTipo === "linea" ? 1500 : 160);
+  // el margen por defecto, traducido a indices con la geometria actual
+  gHolgura = Math.max(1, Math.round(nVis * GAP_DER / anchoUtil));
+  if (!gVista) gVista = { a: S.n - nVis + gHolgura, b: S.n - 1 + gHolgura };
   if (gVista.b - gVista.a < 8) gVista.b = gVista.a + 8;
 
   const cv = document.querySelector("#cg"), dpr = devicePixelRatio || 1;
   const w = cv.clientWidth, h = cv.clientHeight;
   cv.width = w * dpr; cv.height = h * dpr;
   const g = cv.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
-  // `pad.r` es el ancho de las etiquetas de precio; `GAP_DER` es aire entre la ultima
-  // barra y el eje, como el "right margin" de NT8 / TradingView. Sin el, la vela mas
-  // reciente queda pegada al borde y no se ve hacia donde va.
-  const GAP_DER = 156;
-  const pad = { l: 12, r: 66 + GAP_DER, t: 12, b: 22 };
+  // EL AREA DE DIBUJO LLEGA HASTA LA COLUMNA DE PRECIOS.
+  //
+  // Antes reservaba `GAP_DER` FUERA del area: las velas y las zonas terminaban 156 px
+  // antes del eje mientras la grilla y la linea de ultimo precio seguian hasta las
+  // etiquetas. Esa franja con lineas y sin datos es lo que se leia como "el grafico se
+  // corta ahi", y se cortaba siempre en el mismo lugar porque era un borde fijo.
+  //
+  // El margen sigue existiendo, pero ahora es ESPACIO DEL GRAFICO --indices vacios al
+  // final de la vista, como el right margin de TradingView-- no un recorte del lienzo.
+  // Se puede scrollear hacia el y las velas pueden ocuparlo.
+  const pad = { l: 12, r: 66, t: 12, b: 22 };
   const W = w - pad.l - pad.r, H = h - pad.t - pad.b;
-  const xEje = pad.l + W + GAP_DER;        // donde arranca la columna de precios
+  const xEje = pad.l + W;                  // donde arranca la columna de precios
   const a = gVista.a, b = gVista.b, m = b - a + 1;
 
   // La vista puede salirse del rango de datos: TradingView deja seguir scrolleando
@@ -233,11 +261,7 @@ function zoomG(e) {
   const S = serieG(), r = e.currentTarget.getBoundingClientRect();
   const f = (e.clientX - r.left) / r.width, c = gVista.a + f * (gVista.b - gVista.a);
   const w = Math.max(12, (gVista.b - gVista.a) * (e.deltaY > 0 ? 1.25 : 0.8));
-  let a = Math.round(c - f * w), b = Math.round(c + (1 - f) * w);
-  // Mismo tope que el paneo: la serie llega hasta el borde y no se sale.
-  if (a < 0) { b -= a; a = 0; }
-  if (b > S.n - 1) { a -= (b - (S.n - 1)); b = S.n - 1; }
-  gVista = { a: Math.max(0, a), b: Math.min(S.n - 1, b) };
+  gVista = acotar({ a: Math.round(c - f * w), b: Math.round(c + (1 - f) * w) });
   pintarG();
 }
 
@@ -291,10 +315,7 @@ function arrastreG(ev) {
   // por eso no hace falta holgura de indices encima.
   const mover = e => {
     const dx = Math.round((e.clientX - x0) / r.width * span);
-    let a = v0.a - dx, b = v0.b - dx;
-    if (a < 0) { b -= a; a = 0; }
-    if (b > S.n - 1) { a -= (b - (S.n - 1)); b = S.n - 1; }
-    gVista = { a: Math.max(0, a), b: Math.min(S.n - 1, b) };
+    gVista = acotar({ a: v0.a - dx, b: v0.b - dx });
     // Signo, derivado y no adivinado. `Y(p) = pad.t + H - (p - lo)/(hi - lo) * H`, o
     // sea que la pantalla crece hacia ABAJO y el precio hacia ARRIBA. Para que un
     // precio P se dibuje `dy` pixeles mas abajo hace falta que `Y(P)` aumente, y eso
