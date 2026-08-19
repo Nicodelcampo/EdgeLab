@@ -80,6 +80,22 @@
   .vacio{display:grid;place-items:center;height:100%;text-align:center;color:var(--dim);padding:var(--s4);}
   .vacio h2{font-size:15px;font-weight:600;color:var(--text);margin:0 0 6px;}
   .vacio p{margin:0;max-width:44ch;font-size:12px;line-height:1.6;}
+  /* --- vista grafico --- */
+  .tabs{display:flex;gap:2px;background:var(--surface2);border:1px solid var(--border2);
+    border-radius:var(--rs);padding:2px;}
+  .tabs button{background:transparent;border:none;padding:3px 11px;border-radius:4px;color:var(--dim);}
+  .tabs button.on{background:var(--accent-dim);color:var(--text);}
+  .vista{display:none;min-height:0;}
+  .vista.on{display:grid;}
+  .barra-tool{display:flex;align-items:center;gap:var(--s3);padding:6px var(--s3);
+    background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap;}
+  .grupo{display:flex;align-items:center;gap:var(--s1);}
+  .grupo>span{color:var(--dim2);font-size:11px;text-transform:uppercase;letter-spacing:.05em;
+    margin-right:2px;}
+  .grupo button{padding:3px 9px;font-size:12px;font-family:var(--mono);}
+  .grupo button.on{background:var(--accent-dim);border-color:var(--accent);color:var(--text);}
+  .sep{width:1px;height:18px;background:var(--border2);}
+  #wrapG{position:relative;min-height:0;}
   kbd{font-family:var(--mono);font-size:11px;background:var(--surface3);
     border:1px solid var(--border2);border-radius:3px;padding:1px 5px;color:var(--dim);}
 </style>
@@ -90,9 +106,13 @@
   <div class="marca">H-Z2A <span>· corredores</span></div>
   <div class="caso mono" id="caso">—</div>
   <div class="chips" id="chips"></div>
+  <div class="tabs">
+    <button id="tabCorr" class="on">corredores</button>
+    <button id="tabGraf">gráfico</button>
+  </div>
 </header>
 
-<main>
+<main id="vCorr" class="vista on" style="grid-template-columns:272px 1fr">
   <aside>
     <div class="filtro"><input id="q" placeholder="filtrar  (/)" autocomplete="off"></div>
     <div class="lista" id="lista"></div>
@@ -127,6 +147,28 @@
   </div>
 </main>
 
+<section id="vGraf" class="vista" style="grid-template-rows:auto 1fr">
+  <div class="barra-tool">
+    <div class="grupo"><span>tipo</span>
+      <button data-tipo="velas" class="on">velas</button>
+      <button data-tipo="linea">línea + tick</button>
+    </div>
+    <div class="sep"></div>
+    <!-- Dos ejes DISTINTOS, no dos unidades del mismo: CLAUDE.md pide no confundir
+         `ticks_per_row` (parametro) con `bar_spec` (resolucion de barra). Por eso van
+         en dos grupos separados y no en un desplegable unico. -->
+    <div class="grupo" id="gTiempo"><span>tiempo</span></div>
+    <div class="sep"></div>
+    <div class="grupo" id="gTicks"><span>ticks</span></div>
+    <div class="sep"></div>
+    <div class="grupo"><span id="infoG" class="mono" style="text-transform:none;letter-spacing:0"></span></div>
+  </div>
+  <div id="wrapG"><canvas id="cg"></canvas>
+    <div class="leyenda" id="legG"></div>
+  </div>
+</section>
+
+<script src="barras.js"></script>
 <script>
 // ---------------------------------------------------------------------------
 // Esta pagina NO clasifica nada. Las marcas vienen de `trazas.json`, y ahi las
@@ -353,3 +395,4 @@ function csv(){
   a.href = URL.createObjectURL(blob); a.download = `hz2a_${c.zone_id}.csv`; a.click();
 }
 </script>
+<script src="grafico.js"></script>
