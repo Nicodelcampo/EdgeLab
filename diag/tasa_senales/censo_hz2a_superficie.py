@@ -409,6 +409,17 @@ def main(argv=None):
                         celda_degenerada=bool(dl + R >= D),
                         separacion_observable=bool(D - R - 1 >= 1),
                         anillo_anida=bool(nm >= prev_nm),
+                        # P-47. `vive_por_N` cuenta EVENTOS, pero la entrada 014 §3
+                        # congelo el criterio sobre SESIONES: «una celda con 500
+                        # eventos en 3 sesiones no es 500 observaciones». El umbral
+                        # 403 se derivo a nivel variante sobre eventos y NO existe su
+                        # equivalente en sesiones, asi que inventarlo aca seria
+                        # fabricar un gate. Se publica sobre que se computa y cuanto
+                        # se concentra, y la decision queda a la vista.
+                        criterio_N="eventos",
+                        eventos_por_sesion=round(
+                            nm / len(sesiones.get((D, dl, R, pr), ())), 2)
+                        if sesiones.get((D, dl, R, pr)) else 0.0,
                         vive_por_N=bool(nm >= N_MINIMO_VARIANTE)))
                     prev_nm, prev_a2 = nm, a2
 
