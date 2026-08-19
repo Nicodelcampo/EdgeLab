@@ -3,7 +3,7 @@
 Índice aditivo. **No mueve** archivos existentes de `docs/`. Si este archivo y una página de Notion divergen, **manda el repo**.
 
 Generado: 2026-08-17 · HEAD de referencia: `f247e797a28ee441ceb50e9efb447709b04d0f02`
-Actualizado: 2026-08-18 (entradas 015–027)
+Actualizado: 2026-08-18 (entradas 015–029)
 
 ## Niveles
 
@@ -18,6 +18,10 @@ Actualizado: 2026-08-18 (entradas 015–027)
 
 | Fecha | Actualidad | Nivel | Categoría | Título | Repo | Snapshot |
 |---|---|---|---|---|---|---|
+| 2026-08-18 | vigente | L0_entrada | intake | Intake Nico · H-Z2A exploratorio (prosa textual) | `docs/research/INTAKE_NICO_HZ2A_EXPLORATORIO_2026-08-18.md` | — |
+| 2026-08-18 | vigente | L1_linea | board | Asiento P-45 (c) y alcance (copiar a PENDIENTE) | `docs/research/BOARD_P45_P50_2026-08-18.md` | — |
+| 2026-08-18 | vigente | L1_linea | canal | Entrada 029 — intake Nico: P-45 (c), máquina libre, v2 sin outcomes | `docs/audits/ENTRADA_029_INTAKE_NICO_P45C_Y_ALCANCE_2026-08-18.md` | — |
+| 2026-08-18 | vigente | L1_linea | canal | Entrada 028 — enmienda P-46 y barrido versionado | `docs/audits/ENTRADA_028_ENMIENDA_P46_Y_BARRIDO_VERSIONADO_2026-08-18.md` | — |
 | 2026-08-18 | vigente | L1_linea | canal | Entrada 027 — el break cierra; P-45 bloquea v2; P-46 son 15 nulas | `docs/audits/ENTRADA_027_AUDITORIA_026_P45_P46_2026-08-18.md` | — |
 | 2026-08-18 | vigente | L1_linea | canal | Entrada 026 — dos causas de la no-anidación; P-45 y P-46 | `docs/audits/ENTRADA_026_DOS_CAUSAS_DE_LA_NO_ANIDACION_2026-08-18.md` | — |
 | 2026-08-18 | vigente | L1_linea | canal | Entrada 025 — auditoría del fix: GO condicional a censo v2 | `docs/audits/ENTRADA_025_AUDITORIA_FIX_GO_CONDICIONAL_2026-08-18.md` | — |
