@@ -1,0 +1,362 @@
+{
+  "schema_version": "hft_es_context_feature_registry_v1",
+  "status": "RESEARCH_REGISTERED_NOT_EXECUTED",
+  "date": "2026-08-20",
+  "repo": "Nicodelcampo/EdgeLab",
+  "branch": "foundation/f0b-compatibility-probe",
+  "remote_head_before_registration": "6a15255709bf6020406397edcc57d11415213b1a",
+  "human_memo": "docs/research/HFT_ES_CAPA_2_MICROESTRUCTURA_Y_REGIMENES_2026-08-20.md",
+  "provenance": {
+    "scripts_run": false,
+    "outcomes_inspected": false,
+    "pnl_inspected": false,
+    "holdout_touched": false,
+    "detector_modified": false,
+    "local_r1_v2": {
+      "status": "USER_REPORTED_LOCAL_UNCOMMITTED",
+      "universe_sessions": 62,
+      "eligible_sessions": 59,
+      "mc_resamples": 400,
+      "p_median": 0.1796,
+      "p_lt_0_05_sessions": 18,
+      "p_lt_0_05_fraction": 0.3051,
+      "interpretation": "inconclusive_not_edge_not_null"
+    }
+  },
+  "verdict": {
+    "raw_zone_as_universal_support_resistance": "low_hope",
+    "standalone_trade_signal": "low_hope",
+    "contextual_microstructure_state_detector": "moderate_unproven",
+    "feature_in_preregistered_regime_model": "moderate_unproven",
+    "live_strategy_now": "very_low_hope"
+  },
+  "frozen_decisions": [
+    {
+      "id": "D-HFT-CTX-01",
+      "decision": "freeze_flat_detector_and_oracle",
+      "detail": "Add features in an offline table; do not overwrite HFTZonesESPureV2Flat."
+    },
+    {
+      "id": "D-HFT-CTX-02",
+      "decision": "label_feature_availability",
+      "allowed_labels": ["PRE", "AT_EVENT", "POST"],
+      "rule": "POST fields are outcomes and cannot be regime filters."
+    },
+    {
+      "id": "D-HFT-CTX-03",
+      "decision": "short_feature_whitelist",
+      "primary_families": [
+        "session_phase",
+        "intraday_normalized_activity_and_volatility",
+        "causal_episode_state",
+        "within_event_effort_vs_result",
+        "scheduled_macro_news"
+      ]
+    },
+    {
+      "id": "D-HFT-CTX-04",
+      "decision": "official_macro_calendars_only",
+      "initial_scope": "scheduled timestamp and event type; no surprise value"
+    },
+    {
+      "id": "D-HFT-CTX-05",
+      "decision": "no_outcomes_before_r2_r3_and_preregistration"
+    },
+    {
+      "id": "D-HFT-CTX-06",
+      "decision": "session_is_minimum_inference_cluster",
+      "detail": "Never report IID event-level confidence intervals."
+    },
+    {
+      "id": "D-HFT-CTX-07",
+      "decision": "current_data_do_not_support_order_book_truth",
+      "detail": "No true OFI, queue position, cancellations, depth replenishment or sub-millisecond ordering claims."
+    },
+    {
+      "id": "D-HFT-CTX-08",
+      "decision": "keep_holdout_untouched",
+      "holdout": "2026-07-01/2026-12-31"
+    }
+  ],
+  "feature_families": [
+    {
+      "id": "F01",
+      "name": "session_phase",
+      "availability": "PRE",
+      "priority": "primary",
+      "data_required": "trades_and_cme_session_calendar",
+      "definition_v0": "asia|europe|premarket|rth_am|rth_pm|close with real DST",
+      "causal": true
+    },
+    {
+      "id": "F02",
+      "name": "activity_regime",
+      "availability": "PRE",
+      "priority": "primary",
+      "data_required": "trades",
+      "components": ["tick_rate_5m", "volume_rate_5m", "median_intertick_ms_5m", "price_changes_5m"],
+      "normalization": "past-only percentile within same 15-minute clock bucket",
+      "causal": true
+    },
+    {
+      "id": "F03",
+      "name": "volatility_regime",
+      "availability": "PRE",
+      "priority": "primary",
+      "data_required": "trades",
+      "components": ["realized_volatility_5m", "range_5m", "price_path_5m"],
+      "normalization": "past-only percentile within same clock bucket",
+      "causal": true
+    },
+    {
+      "id": "F04",
+      "name": "episode_state",
+      "availability": "PRE_AT_EVENT",
+      "priority": "primary",
+      "data_required": "prior_zone_events",
+      "components": ["is_first", "prior_zone_count", "time_since_previous", "prior_same_level_count", "stack_depth_to_date"],
+      "rule": "past events only; symmetric plus/minus windows are descriptive and not live filters",
+      "causal": true
+    },
+    {
+      "id": "F05",
+      "name": "effort_result_event",
+      "availability": "AT_EVENT",
+      "priority": "primary",
+      "data_required": "trades_inside_detected_sweep",
+      "components": ["volume_per_net_displacement", "net_displacement_over_total_path", "final_position_in_event_range", "volume_at_extreme_fraction"],
+      "normalization": "phase and zone width",
+      "causal": true
+    },
+    {
+      "id": "F06",
+      "name": "scheduled_macro_news",
+      "availability": "PRE",
+      "priority": "primary_exogenous",
+      "data_required": "official_release_calendar",
+      "components": ["event_type", "minutes_to_event", "minutes_since_event", "inside_fixed_window"],
+      "causal": true
+    },
+    {
+      "id": "F07",
+      "name": "trend_score",
+      "availability": "PRE",
+      "priority": "secondary_single_factor",
+      "data_required": "trades",
+      "definition_v0": "signed_return_5m divided by realized_volatility_5m; optional distance_to_vwap divided by volatility",
+      "rule": "one trend factor, not a family of RSI/MACD/moving averages",
+      "causal": true
+    },
+    {
+      "id": "F08",
+      "name": "failed_filter_identity",
+      "availability": "AT_EVENT",
+      "priority": "r2_diagnostic",
+      "data_required": "zone_and_near_miss_detector_trace",
+      "components": ["failed_filter", "distance_to_threshold"],
+      "causal": true
+    },
+    {
+      "id": "F09",
+      "name": "trade_only_illiquidity_proxy",
+      "availability": "PRE",
+      "priority": "secondary_proxy",
+      "data_required": "trades",
+      "definition_v0": "absolute_return_5m divided by volume_5m, stored with numerator and denominator",
+      "normalization": "same clock bucket",
+      "warning": "coarse proxy; not observed depth or OFI",
+      "causal": true
+    },
+    {
+      "id": "F10",
+      "name": "geometry_direction",
+      "availability": "AT_EVENT",
+      "priority": "secondary",
+      "data_required": "zone_and_pre_event_prices",
+      "components": ["width_ticks", "sweep_side", "with_or_against_trend", "position_in_session_range"],
+      "causal": true
+    },
+    {
+      "id": "L01",
+      "name": "spread_depth_ofi",
+      "availability": "PRE_AT_EVENT",
+      "priority": "deferred_until_valid_l1_l2",
+      "data_required": "synchronized_quotes_orders_cancellations",
+      "causal": true
+    },
+    {
+      "id": "L02",
+      "name": "queue_imbalance_microprice",
+      "availability": "PRE",
+      "priority": "deferred_until_valid_l1_l2",
+      "data_required": "real_bid_ask_queues",
+      "causal": true
+    },
+    {
+      "id": "L03",
+      "name": "replenishment_half_life",
+      "availability": "POST",
+      "priority": "deferred_outcome",
+      "data_required": "synchronized_l1_l2",
+      "causal": false
+    }
+  ],
+  "r2_matching_audit": {
+    "outcomes_allowed": false,
+    "known_population": {
+      "eligible_zones": 9234,
+      "matched_pairs": 7542,
+      "unmatched_zones": 1692,
+      "match_rate": 0.817
+    },
+    "required_outputs": [
+      "matched_vs_unmatched_by_phase_width_direction_type",
+      "pre_event_activity_volatility_trend",
+      "causal_episode_state",
+      "candidate_control_count",
+      "failed_filter_and_distance",
+      "temporal_separation",
+      "matching_with_and_without_replacement",
+      "control_reuse_distribution",
+      "order_dependence",
+      "coverage_by_session_phase_width",
+      "smd_before_after",
+      "variance_ratios",
+      "ecdf_max_difference",
+      "unmatched_and_common_support_counts"
+    ]
+  },
+  "r3_clustered_inference": {
+    "status": "protocol_required_not_frozen",
+    "minimum_cluster": "session",
+    "iid_event_ci_forbidden": true,
+    "items_to_freeze": [
+      "zone_weighted_vs_session_weighted_estimand",
+      "session_statistic",
+      "session_resampling_method",
+      "bootstrap_B",
+      "seed",
+      "few_pair_sessions",
+      "economic_equivalence_margin",
+      "five_metric_multiplicity"
+    ]
+  },
+  "candidate_future_outcomes_not_preregistered": [
+    {
+      "family": "continuation",
+      "candidate_horizons_seconds": [1, 5, 30]
+    },
+    {
+      "family": "reversal",
+      "candidate_horizons_seconds": [1, 5, 30]
+    },
+    {
+      "family": "resilience",
+      "candidate_horizons_seconds": [1, 5, 30]
+    },
+    {
+      "family": "longer_attraction_revisit",
+      "separate_campaign": true
+    }
+  ],
+  "explicitly_rejected_or_parked": [
+    "vpin",
+    "rsi_macd_indicator_soup",
+    "gex_for_this_phase",
+    "retroactive_absorptionv3_arrow",
+    "mass_parameter_sweep",
+    "m1_m5_as_tick_detector_proxy",
+    "full_sample_hmm_regime_labels",
+    "indicators_without_parity_and_causal_timestamp"
+  ],
+  "execution_order": [
+    "seal_r1",
+    "r2_matchability_profile",
+    "r3_clustered_inference_protocol",
+    "target_free_feature_atlas",
+    "select_contexts_without_outcomes",
+    "preregister_direction_outcome_horizon",
+    "execute_conditioned_measurement",
+    "open_holdout_once_only_if_governance_allows"
+  ],
+  "sources": [
+    {
+      "id": "S01",
+      "scope": "direct_ES",
+      "title": "Returns and Order Flow Imbalances: Intraday Dynamics and Macroeconomic News Effects",
+      "url": "https://arxiv.org/html/2508.06788v4"
+    },
+    {
+      "id": "S02",
+      "scope": "direct_ES",
+      "title": "Intraday Trading Invariance in the E-Mini S&P 500 Futures Market",
+      "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2693810"
+    },
+    {
+      "id": "S03",
+      "scope": "direct_E_mini",
+      "title": "Resiliency in the E-mini futures market",
+      "url": "https://onlinelibrary.wiley.com/doi/10.1002/fut.22259"
+    },
+    {
+      "id": "S04",
+      "scope": "general_limit_order_book",
+      "title": "The Price Impact of Order Book Events",
+      "url": "http://arxiv.org/abs/1011.6402"
+    },
+    {
+      "id": "S05",
+      "scope": "general_limit_order_book",
+      "title": "Queue Imbalance as a One-Tick-Ahead Price Predictor in a Limit Order Book",
+      "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2702117"
+    },
+    {
+      "id": "S06",
+      "scope": "direct_SP500_futures",
+      "title": "Reflecting on the VPIN Dispute",
+      "url": "https://repec.econ.au.dk/repec/creates/rp/13/rp13_42.pdf"
+    },
+    {
+      "id": "S07",
+      "scope": "general_order_flow_clustering",
+      "title": "Clustering of order arrivals, price impact and trade path optimisation",
+      "url": "https://users.iems.northwestern.edu/~armbruster/2007msande444/Hewlett2006%20price%20impact.pdf"
+    },
+    {
+      "id": "S08",
+      "scope": "methodology_multiple_testing",
+      "title": "A Backtesting Protocol in the Era of Machine Learning",
+      "url": "https://people.duke.edu/~charvey/Research/Published_Papers/G138_A_backtesting_protocol.pdf"
+    },
+    {
+      "id": "S09",
+      "scope": "methodology_matching",
+      "title": "Assessing Balance",
+      "url": "https://cran.r-project.org/web/packages/MatchIt/vignettes/assessing-balance.html"
+    },
+    {
+      "id": "S10",
+      "scope": "methodology_clustered_inference",
+      "title": "A Practitioner's Guide to Cluster-Robust Inference",
+      "url": "https://cameron.econ.ucdavis.edu/research/Cameron_Miller_JHR_2015_February.pdf"
+    },
+    {
+      "id": "S11",
+      "scope": "official_macro_calendar",
+      "title": "BLS release schedules",
+      "url": "https://www.bls.gov/schedule/news_release/cpi.htm"
+    },
+    {
+      "id": "S12",
+      "scope": "official_macro_calendar",
+      "title": "Federal Reserve FOMC calendars and historical materials",
+      "url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"
+    },
+    {
+      "id": "S13",
+      "scope": "official_macro_calendar",
+      "title": "New York Fed Economic Indicators Calendar",
+      "url": "https://www.newyorkfed.org/research/calendars/nationalecon_cal"
+    }
+  ]
+}
