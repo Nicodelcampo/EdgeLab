@@ -1,0 +1,984 @@
+{
+ "schema_version": "memoria_nivel_nulo_correcto_v1",
+ "outcomes_accessed": false,
+ "pnl_accessed": false,
+ "holdout_included": false,
+ "n_sesiones": 59,
+ "n_nulo": 400,
+ "semilla": 20260820,
+ "agrupamiento_en_numeros_redondos": {
+  "nota": "fraccion de ticks por resto modulo 4 (1 punto = 4 ticks). Sin preferencia, cada resto daria 0,25. Medido sobre el dato, no citado",
+  "resto_0_punto_entero": 0.2579,
+  "resto_1": 0.2465,
+  "resto_2_medio_punto": 0.2484,
+  "resto_3": 0.2473,
+  "exceso_sobre_uniforme_pp": 0.79
+ },
+ "nulo_viejo": {
+  "descripcion": "precio de tick suelto: MAL ESPECIFICADO, le falta el +ancho/2",
+  "p_mediana": 0.7275,
+  "frac_sesiones_p_menor_005": 0.1356
+ },
+ "nulo_corregido": {
+  "descripcion": "mid construido igual que el real: precio operado al azar mas el MISMO ancho de la zona",
+  "p_mediana": 0.1775,
+  "frac_sesiones_p_menor_005": 0.3051
+ },
+ "efecto_de_diseno": {
+  "formula": "DEFF = 1 + (m-1)*rho ; N_efectivo = N / DEFF",
+  "zonas_por_sesion_media": 156.2,
+  "nota": "rho hay que estimarlo por metrica; aca se publica m para que cualquier intervalo futuro lo aplique. Con m=156, un rho tan chico como 0,05 ya da DEFF=8.8"
+ },
+ "procedencia": {
+  "head_commit": "be21d350899d22a3919859cc6b3648f622fdd935",
+  "archivos_sucios": [
+   "diag/tasa_senales/memoria_nivel_nulo_correcto.py"
+  ]
+ },
+ "sesiones": [
+  {
+   "trade_date": 20251222,
+   "n_zonas": 68,
+   "max_en_un_nivel": 5,
+   "niveles": 42,
+   "niveles_3_o_mas": 6,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 0.37
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.04,
+    "p_3omas": 0.0025
+   }
+  },
+  {
+   "trade_date": 20251223,
+   "n_zonas": 76,
+   "max_en_un_nivel": 4,
+   "niveles": 56,
+   "niveles_3_o_mas": 3,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 0.56
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.1575,
+    "p_3omas": 0.12
+   }
+  },
+  {
+   "trade_date": 20251224,
+   "n_zonas": 50,
+   "max_en_un_nivel": 7,
+   "niveles": 30,
+   "niveles_3_o_mas": 4,
+   "nulo_viejo": {
+    "max": 3.0,
+    "p_max": 0.0
+   },
+   "nulo_corregido": {
+    "max": 2.0,
+    "p_max": 0.0,
+    "p_3omas": 0.0
+   }
+  },
+  {
+   "trade_date": 20251226,
+   "n_zonas": 49,
+   "max_en_un_nivel": 4,
+   "niveles": 33,
+   "niveles_3_o_mas": 5,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 0.5825
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.1375,
+    "p_3omas": 0.0
+   }
+  },
+  {
+   "trade_date": 20251229,
+   "n_zonas": 74,
+   "max_en_un_nivel": 3,
+   "niveles": 59,
+   "niveles_3_o_mas": 3,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 0.995
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.77,
+    "p_3omas": 0.1625
+   }
+  },
+  {
+   "trade_date": 20251230,
+   "n_zonas": 66,
+   "max_en_un_nivel": 4,
+   "niveles": 45,
+   "niveles_3_o_mas": 4,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 0.92
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.345,
+    "p_3omas": 0.2375
+   }
+  },
+  {
+   "trade_date": 20251231,
+   "n_zonas": 102,
+   "max_en_un_nivel": 4,
+   "niveles": 80,
+   "niveles_3_o_mas": 4,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 0.575
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.1025,
+    "p_3omas": 0.04
+   }
+  },
+  {
+   "trade_date": 20260102,
+   "n_zonas": 202,
+   "max_en_un_nivel": 4,
+   "niveles": 157,
+   "niveles_3_o_mas": 7,
+   "nulo_viejo": {
+    "max": 5.0,
+    "p_max": 0.995
+   },
+   "nulo_corregido": {
+    "max": 4.0,
+    "p_max": 0.6025,
+    "p_3omas": 0.3925
+   }
+  },
+  {
+   "trade_date": 20260105,
+   "n_zonas": 143,
+   "max_en_un_nivel": 7,
+   "niveles": 83,
+   "niveles_3_o_mas": 13,
+   "nulo_viejo": {
+    "max": 5.0,
+    "p_max": 0.04
+   },
+   "nulo_corregido": {
+    "max": 4.0,
+    "p_max": 0.005,
+    "p_3omas": 0.0025
+   }
+  },
+  {
+   "trade_date": 20260106,
+   "n_zonas": 149,
+   "max_en_un_nivel": 6,
+   "niveles": 105,
+   "niveles_3_o_mas": 9,
+   "nulo_viejo": {
+    "max": 5.0,
+    "p_max": 0.31
+   },
+   "nulo_corregido": {
+    "max": 4.0,
+    "p_max": 0.025,
+    "p_3omas": 0.035
+   }
+  },
+  {
+   "trade_date": 20260107,
+   "n_zonas": 131,
+   "max_en_un_nivel": 5,
+   "niveles": 96,
+   "niveles_3_o_mas": 8,
+   "nulo_viejo": {
+    "max": 5.0,
+    "p_max": 0.6475
+   },
+   "nulo_corregido": {
+    "max": 4.0,
+    "p_max": 0.0875,
+    "p_3omas": 0.0775
+   }
+  },
+  {
+   "trade_date": 20260108,
+   "n_zonas": 147,
+   "max_en_un_nivel": 5,
+   "niveles": 100,
+   "niveles_3_o_mas": 10,
+   "nulo_viejo": {
+    "max": 6.0,
+    "p_max": 0.9825
+   },
+   "nulo_corregido": {
+    "max": 4.0,
+    "p_max": 0.43,
+    "p_3omas": 0.5975
+   }
+  },
+  {
+   "trade_date": 20260109,
+   "n_zonas": 149,
+   "max_en_un_nivel": 7,
+   "niveles": 114,
+   "niveles_3_o_mas": 5,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 0.01
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.0025,
+    "p_3omas": 0.115
+   }
+  },
+  {
+   "trade_date": 20260112,
+   "n_zonas": 120,
+   "max_en_un_nivel": 4,
+   "niveles": 87,
+   "niveles_3_o_mas": 7,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 0.7475
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.2425,
+    "p_3omas": 0.0
+   }
+  },
+  {
+   "trade_date": 20260113,
+   "n_zonas": 152,
+   "max_en_un_nivel": 4,
+   "niveles": 114,
+   "niveles_3_o_mas": 7,
+   "nulo_viejo": {
+    "max": 5.0,
+    "p_max": 0.99
+   },
+   "nulo_corregido": {
+    "max": 4.0,
+    "p_max": 0.5025,
+    "p_3omas": 0.1575
+   }
+  },
+  {
+   "trade_date": 20260114,
+   "n_zonas": 211,
+   "max_en_un_nivel": 5,
+   "niveles": 154,
+   "niveles_3_o_mas": 15,
+   "nulo_viejo": {
+    "max": 5.0,
+    "p_max": 0.66
+   },
+   "nulo_corregido": {
+    "max": 4.0,
+    "p_max": 0.1,
+    "p_3omas": 0.0
+   }
+  },
+  {
+   "trade_date": 20260115,
+   "n_zonas": 134,
+   "max_en_un_nivel": 3,
+   "niveles": 96,
+   "niveles_3_o_mas": 8,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 1.0
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.98,
+    "p_3omas": 0.0225
+   }
+  },
+  {
+   "trade_date": 20260116,
+   "n_zonas": 159,
+   "max_en_un_nivel": 4,
+   "niveles": 115,
+   "niveles_3_o_mas": 7,
+   "nulo_viejo": {
+    "max": 6.0,
+    "p_max": 1.0
+   },
+   "nulo_corregido": {
+    "max": 4.0,
+    "p_max": 0.7925,
+    "p_3omas": 0.65
+   }
+  },
+  {
+   "trade_date": 20260119,
+   "n_zonas": 22,
+   "max_en_un_nivel": 2,
+   "niveles": 21,
+   "niveles_3_o_mas": 0,
+   "nulo_viejo": {
+    "max": 2.0,
+    "p_max": 0.82
+   },
+   "nulo_corregido": {
+    "max": 1.0,
+    "p_max": 0.47,
+    "p_3omas": 1.0
+   }
+  },
+  {
+   "trade_date": 20260120,
+   "n_zonas": 254,
+   "max_en_un_nivel": 5,
+   "niveles": 187,
+   "niveles_3_o_mas": 13,
+   "nulo_viejo": {
+    "max": 5.0,
+    "p_max": 0.7275
+   },
+   "nulo_corregido": {
+    "max": 4.0,
+    "p_max": 0.125,
+    "p_3omas": 0.04
+   }
+  },
+  {
+   "trade_date": 20260121,
+   "n_zonas": 331,
+   "max_en_un_nivel": 4,
+   "niveles": 268,
+   "niveles_3_o_mas": 7,
+   "nulo_viejo": {
+    "max": 5.0,
+    "p_max": 1.0
+   },
+   "nulo_corregido": {
+    "max": 4.0,
+    "p_max": 0.8175,
+    "p_3omas": 0.925
+   }
+  },
+  {
+   "trade_date": 20260122,
+   "n_zonas": 154,
+   "max_en_un_nivel": 8,
+   "niveles": 98,
+   "niveles_3_o_mas": 13,
+   "nulo_viejo": {
+    "max": 5.0,
+    "p_max": 0.0225
+   },
+   "nulo_corregido": {
+    "max": 4.0,
+    "p_max": 0.0,
+    "p_3omas": 0.0
+   }
+  },
+  {
+   "trade_date": 20260123,
+   "n_zonas": 100,
+   "max_en_un_nivel": 4,
+   "niveles": 72,
+   "niveles_3_o_mas": 7,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 0.7375
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.18,
+    "p_3omas": 0.0075
+   }
+  },
+  {
+   "trade_date": 20260126,
+   "n_zonas": 100,
+   "max_en_un_nivel": 7,
+   "niveles": 65,
+   "niveles_3_o_mas": 8,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 0.025
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.0,
+    "p_3omas": 0.0
+   }
+  },
+  {
+   "trade_date": 20260127,
+   "n_zonas": 89,
+   "max_en_un_nivel": 5,
+   "niveles": 59,
+   "niveles_3_o_mas": 9,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 0.2875
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.0325,
+    "p_3omas": 0.0
+   }
+  },
+  {
+   "trade_date": 20260128,
+   "n_zonas": 114,
+   "max_en_un_nivel": 2,
+   "niveles": 99,
+   "niveles_3_o_mas": 0,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 1.0
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 1.0,
+    "p_3omas": 1.0
+   }
+  },
+  {
+   "trade_date": 20260129,
+   "n_zonas": 236,
+   "max_en_un_nivel": 5,
+   "niveles": 196,
+   "niveles_3_o_mas": 6,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 0.3375
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.0275,
+    "p_3omas": 0.0675
+   }
+  },
+  {
+   "trade_date": 20260130,
+   "n_zonas": 193,
+   "max_en_un_nivel": 6,
+   "niveles": 144,
+   "niveles_3_o_mas": 10,
+   "nulo_viejo": {
+    "max": 5.0,
+    "p_max": 0.2675
+   },
+   "nulo_corregido": {
+    "max": 4.0,
+    "p_max": 0.035,
+    "p_3omas": 0.0375
+   }
+  },
+  {
+   "trade_date": 20260202,
+   "n_zonas": 150,
+   "max_en_un_nivel": 4,
+   "niveles": 123,
+   "niveles_3_o_mas": 5,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 0.78
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.2475,
+    "p_3omas": 0.055
+   }
+  },
+  {
+   "trade_date": 20260203,
+   "n_zonas": 183,
+   "max_en_un_nivel": 4,
+   "niveles": 155,
+   "niveles_3_o_mas": 5,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 0.555
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.125,
+    "p_3omas": 0.0225
+   }
+  },
+  {
+   "trade_date": 20260204,
+   "n_zonas": 173,
+   "max_en_un_nivel": 3,
+   "niveles": 154,
+   "niveles_3_o_mas": 3,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 1.0
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.8125,
+    "p_3omas": 0.2475
+   }
+  },
+  {
+   "trade_date": 20260205,
+   "n_zonas": 170,
+   "max_en_un_nivel": 3,
+   "niveles": 143,
+   "niveles_3_o_mas": 4,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 1.0
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.8475,
+    "p_3omas": 0.08
+   }
+  },
+  {
+   "trade_date": 20260206,
+   "n_zonas": 190,
+   "max_en_un_nivel": 4,
+   "niveles": 161,
+   "niveles_3_o_mas": 4,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 0.52
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.125,
+    "p_3omas": 0.0725
+   }
+  },
+  {
+   "trade_date": 20260209,
+   "n_zonas": 96,
+   "max_en_un_nivel": 4,
+   "niveles": 80,
+   "niveles_3_o_mas": 3,
+   "nulo_viejo": {
+    "max": 3.0,
+    "p_max": 0.325
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.0575,
+    "p_3omas": 0.0525
+   }
+  },
+  {
+   "trade_date": 20260210,
+   "n_zonas": 131,
+   "max_en_un_nivel": 6,
+   "niveles": 95,
+   "niveles_3_o_mas": 7,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 0.0725
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.005,
+    "p_3omas": 0.025
+   }
+  },
+  {
+   "trade_date": 20260211,
+   "n_zonas": 163,
+   "max_en_un_nivel": 6,
+   "niveles": 123,
+   "niveles_3_o_mas": 8,
+   "nulo_viejo": {
+    "max": 5.0,
+    "p_max": 0.285
+   },
+   "nulo_corregido": {
+    "max": 4.0,
+    "p_max": 0.02,
+    "p_3omas": 0.07
+   }
+  },
+  {
+   "trade_date": 20260212,
+   "n_zonas": 282,
+   "max_en_un_nivel": 4,
+   "niveles": 229,
+   "niveles_3_o_mas": 13,
+   "nulo_viejo": {
+    "max": 5.0,
+    "p_max": 1.0
+   },
+   "nulo_corregido": {
+    "max": 4.0,
+    "p_max": 0.7825,
+    "p_3omas": 0.055
+   }
+  },
+  {
+   "trade_date": 20260213,
+   "n_zonas": 236,
+   "max_en_un_nivel": 3,
+   "niveles": 175,
+   "niveles_3_o_mas": 13,
+   "nulo_viejo": {
+    "max": 5.0,
+    "p_max": 1.0
+   },
+   "nulo_corregido": {
+    "max": 4.0,
+    "p_max": 1.0,
+    "p_3omas": 0.015
+   }
+  },
+  {
+   "trade_date": 20260217,
+   "n_zonas": 177,
+   "max_en_un_nivel": 3,
+   "niveles": 154,
+   "niveles_3_o_mas": 1,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 1.0
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.9425,
+    "p_3omas": 0.9425
+   }
+  },
+  {
+   "trade_date": 20260218,
+   "n_zonas": 159,
+   "max_en_un_nivel": 6,
+   "niveles": 118,
+   "niveles_3_o_mas": 6,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 0.0775
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.0025,
+    "p_3omas": 0.0825
+   }
+  },
+  {
+   "trade_date": 20260219,
+   "n_zonas": 133,
+   "max_en_un_nivel": 4,
+   "niveles": 96,
+   "niveles_3_o_mas": 8,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 0.9025
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.3425,
+    "p_3omas": 0.0075
+   }
+  },
+  {
+   "trade_date": 20260220,
+   "n_zonas": 218,
+   "max_en_un_nivel": 4,
+   "niveles": 166,
+   "niveles_3_o_mas": 10,
+   "nulo_viejo": {
+    "max": 5.0,
+    "p_max": 0.985
+   },
+   "nulo_corregido": {
+    "max": 4.0,
+    "p_max": 0.5425,
+    "p_3omas": 0.06
+   }
+  },
+  {
+   "trade_date": 20260223,
+   "n_zonas": 146,
+   "max_en_un_nivel": 6,
+   "niveles": 112,
+   "niveles_3_o_mas": 9,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 0.035
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.01,
+    "p_3omas": 0.0
+   }
+  },
+  {
+   "trade_date": 20260224,
+   "n_zonas": 132,
+   "max_en_un_nivel": 5,
+   "niveles": 109,
+   "niveles_3_o_mas": 3,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 0.27
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.02,
+    "p_3omas": 0.3525
+   }
+  },
+  {
+   "trade_date": 20260225,
+   "n_zonas": 123,
+   "max_en_un_nivel": 5,
+   "niveles": 92,
+   "niveles_3_o_mas": 8,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 0.335
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.0275,
+    "p_3omas": 0.0
+   }
+  },
+  {
+   "trade_date": 20260226,
+   "n_zonas": 186,
+   "max_en_un_nivel": 7,
+   "niveles": 157,
+   "niveles_3_o_mas": 4,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 0.03
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.0,
+    "p_3omas": 0.345
+   }
+  },
+  {
+   "trade_date": 20260227,
+   "n_zonas": 196,
+   "max_en_un_nivel": 4,
+   "niveles": 141,
+   "niveles_3_o_mas": 11,
+   "nulo_viejo": {
+    "max": 5.0,
+    "p_max": 1.0
+   },
+   "nulo_corregido": {
+    "max": 4.0,
+    "p_max": 0.76,
+    "p_3omas": 0.08
+   }
+  },
+  {
+   "trade_date": 20260302,
+   "n_zonas": 221,
+   "max_en_un_nivel": 4,
+   "niveles": 182,
+   "niveles_3_o_mas": 8,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 0.865
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.3175,
+    "p_3omas": 0.0125
+   }
+  },
+  {
+   "trade_date": 20260303,
+   "n_zonas": 265,
+   "max_en_un_nivel": 4,
+   "niveles": 226,
+   "niveles_3_o_mas": 2,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 0.84
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.26,
+    "p_3omas": 0.855
+   }
+  },
+  {
+   "trade_date": 20260304,
+   "n_zonas": 158,
+   "max_en_un_nivel": 3,
+   "niveles": 132,
+   "niveles_3_o_mas": 2,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 0.9975
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.8925,
+    "p_3omas": 0.6075
+   }
+  },
+  {
+   "trade_date": 20260305,
+   "n_zonas": 181,
+   "max_en_un_nivel": 4,
+   "niveles": 158,
+   "niveles_3_o_mas": 3,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 0.5825
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.115,
+    "p_3omas": 0.2325
+   }
+  },
+  {
+   "trade_date": 20260306,
+   "n_zonas": 186,
+   "max_en_un_nivel": 4,
+   "niveles": 156,
+   "niveles_3_o_mas": 4,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 0.9125
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.305,
+    "p_3omas": 0.475
+   }
+  },
+  {
+   "trade_date": 20260309,
+   "n_zonas": 303,
+   "max_en_un_nivel": 4,
+   "niveles": 262,
+   "niveles_3_o_mas": 4,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 0.7475
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.1775,
+    "p_3omas": 0.305
+   }
+  },
+  {
+   "trade_date": 20260310,
+   "n_zonas": 228,
+   "max_en_un_nivel": 4,
+   "niveles": 180,
+   "niveles_3_o_mas": 7,
+   "nulo_viejo": {
+    "max": 5.0,
+    "p_max": 0.9725
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.4325,
+    "p_3omas": 0.2075
+   }
+  },
+  {
+   "trade_date": 20260311,
+   "n_zonas": 152,
+   "max_en_un_nivel": 7,
+   "niveles": 125,
+   "niveles_3_o_mas": 6,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 0.005
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.0,
+    "p_3omas": 0.0475
+   }
+  },
+  {
+   "trade_date": 20260312,
+   "n_zonas": 244,
+   "max_en_un_nivel": 4,
+   "niveles": 186,
+   "niveles_3_o_mas": 9,
+   "nulo_viejo": {
+    "max": 5.0,
+    "p_max": 1.0
+   },
+   "nulo_corregido": {
+    "max": 4.0,
+    "p_max": 0.7125,
+    "p_3omas": 0.48
+   }
+  },
+  {
+   "trade_date": 20260313,
+   "n_zonas": 184,
+   "max_en_un_nivel": 4,
+   "niveles": 152,
+   "niveles_3_o_mas": 7,
+   "nulo_viejo": {
+    "max": 4.0,
+    "p_max": 0.7275
+   },
+   "nulo_corregido": {
+    "max": 3.0,
+    "p_max": 0.195,
+    "p_3omas": 0.01
+   }
+  },
+  {
+   "trade_date": 20260316,
+   "n_zonas": 58,
+   "max_en_un_nivel": 2,
+   "niveles": 52,
+   "niveles_3_o_mas": 0,
+   "nulo_viejo": {
+    "max": 3.0,
+    "p_max": 1.0
+   },
+   "nulo_corregido": {
+    "max": 2.0,
+    "p_max": 0.98,
+    "p_3omas": 1.0
+   }
+  },
+  {
+   "trade_date": 20260318,
+   "n_zonas": 15,
+   "max_en_un_nivel": 2,
+   "niveles": 14,
+   "niveles_3_o_mas": 0,
+   "nulo_viejo": {
+    "max": 1.0,
+    "p_max": 0.2575
+   },
+   "nulo_corregido": {
+    "max": 1.0,
+    "p_max": 0.15,
+    "p_3omas": 1.0
+   }
+  }
+ ]
+}
