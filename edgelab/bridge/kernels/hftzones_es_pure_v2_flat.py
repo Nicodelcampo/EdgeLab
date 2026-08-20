@@ -112,8 +112,20 @@ class _Racha:
         self.total_vol = 0.0
 
 
-def _emitir(r: _Racha, p: Params, tick_size: float) -> Optional[Zona]:
-    """Traduce Finalizar() del .cs. Devuelve None si la racha no califica."""
+def _emitir(r: _Racha, p: Params, tick_size: float,
+            casi: Optional[list] = None) -> Optional[Zona]:
+    """Traduce Finalizar() del .cs. Devuelve None si la racha no califica.
+
+    Si se pasa `casi`, las rachas que fallan EXACTAMENTE UNO de los cuatro filtros de
+    calidad (velocidad, duracion, tasa de volumen, volumen total) se acumulan ahi con el
+    motivo. Sirven como control emparejado: misma geometria, mismo instante, misma
+    sesion, el precio estuvo igual de presente -- pero no son zona.
+
+    Es el control que F2.9 llamo K0 vs N0 (creadora contra no-creadora emparejada). El
+    espejo geometrico NO sirve para esta familia: la zona es el rango del propio barrido
+    y el barrido termina adentro, asi que la distancia al precio de creacion tiene
+    mediana 1 tick y 39% de las zonas la tienen en 0 -- el espejo cae encima de la zona.
+    """
     sweep_ticks = (r.sw_h - r.sw_l) / tick_size
     is_sweep = sweep_ticks >= p.min_sweep_ticks
     is_absorb = (not is_sweep) and p.mostrar_absorb
@@ -127,8 +139,19 @@ def _emitir(r: _Racha, p: Params, tick_size: float) -> Optional[Zona]:
     dur_s = max(total, 1.0) / 1000.0
     vol_rate = r.total_vol / dur_s
 
-    if not (avg_ms <= p.max_avg_ms and total <= p.max_total_ms
-            and vol_rate >= p.min_volume_rate and r.total_vol >= p.min_total_volume):
+    fallos = [n for n, ok in (
+        ("velocidad", avg_ms <= p.max_avg_ms),
+        ("duracion", total <= p.max_total_ms),
+        ("tasa_volumen", vol_rate >= p.min_volume_rate),
+        ("volumen_total", r.total_vol >= p.min_total_volume)) if not ok]
+    if fallos:
+        if casi is not None and len(fallos) == 1:
+            casi.append(dict(start_ts=r.t_start, end_ts=r.t_last, dir=r.dir,
+                             price_upper=r.sw_h, price_lower=r.sw_l,
+                             height_ticks=sweep_ticks, pasos=r.streak,
+                             valid_steps=r.valid_steps, avg_ms=avg_ms,
+                             total_ms=total, vol_rate=vol_rate,
+                             total_vol=r.total_vol, motivo=fallos[0]))
         return None
 
     if is_absorb:
@@ -187,8 +210,16 @@ def _emitir(r: _Racha, p: Params, tick_size: float) -> Optional[Zona]:
         max_level_ticks=max_level_ticks)
 
 
+def run_con_casi(ts_ns, price, volume, tick_size, params=None, skip_primeros=5):
+    """Como `run`, pero devuelve `(zonas, casi_zonas)`. Ver `_emitir`."""
+    casi: list = []
+    z = run(ts_ns, price, volume, tick_size, params, skip_primeros, _casi=casi)
+    return z, casi
+
+
 def run(ts_ns: np.ndarray, price: np.ndarray, volume: np.ndarray, tick_size: float,
-        params: Optional[Params] = None, skip_primeros: int = 5) -> List[Zona]:
+        params: Optional[Params] = None, skip_primeros: int = 5,
+        _casi: Optional[list] = None) -> List[Zona]:
     """Corre la maquina de estados sobre ticks crudos.
 
     `price` en PRECIO (no en ticks): el .cs compara contra `TickSize` y persiste precios.
@@ -205,7 +236,7 @@ def run(ts_ns: np.ndarray, price: np.ndarray, volume: np.ndarray, tick_size: flo
     last_side = 0
 
     def finalizar():
-        z = _emitir(r, p, tick_size)
+        z = _emitir(r, p, tick_size, _casi)
         if z is not None:
             zonas.append(z)
         r.reset()
