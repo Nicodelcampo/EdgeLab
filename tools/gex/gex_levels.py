@@ -40,7 +40,9 @@ import pandas as pd
 
 # ------------------------------------------------------------------ config ---
 OPTIONS_DIR = Path(r"E:\options_data")
-OUT_CSV = Path(r"D:\EdgeLab\data\gex\gex_levels.csv")
+# Anclado al repo donde vive este archivo. Estaba fijo en D:\EdgeLab, que es OTRO clon
+# (hay tres en esta maquina): el indicador leia el CSV de un repo distinto del editado.
+OUT_CSV = Path(__file__).resolve().parents[2] / "data" / "gex" / "gex_levels.csv"
 
 # multiplier: del underlier del parquet al indice. SPY x 10 ~ SPX.
 SYMBOLS = {"SPY": 10.0}
@@ -118,12 +120,20 @@ def compute_levels_one_day(df: pd.DataFrame, spot: float,
 
 # --------------------------------------------------------------- history ----
 def parity_spot(day: pd.DataFrame) -> float:
-    """Spot del dia por put-call parity: strike + call_mid - put_mid (mediana)."""
+    """Spot del dia por put-call parity: strike + call_mid - put_mid (mediana).
+
+    La paridad vale ENTRE CALL Y PUT DEL MISMO VENCIMIENTO. La version anterior hacia
+    `merge(on="strike")` sobre un dia que contiene todos los vencimientos, o sea un
+    producto cartesiano: cada call de cada expiracion contra cada put de cada otra. Con
+    ~40 vencimientos son ~1.600 pares basura por strike, y el spot salia de la mediana
+    de comparaciones sin sentido. Ahora se empareja por (expiration, strike).
+    """
     mid = (day["bid"].fillna(0) + day["ask"].fillna(0)) / 2.0
     day = day.assign(mid=np.where(mid > 0, mid, day["last"]))
-    calls = day[day["type"].str.upper().str.startswith("C")][["strike", "mid"]]
-    puts = day[day["type"].str.upper().str.startswith("P")][["strike", "mid"]]
-    j = calls.merge(puts, on="strike", suffixes=("_c", "_p"))
+    llave = ["expiration", "strike"] if "expiration" in day.columns else ["strike"]
+    calls = day[day["type"].str.upper().str.startswith("C")][llave + ["mid"]]
+    puts = day[day["type"].str.upper().str.startswith("P")][llave + ["mid"]]
+    j = calls.merge(puts, on=llave, suffixes=("_c", "_p"))
     j = j[(j["mid_c"] > 0) & (j["mid_p"] > 0)]
     if j.empty:
         return float(day["strike"].median())
@@ -136,8 +146,12 @@ def run_history(symbol: str, multiplier: float) -> pd.DataFrame:
     if not path.exists():
         print(f"  !! no existe {path} — salteo {symbol}")
         return pd.DataFrame()
-    cols = ["date", "strike", "type", "open_interest", "gamma", "last", "bid", "ask"]
-    df = pd.read_parquet(path, columns=cols)
+    cols = ["date", "expiration", "strike", "type", "open_interest", "gamma",
+            "last", "bid", "ask"]
+    # El filtro se empuja a pyarrow: sin esto se materializan 24,7 M de filas x 9
+    # columnas (~2 GB con las de texto) para descartar la mayoria enseguida.
+    df = pd.read_parquet(path, columns=cols,
+                         filters=[("open_interest", ">", 0), ("gamma", ">", 0)])
     df["type"] = df["type"].str.upper()
     df = df[(df["open_interest"] > 0) & (df["gamma"] > 0)].copy()
     df["date"] = pd.to_datetime(df["date"]).dt.date
@@ -180,7 +194,10 @@ def run_today(symbol: str, multiplier: float) -> pd.DataFrame:
         if oi <= 0 or iv <= 0:
             continue
         expiry, cp, strike = parse_occ(o["option"])
-        t = max((expiry - today).days, 0) / 365.0
+        # 0DTE: `days = 0` daba t = 0, y bs_gamma corta con `t <= 0` -> gamma 0 -> el
+        # `if g > 0` de abajo los descartaba a TODOS. Justo el vencimiento que concentra
+        # casi toda la gamma quedaba afuera. Piso de un cuarto de dia (~6 h de sesion).
+        t = max((expiry - today).days, 0.25) / 365.0
         g = bs_gamma(spot, strike, t, iv, RISK_FREE, q)
         if g > 0:
             recs.append({"strike": strike, "type": cp,

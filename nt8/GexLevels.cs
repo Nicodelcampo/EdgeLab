@@ -50,7 +50,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 DrawOnPricePanel = true;
                 IsSuspendedWhileInactive = true;
 
-                LevelsFile = @"D:\EdgeLab\data\gex\gex_levels.csv";
+                LevelsFile = @"E:\EdgeLab\data\gex\gex_levels.csv";
                 SymbolFilter = "SPY";
                 PriceOffset = 0.0;
                 MaxDaysBack = 120;

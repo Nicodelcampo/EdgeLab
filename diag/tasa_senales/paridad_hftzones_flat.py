@@ -127,15 +127,19 @@ def nivel_b(con, ini_ns, fin_ns, ts_ns, px, vol, tick_size, params):
         "ORDER BY start_ts" % cols,
         (CONTRATO, ini_ns // 1_000_000, fin_ns // 1_000_000)).fetchall()
     nombres = cols.split(",")
-    suyas = {r[0]: dict(zip(nombres, r)) for r in ref}
 
-    mias = {z.start_ts: z for z in run(ts_ns, px, vol, tick_size, params)}
+    # `start_ts` se persiste en MILISEGUNDOS y dentro de un burst hay hasta 182 ticks en
+    # el mismo ms (medido en 20260102: 98% de los ticks comparten ms). O sea que start_ts
+    # NO es clave unica: emparejar 1-a-1 por start_ts cruza zonas distintas y reporta
+    # como "diferencia de algoritmo" lo que es una colision de clave. Se agrupa por
+    # start_ts y dentro del grupo se emparejan primero los EXACTOS.
+    suyas, mias = {}, {}
+    for r in ref:
+        suyas.setdefault(r[0], []).append(dict(zip(nombres, r)))
+    for z in run(ts_ns, px, vol, tick_size, params):
+        mias.setdefault(z.start_ts, []).append(z)
 
-    comunes = sorted(set(suyas) & set(mias))
-    exact, difer, campos = 0, 0, {}
-    ejemplos = []
-    for k in comunes:
-        a, b = suyas[k], mias[k]
+    def difiere(a, b):
         mal = []
         for n in nombres[1:]:
             u, v = a[n], getattr(b, n)
@@ -144,7 +148,22 @@ def nivel_b(con, ini_ns, fin_ns, ts_ns, px, vol, tick_size, params):
                     mal.append(n)
             elif abs(float(u) - float(v)) > 1e-6 * max(1.0, abs(float(u))):
                 mal.append(n)
-        if mal:
+        return mal
+
+    exact, difer, campos = 0, 0, {}
+    ejemplos = []
+    n_colisiones = sum(1 for k in suyas if len(suyas[k]) > 1)
+    for k in sorted(set(suyas) | set(mias)):
+        A, B = list(suyas.get(k, [])), list(mias.get(k, []))
+        libres = list(B)
+        for a in list(A):
+            for b in list(libres):
+                if not difiere(a, b):
+                    exact += 1
+                    A.remove(a); libres.remove(b)
+                    break
+        for a, b in zip(A, libres):          # sobrantes emparejables: diferencia real
+            mal = difiere(a, b)
             difer += 1
             for n in mal:
                 campos[n] = campos.get(n, 0) + 1
@@ -152,13 +171,13 @@ def nivel_b(con, ini_ns, fin_ns, ts_ns, px, vol, tick_size, params):
                 ejemplos.append(dict(start_ts=k, campos=mal,
                                      nt8={n: a[n] for n in mal},
                                      python={n: getattr(b, n) for n in mal}))
-        else:
-            exact += 1
-    return dict(estado=("EXACT" if difer == 0 and len(comunes) == len(suyas) == len(mias)
-                        else "DIFF"),
-                n_nt8=len(suyas), n_python=len(mias), n_comunes=len(comunes),
-                solo_nt8=len(set(suyas) - set(mias)),
-                solo_python=len(set(mias) - set(suyas)),
+    tot_nt8 = sum(len(v) for v in suyas.values())
+    tot_py = sum(len(v) for v in mias.values())
+    return dict(estado=("EXACT" if difer == 0 and exact == tot_nt8 == tot_py else "DIFF"),
+                n_nt8=tot_nt8, n_python=tot_py,
+                start_ts_con_colision=n_colisiones,
+                solo_nt8=tot_nt8 - exact - difer,
+                solo_python=tot_py - exact - difer,
                 exact=exact, con_diferencia=difer,
                 campos_con_diferencia=campos, ejemplos=ejemplos)
 
@@ -168,12 +187,16 @@ def main():
     ap.add_argument("--snapshot", default=str(SNAPSHOT))
     ap.add_argument("--max-sesiones", type=int, default=0)
     ap.add_argument("--solo-nivel-a", action="store_true")
+    ap.add_argument("--sesiones", default="", help="lista YYYYMMDD separada por comas")
     ap.add_argument("--out", default=str(REPO / "docs" / "research" / "paridad_flat.json"))
     a = ap.parse_args()
 
     con = sqlite3.connect("file:%s?mode=ro" % pathlib.Path(a.snapshot).as_posix(),
                           uri=True)
     ses = sesiones_del_oraculo(con)
+    if a.sesiones:
+        pedidas = {int(x) for x in a.sesiones.split(',')}
+        ses = [t for t in ses if t in pedidas]
     if a.max_sesiones:
         ses = ses[:a.max_sesiones]
     print("paridad HFTZonesESPureV2Flat  -  %d sesiones  -  %s" % (len(ses), CONTRATO))
