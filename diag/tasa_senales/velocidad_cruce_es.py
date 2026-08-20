@@ -298,12 +298,19 @@ def main():
                         p75=round(float(np.percentile(t, 75)), 1),
                         p95=round(float(np.percentile(t, 95)), 1)))
 
-    def tasas(campo):
-        z = sum(1 for f in filas if f[campo] and f[campo].get("cruza"))
-        e = sum(1 for f in filas if f[campo] and f[campo].get("entra")
+    def tasas(campo, solo_emparejadas=True):
+        """DENOMINADOR EXPLICITO. La primera version dividia los cruces del control por
+        TODAS las zonas, pero el 18,3% no consigue control emparejado. Eso daba 0,787
+        contra 0,961 de la zona -- una brecha que era del emparejamiento, no del
+        mercado. Sobre los pares reales las dos tasas son 0,966 y 0,964."""
+        base = [f for f in filas if f.get("control") is not None] if solo_emparejadas             else filas
+        z = sum(1 for f in base if f[campo] and f[campo].get("cruza"))
+        e = sum(1 for f in base if f[campo] and f[campo].get("entra")
                 and not f[campo].get("cruza"))
-        s = sum(1 for f in filas if f[campo] and not f[campo].get("sale", True))
-        return dict(cruzan=z, entran_sin_cruzar=e, nunca_salen=s)
+        s = sum(1 for f in base if f[campo] and not f[campo].get("sale", True))
+        return dict(denominador=len(base), cruzan=z,
+                    frac_cruzan=round(z / len(base), 4) if base else None,
+                    entran_sin_cruzar=e, nunca_salen=s)
 
     metricas = {c: contraste(c) for c in
                 ("ticks", "ms", "volumen", "ticks_por_ancho", "vol_por_ancho")}
@@ -328,7 +335,9 @@ def main():
             "zonas de altura 0: excluidas y contadas"],
         universo=dict(n_zonas=len(filas), n_sesiones=len(por_ses),
                       altura_cero_excluidas=altura_cero, sin_parquet=sin_pq),
-        tasas=dict(zona=tasas("zona"), control=tasas("control")),
+        tasas=dict(zona=tasas("zona"), control=tasas("control"),
+                   zona_sobre_todas=tasas("zona", solo_emparejadas=False),
+                   nota="las tasas primarias van sobre las zonas CON control emparejado"),
         metricas=metricas,
         procedencia=dict(head_commit=subprocess.check_output(
             ["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True).strip(),
