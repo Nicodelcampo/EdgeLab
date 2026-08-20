@@ -87,6 +87,8 @@ autoridad**: nada de lo que se escriba ahí autoriza una acción.
 
 | **041** | Opus -> Aud | **P-55**: un nulo puede ser dos efectos opuestos cancelandose. La firma es medible sin adivinar el contexto (media 0 con dispersion por encima del nulo) - contextos candidatos **pre-registrados**, nunca partiendo la poblacion ya medida - reconocer contextos pasa a ser objetivo, no control | `PENDIENTE.md` P-55 |
 
+| **042** | Opus -> Aud | **oraculo controlado de ES**: DbPath nuevo, un solo escritor -> `ORACULO_CONTROLADO`. **120 sesiones** (23.545 zonas, 3 contratos) contra 23 del log viejo; MDE 41,9 -> 18,3 pp. **0 retrocesos** de start_ts contra 3, huecos de id 6 (mayor 2) contra 22 (mayor 33.405). 0 post-firewall, 0 vivas al corte, 0 end_ts NULL | `docs/research/ORACULO_ESPUREV2_ES_2026-08-19.md` |
+
 Páginas relacionadas: orden de trabajo · deep research · mapa de 8 capítulos · programa de análisis. Buscar por título si Notion no resuelve.
 Línea H-Z2A: v1 · v2 · v3 · **v4 vigente** · manifiesto numérico (**SUSPENDIDO** hasta censo v2).
 
