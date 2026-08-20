@@ -70,21 +70,50 @@ namespace NinjaTrader.NinjaScript.Indicators
                 drawn.Clear();
 
                 string[] lines = File.ReadAllLines(LevelsFile);
-                for (int i = 1; i < lines.Length; i++)  // salta header
+                if (lines.Length < 2) return;
+
+                // Columnas por NOMBRE, no por posicion. Las posiciones fijas estaban
+                // corridas una: leia c[3] como CallWall cuando c[3] es spot_index, asi
+                // que dibujaba el PRECIO como Call Wall -- un nivel que el mercado
+                // "respeta" siempre porque es el precio. Con lookup por header, agregar
+                // o mover una columna del CSV no vuelve a romper esto en silencio.
+                string[] head = lines[0].Split(',');
+                int iDate = -1, iSym = -1, iCW = -1, iPW = -1, iFL = -1, iNG = -1, iRG = -1;
+                for (int k = 0; k < head.Length; k++)
+                {
+                    string h = head[k].Trim().ToLowerInvariant();
+                    if (h == "date") iDate = k;
+                    else if (h == "symbol") iSym = k;
+                    else if (h == "call_wall") iCW = k;
+                    else if (h == "put_wall") iPW = k;
+                    else if (h == "gamma_flip") iFL = k;
+                    else if (h == "net_gex_bn") iNG = k;
+                    else if (h == "regime") iRG = k;
+                }
+                if (iDate < 0 || iSym < 0 || iCW < 0 || iPW < 0 || iFL < 0)
+                {
+                    Print("GexLevels: al CSV le faltan columnas obligatorias — no dibujo");
+                    return;
+                }
+
+                int minCols = Math.Max(iDate, Math.Max(iSym,
+                                  Math.Max(iCW, Math.Max(iPW, iFL)))) + 1;
+                for (int i = 1; i < lines.Length; i++)
                 {
                     string[] c = lines[i].Split(',');
-                    if (c.Length < 9) continue;
-                    if (!string.Equals(c[1], SymbolFilter,
+                    if (c.Length < minCols) continue;
+                    if (!string.Equals(c[iSym], SymbolFilter,
                             StringComparison.OrdinalIgnoreCase)) continue;
                     var lv = new Levels();
                     var inv = CultureInfo.InvariantCulture;
-                    if (!double.TryParse(c[3], NumberStyles.Any, inv, out lv.CallWall)) continue;
-                    if (!double.TryParse(c[4], NumberStyles.Any, inv, out lv.PutWall)) continue;
-                    if (!double.TryParse(c[5], NumberStyles.Any, inv, out lv.Flip)) continue;
-                    double.TryParse(c[6], NumberStyles.Any, inv, out lv.NetGex);
-                    lv.Regime = c[7];
+                    if (!double.TryParse(c[iCW], NumberStyles.Any, inv, out lv.CallWall)) continue;
+                    if (!double.TryParse(c[iPW], NumberStyles.Any, inv, out lv.PutWall)) continue;
+                    if (!double.TryParse(c[iFL], NumberStyles.Any, inv, out lv.Flip)) continue;
+                    if (iNG >= 0 && iNG < c.Length)
+                        double.TryParse(c[iNG], NumberStyles.Any, inv, out lv.NetGex);
+                    lv.Regime = (iRG >= 0 && iRG < c.Length) ? c[iRG] : "";
                     lv.Ok = true;
-                    byDate[c[0]] = lv;   // date = yyyy-MM-dd
+                    byDate[c[iDate]] = lv;   // date = yyyy-MM-dd
                 }
             }
             catch { /* archivo a medio escribir: se reintenta en la proxima barra */ }
@@ -128,14 +157,23 @@ namespace NinjaTrader.NinjaScript.Indicators
 
             if (ShowLabels)
             {
-                Draw.Text(this, "GEX_CWT_" + d, "CallWall " + (lv.CallWall + off).ToString("F0"),
-                    t0, lv.CallWall + off, orange);
-                Draw.Text(this, "GEX_PWT_" + d, "PutWall " + (lv.PutWall + off).ToString("F0"),
-                    t0, lv.PutWall + off, green);
-                Draw.Text(this, "GEX_FLT_" + d,
+                var fuente = new NinjaTrader.Gui.Tools.SimpleFont("Arial", 11);
+                Draw.Text(this, "GEX_CWT_" + d, false,
+                    "CallWall " + (lv.CallWall + off).ToString("F0"),
+                    t0, lv.CallWall + off, 8, orange, fuente,
+                    System.Windows.TextAlignment.Left,
+                    Brushes.Transparent, Brushes.Transparent, 0);
+                Draw.Text(this, "GEX_PWT_" + d, false,
+                    "PutWall " + (lv.PutWall + off).ToString("F0"),
+                    t0, lv.PutWall + off, 8, green, fuente,
+                    System.Windows.TextAlignment.Left,
+                    Brushes.Transparent, Brushes.Transparent, 0);
+                Draw.Text(this, "GEX_FLT_" + d, false,
                     "Flip " + (lv.Flip + off).ToString("F0") + "  [" + lv.Regime + " "
                     + lv.NetGex.ToString("F1") + "bn]",
-                    t0, lv.Flip + off, yellow);
+                    t0, lv.Flip + off, 8, yellow, fuente,
+                    System.Windows.TextAlignment.Left,
+                    Brushes.Transparent, Brushes.Transparent, 0);
             }
             drawn.Add(d);
         }
