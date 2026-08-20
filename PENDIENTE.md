@@ -1688,3 +1688,69 @@ Acta: `docs/research/H-ASIA-1_RESULTADO_6J_2026-08-19.md`. 6J, **222 sesiones**.
 **Nota de integridad**: la primera corrida midió la ventana posterior del **día
 equivocado** (cinco horas *antes* de que Asia empezara). Ningún número de esa corrida se
 publicó. Síntoma visible que no se leyó como alarma: 52 descartes `sin_post` de 243.
+
+
+---
+
+## P-55 — el contexto no es un control: es el objeto. Un nulo puede ser dos efectos opuestos cancelándose
+
+**Asentada 2026-08-19.** Observación de Nico:
+
+> «una zona funciona de maneras distintas según el contexto. EdgeLab tiene que aprender
+> a reconocer distintos contextos, donde un mismo tipo de zona puede significar cosas
+> distintas u opuestas. Quizás un objeto de un indicador arroja ruido porque funciona
+> bien en dos contextos y justo por no medirlos, estos dos contextos se suprimen entre
+> ellos y el resultado es ruido.»
+
+### Por qué importa
+
+Un resultado nulo tiene **dos lecturas incompatibles** que la media no distingue:
+
+1. **No hay efecto.** El objeto no informa nada.
+2. **Hay dos efectos de signo opuesto** en subpoblaciones que no se separaron, y la
+   media los cancela **exactamente**.
+
+Tratar (2) como (1) mata hipótesis buenas. Es la falla que este proyecto ya nombró en
+sus reglas —«un efecto real bidireccional puede promediar exactamente cero si sólo se
+mira el canal direccional»— pero estaba escrita como **control estadístico**, no como
+**dirección de investigación**.
+
+### La firma es medible, y NO exige adivinar el contexto
+
+Si dos contextos opuestos se cancelan, la media da cero **pero la dispersión no**:
+
+- distribución **bimodal**, o
+- varianza / colas **por encima del nulo** con media en cero.
+
+Eso se detecta **sin haber mirado** qué separa los grupos. Por eso todo resultado nulo
+de este proyecto publica **los dos canales y la distribución completa**, no la media.
+
+**Un nulo cuya dispersión también cae dentro del nulo es un nulo fuerte. Un nulo con
+dispersión excedente es una señal de heterogeneidad no modelada, y se persigue.**
+
+### La disciplina que lo separa del data snooping
+
+**Los contextos candidatos se escriben ANTES de medir**, con su justificación, y pagan
+su multiplicidad.
+
+Si aparecen **después** de ver el ruido, cualquier partición encuentra algo: con
+suficientes cortes siempre hay uno que separa. Es exactamente P-47 —elegir el umbral
+mirando el resultado— aplicado a subpoblaciones en vez de a un número.
+
+**El orden correcto:**
+
+1. medir sin condicionar, publicando los dos canales y la distribución;
+2. si la media es cero **y la dispersión también es normal** → nulo, se cierra;
+3. si la media es cero **pero la dispersión excede** → hay heterogeneidad, y se abre
+   una campaña **nueva** con contextos pre-registrados y su propio presupuesto;
+4. nunca partir la población que ya se midió para rescatar un nulo.
+
+### Consecuencia de diseño
+
+«Reconocer contextos» pasa a ser un **objetivo de EdgeLab**, no un control de una
+campaña. Implica que los objetos que se miden deben venir con **features de contexto
+computadas y guardadas desde el principio** —régimen de volatilidad, hora, posición en
+el rango de sesión, qué había antes— aunque no se usen en la primera medición. Sin eso,
+volver a preguntar por contexto exige re-correr todo.
+
+**Alcance:** aplica a H-Z2A, H-ASIA-1, HFTZonesESPureV2 y a lo que siga.
