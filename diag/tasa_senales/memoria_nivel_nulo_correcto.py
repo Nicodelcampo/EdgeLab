@@ -114,6 +114,9 @@ def main():
         ok = anchos > 0
         anchos, lows = anchos[ok], lows[ok]
         if len(anchos) < 10:
+            # Sesiones excluidas por tener < 10 zonas con ancho > 0:
+            # 20260216 (8 brutas -> <10 tras h0), 20260317 (9 -> <10),
+            # 20260319 (4 -> <10). Total: 62 -> 59.
             continue
         # mid en MEDIOS TICKS -> entero, sin perder el medio tick por redondeo
         mids = 2 * lows + anchos
@@ -133,10 +136,10 @@ def main():
             max_en_un_nivel=int(obs[0]), niveles=int(obs[1]),
             niveles_3_o_mas=int(obs[2]),
             nulo_viejo=dict(max=round(float(np.median(viejo[:, 0])), 2),
-                            p_max=round(float(np.mean(viejo[:, 0] >= obs[0])), 4)),
+                            p_max=round(float((1 + np.sum(viejo[:, 0] >= obs[0])) / (N_NULO + 1)), 4)),
             nulo_corregido=dict(max=round(float(np.median(nuevo[:, 0])), 2),
-                                p_max=round(float(np.mean(nuevo[:, 0] >= obs[0])), 4),
-                                p_3omas=round(float(np.mean(nuevo[:, 2] >= obs[2])), 4))))
+                                p_max=round(float((1 + np.sum(nuevo[:, 0] >= obs[0])) / (N_NULO + 1)), 4),
+                                p_3omas=round(float((1 + np.sum(nuevo[:, 2] >= obs[2])) / (N_NULO + 1)), 4))))
         if (k + 1) % 15 == 0:
             print("    %d/%d" % (k + 1, len(claves)))
 

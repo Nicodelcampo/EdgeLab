@@ -20,7 +20,7 @@ Snapshot congelado `runs/oraculo_espurev2flat_ES_snapshot.sqlite`, sha256 `a7dec
 | **Imán de zona / revisita** | cerrado en F2.7–F2.10 | 6E, 201 sesiones, 15.947 zonas |
 | **Retorno a la zona** | pasa el 99,7 % de las veces; **control inválido** | ES Flat — ver retractación |
 | **Tasa de volumen dentro → excursión** | ρ ≈ 0 dentro de sesión, terciles sin ordenar | ES V2 (población sesgada) |
-| **Costo de cruce borde a borde** | delta pareada +0,0 en 5 métricas; la zona gana < 50 % | ES Flat, 9.234 zonas, control casi-zona |
+| **Costo de cruce borde a borde** | delta pareada +0,0 en 5 métricas; la zona gana < 50 % | ES Flat, 7.542 pares emparejados, control casi-zona. Pendiente: CI cluster-bootstrap, test de equivalencia, perfil del 18,3 % sin control |
 
 ### Retractación vigente (2026-08-20)
 El control **«espejo»** de *retorno a la zona* y de *tasa de volumen* está **degenerado**.
@@ -36,6 +36,21 @@ re-medirlas con el control casi-zona.
 Lo que **no** se retracta: el ρ ≈ 0 de la tasa de volumen se sostiene sobre la zona misma;
 y el hallazgo de que una ventana de outcome de largo variable fabrica correlación con
 cualquier variable de tendencia intradiaria no dependía del control.
+
+### Retractación adicional — memoria de nivel (commit 59a9f28)
+El «p<0,05 en el 71 % de las sesiones» del censo de contextos (`be21d35`) fue causado por
+un bug de redondeo asimétrico: `np.round(mid)` colapsaba medios ticks sobre enteros en el
+observado pero no en el nulo. Con el nulo corregido (`memoria_nivel_nulo_correcto`), la
+fracción baja a **31 %** (18/59 sesiones, p mediana 0,1775). **El 71 % se retracta.**
+Ver `docs/research/memoria_nivel_nulo_correcto.json`.
+
+---
+
+## MEDIDO — e inconcluso
+
+| qué | resultado | alcance exacto |
+|---|---|---|
+| **Memoria de nivel** | p mediana 0,1775 (nulo corregido), p<0,05 en 31 % de sesiones (≠ 71 % del censo con bug de redondeo). Enriquecimiento 6× sobre el 5 % esperado, pero sin estadístico global ni distribución nula conjunta. **Pendiente, no efecto ni nulo.** | ES Flat, 59 sesiones (3 excluidas por n<10), nulo con mismo constructor de mid |
 
 ---
 
@@ -56,7 +71,9 @@ cualquier variable de tendencia intradiaria no dependía del control.
 1. **Retorno y costo de cruce CONDICIONADOS a contexto.** Todo lo medido es agregado sobre
    la población entera. La dispersión pareada del costo de cruce es enorme (p25 −704 /
    p75 +881 ticks) con mediana cero: la firma que P-55 describe como *dos efectos opuestos
-   cancelándose*. **Un nulo agregado no es un nulo condicional.**
+   cancelándose*. **Un nulo agregado no es un nulo condicional.** El costo de cruce agregado
+   es nulo sobre 7.542 pares, pero sin CI ni test formal de equivalencia. Pendiente:
+   CI cluster-bootstrap con sesión como unidad y margen de equivalencia declarado.
 2. **Cualquier cosa direccional sobre la población V2 original.** El 92 % bajista era el
    orden de dos `if`. Todo estadístico direccional calculado antes del parche mide eso.
 3. **Los otros instrumentos.** Todo esto es ES 03-26. **Nada** se transporta a 6E, NQ o YM
@@ -85,8 +102,12 @@ cualquier variable de tendencia intradiaria no dependía del control.
 
 Tasa normalizada por actividad · fase de sesión con DST real · solapamiento ·
 agrupamiento (Fano) · posición en el rango del día · régimen de volatilidad previo ·
-distancia a VWAP/SMA20/SMA50/EMA9/EMA21 · memoria de nivel dentro de la sesión ·
-persistencia entre sesiones.
+distancia a VWAP/SMA20/SMA50/EMA9/EMA21 · persistencia entre sesiones.
+
+**Memoria de nivel**: ya tiene resultado (inconcluso, ver «MEDIDO — e inconcluso» arriba).
+No es target-free puro: el estadístico de concentración depende de la especificación del
+nulo. La versión corregida (commit 59a9f28) condiciona por ancho y precios operados reales,
+pero no por fase de sesión ni posición temporal.
 
 **Ninguno de esos mira qué pasó después.** Ese es el punto: describir dónde la población
 varía, para que los contextos se declaren informados y no a ciegas. En el momento en que

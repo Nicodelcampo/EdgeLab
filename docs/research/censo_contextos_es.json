@@ -76,8 +76,10 @@
  },
  "memoria_de_nivel": {
   "nota": "nulo = misma cantidad de zonas colocadas en ticks reales al azar; preserva el tiempo que el precio paso en cada nivel",
-  "p_max_mediana": 0.005,
-  "frac_sesiones_p_max_menor_005": 0.7119
+  "p_max_mediana_RETRACTADO": 0.005,
+  "frac_sesiones_p_max_menor_005_RETRACTADO": 0.7119,
+  "retractacion": "commit 59a9f28: el nulo del censo usaba np.round(mid) que colapsaba medios ticks sobre enteros en el observado pero no en el nulo. Con nulo corregido (mismo constructor de mid): p mediana 0.1775, p<0.05 en 31% de sesiones. El 71% se retracta.",
+  "ver": "docs/research/memoria_nivel_nulo_correcto.json"
  },
  "persistencia_entre_sesiones": {
   "tolerancia_ticks": 2,
