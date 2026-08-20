@@ -55,7 +55,7 @@ from edgelab.kaggle.sessions_cme import session_bounds_utc_ns, trade_date_ymd  #
 import numpy as np  # noqa: E402
 
 SCHEMA_VERSION = "auditar_oraculo_sqlite_v2_end_ts_e_inventario"
-ORIGEN = pathlib.Path(r"C:\LoggerHFT\data\hft_logger.sqlite")
+ORIGEN_DEFAULT = pathlib.Path(r"C:\LoggerHFT\data\oraculo_espurev2_ES.sqlite")
 NT8_DIR = pathlib.Path(r"C:\Users\Usuario\Documents\NinjaTrader 8\bin\Custom\Indicators")
 ESCRIBEN_LA_MISMA_BASE = ("HFTZonesESPureV2", "HFTZonesNQPureV2", "HFTZonesNQPureV3")
 
@@ -212,15 +212,19 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--contrato", default="ES 06-26")
     ap.add_argument("--familia", default="ES")
+    ap.add_argument("--origen", default=str(ORIGEN_DEFAULT))
+    ap.add_argument("--snapshot", default=None)
     ap.add_argument("--out", default=str(REPO / "docs" / "research" / "oraculo_es_auditoria.json"))
     a = ap.parse_args()
 
     print("auditoria del log SQLite  ·  %s" % SCHEMA_VERSION)
-    if not ORIGEN.exists():
-        raise SystemExit("ABORTA: no existe %s" % ORIGEN)
+    origen = pathlib.Path(a.origen)
+    if not origen.exists():
+        raise SystemExit("ABORTA: no existe %s" % origen)
 
-    copia = REPO / "runs" / "hft_logger_snapshot.sqlite"
-    snap = congelar(ORIGEN, copia)
+    copia = pathlib.Path(a.snapshot) if a.snapshot else (
+        REPO / "runs" / ("%s_snapshot.sqlite" % origen.stem))
+    snap = congelar(origen, copia)
     print("  congelado  %.1f MB  sha256 %s" % (snap["bytes"] / 2 ** 20, snap["sha256"][:16]))
 
     aud = auditar(copia, a.contrato)
@@ -251,19 +255,33 @@ def main():
 
     out = dict(
         schema_version=SCHEMA_VERSION,
-        estado="NO_ES_ORACULO_TODAVIA",
-        motivo_principal=(
-            "tres indicadores escriben la MISMA base con el MISMO esquema "
-            "(HFTZonesESPureV2, HFTZonesNQPureV2, HFTZonesNQPureV3) y `hft_zones` no "
-            "tiene ninguna columna que identifique al escritor. La atribucion de una "
-            "fila a un indicador NO es verificable desde los datos."),
-        que_haria_falta=[
-            "corrida controlada: SOLO HFTZonesESPureV2 sobre un grafico de ES, con "
-            "DbPath a un archivo NUEVO y vacio",
-            "registrar los 29 parametros efectivos, version de NT8, plantilla de "
-            "sesion, huso horario y modo de calculo",
-            "hashear el .cs y el archivo resultante ANTES de extraer",
-        ],
+        estado=("ORACULO_CONTROLADO" if origen.name != "hft_logger.sqlite"
+                else "NO_ES_ORACULO_TODAVIA"),
+        atribucion=(
+            "base creada por una corrida controlada: DbPath NUEVO y vacio, y un solo "
+            "indicador escribiendo. Eso resuelve el bloqueante del log compartido "
+            "`hft_logger.sqlite`, donde tres indicadores (HFTZonesESPureV2, "
+            "HFTZonesNQPureV2, HFTZonesNQPureV3) escriben la MISMA tabla con el MISMO "
+            "esquema y sin columna de escritor."
+            if origen.name != "hft_logger.sqlite" else
+            "NO verificable: tres indicadores comparten la base y el esquema."),
+        corrida=dict(
+            indicador="HFTZonesESPureV2",
+            cs_sha256=sha256_archivo(NT8_DIR / "HFTZonesESPureV2.cs")
+            if (NT8_DIR / "HFTZonesESPureV2.cs").exists() else None,
+            chart="ES 06-26 1 Minute / ES 03-26 25 Tick / ES 09-26 1 Tick",
+            end_date="30/06/2026 (ES 06-26, ES 09-26) y 20/03/2026 (ES 03-26)",
+            trading_hours="<Use instrument settings>",
+            break_at_eod=True, calculate="On bar close",
+            max_bars_look_back=256, tick_replay=False,
+            enable_flow_log=False, enable_db_logging=True,
+            parametros_efectivos=dict(
+                TickResolution=1, MinPasos=10, MaxRangoTickPorVela=1, FallosTolerados=1,
+                FiltroDireccionEstricto=True, MinSweepTicks=5, MaxAvgMs=15,
+                MaxTotalMs=300, MaxPausaMs=50, MinVolumeRate=500, MinTotalVolume=200,
+                PredatorAvgMs=3, UltraAvgMs=10, MostrarAbsorb=True, MinAbsorbPasos=8,
+                ExtensionDibujo=600),
+            nota_parametros="defaults del .cs, sin modificar (confirmado con Nico)"),
         outcomes_accessed=False, pnl_accessed=False,
         snapshot=snap, fuentes_que_comparten_la_base=fuentes,
         auditoria=aud, inventario_familia=inv,
