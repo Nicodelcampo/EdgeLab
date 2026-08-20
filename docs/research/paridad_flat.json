@@ -1,0 +1,3390 @@
+{
+ "schema_version": "paridad_hftzones_es_pure_v2_flat_v1",
+ "indicador": "HFTZonesESPureV2Flat",
+ "cs_sha256": "4e80c24d873cd9009850e55d3e3b4a7492a77608e47dc8a41f0294cb226824e5",
+ "contrato": "ES 03-26",
+ "snapshot": "E:\\EdgeLab\\runs\\oraculo_espurev2flat_ES_snapshot.sqlite",
+ "outcomes_accessed": false,
+ "pnl_accessed": false,
+ "holdout_included": false,
+ "nota_warmup": "NT8 descarta los 5 primeros ticks de la carga (CurrentBars[1] < 5). Nivel A aplica el mismo skip SOLO en la primera sesion; sin eso el primer bucket discrepa en n_ticks por exactamente 5.",
+ "nota_serie": "el .cs corre sobre AddDataSeries(Tick, 1): la maquina de estados no usa las velas de 25 Tick del chart, que son solo la serie de dibujo",
+ "parametros": {
+  "min_pasos": 10,
+  "max_rango_tick_por_vela": 1,
+  "fallos_tolerados": 1,
+  "filtro_direccion_estricto": true,
+  "min_sweep_ticks": 5,
+  "max_avg_ms": 15,
+  "max_total_ms": 300,
+  "max_pausa_ms": 50,
+  "min_volume_rate": 500,
+  "min_total_volume": 200,
+  "predator_avg_ms": 3,
+  "ultra_avg_ms": 10,
+  "mostrar_absorb": true,
+  "min_absorb_pasos": 8
+ },
+ "resumen": {
+  "n_sesiones": 63,
+  "nivel_a_exact": 36,
+  "nivel_b_exact": 55,
+  "zonas_nt8": 9486,
+  "zonas_exact": 9477,
+  "frac_zonas_exact": 0.999051
+ },
+ "procedencia": {
+  "head_commit": "0f0e2e15f125921e9afeb2e30e61cdb2336aa7c0",
+  "archivos_sucios": [
+   "AGENTS.md",
+   "data/nt8_oracles/hftzonesespurev2_ES_0626_pre_firewall.csv",
+   "diag/tasa_senales/paridad_hftzones_flat.py",
+   "docs/research/comparacion_v2_vs_flat.json",
+   "docs/research/oraculo_es_flat_auditoria.json",
+   "docs/research/paridad_flat_probe.json",
+   "docs/research/retorno_a_zona_es.json",
+   "edgelab/bridge/kernels/",
+   "kaggle_bundle_v2/",
+   "kaggle_dataset/",
+   "tests/bridge/test_hftzones_flat_port.py"
+  ],
+  "medicion_comprometida": true
+ },
+ "sesiones": [
+  {
+   "trade_date": 20251222,
+   "n_ticks_edgelab": 653968,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 37019,
+    "n_buckets_emparejados": 37019,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 37019,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 76,
+    "n_python": 76,
+    "n_comunes": 76,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 76,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20251223,
+   "n_ticks_edgelab": 564272,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 33129,
+    "n_buckets_emparejados": 33129,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 33129,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 84,
+    "n_python": 84,
+    "n_comunes": 84,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 84,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20251224,
+   "n_ticks_edgelab": 286843,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 20055,
+    "n_buckets_emparejados": 20055,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 20055,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 58,
+    "n_python": 58,
+    "n_comunes": 58,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 58,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20251226,
+   "n_ticks_edgelab": 427169,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 29001,
+    "n_buckets_emparejados": 29001,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 29000,
+    "n_distintos": 1,
+    "frac_iguales": 0.999966,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 1,
+     "sell": 1,
+     "n_ticks": 0
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1766703600000,
+      "mio": {
+       "open": 6979.5,
+       "high": 6983.25,
+       "low": 6979.5,
+       "close": 6982.75,
+       "volume": 140.0,
+       "buy": 112.0,
+       "sell": 28.0,
+       "n_ticks": 85
+      },
+      "nt8": {
+       "open": 6979.5,
+       "high": 6983.25,
+       "low": 6979.5,
+       "close": 6982.75,
+       "volume": 140.0,
+       "buy": 84.0,
+       "sell": 56.0,
+       "n_ticks": 85
+      },
+      "campos": [
+       "buy",
+       "sell"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 52,
+    "n_python": 52,
+    "n_comunes": 52,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 52,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20251229,
+   "n_ticks_edgelab": 602703,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 36771,
+    "n_buckets_emparejados": 36771,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 36771,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 79,
+    "n_python": 79,
+    "n_comunes": 79,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 79,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20251230,
+   "n_ticks_edgelab": 503744,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 30875,
+    "n_buckets_emparejados": 30875,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 30874,
+    "n_distintos": 1,
+    "frac_iguales": 0.999968,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 1,
+     "sell": 1,
+     "n_ticks": 0
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1767049200000,
+      "mio": {
+       "open": 6956.5,
+       "high": 6957.0,
+       "low": 6956.5,
+       "close": 6956.5,
+       "volume": 60.0,
+       "buy": 41.0,
+       "sell": 19.0,
+       "n_ticks": 43
+      },
+      "nt8": {
+       "open": 6956.5,
+       "high": 6957.0,
+       "low": 6956.5,
+       "close": 6956.5,
+       "volume": 60.0,
+       "buy": 29.0,
+       "sell": 31.0,
+       "n_ticks": 43
+      },
+      "campos": [
+       "buy",
+       "sell"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 70,
+    "n_python": 70,
+    "n_comunes": 70,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 70,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20251231,
+   "n_ticks_edgelab": 614544,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 33929,
+    "n_buckets_emparejados": 33929,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 33928,
+    "n_distintos": 1,
+    "frac_iguales": 0.999971,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 1,
+     "sell": 1,
+     "n_ticks": 0
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1767135600000,
+      "mio": {
+       "open": 6945.5,
+       "high": 6946.25,
+       "low": 6945.25,
+       "close": 6946.25,
+       "volume": 23.0,
+       "buy": 19.0,
+       "sell": 4.0,
+       "n_ticks": 19
+      },
+      "nt8": {
+       "open": 6945.5,
+       "high": 6946.25,
+       "low": 6945.25,
+       "close": 6946.25,
+       "volume": 23.0,
+       "buy": 9.0,
+       "sell": 14.0,
+       "n_ticks": 19
+      },
+      "campos": [
+       "buy",
+       "sell"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 108,
+    "n_python": 108,
+    "n_comunes": 108,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 108,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260102,
+   "n_ticks_edgelab": 1059896,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 41478,
+    "n_buckets_emparejados": 41478,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 41478,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "DIFF",
+    "n_nt8": 215,
+    "n_python": 215,
+    "n_comunes": 215,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 214,
+    "con_diferencia": 1,
+    "campos_con_diferencia": {
+     "dir": 1,
+     "price_upper": 1,
+     "height_ticks": 1,
+     "pasos": 1,
+     "valid_steps": 1,
+     "avg_ms": 1,
+     "total_ms": 1,
+     "vol_rate": 1,
+     "total_vol": 1,
+     "max_tick_vol": 1,
+     "cvd_sweep": 1,
+     "buy_vol": 1,
+     "sell_vol": 1,
+     "no_move_ticks": 1,
+     "max_level_ticks": 1
+    },
+    "ejemplos": [
+     {
+      "start_ts": 1767365288372,
+      "campos": [
+       "dir",
+       "price_upper",
+       "height_ticks",
+       "pasos",
+       "valid_steps",
+       "avg_ms",
+       "total_ms",
+       "vol_rate",
+       "total_vol",
+       "max_tick_vol",
+       "cvd_sweep",
+       "buy_vol",
+       "sell_vol",
+       "no_move_ticks",
+       "max_level_ticks"
+      ],
+      "nt8": {
+       "dir": 1,
+       "price_upper": 6933.0,
+       "height_ticks": 3.0,
+       "pasos": 139,
+       "valid_steps": 138,
+       "avg_ms": 0.0,
+       "total_ms": 0.0,
+       "vol_rate": 241000.0,
+       "total_vol": 241.0,
+       "max_tick_vol": 14.0,
+       "cvd_sweep": 239.0,
+       "buy_vol": 240.0,
+       "sell_vol": 1.0,
+       "no_move_ticks": 134,
+       "max_level_ticks": 39
+      },
+      "python": {
+       "dir": -1,
+       "price_upper": 6932.75,
+       "height_ticks": 2.0,
+       "pasos": 134,
+       "valid_steps": 128,
+       "avg_ms": 1.443609022556391,
+       "total_ms": 192.0,
+       "vol_rate": 1046.875,
+       "total_vol": 201.0,
+       "max_tick_vol": 6.0,
+       "cvd_sweep": 101.0,
+       "buy_vol": 151.0,
+       "sell_vol": 50.0,
+       "no_move_ticks": 123,
+       "max_level_ticks": 79
+      }
+     }
+    ]
+   }
+  },
+  {
+   "trade_date": 20260105,
+   "n_ticks_edgelab": 832582,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 42043,
+    "n_buckets_emparejados": 42043,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 42043,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "DIFF",
+    "n_nt8": 152,
+    "n_python": 151,
+    "n_comunes": 151,
+    "solo_nt8": 1,
+    "solo_python": 0,
+    "exact": 151,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260106,
+   "n_ticks_edgelab": 778923,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 38340,
+    "n_buckets_emparejados": 38340,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 38340,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "DIFF",
+    "n_nt8": 161,
+    "n_python": 160,
+    "n_comunes": 160,
+    "solo_nt8": 1,
+    "solo_python": 0,
+    "exact": 160,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260107,
+   "n_ticks_edgelab": 842025,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 37725,
+    "n_buckets_emparejados": 37725,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 37724,
+    "n_distintos": 1,
+    "frac_iguales": 0.999973,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 1,
+     "sell": 1,
+     "n_ticks": 0
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1767740400000,
+      "mio": {
+       "open": 6988.5,
+       "high": 6990.0,
+       "low": 6988.25,
+       "close": 6988.75,
+       "volume": 149.0,
+       "buy": 113.0,
+       "sell": 36.0,
+       "n_ticks": 83
+      },
+      "nt8": {
+       "open": 6988.5,
+       "high": 6990.0,
+       "low": 6988.25,
+       "close": 6988.75,
+       "volume": 149.0,
+       "buy": 65.0,
+       "sell": 84.0,
+       "n_ticks": 83
+      },
+      "campos": [
+       "buy",
+       "sell"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 146,
+    "n_python": 146,
+    "n_comunes": 146,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 146,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260108,
+   "n_ticks_edgelab": 939371,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 42280,
+    "n_buckets_emparejados": 42280,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 42280,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "DIFF",
+    "n_nt8": 155,
+    "n_python": 155,
+    "n_comunes": 155,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 153,
+    "con_diferencia": 2,
+    "campos_con_diferencia": {
+     "price_upper": 2,
+     "price_lower": 1,
+     "pasos": 2,
+     "valid_steps": 2,
+     "avg_ms": 2,
+     "total_ms": 2,
+     "vol_rate": 2,
+     "total_vol": 2,
+     "max_tick_vol": 2,
+     "cvd_sweep": 2,
+     "buy_vol": 2,
+     "sell_vol": 2,
+     "no_move_ticks": 2,
+     "max_level_ticks": 2,
+     "height_ticks": 1
+    },
+    "ejemplos": [
+     {
+      "start_ts": 1767880856860,
+      "campos": [
+       "price_upper",
+       "price_lower",
+       "pasos",
+       "valid_steps",
+       "avg_ms",
+       "total_ms",
+       "vol_rate",
+       "total_vol",
+       "max_tick_vol",
+       "cvd_sweep",
+       "buy_vol",
+       "sell_vol",
+       "no_move_ticks",
+       "max_level_ticks"
+      ],
+      "nt8": {
+       "price_upper": 6954.25,
+       "price_lower": 6953.25,
+       "pasos": 87,
+       "valid_steps": 86,
+       "avg_ms": 0.0,
+       "total_ms": 0.0,
+       "vol_rate": 224000.0,
+       "total_vol": 224.0,
+       "max_tick_vol": 50.0,
+       "cvd_sweep": -222.0,
+       "buy_vol": 1.0,
+       "sell_vol": 223.0,
+       "no_move_ticks": 81,
+       "max_level_ticks": 25
+      },
+      "python": {
+       "price_upper": 6953.5,
+       "price_lower": 6952.5,
+       "pasos": 203,
+       "valid_steps": 195,
+       "avg_ms": 0.6336633663366337,
+       "total_ms": 128.0,
+       "vol_rate": 2101.5625,
+       "total_vol": 269.0,
+       "max_tick_vol": 7.0,
+       "cvd_sweep": -49.0,
+       "buy_vol": 110.0,
+       "sell_vol": 159.0,
+       "no_move_ticks": 184,
+       "max_level_ticks": 79
+      }
+     },
+     {
+      "start_ts": 1767883376208,
+      "campos": [
+       "price_upper",
+       "height_ticks",
+       "pasos",
+       "valid_steps",
+       "avg_ms",
+       "total_ms",
+       "vol_rate",
+       "total_vol",
+       "max_tick_vol",
+       "cvd_sweep",
+       "buy_vol",
+       "sell_vol",
+       "no_move_ticks",
+       "max_level_ticks"
+      ],
+      "nt8": {
+       "price_upper": 6943.75,
+       "height_ticks": 4.0,
+       "pasos": 137,
+       "valid_steps": 136,
+       "avg_ms": 0.0,
+       "total_ms": 0.0,
+       "vol_rate": 247000.0,
+       "total_vol": 247.0,
+       "max_tick_vol": 7.0,
+       "cvd_sweep": -241.0,
+       "buy_vol": 3.0,
+       "sell_vol": 244.0,
+       "no_move_ticks": 131,
+       "max_level_ticks": 35
+      },
+      "python": {
+       "price_upper": 6943.25,
+       "height_ticks": 2.0,
+       "pasos": 163,
+       "valid_steps": 156,
+       "avg_ms": 0.6172839506172839,
+       "total_ms": 100.0,
+       "vol_rate": 2080.0,
+       "total_vol": 208.0,
+       "max_tick_vol": 4.0,
+       "cvd_sweep": 28.0,
+       "buy_vol": 118.0,
+       "sell_vol": 90.0,
+       "no_move_ticks": 146,
+       "max_level_ticks": 116
+      }
+     }
+    ]
+   }
+  },
+  {
+   "trade_date": 20260109,
+   "n_ticks_edgelab": 863183,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 39951,
+    "n_buckets_emparejados": 39951,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 39951,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 168,
+    "n_python": 168,
+    "n_comunes": 168,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 168,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260112,
+   "n_ticks_edgelab": 702145,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 43904,
+    "n_buckets_emparejados": 43904,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 43904,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 126,
+    "n_python": 126,
+    "n_comunes": 126,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 126,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260113,
+   "n_ticks_edgelab": 958039,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 40451,
+    "n_buckets_emparejados": 40451,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 40451,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 157,
+    "n_python": 157,
+    "n_comunes": 157,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 157,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260114,
+   "n_ticks_edgelab": 1273322,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 44462,
+    "n_buckets_emparejados": 44462,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 44461,
+    "n_distintos": 1,
+    "frac_iguales": 0.999978,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 1,
+     "sell": 1,
+     "n_ticks": 0
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1768345200000,
+      "mio": {
+       "open": 6998.5,
+       "high": 7000.0,
+       "low": 6998.25,
+       "close": 6999.75,
+       "volume": 76.0,
+       "buy": 48.0,
+       "sell": 28.0,
+       "n_ticks": 65
+      },
+      "nt8": {
+       "open": 6998.5,
+       "high": 7000.0,
+       "low": 6998.25,
+       "close": 6999.75,
+       "volume": 76.0,
+       "buy": 43.0,
+       "sell": 33.0,
+       "n_ticks": 65
+      },
+      "campos": [
+       "buy",
+       "sell"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 217,
+    "n_python": 217,
+    "n_comunes": 217,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 217,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260115,
+   "n_ticks_edgelab": 916679,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 45262,
+    "n_buckets_emparejados": 45262,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 45261,
+    "n_distintos": 1,
+    "frac_iguales": 0.999978,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 1,
+     "sell": 1,
+     "n_ticks": 0
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1768431600000,
+      "mio": {
+       "open": 6955.75,
+       "high": 6959.25,
+       "low": 6955.75,
+       "close": 6957.75,
+       "volume": 167.0,
+       "buy": 113.0,
+       "sell": 54.0,
+       "n_ticks": 71
+      },
+      "nt8": {
+       "open": 6955.75,
+       "high": 6959.25,
+       "low": 6955.75,
+       "close": 6957.75,
+       "volume": 167.0,
+       "buy": 59.0,
+       "sell": 108.0,
+       "n_ticks": 71
+      },
+      "campos": [
+       "buy",
+       "sell"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 136,
+    "n_python": 136,
+    "n_comunes": 136,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 136,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260116,
+   "n_ticks_edgelab": 867606,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 39425,
+    "n_buckets_emparejados": 39425,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 39425,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 164,
+    "n_python": 164,
+    "n_comunes": 164,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 164,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260119,
+   "n_ticks_edgelab": 240928,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 33094,
+    "n_buckets_emparejados": 33094,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 33093,
+    "n_distintos": 1,
+    "frac_iguales": 0.99997,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 1,
+     "sell": 1,
+     "n_ticks": 0
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1768777200000,
+      "mio": {
+       "open": 6918.25,
+       "high": 6919.0,
+       "low": 6911.0,
+       "close": 6911.0,
+       "volume": 1577.0,
+       "buy": 1071.0,
+       "sell": 506.0,
+       "n_ticks": 414
+      },
+      "nt8": {
+       "open": 6918.25,
+       "high": 6919.0,
+       "low": 6911.0,
+       "close": 6911.0,
+       "volume": 1577.0,
+       "buy": 301.0,
+       "sell": 1276.0,
+       "n_ticks": 414
+      },
+      "campos": [
+       "buy",
+       "sell"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 22,
+    "n_python": 22,
+    "n_comunes": 22,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 22,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260120,
+   "n_ticks_edgelab": 1532363,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 56132,
+    "n_buckets_emparejados": 56132,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 56132,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 261,
+    "n_python": 261,
+    "n_comunes": 261,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 261,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260121,
+   "n_ticks_edgelab": 1644987,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 51520,
+    "n_buckets_emparejados": 51520,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 51520,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 340,
+    "n_python": 340,
+    "n_comunes": 340,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 340,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260122,
+   "n_ticks_edgelab": 970777,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 46607,
+    "n_buckets_emparejados": 46607,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 46607,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 159,
+    "n_python": 159,
+    "n_comunes": 159,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 159,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260123,
+   "n_ticks_edgelab": 876252,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 45802,
+    "n_buckets_emparejados": 45802,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 45801,
+    "n_distintos": 1,
+    "frac_iguales": 0.999978,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 1,
+     "sell": 1,
+     "n_ticks": 0
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1769122800000,
+      "mio": {
+       "open": 6938.0,
+       "high": 6940.75,
+       "low": 6937.5,
+       "close": 6939.0,
+       "volume": 116.0,
+       "buy": 85.0,
+       "sell": 31.0,
+       "n_ticks": 78
+      },
+      "nt8": {
+       "open": 6938.0,
+       "high": 6940.75,
+       "low": 6937.5,
+       "close": 6939.0,
+       "volume": 116.0,
+       "buy": 64.0,
+       "sell": 52.0,
+       "n_ticks": 78
+      },
+      "campos": [
+       "buy",
+       "sell"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 105,
+    "n_python": 105,
+    "n_comunes": 105,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 105,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260126,
+   "n_ticks_edgelab": 720022,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 47476,
+    "n_buckets_emparejados": 47476,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 47475,
+    "n_distintos": 1,
+    "frac_iguales": 0.999979,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 1,
+     "sell": 1,
+     "n_ticks": 0
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1769382000000,
+      "mio": {
+       "open": 6904.0,
+       "high": 6904.0,
+       "low": 6891.5,
+       "close": 6891.75,
+       "volume": 933.0,
+       "buy": 565.0,
+       "sell": 368.0,
+       "n_ticks": 394
+      },
+      "nt8": {
+       "open": 6904.0,
+       "high": 6904.0,
+       "low": 6891.5,
+       "close": 6891.75,
+       "volume": 933.0,
+       "buy": 209.0,
+       "sell": 724.0,
+       "n_ticks": 394
+      },
+      "campos": [
+       "buy",
+       "sell"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 107,
+    "n_python": 107,
+    "n_comunes": 107,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 107,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260127,
+   "n_ticks_edgelab": 650087,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 38786,
+    "n_buckets_emparejados": 38786,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 38786,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 96,
+    "n_python": 96,
+    "n_comunes": 96,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 96,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260128,
+   "n_ticks_edgelab": 878075,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 44860,
+    "n_buckets_emparejados": 44860,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 44860,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 116,
+    "n_python": 116,
+    "n_comunes": 116,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 116,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260129,
+   "n_ticks_edgelab": 1441795,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 51348,
+    "n_buckets_emparejados": 51348,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 51348,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 241,
+    "n_python": 241,
+    "n_comunes": 241,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 241,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260130,
+   "n_ticks_edgelab": 1551486,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 60832,
+    "n_buckets_emparejados": 60832,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 60832,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "DIFF",
+    "n_nt8": 195,
+    "n_python": 195,
+    "n_comunes": 195,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 194,
+    "con_diferencia": 1,
+    "campos_con_diferencia": {
+     "price_upper": 1,
+     "height_ticks": 1,
+     "pasos": 1,
+     "valid_steps": 1,
+     "avg_ms": 1,
+     "vol_rate": 1,
+     "total_vol": 1,
+     "cvd_sweep": 1,
+     "sell_vol": 1,
+     "no_move_ticks": 1
+    },
+    "ejemplos": [
+     {
+      "start_ts": 1769727600028,
+      "campos": [
+       "price_upper",
+       "height_ticks",
+       "pasos",
+       "valid_steps",
+       "avg_ms",
+       "vol_rate",
+       "total_vol",
+       "cvd_sweep",
+       "sell_vol",
+       "no_move_ticks"
+      ],
+      "nt8": {
+       "price_upper": 6992.5,
+       "height_ticks": 22.0,
+       "pasos": 92,
+       "valid_steps": 84,
+       "avg_ms": 1.7582417582417582,
+       "vol_rate": 1681.25,
+       "total_vol": 269.0,
+       "cvd_sweep": -239.0,
+       "sell_vol": 254.0,
+       "no_move_ticks": 53
+      },
+      "python": {
+       "price_upper": 6992.25,
+       "height_ticks": 21.0,
+       "pasos": 89,
+       "valid_steps": 81,
+       "avg_ms": 1.8181818181818181,
+       "vol_rate": 1662.5,
+       "total_vol": 266.0,
+       "cvd_sweep": -236.0,
+       "sell_vol": 251.0,
+       "no_move_ticks": 51
+      }
+     }
+    ]
+   }
+  },
+  {
+   "trade_date": 20260202,
+   "n_ticks_edgelab": 1106794,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 63125,
+    "n_buckets_emparejados": 63125,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 63124,
+    "n_distintos": 1,
+    "frac_iguales": 0.999984,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 1,
+     "sell": 1,
+     "n_ticks": 0
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1769986800000,
+      "mio": {
+       "open": 6938.5,
+       "high": 6938.5,
+       "low": 6928.75,
+       "close": 6935.25,
+       "volume": 1040.0,
+       "buy": 716.0,
+       "sell": 324.0,
+       "n_ticks": 363
+      },
+      "nt8": {
+       "open": 6938.5,
+       "high": 6938.5,
+       "low": 6928.75,
+       "close": 6935.25,
+       "volume": 1040.0,
+       "buy": 190.0,
+       "sell": 850.0,
+       "n_ticks": 363
+      },
+      "campos": [
+       "buy",
+       "sell"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "DIFF",
+    "n_nt8": 155,
+    "n_python": 155,
+    "n_comunes": 154,
+    "solo_nt8": 1,
+    "solo_python": 1,
+    "exact": 154,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260203,
+   "n_ticks_edgelab": 1466497,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 49287,
+    "n_buckets_emparejados": 49287,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 49287,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 187,
+    "n_python": 187,
+    "n_comunes": 187,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 187,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260204,
+   "n_ticks_edgelab": 1675522,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 54112,
+    "n_buckets_emparejados": 54112,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 54111,
+    "n_distintos": 1,
+    "frac_iguales": 0.999982,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 1,
+     "sell": 1,
+     "n_ticks": 0
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1770159600000,
+      "mio": {
+       "open": 6934.0,
+       "high": 6935.25,
+       "low": 6934.0,
+       "close": 6935.0,
+       "volume": 60.0,
+       "buy": 45.0,
+       "sell": 15.0,
+       "n_ticks": 28
+      },
+      "nt8": {
+       "open": 6934.0,
+       "high": 6935.25,
+       "low": 6934.0,
+       "close": 6935.0,
+       "volume": 60.0,
+       "buy": 14.0,
+       "sell": 46.0,
+       "n_ticks": 28
+      },
+      "campos": [
+       "buy",
+       "sell"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 173,
+    "n_python": 173,
+    "n_comunes": 173,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 173,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260205,
+   "n_ticks_edgelab": 1672485,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 62258,
+    "n_buckets_emparejados": 62258,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 62257,
+    "n_distintos": 1,
+    "frac_iguales": 0.999984,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 1,
+     "sell": 1,
+     "n_ticks": 0
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1770246000000,
+      "mio": {
+       "open": 6915.5,
+       "high": 6917.75,
+       "low": 6914.5,
+       "close": 6917.75,
+       "volume": 268.0,
+       "buy": 208.0,
+       "sell": 60.0,
+       "n_ticks": 90
+      },
+      "nt8": {
+       "open": 6915.5,
+       "high": 6917.75,
+       "low": 6914.5,
+       "close": 6917.75,
+       "volume": 268.0,
+       "buy": 103.0,
+       "sell": 165.0,
+       "n_ticks": 90
+      },
+      "campos": [
+       "buy",
+       "sell"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 170,
+    "n_python": 170,
+    "n_comunes": 170,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 170,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260206,
+   "n_ticks_edgelab": 1314115,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 63025,
+    "n_buckets_emparejados": 63025,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 63024,
+    "n_distintos": 1,
+    "frac_iguales": 0.999984,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 1,
+     "sell": 1,
+     "n_ticks": 0
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1770332400000,
+      "mio": {
+       "open": 6785.5,
+       "high": 6787.5,
+       "low": 6785.25,
+       "close": 6786.5,
+       "volume": 207.0,
+       "buy": 151.0,
+       "sell": 56.0,
+       "n_ticks": 132
+      },
+      "nt8": {
+       "open": 6785.5,
+       "high": 6787.5,
+       "low": 6785.25,
+       "close": 6786.5,
+       "volume": 207.0,
+       "buy": 92.0,
+       "sell": 115.0,
+       "n_ticks": 132
+      },
+      "campos": [
+       "buy",
+       "sell"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 193,
+    "n_python": 193,
+    "n_comunes": 193,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 193,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260209,
+   "n_ticks_edgelab": 880088,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 53056,
+    "n_buckets_emparejados": 53056,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 53056,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "DIFF",
+    "n_nt8": 98,
+    "n_python": 98,
+    "n_comunes": 98,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 97,
+    "con_diferencia": 1,
+    "campos_con_diferencia": {
+     "dir": 1,
+     "price_upper": 1,
+     "height_ticks": 1,
+     "pasos": 1,
+     "valid_steps": 1,
+     "avg_ms": 1,
+     "total_ms": 1,
+     "vol_rate": 1,
+     "total_vol": 1,
+     "cvd_sweep": 1,
+     "buy_vol": 1,
+     "sell_vol": 1,
+     "no_move_ticks": 1,
+     "max_level_ticks": 1
+    },
+    "ejemplos": [
+     {
+      "start_ts": 1770670800168,
+      "campos": [
+       "dir",
+       "price_upper",
+       "height_ticks",
+       "pasos",
+       "valid_steps",
+       "avg_ms",
+       "total_ms",
+       "vol_rate",
+       "total_vol",
+       "cvd_sweep",
+       "buy_vol",
+       "sell_vol",
+       "no_move_ticks",
+       "max_level_ticks"
+      ],
+      "nt8": {
+       "dir": -1,
+       "price_upper": 6980.5,
+       "height_ticks": 2.0,
+       "pasos": 145,
+       "valid_steps": 137,
+       "avg_ms": 0.0,
+       "total_ms": 0.0,
+       "vol_rate": 302000.0,
+       "total_vol": 302.0,
+       "cvd_sweep": 24.0,
+       "buy_vol": 163.0,
+       "sell_vol": 139.0,
+       "no_move_ticks": 128,
+       "max_level_ticks": 52
+      },
+      "python": {
+       "dir": 1,
+       "price_upper": 6980.75,
+       "height_ticks": 3.0,
+       "pasos": 360,
+       "valid_steps": 338,
+       "avg_ms": 0.055710306406685235,
+       "total_ms": 20.0,
+       "vol_rate": 41650.0,
+       "total_vol": 833.0,
+       "cvd_sweep": -169.0,
+       "buy_vol": 332.0,
+       "sell_vol": 501.0,
+       "no_move_ticks": 316,
+       "max_level_ticks": 284
+      }
+     }
+    ]
+   }
+  },
+  {
+   "trade_date": 20260210,
+   "n_ticks_edgelab": 877218,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 46950,
+    "n_buckets_emparejados": 46950,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 46950,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 131,
+    "n_python": 131,
+    "n_comunes": 131,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 131,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260211,
+   "n_ticks_edgelab": 1131831,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 45258,
+    "n_buckets_emparejados": 45258,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 45258,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 168,
+    "n_python": 168,
+    "n_comunes": 168,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 168,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260212,
+   "n_ticks_edgelab": 1526703,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 47844,
+    "n_buckets_emparejados": 47844,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 47844,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 283,
+    "n_python": 283,
+    "n_comunes": 283,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 283,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260213,
+   "n_ticks_edgelab": 1379004,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 59435,
+    "n_buckets_emparejados": 59435,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 59435,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 238,
+    "n_python": 238,
+    "n_comunes": 238,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 238,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260216,
+   "n_ticks_edgelab": 151394,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 26978,
+    "n_buckets_emparejados": 26978,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 26978,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 8,
+    "n_python": 8,
+    "n_comunes": 8,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 8,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260217,
+   "n_ticks_edgelab": 1293261,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 54055,
+    "n_buckets_emparejados": 54055,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 54055,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 177,
+    "n_python": 177,
+    "n_comunes": 177,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 177,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260218,
+   "n_ticks_edgelab": 983510,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 47025,
+    "n_buckets_emparejados": 47025,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 47024,
+    "n_distintos": 1,
+    "frac_iguales": 0.999979,
+    "campos_con_diferencia": {
+     "open": 1,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 1,
+     "buy": 1,
+     "sell": 1,
+     "n_ticks": 1
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1771369200000,
+      "mio": {
+       "open": 6862.75,
+       "high": 6863.75,
+       "low": 6862.0,
+       "close": 6863.5,
+       "volume": 117.0,
+       "buy": 75.0,
+       "sell": 42.0,
+       "n_ticks": 87
+      },
+      "nt8": {
+       "open": 6862.5,
+       "high": 6863.75,
+       "low": 6862.0,
+       "close": 6863.5,
+       "volume": 87.0,
+       "buy": 47.0,
+       "sell": 40.0,
+       "n_ticks": 82
+      },
+      "campos": [
+       "open",
+       "volume",
+       "buy",
+       "sell",
+       "n_ticks"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 161,
+    "n_python": 161,
+    "n_comunes": 161,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 161,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260219,
+   "n_ticks_edgelab": 976821,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 49227,
+    "n_buckets_emparejados": 49227,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 49226,
+    "n_distintos": 1,
+    "frac_iguales": 0.99998,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 1,
+     "sell": 1,
+     "n_ticks": 0
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1771455600000,
+      "mio": {
+       "open": 6891.75,
+       "high": 6893.0,
+       "low": 6890.5,
+       "close": 6892.5,
+       "volume": 60.0,
+       "buy": 37.0,
+       "sell": 23.0,
+       "n_ticks": 54
+      },
+      "nt8": {
+       "open": 6891.75,
+       "high": 6893.0,
+       "low": 6890.5,
+       "close": 6892.5,
+       "volume": 60.0,
+       "buy": 35.0,
+       "sell": 25.0,
+       "n_ticks": 54
+      },
+      "campos": [
+       "buy",
+       "sell"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 133,
+    "n_python": 133,
+    "n_comunes": 133,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 133,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260220,
+   "n_ticks_edgelab": 1356906,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 48561,
+    "n_buckets_emparejados": 48561,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 48561,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 218,
+    "n_python": 218,
+    "n_comunes": 218,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 218,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260223,
+   "n_ticks_edgelab": 1090427,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 51109,
+    "n_buckets_emparejados": 51109,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 51108,
+    "n_distintos": 1,
+    "frac_iguales": 0.99998,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 1,
+     "sell": 1,
+     "n_ticks": 0
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1771801200000,
+      "mio": {
+       "open": 6918.0,
+       "high": 6918.0,
+       "low": 6914.5,
+       "close": 6915.5,
+       "volume": 463.0,
+       "buy": 364.0,
+       "sell": 99.0,
+       "n_ticks": 106
+      },
+      "nt8": {
+       "open": 6918.0,
+       "high": 6918.0,
+       "low": 6914.5,
+       "close": 6915.5,
+       "volume": 463.0,
+       "buy": 46.0,
+       "sell": 417.0,
+       "n_ticks": 106
+      },
+      "campos": [
+       "buy",
+       "sell"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 148,
+    "n_python": 148,
+    "n_comunes": 148,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 148,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260224,
+   "n_ticks_edgelab": 947874,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 47746,
+    "n_buckets_emparejados": 47746,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 47746,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 136,
+    "n_python": 136,
+    "n_comunes": 136,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 136,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260225,
+   "n_ticks_edgelab": 718873,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 44542,
+    "n_buckets_emparejados": 44542,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 44542,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 131,
+    "n_python": 131,
+    "n_comunes": 131,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 131,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260226,
+   "n_ticks_edgelab": 1121154,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 46635,
+    "n_buckets_emparejados": 46635,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 46634,
+    "n_distintos": 1,
+    "frac_iguales": 0.999979,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 1,
+     "sell": 1,
+     "n_ticks": 0
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1772060400000,
+      "mio": {
+       "open": 6965.0,
+       "high": 6965.75,
+       "low": 6961.25,
+       "close": 6961.75,
+       "volume": 261.0,
+       "buy": 164.0,
+       "sell": 97.0,
+       "n_ticks": 135
+      },
+      "nt8": {
+       "open": 6965.0,
+       "high": 6965.75,
+       "low": 6961.25,
+       "close": 6961.75,
+       "volume": 261.0,
+       "buy": 63.0,
+       "sell": 198.0,
+       "n_ticks": 135
+      },
+      "campos": [
+       "buy",
+       "sell"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 191,
+    "n_python": 191,
+    "n_comunes": 191,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 191,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260227,
+   "n_ticks_edgelab": 1165205,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 52643,
+    "n_buckets_emparejados": 52643,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 52642,
+    "n_distintos": 1,
+    "frac_iguales": 0.999981,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 1,
+     "sell": 1,
+     "n_ticks": 0
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1772146800000,
+      "mio": {
+       "open": 6899.0,
+       "high": 6900.0,
+       "low": 6893.25,
+       "close": 6897.0,
+       "volume": 707.0,
+       "buy": 322.0,
+       "sell": 385.0,
+       "n_ticks": 403
+      },
+      "nt8": {
+       "open": 6899.0,
+       "high": 6900.0,
+       "low": 6893.25,
+       "close": 6897.0,
+       "volume": 707.0,
+       "buy": 240.0,
+       "sell": 467.0,
+       "n_ticks": 403
+      },
+      "campos": [
+       "buy",
+       "sell"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 197,
+    "n_python": 197,
+    "n_comunes": 197,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 197,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260302,
+   "n_ticks_edgelab": 1368262,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 64673,
+    "n_buckets_emparejados": 64673,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 64672,
+    "n_distintos": 1,
+    "frac_iguales": 0.999985,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 1,
+     "sell": 1,
+     "n_ticks": 0
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1772406000000,
+      "mio": {
+       "open": 6820.0,
+       "high": 6820.25,
+       "low": 6811.25,
+       "close": 6815.25,
+       "volume": 2034.0,
+       "buy": 1498.0,
+       "sell": 536.0,
+       "n_ticks": 408
+      },
+      "nt8": {
+       "open": 6820.0,
+       "high": 6820.25,
+       "low": 6811.25,
+       "close": 6815.25,
+       "volume": 2034.0,
+       "buy": 185.0,
+       "sell": 1849.0,
+       "n_ticks": 408
+      },
+      "campos": [
+       "buy",
+       "sell"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 224,
+    "n_python": 224,
+    "n_comunes": 224,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 224,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260303,
+   "n_ticks_edgelab": 1762982,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 67656,
+    "n_buckets_emparejados": 67656,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 67655,
+    "n_distintos": 1,
+    "frac_iguales": 0.999985,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 1,
+     "sell": 1,
+     "n_ticks": 0
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1772492400000,
+      "mio": {
+       "open": 6883.5,
+       "high": 6884.75,
+       "low": 6882.25,
+       "close": 6883.5,
+       "volume": 123.0,
+       "buy": 72.0,
+       "sell": 51.0,
+       "n_ticks": 102
+      },
+      "nt8": {
+       "open": 6883.5,
+       "high": 6884.75,
+       "low": 6882.25,
+       "close": 6883.5,
+       "volume": 123.0,
+       "buy": 52.0,
+       "sell": 71.0,
+       "n_ticks": 102
+      },
+      "campos": [
+       "buy",
+       "sell"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 266,
+    "n_python": 266,
+    "n_comunes": 266,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 266,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260304,
+   "n_ticks_edgelab": 1146117,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 68195,
+    "n_buckets_emparejados": 68195,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 68194,
+    "n_distintos": 1,
+    "frac_iguales": 0.999985,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 1,
+     "sell": 1,
+     "n_ticks": 0
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1772578800000,
+      "mio": {
+       "open": 6813.25,
+       "high": 6813.25,
+       "low": 6812.0,
+       "close": 6812.5,
+       "volume": 34.0,
+       "buy": 18.0,
+       "sell": 16.0,
+       "n_ticks": 25
+      },
+      "nt8": {
+       "open": 6813.25,
+       "high": 6813.25,
+       "low": 6812.0,
+       "close": 6812.5,
+       "volume": 34.0,
+       "buy": 9.0,
+       "sell": 25.0,
+       "n_ticks": 25
+      },
+      "campos": [
+       "buy",
+       "sell"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 160,
+    "n_python": 160,
+    "n_comunes": 160,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 160,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260305,
+   "n_ticks_edgelab": 1462393,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 62936,
+    "n_buckets_emparejados": 62936,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 62936,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 181,
+    "n_python": 181,
+    "n_comunes": 181,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 181,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260306,
+   "n_ticks_edgelab": 1440977,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 60690,
+    "n_buckets_emparejados": 60690,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 60690,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 186,
+    "n_python": 186,
+    "n_comunes": 186,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 186,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260309,
+   "n_ticks_edgelab": 1691839,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 74133,
+    "n_buckets_emparejados": 74133,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 74132,
+    "n_distintos": 1,
+    "frac_iguales": 0.999987,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 1,
+     "sell": 1,
+     "n_ticks": 0
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1773007200000,
+      "mio": {
+       "open": 6685.5,
+       "high": 6686.5,
+       "low": 6680.25,
+       "close": 6680.75,
+       "volume": 1701.0,
+       "buy": 1415.0,
+       "sell": 286.0,
+       "n_ticks": 307
+      },
+      "nt8": {
+       "open": 6685.5,
+       "high": 6686.5,
+       "low": 6680.25,
+       "close": 6680.75,
+       "volume": 1701.0,
+       "buy": 191.0,
+       "sell": 1510.0,
+       "n_ticks": 307
+      },
+      "campos": [
+       "buy",
+       "sell"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "DIFF",
+    "n_nt8": 305,
+    "n_python": 304,
+    "n_comunes": 304,
+    "solo_nt8": 1,
+    "solo_python": 0,
+    "exact": 304,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260310,
+   "n_ticks_edgelab": 1455980,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 64754,
+    "n_buckets_emparejados": 64754,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 64754,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 228,
+    "n_python": 228,
+    "n_comunes": 228,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 228,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260311,
+   "n_ticks_edgelab": 1184219,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 55731,
+    "n_buckets_emparejados": 55731,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 55730,
+    "n_distintos": 1,
+    "frac_iguales": 0.999982,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 1,
+     "sell": 1,
+     "n_ticks": 0
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1773180000000,
+      "mio": {
+       "open": 6796.75,
+       "high": 6797.25,
+       "low": 6794.75,
+       "close": 6797.25,
+       "volume": 85.0,
+       "buy": 32.0,
+       "sell": 53.0,
+       "n_ticks": 47
+      },
+      "nt8": {
+       "open": 6796.75,
+       "high": 6797.25,
+       "low": 6794.75,
+       "close": 6797.25,
+       "volume": 85.0,
+       "buy": 21.0,
+       "sell": 64.0,
+       "n_ticks": 47
+      },
+      "campos": [
+       "buy",
+       "sell"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 152,
+    "n_python": 152,
+    "n_comunes": 152,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 152,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260312,
+   "n_ticks_edgelab": 1404444,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 61588,
+    "n_buckets_emparejados": 61588,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 61587,
+    "n_distintos": 1,
+    "frac_iguales": 0.999984,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 1,
+     "sell": 1,
+     "n_ticks": 0
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1773266400000,
+      "mio": {
+       "open": 6766.0,
+       "high": 6769.0,
+       "low": 6765.75,
+       "close": 6768.0,
+       "volume": 173.0,
+       "buy": 126.0,
+       "sell": 47.0,
+       "n_ticks": 85
+      },
+      "nt8": {
+       "open": 6766.0,
+       "high": 6769.0,
+       "low": 6765.75,
+       "close": 6768.0,
+       "volume": 173.0,
+       "buy": 53.0,
+       "sell": 120.0,
+       "n_ticks": 85
+      },
+      "campos": [
+       "buy",
+       "sell"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 246,
+    "n_python": 246,
+    "n_comunes": 246,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 246,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260313,
+   "n_ticks_edgelab": 1288959,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 59819,
+    "n_buckets_emparejados": 59819,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 59818,
+    "n_distintos": 1,
+    "frac_iguales": 0.999983,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 1,
+     "sell": 1,
+     "n_ticks": 0
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1773352800000,
+      "mio": {
+       "open": 6684.25,
+       "high": 6686.75,
+       "low": 6684.25,
+       "close": 6686.0,
+       "volume": 160.0,
+       "buy": 108.0,
+       "sell": 52.0,
+       "n_ticks": 94
+      },
+      "nt8": {
+       "open": 6684.25,
+       "high": 6686.75,
+       "low": 6684.25,
+       "close": 6686.0,
+       "volume": 160.0,
+       "buy": 59.0,
+       "sell": 101.0,
+       "n_ticks": 94
+      },
+      "campos": [
+       "buy",
+       "sell"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 188,
+    "n_python": 188,
+    "n_comunes": 188,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 188,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260316,
+   "n_ticks_edgelab": 670694,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 54997,
+    "n_buckets_emparejados": 54997,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 54996,
+    "n_distintos": 1,
+    "frac_iguales": 0.999982,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 1,
+     "sell": 1,
+     "n_ticks": 0
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1773612000000,
+      "mio": {
+       "open": 6608.5,
+       "high": 6616.0,
+       "low": 6608.5,
+       "close": 6610.25,
+       "volume": 728.0,
+       "buy": 672.0,
+       "sell": 56.0,
+       "n_ticks": 134
+      },
+      "nt8": {
+       "open": 6608.5,
+       "high": 6616.0,
+       "low": 6608.5,
+       "close": 6610.25,
+       "volume": 728.0,
+       "buy": 120.0,
+       "sell": 608.0,
+       "n_ticks": 134
+      },
+      "campos": [
+       "buy",
+       "sell"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 60,
+    "n_python": 60,
+    "n_comunes": 60,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 60,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260317,
+   "n_ticks_edgelab": 196270,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 36226,
+    "n_buckets_emparejados": 36226,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 36226,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 9,
+    "n_python": 9,
+    "n_comunes": 9,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 9,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260318,
+   "n_ticks_edgelab": 172634,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 32821,
+    "n_buckets_emparejados": 32821,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 32820,
+    "n_distintos": 1,
+    "frac_iguales": 0.99997,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 1,
+     "sell": 1,
+     "n_ticks": 0
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1773784800000,
+      "mio": {
+       "open": 6722.5,
+       "high": 6723.0,
+       "low": 6722.5,
+       "close": 6722.75,
+       "volume": 33.0,
+       "buy": 32.0,
+       "sell": 1.0,
+       "n_ticks": 23
+      },
+      "nt8": {
+       "open": 6722.5,
+       "high": 6723.0,
+       "low": 6722.5,
+       "close": 6722.75,
+       "volume": 33.0,
+       "buy": 28.0,
+       "sell": 5.0,
+       "n_ticks": 23
+      },
+      "campos": [
+       "buy",
+       "sell"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 15,
+    "n_python": 15,
+    "n_comunes": 15,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 15,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260319,
+   "n_ticks_edgelab": 202503,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 37058,
+    "n_buckets_emparejados": 37058,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 37058,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 4,
+    "n_python": 4,
+    "n_comunes": 4,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 4,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260320,
+   "n_ticks_edgelab": 11562,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 6073,
+    "n_buckets_emparejados": 6073,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 6073,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 0,
+    "n_python": 0,
+    "n_comunes": 0,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 0,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  }
+ ]
+}
