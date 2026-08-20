@@ -59,11 +59,16 @@ from edgelab.bridge.ticks import load_canonical_parquet  # noqa: E402
 from edgelab.kaggle.sessions_cme import (minutes_since_session_open,  # noqa: E402
                                          session_bounds_utc_ns, trade_date_ymd)
 
-SCHEMA_VERSION = "retorno_a_zona_es_v2_exige_salir_primero"
+SCHEMA_VERSION = "retorno_a_zona_es_v3_exige_separacion"
 SNAPSHOT = REPO / "runs" / "oraculo_espurev2_ES_snapshot.sqlite"
 HOLDOUT_FIRST_TRADE_DATE = 20260701
 CUTOFF_MS = session_bounds_utc_ns(HOLDOUT_FIRST_TRADE_DATE)[0] // 1_000_000
 SEMILLA = 20260819
+
+# Separacion minima, en ticks, que el precio debe alcanzar ANTES de que un reingreso
+# cuente como retorno. GRILLA declarada, no un numero elegido; R=0 reproduce v2 y
+# queda como referencia degenerada.
+R_SEPARACION = (0, 2, 5, 10, 20)
 
 # contrato -> parquet. La ventana la empuja pyarrow, asi que ES entra sin problema.
 PARQUETS = {
@@ -87,37 +92,38 @@ def zonas_por_sesion(snapshot):
     return out
 
 
-def medir_banda(px_t, ts, lo_t, hi_t):
-    """Primer RETORNO a la banda, exigiendo que el precio haya SALIDO antes.
+def medir_banda(px_t, ts, lo_t, hi_t, r_sep):
+    """Retorno a la banda exigiendo una SEPARACION de `r_sep` ticks antes.
 
-    v1 medía desde el primer tick posterior al barrido, y daba `t = 0` y `llega = 100 %`
-    en zona y espejo: la zona la acaba de crear un barrido que terminó ahí, así que el
-    precio **ya está adentro**. Eso no es un retorno, es "todavía no se fue".
+    v1 no exigia salir: daba t=0 y llega=100% porque el barrido que crea la zona termina
+    adentro. v2 exigio salir, y quedo el problema de fondo: con una banda de 3 ticks de
+    mediana el ruido entra y sale 145 veces por zona, el retorno ocurre el 99,7% de las
+    veces, y da IDENTICO en la zona y en el control. Un evento que pasa siempre no es un
+    evento.
 
-    Ahora: primero se busca la salida de la banda; el retorno es la primera reentrada
-    **después** de esa salida. Todo lo demás —dwell, reentradas— se mide desde la salida,
-    no desde el barrido.
-
-    Devuelve None si nunca sale (la zona nunca se abandona) o si sale y no vuelve.
+    v3 exige que el precio alcance `r_sep` ticks de distancia del borde mas cercano antes
+    de que un reingreso cuente. Es la misma correccion que H-Z2A hizo con R_min, y por eso
+    `r_sep` es una grilla declarada y no un numero elegido.
     """
     dentro = (px_t >= lo_t) & (px_t <= hi_t)
-    fuera = np.flatnonzero(~dentro)
-    if len(fuera) == 0:
-        return dict(nunca_sale=True)
-    s0 = int(fuera[0])                       # primera salida
+    d = np.where(px_t > hi_t, px_t - hi_t, np.where(px_t < lo_t, lo_t - px_t, 0))
+    lejos = d >= max(r_sep, 1)
+    if not lejos.any():
+        return dict(se_separa=False)
+    s0 = int(np.argmax(lejos))
     post = dentro[s0:]
     if not post.any():
-        return dict(nunca_sale=False, vuelve=False,
-                    t_hasta_salida_ms=float((ts[s0] - ts[0]) / 1e6))
-    i0 = s0 + int(np.argmax(post))           # primera reentrada tras salir
+        return dict(se_separa=True, vuelve=False,
+                    t_hasta_separacion_ms=float((ts[s0] - ts[0]) / 1e6))
+    i0 = s0 + int(np.argmax(post))
     reentradas = int(np.flatnonzero(post[1:] & ~post[:-1]).size + (1 if post[0] else 0))
     dt = np.diff(ts, append=ts[-1])
-    return dict(nunca_sale=False, vuelve=True,
-                t_hasta_salida_ms=float((ts[s0] - ts[0]) / 1e6),
+    return dict(se_separa=True, vuelve=True,
+                t_hasta_separacion_ms=float((ts[s0] - ts[0]) / 1e6),
                 t_hasta_retorno_ms=float((ts[i0] - ts[s0]) / 1e6),
                 n_retornos=reentradas,
                 dwell_ms=float(dt[s0:][post].sum() / 1e6),
-                n_ticks_dentro=int(post.sum()))
+                max_excursion_ticks=int(d[s0:].max()))
 
 
 def main():
@@ -173,9 +179,9 @@ def main():
             off = int(rng.integers(-(rango_hi - rango_lo) // 2, (rango_hi - rango_lo) // 2 + 1))
             pl_lo, pl_hi = lo_t + off, hi_t + off
 
-            z = medir_banda(pxp, tsp, lo_t, hi_t)
-            e = medir_banda(pxp, tsp, esp_lo, esp_hi)
-            p = medir_banda(pxp, tsp, pl_lo, pl_hi)
+            z = {r: medir_banda(pxp, tsp, lo_t, hi_t, r) for r in R_SEPARACION}
+            e = {r: medir_banda(pxp, tsp, esp_lo, esp_hi, r) for r in R_SEPARACION}
+            p = {r: medir_banda(pxp, tsp, pl_lo, pl_hi, r) for r in R_SEPARACION}
 
             filas.append(dict(
                 id=zid, contrato=contrato, trade_date=td, bucket=bucket, dir=int(dr),
@@ -186,37 +192,55 @@ def main():
                 rango_sesion_ticks=int(rango_hi - rango_lo),
                 n_ticks_post=int(len(pxp)),
                 # --- medidas -------------------------------------------------------
-                zona=z, espejo=e, placebo=p,
-                llega_zona=bool(z and z.get("vuelve")),
-                llega_espejo=bool(e and e.get("vuelve")),
-                llega_placebo=bool(p and p.get("vuelve")),
-                nunca_sale_zona=bool(z and z.get("nunca_sale"))))
+                zona={str(r): v for r, v in z.items()},
+                espejo={str(r): v for r, v in e.items()},
+                placebo={str(r): v for r, v in p.items()}))
         if (k + 1) % 20 == 0:
             print("    %d/%d sesiones  ·  %d zonas medidas" % (k + 1, len(claves), len(filas)))
 
     print("  %d zonas medidas  (sin parquet: %d, sin ventana posterior: %d)"
           % (len(filas), sin_parquet, sin_post))
 
-    def agr(campo, sub):
-        v = [f[campo][sub] for f in filas if f[campo] and sub in f[campo]]
+    def agr(campo, sub, r):
+        v = [f[campo][str(r)][sub] for f in filas
+             if f[campo][str(r)] and sub in f[campo][str(r)]]
         if not v:
             return {}
         v = np.array(v, dtype=np.float64)
         return dict(n=len(v), mediana=round(float(np.median(v)), 3),
-                    **{("p%02d" % q): round(float(np.percentile(v, q)), 3)
-                       for q in (25, 75)})
+                    p25=round(float(np.percentile(v, 25)), 3),
+                    p75=round(float(np.percentile(v, 75)), 3))
 
-    # por SESION, que es la unidad
+    def frac_por_sesion(campo, r):
+        por = {}
+        for f in filas:
+            v = f[campo][str(r)]
+            por.setdefault(f["trade_date"], []).append(bool(v and v.get("vuelve")))
+        return np.array([float(np.mean(x)) for x in por.values()])
+
     por_ses = {}
     for f in filas:
         por_ses.setdefault(f["trade_date"], []).append(f)
-    llega_ses = {k_: (np.mean([x["llega_zona"] for x in v]),
-                      np.mean([x["llega_espejo"] for x in v]),
-                      np.mean([x["llega_placebo"] for x in v]))
-                 for k_, v in por_ses.items()}
-    lz = np.array([v[0] for v in llega_ses.values()])
-    le = np.array([v[1] for v in llega_ses.values()])
-    lp = np.array([v[2] for v in llega_ses.values()])
+
+    por_R = {}
+    for r in R_SEPARACION:
+        lz = frac_por_sesion("zona", r)
+        le = frac_por_sesion("espejo", r)
+        lp = frac_por_sesion("placebo", r)
+        por_R[str(r)] = dict(
+            llega=dict(zona=round(float(np.median(lz)), 4),
+                       espejo=round(float(np.median(le)), 4),
+                       placebo=round(float(np.median(lp)), 4),
+                       contraste_vs_espejo=round(float(np.median(lz) - np.median(le)), 4),
+                       contraste_vs_placebo=round(float(np.median(lz) - np.median(lp)), 4)),
+            n_zonas_que_se_separan=sum(
+                1 for f in filas if f["zona"][str(r)] and f["zona"][str(r)].get("se_separa")),
+            t_hasta_retorno_ms=dict(zona=agr("zona", "t_hasta_retorno_ms", r),
+                                    espejo=agr("espejo", "t_hasta_retorno_ms", r)),
+            n_retornos=dict(zona=agr("zona", "n_retornos", r),
+                            espejo=agr("espejo", "n_retornos", r)),
+            dwell_ms=dict(zona=agr("zona", "dwell_ms", r),
+                          espejo=agr("espejo", "dwell_ms", r)))
 
     porcelain = subprocess.check_output(
         ["git", "-C", str(REPO), "status", "--porcelain"], text=True).splitlines()
@@ -229,56 +253,40 @@ def main():
             "el censo descriptivo midio 92% de zonas bajistas por el bug isDown-first. "
             "NINGUNA lectura direccional de estos numeros es valida hasta regenerar el "
             "oraculo con HFTZonesESPureV2Flat."),
+        definicion_retorno=(
+            "el precio debe alcanzar R ticks de separacion del borde mas cercano ANTES de "
+            "que un reingreso cuente. Sin separacion el retorno ocurre el 99,7% de las "
+            "veces y 145 veces por zona: la banda mide 3 ticks de mediana y el ruido la "
+            "cruza constantemente. Un evento que pasa siempre no es un evento; es la "
+            "misma correccion que H-Z2A hizo con R_min."),
         controles=dict(
             espejo="misma altura y misma distancia al precio de creacion, del otro lado",
-            placebo="misma altura, desplazamiento aleatorio con semilla fija en el rango de la sesion",
+            placebo="misma altura, desplazamiento aleatorio con semilla fija",
             estimando="contraste zona - control, nunca el valor absoluto",
             semilla=SEMILLA),
+        grilla_separacion=list(R_SEPARACION),
         universo=dict(n_zonas=len(filas), n_sesiones=len(por_ses),
-                      sin_parquet=sin_parquet, sin_ventana_posterior=sin_post,
-                      zonas_que_nunca_se_abandonan=sum(1 for f in filas if f["nunca_sale_zona"])),
-        definicion_retorno=("el precio debe SALIR de la banda antes de que un reingreso "
-                            "cuente como retorno. Sin eso, la zona da t=0 y 100% por "
-                            "construccion: el barrido que la crea termina adentro."),
-        tiempo_hasta_salida=dict(
-            zona=agr("zona", "t_hasta_salida_ms"), espejo=agr("espejo", "t_hasta_salida_ms"),
-            placebo=agr("placebo", "t_hasta_salida_ms")),
-        llega=dict(
-            zona_por_sesion=dict(mediana=round(float(np.median(lz)), 4),
-                                 media=round(float(lz.mean()), 4)),
-            espejo_por_sesion=dict(mediana=round(float(np.median(le)), 4),
-                                   media=round(float(le.mean()), 4)),
-            placebo_por_sesion=dict(mediana=round(float(np.median(lp)), 4),
-                                    media=round(float(lp.mean()), 4)),
-            contraste_vs_espejo=round(float(np.median(lz) - np.median(le)), 4),
-            contraste_vs_placebo=round(float(np.median(lz) - np.median(lp)), 4),
-            n_sesiones=len(lz)),
-        cuando_llega=dict(
-            zona=agr("zona", "t_hasta_retorno_ms"), espejo=agr("espejo", "t_hasta_retorno_ms"),
-            placebo=agr("placebo", "t_hasta_retorno_ms")),
-        dwell_ms=dict(zona=agr("zona", "dwell_ms"), espejo=agr("espejo", "dwell_ms"),
-                      placebo=agr("placebo", "dwell_ms")),
-        n_retornos=dict(zona=agr("zona", "n_retornos"), espejo=agr("espejo", "n_retornos"),
-                        placebo=agr("placebo", "n_retornos")),
+                      sin_parquet=sin_parquet, sin_ventana_posterior=sin_post),
+        por_separacion=por_R,
         procedencia=dict(head_commit=subprocess.check_output(
             ["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True).strip(),
             snapshot=str(a.snapshot),
             archivos_sucios=sorted(sucios), alcance_comprometida=["edgelab/", "diag/"],
-            medicion_comprometida=bool([f for f in sucios if f.startswith(("edgelab/", "diag/"))])),
+            medicion_comprometida=bool(
+                [f for f in sucios if f.startswith(("edgelab/", "diag/"))])),
         zonas=filas)
     pathlib.Path(a.out).write_text(json.dumps(out, indent=2), encoding="utf-8")
 
     print()
-    print("  LLEGA (fraccion por sesion, mediana)")
-    print("    zona    %.3f" % np.median(lz))
-    print("    espejo  %.3f   contraste %+.3f" % (np.median(le), np.median(lz) - np.median(le)))
-    print("    placebo %.3f   contraste %+.3f" % (np.median(lp), np.median(lz) - np.median(lp)))
-    for nom, campo in (("t hasta retorno (ms)", "cuando_llega"), ("dwell (ms)", "dwell_ms"),
-                       ("n retornos", "n_retornos")):
-        z_, e_, p_ = out[campo]["zona"], out[campo]["espejo"], out[campo]["placebo"]
-        if z_:
-            print("  %-22s zona %10.1f   espejo %10.1f   placebo %10.1f"
-                  % (nom, z_["mediana"], e_.get("mediana", -1), p_.get("mediana", -1)))
+    print("   R  zonas que    llega                          t hasta retorno (ms)")
+    print("      se separan   zona    espejo   contraste     zona        espejo")
+    for r in R_SEPARACION:
+        b = por_R[str(r)]
+        tz = b["t_hasta_retorno_ms"]["zona"].get("mediana", -1)
+        te = b["t_hasta_retorno_ms"]["espejo"].get("mediana", -1)
+        print("  %2d  %10d   %.3f   %.3f    %+.3f    %10.1f %10.1f"
+              % (r, b["n_zonas_que_se_separan"], b["llega"]["zona"], b["llega"]["espejo"],
+                 b["llega"]["contraste_vs_espejo"], tz, te))
     print("  escrito %s" % a.out)
     return 0
 
