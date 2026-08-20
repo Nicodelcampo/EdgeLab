@@ -59,7 +59,7 @@ from edgelab.bridge.ticks import load_canonical_parquet  # noqa: E402
 from edgelab.kaggle.sessions_cme import (minutes_since_session_open,  # noqa: E402
                                          session_bounds_utc_ns, trade_date_ymd)
 
-SCHEMA_VERSION = "retorno_a_zona_es_v1_targetfree"
+SCHEMA_VERSION = "retorno_a_zona_es_v2_exige_salir_primero"
 SNAPSHOT = REPO / "runs" / "oraculo_espurev2_ES_snapshot.sqlite"
 HOLDOUT_FIRST_TRADE_DATE = 20260701
 CUTOFF_MS = session_bounds_utc_ns(HOLDOUT_FIRST_TRADE_DATE)[0] // 1_000_000
@@ -88,23 +88,36 @@ def zonas_por_sesion(snapshot):
 
 
 def medir_banda(px_t, ts, lo_t, hi_t):
-    """Primer retorno, cuantos retornos, dwell en ns y ticks dentro de la banda.
+    """Primer RETORNO a la banda, exigiendo que el precio haya SALIDO antes.
 
-    Devuelve None si nunca entra. Todo en TICKS ENTEROS: la banda viene del kernel en
-    precio y se convierte una sola vez, afuera.
+    v1 medía desde el primer tick posterior al barrido, y daba `t = 0` y `llega = 100 %`
+    en zona y espejo: la zona la acaba de crear un barrido que terminó ahí, así que el
+    precio **ya está adentro**. Eso no es un retorno, es "todavía no se fue".
+
+    Ahora: primero se busca la salida de la banda; el retorno es la primera reentrada
+    **después** de esa salida. Todo lo demás —dwell, reentradas— se mide desde la salida,
+    no desde el barrido.
+
+    Devuelve None si nunca sale (la zona nunca se abandona) o si sale y no vuelve.
     """
     dentro = (px_t >= lo_t) & (px_t <= hi_t)
-    if not dentro.any():
-        return None
-    i0 = int(np.argmax(dentro))
-    # entradas: transiciones False -> True
-    cambios = np.flatnonzero(dentro[1:] & ~dentro[:-1]) + 1
-    n_ent = int(len(cambios) + (1 if dentro[0] else 0))
+    fuera = np.flatnonzero(~dentro)
+    if len(fuera) == 0:
+        return dict(nunca_sale=True)
+    s0 = int(fuera[0])                       # primera salida
+    post = dentro[s0:]
+    if not post.any():
+        return dict(nunca_sale=False, vuelve=False,
+                    t_hasta_salida_ms=float((ts[s0] - ts[0]) / 1e6))
+    i0 = s0 + int(np.argmax(post))           # primera reentrada tras salir
+    reentradas = int(np.flatnonzero(post[1:] & ~post[:-1]).size + (1 if post[0] else 0))
     dt = np.diff(ts, append=ts[-1])
-    return dict(t_hasta_retorno_ms=float((ts[i0] - ts[0]) / 1e6),
-                n_retornos=n_ent,
-                dwell_ms=float(dt[dentro].sum() / 1e6),
-                n_ticks_dentro=int(dentro.sum()))
+    return dict(nunca_sale=False, vuelve=True,
+                t_hasta_salida_ms=float((ts[s0] - ts[0]) / 1e6),
+                t_hasta_retorno_ms=float((ts[i0] - ts[s0]) / 1e6),
+                n_retornos=reentradas,
+                dwell_ms=float(dt[s0:][post].sum() / 1e6),
+                n_ticks_dentro=int(post.sum()))
 
 
 def main():
@@ -174,8 +187,10 @@ def main():
                 n_ticks_post=int(len(pxp)),
                 # --- medidas -------------------------------------------------------
                 zona=z, espejo=e, placebo=p,
-                llega_zona=z is not None, llega_espejo=e is not None,
-                llega_placebo=p is not None))
+                llega_zona=bool(z and z.get("vuelve")),
+                llega_espejo=bool(e and e.get("vuelve")),
+                llega_placebo=bool(p and p.get("vuelve")),
+                nunca_sale_zona=bool(z and z.get("nunca_sale"))))
         if (k + 1) % 20 == 0:
             print("    %d/%d sesiones  ·  %d zonas medidas" % (k + 1, len(claves), len(filas)))
 
@@ -183,7 +198,7 @@ def main():
           % (len(filas), sin_parquet, sin_post))
 
     def agr(campo, sub):
-        v = [f[campo][sub] for f in filas if f[campo]]
+        v = [f[campo][sub] for f in filas if f[campo] and sub in f[campo]]
         if not v:
             return {}
         v = np.array(v, dtype=np.float64)
@@ -220,7 +235,14 @@ def main():
             estimando="contraste zona - control, nunca el valor absoluto",
             semilla=SEMILLA),
         universo=dict(n_zonas=len(filas), n_sesiones=len(por_ses),
-                      sin_parquet=sin_parquet, sin_ventana_posterior=sin_post),
+                      sin_parquet=sin_parquet, sin_ventana_posterior=sin_post,
+                      zonas_que_nunca_se_abandonan=sum(1 for f in filas if f["nunca_sale_zona"])),
+        definicion_retorno=("el precio debe SALIR de la banda antes de que un reingreso "
+                            "cuente como retorno. Sin eso, la zona da t=0 y 100% por "
+                            "construccion: el barrido que la crea termina adentro."),
+        tiempo_hasta_salida=dict(
+            zona=agr("zona", "t_hasta_salida_ms"), espejo=agr("espejo", "t_hasta_salida_ms"),
+            placebo=agr("placebo", "t_hasta_salida_ms")),
         llega=dict(
             zona_por_sesion=dict(mediana=round(float(np.median(lz)), 4),
                                  media=round(float(lz.mean()), 4)),
