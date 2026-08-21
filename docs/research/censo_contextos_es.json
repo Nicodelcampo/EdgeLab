@@ -78,8 +78,24 @@
   "nota": "nulo = misma cantidad de zonas colocadas en ticks reales al azar; preserva el tiempo que el precio paso en cada nivel",
   "p_max_mediana_RETRACTADO": 0.005,
   "frac_sesiones_p_max_menor_005_RETRACTADO": 0.7119,
-  "retractacion": "commit 59a9f28: el nulo del censo usaba np.round(mid) que colapsaba medios ticks sobre enteros en el observado pero no en el nulo. Con nulo corregido (mismo constructor de mid): p mediana 0.1775, p<0.05 en 31% de sesiones. El 71% se retracta.",
-  "ver": "docs/research/memoria_nivel_nulo_correcto.json"
+  "retractacion": "commit 59a9f28: el nulo del censo usaba np.round(mid), que colapsaba medios ticks sobre enteros en el observado pero no en el nulo. El 71% se retracta.",
+  "ver": "docs/research/memoria_nivel_nulo_correcto.json",
+  "resultado_vigente": {
+   "estado": "MEASURED_COMMITTED",
+   "p_mediana": 0.1796,
+   "frac_sesiones_p_menor_005": 0.3051,
+   "sesiones": 18,
+   "elegibles": 59,
+   "B": 400,
+   "run_id": "0e16a11b81dcb865",
+   "code_commit": "056618ff458ca26ab87f383160225ccfb53bf5f9",
+   "fuente": "docs/research/memoria_nivel_nulo_correcto.json"
+  },
+  "valor_intermedio_retractado": {
+   "estado": "RETRACTED_INVALID_ESTIMATOR_COUNT_OVER_B",
+   "p_mediana": 0.1775,
+   "motivo": "salio del nulo corregido pero con el estimador p = count/B, que publica p = 0,0 en 5 de 59 sesiones. Con (1+count)/(B+1) el valor es 0,1796. Se conserva porque circulo en docs entre 59a9f28 y el sellado de R1"
+  }
  },
  "persistencia_entre_sesiones": {
   "tolerancia_ticks": 2,

@@ -13,14 +13,22 @@
     "holdout_touched": false,
     "detector_modified": false,
     "local_r1_v2": {
-      "status": "USER_REPORTED_LOCAL_UNCOMMITTED",
+      "status": "MEASURED_COMMITTED",
       "universe_sessions": 62,
       "eligible_sessions": 59,
       "mc_resamples": 400,
       "p_median": 0.1796,
       "p_lt_0_05_sessions": 18,
       "p_lt_0_05_fraction": 0.3051,
-      "interpretation": "inconclusive_not_edge_not_null"
+      "interpretation": "inconclusive_not_edge_not_null",
+      "sealed_by": {
+        "code_commit": "056618ff458ca26ab87f383160225ccfb53bf5f9",
+        "run_id": "0e16a11b81dcb865",
+        "run_scope": "full",
+        "clean_tree": true,
+        "note": "rerun limpio desde worktree detached"
+      },
+      "note_estimator": "p_median 0,1796 confirmado por el rerun sellado. El 0,1775 que circulo en docs es RETRACTED_INVALID_ESTIMATOR_COUNT_OVER_B"
     }
   },
   "verdict": {
@@ -39,7 +47,11 @@
     {
       "id": "D-HFT-CTX-02",
       "decision": "label_feature_availability",
-      "allowed_labels": ["PRE", "AT_EVENT", "POST"],
+      "allowed_labels": [
+        "PRE",
+        "AT_EVENT",
+        "POST"
+      ],
       "rule": "POST fields are outcomes and cannot be regime filters."
     },
     {
@@ -94,7 +106,12 @@
       "availability": "PRE",
       "priority": "primary",
       "data_required": "trades",
-      "components": ["tick_rate_5m", "volume_rate_5m", "median_intertick_ms_5m", "price_changes_5m"],
+      "components": [
+        "tick_rate_5m",
+        "volume_rate_5m",
+        "median_intertick_ms_5m",
+        "price_changes_5m"
+      ],
       "normalization": "past-only percentile within same 15-minute clock bucket",
       "causal": true
     },
@@ -104,7 +121,11 @@
       "availability": "PRE",
       "priority": "primary",
       "data_required": "trades",
-      "components": ["realized_volatility_5m", "range_5m", "price_path_5m"],
+      "components": [
+        "realized_volatility_5m",
+        "range_5m",
+        "price_path_5m"
+      ],
       "normalization": "past-only percentile within same clock bucket",
       "causal": true
     },
@@ -114,7 +135,13 @@
       "availability": "PRE_AT_EVENT",
       "priority": "primary",
       "data_required": "prior_zone_events",
-      "components": ["is_first", "prior_zone_count", "time_since_previous", "prior_same_level_count", "stack_depth_to_date"],
+      "components": [
+        "is_first",
+        "prior_zone_count",
+        "time_since_previous",
+        "prior_same_level_count",
+        "stack_depth_to_date"
+      ],
       "rule": "past events only; symmetric plus/minus windows are descriptive and not live filters",
       "causal": true
     },
@@ -124,7 +151,12 @@
       "availability": "AT_EVENT",
       "priority": "primary",
       "data_required": "trades_inside_detected_sweep",
-      "components": ["volume_per_net_displacement", "net_displacement_over_total_path", "final_position_in_event_range", "volume_at_extreme_fraction"],
+      "components": [
+        "volume_per_net_displacement",
+        "net_displacement_over_total_path",
+        "final_position_in_event_range",
+        "volume_at_extreme_fraction"
+      ],
       "normalization": "phase and zone width",
       "causal": true
     },
@@ -134,7 +166,12 @@
       "availability": "PRE",
       "priority": "primary_exogenous",
       "data_required": "official_release_calendar",
-      "components": ["event_type", "minutes_to_event", "minutes_since_event", "inside_fixed_window"],
+      "components": [
+        "event_type",
+        "minutes_to_event",
+        "minutes_since_event",
+        "inside_fixed_window"
+      ],
       "causal": true
     },
     {
@@ -153,7 +190,10 @@
       "availability": "AT_EVENT",
       "priority": "r2_diagnostic",
       "data_required": "zone_and_near_miss_detector_trace",
-      "components": ["failed_filter", "distance_to_threshold"],
+      "components": [
+        "failed_filter",
+        "distance_to_threshold"
+      ],
       "causal": true
     },
     {
@@ -173,7 +213,12 @@
       "availability": "AT_EVENT",
       "priority": "secondary",
       "data_required": "zone_and_pre_event_prices",
-      "components": ["width_ticks", "sweep_side", "with_or_against_trend", "position_in_session_range"],
+      "components": [
+        "width_ticks",
+        "sweep_side",
+        "with_or_against_trend",
+        "position_in_session_range"
+      ],
       "causal": true
     },
     {
@@ -244,15 +289,27 @@
   "candidate_future_outcomes_not_preregistered": [
     {
       "family": "continuation",
-      "candidate_horizons_seconds": [1, 5, 30]
+      "candidate_horizons_seconds": [
+        1,
+        5,
+        30
+      ]
     },
     {
       "family": "reversal",
-      "candidate_horizons_seconds": [1, 5, 30]
+      "candidate_horizons_seconds": [
+        1,
+        5,
+        30
+      ]
     },
     {
       "family": "resilience",
-      "candidate_horizons_seconds": [1, 5, 30]
+      "candidate_horizons_seconds": [
+        1,
+        5,
+        30
+      ]
     },
     {
       "family": "longer_attraction_revisit",

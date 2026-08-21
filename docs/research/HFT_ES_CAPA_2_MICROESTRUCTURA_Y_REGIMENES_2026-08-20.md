@@ -21,9 +21,11 @@ Este documento es **research y diseño**, no una medición nueva.
 - No se tocó el holdout `2026-07-01 → 2026-12-31`.
 - No se modificó el detector `HFTZonesESPureV2Flat` ni sus parámetros.
 - No se declara ninguna feature como edge.
-- El resultado R1 v2 informado localmente —62 sesiones de universo, 59 elegibles,
-  `18/59 = 30,51 %`, p mediana `0,1796`, B=400— sigue siendo
-  **`USER_REPORTED_LOCAL_UNCOMMITTED`** al momento de este registro. No confundir este
+- El resultado R1 v2 —62 sesiones de universo, 59 elegibles, `18/59 = 30,51 %`,
+  p mediana `0,1796`, B=400— quedo **SELLADO** el 2026-08-21: pasa de
+  `USER_REPORTED_LOCAL_UNCOMMITTED` a **`MEASURED_COMMITTED`** por rerun limpio
+  (`run_id 0e16a11b81dcb865`, codigo `056618f`, worktree detached, arbol limpio).
+  No confundir este
   memo con el sellado de R1.
 
 Este memo complementa, no sustituye,

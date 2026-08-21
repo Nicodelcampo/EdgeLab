@@ -1,5 +1,24 @@
 # HFT CTX Handoff Audit — 2026-08-20
 
+> ## ⬛ RESUELTO — R1 sellado el 2026-08-21
+>
+> Este informe describe el estado en `59a9f28` y **se conserva sin editar** como registro
+> fechado. Sus hallazgos C2, C1 y E1/E2 ya fueron atendidos:
+>
+> | hallazgo | resolución |
+> |---|---|
+> | **C2** — p Monte Carlo usa `count/B` | corregido a `(1 + count)/(B + 1)` en `6a15255`, migrado a `p_montecarlo()` con test de equivalencia en Commit A |
+> | **C1** — 3 sesiones excluidas sin documentar | `excluded_items[]` **computado y serializado**: 20260216 (8), 20260317 (9), 20260319 (4) |
+> | **E1/E2** — docs desactualizados | `censo_contextos_es.json` y `HFT_ZONAS_ES_MEDIDO_Y_NO_MEDIDO.md` actualizados en Commit B |
+> | **D1** — N efectivo presentado como medido | marcado `INFERRED_NOT_VERIFIED`; rho nunca se estimó |
+>
+> **Los números de este informe son los de antes del sellado.** El valor vigente es
+> **p mediana 0,1796** (no 0,1775), `run_id 0e16a11b81dcb865`, código `056618f`.
+> El 0,1775 queda como `RETRACTED_INVALID_ESTIMATOR_COUNT_OVER_B`.
+>
+> **Siguen abiertos**: B4 (perfil del 18,3 % sin control), B5 (CI clusterizado) y C3
+> (estadístico global para la memoria de nivel). Son R2 y R3, fuera del alcance de R1.
+
 > **Auditor**: Antigravity (Claude Opus 4.6 Thinking), invocado como auditor reproducible.
 > **Rama auditada**: `foundation/f0b-compatibility-probe`
 > **HEAD remoto verificado**: `59a9f28efae1fdffa7d25847fedd0e9e248610ba` ✓

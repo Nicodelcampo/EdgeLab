@@ -41,8 +41,15 @@ cualquier variable de tendencia intradiaria no dependía del control.
 El «p<0,05 en el 71 % de las sesiones» del censo de contextos (`be21d35`) fue causado por
 un bug de redondeo asimétrico: `np.round(mid)` colapsaba medios ticks sobre enteros en el
 observado pero no en el nulo. Con el nulo corregido (`memoria_nivel_nulo_correcto`), la
-fracción baja a **31 %** (18/59 sesiones, p mediana 0,1775). **El 71 % se retracta.**
+fracción baja a **31 %** (18/59 sesiones). **El 71 % se retracta.**
 Ver `docs/research/memoria_nivel_nulo_correcto.json`.
+
+### Segunda retractación, del estimador — `RETRACTED_INVALID_ESTIMATOR_COUNT_OVER_B`
+Entre `59a9f28` y el sellado de R1 circuló **p mediana 0,1775**. Ese número salía del
+nulo corregido pero con el estimador `p = count/B`, que publica **p = 0,0 en 5 de 59
+sesiones** — imposible con B remuestreos, donde el mínimo es `1/(B+1) = 0,00249`. Con
+`(1 + count)/(B + 1)` (North et al. 2002) el valor sellado es **0,1796**. El 0,1775 se
+conserva acá porque llegó a citarse en docs; **no se usa**.
 
 ---
 
@@ -50,7 +57,16 @@ Ver `docs/research/memoria_nivel_nulo_correcto.json`.
 
 | qué | resultado | alcance exacto |
 |---|---|---|
-| **Memoria de nivel** | p mediana 0,1775 (nulo corregido), p<0,05 en 31 % de sesiones (≠ 71 % del censo con bug de redondeo). Enriquecimiento 6× sobre el 5 % esperado, pero sin estadístico global ni distribución nula conjunta. **Pendiente, no efecto ni nulo.** | ES Flat, 59 sesiones (3 excluidas por n<10), nulo con mismo constructor de mid |
+| **Memoria de nivel** `MEASURED_COMMITTED` | **p mediana 0,1796**, p<0,05 en **31 %** de las sesiones (18/59), contra el 5 % esperado. Enriquecimiento 6×, pero **sin estadístico global ni distribución nula conjunta**. **Pendiente: ni efecto ni nulo.** | ES Flat. Universo 62 → procesadas 62 → **elegibles 59** (3 excluidas: 20260216, 20260317, 20260319, todas con <10 zonas de ancho > 0). B=400, seed 20260820, `run_id 0e16a11b81dcb865`, código `056618f`, rerun limpio desde worktree detached |
+
+**Denominadores, separados (ATJ-15).** El estadístico de números redondos usa las **62**
+sesiones procesadas; el de memoria usa las **59** elegibles. No son el mismo denominador y
+el artefacto ya no los colapsa en un único `n_sesiones`.
+
+**Números redondos en ES** `MEASURED_COMMITTED`: por resto módulo 4, 0,2579 / 0,2465 /
+0,2484 / 0,2473. El punto entero se lleva 25,79 % contra 25,00 % de la uniforme — exceso de
+**0,79 pp**. El clustering masivo que la literatura documenta para otros índices **no está en
+ES**, así que no es confundidor de la memoria de nivel. Verificado sobre el dato, no citado.
 
 ---
 
