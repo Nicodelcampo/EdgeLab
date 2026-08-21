@@ -177,6 +177,35 @@ medición, S2 es la única admisible**, y sobre ella la evidencia es más débil
 
 ---
 
+## Atlas F1 — construido `MEASURED_COMMITTED`
+
+`docs/research/atlas_hft_es.json` · parquet `data/atlas/atlas_hft_es_full.parquet`,
+22,3 MB, sha256 `fc5451704dee58e3…` (gitignorado: es dato, el hash lo hace trazable).
+
+**370.631 filas, tres poblaciones con las mismas 39 columnas**, todas `PRE` o
+`AT_EVENT`. Ninguna `POST`: no hay excursión, retorno, cruce, MAE/MFE ni P&L.
+
+| grupo | n | ancho mediano | RV previa | dist. VWAP |
+|---|---|---|---|---|
+| ZONA | 9.231 | 3 | 36,1 | 68,1 |
+| CASI | 334.915 | 1 | 32,4 | 62,8 |
+| **S1_1MIN** | 26.485 | **9** | **20,7** | 47,9 |
+
+**Observación que hay que registrar antes de usar S1 como control**: `S1_1MIN` es
+estructuralmente distinto — **9 ticks de ancho mediano contra 3 de la zona**, y RV
+previa **casi la mitad**. O sea que aparece en condiciones más calmas y con geometría
+más grande. Usarlo como control sin emparejar repetiría el error que R2 acaba de medir
+en el control casi-zona. **El emparejamiento de S1 es trabajo pendiente, no resuelto.**
+
+Percentiles **expansivos** (bucket de 15 min, sólo historia previa, sin incluirse a sí
+mismos): disponibles en el 99,7 % / 99,6 % / 98,2 % de las filas.
+
+Declarado como no implementado, en vez de inventado: `scheduled_news`
+**NOT_AVAILABLE** (falta calendario oficial), spread/depth/OFI y queue imbalance
+**DEFERRED** (requieren BBO/L2), columnas BigTrap **BLOCKED** (no hay paridad sobre ES).
+
+---
+
 ## MEDIDO — y vivo
 
 | qué | resultado |
