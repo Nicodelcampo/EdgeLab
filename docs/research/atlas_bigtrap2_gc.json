@@ -1,0 +1,218 @@
+{
+ "schema_version": "atlas_bigtrap2_gc_v1_target_free",
+ "outcomes_accessed": false,
+ "pnl_accessed": false,
+ "holdout_included": true,
+ "advertencia_holdout": "P-56: los datos son de agosto 2026, dentro de la ventana sellada. Esto es DESCRIPCION target-free, no medicion de efecto. No autoriza outcomes.",
+ "instrumento": "GC 12-26",
+ "bar_spec": "25 tick",
+ "tick_size": 0.1,
+ "oraculo": "E:\\l2_parquet__Tick1.csv",
+ "offset_oraculo_horas": 3,
+ "disponibilidad_causal": {
+  "trade_date": "PRE",
+  "hora_ny": "PRE",
+  "session_phase": "PRE",
+  "bucket_15m": "PRE",
+  "tick_rate_5m": "PRE",
+  "vol_rate_5m": "PRE",
+  "rv_prev_5m": "PRE",
+  "rango_prev_5m": "PRE",
+  "ret_prev_5m_signed": "PRE",
+  "trend_score": "PRE",
+  "pos_en_rango_dia": "PRE",
+  "rango_dia_hasta_t0": "PRE",
+  "pct_rv": "PRE",
+  "pct_tick_rate": "PRE",
+  "n_previas_causal": "PRE",
+  "es_primera_5s": "PRE",
+  "t_desde_previa_ms": "PRE",
+  "spread_ticks": "PRE",
+  "bid_size_toque": "PRE",
+  "ask_size_toque": "PRE",
+  "queue_imbalance": "PRE",
+  "depth_bid_5": "PRE",
+  "depth_ask_5": "PRE",
+  "depth_imbalance_5": "PRE",
+  "microprice_offset_ticks": "PRE",
+  "l2_edad_ms": "PRE",
+  "side": "AT_EVENT",
+  "vol": "AT_EVENT",
+  "n_rows": "AT_EVENT",
+  "max_ratio": "AT_EVENT",
+  "zona_ancho_ticks": "AT_EVENT",
+  "dist_close_a_zona_ticks": "AT_EVENT",
+  "bar_vol": "AT_EVENT",
+  "fp_vol": "AT_EVENT",
+  "n_quote": "AT_EVENT",
+  "n_rule": "AT_EVENT",
+  "bar_rango_ticks": "AT_EVENT",
+  "bar_largo": "AT_EVENT"
+ },
+ "no_implementadas": {
+  "scheduled_news": "NOT_AVAILABLE: no hay calendario oficial en el repo",
+  "ofi_verdadero": "PARCIAL: se computa desbalance de cola y de profundidad; el OFI de Cont exige seguir altas/bajas/cancelaciones por nivel, que el dump permite pero todavia no esta implementado",
+  "outcomes": "PROHIBIDO en el atlas por construccion"
+ },
+ "conteos": {
+  "n_traps_oraculo": 20488,
+  "n_filas": 20486,
+  "sin_ancla": 1,
+  "sin_l2": 5370,
+  "con_estado_de_libro": 3,
+  "frac_con_libro": 0.0001,
+  "por_side": {
+   "trapped_sellers": 10367,
+   "trapped_buyers": 10119
+  },
+  "por_fase": {
+   "asia": 4530,
+   "europa": 2726,
+   "premarket": 1058,
+   "rth_am": 1604,
+   "rth_pm": 8725,
+   "cierre": 1843
+  }
+ },
+ "resumen_evento": {
+  "vol": {
+   "n": 20486,
+   "p25": 3.0,
+   "p50": 4.0,
+   "p75": 7.0
+  },
+  "n_rows": {
+   "n": 20486,
+   "p25": 1.0,
+   "p50": 1.0,
+   "p75": 1.0
+  },
+  "max_ratio": {
+   "n": 20486,
+   "p25": 3.0,
+   "p50": 4.0,
+   "p75": 5.0
+  },
+  "zona_ancho_ticks": {
+   "n": 20486,
+   "p25": 1.0,
+   "p50": 1.0,
+   "p75": 1.0
+  },
+  "dist_close_a_zona_ticks": {
+   "n": 20486,
+   "p25": 1.5,
+   "p50": 3.5,
+   "p75": 6.5
+  },
+  "bar_vol": {
+   "n": 20486,
+   "p25": 25.0,
+   "p50": 26.0,
+   "p75": 29.0
+  },
+  "bar_rango_ticks": {
+   "n": 20486,
+   "p25": 7.0,
+   "p50": 9.0,
+   "p75": 11.0
+  }
+ },
+ "resumen_libro": {
+  "spread_ticks": {
+   "n": 3,
+   "p25": 1.0,
+   "p50": 1.0,
+   "p75": 1.0
+  },
+  "bid_size_toque": {
+   "n": 3,
+   "p25": 2.0,
+   "p50": 2.0,
+   "p75": 2.5
+  },
+  "ask_size_toque": {
+   "n": 3,
+   "p25": 1.0,
+   "p50": 1.0,
+   "p75": 1.5
+  },
+  "queue_imbalance": {
+   "n": 3,
+   "p25": 0.633,
+   "p50": 0.667,
+   "p75": 0.667
+  },
+  "depth_bid_5": {
+   "n": 3,
+   "p25": 13.0,
+   "p50": 13.0,
+   "p75": 13.0
+  },
+  "depth_ask_5": {
+   "n": 3,
+   "p25": 11.5,
+   "p50": 14.0,
+   "p75": 14.0
+  },
+  "depth_imbalance_5": {
+   "n": 3,
+   "p25": 0.481,
+   "p50": 0.481,
+   "p75": 0.536
+  },
+  "microprice_offset_ticks": {
+   "n": 3,
+   "p25": 0.133,
+   "p50": 0.167,
+   "p75": 0.167
+  },
+  "l2_edad_ms": {
+   "n": 3,
+   "p25": 232000.0,
+   "p50": 232000.0,
+   "p75": 254000.0
+  }
+ },
+ "resumen_contexto": {
+  "rv_prev_5m": {
+   "n": 20486,
+   "p25": 2.825,
+   "p50": 3.906,
+   "p75": 5.762
+  },
+  "tick_rate_5m": {
+   "n": 20486,
+   "p25": 1.141,
+   "p50": 2.154,
+   "p75": 4.384
+  },
+  "trend_score": {
+   "n": 20485,
+   "p25": -0.724,
+   "p50": 0.103,
+   "p75": 0.877
+  },
+  "pos_en_rango_dia": {
+   "n": 20486,
+   "p25": 0.864,
+   "p50": 0.926,
+   "p75": 0.971
+  },
+  "t_desde_previa_ms": {
+   "n": 20485,
+   "p25": 3512.0,
+   "p50": 13780.0,
+   "p75": 37360.0
+  }
+ },
+ "artefacto": {
+  "ruta": "E:\\EdgeLab\\data\\atlas\\atlas_bigtrap2_gc.parquet",
+  "sha256": "4e705f9e10e8d560be3c66a6b6aa87173e15096d447e3cb7f5adc313d8e19210",
+  "bytes": 902591
+ },
+ "procedencia": {
+  "head_commit": "9b5c8a3cce16fb52d3c91d05b4bcd82fb4ee8779",
+  "comando": "diag/tasa_senales/atlas_bigtrap2_gc.py"
+ }
+}
