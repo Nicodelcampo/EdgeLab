@@ -40,6 +40,7 @@ TARGET-FREE. Sin outcomes.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import pathlib
 import sqlite3
@@ -56,13 +57,52 @@ from edgelab.bridge.ticks import load_canonical_parquet  # noqa: E402
 from edgelab.kaggle.sessions_cme import (session_bounds_utc_ns,  # noqa: E402
                                          trade_date_ymd)
 
-SCHEMA_VERSION = "memoria_nivel_nulo_correcto_v1"
+SCHEMA_VERSION = "memoria_nivel_nulo_correcto_v2_atj15"
 SNAPSHOT = REPO / "runs" / "oraculo_espurev2flat_ES_snapshot.sqlite"
 CONTRATO = "ES 03-26"
 PARQUET = REPO / "data" / "nt8" / "ES_parquet" / "ES_03-26_ticks.parquet"
 CUTOFF_MS = session_bounds_utc_ns(20260701)[0] // 1_000_000
-N_NULO = 400
+N_NULO = 400                 # B: remuestreos Monte Carlo del nulo
 SEMILLA = 20260820
+MIN_ZONAS_MEMORIA = 10       # regla de elegibilidad de la metrica de memoria
+CANONICAL_OUT = REPO / "docs" / "research" / "memoria_nivel_nulo_correcto.json"
+
+
+def p_montecarlo(nulo_vals, observado, b):
+    """p Monte Carlo de North et al. 2002: (1 + #{nulo >= obs}) / (B + 1).
+
+    Nunca devuelve 0: el minimo posible es 1/(B+1). La version `#{...}/B` publicaba
+    p = 0,0 en 5 de 59 sesiones, que es artefacto del estimador y no certeza.
+    """
+    return float((1 + np.sum(np.asarray(nulo_vals) >= observado)) / (b + 1))
+
+
+def p_minimo_posible(b):
+    return 1.0 / (b + 1)
+
+
+def clasificar_run(max_sesiones, out_path):
+    """ATJ-15: una corrida truncada no puede hacerse pasar por completa.
+
+    Devuelve (run_scope, publishable, error). Si esta truncada y apunta al output
+    canonico, `error` explica por que no puede escribirse.
+    """
+    if not max_sesiones:
+        return "full", True, None
+    if pathlib.Path(out_path).resolve() == CANONICAL_OUT.resolve():
+        return ("truncated_probe", False,
+                "corrida truncada (--max-sesiones=%d) no puede sobrescribir el output "
+                "canonico %s; usar --out distinto" % (max_sesiones, CANONICAL_OUT))
+    return "truncated_probe", False, None
+
+
+def make_run_id(head_commit, trade_dates, max_sesiones):
+    """Identidad determinista de la corrida: sin reloj ni azar, dos corridas con la
+    misma identidad producen el mismo run_id."""
+    partes = [SCHEMA_VERSION, head_commit, CONTRATO, SNAPSHOT.name, str(N_NULO),
+              str(SEMILLA), str(MIN_ZONAS_MEMORIA), str(max_sesiones),
+              ",".join(str(t) for t in trade_dates)]
+    return hashlib.sha256("|".join(partes).encode("utf-8")).hexdigest()[:16]
 
 
 def concentracion(mids_medio_tick):
@@ -88,35 +128,53 @@ def main():
         zs.setdefault(td, []).append(f)
     con.close()
 
-    claves = sorted(zs)
-    if a.max_sesiones:
-        claves = claves[:a.max_sesiones]
+    universo = sorted(zs)                       # ANTES de --max-sesiones
+    claves = universo[:a.max_sesiones] if a.max_sesiones else list(universo)
+
+    run_scope, publishable, err = clasificar_run(a.max_sesiones, a.out)
+    if err:
+        sys.exit('ABORTA: ' + err)
+    print("universo %d  ->  seleccionadas %d   (%s, publishable=%s)"
+          % (len(universo), len(claves), run_scope, publishable))
     print("memoria de nivel  -  %s\n  %d sesiones" % (SCHEMA_VERSION, len(claves)))
 
     ses, redondos = [], []
+    faltantes, excluidas = [], []
+    trade_dates_redondeo = []
     for k, td in enumerate(claves):
         ini, fin = session_bounds_utc_ns(td)
         try:
             tk = load_canonical_parquet(PARQUET, start_utc_ns=ini, end_utc_ns=fin,
                                         instrument="ES")
-        except ValueError:
+        except ValueError as e:
+            faltantes.append(dict(trade_date=td, etapa="load_canonical_parquet",
+                                  motivo=str(e)[:160]))
             continue
         pxt, tsz = tk.price_ticks.astype(np.int64), tk.tick_size
+        if len(pxt) == 0:
+            faltantes.append(dict(trade_date=td, etapa="ventana_vacia",
+                                  motivo="0 ticks en la ventana de sesion"))
+            continue
 
         # --- 1. los ticks de ES, se apilan en niveles redondos? ------------------
         # 1 punto = 4 ticks. Si no hubiera preferencia, cada resto 0..3 seria 0,25.
         r = np.bincount(np.mod(pxt, 4), minlength=4).astype(np.float64)
         redondos.append(r / r.sum())
+        trade_dates_redondeo.append(td)
 
         zl = zs[td]
         anchos = np.array([int(round((u - l) / tsz)) for _, u, l in zl], dtype=np.int64)
         lows = np.array([int(round(l / tsz)) for _, _, l in zl], dtype=np.int64)
         ok = anchos > 0
         anchos, lows = anchos[ok], lows[ok]
-        if len(anchos) < 10:
-            # Sesiones excluidas por tener < 10 zonas con ancho > 0:
-            # 20260216 (8 brutas -> <10 tras h0), 20260317 (9 -> <10),
-            # 20260319 (4 -> <10). Total: 62 -> 59.
+        if len(anchos) < MIN_ZONAS_MEMORIA:
+            # ATJ-15: la lista de exclusion se COMPUTA y se serializa. Hardcodearla en
+            # un comentario la deja obsoleta en silencio si cambia el dato.
+            excluidas.append(dict(trade_date=td, n_brutas=len(zl),
+                                  n_ancho_positivo=int(len(anchos)),
+                                  umbral=MIN_ZONAS_MEMORIA,
+                                  motivo="menos de %d zonas con ancho > 0 tras excluir "
+                                         "altura 0" % MIN_ZONAS_MEMORIA))
             continue
         # mid en MEDIOS TICKS -> entero, sin perder el medio tick por redondeo
         mids = 2 * lows + anchos
@@ -136,10 +194,11 @@ def main():
             max_en_un_nivel=int(obs[0]), niveles=int(obs[1]),
             niveles_3_o_mas=int(obs[2]),
             nulo_viejo=dict(max=round(float(np.median(viejo[:, 0])), 2),
-                            p_max=round(float((1 + np.sum(viejo[:, 0] >= obs[0])) / (N_NULO + 1)), 4)),
-            nulo_corregido=dict(max=round(float(np.median(nuevo[:, 0])), 2),
-                                p_max=round(float((1 + np.sum(nuevo[:, 0] >= obs[0])) / (N_NULO + 1)), 4),
-                                p_3omas=round(float((1 + np.sum(nuevo[:, 2] >= obs[2])) / (N_NULO + 1)), 4))))
+                            p_max=round(p_montecarlo(viejo[:, 0], obs[0], N_NULO), 4)),
+            nulo_corregido=dict(
+                max=round(float(np.median(nuevo[:, 0])), 2),
+                p_max=round(p_montecarlo(nuevo[:, 0], obs[0], N_NULO), 4),
+                p_3omas=round(p_montecarlo(nuevo[:, 2], obs[2], N_NULO), 4))))
         if (k + 1) % 15 == 0:
             print("    %d/%d" % (k + 1, len(claves)))
 
@@ -156,12 +215,60 @@ def main():
         grupos.append(i)
     m_bar = float(n.mean())
 
+    head_commit = subprocess.check_output(
+        ["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True).strip()
     sucios = [l[3:].strip() for l in subprocess.check_output(
         ["git", "-C", str(REPO), "status", "--porcelain"], text=True).splitlines() if l]
+    procesadas = [s_["trade_date"] for s_ in ses]
+    run_id = make_run_id(head_commit, claves, a.max_sesiones)
+
+    # ATJ-15: cada metrica declara SU poblacion. price-rounding usa las sesiones
+    # procesadas; memoria usa las elegibles. No son el mismo denominador y no pueden
+    # compartir un unico `n_sesiones`.
     out = dict(
-        schema_version=SCHEMA_VERSION, outcomes_accessed=False, pnl_accessed=False,
-        holdout_included=False, n_sesiones=len(ses), n_nulo=N_NULO, semilla=SEMILLA,
+        schema_version=SCHEMA_VERSION,
+        run_id=run_id,
+        run_scope=run_scope,
+        publishable=publishable,
+        max_sesiones_arg=a.max_sesiones,
+        outcomes_accessed=False, pnl_accessed=False, holdout_included=False,
+
+        # --- lineage de denominadores (ATJ-15) --------------------------------
+        conteos=dict(
+            n_universe_discovered=len(universo),
+            n_selected=len(claves),
+            n_available=len(claves) - len(faltantes),
+            n_processed=len(redondos),
+            n_eligible_rounding=len(redondos),
+            n_eligible_memory=len(ses)),
+        eligibility_rule=dict(
+            rounding="toda sesion con >=1 tick cargado",
+            memory=">=%d zonas con ancho > 0 tras excluir altura 0" % MIN_ZONAS_MEMORIA),
+        missing_items=faltantes,
+        excluded_items=excluidas,
+        poblaciones=dict(
+            P_PROCESSED=dict(id="P_PROCESSED", n=len(redondos),
+                             trade_dates=trade_dates_redondeo),
+            P_ELIGIBLE_MEMORY=dict(id="P_ELIGIBLE_MEMORY", n=len(ses),
+                                   trade_dates=procesadas)),
+
+        # --- metodo Monte Carlo ------------------------------------------------
+        montecarlo=dict(B=N_NULO, seed=SEMILLA,
+                        method="(1 + count(null >= observed)) / (B + 1)",
+                        p_minimo_posible=round(p_minimo_posible(N_NULO), 7),
+                        referencia="North, Curtis & Sham 2002"),
+
+        # --- alias deprecado: sin consumidores en codigo, solo en docs ---------
+        n_sesiones=len(ses),
+        n_sesiones_DEPRECATED=("alias de conteos.n_eligible_memory. Ambiguo: no distingue "
+                               "universo, seleccionadas, procesadas ni elegibles. No usar "
+                               "en artefactos nuevos."),
+        n_nulo=N_NULO, semilla=SEMILLA,
+
         agrupamiento_en_numeros_redondos=dict(
+            population_id="P_PROCESSED",
+            numerator="ticks con resto r modulo 4",
+            denominator="todos los ticks de las %d sesiones procesadas" % len(redondos),
             nota=("fraccion de ticks por resto modulo 4 (1 punto = 4 ticks). Sin "
                   "preferencia, cada resto daria 0,25. Medido sobre el dato, no citado"),
             resto_0_punto_entero=round(float(R[:, 0].mean()), 4),
@@ -170,23 +277,35 @@ def main():
             resto_3=round(float(R[:, 3].mean()), 4),
             exceso_sobre_uniforme_pp=round(float((R[:, 0].mean() - 0.25) * 100), 2)),
         nulo_viejo=dict(
-            descripcion="precio de tick suelto: MAL ESPECIFICADO, le falta el +ancho/2",
+            estado="NON_INTERPRETABLE_LEGACY_DIAGNOSTIC",
+            descripcion=("precio de tick suelto: MAL ESPECIFICADO, le falta el +ancho/2. "
+                         "Se conserva solo como contraste del efecto de la correccion; "
+                         "NO se interpreta como resultado"),
+            population_id="P_ELIGIBLE_MEMORY",
+            numerator="sesiones con p_max < 0,05", denominator="sesiones elegibles",
             p_mediana=round(float(np.median(pv)), 4),
             frac_sesiones_p_menor_005=round(float(np.mean(pv < 0.05)), 4)),
         nulo_corregido=dict(
             descripcion=("mid construido igual que el real: precio operado al azar mas "
                          "el MISMO ancho de la zona"),
+            population_id="P_ELIGIBLE_MEMORY",
+            numerator="sesiones con p_max < 0,05", denominator="sesiones elegibles",
             p_mediana=round(float(np.median(pn)), 4),
             frac_sesiones_p_menor_005=round(float(np.mean(pn < 0.05)), 4)),
         efecto_de_diseno=dict(
             formula="DEFF = 1 + (m-1)*rho ; N_efectivo = N / DEFF",
+            population_id="P_ELIGIBLE_MEMORY",
             zonas_por_sesion_media=round(m_bar, 1),
-            nota=("rho hay que estimarlo por metrica; aca se publica m para que "
-                  "cualquier intervalo futuro lo aplique. Con m=%.0f, un rho tan chico "
-                  "como 0,05 ya da DEFF=%.1f" % (m_bar, 1 + (m_bar - 1) * 0.05))),
-        procedencia=dict(head_commit=subprocess.check_output(
-            ["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True).strip(),
-            archivos_sucios=sorted(sucios)),
+            estado="INFERRED_NOT_VERIFIED",
+            nota=("rho NO fue estimado. Se publica m para que cualquier intervalo futuro "
+                  "lo aplique. Con m=%.0f, un rho tan chico como 0,05 ya da DEFF=%.1f. "
+                  "No usar N/DEFF como N efectivo medido."
+                  % (m_bar, 1 + (m_bar - 1) * 0.05))),
+        procedencia=dict(head_commit=head_commit,
+                         arbol_limpio=not bool(sucios),
+                         archivos_sucios=sorted(sucios),
+                         snapshot=str(SNAPSHOT), contrato=CONTRATO,
+                         comando=" ".join(sys.argv)),
         sesiones=ses)
     pathlib.Path(a.out).write_text(json.dumps(out, indent=1), encoding="utf-8")
 
@@ -199,6 +318,13 @@ def main():
           % (np.median(pv), 100 * np.mean(pv < 0.05)))
     print("     nulo CORREGIDO  p mediana %.4f   p<0,05 en %.0f%% de las sesiones"
           % (np.median(pn), 100 * np.mean(pn < 0.05)))
+    print("  CONTEOS  universo %d -> seleccionadas %d -> disponibles %d -> "
+          "procesadas %d -> elegibles memoria %d"
+          % (out["conteos"]["n_universe_discovered"], out["conteos"]["n_selected"],
+             out["conteos"]["n_available"], out["conteos"]["n_processed"],
+             out["conteos"]["n_eligible_memory"]))
+    print("  faltantes %d   excluidas %d   run_id %s   scope %s"
+          % (len(faltantes), len(excluidas), run_id, run_scope))
     print("\n  3. EFECTO DE DISENO: m = %.0f zonas/sesion  ->  con rho=0,05 DEFF=%.1f, "
           "N_ef = N/%.1f" % (m_bar, 1 + (m_bar - 1) * 0.05, 1 + (m_bar - 1) * 0.05))
     print("  escrito %s" % a.out)
