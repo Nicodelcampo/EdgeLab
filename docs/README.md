@@ -13,7 +13,8 @@
 | L0 | Estado vivo, una página, con gate | `CURRENT.md` |
 | L1 | Board de decisiones | `../PENDIENTE.md` |
 | L1 | Contrato Notion ↔ repo | `TRACEABILITY.md` |
-| L1 | Research en frío (8 paths) | `research/LEER.md` |
+| L1 | Embudo de evidencia y atajos válidos | `research_funnel_playbook.md` |
+| L1 | Research en frío (9 paths) | `research/LEER.md` |
 | L2 | Canal y auditorías | `audits/` |
 | L2 | Research: hipótesis y mediciones | `research/` |
 | L3 | Catálogo Notion ↔ repo | `notion/CATALOG.md` |
@@ -42,10 +43,10 @@
 
 **Vivos hoy:** los de la cadena de entrada (arriba) más los contratos y referentes
 estables que el board cita: `NORTH_STAR.md`, `DECISIONES_2026-08-15.md`,
-`PLAN_RUTA_A_UNA_CUENTA_2026-08-18.md`, `edge_validation_contract.md`,
-`promotion_registry.md`, `kernel_contract.md`, `nt8_bridge.md`,
-`nt8_indicator_parity_contract.md`, `holdout_access_log.md`, y los manifiestos de
-datos (`datos_manifiesto.json`, `oraculos_manifiesto.json`).
+`PLAN_RUTA_A_UNA_CUENTA_2026-08-18.md`, `research_funnel_playbook.md`,
+`edge_validation_contract.md`, `promotion_registry.md`, `kernel_contract.md`,
+`nt8_bridge.md`, `nt8_indicator_parity_contract.md`, `holdout_access_log.md`, y
+los manifiestos de datos (`datos_manifiesto.json`, `oraculos_manifiesto.json`).
 
 **Etapa forense (julio → 10-ago), archivo:** los `ESTADO_*`, `REPORTE_*`,
 `*_RESULTADO_2026-08-10.md`, `P0.*`, `P2_*`, `SCRATCHPAD_*`, `MIGRACION_*`,

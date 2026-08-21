@@ -5,6 +5,9 @@
 > las citas por path + blob que el canal ya selló (regla 3).
 > **Enmienda 2026-08-19:** L3 es `docs/notion/CATALOG.md`. `catalog.json` y
 > `docs/notion/snapshots/` **no existen** — no se citan como si existieran.
+> **Enmienda 2026-08-21:** `docs/research_funnel_playbook.md` entra a L1 como
+> práctica transversal. Organiza muerte barata, reutilización, discovery y
+> freeze; no reemplaza los contratos G0–G5 ni autoriza outcomes.
 
 ## 1 · El problema que esto cierra
 
@@ -42,16 +45,17 @@ nosotros mismos — el nombre de la carpeta no es la identidad; el blob sí.
 ## 3 · Capas (quién manda)
 
 ```
-L0  docs/CURRENT.md              ← una sesión nueva empieza acá
-L1  PENDIENTE.md                 ← board = registro de decisiones
-    docs/DECISIONES_*.md         ← actas
-    docs/NORTH_STAR.md           ← referente (hasheado)
-    docs/audits/CANAL_AUDITOR.md ← índice del canal
-    docs/research/LEER.md        ← 8 paths de research, no el directorio
-L2  docs/audits/ENTRADA_*.md     ← canal 006+ (texto canónico)
-    docs/research/H_Z2A_V4_*.md  ← línea viva
-L3  docs/notion/CATALOG.md       ← mapa Notion ↔ repo (markdown, no catalog.json)
-L4  páginas Notion               ← timbre / redacción / lectura humana
+L0  docs/CURRENT.md                     ← una sesión nueva empieza acá
+L1  PENDIENTE.md                        ← board = registro de decisiones
+    docs/DECISIONES_*.md                ← actas
+    docs/NORTH_STAR.md                  ← referente (hasheado)
+    docs/audits/CANAL_AUDITOR.md        ← índice del canal
+    docs/research/LEER.md               ← 9 paths de research, no el directorio
+    docs/research_funnel_playbook.md    ← embudo y atajos transversales
+L2  docs/audits/ENTRADA_*.md            ← canal 006+ (texto canónico)
+    docs/research/H_Z2A_V4_*.md         ← línea viva
+L3  docs/notion/CATALOG.md              ← mapa Notion ↔ repo (markdown, no catalog.json)
+L4  páginas Notion                      ← timbre / redacción / lectura humana
 ```
 
 Si L4 y L1 divergen, manda L1. Si L3 y L2 divergen, manda L2 (el markdown
@@ -103,6 +107,10 @@ y `L3` (H-Z2A v2). Son ejes distintos a propósito: “¿manda?” ≠ “¿la l
    atrás del HEAD, o si un path entre backticks no existe. No convierte el
    archivo en computado: convierte «quedó viejo» de invisible en ruidoso.
    No relajar el test: actualizar CURRENT o asentar el P-NN.
+9. **Toda línea nueva con combinaciones o screening cita el playbook EF.** Debe
+   declarar su etapa (`EF0-A…EF5`), qué puede excluir y si accede a outcomes.
+   Citar el playbook no concede un gate G ni sustituye manifiesto, paridad,
+   autorización o firewall de holdout.
 
 ## 6 · Qué queda para después (no bloquea esto)
 

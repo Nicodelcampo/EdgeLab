@@ -13,5 +13,6 @@ Una sesión nueva **no** abre `docs/research/`. Si algo de ahí contradice a
 | 6 | Ciclo cerebro (idea, no a construir) | `docs/research/CICLO_CEREBRO_Y_SESION_2026-08-19.md` |
 | 7 | Manifiesto v1 **SUSPENDIDO** | `docs/research/H_Z2A_MANIFIESTO_NUMERICO_2026-08-18.md` |
 | 8 | Costos | `docs/research/LEDGER_COSTOS_CAP3_2026-08-18.md` |
+| 9 | Embudo y atajos transversales | `docs/research_funnel_playbook.md` |
 
 El resto es archivo. No se mueve ni se borra.
