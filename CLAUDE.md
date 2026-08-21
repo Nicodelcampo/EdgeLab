@@ -35,11 +35,21 @@ Recordatorios:
   probabilidad de detectar edges reales y rechazar falsos antes de arriesgar
   capital.
 
-## Estado vigente (2026-08-15)
+## Estado vigente (2026-08-21)
 
-> Punto de entrada operativo: `docs/research/HANDOFF_AUDITORIA_2026-08-14.md`
-> + `PENDIENTE.md` (P-01…P-27) + `docs/research/PRECHECK_HOLDOUT_2026-08-15.md`.
-> Rama viva: `research/bigtrap2-local-displacement-null`.
+> **Punto de entrada operativo: `docs/research/HANDOFF_2026-08-21_ESTADO_COMPLETO.md`.**
+> Está escrito para continuar el proyecto **sin acceso a la conversación que lo produjo**.
+> Se lee junto a `docs/research/HFT_ZONAS_ES_MEDIDO_Y_NO_MEDIDO.md` (registro vivo de qué
+> está medido y qué no), `docs/research_funnel_playbook.md` (prácticas transversales
+> ATJ-01…ATJ-16) y `PENDIENTE.md`.
+> Rama viva: `foundation/f0b-compatibility-probe`.
+
+**Familia HFTZones sobre ES — cinco mediciones, ninguna positiva.** Estado formal:
+`SIN EFECTO DETECTADO, NO CERRADA`. La condición de cierre pre-registrada exigía
+equivalencia en los tres terciles de volatilidad y **sólo uno la alcanzó**: `bajo` y
+`alto` quedaron **sin potencia** (MDE 14,5 y 9,6 contra un margen de 7,91). Lo que falta
+para cerrarla es **dato, no análisis** (P-53: el límite es N).
+Holdout **intacto**. Detector `HFTZonesESPureV2Flat` **no modificado**.
 
 - H1 está muerta; el veredicto fue sobre **6E**, no se transporta a otros instrumentos.
 - BigTrap2 como función de soporte/resistencia: refutado (~96% de ruptura, invariante a los 12 parámetros del indicador).
@@ -226,7 +236,10 @@ selecciona por P&L máximo aislado.
 ## Punteros
 
 - `docs/NORTH_STAR.md` — referente canónico (fuente de verdad).
-- `docs/research/HANDOFF_AUDITORIA_2026-08-14.md` — **punto de entrada operativo vigente**.
+- `docs/research/HANDOFF_2026-08-21_ESTADO_COMPLETO.md` — **punto de entrada operativo vigente**.
+- `docs/research/HFT_ZONAS_ES_MEDIDO_Y_NO_MEDIDO.md` — registro vivo MEDIDO / NO MEDIDO.
+- `docs/research_funnel_playbook.md` — prácticas transversales ATJ-01…ATJ-16.
+- `docs/research/HANDOFF_AUDITORIA_2026-08-14.md` — histórico, **superado**.
 - `PENDIENTE.md` — board de decisiones abiertas, P-01…P-27. Se lee siempre junto al handoff.
 - `docs/research/F27_F210_CIERRE_Y_HERRAMIENTAS_2026-08-13.md` — acta del cierre de
   BigTrap2 como imán, y las herramientas que quedan reutilizables.
@@ -246,11 +259,16 @@ selecciona por P&L máximo aislado.
 `.venv` (Python 3.12) desde `requirements/core-bridge-dev.lock`. Suite:
 `.venv\Scripts\python -m pytest tests -m "not vectorbt" -q`.
 
-**Ramas (reordenado 2026-08-15).** Branch de trabajo:
-`research/bigtrap2-local-displacement-null`.
+**Ramas (reordenado 2026-08-21).** Branch de trabajo:
+`foundation/f0b-compatibility-probe`.
 
-`foundation/f0b-compatibility-probe` queda como **rama de integración, mantenida por
-fast-forward** sobre la rama de trabajo — no se le commitea directo, se la avanza.
+Se corrige la declaración anterior, que nombraba `research/bigtrap2-local-displacement-null`
+como rama de trabajo mientras **todo** el trabajo real ocurría en `foundation`: al
+2026-08-21, 17 de los últimos 18 commits eran directos a `foundation`. La regla y la
+práctica llevaban días divergiendo — la misma familia de falla que
+`docs/AVISO_DIVERGENCIA_DE_RAMAS_2026-08-06.md` describe. Ahora la declaración dice lo
+que efectivamente pasa.
+
 `main` = baseline original, no mergear.
 
 > La frase «Branch de trabajo:» de arriba **la parsea `tools/estado.py`**
