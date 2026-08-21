@@ -206,6 +206,47 @@ Declarado como no implementado, en vez de inventado: `scheduled_news`
 
 ---
 
+## H-ES-CTX-2 — el contexto no rescata la familia, y dos celdas quedan sin potencia
+
+`docs/research/h_es_ctx2_condicionado.json` · `run_id fe483af4ad20e31a` ·
+pre-registro congelado **antes** de correr. 7.057 pares, 62 sesiones, B = 10.000.
+
+| celda | n | ses | punto | IC 95 % | **MDE** | p (Holm) | equivalencia |
+|---|---|---|---|---|---|---|---|
+| `pct_rv` bajo | 883 | 57 | +3,500 | [0,000 · +20,250] | **14,47** | 1,00 | ❌ sin potencia |
+| `pct_rv` medio | 1.807 | 56 | +0,000 | [−2,667 · +0,667] | 2,38 | 1,00 | ✅ |
+| `pct_rv` alto | 3.561 | 58 | +4,500 | [0,000 · +13,400] | **9,58** | 1,00 | ❌ sin potencia |
+| primera 5 s | 4.767 | 62 | +2,500 | [0,000 · +9,750] | 6,97 | — | ❌ sin potencia |
+| no primera | 2.290 | 59 | +0,000 | [0,000 · +5,000] | 3,57 | — | ✅ |
+| TODAS | 7.057 | 62 | +0,667 | [0,000 · +6,250] | 4,47 | — | ✅ |
+
+**Ningún contexto muestra efecto**: `p` de Holm = 1,00 en los tres terciles.
+
+### Lo que el MDE evitó
+
+Sin el MDE publicado antes, `bajo +3,500` y `alto +4,500` se leerían como *«hay algo
+en los extremos»* y arrancaría una cacería. El MDE dice lo contrario: en esas celdas
+**no se puede ver nada menor a 14,5 y 9,6**, contra un margen de 7,91. Los puntos no
+son un hallazgo — son ruido dentro de un intervalo demasiado ancho.
+
+La causa no es sólo el n: `alto` tiene 3.561 pares y aun así MDE 9,58. **Es
+dispersión**: cuando el mercado está agitado, el costo de cruzar varía mucho más.
+
+### La condición de cierre NO se cumplió
+
+El pre-registro decía: *«los tres terciles dan equivalencia dentro de ±7,91 → el
+contexto no separa nada y la familia queda cerrada»*. **Sólo uno de tres la alcanzó.**
+
+Entonces, en estricto rigor: **la familia no cierra formalmente.** Tampoco muestra
+nada. El estado correcto es **«sin efecto detectado, con dos celdas sin potencia
+suficiente para afirmar equivalencia»**.
+
+Cerrarla del todo exigiría **más sesiones** — es decir, otra exportación de oráculo
+desde NT8. Es la restricción que P-53 ya había nombrado: **el límite es N, no el
+modelo.**
+
+---
+
 ## MEDIDO — y vivo
 
 | qué | resultado |
