@@ -20,7 +20,7 @@ Snapshot congelado `runs/oraculo_espurev2flat_ES_snapshot.sqlite`, sha256 `a7dec
 | **Imán de zona / revisita** | cerrado en F2.7–F2.10 | 6E, 201 sesiones, 15.947 zonas |
 | **Retorno a la zona** | pasa el 99,7 % de las veces; **control inválido** | ES Flat — ver retractación |
 | **Tasa de volumen dentro → excursión** | ρ ≈ 0 dentro de sesión, terciles sin ordenar | ES V2 (población sesgada) |
-| **Costo de cruce borde a borde** | delta pareada +0,0 en 5 métricas; la zona gana < 50 % | ES Flat, 7.543 pares. **ALCANCE RECORTADO POR R2**: el estimando NO cubre zonas anchas ni Asia/Europa — ver abajo. Pendiente: CI cluster-bootstrap y test de equivalencia |
+| **Costo de cruce borde a borde** | **EQUIVALENCIA DECLARADA** por R3: +0,583 `ticks/ancho`, IC95 [0,000 · 6,250], IC90 dentro de ±7,91 | ES Flat, 7.058 pares, 62 sesiones. **Alcance: sólo el soporte común** — no cubre zonas anchas ni Asia/Europa (R2) |
 
 ### Retractación vigente (2026-08-20)
 El control **«espejo»** de *retorno a la zona* y de *tasa de volumen* está **degenerado**.
@@ -124,6 +124,56 @@ justificaba porque fuera de RTH las zonas son más anchas. **Es exactamente la c
 el emparejamiento falla más, y falla por ancho.** Medir esa celda con este control sería
 medir su cola angosta. `H-ES-CTX-1` sigue en `DRAFT_NOT_FROZEN`; esto agrega una razón
 independiente a las cinco de la auditoría.
+
+---
+
+## R3 — el costo de cruce queda cerrado por equivalencia `MEASURED_COMMITTED`
+
+`docs/research/r3_inferencia_cruce_es.json` · protocolo congelado **antes** de correr
+(`R3_INFERENCIA_CLUSTERIZADA_PROTOCOLO.md`). Bootstrap de **sesiones completas**,
+B = 10.000, seed 20260821, 7.058 pares en 62 sesiones.
+
+| | valor |
+|---|---|
+| punto (`ticks_por_ancho`) | **+0,583** |
+| IC 95 % | [+0,000 · +6,250] — **cruza cero** |
+| sesión-ponderada | +1,650 — **mismo signo** |
+| margen declarado | ±7,91 (5 % de la mediana del control) |
+| IC 90 % | [+0,000 · +5,500] |
+| **TOST** | ✅ **equivalencia** — el IC entra entero |
+
+Es la primera vez en esta familia que un nulo se afirma **con margen** en vez de por
+ausencia de significancia. Secundarias, todas cruzando cero: `ticks` +1,00 [0 · 14],
+`ms` +0,00 [0 · 106], `volumen` +4,50 [0 · 22], `vol_por_ancho` +2,00 [0 · 11].
+
+### Las cuatro sensibilidades, y la que hay que mirar
+
+| variante | punto | IC 95 % | n |
+|---|---|---|---|
+| S1 orden inverso | +0,000 | [+0,000 · +4,550] | 7.083 |
+| S1 permutado | +0,000 | [+0,000 · +5,167] | 7.063 |
+| **S2 sólo controles anteriores** | +0,000 | **[−4,000 · +0,000]** | **2.778** |
+| S3 con reemplazo | +0,000 | [+0,000 · +3,535] | 7.524 |
+| S4 separación ≤ 5 min | +0,000 | [+0,000 · +3,500] | 6.043 |
+
+**S2 es la que merece atención.** Restringir a controles **causales** —anteriores a su
+zona— deja sólo 2.778 pares, porque el 60,9 % de los controles venía del futuro, y el
+intervalo se **da vuelta**: pasa de [0 · +6,25] a [−4,00 · 0]. Los dos contienen cero y
+los dos puntos son 0, así que el signo no cambia formalmente — pero la asimetría es
+real y queda registrada. **Si alguna vez se quiere una versión live-compatible de esta
+medición, S2 es la única admisible**, y sobre ella la evidencia es más débil.
+
+### Tres límites que viajan con el resultado
+
+1. **El soporte.** Sólo zonas con control: 81,7 %, ancho mediano 3,28 contra 7,76 de las
+   excluidas. **No dice nada sobre zonas anchas ni sobre Asia/Europa.**
+2. **El margen no es económico.** `ticks_por_ancho` cuenta operaciones por unidad de
+   ancho, no dinero. Es relevancia práctica, no rentabilidad. Un margen económico exige
+   reglas de entrada/salida, sizing, fricción estimada **para ES** y fills — nada existe.
+3. **Procedencia.** El artefacto declara `arbol_limpio: false` con 20 archivos sucios:
+   son **`.md` ajenos con diferencias sólo de fin de línea** (CRLF↔LF), verificado con
+   `--ignore-cr-at-eol`. **Ningún `.py` entre ellos.** Se publica el hecho en vez de
+   maquillarlo.
 
 ---
 
