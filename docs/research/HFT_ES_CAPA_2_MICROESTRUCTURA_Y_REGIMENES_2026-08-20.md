@@ -301,6 +301,17 @@ con nombre distinto y prohibida para evaluación predictiva.
 
 ## 5. R2 — auditoría obligatoria del matching antes de buscar contextos
 
+> **EJECUTADO 2026-08-21** — `docs/research/r2_matchability_es.json`, target-free.
+> Resultado: **el emparejamiento no es neutral.** El 18,3 % sin control está sesgado a
+> zonas **anchas** (SMD del ancho **−1,067**: 3,28 vs 7,76 ticks) y por eso a
+> **Asia** (cobertura 0,448) y **Europa** (0,531) frente a RTH (0,86). 13 de 17
+> covariables fuera de |SMD| < 0,10. El greedy es inestable: 38,1 % de las asignaciones
+> cambian al invertir el orden. El 60,9 % de los controles es posterior a su zona.
+>
+> **Se cumple el escenario que esta sección anticipaba**: el nulo agregado no representa
+> esas subpoblaciones, así que hay que redefinir el soporte o limitar el estimando.
+> Detalle en `HFT_ZONAS_ES_MEDIDO_Y_NO_MEDIDO.md`.
+
 Población conocida:
 
 - 9.234 zonas elegibles para cruce;

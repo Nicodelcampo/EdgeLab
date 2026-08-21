@@ -20,7 +20,7 @@ Snapshot congelado `runs/oraculo_espurev2flat_ES_snapshot.sqlite`, sha256 `a7dec
 | **Imán de zona / revisita** | cerrado en F2.7–F2.10 | 6E, 201 sesiones, 15.947 zonas |
 | **Retorno a la zona** | pasa el 99,7 % de las veces; **control inválido** | ES Flat — ver retractación |
 | **Tasa de volumen dentro → excursión** | ρ ≈ 0 dentro de sesión, terciles sin ordenar | ES V2 (población sesgada) |
-| **Costo de cruce borde a borde** | delta pareada +0,0 en 5 métricas; la zona gana < 50 % | ES Flat, 7.542 pares emparejados, control casi-zona. Pendiente: CI cluster-bootstrap, test de equivalencia, perfil del 18,3 % sin control |
+| **Costo de cruce borde a borde** | delta pareada +0,0 en 5 métricas; la zona gana < 50 % | ES Flat, 7.543 pares. **ALCANCE RECORTADO POR R2**: el estimando NO cubre zonas anchas ni Asia/Europa — ver abajo. Pendiente: CI cluster-bootstrap y test de equivalencia |
 
 ### Retractación vigente (2026-08-20)
 El control **«espejo»** de *retorno a la zona* y de *tasa de volumen* está **degenerado**.
@@ -70,6 +70,63 @@ ES**, así que no es confundidor de la memoria de nivel. Verificado sobre el dat
 
 ---
 
+## R2 — el emparejamiento no es neutral `MEASURED_COMMITTED`
+
+`docs/research/r2_matchability_es.json` · 9.235 zonas, 334.924 casi-zonas, 62 sesiones,
+`run_id` en el artefacto. **Target-free: no mira outcomes.**
+
+**El 18,3 % que no consigue control no es una muestra al azar.** Es sistemáticamente
+distinto, y en la dimensión que más importa:
+
+| covariable | matched | unmatched | SMD | KS |
+|---|---|---|---|---|
+| **ancho (ticks)** | 3,28 | **7,76** | **−1,067** | 0,546 |
+| pasos | 181,5 | 298,0 | −0,841 | 0,392 |
+| valid_steps | 176,4 | 289,1 | −0,837 | 0,388 |
+| volumen total | 342,1 | 514,7 | −0,553 | 0,301 |
+| ticks previos 5 min | 18.965 | 12.913 | +0,507 | 0,274 |
+
+**13 de 17 covariables quedan fuera de |SMD| < 0,10.** El emparejamiento por ancho exacto
+descarta preferentemente las zonas **anchas, largas y de mucho volumen**, porque una zona
+ancha tiene pocas casi-zonas de su mismo ancho (1.020 candidatos de mediana contra 34).
+
+**Y eso se proyecta sobre la fase**, porque en Asia/Europa las zonas son anchas:
+
+| fase | cobertura | peso en matched | peso en unmatched |
+|---|---|---|---|
+| **asia** | **0,448** | 0,018 | **0,100** |
+| **europa** | **0,531** | 0,026 | **0,102** |
+| premarket | 0,719 | 0,037 | 0,065 |
+| cierre | 0,736 | 0,045 | 0,073 |
+| rth_pm | 0,849 | 0,496 | 0,394 |
+| rth_am | 0,863 | 0,377 | 0,267 |
+
+Asia pierde **más de la mitad** de sus zonas y pesa 5,5× más entre las descartadas.
+
+### Tres propiedades del emparejamiento, medidas en vez de asumidas
+
+| propiedad | resultado |
+|---|---|
+| **inestabilidad del greedy** | invirtiendo el orden cambia el **38,1 %** de las asignaciones; con permutación aleatoria, el **27,1 %** |
+| **controles del futuro** | el **60,9 %** de los controles es POSTERIOR a su zona (el criterio usa \|Δt\|) |
+| **sin reemplazo** | cuesta 525 pares (8.068 → 7.543); reutilización máxima 11 |
+
+Separación temporal: p50 16,6 s · p95 **17,2 min** · máximo 30 min (el tope).
+Sin candidato de su ancho: 215 zonas (2,3 %).
+
+### Consecuencia, y no es menor
+
+**El nulo agregado de H-ES-CRUCE-1 no representa a las zonas anchas ni a Asia/Europa.**
+No demuestra que ahí haya efecto — obliga a **redefinir el soporte o limitar el estimando**.
+
+Y golpea de lleno al borrador `H-ES-CTX-1`: su contexto primario `C1: RTH vs FUERA` se
+justificaba porque fuera de RTH las zonas son más anchas. **Es exactamente la celda donde
+el emparejamiento falla más, y falla por ancho.** Medir esa celda con este control sería
+medir su cola angosta. `H-ES-CTX-1` sigue en `DRAFT_NOT_FROZEN`; esto agrega una razón
+independiente a las cinco de la auditoría.
+
+---
+
 ## MEDIDO — y vivo
 
 | qué | resultado |
@@ -84,34 +141,38 @@ ES**, así que no es confundidor de la memoria de nivel. Verificado sobre el dat
 
 ### Cosas que suenan medidas pero no lo están
 
-1. **Retorno y costo de cruce CONDICIONADOS a contexto.** Todo lo medido es agregado sobre
+1. **El estimando del costo de cruce sobre soporte completo.** R2 midió que el control sólo
+   existe para el 81,7 %, sesgado a zonas angostas. Falta decidir entre: (a) restringir el
+   estimando al soporte común y declararlo, (b) emparejar por ancho con tolerancia, o
+   (c) usar un control distinto para zonas anchas. **No medido.**
+2. **Retorno y costo de cruce CONDICIONADOS a contexto.** Todo lo medido es agregado sobre
    la población entera. La dispersión pareada del costo de cruce es enorme (p25 −704 /
    p75 +881 ticks) con mediana cero: la firma que P-55 describe como *dos efectos opuestos
    cancelándose*. **Un nulo agregado no es un nulo condicional.** El costo de cruce agregado
    es nulo sobre 7.542 pares, pero sin CI ni test formal de equivalencia. Pendiente:
    CI cluster-bootstrap con sesión como unidad y margen de equivalencia declarado.
-2. **Cualquier cosa direccional sobre la población V2 original.** El 92 % bajista era el
+3. **Cualquier cosa direccional sobre la población V2 original.** El 92 % bajista era el
    orden de dos `if`. Todo estadístico direccional calculado antes del parche mide eso.
-3. **Los otros instrumentos.** Todo esto es ES 03-26. **Nada** se transporta a 6E, NQ o YM
+4. **Los otros instrumentos.** Todo esto es ES 03-26. **Nada** se transporta a 6E, NQ o YM
    — ni el resultado, ni los costos, ni el presupuesto de multiplicidad.
-4. **El holdout.** 2026-07-01 → 2026-12-31 intacto. Ninguna medición de esta familia lo tocó.
+5. **El holdout.** 2026-07-01 → 2026-12-31 intacto. Ninguna medición de esta familia lo tocó.
 
 ### Cosas que nadie intentó todavía
 
-5. **Combinación con otros indicadores.** Hay catálogo (`aVolClusterPOI` con paridad
+6. **Combinación con otros indicadores.** Hay catálogo (`aVolClusterPOI` con paridad
    medida, BigTrap2, TRAPs) pero **nunca se midió co-ocurrencia** con las zonas HFT.
    Distinción que hay que sostener: **co-ocurrencia** (¿pisan el mismo terreno?) es
    target-free y se puede medir ya; **«se complementan para atraer al precio»** es un
    outcome y va después, con contexto declarado.
-6. **Zonas de otros parámetros.** Todo corre con los `SetDefaults` del `.cs`. No hay
+7. **Zonas de otros parámetros.** Todo corre con los `SetDefaults` del `.cs`. No hay
    barrido de `MinPasos`, `MinSweepTicks`, `MaxPausaMs` ni ninguno de los otros.
-7. **El lado de la zona.** Se mide la banda entera. Nunca se separó qué pasa al tocar el
+8. **El lado de la zona.** Se mide la banda entera. Nunca se separó qué pasa al tocar el
    borde superior contra el inferior, ni contra la dirección del barrido que la creó.
-8. **Ejecutabilidad.** Cero. No hay reglas de entrada/salida, ni sizing, ni fricción
+9. **Ejecutabilidad.** Cero. No hay reglas de entrada/salida, ni sizing, ni fricción
    estimada para ES, ni fills. La cadena `geometría → información → P&L bruto → edge neto`
    está frenada en el primer eslabón.
-9. **`aVolCellPOI2`**: paridad en FAIL (P-42), aparcada. No usar hasta resolverla.
-10. **Zonas vivas al cruzar el firewall**: 0 en este oráculo, verificado. Pero si se
+10. **`aVolCellPOI2`**: paridad en FAIL (P-42), aparcada. No usar hasta resolverla.
+11. **Zonas vivas al cruzar el firewall**: 0 en este oráculo, verificado. Pero si se
     regenera el oráculo con otra ventana, hay que volver a verificar.
 
 ### Cosas que el censo descriptivo SÍ está midiendo ahora (target-free, sin outcomes)
