@@ -1,5 +1,29 @@
 # BigTrap2 — la paridad contra el oráculo de 6E no es alcanzable, y no debería serlo
 
+> ## ⬛ CORREGIDO EL MISMO DÍA — la generalización estaba mal
+>
+> Este documento concluía que **«un oráculo de GC tendría el mismo defecto»**. Eso era una
+> **inferencia, no una medición**, y el oráculo de GC que Nico exportó horas después la
+> **refuta**.
+>
+> | | 6E **v2.0** | GC **v2.5.2** |
+> |---|---|---|
+> | `FOOTPRINT_MISMATCH` | 26.661 / 29.905 | **50 / 45.307** |
+> | tasa | **89 %** | **0,11 %** |
+>
+> La v2.5.2 **arregló la desalineación**. Su encabezado lo declara:
+> `attribution=ohlcv_unique_match`, `anchor=bounded_verified`,
+> `close_cmp=integer_half_ticks`, `tie_excluded_both_sides`. Y emite
+> `BARRA_PROCESADA`, que da la frontera exacta de cada barra.
+>
+> **Lo que sigue siendo cierto**: el 89 % de desalineación del oráculo **v2.0 de 6E** es
+> un hecho medido, y cualquier resultado histórico construido sobre ESA versión hereda el
+> ruido.
+>
+> **Lo que se retracta**: que la paridad sea inalcanzable o indeseable *en general*.
+> Con v2.5.2 es las dos cosas — alcanzable y deseable. Ver §7.
+
+
 - **Fecha**: 2026-08-21 · **Estado**: `MEASURED_COMMITTED`
 - **Alcance**: target-free. Sólo integridad del oráculo y del puerto. Sin outcomes.
 - Oráculo auditado: `oracles/BigTrap2_diag_tick25_6E_0926.csv` — 6E 09-26, tick:25,
@@ -104,3 +128,55 @@ y declararlo, no perseguir una paridad que replicaría el error.
 - Falta verificar el comportamiento con `tick_size` de GC (0,10) contra el de 6E
   (0,00005): cuatro órdenes de magnitud de diferencia es donde aparecen los errores de
   redondeo.
+
+---
+
+## 7. Paridad contra el oráculo v2.5.2 de GC — `MEASURED_COMMITTED`
+
+Oráculo: `E:\l2_parquet__Tick1.csv`, GC 12-26 tick:25, 2026-08-11 → 2026-08-21,
+**45.307 barras**, **20.488 TRAPs**, `FOOTPRINT_MISMATCH` en el **0,11 %**.
+
+### 7.1 El anclaje es lo que decide
+
+| método de alineación | TRAPs exactos |
+|---|---|
+| barras uniformes de 25 desde un índice fijo | **5,96 %** |
+| **anclaje por timestamp de cierre de cada `BARRA_PROCESADA`** | **81,15 %** |
+
+`18.505` de `18.506` barras con TRAP anclaron con timestamp **exacto**. El oráculo tiene
+5 barras cortas (largos 21, 18, 10) por frontera de sesión, y asumir 25 uniforme corre
+toda la numeración.
+
+**Los timestamps del oráculo están en hora local ART**: `+3 h` da coincidencia exacta al
+nanosegundo. Mismo hallazgo que en los exports de ES.
+
+### 7.2 El residual es de datos, no de algoritmo
+
+Sobre las 18.505 barras ancladas:
+
+| | coincidencia |
+|---|---|
+| `close` idéntico | **76,4 %** |
+| `bar_vol` idéntico | **89,6 %** |
+
+De los 3.777 eventos no exactos: **1.280 tienen volumen de barra distinto** (datos),
+**0 tienen clasificación de quote distinta**, y 2.497 quedan como «mismo dato, resultado
+distinto» — que al abrirlos resultan ser también diferencia de contenido: la barra del
+oráculo cierra un tick más abajo, lo que mueve `closeHalfTick` y cambia qué filas
+califican.
+
+**Un offset global no lo arregla**: barriendo el índice de arranque, el mejor da **6,7 %**
+de acuerdo en `close`, contra 76,4 % del anclaje por timestamp. Los dos flujos **derivan**
+entre sí, no están desfasados.
+
+Es la misma familia que en ES, donde el export de ticks y el dump NRD diferían un 0,8 %
+en conteo de trades. Acá se manifiesta como deriva de frontera de barra.
+
+### 7.3 Conclusión operativa
+
+**El puerto implementa el algoritmo correctamente.** El 81 % exacto con anclaje, y el
+0 % de discrepancia en clasificación de quote, lo confirman.
+
+Pero para medir la hipótesis de Nico **no hace falta el puerto**: el oráculo v2.5.2 ya
+entrega los 20.488 TRAPs, que son exactamente **las burbujas que él ve en el gráfico**.
+El puerto sirve para variar parámetros, no para reemplazar al oráculo.
