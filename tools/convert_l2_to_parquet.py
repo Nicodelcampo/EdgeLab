@@ -7,9 +7,15 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import sys
 import time
 from pathlib import Path
-from edgelab.data.l2 import convert_l2_session
+
+# La raiz del repo tiene que estar en sys.path: el script se invoca desde cualquier cwd
+# y sin esto falla con ModuleNotFoundError, que es lo que paso el 2026-08-21.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from edgelab.data.l2 import convert_l2_session  # noqa: E402
 
 
 def main():
