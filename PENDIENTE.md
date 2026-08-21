@@ -1754,3 +1754,34 @@ el rango de sesión, qué había antes— aunque no se usen en la primera medici
 volver a preguntar por contexto exige re-correr todo.
 
 **Alcance:** aplica a H-Z2A, H-ASIA-1, HFTZonesESPureV2 y a lo que siga.
+
+---
+
+## P-56 — fuente L2 (ES 09-26, NRD→CSV) dentro del período de holdout — cuarentena estricta target-free
+
+**Asentada 2026-08-21.** Intake: `docs/research/INTAKE_L2_ES_NRD_2026-08-21.md`. Manifiesto: `runs/intake_l2/manifest_es_sep26_l2.json` (`5a43f3a5c79f767e1bc08cf7a240ab50ad12de08f44de59fba5122e3414bcc63`).
+
+**Origen y contexto:**
+Once pares de archivos (.nrd de NinjaTrader Market Replay y .csv exportados) cubren del 2026-08-10 al 2026-08-21 (106.182.208 eventos, 5,13 GB CSV / 591 MB NRD). Todos caen íntegramente dentro de la ventana protegida de holdout (2026-07-01 → 2026-12-31).
+
+**Regla de uso (Gobernanza):**
+- **Permitido:** Auditoría forense de esquema, integridad de archivos, paridad de indicadores, verificación de relojes/timezone y cobertura macroscópica (actividad target-free).
+- **Prohibido:** Cualquier cálculo de señales, outcomes, retornos hacia adelante, P&L, correlaciones o backtests sobre estos datos sin autorización explícita y escrita de Nico.
+- **Estado de sesión 20260821:** Captura parcial de la sesión en curso (hasta 11:57:28 ART), contiene exclusivamente filas L1 (sin L2). Queda sellada tal como se encontró, sin reescribir ni completar.
+
+---
+
+## P-57 — conversor NRD→CSV (`NRDToCSV.cs`, NT8 AddOn v1.2.0) — código de procesamiento no versionado
+
+**Asentada 2026-08-21.** Intake: `docs/research/INTAKE_L2_ES_NRD_2026-08-21.md`.
+
+**Identidad del artefacto:**
+- AddOn `NRDToCSV` v1.2.0 (`NRDToCSV.cs`, sha256 `d409e751c6b6ae104a36d28d62f588301e745131b56f807b7ebf4f1842c903e5`, 18.682 bytes).
+- Paquete zip de instalación: `D:\Descargas\NRDToCSV-1.2.0.zip` (sha256 `f915fb379203e833a4d676f3b2a4b02275405167802284365003b8852afd7ae9`).
+- Mecanismo interno: invoca `NinjaTrader.Data.MarketReplay.DumpMarketDepth(instrument, fromDate, toDate, csvPath)`.
+
+**Riesgo de procedencia y deuda técnica:**
+1. **Código no versionado en repo:** El AddOn reside en `C:\Users\Usuario\Documents\NinjaTrader 8\bin\Custom\AddOns\NRDToCSV.cs` fuera del control de versiones de git. Se prohíbe re-ejecutarlo arbitrariamente o alterar los archivos CSV existentes.
+2. **Acoplamiento al reloj del sistema (ART = UTC-3):** Los timestamps generados por `DumpMarketDepth` adoptan la hora local de la máquina (ART = UTC-3), evidenciado por la coincidencia exacta de la pausa diaria de mantenimiento de CME (16:00–17:00 CDT = 18:00–19:00 ART). Cualquier conversor posterior a Parquet debe normalizar explícitamente el timezone a UTC teniendo en cuenta este offset.
+3. **Ausencia de orden intra-microsegundo:** El CSV carece de columna de secuencia del exchange CME (`seq_num`), y entre el 77 % y el 94 % de las filas comparten microsegundos idénticos.
+
