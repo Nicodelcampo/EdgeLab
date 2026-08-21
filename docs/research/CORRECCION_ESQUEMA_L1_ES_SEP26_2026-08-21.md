@@ -105,6 +105,55 @@ en `E:\NicoPro\ES SEP26\` y basta reconvertir agregando el número de línea.
 - El export de ticks cubre **2026-08-07 → 2026-08-20**; el L2, **2026-08-10 → 2026-08-21**.
   Solapan 9 sesiones completas.
 
+## 4.4 Dos defectos más, encontrados al reconvertir
+
+### El total del acta está mal sumado
+
+La tabla forense del acta declara **`106.182.208`** filas CSV. Sumando **sus propias
+cifras por sesión** da **`125.181.415`** — y ese es también el conteo de líneas real de
+los 11 CSV, verificado uno por uno.
+
+**Los números por sesión son correctos; la fila TOTAL está errada** en 18.999.207. Es un
+error aritmético del acta, no un problema de dato.
+
+### `ts_us` dependía de la versión de pandas — 1000× de error
+
+El parser hacía:
+
+```python
+pd.to_datetime(...).astype("int64") // 1000 + usec
+```
+
+| pandas | dtype | `astype(int64)` | `//1000` |
+|---|---|---|---|
+| 2.x (el sandbox) | `datetime64[ns]` | nanosegundos | **microsegundos** ✅ |
+| 3.0.3 (esta máquina) | `datetime64[us]` | microsegundos | **milisegundos** ❌ |
+
+El mismo código producía unidades distintas según la máquina. Los parquets del sandbox
+salieron bien; esta máquina los escribía en milisegundos **con el campo de microsegundos
+sumado encima**.
+
+Se detectó porque un test del fixture dio `1787101280000` donde el parquet real tenía
+`1787101200080000`. Alcanzó a reescribir 4 sesiones antes de frenar. Ningún análisis
+publicado los usó: la auditoría del reloj corrió sobre los parquets del sandbox.
+
+Corregido con conversión explícita a `datetime64[us]` y **asercion dura de rango epoch**
+que aborta si las unidades vuelven a correrse.
+
+## 4.5 Reconversión completa — `MEASURED_COMMITTED`
+
+Las 11 sesiones regeneradas desde los CSV originales, que nunca se tocaron:
+
+- **125.181.415 filas**, coincidencia **exacta** con el conteo de líneas de cada CSV
+- `source_row` presente en L1 y L2, monótono, sin huecos ni duplicados
+- `ts_us` en microsegundos verificado en las 11
+- 4,90 GB de CSV → 550 MB de parquet (−88,8 %)
+- `20260821` sin L2, como ya declaraba el acta
+
+**Los dos bloqueos de §4.1 y §4.2 quedan resueltos**, salvo el origen absoluto del reloj,
+que sigue abierto y que **deja de ser bloqueante**: L1 y L2 comparten un solo reloj entre
+sí, así que todo análisis interno del libro es válido sin resolverlo.
+
 ## 5. Estado
 
 **La materia prima es buena.** Libro de manual, trades que cuadran con el export de ticks,
