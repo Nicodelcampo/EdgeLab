@@ -38,10 +38,15 @@ versión esperada, llaves y paréntesis balanceados, y CRLF sin LF sueltos.
 |---|---|---|
 | `HFTZones2.cs` | **v2.3** | `9bdbcc8108d8dc3248bf0b23b18e2bbf53765a8a7fdfbb86ebf9f0e35f04fd32` |
 | `BigTrap2.cs` | v2.1 | `77af06eed2bba5d5367ef41a68476d04b295039411ac124492d918c0a557fbf5` |
+| `BigTrap2UniversalFill.cs` | **v1.0** | `794110f03929f22b365e5b0fa0dc269414f051a2117986984db75195fc99e071` |
 | `TickBarDiag.cs` | v1.1 | *(instrumental de diagnóstico, no de trading)* |
 | `VolTicksPOC2.cs` | v2.1 | `48e0718a055958f0b2a325cdee53517e449989c6b43ecfe50e7b4d634278845d` |
 | `aVolCellPOI2.cs` | v2.0 | `4ad4c671333c0b5c214d3d2c3d4c75a6a7dd4f616ee26bc8aaa7d31bb0ead6ed` |
 | `AACloseOpenDiffs.cs` | **v1.2** | `e4f5f17b7a2f29fe85299575a4c4ab45b88b29414cb3ef7547d9616775ed2557` |
+
+`BigTrap2UniversalFill`: cubeta fija 25 ticks sobre subserie de 1 tick. La bolita
+es el **fill** (primer tick posterior al aviso). No corona edge. Ver
+`docs/research/BIGTRAP2_UNIVERSAL_FILL.md`.
 
 ### Cambios del 2026-07-26 (barrido ULP, AUDIT-003)
 
