@@ -1,4 +1,4 @@
-// # meta indicator=BigTrap2Absorption,version=1.0
+// # meta indicator=BigTrap2Absorption,version=1.1
 //
 // BigTrap2Absorption — absorcion = flujo alto con desplazamiento bajo.
 //
@@ -9,7 +9,24 @@
 // Medido en GC DEC26 17-21 ago: 11.964 / 24.093 cubetas = 49,7 % con TRAP,
 // trap_vol mediano = 4 contratos en 1 sola fila. Eso no es un evento.
 //
-// QUE CAMBIA
+// V1.1 (2026-08-22, chat Notion) — CAMBIOS DE RENDERER, EXPORT Y LOGGER.
+// La definicion del evento NO cambio: mismo score, mismos defaults, misma
+// causalidad. El acta multimodelo todavia no cerro (falta Kimi + sintesis).
+// 1. La bolita y la banda de zona se anclan al BAR INDEX del tick de fill
+//    (CurrentBars[0] en el instante del fill), no a GetXByTime: la zona se
+//    dibuja en el punto exacto de fill en cualquier bar spec.
+// 2. Export con claves de contexto por cubeta: t_start, n_ticks, dur_ms,
+//    bid/ask y spread al cierre, d_ticks_mid, trade_date CME. Habilita el corte
+//    por horario/contexto OFFLINE en EdgeLab. Referencia de diseno y numeros:
+//    docs/research/L2_JOIN_BOUNCE_Y_CONTEXTO_2026-08-22.md
+// 3. d_ticks_mid es OBSERVABILIDAD (medido: |dPx_last - dPx_mid| p50 = 2,5
+//    ticks sobre escala mediana de 7). El score sigue usando dPx de last trade
+//    hasta que cierre el acta.
+// 4. OpenLog: nombre unico por corrida (__TW<n>[_k]), NUNCA overwrite ni append;
+//    fallo de escritura se anuncia con Print (fail-closed), no se traga la
+//    excepcion.
+//
+// QUE CAMBIA respecto del kernel viejo
 // 1. El evento deja de ser un umbral absoluto y pasa a ser un RESIDUO: cuanto
 //    flujo firmado se comio el mercado por cada tick que se movio.
 //        dFav = sign(flujo) * (close - open)  en ticks
@@ -35,9 +52,10 @@
 // - TRAP se exporta SIEMPRE que haya geometria (>= MinExportVolume), con el
 //   agregado del kernel viejo (vol / centroid / zone_lo / zone_hi / n_rows /
 //   max_ratio, campos identicos a BigTrap2) MAS los campos nuevos (a_score,
-//   a_thr, a_pass, trap_frac, signed_flow, d_ticks, run_*). Una sola corrida
-//   permite barrer q, MinStackedRows y MinTrapFrac OFFLINE y reproducir el
-//   kernel viejo exactamente desde el mismo archivo.
+//   a_thr, a_pass, trap_frac, signed_flow, d_ticks, run_*) y las claves de
+//   contexto (t_start, n_ticks, dur_ms, spread_ticks, d_ticks_mid, td).
+//   Una sola corrida permite barrer q, MinStackedRows y MinTrapFrac OFFLINE,
+//   por horario y contexto, y reproducir el kernel viejo desde el mismo archivo.
 // - ZONE_CREATED y FILL solo cuando pasan TODOS los cortes.
 // - Las cubetas residuales (cierre de sesion, bloque parcial) NO entran al
 //   historial del percentil y NO disparan: no son comparables con una completa.
@@ -70,12 +88,13 @@ namespace NinjaTrader.NinjaScript.Indicators
 {
 	public class BigTrap2Absorption : Indicator
 	{
-		private const string IND_VERSION = "1.0";
+		private const string IND_VERSION = "1.1";
 
 		private struct FpTick
 		{
 			public long Tick; public double Vol; public int Side;
 			public bool ByQuote; public DateTime Time;
+			public double Bid, Ask;
 		}
 
 		private struct BarSnap
@@ -84,11 +103,19 @@ namespace NinjaTrader.NinjaScript.Indicators
 			public long OpenTick, CloseTick;
 			public double Open, High, Low, Close, Volume;
 			public DateTime Time;
+			// v1.1: claves de contexto por cubeta (todas causales)
+			public DateTime StartTime;
+			public int NTicks;
+			public long DurMs;
+			public double BidC, AskC, SpreadCloseTicks;
+			public double MidO, MidC, DTicksMid;
+			public string TradeDate;
 		}
 
 		private struct UBubble
 		{
 			public DateTime AvailableAt;
+			public int BarIndex;
 			public double Price, ZoneLo, ZoneHi, Volume;
 			public bool IsBull;
 		}
@@ -120,12 +147,14 @@ namespace NinjaTrader.NinjaScript.Indicators
 		private readonly object bubbleLock = new object();
 		private SessionIterator _sessIter;
 		private DateTime _sessEnd = DateTime.MinValue;
+		private string _tradeDate = "";
 		private double lastTickPrice = double.NaN;
 		private int lastTickDir;
 		private int analyzeBarSeq;
 		private bool skippedFirst;
 		private int eventSeq;
 		private StreamWriter eventWriter;
+		private bool eventWriterFailed;
 		private double[] absRing;
 		private int absCount, absPos;
 		private SharpDX.Direct2D1.Brush dxBull, dxBear;
@@ -135,7 +164,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 			if (State == State.SetDefaults)
 			{
 				Name = "BigTrap2Absorption";
-				Description = "Absorcion = flujo alto con desplazamiento bajo. Percentil causal, escala-libre. Bolita en el fill.";
+				Description = "Absorcion = flujo alto con desplazamiento bajo. Percentil causal, escala-libre. Bolita y zona en el fill exacto.";
 				Calculate = Calculate.OnBarClose;
 				IsOverlay = true;
 				DisplayInDataBox = false;
@@ -235,13 +264,16 @@ namespace NinjaTrader.NinjaScript.Indicators
 			lastTickDir = side;
 
 			long tick = (long)Math.Round(price / TickSize, MidpointRounding.AwayFromZero);
-			FpTick ev = new FpTick { Tick = tick, Vol = vol, Side = side, ByQuote = byQuote, Time = tEv };
+			FpTick ev = new FpTick { Tick = tick, Vol = vol, Side = side, ByQuote = byQuote, Time = tEv, Bid = bidQ, Ask = askQ };
 
 			if (_sessEnd == DateTime.MinValue || tEv >= _sessEnd)
 			{
+				// La cubeta residual de la sesion que cierra se etiqueta con el
+				// trade_date de ESA sesion: el flush corre antes del roll.
 				if (curBlock.Count > 0) FlushBlock(true);
 				_sessIter.GetNextSession(tEv, true);
 				_sessEnd = _sessIter.ActualSessionEnd;
+				_tradeDate = _sessIter.ActualTradingDay.ToString("yyyyMMdd", CultureInfo.InvariantCulture);
 			}
 
 			FillPendings(ev);
@@ -254,25 +286,34 @@ namespace NinjaTrader.NinjaScript.Indicators
 		{
 			if (pending.Count == 0) return;
 			double px = ev.Tick * TickSize;
+			// v1.1: el ancla visual del fill es el BAR INDEX del primario en el
+			// instante del print de fill. Es el punto exacto de fill en el chart,
+			// en cualquier bar spec (tick, minuto, volumen).
+			int barIdx = CurrentBars[0];
 			lock (bubbleLock)
 			{
 				for (int i = 0; i < pending.Count; i++)
 				{
 					PendingFill p = pending[i];
 					bubbles.Add(new UBubble {
-						AvailableAt = ev.Time, Price = px,
+						AvailableAt = ev.Time, BarIndex = barIdx, Price = px,
 						ZoneLo = p.ZoneLo, ZoneHi = p.ZoneHi,
 						Volume = p.Volume, IsBull = p.IsBull });
 					LogEvent(ev.Time, "FILL", string.Format(CultureInfo.InvariantCulture,
-						"side={0};dir={1};fill_px={2};fill_at={3:o};signal_at={4:o};a_score={5}",
+						"side={0};dir={1};fill_px={2};fill_at={3:o};signal_at={4:o};a_score={5};fill_bar={6}",
 						p.IsBull ? "trapped_buyers" : "trapped_sellers",
 						p.IsBull ? "short" : "long",
-						px, ev.Time, p.SignalAt, p.Score));
+						px, ev.Time, p.SignalAt, p.Score, barIdx));
 				}
 				int excess = bubbles.Count - Math.Max(100, MaxBubblesStored);
 				if (excess > 0) bubbles.RemoveRange(0, excess);
 			}
 			pending.Clear();
+		}
+
+		private static double MidOf(FpTick e)
+		{
+			return (e.Bid > 0 && e.Ask > 0 && e.Ask >= e.Bid) ? (e.Bid + e.Ask) * 0.5 : double.NaN;
 		}
 
 		private void FlushBlock(bool residual)
@@ -334,8 +375,9 @@ namespace NinjaTrader.NinjaScript.Indicators
 			if (residual) aPass = false;
 
 			LogEvent(s.Time, "ABS_SCORE", string.Format(CultureInfo.InvariantCulture,
-				"bar={0};residual={1};signed_flow={2};d_ticks={3};a_score={4};a_thr={5};a_pass={6};n_hist={7}",
-				s.Bar, residual, signedFlow, dPx, aScore, aThr, aPass, absCount));
+				"bar={0};residual={1};signed_flow={2};d_ticks={3};a_score={4};a_thr={5};a_pass={6};n_hist={7};t_start={8:o};n_ticks={9};dur_ms={10};spread_ticks={11};d_ticks_mid={12};td={13}",
+				s.Bar, residual, signedFlow, dPx, aScore, aThr, aPass, absCount,
+				s.StartTime, s.NTicks, s.DurMs, s.SpreadCloseTicks, s.DTicksMid, s.TradeDate));
 
 			if (askMap.Count > 0 || bidMap.Count > 0)
 				ProcessBar(s, askMap, bidMap, fpVol, nQuote, nRule, signedFlow, dPx, aScore, aThr, aPass);
@@ -356,16 +398,28 @@ namespace NinjaTrader.NinjaScript.Indicators
 				vol += blk[i].Vol;
 			}
 			analyzeBarSeq++;
+			FpTick f0 = blk[0], f1 = blk[blk.Count - 1];
+			double midO = MidOf(f0), midC = MidOf(f1);
 			BarSnap s = new BarSnap {
 				Bar = analyzeBarSeq,
 				OpenTick = o, CloseTick = c,
 				Open = o * TickSize, High = mx * TickSize,
 				Low = mn * TickSize, Close = c * TickSize,
-				Volume = vol, Time = blk[blk.Count - 1].Time
+				Volume = vol, Time = f1.Time,
+				StartTime = f0.Time,
+				NTicks = blk.Count,
+				DurMs = (long)(f1.Time - f0.Time).TotalMilliseconds,
+				BidC = f1.Bid, AskC = f1.Ask,
+				SpreadCloseTicks = (f1.Bid > 0 && f1.Ask > 0 && f1.Ask >= f1.Bid)
+					? (f1.Ask - f1.Bid) / TickSize : double.NaN,
+				MidO = midO, MidC = midC,
+				DTicksMid = (double.IsNaN(midO) || double.IsNaN(midC))
+					? double.NaN : (midC - midO) / TickSize,
+				TradeDate = _tradeDate
 			};
 			LogEvent(s.Time, "BARRA_PROCESADA", string.Format(CultureInfo.InvariantCulture,
-				"bar={0};largo={1};residual={2};tape_window={3}",
-				s.Bar, blk.Count, residual, Math.Max(2, TapeWindowTicks)));
+				"bar={0};largo={1};residual={2};tape_window={3};td={4}",
+				s.Bar, blk.Count, residual, Math.Max(2, TapeWindowTicks), s.TradeDate));
 			return s;
 		}
 
@@ -527,11 +581,12 @@ namespace NinjaTrader.NinjaScript.Indicators
 			double runCentroid = hasRun && runVol > 0 ? runs[iK].WSum / runVol : 0.0;
 
 			LogEvent(s.Time, "TRAP", string.Format(CultureInfo.InvariantCulture,
-				"bar={0};side={1};vol={2};centroid={3};zone_lo={4};zone_hi={5};n_rows={6};max_ratio={7};close={8};bar_vol={9};fp_vol={10};n_quote={11};n_rule={12};trap_frac={13};signed_flow={14};d_ticks={15};a_score={16};a_thr={17};a_pass={18};side_match={19};n_runs={20};run_vol={21};run_rows={22};run_frac={23};run_lo={24};run_hi={25};run_centroid={26};available_at={27:o}",
+				"bar={0};side={1};vol={2};centroid={3};zone_lo={4};zone_hi={5};n_rows={6};max_ratio={7};close={8};bar_vol={9};fp_vol={10};n_quote={11};n_rule={12};trap_frac={13};signed_flow={14};d_ticks={15};a_score={16};a_thr={17};a_pass={18};side_match={19};n_runs={20};run_vol={21};run_rows={22};run_frac={23};run_lo={24};run_hi={25};run_centroid={26};available_at={27:o};t_start={28:o};n_ticks={29};dur_ms={30};spread_ticks={31};d_ticks_mid={32};td={33}",
 				s.Bar, isBull ? "trapped_buyers" : "trapped_sellers",
 				vol, centroid, zoneLo, zoneHi, nRows, maxRatio, s.Close, s.Volume, fpVol, nQuote, nRule,
 				trapFrac, signedFlow, dPx, aScore, aThr, aPass, sideMatch,
-				runs.Count, runVol, runRows, runFrac, runZoneLo, runZoneHi, runCentroid, s.Time));
+				runs.Count, runVol, runRows, runFrac, runZoneLo, runZoneHi, runCentroid, s.Time,
+				s.StartTime, s.NTicks, s.DurMs, s.SpreadCloseTicks, s.DTicksMid, s.TradeDate));
 
 			if (!aPass) return;
 			if (RequireFlowSideMatch && !sideMatch) return;
@@ -546,11 +601,11 @@ namespace NinjaTrader.NinjaScript.Indicators
 				CreatedBar = s.Bar, CreatedAt = s.Time, IsBull = isBull,
 				LoTick = runLoTick, HiTick = runHiTick, Volume = runVol });
 			LogEvent(s.Time, "ZONE_CREATED", string.Format(CultureInfo.InvariantCulture,
-				"zone_id={0}_{1};created_bar={0};side={2};dir={3};lo={4};hi={5};vol={6};rows={7};frac={8};a_score={9};a_thr={10};available_at={11:o}",
+				"zone_id={0}_{1};created_bar={0};side={2};dir={3};lo={4};hi={5};vol={6};rows={7};frac={8};a_score={9};a_thr={10};available_at={11:o};td={12}",
 				s.Bar, isBull ? "B" : "S",
 				isBull ? "trapped_buyers" : "trapped_sellers",
 				isBull ? "short" : "long",
-				runZoneLo, runZoneHi, runVol, runRows, runFrac, aScore, aThr, s.Time));
+				runZoneLo, runZoneHi, runVol, runRows, runFrac, aScore, aThr, s.Time, s.TradeDate));
 		}
 
 		private void UpdateZones(BarSnap s)
@@ -603,6 +658,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				thresh = vols[vols.Length - keep];
 			}
 
+			int firstBar = ChartBars.FromIndex, lastBar = ChartBars.ToIndex;
 			var oldAA = RenderTarget.AntialiasMode;
 			RenderTarget.AntialiasMode = SharpDX.Direct2D1.AntialiasMode.PerPrimitive;
 			try
@@ -610,8 +666,10 @@ namespace NinjaTrader.NinjaScript.Indicators
 				foreach (UBubble b in snap)
 				{
 					if (b.Volume < thresh) continue;
-					float x = chartControl.GetXByTime(b.AvailableAt);
-					if (float.IsNaN(x) || x < 0) continue;
+					// v1.1: ancla por BAR INDEX del tick de fill (punto exacto de fill).
+					if (b.BarIndex < firstBar || b.BarIndex > lastBar) continue;
+					float x = chartControl.GetXByBarIndex(ChartBars, b.BarIndex);
+					if (float.IsNaN(x)) continue;
 					float y = chartScale.GetYByValue(b.Price);
 					var brush = b.IsBull ? dxBull : dxBear;
 					if (brush == null) continue;
@@ -663,14 +721,31 @@ namespace NinjaTrader.NinjaScript.Indicators
 			if (absCount < absRing.Length) absCount++;
 		}
 
+		// v1.1: nombre UNICO por corrida (__TW<n>[_k]); nunca overwrite ni append.
+		// Un log pisado o mezclado destruye evidencia (ya paso: 2026-07-25 y
+		// 2026-08-04 en el kernel viejo). Fallo de apertura/escritura: se anuncia
+		// con Print y se corta el writer (fail-closed).
 		private void OpenLog()
 		{
 			if (string.IsNullOrWhiteSpace(EventLogPath)) return;
 			try
 			{
-				eventWriter = new StreamWriter(EventLogPath, false);
+				string dir = Path.GetDirectoryName(EventLogPath);
+				if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
+				string baseName = Path.GetFileNameWithoutExtension(EventLogPath)
+					+ "__TW" + Math.Max(2, TapeWindowTicks).ToString(CultureInfo.InvariantCulture);
+				string ext = Path.GetExtension(EventLogPath); if (string.IsNullOrEmpty(ext)) ext = ".csv";
+				string path = string.IsNullOrEmpty(dir) ? baseName + ext : Path.Combine(dir, baseName + ext);
+				for (int k = 2; File.Exists(path) && k < 1000; k++)
+					path = string.IsNullOrEmpty(dir)
+						? baseName + "_" + k.ToString(CultureInfo.InvariantCulture) + ext
+						: Path.Combine(dir, baseName + "_" + k.ToString(CultureInfo.InvariantCulture) + ext);
+				eventWriter = new StreamWriter(path, false) { AutoFlush = true };
+				eventWriterFailed = false;
+				Print("BigTrap2Absorption: escribiendo " + path);
 				eventWriter.WriteLine("# meta indicator=BigTrap2Absorption,version=" + IND_VERSION
 					+ ",attribution=self_cut_1tick,classifier=bidask_then_tickrule"
+					+ ",export=v1.1_context_keys,fill_anchor=bar_index"
 					+ ",tape_window=" + Math.Max(2, TapeWindowTicks)
 					+ ",score_mode=" + ScoreMode
 					+ ",absorption_pct=" + AbsorptionPct.ToString(CultureInfo.InvariantCulture)
@@ -692,7 +767,13 @@ namespace NinjaTrader.NinjaScript.Indicators
 					+ ",max_age_bars=" + MaxAgeBars
 					+ ",tick_size=" + TickSize.ToString(CultureInfo.InvariantCulture));
 			}
-			catch { eventWriter = null; }
+			catch (Exception ex)
+			{
+				eventWriter = null;
+				eventWriterFailed = true;
+				Print("BigTrap2Absorption: FALLO abriendo log de eventos: " + ex.Message
+					+ " — la corrida NO produce evidencia.");
+			}
 		}
 
 		private void LogEvent(DateTime t, string type, string payload)
@@ -703,7 +784,14 @@ namespace NinjaTrader.NinjaScript.Indicators
 				eventWriter.WriteLine(string.Format(CultureInfo.InvariantCulture,
 					"{0}|{1:o}|{2}|{3}", eventSeq++, t, type, payload));
 			}
-			catch { }
+			catch (Exception ex)
+			{
+				eventWriterFailed = true;
+				try { eventWriter.Dispose(); } catch { }
+				eventWriter = null;
+				Print("BigTrap2Absorption: FALLO escribiendo eventos: " + ex.Message
+					+ " — el log quedo truncado en seq=" + eventSeq);
+			}
 		}
 
 		private SharpDX.Direct2D1.Brush ToDx(Brush b)
@@ -757,13 +845,13 @@ namespace NinjaTrader.NinjaScript.Indicators
 		[NinjaScriptProperty, Range(0, 1), Display(Name = "MinTrapFrac", GroupName = "3. Seleccion", Order = 2)]
 		public double MinTrapFrac { get; set; }
 
-		[NinjaScriptProperty, Range(0, double.MaxValue), Display(Name = "MinDeltaFilter", GroupName = "3. Seleccion", Order = 3)]
+		[NinjaScriptProperty, Range(0.0, 1000000.0), Display(Name = "MinDeltaFilter", GroupName = "3. Seleccion", Order = 3)]
 		public double MinDeltaFilter { get; set; }
 
-		[NinjaScriptProperty, Range(0, double.MaxValue), Display(Name = "MinTrapVolume (0 = apagado)", GroupName = "3. Seleccion", Order = 4)]
+		[NinjaScriptProperty, Range(0.0, 1000000.0), Display(Name = "MinTrapVolume (0 = apagado)", GroupName = "3. Seleccion", Order = 4)]
 		public double MinTrapVolume { get; set; }
 
-		[NinjaScriptProperty, Range(0, double.MaxValue), Display(Name = "MinExportVolume", GroupName = "3. Seleccion", Order = 5)]
+		[NinjaScriptProperty, Range(0.0, 1000000.0), Display(Name = "MinExportVolume", GroupName = "3. Seleccion", Order = 5)]
 		public double MinExportVolume { get; set; }
 
 		[NinjaScriptProperty, Display(Name = "InvalidationMode", GroupName = "4. Ciclo", Order = 0)]
