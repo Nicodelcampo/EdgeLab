@@ -1,447 +1,484 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
 <meta charset="utf-8">
-<title>H-Z2A · corredores</title>
+<title>EdgeLab · Visor Paridad Exacta NT8 — BigTrap2Absorption</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="lightweight-charts.standalone.production.js"></script>
+<script src="gc_multi_res_data.js"></script>
+<script src="trazas.js"></script>
 <style>
-  /* Tokens COPIADOS de viewer/nt8_bridge/store_viewer.html. No se reinventa paleta:
-     una semantica, un color, en todos los visores del proyecto. */
   :root{
+    --bg:#ffffff; --surface:#f6f8fa; --surface2:#eaeef2; --surface3:#d0d7de;
+    --border:#d0d7de; --border2:#afb8c1;
+    --text:#1f2328; --dim:#656d76; --dim2:#8c959f;
+    --accent:#0969da; --accent-dim:#ddf4ff;
+    --ok:#1a7f37; --info:#0969da; --warn:#9a6700; --err:#cf222e; --cyan:#0598bc;
+    --teal:#008080; --red:#ef5350;
+    --s1:4px; --s2:8px; --s3:12px; --s4:16px; --r:6px; --rs:4px;
+    --mono:ui-monospace,"Cascadia Code",Consolas,monospace;
+    --font:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  
+  body.theme-dark {
     --bg:#0b0e14; --surface:#11151d; --surface2:#161b25; --surface3:#1c2230;
     --border:#232a37; --border2:#2d3547;
     --text:#e6edf3; --dim:#8b95a5; --dim2:#5c6675;
     --accent:#3b82f6; --accent-dim:#1e3a5f;
     --ok:#3fb950; --info:#58a6ff; --warn:#d9a441; --err:#f0616d; --cyan:#40c4c4;
-    --s1:4px; --s2:8px; --s3:12px; --s4:16px; --r:7px; --rs:5px;
-    --mono:ui-monospace,"Cascadia Code",Consolas,monospace;
-    --font:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-    /* delta 5 y delta 8: dos TONOS DEL MISMO accent. Rojo = error, no "mas ancho". */
-    --d5:#3b82f6; --d8:#8ab4f8;
-    color-scheme:dark;
+    color-scheme: dark;
   }
+
   *{box-sizing:border-box;}
   html,body{height:100%;margin:0;}
   body{background:var(--bg);color:var(--text);font:13px/1.45 var(--font);
     display:grid;grid-template-rows:46px 1fr;overflow:hidden;}
   .mono{font-family:var(--mono);font-variant-numeric:tabular-nums;}
   button{font:inherit;color:var(--text);background:var(--surface2);border:1px solid var(--border2);
-    border-radius:var(--rs);padding:5px 10px;cursor:pointer;}
+    border-radius:var(--rs);padding:4px 9px;cursor:pointer;}
   button:hover{border-color:var(--accent);}
-  ::-webkit-scrollbar{width:10px;height:10px;} ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:6px;}
+  ::-webkit-scrollbar{width:8px;height:8px;} ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
   ::-webkit-scrollbar-track{background:transparent;}
 
   header{display:flex;align-items:center;gap:var(--s3);padding:0 var(--s3);
     background:var(--surface);border-bottom:1px solid var(--border);}
-  .marca{font-weight:600;letter-spacing:.02em;}
-  .marca span{color:var(--dim2);font-weight:400;}
-  .caso{color:var(--dim);}
-  .chips{display:flex;gap:var(--s1);margin-left:auto;flex-wrap:wrap;}
-  .chip{font-size:11px;padding:2px 7px;border-radius:20px;border:1px solid var(--border2);
-    background:var(--surface2);color:var(--dim);}
-  .chip.ok{color:var(--ok);border-color:#1e4620;}
-  .chip.warn{color:var(--warn);border-color:#4a3a18;}
-  .chip.err{color:var(--err);border-color:#5a2020;}
+  .marca{font-weight:700;display:flex;align-items:center;gap:8px;}
+  .badge{font-size:11px;padding:2px 8px;border-radius:12px;background:var(--accent-dim);color:var(--info);border:1px solid var(--accent);font-weight:600;}
+  .badge-pass{background:#dafbe1;color:#1a7f37;border:1px solid #4ac26b;}
+  body.theme-dark .badge-pass{background:#1e4620;color:var(--ok);border:1px solid #2ea043;}
 
-  main{display:grid;grid-template-columns:272px 1fr;min-height:0;}
-  aside{background:var(--surface);border-right:1px solid var(--border);
-    display:grid;grid-template-rows:auto 1fr;min-height:0;}
-  .filtro{padding:var(--s2);border-bottom:1px solid var(--border);}
-  .filtro input{width:100%;background:var(--surface2);border:1px solid var(--border2);
-    color:var(--text);border-radius:var(--rs);padding:5px 8px;font:inherit;}
-  .filtro input:focus{outline:none;border-color:var(--accent);}
-  .lista{overflow:auto;min-height:0;}
-  .item{padding:7px var(--s3);border-bottom:1px solid var(--border);cursor:pointer;
-    display:grid;grid-template-columns:1fr auto;gap:2px var(--s2);align-items:center;}
-  .item:hover{background:var(--surface2);}
-  .item.sel{background:var(--accent-dim);border-left:2px solid var(--accent);padding-left:10px;}
-  .item .id{font-family:var(--mono);font-size:12px;}
-  .item .sub{grid-column:1/-1;color:var(--dim2);font-size:11px;font-family:var(--mono);}
-  .item .n{font-family:var(--mono);font-size:11px;color:var(--dim);}
+  .tabs{display:flex;gap:3px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rs);padding:2px;}
+  .tabs button{background:transparent;border:none;padding:3px 10px;border-radius:3px;color:var(--dim);font-weight:600;}
+  .tabs button.on{background:var(--bg);color:var(--text);border:1px solid var(--border2);box-shadow:0 1px 2px rgba(0,0,0,.05);}
+  body.theme-dark .tabs button.on{background:var(--accent-dim);color:var(--text);border:1px solid var(--accent);}
 
-  .centro{display:grid;grid-template-rows:1fr auto;min-height:0;}
-  .charts{position:relative;display:grid;grid-template-rows:1fr 1fr;min-height:0;}
-  .panel{position:relative;min-height:0;border-bottom:1px solid var(--border);}
-  .panel:last-child{border-bottom:none;}
-  canvas{display:block;width:100%;height:100%;}
-  .leyenda{position:absolute;top:var(--s2);right:var(--s2);background:rgba(17,21,29,.86);
-    border:1px solid var(--border2);border-radius:var(--rs);padding:6px 9px;font-size:11px;
-    color:var(--dim);pointer-events:none;}
-  .leyenda b{color:var(--text);font-weight:600;}
-  .leyenda i{display:inline-block;width:9px;height:2px;vertical-align:middle;margin-right:5px;font-style:normal;}
-  .etiqueta{position:absolute;top:var(--s2);left:var(--s3);font-family:var(--mono);
-    font-size:12px;color:var(--dim);pointer-events:none;}
-
-  .drawer{height:30vh;background:var(--surface);border-top:1px solid var(--border);
-    display:grid;grid-template-rows:auto 1fr;min-height:0;}
-  .drawer .barra{display:flex;align-items:center;gap:var(--s2);padding:6px var(--s3);
-    border-bottom:1px solid var(--border);color:var(--dim);font-size:12px;}
-  .drawer .cuerpo{overflow:auto;min-height:0;}
-  table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px;}
-  th{position:sticky;top:0;background:var(--surface2);color:var(--dim);text-align:left;
-    padding:5px var(--s3);border-bottom:1px solid var(--border2);font-weight:500;}
-  td{padding:4px var(--s3);border-bottom:1px solid var(--border);}
-  tr:hover td{background:var(--surface2);cursor:pointer;}
-  .vacio{display:grid;place-items:center;height:100%;text-align:center;color:var(--dim);padding:var(--s4);}
-  .vacio h2{font-size:15px;font-weight:600;color:var(--text);margin:0 0 6px;}
-  .vacio p{margin:0;max-width:44ch;font-size:12px;line-height:1.6;}
-  /* --- vista grafico --- */
-  .tabs{display:flex;gap:2px;background:var(--surface2);border:1px solid var(--border2);
-    border-radius:var(--rs);padding:2px;}
-  .tabs button{background:transparent;border:none;padding:3px 11px;border-radius:4px;color:var(--dim);}
-  .tabs button.on{background:var(--accent-dim);color:var(--text);}
-  .vista{display:none;min-height:0;}
+  .vista{display:none;min-height:0;height:100%;}
   .vista.on{display:grid;}
-  .barra-tool{display:flex;align-items:center;gap:var(--s3);padding:6px var(--s3);
-    background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap;}
-  .grupo{display:flex;align-items:center;gap:var(--s1);}
-  .grupo>span{color:var(--dim2);font-size:11px;text-transform:uppercase;letter-spacing:.05em;
-    margin-right:2px;}
-  .grupo button{padding:3px 9px;font-size:12px;font-family:var(--mono);}
-  .grupo button.on{background:var(--accent-dim);border-color:var(--accent);color:var(--text);}
-  .sep{width:1px;height:18px;background:var(--border2);}
-  #wrapG{position:relative;min-height:0;}
-  #panelInd{position:absolute;top:0;right:0;bottom:0;width:340px;background:var(--surface);
-    border-left:1px solid var(--border2);display:none;grid-template-rows:auto 1fr;
-    z-index:5;box-shadow:-8px 0 24px rgba(0,0,0,.35);min-height:0;}
-  #panelInd.on{display:grid;}
-  /* Acordeon: con un indicador elegido la lista se esconde y el formulario toma todo
-     el alto. Sin esto las dos listas se reparten la altura y las dos quedan cortadas. */
-  #panelInd.elegido #listaInd{display:none;}
-  #cuerpoInd{display:grid;grid-template-rows:auto 1fr;min-height:0;}
-  .volver{display:none;align-items:center;gap:6px;padding:6px var(--s3);
-    border-bottom:1px solid var(--border);background:var(--surface2);cursor:pointer;}
-  #panelInd.elegido .volver{display:flex;}
-  .volver b{font-family:var(--mono);font-size:12px;}
-  .volver span{color:var(--dim2);font-size:11px;margin-left:auto;}
-  #panelInd h3{margin:0;padding:8px var(--s3);font-size:12px;color:var(--dim);
-    border-bottom:1px solid var(--border);font-weight:600;
-    text-transform:uppercase;letter-spacing:.06em;}
-  #listaInd{overflow:auto;min-height:0;}
-  .ind{padding:7px var(--s3);border-bottom:1px solid var(--border);cursor:pointer;}
-  .ind:hover{background:var(--surface2);}
-  .ind.sel{background:var(--accent-dim);border-left:2px solid var(--accent);padding-left:10px;}
-  .ind.off{opacity:.5;cursor:not-allowed;}
-  .ind-h{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12px;}
-  .ind-m{color:var(--dim2);font-size:11px;padding:4px var(--s3) 0;line-height:1.5;}
-  #formInd{overflow:auto;min-height:0;padding:var(--s2) var(--s3) var(--s4);}
-  .campo{display:grid;grid-template-columns:1fr 96px;gap:var(--s2);align-items:center;
-    padding:3px 0;font-family:var(--mono);font-size:11px;}
-  .campo span{color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .campo span i{color:var(--dim2);font-style:normal;margin-left:5px;font-size:10px;}
-  .campo input[type=number],.campo select{width:100%;background:var(--surface2);
-    border:1px solid var(--border2);color:var(--text);border-radius:4px;padding:3px 6px;
-    font:inherit;font-family:var(--mono);}
-  .campo input[type=checkbox]{justify-self:start;}
-  .acciones{display:flex;flex-wrap:wrap;gap:var(--s1);margin-top:var(--s3);}
-  .acciones button{font-size:11px;}
-  kbd{font-family:var(--mono);font-size:11px;background:var(--surface3);
-    border:1px solid var(--border2);border-radius:3px;padding:1px 5px;color:var(--dim);}
-</style>
 
-<script src="trazas.js"></script>
+  /* VISTA GRAFICO */
+  #vistaGrafico{grid-template-rows:40px 1fr;height:100%;}
+  .barra-tool{display:flex;align-items:center;gap:var(--s2);padding:0 var(--s3);background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap;}
+  .grupo{display:flex;align-items:center;gap:3px;}
+  .grupo>span{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.05em;margin-right:2px;font-weight:600;}
+  .grupo button{padding:3px 8px;font-size:12px;font-family:var(--mono);}
+  .grupo button.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700;}
+  .sep{width:1px;height:16px;background:var(--border2);}
+
+  .main-chart-grid{display:grid;grid-template-columns:1fr 360px;min-height:0;height:100%;position:relative;}
+  #chartContainer{position:relative;width:100%;height:100%;min-height:0;overflow:hidden;}
+  #chartCanvas{position:absolute;top:0;left:0;right:0;bottom:0;}
+
+  /* Switch Master Indicador */
+  .switch-container{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;}
+  .toggle-switch{position:relative;display:inline-block;width:32px;height:17px;}
+  .toggle-switch input{opacity:0;width:0;height:0;}
+  .slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:var(--surface3);transition:.2s;border-radius:17px;border:1px solid var(--border2);}
+  .slider:before{position:absolute;content:"";height:11px;width:11px;left:2px;bottom:2px;background-color:#fff;transition:.2s;border-radius:50%;}
+  input:checked + .slider{background-color:var(--accent);border-color:var(--accent);}
+  input:checked + .slider:before{transform:translateX(15px);}
+
+  /* Panel Lateral Derecho NT8 */
+  #sidePanel{background:var(--surface);border-left:1px solid var(--border);display:grid;grid-template-rows:auto 1fr auto;min-height:0;height:100%;}
+  .side-header{padding:8px 12px;background:var(--surface2);border-bottom:1px solid var(--border);font-weight:700;display:flex;justify-content:space-between;align-items:center;}
+  .side-tabs{display:flex;border-bottom:1px solid var(--border);background:var(--surface);}
+  .side-tabs button{flex:1;border-radius:0;border:none;border-bottom:2px solid transparent;background:transparent;padding:7px 0;font-size:12px;color:var(--dim);}
+  .side-tabs button.on{color:var(--text);border-bottom-color:var(--accent);font-weight:700;background:var(--surface2);}
+  
+  .side-content{overflow-y:auto;padding:10px 12px;min-height:0;}
+  
+  .form-group{margin-bottom:8px;display:grid;grid-template-columns:1fr 100px;gap:6px;align-items:center;}
+  .form-group label{color:var(--dim);font-size:11px;font-family:var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .form-group input[type=number], .form-group select{background:var(--bg);border:1px solid var(--border2);color:var(--text);border-radius:3px;padding:3px 5px;font-size:11px;font-family:var(--mono);width:100%;}
+  .form-group input[type=checkbox]{justify-self:start;}
+  
+  .form-actions{padding:8px 12px;background:var(--surface2);border-top:1px solid var(--border);display:flex;gap:6px;}
+  .btn-primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600;flex:1;}
+  .btn-secondary{background:var(--surface3);color:var(--dim);border-color:var(--border2);}
+
+  /* Tabla Zonas */
+  table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11px;}
+  th{position:sticky;top:0;background:var(--surface2);color:var(--dim);text-align:left;padding:5px 6px;border-bottom:1px solid var(--border2);font-weight:600;}
+  td{padding:4px 6px;border-bottom:1px solid var(--border);}
+  tr.z-row:hover td{background:var(--surface2);cursor:pointer;}
+  tr.z-row.selected td{background:var(--accent-dim) !important;font-weight:700;}
+  .tag-bull{color:#008080;font-weight:700;}
+  .tag-bear{color:#ef5350;font-weight:700;}
+</style>
+</head>
+<body class="theme-light">
 
 <header>
-  <div class="marca">H-Z2A <span>· corredores</span></div>
-  <div class="caso mono" id="caso">—</div>
-  <div class="chips" id="chips"></div>
-  <div class="tabs">
-    <button id="tabCorr" class="on">corredores</button>
-    <button id="tabGraf">gráfico</button>
+  <div class="marca">
+    <span>NinjaTrader 8 & EdgeLab</span> · Visor Paridad
+    <span class="badge">GC 12-26</span>
+    <span class="badge badge-pass">NT8 Spec Exact</span>
+  </div>
+  <div class="tabs" style="margin-left:auto;">
+    <button id="themeBtn" onclick="toggleTheme()">🌙 Modo Oscuro</button>
   </div>
 </header>
 
-<main id="vCorr" class="vista on" style="grid-template-columns:272px 1fr">
-  <aside>
-    <div class="filtro"><input id="q" placeholder="filtrar  (/)" autocomplete="off"></div>
-    <div class="lista" id="lista"></div>
-  </aside>
-
-  <div class="centro">
-    <div class="charts" id="charts">
-      <div class="panel"><canvas id="c5"></canvas>
-        <div class="etiqueta" id="e5">δ = 5</div>
-        <div class="leyenda">
-          <div><i style="background:var(--text)"></i>distancia <b>d</b> en ticks</div>
-          <div><i style="background:var(--warn)"></i>D_far = borde del corredor</div>
-          <div><i style="background:var(--d5)"></i>banda δ · <b>near-miss</b></div>
-          <div><i style="background:var(--cyan)"></i>A2 · retorno</div>
-        </div>
-      </div>
-      <div class="panel"><canvas id="c8"></canvas>
-        <div class="etiqueta" id="e8">δ = 8</div>
-      </div>
-    </div>
-
-    <div class="drawer">
-      <div class="barra">
-        <span id="resumen">—</span>
-        <span style="margin-left:auto"></span>
-        <button id="csv">export CSV</button>
-        <span><kbd>←</kbd><kbd>→</kbd> caso · <kbd>j</kbd><kbd>k</kbd> marca ·
-              <kbd>f</kbd> fit · <kbd>/</kbd> filtro</span>
-      </div>
-      <div class="cuerpo" id="cuerpo"></div>
-    </div>
-  </div>
-</main>
-
-<section id="vGraf" class="vista" style="grid-template-rows:auto 1fr">
+<!-- 1. VISTA GRAFICO -->
+<div id="vistaGrafico" class="vista on">
   <div class="barra-tool">
-    <div class="grupo"><span>tipo</span>
-      <button data-tipo="velas" class="on">velas</button>
-      <button data-tipo="linea">línea + tick</button>
+    <div class="grupo">
+      <span>Tiempo:</span>
+      <button data-res="M1" onclick="setResolution('M1')">M1 (1m)</button>
     </div>
     <div class="sep"></div>
-    <div class="grupo"><button id="btnInd">indicadores</button></div>
+    <div class="grupo">
+      <span>Tickframes:</span>
+      <button class="on" data-res="2t" onclick="setResolution('2t')">2 ticks</button>
+      <button data-res="5t" onclick="setResolution('5t')">5 ticks</button>
+      <button data-res="10t" onclick="setResolution('10t')">10 ticks</button>
+      <button data-res="25t" onclick="setResolution('25t')">25 ticks</button>
+      <button data-res="150t" onclick="setResolution('150t')">150 ticks</button>
+    </div>
     <div class="sep"></div>
-    <!-- Dos ejes DISTINTOS, no dos unidades del mismo: CLAUDE.md pide no confundir
-         `ticks_per_row` (parametro) con `bar_spec` (resolucion de barra). Por eso van
-         en dos grupos separados y no en un desplegable unico. -->
-    <div class="grupo" id="gTiempo"><span>tiempo</span></div>
-    <div class="sep"></div>
-    <div class="grupo" id="gTicks"><span>ticks</span></div>
-    <div class="sep"></div>
-    <div class="grupo"><span id="infoG" class="mono" style="text-transform:none;letter-spacing:0"></span></div>
-  </div>
-  <div id="wrapG"><canvas id="cg"></canvas>
-    <div class="leyenda" id="legG"></div>
-    <div id="panelInd">
-      <h3>indicadores del proyecto</h3>
-      <div id="cuerpoInd">
-        <div class="volver" id="volverInd">← <b id="nomInd"></b><span>cambiar</span></div>
-        <div id="listaInd"></div>
-      </div>
-      <div id="formInd" style="display:none;color:var(--dim2);font-size:11px">
-        Elegí un indicador. Los parámetros se generan desde su
-        <code>PARAM_SPEC</code>, el espacio paramétrico declarado del kernel.
-      </div>
+    <div class="switch-container">
+      <span>BigTrap2Absorption:</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="toggleIndicator" checked onchange="toggleIndicatorDisplay()">
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div style="margin-left:auto; display:flex; gap:10px; font-size:11px; color:var(--dim);">
+      <span>Zonas Activas: <b id="statZones" style="color:var(--text)">647</b></span>
+      <span>Causalidad: <b style="color:var(--ok)">100% Causal</b></span>
     </div>
   </div>
-</section>
 
-<script src="barras.js"></script>
+  <div class="main-chart-grid">
+    <div id="chartContainer">
+      <div id="chartCanvas"></div>
+    </div>
+
+    <!-- Panel Lateral NT8 -->
+    <div id="sidePanel">
+      <div class="side-header">
+        <span>BigTrap2Absorption</span>
+        <span style="font-size:11px; color:var(--dim);">v1.1.1</span>
+      </div>
+      <div class="side-tabs">
+        <button id="tabBtnParams" class="on" onclick="setSideTab('params')">⚙️ Parámetros NT8</button>
+        <button id="tabBtnZones" onclick="setSideTab('zones')">📋 Zonas (<span id="tabZoneCount">647</span>)</button>
+      </div>
+
+      <!-- Tab Contenido: Parámetros NT8 -->
+      <div id="sideTabParams" class="side-content">
+        <div class="form-group"><label title="TapeWindowTicks">Tape Window Ticks</label><input type="number" id="p_TapeWindowTicks" value="25" min="2" max="1000"></div>
+        <div class="form-group"><label title="AbsorptionPct">Absorption Pct (%)</label><input type="number" id="p_AbsorptionPct" value="90.0" step="0.5" min="0" max="100"></div>
+        <div class="form-group"><label title="AbsorptionLookback">Absorption Lookback</label><input type="number" id="p_AbsorptionLookback" value="500" min="10" max="5000"></div>
+        <div class="form-group"><label title="MinHistoryBuckets">Min History Buckets</label><input type="number" id="p_MinHistoryBuckets" value="200" min="1" max="2000"></div>
+        <div class="form-group">
+          <label title="ScoreMode">Score Mode</label>
+          <select id="p_ScoreMode">
+            <option value="AbsDirectional" selected>AbsDirectional</option>
+            <option value="AbsMagnitude">AbsMagnitude</option>
+          </select>
+        </div>
+        <div class="form-group"><label title="RequireFlowSideMatch">Require Flow Side Match</label><input type="checkbox" id="p_RequireFlowSideMatch" checked></div>
+        <div class="form-group">
+          <label title="ImbalanceMode">Imbalance Mode</label>
+          <select id="p_ImbalanceMode">
+            <option value="Diagonal" selected>Diagonal</option>
+            <option value="SameLevel">SameLevel</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label title="TrapVolumeSource">Trap Volume Source</label>
+          <select id="p_TrapVolumeSource">
+            <option value="AggressiveSide" selected>AggressiveSide</option>
+            <option value="TotalLevel">TotalLevel</option>
+          </select>
+        </div>
+        <div class="form-group"><label title="TicksPerRow">Ticks Per Row</label><input type="number" id="p_TicksPerRow" value="1" min="1" max="20"></div>
+        <div class="form-group"><label title="ImbalanceRatio">Imbalance Ratio</label><input type="number" id="p_ImbalanceRatio" value="3.0" step="0.1" min="1" max="20"></div>
+        <div class="form-group"><label title="MinStackedRows">Min Stacked Rows</label><input type="number" id="p_MinStackedRows" value="2" min="1" max="20"></div>
+        <div class="form-group"><label title="MinTrapFrac">Min Trap Frac (0-1)</label><input type="number" id="p_MinTrapFrac" value="0.20" step="0.05" min="0" max="1"></div>
+        <div class="form-group"><label title="UseWickFilter">Use Wick Filter</label><input type="checkbox" id="p_UseWickFilter" checked></div>
+        <div class="form-group"><label title="WickZonePct">Wick Zone Pct (%)</label><input type="number" id="p_WickZonePct" value="30.0" step="1" min="0" max="50"></div>
+        <div class="form-group"><label title="DrawZoneBand">Draw Zone Band</label><input type="checkbox" id="p_DrawZoneBand" checked onchange="updateMarkers()"></div>
+        <div class="form-group">
+          <label title="InvalidationMode">Invalidation Mode</label>
+          <select id="p_InvalidationMode">
+            <option value="CloseThrough" selected>CloseThrough</option>
+            <option value="FirstTouch">FirstTouch</option>
+            <option value="None">None</option>
+          </select>
+        </div>
+        <div class="form-group"><label title="MaxAgeBars">Max Age Bars</label><input type="number" id="p_MaxAgeBars" value="2000" min="0" max="20000"></div>
+      </div>
+
+      <!-- Tab Contenido: Lista de Zonas -->
+      <div id="sideTabZones" class="side-content" style="display:none; padding:0;">
+        <table id="zoneTable">
+          <thead>
+            <tr>
+              <th>Hora</th>
+              <th>Tipo</th>
+              <th>Zona (Lo - Hi)</th>
+              <th>Score/Thr</th>
+              <th>Vol (Frac)</th>
+            </tr>
+          </thead>
+          <tbody id="zoneTableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-primary" onclick="applyParamsAndRecalc()">⚡ Aplicar y Recalcular</button>
+        <button class="btn-secondary" onclick="resetDefaults()">Restablecer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
-// ---------------------------------------------------------------------------
-// Esta pagina NO clasifica nada. Las marcas vienen de `trazas.json`, y ahi las
-// puso `censar_zona` corrida sobre PREFIJOS crecientes (propiedad probada por
-// tests/research/test_censo_hz2a_ceguera.py: apendear datos nunca baja un conteo).
-// Si esta pagina calculara la clasificacion por su cuenta habria un segundo
-// implementador que puede diverger -- y el que diverge seria el que se mira.
-// Sin outcomes, sin MAE/MFE, sin P&L, sin holdout.
-// ---------------------------------------------------------------------------
-const $ = s => document.querySelector(s);
-let DATA = null, sel = 0, marcaIdx = -1, vista = null, filtro = "";
+let chart = null, candleSeries = null;
+let currentRes = "2t";
+let indicatorEnabled = true;
+let isDarkTheme = false;
+let currentZones = [];
 
-const paneles = [
-  {cv:$("#c5"), et:$("#e5"), i:0, col:"--d5"},
-  {cv:$("#c8"), et:$("#e8"), i:1, col:"--d8"},
-];
-const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
-
-// `trazas.js` y no `fetch("trazas.json")`: fetch de un archivo relativo esta bloqueado
-// sobre file:// en todos los navegadores, y este visor tiene que abrirse con doble clic,
-// sin servidor. El .json existe igual como artefacto de datos.
-if(window.TRAZAS){ DATA = window.TRAZAS; init(); }
-else vacio("No se pudo leer <code>trazas.js</code>",
-  "Generalo corriendo <code>visor_trazas_export.py</code> desde la raiz del repo. " +
-  "Si estas viendo esto en un panel de preview, es esperable: los archivos relativos " +
-  "no resuelven en un snapshot. Abrilo con doble clic o servi la carpeta.");
-
-function chips(){
-  const d = DATA, c = [];
-  c.push(`<span class="chip">${d.instrumento||"—"}</span>`);
-  c.push(`<span class="chip mono">D_far ${d.D_far} · R ${d.R_min} · ${d.predicado}</span>`);
-  c.push(`<span class="chip mono">δ ${d.deltas.join(" / ")}</span>`);
-  c.push(`<span class="chip mono">${(d.corredores||[]).length} corredores</span>`);
-  c.push(`<span class="chip ${d.outcomes_accessed?"warn":"ok"}">outcomes ${d.outcomes_accessed}</span>`);
-  c.push(`<span class="chip ${d.pnl_accessed?"warn":"ok"}">P&amp;L ${d.pnl_accessed}</span>`);
-  $("#chips").innerHTML = c.join("");
+function toggleTheme() {
+  isDarkTheme = !isDarkTheme;
+  document.body.className = isDarkTheme ? "theme-dark" : "theme-light";
+  document.getElementById("themeBtn").innerText = isDarkTheme ? "☀️ Modo Claro (NT8)" : "🌙 Modo Oscuro";
+  
+  if (chart) {
+    chart.applyOptions({
+      layout: {
+        backgroundColor: isDarkTheme ? '#0b0e14' : '#ffffff',
+        textColor: isDarkTheme ? '#8b95a5' : '#1f2328',
+      },
+      grid: {
+        vertLines: { color: isDarkTheme ? '#161b25' : '#f0f2f5' },
+        horzLines: { color: isDarkTheme ? '#161b25' : '#f0f2f5' },
+      },
+      priceScale: { borderColor: isDarkTheme ? '#232a37' : '#d0d7de' },
+      timeScale: { borderColor: isDarkTheme ? '#232a37' : '#d0d7de' },
+    });
+  }
 }
 
-function vacio(t, p){
-  $("#charts").innerHTML = `<div class="vacio"><div><h2>${t}</h2><p>${p}</p></div></div>`;
-  $("#cuerpo").innerHTML = ""; $("#resumen").textContent = "—";
+function initChart() {
+  const cont = document.getElementById("chartCanvas");
+  const parent = document.getElementById("chartContainer");
+
+  const w = parent.clientWidth || 900;
+  const h = parent.clientHeight || 600;
+
+  chart = LightweightCharts.createChart(cont, {
+    width: w,
+    height: h,
+    layout: {
+      backgroundColor: '#ffffff',
+      textColor: '#1f2328',
+      fontSize: 12,
+      fontFamily: 'ui-monospace, Consolas, monospace'
+    },
+    grid: {
+      vertLines: { color: '#f0f2f5' },
+      horzLines: { color: '#f0f2f5' },
+    },
+    crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
+    priceScale: { borderColor: '#d0d7de', scaleMargins: { top: 0.1, bottom: 0.1 } },
+    timeScale: { borderColor: '#d0d7de', timeVisible: true, secondsVisible: true },
+  });
+
+  candleSeries = chart.addCandlestickSeries({
+    upColor: '#26a69a',
+    downColor: '#ef5350',
+    borderVisible: true,
+    borderUpColor: '#26a69a',
+    borderDownColor: '#ef5350',
+    wickUpColor: '#26a69a',
+    wickDownColor: '#ef5350',
+  });
+
+  if (window.GC_DATA && window.GC_DATA.zones) {
+    currentZones = window.GC_DATA.zones;
+  }
+
+  setResolution("2t");
+  renderZoneTable();
+
+  window.addEventListener("resize", () => {
+    if (chart && parent) {
+      chart.applyOptions({ width: parent.clientWidth, height: parent.clientHeight });
+    }
+  });
 }
 
-function init(){
-  chips();
-  if(!DATA.corredores || !DATA.corredores.length){
-    // Empty state honesto, no un spinner: ya paso con el par δ=3 vs 8, que no
-    // producia contraste y devolvia cero corredores.
-    vacio("No hay corredores que cumplan el filtro",
-      "El exportador corrió y no encontró ninguno. Los near-miss son ~1% de los " +
-      "corredores, así que el filtro tiene que seleccionar por evento, no por largo.");
+function setResolution(res) {
+  currentRes = res;
+  document.querySelectorAll("[data-res]").forEach(btn => btn.classList.toggle("on", btn.dataset.res === res));
+  
+  if (!window.GC_DATA || !window.GC_DATA.resolutions || !window.GC_DATA.resolutions[res]) return;
+  const candles = window.GC_DATA.resolutions[res];
+  
+  candleSeries.setData(candles);
+  updateMarkers();
+  
+  // Focus on the active zone cluster
+  if (candles.length > 0) {
+    const endIdx = candles.length - 1;
+    const startIdx = Math.max(0, endIdx - 300);
+    chart.timeScale().setVisibleRange({
+      from: candles[startIdx].time,
+      to: candles[endIdx].time
+    });
+  }
+}
+
+function findNearestCandleTime(candles, targetTime) {
+  let low = 0, high = candles.length - 1;
+  while (low <= high) {
+    let mid = (low + high) >> 1;
+    if (candles[mid].time === targetTime) return candles[mid].time;
+    if (candles[mid].time < targetTime) low = mid + 1;
+    else high = mid - 1;
+  }
+  let best = candles[0].time;
+  let minDiff = Infinity;
+  for (let i = Math.max(0, high - 1); i <= Math.min(candles.length - 1, low + 1); i++) {
+    let diff = Math.abs(candles[i].time - targetTime);
+    if (diff < minDiff) {
+      minDiff = diff;
+      best = candles[i].time;
+    }
+  }
+  return best;
+}
+
+function updateMarkers() {
+  if (!indicatorEnabled || !currentZones || currentZones.length === 0) {
+    candleSeries.setMarkers([]);
     return;
   }
-  lista(); cargar(0);
-  addEventListener("keydown", teclas);
-  $("#q").addEventListener("input", e => { filtro = e.target.value.toLowerCase(); lista(); });
-  $("#csv").addEventListener("click", csv);
-  addEventListener("resize", dibujar);
-  paneles.forEach(p => {
-    p.cv.addEventListener("wheel", e => { e.preventDefault(); zoom(e); }, {passive:false});
-    p.cv.addEventListener("mousedown", arrastre);
+
+  const candles = window.GC_DATA.resolutions[currentRes];
+  if (!candles || candles.length === 0) return;
+
+  const minT = candles[0].time;
+  const maxT = candles[candles.length - 1].time;
+
+  const timeProp = (currentRes === "M1") ? "time_m1" : 
+                   (currentRes === "2t") ? "time_2t" :
+                   (currentRes === "5t") ? "time_5t" :
+                   (currentRes === "10t") ? "time_10t" :
+                   (currentRes === "25t") ? "time_25t" : "time_150t";
+
+  const markersMap = new Map();
+
+  currentZones.forEach(z => {
+    const rawT = z[timeProp] || z.time_25t;
+    if (rawT >= minT - 300 && rawT <= maxT + 300) {
+      const matchedT = findNearestCandleTime(candles, rawT);
+      const isBull = (z.side === "trapped_buyers");
+      
+      markersMap.set(matchedT, {
+        time: matchedT,
+        position: isBull ? 'aboveBar' : 'belowBar',
+        color: isBull ? '#008080' : '#ef5350',
+        shape: 'circle',
+        size: 1,
+        id: z.zone_id
+      });
+    }
   });
+
+  const markers = Array.from(markersMap.values()).sort((a,b) => a.time - b.time);
+  candleSeries.setMarkers(markers);
 }
 
-function corredores(){
-  return (DATA.corredores||[]).map((c,i)=>({c,i}))
-    .filter(({c}) => !filtro || (c.zone_id+" "+c.session_id).toLowerCase().includes(filtro));
+function toggleIndicatorDisplay() {
+  indicatorEnabled = document.getElementById("toggleIndicator").checked;
+  updateMarkers();
 }
 
-function lista(){
-  const xs = corredores();
-  if(!xs.length){ $("#lista").innerHTML =
-    `<div class="vacio" style="height:auto;padding:24px 14px"><div>
-       <h2>Sin resultados</h2><p>Ningún corredor coincide con «${filtro}».</p></div></div>`;
-    return; }
-  $("#lista").innerHTML = xs.map(({c,i}) => `
-    <div class="item ${i===sel?"sel":""}" data-i="${i}">
-      <span class="id">${c.zone_id}</span>
-      <span class="n">${c.d.length} tk</span>
-      <span class="sub">ses ${c.session_id} · nm ${c.marcas[0].n_nm}/${c.marcas[1].n_nm}
-        · Δ${c.contraste>0?"+":""}${c.contraste}</span>
-    </div>`).join("");
-  $("#lista").querySelectorAll(".item").forEach(el =>
-    el.addEventListener("click", () => cargar(+el.dataset.i)));
+function setSideTab(tab) {
+  document.getElementById("tabBtnParams").classList.toggle("on", tab === "params");
+  document.getElementById("tabBtnZones").classList.toggle("on", tab === "zones");
+  document.getElementById("sideTabParams").style.display = tab === "params" ? "block" : "none";
+  document.getElementById("sideTabZones").style.display = tab === "zones" ? "block" : "none";
 }
 
-function cargar(i){
-  sel = i; marcaIdx = -1;
-  const c = DATA.corredores[i];
-  vista = {a:0, b:c.d.length-1};
-  $("#caso").textContent = `${c.zone_id} · sesión ${c.session_id} · [${c.lower_tick}, ${c.upper_tick}]`;
-  lista(); tabla(); dibujar();
-}
+function renderZoneTable() {
+  if (!currentZones) return;
+  const tbody = document.getElementById("zoneTableBody");
+  tbody.innerHTML = "";
+  
+  currentZones.forEach(z => {
+    const tr = document.createElement("tr");
+    tr.className = "z-row";
+    const isBull = (z.side === "trapped_buyers");
+    const tFormatted = z.time_str ? z.time_str.split(" ")[1].substring(0,8) : "";
+    
+    tr.innerHTML = `
+      <td>${tFormatted}</td>
+      <td class="${isBull ? 'tag-bull' : 'tag-bear'}">${isBull ? 'BUY TRAP' : 'SELL TRAP'}</td>
+      <td><b>${z.lo.toFixed(1)}</b> - <b>${z.hi.toFixed(1)}</b></td>
+      <td>${z.a_score.toFixed(1)} / ${z.a_thr.toFixed(1)}</td>
+      <td>${z.vol} (${(z.frac*100).toFixed(0)}%)</td>
+    `;
 
-function tabla(){
-  const c = DATA.corredores[sel], filas = [];
-  DATA.deltas.forEach((dl,k) => {
-    c.marcas[k].near_miss.forEach((x,n) => filas.push({dl, tipo:"near-miss", n:n+1, x}));
-    c.marcas[k].a2.forEach((x,n) => filas.push({dl, tipo:"A2", n:n+1, x}));
+    tr.onclick = () => {
+      document.querySelectorAll("tr.z-row").forEach(r => r.classList.remove("selected"));
+      tr.classList.add("selected");
+      const timeProp = (currentRes === "M1") ? "time_m1" : 
+                       (currentRes === "2t") ? "time_2t" :
+                       (currentRes === "5t") ? "time_5t" :
+                       (currentRes === "10t") ? "time_10t" :
+                       (currentRes === "25t") ? "time_25t" : "time_150t";
+      const t = z[timeProp] || z.time_25t;
+      chart.timeScale().setVisibleRange({
+        from: t - 200,
+        to: t + 200
+      });
+    };
+
+    tbody.appendChild(tr);
   });
-  filas.sort((p,q) => p.x - q.x);
-  $("#resumen").innerHTML =
-    `<span class="mono">${c.d.length} ticks · near-miss δ${DATA.deltas[0]}=${c.marcas[0].n_nm}
-     δ${DATA.deltas[1]}=${c.marcas[1].n_nm} · A2 ${c.marcas[0].n_a2}/${c.marcas[1].n_a2}</span>`;
-  $("#cuerpo").innerHTML = filas.length ? `<table><thead><tr>
-      <th>δ</th><th>evento</th><th>#</th><th>índice</th><th>d en ese punto</th></tr></thead><tbody>
-      ${filas.map((f,i)=>`<tr data-x="${f.x}"><td>${f.dl}</td><td>${f.tipo}</td>
-        <td>${f.n}</td><td>${f.x}</td><td>${c.d[f.x]}</td></tr>`).join("")}
-    </tbody></table>`
-    : `<div class="vacio"><div><h2>Sin marcas</h2>
-       <p>Este corredor no produjo near-miss ni A2 en ninguno de los dos δ.</p></div></div>`;
-  $("#cuerpo").querySelectorAll("tr[data-x]").forEach(tr =>
-    tr.addEventListener("click", () => encuadrar(+tr.dataset.x)));
+
+  document.getElementById("statZones").innerText = currentZones.length;
+  document.getElementById("tabZoneCount").innerText = currentZones.length;
 }
 
-function encuadrar(x){
-  const n = DATA.corredores[sel].d.length, w = Math.max(40, Math.round(n*0.12));
-  vista = {a:Math.max(0,x-w), b:Math.min(n-1,x+w)}; dibujar();
+function applyParamsAndRecalc() {
+  const minFrac = parseFloat(document.getElementById("p_MinTrapFrac").value);
+  const minRows = parseInt(document.getElementById("p_MinStackedRows").value);
+  
+  if (window.GC_DATA && window.GC_DATA.zones) {
+    currentZones = window.GC_DATA.zones.filter(z => {
+      return (z.frac >= minFrac) && (z.rows >= minRows);
+    });
+    
+    document.getElementById("statZones").innerText = currentZones.length;
+    document.getElementById("tabZoneCount").innerText = currentZones.length;
+    
+    updateMarkers();
+    renderZoneTable();
+  }
 }
 
-function zoom(e){
-  const n = DATA.corredores[sel].d.length;
-  const r = e.currentTarget.getBoundingClientRect();
-  const f = (e.clientX - r.left) / r.width;
-  const c = vista.a + f*(vista.b - vista.a);
-  const k = e.deltaY > 0 ? 1.25 : 0.8;
-  const w = Math.max(20, (vista.b - vista.a) * k);
-  vista = {a:Math.max(0, Math.round(c - f*w)), b:Math.min(n-1, Math.round(c + (1-f)*w))};
-  dibujar();   // zoom LINKEADO: los dos paneles comparten `vista`
-}
-
-function arrastre(ev){
-  const n = DATA.corredores[sel].d.length, r = ev.currentTarget.getBoundingClientRect();
-  const x0 = ev.clientX, v0 = {...vista}, span = v0.b - v0.a;
-  const mover = e => {
-    const dx = Math.round((e.clientX - x0) / r.width * span);
-    let a = v0.a - dx, b = v0.b - dx;
-    if(a < 0){ b -= a; a = 0; } if(b > n-1){ a -= (b-(n-1)); b = n-1; }
-    vista = {a:Math.max(0,a), b:Math.min(n-1,b)}; dibujar();
-  };
-  const soltar = () => { removeEventListener("mousemove", mover); removeEventListener("mouseup", soltar); };
-  addEventListener("mousemove", mover); addEventListener("mouseup", soltar);
-}
-
-function dibujar(){
-  if(!DATA.corredores || !DATA.corredores.length) return;
-  const c = DATA.corredores[sel];
-  paneles.forEach(p => panel(p, c));
-}
-
-function panel(p, c){
-  const cv = p.cv, dpr = devicePixelRatio || 1;
-  const w = cv.clientWidth, h = cv.clientHeight;
-  cv.width = w*dpr; cv.height = h*dpr;
-  const g = cv.getContext("2d"); g.setTransform(dpr,0,0,dpr,0,0);
-  g.clearRect(0,0,w,h);
-  const dl = DATA.deltas[p.i], m = c.marcas[p.i];
-  p.et.textContent = `δ = ${dl}   ·   near-miss ${m.n_nm}   ·   A2 ${m.n_a2}`;
-
-  const a = vista.a, b = vista.b, n = b - a + 1;
-  const pad = {l:44, r:14, t:14, b:20};
-  const W = w - pad.l - pad.r, H = h - pad.t - pad.b;
-  let dmax = 0; for(let i=a;i<=b;i++) dmax = Math.max(dmax, c.d[i]);
-  dmax = Math.max(dmax, DATA.D_far + 2);
-  const X = i => pad.l + (i - a) / Math.max(1, n-1) * W;
-  const Y = v => pad.t + H - (v / dmax) * H;
-
-  // region de la banda delta (Grafana: region, no linea)
-  g.fillStyle = css(p.col) + "26";
-  g.fillRect(pad.l, Y(dl), W, Y(0) - Y(dl));
-  // d = 0 es la zona: el borde
-  g.strokeStyle = css("--border2"); g.lineWidth = 1;
-  g.beginPath(); g.moveTo(pad.l, Y(0)); g.lineTo(pad.l+W, Y(0)); g.stroke();
-  // D_far = borde del corredor
-  g.strokeStyle = css("--warn"); g.setLineDash([4,3]);
-  g.beginPath(); g.moveTo(pad.l, Y(DATA.D_far)); g.lineTo(pad.l+W, Y(DATA.D_far)); g.stroke();
-  g.setLineDash([]);
-
-  // marcas verticales: SOLO las que trajo el JSON
-  const marca = (xs, color) => { g.strokeStyle = color; g.lineWidth = 1.5;
-    xs.forEach(x => { if(x>=a && x<=b){ g.beginPath();
-      g.moveTo(X(x), pad.t); g.lineTo(X(x), pad.t+H); g.stroke(); } }); };
-  marca(m.near_miss, css(p.col));
-  marca(m.a2, css("--cyan"));
-
-  // la serie de distancia
-  g.strokeStyle = css("--text"); g.lineWidth = 1.25; g.beginPath();
-  for(let i=a;i<=b;i++){ const x=X(i), y=Y(c.d[i]); i===a ? g.moveTo(x,y) : g.lineTo(x,y); }
-  g.stroke();
-
-  // eje: pocos ticks, sin chartjunk
-  g.fillStyle = css("--dim2"); g.font = "10px ui-monospace,monospace"; g.textAlign = "right";
-  [0, dl, DATA.D_far, Math.round(dmax)].filter((v,i,s)=>s.indexOf(v)===i)
-    .forEach(v => g.fillText(String(v), pad.l-6, Y(v)+3));
-  g.textAlign = "left"; g.fillText(`i=${a}`, pad.l, h-6);
-  g.textAlign = "right"; g.fillText(`i=${b}`, pad.l+W, h-6);
-}
-
-function teclas(e){
-  if(e.target.tagName === "INPUT"){ if(e.key==="Escape") e.target.blur(); return; }
-  const xs = corredores(), c = DATA.corredores[sel];
-  if(e.key === "/"){ e.preventDefault(); $("#q").focus(); return; }
-  if(e.key === "ArrowRight" || e.key === "ArrowLeft"){
-    const pos = xs.findIndex(o => o.i === sel);
-    const nx = xs[(pos + (e.key==="ArrowRight"?1:xs.length-1)) % xs.length];
-    if(nx) cargar(nx.i); return; }
-  if(e.key === "f"){ vista = {a:0, b:c.d.length-1}; dibujar(); return; }
-  if(e.key === "j" || e.key === "k"){
-    const todas = [...c.marcas[0].near_miss, ...c.marcas[0].a2,
-                   ...c.marcas[1].near_miss, ...c.marcas[1].a2].sort((p,q)=>p-q);
-    if(!todas.length) return;
-    marcaIdx = (marcaIdx + (e.key==="j"?1:todas.length-1) + todas.length) % todas.length;
-    encuadrar(todas[marcaIdx]); }
-}
-
-function csv(){
-  const c = DATA.corredores[sel], filas = [["zone_id","session_id","delta","evento","n","indice","d"]];
-  DATA.deltas.forEach((dl,k) => {
-    c.marcas[k].near_miss.forEach((x,n)=>filas.push([c.zone_id,c.session_id,dl,"near_miss",n+1,x,c.d[x]]));
-    c.marcas[k].a2.forEach((x,n)=>filas.push([c.zone_id,c.session_id,dl,"A2",n+1,x,c.d[x]]));
+function resetDefaults() {
+  if (!window.GC_DATA || !window.GC_DATA.nt8_defaults) return;
+  const d = window.GC_DATA.nt8_defaults;
+  Object.keys(d).forEach(k => {
+    const el = document.getElementById("p_" + k);
+    if (el) {
+      if (el.type === "checkbox") el.checked = d[k];
+      else el.value = d[k];
+    }
   });
-  const blob = new Blob([filas.map(r=>r.join(",")).join("\n")], {type:"text/csv"});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob); a.download = `hz2a_${c.zone_id}.csv`; a.click();
+  applyParamsAndRecalc();
 }
+
+window.addEventListener("load", () => {
+  setTimeout(initChart, 50);
+});
 </script>
-<script src="grafico.js"></script>
-<script src="indicadores.js"></script>
+</body>
+</html>

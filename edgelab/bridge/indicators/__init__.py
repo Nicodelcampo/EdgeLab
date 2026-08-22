@@ -11,13 +11,14 @@ Los kernels aún no portados se agregan al REGISTRY cuando pasan su smoke
 sintético (protocolo F5+); el REGISTRY es la única fuente de verdad de qué
 indicadores existen para la CLI.
 """
-from . import (aacloseopendiffs, avolcellpoi2, bigtrap2, gaps2, hftzones2,
+from . import (aacloseopendiffs, avolcellpoi2, bigtrap2, bigtrap2absorption, gaps2, hftzones2,
                voltickspoc2)
 
 REGISTRY = {
     "Gaps2": gaps2,
     "VolTicksPOC2": voltickspoc2,
     "BigTrap2": bigtrap2,
+    "BigTrap2Absorption": bigtrap2absorption,
     "HFTZones2": hftzones2,
     "aVolCellPOI2": avolcellpoi2,
     "AACloseOpenDiffs": aacloseopendiffs,
@@ -26,5 +27,5 @@ REGISTRY = {
 # AACloseOpenDiffs es SUBSERIE-DRIVEN: arma sus propias barras M1 y NO usa
 # las del chart primario, asi que su salida es independiente del bar_spec.
 M1_DRIVEN = {"AACloseOpenDiffs"}
-TICK_DRIVEN = {"Gaps2", "HFTZones2"}
+TICK_DRIVEN = {"Gaps2", "HFTZones2", "BigTrap2Absorption"}
 BAR_DRIVEN = {"VolTicksPOC2", "aVolCellPOI2", "BigTrap2"}
