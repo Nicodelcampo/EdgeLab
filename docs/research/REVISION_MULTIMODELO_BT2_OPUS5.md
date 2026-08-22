@@ -234,7 +234,265 @@ y con respaldo externo**, y porque el costo de medirlo es una corrida sobre dato
 
 ## 2. Pasada GPT
 
-> Pendiente. Responder Q1–Q7 sin editar la seccion 1.
+**Fecha**: 2026-08-22 · **Rol**: auditor (pre-registro) · **Modelo**: GPT
+**Snapshot revisado**: `foundation/f0b-compatibility-probe` @ `06becaf`
+**Alcance**: razonamiento + research. No se corrio NT8, no se abrieron parquets y no se
+midieron outcomes nuevos.
+
+**Dictamen adelantado**: el evento viejo debe cambiar. No apruebo, sin embargo, correr
+`BigTrap2Absorption.cs` v1.0 con la interpretacion actual. Hay tres bloqueos previos: el score
+por defecto no exige desplazamiento absoluto bajo; la literatura citada valida OFI de libro y
+el codigo calcula imbalance de trades; y la puerta `>=10 sesiones` no cabe en una ventana del
+24 al 30 de junio.
+
+### Q1 — Que es hoy el evento, operativamente
+
+Con los defaults versionados, BigTrap2 toma una cubeta de 25 prints, clasifica cada print
+`buy/sell` por bid/ask y usa tick rule como fallback, agrega el volumen por fila de 1 tick y
+evalua un imbalance diagonal:
+
+```
+buy_ratio[r]  = ask[r] / max(bid[r-1], 1)
+sell_ratio[r] = bid[r] / max(ask[r+1], 1)
+```
+
+Una fila califica si el ratio es `>=3`, esta del lado perdedor del close y cae en el 30 % de
+mecha correspondiente. `TRAP` se exporta por lado desde volumen agregado `>=1`; la burbuja y
+la zona exigen despues `MinTrapVolume>=30`.
+
+Por lo tanto, en el caso frecuente de celda diagonal opuesta vacia, el minimo operativo es:
+
+> al menos 3 contratos agresores en una fila de mecha, del lado perdedor del close, con cero
+> volumen opuesto diagonal.
+
+No es simplemente "tres contratos al ask" en cualquier lugar. El lado respecto del close, la
+mecha, la diagonal y la agregacion por lado tambien definen el evento. Los minimos versionados
+`trap_vol=3` y `trap_ratio=3` son compatibles con esa degeneracion; no miden por si solos cuantas
+filas tuvieron denominador cero. Para medir esa prevalencia haria falta exportar el denominador
+o recomputar el footprint. Aca no se hizo.
+
+### Q2 — Evidencia del repo
+
+Medido y versionado en `docs/research/h_gc_bt2x_oracle_inspect.json`, GC DEC26, 17–21 ago:
+
+| magnitud | valor medido | lectura |
+|---|---:|---|
+| `BARRA_PROCESADA` | 24.093 | denominador de cubetas procesadas |
+| `TRAP` | 11.964 | **0,497 eventos TRAP por cubeta procesada** |
+| lados | 6.126 sellers / 5.838 buyers | balance 51/49 |
+| `trap_vol` p25/p50/p75 | 3 / 4 / 7 | tamano central minimo |
+| `trap_ratio` p25/p50/p75 | 3 / 4 / 5 | pegado al piso operativo |
+| `trap_nrows` p25/p50/p75 | 1 / 1 / 1 | la celda aislada domina |
+| `ZONE_CREATED` | 122 | 1,02 % de los TRAP exportados |
+
+Correccion de lenguaje: `11.964 / 24.093 = 49,7 %` es densidad de eventos por cubeta, no una
+fraccion demostrada de **cubetas unicas**. El codigo puede emitir dos lados en una misma cubeta.
+Sin contar `bar` unicos no corresponde afirmar que 49,7 % de las cubetas tuvieron al menos un
+TRAP.
+
+Medido y versionado en `docs/research/h_gc_bt2x_path_overfit.json`:
+
+| poblacion | n | MFE p50 | MAE p50 | MFE media | MAE media |
+|---|---:|---:|---:|---:|---:|
+| todos | 11.962 | 38 | 36 | 46,036 | 44,923 |
+| `vol>=30` | 122 | 40 | 39 | 46,410 | 48,582 |
+
+El corte absoluto `vol>=30` no rompe la simetria central y en medias la invierte en contra. El
+mismo archivo esta rotulado `OVERFIT_DECLARED_HOLDOUT_AUG17_21` y `no_elige_config=true`; sirve
+para describir la barrera, no para seleccionar ni confirmar.
+
+F2.9 usa otro estimand, la carrera target-free `r_i`, y tambien refuta exclusividad del kernel:
+
+| regla | Delta | IC 95 % |
+|---|---:|---:|
+| `K0` creadora BigTrap2 | +0,0215 | [+0,0029; +0,0400] |
+| `S1` vela extrema generica | **+0,0383** | [+0,0276; +0,0490] |
+| `N0` no-creadora emparejada | +0,0182 | [+0,0020; +0,0344] |
+| `F0` TRAP emitido | +0,0424 | [+0,0312; +0,0535] |
+
+`K0-S1=-0,0168` con IC `[-0,0306; -0,0031]`; `K0-N0` cruza cero; y `F0-S1=+0,0041`
+con IC `[-0,0057; +0,0138]`. La conclusion admisible es que BigTrap2 no agrega informacion
+incremental demostrada sobre el sello barato `S1`. No es que `F0` sea peor: es indistinguible
+de `S1` en ese contraste.
+
+### Q3 — Fortalezas reales
+
+La fortaleza principal sigue siendo la infraestructura, no la senal. `BigTrap2.cs` usa ticks
+enteros, clasificacion de agresor declarada, disponibilidad al cierre, export continuo y
+politica fail-closed para atribucion ambigua. Eso permite falsar una definicion sin mezclarla con
+fills o P&L.
+
+En `BigTrap2Absorption.cs` hay decisiones de diseno utiles, revisadas en codigo pero **no
+medidas**: el percentil se calcula antes de insertar la cubeta corriente; las residuales no
+entran al historial ni disparan; el fill se registra en el primer print posterior; y el export
+incluye `signed_flow`, `d_ticks`, `a_score`, `a_thr`, `run_rows`, `run_frac` y los campos del
+kernel viejo. Esa observabilidad permite auditar y hacer analisis offline sin esconder los
+rechazos.
+
+La literatura si respalda una pregunta general: el impacto de precio debe estudiarse junto con
+flujo y liquidez. Cont–Kukanov–Stoikov encuentran una relacion contemporanea aproximadamente
+lineal entre OFI y cambio de midprice, con pendiente inversa a profundidad. Gould–Bonart
+encuentran poder predictivo de queue imbalance para el siguiente movimiento de midprice. Eso
+justifica investigar flujo, desplazamiento y profundidad. No valida este score particular, no
+valida una reversa en GC y no demuestra rentabilidad.
+
+### Q4 — Debilidades reales
+
+1. **El evento viejo nace de un artefacto numerico.** Con opuesto cero, el ratio es conteo. El
+   piso de 3 contratos cambia de significado por instrumento, hora y regimen.
+2. **La evidencia de frecuencia estaba sobreinterpretada.** Hay 0,497 TRAP/cubeta; no esta
+   medido el porcentaje de cubetas unicas con evento.
+3. **`signed_flow` no es OFI.** El codigo suma volumen de trades iniciados por comprador menos
+   volumen iniciado por vendedor. Eso es trade imbalance (`TI`). El OFI de
+   Cont–Kukanov–Stoikov incluye cambios de cola por limit orders, market orders y cancelaciones
+   en best bid/ask. En su muestra, OFI explico en promedio 65 % del cambio de precio contra 32 %
+   para TI. Invocar ese paper como validacion directa del score actual excede la evidencia.
+4. **`A` no es un residuo.** No estima `beta`, no usa profundidad y no resta impacto esperado.
+   Es un cociente de flujo por movimiento: una proxy de inversa de impacto o profundidad,
+   emparentada conceptualmente con `1/lambda` de Kyle y con la inversa del ratio de iliquidez de
+   Amihud. Un percentil rodante la normaliza por rango local; no vuelve adimensional al score,
+   que conserva unidades de contratos por tick.
+5. **El default contradice el nombre.** En `AbsDirectional`, si `signed_flow>0` y `dPx=-10`, el
+   denominador es 1, exactamente igual que con `dPx=0`. El score premia tanto inmovilidad como
+   un movimiento adverso arbitrariamente grande. Eso puede definir *agresion fallida*, pero no
+   "desplazamiento bajo". `AbsMagnitude` si penaliza `|dPx|`, aunque sigue siendo proxy.
+6. **El precio medido no es el de la literatura citada.** `dPx` usa primer y ultimo trade de la
+   cubeta, no cambio de midquote. Puede incorporar bid-ask bounce. Ademas el score usa flujo de
+   toda la cubeta mientras la geometria `run_*` es local a filas de mecha; no esta demostrado que
+   ambas piezas describan al mismo absorbedor.
+7. **`MinStackedRows=2` es una hipotesis de practica, no evidencia academica.** La busqueda no
+   encontro validacion peer-reviewed directa para "stacked footprint imbalances" como predictor
+   economico. Debe entrar como perilla pre-registrada, no como hecho establecido.
+8. **La paridad del indicador nuevo esta no medida.** El nuevo archivo se autocorta cada 25
+   prints; el viejo usa atribucion OHLCV verificada. La afirmacion "reproduce exactamente el
+   kernel viejo" sigue pendiente de paridad. Ademas `OpenLog()` pisa la ruta exacta y silencia
+   excepciones; eso no es fail-closed y puede destruir o perder evidencia sin aviso.
+9. **El export amplio no autoriza un sweep de outcomes.** Poder barrer `q`, filas y fraccion
+   offline es una ventaja de observabilidad, pero elegir despues de mirar MFE/P&L seria
+   multiplicidad. Debe haber una configuracion headline congelada y el resto quedar
+   exploratorio.
+
+### Q5 — La barrera economica
+
+Fuente: `docs/research/h_gc_bt2x_path_overfit.json`. Son numeros del holdout gastado, rotulados
+como overfit y sin friccion; no adjudican una configuracion.
+
+| concepto | valor |
+|---|---:|
+| mejor celda publicada, todos (`SL13/TP30/BE off`) | +0,7226 ticks brutos |
+| friccion declarada | 1,5 ticks |
+| neto mecanico de esa media | **-0,7774 ticks** |
+| bruto minimo para netear +1 tick | **2,5 ticks** |
+| brecha desde +0,7226 | **1,7774 ticks** |
+| multiplicador de bruto requerido | **3,46x** |
+
+Para `SL13/TP30`, el camino sin deriva exige 30,23 %; el archivo mide 31,91 %. Llegar a 2,5
+ticks brutos exige 36,05 %: +5,82 pp sobre el nulo y +4,14 pp sobre lo observado. El factor
+~3,4 compara deriva requerida con deriva observada; no es una probabilidad de exito.
+
+La celda `vol>=30`, `n=122`, muestra +3,7025 ticks brutos en ese mismo archivo. No se esconde,
+pero tampoco se corona: es una cola chica vista en holdout, dentro de una exploracion declarada,
+y no pertenece al evento nuevo.
+
+`S1=+0,0383` no esta expresado en ticks ni expectancy: es el Delta de la carrera `r_i` de F2.9.
+Sirve como control de la puerta target-free. No se puede restar de 0,7226 ni usarlo como barrera
+economica. Las dos puertas tienen estimands distintos y deben permanecer separadas.
+
+### Q6 — Corresponde cambiar el indicador. Que exactamente
+
+**Si corresponde cambiar el evento viejo. No corresponde aprobar v1.0 sin enmienda semantica y
+tecnica.** El archivo no se toca en esta pasada; primero deben cerrar las tres revisiones.
+
+Cambio exacto que propongo para la sintesis:
+
+1. Nombrar la variable actual correctamente: `trade_imbalance`, no OFI. Reservar OFI para cuando
+   el join L2 de junio este cerrado y entren altas, bajas y cancelaciones del libro.
+2. Separar dos hipotesis antes de ver outcomes:
+   - **Absorcion literal**: `ScoreMode=AbsMagnitude`, flujo alto y movimiento absoluto bajo.
+     Idealmente `dPx` debe ser cambio de midquote; con last trade es una proxy declarada.
+   - **Agresion fallida**: el `AbsDirectional` actual, que acepta movimiento adverso. Es otra
+     hipotesis y no puede reemplazar a la primera si falla.
+3. Describir `a_score` como **proxy de inversa de impacto con percentil causal**, no como residuo
+   OFI ni como score escala-libre. Un residuo real requiere estimar causalmente el impacto
+   esperado y, de ser posible, condicionarlo por profundidad.
+4. Mantener `TapeWindowTicks`, `MinStackedRows` y `MinTrapFrac` como parametros. Congelar un
+   headline; no crear constantes nuevas ni rescatar con grilla.
+5. Antes de cualquier outcome, corregir el contrato de evidencia del logger, verificar
+   compilacion, CRLF, sha256/blob, conteo `files[]` y paridad de cortes/campos contra Python.
+
+La mejora conceptual no es "mas filtro". Es dejar de llamar absorcion a cualquier imbalance de
+mecha y decidir si se estudia baja respuesta absoluta o agresion fallida. Mezclarlas en un enum
+y elegir despues seria dos trials, no robustez.
+
+### Q7 — Prueba falsable y pre-registrada
+
+El protocolo escrito **no es ejecutable tal como esta**. Del 24 al 30 de junio hay como maximo
+7 fechas calendario; bajo una sesion CME por trade date no puede cumplir `>=10 sesiones`. Ese
+conflicto debe enmendarse antes de abrir outcomes: extender discovery hasta al menos 10 sesiones
+o cambiar el piso por escrito, sabiendo que lo debilita. No se corrige despues de correr.
+
+Orden propuesto:
+
+**Puerta 0 — validez tecnica, sin outcomes.** Congelar hash y parametros; compilar; exigir log
+unico sin overwrite silencioso; 0 errores de escritura; corte de cubetas, `signed_flow`, `dPx`,
+percentil causal, `run_*`, `available_at` y fill post-senal en paridad NT8/Python. Cualquier falla
+invalida la corrida completa.
+
+**Headline congelado.** `TapeWindowTicks=25`, `q=90`, `L=500`, `MinHistoryBuckets=200`,
+`MinStackedRows=2`, `MinTrapFrac=0,20`, `RequireFlowSideMatch=true`, y un solo `ScoreMode`
+resuelto por la sintesis antes de medir. La otra semantica es otro trial. Las grillas quedan
+exploratorias y no rescatan el headline.
+
+**Puerta 1 — seleccion target-free.** En discovery no gastado y con `n>=200` y `>=10` sesiones:
+`MFE_p50 / MAE_p50 >= 1,25` para la direccion declarada. La inferencia debe reagrupar por sesion,
+porque los caminos de eventos cercanos comparten ticks. Si falla, se cierra sin SL/TP.
+
+**Puerta 2 — control S1, no cero.** Recomputar `S1` sobre las mismas sesiones GC y con el mismo
+estimand de F2.9. Contraste primario pareado por sesion: `nuevo - S1`; pasa solo si el limite
+inferior del IC 95 % es `>0`. Comparar el IC del nuevo contra el punto historico `+0,0383` ignora
+la incertidumbre del control y mezcla muestras. Si no puede instanciarse S1 en la misma ventana,
+la puerta queda no medida, no aprobada.
+
+**Puerta 3 — economia sin pesca.** Fijar antes una sola monetizacion. Si se hereda
+`SL13/TP30/BE off`, declarar que fue elegida mirando el holdout gastado y que esta corrida solo
+puede ser discovery. Exigir media bruta `>=2,5 ticks`; la grilla completa es secundaria y no
+puede sustituir al headline. Fills y costos los calcula el motor comun, nunca el indicador.
+
+**Regla de parada.** Fallar cualquier puerta cierra la linea y se asienta en
+`EDGES_DISCOVERED.md`. Pasar las tres produce `SURVIVES_DISCOVERY`, no "edge": no queda holdout
+intacto para promocion. Harian falta datos futuros y autorizacion escrita para una confirmacion
+nueva.
+
+### Research consultado en esta pasada
+
+- Cont, Kukanov, Stoikov, *The Price Impact of Order Book Events*, JFEc 2014,
+  arXiv:1011.6402. OFI incluye market/limit/cancel; impacto contemporaneo lineal y dependiente de
+  profundidad; OFI explica mejor que trade imbalance.
+- Kyle, *Continuous Auctions and Insider Trading*, Econometrica 1985. `lambda` es impacto por
+  unidad de order flow; su inversa es profundidad. Respalda interpretar flujo/movimiento como
+  liquidez, no como edge de reversa.
+- Amihud, *Illiquidity and Stock Returns*, JFM 2002. `|return|/dollar volume` es una proxy gruesa
+  de impacto; el cociente inverso es mas cercano a liquidez que a un residuo estructural.
+- Gould y Bonart, *Queue Imbalance as a One-Tick-Ahead Price Predictor in a Limit Order Book*,
+  arXiv:1512.03492. Evidencia predictiva en acciones Nasdaq usando colas del libro, no footprint
+  de trades ni GC.
+- Xu, Gould y Howison, *Multi-Level Order-Flow Imbalance in a Limit Order Book* (2019). La
+  informacion de niveles del libro mejora el ajuste de cambios contemporaneos; refuerza que el
+  L2 pendiente es sustantivo, no cosmetico.
+
+No encontre respaldo peer-reviewed directo para `MinStackedRows=2`, `MinTrapFrac=0,20` ni para
+el score exacto `|TI|/(1+max(0,dFav))`. Son hipotesis falsables de este proyecto.
+
+### Veredicto de la pasada GPT
+
+Coincido con Opus en Q4: el evento actual esta mal definido y no supera al control barato.
+Coincido parcialmente en Q6: hay que cambiar la definicion, pero **no** llamaria al default v1.0
+"residuo OFI, escala-libre, de desplazamiento bajo". Es una proxy rankeada de inversa de impacto
+sobre trade imbalance y, en modo direccional, detecta agresion fallida.
+
+Probabilidad cualitativa de pasar una prueba corregida: **baja**. No asigno porcentaje: no fue
+medido. No corresponde correr outcomes hasta cerrar Kimi, aplicar la regla del acta y enmendar
+la incompatibilidad de sesiones.
 
 ---
 
