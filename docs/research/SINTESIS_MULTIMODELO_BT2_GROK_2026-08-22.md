@@ -9,6 +9,8 @@ encabezado del acta quedo en chat, sin seccion: **no cuenta** como tercera voz. 
 se pesan son Opus 5, GPT y Kimi K3. Visibilidad de las tres + `PARIDAD_BT2_ABSORPTION_2026-08-22.md`.
 No es ciega.
 
+**Headline confirmado por Nico**, 2026-08-22 20:55 ART: `ScoreMode = AbsMagnitude`.
+
 ## Tabla
 
 | pregunta | Opus 5 | GPT | Kimi K3 | acuerdo |
@@ -36,9 +38,9 @@ mide agresion fallida.
 y que 11.964/24.093 es densidad. Precision del mismo objeto. La fraccion de cubetas unicas con
 TRAP sigue **no medida**.
 
-**Cierre: se implementa y se mide**, con el headline de abajo y
-`ENMIENDA_PROTOCOLO_BT2_ABSORPTION_2026-08-22.md`. Nico confirma o veta el headline por escrito
-antes de la corrida. Despues de abrir outcomes, no.
+**Cierre: se implementa y se mide.** Headline y protocolo en
+`ENMIENDA_PROTOCOLO_BT2_ABSORPTION_2026-08-22.md`. Nico confirmo `AbsMagnitude` el 2026-08-22
+20:55 ART.
 
 ## Headline: `ScoreMode = AbsMagnitude`
 
@@ -70,7 +72,7 @@ No agrega una cuarta prediccion de Puerta 1. Viaja la de Kimi: no pasa, ratio 0,
 
 ## Orden
 
-1. Nico confirma o veta `AbsMagnitude`.
+1. ~~Nico confirma o veta `AbsMagnitude`.~~ **Hecho**, 2026-08-22 20:55 ART.
 2. Protocolo enmendado (ya escrito).
 3. Kernel con cortes de sesion + artefacto de paridad (local).
 4. NT8 sobre GC 08-26 discovery.
