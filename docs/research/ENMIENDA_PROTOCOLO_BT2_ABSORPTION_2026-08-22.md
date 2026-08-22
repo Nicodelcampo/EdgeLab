@@ -5,8 +5,9 @@
 **Cuando**: ANTES de abrir outcomes. Si se corre junio sin esto, la corrida no cuenta.
 **Holdout**: agosto no se toca. H-GC-BT2-1 no se reabre.
 
-Nico puede vetar el headline o el piso de sesiones por escrito antes de la corrida.
-Despues de abrir outcomes, no.
+**CONFIRMADO por Nico**, 2026-08-22 20:55 ART, chat Notion (thread de auditoria):
+`ScoreMode = AbsMagnitude` y el resto del headline de la seccion 1. Ya no se veta el modo
+sin acta nueva. Despues de abrir outcomes, no se cambia.
 
 ---
 
