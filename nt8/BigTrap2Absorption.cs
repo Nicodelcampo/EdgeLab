@@ -1,4 +1,4 @@
-// # meta indicator=BigTrap2Absorption,version=1.1
+// # meta indicator=BigTrap2Absorption,version=1.1.1
 //
 // BigTrap2Absorption — absorcion = flujo alto con desplazamiento bajo.
 //
@@ -25,6 +25,8 @@
 // 4. OpenLog: nombre unico por corrida (__TW<n>[_k]), NUNCA overwrite ni append;
 //    fallo de escritura se anuncia con Print (fail-closed), no se traga la
 //    excepcion.
+// V1.1.1: trade_date deriva de _sessEnd (= ActualSessionEnd). ActualTradingDay
+// no existe en el SessionIterator de NT8 (CS1061 reportado en compilacion).
 //
 // QUE CAMBIA respecto del kernel viejo
 // 1. El evento deja de ser un umbral absoluto y pasa a ser un RESIDUO: cuanto
@@ -88,7 +90,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 {
 	public class BigTrap2Absorption : Indicator
 	{
-		private const string IND_VERSION = "1.1";
+		private const string IND_VERSION = "1.1.1";
 
 		private struct FpTick
 		{
@@ -273,7 +275,9 @@ namespace NinjaTrader.NinjaScript.Indicators
 				if (curBlock.Count > 0) FlushBlock(true);
 				_sessIter.GetNextSession(tEv, true);
 				_sessEnd = _sessIter.ActualSessionEnd;
-				_tradeDate = _sessIter.ActualTradingDay.ToString("yyyyMMdd", CultureInfo.InvariantCulture);
+				// CME trade date = fecha del CIERRE de sesion (Globex 18:00 -> 17:00 ET:
+				// el cierre cae en el dia habil al que pertenece la sesion).
+				_tradeDate = _sessEnd.ToString("yyyyMMdd", CultureInfo.InvariantCulture);
 			}
 
 			FillPendings(ev);
