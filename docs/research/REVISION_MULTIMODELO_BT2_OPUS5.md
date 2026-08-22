@@ -171,7 +171,7 @@ Mas dos endurecimientos que el usuario pidio como **parametro** y no como consta
 - **`MinStackedRows`** (default 2): exige filas desbalanceadas **contiguas**. Mata la celda suelta.
 - **`MinTrapFrac`** (default 0,20): el trap tiene que ser una **fraccion** del volumen de la
   cubeta. Reemplaza `MinTrapVolume` absoluto, que se deja en 0 (apagado).
-- **`TapeWindowTicks`** pasa a ser parametro real (era `const 25`).
+- **`TapeWindowTicks`** pasa a ser parametro real (en Fill era `const 25`).
 
 Implementado en **`nt8/BigTrap2Absorption.cs` v1.0**. Decision de diseno importante: el evento
 `TRAP` se exporta **siempre** que haya geometria, con `a_score`, `a_thr`, `a_pass`, `trap_frac`,
@@ -304,7 +304,7 @@ para describir la barrera, no para seleccionar ni confirmar.
 F2.9 usa otro estimand, la carrera target-free `r_i`, y tambien refuta exclusividad del kernel:
 
 | regla | Delta | IC 95 % |
-|---|---:|---:|
+|---|---:|---|
 | `K0` creadora BigTrap2 | +0,0215 | [+0,0029; +0,0400] |
 | `S1` vela extrema generica | **+0,0383** | [+0,0276; +0,0490] |
 | `N0` no-creadora emparejada | +0,0182 | [+0,0020; +0,0344] |
@@ -441,7 +441,7 @@ invalida la corrida completa.
 **Headline congelado.** `TapeWindowTicks=25`, `q=90`, `L=500`, `MinHistoryBuckets=200`,
 `MinStackedRows=2`, `MinTrapFrac=0,20`, `RequireFlowSideMatch=true`, y un solo `ScoreMode`
 resuelto por la sintesis antes de medir. La otra semantica es otro trial. Las grillas quedan
-exploratorias y no rescatan el headline.
+exploratorias y no pueden sustituir al headline.
 
 **Puerta 1 — seleccion target-free.** En discovery no gastado y con `n>=200` y `>=10` sesiones:
 `MFE_p50 / MAE_p50 >= 1,25` para la direccion declarada. La inferencia debe reagrupar por sesion,
@@ -498,7 +498,196 @@ la incompatibilidad de sesiones.
 
 ## 3. Pasada Kimi K3
 
-> Pendiente. Responder Q1–Q7 sin editar las secciones 1 y 2.
+**Fecha**: 2026-08-22 · **Rol**: auditor (pre-registro) · **Modelo**: Kimi K3 (selector del chat
+de Notion, maximo nivel de razonamiento)
+**Snapshot revisado**: `foundation/f0b-compatibility-probe` @ `9f11f7a`
+**Alcance**: definicion del evento. No se corrio NT8, no se midieron outcomes nuevos, no se toco
+el holdout.
+
+**Declaraciones de trazabilidad** (pedidas por el auditor del chat, quedan aca):
+
+- La identidad del modelo es la del selector de Notion; **no es verificable desde adentro del
+  chat**. Si el selector mintiera, esta seccion no la escribio Kimi K3 y la revision pierde una
+  pasada. Riesgo declarado, no bloqueante.
+- Esta pasada tuvo **visibilidad** de las secciones 1 y 2 y de la auditoria de paridad del mismo
+  dia (`PARIDAD_BT2_ABSORPTION_2026-08-22.md`). No es revision ciega: la sintesis tiene que pesar
+  los acuerdos con eso en cuenta.
+- La evidencia se releyo de los artefactos (`h_gc_bt2x_oracle_inspect.json`,
+  `h_gc_bt2x_path_overfit.json`), no de los resumenes ajenos.
+
+### Q1 — Que es hoy el evento, operativamente
+
+Dos definiciones conviven y no hay que mezclarlas.
+
+**Kernel viejo (BigTrap2 v2.5.1, el medido):** cubetas de 25 ticks, footprint por fila de 1 tick,
+imbalance diagonal `ratio >= 3`, fila del lado perdedor del close y dentro del 30 % de mecha.
+El `max(opuesto, 1)` hace que con celda opuesta vacia el ratio sea el conteo absoluto. En el
+artefacto: `trap_vol` min = **3** y `trap_ratio` min = **3**, exactos. El evento real es "al
+menos 3 contratos agresores en una fila de mecha, del lado perdedor, sin oposicion diagonal" —
+con la precision de GPT: el lado, la mecha y la diagonal tambien definen el evento, y el 49,7 %
+es **densidad de eventos por cubeta** (11.964/24.093), no fraccion de cubetas unicas: el
+artefacto no cuenta `bar` unicos con TRAP. Queda como no medido ahi.
+
+**Indicador nuevo (BigTrap2Absorption v1.1.1):** el evento es `A = |TI| / (1 + max(0, sgn(TI) *
+dTicks))` superando el percentil 90 causal rodante (L=500, warmup=200), mas `MinStackedRows=2`,
+`MinTrapFrac=0,20` y `RequireFlowSideMatch`. `TRAP` se exporta siempre que hay geometria; la zona
+exige todos los cortes. TI es **trade imbalance**, no OFI.
+
+### Q2 — Evidencia del repo
+
+Kernel viejo, GC DEC26 17–21 ago (`h_gc_bt2x_oracle_inspect.json`):
+
+| magnitud | valor |
+|---|---|
+| `BARRA_PROCESADA` | 24.093 |
+| `TRAP` | 11.964 (0,497 por cubeta) |
+| `trap_vol` p25/p50/p75 | 3 / 4 / 7 (min 3, max 144) |
+| `trap_ratio` p25/p50/p75 | 3 / 4 / 5 (min 3, max 99) |
+| `trap_nrows` p25/p50/p75 | 1 / 1 / 1 (max 4) |
+| `ZONE_CREATED` | 122 |
+| ciclo de vida | 122 creadas / 279 touched / **119 invalidadas** / 3 expiradas |
+
+Caminos (`h_gc_bt2x_path_overfit.json`, rotulado `OVERFIT_DECLARED_HOLDOUT_AUG17_21`,
+`no_elige_config=true`, EV bruto sin friccion):
+
+| poblacion | n | MFE p50 | MAE p50 | nota |
+|---|---:|---:|---:|---|
+| todos | 11.962 | 38 | 36 | rr p50 = 0,96 |
+| `vol>=30` (zona) | 122 | 40 | 39 | **medias invertidas**: MAE 48,58 > MFE 46,41 |
+
+Grilla: `SL13/TP30/BE off` sobre todos: winrate 31,91 % (n_tp=3.775), EV **+0,7226 t**; el nulo
+sin deriva pide 30,23 %; para netear +1 t hacen falta 36,05 %. Sobre `vol>=30`: winrate 38,84 %,
+EV +3,7025 t con n=122 — cola chica en holdout gastado, exploratoria, no corona nada.
+
+F2.9: `S1` = **+0,0383** > `K0` = +0,0215 ≈ `N0` = +0,0182; `F0` = +0,0424 indistinguible de S1
+(IC del contraste cruza cero).
+
+Evidencia nueva del mismo dia (auditoria de paridad, export v1.1.1 de la misma ventana):
+28.042 cubetas, 13.904 TRAP, **647 zonas creadas / 628 invalidadas / 18 expiradas**. El 97,1 %
+de las zonas del indicador nuevo mueren por close-through. Es consistente con la tesis de trampa
+(el atrapado queda barrido), pero dice que el contenido informativo del evento esta en la
+creacion/fill, no en la persistencia de la zona. Y la semantica del `.cs` resulto portable con
+exactitud: 635/635 zonas reproducidas en el rango cubierto, con una salvedad de fill (1/635).
+
+### Q3 — Fortalezas reales
+
+1. **La infraestructura es lo caro y ya esta.** Subserie 1-tick, corte propio, fill al tick
+   siguiente sin look-ahead, log reproducible. Nada de eso se rehace.
+2. **Clasificacion de agresor correcta**: bid/ask primero, tick rule de respaldo, y `n_quote` /
+   `n_rule` contados en el export — la practica que la literatura (Chakrabarty–Pascual–Shkilko)
+   exige para saber cuanto del flujo es medido y cuanto inferido (~77 % de acierto del tick rule).
+3. **Observabilidad disenada para falsar**: el export amplio permite auditar cada rechazo y
+   barrer cortes offline sin recomputar el indicador.
+4. **La paridad medida hoy es una fortaleza del proceso, no solo del indicador**: la semantica
+   del `.cs` se reprodujo exacta (signed_flow y d_ticks 27.328/27.328, zonas 635/635 en rango).
+   La maquina de auditar funciona.
+5. **La honestidad del repo**: tres hipotesis refutadas con acta, cero edges promovidos. Es lo
+   que hace que esta revision valga algo.
+
+### Q4 — Debilidades reales
+
+1. **El evento viejo esta implicito, no definido** — artefacto del `max(opuesto,1)`. Coincido con
+   Opus y GPT: es el hallazgo central y no hace falta un tercer numero para verlo.
+2. **No es escala-libre**: un piso en contratos mide cosas distintas por instrumento, hora y
+   regimen.
+3. **TI no es OFI** (GPT, suscripto): el 65 % vs 32 % de Cont–Kukanov–Stoikov es sobre OFI de
+   libro con altas/bajas/cancelaciones. El score actual es trade imbalance; citar ese paper como
+   validacion directa excede la evidencia. El join L2 de junio (3/20.486) es el camino
+   sustantivo, no cosmetico (Xu–Gould–Howison).
+4. **`A` no es un residuo ni escala-libre en sentido estricto** (GPT, suscripto): es una proxy de
+   inversa de impacto con percentil causal; conserva unidades de contratos por tick.
+5. **El default contradice el nombre** (GPT Q4.5, suscripto y lo llevo a terreno medible): en
+   `AbsDirectional`, flujo positivo con `dPx=-10` tiene denominador 1, identico a `dPx=0`. Eso
+   mide *agresion fallida*, no *desplazamiento bajo*. Censo target-free pendiente para junio:
+   que fraccion de los `a_pass` proviene de `denom=1`. Si es la mayoria, el indicador es volumen
+   con otro nombre y la Puerta 2 ya esta contestada de antemano.
+6. **`dPx` con first/last trade incorpora bid-ask bounce**; la literatura usa cambio de midquote.
+   Corregible cuando cierre el join L2; hasta entonces, declarado como proxy.
+7. **`MinStackedRows=2` y `MinTrapFrac=0,20` son hipotesis de practica** sin validacion
+   peer-reviewed directa (busqueda de GPT). Entran como perillas pre-registradas, no como hechos.
+8. **El kernel Python commiteado no reproduce al `.cs`** (medido hoy, no en la pasada de GPT que
+   lo tenia como pendiente): sin concepto de sesion, diverge desde la cubeta 3947; corrido
+   verbatim sobre la cinta produce 605 zonas y solo 32 coinciden con el export. Es material de
+   Puerta 0: la corrida de junio tiene que ser del codigo versionado o la paridad no vale.
+9. **El export amplio no autoriza sweeps de outcomes** (GPT, suscripto): headline congelado y el
+   resto exploratorio.
+
+### Q5 — La barrera economica
+
+Mismos numeros, misma conclusion: EV bruto +0,7226 t contra 2,5 t necesarios (brecha 1,7774 t,
+factor 3,46x); 31,91 % observado contra 30,23 % del nulo y 36,05 % requerido. El barrido de 960
+celdas no puede coronar por construccion: sin deriva el EV bruto es cero por definicion. La
+brecha se cierra solo si el evento selecciona mejor, no tocando SL/TP/BE. Y suscribo la
+separacion de GPT: `S1` (Delta de la carrera `r_i` de F2.9) y los ticks de la grilla son
+estimands distintos; no se restan entre si.
+
+### Q6 — Corresponde cambiar el indicador. Que exactamente
+
+**Si: la definicion del evento. Y la divergencia Opus–GPT se resuelve con precision, no con
+voto.**
+
+Son dos estimands distintos:
+
+- **`AbsMagnitude`** (`A = |TI| / (1 + |dPx|)`): absorcion literal, simetrica — flujo alto con
+  desplazamiento absoluto bajo. Es la fiel al nombre y a la practica (baja respuesta de precio).
+- **`AbsDirectional`** (`A = |TI| / (1 + max(0, sgn(TI)*dPx))`): agresion fallida — penaliza solo
+  el desplazamiento a favor del flujo. El movimiento adverso no castiga: es la forma fuerte de
+  "empujaron y no ganaron terreno", que es la tesis de trampa original de BigTrap.
+
+Mi posicion para la sintesis: **headline = `AbsMagnitude`**, por tres motivos: es fiel al nombre
+del indicador; su falsacion es limpia ("bajo desplazamiento absoluto" no admite ambiguedad); y si
+la tesis viva es la trampa, `AbsDirectional` queda como segundo trial pre-registrado, no como
+rescue-post-hoc.
+
+Y una precision que le baja el costo a la decision: el export `ABS_SCORE` incluye `signed_flow` y
+`d_ticks` por cubeta, asi que **las dos cadenas de score se recomputan offline desde el mismo
+archivo** (el percentil es deterministico dado el score). Lo que hay que congelar no es el export
+sino el **estimand headline**: cual cadena define la Puerta 1. Eso se elige antes de medir, una
+sola vez.
+
+`MinStackedRows`, `MinTrapFrac` y `TapeWindowTicks` quedan como parametros congelados en el
+headline (2 / 0,20 / 25). No crear constantes nuevas.
+
+### Q7 — Con que prueba falsable y pre-registrada se decide
+
+Adopto el protocolo corregido de GPT, con la enmienda de sesiones como condicion de ejecutabilidad:
+
+1. **Puerta 0 (tecnica, sin outcomes)**: hash y parametros congelados, compilacion limpia, log
+   unico sin overwrite silencioso, y paridad NT8/Python con el kernel **versionado** (cortes de
+   sesion incluidos) mas el artefacto de la corrida subido al repo. Estado hoy: la semantica esta
+   medida exacta; el kernel commiteado aun no la implementa. Cualquier falla invalida la corrida.
+2. **Enmienda de sesiones, antes de abrir outcomes**: del 24 al 30 de junio hay a lo sumo 7 trade
+   dates; el piso de `>=10 sesiones` no cabe. Se extiende la ventana de discovery o se baja el
+   piso por escrito, declarando que lo debilita. No se corrige despues de correr.
+3. **Puerta 1 (target-free)**: decil superior de `a_score`, `MFE p50 / MAE p50 >= 1,25`, n >= 200,
+   sesiones segun la enmienda, inferencia reagrupada por sesion. Si falla, la linea se cierra ahi.
+4. **Puerta 2 (control)**: `S1` recomputado en las mismas sesiones de junio con el estimand de
+   F2.9; contraste pareado por sesion `nuevo - S1`; pasa solo si el limite inferior del IC 95 %
+   es > 0. Si S1 no puede instanciarse en la ventana, la puerta queda **no medida**, no aprobada.
+5. **Puerta 3 (economia)**: una sola monetizacion congelada de antemano (si se hereda
+   `SL13/TP30/BE off`, se declara que fue elegida mirando el holdout gastado); media bruta
+   >= 2,5 ticks. La grilla es exploratoria y no sustituye al headline.
+6. **Regla de parada**: fallar cualquier puerta cierra la linea y se asienta en
+   `EDGES_DISCOVERED.md`. Pasar las tres produce `SURVIVES_DISCOVERY`, no "edge": no queda
+   holdout intacto para promocion.
+
+**Prediccion pre-registrada de la Puerta 1** (pedida por el auditor; declarada antes de medir
+nada en junio):
+
+> **No pasa.** El decil superior de `A` esta dominado por cubetas de alto |TI|, que son cubetas
+> de alta actividad. MFE y MAE escalan con actividad, asi que su cociente hereda la base medida
+> de 38/36 = 1,055. Nada en la construccion del score induce asimetria de caminos: el score es
+> de magnitud, no de direccion de respuesta. Prediccion: `MFE p50 / MAE p50` del decil superior
+> cae **entre 0,95 y 1,15** (punto ~1,05), lejos de 1,25, y la linea se cierra en la Puerta 1
+> sin llegar a SL/TP. Si pasa, esta lectura queda refutada con el mismo numero — que es para lo
+> que esta la puerta.
+
+### Veredicto de la pasada Kimi K3
+
+Cambiar la definicion del evento: **SI**. Aprobar v1.x sin enmienda semantica (nombre del score,
+dos hipotesis separadas, headline congelado): **NO**. Probabilidad cualitativa de que pase las
+puertas corregidas: **baja**, y por primera vez con una prediccion puntual escrita que la hace
+falsable.
 
 ---
 
