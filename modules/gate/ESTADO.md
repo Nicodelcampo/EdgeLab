@@ -215,10 +215,36 @@ En orden, y **todo después de Puerta 1**:
 | `integration/` | CLI, aliases NT8, ticks→barras | ⚠ G-2 |
 | `research/` | pre-registro CTX-3 | ⚠ G-3 |
 | `runs_examples/` | smokes (fixture + 6E) | eventos sintéticos |
+| `referencia/` | documento externo de método + su auditoría | ver §8 |
 
 **No se modificó ningún archivo del zip original**, salvo renombrar `HANDOFF.md` →
 `HANDOFF_ORIGINAL.md` para que este `ESTADO.md` sea lo primero que se lee. Los defectos G-1,
 G-2 y G-3 están **documentados, no parcheados**.
+
+---
+
+## 8. Referencia externa incorporada
+
+`referencia/Regimenes_Corta_Duracion_Edge_Investigacion.md` (sha256 `b96b3555774f7b50…`, 331
+líneas) — relevamiento de método y bibliografía sobre regímenes de corta duración, adjunto de
+un workspace externo. **Es la especificación de diseño que GATE implementa**: los diez features
+del `model_id` congelado salen casi textuales de su §3.1, cosa que hasta ahora no estaba
+justificada en ninguna parte.
+
+Auditado en `referencia/AUDITORIA_DOC_REGIMENES_2026-08-23.md`. Hallazgo principal, que toca
+directamente a este módulo:
+
+> **G-4 · `ofi_ema_z` está mal nombrado.** El documento advierte explícitamente que OFI de libro
+> y trade imbalance de tape *«no son intercambiables»*. Nuestra cinta (`last;bid;ask;volume`, sin
+> tamaños ni eventos de libro) **no permite OFI**, y la única implementación del módulo
+> (`from_ticks.py:58-69`) calcula `sign(agresor) × volumen` — imbalance de tape. Renombrarlo
+> obliga a un **nuevo `model_id`** por la propia `change_policy`.
+>
+> El L2 que sí permitiría OFI existe (12 sesiones de GC DEC26) pero tiene **cobertura 0 del
+> universo front-month**. Es descargable: 2,1 GB comprimidos para las 152 sesiones.
+
+La app web que acompañaba al documento **no se subió**: 100 % de datos sintéticos, nunca corrió
+sobre datos reales.
 
 ---
 
