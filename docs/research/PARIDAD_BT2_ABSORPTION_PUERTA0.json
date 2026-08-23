@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-23T05:20:10.097867+00:00",
+  "timestamp": "2026-08-23T05:31:37.211118+00:00",
   "indicator": "BigTrap2Absorption",
   "cs_version": "1.1.1",
   "tested_against": "bt2_absorption__TW25_2.csv",
@@ -7,6 +7,17 @@
     "cs_sha256": "18d163123662dc0edfd2f45ddbb007391ac4c39b8c7c58c1e9209d66a9178641",
     "py_kernel_sha256": "0d162a6092c31228ec0f4f9539b4afc0cb5031737263db4369dea2ad03697ab2",
     "export_csv_sha256": "c6eaeb210eeb029930f8157ac76380954700eed80dd5bf5b05df18a5ee9c19d7"
+  },
+  "time_normalization": {
+    "csv_timezone": "America/Argentina/Buenos_Aires",
+    "tape_timezone": "UTC",
+    "measured_offset_hours": 3,
+    "tape_first_ts_utc": "2026-08-17T03:00:00.1600000",
+    "tape_first_ts_art": "2026-08-17T00:00:00.1600000",
+    "first_matched_nt8_bar": 715,
+    "first_matched_t_start_art": "2026-08-17T00:00:09.7880000",
+    "first_matched_t_start_utc": "2026-08-17T03:00:09.7880000",
+    "tape_slice_index": 12
   },
   "headline_params": {
     "ScoreMode": "AbsMagnitude",
@@ -43,55 +54,66 @@
   },
   "layers": {
     "bucket_coverage": {
-      "covered": 27074,
-      "total_nt8": 28042,
-      "pct": 96.55,
-      "uncovered_initial_buckets": 968,
+      "common_t_start_count": 26817,
+      "nt8_total": 28042,
+      "python_total": 26818,
+      "only_nt8_count": 707,
+      "only_python_count": 1,
+      "pct": 95.63,
       "verdict": "PASSED_COVERAGE"
     },
     "signed_flow": {
-      "matched": 646,
-      "total_compared": 27074,
-      "pct": 2.39,
-      "verdict": "FAIL (2.39%)"
+      "matched": 26817,
+      "total_compared": 26817,
+      "pct": 100.0,
+      "verdict": "EXACT"
     },
     "d_ticks": {
-      "matched": 1091,
-      "total_compared": 27074,
-      "pct": 4.03,
-      "verdict": "FAIL (4.03%)"
+      "matched": 26817,
+      "total_compared": 26817,
+      "pct": 100.0,
+      "verdict": "EXACT"
     },
     "a_score": {
-      "matched": 514,
-      "total_compared": 27074,
-      "pct": 1.9,
-      "verdict": "FAIL (1.90%)"
+      "matched": 26817,
+      "total_compared": 26817,
+      "pct": 100.0,
+      "verdict": "EXACT"
     },
     "causal_threshold": {
-      "a_pass_matched": 21955,
-      "n_hist_matched": 26574,
-      "a_thr_matched": 8024,
-      "total_compared": 27074,
-      "a_pass_pct": 81.09,
-      "n_hist_pct": 98.15,
-      "a_thr_pct": 29.64,
-      "verdict": "FAIL"
+      "causal_burn_in_buckets": 500,
+      "post_burn_in_total": 26824,
+      "a_pass_matched": 26824,
+      "n_hist_matched": 26824,
+      "a_thr_matched": 26824,
+      "a_pass_pct": 100.0,
+      "n_hist_pct": 100.0,
+      "a_thr_pct": 100.0,
+      "verdict": "EXACT"
     },
     "zones": {
-      "matched": 569,
-      "py_total": 610,
-      "nt8_covered_total": 629,
-      "pct": 93.28,
-      "verdict": "FAIL (93.28%)"
+      "matched_exact": 628,
+      "common_keys_count": 628,
+      "only_python_count": 0,
+      "only_nt8_count": 18,
+      "pct": 100.0,
+      "verdict": "EXACT"
     },
     "fills": {
-      "matched_exact": 571,
-      "py_total": 610,
-      "nt8_covered_total": 629,
-      "pct": 93.61,
-      "discrepancies_count": 39,
-      "verdict": "FAIL (93.61%)"
+      "matched_exact": 628,
+      "common_keys_count": 628,
+      "only_python_count": 0,
+      "only_nt8_count": 18,
+      "pct": 100.0,
+      "discrepancies_count": 0,
+      "verdict": "EXACT"
     }
   },
-  "puerta_0_verdict": "FAIL_PUERTA_0"
+  "discrepancies_sample": {
+    "bucket_discrepancies_top20": [],
+    "threshold_discrepancies_top20": [],
+    "zone_discrepancies_top20": [],
+    "fill_discrepancies_top20": []
+  },
+  "puerta_0_verdict": "PASSED_PUERTA_0"
 }
