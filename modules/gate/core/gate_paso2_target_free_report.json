@@ -1,0 +1,91 @@
+{
+  "schema": "gate_target_free_v1",
+  "outcomes_accessed": false,
+  "bar_path": {
+    "n_bars": 390,
+    "minutes_by_regime": {
+      "calmo": 133,
+      "normal": 173,
+      "volatil": 52,
+      "toxico": 32
+    },
+    "persistencia_media": 11.47,
+    "flip_flop_rate": 0.0848,
+    "transition_matrix": [
+      [
+        0.925,
+        0.068,
+        0.0,
+        0.008
+      ],
+      [
+        0.052,
+        0.913,
+        0.017,
+        0.017
+      ],
+      [
+        0.0,
+        0.059,
+        0.941,
+        0.0
+      ],
+      [
+        0.031,
+        0.094,
+        0.031,
+        0.844
+      ]
+    ],
+    "expected_duration_from_p_stay": {
+      "calmo": 13.3,
+      "normal": 11.53,
+      "volatil": 17.0,
+      "toxico": 6.4
+    },
+    "unit": "bars(=minutes si 1m)"
+  },
+  "event_labels": {
+    "n_events": 250,
+    "n_as_of_ok": 250,
+    "session_coverage": {
+      "calmo": {
+        "n_events": 94,
+        "n_sessions": 22,
+        "ok_min_sessions": false
+      },
+      "normal": {
+        "n_events": 105,
+        "n_sessions": 23,
+        "ok_min_sessions": false
+      },
+      "volatil": {
+        "n_events": 31,
+        "n_sessions": 11,
+        "ok_min_sessions": false
+      },
+      "toxico": {
+        "n_events": 20,
+        "n_sessions": 10,
+        "ok_min_sessions": false
+      }
+    },
+    "corr_with_ancho": {
+      "status": "OK",
+      "n": 250,
+      "pearson_regime_code_vs_ancho": 0.509,
+      "point_biserial_one_vs_rest": {
+        "calmo": -0.753,
+        "normal": 0.4018,
+        "volatil": 0.7251,
+        "toxico": -0.2675
+      },
+      "verdict": "REJECT_LIKE_CTX2",
+      "thresholds": {
+        "warn": 0.2,
+        "reject": 0.25
+      },
+      "note": "CTX-2 rechaz\u00f3 fase sesi\u00f3n con corr\u2248-0.255 vs ancho. GATE debe publicar esta corr target-free antes de outcomes."
+    }
+  }
+}

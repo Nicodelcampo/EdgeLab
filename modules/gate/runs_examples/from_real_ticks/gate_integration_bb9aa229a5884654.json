@@ -1,0 +1,117 @@
+{
+  "schema_version": "edgelab_gate_integration_v1",
+  "run_id": "bb9aa229a5884654",
+  "seed": 20260823,
+  "model_id": "gate_tf_causal_bal_v2_feat10_sticky90_vpin055",
+  "commit": "drive-sample-6e",
+  "created_at_utc": "2026-08-23T19:44:03.344140+00:00",
+  "inputs": {
+    "events": "/home/workdir/artifacts/runs_gate_labels/from_real_ticks/events_from_6e.csv",
+    "bars": "/home/workdir/artifacts/runs_gate_labels/from_real_ticks/bars_1m_6e.csv",
+    "n_events_in": 859,
+    "n_bars": 10317
+  },
+  "outputs": {
+    "labels_csv": "/home/workdir/artifacts/runs_gate_labels/from_real_ticks/gate_labels_bb9aa229a5884654.csv",
+    "n_labels": 859,
+    "n_as_of_ok": 859,
+    "artifact_json": "/home/workdir/artifacts/runs_gate_labels/from_real_ticks/gate_integration_bb9aa229a5884654.json"
+  },
+  "target_free": {
+    "schema": "gate_target_free_v1",
+    "outcomes_accessed": false,
+    "bar_path": {
+      "n_bars": 10317,
+      "minutes_by_regime": {
+        "calmo": 3405,
+        "normal": 3405,
+        "volatil": 3507,
+        "toxico": 0
+      },
+      "persistencia_media": 10.26,
+      "flip_flop_rate": 0.0974,
+      "transition_matrix": [
+        [
+          0.918,
+          0.077,
+          0.005,
+          0.0
+        ],
+        [
+          0.08,
+          0.856,
+          0.064,
+          0.0
+        ],
+        [
+          0.001,
+          0.066,
+          0.933,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "expected_duration_from_p_stay": {
+        "calmo": 12.24,
+        "normal": 6.92,
+        "volatil": 14.92,
+        "toxico": 1.0
+      },
+      "unit": "bars(=minutes si 1m)"
+    },
+    "event_labels": {
+      "n_events": 859,
+      "n_as_of_ok": 859,
+      "session_coverage": {
+        "calmo": {
+          "n_events": 298,
+          "n_sessions": 10,
+          "ok_min_sessions": false
+        },
+        "normal": {
+          "n_events": 272,
+          "n_sessions": 10,
+          "ok_min_sessions": false
+        },
+        "volatil": {
+          "n_events": 289,
+          "n_sessions": 10,
+          "ok_min_sessions": false
+        },
+        "toxico": {
+          "n_events": 0,
+          "n_sessions": 0,
+          "ok_min_sessions": false
+        }
+      },
+      "corr_with_ancho": {
+        "status": "OK",
+        "n": 859,
+        "pearson_regime_code_vs_ancho": 0.0139,
+        "point_biserial_one_vs_rest": {
+          "calmo": -0.0219,
+          "normal": 0.02,
+          "volatil": 0.0023,
+          "toxico": null
+        },
+        "verdict": "OK_LOW_CORR",
+        "thresholds": {
+          "warn": 0.2,
+          "reject": 0.25
+        },
+        "note": "CTX-2 rechaz\u00f3 fase sesi\u00f3n con corr\u2248-0.255 vs ancho. GATE debe publicar esta corr target-free antes de outcomes."
+      }
+    }
+  },
+  "gate_schema": "1.0.0",
+  "notes": [
+    "Join as-of backward at event t0 only.",
+    "If bars lacked regime, a quantile proxy was used (replace with real GATE detector for formal runs).",
+    "No outcomes accessed."
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "$schema": "gate_context_labels/1.0.0",
+  "title": "GATE context labels for EdgeLab events",
+  "description": "Point-in-time regime labels joined at event t0 only. No outcomes. Fail-closed.",
+  "version": "1.0.0",
+  "required_event_input_columns": {
+    "event_id": "string — unique id of TRAP/zone/fill event from NT8 export",
+    "t0": "datetime64[ns, UTC] or epoch_ns — start of event/bucket (decision time)",
+    "t1": "datetime64[ns, UTC] or epoch_ns — optional end; never used for features",
+    "session_id": "string — CME trade_date or session key",
+    "symbol": "string — e.g. ES",
+    "ancho_ticks": "float — optional; needed for target-free corr diagnostic (Paso 2)"
+  },
+  "label_output_columns": {
+    "event_id": "string",
+    "session_id": "string",
+    "t0": "datetime64[ns, UTC]",
+    "regime": "int8 — 0=calmo 1=normal 2=volatil 3=toxico",
+    "regime_name": "string",
+    "post_calmo": "float32 — posterior or soft score [0,1]",
+    "post_normal": "float32",
+    "post_volatil": "float32",
+    "vpin": "float32 — value known at t0",
+    "sticky_age_bars": "int32 — bars since last regime change at t0",
+    "model_id": "string — frozen config id",
+    "run_id": "string — unique run",
+    "seed": "int64",
+    "commit": "string — git sha or 'local'",
+    "as_of_ok": "bool — true only if all features available at t0",
+    "fail_reason": "string — empty if as_of_ok"
+  },
+  "join_rules": {
+    "alignment": "as_of backward only: feature_ts <= t0",
+    "forbidden": [
+      "forward fill from future bars",
+      "use t1 for any feature",
+      "full-sample z-score",
+      "bidirectional attention at label time"
+    ],
+    "missing_policy": "fail-closed: as_of_ok=false, regime unset or NaN"
+  },
+  "provenance": {
+    "run_id": "required",
+    "seed": "required",
+    "model_id": "required",
+    "commit": "required",
+    "schema_version": "1.0.0"
+  },
+  "regime_codes": {
+    "0": "calmo",
+    "1": "normal",
+    "2": "volatil",
+    "3": "toxico"
+  }
+}
