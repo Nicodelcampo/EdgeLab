@@ -269,3 +269,106 @@ Es el mismo patrón que apareció todo el día del lado de EdgeLab —el `a_scor
 el `dir` de los 377 eventos, el `max_ticks=700000`—. Van nueve, y la constante no es el
 descuido: es que **nadie fue a cruzar la etiqueta contra el contenido** hasta que alguien
 cambió el insumo o la unidad.
+
+---
+
+# ADDENDUM 2026-08-23 — verificación de la auditoría independiente
+
+Escrito **después** de `AUDITORIA_INDEPENDIENTE_GATE_GC_2026-08-23.md` (commit `2a9edb5`).
+No acepté sus hallazgos de palabra: verifiqué los cuatro más consecuentes por ejecución.
+
+## A-1 · **CORRIJO UN ERROR MÍO**: Kyle λ no es defecto del `model_id`
+
+En §2 D-1 escribí *«Kyle λ arrastra el mismo problema»* como si fuera un defecto vigente del
+`model_id` congelado. **Es falso.** Los diez features son:
+
+```
+rvol, er, ofi_ema_z, hurst, vpin, spread_z, sess_rel, phase_open, phase_mid, phase_close
+```
+
+**Kyle λ no está.** Aparece en las familias del documento (§3.1) y en la app de Grok, no en la
+configuración congelada de GATE. El auditor tiene razón: es **deuda futura**, no defecto actual.
+Mi frase confundió el catálogo del documento con la config del módulo.
+
+## A-2 · El módulo **no ejecuta** — CONFIRMADO POR EJECUCIÓN
+
+`gate_adapter.py:29` resuelve `SCHEMA_PATH` a `core/gate_context_schema_v1.json`; el archivo
+está en `schema/`. Corrido el arranque rápido del handoff, textual:
+
+```
+FileNotFoundError: ...\modules\gate\core\gate_context_schema_v1.json
+```
+
+Los smokes se produjeron en un directorio **plano**; el zip los reorganizó en `core/`,
+`schema/`, `integration/` y rompió las rutas. **El layout auditado no es el layout que corrió.**
+
+## A-3 · Look-ahead intrabar — CONFIRMADO, y **supera en gravedad a todo lo que encontré yo**
+
+`ticks_to_bars_1m` usa `resample("1min")`, que con el default `label="left"` **sella la barra al
+inicio del minuto pero agrega los ticks de todo el minuto**. `merge_asof(direction="backward")`
+la acepta porque su timestamp es `≤ t0`.
+
+Demostración ejecutada:
+
+```
+ticks 14:30:00..14:30:29 -> mid=100      ticks 14:30:30..14:30:59 -> mid=999
+barra resample:  time=14:30:00  open=100  high=999  close=999
+evento t0=14:30:10  ->  merge_asof le asigna esa barra  ->  high=999, close=999
+```
+
+**El evento recibe una feature que contiene un movimiento ocurrido 20 segundos después.**
+
+Esto invalida la afirmación central del diseño. El schema prohíbe *«forward fill from future
+bars»*; el defecto no es forward-fill, es que **la barra misma es futura por dentro** y el
+predicado `feature_ts ≤ t0` no lo detecta. **Reordena la lista de defectos: éste va primero.**
+
+## A-4 · `vpin` no es VPIN — CONFIRMADO
+
+`from_ticks.py:82`:
+
+```python
+bars["vpin"] = bars["tape_imb"].abs().rolling(30, min_periods=5).mean()
+```
+
+Media móvil **temporal** de imbalance absoluto. El VPIN canónico
+(Easley–López de Prado–O'Hara) se sincroniza por **buckets de volumen**, no por tiempo.
+
+Agrava G-4: el `model_id` **se llama** `..._vpin055` y el cuarto régimen —tóxico— se define por
+`vpin_threshold: 0.55`. **El estado tóxico está definido por un umbral sobre una cantidad que no
+es la que el nombre declara.** Es P-39 por segunda vez en el mismo `model_id`.
+
+## A-5 · `merge_asof` sin `by=` ni `tolerance` — CONFIRMADO
+
+`gate_adapter.py:124-130` pasa sólo `left_on`, `right_on`, `direction`. Consecuencias:
+
+- **sin `by=`**: un evento de un contrato puede tomar la barra de otro;
+- **sin `tolerance`**: una barra de días atrás satisface `≤ t0` y devuelve `as_of_ok=true`. El
+  schema dice *«fail-closed si no hay barra ≤ t0»*, y una barra de hace tres días **la hay**.
+  Es fail-open disfrazado de fail-closed.
+
+## A-6 · Lo que queda provisional, de mi propio texto
+
+§2 D-5 (*«en GC el régimen es de sesión, 3,18× contra 1,39×»*) está medido sobre **115 sesiones
+y la cadena vieja**, superada por la enmienda a 152 con rolls distintos. El auditor lo marca
+provisional y **tiene razón**: se sostiene recién cuando B-9 se rehaga.
+
+## A-7 · Veredicto conjunto
+
+```
+FOUNDATION_ONLY / NOT_OPERATIONAL   -- coincido, sin reservas
+```
+
+Con el orden que fija el auditor: B-9 sobre 152 → capacidad N_RAND sobre 152 → auditar los
+cuatro rolls → Puerta 1 **una sola vez** → recién ahí decidir GATE. Y si continúa: **reparar
+primero el contrato causal** (A-3) y **`model_id` nuevo** para GC.
+
+## Nota de método
+
+De los siete hallazgos que publiqué, uno estaba mal (A-1) y otro quedó provisional (A-6). Y el
+defecto más grave del módulo —el look-ahead intrabar— **no lo encontré**: leí `merge_asof
+backward` y `fail-closed`, verifiqué que el join era causal, y **no bajé un nivel a preguntar si
+la barra que el join devuelve es causal por dentro**. El predicado era correcto; el objeto sobre
+el que opera, no.
+
+Es la misma forma de los nueve errores del día, pero del lado contrario: esta vez la etiqueta
+—«join as-of causal»— era cierta, y lo que fallaba era el contenido que etiquetaba.
