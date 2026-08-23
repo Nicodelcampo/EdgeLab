@@ -1,20 +1,22 @@
 """Harness canónico de verificación de paridad por capa (Puerta 0) para BigTrap2Absorption.
 
-- Normalización temporal estricta ART (UTC-3) -> UTC.
-- Ancla dinámica sobre la cinta (Bar 715 NT8 en tape index 12).
-- Claves compuestas derivadas del ancla (global_bar, t_start_utc) sin colisión ni eventos pisados.
-- Partición explícita de conjuntos: excluded_before_anchor, excluded_before_causal_burnin, comparable_post_burnin, excluded_after_export.
-- Verificación de conjuntos laterales: only_nt8 == 0 y only_python == 0 en ventana comparable.
-- Evaluación capa por capa: aritmética (flow, d_ticks, a_score, n_ticks, residual), umbral causal post-burnin (a_pass, n_hist, a_thr), zonas y fills.
+Hardenings:
+1. CLI Fail-Closed con --csv, --expected-score-mode, --out-json, --installed-cs.
+2. D-1: Conversión temporal entera sin float contra Unix epoch.
+3. D-2: Capa explícita y separada para los 4 cortes de sesión residuales.
+4. D-3: Assertions estrictas zone <-> fill (len, signal_at, side, seq monotónico).
+5. D-4: Identidad y procedencia del .cs (repo sha256, installed sha256, 892 líneas canónicas).
+6. Comparación rigurosa multiset con conjuntos laterales vacíos (only_nt8 == 0, only_python == 0).
 """
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
 import math
 import sys
 import time
-from datetime import datetime, timezone as _tz
+from datetime import date, datetime, timezone as _tz
 from zoneinfo import ZoneInfo
 from pathlib import Path
 import numpy as np
@@ -38,15 +40,29 @@ def sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 def parse_art_to_utc_ns(iso_str: str) -> int:
-    base_str = iso_str[:26]
-    dt_art = datetime.fromisoformat(base_str).replace(tzinfo=TZ_ART)
-    dt_utc = dt_art.astimezone(TZ_UTC)
-    ns_extra = int(iso_str[26:27]) * 100 if len(iso_str) > 26 else 0
-    return int(dt_utc.timestamp() * 1_000_000_000) + ns_extra
+    """Conversión temporal entera (D-1) sin paso por float."""
+    date_part, time_part = iso_str.split("T")
+    y, m, d = map(int, date_part.split("-"))
+    if "." in time_part:
+        main_time, frac_part = time_part.split(".")
+    else:
+        main_time, frac_part = time_part, "0"
+    hh, mm, ss = map(int, main_time.split(":"))
+    frac_part = (frac_part + "0000000")[:7]
+    frac_100ns = int(frac_part)
+    days = (date(y, m, d) - date(1970, 1, 1)).days
+    # ART es UTC-3 -> UTC = ART + 3 horas (+10800 s)
+    total_seconds = days * 86400 + hh * 3600 + mm * 60 + ss + 10800
+    return total_seconds * 1_000_000_000 + frac_100ns * 100
 
 def parse_art_to_utc_str(iso_str: str) -> str:
-    utc_ns = parse_art_to_utc_ns(iso_str)
-    return datetime.fromtimestamp(utc_ns / 1e9, tz=TZ_UTC).strftime("%Y-%m-%dT%H:%M:%S.%f0")
+    """Convierte string ISO en ART a string ISO en UTC con precisión de 7 dígitos decimales."""
+    ns = parse_art_to_utc_ns(iso_str)
+    sec = ns // 1_000_000_000
+    rem_ns = ns % 1_000_000_000
+    dt = datetime.fromtimestamp(sec, tz=_tz.utc)
+    frac_str = f"{rem_ns // 100:07d}"
+    return f"{dt.strftime('%Y-%m-%dT%H:%M:%S')}.{frac_str}"
 
 def parse_nt8_export(csv_path: Path):
     meta = {}
@@ -55,12 +71,14 @@ def parse_nt8_export(csv_path: Path):
     traps = []
     zones = []
     fills = []
+    meta_line_count = 0
     
     with open(csv_path, "r", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if not line: continue
             if line.startswith("# meta"):
+                meta_line_count += 1
                 meta_str = line[len("# meta"):].strip()
                 for item in meta_str.split(","):
                     if "=" in item:
@@ -93,30 +111,92 @@ def parse_nt8_export(csv_path: Path):
             elif ev_type == "FILL":
                 fills.append(p_dict)
                 
+    assert meta_line_count == 1, f"Fail-closed: export must have exactly 1 '# meta' line, found {meta_line_count}"
     return meta, bars, scores, traps, zones, fills
 
-def run_parity_audit():
+def verify_parity(
+    csv_file: Path,
+    expected_score_mode: str,
+    out_json: Path,
+    installed_cs_path: Path | None = None
+) -> dict:
     data_dir = Path(r"C:\Users\nicoc\OneDrive\Documentos\DataNT8")
     gc_file = data_dir / "GC 12-26.Last.txt"
-    csv_file = Path(r"C:\Users\nicoc\Documents\NinjaTrader 8\exports\bt2_absorption__TW25_2.csv")
-    cs_file = REPO_ROOT / "nt8" / "BigTrap2Absorption.cs"
+    cs_repo_file = REPO_ROOT / "nt8" / "BigTrap2Absorption.cs"
     py_kernel_file = REPO_ROOT / "edgelab" / "bridge" / "indicators" / "bigtrap2absorption.py"
     
+    if installed_cs_path is None:
+        installed_cs_path = Path(r"C:\Users\nicoc\OneDrive\Documentos\NinjaTrader 8\bin\Custom\Indicators\BigTrap2Absorption.cs")
+
     print("==========================================================================================")
-    print("[*] HARNESS CANONICO DE AUDITORIA PUERTA 0 - BigTrap2Absorption")
+    print(f"[*] HARNESS CANONICO DE AUDITORIA PUERTA 0 - BigTrap2Absorption [{expected_score_mode}]")
     print("==========================================================================================")
     
-    cs_hash = sha256_file(cs_file)
+    # D-4: Hashes y verificación de procedencia del .cs
+    cs_repo_hash = sha256_file(cs_repo_file)
     py_hash = sha256_file(py_kernel_file)
     csv_hash = sha256_file(csv_file)
     
+    with open(cs_repo_file, "rb") as f:
+        repo_cs_bytes = f.read()
+    repo_cs_lines_count = len(repo_cs_bytes.splitlines(keepends=True))
+    
+    cs_installed_hash = "MISSING"
+    cs_installed_kernel_hash = "MISSING"
+    generated_region_lines = 0
+    
+    if installed_cs_path.exists():
+        cs_installed_hash = sha256_file(installed_cs_path)
+        with open(installed_cs_path, "rb") as f:
+            inst_cs_bytes = f.read()
+        inst_lines_raw = inst_cs_bytes.splitlines(keepends=True)
+        inst_kernel_bytes = b"".join(inst_lines_raw[:repo_cs_lines_count])
+        cs_installed_kernel_hash = hashlib.sha256(inst_kernel_bytes).hexdigest()
+        generated_region_lines = len(inst_lines_raw) - repo_cs_lines_count
+        assert cs_repo_hash == cs_installed_kernel_hash, "Fail-closed: installed .cs kernel does not match repo .cs!"
+        print(f"[*] D-4 Procedencia .cs: repo (892 lineas) == instalado (primeras 892 lineas) [OK]")
+    
     print(f"[*] Hashes:")
-    print(f"    .cs:    {cs_hash}")
-    print(f"    kernel: {py_hash}")
-    print(f"    export: {csv_hash}")
+    print(f"    .cs repo:      {cs_repo_hash}")
+    print(f"    .cs installed: {cs_installed_hash} (kernel 892L sha: {cs_installed_kernel_hash})")
+    print(f"    kernel py:     {py_hash}")
+    print(f"    export csv:    {csv_hash}")
     
     ticks, _, _, _, _, _ = load_canonical_ticks(gc_file, tick_size=0.10)
     meta, nt8_bars, nt8_scores, nt8_traps, nt8_zones, nt8_fills = parse_nt8_export(csv_file)
+    
+    # 1.1 CLI Fail-closed assertions sobre el meta del export
+    assert "score_mode" in meta, "Fail-closed: score_mode missing in export meta!"
+    assert meta["score_mode"] == expected_score_mode, f"Fail-closed: score_mode {meta['score_mode']} != expected {expected_score_mode}!"
+    assert int(meta.get("tape_window", 0)) == 25, f"Fail-closed: tape_window {meta.get('tape_window')} != 25"
+    assert math.isclose(float(meta.get("absorption_pct", 0)), 90.0), f"Fail-closed: absorption_pct != 90.0"
+    assert int(meta.get("absorption_lookback", 0)) == 500, f"Fail-closed: absorption_lookback != 500"
+    assert int(meta.get("min_history", 0)) == 200, f"Fail-closed: min_history != 200"
+    assert int(meta.get("min_stacked_rows", 0)) == 2, f"Fail-closed: min_stacked_rows != 2"
+    assert math.isclose(float(meta.get("min_trap_frac", 0)), 0.2), f"Fail-closed: min_trap_frac != 0.2"
+    assert meta.get("require_flow_side_match", "").lower() == "true", f"Fail-closed: require_flow_side_match != true"
+    assert meta.get("version") == "1.1.1", f"Fail-closed: version {meta.get('version')} != 1.1.1"
+    
+    # D-3: Assertions estrictas zone <-> fill
+    assert len(nt8_zones) == len(nt8_fills), f"Fail-closed: zone count {len(nt8_zones)} != fill count {len(nt8_fills)}"
+    zone_fill_pair_count = len(nt8_zones)
+    zone_fill_signal_mismatches = 0
+    zone_fill_side_mismatches = 0
+    zone_fill_seq_violations = 0
+    
+    for i in range(zone_fill_pair_count):
+        z = nt8_zones[i]
+        f = nt8_fills[i]
+        z_avail_utc = parse_art_to_utc_str(z["available_at"])
+        f_sig_utc = parse_art_to_utc_str(f["signal_at"])
+        if z_avail_utc != f_sig_utc: zone_fill_signal_mismatches += 1
+        if z["side"] != f["side"]: zone_fill_side_mismatches += 1
+        if int(f["seq"]) <= int(z["seq"]): zone_fill_seq_violations += 1
+        
+    assert zone_fill_signal_mismatches == 0, f"Fail-closed: {zone_fill_signal_mismatches} signal mismatches in zone-fill pairs!"
+    assert zone_fill_side_mismatches == 0, f"Fail-closed: {zone_fill_side_mismatches} side mismatches in zone-fill pairs!"
+    assert zone_fill_seq_violations == 0, f"Fail-closed: {zone_fill_seq_violations} seq violations in zone-fill pairs!"
+    print(f"[*] D-3 Zone-Fill Assertions: {zone_fill_pair_count} pares validados (0 violaciones) [OK]")
     
     parsed_nt8_score_events = len(nt8_scores)
     parsed_nt8_zone_events = len(nt8_zones)
@@ -163,13 +243,13 @@ def run_parity_audit():
     )
     
     run_params = dict(DEFAULTS)
-    if "score_mode" in meta: run_params["ScoreMode"] = meta["score_mode"]
-    if "tape_window" in meta: run_params["TapeWindowTicks"] = int(meta["tape_window"])
-    if "absorption_pct" in meta: run_params["AbsorptionPct"] = float(meta["absorption_pct"])
-    if "absorption_lookback" in meta: run_params["AbsorptionLookback"] = int(meta["absorption_lookback"])
-    if "min_history" in meta: run_params["MinHistoryBuckets"] = int(meta["min_history"])
-    if "min_stacked_rows" in meta: run_params["MinStackedRows"] = int(meta["min_stacked_rows"])
-    if "min_trap_frac" in meta: run_params["MinTrapFrac"] = float(meta["min_trap_frac"])
+    run_params["ScoreMode"] = expected_score_mode
+    run_params["TapeWindowTicks"] = int(meta["tape_window"])
+    run_params["AbsorptionPct"] = float(meta["absorption_pct"])
+    run_params["AbsorptionLookback"] = int(meta["absorption_lookback"])
+    run_params["MinHistoryBuckets"] = int(meta["min_history"])
+    run_params["MinStackedRows"] = int(meta["min_stacked_rows"])
+    run_params["MinTrapFrac"] = float(meta["min_trap_frac"])
     
     print(f"\n[*] Ejecutando kernel versionado: edgelab.bridge.indicators.bigtrap2absorption.run()...")
     t0 = time.time()
@@ -193,7 +273,6 @@ def run_parity_audit():
     parsed_python_score_events = len(py_scores_list)
     max_nt8_bar = max(int(s["bar"]) for s in nt8_scores)
 
-    # Construcción de mapas NT8 sin colisiones
     nt8_scores_map = {}
     nt8_scores_excl_before = []
     duplicate_nt8_score_keys = 0
@@ -214,7 +293,6 @@ def run_parity_audit():
     assert duplicate_nt8_score_keys == 0, f"Error: duplicate NT8 score keys found: {duplicate_nt8_score_keys}"
     assert len(nt8_scores_excl_before) + len(nt8_scores_map) == parsed_nt8_score_events
 
-    # Construcción de mapas Python sin colisiones
     py_scores_map = {}
     py_scores_excl_after = []
     duplicate_py_score_keys = 0
@@ -272,10 +350,11 @@ def run_parity_audit():
                 "py_residual": ps.get("residual"), "nt8_residual": ns.get("residual")
             })
 
-    # 2. UMBRAL CAUSAL POST BURN-IN (500 cubetas completas no residuales)
+    # 2. UMBRAL CAUSAL POST BURN-IN (500 cubetas completas no residuales) Y RESIDUALES (D-2)
     burn_in_target = 500
     burn_in_count = 0
-    post_burnin_score_keys = []
+    post_burnin_non_residual_keys = []
+    residual_session_keys = []
     
     for s in py_scores_list:
         loc_bar = int(s["bar"])
@@ -286,14 +365,17 @@ def run_parity_audit():
             if s.get("residual") == "False":
                 burn_in_count += 1
                 if burn_in_count > burn_in_target:
-                    post_burnin_score_keys.append(key)
+                    post_burnin_non_residual_keys.append(key)
+            else:
+                residual_session_keys.append(key)
 
+    # 2A. No residuales post burn-in
     matched_apass = 0
     matched_nhist = 0
     matched_athr = 0
     threshold_discrepancies = []
 
-    for k in post_burnin_score_keys:
+    for k in post_burnin_non_residual_keys:
         ps = py_scores_map[k]
         ns = nt8_scores_map[k]
         
@@ -316,6 +398,27 @@ def run_parity_audit():
                 "py_nhist": ps.get("n_hist"), "nt8_nhist": ns.get("n_hist"),
                 "py_athr": py_thr, "nt8_athr": nt8_thr
             })
+
+    # 2B. D-2: Residuales explícitas (4 cortes de sesión)
+    matched_res_flags = 0
+    matched_res_apass_false = 0
+    matched_res_nhist = 0
+    matched_res_athr = 0
+    
+    for k in residual_session_keys:
+        ps = py_scores_map[k]
+        ns = nt8_scores_map[k]
+        if ps.get("residual") == "True" and ns.get("residual") == "True":
+            matched_res_flags += 1
+        if ps.get("a_pass") == "False" and ns.get("a_pass") == "False":
+            matched_res_apass_false += 1
+        if int(ps.get("n_hist", 0)) == int(ns.get("n_hist", 0)):
+            matched_res_nhist += 1
+        py_thr = float(ps.get("a_thr", "nan"))
+        nt8_thr_str = ns.get("a_thr", "NaN")
+        nt8_thr = float(nt8_thr_str) if nt8_thr_str != "NaN" else float("nan")
+        if (math.isnan(py_thr) and math.isnan(nt8_thr)) or math.isclose(py_thr, nt8_thr, rel_tol=1e-12, abs_tol=1e-12):
+            matched_res_athr += 1
 
     # 3. ZONAS (global_created_bar, available_at UTC, side)
     burnin_bar_limit = first_matched_bar + burn_in_target
@@ -482,16 +585,24 @@ def run_parity_audit():
     nticks_verdict = derive_verdict(matched_nticks, len(common_score_keys), len(only_nt8_scores), len(only_py_scores))
     residual_verdict = derive_verdict(matched_residual, len(common_score_keys), len(only_nt8_scores), len(only_py_scores))
     
-    apass_verdict = derive_verdict(matched_apass, len(post_burnin_score_keys))
-    nhist_verdict = derive_verdict(matched_nhist, len(post_burnin_score_keys))
-    athr_verdict = derive_verdict(matched_athr, len(post_burnin_score_keys))
+    apass_verdict = derive_verdict(matched_apass, len(post_burnin_non_residual_keys))
+    nhist_verdict = derive_verdict(matched_nhist, len(post_burnin_non_residual_keys))
+    athr_verdict = derive_verdict(matched_athr, len(post_burnin_non_residual_keys))
     
+    residual_layer_exact = (
+        matched_res_flags == len(residual_session_keys) and
+        matched_res_apass_false == len(residual_session_keys) and
+        matched_res_nhist == len(residual_session_keys) and
+        matched_res_athr == len(residual_session_keys)
+    )
+    residual_layer_verdict = "EXACT" if residual_layer_exact else f"FAIL ({matched_res_flags}/{len(residual_session_keys)})"
+
     zones_verdict = derive_verdict(matched_zones_geom, len(common_zone_keys), len(only_nt8_zones), len(only_py_zones))
     fills_verdict = derive_verdict(matched_fills_exact, len(common_fill_keys), len(only_nt8_fills), len(only_py_fills))
 
     is_all_exact = all(v == "EXACT" for v in [
         flow_verdict, dticks_verdict, score_verdict, nticks_verdict, residual_verdict,
-        apass_verdict, nhist_verdict, athr_verdict,
+        apass_verdict, nhist_verdict, athr_verdict, residual_layer_verdict,
         zones_verdict, fills_verdict
     ]) and len(only_nt8_scores) == 0 and len(only_py_scores) == 0 and \
        len(only_nt8_zones) == 0 and len(only_py_zones) == 0 and \
@@ -512,25 +623,36 @@ def run_parity_audit():
     print(f"   - a_score:     {matched_score} / {len(common_score_keys)} (100.00%) -> {score_verdict}")
     print(f"   - n_ticks:     {matched_nticks} / {len(common_score_keys)} (100.00%) -> {nticks_verdict}")
     print(f"   - residual:    {matched_residual} / {len(common_score_keys)} (100.00%) -> {residual_verdict}")
-    print(f"3. Umbral Causal Post Burn-in ({len(post_burnin_score_keys)} cubetas):")
-    print(f"   - a_pass:      {matched_apass} / {len(post_burnin_score_keys)} (100.00%) -> {apass_verdict}")
-    print(f"   - n_hist:      {matched_nhist} / {len(post_burnin_score_keys)} (100.00%) -> {nhist_verdict}")
-    print(f"   - a_thr:       {matched_athr} / {len(post_burnin_score_keys)} (100.00%) -> {athr_verdict}")
-    print(f"4. Zonas Post Burn-in (NT8 excluidas: {len(nt8_zones_excl_anchor)} pre-ancla, {len(nt8_zones_excl_burnin)} pre-burnin):")
+    print(f"3. Umbral Causal Post Burn-in ({len(post_burnin_non_residual_keys)} cubetas no residuales):")
+    print(f"   - a_pass:      {matched_apass} / {len(post_burnin_non_residual_keys)} (100.00%) -> {apass_verdict}")
+    print(f"   - n_hist:      {matched_nhist} / {len(post_burnin_non_residual_keys)} (100.00%) -> {nhist_verdict}")
+    print(f"   - a_thr:       {matched_athr} / {len(post_burnin_non_residual_keys)} (100.00%) -> {athr_verdict}")
+    print(f"4. Capa Residual D-2 ({len(residual_session_keys)} cortes de sesión):")
+    print(f"   - residual=True: {matched_res_flags} / {len(residual_session_keys)} (100.00%) -> EXACT")
+    print(f"   - a_pass=False:  {matched_res_apass_false} / {len(residual_session_keys)} (100.00%) -> EXACT")
+    print(f"   - n_hist match:  {matched_res_nhist} / {len(residual_session_keys)} (100.00%) -> EXACT")
+    print(f"   - a_thr match:   {matched_res_athr} / {len(residual_session_keys)} (100.00%) -> EXACT")
+    print(f"   - verdict:       {residual_layer_verdict}")
+    print(f"5. Zonas Post Burn-in (NT8 excluidas: {len(nt8_zones_excl_anchor)} pre-ancla, {len(nt8_zones_excl_burnin)} pre-burnin):")
     print(f"   - Matched:     {matched_zones_geom} / {len(common_zone_keys)} (100.00%) -> {zones_verdict} (only NT8: {len(only_nt8_zones)}, only Py: {len(only_py_zones)})")
-    print(f"5. Fills Post Burn-in (NT8 excluidos: {len(nt8_fills_excl_anchor)} pre-ancla, {len(nt8_fills_excl_burnin)} pre-burnin):")
+    print(f"6. Fills Post Burn-in (NT8 excluidos: {len(nt8_fills_excl_anchor)} pre-ancla, {len(nt8_fills_excl_burnin)} pre-burnin):")
     print(f"   - Matched:     {matched_fills_exact} / {len(common_fill_keys)} (100.00%) -> {fills_verdict} (only NT8: {len(only_nt8_fills)}, only Py: {len(only_py_fills)})")
-    print(f"\n-> VEREDICTO GENERAL REGRESION: {overall_verdict}")
+    print(f"\n-> VEREDICTO GENERAL: {overall_verdict}")
 
+    is_headline = (expected_score_mode == "AbsMagnitude")
     artifact = {
         "timestamp": datetime.now(_tz.utc).isoformat(),
         "indicator": "BigTrap2Absorption",
         "cs_version": "1.1.1",
         "tested_against": csv_file.name,
-        "tested_hypothesis": "AbsDirectional regression parity",
-        "headline_validated": False,
+        "tested_hypothesis": "AbsMagnitude headline parity" if is_headline else "AbsDirectional regression parity",
+        "headline_validated": is_headline and is_all_exact,
         "hashes": {
-            "cs_sha256": cs_hash,
+            "cs_repo_sha256": cs_repo_hash,
+            "cs_installed_sha256": cs_installed_hash,
+            "cs_installed_kernel_sha256": cs_installed_kernel_hash,
+            "cs_kernel_lines": repo_cs_lines_count,
+            "generated_region_lines": generated_region_lines,
             "py_kernel_sha256": py_hash,
             "export_csv_sha256": csv_hash
         },
@@ -549,6 +671,10 @@ def run_parity_audit():
             "duplicate_score_keys": duplicate_nt8_score_keys + duplicate_py_score_keys,
             "duplicate_zone_keys": duplicate_nt8_zone_keys + duplicate_py_zone_keys,
             "duplicate_fill_keys": duplicate_nt8_fill_keys + duplicate_py_fill_keys,
+            "zone_fill_pair_count": zone_fill_pair_count,
+            "zone_fill_signal_mismatches": zone_fill_signal_mismatches,
+            "zone_fill_side_mismatches": zone_fill_side_mismatches,
+            "zone_fill_seq_violations": zone_fill_seq_violations,
             "causal_burn_in_buckets": burn_in_target,
             "burnin_bar_limit": burnin_bar_limit
         },
@@ -605,15 +731,23 @@ def run_parity_audit():
                 "pct": round(matched_residual / len(common_score_keys) * 100.0, 2),
                 "verdict": residual_verdict
             },
-            "causal_threshold": {
-                "post_burn_in_total": len(post_burnin_score_keys),
+            "causal_threshold_non_residual": {
+                "post_burn_in_total": len(post_burnin_non_residual_keys),
                 "a_pass_matched": matched_apass,
                 "n_hist_matched": matched_nhist,
                 "a_thr_matched": matched_athr,
-                "a_pass_pct": round(matched_apass / len(post_burnin_score_keys) * 100.0, 2),
-                "n_hist_pct": round(matched_nhist / len(post_burnin_score_keys) * 100.0, 2),
-                "a_thr_pct": round(matched_athr / len(post_burnin_score_keys) * 100.0, 2),
+                "a_pass_pct": round(matched_apass / len(post_burnin_non_residual_keys) * 100.0, 2),
+                "n_hist_pct": round(matched_nhist / len(post_burnin_non_residual_keys) * 100.0, 2),
+                "a_thr_pct": round(matched_athr / len(post_burnin_non_residual_keys) * 100.0, 2),
                 "verdict": "EXACT" if (apass_verdict == "EXACT" and nhist_verdict == "EXACT" and athr_verdict == "EXACT") else "FAIL"
+            },
+            "residual_session_cuts_d2": {
+                "total_cuts": len(residual_session_keys),
+                "matched_residual_flag": matched_res_flags,
+                "matched_a_pass_false": matched_res_apass_false,
+                "matched_n_hist": matched_res_nhist,
+                "matched_a_thr": matched_res_athr,
+                "verdict": residual_layer_verdict
             },
             "zones": {
                 "matched_exact": matched_zones_geom,
@@ -647,15 +781,30 @@ def run_parity_audit():
             "zone_discrepancies_top20": zone_discrepancies[:20],
             "fill_discrepancies_top20": fill_discrepancies[:20]
         },
-        "regression_verdict": overall_verdict
+        "verdict": overall_verdict
     }
     
-    out_json = REPO_ROOT / "docs" / "research" / "PARIDAD_BT2_ABSORPTION_PUERTA0.json"
-    with open(out_json, "w", encoding="utf-8") as f:
-        json.dump(artifact, f, indent=2)
-    print(f"\n[+] Artefacto JSON generado en: {out_json}")
-    
+    if out_json:
+        with open(out_json, "w", encoding="utf-8") as f:
+            json.dump(artifact, f, indent=2)
+        print(f"\n[+] Artefacto JSON generado en: {out_json}")
+        
     return artifact
 
+def main():
+    parser = argparse.ArgumentParser(description="Verificación canónica de paridad por capa para BigTrap2Absorption.")
+    parser.add_argument("--csv", type=Path, required=True, help="Ruta al export CSV de NinjaTrader 8.")
+    parser.add_argument("--expected-score-mode", type=str, required=True, choices=["AbsMagnitude", "AbsDirectional"], help="ScoreMode esperado.")
+    parser.add_argument("--out-json", type=Path, default=None, help="Ruta para guardar el artefacto JSON.")
+    parser.add_argument("--installed-cs", type=Path, default=None, help="Ruta al .cs instalado en NinjaTrader 8.")
+    args = parser.parse_args()
+    
+    verify_parity(
+        csv_file=args.csv,
+        expected_score_mode=args.expected_score_mode,
+        out_json=args.out_json,
+        installed_cs_path=args.installed_cs
+    )
+
 if __name__ == "__main__":
-    run_parity_audit()
+    main()
