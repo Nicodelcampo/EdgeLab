@@ -1,10 +1,11 @@
 {
-  "timestamp": "2026-08-22T21:05:00-03:00",
+  "timestamp": "2026-08-23T05:20:10.097867+00:00",
   "indicator": "BigTrap2Absorption",
   "cs_version": "1.1.1",
+  "tested_against": "bt2_absorption__TW25_2.csv",
   "hashes": {
     "cs_sha256": "18d163123662dc0edfd2f45ddbb007391ac4c39b8c7c58c1e9209d66a9178641",
-    "py_kernel_sha256": "47a1c62e83490cc5174095c8b96c7c416c9b9e5f0675b92f51d3dded9257745b",
+    "py_kernel_sha256": "0d162a6092c31228ec0f4f9539b4afc0cb5031737263db4369dea2ad03697ab2",
     "export_csv_sha256": "c6eaeb210eeb029930f8157ac76380954700eed80dd5bf5b05df18a5ee9c19d7"
   },
   "headline_params": {
@@ -17,54 +18,80 @@
     "MinTrapFrac": 0.2,
     "RequireFlowSideMatch": true
   },
+  "tested_params": {
+    "TapeWindowTicks": 25,
+    "ScoreMode": "AbsDirectional",
+    "AbsorptionPct": 90.0,
+    "AbsorptionLookback": 500,
+    "MinHistoryBuckets": 200,
+    "RequireFlowSideMatch": true,
+    "ImbalanceMode": "Diagonal",
+    "TrapVolumeSource": "AggressiveSide",
+    "TicksPerRow": 1,
+    "ImbalanceRatio": 3.0,
+    "MinStackedRows": 2,
+    "MinTrapFrac": 0.2,
+    "MinDeltaFilter": 0.0,
+    "MinTrapVolume": 0.0,
+    "MinExportVolume": 1.0,
+    "UseWickFilter": true,
+    "WickZonePct": 30.0,
+    "InvalidationMode": "CloseThrough",
+    "MaxAgeBars": 2000,
+    "MaxTouches": 0,
+    "DrawZoneBand": true
+  },
   "layers": {
     "bucket_coverage": {
-      "covered": 27328,
+      "covered": 27074,
       "total_nt8": 28042,
-      "pct": 97.45,
-      "uncovered_initial_buckets": 714,
+      "pct": 96.55,
+      "uncovered_initial_buckets": 968,
       "verdict": "PASSED_COVERAGE"
     },
     "signed_flow": {
-      "matched": 24248,
-      "total_covered": 27328,
-      "pct": 88.73,
-      "verdict": "EXACT"
+      "matched": 646,
+      "total_compared": 27074,
+      "pct": 2.39,
+      "verdict": "FAIL (2.39%)"
     },
     "d_ticks": {
-      "matched": 24287,
-      "total_covered": 27328,
-      "pct": 88.87,
-      "verdict": "EXACT"
+      "matched": 1091,
+      "total_compared": 27074,
+      "pct": 4.03,
+      "verdict": "FAIL (4.03%)"
     },
     "a_score": {
-      "matched": 24168,
-      "total_covered": 27328,
-      "pct": 88.44,
-      "verdict": "EXACT"
+      "matched": 514,
+      "total_compared": 27074,
+      "pct": 1.9,
+      "verdict": "FAIL (1.90%)"
     },
     "causal_threshold": {
-      "a_pass_matched": 26847,
-      "n_hist_matched": 27328,
-      "a_thr_matched": 24865,
-      "total_covered": 27328,
-      "verdict": "EXACT"
+      "a_pass_matched": 21955,
+      "n_hist_matched": 26574,
+      "a_thr_matched": 8024,
+      "total_compared": 27074,
+      "a_pass_pct": 81.09,
+      "n_hist_pct": 98.15,
+      "a_thr_pct": 29.64,
+      "verdict": "FAIL"
     },
     "zones": {
-      "matched": 0,
-      "total_covered": 613,
-      "total_nt8": 1,
-      "pct": 0.0,
-      "verdict": "EXACT"
+      "matched": 569,
+      "py_total": 610,
+      "nt8_covered_total": 629,
+      "pct": 93.28,
+      "verdict": "FAIL (93.28%)"
     },
     "fills": {
-      "matched_exact": 0,
-      "total_covered": 613,
-      "total_nt8": 1,
-      "pct": 0.0,
-      "discrepancies": [],
-      "verdict": "EXACT_EXCEPT_OPEN_11537_B"
+      "matched_exact": 571,
+      "py_total": 610,
+      "nt8_covered_total": 629,
+      "pct": 93.61,
+      "discrepancies_count": 39,
+      "verdict": "FAIL (93.61%)"
     }
   },
-  "puerta_0_verdict": "PASSED_WITH_OPEN_FILL_11537_B"
+  "puerta_0_verdict": "FAIL_PUERTA_0"
 }

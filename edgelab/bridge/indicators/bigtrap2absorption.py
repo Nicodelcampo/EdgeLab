@@ -7,7 +7,7 @@ Definición:
 
 El umbral se calcula mediante percentil causal rodante sobre las últimas `AbsorptionLookback` cubetas.
 Cortes de sesión CME mediante session_ids de bars.py (marcan cubetas residuales, fuera del historial).
-Fills anclados al primer tick posterior.
+Fills anclados al primer tick de la cubeta siguiente.
 """
 from __future__ import annotations
 
@@ -121,7 +121,6 @@ def run(ticks, bars=None, footprints=None, params=None, chart_tz="UTC"):
     pending_fills = []
 
     cur_block = []
-    skipped_first = False
     cur_session = None
     bar_seq = 0
     seq_counter = 0
@@ -138,11 +137,13 @@ def run(ticks, bars=None, footprints=None, params=None, chart_tz="UTC"):
         for z in list(active_zones):
             if max_age_bars > 0 and (bar_idx - z["created_bar"]) > max_age_bars:
                 z.update(state="EXPIRED", ended_ms=ns_to_ms(t_ns), end_reason="max_age")
+                log_event(t_ns, "ZONE_EXPIRED", f"zone_id={z['id']};bar={bar_idx};reason=max_age")
                 active_zones.remove(z)
                 continue
             touched = (hi_px >= z["lo"] and lo_px <= z["hi"])
             if touched:
                 z["touches"] += 1
+                log_event(t_ns, "ZONE_TOUCHED", f"zone_id={z['id']};bar={bar_idx};touches={z['touches']}")
             adverse_close = (close_px > z["hi"] if z["is_bull"] else close_px < z["lo"])
             reason = None
             if invalidation == "FirstTouch" and touched:
@@ -153,14 +154,12 @@ def run(ticks, bars=None, footprints=None, params=None, chart_tz="UTC"):
                 reason = "max_touches"
             if reason is not None:
                 z.update(state="INVALIDATED", ended_ms=ns_to_ms(t_ns), end_reason=reason)
+                log_event(t_ns, "ZONE_INVALIDATED", f"zone_id={z['id']};reason={reason};bar={bar_idx}")
                 active_zones.remove(z)
 
     def flush_block(blk, residual, sess_id):
-        nonlocal skipped_first, bar_seq
+        nonlocal bar_seq
         if len(blk) == 0:
-            return
-        if not skipped_first:
-            skipped_first = True
             return
 
         bar_seq += 1
@@ -182,7 +181,13 @@ def run(ticks, bars=None, footprints=None, params=None, chart_tz="UTC"):
         hi_px = mx_tick * tick_size
         lo_px = mn_tick * tick_size
 
+        t_start_iso = datetime.fromtimestamp(blk_ts[0] / 1e9, tz=_tz.utc).strftime("%Y-%m-%dT%H:%M:%S.%f0")
+        t_end_iso = datetime.fromtimestamp(blk_ts[-1] / 1e9, tz=_tz.utc).strftime("%Y-%m-%dT%H:%M:%S.%f0")
+        trade_date = str(sess_id)
+
         update_active_zones(b_idx, blk_ts[-1], close_px, hi_px, lo_px)
+
+        log_event(blk_ts[-1], "BARRA_PROCESADA", f"bar={b_idx};largo={len(blk)};residual={residual};tape_window={tape_window};td={trade_date}")
 
         ask_map = {}
         bid_map = {}
@@ -245,6 +250,22 @@ def run(ticks, bars=None, footprints=None, params=None, chart_tz="UTC"):
 
         if residual:
             a_pass = False
+
+        dur_ms = int((blk_ts[-1] - blk_ts[0]) // 1_000_000)
+        last_bid = blk_bid[-1] * tick_size
+        last_ask = blk_ask[-1] * tick_size
+        spread_ticks = ((blk_ask[-1] - blk_bid[-1]) if (blk_ask[-1] > 0 and blk_bid[-1] > 0 and blk_ask[-1] >= blk_bid[-1]) else float("nan"))
+        
+        # Mid calculation
+        mid0 = (blk_ask[0] + blk_bid[0]) * 0.5 if (blk_ask[0] > 0 and blk_bid[0] > 0 and blk_ask[0] >= blk_bid[0]) else float("nan")
+        mid1 = (blk_ask[-1] + blk_bid[-1]) * 0.5 if (blk_ask[-1] > 0 and blk_bid[-1] > 0 and blk_ask[-1] >= blk_bid[-1]) else float("nan")
+        d_ticks_mid = (mid1 - mid0) if (not math.isnan(mid0) and not math.isnan(mid1)) else float("nan")
+
+        log_event(blk_ts[-1], "ABS_SCORE",
+                  f"bar={b_idx};residual={residual};signed_flow={plain(signed_flow)};d_ticks={plain(d_ticks)};"
+                  f"a_score={plain(a_score)};a_thr={plain(a_thr)};a_pass={a_pass};n_hist={len(abs_ring)};"
+                  f"t_start={t_start_iso};n_ticks={len(blk)};dur_ms={dur_ms};spread_ticks={plain(spread_ticks)};"
+                  f"d_ticks_mid={plain(d_ticks_mid)};td={trade_date}")
 
         # Rows
         row_ask = {}
@@ -356,9 +377,13 @@ def run(ticks, bars=None, footprints=None, params=None, chart_tz="UTC"):
                 "id": f"{b_idx}_{'B' if is_bull else 'S'}",
                 "created_bar": b_idx,
                 "is_bull": is_bull,
+                "side": "trapped_buyers" if is_bull else "trapped_sellers",
+                "dir": "short" if is_bull else "long",
                 "lo": z_lo,
                 "hi": z_hi,
                 "vol": best_run["vol"],
+                "nrows": best_run["nrows"],
+                "frac": best_run["vol"] / max(bar_vol, 1.0),
                 "touches": 0,
                 "created_ms": ns_to_ms(blk_ts[-1]),
                 "state": "ACTIVE",
@@ -371,6 +396,12 @@ def run(ticks, bars=None, footprints=None, params=None, chart_tz="UTC"):
             }
             active_zones.append(z_entry)
             pending_fills.append(z_entry)
+
+            log_event(blk_ts[-1], "ZONE_CREATED",
+                      f"zone_id={z_entry['id']};created_bar={b_idx};side={z_entry['side']};"
+                      f"dir={z_entry['dir']};lo={plain(z_lo)};hi={plain(z_hi)};vol={plain(best_run['vol'])};"
+                      f"rows={best_run['nrows']};frac={plain(z_entry['frac'])};a_score={plain(a_score)};"
+                      f"a_thr={plain(a_thr)};available_at={t_end_iso};td={trade_date}")
 
         # Update circular ring buffer
         if not residual:
@@ -395,13 +426,16 @@ def run(ticks, bars=None, footprints=None, params=None, chart_tz="UTC"):
         if len(pending_fills) > 0:
             px_val = float(ticks.price_ticks[i]) * tick_size
             ts_val = int(ticks.ts_ns[i])
+            fill_iso = datetime.fromtimestamp(ts_val / 1e9, tz=_tz.utc).strftime("%Y-%m-%dT%H:%M:%S.%f0")
             for p_zone in pending_fills:
                 p_zone["fill_px"] = px_val
                 p_zone["fill_ts"] = ts_val
                 p_zone["fill_idx"] = i
-                p_zone["side"] = "trapped_buyers" if p_zone["is_bull"] else "trapped_sellers"
-                p_zone["dir"] = -1 if p_zone["is_bull"] else 1
                 zones.append(p_zone)
+                sig_iso = datetime.fromtimestamp(p_zone["sig_ts"] / 1e9, tz=_tz.utc).strftime("%Y-%m-%dT%H:%M:%S.%f0")
+                log_event(ts_val, "FILL",
+                          f"side={p_zone['side']};dir={p_zone['dir']};fill_px={plain(px_val)};"
+                          f"fill_at={fill_iso};signal_at={sig_iso};a_score={plain(p_zone['a_score'])};fill_bar={p_zone['created_bar']}")
             pending_fills = []
 
         cur_block.append(i)
@@ -416,13 +450,16 @@ def run(ticks, bars=None, footprints=None, params=None, chart_tz="UTC"):
     if len(pending_fills) > 0:
         px_val = float(ticks.price_ticks[-1]) * tick_size
         ts_val = int(ticks.ts_ns[-1])
+        fill_iso = datetime.fromtimestamp(ts_val / 1e9, tz=_tz.utc).strftime("%Y-%m-%dT%H:%M:%S.%f0")
         for p_zone in pending_fills:
             p_zone["fill_px"] = px_val
             p_zone["fill_ts"] = ts_val
             p_zone["fill_idx"] = n_ticks - 1
-            p_zone["side"] = "trapped_buyers" if p_zone["is_bull"] else "trapped_sellers"
-            p_zone["dir"] = -1 if p_zone["is_bull"] else 1
             zones.append(p_zone)
+            sig_iso = datetime.fromtimestamp(p_zone["sig_ts"] / 1e9, tz=_tz.utc).strftime("%Y-%m-%dT%H:%M:%S.%f0")
+            log_event(ts_val, "FILL",
+                      f"side={p_zone['side']};dir={p_zone['dir']};fill_px={plain(px_val)};"
+                      f"fill_at={fill_iso};signal_at={sig_iso};a_score={plain(p_zone['a_score'])};fill_bar={p_zone['created_bar']}")
         pending_fills = []
 
     return dict(

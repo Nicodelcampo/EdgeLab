@@ -65,7 +65,7 @@ _spec_censo.loader.exec_module(_censo)
 # indicadores "aunque no este 100% la paridad": mostrarlos sin decir cual esta en
 # falla seria peor que no mostrarlos.
 PARIDAD = {
-    "BigTrap2Absorption": ("PARCIAL", "GC DEC26 27.328/28.042 cubetas (97.45%), signed_flow/d_ticks 100%, zonas 635/635, fills 634/635 (fill 11537_B abierto)"),
+    "BigTrap2Absorption": ("FAIL", "GC DEC26 27.074/28.042 cubetas (96.55%), signed_flow 2.39%, zonas 569/610 (93.28%), fills 571/610 (93.61%) - FAIL Puerta 0"),
     "aVolCellPOI2": ("FAIL", "P-42: 671 vs 678, 16 diferencias reales; causa acotada al umbral"),
     "HFTZones2": ("PARCIAL", "P-43: 6E PASS 4.821/4.821; GC 3.626/3.630 = 99,89 %, residual abierto"),
     "BigTrap2": ("EXACT", "junio 3.628/3.638 EXACT (99,73 %); abril+mayo 171/171"),
