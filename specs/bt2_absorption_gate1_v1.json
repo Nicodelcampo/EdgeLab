@@ -1,0 +1,167 @@
+{
+  "schema": "bt2_absorption_gate1_v1",
+  "status": "PREREGISTERED_NOT_RUN",
+  "frozen_at_base_commit": "5aede17fb487cdc122f1d7c70c561041bfb347c4",
+  "firewall": {
+    "june_opened": false,
+    "new_outcomes_opened": false,
+    "edge_declared": false,
+    "forbidden": [
+      "post_null_subgroup_search",
+      "pool_sessions",
+      "compare_against_zero_without_n_rand",
+      "use_august_null_as_january_june_constant",
+      "sweep_context_cutoffs",
+      "paths_cross_session"
+    ]
+  },
+  "headline": {
+    "score_mode": "AbsMagnitude",
+    "tape_window_ticks": 25,
+    "absorption_pct": 90,
+    "absorption_lookback": 500,
+    "min_history_buckets": 200,
+    "min_stacked_rows": 2,
+    "min_trap_frac": 0.2,
+    "require_flow_side_match": true
+  },
+  "universe": {
+    "instrument": "GC",
+    "research_end_inclusive": "2026-06-30",
+    "source_contracts_full_ranges": [
+      "GC 04-26",
+      "GC 06-26",
+      "GC 08-26"
+    ],
+    "continuous_rule": {
+      "metric": "sum_printed_volume_by_complete_cme_session",
+      "confirmation": "successor_volume_gt_current_for_2_consecutive_overlap_sessions",
+      "effective": "session_after_second_confirmation",
+      "monotone_no_roll_back": true,
+      "one_contract_per_session": true,
+      "retain_all_source_tapes_for_audit": true
+    }
+  },
+  "parity_precondition": {
+    "status": "BLOCKED_PENDING_ORACLE",
+    "contract": "GC 08-26",
+    "window": [
+      "2026-06-18",
+      "2026-06-30"
+    ],
+    "same_headline_parameters": true,
+    "required_layers": [
+      "a_score",
+      "a_thr",
+      "a_pass",
+      "zones",
+      "fills"
+    ],
+    "on_unexplained_mismatch": "P1_BLOCKED_PARITY"
+  },
+  "arms": {
+    "K_ABS": "BigTrap2Absorption headline",
+    "K_BT2": "BigTrap2 original on the same sessions",
+    "N_RAND": "matched random anchors with exact realized direction mix per session",
+    "K_ABS_SHUFFLE": "same K_ABS anchors with directions permuted within session"
+  },
+  "horizon": {
+    "ticks": 2000,
+    "seconds": 900,
+    "first_cap_wins": true,
+    "session_boundary": "hard",
+    "cross_session_label": "EXCLUDED_FILL_CROSSES_SESSION"
+  },
+  "n_rand": {
+    "role": "P1_PRECONDITION",
+    "replications": 10000,
+    "seed": 20260821,
+    "mix_policy": "copy_each_K_ABS_event_direction_exactly",
+    "august_54_6_pct_is_not_a_constant": true,
+    "pairing": "within_session",
+    "pooled": false,
+    "session_weight": 1,
+    "anchor_unit": "eligible_tick_index",
+    "strata": [
+      "cme_session",
+      "contract",
+      "chicago_30_minute_bin_from_17_00",
+      "cap_driver_ticks_or_clock"
+    ],
+    "sampling": "without_replacement_within_replication",
+    "reuse_across_replications": true,
+    "exclude_exact_real_anchor": true,
+    "exclude_neighboring_windows": false,
+    "sparse_stratum_policy": "PRECONDITION_FAILED_SPARSE_STRATUM",
+    "silent_bin_expansion": false
+  },
+  "k_abs_shuffle": {
+    "mandatory_secondary_control": true,
+    "same_real_anchors": true,
+    "permute_directions_within_session": true,
+    "preserve_session_direction_counts": true,
+    "replications": 10000,
+    "seed": 20260821
+  },
+  "estimand": {
+    "primary": "session_equal_weighted_delta_d_hat_ticks_K_ABS_minus_N_RAND",
+    "secondary": [
+      "session_equal_weighted_delta_d_hat_ticks_K_ABS_minus_K_BT2",
+      "K_ABS_minus_K_ABS_SHUFFLE"
+    ],
+    "legacy_ratio_1_25": "DESCRIPTIVE_NOT_A_GATE",
+    "economic_hurdle_ticks": 2.5,
+    "null_baseline_policy": "measure_in_same_sessions_by_frozen_N_RAND_procedure"
+  },
+  "inference": {
+    "cluster": "cme_session",
+    "equal_session_weights": true,
+    "wild_cluster_bootstrap": "Webb_six_point",
+    "bootstrap_replications": 10000,
+    "seed": 20260821,
+    "reference": "t_G_minus_1",
+    "confidence_interval": 0.95
+  },
+  "power_planning": {
+    "paired_session_sd_ratio_provisional": 0.282,
+    "ratio_per_tick_diagnostic": 0.0275,
+    "expected_unique_sessions": 120,
+    "criterion": "lower_bound_of_two_sided_95pct_CI_gt_0",
+    "at_120": {
+      "ci95_halfwidth_ratio": 0.0504552749,
+      "mde_80pct_ratio": 0.0721210968,
+      "mde_80pct_ticks": 2.6225853373,
+      "power_for_2_5_ticks": 0.7613571524,
+      "power_for_legacy_ratio_effect_0_053": 0.539401083
+    },
+    "sessions_for_80pct_2_5_ticks": 133,
+    "sessions_for_80pct_ratio_effect_0_053": 223,
+    "note": "132.0567 rounds up to 133; the earlier ~113 was a CI-width calculation, not 80% power",
+    "if_G_lt_133": "attach_P1_UNDERPOWERED_FOR_2P5T"
+  },
+  "context_policy": {
+    "context_hypothesis_status": "NONE_PREREGISTERED",
+    "b9_target_free_required": true,
+    "b9_metrics": [
+      "a_thr_p10_p50_p90_by_session",
+      "a_thr_p90_p10_by_chicago_30_minute_bin",
+      "tick_rate_by_session_and_bin",
+      "spread_by_session_and_bin"
+    ],
+    "candidate_must_be_orthogonal_to": [
+      "a_thr",
+      "time_of_day",
+      "tick_rate"
+    ],
+    "matched_control_with_context_without_indicator_required": true,
+    "flat_headline_always_reported": true
+  },
+  "decision_rules": {
+    "P1_PASS": "delta_abs_rand_point_ge_2_5_ticks AND delta_abs_rand_L95_gt_0 AND delta_abs_bt2_L95_ge_0",
+    "P1_FAIL_BUT_REAL_SIGNAL": "delta_abs_rand_L95_gt_0 AND (point_lt_2_5_ticks OR no_incremental_improvement_vs_bt2)",
+    "P1_FAIL_WORSE_THAN_BT2": "delta_abs_bt2_U95_lt_0",
+    "P1_INCONCLUSIVE": "all_other_nonblocked_cases",
+    "P1_BLOCKED_PARITY": "parity_precondition_failed",
+    "P1_BLOCKED_NRAND": "n_rand_generation_or_stratum_capacity_failed"
+  }
+}
