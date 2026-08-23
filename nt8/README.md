@@ -40,7 +40,7 @@ version esperada, llaves y parentesis balanceados, y CRLF sin LF sueltos.
 | `BigTrap2.cs` | v2.1 | `77af06eed2bba5d5367ef41a68476d04b295039411ac124492d918c0a557fbf5` |
 | `BigTrap2UniversalFill.cs` | **v1.0** | `794110f03929f22b365e5b0fa0dc269414f051a2117986984db75195fc99e071` |
 | `BigTrap2UniversalEdge.cs` | **v1.0** | `dad03a1e3b043de05ed787cade3a8b54b62edf681639c559d24cee60b3548c9a` |
-| `BigTrap2Absorption.cs` | **v1.0** | `3f47878d2220b163b86ddc353782f21e9ba009501c2307448327a214262bf417` |
+| `BigTrap2Absorption.cs` | **v1.1.1** | `18d163123662dc0edfd2f45ddbb007391ac4c39b8c7c58c1e9209d66a9178641` |
 | `TickBarDiag.cs` | v1.1 | *(instrumental de diagnostico, no de trading)* |
 | `VolTicksPOC2.cs` | v2.1 | `48e0718a055958f0b2a325cdee53517e449989c6b43ecfe50e7b4d634278845d` |
 | `aVolCellPOI2.cs` | v2.0 | `4ad4c671333c0b5c214d3d2c3d4c75a6a7dd4f616ee26bc8aaa7d31bb0ead6ed` |
