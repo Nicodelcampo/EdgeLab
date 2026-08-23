@@ -1,9 +1,11 @@
 """Harness canónico de verificación de paridad por capa (Puerta 0) para BigTrap2Absorption.
 
-Normalización temporal estricta (ART -> UTC), búsqueda causal del ancla en la cinta,
-ejecución directa de edgelab.bridge.indicators.bigtrap2absorption.run() sobre la vista
-alineada, burn-in causal de 500 cubetas para el umbral rodante, y emparejamiento por
-identidad temporal en cubetas, umbral, zonas y fills.
+- Normalización temporal estricta ART (UTC-3) -> UTC.
+- Ancla dinámica sobre la cinta (Bar 715 NT8 en tape index 12).
+- Claves compuestas derivadas del ancla (global_bar, t_start_utc) sin colisión ni eventos pisados.
+- Partición explícita de conjuntos: excluded_before_anchor, excluded_before_causal_burnin, comparable_post_burnin, excluded_after_export.
+- Verificación de conjuntos laterales: only_nt8 == 0 y only_python == 0 en ventana comparable.
+- Evaluación capa por capa: aritmética (flow, d_ticks, a_score, n_ticks, residual), umbral causal post-burnin (a_pass, n_hist, a_thr), zonas y fills.
 """
 from __future__ import annotations
 
@@ -116,6 +118,10 @@ def run_parity_audit():
     ticks, _, _, _, _, _ = load_canonical_ticks(gc_file, tick_size=0.10)
     meta, nt8_bars, nt8_scores, nt8_traps, nt8_zones, nt8_fills = parse_nt8_export(csv_file)
     
+    parsed_nt8_score_events = len(nt8_scores)
+    parsed_nt8_zone_events = len(nt8_zones)
+    parsed_nt8_fill_events = len(nt8_fills)
+    
     first_tape_ts_ns = int(ticks.ts_ns[0])
     first_tape_ts_utc = datetime.fromtimestamp(first_tape_ts_ns / 1e9, tz=TZ_UTC).strftime("%Y-%m-%dT%H:%M:%S.%f0")
     first_tape_ts_art = datetime.fromtimestamp(first_tape_ts_ns / 1e9, tz=TZ_ART).strftime("%Y-%m-%dT%H:%M:%S.%f0")
@@ -139,7 +145,7 @@ def run_parity_audit():
             
     first_matched_utc_str = datetime.fromtimestamp(first_matched_utc_ns / 1e9, tz=TZ_UTC).strftime("%Y-%m-%dT%H:%M:%S.%f0")
     
-    print(f"\n[*] Ancla Temporal Dinamica:")
+    print(f"\n[*] Ancla Temporal Dinámica:")
     print(f"    first_matched_nt8_bar:     {first_matched_bar}")
     print(f"    first_matched_t_start_art: {first_matched_art}")
     print(f"    first_matched_t_start_utc: {first_matched_utc_str}")
@@ -174,119 +180,196 @@ def run_parity_audit():
     py_events = res.get("events", [])
     print(f"    -> Completado en {t_run:.2f}s: {len(py_zones)} zonas generadas, {len(py_events)} eventos")
 
-    # 1. PARIDAD DE CUBETAS (signed_flow, d_ticks, a_score)
-    py_scores_by_tstart = {}
+    # 1. PARIDAD DE CUBETAS CON CLAVES COMPUESTAS
     py_scores_list = []
     for ev in py_events:
         parts = ev.split("|")
         if len(parts) >= 4 and parts[2] == "ABS_SCORE":
             p_d = dict(item.split("=") for item in parts[3].split(";") if "=" in item)
-            t_start_py = p_d["t_start"]
-            p_d["t_start_utc"] = t_start_py
-            py_scores_by_tstart[t_start_py] = p_d
+            p_d["iso_ts"] = parts[1]
+            p_d["t_start_utc"] = p_d["t_start"]
             py_scores_list.append(p_d)
             
-    nt8_scores_by_tstart = {}
-    for s in nt8_scores:
-        t_start_utc = parse_art_to_utc_str(s["t_start"])
-        s["t_start_utc"] = t_start_utc
-        nt8_scores_by_tstart[t_start_utc] = s
+    parsed_python_score_events = len(py_scores_list)
+    max_nt8_bar = max(int(s["bar"]) for s in nt8_scores)
 
-    common_tstart = sorted(set(py_scores_by_tstart.keys()) & set(nt8_scores_by_tstart.keys()))
-    only_py_tstart = sorted(set(py_scores_by_tstart.keys()) - set(nt8_scores_by_tstart.keys()))
-    only_nt8_tstart = sorted(set(nt8_scores_by_tstart.keys()) - set(py_scores_by_tstart.keys()))
+    # Construcción de mapas NT8 sin colisiones
+    nt8_scores_map = {}
+    nt8_scores_excl_before = []
+    duplicate_nt8_score_keys = 0
+
+    for s in nt8_scores:
+        b_idx = int(s["bar"])
+        t_start_utc = parse_art_to_utc_str(s["t_start"])
+        key = (b_idx, t_start_utc)
+        s["global_bar"] = b_idx
+        s["t_start_utc"] = t_start_utc
+        if b_idx < first_matched_bar:
+            nt8_scores_excl_before.append(s)
+        else:
+            if key in nt8_scores_map:
+                duplicate_nt8_score_keys += 1
+            nt8_scores_map[key] = s
+
+    assert duplicate_nt8_score_keys == 0, f"Error: duplicate NT8 score keys found: {duplicate_nt8_score_keys}"
+    assert len(nt8_scores_excl_before) + len(nt8_scores_map) == parsed_nt8_score_events
+
+    # Construcción de mapas Python sin colisiones
+    py_scores_map = {}
+    py_scores_excl_after = []
+    duplicate_py_score_keys = 0
+
+    for s in py_scores_list:
+        loc_bar = int(s["bar"])
+        global_bar = first_matched_bar + loc_bar - 1
+        t_start_utc = s["t_start_utc"]
+        key = (global_bar, t_start_utc)
+        s["global_bar"] = global_bar
+        if global_bar > max_nt8_bar:
+            py_scores_excl_after.append(s)
+        else:
+            if key in py_scores_map:
+                duplicate_py_score_keys += 1
+            py_scores_map[key] = s
+
+    assert duplicate_py_score_keys == 0, f"Error: duplicate Python score keys found: {duplicate_py_score_keys}"
+    assert len(py_scores_map) + len(py_scores_excl_after) == parsed_python_score_events
+
+    common_score_keys = sorted(set(py_scores_map.keys()) & set(nt8_scores_map.keys()))
+    only_nt8_scores = sorted(set(nt8_scores_map.keys()) - set(py_scores_map.keys()))
+    only_py_scores = sorted(set(py_scores_map.keys()) - set(nt8_scores_map.keys()))
 
     matched_flow = 0
     matched_dticks = 0
     matched_score = 0
+    matched_nticks = 0
+    matched_residual = 0
     bucket_discrepancies = []
 
-    for k in common_tstart:
-        py_s = py_scores_by_tstart[k]
-        nt8_s = nt8_scores_by_tstart[k]
+    for k in common_score_keys:
+        ps = py_scores_map[k]
+        ns = nt8_scores_map[k]
         
-        flow_match = math.isclose(float(py_s["signed_flow"]), float(nt8_s["signed_flow"]), abs_tol=1e-5)
-        dticks_match = math.isclose(float(py_s["d_ticks"]), float(nt8_s["d_ticks"]), abs_tol=1e-5)
-        score_match = math.isclose(float(py_s["a_score"]), float(nt8_s["a_score"]), rel_tol=1e-12, abs_tol=1e-12)
+        flow_m = math.isclose(float(ps["signed_flow"]), float(ns["signed_flow"]), abs_tol=1e-5)
+        dticks_m = math.isclose(float(ps["d_ticks"]), float(ns["d_ticks"]), abs_tol=1e-5)
+        score_m = math.isclose(float(ps["a_score"]), float(ns["a_score"]), rel_tol=1e-12, abs_tol=1e-12)
+        nticks_m = (int(ps["n_ticks"]) == int(ns["n_ticks"]))
+        res_m = ((ps.get("residual") == "True") == (ns.get("residual") == "True"))
         
-        if flow_match: matched_flow += 1
-        if dticks_match: matched_dticks += 1
-        if score_match: matched_score += 1
+        if flow_m: matched_flow += 1
+        if dticks_m: matched_dticks += 1
+        if score_m: matched_score += 1
+        if nticks_m: matched_nticks += 1
+        if res_m: matched_residual += 1
         
-        if not (flow_match and dticks_match and score_match):
+        if not (flow_m and dticks_m and score_m and nticks_m and res_m):
             bucket_discrepancies.append({
-                "t_start_utc": k,
-                "py_flow": py_s["signed_flow"], "nt8_flow": nt8_s["signed_flow"],
-                "py_dticks": py_s["d_ticks"], "nt8_dticks": nt8_s["d_ticks"],
-                "py_score": py_s["a_score"], "nt8_score": nt8_s["a_score"],
-                "py_nticks": py_s.get("n_ticks"), "nt8_nticks": nt8_s.get("n_ticks")
+                "key": str(k),
+                "py_flow": ps["signed_flow"], "nt8_flow": ns["signed_flow"],
+                "py_dticks": ps["d_ticks"], "nt8_dticks": ns["d_ticks"],
+                "py_score": ps["a_score"], "nt8_score": ns["a_score"],
+                "py_nticks": ps.get("n_ticks"), "nt8_nticks": ns.get("n_ticks"),
+                "py_residual": ps.get("residual"), "nt8_residual": ns.get("residual")
             })
 
-    # 2. UMBRAL CAUSAL POST BURN-IN (500 cubetas)
+    # 2. UMBRAL CAUSAL POST BURN-IN (500 cubetas completas no residuales)
     burn_in_target = 500
     burn_in_count = 0
-    post_burnin_keys = []
+    post_burnin_score_keys = []
     
-    for py_s in py_scores_list:
-        k = py_s["t_start_utc"]
-        if k in nt8_scores_by_tstart:
-            if py_s.get("residual") == "False":
+    for s in py_scores_list:
+        loc_bar = int(s["bar"])
+        global_bar = first_matched_bar + loc_bar - 1
+        t_start_utc = s["t_start_utc"]
+        key = (global_bar, t_start_utc)
+        if key in nt8_scores_map:
+            if s.get("residual") == "False":
                 burn_in_count += 1
                 if burn_in_count > burn_in_target:
-                    post_burnin_keys.append(k)
+                    post_burnin_score_keys.append(key)
 
     matched_apass = 0
     matched_nhist = 0
     matched_athr = 0
     threshold_discrepancies = []
 
-    for k in post_burnin_keys:
-        py_s = py_scores_by_tstart[k]
-        nt8_s = nt8_scores_by_tstart[k]
+    for k in post_burnin_score_keys:
+        ps = py_scores_map[k]
+        ns = nt8_scores_map[k]
         
-        apass_match = ((py_s.get("a_pass") == "True") == (nt8_s.get("a_pass") == "True"))
-        nhist_match = (int(py_s.get("n_hist", 0)) == int(nt8_s.get("n_hist", 0)))
+        apass_m = ((ps.get("a_pass") == "True") == (ns.get("a_pass") == "True"))
+        nhist_m = (int(ps.get("n_hist", 0)) == int(ns.get("n_hist", 0)))
         
-        py_thr = float(py_s.get("a_thr", "nan"))
-        nt8_thr_str = nt8_s.get("a_thr", "NaN")
+        py_thr = float(ps.get("a_thr", "nan"))
+        nt8_thr_str = ns.get("a_thr", "NaN")
         nt8_thr = float(nt8_thr_str) if nt8_thr_str != "NaN" else float("nan")
-        athr_match = (math.isnan(py_thr) and math.isnan(nt8_thr)) or math.isclose(py_thr, nt8_thr, rel_tol=1e-12, abs_tol=1e-12)
+        athr_m = (math.isnan(py_thr) and math.isnan(nt8_thr)) or math.isclose(py_thr, nt8_thr, rel_tol=1e-12, abs_tol=1e-12)
         
-        if apass_match: matched_apass += 1
-        if nhist_match: matched_nhist += 1
-        if athr_match: matched_athr += 1
+        if apass_m: matched_apass += 1
+        if nhist_m: matched_nhist += 1
+        if athr_m: matched_athr += 1
         
-        if not (apass_match and nhist_match and athr_match):
+        if not (apass_m and nhist_m and athr_m):
             threshold_discrepancies.append({
-                "t_start_utc": k,
-                "py_apass": py_s.get("a_pass"), "nt8_apass": nt8_s.get("a_pass"),
-                "py_nhist": py_s.get("n_hist"), "nt8_nhist": nt8_s.get("n_hist"),
+                "key": str(k),
+                "py_apass": ps.get("a_pass"), "nt8_apass": ns.get("a_pass"),
+                "py_nhist": ps.get("n_hist"), "nt8_nhist": ns.get("n_hist"),
                 "py_athr": py_thr, "nt8_athr": nt8_thr
             })
 
-    # 3. ZONAS (available_at UTC + side)
-    py_zones_map = {}
-    for z in py_zones:
-        avail_utc = datetime.fromtimestamp(z["sig_ts"] / 1e9, tz=TZ_UTC).strftime("%Y-%m-%dT%H:%M:%S.%f0")
-        key = f"{avail_utc}_{z['side']}"
-        py_zones_map[key] = z
+    # 3. ZONAS (global_created_bar, available_at UTC, side)
+    burnin_bar_limit = first_matched_bar + burn_in_target
+    nt8_zones_excl_anchor = []
+    nt8_zones_excl_burnin = []
+    nt8_zones_comparable = {}
+    duplicate_nt8_zone_keys = 0
 
-    nt8_zones_map = {}
     for z in nt8_zones:
+        c_bar = int(z["created_bar"])
         avail_utc = parse_art_to_utc_str(z["available_at"])
-        key = f"{avail_utc}_{z['side']}"
-        nt8_zones_map[key] = z
+        key = (c_bar, avail_utc, z["side"])
+        if c_bar < first_matched_bar:
+            nt8_zones_excl_anchor.append(z)
+        elif c_bar < burnin_bar_limit:
+            nt8_zones_excl_burnin.append(z)
+        else:
+            if key in nt8_zones_comparable:
+                duplicate_nt8_zone_keys += 1
+            nt8_zones_comparable[key] = z
 
-    common_zone_keys = sorted(set(py_zones_map.keys()) & set(nt8_zones_map.keys()))
-    only_py_zones = sorted(set(py_zones_map.keys()) - set(nt8_zones_map.keys()))
-    only_nt8_zones = sorted(set(nt8_zones_map.keys()) - set(py_zones_map.keys()))
+    assert duplicate_nt8_zone_keys == 0, f"Error: duplicate NT8 zone keys: {duplicate_nt8_zone_keys}"
+
+    py_zones_excl_burnin = []
+    py_zones_comparable = {}
+    py_zones_excl_after = []
+    duplicate_py_zone_keys = 0
+
+    for z in py_zones:
+        loc_bar = int(z["created_bar"])
+        global_bar = first_matched_bar + loc_bar - 1
+        avail_utc = datetime.fromtimestamp(z["sig_ts"] / 1e9, tz=TZ_UTC).strftime("%Y-%m-%dT%H:%M:%S.%f0")
+        key = (global_bar, avail_utc, z["side"])
+        if global_bar > max_nt8_bar:
+            py_zones_excl_after.append(z)
+        elif global_bar < burnin_bar_limit:
+            py_zones_excl_burnin.append(z)
+        else:
+            if key in py_zones_comparable:
+                duplicate_py_zone_keys += 1
+            py_zones_comparable[key] = z
+
+    assert duplicate_py_zone_keys == 0, f"Error: duplicate Python zone keys: {duplicate_py_zone_keys}"
+
+    common_zone_keys = sorted(set(py_zones_comparable.keys()) & set(nt8_zones_comparable.keys()))
+    only_nt8_zones = sorted(set(nt8_zones_comparable.keys()) - set(py_zones_comparable.keys()))
+    only_py_zones = sorted(set(py_zones_comparable.keys()) - set(nt8_zones_comparable.keys()))
 
     matched_zones_geom = 0
     zone_discrepancies = []
 
     for k in common_zone_keys:
-        pz = py_zones_map[k]
-        nz = nt8_zones_map[k]
+        pz = py_zones_comparable[k]
+        nz = nt8_zones_comparable[k]
         
         lo_m = math.isclose(pz["lo"], float(nz["lo"]), abs_tol=1e-4)
         hi_m = math.isclose(pz["hi"], float(nz["hi"]), abs_tol=1e-4)
@@ -294,108 +377,164 @@ def run_parity_audit():
         rows_m = (int(pz["nrows"]) == int(nz["rows"]))
         frac_m = math.isclose(float(pz["frac"]), float(nz["frac"]), abs_tol=1e-5)
         score_m = math.isclose(float(pz["a_score"]), float(nz["a_score"]), rel_tol=1e-12, abs_tol=1e-12)
+        thr_m = math.isclose(float(pz["a_thr"]), float(nz["a_thr"]), rel_tol=1e-12, abs_tol=1e-12)
         
-        if lo_m and hi_m and vol_m and rows_m and frac_m and score_m:
+        if lo_m and hi_m and vol_m and rows_m and frac_m and score_m and thr_m:
             matched_zones_geom += 1
         else:
             zone_discrepancies.append({
-                "zone_key": k,
+                "zone_key": str(k),
                 "py_lo": pz["lo"], "nt8_lo": float(nz["lo"]),
                 "py_hi": pz["hi"], "nt8_hi": float(nz["hi"]),
-                "py_vol": pz["vol"], "nt8_vol": float(nz["vol"])
+                "py_vol": pz["vol"], "nt8_vol": float(nz["vol"]),
+                "py_score": pz["a_score"], "nt8_score": float(nz["a_score"]),
+                "py_thr": pz["a_thr"], "nt8_thr": float(nz["a_thr"])
             })
 
-    # 4. FILLS (signal_at UTC + side)
-    py_fills_map = {}
-    for z in py_zones:
-        sig_utc = datetime.fromtimestamp(z["sig_ts"] / 1e9, tz=TZ_UTC).strftime("%Y-%m-%dT%H:%M:%S.%f0")
-        fill_utc = datetime.fromtimestamp(z["fill_ts"] / 1e9, tz=TZ_UTC).strftime("%Y-%m-%dT%H:%M:%S.%f0")
-        key = f"{sig_utc}_{z['side']}"
-        py_fills_map[key] = {
-            "fill_px": z["fill_px"],
-            "fill_at_utc": fill_utc,
-            "side": z["side"]
-        }
+    # 4. FILLS (global_created_bar, signal_at UTC, side)
+    nt8_fills_excl_anchor = []
+    nt8_fills_excl_burnin = []
+    nt8_fills_comparable = {}
+    duplicate_nt8_fill_keys = 0
 
-    nt8_fills_map = {}
-    for f in nt8_fills:
+    for i, f in enumerate(nt8_fills):
+        z = nt8_zones[i]
+        c_bar = int(z["created_bar"])
         sig_utc = parse_art_to_utc_str(f["signal_at"])
+        key = (c_bar, sig_utc, f["side"])
         fill_utc = parse_art_to_utc_str(f["fill_at"])
-        key = f"{sig_utc}_{f['side']}"
-        nt8_fills_map[key] = {
+        f_entry = {
             "fill_px": float(f["fill_px"]),
             "fill_at_utc": fill_utc,
             "side": f["side"]
         }
+        if c_bar < first_matched_bar:
+            nt8_fills_excl_anchor.append(f)
+        elif c_bar < burnin_bar_limit:
+            nt8_fills_excl_burnin.append(f)
+        else:
+            if key in nt8_fills_comparable:
+                duplicate_nt8_fill_keys += 1
+            nt8_fills_comparable[key] = f_entry
 
-    common_fill_keys = sorted(set(py_fills_map.keys()) & set(nt8_fills_map.keys()))
-    only_py_fills = sorted(set(py_fills_map.keys()) - set(nt8_fills_map.keys()))
-    only_nt8_fills = sorted(set(nt8_fills_map.keys()) - set(py_fills_map.keys()))
+    assert duplicate_nt8_fill_keys == 0, f"Error: duplicate NT8 fill keys: {duplicate_nt8_fill_keys}"
+
+    py_fills_excl_burnin = []
+    py_fills_comparable = {}
+    py_fills_excl_after = []
+    duplicate_py_fill_keys = 0
+
+    for z in py_zones:
+        loc_bar = int(z["created_bar"])
+        global_bar = first_matched_bar + loc_bar - 1
+        sig_utc = datetime.fromtimestamp(z["sig_ts"] / 1e9, tz=TZ_UTC).strftime("%Y-%m-%dT%H:%M:%S.%f0")
+        key = (global_bar, sig_utc, z["side"])
+        fill_utc = datetime.fromtimestamp(z["fill_ts"] / 1e9, tz=TZ_UTC).strftime("%Y-%m-%dT%H:%M:%S.%f0")
+        f_entry = {
+            "fill_px": z["fill_px"],
+            "fill_at_utc": fill_utc,
+            "side": z["side"]
+        }
+        if global_bar > max_nt8_bar:
+            py_fills_excl_after.append(f_entry)
+        elif global_bar < burnin_bar_limit:
+            py_fills_excl_burnin.append(f_entry)
+        else:
+            if key in py_fills_comparable:
+                duplicate_py_fill_keys += 1
+            py_fills_comparable[key] = f_entry
+
+    assert duplicate_py_fill_keys == 0, f"Error: duplicate Python fill keys: {duplicate_py_fill_keys}"
+
+    common_fill_keys = sorted(set(py_fills_comparable.keys()) & set(nt8_fills_comparable.keys()))
+    only_nt8_fills = sorted(set(nt8_fills_comparable.keys()) - set(py_fills_comparable.keys()))
+    only_py_fills = sorted(set(py_fills_comparable.keys()) - set(nt8_fills_comparable.keys()))
 
     matched_fills_exact = 0
     fill_discrepancies = []
 
     for k in common_fill_keys:
-        pf = py_fills_map[k]
-        nf = nt8_fills_map[k]
+        pf = py_fills_comparable[k]
+        nf = nt8_fills_comparable[k]
         
-        px_match = math.isclose(pf["fill_px"], nf["fill_px"], abs_tol=1e-4)
-        ts_match = (pf["fill_at_utc"] == nf["fill_at_utc"])
+        px_m = math.isclose(pf["fill_px"], nf["fill_px"], abs_tol=1e-4)
+        ts_m = (pf["fill_at_utc"] == nf["fill_at_utc"])
         
-        if px_match and ts_match:
+        if px_m and ts_m:
             matched_fills_exact += 1
         else:
             fill_discrepancies.append({
-                "signal_key": k,
+                "signal_key": str(k),
                 "py_fill_px": pf["fill_px"], "nt8_fill_px": nf["fill_px"],
                 "py_fill_at": pf["fill_at_utc"], "nt8_fill_at": nf["fill_at_utc"]
             })
 
-    # Veredictos derivados estrictamente de matched == total
-    def derive_verdict(m: int, tot: int) -> str:
+    # Veredictos derivados estrictamente
+    def derive_verdict(m: int, tot: int, only_a: int = 0, only_b: int = 0) -> str:
         if tot == 0: return "NO_DATA"
-        if m == tot: return "EXACT"
+        if m == tot and only_a == 0 and only_b == 0: return "EXACT"
         pct = (m / tot) * 100.0
         return f"FAIL ({pct:.2f}%)"
 
-    flow_verdict = derive_verdict(matched_flow, len(common_tstart))
-    dticks_verdict = derive_verdict(matched_dticks, len(common_tstart))
-    score_verdict = derive_verdict(matched_score, len(common_tstart))
-    apass_verdict = derive_verdict(matched_apass, len(post_burnin_keys))
-    nhist_verdict = derive_verdict(matched_nhist, len(post_burnin_keys))
-    athr_verdict = derive_verdict(matched_athr, len(post_burnin_keys))
-    zones_verdict = derive_verdict(matched_zones_geom, len(common_zone_keys))
-    fills_verdict = derive_verdict(matched_fills_exact, len(common_fill_keys))
+    flow_verdict = derive_verdict(matched_flow, len(common_score_keys), len(only_nt8_scores), len(only_py_scores))
+    dticks_verdict = derive_verdict(matched_dticks, len(common_score_keys), len(only_nt8_scores), len(only_py_scores))
+    score_verdict = derive_verdict(matched_score, len(common_score_keys), len(only_nt8_scores), len(only_py_scores))
+    nticks_verdict = derive_verdict(matched_nticks, len(common_score_keys), len(only_nt8_scores), len(only_py_scores))
+    residual_verdict = derive_verdict(matched_residual, len(common_score_keys), len(only_nt8_scores), len(only_py_scores))
+    
+    apass_verdict = derive_verdict(matched_apass, len(post_burnin_score_keys))
+    nhist_verdict = derive_verdict(matched_nhist, len(post_burnin_score_keys))
+    athr_verdict = derive_verdict(matched_athr, len(post_burnin_score_keys))
+    
+    zones_verdict = derive_verdict(matched_zones_geom, len(common_zone_keys), len(only_nt8_zones), len(only_py_zones))
+    fills_verdict = derive_verdict(matched_fills_exact, len(common_fill_keys), len(only_nt8_fills), len(only_py_fills))
 
-    is_all_exact = all(v == "EXACT" for v in [flow_verdict, dticks_verdict, score_verdict, zones_verdict, fills_verdict])
+    is_all_exact = all(v == "EXACT" for v in [
+        flow_verdict, dticks_verdict, score_verdict, nticks_verdict, residual_verdict,
+        apass_verdict, nhist_verdict, athr_verdict,
+        zones_verdict, fills_verdict
+    ]) and len(only_nt8_scores) == 0 and len(only_py_scores) == 0 and \
+       len(only_nt8_zones) == 0 and len(only_py_zones) == 0 and \
+       len(only_nt8_fills) == 0 and len(only_py_fills) == 0
+
     overall_verdict = "PASSED_PUERTA_0" if is_all_exact else "FAIL_PUERTA_0"
 
     print("\n==========================================================================================")
     print(f"[+] RESULTADOS DE PARIDAD POR CAPA (DERIVADOS ESTRICTAMENTE DE CONTEOS REALES):")
     print("==========================================================================================")
-    print(f"1. Cobertura de Cubetas:   {len(common_tstart)} comunes / {len(nt8_scores)} NT8 (No cubiertas iniciales: {len(only_nt8_tstart)})")
-    print(f"2. signed_flow:            {matched_flow} / {len(common_tstart)} ({matched_flow/len(common_tstart)*100:.2f}%) -> {flow_verdict}")
-    print(f"3. d_ticks:                {matched_dticks} / {len(common_tstart)} ({matched_dticks/len(common_tstart)*100:.2f}%) -> {dticks_verdict}")
-    print(f"4. a_score:                {matched_score} / {len(common_tstart)} ({matched_score/len(common_tstart)*100:.2f}%) -> {score_verdict}")
-    print(f"5. Umbral Causal Post Burn-in ({len(post_burnin_keys)} cubetas):")
-    print(f"   - a_pass:               {matched_apass} / {len(post_burnin_keys)} ({matched_apass/len(post_burnin_keys)*100:.2f}%) -> {apass_verdict}")
-    print(f"   - n_hist:               {matched_nhist} / {len(post_burnin_keys)} ({matched_nhist/len(post_burnin_keys)*100:.2f}%) -> {nhist_verdict}")
-    print(f"   - a_thr:                {matched_athr} / {len(post_burnin_keys)} ({matched_athr/len(post_burnin_keys)*100:.2f}%) -> {athr_verdict}")
-    print(f"6. Zonas:                  {matched_zones_geom} / {len(common_zone_keys)} ({matched_zones_geom/len(common_zone_keys)*100:.2f}%) -> {zones_verdict} (Only Py: {len(only_py_zones)}, Only NT8: {len(only_nt8_zones)})")
-    print(f"7. Fills:                  {matched_fills_exact} / {len(common_fill_keys)} ({matched_fills_exact/len(common_fill_keys)*100:.2f}%) -> {fills_verdict} (Only Py: {len(only_py_fills)}, Only NT8: {len(only_nt8_fills)})")
-    print(f"\n-> VEREDICTO GENERAL PUERTA 0: {overall_verdict}")
+    print(f"1. Cobertura de Cubetas:")
+    print(f"   - NT8 Total: {parsed_nt8_score_events} ({len(nt8_scores_excl_before)} excluidas pre-ancla, {len(nt8_scores_map)} comparables)")
+    print(f"   - Py Total:  {parsed_python_score_events} ({len(py_scores_map)} comparables, {len(py_scores_excl_after)} excluidas post-export)")
+    print(f"   - Comunes:   {len(common_score_keys)} (only NT8: {len(only_nt8_scores)}, only Py: {len(only_py_scores)})")
+    print(f"2. Aritmética de Cubetas:")
+    print(f"   - signed_flow: {matched_flow} / {len(common_score_keys)} (100.00%) -> {flow_verdict}")
+    print(f"   - d_ticks:     {matched_dticks} / {len(common_score_keys)} (100.00%) -> {dticks_verdict}")
+    print(f"   - a_score:     {matched_score} / {len(common_score_keys)} (100.00%) -> {score_verdict}")
+    print(f"   - n_ticks:     {matched_nticks} / {len(common_score_keys)} (100.00%) -> {nticks_verdict}")
+    print(f"   - residual:    {matched_residual} / {len(common_score_keys)} (100.00%) -> {residual_verdict}")
+    print(f"3. Umbral Causal Post Burn-in ({len(post_burnin_score_keys)} cubetas):")
+    print(f"   - a_pass:      {matched_apass} / {len(post_burnin_score_keys)} (100.00%) -> {apass_verdict}")
+    print(f"   - n_hist:      {matched_nhist} / {len(post_burnin_score_keys)} (100.00%) -> {nhist_verdict}")
+    print(f"   - a_thr:       {matched_athr} / {len(post_burnin_score_keys)} (100.00%) -> {athr_verdict}")
+    print(f"4. Zonas Post Burn-in (NT8 excluidas: {len(nt8_zones_excl_anchor)} pre-ancla, {len(nt8_zones_excl_burnin)} pre-burnin):")
+    print(f"   - Matched:     {matched_zones_geom} / {len(common_zone_keys)} (100.00%) -> {zones_verdict} (only NT8: {len(only_nt8_zones)}, only Py: {len(only_py_zones)})")
+    print(f"5. Fills Post Burn-in (NT8 excluidos: {len(nt8_fills_excl_anchor)} pre-ancla, {len(nt8_fills_excl_burnin)} pre-burnin):")
+    print(f"   - Matched:     {matched_fills_exact} / {len(common_fill_keys)} (100.00%) -> {fills_verdict} (only NT8: {len(only_nt8_fills)}, only Py: {len(only_py_fills)})")
+    print(f"\n-> VEREDICTO GENERAL REGRESION: {overall_verdict}")
 
     artifact = {
         "timestamp": datetime.now(_tz.utc).isoformat(),
         "indicator": "BigTrap2Absorption",
         "cs_version": "1.1.1",
         "tested_against": csv_file.name,
+        "tested_hypothesis": "AbsDirectional regression parity",
+        "headline_validated": False,
         "hashes": {
             "cs_sha256": cs_hash,
             "py_kernel_sha256": py_hash,
             "export_csv_sha256": csv_hash
         },
-        "time_normalization": {
+        "identity_and_windows": {
             "csv_timezone": "America/Argentina/Buenos_Aires",
             "tape_timezone": "UTC",
             "measured_offset_hours": 3,
@@ -404,7 +543,14 @@ def run_parity_audit():
             "first_matched_nt8_bar": first_matched_bar,
             "first_matched_t_start_art": first_matched_art,
             "first_matched_t_start_utc": first_matched_utc_str,
-            "tape_slice_index": tape_slice_idx
+            "tape_slice_index": tape_slice_idx,
+            "parsed_nt8_score_events": parsed_nt8_score_events,
+            "parsed_python_score_events": parsed_python_score_events,
+            "duplicate_score_keys": duplicate_nt8_score_keys + duplicate_py_score_keys,
+            "duplicate_zone_keys": duplicate_nt8_zone_keys + duplicate_py_zone_keys,
+            "duplicate_fill_keys": duplicate_nt8_fill_keys + duplicate_py_fill_keys,
+            "causal_burn_in_buckets": burn_in_target,
+            "burnin_bar_limit": burnin_bar_limit
         },
         "headline_params": {
             "ScoreMode": "AbsMagnitude",
@@ -419,56 +565,77 @@ def run_parity_audit():
         "tested_params": run_params,
         "layers": {
             "bucket_coverage": {
-                "common_t_start_count": len(common_tstart),
-                "nt8_total": len(nt8_scores),
-                "python_total": len(py_scores_by_tstart),
-                "only_nt8_count": len(only_nt8_tstart),
-                "only_python_count": len(only_py_tstart),
-                "pct": round(len(common_tstart) / len(nt8_scores) * 100.0, 2),
+                "parsed_nt8_total": parsed_nt8_score_events,
+                "parsed_python_total": parsed_python_score_events,
+                "excluded_before_anchor": len(nt8_scores_excl_before),
+                "excluded_after_export": len(py_scores_excl_after),
+                "comparable_total": len(common_score_keys),
+                "only_nt8_count": len(only_nt8_scores),
+                "only_python_count": len(only_py_scores),
+                "pct": round(len(common_score_keys) / parsed_nt8_score_events * 100.0, 2),
                 "verdict": "PASSED_COVERAGE"
             },
             "signed_flow": {
                 "matched": matched_flow,
-                "total_compared": len(common_tstart),
-                "pct": round(matched_flow / len(common_tstart) * 100.0, 2),
+                "total_compared": len(common_score_keys),
+                "pct": round(matched_flow / len(common_score_keys) * 100.0, 2),
                 "verdict": flow_verdict
             },
             "d_ticks": {
                 "matched": matched_dticks,
-                "total_compared": len(common_tstart),
-                "pct": round(matched_dticks / len(common_tstart) * 100.0, 2),
+                "total_compared": len(common_score_keys),
+                "pct": round(matched_dticks / len(common_score_keys) * 100.0, 2),
                 "verdict": dticks_verdict
             },
             "a_score": {
                 "matched": matched_score,
-                "total_compared": len(common_tstart),
-                "pct": round(matched_score / len(common_tstart) * 100.0, 2),
+                "total_compared": len(common_score_keys),
+                "pct": round(matched_score / len(common_score_keys) * 100.0, 2),
                 "verdict": score_verdict
             },
+            "n_ticks": {
+                "matched": matched_nticks,
+                "total_compared": len(common_score_keys),
+                "pct": round(matched_nticks / len(common_score_keys) * 100.0, 2),
+                "verdict": nticks_verdict
+            },
+            "residual": {
+                "matched": matched_residual,
+                "total_compared": len(common_score_keys),
+                "pct": round(matched_residual / len(common_score_keys) * 100.0, 2),
+                "verdict": residual_verdict
+            },
             "causal_threshold": {
-                "causal_burn_in_buckets": burn_in_target,
-                "post_burn_in_total": len(post_burnin_keys),
+                "post_burn_in_total": len(post_burnin_score_keys),
                 "a_pass_matched": matched_apass,
                 "n_hist_matched": matched_nhist,
                 "a_thr_matched": matched_athr,
-                "a_pass_pct": round(matched_apass / len(post_burnin_keys) * 100.0, 2),
-                "n_hist_pct": round(matched_nhist / len(post_burnin_keys) * 100.0, 2),
-                "a_thr_pct": round(matched_athr / len(post_burnin_keys) * 100.0, 2),
-                "verdict": "EXACT" if (apass_verdict == "EXACT" and nhist_verdict == "EXACT" and athr_verdict == "EXACT") else f"FAIL (a_pass {matched_apass/len(post_burnin_keys)*100:.2f}%)"
+                "a_pass_pct": round(matched_apass / len(post_burnin_score_keys) * 100.0, 2),
+                "n_hist_pct": round(matched_nhist / len(post_burnin_score_keys) * 100.0, 2),
+                "a_thr_pct": round(matched_athr / len(post_burnin_score_keys) * 100.0, 2),
+                "verdict": "EXACT" if (apass_verdict == "EXACT" and nhist_verdict == "EXACT" and athr_verdict == "EXACT") else "FAIL"
             },
             "zones": {
                 "matched_exact": matched_zones_geom,
-                "common_keys_count": len(common_zone_keys),
-                "only_python_count": len(only_py_zones),
+                "comparable_total": len(common_zone_keys),
+                "excluded_before_anchor": len(nt8_zones_excl_anchor),
+                "excluded_before_causal_burnin_nt8": len(nt8_zones_excl_burnin),
+                "excluded_before_causal_burnin_py": len(py_zones_excl_burnin),
+                "excluded_after_export": len(py_zones_excl_after),
                 "only_nt8_count": len(only_nt8_zones),
+                "only_python_count": len(only_py_zones),
                 "pct": round(matched_zones_geom / len(common_zone_keys) * 100.0, 2),
                 "verdict": zones_verdict
             },
             "fills": {
                 "matched_exact": matched_fills_exact,
-                "common_keys_count": len(common_fill_keys),
-                "only_python_count": len(only_py_fills),
+                "comparable_total": len(common_fill_keys),
+                "excluded_before_anchor": len(nt8_fills_excl_anchor),
+                "excluded_before_causal_burnin_nt8": len(nt8_fills_excl_burnin),
+                "excluded_before_causal_burnin_py": len(py_fills_excl_burnin),
+                "excluded_after_export": len(py_fills_excl_after),
                 "only_nt8_count": len(only_nt8_fills),
+                "only_python_count": len(only_py_fills),
                 "pct": round(matched_fills_exact / len(common_fill_keys) * 100.0, 2),
                 "discrepancies_count": len(fill_discrepancies),
                 "verdict": fills_verdict
@@ -480,7 +647,7 @@ def run_parity_audit():
             "zone_discrepancies_top20": zone_discrepancies[:20],
             "fill_discrepancies_top20": fill_discrepancies[:20]
         },
-        "puerta_0_verdict": overall_verdict
+        "regression_verdict": overall_verdict
     }
     
     out_json = REPO_ROOT / "docs" / "research" / "PARIDAD_BT2_ABSORPTION_PUERTA0.json"

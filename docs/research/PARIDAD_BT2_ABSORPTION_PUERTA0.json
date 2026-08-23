@@ -1,14 +1,16 @@
 {
-  "timestamp": "2026-08-23T05:31:37.211118+00:00",
+  "timestamp": "2026-08-23T05:53:01.112365+00:00",
   "indicator": "BigTrap2Absorption",
   "cs_version": "1.1.1",
   "tested_against": "bt2_absorption__TW25_2.csv",
+  "tested_hypothesis": "AbsDirectional regression parity",
+  "headline_validated": false,
   "hashes": {
     "cs_sha256": "18d163123662dc0edfd2f45ddbb007391ac4c39b8c7c58c1e9209d66a9178641",
     "py_kernel_sha256": "0d162a6092c31228ec0f4f9539b4afc0cb5031737263db4369dea2ad03697ab2",
     "export_csv_sha256": "c6eaeb210eeb029930f8157ac76380954700eed80dd5bf5b05df18a5ee9c19d7"
   },
-  "time_normalization": {
+  "identity_and_windows": {
     "csv_timezone": "America/Argentina/Buenos_Aires",
     "tape_timezone": "UTC",
     "measured_offset_hours": 3,
@@ -17,7 +19,14 @@
     "first_matched_nt8_bar": 715,
     "first_matched_t_start_art": "2026-08-17T00:00:09.7880000",
     "first_matched_t_start_utc": "2026-08-17T03:00:09.7880000",
-    "tape_slice_index": 12
+    "tape_slice_index": 12,
+    "parsed_nt8_score_events": 28042,
+    "parsed_python_score_events": 27329,
+    "duplicate_score_keys": 0,
+    "duplicate_zone_keys": 0,
+    "duplicate_fill_keys": 0,
+    "causal_burn_in_buckets": 500,
+    "burnin_bar_limit": 1215
   },
   "headline_params": {
     "ScoreMode": "AbsMagnitude",
@@ -54,34 +63,47 @@
   },
   "layers": {
     "bucket_coverage": {
-      "common_t_start_count": 26817,
-      "nt8_total": 28042,
-      "python_total": 26818,
-      "only_nt8_count": 707,
-      "only_python_count": 1,
-      "pct": 95.63,
+      "parsed_nt8_total": 28042,
+      "parsed_python_total": 27329,
+      "excluded_before_anchor": 714,
+      "excluded_after_export": 1,
+      "comparable_total": 27328,
+      "only_nt8_count": 0,
+      "only_python_count": 0,
+      "pct": 97.45,
       "verdict": "PASSED_COVERAGE"
     },
     "signed_flow": {
-      "matched": 26817,
-      "total_compared": 26817,
+      "matched": 27328,
+      "total_compared": 27328,
       "pct": 100.0,
       "verdict": "EXACT"
     },
     "d_ticks": {
-      "matched": 26817,
-      "total_compared": 26817,
+      "matched": 27328,
+      "total_compared": 27328,
       "pct": 100.0,
       "verdict": "EXACT"
     },
     "a_score": {
-      "matched": 26817,
-      "total_compared": 26817,
+      "matched": 27328,
+      "total_compared": 27328,
+      "pct": 100.0,
+      "verdict": "EXACT"
+    },
+    "n_ticks": {
+      "matched": 27328,
+      "total_compared": 27328,
+      "pct": 100.0,
+      "verdict": "EXACT"
+    },
+    "residual": {
+      "matched": 27328,
+      "total_compared": 27328,
       "pct": 100.0,
       "verdict": "EXACT"
     },
     "causal_threshold": {
-      "causal_burn_in_buckets": 500,
       "post_burn_in_total": 26824,
       "a_pass_matched": 26824,
       "n_hist_matched": 26824,
@@ -92,18 +114,26 @@
       "verdict": "EXACT"
     },
     "zones": {
-      "matched_exact": 628,
-      "common_keys_count": 628,
+      "matched_exact": 626,
+      "comparable_total": 626,
+      "excluded_before_anchor": 12,
+      "excluded_before_causal_burnin_nt8": 9,
+      "excluded_before_causal_burnin_py": 3,
+      "excluded_after_export": 0,
+      "only_nt8_count": 0,
       "only_python_count": 0,
-      "only_nt8_count": 18,
       "pct": 100.0,
       "verdict": "EXACT"
     },
     "fills": {
-      "matched_exact": 628,
-      "common_keys_count": 628,
+      "matched_exact": 626,
+      "comparable_total": 626,
+      "excluded_before_anchor": 12,
+      "excluded_before_causal_burnin_nt8": 9,
+      "excluded_before_causal_burnin_py": 3,
+      "excluded_after_export": 0,
+      "only_nt8_count": 0,
       "only_python_count": 0,
-      "only_nt8_count": 18,
       "pct": 100.0,
       "discrepancies_count": 0,
       "verdict": "EXACT"
@@ -115,5 +145,5 @@
     "zone_discrepancies_top20": [],
     "fill_discrepancies_top20": []
   },
-  "puerta_0_verdict": "PASSED_PUERTA_0"
+  "regression_verdict": "PASSED_PUERTA_0"
 }
