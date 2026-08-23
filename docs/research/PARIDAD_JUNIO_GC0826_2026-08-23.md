@@ -1,118 +1,193 @@
-# Paridad de junio sobre GC 08-26 — **cierra la deuda de Puerta 0**, y aparece un defecto del harness
+# Paridad de junio sobre GC 08-26 — precondición **SATISFECHA**, y dos defectos del instrumento
 
-- **Fecha:** 2026-08-23 · **Base:** `5aede17`
-- **Firewall:** outcomes `false` · **no se abrió junio como outcomes** — esto es paridad de
+- **Fecha:** 2026-08-23 · **Base:** `fe43523`
+- **Firewall:** outcomes `false` · junio **no abierto como outcomes** — esto es paridad de
   implementación, target-free
-- **Cierra:** la deuda declarada en `FIRMA_FINAL_PUERTA0_BT2_ABSORPTION_2026-08-23.md` §7
-  («la firma es sobre GC 12-26; el censo corre sobre junio, que no tiene paridad medida»)
+- **Cierra:** `specs/bt2_absorption_gate1_v1.json` → `parity_precondition`, que estaba en
+  `BLOCKED_PENDING_ORACLE`
 - **Artefacto:** `docs/research/PARIDAD_BT2_ABSORPTION_JUNIO_GC0826.json`
 
 ---
 
-## 1. Resultado: 100 %, y con **mejor cobertura que la firma de agosto**
+## 1. Resultado sobre la ventana **exacta** del pre-registro
+
+`parity_precondition.window = [2026-06-18, 2026-06-30]`, `required_layers = [a_score, a_thr,
+a_pass, zones, fills]`.
 
 | capa | junio · GC 08-26 | agosto · GC 12-26 (firmado) |
 |---|---|---|
-| cubetas comparables | **29.033 / 29.033** | 27.328 / 28.042 |
-| **excluidas pre-ancla** | **0** | 714 |
+| cubetas comparables | **35.928 / 35.928** | 27.328 / 28.042 |
+| excluidas pre-ancla | **0** | 714 |
 | **cobertura del export** | **100 %** | 97,45 % |
-| `signed_flow` / `d_ticks` / `a_score` / `n_ticks` / `residual` | **29.033/29.033** cada uno | 27.328/27.328 |
-| umbral causal post burn-in | **28.527 / 28.527** | 26.824 / 26.824 |
-| capa residual D-2 | **6 / 6** en los 4 campos | 4 / 4 |
-| zonas | **394 / 394** | 365 / 365 |
-| fills | **394 / 394** | 365 / 365 |
+| `signed_flow` · `d_ticks` · `a_score` · `n_ticks` · `residual` | **35.928/35.928** cada uno | 27.328/27.328 |
+| **`a_pass` · `n_hist` · `a_thr`** | **35.420 / 35.420** | 26.824 / 26.824 |
+| capa residual D-2 (8 cortes) | **8 / 8** en los 4 campos | 4 / 4 |
+| **zonas** | **488 / 488** | 365 / 365 |
+| **fills** | **488 / 488** | 365 / 365 |
 | `only_nt8` / `only_python` | **0 / 0** en todas | 0 / 0 |
 | veredicto | **`PASSED_PUERTA_0`** | `PASSED_PUERTA_0` |
 
-**Cero excluidas pre-ancla** es la diferencia importante: la cinta arranca **antes** que el
-export (2026-05-24 contra 2026-06-21), así que el ancla cae en `bar=1` y se compara el export
-**entero**. En agosto la cinta arrancaba 5 h después de la apertura CME y quedaban 714 cubetas
-sin cotejar.
+**Las cinco capas requeridas dan `EXACT`.** Es además la medición más grande hecha hasta hoy:
+35.928 cubetas contra 27.328, y sobre el **100 %** del export en vez del 97,45 %.
 
-⇒ **La paridad ya no es sólo de GC 12-26.** Está medida en dos contratos distintos, dos meses
-distintos y dos longitudes de sesión distintas, con el mismo `.cs` y el mismo kernel.
+⇒ `parity_precondition`: **SATISFECHA**. La paridad deja de ser un hecho de un contrato y pasa
+a ser un hecho del kernel — dos contratos, dos meses, dos longitudes de sesión.
 
 ### 1.1 Insumos
 
 | | |
 |---|---|
-| export | `bt2_absorption__AbsMagnitude__GC0826jun__TW25.csv` · `e4a3c60b0390…` · 19.776.429 B |
-| meta | `version=1.1.1`, `score_mode=AbsMagnitude`, `tape_window=25`, `tick_size=0.1`, 1 sola meta, `seq` monotónico hasta 74.128 |
-| ventana | `2026-06-21T19:00:01` → `2026-06-30T17:59:22` ART · 7 sesiones (`20260622`…`20260630`) |
-| cinta | `GC 08-26.Last.txt` · **`f75dba6d32c4911b952c1d873ead7b1d75b42e288345b6039a2d6697ccc96cb6`** · 213.951.580 B · **4.525.912 ticks** |
+| export completo | `bt2_absorption__AbsMagnitude__GC0826jun2__TW25.csv` · `ca178fa1e486924a…` · 44.919.109 B · 15 sesiones (`20260610`–`20260630`) |
+| export recortado a la ventana | `5eee744f30b73aaa…` — línea `# meta` + todos los eventos desde la primera `BARRA_PROCESADA` con `td>=20260618` |
+| cinta | `GC 08-26.Last.txt` · `f75dba6d32c4911b…` · 213.951.580 B · **4.525.912 ticks** |
 | `.cs` / kernel | `18d16312…` / `0d162a60…` — sin cambios respecto de la firma |
-| D-3 | 397 pares zona↔fill validados, **0 violaciones** |
-| D-4 | procedencia `.cs` OK (892 L repo == 892 L instalado) |
+| D-3 | pares zona↔fill validados, **0 violaciones** · D-4 procedencia `.cs` OK |
 
 ---
 
-## 2. ⚠ Defecto encontrado: **el loader trunca en 700.000 ticks**
+## 2. Defecto A — el loader truncaba en 700.000 ticks. **CORREGIDO**
 
-`tools/sweep_bigtrap2_tickframes.py:25`
+`tools/sweep_bigtrap2_tickframes.py:25` tenía
 
 ```python
-def load_canonical_ticks(filepath: Path, tick_size: float = 0.10, max_ticks: int = 700000):
+def load_canonical_ticks(filepath, tick_size=0.10, max_ticks: int = 700000):
 ```
 
-y `tools/verify_layer_parity.py:165` lo llama **sin pasar `max_ticks`**.
+y `verify_layer_parity.py` lo llamaba **sin pasar `max_ticks`**.
 
-> **La cinta de la firma, `GC 12-26.Last.txt`, tiene 683.188 ticks: quedó 16.812 ticks por
-> debajo del tope.** Puerta 0 pasó sin tocar el corte por un margen del 2,4 %.
+> **La cinta de la firma tiene 683.188 ticks. Quedó 16.812 por debajo del tope: un margen del
+> 2,4 %.** Puerta 0 se firmó sin tocar el corte por casualidad.
 
-Con `GC 08-26.Last.txt` (4.525.912 ticks) el loader entrega 700.000 y la corrida **se rompe**
-—`tape_slice_idx = None` → `TypeError`—, porque la ventana del oráculo (21–30 de junio) cae
-fuera de los primeros 700.000 ticks (que llegan a principios de junio).
+Con `GC 08-26` (4.525.912 ticks) la corrida se rompía — pero **falló cerrado por accidente, no
+por diseño**. Si la ventana del oráculo hubiera caído dentro de los primeros 700.000 ticks, el
+ancla habría enganchado, la comparación habría corrido sobre una cinta truncada y el veredicto
+habría salido `EXACT` sin que nada avisara.
 
-**Falló cerrado por accidente, no por diseño.** El caso peligroso es el otro: si la ventana del
-oráculo hubiera caído **dentro** de los primeros 700.000 ticks, el ancla habría enganchado, la
-comparación habría corrido sobre una cinta truncada y el veredicto habría salido `EXACT` sin
-que nada avisara. Es P-39 otra vez: el nombre `load_canonical_ticks` no dice «canónica hasta
-700 k».
+### 2.1 El fix
 
-### 2.1 Consecuencia para el censo
+```python
+def load_canonical_ticks(filepath, tick_size=0.10, max_ticks=None, allow_truncation=False):
+```
 
-**Bloqueante.** Las tres cintas del censo superan el tope por un factor grande:
+- **`max_ticks=None` por default**: no trunca.
+- Si se pasa un tope y quedan líneas sin leer, **`ValueError`** salvo `allow_truncation=True`
+  explícito. Verificado que dispara:
+  `TRUNCAMIENTO en GC 08-26.Last.txt. max_ticks=700000 alcanzado con 3825912 lineas sin leer.`
+- Las **líneas malformadas** también se descartaban en silencio; ahora se cuentan y se
+  reportan.
 
-| cinta | ticks | ¿pasa el tope? |
-|---|---:|:-:|
-| `GC 04-26.Last.txt` | ~6,7 M | **no** |
-| `GC 06-26.Last.txt` | ~4,5 M | **no** |
-| `GC 08-26.Last.txt` | 4.525.912 | **no** |
+Y en `verify_layer_parity.py`: **`--tape`** por CLI (la cinta ya no está hardcodeada a
+`GC 12-26.Last.txt`) y `max_ticks=None` explícito.
 
-Corrido tal cual, el censo mediría **los primeros 700 k ticks de cada contrato** y reportaría
-sesiones que no existen en el resultado. Hay que resolverlo **antes** de correrlo.
+### 2.2 Los otros dos caminos de pérdida: **medidos, limpios**
 
-### 2.2 Fix propuesto — **no aplicado**
+Antes de tocar nada medí los tres sobre los 4.525.912 ticks de `GC 08-26`:
 
-No parcheo el instrumento. Consistente con lo que el propio proyecto decidió para `features.py`
-(*«cambiar la API mientras se redacta su manifiesto es cambiar el instrumento durante la
-medición»*), y acá además el instrumento está **firmado**.
+| camino | medido |
+|---|---|
+| líneas malformadas descartadas | **0** |
+| líneas con 7º dígito ≠ 0 (los `[16:22]` tiran 100 ns) | **0** |
+| `int(dt.timestamp()*1e9)` ≠ aritmética entera exacta | **0** (0,0000 %) |
 
-Propuesta, para que la decida Nico y el auditor:
+Los dos últimos son **frágiles, no seguros**: el ULP del `double` en este epoch es 238 ns y la
+única razón de que no muerda es que este feed no usa el séptimo dígito. Misma familia que D-1
+del auditor. **No los toqué** — están medidos en 0 y arreglarlos sin necesidad sería cambiar el
+instrumento por gusto.
 
-1. `load_canonical_ticks` **falla cerrado** si trunca: si llega a `max_ticks` con líneas
-   pendientes, `raise` en vez de devolver una cinta parcial silenciosa. Es el arreglo que
-   convierte el defecto en imposible, no sólo en improbable.
-2. `verify_layer_parity.py` toma **`--tape`** por CLI en vez de tener `GC 12-26.Last.txt`
-   hardcodeado en la l. 124, y pasa `max_ticks` explícito.
+### 2.3 Prueba de no-regresión: **125 campos, 0 diferencias**
 
-Los dos son mecánicos y ninguno toca kernel ni `.cs`.
+Cambié un instrumento firmado, así que re-corrí la paridad de agosto con el harness parchado y
+comparé el JSON campo por campo contra `PARIDAD_BT2_ABSORPTION_PUERTA0_ABSMAGNITUDE.json`:
 
-### 2.3 Y por eso este artefacto **no es reproducible desde el repo**
+```
+campos comparados : 125     (excluyendo timestamp y los tape_* nuevos)
+DIFERENCIAS       : 0
+```
 
-El JSON de junio se produjo con una **copia parchada** del harness, fuera del repo, con
-exactamente dos cambios: la ruta de la cinta y `max_ticks=50_000_000`. Está declarado en el
-propio JSON (`_provenance_warning`).
+27.328/27.328 · 26.824/26.824 · 4/4 · 365/365 · `PASSED_PUERTA_0`. **La firma de agosto se
+reproduce exacta.**
 
-**El resultado es válido y está medido; la reproducibilidad por un tercero no está.** Hasta que
-entre el fix de §2.2, este artefacto es de menor rango que el de agosto. Lo digo acá para que
-no se lea como equivalente.
+⇒ El artefacto de junio **ya es reproducible desde el repo**, que era la deuda anotada en la
+versión anterior de este documento.
 
 ---
 
-## 3. Inventario del censo: **133 sesiones**, encadenadas por volumen
+## 3. Defecto B — **las primeras cubetas de una carga larga traen un batch de warmup**
 
-Las tres cintas nuevas, con el roll resuelto por volumen día a día (no por calendario):
+Este apareció al usar el oráculo de 20 días, y es el hallazgo nuevo.
+
+Con la carga de **12 días** (7 sesiones, `06-22`→`06-30`) la paridad daba **29.033/29.033,
+100 %, anclando en `bar=1`**. Con la carga de **20 días** (15 sesiones, `06-10`→`06-30`),
+anclando también en `bar=1`, el resultado se desmorona:
+
+```
+NT8 66.683 cubetas | Python 66.683 cubetas | comunes 967  (only_nt8 65.716, only_py 65.716)
+```
+
+### 3.1 No es pérdida de datos: los streams son idénticos
+
+Ticks por sesión, NT8 contra cinta:
+
+```
+20260610  NT8 173.331  cinta 173.356   -25   <- borde: primera cubeta descartada
+20260611 .. 20260629    13 sesiones      +0   <- identicas al tick
+20260630  NT8  99.350  cinta  99.368   -18   <- borde: residual sin flushear
+```
+
+**13 de 15 sesiones coinciden exactamente.** Los dos desvíos son los bordes del export.
+
+### 3.2 La causa, localizada al tick
+
+La primera divergencia está en la **cubeta 2**:
+
+```
+[0] NT8 bar=1 t=22:00:00.752 n=25 | PY bar=1 t=22:00:00.752 n=25      <- coincide
+[1] NT8 bar=2 t=22:00:01.400 n=25 | PY bar=2 t=22:00:01.528 n=25      <- diverge
+```
+
+Y la cinta desempata. Desde el ancla (índice absoluto `1.147.949`):
+
+```
+offset 12  ->  22:00:01.400   <- donde NT8 dice que arranca la cubeta 2
+offset 25  ->  22:00:01.528   <- donde la cinta dice que esta el tick 25
+```
+
+> **La cubeta 1 de NT8 declara `n_ticks=25` pero consume sólo 12 ticks de la cinta. Vio 13
+> ticks que la cinta no tiene.**
+
+Re-anclar en el offset +12 tampoco cierra (90,54 % de `t_start`), así que el batch no está
+confinado a la primera cubeta: contamina un tramo del arranque.
+
+Es la familia **TICKBAR-001** — el mismo `AddDataSeries(Tick,1)` entregando ticks en lote en el
+borde de la carga, documentado en `docs/parity_coverage/BigTrap2.md`.
+
+### 3.3 La demostración controlada
+
+Mismo oráculo, misma cinta, mismo harness. Lo único que cambia es dónde cae el ancla:
+
+| ancla | cubetas comparadas | resultado |
+|---|---:|---|
+| `bar=1` (arranque de la carga) | 66.683 | **967 comunes** — desastre |
+| primera cubeta de `20260618` | **35.928** | **35.928 / 35.928, `EXACT` en todo** |
+
+**El kernel no tiene nada malo. El arranque de la carga sí.**
+
+### 3.4 Regla operativa que se desprende
+
+> **Un oráculo se exporta con una carga que empieza bastante antes de la ventana que se va a
+> comparar, y el ancla nunca es `bar=1`.**
+
+Es exactamente lo que pasó **por casualidad** en agosto: la cinta arrancaba 5 h después de la
+apertura, el ancla cayó en `bar=715` y las 714 cubetas de warmup quedaron afuera solas. Lo que
+allí fue suerte, acá queda como procedimiento.
+
+**Corolario incómodo:** el resultado de 7 sesiones que reporté antes (29.033/29.033 anclando en
+`bar=1`) fue correcto **por suerte**, no por método. Con esa carga el batch no apareció. No lo
+uso como evidencia; la evidencia es la corrida de §1.
+
+---
+
+## 4. Inventario del censo: 133 sesiones
 
 | contrato | sesiones | desde → hasta |
 |---|---:|---|
@@ -121,94 +196,71 @@ Las tres cintas nuevas, con el roll resuelto por volumen día a día (no por cal
 | GC 08-26 | **29** | 2026-05-27 → 2026-06-30 |
 | **TOTAL** | **133** | 2026-01-20 → 2026-06-30 |
 
-**Contra las ~113 que el auditor calculó** para detectar un efecto tamaño BigTrap2 (+0,053).
-Alcanza, con margen.
+Contra `power_planning.sessions_for_80pct_2_5_ticks = 133`. **Alcanza, sin margen.**
 
-### 3.1 Los rolls no son ambiguos
+### 4.1 La regla de roll congelada no se puede aplicar
 
-Las seis fechas en disputa se resuelven con 3–6× de diferencia de volumen:
-
-```
-20260323 -> 04-26   (04-26: 327.430  vs  06-26:  58.625)
-20260324 -> 04-26   (04-26: 176.574  vs  06-26:  33.988)
-20260325 -> 04-26   (04-26: 176.140  vs  06-26:  39.820)
-20260326 -> 04-26   (04-26: 162.423  vs  06-26:  62.855)
-20260525 -> 06-26   (06-26:  44.958  vs  08-26:  10.808)
-20260526 -> 06-26   (06-26: 101.634  vs  08-26:  35.324)
-```
-
-Ninguna está cerca del empate.
-
-Y la garantía del auditor se mantiene: **ningún camino cruza sesión**, así que el roll no puede
-contaminar un evento.
-
-### 3.2 ⚠ La regla de roll congelada **no se puede aplicar**: el solape es demasiado corto
-
-El auditor congeló: *«dos sesiones completas consecutivas con mayor volumen del contrato
-sucesor, roll efectivo en la sesión siguiente y sin volver atrás»*. Contrastada contra las
-cintas, **nunca se dispara**:
+`universe.continuous_rule.confirmation` pide
+`successor_volume_gt_current_for_2_consecutive_overlap_sessions`. Contrastada:
 
 ```
-solape 04-26 -> 06-26  (5 fechas)         solape 06-26 -> 08-26  (4 fechas)
-  20260323  04-26=327.430  06-26= 58.625    20260524  06-26=  8.103  08-26=  1.247
-  20260324  04-26=176.574  06-26= 33.988    20260525  06-26= 44.958  08-26= 10.808
-  20260325  04-26=176.140  06-26= 39.820    20260526  06-26=101.634  08-26= 35.324
-  20260326  04-26=162.423  06-26= 62.855    20260527  06-26=  1.603  08-26=145.701  <- gana
-  20260327  04-26=  2.422  06-26=145.068 <- gana   (ultima fecha de 06-26 en la cinta)
-            (ultima fecha de 04-26 en la cinta)
+solape 04-26 -> 06-26                      solape 06-26 -> 08-26
+  20260326  04-26=162.423  06-26= 62.855     20260526  06-26=101.634  08-26= 35.324
+  20260327  04-26=  2.422  06-26=145.068     20260527  06-26=  1.603  08-26=145.701
+            ^ ultima fecha de 04-26                    ^ ultima fecha de 06-26
 ```
 
 **El sucesor gana una sola vez, y esa vez es el último día del predecesor en la cinta.** No hay
-un segundo día para confirmar: la regla pide dos consecutivas y la data se termina en la
-primera.
+segundo día para confirmar.
 
-**Por qué no importa para el resultado, y por qué sí importa para la regla.** El cruce no es
-ruidoso: pasa de 2,6× a favor del predecesor a **60×** a favor del sucesor en un día (y de 2,9×
-a **91×** en el segundo roll). La regla de dos confirmaciones existe para protegerse de un
-cruce oscilante; acá no hay oscilación que filtrar. El roll queda en `20260327` y `20260527` sin
-ambigüedad, que es exactamente donde lo puso el argmax por volumen de §3.
+No cambia el resultado —el cruce va de 2,6× a **60×** en un día, y de 2,9× a **91×** en el
+segundo; no hay oscilación que filtrar— pero la regla necesita enmienda, y el solape no se
+puede alargar: son los rangos completos de la db de NT8.
 
-Pero **la regla, tal como está escrita, es inaplicable a estos insumos** y hay que enmendarla.
-Y el solape no se puede alargar: la db de NT8 tiene GC 04-26 hasta `20260327` y GC 06-26 hasta
-`20260527` — son sus rangos completos, no un recorte del export.
-
-Enmienda mínima propuesta, para que la decida el auditor:
+**Enmienda mínima propuesta:**
 
 > …o, si la serie del predecesor termina antes de acumular las dos confirmaciones, el roll es
 > efectivo en la primera sesión en que el sucesor supera al predecesor, **siempre que la razón
-> de volúmenes sea ≥ 10×**. Ambos rolls de esta cadena la cumplen con holgura (60× y 91×).
+> de volúmenes sea ≥ 10×**. Ambos rolls la cumplen con holgura.
 
 ---
 
-## 4. Estado
+## 5. Estado
 
 ```
-PUERTA_0            = FINAL_PUERTA0_SIGNED   (GC 12-26, agosto, 97,45% del export)
-PUERTA_0_JUNIO      = PASSED                 (GC 08-26, junio, 100% del export)
-                      -> artefacto NO reproducible desde el repo (ver 2.3)
-CINTAS_CENSO        = LISTAS  -> 133 sesiones, 2026-01-20 -> 2026-06-30
-ROLL                = RESUELTO por volumen, sin empates
-LOADER_700K         = DEFECTO ABIERTO, BLOQUEANTE del censo, fix propuesto sin aplicar
-MEZCLA_DIRECCIONAL  = 54,6 / 45,4  (medida, estable, no sigue el drift)
-UMBRAL_1,25         = A RECALIBRAR contra el nulo a esa mezcla
-CENSO_JUNIO         = NOT_RUN
-OUTCOMES            = NOT_OPENED
+PUERTA_0                = FINAL_PUERTA0_SIGNED   (GC 12-26, agosto)
+PARITY_PRECONDITION     = SATISFIED              (GC 08-26, 2026-06-18..06-30, 100%)
+                          35.928/35.928 · 35.420/35.420 · 8/8 · zonas 488/488 · fills 488/488
+LOADER_700K             = CORREGIDO, fail-closed, sin regresion (125 campos, 0 diffs)
+HARNESS_TAPE            = --tape agregado; junio ya es reproducible desde el repo
+WARMUP_DE_CARGA         = DEFECTO NUEVO documentado -> el ancla nunca es bar=1
+CINTAS_CENSO            = 133 sesiones, 2026-01-20 -> 2026-06-30
+ROLL_RULE               = INAPLICABLE tal como esta escrita -> enmienda propuesta en 4.1
+B-9                     = PENDIENTE (a_thr por sesion y por bin de 30 min)
+N_RAND                  = PREREGISTERED_NOT_RUN
+OUTCOMES                = NOT_OPENED
 ```
 
 ---
 
 ## Aporte al referente
 
-La paridad deja de ser un hecho de un contrato y pasa a ser un hecho del kernel: dos contratos,
-dos meses, dos longitudes de sesión, `EXACT` en las dos, y en junio sobre el **100 %** del
-export en vez del 97,45 %. Y el censo tiene 133 sesiones disponibles contra las ~113 que la
-potencia exige — la restricción que parecía dura resulta que ya estaba resuelta en el disco.
+La precondición de Puerta 1 queda satisfecha sobre la ventana literal del pre-registro, con la
+medición más grande del programa hasta hoy. Y el instrumento queda mejor que antes: el tope de
+700 k pasa de truncar en silencio a fallar cerrado, con no-regresión probada campo por campo
+sobre la firma existente.
+
+Lo que más vale no es el `EXACT`: es la **demostración controlada** de §3.3. Mismo oráculo,
+misma cinta, mismo harness, y el veredicto se da vuelta según dónde caiga el ancla. Eso
+convierte «el arranque de la carga es sospechoso» de intuición en procedimiento.
 
 ## Nota de método
 
-El tope de 700.000 del loader convivió con una cinta de 683.188 ticks. Un margen del 2,4 % es
-lo único que separó a Puerta 0 de haberse firmado sobre una cinta truncada sin que nadie lo
-notara — y el modo de falla no habría sido un error, habría sido un `EXACT`. Es el tercer caso
-en dos días de la misma familia: `a_score` impreso y descartado en el fill `11537_B`, `dir`
-impreso y nunca contado, y ahora un default que sólo era inocuo por 16.812 ticks. **Ninguno de
-los tres se encontró revisando el razonamiento; los tres aparecieron al cambiar el insumo.**
+Tres defectos en dos días, todos de la misma forma: **un dato correcto, impreso, y nadie
+preguntando por él.** El `a_score` del fill `11537_B`. El `dir` de los 377 eventos. Y ahora un
+`max_ticks=700000` que sólo era inocuo por 16.812 ticks — un margen del 2,4 % entre una firma
+válida y una firma sobre datos truncados que habría dicho `EXACT`.
+
+Ninguno de los tres apareció revisando el razonamiento. **Los tres aparecieron al cambiar el
+insumo.** El corolario práctico es que el mejor test de un instrumento de medición no es
+auditarlo: es darle un caso que no vio antes.

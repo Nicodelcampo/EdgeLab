@@ -118,10 +118,13 @@ def verify_parity(
     csv_file: Path,
     expected_score_mode: str,
     out_json: Path,
-    installed_cs_path: Path | None = None
+    installed_cs_path: Path | None = None,
+    tape_path: Path | None = None
 ) -> dict:
     data_dir = Path(r"C:\Users\nicoc\OneDrive\Documentos\DataNT8")
-    gc_file = data_dir / "GC 12-26.Last.txt"
+    # La cinta ya no esta hardcodeada: la paridad se mide en mas de un contrato.
+    # Default = la cinta de la firma de Puerta 0 (GC 12-26, agosto).
+    gc_file = Path(tape_path) if tape_path else data_dir / "GC 12-26.Last.txt"
     cs_repo_file = REPO_ROOT / "nt8" / "BigTrap2Absorption.cs"
     py_kernel_file = REPO_ROOT / "edgelab" / "bridge" / "indicators" / "bigtrap2absorption.py"
     
@@ -162,7 +165,9 @@ def verify_parity(
     print(f"    kernel py:     {py_hash}")
     print(f"    export csv:    {csv_hash}")
     
-    ticks, _, _, _, _, _ = load_canonical_ticks(gc_file, tick_size=0.10)
+    # max_ticks=None: carga la cinta completa. El default historico de 700000
+    # truncaba en silencio (ver PARIDAD_JUNIO_GC0826_2026-08-23.md seccion 2).
+    ticks, _, _, _, _, _ = load_canonical_ticks(gc_file, tick_size=0.10, max_ticks=None)
     meta, nt8_bars, nt8_scores, nt8_traps, nt8_zones, nt8_fills = parse_nt8_export(csv_file)
     
     # 1.1 CLI Fail-closed assertions sobre el meta del export
@@ -797,13 +802,16 @@ def main():
     parser.add_argument("--expected-score-mode", type=str, required=True, choices=["AbsMagnitude", "AbsDirectional"], help="ScoreMode esperado.")
     parser.add_argument("--out-json", type=Path, default=None, help="Ruta para guardar el artefacto JSON.")
     parser.add_argument("--installed-cs", type=Path, default=None, help="Ruta al .cs instalado en NinjaTrader 8.")
+    parser.add_argument("--tape", type=Path, default=None,
+                        help="Cinta .Last.txt. Default: GC 12-26.Last.txt (la de la firma).")
     args = parser.parse_args()
     
     verify_parity(
         csv_file=args.csv,
         expected_score_mode=args.expected_score_mode,
         out_json=args.out_json,
-        installed_cs_path=args.installed_cs
+        installed_cs_path=args.installed_cs,
+        tape_path=args.tape
     )
 
 if __name__ == "__main__":
