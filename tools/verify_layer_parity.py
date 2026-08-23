@@ -165,10 +165,17 @@ def verify_parity(
     print(f"    kernel py:     {py_hash}")
     print(f"    export csv:    {csv_hash}")
     
+    meta, nt8_bars, nt8_scores, nt8_traps, nt8_zones, nt8_fills = parse_nt8_export(csv_file)
+
+    # tick_size sale del meta del export, que el .cs escribe desde NT8.TickSize.
+    # Estaba hardcodeado a 0.10 (el del oro): eso ataba el harness a GC en silencio.
+    assert "tick_size" in meta, "Fail-closed: tick_size missing in export meta!"
+    tick_size = float(meta["tick_size"])
+    assert tick_size > 0, f"Fail-closed: tick_size invalido: {tick_size}"
+    print(f"[*] tick_size del meta: {tick_size}")
     # max_ticks=None: carga la cinta completa. El default historico de 700000
     # truncaba en silencio (ver PARIDAD_JUNIO_GC0826_2026-08-23.md seccion 2).
-    ticks, _, _, _, _, _ = load_canonical_ticks(gc_file, tick_size=0.10, max_ticks=None)
-    meta, nt8_bars, nt8_scores, nt8_traps, nt8_zones, nt8_fills = parse_nt8_export(csv_file)
+    ticks, _, _, _, _, _ = load_canonical_ticks(gc_file, tick_size=tick_size, max_ticks=None)
     
     # 1.1 CLI Fail-closed assertions sobre el meta del export
     assert "score_mode" in meta, "Fail-closed: score_mode missing in export meta!"
