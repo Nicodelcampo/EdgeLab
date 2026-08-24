@@ -1,8 +1,7 @@
 name: CI
 
-# La suite no ejecuta mediciones de research ni abre outcomes. Los dos smokes
-# dan diagnóstico rápido y explícito para el módulo crypto/contexto; el job
-# completo conserva la cobertura histórica del repositorio.
+# La suite no ejecuta mediciones de research ni abre outcomes. Se particiona por
+# superficie para que una regresión muestre su dominio sin ocultar la cobertura.
 
 on:
   push:
@@ -18,40 +17,24 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  focused:
-    name: focused (${{ matrix.name }})
+  tests:
+    name: pytest (${{ matrix.name }})
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
         include:
-          - name: crypto
-            test_args: tests/bridge/test_binance_usdm.py tests/bridge/test_crypto_target_free.py
-          - name: context
-            test_args: tests/research/test_context_point_in_time.py tests/research/test_context_strict_time.py
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-          cache: pip
-
-      - name: Install locked dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements/core-bridge-dev.lock
-
-      - name: Run focused tests
-        run: python -m pytest -q ${{ matrix.test_args }}
-
-  tests:
-    name: pytest (python 3.12)
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
+          - name: bridge
+            test_args: tests/bridge
+          - name: research
+            test_args: tests/research
+          - name: foundation
+            test_args: tests/foundation
+          - name: data-external-stats
+            test_args: tests/data tests/external tests/stats
+          - name: top-level
+            test_args: tests/test_*.py
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -72,5 +55,5 @@ jobs:
           python -c "import sys, platform; print(sys.version); print(platform.platform())"
           pip freeze | sha256sum
 
-      - name: Run test suite
-        run: python -m pytest -q --durations=10
+      - name: Run test shard
+        run: python -m pytest -q --durations=10 ${{ matrix.test_args }}
