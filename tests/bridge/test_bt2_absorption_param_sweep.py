@@ -207,3 +207,56 @@ def test_commit_desconocido_invalida_igual_que_una_mezcla(tmp_path, monkeypatch)
     assert out["partials_code_commit"] == ["?"]
     assert out["status"] == "DIAGNOSTIC_REAGGREGATION_MIXED_CODE"
     assert out["promotion_eligible"] is False
+
+
+# ---------- modo finalize-only, solo lectura ----------
+
+def _args(tmp, contracts=("GC 02-26",), stage="oat"):
+    import argparse
+    from pathlib import Path
+    return argparse.Namespace(spec=S.DEFAULT_SPEC, split=S.DEFAULT_SPLIT,
+                              chain=S.DEFAULT_CHAIN, output=Path(tmp),
+                              stage=stage, contracts=list(contracts))
+
+
+def test_finalize_only_aborta_si_falta_un_parcial(tmp_path, monkeypatch):
+    """No agrega lo que hay: exige el conjunto completo y nombra lo que falta."""
+    monkeypatch.setattr(S, "plan", lambda *a, **k: (
+        {"overlap": {"time_tolerance_seconds": 0, "price_tolerance_ticks": 0}},
+        _cfgs("cfgA") + _cfgs("cfgB"),
+        {"assignment": {"20251126": "GC 02-26"}, "puerta1_133": ["20251126"],
+         "all_152": ["20251126"], "sealed_19": []}))
+    _partial(tmp_path, "cfgA", "GC 02-26", ["20251126"])      # falta cfgB
+    with pytest.raises(SystemExit) as e:
+        S.finalize_only(_args(tmp_path))
+    assert "conjunto COMPLETO" in str(e.value)
+    assert "cfgB" in str(e.value), "debe nombrar el que falta"
+
+
+def test_finalize_only_no_importa_el_kernel(tmp_path):
+    """Solo lectura: la funcion no debe tocar run_abs ni las cintas."""
+    import inspect
+    src = inspect.getsource(S.finalize_only)
+    assert "run_abs" not in src
+    assert "load_canonical_ticks" not in src
+    assert "_atomic_json(partial" not in src
+
+
+def test_finalize_only_no_sobrescribe_parciales(tmp_path, monkeypatch):
+    """El contenido de partials/ debe quedar byte-identico tras reagregar."""
+    import hashlib
+    monkeypatch.setattr(S, "plan", lambda *a, **k: (
+        {"overlap": {"time_tolerance_seconds": 0, "price_tolerance_ticks": 0}},
+        _cfgs("cfgA"),
+        {"assignment": {"20251126": "GC 02-26"}, "puerta1_133": ["20251126"],
+         "all_152": ["20251126"], "sealed_19": []}))
+    _partial(tmp_path, "cfgA", "GC 02-26", ["20251126"], commit="abc123")
+    import json as _j
+    (tmp_path / "input_manifest.json").write_text(
+        _j.dumps({"GC 02-26": {"sha256": "sha_GC 02-26"}}), encoding="utf-8")
+    f = tmp_path / "partials" / "cfgA__GC_02-26.json"
+    antes = hashlib.sha256(f.read_bytes()).hexdigest()
+    monkeypatch.setattr(S, "clean_commit", lambda: "abc123")
+    monkeypatch.setattr(S, "_git", _fake_git("abc123"))
+    S.finalize_only(_args(tmp_path))
+    assert hashlib.sha256(f.read_bytes()).hexdigest() == antes

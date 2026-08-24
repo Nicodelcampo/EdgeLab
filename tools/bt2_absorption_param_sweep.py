@@ -322,6 +322,47 @@ def plan(spec_path, split_path, chain_path, output, stage):
     return spec,configs,universe
 
 
+def finalize_only(args):
+    """Reagrega parciales YA medidos. Solo lectura: no corre el kernel ni escribe
+    parciales.
+
+    Existe porque un defecto en la agregacion no deberia costar el recomputo de
+    toda la medicion. Tres garantias:
+
+    1. EXIGE EL CONJUNTO COMPLETO. Si falta un solo config x contrato, aborta
+       nombrandolos. No agrega lo que hay.
+    2. NO COMPUTA. No importa el kernel ni toca las cintas.
+    3. NO SOBRESCRIBE PARCIALES. Solo escribe los artefactos de resumen.
+
+    La procedencia sigue mandando: si los parciales vienen de un commit distinto
+    al de esta corrida, el status es DIAGNOSTIC_REAGGREGATION_MIXED_CODE y
+    promotion_eligible queda en false.
+    """
+    spec, configs, universe = plan(args.spec, args.split, args.chain, args.output, args.stage)
+    contracts = tuple(getattr(args, "contracts", None) or CONTRACTS)
+    faltan = [f"{c['config_id']}__{k}" for c in configs for k in contracts
+              if not _partial_path(args.output, c, k).exists()]
+    if faltan:
+        raise SystemExit(
+            f"finalize-only exige el conjunto COMPLETO: faltan {len(faltan)} de "
+            f"{len(configs)*len(contracts)} parciales. Primeros: {faltan[:5]}")
+    manifest = load_json(args.output / "input_manifest.json")
+    assignment = universe["assignment"]
+    result = finalize(args.output, configs, manifest, head_start=clean_commit(), spec=spec,
+                      p1_sessions=[d for d in universe["puerta1_133"] if assignment[d] in contracts],
+                      contracts=contracts)
+    _atomic_json(args.output / "run_status.json",
+                 {"status": result["status"], "mode": "FINALIZE_ONLY",
+                  "outcomes_opened": False, "recomputed": False})
+    print(json.dumps({"status": result["status"], "mode": "FINALIZE_ONLY",
+                      "n_configs": result["n_configs"],
+                      "promotion_eligible": result["promotion_eligible"],
+                      "partials_code_commit": result["partials_code_commit"],
+                      "finalize_matches_partials": result["finalize_matches_partials"],
+                      "outcomes_opened": False}, indent=2, ensure_ascii=False))
+    return 0 if result["status"].startswith("COMPLETE") else 3
+
+
 def run_campaign(args):
     spec,configs,universe=plan(args.spec,args.split,args.chain,args.output,args.stage); head=clean_commit(); started=time.monotonic(); max_seconds=float(args.max_hours)*3600 if args.max_hours else None
     assignment=universe["assignment"]; report_sessions=set(universe["puerta1_133"]); expected_all=set(universe["all_152"]); input_manifest={}
@@ -352,15 +393,19 @@ def run_campaign(args):
 
 def parser():
     out=argparse.ArgumentParser(description=__doc__); sub=out.add_subparsers(dest="command",required=True)
-    for name in ("plan","run"):
+    for name in ("plan","run","finalize-only"):
         p=sub.add_parser(name); p.add_argument("--spec",type=Path,default=DEFAULT_SPEC); p.add_argument("--split",type=Path,default=DEFAULT_SPLIT); p.add_argument("--chain",type=Path,default=DEFAULT_CHAIN); p.add_argument("--output",type=Path,required=True); p.add_argument("--stage",choices=("oat","all"),default="all")
+        if name in ("run","finalize-only"):
+            p.add_argument("--contracts",nargs="+",default=list(CONTRACTS),choices=list(CONTRACTS),help="Subconjunto de contratos. Un subconjunto NUNCA es COMPLETE_TARGET_FREE.")
         if name=="run":
-            p.add_argument("--data-dir",type=Path,required=True); p.add_argument("--tick-size",type=float,default=.10); p.add_argument("--resume",action="store_true"); p.add_argument("--max-hours",type=float,default=8.5); p.add_argument("--contracts",nargs="+",default=list(CONTRACTS),choices=list(CONTRACTS),help="Subconjunto de contratos a medir. Por defecto los cuatro. Un subconjunto marca el resultado como cobertura parcial y NUNCA como COMPLETE_TARGET_FREE.")
+            p.add_argument("--data-dir",type=Path,required=True); p.add_argument("--tick-size",type=float,default=.10); p.add_argument("--resume",action="store_true"); p.add_argument("--max-hours",type=float,default=8.5)
     return out
 
 
 def main():
     args=parser().parse_args()
+    if args.command=="finalize-only":
+        raise SystemExit(finalize_only(args))
     if args.command=="plan":
         _,configs,universe=plan(args.spec,args.split,args.chain,args.output,args.stage); print(json.dumps({"status":"PLAN_TARGET_FREE","n_configs":len(configs),"n_all":len(universe["all_152"]),"n_report":len(universe["puerta1_133"]),"n_sealed":len(universe["sealed_19"]),"outcomes_opened":False},indent=2)); return
     raise SystemExit(run_campaign(args))
