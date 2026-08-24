@@ -1,6 +1,6 @@
 {
   "schema": "edgelab.crypto.binance_usdm_pilot/1.1.0",
-  "created_at_utc": "2026-08-24T19:13:06.996286+00:00",
+  "created_at_utc": "2026-08-24T19:32:42.739177+00:00",
   "north_star_sha256": "d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1",
   "outcomes_accessed": false,
   "join_contract": "bookTicker.transaction_time < trade.time",
@@ -15,29 +15,30 @@
     "product": "USD-M_PERPETUAL",
     "tick_size": "0.10",
     "quantity_unit_base": "0.001",
-    "quantity_unit_status": "PROVISIONAL_USER_SUPPLIED"
+    "quantity_unit_status": "PROVISIONAL_EXCHANGE_STEP_SIZE",
+    "quantity_unit_source": "exchangeInfo.LOT_SIZE.stepSize"
   },
   "inputs": {
     "trades": {
-      "path": "<DATA_ROOT>/C:/ProyectosQuant/cryptodata/raw/BTCUSDT-trades-2024-03-30.zip",
+      "path": "<DATA_ROOT>/raw/BTCUSDT-trades-2024-03-30.zip",
       "sha256": "a385248e48e38c8ae96641cf3a34887be080ae2d1558b70a80efddceb211b9d0",
       "bytes": 12403562
     },
     "book_ticker": {
-      "path": "<DATA_ROOT>/C:/ProyectosQuant/cryptodata/raw/BTCUSDT-bookTicker-2024-03-30.zip",
+      "path": "<DATA_ROOT>/raw/BTCUSDT-bookTicker-2024-03-30.zip",
       "sha256": "6c6310b48a0de980d61f7e7edab7975abd0a6fe7d6b63a1156f7ea74bb15d151",
       "bytes": 87758829
     }
   },
   "outputs": {
     "ticks": {
-      "path": "<DATA_ROOT>/C:/ProyectosQuant/cryptodata/derived/BTCUSDT_2024-03-30_u1/BTCUSDT_bt2_ticks.parquet",
+      "path": "<DATA_ROOT>/derived/BTCUSDT_2024-03-30_u1/BTCUSDT_bt2_ticks.parquet",
       "sha256": "e96c3cff5764c0ba593846eebc39a350058edeca8b0b7d109dafa40d5e4a08af",
       "bytes": 15107832,
       "rows": 1469266
     },
     "sidecar": {
-      "path": "<DATA_ROOT>/C:/ProyectosQuant/cryptodata/derived/BTCUSDT_2024-03-30_u1/BTCUSDT_bt2_sidecar.parquet",
+      "path": "<DATA_ROOT>/derived/BTCUSDT_2024-03-30_u1/BTCUSDT_bt2_sidecar.parquet",
       "sha256": "d333bc49b95b146f18a3dc7612b198d740be5d45397f654763ed1d7b56b2ec62",
       "bytes": 26683607,
       "rows": 1469266
@@ -100,8 +101,22 @@
       }
     ],
     "quantity_unit_base": "0.001",
-    "quantity_unit_status": "PROVISIONAL_USER_SUPPLIED",
+    "quantity_unit_status": "PROVISIONAL_EXCHANGE_STEP_SIZE",
+    "quantity_unit_source": "exchangeInfo.LOT_SIZE.stepSize",
+    "raw_id_gap_ranges": 7,
+    "raw_missing_trade_ids": 7,
+    "analysis_id_gap_ranges": 8,
+    "analysis_missing_trade_ids": 8,
+    "id_gaps_created_by_exclusion": 1,
+    "n_offtick_book_rows_excluded_bid": 0,
+    "n_offtick_book_rows_excluded_ask": 0,
+    "offtick_book_sample": [],
+    "n_trades_with_changed_bbo": 0,
+    "added_book_age_ns_p50": null,
+    "added_book_age_ns_max": 0,
+    "promotion_eligible": false,
     "n_offtick_prices_excluded": 1,
+    "n_offtick_book_rows_excluded": 0,
     "offtick_price_sample": [
       {
         "trade_id": 4816611114,
@@ -111,7 +126,7 @@
       }
     ],
     "offtick_exclusion_invoked": true,
-    "status": "PILOT_ACCEPTED_TARGET_FREE_WITH_ID_GAPS",
+    "status": "DIAGNOSTIC_OFFTICK_EXCLUSION",
     "outcomes_opened": false
   },
   "target_free_census": {
@@ -140,11 +155,12 @@
     "excluded": "sin book previo; sólo permitido con --allow-partial-join y cuantificado"
   },
   "provenance": {
-    "head_start": "d5a9fe29a8822bc1d025c676835bd2f3d51ae559",
-    "head_end": "d5a9fe29a8822bc1d025c676835bd2f3d51ae559",
+    "head_start": "b1a88ccc2334afa64f648c3e8c9da7206f5ce454",
+    "head_end": "b1a88ccc2334afa64f648c3e8c9da7206f5ce454",
     "tree_dirty_start": false,
     "tree_dirty_end": false,
     "valid": true,
     "allow_dirty_requested": false
-  }
+  },
+  "manifest_schema_version": "edgelab.crypto.pilot_manifest/1.1.0"
 }

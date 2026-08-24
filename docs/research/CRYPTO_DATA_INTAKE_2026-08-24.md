@@ -68,24 +68,42 @@ sha256 `c23b0b2f24be5578…` · `timezone=UTC` · `serverTime=1787594411103`
 
 `tick_size = PRICE_FILTER.tickSize = 0.10` para BTCUSDT.
 
-**`0.001` se usó como `PROVISIONAL_EXCHANGE_STEP_SIZE`**, y el manifest lo registra como
-`quantity_unit_status = PROVISIONAL_USER_SUPPLIED`. **No es una unidad económica
-validada**: es el incremento mínimo permitido y nada más.
+**`0.001` se usó como `PROVISIONAL_EXCHANGE_STEP_SIZE`**, con
+`quantity_unit_source = exchangeInfo.LOT_SIZE.stepSize` en el manifest. **No es una
+unidad económica validada**: es el incremento mínimo permitido y nada más.
 
 ### 1.5 Gates de integridad — resultado
 
-| día | trades | book updates | joined | cobertura | strict-prior viol. | ID gaps | IDs faltantes |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| 2024-03-29 | 2.898.780 | 10.315.644 | 2.898.780 | **100,0000 %** | **0** | 20 | 20 |
-| 2024-03-30 | 1.469.266 | 7.398.592 | 1.469.266 | **100,0000 %** | **0** | 8 | 8 |
+| día | trades | book updates | joined | cobertura | strict-prior viol. |
+|---|---:|---:|---:|---:|---:|
+| 2024-03-29 | 2.898.780 | 10.315.644 | 2.898.780 | **100,0000 %** | **0** |
+| 2024-03-30 | 1.469.266 | 7.398.592 | 1.469.266 | **100,0000 %** | **0** |
 
-- Join causal estricto `bookTicker.transaction_time < trade.time`: **0 violaciones**.
-- Cobertura **completa**: ningún trade quedó sin book previo. No se invocó
-  `--allow-partial-join`.
-- `duplicate_trade_ids = 0` en ambos días.
-- Book cruzado: **0** — ninguno abortó por esa causa.
-- Acuerdo maker/quote: **100 %** sobre 2.891.659 y 1.466.509 trades clasificables.
-- `outcomes_opened = false` en los dos manifests.
+**Gaps de ID, separados raw / análisis** (corrección de auditoría: antes se
+calculaban después de excluir, así que una exclusión se disfrazaba de gap del venue):
+
+| día | RAW ranges/missing | ANÁLISIS ranges/missing | creados por la exclusión |
+|---|---:|---:|---:|
+| 2024-03-29 | **14 / 14** | 20 / 20 | **+6** |
+| 2024-03-30 | **7 / 7** | 8 / 8 | **+1** |
+
+> Los **7 gaps RAW del 2024-03-30** son los «siete gaps del piloto original» del
+> bloqueante #2 del contrato causal. El 8 que reporté antes era post-exclusión y los
+> tapaba.
+
+**Acuerdo maker/quote — NO fue 100 %:**
+
+| día | acuerdo | clasificables | **desacuerdos** |
+|---|---:|---:|---:|
+| 2024-03-29 | **99,8037 %** | 2.897.346 | **5.687** |
+| 2024-03-30 | **99,8319 %** | 1.468.978 | **2.469** |
+
+Corrección de un error mío de reporte: imprimí `0.9980` con `%.2f` → `1.00` y lo leí
+como «100 %». Eso borró 8.156 desacuerdos reales. **No se investigó su causa** — hacerlo
+no requiere outcomes, pero no se hizo.
+
+- `duplicate_trade_ids = 0` en ambos días · book cruzado **0** · `outcomes_opened=false`.
+- Cobertura **completa**: no se invocó `--allow-partial-join`.
 
 ### 1.6 La anomalía off-tick — medida, **no explicada**
 
@@ -97,10 +115,15 @@ Escaneo exhaustivo de los dos días completos, `tick_size = 0.10`:
              4.368.053 total    ->  7   (0,00016 %)
 ```
 
-**Primero se descartó que fuera un `tick_size` mal declarado:** sobre 400.000 precios de
-muestra, **399.999 tienen exactamente 1 decimal**. `0.10` es correcto para estos
-archivos. *No se bajó el tick a 0.01 para que pasara el gate* — eso habría sido ajustar
-el parámetro al dato.
+**Granularidad modal observada, compatible con `0.10`:** sobre 400.000 precios de
+muestra, **399.999 tienen exactamente 1 decimal**.
+
+> **Eso NO prueba que `tickSize = 0.10` rigiera en 2024-03.** Es consistente con esa
+> hipótesis y descarta que `0.01` sea el valor natural del período, pero la metadata
+> histórica **sigue abierta** — ver §4.
+
+Lo que sí sostiene: *no se bajó el tick a `0.01` para que pasara el gate*, porque eso
+habría sido ajustar el parámetro al dato y habría convertido 7 anomalías en 0.
 
 Los 7 tienen estructura:
 
@@ -117,18 +140,36 @@ fuera de tick** ese día, 0 el 2024-03-30.
 > Que la anomalía esté en **las dos fuentes** y en **los mismos precios** descarta
 > corrupción del archivo de trades.
 
+**Efecto medido de excluir el book off-tick** (13 filas, todas del lado `bid`, el
+2024-03-29; 0 el 2024-03-30):
+
+```
+trades que cambian de BBO seleccionado :  2  de 2.898.780
+edad extra introducida  p50 / max      :  7.000.000 ns  /  7.000.000 ns   (7 ms)
+```
+
+El filtro es casi inocuo en efecto, pero **no se asume**: se mide y se declara.
+
 **No se afirma la causa.** Queda como hallazgo abierto.
 
 ### 1.7 Sensibilidad de unidad
 
-**NO CORRIDA.** Sólo se materializó `1×` (`0.001`). Falta `0.5×` y `2×`.
+**NO CORRIDA.** Sólo se materializó `1×` (`0.001`), etiquetado
+`PROVISIONAL_EXCHANGE_STEP_SIZE` con `quantity_unit_source =
+exchangeInfo.LOT_SIZE.stepSize`. Falta `0.5×` y `2×`.
 
 ---
 
 ## 2. INFERIDO
 
-- Que `tickSize = 0.10` regía en 2024-03 se infiere de la granularidad observada
-  (99,99975 % con 1 decimal), **no** de metadata histórica.
+- Que `tickSize = 0.10` regía en 2024-03 es **hipótesis compatible**, no hecho. Se
+  apoya en la granularidad modal observada (99,99975 % con 1 decimal) y en que
+  `exchangeInfo` vigente declara `0.10`. **No hay metadata histórica que lo confirme.**
+- **Búsqueda de anuncios oficiales de cambio de tick (punto 4 de auditoría):** Binance
+  **sí** publica avisos de ajuste de tick para USDⓈ-M —se encontraron varios de 2025 y
+  2026—, pero **no se halló ninguno de BTCUSDT cercano a marzo de 2024**. Ausencia de
+  evidencia, no evidencia de ausencia: la práctica existe y la búsqueda no fue
+  exhaustiva sobre el archivo histórico de anuncios.
 - Que la anomalía off-tick es del venue y no del archivo se infiere de su presencia
   simultánea en `trades` y `bookTicker` con los mismos precios.
 
@@ -142,8 +183,11 @@ fuera de tick** ese día, 0 el 2024-03-30.
   2026-08-24**. Binance no publica `exchangeInfo` histórico en Data Vision. El
   bloqueante #1 del contrato causal **sigue abierto**.
 - **Causa de los 7 off-tick.**
-- **Los 20 y 8 ID gaps** — cuantificados, no explicados. No son los «siete gaps del
-  piloto original» del bloqueante #2: ese número no reaparece acá.
+- **Causa de los gaps de ID.** Cuantificados y separados raw/análisis (§1.5), **no
+  explicados**. Corrección: los **7 gaps RAW del 2024-03-30 SÍ son** los «siete gaps del
+  piloto original» del bloqueante #2. Mi afirmación previa de que «ese número no
+  reaparece» era falsa y salía de mirar el conteo post-exclusión.
+- **Causa de los 8.156 desacuerdos maker/quote.**
 - **ETHUSDT y SOLUSDT** — descargados no; el piloto no corrió.
 - **Sensibilidad `0.5× / 2×`.**
 - **Cualquier variable de respuesta.**
@@ -152,21 +196,65 @@ fuera de tick** ese día, 0 el 2024-03-30.
 
 ## 5. Modo diagnóstico invocado ⚠
 
-Los dos días corrieron **sólo con `--allow-offtick-prices`**, que es un modo declarado y
-apagado por default.
+Los dos días corrieron **sólo con `--allow-offtick-prices`**, apagado por default.
 
 ```
-offtick_exclusion_invoked = true   en los dos dias
-n_offtick_prices_excluded      = 6  /  1
-n_offtick_book_rows_excluded   = 13 /  0
+status                          = DIAGNOSTIC_OFFTICK_EXCLUSION
+promotion_eligible              = false
+offtick_exclusion_invoked       = true
+n_offtick_prices_excluded       =  6  /  1
+n_offtick_book_rows_excluded    = 13  /  0     (bid=13, ask=0)
+n_trades_with_changed_bbo       =  2  /  0
 ```
 
-Por contrato, **un modo de diagnóstico parcial no se promueve**. Estas corridas no
-cuentan como paso limpio de los gates: cuentan como diagnóstico con exclusiones
-declaradas y contadas.
+La precedencia de estado es explícita en el kernel: **la exclusión off-tick domina sobre
+gaps y join parcial**, así que una corrida con exclusiones **no puede emitir
+`PILOT_ACCEPTED*` bajo ninguna combinación**. Hay un `assert` que corta si alguna vez
+ocurriera, de modo que el invariante no depende del orden de los `if`.
 
-**Por eso no se avanzó a ETHUSDT.** La regla es avanzar sólo si los gates pasan, y acá
-pasaron con una excepción invocada.
+**Por eso no se avanzó a ETHUSDT ni SOLUSDT como etapa promocionada.**
+
+---
+
+## 5-bis. Escaneo `diagnostic_only` de ETHUSDT y SOLUSDT
+
+Autorizado como escaneo raw, **sin materializar BigTrap2 y sin promover**.
+`promotion_eligible=false` · `outcomes_opened=false`. Descarga oficial con los 8
+checksums coincidentes.
+
+Off-tick contra el `tickSize` **vigente** de cada símbolo:
+
+| símbolo | tick usado | día | trades off-tick | book off-tick |
+|---|---:|---|---:|---:|
+| ETHUSDT | 0.01 | 03-29 | **0** / 2.876.273 | **0** / 7.981.165 |
+| ETHUSDT | 0.01 | 03-30 | **0** / 2.148.077 | **0** / 5.996.993 |
+| SOLUSDT | 0.0100 | 03-29 | **1.616.520** / 1.907.324 | **6.452.467** / 6.456.357 |
+| SOLUSDT | 0.0100 | 03-30 | **1.531.003** / 1.818.053 | **5.454.135** / 5.458.186 |
+
+**ETH está limpio: la anomalía de BTC no aparece.**
+
+**SOL no tiene una anomalía: tiene el tick equivocado.** ~85 % «off-tick» no es una
+anomalía de microestructura, es una metadata que no corresponde al período.
+
+```
+SOLUSDT 2024-03-30, decimales en price:
+  1 decimal    3,72 %
+  2 decimales 11,97 %
+  3 decimales 84,31 %    <- modal
+exchangeInfo VIGENTE: tickSize = 0.0100    incompatible
+granularidad modal compatible con:   0.001
+```
+
+> **Esto prueba el bloqueante #1 empíricamente.** El `tickSize` de SOLUSDT **cambió**
+> entre 2024-03 y 2026-08, así que usar `exchangeInfo` vigente sobre datos históricos es
+> inseguro **como método**, no sólo en principio.
+>
+> Para BTCUSDT el valor vigente resulta compatible con los datos, pero eso es
+> **coincidencia afortunada, no validación**. La hipótesis de §2 se sostiene por la
+> granularidad observada, no por la metadata.
+
+**No se corrigió el tick de SOL a 0.001.** Sería inferirlo del dato, que es exactamente
+lo que este hallazgo desaconseja. SOL queda bloqueado hasta tener metadata histórica.
 
 ---
 
