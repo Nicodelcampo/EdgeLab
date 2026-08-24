@@ -233,6 +233,17 @@ Off-tick contra el `tickSize` **vigente** de cada símbolo:
 
 **ETH está limpio: la anomalía de BTC no aparece.**
 
+> **DECISIÓN (2026-08-24): ETH NO se promueve.** Queda `diagnostic_only` hasta obtener
+> metadata histórica contemporánea o aprobar un contrato alternativo
+> `OBSERVED_PRICE_GRID`. Estar limpio contra el tick vigente **no es validación** — el
+> caso SOL prueba que «vigente compatible» puede ser coincidencia.
+>
+> ```
+> BTC  diagnostico        promotion_eligible = false
+> ETH  diagnostic_only    NO promovido
+> SOL  BLOQUEADO          metadata historica incompatible
+> ```
+
 **SOL no tiene una anomalía: tiene el tick equivocado.** ~85 % «off-tick» no es una
 anomalía de microestructura, es una metadata que no corresponde al período.
 
