@@ -56,6 +56,10 @@ def main() -> int:
     )
     p.add_argument("--trades-sha256")
     p.add_argument("--book-sha256")
+    p.add_argument("--quantity-unit-status", default="PROVISIONAL_EXCHANGE_STEP_SIZE",
+                   help="Estado de la unidad. Sin default economico: describe QUE es el valor.")
+    p.add_argument("--quantity-unit-source", default="exchangeInfo.LOT_SIZE.stepSize",
+                   help="Procedencia declarada del valor de unidad.")
     p.add_argument("--allow-partial-join", action="store_true")
     p.add_argument("--allow-offtick-prices", action="store_true",
                    help="DIAGNOSTICO: excluye y cuenta precios fuera de la grilla de tick. Marca la corrida como excluyente; no se promueve.")
@@ -71,6 +75,9 @@ def main() -> int:
         symbol=args.symbol,
         tick_size=args.tick_size,
         quantity_unit_base=args.quantity_unit_base,
+    ,
+        quantity_unit_status=args.quantity_unit_status,
+        quantity_unit_source=args.quantity_unit_source,
     )
     result = load_binance_usdm_pair(
         args.trades,

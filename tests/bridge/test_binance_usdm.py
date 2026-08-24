@@ -31,7 +31,9 @@ def _write_pair(tmp_path, *, first_book_time=None, trade_ids=(10, 11)):
 
 
 def _contract():
-    return BinanceUsdmContract(symbol="BTCUSDT", tick_size="0.1", quantity_unit_base="0.001")
+    return BinanceUsdmContract(symbol="BTCUSDT", tick_size="0.1", quantity_unit_base="0.001",
+                               quantity_unit_status="PROVISIONAL_EXCHANGE_STEP_SIZE",
+                               quantity_unit_source="exchangeInfo.LOT_SIZE.stepSize")
 
 
 def test_join_usa_book_estrictamente_anterior_y_no_el_de_igual_timestamp(tmp_path):

@@ -142,8 +142,49 @@ def test_book_todo_offtick_aborta_explicitamente(tmp_path):
 
 
 def test_unidad_declara_fuente_y_estado_de_exchange():
+    """Los valores ya no tienen default: se pasan explicitos y quedan en el
+    contrato. Este test cambio de premisa en la ronda 2 de auditoria."""
     from edgelab.crypto.binance_usdm import BinanceUsdmContract
-    c = BinanceUsdmContract(symbol="BTCUSDT", tick_size="0.10", quantity_unit_base="0.001")
+    c = BinanceUsdmContract(symbol="BTCUSDT", tick_size="0.10", quantity_unit_base="0.001",
+                            quantity_unit_status="PROVISIONAL_EXCHANGE_STEP_SIZE",
+                            quantity_unit_source="exchangeInfo.LOT_SIZE.stepSize")
     assert c.quantity_unit_status == "PROVISIONAL_EXCHANGE_STEP_SIZE"
     assert c.quantity_unit_source == "exchangeInfo.LOT_SIZE.stepSize"
     assert "USER_SUPPLIED" not in c.quantity_unit_status
+    assert c.to_dict()["quantity_unit_source"] == "exchangeInfo.LOT_SIZE.stepSize"
+
+
+# ---------- auditoria 2026-08-24 ronda 2 ----------
+
+def test_unidad_sin_procedencia_falla_cerrado():
+    """No hay default: afirmar exchangeInfo sin que nadie lo declare seria
+    inventar la fuente en el manifest."""
+    from edgelab.crypto.binance_usdm import BinanceUsdmContract
+    with pytest.raises(ValueError, match="quantity_unit_status"):
+        BinanceUsdmContract(symbol="BTCUSDT", tick_size="0.10", quantity_unit_base="0.001")
+    with pytest.raises(ValueError, match="quantity_unit_source"):
+        BinanceUsdmContract(symbol="BTCUSDT", tick_size="0.10", quantity_unit_base="0.001",
+                            quantity_unit_status="PROVISIONAL_EXCHANGE_STEP_SIZE")
+
+
+def test_gaps_creados_se_calculan_por_poblacion_no_por_conteo_de_rangos():
+    """Restar cantidades de rangos da mal cuando una exclusion PARTE un rango
+    existente: 1 rango puede volverse 2 sin que falte ningun ID nuevo."""
+    import numpy as np
+    from edgelab.crypto.binance_usdm import _missing_id_set
+    raw = np.array([10, 11, 15, 16], dtype=np.int64)      # falta 12,13,14 -> 1 rango
+    assert _missing_id_set(raw) == {12, 13, 14}
+    # al excluir el 15, el hueco crece pero NO aparecen rangos nuevos
+    post = np.array([10, 11, 16], dtype=np.int64)
+    creados = _missing_id_set(post) - _missing_id_set(raw)
+    assert creados == {15}, "el creado es el ID excluido, no una diferencia de rangos"
+    assert len(creados) == 1
+
+
+def test_el_invariante_de_promocion_es_excepcion_no_assert():
+    """python -O elimina los assert; el invariante debe sobrevivir."""
+    import inspect
+    from edgelab.crypto import binance_usdm as M
+    src = inspect.getsource(M.load_binance_usdm_pair)
+    assert "raise RuntimeError" in src
+    assert "assert not (offtick_invoked" not in src

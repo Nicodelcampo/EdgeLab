@@ -73,10 +73,16 @@ class BinanceUsdmContract:
     quantity_unit_base: Decimal | str | float
     venue: str = "BINANCE"
     product: str = "USD-M_PERPETUAL"
-    quantity_unit_status: str = "PROVISIONAL_EXCHANGE_STEP_SIZE"
-    quantity_unit_source: str = "exchangeInfo.LOT_SIZE.stepSize"
+    quantity_unit_status: str | None = None
+    quantity_unit_source: str | None = None
 
     def __post_init__(self) -> None:
+        # La procedencia de la unidad NO tiene default: afirmar exchangeInfo sin
+        # que nadie lo haya declarado seria inventar la fuente en el manifest.
+        if not self.quantity_unit_status:
+            raise ValueError("quantity_unit_status es obligatorio y no tiene default")
+        if not self.quantity_unit_source:
+            raise ValueError("quantity_unit_source es obligatorio y no tiene default")
         symbol = str(self.symbol).strip().upper()
         if not symbol:
             raise ValueError("symbol vacío")
@@ -123,7 +129,7 @@ class CryptoPilotReport:
     gap_sample: tuple[dict[str, int], ...]
     quantity_unit_base: str
     quantity_unit_status: str
-    quantity_unit_source: str = "exchangeInfo.LOT_SIZE.stepSize"
+    quantity_unit_source: str = ""
     raw_id_gap_ranges: int = 0
     raw_missing_trade_ids: int = 0
     analysis_id_gap_ranges: int = 0
@@ -336,6 +342,15 @@ def _prices_to_ticks(values: np.ndarray, tick_size: Decimal, name: str) -> np.nd
     return nearest.astype(np.int64)
 
 
+def _missing_id_set(trade_ids: np.ndarray) -> set[int]:
+    """IDs ausentes entre el minimo y el maximo observados. Conjunto concreto,
+    para poder restar poblaciones en vez de restar cantidades de rangos."""
+    ids = np.unique(np.asarray(trade_ids, dtype=np.int64))
+    if len(ids) < 2:
+        return set()
+    return set(range(int(ids[0]), int(ids[-1]) + 1)) - set(ids.tolist())
+
+
 def _id_gaps(trade_ids: np.ndarray) -> tuple[int, int, tuple[dict[str, int], ...]]:
     ids = np.sort(np.unique(np.asarray(trade_ids, dtype=np.int64)))
     if len(ids) < 2:
@@ -389,6 +404,7 @@ def load_binance_usdm_pair(
     # Gaps sobre la poblacion RAW, ANTES de cualquier exclusion. Sin esto, una
     # exclusion se disfraza de gap del venue.
     raw_gaps, raw_missing, _ = _id_gaps(trades["trade_id"].to_numpy(dtype=np.int64))
+    raw_missing_set = _missing_id_set(trades["trade_id"].to_numpy(dtype=np.int64))
 
     _off = offtick_mask(trades["price"].to_numpy(dtype=np.float64), contract.tick_size)
     n_offtick = int(_off.sum())
@@ -512,7 +528,12 @@ def load_binance_usdm_pair(
     if offtick_invoked:
         status = "DIAGNOSTIC_OFFTICK_EXCLUSION"
     promotion_eligible = not offtick_invoked and not n_unmatched
-    assert not (offtick_invoked and status.startswith("PILOT_ACCEPTED")),         "invariante violado: exclusion off-tick no puede emitir PILOT_ACCEPTED"
+    # Excepcion explicita, NO assert: python -O elimina los assert y el
+    # invariante desapareceria justo en una corrida optimizada.
+    if offtick_invoked and status.startswith("PILOT_ACCEPTED"):
+        raise RuntimeError(
+            "invariante violado: exclusion off-tick invocada con status "
+            f"{status}; una corrida con exclusiones no puede emitir PILOT_ACCEPTED")
 
     report = CryptoPilotReport(
         n_trades=int(len(trades)),
@@ -534,7 +555,7 @@ def load_binance_usdm_pair(
         raw_missing_trade_ids=raw_missing,
         analysis_id_gap_ranges=gaps,
         analysis_missing_trade_ids=missing_ids,
-        id_gaps_created_by_exclusion=gaps - raw_gaps,
+        id_gaps_created_by_exclusion=len(_missing_id_set(tr["trade_id"].to_numpy(dtype=np.int64)) - raw_missing_set),
         n_offtick_book_rows_excluded_bid=n_off_bid,
         n_offtick_book_rows_excluded_ask=n_off_ask,
         offtick_book_sample=offtick_book_sample,
