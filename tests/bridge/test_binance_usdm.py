@@ -48,7 +48,13 @@ def test_unidad_de_volumen_es_explicita_y_no_heredada_de_futuros_cme(tmp_path):
     out = load_binance_usdm_pair(tp, bp, _contract())
     assert out.ticks.volume.tolist() == pytest.approx([2.0, 3.0])
     assert out.report.quantity_unit_base == "0.001"
-    assert out.report.quantity_unit_status == "PROVISIONAL_USER_SUPPLIED"
+    # La unidad sigue siendo PROVISIONAL y con procedencia declarada. La etiqueta
+    # dejo de decir USER_SUPPLIED porque el valor sale de exchangeInfo, no del
+    # usuario; lo que el test protege —que sea explicita y no heredada de CME—
+    # no cambia.
+    assert out.report.quantity_unit_status == "PROVISIONAL_EXCHANGE_STEP_SIZE"
+    assert out.report.quantity_unit_source == "exchangeInfo.LOT_SIZE.stepSize"
+    assert out.report.quantity_unit_status.startswith("PROVISIONAL_")
 
 
 def test_join_sin_book_previo_falla_cerrado(tmp_path):
