@@ -5,7 +5,7 @@
   "head_registro": "dc63c2feec1bb451ee39da6a5f43d175385c252d",
   "rama": "foundation/f0b-compatibility-probe",
   "cuarentena": "C:\\Users\\nicoc\\OneDrive\\Documentos\\DataNT8\\quarantine\\INC_OUTCOMES_UNTRACKED_20260824",
-  "n_archivos": 11,
+  "n_archivos": 12,
   "mtime_comun_todos": "2026-08-23T20:58:34Z",
   "matriz_exposicion": {
     "P1_133_OUTCOME_EXPOSURE": "YES",
@@ -360,5 +360,23 @@
     "prohibido_afirmar": "OUTCOMES_NOT_OPENED como enunciado global",
     "obligatorio_reportar": "PREEXISTING_OUTCOME_EXPOSURE=YES junto a CAMPAIGN_OUTCOMES_OPENED=false",
     "no_se_edito": "specs congelados intactos; la enmienda va como artefacto separado"
+  },
+  "n_archivos_con_outcomes": 11,
+  "n_archivos_target_free": 1,
+  "correccion_2026-08-24": {
+    "motivo": "El inventario inicial declaro 11. Son 12: git status --short colapsa los subdirectorios sin seguimiento en una sola linea ('?? scratch/'), asi que el archivo dentro de scratch/ no aparecio como entrada propia.",
+    "descubierto_en": "fail-closed clean_commit() del runner, que rechazo correr con el arbol sucio",
+    "archivo": {
+      "ruta_original": "scratch/test_session_kernel.py",
+      "bytes": 11241,
+      "last_write_local": "2026-08-23 17:58:34.393956600 -0300",
+      "sha256": "b0568ada86cdea75c9ee383dc3399bc040c5f6a4e50152d81d8ffd268dae2e1e",
+      "copia_verificada": true,
+      "destino": "quarantine/INC_OUTCOMES_UNTRACKED_20260824/originales/test_session_kernel.py"
+    },
+    "mismo_drop": "SI: mtime identico al segundo con los otros 11 (2026-08-23T20:58:34Z)",
+    "contiene_outcomes": false,
+    "evidencia_target_free": "grep sin coincidencias para mfe|mae|pnl|winrate|net_|p_val|p-val|veredicto|take_profit|stop_loss|TP|SL|retorno|hit_rate; su docstring lo declara verificador de paridad contra bt2_absorption__TW25_2.csv",
+    "efecto_en_matriz_de_exposicion": "NINGUNO. No cambia ninguna de las seis clasificaciones."
   }
 }

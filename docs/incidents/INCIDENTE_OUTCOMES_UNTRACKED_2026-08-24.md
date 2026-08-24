@@ -158,6 +158,46 @@ medición que no mira outcomes.**
 
 ---
 
+## 4-bis. Corrección del inventario: son **12**, no 11
+
+El inventario inicial declaró 11 archivos. **Son 12.**
+
+`git status --short` **colapsa los subdirectorios sin seguimiento en una sola línea**
+(`?? scratch/`), así que el archivo de adentro nunca apareció como entrada propia del
+inventario.
+
+```
+scratch/test_session_kernel.py
+  11.241 bytes
+  last write   2026-08-23 17:58:34.393956600 -0300   <- MISMO SEGUNDO que los otros 11
+  sha256       b0568ada86cdea75c9ee383dc3399bc040c5f6a4e50152d81d8ffd268dae2e1e
+```
+
+**Mismo drop, confirmado por el `mtime` idéntico al segundo.** Cuarentenado con el mismo
+procedimiento y verificación bit a bit.
+
+**Pero es target-free y no cambia la matriz de exposición.** Grep sin coincidencias para
+`mfe|mae|pnl|winrate|net_|p_val|p-val|veredicto|take_profit|stop_loss|TP|SL|retorno|hit_rate`,
+y su propio docstring lo declara verificador de paridad contra
+`bt2_absorption__TW25_2.csv`.
+
+```
+12 archivos del mismo drop  =  11 con outcomes  +  1 target-free
+```
+
+**Ninguna de las seis clasificaciones de §2 se mueve.**
+
+### Cómo apareció
+
+No lo encontró una revisión: lo encontró el **fail-closed del runner**.
+`tools/bt2_absorption_param_sweep.py::clean_commit()` se negó a arrancar con el árbol
+sucio, y al ir a limpiarlo apareció el archivo que el inventario no había visto.
+
+> Un guardrail que aborta la corrida formal atrapó un hueco de la auditoría manual que
+> la auditoría manual no iba a encontrar sola.
+
+---
+
 ## 5. Procedimiento de cuarentena
 
 1. Inventario inmutable de los 11: ruta, bytes, `creation_time`, `last_write`, sha256.
