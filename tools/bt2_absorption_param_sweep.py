@@ -272,7 +272,11 @@ def finalize(output, configs, input_manifest, *, head_start, spec, p1_sessions, 
     summaries={}; events={}; session_rows=[]
     for cfg in configs:
         cid=cfg["config_id"]; aggregate=_aggregate(by_config[cid])
-        if set(aggregate["sessions"])!=set(p1_sessions): raise ValueError(f"{cid}: faltan sesiones reportables ({len(aggregate[chr(34)+chr(115)+chr(101)+chr(115)+chr(115)+chr(105)+chr(111)+chr(110)+chr(115)+chr(34)])}/{len(p1_sessions)})")
+        got=set(aggregate["sessions"]); want=set(p1_sessions)
+        if got!=want:
+            faltan=sorted(want-got); sobran=sorted(got-want)
+            raise ValueError(f"{cid}: cobertura de sesiones incorrecta: {len(got)}/{len(want)}; "
+                             f"faltan {len(faltan)} {faltan[:5]}; sobran {len(sobran)} {sobran[:5]}")
         ev={key for part in by_config[cid] for key in part["event_keys"]}; events[cid]=ev
         summaries[cid]={"stage":cfg["stage"],"axis":cfg["axis"],"params":cfg["params"],**aggregate["aggregate"],"event_set_sha256":digest(sorted(ev)),"target_free_fingerprint":digest({"sessions":aggregate["sessions"],"events":sorted(ev)})}
         for session,metrics in aggregate["sessions"].items(): session_rows.append({"config_id":cid,"session":session,**metrics})
@@ -284,10 +288,24 @@ def finalize(output, configs, input_manifest, *, head_start, spec, p1_sessions, 
     headline_fp=summaries[headline]["target_free_fingerprint"]
     identical=sorted({str(s["axis"]) for cid,s in summaries.items() if cid!=headline and s["stage"]=="oat" and s["target_free_fingerprint"]==headline_fp})
     head_end=_git("rev-parse","HEAD"); dirty_end=bool(_git("status","--porcelain"))
-    result={"schema":"bt2_absorption_target_free_sweep_result_v1","status":("INVALID_PROVENANCE" if (head_end!=head_start or dirty_end) else "COMPLETE_TARGET_FREE" if set(contracts)==set(CONTRACTS) else "COMPLETE_TARGET_FREE_PARTIAL_CONTRACTS"),"target_free":True,"outcomes_opened":False,"sealed_outcomes_opened":False,"head_start":head_start,"head_end":head_end,
+    # Procedencia de los parciales. "?" (commit desconocido) invalida igual que
+    # una mezcla: no se puede afirmar de que codigo salio la medicion.
+    provenance_ok = (len(partial_commits)==1 and "?" not in partial_commits
+                     and sorted(partial_commits)==[head_start])
+    if not provenance_ok:
+        status="DIAGNOSTIC_REAGGREGATION_MIXED_CODE"
+    elif head_end!=head_start or dirty_end:
+        status="INVALID_PROVENANCE"
+    elif set(contracts)==set(CONTRACTS):
+        status="COMPLETE_TARGET_FREE"
+    else:
+        status="COMPLETE_TARGET_FREE_PARTIAL_CONTRACTS"
+    result={"schema":"bt2_absorption_target_free_sweep_result_v1","status":status,
+        "promotion_eligible":bool(provenance_ok and head_end==head_start and not dirty_end
+                                  and set(contracts)==set(CONTRACTS)),"target_free":True,"outcomes_opened":False,"sealed_outcomes_opened":False,"head_start":head_start,"head_end":head_end,
         "partials_code_commit":sorted(partial_commits),
         "partials_uniform_commit":len(partial_commits)==1,
-        "finalize_matches_partials":sorted(partial_commits)==[head_start],"worktree_clean_start":True,"worktree_clean_end":not dirty_end,"north_star_sha256":NORTH_STAR_SHA256,"contracts_measured":list(contracts),"contracts_omitted":[c for c in CONTRACTS if c not in contracts],"full_contract_coverage":set(contracts)==set(CONTRACTS),"n_configs":len(configs),"headline_config_id":headline,"input_manifest":input_manifest,"identical_to_headline_oat_axes":identical,"warning":"event overlap is descriptive; it is not an effective test count","summaries":summaries}
+        "finalize_matches_partials":provenance_ok,"worktree_clean_start":True,"worktree_clean_end":not dirty_end,"north_star_sha256":NORTH_STAR_SHA256,"contracts_measured":list(contracts),"contracts_omitted":[c for c in CONTRACTS if c not in contracts],"full_contract_coverage":set(contracts)==set(CONTRACTS),"n_configs":len(configs),"headline_config_id":headline,"input_manifest":input_manifest,"identical_to_headline_oat_axes":identical,"warning":"event overlap is descriptive; it is not an effective test count","summaries":summaries}
     _atomic_json(output/"summary.json",result); _atomic_json(output/"exact_overlap_matrix.json",matrix)
     with (output/"session_metrics.jsonl").open("w",encoding="utf-8") as handle:
         for row in session_rows: handle.write(json.dumps(row,sort_keys=True,ensure_ascii=False,allow_nan=False)+"\n")

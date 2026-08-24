@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
+import pytest
 import re
 import inspect
 
@@ -113,21 +114,96 @@ def test_finalize_respeta_el_subconjunto_de_contratos():
     assert "for contract in CONTRACTS:" not in src
 
 
-def test_finalize_escala_el_chequeo_de_sesiones_al_subconjunto():
-    """Con --contracts parcial, exigir las 133 sesiones es un falso negativo.
 
-    El chequeo debe seguir siendo estricto pero sobre las sesiones que pertenecen
-    a los contratos efectivamente medidos.
-    """
-    src = inspect.getsource(S)
-    assert 'p1_sessions=[d for d in universe["puerta1_133"] if assignment[d] in contracts]' in src
-    # y el error debe decir cuantas faltan, no solo que faltan
-    assert "faltan sesiones reportables ({" in src
+# ---------- finalize: tests funcionales, no de inspeccion de fuente ----------
+
+def _partial(tmp, cfg_id, contract, sessions, *, commit="abc123", ev=None):
+    """Escribe un parcial minimo con la forma que finalize espera."""
+    import json
+    d = tmp / "partials"; d.mkdir(exist_ok=True)
+    if ev is None:   # formato real: contract|session|dir|ts_ns|lo2|hi2
+        ev = tuple(f"{contract}|{s}|long|{1764118034836000000 + i}|83421|83427"
+                   for i, s in enumerate(sessions))
+    rec = {"schema": "bt2_absorption_target_free_partial_v1", "target_free": True,
+           "outcomes_opened": False, "config_id": cfg_id, "contract": contract,
+           "input_sha256": "sha_" + contract, "code_commit": commit,
+           "params_sha256": "p", "elapsed_seconds": 1.0,
+           "result": {"contract": contract, "event_keys": list(ev),
+                      "sessions": {s: {"n_buckets": 10, "n_zones": 1, "n_pass": 1,
+                                       "n_residual": 0, "n_long": 1, "n_short": 0,
+                                       "n_active": 1, "n_invalidated": 0, "n_expired": 0,
+                                       "touches_sum": 0, "pass_rate": 0.1} for s in sessions}}}
+    (d / f"{cfg_id}__{contract.replace(' ', '_')}.json").write_text(
+        json.dumps(rec), encoding="utf-8")
+    return rec
 
 
-def test_el_resultado_declara_la_procedencia_de_los_parciales():
-    """Si finalize corre bajo un commit distinto al que produjo los parciales,
-    eso tiene que quedar escrito, no inferido."""
-    src = inspect.getsource(S.finalize)
-    for campo in ("partials_code_commit", "partials_uniform_commit", "finalize_matches_partials"):
-        assert campo in src, f"finalize no declara {campo}"
+def _fake_git(head):
+    """rev-parse devuelve el head; status devuelve vacio (arbol limpio)."""
+    def g(*a):
+        return "" if "status" in a else head
+    return g
+
+
+def _cfgs(cfg_id):
+    return [{"config_id": cfg_id, "stage": "headline", "axis": None, "params": {"a": 1}}]
+
+
+def _spec():
+    return {"overlap": {"time_tolerance_seconds": 0, "price_tolerance_ticks": 0}}
+
+
+def test_subconjunto_de_contratos_no_exige_sesiones_ajenas(tmp_path, monkeypatch):
+    """GC 02-26 aporta sus sesiones; finalize no debe pedir las de los otros tres."""
+    cid = "cfg1"
+    _partial(tmp_path, cid, "GC 02-26", ["20251126", "20251127"])
+    monkeypatch.setattr(S, "_git", _fake_git("abc123"))
+    out = S.finalize(tmp_path, _cfgs(cid),
+                     {"GC 02-26": {"sha256": "sha_GC 02-26"}},
+                     head_start="abc123", spec=_spec(),
+                     p1_sessions=["20251126", "20251127"], contracts=("GC 02-26",))
+    assert out["status"] == "COMPLETE_TARGET_FREE_PARTIAL_CONTRACTS"
+    assert out["contracts_measured"] == ["GC 02-26"]
+    assert out["promotion_eligible"] is False, "subconjunto nunca es promocionable"
+
+
+def test_sesion_faltante_aborta_y_dice_cual(tmp_path, monkeypatch):
+    cid = "cfg1"
+    _partial(tmp_path, cid, "GC 02-26", ["20251126"])
+    monkeypatch.setattr(S, "_git", _fake_git("abc123"))
+    with pytest.raises(ValueError) as e:
+        S.finalize(tmp_path, _cfgs(cid), {"GC 02-26": {"sha256": "sha_GC 02-26"}},
+                   head_start="abc123", spec=_spec(),
+                   p1_sessions=["20251126", "20251127"], contracts=("GC 02-26",))
+    assert "20251127" in str(e.value), "el error debe nombrar la sesion faltante"
+    assert "1/2" in str(e.value)
+
+
+def test_procedencia_mezclada_no_puede_ser_complete(tmp_path, monkeypatch):
+    """Parciales de otro commit que el de finalize => diagnostico, no COMPLETE."""
+    cid = "cfg1"
+    _partial(tmp_path, cid, "GC 02-26", ["20251126"], commit="viejo999")
+    monkeypatch.setattr(S, "_git", _fake_git("nuevo111"))
+    out = S.finalize(tmp_path, _cfgs(cid), {"GC 02-26": {"sha256": "sha_GC 02-26"}},
+                     head_start="nuevo111", spec=_spec(),
+                     p1_sessions=["20251126"], contracts=("GC 02-26",))
+    assert out["status"] == "DIAGNOSTIC_REAGGREGATION_MIXED_CODE"
+    assert out["finalize_matches_partials"] is False
+    assert out["promotion_eligible"] is False
+    assert out["partials_code_commit"] == ["viejo999"]
+
+
+def test_commit_desconocido_invalida_igual_que_una_mezcla(tmp_path, monkeypatch):
+    cid = "cfg1"
+    rec = _partial(tmp_path, cid, "GC 02-26", ["20251126"])
+    import json
+    f = tmp_path / "partials" / f"{cid}__GC_02-26.json"
+    rec.pop("code_commit")                      # parcial sin procedencia
+    f.write_text(json.dumps(rec), encoding="utf-8")
+    monkeypatch.setattr(S, "_git", _fake_git("abc123"))
+    out = S.finalize(tmp_path, _cfgs(cid), {"GC 02-26": {"sha256": "sha_GC 02-26"}},
+                     head_start="abc123", spec=_spec(),
+                     p1_sessions=["20251126"], contracts=("GC 02-26",))
+    assert out["partials_code_commit"] == ["?"]
+    assert out["status"] == "DIAGNOSTIC_REAGGREGATION_MIXED_CODE"
+    assert out["promotion_eligible"] is False
