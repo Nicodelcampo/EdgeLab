@@ -1,71 +1,22 @@
 {
-  "model_id": "gate_tf_causal_bal_v2_feat10_sticky90_vpin055",
-  "status": "FROZEN_CANDIDATE",
-  "frozen_at": "2026-08-23",
-  "schema_version": "1.0.0",
-  "reproducibility": {
-    "config_sha256": "61667366ed4eb5c537f0c16e4b1e9136720419d5aa5e21a61658201892a1f8e8",
-    "note": "Fill config_sha256 after hashing this file's canonical JSON (sorted keys, no null hash field)."
-  },
-  "detector": {
-    "architecture": "BalancedTransformer_or_HMM3_forward",
-    "preferred": "TF_causal_bal",
-    "causal_attention_only": true,
-    "bidirectional_allowed_in_production": false,
-    "bidirectional_offline_bound_only": true,
-    "K_states_trained": 3,
-    "toxic_policy": "VPIN_overlay_not_4th_HMM_state",
-    "sticky_diag": 0.9,
-    "hysteresis_min_bars": 3,
-    "hysteresis_pmin": 0.4,
-    "vpin_threshold": 0.55,
-    "class_balanced_focal": {
-      "gamma": 2.0,
-      "beta": 0.99
-    }
-  },
-  "features": {
-    "list": [
-      "rvol",
-      "er",
-      "ofi_ema_z",
-      "hurst",
-      "vpin",
-      "spread_z",
-      "sess_rel",
-      "phase_open",
-      "phase_mid",
-      "phase_close"
-    ],
-    "n": 10,
-    "normalization": "train_only_zscore_causal",
-    "forbidden": [
-      "full_sample_zscore",
-      "forward_fill",
-      "features_using_t1"
-    ]
-  },
-  "generator_reference_synthetic": "v2_target_budget",
-  "label_join": {
-    "schema": "gate_context_schema_v1",
-    "alignment": "as_of_backward_feature_ts_le_t0",
-    "fail_closed": true
-  },
-  "provenance_required_on_every_run": [
-    "run_id",
-    "seed",
-    "model_id",
-    "commit",
-    "schema_version"
+  "status": "RETIRED_INVALID_PLACEHOLDER",
+  "retired_model_id": "gate_tf_causal_bal_v2_feat10_sticky90_vpin055",
+  "retired_at": "2026-08-24",
+  "reasons": [
+    "config_sha256 no reproducible",
+    "sin checkpoint, pesos, normalizador ni hash de datos de entrenamiento",
+    "ofi_ema_z era tape imbalance y vpin no era VPIN",
+    "estado toxic dependía de la magnitud mal nombrada",
+    "Transformer demo no constituía un modelo formal"
   ],
-  "change_policy": {
-    "any_change_to_features_or_hyperparams": "new_model_id required (e.g. ..._v3_...)",
-    "code_bugfix_same_math": "same model_id + note in commit",
-    "production_path": "causal only; no bi-dir weights"
+  "replacement": {
+    "model_family": "gate_gc_l1_hmm3_forward_v0",
+    "formal_model_id_format": "gate_gc_l1_hmm3_forward_v0:<checkpoint_sha256[0:16]>",
+    "config_sha256": "62aa3ad0058afd5ac25468dac492a57ebf45e43a6d8e313797f702954a0e9edd",
+    "config_implementation": "modules/gate/core/gate_hmm3_forward.py::HMM3Config",
+    "checkpoint_status": "PENDING_REAL_TARGET_FREE_TRAIN_DATA",
+    "forbidden_placeholder": true
   },
-  "literature_anchors": {
-    "experiment_versioning": "MLflow LoggedModel / config+git commit binding",
-    "immutable_config": "frozen baseline configs in trading HPO literature",
-    "artifact_integrity": "checksum / content hash of config artifact"
-  }
+  "outcomes_opened": false,
+  "note": "No existe model_id formal hasta que fit_hmm3 escriba un checkpoint validable sobre datos reales."
 }
