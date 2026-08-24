@@ -188,3 +188,13 @@ def test_el_invariante_de_promocion_es_excepcion_no_assert():
     src = inspect.getsource(M.load_binance_usdm_pair)
     assert "raise RuntimeError" in src
     assert "assert not (offtick_invoked" not in src
+
+
+def test_las_herramientas_del_piloto_compilan():
+    """Los tests no importan tools/, asi que un SyntaxError ahi pasa la suite.
+    Este test cierra ese hueco: compila los entrypoints sin ejecutarlos."""
+    import py_compile
+    from pathlib import Path
+    raiz = Path(__file__).resolve().parents[2]
+    for rel in ("tools/binance_bt2_pilot.py",):
+        py_compile.compile(str(raiz / rel), doraise=True)

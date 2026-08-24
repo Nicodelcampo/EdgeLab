@@ -75,7 +75,6 @@ def main() -> int:
         symbol=args.symbol,
         tick_size=args.tick_size,
         quantity_unit_base=args.quantity_unit_base,
-    ,
         quantity_unit_status=args.quantity_unit_status,
         quantity_unit_source=args.quantity_unit_source,
     )
