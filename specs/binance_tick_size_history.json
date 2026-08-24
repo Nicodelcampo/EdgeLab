@@ -1,0 +1,42 @@
+{
+  "schema": "edgelab.crypto.tick_size_history/1.0.0",
+  "purpose": "tickSize vigente por simbolo y fecha, desde anuncios OFICIALES de Binance. Resuelve el bloqueante #1 del contrato causal: exchangeInfo solo expone el valor VIGENTE.",
+  "authority": "binance.com/support/announcement",
+  "compiled_at_utc": "2026-08-24",
+  "warning": "Lista NO exhaustiva. La ausencia de un cambio no prueba que no existio: prueba que no se encontro. Un simbolo/fecha sin cobertura debe fallar cerrado, no caer al valor vigente.",
+  "symbols": {
+    "BTCUSDT": {
+      "changes": [
+        {
+          "effective_utc": "2022-02-15T03:30:00Z",
+          "tick_before": "0.01",
+          "tick_after": "0.1",
+          "source_url": "https://www.binance.com/en-AU/support/announcement/detail/81e6795b0bae49828cbd52479094a987",
+          "verified_by": "claude-opus-5 2026-08-24"
+        }
+      ],
+      "current_exchangeinfo_2026_08_24": "0.10"
+    },
+    "SOLUSDT": {
+      "changes": [
+        {
+          "effective_utc": "2024-10-14T06:30:00Z",
+          "tick_before": "0.001",
+          "tick_after": "0.01",
+          "source_url": "https://www.binance.com/en/support/announcement/detail/8bfe2e9b86734cd08f3cbcdb82b79f51",
+          "verified_by": "claude-opus-5 2026-08-24"
+        }
+      ],
+      "current_exchangeinfo_2026_08_24": "0.0100"
+    },
+    "ETHUSDT": {
+      "changes": [],
+      "note": "No se encontro anuncio de cambio de tick. NO es prueba de que no hubo: es ausencia de evidencia. Corroboracion independiente: 0 precios off-tick contra 0.01 en 26,6M de filas de 2024-03-29/30.",
+      "current_exchangeinfo_2026_08_24": "0.01"
+    }
+  },
+  "known_gaps": [
+    "LOT_SIZE / minQty historico NO cubierto. Hay indicio de cambio en SOLUSDT: anuncio del 2025-04-02 baja el minimo de 1 SOL a 0.01 SOL, lo que sugiere que en 2024-03 la unidad de cantidad era DISTINTA de la vigente.",
+    "Solo tres simbolos. Cualquier otro debe fallar cerrado."
+  ]
+}
