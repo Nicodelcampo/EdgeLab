@@ -57,6 +57,8 @@ def main() -> int:
     p.add_argument("--trades-sha256")
     p.add_argument("--book-sha256")
     p.add_argument("--allow-partial-join", action="store_true")
+    p.add_argument("--allow-offtick-prices", action="store_true",
+                   help="DIAGNOSTICO: excluye y cuenta precios fuera de la grilla de tick. Marca la corrida como excluyente; no se promueve.")
     p.add_argument("--allow-dirty", action="store_true")
     p.add_argument("--out-dir", type=Path, required=True)
     args = p.parse_args()
@@ -77,6 +79,7 @@ def main() -> int:
         expected_trades_sha256=args.trades_sha256,
         expected_book_sha256=args.book_sha256,
         require_full_coverage=not args.allow_partial_join,
+        allow_offtick_prices=args.allow_offtick_prices,
     )
 
     args.out_dir.mkdir(parents=True, exist_ok=True)

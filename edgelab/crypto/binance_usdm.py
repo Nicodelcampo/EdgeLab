@@ -121,7 +121,10 @@ class CryptoPilotReport:
     gap_sample: tuple[dict[str, int], ...]
     quantity_unit_base: str
     quantity_unit_status: str
-    status: str
+    n_offtick_prices_excluded: int = 0
+    offtick_price_sample: tuple[dict[str, Any], ...] = ()
+    offtick_exclusion_invoked: bool = False
+    status: str = "OK"
     outcomes_opened: bool = False
 
     def to_dict(self) -> dict[str, Any]:
@@ -299,6 +302,13 @@ def read_book_ticker(path: str | Path) -> pd.DataFrame:
     return out.sort_values(["transaction_time_ns", "update_id"], kind="mergesort").reset_index(drop=True)
 
 
+def offtick_mask(values: np.ndarray, tick_size: Decimal) -> np.ndarray:
+    """True donde el precio NO cae en la grilla de tick. No aborta: sólo marca."""
+    tick = float(tick_size)
+    ratio = np.asarray(values, dtype=np.float64) / tick
+    return ~np.isclose(values, np.rint(ratio) * tick, rtol=0.0, atol=tick * 1e-8)
+
+
 def _prices_to_ticks(values: np.ndarray, tick_size: Decimal, name: str) -> np.ndarray:
     tick = float(tick_size)
     ratio = np.asarray(values, dtype=np.float64) / tick
@@ -335,11 +345,17 @@ def load_binance_usdm_pair(
     expected_trades_sha256: str | None = None,
     expected_book_sha256: str | None = None,
     require_full_coverage: bool = True,
+    allow_offtick_prices: bool = False,
 ) -> CryptoPilotResult:
     """Carga y une ambos archivos con búsqueda estrictamente anterior.
 
     Si falta book previo para cualquier trade, el default falla cerrado. Con
     ``require_full_coverage=False`` esos trades se excluyen y quedan cuantificados.
+
+    Precios fuera de la grilla de tick abortan por default. Con
+    ``allow_offtick_prices=True`` se excluyen, se cuentan y se muestrean en el
+    reporte, y la corrida queda marcada ``offtick_exclusion_invoked=True``. Ese
+    modo es DIAGNOSTICO: no se promueve ni se compara contra una corrida limpia.
     """
     if expected_trades_sha256 and sha256_file(trades_path) != expected_trades_sha256.lower():
         raise ValueError("SHA-256 de trades no coincide")
@@ -351,6 +367,24 @@ def load_binance_usdm_pair(
     duplicate_trade_ids = int(trades["trade_id"].duplicated().sum())
     if duplicate_trade_ids:
         raise ValueError(f"trades: {duplicate_trade_ids} trade_id duplicados")
+
+    # Precios fuera de la grilla de tick. Se resuelve ANTES del join para que la
+    # cobertura y los conteos posteriores describan la poblacion efectivamente usada.
+    _off = offtick_mask(trades["price"].to_numpy(dtype=np.float64), contract.tick_size)
+    n_offtick = int(_off.sum())
+    offtick_sample: tuple[dict[str, Any], ...] = ()
+    if n_offtick:
+        offtick_sample = tuple(
+            {"trade_id": int(r.trade_id), "price": float(r.price), "qty": float(r.qty),
+             "trade_time_ns": int(r.trade_time_ns)}
+            for r in trades.loc[_off].head(10).itertuples())
+        if not allow_offtick_prices:
+            first = offtick_sample[0]
+            raise ValueError(
+                f"trades: {n_offtick} precios no alinea(n) con tick_size={contract.tick_size}; "
+                f"primero trade_id={first['trade_id']} price={first['price']}. "
+                "Usar allow_offtick_prices=True SOLO como diagnostico declarado.")
+        trades = trades.loc[~_off].reset_index(drop=True)
 
     t_trade = trades["trade_time_ns"].to_numpy(dtype=np.int64)
     t_book = book["transaction_time_ns"].to_numpy(dtype=np.int64)
@@ -429,6 +463,9 @@ def load_binance_usdm_pair(
         missing_trade_ids=missing_ids,
         gap_sample=gap_sample,
         quantity_unit_base=str(contract.quantity_unit_base),
+        n_offtick_prices_excluded=n_offtick,
+        offtick_price_sample=offtick_sample,
+        offtick_exclusion_invoked=bool(n_offtick and allow_offtick_prices),
         quantity_unit_status=contract.quantity_unit_status,
         status=status,
     )
