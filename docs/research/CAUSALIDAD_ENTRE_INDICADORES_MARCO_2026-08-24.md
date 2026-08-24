@@ -1,172 +1,229 @@
-# Causalidad entre indicadores — qué aparato aplica y cuál no
+# Causalidad entre indicadores — marco operativo target-free
 
-- **Fecha:** 2026-08-24 · **Estado:** marco de referencia, **no hay medición acá**
-- **Origen:** pregunta de Nico — *«al comparar dos indicadores, buscando correlaciones,
-  determinar si uno es causa del otro, seguir la cadena hasta la causa inicial y darle
-  más peso, dejando al resto como indicios»*
-- **Firewall:** no toca outcomes · no declara edge
+- **Fecha:** 2026-08-24
+- **Estado:** contrato metodológico; **no contiene mediciones nuevas**
+- **Firewall:** no toca outcomes, retornos, P&L ni holdout; no declara edge
+- **Pregunta:** cómo distinguir dependencia algorítmica, insumo común, precedencia predictiva y causalidad de mercado entre indicadores.
 
-> Este documento **no mide nada**. Ordena qué herramienta sirve para qué, cuál no sirve
-> acá y por qué, para no gastar tiempo en el aparato equivocado.
-
----
-
-## 1. El vocabulario tiene casa formal, pero no en este dominio
-
-**Necesaria / suficiente / contribuyente / INUS** es el núcleo de **QCA** (Qualitative
-Comparative Analysis), su variante difusa **fsQCA**, y **NCA** para condiciones
-necesarias. Aparato real y riguroso: calibra variables como conjuntos difusos y busca
-*configuraciones* conjuntamente suficientes.
-
-**Está construido para N chico.** La literatura es epidemiología, política pública,
-emisiones. **Cero aplicaciones en microestructura de mercado**, y con ~10⁴ eventos por
-configuración no es la herramienta.
-
-Para series temporales financieras el aparato es otro: **Granger, transfer entropy,
-convergent cross-mapping, PCMCI**.
+> Regla central: correlación, Jaccard o Granger bivariado no autorizan una flecha causal.
+> Antes de preguntar por causalidad hay que identificar qué computa cada indicador, cuándo
+> queda disponible y qué información común consume.
 
 ---
 
-## 2. La trampa que invalida la versión ingenua
+## 1. Cuatro relaciones distintas
 
-**Principio de la causa común (Reichenbach):** si `X` e `Y` correlacionan, hay tres
-opciones — `X→Y`, `Y→X`, **o una `Z` que causa a las dos**.
-
-**Granger no distingue causación: mide mejora predictiva.** Dos indicadores que leen la
-misma cinta tienen a la cinta como `Z`, y van a "Granger-causarse" mutuamente sin que
-exista ninguna flecha entre ellos.
-
-Estado del arte: **Runge et al., *Science Advances* 2019 · *Nature Communications*
-2019** — algoritmo **PCMCI**, paquete `tigramite`. Existe justamente para descubrir
-estructura causal en series temporales **controlando dependencias espurias por causa
-común y por autocorrelación**. Su resultado central: las redes causales estimadas quedan
-**mucho más ralas** que las de correlación.
-
-Hallazgo empírico útil: hay **causalidad no lineal significativa** en índices
-accionarios, o sea que la correlación de Pearson —buen proxy de la causalidad lineal—
-**subestima la causalidad total** (*arxiv:2312.16185*).
-
----
-
-## 3. Para BigTrap2 vs BigTrap2Absorption la pregunta está mal planteada
-
-Verificado en fuente. `BigTrap2Absorption` **no es un indicador distinto**: es el kernel
-de BigTrap2 más tres filtros encima —percentil causal `a_pass`, `MinStackedRows`,
-`MinTrapFrac`.
-
-```
-zonas de Absorption  ⊆  traps de BigTrap2      por construcción
-```
-
-No hay causación: hay **contención de conjuntos**. Granger daría casi perfecto y no
-significaría nada. Es error de categoría, no resultado.
-
-**Dónde sí aplica:** entre indicadores que leen la misma cinta pero computan cosas
-genuinamente distintas — `BigTrap2` · `Gaps2` · `HFTZones2` · `aVolClusterPOI`. Ahí la
-causa común es el flujo de órdenes, y ése es el confundidor a controlar.
-
----
-
-## 4. Solapamiento ≠ estructura de dependencia
-
-`specs/bt2_absorption_target_free_sweep_v1.json` lleva escrito:
-
-```json
-"warning": "event overlap is descriptive; it is not an effective test count"
-```
-
-con la prohibición explícita de derivar «número efectivo de tests» del Jaccard. La razón,
-en términos causales:
-
-- **Solapamiento alto ≠ redundancia.** Dos configs pueden compartir el 95 % de los
-  eventos y diferir justo en el 5 % que decide.
-- **Solapamiento cero ≠ independencia.** Dos configs pueden particionar la misma señal y
-  ser perfectamente redundantes sin compartir un solo evento.
-
-El Jaccard mide **coincidencia de conjuntos**. La cadena causa-raíz/indicio requiere
-**estructura de dependencia**, que es justo lo que el Jaccard no da.
-
----
-
-## 5. Qué es implementable acá, y qué no
-
-### Gratis y target-free — relacionar indicadores entre sí no mira outcomes
-
-| técnica | qué contesta | costo |
+| relación | pregunta | evidencia mínima |
 |---|---|---|
-| **análogo de NCA** | `P(evento │ C)` contra `P(evento)`: ¿`C` es necesaria? | barato |
-| **PCMCI** (`tigramite`) | estructura causal controlando causa común y autocorrelación | medio |
+| **dependencia algorítmica** | ¿B usa directamente un estado o salida de A? | linaje de fuente y parámetros |
+| **insumo común** | ¿A y B responden al mismo tape/book/régimen? | grafo de inputs y condicionantes point-in-time |
+| **precedencia predictiva** | ¿el pasado de A mejora la predicción target-free de B? | serie regular, lags congelados, baseline condicionado |
+| **causalidad de mercado** | ¿una intervención sobre el mecanismo de A cambiaría B? | intervención defendible e invariancia fuera del entorno de ajuste |
 
-Ambas sobre el store de coordenadas ya existente, sin recomputar kernels.
+Estas relaciones pueden coexistir, pero ninguna implica automáticamente la siguiente.
+En particular:
 
-### Desaconsejado
-
-- **QCA/fsQCA directo** — calibración difusa pensada para decenas de casos.
-- **Granger crudo entre indicadores** — significativo casi siempre por la cinta compartida.
-
----
-
-## 6. Dos problemas que no se resuelven guardando datos
-
-**El binning no se puede diferir para siempre.** PCMCI, Granger y transfer entropy
-necesitan series **regularmente muestreadas**. Un stream de eventos hay que binearlo, y
-la elección no es neutra: muy grueso destruye el lead-lag que se busca, muy fino deja casi
-todo en ceros. Causal discovery sobre series irregulares es **área abierta**
-(*arxiv:2507.03310*), no algo resuelto que se aplica.
-
-**El store facilita el fishing.** Tener todos los eventos de todos los indicadores en
-disco hace barato correlacionar todo contra outcomes hasta que algo dé. La disciplina
-tiene que ser **estructural, no de intención**: columnas de outcome físicamente ausentes,
-como hace el sweep con `outcomes_opened=false` en sus siete salidas y como fija
-`tests/bridge/test_bt2a_event_pit.py`.
+- correlación no distingue `A→B`, `B→A` ni una causa común `Z`;
+- Granger mide información predictiva condicional al modelo y a los lags, no causalidad por sí sola;
+- Jaccard mide coincidencia de conjuntos, no dirección ni mecanismo;
+- una dependencia en código puede explicar precedencia perfecta sin ninguna causalidad de mercado.
 
 ---
 
-## 7. La advertencia que ordena todo lo anterior
+## 2. Estado de evidencia en EdgeLab
 
-> Cualquier cadena causal entre indicadores es **entre indicadores**, no **hacia el
-> retorno**.
+### Medido o verificado en fuente
 
-Determinar que `A` causa `B` y que `A` es la raíz **no dice que `A` prediga nada**. Son
-dos preguntas separadas, y la segunda sigue costando outcomes y multiplicidad. El
-descubrimiento causal puede **reducir el espacio de hipótesis** a testear; no puede
-sustituir el test.
+- `BigTrap2Absorption` reutiliza piezas del kernel y agrega condiciones propias.
+- `event_keys` representa coordenadas de eventos, no la población temporal completa.
+- el sweep target-free prohíbe outcomes y advierte que el solapamiento es descriptivo.
+- `ABS_SCORE` necesita la cubeta completa: su disponibilidad causal es el cierre/publicación de la cubeta, no `t_start`.
+
+### Inferido, pendiente de medición explícita
+
+- puede haber alta contención o coincidencia entre eventos de `BigTrap2` y
+  `BigTrap2Absorption` bajo parámetros compatibles.
+- tape rate y spread pueden capturar parte del estado común de liquidez/actividad.
+
+### No medido
+
+- contención exacta `Absorption ⊆ BigTrap2` a identidad y geometría congeladas;
+- ausencia de confusores latentes;
+- dirección causal entre indicadores;
+- estabilidad de una red temporal entre contratos, sesiones o crypto;
+- cualquier relación con retornos.
+
+Por eso se retira la afirmación global `Absorption ⊆ BigTrap2`. La hipótesis correcta es:
+
+> **Bajo un mapeo explícito de parámetros, identidad temporal y geometría, medir si los
+> eventos de Absorption son un subconjunto de los eventos de BigTrap2.**
+
+Si la contención aparece, primero se interpreta como linaje/filtrado computacional. Si no
+aparece, la discrepancia se audita antes de aplicar un modelo temporal.
 
 ---
 
-## 8. Qué existe ya en el repo para esto
+## 3. El atlas causal por capas
 
-| pieza | dónde |
-|---|---|
-| store de coordenadas de evento | `partials/*.json` → `event_keys` |
-| estado point-in-time por evento | rama `research/event-store-pit` → `event_pit` |
-| condicionantes de causa común | `tape_rate_per_s`, `spread_p50/p90_ticks` en `event_pit` |
-| garantía de no look-ahead | `tests/bridge/test_bt2a_event_pit.py` |
-| ejes de contexto ya medidos | `docs/research/B9_Y_NRAND_SOBRE_152_2026-08-23.md` |
+### C0 — linaje computacional
 
-**El eslabón que falta** es el binning de §6, que es decisión de investigación y no de
-implementación.
+Construir un DAG desde fuente y configuración:
+
+- inputs crudos consumidos;
+- transformaciones compartidas;
+- estados reutilizados;
+- parámetros y condiciones adicionales;
+- timestamp real de disponibilidad;
+- identidad causal `(timestamp, sequence)` cuando hay empates.
+
+C0 contesta dependencia algorítmica. No necesita estadística ni outcomes.
+
+### C1 — grafo temporal target-free condicionado
+
+Sólo después de C0:
+
+1. construir una **población temporal regular** o risk set que incluya eventos y no-eventos;
+2. congelar resolución, lags y política de ceros/missing;
+3. condicionar por proxies point-in-time de actividad y liquidez;
+4. estimar precedencia con baseline autocorrelado y control de multiplicidad;
+5. ejecutar placebos de tiempo y dirección.
+
+PCMCI, Granger condicionado o información dirigida son herramientas posibles, no sellos
+de causalidad. Tape rate y spread son **proxies parciales**, no “el confundidor”. Quedan
+abiertos profundidad, volatilidad, hora, sesión, noticias, latencia, venue y confusores
+latentes.
+
+### C2 — intervenciones computacionales
+
+Intervenir donde sí hay control:
+
+- apagar un filtro manteniendo igual el input;
+- permutar o bloquear una señal intermedia;
+- variar una única transformación con el resto congelado;
+- comprobar si cambia B en el sentido previsto por C0.
+
+Esto identifica dependencia del software/mecanismo implementado. No equivale todavía a
+intervenir el mercado.
+
+### C3 — invariancia
+
+Una relación candidata debe conservar signo, timing y magnitud razonable fuera del entorno
+donde se detectó:
+
+- contratos y sesiones no usados para ajustar;
+- regímenes de actividad/liquidez;
+- instrumentos comparables;
+- crypto, sólo tras validar unidades, join causal y microestructura 24/7.
+
+Una flecha que desaparece al cambiar de entorno se etiqueta dependiente del régimen, no
+causa estable.
+
+### C4 — outcomes, sólo con STOP y preregistro separados
+
+C0–C3 no dicen que un indicador tenga expectativa. Antes de abrir C4 debe existir:
+
+- STOP explícito del descubrimiento target-free;
+- conjunto de hipótesis congelado;
+- métrica, horizonte, costes y multiplicidad preregistrados;
+- población y holdout sellados;
+- autorización escrita para abrir outcomes.
+
+Hasta entonces: `CAMPAIGN_OUTCOMES_OPENED=false`.
 
 ---
 
-## Referencias
+## 4. Por qué un store sólo de eventos no alcanza
 
-| ref | aporte |
-|---|---|
-| Runge et al., *Sci. Adv.* 2019 · *Nat. Commun.* 2019 | PCMCI; redes causales más ralas que las de correlación |
-| *arxiv:2312.16185* | causalidad no lineal en mercados; Pearson subestima |
-| *arxiv:1401.1457* | comparación Granger lineal / kernel / transfer entropy |
-| *arxiv:2312.17375* | CD-NOTS, descubrimiento causal en series no estacionarias |
-| *arxiv:2507.03310* | causal discovery en series irregulares — problema abierto |
-| *arxiv:2501.02672* | Granger reinterpretado con redes bayesianas causales |
-| QCA / fsQCA / NCA | INUS y condiciones necesarias; N chico, otro dominio |
+`P(evento | C)` requiere denominador. `event_keys` y `event_pit` sólo contienen instantes
+con evento, por lo que no permiten estimar `P(evento)`, riesgo base ni hazard sin construir
+la población de exposición.
 
-## Aporte al referente
+El artefacto mínimo para C1 necesita:
 
-Queda separado lo que suena aplicable de lo que lo es. El vocabulario de condiciones
-necesarias y suficientes tiene aparato formal, pero vive en un régimen de N que no es
-éste; y la técnica que sí corresponde —descubrimiento causal en series temporales— tiene
-un modo de fallar específico que la vuelve inútil justo en el caso de este proyecto: dos
-indicadores sobre la misma cinta. Queda anotado antes de gastar tiempo en la herramienta
-equivocada, y con el caso concreto donde la pregunta ni siquiera está bien formada,
-porque `Absorption ⊆ BigTrap2` es contención, no causación.
+- grilla temporal preregistrada;
+- indicador de evento por nodo;
+- tiempo en riesgo/no-evento;
+- disponibilidad de cada feature;
+- sesión, contrato e instrumento;
+- missing explícito;
+- cobertura y hash por sesión.
+
+La resolución no es un detalle de implementación. Deben medirse al menos dos o tres escalas
+congeladas y decidirse por criterios target-free de sparsity, aliasing y estabilidad, no por
+resultados futuros.
+
+---
+
+## 5. Contrato point-in-time
+
+Para cada feature:
+
+```text
+feature_available_at < event_time
+```
+
+Se permite igualdad sólo si existe una secuencia de publicación inequívoca y se compara
+`(timestamp, sequence)`. En otro caso, igualdad es ambigua y falla cerrado.
+
+Requisitos del store:
+
+- `ABS_SCORE` fechado al cierre real de su cubeta;
+- frontera de tape por `(ts_ns, sequence)` o `sig_idx`, no sólo timestamp;
+- ventana que no cruza sesión;
+- tamaño de ventana parametrizado y preregistrado;
+- definición explícita de tasa (`N` observaciones cubren `N-1` intervalos);
+- locked book declarado y crossed book rechazado;
+- geometría en ticks enteros o medios ticks;
+- `event_keys ↔ event_pit` uno-a-uno;
+- schema, hash, cobertura y conteos `as_of_ok` por sesión;
+- recomputación obligatoria de parciales producidos con un schema anterior.
+
+---
+
+## 6. Tests negativos antes de creer una flecha
+
+1. **Placebo temporal:** desplazar A al futuro no debe “predecir” B.
+2. **Permutación por sesión:** romper orden preservando tasas marginales.
+3. **Control de causa común:** agregar estado de actividad/liquidez y observar atenuación.
+4. **Dirección inversa:** comparar `A→B` contra `B→A` con la misma disciplina.
+5. **Intervención de código:** desactivar el supuesto mecanismo de C0.
+6. **Invariancia:** replicar sin reajustar en otro contrato/régimen/instrumento.
+7. **Sensibilidad de binning/lags:** una flecha no puede depender de un único corte elegido después de mirar.
+
+Si una relación falla estos controles, se conserva como asociación descriptiva.
+
+---
+
+## 7. Herramientas y límites
+
+- **PCMCI/tigramite:** útil para dependencia temporal multivariada condicionada; sensible a
+  variables omitidas, resolución y supuestos del test condicional.
+- **Granger condicionado:** prueba precedencia predictiva bajo un modelo; no identifica una
+  intervención causal por sí solo.
+- **Transfer entropy/información dirigida:** capta no linealidad, pero paga estimación,
+  discretización y multiplicidad.
+- **QCA/fsQCA/NCA:** vocabulario útil para necesidad/suficiencia, pero su encaje con streams
+  masivos de microestructura no está establecido acá. No se afirma “cero aplicaciones” sin
+  una revisión bibliográfica sistemática.
+- **Pearson:** resumen de dependencia lineal. No es proxy de causalidad lineal sin supuestos
+  causales adicionales.
+
+---
+
+## 8. Orden de ejecución
+
+1. corregir y validar el store point-in-time;
+2. producir C0 desde fuente y tests de contención condicionada;
+3. construir risk set regular target-free;
+4. preregistrar resolución, lags, proxies y multiplicidad de C1;
+5. ejecutar C2 y placebos;
+6. exigir C3 fuera del entorno de descubrimiento;
+7. STOP;
+8. sólo con autorización separada, diseñar C4.
+
+## Dictamen
+
+Sí: el enfoque por atlas se usa en análisis a gran escala, pero la unidad correcta no es
+“correlación entre indicadores”. Es una secuencia auditable de **linaje → dependencia
+temporal condicionada → intervención computacional → invariancia**. Recién después, y bajo
+otro preregistro, puede preguntarse por outcomes.
