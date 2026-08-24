@@ -92,3 +92,22 @@ def test_runner_no_importa_motor_de_outcomes():
     assert set(flags) == {"False"}, f"outcomes_opened emitido como True: {flags}"
     sealed = re.findall(r'"sealed_outcomes_opened"\s*:\s*(True|False)', source)
     assert set(sealed) == {"False"}, f"sealed_outcomes_opened emitido como True: {sealed}"
+
+
+def test_subconjunto_de_contratos_nunca_declara_cobertura_completa():
+    """Un --contracts parcial debe marcarse como parcial, no como COMPLETE_TARGET_FREE."""
+    source = inspect.getsource(S)
+    # el estado parcial existe y es alcanzable
+    assert "COMPLETE_TARGET_FREE_PARTIAL_CONTRACTS" in source
+    # y el resultado declara explicitamente que contratos se midieron y cuales no
+    for campo in ("contracts_measured", "contracts_omitted", "full_contract_coverage"):
+        assert campo in source, f"el resultado no declara {campo}"
+    # COMPLETE_TARGET_FREE a secas debe estar condicionado a la igualdad con CONTRACTS
+    assert "set(contracts)==set(CONTRACTS)" in source
+
+
+def test_finalize_respeta_el_subconjunto_de_contratos():
+    """finalize() debe iterar el subconjunto recibido, no la constante global."""
+    src = inspect.getsource(S.finalize)
+    assert "for contract in contracts:" in src
+    assert "for contract in CONTRACTS:" not in src

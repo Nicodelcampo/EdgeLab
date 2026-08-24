@@ -257,10 +257,11 @@ def _partial_path(output, cfg, contract):
     return output/"partials"/f"{cfg['config_id']}__{contract.replace(' ','_')}.json"
 
 
-def finalize(output, configs, input_manifest, *, head_start, spec, p1_sessions):
+def finalize(output, configs, input_manifest, *, head_start, spec, p1_sessions, contracts=CONTRACTS):
     by_config=defaultdict(list)
+    contracts=tuple(contracts)
     for cfg in configs:
-        for contract in CONTRACTS:
+        for contract in contracts:
             path=_partial_path(output,cfg,contract)
             if not path.exists(): raise FileNotFoundError(path)
             record=load_json(path)
@@ -281,7 +282,7 @@ def finalize(output, configs, input_manifest, *, head_start, spec, p1_sessions):
     headline_fp=summaries[headline]["target_free_fingerprint"]
     identical=sorted({str(s["axis"]) for cid,s in summaries.items() if cid!=headline and s["stage"]=="oat" and s["target_free_fingerprint"]==headline_fp})
     head_end=_git("rev-parse","HEAD"); dirty_end=bool(_git("status","--porcelain"))
-    result={"schema":"bt2_absorption_target_free_sweep_result_v1","status":"COMPLETE_TARGET_FREE" if head_end==head_start and not dirty_end else "INVALID_PROVENANCE","target_free":True,"outcomes_opened":False,"sealed_outcomes_opened":False,"head_start":head_start,"head_end":head_end,"worktree_clean_start":True,"worktree_clean_end":not dirty_end,"north_star_sha256":NORTH_STAR_SHA256,"n_configs":len(configs),"headline_config_id":headline,"input_manifest":input_manifest,"identical_to_headline_oat_axes":identical,"warning":"event overlap is descriptive; it is not an effective test count","summaries":summaries}
+    result={"schema":"bt2_absorption_target_free_sweep_result_v1","status":("INVALID_PROVENANCE" if (head_end!=head_start or dirty_end) else "COMPLETE_TARGET_FREE" if set(contracts)==set(CONTRACTS) else "COMPLETE_TARGET_FREE_PARTIAL_CONTRACTS"),"target_free":True,"outcomes_opened":False,"sealed_outcomes_opened":False,"head_start":head_start,"head_end":head_end,"worktree_clean_start":True,"worktree_clean_end":not dirty_end,"north_star_sha256":NORTH_STAR_SHA256,"contracts_measured":list(contracts),"contracts_omitted":[c for c in CONTRACTS if c not in contracts],"full_contract_coverage":set(contracts)==set(CONTRACTS),"n_configs":len(configs),"headline_config_id":headline,"input_manifest":input_manifest,"identical_to_headline_oat_axes":identical,"warning":"event overlap is descriptive; it is not an effective test count","summaries":summaries}
     _atomic_json(output/"summary.json",result); _atomic_json(output/"exact_overlap_matrix.json",matrix)
     with (output/"session_metrics.jsonl").open("w",encoding="utf-8") as handle:
         for row in session_rows: handle.write(json.dumps(row,sort_keys=True,ensure_ascii=False,allow_nan=False)+"\n")
@@ -303,7 +304,8 @@ def run_campaign(args):
     assignment=universe["assignment"]; report_sessions=set(universe["puerta1_133"]); expected_all=set(universe["all_152"]); input_manifest={}
     from tools.sweep_bigtrap2_tickframes import load_canonical_ticks
     from edgelab.bridge.indicators.bigtrap2absorption import run as run_abs
-    for contract in CONTRACTS:
+    contracts=tuple(getattr(args,'contracts',None) or CONTRACTS)
+    for contract in contracts:
         path=args.data_dir/f"{contract}.Last.txt"
         if not path.exists(): raise FileNotFoundError(path)
         input_sha=file_sha256(path); ticks,*_=load_canonical_ticks(path,tick_size=float(args.tick_size),max_ticks=None); ticks.instrument="GC"; ticks.contract=contract; ticks.source=str(path)
@@ -321,7 +323,7 @@ def run_campaign(args):
             if max_seconds and time.monotonic()-started>=max_seconds:
                 _atomic_json(args.output/"run_status.json",{"status":"PAUSED_BY_MAX_HOURS","head_start":head,"elapsed_seconds":time.monotonic()-started,"outcomes_opened":False}); return 2
         del ticks
-    result=finalize(args.output,configs,input_manifest,head_start=head,spec=spec,p1_sessions=universe["puerta1_133"]); _atomic_json(args.output/"run_status.json",{"status":result["status"],"head_start":head,"elapsed_seconds":time.monotonic()-started,"outcomes_opened":False})
+    result=finalize(args.output,configs,input_manifest,head_start=head,spec=spec,p1_sessions=universe["puerta1_133"],contracts=contracts); _atomic_json(args.output/"run_status.json",{"status":result["status"],"head_start":head,"elapsed_seconds":time.monotonic()-started,"outcomes_opened":False})
     print(json.dumps({"status":result["status"],"n_configs":result["n_configs"],"identical_to_headline_oat_axes":result["identical_to_headline_oat_axes"],"outcomes_opened":False},indent=2,ensure_ascii=False)); return 0 if result["status"]=="COMPLETE_TARGET_FREE" else 3
 
 
@@ -330,7 +332,7 @@ def parser():
     for name in ("plan","run"):
         p=sub.add_parser(name); p.add_argument("--spec",type=Path,default=DEFAULT_SPEC); p.add_argument("--split",type=Path,default=DEFAULT_SPLIT); p.add_argument("--chain",type=Path,default=DEFAULT_CHAIN); p.add_argument("--output",type=Path,required=True); p.add_argument("--stage",choices=("oat","all"),default="all")
         if name=="run":
-            p.add_argument("--data-dir",type=Path,required=True); p.add_argument("--tick-size",type=float,default=.10); p.add_argument("--resume",action="store_true"); p.add_argument("--max-hours",type=float,default=8.5)
+            p.add_argument("--data-dir",type=Path,required=True); p.add_argument("--tick-size",type=float,default=.10); p.add_argument("--resume",action="store_true"); p.add_argument("--max-hours",type=float,default=8.5); p.add_argument("--contracts",nargs="+",default=list(CONTRACTS),choices=list(CONTRACTS),help="Subconjunto de contratos a medir. Por defecto los cuatro. Un subconjunto marca el resultado como cobertura parcial y NUNCA como COMPLETE_TARGET_FREE.")
     return out
 
 
