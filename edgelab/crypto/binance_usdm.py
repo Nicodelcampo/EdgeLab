@@ -122,6 +122,7 @@ class CryptoPilotReport:
     quantity_unit_base: str
     quantity_unit_status: str
     n_offtick_prices_excluded: int = 0
+    n_offtick_book_rows_excluded: int = 0
     offtick_price_sample: tuple[dict[str, Any], ...] = ()
     offtick_exclusion_invoked: bool = False
     status: str = "OK"
@@ -386,6 +387,19 @@ def load_binance_usdm_pair(
                 "Usar allow_offtick_prices=True SOLO como diagnostico declarado.")
         trades = trades.loc[~_off].reset_index(drop=True)
 
+    # Mismo fenomeno del lado del book. Se cuenta APARTE porque la semantica es
+    # distinta: quitar una fila de book cambia que book ve un trade posterior,
+    # no solo la poblacion de trades.
+    _offb = (offtick_mask(book["bid_price"].to_numpy(dtype=np.float64), contract.tick_size)
+             | offtick_mask(book["ask_price"].to_numpy(dtype=np.float64), contract.tick_size))
+    n_offtick_book = int(_offb.sum())
+    if n_offtick_book:
+        if not allow_offtick_prices:
+            raise ValueError(
+                f"bookTicker: {n_offtick_book} filas no alinea(n) con tick_size={contract.tick_size}. "
+                "Usar allow_offtick_prices=True SOLO como diagnostico declarado.")
+        book = book.loc[~_offb].reset_index(drop=True)
+
     t_trade = trades["trade_time_ns"].to_numpy(dtype=np.int64)
     t_book = book["transaction_time_ns"].to_numpy(dtype=np.int64)
     if len(t_book) == 0:
@@ -464,8 +478,9 @@ def load_binance_usdm_pair(
         gap_sample=gap_sample,
         quantity_unit_base=str(contract.quantity_unit_base),
         n_offtick_prices_excluded=n_offtick,
+        n_offtick_book_rows_excluded=n_offtick_book,
         offtick_price_sample=offtick_sample,
-        offtick_exclusion_invoked=bool(n_offtick and allow_offtick_prices),
+        offtick_exclusion_invoked=bool((n_offtick or n_offtick_book) and allow_offtick_prices),
         quantity_unit_status=contract.quantity_unit_status,
         status=status,
     )
