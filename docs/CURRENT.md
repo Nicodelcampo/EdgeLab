@@ -1,52 +1,93 @@
 # CURRENT — empezar acá
 
-> Punto de entrada único. Una sesión nueva (Claude, auditor o Nico) lee esto
-> antes de cualquier otra página. Si este archivo y Notion divergen, **manda
-> el repo**.
+> Estado operativo al 2026-08-24. Para un traspaso nuevo, el primer archivo es `AUDITOR_START_HERE.md`.
 
-**Rama viva:** `foundation/f0b-compatibility-probe`
-**Fecha:** 2026-08-20
-**Referente:** `docs/NORTH_STAR.md` sha256 `d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1`
+**Rama viva:** `foundation/f0b-compatibility-probe`  
+**Audited scientific base:** `9b23c307cb112cdd6392d98673e8ead2e8bc4698`  
+**Handoff package:** `7b360bf8f6bc4ac54ca72f771520690046f61789`  
+**Referente:** `docs/NORTH_STAR.md` · sha256 del cuerpo `d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1`
 
-## Qué está vivo hoy
+## Línea primaria
 
-**Frente principal: `HFTZonesESPureV2` sobre ES.** Primero entender el indicador
-original en su activo; la adaptación multi-activo queda para después.
+**BigTrap2Absorption — sweep target-free parcial sobre GC 02-26.**
 
-1. **Oráculo controlado** — `runs/oraculo_espurev2_ES_snapshot.sqlite`
-   (`sha256 bece887455c0347b…`). DbPath nuevo, **un solo escritor**: resuelve el
-   bloqueante del log compartido, donde 3 indicadores escribían la misma tabla sin
-   columna de autor. **23.863 zonas · 120 sesiones** pre-firewall. 0 duplicados,
-   0 retrocesos, 0 post-firewall. Acta: `ORACULO_ESPUREV2_ES_2026-08-19.md`.
-2. **Censo descriptivo corrido** — `CENSO_ZONAS_ES_2026-08-19.md`. Hallazgo:
-   **92 % de zonas bajistas por el `isDown`-first** (`.cs` l.215-216 y 233-234: con
-   precio plano las dos condiciones son true e `isDown` gana). Idéntico en 3 buckets
-   y 3 contratos. **Ninguna lectura direccional de esa población es válida.**
-   Segundo hallazgo: la **ocupación está saturada** (p05 0,80 · p50 0,95), así que el
-   ABSORB propuesto en la spec de HFTZonesRange clasificaría casi todo.
-3. **Parche listo, sin tocar el original** — `docs/research/parches/HFTZonesESPureV2Flat.cs`
-   (`sha256 4e80c24d…`), ya copiado a la carpeta de NT8. **Falta compilar y correr.**
-   Comparador preparado: `diag/tasa_senales/comparar_v2_vs_flat.py`.
-4. **Retorno a zona** — `diag/tasa_senales/retorno_a_zona_es.py`, target-free, con
-   dos controles construidos en la misma sesión (espejo emparejado por distancia,
-   placebo aleatorio con semilla fija).
+- 99 configuraciones únicas: 51 OAT + 48 interacciones.
+- Estado esperado para un subconjunto: `COMPLETE_TARGET_FREE_PARTIAL_CONTRACTS`.
+- El sweep no mira outcomes, no elige ganador y no es Puerta 1.
+- Puerta 1 no se corrió y su runner no existe.
+- No relanzar: inspeccionar proceso, parciales, `run_status`, `config_id`, hashes y procedencia; continuar con `--resume`.
 
-**Línea H-Z2A:** v4, manifiesto v1 SUSPENDIDO, censo v2 verificado, P-47 = A.
-**Línea HFTZonesRange / multi-activo: APARCADA** salvo el diagnóstico v2.3, que cerró
-limpio.
-**H-ASIA-1** en 6J: refutada en su forma literal.
+Acta: `docs/research/ESTADO_BT2_ABSORPTION_2026-08-24.md`.
 
-**Board:** hasta **P-55** (el contexto no es un control: un nulo puede ser dos efectos
-opuestos cancelándose). `PENDIENTE.md`.
-**Canal:** `docs/audits/CANAL_AUDITOR.md`, hasta la entrada 043.
+## Vector de estado BT2Absorption
 
-## Qué no tocar
+```text
+PUERTA_0_FIRMADA                = SI
+KERNEL_PARITY_ON_EQUAL_INPUT    = ~EXACT
+GLOBAL_ACCUMULATED_PARITY       = FAIL por indexado acumulado
+SESSION_RECOVERABLE_PARITY      = RECOVERED
+TAPE_VS_CHART_COVERAGE          = ABIERTO
+UNIVERSO                        = 152 sesiones
+SPLIT                           = 133 / 19, i % 8 == 7
+SWEEP_TARGET_FREE               = EN CURSO, GC 02-26
+PUERTA_1                        = NO CORRIDA
+CAMPAIGN_OUTCOMES_OPENED        = false
+PREEXISTING_OUTCOME_EXPOSURE    = YES
+```
 
-Holdout · P&L · F4 sin STOP · MAE/MFE · `features.py` · `fix/g2-a1-*` ·
-`COVERAGE_NEUTRAL` · matriz de kernels · Optuna/CatBoost · cambiar el 403 ·
-boolean de sesiones · semáforo de «vive» en el visor.
-Firewall: outcomes `false`, holdout 2026-07-01 → 2026-12-31
-(`1782856800000000000` ns).
+No resumir las dos últimas líneas como `OUTCOMES_NOT_OPENED` global.
 
-**Aporte al referente:** A evita convertir la potencia en una etiqueta. El visor
-acorta el tiempo entre «esto huele mal» y el corredor, sin mirar el resultado.
+## Incidente vigente
+
+Doce archivos preexistentes sin seguimiento se movieron a cuarentena con verificación bit a bit: 11 contenían outcomes y 1 era target-free.
+
+- 11/133 sesiones de Puerta 1 expuestas;
+- sellada `20260608` expuesta;
+- holdout temporal tocado por cuatro contratos;
+- búsqueda previa de contexto × outcomes;
+- familia YM y barrido cross-asset expuestos.
+
+Autoridad: `docs/incidents/INCIDENTE_OUTCOMES_UNTRACKED_2026-08-24.md` y su manifest.
+
+## Líneas separadas
+
+- `research/gate-regime-context`: `FOUNDATION_EXECUTABLE`, `CHECKPOINT_PENDING_REAL_DATA`, `NOT_YET_OPERATIONAL`.
+- `work/crypto-context-foundation-20260824`: PR #14 draft; CI roja; no mergear.
+- Las restantes 23 ramas no primarias están clasificadas en `docs/BRANCH_REGISTRY_2026-08-24.md`.
+
+## No tocar sin decisión explícita
+
+- outcomes, P&L, MAE/MFE o Puerta 1;
+- holdout para diseñar o elegir;
+- specs/splits congelados;
+- ramas G2 rivales;
+- borrado/cierre de ramas;
+- parquets o particiones publicadas;
+- cuarentena del incidente;
+- `TAPE_VS_CHART_COVERAGE` como si estuviera resuelto.
+
+## Primer chequeo
+
+```powershell
+git remote -v
+git fetch --all --prune
+git rev-parse --show-toplevel
+git worktree list
+git status --short --untracked-files=all
+.venv\Scripts\python tools\estado.py
+```
+
+El remoto reciente se llamó `github`, no `origin`.
+
+## Índices canónicos
+
+- `AUDITOR_START_HERE.md`
+- `docs/HANDOFF_AUDITOR_2026-08-24.md`
+- `docs/REPOSITORY_VISIBILITY_AUDIT_2026-08-24.md`
+- `docs/BRANCH_REGISTRY_2026-08-24.md`
+- `docs/research/LEER.md`
+- `PENDIENTE.md`
+
+## Aporte al referente
+
+CURRENT vuelve a describir el trabajo realmente vivo y hace explícita la exposición previa. El auditor puede continuar el sweep target-free sin confundirlo con Puerta 1, con un holdout intacto o con evidencia de edge.
