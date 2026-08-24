@@ -111,3 +111,23 @@ def test_finalize_respeta_el_subconjunto_de_contratos():
     src = inspect.getsource(S.finalize)
     assert "for contract in contracts:" in src
     assert "for contract in CONTRACTS:" not in src
+
+
+def test_finalize_escala_el_chequeo_de_sesiones_al_subconjunto():
+    """Con --contracts parcial, exigir las 133 sesiones es un falso negativo.
+
+    El chequeo debe seguir siendo estricto pero sobre las sesiones que pertenecen
+    a los contratos efectivamente medidos.
+    """
+    src = inspect.getsource(S)
+    assert 'p1_sessions=[d for d in universe["puerta1_133"] if assignment[d] in contracts]' in src
+    # y el error debe decir cuantas faltan, no solo que faltan
+    assert "faltan sesiones reportables ({" in src
+
+
+def test_el_resultado_declara_la_procedencia_de_los_parciales():
+    """Si finalize corre bajo un commit distinto al que produjo los parciales,
+    eso tiene que quedar escrito, no inferido."""
+    src = inspect.getsource(S.finalize)
+    for campo in ("partials_code_commit", "partials_uniform_commit", "finalize_matches_partials"):
+        assert campo in src, f"finalize no declara {campo}"
