@@ -106,6 +106,9 @@ def test_features_l1_se_publican_al_cierre_del_minuto_sin_ofi_ni_vpin():
     )
     features = build_l1_minute_features(ticks)
     first = features.iloc[0]
+    assert first["instrument"] == "GC"
+    assert first["contract"] == "GC 06-26"
+    assert first["cme_session"] == "20260324"
     assert first["feature_available_at"] == pd.Timestamp("2026-03-24T14:01:00Z")
     assert first["data_window_end"] < first["feature_available_at"]
     assert "tape_imbalance" in features

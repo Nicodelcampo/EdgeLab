@@ -85,23 +85,23 @@ def build_l1_minute_features(
     ).clip(-1.0, 1.0)
     bars = bars.sort_values(_KEYS + ["minute_start"], kind="mergesort").reset_index(drop=True)
 
-    def add_rolling(group: pd.DataFrame) -> pd.DataFrame:
-        g = group.copy()
-        ret = g["mid_close_ticks"].diff()
-        g["mid_return_ticks"] = ret
-        g[f"rv_ticks_{rv_window}m"] = ret.rolling(
-            rv_window, min_periods=min(5, rv_window)
-        ).std(ddof=0)
-        net = (g["mid_close_ticks"] - g["mid_close_ticks"].shift(efficiency_window)).abs()
-        path = ret.abs().rolling(efficiency_window, min_periods=efficiency_window).sum()
-        g[f"efficiency_ratio_{efficiency_window}m"] = (net / path.replace(0, np.nan)).clip(0, 1)
-        return g
-
-    bars = (
-        bars.groupby(_KEYS, sort=False, group_keys=False, dropna=False)
-        .apply(add_rolling, include_groups=False)
-        .reset_index(drop=True)
+    by_identity = bars.groupby(_KEYS, sort=False, dropna=False)
+    bars["mid_return_ticks"] = by_identity["mid_close_ticks"].diff()
+    rv_name = f"rv_ticks_{rv_window}m"
+    bars[rv_name] = by_identity["mid_return_ticks"].transform(
+        lambda s: s.rolling(rv_window, min_periods=min(5, rv_window)).std(ddof=0)
     )
+    shifted = by_identity["mid_close_ticks"].shift(efficiency_window)
+    net = (bars["mid_close_ticks"] - shifted).abs()
+    path = by_identity["mid_return_ticks"].transform(
+        lambda s: s.abs().rolling(
+            efficiency_window, min_periods=efficiency_window
+        ).sum()
+    )
+    bars[f"efficiency_ratio_{efficiency_window}m"] = (
+        net / path.replace(0, np.nan)
+    ).clip(0, 1)
+
     if (bars["data_window_end"] > bars["feature_available_at"]).any():
         raise AssertionError("feature publicada antes del fin de su ventana")
     return bars

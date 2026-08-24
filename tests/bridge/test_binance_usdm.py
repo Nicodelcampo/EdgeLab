@@ -5,19 +5,22 @@ import pytest
 
 from edgelab.crypto.binance_usdm import BinanceUsdmContract, load_binance_usdm_pair
 
+_BASE_MS = 1_711_756_800_000
 
-def _write_pair(tmp_path, *, first_book_time=999, trade_ids=(10, 11)):
+
+def _write_pair(tmp_path, *, first_book_time=None, trade_ids=(10, 11)):
+    first_book_time = _BASE_MS - 1 if first_book_time is None else first_book_time
     trades = pd.DataFrame(
         [
-            [trade_ids[0], 100.1, 0.002, 0.2002, 1000, "false"],
-            [trade_ids[1], 100.0, 0.003, 0.3000, 1001, "true"],
+            [trade_ids[0], 100.1, 0.002, 0.2002, _BASE_MS, "false"],
+            [trade_ids[1], 100.0, 0.003, 0.3000, _BASE_MS + 1, "true"],
         ]
     )
     books = pd.DataFrame(
         [
             [1, 100.0, 2.0, 100.1, 3.0, first_book_time, first_book_time],
-            [2, 100.1, 2.0, 100.2, 3.0, 1000, 1000],
-            [3, 99.9, 2.0, 100.0, 3.0, 1001, 1001],
+            [2, 100.1, 2.0, 100.2, 3.0, _BASE_MS, _BASE_MS],
+            [3, 99.9, 2.0, 100.0, 3.0, _BASE_MS + 1, _BASE_MS + 1],
         ]
     )
     tp = tmp_path / "BTCUSDT-trades.csv"
@@ -49,7 +52,7 @@ def test_unidad_de_volumen_es_explicita_y_no_heredada_de_futuros_cme(tmp_path):
 
 
 def test_join_sin_book_previo_falla_cerrado(tmp_path):
-    tp, bp = _write_pair(tmp_path, first_book_time=1000)
+    tp, bp = _write_pair(tmp_path, first_book_time=_BASE_MS)
     with pytest.raises(ValueError, match="join causal incompleto"):
         load_binance_usdm_pair(tp, bp, _contract())
 
