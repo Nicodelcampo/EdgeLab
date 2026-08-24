@@ -44,7 +44,7 @@ parámetro**. Cualquier afirmación futura sobre «TW óptimo» tiene que decir 
 
 ---
 
-## 2. Dos parámetros que no mueven nada — y uno merece sospecha
+## 2. Dos parámetros que no mueven nada — y uno no *puede* moverse
 
 | eje | valor | zonas | `a_pass` |
 |---|---|---:|---:|
@@ -56,9 +56,6 @@ parámetro**. Cualquier afirmación futura sobre «TW óptimo» tiene que decir 
 
 **`AbsorptionLookback`**: ±1,1 % de rango sobre un cambio de **5×** en el parámetro.
 Sensibilidad muy baja. Candidato a no-op.
-
-**`MinHistoryBuckets`**: salida **idéntica en los dos números**, bajando el burn-in de 200
-a 50.
 
 **`MinHistoryBuckets`**: salida **idéntica en los dos números**. La sospecha inmediata
 —que el parámetro no llegara al kernel— **se verificó y es falsa**:
@@ -159,9 +156,15 @@ distinción que se pierde cuando un censo se resume como «la configuración fun
 
 ## Nota de método
 
-El resultado más útil de las 13 configs no es una curva sino una **sospecha**:
-`MinHistoryBuckets` devolvió salida idéntica al headline en los dos números, y la
-tentación es anotarlo como no-op y seguir. Pero «no-op» y «parámetro que no llega al
-kernel» producen exactamente el mismo dato, y el censo no los distingue. Lo barato ahora
-es dejar la duda escrita; lo caro es descubrir en tres semanas que un eje del barrido
-nunca se movió.
+El resultado más útil de las 13 configs no fue una curva: fue una **sospecha que se
+cayó al verificarla**. `MinHistoryBuckets` devolvió salida idéntica al headline, y la
+lectura fácil era anotarlo como no-op. Pero «no-op» y «parámetro que no llega al kernel»
+producen **exactamente el mismo dato**, así que fui al código: está cableado.
+
+La causa real resultó más interesante que cualquiera de las dos hipótesis. El eje no es
+inerte — es **inobservable en este setup**, porque la ventana reportable arranca 21 días
+y ~90.000 cubetas después del inicio de la cinta, y para entonces cualquier `min_history`
+por debajo de ese número quedó atrás hace rato.
+
+Eso no se ve en la tabla. Se ve cruzando la grilla contra el calendario del universo, que
+son dos artefactos que nadie tenía motivo para mirar juntos.
