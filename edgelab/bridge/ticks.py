@@ -41,6 +41,11 @@ class TickSeries:
     instrument: str = "?"
     contract: str = "?"
     source: str = "?"
+    # Lado del AGRESOR informado por la fuente, cuando existe: +1 comprador
+    # taker, -1 vendedor taker, 0 desconocido. Es un dato del venue, no una
+    # inferencia. Binance lo publica como `is_buyer_maker` en sus trades.
+    # None = la fuente no lo provee y se clasifica por quote/tick-rule.
+    aggressor_side: Optional[np.ndarray] = None
 
     def __post_init__(self):
         d = np.diff(self.ts_ns)

@@ -157,6 +157,7 @@ class Footprints:
     n_quote: np.ndarray
     n_rule: np.ndarray
     has_quotes: bool
+    n_exchange: np.ndarray | None = None
 
 
 def build_footprints(ticks: TickSeries, bars: BarSeries) -> Footprints:
@@ -166,6 +167,9 @@ def build_footprints(ticks: TickSeries, bars: BarSeries) -> Footprints:
     total = [dict() for _ in range(nb)]
     n_quote = np.zeros(nb, np.int64)
     n_rule = np.zeros(nb, np.int64)
+    n_exchange = np.zeros(nb, np.int64)
+    side_src = getattr(ticks, "aggressor_side", None)
+    has_side = side_src is not None
     has_ba = ticks.bid_ticks is not None and ticks.ask_ticks is not None
     last_price = None
     last_dir = 0
@@ -173,8 +177,14 @@ def build_footprints(ticks: TickSeries, bars: BarSeries) -> Footprints:
         b = int(bars.tick_bar_idx[i])
         p = int(ticks.price_ticks[i])
         vol = float(ticks.volume[i])
-        side, by_quote = 0, False
-        if has_ba:
+        side, by_quote, by_exchange = 0, False, False
+        # PRECEDENCIA: lado informado por el venue > quote > tick-rule.
+        # El venue no infiere: sabe quien fue el maker.
+        if has_side:
+            s_i = int(side_src[i])
+            if s_i in (1, -1):
+                side, by_exchange = s_i, True
+        if side == 0 and has_ba:
             aq, bq = int(ticks.ask_ticks[i]), int(ticks.bid_ticks[i])
             if aq > 0 and bq > 0 and aq >= bq:
                 if p >= aq:
@@ -187,14 +197,16 @@ def build_footprints(ticks: TickSeries, bars: BarSeries) -> Footprints:
             if side == 0:
                 side = 1  # primer tick sin información (contrato BigTrap2)
         last_price, last_dir = p, side
-        if by_quote:
+        if by_exchange:
+            n_exchange[b] += 1
+        elif by_quote:
             n_quote[b] += 1
         else:
             n_rule[b] += 1
         m = ask[b] if side > 0 else bid[b]
         m[p] = m.get(p, 0.0) + vol
         total[b][p] = total[b].get(p, 0.0) + vol
-    return Footprints(ask, bid, total, n_quote, n_rule, has_quotes=bool(has_ba))
+    return Footprints(ask, bid, total, n_quote, n_rule, has_quotes=bool(has_ba), n_exchange=n_exchange)
 
 
 def footprint_volume_mismatches(bars: BarSeries, fps: Footprints, tol: float = 0.5):
