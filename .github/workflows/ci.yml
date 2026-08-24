@@ -1,12 +1,7 @@
 name: CI
 
-# Cierra P-05 (PENDIENTE.md): hasta ahora la suite corria solo en local y el
-# estado verde dependia de que quien la corre lo reporte fielmente. Ahora es
-# verificable desde el remoto.
-#
-# Este workflow NO ejecuta ninguna medicion de research: los scripts de diag/
-# requieren data/ (gitignoreado, dato local) y abortan solos si no lo
-# encuentran. Corre la suite de tests y nada mas.
+# La suite no ejecuta mediciones de research ni abre outcomes. Los shards hacen
+# visible qué superficie falla y conservan la cobertura completa del árbol.
 
 on:
   push:
@@ -23,9 +18,33 @@ concurrency:
 
 jobs:
   tests:
-    name: pytest (python 3.12)
+    name: pytest (${{ matrix.name }})
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: bridge-a-f
+            test_args: tests/bridge/test_[a-f]*.py
+          - name: bridge-g-m
+            test_args: tests/bridge/test_[g-m]*.py
+          - name: bridge-n-s
+            test_args: tests/bridge/test_[n-s]*.py
+          - name: bridge-t-z
+            test_args: tests/bridge/test_[t-z]*.py
+          - name: top-state
+            test_args: tests/test_current_md.py tests/test_north_star_hash.py tests/test_manifiestos_no_se_angostan.py
+          - name: top-infra
+            test_args: tests/test_kaggle_bundle_builder.py tests/test_verificar_artefactos.py tests/test_verify_indices.py tests/test_verify_tree.py
+          - name: top-session-holdout
+            test_args: tests/test_sessions.py tests/test_recut_holdout.py
+          - name: research
+            test_args: tests/research
+          - name: foundation
+            test_args: tests/foundation
+          - name: data-external-stats
+            test_args: tests/data tests/external tests/stats
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -46,7 +65,5 @@ jobs:
           python -c "import sys, platform; print(sys.version); print(platform.platform())"
           pip freeze | sha256sum
 
-      # pyproject.toml ya fija testpaths=["tests"] y pythonpath=["."].
-      # Los tests que necesitan data/ estan marcados skip por si mismos.
-      - name: Run test suite
-        run: python -m pytest -q --durations=10
+      - name: Run test shard
+        run: python -m pytest -q --durations=10 ${{ matrix.test_args }}
