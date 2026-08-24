@@ -1,0 +1,241 @@
+{
+  "schema": "edgelab.crypto.binance_usdm_pilot/1.1.0",
+  "created_at_utc": "2026-08-24T19:15:09.988162+00:00",
+  "north_star_sha256": "d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1",
+  "outcomes_accessed": false,
+  "join_contract": "bookTicker.transaction_time < trade.time",
+  "event_identity": [
+    "trade_time_ns",
+    "trade_id"
+  ],
+  "contract": {
+    "symbol": "BTCUSDT",
+    "contract_id": "BTCUSDT-PERP",
+    "venue": "BINANCE",
+    "product": "USD-M_PERPETUAL",
+    "tick_size": "0.10",
+    "quantity_unit_base": "0.001",
+    "quantity_unit_status": "PROVISIONAL_USER_SUPPLIED"
+  },
+  "inputs": {
+    "trades": {
+      "path": "<DATA_ROOT>/C:/ProyectosQuant/cryptodata/raw/BTCUSDT-trades-2024-03-29.zip",
+      "sha256": "b10ed9a4c565a5e81752486ec752f66175237498084b3aebc0d57d107eb13259",
+      "bytes": 24514449
+    },
+    "book_ticker": {
+      "path": "<DATA_ROOT>/C:/ProyectosQuant/cryptodata/raw/BTCUSDT-bookTicker-2024-03-29.zip",
+      "sha256": "c95c1d9afe1dc8b60a4be37f4af84078cd32b6bf6bce8e58ed01595b4b26e9c7",
+      "bytes": 119997573
+    }
+  },
+  "outputs": {
+    "ticks": {
+      "path": "<DATA_ROOT>/C:/ProyectosQuant/cryptodata/derived/BTCUSDT_2024-03-29_u1/BTCUSDT_bt2_ticks.parquet",
+      "sha256": "714beb1afee85c190012c7fa1b7945c7b16e8fe87782c81b65dd3f5e1b4c0f17",
+      "bytes": 28614224,
+      "rows": 2898780
+    },
+    "sidecar": {
+      "path": "<DATA_ROOT>/C:/ProyectosQuant/cryptodata/derived/BTCUSDT_2024-03-29_u1/BTCUSDT_bt2_sidecar.parquet",
+      "sha256": "8ed468da76e8e2d2ca96785c5914e553d9ea2b014a534032ef3e450a22de7a53",
+      "bytes": 48166920,
+      "rows": 2898780
+    }
+  },
+  "report": {
+    "n_trades": 2898780,
+    "n_book_updates": 10315644,
+    "n_joined": 2898780,
+    "n_unmatched_without_prior_book": 0,
+    "join_coverage": 1.0,
+    "strict_prior_violations": 0,
+    "n_quote_classifiable": 2897346,
+    "quote_classifiable_pct": 0.9995053091300478,
+    "maker_agreement_n": 2891659,
+    "maker_agreement_pct": 0.9980371691886298,
+    "duplicate_trade_ids": 0,
+    "id_gap_ranges": 20,
+    "missing_trade_ids": 20,
+    "gap_sample": [
+      {
+        "after_id": 4813387989,
+        "before_id": 4813387991,
+        "missing": 1
+      },
+      {
+        "after_id": 4813500697,
+        "before_id": 4813500699,
+        "missing": 1
+      },
+      {
+        "after_id": 4813581218,
+        "before_id": 4813581220,
+        "missing": 1
+      },
+      {
+        "after_id": 4813614353,
+        "before_id": 4813614355,
+        "missing": 1
+      },
+      {
+        "after_id": 4813632079,
+        "before_id": 4813632081,
+        "missing": 1
+      },
+      {
+        "after_id": 4813666493,
+        "before_id": 4813666495,
+        "missing": 1
+      },
+      {
+        "after_id": 4813717434,
+        "before_id": 4813717436,
+        "missing": 1
+      },
+      {
+        "after_id": 4814121800,
+        "before_id": 4814121802,
+        "missing": 1
+      },
+      {
+        "after_id": 4814428433,
+        "before_id": 4814428435,
+        "missing": 1
+      },
+      {
+        "after_id": 4814502757,
+        "before_id": 4814502759,
+        "missing": 1
+      },
+      {
+        "after_id": 4814931367,
+        "before_id": 4814931369,
+        "missing": 1
+      },
+      {
+        "after_id": 4815079661,
+        "before_id": 4815079663,
+        "missing": 1
+      },
+      {
+        "after_id": 4815250304,
+        "before_id": 4815250306,
+        "missing": 1
+      },
+      {
+        "after_id": 4815410790,
+        "before_id": 4815410792,
+        "missing": 1
+      },
+      {
+        "after_id": 4815580945,
+        "before_id": 4815580947,
+        "missing": 1
+      },
+      {
+        "after_id": 4816058717,
+        "before_id": 4816058719,
+        "missing": 1
+      },
+      {
+        "after_id": 4816061270,
+        "before_id": 4816061272,
+        "missing": 1
+      },
+      {
+        "after_id": 4816175156,
+        "before_id": 4816175158,
+        "missing": 1
+      },
+      {
+        "after_id": 4816198401,
+        "before_id": 4816198403,
+        "missing": 1
+      },
+      {
+        "after_id": 4816203978,
+        "before_id": 4816203980,
+        "missing": 1
+      }
+    ],
+    "quantity_unit_base": "0.001",
+    "quantity_unit_status": "PROVISIONAL_USER_SUPPLIED",
+    "n_offtick_prices_excluded": 6,
+    "n_offtick_book_rows_excluded": 13,
+    "offtick_price_sample": [
+      {
+        "trade_id": 4813614354,
+        "price": 70428.34,
+        "qty": 0.001,
+        "trade_time_ns": 1711682792026000000
+      },
+      {
+        "trade_id": 4813632080,
+        "price": 70344.83,
+        "qty": 0.001,
+        "trade_time_ns": 1711682980026000000
+      },
+      {
+        "trade_id": 4814121801,
+        "price": 69856.92,
+        "qty": 0.001,
+        "trade_time_ns": 1711698764447000000
+      },
+      {
+        "trade_id": 4814931368,
+        "price": 70428.34,
+        "qty": 0.001,
+        "trade_time_ns": 1711719302375000000
+      },
+      {
+        "trade_id": 4815250305,
+        "price": 69856.92,
+        "qty": 0.001,
+        "trade_time_ns": 1711725953019000000
+      },
+      {
+        "trade_id": 4816175157,
+        "price": 69856.92,
+        "qty": 0.001,
+        "trade_time_ns": 1711752958290000000
+      }
+    ],
+    "offtick_exclusion_invoked": true,
+    "status": "PILOT_ACCEPTED_TARGET_FREE_WITH_ID_GAPS",
+    "outcomes_opened": false
+  },
+  "target_free_census": {
+    "schema": "edgelab.crypto.bt2_target_free_census/1.0.0",
+    "target_free": true,
+    "outcomes_opened": false,
+    "instrument": "BTCUSDT",
+    "contract": "BTCUSDT-PERP",
+    "n_ticks": 2898780,
+    "first_ts_ns": 1711670400018000000,
+    "last_ts_ns": 1711756799943000000,
+    "duration_ns": 86399925000000,
+    "same_timestamp_adjacent_pairs": 2097386,
+    "tick_rate_per_second": 33.55072356833643,
+    "locked_book_pct": 0.0,
+    "spread_ticks_p50": 1.0,
+    "spread_ticks_p90": 1.0,
+    "spread_ticks_p99": 41.0,
+    "volume_units_p50": 7.0,
+    "volume_units_p90": 152.0,
+    "volume_units_p99": 810.0
+  },
+  "population": {
+    "event_space": "todos los trades del archivo diario USD-M; sin selección por resultado",
+    "included": "trade con bookTicker estrictamente anterior",
+    "excluded": "sin book previo; sólo permitido con --allow-partial-join y cuantificado"
+  },
+  "provenance": {
+    "head_start": "f2f2695835174bd92dd4bdb6b25474f4d74c7d9d",
+    "head_end": "f2f2695835174bd92dd4bdb6b25474f4d74c7d9d",
+    "tree_dirty_start": false,
+    "tree_dirty_end": false,
+    "valid": true,
+    "allow_dirty_requested": false
+  }
+}

@@ -1,0 +1,150 @@
+{
+  "schema": "edgelab.crypto.binance_usdm_pilot/1.1.0",
+  "created_at_utc": "2026-08-24T19:13:06.996286+00:00",
+  "north_star_sha256": "d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1",
+  "outcomes_accessed": false,
+  "join_contract": "bookTicker.transaction_time < trade.time",
+  "event_identity": [
+    "trade_time_ns",
+    "trade_id"
+  ],
+  "contract": {
+    "symbol": "BTCUSDT",
+    "contract_id": "BTCUSDT-PERP",
+    "venue": "BINANCE",
+    "product": "USD-M_PERPETUAL",
+    "tick_size": "0.10",
+    "quantity_unit_base": "0.001",
+    "quantity_unit_status": "PROVISIONAL_USER_SUPPLIED"
+  },
+  "inputs": {
+    "trades": {
+      "path": "<DATA_ROOT>/C:/ProyectosQuant/cryptodata/raw/BTCUSDT-trades-2024-03-30.zip",
+      "sha256": "a385248e48e38c8ae96641cf3a34887be080ae2d1558b70a80efddceb211b9d0",
+      "bytes": 12403562
+    },
+    "book_ticker": {
+      "path": "<DATA_ROOT>/C:/ProyectosQuant/cryptodata/raw/BTCUSDT-bookTicker-2024-03-30.zip",
+      "sha256": "6c6310b48a0de980d61f7e7edab7975abd0a6fe7d6b63a1156f7ea74bb15d151",
+      "bytes": 87758829
+    }
+  },
+  "outputs": {
+    "ticks": {
+      "path": "<DATA_ROOT>/C:/ProyectosQuant/cryptodata/derived/BTCUSDT_2024-03-30_u1/BTCUSDT_bt2_ticks.parquet",
+      "sha256": "e96c3cff5764c0ba593846eebc39a350058edeca8b0b7d109dafa40d5e4a08af",
+      "bytes": 15107832,
+      "rows": 1469266
+    },
+    "sidecar": {
+      "path": "<DATA_ROOT>/C:/ProyectosQuant/cryptodata/derived/BTCUSDT_2024-03-30_u1/BTCUSDT_bt2_sidecar.parquet",
+      "sha256": "d333bc49b95b146f18a3dc7612b198d740be5d45397f654763ed1d7b56b2ec62",
+      "bytes": 26683607,
+      "rows": 1469266
+    }
+  },
+  "report": {
+    "n_trades": 1469266,
+    "n_book_updates": 7398592,
+    "n_joined": 1469266,
+    "n_unmatched_without_prior_book": 0,
+    "join_coverage": 1.0,
+    "strict_prior_violations": 0,
+    "n_quote_classifiable": 1468978,
+    "quote_classifiable_pct": 0.9998039837578764,
+    "maker_agreement_n": 1466509,
+    "maker_agreement_pct": 0.9983192396346303,
+    "duplicate_trade_ids": 0,
+    "id_gap_ranges": 8,
+    "missing_trade_ids": 8,
+    "gap_sample": [
+      {
+        "after_id": 4816611113,
+        "before_id": 4816611115,
+        "missing": 1
+      },
+      {
+        "after_id": 4816693456,
+        "before_id": 4816693458,
+        "missing": 1
+      },
+      {
+        "after_id": 4816850862,
+        "before_id": 4816850864,
+        "missing": 1
+      },
+      {
+        "after_id": 4817199997,
+        "before_id": 4817199999,
+        "missing": 1
+      },
+      {
+        "after_id": 4817279452,
+        "before_id": 4817279454,
+        "missing": 1
+      },
+      {
+        "after_id": 4817279510,
+        "before_id": 4817279512,
+        "missing": 1
+      },
+      {
+        "after_id": 4817465129,
+        "before_id": 4817465131,
+        "missing": 1
+      },
+      {
+        "after_id": 4817590647,
+        "before_id": 4817590649,
+        "missing": 1
+      }
+    ],
+    "quantity_unit_base": "0.001",
+    "quantity_unit_status": "PROVISIONAL_USER_SUPPLIED",
+    "n_offtick_prices_excluded": 1,
+    "offtick_price_sample": [
+      {
+        "trade_id": 4816611114,
+        "price": 70344.83,
+        "qty": 0.001,
+        "trade_time_ns": 1711774936035000000
+      }
+    ],
+    "offtick_exclusion_invoked": true,
+    "status": "PILOT_ACCEPTED_TARGET_FREE_WITH_ID_GAPS",
+    "outcomes_opened": false
+  },
+  "target_free_census": {
+    "schema": "edgelab.crypto.bt2_target_free_census/1.0.0",
+    "target_free": true,
+    "outcomes_opened": false,
+    "instrument": "BTCUSDT",
+    "contract": "BTCUSDT-PERP",
+    "n_ticks": 1469266,
+    "first_ts_ns": 1711756800014000000,
+    "last_ts_ns": 1711843199126000000,
+    "duration_ns": 86399112000000,
+    "same_timestamp_adjacent_pairs": 986861,
+    "tick_rate_per_second": 17.00556829797047,
+    "locked_book_pct": 0.0,
+    "spread_ticks_p50": 1.0,
+    "spread_ticks_p90": 1.0,
+    "spread_ticks_p99": 10.0,
+    "volume_units_p50": 8.0,
+    "volume_units_p90": 146.0,
+    "volume_units_p99": 803.0
+  },
+  "population": {
+    "event_space": "todos los trades del archivo diario USD-M; sin selección por resultado",
+    "included": "trade con bookTicker estrictamente anterior",
+    "excluded": "sin book previo; sólo permitido con --allow-partial-join y cuantificado"
+  },
+  "provenance": {
+    "head_start": "d5a9fe29a8822bc1d025c676835bd2f3d51ae559",
+    "head_end": "d5a9fe29a8822bc1d025c676835bd2f3d51ae559",
+    "tree_dirty_start": false,
+    "tree_dirty_end": false,
+    "valid": true,
+    "allow_dirty_requested": false
+  }
+}
