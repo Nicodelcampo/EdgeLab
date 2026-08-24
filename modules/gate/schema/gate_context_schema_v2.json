@@ -1,0 +1,43 @@
+{
+  "$schema": "gate_context_labels/2.0.0",
+  "version": "2.0.0",
+  "status": "FORMAL_POINT_IN_TIME_CONTRACT",
+  "event_required": [
+    "event_id",
+    "instrument",
+    "contract",
+    "cme_session",
+    "event_time"
+  ],
+  "context_required": [
+    "instrument",
+    "contract",
+    "cme_session",
+    "data_window_end",
+    "feature_available_at",
+    "context_state",
+    "context_model_id",
+    "context_run_id"
+  ],
+  "states": ["calm", "normal", "volatile"],
+  "forbidden_states": ["toxic"],
+  "join": {
+    "direction": "backward",
+    "keys": ["instrument", "contract", "cme_session"],
+    "max_feature_age": "PT1M",
+    "missing_policy": "fail_closed",
+    "causal_invariant": "data_window_end <= feature_available_at <= event_time"
+  },
+  "model_id_format": "gate_gc_l1_hmm3_forward_v0:<checkpoint_sha256[0:16]>",
+  "forbidden": [
+    "forward fill from a future bar",
+    "cross-instrument join",
+    "cross-contract join",
+    "cross-session join",
+    "full-sample normalization",
+    "unhashed model name",
+    "OFI without book events and sizes",
+    "VPIN without volume buckets"
+  ],
+  "outcomes_accessed": false
+}
