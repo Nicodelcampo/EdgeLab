@@ -45,7 +45,41 @@ def test_external_optional_none_when_unset(tmp_path):
     assert s.manifests_dir == s.root / "manifests"
 
 
-def test_import_does_not_create_dirs():
+def test_import_does_not_create_dirs(tmp_path):
+    """Importar config no debe tocar el filesystem.
+
+    El invariante es 'importar no crea directorios', NO 'repo/manifests no existe
+    jamas': ese directorio puede existir legitimamente porque hay artefactos
+    versionados adentro. Se verifica en un sandbox, reimportando el modulo con
+    Path.mkdir saboteado: si el import crea un solo directorio, falla.
+    """
+    import importlib
     import edgelab.config as cfg
-    # 'manifests' es un dir lógico nuevo: debe resolverse pero NO crearse al importar.
-    assert not cfg.MANIFESTS_DIR.exists(), "importar config no debe crear directorios físicos"
+
+    creados = []
+    real_mkdir = Path.mkdir
+
+    def mkdir_espia(self, *a, **kw):
+        creados.append(str(self))
+        return real_mkdir(self, *a, **kw)
+
+    Path.mkdir = mkdir_espia
+    try:
+        importlib.reload(cfg)
+    finally:
+        Path.mkdir = real_mkdir
+
+    assert creados == [], f"importar config creo directorios: {creados}"
+
+
+def test_resolver_no_materializa_rutas_internas(tmp_path):
+    """Resolver rutas es puro: devuelve Paths, no los crea."""
+    from edgelab.config import resolve_settings
+    s = resolve_settings(env={}, default_toml=tmp_path / "none.toml",
+                         local_toml=tmp_path / "none.toml")
+    assert s.manifests_dir == s.root / "manifests"
+    assert s.data_dir == s.root / "data"
+    # sobre una raiz sintetica, resolver no debe materializar nada
+    inexistente = tmp_path / "repo_fantasma"
+    assert not (inexistente / "manifests").exists()
+    assert not (inexistente / "data").exists()

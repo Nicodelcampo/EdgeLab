@@ -73,7 +73,8 @@ class BinanceUsdmContract:
     quantity_unit_base: Decimal | str | float
     venue: str = "BINANCE"
     product: str = "USD-M_PERPETUAL"
-    quantity_unit_status: str = "PROVISIONAL_USER_SUPPLIED"
+    quantity_unit_status: str = "PROVISIONAL_EXCHANGE_STEP_SIZE"
+    quantity_unit_source: str = "exchangeInfo.LOT_SIZE.stepSize"
 
     def __post_init__(self) -> None:
         symbol = str(self.symbol).strip().upper()
@@ -100,6 +101,7 @@ class BinanceUsdmContract:
             "tick_size": str(self.tick_size),
             "quantity_unit_base": str(self.quantity_unit_base),
             "quantity_unit_status": self.quantity_unit_status,
+            "quantity_unit_source": self.quantity_unit_source,
         }
 
 
@@ -121,6 +123,19 @@ class CryptoPilotReport:
     gap_sample: tuple[dict[str, int], ...]
     quantity_unit_base: str
     quantity_unit_status: str
+    quantity_unit_source: str = "exchangeInfo.LOT_SIZE.stepSize"
+    raw_id_gap_ranges: int = 0
+    raw_missing_trade_ids: int = 0
+    analysis_id_gap_ranges: int = 0
+    analysis_missing_trade_ids: int = 0
+    id_gaps_created_by_exclusion: int = 0
+    n_offtick_book_rows_excluded_bid: int = 0
+    n_offtick_book_rows_excluded_ask: int = 0
+    offtick_book_sample: tuple[dict[str, Any], ...] = ()
+    n_trades_with_changed_bbo: int = 0
+    added_book_age_ns_p50: float | None = None
+    added_book_age_ns_max: int = 0
+    promotion_eligible: bool = True
     n_offtick_prices_excluded: int = 0
     n_offtick_book_rows_excluded: int = 0
     offtick_price_sample: tuple[dict[str, Any], ...] = ()
@@ -371,6 +386,10 @@ def load_binance_usdm_pair(
 
     # Precios fuera de la grilla de tick. Se resuelve ANTES del join para que la
     # cobertura y los conteos posteriores describan la poblacion efectivamente usada.
+    # Gaps sobre la poblacion RAW, ANTES de cualquier exclusion. Sin esto, una
+    # exclusion se disfraza de gap del venue.
+    raw_gaps, raw_missing, _ = _id_gaps(trades["trade_id"].to_numpy(dtype=np.int64))
+
     _off = offtick_mask(trades["price"].to_numpy(dtype=np.float64), contract.tick_size)
     n_offtick = int(_off.sum())
     offtick_sample: tuple[dict[str, Any], ...] = ()
@@ -393,12 +412,42 @@ def load_binance_usdm_pair(
     _offb = (offtick_mask(book["bid_price"].to_numpy(dtype=np.float64), contract.tick_size)
              | offtick_mask(book["ask_price"].to_numpy(dtype=np.float64), contract.tick_size))
     n_offtick_book = int(_offb.sum())
+    n_off_bid = n_off_ask = 0; offtick_book_sample: tuple[dict[str, Any], ...] = ()
+    n_changed_bbo = 0; added_age_p50 = None; added_age_max = 0
     if n_offtick_book:
         if not allow_offtick_prices:
             raise ValueError(
                 f"bookTicker: {n_offtick_book} filas no alinea(n) con tick_size={contract.tick_size}. "
                 "Usar allow_offtick_prices=True SOLO como diagnostico declarado.")
+        _ob = offtick_mask(book["bid_price"].to_numpy(dtype=np.float64), contract.tick_size)
+        _oa = offtick_mask(book["ask_price"].to_numpy(dtype=np.float64), contract.tick_size)
+        n_off_bid = int(_ob.sum()); n_off_ask = int(_oa.sum())
+        offtick_book_sample = tuple(
+            {"update_id": int(getattr(r, "update_id", -1)),
+             "bid_price": float(r.bid_price), "ask_price": float(r.ask_price),
+             "transaction_time_ns": int(r.transaction_time_ns),
+             "offtick_side": ("bid" if _ob[i] and not _oa[i] else
+                              "ask" if _oa[i] and not _ob[i] else "both")}
+            for i, r in zip(np.flatnonzero(_offb)[:10], book.loc[_offb].head(10).itertuples()))
+        # BBO que habria visto cada trade SIN excluir, para medir el efecto del filtro
+        _t_book_pre = book["transaction_time_ns"].to_numpy(dtype=np.int64)
+        _idx_pre = np.searchsorted(_t_book_pre, trades["trade_time_ns"].to_numpy(dtype=np.int64), side="left") - 1
+        _keep_pos = np.flatnonzero(~_offb)
         book = book.loc[~_offb].reset_index(drop=True)
+        if len(book) == 0:
+            raise ValueError("bookTicker: TODAS las filas quedaron fuera de tick; abortado")
+        _remap = np.full(len(_offb), -1, dtype=np.int64); _remap[_keep_pos] = np.arange(len(_keep_pos))
+        _t_book_post = book["transaction_time_ns"].to_numpy(dtype=np.int64)
+        _idx_post = np.searchsorted(_t_book_post, trades["trade_time_ns"].to_numpy(dtype=np.int64), side="left") - 1
+        _valid = (_idx_pre >= 0) & (_idx_post >= 0)
+        _changed = _valid & (_remap[np.clip(_idx_pre, 0, len(_offb)-1)] != _idx_post)
+        n_changed_bbo = int(_changed.sum())
+        if n_changed_bbo:
+            _extra = (_t_book_pre[np.clip(_idx_pre,0,len(_t_book_pre)-1)][_changed]
+                      - _t_book_post[np.clip(_idx_post,0,len(_t_book_post)-1)][_changed])
+            added_age_p50 = float(np.median(_extra)); added_age_max = int(_extra.max())
+        else:
+            added_age_p50 = None; added_age_max = 0
 
     t_trade = trades["trade_time_ns"].to_numpy(dtype=np.int64)
     t_book = book["transaction_time_ns"].to_numpy(dtype=np.int64)
@@ -453,13 +502,17 @@ def load_binance_usdm_pair(
 
     gaps, missing_ids, gap_sample = _id_gaps(tr["trade_id"].to_numpy(dtype=np.int64))
     coverage = len(tr) / len(trades) if len(trades) else 0.0
-    status = (
-        "PILOT_ACCEPTED_TARGET_FREE_WITH_ID_GAPS"
-        if gaps
-        else "PILOT_ACCEPTED_TARGET_FREE"
-    )
+    # PRECEDENCIA DE ESTADO, de menor a mayor severidad. La exclusion off-tick
+    # DOMINA sobre gaps y join parcial: una corrida con exclusiones invocadas no
+    # puede emitir PILOT_ACCEPTED* bajo ninguna combinacion.
+    offtick_invoked = bool((n_offtick or n_offtick_book) and allow_offtick_prices)
+    status = "PILOT_ACCEPTED_TARGET_FREE_WITH_ID_GAPS" if gaps else "PILOT_ACCEPTED_TARGET_FREE"
     if n_unmatched:
         status = "PILOT_PARTIAL_JOIN"
+    if offtick_invoked:
+        status = "DIAGNOSTIC_OFFTICK_EXCLUSION"
+    promotion_eligible = not offtick_invoked and not n_unmatched
+    assert not (offtick_invoked and status.startswith("PILOT_ACCEPTED")),         "invariante violado: exclusion off-tick no puede emitir PILOT_ACCEPTED"
 
     report = CryptoPilotReport(
         n_trades=int(len(trades)),
@@ -477,6 +530,19 @@ def load_binance_usdm_pair(
         missing_trade_ids=missing_ids,
         gap_sample=gap_sample,
         quantity_unit_base=str(contract.quantity_unit_base),
+        raw_id_gap_ranges=raw_gaps,
+        raw_missing_trade_ids=raw_missing,
+        analysis_id_gap_ranges=gaps,
+        analysis_missing_trade_ids=missing_ids,
+        id_gaps_created_by_exclusion=gaps - raw_gaps,
+        n_offtick_book_rows_excluded_bid=n_off_bid,
+        n_offtick_book_rows_excluded_ask=n_off_ask,
+        offtick_book_sample=offtick_book_sample,
+        n_trades_with_changed_bbo=n_changed_bbo,
+        added_book_age_ns_p50=added_age_p50,
+        added_book_age_ns_max=added_age_max,
+        promotion_eligible=promotion_eligible,
+        quantity_unit_source=contract.quantity_unit_source,
         n_offtick_prices_excluded=n_offtick,
         n_offtick_book_rows_excluded=n_offtick_book,
         offtick_price_sample=offtick_sample,
