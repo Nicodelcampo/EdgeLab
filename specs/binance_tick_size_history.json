@@ -38,5 +38,45 @@
   "known_gaps": [
     "LOT_SIZE / minQty historico NO cubierto. Hay indicio de cambio en SOLUSDT: anuncio del 2025-04-02 baja el minimo de 1 SOL a 0.01 SOL, lo que sugiere que en 2024-03 la unidad de cantidad era DISTINTA de la vigente.",
     "Solo tres simbolos. Cualquier otro debe fallar cerrado."
-  ]
+  ],
+  "quantity_unit_history": {
+    "status": "INCOMPLETO — no usar como autoridad",
+    "why": "Mismo defecto que el tick: exchangeInfo expone solo LOT_SIZE vigente y el minimo cambia.",
+    "evidence": [
+      {
+        "symbol": "SOLUSDT",
+        "field": "minimum trade amount",
+        "before": "1 SOL",
+        "after": "0.01 SOL",
+        "effective_utc": "2025-04-02",
+        "source_url": "https://www.binance.com/en/support/announcement/detail/62e7f20e3f2d4313ab7b2147f51065c6",
+        "implication": "En 2024-03 la unidad de cantidad de SOLUSDT era DISTINTA de la vigente."
+      }
+    ],
+    "not_covered": [
+      "BTCUSDT",
+      "ETHUSDT",
+      "stepSize de cualquier simbolo"
+    ],
+    "policy": "Mientras siga INCOMPLETO, quantity_unit_status debe ser PROVISIONAL_EXCHANGE_STEP_SIZE y quantity_unit_source debe declarar que el valor es VIGENTE, no historico. Prohibido tratarlo como unidad economica validada."
+  },
+  "sources_measured_2026_08_24": {
+    "binance_um_daily": {
+      "trades": "al dia 2026-08-23",
+      "aggTrades": "al dia",
+      "bookDepth": "al dia, bandas de % cada 30s, NO es BBO",
+      "metrics": "al dia",
+      "bookTicker": "DISCONTINUADO tras 2024-03-30"
+    },
+    "bybit_public": {
+      "url": "https://public.bybit.com/trading/{symbol}/",
+      "aggressor_field": "side",
+      "al_dia": "2026-08-23",
+      "orderbook_bulk": "404 - no existe en el indice publico"
+    },
+    "okx": {
+      "orderbook_bulk": "404 en los patrones probados; descarga detras de UI"
+    },
+    "l2_bulk_gratis": "NO ENCONTRADO por HTTP plano"
+  }
 }

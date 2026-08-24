@@ -48,3 +48,21 @@ def test_el_artefacto_declara_sus_propios_huecos():
     assert h["known_gaps"], "el artefacto debe declarar que NO cubre"
     assert any("LOT_SIZE" in g for g in h["known_gaps"])
     assert "NO exhaustiva" in h["warning"]
+
+
+def test_la_unidad_de_cantidad_esta_declarada_como_incompleta():
+    """El hueco de LOT_SIZE historico debe estar escrito, no implicito."""
+    h = load_history()
+    q = h["quantity_unit_history"]
+    assert q["status"].startswith("INCOMPLETO")
+    assert any(e["symbol"] == "SOLUSDT" for e in q["evidence"])
+    assert "PROVISIONAL_EXCHANGE_STEP_SIZE" in q["policy"]
+    assert "BTCUSDT" in q["not_covered"] and "ETHUSDT" in q["not_covered"]
+
+
+def test_el_inventario_de_fuentes_no_presenta_bookdepth_como_bbo():
+    h = load_history()
+    s = h["sources_measured_2026_08_24"]
+    assert "NO es BBO" in s["binance_um_daily"]["bookDepth"]
+    assert "DISCONTINUADO" in s["binance_um_daily"]["bookTicker"]
+    assert s["l2_bulk_gratis"] == "NO ENCONTRADO por HTTP plano"
