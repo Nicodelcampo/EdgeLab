@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
+import re
 import inspect
 
 import numpy as np
@@ -84,4 +85,10 @@ def test_runner_no_importa_motor_de_outcomes():
     source = inspect.getsource(S)
     assert "from edgelab.engine" not in source
     assert "import edgelab.engine" not in source
-    assert '"outcomes_opened": False' in source
+    # Insensible al espaciado del JSON: el runner usa separadores compactos.
+    # Ademas exige que NUNCA se emita True, que es la propiedad que importa.
+    flags = re.findall(r'"outcomes_opened"\s*:\s*(True|False)', source)
+    assert flags, "el runner no declara outcomes_opened en ninguna salida"
+    assert set(flags) == {"False"}, f"outcomes_opened emitido como True: {flags}"
+    sealed = re.findall(r'"sealed_outcomes_opened"\s*:\s*(True|False)', source)
+    assert set(sealed) == {"False"}, f"sealed_outcomes_opened emitido como True: {sealed}"
