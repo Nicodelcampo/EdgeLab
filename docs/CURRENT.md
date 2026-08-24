@@ -1,52 +1,67 @@
-# CURRENT — empezar acá
+# CURRENT — estado de la rama crypto/contexto
 
-> Punto de entrada único. Una sesión nueva (Claude, auditor o Nico) lee esto
-> antes de cualquier otra página. Si este archivo y Notion divergen, **manda
-> el repo**.
+> Este archivo describe la rama de módulo. La continuidad e integración siguen en
+> `foundation/f0b-compatibility-probe`; este branch no reemplaza ese punto de entrada.
 
-**Rama viva:** `foundation/f0b-compatibility-probe`
-**Fecha:** 2026-08-20
+**Rama viva:** `foundation/f0b-compatibility-probe`  
+**Rama de módulo:** `work/crypto-context-foundation-20260824`  
+**Fecha:** 2026-08-24  
 **Referente:** `docs/NORTH_STAR.md` sha256 `d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1`
 
-## Qué está vivo hoy
+## Qué está vivo acá
 
-**Frente principal: `HFTZonesESPureV2` sobre ES.** Primero entender el indicador
-original en su activo; la adaptación multi-activo queda para después.
+**Piloto Binance USD-M para BigTrap2/BigTrap2Absorption, todavía target-free.**
 
-1. **Oráculo controlado** — `runs/oraculo_espurev2_ES_snapshot.sqlite`
-   (`sha256 bece887455c0347b…`). DbPath nuevo, **un solo escritor**: resuelve el
-   bloqueante del log compartido, donde 3 indicadores escribían la misma tabla sin
-   columna de autor. **23.863 zonas · 120 sesiones** pre-firewall. 0 duplicados,
-   0 retrocesos, 0 post-firewall. Acta: `ORACULO_ESPUREV2_ES_2026-08-19.md`.
-2. **Censo descriptivo corrido** — `CENSO_ZONAS_ES_2026-08-19.md`. Hallazgo:
-   **92 % de zonas bajistas por el `isDown`-first** (`.cs` l.215-216 y 233-234: con
-   precio plano las dos condiciones son true e `isDown` gana). Idéntico en 3 buckets
-   y 3 contratos. **Ninguna lectura direccional de esa población es válida.**
-   Segundo hallazgo: la **ocupación está saturada** (p05 0,80 · p50 0,95), así que el
-   ABSORB propuesto en la spec de HFTZonesRange clasificaría casi todo.
-3. **Parche listo, sin tocar el original** — `docs/research/parches/HFTZonesESPureV2Flat.cs`
-   (`sha256 4e80c24d…`), ya copiado a la carpeta de NT8. **Falta compilar y correr.**
-   Comparador preparado: `diag/tasa_senales/comparar_v2_vs_flat.py`.
-4. **Retorno a zona** — `diag/tasa_senales/retorno_a_zona_es.py`, target-free, con
-   dos controles construidos en la misma sesión (espejo emparejado por distancia,
-   placebo aleatorio con semilla fija).
+- Ingesta `trades + bookTicker` con join estricto
+  `bookTicker.transaction_time < trade.time`.
+- `tick_size` y unidad base de cantidad son obligatorios; no se heredan de CME y no
+  tienen default económico.
+- Identidad y orden causal explícitos por timestamp más secuencia/ID.
+- Contrato de sensibilidad de unidad congelado en
+  `specs/crypto_bt2_target_free_v1.json`.
+- Censo sin respuestas y validadores en `edgelab/crypto/target_free.py`.
+- Materializador reproducible en `tools/binance_bt2_pilot.py`, con hashes de inputs y
+  outputs y procedencia HEAD/dirty de inicio y fin.
+- Join de contexto point-in-time estrictamente anterior en
+  `edgelab/context/point_in_time.py`; igualdad sin secuencia falla cerrado.
+- Tests focalizados de crypto y contexto pasaron en ambos eventos de CI del commit
+  diagnóstico; la suite histórica completa conserva fallas heredadas en shards ajenos y
+  sigue bajo aislamiento. No leer el PR como mergeable hasta cerrarlas.
 
-**Línea H-Z2A:** v4, manifiesto v1 SUSPENDIDO, censo v2 verificado, P-47 = A.
-**Línea HFTZonesRange / multi-activo: APARCADA** salvo el diagnóstico v2.3, que cerró
-limpio.
-**H-ASIA-1** en 6J: refutada en su forma literal.
+## Firewall
 
-**Board:** hasta **P-55** (el contexto no es un control: un nulo puede ser dos efectos
-opuestos cancelándose). `PENDIENTE.md`.
-**Canal:** `docs/audits/CANAL_AUDITOR.md`, hasta la entrada 043.
+```text
+TARGET_FREE                   = true
+CAMPAIGN_OUTCOMES_OPENED      = false
+RETURNS_ACCESSED              = false
+PNL_ACCESSED                  = false
+HOLDOUT_ACCESSED              = false
+EDGE_DECLARED                 = false
+```
 
-## Qué no tocar
+No interpretar cantidad de zonas, acuerdo maker/quote, actividad, spread ni estabilidad
+como expectativa económica.
 
-Holdout · P&L · F4 sin STOP · MAE/MFE · `features.py` · `fix/g2-a1-*` ·
-`COVERAGE_NEUTRAL` · matriz de kernels · Optuna/CatBoost · cambiar el 403 ·
-boolean de sesiones · semáforo de «vive» en el visor.
-Firewall: outcomes `false`, holdout 2026-07-01 → 2026-12-31
-(`1782856800000000000` ns).
+## Próximo input permitido
 
-**Aporte al referente:** A evita convertir la potencia en una etiqueta. El visor
-acorta el tiempo entre «esto huele mal» y el corredor, sin mirar el resultado.
+Parquets u oráculos de `trades` y `bookTicker`, acompañados por símbolo, fuente, rango,
+`tick_size`, unidad base propuesta y hashes si ya existen. El orden de trabajo es:
+
+1. verificar tamaño, hash y schema;
+2. congelar unidad/metadata;
+3. auditar IDs, gaps, timestamps, cobertura y join causal;
+4. ejecutar sólo censos y sensibilidad target-free;
+5. detenerse antes de cualquier columna de respuesta.
+
+## No tocar desde esta rama
+
+- outcomes, retornos, P&L, MAE/MFE o holdout;
+- specs/splits congelados de campañas vigentes;
+- la rama primaria durante el sweep activo;
+- merge del PR #14 antes de CI completa y auditoría de base.
+
+## Aporte al referente
+
+La rama queda preparada para recibir datos crypto reales sin inventar unidades ni abrir
+respuestas. El progreso actual reduce riesgo de look-ahead y de procedencia; todavía no
+aporta evidencia de edge.
