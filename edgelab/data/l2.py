@@ -56,7 +56,7 @@ _US_MIN, _US_MAX = 1_000_000_000_000_000, 3_000_000_000_000_000
 
 
 def _a_microsegundos(serie_ts_str, serie_usec):
-    """Epoch en MICROSEGUNDOS, independiente de la version de pandas.
+    """Epoch en MICROSEGUNDOS como ndarray, independiente de pandas 2/3.
 
     BUG QUE ESTO ARREGLA (2026-08-21). La version anterior hacia:
 
@@ -69,9 +69,15 @@ def _a_microsegundos(serie_ts_str, serie_usec):
     O sea que el MISMO codigo producia unidades distintas segun la maquina. Los parquets
     del sandbox salieron bien y los de esta maquina salian en milisegundos, con el campo
     de microsegundos sumado encima. Se convierte a [us] EXPLICITAMENTE y se verifica.
+
+    El retorno se fuerza a ``np.ndarray``. Sumar un ndarray y una ``pd.Series`` puede
+    devolver una Series; entonces ``ts_us[-1]`` se interpreta como etiqueta -1 y falla
+    con RangeIndex. El contrato posicional es necesario para el conversor por chunks.
     """
     dt = pd.to_datetime(serie_ts_str.astype(str), format="%Y%m%d%H%M%S", errors="coerce")
-    us = dt.values.astype("datetime64[us]").astype(np.int64) + serie_usec.astype(np.int64)
+    base_us = dt.values.astype("datetime64[us]").astype(np.int64)
+    extra_us = np.asarray(serie_usec, dtype=np.int64)
+    us = np.asarray(base_us + extra_us, dtype=np.int64)
     if len(us):
         lo, hi = int(np.min(us)), int(np.max(us))
         if not (_US_MIN <= lo and hi <= _US_MAX):
@@ -99,11 +105,11 @@ def parse_l2_raw_csv(csv_path: str | Path, tick_size: float = 0.00005) -> tuple[
     df_l2["level"] = df_l2["level"].astype(np.int8)
     df_l2["price"] = df_l2["price"].astype(np.float64)
     df_l2["size"] = df_l2["size"].astype(np.int32)
-    
+
     df_l2["ts_us"] = _a_microsegundos(df_l2["ts_str"], df_l2["usec"])
     df_l2["price_tick"] = np.round(df_l2["price"] / tick_size).astype(np.int32)
     df_l2.drop(columns=["ts_str", "usec"], inplace=True)
-    
+
     # 2. L1 Quotes / Top of Book
     m_l1 = df_raw[0] == "L1"
     df_l1 = df_raw[m_l1][[1, 2, 3, 4, 5, "source_row"]].copy()
@@ -111,11 +117,11 @@ def parse_l2_raw_csv(csv_path: str | Path, tick_size: float = 0.00005) -> tuple[
     df_l1["side"] = df_l1["side"].astype(np.int8)
     df_l1["price"] = df_l1["price"].astype(np.float64)
     df_l1["size"] = df_l1["size"].astype(np.int32)
-    
+
     df_l1["ts_us"] = _a_microsegundos(df_l1["ts_str"], df_l1["usec"])
     df_l1["price_tick"] = np.round(df_l1["price"] / tick_size).astype(np.int32)
     df_l1.drop(columns=["ts_str", "usec"], inplace=True)
-    
+
     return df_l2, df_l1
 
 
@@ -124,21 +130,21 @@ def convert_l2_session(csv_path: str | Path, out_dir: str | Path, tick_size: flo
     csv_path = Path(csv_path)
     out_dir = Path(out_dir)
     session_name = csv_path.stem
-    
+
     dir_l2 = out_dir / "l2_depth"
     dir_l1 = out_dir / "l1_quotes"
     dir_l2.mkdir(parents=True, exist_ok=True)
     dir_l1.mkdir(parents=True, exist_ok=True)
-    
+
     df_l2, df_l1 = parse_l2_raw_csv(csv_path, tick_size=tick_size)
-    
+
     p_l2 = dir_l2 / f"{session_name}.parquet"
     p_l1 = dir_l1 / f"{session_name}.parquet"
-    
+
     t_l2 = pa.Table.from_pandas(df_l2, preserve_index=False)
     pq.write_table(t_l2, p_l2, compression="zstd", compression_level=7)
-    
+
     t_l1 = pa.Table.from_pandas(df_l1, preserve_index=False)
     pq.write_table(t_l1, p_l1, compression="zstd", compression_level=7)
-    
+
     return p_l2, p_l1
