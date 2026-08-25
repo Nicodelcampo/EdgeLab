@@ -224,9 +224,17 @@ del exchange, y el indicador sólo usaba el libro para adivinar eso. La cobertur
 
 **El tamaño mínimo de precio cambia con el tiempo.** SOL pasó de `0.001` a `0.01` el
 2024-10-14; usar el valor actual sobre datos viejos daba **85 % de precios «inválidos»**
-que no lo eran. Resuelto en `specs/binance_tick_size_history.json`.
+que no lo eran.
 
-→ `docs/research/CRYPTO_FUENTES_DISPONIBILIDAD_2026-08-24.md`
+> ⚠ **Todo lo de crypto vive en otra rama y NO está mergeado.** Para verlo:
+>
+> ```bash
+> git checkout work/crypto-context-foundation-20260824
+> ```
+>
+> Ahí están `docs/research/CRYPTO_FUENTES_DISPONIBILIDAD_2026-08-24.md`,
+> `docs/research/CRYPTO_DATA_INTAKE_2026-08-24.md` y
+> `specs/binance_tick_size_history.json`. **En `foundation` no existen.**
 
 ---
 
@@ -248,7 +256,7 @@ docs/HANDOFF_2026-08-25.md                           version narrativa del trasp
 docs/research/SWEEP_OAT_51_RESULTADO_2026-08-24.md   barrido de a una perilla
 docs/research/SWEEP_INTERACCIONES_PARCIAL_...        por que no se componen
 docs/research/FIRMA_FINAL_PUERTA0_...                la firma de equivalencia
-docs/research/CRYPTO_FUENTES_DISPONIBILIDAD_...      qué hay gratis de crypto
+docs/research/CRYPTO_FUENTES_DISPONIBILIDAD_...      qué hay gratis de crypto  (rama crypto)
 docs/nt8_indicator_parity_contract.md                reglas de comparación
 specs/bt2_absorption_gate1_v1.json                   la prueba pendiente, congelada
 manifests/sweep/GC02-26_7fbab53_extract.json         conteos del barrido, 66 KB
