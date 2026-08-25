@@ -105,6 +105,9 @@ def parse_l2_raw_csv(csv_path: str | Path, tick_size: float = 0.00005) -> tuple[
     df_l2["level"] = df_l2["level"].astype(np.int8)
     df_l2["price"] = df_l2["price"].astype(np.float64)
     df_l2["size"] = df_l2["size"].astype(np.int32)
+    df_l2["usec"] = df_l2["usec"].astype(np.int64)
+    if (df_l2["usec"] > 999_999).any():
+        df_l2["usec"] = df_l2["usec"] // 10
 
     df_l2["ts_us"] = _a_microsegundos(df_l2["ts_str"], df_l2["usec"])
     df_l2["price_tick"] = np.round(df_l2["price"] / tick_size).astype(np.int32)
@@ -117,6 +120,9 @@ def parse_l2_raw_csv(csv_path: str | Path, tick_size: float = 0.00005) -> tuple[
     df_l1["side"] = df_l1["side"].astype(np.int8)
     df_l1["price"] = df_l1["price"].astype(np.float64)
     df_l1["size"] = df_l1["size"].astype(np.int32)
+    df_l1["usec"] = df_l1["usec"].astype(np.int64)
+    if (df_l1["usec"] > 999_999).any():
+        df_l1["usec"] = df_l1["usec"] // 10
 
     df_l1["ts_us"] = _a_microsegundos(df_l1["ts_str"], df_l1["usec"])
     df_l1["price_tick"] = np.round(df_l1["price"] / tick_size).astype(np.int32)

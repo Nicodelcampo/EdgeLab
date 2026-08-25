@@ -171,6 +171,7 @@ def _parse_chunk(
     source_row_start: int,
     tick_size: float,
     allow_off_grid: bool,
+    is_100ns: bool = False,
 ) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, Any], np.ndarray]:
     raw = raw.reset_index(drop=True)
     raw["source_row"] = np.arange(
@@ -185,9 +186,10 @@ def _parse_chunk(
         raise ValueError(f"record_type desconocido/vacio en source_row={rows}: {values}")
     raw[0] = kinds
 
-    usec = _integer_series(raw[3], "microsecond", np.dtype(np.int32))
-    if ((usec < 0) | (usec > 999_999)).any():
-        raise ValueError("microsecond fuera de [0, 999999]")
+    subsecond = _integer_series(raw[3], "microsecond", np.dtype(np.int64))
+    if ((subsecond < 0) | (subsecond > 9_999_999)).any():
+        raise ValueError("microsecond fuera de [0, 9999999]")
+    usec = (subsecond // 10) if is_100ns else subsecond
     ts_text = raw[2].astype(str).str.strip()
     if (~ts_text.str.fullmatch(r"\d{14}")).any():
         rows = raw.loc[~ts_text.str.fullmatch(r"\d{14}"), "source_row"].head(10).tolist()
@@ -358,12 +360,24 @@ def convert_one_file(
             skip_blank_lines=False,
             on_bad_lines="error",
         )
+        is_100ns = False
+        with open(csv_path, "r", encoding="utf-8", errors="ignore") as f:
+            for i, line in enumerate(f):
+                if i >= 10000:
+                    break
+                parts = line.strip().split(";")
+                if len(parts) >= 4 and parts[3].isdigit():
+                    if int(parts[3]) > 999_999:
+                        is_100ns = True
+                        break
+
         for raw in reader:
             l2, l1, stats, ts_us = _parse_chunk(
                 raw,
                 source_row_start=int(counters["raw_rows"]),
                 tick_size=tick_size,
                 allow_off_grid=allow_off_grid,
+                is_100ns=is_100ns,
             )
             if len(ts_us):
                 inversions = int(np.count_nonzero(np.diff(ts_us) < 0))

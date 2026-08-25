@@ -131,3 +131,25 @@ def test_no_sobreescribe_sin_flag_explicito(tmp_path):
             chunk_rows=3,
             allow_dirty=True,
         )
+
+
+def test_conversion_soporta_subsegundos_en_escala_100ns(tmp_path):
+    csv_100ns = (
+        "L2;0;20260609010001;1960000;0;0;;3400.1;2\n"
+        "L1;1;20260609010001;2000000;3400.0;1\n"
+    )
+    source = tmp_path / "GC_08-26_100ns.csv"
+    source.write_text(csv_100ns, encoding="utf-8")
+    out = tmp_path / "out"
+    manifest = convert_one_file(
+        source,
+        out,
+        instrument="GC 08-26",
+        tick_size=0.1,
+        chunk_rows=1,
+        allow_dirty=True,
+    )
+    l2 = pd.read_parquet(out / "l2_depth" / f"{source.stem}.parquet")
+    l1 = pd.read_parquet(out / "l1_quotes" / f"{source.stem}.parquet")
+    assert int(l2["ts_us"].iloc[0] % 1_000_000) == 196000
+    assert int(l1["ts_us"].iloc[0] % 1_000_000) == 200000
