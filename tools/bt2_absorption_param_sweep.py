@@ -31,6 +31,10 @@ DEFAULT_SPEC = REPO_ROOT / "specs" / "bt2_absorption_target_free_sweep_v1.json"
 DEFAULT_SPLIT = REPO_ROOT / "specs" / "bt2_absorption_gate1_split_v1.json"
 DEFAULT_CHAIN = REPO_ROOT / "docs" / "research" / "CADENA_FRONTMONTH_GC.json"
 CONTRACTS = ("GC 02-26", "GC 04-26", "GC 06-26", "GC 08-26")
+# Ventana causal de cinta para el estado point-in-time: los PIT_TAPE_WINDOW ticks
+# inmediatamente ANTERIORES o iguales a t0. Nunca posteriores.
+PIT_TAPE_WINDOW = 500
+PIT_SCHEMA = "bt2a_event_pit_v1"
 
 
 def _canonical_bytes(value: object) -> bytes:
@@ -171,7 +175,81 @@ def _q(values: list[float], q: float) -> float | None:
     return float(np.quantile(np.asarray(values, dtype=float), q)) if values else None
 
 
-def summarize_run(result: dict[str, Any], *, contract: str, report_sessions: set[str], assignment: dict[str, str], tick_size: float) -> dict[str, Any]:
+def _pit_record(event_key, zone, session, direction, contract, tick_size,
+                bkt_ts, bkt_dat, tape_ts, tape_spread):
+    """Estado point-in-time del evento en t0. TODO se calcula con datos <= t0.
+
+    Contrato de causalidad, y es lo unico que hace util a este registro:
+
+    - `event_time_ns` es `sig_ts`, el close de la cubeta que disparo la senal.
+    - El estado del indicador sale de la ULTIMA cubeta con `t_start <= t0`
+      (`searchsorted(..., "right") - 1`). Nunca de la siguiente.
+    - El estado de cinta sale de los `PIT_TAPE_WINDOW` ticks que terminan en el
+      ultimo tick con `ts <= t0`. Nunca de ticks posteriores.
+    - `as_of_ok=False` si falta cualquiera de los dos, y los campos quedan en
+      None. No se rellena hacia adelante ni se imputa.
+    - NO hay ningun campo de outcome. Ni MFE, ni MAE, ni retorno, ni fill.
+
+    `feature_available_at_ns` es el timestamp del dato mas reciente que se uso,
+    asi que por construccion `feature_available_at_ns <= event_time_ns`.
+    """
+    t0 = int(zone["sig_ts"])
+    rec = {
+        "schema": PIT_SCHEMA, "event_key": event_key,
+        "instrument": "GC", "contract": contract, "cme_session_id": session,
+        "event_time_ns": t0, "side": direction,
+        "zone_lo_ticks": float(zone["lo"]) / tick_size,
+        "zone_hi_ticks": float(zone["hi"]) / tick_size,
+        "zone_width_ticks": float(zone["hi"] - zone["lo"]) / tick_size,
+        "zone_rows": int(zone["nrows"]), "trap_frac": float(zone["frac"]),
+        "trap_volume": float(zone["vol"]),
+    }
+    avail = []
+
+    # --- estado del indicador: ultima cubeta con t_start <= t0
+    ind = None
+    if bkt_ts is not None and len(bkt_ts):
+        i = int(np.searchsorted(bkt_ts, t0, side="right")) - 1
+        if i >= 0:
+            ind = bkt_dat[i]; avail.append(int(bkt_ts[i]))
+    if ind is None:
+        rec.update({k: None for k in ("a_score","a_thr","a_pass","n_hist",
+                                      "signed_flow","d_ticks","bucket_n_ticks","bucket_residual")})
+    else:
+        _f = lambda k: (None if ind.get(k,"NaN") in {"NaN","nan",""} else float(ind[k]))
+        rec.update({"a_score":_f("a_score"), "a_thr":_f("a_thr"),
+                    "a_pass": ind.get("a_pass","False")=="True",
+                    "n_hist": int(ind.get("n_hist",0)),
+                    "signed_flow":_f("signed_flow"), "d_ticks":_f("d_ticks"),
+                    "bucket_n_ticks": int(ind.get("n_ticks",0)),
+                    "bucket_residual": ind.get("residual","False")=="True"})
+
+    # --- estado de cinta: los PIT_TAPE_WINDOW ticks que TERMINAN en t0
+    tape = None
+    if tape_ts is not None and len(tape_ts):
+        j = int(np.searchsorted(tape_ts, t0, side="right"))
+        if j >= PIT_TAPE_WINDOW:
+            lo = j - PIT_TAPE_WINDOW
+            span_ns = int(tape_ts[j-1]) - int(tape_ts[lo])
+            tape = {
+                "tape_window_ticks": PIT_TAPE_WINDOW,
+                "tape_rate_per_s": (PIT_TAPE_WINDOW / (span_ns/1e9)) if span_ns > 0 else None,
+                "tape_span_s": span_ns/1e9,
+                "spread_p50_ticks": float(np.median(tape_spread[lo:j])),
+                "spread_p90_ticks": float(np.quantile(tape_spread[lo:j], .9)),
+            }
+            avail.append(int(tape_ts[j-1]))
+    rec.update(tape or {k: None for k in ("tape_window_ticks","tape_rate_per_s",
+                                          "tape_span_s","spread_p50_ticks","spread_p90_ticks")})
+
+    rec["as_of_ok"] = (ind is not None) and (tape is not None)
+    rec["feature_available_at_ns"] = max(avail) if avail else None
+    # invariante duro: ninguna feature puede venir del futuro
+    assert rec["feature_available_at_ns"] is None or rec["feature_available_at_ns"] <= t0,         f"look-ahead en {event_key}"
+    return rec
+
+
+def summarize_run(result: dict[str, Any], *, contract: str, report_sessions: set[str], assignment: dict[str, str], tick_size: float, ticks=None) -> dict[str, Any]:
     score_rows = []
     for line in result.get("events", []):
         if "|ABS_SCORE|" in line:
@@ -187,6 +265,15 @@ def summarize_run(result: dict[str, Any], *, contract: str, report_sessions: set
         rec["n_pass"] += int(data.get("a_pass", "False") == "True")
         buffers[session]["score"].append(float(data["a_score"]))
         if data.get("a_thr", "NaN") not in {"NaN","nan",""}: buffers[session]["threshold"].append(float(data["a_thr"]))
+    # Indice causal: t_start de cada cubeta -> su estado. Se usa con busqueda
+    # "ultimo t_start <= t0", nunca hacia adelante.
+    _bkt_ts = np.asarray([row[0] for row in score_rows], dtype=np.int64)
+    _bkt_order = np.argsort(_bkt_ts, kind="stable")
+    _bkt_ts = _bkt_ts[_bkt_order]
+    _bkt_dat = [score_rows[i][1] for i in _bkt_order]
+    _tape_ts = np.asarray(ticks.ts_ns, dtype=np.int64) if ticks is not None else None
+    _tape_spread = (np.asarray(ticks.ask_ticks, dtype=np.int64) - np.asarray(ticks.bid_ticks, dtype=np.int64)) if ticks is not None else None
+    event_pit = []
     zones = list(result.get("zones", []))
     zone_sessions = session_dates_from_ns(np.asarray([int(z["sig_ts"]) for z in zones], dtype=np.int64))
     event_keys = []; geometry = defaultdict(lambda: {"width":[],"rows":[],"frac":[],"volume":[]})
@@ -201,11 +288,17 @@ def summarize_run(result: dict[str, Any], *, contract: str, report_sessions: set
         geometry[session]["width"].append(float(zone["hi"] - zone["lo"]) / tick_size)
         geometry[session]["rows"].append(float(zone["nrows"])); geometry[session]["frac"].append(float(zone["frac"])); geometry[session]["volume"].append(float(zone["vol"]))
         lo2 = int(round(float(zone["lo"]) / tick_size * 2)); hi2 = int(round(float(zone["hi"]) / tick_size * 2))
-        event_keys.append(f"{contract}|{session}|{direction}|{int(zone['sig_ts'])}|{lo2}|{hi2}")
+        ekey = f"{contract}|{session}|{direction}|{int(zone['sig_ts'])}|{lo2}|{hi2}"
+        event_keys.append(ekey)
+        event_pit.append(_pit_record(ekey, zone, session, direction, contract, tick_size,
+                                     _bkt_ts, _bkt_dat, _tape_ts, _tape_spread))
     for session, rec in by_session.items():
         score, threshold, geom = buffers[session]["score"], buffers[session]["threshold"], geometry[session]
         rec.update({"pass_rate":rec["n_pass"]/rec["n_buckets"] if rec["n_buckets"] else None,"score_p10":_q(score,.1),"score_p50":_q(score,.5),"score_p90":_q(score,.9),"threshold_p10":_q(threshold,.1),"threshold_p50":_q(threshold,.5),"threshold_p90":_q(threshold,.9),"zone_width_ticks_p50":_q(geom["width"],.5),"zone_rows_p50":_q(geom["rows"],.5),"trap_frac_p50":_q(geom["frac"],.5),"trap_volume_p50":_q(geom["volume"],.5)})
-    return {"contract":contract,"sessions":dict(sorted(by_session.items())),"event_keys":sorted(set(event_keys))}
+    return {"contract":contract,"sessions":dict(sorted(by_session.items())),
+            "event_keys":sorted(set(event_keys)),
+            "event_pit_schema":PIT_SCHEMA,
+            "event_pit":sorted(event_pit,key=lambda r:(r["event_time_ns"],r["event_key"]))}
 
 
 def exact_jaccard(a: set[str], b: set[str]) -> float:
@@ -381,7 +474,7 @@ def run_campaign(args):
             if args.resume and partial.exists():
                 prev=load_json(partial)
                 if prev.get("input_sha256")==input_sha and prev.get("config_id")==cfg["config_id"] and prev.get("code_commit")==head: continue
-            t0=time.monotonic(); result=run_abs(ticks,params=cfg["params"]); reduced=summarize_run(result,contract=contract,report_sessions=report_sessions,assignment=assignment,tick_size=float(args.tick_size))
+            t0=time.monotonic(); result=run_abs(ticks,params=cfg["params"]); reduced=summarize_run(result,contract=contract,report_sessions=report_sessions,assignment=assignment,tick_size=float(args.tick_size),ticks=ticks)
             record={"schema":"bt2_absorption_target_free_partial_v1","target_free":True,"outcomes_opened":False,"config_id":cfg["config_id"],"params_sha256":digest(cfg["params"]),"contract":contract,"input_sha256":input_sha,"code_commit":head,"elapsed_seconds":time.monotonic()-t0,"result":reduced}; _atomic_json(partial,record)
             print(f"[{contract}] {cfg['config_id']} {cfg['stage']} zones={len(reduced['event_keys'])} {record['elapsed_seconds']:.1f}s",flush=True)
             if max_seconds and time.monotonic()-started>=max_seconds:
