@@ -222,22 +222,23 @@ def _parse_chunk(
     l2["price_tick"] = l2_ticks
     l2 = l2[[field.name for field in L2_SCHEMA]]
 
-    # L1: 0=ASK, 1=BID, 2=LAST, 5=DAILY_VOLUME.
+    # L1: 0=ASK, 1=BID, 2=LAST, 3=OPENING, 4=HIGH, 5=DAILY_VOLUME, 6=LOW, 7=SETTLEMENT, 8=OPEN_INTEREST.
     l1 = raw.loc[raw[0] == "L1", [1, 4, 5, "source_row", "ts_us"]].copy()
     l1.columns = ["side", "price", "size", "source_row", "ts_us"]
     l1.reset_index(drop=True, inplace=True)
     l1["side"] = _integer_series(l1["side"], "L1.side", np.dtype(np.int8))
     l1["price"] = _float_series(l1["price"], "L1.price")
     l1["size"] = _integer_series(l1["size"], "L1.size", np.dtype(np.int64))
-    if not set(l1["side"].unique()).issubset({0, 1, 2, 5}):
-        raise ValueError(f"L1.side fuera de {{0,1,2,5}}: {sorted(l1['side'].unique())}")
+    if not set(l1["side"].unique()).issubset({0, 1, 2, 3, 4, 5, 6, 7, 8}):
+        raise ValueError(f"L1.side fuera de {{0..8}}: {sorted(l1['side'].unique())}")
     if (l1["size"] < 0).any():
         raise ValueError("L1 contiene size negativo")
-    bad_price = ((l1["side"] == 5) & (l1["price"] != 0)) | (
-        (l1["side"] != 5) & (l1["price"] <= 0)
+    is_zero_price_type = l1["side"].isin([5, 8])
+    bad_price = (is_zero_price_type & (l1["price"] != 0)) | (
+        (~is_zero_price_type) & (l1["price"] <= 0)
     )
     if bad_price.any():
-        raise ValueError("L1 price invalido para quote/trade o DAILY_VOLUME")
+        raise ValueError("L1 price invalido para quote/trade o DAILY_VOLUME/OPEN_INTEREST")
     l1_ticks, l1_off_grid, l1_max_residual = _price_ticks(
         l1["price"], tick_size, allow_off_grid=allow_off_grid, label="L1.price"
     )
