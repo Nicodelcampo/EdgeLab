@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
+import pytest
 import re
 import inspect
 
@@ -111,3 +112,151 @@ def test_finalize_respeta_el_subconjunto_de_contratos():
     src = inspect.getsource(S.finalize)
     assert "for contract in contracts:" in src
     assert "for contract in CONTRACTS:" not in src
+
+
+
+# ---------- finalize: tests funcionales, no de inspeccion de fuente ----------
+
+def _partial(tmp, cfg_id, contract, sessions, *, commit="abc123", ev=None):
+    """Escribe un parcial minimo con la forma que finalize espera."""
+    import json
+    d = tmp / "partials"; d.mkdir(exist_ok=True)
+    if ev is None:   # formato real: contract|session|dir|ts_ns|lo2|hi2
+        ev = tuple(f"{contract}|{s}|long|{1764118034836000000 + i}|83421|83427"
+                   for i, s in enumerate(sessions))
+    rec = {"schema": "bt2_absorption_target_free_partial_v1", "target_free": True,
+           "outcomes_opened": False, "config_id": cfg_id, "contract": contract,
+           "input_sha256": "sha_" + contract, "code_commit": commit,
+           "params_sha256": "p", "elapsed_seconds": 1.0,
+           "result": {"contract": contract, "event_keys": list(ev),
+                      "sessions": {s: {"n_buckets": 10, "n_zones": 1, "n_pass": 1,
+                                       "n_residual": 0, "n_long": 1, "n_short": 0,
+                                       "n_active": 1, "n_invalidated": 0, "n_expired": 0,
+                                       "touches_sum": 0, "pass_rate": 0.1} for s in sessions}}}
+    (d / f"{cfg_id}__{contract.replace(' ', '_')}.json").write_text(
+        json.dumps(rec), encoding="utf-8")
+    return rec
+
+
+def _fake_git(head):
+    """rev-parse devuelve el head; status devuelve vacio (arbol limpio)."""
+    def g(*a):
+        return "" if "status" in a else head
+    return g
+
+
+def _cfgs(cfg_id):
+    return [{"config_id": cfg_id, "stage": "headline", "axis": None, "params": {"a": 1}}]
+
+
+def _spec():
+    return {"overlap": {"time_tolerance_seconds": 0, "price_tolerance_ticks": 0}}
+
+
+def test_subconjunto_de_contratos_no_exige_sesiones_ajenas(tmp_path, monkeypatch):
+    """GC 02-26 aporta sus sesiones; finalize no debe pedir las de los otros tres."""
+    cid = "cfg1"
+    _partial(tmp_path, cid, "GC 02-26", ["20251126", "20251127"])
+    monkeypatch.setattr(S, "_git", _fake_git("abc123"))
+    out = S.finalize(tmp_path, _cfgs(cid),
+                     {"GC 02-26": {"sha256": "sha_GC 02-26"}},
+                     head_start="abc123", spec=_spec(),
+                     p1_sessions=["20251126", "20251127"], contracts=("GC 02-26",))
+    assert out["status"] == "COMPLETE_TARGET_FREE_PARTIAL_CONTRACTS"
+    assert out["contracts_measured"] == ["GC 02-26"]
+    assert out["promotion_eligible"] is False, "subconjunto nunca es promocionable"
+
+
+def test_sesion_faltante_aborta_y_dice_cual(tmp_path, monkeypatch):
+    cid = "cfg1"
+    _partial(tmp_path, cid, "GC 02-26", ["20251126"])
+    monkeypatch.setattr(S, "_git", _fake_git("abc123"))
+    with pytest.raises(ValueError) as e:
+        S.finalize(tmp_path, _cfgs(cid), {"GC 02-26": {"sha256": "sha_GC 02-26"}},
+                   head_start="abc123", spec=_spec(),
+                   p1_sessions=["20251126", "20251127"], contracts=("GC 02-26",))
+    assert "20251127" in str(e.value), "el error debe nombrar la sesion faltante"
+    assert "1/2" in str(e.value)
+
+
+def test_procedencia_mezclada_no_puede_ser_complete(tmp_path, monkeypatch):
+    """Parciales de otro commit que el de finalize => diagnostico, no COMPLETE."""
+    cid = "cfg1"
+    _partial(tmp_path, cid, "GC 02-26", ["20251126"], commit="viejo999")
+    monkeypatch.setattr(S, "_git", _fake_git("nuevo111"))
+    out = S.finalize(tmp_path, _cfgs(cid), {"GC 02-26": {"sha256": "sha_GC 02-26"}},
+                     head_start="nuevo111", spec=_spec(),
+                     p1_sessions=["20251126"], contracts=("GC 02-26",))
+    assert out["status"] == "DIAGNOSTIC_REAGGREGATION_MIXED_CODE"
+    assert out["finalize_matches_partials"] is False
+    assert out["promotion_eligible"] is False
+    assert out["partials_code_commit"] == ["viejo999"]
+
+
+def test_commit_desconocido_invalida_igual_que_una_mezcla(tmp_path, monkeypatch):
+    cid = "cfg1"
+    rec = _partial(tmp_path, cid, "GC 02-26", ["20251126"])
+    import json
+    f = tmp_path / "partials" / f"{cid}__GC_02-26.json"
+    rec.pop("code_commit")                      # parcial sin procedencia
+    f.write_text(json.dumps(rec), encoding="utf-8")
+    monkeypatch.setattr(S, "_git", _fake_git("abc123"))
+    out = S.finalize(tmp_path, _cfgs(cid), {"GC 02-26": {"sha256": "sha_GC 02-26"}},
+                     head_start="abc123", spec=_spec(),
+                     p1_sessions=["20251126"], contracts=("GC 02-26",))
+    assert out["partials_code_commit"] == ["?"]
+    assert out["status"] == "DIAGNOSTIC_REAGGREGATION_MIXED_CODE"
+    assert out["promotion_eligible"] is False
+
+
+# ---------- modo finalize-only, solo lectura ----------
+
+def _args(tmp, contracts=("GC 02-26",), stage="oat"):
+    import argparse
+    from pathlib import Path
+    return argparse.Namespace(spec=S.DEFAULT_SPEC, split=S.DEFAULT_SPLIT,
+                              chain=S.DEFAULT_CHAIN, output=Path(tmp),
+                              stage=stage, contracts=list(contracts))
+
+
+def test_finalize_only_aborta_si_falta_un_parcial(tmp_path, monkeypatch):
+    """No agrega lo que hay: exige el conjunto completo y nombra lo que falta."""
+    monkeypatch.setattr(S, "plan", lambda *a, **k: (
+        {"overlap": {"time_tolerance_seconds": 0, "price_tolerance_ticks": 0}},
+        _cfgs("cfgA") + _cfgs("cfgB"),
+        {"assignment": {"20251126": "GC 02-26"}, "puerta1_133": ["20251126"],
+         "all_152": ["20251126"], "sealed_19": []}))
+    _partial(tmp_path, "cfgA", "GC 02-26", ["20251126"])      # falta cfgB
+    with pytest.raises(SystemExit) as e:
+        S.finalize_only(_args(tmp_path))
+    assert "conjunto COMPLETO" in str(e.value)
+    assert "cfgB" in str(e.value), "debe nombrar el que falta"
+
+
+def test_finalize_only_no_importa_el_kernel(tmp_path):
+    """Solo lectura: la funcion no debe tocar run_abs ni las cintas."""
+    import inspect
+    src = inspect.getsource(S.finalize_only)
+    assert "run_abs" not in src
+    assert "load_canonical_ticks" not in src
+    assert "_atomic_json(partial" not in src
+
+
+def test_finalize_only_no_sobrescribe_parciales(tmp_path, monkeypatch):
+    """El contenido de partials/ debe quedar byte-identico tras reagregar."""
+    import hashlib
+    monkeypatch.setattr(S, "plan", lambda *a, **k: (
+        {"overlap": {"time_tolerance_seconds": 0, "price_tolerance_ticks": 0}},
+        _cfgs("cfgA"),
+        {"assignment": {"20251126": "GC 02-26"}, "puerta1_133": ["20251126"],
+         "all_152": ["20251126"], "sealed_19": []}))
+    _partial(tmp_path, "cfgA", "GC 02-26", ["20251126"], commit="abc123")
+    import json as _j
+    (tmp_path / "input_manifest.json").write_text(
+        _j.dumps({"GC 02-26": {"sha256": "sha_GC 02-26"}}), encoding="utf-8")
+    f = tmp_path / "partials" / "cfgA__GC_02-26.json"
+    antes = hashlib.sha256(f.read_bytes()).hexdigest()
+    monkeypatch.setattr(S, "clean_commit", lambda: "abc123")
+    monkeypatch.setattr(S, "_git", _fake_git("abc123"))
+    S.finalize_only(_args(tmp_path))
+    assert hashlib.sha256(f.read_bytes()).hexdigest() == antes

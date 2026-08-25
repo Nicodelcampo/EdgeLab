@@ -260,6 +260,7 @@ def _partial_path(output, cfg, contract):
 def finalize(output, configs, input_manifest, *, head_start, spec, p1_sessions, contracts=CONTRACTS):
     by_config=defaultdict(list)
     contracts=tuple(contracts)
+    partial_commits=set()
     for cfg in configs:
         for contract in contracts:
             path=_partial_path(output,cfg,contract)
@@ -267,10 +268,15 @@ def finalize(output, configs, input_manifest, *, head_start, spec, p1_sessions, 
             record=load_json(path)
             if record["input_sha256"]!=input_manifest[contract]["sha256"] or record["config_id"]!=cfg["config_id"]: raise ValueError(f"partial incompatible: {path}")
             by_config[cfg["config_id"]].append(record["result"])
+            partial_commits.add(record.get("code_commit","?"))
     summaries={}; events={}; session_rows=[]
     for cfg in configs:
         cid=cfg["config_id"]; aggregate=_aggregate(by_config[cid])
-        if set(aggregate["sessions"])!=set(p1_sessions): raise ValueError(f"{cid}: faltan sesiones reportables")
+        got=set(aggregate["sessions"]); want=set(p1_sessions)
+        if got!=want:
+            faltan=sorted(want-got); sobran=sorted(got-want)
+            raise ValueError(f"{cid}: cobertura de sesiones incorrecta: {len(got)}/{len(want)}; "
+                             f"faltan {len(faltan)} {faltan[:5]}; sobran {len(sobran)} {sobran[:5]}")
         ev={key for part in by_config[cid] for key in part["event_keys"]}; events[cid]=ev
         summaries[cid]={"stage":cfg["stage"],"axis":cfg["axis"],"params":cfg["params"],**aggregate["aggregate"],"event_set_sha256":digest(sorted(ev)),"target_free_fingerprint":digest({"sessions":aggregate["sessions"],"events":sorted(ev)})}
         for session,metrics in aggregate["sessions"].items(): session_rows.append({"config_id":cid,"session":session,**metrics})
@@ -282,7 +288,24 @@ def finalize(output, configs, input_manifest, *, head_start, spec, p1_sessions, 
     headline_fp=summaries[headline]["target_free_fingerprint"]
     identical=sorted({str(s["axis"]) for cid,s in summaries.items() if cid!=headline and s["stage"]=="oat" and s["target_free_fingerprint"]==headline_fp})
     head_end=_git("rev-parse","HEAD"); dirty_end=bool(_git("status","--porcelain"))
-    result={"schema":"bt2_absorption_target_free_sweep_result_v1","status":("INVALID_PROVENANCE" if (head_end!=head_start or dirty_end) else "COMPLETE_TARGET_FREE" if set(contracts)==set(CONTRACTS) else "COMPLETE_TARGET_FREE_PARTIAL_CONTRACTS"),"target_free":True,"outcomes_opened":False,"sealed_outcomes_opened":False,"head_start":head_start,"head_end":head_end,"worktree_clean_start":True,"worktree_clean_end":not dirty_end,"north_star_sha256":NORTH_STAR_SHA256,"contracts_measured":list(contracts),"contracts_omitted":[c for c in CONTRACTS if c not in contracts],"full_contract_coverage":set(contracts)==set(CONTRACTS),"n_configs":len(configs),"headline_config_id":headline,"input_manifest":input_manifest,"identical_to_headline_oat_axes":identical,"warning":"event overlap is descriptive; it is not an effective test count","summaries":summaries}
+    # Procedencia de los parciales. "?" (commit desconocido) invalida igual que
+    # una mezcla: no se puede afirmar de que codigo salio la medicion.
+    provenance_ok = (len(partial_commits)==1 and "?" not in partial_commits
+                     and sorted(partial_commits)==[head_start])
+    if not provenance_ok:
+        status="DIAGNOSTIC_REAGGREGATION_MIXED_CODE"
+    elif head_end!=head_start or dirty_end:
+        status="INVALID_PROVENANCE"
+    elif set(contracts)==set(CONTRACTS):
+        status="COMPLETE_TARGET_FREE"
+    else:
+        status="COMPLETE_TARGET_FREE_PARTIAL_CONTRACTS"
+    result={"schema":"bt2_absorption_target_free_sweep_result_v1","status":status,
+        "promotion_eligible":bool(provenance_ok and head_end==head_start and not dirty_end
+                                  and set(contracts)==set(CONTRACTS)),"target_free":True,"outcomes_opened":False,"sealed_outcomes_opened":False,"head_start":head_start,"head_end":head_end,
+        "partials_code_commit":sorted(partial_commits),
+        "partials_uniform_commit":len(partial_commits)==1,
+        "finalize_matches_partials":provenance_ok,"worktree_clean_start":True,"worktree_clean_end":not dirty_end,"north_star_sha256":NORTH_STAR_SHA256,"contracts_measured":list(contracts),"contracts_omitted":[c for c in CONTRACTS if c not in contracts],"full_contract_coverage":set(contracts)==set(CONTRACTS),"n_configs":len(configs),"headline_config_id":headline,"input_manifest":input_manifest,"identical_to_headline_oat_axes":identical,"warning":"event overlap is descriptive; it is not an effective test count","summaries":summaries}
     _atomic_json(output/"summary.json",result); _atomic_json(output/"exact_overlap_matrix.json",matrix)
     with (output/"session_metrics.jsonl").open("w",encoding="utf-8") as handle:
         for row in session_rows: handle.write(json.dumps(row,sort_keys=True,ensure_ascii=False,allow_nan=False)+"\n")
@@ -297,6 +320,47 @@ def plan(spec_path, split_path, chain_path, output, stage):
     universe={"assignment":assignment,"all_152":sessions,"puerta1_133":p1,"sealed_19":sealed,"sealed_used_for_metrics":False,"sealed_target_free_history_processed":True}
     output.mkdir(parents=True,exist_ok=True); _atomic_json(output/"expanded_grid.json",expanded); _atomic_json(output/"universe.json",universe)
     return spec,configs,universe
+
+
+def finalize_only(args):
+    """Reagrega parciales YA medidos. Solo lectura: no corre el kernel ni escribe
+    parciales.
+
+    Existe porque un defecto en la agregacion no deberia costar el recomputo de
+    toda la medicion. Tres garantias:
+
+    1. EXIGE EL CONJUNTO COMPLETO. Si falta un solo config x contrato, aborta
+       nombrandolos. No agrega lo que hay.
+    2. NO COMPUTA. No importa el kernel ni toca las cintas.
+    3. NO SOBRESCRIBE PARCIALES. Solo escribe los artefactos de resumen.
+
+    La procedencia sigue mandando: si los parciales vienen de un commit distinto
+    al de esta corrida, el status es DIAGNOSTIC_REAGGREGATION_MIXED_CODE y
+    promotion_eligible queda en false.
+    """
+    spec, configs, universe = plan(args.spec, args.split, args.chain, args.output, args.stage)
+    contracts = tuple(getattr(args, "contracts", None) or CONTRACTS)
+    faltan = [f"{c['config_id']}__{k}" for c in configs for k in contracts
+              if not _partial_path(args.output, c, k).exists()]
+    if faltan:
+        raise SystemExit(
+            f"finalize-only exige el conjunto COMPLETO: faltan {len(faltan)} de "
+            f"{len(configs)*len(contracts)} parciales. Primeros: {faltan[:5]}")
+    manifest = load_json(args.output / "input_manifest.json")
+    assignment = universe["assignment"]
+    result = finalize(args.output, configs, manifest, head_start=clean_commit(), spec=spec,
+                      p1_sessions=[d for d in universe["puerta1_133"] if assignment[d] in contracts],
+                      contracts=contracts)
+    _atomic_json(args.output / "run_status.json",
+                 {"status": result["status"], "mode": "FINALIZE_ONLY",
+                  "outcomes_opened": False, "recomputed": False})
+    print(json.dumps({"status": result["status"], "mode": "FINALIZE_ONLY",
+                      "n_configs": result["n_configs"],
+                      "promotion_eligible": result["promotion_eligible"],
+                      "partials_code_commit": result["partials_code_commit"],
+                      "finalize_matches_partials": result["finalize_matches_partials"],
+                      "outcomes_opened": False}, indent=2, ensure_ascii=False))
+    return 0 if result["status"].startswith("COMPLETE") else 3
 
 
 def run_campaign(args):
@@ -323,21 +387,25 @@ def run_campaign(args):
             if max_seconds and time.monotonic()-started>=max_seconds:
                 _atomic_json(args.output/"run_status.json",{"status":"PAUSED_BY_MAX_HOURS","head_start":head,"elapsed_seconds":time.monotonic()-started,"outcomes_opened":False}); return 2
         del ticks
-    result=finalize(args.output,configs,input_manifest,head_start=head,spec=spec,p1_sessions=universe["puerta1_133"],contracts=contracts); _atomic_json(args.output/"run_status.json",{"status":result["status"],"head_start":head,"elapsed_seconds":time.monotonic()-started,"outcomes_opened":False})
+    result=finalize(args.output,configs,input_manifest,head_start=head,spec=spec,p1_sessions=[d for d in universe["puerta1_133"] if assignment[d] in contracts],contracts=contracts); _atomic_json(args.output/"run_status.json",{"status":result["status"],"head_start":head,"elapsed_seconds":time.monotonic()-started,"outcomes_opened":False})
     print(json.dumps({"status":result["status"],"n_configs":result["n_configs"],"identical_to_headline_oat_axes":result["identical_to_headline_oat_axes"],"outcomes_opened":False},indent=2,ensure_ascii=False)); return 0 if result["status"]=="COMPLETE_TARGET_FREE" else 3
 
 
 def parser():
     out=argparse.ArgumentParser(description=__doc__); sub=out.add_subparsers(dest="command",required=True)
-    for name in ("plan","run"):
+    for name in ("plan","run","finalize-only"):
         p=sub.add_parser(name); p.add_argument("--spec",type=Path,default=DEFAULT_SPEC); p.add_argument("--split",type=Path,default=DEFAULT_SPLIT); p.add_argument("--chain",type=Path,default=DEFAULT_CHAIN); p.add_argument("--output",type=Path,required=True); p.add_argument("--stage",choices=("oat","all"),default="all")
+        if name in ("run","finalize-only"):
+            p.add_argument("--contracts",nargs="+",default=list(CONTRACTS),choices=list(CONTRACTS),help="Subconjunto de contratos. Un subconjunto NUNCA es COMPLETE_TARGET_FREE.")
         if name=="run":
-            p.add_argument("--data-dir",type=Path,required=True); p.add_argument("--tick-size",type=float,default=.10); p.add_argument("--resume",action="store_true"); p.add_argument("--max-hours",type=float,default=8.5); p.add_argument("--contracts",nargs="+",default=list(CONTRACTS),choices=list(CONTRACTS),help="Subconjunto de contratos a medir. Por defecto los cuatro. Un subconjunto marca el resultado como cobertura parcial y NUNCA como COMPLETE_TARGET_FREE.")
+            p.add_argument("--data-dir",type=Path,required=True); p.add_argument("--tick-size",type=float,default=.10); p.add_argument("--resume",action="store_true"); p.add_argument("--max-hours",type=float,default=8.5)
     return out
 
 
 def main():
     args=parser().parse_args()
+    if args.command=="finalize-only":
+        raise SystemExit(finalize_only(args))
     if args.command=="plan":
         _,configs,universe=plan(args.spec,args.split,args.chain,args.output,args.stage); print(json.dumps({"status":"PLAN_TARGET_FREE","n_configs":len(configs),"n_all":len(universe["all_152"]),"n_report":len(universe["puerta1_133"]),"n_sealed":len(universe["sealed_19"]),"outcomes_opened":False},indent=2)); return
     raise SystemExit(run_campaign(args))
