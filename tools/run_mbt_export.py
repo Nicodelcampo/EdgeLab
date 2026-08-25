@@ -68,7 +68,7 @@ def fmt_float(v: float) -> str:
     return str(v)
 
 
-def load_canonical_ticks_fast(filepath: Path, tick_size: float = 0.25):
+def load_canonical_ticks_fast(filepath: Path, tick_size: float = 0.25, allow_missing_bbo: bool = True):
     from edgelab.bridge.ticks import TickSeries
     from datetime import date
     import time
@@ -77,11 +77,11 @@ def load_canonical_ticks_fast(filepath: Path, tick_size: float = 0.25):
     prices, bids, asks, volumes, ts_ns = [], [], [], [], []
     epoch_days_cache = {}
     
-    with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
-        for line in f:
+    with open(filepath, "r", encoding="utf-8") as f:
+        for line_num, line in enumerate(f, 1):
             parts = line.strip().split(";")
             if len(parts) < 5:
-                continue
+                raise ValueError(f"load_canonical_ticks_fast: línea malformada {line_num} en {filepath.name}: {line.strip()!r}")
             dt_str = parts[0]
             ymd = dt_str[:8]
             if ymd in epoch_days_cache:
@@ -101,6 +101,9 @@ def load_canonical_ticks_fast(filepath: Path, tick_size: float = 0.25):
             a = float(parts[3])
             v = float(parts[4])
             
+            if (b <= 0 or a <= 0) and not allow_missing_bbo:
+                raise ValueError(f"load_canonical_ticks_fast: BBO no positivo en línea {line_num}: bid={b}, ask={a}")
+                
             ts_ns.append(t_ns)
             prices.append(p)
             bids.append(b if b > 0 else p - tick_size)

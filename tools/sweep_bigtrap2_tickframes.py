@@ -68,8 +68,9 @@ def load_canonical_ticks(filepath: Path, tick_size: float = 0.10, max_ticks: int
                 
                 from datetime import datetime, timezone
                 dt = datetime(y, m, d, hh, mm, ss, us, tzinfo=timezone.utc)
-                ms = int(dt.timestamp() * 1000.0)
-                t_ns = int(dt.timestamp() * 1_000_000_000.0)
+                sec = int(dt.timestamp())
+                ms = sec * 1000 + us // 1000
+                t_ns = sec * 1_000_000_000 + us * 1_000
                 
                 p = float(parts[1])
                 b = float(parts[2])
