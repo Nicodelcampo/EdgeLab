@@ -68,6 +68,69 @@ def fmt_float(v: float) -> str:
     return str(v)
 
 
+def load_canonical_ticks_fast(filepath: Path, tick_size: float = 0.25):
+    from edgelab.bridge.ticks import TickSeries
+    from datetime import date
+    import time
+    
+    t0 = time.time()
+    prices, bids, asks, volumes, ts_ns = [], [], [], [], []
+    epoch_days_cache = {}
+    
+    with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
+        for line in f:
+            parts = line.strip().split(";")
+            if len(parts) < 5:
+                continue
+            dt_str = parts[0]
+            ymd = dt_str[:8]
+            if ymd in epoch_days_cache:
+                days = epoch_days_cache[ymd]
+            else:
+                days = (date(int(ymd[:4]), int(ymd[4:6]), int(ymd[6:8])) - date(1970, 1, 1)).days
+                epoch_days_cache[ymd] = days
+                
+            hh = int(dt_str[9:11])
+            mm = int(dt_str[11:13])
+            ss = int(dt_str[13:15])
+            frac = int((dt_str[16:] + "0000000")[:7])
+            t_ns = (days * 86400 + hh * 3600 + mm * 60 + ss) * 1_000_000_000 + frac * 100
+            
+            p = float(parts[1])
+            b = float(parts[2])
+            a = float(parts[3])
+            v = float(parts[4])
+            
+            ts_ns.append(t_ns)
+            prices.append(p)
+            bids.append(b if b > 0 else p - tick_size)
+            asks.append(a if a > 0 else p + tick_size)
+            volumes.append(v)
+            
+    px_arr = np.array(prices, dtype=np.float64)
+    bid_arr = np.array(bids, dtype=np.float64)
+    ask_arr = np.array(asks, dtype=np.float64)
+    vol_arr = np.array(volumes, dtype=np.float64)
+    ns_arr = np.array(ts_ns, dtype=np.int64)
+    
+    px_ticks = np.round(px_arr / tick_size).astype(np.int64)
+    bid_ticks = np.round(bid_arr / tick_size).astype(np.int64)
+    ask_ticks = np.round(ask_arr / tick_size).astype(np.int64)
+    seq_arr = np.arange(len(px_ticks), dtype=np.int64)
+    
+    ticks = TickSeries(
+        ts_ns=ns_arr,
+        price_ticks=px_ticks,
+        bid_ticks=bid_ticks,
+        ask_ticks=ask_ticks,
+        volume=vol_arr,
+        sequence=seq_arr,
+        tick_size=tick_size
+    )
+    print(f"[*] Loaded {len(ticks):,} ticks in {time.time() - t0:.2f}s")
+    return ticks
+
+
 def run_export(
     tape_path: Path,
     out_dir: Path,
@@ -93,21 +156,26 @@ def run_export(
     max_touches: int = 0,
     max_age_bars: int = 2000,
     prefix: str = "mbt_export",
+    ticks=None,
+    trade_dates=None,
 ) -> Path:
     out_dir.mkdir(parents=True, exist_ok=True)
-    out_path = out_dir / f"{prefix}__TW{tape_window_ticks}.csv"
+    base_name = f"{prefix}__TW{tape_window_ticks}_rows{min_stacked_rows}_tpr{ticks_per_row}"
+    out_path = out_dir / f"{base_name}.csv"
     k = 2
     while out_path.exists():
-        out_path = out_dir / f"{prefix}__TW{tape_window_ticks}_{k}.csv"
+        out_path = out_dir / f"{base_name}_{k}.csv"
         k += 1
 
-    print(f"[*] Procesando {tape_path.name} con TW={tape_window_ticks} -> {out_path.name}...")
-    ticks, _, _, _, _, _ = load_canonical_ticks(tape_path, tick_size=tick_size)
+    print(f"[*] Procesando {tape_path.name} con TW={tape_window_ticks}, rows={min_stacked_rows}, tpr={ticks_per_row} -> {out_path.name}...")
+    if ticks is None:
+        ticks = load_canonical_ticks_fast(tape_path, tick_size=tick_size)
     n_ticks_total = len(ticks)
 
     # Session IDs
-    s_ids = session_ids(ticks.ts_ns)
-    trade_dates = pd.to_datetime(s_ids * 86400, unit="s").strftime("%Y%m%d").values
+    if trade_dates is None:
+        s_ids = session_ids(ticks.ts_ns)
+        trade_dates = pd.to_datetime(s_ids * 86400, unit="s").strftime("%Y%m%d").values
 
     ring_cap = max(20, absorption_lookback)
     abs_ring = [0.0] * ring_cap
@@ -605,12 +673,22 @@ def main():
     ap.add_argument("--prefix", default="mbt_export")
     ap.add_argument("--tw", type=int, nargs="+", default=[10, 15, 25, 50])
     ap.add_argument("--tick-size", type=float, default=5.0)
+    ap.add_argument("--min-stacked-rows", type=int, default=2)
+    ap.add_argument("--ticks-per-row", type=int, default=1)
     args = ap.parse_args()
 
     tape_path = Path(args.tape)
     out_dir = Path(args.out_dir)
     for tw in args.tw:
-        run_export(tape_path, out_dir, tape_window_ticks=tw, tick_size=args.tick_size, prefix=args.prefix)
+        run_export(
+            tape_path,
+            out_dir,
+            tape_window_ticks=tw,
+            tick_size=args.tick_size,
+            min_stacked_rows=args.min_stacked_rows,
+            ticks_per_row=args.ticks_per_row,
+            prefix=args.prefix,
+        )
 
 
 if __name__ == "__main__":
