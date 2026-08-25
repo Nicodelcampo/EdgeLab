@@ -363,6 +363,14 @@ def run(ticks, bars=None, footprints=None, params=None, chart_tz="UTC"):
                         best_run = run_cand
             if best_run is None:
                 continue
+            # Paridad con BigTrap2Absorption.cs:561
+            #     if (nRows == 0 || vol <= 0 || vol < MinExportVolume) return;
+            # El parametro se leia y se descartaba. Al default (1.0) el filtro es
+            # inerte porque ningun trap real tiene volumen < 1, asi que la
+            # divergencia quedaba invisible en Puerta 0. A valores mayores las
+            # dos implementaciones daban resultados distintos.
+            if best_run["nrows"] == 0 or best_run["vol"] <= 0 or best_run["vol"] < min_export_vol:
+                continue
             if best_run["vol"] < min_trap_vol:
                 continue
             if (best_run["vol"] / max(bar_vol, 1.0)) < min_trap_frac:
