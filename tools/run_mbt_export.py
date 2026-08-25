@@ -92,12 +92,13 @@ def run_export(
     invalidation_mode: str = "CloseThrough",
     max_touches: int = 0,
     max_age_bars: int = 2000,
+    prefix: str = "mbt_export",
 ) -> Path:
     out_dir.mkdir(parents=True, exist_ok=True)
-    out_path = out_dir / f"mbt_export__TW{tape_window_ticks}.csv"
+    out_path = out_dir / f"{prefix}__TW{tape_window_ticks}.csv"
     k = 2
     while out_path.exists():
-        out_path = out_dir / f"mbt_export__TW{tape_window_ticks}_{k}.csv"
+        out_path = out_dir / f"{prefix}__TW{tape_window_ticks}_{k}.csv"
         k += 1
 
     print(f"[*] Procesando {tape_path.name} con TW={tape_window_ticks} -> {out_path.name}...")
@@ -598,9 +599,10 @@ def run_export(
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Generar export MBT BigTrap2Absorption")
+    ap = argparse.ArgumentParser(description="Generar export BigTrap2Absorption")
     ap.add_argument("--tape", default="E:/DatosNT8/MBT 08-26.Last.txt")
     ap.add_argument("--out-dir", default="E:/DatosNT8/mbt_apriori")
+    ap.add_argument("--prefix", default="mbt_export")
     ap.add_argument("--tw", type=int, nargs="+", default=[10, 15, 25, 50])
     ap.add_argument("--tick-size", type=float, default=5.0)
     args = ap.parse_args()
@@ -608,7 +610,7 @@ def main():
     tape_path = Path(args.tape)
     out_dir = Path(args.out_dir)
     for tw in args.tw:
-        run_export(tape_path, out_dir, tape_window_ticks=tw, tick_size=args.tick_size)
+        run_export(tape_path, out_dir, tape_window_ticks=tw, tick_size=args.tick_size, prefix=args.prefix)
 
 
 if __name__ == "__main__":

@@ -336,12 +336,13 @@ def analyze_file(csv_path: Path):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dir", default="E:/DatosNT8/mbt_apriori")
+    ap.add_argument("--pattern", default="mbt_export__TW*.csv")
     args = ap.parse_args()
 
     out_dir = Path(args.dir)
-    files = sorted(out_dir.glob("mbt_export__TW*.csv"))
+    files = sorted(out_dir.glob(args.pattern))
     if not files:
-        print(f"No se encontraron exports en {out_dir}")
+        print(f"No se encontraron exports en {out_dir} con patron {args.pattern}")
         return
 
     results = []

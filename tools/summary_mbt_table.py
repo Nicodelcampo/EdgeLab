@@ -9,10 +9,19 @@ from tools.analyze_mbt_apriori import parse_export, percentile
 import numpy as np
 import pandas as pd
 from collections import defaultdict
+import argparse
 import hashlib
 import json
 
-files = sorted(Path("E:/DatosNT8/mbt_apriori").glob("mbt_export__TW*.csv"))
+ap = argparse.ArgumentParser()
+ap.add_argument("--dir", default="E:/DatosNT8/mbt_apriori")
+ap.add_argument("--pattern", default="mbt_export__TW*.csv")
+args = ap.parse_args()
+
+files = sorted(Path(args.dir).glob(args.pattern))
+if not files:
+    print(f"No se encontraron exports en {args.dir} con patron {args.pattern}")
+    sys.exit(1)
 
 summary_rows = []
 manifest = []
