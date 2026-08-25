@@ -867,3 +867,68 @@ Nota de firewall: la fuente proviene de una ventana **dentro** del holdout
 `docs/holdout_access_log.md`. Por eso esa evidencia **no sirve** como oráculo de
 promoción de un edge: la promoción exige `parity_exact` propio sobre una ventana
 del **período de desarrollo** (pre-holdout) — ver `CAMP-001` §11.
+
+---
+
+### REGLA DE CLAVE — la comparación se indexa POR SESIÓN, nunca por barra acumulada (2026-08-24)
+
+**Medido sobre BigTrap2Absorption, GC 02-26, 30 sesiones.** Vale para todo kernel que
+corte cubetas por conteo de ticks.
+
+El comparador indexaba por número de barra **acumulado desde el inicio de la carga**.
+Con cubetas de N ticks, **una sola diferencia de tick corre toda la numeración posterior
+y no se recupera nunca**: el corte de sesión restaura la *partición*, pero el contador de
+barras sigue de largo.
+
+| clave | cobertura comparable | aritmética exacta |
+|---|---:|---:|
+| `(bar_global, t_start)` | **0,77 %** | — |
+| `(cme_session_id, bucket_index_within_session, t_start)` | **100 %** | **99,992 %** |
+
+Un factor de 130× en cobertura, midiendo **el mismo kernel sobre los mismos datos**.
+
+> **`FAIL` de comparador y `FAIL` de kernel no son lo mismo.** Acá el primero se leyó como
+> el segundo tres veces —GC 02-26, GC 04-26, GC 06-26— antes de medirlo bien.
+
+**Regla:** la clave de comparación es `(cme_session_id, bucket_index_within_session,
+t_start)`. Prohibido indexar por barra global. Y el veredicto se reporta **por capas
+separadas**: identidad de datos, partición, aritmética local, estado causal global y
+zonas/fills. Un `FAIL` agregado no dice en cuál de las cinco falló.
+
+#### Corolario: el anillo causal NO reinicia por sesión
+
+La cubeta reinicia en el corte de sesión; el historial rodante **no**. Una sesión con
+flujo distinto contamina `a_thr`/`a_pass` durante hasta `lookback` cubetas **posteriores**,
+aunque el conteo de ticks de la sesión siguiente coincida exacto.
+
+Por eso la capa de estado causal tiene que **declarar cuántas cubetas están afectadas por
+una divergencia previa** en vez de mezclarlas con las limpias. Extiende la *Regla de
+ventana llena para kernels con historia rodante* (2026-07-26): no alcanza con que la
+ventana esté llena, hay que saber **de qué** se llenó.
+
+---
+
+### PRECONDICIÓN DE FLUJO IDÉNTICO — la cinta y el chart no siempre traen los mismos ticks (2026-08-24)
+
+Precondición que nunca estuvo escrita y que **toda** medición de paridad asume en silencio.
+
+El `.Last.txt` sale de la base de ticks cruda; el chart de NT8 aplica una **plantilla de
+sesión**. En semanas normales coinciden exacto. En calendario irregular, no.
+
+Medido sobre GC 02-26, 33 sesiones CME:
+
+```
+28 de 33 sesiones          coinciden tick por tick
+20251127 (Thanksgiving)    +431 ticks en la cinta   <- la plantilla corta 90 min antes
+primera y ultima           +25 / +14   parciales por borde de carga
+sabados y domingos         +7          ticks fuera de horario en la base cruda
+```
+
+**No es defecto del kernel.** Es que dos fuentes que se suponían idénticas no lo son.
+
+**Regla:** antes de declarar `FAIL` de paridad, medir la identidad de flujo **por sesión**
+y reportarla como capa aparte. Un `FAIL` con `TAPE_VS_CHART_COVERAGE` sin verificar no es
+atribuible al kernel.
+
+**Y no se parchea rellenando:** ni completar chart con cinta ni cinta con chart, ni
+reducirse en silencio a la intersección disponible. Se declara.
