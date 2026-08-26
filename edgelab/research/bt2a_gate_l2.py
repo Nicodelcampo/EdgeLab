@@ -25,17 +25,17 @@ def validate_context_labels(contexts:pd.DataFrame,*,coverage_min=.99,minimum_ses
     required={"contract","cme_session","available_source_row","context_state","context_group","context_as_of_ok"}
     _require(contexts,required,"contexts")
     if contexts.empty: raise ValueError("contexts are empty")
-    f=contexts.copy(); f.context_state=f.context_state.astype(str).str.lower(); f.context_group=f.context_group.astype(str)
-    unknown=sorted(set(f.context_state)-STATES)
+    f=contexts.copy(); ok=f.context_as_of_ok.astype(bool); f.context_state=f.context_state.astype("string").str.lower(); f.context_group=f.context_group.astype("string")
+    unknown=sorted(set(f.loc[ok,"context_state"].dropna())-STATES)
     if unknown: raise ValueError(f"unknown context states: {unknown}")
     if f.duplicated(["contract","cme_session","available_source_row"]).any(): raise ValueError("duplicate context publication coordinate")
     monotone=True
     for _,rows in f.groupby(["contract","cme_session"],sort=False):
         src=rows.available_source_row.to_numpy(dtype=np.int64)
         if len(src)>1 and np.any(src[1:]<=src[:-1]): monotone=False; break
-    mapping=bool((f.context_state.map(STATE_GROUP)==f.context_group).all())
-    ok=f.context_as_of_ok.astype(bool); coverage=float(ok.mean())
-    rows_by_state={s:int((f.context_state==s).sum()) for s in sorted(STATES)}
+    mapping=bool((f.loc[ok,"context_state"].map(STATE_GROUP)==f.loc[ok,"context_group"]).all())
+    coverage=float(ok.mean())
+    rows_by_state={s:int(((f.context_state==s)&ok).sum()) for s in sorted(STATES)}
     sessions_by_group={g:int(f.loc[(f.context_group==g)&ok,["contract","cme_session"]].drop_duplicates().shape[0]) for g in GROUPS}
     minimum=all(n>=int(minimum_sessions_per_group) for n in sessions_by_group.values()); coverage_ok=coverage>=float(coverage_min)
     return L2Readiness(len(f),int(f[["contract","cme_session"]].drop_duplicates().shape[0]),coverage,rows_by_state,sessions_by_group,monotone,mapping,coverage_ok,minimum,bool(monotone and mapping and coverage_ok and minimum))
