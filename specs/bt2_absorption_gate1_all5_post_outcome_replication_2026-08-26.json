@@ -2,17 +2,156 @@
   "schema": "bt2a_gate1_all5_post_outcome_replication_v1",
   "status": "FROZEN_BEFORE_ALL5_RERUN",
   "frozen_at": "2026-08-26T04:10:56.691574+00:00",
-  "amends_without_overwriting": ["specs/bt2_absorption_gate1_v1.json", "specs/bt2_absorption_gate1_split_v1.json", "specs/bt2_absorption_gate1_exposure_amendment_2026-08-24.json", "specs/bt2_absorption_gate1_parity_amendment_2026-08-24.json"],
+  "amends_without_overwriting": [
+    "specs/bt2_absorption_gate1_v1.json",
+    "specs/bt2_absorption_gate1_split_v1.json",
+    "specs/bt2_absorption_gate1_exposure_amendment_2026-08-24.json",
+    "specs/bt2_absorption_gate1_parity_amendment_2026-08-24.json"
+  ],
   "reason": "Post-outcome expanded replication requested after clean76. Includes all five delivered GC contracts in one non-overlapping, left-censored chain. It does not rewrite or promote the historical Gate 1.",
-  "universe": {"session_registry": "specs/bt2_absorption_gate1_all5_sessions_2026-08-26.json", "input_registry": "specs/bt2_absorption_gate1_all5_input_registry_2026-08-26.json", "contracts": ["GC 12-25", "GC 02-26", "GC 04-26", "GC 06-26", "GC 08-26"], "sessions": 234, "selection": "all valid weekday sessions in fixed non-overlapping contract windows", "left_censored": true, "no_posthoc_claim_of_confirmation": true},
-  "event_definitions": {"K_ABS": {"kernel": "edgelab.research.all5_runtime.bigtrap2absorption", "parameters": {"TapeWindowTicks": 25, "ScoreMode": "AbsMagnitude", "AbsorptionPct": 90.0, "AbsorptionLookback": 500, "MinHistoryBuckets": 200, "MinStackedRows": 2, "MinTrapFrac": 0.2, "RequireFlowSideMatch": true}}, "K_BT2": {"kernel": "edgelab.research.all5_runtime.bigtrap2", "parameters": "module DEFAULTS", "tick_bar_size": 25, "reset_tick_counter_at_cme_session": true}},
-  "arms": ["K_ABS", "K_ABS_SHUFFLE", "K_BT2", "N_RAND"],
-  "execution": {"order": ["ts_utc_ns", "source_row"], "fill": "first canonical tick strictly after the signal", "signal_tick_fill_forbidden": true, "fill_price": "price_ticks of the execution tick", "barriers_and_excursions_anchor": "execution price", "missing_execution": "EXCLUDED_NO_EXECUTION_TICK", "cross_session_fill": "EXCLUDED_FILL_CROSSES_SESSION", "memory_mode": "one selected session plus immediately preceding valid session", "warmup": "previous valid session reconstructs the rolling 500 x 25-tick absorption state; at the left edge, all available pre-sample ticks are used", "memory_bound": "never loads a complete multi-month contract into RAM", "checkpoint_invalidation": "sample registry hash + input registry hash + runtime hash"},
-  "horizon": {"rule": "first_cap_wins", "tick_cap": 2000, "clock_cap_seconds": 900, "tie_break": "tick_cap", "session_boundary": "hard", "incomplete_path": "excluded"},
-  "estimand": {"event_metrics": ["MFE_ticks", "MAE_ticks"], "session_d_hat_ticks": "median_i(MFE_ticks) - median_i(MAE_ticks)", "primary_session_contrast": "d_hat(K_ABS,s) - median_b[d_hat(N_RAND,b,s)]", "secondary_session_contrasts": ["d_hat(K_ABS,s) - d_hat(K_BT2,s)", "d_hat(K_ABS,s) - median_b[d_hat(K_ABS_SHUFFLE,b,s)]"], "aggregation": "equal weight per CME session", "economic_hurdle_ticks": 2.5, "legacy_ratio_1_25": "DESCRIPTIVE_NOT_A_GATE"},
-  "randomization": {"replications": 10000, "seed": 20260821, "N_RAND": {"strata": ["cme_session", "contract", "chicago_30_minute_bin_from_17_00", "cap_driver"], "directions": "copy each K_ABS event direction", "sampling": "without replacement within each replication", "exact_real_anchor_excluded": true, "sparse_stratum": "PRECONDITION_FAILED_SPARSE_STRATUM", "silent_bin_expansion": false}, "K_ABS_SHUFFLE": {"anchors": "same K_ABS execution anchors", "directions": "permute within CME session", "preserve_direction_counts": true}},
-  "inference": {"cluster": "cme_session", "equal_session_weights": true, "wild_cluster_bootstrap": "Webb_six_point", "bootstrap_replications": 10000, "seed": 20260821, "confidence_interval": 0.95},
-  "power": {"available_sessions": 234, "mandatory_label": "POST_OUTCOME_EXPANDED_REPLICATION", "promotion_eligible": false, "interpretation": "Larger N improves precision but cannot restore the confirmatory firewall after outcomes were opened."},
-  "firewall": {"CAMPAIGN_OUTCOMES_OPENED": true, "PREEXISTING_OUTCOME_EXPOSURE": "YES_MIXED_AND_WIDESPREAD", "EDGE_DECLARED": false, "confirmatory_eligible": false, "frozen_before_this_rerun": true, "forbidden": ["represent_as_original_gate1", "call_d_hat_realized_or_net_pnl", "declare_alpha_or_edge", "select_contexts_after_outcomes", "ignore_left_censoring", "pool_events_as_independent_observations"]},
-  "interpretation_contract": {"estimand_name": "session d_hat path-excursion contrast", "not_realized_pnl": true, "costs_included": false, "allowed_claim": "evidence of a contrast against the specified null within this post-outcome sample", "forbidden_claims": ["net ticks", "scientifically proves genuine alpha", "not luck or noise in general", "promotion or edge declaration"], "secondary_controls": "A 95% interval containing zero fails the declared comparison even if nearly all of it is positive."}
+  "universe": {
+    "session_registry": "specs/bt2_absorption_gate1_all5_sessions_2026-08-26.json",
+    "input_registry": "specs/bt2_absorption_gate1_all5_input_registry_2026-08-26.json",
+    "contracts": [
+      "GC 12-25",
+      "GC 02-26",
+      "GC 04-26",
+      "GC 06-26",
+      "GC 08-26"
+    ],
+    "sessions": 234,
+    "selection": "all valid weekday sessions in fixed non-overlapping contract windows",
+    "left_censored": true,
+    "no_posthoc_claim_of_confirmation": true
+  },
+  "event_definitions": {
+    "K_ABS": {
+      "kernel": "edgelab.research.all5_runtime.bigtrap2absorption",
+      "parameters": {
+        "TapeWindowTicks": 25,
+        "ScoreMode": "AbsMagnitude",
+        "AbsorptionPct": 90.0,
+        "AbsorptionLookback": 500,
+        "MinHistoryBuckets": 200,
+        "MinStackedRows": 2,
+        "MinTrapFrac": 0.2,
+        "RequireFlowSideMatch": true
+      }
+    },
+    "K_BT2": {
+      "kernel": "edgelab.research.all5_runtime.bigtrap2",
+      "parameters": "module DEFAULTS",
+      "tick_bar_size": 25,
+      "reset_tick_counter_at_cme_session": true
+    }
+  },
+  "arms": [
+    "K_ABS",
+    "K_ABS_SHUFFLE",
+    "K_BT2",
+    "N_RAND"
+  ],
+  "execution": {
+    "order": [
+      "ts_utc_ns",
+      "source_row"
+    ],
+    "fill": "first canonical tick strictly after the signal",
+    "signal_tick_fill_forbidden": true,
+    "fill_price": "price_ticks of the execution tick",
+    "barriers_and_excursions_anchor": "execution price",
+    "missing_execution": "EXCLUDED_NO_EXECUTION_TICK",
+    "cross_session_fill": "EXCLUDED_FILL_CROSSES_SESSION",
+    "memory_mode": "one selected session plus immediately preceding valid session",
+    "warmup": "previous valid session reconstructs the rolling 500 x 25-tick absorption state; at the left edge, all available pre-sample ticks are used",
+    "memory_bound": "never loads a complete multi-month contract into RAM",
+    "checkpoint_invalidation": "sample registry hash + input registry hash + runtime hash"
+  },
+  "horizon": {
+    "rule": "first_cap_wins",
+    "tick_cap": 2000,
+    "clock_cap_seconds": 900,
+    "tie_break": "tick_cap",
+    "session_boundary": "hard",
+    "incomplete_path": "excluded"
+  },
+  "estimand": {
+    "event_metrics": [
+      "MFE_ticks",
+      "MAE_ticks"
+    ],
+    "session_d_hat_ticks": "median_i(MFE_ticks) - median_i(MAE_ticks)",
+    "primary_session_contrast": "d_hat(K_ABS,s) - median_b[d_hat(N_RAND,b,s)]",
+    "secondary_session_contrasts": [
+      "d_hat(K_ABS,s) - d_hat(K_BT2,s)",
+      "d_hat(K_ABS,s) - median_b[d_hat(K_ABS_SHUFFLE,b,s)]"
+    ],
+    "aggregation": "equal weight per CME session",
+    "economic_hurdle_ticks": 2.5,
+    "legacy_ratio_1_25": "DESCRIPTIVE_NOT_A_GATE"
+  },
+  "randomization": {
+    "replications": 10000,
+    "seed": 20260821,
+    "N_RAND": {
+      "strata": [
+        "cme_session",
+        "contract",
+        "chicago_30_minute_bin_from_17_00",
+        "cap_driver"
+      ],
+      "directions": "copy each K_ABS event direction",
+      "sampling": "without replacement within each replication",
+      "exact_real_anchor_excluded": true,
+      "sparse_stratum": "PRECONDITION_FAILED_SPARSE_STRATUM",
+      "silent_bin_expansion": false
+    },
+    "K_ABS_SHUFFLE": {
+      "anchors": "same K_ABS execution anchors",
+      "directions": "permute within CME session",
+      "preserve_direction_counts": true
+    }
+  },
+  "inference": {
+    "cluster": "cme_session",
+    "equal_session_weights": true,
+    "wild_cluster_bootstrap": "Webb_six_point",
+    "bootstrap_replications": 10000,
+    "seed": 20260821,
+    "confidence_interval": 0.95
+  },
+  "power": {
+    "available_sessions": 234,
+    "mandatory_label": "POST_OUTCOME_EXPANDED_REPLICATION",
+    "promotion_eligible": false,
+    "interpretation": "Larger N improves precision but cannot restore the confirmatory firewall after outcomes were opened."
+  },
+  "firewall": {
+    "CAMPAIGN_OUTCOMES_OPENED": true,
+    "PREEXISTING_OUTCOME_EXPOSURE": "YES_MIXED_AND_WIDESPREAD",
+    "EDGE_DECLARED": false,
+    "confirmatory_eligible": false,
+    "frozen_before_this_rerun": true,
+    "forbidden": [
+      "represent_as_original_gate1",
+      "call_d_hat_realized_or_net_pnl",
+      "declare_alpha_or_edge",
+      "select_contexts_after_outcomes",
+      "ignore_left_censoring",
+      "pool_events_as_independent_observations"
+    ]
+  },
+  "interpretation_contract": {
+    "estimand_name": "session d_hat path-excursion contrast",
+    "not_realized_pnl": true,
+    "costs_included": false,
+    "allowed_claim": "evidence of a contrast against the specified null within this post-outcome sample",
+    "forbidden_claims": [
+      "net ticks",
+      "scientifically proves genuine alpha",
+      "not luck or noise in general",
+      "promotion or edge declaration"
+    ],
+    "secondary_controls": "A 95% interval containing zero fails the declared comparison even if nearly all of it is positive."
+  }
 }
