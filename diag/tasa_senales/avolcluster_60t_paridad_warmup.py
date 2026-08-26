@@ -37,6 +37,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
 from edgelab.bridge.bars import build_tick_bars  # noqa: E402
+from edgelab.bridge.sessions import session_begin_ns as nominal_session_begin_ns  # noqa: E402
 from edgelab.bridge.indicators.avolclusterpoi import (  # noqa: E402
     SessionProfile, detect_block, session_relative_bucket, RESEARCH_DEFAULTS,
 )
@@ -168,7 +169,12 @@ def main() -> int:
     for d in all_dates:
         mask = session_labels == d
         sess_ticks = slice_session(ticks, mask)
-        session_begin_ns = int(sess_ticks.ts_ns[0])
+        # Antigravity (2026-08-26): NT8 ancla el bucket horario a
+        # sessionIterator.ActualSessionBegin (17:00 CT oficial de plantilla),
+        # NO al primer trade real -- verificado en nt8/aVolClusterPOI.cs:295.
+        # session_begin_ns() de edgelab.bridge.sessions replica esa semantica
+        # (ya validada 7/7 contra el oraculo real, ver su docstring).
+        session_begin = nominal_session_begin_ns(int(sess_ticks.ts_ns[0]))
         bars = build_tick_bars(sess_ticks, ticks_per_bar=TICKS_PER_BAR)
         cells_by_block, close_by_block, end_ns_by_block = block_cells_and_meta(
             sess_ticks, bars, window_bars=WINDOW_BARS)
@@ -180,7 +186,7 @@ def main() -> int:
         for blk in sorted(cells_by_block):
             cells = cells_by_block[blk]
             close_tick = int(close_by_block[blk])
-            bucket = session_relative_bucket(int(end_ns_by_block[blk]), session_begin_ns,
+            bucket = session_relative_bucket(int(end_ns_by_block[blk]), session_begin,
                                               params["time_bucket_minutes"])
             hist = profile.history_scores(bucket)
             out = detect_block(cells, hist, params=params, close_tick=close_tick)
