@@ -83,7 +83,7 @@ def context_interaction_test(rows:pd.DataFrame,*,score_column="score_fp",abs_arm
     return {"status":"CONTEXT_INTERACTION_ESTIMATED","estimand":"((K_ABS-N_RAND)|G-operable)-((K_ABS-N_RAND)|G-stress)","point":point,"lower":float(np.quantile(draws,.025)),"upper":float(np.quantile(draws,.975)),"p_two_sided":float((1+np.sum(np.abs(null)>=abs(point)))/(replications+1)),"n_sessions_by_group":counts,"minimum_sessions_per_group":minimum_sessions_per_group,"replications":replications,"seed":seed,"outcomes_interpreted":True,"edge_declared":False}
 
 def validate_run_identity(manifest:dict,model:dict,report:dict,*,require_clean=True):
-    ids=[x for x in (manifest.get("model_id"),model.get("model_id"),report.get("model_id")) if x is not None]; model_ok=bool(ids) and len(set(map(str,ids)))==1
+    ids=[str(x).strip() for x in (manifest.get("model_id"),model.get("model_id"),report.get("model_id")) if x is not None]; model_ok=len(ids)==3 and all(ids) and len(set(ids))==1
     outcomes=manifest.get("CAMPAIGN_OUTCOMES_OPENED") is False; edge=manifest.get("EDGE_DECLARED") is False
     commits=bool(manifest.get("code_commit_start")) and manifest.get("code_commit_start")==manifest.get("code_commit_end")
     clean=(not manifest.get("dirty_start") and not manifest.get("dirty_end")) or not require_clean; status=manifest.get("status")=="COMPLETE_TARGET_FREE_CONTEXT_EXTRACTION"; ready=all((model_ok,outcomes,edge,commits,clean,status))
