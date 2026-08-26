@@ -274,7 +274,16 @@ Un solo contrato de 1,13 M ticks filtra 871 filas de holdout. El contrato tipifi
 
 ## P-18 · La Versión 1 del dataset de Kaggle incumple la Fase 0 del contrato
 
-**Estado**: **ABIERTA — acotada por D-1, no cerrada.** Ya no bloquea el pipeline local (Kaggle
+**Estado**: **RESUELTA (2026-08-26, `USER_REPORTED`).** Nico borró el dataset de Kaggle
+(acción humana que era el único criterio de cierre pendiente). No verificado por API
+propia — no hay credencial de Kaggle en este entorno para confirmarlo de forma
+independiente; se registra como reportado por el usuario, no como `MEASURED_COMMITTED`.
+Ver también `docs/research/CME_Market_Data_Policy_Cloud_Kaggle.html`: la prohibición de
+subir ticks reales a Kaggle es contractual (ILA de CME), no una preferencia de diseño —
+aplica a cualquier intento futuro, privado o no, y también descarta a Kaggle como
+plataforma de **cómputo** sobre datos reales, no sólo de publicación.
+
+**Histórico (ya no aplica, se conserva para trazabilidad)**: Ya no bloquea el pipeline local (Kaggle
 sale del programa), pero **el residual es intacto**: la V1 con ticks crudos y
 holdout físico sigue publicada. **Acción humana de Nico: borrar el dataset.**
 Ninguna herramienta lo hace.
