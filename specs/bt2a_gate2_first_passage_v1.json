@@ -1,0 +1,78 @@
+{
+  "schema": "bt2a_gate2_first_passage_v1",
+  "status": "PROPOSED_POST_OUTCOME_DIAGNOSTIC_NOT_FROZEN",
+  "created_date": "2026-08-26",
+  "source_gate1": {
+    "branch": "work/bt2a-gate1-all5-20260826",
+    "commit": "3e639e150bcd7b4691da3d1ba8049a33f586c217",
+    "n_sessions": 234,
+    "k_abs_events": 16940,
+    "k_bt2_events": 5262,
+    "outcomes_already_opened": true,
+    "confirmatory_eligible": false
+  },
+  "firewall": {
+    "new_outcomes_opened_by_this_spec": false,
+    "first_run_class": "POST_OUTCOME_DIAGNOSTIC",
+    "edge_declaration_allowed": false,
+    "promotion_allowed": false,
+    "requires_explicit_authorization_before_run": true
+  },
+  "input": {
+    "event_source": "REGENERATE_FROM_FROZEN_GATE1_RUNTIME",
+    "provisional_event_store_allowed": false,
+    "ordering": ["ts_utc_ns", "source_row"],
+    "session_boundary": "HARD_CME",
+    "fill": "FIRST_ROW_STRICTLY_AFTER_SIGNAL"
+  },
+  "p2a": {
+    "outcomes": ["TP_FIRST", "SL_FIRST", "TIMEOUT"],
+    "barriers_ticks": [5, 9, 18, 30],
+    "primary_horizons_ticks": [25, 50, 100, 250],
+    "secondary_horizons_seconds": [5, 30, 120],
+    "diagnostic_ceiling": {
+      "ticks": 2000,
+      "seconds": 900
+    },
+    "timeout_included": true,
+    "score": {
+      "TP_FIRST": 1,
+      "SL_FIRST": -1,
+      "TIMEOUT": 0
+    },
+    "aggregation": "EQUAL_CME_SESSION_WEIGHT"
+  },
+  "arms": ["K_ABS", "N_RAND", "K_ABS_SHUFFLE", "K_BT2"],
+  "contrasts": {
+    "primary": "K_ABS_MINUS_N_RAND",
+    "secondary": ["K_ABS_MINUS_K_ABS_SHUFFLE", "K_ABS_MINUS_K_BT2"]
+  },
+  "inference": {
+    "unit": "CME_SESSION",
+    "bootstrap_replications": 10000,
+    "multiplicity": "HOLM_OVER_16_PRIMARY_BARRIER_HORIZON_CELLS",
+    "events_assumed_iid": false
+  },
+  "p2b": {
+    "simulator_contract": "docs/execution_simulator_spec.md",
+    "max_simultaneous_positions": 1,
+    "concurrency_policy": "FIRST_EXECUTABLE_SIGNAL_WINS",
+    "rejections_persisted": true,
+    "cost_scenarios": ["ideal", "base", "adverso", "severo"],
+    "commission_status": "PENDING_ACCOUNT_STATEMENT_CONFIRMATION",
+    "estimands": ["NET_PNL_PER_TRADE_EQUAL_SESSION", "NET_PNL_PER_ELIGIBLE_SIGNAL_EQUAL_SESSION"]
+  },
+  "parameter_sweep": {
+    "headline_is_primary": true,
+    "other_98_configs": "TARGET_FREE_SENSITIVITY_ONLY",
+    "cross_product_winner_selection_allowed": false
+  },
+  "allowed_labels": [
+    "P2_DIAGNOSTIC_MECHANISM_SUPPORTED",
+    "P2_DIAGNOSTIC_MECHANISM_NOT_SUPPORTED",
+    "P2_DIAGNOSTIC_EXECUTION_POSITIVE",
+    "P2_DIAGNOSTIC_EXECUTION_NEGATIVE",
+    "P2_DIAGNOSTIC_INCONCLUSIVE"
+  ],
+  "forbidden_labels": ["CONFIRMATORY_PASS", "EDGE_DECLARED", "PROMOTED"]
+}
