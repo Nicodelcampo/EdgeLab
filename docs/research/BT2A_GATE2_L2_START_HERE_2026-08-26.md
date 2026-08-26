@@ -4,21 +4,16 @@ Paquete ordenado:
 
 [`docs/research/bt2a_gate2_l2_20260826/README.md`](bt2a_gate2_l2_20260826/README.md)
 
-Contiene:
-
-- resultado vinculante de Gate 1 all5;
-- auditoría de la extracción L2, Event Store y sweep nocturnos;
-- contrato propuesto de first-passage/ejecución para Puerta 2;
-- contrato contextual propuesto para Puerta L2;
-- research web primario;
-- prompt de auditoría local para Claude Code;
-- plan de implementación y blockers.
-
-Estado global:
+Incluye el resultado vinculante de Gate 1 all5, auditoría de los runs nocturnos, research, contratos, runners y el estado de hardening. La implementación más reciente está en [`06_HARDENING_IMPLEMENTATION.md`](bt2a_gate2_l2_20260826/06_HARDENING_IMPLEMENTATION.md).
 
 ```text
 GATE1 = COMPLETE_POST_OUTCOME
-GATE2 = PROPOSED_NOT_FROZEN
-GATE_L2 = PILOT_IMPLEMENTED_EVIDENCE_INCOMPLETE
+P2-A = IMPLEMENTED_NOT_RUN
+P2-B = IMPLEMENTED_NOT_RUN_COST_IDENTITY_PENDING
+GATE2_SPEC = PROPOSED_NOT_FROZEN
+GATE_L2 = VALIDATION_IMPLEMENTED_REAL_DATA_EVIDENCE_PENDING
+NEW_P2_OR_L2_OUTCOMES_OPENED = false
 EDGE_DECLARED = false
 ```
+
+Rama activa: `work/bt2a-gate2-l2-hardening-20260826`.

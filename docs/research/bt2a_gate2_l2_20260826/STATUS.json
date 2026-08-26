@@ -1,53 +1,50 @@
 {
-  "schema": "bt2a_gate2_l2_audit_status_v1",
+  "schema": "bt2a_gate2_l2_hardening_status_v2",
   "as_of": "2026-08-26",
-  "integration_branch": "work/bt2a-gate2-l2-audit-20260826",
-  "base_commit": "3e639e150bcd7b4691da3d1ba8049a33f586c217",
+  "integration_branch": "work/bt2a-gate2-l2-hardening-20260826",
+  "base_commit": "5ddc5eb718f60bc925aae493203589ce5520e3fd",
   "gate1": {
     "status": "COMPLETE_GATE1_ALL5_POST_OUTCOME_REPLICATION",
     "n_sessions": 234,
     "k_abs_events": 16940,
     "k_bt2_events": 5262,
+    "canonical_event_store_builder_implemented": true,
+    "canonical_event_store_full_run_complete": false,
     "edge_declared": false,
     "confirmatory_eligible": false
   },
-  "antigravity": {
-    "branch": "work/futures-l2-context-foundation-20260825",
-    "tip": "0a1283f97a0ccee2802bd77617e4c0abbdc3290a",
-    "l2": {
-      "commit": "ced33dd4235da2882f5e334c87c84b7f3249dc7d",
-      "execution_claimed_complete": true,
-      "target_free_by_code": true,
-      "formal_evidence_complete": false,
-      "formal_verified": false
-    },
-    "event_store": {
-      "commit": "070af84357d659e3862446c762497755de301456",
-      "reported_k_abs_events": 18679,
-      "reported_k_bt2_events": 5870,
-      "gate1_population_equivalent": false,
-      "p2_input_authorized": false
-    },
-    "sweep": {
-      "commit": "0a1283f97a0ccee2802bd77617e4c0abbdc3290a",
-      "configs": 99,
-      "contracts": 4,
-      "expected_partials": 396,
-      "reported_partials": 190,
-      "target_free_by_code": true,
-      "all5_234_session_universe": false,
-      "resume_from_current_tip_authorized": false
-    }
-  },
   "gate2": {
-    "status": "PROPOSED_POST_OUTCOME_DIAGNOSTIC_NOT_FROZEN",
-    "runner_implemented": false,
-    "outcomes_opened_in_this_audit": false
+    "status": "IMPLEMENTED_NOT_RUN_SPEC_NOT_FROZEN",
+    "p2a_kernel_implemented": true,
+    "p2a_runner_implemented": true,
+    "p2b_execution_engine_implemented": true,
+    "p2b_runner_implemented": true,
+    "gc_cost_identity_confirmed": false,
+    "spec_frozen": false,
+    "authorized": false,
+    "outcomes_opened_in_hardening": false,
+    "edge_declared": false
   },
   "gate_l2": {
-    "status": "PILOT_IMPLEMENTED_EVIDENCE_INCOMPLETE",
-    "event_join_ready": false,
-    "minimum_sessions_per_primary_cell_met": false,
-    "outcomes_authorized": false
-  }
+    "status": "VALIDATION_IMPLEMENTED_REAL_DATA_EVIDENCE_PENDING",
+    "strict_source_row_join_implemented": true,
+    "target_free_package_validator_implemented": true,
+    "context_interaction_implemented": true,
+    "dirty_run_accepted": false,
+    "formal_extraction_verified": false,
+    "minimum_sessions_per_primary_group_met": false,
+    "outcomes_authorized": false,
+    "edge_declared": false
+  },
+  "local_audit": {
+    "claude_result_expected": ["LOCAL_AUDIT_RESULT.json", "LOCAL_AUDIT_RESULT.md"],
+    "incorporated": false
+  },
+  "sweep": {
+    "reported_partials": 190,
+    "expected_partials": 396,
+    "resume_authorized": false
+  },
+  "new_p2_or_l2_outcomes_opened": false,
+  "pull_request_opened": false
 }
