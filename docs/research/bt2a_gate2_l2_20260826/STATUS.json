@@ -1,50 +1,58 @@
 {
-  "schema": "bt2a_gate2_l2_hardening_status_v2",
-  "as_of": "2026-08-26",
-  "integration_branch": "work/bt2a-gate2-l2-hardening-20260826",
-  "base_commit": "5ddc5eb718f60bc925aae493203589ce5520e3fd",
+  "schema": "bt2a_gate2_l2_audit_status_v2",
+  "date": "2026-08-26",
+  "branch": "work/bt2a-gate2-l2-hardening-20260826",
+  "implementation_tip": "6d38294777c103cf6db78a6734f6283032a4cb56",
   "gate1": {
+    "branch": "work/bt2a-gate1-all5-20260826",
+    "tip": "3e639e150bcd7b4691da3d1ba8049a33f586c217",
     "status": "COMPLETE_GATE1_ALL5_POST_OUTCOME_REPLICATION",
+    "decision": "EXPANDED_PRIMARY_POSITIVE_NOT_NONINFERIOR_TO_BT2",
     "n_sessions": 234,
-    "k_abs_events": 16940,
-    "k_bt2_events": 5262,
-    "canonical_event_store_builder_implemented": true,
-    "canonical_event_store_full_run_complete": false,
-    "edge_declared": false,
-    "confirmatory_eligible": false
+    "n_k_abs": 16940,
+    "n_k_bt2": 5262,
+    "edge_declared": false
   },
   "gate2": {
-    "status": "IMPLEMENTED_NOT_RUN_SPEC_NOT_FROZEN",
-    "p2a_kernel_implemented": true,
-    "p2a_runner_implemented": true,
-    "p2b_execution_engine_implemented": true,
-    "p2b_runner_implemented": true,
-    "gc_cost_identity_confirmed": false,
-    "spec_frozen": false,
-    "authorized": false,
-    "outcomes_opened_in_hardening": false,
-    "edge_declared": false
+    "p2a": "IMPLEMENTED_NOT_RUN",
+    "p2b": "IMPLEMENTED_NOT_RUN",
+    "spec": "PROPOSED_NOT_FROZEN",
+    "canonical_event_store_234": "NOT_REBUILT_YET",
+    "cost_identity_gc": "NOT_CONFIRMED",
+    "input_identity_validation": "IMPLEMENTED",
+    "p2a_primary_cells": 16,
+    "p2a_secondary_clock_cells": 12,
+    "p2a_primary_multiplicity": "HOLM_OVER_16_PRIMARY_CELLS",
+    "p2b_inference_metrics": [
+      "mean_net_ticks_per_eligible_signal",
+      "mean_net_ticks_per_trade",
+      "mean_net_usd_per_eligible_signal",
+      "mean_net_usd_per_trade"
+    ],
+    "authorization_required": true
   },
   "gate_l2": {
-    "status": "VALIDATION_IMPLEMENTED_REAL_DATA_EVIDENCE_PENDING",
-    "strict_source_row_join_implemented": true,
-    "target_free_package_validator_implemented": true,
-    "context_interaction_implemented": true,
-    "dirty_run_accepted": false,
-    "formal_extraction_verified": false,
-    "minimum_sessions_per_primary_group_met": false,
-    "outcomes_authorized": false,
-    "edge_declared": false
+    "validator": "IMPLEMENTED_FAIL_CLOSED",
+    "three_way_model_identity": "REQUIRED",
+    "complete_artifact_hash_inventory": "REQUIRED",
+    "features_parquet": "REQUIRED",
+    "strict_join": "available_source_row < event_source_row",
+    "context_interaction_cluster": "CME_SESSION",
+    "extraction_evidence": "PENDING_LOCAL_AUDIT",
+    "sample_power": "NOT_READY",
+    "outcomes_opened": false
   },
-  "local_audit": {
-    "claude_result_expected": ["LOCAL_AUDIT_RESULT.json", "LOCAL_AUDIT_RESULT.md"],
-    "incorporated": false
+  "verification": {
+    "strict_json": "PASS",
+    "cluster_bootstrap": "PASS",
+    "p2a_eligibility_reassertion": "PASS",
+    "p2a_family_structure": "PASS",
+    "p2b_metric_structure": "PASS",
+    "local_secret_scan": "PASS",
+    "github_advanced_security_secret_scan": "UNAVAILABLE_NOT_ENABLED"
   },
-  "sweep": {
-    "reported_partials": 190,
-    "expected_partials": 396,
-    "resume_authorized": false
-  },
+  "claude_local_audit": "PENDING_RESULTS",
+  "resume_old_sweep_authorized": false,
   "new_p2_or_l2_outcomes_opened": false,
-  "pull_request_opened": false
+  "edge_declared": false
 }
