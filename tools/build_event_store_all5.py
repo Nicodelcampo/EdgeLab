@@ -21,7 +21,6 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from edgelab.bridge.ticks import load_canonical_parquet
-from edgelab.research.bt2_gate1_preflight import cme_session_dates
 from edgelab.bridge.indicators import (
     bigtrap2absorption,
     bigtrap2,
@@ -29,6 +28,14 @@ from edgelab.bridge.indicators import (
     voltickspoc2,
 )
 from edgelab.bridge.bars import build_footprints, build_tick_bars
+
+
+def cme_session_dates(ts_ns: np.ndarray) -> np.ndarray:
+    sec = ts_ns // 1_000_000_000
+    dt = pd.to_datetime(sec, unit="s", utc=True).tz_convert("America/Chicago")
+    is_after_17 = dt.hour >= 17
+    trade_dt = dt + pd.to_timedelta(np.where(is_after_17, 1, 0), unit="D")
+    return trade_dt.strftime("%Y%m%d").to_numpy()
 
 DATA_DIR = Path(r"E:\DatosNT8\gc_gate1_parquets_20260825")
 OUT_DIR = Path(r"E:\DatosNT8\event_store_gc_all5")
@@ -104,9 +111,10 @@ def process_contract(contract: str, parquet_path: Path) -> pd.DataFrame:
     # 3. HFTZones2
     print("  [3/4] Ejecutando HFTZones2...")
     try:
-        res_hft = hftzones2.run(ticks, params=hftzones2.DEFAULTS)
+        res_hft = hftzones2.run(ticks, bars25, params=hftzones2.DEFAULTS)
         for z in res_hft.get("zones", []):
-            idx = int(z.get("sig_idx", z.get("bar_idx", 0)))
+            bar = int(z.get("created_bar", z.get("bar_idx", 0)))
+            idx = int(stops[bar] - 1) if bar < len(stops) else n_ticks - 1
             fill_idx = min(idx + 1, n_ticks - 1)
             direction = 1 if z.get("dir", z.get("direction", "long")) in ("long", 1) else -1
             events.append({
@@ -126,16 +134,17 @@ def process_contract(contract: str, parquet_path: Path) -> pd.DataFrame:
             })
         print(f"    -> {len(res_hft.get('zones', [])):,} eventos HFTZones2.")
     except Exception as e:
-        print(f"    -> HFTZones2 error o no-op: {e}")
+        print(f"    -> HFTZones2 error: {e}")
 
     # 4. VolTicksPOC2
     print("  [4/4] Ejecutando VolTicksPOC2...")
     try:
-        res_poc = voltickspoc2.run(ticks, params=voltickspoc2.DEFAULTS)
+        res_poc = voltickspoc2.run(ticks, bars25, fps25, params=voltickspoc2.DEFAULTS)
         for z in res_poc.get("zones", []):
-            idx = int(z.get("sig_idx", 0))
+            bar = int(z.get("created_bar", z.get("bar_idx", 0)))
+            idx = int(stops[bar] - 1) if bar < len(stops) else n_ticks - 1
             fill_idx = min(idx + 1, n_ticks - 1)
-            direction = 1 if z.get("dir", "long") == "long" else -1
+            direction = 1 if z.get("kind", "bullish") == "bullish" else -1
             events.append({
                 "ts_utc_ns": int(ticks.ts_ns[idx]),
                 "source_row": int(ticks.sequence[idx]),
@@ -148,12 +157,12 @@ def process_contract(contract: str, parquet_path: Path) -> pd.DataFrame:
                 "fill_source_row": int(ticks.sequence[fill_idx]),
                 "fill_price_ticks": int(ticks.price_ticks[fill_idx]),
                 "metadata_json": json.dumps({
-                    "poc_vol": float(z.get("poc_vol", 0.0)),
+                    "poc_vol": float(z.get("poc_volume", z.get("poc_vol", 0.0))),
                 }, separators=(",", ":")),
             })
         print(f"    -> {len(res_poc.get('zones', [])):,} eventos VolTicksPOC2.")
     except Exception as e:
-        print(f"    -> VolTicksPOC2 error o no-op: {e}")
+        print(f"    -> VolTicksPOC2 error: {e}")
 
     df = pd.DataFrame(events)
     if not df.empty:
