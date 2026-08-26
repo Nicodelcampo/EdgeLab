@@ -1785,3 +1785,37 @@ Once pares de archivos (.nrd de NinjaTrader Market Replay y .csv exportados) cub
 2. **Acoplamiento al reloj del sistema (ART = UTC-3):** Los timestamps generados por `DumpMarketDepth` adoptan la hora local de la máquina (ART = UTC-3), evidenciado por la coincidencia exacta de la pausa diaria de mantenimiento de CME (16:00–17:00 CDT = 18:00–19:00 ART). Cualquier conversor posterior a Parquet debe normalizar explícitamente el timezone a UTC teniendo en cuenta este offset.
 3. **Ausencia de orden intra-microsegundo:** El CSV carece de columna de secuencia del exchange CME (`seq_num`), y entre el 77 % y el 94 % de las filas comparten microsegundos idénticos.
 
+---
+
+## P-58 — paridad `aVolClusterPOI` en 60 ticks (GC 04-26): 68,3%, causa del faltante sin identificar
+
+**Asentada 2026-08-26.** Registro completo: `docs/research/AVOLCLUSTERPOI_60T_PARIDAD_INVESTIGACION_2026-08-26.md`.
+Commits: `919ff35`, `bfddd16`.
+
+**Estado:** `PARITY_PARTIAL_UNEXPLAINED`. NO es un PASS — no se declara paridad firmada
+sobre `aVolClusterPOI` en 60 ticks estilo `HFTZones2`/`VolTicksPOC2`.
+
+**Medido:** 123/180 zonas del oráculo NT8 coinciden exacto (precio, volumen, timestamp
+al milisegundo) contra el kernel Python — las que coinciden, coinciden perfecto. El
+30% restante no tiene causa identificada.
+
+**Dos hipótesis plausibles, verificadas contra código, refutadas con evidencia empírica:**
+1. Warmup insuficiente del `SessionProfile` — probado con 114 sesiones reales de
+   calentamiento (cinta completa desde 2025-10-10): match rate **igual o peor** que sin
+   warmup (68,3% vs 70,0% del intento original).
+2. Ancla del bucket horario (`sessionBegin` = primer trade real vs
+   `sessionIterator.ActualSessionBegin` de NT8) — corregido con
+   `edgelab.bridge.sessions.session_begin_ns()` (ya validada 7/7): resultado **idéntico
+   byte a byte** al anterior, ni un solo match cambió.
+
+**Decisión de Nico (2026-08-26):** no seguir cavando por ahora — la meseta + placebo
+target-free ya dan evidencia independiente de estructura real (55× sobre el placebo,
+`AVOLCLUSTERPOI_RESOLUCION_RESULTADO_2026-08-26.md`), así que el 68% no bloquea seguir
+explorando target-free. Sí bloquea declarar paridad firmada.
+
+**Pendiente si se retoma:** diagnóstico quirúrgico de un bloque específico (valores
+intermedios lado a lado NT8↔Python) — candidatos de causa listados en el documento:
+interpolación de cuantil, desempate de mediana en punto flotante, diferencia real en
+los datos de origen (feed NT8 vs `.Last.txt`), o criterio de "sesión completa" para el
+FIFO de `lookback_sessions`.
+
