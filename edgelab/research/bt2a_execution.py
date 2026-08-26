@@ -47,7 +47,12 @@ def simulate(signals,ts_utc_ns,source_row,last_ticks,bid_ticks,ask_ticks,session
         entry_fill=entry_book+d*cost.slip_entry; target=entry_fill+d*target_ticks; stop=entry_fill-d*stop_ticks
         seconds=sig.get("time_stop_seconds"); deadline=None if seconds in (None,0) else int(ts[entry])+int(round(float(seconds)*1_000_000_000))
         exit_idx=None; exit_ref=None; reason=None; kind=None; session=sessions[entry]
-        for j in range(entry,len(ts)):
+        # The entry row is consumed by the fill. Exit evidence must come from
+        # a strictly later source row; one observation cannot open and close.
+        start_exit=entry+1
+        if start_exit>=len(ts) or sessions[start_exit]!=session:
+            exit_idx=entry; reason="session_close" if close_at_session_end else "data_edge"; kind="market"
+        for j in range(start_exit,len(ts)):
             if sessions[j]!=session: break
             px=int(last[j]); hit_target=px>=target if d>0 else px<=target; hit_stop=px<=stop if d>0 else px>=stop
             if hit_target: exit_idx=j; exit_ref=target; reason="target"; kind="target"; break
