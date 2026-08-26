@@ -1,4 +1,5 @@
 import copy,pytest
+from pathlib import Path
 from edgelab.research.bt2a_event_store import canonical_sha256,validate_event_checkpoint
 
 def checkpoint():
@@ -10,3 +11,5 @@ def test_checkpoint_identity_and_tamper_detection():
  value=checkpoint(); assert len(validate_event_checkpoint(value,contract='GC',session='S',sample_registry_sha256='a',input_registry_sha256='b'))==2
  bad=copy.deepcopy(value); bad['events'][0]['direction']=-1
  with pytest.raises(RuntimeError): validate_event_checkpoint(bad,contract='GC',session='S',sample_registry_sha256='a',input_registry_sha256='b')
+def test_p2a_reasserts_gate1_eligibility():
+ source=Path('tools/run_bt2a_gate2_p2a.py').read_text(); assert '~cache.eligible[abs_idx]' in source and '~cache.eligible[bt_idx]' in source
