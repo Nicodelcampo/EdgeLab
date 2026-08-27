@@ -3,6 +3,8 @@
 from __future__ import annotations
 import argparse,hashlib,importlib.metadata,json,os,platform,re,subprocess
 from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import numpy as np
 from edgelab.research.all5_runtime.ticks import load_canonical_parquet
 from edgelab.research.bt2_gate1_all5 import _context,_end,_labels,_start
