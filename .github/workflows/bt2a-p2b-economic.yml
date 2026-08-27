@@ -1,0 +1,48 @@
+name: BT2A P2-B economic contract
+
+on:
+  push:
+    branches:
+      - research/bt2a-p2b-economic-gc-v1-20260827
+    paths:
+      - 'specs/bt2a_p2b_gc_economic_v1.json'
+      - 'docs/research/BT2A_P2B_GC_ECONOMIC_PROTOCOL_V1_2026-08-27.md'
+      - 'tools/run_bt2a_p2b_gc_economic.py'
+      - 'tests/research/test_bt2a_p2b_gc_economic.py'
+      - '.github/workflows/bt2a-p2b-economic.yml'
+  pull_request:
+    paths:
+      - 'specs/bt2a_p2b_gc_economic_v1.json'
+      - 'tools/run_bt2a_p2b_gc_economic.py'
+      - 'tests/research/test_bt2a_p2b_gc_economic.py'
+      - '.github/workflows/bt2a-p2b-economic.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bt2a-p2b-economic-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: frozen P2-B spec and deterministic harness
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install locked dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements/core-bridge-dev.lock
+      - name: Compile runner
+        run: python -m py_compile tools/run_bt2a_p2b_gc_economic.py
+      - name: Validate JSON
+        run: python -m json.tool specs/bt2a_p2b_gc_economic_v1.json >/dev/null
+      - name: Run deterministic P2-B harness
+        run: python -m pytest -q tests/research/test_bt2a_p2b_gc_economic.py
