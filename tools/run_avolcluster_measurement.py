@@ -233,28 +233,43 @@ def holm_adjust(p_values: dict[str, float | None]) -> dict[str, float | None]:
     return out
 
 
-def pick_controls(panel: SessionPanel, touch_pos: int, horizon: int,
-                  spec: dict, event_id: str) -> list[int]:
+def pick_controls(
+    sessions: dict[tuple[str, int], SessionPanel],
+    event_key: tuple[str, int],
+    touch_pos: int,
+    horizon: int,
+    spec: dict,
+    event_id: str,
+) -> list[tuple[SessionPanel, int]]:
+    """Same contract/time bucket, other CME sessions, causal pre-vol match."""
     cfg = spec["hypothesis_1_compression"]["n_rand"]
-    row = panel.frame.iloc[touch_pos]
+    event_contract, event_session = event_key
+    event_panel = sessions[event_key]
+    row = event_panel.frame.iloc[touch_pos]
+    bucket, prevol = int(row["time_bucket"]), float(row["pre_touch_vol_ticks"])
+    blackout = int(cfg["blackout_bars_from_any_zone_touch"])
     eligible = []
-    for pos, cand in panel.frame.iterrows():
-        if bool(cand["is_zone_touch"]) or int(cand["time_bucket"]) != int(row["time_bucket"]):
+    for (contract, session), panel in sessions.items():
+        if contract != event_contract or session == event_session:
             continue
-        cvol, vol = float(cand["pre_touch_vol_ticks"]), float(row["pre_touch_vol_ticks"])
-        if not math.isfinite(cvol) or cvol <= 0 or forward_slice(panel, pos, horizon) is None:
-            continue
-        if panel.touch_positions.size and np.min(np.abs(panel.touch_positions - pos)) <= int(cfg["blackout_bars_from_any_zone_touch"]):
-            continue
-        eligible.append((abs(math.log(cvol / vol)), int(pos)))
-    eligible.sort(key=lambda x: (x[0], x[1]))
-    close = [pos for dist, pos in eligible if dist <= float(cfg["max_abs_log_prevol_distance"])]
-    pool = close if len(close) >= int(cfg["minimum_controls_per_event"]) else [p for _, p in eligible]
+        for pos, cand in panel.frame.iterrows():
+            if bool(cand["is_zone_touch"]) or int(cand["time_bucket"]) != bucket:
+                continue
+            cvol = float(cand["pre_touch_vol_ticks"])
+            if not math.isfinite(cvol) or cvol <= 0 or forward_slice(panel, pos, horizon) is None:
+                continue
+            if panel.touch_positions.size and np.min(np.abs(panel.touch_positions - pos)) <= blackout:
+                continue
+            eligible.append((abs(math.log(cvol / prevol)), int(session), int(pos), panel))
+    eligible.sort(key=lambda x: (x[0], x[1], x[2]))
+    close = [x for x in eligible if x[0] <= float(cfg["max_abs_log_prevol_distance"])]
+    pool = close if len(close) >= int(cfg["minimum_controls_per_event"]) else eligible
     k = int(cfg["controls_per_event"])
-    if len(pool) <= k:
-        return pool
-    rng = np.random.default_rng(stable_seed(int(cfg["deterministic_seed"]), event_id, horizon))
-    return sorted(map(int, rng.choice(np.array(pool), size=k, replace=False)))
+    if len(pool) > k:
+        rng = np.random.default_rng(stable_seed(int(cfg["deterministic_seed"]), event_id, horizon))
+        chosen = sorted(map(int, rng.choice(np.arange(len(pool)), size=k, replace=False)))
+        pool = [pool[i] for i in chosen]
+    return [(panel, pos) for _dist, _session, pos, panel in pool]
 
 
 def run_h1(sessions: dict, spec: dict) -> tuple[dict, list[dict]]:
@@ -274,8 +289,8 @@ def run_h1(sessions: dict, spec: dict) -> tuple[dict, list[dict]]:
                     continue
                 eligible_events += 1
                 event_id = f"{contract}|{session}|{row['zone_id']}"
-                controls = pick_controls(panel, int(pos), horizon, spec, event_id)
-                ys = [range_outcome(panel, p, horizon) for p in controls]
+                controls = pick_controls(sessions, (contract, session), int(pos), horizon, spec, event_id)
+                ys = [range_outcome(control_panel, p, horizon) for control_panel, p in controls]
                 ys = [float(x) for x in ys if x is not None]
                 if len(ys) < int(cfg["n_rand"]["minimum_controls_per_event"]):
                     continue
@@ -493,6 +508,10 @@ def main(argv: Iterable[str] | None = None) -> int:
         if gs["dirty"] and not (args.preflight_only and args.allow_dirty):
             raise MeasurementAbort("ABSTAIN_INPUT_INTEGRITY", "dirty/unavailable worktree")
         panel, diag = validate_panel(load_table(args.panel), spec)
+        expected_sessions = int(spec["population"]["sessions_expected"])
+        if diag["sessions"] != expected_sessions:
+            raise MeasurementAbort("ABSTAIN_INPUT_INTEGRITY",
+                                   f"expected {expected_sessions} contract-sessions; got {diag['sessions']}")
         base = {"schema_version": SCHEMA, "generated_utc": datetime.now(timezone.utc).isoformat(),
                 "spec_path": str(args.spec), "spec_sha256": sha256_file(args.spec),
                 "panel_path": str(args.panel), "panel_sha256": sha256_file(args.panel),
