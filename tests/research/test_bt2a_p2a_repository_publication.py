@@ -110,3 +110,11 @@ def test_publication_firewall_is_fail_closed() -> None:
         "CONFIRMATORY_ELIGIBLE": False,
         "PROMOTION_ELIGIBLE": False,
     }
+
+
+if __name__ == "__main__":
+    test_aggregate_result_reconstructs_frozen_payload()
+    test_complete_checkpoint_inventory_reconstructs()
+    test_complete_source_package_inventory_reconstructs()
+    test_publication_firewall_is_fail_closed()
+    print("PASS_BT2A_P2A_REPOSITORY_PUBLICATION")
