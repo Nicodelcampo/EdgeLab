@@ -8,7 +8,7 @@
 
 ## 0. Veredicto epistemológico previo
 
-El diseño, el detector y la selección de features son **target-free**. La ejecución formal **sí abre trayectorias futuras de precio** para medir rango, MFE, MAE y primer pasaje:
+El diseño, detector y selección de features son **target-free**. La ejecución formal **sí abre trayectorias futuras de precio** para medir rango, MFE, MAE y primer pasaje:
 
 ```text
 DESIGN_TARGET_FREE=true
@@ -87,13 +87,15 @@ Se excluye la barra del toque. Ventana incompleta/no contigua dentro de la sesi�
 
 Hasta 20 controles por evento:
 
-- mismo contrato, sesión y bucket de 30 minutos;
+- mismo contrato y bucket session-relative de 30 minutos, pero **otra sesión CME**;
 - no son primeros toques;
-- blackout de 60 barras de cualquier primer toque;
+- en la sesión control, blackout de 60 barras de cualquier primer toque;
 - preferencia `|log(vol_control/vol_zone)|<=log(1.25)`; fallback a vecinos de pre-vol del mismo estrato;
 - mínimo cinco controles;
 - seed `2026082701`;
 - match rate mínimo 80%.
+
+La sesión focal se excluye porque “misma sesión + mismo bucket de 30 minutos + blackout de 60 barras” define un conjunto vacío y porque una ventana control forward no debe solaparse con el episodio focal.
 
 ```text
 D_i(H)=Y_zone,i(H)-mean_j(Y_NRAND,ij(H))
@@ -145,7 +147,7 @@ Anchor: close de la barra del primer toque; trayectoria desde `t+1`; H=30.
 
 ```text
 MFE = máxima excursión favorable
-aMAE = máxima excursión adversa
+MAE = máxima excursión adversa
 d_hat_global = median(MFE)-median(MAE)
 ```
 
@@ -182,7 +184,7 @@ Decisión:
 4. creadora no elegible;
 5. episodios únicos;
 6. forward dentro de sesión y contiguo;
-7. blackout/match determinista;
+7. N_RAND cross-session, blackout y match determinista;
 8. signos de votos;
 9. conflicto abstiene;
 10. doble pasaje misma barra vale cero;
