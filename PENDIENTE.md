@@ -1828,3 +1828,25 @@ interpolación de cuantil, desempate de mediana en punto flotante, diferencia re
 los datos de origen (feed NT8 vs `.Last.txt`), o criterio de "sesión completa" para el
 FIFO de `lookback_sessions`.
 
+---
+
+## P-59 · Lotes de L1/L2 real de GC subidos a Notion — mismo riesgo que P-18, otra plataforma
+
+**Asentada 2026-08-26. Confirmada por Nico: ya se subieron.** Decisión de Nico: seguir,
+sin remediación por ahora ("no pasó nada").
+
+Encontrados en `E:\DatosNT8\subir_a_notion_menor_200mb\`: múltiples zips (`gc_canonical_l2_lote*`,
+`gc_jun26_l2_lote*`, `gc_aug26_l2_loteD*`) con parquets reales de `l1_quotes`/`l2_depth`
+de GC (may-jun 2026), fraccionados a <200MB para el límite de adjuntos de Notion.
+Verificado abriendo el contenido: son parquets reales, no sintéticos ni derivados.
+
+Misma familia de riesgo que P-18 (ver `docs/research/CME_Market_Data_Policy_Cloud_Kaggle.html`):
+la prohibición de subir ticks/L1/L2 reales a una nube de terceros no es específica de
+Kaggle — depende de que la plataforma no sea "Service Facilitator" homologado por CME
+y de la cláusula de licencia sobre contenido de usuario, algo estándar en casi cualquier
+SaaS, Notion incluido. No verificado si la carpeta `Notion/` en disco refleja subida
+completa o parcial.
+
+**No se toma acción de remediación** por decisión explícita de Nico. Se registra para
+trazabilidad, no como bloqueante activo.
+
