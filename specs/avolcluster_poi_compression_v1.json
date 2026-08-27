@@ -7,20 +7,9 @@
   "authority": {
     "base_branch": "foundation/f0b-compatibility-probe",
     "base_commit": "8ebda7840bc3f0a7e39f3561db75a2c9090fd55f",
-    "kernel": {
-      "path": "edgelab/bridge/indicators/avolclusterpoi.py",
-      "version": "0.5",
-      "git_blob_sha1": "e472a06899e3d76287072fdbeef4b95604101eb3"
-    },
-    "nt8_contract": {
-      "path": "nt8/aVolClusterPOI.cs",
-      "version": "0.5",
-      "git_blob_sha1": "d512d91a606d41609b21ef244c896ead1dc52a10"
-    },
-    "prior_spec": {
-      "path": "specs/avolcluster_poi_v0.json",
-      "git_blob_sha1": "e0229ce76f9879bcd309819136d407b018da29b4"
-    }
+    "kernel": {"path": "edgelab/bridge/indicators/avolclusterpoi.py", "version": "0.5", "git_blob_sha1": "e472a06899e3d76287072fdbeef4b95604101eb3"},
+    "nt8_contract": {"path": "nt8/aVolClusterPOI.cs", "version": "0.5", "git_blob_sha1": "d512d91a606d41609b21ef244c896ead1dc52a10"},
+    "prior_spec": {"path": "specs/avolcluster_poi_v0.json", "git_blob_sha1": "e0229ce76f9879bcd309819136d407b018da29b4"}
   },
   "epistemic_scope": {
     "design_is_target_free": true,
@@ -81,13 +70,9 @@
       "instrument", "contract", "session_id", "bar_index_in_session", "ts_utc_ns", "time_bucket",
       "high_tick", "low_tick", "close_tick", "pre_touch_vol_ticks", "is_zone_touch", "kind",
       "zone_id", "created_ts_utc_ns", "lower_tick", "upper_tick", "zone_score", "delta_z",
-      "penetration_ticks", "displacement_ticks", "bt2a_direction", "bt2_direction", "vwap_tick",
-      "val_tick", "vah_tick"
+      "penetration_ticks", "displacement_ticks", "bt2a_direction", "bt2_direction", "vwap_tick", "val_tick", "vah_tick"
     ],
-    "null_values": {
-      "zone_fields_on_non_touch_rows": "allowed",
-      "trigger_fields": "zero_or_null_means_no_vote"
-    },
+    "null_values": {"zone_fields_on_non_touch_rows": "allowed", "trigger_fields": "zero_or_null_means_no_vote"},
     "causal_feature_rule": "Every feature at row t must use only information with source_row <= t. Daily VWAP/VA are expanding as-of values, never final-session values.",
     "pre_touch_volatility": {
       "definition": "median one-minute true range over the 30 complete bars ending at t-1",
@@ -104,11 +89,13 @@
     "n_rand": {
       "controls_per_event": 20,
       "same_contract": true,
-      "same_session": true,
+      "same_session": false,
+      "exclude_event_session": true,
       "same_time_bucket": true,
       "max_abs_log_prevol_distance": 0.22314355131420976,
       "fallback": "nearest_prevol_candidates_within_same_stratum",
       "blackout_bars_from_any_zone_touch": 60,
+      "blackout_applies_within_control_session": true,
       "deterministic_seed": 2026082701,
       "minimum_controls_per_event": 5,
       "minimum_event_match_rate": 0.8
@@ -124,15 +111,8 @@
     "primary_horizon_bars": 30,
     "anchor": "close_tick_of_first_touch_bar; measurement begins at t+1",
     "trigger_votes": {
-      "delta_absorption": {
-        "eligible_if": "abs(delta_z)>=2 and penetration_ticks>=1 and abs(displacement_ticks)<=1",
-        "predicted_direction": "minus_sign(delta_z)"
-      },
-      "bigtrap_confluence": {
-        "eligible_values": [-1, 1],
-        "source_columns": ["bt2a_direction", "bt2_direction"],
-        "spatiotemporal_match_must_be_enforced_by_builder": true
-      },
+      "delta_absorption": {"eligible_if": "abs(delta_z)>=2 and penetration_ticks>=1 and abs(displacement_ticks)<=1", "predicted_direction": "minus_sign(delta_z)"},
+      "bigtrap_confluence": {"eligible_values": [-1, 1], "source_columns": ["bt2a_direction", "bt2_direction"], "spatiotemporal_match_must_be_enforced_by_builder": true},
       "value_context": {
         "long_if": "close_tick<val_tick and close_tick<vwap_tick",
         "short_if": "close_tick>vah_tick and close_tick>vwap_tick",
