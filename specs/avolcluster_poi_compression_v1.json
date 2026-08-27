@@ -1,0 +1,220 @@
+{
+  "schema_version": "avolcluster_poi_compression_v1.0.0",
+  "status": "FROZEN_METHOD",
+  "frozen_at_utc": "2026-08-27T18:33:00Z",
+  "title": "aVolClusterPOI v0.5 compression and directional-trigger measurement",
+  "north_star_sha256": "d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1",
+  "authority": {
+    "base_branch": "foundation/f0b-compatibility-probe",
+    "base_commit": "8ebda7840bc3f0a7e39f3561db75a2c9090fd55f",
+    "kernel": {
+      "path": "edgelab/bridge/indicators/avolclusterpoi.py",
+      "version": "0.5",
+      "git_blob_sha1": "e472a06899e3d76287072fdbeef4b95604101eb3"
+    },
+    "nt8_contract": {
+      "path": "nt8/aVolClusterPOI.cs",
+      "version": "0.5",
+      "git_blob_sha1": "d512d91a606d41609b21ef244c896ead1dc52a10"
+    },
+    "prior_spec": {
+      "path": "specs/avolcluster_poi_v0.json",
+      "git_blob_sha1": "e0229ce76f9879bcd309819136d407b018da29b4"
+    }
+  },
+  "epistemic_scope": {
+    "design_is_target_free": true,
+    "detector_is_target_free": true,
+    "execution_reads_future_price_path": true,
+    "pnl_accessed": false,
+    "returns_used_for_filtering_or_tuning": false,
+    "interpretation": "Preregistered path-outcome diagnostic. Not P&L, not an edge, not a promotion gate.",
+    "forbidden_claims": ["edge", "alpha demonstrated", "profitable", "SL/TP optimized", "holdout confirmed"]
+  },
+  "population": {
+    "instrument": "NQ",
+    "contracts_exact": 5,
+    "sessions_expected": 234,
+    "session_id_format": "YYYYMMDD_CME_TRADE_DATE",
+    "session_id_max_inclusive": "20260630",
+    "holdout_session_id_min_inclusive": "20260701",
+    "holdout_end_inclusive": "20261231",
+    "zone_kind": "OFF_PRICE",
+    "event_unit": "first_touch_episode",
+    "creation_bar_is_never_eligible_for_touch": true,
+    "one_first_touch_per_zone": true,
+    "episode_collapse": {
+      "same_contract_and_bar": true,
+      "representative_order": ["earliest_created_ts_utc_ns", "highest_zone_score", "lowest_zone_id_lexicographic"]
+    },
+    "minimum_information_gate": {
+      "events": 400,
+      "cluster_sessions": 40,
+      "note": "A count gate is not an unconditional guarantee of 80% power. The power target holds only under the frozen MDE/ICC assumptions."
+    }
+  },
+  "detector": {
+    "window_bars": 10,
+    "bar_type": "time_1m",
+    "calculate": "OnBarClose",
+    "availability": "B_plus_1",
+    "median_multiplier": 2.0,
+    "median_definition": "upper_median",
+    "max_gap_ticks": 1,
+    "min_cluster_ticks": 2,
+    "one_cluster_per_block": true,
+    "time_bucket_minutes": 30,
+    "bucket_anchor": "session_relative_bar_close_minus_1_second",
+    "lookback_sessions": 20,
+    "detection_percentile": 98.0,
+    "quantile": "empirical_no_interpolation",
+    "min_samples_per_bucket": 20,
+    "history": "prior_complete_sessions_only_fifo_by_session",
+    "fallback_global_history": false,
+    "predictive_filter": false,
+    "quality_score_gate": false,
+    "max_age_bars": 0
+  },
+  "measurement_panel": {
+    "grain": "one 1-minute anchor row per contract and CME session after episode collapse",
+    "required_columns": [
+      "instrument", "contract", "session_id", "bar_index_in_session", "ts_utc_ns", "time_bucket",
+      "high_tick", "low_tick", "close_tick", "pre_touch_vol_ticks", "is_zone_touch", "kind",
+      "zone_id", "created_ts_utc_ns", "lower_tick", "upper_tick", "zone_score", "delta_z",
+      "penetration_ticks", "displacement_ticks", "bt2a_direction", "bt2_direction", "vwap_tick",
+      "val_tick", "vah_tick"
+    ],
+    "null_values": {
+      "zone_fields_on_non_touch_rows": "allowed",
+      "trigger_fields": "zero_or_null_means_no_vote"
+    },
+    "causal_feature_rule": "Every feature at row t must use only information with source_row <= t. Daily VWAP/VA are expanding as-of values, never final-session values.",
+    "pre_touch_volatility": {
+      "definition": "median one-minute true range over the 30 complete bars ending at t-1",
+      "lookback_bars": 30,
+      "minimum_positive_ticks": 1.0
+    }
+  },
+  "hypothesis_1_compression": {
+    "primary_horizon_bars": 30,
+    "secondary_horizons_bars": [5, 15, 60],
+    "outcome": "log1p((max_high_tick_minus_min_low_tick_over_t_plus_1_to_t_plus_H)/pre_touch_vol_ticks)",
+    "estimand": "equal_session_weighted_mean(zone_outcome_minus_mean_matched_N_RAND_outcome)",
+    "alternative": "greater_than_zero",
+    "n_rand": {
+      "controls_per_event": 20,
+      "same_contract": true,
+      "same_session": true,
+      "same_time_bucket": true,
+      "max_abs_log_prevol_distance": 0.22314355131420976,
+      "fallback": "nearest_prevol_candidates_within_same_stratum",
+      "blackout_bars_from_any_zone_touch": 60,
+      "deterministic_seed": 2026082701,
+      "minimum_controls_per_event": 5,
+      "minimum_event_match_rate": 0.8
+    },
+    "primary_decision": {
+      "supported_if": ["information_gate_passes", "control_match_rate_ge_0.8", "wild_cluster_bootstrap_ci95_lower_gt_0", "one_sided_p_le_0.05"],
+      "refuted_if": "wild_cluster_bootstrap_ci95_upper_le_0",
+      "otherwise": "INCONCLUSIVE"
+    },
+    "secondary_multiplicity": "Holm correction across H=5,15,60; secondary results never override the H=30 verdict"
+  },
+  "hypothesis_2_direction": {
+    "primary_horizon_bars": 30,
+    "anchor": "close_tick_of_first_touch_bar; measurement begins at t+1",
+    "trigger_votes": {
+      "delta_absorption": {
+        "eligible_if": "abs(delta_z)>=2 and penetration_ticks>=1 and abs(displacement_ticks)<=1",
+        "predicted_direction": "minus_sign(delta_z)"
+      },
+      "bigtrap_confluence": {
+        "eligible_values": [-1, 1],
+        "source_columns": ["bt2a_direction", "bt2_direction"],
+        "spatiotemporal_match_must_be_enforced_by_builder": true
+      },
+      "value_context": {
+        "long_if": "close_tick<val_tick and close_tick<vwap_tick",
+        "short_if": "close_tick>vah_tick and close_tick>vwap_tick",
+        "inside_value_vote": 0,
+        "daily_levels": "expanding_as_of_touch"
+      }
+    },
+    "composite": {
+      "exclude_avol_off_price_direction_from_votes": true,
+      "minimum_nonzero_votes": 2,
+      "require_unanimity_of_nonzero_votes": true,
+      "tie_or_conflict": "ABSTAIN_EVENT"
+    },
+    "excursion": {
+      "mfe_ticks": "max favorable excursion from anchor over t+1..t+H",
+      "mae_ticks": "max adverse excursion from anchor over t+1..t+H",
+      "d_hat_descriptive": "median(MFE)-median(MAE)",
+      "primary_cluster_estimand": "mean across sessions of [median_session(MFE)-median_session(MAE)]",
+      "ratio_secondary": "geometric mean across sessions of (median_MFE+0.5)/(median_MAE+0.5)"
+    },
+    "first_passage": {
+      "symmetric_barrier_ticks": "max(1,ceil(pre_touch_vol_ticks))",
+      "same_bar_both_sides": "tie_zero",
+      "unresolved_by_H": "censor_zero",
+      "score": {"predicted_first": 1, "adverse_first": -1, "tie_or_censor": 0}
+    },
+    "null_models": {
+      "mirror": "invert predicted direction on the same event and same path",
+      "time_shuffle": {
+        "method": "nonzero circular shift of composite directions within contract-session",
+        "replications": 9999,
+        "seed": 2026082702,
+        "minimum_permutable_session_fraction": 0.8
+      }
+    },
+    "primary_decision": {
+      "supported_if": ["information_gate_passes_on_composite_events", "wild_cluster_bootstrap_d_ci95_lower_gt_0", "wild_cluster_bootstrap_first_passage_ci95_lower_gt_0", "time_shuffle_one_sided_p_le_0.05"],
+      "refuted_if": "both primary ci95 upper bounds are <=0",
+      "otherwise": "INCONCLUSIVE"
+    },
+    "individual_trigger_families": "secondary only; Holm correction; cannot rescue a failed composite"
+  },
+  "inference": {
+    "cluster": "contract_x_session_id",
+    "session_weighting": "equal",
+    "confidence_level": 0.95,
+    "wild_cluster_bootstrap": {
+      "weights": "Rademacher",
+      "replications": 9999,
+      "seed": 2026082703,
+      "ci": "percentile_on_centered_cluster_residuals",
+      "p_value": "one_sided_sign_flip_under_zero_null"
+    },
+    "alpha_primary": 0.05,
+    "power_design": {
+      "target": 0.8,
+      "standardized_mde": 0.2,
+      "assumed_max_icc": 0.05,
+      "minimum_events": 400,
+      "minimum_clusters": 40,
+      "warning": "If empirical dependence or attrition violates these assumptions, verdict is ABSTAIN_POWER; N alone does not prove power."
+    }
+  },
+  "firewall": {
+    "reject_session_id_ge": "20260701",
+    "reject_unknown_or_open_ended_session_range": true,
+    "forbid_columns_or_tokens": ["pnl", "profit", "commission", "slippage", "target_ticks", "stop_ticks", "winner"],
+    "forbid_parameter_sweep": true,
+    "forbid_post_hoc_exclusions": true,
+    "forbid_sl_tp_interpretation": true,
+    "dirty_worktree": "ABSTAIN unless --allow-dirty is used with --preflight-only"
+  },
+  "verdict_labels": [
+    "ABSTAIN_INPUT_INTEGRITY", "ABSTAIN_HOLDOUT_FIREWALL", "ABSTAIN_POWER_H1", "ABSTAIN_POWER_H2",
+    "H1_COMPRESSION_SUPPORTED", "H1_COMPRESSION_REFUTED", "H1_COMPRESSION_INCONCLUSIVE",
+    "H2_DIRECTION_SUPPORTED", "H2_DIRECTION_REFUTED", "H2_DIRECTION_INCONCLUSIVE"
+  ],
+  "outputs": {
+    "json": "avolcluster_measurement_result.json",
+    "event_audit_csv": "avolcluster_measurement_event_audit.csv",
+    "manifest": "avolcluster_measurement_manifest.json",
+    "hash_algorithm": "SHA-256",
+    "allow_nan": false
+  }
+}
