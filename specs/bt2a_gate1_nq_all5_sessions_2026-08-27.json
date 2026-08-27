@@ -1,0 +1,51 @@
+{
+  "schema": "bt2a_gate1_nq_all5_compact_session_registry_v1",
+  "status": "FROZEN_FOR_POST_OUTCOME_REPLICATION",
+  "generated_utc": "2026-08-27T17:12:00.000000+00:00",
+  "instrument": "NQ",
+  "tick_size": 0.25,
+  "campaign_outcomes_opened": false,
+  "frozen_before_this_rerun": true,
+  "confirmatory_eligible": false,
+  "edge_declared": false,
+  "preexisting_outcome_exposure": "NO_PREVIOUS_NQ_GATE1_RUN",
+  "selection": {
+    "contracts": ["NQ 09-25", "NQ 12-25", "NQ 03-26", "NQ 06-26", "NQ 09-26"],
+    "n_sessions": 234,
+    "policy": "non-overlapping mechanical volume-crossover front-month NQ contract chain; CME ETH Monday-Friday sessions in fixed contract windows; strictly trimmed at 2026-06-30 before holdout",
+    "window_start": "20250804",
+    "window_end": "20260630",
+    "contract_windows": {
+      "NQ 09-25": {"start": "20250804", "end": "20250915"},
+      "NQ 12-25": {"start": "20250916", "end": "20251212"},
+      "NQ 03-26": {"start": "20251215", "end": "20260313"},
+      "NQ 06-26": {"start": "20260316", "end": "20260612"},
+      "NQ 09-26": {"start": "20260615", "end": "20260630"}
+    },
+    "exclusions": {
+      "weekend_labels": "technical ghost labels; not valid CME trade-date sessions"
+    }
+  },
+  "contract_session_counts": {
+    "NQ 09-25": 31,
+    "NQ 12-25": 64,
+    "NQ 03-26": 63,
+    "NQ 06-26": 64,
+    "NQ 09-26": 12
+  },
+  "initial_warmup_session": {
+    "NQ 09-25": "20250801",
+    "NQ 12-25": "20250915",
+    "NQ 03-26": "20251212",
+    "NQ 06-26": "20260313",
+    "NQ 09-26": "20260612"
+  },
+  "closed_weekday_exclusions": {
+    "NQ 09-25": [],
+    "NQ 12-25": [],
+    "NQ 03-26": ["20251225", "20260101"],
+    "NQ 06-26": ["20260403"],
+    "NQ 09-26": []
+  },
+  "expansion_rule": "enumerate Monday-Friday dates in each fixed contract window, remove closed_weekday_exclusions, and use the previous emitted date as warmup after the contract-specific initial warmup"
+}

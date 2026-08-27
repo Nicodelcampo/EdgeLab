@@ -115,11 +115,12 @@ def extract_events_for_contract(
     contract: str,
     parquet_path: Path,
     valid_sessions: set[str],
+    instrument: str = "GC",
     params: dict | None = None,
 ) -> list[dict]:
     """Run all four indicators and collect events within valid sessions only."""
-    print(f"\n--- {contract} ({parquet_path.name}) ---")
-    ticks = load_canonical_parquet(parquet_path, contract=contract, instrument="GC")
+    print(f"\n--- {contract} ({parquet_path.name}) [Instrument: {instrument}] ---")
+    ticks = load_canonical_parquet(parquet_path, contract=contract, instrument=instrument)
     sess = session_ids(ticks.ts_ns)
 
     # Convert integer session labels to date strings for filtering
@@ -367,6 +368,9 @@ def main():
     all_events = []
     contract_summaries = {}
 
+    instrument = str(sess_reg.get("instrument", "GC"))
+    print(f"Target Instrument: {instrument}")
+
     for contract in contracts:
         valid_sessions = sessions_by_contract.get(contract, set())
         ckey = contract.replace(" ", "_")
@@ -375,7 +379,7 @@ def main():
                                              f"{ckey}_ticks.parquet")
 
         events = extract_events_for_contract(
-            contract, pq_file, valid_sessions)
+            contract, pq_file, valid_sessions, instrument=instrument)
 
         # Sort and deduplicate
         df = pd.DataFrame(events)
