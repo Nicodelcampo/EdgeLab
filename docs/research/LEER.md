@@ -33,3 +33,7 @@ No leer esa clasificación como P&L, ganador, SL/TP, edge o promoción. P2-B, ou
 - H-Z2A, HFTZones, GEX, YM, LUX y ZAMR permanecen como historia o líneas aparcadas.
 
 El resto de `docs/research/` es archivo, evidencia o una línea distinta. No se mueve ni se borra sólo para ordenar visualmente.
+
+## Aporte al referente
+
+El índice apunta primero al resultado P2-A efectivamente ejecutado y a su firewall, evitando que el siguiente auditor arranque desde el estado del sweep del 24-ago o confunda mecanismo con estrategia económica.
