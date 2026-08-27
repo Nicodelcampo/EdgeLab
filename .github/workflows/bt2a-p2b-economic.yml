@@ -6,20 +6,25 @@ on:
       - research/bt2a-p2b-economic-gc-v1-20260827
     paths:
       - 'specs/bt2a_p2b_gc_economic_v1.json'
+      - 'specs/bt2a_macro_calendar_gc_20250804_20260630_v1.json'
       - 'docs/research/BT2A_P2B_GC_ECONOMIC_PROTOCOL_V1_2026-08-27.md'
       - 'tools/run_bt2a_p2b_gc_economic.py'
       - 'tests/research/test_bt2a_p2b_gc_economic.py'
+      - 'tests/research/test_bt2a_macro_calendar.py'
       - '.github/workflows/bt2a-p2b-economic.yml'
   pull_request:
     paths:
       - 'specs/bt2a_p2b_gc_economic_v1.json'
+      - 'specs/bt2a_macro_calendar_gc_20250804_20260630_v1.json'
       - 'tools/run_bt2a_p2b_gc_economic.py'
       - 'tests/research/test_bt2a_p2b_gc_economic.py'
+      - 'tests/research/test_bt2a_macro_calendar.py'
       - '.github/workflows/bt2a-p2b-economic.yml'
   workflow_dispatch:
 
 permissions:
   contents: read
+  pull-requests: write
 
 concurrency:
   group: bt2a-p2b-economic-${{ github.ref }}
@@ -43,6 +48,18 @@ jobs:
       - name: Compile runner
         run: python -m py_compile tools/run_bt2a_p2b_gc_economic.py
       - name: Validate JSON
-        run: python -m json.tool specs/bt2a_p2b_gc_economic_v1.json >/dev/null
+        run: |
+          python -m json.tool specs/bt2a_p2b_gc_economic_v1.json >/dev/null
+          python -m json.tool specs/bt2a_macro_calendar_gc_20250804_20260630_v1.json >/dev/null
       - name: Run deterministic P2-B harness
-        run: python -m pytest -q tests/research/test_bt2a_p2b_gc_economic.py
+        run: >-
+          python -m pytest -q
+          tests/research/test_bt2a_p2b_gc_economic.py
+          tests/research/test_bt2a_macro_calendar.py
+      - name: Report frozen calendar SHA-256
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          SHA=$(sha256sum specs/bt2a_macro_calendar_gc_20250804_20260630_v1.json | cut -d' ' -f1)
+          gh pr comment "${{ github.event.pull_request.number }}" --body "P2-B frozen macro calendar SHA-256: \`$SHA\`"
