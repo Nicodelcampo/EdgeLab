@@ -307,6 +307,45 @@ def extract_events_for_contract(
     return events
 
 
+def process_contract_worker(args_tuple):
+    contract, pq_file, valid_sessions, instrument, output_dir = args_tuple
+    ckey = contract.replace(" ", "_")
+    events = extract_events_for_contract(
+        contract, pq_file, valid_sessions, instrument=instrument)
+
+    # Sort and deduplicate
+    df = pd.DataFrame(events)
+    if not df.empty:
+        df = df.sort_values(
+            ["ts_utc_ns", "source_row", "indicator", "direction"]
+        ).reset_index(drop=True)
+        before = len(df)
+        df = df.drop_duplicates(
+            subset=["ts_utc_ns", "source_row", "indicator", "direction"],
+            keep="first"
+        ).reset_index(drop=True)
+        n_dedup = before - len(df)
+        if n_dedup > 0:
+            print(f"  WARNING ({contract}): dropped {n_dedup} duplicate events")
+
+    out_file = output_dir / f"{ckey}_event_store.parquet"
+    df.to_parquet(out_file, index=False, engine="pyarrow")
+
+    by_ind = df["indicator"].value_counts().to_dict() if not df.empty else {}
+    summary = {
+        "total_events": len(df),
+        "by_indicator": by_ind,
+        "sessions_in_registry": len(valid_sessions),
+        "sessions_with_events": int(df["session_id"].nunique())
+                                if not df.empty else 0,
+        "parquet_file": out_file.name,
+        "parquet_bytes": out_file.stat().st_size,
+        "parquet_sha256": file_sha256(out_file),
+    }
+    print(f"  => [{contract}] Finished -> {out_file.name}: {len(df):,} events")
+    return contract, summary, events
+
+
 # ── Main ──────────────────────────────────────────────────────────────
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
@@ -318,6 +357,8 @@ def main():
                     help="Compact session registry JSON (all5)")
     ap.add_argument("--input-registry", type=Path, required=True,
                     help="Input registry JSON (all5)")
+    ap.add_argument("--workers", type=int, default=5,
+                    help="Number of concurrent worker processes (default: 5)")
     ap.add_argument("--root", type=Path, default=REPO_ROOT)
     ap.add_argument("--allow-dirty", action="store_true",
                     help="Allow running on dirty worktree (diagnostic only)")
@@ -347,6 +388,10 @@ def main():
 
     # Validate input parquets exist and match hashes
     input_contracts = input_reg.get("contracts", {})
+    worker_tasks = []
+    instrument = str(sess_reg.get("instrument", "GC"))
+    print(f"Target Instrument: {instrument}")
+
     for contract in contracts:
         ckey = contract.replace(" ", "_")
         entry = input_contracts.get(contract, {})
@@ -362,57 +407,27 @@ def main():
                     f"INPUT HASH MISMATCH for {contract}: "
                     f"expected {expected_sha[:16]}…, got {actual[:16]}…")
             print(f"  {contract}: input hash verified ✓")
+        valid_sessions = sessions_by_contract.get(contract, set())
+        worker_tasks.append((contract, pq_file, valid_sessions, instrument, args.output_dir))
 
-    # Process each contract
+    # Process contracts in parallel
     args.output_dir.mkdir(parents=True, exist_ok=True)
     all_events = []
     contract_summaries = {}
 
-    instrument = str(sess_reg.get("instrument", "GC"))
-    print(f"Target Instrument: {instrument}")
+    import concurrent.futures
+    workers = min(args.workers, len(worker_tasks))
+    print(f"\nLaunching {len(worker_tasks)} contract extractions across {workers} parallel processes...")
 
-    for contract in contracts:
-        valid_sessions = sessions_by_contract.get(contract, set())
-        ckey = contract.replace(" ", "_")
-        entry = input_contracts.get(contract, {})
-        pq_file = args.data_dir / entry.get("parquet_file",
-                                             f"{ckey}_ticks.parquet")
+    if workers > 1:
+        with concurrent.futures.ProcessPoolExecutor(max_workers=workers) as executor:
+            results = list(executor.map(process_contract_worker, worker_tasks))
+    else:
+        results = [process_contract_worker(t) for t in worker_tasks]
 
-        events = extract_events_for_contract(
-            contract, pq_file, valid_sessions, instrument=instrument)
-
-        # Sort and deduplicate
-        df = pd.DataFrame(events)
-        if not df.empty:
-            df = df.sort_values(
-                ["ts_utc_ns", "source_row", "indicator", "direction"]
-            ).reset_index(drop=True)
-            # Deduplicate on (ts_utc_ns, source_row, indicator, direction)
-            before = len(df)
-            df = df.drop_duplicates(
-                subset=["ts_utc_ns", "source_row", "indicator", "direction"],
-                keep="first"
-            ).reset_index(drop=True)
-            n_dedup = before - len(df)
-            if n_dedup > 0:
-                print(f"  WARNING: dropped {n_dedup} duplicate events")
-
-        out_file = args.output_dir / f"{ckey}_event_store.parquet"
-        df.to_parquet(out_file, index=False, engine="pyarrow")
-
-        by_ind = df["indicator"].value_counts().to_dict() if not df.empty else {}
-        contract_summaries[contract] = {
-            "total_events": len(df),
-            "by_indicator": by_ind,
-            "sessions_in_registry": len(valid_sessions),
-            "sessions_with_events": int(df["session_id"].nunique())
-                                    if not df.empty else 0,
-            "parquet_file": out_file.name,
-            "parquet_bytes": out_file.stat().st_size,
-            "parquet_sha256": file_sha256(out_file),
-        }
+    for contract, summary, events in results:
+        contract_summaries[contract] = summary
         all_events.extend(events)
-        print(f"  => {out_file.name}: {len(df):,} events")
 
     # Validate: no event past holdout
     if all_events:
