@@ -238,6 +238,7 @@ def extract_events_for_contract(
             continue
         if fill_idx == sig_idx:
             continue
+        h_ticks = int(round(abs(float(z["top"]) - float(z["bottom"])) / ticks.tick_size))
         events.append({
             "ts_utc_ns": int(ticks.ts_ns[sig_idx]),
             "source_row": int(ticks.sequence[sig_idx]),
@@ -250,16 +251,13 @@ def extract_events_for_contract(
             "fill_source_row": int(ticks.sequence[fill_idx]),
             "fill_price_ticks": int(ticks.price_ticks[fill_idx]),
             "metadata_json": json.dumps({
-                "bucket": str(z["bucket"]),
-                "height_ticks": int(z["height_ticks"]),
-                "pasos": int(z["pasos"]),
-                "valid_steps": int(z["valid_steps"]),
-                "avg_ms": round(float(z["avg_ms"]), 3),
-                "total_ms": round(float(z["total_ms"]), 1),
-                "total_vol": round(float(z["total_vol"]), 2),
+                "bucket": str(z.get("bucket", "")),
+                "height_ticks": h_ticks,
                 "upper": float(z["top"]),
                 "lower": float(z["bottom"]),
-                "calib_id": int(z["calib_id"]),
+                "calib_id": int(z.get("calib_id", 0)),
+                "touches": int(z.get("touches", 0)),
+                "kind": str(z.get("kind", "")),
             }, separators=(",", ":")),
         })
         n_hft += 1
@@ -283,6 +281,7 @@ def extract_events_for_contract(
             continue
         if fill_idx == sig_idx:
             continue
+        poc_t = int(round(((float(z["top"]) + float(z["bottom"])) / 2.0) / ticks.tick_size))
         events.append({
             "ts_utc_ns": int(ticks.ts_ns[sig_idx]),
             "source_row": int(ticks.sequence[sig_idx]),
@@ -290,13 +289,12 @@ def extract_events_for_contract(
             "session_id": str(sess_dates[sig_idx]),
             "indicator": "VolTicksPOC2",
             "direction": 1,    # VolTicksPOC2 is non-directional; use +1
-            "price_ticks": int(z["poc_tick"]),
+            "price_ticks": poc_t,
             "fill_ts_utc_ns": int(ticks.ts_ns[fill_idx]),
             "fill_source_row": int(ticks.sequence[fill_idx]),
             "fill_price_ticks": int(ticks.price_ticks[fill_idx]),
             "metadata_json": json.dumps({
-                "poc_tick": int(z["poc_tick"]),
-                "pct": round(float(z.get("pct", 0.0)), 6),
+                "poc_tick": poc_t,
                 "touches": int(z.get("touches", 0)),
                 "upper": float(z.get("top", 0.0)),
                 "lower": float(z.get("bottom", 0.0)),
