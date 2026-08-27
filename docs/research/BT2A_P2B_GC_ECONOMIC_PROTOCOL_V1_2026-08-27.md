@@ -94,13 +94,14 @@ El archivo incorpora las anomalías oficiales del lapse de apropiaciones:
 - NFP enero 2026: retrasado al `2026-02-11`;
 - CPI enero 2026: retrasado al `2026-02-13`.
 
-El SHA-256 de los bytes del calendario debe calcularse en el checkout limpio y
-quedar citado textualmente en la autorización:
+Identidad congelada del archivo:
 
-```powershell
-$CAL = "specs/bt2a_macro_calendar_gc_20250804_20260630_v1.json"
-$SHA = (Get-FileHash $CAL -Algorithm SHA256).Hash.ToLower()
+```text
+SHA-256 5f1a484858c7d0bdd997f7f6dafef014bae2f13debdb5bcce937d74257cbd9ca
 ```
+
+La autorización de ejecución debe citar ese SHA-256 textualmente. Un hash
+distinto produce `ABSTAIN` antes de abrir precios o P&L.
 
 ## Inferencia
 
@@ -111,6 +112,7 @@ tienen límite inferior positivo y `p_Holm≤0,05`. No se elige la mejor celda.
 ## Preflight
 
 ```powershell
+$SHA = "5f1a484858c7d0bdd997f7f6dafef014bae2f13debdb5bcce937d74257cbd9ca"
 python tools/run_bt2a_p2b_gc_economic.py `
   --event-store-dir E:\EdgeLab\bt2a_event_store `
   --data-dir E:\EdgeLab\gc_parquets `

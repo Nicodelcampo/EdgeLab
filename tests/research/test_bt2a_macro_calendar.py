@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 from collections import Counter
 from datetime import datetime, timezone
@@ -7,6 +8,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 CALENDAR = ROOT / "specs" / "bt2a_macro_calendar_gc_20250804_20260630_v1.json"
+SPEC = ROOT / "specs" / "bt2a_p2b_gc_economic_v1.json"
 
 
 def _dt(text: str) -> datetime:
@@ -38,6 +40,14 @@ def test_dst_conversions_and_cancellations_are_explicit():
     assert by_id["NFP-2026-02"].endswith("13:30:00Z")
     canceled = {(row["event_type"], row["reference_period"]) for row in value["canceled_releases"]}
     assert canceled == {("CPI", "2025-10"), ("NFP", "2025-10")}
+
+
+def test_calendar_sha256_is_bound_in_p2b_spec():
+    spec = json.loads(SPEC.read_text(encoding="utf-8"))
+    expected = spec["macro_exclusion"]["calendar_sha256"]
+    observed = hashlib.sha256(CALENDAR.read_bytes()).hexdigest()
+    assert observed == expected == "5f1a484858c7d0bdd997f7f6dafef014bae2f13debdb5bcce937d74257cbd9ca"
+    assert spec["macro_exclusion"]["calendar_dates_frozen_in_this_spec"] is True
 
 
 def test_calendar_firewall_remains_closed():
