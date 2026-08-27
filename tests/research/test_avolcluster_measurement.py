@@ -66,6 +66,7 @@ def test_spec_is_frozen_json():
     assert s["population"]["holdout_session_id_min_inclusive"] == "20260701"
     assert s["epistemic_scope"]["execution_reads_future_price_path"] is True
     assert s["epistemic_scope"]["pnl_accessed"] is False
+    assert s["hypothesis_1_compression"]["n_rand"]["same_session"] is False
 
 
 def test_preflight_accepts_five_contract_pre_holdout_panel():
@@ -127,13 +128,22 @@ def test_same_bar_dual_first_passage_is_zero():
     assert first_passage(p, 65, 30, direction=-1, barrier=4) == 0
 
 
-def test_control_selection_is_deterministic_and_respects_blackout():
-    df = panel_frame(bars=240).query("contract == 'NQ C1'").copy()
-    p = session_panel(df)
-    a = pick_controls(p, 65, 30, spec(), "event")
-    b = pick_controls(p, 65, 30, spec(), "event")
-    assert a == b
-    assert all(abs(i - 65) > 60 for i in a)
+def test_control_selection_is_cross_session_and_deterministic():
+    event_df = panel_frame(bars=240).query("contract == 'NQ C1'").copy()
+    control_df = event_df.copy()
+    control_df["session_id"] = 20260629
+    control_df["ts_utc_ns"] -= 86_400_000_000_000
+    control_df["is_zone_touch"] = 0
+    for col in ("kind", "zone_id", "created_ts_utc_ns", "lower_tick", "upper_tick", "zone_score"):
+        control_df[col] = None
+    event_panel = session_panel(event_df)
+    control_panel = session_panel(control_df)
+    sessions = {("NQ C1", 20260630): event_panel, ("NQ C1", 20260629): control_panel}
+    a = pick_controls(sessions, ("NQ C1", 20260630), 65, 30, spec(), "event")
+    b = pick_controls(sessions, ("NQ C1", 20260630), 65, 30, spec(), "event")
+    assert [(id(p), i) for p, i in a] == [(id(p), i) for p, i in b]
+    assert a
+    assert all(panel is control_panel for panel, _ in a)
 
 
 def test_wild_cluster_bootstrap_is_reproducible():
