@@ -5,9 +5,18 @@
   "purpose": "Test the preregistered directional first-passage mechanism for the structurally selected BT2A NQ configuration without economic PnL or holdout access.",
   "execution_platform": "KAGGLE_ONLY",
   "dependencies": {
-    "selected_configuration_sha256": null,
+    "selected_configuration_file": "selected_configuration.json",
+    "selected_configuration_file_sha256": null,
+    "bt2a_creation_event_store_manifest_file": "bt2a_nq_creation_event_store_manifest.json",
     "bt2a_creation_event_store_manifest_sha256": null,
-    "private_preholdout_package_manifest_sha256": null,
+    "private_package_manifest_file": "kaggle_research_package_manifest.json",
+    "private_package_manifest_sha256": null,
+    "effective_input_registry_file": "effective_input_registry.json",
+    "effective_input_registry_sha256": null,
+    "bt2_v2_result_file": "bigtrap2_nq_tickframes_sweep_v2.json",
+    "bt2_v2_result_file_sha256": null,
+    "bt2_comparator_config_id": null,
+    "macro_calendar_file": null,
     "macro_calendar_sha256": null,
     "all_dependencies_must_be_hash_bound": true
   },
@@ -16,7 +25,8 @@
     "contracts": ["NQ 09-25", "NQ 12-25", "NQ 03-26", "NQ 06-26", "NQ 09-26"],
     "contract_sessions": 234,
     "session_max": "20260630",
-    "holdout_session_min_inclusive": "20260701"
+    "holdout_session_min_inclusive": "20260701",
+    "holdout_open_utc_ns": 1782856800000000000
   },
   "arms": {
     "primary": "K_ABS",
@@ -39,6 +49,14 @@
     "D_HAT", "MFE_TICKS", "MAE_TICKS", "TIME_TO_FIRST_PASSAGE",
     "TIMEOUT_RATE", "MIRROR_NULL_DIFFERENCE", "TIME_SHUFFLE_DIFFERENCE"
   ],
+  "power_design": {
+    "mde_ticks": null,
+    "icc": null,
+    "target_power": 0.8,
+    "alpha_family": 0.05,
+    "effective_sessions_required": null,
+    "freeze_before_outcomes_required": true
+  },
   "inference": {
     "cluster_unit": "CME_SESSION",
     "primary_weighting": "EQUAL_SESSION_WEIGHT",

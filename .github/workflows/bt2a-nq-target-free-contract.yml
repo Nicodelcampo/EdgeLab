@@ -7,22 +7,26 @@ on:
     paths:
       - 'tools/run_bt2a_nq_target_free_selection.py'
       - 'tools/build_bt2a_nq_creation_event_store.py'
+      - 'tools/preflight_bt2a_nq_gate1.py'
       - 'specs/bt2a_nq_target_free_selection_v1.draft.json'
       - 'specs/bt2a_nq_creation_event_store_v1.draft.json'
       - 'specs/bt2a_nq_gate1_v1.draft.json'
       - 'tests/research/test_bt2a_nq_target_free_selection.py'
       - 'tests/research/test_bt2a_nq_event_store_builder.py'
+      - 'tests/research/test_bt2a_nq_gate1_preflight.py'
       - 'tests/research/test_bt2a_nq_downstream_contracts.py'
       - '.github/workflows/bt2a-nq-target-free-contract.yml'
   pull_request:
     paths:
       - 'tools/run_bt2a_nq_target_free_selection.py'
       - 'tools/build_bt2a_nq_creation_event_store.py'
+      - 'tools/preflight_bt2a_nq_gate1.py'
       - 'specs/bt2a_nq_target_free_selection_v1.draft.json'
       - 'specs/bt2a_nq_creation_event_store_v1.draft.json'
       - 'specs/bt2a_nq_gate1_v1.draft.json'
       - 'tests/research/test_bt2a_nq_target_free_selection.py'
       - 'tests/research/test_bt2a_nq_event_store_builder.py'
+      - 'tests/research/test_bt2a_nq_gate1_preflight.py'
       - 'tests/research/test_bt2a_nq_downstream_contracts.py'
       - '.github/workflows/bt2a-nq-target-free-contract.yml'
   workflow_dispatch:
@@ -53,12 +57,14 @@ jobs:
           python -m json.tool specs/bt2a_nq_target_free_selection_v1.draft.json >/dev/null
           python -m json.tool specs/bt2a_nq_creation_event_store_v1.draft.json >/dev/null
           python -m json.tool specs/bt2a_nq_gate1_v1.draft.json >/dev/null
-          python -m py_compile tools/run_bt2a_nq_target_free_selection.py tools/build_bt2a_nq_creation_event_store.py
+          python -m py_compile tools/run_bt2a_nq_target_free_selection.py tools/build_bt2a_nq_creation_event_store.py tools/preflight_bt2a_nq_gate1.py
           python tools/run_bt2a_nq_target_free_selection.py --help >/dev/null
           python tools/build_bt2a_nq_creation_event_store.py --help >/dev/null
+          python tools/preflight_bt2a_nq_gate1.py --help >/dev/null
       - name: Run target-free and downstream contract tests
         run: >-
           python -m pytest -q
           tests/research/test_bt2a_nq_target_free_selection.py
           tests/research/test_bt2a_nq_event_store_builder.py
+          tests/research/test_bt2a_nq_gate1_preflight.py
           tests/research/test_bt2a_nq_downstream_contracts.py
