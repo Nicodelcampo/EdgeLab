@@ -1,0 +1,114 @@
+{
+  "schema_version": "edgelab_general_ci_debt_reconciliation_v1",
+  "status": "PASS_WITH_PREEXISTING_GENERAL_CI_DEBT_OPERATOR_ATTESTED",
+  "reported_date": "2026-08-28",
+  "evidence_scope": "OPERATOR_ATTESTATION_RECONCILED_WITH_REMOTE_CHECK_STATUS",
+  "comparison": {
+    "baseline_head": "7bbb33828c9e0efb02af850463b4957943934d43",
+    "stack_head_tested": "30cf3cea41346f33288f1a8dd31bcbe4aa1a0af4",
+    "pr24_isolated_head": "a38f11425e36b19c23f0c1e943b9643f8241967e",
+    "pr24_isolated_full_suite_comparison_supplied": false,
+    "command": "python -m pytest -q --durations=10",
+    "python": "3.12.7",
+    "platform": "win32",
+    "duration_seconds_stack": 364.62,
+    "baseline_and_stack_failure_sets_reported_identical": true,
+    "stack_regression_delta_reported": 0
+  },
+  "stack_result": {
+    "passed": 1212,
+    "failed": 30,
+    "skipped": 35,
+    "xfailed": 2,
+    "errors": 14
+  },
+  "failure_groups": [
+    {
+      "group": "PYARROW_SCHEMA_INCOMPATIBILITY",
+      "files": ["tests/bridge/test_audit_p3.py"],
+      "failed": 0,
+      "errors": 13,
+      "classification": "PREEXISTING_TECHNICAL_DEBT",
+      "reported_present_identically_in_baseline": true
+    },
+    {
+      "group": "LEGACY_STORE_V2_COVERAGE",
+      "files": [
+        "tests/bridge/test_coverage_propagation.py",
+        "tests/bridge/test_store_v2.py"
+      ],
+      "failed": 19,
+      "errors": 0,
+      "classification": "PREEXISTING_TECHNICAL_DEBT",
+      "reported_present_identically_in_baseline": true
+    },
+    {
+      "group": "ENVIRONMENT_CONTRACT",
+      "files": ["tests/foundation/test_environment_contract.py"],
+      "failed": 1,
+      "errors": 0,
+      "classification": "DEPENDENCY_OR_ENVIRONMENT",
+      "reported_present_identically_in_baseline": true
+    },
+    {
+      "group": "LEGACY_CLI_EXIT_CODES",
+      "files": ["tests/research/test_bigtrap2_distance_matched_null.py"],
+      "failed": 3,
+      "errors": 0,
+      "classification": "PREEXISTING_TECHNICAL_DEBT",
+      "reported_present_identically_in_baseline": true
+    },
+    {
+      "group": "WINDOWS_TEMPFILE_LOCKING",
+      "files": ["tests/test_verify_tree.py"],
+      "failed": 1,
+      "errors": 0,
+      "classification": "LOCAL_FIXTURE_OR_OS",
+      "reported_present_identically_in_baseline": true
+    },
+    {
+      "group": "AUXILIARY_DEMOS_AND_PLACEBOS_REMAINDER",
+      "files": [
+        "tests/bridge/test_vectorbt_demo.py",
+        "tests/research/test_ulp_sweep.py",
+        "tests/research/test_prerange_sweep_formal.py"
+      ],
+      "failed": 6,
+      "errors": 1,
+      "classification": "PREEXISTING_TECHNICAL_DEBT",
+      "reported_present_identically_in_baseline": true,
+      "exact_node_ids_supplied": false
+    }
+  ],
+  "arithmetic": {
+    "failure_groups_sum": 30,
+    "error_groups_sum": 14,
+    "matches_stack_result": true
+  },
+  "dedicated_contracts": {
+    "pr24_kaggle_contract": "PASS_REMOTE",
+    "pr23_bt2_nq_sweep_contract": "PASS_REMOTE",
+    "local_combined_contract_tests": {
+      "passed": 24,
+      "failed": 0,
+      "errors": 0,
+      "duration_seconds": 5.2,
+      "evidence_scope": "OPERATOR_ATTESTED"
+    }
+  },
+  "limitations": {
+    "raw_pytest_logs_committed": false,
+    "exact_failure_node_ids_committed": false,
+    "remote_auditor_reproduced_local_baseline": false,
+    "claim_allowed": "STACK_HEAD_INTRODUCED_ZERO_REPORTED_REGRESSIONS_VS_BASELINE",
+    "claim_not_yet_allowed": "PR24_ISOLATED_ZERO_REGRESSIONS_INDEPENDENTLY_CERTIFIED"
+  },
+  "firewalls": {
+    "KAGGLE_DATASET_UPLOAD_EXECUTED": false,
+    "BIGTRAP2_RERUN_AUTHORIZED": false,
+    "BT2A_NQ_SWEEP_AUTHORIZED": false,
+    "BT2A_NQ_GATE1_AUTHORIZED": false,
+    "HOLDOUT_AUTHORIZED": false,
+    "SCIENTIFIC_RUN_AUTHORIZED": false
+  }
+}
