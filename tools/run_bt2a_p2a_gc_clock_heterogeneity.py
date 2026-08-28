@@ -422,10 +422,14 @@ def preflight(root: Path, event_store_dir: Path, data_dir: Path, *, check_git: b
                 macro_checks["valid"] = True
             except RuntimeError:
                 pass
-    runtime_checks = p2a.runtime_environment_checks(root, source_spec)
+    binding = spec.get("implementation_binding", {})
+    lock_path = root / "requirements" / "core-bridge-dev.lock"
+    runtime_checks = {
+        "lock_exists": lock_path.is_file(),
+        "lock_sha256": file_sha256(lock_path) == binding.get("runtime_environment_lock_sha256") if lock_path.is_file() else False,
+    }
     require_commit = spec.get("status") == "FROZEN_PREAUTHORIZATION"
     git_checks = _git_checks(root, expected_commit=expected_commit, require_commit=require_commit) if check_git else {"skipped_for_test": True}
-    binding = spec.get("implementation_binding", {})
     impl_checks = {}
     sci_path = root / binding.get("scientific_module_repository_path", "")
     if sci_path.is_file() and binding.get("scientific_module_sha256"):
