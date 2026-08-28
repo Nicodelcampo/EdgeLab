@@ -29,7 +29,7 @@ def _fixture(tmp_path: Path, *, timestamp: int = 100) -> tuple[Path, dict]:
     ]
     for offset, name in enumerate(names):
         pq.write_table(
-            pa.table({"timestamp": pa.array([timestamp + offset], type=pa.int64())}),
+            pa.table({"ts_utc_ns": pa.array([timestamp + offset], type=pa.int64())}),
             tmp_path / name,
         )
     registry = tmp_path / "effective_input_registry.json"
@@ -58,7 +58,7 @@ def _fixture(tmp_path: Path, *, timestamp: int = 100) -> tuple[Path, dict]:
         "owner_identity_reconciled": True,
         "canonical_dataset": {"id": "nicolasbuttaro/edgelab-ticks-nq-preholdout"},
         "remote_payload_files_reported": payload_names + [checksum.name],
-        "local_package": {
+        "phase1_canonical_evidence": {
             "files_sha256_self_hash": _sha(checksum),
             "effective_input_registry_sha256": _sha(registry),
             "package_manifest_sha256": _sha(manifest_path),
@@ -99,7 +99,7 @@ def test_post_upload_rehash_rejects_checksum_line_ending_change(tmp_path: Path):
 
 def test_post_upload_rehash_rejects_holdout_boundary(tmp_path: Path):
     data_dir, contract = _fixture(tmp_path, timestamp=100)
-    contract["local_package"]["holdout_open_utc_ns"] = 104
+    contract["phase1_canonical_evidence"]["holdout_open_utc_ns"] = 104
     with pytest.raises(PostUploadRehashError, match="holdout boundary"):
         verify_post_upload(data_dir, contract)
 
