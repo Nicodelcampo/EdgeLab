@@ -1,28 +1,29 @@
-# Informe de Auditoría Cuantitativa y de Integridad — PR #20 (Revisión Final)
+# Informe de Auditoría Cuantitativa y de Integridad — PR #20 (Ceremonia de Freeze)
 **Diagnóstico de Heterogeneidad Horaria de GC (BT2A P2-A V1)**  
-**Fecha:** 2026-08-28 02:15 UTC-3  
+**Fecha:** 2026-08-28 02:28 UTC-3  
 **Auditor:** Antigravity (Google DeepMind)  
-**Destinatario:** Auditor Independiente / Nicolas Buttaro  
+**Autorización de Freeze Emitida por:** Nicolas Buttaro (`APPROVE_FREEZE_BT2A_P2A_GC_CLOCK_HETEROGENEITY_V1`)  
 
 ---
 
-## 1. Identidad Remota y Estado de Rama
+## 1. Identidad del Freeze Formal
 
-| Parámetro | Valor Verificado en Remoto |
+| Parámetro | Valor de Freeze Vinculante |
 |---|---|
 | **Rama** | `research/bt2a-p2a-clock-heterogeneity-v1-20260827` |
-| **Commit Base de la Rama** | `ef7f5c96445d2463614aa1aa0a793cdbedafcfa9` |
-| **Estado de PR #20 en GitHub** | Abierta, en Draft, descripción actualizada y armonizada vía GitHub CLI (`gh pr edit 20`) |
-| **Estado del Spec** | `DRAFT_PREAUTHORIZATION_FAIL_CLOSED` |
-| **Autorización de Freeze** | `freeze_authorized = false` |
-| **Autorización de Ejecución** | `execution_authorized = false` |
-| **Hash Congelado Declarado** | `frozen_spec_payload_sha256 = null` |
+| **Commit Base del PR** | `ef7f5c96445d2463614aa1aa0a793cdbedafcfa9` |
+| **Estado del Spec** | `FROZEN_PREAUTHORIZATION` |
+| **Autorización de Freeze** | `freeze_authorized = true` |
+| **Autorización de Ejecución** | `execution_authorized = false` (Cerrada) |
+| **Hash Congelado Vinculante** | `0ff77118098667991b88737e91ad58b29d1eb5fee5406d2a278983edf9ae9cee` |
+| **Token de Freeze Registrado** | `APPROVE_FREEZE_BT2A_P2A_GC_CLOCK_HETEROGENEITY_V1` |
+| **Token Requerido para Ejecución** | `AUTHORIZE_BT2A_P2A_GC_CLOCK_HETEROGENEITY_V1` (Pendiente preflight congelado) |
 | **Worktree Local** | Limpio (`git status --porcelain` vacío) |
-| **CI Contractual Dedicado** | **PASS / SUCCESS** en GitHub Actions (`BT2A P2-A GC clock heterogeneity contract` — 35s) |
+| **CI Contractual Dedicado** | **PASS / SUCCESS** en GitHub Actions (`BT2A P2-A GC clock heterogeneity contract` — 36s-39s) |
 
 ---
 
-## 2. Cierre Exhaustivo de Bloqueadores Técnicos y Metodológicos
+## 2. Hardening Técnico y Metodológico Sellado
 
 ### ✅ 1. Validación Lógica Profunda del Parquet y Equivalencia 1:1 con Checkpoints (Camino B Completo)
 - **Implementación:** `validate_clock_event_store()` abre el archivo Parquet físico con `pyarrow.parquet.read_table()` y valida activamente:
@@ -43,7 +44,7 @@
 ---
 
 ### ✅ 2. Tests de Camino B Autocontenidos e Incondicionales para CI
-- **Implementación:** `test_validate_clock_event_store_path_b_policy()` utiliza un dataset sintético determinista de 2 checkpoints y 4 eventos que ejercita exactamente la misma política de identidad en cualquier entorno (incluyendo runners Ubuntu en GitHub Actions):
+- **Implementación:** `test_validate_clock_event_store_path_b_policy()` utiliza un dataset sintético determinista de 2 checkpoints y 4 eventos que ejercita exactamente la misma política de identidad en cualquier entorno:
   1. **Rechazo de bytes corruptos** (`physical_transport_identity = "CORRUPT_OR_INVALID"`, `ready = False`).
   2. **Test positivo end-to-end** con serialización PyArrow alternativa (`ready = True`, `logical_identity = "PASS"`, `DIFFERENT_NON_BLOCKING`, `parquet_matches_checkpoints_1to1 = True`).
   3. **Test negativo de mutación lógica:** Swap de dirección entre eventos conservando schema, 4 filas y conteos por brazo → detectado inmediatamente (`ready = False`, `logical_identity = "FAIL"`, `CORRUPT_OR_INVALID`, `parquet_matches_checkpoints_1to1 = False`).
@@ -66,11 +67,10 @@
 ---
 
 ### ✅ 4. Armonización Total de Documentación, Firewalls y Protocolo
-- **Spec (`specs/bt2a_p2a_gc_clock_heterogeneity_v1.json`):** Campos del firewall armonizados (`PREMATURE_CHECKPOINTS_QUARANTINED = true`, `PREMATURE_CHECKPOINTS_USED = false`, `PREMATURE_CLOCK_SESSIONS = 4`, `NEW_ANALYTICAL_FAMILY_PARTIALLY_EXECUTED = true`, `FUTURE_PRICE_PATH_ACCESSED = true`).
-- **Protocolo (`docs/research/BT2A_P2A_GC_CLOCK_HETEROGENEITY_PROTOCOL_V1_DRAFT_2026-08-27.md`):** Todos los comandos de ejecución y preflight congelado incluyen `--expected-commit <FROZEN_COMMIT_SHA>`.
+- **Spec (`specs/bt2a_p2a_gc_clock_heterogeneity_v1.json`):** Congelado en `FROZEN_PREAUTHORIZATION` con `freeze_authorized = true`, `execution_authorized = false` y `frozen_spec_payload_sha256 = "0ff77118098667991b88737e91ad58b29d1eb5fee5406d2a278983edf9ae9cee"`.
+- **Protocolo (`docs/research/BT2A_P2A_GC_CLOCK_HETEROGENEITY_PROTOCOL_V1_DRAFT_2026-08-27.md`):** Comandos congelados incluyen `--expected-commit <FROZEN_COMMIT_SHA>`.
 - **Descripción de PR #20 en GitHub:** Actualizada vía `gh pr edit 20` asentando la apertura prematura de 4 sesiones, cuarentena, firewalls y la validación PyArrow 1:1 del Parquet.
-- **`docs/CURRENT.md`:** Actualizado semánticamente (`P2A = COMPLETE_POST_OUTCOME_DIAGNOSTIC`, `P2A_CLOCK_HETEROGENEITY = DRAFT_PREAUTHORIZATION_FAIL_CLOSED`, `Fecha: 2026-08-28`).
-- **Informe Versionado:** Guardado en `docs/research/REPORT_AUDITOR_GC_CLOCK_HARDENING_2026-08-28.md`.
+- **`docs/CURRENT.md`:** Actualizado a `P2A_CLOCK_HETEROGENEITY = FROZEN_PREAUTHORIZATION`.
 
 ---
 
@@ -79,26 +79,16 @@
 | Dimensión | Estado | Evidencia / Observación |
 |---|---|---|
 | `BASE_BRANCH_VERIFIED` | **PASS** | `ef7f5c96445d2463614aa1aa0a793cdbedafcfa9` |
-| `DEDICATED_CI` | **PASS** | Workflow contractual verde en GitHub Actions (35s) |
-| `DEDICATED_TESTS` | **PASS** | 19/19 tests pasando al 100% |
+| `DEDICATED_CI` | **PASS** | Workflow contractual verde en GitHub Actions (36s-39s) |
+| `DEDICATED_TESTS` | **PASS** | 23/23 tests pasando al 100% |
 | `NON_CIRCULAR_COMMIT_BINDING` | **PASS** | Sin autorreferencia circular |
 | `MANDATORY_COMMIT_IMMEDIATE_ABORT` | **PASS** | Aborta antes de preflight en todos los modos de ejecución |
 | `LOGICAL_PARQUET_SCHEMA_AND_COUNTS` | **PASS** | PyArrow schema 17 cols, 22.202 filas, arm counts exactos |
 | `PARQUET_LOGICAL_PAYLOAD_EQUALITY` | **PASS** | Reconstruye `feee6001...` y exige igualdad 1:1 con checkpoints |
-| `PATH_B_END_TO_END_TESTS` | **PASS** | Test positivo y test de mutación negativa incondicionales |
+| `PATH_B_END_TO_END_TESTS` | **PASS** | Test positivo y test de mutación negativa incondicionales (2 ckpts / 4 evts) |
 | `PROTOCOL_COMMANDS_HARMONIZED` | **PASS** | Comandos actualizados con `--expected-commit` |
 | `FIREWALL_FIELDS_HARMONIZED` | **PASS** | Spec, protocolo, código, PR body y preflight 100% consistentes |
-| `PR_DESCRIPTION_ON_GITHUB` | **PASS** | Actualizada en la UI de GitHub con garantías 1:1 |
-| `CURRENT_MD_SEMANTIC_HARMONIZED` | **PASS** | Refleja P2-A completo y Clock Heterogeneity en borrador |
-| `REPORT_VERSIONED_IN_REPO` | **PASS** | Publicado en `docs/research/` |
-| `READY_TO_FREEZE` | **SI (Pendiente Decisión y Token de Nico)** | Hardening técnico y documental 100% cerrado |
-| `READY_TO_EXECUTE` | **NO** | Requiere freeze previo y preflight verde |
-
----
-
-## 4. Valores Proyectados para la Ceremonia de Freeze
-
-Una vez que Nico apruebe formalmente el pase a freeze con el token `APPROVE_FREEZE_BT2A_P2A_GC_CLOCK_HETEROGENEITY_V1`:
-
-- **`PROJECTED_FROZEN_SPEC_PAYLOAD_SHA256`:**  
-  `34b207e073a97a5a38a53760b220031bcf59080e50a0e5cabe9ae2d4f405dad7`
+| `PR_DESCRIPTION_ON_GITHUB` | **PASS** | Actualizada en la UI de GitHub con garantías 1:1 y clean formatting |
+| `CURRENT_MD_SEMANTIC_HARMONIZED` | **PASS** | `P2A_CLOCK_HETEROGENEITY = FROZEN_PREAUTHORIZATION` |
+| `SPEC_FROZEN` | **PASS** | `FROZEN_PREAUTHORIZATION`, hash `0ff77118...` |
+| `READY_TO_EXECUTE` | **NO** | Requiere preflight congelado y token de ejecución |

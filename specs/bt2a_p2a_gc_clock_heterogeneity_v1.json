@@ -1,6 +1,6 @@
 {
   "schema": "bt2a_p2a_gc_clock_heterogeneity_v1",
-  "status": "DRAFT_PREAUTHORIZATION_FAIL_CLOSED",
+  "status": "FROZEN_PREAUTHORIZATION",
   "created_date": "2026-08-27",
   "purpose": "Measure pre-cost GC time-of-day heterogeneity of the already-opened P2-A directional mechanism without selecting an operating window.",
   "source_p2a": {
@@ -18,9 +18,18 @@
     "outcomes_already_opened": true,
     "confirmatory_eligible": false,
     "parent_cells_selected_post_outcome": [
-      {"barrier_ticks": 9, "horizon_ticks": 25},
-      {"barrier_ticks": 30, "horizon_ticks": 100},
-      {"barrier_ticks": 30, "horizon_ticks": 250}
+      {
+        "barrier_ticks": 9,
+        "horizon_ticks": 25
+      },
+      {
+        "barrier_ticks": 30,
+        "horizon_ticks": 100
+      },
+      {
+        "barrier_ticks": 30,
+        "horizon_ticks": 250
+      }
     ]
   },
   "scientific_correction": {
@@ -30,7 +39,13 @@
   },
   "scope": {
     "instrument": "GC",
-    "contracts": ["GC 12-25", "GC 02-26", "GC 04-26", "GC 06-26", "GC 08-26"],
+    "contracts": [
+      "GC 12-25",
+      "GC 02-26",
+      "GC 04-26",
+      "GC 06-26",
+      "GC 08-26"
+    ],
     "arm": "K_ABS",
     "event_clock": "FILL_TS_UTC_NS_FIRST_CANONICAL_ROW_STRICTLY_AFTER_SIGNAL",
     "session_boundary": "HARD_CME",
@@ -43,17 +58,44 @@
     "dst_policy": "IANA_ZONEINFO",
     "interval": "LEFT_CLOSED_RIGHT_OPEN",
     "definitions": [
-      {"name": "ASIA_ETH", "start": "17:00:00", "end": "01:00:00", "wraps_midnight": true},
-      {"name": "EUROPE_PRE_RTH", "start": "01:00:00", "end": "07:20:00", "wraps_midnight": false},
-      {"name": "GC_RTH", "start": "07:20:00", "end": "12:30:00", "wraps_midnight": false},
-      {"name": "POST_RTH", "start": "12:30:00", "end": "16:00:00", "wraps_midnight": false}
+      {
+        "name": "ASIA_ETH",
+        "start": "17:00:00",
+        "end": "01:00:00",
+        "wraps_midnight": true
+      },
+      {
+        "name": "EUROPE_PRE_RTH",
+        "start": "01:00:00",
+        "end": "07:20:00",
+        "wraps_midnight": false
+      },
+      {
+        "name": "GC_RTH",
+        "start": "07:20:00",
+        "end": "12:30:00",
+        "wraps_midnight": false
+      },
+      {
+        "name": "POST_RTH",
+        "start": "12:30:00",
+        "end": "16:00:00",
+        "wraps_midnight": false
+      }
     ],
-    "maintenance_excluded": {"start": "16:00:00", "end": "17:00:00"},
+    "maintenance_excluded": {
+      "start": "16:00:00",
+      "end": "17:00:00"
+    },
     "boundaries_source": "CME_GC_TRADING_PHASES_NOT_OBSERVED_EFFECT_MAXIMA"
   },
   "macro_exclusion": {
     "primary_population": "NON_BLACKOUT_ONLY",
-    "event_types": ["FOMC", "CPI", "NFP"],
+    "event_types": [
+      "FOMC",
+      "CPI",
+      "NFP"
+    ],
     "window": "RELEASE_UTC_INCLUSIVE_TO_RELEASE_PLUS_5_MINUTES_EXCLUSIVE",
     "calendar_repository_path": "specs/bt2a_macro_calendar_gc_20250804_20260630_v1.json",
     "calendar_file_sha256": "5f1a484858c7d0bdd997f7f6dafef014bae2f13debdb5bcce937d74257cbd9ca",
@@ -61,7 +103,11 @@
     "macro_rows_reported": "COUNTS_ONLY"
   },
   "estimand": {
-    "score": {"TP_FIRST": 1, "SL_FIRST": -1, "TIMEOUT": 0},
+    "score": {
+      "TP_FIRST": 1,
+      "SL_FIRST": -1,
+      "TIMEOUT": 0
+    },
     "session_phase_effect": "mean(K_ABS first-passage score) - median over N_RAND replication means within session, phase and parent cell",
     "heterogeneity_contrast": "D_session_cell_phase - mean(D_session_cell_all_three_other_phases)",
     "minimum_other_phases": 3,
@@ -108,7 +154,13 @@
     "P2A_POST_SELECTION_NO_CLOCK_HETEROGENEITY_SIGNAL",
     "P2A_CLOCK_HETEROGENEITY_INCONCLUSIVE"
   ],
-  "forbidden_labels": ["BEST_WINDOW", "OPTIMAL_HOUR", "CONFIRMATORY_PASS", "EDGE_DECLARED", "PROMOTED"],
+  "forbidden_labels": [
+    "BEST_WINDOW",
+    "OPTIMAL_HOUR",
+    "CONFIRMATORY_PASS",
+    "EDGE_DECLARED",
+    "PROMOTED"
+  ],
   "preflight": {
     "must_not_parse_price_values": true,
     "must_not_compute_outcomes": true,
@@ -152,7 +204,7 @@
   },
   "authorization": {
     "preparation_authorized": true,
-    "freeze_authorized": false,
+    "freeze_authorized": true,
     "execution_authorized": false,
     "freeze_approval_token": "APPROVE_FREEZE_BT2A_P2A_GC_CLOCK_HETEROGENEITY_V1",
     "execution_token": "AUTHORIZE_BT2A_P2A_GC_CLOCK_HETEROGENEITY_V1",
@@ -161,7 +213,7 @@
   "freeze": {
     "branch": "research/bt2a-p2a-clock-heterogeneity-v1-20260827",
     "base_branch": "work/bt2a-gate2-p2a-freeze-20260826",
-    "frozen_spec_payload_sha256": null,
+    "frozen_spec_payload_sha256": "0ff77118098667991b88737e91ad58b29d1eb5fee5406d2a278983edf9ae9cee",
     "spec_changes_after_first_authorized_run_forbidden": true
   },
   "firewall": {

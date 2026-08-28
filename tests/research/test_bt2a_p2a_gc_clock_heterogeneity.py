@@ -133,14 +133,16 @@ def test_frozen_macro_calendar_identity_and_count():
     assert max(start for start, _ in intervals) < runner.HOLDOUT_NS
 
 
-def test_draft_contract_is_deliberately_fail_closed():
+def test_frozen_contract_is_preauthorized_and_fail_closed_for_execution():
     runner = load_runner()
     spec = json.loads(SPEC.read_text(encoding="utf-8"))
     checks = runner.frozen_contract_checks(spec)
-    assert spec["status"] == "DRAFT_PREAUTHORIZATION_FAIL_CLOSED"
+    assert spec["status"] == "FROZEN_PREAUTHORIZATION"
     assert checks["schema"]
-    assert not checks["status_frozen"]
-    assert not checks["spec_payload_bound"]
+    assert checks["status_frozen"]
+    assert checks["freeze_authorized"]
+    assert checks["execution_closed"]
+    assert checks["spec_payload_bound"]
     assert spec["authorization"]["execution_authorized"] is False
     assert spec["firewall"]["HOLDOUT_TOUCHED"] is False
     assert spec["firewall"]["P2B_RUN"] is False
