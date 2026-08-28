@@ -222,3 +222,47 @@ def test_negative_frozen_contract_checks():
     spec6["authorization"]["freeze_authorized"] = True
     spec6["freeze"]["frozen_spec_payload_sha256"] = "0" * 64
     assert not runner.frozen_contract_checks(spec6)["spec_payload_bound"]
+
+
+def test_atomic_json_roundtrip_and_cleanup(tmp_path: Path):
+    """Smoke test covering: import uuid, sort_keys, allow_nan, tempfile cleanup."""
+    runner = load_runner()
+    target = tmp_path / "sub" / "checkpoint.json"
+    payload = {"z_key": 1, "a_key": 2, "nested": {"b": True, "a": False}}
+    runner.atomic_json(target, payload)
+    # File must exist
+    assert target.is_file()
+    # No leftover temp files
+    siblings = list(target.parent.iterdir())
+    assert len(siblings) == 1 and siblings[0].name == "checkpoint.json"
+    # Content must be valid JSON dict
+    loaded = json.loads(target.read_text(encoding="utf-8"))
+    assert isinstance(loaded, dict)
+    assert loaded == payload
+    # Keys must be sorted in serialized output (sort_keys=True)
+    raw = target.read_text(encoding="utf-8")
+    a_pos = raw.index('"a_key"')
+    z_pos = raw.index('"z_key"')
+    assert a_pos < z_pos, "sort_keys=True must order keys alphabetically"
+
+
+def test_atomic_json_rejects_nan(tmp_path: Path):
+    """allow_nan=False must reject NaN/Infinity."""
+    runner = load_runner()
+    target = tmp_path / "bad.json"
+    with pytest.raises(ValueError):
+        runner.atomic_json(target, {"value": float("nan")})
+    assert not target.exists()
+
+
+def test_load_json_rejects_non_dict(tmp_path: Path):
+    """load_json must reject JSON arrays and scalars."""
+    runner = load_runner()
+    array_file = tmp_path / "array.json"
+    array_file.write_text("[1, 2, 3]", encoding="utf-8")
+    with pytest.raises(RuntimeError, match="JSON object required"):
+        runner.load_json(array_file)
+    scalar_file = tmp_path / "scalar.json"
+    scalar_file.write_text('"hello"', encoding="utf-8")
+    with pytest.raises(RuntimeError, match="JSON object required"):
+        runner.load_json(scalar_file)

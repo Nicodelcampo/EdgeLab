@@ -9,6 +9,7 @@ import os
 import platform
 import subprocess
 import sys
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -76,12 +77,17 @@ def canonical(value) -> str:
 def atomic_json(path: Path, value: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temp = path.with_name(f".{path.name}.tmp.{uuid.uuid4().hex}")
-    temp.write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    temp.write_text(json.dumps(
+        value, indent=2, sort_keys=True, ensure_ascii=False, allow_nan=False,
+    ) + "\n", encoding="utf-8")
     temp.replace(path)
 
 
 def load_json(path: Path) -> dict:
-    return json.loads(path.read_text(encoding="utf-8"))
+    value = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(value, dict):
+        raise RuntimeError(f"JSON object required: {path}")
+    return value
 
 
 def load_spec(root: Path = ROOT) -> dict:
@@ -227,7 +233,28 @@ def preflight(root: Path, event_store_dir: Path, data_dir: Path, *, check_git: b
                 pass
     runtime_checks = p2a.runtime_environment_checks(root, source_spec)
     git_checks = _git_checks(root) if check_git else {"skipped_for_test": True}
-    groups = (frozen, source_checks, sample_checks, data_files, macro_checks, runtime_checks, git_checks)
+    binding = spec.get("implementation_binding", {})
+    impl_checks = {}
+    sci_path = root / binding.get("scientific_module_repository_path", "")
+    if sci_path.is_file() and binding.get("scientific_module_sha256"):
+        impl_checks["scientific_module_sha256"] = file_sha256(sci_path) == binding["scientific_module_sha256"]
+    else:
+        impl_checks["scientific_module_sha256"] = False
+    if binding.get("macro_calendar_file_sha256"):
+        impl_checks["macro_calendar_sha256"] = macro_checks.get("sha256", False)
+    else:
+        impl_checks["macro_calendar_sha256"] = False
+    source_p2a_spec_path = root / SOURCE_SPEC_REL
+    if source_p2a_spec_path.is_file() and binding.get("source_p2a_spec_sha256"):
+        impl_checks["source_spec_sha256"] = file_sha256(source_p2a_spec_path) == binding["source_p2a_spec_sha256"]
+    else:
+        impl_checks["source_spec_sha256"] = False
+    lock_path = root / "requirements" / "core-bridge-dev.lock"
+    if lock_path.is_file() and binding.get("runtime_environment_lock_sha256"):
+        impl_checks["runtime_lock_sha256"] = file_sha256(lock_path) == binding["runtime_environment_lock_sha256"]
+    else:
+        impl_checks["runtime_lock_sha256"] = False
+    groups = (frozen, source_checks, sample_checks, data_files, macro_checks, runtime_checks, git_checks, impl_checks)
     ready = identity.get("ready") is True and all(all(group.values()) for group in groups)
     return {
         "schema": "bt2a_p2a_gc_clock_preflight_v1",
@@ -240,6 +267,7 @@ def preflight(root: Path, event_store_dir: Path, data_dir: Path, *, check_git: b
         "event_store_identity": identity,
         "data_files_exist": data_files,
         "macro_calendar": macro_checks,
+        "implementation_binding": impl_checks,
         "runtime_environment": runtime_checks,
         "git": git_checks,
         "P2A_OUTCOMES_ALREADY_OPENED": True,
