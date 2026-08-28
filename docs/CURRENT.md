@@ -73,9 +73,9 @@ CANONICAL_EVENT_STORE_234    = PASS
 P2A                           = COMPLETE_POST_OUTCOME_DIAGNOSTIC
 P2A_CLOCK_HETEROGENEITY       = DRAFT_PREAUTHORIZATION_FAIL_CLOSED
 P2B                           = IMPLEMENTED_NOT_RUN
-GATE_L2_SAMPLE_POWER          = NOT_READY
-NEW_P2_OR_L2_OUTCOMES_OPENED  = false
-EDGE_DECLARED                 = false
+GATE_L2_SAMPLE_POWER                    = NOT_READY
+NEW_OUTCOMES_OPENED_BY_CLOCK_PREPARATION = false
+EDGE_DECLARED                           = false
 ```
 
 ## Primer chequeo
