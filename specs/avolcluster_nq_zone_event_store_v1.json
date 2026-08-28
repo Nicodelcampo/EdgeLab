@@ -1,5 +1,5 @@
 {
-  "schema_version": "avolcluster_nq_zone_event_store_v1.0.0-draft",
+  "schema_version": "avolcluster_nq_zone_event_store_v1.0.1-draft",
   "status": "DRAFT_PREAUTHORIZATION_FAIL_CLOSED",
   "title": "aVolClusterPOI NQ-120t canonical zone-creation Event Store",
   "freeze_authorized": false,
@@ -16,6 +16,8 @@
     "kernel_git_blob_sha1": "e472a06899e3d76287072fdbeef4b95604101eb3",
     "session_registry_path": "specs/bt2a_gate1_nq_all5_sessions_2026-08-27.json",
     "session_registry_git_blob_sha1": "2dae4869ca81e710e4b4fd8c77b05cadb834718a",
+    "input_registry_path": "specs/bt2a_gate1_nq_all5_input_registry_2026-08-27.json",
+    "input_registry_git_blob_sha1": "7709b8016d0e455921ab88be4d30f215a270c620",
     "selection_result_path": "docs/research/avolcluster_nq_microticks_result.json",
     "selection_result_git_blob_sha1": "29459431d8be21562469ba7755ca920122425b4f"
   },
@@ -103,6 +105,8 @@
     "stage": "ZONE_CREATION_ONLY",
     "checkpoint_grain": "one JSON file per contract-session",
     "checkpoint_order": "session registry ordinal",
+    "resume_policy": "only a contiguous prefix bound to the same spec, source hashes and exact code commit",
+    "profile_state": "hash-bound snapshot after every committed contract-session",
     "parquet_role": "transport mirror validated 1:1 against canonical checkpoints",
     "contract": {
       "exact_columns": true,
@@ -155,6 +159,10 @@
   },
   "authorization": {
     "freeze_token": "APPROVE_FREEZE_AVOLCLUSTER_NQ_ZONE_EVENT_STORE_V1",
+    "zone_store_build_token": "AUTHORIZE_BUILD_AVOLCLUSTER_NQ_ZONE_EVENT_STORE_V1",
+    "zone_store_build_authorized": false,
+    "zone_store_finalize_token": "AUTHORIZE_FINALIZE_AVOLCLUSTER_NQ_ZONE_EVENT_STORE_V1",
+    "zone_store_finalize_authorized": false,
     "zone_store_validation_token": "AUTHORIZE_VALIDATE_AVOLCLUSTER_NQ_ZONE_EVENT_STORE_V1",
     "zone_store_validation_authorized": false,
     "future_path_authorized": false,
@@ -164,18 +172,20 @@
     "generic_logical_event_store_validator": "IMPLEMENTED",
     "avol_creation_schema_and_domain_validator": "IMPLEMENTED",
     "parquet_checkpoint_equivalence": "IMPLEMENTED",
-    "selected_configuration_real_data_builder": "NOT_IMPLEMENTED",
-    "real_data_manifest_bound": false,
+    "real_data_manifest_bound": true,
+    "selected_configuration_real_data_builder": "IMPLEMENTED_FAIL_CLOSED",
+    "atomic_session_checkpoints": "IMPLEMENTED",
+    "session_profile_resume_state": "IMPLEMENTED",
     "real_event_store_built": false,
     "first_touch_event_store_built": false,
     "gate1_outcomes_run": false
   },
   "review_blockers": [
-    "bind SHA-256 for each of the five local NQ source Parquet files",
-    "implement the selected-configuration builder with atomic per-session checkpoints and resume state",
-    "prove exact reproduction of the 5876 OFF_PRICE target-free zone count",
+    "review the selected-configuration builder and synthetic resume/checkpoint tests",
+    "prove exact reproduction of the 5876 OFF_PRICE target-free zone count on the five hash-bound inputs",
     "audit NQ-120t Python versus NT8 detector parity or explicitly classify the run as Python-kernel research only",
-    "freeze creation Event Store contract before validating real artifacts",
+    "freeze creation Event Store contract before running the real-data builder",
+    "authorize build and finalize with separate literal tokens",
     "design and freeze lifecycle, first-touch, episode-collapse and outcome clocks separately",
     "obtain explicit authorization before any future-path or outcome execution"
   ],

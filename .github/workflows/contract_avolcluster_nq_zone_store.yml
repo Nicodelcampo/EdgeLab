@@ -7,19 +7,25 @@ on:
     paths:
       - 'edgelab/research/event_store_contract.py'
       - 'edgelab/research/avolcluster_nq_zone_store.py'
+      - 'edgelab/research/avolcluster_nq_zone_builder.py'
       - 'tools/validate_avolcluster_nq_zone_store.py'
+      - 'tools/build_avolcluster_nq_zone_store.py'
       - 'specs/avolcluster_nq_zone_event_store_v1.json'
       - 'tests/research/test_event_store_contract.py'
       - 'tests/research/test_avolcluster_nq_zone_store.py'
+      - 'tests/research/test_avolcluster_nq_zone_builder.py'
       - '.github/workflows/contract_avolcluster_nq_zone_store.yml'
   pull_request:
     paths:
       - 'edgelab/research/event_store_contract.py'
       - 'edgelab/research/avolcluster_nq_zone_store.py'
+      - 'edgelab/research/avolcluster_nq_zone_builder.py'
       - 'tools/validate_avolcluster_nq_zone_store.py'
+      - 'tools/build_avolcluster_nq_zone_store.py'
       - 'specs/avolcluster_nq_zone_event_store_v1.json'
       - 'tests/research/test_event_store_contract.py'
       - 'tests/research/test_avolcluster_nq_zone_store.py'
+      - 'tests/research/test_avolcluster_nq_zone_builder.py'
       - '.github/workflows/contract_avolcluster_nq_zone_store.yml'
   workflow_dispatch:
 
@@ -48,10 +54,14 @@ jobs:
         run: |
           python -m pytest -q \
             tests/research/test_event_store_contract.py \
-            tests/research/test_avolcluster_nq_zone_store.py
-      - name: Draft preflight must not open paths
+            tests/research/test_avolcluster_nq_zone_store.py \
+            tests/research/test_avolcluster_nq_zone_builder.py
+      - name: Draft preflights must not open paths
         run: |
           python tools/validate_avolcluster_nq_zone_store.py \
             --preflight-only \
             --expected-commit "${GITHUB_SHA}" \
             --output-json /tmp/avolcluster_nq_zone_store_preflight.json
+          python tools/build_avolcluster_nq_zone_store.py \
+            --preflight-only \
+            --expected-commit "${GITHUB_SHA}"
