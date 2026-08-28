@@ -1,0 +1,85 @@
+{
+  "schema_version": "bt2a_nq_gate1_v1",
+  "status": "DRAFT_DESIGN_ONLY_PREAUTHORIZATION",
+  "created_date": "2026-08-28",
+  "purpose": "Test the preregistered directional first-passage mechanism for the structurally selected BT2A NQ configuration without economic PnL or holdout access.",
+  "execution_platform": "KAGGLE_ONLY",
+  "dependencies": {
+    "selected_configuration_sha256": null,
+    "bt2a_creation_event_store_manifest_sha256": null,
+    "private_preholdout_package_manifest_sha256": null,
+    "macro_calendar_sha256": null,
+    "all_dependencies_must_be_hash_bound": true
+  },
+  "universe": {
+    "instrument": "NQ",
+    "contracts": ["NQ 09-25", "NQ 12-25", "NQ 03-26", "NQ 06-26", "NQ 09-26"],
+    "contract_sessions": 234,
+    "session_max": "20260630",
+    "holdout_session_min_inclusive": "20260701"
+  },
+  "arms": {
+    "primary": "K_ABS",
+    "comparators": ["K_BT2", "N_RAND", "K_ABS_SHUFFLE"],
+    "n_rand_matching": ["contract", "cme_session_id", "coarse_phase", "availability", "local_volatility_bin"],
+    "shuffle_policy": "WITHIN_CONTRACT_SESSION_AND_COARSE_PHASE_PRESERVE_EVENT_COUNT"
+  },
+  "outcome_family": {
+    "first_passage_barriers_ticks": [5, 9, 18, 30],
+    "first_passage_horizons_observations": [25, 50, 100, 250],
+    "family_size": 16,
+    "evaluate_full_family": true,
+    "gc_positive_cells_annotation_only": [[9, 25], [30, 100], [30, 250]],
+    "gc_results_may_reduce_nq_family": false,
+    "favorable_direction": "BT2A_SIGNAL_DIRECTION",
+    "same_observation_tie": "ADVERSE_FIRST",
+    "incomplete_path_policy": "EXCLUDE_WITH_REASON"
+  },
+  "secondary_estimands": [
+    "D_HAT", "MFE_TICKS", "MAE_TICKS", "TIME_TO_FIRST_PASSAGE",
+    "TIMEOUT_RATE", "MIRROR_NULL_DIFFERENCE", "TIME_SHUFFLE_DIFFERENCE"
+  ],
+  "inference": {
+    "cluster_unit": "CME_SESSION",
+    "primary_weighting": "EQUAL_SESSION_WEIGHT",
+    "events_assumed_iid": false,
+    "holm_family_size": 16,
+    "confidence": 0.95,
+    "minimum_events": 400,
+    "minimum_effective_sessions": 40,
+    "minimum_event_count_alone_is_power_proof": false,
+    "pre_execution_power_inputs_required": ["MDE", "ICC", "EFFECTIVE_SESSION_COUNT", "ARM_DENSITY"]
+  },
+  "decision_rule": {
+    "full_family_required": true,
+    "winner_selection_allowed": false,
+    "positive_requires_effect_interval_and_holm": true,
+    "allowed_labels": [
+      "BT2A_NQ_GATE1_DIRECTIONAL_MECHANISM_SUPPORTED",
+      "BT2A_NQ_GATE1_NO_DIRECTIONAL_MECHANISM",
+      "BT2A_NQ_GATE1_INCONCLUSIVE_POWER",
+      "ABSTAIN_IDENTITY_CAUSALITY_OR_COVERAGE"
+    ],
+    "edge_declaration_allowed": false,
+    "promotion_allowed": false
+  },
+  "authorization": {
+    "freeze_token_label": "APPROVE_FREEZE_BT2A_NQ_GATE1_V1",
+    "run_token_label": "AUTHORIZE_RUN_BT2A_NQ_GATE1_V1",
+    "execution_authorized": false,
+    "active_token": null,
+    "frozen_commit": null
+  },
+  "firewall": {
+    "GATE1_RUN": false,
+    "OUTCOMES_ACCESSED": false,
+    "FUTURE_PRICE_PATH_ACCESSED": false,
+    "FIRST_PASSAGE_ACCESSED": false,
+    "MFE_MAE_ACCESSED": false,
+    "PNL_ACCESSED": false,
+    "HOLDOUT_TOUCHED": false,
+    "WINNER_SELECTED": false,
+    "EDGE_DECLARED": false,
+    "PROMOTION_ELIGIBLE": false
+  }
+}
