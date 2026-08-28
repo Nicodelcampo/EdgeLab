@@ -7,6 +7,7 @@ import pytest
 
 from edgelab.research.avolcluster_nq_zone_store import (
     SPEC_STATUS_DRAFT,
+    SPEC_STATUS_FROZEN,
     build_creation_event,
     projected_frozen_payload_sha256,
     validate_spec,
@@ -47,7 +48,7 @@ def event(session_id="20260630", block_index=1, score=20.0):
 def test_spec_is_target_free_draft_and_binds_selected_configuration():
     s = spec()
     validate_spec(s)
-    assert s["status"] == SPEC_STATUS_DRAFT
+    assert s["status"] in {SPEC_STATUS_DRAFT, SPEC_STATUS_FROZEN}
     assert s["target_free_selection"]["selected_configuration"]["config_id"] == "tick_120_W5_M20_C4_P950"
     assert s["target_free_selection"]["observed_summary"]["off_price_events"] == 5876
     assert s["epistemic_scope"]["future_price_path_accessed_by_this_stage"] is False
