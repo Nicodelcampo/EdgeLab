@@ -56,6 +56,7 @@ SOURCE_SPEC_SHA256 = "176ca3e0c37f44823bfe5f8cf64849b55dcf12b5114d930d5ec8776c15
 SOURCE_RESULT_SHA256 = "296f8352a46751c3a9a26a32ec29661ddcecba7ac57874a967dc591a92766e28"
 EVENT_PAYLOAD_SHA256 = "feee6001e88aa69f62a092b253e468531230120a3dccdc2ceac0d488c9684cbd"
 MACRO_FILE_SHA256 = "5f1a484858c7d0bdd997f7f6dafef014bae2f13debdb5bcce937d74257cbd9ca"
+EXPECTED_CANONICAL_PARQUET_SHA256 = "6f7994b4ff21d2ddd0addcd9d3815b7ae83ff008b5b4774e74f2821efb2a4d77"
 EXPECTED_FROZEN_SPEC_PAYLOAD_SHA256: str | None = None
 PARENT_CELLS = ((9, 25), (30, 100), (30, 250))
 CONTROL_REPLICATIONS = 10000
@@ -74,21 +75,25 @@ def canonical(value) -> str:
 
 def atomic_json(path: Path, value: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    tmp = path.with_suffix(path.suffix + ".tmp")
-    tmp.write_text(json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False,
-                              allow_nan=False) + "\n", encoding="utf-8")
-    os.replace(tmp, path)
+    temp = path.with_name(f".{path.name}.tmp.{uuid.uuid4().hex}")
+    temp.write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    temp.replace(path)
 
 
 def load_json(path: Path) -> dict:
-    value = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(value, dict):
-        raise RuntimeError(f"JSON object required: {path}")
-    return value
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 def load_spec(root: Path = ROOT) -> dict:
     return load_json(root / SPEC_REL)
+
+
+def frozen_spec_payload_sha256(spec: dict) -> str:
+    from copy import deepcopy
+    normalized = deepcopy(spec)
+    if "freeze" in normalized and isinstance(normalized["freeze"], dict):
+        normalized["freeze"]["frozen_spec_payload_sha256"] = None
+    return canonical(normalized)
 
 
 def frozen_contract_checks(spec: dict) -> dict[str, bool]:
@@ -97,19 +102,32 @@ def frozen_contract_checks(spec: dict) -> dict[str, bool]:
     decision = spec.get("decision_rule", {})
     authorization = spec.get("authorization", {})
     firewall = spec.get("firewall", {})
+    estimand = spec.get("estimand", {})
+    freeze_meta = spec.get("freeze", {})
     parent = tuple(
         (int(row.get("barrier_ticks", -1)), int(row.get("horizon_ticks", -1)))
         for row in source.get("parent_cells_selected_post_outcome", [])
     )
     definitions = spec.get("phases", {}).get("definitions", [])
     phases = tuple(str(row.get("name")) for row in definitions)
+    computed_hash = frozen_spec_payload_sha256(spec)
     bound = isinstance(EXPECTED_FROZEN_SPEC_PAYLOAD_SHA256, str) and len(EXPECTED_FROZEN_SPEC_PAYLOAD_SHA256) == 64
     return {
         "schema": spec.get("schema") == "bt2a_p2a_gc_clock_heterogeneity_v1",
         "status_frozen": spec.get("status") == "FROZEN_PREAUTHORIZATION",
-        "spec_payload_bound": bool(bound and canonical(spec) == EXPECTED_FROZEN_SPEC_PAYLOAD_SHA256),
+        "freeze_authorized": authorization.get("freeze_authorized") is True,
+        "execution_closed": authorization.get("execution_authorized") is False,
+        "spec_payload_bound": bool(
+            bound
+            and freeze_meta.get("frozen_spec_payload_sha256") == computed_hash
+            and EXPECTED_FROZEN_SPEC_PAYLOAD_SHA256 == computed_hash
+        ),
+        "minimum_other_phases": int(estimand.get("minimum_other_phases", -1)) == 3,
+        "minimum_sessions_per_contrast": int(estimand.get("minimum_sessions_per_contrast", -1)) == 117,
+        "heterogeneity_contrast": estimand.get("heterogeneity_contrast") == "D_session_cell_phase - mean(D_session_cell_all_three_other_phases)",
         "source_result": source.get("result_payload_sha256") == SOURCE_RESULT_SHA256,
         "event_store": source.get("canonical_event_store_payload_sha256") == EVENT_PAYLOAD_SHA256,
+        "canonical_parquet_declared": source.get("canonical_event_store_parquet_sha256") == EXPECTED_CANONICAL_PARQUET_SHA256,
         "parent_cells": parent == PARENT_CELLS,
         "parent_cells_post_selection": source.get("confirmatory_eligible") is False,
         "phases": phases == PHASES,

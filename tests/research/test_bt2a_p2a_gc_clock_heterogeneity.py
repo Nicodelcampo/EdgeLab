@@ -181,3 +181,44 @@ def test_spec_freezes_post_selection_interpretation_and_fixed_12_cell_family():
     assert spec["decision_rule"]["winner_selection_allowed"] is False
     assert spec["decision_rule"]["p2b_rule_change_allowed"] is False
     assert "BEST_WINDOW" in spec["forbidden_labels"]
+
+
+def test_negative_frozen_contract_checks():
+    runner = load_runner()
+    base_spec = json.loads(SPEC.read_text(encoding="utf-8"))
+
+    # 1. freeze_authorized = false => fails freeze_authorized check
+    spec1 = json.loads(json.dumps(base_spec))
+    spec1["status"] = "FROZEN_PREAUTHORIZATION"
+    spec1["authorization"]["freeze_authorized"] = False
+    assert not runner.frozen_contract_checks(spec1)["freeze_authorized"]
+
+    # 2. status != FROZEN_PREAUTHORIZATION => fails status_frozen check
+    spec2 = json.loads(json.dumps(base_spec))
+    spec2["status"] = "DRAFT_PREAUTHORIZATION_FAIL_CLOSED"
+    assert not runner.frozen_contract_checks(spec2)["status_frozen"]
+
+    # 3. minimum_other_phases != 3 => fails minimum_other_phases check
+    spec3 = json.loads(json.dumps(base_spec))
+    spec3["estimand"]["minimum_other_phases"] = 2
+    assert not runner.frozen_contract_checks(spec3)["minimum_other_phases"]
+
+    # 4. minimum_sessions_per_contrast != 117 => fails minimum_sessions check
+    spec4 = json.loads(json.dumps(base_spec))
+    spec4["estimand"]["minimum_sessions_per_contrast"] = 100
+    assert not runner.frozen_contract_checks(spec4)["minimum_sessions_per_contrast"]
+
+    # 5. Mutating any field => normalized hash mismatch
+    spec5 = json.loads(json.dumps(base_spec))
+    spec5["status"] = "FROZEN_PREAUTHORIZATION"
+    spec5["authorization"]["freeze_authorized"] = True
+    spec5["freeze"]["frozen_spec_payload_sha256"] = runner.frozen_spec_payload_sha256(spec5)
+    spec5["purpose"] = "Mutated purpose string"
+    assert not runner.frozen_contract_checks(spec5)["spec_payload_bound"]
+
+    # 6. Mutating declared hash => fails spec_payload_bound
+    spec6 = json.loads(json.dumps(base_spec))
+    spec6["status"] = "FROZEN_PREAUTHORIZATION"
+    spec6["authorization"]["freeze_authorized"] = True
+    spec6["freeze"]["frozen_spec_payload_sha256"] = "0" * 64
+    assert not runner.frozen_contract_checks(spec6)["spec_payload_bound"]

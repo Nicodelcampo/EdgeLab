@@ -107,7 +107,7 @@ def aggregate_clock_family(
                     for candidate in phases
                     if candidate != phase and (barrier, horizon, candidate) in effects
                 ]
-                if len(other) >= int(min_other_phases):
+                if len(other) == len(phases) - 1 and len(other) >= int(min_other_phases):
                     heterogeneity_values.append(effects[key] - sum(other) / len(other))
             inference = infer(
                 heterogeneity_values,
@@ -117,7 +117,7 @@ def aggregate_clock_family(
                 "barrier_ticks": int(barrier),
                 "horizon_ticks": int(horizon),
                 "phase": phase,
-                "estimand": "SESSION_PHASE_EFFECT_MINUS_MEAN_AVAILABLE_OTHER_PHASE_EFFECTS",
+                "estimand": "SESSION_PHASE_EFFECT_MINUS_MEAN_ALL_THREE_OTHER_PHASE_EFFECTS",
                 "n_sessions": len(heterogeneity_values),
                 "status": "COMPLETE" if inference is not None and len(heterogeneity_values) >= int(min_sessions) else "INSUFFICIENT_COVERAGE",
                 "phase_minus_rest": inference,
