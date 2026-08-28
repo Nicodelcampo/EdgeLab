@@ -14,6 +14,7 @@ from edgelab.kaggle.execution import (
     render_argv,
     verify_package_manifest,
 )
+from tools.run_kaggle_frozen_job import validate_attestation
 
 ROOT = Path(__file__).resolve().parents[2]
 TEMPLATE = ROOT / "specs/kaggle_frozen_execution_v1.template.json"
@@ -27,6 +28,7 @@ def test_template_is_non_executable_and_has_required_firewalls():
     assert not any(spec["firewalls"].values())
     assert spec["execution"]["shell"] is False
     assert spec["execution"]["parallelism"]["max_workers"] == 1
+    assert spec["outputs"]["firewall_attestation_path"] in spec["outputs"]["required_paths"]
 
 
 def _package(tmp_path: Path):
@@ -105,6 +107,37 @@ def test_argv_rendering_has_no_unresolved_placeholders():
     assert rendered == ["python", "job.py", "--data", "/x"]
     with pytest.raises(KaggleContractError, match="unresolved"):
         render_argv(["{missing}"], {})
+
+
+def test_firewall_attestation_is_boolean_and_fail_closed(tmp_path: Path):
+    path = tmp_path / "execution_attestation.json"
+    attestation = {
+        "future_price_path_accessed": False,
+        "first_touch_accessed": False,
+        "pnl_accessed": False,
+        "holdout_touched": False,
+    }
+    atomic_write_json(path, attestation)
+    result = validate_attestation(path, {
+        "future_price_path_authorized": False,
+        "first_touch_authorized": False,
+        "pnl_authorized": False,
+        "holdout_authorized": False,
+    })
+    assert result["breaches"] == []
+    attestation["first_touch_accessed"] = True
+    atomic_write_json(path, attestation)
+    result = validate_attestation(path, {
+        "future_price_path_authorized": False,
+        "first_touch_authorized": False,
+        "pnl_authorized": False,
+        "holdout_authorized": False,
+    })
+    assert result["breaches"] == ["first_touch_accessed"]
+    attestation["pnl_accessed"] = "false"
+    atomic_write_json(path, attestation)
+    with pytest.raises(KaggleContractError, match="requires boolean"):
+        validate_attestation(path, {})
 
 
 def test_legacy_metadata_no_longer_claims_cc0():
