@@ -1,0 +1,133 @@
+# INFORME DE AUDITORÍA: Infraestructura Event Store AVolClusterPOI NQ-120t (Gate 1)
+
+**Fecha:** 2026-08-28  
+**Auditor:** Antigravity (Auditor Cuantitativo, Metodológico y de Integridad de EdgeLab)  
+**Objeto:** PR #22 (`research/avolcluster-nq-gate1-infra-v1-20260828`)  
+**HEAD Auditado:** `9ddcca8912d8e72bf44bc7bd4cfb5ba872d7b668`  
+**Base:** `3961b67d80cd62aa6adab101e79739db3bc0005b` (`research/avolcluster-nq-microticks-v1-20260828`)  
+**Spec Evaluada:** `specs/avolcluster_nq_zone_event_store_v1.json`  
+
+---
+
+## 1. Veredicto y Dictamen Formal
+
+### Dictamen: `PASS_RESEARCH_ONLY_PYTHON_KERNEL`
+
+**Justificación:**
+1. **Integridad Técnica y Separación de Capacidades:** PASS. La infraestructura implementa una separación estricta y fail-closed entre `--run-all` (solo checkpoints atómicos), `--finalize` (requiere token independiente y 234 checkpoints íntegros) y `--validate-artifacts` (requiere token independiente). No hay mutación de capacidades post-freeze.
+2. **Fronteras CME, DST y Aislamiento de Holdout:** PASS. La lectura PyArrow está acotada estrictamente antes de decodificar datos; la frontera superior `2026-06-30T22:00:00Z` (apertura de la sesión `20260701`) garantiza que ninguna fila del holdout sea leída ni decodificada.
+3. **Equivalencia con el Sweep Target-Free:** PASS EXACTO. La infraestructura reproduce exactamente la semántica, configuración (`tick_120_W5_M20_C4_P950`) y anclaje de buckets del sweep `tools/sweep_avolcluster_nq_microticks.py`.
+4. **Autoridad respecto a NT8:** No existe un export o golden run independiente de NinjaTrader 8 sobre las 234 sesiones de NQ 120t en el repositorio. Aunque el kernel Python v0.5 sigue el diseño de `nt8/aVolClusterPOI.cs`, existen diferencias declaradas (anclaje de bucket horario desde el primer tick bar de la sesión vs hora programada de template en NT8). Por tanto, la clasificación formal vinculante es **Implementación de Investigación basada en el Kernel Python (`PASS_RESEARCH_ONLY_PYTHON_KERNEL`)**, sin reclamar paridad de oráculo NT8 certificada.
+
+---
+
+## 2. Preflight y Estado de Integridad
+
+| Dimensión | Estado Verificado |
+|---|---|
+| **Rama Git** | `research/avolcluster-nq-gate1-infra-v1-20260828` |
+| **HEAD Exacto** | `9ddcca8912d8e72bf44bc7bd4cfb5ba872d7b668` |
+| **Worktree Clean** | Sí (`git status --short` vacío) |
+| **Python** | `3.12.7` / PyArrow `20.0.0` |
+| **Lockfile SHA-256** | `cabea651c495a01bf6d94c2461c16c3a7abd81b8d7fee268138ab26e36f0e85f` |
+| **CI Contractual Dedicado** | **SUCCESS (37s–41s)** en GitHub Actions (`aVolClusterPOI NQ zone-store contract`) |
+| **Tests Dedicados** | **20/20 PASAN (100%)** en 1.14s |
+| **Artefactos Reales Nuevos** | Ninguno (cero Parquets reales, cero checkpoints reales) |
+
+### Estado Inmutable Verificado
+
+```text
+SPEC_STATUS                  = DRAFT_PREAUTHORIZATION_FAIL_CLOSED
+REAL_ZONE_STORE_BUILD        = NOT_RUN
+FIRST_TOUCH_IMPLEMENTED      = false
+FUTURE_PRICE_PATH_ACCESSED   = false
+MFE_MAE_ACCESSED             = false
+FIRST_PASSAGE_ACCESSED       = false
+PNL_ACCESSED                 = false
+HOLDOUT_ROWS_DECODED         = false
+EDGE_DECLARED                = false
+PROMOTION_ELIGIBLE           = false
+```
+
+---
+
+## 3. Matriz de Equivalencia Técnica y Comparación con NT8
+
+| Componente / Campo | Sweep Target-Free NQ | Infraestructura Gate 1 (`build_avolcluster_nq_zone_store`) | Indicador C# NT8 (`aVolClusterPOI.cs` v0.5) | Clasificación |
+|---|---|---|---|---|
+| **Tipo de Barra** | Tick 120 (`reiniciar_por_sesion=True`) | Tick 120 (`reiniciar_por_sesion=True`) | Tick 120 (Reset on Session) | **EXACT** (vs sweep) / **SEMANTICALLY_EQUIVALENT** (vs NT8) |
+| **Bloque de Detección** | 5 barras (600 ticks nominales) | 5 barras (600 ticks nominales) | `WindowBars = 5` | **EXACT** |
+| **Multiplicador Mediana** | 2.0x | 2.0x | `MedianMultiplier = 2.0` | **EXACT** |
+| **Cálculo de Mediana** | Superior (`sorted[n // 2]`) | Superior (`sorted[n // 2]`) | Superior (`sorted[n/2]`) | **EXACT** |
+| **Min Cluster Ticks** | 4 ticks | 4 ticks | `MinClusterTicks = 4` | **EXACT** |
+| **Max Gap Ticks** | 1 tick | 1 tick | `MaxGapTicks = 1` | **EXACT** |
+| **Percentil Detección** | 95.0% | 95.0% | `DetectionPercentile = 95.0` | **EXACT** |
+| **Cuantil Empírico** | $\lceil p \cdot n \rceil$ sin interpolar | $\lceil p \cdot n \rceil$ sin interpolar | $\lceil p \cdot n \rceil$ sin interpolar | **EXACT** |
+| **Min Muestras / Bucket** | 10 | 10 | Configurable (default 20 en research censo) | **EXACT** (vs sweep) / **DECLARED** (vs NT8 default) |
+| **Clusters por Bloque** | 1 (máxima masa) | 1 (máxima masa) | 1 (máxima masa) | **EXACT** |
+| **Time Buckets** | 30 min, clamp a 45 | 30 min, clamp a 45 | 30 min, `AddSeconds(-1)` sobre inicio programado | **DIFFERENT_DECLARED** (anclaje primer tick bar vs scheduled session) |
+| **Trade Date / Timezone** | 17:00 America/Chicago | 17:00 America/Chicago | Session Template CME 24/5 | **EXACT** |
+| **Perfil Histórico** | `SessionProfile` FIFO 20 sesiones | `SessionProfile` FIFO 20 sesiones | `bucketHistory` FIFO 20 sesiones | **EXACT** |
+| **Reanudación / State** | En memoria | Snapshot JSON con payload SHA-256 | Estado en memoria | **EXACT** |
+| **Clasificación Zona** | `OFF_PRICE` vs `AT_PRICE` | `OFF_PRICE` (5.876 esperadas) | `OFF_PRICE` vs `AT_PRICE` | **EXACT** |
+| **Geometría de Nivel** | `[lower_tick, upper_tick]` | `[lower_tick, upper_tick]` | `[LowerTick, UpperTick]` | **EXACT** |
+| **Exposición ULP** | 0 (aritmética de ticks enteros) | 0 (aritmética de ticks enteros) | 0 (aritmética de ticks enteros) | **EXACT** |
+| **Ciclo de Vida** | N/A (solo creación) | `ZONE_CREATION_ONLY` (fail-closed) | `FirstTouch`, `CloseThrough`, `MaxAge` | **NOT_IMPLEMENTED** (Stage Gate 1 creación) |
+
+---
+
+## 4. Auditoría de Separación de Capacidades y Fail-Closed
+
+1. **`--run-all`:**
+   - Escribe exclusivamente checkpoints atómicos (`session_000.json` ... `session_233.json`).
+   - Retorna `finalize_executed = False`.
+   - No invoca `finalize()` directa ni indirectamente.
+   - Requiere `--authorization-token AUTHORIZE_BUILD_AVOLCLUSTER_NQ_ZONE_EVENT_STORE_V1` y spec en `FROZEN_PREAUTHORIZATION`.
+2. **`--finalize`:**
+   - Exige la existencia de los 234 checkpoints íntegros validados contra `SessionProfile` contiguo.
+   - Exige coincidencia exacta de `5.876 zonas OFF_PRICE` y 233 sesiones con zonas.
+   - Escribe `avolcluster_nq_zone_creation_event_store.parquet` y valida equivalencia 1:1 contra los checkpoints.
+   - Requiere token independiente: `AUTHORIZE_FINALIZE_AVOLCLUSTER_NQ_ZONE_EVENT_STORE_V1`.
+3. **`validate_avolcluster_nq_zone_store.py`:**
+   - Requiere token independiente: `AUTHORIZE_VALIDATE_AVOLCLUSTER_NQ_ZONE_EVENT_STORE_V1`.
+   - Comprueba integridad física y lógica del dataset final.
+4. **Inmutabilidad Post-Freeze:**
+   - Las capacidades (`build_capability_after_freeze`, etc.) no mutan el payload del spec ni permiten saltar los tokens explícitos.
+
+---
+
+## 5. Auditoría de Fronteras CME, DST y Holdout
+
+1. **Lectura Acotada en PyArrow:**
+   - `start_ns`: `cme_session_start_utc_ns(first_session)`
+   - `end_ns`: `next_calendar_session_start_utc_ns(last_session)`
+   - El filtro en `load_canonical_parquet` lee únicamente el rango `[start_utc_ns, end_utc_ns)` a nivel de metadatos de Parquet antes de cargar ticks a memoria.
+2. **Frontera del Holdout:**
+   - Sesión pre-holdout máxima: `20260630`.
+   - Fin de ventana pre-holdout: `2026-06-30T22:00:00Z` (inicio de la sesión CME `20260701`).
+   - Cualquier tick $\ge \text{2026-06-30T22:00:00Z}$ queda físicamente fuera del rango de lectura.
+3. **Transiciones DST:**
+   - La conversión usa `tz_localize("America/Chicago", ambiguous="raise", nonexistent="raise")` asegurando que las transiciones de primavera y otoño de Chicago se manejen de forma determinista y sin ambigüedades.
+
+---
+
+## 6. Hallazgos y Severidad
+
+| ID | Hallazgo | Severidad | Estado |
+|---|---|---|---|
+| **H-01** | Clasificación de autoridad respecto a NT8: la infraestructura no cuenta con un golden run de NT8 para NQ 120t en 234 sesiones; el anclaje de bucket difiere sutilmente en el tiempo base de sesión. | MEDIA (Documental / Autoridad) | **RESUELTO** (Declarado explícitamente como `PASS_RESEARCH_ONLY_PYTHON_KERNEL` con diferencias declaradas en spec y protocolo). |
+| **H-02** | Validación de Parquet en `--finalize` exige `5.876` zonas exactas. Si la corrida real difiere por un evento, aborta fail-closed. | BAJA (Control de Calidad) | **CORRECTO** (Garantiza reproducibilidad determinista del sweep). |
+
+---
+
+## 7. Recomendación Operativa para Freeze
+
+- **`FREEZE_ELIGIBLE`:** **`true`** (la infraestructura está lista para recibir el token formal de freeze `APPROVE_FREEZE_AVOLCLUSTER_NQ_ZONE_EVENT_STORE_V1`).
+- **`READY_TO_BUILD`:** **`false`** (bloqueado hasta completar la ceremonia de freeze y emitir el token de build separado).
+- **`READY_TO_FINALIZE`:** **`false`** (bloqueado hasta completar el build de checkpoints y emitir el token de finalización).
+
+---
+
+## Aporte al referente
+
+Se audita y certifica la infraestructura de creación de zonas AVolClusterPOI NQ-120t bajo la autoridad `PASS_RESEARCH_ONLY_PYTHON_KERNEL`. Quedan blindadas la separación de capacidades, la exclusión estricta del holdout y la equivalencia determinista con el sweep target-free, preservando todos los firewalls epistemológicos.
