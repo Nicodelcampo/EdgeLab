@@ -6,6 +6,7 @@
 
 **Línea BT2A:** `work/bt2a-gate2-p2a-freeze-20260826`
 **Infraestructura AVol activa:** `research/avolcluster-nq-gate1-infra-v1-20260828`
+**Sweep BigTrap2 NQ activo:** `research/bigtrap2-nq-tickframes-sweep-v1-20260828`
 **Base AVol target-free:** `3961b67d80cd62aa6adab101e79739db3bc0005b`
 **Referente:** `docs/NORTH_STAR.md`
 
@@ -56,6 +57,19 @@ La rama activa agrega, sin ejecutar datos reales:
 - finalización condicionada a 234 checkpoints, 5.876 eventos y equivalencia Parquet ↔ checkpoints.
 
 El Event Store canónico de creación de zonas AVolClusterPOI NQ-120t ha completado Gate 1A con éxito total: 234 checkpoints atómicos generados en commit productor `910c4dd75a6e6494f01497b4ff073d5a1e8e9637`, reproduciendo exactamente 5.876 zonas `OFF_PRICE` en 233 sesiones CME. Consolidado en Parquet (`4dad91f6...`) y validado independientemente (`READY_ZONE_CREATION_EVENT_STORE`) con equivalencia 100% (`PASS`). Metadatos publicados en `docs/research/` (manifest, validación e inventario de checkpoints). Lifecycle (Gate 1B), first touch, BT2A NQ join y outcomes permanecen cerrados y fail-closed.
+
+## Sweep BigTrap2 NQ (112 Configuraciones — Reclasificación V1 y Remediación V2)
+
+El sweep inicial de BigTrap2 sobre los 5 contratos de NQ (234 sesiones) completó 112 configuraciones en 16.391,9s (~4,55h), pero incurrió en decodificación de holdout en memoria y acceso a ciclo de vida (`update_zones`).
+- **Estado V1:** Preservado inmutable como evidencia expuesta bajo `COMPLETE_RETROSPECTIVE_SWEEP_PUBLICATION_WITH_EXPOSURE` (`FUTURE_PRICE_PATH_ACCESSED = true`, `FIRST_TOUCH_ACCESSED = true`, `HOLDOUT_ROWS_DECODED = true`).
+- **Artefactos V1:** `docs/research/bigtrap2_nq_tickframes_sweep_result.json` (original Windows CRLF `ae631415...`, normalizado LF `47161482...`) con sidecar `docs/research/bigtrap2_nq_tickframes_sweep_result_classification.json`.
+- **Incidente:** `docs/incidents/INCIDENTE_BIGTRAP2_NQ_SWEEP_LIFECYCLE_HOLDOUT_2026-08-28.md`.
+- **Remediación V2:**
+  - Detector creation-only puro: `edgelab/bridge/indicators/bigtrap2_creation_only.py`.
+  - Runner fail-closed V2: `tools/sweep_bigtrap2_nq_tickframes_v2.py` (PyArrow acotado a `[min_start, max_end)`, hash check de 5 inputs, token y commit runtime gates).
+  - Spec V2 en borrador: `specs/bigtrap2_nq_tickframes_sweep_v2.draft.json` con hashes canónicos de Gate 1A (`f50350ee...` y `2ce11410...`).
+  - Tokens: `BIGTRAP2_SELECTION_FREEZE_TOKEN_ISSUED = false`, `BIGTRAP2_RERUN_AUTHORIZED = false`.
+
 
 ## Diseño conjunto AVol + BT2A NQ + L2
 

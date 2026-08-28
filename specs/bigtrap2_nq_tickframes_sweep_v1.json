@@ -1,0 +1,57 @@
+{
+  "schema_version": "bigtrap2_nq_tickframes_sweep_spec_v1",
+  "spec_id": "BT2_NQ_TICKFRAMES_SWEEP_V1",
+  "title": "Retrospective Resolution Sweep for BigTrap2 on NQ (Preserved Historical Exposure)",
+  "created_utc": "2026-08-28T14:25:00Z",
+  "status": "COMPLETE_RETROSPECTIVE_SWEEP_PUBLICATION_WITH_EXPOSURE",
+  "instrument": "NQ",
+  "binding": {
+    "session_registry_path": "specs/bt2a_gate1_nq_all5_sessions_2026-08-27.json",
+    "input_registry_path": "specs/bt2a_gate1_nq_all5_input_registry_2026-08-27.json",
+    "output_result_path": "docs/research/bigtrap2_nq_tickframes_sweep_result.json",
+    "output_result_sha256": "4716148209c44ea42e801a0717ead2eb357cf4d635b0f0c01ed72e161d342713"
+  },
+  "universe": {
+    "contracts": [
+      "NQ 09-25",
+      "NQ 12-25",
+      "NQ 03-26",
+      "NQ 06-26",
+      "NQ 09-26"
+    ],
+    "total_cme_sessions": 234,
+    "holdout_start_date": "20260701"
+  },
+  "grid": {
+    "bar_series_types": {
+      "tick_10": {"kind": "tick", "param": 10},
+      "tick_25": {"kind": "tick", "param": 25},
+      "tick_50": {"kind": "tick", "param": 50},
+      "tick_100": {"kind": "tick", "param": 100},
+      "tick_120": {"kind": "tick", "param": 120},
+      "tick_240": {"kind": "tick", "param": 240},
+      "time_1m": {"kind": "time", "param": 1}
+    },
+    "imbalance_ratios": [2.5, 3.0, 3.5, 4.0],
+    "min_trap_volumes": [10, 20, 50, 100],
+    "total_configurations": 112
+  },
+  "kernel_parameters": {
+    "indicator": "BigTrap2",
+    "version": "2.2_bridge",
+    "use_wick_filter": false
+  },
+  "firewalls": {
+    "future_price_path_accessed": true,
+    "first_touch_accessed": true,
+    "mfe_mae_accessed": false,
+    "pnl_accessed": false,
+    "holdout_rows_decoded": true,
+    "holdout_touched": true,
+    "winner_selected": false,
+    "edge_declared": false,
+    "promotion_eligible": false,
+    "confirmatory_eligible": false,
+    "event_store_build_eligible": false
+  }
+}
