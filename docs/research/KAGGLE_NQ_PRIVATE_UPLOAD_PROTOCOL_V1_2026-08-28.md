@@ -1,22 +1,26 @@
 # Protocolo operativo de upload privado — NQ pre-holdout
 
 **Fecha:** 2026-08-28  
-**Estado:** `READY_FOR_PRIVATE_UPLOAD_AUTHORIZATION_OPERATOR_ATTESTED`  
+**Estado:** `AUTHORIZED_PRIVATE_UPLOAD_PENDING_EXECUTION`  
 **Spec:** `specs/kaggle_nq_private_upload_v1.draft.json`  
-**Upload autorizado:** `false`  
-**Upload ejecutado:** `false`
+**Upload autorizado:** `true`  
+**Upload ejecutado:** `false`  
+**Corrida científica autorizada:** `false`
 
-## 1. Alcance
+## 1. Alcance autorizado
 
-Esta ceremonia autoriza únicamente la creación de un dataset privado nuevo a partir del paquete local ya construido. No autoriza una nueva versión de un dataset existente, upload por web, notebook, sweep, Event Store, outcomes ni holdout.
+La directiva explícita del propietario emitida el `2026-08-28T20:40:08.393Z` autoriza únicamente crear un dataset privado nuevo desde el paquete local certificado.
 
 ```text
+TOKEN            = AUTHORIZE_UPLOAD_KAGGLE_NQ_PREHOLDOUT_PRIVATE_V1
 DATASET_ID       = nicodelcampo/edgelab-ticks-nq-preholdout
 LOCAL_SOURCE     = E:\EdgeLab\kaggle_nq_research
 MECHANISM        = KAGGLE_CLI_CREATE_ONLY
 VISIBILITY       = private_only
 PUBLIC_SHARING   = forbidden
 ```
+
+No autoriza una nueva versión de un dataset existente, upload por web, notebook, sweep, Event Store, outcomes ni holdout.
 
 ## 2. Inventario
 
@@ -28,7 +32,7 @@ CONTROL_METADATA           = 1
 REMOTE_DATA_FILES_EXPECTED = 8
 ```
 
-Los ocho payloads remotos esperados son cinco Parquet, `effective_input_registry.json`, `kaggle_research_package_manifest.json` y `files.sha256`. `dataset-metadata.json` es control-plane para Kaggle CLI y no se exige como payload remoto. Si Kaggle lo expone, debe coincidir exactamente con el metadata local y el inventario real debe registrarse como nueve.
+Los ocho payloads remotos esperados son cinco Parquet, `effective_input_registry.json`, `kaggle_research_package_manifest.json` y `files.sha256`. `dataset-metadata.json` es control-plane para Kaggle CLI. Si Kaggle lo expone como archivo, debe coincidir exactamente con el metadata local y el inventario real debe registrarse como nueve.
 
 ## 3. Identidad local vinculante
 
@@ -44,21 +48,18 @@ HOLDOUT_OPEN_UTC_NS       = 1782856800000000000
 STRICT_MARGIN             = 144 ms
 ```
 
-La verificación física local permanece bajo atestación del operador hasta el rehash independiente post-upload.
-
 ## 4. Preflight runtime obligatorio
 
-En la terminal personal de Nico, fuera del repositorio:
+Antes de crear el dataset, el operador debe:
 
-1. Confirmar que Kaggle CLI está disponible.
-2. Ejecutar una consulta autenticada de datasets propios; `kaggle config view` por sí solo no prueba el owner.
-3. Confirmar que la cuenta efectiva es `nicodelcampo`.
-4. Buscar coincidencia exacta del slug `edgelab-ticks-nq-preholdout`.
-5. Si existe, abortar. No cambiar automáticamente de `create` a `version`.
-6. Releer el metadata local y exigir `id` exacto e `isPrivate=true`.
-7. Recalcular el SHA-256 del metadata.
-8. Verificar las siete entradas de `files.sha256` y su self-hash.
-9. Rechazar cualquier archivo local adicional.
+1. confirmar que Kaggle CLI está autenticado funcionalmente;
+2. comprobar mediante consulta autenticada que el owner efectivo es `nicodelcampo`;
+3. confirmar que no existe el slug exacto `edgelab-ticks-nq-preholdout`;
+4. abortar si existe; no cambiar automáticamente de `create` a `version`;
+5. exigir `id` exacto e `isPrivate=true` en el metadata local;
+6. recalcular el hash del metadata;
+7. verificar las siete entradas de `files.sha256` y su self-hash;
+8. rechazar cualquier archivo local adicional.
 
 Estados de aborto:
 
@@ -70,25 +71,19 @@ ABSTAIN_UPLOAD_HASH_MISMATCH
 ABSTAIN_UPLOAD_INVENTORY_MISMATCH
 ```
 
-## 5. Comando autorizado por esta ceremonia
+## 5. Comando autorizado
 
-Sólo después de recibir una directiva independiente que contenga el token exacto:
-
-```text
-AUTHORIZE_UPLOAD_KAGGLE_NQ_PREHOLDOUT_PRIVATE_V1
-```
-
-puede ejecutarse:
+Si todos los preconditions pasan, queda autorizado exactamente:
 
 ```powershell
 kaggle datasets create -p "E:\EdgeLab\kaggle_nq_research"
 ```
 
-La presencia del token en esta documentación no constituye autorización.
+No queda autorizado ningún fallback a `kaggle datasets version`.
 
 ## 6. Verificación post-upload
 
-`kaggle datasets status` valida procesamiento, no privacidad. Deben verificarse por separado:
+Después del create, detener toda ejecución científica y comprobar separadamente:
 
 ```text
 PROCESSING_STATUS = ready
@@ -97,7 +92,9 @@ SLUG              = edgelab-ticks-nq-preholdout
 VISIBILITY        = private
 ```
 
-La privacidad se confirma mediante sesión web autenticada o API autenticada que exponga `isPrivate`. Registrar versión, timestamp, URL privada, tamaño e inventario remoto.
+`kaggle datasets status` valida procesamiento, no privacidad. La privacidad debe confirmarse mediante sesión web autenticada o API autenticada que exponga `isPrivate`.
+
+Registrar versión, timestamp, URL privada, tamaño e inventario remoto.
 
 Antes de cualquier kernel:
 
@@ -106,7 +103,7 @@ Antes de cualquier kernel:
 3. verificar self-hash e inventario;
 4. verificar filas, bytes y `ts_max`;
 5. confirmar ausencia física de holdout;
-6. emitir una certificación post-upload.
+6. emitir certificación post-upload.
 
 Si un byte difiere:
 
@@ -125,13 +122,13 @@ Si aparece público, con owner/slug incorrecto o con inventario inesperado:
 3. registrar incidente;
 4. no reintentar sin nueva ceremonia.
 
-El borrado es mitigación de emergencia, no sustituto de la verificación previa de privacidad.
-
-## 8. Firewalls
+## 8. Separación científica
 
 ```text
 KAGGLE_DATASET_BUILD_EXECUTED  = true
+KAGGLE_DATASET_UPLOAD_AUTHORIZED = true
 KAGGLE_DATASET_UPLOAD_EXECUTED = false
+POST_UPLOAD_REHASH             = pending
 BIGTRAP2_RERUN_AUTHORIZED      = false
 BT2A_NQ_SWEEP_AUTHORIZED       = false
 BT2A_NQ_GATE1_AUTHORIZED       = false
@@ -141,4 +138,4 @@ SCIENTIFIC_RUN_AUTHORIZED      = false
 
 ## Aporte al referente
 
-El upload privado NQ queda formalizado como create-only por Kaggle CLI, con owner y colisión verificados en runtime, privacidad separada del estado de procesamiento y rehash obligatorio antes de cualquier kernel.
+El propietario autorizó exclusivamente el create privado NQ por Kaggle CLI; ejecución científica, versionado, outcomes y holdout permanecen fuera de alcance y el upload sigue pendiente de ejecución por un operador con acceso local y credenciales.
