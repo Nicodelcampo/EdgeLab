@@ -1,0 +1,157 @@
+{
+  "schema": "bt2a_p2a_gc_clock_heterogeneity_v1",
+  "status": "DRAFT_PREAUTHORIZATION_FAIL_CLOSED",
+  "created_date": "2026-08-27",
+  "purpose": "Measure pre-cost GC time-of-day heterogeneity of the already-opened P2-A directional mechanism without selecting an operating window.",
+  "source_p2a": {
+    "result_branch": "results/bt2a-p2a-v1-r1-20260827",
+    "result_commit": "7a9959fb4ee2bf532c64e860cae794db7557eec7",
+    "result_payload_sha256": "296f8352a46751c3a9a26a32ec29661ddcecba7ac57874a967dc591a92766e28",
+    "classification": "P2_DIAGNOSTIC_MECHANISM_SUPPORTED",
+    "canonical_event_store_payload_sha256": "feee6001e88aa69f62a092b253e468531230120a3dccdc2ceac0d488c9684cbd",
+    "canonical_event_store_parquet_sha256": "6f7994b4ff21d2ddd0addcd9d3815b7ae83ff008b5b4774e74f2821efb2a4d77",
+    "n_sessions": 234,
+    "n_events": 22202,
+    "k_abs": 16940,
+    "k_bt2": 5262,
+    "max_cme_session": "20260630",
+    "outcomes_already_opened": true,
+    "confirmatory_eligible": false,
+    "parent_cells_selected_post_outcome": [
+      {"barrier_ticks": 9, "horizon_ticks": 25},
+      {"barrier_ticks": 30, "horizon_ticks": 100},
+      {"barrier_ticks": 30, "horizon_ticks": 250}
+    ]
+  },
+  "scientific_correction": {
+    "existing_secondary_clock_family": "The 12 existing P2-A secondary clock cells are 5/30/120-second outcome horizons, not clock-time session windows.",
+    "new_family_required": true,
+    "new_family_scope": "3 post-outcome-selected parent cells x 4 ex-ante market phases = 12 phase-vs-rest contrasts"
+  },
+  "scope": {
+    "instrument": "GC",
+    "contracts": ["GC 12-25", "GC 02-26", "GC 04-26", "GC 06-26", "GC 08-26"],
+    "arm": "K_ABS",
+    "event_clock": "FILL_TS_UTC_NS_FIRST_CANONICAL_ROW_STRICTLY_AFTER_SIGNAL",
+    "session_boundary": "HARD_CME",
+    "aggregation": "EQUAL_CME_SESSION_WEIGHT",
+    "costs_applied": false,
+    "pnl_computed": false
+  },
+  "phases": {
+    "timezone": "America/Chicago",
+    "dst_policy": "IANA_ZONEINFO",
+    "interval": "LEFT_CLOSED_RIGHT_OPEN",
+    "definitions": [
+      {"name": "ASIA_ETH", "start": "17:00:00", "end": "01:00:00", "wraps_midnight": true},
+      {"name": "EUROPE_PRE_RTH", "start": "01:00:00", "end": "07:20:00", "wraps_midnight": false},
+      {"name": "GC_RTH", "start": "07:20:00", "end": "12:30:00", "wraps_midnight": false},
+      {"name": "POST_RTH", "start": "12:30:00", "end": "16:00:00", "wraps_midnight": false}
+    ],
+    "maintenance_excluded": {"start": "16:00:00", "end": "17:00:00"},
+    "boundaries_source": "CME_GC_TRADING_PHASES_NOT_OBSERVED_EFFECT_MAXIMA"
+  },
+  "macro_exclusion": {
+    "primary_population": "NON_BLACKOUT_ONLY",
+    "event_types": ["FOMC", "CPI", "NFP"],
+    "window": "RELEASE_UTC_INCLUSIVE_TO_RELEASE_PLUS_5_MINUTES_EXCLUSIVE",
+    "calendar_repository_path": "specs/bt2a_macro_calendar_gc_20250804_20260630_v1.json",
+    "calendar_file_sha256": "5f1a484858c7d0bdd997f7f6dafef014bae2f13debdb5bcce937d74257cbd9ca",
+    "macro_outcomes_analyzed": false,
+    "macro_rows_reported": "COUNTS_ONLY"
+  },
+  "estimand": {
+    "score": {"TP_FIRST": 1, "SL_FIRST": -1, "TIMEOUT": 0},
+    "session_phase_effect": "mean(K_ABS first-passage score) - median over N_RAND replication means within session, phase and parent cell",
+    "heterogeneity_contrast": "D_session_cell_phase - mean(D_session_cell_other_available_phases)",
+    "minimum_other_phases": 2,
+    "minimum_sessions_per_contrast": 117,
+    "no_event_session_phase": "MISSING_NOT_ZERO",
+    "unmatchable_session_phase": "ABSTAIN_WITH_REASON",
+    "all_registry_sessions_retained": true
+  },
+  "nrand": {
+    "replications": 10000,
+    "sampling": "DETERMINISTIC_WITHOUT_REPLACEMENT",
+    "same_cme_session": true,
+    "same_30_minute_chicago_bin": true,
+    "same_gate1_cap_driver": true,
+    "same_frozen_phase": true,
+    "macro_blackout_candidates_excluded": true,
+    "own_anchor_excluded": true,
+    "sparse_stratum_policy": "ABSTAIN_SESSION_PHASE"
+  },
+  "inference": {
+    "unit": "CME_SESSION",
+    "method": "WEBB_SIX_POINT_WILD_CLUSTER_BY_CME_SESSION",
+    "alternative": "TWO_SIDED",
+    "confidence": 0.95,
+    "replications": 10000,
+    "base_seed": 20260827,
+    "primary_family": "12_PHASE_VS_REST_CONTRASTS",
+    "multiplicity": "HOLM_OVER_12",
+    "phase_level_effects": "UNADJUSTED_DESCRIPTIVE_ONLY",
+    "events_assumed_iid": false
+  },
+  "decision_rule": {
+    "complete_family_required": true,
+    "heterogeneity_signal": "AT_LEAST_ONE_PHASE_VS_REST_CONTRAST_WITH_CI_EXCLUDING_ZERO_AND_P_HOLM_12_LE_0.05",
+    "no_signal": "COMPLETE_FAMILY_AND_ZERO_FAMILYWISE_SIGNALS",
+    "winner_selection_allowed": false,
+    "operating_window_selection_allowed": false,
+    "p2b_rule_change_allowed": false,
+    "edge_declaration_allowed": false,
+    "promotion_allowed": false
+  },
+  "allowed_labels": [
+    "P2A_POST_SELECTION_CLOCK_HETEROGENEITY_SIGNAL",
+    "P2A_POST_SELECTION_NO_CLOCK_HETEROGENEITY_SIGNAL",
+    "P2A_CLOCK_HETEROGENEITY_INCONCLUSIVE"
+  ],
+  "forbidden_labels": [
+    "BEST_WINDOW",
+    "OPTIMAL_HOUR",
+    "CONFIRMATORY_PASS",
+    "EDGE_DECLARED",
+    "PROMOTED"
+  ],
+  "preflight": {
+    "must_not_parse_price_values": true,
+    "must_not_compute_outcomes": true,
+    "must_validate_source_p2a_spec": true,
+    "must_validate_canonical_event_store": true,
+    "must_require_234_event_checkpoints": true,
+    "must_require_five_raw_parquets": true,
+    "must_validate_macro_calendar_sha256": true,
+    "must_require_clean_worktree": true,
+    "ready_label": "PASS_READY_FOR_CLOCK_AUTHORIZATION"
+  },
+  "authorization": {
+    "preparation_authorized": true,
+    "freeze_authorized": false,
+    "execution_authorized": false,
+    "freeze_approval_token": "APPROVE_FREEZE_BT2A_P2A_GC_CLOCK_HETEROGENEITY_V1",
+    "execution_token": "AUTHORIZE_BT2A_P2A_GC_CLOCK_HETEROGENEITY_V1",
+    "heavy_cpu_requires_execution_token": true
+  },
+  "freeze": {
+    "branch": "research/bt2a-p2a-clock-heterogeneity-v1-20260827",
+    "base_branch": "work/bt2a-gate2-p2a-freeze-20260826",
+    "frozen_spec_payload_sha256": null,
+    "spec_changes_after_first_authorized_run_forbidden": true
+  },
+  "firewall": {
+    "P2A_OUTCOMES_ALREADY_OPENED": true,
+    "NEW_ANALYTICAL_FAMILY_PREPARED": true,
+    "NEW_ANALYTICAL_FAMILY_EXECUTED": false,
+    "FUTURE_PRICE_PATH_ACCESSED_BY_PREPARATION": false,
+    "PNL_ACCESSED": false,
+    "P2B_RUN": false,
+    "L2_OUTCOMES_OPENED": false,
+    "HOLDOUT_TOUCHED": false,
+    "WINNER_SELECTED": false,
+    "EDGE_DECLARED": false,
+    "CONFIRMATORY_ELIGIBLE": false,
+    "PROMOTION_ELIGIBLE": false
+  }
+}
