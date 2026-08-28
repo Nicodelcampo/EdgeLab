@@ -1,0 +1,103 @@
+{
+  "schema": "bt2_absorption_target_free_sweep_v1",
+  "status": "FROZEN_TARGET_FREE_NOT_RUN",
+  "frozen_at": "2026-08-24",
+  "north_star_sha256": "d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1",
+  "justificacion_economica": "Mapear qué parámetros cambian realmente la población antes de gastar outcomes reduce falsos negativos de un único headline y evita cobrar configuraciones redundantes como hipótesis independientes.",
+  "como_podria_refutarse": "Se refuta como herramienta de screening si no reproduce el headline, accede a outcomes, usa las 19 sesiones selladas en métricas, omite un parámetro de DEFAULTS/PARAM_SPEC o no detecta parámetros no-op conocidos.",
+  "firewall": {
+    "target_free": true,
+    "outcomes_opened": false,
+    "sealed_outcomes_opened": false,
+    "forbidden_imports": ["edgelab.engine", "atlas_excursiones_nulas"],
+    "forbidden_metrics": ["MFE", "MAE", "return", "PnL", "hit_rate", "d_hat"]
+  },
+  "universe": {
+    "split": "specs/bt2_absorption_gate1_split_v1.json",
+    "chain": "docs/research/CADENA_FRONTMONTH_GC.json",
+    "causal_history_sessions": 152,
+    "reported_sessions": 133,
+    "sealed_sessions": 19,
+    "sealed_policy": "Procesar ticks target-free sólo para conservar abs_ring cronológico; excluir totalmente las 19 sesiones de todas las métricas, solapamientos y decisiones.",
+    "raw_td_join_forbidden": true,
+    "canonical_identity": ["instrument", "contract", "cme_session", "t_start"]
+  },
+  "runtime_budget": {
+    "wall_clock_hours": 9,
+    "runner_default_max_hours": 8.5,
+    "resume_required": true,
+    "partial_write_atomic": true
+  },
+  "parameter_space": {
+    "roles": {
+      "event_generation": [
+        "TapeWindowTicks", "ScoreMode", "AbsorptionPct", "AbsorptionLookback",
+        "MinHistoryBuckets", "RequireFlowSideMatch", "ImbalanceMode",
+        "TrapVolumeSource", "TicksPerRow", "ImbalanceRatio", "MinStackedRows",
+        "MinTrapFrac", "MinDeltaFilter", "MinTrapVolume", "UseWickFilter",
+        "WickZonePct"
+      ],
+      "lifecycle": ["InvalidationMode", "MaxAgeBars", "MaxTouches"],
+      "suspected_noop_or_presentation": ["MinExportVolume", "DrawZoneBand"]
+    },
+    "selection_rule": "No se elige ganador target-free; se describen activación, sensibilidad, redundancia e interacciones."
+  },
+  "oat_levels": {
+    "TapeWindowTicks": [5, 10, 15, 25, 50, 100],
+    "ScoreMode": ["AbsMagnitude", "AbsDirectional"],
+    "AbsorptionPct": [80.0, 85.0, 90.0, 95.0],
+    "AbsorptionLookback": [200, 500, 1000],
+    "MinHistoryBuckets": [50, 100, 200, 500],
+    "RequireFlowSideMatch": [true, false],
+    "ImbalanceMode": ["Diagonal", "SameLevel"],
+    "TrapVolumeSource": ["AggressiveSide", "TotalLevel"],
+    "TicksPerRow": [1, 2, 4],
+    "ImbalanceRatio": [2.0, 3.0, 4.0, 6.0],
+    "MinStackedRows": [1, 2, 3, 4],
+    "MinTrapFrac": [0.1, 0.2, 0.3, 0.5],
+    "MinDeltaFilter": [0.0, 10.0, 50.0, 100.0],
+    "MinTrapVolume": [0.0, 10.0, 50.0, 100.0],
+    "MinExportVolume": [1.0, 10.0, 1000.0],
+    "UseWickFilter": [true, false],
+    "WickZonePct": [10.0, 20.0, 30.0, 40.0, 50.0],
+    "InvalidationMode": ["CloseThrough", "FirstTouch", "None"],
+    "MaxAgeBars": [0, 500, 2000, 5000],
+    "MaxTouches": [0, 1, 3, 5],
+    "DrawZoneBand": [true, false]
+  },
+  "interaction_design": {
+    "type": "balanced_mixed_discrete_screening",
+    "seed": 20260824,
+    "n_rows": 48,
+    "axes": [
+      "TapeWindowTicks", "ScoreMode", "AbsorptionPct", "AbsorptionLookback",
+      "MinHistoryBuckets", "RequireFlowSideMatch", "ImbalanceMode",
+      "TrapVolumeSource", "TicksPerRow", "ImbalanceRatio", "MinStackedRows",
+      "MinTrapFrac", "MinDeltaFilter", "MinTrapVolume", "UseWickFilter",
+      "WickZonePct"
+    ],
+    "interpretation": "Screening de interacciones; no es factorial completo ni búsqueda de PnL."
+  },
+  "metrics": {
+    "population": ["n_buckets", "n_residual", "n_pass", "n_zones", "n_long", "n_short", "sessions_with_zones"],
+    "score": ["score_p10_p50_p90", "threshold_p10_p50_p90", "pass_rate"],
+    "geometry": ["zone_width_ticks", "stacked_rows", "trap_frac", "trap_volume"],
+    "lifecycle": ["active", "invalidated", "expired", "touches"],
+    "integrity": ["coverage_by_contract_session", "input_sha256", "code_commit", "dirty_start_end", "runtime"]
+  },
+  "overlap": {
+    "exact_identity": ["contract", "cme_session", "direction", "sig_ts", "lo_half_tick", "hi_half_tick"],
+    "time_tolerance_seconds": 60,
+    "price_tolerance_ticks": 2,
+    "effective_test_count_from_jaccard_forbidden": true,
+    "use": "describir redundancia y congelar representantes antes de outcomes"
+  },
+  "failure_policy": {
+    "zero_over_zero": "ABORT",
+    "missing_expected_session": "ABORT",
+    "partial_silent_intersection": "ABORT",
+    "dirty_worktree": "ABORT",
+    "head_changed_during_run": "INVALID_PROVENANCE",
+    "outcome_access": "ABORT_AND_INVALIDATE"
+  }
+}

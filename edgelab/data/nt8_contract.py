@@ -22,36 +22,56 @@ from pydantic import BaseModel, ConfigDict, Field
 class InstrumentSpec(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
     symbol: str
-    tick_size: float          # p.ej. 6E = 0.00005
-    tick_value: float         # USD por tick (6E = 6.25)
-    multiplier: float         # tamaño de contrato (6E = 125000 EUR)
+    tick_size: float
+    tick_value: float
+    multiplier: float
 
 
-# 6E — futuros EUR/USD (CME). Precios internos en ticks enteros.
 SIX_E = InstrumentSpec(symbol="6E", tick_size=0.00005, tick_value=6.25, multiplier=125000.0)
-
-# YM — futuros Mini Dow ($5) (CBOT/CME). tick_value = tick_size * multiplier,
-# igual que 6E (1.0 * 5.0 = 5.00): consistente con la formula, no un dato suelto.
 YM = InstrumentSpec(symbol="YM", tick_size=1.0, tick_value=5.00, multiplier=5.0)
-
-# ES — futuros E-mini S&P 500 (CME). tick_value = 0.25 * 50.0 = 12.50.
 ES = InstrumentSpec(symbol="ES", tick_size=0.25, tick_value=12.50, multiplier=50.0)
-
-# NQ — futuros E-mini Nasdaq-100 (CME). tick_value = 0.25 * 20.0 = 5.00.
 NQ = InstrumentSpec(symbol="NQ", tick_size=0.25, tick_value=5.00, multiplier=20.0)
+
+# ZB — 30-Year U.S. Treasury Bond: 1/32 point, USD 31.25 por tick.
+ZB = InstrumentSpec(symbol="ZB", tick_size=0.03125, tick_value=31.25, multiplier=1000.0)
+
+# GC — COMEX Gold futures: 0.10 USD por onza, contrato de 100 oz,
+# tick_value = 0.10 * 100 = USD 10. Este catálogo solo define geometría del
+# contrato; no adjudica que un parquet sea canónico (eso requiere hash/P0/P1A).
+GC = InstrumentSpec(symbol="GC", tick_size=0.1, tick_value=10.0, multiplier=100.0)
+
+# 6J — CME Japanese Yen futures. Contrato de 12.500.000 JPY, cotizado en USD por JPY.
+#
+# `tick_size` NO se acepta de palabra: 5e-07 está declarado en los manifiestos de los
+# parquets (`data/nt8/6J_parquet/6J_*_manifest.json`, campo `tick_size`), generados por
+# `build_nt8_ticks` desde los .Last.txt. Coincide con lo que informó Nico.
+#
+# La aritmética se auto-verifica: 0,0000005 × 12.500.000 = 6,25 USD por tick, el mismo
+# tick_value que 6E (0,00005 × 125.000 = 6,25). Si alguno de los tres números estuviera
+# mal, el producto no cerraría — ver `tests/data/test_nt8_contract_6j.py`.
+SIX_J = InstrumentSpec(symbol="6J", tick_size=0.0000005, tick_value=6.25,
+                       multiplier=12_500_000.0)
+
+INSTRUMENT_SPECS: dict[str, InstrumentSpec] = {
+    "6E": SIX_E,
+    "YM": YM,
+    "ES": ES,
+    "NQ": NQ,
+    "ZB": ZB,
+    "GC": GC,
+    "6J": SIX_J,
+}
 
 
 class Nt8TickContract(BaseModel):
-    """Contrato del formato. `declared_tz` es OBLIGATORIA (sin default) → una
-    spec sin zona declarada falla en carga (ValidationError)."""
+    """Contrato del formato. `declared_tz` es OBLIGATORIA (sin default)."""
     model_config = ConfigDict(extra="forbid")
 
-    declared_tz: str = Field(min_length=1)     # zona DECLARADA del export (F2 la verifica)
+    declared_tz: str = Field(min_length=1)
     instrument: InstrumentSpec
     field_sep: str = ";"
     columns: tuple[str, ...] = ("ts", "last", "bid", "ask", "volume")
     ts_format: str = "yyyyMMdd HHmmss fffffff"
     frac_digits: int = 7
-    frac_unit_ns: int = 100                    # 100 ns por unidad (.NET ticks)
-    price_align_tol: float = 1e-9              # tolerancia relativa de alineación a tick
-    # semántica de agresor (documental): last==ask -> buy, last==bid -> sell, otro -> unclassified
+    frac_unit_ns: int = 100
+    price_align_tol: float = 1e-9

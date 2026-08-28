@@ -1,0 +1,191 @@
+{
+ "schema_version": "paridad_hftzones_es_pure_v2_flat_v1",
+ "indicador": "HFTZonesESPureV2Flat",
+ "cs_sha256": "4e80c24d873cd9009850e55d3e3b4a7492a77608e47dc8a41f0294cb226824e5",
+ "contrato": "ES 03-26",
+ "snapshot": "E:\\EdgeLab\\runs\\oraculo_espurev2flat_ES_snapshot.sqlite",
+ "outcomes_accessed": false,
+ "pnl_accessed": false,
+ "holdout_included": false,
+ "nota_serie": "el .cs corre sobre AddDataSeries(Tick, 1): la maquina de estados no usa las velas de 25 Tick del chart, que son solo la serie de dibujo",
+ "parametros": {
+  "min_pasos": 10,
+  "max_rango_tick_por_vela": 1,
+  "fallos_tolerados": 1,
+  "filtro_direccion_estricto": true,
+  "min_sweep_ticks": 5,
+  "max_avg_ms": 15,
+  "max_total_ms": 300,
+  "max_pausa_ms": 50,
+  "min_volume_rate": 500,
+  "min_total_volume": 200,
+  "predator_avg_ms": 3,
+  "ultra_avg_ms": 10,
+  "mostrar_absorb": true,
+  "min_absorb_pasos": 8
+ },
+ "resumen": {
+  "n_sesiones": 3,
+  "nivel_a_exact": 2,
+  "nivel_b_exact": 3,
+  "zonas_nt8": 218,
+  "zonas_exact": 218,
+  "frac_zonas_exact": 1.0
+ },
+ "procedencia": {
+  "head_commit": "0f0e2e15f125921e9afeb2e30e61cdb2336aa7c0",
+  "archivos_sucios": [
+   "AGENTS.md",
+   "data/nt8_oracles/hftzonesespurev2_ES_0626_pre_firewall.csv",
+   "diag/tasa_senales/paridad_hftzones_flat.py",
+   "docs/research/comparacion_v2_vs_flat.json",
+   "docs/research/oraculo_es_flat_auditoria.json",
+   "docs/research/retorno_a_zona_es.json",
+   "edgelab/bridge/kernels/",
+   "kaggle_bundle_v2/",
+   "kaggle_dataset/"
+  ],
+  "medicion_comprometida": true
+ },
+ "sesiones": [
+  {
+   "trade_date": 20251222,
+   "n_ticks_edgelab": 653968,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 37019,
+    "n_buckets_emparejados": 37019,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 37018,
+    "n_distintos": 1,
+    "frac_iguales": 0.999973,
+    "campos_con_diferencia": {
+     "open": 1,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 1,
+     "buy": 1,
+     "sell": 1,
+     "n_ticks": 1
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1766358000000,
+      "mio": {
+       "open": 6906.25,
+       "high": 6910.0,
+       "low": 6905.0,
+       "close": 6905.5,
+       "volume": 573.0,
+       "buy": 435.0,
+       "sell": 138.0,
+       "n_ticks": 217
+      },
+      "nt8": {
+       "open": 6907.0,
+       "high": 6910.0,
+       "low": 6905.0,
+       "close": 6905.5,
+       "volume": 277.0,
+       "buy": 148.0,
+       "sell": 129.0,
+       "n_ticks": 212
+      },
+      "campos": [
+       "open",
+       "volume",
+       "buy",
+       "sell",
+       "n_ticks"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 76,
+    "n_python": 76,
+    "n_comunes": 76,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 76,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20251223,
+   "n_ticks_edgelab": 564272,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 33129,
+    "n_buckets_emparejados": 33129,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 33129,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 84,
+    "n_python": 84,
+    "n_comunes": 84,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 84,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20251224,
+   "n_ticks_edgelab": 286843,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 20055,
+    "n_buckets_emparejados": 20055,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 20055,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "EXACT",
+    "n_nt8": 58,
+    "n_python": 58,
+    "n_comunes": 58,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 58,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  }
+ ]
+}

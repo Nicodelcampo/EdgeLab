@@ -24,11 +24,30 @@ Esta muerte adjudica la regla de primer toque y su monetización. No convierte a
 
 La ruptura permanece alrededor de 96% y prácticamente invariante en la grilla target-free estudiada.
 
-### BigTrap2 — atracción/revisita
+### BigTrap2 — atracción/revisita (imán de zona)
 
-**Estado:** HIPÓTESIS PROVISIONAL; NO ES EDGE.
+**Estado:** **CERRADA — REFUTADA (2026-08-13).** No es edge y no es hipótesis viva.
 
-El primer nulo mostró 97,9% de revisita real frente a ~51,4% nula, pero se detectaron dos defectos en la geometría de los nulos. La promoción está bloqueada hasta cerrar la procedencia de los reruns y, luego, F4 constitucional.
+Estado del proyecto: `BIGTRAP2_MAGNET_LINE_CLOSED`. Acta:
+`docs/research/F27_F210_CIERRE_Y_HERRAMIENTAS_2026-08-13.md`. Cadena sobre 6E, 201
+sesiones, 15.947 zonas:
+
+- **F2.7** — la carrera contra el espejo es real (Δ≈+0,048, IC [+0,031, +0,066]).
+  Real y espejo equidistantes del close: «gana porque está más cerca» queda descartado.
+- **F2.8** — **no es imán**. El efecto no muere en `d≥6` (Δ≈+0,077) y un control
+  **sin zona** con la misma geometría da casi lo mismo: el contraste cruza cero.
+- **F2.9** — el kernel no es el mejor sello. Vela extrema genérica `S1` = +0,038
+  contra creadora BigTrap2 `K0` = +0,021, y `K0 ≈ N0` (no-creadora emparejada).
+- **F2.10** — no hay ventana temporal exclusiva; el contraste `t+1` cruza cero.
+
+**Lo que sobrevive, y no es de zona:** una vela extrema marca una carrera
+asimétrica. No es exclusiva de BigTrap2 y no es un sistema — es un sello barato de
+contexto.
+
+El texto anterior de esta entrada («97,9 % contra ~51,4 % nula… promoción bloqueada
+hasta cerrar la procedencia de los reruns») describía el **primer** nulo, con dos
+defectos de geometría ya corregidos. Quedó **superado por F2.7–F2.10** y se
+mantuvo aquí dos días de más.
 
 ### Asian Range Breakout / ARB
 

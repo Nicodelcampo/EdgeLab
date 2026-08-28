@@ -1,0 +1,300 @@
+{
+ "schema_version": "retorno_a_zona_es_v3_exige_separacion",
+ "outcomes_accessed": false,
+ "pnl_accessed": false,
+ "holdout_included": false,
+ "advertencia_poblacion": "el censo descriptivo midio 92% de zonas bajistas por el bug isDown-first. NINGUNA lectura direccional de estos numeros es valida hasta regenerar el oraculo con HFTZonesESPureV2Flat.",
+ "definicion_retorno": "el precio debe alcanzar R ticks de separacion del borde mas cercano ANTES de que un reingreso cuente. Sin separacion el retorno ocurre el 99,7% de las veces y 145 veces por zona: la banda mide 3 ticks de mediana y el ruido la cruza constantemente. Un evento que pasa siempre no es un evento; es la misma correccion que H-Z2A hizo con R_min.",
+ "controles": {
+  "espejo": "misma altura y misma distancia al precio de creacion, del otro lado",
+  "placebo": "misma altura, desplazamiento aleatorio con semilla fija",
+  "estimando": "contraste zona - control, nunca el valor absoluto",
+  "semilla": 20260819
+ },
+ "grilla_separacion": [
+  0,
+  2,
+  5,
+  10,
+  20
+ ],
+ "universo": {
+  "n_zonas": 23851,
+  "n_sesiones": 114,
+  "sin_parquet": 9,
+  "sin_ventana_posterior": 2
+ },
+ "por_separacion": {
+  "0": {
+   "llega": {
+    "zona": 0.9974,
+    "espejo": 0.9968,
+    "placebo": 0.4133,
+    "contraste_vs_espejo": 0.0006,
+    "contraste_vs_placebo": 0.5842
+   },
+   "n_zonas_que_se_separan": 23851,
+   "t_hasta_retorno_ms": {
+    "zona": {
+     "n": 23748,
+     "mediana": 84.0,
+     "p25": 8.0,
+     "p75": 552.0
+    },
+    "espejo": {
+     "n": 23720,
+     "mediana": 112.0,
+     "p25": 12.0,
+     "p75": 724.0
+    }
+   },
+   "n_retornos": {
+    "zona": {
+     "n": 23748,
+     "mediana": 145.0,
+     "p25": 66.0,
+     "p75": 279.0
+    },
+    "espejo": {
+     "n": 23720,
+     "mediana": 145.0,
+     "p25": 66.0,
+     "p75": 279.0
+    }
+   },
+   "dwell_ms": {
+    "zona": {
+     "n": 23748,
+     "mediana": 241018.0,
+     "p25": 66289.0,
+     "p75": 636521.0
+    },
+    "espejo": {
+     "n": 23720,
+     "mediana": 237335.75,
+     "p25": 65114.0,
+     "p75": 630626.0
+    }
+   }
+  },
+  "2": {
+   "llega": {
+    "zona": 0.9893,
+    "espejo": 0.9899,
+    "placebo": 0.4121,
+    "contraste_vs_espejo": -0.0006,
+    "contraste_vs_placebo": 0.5772
+   },
+   "n_zonas_que_se_separan": 23849,
+   "t_hasta_retorno_ms": {
+    "zona": {
+     "n": 23526,
+     "mediana": 1136.0,
+     "p25": 208.0,
+     "p75": 6968.0
+    },
+    "espejo": {
+     "n": 23511,
+     "mediana": 1164.0,
+     "p25": 216.0,
+     "p75": 7064.0
+    }
+   },
+   "n_retornos": {
+    "zona": {
+     "n": 23526,
+     "mediana": 144.0,
+     "p25": 65.0,
+     "p75": 278.0
+    },
+    "espejo": {
+     "n": 23511,
+     "mediana": 143.0,
+     "p25": 65.0,
+     "p75": 278.0
+    }
+   },
+   "dwell_ms": {
+    "zona": {
+     "n": 23526,
+     "mediana": 242674.0,
+     "p25": 66956.0,
+     "p75": 637976.0
+    },
+    "espejo": {
+     "n": 23511,
+     "mediana": 239384.0,
+     "p25": 66172.0,
+     "p75": 631810.0
+    }
+   }
+  },
+  "5": {
+   "llega": {
+    "zona": 0.9604,
+    "espejo": 0.9591,
+    "placebo": 0.4117,
+    "contraste_vs_espejo": 0.0013,
+    "contraste_vs_placebo": 0.5487
+   },
+   "n_zonas_que_se_separan": 23832,
+   "t_hasta_retorno_ms": {
+    "zona": {
+     "n": 22632,
+     "mediana": 15220.0,
+     "p25": 3688.0,
+     "p75": 77811.0
+    },
+    "espejo": {
+     "n": 22603,
+     "mediana": 15800.0,
+     "p25": 3844.0,
+     "p75": 81974.0
+    }
+   },
+   "n_retornos": {
+    "zona": {
+     "n": 22632,
+     "mediana": 141.0,
+     "p25": 62.0,
+     "p75": 279.0
+    },
+    "espejo": {
+     "n": 22603,
+     "mediana": 140.0,
+     "p25": 62.0,
+     "p75": 278.0
+    }
+   },
+   "dwell_ms": {
+    "zona": {
+     "n": 22632,
+     "mediana": 250546.0,
+     "p25": 71336.0,
+     "p75": 644769.0
+    },
+    "espejo": {
+     "n": 22603,
+     "mediana": 248664.0,
+     "p25": 70824.0,
+     "p75": 639894.0
+    }
+   }
+  },
+  "10": {
+   "llega": {
+    "zona": 0.9062,
+    "espejo": 0.9058,
+    "placebo": 0.4091,
+    "contraste_vs_espejo": 0.0004,
+    "contraste_vs_placebo": 0.4971
+   },
+   "n_zonas_que_se_separan": 23698,
+   "t_hasta_retorno_ms": {
+    "zona": {
+     "n": 21102,
+     "mediana": 80208.0,
+     "p25": 18913.0,
+     "p75": 378954.0
+    },
+    "espejo": {
+     "n": 21063,
+     "mediana": 80384.0,
+     "p25": 19060.0,
+     "p75": 388272.0
+    }
+   },
+   "n_retornos": {
+    "zona": {
+     "n": 21102,
+     "mediana": 136.0,
+     "p25": 56.0,
+     "p75": 281.0
+    },
+    "espejo": {
+     "n": 21063,
+     "mediana": 136.0,
+     "p25": 57.0,
+     "p75": 281.0
+    }
+   },
+   "dwell_ms": {
+    "zona": {
+     "n": 21102,
+     "mediana": 251872.0,
+     "p25": 74025.0,
+     "p75": 648202.0
+    },
+    "espejo": {
+     "n": 21063,
+     "mediana": 253100.0,
+     "p25": 75164.0,
+     "p75": 648440.0
+    }
+   }
+  },
+  "20": {
+   "llega": {
+    "zona": 0.7294,
+    "espejo": 0.7077,
+    "placebo": 0.3953,
+    "contraste_vs_espejo": 0.0217,
+    "contraste_vs_placebo": 0.3341
+   },
+   "n_zonas_que_se_separan": 22479,
+   "t_hasta_retorno_ms": {
+    "zona": {
+     "n": 17380,
+     "mediana": 328860.0,
+     "p25": 90557.0,
+     "p75": 1182713.0
+    },
+    "espejo": {
+     "n": 17365,
+     "mediana": 329692.0,
+     "p25": 91136.0,
+     "p75": 1174600.0
+    }
+   },
+   "n_retornos": {
+    "zona": {
+     "n": 17380,
+     "mediana": 146.0,
+     "p25": 58.0,
+     "p75": 296.25
+    },
+    "espejo": {
+     "n": 17365,
+     "mediana": 145.0,
+     "p25": 59.0,
+     "p75": 296.0
+    }
+   },
+   "dwell_ms": {
+    "zona": {
+     "n": 17380,
+     "mediana": 253672.0,
+     "p25": 76213.0,
+     "p75": 654764.0
+    },
+    "espejo": {
+     "n": 17365,
+     "mediana": 252284.0,
+     "p25": 76956.0,
+     "p75": 652752.0
+    }
+   }
+  }
+ },
+ "procedencia": {
+  "head_commit": "0f0e2e15f125921e9afeb2e30e61cdb2336aa7c0",
+  "snapshot": "E:\\EdgeLab\\runs\\oraculo_espurev2_ES_snapshot.sqlite",
+  "archivos_sucios": [],
+  "alcance_comprometida": [
+   "edgelab/",
+   "diag/"
+  ],
+  "medicion_comprometida": false
+ },
+ "RETRACTACION_2026-08-20": "el control 'espejo' de esta medicion esta DEGENERADO. Se construia a la misma distancia del precio de creacion, del otro lado; pero la zona ES el rango del barrido que la crea y el barrido termina adentro, asi que esa distancia tiene mediana 1 tick y el 39% de las zonas la tienen en CERO. Con distancia cero el espejo cae ENCIMA de la zona: 630 de 1.601 pares daban valores identicos. El contraste zona-espejo ~ 0 que este archivo publica estaba garantizado por construccion y NO es evidencia de ausencia de efecto. El control valido para esta familia es la casi-zona emparejada (F2.9 K0/N0), en diag/tasa_senales/velocidad_cruce_es.py"
+}

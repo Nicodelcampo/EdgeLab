@@ -10,11 +10,11 @@ def test_root_is_portable_from_file():
     assert cfg.ROOT == Path(cfg.__file__).resolve().parents[1]
 
 
-def test_internal_paths_root_relative():
-    import edgelab.config as cfg
-    assert cfg.DATA_DIR == cfg.ROOT / "data"
-    assert cfg.EURUSD_TICKS == cfg.ROOT / "data" / "eurusd_ticks.parquet"
-    assert cfg.NQ_M1_CLEAN == cfg.ROOT / "data" / "nq_m1_clean.parquet"
+def test_internal_paths_root_relative(tmp_path):
+    from edgelab.config import resolve_settings
+    s = resolve_settings(env={}, local_toml=tmp_path / "none.toml", default_toml=tmp_path / "none.toml")
+    assert s.data_dir == s.root / "data"
+    assert s.manifests_dir == s.root / "manifests"
 
 
 def test_precedence_local_over_env_over_default(tmp_path):
