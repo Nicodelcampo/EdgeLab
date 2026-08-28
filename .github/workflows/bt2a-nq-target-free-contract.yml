@@ -1,0 +1,55 @@
+name: BT2A NQ target-free contract
+
+on:
+  push:
+    branches:
+      - research/bt2a-nq-target-free-selection-v1-20260828
+    paths:
+      - 'tools/run_bt2a_nq_target_free_selection.py'
+      - 'specs/bt2a_nq_target_free_selection_v1.draft.json'
+      - 'specs/bt2a_nq_creation_event_store_v1.draft.json'
+      - 'specs/bt2a_nq_gate1_v1.draft.json'
+      - 'tests/research/test_bt2a_nq_target_free_selection.py'
+      - 'tests/research/test_bt2a_nq_downstream_contracts.py'
+      - '.github/workflows/bt2a-nq-target-free-contract.yml'
+  pull_request:
+    paths:
+      - 'tools/run_bt2a_nq_target_free_selection.py'
+      - 'specs/bt2a_nq_target_free_selection_v1.draft.json'
+      - 'specs/bt2a_nq_creation_event_store_v1.draft.json'
+      - 'specs/bt2a_nq_gate1_v1.draft.json'
+      - 'tests/research/test_bt2a_nq_target_free_selection.py'
+      - 'tests/research/test_bt2a_nq_downstream_contracts.py'
+      - '.github/workflows/bt2a-nq-target-free-contract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bt2a-nq-target-free-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install locked environment
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements/core-bridge-dev.lock
+      - name: Validate contracts
+        run: |
+          python -m json.tool specs/bt2a_nq_target_free_selection_v1.draft.json >/dev/null
+          python -m json.tool specs/bt2a_nq_creation_event_store_v1.draft.json >/dev/null
+          python -m json.tool specs/bt2a_nq_gate1_v1.draft.json >/dev/null
+          python -m py_compile tools/run_bt2a_nq_target_free_selection.py
+          python tools/run_bt2a_nq_target_free_selection.py --help >/dev/null
+      - name: Run target-free and downstream contract tests
+        run: python -m pytest -q tests/research/test_bt2a_nq_target_free_selection.py tests/research/test_bt2a_nq_downstream_contracts.py
