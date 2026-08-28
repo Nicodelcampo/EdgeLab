@@ -4,6 +4,7 @@
 
 No mode scans post-creation outcomes.  --run-all remains disabled until the
 creation contract is frozen and its dedicated build token is authorized.
+Finalization has a separate authorization and is never implicit in --run-all.
 """
 from __future__ import annotations
 
@@ -12,10 +13,11 @@ import gc
 import json
 import subprocess
 import sys
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 
@@ -66,6 +68,20 @@ def git_state() -> dict:
         "branch": run("branch", "--show-current") or "",
         "dirty": status is None or bool(status),
     }
+
+
+def cme_session_start_utc_ns(session_id: str) -> int:
+    """17:00 America/Chicago on the calendar day before the CME trade date."""
+    trade_date = pd.Timestamp(datetime.strptime(session_id, "%Y%m%d").date())
+    local_start = (trade_date - pd.Timedelta(days=1) + pd.Timedelta(hours=17)).tz_localize(
+        "America/Chicago", ambiguous="raise", nonexistent="raise"
+    )
+    return int(local_start.tz_convert("UTC").value)
+
+
+def next_calendar_session_start_utc_ns(session_id: str) -> int:
+    next_day = datetime.strptime(session_id, "%Y%m%d") + timedelta(days=1)
+    return cme_session_start_utc_ns(next_day.strftime("%Y%m%d"))
 
 
 def load_registries(session_path: Path, input_path: Path) -> tuple[dict, dict, list[dict]]:
@@ -133,7 +149,10 @@ def scan_resume(
             continue
         if missing_seen:
             raise EventStoreContractError("checkpoint set is not a contiguous prefix")
-        payload = json.loads(path.read_text(encoding="utf-8"))
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except Exception as exc:
+            raise EventStoreContractError(f"invalid checkpoint JSON: {path.name}") from exc
         source_sha = inputs["contracts"][row["contract"]]["parquet_sha256"]
         profile = validate_checkpoint(
             payload,
@@ -160,7 +179,17 @@ def run_all(args: argparse.Namespace, spec: dict, inputs: dict, expanded: list[d
     for contract in contracts_in_order:
         entry = inputs["contracts"][contract]
         source_path = verify_input_file(args.data_dir, contract, entry)
-        ticks = load_canonical_parquet(source_path, contract=contract, instrument="NQ")
+        contract_registry_rows = [row for row in expanded if row["contract"] == contract]
+        start_ns = cme_session_start_utc_ns(contract_registry_rows[0]["cme_session_id"])
+        end_ns = next_calendar_session_start_utc_ns(contract_registry_rows[-1]["cme_session_id"])
+        # Predicate pushdown ensures out-of-registry and holdout rows are never decoded.
+        ticks = load_canonical_parquet(
+            source_path,
+            contract=contract,
+            instrument="NQ",
+            start_utc_ns=start_ns,
+            end_utc_ns=end_ns,
+        )
         bars = build_tick_bars(ticks, 120, reiniciar_por_sesion=True)
         footprints = build_footprints(ticks, bars)
         bar_sessions = cme_session_dates(bars.end_ns)
@@ -194,29 +223,27 @@ def run_all(args: argparse.Namespace, spec: dict, inputs: dict, expanded: list[d
             written += 1
         del ticks, bars, footprints, bar_sessions
         gc.collect()
-    return finalize(args, spec, inputs, expanded, gs, require_auth=False) | {
+    total_checkpoints = len(list(checkpoints_dir.glob("*.json")))
+    return {
+        "status": "COMPLETE_TARGET_FREE_CHECKPOINT_BUILD" if total_checkpoints == len(expanded) else "PARTIAL_TARGET_FREE_CHECKPOINT_BUILD",
         "checkpoints_written_this_run": written,
+        "checkpoint_files_total": total_checkpoints,
         "resume_start_ordinal": start,
+        "ready_for_finalize": total_checkpoints == len(expanded),
+        "finalize_executed": False,
+        "future_price_path_accessed": False,
+        "pnl_accessed": False,
+        "holdout_rows_decoded": False,
     }
 
 
-def finalize(
-    args: argparse.Namespace,
-    spec: dict,
-    inputs: dict,
-    expanded: list[dict],
-    gs: dict,
-    *,
-    require_auth: bool = True,
-) -> dict:
-    if require_auth:
-        require_execution(args, spec, gs, "zone_store_finalize_token", "zone_store_finalize_authorized")
+def finalize(args: argparse.Namespace, spec: dict, inputs: dict, expanded: list[dict], gs: dict) -> dict:
+    require_execution(args, spec, gs, "zone_store_finalize_token", "zone_store_finalize_authorized")
     if args.output_dir is None:
         raise EventStoreContractError("--output-dir is mandatory for --finalize")
     checkpoints_dir = args.output_dir / "checkpoints"
     if len(list(checkpoints_dir.glob("*.json"))) != len(expanded):
         raise EventStoreContractError("expected exactly 234 checkpoint files")
-    # Full prefix scan validates payload hashes, spec/source/commit bindings and profile chain.
     start, _ = scan_resume(checkpoints_dir, expanded, inputs, spec, args.expected_commit)
     if start != len(expanded):
         raise EventStoreContractError("checkpoint prefix is incomplete")
@@ -284,6 +311,7 @@ def main(argv: list[str] | None = None) -> int:
                 **base,
                 "status": "DRAFT_BUILDER_PREPARED" if spec["status"] != SPEC_STATUS_FROZEN else "FROZEN_BUILDER_PREFLIGHT",
                 "run_all_authorized": bool(spec["authorization"]["zone_store_build_authorized"]),
+                "finalize_authorized": bool(spec["authorization"]["zone_store_finalize_authorized"]),
                 "ready_for_first_touch_or_outcomes": False,
                 "review_blockers": spec["review_blockers"],
             }

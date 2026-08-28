@@ -4,6 +4,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import numpy as np
+import pandas as pd
 import pytest
 
 from edgelab.bridge.indicators.avolclusterpoi import SessionProfile
@@ -15,6 +16,10 @@ from edgelab.research.avolcluster_nq_zone_builder import (
     validate_checkpoint,
 )
 from edgelab.research.event_store_contract import EventStoreContractError
+from tools.build_avolcluster_nq_zone_store import (
+    cme_session_start_utc_ns,
+    next_calendar_session_start_utc_ns,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -108,3 +113,11 @@ def test_checkpoint_binds_spec_source_commit_session_and_profile():
             payload, spec=spec(), expected_contract="NQ 06-26", expected_session_id="20260630",
             expected_ordinal=10, expected_source_sha256="a" * 64, expected_commit="b" * 40,
         )
+
+
+def test_registry_decode_bounds_stop_before_holdout_session():
+    start = cme_session_start_utc_ns("20260630")
+    end = next_calendar_session_start_utc_ns("20260630")
+    assert pd.Timestamp(start, unit="ns", tz="UTC") == pd.Timestamp("2026-06-29T22:00:00Z")
+    assert pd.Timestamp(end, unit="ns", tz="UTC") == pd.Timestamp("2026-06-30T22:00:00Z")
+    assert end > start
