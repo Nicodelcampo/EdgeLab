@@ -1,0 +1,144 @@
+{
+  "schema_version": "zamr1_structural_contract_v0",
+  "status": "Z0_EXECUTABLE_TARGET_FREE",
+  "campaign_id": "ZAMR-1",
+  "base_commit": "1b8e168ebac9ca45d4d998bc6ee66bb920f4c282",
+  "lineage": {
+    "multiframe_contract_commit": "05d2da7525f528e26778c53174840e31a038440c",
+    "f27_artifact": "diag/tasa_senales/F2.7_formal_93c2e3f3ac44.json",
+    "f27_payload_sha256": "93c2e3f3ac4423bcfb16dc387538ccc72e89bbfb280c1ec76fdf25aafa27cd46"
+  },
+  "authorization": {
+    "allowed": [
+      "documentation",
+      "static_validation",
+      "structural_zone_census",
+      "target_free_performance_benchmark"
+    ],
+    "forbidden": [
+      "predictive_targets",
+      "future_returns",
+      "pnl",
+      "economic_selection",
+      "holdout_access"
+    ]
+  },
+  "firewall": {
+    "research_cutoff_utc": "2026-06-30T22:00:00Z",
+    "max_allowed_timestamp_ns_exclusive": 1782856800000000000,
+    "holdout_rows_allowed": 0
+  },
+  "identity": {
+    "required_manifest_fields": [
+      "dataset_id",
+      "dataset_schema_version",
+      "code_commit",
+      "code_dirty",
+      "builder_id",
+      "source_data_manifest_sha256",
+      "parameter_registry_sha256",
+      "instrument_manifest_sha256",
+      "created_at_utc",
+      "research_cutoff_utc",
+      "outcomes_accessed",
+      "pnl_accessed",
+      "holdout_included",
+      "license_decision",
+      "pilot_stage"
+    ],
+    "allowed_license_decisions": ["RAW_ALLOWED", "DERIVED_ONLY", "NO_UPLOAD"],
+    "code_dirty_allowed": false,
+    "outcomes_accessed_allowed": false,
+    "pnl_accessed_allowed": false,
+    "holdout_included_allowed": false
+  },
+  "session_key": {
+    "definition": "instrument|contract|session_date"
+  },
+  "tables": {
+    "events_long": {
+      "primary_key": ["event_key"],
+      "required_columns": [
+        "event_key",
+        "session_key",
+        "instrument",
+        "contract",
+        "session_date",
+        "indicator_id",
+        "indicator_version",
+        "bar_spec",
+        "ticks_per_bar",
+        "param_set_id",
+        "source_run_id",
+        "event_id",
+        "zone_id",
+        "event_type",
+        "side",
+        "event_time_ns",
+        "bar_end_ns",
+        "available_at_ns",
+        "anchor_price_tick",
+        "zone_lo_tick",
+        "zone_hi_tick",
+        "strength",
+        "aggressive_volume",
+        "bar_volume",
+        "oracle_parity_status"
+      ]
+    },
+    "zones_long": {
+      "primary_key": ["zone_key"],
+      "required_columns": [
+        "zone_key",
+        "session_key",
+        "instrument",
+        "contract",
+        "session_date",
+        "indicator_id",
+        "indicator_version",
+        "bar_spec",
+        "ticks_per_bar",
+        "param_set_id",
+        "source_run_id",
+        "zone_id",
+        "side",
+        "created_at_ns",
+        "available_at_ns",
+        "ended_at_ns",
+        "state",
+        "end_reason",
+        "zone_lo_tick",
+        "zone_hi_tick",
+        "strength",
+        "touch_count",
+        "oracle_parity_status"
+      ]
+    }
+  },
+  "forbidden_column_prefixes": ["target__", "y_", "future_", "outcome_", "pnl_", "return_"],
+  "causality_invariants": [
+    "event_time_ns <= bar_end_ns <= available_at_ns",
+    "zone.created_at_ns <= zone.available_at_ns",
+    "zone.ended_at_ns is null or zone.ended_at_ns >= zone.created_at_ns",
+    "all temporal columns are strictly before max_allowed_timestamp_ns_exclusive"
+  ],
+  "pilot": {
+    "stage": "Z1_BIGTRAP2_DEFAULTS",
+    "min_sessions": 20,
+    "max_sessions": 30,
+    "allowed_indicators": ["BigTrap2"],
+    "allowed_bar_specs": ["tick:5", "tick:10", "tick:25", "tick:50", "tick:100", "tick:200"],
+    "default_parameters_only": true,
+    "outcomes_required": false,
+    "targets_table_allowed": false
+  },
+  "quality_gates": {
+    "duplicate_primary_keys": 0,
+    "missing_required_columns": 0,
+    "causality_violations": 0,
+    "firewall_violations": 0,
+    "forbidden_columns": 0,
+    "invalid_parameter_sets": 0,
+    "missing_hashes": 0
+  }
+}
