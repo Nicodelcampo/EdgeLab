@@ -165,7 +165,8 @@ def test_preflight_missing_inputs_returns_nonzero_without_opening_paths(tmp_path
     assert run.returncode == 2
     result = json.loads(run.stdout)
     assert result["status"] == "NOT_READY"
-    assert result["FUTURE_PRICE_PATH_ACCESSED_BY_PREFLIGHT"] is False
+    assert result["FUTURE_PRICE_PATH_ACCESSED_BY_PREPARATION"] is False
+    assert result["FUTURE_PRICE_PATH_ACCESSED"] is True
     assert result["PNL_ACCESSED"] is False
     assert result["HOLDOUT_TOUCHED"] is False
 
@@ -269,7 +270,7 @@ def test_load_json_rejects_non_dict(tmp_path: Path):
 
 
 def test_positive_freeze_roundtrip():
-    """A correctly frozen spec must pass all contract checks, and a single mutation must break it."""
+    """A correctly frozen spec must pass 100% of frozen_contract_checks, and a single mutation must break it."""
     runner = load_runner()
     base_spec = json.loads(SPEC.read_text(encoding="utf-8"))
 
@@ -288,14 +289,8 @@ def test_positive_freeze_roundtrip():
         runner.EXPECTED_FROZEN_SPEC_PAYLOAD_SHA256 = payload_hash
 
         checks = runner.frozen_contract_checks(spec)
-        assert checks["schema"], f"schema failed: {checks}"
-        assert checks["status_frozen"], f"status_frozen failed: {checks}"
-        assert checks["freeze_authorized"], f"freeze_authorized failed: {checks}"
-        assert checks["spec_payload_bound"], f"spec_payload_bound failed: {checks}"
-        # All structural checks that don't depend on external state
-        for key in ("minimum_other_phases", "minimum_sessions_per_contrast",
-                    "phases", "holm_family", "no_winner", "p2b_unchanged"):
-            assert checks[key], f"{key} failed: {checks}"
+        failed = {k: v for k, v in checks.items() if not v}
+        assert not failed, f"All contract checks must pass on a frozen spec, but failed: {failed}"
 
         # Mutate one scientific field — must break spec_payload_bound
         mutated = json.loads(json.dumps(spec))
@@ -305,3 +300,50 @@ def test_positive_freeze_roundtrip():
         assert not mutated_checks["minimum_sessions_per_contrast"], "Mutation was not detected by minimum_sessions_per_contrast"
     finally:
         runner.EXPECTED_FROZEN_SPEC_PAYLOAD_SHA256 = original
+
+
+def test_validate_clock_event_store_path_b_policy(tmp_path: Path):
+    """Path B: Logical identity is primary; different parquet physical hash is DIFFERENT_NON_BLOCKING."""
+    runner = load_runner()
+    source_spec = json.loads((ROOT / "specs" / "bt2a_gate2_first_passage_v1.json").read_text(encoding="utf-8"))
+
+    # Missing manifest -> ready=False
+    res_empty = runner.validate_clock_event_store(tmp_path, source_spec)
+    assert not res_empty["ready"]
+    assert res_empty["logical_identity"] == "FAIL"
+
+    # Setup manifest with canonical logical fields
+    manifest = {
+        "status": "COMPLETE_RECONCILED_WITH_GATE1_ALL5",
+        "n_sessions": 234,
+        "n_events": 22202,
+        "events_payload_sha256": "feee6001e88aa69f62a092b253e468531230120a3dccdc2ceac0d488c9684cbd",
+        "counts": source_spec["canonical_event_store"]["counts_by_contract"],
+        "parquet": {"path": "bt2a_gate1_canonical_events_all5.parquet", "sha256": "different_transport_hash_123"},
+    }
+    (tmp_path / "run_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+    # Parquet with different byte hash (e.g. Windows serialization)
+    (tmp_path / "bt2a_gate1_canonical_events_all5.parquet").write_bytes(b"DIFFERENT_PYARROW_METADATA_BYTES")
+
+    # Without checkpoints -> ready=False
+    res_no_ckpts = runner.validate_clock_event_store(tmp_path, source_spec)
+    assert not res_no_ckpts["ready"]
+    assert res_no_ckpts["physical_transport_identity"] == "DIFFERENT_NON_BLOCKING"
+
+
+def test_mandatory_expected_commit_in_frozen_mode():
+    """In FROZEN_PREAUTHORIZATION status, preflight requires --expected-commit to be ready."""
+    runner = load_runner()
+    # When require_commit=True and expected_commit is None -> commit_exact is False
+    git_checks = runner._git_checks(ROOT, expected_commit=None, require_commit=True)
+    assert git_checks["commit_exact"] is False
+
+    # When expected_commit matches HEAD -> commit_exact is True
+    head_sha = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True, capture_output=True).stdout.strip()
+    git_checks_valid = runner._git_checks(ROOT, expected_commit=head_sha, require_commit=True)
+    assert git_checks_valid["commit_exact"] is True
+
+    # When expected_commit is mismatched -> commit_exact is False
+    git_checks_bad = runner._git_checks(ROOT, expected_commit="0" * 40, require_commit=True)
+    assert git_checks_bad["commit_exact"] is False
+

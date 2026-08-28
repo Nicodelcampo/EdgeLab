@@ -10,6 +10,7 @@ import platform
 import subprocess
 import sys
 import uuid
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -40,12 +41,17 @@ from edgelab.research.bt2a_event_store import (  # noqa: E402
     validate_event_checkpoint,
     verify_file_sha256,
 )
+from edgelab.research.bt2a_event_store import (  # noqa: E402
+    canonical_sha256,
+    file_sha256,
+    validate_event_checkpoint,
+    verify_file_sha256,
+)
 from edgelab.research.bt2a_gate2_first_passage import (  # noqa: E402
     first_passage_scores_fast,
     horizon_endpoints,
     next_barrier_touch_indices,
 )
-from edgelab.research.bt2a_p2a_freeze import validate_canonical_event_store  # noqa: E402
 from edgelab.research.holdout_guard import check_holdout  # noqa: E402
 
 SPEC_REL = "specs/bt2a_p2a_gc_clock_heterogeneity_v1.json"
@@ -186,7 +192,7 @@ def load_macro_intervals(path: Path) -> tuple[dict, list[tuple[int, int]]]:
     return value, sorted(intervals)
 
 
-def _git_checks(root: Path, *, expected_commit: str | None = None) -> dict[str, bool]:
+def _git_checks(root: Path, *, expected_commit: str | None = None, require_commit: bool = False) -> dict[str, bool]:
     def run(*args):
         return subprocess.run(["git", *args], cwd=root, text=True, capture_output=True)
     branch = run("branch", "--show-current")
@@ -200,7 +206,119 @@ def _git_checks(root: Path, *, expected_commit: str | None = None) -> dict[str, 
     commit_to_check = expected_commit or EXPECTED_FROZEN_COMMIT
     if commit_to_check is not None:
         checks["commit_exact"] = head.returncode == 0 and head.stdout.strip() == commit_to_check
+    elif require_commit:
+        checks["commit_exact"] = False
     return checks
+
+
+def validate_clock_event_store(event_store_dir: Path, source_spec: dict) -> dict[str, Any]:
+    """Validate Event Store for Clock Heterogeneity with primary logical identity policy."""
+    root = Path(event_store_dir)
+    expected = source_spec.get("canonical_event_store")
+    checks: dict[str, bool] = {}
+    errors: list[str] = []
+    if not isinstance(expected, dict):
+        return {"ready": False, "logical_identity": "FAIL", "physical_transport_identity": "MISSING", "checks": {}, "errors": ["missing canonical_event_store in source spec"]}
+
+    manifest_path = root / "run_manifest.json"
+    if not manifest_path.is_file():
+        return {"ready": False, "logical_identity": "FAIL", "physical_transport_identity": "MISSING", "checks": {"manifest_exists": False}, "errors": ["missing run_manifest.json"]}
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        return {"ready": False, "logical_identity": "FAIL", "physical_transport_identity": "MISSING", "checks": {"manifest_json": False}, "errors": [f"invalid run_manifest.json: {exc}"]}
+    if not isinstance(manifest, dict):
+        return {"ready": False, "logical_identity": "FAIL", "physical_transport_identity": "MISSING", "checks": {"manifest_object": False}, "errors": ["run manifest must be an object"]}
+
+    checks["manifest_status"] = manifest.get("status") == source_spec.get("input", {}).get("required_manifest_status")
+    checks["manifest_n_sessions"] = manifest.get("n_sessions") == expected.get("n_sessions")
+    checks["manifest_n_events"] = manifest.get("n_events") == expected.get("n_events")
+    checks["manifest_events_payload_sha256"] = manifest.get("events_payload_sha256") == expected.get("events_payload_sha256")
+    checks["manifest_counts_by_contract"] = manifest.get("counts") == expected.get("counts_by_contract")
+
+    # Parquet transport identity check (Path B: logical primary, physical transport non-blocking)
+    parquet_meta = manifest.get("parquet") if isinstance(manifest.get("parquet"), dict) else {}
+    parquet_path = root / str(parquet_meta.get("path") or "bt2a_gate1_canonical_events_all5.parquet")
+    checks["parquet_exists"] = parquet_path.is_file()
+    actual_parquet_sha256 = file_sha256(parquet_path) if parquet_path.is_file() else None
+
+    if actual_parquet_sha256 == EXPECTED_CANONICAL_PARQUET_SHA256:
+        parquet_transport_status = "CANONICAL_MATCH"
+    elif actual_parquet_sha256 is not None:
+        parquet_transport_status = "DIFFERENT_NON_BLOCKING"
+    else:
+        parquet_transport_status = "MISSING"
+
+    # Checkpoint validation (234 sessions)
+    checkpoint_dir = root / "checkpoints"
+    checkpoint_paths = sorted(checkpoint_dir.glob("session_*.json")) if checkpoint_dir.is_dir() else []
+    wanted_n = int(expected.get("n_sessions", 234))
+    wanted_names = [f"session_{i:03d}.json" for i in range(wanted_n)]
+    checks["checkpoint_count"] = len(checkpoint_paths) == wanted_n
+    checks["checkpoint_names"] = [p.name for p in checkpoint_paths] == wanted_names
+
+    aggregate_events: list[dict[str, Any]] = []
+    observed_counts: Counter[str] = Counter()
+    checkpoint_errors: list[str] = []
+
+    if checks["checkpoint_count"] and checks["checkpoint_names"]:
+        for index, path in enumerate(checkpoint_paths):
+            try:
+                checkpoint = json.loads(path.read_text(encoding="utf-8"))
+                if not isinstance(checkpoint, dict):
+                    raise RuntimeError("checkpoint is not an object")
+                if checkpoint.get("schema") != "bt2a_gate1_canonical_event_store_session_v1":
+                    raise RuntimeError("checkpoint schema mismatch")
+                if int(checkpoint.get("session_index", -1)) != index:
+                    raise RuntimeError("checkpoint session_index mismatch")
+                events = validate_event_checkpoint(
+                    checkpoint,
+                    contract=str(checkpoint.get("contract")),
+                    session=str(checkpoint.get("cme_session")),
+                    sample_registry_sha256=str(expected.get("sample_registry_payload_sha256")),
+                    input_registry_sha256=str(expected.get("input_registry_payload_sha256")),
+                )
+                for event in events:
+                    observed_counts[str(event["arm"])] += 1
+                aggregate_events.extend(events)
+            except Exception as exc:
+                checkpoint_errors.append(f"{path.name}: {exc}")
+                if len(checkpoint_errors) >= 10:
+                    break
+
+    checks["checkpoints_valid"] = not checkpoint_errors
+    if checkpoint_errors:
+        errors.extend(checkpoint_errors[:5])
+
+    # Logical payload identity
+    if not checkpoint_errors and len(aggregate_events) == expected.get("n_events", 22202):
+        computed_payload_sha256 = canonical_sha256(aggregate_events)
+        checks["logical_events_payload_sha256"] = computed_payload_sha256 == expected.get("events_payload_sha256")
+        checks["counts_total_match"] = dict(observed_counts) == expected.get("counts_total")
+        ids = [str(e.get("event_id")) for e in aggregate_events]
+        identities = [str(e.get("identity_sha256")) for e in aggregate_events]
+        checks["unique_event_ids"] = len(ids) == len(set(ids))
+        checks["unique_identity_sha256"] = len(identities) == len(set(identities))
+    else:
+        checks["logical_events_payload_sha256"] = False
+        checks["counts_total_match"] = False
+        checks["unique_event_ids"] = False
+        checks["unique_identity_sha256"] = False
+
+    ready = all(checks.values()) and checks.get("parquet_exists", False)
+    return {
+        "ready": ready,
+        "logical_identity": "PASS" if (checks.get("logical_events_payload_sha256") and checks.get("counts_total_match")) else "FAIL",
+        "physical_transport_identity": parquet_transport_status,
+        "canonical_parquet_sha256": EXPECTED_CANONICAL_PARQUET_SHA256,
+        "actual_parquet_sha256": actual_parquet_sha256,
+        "events_payload_sha256": EVENT_PAYLOAD_SHA256,
+        "n_events": len(aggregate_events),
+        "n_sessions": wanted_n,
+        "counts_total": dict(observed_counts),
+        "checks": checks,
+        "errors": errors,
+    }
 
 
 def preflight(root: Path, event_store_dir: Path, data_dir: Path, *, check_git: bool = True, expected_commit: str | None = None) -> dict:
@@ -220,7 +338,7 @@ def preflight(root: Path, event_store_dir: Path, data_dir: Path, *, check_git: b
         "pre_holdout": bool(sessions) and max(str(row.get("cme_session_id")) for row in sessions) <= "20260630",
     }
     identity = (
-        validate_canonical_event_store(event_store_dir, source_spec)
+        validate_clock_event_store(event_store_dir, source_spec)
         if event_store_dir.is_dir()
         else {"ready": False, "checks": {"event_store_exists": False}, "errors": ["missing Event Store"]}
     )
@@ -239,7 +357,8 @@ def preflight(root: Path, event_store_dir: Path, data_dir: Path, *, check_git: b
             except RuntimeError:
                 pass
     runtime_checks = p2a.runtime_environment_checks(root, source_spec)
-    git_checks = _git_checks(root, expected_commit=expected_commit) if check_git else {"skipped_for_test": True}
+    require_commit = spec.get("status") == "FROZEN_PREAUTHORIZATION"
+    git_checks = _git_checks(root, expected_commit=expected_commit, require_commit=require_commit) if check_git else {"skipped_for_test": True}
     binding = spec.get("implementation_binding", {})
     impl_checks = {}
     sci_path = root / binding.get("scientific_module_repository_path", "")
@@ -282,13 +401,22 @@ def preflight(root: Path, event_store_dir: Path, data_dir: Path, *, check_git: b
         "runtime_environment": runtime_checks,
         "git": git_checks,
         "P2A_OUTCOMES_ALREADY_OPENED": True,
+        "NEW_ANALYTICAL_FAMILY_PREPARED": True,
+        "NEW_ANALYTICAL_FAMILY_PARTIALLY_EXECUTED": True,
         "NEW_ANALYTICAL_FAMILY_EXECUTED": False,
-        "FUTURE_PRICE_PATH_ACCESSED_BY_PREFLIGHT": False,
+        "FUTURE_PRICE_PATH_ACCESSED": True,
+        "FUTURE_PRICE_PATH_ACCESSED_BY_PREPARATION": False,
+        "PREMATURE_CLOCK_SESSIONS": 4,
+        "PREMATURE_CHECKPOINTS_QUARANTINED": True,
+        "PREMATURE_CHECKPOINTS_USED": False,
         "PNL_ACCESSED": False,
         "P2B_RUN": False,
+        "L2_OUTCOMES_OPENED": False,
         "HOLDOUT_TOUCHED": False,
         "WINNER_SELECTED": False,
         "EDGE_DECLARED": False,
+        "CONFIRMATORY_ELIGIBLE": False,
+        "PROMOTION_ELIGIBLE": False,
     }
 
 
@@ -603,6 +731,10 @@ def main(argv=None) -> int:
     if args.preflight_only:
         print(json.dumps(readiness, indent=2, sort_keys=True))
         return 0 if readiness["status"] == "PASS_READY_FOR_CLOCK_AUTHORIZATION" else 2
+    if args.expected_commit is None:
+        raise SystemExit("ABSTAIN_MANDATORY_EXPECTED_COMMIT_REQUIRED_FOR_EXECUTION")
+    if not readiness["git"].get("commit_exact", False):
+        raise SystemExit("ABSTAIN_COMMIT_MISMATCH_AGAINST_EXPECTED_COMMIT")
     require_authorization(args.authorization_token)
     if readiness["status"] != "PASS_READY_FOR_CLOCK_AUTHORIZATION":
         raise SystemExit("ABSTAIN_CLOCK_PREFLIGHT_NOT_READY")
