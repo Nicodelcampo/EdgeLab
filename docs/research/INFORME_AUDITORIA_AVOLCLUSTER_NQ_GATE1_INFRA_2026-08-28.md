@@ -176,10 +176,39 @@ Los archivos físicos en disco (`E:\EdgeLab\data\nt8\NQ_parquet`) y sus manifies
 6. **Tests Automatizados:**  
    Se incorporó `test_input_registry_matches_official_datos_manifiesto()` asegurando consistencia continua con el manifiesto canónico.
 
+## 10. Addendum de Ejecución, Finalización y Validación Independiente (Gate 1A Certificado)
+
+### 10.1 Resumen de la Cadena Ejecutada
+1. **Freeze Formal Autorizado:**  
+   - Token: `APPROVE_FREEZE_AVOLCLUSTER_NQ_ZONE_EVENT_STORE_V1`
+   - Commit Productor: `910c4dd75a6e6494f01497b4ff073d5a1e8e9637`
+   - Payload Congelado: `c9792d00da4f15311acdd13f965d06d601e0d08ae0e961766338d04e5e9440ba`
+2. **Construcción de Checkpoints (`--run-all`):**  
+   - Token: `AUTHORIZE_BUILD_AVOLCLUSTER_NQ_ZONE_EVENT_STORE_V1`
+   - Checkpoints: **234 archivos JSON** (prefijo continuo `000` a `233`)
+   - Zonas `OFF_PRICE` creadas: **5.876** (100% exacto al sweep target-free)
+   - Sesiones con eventos: **233 contract-sessions**
+3. **Consolidación en Parquet (`--finalize`):**  
+   - Token: `AUTHORIZE_FINALIZE_AVOLCLUSTER_NQ_ZONE_EVENT_STORE_V1`
+   - Parquet: `avolcluster_nq_zone_creation_event_store.parquet` (SHA-256 físico `4dad91f6a572bfb5edc714dfb13daa4a0bbee6b96301a4d734466a9da7a06674`, checksum lógico `7c254009dc4ccd58f4187360a861f76a692945b94c7091766cce6cf3e46f3a77`)
+   - Manifiesto: `avolcluster_nq_zone_store_manifest.json` (SHA-256 físico `df80294138d0401d979bceb5416c6006d05fd7d143b00a1bab2323260fea0cd3`, payload interno `f87061427d884dac3290c52144bdcf0ab079d4a4b4674237c279072eae51cacc`)
+4. **Validación Independiente (`--validate-artifacts`):**  
+   - Token: `AUTHORIZE_VALIDATE_AVOLCLUSTER_NQ_ZONE_EVENT_STORE_V1`
+   - Dictamen: `PASS_READY_ZONE_CREATION_EVENT_STORE` (`READY_ZONE_CREATION_EVENT_STORE`)
+   - Equivalencia Parquet ↔ Checkpoints: **100% Exacta (`PASS`)**
+
+### 10.2 Publicación de Metadatos sin Artefactos Pesados
+Los artefactos pesados (Parquet y 234 checkpoints JSON) se preservan localmente en `runs/avolcluster_nq_zone_store_run_20260828/`. Se publican en el repositorio únicamente:
+- Manifiesto canónico: [`docs/research/avolcluster_nq_zone_store_manifest.json`](avolcluster_nq_zone_store_manifest.json)
+- Resultado de validación: [`docs/research/avolcluster_nq_zone_store_validation.json`](avolcluster_nq_zone_store_validation.json)
+- Inventario completo de checkpoints: [`docs/research/avolcluster_nq_checkpoints_manifest.json`](avolcluster_nq_checkpoints_manifest.json)
+- Informe final: [`docs/research/INFORME_FINAL_AVOLCLUSTER_NQ_GATE1A_2026-08-28.md`](INFORME_FINAL_AVOLCLUSTER_NQ_GATE1A_2026-08-28.md)
+
 ---
 
 ## Aporte al referente
 
-Se audita y certifica la infraestructura de creación de zonas AVolClusterPOI NQ-120t bajo la autoridad `PASS_RESEARCH_ONLY_PYTHON_KERNEL`. El control fail-closed de procedencia detectó con éxito la divergencia de hashes en el registry histórico. Se completa la corrección controlada en estado borrador, vinculando el nuevo blob `09d09dec961ebe091fe68d4062b63f9faf34610e` y proyectando el nuevo payload congelado `c9792d00da4f15311acdd13f965d06d601e0d08ae0e961766338d04e5e9440ba` para una nueva ceremonia formal de freeze.
+Se audita, certifica y publica formalmente la conclusión de Gate 1A para AVolClusterPOI NQ-120t. Quedan vinculados de forma inmutable el commit productor `910c4dd75a6e6494f01497b4ff073d5a1e8e9637` y el commit de publicación, preservando la equivalencia determinista, el holdout sellado y todos los firewalls epistemológicos.
+
 
 

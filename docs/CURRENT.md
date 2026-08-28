@@ -55,7 +55,7 @@ La rama activa agrega, sin ejecutar datos reales:
 - build, finalize y validate separados por tokens de runtime;
 - finalización condicionada a 234 checkpoints, 5.876 eventos y equivalencia Parquet ↔ checkpoints.
 
-La spec se encuentra formalmente congelada bajo el nuevo binding vinculante (`status = FROZEN_ZONE_CREATION_EVENT_STORE`, `frozen_commit = 3fd75812862a6aea58057eba01b5cb457f0a6c56`, `frozen_spec_payload_sha256 = c9792d00da4f15311acdd13f965d06d601e0d08ae0e961766338d04e5e9440ba`). No se autorizó la ejecución real del build ni se emitieron tokens de build/finalize/validate. No se construyó el Event Store real, no se abrió lifecycle/first touch y no se evaluaron outcomes.
+El Event Store canónico de creación de zonas AVolClusterPOI NQ-120t ha completado Gate 1A con éxito total: 234 checkpoints atómicos generados en commit productor `910c4dd75a6e6494f01497b4ff073d5a1e8e9637`, reproduciendo exactamente 5.876 zonas `OFF_PRICE` en 233 sesiones CME. Consolidado en Parquet (`4dad91f6...`) y validado independientemente (`READY_ZONE_CREATION_EVENT_STORE`) con equivalencia 100% (`PASS`). Metadatos publicados en `docs/research/` (manifest, validación e inventario de checkpoints). Lifecycle (Gate 1B), first touch, BT2A NQ join y outcomes permanecen cerrados y fail-closed.
 
 ## Diseño conjunto AVol + BT2A NQ + L2
 
@@ -102,12 +102,12 @@ La adquisición L1/L2 sigue target-free. No ejecutar HMM final, join de outcomes
 GATE1_ALL5                              = COMPLETE_POST_OUTCOME_REPLICATION
 CANONICAL_EVENT_STORE_234              = PASS
 P2A                                     = COMPLETE_POST_OUTCOME_DIAGNOSTIC
-P2A_CLOCK_HETEROGENEITY                 = FROZEN_PREAUTHORIZATION
+P2A_CLOCK_HETEROGENEITY                 = COMPLETE_NO_CLOCK_HETEROGENEITY_SIGNAL
 P2B                                     = IMPLEMENTED_NOT_RUN
 GATE_L2_SAMPLE_POWER                    = NOT_READY
 AVOL_NQ_TARGET_FREE_SELECTION           = COMPLETE
-AVOL_NQ_ZONE_STORE                      = FROZEN_ZONE_CREATION_EVENT_STORE
-AVOL_NQ_ZONE_STORE_REAL_BUILD           = NOT_RUN
+AVOL_NQ_ZONE_STORE                      = READY_ZONE_CREATION_EVENT_STORE
+AVOL_NQ_ZONE_STORE_REAL_BUILD           = COMPLETE_5876_ROWS_234_SESSIONS
 AVOL_NQ_FIRST_TOUCH                     = NOT_IMPLEMENTED
 AVOL_NQ_GATE1_OUTCOMES_OPENED           = false
 AVOL_BT2A_NQ_JOINT_DESIGN               = DRAFT_DESIGN_ONLY_PREAUTHORIZATION

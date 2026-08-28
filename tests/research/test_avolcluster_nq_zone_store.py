@@ -139,3 +139,38 @@ def test_input_registry_matches_official_datos_manifiesto():
         assert entry["parquet_sha256"] == man_entry["sha256"], f"hash mismatch for {contract}"
         assert entry["bytes"] == man_entry["bytes"], f"byte size mismatch for {contract}"
 
+
+def test_published_gate1a_metadata_and_hashes():
+    """Verify published Gate 1A creation metadata, hashes and checkpoint inventory."""
+    manifest_path = ROOT / "docs/research/avolcluster_nq_zone_store_manifest.json"
+    validation_path = ROOT / "docs/research/avolcluster_nq_zone_store_validation.json"
+    inventory_path = ROOT / "docs/research/avolcluster_nq_checkpoints_manifest.json"
+    report_path = ROOT / "docs/research/INFORME_FINAL_AVOLCLUSTER_NQ_GATE1A_2026-08-28.md"
+
+    assert manifest_path.is_file()
+    assert validation_path.is_file()
+    assert inventory_path.is_file()
+    assert report_path.is_file()
+
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    assert manifest["status"] == "COMPLETE_TARGET_FREE_ZONE_CREATION_STORE"
+    assert manifest["code_commit"] == "910c4dd75a6e6494f01497b4ff073d5a1e8e9637"
+    assert manifest["spec_payload_sha256"] == "c9792d00da4f15311acdd13f965d06d601e0d08ae0e961766338d04e5e9440ba"
+    assert manifest["diagnostics"]["rows"] == 5876
+    assert manifest["diagnostics"]["contract_sessions_with_events"] == 233
+    assert manifest["parquet"]["parquet_physical_sha256"] == "4dad91f6a572bfb5edc714dfb13daa4a0bbee6b96301a4d734466a9da7a06674"
+    assert manifest["parquet"]["logical_payload_sha256"] == "7c254009dc4ccd58f4187360a861f76a692945b94c7091766cce6cf3e46f3a77"
+    assert manifest["payload_sha256"] == "f87061427d884dac3290c52144bdcf0ab079d4a4b4674237c279072eae51cacc"
+
+    validation = json.loads(validation_path.read_text(encoding="utf-8"))
+    assert validation["status"] == "READY_ZONE_CREATION_EVENT_STORE"
+    assert validation["transport"]["logical_identity"] == "PASS"
+    assert validation["transport"]["parquet_matches_checkpoints_1to1"] is True
+
+    inventory = json.loads(inventory_path.read_text(encoding="utf-8"))
+    assert inventory["total_checkpoints"] == 234
+    assert inventory["total_events"] == 5876
+    assert inventory["sessions_with_events"] == 233
+    assert len(inventory["checkpoints"]) == 234
+
+
