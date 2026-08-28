@@ -1,6 +1,6 @@
 # CURRENT — empezar acá
 
-**Fecha:** 2026-08-26
+**Fecha:** 2026-08-28
 
 > Estado operativo posterior al hardening Gate 2/L2 y a la reproducción canónica de Gate 1.
 
