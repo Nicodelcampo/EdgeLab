@@ -266,3 +266,42 @@ def test_load_json_rejects_non_dict(tmp_path: Path):
     scalar_file.write_text('"hello"', encoding="utf-8")
     with pytest.raises(RuntimeError, match="JSON object required"):
         runner.load_json(scalar_file)
+
+
+def test_positive_freeze_roundtrip():
+    """A correctly frozen spec must pass all contract checks, and a single mutation must break it."""
+    runner = load_runner()
+    base_spec = json.loads(SPEC.read_text(encoding="utf-8"))
+
+    # Build a valid frozen spec
+    spec = json.loads(json.dumps(base_spec))
+    spec["status"] = "FROZEN_PREAUTHORIZATION"
+    spec["authorization"]["freeze_authorized"] = True
+    spec["authorization"]["execution_authorized"] = False
+    # Compute and place the frozen hash
+    payload_hash = runner.frozen_spec_payload_sha256(spec)
+    spec["freeze"]["frozen_spec_payload_sha256"] = payload_hash
+
+    # Temporarily bind the runner constant to the computed hash
+    original = runner.EXPECTED_FROZEN_SPEC_PAYLOAD_SHA256
+    try:
+        runner.EXPECTED_FROZEN_SPEC_PAYLOAD_SHA256 = payload_hash
+
+        checks = runner.frozen_contract_checks(spec)
+        assert checks["schema"], f"schema failed: {checks}"
+        assert checks["status_frozen"], f"status_frozen failed: {checks}"
+        assert checks["freeze_authorized"], f"freeze_authorized failed: {checks}"
+        assert checks["spec_payload_bound"], f"spec_payload_bound failed: {checks}"
+        # All structural checks that don't depend on external state
+        for key in ("minimum_other_phases", "minimum_sessions_per_contrast",
+                    "phases", "holm_family", "no_winner", "p2b_unchanged"):
+            assert checks[key], f"{key} failed: {checks}"
+
+        # Mutate one scientific field — must break spec_payload_bound
+        mutated = json.loads(json.dumps(spec))
+        mutated["estimand"]["minimum_sessions_per_contrast"] = 99
+        mutated_checks = runner.frozen_contract_checks(mutated)
+        assert not mutated_checks["spec_payload_bound"], "Mutation was not detected by spec_payload_bound"
+        assert not mutated_checks["minimum_sessions_per_contrast"], "Mutation was not detected by minimum_sessions_per_contrast"
+    finally:
+        runner.EXPECTED_FROZEN_SPEC_PAYLOAD_SHA256 = original

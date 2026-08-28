@@ -54,11 +54,13 @@ MACRO_REL = "specs/bt2a_macro_calendar_gc_20250804_20260630_v1.json"
 BRANCH = "research/bt2a-p2a-clock-heterogeneity-v1-20260827"
 AUTH = "AUTHORIZE_BT2A_P2A_GC_CLOCK_HETEROGENEITY_V1"
 SOURCE_SPEC_SHA256 = "176ca3e0c37f44823bfe5f8cf64849b55dcf12b5114d930d5ec8776c1566468c"
+SOURCE_SPEC_FILE_SHA256 = "0705ae8377e91bd3fc4ed60ad712acd1b4e52b436e53d094dcdb957e8fbf08d5"
 SOURCE_RESULT_SHA256 = "296f8352a46751c3a9a26a32ec29661ddcecba7ac57874a967dc591a92766e28"
 EVENT_PAYLOAD_SHA256 = "feee6001e88aa69f62a092b253e468531230120a3dccdc2ceac0d488c9684cbd"
 MACRO_FILE_SHA256 = "5f1a484858c7d0bdd997f7f6dafef014bae2f13debdb5bcce937d74257cbd9ca"
 EXPECTED_CANONICAL_PARQUET_SHA256 = "6f7994b4ff21d2ddd0addcd9d3815b7ae83ff008b5b4774e74f2821efb2a4d77"
 EXPECTED_FROZEN_SPEC_PAYLOAD_SHA256: str | None = None
+EXPECTED_FROZEN_COMMIT: str | None = None
 PARENT_CELLS = ((9, 25), (30, 100), (30, 250))
 CONTROL_REPLICATIONS = 10000
 INFERENCE_REPLICATIONS = 10000
@@ -184,19 +186,24 @@ def load_macro_intervals(path: Path) -> tuple[dict, list[tuple[int, int]]]:
     return value, sorted(intervals)
 
 
-def _git_checks(root: Path) -> dict[str, bool]:
+def _git_checks(root: Path, *, expected_commit: str | None = None) -> dict[str, bool]:
     def run(*args):
         return subprocess.run(["git", *args], cwd=root, text=True, capture_output=True)
     branch = run("branch", "--show-current")
     status = run("status", "--porcelain")
-    return {
+    head = run("rev-parse", "HEAD")
+    checks = {
         "git_available": branch.returncode == 0,
         "branch": branch.returncode == 0 and branch.stdout.strip() == BRANCH,
         "worktree_clean": status.returncode == 0 and not status.stdout.strip(),
     }
+    commit_to_check = expected_commit or EXPECTED_FROZEN_COMMIT
+    if commit_to_check is not None:
+        checks["commit_exact"] = head.returncode == 0 and head.stdout.strip() == commit_to_check
+    return checks
 
 
-def preflight(root: Path, event_store_dir: Path, data_dir: Path, *, check_git: bool = True) -> dict:
+def preflight(root: Path, event_store_dir: Path, data_dir: Path, *, check_git: bool = True, expected_commit: str | None = None) -> dict:
     spec = load_spec(root)
     source_spec = load_json(root / SOURCE_SPEC_REL)
     frozen = frozen_contract_checks(spec)
@@ -232,7 +239,7 @@ def preflight(root: Path, event_store_dir: Path, data_dir: Path, *, check_git: b
             except RuntimeError:
                 pass
     runtime_checks = p2a.runtime_environment_checks(root, source_spec)
-    git_checks = _git_checks(root) if check_git else {"skipped_for_test": True}
+    git_checks = _git_checks(root, expected_commit=expected_commit) if check_git else {"skipped_for_test": True}
     binding = spec.get("implementation_binding", {})
     impl_checks = {}
     sci_path = root / binding.get("scientific_module_repository_path", "")
@@ -245,10 +252,14 @@ def preflight(root: Path, event_store_dir: Path, data_dir: Path, *, check_git: b
     else:
         impl_checks["macro_calendar_sha256"] = False
     source_p2a_spec_path = root / SOURCE_SPEC_REL
-    if source_p2a_spec_path.is_file() and binding.get("source_p2a_spec_sha256"):
-        impl_checks["source_spec_sha256"] = file_sha256(source_p2a_spec_path) == binding["source_p2a_spec_sha256"]
+    if source_p2a_spec_path.is_file() and binding.get("source_p2a_spec_file_sha256"):
+        impl_checks["source_spec_file_sha256"] = file_sha256(source_p2a_spec_path) == binding["source_p2a_spec_file_sha256"]
     else:
-        impl_checks["source_spec_sha256"] = False
+        impl_checks["source_spec_file_sha256"] = False
+    if source_p2a_spec_path.is_file() and binding.get("source_p2a_spec_payload_sha256"):
+        impl_checks["source_spec_payload_sha256"] = canonical(load_json(source_p2a_spec_path)) == binding["source_p2a_spec_payload_sha256"]
+    else:
+        impl_checks["source_spec_payload_sha256"] = False
     lock_path = root / "requirements" / "core-bridge-dev.lock"
     if lock_path.is_file() and binding.get("runtime_environment_lock_sha256"):
         impl_checks["runtime_lock_sha256"] = file_sha256(lock_path) == binding["runtime_environment_lock_sha256"]
@@ -583,11 +594,12 @@ def main(argv=None) -> int:
     modes.add_argument("--run-all", action="store_true")
     modes.add_argument("--finalize", action="store_true")
     parser.add_argument("--authorization-token")
+    parser.add_argument("--expected-commit", help="Exact git commit SHA to verify against HEAD")
     args = parser.parse_args(argv)
     root = args.root.resolve()
     event_store = args.event_store_dir.resolve()
     data_dir = args.data_dir.resolve()
-    readiness = preflight(root, event_store, data_dir)
+    readiness = preflight(root, event_store, data_dir, expected_commit=args.expected_commit)
     if args.preflight_only:
         print(json.dumps(readiness, indent=2, sort_keys=True))
         return 0 if readiness["status"] == "PASS_READY_FOR_CLOCK_AUTHORIZATION" else 2
