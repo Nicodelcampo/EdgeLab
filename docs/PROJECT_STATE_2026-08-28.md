@@ -14,7 +14,8 @@ main (baseline antiguo)
    │     └─ PR #20 research/bt2a-p2a-clock-heterogeneity-v1
    ├─ PR #17 work/indicator-coordinate-store-v1
    ├─ PR #19 research/avolcluster-compression-v1
-   └─ research/avolcluster-nq-microticks-v1 (sin PR al corte)
+   ├─ research/avolcluster-nq-microticks-v1 (sin PR al corte inicial)
+   └─ PR #21 docs/traceability-refresh-20260828
 ```
 
 La indentación expresa dependencia conceptual/base declarada, no prueba de merge ni patch-equivalence.
@@ -35,6 +36,7 @@ La indentación expresa dependencia conceptual/base declarada, no prueba de merg
 | #18 | `research/bt2a-p2b-economic-gc-v1-20260827` | `work/bt2a-gate2-p2a-freeze-20260826` | draft | protocolo económico |
 | #19 | `research/avolcluster-compression-v1-20260827` | `foundation/f0b-compatibility-probe` | draft | protocolo aVol/BigTrap |
 | #20 | `research/bt2a-p2a-clock-heterogeneity-v1-20260827` | `work/bt2a-gate2-p2a-freeze-20260826` | draft | diagnóstico horario post-selección |
+| #21 | `docs/traceability-refresh-20260828` | `foundation/f0b-compatibility-probe` | draft | refresh documental y registro de ramas |
 
 ## 3. Ledger de afirmaciones
 
@@ -45,6 +47,7 @@ La indentación expresa dependencia conceptual/base declarada, no prueba de merg
 | aVol NQ microticks | densidad, cobertura y ancho de zonas en 378 configuraciones | first touch, expansión, compresión, dirección, P&L |
 | aVol compression protocol | spec/runner de medición en rama PR #19 | resultado de Gate 1 para NQ-120t |
 | Coordinate Store | infraestructura target-free en PR #17 | edge económico |
+| Trazabilidad 28-ago | ramas, PR, dependencias y firewalls inventariados | contención/patch-equivalence de ramas históricas |
 
 ## 4. Reglas de actualización
 
@@ -76,4 +79,4 @@ Este snapshot **no autoriza ningún cierre**.
 
 ## Aporte al referente
 
-El mapa separa base, contratos, resultados y diagnósticos; evita leer las 44 ramas como una línea temporal única y define qué evidencia falta antes de integrar o archivar.
+El mapa separa base, contratos, resultados y diagnósticos; evita leer las ramas como una línea temporal única y define qué evidencia falta antes de integrar o archivar.

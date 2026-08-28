@@ -1,6 +1,6 @@
 # CURRENT — empezar acá
 
-> Estado operativo remoto al **2026-08-28 05:04 UTC**.  
+> Estado operativo remoto al **2026-08-28 05:08 UTC**.  
 > Punto de entrada: `AUDITOR_START_HERE.md`.
 
 **Base de integración vigente:** `foundation/f0b-compatibility-probe@8ebda7840bc3f0a7e39f3561db75a2c9090fd55f`  
@@ -11,9 +11,9 @@
 ## Vector operativo
 
 ```text
-REMOTE_BRANCHES                         = 44
+REMOTE_BRANCHES                         = 46
 PROTECTED_BRANCHES                      = 0
-OPEN_PULL_REQUESTS                      = 12
+OPEN_PULL_REQUESTS                      = 13
 HOLDOUT_2026_07_01_TO_2026_12_31       = CLOSED_FOR_DESIGN
 GLOBAL_OUTCOME_EXPOSURE                 = YES, PREEXISTING
 MAIN_IS_CURRENT_INTEGRATION             = false
@@ -21,6 +21,8 @@ FOUNDATION_IS_INTEGRATION_BASE          = true
 BRANCH_DELETION_AUTHORIZED              = false
 MERGE_AUTHORIZED_BY_THIS_DOCUMENT       = false
 ```
+
+El corte inicial tenía 45 ramas y 12 PR abiertas. La rama documental `docs/traceability-refresh-20260828` y su PR #21 elevan los totales actuales a 46 y 13.
 
 ## Líneas activas
 
@@ -41,7 +43,7 @@ READY_TO_FREEZE         = NO
 READY_TO_EXECUTE        = NO
 ```
 
-Bloqueador de integridad: la política Camino B valida schema, número de filas y conteos globales del Parquet, pero todavía no prueba que sus filas sean lógicamente idénticas a las de los 234 checkpoints.
+Bloqueador de integridad: la política Camino B valida schema, número de filas y conteos globales del Parquet, pero todavía no prueba que sus filas sean lógicamente idénticas a las de los 234 checkpoints. La observación quedó registrada también en PR #20.
 
 ### AVolClusterPOI
 
@@ -55,9 +57,10 @@ Bloqueador de integridad: la política Camino B valida schema, número de filas 
 
 `120 ticks` es resolución de barra. Con `window_bars=5`, el bloque nominal agrega 600 ticks. No llamar “resolución ideal” sin separar efecto de barra y tamaño total del bloque.
 
-### Infraestructura
+### Infraestructura y trazabilidad
 
 - PR #17: coordinate store target-free de cuatro indicadores.
+- PR #21: actualización documental de entrada, estado, campañas y ramas; no autoriza ciencia ni limpieza destructiva.
 - `research/event-store-pit`: módulo PIT aislado.
 - `research/gate-regime-context`: cimiento ejecutable, no evidencia operativa.
 
