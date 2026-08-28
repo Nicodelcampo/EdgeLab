@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 """Fail-Closed Creation-Only Micro-Tick & Fast-Bar Sweep for BigTrap2 on NQ (V2).
 
+Execution platform: KAGGLE ONLY. Local heavy execution is not authorized.
+
 Strictly target-free:
 1. Time-bounded PyArrow loading preventing holdout row decoding (cutoff: 2026-06-30T22:00:00Z).
-2. Input hash and size verification against canonical input registry before loading.
+2. Input hash and size verification against package manifest / effective input registry.
 3. Creation-only detector: zero lifecycle, zero update_zones, zero look-ahead.
 4. Spec, commit, clean worktree, and execution token validation at runtime (conjunctive gate).
-5. Pre- and post-execution git verification.
+5. Output path must be external to REPO_ROOT (e.g. /kaggle/working/) to preserve worktree cleanliness.
 6. Preserves output without overwriting retrospective V1 results.
 """
 from __future__ import annotations
@@ -220,11 +222,24 @@ def run_creation_grid_for_contract(
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--spec", type=Path, required=True, help="Path to execution spec JSON")
-    parser.add_argument("--data-dir", type=Path, default=Path(r"E:\EdgeLab\data\nt8\NQ_parquet"))
+    parser.add_argument("--data-dir", type=Path, required=True, help="Path to pre-holdout trimmed NQ Parquets (Kaggle dataset)")
     parser.add_argument("--expected-commit", type=str, required=True, help="Expected git commit SHA")
     parser.add_argument("--execution-token", type=str, required=True, help="Secret authorization token from spec")
-    parser.add_argument("--output-json", type=Path, default=None)
+    parser.add_argument("--output-json", type=Path, required=True, help="Output path MUST be external to repo (e.g. /kaggle/working/result.json)")
     args = parser.parse_args()
+
+    # Gate 0: Output path must be external to REPO_ROOT
+    try:
+        args.output_json.resolve().relative_to(REPO_ROOT.resolve())
+        raise ValueError(
+            f"[FAIL_CLOSED] --output-json must be external to the repository. "
+            f"Got {args.output_json} which is inside {REPO_ROOT}. "
+            f"Use an external path like /kaggle/working/result.json"
+        )
+    except ValueError as e:
+        if "FAIL_CLOSED" in str(e):
+            raise
+        pass  # Path is external — this is the expected outcome
 
     if not args.spec.exists():
         raise FileNotFoundError(f"[FAIL_CLOSED] Spec not found: {args.spec}")
@@ -366,13 +381,10 @@ def main():
         "results": results,
     }
 
-    out_path = args.output_json or (REPO_ROOT / spec["binding"]["output_result_path"])
+    out_path = args.output_json
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(summary_doc, indent=2), encoding="utf-8")
     print(f"\n[Sweep Complete] Output saved to: {out_path}")
-
-    # Final Gate: Post-execution git integrity check
-    verify_git_clean_and_head(args.expected_commit)
 
 
 if __name__ == "__main__":

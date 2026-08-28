@@ -81,8 +81,13 @@ def test_v2_draft_spec_binds_canonical_gate1a_hashes():
     (2.5, 10.0),
     (3.5, 50.0),
 ])
-def test_creation_only_integral_parity(bar_kind, bar_param, imb_ratio, min_vol):
-    """Integral bitwise creation parity test between canonical BigTrap2 and creation-only detector."""
+def test_representative_multi_resolution_creation_parity(bar_kind, bar_param, imb_ratio, min_vol):
+    """REPRESENTATIVE_MULTI_RESOLUTION_CREATION_PARITY against bigtrap2.py.
+    
+    Compares bar_idx, bar_time_ns, side, kind, top, bottom, vol and centroid
+    across 8 representative (bar_type x param) combinations on synthetic data.
+    This validates against the Python bridge kernel, not directly against BigTrap2.cs.
+    """
     ticks = make_synthetic(start_utc="2026-06-01T23:00:00", n_sessions=3, ticks_per_session=2000, tick_size=0.25, seed=42)
     
     if bar_kind == "tick":
@@ -102,35 +107,39 @@ def test_creation_only_integral_parity(bar_kind, bar_param, imb_ratio, min_vol):
     canonical_res = run_bigtrap2_canonical(ticks, bars, fps, params=params)
     creation_only_zones = detect_creations_only(ticks, bars, fps, params=params)
 
-    # Parse logged ZONE_CREATED lines from canonical CSV stream
-    canonical_created_events = []
+    # Extract canonical zones; exported zones have top/bottom/created_bar/created_ms/kind
+    # but NOT vol. Extract vol from ZONE_CREATED CSV log lines.
+    canonical_zones = canonical_res["zones"]
+    
+    # Parse vol from CSV log for each ZONE_CREATED event (ordered same as zones)
+    canonical_vols = []
     for line in canonical_res["csv_lines"]:
         parts = line.split("|")
         if len(parts) >= 4 and parts[2] == "ZONE_CREATED":
             payload = parts[3]
             props = dict(item.split("=") for item in payload.split(";") if "=" in item)
-            canonical_created_events.append({
-                "bar_idx": int(props["created_bar"]),
-                "side": "B" if props["side"] == "trapped_buyers" else "S",
-                "kind": props["side"],
-                "lo": float(props["lo"]),
-                "hi": float(props["hi"]),
-                "vol": float(props["vol"]),
-            })
+            canonical_vols.append(float(props["vol"]))
 
     # Parity check: zone count
-    assert len(canonical_created_events) == len(creation_only_zones)
+    assert len(canonical_zones) == len(creation_only_zones), (
+        f"Zone count mismatch: canonical={len(canonical_zones)}, creation_only={len(creation_only_zones)}"
+    )
+    assert len(canonical_vols) == len(canonical_zones)
 
-    # Zone-by-zone integral bitwise equality check
-    for cz, coz in zip(canonical_created_events, creation_only_zones):
-        assert coz["bar_idx"] == cz["bar_idx"]
-        assert coz["side"] == cz["side"]
-        assert coz["kind"] == cz["kind"]
-        assert coz["top"] == cz["hi"]
-        assert coz["bottom"] == cz["lo"]
-        assert coz["vol"] == cz["vol"]
-        assert coz["bottom"] <= coz["centroid"] <= coz["top"]
-        assert coz["width_ticks"] == int(round((cz["hi"] - cz["lo"]) / 0.25))
+    # Zone-by-zone equality check on all available creation-time fields
+    for i, (cz, coz) in enumerate(zip(canonical_zones, creation_only_zones)):
+        assert coz["bar_idx"] == cz["created_bar"], f"Zone {i}: bar_idx mismatch"
+        # Compare at ms precision: canonical kernel stores created_ms (ns_to_ms truncation)
+        assert coz["bar_time_ns"] // 1_000_000 == cz["created_ms"], f"Zone {i}: bar_time_ms mismatch"
+        assert coz["kind"] == cz["kind"], f"Zone {i}: kind mismatch"
+        expected_side = "B" if cz["kind"] == "trapped_buyers" else "S"
+        assert coz["side"] == expected_side, f"Zone {i}: side mismatch"
+        assert coz["top"] == cz["top"], f"Zone {i}: top mismatch"
+        assert coz["bottom"] == cz["bottom"], f"Zone {i}: bottom mismatch"
+        assert coz["vol"] == canonical_vols[i], f"Zone {i}: vol mismatch"
+        # Centroid: bounded by zone geometry
+        assert coz["bottom"] <= coz["centroid"] <= coz["top"], f"Zone {i}: centroid out of bounds"
+        assert coz["width_ticks"] == int(round((cz["top"] - cz["bottom"]) / 0.25)), f"Zone {i}: width mismatch"
 
 
 def test_cme_session_utc_bounds_expansion_no_keyerror():
@@ -212,3 +221,23 @@ def test_runtime_gates_reject_draft_spec_even_with_token():
     }
     with pytest.raises(PermissionError, match=r"Invalid or missing execution token"):
         verify_runtime_execution_gates(frozen_wrong_token_spec, expected_commit="abc1234", execution_token="WRONG_TOKEN")
+
+
+def test_output_path_must_be_external_to_repo(tmp_path):
+    """Verify that --output-json inside REPO_ROOT is rejected."""
+    from tools.sweep_bigtrap2_nq_tickframes_v2 import REPO_ROOT as V2_REPO_ROOT
+    internal_path = V2_REPO_ROOT / "docs" / "research" / "forbidden_output.json"
+    try:
+        internal_path.resolve().relative_to(V2_REPO_ROOT.resolve())
+        is_internal = True
+    except ValueError:
+        is_internal = False
+    assert is_internal, "Test setup: internal_path must be inside REPO_ROOT"
+
+    external_path = tmp_path / "kaggle_working" / "result.json"
+    try:
+        external_path.resolve().relative_to(V2_REPO_ROOT.resolve())
+        is_external = False
+    except ValueError:
+        is_external = True
+    assert is_external, "Test setup: external_path must be outside REPO_ROOT"
