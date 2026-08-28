@@ -1,93 +1,101 @@
 # CURRENT — empezar acá
 
-> Estado operativo al 2026-08-24. Para un traspaso nuevo, el primer archivo es `AUDITOR_START_HERE.md`.
+> Estado operativo remoto al **2026-08-28 05:08 UTC**.  
+> Punto de entrada: `AUDITOR_START_HERE.md`.
 
-**Rama viva:** `foundation/f0b-compatibility-probe`  
-**Audited scientific base:** `9b23c307cb112cdd6392d98673e8ead2e8bc4698`  
-**Handoff package:** `7b360bf8f6bc4ac54ca72f771520690046f61789`  
-**Referente:** `docs/NORTH_STAR.md` · sha256 del cuerpo `d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1`
+**Base de integración vigente:** `foundation/f0b-compatibility-probe@8ebda7840bc3f0a7e39f3561db75a2c9090fd55f`  
+**Baseline histórico:** `main@cde6d93a75240f550db1fc3b96ca90605ca967c8`  
+**Registro de ramas:** `docs/BRANCH_REGISTRY_2026-08-28.md`  
+**Mapa de campañas:** `docs/PROJECT_STATE_2026-08-28.md`
 
-## Línea primaria
-
-**BigTrap2Absorption — sweep target-free parcial sobre GC 02-26.**
-
-- 99 configuraciones únicas: 51 OAT + 48 interacciones.
-- Estado esperado para un subconjunto: `COMPLETE_TARGET_FREE_PARTIAL_CONTRACTS`.
-- El sweep no mira outcomes, no elige ganador y no es Puerta 1.
-- Puerta 1 no se corrió y su runner no existe.
-- No relanzar: inspeccionar proceso, parciales, `run_status`, `config_id`, hashes y procedencia; continuar con `--resume`.
-
-Acta: `docs/research/ESTADO_BT2_ABSORPTION_2026-08-24.md`.
-
-## Vector de estado BT2Absorption
+## Vector operativo
 
 ```text
-PUERTA_0_FIRMADA                = SI
-KERNEL_PARITY_ON_EQUAL_INPUT    = ~EXACT
-GLOBAL_ACCUMULATED_PARITY       = FAIL por indexado acumulado
-SESSION_RECOVERABLE_PARITY      = RECOVERED
-TAPE_VS_CHART_COVERAGE          = ABIERTO
-UNIVERSO                        = 152 sesiones
-SPLIT                           = 133 / 19, i % 8 == 7
-SWEEP_TARGET_FREE               = EN CURSO, GC 02-26
-PUERTA_1                        = NO CORRIDA
-CAMPAIGN_OUTCOMES_OPENED        = false
-PREEXISTING_OUTCOME_EXPOSURE    = YES
+REMOTE_BRANCHES                         = 46
+PROTECTED_BRANCHES                      = 0
+OPEN_PULL_REQUESTS                      = 13
+HOLDOUT_2026_07_01_TO_2026_12_31       = CLOSED_FOR_DESIGN
+GLOBAL_OUTCOME_EXPOSURE                 = YES, PREEXISTING
+MAIN_IS_CURRENT_INTEGRATION             = false
+FOUNDATION_IS_INTEGRATION_BASE          = true
+BRANCH_DELETION_AUTHORIZED              = false
+MERGE_AUTHORIZED_BY_THIS_DOCUMENT       = false
 ```
 
-No resumir las dos últimas líneas como `OUTCOMES_NOT_OPENED` global.
+El corte inicial tenía 45 ramas y 12 PR abiertas. La rama documental `docs/traceability-refresh-20260828` y su PR #21 elevan los totales actuales a 46 y 13.
 
-## Incidente vigente
+## Líneas activas
 
-Doce archivos preexistentes sin seguimiento se movieron a cuarentena con verificación bit a bit: 11 contenían outcomes y 1 era target-free.
+### BT2A
 
-- 11/133 sesiones de Puerta 1 expuestas;
-- sellada `20260608` expuesta;
-- holdout temporal tocado por cuatro contratos;
-- búsqueda previa de contexto × outcomes;
-- familia YM y barrido cross-asset expuestos.
+- PR #15: contrato P2-A congelable, base de la cadena posterior.
+- PR #16: resultado completo P2-A V1-R1; outcomes ya abiertos; no confirmatorio.
+- PR #18: protocolo económico P2-B, draft y separado de la ejecución.
+- PR #20: heterogeneidad horaria post-selección de GC, draft.
 
-Autoridad: `docs/incidents/INCIDENTE_OUTCOMES_UNTRACKED_2026-08-24.md` y su manifest.
+Estado de PR #20 al corte:
 
-## Líneas separadas
-
-- `research/gate-regime-context`: `FOUNDATION_EXECUTABLE`, `CHECKPOINT_PENDING_REAL_DATA`, `NOT_YET_OPERATIONAL`.
-- `work/crypto-context-foundation-20260824`: PR #14 draft; CI roja; no mergear.
-- Las restantes 23 ramas no primarias están clasificadas en `docs/BRANCH_REGISTRY_2026-08-24.md`.
-
-## No tocar sin decisión explícita
-
-- outcomes, P&L, MAE/MFE o Puerta 1;
-- holdout para diseñar o elegir;
-- specs/splits congelados;
-- ramas G2 rivales;
-- borrado/cierre de ramas;
-- parquets o particiones publicadas;
-- cuarentena del incidente;
-- `TAPE_VS_CHART_COVERAGE` como si estuviera resuelto.
-
-## Primer chequeo
-
-```powershell
-git remote -v
-git fetch --all --prune
-git rev-parse --show-toplevel
-git worktree list
-git status --short --untracked-files=all
-.venv\Scripts\python tools\estado.py
+```text
+HEAD                    = 56717b0d5bcb8691fbfe30f8d2478ec91cb859fc
+CONTRACT_CHECK          = PASS
+PYTEST_CHECKS           = FAIL / FAIL
+READY_TO_FREEZE         = NO
+READY_TO_EXECUTE        = NO
 ```
 
-El remoto reciente se llamó `github`, no `origin`.
+Bloqueador de integridad: la política Camino B valida schema, número de filas y conteos globales del Parquet, pero todavía no prueba que sus filas sean lógicamente idénticas a las de los 234 checkpoints. La observación quedó registrada también en PR #20.
 
-## Índices canónicos
+### AVolClusterPOI
 
-- `AUDITOR_START_HERE.md`
-- `docs/HANDOFF_AUDITOR_2026-08-24.md`
-- `docs/REPOSITORY_VISIBILITY_AUDIT_2026-08-24.md`
-- `docs/BRANCH_REGISTRY_2026-08-24.md`
-- `docs/research/LEER.md`
-- `PENDIENTE.md`
+- PR #19: protocolo fail-closed de localización/compresión y dirección condicionada con BigTrap.
+- Rama `research/avolcluster-nq-microticks-v1-20260828`:
+  - NQ, 234 sesiones pre-holdout;
+  - sweep target-free de 378 configuraciones;
+  - primera configuración: `tick_120_W5_M20_C4_P950`;
+  - 5.876 zonas OFF_PRICE, 25,11 por sesión, 1,09 por hora, cobertura 99,6%;
+  - no ejecutó expansión, first passage, MFE/MAE, P&L ni Gate 1.
+
+`120 ticks` es resolución de barra. Con `window_bars=5`, el bloque nominal agrega 600 ticks. No llamar “resolución ideal” sin separar efecto de barra y tamaño total del bloque.
+
+### Infraestructura y trazabilidad
+
+- PR #17: coordinate store target-free de cuatro indicadores.
+- PR #21: actualización documental de entrada, estado, campañas y ramas; no autoriza ciencia ni limpieza destructiva.
+- `research/event-store-pit`: módulo PIT aislado.
+- `research/gate-regime-context`: cimiento ejecutable, no evidencia operativa.
+
+## Estado epistemológico obligatorio
+
+```text
+TARGET_FREE_SELECTION_IS_OUTCOME_EVIDENCE = false
+PARITY_IS_EDGE                            = false
+BACKTEST_IS_EDGE                          = false
+P2A_CONFIRMATORY_ELIGIBLE                 = false
+P2A_PROMOTION_ELIGIBLE                    = false
+PNL_ACCESSED_IN_CLOCK_FAMILY              = false
+HOLDOUT_TOUCHED_BY_CURRENT_FAMILIES       = false
+```
+
+La exposición histórica documentada sigue vigente. No escribir `OUTCOMES_NOT_OPENED` como afirmación global.
+
+## Próximas acciones seguras
+
+1. Corregir PR #20 para ligar Parquet ↔ checkpoints fila por fila o por payload canónico; agregar tests positivos y negativos end-to-end.
+2. Diagnosticar las dos fallas generales de CI de PR #20 sin relajar contratos.
+3. Para AVolClusterPOI NQ-120t, congelar primero configuración, lifecycle, primer toque y reloj causal; no abrir outcomes sin STOP.
+4. Mantener cada familia en su rama; integrar sólo mediante PR revisada.
+5. Actualizar este archivo y el registro de ramas cuando cambie un tip, estado de PR o firewall.
+
+## No hacer desde este documento
+
+- no ejecutar outcomes;
+- no emitir tokens de freeze/ejecución;
+- no tocar holdout;
+- no borrar ramas;
+- no cerrar PR históricas;
+- no mover documentación ya citada;
+- no reinterpretar un sweep target-free como Gate 1.
 
 ## Aporte al referente
 
-CURRENT vuelve a describir el trabajo realmente vivo y hace explícita la exposición previa. El auditor puede continuar el sweep target-free sin confundirlo con Puerta 1, con un holdout intacto o con evidencia de edge.
+CURRENT consolida el estado remoto real del 28-ago, hace visibles las dependencias entre PR y separa explícitamente configuración, medición, resultado y promoción.
