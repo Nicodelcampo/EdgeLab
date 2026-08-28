@@ -1,0 +1,128 @@
+{
+  "schema_version": "edgelab_kaggle_private_package_build_certification_v1",
+  "status": "COMPLETE_PRIVATE_RESEARCH_PACKAGE",
+  "reported_utc_date": "2026-08-28",
+  "evidence_scope": "OPERATOR_ATTESTATION_RECONCILED_BY_REMOTE_AUDITOR",
+  "remote_auditor_rehashed_local_files": false,
+  "builder": {
+    "head": "4ad4f2e7ca5a48aa9b42414fc94fc4575fb2ead5",
+    "authorization_token_label": "AUTHORIZE_BUILD_KAGGLE_RESEARCH_DATASET_V1",
+    "local_output_directory": "E:\\EdgeLab\\kaggle_nq_research"
+  },
+  "dataset": {
+    "id": "nicodelcampo/edgelab-ticks-nq-preholdout",
+    "visibility": "private_only",
+    "is_private": true,
+    "upload_executed": false
+  },
+  "holdout": {
+    "open_utc_ns": 1782856800000000000,
+    "open_utc": "2026-06-30T22:00:00Z",
+    "research_dataset_holdout_present": false,
+    "maximum_packaged_ts_utc_ns": 1782856799856000000,
+    "strict_margin_ns": 144000000,
+    "strict_margin_ms": 144,
+    "operator_reported_margin_unit_correction": "The supplied narrative said 144 microseconds; integer subtraction proves 144 milliseconds. The strict inequality and holdout verdict are unchanged."
+  },
+  "artifacts": {
+    "kaggle_research_package_manifest.json": {
+      "file_sha256": "4d1053090d80930ee7494e008148b0b8a64829568d861065e054ed2f88f91506",
+      "canonical_payload_sha256": "f44e76c48be9d5e9017baa9efac2626e98c88cc3fd0b7840acfc8c1707641554",
+      "bytes": 3449
+    },
+    "effective_input_registry.json": {
+      "file_sha256": "f9bcf5eee1e68bd4797a959f7e22d3344ae383d9d33c4c59a783ef10ce35e31f",
+      "canonical_payload_sha256_reported": "3dd102216f239cb62730d2d80bd42f7368b5da3569af6b95473da5bdf5e414c",
+      "bytes": 3122
+    },
+    "files.sha256": {
+      "file_sha256": "dddd3c83bc9fee7e3bf71181b051b1c54aea28f8c7ca4eafe96a606be4401bce",
+      "bytes": 645
+    },
+    "dataset-metadata.json": {
+      "file_sha256": "2114192e9b249eea7bf2cf23a0150dc31251e95c51397174ded8f52389237ab4",
+      "bytes": 342
+    }
+  },
+  "contracts": [
+    {
+      "contract": "NQ 09-25",
+      "file": "NQ_09-25_ticks.parquet",
+      "bytes": 258443344,
+      "sha256": "b0ea15f34ffd4158dbcddccd784d0cce88323f5893727522ffbd9af913014ccb",
+      "rows": 13624675,
+      "rows_removed": 0,
+      "ts_min_utc_ns": 1754078400008000000,
+      "ts_max_utc_ns": 1758288594644000000,
+      "custody_recut": false
+    },
+    {
+      "contract": "NQ 12-25",
+      "file": "NQ_12-25_ticks.parquet",
+      "bytes": 657714147,
+      "sha256": "6e0cea584fbe88ebf64451cac2601e55bb5cf289ff199b7cd4bd6d42e8a45da5",
+      "rows": 34264511,
+      "rows_removed": 0,
+      "ts_min_utc_ns": 1757559781528000000,
+      "ts_max_utc_ns": 1766354460642652200,
+      "custody_recut": false
+    },
+    {
+      "contract": "NQ 03-26",
+      "file": "NQ_03-26_ticks.parquet",
+      "bytes": 601961694,
+      "sha256": "02d4eebcd04aad981f0567e7837fc89e1125aecf14192fecc9275b4beb1e396c",
+      "rows": 30825016,
+      "rows_removed": 0,
+      "ts_min_utc_ns": 1765422006472000000,
+      "ts_max_utc_ns": 1774013398672000000,
+      "custody_recut": false
+    },
+    {
+      "contract": "NQ 06-26",
+      "file": "NQ_06-26_ticks.parquet",
+      "bytes": 675240935,
+      "sha256": "3de249b9b8d8ada01c5b485aa893ccdf1315ae3f7bbebcaf72024de12e1b25f6",
+      "rows": 34203535,
+      "rows_removed": 0,
+      "ts_min_utc_ns": 1773284545604000000,
+      "ts_max_utc_ns": 1781789395044000000,
+      "custody_recut": false
+    },
+    {
+      "contract": "NQ 09-26",
+      "file": "NQ_09-26_ticks.parquet",
+      "bytes": 72525040,
+      "sha256": "1030715b216210e9443077212fd2e26303966c031243167d097d8465f81fb64f",
+      "source_sha256": "a1abae00913c5e7138a9659615a4ec4f0cc3aa0446133d582c10cfd62114a995",
+      "rows": 6235464,
+      "rows_removed": 8737419,
+      "ts_min_utc_ns": 1780887692172000000,
+      "ts_max_utc_ns": 1782856799856000000,
+      "custody_recut": true
+    }
+  ],
+  "totals": {
+    "parquet_files": 5,
+    "packaged_rows": 119153201,
+    "removed_rows": 8737419,
+    "packaged_parquet_bytes": 2265885160,
+    "source_files_verified": 5,
+    "source_bytes_verified": 2498938021
+  },
+  "arithmetic_reconciliation": {
+    "contract_bytes_sum_matches_total": true,
+    "contract_rows_sum_matches_total": true,
+    "removed_rows_all_from_nq_09_26": true,
+    "all_ts_max_strictly_before_holdout": true
+  },
+  "firewalls": {
+    "KAGGLE_DATASET_BUILD_EXECUTED": true,
+    "KAGGLE_DATASET_UPLOAD_EXECUTED": false,
+    "BIGTRAP2_RERUN_AUTHORIZED": false,
+    "BT2A_NQ_SWEEP_AUTHORIZED": false,
+    "BT2A_NQ_GATE1_AUTHORIZED": false,
+    "HOLDOUT_AUTHORIZED": false,
+    "SCIENTIFIC_RUN_AUTHORIZED": false
+  }
+}
