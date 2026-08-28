@@ -4,6 +4,7 @@
 > **Cobertura inicial:** 45/45 ramas devueltas por GitHub.  
 > **Estado después de este registro:** 46 ramas, incluyendo `docs/traceability-refresh-20260828`.  
 > **Protección observada:** 0/45 ramas iniciales protegidas.  
+> **Snapshot machine-readable:** `docs/BRANCH_REGISTRY_2026-08-28.json`  
 > **Base de integración:** `foundation/f0b-compatibility-probe@8ebda7840bc3f0a7e39f3561db75a2c9090fd55f`.
 
 Este registro hace visibles las refs. **No autoriza merges, cierres ni borrados.** Las clasificaciones que requieren ancestry o patch-equivalence quedan pendientes de verificación mecánica local.
@@ -69,7 +70,7 @@ Este registro hace visibles las refs. **No autoriza merges, cierres ni borrados.
 | 43 | `work/indicator-coordinate-store-v1-20260827` · `9ad26cf` | ACTIVE_RESEARCH / OPEN_PR | #17 |
 | 44 | `work/repository-research-iterations` · `5abf9b6` | HISTORICAL | iteraciones documentales |
 | 45 | `work/research-architecture-hardening` · `a2b3527` | HISTORICAL | arquitectura temprana |
-| 46 | `docs/traceability-refresh-20260828` · `b9fb279` | TRACEABILITY / OPEN_PR | #21; tip inicial, actualizado por este commit |
+| 46 | `docs/traceability-refresh-20260828` | TRACEABILITY / OPEN_PR | #21; resolver tip remoto actual, no autorreferenciar snapshot |
 
 ## Riesgos observados
 
