@@ -1,15 +1,15 @@
 # CURRENT — empezar acá
 
-**Fecha:** 2026-08-26
+**Fecha:** 2026-08-28
 
-> Estado operativo posterior al hardening Gate 2/L2 y a la reproducción canónica de Gate 1.
+> Estado operativo posterior al hardening Gate 2/L2, a la reproducción canónica de Gate 1 BT2A y a la preparación target-free de AVolClusterPOI NQ.
 
-**Rama viva propuesta:** `work/bt2a-gate2-p2a-freeze-20260826`
-**Base de hardening:** `761f50ba93158cc78c846b8774b7ac21a31b3b57`
-**Gate 1 canónica:** `3e639e150bcd7b4691da3d1ba8049a33f586c217`
+**Línea BT2A:** `work/bt2a-gate2-p2a-freeze-20260826`
+**Infraestructura AVol activa:** `research/avolcluster-nq-gate1-infra-v1-20260828`
+**Base AVol target-free:** `3961b67d80cd62aa6adab101e79739db3bc0005b`
 **Referente:** `docs/NORTH_STAR.md`
 
-## Línea primaria
+## Línea primaria BT2A
 
 BigTrap2Absorption Gate 1 all5 está cerrada como réplica post-outcome:
 
@@ -22,83 +22,92 @@ BigTrap2Absorption Gate 1 all5 está cerrada como réplica post-outcome:
 
 `d_hat` es asimetría de recorrido, no P&L. Gate 1 no se reabre para elegir SL/TP.
 
-## Event Store canónico
+## Puerta 2 BT2A
 
-La población fue reproducida bajo Python 3.12.14 y el lock exacto:
+- P2-A: ejecutado y soportado como diagnóstico post-selección (`results/bt2a-p2a-v1-r1-20260827`, payload `296f8352a46751c3a9a26a32ec29661ddcecba7ac57874a967dc591a92766e28`, clasificación `P2_DIAGNOSTIC_MECHANISM_SUPPORTED`).
+- P2-B: implementado, no ejecutado.
+- Diagnóstico de Heterogeneidad Horaria GC V1: congelado preautorización (`specs/bt2a_p2a_gc_clock_heterogeneity_v1.json`).
+- P2-A no declara edge ni habilita promoción.
+
+## AVolClusterPOI NQ-120t
+
+La selección target-free quedó completa para `tick_120_W5_M20_C4_P950`:
 
 ```text
-sessions = 234
-K_ABS    = 16940
-K_BT2    = 5262
-events   = 22202
+sessions              = 234
+OFF_PRICE zones       = 5876
+AT_PRICE excluded     = 3728
+sessions with zones   = 233
+coverage               = 99.6%
+mean width             = 14.8 ticks
+width p95              = 26 ticks
+fitness target-free    = 0.9987
 ```
 
-La procedencia y hashes vinculantes viven en `specs/bt2a_gate2_first_passage_v1.json`.
+La rama activa agrega, sin ejecutar datos reales:
 
-## Puerta 2
+- contrato lógico genérico de Event Store;
+- Event Store AVol limitado a `ZONE_CREATED` y `OFF_PRICE`;
+- inputs y sesiones hash-bound;
+- builder NQ-120t reanudable con checkpoints por contract-session;
+- snapshot hash-bound de `SessionProfile` a través de la cadena de contratos;
+- lectura PyArrow limitada a ventanas CME registradas, con frontera del holdout en `2026-06-30T22:00:00Z`;
+- build, finalize y validate separados por tokens de runtime;
+- finalización condicionada a 234 checkpoints, 5.876 eventos y equivalencia Parquet ↔ checkpoints.
 
-- P2-A: implementado, no ejecutado.
-- P2-B: implementado, no ejecutado.
-- El spec P2-A queda congelado por este cambio sólo después de revisión humana del diff.
-- La ejecución exige el token literal `AUTHORIZE_BT2A_P2A_POST_OUTCOME_DIAGNOSTIC`.
-- P2-A es diagnóstico post-outcome; no puede declarar edge ni promoción.
-- La familia primaria son 16 celdas B×H_ticks con Holm; las 12 celdas de reloj son descriptivas secundarias.
-- La regla `P2_DIAGNOSTIC_MECHANISM_SUPPORTED` está codificada y congelada en el spec.
-
-Runner: `tools/run_bt2a_gate2_p2a.py`.
-
-Candidato V1-R1: el fail-closed adversarial rechaza checkpoints malformados, mutaciones del contrato, valores no finitos y `NOT_READY` con código de éxito. Validación Python 3.12 exacta: 45 tests aprobados; outcomes no abiertos.
+La spec permanece `DRAFT_PREAUTHORIZATION_FAIL_CLOSED`. No se emitió freeze ni autorización. No se construyó el Event Store real, no se abrió lifecycle/first touch y no se evaluaron outcomes.
 
 ## Línea C / Gate L2
 
-La adquisición L1/L2 sigue target-free. La entrega auditada tiene integridad de bytes, pero no está lista para contexto:
-
-- reloj sin resolver;
-- procedencia parcialmente dirty;
-- contrato y captura común con eventos no acreditados;
-- menos de 40 sesiones efectivas por grupo.
-
-No ejecutar HMM final, join de outcomes ni CTX-3 hasta pasar los gates de `docs/research/bt2a_gate2_l2_20260826/03_GATE_L2_CONTEXT_CONTRACT.md`.
+La adquisición L1/L2 sigue target-free. No ejecutar HMM final, join de outcomes ni CTX-3 hasta pasar los gates de `docs/research/bt2a_gate2_l2_20260826/03_GATE_L2_CONTEXT_CONTRACT.md`.
 
 ## Firewall
 
 - Holdout `20260701–20261231` sellado.
-- No abrir P2-A sin spec congelado, Event Store exacto y autorización literal.
+- P2-A outcomes ya abiertos (`P2A_OUTCOMES_ALREADY_OPENED=true`).
 - No abrir P2-B sin autorización separada y costos GC confirmados.
-- No usar `aVolClusterPOI` como oracle.
-- No elegir una celda por el máximo observado.
+- AVol NQ: `FUTURE_PRICE_PATH_ACCESSED=false`, `FIRST_TOUCH_ACCESSED=false`, `PNL_ACCESSED=false`, `HOLDOUT_TOUCHED=false`.
+- No usar `aVolClusterPOI` como oracle ni interpretar `geometric_side` como pronóstico.
 
 ## Estado compacto
 
 ```text
-GATE1_ALL5                    = COMPLETE_POST_OUTCOME_REPLICATION
-CANONICAL_EVENT_STORE_234    = PASS
-P2A_SPEC                      = FROZEN_POST_OUTCOME_DIAGNOSTIC
-P2A                           = IMPLEMENTED_NOT_RUN
-P2B                           = IMPLEMENTED_NOT_RUN
-GATE_L2_SAMPLE_POWER          = NOT_READY
-NEW_P2_OR_L2_OUTCOMES_OPENED  = false
-EDGE_DECLARED                 = false
+GATE1_ALL5                              = COMPLETE_POST_OUTCOME_REPLICATION
+CANONICAL_EVENT_STORE_234              = PASS
+P2A                                     = COMPLETE_POST_OUTCOME_DIAGNOSTIC
+P2A_CLOCK_HETEROGENEITY                 = FROZEN_PREAUTHORIZATION
+P2B                                     = IMPLEMENTED_NOT_RUN
+GATE_L2_SAMPLE_POWER                    = NOT_READY
+AVOL_NQ_TARGET_FREE_SELECTION           = COMPLETE
+AVOL_NQ_ZONE_STORE                      = DRAFT_INFRASTRUCTURE
+AVOL_NQ_ZONE_STORE_REAL_BUILD           = NOT_RUN
+AVOL_NQ_FIRST_TOUCH                     = NOT_IMPLEMENTED
+AVOL_NQ_GATE1_OUTCOMES_OPENED           = false
+NEW_OUTCOMES_OPENED_BY_AVOL_PREPARATION = false
+EDGE_DECLARED                           = false
 ```
 
-## Primer chequeo
+## Primer chequeo AVol
 
 ```powershell
 git rev-parse HEAD
 git branch --show-current
 git status --short --untracked-files=all
-python -m pytest tests/test_current_md.py tests/research/test_bt2a_gate2_first_passage.py tests/research/test_bt2a_gate2_boundaries.py tests/research/test_bt2a_event_store_identity.py tests/research/test_bt2a_statistical_safety.py
+python -m pytest -q tests/research/test_event_store_contract.py tests/research/test_avolcluster_nq_zone_store.py tests/research/test_avolcluster_nq_zone_builder.py
+python tools/validate_avolcluster_nq_zone_store.py --preflight-only --expected-commit <REVIEWED_HEAD_SHA>
+python tools/build_avolcluster_nq_zone_store.py --preflight-only --expected-commit <REVIEWED_HEAD_SHA>
 ```
 
 ## Índices canónicos
 
 - `AUDITOR_START_HERE.md`
 - `docs/NORTH_STAR.md`
-- `docs/research/bt2a_gate2_l2_20260826/STATUS.json`
-- `docs/research/bt2a_gate2_l2_20260826/07_FINAL_HARDENING_AUDIT.md`
-- `specs/bt2a_gate2_first_passage_v1.json`
+- `docs/research/AVOLCLUSTER_NQ_GATE1_INFRA_PROTOCOL_V1_DRAFT_2026-08-28.md`
+- `specs/avolcluster_nq_zone_event_store_v1.json`
+- `specs/bt2a_gate1_nq_all5_sessions_2026-08-27.json`
+- `specs/bt2a_gate1_nq_all5_input_registry_2026-08-27.json`
 - `PENDIENTE.md`
 
 ## Aporte al referente
 
-Gate 1 queda cerrada y reproducida; P2-A queda definido ex ante como diagnóstico de first-passage, con identidad, multiplicidad, semillas y regla de decisión explícitas. La apertura de outcomes continúa bloqueada hasta autorización literal.
+La configuración NQ-120t seleccionada target-free ya tiene una ruta de reproducción auditable, reanudable y cerrada a futuro; construcción real, lifecycle, outcomes y holdout permanecen sin abrir.

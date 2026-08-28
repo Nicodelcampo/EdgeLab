@@ -19,6 +19,7 @@ from edgelab.research.event_store_contract import EventStoreContractError
 from tools.build_avolcluster_nq_zone_store import (
     cme_session_start_utc_ns,
     next_calendar_session_start_utc_ns,
+    run_all,
 )
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -115,9 +116,32 @@ def test_checkpoint_binds_spec_source_commit_session_and_profile():
         )
 
 
-def test_registry_decode_bounds_stop_before_holdout_session():
+def test_registry_decode_bounds_stop_before_holdout_session_and_handle_dst():
     start = cme_session_start_utc_ns("20260630")
     end = next_calendar_session_start_utc_ns("20260630")
     assert pd.Timestamp(start, unit="ns", tz="UTC") == pd.Timestamp("2026-06-29T22:00:00Z")
     assert pd.Timestamp(end, unit="ns", tz="UTC") == pd.Timestamp("2026-06-30T22:00:00Z")
-    assert end > start
+    assert pd.Timestamp(cme_session_start_utc_ns("20251103"), unit="ns", tz="UTC") == pd.Timestamp("2025-11-02T23:00:00Z")
+    assert pd.Timestamp(cme_session_start_utc_ns("20260309"), unit="ns", tz="UTC") == pd.Timestamp("2026-03-08T22:00:00Z")
+
+
+def test_run_all_completes_checkpoints_without_implicit_finalize(tmp_path):
+    s = spec()
+    s["status"] = "FROZEN_ZONE_CREATION_EVENT_STORE"
+    commit = "b" * 40
+    args = SimpleNamespace(
+        expected_commit=commit,
+        authorization_token=s["authorization"]["zone_store_build_token"],
+        data_dir=tmp_path,
+        output_dir=tmp_path,
+    )
+    result = run_all(
+        args,
+        s,
+        {"contracts": {}},
+        [],
+        {"available": True, "commit": commit, "dirty": False},
+    )
+    assert result["status"] == "COMPLETE_TARGET_FREE_CHECKPOINT_BUILD"
+    assert result["finalize_executed"] is False
+    assert not list(tmp_path.glob("*.parquet"))
