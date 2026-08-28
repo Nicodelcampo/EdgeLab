@@ -12,6 +12,8 @@ El operador reportó la construcción local ejecutada con `AUTHORIZE_BUILD_KAGGL
 
 La versión legible por máquina está en `KAGGLE_NQ_PRIVATE_PACKAGE_BUILD_CERTIFICATION_V1_2026-08-28.json`.
 
+La reconciliación de ramas, CI y alcance de evidencia está en `RECONCILIACION_SINCRONIZACION_PHASE1_KAGGLE_2026-08-28.md`.
+
 ## Identidad declarada
 
 | Artefacto | SHA-256 físico | SHA-256 lógico reportado | Bytes |
@@ -24,20 +26,18 @@ La versión legible por máquina está en `KAGGLE_NQ_PRIVATE_PACKAGE_BUILD_CERTI
 ## Reconciliación
 
 ```text
-PARQUET_FILES                   = 5
-PACKAGED_ROWS                   = 119153201
-REMOVED_HOLDOUT_ROWS            = 8737419
-PACKAGED_PARQUET_BYTES          = 2265885160
-RECUT_FILE                      = NQ_09-26_ticks.parquet
-RECUT_FILE_SHA256               = 1030715b216210e9443077212fd2e26303966c031243167d097d8465f81fb64f
+PARQUET_FILES                    = 5
+PACKAGED_ROWS                    = 119153201
+REMOVED_HOLDOUT_ROWS             = 8737419
+PACKAGED_PARQUET_BYTES           = 2265885160
+RECUT_FILE                       = NQ_09-26_ticks.parquet
+RECUT_FILE_SHA256                = 1030715b216210e9443077212fd2e26303966c031243167d097d8465f81fb64f
 RESEARCH_DATASET_HOLDOUT_PRESENT = false
 ```
 
 La suma de los cinco conteos de filas da exactamente `119153201`; la suma de bytes da exactamente `2265885160`. Las `8737419` filas eliminadas pertenecen exclusivamente a `NQ 09-26`.
 
 ## Corrección de unidad
-
-La desigualdad es correcta, pero la narrativa recibida expresó el margen como `144 µs`:
 
 ```text
 1782856800000000000 - 1782856799856000000 = 144000000 ns
@@ -47,16 +47,35 @@ La desigualdad es correcta, pero la narrativa recibida expresó el margen como `
 
 El margen correcto es **144 milisegundos**, no 144 microsegundos. Esto no modifica el veredicto: el máximo timestamp empaquetado permanece estrictamente antes de la apertura del holdout.
 
+## Alcance de evidencia
+
+```text
+EVIDENCE_SCOPE                      = OPERATOR_ATTESTATION_RECONCILED_BY_REMOTE_AUDITOR
+REMOTE_AUDITOR_REHASHED_LOCAL_FILES = false
+POST_UPLOAD_BYTE_REHASH_REQUIRED     = true
+```
+
+La ausencia física fue certificada por el builder y atestada por el operador. La auditoría remota reconcilió las identidades y la aritmética declaradas, pero la verificación física independiente queda pendiente del rehash del dataset privado ya adjuntado en Kaggle.
+
+## CI
+
+```text
+DEDICATED_KAGGLE_CONTRACT = PASS
+GENERAL_REPOSITORY_PYTEST = FAIL
+```
+
+El check contractual dedicado valida la infraestructura fail-closed. No implica que la suite general del repositorio esté verde.
+
 ## Firewalls
 
 ```text
-KAGGLE_DATASET_BUILD_EXECUTED = true
+KAGGLE_DATASET_BUILD_EXECUTED  = true
 KAGGLE_DATASET_UPLOAD_EXECUTED = false
-BIGTRAP2_RERUN_AUTHORIZED = false
-BT2A_NQ_SWEEP_AUTHORIZED = false
-BT2A_NQ_GATE1_AUTHORIZED = false
-HOLDOUT_AUTHORIZED = false
-SCIENTIFIC_RUN_AUTHORIZED = false
+BIGTRAP2_RERUN_AUTHORIZED      = false
+BT2A_NQ_SWEEP_AUTHORIZED       = false
+BT2A_NQ_GATE1_AUTHORIZED       = false
+HOLDOUT_AUTHORIZED             = false
+SCIENTIFIC_RUN_AUTHORIZED      = false
 ```
 
 ## Dictamen
