@@ -14,6 +14,7 @@ from edgelab.kaggle.execution import (
     render_argv,
     verify_package_manifest,
 )
+from tools.build_kaggle_bundle import evaluate_license, parse_license_gate
 from tools.run_kaggle_frozen_job import validate_attestation
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -29,6 +30,18 @@ def test_template_is_non_executable_and_has_required_firewalls():
     assert spec["execution"]["shell"] is False
     assert spec["execution"]["parallelism"]["max_workers"] == 1
     assert spec["outputs"]["firewall_attestation_path"] in spec["outputs"]["required_paths"]
+
+
+def test_private_cloud_license_gate_is_approved_but_never_public():
+    decision = evaluate_license(
+        parse_license_gate(ROOT / "docs/research/DATA_LICENSE_DECISION.md")
+    )
+    assert decision["ok"] is True
+    assert decision["status"] == "APPROVED"
+    assert decision["force_private"] is True
+    assert decision["kaggle_visibility"] == "private_only"
+    assert decision["redistribution_allowed"] == "false"
+    assert decision["kaggle_license_name"] not in {"CC0-1.0", "PDDL", "ODbL-1.0"}
 
 
 def _package(tmp_path: Path):

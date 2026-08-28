@@ -1,6 +1,6 @@
 # Protocolo de Ejecución Congelada en Kaggle/Cloud V1
 
-**Estado:** `INFRASTRUCTURE_PREPARED_NOT_AUTHORIZED`  
+**Estado:** `INFRASTRUCTURE_PREPARED_PRIVATE_CUSTODY_APPROVED_RUN_NOT_AUTHORIZED`  
 **Holdout:** trade dates `20260701–20261231`; apertura física `2026-06-30T22:00:00Z`.  
 **North Star:** `d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1`.
 
@@ -8,10 +8,11 @@
 
 Las próximas corridas pesadas pueden ejecutarse en Kaggle u otro notebook cloud. La plataforma cambia; la hipótesis, el spec, el kernel y los firewalls no. No se promete una duración de 15–30 minutos: CPU, RAM, cuotas e I/O se registran por corrida y el speedup se acepta sólo después de un benchmark reproducible.
 
-## Dos correcciones obligatorias
+## Reglas obligatorias
 
-1. **Privado no equivale a autorizado.** Subir ticks a infraestructura de terceros sigue siendo transferencia. `docs/research/DATA_LICENSE_DECISION.md` está `PENDING`; mientras siga así, el packager devuelve `ABSTAIN_LICENSE` y no se autoriza crear ni actualizar el dataset.
+1. **Custodia privada aprobada no equivale a redistribución.** `docs/research/DATA_LICENSE_DECISION.md` está `APPROVED` por directiva del propietario sólo para datasets privados y cómputo de EdgeLab. La visibilidad pública, compartir con terceros y licencias abiertas siguen prohibidos.
 2. **Los Parquet crudos que cruzan julio no son inputs de research cloud.** El dataset privado histórico contiene holdout y queda clasificado como `raw_custody`. Para una campaña exploratoria se construye localmente un paquete físicamente pre-holdout. El manifest del paquete conserva los hashes de los archivos fuente y registra hashes nuevos para cualquier recorte.
+3. **La licencia no autoriza una corrida científica.** Cada ejecución conserva freeze propio, commit exacto, token de campaña y attestation post-run.
 
 ## Arquitectura de dos freezes
 
@@ -39,7 +40,7 @@ python tools/prepare_kaggle_research_dataset.py `
   --dataset-id nicodelcampo/edgelab-ticks-nq-preholdout
 ```
 
-La construcción real requiere licencia aprobada y el token separado:
+La custodia privada ya está aprobada. La construcción efectiva del paquete sigue requiriendo el token operativo separado:
 
 ```text
 AUTHORIZE_BUILD_KAGGLE_RESEARCH_DATASET_V1
@@ -103,6 +104,7 @@ Una corrida autorizada emite:
 
 - `run_status.json` con `head_start`, `head_end`, dirty state y recursos observados;
 - stdout/stderr completos;
+- `execution_attestation.json` con acceso real a future path, first touch, P&L y holdout;
 - resultados y checkpoints del runner científico;
 - `artifact_manifest.json` con bytes y SHA-256 por archivo;
 - `/kaggle/working/output.zip` determinista;
@@ -120,8 +122,9 @@ La descarga no autoriza publicación. Localmente:
 ## Gates de aceptación
 
 ```text
-DATA_LICENSE_APPROVED                 = required
+PRIVATE_CLOUD_CUSTODY_APPROVED        = true
 DATASET_VISIBILITY                    = private_only
+PUBLIC_OR_THIRD_PARTY_SHARING         = forbidden
 SOURCE_BYTES_AND_SHA256               = exact
 RESEARCH_DATASET_HOLDOUT_PRESENT      = false
 CODE_HEAD_START_EQUALS_END            = true
@@ -137,7 +140,8 @@ CLOUD_RESULT_AUTOMATICALLY_ACCEPTED   = false
 
 ```text
 KAGGLE_CLOUD_INFRA_PREPARED = true
-KAGGLE_DATASET_BUILD        = NOT_AUTHORIZED_ABSTAIN_LICENSE
+KAGGLE_PRIVATE_CUSTODY      = APPROVED
+KAGGLE_DATASET_BUILD        = READY_NOT_EXECUTED
 KAGGLE_RESEARCH_RUN         = false
 HOLDOUT_AUTHORIZED          = false
 OUTCOMES_AUTHORIZED         = false
@@ -145,4 +149,4 @@ OUTCOMES_AUTHORIZED         = false
 
 ## Aporte al referente
 
-El cómputo cloud queda convertido en un medio reproducible para acelerar campañas ya aprobadas, sin transformar RAM o paralelismo en una excepción a licencia, lineage, determinismo o sello del holdout.
+El cómputo cloud queda habilitado como custodia privada y medio reproducible, sin transformar esa aprobación en permiso para abrir holdout, outcomes o campañas no congeladas.
