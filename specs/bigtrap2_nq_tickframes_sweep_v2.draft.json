@@ -1,30 +1,35 @@
 {
   "schema_version": "bigtrap2_nq_tickframes_sweep_spec_v2",
   "spec_id": "BT2_NQ_TICKFRAMES_SWEEP_V2_DRAFT",
-  "title": "Strict Creation-Only Micro-Tick and Fast-Bar Resolution Sweep for BigTrap2 on NQ (V2 Draft)",
+  "title": "Kaggle-only creation sweep for BigTrap2 NQ V2",
   "created_utc": "2026-08-28T17:40:00Z",
   "status": "DRAFT_PREAUTHORIZATION_CREATION_ONLY",
   "execution_authorized": false,
   "instrument": "NQ",
+  "execution_platform": {
+    "platform": "KAGGLE",
+    "kaggle_only": true,
+    "local_heavy_execution_allowed": false,
+    "input_root": "/kaggle/input",
+    "output_root": "/kaggle/working"
+  },
   "binding": {
     "session_registry_path": "specs/bt2a_gate1_nq_all5_sessions_2026-08-27.json",
     "session_registry_sha256": "f50350ee67d53be38cd00e0f3e548cc877e980aebb3b08e422cdde007b39c6cb",
-    "input_registry_path": "specs/bt2a_gate1_nq_all5_input_registry_2026-08-27.json",
-    "input_registry_sha256": "2ce114105970e0d5010ebe150fbd0ec1b2911b4ecced946ecbb31510d17d1ed9",
-    "output_result_path": "docs/research/bigtrap2_nq_tickframes_sweep_v2_result.json"
+    "source_input_registry_path": "specs/bt2a_gate1_nq_all5_input_registry_2026-08-27.json",
+    "source_input_registry_sha256": "2ce114105970e0d5010ebe150fbd0ec1b2911b4ecced946ecbb31510d17d1ed9",
+    "package_manifest_file": "kaggle_research_package_manifest.json",
+    "package_manifest_sha256": "PENDING_PRIVATE_PREHOLDOUT_PACKAGE_BUILD",
+    "effective_input_registry_file": "effective_input_registry.json",
+    "effective_input_registry_sha256": "PENDING_PRIVATE_PREHOLDOUT_PACKAGE_BUILD",
+    "output_result_filename": "bigtrap2_nq_tickframes_sweep_v2_result.json"
   },
   "universe": {
-    "contracts": [
-      "NQ 09-25",
-      "NQ 12-25",
-      "NQ 03-26",
-      "NQ 06-26",
-      "NQ 09-26"
-    ],
+    "contracts": ["NQ 09-25", "NQ 12-25", "NQ 03-26", "NQ 06-26", "NQ 09-26"],
     "total_cme_sessions": 234,
     "holdout_start_date": "20260701",
     "holdout_cutoff_utc_ns": 1782856800000000000,
-    "holdout_touched": false
+    "physical_holdout_absence_required": true
   },
   "grid": {
     "bar_series_types": {

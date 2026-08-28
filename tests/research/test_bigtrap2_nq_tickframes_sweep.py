@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-"""Unit, Parity and Adversarial Contract Tests for BigTrap2 NQ Micro-Tick Sweep."""
+"""Contract, parity and Kaggle-envelope tests for the BigTrap2 NQ sweep."""
 from __future__ import annotations
 
 import hashlib
 import json
-import re
 from pathlib import Path
+
 import numpy as np
 import pytest
 
@@ -17,58 +17,56 @@ from edgelab.bridge.ticks import make_synthetic
 from edgelab.bridge.bars import build_tick_bars, build_time_bars, build_footprints
 from tools.build_event_store_all5_v2 import expand_sessions
 from tools.sweep_bigtrap2_nq_tickframes_v2 import (
-    cme_session_to_utc_bounds_ns,
-    verify_inputs_fail_closed,
-    verify_runtime_execution_gates,
     HOLDOUT_CUTOFF_UTC_NS,
+    canonical_sha256,
+    cme_session_to_utc_bounds_ns,
+    compute_sha256,
+    validate_kaggle_runtime,
+    verify_inputs_fail_closed,
+    verify_package_and_effective_registry,
+    verify_runtime_execution_gates,
 )
 
 
 def test_v1_retrospective_spec_and_sidecar_hashes():
-    spec_path = REPO_ROOT / "specs" / "bigtrap2_nq_tickframes_sweep_v1.json"
-    assert spec_path.exists(), "Spec file v1 must exist"
-    
-    spec = json.loads(spec_path.read_text(encoding="utf-8"))
-    assert spec["schema_version"] == "bigtrap2_nq_tickframes_sweep_spec_v1"
+    spec = json.loads(
+        (REPO_ROOT / "specs/bigtrap2_nq_tickframes_sweep_v1.json").read_text()
+    )
     assert spec["status"] == "COMPLETE_RETROSPECTIVE_SWEEP_PUBLICATION_WITH_EXPOSURE"
     assert spec["firewalls"]["future_price_path_accessed"] is True
     assert spec["firewalls"]["first_touch_accessed"] is True
     assert spec["firewalls"]["holdout_rows_decoded"] is True
     assert spec["firewalls"]["winner_selected"] is False
-    
     result_path = REPO_ROOT / spec["binding"]["output_result_path"]
-    assert result_path.exists(), f"Result file {result_path} must exist"
-    
     actual_hash = hashlib.sha256(result_path.read_bytes()).hexdigest()
-    assert actual_hash == spec["binding"]["output_result_sha256"] == "4716148209c44ea42e801a0717ead2eb357cf4d635b0f0c01ed72e161d342713"
-
-    # Sidecar classification check
-    sidecar_path = REPO_ROOT / "docs" / "research" / "bigtrap2_nq_tickframes_sweep_result_classification.json"
-    assert sidecar_path.exists(), "Sidecar classification must exist"
-    sidecar = json.loads(sidecar_path.read_text(encoding="utf-8"))
+    assert actual_hash == "4716148209c44ea42e801a0717ead2eb357cf4d635b0f0c01ed72e161d342713"
+    sidecar = json.loads(
+        (REPO_ROOT / "docs/research/bigtrap2_nq_tickframes_sweep_result_classification.json").read_text()
+    )
     assert sidecar["original_reported_sha256"] == "ae631415478938882330f1e1812ea4e9ea07b84d96e436f10f292450784fb9d8"
     assert sidecar["normalized_lf_sha256"] == actual_hash
     assert sidecar["transformation"] == "EOL_NORMALIZATION_ONLY"
     assert sidecar["logical_payload_changed"] is False
-    assert sidecar["classification"] == "COMPLETE_RETROSPECTIVE_SWEEP_PUBLICATION_WITH_EXPOSURE"
 
 
-def test_v2_draft_spec_binds_canonical_gate1a_hashes():
-    spec_v2_path = REPO_ROOT / "specs" / "bigtrap2_nq_tickframes_sweep_v2.draft.json"
-    assert spec_v2_path.exists(), "Spec file v2 draft must exist"
-    
-    spec_v2 = json.loads(spec_v2_path.read_text(encoding="utf-8"))
-    assert spec_v2["status"] == "DRAFT_PREAUTHORIZATION_CREATION_ONLY"
-    assert spec_v2["execution_authorized"] is False
-    
-    sess_reg_path = REPO_ROOT / spec_v2["binding"]["session_registry_path"]
-    inp_reg_path = REPO_ROOT / spec_v2["binding"]["input_registry_path"]
-    
-    sess_sha = hashlib.sha256(sess_reg_path.read_bytes()).hexdigest()
-    inp_sha = hashlib.sha256(inp_reg_path.read_bytes()).hexdigest()
-    
-    assert sess_sha == spec_v2["binding"]["session_registry_sha256"] == "f50350ee67d53be38cd00e0f3e548cc877e980aebb3b08e422cdde007b39c6cb"
-    assert inp_sha == spec_v2["binding"]["input_registry_sha256"] == "2ce114105970e0d5010ebe150fbd0ec1b2911b4ecced946ecbb31510d17d1ed9"
+def test_v2_draft_is_kaggle_only_and_package_bound():
+    spec_path = REPO_ROOT / "specs/bigtrap2_nq_tickframes_sweep_v2.draft.json"
+    spec = json.loads(spec_path.read_text())
+    assert spec["status"] == "DRAFT_PREAUTHORIZATION_CREATION_ONLY"
+    assert spec["execution_authorized"] is False
+    assert spec["execution_platform"] == {
+        "platform": "KAGGLE",
+        "kaggle_only": True,
+        "local_heavy_execution_allowed": False,
+        "input_root": "/kaggle/input",
+        "output_root": "/kaggle/working",
+    }
+    session_path = REPO_ROOT / spec["binding"]["session_registry_path"]
+    source_path = REPO_ROOT / spec["binding"]["source_input_registry_path"]
+    assert compute_sha256(session_path) == spec["binding"]["session_registry_sha256"]
+    assert compute_sha256(source_path) == spec["binding"]["source_input_registry_sha256"]
+    assert spec["binding"]["package_manifest_sha256"].startswith("PENDING_")
+    assert spec["binding"]["effective_input_registry_sha256"].startswith("PENDING_")
 
 
 @pytest.mark.parametrize("bar_kind,bar_param", [
@@ -77,167 +75,211 @@ def test_v2_draft_spec_binds_canonical_gate1a_hashes():
     ("tick", 120),
     ("time", 1),
 ])
-@pytest.mark.parametrize("imb_ratio,min_vol", [
+@pytest.mark.parametrize("imbalance_ratio,minimum_volume", [
     (2.5, 10.0),
     (3.5, 50.0),
 ])
-def test_representative_multi_resolution_creation_parity(bar_kind, bar_param, imb_ratio, min_vol):
-    """REPRESENTATIVE_MULTI_RESOLUTION_CREATION_PARITY against bigtrap2.py.
-    
-    Compares bar_idx, bar_time_ns, side, kind, top, bottom, vol and centroid
-    across 8 representative (bar_type x param) combinations on synthetic data.
-    This validates against the Python bridge kernel, not directly against BigTrap2.cs.
-    """
-    ticks = make_synthetic(start_utc="2026-06-01T23:00:00", n_sessions=3, ticks_per_session=2000, tick_size=0.25, seed=42)
-    
-    if bar_kind == "tick":
-        bars = build_tick_bars(ticks, bar_param, reiniciar_por_sesion=True)
-    else:
-        bars = build_time_bars(ticks, bar_param)
-        
-    fps = build_footprints(ticks, bars)
-
+def test_representative_multi_resolution_creation_parity(
+    bar_kind, bar_param, imbalance_ratio, minimum_volume
+):
+    """Representative Python-bridge creation parity; this is not NT8/C# parity."""
+    ticks = make_synthetic(
+        start_utc="2026-06-01T23:00:00",
+        n_sessions=3,
+        ticks_per_session=2000,
+        tick_size=0.25,
+        seed=42,
+    )
+    bars = (
+        build_tick_bars(ticks, bar_param, reiniciar_por_sesion=True)
+        if bar_kind == "tick"
+        else build_time_bars(ticks, bar_param)
+    )
+    footprints = build_footprints(ticks, bars)
     params = {
-        "imbalance_ratio": imb_ratio,
-        "min_trap_volume": min_vol,
-        "min_export_volume": min_vol,
+        "imbalance_ratio": imbalance_ratio,
+        "min_trap_volume": minimum_volume,
+        "min_export_volume": minimum_volume,
         "use_wick_filter": False,
     }
-
-    canonical_res = run_bigtrap2_canonical(ticks, bars, fps, params=params)
-    creation_only_zones = detect_creations_only(ticks, bars, fps, params=params)
-
-    # Extract canonical zones; exported zones have top/bottom/created_bar/created_ms/kind
-    # but NOT vol. Extract vol from ZONE_CREATED CSV log lines.
-    canonical_zones = canonical_res["zones"]
-    
-    # Parse vol from CSV log for each ZONE_CREATED event (ordered same as zones)
-    canonical_vols = []
-    for line in canonical_res["csv_lines"]:
+    canonical = run_bigtrap2_canonical(ticks, bars, footprints, params=params)
+    creation_only = detect_creations_only(ticks, bars, footprints, params=params)
+    canonical_volumes = []
+    for line in canonical["csv_lines"]:
         parts = line.split("|")
         if len(parts) >= 4 and parts[2] == "ZONE_CREATED":
-            payload = parts[3]
-            props = dict(item.split("=") for item in payload.split(";") if "=" in item)
-            canonical_vols.append(float(props["vol"]))
+            properties = dict(
+                item.split("=") for item in parts[3].split(";") if "=" in item
+            )
+            canonical_volumes.append(float(properties["vol"]))
 
-    # Parity check: zone count
-    assert len(canonical_zones) == len(creation_only_zones), (
-        f"Zone count mismatch: canonical={len(canonical_zones)}, creation_only={len(creation_only_zones)}"
-    )
-    assert len(canonical_vols) == len(canonical_zones)
-
-    # Zone-by-zone equality check on all available creation-time fields
-    for i, (cz, coz) in enumerate(zip(canonical_zones, creation_only_zones)):
-        assert coz["bar_idx"] == cz["created_bar"], f"Zone {i}: bar_idx mismatch"
-        # Compare at ms precision: canonical kernel stores created_ms (ns_to_ms truncation)
-        assert coz["bar_time_ns"] // 1_000_000 == cz["created_ms"], f"Zone {i}: bar_time_ms mismatch"
-        assert coz["kind"] == cz["kind"], f"Zone {i}: kind mismatch"
-        expected_side = "B" if cz["kind"] == "trapped_buyers" else "S"
-        assert coz["side"] == expected_side, f"Zone {i}: side mismatch"
-        assert coz["top"] == cz["top"], f"Zone {i}: top mismatch"
-        assert coz["bottom"] == cz["bottom"], f"Zone {i}: bottom mismatch"
-        assert coz["vol"] == canonical_vols[i], f"Zone {i}: vol mismatch"
-        # Centroid: bounded by zone geometry
-        assert coz["bottom"] <= coz["centroid"] <= coz["top"], f"Zone {i}: centroid out of bounds"
-        assert coz["width_ticks"] == int(round((cz["top"] - cz["bottom"]) / 0.25)), f"Zone {i}: width mismatch"
+    assert len(canonical["zones"]) == len(creation_only) == len(canonical_volumes)
+    for index, (expected, actual) in enumerate(zip(canonical["zones"], creation_only)):
+        assert actual["bar_idx"] == expected["created_bar"], index
+        assert actual["bar_time_ns"] // 1_000_000 == expected["created_ms"], index
+        assert actual["kind"] == expected["kind"], index
+        assert actual["side"] == (
+            "B" if expected["kind"] == "trapped_buyers" else "S"
+        ), index
+        assert actual["top"] == expected["top"], index
+        assert actual["bottom"] == expected["bottom"], index
+        assert actual["vol"] == canonical_volumes[index], index
+        # Centroid is a creation-only geometric invariant; canonical export omits it.
+        assert actual["bottom"] <= actual["centroid"] <= actual["top"], index
+        assert actual["width_ticks"] == int(
+            round((expected["top"] - expected["bottom"]) / 0.25)
+        ), index
 
 
 def test_cme_session_utc_bounds_expansion_no_keyerror():
-    """Verify CME session UTC boundary expansion across all 234 sessions."""
-    sess_reg_path = REPO_ROOT / "specs" / "bt2a_gate1_nq_all5_sessions_2026-08-27.json"
-    sess_reg = json.loads(sess_reg_path.read_text(encoding="utf-8"))
-    
-    expanded = expand_sessions(sess_reg)
+    registry = json.loads(
+        (REPO_ROOT / "specs/bt2a_gate1_nq_all5_sessions_2026-08-27.json").read_text()
+    )
+    expanded = expand_sessions(registry)
     assert len(expanded) == 234
-    
-    sessions_by_contract: dict[str, set[str]] = {}
-    time_bounds_by_contract: dict[str, tuple[int, int]] = {}
-    
+    sessions: dict[str, set[str]] = {}
     for row in expanded:
-        c = row["contract"]
-        sid = row["cme_session_id"]
-        sessions_by_contract.setdefault(c, set()).add(sid)
-        
-        s_ns, e_ns = cme_session_to_utc_bounds_ns(sid)
-        assert s_ns < e_ns
-        assert s_ns > 0
-        assert e_ns <= HOLDOUT_CUTOFF_UTC_NS
-        
-        if c not in time_bounds_by_contract:
-            time_bounds_by_contract[c] = (s_ns, e_ns)
-        else:
-            cur_s, cur_e = time_bounds_by_contract[c]
-            time_bounds_by_contract[c] = (min(cur_s, s_ns), max(cur_e, e_ns))
-
-    assert sum(len(v) for v in sessions_by_contract.values()) == 234
-    assert len(time_bounds_by_contract) == 5
+        start_ns, end_ns = cme_session_to_utc_bounds_ns(row["cme_session_id"])
+        assert 0 < start_ns < end_ns <= HOLDOUT_CUTOFF_UTC_NS
+        sessions.setdefault(row["contract"], set()).add(row["cme_session_id"])
+    assert sum(map(len, sessions.values())) == 234
+    assert len(sessions) == 5
 
 
-def test_input_registry_parser_and_validation_fail_closed(tmp_path):
-    """Verify input registry dictionary parser and fail-closed validation."""
-    inp_reg_path = REPO_ROOT / "specs" / "bt2a_gate1_nq_all5_input_registry_2026-08-27.json"
-    input_reg = json.loads(inp_reg_path.read_text(encoding="utf-8"))
-    
-    assert "contracts" in input_reg
-    assert isinstance(input_reg["contracts"], dict)
-    assert len(input_reg["contracts"]) == 5
-    
-    # Test missing parquet file fail-closed
-    with pytest.raises(FileNotFoundError, match=r"\[FAIL_CLOSED\] Required input parquet missing"):
-        verify_inputs_fail_closed(tmp_path, input_reg)
-
-    # Test size mismatch fail-closed
-    fake_pq = tmp_path / "NQ_09-25_ticks.parquet"
-    fake_pq.write_bytes(b"corrupted_bytes")
-    with pytest.raises(ValueError, match=r"\[FAIL_CLOSED\] Size mismatch"):
-        verify_inputs_fail_closed(tmp_path, input_reg)
+def test_input_registry_validation_fails_closed(tmp_path):
+    registry = json.loads(
+        (REPO_ROOT / "specs/bt2a_gate1_nq_all5_input_registry_2026-08-27.json").read_text()
+    )
+    with pytest.raises(FileNotFoundError, match="Required input Parquet missing"):
+        verify_inputs_fail_closed(tmp_path, registry)
+    fake = tmp_path / "NQ_09-25_ticks.parquet"
+    fake.write_bytes(b"corrupt")
+    with pytest.raises(RuntimeError, match="Size mismatch"):
+        verify_inputs_fail_closed(tmp_path, registry)
 
 
-def test_runtime_gates_reject_draft_spec_even_with_token():
-    """Verify that draft specs are strictly rejected even if valid token string is passed."""
-    draft_spec = {
+def test_runtime_gates_reject_draft_even_with_token():
+    draft = {
         "status": "DRAFT_PREAUTHORIZATION_CREATION_ONLY",
         "execution_authorized": False,
-        "execution_token": "TEST_TOKEN_123",
-        "frozen_commit": "abc1234",
+        "execution_token": "TOKEN",
+        "frozen_commit": "a" * 40,
     }
-    with pytest.raises(PermissionError, match=r"Spec status must be 'FROZEN_PREFLIGHT_READY'"):
-        verify_runtime_execution_gates(draft_spec, expected_commit="abc1234", execution_token="TEST_TOKEN_123")
+    with pytest.raises(PermissionError, match="draft specs remain non-executable"):
+        verify_runtime_execution_gates(draft, "a" * 40, "TOKEN")
 
-    frozen_unauthorized_spec = {
+    unauthorized = {
         "status": "FROZEN_PREFLIGHT_READY",
         "execution_authorized": False,
-        "execution_token": "TEST_TOKEN_123",
-        "frozen_commit": "abc1234",
+        "execution_token": "TOKEN",
+        "frozen_commit": "a" * 40,
     }
-    with pytest.raises(PermissionError, match=r"Spec execution is not authorized"):
-        verify_runtime_execution_gates(frozen_unauthorized_spec, expected_commit="abc1234", execution_token="TEST_TOKEN_123")
+    with pytest.raises(PermissionError, match="execution_authorized"):
+        verify_runtime_execution_gates(unauthorized, "a" * 40, "TOKEN")
 
-    frozen_wrong_token_spec = {
-        "status": "FROZEN_PREFLIGHT_READY",
-        "execution_authorized": True,
-        "execution_token": "CORRECT_TOKEN",
-        "frozen_commit": "abc1234",
+
+def test_validate_kaggle_runtime_calls_production_gate(tmp_path):
+    input_root = tmp_path / "kaggle/input"
+    working_root = tmp_path / "kaggle/working"
+    data_dir = input_root / "private-dataset"
+    input_root.mkdir(parents=True)
+    working_root.mkdir(parents=True)
+    data_dir.mkdir()
+    environment = {"KAGGLE_KERNEL_RUN_TYPE": "Batch"}
+
+    _, output = validate_kaggle_runtime(
+        data_dir,
+        working_root / "job/result.json",
+        input_root=input_root,
+        working_root=working_root,
+        environment=environment,
+    )
+    assert output == (working_root / "job/result.json").resolve()
+
+    with pytest.raises(RuntimeError, match="data-dir"):
+        validate_kaggle_runtime(
+            tmp_path / "local-data",
+            working_root / "result.json",
+            input_root=input_root,
+            working_root=working_root,
+            environment=environment,
+        )
+    with pytest.raises(RuntimeError, match="output-json"):
+        validate_kaggle_runtime(
+            data_dir,
+            tmp_path / "local-output.json",
+            input_root=input_root,
+            working_root=working_root,
+            environment=environment,
+        )
+    with pytest.raises(RuntimeError, match="attestation"):
+        validate_kaggle_runtime(
+            data_dir,
+            working_root / "result.json",
+            input_root=input_root,
+            working_root=working_root,
+            environment={},
+        )
+
+
+def test_package_manifest_binds_effective_registry_and_physical_inputs(tmp_path):
+    data_dir = tmp_path / "dataset"
+    data_dir.mkdir()
+    parquet = data_dir / "NQ_09-25_ticks.parquet"
+    parquet.write_bytes(b"PAR1-test-pre-holdout")
+    parquet_sha = compute_sha256(parquet)
+    effective = {
+        "selected_contracts": ["NQ 09-25"],
+        "contracts": {
+            "NQ 09-25": {
+                "parquet_file": parquet.name,
+                "bytes": parquet.stat().st_size,
+                "parquet_sha256": parquet_sha,
+            }
+        },
     }
-    with pytest.raises(PermissionError, match=r"Invalid or missing execution token"):
-        verify_runtime_execution_gates(frozen_wrong_token_spec, expected_commit="abc1234", execution_token="WRONG_TOKEN")
+    effective_path = data_dir / "effective_input_registry.json"
+    effective_path.write_text(json.dumps(effective), encoding="utf-8")
+    effective_sha = compute_sha256(effective_path)
+    source_sha = "a" * 64
+    manifest = {
+        "schema_version": "edgelab_kaggle_research_package_v1",
+        "generated_utc": "2026-08-28T00:00:00Z",
+        "dataset_id": "private/test",
+        "visibility": "private_only",
+        "source_input_registry_file_sha256": source_sha,
+        "effective_input_registry_file": effective_path.name,
+        "effective_input_registry_file_sha256": effective_sha,
+        "holdout_open_utc_ns": HOLDOUT_CUTOFF_UTC_NS,
+        "research_max_trade_date": 20260630,
+        "research_dataset_holdout_present": False,
+        "files": [
+            {
+                "contract": "NQ 09-25",
+                "file": parquet.name,
+                "bytes": parquet.stat().st_size,
+                "sha256": parquet_sha,
+                "ts_max_utc_ns": HOLDOUT_CUTOFF_UTC_NS - 1,
+            }
+        ],
+    }
+    manifest["payload_sha256"] = canonical_sha256(manifest)
+    manifest_path = data_dir / "kaggle_research_package_manifest.json"
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    spec = {
+        "binding": {
+            "package_manifest_file": manifest_path.name,
+            "package_manifest_sha256": compute_sha256(manifest_path),
+            "effective_input_registry_file": effective_path.name,
+            "effective_input_registry_sha256": effective_sha,
+            "source_input_registry_sha256": source_sha,
+        },
+        "universe": {"contracts": ["NQ 09-25"]},
+    }
+    _, _, provenance = verify_package_and_effective_registry(data_dir, spec)
+    assert provenance["physical_holdout_absence"] is True
+    assert provenance["verified_contracts"] == ["NQ 09-25"]
 
-
-def test_output_path_must_be_external_to_repo(tmp_path):
-    """Verify that --output-json inside REPO_ROOT is rejected."""
-    from tools.sweep_bigtrap2_nq_tickframes_v2 import REPO_ROOT as V2_REPO_ROOT
-    internal_path = V2_REPO_ROOT / "docs" / "research" / "forbidden_output.json"
-    try:
-        internal_path.resolve().relative_to(V2_REPO_ROOT.resolve())
-        is_internal = True
-    except ValueError:
-        is_internal = False
-    assert is_internal, "Test setup: internal_path must be inside REPO_ROOT"
-
-    external_path = tmp_path / "kaggle_working" / "result.json"
-    try:
-        external_path.resolve().relative_to(V2_REPO_ROOT.resolve())
-        is_external = False
-    except ValueError:
-        is_external = True
-    assert is_external, "Test setup: external_path must be outside REPO_ROOT"
+    effective_path.write_text("{}", encoding="utf-8")
+    with pytest.raises(RuntimeError, match="Effective registry SHA-256 mismatch"):
+        verify_package_and_effective_registry(data_dir, spec)

@@ -6,6 +6,7 @@ on:
       - 'tools/sweep_bigtrap2_nq_tickframes*.py'
       - 'edgelab/bridge/indicators/bigtrap2_creation_only.py'
       - 'specs/bigtrap2_nq_tickframes_sweep*.json'
+      - 'specs/kaggle_bigtrap2_nq_tickframes_sweep*.json'
       - 'docs/research/bigtrap2_nq_tickframes_sweep*.json'
       - 'tests/research/test_bigtrap2_nq_tickframes_sweep.py'
       - '.github/workflows/bt2_nq_sweep.yml'
@@ -14,6 +15,7 @@ on:
       - 'tools/sweep_bigtrap2_nq_tickframes*.py'
       - 'edgelab/bridge/indicators/bigtrap2_creation_only.py'
       - 'specs/bigtrap2_nq_tickframes_sweep*.json'
+      - 'specs/kaggle_bigtrap2_nq_tickframes_sweep*.json'
       - 'docs/research/bigtrap2_nq_tickframes_sweep*.json'
       - 'tests/research/test_bigtrap2_nq_tickframes_sweep.py'
       - '.github/workflows/bt2_nq_sweep.yml'
@@ -36,6 +38,5 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements/core-bridge-dev.lock
 
-      - name: Run BigTrap2 NQ sweep contract tests
-        run: |
-          pytest tests/research/test_bigtrap2_nq_tickframes_sweep.py -v
+      - name: Run BigTrap2 NQ Kaggle contract tests
+        run: pytest tests/research/test_bigtrap2_nq_tickframes_sweep.py -v
