@@ -1,0 +1,65 @@
+{
+  "schema_version": "bigtrap2_nq_tickframes_sweep_spec_v2",
+  "spec_id": "BT2_NQ_TICKFRAMES_SWEEP_V2_DRAFT",
+  "title": "Kaggle-only creation sweep for BigTrap2 NQ V2",
+  "created_utc": "2026-08-28T17:40:00Z",
+  "status": "DRAFT_PREAUTHORIZATION_CREATION_ONLY",
+  "execution_authorized": false,
+  "instrument": "NQ",
+  "execution_platform": {
+    "platform": "KAGGLE",
+    "kaggle_only": true,
+    "local_heavy_execution_allowed": false,
+    "input_root": "/kaggle/input",
+    "output_root": "/kaggle/working"
+  },
+  "binding": {
+    "session_registry_path": "specs/bt2a_gate1_nq_all5_sessions_2026-08-27.json",
+    "session_registry_sha256": "f50350ee67d53be38cd00e0f3e548cc877e980aebb3b08e422cdde007b39c6cb",
+    "source_input_registry_path": "specs/bt2a_gate1_nq_all5_input_registry_2026-08-27.json",
+    "source_input_registry_sha256": "2ce114105970e0d5010ebe150fbd0ec1b2911b4ecced946ecbb31510d17d1ed9",
+    "package_manifest_file": "kaggle_research_package_manifest.json",
+    "package_manifest_sha256": "PENDING_PRIVATE_PREHOLDOUT_PACKAGE_BUILD",
+    "effective_input_registry_file": "effective_input_registry.json",
+    "effective_input_registry_sha256": "PENDING_PRIVATE_PREHOLDOUT_PACKAGE_BUILD",
+    "output_result_filename": "bigtrap2_nq_tickframes_sweep_v2_result.json"
+  },
+  "universe": {
+    "contracts": ["NQ 09-25", "NQ 12-25", "NQ 03-26", "NQ 06-26", "NQ 09-26"],
+    "total_cme_sessions": 234,
+    "holdout_start_date": "20260701",
+    "holdout_cutoff_utc_ns": 1782856800000000000,
+    "physical_holdout_absence_required": true
+  },
+  "grid": {
+    "bar_series_types": {
+      "tick_10": {"kind": "tick", "param": 10},
+      "tick_25": {"kind": "tick", "param": 25},
+      "tick_50": {"kind": "tick", "param": 50},
+      "tick_100": {"kind": "tick", "param": 100},
+      "tick_120": {"kind": "tick", "param": 120},
+      "tick_240": {"kind": "tick", "param": 240},
+      "time_1m": {"kind": "time", "param": 1}
+    },
+    "imbalance_ratios": [2.5, 3.0, 3.5, 4.0],
+    "min_trap_volumes": [10, 20, 50, 100],
+    "total_configurations": 112
+  },
+  "kernel_parameters": {
+    "indicator": "BigTrap2CreationOnly",
+    "version": "2.5.2_creation_only",
+    "use_wick_filter": false,
+    "lifecycle_disabled": true
+  },
+  "firewalls": {
+    "future_price_path_accessed": false,
+    "first_touch_accessed": false,
+    "mfe_mae_accessed": false,
+    "pnl_accessed": false,
+    "holdout_rows_decoded": false,
+    "holdout_touched": false,
+    "winner_selected": false,
+    "edge_declared": false,
+    "promotion_eligible": false
+  }
+}
