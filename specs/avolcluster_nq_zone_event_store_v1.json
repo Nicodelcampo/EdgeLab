@@ -1,5 +1,5 @@
 {
-  "schema_version": "avolcluster_nq_zone_event_store_v1.0.1-draft",
+  "schema_version": "avolcluster_nq_zone_event_store_v1.0.2-draft",
   "status": "DRAFT_PREAUTHORIZATION_FAIL_CLOSED",
   "title": "aVolClusterPOI NQ-120t canonical zone-creation Event Store",
   "freeze_authorized": false,
@@ -160,12 +160,12 @@
   "authorization": {
     "freeze_token": "APPROVE_FREEZE_AVOLCLUSTER_NQ_ZONE_EVENT_STORE_V1",
     "zone_store_build_token": "AUTHORIZE_BUILD_AVOLCLUSTER_NQ_ZONE_EVENT_STORE_V1",
-    "zone_store_build_authorized": false,
+    "zone_store_build_capability_after_freeze": true,
     "zone_store_finalize_token": "AUTHORIZE_FINALIZE_AVOLCLUSTER_NQ_ZONE_EVENT_STORE_V1",
-    "zone_store_finalize_authorized": false,
+    "zone_store_finalize_capability_after_freeze": true,
     "zone_store_validation_token": "AUTHORIZE_VALIDATE_AVOLCLUSTER_NQ_ZONE_EVENT_STORE_V1",
-    "zone_store_validation_authorized": false,
-    "future_path_authorized": false,
+    "zone_store_validation_capability_after_freeze": true,
+    "future_path_capability_after_freeze": false,
     "outcome_execution_token": null
   },
   "implementation_status": {
@@ -185,7 +185,7 @@
     "prove exact reproduction of the 5876 OFF_PRICE target-free zone count on the five hash-bound inputs",
     "audit NQ-120t Python versus NT8 detector parity or explicitly classify the run as Python-kernel research only",
     "freeze creation Event Store contract before running the real-data builder",
-    "authorize build and finalize with separate literal tokens",
+    "supply build and finalize tokens as separate runtime decisions",
     "design and freeze lifecycle, first-touch, episode-collapse and outcome clocks separately",
     "obtain explicit authorization before any future-path or outcome execution"
   ],

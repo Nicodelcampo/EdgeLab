@@ -52,6 +52,8 @@ def test_spec_is_target_free_draft_and_binds_selected_configuration():
     assert s["target_free_selection"]["observed_summary"]["off_price_events"] == 5876
     assert s["epistemic_scope"]["future_price_path_accessed_by_this_stage"] is False
     assert s["lifecycle"]["first_touch_implemented"] is False
+    assert s["authorization"]["zone_store_build_capability_after_freeze"] is True
+    assert s["authorization"]["future_path_capability_after_freeze"] is False
     assert s["implementation_status"]["gate1_outcomes_run"] is False
 
 

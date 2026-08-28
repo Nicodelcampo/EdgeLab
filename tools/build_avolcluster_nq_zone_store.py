@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 """Build/resume/finalize the target-free NQ-120t aVolClusterPOI zone store.
 
-No mode scans post-creation outcomes.  --run-all remains disabled until the
-creation contract is frozen and its dedicated build token is authorized.
-Finalization has a separate authorization and is never implicit in --run-all.
+No mode scans post-creation outcomes. --run-all remains disabled until the
+creation contract is frozen and its dedicated build token is supplied.
+Finalization has a separate token and is never implicit in --run-all.
 """
 from __future__ import annotations
 
@@ -103,7 +103,13 @@ def load_registries(session_path: Path, input_path: Path) -> tuple[dict, dict, l
     return sessions, inputs, expanded
 
 
-def require_execution(args: argparse.Namespace, spec: dict, gs: dict, token_key: str, flag_key: str) -> None:
+def require_execution(
+    args: argparse.Namespace,
+    spec: dict,
+    gs: dict,
+    token_key: str,
+    capability_key: str,
+) -> None:
     if spec["status"] != SPEC_STATUS_FROZEN:
         raise EventStoreContractError("creation Event Store spec is not frozen")
     if not args.expected_commit:
@@ -113,8 +119,10 @@ def require_execution(args: argparse.Namespace, spec: dict, gs: dict, token_key:
     if gs["dirty"]:
         raise EventStoreContractError("dirty worktree")
     auth = spec["authorization"]
-    if auth.get(flag_key) is not True or args.authorization_token != auth.get(token_key):
-        raise EventStoreContractError("missing or invalid dedicated authorization")
+    if auth.get(capability_key) is not True:
+        raise EventStoreContractError("requested post-freeze capability is disabled")
+    if args.authorization_token != auth.get(token_key):
+        raise EventStoreContractError("missing or invalid dedicated authorization token")
 
 
 def verify_input_file(data_dir: Path, contract: str, entry: dict) -> Path:
@@ -167,7 +175,11 @@ def scan_resume(
 
 
 def run_all(args: argparse.Namespace, spec: dict, inputs: dict, expanded: list[dict], gs: dict) -> dict:
-    require_execution(args, spec, gs, "zone_store_build_token", "zone_store_build_authorized")
+    require_execution(
+        args, spec, gs,
+        "zone_store_build_token",
+        "zone_store_build_capability_after_freeze",
+    )
     if args.data_dir is None or args.output_dir is None:
         raise EventStoreContractError("--data-dir and --output-dir are mandatory for --run-all")
     checkpoints_dir = args.output_dir / "checkpoints"
@@ -182,7 +194,6 @@ def run_all(args: argparse.Namespace, spec: dict, inputs: dict, expanded: list[d
         contract_registry_rows = [row for row in expanded if row["contract"] == contract]
         start_ns = cme_session_start_utc_ns(contract_registry_rows[0]["cme_session_id"])
         end_ns = next_calendar_session_start_utc_ns(contract_registry_rows[-1]["cme_session_id"])
-        # Predicate pushdown ensures out-of-registry and holdout rows are never decoded.
         ticks = load_canonical_parquet(
             source_path,
             contract=contract,
@@ -218,8 +229,10 @@ def run_all(args: argparse.Namespace, spec: dict, inputs: dict, expanded: list[d
                 diagnostics=diagnostics,
                 profile=profile,
             )
-            path = checkpoints_dir / checkpoint_name(int(row["session_ordinal"]), contract, sid)
-            atomic_write_json(path, payload)
+            atomic_write_json(
+                checkpoints_dir / checkpoint_name(int(row["session_ordinal"]), contract, sid),
+                payload,
+            )
             written += 1
         del ticks, bars, footprints, bar_sessions
         gc.collect()
@@ -238,7 +251,11 @@ def run_all(args: argparse.Namespace, spec: dict, inputs: dict, expanded: list[d
 
 
 def finalize(args: argparse.Namespace, spec: dict, inputs: dict, expanded: list[dict], gs: dict) -> dict:
-    require_execution(args, spec, gs, "zone_store_finalize_token", "zone_store_finalize_authorized")
+    require_execution(
+        args, spec, gs,
+        "zone_store_finalize_token",
+        "zone_store_finalize_capability_after_freeze",
+    )
     if args.output_dir is None:
         raise EventStoreContractError("--output-dir is mandatory for --finalize")
     checkpoints_dir = args.output_dir / "checkpoints"
@@ -251,7 +268,9 @@ def finalize(args: argparse.Namespace, spec: dict, inputs: dict, expanded: list[
     normalized, diagnostics = validate_zone_rows(rows, spec, enforce_expected_counts=True)
     parquet_path = args.output_dir / "avolcluster_nq_zone_creation_event_store.parquet"
     pq.write_table(pa.Table.from_pylist(normalized), parquet_path, compression="zstd")
-    transport = validate_parquet_against_rows(parquet_path, normalized, spec["event_store"]["contract"])
+    transport = validate_parquet_against_rows(
+        parquet_path, normalized, spec["event_store"]["contract"]
+    )
     manifest = {
         "schema_version": "avolcluster_nq_zone_store_manifest_v1",
         "status": "COMPLETE_TARGET_FREE_ZONE_CREATION_STORE",
@@ -292,6 +311,7 @@ def main(argv: list[str] | None = None) -> int:
         spec = load_spec(args.spec)
         _sessions, inputs, expanded = load_registries(args.session_registry, args.input_registry)
         gs = git_state()
+        auth = spec["authorization"]
         base = {
             "schema_version": "avolcluster_nq_zone_builder_status_v1",
             "generated_utc": datetime.now(timezone.utc).isoformat(),
@@ -310,8 +330,9 @@ def main(argv: list[str] | None = None) -> int:
             result = {
                 **base,
                 "status": "DRAFT_BUILDER_PREPARED" if spec["status"] != SPEC_STATUS_FROZEN else "FROZEN_BUILDER_PREFLIGHT",
-                "run_all_authorized": bool(spec["authorization"]["zone_store_build_authorized"]),
-                "finalize_authorized": bool(spec["authorization"]["zone_store_finalize_authorized"]),
+                "build_capability_after_freeze": bool(auth.get("zone_store_build_capability_after_freeze")),
+                "finalize_capability_after_freeze": bool(auth.get("zone_store_finalize_capability_after_freeze")),
+                "run_all_ready": spec["status"] == SPEC_STATUS_FROZEN,
                 "ready_for_first_touch_or_outcomes": False,
                 "review_blockers": spec["review_blockers"],
             }

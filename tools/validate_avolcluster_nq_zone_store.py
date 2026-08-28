@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 """Preflight and validate the NQ-120t aVolClusterPOI creation Event Store.
 
-This command never builds first-touch or outcome paths.  While the spec is a
-draft, only --preflight-only is accepted.  Artifact validation requires a
-frozen contract, exact commit and a separate zone-store authorization token.
+This command never builds first-touch or outcome paths. While the spec is a
+draft, only --preflight-only is accepted. Artifact validation requires a frozen
+contract, exact commit and the separate validation token bound in that contract.
 """
 from __future__ import annotations
 
@@ -38,7 +38,6 @@ def git_state() -> dict:
     def run(*args: str) -> tuple[int, str]:
         proc = subprocess.run(["git", *args], cwd=REPO_ROOT, text=True, capture_output=True)
         return proc.returncode, proc.stdout.strip()
-
     rc, commit = run("rev-parse", "HEAD")
     if rc:
         return {"available": False, "commit": None, "branch": None, "dirty": True}
@@ -66,10 +65,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--expected-commit")
     parser.add_argument("--authorization-token")
     parser.add_argument("--output-json", type=Path)
+    args = parser.parse_args(argv)
     try:
-        spec = load_spec(parser.parse_args(argv).spec)
-        args = parser.parse_args(argv)
+        spec = load_spec(args.spec)
         gs = git_state()
+        capability = bool(
+            spec["authorization"].get("zone_store_validation_capability_after_freeze")
+        )
         base = {
             "schema_version": "avolcluster_nq_zone_store_validation_v1",
             "generated_utc": datetime.now(timezone.utc).isoformat(),
@@ -87,7 +89,8 @@ def main(argv: list[str] | None = None) -> int:
             result = {
                 **base,
                 "status": "DRAFT_PREPARATION_READY" if spec["status"] != SPEC_STATUS_FROZEN else "FROZEN_PREFLIGHT_READY",
-                "ready_for_zone_store_validation": spec["status"] == SPEC_STATUS_FROZEN,
+                "validation_capability_after_freeze": capability,
+                "ready_for_zone_store_validation": spec["status"] == SPEC_STATUS_FROZEN and capability,
                 "ready_for_first_touch_or_outcomes": False,
                 "review_blockers": spec["review_blockers"],
             }
@@ -96,6 +99,8 @@ def main(argv: list[str] | None = None) -> int:
 
         if spec["status"] != SPEC_STATUS_FROZEN:
             raise EventStoreContractError("spec is not frozen")
+        if not capability:
+            raise EventStoreContractError("artifact validation capability is disabled")
         if not args.expected_commit:
             raise EventStoreContractError("--expected-commit is mandatory")
         if not gs["available"] or gs["commit"] != args.expected_commit:
@@ -103,8 +108,6 @@ def main(argv: list[str] | None = None) -> int:
         if gs["dirty"]:
             raise EventStoreContractError("dirty worktree")
         authorization = spec["authorization"]
-        if authorization.get("zone_store_validation_authorized") is not True:
-            raise EventStoreContractError("zone-store validation is not authorized")
         if args.authorization_token != authorization.get("zone_store_validation_token"):
             raise EventStoreContractError("invalid or missing authorization token")
         if args.checkpoints_dir is None or args.parquet is None:
@@ -138,7 +141,6 @@ def main(argv: list[str] | None = None) -> int:
             "holdout_touched": exc.label == "ABSTAIN_HOLDOUT_FIREWALL",
             "edge_declared": False,
         }
-        # Parsing may have failed before args exists; emit to stderr only.
         print(json.dumps(payload, indent=2, sort_keys=True, ensure_ascii=False), file=sys.stderr)
         return 2
 
