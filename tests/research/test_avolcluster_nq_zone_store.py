@@ -118,3 +118,24 @@ def test_outcome_or_first_touch_columns_cannot_enter_creation_store():
 def test_real_expected_count_is_a_gate_not_faked_by_unit_fixture():
     with pytest.raises(EventStoreContractError, match="expected 5876"):
         validate_zone_rows([event()], spec(), enforce_expected_counts=True)
+
+
+def test_input_registry_matches_official_datos_manifiesto():
+    """Ensure all 5 NQ input registry parquet files match docs/datos_manifiesto.json exact hashes and byte counts."""
+    input_path = ROOT / "specs/bt2a_gate1_nq_all5_input_registry_2026-08-27.json"
+    manifest_path = ROOT / "docs/datos_manifiesto.json"
+    assert input_path.is_file()
+    assert manifest_path.is_file()
+
+    inputs = json.loads(input_path.read_text(encoding="utf-8"))
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+
+    manifest_files = manifest.get("archivos", {})
+    for contract, entry in inputs["contracts"].items():
+        pq_name = entry["parquet_file"]
+        canonical_key = f"data/nt8/NQ_parquet/{pq_name}"
+        assert canonical_key in manifest_files, f"missing {canonical_key} in datos_manifiesto.json"
+        man_entry = manifest_files[canonical_key]
+        assert entry["parquet_sha256"] == man_entry["sha256"], f"hash mismatch for {contract}"
+        assert entry["bytes"] == man_entry["bytes"], f"byte size mismatch for {contract}"
+

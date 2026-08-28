@@ -148,9 +148,38 @@ PROMOTION_ELIGIBLE           = false
   `projected_frozen_payload_sha256 = "1f2ef16548ab6a9d413a7871351800a9868e9ede9725f46c9e2f482588abe59c"`
 - Diseño conjunto borrador (`specs/avolcluster_bt2a_nq_joint_measurement_v1.draft.json`): permanece en estado borrador y **completamente fuera** de la autorización de creación.
 
+## 9. Addendum de Incidente de Procedencia de Inputs y Corrección Controlada (2026-08-28)
+
+### 9.1 Incidente y Aborto Fail-Closed
+Al ejecutar `--run-all` bajo el token `AUTHORIZE_BUILD_AVOLCLUSTER_NQ_ZONE_EVENT_STORE_V1` con binding al HEAD `69f5868c09b6628819b041c6734c041cedffef1f`, el runner ejecutó `verify_input_file` y abortó fail-closed de inmediato:
+`status: ABSTAIN_EVENT_STORE_CONTRACT`, `message: source SHA-256 mismatch for NQ 09-25`.
+- **Cero checkpoints creados** (`checkpoints = 0`).
+- **Cero filas decodificadas del holdout**.
+- **Ausencia total de Parquet final**.
+
+### 9.2 Causa Raíz Forense
+Los archivos físicos en disco (`E:\EdgeLab\data\nt8\NQ_parquet`) y sus manifiestos locales coinciden al 100% con [`docs/datos_manifiesto.json`](docs/datos_manifiesto.json). No obstante, el archivo `specs/bt2a_gate1_nq_all5_input_registry_2026-08-27.json` (introducido en commit `ee357e1`) presentaba una divergencia en la segunda mitad del string SHA-256 para 4 contratos (NQ 09-25, NQ 12-25, NQ 06-26 y NQ 09-26), coincidiendo únicamente NQ 03-26.
+
+### 9.3 Corrección Controlada (`APPROVE_CORRECT_AVOLCLUSTER_NQ_INPUT_REGISTRY_V1`)
+1. **Invalidación Formal del Freeze Anterior:**  
+   `OLD_BUILD_AUTHORIZATION_HEAD = 69f5868c09b6628819b041c6734c041cedffef1f`  
+   `OLD_FROZEN_PAYLOAD = 1f2ef16548ab6a9d413a7871351800a9868e9ede9725f46c9e2f482588abe59c`  
+   `OLD_BUILD_AUTHORIZATION_VALID = false`
+2. **Retorno Temporal a Estado Borrador:**  
+   `status = "DRAFT_PREAUTHORIZATION_FAIL_CLOSED"`, `freeze_authorized = false`, `execution_authorized = false`.
+3. **Alineación de Hashes:**  
+   Se corrigieron los 4 hashes para alinearlos estrictamente con `docs/datos_manifiesto.json` y el almacenamiento físico.
+4. **Nuevo Blob SHA-1 del Input Registry:**  
+   `input_registry_git_blob_sha1 = "09d09dec961ebe091fe68d4062b63f9faf34610e"`
+5. **Nuevo Payload Científico Proyectado:**  
+   `new_projected_frozen_payload_sha256 = "c9792d00da4f15311acdd13f965d06d601e0d08ae0e961766338d04e5e9440ba"`
+6. **Tests Automatizados:**  
+   Se incorporó `test_input_registry_matches_official_datos_manifiesto()` asegurando consistencia continua con el manifiesto canónico.
+
 ---
 
 ## Aporte al referente
 
-Se audita y certifica la infraestructura de creación de zonas AVolClusterPOI NQ-120t bajo la autoridad `PASS_RESEARCH_ONLY_PYTHON_KERNEL`. Quedan reconciliados los tres commits de la cadena, clasificada la deuda de CI preexistente sin regresiones, y vinculado el payload congelado proyectado `1f2ef16548ab6a9d413a7871351800a9868e9ede9725f46c9e2f482588abe59c` al estado formal `FROZEN_ZONE_CREATION_EVENT_STORE`.
+Se audita y certifica la infraestructura de creación de zonas AVolClusterPOI NQ-120t bajo la autoridad `PASS_RESEARCH_ONLY_PYTHON_KERNEL`. El control fail-closed de procedencia detectó con éxito la divergencia de hashes en el registry histórico. Se completa la corrección controlada en estado borrador, vinculando el nuevo blob `09d09dec961ebe091fe68d4062b63f9faf34610e` y proyectando el nuevo payload congelado `c9792d00da4f15311acdd13f965d06d601e0d08ae0e961766338d04e5e9440ba` para una nueva ceremonia formal de freeze.
+
 
