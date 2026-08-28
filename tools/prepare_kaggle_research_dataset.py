@@ -43,12 +43,23 @@ def registry_records(registry: dict) -> list[tuple[str, dict]]:
 
 
 def manifest_by_filename(data_manifest: dict) -> dict[str, dict]:
-    out: dict[str, dict] = {}
+    candidates: dict[str, list[tuple[bool, dict]]] = {}
     for declared_path, record in (data_manifest.get("archivos") or {}).items():
         name = Path(declared_path).name
-        if name in out and out[name] != record:
+        is_quarantine = any(
+            part.startswith(("6E_dirty", "6E_prev", "quarantine", "dirty"))
+            for part in Path(declared_path).parts
+        )
+        candidates.setdefault(name, []).append((is_quarantine, record))
+
+    out: dict[str, dict] = {}
+    for name, entries in candidates.items():
+        clean = [r for is_q, r in entries if not is_q]
+        active = clean if clean else [r for _, r in entries]
+        first = active[0]
+        if any(r != first for r in active[1:]):
             raise RuntimeError(f"ambiguous data manifest filename: {name}")
-        out[name] = record
+        out[name] = first
     return out
 
 
