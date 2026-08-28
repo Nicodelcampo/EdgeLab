@@ -57,6 +57,32 @@ La rama activa agrega, sin ejecutar datos reales:
 
 La spec permanece `DRAFT_PREAUTHORIZATION_FAIL_CLOSED`. No se emitió freeze ni autorización. No se construyó el Event Store real, no se abrió lifecycle/first touch y no se evaluaron outcomes.
 
+## Diseño conjunto AVol + BT2A NQ + L2
+
+Quedó registrado un diseño futuro completo, todavía no ejecutable, para:
+
+- creación y geometría AVol;
+- lifecycle, first touch, supervivencia y riesgos competitivos;
+- expansión no direccional y recorrido direccional;
+- confluencia temporal y espacial con BT2A NQ;
+- acuerdo/desacuerdo de `K_ABS` y `K_BT2`;
+- interacción incremental versus AVol solo, BT2A solo y controles;
+- nulls N_RAND, Mirror, Time-Shuffle, geometry-match y placebo leads;
+- configuración primaria más robustez de un factor;
+- familia BT2A completa de 16 celdas para NQ;
+- cuatro fases NQ primarias y ocho ventanas descriptivas;
+- contexto L2 causal `as-of backward` como estratificador;
+- gates jerárquicos para evitar 84.480 comparaciones cartesianas;
+- inferencia agrupada por sesión CME y control de multiplicidad.
+
+Autoridades:
+
+- `docs/research/AVOLCLUSTER_BT2A_NQ_JOINT_MEASUREMENT_DESIGN_V1_2026-08-28.md`;
+- `specs/avolcluster_bt2a_nq_joint_measurement_v1.draft.json`.
+
+Estado: `DRAFT_DESIGN_ONLY_PREAUTHORIZATION`. No autoriza lifecycle, outcomes,
+BT2A NQ, join L2, first passage, P&L ni acceso al holdout.
+
 ## Línea C / Gate L2
 
 La adquisición L1/L2 sigue target-free. No ejecutar HMM final, join de outcomes ni CTX-3 hasta pasar los gates de `docs/research/bt2a_gate2_l2_20260826/03_GATE_L2_CONTEXT_CONTRACT.md`.
@@ -68,6 +94,7 @@ La adquisición L1/L2 sigue target-free. No ejecutar HMM final, join de outcomes
 - No abrir P2-B sin autorización separada y costos GC confirmados.
 - AVol NQ: `FUTURE_PRICE_PATH_ACCESSED=false`, `FIRST_TOUCH_ACCESSED=false`, `PNL_ACCESSED=false`, `HOLDOUT_TOUCHED=false`.
 - No usar `aVolClusterPOI` como oracle ni interpretar `geometric_side` como pronóstico.
+- El diseño conjunto registrado no concede ninguna capacidad runtime.
 
 ## Estado compacto
 
@@ -83,6 +110,8 @@ AVOL_NQ_ZONE_STORE                      = DRAFT_INFRASTRUCTURE
 AVOL_NQ_ZONE_STORE_REAL_BUILD           = NOT_RUN
 AVOL_NQ_FIRST_TOUCH                     = NOT_IMPLEMENTED
 AVOL_NQ_GATE1_OUTCOMES_OPENED           = false
+AVOL_BT2A_NQ_JOINT_DESIGN               = DRAFT_DESIGN_ONLY_PREAUTHORIZATION
+AVOL_BT2A_NQ_JOINT_EXECUTION            = NOT_AUTHORIZED
 NEW_OUTCOMES_OPENED_BY_AVOL_PREPARATION = false
 EDGE_DECLARED                           = false
 ```
@@ -93,7 +122,7 @@ EDGE_DECLARED                           = false
 git rev-parse HEAD
 git branch --show-current
 git status --short --untracked-files=all
-python -m pytest -q tests/research/test_event_store_contract.py tests/research/test_avolcluster_nq_zone_store.py tests/research/test_avolcluster_nq_zone_builder.py
+python -m pytest -q tests/research/test_event_store_contract.py tests/research/test_avolcluster_nq_zone_store.py tests/research/test_avolcluster_nq_zone_builder.py tests/research/test_avolcluster_bt2a_nq_joint_measurement_spec.py
 python tools/validate_avolcluster_nq_zone_store.py --preflight-only --expected-commit <REVIEWED_HEAD_SHA>
 python tools/build_avolcluster_nq_zone_store.py --preflight-only --expected-commit <REVIEWED_HEAD_SHA>
 ```
@@ -103,11 +132,13 @@ python tools/build_avolcluster_nq_zone_store.py --preflight-only --expected-comm
 - `AUDITOR_START_HERE.md`
 - `docs/NORTH_STAR.md`
 - `docs/research/AVOLCLUSTER_NQ_GATE1_INFRA_PROTOCOL_V1_DRAFT_2026-08-28.md`
+- `docs/research/AVOLCLUSTER_BT2A_NQ_JOINT_MEASUREMENT_DESIGN_V1_2026-08-28.md`
 - `specs/avolcluster_nq_zone_event_store_v1.json`
+- `specs/avolcluster_bt2a_nq_joint_measurement_v1.draft.json`
 - `specs/bt2a_gate1_nq_all5_sessions_2026-08-27.json`
 - `specs/bt2a_gate1_nq_all5_input_registry_2026-08-27.json`
 - `PENDIENTE.md`
 
 ## Aporte al referente
 
-La configuración NQ-120t seleccionada target-free ya tiene una ruta de reproducción auditable, reanudable y cerrada a futuro; construcción real, lifecycle, outcomes y holdout permanecen sin abrir.
+La configuración NQ-120t conserva su ruta de creación fail-closed y ahora suma un diseño integral de medición conjunta con BT2A, clock y L2, registrado sin abrir lifecycle, outcomes ni holdout.

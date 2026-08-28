@@ -126,6 +126,18 @@ PROMOTION_ELIGIBLE         = false
 
 Tras CI verde y revisión de paridad/semántica, la siguiente decisión posible es **freeze del contrato de creación**. Eso no autoriza build. Build, finalize, validate y cualquier lifecycle/outcome son decisiones posteriores e independientes.
 
+## 10. Diseño futuro conjunto registrado
+
+El diseño completo para medir AVol, BT2A NQ, secuencias temporales, relaciones
+espaciales, varias configuraciones, fases horarias, nulls, supervivencia y
+moderación L2 quedó registrado en:
+
+- `docs/research/AVOLCLUSTER_BT2A_NQ_JOINT_MEASUREMENT_DESIGN_V1_2026-08-28.md`;
+- `specs/avolcluster_bt2a_nq_joint_measurement_v1.draft.json`.
+
+Esos artefactos son `DRAFT_DESIGN_ONLY_PREAUTHORIZATION`. No amplían la capacidad
+del Event Store de creación ni autorizan first touch, BT2A NQ, L2, outcomes o P&L.
+
 ## Aporte al referente
 
-La selección NQ-120t queda convertida en una especificación de creación reproducible y fail-closed; ningún outcome se abre por preparar esta infraestructura.
+La selección NQ-120t queda convertida en una especificación de creación reproducible y fail-closed; el roadmap conjunto está preservado sin abrir ningún outcome.

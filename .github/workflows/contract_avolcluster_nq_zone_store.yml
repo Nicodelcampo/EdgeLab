@@ -11,9 +11,12 @@ on:
       - 'tools/validate_avolcluster_nq_zone_store.py'
       - 'tools/build_avolcluster_nq_zone_store.py'
       - 'specs/avolcluster_nq_zone_event_store_v1.json'
+      - 'specs/avolcluster_bt2a_nq_joint_measurement_v1.draft.json'
+      - 'docs/research/AVOLCLUSTER_BT2A_NQ_JOINT_MEASUREMENT_DESIGN_V1_2026-08-28.md'
       - 'tests/research/test_event_store_contract.py'
       - 'tests/research/test_avolcluster_nq_zone_store.py'
       - 'tests/research/test_avolcluster_nq_zone_builder.py'
+      - 'tests/research/test_avolcluster_bt2a_nq_joint_measurement_spec.py'
       - '.github/workflows/contract_avolcluster_nq_zone_store.yml'
   pull_request:
     paths:
@@ -23,9 +26,12 @@ on:
       - 'tools/validate_avolcluster_nq_zone_store.py'
       - 'tools/build_avolcluster_nq_zone_store.py'
       - 'specs/avolcluster_nq_zone_event_store_v1.json'
+      - 'specs/avolcluster_bt2a_nq_joint_measurement_v1.draft.json'
+      - 'docs/research/AVOLCLUSTER_BT2A_NQ_JOINT_MEASUREMENT_DESIGN_V1_2026-08-28.md'
       - 'tests/research/test_event_store_contract.py'
       - 'tests/research/test_avolcluster_nq_zone_store.py'
       - 'tests/research/test_avolcluster_nq_zone_builder.py'
+      - 'tests/research/test_avolcluster_bt2a_nq_joint_measurement_spec.py'
       - '.github/workflows/contract_avolcluster_nq_zone_store.yml'
   workflow_dispatch:
 
@@ -55,7 +61,10 @@ jobs:
           python -m pytest -q \
             tests/research/test_event_store_contract.py \
             tests/research/test_avolcluster_nq_zone_store.py \
-            tests/research/test_avolcluster_nq_zone_builder.py
+            tests/research/test_avolcluster_nq_zone_builder.py \
+            tests/research/test_avolcluster_bt2a_nq_joint_measurement_spec.py
+      - name: Validate design JSON
+        run: python -m json.tool specs/avolcluster_bt2a_nq_joint_measurement_v1.draft.json >/dev/null
       - name: Draft preflights must not open paths
         run: |
           python tools/validate_avolcluster_nq_zone_store.py \
