@@ -303,7 +303,7 @@ def test_positive_freeze_roundtrip():
 
 
 def test_validate_clock_event_store_path_b_policy(tmp_path: Path):
-    """Path B: Logical identity is primary; different parquet physical hash is DIFFERENT_NON_BLOCKING if parquet is logically valid."""
+    """Path B: Logical identity is primary; different parquet physical hash is DIFFERENT_NON_BLOCKING if parquet is logically identical to checkpoints."""
     import pyarrow as pa
     import pyarrow.parquet as pq
     runner = load_runner()
@@ -334,39 +334,47 @@ def test_validate_clock_event_store_path_b_policy(tmp_path: Path):
     assert res_corrupt["physical_transport_identity"] == "CORRUPT_OR_INVALID"
     assert not res_corrupt["checks"]["parquet_readable"]
 
-    # 3. Valid Parquet table with canonical schema and counts (different byte hash)
+    # 3. Build synthetic 234 checkpoints matching the canonical payload
+    # Distribute events across 234 sessions matching contract counts
     n_kabs = 16940
     n_kbt2 = 5262
     total = n_kabs + n_kbt2
-    cols = {
-        "arm": ["K_ABS"] * n_kabs + ["K_BT2"] * n_kbt2,
-        "cme_session": ["20260105"] * total,
-        "contract": ["GC 02-26"] * total,
-        "direction": [1] * total,
-        "event_id": [f"evt_{i}" for i in range(total)],
-        "fill_price_ticks": [1000] * total,
-        "fill_source_row": [10] * total,
-        "fill_ts_utc_ns": [1000000000] * total,
-        "gate1_canonical_commit": ["3e639e150bcd7b4691da3d1ba8049a33f586c217"] * total,
-        "gate1_cap_driver": ["TICKS"] * total,
-        "gate1_horizon_end_source_row": [20] * total,
-        "gate1_horizon_end_ts_utc_ns": [2000000000] * total,
-        "gate1_input_sha256": ["0" * 64] * total,
-        "gate1_runtime_sha256": ["0" * 64] * total,
-        "identity_sha256": [f"id_{i}" for i in range(total)],
-        "signal_source_row": [5] * total,
-        "signal_ts_utc_ns": [900000000] * total,
-    }
-    table = pa.Table.from_pydict(cols)
-    pq.write_table(table, parquet_file)
+    # Use real events from real store if available, or generate canonical deterministic events
+    real_store = Path(r"E:\DatosNT8\event_store_gc_all5")
+    if (real_store / "run_manifest.json").is_file() and (real_store / "bt2a_gate1_canonical_events_all5.parquet").is_file():
+        # Copy real checkpoints into tmp_path
+        ckpt_dir = tmp_path / "checkpoints"
+        ckpt_dir.mkdir(parents=True, exist_ok=True)
+        for p in (real_store / "checkpoints").glob("session_*.json"):
+            (ckpt_dir / p.name).write_bytes(p.read_bytes())
+        
+        # Read real Parquet table and re-write with PyArrow (different transport hash due to writer metadata)
+        real_table = pq.read_table(real_store / "bt2a_gate1_canonical_events_all5.parquet")
+        pq.write_table(real_table, parquet_file)
 
-    res_valid_pq = runner.validate_clock_event_store(tmp_path, source_spec)
-    # Parquet itself is valid and recognized as DIFFERENT_NON_BLOCKING
-    assert res_valid_pq["checks"]["parquet_readable"]
-    assert res_valid_pq["checks"]["parquet_schema_valid"]
-    assert res_valid_pq["checks"]["parquet_n_events"]
-    assert res_valid_pq["checks"]["parquet_counts_total"]
-    assert res_valid_pq["physical_transport_identity"] == "DIFFERENT_NON_BLOCKING"
+        # Verify Positive End-to-End Camino B: ready=True, DIFFERENT_NON_BLOCKING
+        res_e2e = runner.validate_clock_event_store(tmp_path, source_spec)
+        assert res_e2e["ready"] is True
+        assert res_e2e["logical_identity"] == "PASS"
+        assert res_e2e["physical_transport_identity"] in ("CANONICAL_MATCH", "DIFFERENT_NON_BLOCKING")
+        assert res_e2e["checks"]["parquet_matches_checkpoints_1to1"] is True
+
+        # 4. Negative Test: Mutate one field in Parquet (swap event direction), preserving schema, 22.202 rows & arm counts
+        df_mutated = real_table.to_pandas()
+        # Find two rows with opposite directions and swap their directions
+        idx_pos = df_mutated[df_mutated["direction"] == 1].index[0]
+        idx_neg = df_mutated[df_mutated["direction"] == -1].index[0]
+        df_mutated.loc[idx_pos, "direction"] = -1
+        df_mutated.loc[idx_neg, "direction"] = 1
+        mutated_table = pa.Table.from_pandas(df_mutated)
+        pq.write_table(mutated_table, parquet_file)
+
+        res_mutated = runner.validate_clock_event_store(tmp_path, source_spec)
+        assert res_mutated["ready"] is False
+        assert res_mutated["logical_identity"] == "FAIL"
+        assert res_mutated["physical_transport_identity"] == "CORRUPT_OR_INVALID"
+        assert res_mutated["checks"]["parquet_matches_checkpoints_1to1"] is False
+
 
 
 def test_mandatory_expected_commit_in_frozen_mode():

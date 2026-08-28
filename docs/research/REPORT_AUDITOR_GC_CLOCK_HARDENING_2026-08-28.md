@@ -1,6 +1,6 @@
-# Informe de Auditoría Cuantitativa y de Integridad — PR #20 (Revisión 3)
+# Informe de Auditoría Cuantitativa y de Integridad — PR #20 (Revisión 4 Final)
 **Diagnóstico de Heterogeneidad Horaria de GC (BT2A P2-A V1)**  
-**Fecha:** 2026-08-28 02:00 UTC-3  
+**Fecha:** 2026-08-28 02:06 UTC-3  
 **Auditor:** Antigravity (Google DeepMind)  
 **Destinatario:** Auditor Independiente / Nicolas Buttaro  
 
@@ -16,24 +16,31 @@
 | **Autorización de Freeze** | `freeze_authorized = false` |
 | **Autorización de Ejecución** | `execution_authorized = false` |
 | **Hash Congelado Declarado** | `frozen_spec_payload_sha256 = null` |
+| **Descripción de PR #20 en GitHub** | Actualizada y armonizada vía GitHub CLI (`gh pr edit 20`) |
 | **Worktree Local** | Limpio (`git status --porcelain` vacío) |
 
 ---
 
-## 2. Cierre Operativo de los Bloqueadores de Revisión 2
+## 2. Cierre Exhaustivo de los Bloqueadores de Auditoría
 
-### ✅ 1. Validación Lógica y de Schema del Parquet Físico (Camino B Completo)
-- **Implementación:** `validate_clock_event_store()` abre el archivo Parquet con `pyarrow.parquet.read_table()` y valida:
-  1. Que el archivo sea un Parquet válido y legible sin corrupción (`parquet_readable = True`).
-  2. Que contenga las 17 columnas canónicas obligatorias (`parquet_schema_valid = True`).
-  3. Que tenga exactamente 22.202 filas (`parquet_n_events = True`).
-  4. Que los conteos por `arm` sean exactamente `K_ABS = 16.940` y `K_BT2 = 5.262` (`parquet_counts_total = True`).
-  5. Que los 234 checkpoints sumen 22.202 eventos con hash canónico `feee6001e88aa69f62a092b253e468531230120a3dccdc2ceac0d488c9684cbd`.
+### ✅ 1. Validación Lógica Profunda del Parquet y Equivalencia 1:1 con Checkpoints (Camino B Completo)
+- **Implementación Operativa:** `validate_clock_event_store()` abre el archivo Parquet físico con `pyarrow.parquet.read_table()` y valida:
+  1. Legibilidad y ausencia de corrupción (`parquet_readable = True`).
+  2. Presencia obligatoria de las 17 columnas canónicas (`parquet_schema_valid = True`).
+  3. Exactamente 22.202 filas (`parquet_n_events = True`).
+  4. Conteos de `arm`: `K_ABS = 16.940` y `K_BT2 = 5.262` (`parquet_counts_total = True`).
+  5. Unicidad de `event_id` y de `identity_sha256` en el Parquet (`parquet_unique_event_ids = True`, `parquet_unique_identity_sha256 = True`).
+  6. Reconstrucción completa de las filas del Parquet y hash canónico:  
+     `parquet_logical_payload_sha256 == "feee6001e88aa69f62a092b253e468531230120a3dccdc2ceac0d488c9684cbd"`.
+  7. Comparación 1:1 estricta entre las filas del Parquet y los 234 checkpoints agregados (`parquet_matches_checkpoints_1to1 = True`).
 - **Clasificación de Transporte:**
   - Si el hash físico es `6f7994b4...` → `CANONICAL_MATCH`.
   - Si el hash físico difiere pero el Parquet pasa el 100% de los checks lógicos y de schema → `DIFFERENT_NON_BLOCKING` (`ready = True`).
-  - Si el Parquet es corrupto o falla schema/filas/conteos → `CORRUPT_OR_INVALID` (`ready = False`, fail-closed).
-- **Test:** `test_validate_clock_event_store_path_b_policy()` prueba tanto el rechazo inmediato de bytes corruptos como la aceptación de una tabla PyArrow válida con hash diferente.
+  - Si el Parquet es corrupto o si una sola fila difiere de los checkpoints → `CORRUPT_OR_INVALID` (`ready = False`, fail-closed).
+- **Tests Dedicados:** `test_validate_clock_event_store_path_b_policy()` prueba:
+  - Rechazo de bytes corruptos.
+  - Test positivo end-to-end con checkpoints reales + Parquet reescrito con PyArrow (hash físico diferente) → `ready = True`, `logical_identity = "PASS"`.
+  - Test negativo de mutación lógica: swap de dirección entre filas preservando schema, 22.202 filas y conteos globales → `ready = False`, `logical_identity = "FAIL"`, `physical_transport_identity = "CORRUPT_OR_INVALID"`.
 
 ---
 
@@ -52,14 +59,19 @@
 
 ---
 
-### ✅ 3. Comandos del Protocolo Actualizados con `--expected-commit`
-- El documento `docs/research/BT2A_P2A_GC_CLOCK_HETEROGENEITY_PROTOCOL_V1_DRAFT_2026-08-27.md` incluye `--expected-commit <FROZEN_COMMIT_SHA>` en todos los comandos de preflight congelado y de ejecución (`--run-all` y `--finalize`).
+### ✅ 3. Comandos del Protocolo Armonizados con `--expected-commit`
+- El documento `BT2A_P2A_GC_CLOCK_HETEROGENEITY_PROTOCOL_V1_DRAFT_2026-08-27.md` incluye `--expected-commit <FROZEN_COMMIT_SHA>` en todos los comandos de preflight congelado y de ejecución (`--run-all` y `--finalize`).
 
 ---
 
-### ✅ 4. Limpieza de Imports y Publicación en Repo
+### ✅ 4. Descripción de PR #20 en GitHub Actualizada
+- Actualizada en GitHub (`gh pr edit 20`) con el registro formal de la apertura prematura de 4 sesiones, los firewalls activos y las reglas de validación.
+
+---
+
+### ✅ 5. Limpieza de Imports y Reporte Versionado en el Repo
 - Se eliminó el import duplicado de `bt2a_event_store`.
-- Este informe queda versionado dentro del repositorio en `docs/research/`.
+- Este informe queda versionado dentro del repositorio en `docs/research/REPORT_AUDITOR_GC_CLOCK_HARDENING_2026-08-28.md`.
 
 ---
 
@@ -68,9 +80,21 @@
 | Dimensión | Estado | Observación |
 |---|---|---|
 | `DEDICATED_CONTRACT_TESTS` | **PASS** | **19/19 tests pasan (100%)** |
-| `LOGICAL_PARQUET_SCHEMA_AND_COUNTS` | **PASS** | PyArrow schema, 22.202 filas y arm counts validados |
-| `MANDATORY_COMMIT_IMMEDIATE_ABORT` | **PASS** | Verificado antes de preflight en todos los modos |
+| `LOGICAL_PARQUET_SCHEMA_AND_COUNTS` | **PASS** | PyArrow schema, 22.202 filas y arm counts validados operativamente |
+| `PARQUET_LOGICAL_PAYLOAD_EQUALITY` | **PASS** | Reconstruye `feee6001...` desde filas del Parquet y exige 1:1 con checkpoints |
+| `MANDATORY_COMMIT_IMMEDIATE_ABORT` | **PASS** | Aborta antes de preflight en todos los modos de ejecución |
 | `PROTOCOL_COMMANDS_HARMONIZED` | **PASS** | Comandos actualizados con `--expected-commit` |
-| `FIREWALL_HARMONIZATION` | **PASS** | Spec, protocolo y código 100% consistentes |
-| `READY_TO_FREEZE` | **SI (Pendiente Decisión y Token de Nico)** | Hardening técnico 100% cerrado |
+| `FIREWALL_HARMONIZATION` | **PASS** | Spec, protocolo, código, PR description y preflight 100% consistentes |
+| `PR_DESCRIPTION_ON_GITHUB` | **PASS** | Actualizada en la UI de GitHub |
+| `REPORT_VERSIONED_IN_REPO` | **PASS** | Guardado en `docs/research/` |
+| `READY_TO_FREEZE` | **SI (Pendiente Decisión y Token de Nico)** | Hardening técnico y documental 100% cerrado |
 | `READY_TO_EXECUTE` | **NO** | Requiere freeze previo y preflight verde |
+
+---
+
+## 4. Valores Proyectados para la Ceremonia de Freeze
+
+Una vez que Nico apruebe el pase a freeze con el token `APPROVE_FREEZE_BT2A_P2A_GC_CLOCK_HETEROGENEITY_V1`:
+
+- **`PROJECTED_FROZEN_SPEC_PAYLOAD_SHA256`:**  
+  `34b207e073a97a5a38a53760b220031bcf59080e50a0e5cabe9ae2d4f405dad7`

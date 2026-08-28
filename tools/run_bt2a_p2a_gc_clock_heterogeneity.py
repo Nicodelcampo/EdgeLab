@@ -206,7 +206,7 @@ def _git_checks(root: Path, *, expected_commit: str | None = None, require_commi
 
 
 def validate_clock_event_store(event_store_dir: Path, source_spec: dict) -> dict[str, Any]:
-    """Validate Event Store for Clock Heterogeneity with primary logical identity policy."""
+    """Validate Event Store for Clock Heterogeneity with deep logical identity policy."""
     root = Path(event_store_dir)
     expected = source_spec.get("canonical_event_store")
     checks: dict[str, bool] = {}
@@ -230,61 +230,7 @@ def validate_clock_event_store(event_store_dir: Path, source_spec: dict) -> dict
     checks["manifest_events_payload_sha256"] = manifest.get("events_payload_sha256") == expected.get("events_payload_sha256")
     checks["manifest_counts_by_contract"] = manifest.get("counts") == expected.get("counts_by_contract")
 
-    # Parquet transport and logical validation (Path B: logical primary, physical transport non-blocking)
-    parquet_meta = manifest.get("parquet") if isinstance(manifest.get("parquet"), dict) else {}
-    parquet_path = root / str(parquet_meta.get("path") or "bt2a_gate1_canonical_events_all5.parquet")
-    checks["parquet_exists"] = parquet_path.is_file()
-    actual_parquet_sha256 = file_sha256(parquet_path) if parquet_path.is_file() else None
-
-    parquet_logical_valid = False
-    if parquet_path.is_file():
-        try:
-            import pyarrow.parquet as pq
-            parquet_table = pq.read_table(parquet_path)
-            expected_cols = {
-                "arm", "cme_session", "contract", "direction", "event_id",
-                "fill_price_ticks", "fill_source_row", "fill_ts_utc_ns",
-                "gate1_canonical_commit", "gate1_cap_driver",
-                "gate1_horizon_end_source_row", "gate1_horizon_end_ts_utc_ns",
-                "gate1_input_sha256", "gate1_runtime_sha256",
-                "identity_sha256", "signal_source_row", "signal_ts_utc_ns"
-            }
-            schema_names = set(parquet_table.schema.names)
-            checks["parquet_readable"] = True
-            checks["parquet_schema_valid"] = expected_cols.issubset(schema_names)
-            checks["parquet_n_events"] = parquet_table.num_rows == int(expected.get("n_events", 22202))
-
-            df_parquet = parquet_table.to_pandas()
-            arm_counts = dict(df_parquet["arm"].value_counts()) if "arm" in df_parquet.columns else {}
-            checks["parquet_counts_total"] = arm_counts == expected.get("counts_total")
-            parquet_logical_valid = bool(
-                checks["parquet_readable"]
-                and checks["parquet_schema_valid"]
-                and checks["parquet_n_events"]
-                and checks["parquet_counts_total"]
-            )
-        except Exception as exc:
-            checks["parquet_readable"] = False
-            checks["parquet_schema_valid"] = False
-            checks["parquet_n_events"] = False
-            checks["parquet_counts_total"] = False
-            errors.append(f"parquet validation failed: {exc}")
-    else:
-        checks["parquet_readable"] = False
-        checks["parquet_schema_valid"] = False
-        checks["parquet_n_events"] = False
-        checks["parquet_counts_total"] = False
-
-    if actual_parquet_sha256 == EXPECTED_CANONICAL_PARQUET_SHA256:
-        parquet_transport_status = "CANONICAL_MATCH"
-    elif actual_parquet_sha256 is not None and parquet_logical_valid:
-        parquet_transport_status = "DIFFERENT_NON_BLOCKING"
-    elif actual_parquet_sha256 is not None:
-        parquet_transport_status = "CORRUPT_OR_INVALID"
-    else:
-        parquet_transport_status = "MISSING"
-
-    # Checkpoint validation (234 sessions)
+    # 1. Checkpoint validation (234 sessions)
     checkpoint_dir = root / "checkpoints"
     checkpoint_paths = sorted(checkpoint_dir.glob("session_*.json")) if checkpoint_dir.is_dir() else []
     wanted_n = int(expected.get("n_sessions", 234))
@@ -325,7 +271,7 @@ def validate_clock_event_store(event_store_dir: Path, source_spec: dict) -> dict
     if checkpoint_errors:
         errors.extend(checkpoint_errors[:5])
 
-    # Logical payload identity
+    # Checkpoint logical identity
     if not checkpoint_errors and len(aggregate_events) == expected.get("n_events", 22202):
         computed_payload_sha256 = canonical_sha256(aggregate_events)
         checks["logical_events_payload_sha256"] = computed_payload_sha256 == expected.get("events_payload_sha256")
@@ -340,10 +286,95 @@ def validate_clock_event_store(event_store_dir: Path, source_spec: dict) -> dict
         checks["unique_event_ids"] = False
         checks["unique_identity_sha256"] = False
 
-    ready = all(checks.values()) and checks.get("parquet_exists", False)
+    # 2. Deep Parquet Logical & Schema Validation (Path B)
+    parquet_meta = manifest.get("parquet") if isinstance(manifest.get("parquet"), dict) else {}
+    parquet_path = root / str(parquet_meta.get("path") or "bt2a_gate1_canonical_events_all5.parquet")
+    checks["parquet_exists"] = parquet_path.is_file()
+    actual_parquet_sha256 = file_sha256(parquet_path) if parquet_path.is_file() else None
+
+    parquet_events: list[dict[str, Any]] = []
+    parquet_logical_valid = False
+    if parquet_path.is_file():
+        try:
+            import pyarrow.parquet as pq
+            parquet_table = pq.read_table(parquet_path)
+            expected_cols = {
+                "arm", "cme_session", "contract", "direction", "event_id",
+                "fill_price_ticks", "fill_source_row", "fill_ts_utc_ns",
+                "gate1_canonical_commit", "gate1_cap_driver",
+                "gate1_horizon_end_source_row", "gate1_horizon_end_ts_utc_ns",
+                "gate1_input_sha256", "gate1_runtime_sha256",
+                "identity_sha256", "signal_source_row", "signal_ts_utc_ns"
+            }
+            schema_names = set(parquet_table.schema.names)
+            checks["parquet_readable"] = True
+            checks["parquet_schema_valid"] = expected_cols.issubset(schema_names)
+            checks["parquet_n_events"] = parquet_table.num_rows == int(expected.get("n_events", 22202))
+
+            df_parquet = parquet_table.to_pandas()
+            for r in df_parquet.to_dict(orient="records"):
+                row = {k: (v.item() if hasattr(v, "item") else v) for k, v in r.items()}
+                parquet_events.append(row)
+
+            parquet_payload_sha256 = canonical_sha256(parquet_events)
+            checks["parquet_logical_payload_sha256"] = parquet_payload_sha256 == expected.get("events_payload_sha256")
+
+            p_ids = [str(e.get("event_id")) for e in parquet_events]
+            p_identities = [str(e.get("identity_sha256")) for e in parquet_events]
+            checks["parquet_unique_event_ids"] = len(p_ids) == len(set(p_ids))
+            checks["parquet_unique_identity_sha256"] = len(p_identities) == len(set(p_identities))
+
+            p_counts = Counter(str(e.get("arm")) for e in parquet_events)
+            checks["parquet_counts_total"] = dict(p_counts) == expected.get("counts_total")
+
+            # Validate exact 1:1 match between Parquet rows and checkpoint events
+            checks["parquet_matches_checkpoints_1to1"] = (
+                bool(aggregate_events) and (parquet_events == aggregate_events)
+            )
+
+            parquet_logical_valid = bool(
+                checks["parquet_readable"]
+                and checks["parquet_schema_valid"]
+                and checks["parquet_n_events"]
+                and checks["parquet_logical_payload_sha256"]
+                and checks["parquet_unique_event_ids"]
+                and checks["parquet_unique_identity_sha256"]
+                and checks["parquet_counts_total"]
+                and checks["parquet_matches_checkpoints_1to1"]
+            )
+        except Exception as exc:
+            checks["parquet_readable"] = False
+            checks["parquet_schema_valid"] = False
+            checks["parquet_n_events"] = False
+            checks["parquet_logical_payload_sha256"] = False
+            checks["parquet_unique_event_ids"] = False
+            checks["parquet_unique_identity_sha256"] = False
+            checks["parquet_counts_total"] = False
+            checks["parquet_matches_checkpoints_1to1"] = False
+            errors.append(f"parquet deep validation failed: {exc}")
+    else:
+        checks["parquet_readable"] = False
+        checks["parquet_schema_valid"] = False
+        checks["parquet_n_events"] = False
+        checks["parquet_logical_payload_sha256"] = False
+        checks["parquet_unique_event_ids"] = False
+        checks["parquet_unique_identity_sha256"] = False
+        checks["parquet_counts_total"] = False
+        checks["parquet_matches_checkpoints_1to1"] = False
+
+    if actual_parquet_sha256 == EXPECTED_CANONICAL_PARQUET_SHA256 and parquet_logical_valid:
+        parquet_transport_status = "CANONICAL_MATCH"
+    elif actual_parquet_sha256 is not None and parquet_logical_valid:
+        parquet_transport_status = "DIFFERENT_NON_BLOCKING"
+    elif actual_parquet_sha256 is not None:
+        parquet_transport_status = "CORRUPT_OR_INVALID"
+    else:
+        parquet_transport_status = "MISSING"
+
+    ready = not errors and all(checks.values())
     return {
         "ready": ready,
-        "logical_identity": "PASS" if (checks.get("logical_events_payload_sha256") and checks.get("counts_total_match")) else "FAIL",
+        "logical_identity": "PASS" if (checks.get("logical_events_payload_sha256") and checks.get("parquet_logical_payload_sha256") and checks.get("parquet_matches_checkpoints_1to1")) else "FAIL",
         "physical_transport_identity": parquet_transport_status,
         "canonical_parquet_sha256": EXPECTED_CANONICAL_PARQUET_SHA256,
         "actual_parquet_sha256": actual_parquet_sha256,
