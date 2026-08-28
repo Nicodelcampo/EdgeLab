@@ -13,7 +13,6 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from edgelab.kaggle.execution import canonical_sha256, load_json, sha256_file
-from tools.prepare_kaggle_research_dataset import _extract_ts_ns
 
 
 class PostUploadRehashError(RuntimeError):
@@ -51,28 +50,25 @@ def parse_checksum_file(path: Path) -> dict[str, str]:
 
 def parquet_metrics(path: Path, holdout_open_utc_ns: int) -> dict:
     try:
+        import pyarrow.compute as pc
         import pyarrow.parquet as pq
-    except ImportError as exc:  # pragma: no cover - dependency contract
+    except ImportError as exc:  # pragma: no cover
         raise PostUploadRehashError("pyarrow is required") from exc
 
     parquet = pq.ParquetFile(path)
-    names = set(parquet.schema_arrow.names)
-    if "timestamp" in names:
-        columns = ["timestamp"]
-    elif {"date", "time"}.issubset(names):
-        columns = ["date", "time"]
-    else:
-        raise PostUploadRehashError(f"cannot identify timestamp columns: {path.name}")
-
+    if "ts_utc_ns" not in parquet.schema_arrow.names:
+        raise PostUploadRehashError(f"missing canonical ts_utc_ns: {path.name}")
     row_count = int(parquet.metadata.num_rows)
     observed_rows = 0
     maximum: int | None = None
     for index in range(parquet.num_row_groups):
-        table = parquet.read_row_group(index, columns=columns)
-        values = _extract_ts_ns(table)
-        observed_rows += len(values)
-        if len(values):
-            value = int(values.max())
+        table = parquet.read_row_group(index, columns=["ts_utc_ns"])
+        observed_rows += table.num_rows
+        if table.num_rows:
+            scalar = pc.max(table["ts_utc_ns"]).as_py()
+            if scalar is None:
+                raise PostUploadRehashError(f"null timestamp group: {path.name}")
+            value = int(scalar)
             maximum = value if maximum is None else max(maximum, value)
     if observed_rows != row_count:
         raise PostUploadRehashError(f"row-group count mismatch: {path.name}")
@@ -113,12 +109,12 @@ def verify_post_upload(data_dir: Path, contract: dict) -> dict:
             f"remote inventory mismatch: expected={expected_sorted!r} actual={actual_files!r}"
         )
 
-    local = contract.get("local_package") or {}
+    phase1 = contract.get("phase1_canonical_evidence") or contract.get("local_package") or {}
     checksum_path = data_dir / "files.sha256"
     actual_self_hash = sha256_file(checksum_path)
-    if actual_self_hash != local.get("files_sha256_self_hash"):
+    if actual_self_hash != phase1.get("files_sha256_self_hash"):
         raise PostUploadRehashError(
-            f"files.sha256 self-hash mismatch: expected={local.get('files_sha256_self_hash')} "
+            f"files.sha256 self-hash mismatch: expected={phase1.get('files_sha256_self_hash')} "
             f"actual={actual_self_hash}"
         )
     checksums = parse_checksum_file(checksum_path)
@@ -135,11 +131,11 @@ def verify_post_upload(data_dir: Path, contract: dict) -> dict:
         verified.append({"file": name, "bytes": path.stat().st_size, "sha256": actual})
 
     registry_hash = sha256_file(data_dir / "effective_input_registry.json")
-    if registry_hash != local.get("effective_input_registry_sha256"):
+    if registry_hash != phase1.get("effective_input_registry_sha256"):
         raise PostUploadRehashError("effective input registry SHA-256 mismatch")
     manifest_path = data_dir / "kaggle_research_package_manifest.json"
     manifest_hash = sha256_file(manifest_path)
-    if manifest_hash != local.get("package_manifest_sha256"):
+    if manifest_hash != phase1.get("package_manifest_sha256"):
         raise PostUploadRehashError("package manifest SHA-256 mismatch")
     manifest = load_json(manifest_path)
     payload = manifest.get("payload_sha256")
@@ -147,21 +143,21 @@ def verify_post_upload(data_dir: Path, contract: dict) -> dict:
     if not _hex64(payload) or canonical_sha256(body) != payload:
         raise PostUploadRehashError("package manifest payload hash mismatch")
 
-    holdout = local.get("holdout_open_utc_ns")
+    holdout = phase1.get("holdout_open_utc_ns")
     if not isinstance(holdout, int):
         raise PostUploadRehashError("invalid holdout boundary")
     parquet_names = sorted(name for name in expected_files if name.endswith(".parquet"))
-    if len(parquet_names) != local.get("parquet_files"):
+    if len(parquet_names) != phase1.get("parquet_files"):
         raise PostUploadRehashError("parquet file count mismatch")
     metrics = [parquet_metrics(data_dir / name, holdout) for name in parquet_names]
     rows = sum(item["rows"] for item in metrics)
     parquet_bytes = sum(item["bytes"] for item in metrics)
     maximum = max(item["ts_max_utc_ns"] for item in metrics)
-    if rows != local.get("parquet_rows"):
+    if rows != phase1.get("parquet_rows"):
         raise PostUploadRehashError(f"parquet row total mismatch: {rows}")
-    if parquet_bytes != local.get("parquet_bytes"):
+    if parquet_bytes != phase1.get("parquet_bytes"):
         raise PostUploadRehashError(f"parquet byte total mismatch: {parquet_bytes}")
-    if maximum != local.get("maximum_timestamp_utc_ns"):
+    if maximum != phase1.get("maximum_timestamp_utc_ns"):
         raise PostUploadRehashError(f"maximum timestamp mismatch: {maximum}")
 
     return {
