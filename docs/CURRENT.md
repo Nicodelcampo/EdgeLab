@@ -1,6 +1,6 @@
 # CURRENT — empezar acá
 
-**Fecha:** 2026-08-26
+**Fecha:** 2026-08-28
 
 > Estado operativo posterior al hardening Gate 2/L2 y a la reproducción canónica de Gate 1.
 
@@ -37,17 +37,14 @@ La procedencia y hashes vinculantes viven en `specs/bt2a_gate2_first_passage_v1.
 
 ## Puerta 2
 
-- P2-A: implementado, no ejecutado.
+- P2-A: ejecutado y soportado como diagnóstico post-selección (`results/bt2a-p2a-v1-r1-20260827`, payload `296f8352a46751c3a9a26a32ec29661ddcecba7ac57874a967dc591a92766e28`, clasificación `P2_DIAGNOSTIC_MECHANISM_SUPPORTED`).
 - P2-B: implementado, no ejecutado.
-- El spec P2-A queda congelado por este cambio sólo después de revisión humana del diff.
-- La ejecución exige el token literal `AUTHORIZE_BT2A_P2A_POST_OUTCOME_DIAGNOSTIC`.
-- P2-A es diagnóstico post-outcome; no puede declarar edge ni promoción.
-- La familia primaria son 16 celdas B×H_ticks con Holm; las 12 celdas de reloj son descriptivas secundarias.
-- La regla `P2_DIAGNOSTIC_MECHANISM_SUPPORTED` está codificada y congelada en el spec.
+- Diagnóstico de Heterogeneidad Horaria GC V1: ejecutado y finalizado bajo autorización vinculante (`specs/bt2a_p2a_gc_clock_heterogeneity_v1.json`, resultado `docs/research/BT2A_P2A_GC_CLOCK_HETEROGENEITY_RESULT_2026-08-28.md`, clasificación `P2A_POST_SELECTION_NO_CLOCK_HETEROGENEITY_SIGNAL`, payload SHA-256 `4a01978b98ccaa4342120493a295680820da44d0474b4d991b9f5bab94424a0d`). No se detectó evidencia estadística de que el contraste K_ABS−N_RAND difiera entre las 4 fases horarias tras Holm-12 (0/12 contrastes familiares). Esto no prueba homogeneidad positiva; descarta formalmente introducir filtros horarios post-hoc.
+- Incidente epistemológico asentado: 4 sesiones prematuras en cuarentena; ejecución autorizada cerrada.
+- P2-A no declara edge ni habilita promoción.
 
-Runner: `tools/run_bt2a_gate2_p2a.py`.
-
-Candidato V1-R1: el fail-closed adversarial rechaza checkpoints malformados, mutaciones del contrato, valores no finitos y `NOT_READY` con código de éxito. Validación Python 3.12 exacta: 45 tests aprobados; outcomes no abiertos.
+Runner P2-A: `tools/run_bt2a_gate2_p2a.py`.
+Runner Clock: `tools/run_bt2a_p2a_gc_clock_heterogeneity.py`.
 
 ## Línea C / Gate L2
 
@@ -63,22 +60,22 @@ No ejecutar HMM final, join de outcomes ni CTX-3 hasta pasar los gates de `docs/
 ## Firewall
 
 - Holdout `20260701–20261231` sellado.
-- No abrir P2-A sin spec congelado, Event Store exacto y autorización literal.
+- P2-A outcomes ya abiertos (`P2A_OUTCOMES_ALREADY_OPENED=true`).
 - No abrir P2-B sin autorización separada y costos GC confirmados.
 - No usar `aVolClusterPOI` como oracle.
-- No elegir una celda por el máximo observado.
+- No elegir horario por máximo observado (`winner_selection_allowed=false`).
 
 ## Estado compacto
 
 ```text
 GATE1_ALL5                    = COMPLETE_POST_OUTCOME_REPLICATION
 CANONICAL_EVENT_STORE_234    = PASS
-P2A_SPEC                      = FROZEN_POST_OUTCOME_DIAGNOSTIC
-P2A                           = IMPLEMENTED_NOT_RUN
+P2A                           = COMPLETE_POST_OUTCOME_DIAGNOSTIC
+P2A_CLOCK_HETEROGENEITY       = COMPLETE_NO_CLOCK_HETEROGENEITY_SIGNAL
 P2B                           = IMPLEMENTED_NOT_RUN
-GATE_L2_SAMPLE_POWER          = NOT_READY
-NEW_P2_OR_L2_OUTCOMES_OPENED  = false
-EDGE_DECLARED                 = false
+GATE_L2_SAMPLE_POWER                    = NOT_READY
+NEW_OUTCOMES_OPENED_BY_CLOCK_PREPARATION = false
+EDGE_DECLARED                           = false
 ```
 
 ## Primer chequeo
