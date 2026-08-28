@@ -1,0 +1,191 @@
+{
+  "schema_version": "avolcluster_nq_zone_event_store_v1.0.0-draft",
+  "status": "DRAFT_PREAUTHORIZATION_FAIL_CLOSED",
+  "title": "aVolClusterPOI NQ-120t canonical zone-creation Event Store",
+  "freeze_authorized": false,
+  "execution_authorized": false,
+  "frozen_at_utc": null,
+  "frozen_commit": null,
+  "frozen_spec_payload_sha256": null,
+  "authority": {
+    "branch": "research/avolcluster-nq-gate1-infra-v1-20260828",
+    "base_branch": "research/avolcluster-nq-microticks-v1-20260828",
+    "base_commit": "3961b67d80cd62aa6adab101e79739db3bc0005b",
+    "kernel_path": "edgelab/bridge/indicators/avolclusterpoi.py",
+    "kernel_version": "0.5",
+    "kernel_git_blob_sha1": "e472a06899e3d76287072fdbeef4b95604101eb3",
+    "session_registry_path": "specs/bt2a_gate1_nq_all5_sessions_2026-08-27.json",
+    "session_registry_git_blob_sha1": "2dae4869ca81e710e4b4fd8c77b05cadb834718a",
+    "selection_result_path": "docs/research/avolcluster_nq_microticks_result.json",
+    "selection_result_git_blob_sha1": "29459431d8be21562469ba7755ca920122425b4f"
+  },
+  "epistemic_scope": {
+    "stage": "TARGET_FREE_ZONE_CREATION_INFRASTRUCTURE_ONLY",
+    "detector_is_target_free": true,
+    "future_price_path_accessed_by_this_stage": false,
+    "first_touch_accessed": false,
+    "forward_returns_accessed": false,
+    "mfe_mae_accessed": false,
+    "first_passage_accessed": false,
+    "pnl_accessed": false,
+    "holdout_touched": false,
+    "winner_selected_from_outcomes": false,
+    "edge_declared": false,
+    "promotion_eligible": false
+  },
+  "target_free_selection": {
+    "status": "COMPLETE_TARGET_FREE_DENSITY_WIDTH_SELECTION",
+    "selected_configuration": {
+      "config_id": "tick_120_W5_M20_C4_P950",
+      "bar_type": "tick_120",
+      "window_bars": 5,
+      "nominal_ticks_per_block": 600,
+      "median_multiplier": 2.0,
+      "min_cluster_ticks": 4,
+      "detection_percentile": 95.0
+    },
+    "observed_summary": {
+      "total_contract_sessions": 234,
+      "off_price_events": 5876,
+      "at_price_events_excluded_from_gate1_population": 3728,
+      "contract_sessions_with_off_price_events": 233,
+      "coverage_percent": 99.6,
+      "zones_per_contract_session_mean": 25.11,
+      "zones_per_hour_mean_assuming_23h_session": 1.09,
+      "width_ticks_mean": 14.8,
+      "width_ticks_p95": 26.0,
+      "fitness_score": 0.9987
+    },
+    "interpretation_limits": [
+      "120 ticks is the selected bar resolution, not a proof of isolated optimality",
+      "five bars imply a nominal 600-tick detection block",
+      "fitness used only target-free density, coverage and width",
+      "selection does not establish predictive information or edge"
+    ]
+  },
+  "population": {
+    "instrument": "NQ",
+    "tick_size": 0.25,
+    "contracts": ["NQ 09-25", "NQ 12-25", "NQ 03-26", "NQ 06-26", "NQ 09-26"],
+    "contract_sessions_expected": 234,
+    "session_id_format": "YYYYMMDD_CME_TRADE_DATE",
+    "session_id_max_inclusive": "20260630",
+    "holdout_session_id_min_inclusive": "20260701",
+    "holdout_end_inclusive": "20261231",
+    "zone_kind": "OFF_PRICE",
+    "creation_bar_eligible_for_touch": false
+  },
+  "detector": {
+    "kernel_version": "0.5",
+    "calculate": "OnBarClose",
+    "bar_type": "tick",
+    "tick_bar_size": 120,
+    "reset_tick_bars_by_session": true,
+    "window_bars": 5,
+    "disjoint_blocks": true,
+    "median_multiplier": 2.0,
+    "median_definition": "upper_median",
+    "max_gap_ticks": 1,
+    "min_cluster_ticks": 4,
+    "one_cluster_per_block": true,
+    "time_bucket_minutes": 30,
+    "bucket_anchor": "session_start_elapsed_minutes_clamped_to_45_as_in_selection_runner",
+    "lookback_sessions": 20,
+    "detection_percentile": 95.0,
+    "quantile": "empirical_no_interpolation",
+    "min_samples_per_bucket": 10,
+    "history": "prior_complete_sessions_only_fifo_by_session_across_chronological_front_contract_chain",
+    "fallback_global_history": false,
+    "quality_score_gate": false,
+    "max_age_bars": 0
+  },
+  "event_store": {
+    "stage": "ZONE_CREATION_ONLY",
+    "checkpoint_grain": "one JSON file per contract-session",
+    "checkpoint_order": "session registry ordinal",
+    "parquet_role": "transport mirror validated 1:1 against canonical checkpoints",
+    "contract": {
+      "exact_columns": true,
+      "fields": [
+        {"name": "schema_version", "type": "str", "nullable": false, "non_empty": true},
+        {"name": "event_id", "type": "str", "nullable": false, "non_empty": true},
+        {"name": "identity_sha256", "type": "str", "nullable": false, "non_empty": true},
+        {"name": "event_type", "type": "str", "nullable": false, "non_empty": true},
+        {"name": "instrument", "type": "str", "nullable": false, "non_empty": true},
+        {"name": "contract", "type": "str", "nullable": false, "non_empty": true},
+        {"name": "session_id", "type": "str", "nullable": false, "non_empty": true},
+        {"name": "config_id", "type": "str", "nullable": false, "non_empty": true},
+        {"name": "session_ordinal", "type": "int", "nullable": false},
+        {"name": "block_index", "type": "int", "nullable": false},
+        {"name": "block_start_bar_index", "type": "int", "nullable": false},
+        {"name": "block_end_bar_index", "type": "int", "nullable": false},
+        {"name": "created_ts_utc_ns", "type": "int", "nullable": false},
+        {"name": "availability_ts_utc_ns", "type": "int", "nullable": false},
+        {"name": "bar_type", "type": "str", "nullable": false, "non_empty": true},
+        {"name": "lower_tick", "type": "int", "nullable": false},
+        {"name": "upper_tick", "type": "int", "nullable": false},
+        {"name": "width_ticks", "type": "int", "nullable": false},
+        {"name": "close_tick", "type": "int", "nullable": false},
+        {"name": "geometric_side", "type": "int", "nullable": false},
+        {"name": "distance_ticks", "type": "int", "nullable": false},
+        {"name": "zone_score", "type": "float", "nullable": false},
+        {"name": "detection_threshold", "type": "float", "nullable": false},
+        {"name": "history_score_count", "type": "int", "nullable": false},
+        {"name": "history_session_count", "type": "int", "nullable": false},
+        {"name": "source_data_sha256", "type": "str", "nullable": false, "non_empty": true}
+      ],
+      "sort_keys": ["session_ordinal", "created_ts_utc_ns", "block_index", "lower_tick", "upper_tick", "event_id"],
+      "identity_column": "identity_sha256",
+      "identity_fields": [
+        "schema_version", "event_id", "event_type", "instrument", "contract", "session_id", "config_id",
+        "session_ordinal", "block_index", "block_start_bar_index", "block_end_bar_index",
+        "created_ts_utc_ns", "availability_ts_utc_ns", "bar_type", "lower_tick", "upper_tick",
+        "width_ticks", "close_tick", "geometric_side", "distance_ticks", "zone_score",
+        "detection_threshold", "history_score_count", "history_session_count", "source_data_sha256"
+      ],
+      "unique_fields": ["event_id", "identity_sha256"]
+    }
+  },
+  "lifecycle": {
+    "first_touch_implemented": false,
+    "zone_invalidation_implemented": false,
+    "episode_collapse_implemented": false,
+    "future_stage_requires_separate_frozen_spec": true,
+    "future_stage_must_not_infer_direction_from_off_price_geometric_side": true
+  },
+  "authorization": {
+    "freeze_token": "APPROVE_FREEZE_AVOLCLUSTER_NQ_ZONE_EVENT_STORE_V1",
+    "zone_store_validation_token": "AUTHORIZE_VALIDATE_AVOLCLUSTER_NQ_ZONE_EVENT_STORE_V1",
+    "zone_store_validation_authorized": false,
+    "future_path_authorized": false,
+    "outcome_execution_token": null
+  },
+  "implementation_status": {
+    "generic_logical_event_store_validator": "IMPLEMENTED",
+    "avol_creation_schema_and_domain_validator": "IMPLEMENTED",
+    "parquet_checkpoint_equivalence": "IMPLEMENTED",
+    "selected_configuration_real_data_builder": "NOT_IMPLEMENTED",
+    "real_data_manifest_bound": false,
+    "real_event_store_built": false,
+    "first_touch_event_store_built": false,
+    "gate1_outcomes_run": false
+  },
+  "review_blockers": [
+    "bind SHA-256 for each of the five local NQ source Parquet files",
+    "implement the selected-configuration builder with atomic per-session checkpoints and resume state",
+    "prove exact reproduction of the 5876 OFF_PRICE target-free zone count",
+    "audit NQ-120t Python versus NT8 detector parity or explicitly classify the run as Python-kernel research only",
+    "freeze creation Event Store contract before validating real artifacts",
+    "design and freeze lifecycle, first-touch, episode-collapse and outcome clocks separately",
+    "obtain explicit authorization before any future-path or outcome execution"
+  ],
+  "forbidden_claims": [
+    "120t is universally optimal",
+    "zone has predictive information",
+    "OFF_PRICE side is a direction forecast",
+    "institutional activity proven",
+    "compression proven",
+    "edge",
+    "promotion eligible"
+  ]
+}
