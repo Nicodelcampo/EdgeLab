@@ -1,0 +1,128 @@
+{
+  "schema_version": "preparar_es_v1",
+  "instrumento": "ES",
+  "outcomes_accessed": false,
+  "pnl_accessed": false,
+  "holdout_included": false,
+  "firewall": {
+    "holdout_first_trade_date": 20260701,
+    "cutoff_ns": 1782856800000000000
+  },
+  "nota_memoria": "`load_canonical_parquet` YA acepta start_utc_ns/end_utc_ns y empuja el filtro a pyarrow. P-25 afirmaba que lee el archivo completo: es falso, lo hacian las llamadas. Una sesion de ES_06-26 sale en 1,38 M ticks (66 MB) contra 73,3 M del archivo.",
+  "contratos": [
+    {
+      "archivo": "ES_03-26_ticks.parquet",
+      "sha256": "948067cfb66a6c7cd19bed1c6f87c2a0877b1764740a00714e23edd1749a9c35",
+      "canon_disponible": false,
+      "filas": 68302992,
+      "filas_pre_firewall": 68302992,
+      "gb_arrays_sin_ventana": 3.053,
+      "ts_min": 1765422000024000000,
+      "ts_max": 1774015800000000000,
+      "n_sesiones_pre_firewall": 79,
+      "primera_sesion": 20251211,
+      "ultima_sesion": 20260320
+    },
+    {
+      "archivo": "ES_06-26_ticks.parquet",
+      "sha256": "dc859fa39a6497c832e78259ead6b36c623b61d9a27212af2c41f0b74d68992b",
+      "canon_disponible": false,
+      "filas": 73268494,
+      "filas_pre_firewall": 73268494,
+      "gb_arrays_sin_ventana": 3.275,
+      "ts_min": 1773284403180000000,
+      "ts_max": 1781789399412000000,
+      "n_sesiones_pre_firewall": 72,
+      "primera_sesion": 20260312,
+      "ultima_sesion": 20260618
+    },
+    {
+      "archivo": "ES_09-25_ticks.parquet",
+      "sha256": "00190e32870e176eb404bc6d96fb157087006accfb4b80f201fef0a7cb3cb38e",
+      "canon_disponible": false,
+      "filas": 35045149,
+      "filas_pre_firewall": 35045149,
+      "gb_arrays_sin_ventana": 1.567,
+      "ts_min": 1752789600008000000,
+      "ts_max": 1758288598696000000,
+      "n_sesiones_pre_firewall": 56,
+      "primera_sesion": 20250718,
+      "ultima_sesion": 20250919
+    },
+    {
+      "archivo": "ES_09-26_ticks.parquet",
+      "sha256": "add9bfcd46b3e8a14b26e6fe90295509dc9444309836f186661850af214146ef",
+      "canon_disponible": false,
+      "filas": 30509257,
+      "filas_pre_firewall": 12743000,
+      "gb_arrays_sin_ventana": 1.364,
+      "ts_min": 1780887600128000000,
+      "ts_max": 1785199907652000000,
+      "n_sesiones_pre_firewall": 18,
+      "primera_sesion": 20260608,
+      "ultima_sesion": 20260630
+    },
+    {
+      "archivo": "ES_12-25_ticks.parquet",
+      "sha256": "07a34df2e3527ae7e76c8af111a8a5e5537debd850dc2c4aa4377195059cbee8",
+      "canon_disponible": false,
+      "filas": 73446975,
+      "filas_pre_firewall": 73446975,
+      "gb_arrays_sin_ventana": 3.283,
+      "ts_min": 1757559697168000000,
+      "ts_max": 1766341561600635500,
+      "n_sesiones_pre_firewall": 88,
+      "primera_sesion": 20250911,
+      "ultima_sesion": 20251221
+    }
+  ],
+  "cadena_temporal": [
+    "ES_09-25_ticks.parquet",
+    "ES_12-25_ticks.parquet",
+    "ES_03-26_ticks.parquet",
+    "ES_06-26_ticks.parquet",
+    "ES_09-26_ticks.parquet"
+  ],
+  "solapes": [
+    {
+      "a": "ES_09-25_ticks.parquet",
+      "b": "ES_12-25_ticks.parquet",
+      "solape_ns": 728901528000000
+    },
+    {
+      "a": "ES_12-25_ticks.parquet",
+      "b": "ES_03-26_ticks.parquet",
+      "solape_ns": 919561576635500
+    },
+    {
+      "a": "ES_03-26_ticks.parquet",
+      "b": "ES_06-26_ticks.parquet",
+      "solape_ns": 731396820000000
+    },
+    {
+      "a": "ES_06-26_ticks.parquet",
+      "b": "ES_09-26_ticks.parquet",
+      "solape_ns": 901799284000000
+    }
+  ],
+  "oraculo": {
+    "disponible": true,
+    "contrato": "ES 06-26",
+    "archivo": "E:\\EdgeLab\\data\\nt8_oracles\\hftzonesespurev2_ES_0626_pre_firewall.csv",
+    "zonas_exportadas": 2742,
+    "zonas_totales_del_contrato": 2742,
+    "zonas_descartadas_por_firewall": 0,
+    "corte_utc_ms": 1782856800000,
+    "sha256": "f0c2e851d1563aa50784cff04181dcf389d4b5c6a1f73550f8e0e22689d28e43",
+    "nota": "el .cs escribe SQLite, no CSV; se convierte SIN tocarlo -- modificar el indicador cambiaria el objeto que se valida"
+  },
+  "procedencia": {
+    "head_commit": "99e786619cc0084eb3f5b1f1c8e19e67464e2202",
+    "archivos_sucios": [],
+    "alcance_comprometida": [
+      "edgelab/",
+      "diag/"
+    ],
+    "medicion_comprometida": false
+  }
+}

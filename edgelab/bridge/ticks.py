@@ -13,10 +13,10 @@ from typing import Optional
 
 import numpy as np
 
-from edgelab.data.nt8_contract import ES, NQ, SIX_E, YM, InstrumentSpec
+from edgelab.data.nt8_contract import INSTRUMENT_SPECS, InstrumentSpec
 
-# Catálogo de instrumentos soportados por el bridge (tick_size del contrato F1).
-INSTRUMENT_CATALOG = {"6E": SIX_E, "YM": YM, "ES": ES, "NQ": NQ}
+# Alias histórico: una sola fuente de verdad vive en nt8_contract.py.
+INSTRUMENT_CATALOG = INSTRUMENT_SPECS
 
 _REQUIRED = ("ts_utc_ns", "price_ticks", "volume", "bid_ticks", "ask_ticks",
              "sequence", "instrument", "contract")
@@ -31,12 +31,12 @@ def instrument_spec(symbol: str) -> InstrumentSpec:
 
 @dataclass
 class TickSeries:
-    ts_ns: np.ndarray            # int64 UTC ns, monótono no-decreciente (gate P0)
-    price_ticks: np.ndarray      # int64
-    volume: np.ndarray           # float64
-    bid_ticks: Optional[np.ndarray]  # int64 o None si el feed no trae quotes
+    ts_ns: np.ndarray
+    price_ticks: np.ndarray
+    volume: np.ndarray
+    bid_ticks: Optional[np.ndarray]
     ask_ticks: Optional[np.ndarray]
-    sequence: np.ndarray         # int64, orden estable del archivo fuente
+    sequence: np.ndarray
     tick_size: float
     instrument: str = "?"
     contract: str = "?"
@@ -56,9 +56,7 @@ class TickSeries:
 
 def load_canonical_parquet(path, contract=None, start_utc_ns=None, end_utc_ns=None,
                            instrument=None) -> TickSeries:
-    """Lee el parquet canónico F2, filtrado por `contract` y `[start, end)` UTC.
-    Preserva el orden de fila (sequence). Falla si el schema no es F2 o el
-    instrument no está en el catálogo."""
+    """Lee el parquet canónico F2, filtrado por `contract` y `[start, end)` UTC."""
     import pyarrow.parquet as pq
 
     filters = []
@@ -95,8 +93,7 @@ def load_canonical_parquet(path, contract=None, start_utc_ns=None, end_utc_ns=No
 def make_synthetic(start_utc: str = "2026-06-01T23:00:00", n_sessions: int = 3,
                    ticks_per_session: int = 30000, tick_size: float = 0.25,
                    seed: int = 7) -> TickSeries:
-    """Ticks sintéticos deterministas para tests/demo: random walk + ráfagas HFT
-    + gaps de 1 tick, en sesiones separadas por pausas nocturnas."""
+    """Ticks sintéticos deterministas para tests/demo."""
     rng = np.random.default_rng(seed)
     t0 = int(datetime.fromisoformat(start_utc).replace(tzinfo=timezone.utc).timestamp() * 1e9)
     ts, px, vol, bid, ask = [], [], [], [], []

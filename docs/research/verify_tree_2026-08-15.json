@@ -1,0 +1,122 @@
+{
+  "avisos": 2,
+  "base": "E:\\EdgeLab\\data\\nt8",
+  "bytes_verificados": 17067000969,
+  "checks": [
+    {
+      "detail": "tool='tools/recut_holdout.py@v1'",
+      "id": "manifiesto.herramienta",
+      "level": "ok"
+    },
+    {
+      "detail": "precheck=False (un manifiesto de precheck no describe ningun arbol)",
+      "id": "manifiesto.no_precheck",
+      "level": "ok"
+    },
+    {
+      "detail": "verdict='PASS'",
+      "id": "manifiesto.veredicto",
+      "level": "ok"
+    },
+    {
+      "detail": "registros sin RECUT/output/digesto: ninguno",
+      "id": "manifiesto.estados",
+      "level": "ok"
+    },
+    {
+      "detail": "los 7 totales cierran",
+      "id": "manifiesto.totales",
+      "level": "ok"
+    },
+    {
+      "detail": "keep+drop != total en: ninguno",
+      "id": "manifiesto.particion",
+      "level": "ok"
+    },
+    {
+      "detail": "esperados 56, encontrados 56, faltan: ninguno",
+      "id": "inventario.faltantes",
+      "level": "ok"
+    },
+    {
+      "detail": "parquets no declarados en el manifiesto: ninguno",
+      "id": "inventario.extras",
+      "level": "ok"
+    },
+    {
+      "detail": "mismo nombre en dos carpetas: ninguno",
+      "id": "inventario.sin_ambiguedad",
+      "level": "ok"
+    },
+    {
+      "detail": "1 archivos no-parquet en el arbol: recut_index.json",
+      "id": "inventario.no_parquet",
+      "level": "skip"
+    },
+    {
+      "detail": "cada salida esta en la carpeta declarada",
+      "id": "inventario.carpetas",
+      "level": "ok"
+    },
+    {
+      "detail": "bytes+sha256+blob recalculados y coincidentes en 11/11 salidas (970.254.030 B)",
+      "id": "salidas.digestos",
+      "level": "ok"
+    },
+    {
+      "detail": "sha256 recalculado y coincidente en 45/45 limpios (16.096.746.939 B)",
+      "id": "enlaces.digestos",
+      "level": "ok"
+    },
+    {
+      "detail": "6E_09-26_ticks.parquet: ambiguo en el origen",
+      "id": "fuente.intacta",
+      "level": "falla"
+    },
+    {
+      "detail": "45/45 limpios comparten inodo con el origen (hardlink: el arbol no es una copia fisica; un write in-place mutaria el origen inmutable)",
+      "id": "enlaces.inodo",
+      "level": "ok"
+    },
+    {
+      "detail": "56/56 parquets con permiso de escritura (con inodos compartidos, un write in-place contamina el origen): 6B_03-26_ticks.parquet, 6B_06-26_ticks.parquet, 6B_09-25_ticks.parquet, 6B_09-26_ticks.parquet, 6B_12-25_ticks.parquet",
+      "id": "proteccion.escritura",
+      "level": "aviso"
+    },
+    {
+      "detail": "max(ts_utc_ns) < apertura de sesion (1782856800000000000) en 56/56 parquets, medido en disco",
+      "id": "holdout.max_ts_fisico",
+      "level": "ok"
+    },
+    {
+      "detail": "2 par(es) con digesto identico en los 11 archivos -> columna redundante: sequence == source_row; ts_local_ns == ts_utc_ns",
+      "id": "columnas.digestos_duplicados",
+      "level": "aviso"
+    },
+    {
+      "detail": "22 comparaciones columna-a-columna confirman igualdad byte a byte",
+      "id": "columnas.verificado_pyarrow",
+      "level": "ok"
+    }
+  ],
+  "fallas": 1,
+  "limpios_verificados": 45,
+  "ok": 15,
+  "out_base": "E:\\EdgeLab\\data\\nt8_research_v2",
+  "pares_columnas_redundantes": [
+    [
+      "sequence",
+      "source_row"
+    ],
+    [
+      "ts_local_ns",
+      "ts_utc_ns"
+    ]
+  ],
+  "parquets_con_ts_medido": 56,
+  "salidas_verificadas": 11,
+  "schema_version": 1,
+  "skips": 1,
+  "tool": "tools/verify_tree.py@v1",
+  "verdict": "FAIL_FUENTE"
+}

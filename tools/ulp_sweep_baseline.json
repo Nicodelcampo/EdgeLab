@@ -197,6 +197,22 @@
     "CaptureEventProbeV2.cs :: else if (e.Price <= bid.Value) aggressor = \"sell\";": {
       "evidencia": "MEDIDO (AUDIT-002, tools/ulp_exposure.py, caso 'CaptureEventProbeV2 (clasificacion de agresor)', 6E ts=5e-05, niveles 20000-25000): exposicion 0.00%, 0 flips de 5001 niveles en cada uno de los dos umbrales. El empate NO es un caso de borde aqui: un trade exactamente al ask es el caso NORMAL de un buy agresivo, por eso se midio con offset_ticks=0 en vez de declararlo inmune por medio tick. price, bid y ask son los TRES precios de grilla del mismo snapshot del feed, llevados SIN aritmetica; feed() y ticks*tick_size son estrictamente monotonas en el indice de tick, asi que preservan orden Y empates. No se modifican las comparaciones: no hay exposicion que corregir.",
       "veredicto": "INMUNE_MONOTONO"
+    },
+    "YMPreRangeSweep.cs :: bool hitH = (High[0] >= rangeHigh);": {
+      "evidencia": "MEDIDO POR LECTURA DEL CAMINO DE DATOS, no por analogia: `rangeHigh` se construye SOLO con `rangeHigh = High[0]` (linea 237) y `rangeHigh = Math.Max(rangeHigh, High[0])` (linea 242). `Math.Max` es SELECCION, no aritmetica: devuelve uno de sus dos operandos sin tocarlo. Entonces `rangeHigh` es siempre, literalmente, algun `High[0]` -- un precio de grilla llevado SIN aritmetica, no un valor derivado. Los dos lados de la comparacion son precios de grilla puros, y feed() y ticks*tick_size son ambas estrictamente monotonas en el indice de tick, asi que preservan orden Y empates: feed(a)>feed(b) <=> a>b. Es el mismo caso que las otras entradas INMUNE_MONOTONO de este baseline. Si alguna vez `rangeHigh` pasa a calcularse (promedio, offset, porcentaje del rango), este triaje CADUCA y hay que medirlo con tools/ulp_exposure.py.",
+      "veredicto": "INMUNE_MONOTONO"
+    },
+    "YMPreRangeSweep.cs :: bool hitL = (Low[0] <= rangeLow);": {
+      "evidencia": "Simetrico del anterior. `rangeLow` se construye SOLO con `rangeLow = Low[0]` (linea 238) y `rangeLow = Math.Min(rangeLow, Low[0])` (linea 243). `Math.Min` es seleccion, no aritmetica. Ambos operandos son precios de grilla llevados sin aritmetica; la monotonia estricta de feed() y ticks*tick_size preserva orden y empates. Mismo caveat: si `rangeLow` pasa a calcularse, este triaje caduca.",
+      "veredicto": "INMUNE_MONOTONO"
+    },
+    "aVolClusterPOI.cs :: bool offPrice = direction != 0;": {
+      "evidencia": "no compara precios: direction es un entero (-1, 0, +1) derivado de comparaciones en ticks enteros que clasifica si el cierre quedo arriba, dentro o abajo de la zona. Falso positivo del scanner ULP.",
+      "veredicto": "NO_ES_PRECIO"
+    },
+    "aVolClusterPOI.cs :: bool passes = offPrice && quality >= MinQualityScore;": {
+      "evidencia": "no compara precios: quality es un score heuristico continuo 0..100 y MinQualityScore es su umbral de corte de ranking. Falso positivo del scanner ULP.",
+      "veredicto": "NO_ES_PRECIO"
     }
   }
 }

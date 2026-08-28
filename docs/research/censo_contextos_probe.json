@@ -1,0 +1,1195 @@
+{
+ "schema_version": "censo_contextos_es_v1_target_free",
+ "outcomes_accessed": false,
+ "pnl_accessed": false,
+ "holdout_included": false,
+ "proposito": "describir DONDE y COMO aparecen las zonas, para que la declaracion de contextos sea informada. Nada de lo que pasa DESPUES entra aca",
+ "estado_previo": "rango y ticks de los 5 min ANTERIORES, y rango del dia HASTA el instante de creacion. Ninguna ventana posterior",
+ "huso": "America/New_York con DST real via zoneinfo, no offset fijo: la etiqueta horaria mal resuelta es lo que bloqueo H-SWEEP-1",
+ "fases": {
+  "asia": [
+   18,
+   3
+  ],
+  "europa": [
+   3,
+   8
+  ],
+  "premarket": [
+   8,
+   9.5
+  ],
+  "rth_am": [
+   9.5,
+   12
+  ],
+  "rth_pm": [
+   12,
+   16
+  ],
+  "cierre": [
+   16,
+   18
+  ]
+ },
+ "universo": {
+  "n_zonas": 742,
+  "n_sesiones": 8,
+  "sin_parquet": 0
+ },
+ "zonas_por_sesion": {
+  "n": 8,
+  "p25": 67.0,
+  "mediana": 77.5,
+  "p75": 90.0,
+  "media": 92.75
+ },
+ "agrupamiento": {
+  "fano_mediana": 8.627,
+  "fano_p25": 7.54,
+  "fano_p75": 11.17,
+  "bin_min": 5,
+  "lectura": "Poisson = 1; > 1 significa que llegan en rafagas"
+ },
+ "solapamiento": {
+  "ventana_min": 30,
+  "resumen": {
+   "n": 742,
+   "p25": 1.0,
+   "mediana": 3.0,
+   "p75": 10.0,
+   "media": 5.81
+  },
+  "frac_con_al_menos_uno": 0.8181
+ },
+ "medias_declaradas": {
+  "sma": [
+   20,
+   50
+  ],
+  "ema": [
+   9,
+   21
+  ],
+  "base": "barras de 1 minuto cerradas ANTES de la creacion",
+  "vwap": "acumulado de sesion hasta la barra anterior"
+ },
+ "memoria_de_nivel": {
+  "nota": "nulo = misma cantidad de zonas colocadas en ticks reales al azar; preserva el tiempo que el precio paso en cada nivel",
+  "p_max_mediana": 0.005,
+  "frac_sesiones_p_max_menor_005": 0.75
+ },
+ "persistencia_entre_sesiones": {
+  "tolerancia_ticks": 2,
+  "n_pares": 7,
+  "frac_hoy_cerca_de_ayer": 0.1667,
+  "nulo_desplazado": 0.1666,
+  "contraste": 0.0001
+ },
+ "por_fase": {
+  "europa": {
+   "n_zonas": 11,
+   "frac_zonas": 0.0148,
+   "ticks": 225000,
+   "volumen": 286253.0,
+   "frac_ticks": 0.0477,
+   "zonas_por_millon_ticks": 48.89,
+   "zonas_por_millon_contratos": 38.43,
+   "frac_alcistas": 0.8182,
+   "ancho": {
+    "n": 11,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 3.5,
+    "media": 2.45
+   },
+   "pasos": {
+    "n": 11,
+    "p25": 82.0,
+    "mediana": 105.0,
+    "p75": 131.0,
+    "media": 114.55
+   },
+   "avg_ms": {
+    "n": 11,
+    "p25": 0.21,
+    "mediana": 0.29,
+    "p75": 0.59,
+    "media": 0.42
+   },
+   "total_vol": {
+    "n": 11,
+    "p25": 236.5,
+    "mediana": 264.0,
+    "p75": 530.0,
+    "media": 444.82
+   },
+   "solape": {
+    "n": 11,
+    "p25": 0.0,
+    "mediana": 0.0,
+    "p75": 1.0,
+    "media": 0.36
+   },
+   "pos_en_rango": {
+    "n": 11,
+    "p25": 0.8,
+    "mediana": 0.97,
+    "p75": 1.01,
+    "media": 0.82
+   },
+   "frac_absorb": 0.8182,
+   "vs_medias": {
+    "vwap": {
+     "abs_ticks": {
+      "n": 11,
+      "p25": 28.29,
+      "mediana": 39.01,
+      "p75": 52.49,
+      "media": 39.59
+     },
+     "frac_por_encima": 0.8182
+    },
+    "sma20": {
+     "abs_ticks": {
+      "n": 11,
+      "p25": 7.2,
+      "mediana": 8.5,
+      "p75": 10.47,
+      "media": 9.28
+     },
+     "frac_por_encima": 0.8182
+    },
+    "sma50": {
+     "abs_ticks": {
+      "n": 11,
+      "p25": 9.73,
+      "mediana": 13.04,
+      "p75": 17.15,
+      "media": 13.51
+     },
+     "frac_por_encima": 0.8182
+    },
+    "ema9": {
+     "abs_ticks": {
+      "n": 11,
+      "p25": 5.22,
+      "mediana": 5.77,
+      "p75": 8.37,
+      "media": 6.67
+     },
+     "frac_por_encima": 0.8182
+    },
+    "ema21": {
+     "abs_ticks": {
+      "n": 11,
+      "p25": 7.39,
+      "mediana": 8.19,
+      "p75": 10.11,
+      "media": 8.96
+     },
+     "frac_por_encima": 0.8182
+    }
+   }
+  },
+  "premarket": {
+   "n_zonas": 22,
+   "frac_zonas": 0.0296,
+   "ticks": 175000,
+   "volumen": 242803.0,
+   "frac_ticks": 0.0371,
+   "zonas_por_millon_ticks": 125.71,
+   "zonas_por_millon_contratos": 90.61,
+   "frac_alcistas": 0.3636,
+   "ancho": {
+    "n": 22,
+    "p25": 2.25,
+    "mediana": 3.5,
+    "p75": 5.0,
+    "media": 4.59
+   },
+   "pasos": {
+    "n": 22,
+    "p25": 128.25,
+    "mediana": 175.5,
+    "p75": 277.5,
+    "media": 218.5
+   },
+   "avg_ms": {
+    "n": 22,
+    "p25": 0.3,
+    "mediana": 0.44,
+    "p75": 0.69,
+    "media": 0.49
+   },
+   "total_vol": {
+    "n": 22,
+    "p25": 249.25,
+    "mediana": 420.0,
+    "p75": 538.0,
+    "media": 410.73
+   },
+   "solape": {
+    "n": 22,
+    "p25": 1.0,
+    "mediana": 1.0,
+    "p75": 2.0,
+    "media": 1.36
+   },
+   "pos_en_rango": {
+    "n": 22,
+    "p25": 0.07,
+    "mediana": 0.32,
+    "p75": 0.74,
+    "media": 0.41
+   },
+   "frac_absorb": 0.5909,
+   "vs_medias": {
+    "vwap": {
+     "abs_ticks": {
+      "n": 22,
+      "p25": 18.07,
+      "mediana": 42.81,
+      "p75": 60.09,
+      "media": 42.11
+     },
+     "frac_por_encima": 0.4545
+    },
+    "sma20": {
+     "abs_ticks": {
+      "n": 22,
+      "p25": 3.65,
+      "mediana": 8.78,
+      "p75": 14.65,
+      "media": 11.2
+     },
+     "frac_por_encima": 0.3182
+    },
+    "sma50": {
+     "abs_ticks": {
+      "n": 22,
+      "p25": 6.79,
+      "mediana": 14.14,
+      "p75": 27.67,
+      "media": 17.64
+     },
+     "frac_por_encima": 0.3182
+    },
+    "ema9": {
+     "abs_ticks": {
+      "n": 22,
+      "p25": 3.06,
+      "mediana": 5.53,
+      "p75": 9.53,
+      "media": 7.94
+     },
+     "frac_por_encima": 0.3182
+    },
+    "ema21": {
+     "abs_ticks": {
+      "n": 22,
+      "p25": 2.75,
+      "mediana": 9.19,
+      "p75": 14.22,
+      "media": 10.69
+     },
+     "frac_por_encima": 0.4091
+    }
+   }
+  },
+  "rth_am": {
+   "n_zonas": 215,
+   "frac_zonas": 0.2898,
+   "ticks": 2140000,
+   "volumen": 2878211.0,
+   "frac_ticks": 0.454,
+   "zonas_por_millon_ticks": 100.47,
+   "zonas_por_millon_contratos": 74.7,
+   "frac_alcistas": 0.4744,
+   "ancho": {
+    "n": 215,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 4.0,
+    "media": 2.9
+   },
+   "pasos": {
+    "n": 215,
+    "p25": 122.0,
+    "mediana": 160.0,
+    "p75": 218.0,
+    "media": 189.19
+   },
+   "avg_ms": {
+    "n": 215,
+    "p25": 0.18,
+    "mediana": 0.51,
+    "p75": 0.91,
+    "media": 0.6
+   },
+   "total_vol": {
+    "n": 215,
+    "p25": 232.0,
+    "mediana": 273.0,
+    "p75": 403.5,
+    "media": 390.58
+   },
+   "solape": {
+    "n": 215,
+    "p25": 0.0,
+    "mediana": 1.0,
+    "p75": 2.0,
+    "media": 1.53
+   },
+   "pos_en_rango": {
+    "n": 215,
+    "p25": 0.16,
+    "mediana": 0.46,
+    "p75": 0.77,
+    "media": 0.46
+   },
+   "frac_absorb": 0.8558,
+   "vs_medias": {
+    "vwap": {
+     "abs_ticks": {
+      "n": 215,
+      "p25": 17.41,
+      "mediana": 33.53,
+      "p75": 63.35,
+      "media": 48.63
+     },
+     "frac_por_encima": 0.4186
+    },
+    "sma20": {
+     "abs_ticks": {
+      "n": 215,
+      "p25": 10.95,
+      "mediana": 24.9,
+      "p75": 45.92,
+      "media": 33.12
+     },
+     "frac_por_encima": 0.386
+    },
+    "sma50": {
+     "abs_ticks": {
+      "n": 215,
+      "p25": 12.41,
+      "mediana": 25.54,
+      "p75": 49.74,
+      "media": 36.33
+     },
+     "frac_por_encima": 0.414
+    },
+    "ema9": {
+     "abs_ticks": {
+      "n": 215,
+      "p25": 6.85,
+      "mediana": 14.51,
+      "p75": 30.45,
+      "media": 19.58
+     },
+     "frac_por_encima": 0.3953
+    },
+    "ema21": {
+     "abs_ticks": {
+      "n": 215,
+      "p25": 9.84,
+      "mediana": 21.43,
+      "p75": 41.5,
+      "media": 27.56
+     },
+     "frac_por_encima": 0.4093
+    }
+   }
+  },
+  "rth_pm": {
+   "n_zonas": 436,
+   "frac_zonas": 0.5876,
+   "ticks": 1791843,
+   "volumen": 2791350.0,
+   "frac_ticks": 0.3802,
+   "zonas_por_millon_ticks": 243.32,
+   "zonas_por_millon_contratos": 156.2,
+   "frac_alcistas": 0.4771,
+   "ancho": {
+    "n": 436,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 3.0,
+    "media": 2.14
+   },
+   "pasos": {
+    "n": 436,
+    "p25": 114.0,
+    "mediana": 148.0,
+    "p75": 231.0,
+    "media": 192.88
+   },
+   "avg_ms": {
+    "n": 436,
+    "p25": 0.27,
+    "mediana": 0.5,
+    "p75": 0.9,
+    "media": 0.63
+   },
+   "total_vol": {
+    "n": 436,
+    "p25": 227.0,
+    "mediana": 308.0,
+    "p75": 505.0,
+    "media": 434.21
+   },
+   "solape": {
+    "n": 436,
+    "p25": 2.0,
+    "mediana": 6.0,
+    "p75": 13.0,
+    "media": 7.88
+   },
+   "pos_en_rango": {
+    "n": 436,
+    "p25": 0.14,
+    "mediana": 0.41,
+    "p75": 0.84,
+    "media": 0.47
+   },
+   "frac_absorb": 0.9128,
+   "vs_medias": {
+    "vwap": {
+     "abs_ticks": {
+      "n": 436,
+      "p25": 11.97,
+      "mediana": 34.64,
+      "p75": 72.42,
+      "media": 44.57
+     },
+     "frac_por_encima": 0.4472
+    },
+    "sma20": {
+     "abs_ticks": {
+      "n": 436,
+      "p25": 3.95,
+      "mediana": 10.03,
+      "p75": 20.1,
+      "media": 13.12
+     },
+     "frac_por_encima": 0.3647
+    },
+    "sma50": {
+     "abs_ticks": {
+      "n": 436,
+      "p25": 3.82,
+      "mediana": 10.0,
+      "p75": 24.79,
+      "media": 16.04
+     },
+     "frac_por_encima": 0.3624
+    },
+    "ema9": {
+     "abs_ticks": {
+      "n": 436,
+      "p25": 2.86,
+      "mediana": 6.14,
+      "p75": 15.5,
+      "media": 9.71
+     },
+     "frac_por_encima": 0.3945
+    },
+    "ema21": {
+     "abs_ticks": {
+      "n": 436,
+      "p25": 3.5,
+      "mediana": 8.49,
+      "p75": 19.15,
+      "media": 12.07
+     },
+     "frac_por_encima": 0.3899
+    }
+   }
+  },
+  "cierre": {
+   "n_zonas": 53,
+   "frac_zonas": 0.0714,
+   "ticks": 121296,
+   "volumen": 234343.0,
+   "frac_ticks": 0.0257,
+   "zonas_por_millon_ticks": 436.95,
+   "zonas_por_millon_contratos": 226.16,
+   "frac_alcistas": 0.4906,
+   "ancho": {
+    "n": 53,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 2.0,
+    "media": 1.96
+   },
+   "pasos": {
+    "n": 53,
+    "p25": 93.0,
+    "mediana": 121.0,
+    "p75": 142.0,
+    "media": 125.47
+   },
+   "avg_ms": {
+    "n": 53,
+    "p25": 0.3,
+    "mediana": 0.75,
+    "p75": 1.15,
+    "media": 0.86
+   },
+   "total_vol": {
+    "n": 53,
+    "p25": 232.0,
+    "mediana": 276.0,
+    "p75": 342.0,
+    "media": 328.38
+   },
+   "solape": {
+    "n": 53,
+    "p25": 5.0,
+    "mediana": 8.0,
+    "p75": 14.0,
+    "media": 9.68
+   },
+   "pos_en_rango": {
+    "n": 53,
+    "p25": 0.2,
+    "mediana": 0.42,
+    "p75": 0.83,
+    "media": 0.46
+   },
+   "frac_absorb": 0.9811,
+   "vs_medias": {
+    "vwap": {
+     "abs_ticks": {
+      "n": 53,
+      "p25": 8.24,
+      "mediana": 23.18,
+      "p75": 61.03,
+      "media": 35.19
+     },
+     "frac_por_encima": 0.6226
+    },
+    "sma20": {
+     "abs_ticks": {
+      "n": 53,
+      "p25": 1.6,
+      "mediana": 11.8,
+      "p75": 23.8,
+      "media": 13.21
+     },
+     "frac_por_encima": 0.3774
+    },
+    "sma50": {
+     "abs_ticks": {
+      "n": 53,
+      "p25": 2.86,
+      "mediana": 12.62,
+      "p75": 21.76,
+      "media": 13.93
+     },
+     "frac_por_encima": 0.3208
+    },
+    "ema9": {
+     "abs_ticks": {
+      "n": 53,
+      "p25": 1.73,
+      "mediana": 4.0,
+      "p75": 11.54,
+      "media": 9.47
+     },
+     "frac_por_encima": 0.5472
+    },
+    "ema21": {
+     "abs_ticks": {
+      "n": 53,
+      "p25": 1.59,
+      "mediana": 9.41,
+      "p75": 20.38,
+      "media": 11.65
+     },
+     "frac_por_encima": 0.3962
+    }
+   }
+  },
+  "asia": {
+   "n_zonas": 5,
+   "frac_zonas": 0.0067,
+   "ticks": 260000,
+   "volumen": 315632.0,
+   "frac_ticks": 0.0552,
+   "zonas_por_millon_ticks": 19.23,
+   "zonas_por_millon_contratos": 15.84,
+   "frac_alcistas": 0.6,
+   "ancho": {
+    "n": 5,
+    "p25": 2.0,
+    "mediana": 2.0,
+    "p75": 6.0,
+    "media": 3.8
+   },
+   "pasos": {
+    "n": 5,
+    "p25": 75.0,
+    "mediana": 164.0,
+    "p75": 198.0,
+    "media": 139.0
+   },
+   "avg_ms": {
+    "n": 5,
+    "p25": 0.22,
+    "mediana": 0.54,
+    "p75": 0.89,
+    "media": 0.8
+   },
+   "total_vol": {
+    "n": 5,
+    "p25": 280.0,
+    "mediana": 357.0,
+    "p75": 484.0,
+    "media": 375.8
+   },
+   "solape": {
+    "n": 5,
+    "p25": 0.0,
+    "mediana": 0.0,
+    "p75": 1.0,
+    "media": 0.4
+   },
+   "pos_en_rango": {
+    "n": 5,
+    "p25": 0.1,
+    "mediana": 0.11,
+    "p75": 0.22,
+    "media": 0.27
+   },
+   "frac_absorb": 0.6,
+   "vs_medias": {
+    "vwap": {
+     "abs_ticks": {
+      "n": 5,
+      "p25": 26.89,
+      "mediana": 33.9,
+      "p75": 36.65,
+      "media": 30.55
+     },
+     "frac_por_encima": 0.2
+    },
+    "sma20": {
+     "abs_ticks": {
+      "n": 5,
+      "p25": 5.85,
+      "mediana": 13.4,
+      "p75": 18.15,
+      "media": 12.44
+     },
+     "frac_por_encima": 0.2
+    },
+    "sma50": {
+     "abs_ticks": {
+      "n": 5,
+      "p25": 5.9,
+      "mediana": 17.78,
+      "p75": 29.04,
+      "media": 17.82
+     },
+     "frac_por_encima": 0.2
+    },
+    "ema9": {
+     "abs_ticks": {
+      "n": 5,
+      "p25": 4.79,
+      "mediana": 8.5,
+      "p75": 10.59,
+      "media": 7.81
+     },
+     "frac_por_encima": 0.2
+    },
+    "ema21": {
+     "abs_ticks": {
+      "n": 5,
+      "p25": 5.24,
+      "mediana": 13.16,
+      "p75": 16.43,
+      "media": 11.59
+     },
+     "frac_por_encima": 0.2
+    }
+   }
+  }
+ },
+ "por_dow": {
+  "0": 156,
+  "1": 156,
+  "2": 163,
+  "4": 267
+ },
+ "procedencia": {
+  "head_commit": "3aa688716489539d609a40d9633c8d5e0e72d289",
+  "snapshot": "E:\\EdgeLab\\runs\\oraculo_espurev2flat_ES_snapshot.sqlite",
+  "archivos_sucios": [
+   "diag/tasa_senales/censo_contextos_es.py"
+  ],
+  "medicion_comprometida": true
+ },
+ "sesiones": [
+  {
+   "trade_date": 20251222,
+   "n_zonas": 76,
+   "n_ticks": 653968,
+   "volumen": 932197.0,
+   "rango_ticks": 143,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 40000,
+     "volumen": 47693.0
+    },
+    "europa": {
+     "ticks": 35000,
+     "volumen": 42844.0
+    },
+    "premarket": {
+     "ticks": 25000,
+     "volumen": 34367.0
+    },
+    "rth_am": {
+     "ticks": 300000,
+     "volumen": 395339.0
+    },
+    "rth_pm": {
+     "ticks": 240000,
+     "volumen": 385242.0
+    },
+    "cierre": {
+     "ticks": 13968,
+     "volumen": 26712.0
+    }
+   },
+   "zonas_por_fase": {
+    "europa": 1,
+    "premarket": 1,
+    "rth_am": 13,
+    "rth_pm": 53,
+    "cierre": 8
+   },
+   "solape": {
+    "n": 76,
+    "p25": 0.0,
+    "mediana": 10.5,
+    "p75": 15.5,
+    "media": 8.74
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 30,
+    "max_zonas_en_un_nivel": 10,
+    "niveles_con_3_o_mas": 10,
+    "nulo_max_mediana": 5.0,
+    "nulo_niveles_mediana": 50.0,
+    "nulo_3omas_mediana": 6.0,
+    "p_max": 0.005,
+    "p_3omas": 0.01
+   },
+   "fano": 7.951
+  },
+  {
+   "trade_date": 20251223,
+   "n_zonas": 84,
+   "n_ticks": 564272,
+   "volumen": 821372.0,
+   "rango_ticks": 202,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 30000,
+     "volumen": 35509.0
+    },
+    "europa": {
+     "ticks": 30000,
+     "volumen": 37895.0
+    },
+    "premarket": {
+     "ticks": 30000,
+     "volumen": 39938.0
+    },
+    "rth_am": {
+     "ticks": 260000,
+     "volumen": 345977.0
+    },
+    "rth_pm": {
+     "ticks": 195000,
+     "volumen": 323773.0
+    },
+    "cierre": {
+     "ticks": 19272,
+     "volumen": 38280.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 1,
+    "europa": 1,
+    "premarket": 5,
+    "rth_am": 16,
+    "rth_pm": 55,
+    "cierre": 6
+   },
+   "solape": {
+    "n": 84,
+    "p25": 1.0,
+    "mediana": 3.0,
+    "p75": 12.0,
+    "media": 6.43
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 46,
+    "max_zonas_en_un_nivel": 8,
+    "niveles_con_3_o_mas": 8,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 62.0,
+    "nulo_3omas_mediana": 4.0,
+    "p_max": 0.005,
+    "p_3omas": 0.02
+   },
+   "fano": 9.303
+  },
+  {
+   "trade_date": 20251224,
+   "n_zonas": 58,
+   "n_ticks": 286843,
+   "volumen": 421689.0,
+   "rango_ticks": 142,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 25000,
+     "volumen": 29446.0
+    },
+    "europa": {
+     "ticks": 15000,
+     "volumen": 18734.0
+    },
+    "premarket": {
+     "ticks": 10000,
+     "volumen": 13288.0
+    },
+    "rth_am": {
+     "ticks": 155000,
+     "volumen": 219806.0
+    },
+    "rth_pm": {
+     "ticks": 81843,
+     "volumen": 140415.0
+    }
+   },
+   "zonas_por_fase": {
+    "rth_am": 19,
+    "rth_pm": 39
+   },
+   "solape": {
+    "n": 58,
+    "p25": 1.0,
+    "mediana": 6.0,
+    "p75": 18.0,
+    "media": 10.21
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 28,
+    "max_zonas_en_un_nivel": 12,
+    "niveles_con_3_o_mas": 6,
+    "nulo_max_mediana": 3.0,
+    "nulo_niveles_mediana": 45.0,
+    "nulo_3omas_mediana": 2.0,
+    "p_max": 0.0,
+    "p_3omas": 0.035
+   },
+   "fano": 5.92
+  },
+  {
+   "trade_date": 20251226,
+   "n_zonas": 52,
+   "n_ticks": 427169,
+   "volumen": 590839.0,
+   "rango_ticks": 100,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 25000,
+     "volumen": 29411.0
+    },
+    "europa": {
+     "ticks": 15000,
+     "volumen": 18883.0
+    },
+    "premarket": {
+     "ticks": 10000,
+     "volumen": 13090.0
+    },
+    "rth_am": {
+     "ticks": 195000,
+     "volumen": 248111.0
+    },
+    "rth_pm": {
+     "ticks": 170000,
+     "volumen": 258488.0
+    },
+    "cierre": {
+     "ticks": 12169,
+     "volumen": 22856.0
+    }
+   },
+   "zonas_por_fase": {
+    "premarket": 2,
+    "rth_am": 12,
+    "rth_pm": 35,
+    "cierre": 3
+   },
+   "solape": {
+    "n": 52,
+    "p25": 1.0,
+    "mediana": 3.0,
+    "p75": 7.0,
+    "media": 4.35
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 27,
+    "max_zonas_en_un_nivel": 9,
+    "niveles_con_3_o_mas": 5,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 36.0,
+    "nulo_3omas_mediana": 4.0,
+    "p_max": 0.0,
+    "p_3omas": 0.24
+   },
+   "fano": 7.765
+  },
+  {
+   "trade_date": 20251229,
+   "n_zonas": 79,
+   "n_ticks": 602703,
+   "volumen": 835955.0,
+   "rango_ticks": 195,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 35000,
+     "volumen": 40958.0
+    },
+    "europa": {
+     "ticks": 40000,
+     "volumen": 48429.0
+    },
+    "premarket": {
+     "ticks": 30000,
+     "volumen": 43420.0
+    },
+    "rth_am": {
+     "ticks": 265000,
+     "volumen": 353397.0
+    },
+    "rth_pm": {
+     "ticks": 220000,
+     "volumen": 324151.0
+    },
+    "cierre": {
+     "ticks": 12703,
+     "volumen": 25600.0
+    }
+   },
+   "zonas_por_fase": {
+    "europa": 2,
+    "premarket": 7,
+    "rth_am": 21,
+    "rth_pm": 39,
+    "cierre": 10
+   },
+   "solape": {
+    "n": 79,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 8.0,
+    "media": 4.41
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 52,
+    "max_zonas_en_un_nivel": 6,
+    "niveles_con_3_o_mas": 6,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 56.0,
+    "nulo_3omas_mediana": 5.0,
+    "p_max": 0.05,
+    "p_3omas": 0.345
+   },
+   "fano": 6.866
+  },
+  {
+   "trade_date": 20251230,
+   "n_zonas": 70,
+   "n_ticks": 503744,
+   "volumen": 728539.0,
+   "rango_ticks": 83,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 30000,
+     "volumen": 36125.0
+    },
+    "europa": {
+     "ticks": 25000,
+     "volumen": 33485.0
+    },
+    "premarket": {
+     "ticks": 20000,
+     "volumen": 26559.0
+    },
+    "rth_am": {
+     "ticks": 230000,
+     "volumen": 317784.0
+    },
+    "rth_pm": {
+     "ticks": 185000,
+     "volumen": 289418.0
+    },
+    "cierre": {
+     "ticks": 13744,
+     "volumen": 25168.0
+    }
+   },
+   "zonas_por_fase": {
+    "europa": 1,
+    "rth_am": 29,
+    "rth_pm": 34,
+    "cierre": 6
+   },
+   "solape": {
+    "n": 70,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 11.0,
+    "media": 5.46
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 36,
+    "max_zonas_en_un_nivel": 7,
+    "niveles_con_3_o_mas": 8,
+    "nulo_max_mediana": 5.0,
+    "nulo_niveles_mediana": 41.0,
+    "nulo_3omas_mediana": 7.0,
+    "p_max": 0.035,
+    "p_3omas": 0.44
+   },
+   "fano": 11.28
+  },
+  {
+   "trade_date": 20251231,
+   "n_zonas": 108,
+   "n_ticks": 614544,
+   "volumen": 910289.0,
+   "rango_ticks": 245,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 30000,
+     "volumen": 35692.0
+    },
+    "europa": {
+     "ticks": 20000,
+     "volumen": 24225.0
+    },
+    "premarket": {
+     "ticks": 25000,
+     "volumen": 34655.0
+    },
+    "rth_am": {
+     "ticks": 210000,
+     "volumen": 277645.0
+    },
+    "rth_pm": {
+     "ticks": 300000,
+     "volumen": 479235.0
+    },
+    "cierre": {
+     "ticks": 29544,
+     "volumen": 58837.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 3,
+    "premarket": 4,
+    "rth_am": 12,
+    "rth_pm": 79,
+    "cierre": 10
+   },
+   "solape": {
+    "n": 108,
+    "p25": 1.0,
+    "mediana": 4.0,
+    "p75": 7.0,
+    "media": 5.5
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 68,
+    "max_zonas_en_un_nivel": 9,
+    "niveles_con_3_o_mas": 8,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 80.0,
+    "nulo_3omas_mediana": 5.0,
+    "p_max": 0.0,
+    "p_3omas": 0.085
+   },
+   "fano": 14.964
+  },
+  {
+   "trade_date": 20260102,
+   "n_zonas": 215,
+   "n_ticks": 1059896,
+   "volumen": 1507712.0,
+   "rango_ticks": 292,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 45000,
+     "volumen": 60798.0
+    },
+    "europa": {
+     "ticks": 45000,
+     "volumen": 61758.0
+    },
+    "premarket": {
+     "ticks": 25000,
+     "volumen": 37486.0
+    },
+    "rth_am": {
+     "ticks": 525000,
+     "volumen": 720152.0
+    },
+    "rth_pm": {
+     "ticks": 400000,
+     "volumen": 590628.0
+    },
+    "cierre": {
+     "ticks": 19896,
+     "volumen": 36890.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 1,
+    "europa": 6,
+    "premarket": 3,
+    "rth_am": 93,
+    "rth_pm": 102,
+    "cierre": 10
+   },
+   "solape": {
+    "n": 215,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 5.0,
+    "media": 4.5
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 127,
+    "max_zonas_en_un_nivel": 7,
+    "niveles_con_3_o_mas": 20,
+    "nulo_max_mediana": 5.0,
+    "nulo_niveles_mediana": 139.0,
+    "nulo_3omas_mediana": 17.0,
+    "p_max": 0.08,
+    "p_3omas": 0.265
+   },
+   "fano": 11.128
+  }
+ ],
+ "n_sesiones_detalle": 8
+}

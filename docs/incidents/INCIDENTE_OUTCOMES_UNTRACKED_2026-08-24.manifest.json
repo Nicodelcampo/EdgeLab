@@ -1,0 +1,382 @@
+{
+  "incidente": "INC_OUTCOMES_UNTRACKED_20260824",
+  "fecha_utc": "2026-08-24T04:43:44.116209+00:00",
+  "head_deteccion": "b58dd4e011606b6b37d6d16795f58e1c615b9580",
+  "head_registro": "dc63c2feec1bb451ee39da6a5f43d175385c252d",
+  "rama": "foundation/f0b-compatibility-probe",
+  "cuarentena": "C:\\Users\\nicoc\\OneDrive\\Documentos\\DataNT8\\quarantine\\INC_OUTCOMES_UNTRACKED_20260824",
+  "n_archivos": 12,
+  "mtime_comun_todos": "2026-08-23T20:58:34Z",
+  "matriz_exposicion": {
+    "P1_133_OUTCOME_EXPOSURE": "YES",
+    "P1_133_sesiones_tocadas": [
+      "20260528",
+      "20260529",
+      "20260601",
+      "20260602",
+      "20260603",
+      "20260604",
+      "20260605",
+      "20260609",
+      "20260610",
+      "20260611",
+      "20260612"
+    ],
+    "P1_133_n_tocadas": 11,
+    "SEALED_19_OUTCOME_EXPOSURE": "YES",
+    "SEALED_19_sesiones_tocadas": [
+      "20260608"
+    ],
+    "SEALED_19_n_tocadas": 1,
+    "TEMPORAL_HOLDOUT_EXPOSURE": "YES",
+    "CONTEXT_FILTER_SEARCH": "YES",
+    "CROSS_ASSET_OUTCOME_SEARCH": "YES",
+    "YM_FAMILY_EXPOSURE": "YES",
+    "TEMPORAL_HOLDOUT_detalle": {
+      "ventana_holdout": "2026-07-01 .. 2026-12-31",
+      "metodo": "rango de fechas efectivamente leido por cada script, medido sobre la cinta aplicando su max_ticks; NO inferido del nombre del contrato",
+      "cintas": [
+        {
+          "cinta": "GC 12-26",
+          "max_ticks": null,
+          "leido": "20260817..20260821",
+          "en_holdout": true,
+          "scripts": [
+            "adversarial_gauntlet.py",
+            "evaluate_cross_assets.py",
+            "sweep_context_filters.py",
+            "sweep_indicator.py"
+          ]
+        },
+        {
+          "cinta": "YM 09-26",
+          "max_ticks": null,
+          "leido": "20260818..20260821",
+          "en_holdout": true,
+          "scripts": [
+            "adversarial_gauntlet.py",
+            "evaluate_cross_assets.py",
+            "sweep_context_filters.py",
+            "validate_multi_quarter_ym.py"
+          ]
+        },
+        {
+          "cinta": "ES 09-26",
+          "max_ticks": 350000,
+          "leido": "20260816..20260817",
+          "en_holdout": true,
+          "scripts": [
+            "evaluate_cross_assets.py"
+          ]
+        },
+        {
+          "cinta": "NQ 09-26",
+          "max_ticks": 350000,
+          "leido": "20260816..20260817",
+          "en_holdout": true,
+          "scripts": [
+            "evaluate_cross_assets.py"
+          ]
+        },
+        {
+          "cinta": "YM 03-26",
+          "max_ticks": null,
+          "leido": "20260115..20260123",
+          "en_holdout": false,
+          "scripts": [
+            "validate_multi_quarter_ym.py"
+          ]
+        },
+        {
+          "cinta": "YM 06-26",
+          "max_ticks": 2000000,
+          "leido": "20260329..20260508",
+          "en_holdout": false,
+          "scripts": [
+            "validate_multi_quarter_ym.py"
+          ]
+        }
+      ],
+      "familias_comprometidas": [
+        "GC (via GC 12-26, agosto)",
+        "YM (09-26)",
+        "ES (09-26)",
+        "NQ (09-26)"
+      ],
+      "familias_no_comprometidas_por_holdout": [
+        "YM 03-26 y YM 06-26 son pre-holdout; comprometen la familia YM por otra via, no por el holdout temporal"
+      ]
+    }
+  },
+  "vector_de_exposicion_gc_pre_holdout": {
+    "script": "tools/validate_oos_gold.py",
+    "cinta": "GC 08-26.Last.txt",
+    "max_ticks": 1500000,
+    "rango_leido": "2026-05-24 -> 2026-06-12",
+    "metricas": [
+      "WinRate",
+      "Net",
+      "MonteCarlo p-value",
+      "Veredicto"
+    ],
+    "nota": "unico script que toca fechas pre-holdout del universo GC de Puerta 1"
+  },
+  "archivos": [
+    {
+      "ruta_original": "tools/adversarial_gauntlet.py",
+      "bytes": 13779,
+      "creation_time_utc": "2026-08-22T23:21:46.848403+00:00",
+      "last_write_utc": "2026-08-23T20:58:34.408438+00:00",
+      "sha256_origen": "5fa2c6bf0d36ea6114d0704f2530148a097b69efa56c083009132b8effcb8a05",
+      "sha256_copia": "5fa2c6bf0d36ea6114d0704f2530148a097b69efa56c083009132b8effcb8a05",
+      "copia_verificada": true,
+      "destino": "C:\\Users\\nicoc\\OneDrive\\Documentos\\DataNT8\\quarantine\\INC_OUTCOMES_UNTRACKED_20260824\\adversarial_gauntlet.py"
+    },
+    {
+      "ruta_original": "tools/evaluate_cross_assets.py",
+      "bytes": 16545,
+      "creation_time_utc": "2026-08-22T23:17:37.483146+00:00",
+      "last_write_utc": "2026-08-23T20:58:34.409449+00:00",
+      "sha256_origen": "434771f2c7ce2349af1454aac144c4dac57dd2d0f851f6195232bf94dd121c67",
+      "sha256_copia": "434771f2c7ce2349af1454aac144c4dac57dd2d0f851f6195232bf94dd121c67",
+      "copia_verificada": true,
+      "destino": "C:\\Users\\nicoc\\OneDrive\\Documentos\\DataNT8\\quarantine\\INC_OUTCOMES_UNTRACKED_20260824\\evaluate_cross_assets.py"
+    },
+    {
+      "ruta_original": "tools/sweep_context_filters.py",
+      "bytes": 14282,
+      "creation_time_utc": "2026-08-22T23:28:12.865496+00:00",
+      "last_write_utc": "2026-08-23T20:58:34.410957+00:00",
+      "sha256_origen": "ea29a7d849ff66d29f4f62ef5c5973b9c2973ccc29195b997e9aa2dc28b2269f",
+      "sha256_copia": "ea29a7d849ff66d29f4f62ef5c5973b9c2973ccc29195b997e9aa2dc28b2269f",
+      "copia_verificada": true,
+      "destino": "C:\\Users\\nicoc\\OneDrive\\Documentos\\DataNT8\\quarantine\\INC_OUTCOMES_UNTRACKED_20260824\\sweep_context_filters.py"
+    },
+    {
+      "ruta_original": "tools/sweep_indicator.py",
+      "bytes": 7931,
+      "creation_time_utc": "2026-08-22T22:55:25.944572+00:00",
+      "last_write_utc": "2026-08-23T20:58:34.410957+00:00",
+      "sha256_origen": "7ba9f128bab0d171966205fcbd39f85bdc25737654e94e80549413560c20db11",
+      "sha256_copia": "7ba9f128bab0d171966205fcbd39f85bdc25737654e94e80549413560c20db11",
+      "copia_verificada": true,
+      "destino": "C:\\Users\\nicoc\\OneDrive\\Documentos\\DataNT8\\quarantine\\INC_OUTCOMES_UNTRACKED_20260824\\sweep_indicator.py"
+    },
+    {
+      "ruta_original": "tools/validate_multi_quarter_ym.py",
+      "bytes": 6071,
+      "creation_time_utc": "2026-08-22T23:39:40.841508+00:00",
+      "last_write_utc": "2026-08-23T20:58:34.413715+00:00",
+      "sha256_origen": "b3ab8336ed4c15a5cf0f496339c053dedff26bdbe2dd31a575d07ba7e9075e19",
+      "sha256_copia": "b3ab8336ed4c15a5cf0f496339c053dedff26bdbe2dd31a575d07ba7e9075e19",
+      "copia_verificada": true,
+      "destino": "C:\\Users\\nicoc\\OneDrive\\Documentos\\DataNT8\\quarantine\\INC_OUTCOMES_UNTRACKED_20260824\\validate_multi_quarter_ym.py"
+    },
+    {
+      "ruta_original": "tools/validate_oos_gold.py",
+      "bytes": 5482,
+      "creation_time_utc": "2026-08-22T23:31:59.656184+00:00",
+      "last_write_utc": "2026-08-23T20:58:34.413715+00:00",
+      "sha256_origen": "3b3b27be91421ee6b89eefe41f6253ebfe3fd342f3a7f9febf899b7425ba4b3b",
+      "sha256_copia": "3b3b27be91421ee6b89eefe41f6253ebfe3fd342f3a7f9febf899b7425ba4b3b",
+      "copia_verificada": true,
+      "destino": "C:\\Users\\nicoc\\OneDrive\\Documentos\\DataNT8\\quarantine\\INC_OUTCOMES_UNTRACKED_20260824\\validate_oos_gold.py"
+    },
+    {
+      "ruta_original": "reports_bigtrap2_tickframe_sweep_GC.csv",
+      "bytes": 4069,
+      "creation_time_utc": "2026-08-22T23:59:48.438998+00:00",
+      "last_write_utc": "2026-08-23T20:58:34.393957+00:00",
+      "sha256_origen": "40d3347c428024add2afd691c0e44a41397c859ecca971b8f96126db9a469131",
+      "columnas": [
+        "Tickframe",
+        "Modo",
+        "Bracket",
+        "N",
+        "TP",
+        "SL",
+        "WinRate",
+        "Net Ticks/tr",
+        "Net USD/tr",
+        "Net Total (t)",
+        "p-val MC",
+        "Veredicto"
+      ],
+      "n_filas_datos": 40,
+      "columnas_outcome": [
+        "TP",
+        "SL",
+        "WinRate",
+        "Net Ticks/tr",
+        "Net USD/tr",
+        "Net Total (t)",
+        "p-val MC",
+        "Veredicto"
+      ],
+      "sha256_copia": "40d3347c428024add2afd691c0e44a41397c859ecca971b8f96126db9a469131",
+      "copia_verificada": true,
+      "destino": "C:\\Users\\nicoc\\OneDrive\\Documentos\\DataNT8\\quarantine\\INC_OUTCOMES_UNTRACKED_20260824\\reports_bigtrap2_tickframe_sweep_GC.csv"
+    },
+    {
+      "ruta_original": "reports_context_filter_sweep_GC_DEC26.csv",
+      "bytes": 15243,
+      "creation_time_utc": "2026-08-22T23:28:49.930678+00:00",
+      "last_write_utc": "2026-08-23T20:58:34.393957+00:00",
+      "sha256_origen": "9e2a1e48d25ac14f5da528b8d5185d63b9c36a26ee034c9b53052afd9ac26f5b",
+      "columnas": [
+        "Sesion",
+        "Tendencia",
+        "VelocidadTape",
+        "Bracket",
+        "N",
+        "WinRate",
+        "Net Ticks/tr",
+        "Net USD/tr",
+        "Net Total (t)",
+        "p-val MC",
+        "Veredicto"
+      ],
+      "n_filas_datos": 126,
+      "columnas_outcome": [
+        "WinRate",
+        "Net Ticks/tr",
+        "Net USD/tr",
+        "Net Total (t)",
+        "p-val MC",
+        "Veredicto"
+      ],
+      "sha256_copia": "9e2a1e48d25ac14f5da528b8d5185d63b9c36a26ee034c9b53052afd9ac26f5b",
+      "copia_verificada": true,
+      "destino": "C:\\Users\\nicoc\\OneDrive\\Documentos\\DataNT8\\quarantine\\INC_OUTCOMES_UNTRACKED_20260824\\reports_context_filter_sweep_GC_DEC26.csv"
+    },
+    {
+      "ruta_original": "reports_context_filter_sweep_YM_SEP26.csv",
+      "bytes": 8215,
+      "creation_time_utc": "2026-08-22T23:28:55.313940+00:00",
+      "last_write_utc": "2026-08-23T20:58:34.393957+00:00",
+      "sha256_origen": "df55ba18d3993ddf85d838973361555cc85e16c51ee4580e55855d55aff39a6a",
+      "columnas": [
+        "Sesion",
+        "Tendencia",
+        "VelocidadTape",
+        "Bracket",
+        "N",
+        "WinRate",
+        "Net Ticks/tr",
+        "Net USD/tr",
+        "Net Total (t)",
+        "p-val MC",
+        "Veredicto"
+      ],
+      "n_filas_datos": 69,
+      "columnas_outcome": [
+        "WinRate",
+        "Net Ticks/tr",
+        "Net USD/tr",
+        "Net Total (t)",
+        "p-val MC",
+        "Veredicto"
+      ],
+      "sha256_copia": "df55ba18d3993ddf85d838973361555cc85e16c51ee4580e55855d55aff39a6a",
+      "copia_verificada": true,
+      "destino": "C:\\Users\\nicoc\\OneDrive\\Documentos\\DataNT8\\quarantine\\INC_OUTCOMES_UNTRACKED_20260824\\reports_context_filter_sweep_YM_SEP26.csv"
+    },
+    {
+      "ruta_original": "reports_cross_asset_evaluation.csv",
+      "bytes": 1476,
+      "creation_time_utc": "2026-08-22T23:19:32.791093+00:00",
+      "last_write_utc": "2026-08-23T20:58:34.393957+00:00",
+      "sha256_origen": "b163c047d55f1e76038fb5819944431f3baca54687fa4eb7ba5d6d89e66435f8",
+      "columnas": [
+        "Activo",
+        "Preset",
+        "TW",
+        "Pct",
+        "Rows",
+        "Frac",
+        "Modo",
+        "N Zonas",
+        "MFE p50",
+        "MAE p50",
+        "Asimetria",
+        "WinRate",
+        "Net Ticks",
+        "Net USD/tr",
+        "Veredicto"
+      ],
+      "n_filas_datos": 15,
+      "columnas_outcome": [
+        "MFE p50",
+        "MAE p50",
+        "Asimetria",
+        "WinRate",
+        "Net Ticks",
+        "Net USD/tr",
+        "Veredicto"
+      ],
+      "sha256_copia": "b163c047d55f1e76038fb5819944431f3baca54687fa4eb7ba5d6d89e66435f8",
+      "copia_verificada": true,
+      "destino": "C:\\Users\\nicoc\\OneDrive\\Documentos\\DataNT8\\quarantine\\INC_OUTCOMES_UNTRACKED_20260824\\reports_cross_asset_evaluation.csv"
+    },
+    {
+      "ruta_original": "reports_ym_multi_quarter_audit.csv",
+      "bytes": 1123,
+      "creation_time_utc": "2026-08-22T23:41:49.825709+00:00",
+      "last_write_utc": "2026-08-23T20:58:34.393957+00:00",
+      "sha256_origen": "3c272c117cc3493fe925a02236606296f7bbe1ab8d54a0fe7939992eb21e5bd3",
+      "columnas": [
+        "Contrato",
+        "Hipotesis",
+        "N",
+        "TP",
+        "SL",
+        "WinRate",
+        "Net Ticks/tr",
+        "Net USD/tr",
+        "Net Total (t)",
+        "p-val MC",
+        "Veredicto"
+      ],
+      "n_filas_datos": 15,
+      "columnas_outcome": [
+        "TP",
+        "SL",
+        "WinRate",
+        "Net Ticks/tr",
+        "Net USD/tr",
+        "Net Total (t)",
+        "p-val MC",
+        "Veredicto"
+      ],
+      "sha256_copia": "3c272c117cc3493fe925a02236606296f7bbe1ab8d54a0fe7939992eb21e5bd3",
+      "copia_verificada": true,
+      "destino": "C:\\Users\\nicoc\\OneDrive\\Documentos\\DataNT8\\quarantine\\INC_OUTCOMES_UNTRACKED_20260824\\reports_ym_multi_quarter_audit.csv"
+    }
+  ],
+  "distincion_campana_vs_global": {
+    "CAMPAIGN_OUTCOMES_OPENED": false,
+    "PREEXISTING_OUTCOME_EXPOSURE": "YES",
+    "regla_de_lectura": "El flag outcomes_opened=false que emite tools/bt2_absorption_param_sweep.py describe UNICAMENTE la campana target-free del 2026-08-24. NO es una afirmacion global sobre el proyecto.",
+    "prohibido_afirmar": "OUTCOMES_NOT_OPENED como enunciado global",
+    "obligatorio_reportar": "PREEXISTING_OUTCOME_EXPOSURE=YES junto a CAMPAIGN_OUTCOMES_OPENED=false",
+    "no_se_edito": "specs congelados intactos; la enmienda va como artefacto separado"
+  },
+  "n_archivos_con_outcomes": 11,
+  "n_archivos_target_free": 1,
+  "correccion_2026-08-24": {
+    "motivo": "El inventario inicial declaro 11. Son 12: git status --short colapsa los subdirectorios sin seguimiento en una sola linea ('?? scratch/'), asi que el archivo dentro de scratch/ no aparecio como entrada propia.",
+    "descubierto_en": "fail-closed clean_commit() del runner, que rechazo correr con el arbol sucio",
+    "archivo": {
+      "ruta_original": "scratch/test_session_kernel.py",
+      "bytes": 11241,
+      "last_write_local": "2026-08-23 17:58:34.393956600 -0300",
+      "sha256": "b0568ada86cdea75c9ee383dc3399bc040c5f6a4e50152d81d8ffd268dae2e1e",
+      "copia_verificada": true,
+      "destino": "quarantine/INC_OUTCOMES_UNTRACKED_20260824/originales/test_session_kernel.py"
+    },
+    "mismo_drop": "SI: mtime identico al segundo con los otros 11 (2026-08-23T20:58:34Z)",
+    "contiene_outcomes": false,
+    "evidencia_target_free": "grep sin coincidencias para mfe|mae|pnl|winrate|net_|p_val|p-val|veredicto|take_profit|stop_loss|TP|SL|retorno|hit_rate; su docstring lo declara verificador de paridad contra bt2_absorption__TW25_2.csv",
+    "efecto_en_matriz_de_exposicion": "NINGUNO. No cambia ninguna de las seis clasificaciones."
+  }
+}

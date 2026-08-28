@@ -1,56 +1,78 @@
-# `nt8/` — copias canónicas de los `.cs` de NinjaTrader
+# `nt8/` — copias canonicas de los `.cs` de NinjaTrader
 
-Fuente de verdad **versionada** del código NinjaScript que genera los oráculos.
+Fuente de verdad **versionada** del codigo NinjaScript que genera los oraculos.
 Lo que corre es la copia instalada en
-`%USERPROFILE%\Documents\NinjaTrader 8\bin\Custom\Indicators\`; esta carpeta
+`%USERPROFILE%\\Documents\\NinjaTrader 8\\bin\\Custom\\Indicators\\`; esta carpeta
 existe para que un cambio en un `.cs` quede en la historia de git junto al fix
 del kernel Python que lo espeja.
 
 ## Regla operativa (incidente 2026-07-25)
 
 **Los `.cs` se REEMPLAZAN in place. Nunca se guardan copias dentro de
-`bin\Custom`** — NT8 compila **todo** el árbol y dos definiciones de la misma
+`bin\\Custom`** — NT8 compila **todo** el arbol y dos definiciones de la misma
 clase producen `CS0111` / `CS0102` / `CS0121` / `CS0229`. Los respaldos van a
-`archive/nt8_cs_backup/` con timestamp, **fuera** de `bin\Custom`.
+`archive/nt8_cs_backup/` con timestamp, **fuera** de `bin\\Custom`.
 
-**Las copias canónicas de acá NO llevan el bloque
+**Las copias canonicas de aca NO llevan el bloque
 `#region NinjaScript generated code`.** Ese bloque es *salida de build*: lo
 genera NT8 al compilar. Si un archivo ya lo trae y NT8 genera otro, quedan dos y
-la compilación falla.
+la compilacion falla.
 
 **Terminadores CRLF.** Un `.cs` con LF hace que NT8 no reconozca su propia
-región generada y **anexe una segunda** en vez de reemplazarla — que es
-exactamente cómo se rompió la compilación el 2026-07-25 al instalar un archivo
+region generada y **anexe una segunda** en vez de reemplazarla — que es
+exactamente como se rompio la compilacion el 2026-07-25 al instalar un archivo
 revisado fuera del repo.
 
-## Verificación antes de entregar un `.cs` a NT8
+## Verificacion antes de entregar un `.cs` a NT8
 
 ```bash
 python tools/check_nt8_cs.py nt8/HFTZones2.cs
 ```
 
 Debe dar: 1 sola `class X : Indicator`, **0** regiones generadas, meta con la
-versión esperada, llaves y paréntesis balanceados, y CRLF sin LF sueltos.
+version esperada, llaves y parentesis balanceados, y CRLF sin LF sueltos.
 
 ## Inventario
 
-| archivo | versión | sha256 (canónico, sin región generada) |
+| archivo | version | sha256 (canonico, sin region generada) |
 |---|---|---|
 | `HFTZones2.cs` | **v2.3** | `9bdbcc8108d8dc3248bf0b23b18e2bbf53765a8a7fdfbb86ebf9f0e35f04fd32` |
 | `BigTrap2.cs` | v2.1 | `77af06eed2bba5d5367ef41a68476d04b295039411ac124492d918c0a557fbf5` |
-| `TickBarDiag.cs` | v1.1 | *(instrumental de diagnóstico, no de trading)* |
+| `BigTrap2UniversalFill.cs` | **v1.0** | `794110f03929f22b365e5b0fa0dc269414f051a2117986984db75195fc99e071` |
+| `BigTrap2UniversalEdge.cs` | **v1.0** | `dad03a1e3b043de05ed787cade3a8b54b62edf681639c559d24cee60b3548c9a` |
+| `BigTrap2Absorption.cs` | **v1.1.1** | `18d163123662dc0edfd2f45ddbb007391ac4c39b8c7c58c1e9209d66a9178641` |
+| `TickBarDiag.cs` | v1.1 | *(instrumental de diagnostico, no de trading)* |
 | `VolTicksPOC2.cs` | v2.1 | `48e0718a055958f0b2a325cdee53517e449989c6b43ecfe50e7b4d634278845d` |
 | `aVolCellPOI2.cs` | v2.0 | `4ad4c671333c0b5c214d3d2c3d4c75a6a7dd4f616ee26bc8aaa7d31bb0ead6ed` |
 | `AACloseOpenDiffs.cs` | **v1.2** | `e4f5f17b7a2f29fe85299575a4c4ab45b88b29414cb3ef7547d9616775ed2557` |
 
+`BigTrap2UniversalFill`: cubeta fija 25 ticks sobre subserie de 1 tick. La bolita
+es el **fill** (primer tick posterior al aviso). No corona edge. Ver
+`docs/research/BIGTRAP2_UNIVERSAL_FILL.md`.
+
+`BigTrap2UniversalEdge`: misma cubeta universal, la bolita se dibuja en el frente
+de la zona en vez del centroide. Sigue sin coronar edge.
+
+`BigTrap2Absorption`: **cambia la definicion del evento**, no el dibujo. En vez
+de `ratio = agresivo / max(opuesto,1)` — que con la celda opuesta vacia degenera
+en "3 contratos y nada abajo" y dispara en el 49,7 % de las cubetas — el evento
+es el residuo `A = |flujo firmado| / (1 + max(0, desplazamiento a favor))` con
+umbral por **percentil causal rodante**. Agrega `MinStackedRows` (filas
+contiguas), `MinTrapFrac` (fraccion de la cubeta) y hace de `TapeWindowTicks` un
+parametro real. El log `TRAP` exporta siempre `a_score` / `a_thr` / `a_pass` /
+`run_*` junto al agregado del kernel viejo, asi que una sola corrida permite
+barrer los cortes offline y reproducir BigTrap2 exacto desde el mismo archivo.
+**No corona edge**: hay que pasar las 3 puertas de
+`docs/research/REVISION_MULTIMODELO_BT2_OPUS5.md`, en discovery de junio.
+
 ### Cambios del 2026-07-26 (barrido ULP, AUDIT-003)
 
-| archivo | de → a | qué cambió | por qué |
+| archivo | de → a | que cambio | por que |
 |---|---|---|---|
-| `HFTZones2.cs` | v2.2 → **v2.3** | `inside` pasa a comparar `priceTick` contra `LowerTick`/`UpperTick`; el precio se convierte **una vez por llamada** | el `.cs` había quedado en v2.2 mientras `hftzones2.py` ya era v2.3 — los dos lados estaban desalineados **por construcción**. Exposición medida antes 24,30 %, después **0,00 %** |
-| `AACloseOpenDiffs.cs` | v1.0 → **v1.2** | `MinDiffTicks` se compara en enteros (`gapTicks`), no en points; se agrega el helper `PriceToTick` | v1.0 descartaba el **47,5 %** de los gaps de 1 tick (43,5 % observado). Aprobado por Nico. **v1.2** agrega `ind_version` por FILA al logger de research (Decisión B): ese archivo mergea corridas, así que una versión a nivel de archivo sería falsa |
+| `HFTZones2.cs` | v2.2 → **v2.3** | `inside` pasa a comparar `priceTick` contra `LowerTick`/`UpperTick`; el precio se convierte **una vez por llamada** | el `.cs` habia quedado en v2.2 mientras `hftzones2.py` ya era v2.3 — los dos lados estaban desalineados **por construccion**. Exposicion medida antes 24,30 %, despues **0,00 %** |
+| `AACloseOpenDiffs.cs` | v1.0 → **v1.2** | `MinDiffTicks` se compara en enteros (`gapTicks`), no en points; se agrega el helper `PriceToTick` | v1.0 descartaba el **47,5 %** de los gaps de 1 tick (43,5 % observado). Aprobado por Nico. **v1.2** agrega `ind_version` por FILA al logger de research (Decision B): ese archivo mergea corridas, asi que una version a nivel de archivo seria falsa |
 
-Verificación de los dos: `python tools/check_nt8_cs.py --ulp nt8/*.cs`.
+Verificacion de los dos: `python tools/check_nt8_cs.py --ulp nt8/*.cs`.
 
 **`Gaps2.cs` no se toca**: es la referencia que dio
-paridad 1316/1316; cualquier cambio exige digest nuevo y oráculo nuevo.
+paridad 1316/1316; cualquier cambio exige digest nuevo y oraculo nuevo.

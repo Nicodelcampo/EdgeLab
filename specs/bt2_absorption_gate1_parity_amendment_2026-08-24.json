@@ -1,0 +1,24 @@
+{
+  "schema": "bt2_absorption_gate1_parity_amendment_v1",
+  "status": "PARITY_PRECONDITION_SATISFIED_CONDITIONAL_EQUAL_INPUT",
+  "frozen_at": "2026-08-24",
+  "amends": "specs/bt2_absorption_gate1_v1.json#parity_precondition",
+  "evidence": "docs/research/PARIDAD_POR_SESION_3_CONTRATOS_2026-08-24.md",
+  "verdicts": {
+    "GLOBAL_ACCUMULATED_PARITY": "FAIL_INDEXING_ARTIFACT_EXPLAINED",
+    "SESSION_RECOVERABLE_PARITY": "RECOVERED_3_OF_3",
+    "KERNEL_PARITY_ON_EQUAL_INPUT": "APPROX_EXACT",
+    "TAPE_VS_CHART_COVERAGE": "OPEN"
+  },
+  "guardrails": [
+    "No usar td crudo para joins: Python loguea días desde epoch y NT8 YYYYMMDD.",
+    "Toda afirmación de paridad queda condicionada a cubetas con input igual y causalmente limpio.",
+    "La cobertura tape/chart abierta no se reetiqueta como defecto de kernel ni se rellena silenciosamente.",
+    "Puerta 1 no puede mezclar fuentes sin política de cobertura congelada."
+  ],
+  "firewall": {
+    "outcomes_opened": false,
+    "sealed_block_opened": false,
+    "edge_declared": false
+  }
+}

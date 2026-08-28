@@ -22,7 +22,7 @@ estados del que se la extrae.
 
 | # | qué | resultado | artefacto |
 |---|---|---|---|
-| M1 | Paridad NT8↔Python de 5 indicadores | 47/47 oráculos, 0 FALTA, 0 DIFIERE | `docs/oraculos_manifiesto.json` |
+| M1 | **Identidad/integridad de archivos de oráculo entre máquinas** (NO paridad semántica — re-etiquetado 2026-08-11, corrección del auditor sobre P0.1: `tools/manifiesto_oraculos.py` declara explícito que no lee una sola fila de eventos, sólo hashea bytes) | 47/47 oráculos presentes, 0 FALTA, 0 DIFIERE de bytes | `docs/oraculos_manifiesto.json` |
 | M2 | Censo de primeros toques post `sep_min` | 15.577 toques / 201 sesiones | `censo_primeros_toques.json` |
 | M3 | Curva de excursión sobre primeros toques | `T` vs eventos; T=34 elegido | `curva_excursion_ticks.json` |
 | M4 | `f` con ambos filtros, órdenes A y B | 755 con excursión → 424 orden B | `f_ambos_filtros.json` |
@@ -44,6 +44,7 @@ estados del que se la extrae.
 | M20 | **Enmienda G2-A1**: gate MCPT corregido | reemplazado por `PrimaryCI` (ya existía); DSR unificado 0,95; `evaluar()` eliminado | `docs/incidents/AMENDMENT_G2-A1_2026-08-10.md` |
 | M21 | **F1.1 × grilla de parámetros** + MDE publicado | brecha de atracción invariante (43,8–47,3 pp) en las 5 celdas que F2/F4 señalaron; MDE 20-40× menor que el efecto | `F1.1_GRILLA_PARAMETROS_RESULTADO_2026-08-10.md` |
 | M22 | **F1.1 × régimen**: día de semana y volatilidad de sesión | brecha de atracción pareja: 8/8 celdas con 100 % sesiones REAL&gt;NULO, rango 45,5–48,8 pp alrededor del 46,8 pp global, dentro del MDE de cada celda | `F1.1_regimen_dow_vol__405ea0117c28.json`, `F1.1_REGIMEN_DOW_VOL_RESULTADO_2026-08-10.md` |
+| M23 | **P0.1**: cobertura semántica real (gate P1/P2, no M1) de BigTrap2 por versión × bar_spec | `time:1`: PASS documentado sólo a v2.1 (225/225, 2026-07-27); v2.2–v2.5.1 nunca re-corridas contra el gate real. `tick:25`: **cero PASS documentado, a ninguna versión** — el único intento (2026-07-24) dio FAIL con causa raíz no atribuible a Python, y la vía SameLevel se redirigió a `time:1` (O2′), dejando tick:25 como "deuda separada". Kernel Python sin cambios desde 2026-07-29; drift v2.2→v2.5.1 del `.cs` vive enteramente en atribución evento→barra, camino sólo-tick, arquitectura Python inmune por construcción (`tick_bar_idx`) — argumento estructural medido con test, no sustituto del gate real | `P0.1_BIGTRAP2_DRIFT_ADJUDICACION_2026-08-11.md`, `P2_SEIS_HASHES_ADJUDICACION_2026-08-11.md`, rama `audit/p0-bigtrap2-drift` |
 
 ---
 

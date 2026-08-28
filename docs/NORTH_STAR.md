@@ -110,4 +110,4 @@ Ver también: `edge_validation_contract.md` (gates G0–G5), `kernel_contract.md
 
 <!-- SHA256-BODY-ABOVE -->
 
-**sha256 (cuerpo hasta el marcador):** `21bb3b01a33e2b373859a38ac4615de376a6262f0aa7ced0e8f5dec33b5256a8`
+**sha256 (cuerpo hasta el marcador):** `d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1`
