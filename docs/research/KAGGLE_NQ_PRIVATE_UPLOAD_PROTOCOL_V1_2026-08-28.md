@@ -1,101 +1,59 @@
 # Protocolo operativo de upload privado — NQ pre-holdout
 
-**Fecha:** 2026-08-28  
-**Estado:** `UPLOAD_COMPLETED_OWNER_RECONCILED_PENDING_POST_UPLOAD_REHASH`  
+**Estado:** `POST_UPLOAD_REHASH_FAIL_CLOSED_CONTROL_HASH_DRIFT`  
 **Dataset canónico:** `nicolasbuttaro/edgelab-ticks-nq-preholdout`  
 **Upload ejecutado:** `true`  
 **Owner reconciliado:** `true`  
-**Post-upload rehash:** `pending`  
+**Post-upload rehash:** `fail_closed_control_hash_drift`  
 **Corrida científica autorizada:** `false`
 
-## 1. Historial de autoridad
-
-La autorización original permitió exclusivamente un create privado. El upload terminó bajo `nicolasbuttaro`, mientras el metadata original esperaba `nicodelcampo`. La diferencia fue registrada como desviación y el propietario decidió explícitamente aceptar `nicolasbuttaro` como custodio Kaggle canónico.
-
-Autoridades:
-
-- `docs/research/KAGGLE_NQ_PRIVATE_UPLOAD_AUTHORIZATION_2026-08-28.md`;
-- `docs/research/KAGGLE_NQ_PRIVATE_UPLOAD_EXECUTION_2026-08-28.md`;
-- `docs/research/KAGGLE_NQ_PRIVATE_UPLOAD_OWNER_RESOLUTION_2026-08-28.md`.
-
-## 2. Estado remoto reportado
+## Evidencia aceptada
 
 ```text
-DATASET_ID                  = nicolasbuttaro/edgelab-ticks-nq-preholdout
-VERSION                     = v1
-VISIBILITY                  = private_OPERATOR_ATTESTED
-UNAUTHENTICATED_ACCESS      = 404_OPERATOR_ATTESTED
-REMOTE_FILES                = 8/8_OPERATOR_ATTESTED
-OWNER_IDENTITY_RECONCILED   = true
-POST_UPLOAD_REHASH          = pending
+PARQUET_FILES             = 5
+PARQUET_ROWS              = 119153201
+PARQUET_BYTES             = 2265885160
+MAX_TS_UTC_NS             = 1782856799856000000
+HOLDOUT_OPEN_UTC_NS       = 1782856800000000000
+STRICT_MARGIN             = 144 ms
+PARQUET_HASHES_MATCH      = 5/5_OPERATOR_ATTESTED
+EFFECTIVE_REGISTRY_MATCH  = true_OPERATOR_ATTESTED
 ```
 
-## 3. Integridad esperada
+## Drift de control
 
 ```text
-PARQUET_FILES               = 5
-PARQUET_ROWS                = 119153201
-PARQUET_BYTES               = 2265885160
-MAX_TS_UTC_NS               = 1782856799856000000
-HOLDOUT_OPEN_UTC_NS         = 1782856800000000000
-STRICT_MARGIN               = 144 ms
-FILES_SHA256_ENTRIES        = 7
-FILES_SHA256_SELF_HASH      = dddd3c83bc9fee7e3bf71181b051b1c54aea28f8c7ca4eafe96a606be4401bce
-EFFECTIVE_REGISTRY_SHA256   = f9bcf5eee1e68bd4797a959f7e22d3344ae383d9d33c4c59a783ef10ce35e31f
-PACKAGE_MANIFEST_SHA256     = 4d1053090d80930ee7494e008148b0b8a64829568d861065e054ed2f88f91506
+PHASE1_MANIFEST_SHA256 = 4d1053090d80930ee7494e008148b0b8a64829568d861065e054ed2f88f91506
+CLOUD_MANIFEST_SHA256  = 3dd22d7e21a3bab3de4ec0c044120fa1e94f1b0bbd942fa2c02be108fde5da46
+PHASE1_FILES_SELF_HASH = dddd3c83bc9fee7e3bf71181b051b1c54aea28f8c7ca4eafe96a606be4401bce
+CLOUD_FILES_SELF_HASH  = 0f12f20194756a178f9e7c22fde17362eaaccecde05054071856831ed9b2f7e5
 ```
 
-## 4. Metadata histórico
+El reporte de `7/7 PASS` usa como esperado el hash remoto nuevo del manifest, no el hash canónico registrado en Fase 1. Contra la evidencia versionada, el resultado es `6/7` más self-hash distinto.
 
-El metadata local original con ID `nicodelcampo/...` queda preservado como evidencia pre-upload, no como metadata canónico futuro. No se cambia retroactivamente su hash.
+## Próximo gate
 
-Para futuras versiones o recreaciones, el ID debe ser:
+Entregar ambos archivos de control remotos, producir diff semántico y rerun con:
 
 ```text
-nicolasbuttaro/edgelab-ticks-nq-preholdout
+tools/verify_kaggle_nq_post_upload.py
 ```
 
-## 5. Próximo gate — rehash post-upload
+desde un commit exacto. El artefacto JSON debe conservarse sin editar.
 
-Sobre `/kaggle/input/edgelab-ticks-nq-preholdout/`:
-
-1. verificar inventario remoto;
-2. verificar las siete entradas de `files.sha256`;
-3. verificar el self-hash de `files.sha256`;
-4. recomputar filas y bytes de los cinco Parquet;
-5. recomputar `ts_max`;
-6. confirmar ausencia física de holdout;
-7. emitir certificación post-upload.
-
-Resultado requerido:
+## Firewalls
 
 ```text
-POST_UPLOAD_BYTE_REHASH = PASS
-```
-
-Si cualquier valor difiere:
-
-```text
-FAIL_CLOSED
-NO_KERNEL
-NO_AUTOMATIC_RETRY
-```
-
-## 6. Firewalls
-
-```text
-KAGGLE_DATASET_BUILD_EXECUTED    = true
-KAGGLE_DATASET_UPLOAD_AUTHORIZED = true
-KAGGLE_DATASET_UPLOAD_EXECUTED   = true
-OWNER_IDENTITY_RECONCILED        = true
-POST_UPLOAD_REHASH               = pending
-BIGTRAP2_RERUN_AUTHORIZED        = false
-BT2A_NQ_SWEEP_AUTHORIZED         = false
-BT2A_NQ_GATE1_AUTHORIZED         = false
-HOLDOUT_AUTHORIZED               = false
-SCIENTIFIC_RUN_AUTHORIZED        = false
+KAGGLE_DATASET_UPLOAD_EXECUTED = true
+OWNER_IDENTITY_RECONCILED      = true
+POST_UPLOAD_REHASH_PASSED      = false
+CONTROL_HASH_DRIFT_RECONCILED  = false
+BIGTRAP2_RERUN_AUTHORIZED      = false
+BT2A_NQ_GATE1_AUTHORIZED       = false
+HOLDOUT_AUTHORIZED             = false
+SCIENTIFIC_RUN_AUTHORIZED      = false
 ```
 
 ## Aporte al referente
 
-El owner observado queda reconciliado como custodio canónico; el único siguiente gate permitido es el rehash post-upload, sin autorización científica implícita.
+El payload de mercado coincide, pero dos archivos de control difieren de Fase 1; no se congela BigTrap2 V2 hasta reconciliarlos.
