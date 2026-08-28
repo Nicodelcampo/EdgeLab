@@ -41,12 +41,6 @@ from edgelab.research.bt2a_event_store import (  # noqa: E402
     validate_event_checkpoint,
     verify_file_sha256,
 )
-from edgelab.research.bt2a_event_store import (  # noqa: E402
-    canonical_sha256,
-    file_sha256,
-    validate_event_checkpoint,
-    verify_file_sha256,
-)
 from edgelab.research.bt2a_gate2_first_passage import (  # noqa: E402
     first_passage_scores_fast,
     horizon_endpoints,
@@ -236,16 +230,57 @@ def validate_clock_event_store(event_store_dir: Path, source_spec: dict) -> dict
     checks["manifest_events_payload_sha256"] = manifest.get("events_payload_sha256") == expected.get("events_payload_sha256")
     checks["manifest_counts_by_contract"] = manifest.get("counts") == expected.get("counts_by_contract")
 
-    # Parquet transport identity check (Path B: logical primary, physical transport non-blocking)
+    # Parquet transport and logical validation (Path B: logical primary, physical transport non-blocking)
     parquet_meta = manifest.get("parquet") if isinstance(manifest.get("parquet"), dict) else {}
     parquet_path = root / str(parquet_meta.get("path") or "bt2a_gate1_canonical_events_all5.parquet")
     checks["parquet_exists"] = parquet_path.is_file()
     actual_parquet_sha256 = file_sha256(parquet_path) if parquet_path.is_file() else None
 
+    parquet_logical_valid = False
+    if parquet_path.is_file():
+        try:
+            import pyarrow.parquet as pq
+            parquet_table = pq.read_table(parquet_path)
+            expected_cols = {
+                "arm", "cme_session", "contract", "direction", "event_id",
+                "fill_price_ticks", "fill_source_row", "fill_ts_utc_ns",
+                "gate1_canonical_commit", "gate1_cap_driver",
+                "gate1_horizon_end_source_row", "gate1_horizon_end_ts_utc_ns",
+                "gate1_input_sha256", "gate1_runtime_sha256",
+                "identity_sha256", "signal_source_row", "signal_ts_utc_ns"
+            }
+            schema_names = set(parquet_table.schema.names)
+            checks["parquet_readable"] = True
+            checks["parquet_schema_valid"] = expected_cols.issubset(schema_names)
+            checks["parquet_n_events"] = parquet_table.num_rows == int(expected.get("n_events", 22202))
+
+            df_parquet = parquet_table.to_pandas()
+            arm_counts = dict(df_parquet["arm"].value_counts()) if "arm" in df_parquet.columns else {}
+            checks["parquet_counts_total"] = arm_counts == expected.get("counts_total")
+            parquet_logical_valid = bool(
+                checks["parquet_readable"]
+                and checks["parquet_schema_valid"]
+                and checks["parquet_n_events"]
+                and checks["parquet_counts_total"]
+            )
+        except Exception as exc:
+            checks["parquet_readable"] = False
+            checks["parquet_schema_valid"] = False
+            checks["parquet_n_events"] = False
+            checks["parquet_counts_total"] = False
+            errors.append(f"parquet validation failed: {exc}")
+    else:
+        checks["parquet_readable"] = False
+        checks["parquet_schema_valid"] = False
+        checks["parquet_n_events"] = False
+        checks["parquet_counts_total"] = False
+
     if actual_parquet_sha256 == EXPECTED_CANONICAL_PARQUET_SHA256:
         parquet_transport_status = "CANONICAL_MATCH"
-    elif actual_parquet_sha256 is not None:
+    elif actual_parquet_sha256 is not None and parquet_logical_valid:
         parquet_transport_status = "DIFFERENT_NON_BLOCKING"
+    elif actual_parquet_sha256 is not None:
+        parquet_transport_status = "CORRUPT_OR_INVALID"
     else:
         parquet_transport_status = "MISSING"
 
@@ -727,15 +762,17 @@ def main(argv=None) -> int:
     root = args.root.resolve()
     event_store = args.event_store_dir.resolve()
     data_dir = args.data_dir.resolve()
+    if not args.preflight_only:
+        if args.expected_commit is None:
+            raise SystemExit("ABSTAIN_MANDATORY_EXPECTED_COMMIT_REQUIRED_FOR_EXECUTION")
+        git_checks = _git_checks(root, expected_commit=args.expected_commit, require_commit=True)
+        if not git_checks.get("commit_exact", False):
+            raise SystemExit("ABSTAIN_COMMIT_MISMATCH_AGAINST_EXPECTED_COMMIT")
+        require_authorization(args.authorization_token)
     readiness = preflight(root, event_store, data_dir, expected_commit=args.expected_commit)
     if args.preflight_only:
         print(json.dumps(readiness, indent=2, sort_keys=True))
         return 0 if readiness["status"] == "PASS_READY_FOR_CLOCK_AUTHORIZATION" else 2
-    if args.expected_commit is None:
-        raise SystemExit("ABSTAIN_MANDATORY_EXPECTED_COMMIT_REQUIRED_FOR_EXECUTION")
-    if not readiness["git"].get("commit_exact", False):
-        raise SystemExit("ABSTAIN_COMMIT_MISMATCH_AGAINST_EXPECTED_COMMIT")
-    require_authorization(args.authorization_token)
     if readiness["status"] != "PASS_READY_FOR_CLOCK_AUTHORIZATION":
         raise SystemExit("ABSTAIN_CLOCK_PREFLIGHT_NOT_READY")
     if args.output_dir is None:

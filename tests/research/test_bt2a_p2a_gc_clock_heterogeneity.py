@@ -303,11 +303,14 @@ def test_positive_freeze_roundtrip():
 
 
 def test_validate_clock_event_store_path_b_policy(tmp_path: Path):
-    """Path B: Logical identity is primary; different parquet physical hash is DIFFERENT_NON_BLOCKING."""
+    """Path B: Logical identity is primary; different parquet physical hash is DIFFERENT_NON_BLOCKING if parquet is logically valid."""
+    import pyarrow as pa
+    import pyarrow.parquet as pq
     runner = load_runner()
     source_spec = json.loads((ROOT / "specs" / "bt2a_gate2_first_passage_v1.json").read_text(encoding="utf-8"))
+    expected = source_spec["canonical_event_store"]
 
-    # Missing manifest -> ready=False
+    # 1. Missing manifest -> ready=False, logical_identity=FAIL
     res_empty = runner.validate_clock_event_store(tmp_path, source_spec)
     assert not res_empty["ready"]
     assert res_empty["logical_identity"] == "FAIL"
@@ -318,17 +321,52 @@ def test_validate_clock_event_store_path_b_policy(tmp_path: Path):
         "n_sessions": 234,
         "n_events": 22202,
         "events_payload_sha256": "feee6001e88aa69f62a092b253e468531230120a3dccdc2ceac0d488c9684cbd",
-        "counts": source_spec["canonical_event_store"]["counts_by_contract"],
+        "counts": expected["counts_by_contract"],
         "parquet": {"path": "bt2a_gate1_canonical_events_all5.parquet", "sha256": "different_transport_hash_123"},
     }
     (tmp_path / "run_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
-    # Parquet with different byte hash (e.g. Windows serialization)
-    (tmp_path / "bt2a_gate1_canonical_events_all5.parquet").write_bytes(b"DIFFERENT_PYARROW_METADATA_BYTES")
 
-    # Without checkpoints -> ready=False
-    res_no_ckpts = runner.validate_clock_event_store(tmp_path, source_spec)
-    assert not res_no_ckpts["ready"]
-    assert res_no_ckpts["physical_transport_identity"] == "DIFFERENT_NON_BLOCKING"
+    # 2. Corrupt parquet bytes -> CORRUPT_OR_INVALID, ready=False
+    parquet_file = tmp_path / "bt2a_gate1_canonical_events_all5.parquet"
+    parquet_file.write_bytes(b"CORRUPT_NOT_A_PARQUET_FILE")
+    res_corrupt = runner.validate_clock_event_store(tmp_path, source_spec)
+    assert not res_corrupt["ready"]
+    assert res_corrupt["physical_transport_identity"] == "CORRUPT_OR_INVALID"
+    assert not res_corrupt["checks"]["parquet_readable"]
+
+    # 3. Valid Parquet table with canonical schema and counts (different byte hash)
+    n_kabs = 16940
+    n_kbt2 = 5262
+    total = n_kabs + n_kbt2
+    cols = {
+        "arm": ["K_ABS"] * n_kabs + ["K_BT2"] * n_kbt2,
+        "cme_session": ["20260105"] * total,
+        "contract": ["GC 02-26"] * total,
+        "direction": [1] * total,
+        "event_id": [f"evt_{i}" for i in range(total)],
+        "fill_price_ticks": [1000] * total,
+        "fill_source_row": [10] * total,
+        "fill_ts_utc_ns": [1000000000] * total,
+        "gate1_canonical_commit": ["3e639e150bcd7b4691da3d1ba8049a33f586c217"] * total,
+        "gate1_cap_driver": ["TICKS"] * total,
+        "gate1_horizon_end_source_row": [20] * total,
+        "gate1_horizon_end_ts_utc_ns": [2000000000] * total,
+        "gate1_input_sha256": ["0" * 64] * total,
+        "gate1_runtime_sha256": ["0" * 64] * total,
+        "identity_sha256": [f"id_{i}" for i in range(total)],
+        "signal_source_row": [5] * total,
+        "signal_ts_utc_ns": [900000000] * total,
+    }
+    table = pa.Table.from_pydict(cols)
+    pq.write_table(table, parquet_file)
+
+    res_valid_pq = runner.validate_clock_event_store(tmp_path, source_spec)
+    # Parquet itself is valid and recognized as DIFFERENT_NON_BLOCKING
+    assert res_valid_pq["checks"]["parquet_readable"]
+    assert res_valid_pq["checks"]["parquet_schema_valid"]
+    assert res_valid_pq["checks"]["parquet_n_events"]
+    assert res_valid_pq["checks"]["parquet_counts_total"]
+    assert res_valid_pq["physical_transport_identity"] == "DIFFERENT_NON_BLOCKING"
 
 
 def test_mandatory_expected_commit_in_frozen_mode():
@@ -346,4 +384,44 @@ def test_mandatory_expected_commit_in_frozen_mode():
     # When expected_commit is mismatched -> commit_exact is False
     git_checks_bad = runner._git_checks(ROOT, expected_commit="0" * 40, require_commit=True)
     assert git_checks_bad["commit_exact"] is False
+
+
+def test_execution_modes_abort_immediately_without_expected_commit(tmp_path: Path):
+    """Execution modes (--run-all, --session-index, --finalize) must fail-closed immediately without --expected-commit."""
+    for flag in (["--run-all"], ["--session-index", "0"], ["--finalize"]):
+        run_missing = subprocess.run(
+            [
+                sys.executable,
+                "tools/run_bt2a_p2a_gc_clock_heterogeneity.py",
+                "--event-store-dir", str(tmp_path),
+                "--data-dir", str(tmp_path),
+                "--output-dir", str(tmp_path / "out"),
+                "--authorization-token", "AUTHORIZE_BT2A_P2A_GC_CLOCK_HETEROGENEITY_V1",
+                *flag,
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+        )
+        assert run_missing.returncode != 0
+        assert "ABSTAIN_MANDATORY_EXPECTED_COMMIT_REQUIRED_FOR_EXECUTION" in run_missing.stderr
+
+        run_mismatch = subprocess.run(
+            [
+                sys.executable,
+                "tools/run_bt2a_p2a_gc_clock_heterogeneity.py",
+                "--event-store-dir", str(tmp_path),
+                "--data-dir", str(tmp_path),
+                "--output-dir", str(tmp_path / "out"),
+                "--authorization-token", "AUTHORIZE_BT2A_P2A_GC_CLOCK_HETEROGENEITY_V1",
+                "--expected-commit", "0" * 40,
+                *flag,
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+        )
+        assert run_mismatch.returncode != 0
+        assert "ABSTAIN_COMMIT_MISMATCH_AGAINST_EXPECTED_COMMIT" in run_mismatch.stderr
+
 

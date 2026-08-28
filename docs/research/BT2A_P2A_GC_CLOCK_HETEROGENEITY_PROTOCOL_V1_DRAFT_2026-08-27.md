@@ -120,12 +120,22 @@ El preflight:
 - verifica Python 3.12.14 y el lock;
 - no lee valores de precio ni calcula outcomes.
 
-Comando de preflight:
+Comando de preflight (borrador):
 
 ```bash
 python tools/run_bt2a_p2a_gc_clock_heterogeneity.py \
   --event-store-dir /ruta/event-store \
   --data-dir /ruta/gate1-parquets \
+  --preflight-only
+```
+
+Comando de preflight congelado (exige commit exacto):
+
+```bash
+python tools/run_bt2a_p2a_gc_clock_heterogeneity.py \
+  --event-store-dir /ruta/event-store \
+  --data-dir /ruta/gate1-parquets \
+  --expected-commit <FROZEN_COMMIT_SHA> \
   --preflight-only
 ```
 
@@ -135,13 +145,14 @@ La ejecución permanecerá bloqueada hasta que el spec se congele en un commit r
 AUTHORIZE_BT2A_P2A_GC_CLOCK_HETEROGENEITY_V1
 ```
 
-Después de una autorización válida:
+Después de una autorización válida (requiere token y commit exacto):
 
 ```bash
 python tools/run_bt2a_p2a_gc_clock_heterogeneity.py \
   --event-store-dir /ruta/event-store \
   --data-dir /ruta/gate1-parquets \
   --output-dir /ruta/salida-clock-v1 \
+  --expected-commit <FROZEN_COMMIT_SHA> \
   --run-all \
   --authorization-token AUTHORIZE_BT2A_P2A_GC_CLOCK_HETEROGENEITY_V1
 
@@ -149,6 +160,7 @@ python tools/run_bt2a_p2a_gc_clock_heterogeneity.py \
   --event-store-dir /ruta/event-store \
   --data-dir /ruta/gate1-parquets \
   --output-dir /ruta/salida-clock-v1 \
+  --expected-commit <FROZEN_COMMIT_SHA> \
   --finalize \
   --authorization-token AUTHORIZE_BT2A_P2A_GC_CLOCK_HETEROGENEITY_V1
 ```
