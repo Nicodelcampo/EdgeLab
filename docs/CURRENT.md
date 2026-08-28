@@ -39,7 +39,7 @@ La procedencia y hashes vinculantes viven en `specs/bt2a_gate2_first_passage_v1.
 
 - P2-A: ejecutado y soportado como diagnóstico post-selección (`results/bt2a-p2a-v1-r1-20260827`, payload `296f8352a46751c3a9a26a32ec29661ddcecba7ac57874a967dc591a92766e28`, clasificación `P2_DIAGNOSTIC_MECHANISM_SUPPORTED`).
 - P2-B: implementado, no ejecutado.
-- Diagnóstico de Heterogeneidad Horaria GC V1: congelado preautorización (`specs/bt2a_p2a_gc_clock_heterogeneity_v1.json`, rama `research/bt2a-p2a-clock-heterogeneity-v1-20260827`).
+- Diagnóstico de Heterogeneidad Horaria GC V1: ejecutado y finalizado bajo autorización vinculante (`specs/bt2a_p2a_gc_clock_heterogeneity_v1.json`, resultado `docs/research/BT2A_P2A_GC_CLOCK_HETEROGENEITY_RESULT_2026-08-28.md`, clasificación `P2A_POST_SELECTION_NO_CLOCK_HETEROGENEITY_SIGNAL`, payload SHA-256 `4a01978b98ccaa4342120493a295680820da44d0474b4d991b9f5bab94424a0d`). No se detectó evidencia estadística de que el contraste K_ABS−N_RAND difiera entre las 4 fases horarias tras Holm-12 (0/12 contrastes familiares). Esto no prueba homogeneidad positiva; descarta formalmente introducir filtros horarios post-hoc.
 - Incidente epistemológico asentado: 4 sesiones prematuras en cuarentena; ejecución autorizada cerrada.
 - P2-A no declara edge ni habilita promoción.
 
@@ -71,7 +71,7 @@ No ejecutar HMM final, join de outcomes ni CTX-3 hasta pasar los gates de `docs/
 GATE1_ALL5                    = COMPLETE_POST_OUTCOME_REPLICATION
 CANONICAL_EVENT_STORE_234    = PASS
 P2A                           = COMPLETE_POST_OUTCOME_DIAGNOSTIC
-P2A_CLOCK_HETEROGENEITY       = FROZEN_PREAUTHORIZATION
+P2A_CLOCK_HETEROGENEITY       = COMPLETE_NO_CLOCK_HETEROGENEITY_SIGNAL
 P2B                           = IMPLEMENTED_NOT_RUN
 GATE_L2_SAMPLE_POWER                    = NOT_READY
 NEW_OUTCOMES_OPENED_BY_CLOCK_PREPARATION = false

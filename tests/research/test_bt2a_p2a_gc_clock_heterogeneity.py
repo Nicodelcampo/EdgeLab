@@ -494,3 +494,35 @@ def test_execution_modes_abort_immediately_without_expected_commit(tmp_path: Pat
         assert "ABSTAIN_COMMIT_MISMATCH_AGAINST_EXPECTED_COMMIT" in run_mismatch.stderr
 
 
+def test_published_clock_heterogeneity_result():
+    """Verify published clock heterogeneity result properties and exact zero-signal verdict."""
+    report_path = ROOT / "docs" / "research" / "BT2A_P2A_GC_CLOCK_HETEROGENEITY_RESULT_2026-08-28.md"
+    assert report_path.is_file()
+    report_text = report_path.read_text(encoding="utf-8")
+    assert "P2A_POST_SELECTION_NO_CLOCK_HETEROGENEITY_SIGNAL" in report_text
+    assert "ZERO_HOLM_12_PHASE_VS_REST_CONTRASTS" in report_text
+    assert "4a01978b98ccaa4342120493a295680820da44d0474b4d991b9f5bab94424a0d" in report_text
+
+    result_path = ROOT / "runs" / "bt2a_p2a_gc_clock_heterogeneity_run_20260828" / "bt2a_p2a_gc_clock_heterogeneity_result.json"
+    if result_path.is_file():
+        runner = load_runner()
+        data = json.loads(result_path.read_text(encoding="utf-8"))
+        assert data["status"] == "COMPLETE_AUTHORIZED_POST_SELECTION_CLOCK_DIAGNOSTIC"
+        assert data["decision"]["label"] == "P2A_POST_SELECTION_NO_CLOCK_HETEROGENEITY_SIGNAL"
+        assert data["decision"]["reason"] == "ZERO_HOLM_12_PHASE_VS_REST_CONTRASTS"
+        assert data["decision"]["passing_contrasts"] == []
+        assert data["decision"]["edge_declared"] is False
+        assert data["decision"]["winner_selected"] is False
+        assert data["decision"]["promotion_eligible"] is False
+        assert data["n_K_ABS_source"] == 16940
+        assert data["n_K_ABS_macro_excluded"] == 71
+        assert data["n_sessions"] == 234
+        assert len(data["clock_family"]["family"]) == 12
+        for item in data["clock_family"]["family"]:
+            assert item["p_holm_12"] > 0.05
+            assert item["familywise_signal"] is False
+        assert runner.canonical({k: v for k, v in data.items() if k != "payload_sha256"}) == data["payload_sha256"]
+        assert data["payload_sha256"] == "4a01978b98ccaa4342120493a295680820da44d0474b4d991b9f5bab94424a0d"
+
+
+
