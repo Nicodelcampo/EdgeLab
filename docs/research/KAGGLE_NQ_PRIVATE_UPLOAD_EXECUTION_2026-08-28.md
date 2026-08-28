@@ -1,44 +1,36 @@
-# Ejecución del upload privado NQ — reconciliación inicial
+# Ejecución del upload privado NQ — estado reconciliado
 
 **Fecha:** 2026-08-28  
 **Evidencia:** `OPERATOR_ATTESTED`  
-**Estado:** `UPLOAD_COMPLETED_OWNER_IDENTITY_DEVIATION_PENDING_RECONCILIATION`
+**Estado:** `UPLOAD_COMPLETED_OWNER_RECONCILED_PENDING_POST_UPLOAD_REHASH`
 
-## Resultado reportado
-
-El operador reportó creación exitosa, privada y con ocho archivos:
+## Dataset canónico
 
 ```text
 Dataset = nicolasbuttaro/edgelab-ticks-nq-preholdout
 Version = v1
-Private = true
-Files   = 8/8
+Private = true_OPERATOR_ATTESTED
+Files   = 8/8_OPERATOR_ATTESTED
 Rows    = 119153201
 Bytes   = 2265885160
 Rehash  = pending
 ```
 
-## Hallazgo
+## Resolución del owner
 
-La autorización y el metadata pre-upload exigían:
-
-```text
-nicodelcampo/edgelab-ticks-nq-preholdout
-```
-
-El dataset observado quedó bajo:
+La autorización original esperaba `nicodelcampo`, pero el create quedó bajo `nicolasbuttaro`. Después de registrar la desviación, el propietario eligió explícitamente aceptar `nicolasbuttaro` como custodio Kaggle canónico.
 
 ```text
-nicolasbuttaro/edgelab-ticks-nq-preholdout
+OWNER_IDENTITY_RECONCILED = true
+CANONICAL_OWNER           = nicolasbuttaro
 ```
 
-Esto es una desviación de identidad. No se reportó exposición pública, pero la sustitución de owner no puede aceptarse retroactivamente sin una decisión explícita.
+El metadata pre-upload anterior permanece como evidencia histórica y no debe reutilizarse en futuras versiones.
 
 ## Estado científico
 
 ```text
 UPLOAD_EXECUTED             = true
-OWNER_IDENTITY_RECONCILED   = false
 POST_UPLOAD_REHASH          = pending
 BIGTRAP2_RERUN_AUTHORIZED   = false
 BT2A_NQ_GATE1_AUTHORIZED    = false
@@ -46,8 +38,6 @@ HOLDOUT_AUTHORIZED          = false
 SCIENTIFIC_RUN_AUTHORIZED   = false
 ```
 
-El rehash puede realizarse para verificar integridad de custodia. Freeze y ejecución científica permanecen bloqueados hasta reconciliar el owner.
-
 ## Aporte al referente
 
-Se preservó el hecho físico del upload sin convertir una desviación de identidad en conformidad contractual; el próximo gate requiere decidir explícitamente qué owner Kaggle es canónico.
+El upload y su owner quedan reconciliados sin alterar retroactivamente la evidencia; el próximo gate es exclusivamente el rehash post-upload.

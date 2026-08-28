@@ -1,32 +1,46 @@
 {
   "schema_version": "edgelab_kaggle_private_upload_v1",
-  "status": "UPLOAD_COMPLETED_OWNER_IDENTITY_DEVIATION_PENDING_RECONCILIATION",
+  "status": "UPLOAD_COMPLETED_OWNER_RECONCILED_PENDING_POST_UPLOAD_REHASH",
   "upload_authorized": true,
   "upload_executed": true,
+  "owner_identity_reconciled": true,
   "post_upload_rehash": "pending",
   "scientific_run_authorized": false,
-  "authorized_dataset": {
-    "owner": "nicodelcampo",
-    "slug": "edgelab-ticks-nq-preholdout",
-    "id": "nicodelcampo/edgelab-ticks-nq-preholdout",
-    "visibility": "private_only",
-    "is_private": true,
-    "local_source_directory": "E:\\EdgeLab\\kaggle_nq_research"
-  },
-  "observed_remote_dataset": {
-    "evidence_scope": "OPERATOR_ATTESTED",
+  "canonical_dataset": {
     "owner": "nicolasbuttaro",
     "slug": "edgelab-ticks-nq-preholdout",
     "id": "nicolasbuttaro/edgelab-ticks-nq-preholdout",
     "url": "https://www.kaggle.com/datasets/nicolasbuttaro/edgelab-ticks-nq-preholdout",
     "version": 1,
+    "visibility": "private_only",
+    "is_private_reported": true,
+    "custodian_status": "EXPLICITLY_ACCEPTED_BY_PROJECT_OWNER"
+  },
+  "original_authorization": {
+    "token": "AUTHORIZE_UPLOAD_KAGGLE_NQ_PREHOLDOUT_PRIVATE_V1",
+    "issued_at_utc": "2026-08-28T20:40:08.393Z",
+    "original_expected_owner": "nicodelcampo",
+    "original_expected_id": "nicodelcampo/edgelab-ticks-nq-preholdout",
+    "scope": "CREATE_NEW_PRIVATE_DATASET_ONLY"
+  },
+  "owner_resolution": {
+    "decision": "ACCEPT_NICOLASBUTTARO_AS_CANONICAL_KAGGLE_CUSTODIAN",
+    "decided_by": "PROJECT_OWNER_EXPLICIT_DIRECTIVE",
+    "decided_at_utc": "2026-08-28T21:32:24.058Z",
+    "retroactive_payload_change": false,
+    "public_exposure_reported": false,
+    "original_metadata_preserved_as_historical_evidence": true,
+    "future_metadata_id_must_equal": "nicolasbuttaro/edgelab-ticks-nq-preholdout",
+    "future_metadata_hash": "pending_generation_not_required_for_v1_rehash"
+  },
+  "observed_remote_dataset": {
+    "evidence_scope": "OPERATOR_ATTESTED",
+    "id": "nicolasbuttaro/edgelab-ticks-nq-preholdout",
+    "version": 1,
     "visibility_reported": "private",
     "unauthenticated_access_reported": "404",
     "cli_exit_code": 0,
-    "remote_files_reported": 8,
-    "owner_matches_authorized_owner": false,
-    "slug_matches_authorized_slug": true,
-    "private_visibility_reported": true
+    "remote_files_reported": 8
   },
   "local_package": {
     "elements": 9,
@@ -39,7 +53,7 @@
     "holdout_open_utc_ns": 1782856800000000000,
     "strict_margin_ns": 144000000,
     "holdout_present": false,
-    "dataset_metadata_sha256_before_upload": "2114192e9b249eea7bf2cf23a0150dc31251e95c51397174ded8f52389237ab4",
+    "historical_pre_upload_metadata_sha256": "2114192e9b249eea7bf2cf23a0150dc31251e95c51397174ded8f52389237ab4",
     "files_sha256_self_hash": "dddd3c83bc9fee7e3bf71181b051b1c54aea28f8c7ca4eafe96a606be4401bce",
     "effective_input_registry_sha256": "f9bcf5eee1e68bd4797a959f7e22d3344ae383d9d33c4c59a783ef10ce35e31f",
     "package_manifest_sha256": "4d1053090d80930ee7494e008148b0b8a64829568d861065e054ed2f88f91506"
@@ -54,32 +68,20 @@
     "kaggle_research_package_manifest.json",
     "files.sha256"
   ],
-  "authorization": {
-    "required_token": "AUTHORIZE_UPLOAD_KAGGLE_NQ_PREHOLDOUT_PRIVATE_V1",
-    "issued": true,
-    "issued_by": "PROJECT_OWNER_EXPLICIT_DIRECTIVE",
-    "issued_at_utc": "2026-08-28T20:40:08.393Z",
-    "scope": "CREATE_NEW_PRIVATE_DATASET_ONLY",
-    "authorized_owner": "nicodelcampo"
-  },
-  "deviation": {
-    "code": "KAGGLE_OWNER_IDENTITY_MISMATCH",
-    "severity": "GATE_BLOCKING_NOT_PUBLIC_EXPOSURE_REPORTED",
-    "expected_owner": "nicodelcampo",
-    "observed_owner": "nicolasbuttaro",
-    "root_cause": "not_yet_reconciled",
-    "retroactive_owner_substitution_allowed": false,
-    "required_decision": "EXPLICITLY_ACCEPT_OBSERVED_OWNER_OR_DELETE_AND_RECREATE_UNDER_AUTHORIZED_OWNER",
-    "post_upload_rehash_may_run_for_diagnostic_integrity": true,
-    "scientific_freeze_allowed_before_reconciliation": false,
-    "scientific_execution_allowed_before_reconciliation": false
+  "post_upload_checks": {
+    "processing_status_reported": "ready",
+    "privacy_reported": "private",
+    "remote_byte_rehash_required": true,
+    "remote_inventory_reverification_required": true,
+    "rows_bytes_timestamp_reverification_required": true,
+    "kernel_execution_before_rehash": "forbidden"
   },
   "firewalls": {
     "kaggle_dataset_build_executed": true,
     "kaggle_dataset_upload_authorized": true,
     "kaggle_dataset_upload_executed": true,
+    "owner_identity_reconciled": true,
     "post_upload_rehash_passed": false,
-    "owner_identity_reconciled": false,
     "bigtrap2_rerun_authorized": false,
     "bt2a_nq_sweep_authorized": false,
     "bt2a_nq_gate1_authorized": false,
