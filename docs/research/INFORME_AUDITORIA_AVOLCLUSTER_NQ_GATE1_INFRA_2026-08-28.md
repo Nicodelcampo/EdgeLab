@@ -126,8 +126,31 @@ PROMOTION_ELIGIBLE           = false
 - **`READY_TO_BUILD`:** **`false`** (bloqueado hasta completar la ceremonia de freeze y emitir el token de build separado).
 - **`READY_TO_FINALIZE`:** **`false`** (bloqueado hasta completar el build de checkpoints y emitir el token de finalización).
 
+## 8. Addendum de Reconciliación de Identidad y CI (2026-08-28)
+
+### 8.1 Reconciliación de Commits
+| Rol | Commit SHA | Descripción |
+|---|---|---|
+| `IMPLEMENTATION_AUDITED_COMMIT` | `9ddcca8912d8e72bf44bc7bd4cfb5ba872d7b668` | Commit de infraestructura ejecutable, builder y contrato auditado inicialmente. |
+| `AUDIT_REPORT_COMMIT` | `ea528cf70a1b2540bbc5ca6166cefe81b64a1bb8` | Commit que incorporó el informe de auditoría inicial. |
+| `CURRENT_FREEZE_CANDIDATE` | `f05ccceb454e989315ccc5911bf0f0414c3a0123` | HEAD actual del PR #22 (agrega diseño conjunto `avolcluster_bt2a_nq_joint_measurement_v1.draft.json` sin alterar el código ejecutable de creación). |
+| `POST_AUDIT_EXECUTABLE_CHANGES` | `false` | Se verificó mediante `git diff` que ningún componente de creación/builder fue mutado. |
+
+### 8.2 Clasificación de Deuda CI
+- **CI Contractual Dedicado (`aVolClusterPOI NQ zone-store contract`):** **SUCCESS (40s)** en PR y push.
+- **CI General Pytest (Python 3.12):** 8 fallos y 1 error preexistentes en la base `ef7f5c9` / `3961b67` por tests heredados que requieren rutas locales `data/nt8/`.
+- **Regresiones AVol:** **`AVOL_REGRESSIONS = 0`**. 26/26 tests dedicados de AVol pasan al 100%.
+
+### 8.3 Semántica de Estado de Freeze
+- Estado congelado exacto según código (`edgelab/research/avolcluster_nq_zone_store.py`):
+  `status = "FROZEN_ZONE_CREATION_EVENT_STORE"`
+- Payload congelado proyectado:
+  `projected_frozen_payload_sha256 = "1f2ef16548ab6a9d413a7871351800a9868e9ede9725f46c9e2f482588abe59c"`
+- Diseño conjunto borrador (`specs/avolcluster_bt2a_nq_joint_measurement_v1.draft.json`): permanece en estado borrador y **completamente fuera** de la autorización de creación.
+
 ---
 
 ## Aporte al referente
 
-Se audita y certifica la infraestructura de creación de zonas AVolClusterPOI NQ-120t bajo la autoridad `PASS_RESEARCH_ONLY_PYTHON_KERNEL`. Quedan blindadas la separación de capacidades, la exclusión estricta del holdout y la equivalencia determinista con el sweep target-free, preservando todos los firewalls epistemológicos.
+Se audita y certifica la infraestructura de creación de zonas AVolClusterPOI NQ-120t bajo la autoridad `PASS_RESEARCH_ONLY_PYTHON_KERNEL`. Quedan reconciliados los tres commits de la cadena, clasificada la deuda de CI preexistente sin regresiones, y vinculado el payload congelado proyectado `1f2ef16548ab6a9d413a7871351800a9868e9ede9725f46c9e2f482588abe59c` al estado formal `FROZEN_ZONE_CREATION_EVENT_STORE`.
+
