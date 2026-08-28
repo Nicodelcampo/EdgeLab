@@ -1,0 +1,201 @@
+{
+  "schema_version": "bigtrap2_f28_distance_coverage_v0",
+  "status": "PREREGISTERED_NOT_RUN",
+  "date": "2026-08-13",
+  "campaign": "F2.8",
+  "title": "Distance, creator-bar, occupancy and residual opportunity atlas",
+  "inherits": {
+    "protocol": "docs/research/BIGTRAP2_LOCAL_REFLECTION_NULL_PROTOCOL_2026-08-12.md",
+    "spec": "specs/bigtrap2_local_reflection_null_v2.json",
+    "formal_run": "diag/tasa_senales/F2.7_formal_93c2e3f3ac44.json",
+    "kernel_frozen": true,
+    "same_universe": true,
+    "same_estimand_r_i": true
+  },
+  "purpose": {
+    "not_only_falsification": true,
+    "also_discovery": true,
+    "statement": "F2.8 no existe para matar BigTrap2. Existe para localizar DÓNDE vive la asimetría de F2.7, QUÉ objeto la produce y QUÉ residual queda explotable si la atracción de zona no es el mecanismo."
+  },
+  "known_facts_frozen_before_run": {
+    "f27_label": "REFLECTION_POSITIVE",
+    "delta_reflection": 0.04815265363200558,
+    "se_hac": 0.008916839613558459,
+    "ci95": [0.0306759691, 0.0656293381],
+    "sessions": 201,
+    "zones_eligible": 15947,
+    "real_first": 8280,
+    "mirror_first": 7661,
+    "technical_ties": 0,
+    "double_censoring": 6,
+    "distance_p50_ticks": 2,
+    "frac_d_le_2": 0.713,
+    "frac_d_le_3": 0.857,
+    "frac_d_le_5": 0.95,
+    "mirror_overlap_with_other_zones_note": "reported high; NOT equivalent to fraction of intraday range covered"
+  },
+  "corrections_to_informal_critique": {
+    "real_is_not_closer_than_mirror": "By construction d(real,anchor)=d(mirror,anchor). The naive 'closer to close' story is impossible.",
+    "overlap_is_not_occupancy": "A mirror overlapping some other zone is not the same as 99.6% of the price-time range being occupied.",
+    "replication_after_mechanics": "ES/NQ replication is valuable but second. 6E already has 201 formal sessions."
+  },
+  "literature_anchors": [
+    {
+      "id": "osler_2000",
+      "cite": "Osler, C. (2000). Support for Resistance: Technical Analysis and Intraday Exchange Rates. FRBNY Economic Policy Review.",
+      "use": "Compare published/selected levels against matched arbitrary levels. Measure trend interruption, not only first-touch race. Do not claim profitability."
+    },
+    {
+      "id": "reflection_first_passage",
+      "cite": "Classical reflection principle / first-passage symmetry of Brownian motion.",
+      "use": "F2.7 already uses geometric reflection. F2.8 asks whether residual asymmetry is distance-dependent or bar-selected."
+    },
+    {
+      "id": "microstructure_gap_ou",
+      "cite": "Large-tick microstructure: the gap between mid/last and an efficient-price/anchor can mean-revert locally even if the zone object is inert.",
+      "use": "Motivates creator-bar controls and near-anchor strata. Does not authorize a new OU trading model."
+    }
+  ],
+  "population": {
+    "reuse_f27_pairs_only": true,
+    "no_new_kernel_run_required_if_payload_sufficient": false,
+    "rebuild_pairs_with_same_rules": true,
+    "research_end_inclusive": "2026-06-30",
+    "session_count_required": 201,
+    "holdout_forbidden": true,
+    "outcomes_accessed": false,
+    "pnl_accessed": false
+  },
+  "families": {
+    "A_distance_landscape": {
+      "question": "Where in d does the race live, and is there a far-zone family worth keeping?",
+      "primary_cuts_descriptive_not_original_preregistration": ["d<=2", "3<=d<=5", "d>=6"],
+      "additional_published_cuts": ["d>3", "d>5", "d continuous"],
+      "note": "Cuts were suggested after seeing the F2.7 distance distribution. They are an explicit post-F2.7 amendment, not a hidden original hypothesis.",
+      "estimand": "session-equal-weight mean of r_i inside each cut, HAC like F2.7",
+      "required_outputs": ["n_zones", "n_sessions_with_support", "frac_resolved", "delta", "se_hac", "ci95", "mde_observed", "real_first", "mirror_first", "double_censor"]
+    },
+    "B_creator_bar_controls": {
+      "question": "Is the race a property of BigTrap2 zones or of the creator bar?",
+      "controls": [
+        {
+          "id": "matched_geometry_nontrap",
+          "rule": "Same session, same side of close, same d, same width, creator bar without a BigTrap2 zone. If multiple, choose the closest in clock time; if still tied, choose lower bar index."
+        },
+        {
+          "id": "placebo_same_bar_rotated",
+          "rule": "On the same creator bar, keep width and d but rotate the interval to another eligible disjoint location on the same side if it exists; otherwise mark unmatched."
+        }
+      ],
+      "contrast": "Delta_BT2(d) - Delta_control(d) by session",
+      "unmatched_policy": "report match rate; do not impute; abstain contrast if match_rate < 0.40 in that cut"
+    },
+    "C_active_occupancy": {
+      "question": "How much of the accessible price-time field is actually occupied by live zones?",
+      "unit": "bar x tick within that bar's [low_t, high_t]",
+      "active_definition": "zone is active on bar b if created_bar < b <= removal_bar and not yet invalidated/expired",
+      "metrics": ["occupancy_frac_range", "occupancy_frac_visited", "n_active_zones", "nearest_active_distance", "isolated_zone_indicator"],
+      "isolated_definition": "a zone whose interval does not overlap any other simultaneously active zone",
+      "random_controls": "same count, widths and lifetimes placed uniformly on the session range; 200 draws per session, seed frozen"
+    },
+    "D_residual_opportunity": {
+      "question": "If attraction is weak, what structured residual remains?",
+      "classes": [
+        {
+          "id": "FAR_ISOLATED",
+          "if": "d>=6 and isolated and occupancy_local < 0.30",
+          "opportunity": "rare object; candidate for a small high-purity family, not a dense atlas"
+        },
+        {
+          "id": "NEAR_BAR_TIMER",
+          "if": "effect concentrated in d<=2 and creator-bar controls match BT2",
+          "opportunity": "BigTrap2 as selector of reversal/continuation bars, not as a magnetic zone"
+        },
+        {
+          "id": "UNCOVERED_HOLE",
+          "if": "persistent uncovered ticks that later become first-passage destinations more than matched holes",
+          "opportunity": "anti-zone / liquidity-hole family, possibly later aVol or range residuals"
+        },
+        {
+          "id": "MIRROR_FIRST_POCKET",
+          "if": "a declared cut has ci95_upper < 0 with support",
+          "opportunity": "fade-the-zone / opposite-side first passage pocket"
+        },
+        {
+          "id": "INTERRUPTION_NOT_RACE",
+          "if": "Osler-style interruption exceeds matched controls even when r_i is near 0",
+          "opportunity": "zones as brakes, not magnets; different product than first-touch race"
+        },
+        {
+          "id": "CROWDED_WALLPAPER",
+          "if": "occupancy_frac_visited p50 > 0.80 and isolated_rate < 0.10",
+          "opportunity": "do not treat zones as independent observations; move to density-aware features"
+        }
+      ]
+    },
+    "E_interruption_geometry": {
+      "question": "After first contact, does price interrupt, bounce, or continue through?",
+      "inspired_by": "osler_2000",
+      "target_free": true,
+      "definitions": {
+        "contact": "first bar/tick that intersects the interval after created_bar",
+        "interrupt": "within next H_int bars, price fails to close through the far side",
+        "bounce": "after contact, next excursion of at least width_ticks goes back toward the creator close",
+        "through": "close through the far side before bounce",
+        "H_int_bars": 5
+      },
+      "forbidden": ["signed return", "stop", "target", "pnl"]
+    }
+  },
+  "gates": {
+    "reuse_f27_invariants": true,
+    "reflection_coverage_min": 0.95,
+    "require_201_sessions": true,
+    "resolution_rate_min_global": 0.30,
+    "technical_ties_max": 0.01,
+    "stratum_min_sessions": 30,
+    "stratum_min_resolved_pairs": 200,
+    "occupancy_draws_per_session": 200,
+    "rng_seed": 20260813,
+    "clean_tree": true
+  },
+  "decision_labels": [
+    "OPEN_FAR_ZONE_FAMILY",
+    "OPEN_BAR_CLASSIFIER",
+    "OPEN_HOLE_FAMILY",
+    "OPEN_FADE_MIRROR",
+    "OPEN_INTERRUPTION_FAMILY",
+    "OPEN_DENSITY_FEATURES",
+    "CLOSE_ZONE_ATTRACTION",
+    "CONTINUE_AMBIGUOUS"
+  ],
+  "decision_rules": {
+    "OPEN_FAR_ZONE_FAMILY": "d>=6 has ci95_lower>0, n_sessions>=30, resolved_pairs>=200, and BT2-control contrast ci95_lower>0",
+    "OPEN_BAR_CLASSIFIER": "global or d<=2 remains positive, but BT2-control contrast is compatible with zero",
+    "OPEN_HOLE_FAMILY": "occupancy p50>=0.50 and uncovered holes have higher later first-passage than matched random holes",
+    "OPEN_FADE_MIRROR": "any predeclared cut has ci95_upper<0 with support gates",
+    "OPEN_INTERRUPTION_FAMILY": "interrupt or bounce rate exceeds matched controls by session HAC ci excluding 0",
+    "OPEN_DENSITY_FEATURES": "occupancy p50>0.80 or isolated_rate<0.10",
+    "CLOSE_ZONE_ATTRACTION": "no far-zone, no BT2-over-control, no hole, no fade, no interruption edge",
+    "CONTINUE_AMBIGUOUS": "interesting point estimate but underpowered after gates",
+    "multiple_labels_allowed": true
+  },
+  "forbidden": [
+    "tick:25",
+    "holdout",
+    "returns",
+    "pnl",
+    "trading_direction",
+    "target_stop",
+    "parameter_sweep",
+    "z2_authorization",
+    "kaggle_raw_upload",
+    "kernel_modification",
+    "post_result_cut_invention_as_primary"
+  ],
+  "next_after_decision": {
+    "if_any_OPEN_star": "write a one-family follow-up spec; do not open Z2 or PIT",
+    "if_CLOSE_ZONE_ATTRACTION": "keep F2.7 as geometric fact; stop treating BigTrap2 zones as magnetic objects",
+    "if_CONTINUE_AMBIGUOUS": "add power or another asset only for the underpowered family, not a full atlas"
+  }
+}

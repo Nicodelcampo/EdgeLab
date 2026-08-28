@@ -106,8 +106,8 @@ REFASM = Path(os.environ["NT8_REFASM"]) if os.environ.get("NT8_REFASM") \
 #: "tu codigo esta roto" cuando la verdad es "no pude verificarlo", que es
 #: justamente el modo de falla que este expediente persigue.
 #: CS0006 metadata file no encontrado · CS0009/CS0518 referencia invalida o
-#: tipo base ausente · CS1703 assembly duplicado.
-ERRORES_DE_ENTORNO = ("CS0006", "CS0009", "CS0518", "CS1703", "CS1704")
+#: tipo base ausente · CS1703 assembly duplicado · CS0433 tipo duplicado en DLLs.
+ERRORES_DE_ENTORNO = ("CS0006", "CS0009", "CS0433", "CS0518", "CS1703", "CS1704")
 
 #: La mutación del control negativo. Reproduce **el defecto real de v2.3**: un
 #: identificador sin declarar. No un error de sintaxis trivial — el gate tiene

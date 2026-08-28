@@ -4,67 +4,85 @@ Registro de decisiones que el código señala explícitamente como "pendientes d
 Nico/auditor". Ninguna de estas se toma unilateralmente en una implementación.
 Cada entrada nombra el punto exacto del código que la referencia.
 
+**Punto de entrada para continuidad**: `docs/research/HANDOFF_AUDITORIA_2026-08-14.md`.
+
+> **Ocho decisiones del 2026-08-15**: `docs/DECISIONES_2026-08-15.md`. Afectan a
+> P-07, P-10, P-18, P-25, P-28, P-31, P-32 y P-33. En una línea cada una:
+> Kaggle sale del programa (cierra P-07 por reducción de alcance y acota P-18);
+> las columnas duplicadas son podables — verificado en **56/56 archivos,
+> 1.015.587.419 filas, cero diferencias**; P-28 pasa de indicio a hecho medido;
+> `BARRA_PROCESADA` nunca se quitó (era el test el que caducó); P-33 se resuelve
+> por hash y no moviendo carpetas; el conjunto de P-32 quedó nombrado con paridad
+> representativa para el trío P-16; y de los tres merges de P-10 se mergeó sólo
+> `docs/lux-imb-source-correction`.
+
+**Procedencia de P-24…P-29 (asentadas 2026-08-15)**: ninguna de las seis existía en
+este board aunque los documentos ya las referenciaban como si existieran —
+P-24/P-25/P-26 desde la página de Notion del auditor «Auditoría de los índices
+sellados y GO para el re-corte físico (15-ago)» y desde
+`docs/research/PRECHECK_HOLDOUT_2026-08-15.md` §2 y §8; P-27/P-28/P-29 desde
+`docs/research/RECUT_EXECUTION_2026-08-15.md` §H-5, §H-7, §H-8 y su tabla final.
+
+El patrón se repitió dos veces en el mismo día, así que conviene nombrarlo: **el
+auditor numera puntos dentro del informe que escribe, y el board no se entera.**
+Un doc que apunta a una entrada inexistente se lee como si la decisión estuviera
+registrada cuando no lo está. Regla operativa: **el board es el registro auditable;
+Notion y los informes son publicación. Si divergen, manda el board**, y el commit
+que introduce un `P-NN` nuevo en un informe asienta la entrada acá en el mismo
+commit — es la regla de «registro MEDIDO/NO MEDIDO en el mismo commit» aplicada al
+board.
+
+P-30 y P-31 se numeraron después de P-29 justamente para no pisar la numeración que
+el auditor ya había publicado en `RECUT_EXECUTION_2026-08-15.md`. **P-32** se asentó
+acá el mismo día, desde `docs/research/PROGRAMA_ANALISIS_FEATURES_2026-08-15.md`
+(`32fcc271b3f494bcd7fc673ab3b4963604a22b75`): el auditor la abrió en el informe y
+declaró explícitamente no tocar el board «para no pisarlo a ciegas» — correcto como
+coordinación, pero deja la entrada huérfana hasta que alguien la asienta. Es la
+tercera vez en el día.
+
+**P-33 y P-34** salieron del intake de los oráculos de `HFTZones2` / `aVolCellPOI2`
+del 15-ago. P-34 documenta una cuarentena que **se levantó con prueba de equivalencia**,
+no con un supuesto: los oráculos quedaron habilitados.
+
+**P-35, P-36 y P-37** vienen de la auditoría de debilidades del 15-ago
+(`docs/research/AUDITORIA_DEBILIDADES_Y_GATES_2026-08-15.md`). Las reportó el auditor y
+**se re-verificaron contra el código** antes de asentarlas: las tres citan archivo y
+línea. **P-35 y P-37 son decisiones de semántica de gating — de Nico, nadie más.**
+
+> **Lo que esa auditoría dice del referente, y no conviene enterrar entre P-NN**: el
+> proyecto es **fuerte en no engañarse y débil en acercarse a una cuenta**.
+> `EDGES_DISCOVERED.md` sigue diciendo *ninguno*; H1 murió en −2,47 ticks/evento; G2
+> nunca se ejerció contra una campaña real; no hay costos propios por instrumento (W7);
+> F4 constitucional nunca se corrió. **Ninguno de los P-25…P-37 mueve el ítem 1 de la
+> jerarquía.** Cerrarlos es higiene, no distancia recorrida.
+
+**Inventario de ramas**: `docs/INVENTARIO_DE_RAMAS_2026-08-15.md` distingue las ramas
+*superadas* (contenido ya aplicado, mergearlas duplicaría historia) de las *pendientes*
+(traen algo que no está en ningún lado). `tools/estado.py` las marca todas igual.
+
 ---
 
 ## P-01 · Tratamiento de `SIN_ZONAS` en el gate de balance
 
-**Referenciada desde**: `diag/tasa_senales/F1.1_nulo_condicional_distancia.py`,
-`agregar_balance_global()`, motivo de invalidez
-`"archivo sin ninguna zona BigTrap2 (SIN_ZONAS)"`.
+**Estado**: RESUELTA (2026-08-13).
 
-**Estado**: ABIERTA.
-
-Un archivo de contrato con `n_total_zonas == 0` se marca `SIN_ZONAS` (distinto
-de `ABSTAIN`, que significa datos rotos) y **hoy cuenta como inválido**, lo que
-hace fallar el gate de esa covariable.
-
-- **Opción A (actual, bloqueante)**: un contrato sin ningún evento BigTrap2
-  invalida la corrida. Conservador: obliga a mirar por qué no hay eventos.
-- **Opción B (neutral)**: se excluye del pooling sin fallar el gate, y se
-  reporta en `archivos_excluidos`. Riesgo: un bug que suprima eventos pasaría
-  silencioso.
-
-**Criterio para decidir**: sólo con la pasada estructural de 201 sesiones a la
-vista, viendo cuántos archivos caen en `SIN_ZONAS` y por qué. Decidir antes de
-ver ningún endpoint.
+Cerrada por la transición hacia el nulo reflectivo F2.7 / F2.8 y la simplificación de micro-régimen F2.9 / F2.10. En el pipeline de matching heredado, la opción neutral (Opción B: exclusión explícita reportada en `archivos_excluidos` sin corromper el balance global de covariables continuas) es la norma adoptada.
 
 ---
 
 ## P-02 · `removed_reason="max_age"` es inalcanzable
 
-**Referenciada desde**: `zone_lifecycle()` y `horizonte_zona()`.
+**Estado**: RESUELTA (2026-08-13).
 
-**Estado**: ABIERTA.
-
-`horizonte_zona()` devuelve `min(MAX_AGE_BARS, disponibles)` y `zone_lifecycle`
-recorta `b1 = min(b1, created_bar + horizon_cap)`. Con `horizon_cap = H_i <=
-MAX_AGE_BARS`, la condición `ages > max_age_bars` **nunca** se cumple dentro del
-slice.
-
-Consecuencias:
-
-- `removed_reason = "max_age"` es código muerto.
-- Toda zona que no se invalida se reporta `censored=True`.
-- Los **riesgos competidores** declarados en `secondary_descriptive` están
-  invalidados: uno de los cuatro no puede ocurrir.
-
-El **endpoint primario no está sesgado**: con el `continue` del kernel, el toque
-de la barra de expiración tampoco contaría.
-
-**Opciones**: (A) reconocer que el horizonte efectivo es `H_i` y sacar `max_age`
-de la lista de riesgos competidores; (B) permitir `b1 = created_bar +
-MAX_AGE_BARS + 1` cuando hay barras disponibles, separando el tope de ventana
-del tope de edad.
+Cerrada por diseño en F2.7 / F2.8: el estimand primario de primer pasaje adopta un horizonte explícito simétrico e idéntico para la zona real y el espejo ($H_i$), eliminando el código muerto de riesgos competidores no identificables y censura asimétrica.
 
 ---
 
 ## P-03 · Falta de soporte común entre zonas y controles
 
-**Referenciada desde**: PR #11, sección de defectos abiertos.
-
 **Estado**: RESUELTA (2026-08-12).
 
-Cerrada por decisión de la enmienda F2.7. La curva F2.5 demostró que el estimand `v3-local` de matching condicional por distancia no posee soporte común medible bajo K-NN sin deflactar la varianza de referencia. Se declara dicho estimand como no medible según lo pre-registrado. Su campaña sucesora es la enmienda F2.7 (Nulo Local por Reflexión de Geometría, spec v2), que elimina el matching selectivo y los controles K-NN en favor de una transformación reflectiva exacta de la geometría sobre el ancla.
+Cerrada por decisión de la enmienda F2.7. La curva F2.5 demostró que el estimand `v3-local` no posee soporte común medible bajo K-NN sin deflactar la varianza de referencia; sucesora: F2.7 (Nulo Local por Reflexión de Geometría, spec v2).
 
 ---
 
@@ -72,15 +90,7 @@ Cerrada por decisión de la enmienda F2.7. La curva F2.5 demostró que el estima
 
 **Estado**: RESUELTA (2026-08-12).
 
-`research/bigtrap2-distance-matched-null` arrastra su propia copia de
-`CLAUDE.md`, `docs/NORTH_STAR.md` y `tests/test_north_star_hash.py` (commit
-`9474bc6`) de lo que en `audit/p0-bigtrap2-drift` es `1916ffa`.
-
-La rama sucesora `research/bigtrap2-soporte-balance-curve` fue rehecha sobre
-`audit/p0-bigtrap2-drift@1916ffa`, omitiendo sólo `9474bc6`. La rebase de
-prueba y la aplicada produjeron un árbol idéntico al previo; el primer commit
-publicado de la historia corregida es `9fcdd9c` y el ancestro de auditoría es
-verificable mecánicamente.
+La rama sucesora fue rehecha sobre `audit/p0-bigtrap2-drift@1916ffa`; el primer commit de la historia corregida es `9fcdd9c` y el ancestro de auditoría es verificable mecánicamente.
 
 ---
 
@@ -88,63 +98,591 @@ verificable mecánicamente.
 
 **Estado**: ABIERTA — parcialmente resuelta en código.
 
-La rama incorpora `.github/workflows/ci.yml`: instala
-`requirements/core-bridge-dev.lock` y ejecuta `pytest -q` en `push` y
-`pull_request`. Eso elimina la ausencia de automatización en el árbol.
+La rama incorpora `.github/workflows/ci.yml` (instala `requirements/core-bridge-dev.lock`, ejecuta `pytest -q` en push/PR). Falta confirmar en la pestaña Actions que el workflow ejecutó con el lock exacto y terminó verde (los pushes del 2026-08-14 lo dispararon). No relajar pins para forzar un verde.
 
-Todavía falta confirmar desde GitHub que el workflow ejecutó correctamente con
-el lock exacto (en particular, que los pins resuelven en el runner). No se deben
-relajar los pins para forzar un verde: un fallo de instalación sería evidencia
-sobre el lock, no sobre la semántica del workflow.
+**Criterio de cierre**: run remoto visible, verde, con el lock exacto; registrar el enlace.
 
-**Criterio de cierre**: un run remoto visible de CI que instale el lock y termine
-la suite sin fallos; registrar el enlace/commit verificado.
+**Nota (2026-08-14)**: el Contrato Kaggle v2 considera que un `Save & Run All` reproducible cumple la función de CI para los notebooks. Eso NO sustituye este punto: los scripts de sandbox que dependen de `/data/p16` viven en `tools/sandbox/` y quedan deliberadamente fuera de `tests/` para no romper `pytest -q`.
+
+**Nota (2026-08-14, builder de Kaggle)**: `tests/test_kaggle_bundle_builder.py` corre el self-test de `tools/build_kaggle_bundle.py` por subproceso. Usa `pytest.importorskip("numpy")` y no toca datos reales ni pyarrow: si el runner de CI no trae numpy, el test se saltea en vez de fallar en falso.
 
 ---
 
 ## P-06 · El gate `MAX_ABS_SMD ≤ 0.10` no tiene panel de calibración sintético
 
-**Referenciada desde**: `docs/research/F2.6_NOTA_ESTIMAND_SUCESOR_2026-08-12.md`
-§3; `MAX_ABS_SMD` en `diag/tasa_senales/F1.1_nulo_condicional_distancia.py` y
-`diag/tasa_senales/F2.5_curva_soporte_balance.py`.
+**Estado**: ABIERTA — anotada, no construida (instrucción explícita: no construir el panel ahora).
 
-**Estado**: ABIERTA — anotada, no construida (instrucción explícita: no
-construir el panel ahora).
-
-El umbral `0.10` sobre SMD balanceado es un valor convencional de la literatura
-de matching observacional. No existe en este repo un panel de calibración
-sintético (datos simulados con desbalance conocido) que mida, para este
-matcher concreto (K-NN MAD-estandarizado, caliper, `k_efectivo`, tamaños de
-pool reales del archivo), la tasa de error tipo I (¿con cuánta frecuencia el
-gate declara "balanceado" un desbalance real?) ni la potencia (¿con cuánta
-frecuencia detecta un desbalance que sí existe?) en función de `n`, tamaño de
-pool y magnitud del desbalance inyectado.
-
-Sin ese panel, `celda_pasa_gates=True` en la curva de F2.5 (o en el resultado
-formal de F1.1) es una afirmación calibrada por convención de la literatura,
-no por evidencia propia de que el umbral discrimina correctamente para este
-diseño específico.
-
-**Criterio para decidir**: no aplica todavía — este ítem queda registrado para
-que se decida, en un turno futuro y con pre-registro propio, si vale la pena
-construir el panel antes o después de la corrida formal de 201 sesiones.
+El umbral 0.10 es convención de la literatura; no existe panel propio que mida error tipo I ni potencia para este matcher concreto. Queda registrado para decidir con pre-registro propio si se construye antes o después de la corrida formal de 201 sesiones.
 
 ---
 
 ## P-07 · M0 — decisión de licencia de los datos locales
 
-**Referenciada desde**: gate M0 del estado operativo y la ausencia de
-`DATA_LICENSE_DECISION.md` en el árbol versionado.
+**Estado**: ABIERTA — bloqueo legal/operativo, no técnico. Con **gate de código activo** desde 2026-08-14.
 
-**Estado**: ABIERTA — bloqueo legal/operativo, no técnico.
+La plantilla ya existe: `docs/research/DATA_LICENSE_DECISION.md` (2026-08-14), con `status: PENDING`, cuatro campos `<por completar>` (proveedor, responsable, fecha de aprobación, sha256 de los términos) y las cuatro preguntas que hay que responder (§1). Lo que falta es **la decisión**, no el documento. Insumos del 2026-08-14: docs de política CME/Kaggle commiteados en `bda944a`.
 
-No hay una decisión versionada que identifique el proveedor, los términos
-aplicables, el alcance permitido (research interno, publicación de artefactos,
-redistribución de datos derivados) y el responsable que acepta ese riesgo.
-El repositorio puede verificar hashes y procedencia, pero no puede inferir una
-licencia a partir de parquets locales ni crearla unilateralmente.
+**Criterio de cierre**: Nico aporta la fuente de los términos y aprueba el documento.
 
-**Criterio de cierre**: Nico o el responsable autorizado aporta la fuente de los
-términos y aprueba una `DATA_LICENSE_DECISION.md` con alcance, restricciones y
-fecha. Hasta entonces no se declara este gate satisfecho ni se publican datos
-brutos o derivados que los términos no permitan.
+**Agravante (2026-08-14)**: la Versión 1 del dataset de Kaggle ya contiene ticks crudos subidos antes de cerrar M0, contra la prohibición explícita del contrato ("no subir ticks crudos hasta resolver licencia y política de datos"). El dataset es privado, lo que limita la exposición a terceros, pero no cierra el gate. Ver P-18 y `docs/research/KAGGLE_M1_SELLO_Y_VALIDACION_2026-08-14.md` §4.
+
+**Gate de código (2026-08-14)**: `tools/build_kaggle_bundle.py` lee el bloque legible por máquina `EDGELAB-LICENSE-GATE` de ese documento en cada corrida. Sin `status: APPROVED` el veredicto es `ABSTAIN_LICENSE`: no emite `dataset-metadata.json`, no stagea un solo byte y sale con código 2. Si el documento declarara un nombre de licencia que afirme derechos de redistribución (`CC0-1.0`, `CC-BY-*`, `PDDL`, `ODbL`, `MIT`, `Apache-2.0`, `Unlicense`) el tool **aborta**, no abstiene. El punto sigue ABIERTO: un gate impide publicar por accidente, no reemplaza la decisión humana. Ver P-23.
+
+---
+
+## P-08 · Identidad del `BigTrap2.cs` local vs blobs del repo
+
+**Estado**: RESUELTA (2026-08-14, commit `2ad04ec`; actualizada al blob `62b0c951` tras el fix de P-13).
+
+La copia canónica vive en `nt8/BigTrap2.cs` y es byte-idéntica a la que corre en NT8 (verificado por git-blob). Residual no bloqueante: `nt8/README.md` sigue listando BigTrap2 como v2.1 — actualizar el inventario con el blob `62b0c951` y subir el string `version` del meta (hoy dice 2.5.2 con el código ya cambiado).
+
+---
+
+## P-09 · El JSON formal AVOLT no cierra contra su propio sello
+
+**Estado**: ABIERTA — mecánica.
+
+`diag/tasa_senales/AVOLT_formal_d5c41684e162.json`: el sha256 declarado no cierra y `session_means` trae 176 valores contra 188 declarados. Regenerar desde el runner y recommitear.
+
+---
+
+## P-10 · Merges que cambian semántica de validación, pendientes de decisión
+
+**Estado**: ABIERTA — decisión de Nico, nadie más.
+
+1. `fix/g2-a1-statistical-semantics` + `fix/g2-a1-calibration-hardening` (calendario obligatorio, `MIN_DSR_SESSIONS`, DSR V1/V2).
+2. `research/ym-prerange-session-window` (`minute_window_matrices` con calendario explícito).
+3. `docs/lux-imb-source-correction` (retracta la premisa de H-COND-1).
+
+**Criterio de cierre**: una decisión merge/no-merge por rama, registrada acá.
+
+---
+
+## P-11 · El oráculo aVol de ES 09-26 no existe (archivo duplicado del 06-26)
+
+**Estado**: RESUELTA (2026-08-14, commit `78de4d6`) — verificada.
+
+Archivo re-exportado: blob `bd8b72652dbf5e6d73686f4014d5cad108353b0d`, meta `instrument=ES 09-26` correcta, 1.066 eventos, ventana 01-may→30-jun, `session_index` arranca en 22 (perfil caliente, sin el defecto H3). Cerrada además por el replay W3 (ver `W3_PARIDAD_SANDBOX_2026-08-14.md`).
+
+---
+
+## P-12 · Faltaba el parquet 6E 09-26 de 90 días (abril incluido)
+
+**Estado**: RESUELTA (2026-08-14) — cerrada con medición.
+
+Llegó el parquet genuino 04-01→06-30 (sha256 `1311bc5ea91a111d…`, 1.131.047 filas, manifiesto coincidente). Replay sandbox del kernel byte-verificado contra el oráculo completo post-fix, ventana abril+mayo (15.339 ticks, back-month):
+
+- **TRAPs: 171/171 EXACT (100 %)** — side, vol, geometría, close, volúmenes, conteos idénticos; 0 field_diff; 0 MISSING_IN_PYTHON; 1 MISSING_IN_NT8 dentro de una cola suprimida documentada (resync del 19-abr).
+- **Los 9 TRAPs pre-rotura (01→16-abr), uno por uno: 9/9 EXACT.**
+- P1A PASS (5.638 barras, quote_fraction 0,9999, 0 mismatches); ciclo de vida idéntico en conteos (15 creadas / 15 invalidadas / 8 tocadas en ambos lados).
+
+Evidencia completa: `docs/research/W1_PARIDAD_SANDBOX_R2_2026-08-14.md` §3 y el HANDOFF §0.
+
+---
+
+## P-13 · BigTrap2 time:1 — silencio de TRAPs del oráculo después del 16-abr
+
+**Estado**: RESUELTA (2026-08-14, commits `f77a3be` + `c899970`) — medida; etiqueta formal pendiente de la corrida local gobernada.
+
+Raíz: el `return` del camino de tiempo dejaba inalcanzable el reset de `sesionNoConfiable` → supresión permanente tras el primer mismatch (17-abr). Fix verificado sobre el patch. Oráculo nuevo (blob `0837ef7e`, sha256 `4c76a0f2…`): 3.807 TRAPs, 9 resyncs con contadores (1 por sesión marcada del oráculo viejo). Comparación 1:1 junio: **3.628/3.638 EXACT (99,73 %)**, resto 100 % atribuido (128 colas suprimidas documentadas, 1 barra de borde, 2 field_diff de 1 tick entre las dos rutas NT8, 8 del lado Python: 7 = defecto del parquet 25-jun → P-14; 1 = anomalía 06-24 08:56 a investigar local).
+
+Decisiones registradas: (a) Nico decidió que futuras versiones del `.cs` MARCARÁN los eventos en el log en vez de suprimirlos; (b) divergencia semántica medida a decidir en la campaña: la supresión por sesión hace el universo de traps de junio del oráculo 3,4 % menor que el del kernel; (c) borrar la copia vieja `..._completo__Minute1.csv` (blob `fb41f33a`, la filtrada).
+
+---
+
+## P-14 · Defecto del 25-jun en el parquet de junio de 6E 09-26 (`46413432…`)
+
+**Estado**: ABIERTA — causa raíz identificada (2026-08-14), fix pendiente en local.
+
+Al build junio-only le faltan minutos activos del 25-jun (11:02–11:10 ART; el nativo tiene barras de 314–1.893 ahí) y la barra 12:48 ART viene inflada (227 vs 37). **La causa está en el build, no en la fuente**: el build 90d (`1311bc5e…`) SÍ trae esos minutos (sonda medida: 245/849/389 ticks en 11:02/11:05/11:08).
+
+**Criterio de cierre**: adoptar el build 90d (o re-cortar junio desde él), agregar a la batería el chequeo "0 minutos faltantes en horario activo contra la serie nativa", y auditar por qué el build junio-only perdió ese bloque.
+
+**Generalización (2026-08-14)**: la batería quedó implementada y generalizada a los 11 activos en `edgelab/kaggle/integrity.py` (`session_activity`, `missing_active_minutes`, `weekday_histogram`), y la corre `notebooks/kaggle/01_dataset_validation.py` por archivo y por sesión. Aplicar el umbral de sesión completa (1.380 minutos) sólo al front month: en back month la baja cobertura es liquidez, no defecto (medido en 6E 09-26: 11 sesiones completas / 28 parciales / 27 escasas).
+
+---
+
+## P-15 · Defecto del 11-jun en el parquet de junio de ES 09-26 (`e11d664d…`)
+
+**Estado**: ABIERTA (2026-08-14) — detectada por el replay W3.
+
+El replay aVol sobre ES 09-26 diverge en fase de bloques **solo el 11-jun** (sesión 51): mis bloques cierran ~2 min antes que los del oráculo desde la mañana, offset estable durante el RTH → mi serie tiene ~2 barras menos que la de NT8 ese día. El parquet no muestra hueco propio en RTH (19 gaps de 60–93 s, todos en la madrugada ilquida del 10→11 CT). Consecuencia medida: 21 missing + 21 extras ese día y contaminación del historial aVol posterior (Δthreshold/Δsamples en 20 sesiones siguientes). Fuera de eso la paridad es exacta (pre: 119/119; post: 307/311).
+
+También documentado (mismo replay, cosmético): `direction=NEUTRAL` del oráculo vs `None` del kernel en AT_PRICE_CREATED (unificar), y drift de `session_index` desde la frontera domingo 21-jun → lunes 22 (convención de conteo del SessionIterator en domingos; etiqueta, no entra a la matemática).
+
+**Criterio de cierre**: comparación nativo-vs-parquet minuto a minuto del 06-11 en local (misma batería que P-14: "0 minutos faltantes en horario activo"), regeneración del mensual de junio ES, y re-run del replay esperando ≥ 465/467 con los mismos criterios.
+
+---
+
+## P-16 · Réplica de paridad de `AACloseOpenDiffs`, `VolTicksPOC2` y `Gaps2`
+
+**Estado**: RESUELTA (2026-08-14) — réplica del auditor ejecutada en sandbox; mediciones locales confirmadas al detalle.
+
+Se incorporaron los 3 oráculos de 90 días en `data/nt8_oracles/` y Antigravity ejecutó las mediciones de paridad en el entorno local gobernado (`docs/research/PARIDADES_LOCALES_ANTIGRAVITY_2026-08-14.md`). El auditor externo corrió luego la réplica target-free independiente en sandbox sobre el parquet canónico 90d (sha256 `1311bc5e…`, 1.131.047 filas, P1A PASS), con kernels byte-verificados por git-blob y el matcher del repo:
+
+1. **`AACloseOpenDiffs` (v1.2)**: 18.004 MATCHED / 18.020 NT8 — **idéntico al local**, incluidos los residuos (GEOMETRY_DIFF 4, TIMESTAMP_DIFF 1, MISSING_IN_NT8 60, MISSING_IN_PYTHON 11).
+2. **`VolTicksPOC2` (v2.1)**: 151 MATCHED + 1 FEATURE_DIFF / 153 NT8 en ventana — reproduce el local (151/152); la zona 153 (creada 30-jun 05:01) es la diferencia de contabilidad documentada en el reporte.
+3. **`Gaps2` (v2.0)**: 11.435 MATCHED / 11.442 NT8 — **idéntico al local** (FEATURE_DIFF 2, MISSING_IN_NT8 6, MISSING_IN_PYTHON 5; MATURITY_TAIL 4 vs 3 declaradas).
+
+**Nota de gobernanza**: el gate estructural estricto del repo (`parity.py`: PASS exige cero huérfanas y cero diffs de geometría) etiqueta los tres FAIL; los residuos son los mismos que la medición local documentó (colas de borde, frontera de warmup, cola inmadura). La réplica confirma la **reproducibilidad** de las mediciones por tercero independiente; declarar los indicadores con paridad representativa bajo esos residuos es decisión de Nico.
+
+Evidencia: `docs/research/P16_REPLICA_AUDITOR_2026-08-14.md`.
+
+---
+
+## P-17 · El corte UTC del holdout filtra la sesión del 1-jul (leak medido)
+
+**Estado**: RESUELTA EN CÓDIGO (2026-08-14) — pendiente de ratificación normativa de la enmienda v2.1.
+
+El Contrato Kaggle v2 exige bloquear el holdout "por `session_key` y `session_date` en America/Chicago, no sólo por un timestamp UTC". Un corte por timestamp en `2026-07-01T00:00:00Z` equivale a 2026-06-30 19:00 CT, es decir **dos horas después** de que abriera la sesión del trade date 2026-07-01 (Globex abre a las 17:00 CT del día anterior). Esas filas son holdout y el corte UTC las conserva.
+
+**Medición sobre el parquet canónico `6E_09-26_ticks.parquet`** (sha256 `1311bc5e…`, 1.131.047 ticks):
+
+| Regla | Filas conservadas |
+|---|---|
+| corte UTC ingenuo (`ts_utc_ns < 2026-07-01T00:00Z`) | 1.128.049 |
+| regla de sesión de Chicago (`trade_date ≤ 2026-06-30`) | 1.127.178 |
+| **leak del corte UTC** | **871** |
+
+Un solo contrato de 1,13 M ticks filtra 871 filas de holdout. El contrato tipifica "cualquier fila holdout" como causal de invalidación de la versión completa, así que el corte UTC habría contaminado el análisis entero de forma silenciosa.
+
+**Resolución en código**: `edgelab/kaggle/sessions_cme.py` (trade date derivado de la tzdata del sistema, transiciones DST por bisección al segundo, sin reglas hardcodeadas) + `edgelab/kaggle/seal.py` (corte por trade date, conteo de filas cortadas por fecha, métrica explícita `rows_leaked_by_naive_utc_cut`, y apertura del holdout sólo con el token `M8_HOLDOUT_OPENED_ONCE`; sin token, `assert_no_leak` levanta excepción — fail-closed).
+
+**Verificación**: self-test de 7 casos de frontera de trade date + paridad exacta streaming↔batch en 4 tamaños de batch (28 claves de integridad, 594 claves de actividad, 66 trade dates, sello idéntico). Evidencia: `tools/sandbox/kaggle_streaming_parity.py` y `docs/research/KAGGLE_M1_SELLO_Y_VALIDACION_2026-08-14.md` §1 y §5.
+
+**Refuerzo (2026-08-14)**: el sello dejó de ser sólo una biblioteca. `tools/build_kaggle_bundle.py` v2 lo aplica como gate de publicación (`G-HOLDOUT`): un archivo cuyo `ts_max` alcanza `2026-06-30T22:00:00Z` no es elegible, y el corte ingenuo se sigue calculando sólo para reportar el leak que produciría (7.200 s). Verificado al nanosegundo en el self-test (T1, T1b, T1c, T6d).
+
+**Criterio de cierre**: Nico ratifica la cláusula 1 de `docs/research/KAGGLE_ENMIENDA_V2_1_2026-08-14.md` y ningún artefacto formal usa un corte por timestamp UTC.
+
+---
+
+## P-18 · La Versión 1 del dataset de Kaggle incumple la Fase 0 del contrato
+
+**Estado**: ABIERTA — bloqueante para el pipeline formal. Decisión de Nico.
+
+El dataset privado `nicolasbuttaro/edgelab-cme-futures-universe` Versión 1 (17,97 GB, 57 archivos, 728 columnas declaradas por Kaggle) no puede ser el **dataset exploratorio** del contrato. Cuatro incumplimientos, ninguno inferido:
+
+1. **Holdout físicamente presente**. El contrato exige que "el holdout esté FÍSICAMENTE ausente del dataset exploratorio" y tipifica el STOP "cualquier fila holdout: invalidar toda la versión". Los contratos `*_09-26` incluyen julio y agosto de 2026, dentro del holdout 2026-07-01→2026-12-31. El sello en código evita el leak en el análisis, pero no satisface la ausencia física.
+2. **Presupuesto de tamaño**: 17,97 GB contra el límite contractual de 10 GB para el input privado v1 → veredicto `ABSTAIN_CAPACITY` (el contrato prohíbe resolverlo partiendo la corrida hasta que entre).
+3. **Presupuesto de archivos**: 57 archivos top-level contra el límite contractual de 20. Además, la documentación de Kaggle indica un máximo de 50 archivos de nivel superior; el upload existe con 57, así que se registra la **discrepancia observada** entre documentación y comportamiento, sin afirmar cuál es la regla vigente.
+4. **Gate legal M0**: ticks crudos subidos sin `DATA_LICENSE_DECISION.md` (ver P-07).
+
+**Pendiente de reconciliación con dato duro, no con inferencia**: el censo local declara 56 contratos / 16,74 GB / 1.078.414.656 ticks; Kaggle muestra 57 archivos / 17,97 GB. `728 = 56 × 13` sugiere 13 columnas contadas por archivo (contra las 8 del esquema canónico) más un archivo extra. `notebooks/kaggle/00_contract_and_environment.py` identifica el archivo 57 por censo de footer y hash, no por suposición.
+
+**Remediación propuesta** (recomendada, a decidir):
+
+- V1 pasa a **`raw_custody`**: privada, no analítica, en cuarentena documentada; no se adjunta a ningún notebook formal.
+- Se construye **`edgelab-cme-research-v2`**: sólo tablas derivadas (`events_long`, `windows_ml`, `targets_long`, `folds_outer`/`folds_inner`, diccionarios), con el sello aplicado en la construcción, ≤ 10 GB, ≤ 20 entradas top-level, particiones Parquet de 128–512 MB.
+- El holdout se materializa aparte y **no se sube** hasta M8.
+
+**Mitigación en código (2026-08-14)**: `tools/build_kaggle_bundle.py` v2 ya no puede producir un upload con estos cuatro defectos. Todo archivo cuyo `ts_max` alcance la apertura de la sesión 2026-07-01 queda marcado `RECUT_REQUIRED`, sale del staging y fuerza `ABSTAIN_HOLDOUT` (punto 1); el presupuesto se evalúa con `inventory.budget_gates` y devuelve `ABSTAIN_CAPACITY` (puntos 2 y 3, verificado con una fixture de 12 GiB); y el gate M0 pasó a ser mecánico (punto 4, ver P-07). Lo que **no** resuelve: la V1 ya está subida y no la produjo este script, y falta la herramienta de **re-corte físico** de los parquets que contienen holdout. Ver P-23.
+
+**Criterio de cierre**: existe un dataset de Kaggle cuyo `00_contract_and_environment` devuelve `PASS` en los gates G1 (reconciliación), G2 (presupuesto), G3 (pre-screen de holdout) y G4 (M0).
+
+---
+
+## P-19 · a · P-22 · Defectos medidos del barrido L3 PreRange
+
+**Estado**: ABIERTAS (2026-08-14) — abiertas en el informe de auditoría del barrido L3 (commit `0cf68a0a`), con su evidencia y su aritmética completa ahí. Acá quedan **asentadas para que la numeración no se pise**; el detalle no se duplica.
+
+Los cuatro defectos, medidos y no inferidos, sobre 72.962 sesiones sintéticas en cinco regímenes adversariales:
+
+1. **Inanición de la familia de placebos (bloqueante)**: 14 de los 25 placebos arrancan entre 00:12 y 07:12. Con un M1 sólo-RTH quedan 11 usables contra el mínimo de 19 → `PRERANGE_EDGE` es **inemitible** y el runner reporta `WINDOW_UNSPECIFIC`, que se lee como resultado científico y es cobertura de archivo. Reemplazo propuesto: grilla de 15 min en RTH (23 miembros, piso 0,042).
+2. **Regla de toque por contención en vez de cruce**: 0,78 % de misclasificación cuando el rango se comprime — justo el estrato que el análisis original celebraba, así que censura la muestra donde el efecto se buscaba.
+3. **Redondeo bancario en `d`**: sesga el empate en la carrera simétrica.
+4. **Agrupación por fecha calendario en vez de trade date CME**: vuelve el `p_perm` **anti-conservador** porque mezcla ventanas overnight no exchangeables con la primaria.
+
+Además, discrepancia material de procedencia: el spec corre **08:12–09:12** y el resumen operativo dice **08:30–09:30**. No son la misma ventana (una tiene el dato macro adentro, la otra en el borde de arranque) y cambiarla "porque suena mejor" quema la procedencia — `apply_provenance_cap()` degrada a `WINDOW_UNSPECIFIC` toda ventana elegida mirando estos datos.
+
+Lo que **resistió** la auditoría: el estimand de la carrera simétrica. |E[r]| ≤ 0,008, ningún z sobre 1,07, sesgo del nulo acotado a 0,023 = 15 % del MDE, incluso con saltos asimétricos de 8 vs 1 tick y con `d` menor al recorrido de una barra.
+
+**Criterio de cierre**: los dos fixes de tres líneas aplicados, la familia de placebos reemplazada por la grilla RTH, una sola ventana fijada con su fuente escrita, y **nada corrido sobre datos reales antes de eso** (hoy no cuesta nada; en una semana ya sería p-hacking).
+
+---
+
+## P-23 · El builder del bundle de Kaggle declaraba CC0 y era fail-open
+
+**Estado**: RESUELTA EN CÓDIGO (2026-08-14, commits `50a5881` + `fb3ab8f` + `b68a548`) — con residual explícito.
+
+Artefacto auditado: `tools/build_kaggle_bundle.py` en `56184a3`, blob `df383c0685e5e46a806fb9b650a370bf529928c3`. Cinco defectos, cada uno verificable en ese blob:
+
+1. **`licenses: [{"name": "CC0-1.0"}]`** — dedicación al dominio público declarada por código sobre datos de mercado de terceros, con P-07 abierta y el dataset ya subido.
+2. **Identidad prometida y no calculada** — el encabezado anunciaba sha256 y rangos de fechas; el código escribía `num_rows` y bytes. Sin sha256 no se verifica lo subido; sin min/max de `ts_utc_ns` no se certifica ausencia de holdout.
+3. **`id` y `OUT_DIR` desalineados del upload real** — `nicodelcampo/edgelab-cme-futures-ticks` vs el dataset existente `nicolasbuttaro/edgelab-cme-futures-universe`, y en `OUT_DIR` sólo se escribía el JSON: **ningún parquet se copiaba ahí**. Los 57 archivos de la v1 los subió otro procedimiento, no versionado (patrón D9, esta vez del lado de los datos).
+4. **Fail-open** — `if not folder_path.exists(): continue` y `except Exception as e: print(...)`: un activo entero podía faltar sin cambiar el resultado. Más el filtro silencioso `"all" not in f.name and "prev" not in f.name`.
+5. **Tabla de `tick_size`/`multiplier` duplicada a mano** frente a `edgelab/instruments.py`.
+
+Y lo que faltaba por completo: el builder no sabía nada del sello del holdout (ver P-17).
+
+**Reemplazo (v2, blob `33b39364afb31da576a26500ea90dde5a2a9954f`, 47.692 B)**: seis gates —`G-INSTRUMENT`, `G-LAYOUT`, `G-IDENTITY`, `G-HOLDOUT`, `G-BUDGET`, `G-LIC`— con veredictos `PASS` / `FAIL_INSTRUMENTS` / `FAIL_LAYOUT` / `FAIL_INTEGRITY` / `ABSTAIN_LICENSE` / `ABSTAIN_HOLDOUT` / `ABSTAIN_CAPACITY` y exit codes 0 / 1 / 2. Cuarentena con causa nombrada por archivo. `bundle_index.json` se escribe siempre (rastro de auditoría) y sella su propio contenido con `index_sha256`; el staging, `dataset-metadata.json` (`isPrivate: True`, `--dataset-id` obligatorio), el `README.md` con la restricción de uso y la hoja `files.sha256` sólo existen con `PASS`. Cantidades de una sola fuente: `edgelab/instruments.py::CME_UNIVERSE`.
+
+**Evidencia**: self-test de 26 checks, 0 fallas (`python tools/build_kaggle_bundle.py --selftest`, cableado en `tests/test_kaggle_bundle_builder.py`). Los bytes commiteados son los mismos que pasaron el self-test: blob verificado contra el commit. Informe completo: `docs/research/KAGGLE_BUNDLE_BUILDER_AUDITORIA_2026-08-14.md`.
+
+**Residual, que el código no cierra**:
+
+- La **V1 ya está subida y no la produjo un script versionado**: su identidad sigue sin cerrar.
+- Falta la herramienta de **re-corte físico** de los parquets con holdout (P-18); v2 los detecta y excluye, no los corta.
+- **57 vs 56 archivos** sin reconciliar.
+- Existe `--no-hash` para diagnóstico y está prohibido para publicar (sin sha256, `G-IDENTITY` falla).
+
+**Criterio de cierre**: (a) una corrida del builder v2 desde la máquina local gobernada sobre `E:/EdgeLab/data/nt8`, con su `bundle_index.json` commiteado — cualquier veredicto, y si es `ABSTAIN_*` se registra tal cual; y (b) que lo que quede en Kaggle sea **exactamente** el staging que produjo el script, verificable con `sha256sum -c files.sha256`.
+
+**Criterio (a): CERRADO (2026-08-15)**. `docs/research/bundle_index.json` está commiteado (`69eb269`, `index_sha256 6d46269c7e35a8a7…`) y su veredicto `ABSTAIN_LICENSE` es reproducible desde el repo. El criterio (b) sigue abierto. Ver `docs/research/PRECHECK_HOLDOUT_2026-08-15.md` §8.
+
+---
+
+## P-24 · `edgelab/kaggle/streaming.py` está sin revisar y sin sellar
+
+**Estado**: ABIERTA (2026-08-15).
+
+El módulo apareció en el repo pero **`load_repo_modules` no lo carga**, así que no entra en el bloque `code_identity` de los manifiestos. Es código que participa del pipeline de Kaggle sin quedar cubierto por la verificación de identidad que sí cubre a `identity.py`, `inventory.py`, `sessions_cme.py` e `instruments.py`.
+
+Identidad al momento de abrir el punto: blob `08e3cee410f9d92b3a11df0405254b7956efbc18`, 11.100 B en LF (11.371 B en working tree con CRLF — ver P-26).
+
+**Criterio de cierre**: auditoría línea por línea del módulo, y o bien se agrega a `load_repo_modules` para que quede sellado, o se documenta por escrito por qué queda deliberadamente fuera.
+
+---
+
+## P-25 · Decisión humana de presupuesto para `research-v2`
+
+**Estado**: ABIERTA — decisión de Nico, nadie más.
+
+Medido en `docs/research/PRECHECK_HOLDOUT_2026-08-15.md` §5: el árbol post-re-corte tendrá **60 archivos top-level y ≈15,7 GiB**, contra límites contractuales de 20 archivos / 10 GiB (y 50 archivos del lado de Kaggle). **El re-corte mejora la legalidad del holdout y empeora el cuadro de capacidad**: el gate `top_level_files_kaggle` pasa de `pass` (49 ≤ 50) a fallar (60 > 50).
+
+Y un corolario que cambia el orden de prioridades: como `VERDICT_PRECEDENCE` es un `if/elif` con `ABSTAIN_LICENSE` antes que `ABSTAIN_HOLDOUT` y `ABSTAIN_CAPACITY`, **aprobar la licencia (P-07) no produce un `PASS`** — produce el siguiente veredicto de la cadena. Los tres gates fallan hoy; el veredicto sólo muestra el primero.
+
+Cuatro opciones, ninguna gratis, y las cuatro cambian el objeto de estudio:
+
+1. **Enmendar el presupuesto** del Contrato Kaggle v2 (subir los 10 GiB / 20 archivos), con justificación escrita y firmada.
+2. **Publicar sólo el front month por activo** — menos archivos y menos GiB, a costa de cobertura. Ojo: recortar por contrato **no** equivale a recortar por solapamiento con el holdout (dos de los 11 en cuarentena son `GC_08-26` y `MBT_07-26`, no 09-26).
+3. **Pre-registrar un subconjunto de activos** y publicar sólo esos.
+4. **Podar columnas** del esquema para bajar bytes por tick.
+
+**Criterio de cierre**: Nico elige una y queda escrita acá antes de cualquier publicación.
+
+---
+
+## P-26 · Normalización de fin de línea y aviso de pausa en los manifiestos
+
+**Estado**: ABIERTA — mecánica, aditiva.
+
+Dos campos que faltan, medidos en `docs/research/PRECHECK_HOLDOUT_2026-08-15.md` §2 y §4:
+
+1. **`git_blob_sha1_lf` en `edgelab/kaggle/identity.py`**, de forma **aditiva** (sin mutar la clave existente). `identity.git_blob_sha1` hashea los bytes del working tree, así que en un checkout Windows con `core.autocrlf` **nunca** iguala el blob commiteado: el manifiesto acusaba deriva de código en cuatro módulos donde no la había. Se probó con hash, no con hipótesis (LF → CRLF sobre `sessions_cme.py` reproduce exactamente el blob declarado). `tools/verify_indices.py` ya tolera esto clasificando `LF_EXACTO` / `CRLF_NORMALIZADO` / `DERIVA`; falta que el manifiesto lo traiga de fábrica.
+2. **`rows_in_maintenance_break` por archivo en `tools/recut_holdout.py`**. Dos de los 11 archivos conservan ticks dentro de la pausa diaria 16:00–17:00 CT (`NQ_09-26` y `MBT_07-26`). No es leak —por la regla congelada esos ticks son del trade date 20260630— pero son impresiones de pre-apertura, settlement o skew de reloj, y hoy ningún chequeo de integridad las cuenta.
+
+---
+
+## P-27 · `verify_indices.py` extrapola bytes en vez de leer los medidos
+
+**Estado**: ABIERTA (2026-08-15) — defecto de herramienta, no de corrida.
+
+Post-corrida, `verify_indices.py` sigue estimando el tamaño del árbol como
+`source_bytes × keep/total` en lugar de leer `output_bytes`, que el manifiesto real
+**ya trae medido**. Error sobre el total: 0,9 % (15,752 GiB estimados vs 15,895
+medidos); sobre la porción re-cortada: **+18,8 %** (816.834.273 estimados vs
+970.254.030 medidos). Ver `docs/research/RECUT_EXECUTION_2026-08-15.md` H-5.
+
+**Criterio de cierre**: la herramienta usa `output_bytes` cuando existe, y reporta
+estimación vs medición cuando las dos están disponibles.
+
+---
+
+## P-28 · Columnas redundantes y semántica de `sequence`
+
+**Estado**: ABIERTA (2026-08-15) — afecta qué análisis están soportados por estos datos.
+
+Los digestos por columna del manifiesto prueban, en **11/11 archivos** (22 igualdades
+de sha256 independientes):
+
+- `digest(ts_utc_ns) == digest(ts_local_ns)` — `ts_local_ns` es un duplicado; si fuera
+  hora de Chicago diferiría en 5–6 h.
+- `digest(sequence) == digest(source_row)` — **`sequence` no es un número de secuencia
+  del exchange**, es casi con certeza el índice de fila del origen.
+
+La consecuencia que importa para research, no para el presupuesto: **cualquier análisis
+de microestructura que asuma secuenciación del mercado** (orden de eventos dentro del
+mismo timestamp, detección de huecos) **no está soportado por estos datos** y debe
+pre-registrarse como limitación. El esquema tiene 11 columnas informativas de 13
+(`instrument` y `contract` son constantes por archivo, ya presentes en ruta y nombre).
+
+**Criterio de cierre**: confirmar con `verify_tree.py --columns` (los digestos prueban
+indistinguibilidad bajo la función de digesto, la comparación directa lo zanja),
+documentar el esquema real y pre-registrar la limitación. Ver `RECUT_EXECUTION_2026-08-15.md` H-7.
+
+---
+
+## P-29 · Los 45 archivos limpios comparten inodo con el árbol de origen inmutable
+
+**Estado**: ABIERTA (2026-08-15) — riesgo de integridad, no defecto actual.
+
+`linked_clean[*].method = "hardlink"` en 45/45. El árbol `research-v2` no es una copia
+física: ocupa ~0,97 GiB de datos nuevos, no 15,9 GiB. **Cualquier escritura in-place
+sobre uno de esos 45 archivos mutaría el parquet inmutable de origen.** Hoy la
+inmutabilidad depende de que nadie escriba in-place, no de una barrera.
+
+**Criterio de cierre**: quitar el bit de escritura en los dos árboles y verificarlo
+(`verify_tree.py` ya lo chequea y avisa). Ver `RECUT_EXECUTION_2026-08-15.md` H-8.
+
+---
+
+## P-30 · `nt8/BigTrap2OptimizerStrategy.cs` — optimizador de SL/TP sin decisión previa
+
+**Estado**: RESUELTA (2026-08-15, commit `438ef1b`) — asentada para que quede el registro, no para reabrirla.
+
+El 2026-08-14 entraron dos commits (`d1133c1` "add BigTrap2OptimizerStrategy for pure SL and TP optimization", `7a8a6c8` "fix GetAsk/GetBid syntax") con un archivo nuevo que **optimiza stop-loss y take-profit**. Eso es búsqueda sobre P&L, no sobre estructura, y choca con dos cosas del marco: la regla STOP (nada sobre retornos sin manifiesto de campaña y OK explícito) y el hecho de que una grilla de SL/TP sobre histórico es la máquina de sobreajuste más clásica que existe — sin corrección por multiplicidad ni placebos, cualquier máximo que encuentre es indistinguible de ruido.
+
+El defecto de gobernanza no era la estrategia en sí (puede tener un propósito legítimo, p. ej. medir sensibilidad en vez de elegir parámetros): era que **entró por un commit de sintaxis, sin quedar nombrada ni decidida**.
+
+**Resolución**: `438ef1b` ("chore(nt8): remove SchermanQuantReversion and BigTrap2OptimizerStrategy to keep repo strictly scoped to EdgeLab research") borró los dos archivos, −791 líneas. Si alguna vez se reintroduce, entra con su propósito declarado por escrito y su decisión previa, no en un commit de otra cosa.
+
+---
+
+## P-31 · La rama viva no está verde: 6 fallas + 1 error en la suite
+
+**Estado**: ABIERTA (2026-08-15) — medido, con causa raíz por ítem, **nada parcheado**.
+
+Corrida completa sobre `research/bigtrap2-local-displacement-null@4b9611a`
+(`pytest tests -m "not vectorbt" -q`, `.venv` del clon principal):
+**6 failed, 940 passed, 33 skipped, 3 deselected, 2 xfailed, 1 error en 172 s.**
+
+Ninguna la causó el commit de ordenamiento del board (ese diff es sólo `.md`).
+Se listan con causa raíz porque la regla permanente es **causa raíz obligatoria para
+todo WARN/FAIL**, y porque P-05 pide un verde con el lock exacto: hoy ese verde no
+existe ni local ni remotamente.
+
+| # | Test | Causa raíz |
+| --- | --- | --- |
+| 1 | `test_data_root_resuelve_data_gitignoreado_desde_una_worktree` | **Regresión real.** Ver abajo. |
+| 2 | `test_selftest_verify_tree` | `PermissionError [WinError 5]` en `verify_tree.py::_fixture` (línea ~659): hace `os.remove()` sobre un archivo que el propio fixture dejó **read-only** para ejercitar la auditoría de protección de escritura (P-29). En Windows no se puede borrar un read-only; falta `os.chmod(p, stat.S_IWRITE)` antes del `remove`. Es incompatibilidad de plataforma del fixture, **no** de la lógica de verificación. |
+| 3 | `test_cada_cs_declara_version_en_el_meta[ExportM1Bars.cs]` | El `.cs` no declara `version=`. Regla permanente («cada corrección de `.cs` viaja con su versión»). |
+| 4 | `test_cada_cs_declara_version_en_el_meta[YMPreRangeSweep.cs]` | Idem. |
+| 5 | `test_todo_candidato_actual_esta_triajeado` | `YMPreRangeSweep.cs` introduce comparaciones de precio (`High[0] >= rangeHigh`, `Low[0] <= rangeLow`) que son candidatos ULP sin medir ni sellar en `tools/ulp_sweep_baseline.json`. Un candidato no es un bug — los bordes a medio tick son inmunes por construcción — pero el que no se mide, no se sabe. |
+| 6 | `test_H2_el_cs_emite_BARRA_PROCESADA_en_el_camino_de_tick` | `nt8/BigTrap2.cs` ya no contiene `LogEvent("BARRA_PROCESADA"`. El `.cs` cambió 83 líneas en el fix de frontera de sesión (`f77a3be`, P-13). **Hay que decidir cuál de las dos cosas es cierta**: el evento se quitó (y entonces el denominador de esa medición desapareció, que es lo que el test existe para impedir) o el test quedó viejo. No son intercambiables. |
+| E | `test_placebos_and_gates` (ERROR) | `tests/research/test_prerange_sweep_formal.py` pide la fixture `null_out`, que no está definida en ninguna parte. El mismo archivo además tiene dos tests que hacen `return dict` en vez de `assert` (`PytestReturnNotNoneWarning`), así que **no evalúan nada**: pasan siempre. El módulo no es un test válido de pytest. |
+
+### Detalle del ítem 1 — la regresión
+
+`data_root()` devuelve el `data/` de la worktree en vez de resolver el del checkout
+principal vía `git worktree list`, y el test lo caza exactamente como fue escrito para
+hacerlo («si no, `data_root()` encontró un directorio `data` equivocado — falso
+positivo silencioso»).
+
+La causa es un cambio de invariante, no un cambio de código: `.gitignore` líneas 34–36
+son `/data/*` + `!/data/nt8_oracles/`, y desde que se commitearon los 11 CSV de
+`data/nt8_oracles/`, **toda worktree tiene un `data/`** — con los oráculos, sin
+`data/nt8/`. `data_root()` lo encuentra, lo da por bueno y devuelve un árbol sin los
+parquets. `CLAUDE.md` declara «`/data/` es dato local (gitignorado)»; esa premisa dejó
+de ser cierta y el resolvedor la seguía asumiendo.
+
+**Consecuencia que importa**: cualquier medición corrida desde una worktree puede
+resolver a un `data/` sin parquets. Falla ruidosamente en este test, pero un script que
+sólo pida `data_root()` y liste lo que encuentre puede quedarse en silencio.
+
+**Criterio de cierre**: `data_root()` valida que el directorio elegido contenga de
+verdad `nt8/` antes de devolverlo (falla cerrado si no), o los oráculos salen de
+`data/`. Decidir cuál, no las dos a medias.
+
+---
+
+## P-32 · Nombrar el conjunto de indicadores del programa de análisis
+
+**Estado**: ABIERTA — decisión de Nico, nadie más.
+
+Abierta en `docs/research/PROGRAMA_ANALISIS_FEATURES_2026-08-15.md`
+(commit `32fcc271b3f494bcd7fc673ab3b4963604a22b75`, 137 líneas, estado
+`PROGRAM_REGISTERED` — no ejecutado). Es el paso 2 de su orden de ejecución.
+
+**No hay «6 indicadores con paridad comprobada» como bloque homogéneo.** Cada uno
+entra con su estado, y mezclarlos junta tres cosas distintas: P2 formal, réplica
+P-16 con residuos, y P1A/warmup.
+
+| Indicador | Medido | Falta |
+| --- | --- | --- |
+| BigTrap2 | 3.628/3.638 EXACT junio; 171/171 abr+may. Imán cerrado. | `tick:5/10`. Cruce con aVol prohibido. |
+| aVolClusterPOI v0.5 | 6E 72/72, Δscore=0. ES 100 % pre-11-jun. | Nulo propio. P-15. |
+| Gaps2 v2.0 | P-16: 11.435/11.442. P2 histórico 1.316/1.316. | Esa ventana corta cae en el holdout. Gate estructural FAIL por bordes. |
+| AACloseOpenDiffs v1.2 | P-16: 18.004/18.020, idéntico al local. | FAIL estructural. «Paridad representativa» es decisión de Nico. |
+| VolTicksPOC2 v2.1 | P-16: 151 MATCHED + 1 FEATURE_DIFF. | Mismo FAIL. Secuenciador causal no portado en `tick:N`. |
+| HFTZones2 v2.3 | P1A + PASS 1.599 con warmup. | No está en P-16. |
+| aVolCellPOI2 v2.0 | P1A, 140 zonas con warmup. | Paridad NT8 formal. |
+| YMPreRangeSweep | 72,5 % doble barrido; nulo 54–76 % → no es edge. | P-19…P-22 bloquean L3 real. |
+
+**Criterio de cierre**: Nico nombra el conjunto y, si corresponde, declara por escrito
+«paridad representativa» del trío P-16 (`Gaps2`, `AACloseOpenDiffs`, `VolTicksPOC2`),
+cuyos residuos son de borde/warmup pero hacen fallar el gate estructural estricto.
+
+---
+
+## P-33 · `verify_tree.py` resuelve la fuente por nombre de archivo y da `FAIL_FUENTE` en 6E
+
+**Estado**: ABIERTA (2026-08-15) — **medido, no parcheado**. La herramienta se comportó
+bien; lo que falta es decidir la resolución.
+
+Corrida real del paso 1 del programa, desde la máquina gobernada:
+
+```
+python tools/verify_tree.py --recut E:/EdgeLab/data/nt8_research_v2/recut_index.json \
+                            --maxts --columns --no-source-hash
+```
+
+`15 ok | 1 falla | 2 avisos | 1 omitido` · 17.067.000.969 B re-hasheados ·
+**`VEREDICTO: FAIL_FUENTE`**, por un único chequeo:
+
+```
+[FALLA] fuente.intacta   6E_09-26_ticks.parquet: ambiguo en el origen
+```
+
+**Causa raíz**: hay dos archivos con ese nombre bajo `E:/EdgeLab/data/nt8/`.
+
+| Ruta | sha256 | Bytes |
+| --- | --- | --- |
+| `6E/6E_09-26_ticks.parquet` | `6ffcdf041f8d77a2d6fb7cfe85d63bd8b176a081caa8ad8cd0aaae57c6f178f4` | 45.439.347 |
+| `6E_prev_20260803_captura_rala/6E_09-26_ticks.parquet` | `654e006e483f62727dd2d52680e41b0c4c03531a3763471a1ba3532497883a06` | 37.559.162 |
+
+El primero es el canónico: coincide con `source_sha256` del manifiesto **y** con uno de
+los cinco parquets canónicos declarados. El segundo es una captura rala previa, y su
+hash **`654e006e…` es uno de los dos exports Z1 que
+`docs/research/F27_F210_CIERRE_Y_HERRAMIENTAS_2026-08-13.md` §1 prohíbe explícitamente
+usar** («No usar los exports Z1 (`fd2e358…` / `654e006…`)»).
+
+Así que la procedencia está intacta — el archivo correcto es el correcto — pero el
+resolvedor **busca por nombre de archivo en el árbol** y encuentra dos candidatos, uno
+de ellos en la lista negra del proyecto. Falla cerrado, que es lo correcto; el problema
+es que el árbol de origen tiene una carpeta `*_prev_*` con un artefacto prohibido y
+mismo nombre.
+
+Antecedente relevante: el builder v1 de Kaggle tenía el filtro silencioso
+`"all" not in f.name and "prev" not in f.name` (defecto D-4). Filtrarlas en silencio era
+peor; **flaggearlas es mejor**, pero deja el veredicto global en rojo por un tema de
+layout, no de integridad.
+
+**Criterio de cierre** — elegir una, no las dos a medias:
+1. `verify_tree.py` resuelve la fuente por la **carpeta declarada en el manifiesto** (o
+   por coincidencia de `source_sha256`) en vez de por búsqueda de nombre; la ambigüedad
+   pasa a aviso sólo si ningún candidato cierra por hash.
+2. Las carpetas `*_prev_*` salen de `data/nt8/` a un árbol de cuarentena, y el acta de
+   exports prohibidos se hace cumplir por ubicación además de por hash.
+
+---
+
+## P-34 · Las etiquetas de versión no se derivan del contenido
+
+**Estado**: ABIERTA (2026-08-15) — medido. La cuarentena que disparó **se levantó con prueba**.
+
+Al hacer el intake de los oráculos de `HFTZones2` y `aVolCellPOI2` aparecieron tres
+etiquetas distintas para el mismo indicador. Se investigó en vez de asumir, y **las
+tres describen el mismo comportamiento**:
+
+| Artefacto | Etiqueta declarada | Comportamiento real |
+| --- | --- | --- |
+| `edgelab/bridge/indicators/hftzones2.py` (blob `8886d51c…`) | docstring «v2.1» | **v2.3** |
+| `nt8/HFTZones2.cs` del repo (blob `64f1db87…`) | `engine=…v23_lifecycle_all_integer` | **v2.3** |
+| `HFTZones2.cs` instalado en NT8 (blob `700ecdb4…`) | `engine=…v22_zone_edges` | **v2.3** |
+
+**Prueba de equivalencia** (por lectura de código, no por analogía). Quitando las 53
+líneas de `#region NinjaScript generated code` que NT8 autogenera, el diff entre el
+`.cs` del repo y el instalado es **un solo bloque**: el repo saca
+`long priceTick = PriceToTick(price);` **fuera** del `for` sobre zonas; el de NT8 lo
+calcula **dentro**. `price` es un parámetro que no cambia en el loop y `PriceToTick`
+es pura (`Math.Round(price / TickSize, AwayFromZero)`, sin estado): es un **hoist de
+invariante de loop**. Mismo valor, mismas comparaciones enteras
+(`priceTick >= z.LowerTick && priceTick <= z.UpperTick`), mismo resultado.
+
+El kernel Python hace lo mismo que el repo: `px_t = snap_to_tick(price, tick_size)`
+fuera del loop y `z["lower_t"] <= px_t <= z["upper_t"]` adentro
+(`hftzones2.py:365-369`). Su docstring «v2.1» es etiqueta vieja, no código viejo.
+
+`aVolCellPOI2`: el `.cs` del repo (`d43c686f…`) y el instalado (`91d186a6…`) **no
+tienen ninguna diferencia real** — sólo el boilerplate autogenerado.
+
+### Por qué queda abierta si todo dio bien
+
+Porque el resultado favorable es accidental. **Ninguna de las tres etiquetas se deriva
+del contenido**: son strings escritos a mano que se actualizan por disciplina. Esta vez
+tres etiquetas distintas cubrían un mismo comportamiento; la falla simétrica —dos
+artefactos con la **misma** etiqueta y comportamiento distinto— es P-08 otra vez, y no
+hay nada en el sistema que la impida.
+
+Consecuencia que importa: **cualquier paridad previa validada mirando sólo el string de
+versión hereda esta duda.** El blob sí se deriva del contenido; la etiqueta no.
+
+**Criterio de cierre**: la verificación de identidad de un oráculo compara **blobs**
+(`.cs` del repo vs el que produjo el CSV), no strings de versión — y si el `.cs` que
+corrió no está en el repo, el oráculo entra en cuarentena hasta que se commitee. Como
+mínimo: subir el `version` del meta cuando cambia el engine, y sincronizar el docstring
+del kernel Python.
+
+**Residual inmediato**: los tres artefactos siguen mal etiquetados. Corregir las
+etiquetas es barato; hacerlo **antes** de la próxima corrida formal evita que alguien
+repita esta investigación desde cero.
+
+---
+
+## P-35 · Una paridad con `WARN` se registra como `parity_exact`
+
+**Estado**: ABIERTA — **decisión de semántica de gating, de Nico. Nadie más la toca.**
+
+**Verificado** en `edgelab/bridge/store.py:268-276`:
+
+```python
+if gate == "FAIL":
+    return "parity_failed"
+if gate in ("PASS", "WARN"):
+    return "parity_exact"
+```
+
+`WARN` y `PASS` colapsan al mismo estado: una paridad con advertencias queda sellada como
+`parity_exact` e **indistinguible de una limpia**.
+
+**Caso concreto del mismo día**: la paridad de HFTZones2 dio `WARN` sin frontera de
+madurez (31 `STATE_ORDER_DIFF` + 4 `FEATURE_DIFF`) y `PASS` con ella — las dos corridas
+están publicadas en `docs/research/paridad_hftzones2_12d_2026-08-15.json`. **Si se
+hubiera publicado la primera al store, habría quedado marcada `parity_exact`.**
+
+Es la misma familia que P-34: **la etiqueta no se deriva del contenido**. Acá el
+colapso es de dos veredictos distintos en una sola etiqueta.
+
+**Criterio de cierre**: o `WARN` tiene su propio estado, o se documenta por escrito por
+qué un WARN es equivalente a un PASS para el consumo formal en G2+.
+
+---
+
+## P-36 · Dos semánticas de «covered» conviven en `coverage.py`
+
+**Estado**: ABIERTA — mecánica, sin decisión de semántica.
+
+**Verificado** en `edgelab/bridge/coverage.py`: el docstring y las matrices dicen que
+`parity_covered` exige que **todas las ramas** estén cubiertas, vía `branches_of` (l. 24),
+`config_branches` (l. 35) e `is_covered` (l. 50). Pero `propagate_coverage` (l. 131+) **no
+usa ninguna de las tres**: decide con `coverage_blockers()` (l. 176-180), que compara
+identidad dura + igualdad de params salvo los coverage-neutral.
+
+`is_covered` sólo aparece referenciada **dentro de su propia definición** (l. 53): la
+contabilidad de ramas es **código muerto respecto de la propagación**.
+
+Riesgo: alguien lee el docstring, cree que las ramas se verifican, y no.
+
+**Criterio de cierre**: o `propagate_coverage` usa la contabilidad de ramas, o el
+docstring y las matrices dejan de prometerla.
+
+---
+
+## P-37 · `parity_covered` es inalcanzable para 4 de los 5 kernels
+
+**Estado**: ABIERTA — **decisión de Nico**: ampliar la lista blanca es ampliar qué
+diferencias se declaran irrelevantes para la paridad.
+
+**Verificado** en `edgelab/bridge/coverage.py:64-71`: `COVERAGE_NEUTRAL` tiene **una sola
+entrada**, `Gaps2`. Para los otros cuatro kernels `_neutral()` devuelve conjuntos vacíos,
+así que **cualquier** diferencia de params bloquea la cobertura.
+
+**Consecuencia dura**: la decisión **D-6** («paridad representativa» para el trío P-16)
+**no tiene camino ejecutable** para 4 de 5. No por falta de cableado —`store.publish_run()`
+sí llama a `propagate_coverage` (`store.py:393-400`)— sino por falta de entradas
+justificadas en la lista blanca. El consumo formal en G2+ exige `parity_exact` o
+`parity_covered`; hoy los «representativos» quedan fuera.
+
+**Criterio de cierre**: cada entrada nueva en `COVERAGE_NEUTRAL` viene con justificación
+escrita **por parámetro**, al nivel de la de `Gaps2` (que cita §8.3.1 campo por campo).
+O se declara por escrito que D-6 no es ejecutable y se elige otro camino.

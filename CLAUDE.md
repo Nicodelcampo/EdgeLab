@@ -35,15 +35,62 @@ Recordatorios:
   probabilidad de detectar edges reales y rechazar falsos antes de arriesgar
   capital.
 
-## Estado vigente (2026-08-10)
+## Estado vigente (2026-08-15)
+
+> Punto de entrada operativo: `docs/research/HANDOFF_AUDITORIA_2026-08-14.md`
+> + `PENDIENTE.md` (P-01…P-27) + `docs/research/PRECHECK_HOLDOUT_2026-08-15.md`.
+> Rama viva: `research/bigtrap2-local-displacement-null`.
 
 - H1 está muerta; el veredicto fue sobre **6E**, no se transporta a otros instrumentos.
 - BigTrap2 como función de soporte/resistencia: refutado (~96% de ruptura, invariante a los 12 parámetros del indicador).
-- BigTrap2 como marcador de atracción/revisita: hipótesis provisional con evidencia fuerte y convergente (6E `time:1`, 6E `tick:25`, ES `time:1` — las tres ~47pp de brecha pareada, 201/201 sesiones), pero **no es edge todavía**.
+- **BigTrap2 como imán de zona: CERRADO (2026-08-13)** — estado `BIGTRAP2_MAGNET_LINE_CLOSED`,
+  acta en `docs/research/F27_F210_CIERRE_Y_HERRAMIENTAS_2026-08-13.md`. La hipótesis
+  de atracción/revisita que este archivo declaraba "provisional con evidencia fuerte"
+  **no sobrevivió**. Cadena de refutación sobre 6E, 201 sesiones, 15.947 zonas:
+  - **F2.7**: la carrera contra el espejo es real (Δ≈+0,048, IC [+0,031, +0,066]).
+    Real y espejo equidistantes del close, así que "gana porque está más cerca" queda descartado.
+  - **F2.8**: **no es imán**. El efecto no muere en `d≥6` (Δ≈+0,077) y un control
+    *sin zona* con la misma geometría da casi lo mismo: el contraste cruza cero.
+  - **F2.9**: el kernel no es el mejor sello. Vela extrema genérica `S1` = +0,038;
+    creadora BigTrap2 `K0` = +0,021, y `K0 ≈ N0` (no-creadora emparejada).
+    Residual de zona +0,026 con MDE 0,034 → no se promueve.
+  - **F2.10**: no hay ventana temporal exclusiva; el contraste `t+1` cruza cero.
+  - Lo que **sí** queda: una vela extrema marca una carrera asimétrica. No es de zona,
+    no es exclusiva de BigTrap2, no es un sistema. Es un sello barato de contexto.
+  - Cerrados por este acta: imán de zona, cola lejana / 17 frames / Z2, ventana
+    `t+1`/`t+2` como producto, cruce BigTrap2 × aVol, PIT / Kaplan-Meier / Cox sobre
+    este objeto, y Kaggle de ticks reales (`NO_UPLOAD`).
+- **Segunda familia viva: `aVolClusterPOI`** — paridad medida (6E: 72/72 creaciones,
+  Δscore = 0 exacto; ES 09-26: 100% pre-11-jun). Sin nulo propio todavía: es el
+  siguiente candidato si hay campaña nueva, **sola y target-free**, sin cruce.
+- **Paridad de kernels cerrada punta a punta** (P-12/P-13/P-16): BigTrap2 junio
+  3.628/3.638 EXACT (99,73%), abril+mayo 171/171 EXACT. Causa raíz del silencio de
+  TRAPs: `sesionNoConfiable` nunca reseteaba porque el bloque de frontera quedaba
+  detrás del `return` del camino de tiempo (fix `f77a3be`).
 - F4 constitucional (información condicional) NO ejecutada — bloqueada por el STOP de abajo.
-- Holdout intacto.
+- Holdout intacto en análisis. Frente de datos/legal, al 2026-08-15 (P-07, P-18, P-25):
+  - El leak del corte UTC está **medido y cerrado en código**: la sesión CME del 1-jul
+    abre 17:00 CT del 30-jun, así que un corte en `2026-07-01T00:00Z` dejaba pasar
+    7.200 s de holdout (871 filas en el parquet ancla; 101.364 ticks sobre los 11
+    archivos en cuarentena).
+  - **El re-corte físico SÍ se ejecutó** (2026-08-15, máquina local gobernada):
+    `[PASS] 11/11`, 48.510.023 filas conservadas, 62.827.237 descartadas. Las fuentes
+    se verificaron **intactas después de escribir** (sha256 11/11) — el árbol de origen
+    sigue siendo inmutable. `research-v2` existe: 56 contratos, 1.015.587.419 ticks,
+    15,895 GiB. Acta: `docs/research/RECUT_EXECUTION_2026-08-15.md`.
+  - **`research-v2` NO es publicable.** Sigue bloqueado por licencia (`ABSTAIN_LICENSE`)
+    y ahora por capacidad con tres compuertas en rojo. Y ojo con el orden:
+    **aprobar la licencia no desbloquea nada por sí solo** — `VERDICT_PRECEDENCE` es un
+    `if/elif` y `ABSTAIN_LICENSE` tapaba otros dos gates que también fallan.
+  - La V1 del dataset de Kaggle sigue con ticks crudos y holdout físicamente presente,
+    subidos antes de cerrar M0 (P-18, abierta y bloqueante).
+  - Dos hallazgos que tocan research, no sólo publicación (P-28): `ts_local_ns` es un
+    duplicado exacto de `ts_utc_ns`, y **`sequence` no es secuencia del exchange** sino
+    índice de fila del origen — 22 igualdades de sha256 sobre 11/11 archivos. Cualquier
+    análisis de microestructura que asuma secuenciación de mercado **no está soportado
+    por estos datos**.
 - Incidente de procedencia Git del 2026-08-10 (`docs/incidents/INCIDENTE_PROCEDENCIA_2026-08-10.md`) **cerrado** — ver `docs/incidents/RESOLUCION_INCIDENTE_PROCEDENCIA_2026-08-10.md`. Las reglas 15–18 de abajo son la práctica permanente que deja como saldo.
-- **Dos familias nuevas registradas** (observación de Nico, no ejecutadas): `docs/research/H-COND-1_LUX-IMB_PROTOCOLO.md` (indicador LuxAlgo Imbalance Detector sobre ES; **bloqueada** — faltan parámetros reales del chart exportados, ledger as-of, auditoría antirepintado y paridad Pine→NT8. **OJO**: la versión de este archivo en este repo todavía describe el bloqueo como "el render borra zonas mitigadas" — esa premisa fue **retractada por Nico** en la rama remota sin mergear `docs/lux-imb-source-correction` [2026-08-11]: en el indicador que él usa las zonas NO desaparecen por mitigación y no existe un input "Mitigation Method"; no confiar en la razón vieja hasta mergear esa corrección) y `docs/research/H-SWEEP-1_YM_PRERANGE.md` (ventana 08:12–09:12 ET sobre YM; 5-de-6 no rechaza ni una moneda — el nulo correcto no es 50% sino 54–76% vía reflexión browniana, y la versión operable compite contra la ruina del jugador `s/(R+s)`. El constructor de sesión parametrizable que faltaba **ya existe y está testeado** (`edgelab/sessions.py::build_session_matrices`, generalizado 2026-08-10) — **sigue bloqueada**, pero ahora por lo que el gate §15 pide de verdad: resolver huso horario [EST/EDT, la etiqueta "Tokyo" del chart no está explicada] y construir calendario de research propio para YM, que todavía no existe. **OJO**: hay una versión más avanzada sin mergear en la rama remota `research/ym-prerange-session-window` — `minute_window_matrices` con calendario explícito obligatorio y soporte de cruce de medianoche — antes de tocar `edgelab/sessions.py` de nuevo, revisar si esa rama ya resuelve esto).
+- **Dos familias nuevas registradas** (observación de Nico, no ejecutadas): `docs/research/H-COND-1_LUX-IMB_PROTOCOLO.md` (indicador LuxAlgo Imbalance Detector sobre ES; **bloqueada** — faltan parámetros reales del chart exportados, ledger as-of, auditoría antirepintado y paridad Pine→NT8. **Corrección de fuente ya mergeada** [2026-08-15, rama `docs/lux-imb-source-correction`]: las dos premisas viejas —que las zonas mitigadas desaparecían solas y que existía un input `Mitigation Method`— están **retiradas**; en el indicador que usa Nico las zonas NO desaparecen por mitigación. Los parámetros a exportar son: selector `Imbalance` con **OG y VI activos y FVG apagado**, `Min Width`, `Extend`, timeframe e instrumento/contrato con plantilla de sesión. No volver a pedir un método de mitigación. Ver `docs/research/LUX_IMBALANCE_DETECTOR_SOURCE_VERIFICATION.md`) y `docs/research/H-SWEEP-1_YM_PRERANGE.md` (ventana 08:12–09:12 ET sobre YM; 5-de-6 no rechaza ni una moneda — el nulo correcto no es 50% sino 54–76% vía reflexión browniana, y la versión operable compite contra la ruina del jugador `s/(R+s)`. El constructor de sesión parametrizable que faltaba **ya existe y está testeado** (`edgelab/sessions.py::build_session_matrices`, generalizado 2026-08-10) — **sigue bloqueada**, pero ahora por lo que el gate §15 pide de verdad: resolver huso horario [EST/EDT, la etiqueta "Tokyo" del chart no está explicada] y construir calendario de research propio para YM, que todavía no existe. **OJO**: hay una versión más avanzada sin mergear en la rama remota `research/ym-prerange-session-window` — `minute_window_matrices` con calendario explícito obligatorio y soporte de cruce de medianoche — antes de tocar `edgelab/sessions.py` de nuevo, revisar si esa rama ya resuelve esto).
 - **Gate G2 corregido acá** (enmienda `G2-A1`, commit `62ac28c`, con OK explícito de Nico en sus 3 preguntas abiertas — ver `docs/incidents/AMENDMENT_G2-A1_2026-08-10.md`): el MCPT original medía concentración temporal pese a lo que decía su contrato, y estructuralmente favorecía al edge que decae y penalizaba al estable (contradecía a G1). Ahora `temporal_concentration_test` quedó como diagnóstico, `PrimaryCI` (bootstrap estacionario, `lower>0`, clusterizado por sesión) es la inferencia primaria, y `AUTHORIZED_DSR_METHOD_SHA256S` ya no está vacío. Sigue sin ejercitarse contra una campaña real. **OJO — descubierto 2026-08-10 22:3x vía `git fetch`**: existe una línea de trabajo paralela y más avanzada, sin mergear, en las ramas remotas `fix/g2-a1-statistical-semantics` + `fix/g2-a1-calibration-hardening` (autor `Nicodelcampo`, validada contra CI, fusiona el `g2.py` de este repo pero reescribe `g2_decision.py`/`promotion.py` con calendario de sesiones elegibles obligatorio, `MIN_DSR_SESSIONS` y dos métodos DSR versionados V1/V2. **No mergear sin decisión explícita de Nico** — son cambios de semántica de validación, regla permanente de este archivo.
 
 ## Decisión de prioridad vigente (sellada por Nico)
@@ -179,7 +226,12 @@ selecciona por P&L máximo aislado.
 ## Punteros
 
 - `docs/NORTH_STAR.md` — referente canónico (fuente de verdad).
-- `docs/ESTADO_2026-08-10_EMPEZAR_ACA.md` — punto de entrada operativo vigente.
+- `docs/research/HANDOFF_AUDITORIA_2026-08-14.md` — **punto de entrada operativo vigente**.
+- `PENDIENTE.md` — board de decisiones abiertas, P-01…P-27. Se lee siempre junto al handoff.
+- `docs/research/F27_F210_CIERRE_Y_HERRAMIENTAS_2026-08-13.md` — acta del cierre de
+  BigTrap2 como imán, y las herramientas que quedan reutilizables.
+- `docs/research/PRECHECK_HOLDOUT_2026-08-15.md` — estado del re-corte del holdout.
+- `docs/ESTADO_2026-08-10_EMPEZAR_ACA.md` — histórico; **superado** por el handoff.
 - `docs/edge_validation_contract.md` — gates G0–G5 de "edge válido y aplicable".
 - `docs/kernel_contract.md` — construcción técnica target-free de kernels.
 - `docs/nt8_indicator_parity_contract.md` — protocolo de paridad NT8↔Python.
@@ -189,8 +241,26 @@ selecciona por P&L máximo aislado.
 ## Entorno
 
 `.venv` (Python 3.12) desde `requirements/core-bridge-dev.lock`. Suite:
-`.venv\Scripts\python -m pytest tests -m "not vectorbt" -q`. Branch de trabajo:
-`foundation/f0b-compatibility-probe` (main = baseline original, no mergear).
+`.venv\Scripts\python -m pytest tests -m "not vectorbt" -q`.
+
+**Ramas (reordenado 2026-08-15).** Branch de trabajo:
+`research/bigtrap2-local-displacement-null`.
+
+`foundation/f0b-compatibility-probe` queda como **rama de integración, mantenida por
+fast-forward** sobre la rama de trabajo — no se le commitea directo, se la avanza.
+`main` = baseline original, no mergear.
+
+> La frase «Branch de trabajo:» de arriba **la parsea `tools/estado.py`**
+> (`rama_declarada()`, regex `Branch de trabajo:\s*\n?` + backticks). Si se
+> reformula esa línea, `estado.py` devuelve `None` y el primer comando de cada
+> sesión miente en silencio. Cambiar las dos cosas juntas o ninguna.
+
+Hasta el 2026-08-15 este archivo declaraba `foundation` como branch de trabajo
+mientras el trabajo real vivía cinco días adelante en otra rama, y el propio
+`CLAUDE.md` seguía afirmando viva una hipótesis que `F2.8` había cerrado. Es la
+misma familia de falla que `docs/AVISO_DIVERGENCIA_DE_RAMAS_2026-08-06.md`
+describe: **cuando el documento rector y el árbol discrepan, cada lado lee el suyo
+y las dos lecturas son internamente coherentes.**
 
 ## PRIMER COMANDO DE CADA SESIÓN
 

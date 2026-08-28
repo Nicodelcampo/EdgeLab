@@ -1,0 +1,90 @@
+{
+  "schema_version": "bigtrap2_f210_regime_window_v0",
+  "status": "PREREGISTERED_NOT_RUN",
+  "date": "2026-08-13",
+  "campaign": "F2.10",
+  "title": "Is the F2.9 t+1/t+2 race a timing window after an extreme bar, or just clustered S1 bars?",
+  "inherits": {
+    "f29": "specs/bigtrap2_f29_bar_classifier_v0.json",
+    "same_201_sessions": true,
+    "same_canonical_parquets": true,
+    "same_p_mode": true,
+    "same_r_i": true,
+    "kernel_frozen": true
+  },
+  "why_this_and_not_zone_residual": {
+    "f29_audit": "OPEN_REGIME_WINDOW is the clean result. OPEN_ZONE_RESIDUAL barely clears zero (ci95_lower=+0.0015, MDE=0.034) and must not drive aVol x BigTrap2. S1 beats K0 on P_mode. Use the cheap OHLC stamp, not the kernel, as the default trigger.",
+    "object": "a 1-2 minute window after an extreme bar, still target-free"
+  },
+  "question": "After an S1 bar, does P_mode on the next bar remain special even when that next bar is not itself S1? If the effect lives only when t+1 is also S1, it was clustering, not a window.",
+  "population": {
+    "research_end_inclusive": "2026-06-30",
+    "session_count_required": 201,
+    "bar_spec": "time:1",
+    "stamp": "S1 = range_ticks>=3 and max(upper_wick_frac,lower_wick_frac)>=0.30 and volume>=session median",
+    "probe": "P_mode d=2 width=1 on the evaluated bar, not on the stamp bar",
+    "include_r_i_zeros_in_session_mean": true,
+    "holdout_forbidden": true
+  },
+  "families": {
+    "A_decompose_t1": {
+      "primary": true,
+      "arms": [
+        {"id": "T1_all", "selects": "bar b where b-1 is S1, same session"},
+        {"id": "T1_not_S1", "selects": "T1_all and b is not S1"},
+        {"id": "T1_and_S1", "selects": "T1_all and b is S1"},
+        {"id": "S1_isolated", "selects": "S1 and previous bar is not S1"}
+      ]
+    },
+    "B_placebo_next_bar": {
+      "id": "P1",
+      "selects": "bar b where b-1 is a non-S1 matched to an S1 on session, range quintile, close_loc quintile, volume quintile, nearest in time",
+      "question": "Is any next minute special, or only the minute after S1?"
+    },
+    "C_kernel_needed": {
+      "arms": [
+        {"id": "T1_after_S1", "selects": "T1_all"},
+        {"id": "T1_after_K0", "selects": "bar b where b-1 created a BigTrap2 zone"}
+      ],
+      "contrast": "T1_after_K0 minus T1_after_S1, paired by session"
+    },
+    "D_t2_and_tm1": {
+      "offsets": ["+2", "-1"],
+      "note": "t-1 negative in F2.9 is reported, not promoted, unless it beats its own placebo and ci95_upper<0."
+    }
+  },
+  "required_contrasts": [
+    "T1_not_S1 minus P1",
+    "T1_and_S1 minus S1_isolated",
+    "T1_after_K0 minus T1_after_S1"
+  ],
+  "decision_labels": [
+    "OPEN_POST_STAMP_WINDOW",
+    "OPEN_CLUSTER_ONLY",
+    "KEEP_KERNEL_FOR_WINDOW",
+    "OPEN_PRE_STAMP_REVERSAL",
+    "CLOSE_WINDOW",
+    "CONTINUE_AMBIGUOUS"
+  ],
+  "decision_rules": {
+    "OPEN_POST_STAMP_WINDOW": "T1_not_S1 ci95_lower>0 and (T1_not_S1 minus P1) ci95_lower>0, with support",
+    "OPEN_CLUSTER_ONLY": "T1_and_S1 ci95_lower>0 and T1_not_S1 compatible with zero",
+    "KEEP_KERNEL_FOR_WINDOW": "(T1_after_K0 minus T1_after_S1) ci95_lower>0 with support",
+    "OPEN_PRE_STAMP_REVERSAL": "T_minus1 ci95_upper<0 and (T_minus1 minus placebo_minus1) ci95_upper<0",
+    "CLOSE_WINDOW": "no positive window after gates",
+    "CONTINUE_AMBIGUOUS": "interesting but underpowered",
+    "primary_if_multiple": "OPEN_POST_STAMP_WINDOW over OPEN_CLUSTER_ONLY; do not open aVol or zone residual from this run"
+  },
+  "forbidden": [
+    "tick:25",
+    "holdout",
+    "pnl",
+    "z2",
+    "far_zone_campaign",
+    "kaggle_joint_bt2_avol",
+    "promote_zone_residual",
+    "parameter_sweep",
+    "dropping_r_i_zeros",
+    "independent_se_sum_as_primary_contrast"
+  ]
+}

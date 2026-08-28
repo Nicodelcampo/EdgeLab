@@ -28,7 +28,7 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 from edgelab.config import DATA_DIR, ensure_dir
-from edgelab.data.nt8_contract import SIX_E, Nt8TickContract
+from edgelab.data.nt8_contract import SIX_E, INSTRUMENT_SPECS, Nt8TickContract, ZB
 from edgelab.data.nt8_timezone import forbidden_days, verify_offset
 
 NS = 1_000_000_000
@@ -225,21 +225,56 @@ def _contract_of(filename):
     return os.path.splitext(os.path.basename(filename))[0].replace(".Last", "")
 
 
-def main():
+def main(argv=None):
+    import argparse
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-    src_dir = os.path.join(os.path.dirname(DATA_DIR), "TickData")
-    out_dir = os.path.join(DATA_DIR, "nt8", "6E")
-    files = sorted(f for f in os.listdir(src_dir) if f.endswith(".Last.txt"))
+    
+    parser = argparse.ArgumentParser(description="Conversor NT8 .Last.txt -> Parquet canónico (gate P0)")
+    parser.add_argument("--instrument", "-i", default="6E", choices=list(INSTRUMENT_SPECS.keys()),
+                        help="Símbolo del instrumento (6E, ZB, YM, ES, NQ). Default: 6E")
+    parser.add_argument("--src-dir", "-s", default=None,
+                        help="Directorio fuente con archivos .Last.txt")
+    parser.add_argument("--out-dir", "-o", default=None,
+                        help="Directorio destino de salida para los .parquet")
+    parser.add_argument("--file", "-f", default=None,
+                        help="Archivo específico .Last.txt a convertir (opcional)")
+    
+    args = parser.parse_args(argv)
+    inst = INSTRUMENT_SPECS[args.instrument]
+    
+    if args.src_dir:
+        src_dir = args.src_dir
+    else:
+        candidates = [
+            os.path.join(DATA_DIR, "nt8", inst.symbol),
+            os.path.join(os.path.dirname(DATA_DIR), "TickData"),
+            os.path.join(DATA_DIR, "nt8"),
+        ]
+        src_dir = next((c for c in candidates if os.path.exists(c) and any(f.endswith(".Last.txt") for f in os.listdir(c))), candidates[0])
+
+    out_dir = args.out_dir or os.path.join(DATA_DIR, "nt8", inst.symbol)
+    
+    if args.file:
+        files = [os.path.basename(args.file)]
+        src_dir = os.path.dirname(os.path.abspath(args.file))
+    else:
+        if not os.path.exists(src_dir):
+            print(f"FAIL: Directorio fuente no existe: {src_dir}")
+            return []
+        files = sorted(f for f in os.listdir(src_dir) if f.endswith(".Last.txt") and (inst.symbol in f or args.src_dir))
+
+    print(f"Instrumento: {inst.symbol} (tick_size={inst.tick_size}, tick_value={inst.tick_value})")
     print(f"Fuente: {src_dir} ({len(files)} archivos) -> {out_dir}")
+    
     summaries = []
     for f in files:
         contract = _contract_of(f)
         print(f"\n=== {contract} ===")
-        s = audit_and_convert(os.path.join(src_dir, f), contract, out_dir, "UTC", SIX_E)
+        s = audit_and_convert(os.path.join(src_dir, f), contract, out_dir, "UTC", inst)
         summaries.append(s)
-        tzv = s["metrics"]["tz_verification"]
+        tzv = s["metrics"].get("tz_verification", {})
         print(f"  status={s['status']} rows={s['rows']:,} "
-              f"utc_verificado={tzv['verified_utc']} score_utc={tzv['score_utc']} "
+              f"utc_verificado={tzv.get('verified_utc')} score_utc={tzv.get('score_utc')} "
               f"parquet={'sí' if s.get('parquet') else 'NO'}")
         for x in s["fails"]:
             print(f"  FAIL: {x}")
@@ -249,8 +284,9 @@ def main():
     ok = [s for s in summaries if s.get("parquet")]
     if ok:
         tables = [pq.read_table(s["parquet"]) for s in ok]
-        _atomic_write_parquet(pa.concat_tables(tables), os.path.join(out_dir, "6E_all_contracts.parquet"))
-        print(f"\n6E_all_contracts.parquet: {sum(t.num_rows for t in tables):,} filas, {len(ok)} contratos")
+        all_path = os.path.join(out_dir, f"{inst.symbol}_all_contracts.parquet")
+        _atomic_write_parquet(pa.concat_tables(tables), all_path)
+        print(f"\n{os.path.basename(all_path)}: {sum(t.num_rows for t in tables):,} filas, {len(ok)} contratos")
     return summaries
 
 
