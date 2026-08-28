@@ -80,13 +80,13 @@ Los controles `N_RAND` conservan el contrato de P2-A:
 - 10.000 replicaciones;
 - exclusión de la propia ancla.
 
-El contraste horario es:
+El contraste horario fijo es:
 
 ```text
-H[s,c,p] = D[s,c,p] - media(D[s,c,q] para otras fases q disponibles)
+H[s,c,p] = D[s,c,p] - media(D[s,c,q] para las tres fases q distintas de p)
 ```
 
-Se requieren la fase evaluada y al menos dos de las otras tres fases. Una sesión-fase sin eventos no vale cero: queda ausente. Una sesión-fase sin capacidad de matching se abstiene con motivo persistido.
+La sesión debe aportar la fase evaluada y las otras tres fases. Así el estimando no cambia según qué fases estén disponibles. Una sesión-fase sin eventos no vale cero: queda ausente. Una sesión-fase sin capacidad de matching se abstiene con motivo persistido.
 
 ## Inferencia
 

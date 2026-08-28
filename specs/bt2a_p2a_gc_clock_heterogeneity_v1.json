@@ -63,8 +63,8 @@
   "estimand": {
     "score": {"TP_FIRST": 1, "SL_FIRST": -1, "TIMEOUT": 0},
     "session_phase_effect": "mean(K_ABS first-passage score) - median over N_RAND replication means within session, phase and parent cell",
-    "heterogeneity_contrast": "D_session_cell_phase - mean(D_session_cell_other_available_phases)",
-    "minimum_other_phases": 2,
+    "heterogeneity_contrast": "D_session_cell_phase - mean(D_session_cell_all_three_other_phases)",
+    "minimum_other_phases": 3,
     "minimum_sessions_per_contrast": 117,
     "no_event_session_phase": "MISSING_NOT_ZERO",
     "unmatchable_session_phase": "ABSTAIN_WITH_REASON",
@@ -108,13 +108,7 @@
     "P2A_POST_SELECTION_NO_CLOCK_HETEROGENEITY_SIGNAL",
     "P2A_CLOCK_HETEROGENEITY_INCONCLUSIVE"
   ],
-  "forbidden_labels": [
-    "BEST_WINDOW",
-    "OPTIMAL_HOUR",
-    "CONFIRMATORY_PASS",
-    "EDGE_DECLARED",
-    "PROMOTED"
-  ],
+  "forbidden_labels": ["BEST_WINDOW", "OPTIMAL_HOUR", "CONFIRMATORY_PASS", "EDGE_DECLARED", "PROMOTED"],
   "preflight": {
     "must_not_parse_price_values": true,
     "must_not_compute_outcomes": true,
