@@ -1,0 +1,67 @@
+{
+  "schema_version": "edgelab_kaggle_frozen_execution_v1",
+  "status": "DRAFT_TEMPLATE_NOT_EXECUTABLE",
+  "campaign_id": "REPLACE_WITH_UNIQUE_CAMPAIGN_ID",
+  "north_star_sha256": "d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1",
+  "justificacion_economica": "Reduce wall-clock de corridas ya aprobadas sin cambiar la hipótesis, el universo ni los gates científicos.",
+  "como_podria_refutarse": "Falla si el entorno cloud no reproduce hashes, conteos, determinismo o límites físicos del holdout frente a la corrida local contractual.",
+  "frozen_code": {
+    "commit": "REPLACE_WITH_FULL_40_CHARACTER_COMMIT",
+    "dirty_allowed": false
+  },
+  "input_package": {
+    "manifest_file": "kaggle_research_package_manifest.json",
+    "manifest_sha256": "REPLACE_WITH_PACKAGE_MANIFEST_FILE_SHA256",
+    "source_input_registry_sha256": "REPLACE_WITH_SOURCE_REGISTRY_SHA256",
+    "source_data_manifest_sha256": "REPLACE_WITH_DATOS_MANIFIESTO_SHA256",
+    "holdout_open_utc_ns": 1782856800000000000,
+    "research_max_trade_date": 20260630,
+    "physical_holdout_absence_required": true
+  },
+  "execution": {
+    "argv": [
+      "python",
+      "REPLACE_WITH_CAMPAIGN_RUNNER.py",
+      "--data-dir",
+      "{data_dir}",
+      "--output-dir",
+      "{output_dir}",
+      "--expected-commit",
+      "{expected_commit}"
+    ],
+    "shell": false,
+    "timeout_seconds": 43200,
+    "parallelism": {
+      "mode": "serial_fail_closed",
+      "max_workers": 1,
+      "safe_partition_key": null,
+      "merge_order": "lexicographic_partition_id",
+      "note": "Increase only after proving that partitions do not share mutable state. AVol SessionProfile chains remain serial."
+    },
+    "thread_env": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1"
+    }
+  },
+  "outputs": {
+    "required_paths": [
+      "REPLACE_WITH_PRIMARY_RESULT.json"
+    ],
+    "archive_path": "/kaggle/working/output.zip",
+    "publication_requires_local_pytest": true
+  },
+  "authorization": {
+    "run_capability": false,
+    "run_token": "REPLACE_WITH_PER_CAMPAIGN_TOKEN_AFTER_FORMAL_FREEZE"
+  },
+  "firewalls": {
+    "future_price_path_authorized": false,
+    "first_touch_authorized": false,
+    "pnl_authorized": false,
+    "holdout_authorized": false,
+    "winner_selection_authorized": false,
+    "promotion_authorized": false
+  }
+}
