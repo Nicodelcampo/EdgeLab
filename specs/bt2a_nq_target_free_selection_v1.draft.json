@@ -1,6 +1,6 @@
 {
   "schema_version": "bt2a_nq_target_free_selection_v1",
-  "status": "DRAFT_PREAUTHORIZATION",
+  "status": "FROZEN_PREAUTHORIZATION",
   "created_date": "2026-08-28",
   "north_star_sha256": "d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1",
   "purpose": "Select one structurally stable BigTrap2Absorption configuration for NQ without lifecycle, future paths, outcomes, returns or PnL.",
@@ -21,15 +21,21 @@
     "source_input_registry_path": "specs/bt2a_gate1_nq_all5_input_registry_2026-08-27.json",
     "source_input_registry_sha256": "2ce114105970e0d5010ebe150fbd0ec1b2911b4ecced946ecbb31510d17d1ed9",
     "package_manifest_file": "kaggle_research_package_manifest.json",
-    "package_manifest_sha256": null,
-    "package_manifest_payload_sha256": null,
+    "package_manifest_sha256": "3dd22d7e21a3bab3de4ec0c044120fa1e94f1b0bbd942fa2c02be108fde5da46",
+    "package_manifest_payload_sha256": "f44e76c48be9d5e9017baa9efac2626e98c88cc3fd0b7840acfc8c1707641554",
     "effective_input_registry_file": "effective_input_registry.json",
-    "effective_input_registry_sha256": null,
-    "dataset_id": "nicodelcampo/edgelab-ticks-nq-preholdout"
+    "effective_input_registry_sha256": "f9bcf5eee1e68bd4797a959f7e22d3344ae383d9d33c4c59a783ef10ce35e31f",
+    "dataset_id": "nicolasbuttaro/edgelab-ticks-nq-preholdout"
   },
   "universe": {
     "instrument": "NQ",
-    "contracts": ["NQ 09-25", "NQ 12-25", "NQ 03-26", "NQ 06-26", "NQ 09-26"],
+    "contracts": [
+      "NQ 09-25",
+      "NQ 12-25",
+      "NQ 03-26",
+      "NQ 06-26",
+      "NQ 09-26"
+    ],
     "contract_sessions": 234,
     "session_start": "20250804",
     "session_end": "20260630",
@@ -45,7 +51,13 @@
     "creation_only": true,
     "lifecycle_disabled": true,
     "event_availability": "SIGNAL_BUCKET_CLOSE",
-    "coordinate_identity": ["contract", "cme_session_id", "direction", "event_time_ns", "source_row"]
+    "coordinate_identity": [
+      "contract",
+      "cme_session_id",
+      "direction",
+      "event_time_ns",
+      "source_row"
+    ]
   },
   "baseline": {
     "TapeWindowTicks": 25,
@@ -73,22 +85,93 @@
     "DrawZoneBand": true
   },
   "candidate_levels": {
-    "TapeWindowTicks": [5, 10, 15, 25, 50, 100],
-    "ScoreMode": ["AbsMagnitude", "AbsDirectional"],
-    "AbsorptionPct": [80.0, 85.0, 90.0, 95.0],
-    "AbsorptionLookback": [200, 500, 1000],
-    "MinHistoryBuckets": [50, 100, 200, 500],
-    "RequireFlowSideMatch": [true, false],
-    "ImbalanceMode": ["Diagonal", "SameLevel"],
-    "TrapVolumeSource": ["AggressiveSide", "TotalLevel"],
-    "TicksPerRow": [1, 2, 4],
-    "ImbalanceRatio": [2.0, 3.0, 4.0, 6.0],
-    "MinStackedRows": [1, 2, 3, 4],
-    "MinTrapFrac": [0.1, 0.2, 0.3, 0.5],
-    "MinDeltaFilter": [0.0, 10.0, 50.0, 100.0],
-    "MinTrapVolume": [0.0, 10.0, 50.0, 100.0],
-    "UseWickFilter": [true, false],
-    "WickZonePct": [10.0, 20.0, 30.0, 40.0, 50.0]
+    "TapeWindowTicks": [
+      5,
+      10,
+      15,
+      25,
+      50,
+      100
+    ],
+    "ScoreMode": [
+      "AbsMagnitude",
+      "AbsDirectional"
+    ],
+    "AbsorptionPct": [
+      80.0,
+      85.0,
+      90.0,
+      95.0
+    ],
+    "AbsorptionLookback": [
+      200,
+      500,
+      1000
+    ],
+    "MinHistoryBuckets": [
+      50,
+      100,
+      200,
+      500
+    ],
+    "RequireFlowSideMatch": [
+      true,
+      false
+    ],
+    "ImbalanceMode": [
+      "Diagonal",
+      "SameLevel"
+    ],
+    "TrapVolumeSource": [
+      "AggressiveSide",
+      "TotalLevel"
+    ],
+    "TicksPerRow": [
+      1,
+      2,
+      4
+    ],
+    "ImbalanceRatio": [
+      2.0,
+      3.0,
+      4.0,
+      6.0
+    ],
+    "MinStackedRows": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "MinTrapFrac": [
+      0.1,
+      0.2,
+      0.3,
+      0.5
+    ],
+    "MinDeltaFilter": [
+      0.0,
+      10.0,
+      50.0,
+      100.0
+    ],
+    "MinTrapVolume": [
+      0.0,
+      10.0,
+      50.0,
+      100.0
+    ],
+    "UseWickFilter": [
+      true,
+      false
+    ],
+    "WickZonePct": [
+      10.0,
+      20.0,
+      30.0,
+      40.0,
+      50.0
+    ]
   },
   "design": {
     "headline_plus_oat": true,
@@ -109,21 +192,36 @@
     "selected_configuration_json": true,
     "execution_attestation_json": true,
     "coordinate_fields": [
-      "config_id", "contract", "cme_session_id", "event_time_ns", "source_row",
-      "direction", "signal_price_ticks", "a_score", "a_threshold", "event_key"
+      "config_id",
+      "contract",
+      "cme_session_id",
+      "event_time_ns",
+      "source_row",
+      "direction",
+      "signal_price_ticks",
+      "a_score",
+      "a_threshold",
+      "event_key"
     ]
   },
   "structural_metrics": [
-    "event_count", "sessions_with_events", "contracts_with_events", "events_per_session",
-    "contract_hhi", "maximum_session_share", "direction_balance", "neighbor_exact_jaccard",
-    "neighbor_count_ratio_stability", "deterministic_replay_digest"
+    "event_count",
+    "sessions_with_events",
+    "contracts_with_events",
+    "events_per_session",
+    "contract_hhi",
+    "maximum_session_share",
+    "direction_balance",
+    "neighbor_exact_jaccard",
+    "neighbor_count_ratio_stability",
+    "deterministic_replay_digest"
   ],
   "eligibility": {
     "minimum_events": 400,
     "minimum_sessions_with_events": 40,
     "minimum_contracts_with_events": 4,
     "maximum_contract_hhi": 0.55,
-    "maximum_single_session_share": 0.10,
+    "maximum_single_session_share": 0.1,
     "minimum_neighbor_median_exact_jaccard": 0.25,
     "minimum_nearest_neighbors": 4,
     "n_ge_400_is_power_proof": false
@@ -132,7 +230,10 @@
     "type": "DETERMINISTIC_STRUCTURAL_ONLY",
     "eligible_set_required": true,
     "score": "0.45*neighbor_median_exact_jaccard + 0.25*session_coverage + 0.20*(1-contract_hhi) + 0.10*neighbor_count_ratio_stability",
-    "tie_breakers": ["minimum_normalized_distance_to_gc_anchor", "config_id_ascending"],
+    "tie_breakers": [
+      "minimum_normalized_distance_to_gc_anchor",
+      "config_id_ascending"
+    ],
     "outcome_based_ranking_forbidden": true,
     "density_maximization_forbidden": true,
     "success_label": "SELECTED_STABLE_NQ_CONFIGURATION",
