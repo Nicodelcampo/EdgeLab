@@ -30,7 +30,7 @@ if len(EXPECTED_COMMIT) != 40 or not DATA_DIR:
 
 if not (REPO_DIR / ".git").exists():
     subprocess.run(["git", "clone", "--filter=blob:none", "--no-checkout", REPO_URL, str(REPO_DIR)], check=True)
-subprocess.run(["git", "fetch", "origin", EXPECTED_COMMIT, "--depth", "1"], cwd=REPO_DIR, check=True)
+subprocess.run(["git", "fetch", "origin", EXPECTED_COMMIT, "--depth", "200"], cwd=REPO_DIR, check=True)
 subprocess.run(["git", "checkout", "--detach", EXPECTED_COMMIT], cwd=REPO_DIR, check=True)
 actual = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=REPO_DIR, text=True).strip()
 if actual != EXPECTED_COMMIT:
