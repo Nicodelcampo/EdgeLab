@@ -49,8 +49,13 @@ if not EXECUTE:
     print("mode= PREFLIGHT_ONLY")
     print("repo_commit=", actual)
     print("data_dir=", DATA_DIR)
-    subprocess.run(command, cwd=REPO_DIR, check=True)
-    print("artifact=", OUTPUT_DIR / "preflight.json")
+    proc = subprocess.run(command, cwd=REPO_DIR, check=False)
+    print("preflight_exit_code=", proc.returncode)
+    preflight_path = OUTPUT_DIR / "preflight.json"
+    if preflight_path.is_file():
+        print("--- preflight.json ---")
+        print(preflight_path.read_text(encoding="utf-8"))
+    print("artifact=", preflight_path)
 else:
     if not TOKEN:
         raise SystemExit("EDGELAB_EXECUTE=1 requires EDGELAB_AUTHORIZATION_TOKEN")
