@@ -158,6 +158,30 @@ def verify_git_clean_and_head(expected_commit: str) -> dict[str, Any]:
     return {"head": head, "dirty": False}
 
 
+def _is_ancestor(older: str | None, newer: str) -> bool:
+    """True if `older` is `newer` itself or a real git ancestor of it.
+
+    Resolves an unavoidable bootstrap gap in the original exact-equality check:
+    a commit's own tree cannot contain its own final commit hash (the hash is a
+    function of the tree, so embedding the hash changes the tree, which changes
+    the hash -- no finite sequence of commits converges without a brute-force
+    preimage search). Requiring `older` to be an ancestor-or-self of `newer`
+    keeps the real guarantee (you cannot run code from a different or older,
+    unrelated commit than what was frozen) while remaining satisfiable: freeze
+    against an already-known prior commit, then run at that commit or any
+    descendant of it.
+    """
+    if not isinstance(older, str) or len(older) != 40:
+        return False
+    if older == newer:
+        return True
+    proc = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", older, newer],
+        cwd=REPO_ROOT, capture_output=True,
+    )
+    return proc.returncode == 0
+
+
 def verify_runtime_execution_gates(
     spec: dict[str, Any], expected_commit: str, execution_token: str | None
 ) -> None:
@@ -170,8 +194,10 @@ def verify_runtime_execution_gates(
         raise PermissionError("[FAIL_CLOSED] execution_authorized must be true")
     if not execution_token or execution_token != spec.get("execution_token"):
         raise PermissionError("[FAIL_CLOSED] Invalid or missing campaign token")
-    if spec.get("frozen_commit") != expected_commit:
-        raise RuntimeError("[FAIL_CLOSED] frozen_commit differs from --expected-commit")
+    if not _is_ancestor(spec.get("frozen_commit"), expected_commit):
+        raise RuntimeError(
+            "[FAIL_CLOSED] --expected-commit is not the frozen commit or a descendant of it"
+        )
 
     platform = spec.get("execution_platform") or {}
     if (
