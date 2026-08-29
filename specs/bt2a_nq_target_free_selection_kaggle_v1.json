@@ -1,0 +1,71 @@
+{
+  "schema_version": "edgelab_kaggle_frozen_execution_v1",
+  "status": "FROZEN_PREFLIGHT_READY",
+  "campaign_id": "bt2a_nq_target_free_selection_v1_20260828",
+  "north_star_sha256": "d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1",
+  "justificacion_economica": "Selecciona una configuracion estructuralmente estable de BigTrap2Absorption para NQ, target-free, para poder correr Gate 1 de NQ con la misma disciplina ya aplicada a GC en vez de heredar la config de GC sin justificacion propia.",
+  "como_podria_refutarse": "Falla si Kaggle no reproduce los hashes del paquete de datos NQ, si el commit efectivo difiere del congelado, si el arbol esta dirty, o si la corrida toca lifecycle/first_touch/PnL/holdout (atestiguado en execution_attestation.json).",
+  "frozen_code": {
+    "commit": "PENDING_SELF_BINDING_COMMIT",
+    "dirty_allowed": false
+  },
+  "input_package": {
+    "manifest_file": "kaggle_research_package_manifest.json",
+    "manifest_sha256": "3dd22d7e21a3bab3de4ec0c044120fa1e94f1b0bbd942fa2c02be108fde5da46",
+    "source_input_registry_sha256": "2ce114105970e0d5010ebe150fbd0ec1b2911b4ecced946ecbb31510d17d1ed9",
+    "source_data_manifest_sha256": null,
+    "holdout_open_utc_ns": 1782856800000000000,
+    "research_max_trade_date": 20260630,
+    "physical_holdout_absence_required": true
+  },
+  "execution": {
+    "argv": [
+      "python",
+      "tools/run_bt2a_nq_target_free_selection_kaggle_all.py",
+      "--data-dir",
+      "{data_dir}",
+      "--output-dir",
+      "{output_dir}",
+      "--expected-commit",
+      "{expected_commit}"
+    ],
+    "shell": false,
+    "timeout_seconds": 43200,
+    "parallelism": {
+      "mode": "serial_fail_closed",
+      "max_workers": 1,
+      "safe_partition_key": null,
+      "merge_order": "lexicographic_partition_id",
+      "note": "El orquestador ya recorre los 5 contratos mas finalize en serie dentro de un solo proceso; no hay paralelismo entre particiones."
+    },
+    "thread_env": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1"
+    }
+  },
+  "outputs": {
+    "required_paths": [
+      "expanded_grid.json",
+      "coordinate_manifest.json",
+      "selection_result.json",
+      "execution_attestation.json"
+    ],
+    "firewall_attestation_path": "execution_attestation.json",
+    "archive_path": "/kaggle/working/output.zip",
+    "publication_requires_local_pytest": true
+  },
+  "authorization": {
+    "run_capability": true,
+    "run_token": "AUTHORIZE_RUN_BT2A_NQ_TARGET_FREE_SELECTION_V1"
+  },
+  "firewalls": {
+    "future_price_path_authorized": false,
+    "first_touch_authorized": false,
+    "pnl_authorized": false,
+    "holdout_authorized": false,
+    "winner_selection_authorized": false,
+    "promotion_authorized": false
+  }
+}
