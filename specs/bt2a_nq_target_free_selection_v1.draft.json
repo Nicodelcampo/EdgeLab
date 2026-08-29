@@ -1,0 +1,257 @@
+{
+  "schema_version": "bt2a_nq_target_free_selection_v1",
+  "status": "FROZEN_PREFLIGHT_READY",
+  "created_date": "2026-08-28",
+  "north_star_sha256": "d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1",
+  "purpose": "Select one structurally stable BigTrap2Absorption configuration for NQ without lifecycle, future paths, outcomes, returns or PnL.",
+  "execution_platform": {
+    "platform": "KAGGLE",
+    "kaggle_only": true,
+    "local_heavy_execution_allowed": false,
+    "private_dataset_required": true,
+    "physical_holdout_absence_required": true
+  },
+  "execution_authorized": true,
+  "execution_token": "AUTHORIZE_RUN_BT2A_NQ_TARGET_FREE_SELECTION_V1",
+  "required_execution_token_label": "AUTHORIZE_RUN_BT2A_NQ_TARGET_FREE_SELECTION_V1",
+  "frozen_commit": "0f38ed542a35372dcb0dfe1f57a2d1ed6f29d703",
+  "binding": {
+    "session_registry_path": "specs/bt2a_gate1_nq_all5_sessions_2026-08-27.json",
+    "session_registry_sha256": "f50350ee67d53be38cd00e0f3e548cc877e980aebb3b08e422cdde007b39c6cb",
+    "source_input_registry_path": "specs/bt2a_gate1_nq_all5_input_registry_2026-08-27.json",
+    "source_input_registry_sha256": "2ce114105970e0d5010ebe150fbd0ec1b2911b4ecced946ecbb31510d17d1ed9",
+    "package_manifest_file": "kaggle_research_package_manifest.json",
+    "package_manifest_sha256": "3dd22d7e21a3bab3de4ec0c044120fa1e94f1b0bbd942fa2c02be108fde5da46",
+    "package_manifest_payload_sha256": "f44e76c48be9d5e9017baa9efac2626e98c88cc3fd0b7840acfc8c1707641554",
+    "effective_input_registry_file": "effective_input_registry.json",
+    "effective_input_registry_sha256": "f9bcf5eee1e68bd4797a959f7e22d3344ae383d9d33c4c59a783ef10ce35e31f",
+    "dataset_id": "nicolasbuttaro/edgelab-ticks-nq-preholdout"
+  },
+  "universe": {
+    "instrument": "NQ",
+    "contracts": [
+      "NQ 09-25",
+      "NQ 12-25",
+      "NQ 03-26",
+      "NQ 06-26",
+      "NQ 09-26"
+    ],
+    "contract_sessions": 234,
+    "session_start": "20250804",
+    "session_end": "20260630",
+    "holdout_session_min_inclusive": "20260701",
+    "holdout_open_utc_ns": 1782856800000000000,
+    "safe_partition_key": "contract",
+    "all_five_input_partitions_required": true
+  },
+  "kernel": {
+    "implementation": "edgelab.research.all5_runtime.bigtrap2absorption.run",
+    "authority": "PYTHON_RESEARCH_KERNEL",
+    "direct_nt8_csharp_parity_certified": false,
+    "creation_only": true,
+    "lifecycle_disabled": true,
+    "event_availability": "SIGNAL_BUCKET_CLOSE",
+    "coordinate_identity": [
+      "contract",
+      "cme_session_id",
+      "direction",
+      "event_time_ns",
+      "source_row"
+    ]
+  },
+  "baseline": {
+    "TapeWindowTicks": 25,
+    "ScoreMode": "AbsMagnitude",
+    "AbsorptionPct": 90.0,
+    "AbsorptionLookback": 500,
+    "MinHistoryBuckets": 200,
+    "RequireFlowSideMatch": true,
+    "ImbalanceMode": "Diagonal",
+    "TrapVolumeSource": "AggressiveSide",
+    "TicksPerRow": 1,
+    "ImbalanceRatio": 3.0,
+    "MinStackedRows": 2,
+    "MinTrapFrac": 0.2,
+    "MinDeltaFilter": 0.0,
+    "MinTrapVolume": 0.0,
+    "UseWickFilter": true,
+    "WickZonePct": 30.0
+  },
+  "fixed_parameters": {
+    "MinExportVolume": 1.0,
+    "InvalidationMode": "CloseThrough",
+    "MaxAgeBars": 2000,
+    "MaxTouches": 0,
+    "DrawZoneBand": true
+  },
+  "candidate_levels": {
+    "TapeWindowTicks": [
+      5,
+      10,
+      15,
+      25,
+      50,
+      100
+    ],
+    "ScoreMode": [
+      "AbsMagnitude",
+      "AbsDirectional"
+    ],
+    "AbsorptionPct": [
+      80.0,
+      85.0,
+      90.0,
+      95.0
+    ],
+    "AbsorptionLookback": [
+      200,
+      500,
+      1000
+    ],
+    "MinHistoryBuckets": [
+      50,
+      100,
+      200,
+      500
+    ],
+    "RequireFlowSideMatch": [
+      true,
+      false
+    ],
+    "ImbalanceMode": [
+      "Diagonal",
+      "SameLevel"
+    ],
+    "TrapVolumeSource": [
+      "AggressiveSide",
+      "TotalLevel"
+    ],
+    "TicksPerRow": [
+      1,
+      2,
+      4
+    ],
+    "ImbalanceRatio": [
+      2.0,
+      3.0,
+      4.0,
+      6.0
+    ],
+    "MinStackedRows": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "MinTrapFrac": [
+      0.1,
+      0.2,
+      0.3,
+      0.5
+    ],
+    "MinDeltaFilter": [
+      0.0,
+      10.0,
+      50.0,
+      100.0
+    ],
+    "MinTrapVolume": [
+      0.0,
+      10.0,
+      50.0,
+      100.0
+    ],
+    "UseWickFilter": [
+      true,
+      false
+    ],
+    "WickZonePct": [
+      10.0,
+      20.0,
+      30.0,
+      40.0,
+      50.0
+    ]
+  },
+  "design": {
+    "headline_plus_oat": true,
+    "interaction_type": "DETERMINISTIC_BALANCED_MIXED_DISCRETE",
+    "interaction_rows": 64,
+    "seed": 20260828,
+    "minimum_unique_configurations": 90,
+    "full_factorial_forbidden": true,
+    "invalid_min_history_gt_lookback_policy": "CLAMP_TO_LOOKBACK",
+    "configuration_id": "SHA256_CANONICAL_PARAMETERS_PREFIX_16"
+  },
+  "target_free_outputs": {
+    "coordinates_per_config_contract_parquet": true,
+    "contract_checkpoints": true,
+    "expanded_grid_json": true,
+    "coordinate_manifest_json": true,
+    "selection_result_json": true,
+    "selected_configuration_json": true,
+    "execution_attestation_json": true,
+    "coordinate_fields": [
+      "config_id",
+      "contract",
+      "cme_session_id",
+      "event_time_ns",
+      "source_row",
+      "direction",
+      "signal_price_ticks",
+      "a_score",
+      "a_threshold",
+      "event_key"
+    ]
+  },
+  "structural_metrics": [
+    "event_count",
+    "sessions_with_events",
+    "contracts_with_events",
+    "events_per_session",
+    "contract_hhi",
+    "maximum_session_share",
+    "direction_balance",
+    "neighbor_exact_jaccard",
+    "neighbor_count_ratio_stability",
+    "deterministic_replay_digest"
+  ],
+  "eligibility": {
+    "minimum_events": 400,
+    "minimum_sessions_with_events": 40,
+    "minimum_contracts_with_events": 4,
+    "maximum_contract_hhi": 0.55,
+    "maximum_single_session_share": 0.1,
+    "minimum_neighbor_median_exact_jaccard": 0.25,
+    "minimum_nearest_neighbors": 4,
+    "n_ge_400_is_power_proof": false
+  },
+  "selection_rule": {
+    "type": "DETERMINISTIC_STRUCTURAL_ONLY",
+    "eligible_set_required": true,
+    "score": "0.45*neighbor_median_exact_jaccard + 0.25*session_coverage + 0.20*(1-contract_hhi) + 0.10*neighbor_count_ratio_stability",
+    "tie_breakers": [
+      "minimum_normalized_distance_to_gc_anchor",
+      "config_id_ascending"
+    ],
+    "outcome_based_ranking_forbidden": true,
+    "density_maximization_forbidden": true,
+    "success_label": "SELECTED_STABLE_NQ_CONFIGURATION",
+    "abstain_label": "ABSTAIN_NO_STABLE_NQ_CONFIGURATION"
+  },
+  "firewall": {
+    "TARGET_FREE": true,
+    "LIFECYCLE_ACCESSED": false,
+    "FIRST_TOUCH_ACCESSED": false,
+    "FUTURE_PRICE_PATH_ACCESSED": false,
+    "FIRST_PASSAGE_ACCESSED": false,
+    "MFE_MAE_ACCESSED": false,
+    "RETURNS_ACCESSED": false,
+    "PNL_ACCESSED": false,
+    "HOLDOUT_ROWS_DECODED": false,
+    "HOLDOUT_TOUCHED": false,
+    "ECONOMIC_WINNER_SELECTED": false,
+    "EDGE_DECLARED": false,
+    "PROMOTION_ELIGIBLE": false
+  }
+}

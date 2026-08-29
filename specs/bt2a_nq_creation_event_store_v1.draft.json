@@ -1,0 +1,56 @@
+{
+  "schema_version": "bt2a_nq_creation_event_store_v1",
+  "status": "DRAFT_PREAUTHORIZATION",
+  "created_date": "2026-08-28",
+  "purpose": "Consolidate only the selected target-free BT2A NQ creation coordinates into a hash-bound Event Store without re-reading price paths.",
+  "execution_platform": "KAGGLE_ONLY",
+  "source_selection": {
+    "result_file": "selection_result.json",
+    "result_file_sha256": null,
+    "selected_configuration_file": "selected_configuration.json",
+    "selected_configuration_file_sha256": null,
+    "selected_config_id": null,
+    "coordinate_manifest_file": "coordinate_manifest.json",
+    "coordinate_manifest_file_sha256": null,
+    "required_selection_status": "SELECTED_STABLE_NQ_CONFIGURATION"
+  },
+  "universe": {
+    "instrument": "NQ",
+    "contracts": ["NQ 09-25", "NQ 12-25", "NQ 03-26", "NQ 06-26", "NQ 09-26"],
+    "contract_sessions": 234,
+    "session_max": "20260630",
+    "holdout_session_min_inclusive": "20260701"
+  },
+  "build": {
+    "mode": "TRANSFORM_SELECTED_COORDINATES_ONLY",
+    "raw_tick_decode_allowed": false,
+    "future_path_decode_allowed": false,
+    "lifecycle_allowed": false,
+    "checkpoint_partition": "contract",
+    "deduplicate_identity": ["contract", "cme_session_id", "direction", "event_time_ns", "source_row"],
+    "sort_order": ["contract", "cme_session_id", "event_time_ns", "source_row", "direction", "event_key"],
+    "output_parquet": "bt2a_nq_creation_events.parquet",
+    "output_manifest": "bt2a_nq_creation_event_store_manifest.json"
+  },
+  "authorization": {
+    "freeze_token_label": "APPROVE_FREEZE_BT2A_NQ_CREATION_EVENT_STORE_V1",
+    "build_token_label": "AUTHORIZE_BUILD_BT2A_NQ_CREATION_EVENT_STORE_V1",
+    "finalize_token_label": "AUTHORIZE_FINALIZE_BT2A_NQ_CREATION_EVENT_STORE_V1",
+    "validate_token_label": "AUTHORIZE_VALIDATE_BT2A_NQ_CREATION_EVENT_STORE_V1",
+    "execution_authorized": false,
+    "active_token": null,
+    "frozen_commit": null
+  },
+  "firewall": {
+    "EVENT_STORE_READY": false,
+    "LIFECYCLE_ACCESSED": false,
+    "FIRST_TOUCH_ACCESSED": false,
+    "FUTURE_PRICE_PATH_ACCESSED": false,
+    "FIRST_PASSAGE_ACCESSED": false,
+    "MFE_MAE_ACCESSED": false,
+    "PNL_ACCESSED": false,
+    "HOLDOUT_TOUCHED": false,
+    "EDGE_DECLARED": false,
+    "PROMOTION_ELIGIBLE": false
+  }
+}
