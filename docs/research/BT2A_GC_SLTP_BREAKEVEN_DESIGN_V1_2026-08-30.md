@@ -1,6 +1,7 @@
 # BT2A GC — Diseño de medición de lógicas de salida SL/TP asimétricas y breakeven (V1.1, borrador)
 
 - **Fecha:** 2026-08-30 (ART) · **V1.1:** grilla densa de gatillo BE + Romano-Wolf + MCS + regla de meseta, a pedido de Nico ("la excursión para poner break even no puede ser arbitraria; quiero que se pruebe todo, o al menos muchas combinaciones; quizás ninguna funciona pero que sugiera cuál es mejor y más sólida").
+- **Corrigendum V1.1 (mismo día):** en §13, la alternativa DP2 con H fija son **186** primarias (29×3×2 BE + 12 ASIM, con 1 H), no 232 como decía la primera versión de este archivo. Registrado también en `docs/audits/CANAL_NOTION_AI_2026-08-30_002.md` §3.
 - **Estado:** `DRAFT_DESIGN_ONLY_PREAUTHORIZATION`
 - **Autor:** Notion AI — Auditor Cuantitativo.
 - **Rama:** `research/bt2a-gc-sltp-breakeven-design-v1-20260830`
@@ -131,7 +132,7 @@ Sólo si Gate 1 NQ se ejecuta y soporta el mecanismo direccional: mismo esquelet
 ## 13. Puntos de decisión para Nico (bloquean la redacción del spec de freeze)
 
 - **DP1 — Alcance:** ¿GC exploratorio solo, con transferencia NQ condicionada? (recomendado: sí)
-- **DP2 — Grilla V1.1:** ¿G densa {2..30} con curva de respuesta (recomendado — es tu pedido de no arbitrariedad), o recorte a H fija en 250 para ganar potencia por celda (232 primarias en vez de 372)?
+- **DP2 — Grilla V1.1:** ¿G densa {2..30} con curva de respuesta y H ∈ {25, 250} (372 primarias — recomendado, es tu pedido de no arbitrariedad), o recorte a H fija en 250 para ganar potencia por celda (**186 primarias**: 29×3×2 BE + 12 ASIM con una sola H)?
 - **DP3 — REF:** ¿la política de reutilización de P2B de §7? (recomendado: sí)
 - **DP4 — Mecánica BE:** ¿scrape exactamente a entrada, o a entrada − 1 tick (cubre parte de la fricción)? ¿Sin re-entrada tras scrape (una ejecución por señal, como P2B)? (recomendado: scrape a entrada exacta, sin re-entrada — más limpio de auditar)
 - **DP5 — Capa 0:** ¿censo de arquetipos en función de g como familia descriptiva declarada dentro de esta campaña (recomendado) o como campaña aparte?
@@ -148,7 +149,7 @@ Fuentes consultadas para el rediseño V1.1 (búsqueda web, 2026-08-30):
 - **Romano & Wolf (2005), "Stepwise Multiple Testing as Formalized Data Snooping", Econometrica 73(4)** y **(2005) JASA 100(469)** — stepdown bootstrap que controla FWER explotando dependencia; motivado literalmente por "un trader que backtesta varias ideas y quiere saber cuántas valen". Base de la corrección primaria (§5). https://www.econometricsociety.org/publications/econometrica/2005/07/01/stepwise-multiple-testing-formalized-data-snooping
 - **Kaminski & Lo (2007/2014), "When do stop-loss rules stop losses?"** — bajo random walk los stops siempre restan expectativa; sólo suman con momentum real. Prior estructural de la campaña y refutación cruzada con P2A (§2, §10). https://ssrn.com/abstract=968338
 - **Bailey, Borwein, López de Prado & Zhu, "The Probability of Backtest Overfitting"** y **Bailey & López de Prado (2014), "The Deflated Sharpe Ratio", JPM 40(5)** — PBO/CSCV y DSR con N_eff; ya implementados en el repo, se aplican a la matriz completa (§8.3). https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2326253
-- **Literature de meseta de parámetros:** LuxAlgo, "Stress-Test Your Algorithmic Trading Strategy" (meseta vs. aguja; sensibilidad paramétrica); NTUT, "On the design of searching algorithm for parameter plateau in quantitative trading strategies" (plateau score; los picos aislados fallan OOS y las mesetas sobreviven); umbral de estabilidad de vecindad 70–80% (PickMyTrade validation guide). Base de la regla de meseta (§8.2). https://www.luxalgo.com/blog/stress-test-your-algorithmic-trading-strategy-guide-to-avoiding-overfitting/ · https://www.sciencedirect.com/science/article/pii/S095070512400265X
+- **Literatura de meseta de parámetros:** LuxAlgo, "Stress-Test Your Algorithmic Trading Strategy" (meseta vs. aguja; sensibilidad paramétrica); NTUT, "On the design of searching algorithm for parameter plateau in quantitative trading strategies" (plateau score; los picos aislados fallan OOS y las mesetas sobreviven); umbral de estabilidad de vecindad 70–80% (PickMyTrade validation guide). Base de la regla de meseta (§8.2). https://www.luxalgo.com/blog/stress-test-your-algorithmic-trading-strategy-guide-to-avoiding-overfitting/ · https://www.sciencedirect.com/science/article/pii/S095070512400265X
 - **Evidencia practitioner sobre breakeven stops:** tradeciety, "Why You Lose Money With Break-Even Stops" — el modo de falla documentado es la confiscación de ganadores por retracement; ya declarado como costo estructural en §1. https://tradeciety.com/why-you-lose-money-with-break-even-stops
 
 **Lo que NO se encontró:** ninguna fuente que valide elegir un gatillo BE puntual por observación visual — consistente con el pedido de Nico de grilla densa. Tampoco evidencia académica específica de breakeven stops en futuros intradía tick-level: esta campaña mediría algo que la literatura no resolvió, lo cual sube el valor del resultado en cualquiera de los dos signos.
