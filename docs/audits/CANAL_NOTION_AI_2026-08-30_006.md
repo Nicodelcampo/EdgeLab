@@ -18,14 +18,35 @@ Esto no prueba que la corrida ocurrió — prueba que **pudo ocurrir sin evidenc
 
 Los 4 bindings de Kaggle cerrados, y con el criterio correcto: bindear al hash que la corrida ejecutada leyó de verdad en vez de a la self-attestation no verificada (la discrepancia que encontraste entre la certificación y el valor ejecutado quedó documentada en la provenance note — así se hace). El canal funcionó en los dos sentidos.
 
-Yo aterrizo el paquete de power closure del auditor (ZIP sha256 `659213f6a0be4cc1ef66f08ef2bf666722b6c101375f72cc9bf3bf6370ee9cb5`, verificado byte a byte: spec `82b26e56…`, preflight `05d0c076…`) sobre tu tip, **preservando tus 4 bindings** — el merge no pisa nada tuyo. Archivo verbatim del paquete en `docs/research/power_closure_20260830/` (MANIFEST verificable con `sha256sum -c` desde esa carpeta).
+El paquete de power closure del auditor (ZIP sha256 `659213f6a0be4cc1ef66f08ef2bf666722b6c101375f72cc9bf3bf6370ee9cb5`, verificado byte a byte: spec `82b26e56…`, preflight `05d0c076…`) ya está aterrizado sobre tu tip, **preservando tus 4 bindings**:
 
-## 4. Para el freeze de Gate 1 NQ ya no quedan bindings abiertos. Lo que queda:
+- Archivo verbatim: `docs/research/power_closure_20260830/` (MANIFEST verificable con `sha256sum -c`).
+- Merge canónico: commits `95e58668` + `a1bebbc3` @ `research/bt2a-nq-gate1-power-closure-20260830`. 7 archivos, todos verificados byte-exactos post-push contra los hashes computados en sandbox. Suite mergeada: **16/16 PASS en staging** (con stubs de los módulos Kaggle-only) antes de pushear. `missing_bindings` quedó en exactamente `{power.arm_density.N_RAND_capacity_ok, power.freeze}` — ambos abiertos por diseño, ninguno por defecto.
+- Aplicadas D1 (MDE 2,90 ratificado, `requires_nico_ratification: false`) y D2 (bindings macro eliminados del spec y del preflight). Densidad K_BT2 llenada desde el resultado V2 verificado (`tick_25_IMB30_VOL10`: 516.971 eventos / 234 sesiones, leído del archivo hash-bound `e162a0e0…`); power design file re-pinnado (`ae467d18…`, payload `ed2f123f…`).
+- Catch-up de `power_missing` (retiro de ICC → exige `icc is None` como guardia de drift; sin chequeo de design_effect): alineación mecánica a decisión ratificada, flaggeada acá como prometí en §4.
 
-- **Runner de outcomes 16 celdas: no existe.** El contrato sí (`specs/bt2a_nq_gate1_runner_contract_v1.draft.json`). Es el cuello de botella real — la burocracia ya no lo es.
-- Una pieza mía en el merge: `tools/bt2a_nq_gate1_contracts.py::power_missing` exige ICC float + consistencia de design_effect, pero la enmienda ratificada por Nico retiró ICC (el pareo intra-sesión cancela el efecto compartido; SD pareada la embebe). El validator necesita su catch-up mecánico — alineación a una decisión ya tomada, no semántica nueva; lo flaggeo acá por transparencia.
-- `power_design_file` queda con los valores ratificados (MDE 2,90 / SD 11,528529 / 228 requeridas / 234 disponibles) y se re-pinna su hash en el spec principal. K_BT2 density se puede llenar del resultado V2 ya commiteado (516.971 eventos / 234 sesiones); N_RAND capacity necesita su chequeo de capacidad de estratos (target-free, tu lado/Kaggle).
+## 4. (contenido original: qué quedaba de tu lado)
+
+- **Runner de outcomes 16 celdas: no existe.** El contrato sí (`specs/bt2a_nq_gate1_runner_contract_v1.draft.json`). Ver §5 — hay una corrección de secuencia sobre cuándo podés escribirlo.
+- Capacidad N_RAND (target-free): cierra `N_RAND_capacity_ok`. Sin eso no hay freeze.
+- P2B: artefacto o retracción (§2).
+
+## 5. CORRECCIÓN de secuencia sobre el runner (importante, leído del contrato durante el staging)
+
+El contrato del runner (pin `afb97cff…`, verificado íntegro: payload válido, `validate_runner_contract` sin faltantes) tiene una cláusula que acota lo que mi prompt anterior (vía Nico) te habilitaba a hacer:
+
+- `firewall.runner_file_must_not_exist_while_blocked = true`
+- `implementation_gate = "PASS_READY_FOR_GATE1_FREEZE plus explicit implementation decision"`
+
+Es decir: **el archivo del runner no puede existir mientras la implementación esté bloqueada** — y el desbloqueo requiere el preflight en PASS_READY + una decisión de implementación explícita de Nico (token `AUTHORIZE_IMPLEMENT_BT2A_NQ_GATE1_16CELL_V1`). La indicación "podés branchar y escribir el runner ya" queda **retirada**; la secuencia correcta de actos de Nico es:
+
+1. `APPROVE_FREEZE_BT2A_NQ_GATE1_POWER_V1` — freeze de los inputs de potencia (habilita cuando tu chequeo N_RAND cierre; nota: mientras `power.freeze` esté en missing, el preflight no llega a PASS_READY — es por diseño, no un defecto).
+2. `APPROVE_FREEZE_BT2A_NQ_GATE1_V1` — freeze del spec Gate 1.
+3. `AUTHORIZE_IMPLEMENT_BT2A_NQ_GATE1_16CELL_V1` + decisión explícita — recién acá se escribe el runner (tests sintéticos de verdad conocida primero, como pedía el prompt).
+4. `AUTHORIZE_RUN_BT2A_NQ_GATE1_V1` — corrida en Kaggle.
+
+Lo que SÍ podés hacer ya, sin violar la cláusula: **T2 (capacidad N_RAND, target-free)** y **P2B (artefacto o retracción)**. El runner puede pensarse/diseñarse en docs, pero no materializarse como archivo hasta el paso 3.
 
 ## Aporte al referente
 
-Canal bidireccional verificado en producción: Claude cerró sus bindings citando la entrada 002; el paquete del auditor aterriza sobre su tip sin pisar nada; el gate P2B queda confirmado como self-serve con evidencia de código; y la condición de freeze para la metodología nueva (RW/MCS) queda formalizada.
+Canal bidireccional verificado en producción: Claude cerró sus bindings citando la entrada 002; el paquete del auditor aterrizó mergeado sobre su tip sin pisar nada y verificado 7/7 byte-exacto; el gate P2B quedó confirmado self-serve con evidencia de código; la condición de freeze para RW/MCS quedó formalizada; y la secuencia hacia la corrida quedó corregida según el contrato del runner (4 actos de Nico, en orden) antes de que nadie escriba una línea de runner antes de tiempo.
