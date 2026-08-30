@@ -9,13 +9,13 @@
     "result_commit": "7a9959fb4ee2bf532c64e860cae794db7557eec7",
     "classification": "P2_DIAGNOSTIC_MECHANISM_SUPPORTED",
     "result_payload_sha256": "296f8352a46751c3a9a26a32ec29661ddcecba7ac57874a967dc591a92766e28",
-    "event_store_payload_sha256": "f033f0c81c57317f3546f7641af88aa304a38b9ddf7dea800266cd1da320dfa8",
+    "event_store_payload_sha256": "602f8f18467f6be081f36e8fc08f5d7e703f510a088afeb480d0b27b5e678e1d",
     "n_sessions": 234,
     "n_events": 22202,
     "max_cme_session": "20260630",
     "outcomes_already_opened": true,
     "confirmatory_eligible": false,
-    "event_store_rebuild_note": "Original event_store_payload_sha256 (feee6001e8...) was pinned to an Event Store built with the un-recut GC 08-26 source (2e145b3d...), which is not available in this environment. Rebuilt locally against the Kaggle-hosted, physically pre-holdout GC 08-26 file (ec0a48d4...); per-contract K_ABS/K_BT2 counts matched EXPECTED exactly (1314/357), and _end('20260630') == the recut boundary in nanoseconds, proving the recut removed zero rows any registered session ever reads. Only the recorded gate1_input_sha256 provenance field changed for GC 08-26 events, which changes events_payload_sha256 even though the underlying detected events are identical."
+    "event_store_rebuild_note": "Original event_store_payload_sha256 (feee6001e8...) was pinned to an Event Store built with the un-recut GC 08-26 source (2e145b3d...), which is not available in this environment. Re-pinned to f033f0c8... after proving the recut removed zero rows any registered session ever reads (per-contract counts matched EXPECTED exactly: 1314/357 for GC 08-26; _end('20260630') == the recut boundary in nanoseconds). That f033f0c8... value, however, was computed from an incomplete, not-yet-fully-consistent local rebuild (210/234 checkpoints under the old registry hash, 24/234 under the new one) that was abandoned mid-rebuild when local heavy execution was found to violate KAGGLE_ONLY_EXECUTION_POLICY_V1. Re-pinned a second time to 602f8f18... -- the value from a single, complete, consistent 234/234-session rebuild run on Kaggle (research/bt2a-p2b-economic-gc-v1-20260827 @ 70264e805a), whose per-contract K_ABS/K_BT2 counts again matched EXPECTED exactly. This is the value to trust going forward; f033f0c8... should not be treated as ever having been correct."
   },
   "firewall": {
     "P2B_SPEC_PREPARATION": true,
