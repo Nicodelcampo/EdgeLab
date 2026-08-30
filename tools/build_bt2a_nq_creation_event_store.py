@@ -21,7 +21,7 @@ if str(ROOT) not in os.sys.path:
     os.sys.path.insert(0, str(ROOT))
 
 from edgelab.kaggle.execution import atomic_write_json, canonical_sha256, sha256_file
-from tools.sweep_bigtrap2_nq_tickframes_v2 import validate_kaggle_runtime, verify_git_clean_and_head
+from tools.sweep_bigtrap2_nq_tickframes_v2 import _is_ancestor, validate_kaggle_runtime, verify_git_clean_and_head
 from tools.bt2a_nq_gate1_contracts import (
     INFORMAL_STATUS, selection_provenance_missing, validate_selection_provenance,
 )
@@ -200,8 +200,8 @@ def require_build_authorization(spec: dict[str, Any], expected_commit: str, toke
         raise PermissionError("Event Store spec is not frozen for build")
     if token != BUILD_TOKEN or auth.get("active_token") != BUILD_TOKEN:
         raise PermissionError("missing exact Event Store build token")
-    if auth.get("frozen_commit") != expected_commit:
-        raise RuntimeError("Event Store frozen commit mismatch")
+    if not _is_ancestor(auth.get("frozen_commit"), expected_commit):
+        raise RuntimeError("Event Store frozen commit is not an ancestor of --expected-commit")
     verify_git_clean_and_head(expected_commit)
 
 
