@@ -1,8 +1,9 @@
 {
-  "schema_version": "avolcluster_nq_lifecycle_first_touch_v1.0.0-draft",
+  "schema_version": "avolcluster_nq_lifecycle_first_touch_v1.1.0-draft",
   "status": "DRAFT_DESIGN_ONLY_PREAUTHORIZATION",
-  "title": "aVolClusterPOI NQ-120t lifecycle + first-touch Event Store (Gate 3/4 del roadmap conjunto)",
+  "title": "aVolClusterPOI NQ-120t lifecycle + zone-interaction Event Store (Gate 3/4 del roadmap conjunto)",
   "created_date": "2026-08-30",
+  "version_note": "v1.1.0: las zonas son regiones, no puntos (input de Nico 2026-08-30). Se reemplaza la clasificación borde-céntrica por anatomía completa de interacción: entrada, profundidad interior, permanencia, resolución. DP-L1/L2/L3 resueltos por delegación de Nico (ver doc de diseño §6).",
   "freeze_authorized": false,
   "execution_authorized": false,
   "authority": {
@@ -22,7 +23,7 @@
     "input_registry_path": "specs/bt2a_gate1_nq_all5_input_registry_2026-08-27.json"
   },
   "epistemic_scope": {
-    "stage": "LIFECYCLE_FIRST_TOUCH_MEASUREMENT_INFRASTRUCTURE_ONLY",
+    "stage": "LIFECYCLE_ZONE_INTERACTION_MEASUREMENT_INFRASTRUCTURE_ONLY",
     "reads_future_price_path_relative_to_creation": true,
     "future_price_path_accessed_only_after_build_token": true,
     "directional_outcomes_accessed": false,
@@ -33,7 +34,7 @@
     "winner_selected_from_outcomes": false,
     "edge_declared": false,
     "promotion_eligible": false,
-    "note": "El lifecycle lee precios posteriores a la creación de la zona (first touch). No es P&L ni outcome direccional, pero SÍ es acceso a camino futuro: por eso corre con token propio, post-freeze, en ventanas registradas pre-holdout."
+    "note": "El lifecycle lee precios posteriores a la creación de la zona. No es P&L ni outcome direccional, pero SÍ es acceso a camino futuro: corre con token propio, post-freeze, en ventanas registradas pre-holdout."
   },
   "population": {
     "source": "canonical_zone_creation_event_store",
@@ -50,29 +51,36 @@
     "event_space_enumeration": "Toda zona ZONE_CREATED del store canónico de creación (5.876), sin filtro posterior. El espacio del que se extrae es exactamente el store congelado; ninguna zona se agrega ni se quita por propiedades de su trayectoria."
   },
   "definitions": {
-    "first_touch": "Primer tick causalmente posterior a availability_ts_utc_ns de la zona cuyo precio entra en [lower_tick, upper_tick] inclusive, en ticks enteros.",
-    "creation_bar_eligible_for_touch": false,
+    "zone_is_a_region": "La zona es el intervalo entero [lower_tick, upper_tick] en ticks enteros. El precio interactúa con toda la región: entra, la habita, la penetra parcial o totalmente, y sale por algún lado. Ninguna métrica reduce la zona a un borde o punto.",
+    "creation_bar_eligible_for_interaction": false,
     "clock_start": "availability_ts_utc_ns del evento de creación (primer instante causalmente disponible después del cierre creador).",
-    "touch_edge_classification": {
-      "LOWER_EDGE": "primer tick de contacto == lower_tick",
-      "UPPER_EDGE": "primer tick de contacto == upper_tick",
-      "INTERIOR": "primer tick de contacto estrictamente interior",
-      "FULL_PENETRATION_AT_CONTACT": "el primer contacto ya atraviesa la zona completa (entra por un borde y sale por el otro dentro del mismo tick — sólo observable si el tick abarca ambos bordes)",
-      "tie_policy": "si un mismo tick toca ambos bordes (ancho 0 tras snap o tick grande), clasificar AMBIGUOUS_EDGE y contar aparte; no inventar orden (ATJ-03)."
+    "entry": "Primer tick causalmente posterior a availability cuyo precio cae dentro de [lower_tick, upper_tick] inclusive.",
+    "entry_edge": {
+      "LOWER": "el tick inmediatamente anterior en el stream canónico estaba por debajo de lower_tick; la entrada fue cruzando el borde inferior",
+      "UPPER": "el tick anterior estaba por encima de upper_tick; la entrada fue cruzando el borde superior",
+      "AMBIGUOUS": "no existe tick anterior utilizable (p.ej. gap de datos) — se clasifica y cuenta aparte; no se inventa orden (ATJ-03, P-28)"
     },
-    "penetration_ticks_max": "máxima cantidad de ticks enteros que el precio cierra más allá del borde opuesto dentro de la misma sesión, posterior al primer toque; 0 si nunca penetra.",
-    "expiration": "la zona llega al final duro de su sesión CME sin primer toque.",
-    "censoring": "RIGHT_CENSORED_AT_SESSION_END. No hay zonas que vivan entre sesiones: la frontera de sesión es dura (misma regla que Gate 1 BT2A). El fin de datos (sesión 20260630) es censura administrativa y se reporta aparte.",
-    "reentry_and_second_touches": "familia secundaria declarada: conteo y timestamps de reingresos posteriores al primer toque dentro de la misma sesión. Nunca alimentan el ancla primaria."
+    "full_traversal_without_contact": "Dos ticks consecutivos del stream canónico abarcan la zona entera sin ningún tick dentro (prev < lower y next > upper, o viceversa). La zona fue atravesada sin jamás detener el precio ni un tick. Estado propio: TRAVERSED_NO_CONTACT. Es un hecho de microestructura de primer orden (la zona no frenó nada) y jamás se cuenta como toque.",
+    "depth_into_zone_ticks_max": "Máxima penetración interior durante el primer episodio, medida desde el borde de entrada hacia adentro, en ticks enteros: entry por LOWER → max(tick - lower_tick); entry por UPPER → max(upper_tick - tick). Rango 0..width_ticks; depth == width_ticks significa que alcanzó el borde opuesto.",
+    "depth_pct_width_milli": "depth_into_zone_ticks_max / width_ticks expresado en por-mil entero (0..1000), para comparar zonas de distinto ancho sin floats.",
+    "dwell_first_episode": "Tiempo (ns) y cantidad de ticks que el precio permanece dentro de [lower_tick, upper_tick] durante el primer episodio (desde entry hasta la primera salida o fin de sesión).",
+    "first_episode_resolution": {
+      "TURNED_EXITED_ENTRY_SIDE": "sale por el mismo lado por el que entró — la zona lo devolvió (rechazo/turn interior)",
+      "TRAVERSED_EXITED_OPPOSITE_SIDE": "sale por el lado opuesto — atravesó la zona completa con contacto",
+      "INSIDE_AT_SESSION_END": "el precio termina la sesión dentro de la zona"
+    },
+    "traversal_consumption_rule": "El primer TRAVERSED consume la zona para la familia primaria: la anatomía primaria describe el camino creación → primera salida por el lado opuesto (o fin de sesión). Interacciones post-travesía se contabilizan pero son familia secundaria.",
+    "reentries": "conteo y timestamps de entradas posteriores a la primera, anteriores a la travesía que consume. Secundario declarado; nunca alimenta el ancla primaria.",
+    "expiration": "la zona llega al final duro de su sesión CME sin ningún tick dentro (ni travesía sin contacto).",
+    "censoring": "RIGHT_CENSORED_AT_SESSION_END; el fin de datos (sesión 20260630) es censura administrativa y se reporta aparte (CENSORED_DATA_END). No hay zonas multi-sesión (DP-L1 resuelto)."
   },
   "episode_policy": {
-    "overlapping_zones_rule": "FIRST_ELIGIBLE_EVENT_WINS por región solapada: si dos zonas OFF_PRICE de la misma sesión se solapan en precio, el episodio de toque se ancla a la zona con availability_ts_utc_ns menor; la segunda se marca EPISODE_COLLAPSED_WITH=<event_id> y se excluye del análisis primario (se conserva la fila, marcada).",
-    "overlap_detection": "solapamiento = intersección no vacía de [lower_tick, upper_tick] dentro de la misma sesión.",
-    "collapse_rule_must_be_frozen_before_outcomes": true,
-    "second_touches_secondary_only": true
+    "overlapping_zones_rule": "FIRST_ELIGIBLE_EVENT_WINS por región solapada: si dos zonas OFF_PRICE de la misma sesión se solapan en precio, el episodio se ancla a la de menor availability_ts_utc_ns; la segunda se marca EPISODE_COLLAPSED_WITH=<zone_event_id> y se excluye del análisis primario (fila conservada, marcada). Regla confirmada bajo delegación (DP-L3): es la única candidata que no condiciona el ancla a la interacción misma (una regla 'la más cercana al precio al tocar' usaría el outcome para elegir el ancla).",
+    "overlap_detection": "intersección no vacía de [lower_tick, upper_tick] dentro de la misma sesión",
+    "collapse_rule_frozen_before_outcomes": true
   },
   "event_store": {
-    "stage": "ZONE_LIFECYCLE_FIRST_TOUCH_ONLY",
+    "stage": "ZONE_LIFECYCLE_INTERACTION_ONLY",
     "checkpoint_grain": "one JSON file per contract-session",
     "checkpoint_order": "session registry ordinal",
     "resume_policy": "only a contiguous prefix bound to the same spec, source hashes and exact code commit",
@@ -90,16 +98,20 @@
         {"name": "session_id", "type": "str"},
         {"name": "config_id", "type": "str"},
         {"name": "session_ordinal", "type": "int"},
-        {"name": "final_state", "type": "str", "domain": ["TOUCHED", "EXPIRED_SESSION_END", "CENSORED_DATA_END"]},
-        {"name": "first_touch_ts_utc_ns", "type": "int", "nullable": true},
-        {"name": "first_touch_tick", "type": "int", "nullable": true},
-        {"name": "touch_edge", "type": "str", "nullable": true, "domain": ["LOWER_EDGE", "UPPER_EDGE", "INTERIOR", "FULL_PENETRATION_AT_CONTACT", "AMBIGUOUS_EDGE"]},
-        {"name": "age_at_touch_ns", "type": "int", "nullable": true},
+        {"name": "final_state", "type": "str", "domain": ["ENTERED", "TRAVERSED_NO_CONTACT", "EXPIRED_SESSION_END", "CENSORED_DATA_END"]},
+        {"name": "first_entry_ts_utc_ns", "type": "int", "nullable": true},
+        {"name": "first_entry_tick", "type": "int", "nullable": true},
+        {"name": "entry_edge", "type": "str", "nullable": true, "domain": ["LOWER", "UPPER", "AMBIGUOUS"]},
+        {"name": "age_at_first_entry_ns", "type": "int", "nullable": true},
         {"name": "ticks_since_availability", "type": "int", "nullable": true},
         {"name": "bars_120t_since_availability", "type": "int", "nullable": true},
-        {"name": "approach_side", "type": "int", "nullable": true, "note": "signo de (first_touch_tick - close_tick de creación); descriptivo geométrico, NO dirección de trade"},
-        {"name": "penetration_ticks_max", "type": "int", "nullable": true},
-        {"name": "n_reentries_after_first_touch", "type": "int", "nullable": true},
+        {"name": "depth_into_zone_ticks_max", "type": "int", "nullable": true},
+        {"name": "depth_pct_width_milli", "type": "int", "nullable": true},
+        {"name": "dwell_ns_first_episode", "type": "int", "nullable": true},
+        {"name": "ticks_inside_first_episode", "type": "int", "nullable": true},
+        {"name": "first_episode_resolution", "type": "str", "nullable": true, "domain": ["TURNED_EXITED_ENTRY_SIDE", "TRAVERSED_EXITED_OPPOSITE_SIDE", "INSIDE_AT_SESSION_END"]},
+        {"name": "session_resolution", "type": "str", "nullable": true, "domain": ["NEVER_ENTERED", "TRAVERSED", "INTERACTED_NEVER_TRAVERSED", "INSIDE_AT_END"]},
+        {"name": "n_entries_session", "type": "int", "nullable": true},
         {"name": "episode_collapsed_with", "type": "str", "nullable": true},
         {"name": "creation_source_identity_sha256", "type": "str"},
         {"name": "source_data_sha256", "type": "str"}
@@ -112,13 +124,26 @@
   "finalization_gates": {
     "exactly_234_checkpoints": true,
     "contiguous_prefix_complete": true,
-    "exactly_5876_zones_accounted": "TOUCHED + EXPIRED_SESSION_END + CENSORED_DATA_END == 5876 en total y por sesión contra el store de creación",
+    "exactly_5876_zones_accounted": "ENTERED + TRAVERSED_NO_CONTACT + EXPIRED_SESSION_END + CENSORED_DATA_END == 5876 en total y por sesión contra el store de creación",
     "every_zone_event_id_exists_in_creation_store": true,
-    "no_touch_before_availability": "check duro: first_touch_ts_utc_ns > availability_ts_utc_ns en toda fila TOUCHED",
+    "no_entry_before_availability": "check duro: first_entry_ts_utc_ns > availability_ts_utc_ns en toda fila ENTERED",
+    "traversed_no_contact_consistency": "toda fila TRAVERSED_NO_CONTACT tiene first_entry_ts_utc_ns NULL y un par de ticks consecutivos que abarcan [lower,upper] verificable en el checkpoint",
+    "depth_bounds": "0 <= depth_into_zone_ticks_max <= width_ticks en toda fila ENTERED",
     "zero_sessions_ge_20260701": true,
     "zero_directional_or_pnl_columns": true,
     "schema_and_domain_valid": true,
     "parquet_checkpoint_equivalence_1to1": true
+  },
+  "funnel_outputs_for_later_gates": {
+    "principle": "la complejidad de corridas posteriores se resuelve con la información de corridas anteriores más simples (regla de Nico 2026-08-30). Este store produce, como manifiesto descriptivo de cobertura (conteos y distribuciones, no contrastes), las cantidades que congelan grados de libertad de gates posteriores; los specs posteriores las citan por hash, nunca las re-derivan distinto.",
+    "outputs": [
+      {"quantity": "tasa de ENTERED vs TRAVERSED_NO_CONTACT vs EXPIRED", "freezes": "si la familia 'zona como barrera' vive o muere barato antes de gastar presupuesto en Gate 8"},
+      {"quantity": "distribución de depth_pct_width_milli (cuantiles publicados)", "freezes": "los thresholds de rechazo/aceptación de la capa direccional L4 se bindean a estos cuantiles en vez de elegirse arbitrarios"},
+      {"quantity": "distribución de dwell_ns_first_episode", "freezes": "recalibración escrita de las ventanas temporales de confluencia BT2A (la grilla ±5s/30s/120s del diseño conjunto §7.1)"},
+      {"quantity": "tasa de entry_edge LOWER/UPPER/AMBIGUOUS y de GAP traversal", "freezes": "si Gate 8 necesita reglas de gap y ambigüedad, y con qué presupuesto de exclusión"},
+      {"quantity": "hazard de contacto por edad de zona", "freezes": "la elección de horizontes H para las familias de outcomes posteriores"},
+      {"quantity": "tasa de EPISODE_COLLAPSED por sesión", "freezes": "si la regla de colapso es asunto menor o requiere sensibilidad propia en Gate 8"}
+    ]
   },
   "authorization": {
     "freeze_token": "APPROVE_FREEZE_AVOLCLUSTER_NQ_LIFECYCLE_V1",
@@ -130,9 +155,8 @@
     "outcome_execution_token": null
   },
   "review_blockers_before_freeze": [
-    "decidir DP-L1, DP-L2, DP-L3 del documento de diseño",
     "bindear el hash completo del parquet del store de creación (hoy sólo prefijo 4dad91f6 vía CURRENT.md)",
-    "implementación del runner con tests sintéticos (verdad conocida: toque, expiración, censura, solapamiento, tie ambiguo) ANTES de freeze",
+    "implementación del runner con tests sintéticos de verdad conocida (toque por cada borde, travesía con y sin contacto, expiración, censura, solapamiento, tie ambiguo, depth y dwell exactos en jugadas construidas a mano) ANTES de freeze",
     "preflight fail-closed equivalente al del store de creación (hash de inputs, ventanas, cero lectura fuera de rango)",
     "publicar inputs de potencia para la capa de contraste posterior: n_sesiones con zonas (233), densidad por sesión, sin abrir outcomes"
   ],
