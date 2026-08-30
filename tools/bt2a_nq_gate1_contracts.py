@@ -79,8 +79,11 @@ def power_missing(value:dict[str,Any],require_frozen:bool=True)->list[str]:
  for arm in ('K_ABS','K_BT2'):
   if not isinstance(a.get(arm),dict) or not isinstance(a[arm].get('events'),int) or a[arm]['events']<1: miss.append(f'power.arm_density.{arm}')
  if a.get('N_RAND_capacity_ok') is not True: miss.append('power.arm_density.N_RAND_capacity_ok')
+ if isinstance(v.get('effective_sessions_available'),(int,float)) and isinstance(v.get('effective_sessions_required'),int) and v['effective_sessions_available'] < v['effective_sessions_required']:
+  miss.append('power.insufficient_effective_sessions')
  if require_frozen and value.get('status')!='FROZEN_POWER_INPUTS': miss.append('power.freeze')
- if not miss:
+ blockers=set(miss)-{'power.freeze'}
+ if not blockers:
   alpha=e['alpha_family']/value['family']['cells']; zcrit=NormalDist().inv_cdf(1-alpha/2); zpow=NormalDist().inv_cdf(e['target_power'])
   required=math.ceil(((zcrit+zpow)*e['paired_session_sd_ticks']/e['mde_ticks'])**2)
   if v['effective_sessions_required']!=max(v['minimum_effective_sessions'],required): raise RuntimeError('effective_sessions_required inconsistent with frozen formula')
@@ -93,5 +96,16 @@ def validate_runner_contract(value:dict[str,Any])->list[str]:
  f=value['family']; cells={(b,h) for b in f['barriers_ticks'] for h in f['horizons_observations']}
  if len(cells)!=16 or f.get('evaluate_full_family') is not True: raise RuntimeError('runner family drift')
  if value.get('implementation_authorized') is not False or value.get('execution_authorized') is not False: raise RuntimeError('blocked runner contract has capability')
- unresolved=[k for k,v in value['estimand_resolution_required_before_implementation'].items() if str(v).startswith('UNRESOLVED')]
- return ['runner.'+x for x in unresolved]
+ decisions=value['estimand_resolution_required_before_implementation']
+ expected={
+  'primary_outcome_encoding':'SIGNED_FIRST_PASSAGE_TICKS',
+  'primary_contrast':'K_ABS_MINUS_N_RAND_MATCHED_WITHIN_CME_SESSION',
+  'multiplicity_scope_across_three_comparators':'HOLM_16_PRIMARY_ONLY; SECONDARY_COMPARATORS_NON_TRIGGERING',
+  'paired_session_variance_definition':'UNBIASED_SAMPLE_VARIANCE_OF_EQUAL_WEIGHT_SESSION_CONTRASTS',
+ }
+ missing=['runner.'+k for k,v in expected.items() if decisions.get(k)!=v]
+ roles=value.get('contrast_roles') or {}; mult=value.get('multiplicity') or {}; var=value.get('paired_session_variance') or {}
+ if roles.get('secondary_contrasts_may_trigger_supported_label') is not False: missing.append('runner.secondary_non_triggering')
+ if mult.get('primary_method')!='HOLM_STEP_DOWN_TWO_SIDED_ALPHA_0_05': missing.append('runner.primary_multiplicity')
+ if var.get('pseudoreplication_forbidden') is not True or var.get('event_level_rows_as_independent_replicates') is not False: missing.append('runner.variance_pseudoreplication_guard')
+ return sorted(set(missing))

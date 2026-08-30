@@ -25,11 +25,30 @@
     "partition": "contract_session",
     "resume_requires_exact_spec_code_and_input_hashes": true
   },
+  "contrast_roles": {
+    "K_ABS_MINUS_K_ABS_SHUFFLE": "SECONDARY_SPECIFICITY_NON_TRIGGERING",
+    "K_ABS_MINUS_K_BT2": "SECONDARY_BENCHMARK_NON_TRIGGERING",
+    "K_ABS_MINUS_N_RAND": "SOLE_CONFIRMATORY_PRIMARY",
+    "secondary_contrasts_may_trigger_supported_label": false
+  },
+  "estimand_definition": {
+    "event_cell_value_ticks": {
+      "adverse_first": "-barrier_ticks",
+      "favorable_first": "+barrier_ticks",
+      "incomplete_path": "EXCLUDE_WITH_REASON",
+      "same_observation_tie": "ADVERSE_FIRST",
+      "timeout": "0"
+    },
+    "minimum_effect_interpretation": "One signed NQ tick; mechanistic only, not PnL",
+    "primary_session_contrast": "session_mean(K_ABS) - session_mean(N_RAND)",
+    "session_arm_value": "Arithmetic mean of eligible event_cell_value_ticks within arm, CME session and cell",
+    "session_weighting": "EQUAL_SESSION_WEIGHT"
+  },
   "estimand_resolution_required_before_implementation": {
-    "multiplicity_scope_across_three_comparators": "UNRESOLVED_IN_CURRENT_SPEC",
-    "paired_session_variance_definition": "UNRESOLVED_IN_CURRENT_SPEC",
-    "primary_contrast": "UNRESOLVED_IN_CURRENT_SPEC",
-    "primary_outcome_encoding": "UNRESOLVED_IN_CURRENT_SPEC"
+    "multiplicity_scope_across_three_comparators": "HOLM_16_PRIMARY_ONLY; SECONDARY_COMPARATORS_NON_TRIGGERING",
+    "paired_session_variance_definition": "UNBIASED_SAMPLE_VARIANCE_OF_EQUAL_WEIGHT_SESSION_CONTRASTS",
+    "primary_contrast": "K_ABS_MINUS_N_RAND_MATCHED_WITHIN_CME_SESSION",
+    "primary_outcome_encoding": "SIGNED_FIRST_PASSAGE_TICKS"
   },
   "execution_authorized": false,
   "family": {
@@ -68,8 +87,22 @@
     "macro_policy": "identity-only; no filtering",
     "market_data": "physically pre-holdout package only"
   },
+  "multiplicity": {
+    "primary_family": "16 barrier-by-horizon cells for K_ABS minus N_RAND",
+    "primary_method": "HOLM_STEP_DOWN_TWO_SIDED_ALPHA_0_05",
+    "secondary_adjustments_share_primary_alpha": false,
+    "secondary_families": "Report raw and separately Holm-adjusted values within each 16-cell comparator family",
+    "winner_selection_allowed": false
+  },
   "north_star_sha256": "d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1",
-  "payload_sha256": "fdf5aad14b1496e5a04de8544b5650078126a94c8ae82ac732987a742f1e7c63",
+  "paired_session_variance": {
+    "cell_specific_variance_report_required": true,
+    "definition": "Unbiased sample variance (ddof=1) of session-level paired contrasts among sessions eligible in both arms for that cell",
+    "event_level_rows_as_independent_replicates": false,
+    "n_rand_replicates": "Average all preregistered matched N_RAND replicates inside each session before forming one paired contrast",
+    "pseudoreplication_forbidden": true
+  },
+  "payload_sha256": "0663d27371920e2f38a831f76c52bda61d155eb77bacf491bedbea54bf66b061",
   "required_outputs": [
     "per-session arm/cell sufficient statistics",
     "exclusion reasons",
@@ -79,5 +112,5 @@
     "manifest"
   ],
   "schema_version": "bt2a_nq_gate1_runner_contract_v1",
-  "status": "DRAFT_BLOCKED_BY_PREFLIGHT"
+  "status": "DRAFT_DECISIONS_RESOLVED_PREFLIGHT_BLOCKED"
 }
