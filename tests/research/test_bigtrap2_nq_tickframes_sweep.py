@@ -49,11 +49,17 @@ def test_v1_retrospective_spec_and_sidecar_hashes():
     assert sidecar["logical_payload_changed"] is False
 
 
-def test_v2_draft_is_kaggle_only_and_package_bound():
+def _is_hex64(value):
+    return isinstance(value, str) and len(value) == 64 and all(c in "0123456789abcdef" for c in value)
+
+
+def test_v2_frozen_is_kaggle_only_and_package_bound():
     spec_path = REPO_ROOT / "specs/bigtrap2_nq_tickframes_sweep_v2.draft.json"
     spec = json.loads(spec_path.read_text())
-    assert spec["status"] == "DRAFT_PREAUTHORIZATION_CREATION_ONLY"
-    assert spec["execution_authorized"] is False
+    assert spec["status"] == "FROZEN_PREFLIGHT_READY"
+    assert spec["execution_authorized"] is True
+    assert spec["execution_token"] == "AUTHORIZE_RUN_BT2_NQ_TICKFRAMES_SWEEP_V2"
+    assert _is_hex64(spec["frozen_commit"])
     assert spec["execution_platform"] == {
         "platform": "KAGGLE",
         "kaggle_only": True,
@@ -65,8 +71,26 @@ def test_v2_draft_is_kaggle_only_and_package_bound():
     source_path = REPO_ROOT / spec["binding"]["source_input_registry_path"]
     assert compute_sha256(session_path) == spec["binding"]["session_registry_sha256"]
     assert compute_sha256(source_path) == spec["binding"]["source_input_registry_sha256"]
-    assert spec["binding"]["package_manifest_sha256"].startswith("PENDING_")
-    assert spec["binding"]["effective_input_registry_sha256"].startswith("PENDING_")
+    assert _is_hex64(spec["binding"]["package_manifest_sha256"])
+    assert _is_hex64(spec["binding"]["effective_input_registry_sha256"])
+
+
+def test_v2_comparator_selection_rule_is_ex_ante_and_matches_module_defaults():
+    """The frozen K_BT2 comparator anchor must trace to values fixed before any
+    sweep result exists (module DEFAULTS / GC's already-proven Gate 1 bar size),
+    never to a value chosen by looking at this sweep's own output."""
+    spec_path = REPO_ROOT / "specs/bigtrap2_nq_tickframes_sweep_v2.draft.json"
+    spec = json.loads(spec_path.read_text())
+    rule = spec["comparator_selection_rule"]
+    from edgelab.bridge.indicators.bigtrap2_creation_only import DEFAULTS as CREATION_DEFAULTS
+    assert rule["imbalance_ratio"] == CREATION_DEFAULTS["imbalance_ratio"]
+    assert rule["min_trap_volume"] == CREATION_DEFAULTS["min_trap_volume"]
+    assert rule["bar_type"] == "tick_25"
+    assert rule["selected_cfg_id"] == "tick_25_IMB30_VOL10"
+    grid = spec["grid"]
+    assert rule["bar_type"] in grid["bar_series_types"]
+    assert rule["imbalance_ratio"] in grid["imbalance_ratios"]
+    assert rule["min_trap_volume"] in grid["min_trap_volumes"]
 
 
 @pytest.mark.parametrize("bar_kind,bar_param", [
