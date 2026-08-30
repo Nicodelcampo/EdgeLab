@@ -21,6 +21,9 @@ if str(ROOT) not in os.sys.path:
 from edgelab.kaggle.execution import atomic_write_json, load_json, sha256_file, verify_package_manifest
 from tools.build_bt2a_nq_creation_event_store import validate_store
 from tools.sweep_bigtrap2_nq_tickframes_v2 import validate_kaggle_runtime, verify_git_clean_and_head
+from tools.bt2a_nq_gate1_contracts import (
+    load_json as load_contract_json, power_missing, validate_macro_policy, validate_runner_contract,
+)
 
 DEFAULT_SPEC = ROOT / "specs" / "bt2a_nq_gate1_v1.draft.json"
 INPUT_ROOT = Path("/kaggle/input")
@@ -88,10 +91,12 @@ def missing_bindings(spec: dict[str, Any]) -> list[str]:
         "effective_input_registry_sha256",
         "bt2_v2_result_file_sha256",
         "macro_calendar_sha256",
+        "power_design_file_sha256",
+        "runner_contract_file_sha256",
     ):
         if not _hex64(deps.get(name)):
             missing.append(name)
-    for name in ("bt2_comparator_config_id", "macro_calendar_file"):
+    for name in ("bt2_comparator_config_id", "macro_calendar_file", "power_design_file", "runner_contract_file"):
         if not isinstance(deps.get(name), str) or not deps[name]:
             missing.append(name)
     power = spec["power_design"]
@@ -104,7 +109,22 @@ def missing_bindings(spec: dict[str, Any]) -> list[str]:
         missing.append("power_design.icc")
     if not isinstance(sessions, int) or sessions < int(spec["inference"]["minimum_effective_sessions"]):
         missing.append("power_design.effective_sessions_required")
-    return missing
+    deps = spec["dependencies"]
+    power_file = deps.get("power_design_file")
+    if isinstance(power_file, str) and _hex64(deps.get("power_design_file_sha256")):
+        try:
+            path = _verify_file(ROOT, power_file, deps["power_design_file_sha256"])
+            missing.extend(power_missing(load_contract_json(path), require_frozen=True))
+        except Exception:
+            missing.append("power_design.contract_invalid")
+    runner_file = deps.get("runner_contract_file")
+    if isinstance(runner_file, str) and _hex64(deps.get("runner_contract_file_sha256")):
+        try:
+            path = _verify_file(ROOT, runner_file, deps["runner_contract_file_sha256"])
+            missing.extend(validate_runner_contract(load_contract_json(path)))
+        except Exception:
+            missing.append("runner_contract.invalid")
+    return sorted(set(missing))
 
 
 def _verify_file(root: Path, name: str, expected: str) -> Path:
@@ -161,6 +181,9 @@ def preflight(spec_path: Path, data_dir: Path, event_store_dir: Path, bt2_dir: P
             errors.append(f"bt2: {exc}")
         try:
             macro = _verify_file(ROOT, deps["macro_calendar_file"], deps["macro_calendar_sha256"])
+            macro_missing = validate_macro_policy(load_contract_json(macro), require_frozen=True)
+            if macro_missing:
+                raise RuntimeError("macro policy is not frozen")
             evidence["macro_calendar_file_sha256"] = sha256_file(macro)
         except Exception as exc:
             errors.append(f"macro: {exc}")

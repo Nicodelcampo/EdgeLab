@@ -1,0 +1,81 @@
+{
+  "authorization": {
+    "active_token": null,
+    "build_token_label": "AUTHORIZE_BUILD_BT2A_NQ_CREATION_EVENT_STORE_V1",
+    "execution_authorized": false,
+    "finalize_token_label": "AUTHORIZE_FINALIZE_BT2A_NQ_CREATION_EVENT_STORE_V1",
+    "freeze_token_label": "APPROVE_FREEZE_BT2A_NQ_CREATION_EVENT_STORE_INFORMAL_V1",
+    "frozen_commit": null,
+    "validate_token_label": "AUTHORIZE_VALIDATE_BT2A_NQ_CREATION_EVENT_STORE_V1"
+  },
+  "build": {
+    "checkpoint_partition": "contract",
+    "deduplicate_identity": [
+      "contract",
+      "cme_session_id",
+      "direction",
+      "event_time_ns",
+      "source_row"
+    ],
+    "future_path_decode_allowed": false,
+    "lifecycle_allowed": false,
+    "mode": "TRANSFORM_SELECTED_COORDINATES_ONLY",
+    "output_manifest": "bt2a_nq_creation_event_store_manifest.json",
+    "output_parquet": "bt2a_nq_creation_events.parquet",
+    "raw_tick_decode_allowed": false,
+    "sort_order": [
+      "contract",
+      "cme_session_id",
+      "event_time_ns",
+      "source_row",
+      "direction",
+      "event_key"
+    ]
+  },
+  "created_date": "2026-08-30",
+  "execution_platform": "KAGGLE_ONLY",
+  "firewall": {
+    "EDGE_DECLARED": false,
+    "EVENT_STORE_READY": false,
+    "FIRST_PASSAGE_ACCESSED": false,
+    "FIRST_TOUCH_ACCESSED": false,
+    "FUTURE_PRICE_PATH_ACCESSED": false,
+    "HOLDOUT_TOUCHED": false,
+    "LIFECYCLE_ACCESSED": false,
+    "MFE_MAE_ACCESSED": false,
+    "PNL_ACCESSED": false,
+    "PROMOTION_ELIGIBLE": false
+  },
+  "purpose": "Consolidate all-five creation coordinates for the fixed informal NQ config without mislabeling it as a formal stable selection.",
+  "schema_version": "bt2a_nq_creation_event_store_v1",
+  "source_selection": {
+    "confirmatory_eligible": false,
+    "coordinate_manifest_file": "coordinate_manifest.json",
+    "coordinate_manifest_file_sha256": null,
+    "gate1_classification": "EXPLORATORY_NON_CONFIRMATORY_NON_PROMOTABLE",
+    "promotion_eligible": false,
+    "provenance_amendment_file": "specs/bt2a_nq_informal_all5_provenance_amendment_v1.draft.json",
+    "provenance_amendment_sha256": "4cb789f874e58c5560c496539a4f30677d3d1163e98c7aa485bc85a13438f5d8",
+    "provenance_mode": "INFORMAL_FIXED_CONFIG_ALL5",
+    "required_selection_status": "INFORMAL_EARLY_STOP_NQ_CONFIGURATION",
+    "result_file": "informal_all5_coordinate_result.json",
+    "result_file_sha256": null,
+    "selected_config_id": "bt2a_nq_7e84981882b0b380",
+    "selected_configuration_file": "bt2a_nq_selected_configuration_2026-08-29.json",
+    "selected_configuration_file_sha256": null
+  },
+  "status": "DRAFT_PREAUTHORIZATION",
+  "universe": {
+    "contract_sessions": 234,
+    "contracts": [
+      "NQ 09-25",
+      "NQ 12-25",
+      "NQ 03-26",
+      "NQ 06-26",
+      "NQ 09-26"
+    ],
+    "holdout_session_min_inclusive": "20260701",
+    "instrument": "NQ",
+    "session_max": "20260630"
+  }
+}

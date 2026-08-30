@@ -16,13 +16,23 @@
     "bt2_v2_result_file": "bigtrap2_nq_tickframes_sweep_v2.json",
     "bt2_v2_result_file_sha256": null,
     "bt2_comparator_config_id": null,
-    "macro_calendar_file": null,
-    "macro_calendar_sha256": null,
-    "all_dependencies_must_be_hash_bound": true
+    "macro_calendar_file": "specs/bt2a_nq_gate1_macro_policy_v1.draft.json",
+    "macro_calendar_sha256": "94b8bdf3ae47a23fc5e78900e7f54ed8f81281c919eb55186dc68372cb3f7c96",
+    "all_dependencies_must_be_hash_bound": true,
+    "power_design_file": "specs/bt2a_nq_gate1_power_design_v1.draft.json",
+    "power_design_file_sha256": "2e991d8e89e96157549b480e1807a28a1de810ef81a270b00c9ceb12f6c0f721",
+    "runner_contract_file": "specs/bt2a_nq_gate1_runner_contract_v1.draft.json",
+    "runner_contract_file_sha256": "e65ae7a33fcef85797d81dfa6928489e1ad89a757ca5a0dfbab0d015740b952b"
   },
   "universe": {
     "instrument": "NQ",
-    "contracts": ["NQ 09-25", "NQ 12-25", "NQ 03-26", "NQ 06-26", "NQ 09-26"],
+    "contracts": [
+      "NQ 09-25",
+      "NQ 12-25",
+      "NQ 03-26",
+      "NQ 06-26",
+      "NQ 09-26"
+    ],
     "contract_sessions": 234,
     "session_max": "20260630",
     "holdout_session_min_inclusive": "20260701",
@@ -30,24 +40,62 @@
   },
   "arms": {
     "primary": "K_ABS",
-    "comparators": ["K_BT2", "N_RAND", "K_ABS_SHUFFLE"],
-    "n_rand_matching": ["contract", "cme_session_id", "coarse_phase", "availability", "local_volatility_bin"],
+    "comparators": [
+      "K_BT2",
+      "N_RAND",
+      "K_ABS_SHUFFLE"
+    ],
+    "n_rand_matching": [
+      "contract",
+      "cme_session_id",
+      "coarse_phase",
+      "availability",
+      "local_volatility_bin"
+    ],
     "shuffle_policy": "WITHIN_CONTRACT_SESSION_AND_COARSE_PHASE_PRESERVE_EVENT_COUNT"
   },
   "outcome_family": {
-    "first_passage_barriers_ticks": [5, 9, 18, 30],
-    "first_passage_horizons_observations": [25, 50, 100, 250],
+    "first_passage_barriers_ticks": [
+      5,
+      9,
+      18,
+      30
+    ],
+    "first_passage_horizons_observations": [
+      25,
+      50,
+      100,
+      250
+    ],
     "family_size": 16,
     "evaluate_full_family": true,
-    "gc_positive_cells_annotation_only": [[9, 25], [30, 100], [30, 250]],
+    "gc_positive_cells_annotation_only": [
+      [
+        9,
+        25
+      ],
+      [
+        30,
+        100
+      ],
+      [
+        30,
+        250
+      ]
+    ],
     "gc_results_may_reduce_nq_family": false,
     "favorable_direction": "BT2A_SIGNAL_DIRECTION",
     "same_observation_tie": "ADVERSE_FIRST",
     "incomplete_path_policy": "EXCLUDE_WITH_REASON"
   },
   "secondary_estimands": [
-    "D_HAT", "MFE_TICKS", "MAE_TICKS", "TIME_TO_FIRST_PASSAGE",
-    "TIMEOUT_RATE", "MIRROR_NULL_DIFFERENCE", "TIME_SHUFFLE_DIFFERENCE"
+    "D_HAT",
+    "MFE_TICKS",
+    "MAE_TICKS",
+    "TIME_TO_FIRST_PASSAGE",
+    "TIMEOUT_RATE",
+    "MIRROR_NULL_DIFFERENCE",
+    "TIME_SHUFFLE_DIFFERENCE"
   ],
   "power_design": {
     "mde_ticks": null,
@@ -66,7 +114,12 @@
     "minimum_events": 400,
     "minimum_effective_sessions": 40,
     "minimum_event_count_alone_is_power_proof": false,
-    "pre_execution_power_inputs_required": ["MDE", "ICC", "EFFECTIVE_SESSION_COUNT", "ARM_DENSITY"]
+    "pre_execution_power_inputs_required": [
+      "MDE",
+      "ICC",
+      "EFFECTIVE_SESSION_COUNT",
+      "ARM_DENSITY"
+    ]
   },
   "decision_rule": {
     "full_family_required": true,
@@ -99,5 +152,14 @@
     "WINNER_SELECTED": false,
     "EDGE_DECLARED": false,
     "PROMOTION_ELIGIBLE": false
+  },
+  "selection_provenance": {
+    "required_status": "INFORMAL_EARLY_STOP_NQ_CONFIGURATION",
+    "selected_config_id": "bt2a_nq_7e84981882b0b380",
+    "amendment_file": "specs/bt2a_nq_informal_all5_provenance_amendment_v1.draft.json",
+    "amendment_file_sha256": "4cb789f874e58c5560c496539a4f30677d3d1163e98c7aa485bc85a13438f5d8",
+    "classification": "EXPLORATORY_NON_CONFIRMATORY_NON_PROMOTABLE",
+    "confirmatory_eligible": false,
+    "promotion_eligible": false
   }
 }

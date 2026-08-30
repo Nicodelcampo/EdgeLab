@@ -22,6 +22,9 @@ if str(ROOT) not in os.sys.path:
 
 from edgelab.kaggle.execution import atomic_write_json, canonical_sha256, sha256_file
 from tools.sweep_bigtrap2_nq_tickframes_v2 import validate_kaggle_runtime, verify_git_clean_and_head
+from tools.bt2a_nq_gate1_contracts import (
+    INFORMAL_STATUS, selection_provenance_missing, validate_selection_provenance,
+)
 
 DEFAULT_SPEC = ROOT / "specs" / "bt2a_nq_creation_event_store_v1.draft.json"
 FROZEN = "FROZEN_PREFLIGHT_READY"
@@ -80,6 +83,9 @@ def validate_spec(spec: dict[str, Any]) -> None:
             raise RuntimeError("frozen Event Store requires exact build capability")
         if not isinstance(auth.get("frozen_commit"), str) or len(auth["frozen_commit"]) != 40:
             raise RuntimeError("frozen Event Store requires full commit")
+    # Formal selection remains the default.  The informal 2/5 route is accepted
+    # only when an external amendment is hash-bound and explicitly non-promotable.
+    validate_selection_provenance(spec, ROOT, require_frozen=False)
     firewall = spec.get("firewall") or {}
     if any(firewall.get(name) is not False for name in (
         "LIFECYCLE_ACCESSED", "FIRST_TOUCH_ACCESSED", "FUTURE_PRICE_PATH_ACCESSED",
@@ -111,6 +117,7 @@ def _verify_bound_file(root: Path, name: str, expected: str | None) -> Path:
 
 def verify_selection_artifact(spec: dict[str, Any], artifact_dir: Path) -> dict[str, Any]:
     source = spec["source_selection"]
+    provenance = validate_selection_provenance(spec, ROOT, require_frozen=True)
     result_path = _verify_bound_file(artifact_dir, source["result_file"], source["result_file_sha256"])
     selected_path = _verify_bound_file(
         artifact_dir, source["selected_configuration_file"], source["selected_configuration_file_sha256"]
@@ -144,6 +151,7 @@ def verify_selection_artifact(spec: dict[str, Any], artifact_dir: Path) -> dict[
     return {
         "config_id": config_id,
         "selected": selected,
+        "selection_provenance": provenance,
         "selection_result_file_sha256": sha256_file(result_path),
         "selected_configuration_file_sha256": sha256_file(selected_path),
         "coordinate_manifest_file_sha256": sha256_file(manifest_path),
@@ -159,7 +167,7 @@ def preflight(spec_path: Path, artifact_dir: Path, output_dir: Path, expected_co
     source = spec["source_selection"]
     bound = all(_hex64(source.get(name)) for name in (
         "result_file_sha256", "selected_configuration_file_sha256", "coordinate_manifest_file_sha256"
-    )) and isinstance(source.get("selected_config_id"), str)
+    )) and isinstance(source.get("selected_config_id"), str) and not selection_provenance_missing(source)
     evidence = None
     error = None
     if bound:
@@ -237,6 +245,9 @@ def build(spec_path: Path, artifact_dir: Path, output_dir: Path, expected_commit
         "frozen_commit": expected_commit,
         "spec_file_sha256": sha256_file(spec_path),
         "selected_config_id": evidence["config_id"],
+        "selection_provenance": evidence["selection_provenance"],
+        "confirmatory_eligible": evidence["selection_provenance"]["confirmatory_eligible"],
+        "promotion_eligible": evidence["selection_provenance"]["promotion_eligible"],
         "selection_result_file_sha256": evidence["selection_result_file_sha256"],
         "selected_configuration_file_sha256": evidence["selected_configuration_file_sha256"],
         "coordinate_manifest_file_sha256": evidence["coordinate_manifest_file_sha256"],
@@ -283,6 +294,13 @@ def validate_store(store_dir: Path, manifest_name: str) -> dict[str, Any]:
     manifest = load_json(manifest_path)
     if not _payload_valid(manifest) or manifest.get("status") != "READY_CREATION_EVENT_STORE":
         raise RuntimeError("invalid creation Event Store manifest")
+    provenance = manifest.get("selection_provenance") or {}
+    if provenance.get("status") == INFORMAL_STATUS and (
+        manifest.get("confirmatory_eligible") is not False
+        or manifest.get("promotion_eligible") is not False
+        or provenance.get("classification") != "EXPLORATORY_NON_CONFIRMATORY_NON_PROMOTABLE"
+    ):
+        raise RuntimeError("informal Event Store lost non-promotable provenance")
     parquet = _safe_child(store_dir, manifest["parquet_file"])
     if not parquet.is_file() or parquet.stat().st_size != manifest["parquet_file_bytes"] or sha256_file(parquet) != manifest["parquet_file_sha256"]:
         raise RuntimeError("creation Event Store Parquet mismatch")

@@ -1,0 +1,83 @@
+{
+  "arms": {
+    "comparators": [
+      "K_BT2",
+      "N_RAND",
+      "K_ABS_SHUFFLE"
+    ],
+    "n_rand_matching": [
+      "contract",
+      "cme_session_id",
+      "coarse_phase",
+      "availability",
+      "local_volatility_bin"
+    ],
+    "primary": "K_ABS",
+    "shuffle_policy": "WITHIN_CONTRACT_SESSION_AND_COARSE_PHASE_PRESERVE_EVENT_COUNT"
+  },
+  "authorization": {
+    "active_token": null,
+    "implementation_token_label": "AUTHORIZE_IMPLEMENT_BT2A_NQ_GATE1_16CELL_V1",
+    "run_token_label": "AUTHORIZE_RUN_BT2A_NQ_GATE1_V1"
+  },
+  "checkpointing": {
+    "atomic": true,
+    "partition": "contract_session",
+    "resume_requires_exact_spec_code_and_input_hashes": true
+  },
+  "estimand_resolution_required_before_implementation": {
+    "multiplicity_scope_across_three_comparators": "UNRESOLVED_IN_CURRENT_SPEC",
+    "paired_session_variance_definition": "UNRESOLVED_IN_CURRENT_SPEC",
+    "primary_contrast": "UNRESOLVED_IN_CURRENT_SPEC",
+    "primary_outcome_encoding": "UNRESOLVED_IN_CURRENT_SPEC"
+  },
+  "execution_authorized": false,
+  "family": {
+    "barriers_ticks": [
+      5,
+      9,
+      18,
+      30
+    ],
+    "cells": 16,
+    "evaluate_full_family": true,
+    "horizons_observations": [
+      25,
+      50,
+      100,
+      250
+    ],
+    "incomplete_path_policy": "EXCLUDE_WITH_REASON",
+    "same_observation_tie": "ADVERSE_FIRST"
+  },
+  "firewall": {
+    "edge_declared": false,
+    "holdout_touched": false,
+    "pnl_accessed": false,
+    "promotion_eligible": false,
+    "runner_file_must_not_exist_while_blocked": true,
+    "winner_selected": false
+  },
+  "implementation_authorized": false,
+  "implementation_gate": "PASS_READY_FOR_GATE1_FREEZE plus explicit implementation decision",
+  "inputs": {
+    "K_ABS": "hash-bound BT2A NQ creation Event Store",
+    "K_BT2": "hash-bound creation-only V2 comparator coordinates",
+    "all_dependencies_hash_bound": true,
+    "gate1_spec": "specs/bt2a_nq_gate1_v1.draft.json",
+    "macro_policy": "identity-only; no filtering",
+    "market_data": "physically pre-holdout package only"
+  },
+  "north_star_sha256": "d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1",
+  "payload_sha256": "fdf5aad14b1496e5a04de8544b5650078126a94c8ae82ac732987a742f1e7c63",
+  "required_outputs": [
+    "per-session arm/cell sufficient statistics",
+    "exclusion reasons",
+    "Holm family table",
+    "coverage",
+    "attestation",
+    "manifest"
+  ],
+  "schema_version": "bt2a_nq_gate1_runner_contract_v1",
+  "status": "DRAFT_BLOCKED_BY_PREFLIGHT"
+}
