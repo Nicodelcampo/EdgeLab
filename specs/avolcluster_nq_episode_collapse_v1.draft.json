@@ -1,0 +1,402 @@
+{
+  "schema_version": "avolcluster_nq_episode_collapse_contract_v1.0.0-draft",
+  "status": "DRAFT_DECISIONS_REQUIRED_FAIL_CLOSED",
+  "created_date": "2026-08-30",
+  "purpose": "Define a deterministic, creation-only episode-collapse policy for overlapping AVol zones without reading future prices or silently changing the analysis denominator.",
+  "economic_justification": "Collapsing dependent overlapping zones before outcomes prevents one market episode from being counted repeatedly and overstating effective sample size or apparent edge.",
+  "how_it_can_be_refuted": "Reject the policy if episode membership changes with input order, links zones across forbidden partitions, depends on first touch or future prices, creates more than one primary anchor, or cannot reproduce membership from the frozen creation store and policy hash.",
+  "authority": {
+    "target_branch": "research/avolcluster-nq-gate1-infra-v1-20260828",
+    "reported_target_head": "7bbb33828c9e0efb02af850463b4957943934d43",
+    "joint_design": "docs/research/AVOLCLUSTER_BT2A_NQ_JOINT_MEASUREMENT_DESIGN_V1_2026-08-28.md",
+    "normative_primary_anchor": "FIRST_ELIGIBLE_EVENT_WINS",
+    "lifecycle_spec_path": "specs/avolcluster_nq_lifecycle_first_touch_v1.draft.json",
+    "lifecycle_spec_file_sha256": "0484311415672765a028d4746864075225818620e7a59a0efdcc1676fa7fc0af"
+  },
+  "source_creation_store": {
+    "manifest_path": "docs/research/avolcluster_nq_zone_store_manifest.json",
+    "manifest_file_sha256": "5e4e515d744b7dbe51116b8e071766f3765f63e999ffbf0197a1f71fa2da61c3",
+    "manifest_payload_sha256": "f87061427d884dac3290c52144bdcf0ab079d4a4b4674237c279072eae51cacc",
+    "spec_payload_sha256": "c9792d00da4f15311acdd13f965d06d601e0d08ae0e961766338d04e5e9440ba",
+    "logical_payload_sha256": "7c254009dc4ccd58f4187360a861f76a692945b94c7091766cce6cf3e46f3a77",
+    "parquet_physical_sha256": "4dad91f6a572bfb5edc714dfb13daa4a0bbee6b96301a4d734466a9da7a06674",
+    "producer_commit": "910c4dd75a6e6494f01497b4ff073d5a1e8e9637",
+    "status": "COMPLETE_TARGET_FREE_ZONE_CREATION_STORE",
+    "rows": 5876,
+    "contract_sessions_with_events": 233,
+    "checkpoint_files": 234
+  },
+  "population": {
+    "instrument": "NQ",
+    "tick_size": 0.25,
+    "config_id": "tick_120_W5_M20_C4_P950",
+    "zone_kind": "OFF_PRICE",
+    "source_zone_count": 5876,
+    "registered_contract_sessions": 234,
+    "source_sessions_with_zones": 233,
+    "holdout_session_min_inclusive": "20260701",
+    "creation_bar_eligible_for_first_touch": false,
+    "timezone": "America/Chicago"
+  },
+  "resolved_rules": {
+    "primary_anchor": "FIRST_ELIGIBLE_EVENT_WINS",
+    "reentries_role": "SECONDARY_ONLY",
+    "second_touches_role": "SECONDARY_ONLY",
+    "collapse_must_precede_outcome_measurement": true,
+    "episode_builder_may_use_future_path": false,
+    "statistical_cluster_unit": "CME_SESSION",
+    "configuration_scope": "PRIMARY_AVOL_CONFIGURATION_ONLY"
+  },
+  "spatial": {
+    "link_rule": null,
+    "minimum_overlap_ticks": null,
+    "minimum_overlap_fraction_of_smaller_zone": null,
+    "maximum_adjacency_gap_ticks": null
+  },
+  "temporal": {
+    "anchor_field": null,
+    "window_value": null,
+    "window_unit": null,
+    "interval_boundary_policy": null
+  },
+  "grouping": {
+    "partition_keys": null,
+    "transitivity_policy": null,
+    "algorithm": null,
+    "cross_session_policy": null,
+    "cross_contract_policy": null
+  },
+  "anchor": {
+    "primary_rule": "FIRST_ELIGIBLE_EVENT_WINS",
+    "eligibility_definition": null,
+    "tie_break_policy": null,
+    "anchor_replacement_policy": null
+  },
+  "lifecycle_relation": {
+    "collapse_timing": null,
+    "shared_touch_policy": null
+  },
+  "multiconfig": {
+    "policy": null
+  },
+  "null_controls": {
+    "episode_collapse_policy": null
+  },
+  "candidate_values_not_selected": {
+    "spatial.link_rule": [
+      "ANY_INCLUSIVE_OVERLAP",
+      "MINIMUM_OVERLAP_TICKS",
+      "MINIMUM_OVERLAP_FRACTION",
+      "OVERLAP_OR_MAXIMUM_GAP"
+    ],
+    "temporal.anchor_field": [
+      "created_ts_utc_ns",
+      "availability_ts_utc_ns"
+    ],
+    "temporal.window_unit": [
+      "NANOSECONDS",
+      "SECONDS",
+      "CREATION_BLOCKS"
+    ],
+    "temporal.interval_boundary_policy": [
+      "INCLUSIVE",
+      "EXCLUSIVE"
+    ],
+    "grouping.partition_keys": [
+      [
+        "instrument",
+        "contract",
+        "session_id",
+        "config_id"
+      ],
+      [
+        "instrument",
+        "contract",
+        "session_id"
+      ]
+    ],
+    "grouping.transitivity_policy": [
+      "TRANSITIVE_CONNECTED_COMPONENTS",
+      "NON_TRANSITIVE_GREEDY_ANCHOR"
+    ],
+    "grouping.algorithm": [
+      "CONNECTED_COMPONENTS",
+      "GREEDY_FIRST_ANCHOR"
+    ],
+    "grouping.cross_session_policy": [
+      "NEVER"
+    ],
+    "grouping.cross_contract_policy": [
+      "NEVER"
+    ],
+    "anchor.eligibility_definition": [
+      "ALL_PRIMARY_CONFIG_CREATION_EVENTS",
+      "QUALITY_FILTER_FROM_SEPARATE_FROZEN_SPEC"
+    ],
+    "anchor.tie_break_policy": [
+      "ANCHOR_TS_THEN_ZONE_EVENT_ID"
+    ],
+    "anchor.anchor_replacement_policy": [
+      "NEVER"
+    ],
+    "lifecycle_relation.collapse_timing": [
+      "BEFORE_FIRST_TOUCH_AND_OUTCOMES"
+    ],
+    "lifecycle_relation.shared_touch_policy": [
+      "UNRESOLVED_UNTIL_LIFECYCLE_FREEZE"
+    ],
+    "multiconfig.policy": [
+      "PRIMARY_CONFIG_ONLY"
+    ],
+    "null_controls.episode_collapse_policy": [
+      "SAME_FROZEN_POLICY_AS_REAL_ZONES"
+    ]
+  },
+  "decision_paths": [
+    "spatial.link_rule",
+    "spatial.minimum_overlap_ticks",
+    "spatial.minimum_overlap_fraction_of_smaller_zone",
+    "spatial.maximum_adjacency_gap_ticks",
+    "temporal.anchor_field",
+    "temporal.window_value",
+    "temporal.window_unit",
+    "temporal.interval_boundary_policy",
+    "grouping.partition_keys",
+    "grouping.transitivity_policy",
+    "grouping.algorithm",
+    "grouping.cross_session_policy",
+    "grouping.cross_contract_policy",
+    "anchor.eligibility_definition",
+    "anchor.tie_break_policy",
+    "anchor.anchor_replacement_policy",
+    "lifecycle_relation.collapse_timing",
+    "lifecycle_relation.shared_touch_policy",
+    "multiconfig.policy",
+    "null_controls.episode_collapse_policy"
+  ],
+  "unresolved_decisions": [
+    "spatial.link_rule",
+    "spatial.minimum_overlap_ticks",
+    "spatial.minimum_overlap_fraction_of_smaller_zone",
+    "spatial.maximum_adjacency_gap_ticks",
+    "temporal.anchor_field",
+    "temporal.window_value",
+    "temporal.window_unit",
+    "temporal.interval_boundary_policy",
+    "grouping.partition_keys",
+    "grouping.transitivity_policy",
+    "grouping.algorithm",
+    "grouping.cross_session_policy",
+    "grouping.cross_contract_policy",
+    "anchor.eligibility_definition",
+    "anchor.tie_break_policy",
+    "anchor.anchor_replacement_policy",
+    "lifecycle_relation.collapse_timing",
+    "lifecycle_relation.shared_touch_policy",
+    "multiconfig.policy",
+    "null_controls.episode_collapse_policy"
+  ],
+  "decision_evidence": {
+    "spatial.link_rule": null,
+    "spatial.minimum_overlap_ticks": null,
+    "spatial.minimum_overlap_fraction_of_smaller_zone": null,
+    "spatial.maximum_adjacency_gap_ticks": null,
+    "temporal.anchor_field": null,
+    "temporal.window_value": null,
+    "temporal.window_unit": null,
+    "temporal.interval_boundary_policy": null,
+    "grouping.partition_keys": null,
+    "grouping.transitivity_policy": null,
+    "grouping.algorithm": null,
+    "grouping.cross_session_policy": null,
+    "grouping.cross_contract_policy": null,
+    "anchor.eligibility_definition": null,
+    "anchor.tie_break_policy": null,
+    "anchor.anchor_replacement_policy": null,
+    "lifecycle_relation.collapse_timing": null,
+    "lifecycle_relation.shared_touch_policy": null,
+    "multiconfig.policy": null,
+    "null_controls.episode_collapse_policy": null
+  },
+  "episode_membership_contract": {
+    "exact_columns": true,
+    "fields": [
+      {
+        "name": "schema_version",
+        "type": "str",
+        "nullable": false,
+        "non_empty": true
+      },
+      {
+        "name": "episode_id",
+        "type": "str",
+        "nullable": false,
+        "non_empty": true
+      },
+      {
+        "name": "identity_sha256",
+        "type": "str",
+        "nullable": false,
+        "non_empty": true
+      },
+      {
+        "name": "zone_event_id",
+        "type": "str",
+        "nullable": false,
+        "non_empty": true
+      },
+      {
+        "name": "zone_identity_sha256",
+        "type": "str",
+        "nullable": false,
+        "non_empty": true
+      },
+      {
+        "name": "instrument",
+        "type": "str",
+        "nullable": false,
+        "non_empty": true
+      },
+      {
+        "name": "contract",
+        "type": "str",
+        "nullable": false,
+        "non_empty": true
+      },
+      {
+        "name": "session_id",
+        "type": "str",
+        "nullable": false,
+        "non_empty": true
+      },
+      {
+        "name": "config_id",
+        "type": "str",
+        "nullable": false,
+        "non_empty": true
+      },
+      {
+        "name": "created_ts_utc_ns",
+        "type": "int",
+        "nullable": false
+      },
+      {
+        "name": "availability_ts_utc_ns",
+        "type": "int",
+        "nullable": false
+      },
+      {
+        "name": "lower_tick",
+        "type": "int",
+        "nullable": false
+      },
+      {
+        "name": "upper_tick",
+        "type": "int",
+        "nullable": false
+      },
+      {
+        "name": "episode_anchor_zone_event_id",
+        "type": "str",
+        "nullable": false,
+        "non_empty": true
+      },
+      {
+        "name": "is_primary_anchor",
+        "type": "bool",
+        "nullable": false
+      },
+      {
+        "name": "member_rank",
+        "type": "int",
+        "nullable": false
+      },
+      {
+        "name": "membership_reason",
+        "type": "str",
+        "nullable": false,
+        "non_empty": true
+      },
+      {
+        "name": "policy_payload_sha256",
+        "type": "str",
+        "nullable": false,
+        "non_empty": true
+      },
+      {
+        "name": "future_price_path_accessed",
+        "type": "bool",
+        "nullable": false
+      },
+      {
+        "name": "pnl_accessed",
+        "type": "bool",
+        "nullable": false
+      },
+      {
+        "name": "holdout_touched",
+        "type": "bool",
+        "nullable": false
+      }
+    ],
+    "sort_keys": [
+      "session_id",
+      "episode_id",
+      "member_rank",
+      "zone_event_id"
+    ],
+    "identity_column": "identity_sha256",
+    "identity_fields": [
+      "schema_version",
+      "episode_id",
+      "zone_event_id",
+      "zone_identity_sha256",
+      "instrument",
+      "contract",
+      "session_id",
+      "config_id",
+      "created_ts_utc_ns",
+      "availability_ts_utc_ns",
+      "lower_tick",
+      "upper_tick",
+      "episode_anchor_zone_event_id",
+      "is_primary_anchor",
+      "member_rank",
+      "membership_reason",
+      "policy_payload_sha256",
+      "future_price_path_accessed",
+      "pnl_accessed",
+      "holdout_touched"
+    ],
+    "unique_fields": [
+      "zone_event_id",
+      "identity_sha256"
+    ]
+  },
+  "authorization": {
+    "freeze_authorized": false,
+    "freeze_token": null,
+    "execution_authorized": false,
+    "execution_token": null,
+    "creation_only_episode_builder_present": true,
+    "creation_only_episode_build_authorized": false,
+    "standalone_io_runner_present": false,
+    "future_path_capability": false,
+    "kaggle_only_if_later_authorized": true
+  },
+  "frozen_at_utc": null,
+  "frozen_commit": null,
+  "frozen_policy_payload_sha256": null,
+  "firewall": {
+    "DESIGN_ONLY": true,
+    "EPISODE_BUILD_ALLOWED": false,
+    "FIRST_TOUCH_ACCESSED": false,
+    "FUTURE_PRICE_PATH_ACCESSED": false,
+    "MFE_MAE_ACCESSED": false,
+    "FIRST_PASSAGE_ACCESSED": false,
+    "PNL_ACCESSED": false,
+    "HOLDOUT_TOUCHED": false,
+    "EDGE_DECLARED": false,
+    "PROMOTION_ELIGIBLE": false
+  }
+}

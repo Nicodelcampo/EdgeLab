@@ -1,0 +1,535 @@
+{
+  "schema_version": "avolcluster_nq_lifecycle_first_touch_contract_v1.0.0-draft",
+  "status": "DRAFT_DECISIONS_REQUIRED_FAIL_CLOSED",
+  "created_date": "2026-08-30",
+  "purpose": "Define and validate the future AVolClusterPOI NQ lifecycle/first-touch store without granting raw-tick, future-path, outcome, PnL or execution capability.",
+  "economic_justification": "A fixed first-touch clock and lifecycle denominator are prerequisites for testing whether AVol geometry contains usable information; this draft prevents duplicate or ambiguous contacts from manufacturing an apparent edge.",
+  "how_it_can_be_refuted": "Reject the contract if source identities drift, creation-bar contacts enter, touch or invalidation ordering remains ambiguous, lifecycle rows are non-deterministic, holdout rows are reachable, or any PnL/MFE/MAE/first-passage field enters this layer.",
+  "authority": {
+    "target_branch": "research/avolcluster-nq-gate1-infra-v1-20260828",
+    "reported_target_head": "7bbb33828c9e0efb02af850463b4957943934d43",
+    "reported_target_head_independently_verified": false,
+    "base_files_git_blob_sha1_verified": {
+      "docs/research/INFORME_FINAL_AVOLCLUSTER_NQ_GATE1A_2026-08-28.md": "08632a173babd85abf02050424c863edf0ec05be",
+      "docs/research/AVOLCLUSTER_BT2A_NQ_JOINT_MEASUREMENT_DESIGN_V1_2026-08-28.md": "fea95f2957c306a42004b4bfcff75f17bc061f55",
+      "specs/avolcluster_nq_zone_event_store_v1.json": "c788924a3851e86a54b17bff03546dc7d730b989",
+      "specs/avolcluster_bt2a_nq_joint_measurement_v1.draft.json": "3db09331f730cc1f137e6bc3aa0dc57f524dddb6"
+    },
+    "gate1a_report": "docs/research/INFORME_FINAL_AVOLCLUSTER_NQ_GATE1A_2026-08-28.md",
+    "joint_design": "docs/research/AVOLCLUSTER_BT2A_NQ_JOINT_MEASUREMENT_DESIGN_V1_2026-08-28.md",
+    "creation_spec": "specs/avolcluster_nq_zone_event_store_v1.json",
+    "joint_design_spec": "specs/avolcluster_bt2a_nq_joint_measurement_v1.draft.json",
+    "avol_authority": "PYTHON_RESEARCH_KERNEL_V0_5_NO_NT8_ORACLE_CLAIM"
+  },
+  "source_creation_store": {
+    "manifest_path": "docs/research/avolcluster_nq_zone_store_manifest.json",
+    "manifest_file_sha256": "5e4e515d744b7dbe51116b8e071766f3765f63e999ffbf0197a1f71fa2da61c3",
+    "manifest_payload_sha256": "f87061427d884dac3290c52144bdcf0ab079d4a4b4674237c279072eae51cacc",
+    "spec_payload_sha256": "c9792d00da4f15311acdd13f965d06d601e0d08ae0e961766338d04e5e9440ba",
+    "logical_payload_sha256": "7c254009dc4ccd58f4187360a861f76a692945b94c7091766cce6cf3e46f3a77",
+    "parquet_physical_sha256": "4dad91f6a572bfb5edc714dfb13daa4a0bbee6b96301a4d734466a9da7a06674",
+    "producer_commit": "910c4dd75a6e6494f01497b4ff073d5a1e8e9637",
+    "status": "COMPLETE_TARGET_FREE_ZONE_CREATION_STORE",
+    "rows": 5876,
+    "contract_sessions_with_events": 233,
+    "checkpoint_files": 234
+  },
+  "population": {
+    "instrument": "NQ",
+    "tick_size": 0.25,
+    "config_id": "tick_120_W5_M20_C4_P950",
+    "zone_kind": "OFF_PRICE",
+    "source_zone_count": 5876,
+    "registered_contract_sessions": 234,
+    "source_sessions_with_zones": 233,
+    "holdout_session_min_inclusive": "20260701",
+    "creation_bar_eligible_for_first_touch": false,
+    "timezone": "America/Chicago"
+  },
+  "resolved_rules": {
+    "first_touch_clock_starts_at": "FIRST_OBSERVATION_AT_OR_AFTER_AVAILABILITY_TS_UTC_NS",
+    "creation_bar_eligible": false,
+    "geometric_side_is_direction_forecast": false,
+    "primary_population": "ONE_LIFECYCLE_RECORD_PER_SOURCE_ZONE_BEFORE_EPISODE_COLLAPSE",
+    "reentries_role": "SECONDARY_ONLY",
+    "second_touches_role": "SECONDARY_ONLY",
+    "statistical_cluster_unit": "CME_SESSION"
+  },
+  "clock": {
+    "timezone": "America/Chicago",
+    "start_boundary_field": "availability_ts_utc_ns",
+    "start_boundary_inclusive": true,
+    "creation_bar_eligible": false,
+    "observation_source": null,
+    "observation_clock_unit": null,
+    "age_origin": null
+  },
+  "touch": {
+    "price_field": null,
+    "interval_boundary_policy": null,
+    "contact_definition": null,
+    "penetration_definition": null,
+    "intrabar_ordering_policy": null,
+    "same_timestamp_tie_policy": null,
+    "source_row_identity_field": null,
+    "missing_ticks_policy": null
+  },
+  "expiration": {
+    "max_age_value": null,
+    "max_age_unit": null,
+    "expiration_boundary_policy": null,
+    "session_carry_policy": null
+  },
+  "invalidation": {
+    "rule": null,
+    "penetration_ticks": null
+  },
+  "precedence": {
+    "touch_vs_invalidation": null,
+    "expiration_vs_touch": null
+  },
+  "reentries": {
+    "reentry_definition": null,
+    "second_touch_definition": null,
+    "primary_inclusion_policy": null
+  },
+  "censoring": {
+    "end_of_sample_policy": null,
+    "roll_boundary_policy": null
+  },
+  "raw_data": {
+    "source_registry_path": null,
+    "source_registry_sha256": null,
+    "kaggle_dataset_slug": null
+  },
+  "candidate_values_not_selected": {
+    "clock.observation_source": [
+      "CANONICAL_TRADE_TICKS",
+      "CANONICAL_TICK_BARS"
+    ],
+    "clock.observation_clock_unit": [
+      "TRADE_TICK",
+      "TICK_BAR"
+    ],
+    "clock.age_origin": [
+      "AVAILABILITY_TS",
+      "CREATED_TS"
+    ],
+    "touch.price_field": [
+      "trade_price_tick",
+      "tick_bar_high_low"
+    ],
+    "touch.interval_boundary_policy": [
+      "INCLUSIVE_BOTH"
+    ],
+    "touch.contact_definition": [
+      "TRADE_TICK_INTERSECTS_ZONE",
+      "TICK_BAR_RANGE_INTERSECTS_ZONE"
+    ],
+    "touch.penetration_definition": [
+      "ZERO_AT_FIRST_ENTRY",
+      "DEPTH_FROM_NEAREST_EDGE"
+    ],
+    "touch.intrabar_ordering_policy": [
+      "RAW_SOURCE_ROW_ORDER_REQUIRED",
+      "NOT_APPLICABLE_TRADE_TICKS"
+    ],
+    "touch.same_timestamp_tie_policy": [
+      "SOURCE_ROW_ORDER",
+      "ABSTAIN_AMBIGUOUS"
+    ],
+    "touch.source_row_identity_field": [
+      "source_row",
+      "sequence_if_accredited"
+    ],
+    "touch.missing_ticks_policy": [
+      "ABSTAIN_SESSION",
+      "ADMINISTRATIVE_CENSORING"
+    ],
+    "expiration.max_age_unit": [
+      "TRADE_TICKS",
+      "TICK_BARS",
+      "WALL_CLOCK_SECONDS"
+    ],
+    "expiration.expiration_boundary_policy": [
+      "EXCLUSIVE",
+      "INCLUSIVE"
+    ],
+    "expiration.session_carry_policy": [
+      "SAME_SESSION_ONLY",
+      "CARRY_ACROSS_REGISTERED_SESSIONS"
+    ],
+    "invalidation.rule": [
+      "NONE",
+      "CLOSE_THROUGH",
+      "TRADE_THROUGH"
+    ],
+    "precedence.touch_vs_invalidation": [
+      "TOUCH_FIRST",
+      "INVALIDATION_FIRST",
+      "SOURCE_ORDER"
+    ],
+    "precedence.expiration_vs_touch": [
+      "TOUCH_FIRST",
+      "EXPIRATION_FIRST",
+      "SOURCE_ORDER"
+    ],
+    "reentries.primary_inclusion_policy": [
+      "EXCLUDE_FROM_PRIMARY",
+      "DESCRIPTIVE_ONLY"
+    ],
+    "censoring.end_of_sample_policy": [
+      "ADMINISTRATIVE_CENSORING"
+    ],
+    "censoring.roll_boundary_policy": [
+      "CENSOR_AT_CONTRACT_END",
+      "CARRY_WITH_EXPLICIT_ROLL_MAPPING"
+    ]
+  },
+  "decision_paths": [
+    "clock.observation_source",
+    "clock.observation_clock_unit",
+    "clock.age_origin",
+    "touch.price_field",
+    "touch.interval_boundary_policy",
+    "touch.contact_definition",
+    "touch.penetration_definition",
+    "touch.intrabar_ordering_policy",
+    "touch.same_timestamp_tie_policy",
+    "touch.source_row_identity_field",
+    "touch.missing_ticks_policy",
+    "expiration.max_age_value",
+    "expiration.max_age_unit",
+    "expiration.expiration_boundary_policy",
+    "expiration.session_carry_policy",
+    "invalidation.rule",
+    "invalidation.penetration_ticks",
+    "precedence.touch_vs_invalidation",
+    "precedence.expiration_vs_touch",
+    "reentries.reentry_definition",
+    "reentries.second_touch_definition",
+    "reentries.primary_inclusion_policy",
+    "censoring.end_of_sample_policy",
+    "censoring.roll_boundary_policy",
+    "raw_data.source_registry_path",
+    "raw_data.source_registry_sha256",
+    "raw_data.kaggle_dataset_slug"
+  ],
+  "unresolved_decisions": [
+    "clock.observation_source",
+    "clock.observation_clock_unit",
+    "clock.age_origin",
+    "touch.price_field",
+    "touch.interval_boundary_policy",
+    "touch.contact_definition",
+    "touch.penetration_definition",
+    "touch.intrabar_ordering_policy",
+    "touch.same_timestamp_tie_policy",
+    "touch.source_row_identity_field",
+    "touch.missing_ticks_policy",
+    "expiration.max_age_value",
+    "expiration.max_age_unit",
+    "expiration.expiration_boundary_policy",
+    "expiration.session_carry_policy",
+    "invalidation.rule",
+    "invalidation.penetration_ticks",
+    "precedence.touch_vs_invalidation",
+    "precedence.expiration_vs_touch",
+    "reentries.reentry_definition",
+    "reentries.second_touch_definition",
+    "reentries.primary_inclusion_policy",
+    "censoring.end_of_sample_policy",
+    "censoring.roll_boundary_policy",
+    "raw_data.source_registry_path",
+    "raw_data.source_registry_sha256",
+    "raw_data.kaggle_dataset_slug"
+  ],
+  "decision_evidence": {
+    "clock.observation_source": null,
+    "clock.observation_clock_unit": null,
+    "clock.age_origin": null,
+    "touch.price_field": null,
+    "touch.interval_boundary_policy": null,
+    "touch.contact_definition": null,
+    "touch.penetration_definition": null,
+    "touch.intrabar_ordering_policy": null,
+    "touch.same_timestamp_tie_policy": null,
+    "touch.source_row_identity_field": null,
+    "touch.missing_ticks_policy": null,
+    "expiration.max_age_value": null,
+    "expiration.max_age_unit": null,
+    "expiration.expiration_boundary_policy": null,
+    "expiration.session_carry_policy": null,
+    "invalidation.rule": null,
+    "invalidation.penetration_ticks": null,
+    "precedence.touch_vs_invalidation": null,
+    "precedence.expiration_vs_touch": null,
+    "reentries.reentry_definition": null,
+    "reentries.second_touch_definition": null,
+    "reentries.primary_inclusion_policy": null,
+    "censoring.end_of_sample_policy": null,
+    "censoring.roll_boundary_policy": null,
+    "raw_data.source_registry_path": null,
+    "raw_data.source_registry_sha256": null,
+    "raw_data.kaggle_dataset_slug": null
+  },
+  "lifecycle_row_contract": {
+    "exact_columns": true,
+    "fields": [
+      {
+        "name": "schema_version",
+        "type": "str",
+        "nullable": false,
+        "non_empty": true
+      },
+      {
+        "name": "lifecycle_event_id",
+        "type": "str",
+        "nullable": false,
+        "non_empty": true
+      },
+      {
+        "name": "identity_sha256",
+        "type": "str",
+        "nullable": false,
+        "non_empty": true
+      },
+      {
+        "name": "zone_event_id",
+        "type": "str",
+        "nullable": false,
+        "non_empty": true
+      },
+      {
+        "name": "zone_identity_sha256",
+        "type": "str",
+        "nullable": false,
+        "non_empty": true
+      },
+      {
+        "name": "instrument",
+        "type": "str",
+        "nullable": false,
+        "non_empty": true
+      },
+      {
+        "name": "contract",
+        "type": "str",
+        "nullable": false,
+        "non_empty": true
+      },
+      {
+        "name": "session_id",
+        "type": "str",
+        "nullable": false,
+        "non_empty": true
+      },
+      {
+        "name": "config_id",
+        "type": "str",
+        "nullable": false,
+        "non_empty": true
+      },
+      {
+        "name": "session_ordinal",
+        "type": "int",
+        "nullable": false
+      },
+      {
+        "name": "created_ts_utc_ns",
+        "type": "int",
+        "nullable": false
+      },
+      {
+        "name": "availability_ts_utc_ns",
+        "type": "int",
+        "nullable": false
+      },
+      {
+        "name": "lower_tick",
+        "type": "int",
+        "nullable": false
+      },
+      {
+        "name": "upper_tick",
+        "type": "int",
+        "nullable": false
+      },
+      {
+        "name": "width_ticks",
+        "type": "int",
+        "nullable": false
+      },
+      {
+        "name": "lifecycle_status",
+        "type": "str",
+        "nullable": false,
+        "non_empty": true
+      },
+      {
+        "name": "first_touch_observed",
+        "type": "bool",
+        "nullable": false
+      },
+      {
+        "name": "first_touch_ts_utc_ns",
+        "type": "int",
+        "nullable": true
+      },
+      {
+        "name": "first_touch_tick",
+        "type": "int",
+        "nullable": true
+      },
+      {
+        "name": "first_touch_source_row",
+        "type": "int",
+        "nullable": true
+      },
+      {
+        "name": "first_touch_age_observations",
+        "type": "int",
+        "nullable": true
+      },
+      {
+        "name": "first_touch_age_ns",
+        "type": "int",
+        "nullable": true
+      },
+      {
+        "name": "contact_class",
+        "type": "str",
+        "nullable": true
+      },
+      {
+        "name": "penetration_ticks",
+        "type": "int",
+        "nullable": true
+      },
+      {
+        "name": "expired_without_touch",
+        "type": "bool",
+        "nullable": false
+      },
+      {
+        "name": "expiration_ts_utc_ns",
+        "type": "int",
+        "nullable": true
+      },
+      {
+        "name": "invalidation_observed",
+        "type": "bool",
+        "nullable": false
+      },
+      {
+        "name": "invalidation_ts_utc_ns",
+        "type": "int",
+        "nullable": true
+      },
+      {
+        "name": "censoring_reason",
+        "type": "str",
+        "nullable": true
+      },
+      {
+        "name": "source_tick_data_sha256",
+        "type": "str",
+        "nullable": false,
+        "non_empty": true
+      },
+      {
+        "name": "policy_payload_sha256",
+        "type": "str",
+        "nullable": false,
+        "non_empty": true
+      },
+      {
+        "name": "future_price_path_accessed",
+        "type": "bool",
+        "nullable": false
+      },
+      {
+        "name": "pnl_accessed",
+        "type": "bool",
+        "nullable": false
+      },
+      {
+        "name": "holdout_touched",
+        "type": "bool",
+        "nullable": false
+      }
+    ],
+    "sort_keys": [
+      "session_ordinal",
+      "created_ts_utc_ns",
+      "zone_event_id"
+    ],
+    "identity_column": "identity_sha256",
+    "identity_fields": [
+      "schema_version",
+      "lifecycle_event_id",
+      "zone_event_id",
+      "zone_identity_sha256",
+      "instrument",
+      "contract",
+      "session_id",
+      "config_id",
+      "session_ordinal",
+      "created_ts_utc_ns",
+      "availability_ts_utc_ns",
+      "lower_tick",
+      "upper_tick",
+      "width_ticks",
+      "lifecycle_status",
+      "first_touch_observed",
+      "first_touch_ts_utc_ns",
+      "first_touch_tick",
+      "first_touch_source_row",
+      "first_touch_age_observations",
+      "first_touch_age_ns",
+      "contact_class",
+      "penetration_ticks",
+      "expired_without_touch",
+      "expiration_ts_utc_ns",
+      "invalidation_observed",
+      "invalidation_ts_utc_ns",
+      "censoring_reason",
+      "source_tick_data_sha256",
+      "policy_payload_sha256",
+      "future_price_path_accessed",
+      "pnl_accessed",
+      "holdout_touched"
+    ],
+    "unique_fields": [
+      "lifecycle_event_id",
+      "zone_event_id",
+      "identity_sha256"
+    ]
+  },
+  "authorization": {
+    "freeze_authorized": false,
+    "freeze_token": null,
+    "execution_authorized": false,
+    "execution_token": null,
+    "raw_tick_decode_capability": false,
+    "future_path_capability": false,
+    "first_touch_store_build_capability": false,
+    "kaggle_only_if_later_authorized": true
+  },
+  "frozen_at_utc": null,
+  "frozen_commit": null,
+  "frozen_policy_payload_sha256": null,
+  "firewall": {
+    "DESIGN_ONLY": true,
+    "RAW_TICK_DECODE_ALLOWED": false,
+    "LIFECYCLE_EXECUTION_ALLOWED": false,
+    "FIRST_TOUCH_BUILD_ALLOWED": false,
+    "FUTURE_PRICE_PATH_ACCESSED": false,
+    "MFE_MAE_ACCESSED": false,
+    "FIRST_PASSAGE_ACCESSED": false,
+    "PNL_ACCESSED": false,
+    "HOLDOUT_TOUCHED": false,
+    "EDGE_DECLARED": false,
+    "PROMOTION_ELIGIBLE": false
+  }
+}
