@@ -1,0 +1,159 @@
+{
+  "schema": "bt2a_gate1_nq_all5_post_outcome_replication_v1",
+  "status": "DRAFT_BEFORE_NQ_ALL5_FIRST_RUN",
+  "drafted_at": "2026-08-29T21:00:00.000000+00:00",
+  "amends_without_overwriting": [],
+  "reason": "First Gate 1 execution for NQ. Simplified design requested by Nico: a direct fork of the proven GC MFE-MAE all5 design (specs/bt2_absorption_gate1_all5_post_outcome_replication_2026-08-26.json), K_ABS-primary with K_BT2/N_RAND/K_ABS_SHUFFLE as comparators, no external BigTrap2 comparator sweep dependency (K_BT2 comes inline from the bigtrap2 module's own DEFAULTS, exactly as in GC). K_ABS uses the informal early-stop config bt2a_nq_7e84981882b0b380 (specs/bt2a_nq_selected_configuration_2026-08-29.json) instead of module DEFAULTS -- see docs/research/DECISION_NQ_SELECTION_EARLY_STOP_2026-08-29.md for why this config is informal (2 of 5 contracts, no formal structural_score) and not SELECTED_STABLE_NQ_CONFIGURATION.",
+  "universe": {
+    "session_registry": "specs/bt2a_gate1_nq_all5_sessions_2026-08-27.json",
+    "input_registry": "specs/bt2a_gate1_nq_all5_input_registry_2026-08-27.json",
+    "contracts": [
+      "NQ 09-25",
+      "NQ 12-25",
+      "NQ 03-26",
+      "NQ 06-26",
+      "NQ 09-26"
+    ],
+    "sessions": 234,
+    "selection": "all valid weekday sessions in fixed non-overlapping contract windows",
+    "left_censored": true,
+    "no_posthoc_claim_of_confirmation": true
+  },
+  "event_definitions": {
+    "K_ABS": {
+      "kernel": "edgelab.research.all5_runtime.bigtrap2absorption",
+      "config_id": "bt2a_nq_7e84981882b0b380",
+      "config_source": "specs/bt2a_nq_selected_configuration_2026-08-29.json",
+      "config_provenance": "INFORMAL_EARLY_STOP_NQ_CONFIGURATION, not SELECTED_STABLE_NQ_CONFIGURATION",
+      "parameters": {
+        "TapeWindowTicks": 25,
+        "ScoreMode": "AbsMagnitude",
+        "AbsorptionPct": 90.0,
+        "AbsorptionLookback": 500,
+        "MinHistoryBuckets": 200,
+        "MinStackedRows": 1,
+        "MinTrapFrac": 0.2,
+        "RequireFlowSideMatch": true
+      },
+      "parameters_note": "Differs from bigtrap2absorption module DEFAULTS in exactly one field: MinStackedRows=1 instead of 2. Full 21-key parameter dict is hardcoded as K_ABS_PARAMS_NQ in edgelab/research/bt2_gate1_nq_all5.py to avoid an implicit dependency on module DEFAULTS remaining GC-shaped."
+    },
+    "K_BT2": {
+      "kernel": "edgelab.research.all5_runtime.bigtrap2",
+      "parameters": "module DEFAULTS",
+      "tick_bar_size": 25,
+      "reset_tick_counter_at_cme_session": true
+    }
+  },
+  "arms": [
+    "K_ABS",
+    "K_ABS_SHUFFLE",
+    "K_BT2",
+    "N_RAND"
+  ],
+  "execution": {
+    "order": [
+      "ts_utc_ns",
+      "source_row"
+    ],
+    "fill": "first canonical tick strictly after the signal",
+    "signal_tick_fill_forbidden": true,
+    "fill_price": "price_ticks of the execution tick",
+    "barriers_and_excursions_anchor": "execution price",
+    "missing_execution": "EXCLUDED_NO_EXECUTION_TICK",
+    "cross_session_fill": "EXCLUDED_FILL_CROSSES_SESSION",
+    "memory_mode": "one selected session plus immediately preceding valid session",
+    "warmup": "previous valid session reconstructs the rolling 500 x 25-tick absorption state; at the left edge, all available pre-sample ticks are used",
+    "memory_bound": "never loads a complete multi-month contract into RAM",
+    "checkpoint_invalidation": "sample registry hash + input registry hash + runtime hash"
+  },
+  "horizon": {
+    "rule": "first_cap_wins",
+    "tick_cap": 2000,
+    "clock_cap_seconds": 900,
+    "tie_break": "tick_cap",
+    "session_boundary": "hard",
+    "incomplete_path": "excluded"
+  },
+  "estimand": {
+    "event_metrics": [
+      "MFE_ticks",
+      "MAE_ticks"
+    ],
+    "session_d_hat_ticks": "median_i(MFE_ticks) - median_i(MAE_ticks)",
+    "primary_session_contrast": "d_hat(K_ABS,s) - median_b[d_hat(N_RAND,b,s)]",
+    "secondary_session_contrasts": [
+      "d_hat(K_ABS,s) - d_hat(K_BT2,s)",
+      "d_hat(K_ABS,s) - median_b[d_hat(K_ABS_SHUFFLE,b,s)]"
+    ],
+    "aggregation": "equal weight per CME session",
+    "economic_hurdle_ticks": 2.5,
+    "legacy_ratio_1_25": "DESCRIPTIVE_NOT_A_GATE"
+  },
+  "randomization": {
+    "replications": 10000,
+    "seed": 20260821,
+    "N_RAND": {
+      "strata": [
+        "cme_session",
+        "contract",
+        "chicago_30_minute_bin_from_17_00",
+        "cap_driver"
+      ],
+      "directions": "copy each K_ABS event direction",
+      "sampling": "without replacement within each replication",
+      "exact_real_anchor_excluded": true,
+      "sparse_stratum": "PRECONDITION_FAILED_SPARSE_STRATUM",
+      "silent_bin_expansion": false
+    },
+    "K_ABS_SHUFFLE": {
+      "anchors": "same K_ABS execution anchors",
+      "directions": "permute within CME session",
+      "preserve_direction_counts": true
+    }
+  },
+  "inference": {
+    "cluster": "cme_session",
+    "equal_session_weights": true,
+    "wild_cluster_bootstrap": "Webb_six_point",
+    "bootstrap_replications": 10000,
+    "seed": 20260821,
+    "confidence_interval": 0.95
+  },
+  "power": {
+    "available_sessions": 234,
+    "mandatory_label": "POST_OUTCOME_EXPANDED_REPLICATION",
+    "promotion_eligible": false,
+    "interpretation": "Larger N improves precision but cannot restore the confirmatory firewall after outcomes were opened. Session-count threshold (133) is inherited unchanged from the GC design this spec forks -- it is a property of the shared estimand/method, not a re-derived NQ-specific power computation; no MDE/ICC analysis was run for NQ."
+  },
+  "firewall": {
+    "CAMPAIGN_OUTCOMES_OPENED": true,
+    "PREEXISTING_OUTCOME_EXPOSURE": "YES_HOLDOUT_TOUCHED_BY_UNRELATED_BT2_SWEEP_MFE_MAE_NEVER_COMPUTED_FOR_NQ",
+    "PREEXISTING_OUTCOME_EXPOSURE_SOURCE": "docs/research/bigtrap2_nq_tickframes_sweep_result_classification.json",
+    "PREEXISTING_OUTCOME_EXPOSURE_NOTE": "NQ's known prior exposure is the BigTrap2 comparator sweep that touched the holdout (future_price_path_accessed=true, first_touch_accessed=true, holdout_touched=true) but never accessed MFE/MAE or PnL -- the estimand this Gate 1 measures. This run is the first NQ MFE-MAE measurement. edgelab/research/bt2_gate1_nq_all5.py computes this label dynamically from that classification file at result-build time rather than hardcoding it.",
+    "EDGE_DECLARED": false,
+    "confirmatory_eligible": false,
+    "frozen_before_this_rerun": false,
+    "forbidden": [
+      "represent_as_original_gate1",
+      "call_d_hat_realized_or_net_pnl",
+      "declare_alpha_or_edge",
+      "select_contexts_after_outcomes",
+      "ignore_left_censoring",
+      "pool_events_as_independent_observations"
+    ]
+  },
+  "interpretation_contract": {
+    "estimand_name": "session d_hat path-excursion contrast",
+    "not_realized_pnl": true,
+    "costs_included": false,
+    "allowed_claim": "evidence of a contrast against the specified null within this post-outcome sample",
+    "forbidden_claims": [
+      "net ticks",
+      "scientifically proves genuine alpha",
+      "not luck or noise in general",
+      "promotion or edge declaration"
+    ],
+    "secondary_controls": "A 95% interval containing zero fails the declared comparison even if nearly all of it is positive."
+  },
+  "execution_platform": "KAGGLE_ONLY"
+}
