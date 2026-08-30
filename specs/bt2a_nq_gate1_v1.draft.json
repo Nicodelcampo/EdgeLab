@@ -31,25 +31,31 @@
       "ABSTAIN_IDENTITY_CAUSALITY_OR_COVERAGE"
     ],
     "edge_declaration_allowed": false,
+    "estimand_amendment_ref": "bt2a_nq_gate1_estimand_amendment_v1",
     "full_family_required": true,
     "positive_requires_effect_interval_and_holm": true,
+    "primary_contrast": "K_ABS_MINUS_N_RAND_PAIRED_WITHIN_CME_SESSION",
     "promotion_allowed": false,
+    "secondary_comparators_cannot_trigger_positive_alone": true,
     "winner_selection_allowed": false
   },
   "dependencies": {
     "all_dependencies_must_be_hash_bound": true,
+    "binding_notes": {
+      "bt2a_creation_event_store_manifest_sha256": "Bound to the frozen physical manifest. The 2026-08-30 rebuild reproduced it with only frozen_commit differing; if the rebuilt store is ever re-uploaded this binding must change.",
+      "kaggle_bindings": "selected_configuration_file_sha256, private_package_manifest_sha256, effective_input_registry_sha256 and bt2_v2_result_file_sha256 closed by Claude at commit 83884585 (2026-08-30), each with its provenance note; see bt2_v2_result_file_provenance_note and private_package_manifest_provenance_note.",
+      "macro_calendar": "ELIMINATED BY AMENDMENT 2026-08-30 (Nico decision D2, docs/DECISIONES_NICO_2026-08-30.md): no design element consumed it (n_rand_matching is contract, cme_session_id, coarse_phase, availability, local_volatility_bin). The draft policy file specs/bt2a_nq_gate1_macro_policy_v1.draft.json remains in the tree but is no longer bound by Gate 1."
+    },
     "bt2_comparator_config_id": "tick_25_IMB30_VOL10",
     "bt2_v2_result_file": "bigtrap2_nq_tickframes_sweep_v2.json",
     "bt2_v2_result_file_provenance_note": "File committed in-repo at docs/research/bigtrap2_nq_tickframes_sweep_v2_result.json (same source already used to bind bt2_comparator_config_id at commit 1a33e80). Still needs physical staging under --bt2-artifact-dir on Kaggle before an actual Gate 1 run -- binding the hash here only closes the spec-level dependency, not run-time artifact placement.",
     "bt2_v2_result_file_sha256": "e162a0e0a51198b45cb0a444d9853f646deec18370d378333f25a58ae6999571",
     "bt2a_creation_event_store_manifest_file": "bt2a_nq_creation_event_store_manifest.json",
-    "bt2a_creation_event_store_manifest_sha256": null,
+    "bt2a_creation_event_store_manifest_sha256": "b3177b51892298fc75a8bc6ab156d15525473aef52d71e4c717da148501ba544",
     "effective_input_registry_file": "effective_input_registry.json",
     "effective_input_registry_sha256": "f9bcf5eee1e68bd4797a959f7e22d3344ae383d9d33c4c59a783ef10ce35e31f",
-    "macro_calendar_file": "specs/bt2a_nq_gate1_macro_policy_v1.draft.json",
-    "macro_calendar_sha256": "94b8bdf3ae47a23fc5e78900e7f54ed8f81281c919eb55186dc68372cb3f7c96",
     "power_design_file": "specs/bt2a_nq_gate1_power_design_v1.draft.json",
-    "power_design_file_sha256": "2e991d8e89e96157549b480e1807a28a1de810ef81a270b00c9ceb12f6c0f721",
+    "power_design_file_sha256": "ae467d18fb6dc23083e358e8f5127e44d64be38e3657d3b6d8e26eba07899c01",
     "private_package_manifest_file": "kaggle_research_package_manifest.json",
     "private_package_manifest_provenance_note": "The self-attested KAGGLE_NQ_PRIVATE_PACKAGE_BUILD_CERTIFICATION_V1_2026-08-28.json reports a DIFFERENT hash (4d1053090d80930ee7494e008148b0b8a64829568d861065e054ed2f88f91506, upload_executed=false, remote_auditor_rehashed_local_files=false) for the same filename. This binding uses the hash actually read by the executed BigTrap2 V2 sweep (input_provenance.package_manifest_file_sha256 in docs/research/bigtrap2_nq_tickframes_sweep_v2_result.json), not the unverified self-attestation. Discrepancy found and resolved 2026-08-30 by Claude.",
     "private_package_manifest_sha256": "2336b2967dd6f5ef0c3afddfa76cdeac3b411a4eb006cede42fa9502e51039db",
@@ -57,6 +63,29 @@
     "runner_contract_file_sha256": "afb97cff6e4b35509fcb94e1cffef87ccaa106e65546629603a300bab9870a6a",
     "selected_configuration_file": "bt2a_nq_selected_configuration_2026-08-29.json",
     "selected_configuration_file_sha256": "b4f8ebc4d13d01b6a4d39250fc6c05fad37ad5d395cf535e8ec56e849c44b1bc"
+  },
+  "estimand_amendment": {
+    "amendment_id": "bt2a_nq_gate1_estimand_amendment_v1",
+    "authorization_channel": "Notion chat survey response",
+    "authorized_at": "2026-08-30T15:32-03:00",
+    "authorized_by": "Nicolas Buttaro",
+    "from_outcome_per_event": "TRICHOTOMOUS_SIGN_PLUS_B_MINUS_B_ZERO",
+    "rationale": "The trichotomous encoding discards excursion magnitude and inflates the session-level SD to 26.91 ticks, requiring 10443 sessions for MDE 1. The magnitude estimand is the one the GC sibling instrument already runs, with a measured session-level SD of 11.53 ticks.",
+    "tie_and_incomplete_policy_retained": {
+      "incomplete_trajectory": "EXCLUDED_AT_EVENT_LEVEL",
+      "tie": "ADVERSE"
+    },
+    "to_outcome_per_event": "MAGNITUDE_OF_EXCURSION_WITHIN_CELL_CAPPED_BY_CELL_BARRIER_AND_HORIZON",
+    "unchanged": [
+      "first_passage_barriers_ticks",
+      "first_passage_horizons_observations",
+      "family_size_16",
+      "arms_and_comparators",
+      "paired_within_cme_session_contrast_K_ABS_minus_N_RAND",
+      "equal_session_weight",
+      "holm_multiplicity_over_16_cells",
+      "holdout_boundary"
+    ]
   },
   "execution_platform": "KAGGLE_ONLY",
   "firewall": {
@@ -79,9 +108,10 @@
     "minimum_effective_sessions": 40,
     "minimum_event_count_alone_is_power_proof": false,
     "minimum_events": 400,
+    "power_requires_available_at_least_required": true,
     "pre_execution_power_inputs_required": [
       "MDE",
-      "ICC",
+      "PAIRED_SESSION_SD",
       "EFFECTIVE_SESSION_COUNT",
       "ARM_DENSITY"
     ],
@@ -119,14 +149,56 @@
     ],
     "gc_results_may_reduce_nq_family": false,
     "incomplete_path_policy": "EXCLUDE_WITH_REASON",
+    "per_event_outcome": "SIGNED_MAGNITUDE_OF_EXCURSION_TICKS_CAPPED_BY_CELL_BARRIER_AND_HORIZON",
+    "per_event_outcome_amendment_ref": "bt2a_nq_gate1_estimand_amendment_v1",
+    "per_event_outcome_sign_convention": "POSITIVE_TOWARD_BT2A_SIGNAL_DIRECTION",
+    "per_event_outcome_superseded": "TRICHOTOMOUS_SIGN_PLUS_B_MINUS_B_ZERO",
+    "per_event_outcome_units": "TICKS",
     "same_observation_tie": "ADVERSE_FIRST"
   },
   "power_design": {
     "alpha_family": 0.05,
-    "effective_sessions_required": null,
+    "alpha_per_cell": 0.003125,
+    "effective_sessions_available": 234,
+    "effective_sessions_required": 228,
+    "estimand": "MAGNITUDE_WITHIN_CELL",
     "freeze_before_outcomes_required": true,
     "icc": null,
-    "mde_ticks": null,
+    "icc_retired_reason": "Within-session pairing cancels the shared session effect, so the session-level SD already embeds clustering. The GC bootstrap CI95 for ICC was [0.0254, 0.5317], too wide to use, and the fail-closed upper bound was worse than the previously assumed 0.20.",
+    "icc_status": "NOT_IDENTIFIED_TIGHTLY_ENOUGH_TO_USE",
+    "mde_reconciliation": {
+      "adopted_margin_sessions": 6,
+      "adopted_required_sessions": 228,
+      "adopted_value_ticks": 2.9,
+      "authorized_source": "docs/research/DECISION_NICO_ESTIMAND_MAGNITUDE_2026-08-30.md (commit 74860a5)",
+      "authorized_value_required_sessions": 235,
+      "authorized_value_ticks": 2.861,
+      "available_sessions": 234,
+      "problem": "2.861 is the exact MDE@234, so ceil() of the required-session formula returns 235, one more than the 234 available. The authorized value is not implementable as written.",
+      "ratification_record": "docs/DECISIONES_NICO_2026-08-30.md (D1)",
+      "ratified_at": "2026-08-30T18:07-03:00",
+      "ratified_by": "Nicolas Buttaro",
+      "requires_nico_ratification": false,
+      "why_conservative": "A larger MDE is a weaker claim, so adopting 2.90 cannot inflate sensitivity. It stays below 3.360, the lower bound of the GC CI95, which is the condition that matters for being powered against an effect of the size the sibling instrument measures."
+    },
+    "mde_ticks": 2.9,
+    "mde_ticks_knife_edge_rejected": 2.8614,
+    "multiplicity_scope": "ALL_16_CELLS_RETAINED",
+    "paired_session_sd_provenance": {
+      "arm_correlation_rho": 0.5617,
+      "gc_full_result_payload_sha256": "a307a12c441d82877590a20c59aa1079d590de2cdbb6d55180caaec21622ca53",
+      "pairing_cancels_shared_session_effect": true,
+      "pairing_variance_reduction_pct": 48.06,
+      "sd_is_upper_bound_for_nq": true,
+      "source": "BT2_ABSORPTION_GATE1_ALL5_RESULT_2026-08-26 (GC, all 5 contracts)",
+      "upper_bound_reasons": [
+        "NQ cell barriers 5-30 ticks and horizons 25-250 obs cap variation more tightly than GC tick_cap=2000 / clock_cap_seconds=900",
+        "NQ has 652.54 events per session versus 72.39 in GC, reducing the sampling component"
+      ]
+    },
+    "paired_session_sd_ticks": 11.528529,
+    "power_multiplicity_basis": "BONFERRONI_CONSERVATIVE_FOR_POWER_HOLM_FOR_INFERENCE",
+    "session_attrition_margin": 6,
     "target_power": 0.8
   },
   "purpose": "Test the preregistered directional first-passage mechanism for the structurally selected BT2A NQ configuration without economic PnL or holdout access.",
