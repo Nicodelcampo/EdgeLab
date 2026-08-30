@@ -1,0 +1,71 @@
+{
+  "schema": "bt2a_nq_selection_informal_amendment_v1",
+  "status": "ACTIVE",
+  "created_utc": "2026-08-29T23:15:00.000000+00:00",
+  "amends": "specs/bt2a_nq_target_free_selection_v1.draft.json",
+  "purpose": "Formal amendment authorizing the informal path for the BT2A NQ target-free selection, per Nico's explicit choice (2026-08-29) between finishing the formal 5-contract campaign versus this cheaper fixed-config alternative.",
+  "point_1_config_fixed": {
+    "config_id": "bt2a_nq_7e84981882b0b380",
+    "status": "INFORMAL_EARLY_STOP_NQ_CONFIGURATION",
+    "not_this": "SELECTED_STABLE_NQ_CONFIGURATION",
+    "params": {
+      "TapeWindowTicks": 25,
+      "ScoreMode": "AbsMagnitude",
+      "AbsorptionPct": 90.0,
+      "AbsorptionLookback": 500,
+      "MinHistoryBuckets": 200,
+      "RequireFlowSideMatch": true,
+      "ImbalanceMode": "Diagonal",
+      "TrapVolumeSource": "AggressiveSide",
+      "TicksPerRow": 1,
+      "ImbalanceRatio": 3.0,
+      "MinStackedRows": 1,
+      "MinTrapFrac": 0.2,
+      "MinDeltaFilter": 0.0,
+      "MinTrapVolume": 0.0,
+      "UseWickFilter": true,
+      "WickZonePct": 30.0,
+      "MinExportVolume": 1.0,
+      "InvalidationMode": "CloseThrough",
+      "MaxAgeBars": 2000,
+      "MaxTouches": 0,
+      "DrawZoneBand": true
+    },
+    "evidence_source": "docs/research/DECISION_NQ_SELECTION_EARLY_STOP_2026-08-29.md"
+  },
+  "point_2_rule_violation_declared": {
+    "formal_rule": "structural_score = 0.45*neighbor_median_exact_jaccard + 0.25*session_coverage + 0.20*(1-contract_hhi) + 0.10*neighbor_count_ratio_stability, over minimum_contracts_with_events=4",
+    "formal_rule_never_computed": true,
+    "proxy_actually_used": "n_events per contract (raw count), compared informally across only 2 of 5 contracts",
+    "proxy_evidence": {
+      "contracts_completed": ["NQ 09-25", "NQ 12-25"],
+      "n_events_by_contract": {"NQ 09-25": 18538, "NQ 12-25": 44546},
+      "spearman_rank_correlation_between_the_2_contracts": 0.976,
+      "top10_configs_identical_set": true
+    },
+    "consequence": "This selection does not satisfy the preregistered eligibility rule. Any Gate 1 built on this config is EXPLORATORY, NOT CONFIRMATORY, NOT PROMOTABLE, regardless of its own results.",
+    "gate1_status_ceiling": {
+      "confirmatory_eligible": false,
+      "promotion_eligible": false,
+      "edge_declared": false
+    }
+  },
+  "point_3_informal_partitions": {
+    "tool": "tools/run_bt2a_nq_target_free_informal_fixed_config.py",
+    "scope": "Generates creation-only coordinates for config_id bt2a_nq_7e84981882b0b380 ONLY, for the 3 contracts never run under the formal campaign (NQ 03-26, NQ 06-26, NQ 09-26). Does not repeat the 104-config grid.",
+    "reuses_unchanged": "tools/run_bt2a_nq_target_free_selection.py's per-contract computation path (same event schema, same coordinate/checkpoint file layout, same firewall discipline), restricted to one config_id.",
+    "formal_partitions_already_complete": ["NQ 09-25", "NQ 12-25"],
+    "informal_partitions_to_produce": ["NQ 03-26", "NQ 06-26", "NQ 09-26"],
+    "manifest_requirement": "An all-5 hash-bound coordinate manifest must be produced covering all 5 contracts for config_id bt2a_nq_7e84981882b0b380 before the Event Store creation-only build may consume it -- 2 formal partitions plus 3 informal partitions, explicitly labeled as such in the manifest."
+  },
+  "point_4_event_store_acceptance": {
+    "requirement": "tools/build_bt2a_nq_creation_event_store.py must accept this informal all-5 manifest as valid input without asserting or implying SELECTED_STABLE_NQ_CONFIGURATION. Any status field it writes for provenance must cite this amendment file and carry the INFORMAL_EARLY_STOP_NQ_CONFIGURATION label through to its own output, not silently upgrade it.",
+    "implementation_status": "NOT_YET_IMPLEMENTED",
+    "note": "build_bt2a_nq_creation_event_store.py currently expects status SELECTED_STABLE_NQ_CONFIGURATION per docs/research/BT2A_NQ_CAMPAIGN_SEQUENCE_V1_2026-08-28.md's own read of that tool. It must be amended (not bypassed) to accept this informal provenance explicitly, before it is run."
+  },
+  "authorization": {
+    "authorized_by": "Nico",
+    "authorized_date": "2026-08-29",
+    "authorization_note": "Explicit choice between the formal path (finish 3 remaining contracts) and this informal path (fixed-config coordinates for the 3 missing contracts only), made via direct instruction after being shown both options with their tradeoffs."
+  }
+}
