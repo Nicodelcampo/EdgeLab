@@ -1,0 +1,102 @@
+{
+  "icc_identification": {
+    "bootstrap_ci95": [
+      0.0254,
+      0.5317
+    ],
+    "contract_fixed_effects": 0.0878,
+    "leave_one_contract_out_range": [
+      0.0441,
+      0.1337
+    ],
+    "method": "moment regression of squared session deviations on 1/m_s",
+    "note": "The bootstrap interval spans an order of magnitude and its fail-closed upper bound (0.5317) is worse than the assumed 0.20. The ICC route is therefore rejected as a power lever. The transferable parameter is the realized contrast SD, which needs no ICC because it is measured at session level directly.",
+    "point": 0.067909,
+    "verdict": "NOT_IDENTIFIED_TIGHTLY_ENOUGH_TO_USE"
+  },
+  "measured": {
+    "mean_events_per_session": 72.3931623931624,
+    "mean_paired_session_contrast_ticks": 4.837606837606837,
+    "n_sessions": 234,
+    "pairing_variance_reduction": 0.48056927134270244,
+    "published_contrast": {
+      "lower": 3.355594159773872,
+      "n_sessions": 234,
+      "point": 4.837606837606837,
+      "upper": 6.320101319544505
+    },
+    "reconstruction_matches_published_contrast": true,
+    "rho_between_arms": 0.5616997878183579,
+    "sd_arm_K_ABS": 13.934391202022912,
+    "sd_arm_N_RAND": 7.855140056265527,
+    "sd_paired_session_contrast_ticks": 11.52852946706934,
+    "se_mean_ticks": 0.7536435476361024
+  },
+  "nq_power": {
+    "alpha_bonferroni_16": 0.003125,
+    "alpha_single": 0.05,
+    "mean_events_per_session": 652.542735042735,
+    "n_sessions_available": 234,
+    "power": 0.8,
+    "scenarios": [
+      {
+        "encoding": "sign(+b/-b/0) first passage",
+        "id": "TRICHOTOMOUS_PREREGISTERED",
+        "mde_at_234_bonf16": 6.680388159547587,
+        "mde_at_234_single": 4.9293445721540845,
+        "required_mde1_bonf16": 10443,
+        "sd_basis": "Popoviciu bound b=30 / sqrt(m_eff), ICC=0.20 ASSUMED",
+        "sd_session_ticks": 26.914930875705576
+      },
+      {
+        "encoding": "signed excursion magnitude, GC estimand family",
+        "id": "MAGNITUDE_GC_TRANSFER",
+        "mde_at_234_bonf16": 2.861424839040629,
+        "mde_at_234_single": 2.1113966227835212,
+        "required_mde1_bonf16": 1916,
+        "required_mde1_single": 1044,
+        "sd_basis": "GC realized paired-session contrast SD, MEASURED n=234",
+        "sd_session_ticks": 11.52852946706934
+      }
+    ]
+  },
+  "payload_sha256": "032c6b7bbcefbd10c126ce87ff46bdd024df8fc48fe5a621b0418b5c1f6c65a5",
+  "schema_version": "bt2a_nq_gate1_gc_transfer_prior_v1",
+  "source_files_sha256": {
+    "docs/research/BT2_ABSORPTION_GATE1_ALL5_RESULT_2026-08-26.json": "d2615fe0a8143aa5f602d584daab8bf4b0871827916c3507851665f3c8741cb2",
+    "docs/research/BT2_ABSORPTION_GATE1_ALL5_SESSIONS_GC_02_26_2026-08-26.csv": "e0c989a8699695380fe9a392fb3289b04bae0c1213395ec31c08d66764b37430",
+    "docs/research/BT2_ABSORPTION_GATE1_ALL5_SESSIONS_GC_04_26_2026-08-26.csv": "285e4a198196f999be3783202780d5398c78776ca3ec7a3ec6408bd0f2d49ee0",
+    "docs/research/BT2_ABSORPTION_GATE1_ALL5_SESSIONS_GC_06_26_2026-08-26.csv": "68dc7eb2081c93725f4fd80a7ab3351ca543cf5deb255573add1ae488a0f4002",
+    "docs/research/BT2_ABSORPTION_GATE1_ALL5_SESSIONS_GC_08_26_2026-08-26.csv": "e42761dfa8ffdd1fa1be1d19c78e9748e04a6bc8a4683b759e15e6d427b33b50",
+    "docs/research/BT2_ABSORPTION_GATE1_ALL5_SESSIONS_GC_12_25_2026-08-26.csv": "5b65fea95d39318d99a7eaa0a56fa07b903f7e050c0d6687659896a7bee56b8c"
+  },
+  "source_instrument": "GC",
+  "source_run": {
+    "arms": [
+      "K_ABS",
+      "K_ABS_SHUFFLE",
+      "K_BT2",
+      "N_RAND"
+    ],
+    "campaign_outcomes_opened": true,
+    "clock_cap_seconds": 900,
+    "decision": "EXPANDED_PRIMARY_POSITIVE_NOT_NONINFERIOR_TO_BT2",
+    "estimand": "median(MFE_ticks)-median(MAE_ticks), equal CME-session weight",
+    "full_result_payload_sha256": "a307a12c441d82877590a20c59aa1079d590de2cdbb6d55180caaec21622ca53",
+    "multiplicity": "single preregistered configuration, alpha=0.05, no Bonferroni",
+    "n_sessions": 234,
+    "replications": 10000,
+    "seed": 20260821,
+    "status": "COMPLETE_GATE1_ALL5_POST_OUTCOME_REPLICATION",
+    "summary_payload_sha256": "38fd7267ae8f7cd7503a28bff8ab32fcec60a8c027d7b263bcbd3b9e674638cc",
+    "tick_cap": 2000
+  },
+  "status": "DRAFT_REVIEW_REQUIRED",
+  "target_free_wrt_nq": true,
+  "transfer_justification": "GC and NQ Gate 1 share the same event family (BigTrap2Absorption), the same runner lineage (edgelab.research.bt2_gate1_all5), the same paired within-CME-session contrast K_ABS - N_RAND, the same equal-session weighting, the same 234-session sample size, and the same replication design (replications=10000, seed=20260821). GC outcomes are already open, so reading them opens nothing new. Two independent margins make the transfer conservative rather than optimistic for NQ: (1) NQ cells cap excursions at 5-30 ticks over 25-250 horizons, far tighter than GC's tick_cap=2000 / clock_cap_seconds=900, and a tighter cap can only reduce event-level outcome variance; (2) NQ has 652.5 events per session against GC's 72.4, which can only reduce the sampling component of session-level variance. The transferred SD is therefore an upper bound for NQ under the same estimand, not a point estimate.",
+  "unresolved_requires_nico": [
+    "estimand_amendment_authorization",
+    "preregistered_mde_ticks",
+    "multiplicity_scope_16_cells_vs_single_primary_cell"
+  ]
+}
