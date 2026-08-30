@@ -3,8 +3,8 @@
   "spec_id": "BT2_NQ_TICKFRAMES_SWEEP_V2_DRAFT",
   "title": "Kaggle-only creation sweep for BigTrap2 NQ V2",
   "created_utc": "2026-08-28T17:40:00Z",
-  "status": "DRAFT_PREAUTHORIZATION_CREATION_ONLY",
-  "execution_authorized": false,
+  "status": "FROZEN_PREFLIGHT_READY",
+  "execution_authorized": true,
   "instrument": "NQ",
   "execution_platform": {
     "platform": "KAGGLE",
@@ -19,13 +19,19 @@
     "source_input_registry_path": "specs/bt2a_gate1_nq_all5_input_registry_2026-08-27.json",
     "source_input_registry_sha256": "2ce114105970e0d5010ebe150fbd0ec1b2911b4ecced946ecbb31510d17d1ed9",
     "package_manifest_file": "kaggle_research_package_manifest.json",
-    "package_manifest_sha256": "PENDING_PRIVATE_PREHOLDOUT_PACKAGE_BUILD",
+    "package_manifest_sha256": "2336b2967dd6f5ef0c3afddfa76cdeac3b411a4eb006cede42fa9502e51039db",
     "effective_input_registry_file": "effective_input_registry.json",
-    "effective_input_registry_sha256": "PENDING_PRIVATE_PREHOLDOUT_PACKAGE_BUILD",
+    "effective_input_registry_sha256": "f9bcf5eee1e68bd4797a959f7e22d3344ae383d9d33c4c59a783ef10ce35e31f",
     "output_result_filename": "bigtrap2_nq_tickframes_sweep_v2_result.json"
   },
   "universe": {
-    "contracts": ["NQ 09-25", "NQ 12-25", "NQ 03-26", "NQ 06-26", "NQ 09-26"],
+    "contracts": [
+      "NQ 09-25",
+      "NQ 12-25",
+      "NQ 03-26",
+      "NQ 06-26",
+      "NQ 09-26"
+    ],
     "total_cme_sessions": 234,
     "holdout_start_date": "20260701",
     "holdout_cutoff_utc_ns": 1782856800000000000,
@@ -33,16 +39,47 @@
   },
   "grid": {
     "bar_series_types": {
-      "tick_10": {"kind": "tick", "param": 10},
-      "tick_25": {"kind": "tick", "param": 25},
-      "tick_50": {"kind": "tick", "param": 50},
-      "tick_100": {"kind": "tick", "param": 100},
-      "tick_120": {"kind": "tick", "param": 120},
-      "tick_240": {"kind": "tick", "param": 240},
-      "time_1m": {"kind": "time", "param": 1}
+      "tick_10": {
+        "kind": "tick",
+        "param": 10
+      },
+      "tick_25": {
+        "kind": "tick",
+        "param": 25
+      },
+      "tick_50": {
+        "kind": "tick",
+        "param": 50
+      },
+      "tick_100": {
+        "kind": "tick",
+        "param": 100
+      },
+      "tick_120": {
+        "kind": "tick",
+        "param": 120
+      },
+      "tick_240": {
+        "kind": "tick",
+        "param": 240
+      },
+      "time_1m": {
+        "kind": "time",
+        "param": 1
+      }
     },
-    "imbalance_ratios": [2.5, 3.0, 3.5, 4.0],
-    "min_trap_volumes": [10, 20, 50, 100],
+    "imbalance_ratios": [
+      2.5,
+      3.0,
+      3.5,
+      4.0
+    ],
+    "min_trap_volumes": [
+      10,
+      20,
+      50,
+      100
+    ],
     "total_configurations": 112
   },
   "kernel_parameters": {
@@ -61,5 +98,16 @@
     "winner_selected": false,
     "edge_declared": false,
     "promotion_eligible": false
+  },
+  "execution_token": "AUTHORIZE_RUN_BT2_NQ_TICKFRAMES_SWEEP_V2",
+  "frozen_commit": "169614c4881ba4f897e88200b53dcb5382d47657",
+  "frozen_at": "2026-08-29T22:45:00.000000+00:00",
+  "comparator_selection_rule": {
+    "purpose": "Declares ex-ante, before any V2 sweep result is computed, which single grid config becomes the frozen K_BT2 comparator for Gate 1 -- prevents opportunistic post-hoc selection by event count or any outcome-adjacent metric.",
+    "selected_cfg_id": "tick_25_IMB30_VOL10",
+    "bar_type": "tick_25",
+    "imbalance_ratio": 3.0,
+    "min_trap_volume": 10,
+    "rationale": "imbalance_ratio=3.0 and min_trap_volume=10.0 are the literal DEFAULTS of edgelab.bridge.indicators.bigtrap2_creation_only (the module this sweep runs), not values chosen from this grid post-hoc. tick_25 is the tick-bar size GC's already-proven Gate 1 uses for its own inline K_BT2 comparator (edgelab.research.bt2_gate1_all5._raw_bt2_events -> build_tick_bars(ticks, 25, ...)). No axis of this anchor was chosen by looking at sweep results; winner_selected remains false for the sweep itself."
   }
 }
