@@ -1,9 +1,9 @@
 {
-  "schema_version": "avolcluster_nq_lifecycle_first_touch_v1.1.0-draft",
+  "schema_version": "avolcluster_nq_lifecycle_first_touch_v1.2.0-draft",
   "status": "DRAFT_DESIGN_ONLY_PREAUTHORIZATION",
   "title": "aVolClusterPOI NQ-120t lifecycle + zone-interaction Event Store (Gate 3/4 del roadmap conjunto)",
   "created_date": "2026-08-30",
-  "version_note": "v1.1.0: las zonas son regiones, no puntos (input de Nico 2026-08-30). Se reemplaza la clasificación borde-céntrica por anatomía completa de interacción: entrada, profundidad interior, permanencia, resolución. DP-L1/L2/L3 resueltos por delegación de Nico (ver doc de diseño §6).",
+  "version_note": "v1.2.0: contrato de paralelismo agregado (pregunta de Nico 2026-08-30: ¿las corridas corren contratos en paralelo en Kaggle?). El lifecycle no tiene estado cruzado entre sesiones por construcción (D-L1) => nace paralelo por contract-session con determinismo obligatorio. v1.1.0: zonas como regiones (anatomía completa de interacción); D-L1/L2/L3 resueltos por delegación.",
   "freeze_authorized": false,
   "execution_authorized": false,
   "authority": {
@@ -72,12 +72,30 @@
     "traversal_consumption_rule": "El primer TRAVERSED consume la zona para la familia primaria: la anatomía primaria describe el camino creación → primera salida por el lado opuesto (o fin de sesión). Interacciones post-travesía se contabilizan pero son familia secundaria.",
     "reentries": "conteo y timestamps de entradas posteriores a la primera, anteriores a la travesía que consume. Secundario declarado; nunca alimenta el ancla primaria.",
     "expiration": "la zona llega al final duro de su sesión CME sin ningún tick dentro (ni travesía sin contacto).",
-    "censoring": "RIGHT_CENSORED_AT_SESSION_END; el fin de datos (sesión 20260630) es censura administrativa y se reporta aparte (CENSORED_DATA_END). No hay zonas multi-sesión (DP-L1 resuelto)."
+    "censoring": "RIGHT_CENSORED_AT_SESSION_END; el fin de datos (sesión 20260630) es censura administrativa y se reporta aparte (CENSORED_DATA_END). No hay zonas multi-sesión (D-L1 resuelto)."
   },
   "episode_policy": {
-    "overlapping_zones_rule": "FIRST_ELIGIBLE_EVENT_WINS por región solapada: si dos zonas OFF_PRICE de la misma sesión se solapan en precio, el episodio se ancla a la de menor availability_ts_utc_ns; la segunda se marca EPISODE_COLLAPSED_WITH=<zone_event_id> y se excluye del análisis primario (fila conservada, marcada). Regla confirmada bajo delegación (DP-L3): es la única candidata que no condiciona el ancla a la interacción misma (una regla 'la más cercana al precio al tocar' usaría el outcome para elegir el ancla).",
+    "overlapping_zones_rule": "FIRST_ELIGIBLE_EVENT_WINS por región solapada: si dos zonas OFF_PRICE de la misma sesión se solapan en precio, el episodio se ancla a la de menor availability_ts_utc_ns; la segunda se marca EPISODE_COLLAPSED_WITH=<zone_event_id> y se excluye del análisis primario (fila conservada, marcada). Regla confirmada bajo delegación (D-L3): es la única candidata que no condiciona el ancla a la interacción misma (una regla 'la más cercana al precio al tocar' usaría el outcome para elegir el ancla).",
     "overlap_detection": "intersección no vacía de [lower_tick, upper_tick] dentro de la misma sesión",
     "collapse_rule_frozen_before_outcomes": true
+  },
+  "parallelism": {
+    "contract_status": "BORN_PARALLEL_BY_CONSTRUCTION",
+    "rationale": "pregunta de Nico 2026-08-30. Auditoría de los runners existentes: (a) tools/build_avolcluster_nq_zone_store.py es serial y debe serlo — el SessionProfile se arrastra a través de la cadena cronológica de contratos (lookback 20 sesiones); paralelizar contratos de forma ingenua rompe la correctitud; (b) tools/sweep_bigtrap2_nq_tickframes_v2.py es serial pero no necesita serlo — edgelab/bridge/indicators/bigtrap2_creation_only.py::detect_creations_only es una función pura sin estado de módulo ni perfil cruzado (verificado leyendo el fuente, blob f0e481d9); (c) este store de lifecycle no tiene estado cruzado entre sesiones por construcción (zonas sesión-scoped, D-L1) => nace paralelo.",
+    "parallel_unit": "contract-session (coincide con el grano del checkpoint)",
+    "state_dependency": "ninguna entre unidades: cada contract-session depende sólo de (a) sus zonas del store de creación (leído por hash) y (b) los ticks de su propia ventana CME registrada",
+    "determinism_contract": {
+      "results_independent_of_worker_count": "los bytes de cada checkpoint deben ser idénticos para worker_count = 1 y worker_count = N; el merge/persistencia sigue session_ordinal, nunca el orden de finalización de workers",
+      "worker_count_recorded_not_load_bearing": "worker_count se registra en el manifiesto como metadato operativo y jamás cambia el contenido",
+      "atomic_writes_only": "escritura atómica por checkpoint (patrón atomic_write_json ya existente); un fallo a mitad de corrida no deja checkpoints parciales de sesión",
+      "verification_required": "test sintético obligatorio ANTES del freeze: misma fixture ejecutada con worker_count 1 y worker_count 4 debe producir checkpoints byte-idénticos (mismo sha256 por archivo)"
+    },
+    "kaggle_resource_contract": {
+      "binding_constraint": "RAM, no CPU: un worker que decodifica un contrato NQ completo en memoria multiplica el pico por worker; el patrón correcto es cargar una vez y compartir read-only entre workers por fork (copy-on-write en Linux/Kaggle) o pool acotado con gc entre contratos",
+      "cores_expectation": "kernels CPU de Kaggle ~4 vCPU: speedup objetivo 3-4x, no lineal; declarar elapsed_seconds por fase en el manifiesto (como hace el sweep V2) para que el speedup sea medido y no supuesto",
+      "session_time_budget": "Kaggle acota la duración de sesión; la paralelización es también hedge de ese límite"
+    },
+    "out_of_scope_but_registered": "dos descomposiciones para trabajos futuros, no para este spec: (i) creación AVol en dos fases (contribuciones de perfil por sesión en paralelo + merge por prefijo ordenado + detección paralela contra snapshots hash-bindeados) — sólo pagaría en un re-run de creación, hoy no planeado; (ii) sweep BigTrap2 NQ V2 por contrato o por (contrato × bar_type), seguro por la pureza verificada del detector"
   },
   "event_store": {
     "stage": "ZONE_LIFECYCLE_INTERACTION_ONLY",
@@ -129,6 +147,7 @@
     "no_entry_before_availability": "check duro: first_entry_ts_utc_ns > availability_ts_utc_ns en toda fila ENTERED",
     "traversed_no_contact_consistency": "toda fila TRAVERSED_NO_CONTACT tiene first_entry_ts_utc_ns NULL y un par de ticks consecutivos que abarcan [lower,upper] verificable en el checkpoint",
     "depth_bounds": "0 <= depth_into_zone_ticks_max <= width_ticks en toda fila ENTERED",
+    "determinism_across_worker_counts": "misma corrida con distinto worker_count produce checkpoints byte-idénticos (ver parallelism.determinism_contract)",
     "zero_sessions_ge_20260701": true,
     "zero_directional_or_pnl_columns": true,
     "schema_and_domain_valid": true,
@@ -156,7 +175,7 @@
   },
   "review_blockers_before_freeze": [
     "bindear el hash completo del parquet del store de creación (hoy sólo prefijo 4dad91f6 vía CURRENT.md)",
-    "implementación del runner con tests sintéticos de verdad conocida (toque por cada borde, travesía con y sin contacto, expiración, censura, solapamiento, tie ambiguo, depth y dwell exactos en jugadas construidas a mano) ANTES de freeze",
+    "implementación del runner con tests sintéticos de verdad conocida (toque por cada borde, travesía con y sin contacto, expiración, censura, solapamiento, tie ambiguo, depth y dwell exactos en jugadas construidas a mano, y la prueba de determinismo worker_count 1 vs 4) ANTES de freeze",
     "preflight fail-closed equivalente al del store de creación (hash de inputs, ventanas, cero lectura fuera de rango)",
     "publicar inputs de potencia para la capa de contraste posterior: n_sesiones con zonas (233), densidad por sesión, sin abrir outcomes"
   ],
