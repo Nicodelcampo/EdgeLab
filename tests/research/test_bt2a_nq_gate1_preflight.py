@@ -22,11 +22,20 @@ def test_gate1_draft_is_valid_but_not_ready():
     runner.validate_spec(value)
     missing = runner.missing_bindings(value)
     assert "bt2a_creation_event_store_manifest_sha256" in missing
-    assert "bt2_comparator_config_id" in missing
-    assert "macro_calendar_sha256" in missing
+    assert "bt2_v2_result_file_sha256" in missing
+    assert "selected_configuration_file_sha256" in missing
     assert "power_design.mde_ticks" in missing
     assert "power_design.icc" in missing
     assert "power_design.effective_sessions_required" in missing
+
+
+def test_gate1_comparator_config_id_is_bound_to_preregistered_v2_winner():
+    value = load_spec()
+    assert value["dependencies"]["bt2_comparator_config_id"] == "tick_25_IMB30_VOL10"
+    rule = json.loads(
+        (ROOT / "specs" / "bigtrap2_nq_tickframes_sweep_v2.draft.json").read_text(encoding="utf-8")
+    )["comparator_selection_rule"]
+    assert value["dependencies"]["bt2_comparator_config_id"] == rule["selected_cfg_id"]
 
 
 def test_gate1_preflight_has_no_execution_mode_or_outcome_import():
