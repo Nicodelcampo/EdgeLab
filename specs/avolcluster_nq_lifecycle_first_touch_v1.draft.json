@@ -1,0 +1,158 @@
+{
+  "schema_version": "avolcluster_nq_lifecycle_first_touch_v1.0.0-draft",
+  "status": "DRAFT_DESIGN_ONLY_PREAUTHORIZATION",
+  "title": "aVolClusterPOI NQ-120t lifecycle + first-touch Event Store (Gate 3/4 del roadmap conjunto)",
+  "created_date": "2026-08-30",
+  "freeze_authorized": false,
+  "execution_authorized": false,
+  "authority": {
+    "design_document": "docs/research/AVOLCLUSTER_NQ_LIFECYCLE_FIRST_TOUCH_DESIGN_V1_2026-08-30.md",
+    "joint_design_document": "docs/research/AVOLCLUSTER_BT2A_NQ_JOINT_MEASUREMENT_DESIGN_V1_2026-08-28.md",
+    "joint_design_spec": "specs/avolcluster_bt2a_nq_joint_measurement_v1.draft.json",
+    "creation_store_spec": "specs/avolcluster_nq_zone_event_store_v1.json",
+    "creation_store_spec_frozen_commit": "3fd75812862a6aea58057eba01b5cb457f0a6c56",
+    "creation_store_spec_payload_sha256": "c9792d00da4f15311acdd13f965d06d601e0d08ae0e961766338d04e5e9440ba",
+    "creation_store_producer_commit": "910c4dd75a6e6494f01497b4ff073d5a1e8e9637",
+    "creation_store_parquet_sha256_prefix_from_current_md": "4dad91f6",
+    "creation_store_full_hash_binding": "PENDING_AT_FREEZE_FROM_docs/research/_metadata",
+    "kernel_path": "edgelab/bridge/indicators/avolclusterpoi.py",
+    "kernel_version": "0.5",
+    "kernel_git_blob_sha1": "e472a06899e3d76287072fdbeef4b95604101eb3",
+    "session_registry_path": "specs/bt2a_gate1_nq_all5_sessions_2026-08-27.json",
+    "input_registry_path": "specs/bt2a_gate1_nq_all5_input_registry_2026-08-27.json"
+  },
+  "epistemic_scope": {
+    "stage": "LIFECYCLE_FIRST_TOUCH_MEASUREMENT_INFRASTRUCTURE_ONLY",
+    "reads_future_price_path_relative_to_creation": true,
+    "future_price_path_accessed_only_after_build_token": true,
+    "directional_outcomes_accessed": false,
+    "mfe_mae_accessed": false,
+    "first_passage_accessed": false,
+    "pnl_accessed": false,
+    "holdout_touched": false,
+    "winner_selected_from_outcomes": false,
+    "edge_declared": false,
+    "promotion_eligible": false,
+    "note": "El lifecycle lee precios posteriores a la creación de la zona (first touch). No es P&L ni outcome direccional, pero SÍ es acceso a camino futuro: por eso corre con token propio, post-freeze, en ventanas registradas pre-holdout."
+  },
+  "population": {
+    "source": "canonical_zone_creation_event_store",
+    "zone_kind": "OFF_PRICE",
+    "config_id": "tick_120_W5_M20_C4_P950",
+    "instrument": "NQ",
+    "tick_size": 0.25,
+    "contracts": ["NQ 09-25", "NQ 12-25", "NQ 03-26", "NQ 06-26", "NQ 09-26"],
+    "contract_sessions_expected": 234,
+    "zones_expected_exact": 5876,
+    "contract_sessions_with_zones_expected": 233,
+    "session_id_max_inclusive": "20260630",
+    "holdout_session_id_min_inclusive": "20260701",
+    "event_space_enumeration": "Toda zona ZONE_CREATED del store canónico de creación (5.876), sin filtro posterior. El espacio del que se extrae es exactamente el store congelado; ninguna zona se agrega ni se quita por propiedades de su trayectoria."
+  },
+  "definitions": {
+    "first_touch": "Primer tick causalmente posterior a availability_ts_utc_ns de la zona cuyo precio entra en [lower_tick, upper_tick] inclusive, en ticks enteros.",
+    "creation_bar_eligible_for_touch": false,
+    "clock_start": "availability_ts_utc_ns del evento de creación (primer instante causalmente disponible después del cierre creador).",
+    "touch_edge_classification": {
+      "LOWER_EDGE": "primer tick de contacto == lower_tick",
+      "UPPER_EDGE": "primer tick de contacto == upper_tick",
+      "INTERIOR": "primer tick de contacto estrictamente interior",
+      "FULL_PENETRATION_AT_CONTACT": "el primer contacto ya atraviesa la zona completa (entra por un borde y sale por el otro dentro del mismo tick — sólo observable si el tick abarca ambos bordes)",
+      "tie_policy": "si un mismo tick toca ambos bordes (ancho 0 tras snap o tick grande), clasificar AMBIGUOUS_EDGE y contar aparte; no inventar orden (ATJ-03)."
+    },
+    "penetration_ticks_max": "máxima cantidad de ticks enteros que el precio cierra más allá del borde opuesto dentro de la misma sesión, posterior al primer toque; 0 si nunca penetra.",
+    "expiration": "la zona llega al final duro de su sesión CME sin primer toque.",
+    "censoring": "RIGHT_CENSORED_AT_SESSION_END. No hay zonas que vivan entre sesiones: la frontera de sesión es dura (misma regla que Gate 1 BT2A). El fin de datos (sesión 20260630) es censura administrativa y se reporta aparte.",
+    "reentry_and_second_touches": "familia secundaria declarada: conteo y timestamps de reingresos posteriores al primer toque dentro de la misma sesión. Nunca alimentan el ancla primaria."
+  },
+  "episode_policy": {
+    "overlapping_zones_rule": "FIRST_ELIGIBLE_EVENT_WINS por región solapada: si dos zonas OFF_PRICE de la misma sesión se solapan en precio, el episodio de toque se ancla a la zona con availability_ts_utc_ns menor; la segunda se marca EPISODE_COLLAPSED_WITH=<event_id> y se excluye del análisis primario (se conserva la fila, marcada).",
+    "overlap_detection": "solapamiento = intersección no vacía de [lower_tick, upper_tick] dentro de la misma sesión.",
+    "collapse_rule_must_be_frozen_before_outcomes": true,
+    "second_touches_secondary_only": true
+  },
+  "event_store": {
+    "stage": "ZONE_LIFECYCLE_FIRST_TOUCH_ONLY",
+    "checkpoint_grain": "one JSON file per contract-session",
+    "checkpoint_order": "session registry ordinal",
+    "resume_policy": "only a contiguous prefix bound to the same spec, source hashes and exact code commit",
+    "parquet_role": "transport mirror validated 1:1 against canonical checkpoints",
+    "input_binding": "cada zona se lee del store de creación por identity_sha256; el runner verifica el hash del store de entrada ANTES de decodificar precios; los precios se leen de los cinco Parquet hash-bindeados del input registry, con predicate pushdown dentro de la ventana CME registrada de cada sesión.",
+    "contract": {
+      "exact_columns": true,
+      "fields": [
+        {"name": "schema_version", "type": "str"},
+        {"name": "lifecycle_event_id", "type": "str"},
+        {"name": "zone_event_id", "type": "str", "note": "FK al store de creación"},
+        {"name": "zone_identity_sha256", "type": "str"},
+        {"name": "instrument", "type": "str"},
+        {"name": "contract", "type": "str"},
+        {"name": "session_id", "type": "str"},
+        {"name": "config_id", "type": "str"},
+        {"name": "session_ordinal", "type": "int"},
+        {"name": "final_state", "type": "str", "domain": ["TOUCHED", "EXPIRED_SESSION_END", "CENSORED_DATA_END"]},
+        {"name": "first_touch_ts_utc_ns", "type": "int", "nullable": true},
+        {"name": "first_touch_tick", "type": "int", "nullable": true},
+        {"name": "touch_edge", "type": "str", "nullable": true, "domain": ["LOWER_EDGE", "UPPER_EDGE", "INTERIOR", "FULL_PENETRATION_AT_CONTACT", "AMBIGUOUS_EDGE"]},
+        {"name": "age_at_touch_ns", "type": "int", "nullable": true},
+        {"name": "ticks_since_availability", "type": "int", "nullable": true},
+        {"name": "bars_120t_since_availability", "type": "int", "nullable": true},
+        {"name": "approach_side", "type": "int", "nullable": true, "note": "signo de (first_touch_tick - close_tick de creación); descriptivo geométrico, NO dirección de trade"},
+        {"name": "penetration_ticks_max", "type": "int", "nullable": true},
+        {"name": "n_reentries_after_first_touch", "type": "int", "nullable": true},
+        {"name": "episode_collapsed_with", "type": "str", "nullable": true},
+        {"name": "creation_source_identity_sha256", "type": "str"},
+        {"name": "source_data_sha256", "type": "str"}
+      ],
+      "sort_keys": ["session_ordinal", "zone_event_id"],
+      "unique_fields": ["lifecycle_event_id", "zone_event_id"],
+      "forbidden_columns": ["mfe", "mae", "first_passage", "tp_first", "sl_first", "pnl", "return", "outcome_direction"]
+    }
+  },
+  "finalization_gates": {
+    "exactly_234_checkpoints": true,
+    "contiguous_prefix_complete": true,
+    "exactly_5876_zones_accounted": "TOUCHED + EXPIRED_SESSION_END + CENSORED_DATA_END == 5876 en total y por sesión contra el store de creación",
+    "every_zone_event_id_exists_in_creation_store": true,
+    "no_touch_before_availability": "check duro: first_touch_ts_utc_ns > availability_ts_utc_ns en toda fila TOUCHED",
+    "zero_sessions_ge_20260701": true,
+    "zero_directional_or_pnl_columns": true,
+    "schema_and_domain_valid": true,
+    "parquet_checkpoint_equivalence_1to1": true
+  },
+  "authorization": {
+    "freeze_token": "APPROVE_FREEZE_AVOLCLUSTER_NQ_LIFECYCLE_V1",
+    "build_token": "AUTHORIZE_BUILD_AVOLCLUSTER_NQ_LIFECYCLE_V1",
+    "finalize_token": "AUTHORIZE_FINALIZE_AVOLCLUSTER_NQ_LIFECYCLE_V1",
+    "validate_token": "AUTHORIZE_VALIDATE_AVOLCLUSTER_NQ_LIFECYCLE_V1",
+    "tokens_are_separate_runtime_decisions": true,
+    "execution_platform": "KAGGLE_ONLY",
+    "outcome_execution_token": null
+  },
+  "review_blockers_before_freeze": [
+    "decidir DP-L1, DP-L2, DP-L3 del documento de diseño",
+    "bindear el hash completo del parquet del store de creación (hoy sólo prefijo 4dad91f6 vía CURRENT.md)",
+    "implementación del runner con tests sintéticos (verdad conocida: toque, expiración, censura, solapamiento, tie ambiguo) ANTES de freeze",
+    "preflight fail-closed equivalente al del store de creación (hash de inputs, ventanas, cero lectura fuera de rango)",
+    "publicar inputs de potencia para la capa de contraste posterior: n_sesiones con zonas (233), densidad por sesión, sin abrir outcomes"
+  ],
+  "forbidden_claims": [
+    "zone has predictive information",
+    "touch hazard is an edge",
+    "OFF_PRICE side is a direction forecast",
+    "institutional activity proven",
+    "edge",
+    "promotion eligible"
+  ],
+  "firewall": {
+    "LIFECYCLE_STORE_BUILT": false,
+    "FUTURE_PRICE_PATH_ACCESSED": false,
+    "MFE_MAE_ACCESSED": false,
+    "FIRST_PASSAGE_ACCESSED": false,
+    "PNL_ACCESSED": false,
+    "HOLDOUT_TOUCHED": false,
+    "WINNER_SELECTED": false,
+    "EDGE_DECLARED": false,
+    "PROMOTION_ELIGIBLE": false
+  }
+}
