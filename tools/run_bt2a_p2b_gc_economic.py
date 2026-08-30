@@ -32,7 +32,7 @@ from edgelab.research.holdout_guard import check_holdout  # noqa: E402
 SPEC_REL = "specs/bt2a_p2b_gc_economic_v1.json"
 AUTH = "AUTHORIZE_BT2A_P2B_GC_ECONOMIC_V1"
 BRANCH = "research/bt2a-p2b-economic-gc-v1-20260827"
-EVENT_PAYLOAD = "feee6001e88aa69f62a092b253e468531230120a3dccdc2ceac0d488c9684cbd"
+EVENT_PAYLOAD = "f033f0c81c57317f3546f7641af88aa304a38b9ddf7dea800266cd1da320dfa8"  # rebuilt after GC 08-26 recut; see specs/bt2a_p2b_gc_economic_v1.json source_p2a.event_store_rebuild_note
 BARRIERS = (5, 9, 18, 30)
 HORIZONS = (25, 50, 100, 250)
 SCENARIOS = {
