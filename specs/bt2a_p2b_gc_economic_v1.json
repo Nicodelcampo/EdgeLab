@@ -1,0 +1,246 @@
+{
+  "schema": "bt2a_p2b_gc_economic_v1",
+  "status": "FROZEN_PREAUTHORIZATION",
+  "created_date": "2026-08-27",
+  "P2B_SPEC_PREPARATION": true,
+  "P2B_RUN": false,
+  "source_p2a": {
+    "result_branch": "results/bt2a-p2a-v1-r1-20260827",
+    "result_commit": "7a9959fb4ee2bf532c64e860cae794db7557eec7",
+    "classification": "P2_DIAGNOSTIC_MECHANISM_SUPPORTED",
+    "result_payload_sha256": "296f8352a46751c3a9a26a32ec29661ddcecba7ac57874a967dc591a92766e28",
+    "event_store_payload_sha256": "602f8f18467f6be081f36e8fc08f5d7e703f510a088afeb480d0b27b5e678e1d",
+    "n_sessions": 234,
+    "n_events": 22202,
+    "max_cme_session": "20260630",
+    "outcomes_already_opened": true,
+    "confirmatory_eligible": false,
+    "event_store_rebuild_note": "Original event_store_payload_sha256 (feee6001e8...) was pinned to an Event Store built with the un-recut GC 08-26 source (2e145b3d...), which is not available in this environment. Re-pinned to f033f0c8... after proving the recut removed zero rows any registered session ever reads (per-contract counts matched EXPECTED exactly: 1314/357 for GC 08-26; _end('20260630') == the recut boundary in nanoseconds). That f033f0c8... value, however, was computed from an incomplete, not-yet-fully-consistent local rebuild (210/234 checkpoints under the old registry hash, 24/234 under the new one) that was abandoned mid-rebuild when local heavy execution was found to violate KAGGLE_ONLY_EXECUTION_POLICY_V1. Re-pinned a second time to 602f8f18... -- the value from a single, complete, consistent 234/234-session rebuild run on Kaggle (research/bt2a-p2b-economic-gc-v1-20260827 @ 70264e805a), whose per-contract K_ABS/K_BT2 counts again matched EXPECTED exactly. This is the value to trust going forward; f033f0c8... should not be treated as ever having been correct."
+  },
+  "firewall": {
+    "P2B_SPEC_PREPARATION": true,
+    "P2B_RUN": false,
+    "PNL_ACCESSED_BY_PREPARATION": false,
+    "FUTURE_PRICE_PATH_ACCESSED_BY_PREFLIGHT": false,
+    "L2_OUTCOMES_OPENED": false,
+    "HOLDOUT_TOUCHED": false,
+    "WINNER_SELECTED": false,
+    "EDGE_DECLARED": false,
+    "CONFIRMATORY_ELIGIBLE": false,
+    "PROMOTION_ELIGIBLE": false,
+    "execution_requires_separate_explicit_authorization": true
+  },
+  "scope": {
+    "instrument": "GC",
+    "contracts": [
+      "GC 12-25",
+      "GC 02-26",
+      "GC 04-26",
+      "GC 06-26",
+      "GC 08-26"
+    ],
+    "position_size_contracts": 1,
+    "pyramiding": false,
+    "reinvestment": false,
+    "arm": "K_ABS",
+    "max_simultaneous_positions": 1,
+    "concurrency_policy": "FIRST_EXECUTABLE_SIGNAL_WINS_PER_CELL",
+    "rejections_persisted": true
+  },
+  "primary_family": {
+    "barriers_ticks": [
+      5,
+      9,
+      18,
+      30
+    ],
+    "horizons_ticks": [
+      25,
+      50,
+      100,
+      250
+    ],
+    "n_cells": 16,
+    "evaluate_all_cells": true,
+    "cross_cell_winner_selection_allowed": false,
+    "p2a_positive_cells_annotation_only": [
+      {
+        "barrier_ticks": 9,
+        "horizon_ticks": 25
+      },
+      {
+        "barrier_ticks": 30,
+        "horizon_ticks": 100
+      },
+      {
+        "barrier_ticks": 30,
+        "horizon_ticks": 250
+      }
+    ]
+  },
+  "instrument_economics": {
+    "tick_size_points": 0.1,
+    "tick_value_usd": 10.0,
+    "point_value_usd": 100.0,
+    "broker_reference": "NinjaTrader Brokerage / EdgeClear",
+    "account_reference": "standard CME intraday margin",
+    "assumption_source": "USER_SUPPLIED_FROZEN_ASSUMPTION_2026-08-27"
+  },
+  "execution": {
+    "signal_availability": "ON_BAR_CLOSE",
+    "entry_order": "AGGRESSIVE_MARKET",
+    "entry_fill_anchor": "FIRST_CANONICAL_TICK_STRICTLY_AFTER_SIGNAL",
+    "same_timestamp_fill_allowed": false,
+    "causal_latency_rows": 1,
+    "latency_diagnostic_ms": {
+      "expected_min": 100,
+      "expected_max": 250,
+      "enforced_as_second_delay": false
+    },
+    "favorable_barrier_order": "LIMIT_AT_PLUS_B_FROM_UNSLIPPED_ENTRY_ANCHOR",
+    "adverse_barrier_order": "STOP_MARKET_AT_MINUS_B_FROM_UNSLIPPED_ENTRY_ANCHOR",
+    "timeout": "MARKET_EXIT_AT_H_TICK_OBSERVATIONS_OR_LAST_TICK_OF_SESSION",
+    "stop_gap_policy": "USE_FIRST_OBSERVED_TRIGGER_PRICE_IF_WORSE_THAN_STOP_LEVEL",
+    "target_price_improvement_allowed": false,
+    "target_and_stop_same_observation": "ADVERSE_STOP_WINS",
+    "close_at_session_end": true
+  },
+  "costs": {
+    "commission_and_fees_round_trip_usd": 5.0,
+    "commission_and_fees_round_trip_ticks": 0.5,
+    "components": [
+      "CME_EXCHANGE",
+      "NFA",
+      "BROKER_CLEARING"
+    ],
+    "component_breakdown_available": false,
+    "spread_ticks_round_trip_assumption": 1.0,
+    "spread_usd_round_trip_assumption": 10.0,
+    "scenarios": {
+      "base": {
+        "slippage_entry_ticks": 1.0,
+        "slippage_exit_ticks": 1.0,
+        "slippage_round_trip_ticks": 2.0,
+        "commission_plus_slippage_ticks": 2.5,
+        "all_in_friction_ticks_including_spread": 3.5,
+        "all_in_friction_usd_including_spread": 35.0
+      },
+      "adverse": {
+        "slippage_entry_ticks": 2.0,
+        "slippage_exit_ticks": 2.0,
+        "slippage_round_trip_ticks": 4.0,
+        "commission_plus_slippage_ticks": 4.5,
+        "all_in_friction_ticks_including_spread": 5.5,
+        "all_in_friction_usd_including_spread": 55.0
+      }
+    },
+    "formula": "net_ticks = gross_ticks - spread_ticks - slippage_round_trip_ticks - commission_round_trip_usd/tick_value_usd",
+    "double_counting_forbidden": true
+  },
+  "sessions": {
+    "canonical_boundary": "HARD_CME_FROM_EVENT_STORE",
+    "canonical_chicago_window": "17:00_PREVIOUS_DAY_TO_17:00_TRADE_DATE_WITH_DAILY_MAINTENANCE_GAP_IN_SOURCE",
+    "user_supplied_window": "18:00_TO_17:00_CT",
+    "timezone_reconciliation": "18:00-17:00 is the ET expression; canonical CT expression is 17:00-16:00 tradable with 16:00-17:00 maintenance, while the repository session label rolls at 17:00 CT",
+    "rth_chicago": {
+      "start": "07:20:00",
+      "end": "12:30:00",
+      "interval": "LEFT_CLOSED_RIGHT_OPEN"
+    },
+    "report_full_session": true,
+    "report_rth_breakdown": true,
+    "aggregation": "EQUAL_CME_SESSION_WEIGHT"
+  },
+  "macro_exclusion": {
+    "event_types": [
+      "FOMC",
+      "CPI",
+      "NFP"
+    ],
+    "window": "RELEASE_UTC_INCLUSIVE_TO_RELEASE_PLUS_5_MINUTES_EXCLUSIVE",
+    "calendar_schema": "bt2a_macro_calendar_v1",
+    "calendar_repository_path": "specs/bt2a_macro_calendar_gc_20250804_20260630_v1.json",
+    "calendar_status": "FROZEN_RESEARCH_SOURCED",
+    "calendar_sample_start": "2025-08-04T00:00:00Z",
+    "calendar_sample_end_exclusive": "2026-07-01T00:00:00Z",
+    "calendar_event_count": 26,
+    "calendar_counts": {
+      "FOMC": 7,
+      "CPI": 10,
+      "NFP": 9
+    },
+    "calendar_sha256": "5f1a484858c7d0bdd997f7f6dafef014bae2f13debdb5bcce937d74257cbd9ca",
+    "calendar_sha256_binding": "SPEC_LITERAL_SHA256_REQUIRED_AS_RUNNER_ARGUMENT_AND_EXECUTION_AUTHORIZATION_BINDING",
+    "calendar_dates_frozen_in_this_spec": true,
+    "missing_or_unbound_calendar_policy": "ABSTAIN"
+  },
+  "holdout": {
+    "start": "2026-07-01T00:00:00Z",
+    "end": "2026-12-31T23:59:59.999999Z",
+    "development_rows_at_or_after_start_allowed": false,
+    "policy": "FAIL_CLOSED"
+  },
+  "estimands": [
+    "NET_USD_PER_TRADE_EQUAL_SESSION",
+    "NET_USD_PER_ELIGIBLE_SIGNAL_EQUAL_SESSION",
+    "NET_TICKS_PER_TRADE_EQUAL_SESSION",
+    "NET_TICKS_PER_ELIGIBLE_SIGNAL_EQUAL_SESSION",
+    "RTH_AND_FULL_SESSION_BREAKDOWN",
+    "TURNOVER_AND_CONCURRENCY_REJECTION_RATE"
+  ],
+  "inference": {
+    "unit": "CME_SESSION",
+    "bootstrap_replications": 10000,
+    "sign_flip_replications": 10000,
+    "confidence": 0.95,
+    "base_seed": 20260827,
+    "multiplicity": "HOLM_OVER_16_CELLS_SEPARATELY_PER_COST_SCENARIO",
+    "events_assumed_iid": false
+  },
+  "decision_rule": {
+    "cell_base_supported": "BASE lower_95 > 0 AND BASE p_holm_16 <= 0.05",
+    "cell_adverse_supported": "ADVERSE lower_95 > 0 AND ADVERSE p_holm_16 <= 0.05",
+    "cell_robust": "cell_base_supported AND cell_adverse_supported",
+    "cell_cost_fragile": "cell_base_supported AND NOT cell_adverse_supported",
+    "global_positive": "AT_LEAST_ONE_ROBUST_CELL_WITHOUT_SELECTING_A_WINNER",
+    "no_winner_selected": true,
+    "edge_declaration_allowed": false,
+    "promotion_allowed": false
+  },
+  "allowed_labels": [
+    "P2B_DIAGNOSTIC_ECONOMIC_ROBUST_CELL_EXISTS",
+    "P2B_DIAGNOSTIC_ECONOMIC_BASE_ONLY",
+    "P2B_DIAGNOSTIC_EXECUTION_NEGATIVE",
+    "P2B_DIAGNOSTIC_INCONCLUSIVE"
+  ],
+  "forbidden_labels": [
+    "CONFIRMATORY_PASS",
+    "EDGE_DECLARED",
+    "PROMOTED",
+    "WINNER_SELECTED"
+  ],
+  "preflight": {
+    "mode": "--preflight-only",
+    "must_not_parse_price_values": true,
+    "must_not_compute_pnl": true,
+    "requires_clean_worktree": true,
+    "requires_event_store_identity": true,
+    "requires_234_checkpoints": true,
+    "requires_macro_calendar_sha256": true,
+    "ready_label": "PASS_READY_FOR_P2B_AUTHORIZATION"
+  },
+  "authorization": {
+    "preparation_authorized": true,
+    "execution_authorized": false,
+    "execution_token": "AUTHORIZE_BT2A_P2B_GC_ECONOMIC_V1",
+    "authorization_must_bind_macro_calendar_sha256": true
+  },
+  "freeze": {
+    "branch": "research/bt2a-p2b-economic-gc-v1-20260827",
+    "base_branch": "work/bt2a-gate2-p2a-freeze-20260826",
+    "execution_authorization_separate": true,
+    "spec_changes_after_first_authorized_run_forbidden": true
+  },
+  "justificacion_economica": "P2-A supported a directional mechanism but did not measure realized net expectancy. P2-B applies frozen executable rules and all-in GC frictions before any holdout access.",
+  "como_podria_refutarse": "The protocol fails if causal fills, cost additivity, macro exclusion, session boundaries, concurrency, all 16 cells, or deterministic replay cannot be independently reconstructed, or if any preparation/preflight path reads PnL or holdout data."
+}
