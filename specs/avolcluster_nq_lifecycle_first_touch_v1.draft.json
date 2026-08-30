@@ -98,9 +98,9 @@
     "roll_boundary_policy": null
   },
   "raw_data": {
-    "source_registry_path": null,
-    "source_registry_sha256": null,
-    "kaggle_dataset_slug": null
+    "source_registry_path": "specs/bt2a_gate1_nq_all5_sessions_2026-08-27.json",
+    "source_registry_sha256": "f50350ee67d53be38cd00e0f3e548cc877e980aebb3b08e422cdde007b39c6cb",
+    "kaggle_dataset_slug": "nicolasbuttaro/edgelab-ticks-nq-preholdout"
   },
   "candidate_values_not_selected": {
     "clock.observation_source": [
@@ -215,6 +215,7 @@
     "raw_data.source_registry_sha256",
     "raw_data.kaggle_dataset_slug"
   ],
+  "unresolved_decisions_note": "raw_data.* removed from unresolved_decisions below on 2026-08-30 -- these are pre-existing facts about the repo/dataset, not new design judgment. See decision_evidence for the measured basis.",
   "unresolved_decisions": [
     "clock.observation_source",
     "clock.observation_clock_unit",
@@ -239,10 +240,7 @@
     "reentries.second_touch_definition",
     "reentries.primary_inclusion_policy",
     "censoring.end_of_sample_policy",
-    "censoring.roll_boundary_policy",
-    "raw_data.source_registry_path",
-    "raw_data.source_registry_sha256",
-    "raw_data.kaggle_dataset_slug"
+    "censoring.roll_boundary_policy"
   ],
   "decision_evidence": {
     "clock.observation_source": null,
@@ -269,9 +267,24 @@
     "reentries.primary_inclusion_policy": null,
     "censoring.end_of_sample_policy": null,
     "censoring.roll_boundary_policy": null,
-    "raw_data.source_registry_path": null,
-    "raw_data.source_registry_sha256": null,
-    "raw_data.kaggle_dataset_slug": null
+    "raw_data.source_registry_path": {
+      "decision_id": "AVOL_LIFECYCLE_RAW_DATA_REGISTRY_PATH_V1",
+      "authority": "Claude (EdgeLab session), measured directly against the frozen creation store",
+      "decided_at": "2026-08-30T06:10:00-03:00",
+      "source_reference": "docs/research/avolcluster_nq_zone_store_manifest.json:session_registry_sha256 (f50350ee67d53be38cd00e0f3e548cc877e980aebb3b08e422cdde007b39c6cb) matches sha256(specs/bt2a_gate1_nq_all5_sessions_2026-08-27.json) byte-for-byte; this is not a new registry, it is the same NQ session registry already used by the BT2A NQ Gate 1 campaign this session."
+    },
+    "raw_data.source_registry_sha256": {
+      "decision_id": "AVOL_LIFECYCLE_RAW_DATA_REGISTRY_SHA256_V1",
+      "authority": "Claude (EdgeLab session), measured directly against the frozen creation store",
+      "decided_at": "2026-08-30T06:10:00-03:00",
+      "source_reference": "Identical fact as raw_data.source_registry_path -- sha256(specs/bt2a_gate1_nq_all5_sessions_2026-08-27.json) computed locally, byte-for-byte match against docs/research/avolcluster_nq_zone_store_manifest.json:session_registry_sha256."
+    },
+    "raw_data.kaggle_dataset_slug": {
+      "decision_id": "AVOL_LIFECYCLE_RAW_DATA_KAGGLE_SLUG_V1",
+      "authority": "Claude (EdgeLab session), INFERRED_BY_ELIMINATION_NOT_DIRECTLY_CONFIRMED",
+      "decided_at": "2026-08-30T06:10:00-03:00",
+      "source_reference": "kaggle datasets list -m shows exactly one NQ raw-tick dataset in this account (nicolasbuttaro/edgelab-ticks-nq-preholdout); no AVolCluster-specific NQ tick dataset or Kaggle kernel exists (Gate 1A's build predates the Kaggle-only policy and ran locally per Nico's own confirmation). This is the only candidate that exists, not a value read from the original Gate 1A build log -- flag for confirmation if/when Gate 1A's build is ever reproduced under the current Kaggle-only policy."
+    }
   },
   "lifecycle_row_contract": {
     "exact_columns": true,

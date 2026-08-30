@@ -26,11 +26,28 @@ class TestAvolLifecycleSpecs(unittest.TestCase):
     def test_lifecycle_draft_is_explicitly_unresolved_and_closed(self):
         spec = self.load("specs/avolcluster_nq_lifecycle_first_touch_v1.draft.json")
         missing = validate_lifecycle_spec(spec)
-        self.assertEqual(missing, spec["decision_paths"])
+        self.assertEqual(missing, spec["unresolved_decisions"])
         self.assertFalse(spec["authorization"]["execution_authorized"])
         self.assertIsNone(spec["authorization"]["execution_token"])
         self.assertFalse(spec["authorization"]["future_path_capability"])
         self.assertFalse(spec["firewall"]["FIRST_TOUCH_BUILD_ALLOWED"])
+
+    def test_raw_data_facts_are_resolved_with_measured_evidence_not_invented(self):
+        spec = self.load("specs/avolcluster_nq_lifecycle_first_touch_v1.draft.json")
+        self.assertNotIn("raw_data.source_registry_path", spec["unresolved_decisions"])
+        self.assertNotIn("raw_data.source_registry_sha256", spec["unresolved_decisions"])
+        self.assertNotIn("raw_data.kaggle_dataset_slug", spec["unresolved_decisions"])
+        registry_path = spec["raw_data"]["source_registry_path"]
+        registry_bytes = (ROOT / registry_path).read_bytes()
+        import hashlib
+
+        self.assertEqual(hashlib.sha256(registry_bytes).hexdigest(), spec["raw_data"]["source_registry_sha256"])
+        manifest = self.load(spec["source_creation_store"]["manifest_path"])
+        self.assertEqual(manifest["session_registry_sha256"], spec["raw_data"]["source_registry_sha256"])
+        for path in ("raw_data.source_registry_path", "raw_data.source_registry_sha256", "raw_data.kaggle_dataset_slug"):
+            evidence = spec["decision_evidence"][path]
+            self.assertTrue(evidence["decision_id"])
+            self.assertTrue(evidence["source_reference"])
 
     def test_episode_draft_preserves_normative_anchor_without_inventing_collapse(self):
         spec = self.load("specs/avolcluster_nq_episode_collapse_v1.draft.json")
@@ -48,9 +65,9 @@ class TestAvolLifecycleSpecs(unittest.TestCase):
         result = audit_readiness(ROOT)
         self.assertEqual(result["status"], "NOT_READY_DECISIONS_REQUIRED")
         self.assertFalse(result["ready_for_execution"])
-        self.assertEqual(len(result["lifecycle_missing_decisions"]), 27)
+        self.assertEqual(len(result["lifecycle_missing_decisions"]), 24)
         self.assertEqual(len(result["episode_missing_decisions"]), 20)
-        self.assertEqual(len(result["missing_decisions"]), 47)
+        self.assertEqual(len(result["missing_decisions"]), 44)
         self.assertTrue(all(row["pass"] for row in result["source_bindings"].values()))
         self.assertTrue(result["creation_manifest"]["checks"]["payload_self_consistent"])
         self.assertFalse(result["FIRST_TOUCH_ACCESSED"])

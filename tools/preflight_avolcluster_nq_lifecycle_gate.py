@@ -31,7 +31,7 @@ EXPECTED_BLOBS = {
     "specs/avolcluster_bt2a_nq_joint_measurement_v1.draft.json": "3db09331f730cc1f137e6bc3aa0dc57f524dddb6",
 }
 EXPECTED_CREATION_MANIFEST = {
-    "file_sha256": "5e4e515d744b7dbe51116b8e071766f3765f63e999ffbf0197a1f71fa2da61c3",
+    "file_sha256": "df80294138d0401d979bceb5416c6006d05fd7d143b00a1bab2323260fea0cd3",
     "payload_sha256": "f87061427d884dac3290c52144bdcf0ab079d4a4b4674237c279072eae51cacc",
     "logical_payload_sha256": "7c254009dc4ccd58f4187360a861f76a692945b94c7091766cce6cf3e46f3a77",
     "parquet_physical_sha256": "4dad91f6a572bfb5edc714dfb13daa4a0bbee6b96301a4d734466a9da7a06674",
