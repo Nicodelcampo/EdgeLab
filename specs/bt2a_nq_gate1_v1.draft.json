@@ -1,45 +1,5 @@
 {
-  "schema_version": "bt2a_nq_gate1_v1",
-  "status": "DRAFT_DESIGN_ONLY_PREAUTHORIZATION",
-  "created_date": "2026-08-28",
-  "purpose": "Test the preregistered directional first-passage mechanism for the structurally selected BT2A NQ configuration without economic PnL or holdout access.",
-  "execution_platform": "KAGGLE_ONLY",
-  "dependencies": {
-    "selected_configuration_file": "selected_configuration.json",
-    "selected_configuration_file_sha256": null,
-    "bt2a_creation_event_store_manifest_file": "bt2a_nq_creation_event_store_manifest.json",
-    "bt2a_creation_event_store_manifest_sha256": null,
-    "private_package_manifest_file": "kaggle_research_package_manifest.json",
-    "private_package_manifest_sha256": null,
-    "effective_input_registry_file": "effective_input_registry.json",
-    "effective_input_registry_sha256": null,
-    "bt2_v2_result_file": "bigtrap2_nq_tickframes_sweep_v2.json",
-    "bt2_v2_result_file_sha256": null,
-    "bt2_comparator_config_id": "tick_25_IMB30_VOL10",
-    "macro_calendar_file": "specs/bt2a_nq_gate1_macro_policy_v1.draft.json",
-    "macro_calendar_sha256": "94b8bdf3ae47a23fc5e78900e7f54ed8f81281c919eb55186dc68372cb3f7c96",
-    "all_dependencies_must_be_hash_bound": true,
-    "power_design_file": "specs/bt2a_nq_gate1_power_design_v1.draft.json",
-    "power_design_file_sha256": "2e991d8e89e96157549b480e1807a28a1de810ef81a270b00c9ceb12f6c0f721",
-    "runner_contract_file": "specs/bt2a_nq_gate1_runner_contract_v1.draft.json",
-    "runner_contract_file_sha256": "e65ae7a33fcef85797d81dfa6928489e1ad89a757ca5a0dfbab0d015740b952b"
-  },
-  "universe": {
-    "instrument": "NQ",
-    "contracts": [
-      "NQ 09-25",
-      "NQ 12-25",
-      "NQ 03-26",
-      "NQ 06-26",
-      "NQ 09-26"
-    ],
-    "contract_sessions": 234,
-    "session_max": "20260630",
-    "holdout_session_min_inclusive": "20260701",
-    "holdout_open_utc_ns": 1782856800000000000
-  },
   "arms": {
-    "primary": "K_ABS",
     "comparators": [
       "K_BT2",
       "N_RAND",
@@ -52,9 +12,85 @@
       "availability",
       "local_volatility_bin"
     ],
+    "primary": "K_ABS",
     "shuffle_policy": "WITHIN_CONTRACT_SESSION_AND_COARSE_PHASE_PRESERVE_EVENT_COUNT"
   },
+  "authorization": {
+    "active_token": null,
+    "execution_authorized": false,
+    "freeze_token_label": "APPROVE_FREEZE_BT2A_NQ_GATE1_V1",
+    "frozen_commit": null,
+    "run_token_label": "AUTHORIZE_RUN_BT2A_NQ_GATE1_V1"
+  },
+  "created_date": "2026-08-28",
+  "decision_rule": {
+    "allowed_labels": [
+      "BT2A_NQ_GATE1_DIRECTIONAL_MECHANISM_SUPPORTED",
+      "BT2A_NQ_GATE1_NO_DIRECTIONAL_MECHANISM",
+      "BT2A_NQ_GATE1_INCONCLUSIVE_POWER",
+      "ABSTAIN_IDENTITY_CAUSALITY_OR_COVERAGE"
+    ],
+    "edge_declaration_allowed": false,
+    "full_family_required": true,
+    "positive_requires_effect_interval_and_holm": true,
+    "promotion_allowed": false,
+    "winner_selection_allowed": false
+  },
+  "dependencies": {
+    "all_dependencies_must_be_hash_bound": true,
+    "bt2_comparator_config_id": "tick_25_IMB30_VOL10",
+    "bt2_v2_result_file": "bigtrap2_nq_tickframes_sweep_v2.json",
+    "bt2_v2_result_file_provenance_note": "File committed in-repo at docs/research/bigtrap2_nq_tickframes_sweep_v2_result.json (same source already used to bind bt2_comparator_config_id at commit 1a33e80). Still needs physical staging under --bt2-artifact-dir on Kaggle before an actual Gate 1 run -- binding the hash here only closes the spec-level dependency, not run-time artifact placement.",
+    "bt2_v2_result_file_sha256": "e162a0e0a51198b45cb0a444d9853f646deec18370d378333f25a58ae6999571",
+    "bt2a_creation_event_store_manifest_file": "bt2a_nq_creation_event_store_manifest.json",
+    "bt2a_creation_event_store_manifest_sha256": null,
+    "effective_input_registry_file": "effective_input_registry.json",
+    "effective_input_registry_sha256": "f9bcf5eee1e68bd4797a959f7e22d3344ae383d9d33c4c59a783ef10ce35e31f",
+    "macro_calendar_file": "specs/bt2a_nq_gate1_macro_policy_v1.draft.json",
+    "macro_calendar_sha256": "94b8bdf3ae47a23fc5e78900e7f54ed8f81281c919eb55186dc68372cb3f7c96",
+    "power_design_file": "specs/bt2a_nq_gate1_power_design_v1.draft.json",
+    "power_design_file_sha256": "2e991d8e89e96157549b480e1807a28a1de810ef81a270b00c9ceb12f6c0f721",
+    "private_package_manifest_file": "kaggle_research_package_manifest.json",
+    "private_package_manifest_provenance_note": "The self-attested KAGGLE_NQ_PRIVATE_PACKAGE_BUILD_CERTIFICATION_V1_2026-08-28.json reports a DIFFERENT hash (4d1053090d80930ee7494e008148b0b8a64829568d861065e054ed2f88f91506, upload_executed=false, remote_auditor_rehashed_local_files=false) for the same filename. This binding uses the hash actually read by the executed BigTrap2 V2 sweep (input_provenance.package_manifest_file_sha256 in docs/research/bigtrap2_nq_tickframes_sweep_v2_result.json), not the unverified self-attestation. Discrepancy found and resolved 2026-08-30 by Claude.",
+    "private_package_manifest_sha256": "2336b2967dd6f5ef0c3afddfa76cdeac3b411a4eb006cede42fa9502e51039db",
+    "runner_contract_file": "specs/bt2a_nq_gate1_runner_contract_v1.draft.json",
+    "runner_contract_file_sha256": "afb97cff6e4b35509fcb94e1cffef87ccaa106e65546629603a300bab9870a6a",
+    "selected_configuration_file": "bt2a_nq_selected_configuration_2026-08-29.json",
+    "selected_configuration_file_sha256": "b4f8ebc4d13d01b6a4d39250fc6c05fad37ad5d395cf535e8ec56e849c44b1bc"
+  },
+  "execution_platform": "KAGGLE_ONLY",
+  "firewall": {
+    "EDGE_DECLARED": false,
+    "FIRST_PASSAGE_ACCESSED": false,
+    "FUTURE_PRICE_PATH_ACCESSED": false,
+    "GATE1_RUN": false,
+    "HOLDOUT_TOUCHED": false,
+    "MFE_MAE_ACCESSED": false,
+    "OUTCOMES_ACCESSED": false,
+    "PNL_ACCESSED": false,
+    "PROMOTION_ELIGIBLE": false,
+    "WINNER_SELECTED": false
+  },
+  "inference": {
+    "cluster_unit": "CME_SESSION",
+    "confidence": 0.95,
+    "events_assumed_iid": false,
+    "holm_family_size": 16,
+    "minimum_effective_sessions": 40,
+    "minimum_event_count_alone_is_power_proof": false,
+    "minimum_events": 400,
+    "pre_execution_power_inputs_required": [
+      "MDE",
+      "ICC",
+      "EFFECTIVE_SESSION_COUNT",
+      "ARM_DENSITY"
+    ],
+    "primary_weighting": "EQUAL_SESSION_WEIGHT"
+  },
   "outcome_family": {
+    "evaluate_full_family": true,
+    "family_size": 16,
+    "favorable_direction": "BT2A_SIGNAL_DIRECTION",
     "first_passage_barriers_ticks": [
       5,
       9,
@@ -67,8 +103,6 @@
       100,
       250
     ],
-    "family_size": 16,
-    "evaluate_full_family": true,
     "gc_positive_cells_annotation_only": [
       [
         9,
@@ -84,10 +118,19 @@
       ]
     ],
     "gc_results_may_reduce_nq_family": false,
-    "favorable_direction": "BT2A_SIGNAL_DIRECTION",
-    "same_observation_tie": "ADVERSE_FIRST",
-    "incomplete_path_policy": "EXCLUDE_WITH_REASON"
+    "incomplete_path_policy": "EXCLUDE_WITH_REASON",
+    "same_observation_tie": "ADVERSE_FIRST"
   },
+  "power_design": {
+    "alpha_family": 0.05,
+    "effective_sessions_required": null,
+    "freeze_before_outcomes_required": true,
+    "icc": null,
+    "mde_ticks": null,
+    "target_power": 0.8
+  },
+  "purpose": "Test the preregistered directional first-passage mechanism for the structurally selected BT2A NQ configuration without economic PnL or holdout access.",
+  "schema_version": "bt2a_nq_gate1_v1",
   "secondary_estimands": [
     "D_HAT",
     "MFE_TICKS",
@@ -97,69 +140,28 @@
     "MIRROR_NULL_DIFFERENCE",
     "TIME_SHUFFLE_DIFFERENCE"
   ],
-  "power_design": {
-    "mde_ticks": null,
-    "icc": null,
-    "target_power": 0.8,
-    "alpha_family": 0.05,
-    "effective_sessions_required": null,
-    "freeze_before_outcomes_required": true
-  },
-  "inference": {
-    "cluster_unit": "CME_SESSION",
-    "primary_weighting": "EQUAL_SESSION_WEIGHT",
-    "events_assumed_iid": false,
-    "holm_family_size": 16,
-    "confidence": 0.95,
-    "minimum_events": 400,
-    "minimum_effective_sessions": 40,
-    "minimum_event_count_alone_is_power_proof": false,
-    "pre_execution_power_inputs_required": [
-      "MDE",
-      "ICC",
-      "EFFECTIVE_SESSION_COUNT",
-      "ARM_DENSITY"
-    ]
-  },
-  "decision_rule": {
-    "full_family_required": true,
-    "winner_selection_allowed": false,
-    "positive_requires_effect_interval_and_holm": true,
-    "allowed_labels": [
-      "BT2A_NQ_GATE1_DIRECTIONAL_MECHANISM_SUPPORTED",
-      "BT2A_NQ_GATE1_NO_DIRECTIONAL_MECHANISM",
-      "BT2A_NQ_GATE1_INCONCLUSIVE_POWER",
-      "ABSTAIN_IDENTITY_CAUSALITY_OR_COVERAGE"
-    ],
-    "edge_declaration_allowed": false,
-    "promotion_allowed": false
-  },
-  "authorization": {
-    "freeze_token_label": "APPROVE_FREEZE_BT2A_NQ_GATE1_V1",
-    "run_token_label": "AUTHORIZE_RUN_BT2A_NQ_GATE1_V1",
-    "execution_authorized": false,
-    "active_token": null,
-    "frozen_commit": null
-  },
-  "firewall": {
-    "GATE1_RUN": false,
-    "OUTCOMES_ACCESSED": false,
-    "FUTURE_PRICE_PATH_ACCESSED": false,
-    "FIRST_PASSAGE_ACCESSED": false,
-    "MFE_MAE_ACCESSED": false,
-    "PNL_ACCESSED": false,
-    "HOLDOUT_TOUCHED": false,
-    "WINNER_SELECTED": false,
-    "EDGE_DECLARED": false,
-    "PROMOTION_ELIGIBLE": false
-  },
   "selection_provenance": {
-    "required_status": "INFORMAL_EARLY_STOP_NQ_CONFIGURATION",
-    "selected_config_id": "bt2a_nq_7e84981882b0b380",
     "amendment_file": "specs/bt2a_nq_informal_all5_provenance_amendment_v1.draft.json",
     "amendment_file_sha256": "4cb789f874e58c5560c496539a4f30677d3d1163e98c7aa485bc85a13438f5d8",
     "classification": "EXPLORATORY_NON_CONFIRMATORY_NON_PROMOTABLE",
     "confirmatory_eligible": false,
-    "promotion_eligible": false
+    "promotion_eligible": false,
+    "required_status": "INFORMAL_EARLY_STOP_NQ_CONFIGURATION",
+    "selected_config_id": "bt2a_nq_7e84981882b0b380"
+  },
+  "status": "DRAFT_DESIGN_ONLY_PREAUTHORIZATION",
+  "universe": {
+    "contract_sessions": 234,
+    "contracts": [
+      "NQ 09-25",
+      "NQ 12-25",
+      "NQ 03-26",
+      "NQ 06-26",
+      "NQ 09-26"
+    ],
+    "holdout_open_utc_ns": 1782856800000000000,
+    "holdout_session_min_inclusive": "20260701",
+    "instrument": "NQ",
+    "session_max": "20260630"
   }
 }

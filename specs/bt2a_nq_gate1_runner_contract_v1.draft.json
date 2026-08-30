@@ -33,11 +33,12 @@
   },
   "estimand_definition": {
     "event_cell_value_ticks": {
-      "adverse_first": "-barrier_ticks",
-      "favorable_first": "+barrier_ticks",
-      "incomplete_path": "EXCLUDE_WITH_REASON",
-      "same_observation_tie": "ADVERSE_FIRST",
-      "timeout": "0"
+      "bounded_range": "[-barrier_ticks, +barrier_ticks] by construction, since each term (MFE, MAE) is independently capped at barrier_ticks before the subtraction",
+      "cap_semantics": "Non-absorbing observation window: the barrier caps the REPORTED magnitude for that cell only, it does not stop or resample the underlying path early. The same one price path per event yields all 16 cell readouts.",
+      "definition": "min(MFE_ticks_at_horizon, barrier_ticks) - min(MAE_ticks_at_horizon, barrier_ticks)",
+      "incomplete_path": "EXCLUDE_WITH_REASON (cache.eligible[idx] is False: insufficient future ticks within the session to complete the horizon_observations window for that cell)",
+      "mfe_mae_source": "edgelab.research.bt2_gate1_outcomes.directional_excursions over a PathCache from build_path_cache(tick_cap=horizon_observations, clock_cap_seconds=a very large constant so the tick cap always governs) -- the same primitives already validated for GC Gate 1 (COMPLETE_GATE1_ALL5_POST_OUTCOME_REPLICATION), reused unmodified. No new tick-decode logic.",
+      "same_observation_tie": "N/A_FOR_PRIMARY -- the magnitude estimand has no first-passage race between favorable and adverse; this rule now governs only the SECONDARY TIME_TO_FIRST_PASSAGE estimand, unchanged"
     },
     "minimum_effect_interpretation": "One signed NQ tick; mechanistic only, not PnL",
     "primary_session_contrast": "session_mean(K_ABS) - session_mean(N_RAND)",
@@ -48,7 +49,9 @@
     "multiplicity_scope_across_three_comparators": "HOLM_16_PRIMARY_ONLY; SECONDARY_COMPARATORS_NON_TRIGGERING",
     "paired_session_variance_definition": "UNBIASED_SAMPLE_VARIANCE_OF_EQUAL_WEIGHT_SESSION_CONTRASTS",
     "primary_contrast": "K_ABS_MINUS_N_RAND_MATCHED_WITHIN_CME_SESSION",
-    "primary_outcome_encoding": "SIGNED_FIRST_PASSAGE_TICKS"
+    "primary_outcome_encoding": "SIGNED_EXCURSION_MAGNITUDE_CAPPED_BY_BARRIER",
+    "resolved_by": "Nico, chat authorization 2026-08-30 18:35-18:39 ART, recorded in docs/research/DECISION_NICO_ESTIMAND_MAGNITUDE_2026-08-30.md (commit 74860a5). Multiplicity scope confirmed as 16 cells intact with Holm, superseding the single-primary-cell alternative that was presented.",
+    "status": "RESOLVED"
   },
   "execution_authorized": false,
   "family": {
@@ -67,7 +70,7 @@
       250
     ],
     "incomplete_path_policy": "EXCLUDE_WITH_REASON",
-    "same_observation_tie": "ADVERSE_FIRST"
+    "same_observation_tie": "N/A_FOR_PRIMARY -- see estimand_definition.event_cell_value_ticks; governs only the secondary TIME_TO_FIRST_PASSAGE estimand"
   },
   "firewall": {
     "edge_declared": false,
@@ -102,7 +105,7 @@
     "n_rand_replicates": "Average all preregistered matched N_RAND replicates inside each session before forming one paired contrast",
     "pseudoreplication_forbidden": true
   },
-  "payload_sha256": "0663d27371920e2f38a831f76c52bda61d155eb77bacf491bedbea54bf66b061",
+  "payload_sha256": "ad13aceebfcfcf6e1f022ef6e9ca4ef2a747339c7cee782f6d4d04c794a6c979",
   "required_outputs": [
     "per-session arm/cell sufficient statistics",
     "exclusion reasons",

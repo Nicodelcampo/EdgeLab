@@ -1,7 +1,6 @@
 from __future__ import annotations
 import importlib.util,json
 from pathlib import Path
-import pytest
 ROOT=Path(__file__).resolve().parents[2]
 from tools.bt2a_nq_gate1_contracts import (CONFIG_ID,INFORMAL_CLASS,load_json,payload_valid,power_missing,validate_macro_policy,validate_runner_contract,validate_selection_provenance)
 
@@ -13,10 +12,14 @@ def test_amendment_is_honest_payload_bound_and_not_retroactive():
  assert a['gate1_interpretation']['classification']==INFORMAL_CLASS
  assert a['gate1_interpretation']['confirmatory_eligible'] is False
 
-def test_informal_event_store_requires_frozen_amendment():
+def test_informal_event_store_amendment_is_frozen_and_still_non_confirmatory():
+ # The amendment froze at commit 38e318b (status FROZEN_PROVENANCE_AMENDMENT);
+ # this test used to assert the pre-freeze state (require_frozen=True raising
+ # "not frozen"), which stopped matching reality once that commit landed and
+ # nobody updated the test. Fixed 2026-08-30.
  s=load_json(ROOT/'specs/bt2a_nq_creation_event_store_informal_v1.draft.json')
- with pytest.raises(RuntimeError,match='not frozen'):
-  validate_selection_provenance(s,ROOT,require_frozen=True)
+ p=validate_selection_provenance(s,ROOT,require_frozen=True)
+ assert p['confirmatory_eligible'] is False and p['promotion_eligible'] is False
  p=validate_selection_provenance(s,ROOT,require_frozen=False)
  assert p['confirmatory_eligible'] is False and p['promotion_eligible'] is False
 

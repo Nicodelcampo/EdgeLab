@@ -98,7 +98,7 @@ def validate_runner_contract(value:dict[str,Any])->list[str]:
  if value.get('implementation_authorized') is not False or value.get('execution_authorized') is not False: raise RuntimeError('blocked runner contract has capability')
  decisions=value['estimand_resolution_required_before_implementation']
  expected={
-  'primary_outcome_encoding':'SIGNED_FIRST_PASSAGE_TICKS',
+  'primary_outcome_encoding':'SIGNED_EXCURSION_MAGNITUDE_CAPPED_BY_BARRIER',
   'primary_contrast':'K_ABS_MINUS_N_RAND_MATCHED_WITHIN_CME_SESSION',
   'multiplicity_scope_across_three_comparators':'HOLM_16_PRIMARY_ONLY; SECONDARY_COMPARATORS_NON_TRIGGERING',
   'paired_session_variance_definition':'UNBIASED_SAMPLE_VARIANCE_OF_EQUAL_WEIGHT_SESSION_CONTRASTS',

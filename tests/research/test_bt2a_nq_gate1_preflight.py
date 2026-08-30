@@ -22,11 +22,16 @@ def test_gate1_draft_is_valid_but_not_ready():
     runner.validate_spec(value)
     missing = runner.missing_bindings(value)
     assert "bt2a_creation_event_store_manifest_sha256" in missing
-    assert "bt2_v2_result_file_sha256" in missing
-    assert "selected_configuration_file_sha256" in missing
     assert "power_design.mde_ticks" in missing
     assert "power_design.icc" in missing
     assert "power_design.effective_sessions_required" in missing
+    # Closed 2026-08-30 by Claude (Kaggle-side bindings 3 of 4 assigned by the
+    # audit thread; bt2a_creation_event_store_manifest_sha256 stays open,
+    # pending the estimand amendment on audit/notion-ai-sltp-p2b-provenance-20260830).
+    assert "bt2_v2_result_file_sha256" not in missing
+    assert "selected_configuration_file_sha256" not in missing
+    assert "private_package_manifest_sha256" not in missing
+    assert "effective_input_registry_sha256" not in missing
 
 
 def test_gate1_comparator_config_id_is_bound_to_preregistered_v2_winner():
