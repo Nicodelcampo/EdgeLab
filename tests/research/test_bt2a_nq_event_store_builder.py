@@ -51,3 +51,14 @@ def test_builder_has_no_raw_tick_or_outcome_imports():
     assert "bt2_gate1_outcomes" not in source
     assert "full_expectancy_surface" not in source
     assert set(runner.REQUIRED_COLUMNS).isdisjoint(runner.FORBIDDEN_COLUMNS)
+
+
+def test_spec_argument_has_no_fail_open_default():
+    # Regression pin for the auditor's 2026-08-30 finding: an unset --spec
+    # used to fall back to the unfrozen DRAFT_PREAUTHORIZATION spec instead of
+    # failing loudly. --spec must be required, with no default at all.
+    assert not hasattr(runner, "DEFAULT_SPEC")
+    with pytest.raises(SystemExit):
+        runner.parser().parse_args(
+            ["--output-dir", "/tmp/x", "--preflight-only"]
+        )

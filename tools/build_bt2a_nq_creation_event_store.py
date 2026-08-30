@@ -26,7 +26,6 @@ from tools.bt2a_nq_gate1_contracts import (
     INFORMAL_STATUS, selection_provenance_missing, validate_selection_provenance,
 )
 
-DEFAULT_SPEC = ROOT / "specs" / "bt2a_nq_creation_event_store_v1.draft.json"
 FROZEN = "FROZEN_PREFLIGHT_READY"
 DRAFT = "DRAFT_PREAUTHORIZATION"
 BUILD_TOKEN = "AUTHORIZE_BUILD_BT2A_NQ_CREATION_EVENT_STORE_V1"
@@ -320,7 +319,7 @@ def validate_store(store_dir: Path, manifest_name: str) -> dict[str, Any]:
 
 def parser() -> argparse.ArgumentParser:
     out = argparse.ArgumentParser(description=__doc__)
-    out.add_argument("--spec", type=Path, default=DEFAULT_SPEC)
+    out.add_argument("--spec", type=Path, required=True)
     out.add_argument("--selection-artifact-dir", type=Path)
     out.add_argument("--output-dir", type=Path, required=True)
     out.add_argument("--expected-commit")
