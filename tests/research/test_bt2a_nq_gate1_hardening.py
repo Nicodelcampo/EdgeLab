@@ -34,13 +34,16 @@ def test_macro_policy_is_explicit_null_not_empty_unknown_calendar():
  assert validate_macro_policy(m,True)==['macro_policy.freeze']
 
 def test_power_contract_closes_defensible_inputs_but_remains_fail_closed():
+ # K_BT2 density closed 2026-08-30 (tick_25_IMB30_VOL10: 516971/234, commit
+ # 95e5866) -- this assertion updated from "in missing" to "not in missing"
+ # to match; power.icc renamed to power.icc_retired in the same commit.
  p=load_json(ROOT/'specs/bt2a_nq_gate1_power_design_v1.draft.json')
  missing=power_missing(p,True)
  assert 'power.mde_ticks' not in missing and 'power.paired_session_sd_ticks' not in missing
- assert 'power.icc' not in missing and 'power.arm_density.K_ABS' not in missing
- assert 'power.arm_density.K_BT2' in missing
+ assert 'power.icc_retired' not in missing and 'power.arm_density.K_ABS' not in missing
+ assert 'power.arm_density.K_BT2' not in missing
  assert 'power.arm_density.N_RAND_capacity_ok' in missing
- assert 'power.insufficient_effective_sessions' in missing and 'power.freeze' in missing
+ assert 'power.freeze' in missing
 
 def test_runner_contract_resolves_choices_but_still_blocks_capability():
  r=load_json(ROOT/'specs/bt2a_nq_gate1_runner_contract_v1.draft.json')

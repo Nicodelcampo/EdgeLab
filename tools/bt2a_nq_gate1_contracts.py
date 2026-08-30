@@ -41,7 +41,7 @@ def payload_valid(v:dict[str,Any])->bool:
 def _bound(root:Path,rel:str,digest:str)->Path:
  if not isinstance(rel,str) or not rel or Path(rel).is_absolute() or '..' in Path(rel).parts: raise RuntimeError('unsafe bound path')
  p=(root/rel).resolve(); rr=root.resolve()
- if not p.is_relative_to(rr) or not p.is_symlink() or not p.is_file(): raise RuntimeError(f'missing/unsafe bound file: {rel}')
+ if not p.is_relative_to(rr) or p.is_symlink() or not p.is_file(): raise RuntimeError(f'missing/unsafe bound file: {rel}')
  if sha256_file(p)!=digest: raise RuntimeError(f'bound file SHA mismatch: {rel}')
  return p
 
