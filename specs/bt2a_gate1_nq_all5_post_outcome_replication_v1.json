@@ -1,6 +1,6 @@
 {
   "schema": "bt2a_gate1_nq_all5_post_outcome_replication_v1",
-  "status": "DRAFT_BEFORE_NQ_ALL5_FIRST_RUN",
+  "status": "FROZEN_BEFORE_NQ_ALL5_FIRST_RUN",
   "drafted_at": "2026-08-29T21:00:00.000000+00:00",
   "amends_without_overwriting": [],
   "reason": "First Gate 1 execution for NQ. Simplified design requested by Nico: a direct fork of the proven GC MFE-MAE all5 design (specs/bt2_absorption_gate1_all5_post_outcome_replication_2026-08-26.json), K_ABS-primary with K_BT2/N_RAND/K_ABS_SHUFFLE as comparators, no external BigTrap2 comparator sweep dependency (K_BT2 comes inline from the bigtrap2 module's own DEFAULTS, exactly as in GC). K_ABS uses the informal early-stop config bt2a_nq_7e84981882b0b380 (specs/bt2a_nq_selected_configuration_2026-08-29.json) instead of module DEFAULTS -- see docs/research/DECISION_NQ_SELECTION_EARLY_STOP_2026-08-29.md for why this config is informal (2 of 5 contracts, no formal structural_score) and not SELECTED_STABLE_NQ_CONFIGURATION.",
@@ -132,7 +132,7 @@
     "PREEXISTING_OUTCOME_EXPOSURE_NOTE": "NQ's known prior exposure is the BigTrap2 comparator sweep that touched the holdout (future_price_path_accessed=true, first_touch_accessed=true, holdout_touched=true) but never accessed MFE/MAE or PnL -- the estimand this Gate 1 measures. This run is the first NQ MFE-MAE measurement. edgelab/research/bt2_gate1_nq_all5.py computes this label dynamically from that classification file at result-build time rather than hardcoding it.",
     "EDGE_DECLARED": false,
     "confirmatory_eligible": false,
-    "frozen_before_this_rerun": false,
+    "frozen_before_this_rerun": true,
     "forbidden": [
       "represent_as_original_gate1",
       "call_d_hat_realized_or_net_pnl",
@@ -155,5 +155,6 @@
     ],
     "secondary_controls": "A 95% interval containing zero fails the declared comparison even if nearly all of it is positive."
   },
-  "execution_platform": "KAGGLE_ONLY"
+  "execution_platform": "KAGGLE_ONLY",
+  "frozen_at": "2026-08-29T21:59:00.000000+00:00"
 }
