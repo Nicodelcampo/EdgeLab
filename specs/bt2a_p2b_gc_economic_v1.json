@@ -9,12 +9,13 @@
     "result_commit": "7a9959fb4ee2bf532c64e860cae794db7557eec7",
     "classification": "P2_DIAGNOSTIC_MECHANISM_SUPPORTED",
     "result_payload_sha256": "296f8352a46751c3a9a26a32ec29661ddcecba7ac57874a967dc591a92766e28",
-    "event_store_payload_sha256": "feee6001e88aa69f62a092b253e468531230120a3dccdc2ceac0d488c9684cbd",
+    "event_store_payload_sha256": "f033f0c81c57317f3546f7641af88aa304a38b9ddf7dea800266cd1da320dfa8",
     "n_sessions": 234,
     "n_events": 22202,
     "max_cme_session": "20260630",
     "outcomes_already_opened": true,
-    "confirmatory_eligible": false
+    "confirmatory_eligible": false,
+    "event_store_rebuild_note": "Original event_store_payload_sha256 (feee6001e8...) was pinned to an Event Store built with the un-recut GC 08-26 source (2e145b3d...), which is not available in this environment. Rebuilt locally against the Kaggle-hosted, physically pre-holdout GC 08-26 file (ec0a48d4...); per-contract K_ABS/K_BT2 counts matched EXPECTED exactly (1314/357), and _end('20260630') == the recut boundary in nanoseconds, proving the recut removed zero rows any registered session ever reads. Only the recorded gate1_input_sha256 provenance field changed for GC 08-26 events, which changes events_payload_sha256 even though the underlying detected events are identical."
   },
   "firewall": {
     "P2B_SPEC_PREPARATION": true,
@@ -31,7 +32,13 @@
   },
   "scope": {
     "instrument": "GC",
-    "contracts": ["GC 12-25", "GC 02-26", "GC 04-26", "GC 06-26", "GC 08-26"],
+    "contracts": [
+      "GC 12-25",
+      "GC 02-26",
+      "GC 04-26",
+      "GC 06-26",
+      "GC 08-26"
+    ],
     "position_size_contracts": 1,
     "pyramiding": false,
     "reinvestment": false,
@@ -41,15 +48,34 @@
     "rejections_persisted": true
   },
   "primary_family": {
-    "barriers_ticks": [5, 9, 18, 30],
-    "horizons_ticks": [25, 50, 100, 250],
+    "barriers_ticks": [
+      5,
+      9,
+      18,
+      30
+    ],
+    "horizons_ticks": [
+      25,
+      50,
+      100,
+      250
+    ],
     "n_cells": 16,
     "evaluate_all_cells": true,
     "cross_cell_winner_selection_allowed": false,
     "p2a_positive_cells_annotation_only": [
-      {"barrier_ticks": 9, "horizon_ticks": 25},
-      {"barrier_ticks": 30, "horizon_ticks": 100},
-      {"barrier_ticks": 30, "horizon_ticks": 250}
+      {
+        "barrier_ticks": 9,
+        "horizon_ticks": 25
+      },
+      {
+        "barrier_ticks": 30,
+        "horizon_ticks": 100
+      },
+      {
+        "barrier_ticks": 30,
+        "horizon_ticks": 250
+      }
     ]
   },
   "instrument_economics": {
@@ -66,7 +92,11 @@
     "entry_fill_anchor": "FIRST_CANONICAL_TICK_STRICTLY_AFTER_SIGNAL",
     "same_timestamp_fill_allowed": false,
     "causal_latency_rows": 1,
-    "latency_diagnostic_ms": {"expected_min": 100, "expected_max": 250, "enforced_as_second_delay": false},
+    "latency_diagnostic_ms": {
+      "expected_min": 100,
+      "expected_max": 250,
+      "enforced_as_second_delay": false
+    },
     "favorable_barrier_order": "LIMIT_AT_PLUS_B_FROM_UNSLIPPED_ENTRY_ANCHOR",
     "adverse_barrier_order": "STOP_MARKET_AT_MINUS_B_FROM_UNSLIPPED_ENTRY_ANCHOR",
     "timeout": "MARKET_EXIT_AT_H_TICK_OBSERVATIONS_OR_LAST_TICK_OF_SESSION",
@@ -78,7 +108,11 @@
   "costs": {
     "commission_and_fees_round_trip_usd": 5.0,
     "commission_and_fees_round_trip_ticks": 0.5,
-    "components": ["CME_EXCHANGE", "NFA", "BROKER_CLEARING"],
+    "components": [
+      "CME_EXCHANGE",
+      "NFA",
+      "BROKER_CLEARING"
+    ],
     "component_breakdown_available": false,
     "spread_ticks_round_trip_assumption": 1.0,
     "spread_usd_round_trip_assumption": 10.0,
@@ -108,13 +142,21 @@
     "canonical_chicago_window": "17:00_PREVIOUS_DAY_TO_17:00_TRADE_DATE_WITH_DAILY_MAINTENANCE_GAP_IN_SOURCE",
     "user_supplied_window": "18:00_TO_17:00_CT",
     "timezone_reconciliation": "18:00-17:00 is the ET expression; canonical CT expression is 17:00-16:00 tradable with 16:00-17:00 maintenance, while the repository session label rolls at 17:00 CT",
-    "rth_chicago": {"start": "07:20:00", "end": "12:30:00", "interval": "LEFT_CLOSED_RIGHT_OPEN"},
+    "rth_chicago": {
+      "start": "07:20:00",
+      "end": "12:30:00",
+      "interval": "LEFT_CLOSED_RIGHT_OPEN"
+    },
     "report_full_session": true,
     "report_rth_breakdown": true,
     "aggregation": "EQUAL_CME_SESSION_WEIGHT"
   },
   "macro_exclusion": {
-    "event_types": ["FOMC", "CPI", "NFP"],
+    "event_types": [
+      "FOMC",
+      "CPI",
+      "NFP"
+    ],
     "window": "RELEASE_UTC_INCLUSIVE_TO_RELEASE_PLUS_5_MINUTES_EXCLUSIVE",
     "calendar_schema": "bt2a_macro_calendar_v1",
     "calendar_repository_path": "specs/bt2a_macro_calendar_gc_20250804_20260630_v1.json",
@@ -122,7 +164,11 @@
     "calendar_sample_start": "2025-08-04T00:00:00Z",
     "calendar_sample_end_exclusive": "2026-07-01T00:00:00Z",
     "calendar_event_count": 26,
-    "calendar_counts": {"FOMC": 7, "CPI": 10, "NFP": 9},
+    "calendar_counts": {
+      "FOMC": 7,
+      "CPI": 10,
+      "NFP": 9
+    },
     "calendar_sha256": "5f1a484858c7d0bdd997f7f6dafef014bae2f13debdb5bcce937d74257cbd9ca",
     "calendar_sha256_binding": "SPEC_LITERAL_SHA256_REQUIRED_AS_RUNNER_ARGUMENT_AND_EXECUTION_AUTHORIZATION_BINDING",
     "calendar_dates_frozen_in_this_spec": true,
@@ -167,7 +213,12 @@
     "P2B_DIAGNOSTIC_EXECUTION_NEGATIVE",
     "P2B_DIAGNOSTIC_INCONCLUSIVE"
   ],
-  "forbidden_labels": ["CONFIRMATORY_PASS", "EDGE_DECLARED", "PROMOTED", "WINNER_SELECTED"],
+  "forbidden_labels": [
+    "CONFIRMATORY_PASS",
+    "EDGE_DECLARED",
+    "PROMOTED",
+    "WINNER_SELECTED"
+  ],
   "preflight": {
     "mode": "--preflight-only",
     "must_not_parse_price_values": true,
