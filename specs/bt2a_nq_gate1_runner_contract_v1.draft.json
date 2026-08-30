@@ -97,6 +97,16 @@
     "secondary_families": "Report raw and separately Holm-adjusted values within each 16-cell comparator family",
     "winner_selection_allowed": false
   },
+  "n_rand_matching_definitions": {
+    "amendment_id": "bt2a_nq_gate1_nrand_strata_definitions_v1",
+    "availability": "Event-level flag: the forward window of the maximum horizon (250 observations) fits completely within the event's CME session, making the event evaluable in all 16 cells. Aligned with incomplete_path_policy=EXCLUDE_WITH_REASON: N_RAND anchors are drawn from the same pool of fully evaluable positions as K_ABS.",
+    "coarse_phase": "Chicago-time 2-hour block from the 17:00 session open: phase = floor(chicago_minutes_since_17:00 / 120) within the CME session, 6 phases. Deliberate coarsening of GC's chicago_30_minute_bin for stratum capacity: with ~652 events/session in NQ, 30-minute bins crossed with volatility bins would leave ~1.8 events/stratum/session, too sparse for without-replacement N_RAND sampling; 2-hour blocks leave ~109 events/phase/session at the median before crossing.",
+    "local_volatility_bin": "Per-contract quintile of pre-anchor local volatility: median absolute tick delta over the 500 ticks strictly preceding the event; quintile edges computed over all pre-holdout events of the contract. Events with fewer than 500 prior ticks in the session fall into their own visible stratum INSUFFICIENT_HISTORY, never a silent exclusion.",
+    "signature_channel": "Notion AI survey, recorded in docs/DECISIONES_NICO_2026-08-30.md (D6)",
+    "signed_at": "2026-08-30T19:56-03:00",
+    "signed_by": "Nicolas Buttaro",
+    "target_free_note": "availability and local_volatility_bin are computed from the session registry and strictly pre-anchor ticks on Kaggle; nothing post-event is touched, so this adds no outcome access."
+  },
   "north_star_sha256": "d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1",
   "paired_session_variance": {
     "cell_specific_variance_report_required": true,
@@ -105,7 +115,7 @@
     "n_rand_replicates": "Average all preregistered matched N_RAND replicates inside each session before forming one paired contrast",
     "pseudoreplication_forbidden": true
   },
-  "payload_sha256": "ad13aceebfcfcf6e1f022ef6e9ca4ef2a747339c7cee782f6d4d04c794a6c979",
+  "payload_sha256": "8d62cba8b13c4d3d1c8139d4cbc841dfcb4ae2abc7036e09e68e4b462f5439fc",
   "required_outputs": [
     "per-session arm/cell sufficient statistics",
     "exclusion reasons",
