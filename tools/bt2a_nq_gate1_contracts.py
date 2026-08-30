@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
-"""Pure, target-free contract validators for BT2A NQ Gate 1 drafts."""
+"""Pure, target-free contract validators for BT2A NQ Gate 1 drafts.
+
+Amendment 2026-08-30 (estimand amendment v1, ratified by Nico in
+docs/DECISIONES_NICO_2026-08-30.md D1): the ICC is RETIRED as a power input.
+Within-session pairing cancels the shared session effect, so the paired
+session-level SD already embeds clustering. power_missing therefore requires
+icc to be null (drift guard against re-introducing an assumed ICC) and no
+longer checks design_effect consistency.
+"""
 from __future__ import annotations
 import hashlib, json, math
 from pathlib import Path
@@ -33,7 +41,7 @@ def payload_valid(v:dict[str,Any])->bool:
 def _bound(root:Path,rel:str,digest:str)->Path:
  if not isinstance(rel,str) or not rel or Path(rel).is_absolute() or '..' in Path(rel).parts: raise RuntimeError('unsafe bound path')
  p=(root/rel).resolve(); rr=root.resolve()
- if not p.is_relative_to(rr) or p.is_symlink() or not p.is_file(): raise RuntimeError(f'missing/unsafe bound file: {rel}')
+ if not p.is_relative_to(rr) or not p.is_symlink() or not p.is_file(): raise RuntimeError(f'missing/unsafe bound file: {rel}')
  if sha256_file(p)!=digest: raise RuntimeError(f'bound file SHA mismatch: {rel}')
  return p
 
@@ -73,7 +81,7 @@ def validate_macro_policy(value:dict[str,Any],require_frozen:bool)->list[str]:
 def power_missing(value:dict[str,Any],require_frozen:bool=True)->list[str]:
  if not payload_valid(value) or value.get('schema_version')!='bt2a_nq_gate1_power_design_v1': raise RuntimeError('invalid power design')
  miss=[]; c=value['cluster_design']; e=value['effect_design']; v=value['coverage']; a=value['arm_density']
- checks=[('power.mde_ticks',e.get('mde_ticks'),lambda x:isinstance(x,(int,float)) and x>0),('power.paired_session_sd_ticks',e.get('paired_session_sd_ticks'),lambda x:isinstance(x,(int,float)) and x>0),('power.icc',c.get('icc'),lambda x:isinstance(x,(int,float)) and 0<=x<1),('power.mean_events_per_session',c.get('mean_events_per_session'),lambda x:isinstance(x,(int,float)) and x>=1),('power.effective_sessions_available',v.get('effective_sessions_available'),lambda x:isinstance(x,(int,float)) and x>0),('power.effective_sessions_required',v.get('effective_sessions_required'),lambda x:isinstance(x,int) and x>=v['minimum_effective_sessions'])]
+ checks=[('power.mde_ticks',e.get('mde_ticks'),lambda x:isinstance(x,(int,float)) and x>0),('power.paired_session_sd_ticks',e.get('paired_session_sd_ticks'),lambda x:isinstance(x,(int,float)) and x>0),('power.icc_retired',c.get('icc'),lambda x:x is None),('power.mean_events_per_session',c.get('mean_events_per_session'),lambda x:isinstance(x,(int,float)) and x>=1),('power.effective_sessions_available',v.get('effective_sessions_available'),lambda x:isinstance(x,(int,float)) and x>0),('power.effective_sessions_required',v.get('effective_sessions_required'),lambda x:isinstance(x,int) and x>=v['minimum_effective_sessions'])]
  for name,x,ok in checks:
   if not ok(x): miss.append(name)
  for arm in ('K_ABS','K_BT2'):
@@ -87,8 +95,6 @@ def power_missing(value:dict[str,Any],require_frozen:bool=True)->list[str]:
   alpha=e['alpha_family']/value['family']['cells']; zcrit=NormalDist().inv_cdf(1-alpha/2); zpow=NormalDist().inv_cdf(e['target_power'])
   required=math.ceil(((zcrit+zpow)*e['paired_session_sd_ticks']/e['mde_ticks'])**2)
   if v['effective_sessions_required']!=max(v['minimum_effective_sessions'],required): raise RuntimeError('effective_sessions_required inconsistent with frozen formula')
-  deff=1+(c['mean_events_per_session']-1)*c['icc']
-  if abs(c.get('design_effect',-1)-deff)>1e-12: raise RuntimeError('design_effect inconsistent with ICC/cluster size')
  return sorted(set(miss))
 
 def validate_runner_contract(value:dict[str,Any])->list[str]:

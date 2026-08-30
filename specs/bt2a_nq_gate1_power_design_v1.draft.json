@@ -9,7 +9,15 @@
       "source_parquet_sha256": "96281e880d7949f9dfcf3364091d9ce7696f778e59e6f2e2243995becdd38808"
     },
     "K_ABS_SHUFFLE_preserves_count": true,
-    "K_BT2": null,
+    "K_BT2": {
+      "cfg_id": "tick_25_IMB30_VOL10",
+      "events": 516971,
+      "events_per_session": 2209.277777777778,
+      "measurement_class": "CREATION_ONLY_PREHOLDOUT",
+      "sessions": 234,
+      "source_file": "docs/research/bigtrap2_nq_tickframes_sweep_v2_result.json",
+      "source_file_sha256": "e162a0e0a51198b45cb0a444d9853f646deec18370d378333f25a58ae6999571"
+    },
     "N_RAND_capacity_ok": null,
     "source_files": [
       {
@@ -30,17 +38,11 @@
   },
   "cluster_design": {
     "cluster_unit": "CME_SESSION",
-    "design_effect": 131.308547008547,
+    "design_effect": null,
     "events_assumed_iid": false,
-    "icc": 0.2,
-    "icc_sensitivity_grid": [
-      0.0,
-      0.01,
-      0.05,
-      0.1,
-      0.2
-    ],
-    "icc_source": "CONSERVATIVE_DESIGN_ASSUMPTION_MAX_OF_PREREGISTERED_SENSITIVITY_GRID; not estimated from NQ outcomes",
+    "icc": null,
+    "icc_retired_reason": "Within-session pairing cancels the shared session effect, so the session-level SD already embeds clustering. Retired by estimand amendment v1 (ratified by Nico 2026-08-30, docs/DECISIONES_NICO_2026-08-30.md D1). The prior conservative assumption (0.2) is superseded; the GC bootstrap CI95 [0.0254, 0.5317] was too wide to use.",
+    "icc_status": "RETIRED_BY_ESTIMAND_AMENDMENT_V1",
     "mean_events_per_session": 652.542735042735,
     "primary_weighting": "EQUAL_SESSION_WEIGHT"
   },
@@ -52,17 +54,19 @@
   "coverage": {
     "effective_sessions_available": 234.0,
     "effective_sessions_method": "KISH_ON_PREREGISTERED_SESSION_WEIGHTS",
-    "effective_sessions_required": 51897,
+    "effective_sessions_required": 228,
     "effective_sessions_source": "All 234 pre-holdout CME sessions have K_ABS creation events; equal session weights imply Kish effective sessions = 234 before cell-specific exclusions",
     "minimum_effective_sessions": 40,
     "sessions_total_preholdout": 234
   },
   "effect_design": {
     "alpha_family": 0.05,
-    "mde_justification": "DESIGN_CHOICE_ONE_NQ_TICK_MINIMUM_MECHANISTIC_EFFECT; no PnL or transaction-cost claim",
-    "mde_ticks": 1.0,
-    "paired_session_sd_source": "FINITE_SUPPORT_UPPER_BOUND_FOR_PRIMARY_SESSION_CONTRAST_AT_MAX_BARRIER_30: signed arm means lie in [-30,30], paired difference in [-60,60], so Popoviciu gives SD <= 60 ticks; conservative fallback pending a preregistered external pre-outcome prior",
-    "paired_session_sd_ticks": 60.0,
+    "estimand": "MAGNITUDE_WITHIN_CELL",
+    "mde_justification": "RATIFIED_BY_NICO_2026-08-30 (docs/DECISIONES_NICO_2026-08-30.md D1): adopted MDE 2.90 ticks. The authorized 2.861 was the exact MDE@234 knife edge (235 required > 234 available, not implementable as written); 2.90 is a weaker claim, hence conservative, and stays below 3.360, the GC CI95 lower bound.",
+    "mde_ticks": 2.9,
+    "mde_ticks_knife_edge_rejected": 2.8614,
+    "paired_session_sd_source": "GC_TRANSFER_PRE_OUTCOME: paired session-level contrast SD 11.528529 ticks measured on GC Gate 1 all-5 (result payload sha256 a307a12c441d82877590a20c59aa1079d590de2cdbb6d55180caaec21622ca53), an upper bound for NQ under the same estimand (NQ cell caps 5-30 ticks / 25-250 obs bind tighter than GC tick_cap 2000 / clock_cap 900s; 652.54 vs 72.39 events per session). Pairing cancels the shared session effect (rho = 0.5617, variance reduction 48.06%). Replaces the earlier finite-support Popoviciu bound (SD <= 60), which was valid but too conservative to authorize.",
+    "paired_session_sd_ticks": 11.528529,
     "target_power": 0.8
   },
   "family": {
@@ -83,16 +87,15 @@
   },
   "north_star_sha256": "d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1",
   "outcomes_accessed": false,
-  "payload_sha256": "ab63f2e77cc26d84f52e9063b52561eb56a802ba6d41c1f0cd588c4f0bf5cdec",
+  "payload_sha256": "ed2f123ff3ed972d2ade941569322875806792b16a0160c389345aef895b3971",
   "planning_assessment": {
-    "available_sessions_meet_conservative_bound": false,
-    "conservative_required_sessions": 51897,
+    "available_sessions_meet_conservative_bound": true,
+    "conservative_required_sessions": 228,
     "external_fields_still_required": [
-      "K_BT2 events/sessions/density from the frozen V2 artifact",
       "N_RAND matched-pool capacity by frozen strata"
     ],
-    "interpretation": "The finite-support bound is valid but too conservative for authorization. Replace it only with a hash-bound, preregistered pre-outcome variance prior or keep Gate 1 classified as underpowered."
+    "interpretation": "Power closed by the 2026-08-30 estimand amendment and GC variance transfer: 228 required <= 234 available, margin 6 sessions. Remaining blockers before freeze: N_RAND stratum capacity (target-free check, Claude) and the freeze act itself (Nico token APPROVE_FREEZE_BT2A_NQ_GATE1_V1)."
   },
   "schema_version": "bt2a_nq_gate1_power_design_v1",
-  "status": "DRAFT_CONSERVATIVE_BOUND_INSUFFICIENT_EXTERNAL_DENSITY_REQUIRED"
+  "status": "DRAFT_POWER_CLOSED_PENDING_NRAND_CAPACITY"
 }

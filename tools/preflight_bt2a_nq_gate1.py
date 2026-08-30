@@ -3,15 +3,23 @@
 
 This module deliberately has no outcome execution mode and never imports the
 Gate 1 outcome engine. It verifies that the package, selected BT2A Event Store,
-BigTrap2 comparator, macro calendar and power inputs are all frozen before a
+BigTrap2 comparator, contract files and power inputs are all frozen before a
 separate runner may be implemented or authorized.
+
+Amendment 2026-08-30 (Nico decisions D1/D2, docs/DECISIONES_NICO_2026-08-30.md):
+the macro calendar dependency was eliminated by amendment (no design element
+consumed it) and the power gate was made fail-closed: the declared required
+session count is recomputed from sd/mde/alpha/power and must not exceed the
+available sessions.
 """
 from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 from pathlib import Path
+from statistics import NormalDist
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -22,11 +30,11 @@ from edgelab.kaggle.execution import atomic_write_json, load_json, sha256_file, 
 from tools.build_bt2a_nq_creation_event_store import validate_store
 from tools.sweep_bigtrap2_nq_tickframes_v2 import validate_kaggle_runtime, verify_git_clean_and_head
 from tools.bt2a_nq_gate1_contracts import (
-    load_json as load_contract_json, power_missing, validate_macro_policy, validate_runner_contract,
+    load_json as load_contract_json, power_missing, validate_runner_contract,
 )
 
-DEFAULT_SPEC = ROOT / "specs" / "bt2a_nq_gate1_v1.draft.json"
 INPUT_ROOT = Path("/kaggle/input")
+TARGET_POWER_FLOOR = 0.80
 
 
 def _hex64(value: object) -> bool:
@@ -81,6 +89,21 @@ def validate_spec(spec: dict[str, Any]) -> None:
         raise RuntimeError("draft Gate 1 cannot carry execution capability")
 
 
+def required_effective_sessions(sd_ticks: float, mde_ticks: float, alpha: float,
+                                target_power: float = TARGET_POWER_FLOOR) -> int:
+    """Sessions needed for a paired session-level contrast at the given alpha and power.
+
+    Fail-closed: the declared effective_sessions_required must equal this value, so a design
+    cannot declare a requirement it did not derive.
+    """
+    if not 0.0 < alpha < 1.0 or not 0.0 < target_power < 1.0 or sd_ticks <= 0 or mde_ticks <= 0:
+        raise RuntimeError("invalid power inputs")
+    normal = NormalDist()
+    z_crit = normal.inv_cdf(1.0 - alpha / 2.0)
+    z_pow = normal.inv_cdf(target_power)
+    return math.ceil((((z_crit + z_pow) * sd_ticks) / mde_ticks) ** 2)
+
+
 def missing_bindings(spec: dict[str, Any]) -> list[str]:
     deps = spec["dependencies"]
     missing = []
@@ -90,26 +113,39 @@ def missing_bindings(spec: dict[str, Any]) -> list[str]:
         "private_package_manifest_sha256",
         "effective_input_registry_sha256",
         "bt2_v2_result_file_sha256",
-        "macro_calendar_sha256",
         "power_design_file_sha256",
         "runner_contract_file_sha256",
     ):
         if not _hex64(deps.get(name)):
             missing.append(name)
-    for name in ("bt2_comparator_config_id", "macro_calendar_file", "power_design_file", "runner_contract_file"):
+    for name in ("bt2_comparator_config_id", "power_design_file", "runner_contract_file"):
         if not isinstance(deps.get(name), str) or not deps[name]:
             missing.append(name)
     power = spec["power_design"]
+    floor = int(spec["inference"]["minimum_effective_sessions"])
     mde = power.get("mde_ticks")
-    icc = power.get("icc")
-    sessions = power.get("effective_sessions_required")
-    if not isinstance(mde, (int, float)) or mde <= 0:
-        missing.append("power_design.mde_ticks")
-    if not isinstance(icc, (int, float)) or not 0 <= icc < 1:
-        missing.append("power_design.icc")
-    if not isinstance(sessions, int) or sessions < int(spec["inference"]["minimum_effective_sessions"]):
-        missing.append("power_design.effective_sessions_required")
-    deps = spec["dependencies"]
+    sd = power.get("paired_session_sd_ticks")
+    required = power.get("effective_sessions_required")
+    available = power.get("effective_sessions_available")
+    power_block_missing: list[str] = []
+    if not isinstance(mde, (int, float)) or isinstance(mde, bool) or mde <= 0:
+        power_block_missing.append("power_design.mde_ticks")
+    if not isinstance(sd, (int, float)) or isinstance(sd, bool) or sd <= 0:
+        power_block_missing.append("power_design.paired_session_sd_ticks")
+    if not isinstance(required, int) or isinstance(required, bool) or required < floor:
+        power_block_missing.append("power_design.effective_sessions_required")
+    if not isinstance(available, int) or isinstance(available, bool) or available < floor:
+        power_block_missing.append("power_design.effective_sessions_available")
+    if not power_block_missing:
+        alpha = float(power["alpha_family"]) / int(spec["inference"]["holm_family_size"])
+        recomputed = required_effective_sessions(
+            float(sd), float(mde), alpha, float(power.get("target_power", TARGET_POWER_FLOOR))
+        )
+        if recomputed != int(required):
+            power_block_missing.append("power_design.effective_sessions_required_mismatch")
+        elif int(available) < int(required):
+            power_block_missing.append("power.insufficient_effective_sessions")
+    missing.extend(power_block_missing)
     power_file = deps.get("power_design_file")
     if isinstance(power_file, str) and _hex64(deps.get("power_design_file_sha256")):
         try:
@@ -179,15 +215,7 @@ def preflight(spec_path: Path, data_dir: Path, event_store_dir: Path, bt2_dir: P
             evidence["bt2_comparator_config_id"] = deps["bt2_comparator_config_id"]
         except Exception as exc:
             errors.append(f"bt2: {exc}")
-        try:
-            macro = _verify_file(ROOT, deps["macro_calendar_file"], deps["macro_calendar_sha256"])
-            macro_missing = validate_macro_policy(load_contract_json(macro), require_frozen=True)
-            if macro_missing:
-                raise RuntimeError("macro policy is not frozen")
-            evidence["macro_calendar_file_sha256"] = sha256_file(macro)
-        except Exception as exc:
-            errors.append(f"macro: {exc}")
-    ready = not missing and not errors and len(evidence) == 4
+    ready = not missing and not errors and len(evidence) == 3
     result = {
         "schema_version": "bt2a_nq_gate1_preflight_v1",
         "status": "PASS_READY_FOR_GATE1_FREEZE" if ready else "NOT_READY",
@@ -211,7 +239,7 @@ def preflight(spec_path: Path, data_dir: Path, event_store_dir: Path, bt2_dir: P
 
 def parser() -> argparse.ArgumentParser:
     out = argparse.ArgumentParser(description=__doc__)
-    out.add_argument("--spec", type=Path, default=DEFAULT_SPEC)
+    out.add_argument("--spec", type=Path, required=True)
     out.add_argument("--data-dir", type=Path)
     out.add_argument("--event-store-dir", type=Path)
     out.add_argument("--bt2-artifact-dir", type=Path)
