@@ -150,12 +150,13 @@ def _trade_digest(trades: list[dict]) -> str:
     return canonical(trades)
 
 
-def simulate_cell(*, signals: list[dict], ts_ns, price_ticks, barrier_ticks: int,
+def simulate_cell(*, signals: list[dict], ts_ns, price_ticks, source_row, barrier_ticks: int,
                   horizon_ticks: int, scenario: str,
                   macro_intervals: list[tuple[int, int]]) -> dict:
     ts = np.asarray(ts_ns, dtype=np.int64)
     price = np.asarray(price_ticks, dtype=np.int64)
-    if len(ts) != len(price) or not len(ts):
+    source = np.asarray(source_row, dtype=np.int64)
+    if len(ts) != len(price) or len(ts) != len(source) or not len(ts):
         raise ValueError("invalid path arrays")
     if np.any(ts[1:] < ts[:-1]):
         raise ValueError("nonmonotone timestamps")
@@ -185,7 +186,15 @@ def simulate_cell(*, signals: list[dict], ts_ns, price_ticks, barrier_ticks: int
             continue
 
         signal_ts = int(signal["signal_ts_utc_ns"])
-        if int(ts[entry]) <= signal_ts:
+        signal_row = int(signal["signal_source_row"])
+        # Matches edgelab.research.bt2_gate1_outcomes.strict_next_index's own
+        # guarantee: strictly after means the (ts, source_row) tuple, not ts
+        # alone -- real tick data ties timestamps at nanosecond resolution and
+        # source_row is the tie-break. entry_idx is already identity-verified
+        # against the Event Store's fill_source_row/fill_ts_utc_ns/fill_price_ticks
+        # in map_signals(); this is a defense-in-depth check and must use the same
+        # ordering semantics as the code that produced entry_idx.
+        if (int(ts[entry]), int(source[entry])) <= (signal_ts, signal_row):
             raise ValueError("entry is not strictly after signal")
         latency_ms = (int(ts[entry]) - signal_ts) / 1_000_000.0
         if not 100.0 <= latency_ms <= 250.0:
@@ -413,7 +422,8 @@ def run_session(*, root: Path, data_dir: Path, event_store_dir: Path,
             for scenario in ("base", "adverse"):
                 result = simulate_cell(
                     signals=signals, ts_ns=ticks.ts_ns,
-                    price_ticks=ticks.price_ticks, barrier_ticks=barrier,
+                    price_ticks=ticks.price_ticks, source_row=ticks.sequence,
+                    barrier_ticks=barrier,
                     horizon_ticks=horizon, scenario=scenario,
                     macro_intervals=intervals,
                 )
