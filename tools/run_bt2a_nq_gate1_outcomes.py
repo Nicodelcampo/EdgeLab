@@ -60,9 +60,11 @@ from edgelab.research.bt2a_nq_gate1_runner import (
 )
 
 EXECUTION_TOKEN = "AUTHORIZE_RUN_BT2A_NQ_GATE1_V1"
-# The frozen spec pin (Gate 1 spec froze at commit 8b1f334f, backfill c70bdb5d).
+# The frozen spec pin (Gate 1 spec froze at commit 8b1f334f, backfill c70bdb5d,
+# event-store manifest rebound 2026-08-31 under AUTHORIZE_REBIND_BT2A_EVENT_STORE_MANIFEST_V1,
+# docs/research/DECISION_NICO_REBIND_EVENT_STORE_MANIFEST_2026-08-31.md).
 # Verified against the file, never recomputed-and-self-compared.
-FROZEN_SPEC_SHA256 = "5c5857a5e486edcb68c73f0a0cc73be4d20946ef49d9b652affa4060b7b59d8e"
+FROZEN_SPEC_SHA256 = "b9e75c2533091c3dc8a3a2c8b8b8efde6eb6dfe1313efae48a4b4885366695c3"
 HOLDOUT_OPEN_UTC_NS = 1782856800000000000
 DEFAULT_SPEC = REPO_ROOT / "specs/bt2a_nq_gate1_v1.draft.json"
 CONTRACTS = ["NQ 09-25", "NQ 12-25", "NQ 03-26", "NQ 06-26", "NQ 09-26"]

@@ -42,7 +42,7 @@
   "dependencies": {
     "all_dependencies_must_be_hash_bound": true,
     "binding_notes": {
-      "bt2a_creation_event_store_manifest_sha256": "Bound to the frozen physical manifest. The 2026-08-30 rebuild reproduced it with only frozen_commit differing; if the rebuilt store is ever re-uploaded this binding must change.",
+      "bt2a_creation_event_store_manifest_sha256": "REBOUND 2026-08-31 under AUTHORIZE_REBIND_BT2A_EVENT_STORE_MANIFEST_V1 (Nico, Notion chat): from b3177b51892298fc75a8bc6ab156d15525473aef52d71e4c717da148501ba544 to the rebuilt manifest hash, exactly as the previous note prescribed. The rebuild differs only in the self-referential frozen_commit field (a commit cannot embed its own hash); the underlying parquet is byte-identical (96281e880d7949f9dfcf3364091d9ce7696f778e59e6f2e2243995becdd38808; 152695 events / 234 sessions per the rebuild kernel hash_verification_result.json). Decision: docs/research/DECISION_NICO_REBIND_EVENT_STORE_MANIFEST_2026-08-31.md.",
       "kaggle_bindings": "selected_configuration_file_sha256, private_package_manifest_sha256, effective_input_registry_sha256 and bt2_v2_result_file_sha256 closed by Claude at commit 83884585 (2026-08-30), each with its provenance note; see bt2_v2_result_file_provenance_note and private_package_manifest_provenance_note.",
       "macro_calendar": "ELIMINATED BY AMENDMENT 2026-08-30 (Nico decision D2, docs/DECISIONES_NICO_2026-08-30.md): no design element consumed it (n_rand_matching is contract, cme_session_id, coarse_phase, availability, local_volatility_bin). The draft policy file specs/bt2a_nq_gate1_macro_policy_v1.draft.json remains in the tree but is no longer bound by Gate 1."
     },
@@ -51,7 +51,7 @@
     "bt2_v2_result_file_provenance_note": "File committed in-repo at docs/research/bigtrap2_nq_tickframes_sweep_v2_result.json (same source already used to bind bt2_comparator_config_id at commit 1a33e80). Still needs physical staging under --bt2-artifact-dir on Kaggle before an actual Gate 1 run -- binding the hash here only closes the spec-level dependency, not run-time artifact placement.",
     "bt2_v2_result_file_sha256": "e162a0e0a51198b45cb0a444d9853f646deec18370d378333f25a58ae6999571",
     "bt2a_creation_event_store_manifest_file": "bt2a_nq_creation_event_store_manifest.json",
-    "bt2a_creation_event_store_manifest_sha256": "b3177b51892298fc75a8bc6ab156d15525473aef52d71e4c717da148501ba544",
+    "bt2a_creation_event_store_manifest_sha256": "1e45c43fa60327b67aeb618d00b4137b82cc6c44ad43f348fc5bca8250ef90ea",
     "effective_input_registry_file": "effective_input_registry.json",
     "effective_input_registry_sha256": "f9bcf5eee1e68bd4797a959f7e22d3344ae383d9d33c4c59a783ef10ce35e31f",
     "power_design_file": "specs/bt2a_nq_gate1_power_design_v1.draft.json",
