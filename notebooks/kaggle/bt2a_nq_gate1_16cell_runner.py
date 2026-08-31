@@ -137,14 +137,21 @@ def main() -> None:
     if actual != FULL_COMMIT:
         raise SystemExit(f"checked-out commit differs: {actual} != {FULL_COMMIT}")
 
-    # 2. Locate inputs dynamically (speed lever 3, robust discovery)
-    coords_dir = find_dataset_dir("coordinates")
+    # 2. Locate inputs dynamically (speed lever 3, robust discovery).
+    #    RE-APPLIED 2026-08-31 14:52 UTC: the 8830b74 memory-fix commit was
+    #    authored against a pre-9aa7912 checkout and silently reverted this
+    #    discovery block back to the broken "coordinates"/"package"/"bt2"
+    #    search terms -- confirmed by a real run failing again with "no
+    #    dataset directory matching 'coordinates'" at 14:47 UTC. Two agents
+    #    editing the same file without re-reading the other's latest push
+    #    first; re-applying verbatim what 9aa7912 + c6aec73 already fixed.
     ticks_dir = find_dataset_dir("edgelab-ticks-nq-preholdout")
-    package_dir = find_dataset_dir("package")
-    bt2_dir = find_dataset_dir("bt2")
+    package_dir = ticks_dir
+    event_store_dir = find_dataset_dir("event-store")
+    bt2_dir = find_dataset_dir("bt2-v2")
 
     spec_path = TEMP_REPO_DIR / "specs/bt2a_nq_gate1_v1.draft.json"
-    event_store_manifest = find_file(coords_dir, "bt2a_nq_creation_event_store_manifest", ".json")
+    event_store_manifest = find_file(event_store_dir, "bt2a_nq_creation_event_store_manifest", ".json")
     bt2_result_path = TEMP_REPO_DIR / "docs/research/bigtrap2_nq_tickframes_sweep_v2_result.json"
     bt2_coords_path = find_file(bt2_dir, "tick_25_IMB30_VOL10", ".parquet")
 
@@ -157,7 +164,7 @@ def main() -> None:
         sys.executable, str(TEMP_REPO_DIR / "tools/preflight_bt2a_nq_gate1.py"),
         "--spec", str(spec_path),
         "--data-dir", str(package_dir),
-        "--event-store-dir", str(coords_dir),
+        "--event-store-dir", str(event_store_dir),
         "--bt2-artifact-dir", str(bt2_dir),
         "--output-dir", str(OUTPUT_DIR),
         "--expected-commit", FULL_COMMIT,
