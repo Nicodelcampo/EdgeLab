@@ -36,7 +36,13 @@ STATS_DIR = Path("/kaggle/working/edgelab-stats")
 EXECUTION_TOKEN = "AUTHORIZE_RUN_BT2A_NQ_GATE1_V1"
 
 CONTRACTS = ["NQ 03-26", "NQ 06-26", "NQ 09-25", "NQ 09-26", "NQ 12-25"]
-MAX_WORKERS = 4
+MAX_WORKERS = 2  # was 4; live run 2026-08-31 16:25 UTC OOM-suspected: gate1-contract 1
+# (NQ 06-26, 675MB parquet) died silently mid-load with no traceback -- classic
+# OOM-kill signature -- under 4 concurrent workers each loading up to a ~675MB
+# tick parquet plus K_ABS/K_BT2 coordinates. Per
+# docs/research/KAGGLE_LAUNCHER_PARALLELISM_POLICY_V1_2026-08-30.md this is a
+# launcher-only, reversible speed-lever change (no tool re-authorization
+# needed); the NQ-specific precedent there already used 3, not 4.
 REPLICATIONS = 1000
 SEED = 20260831
 
