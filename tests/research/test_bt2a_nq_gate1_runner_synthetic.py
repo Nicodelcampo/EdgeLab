@@ -1,4 +1,5 @@
-﻿"""Synthetic ground-truth test suite for BT2A NQ Gate 1 runner.
+﻿#!/usr/bin/env python3
+"""Synthetic ground-truth test suite for BT2A NQ Gate 1 runner.
 
 T1 Discipline: 100% target-free, pure synthetic fixtures, hand-planted ground truth,
 no real data, no lookahead, no PnL.
@@ -54,16 +55,32 @@ class TestStratumMatchingWithoutReplacement:
             key1: [100, 101, 102, 103, 104, 105],  # pool=6, needed=3 (6-1 >= 3)
             key2: [200, 201, 202, 203],            # pool=4, needed=2 (4-1 >= 2)
         }
-        sampled = sample_nrand_strata_indices(strata_demand, candidate_pools, seed=42)
-        assert len(sampled) == 5
-        # All sampled from key1 must be unique and in pool1
-        k1_sampled = sampled[:3]
+        pairs = sample_nrand_strata_indices(strata_demand, candidate_pools, seed=42)
+        assert len(pairs) == 5
+        # Pairs come back as (own_anchor, sampled_anchor)
+        k1_pairs = pairs[:3]
+        assert {own for own, _ in k1_pairs} == {10, 20, 30}
+        k1_sampled = [s for _, s in k1_pairs]
         assert len(set(k1_sampled)) == 3
         assert all(idx in candidate_pools[key1] for idx in k1_sampled)
-        # All sampled from key2 must be unique and in pool2
-        k2_sampled = sampled[3:]
+        k2_pairs = pairs[3:]
+        assert {own for own, _ in k2_pairs} == {40, 50}
+        k2_sampled = [s for _, s in k2_pairs]
         assert len(set(k2_sampled)) == 2
         assert all(idx in candidate_pools[key2] for idx in k2_sampled)
+
+    def test_sampled_anchor_never_equals_its_own(self):
+        # Pool contains the anchors themselves; no draw may land on the anchor
+        # it replaces (the pool-1>=n margin exists to make this possible).
+        key = ("NQ 09-25", "20260101", 0, True, 2)
+        own = [10, 11, 12]
+        pool = [10, 11, 12, 100, 101, 102]
+        for seed in range(50):
+            pairs = sample_nrand_strata_indices({key: own}, {key: pool}, seed=seed)
+            assert len(pairs) == 3
+            for o, s in pairs:
+                assert s != o
+                assert s in pool
 
     def test_fails_closed_when_pool_minus_one_less_than_demand(self):
         key = ("NQ 09-25", "20260101", 0, True, 2)
@@ -201,8 +218,13 @@ class TestHolm16Monotonicity:
 
 
 class TestDecisionRule:
+    """Uses the REAL schema emitted by compute_family (point/lower/p_holm_16),
+    not invented keys -- the 52cbe45 version of this suite fed mock keys
+    (mean_contrast/ci_lower) the pipeline never produces, which let the
+    decision rule ship broken (auditor finding, 2026-08-31)."""
+
     def test_inconclusive_power_when_sessions_insufficient(self):
-        family_res = {"cells": {cell_id(5, 25): {"p_holm_16": 0.001, "mean_contrast": 3.0, "ci_lower": 2.0}}}
+        family_res = {"cells": {cell_id(5, 25): {"p_holm_16": 0.001, "point": 3.0, "lower": 2.0}}}
         dec = decide_gate1_outcome(family_res, effective_sessions_available=200, effective_sessions_required=228)
         assert dec["decision"] == "BT2A_NQ_GATE1_INCONCLUSIVE_POWER"
         assert dec["EDGE_DECLARED"] is False
@@ -213,8 +235,8 @@ class TestDecisionRule:
         family_res = {"cells": {
             cell_id(5, 25): {
                 "p_holm_16": 0.002,
-                "mean_contrast": 3.5,
-                "ci_lower": 1.2,
+                "point": 3.5,
+                "lower": 1.2,
             }
         }}
         dec = decide_gate1_outcome(family_res, effective_sessions_available=234, effective_sessions_required=228)
@@ -226,8 +248,8 @@ class TestDecisionRule:
         family_res = {"cells": {
             cell_id(5, 25): {
                 "p_holm_16": 0.45,
-                "mean_contrast": 0.2,
-                "ci_lower": -0.8,
+                "point": 0.2,
+                "lower": -0.8,
             }
         }}
         dec = decide_gate1_outcome(family_res, effective_sessions_available=234, effective_sessions_required=228)
@@ -239,3 +261,38 @@ class TestDecisionRule:
         for label in ALLOWED_DECISION_LABELS:
             assert isinstance(label, str)
             assert label.startswith("BT2A_NQ_GATE1_") or label.startswith("ABSTAIN_")
+
+
+class TestDecisionRuleIntegrationWithRealPipeline:
+    """Feeds decide_gate1_outcome with the ACTUAL output of compute_family,
+    not a hand-built mock. This is the test whose absence let the key-mapping
+    bug ship in 52cbe45."""
+
+    def _family_with_effect(self, mean_shift: float, seed: int):
+        rng = np.random.default_rng(seed)
+        cells = {}
+        for cell in all_cells():
+            cells[cell] = {
+                "K_ABS": {f"s{i}": mean_shift + rng.normal(scale=0.5) for i in range(40)},
+                "N_RAND": {f"s{i}": 0.0 + rng.normal(scale=0.5) for i in range(40)},
+            }
+        return compute_family(cells, replications=500, seed=seed)
+
+    def test_real_family_output_carries_the_keys_the_decision_reads(self):
+        fam = self._family_with_effect(8.0, seed=11)
+        for cid, cdata in fam["cells"].items():
+            for key in ("p_holm_16", "point", "lower"):
+                assert key in cdata, f"{key} missing from real compute_family output"
+
+    def test_planted_effect_is_supported_end_to_end(self):
+        fam = self._family_with_effect(8.0, seed=12)
+        dec = decide_gate1_outcome(fam, effective_sessions_available=234, effective_sessions_required=228)
+        assert dec["decision"] == "BT2A_NQ_GATE1_DIRECTIONAL_MECHANISM_SUPPORTED"
+        assert len(dec["positive_supported_cells"]) >= 1
+        assert dec["EDGE_DECLARED"] is False
+
+    def test_null_effect_is_not_supported_end_to_end(self):
+        fam = self._family_with_effect(0.0, seed=13)
+        dec = decide_gate1_outcome(fam, effective_sessions_available=234, effective_sessions_required=228)
+        assert dec["decision"] == "BT2A_NQ_GATE1_NO_DIRECTIONAL_MECHANISM"
+        assert dec["positive_supported_cells"] == []

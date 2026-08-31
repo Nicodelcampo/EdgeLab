@@ -1,4 +1,4 @@
-﻿"""BT2A NQ Gate 1 (16-cell) Execution Runner.
+"""BT2A NQ Gate 1 (16-cell) Execution Runner.
 
 Implementation authorized under Token 3 (AUTHORIZE_IMPLEMENT_BT2A_NQ_GATE1_16CELL_V1)
 recorded in docs/research/DECISION_NICO_IMPLEMENT_Y_RUN_BT2A_NQ_GATE1_2026-08-31.md.
@@ -112,28 +112,41 @@ def sample_nrand_strata_indices(
     candidate_pools: dict[tuple, list[int]],
     *,
     seed: int,
-) -> list[int]:
+) -> list[tuple[int, int]]:
     """Sample N_RAND candidate indices without replacement within each stratum.
 
-    Fail-closed: requires candidate_pool_size - 1 >= n_needed for each stratum.
+    Returns (own_anchor_position, sampled_position) pairs so the caller can
+    pair each random anchor with the K_ABS event it replaces (the anchor
+    inherits that event's direction, matching the GC engine's event_dir use).
+
+    Fail-closed: requires candidate_pool_size - 1 >= n_needed for each
+    stratum, and each draw excludes its own anchor (the margin exists
+    precisely to make that exclusion possible, same as
+    bt2_gate1_outcomes._sample_without_own).
     """
     rng = np.random.default_rng(seed)
-    sampled_indices: list[int] = []
+    sampled_pairs: list[tuple[int, int]] = []
 
     for key in sorted(strata_demand.keys(), key=lambda kv: (str(kv[0]), str(kv[1]), int(kv[2]), bool(kv[3]), str(kv[4]))):
-        n_needed = len(strata_demand[key])
+        own_positions = list(strata_demand[key])
+        n_needed = len(own_positions)
         if n_needed == 0:
             continue
-        pool = candidate_pools.get(key, [])
+        pool = list(candidate_pools.get(key, []))
         if len(pool) - 1 < n_needed:
             raise RuntimeError(
                 f"[FAIL_CLOSED] Insufficient capacity for stratum {key}: "
                 f"pool={len(pool)}, needed={n_needed} (requires pool - 1 >= needed)"
             )
-        chosen = rng.choice(pool, size=n_needed, replace=False)
-        sampled_indices.extend(chosen.tolist())
+        chosen: list[int] = []
+        for own in own_positions:
+            available = [p for p in pool if p != own and p not in chosen]
+            # pool - 1 >= n_needed guarantees this is non-empty at every draw
+            pick = int(rng.choice(np.asarray(available, dtype=np.int64)))
+            chosen.append(pick)
+            sampled_pairs.append((int(own), pick))
 
-    return sampled_indices
+    return sampled_pairs
 
 
 def permute_kabs_shuffle_indices(
@@ -159,7 +172,6 @@ def permute_kabs_shuffle_indices(
             )
         chosen = rng.choice(pool, size=n_events, replace=False)
         shuffled_indices.extend(chosen.tolist())
-
     return shuffled_indices
 
 
@@ -247,12 +259,15 @@ def decide_gate1_outcome(
     supported_cells: list[str] = []
 
     for cid, cdata in cells.items():
-        p_holm = float(cdata.get("p_holm_16", 1.0))
-        mean_diff = float(cdata.get("mean_contrast", cdata.get("mean", 0.0)))
-        ci_lower = float(cdata.get("ci_lower", cdata.get("ci95_lower", -999.0)))
-        
-        # Positive requires Holm significance, positive direction, and CI lower bound
-        if p_holm <= alpha_family and mean_diff >= minimum_effect_ticks and ci_lower > 0:
+        # Real schema emitted by compute_family/compute_cell_contrast
+        # (wild_cluster_test): point/lower/upper/p_two_sided/p_holm_16.
+        # Fail-closed: missing keys raise instead of silently defaulting.
+        p_holm = float(cdata["p_holm_16"])
+        point = float(cdata["point"])
+        ci_lower = float(cdata["lower"])
+
+        # Positive requires Holm significance, effect >= minimum, positive CI
+        if p_holm <= alpha_family and point >= minimum_effect_ticks and ci_lower > 0:
             supported_cells.append(cid)
 
     if supported_cells:
@@ -331,7 +346,6 @@ def aggregate_full_family_contrasts(
     shuffle_family_result = compute_family(
         shuffle_family_input, replications=replications, seed=seed + 2000
     )
-
     return {
         "primary_contrast": primary_family_result,
         "secondary_contrasts": {
