@@ -1,0 +1,197 @@
+{
+  "schema_version": "bt2a_gc_exitlogic_sltp_breakeven_campaign_v1",
+  "status": "DRAFT_DESIGN_ONLY_PREAUTHORIZATION",
+  "created_date": "2026-08-30",
+  "design_doc": {
+    "file": "docs/research/BT2A_GC_SLTP_BREAKEVEN_DESIGN_V1_2026-08-30.md",
+    "version": "V1.1",
+    "git_blob_sha1": "c102741087655806d9cada24f27e226bce4f18da",
+    "note": "Spec written from the design doc after Nico confirmed DP1-DP5 as a block (docs/DECISIONES_NICO_2026-08-30.md, D5, 2026-08-30 ~19:26 ART)."
+  },
+  "epistemic_classification": "EXPLORATORY_NON_CONFIRMATORY_NON_PROMOTABLE",
+  "epistemic_note": "GC is spent exploratory development (P2A outcomes already opened): nothing measured here can be confirmatory. Confirmation can only come from the holdout (one opening per candidate, post-G3) or from NQ transfer AFTER Gate 1 NQ (DP1).",
+  "purpose": "Measure whether any REGION of exit-rule space (fixed asymmetric and/or breakeven with a dense trigger grid) improves net per-signal expectancy over the frozen symmetric baseline, under the frozen GC cost model, with CME-session-clustered inference -- and if none exists, which region is least bad and how informative the data is. The breakeven trigger is swept densely (G in 2..30) so the trigger is not an arbitrary choice.",
+  "hypothesis_origin": "USER_REPORTED (Nico, 2026-08-30): after a bubble, price either makes a small favorable excursion then reverts to entry (breakeven archetype) or runs without returning to entry (TP archetype). Formalized in the design doc section 1. Prior structural constraint: Kaminski & Lo (SSRN 968338) -- stop rules only add value with real momentum; a positive here without the P2A directional mechanism is grounds to re-verify P2A, not to celebrate.",
+  "authorization": {
+    "active_token": null,
+    "execution_authorized": false,
+    "freeze_token_label": "APPROVE_FREEZE_BT2A_GC_EXITLOGIC_CAMPAIGN_V1",
+    "run_token_label": "AUTHORIZE_RUN_BT2A_GC_EXITLOGIC_CAMPAIGN_V1",
+    "freeze_blocked_by": [
+      "ROMANO_WOLF_AND_MCS_SYNTHETIC_TRUTH_SUITE_MISSING",
+      "P2B_ARTIFACT_OR_RETRACTION_PENDING",
+      "EVENT_STORE_LAYER_AUDIT_PENDING"
+    ],
+    "freeze_blocker_detail": {
+      "ROMANO_WOLF_AND_MCS_SYNTHETIC_TRUTH_SUITE_MISSING": "Romano-Wolf stepdown and Model Confidence Set do not exist in the repo. Freeze is formally blocked (Claude's condition, adopted in canal entry 006 and DECISIONES D5) until the new code has its own known-truth suite: noise -> FWER controlled; planted effect -> detected; planted plateau -> region detected; isolated peak -> rejected by the plateau rule.",
+      "P2B_ARTIFACT_OR_RETRACTION_PENDING": "DP3 policy: if a valid P2B artifact appears, the 16 REF cells are consumed, not re-measured; if retraction confirms P2B never ran, REF is measured inside this campaign. P2B's frozen spec is never modified.",
+      "EVENT_STORE_LAYER_AUDIT_PENDING": "Verify against the canonical event store which trajectory layers already exist (mfe_mae, symmetric first_passage) and what must be measured new (asymmetric first passage; return-to-entry conditional on MFE >= g over the dense grid). Reuse before recompute (ATJ-08). If the admission audit (docs/research/BT2_ABSORPTION_GATE1_ALL5_ADMISSION_AUDIT_2026-08-26.json) no longer reproduces over store 602f8f18..., the population is not the declared one and the campaign does not run."
+    }
+  },
+  "firewall": {
+    "CAMPAIGN_RUN": false,
+    "OUTCOMES_ACCESSED": false,
+    "FUTURE_PRICE_PATH_ACCESSED": false,
+    "FIRST_PASSAGE_ACCESSED": false,
+    "MFE_MAE_ACCESSED": false,
+    "PNL_ACCESSED": false,
+    "HOLDOUT_TOUCHED": false,
+    "WINNER_SELECTED": false,
+    "EDGE_DECLARED": false,
+    "PROMOTION_ELIGIBLE": false
+  },
+  "execution_platform": "KAGGLE_ONLY",
+  "execution_policy": "KAGGLE_ONLY_EXECUTION_POLICY_V1 -- local freeze never touches prices; the measurement runs on Kaggle with runtime tokens.",
+  "population": {
+    "event_store": "canonical BT2A GC creation event store",
+    "canonical_event_store_payload_sha256": "602f8f18467f6be081f36e8fc08f5d7e703f510a088afeb480d0b27b5e678e1d",
+    "events_total": 22202,
+    "cme_sessions": 234,
+    "contracts": ["GC 12-25", "GC 02-26", "GC 04-26", "GC 06-26", "GC 08-26"],
+    "session_max": "20260630",
+    "holdout_sealed_from": "2026-07-01",
+    "headline_parameters_frozen": {
+      "tape_window_ticks": 25,
+      "absorption_pct": 90,
+      "absorption_lookback": 500,
+      "min_history_buckets": 200,
+      "min_stacked_rows": 2,
+      "min_trap_frac": 0.2,
+      "require_flow_side_match": true
+    },
+    "arm_event_counts": {"K_ABS": 16940, "K_BT2": 5262},
+    "alternatives_written_and_rejected": [
+      "Re-measuring signals with other headline parameters -- that is a signal campaign, not an exit-logic campaign.",
+      "NQ events -- Gate 1 NQ has not measured the directional mechanism; the chain forbids PnL before information; NQ transfer stays conditional (DP1).",
+      "Time-of-day subpopulation as primary -- P2A clock-heterogeneity = COMPLETE_NO_CLOCK_HETEROGENEITY_SIGNAL; stays as labeled descriptive breakdown."
+    ]
+  },
+  "arms": {
+    "primary": "K_ABS",
+    "comparators": ["K_BT2", "N_RAND", "K_ABS_SHUFFLE"],
+    "n_rand": "frozen matched control, 10000 replications, per the Gate 1 GC frozen procedure",
+    "k_abs_shuffle": "secondary control: same anchors, directions permuted within session"
+  },
+  "entry_contract": {
+    "shared_with": "frozen P2B entry mechanics, unchanged",
+    "signal_timing": "signal available at bar close",
+    "entry": "aggressive market entry at the first canonical tick strictly after the signal; fill anchor without slippage",
+    "session_boundary": "hard CME session boundary; session close forces market exit",
+    "same_observation_tie": "ADVERSE",
+    "one_execution_per_signal_per_cell": "FIRST_EXECUTABLE_SIGNAL_WINS_PER_CELL",
+    "breakeven_scrape": "DP4 (confirmed in D5): scrape at EXACT entry, no re-entry after scrape. Declared gap rule: if the first observed price at-or-past the trigger is worse than the trigger, the first observed price is used."
+  },
+  "exit_rule_families": {
+    "REF_symmetric_reference": {
+      "cells": 16,
+      "grid": {"barriers_ticks": [5, 9, 18, 30], "horizons_observations": [25, 50, 100, 250]},
+      "rule": "SL = TP = B, identical to the frozen P2B kernel",
+      "reuse_policy": "DP3 (confirmed in D5): if a valid P2B artifact exists it is consumed and NOT re-measured; otherwise these 16 cells are charged to this campaign's budget."
+    },
+    "ASIM_fixed_asymmetric": {
+      "primary_cells": 24,
+      "grid": "SL in {5,9,18,30}, TP in {5,9,18,30}, SL != TP -> 12 ordered pairs x H in {25, 250}",
+      "descriptive_labeled": "intermediate horizons {50, 100} reported outside the primary correction"
+    },
+    "BE_breakeven_dense_trigger": {
+      "primary_cells": 348,
+      "grid": {
+        "G_trigger_ticks": "dense: 2..30 inclusive (29 values) -- the whole relevant scale between spread noise and the maximum frozen barrier",
+        "TP_ticks": [9, 18, 30],
+        "SL0_ticks": [18, 30],
+        "H_observations": [25, 250]
+      },
+      "mechanics": "on first touch of +G, stop moves to exact entry (scrape ~0 before costs); no re-entry; one execution per signal per cell",
+      "structural_constraints": [
+        "G < TP always (a trigger >= TP is another rule, not the hypothesis)",
+        "cells whose G is unreachable within H are not silently dropped: the trigger activation rate per cell is reported (ATJ-15 denominator lineage) and the cell enters the landscape with that rate visible"
+      ],
+      "structural_anchoring_target_free": "each G is additionally reported re-expressed in frozen structural units: multiples of the round-trip spread (1.0 tick, frozen P2B assumption) and of the instrument median bar range (context statistic, not an outcome -- same class as Gate 1 b9_metrics). A solid region at 'G ~ 2x spread' reads structural and portable, not a magic number.",
+      "unit_of_analysis": "the net-expectancy response CURVE over G (surface G x TP x SL0 x H), not 348 isolated tests (ATJ-09)"
+    },
+    "CAPA0_archetype_census": {
+      "status": "DESCRIPTIVE_DECLARED_IN_CAMPAIGN (DP5, confirmed in D5)",
+      "content": "joint per-cell distribution of MFE/MAE, time to first passage, and the key BE statistics as a function of trigger g over the same dense grid: P(return to entry | MFE >= g) (potential rescue rate) and P(TP after scrape | MFE >= g and return) (confiscation rate). The crossing of both curves is the structural answer to 'where does the trigger stop being arbitrary'.",
+      "firewall_note": "motivates and interprets; never feeds selection. Still outcome access: measured post-freeze together with the rest, not before."
+    }
+  },
+  "multiplicity_budget": {
+    "primary_cells": 372,
+    "primary_cells_breakdown": {"BE": 348, "ASIM": 24},
+    "primary_cells_if_REF_measured_here": 388,
+    "primary_correction": "Romano-Wolf stepdown (Econometrica 2005; JASA 2005) over the session-clustered bootstrap -- controls FWER while exploiting the near-collinearity of neighboring G, exactly the case where Holm gives away power",
+    "conservative_reference_bound": "Holm over 372 (or 388) published as the conservative reference bound",
+    "sensitivity": "SPA (White) -- already in repo at validation/spa.py",
+    "per_cost_scenario": "correction applied separately per cost scenario (base / adverse)",
+    "secondary_labeled_never_triggering": ["intermediate horizons", "time-of-day phase", "contract", "Capa 0", "structural units of G"],
+    "n_eff_declared_for_DSR": "372 (or 388 if REF is measured here)",
+    "anti_gaming_rule": "adding variants after running = new campaign inheriting the accumulated budget (edge_validation_contract.md)",
+    "total_publication_rule": "all 372 cells are published, surviving or not -- the full landscape is the deliverable (ATJ-12)"
+  },
+  "inference": {
+    "cluster_unit": "CME_SESSION",
+    "session_weighting": "EQUAL_SESSION_WEIGHT",
+    "bootstrap": "Webb six-point wild cluster bootstrap, 10000 replications, two-sided 95% CI",
+    "seeds": "declared here at freeze (placeholder until freeze)",
+    "power_analysis": "MDE per cell BEFORE execution -- same discipline as Gate 1 NQ. For exploratory GC it is admissible to plan with the paired session SD derived from the already-opened P2A outcomes; it will be declared as such. Cells without power get the INCONCLUSIVE_POWER label, not silence."
+  },
+  "robustness_answer_layers": {
+    "layer_1_model_confidence_set": "MCS (Hansen, Lunde & Nason, Econometrica 2011) at 95% and 90% over per-session loss series: the set of rules statistically indistinguishable from the best. Uninformative data -> large MCS, and that IS the honest answer. Never a point winner.",
+    "layer_2_plateau_rule": "robust region = maximal contiguous G set (within each TP x SL0 x H slice) with lower95 of net expectancy > 0 and parameter stability >= 70% of the +/-20% neighborhood profitable at base costs. An isolated peak without a plateau is fragile by definition, even if it survives Romano-Wolf.",
+    "layer_3_temporal_stability": "walk-forward by contract (fold = contract; region re-selected using only earlier contracts; WF-OOS aggregate must be > 0) + PBO/CSCV (S = 8) over the full cells x time matrix + DSR with declared N_eff. All already in the repo (validation/pbo.py, edgelab/research/g2*.py); reused, not reinvented."
+  },
+  "economics": {
+    "instrument": "GC only -- transporting costs to another instrument is forbidden",
+    "cost_model": "frozen P2B model (USER_SUPPLIED_FROZEN_ASSUMPTION_2026-08-27): base = 3.5 ticks all-in (USD 35); adverse = 5.5 ticks (USD 55). GC tick = 0.10 points = USD 10.",
+    "estimands": ["NET_USD_PER_TRADE_EQUAL_SESSION", "NET_TICKS_PER_TRADE_EQUAL_SESSION", "NETO_POR_SENAL_ELEGIBLE"],
+    "breakdowns": ["RTH vs full session", "turnover", "concurrency rejection rate"],
+    "loss_series_for_MCS": "minus net_ticks per session-cell",
+    "target_free_magnitude_note": "with 3.5t base friction, any cell whose median gross payoff is small starts at a structural disadvantage -- in particular small-G BE cells. Declared now so a negative matrix reads as the fixed cost eating the logic, not as an execution failure. Corollary: if any region survives, it will almost certainly not be at very small G -- and that is information too."
+  },
+  "decision_rule": {
+    "allowed_labels": [
+      "BT2A_GC_EXITLOGIC_EXPLORATORY_ROBUST_REGION_EXISTS",
+      "BT2A_GC_EXITLOGIC_EXPLORATORY_BASE_ONLY",
+      "BT2A_GC_EXITLOGIC_EXPLORATORY_EXECUTION_NEGATIVE",
+      "BT2A_GC_EXITLOGIC_INCONCLUSIVE"
+    ],
+    "forbidden_labels": ["EDGE_DECLARED", "CONFIRMATORY_PASS", "PROMOTED", "WINNER_SELECTED", "BEST_EXIT_RULE", "BEST_G"],
+    "winner_selection_allowed": false,
+    "promotion_allowed": false,
+    "edge_declaration_allowed": false,
+    "regions_not_points": "the MCS and the plateau rule identify regions, never a chosen point",
+    "negative_or_inconclusive_path": "if no cell survives Romano-Wolf and the MCS is uninformative -> EXECUTION_NEGATIVE or INCONCLUSIVE, and the least-bad descriptive region is reported as NOT ACTIONABLE for confirmation without independent data (NQ transfer post-Gate-1-NQ, or holdout via G4 with its single opening). The suggestion exists but is born with its evidence label and its separate confirmation path (ATJ-13).",
+    "any_later_candidate_requires": "the full chain: G2 (PrimaryCI, PBO <= 0.50, DSR >= 0.95 with manifest N_eff, walk-forward, +/-1 step sensitivity), G3 (four cost scenarios), G4 (holdout, single opening). This design grants none of that."
+  },
+  "refutation_conditions": [
+    "No ASIM/BE cell beats its paired REF in base net expectancy -> exit shape adds nothing: Gate 1's excursion asymmetry is not monetized by static rules.",
+    "BE improves at base but collapses at adverse costs (> 0.5x drop of base expectancy) -> the logic is fragile to cost, not to market.",
+    "Capa 0 shows the two archetypes do not exist as separate types (P(return | MFE >= g) flat in g) -> the motivating intuition has no trajectory support.",
+    "The G response curve is noise without a plateau -> there is no non-arbitrary trigger to choose; the question itself dies, with evidence.",
+    "The confiscation rate exceeds the rescue rate across the whole grid -> breakeven destroys value even where it 'looks good' on the chart.",
+    "The MCS contains most cells -> the data cannot distinguish rules; honest answer: insufficient sample for the question, not covert selection.",
+    "Kaminski-Lo prior: if P2A's directional mechanism were artifact, every exit rule subtracts -- a positive here forces re-verifying P2A before believing it."
+  ],
+  "dependencies": {
+    "all_dependencies_must_be_hash_bound": true,
+    "canonical_event_store_payload_sha256": "602f8f18467f6be081f36e8fc08f5d7e703f510a088afeb480d0b27b5e678e1d",
+    "design_doc_git_blob_sha1": "c102741087655806d9cada24f27e226bce4f18da",
+    "p2b_frozen_spec": "specs/bt2a_p2b_gc_economic_v1.json (frozen; never modified by this campaign; P2B_RUN=false, execution_authorized=false)",
+    "p2b_artifact_status": "PENDING -- DP3 policy applies (reuse if valid artifact appears; measure REF here if retraction confirms it never ran)",
+    "romano_wolf_mcs_code": "MISSING -- new code with known-truth suite required before freeze (formal freeze blocker)",
+    "existing_repo_reuse": ["validation/pbo.py", "validation/spa.py", "edgelab/research/g2* (DSR/CSCV)", "edgelab.research.bt2_gate1_outcomes (GC primitives)"]
+  },
+  "pre_freeze_checklist": [
+    "Event-store layer audit: which trajectory layers exist vs what must be measured new (reuse before recompute)",
+    "Romano-Wolf + MCS implemented and verified against synthetic known truth (noise -> FWER controlled; planted effect -> detected; planted plateau -> detected; isolated peak -> rejected)",
+    "P2B artifact-or-retraction resolved (DP3)",
+    "Seeds declared; per-cell power analysis written (paired session SD from opened P2A outcomes, declared as such)",
+    "Compute budget declared: 372 cells x 22202 events is vectorizable and cheap; the session-clustered bootstrap (10000 reps) is the bottleneck and is budgeted"
+  ],
+  "nq_transfer": {
+    "status": "CONDITIONAL_INACTIVE (DP1, confirmed in D5)",
+    "condition": "only if Gate 1 NQ executes and supports the directional mechanism; same design skeleton with its own estimated NQ economics (transporting GC economics is forbidden) and the corresponding NQ event store population. Writing that section as an amendment is work after the Gate 1 NQ freeze."
+  },
+  "decision_record": "docs/DECISIONES_NICO_2026-08-30.md -- D5: DP1-DP5 confirmed as a block 2026-08-30 ~19:26 ART (GC exploratory only; dense grid 372 cells H in {25,250}; P2B reuse policy; scrape at exact entry without re-entry; Capa 0 in-campaign). Claude's independent agreement + RW/MCS freeze condition recorded in canal entry 006.",
+  "does_not": "execute anything; open outcomes; touch the holdout; modify frozen specs (Gate 1, P2A, P2B intact); select any winner; declare any edge. Freeze and run are separate acts with Nico's tokens, and freeze stays blocked until the Romano-Wolf/MCS known-truth suite exists and passes."
+}
