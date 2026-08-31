@@ -7,6 +7,7 @@ no real data, no lookahead, no PnL.
 from __future__ import annotations
 
 import math
+import time
 import numpy as np
 import pytest
 
@@ -44,6 +45,30 @@ def _make_event(key: str, fill_idx: int, direction: int = 1, session: str = "202
         signal_source_row=fill_idx,
         fill_idx=fill_idx,
     )
+
+
+class TestStratumMatchingIsNotQuadratic:
+    def test_realistic_scale_stratum_completes_fast(self):
+        """Regression for the 2026-08-31 live-run stall: a single stratum with
+        a 50k pool and 500 events needing matches never finished the old
+        O(n_needed * pool_size) implementation in 120s. Must stay well under
+        that with the permutation-based rewrite."""
+        rng = np.random.default_rng(0)
+        key = ("NQ 03-26", "20260101", 0, True, 2)
+        pool = rng.choice(2_000_000, size=50_000, replace=False).tolist()
+        own = rng.choice(pool, size=500, replace=False).tolist()
+
+        start = time.monotonic()
+        pairs = sample_nrand_strata_indices({key: own}, {key: pool}, seed=42)
+        elapsed = time.monotonic() - start
+
+        assert elapsed < 5.0, f"took {elapsed:.2f}s, expected sub-second"
+        assert len(pairs) == 500
+        picks = [p for _, p in pairs]
+        assert len(set(picks)) == 500, "duplicate picks within the stratum"
+        for own_pos, pick in pairs:
+            assert pick != own_pos
+            assert pick in pool
 
 
 class TestStratumMatchingWithoutReplacement:

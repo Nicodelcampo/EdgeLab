@@ -124,6 +124,17 @@ def sample_nrand_strata_indices(
     precisely to make that exclusion possible, same as
     bt2_gate1_outcomes._sample_without_own).
     """
+    # VECTORIZED 2026-08-31: the original per-own `[p for p in pool if p != own
+    # and p not in chosen]` rebuilt and re-scanned the whole pool for every
+    # single draw -- O(n_needed * pool_size) per stratum. With 900+ strata on
+    # the large NQ contracts and pools in the tens of thousands, this is the
+    # confirmed candidate for the silent stall between "pools built" and
+    # "events ready" that has no progress marker of its own. Replaced with a
+    # permutation-based draw: shuffle the pool once, take the first n_needed
+    # entries as picks, and resolve any self-collision (pick == own) by
+    # swapping in an unused reserve entry from the same permutation -- still
+    # sampling without replacement from the same pool, still excluding each
+    # draw's own anchor, just O(pool_size + n_needed) instead of quadratic.
     rng = np.random.default_rng(seed)
     sampled_pairs: list[tuple[int, int]] = []
 
@@ -138,13 +149,22 @@ def sample_nrand_strata_indices(
                 f"[FAIL_CLOSED] Insufficient capacity for stratum {key}: "
                 f"pool={len(pool)}, needed={n_needed} (requires pool - 1 >= needed)"
             )
-        chosen: list[int] = []
-        for own in own_positions:
-            available = [p for p in pool if p != own and p not in chosen]
-            # pool - 1 >= n_needed guarantees this is non-empty at every draw
-            pick = int(rng.choice(np.asarray(available, dtype=np.int64)))
-            chosen.append(pick)
-            sampled_pairs.append((int(own), pick))
+        pool_arr = np.asarray(pool, dtype=np.int64)
+        perm = rng.permutation(pool_arr)
+        picks = perm[:n_needed].copy()
+        reserve = perm[n_needed:]
+        own_arr = np.asarray(own_positions, dtype=np.int64)
+        ridx = 0
+        for i in range(n_needed):
+            while picks[i] == own_arr[i]:
+                if ridx >= len(reserve):
+                    raise RuntimeError(
+                        f"[FAIL_CLOSED] exhausted reserve resolving self-collision in stratum {key}"
+                    )
+                picks[i] = reserve[ridx]
+                ridx += 1
+        for own, pick in zip(own_positions, picks.tolist()):
+            sampled_pairs.append((int(own), int(pick)))
 
     return sampled_pairs
 
