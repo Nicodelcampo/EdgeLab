@@ -32,7 +32,6 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from edgelab.bridge.ticks import load_canonical_parquet
 from edgelab.research.bt2_gate1_outcomes import Event
 from edgelab.research.bt2a_nq_gate1_nrand_capacity import (
     INSUFFICIENT_HISTORY,
@@ -68,6 +67,108 @@ FROZEN_SPEC_SHA256 = "b9e75c2533091c3dc8a3a2c8b8b8efde6eb6dfe1313efae48a4b488536
 HOLDOUT_OPEN_UTC_NS = 1782856800000000000
 DEFAULT_SPEC = REPO_ROOT / "specs/bt2a_nq_gate1_v1.draft.json"
 CONTRACTS = ["NQ 09-25", "NQ 12-25", "NQ 03-26", "NQ 06-26", "NQ 09-26"]
+
+
+class _LightTicks:
+    """Memory-bounded tick container: only the 3 columns this pipeline uses."""
+    __slots__ = ("ts_ns", "price_ticks", "sequence")
+
+    def __init__(self, ts_ns, price_ticks, sequence):
+        self.ts_ns = ts_ns
+        self.price_ticks = price_ticks
+        self.sequence = sequence
+
+
+def _load_ticks_light(tick_path: Path, contract: str) -> _LightTicks:
+    """Read ONLY ts_utc_ns / price_ticks / sequence via pyarrow column selection.
+
+    load_canonical_parquet loads all 6 numeric columns (~1.6 GB for a 34M-row
+    contract); the 16-cell evaluation never touches volume/bid/ask. Keeps the
+    P0 gate: non-monotonic timestamps raise.
+    """
+    import pyarrow.parquet as pq
+
+    tbl = pq.read_table(
+        tick_path,
+        columns=["ts_utc_ns", "price_ticks", "sequence"],
+        filters=[("contract", "==", contract)],
+    )
+    if tbl.num_rows == 0:
+        raise RuntimeError(f"empty tick selection for {contract}: {tick_path}")
+    ts_ns = tbl.column("ts_utc_ns").to_numpy(zero_copy_only=False).astype(np.int64)
+    price_ticks = tbl.column("price_ticks").to_numpy(zero_copy_only=False).astype(np.int64)
+    sequence = tbl.column("sequence").to_numpy(zero_copy_only=False).astype(np.int64)
+    d = np.diff(ts_ns)
+    if len(d) and d.min() < 0:
+        raise ValueError("ticks no monótonos (gate P0): auditar/ordenar antes de usar")
+    return _LightTicks(ts_ns, price_ticks, sequence)
+
+
+def _positions_of_source_rows(sequence: np.ndarray, source_rows) -> np.ndarray:
+    """Map source_row -> tick position via binary search instead of a Python
+    dict with one entry per tick (~2.7 GB at 34M rows, per worker).
+
+    Fail-closed: requires the contract's sequence to be strictly increasing
+    (true in the canonical store, where sequence is the source row index —
+    P-28). Any violation raises instead of silently mis-mapping.
+    """
+    seq = np.asarray(sequence, dtype=np.int64)
+    if len(seq) and np.any(np.diff(seq) <= 0):
+        raise RuntimeError("[FAIL_CLOSED] sequence not strictly increasing; refusing searchsorted map")
+    rows = np.asarray(list(source_rows), dtype=np.int64)
+    pos = np.searchsorted(seq, rows)
+    if np.any(pos >= len(seq)) or np.any(seq[pos] != rows):
+        raise RuntimeError("[FAIL_CLOSED] source_row absent from tick sequence")
+    return pos
+
+
+def _build_stratum_pools(sessions, minutes, vol, after, contract, edges):
+    """Vectorized stratum pool construction — identical outputs to the original
+    per-tick Python loop without its memory cost (measured in the auditor
+    sandbox: ~470 MB of Python structures at 3M ticks, extrapolated ~4.4 GB
+    per worker at 34M ticks; that footprint is what OOM-restarted the Kaggle
+    session twice, at MAX_WORKERS=4 and at MAX_WORKERS=2 alike).
+
+    Bit-identical semantics, verified against the function bodies:
+    coarse_phase(m) == m // 240 for normalized minutes, and
+    local_volatility_bin(v, edges) == searchsorted(sorted(edges), v, side="left").
+    Pools are stored as numpy arrays (no per-int boxing).
+    """
+    sess_codes, sess_uniques = pd.factorize(sessions, sort=True)
+    sess_codes = sess_codes.astype(np.int64)
+    phases = (np.asarray(minutes, dtype=np.int64) // 240).astype(np.int64)
+    avail = (np.asarray(after) >= MAX_HORIZON_OBSERVATIONS).astype(np.int64)
+    vol_arr = np.asarray(vol, dtype=np.float64)
+    nan_mask = np.isnan(vol_arr)
+    vb = np.full(len(vol_arr), -1, dtype=np.int64)  # -1 == INSUFFICIENT_HISTORY
+    if edges is not None:
+        edge_arr = np.asarray(sorted(float(e) for e in edges), dtype=np.float64)
+        vb[~nan_mask] = np.searchsorted(edge_arr, vol_arr[~nan_mask], side="left")
+
+    key = (((sess_codes * 6 + phases) * 2 + avail) * 6 + (vb + 1))
+    order = np.argsort(key, kind="stable")
+    sorted_key = key[order]
+    uniq, first, counts = np.unique(sorted_key, return_index=True, return_counts=True)
+
+    pools: dict[tuple, np.ndarray] = {}
+    for u, f, c in zip(uniq.tolist(), first.tolist(), counts.tolist()):
+        uu = int(u)
+        vb1 = uu % 6; uu //= 6
+        av = uu % 2; uu //= 2
+        ph = uu % 6; uu //= 6
+        sess = str(sess_uniques[uu])
+        v_bin = INSUFFICIENT_HISTORY if vb1 == 0 else int(vb1 - 1)
+        pools[stratum_key(contract, sess, int(ph), bool(av), v_bin)] = order[f:f + c]
+
+    key2 = sess_codes * 6 + phases
+    order2 = np.argsort(key2, kind="stable")
+    s2 = key2[order2]
+    uniq2, first2, counts2 = np.unique(s2, return_index=True, return_counts=True)
+    by_phase: dict[tuple[str, int], np.ndarray] = {}
+    for u, f, c in zip(uniq2.tolist(), first2.tolist(), counts2.tolist()):
+        uu = int(u)
+        by_phase[(str(sess_uniques[uu // 6]), int(uu % 6))] = order2[f:f + c]
+    return pools, by_phase
 
 
 def atomic_write_json(path: Path, data: Any) -> None:
@@ -175,7 +276,7 @@ def run_contract_pipeline(
 ) -> Tuple[List[SessionCellArmStat], List[Dict[str, Any]], Dict[str, Any]]:
     """Process all sessions for a single contract, evaluating all 4 arms across 16 cells."""
     print(f"[{contract}] Loading ticks from {tick_path}...", flush=True)
-    ticks = load_canonical_parquet(tick_path, contract=contract, instrument="NQ")
+    ticks = _load_ticks_light(tick_path, contract)
 
     # Positive holdout check: measured, not attested.
     if np.any(ticks.ts_ns >= HOLDOUT_OPEN_UTC_NS):
@@ -187,13 +288,11 @@ def run_contract_pipeline(
     vol = rolling_median_abs_delta_pre_anchor(ticks.price_ticks, sessions)
     after = rows_after_in_session(sessions)
 
-    # 2. Map coordinates to tick positions
-    row_by_source_row = {int(r): i for i, r in enumerate(ticks.sequence)}
-
+    # 2. Map coordinates to tick positions (binary search, not a per-tick dict)
     k_abs_c = k_abs_coords[k_abs_coords["contract"] == contract].reset_index(drop=True)
     if k_abs_c.empty:
         raise RuntimeError(f"no K_ABS coordinates for {contract}")
-    k_abs_positions = np.asarray([row_by_source_row[int(r)] for r in k_abs_c["source_row"]], dtype=np.int64)
+    k_abs_positions = _positions_of_source_rows(ticks.sequence, k_abs_c["source_row"])
 
     contract_event_vol = vol[k_abs_positions]
     valid_vols = contract_event_vol[~np.isnan(contract_event_vol)].tolist()
@@ -232,27 +331,11 @@ def run_contract_pipeline(
         k_abs_events.append(ev)
         events_by_session_phase.setdefault((sess, ph), []).append(ev)
 
-    # 4. Build candidate pools for N_RAND (per stratum) and shuffle (per session-phase)
-    candidate_pools: dict[tuple, list[int]] = {}
-    candidate_indices_by_session_phase: dict[tuple[str, int], list[int]] = {}
-
-    phases = np.array([coarse_phase(int(m)) for m in minutes], dtype=np.int32)
-    available_mask = after >= MAX_HORIZON_OBSERVATIONS
-    vol_bins = np.empty(len(vol), dtype=object)
-    nan_mask = np.isnan(vol)
-    vol_bins[nan_mask] = INSUFFICIENT_HISTORY
-    if edges is not None:
-        valid_indices = np.flatnonzero(~nan_mask)
-        b_idx = np.searchsorted(edges, vol[valid_indices], side="left")
-        for idx, b in zip(valid_indices, b_idx):
-            vol_bins[idx] = int(b)
-
-    for pos in range(len(ticks.price_ticks)):
-        sess = str(sessions[pos])
-        ph = int(phases[pos])
-        s_key = stratum_key(contract, sess, ph, bool(available_mask[pos]), vol_bins[pos])
-        candidate_pools.setdefault(s_key, []).append(pos)
-        candidate_indices_by_session_phase.setdefault((sess, ph), []).append(pos)
+    # 4. Build candidate pools for N_RAND (per stratum) and shuffle (per session-phase),
+    #    vectorized: the per-tick Python loop version is what OOM-killed Kaggle twice.
+    candidate_pools, candidate_indices_by_session_phase = _build_stratum_pools(
+        sessions, minutes, vol, after, contract, edges,
+    )
 
     # 5. Sample N_RAND: pairs (own_anchor, sampled_anchor), own excluded per draw;
     #    the anchor inherits the direction of the K_ABS event it replaces.
@@ -295,11 +378,9 @@ def run_contract_pipeline(
 
     # 7. K_BT2 events from the staged coordinates artifact
     k_bt2_events: list[Event] = []
-    for _, row in k_bt2_coords.iterrows():
-        s_row = int(row["source_row"])
-        if s_row not in row_by_source_row:
-            raise RuntimeError(f"K_BT2 source_row {s_row} not in tick sequence for {contract}")
-        pos = row_by_source_row[s_row]
+    k_bt2_positions = _positions_of_source_rows(ticks.sequence, k_bt2_coords["source_row"])
+    for k, (_, row) in enumerate(k_bt2_coords.iterrows()):
+        pos = int(k_bt2_positions[k])
         sess = str(sessions[pos])
         k_bt2_events.append(Event(
             key=f"BT2_{contract}_{sess}_{pos}",
@@ -325,9 +406,13 @@ def run_contract_pipeline(
     for ev in shuffle_events:
         arms_events["K_ABS_SHUFFLE"].setdefault(ev.session, []).append(ev)
 
-    # 8. Evaluate 16 cells
+    # 8. Evaluate 16 cells. Exclusions are aggregated by (arm, cell, reason) with a
+    #    capped sample: a full per-event-cell exclusion list over 152K events x 16
+    #    cells would be a multi-GB JSON — counts + samples carry the same evidence.
+    EXCLUSION_SAMPLE_CAP = 2000
     stats: list[SessionCellArmStat] = []
     exclusions: list[dict[str, Any]] = []
+    exclusion_counts: dict[str, int] = {}
     unique_sessions = sorted(set(sessions))
 
     for horizon in HORIZONS_OBSERVATIONS:
@@ -343,7 +428,11 @@ def run_contract_pipeline(
                             barrier_ticks=barrier, horizon_observations=horizon,
                         )
                         stats.append(stat)
-                        exclusions.extend(excl)
+                        for e in excl:
+                            ck = f"{arm_name}|{stat.cell_id}|{e['reason']}"
+                            exclusion_counts[ck] = exclusion_counts.get(ck, 0) + 1
+                            if len(exclusions) < EXCLUSION_SAMPLE_CAP:
+                                exclusions.append(e)
 
     contract_summary = {
         "contract": contract,
@@ -354,6 +443,8 @@ def run_contract_pipeline(
         "n_k_bt2_events": len(k_bt2_events),
         "n_k_abs_shuffle_events": len(shuffle_events),
         "quintile_edges": edges,
+        "exclusion_counts": exclusion_counts,
+        "exclusion_sample_size": len(exclusions),
     }
     return stats, exclusions, contract_summary
 
@@ -421,7 +512,7 @@ def run_aggregate(
             raise RuntimeError(f"[FAIL_CLOSED] stats for {contract} were computed against a different spec")
         for row in payload["stats"]:
             all_stats.append(SessionCellArmStat(**row))
-        all_exclusions.extend(payload["exclusions"])
+        all_exclusions.extend(payload["exclusions"])  # capped samples, not the full list
         contract_summaries.append(payload["contract_summary"])
 
     family_results = aggregate_full_family_contrasts(all_stats, replications=replications, seed=seed)
@@ -454,7 +545,10 @@ def run_aggregate(
             "sufficient_power": eff_available >= eff_required,
         },
         "contract_summaries": contract_summaries,
-        "n_exclusions_total": len(all_exclusions),
+        "n_exclusions_total": sum(
+            sum(cs.get("exclusion_counts", {}).values()) for cs in contract_summaries
+        ),
+        "n_exclusions_sampled": len(all_exclusions),
         "execution_metadata": {
             "execution_token": authorization_token,
             "started_utc": t_start.isoformat(),

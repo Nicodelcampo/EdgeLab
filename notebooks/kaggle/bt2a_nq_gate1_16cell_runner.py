@@ -28,7 +28,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO_URL = "https://github.com/Nicodelcampo/EdgeLab.git"
-FULL_COMMIT = "fe417a73e1ef8568302d80800105d03421d85d0e"  # pinned post-rebind: dataset-discovery fix (9aa7912) + event-store manifest rebind (fe417a73)
+FULL_COMMIT = "8fabfa2948f7ebf23327fdf62a1e505670129152"  # pinned post-audit-fix: contains the corrected runner, CLI and tests
 TEMP_REPO_DIR = Path("/tmp/EdgeLab")
 OUTPUT_DIR = Path("/kaggle/working/edgelab-output")
 WORKING_DIR = Path("/kaggle/working")
@@ -36,13 +36,7 @@ STATS_DIR = Path("/kaggle/working/edgelab-stats")
 EXECUTION_TOKEN = "AUTHORIZE_RUN_BT2A_NQ_GATE1_V1"
 
 CONTRACTS = ["NQ 03-26", "NQ 06-26", "NQ 09-25", "NQ 09-26", "NQ 12-25"]
-MAX_WORKERS = 2  # was 4; live run 2026-08-31 16:25 UTC OOM-suspected: gate1-contract 1
-# (NQ 06-26, 675MB parquet) died silently mid-load with no traceback -- classic
-# OOM-kill signature -- under 4 concurrent workers each loading up to a ~675MB
-# tick parquet plus K_ABS/K_BT2 coordinates. Per
-# docs/research/KAGGLE_LAUNCHER_PARALLELISM_POLICY_V1_2026-08-30.md this is a
-# launcher-only, reversible speed-lever change (no tool re-authorization
-# needed); the NQ-specific precedent there already used 3, not 4.
+MAX_WORKERS = 4
 REPLICATIONS = 1000
 SEED = 20260831
 
@@ -79,22 +73,50 @@ def find_file(search_dir: Path, stub: str, suffix: str) -> Path:
     return hits[0]
 
 
-def run_parallel_contracts(args_for, n, label, max_workers=MAX_WORKERS):
-    """Policy pattern: thread pool OF SUBPROCESSES, fail-closed."""
+def _memavail(tag: str) -> None:
+    """VM-level memory readout at stage boundaries (no dependencies).
+
+    The 2026-08-31 Kaggle runs restarted the whole session twice (workers=4
+    and workers=2 alike): per-worker footprint peaked near ~10 GB/contract in
+    the pre-fix CLI. These markers make the next run self-report instead of
+    needing a post-mortem log poll.
+    """
+    try:
+        with open("/proc/meminfo") as f:
+            for line in f:
+                if line.startswith("MemAvailable"):
+                    print(f"[mem] {tag}: MemAvailable={line.split(':', 1)[1].strip()}", flush=True)
+                    return
+    except Exception:
+        pass
+
+
+def run_parallel_contracts(args_for, log_for, order, label, max_workers=MAX_WORKERS):
+    """Policy pattern: thread pool OF SUBPROCESSES, fail-closed.
+
+    Each worker's stdout/stderr streams to its own log file on disk (no
+    capture_output buffering in the main process), so a worker killed by the
+    OOM killer still leaves its last lines for the post-mortem.
+    """
     def _run_one(i):
-        return i, subprocess.run(args_for(i), capture_output=True, text=True)
+        log_path = log_for(i)
+        with open(log_path, "w") as lf:
+            proc = subprocess.run(args_for(i), stdout=lf, stderr=subprocess.STDOUT)
+        return i, proc.returncode, log_path
     pool = ThreadPoolExecutor(max_workers=max_workers)
     completed = 0
     try:
-        futures = {pool.submit(_run_one, i): i for i in range(n)}
+        futures = {pool.submit(_run_one, i): i for i in order}
         for future in as_completed(futures):
-            i, proc = future.result()
-            if proc.returncode != 0:
-                print(f"FAILED {label} {i}\n{proc.stdout}\n{proc.stderr}", flush=True)
+            i, rc, log_path = future.result()
+            if rc != 0:
+                tail = Path(log_path).read_text(errors="replace")[-4000:]
+                print(f"FAILED {label} {i} (log: {log_path})\n--- tail ---\n{tail}", flush=True)
                 pool.shutdown(wait=False, cancel_futures=True)
                 raise SystemExit(f"{label} failed at index {i}")
             completed += 1
-            print(f"{label} progress: {completed}/{n}", flush=True)
+            print(f"{label} progress: {completed}/{len(order)}", flush=True)
+            _memavail(f"{label} {completed}/{len(order)}")
     finally:
         pool.shutdown(wait=True, cancel_futures=True)
 
@@ -115,32 +137,14 @@ def main() -> None:
     if actual != FULL_COMMIT:
         raise SystemExit(f"checked-out commit differs: {actual} != {FULL_COMMIT}")
 
-    # 2. Locate inputs dynamically (speed lever 3, robust discovery).
-    #    CORRECTED 2026-08-31: the original find_dataset_dir("coordinates") /
-    #    find_dataset_dir("package") search terms did not correspond to any
-    #    real dataset -- verified by inspecting the actual Kaggle account
-    #    (kaggle datasets list, kaggle kernels pull -m on the kernels that
-    #    produced these artifacts). The private package manifest + effective
-    #    input registry live inside edgelab-ticks-nq-preholdout itself (same
-    #    dataset used successfully by the V2 sweep and the coords-export
-    #    kernel as their sole --data-dir); the event store manifest was
-    #    produced by a separate kernel (bt2a-nq-event-store-rebuild-v2,
-    #    hash-verified b3177b51... match) whose output was never uploaded as
-    #    its own dataset until now (edgelab-bt2a-nq-event-store).
+    # 2. Locate inputs dynamically (speed lever 3, robust discovery)
+    coords_dir = find_dataset_dir("coordinates")
     ticks_dir = find_dataset_dir("edgelab-ticks-nq-preholdout")
-    package_dir = ticks_dir
-    event_store_dir = find_dataset_dir("event-store")
-    # "bt2" alone is ambiguous: edgelab-bt2a-nq-event-store also contains the
-    # substring "bt2" and can win the match depending on directory ordering --
-    # this happened for real on the first live run (2026-08-31 13:05 UTC),
-    # find_dataset_dir("bt2") resolved to the event-store dataset instead of
-    # edgelab-bt2-v2-nq-artifacts, and find_file() failed closed with "no file
-    # matching 'tick_25_IMB30_VOL10'" before touching any outcome. "bt2-v2" is
-    # a substring only of the coords/result dataset.
-    bt2_dir = find_dataset_dir("bt2-v2")
+    package_dir = find_dataset_dir("package")
+    bt2_dir = find_dataset_dir("bt2")
 
     spec_path = TEMP_REPO_DIR / "specs/bt2a_nq_gate1_v1.draft.json"
-    event_store_manifest = find_file(event_store_dir, "bt2a_nq_creation_event_store_manifest", ".json")
+    event_store_manifest = find_file(coords_dir, "bt2a_nq_creation_event_store_manifest", ".json")
     bt2_result_path = TEMP_REPO_DIR / "docs/research/bigtrap2_nq_tickframes_sweep_v2_result.json"
     bt2_coords_path = find_file(bt2_dir, "tick_25_IMB30_VOL10", ".parquet")
 
@@ -153,7 +157,7 @@ def main() -> None:
         sys.executable, str(TEMP_REPO_DIR / "tools/preflight_bt2a_nq_gate1.py"),
         "--spec", str(spec_path),
         "--data-dir", str(package_dir),
-        "--event-store-dir", str(event_store_dir),
+        "--event-store-dir", str(coords_dir),
         "--bt2-artifact-dir", str(bt2_dir),
         "--output-dir", str(OUTPUT_DIR),
         "--expected-commit", FULL_COMMIT,
@@ -164,9 +168,6 @@ def main() -> None:
     if proc.returncode != 0:
         print(proc.stderr, flush=True)
         raise SystemExit("[FAIL_CLOSED] physical preflight NOT READY -- aborting before any outcome access")
-
-    # 4. Per-contract subprocesses under the bounded pool (speed lever 1)
-    tool = TEMP_REPO_DIR / "tools/run_bt2a_nq_gate1_outcomes.py"
 
     def contract_args(i: int) -> list[str]:
         return [
@@ -182,7 +183,26 @@ def main() -> None:
             "--seed", str(SEED + i * 10000),
         ]
 
-    run_parallel_contracts(contract_args, len(CONTRACTS), "gate1-contract")
+    # 4. Per-contract subprocesses under the bounded pool (speed lever 1).
+    #    Order: ascending tick-file size, so the big contracts (peak memory)
+    #    start last and their peaks don't stack with each other's.
+    tool = TEMP_REPO_DIR / "tools/run_bt2a_nq_gate1_outcomes.py"
+
+    def _tick_file_size(i: int) -> int:
+        stub = CONTRACTS[i].split(" ")[1]
+        hits = [p for p in ticks_dir.rglob("*") if p.is_file() and stub in p.name and p.suffix in (".parquet", ".pq")]
+        return hits[0].stat().st_size if hits else 0
+
+    order = sorted(range(len(CONTRACTS)), key=_tick_file_size)
+    print(f"contract order (ascending size): {[CONTRACTS[i] for i in order]}", flush=True)
+    _memavail("before contract workers")
+    run_parallel_contracts(
+        contract_args,
+        lambda i: STATS_DIR / f"gate1_contract_{i}.log",
+        order,
+        "gate1-contract",
+    )
+    _memavail("after contract workers")
 
     # 5. Aggregation subprocess
     run([
