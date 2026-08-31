@@ -154,7 +154,8 @@ def test_firewalls_remain_closed_after_the_amendment():
         "HOLDOUT_TOUCHED", "WINNER_SELECTED", "EDGE_DECLARED", "PROMOTION_ELIGIBLE",
     ))
     assert value["authorization"]["execution_authorized"] is False
-    assert value["authorization"]["active_token"] is None
+    # Gate 1 spec frozen 2026-08-31: active_token carries the freeze token, never a run capability.
+    assert value["authorization"]["active_token"] == "APPROVE_FREEZE_BT2A_NQ_GATE1_V1"
 
 
 def test_per_event_outcome_is_declared_as_magnitude():

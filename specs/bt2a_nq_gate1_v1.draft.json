@@ -16,7 +16,7 @@
     "shuffle_policy": "WITHIN_CONTRACT_SESSION_AND_COARSE_PHASE_PRESERVE_EVENT_COUNT"
   },
   "authorization": {
-    "active_token": null,
+    "active_token": "APPROVE_FREEZE_BT2A_NQ_GATE1_V1",
     "execution_authorized": false,
     "freeze_token_label": "APPROVE_FREEZE_BT2A_NQ_GATE1_V1",
     "frozen_commit": null,
@@ -99,6 +99,13 @@
     "PNL_ACCESSED": false,
     "PROMOTION_ELIGIBLE": false,
     "WINNER_SELECTED": false
+  },
+  "freeze_record": {
+    "freeze_channel": "Notion AI chat, verbatim token message",
+    "frozen_at": "2026-08-31T00:57-03:00",
+    "frozen_by": "Nicolas Buttaro",
+    "note": "Freeze of the Gate 1 NQ spec itself (token 2), after power inputs froze at commit d45d3943 and all hash bindings closed (missing_bindings == [], verified with the repo's own preflight module). frozen_commit stays null: a file cannot embed the hash of the commit that contains it. Does NOT authorize implementation (AUTHORIZE_IMPLEMENT_BT2A_NQ_GATE1_16CELL_V1) or execution (AUTHORIZE_RUN_BT2A_NQ_GATE1_V1); execution_authorized remains false and every firewall flag stays false. No outcome, PnL, first-passage or holdout access was opened.",
+    "token": "APPROVE_FREEZE_BT2A_NQ_GATE1_V1"
   },
   "inference": {
     "cluster_unit": "CME_SESSION",
@@ -239,7 +246,7 @@
     "required_status": "INFORMAL_EARLY_STOP_NQ_CONFIGURATION",
     "selected_config_id": "bt2a_nq_7e84981882b0b380"
   },
-  "status": "DRAFT_DESIGN_ONLY_PREAUTHORIZATION",
+  "status": "FROZEN_PREFLIGHT_READY",
   "universe": {
     "contract_sessions": 234,
     "contracts": [

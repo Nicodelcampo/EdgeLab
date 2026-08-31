@@ -31,7 +31,9 @@ def test_event_store_is_transform_only_and_closed():
 
 def test_gate1_registers_full_family_and_remains_closed():
     value = load(GATE1)
-    assert value["status"] == "DRAFT_DESIGN_ONLY_PREAUTHORIZATION"
+    # Gate 1 spec frozen 2026-08-31 (Nico token APPROVE_FREEZE_BT2A_NQ_GATE1_V1,
+    # verbatim in chat); this assert tracked the pre-freeze DRAFT status until then.
+    assert value["status"] == "FROZEN_PREFLIGHT_READY"
     assert value["execution_platform"] == "KAGGLE_ONLY"
     family = value["outcome_family"]
     assert family["first_passage_barriers_ticks"] == [5, 9, 18, 30]
