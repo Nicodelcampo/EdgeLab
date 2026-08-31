@@ -28,7 +28,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO_URL = "https://github.com/Nicodelcampo/EdgeLab.git"
-FULL_COMMIT = "fca5516de8021e4debd9e7bc07eb2d1c68ab8081"  # pinned post-s_row-NameError-fix + live progress heartbeat (fca5516)
+FULL_COMMIT = "37aecc65c913ca42104e1b88b4c41a9124f7e29a"  # pinned post-N_RAND-vectorization: sample_nrand_strata_indices was O(n_needed*pool_size), confirmed root cause of the live-run stall (37aecc6)
 TEMP_REPO_DIR = Path("/tmp/EdgeLab")
 OUTPUT_DIR = Path("/kaggle/working/edgelab-output")
 WORKING_DIR = Path("/kaggle/working")
