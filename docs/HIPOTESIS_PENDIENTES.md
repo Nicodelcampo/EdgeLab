@@ -228,3 +228,36 @@ por reloj puede satisfacer eso, con cualquier cantidad de trabajo de traducción
 explicitando qué tiraba y por qué. Lo útil de este archivo es servir de **control
 negativo documentado**: cinco decisiones de diseño que el proyecto ya rechazó,
 con el fuente al lado para mostrar cómo se ven cuando están mal.
+
+---
+
+## HP-005 — Lógicas de salida SL/TP asimétricas + breakeven con gatillo denso (BT2A GC)
+
+**Fecha:** 2026-08-30 · **Origen:** observación de Nico (tras una burbuja, el
+precio o hace una pequeña excursión a favor y revierte a la entrada — arquetipo
+BE — o sigue a favor sin regresar al punto de entrada — arquetipo TP) ·
+**Estado:** diseño V1.1 escrito + spec JSON redactado; DP1–DP5 confirmados por
+Nico (D5, 2026-08-30 ~19:26 ART); **freeze bloqueado** hasta que exista la suite
+de verdad conocida de Romano-Wolf + MCS (condición de Claude, adoptada formal
+como blocker), se resuelva P2B (artefacto o retracción — DP3) y se audite qué
+capas de trayectoria ya existen en el event store (ATJ-08, reuso antes que
+recómputo)
+
+La corrección de fondo de Nico: **la excursión que gatilla el break-even no
+puede ser arbitraria** — el gatillo G se barre denso {2..30} y la respuesta la
+dan la curva de expectativa neta, el Model Confidence Set y la regla de meseta.
+Nunca un punto elegido.
+
+- Diseño: `docs/research/BT2A_GC_SLTP_BREAKEVEN_DESIGN_V1_2026-08-30.md`
+  (V1.1 + corrigendum, blob `c1027410…`).
+- Spec: `specs/bt2a_gc_exitlogic_sltp_breakeven_campaign_v1.draft.json` —
+  372 celdas primarias (348 BE con G densa + 24 ASIM; REF 16 condicionada a la
+  política de reuso P2B), corrección primaria Romano-Wolf, robustez por
+  MCS + meseta + walk-forward/PBO/DSR, economía GC congelada (3,5t/5,5t all-in).
+- Decisión: `docs/DECISIONES_NICO_2026-08-30.md` (D5).
+- Rama: `research/bt2a-gc-sltp-breakeven-design-v1-20260830`.
+- Alcance: GC exploratorio, **nunca confirmatorio**; transferencia a NQ
+  condicionada a que Gate 1 NQ se ejecute y soporte el mecanismo direccional.
+- Auditoría de origen: `docs/audits/AUDITORIA_SLTP_Y_PROVENIENCIA_P2B_2026-08-30.md`
+  (verificó que ninguna lógica asimétrica ni breakeven fue medida jamás en el
+  proyecto — esta es la primera medición diseñada).
