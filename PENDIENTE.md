@@ -1785,3 +1785,21 @@ Once pares de archivos (.nrd de NinjaTrader Market Replay y .csv exportados) cub
 2. **Acoplamiento al reloj del sistema (ART = UTC-3):** Los timestamps generados por `DumpMarketDepth` adoptan la hora local de la máquina (ART = UTC-3), evidenciado por la coincidencia exacta de la pausa diaria de mantenimiento de CME (16:00–17:00 CDT = 18:00–19:00 ART). Cualquier conversor posterior a Parquet debe normalizar explícitamente el timezone a UTC teniendo en cuenta este offset.
 3. **Ausencia de orden intra-microsegundo:** El CSV carece de columna de secuencia del exchange CME (`seq_num`), y entre el 77 % y el 94 % de las filas comparten microsegundos idénticos.
 
+---
+
+## P-58 — autorización self-serve en el runner de BT2A NQ Gate 1 (misma clase que P2B), riesgo aceptado por Nico
+
+**Asentada 2026-08-31.** Rama: `research/bt2a-nq-gate1-runner-impl-v1-20260831`. Precedente:
+`docs/incidents/INCIDENTE_P2B_GC_AUTORIZACION_NO_TRAZABLE_2026-08-30.md`.
+
+**Hallazgo, verificado leyendo el código, no el reporte:**
+
+- `notebooks/kaggle/bt2a_nq_gate1_16cell_runner.py:36`: `EXECUTION_TOKEN = "AUTHORIZE_RUN_BT2A_NQ_GATE1_V1"` — string hardcodeado en el propio archivo commiteado.
+- `tools/run_bt2a_nq_gate1_outcomes.py:62`, `:366`, `:404`: la misma constante, comparada contra `--authorization` con `!=`. Ningún chequeo lee `execution_authorized` del spec congelado, ni `run_capability`, ni el estado de git contra un `frozen_code.commit` externo.
+- El mecanismo genérico que existe en el repo para esto (`edgelab/kaggle/execution.py::require_authorized`, que sí exige spec `FROZEN` + `run_capability=true` + token exacto + árbol limpio en el commit congelado) **no lo usa ni el lanzador ni el CLI de Gate 1**. Instanciar `specs/kaggle_frozen_execution_v1.template.json` para esta campaña no cerraría nada — ese archivo no lo lee nadie en esta ruta de ejecución.
+- Conclusión: "leer el código es conocer el token" — exactamente la frase con la que se cerró el hallazgo de P2B (canal 006, §2). Cualquiera con el archivo (público en el repo) puede correr Gate 1 sin dejar rastro de una autorización externa real.
+
+**Decisión de Nico (2026-08-31, verbatim "2" ante la pregunta "arreglar ahora vs. aceptar y correr"):** aceptar el riesgo residual y correr la campaña ya diseñada (Token 3 implementado y verificado, Token 4 otorgado en `docs/research/DECISION_NICO_IMPLEMENT_Y_RUN_BT2A_NQ_GATE1_2026-08-31.md`) sin bloquear por este gap. **Esto no retracta ni el freeze del spec ni los tokens 3/4** — el diseño y la implementación están verificados de forma independiente (hashes de blob confirmados contra remoto, demo de efecto plantado reproducida a mano: 16/16 celdas `SUPPORTED`, nulo 0/16). El gap es de **plomería de autorización de ejecución**, no del estimand ni del código de decisión.
+
+**Pendiente diferido (no bloqueante para esta corrida):** aplicar a `tools/run_bt2a_nq_gate1_outcomes.py` el mismo fix que corresponde a P2B — validar `--authorization` contra un registro externo congelado y trazable (el propio `DECISION_NICO_...md`, o un `execution_authorized` real en un spec firmado), no contra una constante en el mismo archivo que la usa.
+
