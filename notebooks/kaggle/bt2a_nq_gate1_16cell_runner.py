@@ -28,7 +28,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO_URL = "https://github.com/Nicodelcampo/EdgeLab.git"
-FULL_COMMIT = "8fabfa2948f7ebf23327fdf62a1e505670129152"  # pinned post-audit-fix: contains the corrected runner, CLI and tests
+FULL_COMMIT = "fe417a73e1ef8568302d80800105d03421d85d0e"  # pinned post-rebind: dataset-discovery fix (9aa7912) + event-store manifest rebind (fe417a73)
 TEMP_REPO_DIR = Path("/tmp/EdgeLab")
 OUTPUT_DIR = Path("/kaggle/working/edgelab-output")
 WORKING_DIR = Path("/kaggle/working")
