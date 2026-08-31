@@ -1,29 +1,29 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """CLI orchestration entrypoint for BT2A NQ Gate 1 (16-cell) Execution.
 
 Implementation authorized under Token 3 (AUTHORIZE_IMPLEMENT_BT2A_NQ_GATE1_16CELL_V1).
 Execution strictly gated behind Token 4 (AUTHORIZE_RUN_BT2A_NQ_GATE1_V1).
 
 Fail-Closed Architecture:
-1. Verifies frozen spec hashes before running.
-2. Checks git clean status and frozen commit ancestry.
-3. Loads hash-bound creation events (K_ABS), BigTrap2 V2 comparator coordinates (K_BT2).
-4. Computes strata-matched N_RAND and K_ABS_SHUFFLE.
-5. Evaluates 16-cell capped magnitude outcomes.
-6. Computes Holm step-down family results and decision label.
-7. Emits atomic output manifest and firewall attestation.
+1. Verifies the spec against the FROZEN sha256 pin (not against itself).
+2. Verifies the event store manifest and the BT2 V2 result against the spec's
+   hash bindings.
+3. Positive holdout check on decoded ticks (measured, not attested).
+4. Per-contract mode writes atomic per-contract stats; aggregate mode combines
+   them. Parallelism lives in the Kaggle LAUNCHER as a thread pool of
+   subprocesses per KAGGLE_LAUNCHER_PARALLELISM_POLICY_V1_2026-08-30.md, not
+   inside this tool.
 """
 from __future__ import annotations
 
 import argparse
-import concurrent.futures
 import json
 import os
-import subprocess
 import sys
+from dataclasses import asdict
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Tuple
 
 import numpy as np
 import pandas as pd
@@ -36,7 +36,6 @@ from edgelab.bridge.ticks import load_canonical_parquet
 from edgelab.research.bt2_gate1_outcomes import Event
 from edgelab.research.bt2a_nq_gate1_nrand_capacity import (
     INSUFFICIENT_HISTORY,
-    availability_flag,
     coarse_phase,
     compute_quintile_edges,
     local_volatility_bin,
@@ -45,16 +44,10 @@ from edgelab.research.bt2a_nq_gate1_nrand_capacity import (
 from edgelab.research.bt2a_nq_gate1_outcomes import (
     BARRIERS_TICKS,
     HORIZONS_OBSERVATIONS,
-    all_cells,
     build_cell_cache,
-    cell_id,
 )
 from edgelab.research.bt2a_nq_gate1_runner import (
-    ALPHA_FAMILY,
-    HOLM_FAMILY_SIZE,
     MAX_HORIZON_OBSERVATIONS,
-    MINIMUM_EFFECT_TICKS,
-    PRE_ANCHOR_VOLATILITY_WINDOW,
     SessionCellArmStat,
     aggregate_full_family_contrasts,
     canonical_sha256,
@@ -67,6 +60,10 @@ from edgelab.research.bt2a_nq_gate1_runner import (
 )
 
 EXECUTION_TOKEN = "AUTHORIZE_RUN_BT2A_NQ_GATE1_V1"
+# The frozen spec pin (Gate 1 spec froze at commit 8b1f334f, backfill c70bdb5d).
+# Verified against the file, never recomputed-and-self-compared.
+FROZEN_SPEC_SHA256 = "5c5857a5e486edcb68c73f0a0cc73be4d20946ef49d9b652affa4060b7b59d8e"
+HOLDOUT_OPEN_UTC_NS = 1782856800000000000
 DEFAULT_SPEC = REPO_ROOT / "specs/bt2a_nq_gate1_v1.draft.json"
 CONTRACTS = ["NQ 09-25", "NQ 12-25", "NQ 03-26", "NQ 06-26", "NQ 09-26"]
 
@@ -96,6 +93,9 @@ def cme_session_dates(ts_ns: np.ndarray) -> np.ndarray:
     return np.char.replace(np.datetime_as_string(days, unit="D"), "-", "").astype("U8")
 
 
+PRE_ANCHOR_VOLATILITY_WINDOW = 500
+
+
 def rolling_median_abs_delta_pre_anchor(price_ticks: np.ndarray, session_ids: np.ndarray) -> np.ndarray:
     n = len(price_ticks)
     out = np.full(n, np.nan, dtype=np.float64)
@@ -122,6 +122,47 @@ def rows_after_in_session(session_ids: np.ndarray) -> np.ndarray:
     return out
 
 
+def verify_frozen_inputs(spec_path: Path, event_store_path: Path, bt2_result_path: Path) -> dict:
+    """Verify spec against the frozen pin, and inputs against the spec's bindings."""
+    verify_input_artifact(spec_path, FROZEN_SPEC_SHA256, "spec")
+    spec = json.loads(spec_path.read_text(encoding="utf-8"))
+    deps = spec["dependencies"]
+    verify_input_artifact(event_store_path, deps["bt2a_creation_event_store_manifest_sha256"], "event_store_manifest")
+    verify_input_artifact(bt2_result_path, deps["bt2_v2_result_file_sha256"], "bt2_v2_result")
+    return spec
+
+
+def load_k_abs_coords(event_store_path: Path) -> pd.DataFrame:
+    manifest = json.loads(event_store_path.read_text(encoding="utf-8"))
+    parquet_path = event_store_path.parent / manifest.get("parquet_file", "bt2a_nq_creation_events.parquet")
+    if not parquet_path.is_file():
+        raise FileNotFoundError(f"creation event parquet not found next to manifest: {parquet_path}")
+    df = pd.read_parquet(parquet_path)
+    if df.empty:
+        raise RuntimeError("K_ABS creation coordinates parquet is empty")
+    return df
+
+
+def load_k_bt2_coords(bt2_coords_path: Path, contract: str) -> pd.DataFrame:
+    """Load the staged BT2 comparator coordinates parquet for one contract.
+
+    The V2 sweep RESULT json only carries summary rows; the creation
+    coordinates artifact is staged physically (the spec declares this staging
+    as a separate pending step). Fail-closed: missing file, wrong schema or
+    zero rows for the contract all raise.
+    """
+    if not bt2_coords_path.is_file():
+        raise FileNotFoundError(f"BT2 comparator coordinates not staged: {bt2_coords_path}")
+    df = pd.read_parquet(bt2_coords_path)
+    required = {"contract", "source_row", "direction"}
+    if not required.issubset(set(df.columns)):
+        raise RuntimeError(f"BT2 coordinates schema mismatch: need {sorted(required)}, got {sorted(df.columns)}")
+    out = df[df["contract"] == contract]
+    if out.empty:
+        raise RuntimeError(f"BT2 comparator coordinates staged but empty for {contract}")
+    return out
+
+
 def run_contract_pipeline(
     contract: str,
     tick_path: Path,
@@ -134,7 +175,11 @@ def run_contract_pipeline(
     print(f"[{contract}] Loading ticks from {tick_path}...", flush=True)
     ticks = load_canonical_parquet(tick_path, contract=contract, instrument="NQ")
 
-    # 1. Precompute pre-anchor features
+    # Positive holdout check: measured, not attested.
+    if np.any(ticks.ts_ns >= HOLDOUT_OPEN_UTC_NS):
+        raise RuntimeError(f"[FAIL_CLOSED] Holdout tick decoded for {contract}")
+
+    # 1. Precompute pre-anchor features once per contract (speed lever 2)
     sessions = cme_session_dates(ticks.ts_ns)
     minutes = chicago_minutes_since_1700(ticks.ts_ns)
     vol = rolling_median_abs_delta_pre_anchor(ticks.price_ticks, sessions)
@@ -142,13 +187,12 @@ def run_contract_pipeline(
 
     # 2. Map coordinates to tick positions
     row_by_source_row = {int(r): i for i, r in enumerate(ticks.sequence)}
-    
-    # Filter K_ABS for this contract
-    k_abs_c = k_abs_coords[k_abs_coords["contract"] == contract].reset_index(drop=True)
-    k_abs_positions = [row_by_source_row[int(r)] for r in k_abs_c["source_row"]]
-    k_abs_positions = np.asarray(k_abs_positions, dtype=np.int64)
 
-    # Compute quintile edges for this contract
+    k_abs_c = k_abs_coords[k_abs_coords["contract"] == contract].reset_index(drop=True)
+    if k_abs_c.empty:
+        raise RuntimeError(f"no K_ABS coordinates for {contract}")
+    k_abs_positions = np.asarray([row_by_source_row[int(r)] for r in k_abs_c["source_row"]], dtype=np.int64)
+
     contract_event_vol = vol[k_abs_positions]
     valid_vols = contract_event_vol[~np.isnan(contract_event_vol)].tolist()
     edges = compute_quintile_edges(valid_vols) if valid_vols else None
@@ -157,25 +201,27 @@ def run_contract_pipeline(
     strata_demand: dict[tuple, list[int]] = {}
     k_abs_events: list[Event] = []
     events_by_session_phase: dict[tuple[str, int], list[Event]] = {}
+    direction_by_pos: dict[int, int] = {}
 
     for i, row in k_abs_c.iterrows():
         pos = int(k_abs_positions[i])
         sess = str(sessions[pos])
-        min_1700 = int(minutes[pos])
-        ph = coarse_phase(min_1700)
+        ph = coarse_phase(int(minutes[pos]))
         av = bool(after[pos] >= MAX_HORIZON_OBSERVATIONS)
         v_raw = vol[pos]
         v_bin = INSUFFICIENT_HISTORY if np.isnan(v_raw) else local_volatility_bin(float(v_raw), edges)
         s_key = stratum_key(contract, sess, ph, av, v_bin)
-        
+
         strata_demand.setdefault(s_key, []).append(pos)
-        
+        direction = int(row["direction"])
+        direction_by_pos[pos] = direction
+
         ev = Event(
             key=str(row.get("event_key", f"{contract}_{sess}_{pos}")),
             arm="K_ABS",
             contract=contract,
             session=sess,
-            direction=int(row["direction"]),
+            direction=direction,
             signal_idx=pos,
             signal_ts_ns=int(ticks.ts_ns[pos]),
             signal_source_row=int(ticks.sequence[pos]),
@@ -184,7 +230,7 @@ def run_contract_pipeline(
         k_abs_events.append(ev)
         events_by_session_phase.setdefault((sess, ph), []).append(ev)
 
-    # 4. Build Candidate Pools for N_RAND
+    # 4. Build candidate pools for N_RAND (per stratum) and shuffle (per session-phase)
     candidate_pools: dict[tuple, list[int]] = {}
     candidate_indices_by_session_phase: dict[tuple[str, int], list[int]] = {}
 
@@ -202,33 +248,30 @@ def run_contract_pipeline(
     for pos in range(len(ticks.price_ticks)):
         sess = str(sessions[pos])
         ph = int(phases[pos])
-        av = bool(available_mask[pos])
-        vb = vol_bins[pos]
-        s_key = stratum_key(contract, sess, ph, av, vb)
+        s_key = stratum_key(contract, sess, ph, bool(available_mask[pos]), vol_bins[pos])
         candidate_pools.setdefault(s_key, []).append(pos)
         candidate_indices_by_session_phase.setdefault((sess, ph), []).append(pos)
 
-    # 5. Sample N_RAND
-    n_rand_sampled_pos = sample_nrand_strata_indices(
-        strata_demand, candidate_pools, seed=seed + 101
-    )
+    # 5. Sample N_RAND: pairs (own_anchor, sampled_anchor), own excluded per draw;
+    #    the anchor inherits the direction of the K_ABS event it replaces.
+    nrand_pairs = sample_nrand_strata_indices(strata_demand, candidate_pools, seed=seed + 101)
     n_rand_events: list[Event] = []
-    for idx_pos in n_rand_sampled_pos:
-        sess = str(sessions[idx_pos])
-        ev = Event(
-            key=f"NRAND_{contract}_{sess}_{idx_pos}",
+    for own_pos, sampled_pos in nrand_pairs:
+        sess = str(sessions[sampled_pos])
+        n_rand_events.append(Event(
+            key=f"NRAND_{contract}_{sess}_{sampled_pos}",
             arm="N_RAND",
             contract=contract,
             session=sess,
-            direction=1,  # baseline matched
-            signal_idx=idx_pos,
-            signal_ts_ns=int(ticks.ts_ns[idx_pos]),
-            signal_source_row=int(ticks.sequence[idx_pos]),
-            fill_idx=idx_pos,
-        )
-        n_rand_events.append(ev)
+            direction=direction_by_pos[own_pos],
+            signal_idx=sampled_pos,
+            signal_ts_ns=int(ticks.ts_ns[sampled_pos]),
+            signal_source_row=int(ticks.sequence[sampled_pos]),
+            fill_idx=sampled_pos,
+        ))
 
-    # 6. Sample K_ABS_SHUFFLE
+    # 6. K_ABS_SHUFFLE: permute anchor positions within (session, coarse_phase),
+    #    preserving event count and direction.
     shuffle_events: list[Event] = []
     for (sess, ph), ev_list in events_by_session_phase.items():
         pool_sp = candidate_indices_by_session_phase.get((sess, ph), [])
@@ -236,7 +279,7 @@ def run_contract_pipeline(
             {ph: ev_list}, {ph: pool_sp}, seed=seed + 202 + ph
         )
         for ev_orig, p_pos in zip(ev_list, permuted_pos):
-            ev_shuf = Event(
+            shuffle_events.append(Event(
                 key=f"SHUF_{ev_orig.key}",
                 arm="K_ABS_SHUFFLE",
                 contract=contract,
@@ -246,37 +289,30 @@ def run_contract_pipeline(
                 signal_ts_ns=int(ticks.ts_ns[p_pos]),
                 signal_source_row=int(ticks.sequence[p_pos]),
                 fill_idx=p_pos,
-            )
-            shuffle_events.append(ev_shuf)
+            ))
 
-    # 7. Map K_BT2 events
-    k_bt2_c = k_bt2_coords[k_bt2_coords["contract"] == contract].reset_index(drop=True) if not k_bt2_coords.empty else pd.DataFrame()
+    # 7. K_BT2 events from the staged coordinates artifact
     k_bt2_events: list[Event] = []
-    if not k_bt2_c.empty:
-        for _, row in k_bt2_c.iterrows():
-            s_row = int(row["source_row"])
-            if s_row in row_by_source_row:
-                pos = row_by_source_row[s_row]
-                sess = str(sessions[pos])
-                ev = Event(
-                    key=f"BT2_{contract}_{sess}_{pos}",
-                    arm="K_BT2",
-                    contract=contract,
-                    session=sess,
-                    direction=int(row.get("direction", 1)),
-                    signal_idx=pos,
-                    signal_ts_ns=int(ticks.ts_ns[pos]),
-                    signal_source_row=s_row,
-                    fill_idx=pos,
-                )
-                k_bt2_events.append(ev)
+    for _, row in k_bt2_coords.iterrows():
+        s_row = int(row["source_row"])
+        if s_row not in row_by_source_row:
+            raise RuntimeError(f"K_BT2 source_row {s_row} not in tick sequence for {contract}")
+        pos = row_by_source_row[s_row]
+        sess = str(sessions[pos])
+        k_bt2_events.append(Event(
+            key=f"BT2_{contract}_{sess}_{pos}",
+            arm="K_BT2",
+            contract=contract,
+            session=sess,
+            direction=int(row["direction"]),
+            signal_idx=pos,
+            signal_ts_ns=int(ticks.ts_ns[pos]),
+            signal_source_row=s_row,
+            fill_idx=pos,
+        ))
 
-    # Group events by arm and session
     arms_events: dict[str, dict[str, list[Event]]] = {
-        "K_ABS": {},
-        "N_RAND": {},
-        "K_BT2": {},
-        "K_ABS_SHUFFLE": {},
+        "K_ABS": {}, "N_RAND": {}, "K_BT2": {}, "K_ABS_SHUFFLE": {},
     }
     for ev in k_abs_events:
         arms_events["K_ABS"].setdefault(ev.session, []).append(ev)
@@ -287,10 +323,9 @@ def run_contract_pipeline(
     for ev in shuffle_events:
         arms_events["K_ABS_SHUFFLE"].setdefault(ev.session, []).append(ev)
 
-    # 8. Evaluate 16-cell outcomes across all horizons and barriers
+    # 8. Evaluate 16 cells
     stats: list[SessionCellArmStat] = []
     exclusions: list[dict[str, Any]] = []
-
     unique_sessions = sorted(set(sessions))
 
     for horizon in HORIZONS_OBSERVATIONS:
@@ -301,14 +336,9 @@ def run_contract_pipeline(
                     ev_list = session_map.get(sess, [])
                     if ev_list:
                         stat, excl = evaluate_session_cell_arm(
-                            ev_list,
-                            ticks.price_ticks,
-                            cache,
-                            contract=contract,
-                            session=sess,
-                            arm=arm_name,
-                            barrier_ticks=barrier,
-                            horizon_observations=horizon,
+                            ev_list, ticks.price_ticks, cache,
+                            contract=contract, session=sess, arm=arm_name,
+                            barrier_ticks=barrier, horizon_observations=horizon,
                         )
                         stats.append(stat)
                         exclusions.extend(excl)
@@ -326,107 +356,81 @@ def run_contract_pipeline(
     return stats, exclusions, contract_summary
 
 
-def run_gate1_16cell_pipeline(
-    *,
-    spec_path: Path,
-    event_store_path: Path,
-    bt2_result_path: Path,
-    data_dir: Path,
-    output_dir: Path,
-    authorization_token: str,
-    max_workers: int = 4,
-    replications: int = 1000,
-    seed: int = 20260831,
+def run_single_contract(
+    *, spec_path: Path, event_store_path: Path, bt2_result_path: Path,
+    bt2_coords_path: Path, data_dir: Path, contract: str, stats_out: Path,
+    authorization_token: str, seed: int,
 ) -> dict[str, Any]:
-    t_start = datetime.now(timezone.utc)
+    """Per-contract mode: the unit of work the Kaggle launcher parallelizes
+    as subprocesses (KAGGLE_LAUNCHER_PARALLELISM_POLICY_V1)."""
     if authorization_token != EXECUTION_TOKEN:
-        raise PermissionError(
-            f"[FAIL_CLOSED] Invalid execution token: expected {EXECUTION_TOKEN}, got {authorization_token}"
-        )
+        raise PermissionError(f"[FAIL_CLOSED] Invalid execution token")
+    verify_frozen_inputs(spec_path, event_store_path, bt2_result_path)
+    k_abs_df = load_k_abs_coords(event_store_path)
+    k_bt2_df = load_k_bt2_coords(bt2_coords_path, contract)
 
-    # 1. Load and verify spec and dependencies
+    stub = contract.split(" ")[1]
+    hits = [p for p in data_dir.rglob("*") if p.is_file() and stub in p.name and p.suffix in (".parquet", ".pq")]
+    if not hits:
+        raise FileNotFoundError(f"Missing tick parquet for {contract} in {data_dir}")
+    tick_file = sorted(hits, key=lambda p: len(str(p)))[0]
+
+    stats, exclusions, summary = run_contract_pipeline(
+        contract, tick_file, k_abs_df, k_bt2_df, seed=seed,
+    )
+    payload = {
+        "schema_version": "bt2a_nq_gate1_contract_stats_v1",
+        "contract": contract,
+        "seed": seed,
+        "stats": [asdict(s) for s in stats],
+        "exclusions": exclusions,
+        "contract_summary": summary,
+        "spec_sha256": sha256_file(spec_path),
+        "event_store_manifest_sha256": sha256_file(event_store_path),
+        "bt2_v2_result_sha256": sha256_file(bt2_result_path),
+        "bt2_coords_sha256": sha256_file(bt2_coords_path),
+    }
+    atomic_write_json(stats_out, payload)
+    print(f"[{contract}] stats written to {stats_out} ({len(stats)} stats rows)", flush=True)
+    return payload
+
+
+def run_aggregate(
+    *, spec_path: Path, stats_dir: Path, output_dir: Path,
+    authorization_token: str, replications: int, seed: int,
+    input_hashes: Dict[str, str],
+) -> dict[str, Any]:
+    """Aggregate the per-contract stats into the 16-cell Holm family and decision."""
+    if authorization_token != EXECUTION_TOKEN:
+        raise PermissionError(f"[FAIL_CLOSED] Invalid execution token")
+    verify_input_artifact(spec_path, FROZEN_SPEC_SHA256, "spec")
     spec = json.loads(spec_path.read_text(encoding="utf-8"))
-    deps = spec["dependencies"]
 
-    verify_input_artifact(spec_path, sha256_file(spec_path), "spec")
-    verify_input_artifact(event_store_path, deps["bt2a_creation_event_store_manifest_sha256"], "event_store_manifest")
-    verify_input_artifact(bt2_result_path, deps["bt2_v2_result_file_sha256"], "bt2_v2_result")
-
-    # Load coordinates
-    print("Loading K_ABS creation coordinates...", flush=True)
-    manifest = json.loads(event_store_path.read_text(encoding="utf-8"))
-    # In manifest or adjacent parquet
-    parquet_path = event_store_path.parent / manifest.get("parquet_file", "bt2a_nq_creation_event_store.parquet")
-    if not parquet_path.is_file():
-        # Search in data_dir
-        hits = list(data_dir.rglob("*.parquet"))
-        parquet_hits = [p for p in hits if "creation" in p.name or "bt2a" in p.name]
-        parquet_path = parquet_hits[0] if parquet_hits else event_store_path.with_suffix(".parquet")
-    
-    k_abs_df = pd.read_parquet(parquet_path)
-    print(f"Loaded {len(k_abs_df)} K_ABS creation coordinates.", flush=True)
-
-    print("Loading BigTrap2 V2 comparator coordinates...", flush=True)
-    bt2_json = json.loads(bt2_result_path.read_text(encoding="utf-8"))
-    # Extract coordinates for tick_25_IMB30_VOL10
-    v2_coords = []
-    for item in bt2_json.get("configurations", []):
-        if item.get("cfg_id") == deps["bt2_comparator_config_id"]:
-            for contract_res in item.get("contracts", []):
-                c_name = contract_res.get("contract")
-                for ev in contract_res.get("coordinates", []):
-                    v2_coords.append({
-                        "contract": c_name,
-                        "source_row": ev.get("source_row"),
-                        "direction": ev.get("direction", 1),
-                    })
-    k_bt2_df = pd.DataFrame(v2_coords)
-    print(f"Loaded {len(k_bt2_df)} K_BT2 comparator coordinates.", flush=True)
-
-    # 2. Run contracts in parallel (Speed Lever 1: ThreadPoolExecutor MAX_WORKERS=4)
+    t_start = datetime.now(timezone.utc)
     all_stats: list[SessionCellArmStat] = []
     all_exclusions: list[dict[str, Any]] = []
     contract_summaries: list[dict[str, Any]] = []
+    for contract in CONTRACTS:
+        stats_path = stats_dir / f"bt2a_nq_gate1_stats_{contract.replace(' ', '_')}.json"
+        if not stats_path.is_file():
+            raise FileNotFoundError(f"[FAIL_CLOSED] missing per-contract stats: {stats_path}")
+        payload = json.loads(stats_path.read_text(encoding="utf-8"))
+        if payload.get("spec_sha256") != FROZEN_SPEC_SHA256:
+            raise RuntimeError(f"[FAIL_CLOSED] stats for {contract} were computed against a different spec")
+        for row in payload["stats"]:
+            all_stats.append(SessionCellArmStat(**row))
+        all_exclusions.extend(payload["exclusions"])
+        contract_summaries.append(payload["contract_summary"])
 
-    def _process_one(c_name: str, c_seed: int):
-        stub = c_name.split(" ")[1]
-        hits = [p for p in data_dir.rglob("*") if p.is_file() and stub in p.name and p.suffix in (".parquet", ".pq")]
-        if not hits:
-            raise FileNotFoundError(f"Missing tick parquet for {c_name} in {data_dir}")
-        tick_file = sorted(hits, key=lambda p: len(str(p)))[0]
-        return run_contract_pipeline(
-            c_name, tick_file, k_abs_df, k_bt2_df, seed=c_seed
-        )
+    family_results = aggregate_full_family_contrasts(all_stats, replications=replications, seed=seed)
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = {
-            executor.submit(_process_one, c, seed + i * 10000): c
-            for i, c in enumerate(CONTRACTS)
-        }
-        for future in concurrent.futures.as_completed(futures):
-            c_name = futures[future]
-            try:
-                stats, excl, summary = future.result()
-                all_stats.extend(stats)
-                all_exclusions.extend(excl)
-                contract_summaries.append(summary)
-                print(f"[{c_name}] Completed successfully.", flush=True)
-            except Exception as e:
-                print(f"[{c_name}] FAILED: {e}", flush=True)
-                raise
-
-    # 3. Aggregate full 16-cell Holm family contrasts
-    print("\nAggregating full 16-cell Holm family contrasts...", flush=True)
-    family_results = aggregate_full_family_contrasts(
-        all_stats, replications=replications, seed=seed
-    )
-
-    # 4. Coverage calculation
-    unique_contract_sessions = {f"{s.contract}:{s.session}" for s in all_stats}
-    eff_available = len(unique_contract_sessions)
+    # Coverage: sessions eligible in BOTH arms of the primary contrast, per cell;
+    # take the minimum across cells (fail-closed: the worst cell governs).
+    primary_cells = family_results["primary_contrast"]["cells"]
+    eligible_both = [int(c["n_sessions_eligible_both_arms"]) for c in primary_cells.values()]
+    eff_available = min(eligible_both) if eligible_both else 0
     eff_required = int(spec["power_design"]["effective_sessions_required"])
 
-    # 5. Apply decision rule
     decision = decide_gate1_outcome(
         family_results["primary_contrast"],
         effective_sessions_available=eff_available,
@@ -434,9 +438,6 @@ def run_gate1_16cell_pipeline(
     )
 
     t_end = datetime.now(timezone.utc)
-    duration_sec = (t_end - t_start).total_seconds()
-
-    # 6. Build output report and manifest
     output_report = {
         "schema_version": "bt2a_nq_gate1_result_v1",
         "status": "GATE1_EXECUTION_COMPLETED",
@@ -446,7 +447,7 @@ def run_gate1_16cell_pipeline(
         "secondary_contrasts": family_results["secondary_contrasts"],
         "coverage": {
             "sessions_total_preholdout": 234,
-            "effective_sessions_available": eff_available,
+            "effective_sessions_available_min_over_cells": eff_available,
             "effective_sessions_required": eff_required,
             "sufficient_power": eff_available >= eff_required,
         },
@@ -456,8 +457,7 @@ def run_gate1_16cell_pipeline(
             "execution_token": authorization_token,
             "started_utc": t_start.isoformat(),
             "ended_utc": t_end.isoformat(),
-            "duration_seconds": round(duration_sec, 2),
-            "max_workers": max_workers,
+            "duration_seconds": round((t_end - t_start).total_seconds(), 2),
             "replications": replications,
             "seed": seed,
         },
@@ -471,19 +471,15 @@ def run_gate1_16cell_pipeline(
             "PNL_ACCESSED": False,
         },
     }
-
     manifest = {
         "spec_sha256": sha256_file(spec_path),
-        "event_store_manifest_sha256": sha256_file(event_store_path),
-        "bt2_v2_result_sha256": sha256_file(bt2_result_path),
         "result_payload_sha256": canonical_sha256(output_report),
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+        **input_hashes,
     }
-
     output_dir.mkdir(parents=True, exist_ok=True)
     atomic_write_json(output_dir / "bt2a_nq_gate1_result.json", output_report)
     atomic_write_json(output_dir / "bt2a_nq_gate1_manifest.json", manifest)
-
     return output_report
 
 
@@ -492,29 +488,42 @@ def main(argv=None) -> int:
     parser.add_argument("--spec", type=Path, default=DEFAULT_SPEC)
     parser.add_argument("--event-store", type=Path, required=True)
     parser.add_argument("--bt2-result", type=Path, required=True)
-    parser.add_argument("--data-dir", type=Path, required=True)
-    parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--bt2-coords", type=Path)
+    parser.add_argument("--data-dir", type=Path)
+    parser.add_argument("--stats-dir", type=Path)
+    parser.add_argument("--output-dir", type=Path)
+    parser.add_argument("--contract", type=str)
+    parser.add_argument("--aggregate", action="store_true")
     parser.add_argument("--authorization", type=str, required=True)
-    parser.add_argument("--max-workers", type=int, default=4)
     parser.add_argument("--replications", type=int, default=1000)
     parser.add_argument("--seed", type=int, default=20260831)
     args = parser.parse_args(argv)
 
     try:
-        res = run_gate1_16cell_pipeline(
-            spec_path=args.spec,
-            event_store_path=args.event_store,
-            bt2_result_path=args.bt2_result,
-            data_dir=args.data_dir,
-            output_dir=args.output_dir,
-            authorization_token=args.authorization,
-            max_workers=args.max_workers,
-            replications=args.replications,
-            seed=args.seed,
+        if args.aggregate:
+            if args.stats_dir is None or args.output_dir is None:
+                raise SystemExit("--aggregate requires --stats-dir and --output-dir")
+            res = run_aggregate(
+                spec_path=args.spec, stats_dir=args.stats_dir, output_dir=args.output_dir,
+                authorization_token=args.authorization,
+                replications=args.replications, seed=args.seed,
+                input_hashes={},
+            )
+            print(f"\n=== GATE 1 OUTCOME DECISION ===")
+            print(f"Decision: {res['decision']}")
+            print(f"Reason:   {res['decision_details']['reason']}")
+            return 0
+        if not args.contract:
+            raise SystemExit("per-contract mode requires --contract (or use --aggregate)")
+        if args.bt2_coords is None or args.data_dir is None or args.stats_dir is None:
+            raise SystemExit("per-contract mode requires --bt2-coords, --data-dir and --stats-dir")
+        stats_out = args.stats_dir / f"bt2a_nq_gate1_stats_{args.contract.replace(' ', '_')}.json"
+        run_single_contract(
+            spec_path=args.spec, event_store_path=args.event_store,
+            bt2_result_path=args.bt2_result, bt2_coords_path=args.bt2_coords,
+            data_dir=args.data_dir, contract=args.contract, stats_out=stats_out,
+            authorization_token=args.authorization, seed=args.seed,
         )
-        print(f"\n=== GATE 1 OUTCOME DECISION ===")
-        print(f"Decision: {res['decision']}")
-        print(f"Reason:   {res['decision_details']['reason']}")
         return 0
     except Exception as e:
         print(f"\n[FATAL ERROR] Pipeline aborted: {e}", file=sys.stderr)
