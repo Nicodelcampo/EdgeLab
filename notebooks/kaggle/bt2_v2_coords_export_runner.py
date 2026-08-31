@@ -14,7 +14,7 @@ from pathlib import Path
 
 REPO_URL = "https://github.com/Nicodelcampo/EdgeLab.git"
 BRANCH = "research/bt2a-nq-gate1-runner-impl-v1-20260831"
-EXPECTED_COMMIT = "596b1d50df725f5b12c7cbcaa208dc0dda529b03"
+EXPECTED_COMMIT = "88043c6e14cf4107f9e3454b36ab246e8edfc5a8"  # adds source_row/direction to the export schema
 DATA_DIR = "/kaggle/input/datasets/nicolasbuttaro/edgelab-ticks-nq-preholdout"
 SPEC = "specs/bigtrap2_nq_tickframes_sweep_v2.draft.json"
 AUTH_TOKEN = "AUTHORIZE_RUN_BT2_NQ_TICKFRAMES_SWEEP_V2"
