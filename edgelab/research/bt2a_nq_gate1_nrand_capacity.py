@@ -5,7 +5,7 @@ N_RAND matching strata signed by Nico as D6
 (docs/DECISIONES_NICO_2026-08-30.md; amendment_id
 bt2a_nq_gate1_nrand_strata_definitions_v1, commit 56cc4dc2):
 
-  coarse_phase          -- 2-hour Chicago block from the 17:00 session open
+  coarse_phase          -- 4-hour Chicago block from the 17:00 session open
                            (6 phases/session), a deliberate coarsening of
                            GC's 30-minute bin for stratum capacity.
   availability          -- event-level flag: eligible in all 16 cells, i.e.
@@ -36,21 +36,21 @@ MAX_HORIZON_OBSERVATIONS = 250  # the largest of HORIZONS_OBSERVATIONS in bt2a_n
 PRE_ANCHOR_VOLATILITY_WINDOW = 500
 N_VOLATILITY_QUINTILES = 5
 INSUFFICIENT_HISTORY = "INSUFFICIENT_HISTORY"
-# D6 (docs/DECISIONES_NICO_2026-08-30.md) literally says "2-hour blocks,
-# 6 phases", but 2h x 6 = 12h, not a full ~24h CME session -- internally
-# inconsistent as written. The other two numbers in the same signed text
-# (6 phases, ~109 events/phase/session at NQ's ~652 events/session) are
-# mutually consistent only with 4-hour blocks: 652/6 ~= 108.7 ~= "~109".
-# 652/12 ~= 54.3 does not match the signed figure at all. Implemented as
-# 4-hour blocks / 6 phases to match the self-consistent evidence (phase
-# count + density), not the literal "2-hour" phrase. Flagged to the audit
-# canal (entry 2026-08-30_012) for confirmation; not silently assumed.
+# D6 originally said "2-hour blocks, 6 phases", but 2h x 6 = 12h, not a
+# CME session (~23h of trading, 17:00-16:00 next day with the 16:00-17:00
+# maintenance break). Found and flagged (audit canal entry 012), confirmed
+# independently (entry 013: 6 phases x 4h covers the ~23h session with a
+# 3h final phase; 652 events/session / 6 ~= 108.7 ~= the signed "~109",
+# /12 ~= 54.3 does not match), and ratified by Nico as a corrigendum to D6
+# (docs/DECISIONES_NICO_2026-08-30.md, commit cb84424 on
+# research/bt2a-nq-gate1-power-closure-20260830). 4-hour blocks / 6 phases
+# is now the ratified definition, not an inference from self-consistency.
 COARSE_PHASE_HOURS = 4
 PHASES_PER_SESSION = 24 // COARSE_PHASE_HOURS  # 6
 
 
 def coarse_phase(chicago_minutes_since_1700: int) -> int:
-    """2-hour Chicago block from the 17:00 CME session open, 6 phases.
+    """4-hour Chicago block from the 17:00 CME session open, 6 phases.
 
     `chicago_minutes_since_1700` must already be normalized into
     [0, 1440) by the caller (session-relative minutes, wrapping at
