@@ -60,7 +60,7 @@
     "private_package_manifest_provenance_note": "The self-attested KAGGLE_NQ_PRIVATE_PACKAGE_BUILD_CERTIFICATION_V1_2026-08-28.json reports a DIFFERENT hash (4d1053090d80930ee7494e008148b0b8a64829568d861065e054ed2f88f91506, upload_executed=false, remote_auditor_rehashed_local_files=false) for the same filename. This binding uses the hash actually read by the executed BigTrap2 V2 sweep (input_provenance.package_manifest_file_sha256 in docs/research/bigtrap2_nq_tickframes_sweep_v2_result.json), not the unverified self-attestation. Discrepancy found and resolved 2026-08-30 by Claude.",
     "private_package_manifest_sha256": "2336b2967dd6f5ef0c3afddfa76cdeac3b411a4eb006cede42fa9502e51039db",
     "runner_contract_file": "specs/bt2a_nq_gate1_runner_contract_v1.draft.json",
-    "runner_contract_file_sha256": "9b7912808fb8c5cd9b1c6db46db29b1969e16d5779cac2e4942f11b8ca3d47e2",
+    "runner_contract_file_sha256": "20ae6a3814e9f5a7749e6b2ca627ed27cc220794d4eb4e040abe0460251f52be",
     "selected_configuration_file": "bt2a_nq_selected_configuration_2026-08-29.json",
     "selected_configuration_file_sha256": "b4f8ebc4d13d01b6a4d39250fc6c05fad37ad5d395cf535e8ec56e849c44b1bc"
   },
@@ -120,7 +120,15 @@
   "n_rand_matching_definitions": {
     "amendment_id": "bt2a_nq_gate1_nrand_strata_definitions_v1",
     "availability": "Event-level flag: the forward window of the maximum horizon (250 observations) fits completely within the event's CME session, making the event evaluable in all 16 cells. Aligned with incomplete_path_policy=EXCLUDE_WITH_REASON: N_RAND anchors are drawn from the same pool of fully evaluable positions as K_ABS.",
-    "coarse_phase": "Chicago-time 2-hour block from the 17:00 session open: phase = floor(chicago_minutes_since_17:00 / 120) within the CME session, 6 phases. Deliberate coarsening of GC's chicago_30_minute_bin for stratum capacity: with ~652 events/session in NQ, 30-minute bins crossed with volatility bins would leave ~1.8 events/stratum/session, too sparse for without-replacement N_RAND sampling; 2-hour blocks leave ~109 events/phase/session at the median before crossing.",
+    "coarse_phase": "Chicago-time 4-hour block from the 17:00 session open: phase = floor(chicago_minutes_since_17:00 / 240) within the CME session, 6 phases (with ~23h of trading, 17:00 to 16:00 next day, the last phase covers 3h). Deliberate coarsening of GC's chicago_30_minute_bin for stratum capacity: with ~652 events/session in NQ, 30-minute bins crossed with volatility bins would leave ~1.8 events/stratum/session, too sparse for without-replacement N_RAND sampling; 4-hour blocks leave ~109 events/phase/session at the median before crossing.",
+    "corrigendum": {
+      "field": "coarse_phase",
+      "issue": "The signed text literally said '2-hour blocks, 6 phases', but 2h x 6 = 12h does not cover a ~23h CME trading session, and the other two signed figures (6 phases, ~109 events/phase/session at ~652 events/session) are mutually consistent only with 4-hour blocks (652/6 = 108.7; 652/12 = 54.3).",
+      "ratification_channel": "Notion AI survey, recorded in docs/DECISIONES_NICO_2026-08-30.md (D6 corrigendum)",
+      "ratified_at": "2026-08-30T22:00-03:00",
+      "ratified_by": "Nicolas Buttaro",
+      "resolution": "Corrected to 4-hour blocks per the self-consistent signed figures. Found by Claude (canal entry 012), confirmed by independent auditor recomputation (canal entry 013), ratified by Nico."
+    },
     "local_volatility_bin": "Per-contract quintile of pre-anchor local volatility: median absolute tick delta over the 500 ticks strictly preceding the event; quintile edges computed over all pre-holdout events of the contract. Events with fewer than 500 prior ticks in the session fall into their own visible stratum INSUFFICIENT_HISTORY, never a silent exclusion.",
     "signature_channel": "Notion AI survey, recorded in docs/DECISIONES_NICO_2026-08-30.md (D6)",
     "signed_at": "2026-08-30T19:56-03:00",
