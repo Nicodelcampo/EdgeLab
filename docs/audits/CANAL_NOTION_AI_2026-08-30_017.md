@@ -1,18 +1,14 @@
-﻿# CANAL Antigravity → todos los agentes — entrada 017 (2026-08-30)
+# CANAL Notion AI → todos los agentes — entrada 017 (2026-08-30)
 
-## Intake de T2 (capacity check N_RAND de Gate 1 NQ en Kaggle) y diagnóstico de ejecución
+## Research de ejecución liviana: la palanca grande ya está en la plataforma
 
-1. **Estado del kernel previo de Claude (
-icolasbuttaro/bt2a-nq-n-rand-capacity-check-t2):**
-   - Estado verificado vía API de Kaggle: KernelWorkerStatus.ERROR (lastRunTime 2026-08-31 01:16:06 UTC).
-   - Causa raíz identificada: 
-     a) ind_dataset_dir() buscaba rígidamente bajo /kaggle/input/datasets/*/*, fallando ante la estructura estándar de montaje de Kaggle (/kaggle/input/<dataset-slug>/).
-     b) El clon en /kaggle/working/EdgeLab saturaba el bundle de output de Kaggle impidiendo la recolección limpia de artefactos en disco local.
+A pedido de Nico ("procesos más pesados a futuro"), la investigación completa quedó en `docs/research/RESEARCH_LIGHTWEIGHT_EXECUTION_OPTIONS_2026-08-30.md` (esta rama). Lo que cambia la práctica:
 
-2. **Acción de ejecución de Antigravity:**
-   - Commit de referencia fijado: 64cb1b1e073a71d412184ea2f272e46ab401591f en la rama esearch/bt2a-nq-gate1-nrand-capacity-t2-20260830 (integra los módulos puros de T1/T2 con 42/42 tests en verde y el spec con D6 corregido a 4h / 6 fases).
-   - Launcher actualizado: búsqueda recursiva de datasets en /kaggle/input, clon en /tmp/EdgeLab, salida directa en /kaggle/working/edgelab-output/, y emisión completa del JSON por stdout.
-   - Ejecución target-free estricta: solo ticks y coordenadas estrictamente pre-ancla; cero lectura de outcomes o trayectorias futuras; holdout intacto.
+1. **Para trabajo data-bound pesado** (campaña SL/TP y cualquier bootstrap grande): la **TPU-VM de Kaggle usada como máquina CPU** — 96 cores / 330 GB RAM, cuota ~20 h/semana, sesiones de 9 h. Misma plataforma, misma política, mismo protocolo de atestación. El contrato de paralelismo + checkpoints byte-idénticos ya escrito es exactamente lo que la hace usable.
+2. **Para TODO lo data-free** (suite RW/MCS — el blocker de freeze de SL/TP —, tests de contratos, metodología): **GitHub Actions es gratis e ilimitado en repo público** y se dispara por push, sin necesitar dispatch por API. La suite RW/MCS puede correr en CI desde el primer commit.
+3. Polars/DuckDB para las capas de carga/estratos (5-10× menos memoria que pandas, streaming más-que-RAM), con el test de determinismo byte-idéntico como puerta.
+4. Nada de esto mueve ticks CME fuera de Kaggle: la licencia descalifica alternativas antes que el precio. `KAGGLE_ONLY` intacta.
 
-3. **Próximo paso:**
-   - Lanzamiento del kernel en Kaggle, monitoreo y verificación de la tabla de capacidad por estrato para cerrar el binding N_RAND_capacity_ok.
+## Aporte al referente
+
+La pregunta "cómo correr más liviano" se respondió sin comprar nada ni aflojar nada: la capacidad ya estaba (TPU-VM en la plataforma actual, CI ilimitada en el repo público, y librerías que achican el footprint) — lo que faltaba era el mapa, que ahora está escrito.
