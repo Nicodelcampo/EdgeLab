@@ -154,7 +154,10 @@ def capacity_report(
     per_stratum: dict[str, Any] = {}
     all_ok = True
     insufficient_history_events = 0
-    for key, n_needed in sorted(demand.items(), key=lambda kv: kv[0]):
+    for key, n_needed in sorted(
+        demand.items(),
+        key=lambda kv: (str(kv[0][0]), str(kv[0][1]), int(kv[0][2]), bool(kv[0][3]), str(kv[0][4])),
+    ):
         contract, session, phase, available, vol_bin = key
         pool = int(candidate_pool_sizes.get(key, 0))
         ok = pool - 1 >= n_needed

@@ -24,7 +24,7 @@ import numpy as np
 import pandas as pd
 
 REPO_URL = "https://github.com/Nicodelcampo/EdgeLab.git"
-FULL_COMMIT = "64cb1b1e073a71d412184ea2f272e46ab401591f"
+FULL_COMMIT = "23a5ee41f3f168a75860df1fe66faaeb9e21a900" # will be replaced before commit
 TEMP_REPO_DIR = Path("/tmp/EdgeLab")
 OUTPUT_DIR = Path("/kaggle/working/edgelab-output")
 WORKING_DIR = Path("/kaggle/working")
@@ -130,7 +130,7 @@ def main() -> None:
     print(f"=== BT2A NQ N_RAND CAPACITY CHECK T2 ===", flush=True)
     print(f"Started at: {t_start.isoformat()}", flush=True)
 
-    # 1. Clone EdgeLab to /tmp/EdgeLab (keeps /kaggle/working clean)
+    # 1. Clone EdgeLab to /tmp/EdgeLab
     if TEMP_REPO_DIR.exists():
         shutil.rmtree(TEMP_REPO_DIR)
     run(["git", "clone", "--filter=blob:none", "--no-checkout", REPO_URL, str(TEMP_REPO_DIR)])
@@ -163,6 +163,7 @@ def main() -> None:
 
     all_event_vol_by_contract: dict[str, list[float]] = {c: [] for c in CONTRACTS}
     per_contract_frames = {}
+    cached_ticks_data: dict[str, tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]] = {}
 
     print("\n=== STEP 1: LOAD COORDINATES AND PRE-ANCHOR TICKS ===", flush=True)
     for contract in CONTRACTS:
@@ -179,6 +180,7 @@ def main() -> None:
         minutes = chicago_minutes_since_1700(ticks.ts_ns)
         vol = rolling_median_abs_delta_pre_anchor(ticks.price_ticks, sessions)
         after = rows_after_in_session(sessions)
+        cached_ticks_data[contract] = (sessions, minutes, vol, after)
 
         row_by_source_row = {int(r): i for i, r in enumerate(ticks.sequence)}
         anchor_positions = []
@@ -237,13 +239,8 @@ def main() -> None:
     print("\n=== STEP 4: COMPUTE CANDIDATE POOL SIZES ACROSS ALL TICKS ===", flush=True)
     pool_sizes: dict[tuple, int] = {}
     for contract in CONTRACTS:
-        tick_path = find_tick_file(ticks_dir, contract)
         print(f"Building candidate pool for {contract}...", flush=True)
-        ticks = load_canonical_parquet(tick_path, contract=contract, instrument="NQ")
-        sessions = cme_session_dates(ticks.ts_ns)
-        minutes = chicago_minutes_since_1700(ticks.ts_ns)
-        vol = rolling_median_abs_delta_pre_anchor(ticks.price_ticks, sessions)
-        after = rows_after_in_session(sessions)
+        sessions, minutes, vol, after = cached_ticks_data[contract]
         edges = quintile_edges_by_contract[contract]
 
         phases = np.array([coarse_phase(int(m)) for m in minutes], dtype=np.int32)
