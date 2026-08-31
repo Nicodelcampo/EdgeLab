@@ -39,7 +39,7 @@
     ]
   },
   "authorization": {
-    "active_token": null,
+    "active_token": "APPROVE_FREEZE_BT2A_NQ_GATE1_POWER_V1",
     "freeze_token_label": "APPROVE_FREEZE_BT2A_NQ_GATE1_POWER_V1",
     "review_required": true
   },
@@ -92,15 +92,22 @@
     ],
     "planning_correction": "BONFERRONI_16_CONSERVATIVE_FOR_HOLM_FAMILY"
   },
+  "freeze_record": {
+    "freeze_channel": "Notion AI chat, verbatim token message",
+    "frozen_at": "2026-08-30T23:49-03:00",
+    "frozen_by": "Nicolas Buttaro",
+    "note": "Freeze of Gate 1 NQ power inputs after all pre-execution power requirements closed: MDE 2.90 (D1), paired SD 11.528529 (GC transfer), 228/234 effective sessions, N_RAND capacity verified (report f1777c66a530586c484daf0a07e49ec6c526d4e568a59c4cf3631c7e06ce2736, 2359 strata, 0 failing). No outcome, PnL, first-passage or holdout access was opened to get here.",
+    "token": "APPROVE_FREEZE_BT2A_NQ_GATE1_POWER_V1"
+  },
   "north_star_sha256": "d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1",
   "outcomes_accessed": false,
-  "payload_sha256": "4dad45025ea2d8ecedd2b8477d4eb99eefd53b7b78e7972a64d7cc0468e4ddc4",
+  "payload_sha256": "285e5fb1d2438e3defc5dce49698cb4c4a92cc28ccf715ea3827a79825e2a246",
   "planning_assessment": {
     "available_sessions_meet_conservative_bound": true,
     "conservative_required_sessions": 228,
     "external_fields_still_required": [],
-    "interpretation": "Power closed by the 2026-08-30 estimand amendment and GC variance transfer: 228 required <= 234 available, margin 6 sessions. Remaining blockers before freeze: N_RAND stratum capacity (target-free check, Claude) and the freeze act itself (Nico token APPROVE_FREEZE_BT2A_NQ_GATE1_V1)."
+    "interpretation": "Power inputs closed and FROZEN 2026-08-30 (Nico token APPROVE_FREEZE_BT2A_NQ_GATE1_POWER_V1): 228 required <= 234 available (margin 6 sessions); N_RAND stratum capacity verified true on the real event store (report sha256 f1777c66a530586c484daf0a07e49ec6c526d4e568a59c4cf3631c7e06ce2736, 2359 strata, 0 failing). No open power inputs remain."
   },
   "schema_version": "bt2a_nq_gate1_power_design_v1",
-  "status": "DRAFT_POWER_CLOSED_PENDING_NRAND_CAPACITY"
+  "status": "FROZEN_POWER_INPUTS"
 }
