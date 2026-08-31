@@ -17,14 +17,17 @@ def load_spec() -> dict:
     return json.loads(SPEC_PATH.read_text(encoding="utf-8"))
 
 
-def test_gate1_draft_is_valid_and_only_power_freeze_remains():
+def test_gate1_draft_is_valid_and_all_power_bindings_closed():
     value = load_spec()
     runner.validate_spec(value)
     missing = runner.missing_bindings(value)
-    # Closed by T2: N_RAND stratum capacity (Kaggle capacity check, Antigravity)
-    # Only remaining blocker before freeze: Nico token APPROVE_FREEZE_BT2A_NQ_GATE1_POWER_V1
+    # Closed by T2: N_RAND stratum capacity (Kaggle capacity check, Antigravity).
+    # Power inputs frozen 2026-08-30 at commit d45d3943 (Nico token
+    # APPROVE_FREEZE_BT2A_NQ_GATE1_POWER_V1); this test used to assert
+    # missing == ["power.freeze"], which stopped matching reality once that
+    # commit landed and nobody updated the test. Fixed 2026-08-31.
     assert "power.arm_density.N_RAND_capacity_ok" not in missing
-    assert missing == ["power.freeze"]
+    assert missing == []
     # Closed by the 2026-08-30 merge: all hash bindings, comparator, power design.
     for name in (
         "selected_configuration_file_sha256",

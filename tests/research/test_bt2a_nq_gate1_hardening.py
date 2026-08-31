@@ -37,13 +37,19 @@ def test_power_contract_closes_defensible_inputs_but_remains_fail_closed():
  # K_BT2 density closed 2026-08-30 (tick_25_IMB30_VOL10: 516971/234, commit
  # 95e5866) -- this assertion updated from "in missing" to "not in missing"
  # to match; power.icc renamed to power.icc_retired in the same commit.
+ # N_RAND capacity closed by T2 (report f1777c66a530586c484daf0a07e49ec6c526d
+ # 4e568a59c4cf3631c7e06ce2736, 2359 strata, 0 failing) and power inputs frozen
+ # at commit d45d3943 (2026-08-30, Nico token APPROVE_FREEZE_BT2A_NQ_GATE1_
+ # POWER_V1): the last two assertions updated from "in missing" to "not in
+ # missing", which the freeze commit left stale. Fixed 2026-08-31.
  p=load_json(ROOT/'specs/bt2a_nq_gate1_power_design_v1.draft.json')
  missing=power_missing(p,True)
  assert 'power.mde_ticks' not in missing and 'power.paired_session_sd_ticks' not in missing
  assert 'power.icc_retired' not in missing and 'power.arm_density.K_ABS' not in missing
  assert 'power.arm_density.K_BT2' not in missing
- assert 'power.arm_density.N_RAND_capacity_ok' in missing
- assert 'power.freeze' in missing
+ assert 'power.arm_density.N_RAND_capacity_ok' not in missing
+ assert 'power.freeze' not in missing
+ assert missing == []
 
 def test_runner_contract_resolves_choices_but_still_blocks_capability():
  r=load_json(ROOT/'specs/bt2a_nq_gate1_runner_contract_v1.draft.json')
