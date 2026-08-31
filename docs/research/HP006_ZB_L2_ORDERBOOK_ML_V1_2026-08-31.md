@@ -64,3 +64,38 @@ DeepLOB-class entrena en horas en un T4 de Kaggle (cuota ~30 h/sem GPU + ~20 h/s
 ## Aporte al referente
 
 La primera línea de ML sobre libro del proyecto nace con la doctrina puesta: baseline canónico antes que red, challenger simple antes que DeepLOB, normalización sin leakage, métrica económica en vez de accuracy, N honesto, y la data gate separada de la puerta científica. Si ZB L2 entra, entra por la puerta de adelante.
+
+## Enmienda 2026-08-31 (tarde) — muestra recibida y fixture de tooling
+
+**Muestra A — medible (pre-holdout):** 5 parquets `20260622..26.parquet`
+(escritos con parquet-cpp-arrow 22.0.0, zstd; 16,56M filas totales). Auditoría
+de admisión por footer (medida, sin decodificar páginas): schema NT8 de 9
+columnas (`record_type/market_data_type/timestamp/subsecond/operation/
+position/market_maker/price/volume`); `record_type` ∈ {L1, L2}; `position`
+0–10 (niveles); precios 113,2–114,6 (rango ZB). Salvedades medidas: ventanas
+parciales por día (04:00:00 → 06:45–11:36 — no son sesiones CME completas) y
+**20260625 sin L2** (100% L1; operation/position nulos). Preguntas abiertas:
+TZ fuente de los timestamps; contrato (¿09-26?); qué pasó el 25/06.
+
+**Fixture B — SOLO TOOLING:** `20260828.csv` (1.048.918 filas; export
+historical de la prueba gratuita de NT8, según Nico: "es a fines de desarrollar
+las herramientas de medición L2, no pasa nada si la integridad no es absoluta").
+Está fechado **dentro del holdout** (28/08 > 02/07) ⇒ queda marcado
+`TOOLING_FIXTURE_NOT_MEASUREMENT_DATA`: se usa para desarrollar y validar el
+parser/ETL; **ninguna estadística de mercado sale de él**. Para medir está la
+muestra A (pre-holdout).
+
+**Hallazgos estructurales del fixture** (medidos por `tools/l2_fixture_validate.py`
+— propiedades del feed, no del mercado): `operation` tiene un valor outlier 110
+y 326.780 filas sin operation (las L1); `position` llega a 2.181.353 en algunas
+filas (basura a filtrar — el dominio válido es 0–10); 21.358 retrocesos de
+timestamp y **84% de empates exactos** de ts (la resolución real del feed es
+gruesa: el ETL necesita secuencia sintética por orden de archivo, el ts no
+ordena); 37.112 duplicados exactos de fila; grilla 1/32: 0 violaciones; price
+solo poblado en filas L2; fecha única por archivo (día-calendario de la TZ
+fuente, no sesión CME — el ETL re-corta por 17:00 CT).
+
+**Consecuencia para la data gate (F0):** si el canal de prueba gratuita solo
+puede producir datos fechados post-02/07, la línea de medición queda bloqueada
+hasta una decisión comercial (comprar histórico pre-holdout). La línea de
+tooling NO queda bloqueada: sigue sobre fixtures.
