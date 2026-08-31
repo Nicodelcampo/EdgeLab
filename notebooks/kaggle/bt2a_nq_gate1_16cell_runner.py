@@ -109,14 +109,25 @@ def main() -> None:
     if actual != FULL_COMMIT:
         raise SystemExit(f"checked-out commit differs: {actual} != {FULL_COMMIT}")
 
-    # 2. Locate inputs dynamically (speed lever 3, robust discovery)
-    coords_dir = find_dataset_dir("coordinates")
+    # 2. Locate inputs dynamically (speed lever 3, robust discovery).
+    #    CORRECTED 2026-08-31: the original find_dataset_dir("coordinates") /
+    #    find_dataset_dir("package") search terms did not correspond to any
+    #    real dataset -- verified by inspecting the actual Kaggle account
+    #    (kaggle datasets list, kaggle kernels pull -m on the kernels that
+    #    produced these artifacts). The private package manifest + effective
+    #    input registry live inside edgelab-ticks-nq-preholdout itself (same
+    #    dataset used successfully by the V2 sweep and the coords-export
+    #    kernel as their sole --data-dir); the event store manifest was
+    #    produced by a separate kernel (bt2a-nq-event-store-rebuild-v2,
+    #    hash-verified b3177b51... match) whose output was never uploaded as
+    #    its own dataset until now (edgelab-bt2a-nq-event-store).
     ticks_dir = find_dataset_dir("edgelab-ticks-nq-preholdout")
-    package_dir = find_dataset_dir("package")
+    package_dir = ticks_dir
+    event_store_dir = find_dataset_dir("event-store")
     bt2_dir = find_dataset_dir("bt2")
 
     spec_path = TEMP_REPO_DIR / "specs/bt2a_nq_gate1_v1.draft.json"
-    event_store_manifest = find_file(coords_dir, "bt2a_nq_creation_event_store_manifest", ".json")
+    event_store_manifest = find_file(event_store_dir, "bt2a_nq_creation_event_store_manifest", ".json")
     bt2_result_path = TEMP_REPO_DIR / "docs/research/bigtrap2_nq_tickframes_sweep_v2_result.json"
     bt2_coords_path = find_file(bt2_dir, "tick_25_IMB30_VOL10", ".parquet")
 
@@ -129,7 +140,7 @@ def main() -> None:
         sys.executable, str(TEMP_REPO_DIR / "tools/preflight_bt2a_nq_gate1.py"),
         "--spec", str(spec_path),
         "--data-dir", str(package_dir),
-        "--event-store-dir", str(coords_dir),
+        "--event-store-dir", str(event_store_dir),
         "--bt2-artifact-dir", str(bt2_dir),
         "--output-dir", str(OUTPUT_DIR),
         "--expected-commit", FULL_COMMIT,
