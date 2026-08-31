@@ -124,7 +124,14 @@ def main() -> None:
     ticks_dir = find_dataset_dir("edgelab-ticks-nq-preholdout")
     package_dir = ticks_dir
     event_store_dir = find_dataset_dir("event-store")
-    bt2_dir = find_dataset_dir("bt2")
+    # "bt2" alone is ambiguous: edgelab-bt2a-nq-event-store also contains the
+    # substring "bt2" and can win the match depending on directory ordering --
+    # this happened for real on the first live run (2026-08-31 13:05 UTC),
+    # find_dataset_dir("bt2") resolved to the event-store dataset instead of
+    # edgelab-bt2-v2-nq-artifacts, and find_file() failed closed with "no file
+    # matching 'tick_25_IMB30_VOL10'" before touching any outcome. "bt2-v2" is
+    # a substring only of the coords/result dataset.
+    bt2_dir = find_dataset_dir("bt2-v2")
 
     spec_path = TEMP_REPO_DIR / "specs/bt2a_nq_gate1_v1.draft.json"
     event_store_manifest = find_file(event_store_dir, "bt2a_nq_creation_event_store_manifest", ".json")
