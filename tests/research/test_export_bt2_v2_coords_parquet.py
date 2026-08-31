@@ -31,6 +31,8 @@ def _fake_row(session_id: str, contract: str = "NQ 09-25") -> dict:
         "bottom": 100.0,
         "width_ticks": 2.0,
         "bar_idx": 5,
+        "source_row": 12345,
+        "direction": -1,
     }
 
 

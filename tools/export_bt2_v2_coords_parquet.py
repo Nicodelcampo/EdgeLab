@@ -65,6 +65,8 @@ COORD_COLUMNS = [
     "bottom",
     "width_ticks",
     "bar_idx",
+    "source_row",
+    "direction",
 ]
 
 
@@ -92,6 +94,16 @@ def zones_for_contract(
     footprints = build_footprints(ticks, bars)
     session_ids = cme_session_dates(bars.end_ns)
 
+    # Same convention as tools/build_event_store_all5_v2.py's BigTrap2 block:
+    # the creation signal is anchored at the close (last tick) of the bar the
+    # zone was created in, identified by ticks.sequence (the CME source_row),
+    # not by bar index or timestamp -- Gate 1's loader looks anchors up by
+    # source_row against its own independently-loaded tick series.
+    n_ticks = len(ticks.ts_ns)
+    bar_close_indices = np.concatenate(
+        (np.flatnonzero(np.diff(bars.tick_bar_idx)) + 1, [n_ticks])
+    ) - 1
+
     zones = detect_creations_only(
         ticks,
         bars,
@@ -107,12 +119,19 @@ def zones_for_contract(
     for zone in zones:
         bar_index = zone["bar_idx"]
         if 0 <= bar_index < len(session_ids) and session_ids[bar_index] in valid_sessions:
+            if bar_index >= len(bar_close_indices):
+                continue
+            sig_idx = int(bar_close_indices[bar_index])
             rows.append(
                 {
                     "contract": contract,
                     "session_id": session_ids[bar_index],
                     "bar_time_ns": int(zone["bar_time_ns"]),
                     "side": zone["side"],
+                    "source_row": int(ticks.sequence[sig_idx]),
+                    # Same rule as build_event_store_all5_v2.py's BigTrap2 block:
+                    # trapped sellers get pushed, price expected up -> +1.
+                    "direction": 1 if zone["kind"] == "trapped_sellers" else -1,
                     "top": float(zone["top"]),
                     "bottom": float(zone["bottom"]),
                     "width_ticks": float(zone["width_ticks"]),
