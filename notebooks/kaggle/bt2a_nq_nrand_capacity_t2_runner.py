@@ -24,7 +24,7 @@ import numpy as np
 import pandas as pd
 
 REPO_URL = "https://github.com/Nicodelcampo/EdgeLab.git"
-FULL_COMMIT = "23a5ee41f3f168a75860df1fe66faaeb9e21a900" # will be replaced before commit
+FULL_COMMIT = "6a3893f959c3f623ff0a5d79065ab6837b8fe5ff" # will be replaced before commit
 TEMP_REPO_DIR = Path("/tmp/EdgeLab")
 OUTPUT_DIR = Path("/kaggle/working/edgelab-output")
 WORKING_DIR = Path("/kaggle/working")
