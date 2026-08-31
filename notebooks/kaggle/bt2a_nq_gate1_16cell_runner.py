@@ -24,7 +24,7 @@ import numpy as np
 import pandas as pd
 
 REPO_URL = "https://github.com/Nicodelcampo/EdgeLab.git"
-FULL_COMMIT = "PLACEHOLDER_COMMIT_TO_BE_PINNED"
+FULL_COMMIT = "cd33a154f0b064d7afbf6f0660773d668868aad4"
 TEMP_REPO_DIR = Path("/tmp/EdgeLab")
 OUTPUT_DIR = Path("/kaggle/working/edgelab-output")
 WORKING_DIR = Path("/kaggle/working")
