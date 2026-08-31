@@ -228,3 +228,27 @@ por reloj puede satisfacer eso, con cualquier cantidad de trabajo de traducción
 explicitando qué tiraba y por qué. Lo útil de este archivo es servir de **control
 negativo documentado**: cinco decisiones de diseño que el proyecto ya rechazó,
 con el fuente al lado para mostrar cómo se ven cuando están mal.
+
+---
+
+## HP-006 — ZB L2 order book + ML: imbalance/OFI de baseline, DeepLOB-family de challenger
+
+**Fecha:** 2026-08-31 · **Origen:** propuesta de Nico (chat Notion AI) · **Estado:** registrada, data gate pendiente · **Instrumento:** ZB
+
+*(HP-005 queda reservada para el diseño GC SL/TP/BE — ver §14 de
+`BT2A_GC_SLTP_BREAKEVEN_DESIGN_V1_2026-08-30.md` en
+`research/bt2a-gc-sltp-breakeven-design-v1-20260830`.)*
+
+Nico plantea que para ZB conviene L2 y que, si obtiene el dato, quiere empezar
+a entrenar (DeepLOB / redes). El análisis lo respalda como el mejor paciente
+del universo para señal de libro: tick más grueso del proyecto ($31,25),
+colas persistentes, libro de rates profundo y lento. Diseño completo con
+research de mejores prácticas, fases con puertas y refutaciones pre-escritas:
+`docs/research/HP006_ZB_L2_ORDERBOOK_ML_V1_2026-08-31.md`.
+
+Reglas cardinales asentadas: baseline (queue imbalance + OFI, Gould & Bonart /
+Kolm et al.) antes que cualquier red; challenger de arquitectura simple
+(MLPLOB) antes que DeepLOB (TLOB 2025: el MLP supera al SoTA); normalización
+fit-en-train; la métrica de veredicto es expectativa neta por sesión, nunca
+accuracy (LOBFrame); entrenar con etiquetas = acceso a outcomes = spec + token
+propios; el L2 de ES cuarentenado (P-56/P-57) no se toca.
