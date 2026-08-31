@@ -96,8 +96,42 @@ def run_parallel_contracts(args_for, log_for, order, label, max_workers=MAX_WORK
 
     Each worker's stdout/stderr streams to its own log file on disk (no
     capture_output buffering in the main process), so a worker killed by the
-    OOM killer still leaves its last lines for the post-mortem.
+    OOM killer still leaves its last lines for the post-mortem. A heartbeat
+    thread tails each active worker's log file into the MAIN process stdout
+    every 60s, so `kaggle kernels logs -f` shows live per-contract progress
+    -- per-worker disk logging otherwise made a long-running attempt look
+    silent from outside (2026-08-31 15:00 ART: 30+ min with zero visible
+    output, no way to tell "slow" from "stuck").
     """
+    import threading
+    import time
+
+    log_paths = {i: log_for(i) for i in order}
+    done_flag = {"stop": False}
+    last_pos: dict[int, int] = {i: 0 for i in order}
+
+    def _heartbeat():
+        while not done_flag["stop"]:
+            for i in order:
+                p = log_paths[i]
+                try:
+                    with open(p, "r", errors="replace") as f:
+                        f.seek(last_pos[i])
+                        new = f.read()
+                        last_pos[i] = f.tell()
+                    if new.strip():
+                        for line in new.strip().splitlines()[-3:]:
+                            print(f"[hb w{i}] {line}", flush=True)
+                except FileNotFoundError:
+                    pass
+            for _ in range(60):
+                if done_flag["stop"]:
+                    break
+                time.sleep(1)
+
+    hb_thread = threading.Thread(target=_heartbeat, daemon=True)
+    hb_thread.start()
+
     def _run_one(i):
         log_path = log_for(i)
         with open(log_path, "w") as lf:
@@ -119,6 +153,7 @@ def run_parallel_contracts(args_for, log_for, order, label, max_workers=MAX_WORK
             _memavail(f"{label} {completed}/{len(order)}")
     finally:
         pool.shutdown(wait=True, cancel_futures=True)
+        done_flag["stop"] = True
 
 
 def main() -> None:

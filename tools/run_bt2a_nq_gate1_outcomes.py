@@ -275,8 +275,11 @@ def run_contract_pipeline(
     seed: int,
 ) -> Tuple[List[SessionCellArmStat], List[Dict[str, Any]], Dict[str, Any]]:
     """Process all sessions for a single contract, evaluating all 4 arms across 16 cells."""
+    import time as _time
+    _t0 = _time.monotonic()
     print(f"[{contract}] Loading ticks from {tick_path}...", flush=True)
     ticks = _load_ticks_light(tick_path, contract)
+    print(f"[{contract}] {len(ticks.ts_ns):,} ticks loaded ({_time.monotonic() - _t0:.1f}s)", flush=True)
 
     # Positive holdout check: measured, not attested.
     if np.any(ticks.ts_ns >= HOLDOUT_OPEN_UTC_NS):
@@ -336,6 +339,7 @@ def run_contract_pipeline(
     candidate_pools, candidate_indices_by_session_phase = _build_stratum_pools(
         sessions, minutes, vol, after, contract, edges,
     )
+    print(f"[{contract}] stratum pools built, {len(candidate_pools)} strata ({_time.monotonic() - _t0:.1f}s)", flush=True)
 
     # 5. Sample N_RAND: pairs (own_anchor, sampled_anchor), own excluded per draw;
     #    the anchor inherits the direction of the K_ABS event it replaces.
@@ -390,7 +394,7 @@ def run_contract_pipeline(
             direction=int(row["direction"]),
             signal_idx=pos,
             signal_ts_ns=int(ticks.ts_ns[pos]),
-            signal_source_row=s_row,
+            signal_source_row=int(row["source_row"]),
             fill_idx=pos,
         ))
 
@@ -415,8 +419,15 @@ def run_contract_pipeline(
     exclusion_counts: dict[str, int] = {}
     unique_sessions = sorted(set(sessions))
 
+    print(
+        f"[{contract}] events ready: K_ABS={len(k_abs_events)} N_RAND={len(n_rand_events)} "
+        f"K_BT2={len(k_bt2_events)} SHUFFLE={len(shuffle_events)}; starting 16-cell evaluation "
+        f"({_time.monotonic() - _t0:.1f}s)", flush=True,
+    )
     for horizon in HORIZONS_OBSERVATIONS:
+        _th = _time.monotonic()
         cache = build_cell_cache(ticks.ts_ns, ticks.price_ticks, sessions, horizon_observations=horizon)
+        print(f"[{contract}] horizon={horizon} cache built ({_time.monotonic() - _th:.1f}s)", flush=True)
         for barrier in BARRIERS_TICKS:
             for arm_name, session_map in arms_events.items():
                 for sess in unique_sessions:
@@ -433,6 +444,11 @@ def run_contract_pipeline(
                             exclusion_counts[ck] = exclusion_counts.get(ck, 0) + 1
                             if len(exclusions) < EXCLUSION_SAMPLE_CAP:
                                 exclusions.append(e)
+            print(
+                f"[{contract}] cell barrier={barrier} horizon={horizon} done, "
+                f"{len(stats)} session-arm-cell rows so far ({_time.monotonic() - _t0:.1f}s)",
+                flush=True,
+            )
 
     contract_summary = {
         "contract": contract,
