@@ -170,3 +170,99 @@ class SessionProfile:
 
     def history_session_count(self, bucket):
         return len(self.history.get(int(bucket), ()))
+
+
+def run(ticks, bars, footprints, params=None):
+    """Uniform entrypoint for tools/paridad_oraculo.py's KERNELS dict.
+
+    This kernel exposes primitives only (SessionProfile, detect_block,
+    cluster_hot_ticks) -- no run() existed before, no bars/footprints
+    construction, no session iteration. This is that orchestration, written
+    fresh against the primitives above (not against
+    edgelab/research/avolcluster_nq_zone_builder.py's build_session_creation_events,
+    which computes the time bucket without the "-1 second" anchor adjustment
+    that session_relative_bucket() above documents as required for parity --
+    reusing that path would have silently reintroduced the exact off-by-one
+    bug it exists to avoid).
+
+    Emits zones in the schema edgelab.bridge.parity.match_zones consumes
+    (id/top/bottom/created_ms/state/touches), the same shape already used by
+    edgelab/bridge/indicators/avolcellpoi2.py::run() -- including the
+    "(tick - 0.5) * tick_size" boundary convention parity.py's _geom_ticks
+    depends on for exact half-tick geometry comparison.
+
+    This kernel does not track zone lifecycle (no FIRST_TOUCH,
+    ZONE_INVALIDATED): every zone comes back state="ACTIVE", touches=0,
+    ended_ms=None. Mature NT8 zones that touched or invalidated will show as
+    STATE_ORDER_DIFF/FEATURE_DIFF (WARN, non-blocking) against this -- that is
+    the kernel's real, declared coverage, not a bug in this adapter.
+    """
+    from edgelab.bridge.sessions import session_begin_ns, session_end_ns
+
+    p = {**RESEARCH_DEFAULTS, **(params or {})}
+    window = int(p["window_bars"])
+    tick_size = float(ticks.tick_size)
+
+    n_bars = len(bars.close_t)
+    if n_bars == 0:
+        return dict(indicator=NAME, params=p, zones=[])
+
+    # Group bar indices by CME ETH session (17:00 CT -> 16:00 CT), same
+    # calendar edgelab/bridge/sessions.py documents as replicating NT8's
+    # SessionIterator with the CME US Index/FX Futures ETH template.
+    session_of_bar = [session_end_ns(int(bars.end_ns[b])) for b in range(n_bars)]
+    sessions_in_order: list[int] = []
+    seen = set()
+    for s in session_of_bar:
+        if s not in seen:
+            seen.add(s)
+            sessions_in_order.append(s)
+
+    profile = SessionProfile(lookback_sessions=int(p["lookback_sessions"]))
+    all_zones: list[dict] = []
+    zone_seq = 0
+
+    for sess_end in sessions_in_order:
+        bar_indices = [b for b in range(n_bars) if session_of_bar[b] == sess_end]
+        if not bar_indices:
+            continue
+        sess_begin = session_begin_ns(int(bars.end_ns[bar_indices[0]]))
+        n_blocks = len(bar_indices) // window
+        for block_i in range(n_blocks):
+            block_bars = bar_indices[block_i * window:(block_i + 1) * window]
+            cells: dict[int, float] = {}
+            for b in block_bars:
+                for price_tick, volume in footprints.total[int(b)].items():
+                    t = int(price_tick)
+                    cells[t] = cells.get(t, 0.0) + float(volume)
+            end_bar = block_bars[-1]
+            bucket = session_relative_bucket(
+                int(bars.end_ns[end_bar]), sess_begin, int(p["time_bucket_minutes"])
+            )
+            history_scores = profile.history_scores(bucket)
+            result = detect_block(
+                cells, history_scores, params=p, close_tick=int(bars.close_t[end_bar]),
+            )
+            profile.add_block(bucket, result["best_score"])
+            for zone in result.get("zones", []):
+                if zone.get("kind") != "OFF_PRICE":
+                    continue
+                zone_seq += 1
+                lo_t, hi_t = int(zone["lower_tick"]), int(zone["upper_tick"])
+                all_zones.append(dict(
+                    id=str(zone_seq),
+                    indicator=NAME,
+                    top=(hi_t + 0.5) * tick_size,
+                    bottom=(lo_t - 0.5) * tick_size,
+                    created_ms=int(bars.end_ns[end_bar]) // 1_000_000,
+                    created_bar=int(end_bar),
+                    ended_ms=None,
+                    state="ACTIVE",
+                    kind="avol_cluster_off_price",
+                    touches=0,
+                    end_reason=None,
+                    timeline=[],
+                ))
+        profile.commit()
+
+    return dict(indicator=NAME, params=p, zones=all_zones)
