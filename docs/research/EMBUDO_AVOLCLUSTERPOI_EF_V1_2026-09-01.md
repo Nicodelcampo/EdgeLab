@@ -6,8 +6,8 @@
 - **Holdout:** no se abre, no se toca, no se menciona como fuente.
 - **Namespace:** `EF0-A … EF5` de `docs/research_funnel_playbook.md`. No se crea otro conjunto de etapas.
 - **Objeto:** `nt8/aVolClusterPOI.cs` v0.5 (research freeze), blob `d512d91a606d41609b21ef244c896ead1dc52a10`, leído completo para escribir este documento.
-- **Estado epistémico del objeto:** `PROVISIONAL_UNPARITIED`. Ausencia verificada: no existe `docs/parity_coverage/aVolClusterPOI.md` (sí existe `aVolCellPOI2.md`). La cabecera del propio `.cs` dice: «No usar sus zonas para operar hasta pasar el pipeline estandar».
-- **Enmienda vigente:** **V1.1 (2026-09-01)** — ver §9. Vincula `bar_spec = tick:120` sobre NQ y **corrige el encuadre del gate de paridad del §4**.
+- **Estado epistémico del objeto:** `parity_pending`, con registro abierto en `docs/parity_coverage/aVolClusterPOI.md` (creado 2026-09-01). **Corrige a la V1:** sí existe contraparte Python — `edgelab/bridge/indicators/avolclusterpoi.py` v0.5, blob `e472a06899e3d76287072fdbeef4b95604101eb3` — y es **parcial**; ver §10. La cabecera del propio `.cs` sigue vigente: «No usar sus zonas para operar hasta pasar el pipeline estandar».
+- **Enmiendas vigentes:** **V1.1 (2026-09-01)** — ver §9: vincula `bar_spec = tick:120` sobre NQ y corrige el encuadre del gate de paridad del §4. **V1.2 (2026-09-01)** — ver §10: corrige la afirmación de que no había contraparte Python y fija el alcance real del gate.
 
 ---
 
@@ -84,6 +84,8 @@ Salida: acta `EF0-A` con esos números y nada más. Cero outcomes.
 ## 4. `EF0-B` — Probe provisional (prioriza; **no** excluye)
 
 > **Corregido por la enmienda V1.1, §9.1.** Este parágrafo asumía implícitamente el camino del port en Python. Si el embudo se mide sobre el CSV nativo de NT8, no hay gate de paridad.
+>
+> **Corregido otra vez por la V1.2, §10.1.** Dos afirmaciones de acá quedaron falsas: la réplica Python **ya existe** (parcial, `edgelab/bridge/indicators/avolclusterpoi.py`), y `docs/parity_coverage/aVolClusterPOI.md` **ya fue creado**. Lo que falta es el oráculo.
 
 - Réplica Python del contrato de la cabecera (ticks enteros ⇒ exposición ULP 0 por construcción; verificar con `tools/ulp_exposure.py`).
 - Oráculo NT8 sobre una ventana chica y creación de `docs/parity_coverage/aVolClusterPOI.md` bajo las reglas fail-closed del contrato de paridad.
@@ -228,3 +230,57 @@ Supuesto declarado: una fila del parquet = un evento de trade, y las barras de t
 ### 9.9 Qué queda igual
 
 Todo el resto de la V1: prerregistrar el mapa antes de ver los números, efecto mínimo ≥ 1 tick, unidad = sesión, H1–H5, y el orden `EF0-A` → `EF1` → `EF2`. H2 (umbral degenerado) y H3 (warm-up) siguen siendo las primeras mediciones — ahora con el `bar_spec` que faltaba para poder calcularlas.
+
+---
+
+## 10. Enmienda V1.2 (2026-09-01) — sí hay contraparte Python, y el alcance real del gate
+
+**Origen.** Nico ofrece exportar un oráculo. Al preparar el pliego verifiqué el otro lado del par y encontré que **dos afirmaciones de este documento eran falsas**.
+
+### 10.1 Corrección de hecho
+
+La V1 declaraba `PROVISIONAL_UNPARITIED` con «ausencia verificada: no existe `docs/parity_coverage/aVolClusterPOI.md`». El archivo ahora existe, pero eso es lo menos importante: **la inferencia de fondo estaba mal.** Confundí ausencia de **registro** con ausencia de **implementación**.
+
+Sí existe contraparte Python: `edgelab/bridge/indicators/avolclusterpoi.py` v0.5, blob `e472a06899e3d76287072fdbeef4b95604101eb3`, 6.138 B, leído completo. No estaba en `edgelab/bridge/kernels/` — donde sólo viven `bigtrap2_port.py` y `hftzones_es_pure_v2_flat.py` — sino en `edgelab/bridge/indicators/`, junto a los otros nueve ports. Por eso no apareció cuando busqué el port.
+
+Registro de la falla de método, para el ledger: **la ausencia de un documento de cobertura no es evidencia de la ausencia del kernel.** Es el mismo error de clase que el falso negativo de `search_code` del 2026-08-31, y la corrección es la misma: listar el árbol en vez de inferir de un índice.
+
+### 10.2 El kernel es parcial, y eso define qué puede validar el oráculo
+
+6 KB contra 42 KB del `.cs`, y la diferencia es de alcance, no de estilo. Su propio docstring lo dice: «No QualityScore gate, no target/stop, no BigTrap2».
+
+**Cubre:** mediana superior de las celdas · hot `≥ med × MedianMultiplier` · clusters por `MaxGapTicks`/`MinClusterTicks` · score = suma de volumen · `GetTimeBucket` con el anchor `close − 1 s` · `EmpiricalQuantile` p98 con `ceil` · `CommitSession` con FIFO por **sesión** completa · abstención por `MinSamplesPerBucket` · un cluster de masa máxima por bloque · `AT_PRICE` vs `OFF_PRICE` con `direction` y `distance_ticks`. Los 10 parámetros de su `RESEARCH_DEFAULTS` **coinciden** con el censo del `.cs` del 2026-08-13.
+
+**No cubre:** la construcción de barras ni la acumulación del `tickProfile` — `detect_block` recibe las celdas **ya armadas** — ni `PriceToTick`, ni el filtro `[lowTick, highTick]`, ni `ProcessLifecycle` (`FIRST_TOUCH`, `ZONE_INVALIDATED`, `MaxAgeBars`, `MaxTouches`), ni `UpdateOutcome` (`mfe_ticks`, `mae_ticks`, `outcome`), ni `QualityScore`, ni el filtro predictivo, ni el burst, ni `EmitEvent`.
+
+**Consecuencia:** la paridad alcanzable hoy es la de **creación de zonas**. El ciclo de vida y los outcomes quedan afuera **por ausencia de implementación**, no por decisión metodológica. Y eso alcanza: `EF0-A` y `EF1` son target-free y sólo necesitan que el objeto que crea zonas sea reproducible.
+
+Corolario sobre el camino B del §9.1: el port **no es escribir de cero, es completar**. Cambia el costo estimado de ese camino, no su gate.
+
+### 10.3 El gate no atribuye la culpa (leído en `edgelab/bridge/parity.py`)
+
+Matching bipartito greedy por `created_ms` más geometría en **medio-ticks** (para evitar el banker's rounding que produjo `GEOMETRY_DIFF` falsos en BigTrap2 y VolTicksPOC2; nuestras zonas tienen bordes en ticks enteros, así que no aplica).
+
+- **FAIL:** `MISSING_IN_NT8`, `MISSING_IN_PYTHON`, `GEOMETRY_DIFF`. Geometría **exacta** por defecto (`tol_geom_ticks = 0`).
+- **WARN:** `TIMESTAMP_DIFF`, `STATE_ORDER_DIFF`, `FEATURE_DIFF`, `CALIBRATION_DIFF`, **`FOOTPRINT_MISMATCH`** — que entra por `extra_diags` y por lo tanto **no bloquea**.
+
+Pero el efecto indirecto sí bloquea: si NT8 arma las celdas con el defecto de `TICKBAR-001` y Python las arma desde el tick store, difieren las celdas ⇒ difieren los clusters ⇒ aterriza como `GEOMETRY_DIFF` o como huérfanas. **El matcher no puede distinguir «el kernel está mal traducido» de «el bar builder está en desacuerdo consigo mismo»:** los dos escenarios producen los mismos códigos.
+
+De ahí la regla operativa: **la captura `TickBarDiag` a 120 t va pareada con el oráculo, en la misma corrida, no después.** Sin ella, un FAIL manda a depurar el kernel teniendo el defecto ya declarado en el `.cs` desde el 2026-07-25.
+
+### 10.4 Antecedente útil sobre dónde falla este par
+
+El docstring del kernel registra que la paridad de `SessionProfile` **ya fue corregida el 2026-08-14**: la versión previa aplanaba los scores en un `deque` con tope `lookback`, retenía ~6-7 sesiones cuando `lookback = 20`, y descartaba la primera sesión completa. Las dos cosas contradecían `CommitSession`.
+
+Lectura: los desacuerdos históricos de este par aparecieron en la **contabilidad de la historia**, no en la geometría del cluster. Coincide con el modo de falla de `aVolCellPOI2` (§9.7) y con el riesgo de calendario. Es dónde hay que mirar primero si el gate da FAIL.
+
+### 10.5 Pliego del oráculo
+
+El pliego completo vive en `docs/parity_coverage/aVolClusterPOI.md` §4 y no se duplica acá. Los dos puntos que condicionan el diseño del embudo:
+
+1. **Forzar `EnablePredictiveFilter = false`, `MinQualityScore = 0`, `MaxAgeBars = 0`, `MaxTouches = 0`.** Si el `.cs` descarta eventos que el kernel no sabe descartar, el gate los reporta como `MISSING_IN_NT8`: sería un FAIL de configuración disfrazado de FAIL de paridad.
+2. **≥ 35 sesiones cargadas**, siguiendo el precedente de `aVolCellPOI2`, y rango fuera del holdout declarado antes de exportar.
+
+### 10.6 Qué no cambia
+
+El mapa prerregistrado, el efecto mínimo ≥ 1 tick, la unidad = sesión, H1–H7 y el orden `EF0-A` → `EF1` → `EF2`. La paridad de creación es condición de reproducibilidad, **no** evidencia de borde: un `PASS` no dice nada sobre si las zonas anticipan algo.
