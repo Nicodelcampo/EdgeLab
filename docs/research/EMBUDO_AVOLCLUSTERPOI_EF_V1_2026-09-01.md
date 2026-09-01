@@ -7,6 +7,7 @@
 - **Namespace:** `EF0-A … EF5` de `docs/research_funnel_playbook.md`. No se crea otro conjunto de etapas.
 - **Objeto:** `nt8/aVolClusterPOI.cs` v0.5 (research freeze), blob `d512d91a606d41609b21ef244c896ead1dc52a10`, leído completo para escribir este documento.
 - **Estado epistémico del objeto:** `PROVISIONAL_UNPARITIED`. Ausencia verificada: no existe `docs/parity_coverage/aVolClusterPOI.md` (sí existe `aVolCellPOI2.md`). La cabecera del propio `.cs` dice: «No usar sus zonas para operar hasta pasar el pipeline estandar».
+- **Enmienda vigente:** **V1.1 (2026-09-01)** — ver §9. Vincula `bar_spec = tick:120` sobre NQ y **corrige el encuadre del gate de paridad del §4**.
 
 ---
 
@@ -82,6 +83,8 @@ Salida: acta `EF0-A` con esos números y nada más. Cero outcomes.
 
 ## 4. `EF0-B` — Probe provisional (prioriza; **no** excluye)
 
+> **Corregido por la enmienda V1.1, §9.1.** Este parágrafo asumía implícitamente el camino del port en Python. Si el embudo se mide sobre el CSV nativo de NT8, no hay gate de paridad.
+
 - Réplica Python del contrato de la cabecera (ticks enteros ⇒ exposición ULP 0 por construcción; verificar con `tools/ulp_exposure.py`).
 - Oráculo NT8 sobre una ventana chica y creación de `docs/parity_coverage/aVolClusterPOI.md` bajo las reglas fail-closed del contrato de paridad.
 - **Regla del playbook (ATJ-01):** pocos eventos, dirección rara o lifecycle anómalo **no excluyen** ninguna configuración mientras el port no tenga paridad. Un bug de réplica no es un resultado científico.
@@ -137,3 +140,91 @@ No autoriza `EF0`, `EF1` ni `EF2`. No accede a outcomes. No abre el holdout. No 
 ## Aporte al referente
 
 Un embudo adaptativo con **mapa prerregistrado** es lo que permite que «particularizar según lo que se midió» acumule evidencia en vez de gastarla. La diferencia entre este diseño y una exploración improvisada no está en los números que se van a medir, sino en que las ramas ya están escritas antes de verlos.
+
+---
+
+## 9. Enmienda V1.1 (2026-09-01) — vinculación de config y corrección del gate de paridad
+
+**Origen.** Nico observa que el indicador **ya se corrió sobre NQ** y que la configuración de uso está definida: **barra primaria = 120 Tick**. Tiene razón en la consecuencia práctica, y eso corrige el §4.
+
+### 9.1 Qué se corrige
+
+Correr el `.cs` en NT8 sobre NQ produce el **lado de referencia** de la comparación — el oráculo — no la paridad. Según `docs/parity_coverage/README.md`, en este proyecto la paridad es una propiedad de un **par** de implementaciones (oráculo NT8 contra kernel Python), con estados `parity_exact`, `parity_covered`, `parity_pending`, `parity_failed`.
+
+De ahí la consecuencia que tenía mal encuadrada:
+
+| | Camino A — nativo | Camino B — port Python |
+|---|---|---|
+| Qué se mide | El CSV que emite el `.cs` en NT8 | Una réplica en Python sobre el store de ticks |
+| Gate de paridad | **No aplica.** No hay segunda implementación que pueda discrepar | `parity_pending` ⇒ oráculo obligatorio |
+| Techo | Una corrida por chart, CSV en modo overwrite, sin barrido de configs | Escala, grillas, Kaggle |
+| Deudas abiertas | §9.4 y §9.6 | §9.3, §9.4, §9.6 y §9.7 |
+
+**Si el embudo se mide en el camino A, la paridad no está en el camino crítico.** Aparece recién cuando queramos barrer configuraciones o correr a escala.
+
+### 9.2 Vinculación de configuración
+
+`instrument = NQ`, `bar_spec = tick:120`, resto = defaults v0.5 del `.cs`. **Origen: declaración de Nico en chat, 2026-09-01 — declarado, no medido por mí.** Falta declarar todavía: rango de fechas, plantilla de Trading Hours, TZ y mes de contrato.
+
+### 9.3 Deuda medida — barras de tick (camino B, y quizá también A)
+
+`docs/campaigns/TICKBAR-001_paridad_en_barras_de_tick.md`, **estado ABIERTA desde 2026-07-25**:
+
+- `tick:25` → FAIL con **89,12 % de `FOOTPRINT_MISMATCH`** (26.661 de 29.916 barras).
+- Clasificación confirmada: **H2 BAR BUILDER**. H1 (stream) descartada con evidencia dura: digests de 64 bits **idénticos** sobre 4.229 eventos, calculados por dos implementaciones independientes.
+- Mecanismo exacto: el `take + reset` que corre en `OnBarUpdate(BarsInProgress == 0)` captura un conjunto de eventos de la subserie de 1 tick que **no** es el que le corresponde a la barra primaria que acaba de cerrar.
+- Medido: `vol_fp == vol_bar` en **40/150** barras a 25 t y **19/150** a 10 t.
+- Dueño declarado del defecto: **el `.cs`**. Textual del acta: «NT8 no está en desacuerdo con Python: está en desacuerdo consigo mismo».
+
+**Por qué aplica a aVolClusterPOI.** Construye el perfil con el mismo patrón: `AddDataSeries(BarsPeriodType.Tick, 1)`, acumula en `tickProfile` bajo BIP 1, y en BIP 0 hace el snapshot a `blockCells` y `tickProfile.Clear()`. No es una analogía: es la misma estructura en el mismo callback.
+
+### 9.4 Hallazgo nuevo H7 — el filtro de rango convierte mala atribución en pérdida silenciosa
+
+En el snapshot el código hace `if (kv.Key < lowTick || kv.Key > highTick) continue;`. Si por el desfase de la subserie llegan eventos de la barra siguiente y su precio cae fuera de `[low, high]` de la barra que cerró, **se descartan**: no se reasignan a la barra correcta, se pierden. En TICKBAR-001 el volumen total se conservaba (desvío de 0,94 %, mala asignación); acá el filtro puede producir **pérdida neta** en las celdas — justo lo que alimenta mediana → nivel hot → masa del cluster.
+
+**Atenuante esperado, no medido:** a 120 ticks por barra el borde es ~1/120 del contenido, contra 1/25 y 1/10 de las mediciones existentes, y el bloque suma 10 barras consecutivas, con lo cual parte del corrimiento se compensa dentro del bloque. Es una hipótesis con signo esperado, **no un número**.
+
+### 9.5 Cómo se cierra, barato, con instrumental que ya existe
+
+`nt8/TickBarDiag.cs` y `tools/tickbar_diag.py` ya están escritos, y el runbook de captura está en `docs/campaigns/TICKBAR-001_captura_nt8.md`. Repetir esa captura con **NQ a 120 Tick** (pocos minutos, 150 barras) da la tasa `vol_fp == vol_bar` a la resolución real de trabajo. Ramas declaradas de antemano:
+
+- tasa ≈ 100 % ⇒ el defecto es despreciable a 120 t, se declara **con número**, y deja de bloquear.
+- tasa baja ⇒ el CSV nativo **también** está afectado ⇒ **el camino A tampoco es seguro**: no sería un problema de traducción sino del objeto medido.
+
+Esa segunda rama es la razón por la que la medición vale la pena aunque nunca hagamos el port.
+
+### 9.6 Hallazgo nuevo H6 — el meta del CSV no identifica la corrida
+
+Verificado leyendo `EmitEvent`: la línea 1 registra indicador, versión, instrumento, `tick_size`, `window_bars`, `median_mult`, `max_gap_ticks`, `min_cluster_ticks`, `bucket_minutes`, `percentile`, `lookback_sessions`, `min_samples`, filtro predictivo, `min_quality`, los tres `reaction_*`, `session_buckets`, `invalidation`, `max_age_bars`, `max_touches`, `one_cluster_per_block`, `kinds`, `export`, `footprint`, `quantile` y `write_mode`.
+
+**No registra `bar_spec`, ni plantilla de Trading Hours, ni rango de fechas, ni TZ.**
+
+Consecuencia: dos corridas a 120 t y a 500 t producen **metas idénticas** y objetos completamente distintos. Un CSV de este indicador **no puede autoidentificarse como «120 ticks»**. Es la misma clase de falla que el 2026-07-25 produjo una captura mal rotulada y un `BAR_BUILDER_MISMATCH` falso, y que se cerró agregando el sufijo automático de resolución al nombre del archivo.
+
+**Regla de admisión para esta línea:** ningún CSV de aVolClusterPOI se admite sin `bar_spec`, plantilla de sesión, rango y TZ declarados por fuera del archivo y registrados junto al hash del CSV. Lo correcto de fondo es agregarlos al meta del `.cs` — cambio chico, pero toca el detector congelado y por lo tanto es decisión de Nico.
+
+### 9.7 Deuda medida — calendario de sesiones (camino B)
+
+El único oráculo real que corrió en el proyecto (`aVolCellPOI2`, 2026-07-26) **falló por calendario**: Python contó 28 sesiones y NT8 25 sobre el mismo tramo, por el feriado del 3 de julio; con `min_sessions = 15` cada lado empezó a detectar en sesiones distintas (16 contra 22). Las 2 zonas que ambos vieron **coincidieron**: el desacuerdo no era sobre qué es una anomalía, sino sobre cuándo hay suficiente historia. aVolClusterPOI tiene exactamente la misma dependencia (`LookbackSessions = 20`, `MinSamplesPerBucket = 20`, buckets relativos a `ActualSessionBegin`) ⇒ **el mismo modo de falla está precargado**. La decisión de cuál calendario es la referencia sigue **pendiente de Nico** desde julio.
+
+### 9.8 Con `tick:120` fijado, H3 ya es calculable (ESTIMADO)
+
+Insumos **medidos** del store de ticks congelado de NQ (auditoría Gate 1, 2026-08-31): 119.153.201 ticks en 298 sesiones sobre 5 contratos ⇒ **~399.843 ticks por sesión**.
+
+| Magnitud | Valor | Clase |
+|---|---:|---|
+| Ticks por sesión | ~399.843 | derivado de medido |
+| Barras por sesión a 120 t | ~3.332 | estimado |
+| Bloques por sesión (`WindowBars = 10`) | **~333** | estimado |
+| Buckets de 30 min en sesión ETH (~23 h) | 46 | declarado |
+| Muestras por bucket por sesión (promedio) | **~7,2** | estimado |
+
+**Lectura:** con ~7 muestras por bucket por sesión, `MinSamplesPerBucket = 20` se alcanza en **~3 sesiones** en los buckets activos — H3 es mucho menos restrictivo de lo que temía en la V1.
+
+**Pero el promedio miente por construcción:** los ticks no se reparten parejo. En los buckets nocturnos un bloque de 1.200 ticks puede abarcar 30 minutos o más, o sea **menos de una muestra por bucket por sesión**, y con FIFO de 20 sesiones esos buckets **nunca** llegan al mínimo. Predicción falsable derivada: el detector es **estructuralmente ciego fuera de RTH**, y la cobertura por bucket va a tener forma de U invertida. Esto se mide en `EF0-A` A2 y decide si la unidad de análisis debe restringirse a RTH antes de escribir cualquier hipótesis.
+
+Supuesto declarado: una fila del parquet = un evento de trade, y las barras de tick de NT8 cuentan trades recibidos. Si NT8 cuenta de otra forma (por ejemplo, agregando por timestamp), el conteo de barras cambia y con él toda esta tabla.
+
+### 9.9 Qué queda igual
+
+Todo el resto de la V1: prerregistrar el mapa antes de ver los números, efecto mínimo ≥ 1 tick, unidad = sesión, H1–H5, y el orden `EF0-A` → `EF1` → `EF2`. H2 (umbral degenerado) y H3 (warm-up) siguen siendo las primeras mediciones — ahora con el `bar_spec` que faltaba para poder calcularlas.
