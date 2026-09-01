@@ -168,12 +168,21 @@ Los 4 casos con `ratio>1.30` **no** encajan en ese mecanismo -- no están al
 borde, Python los dispara con margen amplio. Se inspeccionaron
 (`n_history_scores` de sus bloques: 68, 39, 27, 54) sin encontrar un patrón
 único y confirmado (no todos están en el arranque de la serie ni comparten
-bucket/sesión). **Quedan como hipótesis abierta, no resuelta**: podría ser
-ruido de footprint más severo puntual, o un efecto de historial corto
-(`lookback_sessions=20` aún no lleno en esa fecha) que hace más volátil el
-cuantil histórico del lado que sea. No se afirma una causa aquí porque no
-hay evidencia directa que la sostenga -- declarado explícitamente como no
-cerrado, en vez de forzar una explicación.
+bucket/sesión). ~~Quedan como hipótesis abierta, no resuelta~~.
+
+> **Actualización 2026-09-01 (censo de 76): resuelto con dato real, dos
+> mecanismos distintos.** Ver
+> `avolclusterpoi_nq0626_censo_76_20260901/README.md`. `py_id=98` y
+> `py_id=142` tienen decisión real de NT8 `ABSTAIN_NO_HISTORY` -- confirma la
+> hipótesis de historial corto que quedaba abajo sin verificar. `py_id=201` y
+> `py_id=237` tienen decisión real `CREATE` -- **NT8 sí detectó y creó zona**,
+> con margen cómodo sobre su propio umbral; el gate los cuenta como
+> `MISSING_IN_NT8` porque la pérdida de ticks de borde (13 y 43 ticks
+> respectivamente, la misma clase de mecanismo que explica el outlier de 8
+> ticks) corrió la geometría de la zona NT8 lo suficiente como para que
+> `match_zones` con `tol_geom_ticks=0` no la emparejara con la zona Python.
+> No es una falla de detección en esos dos casos -- es una falla de
+> emparejamiento del gate ante una pérdida de borde inusualmente grande.
 
 ## Tarea 4 — re-correr el gate
 
