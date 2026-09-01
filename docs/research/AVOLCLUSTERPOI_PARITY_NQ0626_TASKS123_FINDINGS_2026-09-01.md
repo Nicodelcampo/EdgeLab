@@ -102,6 +102,20 @@ de volumen en las celdas bajas, que en la suma total del bloque es
 insignificante, puede desplazar la mediana lo suficiente para mover
 `hotThreshold` y así el borde del cluster.
 
+> **Actualización 2026-09-01 (posterior a esta entrega): confirmado con datos
+> reales.** Se instrumentó `nt8/aVolClusterPOI.cs` con un modo diagnóstico
+> aditivo que exporta `blockCells` reales por bloque, Nico lo compiló y
+> corrió sobre la misma ventana. El bloque real de NT8 para este caso tiene
+> **13 ticks completos ausentes** (122490-122504, suma de volumen=31) que el
+> footprint de Python sí tiene, más 4 diffs de valor de ±1 a ±5 en ticks
+> compartidos — eso explica exactamente el `clusterCount=17`/`width=18` y el
+> corte en 122541 inferidos abajo vía `density`. Ver
+> `AVOLCLUSTERPOI_NT8_DIAG_CONFIRMED_2026-09-01.md` para el detalle completo,
+> incluidos dos casos adicionales (`nt8_id=9`, `nt8_id=27`) que confirman el
+> mismo mecanismo con severidad proporcional a cuántos ticks se pierden en el
+> borde. El párrafo original de abajo queda como registro de la inferencia
+> previa, ya superada por el dato real.
+
 **No se pudo confirmar con certeza total** porque el oráculo CSV no exporta
 las celdas crudas de NT8 (`blockCells`) — sólo agregados por zona
 (`score, threshold, density, cluster_share`). Lo que sí está confirmado con
@@ -111,14 +125,18 @@ la suma Python de 122524..122541 (1216) es cercana pero no igual al score
 NT8 (1207) — diferencia de 9, del orden de magnitud de un ruido de
 reconstrucción de footprint, no de un tick completo faltante.
 
-**Conclusión de la tarea 3**: el outlier de 8 ticks no es un bug de
+~~**Conclusión de la tarea 3**: el outlier de 8 ticks no es un bug de
 traducción del algoritmo de clustering (verificado idéntico línea por línea);
 es sensibilidad del estadístico mediana a diferencias de footprint ya
 conocidas y de otro modo insignificantes, amplificada porque el detector usa
 esa mediana como umbral binario. Cerrar esto con certeza total requeriría
 exportar `blockCells` desde el `.cs` para este bloque — no se hizo (cambio al
 indicador de producción NT8, fuera del alcance de esta tarea de diagnóstico;
-se consulta antes de tocar el `.cs`).
+se consulta antes de tocar el `.cs`).~~ **Superado: ver la actualización de
+arriba y `AVOLCLUSTERPOI_NT8_DIAG_CONFIRMED_2026-09-01.md`. La causa raíz sí
+es una diferencia de footprint, pero no es ruido disperso genérico — es la
+pérdida de ticks completos en el borde del bloque, del filtro `Low[0]/High[0]`
+del `.cs`, con severidad variable según el bloque.**
 
 ### Los 57 `MISSING_IN_NT8` — patrón cuantificado, no anecdótico
 
