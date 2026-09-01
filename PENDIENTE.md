@@ -1850,3 +1850,43 @@ completa o parcial.
 **No se toma acción de remediación** por decisión explícita de Nico. Se registra para
 trazabilidad, no como bloqueante activo.
 
+## P-60 · Override explícito: corrida SL/TP/BE experimental GC+NQ (2026-09-01)
+
+**Asentada 2026-09-01.** Nico pidió correr el análisis de TP/SL/BE sobre 1 contrato de
+GC y 1 de NQ pese a dos gates que seguían cerrados: GC en
+`DRAFT_DESIGN_ONLY_PREAUTHORIZATION` (`specs/bt2a_gc_exitlogic_sltp_breakeven_campaign_v1.draft.json`,
+falta suite RW/MCS de validación) y NQ con Gate 1 en `NO_DIRECTIONAL_MECHANISM` (no
+`SUPPORTED`, commit `755dc3c`). Confirmación explícita en chat: "Sí, dale, confirmado".
+
+Alcance acotado, no confirmatorio: **1 contrato por activo, 5 celdas** (subconjunto de
+las 372+24+16 de la campaña real), `status=EXPERIMENTAL_NON_CONFIRMATORY`,
+`edge_declared=False`, `promotion_eligible=False`. No abre holdout. GC usa la economía
+ya congelada en P2B (3.5t/5.5t); NQ se reporta solo en ticks brutos porque no existe
+todavía un modelo de fricción validado para ese instrumento (prohibido transportarlo
+desde GC).
+
+Corrida localmente primero (`diag/tasa_senales/sltp_be_experimental_gc_nq.py`): falló
+por `ModuleNotFoundError` (worktree sin el módulo), luego colgó 100+ minutos en el
+cuello de botella ya diagnosticado de `BigTrap2Absorption.update_active_zones()`
+(O(n_blocks × n_active_zones)) y se mató el proceso sin resultado. Ver P-61 para la
+decisión de mover esta corrida a Kaggle.
+
+## P-61 · Contradicción de gobierno: prohibición CME/Kaggle vs. política V1 de scatter-gather ya en uso
+
+**Asentada 2026-09-01.** `docs/research/CME_Market_Data_Policy_Cloud_Kaggle.html`
+(2026-08-14) prohíbe explícitamente subir ticks/L1/L2 reales de CME a cualquier nube de
+terceros, nombrando Kaggle. Pero `docs/research/KAGGLE_SCATTER_GATHER_MULTI_KERNEL_POLICY_V1_2026-08-31.md`
+(commit `981eb3c`, V1.1 `1b0ba85`, "adoptada por Nico") autoriza y de hecho ya viene
+usándose desde 2026-08-28 para compute real sobre ticks de NQ (paridad, N_RAND,
+TICKBAR-001, exports de coordenadas) — **sin ninguna referencia cruzada al memo de
+2026-08-14** en ningún punto de la política V1 (verificado por grep). Son dos
+documentos de gobierno del mismo repo que se contradicen y ninguno cita al otro.
+
+Nico, al ver esto planteado explícitamente, aceptó el riesgo de nuevo para la corrida de
+P-60: "Si lo acepto, segui en kaggle". Datasets ya existentes en Kaggle con ticks reales
+de GC/NQ (`nicolasbuttaro/edgelab-ticks-gc-preholdout`, `-nq-preholdout`, entre otros)
+confirman que la práctica real del proyecto ya asumía este riesgo desde antes de esta
+sesión. **No se toma acción de remediación** — se registra para que quien lea
+`CME_Market_Data_Policy_Cloud_Kaggle.html` no asuma que la prohibición sigue vigente sin
+excepción; la excepción (V1) está aprobada y en uso activo.
+
