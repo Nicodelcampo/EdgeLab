@@ -6,6 +6,16 @@ cerraba con el desfase de 3 ticks del classifier TICKBAR-001 sin resolver; esto
 va más allá y encuentra el mecanismo exacto detrás de los 19 `GEOMETRY_DIFF`
 del gate de paridad (no del classifier de TickBarDiag).
 
+> **Corrección 2026-09-01 (post-auditoría):** la caracterización original de
+> abajo ("el desvío está siempre en el superior, siempre de 1-2 ticks") estaba
+> mal — surgió de mirar sólo 5 de las 19 filas. Recontando las 19 completas:
+> `upper_only=9, lower_only=8, both=2, max_diff=8` (medio-ticks). El mecanismo
+> NO es unidireccional ni acotado a 1-2 ticks; el caso `py_id=372/nt8_id=413`
+> llega a 8. Ver `AVOLCLUSTERPOI_PARITY_NQ0626_TASKS123_FINDINGS_2026-09-01.md`
+> para el diagnóstico de ese caso con datos celda-por-celda (no inferencia).
+> El párrafo original queda abajo tachado conceptualmente pero sin borrar,
+> como registro de qué se afirmó y se corrigió.
+
 ## El patrón, medido, no supuesto
 
 Los 19 `GEOMETRY_DIFF` del gate (`docs/research/avolclusterpoi_nq0626_reports_20260901/paridad_avolclusterpoi_nq0626.json`)
@@ -19,9 +29,11 @@ py=(209369, 209331) nt8=(209373, 209331) diff=2 ticks
 py=(210769, 210737) nt8=(210769, 210735) diff=1 ticks
 ```
 
-`_geom_ticks()` devuelve `(top, bottom)` en medio-ticks. **El borde inferior
-coincide exacto en las 5 muestras; el desvío está siempre en el superior**,
-y siempre de 1-2 ticks. Un solo mecanismo, no ruido disperso.
+~~`_geom_ticks()` devuelve `(top, bottom)` en medio-ticks. El borde inferior
+coincide exacto en las 5 muestras; el desvío está siempre en el superior,
+y siempre de 1-2 ticks. Un solo mecanismo, no ruido disperso.~~ **Corregido
+arriba: sobre las 19 filas completas el desvío es bidireccional (9 arriba, 8
+abajo, 2 ambos bordes) y el máximo es 8, no 1-2.**
 
 ## La lógica de detección se comparó línea por línea — coincide
 
