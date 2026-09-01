@@ -164,6 +164,11 @@ namespace NinjaTrader.NinjaScript.Indicators
 		private bool writerFailed;
 		private long eventSeq;
 
+		// ---- export diagnostico por bloque (opcional, off por defecto) ----
+		private StreamWriter diagWriter;
+		private bool diagWriterFailed;
+		private long diagSeq;
+
 		// ---- dashboard (solo visual) ----
 		private int totalZonesCreated;
 		private int sessionZonesCreated;
@@ -215,6 +220,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 				BurstRangeTicks = 40;
 
 				EventLogPath = "";
+				DiagBlockExportEnabled = false;
+				DiagBlockExportPath = "";
 				Opacity = 40;
 				VisualExtendBars = 500;
 				MaxRenderedZones = 500;
@@ -246,6 +253,9 @@ namespace NinjaTrader.NinjaScript.Indicators
 				writer = null;
 				writerFailed = false;
 				eventSeq = 0;
+				diagWriter = null;
+				diagWriterFailed = false;
+				diagSeq = 0;
 				totalZonesCreated = 0;
 				sessionZonesCreated = 0;
 				outcomeTarget = 0;
@@ -261,6 +271,11 @@ namespace NinjaTrader.NinjaScript.Indicators
 				{
 					try { writer.Flush(); writer.Close(); } catch { }
 					writer = null;
+				}
+				if (diagWriter != null)
+				{
+					try { diagWriter.Flush(); diagWriter.Close(); } catch { }
+					diagWriter = null;
 				}
 			}
 		}
@@ -339,6 +354,19 @@ namespace NinjaTrader.NinjaScript.Indicators
 			int bucket = GetTimeBucket(Time[0]);
 			double bestScore = 0;
 
+			// ---- variables de diagnostico (solo lectura, no alteran la deteccion) ----
+			// Declaradas en el scope de ProcessBlock para que EmitBlockDiag() las vea
+			// sin importar que rama se tomo. DiagBlockExportPath="" => todo esto es
+			// costo cero salvo la asignacion de estos defaults.
+			double diagMedian = double.NaN;
+			double diagHotThreshold = double.NaN;
+			double diagThresh = double.NaN;
+			int diagHistCount = 0;
+			List<List<long>> diagClusters = null;
+			List<long> diagBestCluster = null;
+			double diagBestPassScore = 0;
+			string diagDecision = "ABSTAIN_FEW_CELLS";
+
 			if (blockCells.Count >= 3)
 			{
 				// Mediana (superior para n par) de los volumenes por celda del bloque
@@ -346,6 +374,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 				vols.Sort();
 				double median = vols[vols.Count / 2];
 				double hotThreshold = median * MedianMultiplier;
+				diagMedian = median;
+				diagHotThreshold = hotThreshold;
 
 				// Niveles hot ordenados por tick (entero)
 				List<long> hotTicks = new List<long>();
@@ -369,6 +399,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 					}
 				}
 				if (current.Count >= MinClusterTicks) clusters.Add(current);
+				diagClusters = clusters;
+				diagDecision = clusters.Count == 0 ? "ABSTAIN_NO_CLUSTER" : diagDecision;
 
 				// Umbral historico del bucket. SIN fallback global: sin historia => sin deteccion.
 				double thresh = double.NaN;
@@ -380,6 +412,9 @@ namespace NinjaTrader.NinjaScript.Indicators
 					histCount = hist.Count;
 					thresh = EmpiricalQuantile(hist, DetectionPercentile / 100.0);
 				}
+				diagThresh = thresh;
+				diagHistCount = histCount;
+				if (double.IsNaN(thresh)) diagDecision = "ABSTAIN_NO_HISTORY";
 
 				double blockTotal = 0;
 				foreach (double v in blockCells.Values) blockTotal += v;
@@ -398,6 +433,10 @@ namespace NinjaTrader.NinjaScript.Indicators
 						bestPassScore = score;
 					}
 				}
+				diagBestCluster = bestCluster;
+				diagBestPassScore = bestPassScore;
+				if (bestCluster == null && !double.IsNaN(thresh) && clusters.Count > 0)
+					diagDecision = "ABSTAIN_BELOW_THRESHOLD";
 
 				if (bestCluster != null)
 				{
@@ -419,15 +458,20 @@ namespace NinjaTrader.NinjaScript.Indicators
 					if (EnablePredictiveFilter && !passes)
 					{
 						/* filtro ON: no crea ni at-price ni off-price que no pase */
+						diagDecision = offPrice ? "ABSTAIN_DISTANCE_OR_QUALITY_FILTER" : "ABSTAIN_AT_PRICE_FILTERED";
 					}
 					else
 					{
 						CreateZone(lower, upper, bestPassScore, bucket, thresh, histCount, direction,
 							ratio, share, density, quality, distance, burstCount,
 							offPrice ? "OFF_PRICE" : "AT_PRICE");
+						diagDecision = "CREATE";
 					}
 				}
 			}
+
+			if (DiagBlockExportEnabled) EmitBlockDiag(bucket, diagMedian, diagHotThreshold,
+				diagThresh, diagHistCount, diagClusters, diagBestCluster, diagBestPassScore, diagDecision);
 
 			// La muestra del bloque entra SIEMPRE al pendiente de la sesion actual
 			// (una muestra por bloque = score del mejor cluster; 0 si no hubo).
@@ -897,6 +941,101 @@ namespace NinjaTrader.NinjaScript.Indicators
 			}
 		}
 
+		// ------------------------------------------------------------------
+		// Export CSV diagnostico por bloque (opcional, off por defecto).
+		// Un renglon por bloque procesado, CREATE o ABSTAIN, con las celdas
+		// crudas, la mediana/umbral, todos los clusters candidatos y el
+		// elegido. No participa de la deteccion -- solo lectura de variables
+		// ya calculadas en ProcessBlock(). Pensado para research target-free
+		// (paridad Python<->NT8), no para produccion; dejar DiagBlockExportEnabled
+		// en false salvo corrida de auditoria explicita.
+		// ------------------------------------------------------------------
+		private void EmitBlockDiag(int bucket, double median, double hotThreshold,
+			double thresh, int histCount, List<List<long>> clusters, List<long> bestCluster,
+			double bestPassScore, string decision)
+		{
+			if (string.IsNullOrEmpty(DiagBlockExportPath) || diagWriterFailed) return;
+			try
+			{
+				if (diagWriter == null)
+				{
+					string dir = Path.GetDirectoryName(DiagBlockExportPath);
+					if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
+					diagWriter = new StreamWriter(DiagBlockExportPath, false, new UTF8Encoding(false));
+					diagWriter.AutoFlush = true;
+					diagWriter.WriteLine("# meta,indicator=aVolClusterPOI,version=0.5,mode=block_diagnostic,"
+						+ "instrument=" + Instrument.FullName
+						+ ",tick_size=" + TickSize.ToString(CultureInfo.InvariantCulture)
+						+ ",window_bars=" + WindowBars.ToString(CultureInfo.InvariantCulture)
+						+ ",median_mult=" + MedianMultiplier.ToString(CultureInfo.InvariantCulture)
+						+ ",max_gap_ticks=" + MaxGapTicks.ToString(CultureInfo.InvariantCulture)
+						+ ",min_cluster_ticks=" + MinClusterTicks.ToString(CultureInfo.InvariantCulture)
+						+ ",bucket_minutes=" + TimeBucketMinutes.ToString(CultureInfo.InvariantCulture)
+						+ ",percentile=" + DetectionPercentile.ToString(CultureInfo.InvariantCulture)
+						+ ",lookback_sessions=" + LookbackSessions.ToString(CultureInfo.InvariantCulture)
+						+ ",min_samples=" + MinSamplesPerBucket.ToString(CultureInfo.InvariantCulture)
+						+ ",cells_format=tick:vol pipe-separated, sorted by tick asc"
+						+ ",clusters_format=lower:upper:score:count pipe-separated, in discovery order"
+						+ ",write_mode=overwrite,scope=every_block_CREATE_and_ABSTAIN");
+					diagWriter.WriteLine("diag_seq,bar_index,bar_close_time,session_index,bucket,"
+						+ "n_cells,median,hot_threshold,best_score,threshold,hist_samples,decision,"
+						+ "selected_lower_tick,selected_upper_tick,selected_score,selected_count,"
+						+ "n_clusters,clusters,cells");
+					Print(Name + " log diagnostico por bloque: " + DiagBlockExportPath);
+				}
+				diagSeq++;
+
+				List<long> cellTicks = new List<long>(blockCells.Keys);
+				cellTicks.Sort();
+				StringBuilder cellsSb = new StringBuilder();
+				for (int i = 0; i < cellTicks.Count; i++)
+				{
+					if (i > 0) cellsSb.Append('|');
+					cellsSb.Append(cellTicks[i].ToString(CultureInfo.InvariantCulture));
+					cellsSb.Append(':');
+					cellsSb.Append(blockCells[cellTicks[i]].ToString("0.######", CultureInfo.InvariantCulture));
+				}
+
+				StringBuilder clustersSb = new StringBuilder();
+				int nClusters = clusters == null ? 0 : clusters.Count;
+				if (clusters != null)
+				{
+					for (int ci = 0; ci < clusters.Count; ci++)
+					{
+						List<long> c = clusters[ci];
+						double cScore = 0;
+						for (int i = 0; i < c.Count; i++) cScore += blockCells[c[i]];
+						if (ci > 0) clustersSb.Append('|');
+						clustersSb.Append(c[0]).Append(':').Append(c[c.Count - 1]).Append(':')
+							.Append(cScore.ToString("0.######", CultureInfo.InvariantCulture)).Append(':')
+							.Append(c.Count);
+					}
+				}
+
+				diagWriter.WriteLine(string.Format(CultureInfo.InvariantCulture,
+					"{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18}",
+					diagSeq, CurrentBar,
+					Time[0].ToString("yyyy-MM-ddTHH:mm:ss.fff", CultureInfo.InvariantCulture),
+					sessionIndex, bucket,
+					blockCells.Count,
+					double.IsNaN(median) ? "" : median.ToString("0.######", CultureInfo.InvariantCulture),
+					double.IsNaN(hotThreshold) ? "" : hotThreshold.ToString("0.######", CultureInfo.InvariantCulture),
+					bestPassScore.ToString("0.######", CultureInfo.InvariantCulture),
+					double.IsNaN(thresh) ? "" : thresh.ToString("0.######", CultureInfo.InvariantCulture),
+					histCount, decision,
+					bestCluster == null ? "" : bestCluster[0].ToString(CultureInfo.InvariantCulture),
+					bestCluster == null ? "" : bestCluster[bestCluster.Count - 1].ToString(CultureInfo.InvariantCulture),
+					bestCluster == null ? "" : bestPassScore.ToString("0.######", CultureInfo.InvariantCulture),
+					bestCluster == null ? "" : bestCluster.Count.ToString(CultureInfo.InvariantCulture),
+					nClusters, clustersSb.ToString(), cellsSb.ToString()));
+			}
+			catch (Exception ex)
+			{
+				diagWriterFailed = true;
+				Print(Name + " ERROR [block_diag]: " + ex.Message);
+			}
+		}
+
 		#region Properties
 
 		// -------- Grupo 1: Deteccion (bloque) --------
@@ -1025,6 +1164,19 @@ namespace NinjaTrader.NinjaScript.Indicators
 		[Display(Name = "Event Log Path (vacio = off)", Order = 40, GroupName = "6. Export y visual",
 			Description = "Ruta completa del CSV. SOBREESCRIBE siempre; usar nombre nuevo por corrida.")]
 		public string EventLogPath { get; set; }
+
+		// -------- Grupo 9: Diagnostico por bloque (opcional, research/paridad) --------
+		[NinjaScriptProperty]
+		[Display(Name = "Diag Block Export Enabled", Order = 90, GroupName = "9. Diagnostico (opcional)",
+			Description = "Exporta un CSV con 1 fila por bloque (CREATE y ABSTAIN), con blockCells crudo, "
+				+ "mediana/umbral y todos los clusters candidatos. Off por defecto -- solo para research "
+				+ "de paridad, no cambia la deteccion en produccion.")]
+		public bool DiagBlockExportEnabled { get; set; }
+
+		[NinjaScriptProperty]
+		[Display(Name = "Diag Block Export Path (vacio = off)", Order = 91, GroupName = "9. Diagnostico (opcional)",
+			Description = "Ruta completa del CSV diagnostico. SOBREESCRIBE siempre; usar nombre nuevo por corrida.")]
+		public string DiagBlockExportPath { get; set; }
 
 		[NinjaScriptProperty]
 		[Range(1, 100)]
