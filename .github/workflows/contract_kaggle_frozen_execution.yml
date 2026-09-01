@@ -1,0 +1,78 @@
+name: Kaggle frozen execution contract
+
+on:
+  push:
+    branches:
+      - infra/kaggle-frozen-execution-v1-20260828
+    paths:
+      - 'edgelab/kaggle/execution.py'
+      - 'tools/run_kaggle_frozen_job.py'
+      - 'tools/prepare_kaggle_research_dataset.py'
+      - 'tools/verify_kaggle_nq_post_upload.py'
+      - 'notebooks/kaggle/10_frozen_job_runner.py'
+      - 'notebooks/kaggle/20_nq_post_upload_rehash.py'
+      - 'specs/kaggle_frozen_execution_v1.template.json'
+      - 'specs/kaggle_nq_private_upload_v1.draft.json'
+      - 'docs/research/KAGGLE_FROZEN_EXECUTION_PROTOCOL_V1_2026-08-28.md'
+      - 'docs/research/KAGGLE_NQ_PRIVATE_UPLOAD_PROTOCOL_V1_2026-08-28.md'
+      - 'docs/research/KAGGLE_NQ_POST_UPLOAD_REHASH_PROTOCOL_V1_2026-08-28.md'
+      - 'tests/research/test_kaggle_frozen_execution.py'
+      - 'tests/research/test_kaggle_post_upload_rehash.py'
+      - 'kaggle_dataset/dataset-metadata.json'
+      - 'kaggle_dataset/README.md'
+      - '.github/workflows/contract_kaggle_frozen_execution.yml'
+  pull_request:
+    paths:
+      - 'edgelab/kaggle/execution.py'
+      - 'tools/run_kaggle_frozen_job.py'
+      - 'tools/prepare_kaggle_research_dataset.py'
+      - 'tools/verify_kaggle_nq_post_upload.py'
+      - 'notebooks/kaggle/10_frozen_job_runner.py'
+      - 'notebooks/kaggle/20_nq_post_upload_rehash.py'
+      - 'specs/kaggle_frozen_execution_v1.template.json'
+      - 'specs/kaggle_nq_private_upload_v1.draft.json'
+      - 'docs/research/KAGGLE_FROZEN_EXECUTION_PROTOCOL_V1_2026-08-28.md'
+      - 'docs/research/KAGGLE_NQ_PRIVATE_UPLOAD_PROTOCOL_V1_2026-08-28.md'
+      - 'docs/research/KAGGLE_NQ_POST_UPLOAD_REHASH_PROTOCOL_V1_2026-08-28.md'
+      - 'tests/research/test_kaggle_frozen_execution.py'
+      - 'tests/research/test_kaggle_post_upload_rehash.py'
+      - 'kaggle_dataset/dataset-metadata.json'
+      - 'kaggle_dataset/README.md'
+      - '.github/workflows/contract_kaggle_frozen_execution.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: contract-kaggle-frozen-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install locked environment
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements/core-bridge-dev.lock
+      - name: Validate JSON contracts
+        run: |
+          python -m json.tool specs/kaggle_frozen_execution_v1.template.json >/dev/null
+          python -m json.tool specs/kaggle_nq_private_upload_v1.draft.json >/dev/null
+      - name: Validate CLIs
+        run: |
+          python tools/run_kaggle_frozen_job.py --help >/dev/null
+          python tools/prepare_kaggle_research_dataset.py --help >/dev/null
+          python tools/verify_kaggle_nq_post_upload.py --help >/dev/null
+      - name: Run fail-closed Kaggle contracts
+        run: |
+          python -m pytest -q \
+            tests/research/test_kaggle_frozen_execution.py \
+            tests/research/test_kaggle_post_upload_rehash.py
