@@ -108,3 +108,31 @@ def test_run_empty_bars_returns_no_zones():
     fps = build_footprints(ticks, bars)
     res = run(ticks, bars, fps)
     assert res["zones"] == []
+
+
+def test_run_debug_trace_exposes_per_block_diagnostics():
+    """Task 2 (auditor order 025/026): per-block trace needed to diagnose the
+    57 MISSING_IN_NT8 zones -- score/threshold/cells at creation, not just
+    the final zone geometry."""
+    from edgelab.bridge.bars import build_tick_bars, build_footprints
+    from edgelab.bridge.indicators.avolclusterpoi import run
+    from edgelab.bridge.ticks import make_synthetic
+
+    ticks = make_synthetic(n_sessions=25, ticks_per_session=3000, seed=11)
+    bars = build_tick_bars(ticks, 50, reiniciar_por_sesion=True)
+    fps = build_footprints(ticks, bars)
+
+    res = run(ticks, bars, fps, params={"min_samples_per_bucket": 3}, debug_trace=True)
+    assert "block_trace" in res
+    assert len(res["block_trace"]) > 0
+    zone_ids_from_zones = {z["id"] for z in res["zones"]}
+    zone_ids_from_trace = {zid for bt in res["block_trace"] for zid in bt["zone_ids"]}
+    assert zone_ids_from_zones == zone_ids_from_trace
+    for bt in res["block_trace"]:
+        for key in ("session_end_ns", "block_index", "end_bar", "bucket", "cells",
+                    "best_score", "threshold", "n_history_scores", "close_tick"):
+            assert key in bt
+
+    # Backward compatible: no trace by default.
+    res2 = run(ticks, bars, fps, params={"min_samples_per_bucket": 3})
+    assert "block_trace" not in res2

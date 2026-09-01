@@ -172,7 +172,7 @@ class SessionProfile:
         return len(self.history.get(int(bucket), ()))
 
 
-def run(ticks, bars, footprints, params=None):
+def run(ticks, bars, footprints, params=None, debug_trace=False):
     """Uniform entrypoint for tools/paridad_oraculo.py's KERNELS dict.
 
     This kernel exposes primitives only (SessionProfile, detect_block,
@@ -220,6 +220,7 @@ def run(ticks, bars, footprints, params=None):
 
     profile = SessionProfile(lookback_sessions=int(p["lookback_sessions"]))
     all_zones: list[dict] = []
+    block_trace: list[dict] = []
     zone_seq = 0
 
     for sess_end in sessions_in_order:
@@ -244,13 +245,16 @@ def run(ticks, bars, footprints, params=None):
                 cells, history_scores, params=p, close_tick=int(bars.close_t[end_bar]),
             )
             profile.add_block(bucket, result["best_score"])
+            block_zone_ids: list[str] = []
             for zone in result.get("zones", []):
                 if zone.get("kind") != "OFF_PRICE":
                     continue
                 zone_seq += 1
                 lo_t, hi_t = int(zone["lower_tick"]), int(zone["upper_tick"])
+                zid = str(zone_seq)
+                block_zone_ids.append(zid)
                 all_zones.append(dict(
-                    id=str(zone_seq),
+                    id=zid,
                     indicator=NAME,
                     top=(hi_t + 0.5) * tick_size,
                     bottom=(lo_t - 0.5) * tick_size,
@@ -263,6 +267,24 @@ def run(ticks, bars, footprints, params=None):
                     end_reason=None,
                     timeline=[],
                 ))
+            if debug_trace:
+                block_trace.append(dict(
+                    session_end_ns=int(sess_end),
+                    block_index=int(block_i),
+                    end_bar=int(end_bar),
+                    bucket=int(bucket),
+                    n_cells=len(cells),
+                    cells={int(k): float(v) for k, v in cells.items()},
+                    best_score=result.get("best_score"),
+                    threshold=result.get("threshold"),
+                    abstain=result.get("abstain"),
+                    n_history_scores=len(history_scores),
+                    close_tick=int(bars.close_t[end_bar]),
+                    zone_ids=block_zone_ids,
+                ))
         profile.commit()
 
-    return dict(indicator=NAME, params=p, zones=all_zones)
+    out = dict(indicator=NAME, params=p, zones=all_zones)
+    if debug_trace:
+        out["block_trace"] = block_trace
+    return out
