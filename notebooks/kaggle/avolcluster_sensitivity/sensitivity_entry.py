@@ -19,7 +19,7 @@ import time
 from pathlib import Path
 
 REPO_URL = "https://github.com/Nicodelcampo/EdgeLab.git"
-EXPECTED_COMMIT = "2b630507f19c825a55c583ea96a8e926a6764dd3"
+EXPECTED_COMMIT = "f1e5f5dd929d6fc23bae9b5825f02e763086c119"
 REPO_DIR = Path("/kaggle/working/EdgeLab")
 KAGGLE_INPUT = Path("/kaggle/input")
 OPERABLE_START, OPERABLE_END_EXCLUSIVE = 20260317, 20260616
