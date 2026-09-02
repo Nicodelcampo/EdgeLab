@@ -11,6 +11,7 @@ using System.Xml.Serialization;
 using NinjaTrader.Data;
 using NinjaTrader.Gui;
 using NinjaTrader.Gui.Chart;
+using NinjaTrader.NinjaScript.DrawingTools;
 #endregion
 
 // HFTImpulseZones_P v1.0 -- zonas de impulso, disenado para PARIDAD.

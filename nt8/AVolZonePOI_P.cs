@@ -11,6 +11,7 @@ using System.Xml.Serialization;
 using NinjaTrader.Data;
 using NinjaTrader.Gui;
 using NinjaTrader.Gui.Chart;
+using NinjaTrader.NinjaScript.DrawingTools;
 #endregion
 
 // AVolZonePOI_P v1.0 -- zonas de concentracion de volumen, disenado para PARIDAD.
