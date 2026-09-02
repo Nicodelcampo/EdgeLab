@@ -1,116 +1,228 @@
 #!/usr/bin/env python3
-"""Kaggle entrypoint: agrega volumen real por trade_date sobre los 5 contratos
-NQ (03-26, 06-26, 09-25, 09-26, 12-25) y construye el `contract_regime_manifest_v1`
-causal (edgelab/data/contract_regime.py). Target-free, no toca outcomes.
+"""NQ contract-regime manifest runner v2: target-free and fail-closed.
 
-No es el escaneo pesado de BigTrap2Absorption: solo lee 2 columnas por
-parquet (ts_utc_ns, volume) via pyarrow columnar read y agrega por sesion.
-No corre ningun indicador ni construye barras.
-
-NO SE CORRE SIN AUTORIZACION EXPLICITA -- preparado y testeado localmente
-(edgelab/research/nq_contract_regime_manifest_build.py,
-tests/research/test_nq_contract_regime_manifest_build.py, 5 tests en verde),
-falta la corrida real sobre los 5 parquets (~2,26 GB, 119M ticks).
+`scan` streams the five NQ parquets and writes observations plus an unapproved
+completeness template. `build` is cheap and needs explicit evidence bound to
+the exact parquet hashes. No indicator, target, outcome, P&L or holdout is read.
 """
 from __future__ import annotations
 
+import argparse
+import hashlib
 import json
 import subprocess
 import sys
+from datetime import date, datetime, timezone
 from pathlib import Path
+from typing import Any
 
 REPO_URL = "https://github.com/Nicodelcampo/EdgeLab.git"
-EXPECTED_COMMIT = "ca1a5c21e9e17fec5767f69b662198031b04367d"
 REPO_DIR = Path("/kaggle/working/EdgeLab")
-KAGGLE_INPUT_ROOT = Path("/kaggle/input")
-NQ_CONTRACTS = ["NQ 03-26", "NQ 06-26", "NQ 09-25", "NQ 09-26", "NQ 12-25"]
-
-if not (REPO_DIR / ".git").exists():
-    subprocess.run(["git", "clone", "--filter=blob:none", "--no-checkout", REPO_URL, str(REPO_DIR)], check=True)
-    subprocess.run(["git", "sparse-checkout", "set", "--no-cone",
-                     "edgelab/**", "tools/**"], cwd=REPO_DIR, check=True)
-subprocess.run(["git", "fetch", "origin", EXPECTED_COMMIT, "--depth", "200"], cwd=REPO_DIR, check=True)
-subprocess.run(["git", "checkout", "-B", "nq_regime_manifest", EXPECTED_COMMIT], cwd=REPO_DIR, check=True)
-actual = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=REPO_DIR, text=True).strip()
-if actual != EXPECTED_COMMIT:
-    raise SystemExit("checked-out commit differs from EXPECTED_COMMIT")
-print("repo_commit=", actual, flush=True)
-
-sys.path.insert(0, str(REPO_DIR))
-import pyarrow.parquet as pq  # noqa: E402
-from edgelab.data.contract_regime import build_contract_regime, canonical_sha256  # noqa: E402
-from edgelab.research.nq_contract_regime_manifest_build import build_nq_manifest_inputs  # noqa: E402
-
-sys.path.insert(0, str(REPO_DIR / "tools"))
-from bt2_absorption_param_sweep import session_dates_from_ns, file_sha256  # noqa: E402
+CONTRACTS = ["NQ 09-25", "NQ 12-25", "NQ 03-26", "NQ 06-26", "NQ 09-26"]
+EXPECTED_SCHEMA = ["ts_utc_ns", "price_ticks", "volume", "bid_ticks", "ask_ticks",
+                   "sequence", "instrument", "contract"]
+BATCH_ROWS = 1 << 20
 
 
-def find_parquet(label: str) -> Path:
-    filename = label.replace(" ", "_") + "_ticks.parquet"
-    hits = list(KAGGLE_INPUT_ROOT.rglob(filename))
-    if not hits:
-        raise FileNotFoundError(f"{filename} no encontrado bajo {KAGGLE_INPUT_ROOT}")
+def write_json(path: Path, value: Any) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(value, indent=2, sort_keys=True, ensure_ascii=False,
+                               allow_nan=False) + "\n", encoding="utf-8")
+
+
+def read_json(path: Path) -> dict[str, Any]:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def sha256_file(path: Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def checkout_code(commit: str) -> str:
+    if len(commit) != 40:
+        raise SystemExit("--expected-code-commit must be a full 40-char SHA")
+    if not (REPO_DIR / ".git").exists():
+        subprocess.run(["git", "clone", "--filter=blob:none", "--no-checkout",
+                        REPO_URL, str(REPO_DIR)], check=True)
+        subprocess.run(["git", "sparse-checkout", "set", "--no-cone",
+                        "edgelab/**", "specs/**"], cwd=REPO_DIR, check=True)
+    subprocess.run(["git", "fetch", "origin", commit, "--depth", "200"],
+                   cwd=REPO_DIR, check=True)
+    subprocess.run(["git", "checkout", "-B", "nq_regime_v2", commit],
+                   cwd=REPO_DIR, check=True)
+    actual = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=REPO_DIR,
+                                     text=True).strip()
+    dirty = subprocess.check_output(["git", "status", "--porcelain"], cwd=REPO_DIR,
+                                    text=True).strip()
+    if actual != commit or dirty:
+        raise SystemExit("code provenance gate failed")
+    sys.path.insert(0, str(REPO_DIR))
+    return actual
+
+
+def find_parquet(root: Path, label: str) -> Path:
+    hits = sorted(root.rglob(label.replace(" ", "_") + "_ticks.parquet"))
+    if len(hits) != 1:
+        raise RuntimeError(f"{label}: expected one parquet, found {len(hits)}")
     return hits[0]
 
 
-def daily_volume_for_contract(path: Path) -> dict:
-    """Lee SOLO ts_utc_ns y volume (columnar, no decodifica el resto del
-    schema), agrupa por trade_date via session_dates_from_ns (mismo mapeo
-    causal de sesion CME 17:00 CT ya validado en el proyecto)."""
-    table = pq.read_table(str(path), columns=["ts_utc_ns", "volume"])
-    ts_ns = table.column("ts_utc_ns").to_numpy(zero_copy_only=False)
-    volume = table.column("volume").to_numpy(zero_copy_only=False)
-    trade_dates = session_dates_from_ns(ts_ns)  # 'YYYYMMDD' string por tick
-
+def scan_contract(path: Path, expected_label: str):
     import numpy as np
-    by_date: dict[int, float] = {}
-    order = np.argsort(trade_dates, kind="stable")
-    sorted_dates = trade_dates[order]
-    sorted_vol = volume[order]
-    boundaries = np.flatnonzero(np.concatenate(([True], sorted_dates[1:] != sorted_dates[:-1])))
-    boundaries = np.append(boundaries, len(sorted_dates))
-    for i in range(len(boundaries) - 1):
-        d = int(sorted_dates[boundaries[i]])
-        by_date[d] = float(sorted_vol[boundaries[i]:boundaries[i + 1]].sum())
-    return by_date
+    import pyarrow.compute as pc
+    import pyarrow.parquet as pq
+    from edgelab.kaggle.inventory import footer_census
+    from edgelab.kaggle.seal import HOLDOUT_START_YMD
+    from edgelab.kaggle.sessions_cme import (is_maintenance_break,
+        minutes_since_session_open, session_bounds_utc_ns, trade_date_ymd)
+    from edgelab.research.nq_contract_regime_manifest_build import canonical_contract_from_columns
+
+    footer = footer_census(str(path))
+    if footer.get("column_names") != EXPECTED_SCHEMA:
+        raise RuntimeError(f"{path.name}: schema mismatch")
+    holdout_open_ns, _ = session_bounds_utc_ns(HOLDOUT_START_YMD)
+    if int(footer["ts_max_ns"]) >= holdout_open_ns:
+        raise RuntimeError(f"{path.name}: footer reaches holdout; no pages read")
+
+    sessions, rows = {}, 0
+    last_ts = last_seq = None
+    bad_ts = bad_seq = bad_volume = 0
+    raw_instruments, raw_contracts = set(), set()
+    pf = pq.ParquetFile(path)
+    cols = ["ts_utc_ns", "volume", "sequence", "instrument", "contract"]
+    for batch in pf.iter_batches(batch_size=BATCH_ROWS, columns=cols):
+        ts = np.asarray(batch.column(0), dtype=np.int64)
+        vol = np.asarray(batch.column(1), dtype=np.int64)
+        seq = np.asarray(batch.column(2), dtype=np.int64)
+        if not len(ts):
+            continue
+        rows += len(ts)
+        instruments = {str(x) for x in pc.unique(batch.column(3)).to_pylist()}
+        contracts = {str(x) for x in pc.unique(batch.column(4)).to_pylist()}
+        raw_instruments |= instruments; raw_contracts |= contracts
+        for inst in instruments:
+            for con in contracts:
+                if canonical_contract_from_columns(inst, con) != expected_label:
+                    raise RuntimeError(f"{path.name}: internal identity mismatch")
+        dts = np.diff(ts if last_ts is None else np.concatenate(([last_ts], ts)))
+        dsq = np.diff(seq if last_seq is None else np.concatenate(([last_seq], seq)))
+        bad_ts += int((dts < 0).sum()); bad_seq += int((dsq <= 0).sum())
+        bad_volume += int((vol <= 0).sum())
+        last_ts, last_seq = int(ts[-1]), int(seq[-1])
+        days = trade_date_ymd(ts)
+        maint = is_maintenance_break(ts)
+        minutes = minutes_since_session_open(ts)
+        for day in np.unique(days):
+            m = days == day
+            rec = sessions.setdefault(int(day), {"volume": 0.0,
+                "volume_in_maintenance": 0.0, "tick_count": 0,
+                "maintenance_tick_count": 0, "first_ts_ns": None,
+                "last_ts_ns": None, "active_minutes": set()})
+            rec["volume"] += float(vol[m & ~maint].sum())
+            rec["volume_in_maintenance"] += float(vol[m & maint].sum())
+            rec["tick_count"] += int(m.sum())
+            rec["maintenance_tick_count"] += int((m & maint).sum())
+            tt = ts[m]; lo, hi = int(tt.min()), int(tt.max())
+            rec["first_ts_ns"] = lo if rec["first_ts_ns"] is None else min(lo, rec["first_ts_ns"])
+            rec["last_ts_ns"] = hi if rec["last_ts_ns"] is None else max(hi, rec["last_ts_ns"])
+            rec["active_minutes"].update(int(x) for x in np.unique(minutes[m & ~maint]))
+    if rows != int(footer["rows"]) or bad_ts or bad_seq or bad_volume:
+        raise RuntimeError(f"{path.name}: structural gate failed rows={rows}, "
+                           f"bad_ts={bad_ts}, bad_seq={bad_seq}, bad_volume={bad_volume}")
+    for rec in sessions.values():
+        rec["active_minutes"] = len(rec["active_minutes"])
+    source = {"file": path.name, "bytes": path.stat().st_size, "rows": rows,
+              "row_groups": int(footer["row_groups"]), "schema": EXPECTED_SCHEMA,
+              "ts_min_ns": int(footer["ts_min_ns"]), "ts_max_ns": int(footer["ts_max_ns"]),
+              "sha256": sha256_file(path),
+              "raw_instrument_values": sorted(raw_instruments),
+              "raw_contract_values": sorted(raw_contracts), "identity_verified": True}
+    return source, sessions
+
+
+def scan_all(input_root: Path, code_commit: str):
+    from edgelab.research.nq_contract_regime_manifest_build import OBSERVATIONS_SCHEMA
+    sources, sessions, hashes = {}, {}, {}
+    for label in CONTRACTS:
+        path = find_parquet(input_root, label)
+        print(f"[*] {label}: {path}", flush=True)
+        source, by_day = scan_contract(path, label)
+        sources[label] = source; hashes[label] = source["sha256"]
+        sessions[label] = {str(k): v for k, v in sorted(by_day.items())}
+    return {"schema_version": OBSERVATIONS_SCHEMA,
+            "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+            "source_identity": {"root": "NQ",
+                "dataset": "nicolasbuttaro/edgelab-ticks-nq-preholdout",
+                "contract_parquet_sha256": hashes, "repo_commit": code_commit},
+            "contracts": sources, "sessions": sessions,
+            "outcomes_accessed": False, "holdout_accessed": False}
+
+
+def build_candidate(observations_path: Path, evidence_path: Path, out: Path):
+    from edgelab.data.contract_regime import build_contract_regime, validate_contract_regime
+    from edgelab.research.nq_contract_regime_manifest_build import (
+        OBSERVATIONS_SCHEMA, prepare_nq_manifest_inputs)
+    observed, evidence = read_json(observations_path), read_json(evidence_path)
+    if observed.get("schema_version") != OBSERVATIONS_SCHEMA:
+        raise RuntimeError("wrong observations schema")
+    prepared = prepare_nq_manifest_inputs(
+        per_contract_observations=observed["sessions"],
+        completeness_evidence=evidence, source_identity=observed["source_identity"])
+    manifest = build_contract_regime(**prepared["regime_inputs"])
+    validate_contract_regime(manifest)
+    if any(date(int(str(d)[:4]), int(str(d)[4:6]), int(str(d)[6:])).weekday() >= 5
+           for d in manifest["calendar_trade_dates"]):
+        raise RuntimeError("weekend leaked into manifest")
+    write_json(out / "nq_contract_regime_diagnostics_v2.json", prepared)
+    certified = prepared["ready_for_certified_manifest"] and evidence.get("approved") is True
+    name = "nq_contract_regime_manifest_v1.json" if certified else "nq_contract_regime_candidate_v2.json"
+    write_json(out / name, manifest)
+    return {"status": "PASS_CERTIFIED" if certified else "ABSTAIN_COMPLETENESS_EVIDENCE_REQUIRED",
+            "manifest_file": name, "manifest_sha256": manifest["manifest_sha256"],
+            "roll_schedule_sha256": manifest["manifest_sha256"] if certified else None}
 
 
 def main() -> int:
-    per_contract_volume = {}
-    contract_hashes = {}
-    for label in NQ_CONTRACTS:
-        path = find_parquet(label)
-        print(f"[*] {label}: {path.name}", flush=True)
-        contract_hashes[label] = file_sha256(path)
-        by_date = daily_volume_for_contract(path)
-        per_contract_volume[label] = by_date
-        print(f"    n_trade_dates={len(by_date)} vol_total={sum(by_date.values()):,.0f}", flush=True)
-
-    source_identity = {
-        "root": "NQ", "dataset": "nicolasbuttaro/edgelab-ticks-nq-preholdout",
-        "contract_parquet_sha256": contract_hashes, "repo_commit": EXPECTED_COMMIT,
-    }
-    inputs = build_nq_manifest_inputs(per_contract_volume, source_identity)
-    manifest = build_contract_regime(**inputs)
-
-    out_dir = Path("/kaggle/working/nq_contract_regime_manifest")
-    out_dir.mkdir(parents=True, exist_ok=True)
-    manifest_path = out_dir / "nq_contract_regime_manifest_v1.json"
-    manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-
-    daily_table_path = out_dir / "nq_daily_volume_table.json"
-    daily_table_path.write_text(
-        json.dumps(per_contract_volume, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-
-    crossovers = [row for row in manifest["daily_assignments"] if row.get("decision") == "ROLL_FORWARD"]
-    print(f"escrito: {manifest_path}")
-    print(f"escrito: {daily_table_path}")
-    print(f"manifest_sha256={manifest['manifest_sha256']}")
-    print(f"n_intervals={len(manifest['intervals'])} n_crossovers={len(crossovers)}")
-    for c in crossovers:
-        print(f"  ROLL_FORWARD {c['trade_date']}: -> {c['active_contract']} "
-              f"(leader_over_current={c['leader_over_current']})")
-    return 0
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument("--mode", choices=("scan", "build", "scan-and-build"), required=True)
+    p.add_argument("--expected-code-commit", required=True)
+    p.add_argument("--input-root", type=Path, default=Path("/kaggle/input"))
+    p.add_argument("--output-dir", type=Path,
+                   default=Path("/kaggle/working/nq_contract_regime_manifest_v2"))
+    p.add_argument("--observations", type=Path); p.add_argument("--evidence", type=Path)
+    args = p.parse_args(); commit = checkout_code(args.expected_code_commit)
+    out = args.output_dir; out.mkdir(parents=True, exist_ok=True)
+    observations = args.observations
+    if args.mode in {"scan", "scan-and-build"}:
+        observed = scan_all(args.input_root, commit)
+        observations = out / "nq_contract_session_observations_v2.json"
+        write_json(observations, observed)
+        from edgelab.research.nq_contract_regime_manifest_build import build_completeness_evidence_template
+        write_json(out / "nq_complete_session_evidence_template_v1.json",
+                   build_completeness_evidence_template(observed["sessions"], observed["source_identity"]))
+    if args.mode in {"build", "scan-and-build"} and observations and args.evidence:
+        result = build_candidate(observations, args.evidence, out)
+    else:
+        result = {"status": "ABSTAIN_COMPLETENESS_EVIDENCE_REQUIRED",
+                  "roll_schedule_sha256": None}
+    status = {**result, "runner_version": "nq_contract_regime_manifest_runner_v2",
+              "code_commit": commit, "runner_sha256": sha256_file(Path(__file__)),
+              "heavy_scan_executed": args.mode in {"scan", "scan-and-build"},
+              "outcomes_accessed": False, "holdout_accessed": False,
+              "price_adjustment": "NONE_ACTUAL_TRADED_PRICES",
+              "state_boundary": "RESET_AT_CONTRACT_ROLL",
+              "superseded_artifact_commit": "c3d575fbdfc989952aace8572630a8c6ce046061",
+              "superseded_artifact_status": "PROVISIONAL_INVALID_CALENDAR_DO_NOT_USE_FOR_EF0"}
+    write_json(out / "contract_regime_status.json", status)
+    hashes = {f.name: sha256_file(f) for f in out.iterdir()
+              if f.is_file() and f.name != "sha256_manifest.json"}
+    write_json(out / "sha256_manifest.json", hashes)
+    print(json.dumps(status, indent=2), flush=True)
+    return 0 if status["status"] == "PASS_CERTIFIED" else 3
 
 
 if __name__ == "__main__":
