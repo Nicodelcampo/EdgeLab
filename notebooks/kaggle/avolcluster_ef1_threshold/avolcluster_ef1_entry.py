@@ -29,7 +29,7 @@ import zipfile
 from pathlib import Path
 
 REPO_URL = "https://github.com/Nicodelcampo/EdgeLab.git"
-EXPECTED_COMMIT = "PIN_PENDIENTE"
+EXPECTED_COMMIT = "3a2b2abbe5e22a84bc0a1cc29863f301b47ac8ee"
 REPO_DIR = Path("/kaggle/working/EdgeLab")
 KAGGLE_INPUT = Path("/kaggle/input")
 OPERABLE_START, OPERABLE_END_EXCLUSIVE = 20260317, 20260616
