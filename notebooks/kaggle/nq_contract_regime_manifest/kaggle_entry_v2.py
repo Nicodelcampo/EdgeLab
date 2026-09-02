@@ -254,7 +254,7 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    EXPECTED_CODE_COMMIT = "ab89de5ff176bab5abb38cc17c5e5f6db568f763"
+    EXPECTED_CODE_COMMIT = "90cb98a6a8829fafd6c48d8a63b358fba8200f14"
     OUTPUT_DIR = "/kaggle/working/nq_contract_regime_manifest_v2"
     sys.argv = [
         "nq_contract_regime_manifest_runner.py",
