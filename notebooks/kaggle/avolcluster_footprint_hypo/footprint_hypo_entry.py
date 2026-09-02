@@ -35,7 +35,7 @@ import sys
 from pathlib import Path
 
 REPO_URL = "https://github.com/Nicodelcampo/EdgeLab.git"
-EXPECTED_COMMIT = "PIN_PENDIENTE"
+EXPECTED_COMMIT = "2f14636b89fbc8b9703049dd1f050bd87aa64481"
 REPO_DIR = Path("/kaggle/working/EdgeLab")
 KAGGLE_INPUT = Path("/kaggle/input")
 DIAG_CSV = "data/nt8_oracles/avolcluster_v05_NQ0626_120t_DIAG_20260901.csv"
