@@ -1935,3 +1935,39 @@ commiteado en su último estado (max_age_bars=50, últimas N sesiones) como refe
 para un intento futuro, pero **nunca corrió hasta el final** — no interpretar su
 presencia en el repo como que produjo un resultado.
 
+## P-63 · Merge de `research/avolcluster-nq-parity-oracle-20260901` a `foundation` — el resumen del auditor no mencionaba el cambio de kernel
+
+**Asentada 2026-09-01.** El auditor reportó infraestructura de embudo EF0/EF1 para
+aVolClusterPOI (4 commits: `4b0e5b3`, `58496ad`, `142142b`, `d3d912c`) viviendo en
+`origin/research/avolcluster-nq-parity-oracle-20260901`, no en `foundation` — violación
+de la regla de una sola rama (mergear el mismo día). Nico pidió mergear.
+
+Verificado antes de mergear: los 4 commits existen, el contenido coincide con lo
+relatado (barreras duras `FORBIDDEN_FIELDS`, descomposición 658=414+244), y los 5 tests
+del núcleo EF0 corren y pasan de verdad (no solo "se reportó que pasaron").
+
+**Lo que el resumen NO mencionaba**: la rama también trae un refactor real de
+`edgelab/bridge/indicators/avolclusterpoi.py::detect_block()` — nuevos estados de
+decisión (`ABSTAIN_FEW_CELLS`, `ABSTAIN_NO_HISTORY`, `ABSTAIN_NO_CLUSTER`,
+`ABSTAIN_BELOW_THRESHOLD`, `CREATE`), nuevos campos en el dict de retorno (`median`,
+`hot_threshold`, `history_samples`, `decision`, `clusters`, `selected_cluster`), y un
+caso nuevo (`len(cells)<3`) que antes no estaba especial-casado. Las 4 claves
+históricas (`best_score`, `threshold`, `zones`, `abstain`) se preservan — confirmado
+corriendo los 60 tests de aVolClusterPOI de este repo (incluye los que yo mismo escribí
+esta sesión: paridad 60t, bar-type, plateau/placebo, event-store extract) — todos
+pasan después del merge.
+
+Merge limpio (sin conflictos, `f876aa2`), pusheado. Suite completa post-merge:
+1.224 passed, 5 failed, 1 error — verificado uno por uno que **ninguna de esas 6 fallas
+la causó el merge**: 3 son las mismas preexistentes del triaje de PR #15
+(`test_store_v2`, 2x `test_ulp_sweep`); `test_current_md` falla porque
+`docs/CURRENT.md` nunca declaró `**Fecha:**` (archivo no tocado por este merge);
+`test_verify_tree` es un `PermissionError` de Windows sobre un temp file (ambiental);
+`test_prerange_sweep_formal::test_placebos_and_gates` es un bug preexistente de fixture
+(`null_out` nunca se declaró `@pytest.fixture`, archivo no tocado por este merge).
+
+**No se toma acción de remediación sobre el cambio de kernel** — parece backward-compatible
+por los tests, pero se registra para que quede constancia de que un merge trajo más de lo
+que su propio resumen relataba, y de que verificar "el código compila y los tests que se
+mencionaron pasan" no es lo mismo que verificar "esto es todo lo que trae el commit".
+
