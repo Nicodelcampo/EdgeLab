@@ -2007,3 +2007,12 @@ Pusheado (`1797bff`).
 se generó. Hasta entonces, correr EF0 sobre el trace actual sigue siendo válido como estudio
 provisional del archivo, pero no se puede presentar como el período continuo operable real.
 
+**Decisión de Nico (2026-09-01, verificación independiente confirmada)**: no auditar la
+rama divergente ahora — no bloquea el camino científico actual (los artefactos necesarios
+ya están en `foundation`). Queda **`FROZEN_READ_ONLY` / `DO_NOT_MERGE` / `DO_NOT_DELETE`**.
+Cuando se audite algún día: inventario de paths + merge-base + equivalencia de parches,
+nunca un merge completo; `ce31031` en particular no se cherry-pickea a ciegas porque toca
+la reconciliación histórica de PENDIENTE.md. Camino crítico ahora: cadena NQ multicontrato
+→ volumen diario causal → `contract_regime_manifest_v1` → recorte del período operable →
+trace estructural → EF0 → preguntas → plan EF1.
+
