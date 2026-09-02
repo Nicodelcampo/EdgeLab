@@ -51,12 +51,7 @@ def median_upper(values):
 
 
 def session_relative_bucket(block_end_ns, session_begin_ns, bucket_minutes=30):
-    """Mirror of C# GetTimeBucket(Time[0]) for SessionRelative mode.
-
-    NT8 anchors the bucket at ``barCloseTime.AddSeconds(-1)``. Without the
-    subtraction, blocks closing exactly at :30/:00 are assigned to the next
-    bucket in Python and parity is impossible.
-    """
+    """Mirror of C# GetTimeBucket(Time[0]) for SessionRelative mode."""
     span = int(bucket_minutes) * 60 * NS
     anchor_ns = int(block_end_ns) - NS
     return int((anchor_ns - int(session_begin_ns)) // span)
@@ -79,12 +74,10 @@ def cluster_hot_ticks(cells, median_multiplier, max_gap_ticks, min_cluster_ticks
             current.append(tick)
         else:
             if len(current) >= int(min_cluster_ticks):
-                score = sum(cells[t] for t in current)
-                clusters.append((list(current), score))
+                clusters.append((list(current), sum(cells[t] for t in current)))
             current = [tick]
     if len(current) >= int(min_cluster_ticks):
-        score = sum(cells[t] for t in current)
-        clusters.append((list(current), score))
+        clusters.append((list(current), sum(cells[t] for t in current)))
     return clusters
 
 
@@ -99,51 +92,77 @@ def classify_kind(close_tick, lower_tick, upper_tick):
     return "AT_PRICE", 0, 0
 
 
+def _cluster_records(clusters):
+    return [dict(lower_tick=int(ticks[0]), upper_tick=int(ticks[-1]),
+                 score=float(score), count=len(ticks), ticks=[int(t) for t in ticks])
+            for ticks, score in clusters]
+
+
 def detect_block(cells, history_scores, params=None, close_tick=None):
+    """Detect one block and expose a lossless, target-free diagnostic record.
+
+    Historical public keys (best_score, threshold, zones, abstain) are
+    preserved. Added fields mirror the optional NT8 block diagnostic and make
+    CREATE and every ABSTAIN directly replayable.
+    """
     p = {**RESEARCH_DEFAULTS, **(params or {})}
-    clusters = cluster_hot_ticks(
-        cells, p["median_multiplier"], p["max_gap_ticks"], p["min_cluster_ticks"]
-    )
-    best = max((score for _ticks, score in clusters), default=0.0)
     hist = sorted(history_scores or [])
-    if len(hist) < int(p["min_samples_per_bucket"]):
-        return dict(best_score=best, threshold=None, zones=[], abstain="warmup")
-    thresh = empirical_quantile(hist, p["detection_percentile"] / 100.0)
-    passing = []
-    if thresh is not None and thresh > 0:
-        passing = [(ticks, score) for ticks, score in clusters if score >= thresh]
+    hist_count = len(hist)
+    enough_history = hist_count >= int(p["min_samples_per_bucket"])
+
+    if len(cells) < 3:
+        return dict(best_score=0.0, threshold=None, zones=[],
+                    abstain="warmup" if not enough_history else None,
+                    median=None, hot_threshold=None, history_samples=hist_count,
+                    decision="ABSTAIN_FEW_CELLS", clusters=[], selected_cluster=None)
+
+    median = median_upper(cells.values())
+    hot_threshold = median * float(p["median_multiplier"])
+    clusters = cluster_hot_ticks(cells, p["median_multiplier"], p["max_gap_ticks"],
+                                 p["min_cluster_ticks"])
+    best = max((score for _ticks, score in clusters), default=0.0)
+    threshold = (empirical_quantile(hist, p["detection_percentile"] / 100.0)
+                 if enough_history else None)
+    base = dict(best_score=best, threshold=threshold, zones=[],
+                abstain="warmup" if not enough_history else None,
+                median=median, hot_threshold=hot_threshold,
+                history_samples=hist_count, clusters=_cluster_records(clusters),
+                selected_cluster=None)
+
+    if threshold is None:
+        base["decision"] = "ABSTAIN_NO_HISTORY"
+        return base
+    if not clusters:
+        base["decision"] = "ABSTAIN_NO_CLUSTER"
+        return base
+    passing = [(ticks, score) for ticks, score in clusters
+               if threshold > 0 and score >= threshold]
     if not passing:
-        return dict(best_score=best, threshold=thresh, zones=[], abstain=None)
+        base["decision"] = "ABSTAIN_BELOW_THRESHOLD"
+        return base
+
     ticks, score = max(passing, key=lambda item: item[1])
     kind, direction, distance = classify_kind(close_tick, ticks[0], ticks[-1])
-    zone = dict(
-        lower_tick=ticks[0],
-        upper_tick=ticks[-1],
-        score=score,
-        threshold=thresh,
-        kind=kind,
-        event_type="AT_PRICE_CREATED" if kind == "AT_PRICE" else "ZONE_CREATED",
-    )
+    zone = dict(lower_tick=ticks[0], upper_tick=ticks[-1], score=score,
+                threshold=threshold, kind=kind,
+                event_type="AT_PRICE_CREATED" if kind == "AT_PRICE" else "ZONE_CREATED")
     if direction is not None:
         zone["direction"] = direction
         zone["distance_ticks"] = distance
-    return dict(best_score=best, threshold=thresh, zones=[zone], abstain=None)
+    base["zones"] = [zone]
+    base["abstain"] = None
+    base["decision"] = "CREATE"
+    base["selected_cluster"] = dict(lower_tick=int(ticks[0]), upper_tick=int(ticks[-1]),
+                                    score=float(score), count=len(ticks),
+                                    ticks=[int(t) for t in ticks])
+    return base
 
 
 class SessionProfile:
-    """Prior complete sessions only; FIFO is by SESSION, matching the C#.
-
-    ``history[bucket]`` stores one list per complete session. A 30-minute
-    bucket normally receives three scores (three disjoint 10-bar blocks) per
-    session. The previous Python implementation flattened scores into a deque
-    capped at ``lookback``, retaining only ~6-7 sessions when lookback=20; it
-    also discarded the first complete session. Both behaviors contradicted
-    ``nt8/aVolClusterPOI.cs::CommitSession``.
-    """
+    """Prior complete sessions only; FIFO is by SESSION, matching the C#."""
 
     def __init__(self, lookback_sessions=20):
         self.lookback = int(lookback_sessions)
-        # bucket -> deque[(global_session_index, list[score])]
         self.history = defaultdict(deque)
         self.pending = defaultdict(list)
         self.session_index = 0
@@ -152,8 +171,6 @@ class SessionProfile:
         current = self.session_index
         for bucket, scores in self.pending.items():
             self.history[int(bucket)].append((current, list(map(float, scores))))
-        # C# prunes EVERY bucket by global Session index, even when that bucket
-        # was absent in the session just committed.
         min_session = current - self.lookback + 1
         for q in self.history.values():
             while q and q[0][0] < min_session:
@@ -170,3 +187,83 @@ class SessionProfile:
 
     def history_session_count(self, bucket):
         return len(self.history.get(int(bucket), ()))
+
+
+def run(ticks, bars, footprints, params=None, debug_trace=False):
+    """Uniform entrypoint; debug_trace exports every complete block."""
+    from edgelab.bridge.sessions import session_begin_ns, session_end_ns
+
+    p = {**RESEARCH_DEFAULTS, **(params or {})}
+    window = int(p["window_bars"])
+    tick_size = float(ticks.tick_size)
+    n_bars = len(bars.close_t)
+    if n_bars == 0:
+        out = dict(indicator=NAME, params=p, zones=[])
+        if debug_trace:
+            out["block_trace"] = []
+        return out
+
+    session_of_bar = [session_end_ns(int(bars.end_ns[b])) for b in range(n_bars)]
+    sessions_in_order, seen = [], set()
+    for session_end in session_of_bar:
+        if session_end not in seen:
+            seen.add(session_end)
+            sessions_in_order.append(session_end)
+
+    profile = SessionProfile(lookback_sessions=int(p["lookback_sessions"]))
+    all_zones, block_trace = [], []
+    zone_seq = 0
+    for sess_end in sessions_in_order:
+        bar_indices = [b for b in range(n_bars) if session_of_bar[b] == sess_end]
+        if not bar_indices:
+            continue
+        sess_begin = session_begin_ns(int(bars.end_ns[bar_indices[0]]))
+        n_blocks = len(bar_indices) // window
+        for block_i in range(n_blocks):
+            block_bars = bar_indices[block_i * window:(block_i + 1) * window]
+            cells = {}
+            for b in block_bars:
+                for price_tick, volume in footprints.total[int(b)].items():
+                    tick = int(price_tick)
+                    cells[tick] = cells.get(tick, 0.0) + float(volume)
+            end_bar = block_bars[-1]
+            bucket = session_relative_bucket(int(bars.end_ns[end_bar]), sess_begin,
+                                             int(p["time_bucket_minutes"]))
+            history_scores = profile.history_scores(bucket)
+            result = detect_block(cells, history_scores, params=p,
+                                  close_tick=int(bars.close_t[end_bar]))
+            profile.add_block(bucket, result["best_score"])
+            block_zone_ids = []
+            for zone in result.get("zones", []):
+                if zone.get("kind") != "OFF_PRICE":
+                    continue
+                zone_seq += 1
+                lo_t, hi_t = int(zone["lower_tick"]), int(zone["upper_tick"])
+                zid = str(zone_seq)
+                block_zone_ids.append(zid)
+                all_zones.append(dict(id=zid, indicator=NAME,
+                                      top=(hi_t + 0.5) * tick_size,
+                                      bottom=(lo_t - 0.5) * tick_size,
+                                      created_ms=int(bars.end_ns[end_bar]) // 1_000_000,
+                                      created_bar=int(end_bar), ended_ms=None,
+                                      state="ACTIVE", kind="avol_cluster_off_price",
+                                      touches=0, end_reason=None, timeline=[]))
+            if debug_trace:
+                block_trace.append(dict(
+                    session_end_ns=int(sess_end), session_index=int(profile.session_index),
+                    block_index=int(block_i), end_bar=int(end_bar),
+                    block_end_ns=int(bars.end_ns[end_bar]), bucket=int(bucket),
+                    n_cells=len(cells), cells={int(k): float(v) for k, v in cells.items()},
+                    median=result.get("median"), hot_threshold=result.get("hot_threshold"),
+                    best_score=result.get("best_score"), threshold=result.get("threshold"),
+                    history_samples=result.get("history_samples"),
+                    n_history_scores=len(history_scores), decision=result.get("decision"),
+                    clusters=result.get("clusters", []),
+                    selected_cluster=result.get("selected_cluster"),
+                    abstain=result.get("abstain"), close_tick=int(bars.close_t[end_bar]),
+                    zone_ids=block_zone_ids))
+        profile.commit()
+    out = dict(indicator=NAME, params=p, zones=all_zones)
+    if debug_trace:
+        out["block_trace"] = block_trace
+    return out

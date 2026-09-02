@@ -54,6 +54,7 @@ KERNELS = {
     "gaps2": ("edgelab.bridge.indicators.gaps2", "nt8/Gaps2.cs", False),
     "voltickspoc2": ("edgelab.bridge.indicators.voltickspoc2", "nt8/VolTicksPOC2.cs", True),
     "aacloseopendiffs": ("edgelab.bridge.indicators.aacloseopendiffs", "nt8/AACloseOpenDiffs.cs", False),
+    "avolclusterpoi": ("edgelab.bridge.indicators.avolclusterpoi", "nt8/aVolClusterPOI.cs", True),
 }
 
 

@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "avolclusterpoi_ef1_plan_v1.schema.json",
+  "title": "aVolClusterPOI EF1 target-free plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "status", "parent_ef0_manifest_sha256", "source_config_id", "source_trace_sha256s", "selected_question_ids", "configurations", "metrics", "stopping_rules", "expected_compute", "authorization", "auto_execute", "outcomes_accessed", "holdout_accessed"],
+  "properties": {
+    "schema_version": {"const": "avolclusterpoi_ef1_plan_v1"},
+    "status": {"enum": ["DRAFT_NOT_AUTHORIZED", "REVIEWED_PENDING_AUTHORIZATION", "APPROVED"]},
+    "parent_ef0_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_config_id": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "source_trace_sha256s": {
+      "type": "object", "additionalProperties": false,
+      "required": ["all_blocks.json", "zones.json", "summary.json"],
+      "properties": {
+        "all_blocks.json": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "zones.json": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "summary.json": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "selected_question_ids": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": {"enum": ["Q-HISTORY-STATE", "Q-THRESHOLD-PRESSURE", "Q-GEOMETRY", "Q-ATPRICE-OFFPRICE", "Q-SESSION-STABILITY"]}
+    },
+    "configurations": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["config_id", "role", "rationale", "params"],
+        "properties": {
+          "config_id": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "role": {"enum": ["BASELINE", "ONE_AXIS_PERTURBATION", "JUSTIFIED_INTERACTION"]},
+          "rationale": {"type": "string", "minLength": 1},
+          "params": {
+            "type": "object", "additionalProperties": false,
+            "required": ["window_bars", "median_multiplier", "max_gap_ticks", "min_cluster_ticks", "time_bucket_minutes", "lookback_sessions", "detection_percentile", "min_samples_per_bucket", "max_age_bars", "one_cluster_per_block"],
+            "properties": {
+              "window_bars": {"type": "integer", "minimum": 1},
+              "median_multiplier": {"type": "number", "exclusiveMinimum": 0},
+              "max_gap_ticks": {"type": "integer", "minimum": 0},
+              "min_cluster_ticks": {"type": "integer", "minimum": 1},
+              "time_bucket_minutes": {"type": "integer", "minimum": 1},
+              "lookback_sessions": {"type": "integer", "minimum": 1},
+              "detection_percentile": {"type": "number", "exclusiveMinimum": 0, "maximum": 100},
+              "min_samples_per_bucket": {"type": "integer", "minimum": 1},
+              "max_age_bars": {"type": "integer", "minimum": 0},
+              "one_cluster_per_block": {"const": true}
+            }
+          }
+        }
+      }
+    },
+    "metrics": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": {"enum": ["decision_rates_per_100_blocks", "history_readiness_by_bucket", "score_over_threshold_distribution", "selected_width_distribution", "off_price_distance_distribution", "at_price_off_price_decomposition", "session_concentration", "neighbor_event_fingerprint_overlap"]}
+    },
+    "stopping_rules": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "expected_compute": {
+      "type": "object", "additionalProperties": false,
+      "required": ["estimated_indicator_runs", "heavy_cpu", "checkpoint_policy"],
+      "properties": {
+        "estimated_indicator_runs": {"type": "integer", "minimum": 1},
+        "heavy_cpu": {"type": "boolean"},
+        "checkpoint_policy": {"type": "string", "minLength": 1}
+      }
+    },
+    "authorization": {
+      "type": "object", "additionalProperties": false,
+      "required": ["required", "token"],
+      "properties": {"required": {"const": true}, "token": {"type": ["string", "null"]}}
+    },
+    "auto_execute": {"const": false},
+    "outcomes_accessed": {"const": false},
+    "holdout_accessed": {"const": false}
+  }
+}
