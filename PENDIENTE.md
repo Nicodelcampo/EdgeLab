@@ -1890,3 +1890,35 @@ sesión. **No se toma acción de remediación** — se registra para que quien l
 `CME_Market_Data_Policy_Cloud_Kaggle.html` no asuma que la prohibición sigue vigente sin
 excepción; la excepción (V1) está aprobada y en uso activo.
 
+## P-62 · Los scripts SL/TP/BE del 2026-09-01 no usaron la cadena de front-month real
+
+**Asentada 2026-09-01.** Los dos scripts de Kaggle de P-60
+(`sltp_be_experimental_gc_nq_runner.py` y `be_trigger_sweep_gc_nq_runner.py`) cargan UN
+solo contrato (`GC_08-26_ticks.parquet`, `NQ_09-26_ticks.parquet`) directo del dataset
+preholdout, sin pasar por `tools/bt2_absorption_frontmonth_chain.py` /
+`docs/research/CADENA_FRONTMONTH_GC.json` — la construcción que el proyecto ya tiene para
+identificar qué sesiones de qué contrato tienen volumen real (regla: mínimo 5.000 de
+volumen/sesión, roll confirmado por 2 sesiones donde el sucesor supera al vigente).
+
+Se detectó al correr el barrido de G (break-even) recortado a "las primeras 2 sesiones":
+`GC_08-26` en sus dos primeras sesiones (2026-02-06/09, muy lejos de su vencimiento
+ago-2026) tiene apenas 227 ticks totales — 0 señales. El fix inmediato fue tomar las
+**últimas** 2 sesiones del archivo en vez de las primeras (más cerca del corte
+pre-holdout, con más probabilidad de volumen real), pero eso es un parche puntual, no
+lo mismo que filtrar por la cadena de front-month real.
+
+Para la corrida de cinta completa (P-60, `sltp_be_experimental_gc_nq_2026-09-01_KAGGLE.json`,
+1.422 señales GC / 3.485 NQ) el efecto es menor pero no nulo: `BigTrap2Absorption`
+necesita `min_history_buckets=200` de historial de volumen para generar señales, así que
+los tramos sin liquidez casi no aportan señales — pero igual se computó absorción/warmup
+sobre ticks pre-front-month sin filtrar, mezclando algo de ruido en el historial usado por
+el indicador.
+
+Ambos scripts están rotulados `EXPERIMENTAL_NON_CONFIRMATORY` — no contaminan ningún
+resultado confirmatorio del proyecto (esos ya usan la cadena de front-month, ej. la
+población de 152 sesiones de aVolClusterPOI). **No se toma acción de remediación sobre
+los resultados ya obtenidos** — se registra como limitación conocida de esta mirada
+rápida. Si se quisiera repetir con la población correcta, el paso sería filtrar los
+ticks de cada contrato por las sesiones que `CADENA_FRONTMONTH_GC.json` le asigna, en
+vez de usar el archivo de un solo contrato completo.
+
