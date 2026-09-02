@@ -2119,3 +2119,35 @@ completas, sin podar.
 Aprobar la evidencia de completitud está reservado a Nico por diseño del contrato v2. **No
 se aprueba acá.** EF0 sigue bloqueado: sin manifiesto certificado no hay período operable
 con el que recortar/reconstruir el trace.
+
+## P-67 · Anomalía de mantenimiento de NQ 09-26: dos hipótesis descartadas, plantilla de sesión como causa dominante
+
+**Asentada 2026-09-02.** Ejecutado en Kaggle el diagnóstico autorizado
+(`nq0926-maintenance-diagnostic-20260902`, code_commit `e7ec0e4`, sólo NQ 09-26,
+6.235.464 filas, target-free). Artefactos y detalle en
+`docs/research/nq0926_maintenance_diagnostic_20260902/`.
+
+**Medido**: 363.601 ticks (5,83 %) y 398.066 de volumen en **exactamente 16:00:00–16:59:59
+CT**, en 9 días hábiles consecutivos (17, 18, 22, 23, 24, 25, 26, 29 y 30-jun-2026), con
+cobertura densa de los 60 minutos. Un solo `source_file`, `source_row` == `sequence`
+(confirma P-28), rangos contiguos sin huecos.
+
+**Descartadas por evidencia:**
+- `UTC_LOCAL_FIELD_SEMANTICS`: `ts_local_ns - ts_utc_ns = 0` en el 100 % de las filas.
+- `RECUT_ROW_SELECTION`: el archivo **local pre-recorte** muestra el mismo fenómeno
+  (~6,8 % en hora 16 CT, 17–30 jun). No lo introdujo el re-corte del holdout.
+
+**Causa dominante (no confirmada directamente)**: `NQ 09-26.Last.txt` exportado de NT8 con
+**plantilla de sesión distinta** a los otros cuatro. Comparando cada contrato durante su
+propio período líder, NQ 09-25 / 12-25 / 03-26 / 06-26 tienen **exactamente 0 ticks en la
+hora 16 CT**, mientras NQ 09-26 tiene más actividad a las 16 que a las 15 CT. Es
+diferencia entre archivos, no de mercado. Confirmarlo exige inspeccionar la configuración
+de exportación NT8 / el `.Last.txt` original — **no hecho**. `root_cause_status` sigue
+`UNRESOLVED` en el artefacto.
+
+**Consecuencia acotada**: el roll del 16-jun a NQ 09-26 **no está contaminado** (la anomalía
+empieza el 17-jun; la señal causal de ese roll usa el volumen del 15-jun). Pero el volumen
+diario de NQ 09-26 del 17 al 30-jun **no es comparable** con el de los otros contratos sin
+normalizar la ventana de sesión, y ese volumen alimenta el manifiesto de régimen en esas 9
+fechas. Queda como insumo para la decisión de completitud, que sigue reservada a Nico.
+
