@@ -2016,6 +2016,30 @@ la reconciliación histórica de PENDIENTE.md. Camino crítico ahora: cadena NQ 
 → volumen diario causal → `contract_regime_manifest_v1` → recorte del período operable →
 trace estructural → EF0 → preguntas → plan EF1.
 
+**Corrección 2026-09-01, noche — `c3d575f` invalidado, `PROVISIONAL_INVALID_CALENDAR_DO_NOT_USE_FOR_EF0`.**
+El auditor encontró (y yo verifiqué contra el JSON real, no contra su relato) que el
+manifiesto de `c3d575f` tenía tres defectos reales:
+- **28 fechas de calendario caen en sábado/domingo** (confirmado contando el
+  `calendar_trade_dates` completo: exactamente 28, ej. `20250803`, `20251214`, `20260627`).
+- El `SOURCE_INCOMPLETE` del 2025-12-15 que reporté como "cobertura muy limpia, 1 solo día"
+  en realidad nace de una `signal_trade_date=20251214` (domingo espurio) — no es un gap real
+  de datos, es un artefacto del bug de calendario.
+- `complete_session=True` se inferí­a con solo ver 1 tick del día, sin evidencia real de
+  sesión completa, y no distinguía cero explícito de fila ausente ni descontaba ticks de
+  mantenimiento (16:00–17:00 CT).
+
+Corrección publicada directo en `foundation` (sin desvío de rama esta vez): `089afb9`
+(constructor fail-closed: observación vs. evidencia de completitud como objetos separados,
+cuarentena de fines de semana, cero explícito solo con evidencia, mantenimiento fuerza
+sesión incompleta) + `dd8fbb8` (runner v2 por batches, valida schema/identidad/orden/hashes,
+preflight de holdout por footer, acta `docs/research/NQ_CONTRACT_REGIME_C3D575F_AUDIT_2026-09-01.md`).
+Verificado: 8 tests pasan de verdad, suite completa post-pull 1.239 passed, mismas 6 fallas
+preexistentes de siempre.
+
+Los 4 crossovers de `c3d575f` siguen siendo plausibles pero **no certificados**. La corrida
+pesada v2 sobre los 5 parquets reales (~119M ticks) **no se ejecutó** — sigue bajo STOP,
+pendiente de autorización explícita de Nico, igual que el manifiesto v1 original.
+
 ## P-65 · Auditoría de qué análisis previos mezclaron sesiones sin filtro de liquidez — parcial, no cerrada
 
 **Asentada 2026-09-01.** Nico preguntó si los resultados anteriores del proyecto venían con
