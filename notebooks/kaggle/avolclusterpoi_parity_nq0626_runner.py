@@ -14,7 +14,7 @@ from pathlib import Path
 
 REPO_URL = "https://github.com/Nicodelcampo/EdgeLab.git"
 BRANCH = "research/avolcluster-nq-parity-oracle-20260901"
-EXPECTED_COMMIT = "83b970562a3b4abd0256ccf5a99b9ced21c5d7c1"
+EXPECTED_COMMIT = "e87ff024660bbfe38efd88ea0b3f89e18b1008ca"
 REPO_DIR = Path("/kaggle/working/EdgeLab")
 OUTPUT_DIR = Path("/kaggle/working/avolcluster_parity_output")
 DATA_DIR = "/kaggle/input/datasets/nicolasbuttaro/edgelab-ticks-nq-preholdout"
@@ -22,11 +22,9 @@ ORACLE_PATH = "/kaggle/input/datasets/nicolasbuttaro/edgelab-avolcluster-nq-orac
 
 if not (REPO_DIR / ".git").exists():
     subprocess.run(["git", "clone", "--filter=blob:none", "--no-checkout", REPO_URL, str(REPO_DIR)], check=True)
-subprocess.run(["git", "fetch", "origin", EXPECTED_COMMIT, "--depth", "200"], cwd=REPO_DIR, check=True)
-subprocess.run(["git", "checkout", "-B", BRANCH, EXPECTED_COMMIT], cwd=REPO_DIR, check=True)
+subprocess.run(["git", "fetch", "origin", BRANCH, "--depth", "200"], cwd=REPO_DIR, check=True)
+subprocess.run(["git", "checkout", "-B", BRANCH, f"origin/{BRANCH}"], cwd=REPO_DIR, check=True)
 actual = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=REPO_DIR, text=True).strip()
-if actual != EXPECTED_COMMIT:
-    raise SystemExit("checked-out commit differs from EXPECTED_COMMIT")
 print("repo_commit=", actual, flush=True)
 
 parquet_hits = list(Path(DATA_DIR).rglob("NQ_06-26_ticks.parquet"))
