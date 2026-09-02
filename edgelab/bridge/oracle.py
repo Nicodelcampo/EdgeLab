@@ -88,7 +88,7 @@ def parse_nt8_log(path, chart_tz="UTC", tick_size=None, *, allow_quarantined=Fal
 
 
 def _detect_indicator(meta, header):
-    for name in ("Gaps2", "HFTZones2", "VolTicksPOC2", "aVolCellPOI2", "BigTrap2",
+    for name in ("Gaps2", "HFTZones2", "VolTicksPOC2", "aVolClusterPOI", "aVolCellPOI2", "BigTrap2",
                  "AACloseOpenDiffs"):
         if "indicator=" + name in meta:
             return name
@@ -98,6 +98,8 @@ def _detect_indicator(meta, header):
         return "HFTZones2"
     if "poc_tick" in header:
         return "VolTicksPOC2"
+    if "selected_lower_tick" in header or ("cluster" in meta.lower()):
+        return "aVolClusterPOI"
     if "bucket" in header and "lower_tick" in header:
         return "aVolCellPOI2"
     if "overlap_at_birth" in header:
@@ -202,6 +204,28 @@ def _parse_csv(body, meta, tz, tick_size):
                 z["state"] = _END_STATES[etype]
                 z["ended_ms"] = unix_ms
                 z["end_reason"] = col(parts, "reason") or None
+        elif indicator == "aVolClusterPOI":
+            zid = col(parts, "zone_id")
+            if not zid or zid == "0":
+                continue
+            unix_ms = _to_unix_ms(col(parts, "bar_close_time"), tz)
+            lo_t, hi_t = _f(col(parts, "lower_tick")), _f(col(parts, "upper_tick"))
+            top = (hi_t + 0.5) * tick_size if (hi_t is not None and tick_size) else hi_t
+            bottom = (lo_t - 0.5) * tick_size if (lo_t is not None and tick_size) else lo_t
+            if etype == "ZONE_CREATED":
+                z = zones.setdefault(zid, dict(
+                    id=zid, indicator=indicator, top=top, bottom=bottom,
+                    created_ms=unix_ms, ended_ms=None, state="ACTIVE",
+                    kind="avol_cluster_off_price", touches=0, end_reason=None))
+            elif etype in _END_STATES and zid in zones:
+                z = zones[zid]
+                z["state"] = _END_STATES[etype]
+                z["ended_ms"] = unix_ms
+                z["end_reason"] = col(parts, "reason") or None
+            elif etype == "ZONE_TOUCHED" and zid in zones:
+                t = _f(col(parts, "touch_count"))
+                if t is not None:
+                    zones[zid]["touches"] = int(t)
         elif indicator == "aVolCellPOI2":
             zid = col(parts, "zone_id")
             if not zid or zid == "0":

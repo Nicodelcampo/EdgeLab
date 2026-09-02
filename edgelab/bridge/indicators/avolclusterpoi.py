@@ -203,7 +203,10 @@ def run(ticks, bars, footprints, params=None, debug_trace=False):
             out["block_trace"] = []
         return out
 
-    session_of_bar = [session_end_ns(int(bars.end_ns[b])) for b in range(n_bars)]
+    if getattr(bars, "session_idx", None) is not None:
+        session_of_bar = list(bars.session_idx[:n_bars])
+    else:
+        session_of_bar = [session_end_ns(int(bars.end_ns[b])) for b in range(n_bars)]
     sessions_in_order, seen = [], set()
     for session_end in session_of_bar:
         if session_end not in seen:

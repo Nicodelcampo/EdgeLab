@@ -41,6 +41,7 @@ class BarSeries:
     kind: str                   # "time" | "tick"
     param: int                  # minutos (time) o ticks_por_barra (tick)
     tick_bar_idx: np.ndarray    # índice de barra de cada tick
+    session_idx: Optional[np.ndarray] = None
 
     def __len__(self):
         return len(self.end_ns)
@@ -187,7 +188,8 @@ def build_resolved_tick_bars(ticks: TickSeries, bar_profile_path: str | Path,
     o, h, lo, c, v, tbi = _ohlc(ticks, starts, ends)
     s_ns = ticks.ts_ns[starts].astype(np.int64)
     e_ns = ticks.ts_ns[ends - 1].astype(np.int64)
-    return BarSeries(s_ns, e_ns, o, h, lo, c, v, ticks.tick_size, "tick", int(ticks_per_bar), tbi)
+    sess_idx = df_bp["session_index"].values[:len(starts)].astype(np.int64) if "session_index" in df_bp.columns else None
+    return BarSeries(s_ns, e_ns, o, h, lo, c, v, ticks.tick_size, "tick", int(ticks_per_bar), tbi, sess_idx)
 
 
 
