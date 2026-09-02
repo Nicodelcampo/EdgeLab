@@ -28,7 +28,7 @@ NQ_SCAN_V2_ROWS                     119153201
 NQ_MANIFEST_STATUS                  ABSTAIN_COMPLETENESS_EVIDENCE_REQUIRED
 NQ_CERTIFIED_ROLLS                  0
 NQ_PROVISIONAL_ROLLS                4, robustos en sensibilidad P-68
-CALENDAR_BLOCKER                    acceso a horas oficiales CME por producto
+CALENDAR_STATUS                     RESUELTO 4f365bf -- 322 sesiones con evidencia hasheada; pendiente Juneteenth 2026-06-19
 SOURCE_COMPLETENESS                 no aprobada
 AVOLCLUSTER_NQ_PARITY               FAIL: 19 / 57 / 48
 EF0                                 BLOQUEADO

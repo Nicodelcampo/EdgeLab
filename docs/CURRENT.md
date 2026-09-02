@@ -48,7 +48,7 @@ Contratos y ratios `leader_over_current` fueron idénticos a 6 decimales: 3,3961
 
 ## Bloqueos actuales
 
-1. Obtener las horas oficiales CME Equity Index aplicables y guardar URL, fecha de acceso y SHA-256. El WAF de CME bloqueó descarga automatizada; es un problema de acceso.
+1. ~~Obtener las horas oficiales CME.~~ **RESUELTO 2026-09-02 (`4f365bf`)**: el WAF bloquea `curl` y el fetcher, pero el endpoint JSON oficial que la propia página consume (`/services/trading-hours-by-product`) responde 200 desde el origen y **sirve fechas históricas**, así que 2025 también quedó cubierto. Calendario con evidencia hasheada en `docs/research/cme_equity_index_calendar_20260902/`, valida contra el gate. Corrobora el patrón de 1140 min = early close 12:00 CT (7 de 8 early-close dentro de 0-6 min). **Pendiente**: Juneteenth 2026-06-19 (fuente ambigua vs 115.146 ticks observados), por eso corta el 18-jun.
 2. Construir cobertura de fuente separada del calendario.
 3. Producir evidencia de completitud aprobable.
 4. Reconstruir el manifiesto y verificar formalmente los cuatro rolls.

@@ -68,7 +68,9 @@ Resultado medido: cuatro fechas y contratos idénticos; ratios idénticos a 6 de
 | 2026-03-17 | NQ 06-26 | 1,125767 |
 | 2026-06-16 | NQ 09-26 | 2,286790 |
 
-Esto vuelve robustas las fechas frente a la perturbación probada. No certifica completitud ni calendario: el diagnóstico asumió sesiones completas para aislar ese efecto. La fuente CME sigue faltando por bloqueo de acceso a horas oficiales por producto.
+Esto vuelve robustas las fechas frente a la perturbación probada. No certifica completitud: el diagnóstico asumió sesiones completas para aislar ese efecto.
+
+**2026-09-02, `4f365bf` — calendario CME resuelto.** El WAF bloquea `curl` y el fetcher, pero el endpoint JSON oficial que la propia página consume responde 200 desde el origen y sirve fechas históricas, cubriendo también 2025. Calendario de 322 sesiones (2025-08-01..2026-06-18) con URL + SHA-256 por override, validado contra `cme_equity_index_calendar.py`. Construido sólo con la fuente y corroborado después contra el dato: 7 de 8 early-close dentro de 0-6 minutos, y el patrón de 1140 minutos queda explicado como early close 12:00 CT. Juneteenth 2026-06-19 sin adjudicar (fuente ambigua vs 115.146 ticks observados), por eso el rango corta el 18-jun.
 
 ## Lectura causal
 

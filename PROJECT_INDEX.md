@@ -18,7 +18,7 @@ Este índice ordena el repositorio sin mover, mergear ni borrar historia. Autori
 - 4 rolls NQ provisionales sobrevivieron la sensibilidad con/sin nueve feriados y conservaron ratios a 6 decimales.
 - 0 rolls están certificados: el análisis asumió completitud para aislar calendario.
 - El volumen del scan v2 ya excluye mantenimiento; no falta normalizar NQ 09-26 para el cálculo de rolls.
-- Falta acceso verificable a horas oficiales CME por producto, cobertura de fuente y evidencia de completitud aprobada.
+- Calendario CME **resuelto** (`4f365bf`): horas oficiales por producto capturadas con URL + SHA-256 desde el endpoint JSON de cmegroup.com, 322 sesiones 2025-08-01..2026-06-18 (`docs/research/cme_equity_index_calendar_20260902/`). Faltan: cobertura de fuente, evidencia de completitud aprobada, y Juneteenth 2026-06-19 sin adjudicar.
 - EF0 permanece bloqueado.
 - Outcomes, P&L y holdout requieren autorización explícita separada.
 - La rama de auditoría divergente permanece `FROZEN_READ_ONLY / DO_NOT_MERGE / DO_NOT_DELETE`.

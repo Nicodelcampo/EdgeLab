@@ -7,13 +7,13 @@ Corte: 2026-09-02. Este archivo no autoriza corridas. `PENDIENTE.md`, specs y ma
 | Línea | Estado medido | Próximo cierre verificable | STOP |
 |---|---|---|---|
 | Rolls NQ | 4 fechas/contratos/ratios idénticos a 6 decimales bajo dos calendarios diagnósticos | reconstruir con evidencia aprobada | no llamar certificado |
-| Calendario CME | fechas 2026 visibles; horas por producto no capturadas; 2025 no publicado; WAF bloquea descarga | obtener documento oficial por vía accesible, hashearlo y registrar fecha | no inferir horas de patrones empíricos |
+| Calendario CME | **RESUELTO `4f365bf`**: horas por producto capturadas con URL + SHA-256 vía endpoint JSON de cmegroup.com, que además sirve 2025 (la página no lo publica, el endpoint sí). 322 sesiones, valida contra el gate | adjudicarlo formalmente; resolver Juneteenth 2026-06-19 | no se infirieron horas: se construyó sólo con la fuente y recién después se corroboró contra el dato (7 de 8 dentro de 0-6 min) |
 | Cobertura de fuente | separada conceptualmente; no aprobada | particiones esperadas/presentes, estado de extracción y hash | no usar minutos activos |
 | Manifiesto NQ | v1 inválido; v2 abstiene | aprobar completitud y reconstruir | no EF0/outcomes/holdout |
 | NQ 09-26 | volumen v2 ya excluye mantenimiento | confirmar plantilla NT8 sólo como causa/procedencia residual | no adjudicar causa sin inspección |
 | Trace operable | trace 06-26 no representa cadena certificada | reconstruir desde raw con reset en roll | no recortar post hoc |
 
-El calendario sigue siendo obligatorio para certificar, pero P-68 midió que excluir nueve feriados no cambia ninguno de los cuatro rolls. El bloqueo es de certificación y acceso a fuente, no evidencia actual de que las fechas vayan a moverse.
+El calendario sigue siendo obligatorio para certificar, pero P-68 midió que excluir nueve feriados no cambia ninguno de los cuatro rolls. Desde `4f365bf` el acceso a la fuente **ya no es un bloqueo**: el calendario está capturado y hasheado. Lo que queda es de **certificación** — adjudicar el calendario, resolver Juneteenth 2026-06-19 y aprobar la evidencia de completitud — sin evidencia actual de que las fechas de roll vayan a moverse.
 
 ## Prioridad 1 — aVolClusterPOI NQ
 

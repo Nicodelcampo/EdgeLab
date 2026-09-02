@@ -30,7 +30,7 @@ Paridad exacta, infraestructura, una zona o un backtest aislado no son un edge.
 - Scan NQ v2: 119.153.201 filas, `ABSTAIN_COMPLETENESS_EVIDENCE_REQUIRED`, 0 rolls certificados.
 - Sensibilidad diagnóstica P-68: los cuatro rolls provisionales son idénticos con weekdays y con weekdays menos nueve feriados; ratios idénticos a 6 decimales. Esto no certifica el manifiesto.
 - El volumen del scan v2 ya excluye mantenimiento. La normalización NQ 09-26 no era una tarea pendiente.
-- Calendario CME: bloqueo de acceso a las horas oficiales por producto, no decisión científica. Sigue faltando capturar y hashear la fuente oficial.
+- Calendario CME: **resuelto 2026-09-02 (`4f365bf`)**. Fuente oficial capturada y hasheada vía el endpoint JSON de cmegroup.com (el WAF sólo bloquea curl/fetch directo). 322 sesiones 2025-08-01..2026-06-18. Pendiente: Juneteenth 2026-06-19 sin adjudicar.
 - NQ 09-26: 363.601 ticks en 16:00–17:00 CT sobre 9 días. Dos hipótesis descartadas; plantilla NT8 distinta es dominante pero `root_cause_status=UNRESOLVED`.
 - Paridad aVolClusterPOI NQ 06-26: FAIL, con 19 `GEOMETRY_DIFF`, 57 `MISSING_IN_NT8` y 48 `MISSING_IN_PYTHON`; primero alinear el borde de ~3 ticks.
 - EF0 sigue bloqueado. Outcomes, P&L y holdout requieren autorización explícita separada.
