@@ -1922,3 +1922,16 @@ rápida. Si se quisiera repetir con la población correcta, el paso sería filtr
 ticks de cada contrato por las sesiones que `CADENA_FRONTMONTH_GC.json` le asigna, en
 vez de usar el archivo de un solo contrato completo.
 
+**Adenda 2026-09-01, tarde**: el intento de barrer G (break-even trigger) sobre las
+**últimas** 2 sesiones (para tener volumen real, ver arriba) se abandonó — quedó
+trabado largo rato en Kaggle en v2 (`max_age_bars=50`) y v3 (`max_age_bars=200`) sin
+completar, misma familia del cuello de botella O(n_blocks x n_active_zones) de
+`update_active_zones`, ahora agravado porque una ventana de 2 sesiones de verdadera
+liquidez concentra mucho más volumen/zonas activas que el promedio de la cinta completa
+(que sí terminó, P-60). Decisión de Nico: cortar y quedarse con el único punto ya
+medido (G=9, TP=18/SL=18, sobre la cinta completa: net USD medio −$49,26 en GC). El
+script `notebooks/kaggle/be_sweep_kernel/be_trigger_sweep_gc_nq_runner.py` queda
+commiteado en su último estado (max_age_bars=50, últimas N sesiones) como referencia
+para un intento futuro, pero **nunca corrió hasta el final** — no interpretar su
+presencia en el repo como que produjo un resultado.
+

@@ -64,7 +64,7 @@ BT2A_DEFAULTS = dict(
     imbalance_mode="Diagonal", trap_volume_source="AggressiveSide", ticks_per_row=1,
     imbalance_ratio=3.0, min_stacked_rows=2, min_trap_frac=0.2, min_trap_volume=0.0,
     min_export_volume=1.0, use_wick_filter=True, wick_zone_pct=30.0, min_delta_filter=0.0,
-    invalidation="CloseThrough", max_age_bars=200, bar_ticks=25,
+    invalidation="CloseThrough", max_age_bars=50, bar_ticks=25,
 )
 
 TP_SL_FIXED = 18  # mismo par que el punto BE ya medido (G=9/TP=18/SL=18)
@@ -93,7 +93,11 @@ def pick_one_contract_parquet(filename: str) -> Path:
 
 
 def truncate_to_first_sessions(ticks: TickSeries, session_labels: np.ndarray, n_sessions: int):
-    dates = sorted(set(session_labels.tolist()))[:n_sessions]
+    # ultimas n_sessions, no las primeras: contratos lejanos al vencimiento
+    # tienen volumen casi nulo al principio de su vida (ver GC_08-26 en
+    # 2026-02: 227 ticks en 2 sesiones, 0 senales). Las ultimas sesiones del
+    # archivo estan mas cerca del corte pre-holdout, con volumen real.
+    dates = sorted(set(session_labels.tolist()))[-n_sessions:]
     mask = np.isin(session_labels, dates)
     idx = np.flatnonzero(mask)
     sub = TickSeries(
