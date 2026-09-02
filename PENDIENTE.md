@@ -2158,3 +2158,56 @@ diario de NQ 09-26 del 17 al 30-jun **no es comparable** con el de los otros con
 normalizar la ventana de sesión, y ese volumen alimenta el manifiesto de régimen en esas 9
 fechas. Queda como insumo para la decisión de completitud, que sigue reservada a Nico.
 
+## P-68 · Los 4 rolls de NQ son robustos a las dos piezas que faltaban; el bloqueo real del calendario CME es de acceso, no de decisión
+
+**Asentada 2026-09-02.** Nico pidió resolver lo pendiente. Resultado por punto del camino
+de decisión del auditor:
+
+**(1) Adjudicar `90cb98a`** — hecho (`f896ca6`), alcance acotado a presencia nominal.
+
+**(2) Congelar el calendario CME** — **bloqueado por acceso a la fuente, no por decisión.**
+`edgelab/data/cme_equity_index_calendar.py` exige evidencia con URL de `cmegroup.com` +
+sha256 + `retrieved_at`. Intentado y fallido: `curl` devuelve **HTTP 403** (WAF de CME)
+tanto para las páginas HTML como para los PDFs oficiales
+(`/tools-information/holiday-calendar/files/2026/{holiday}-holiday-settlement-times-2026.pdf`),
+y el fetcher da timeout. Sí se pudo leer la página vía navegador, lo que confirmó
+**oficialmente las fechas de feriado 2026** (New Year 31dic25–2ene26, MLK 18–20ene,
+Presidents 15–17feb, Good Friday 2–4abr, Memorial 24–26may, Juneteenth 18–19jun), pero
+**no las horas por producto**, y **el calendario 2025 ya no está publicado** (CME sólo
+expone el año corriente y el siguiente). Congelar el calendario con evidencia hasheada
+requiere descargar esos PDFs desde una red/entorno que CME no bloquee. **Es una tarea de
+acceso, no una decisión de Nico.**
+
+**(3) Cobertura de fuente separada del calendario** — ya está separada en el código
+(`assert_source_capture_evidence` vs. `build_calendar`, `market_hours_only=true`,
+`source_capture_complete_inferred=false`).
+
+**(4) Normalización de NQ 09-26 para el 17–30 de junio** — **no hace falta: ya está
+aplicada por construcción.** El `volume` que el scan v2 alimenta a la regla de roll **ya
+excluye** los ticks de mantenimiento (`vol[m & ~maint]`), y los cuenta aparte en
+`volume_in_maintenance`. Verificado por aritmética cruzada entre dos artefactos
+independientes: `v2.volume (6.385.687) + v2.volume_in_maintenance (398.066) = 6.783.753 =
+v1.vol_total`, y `v2.volume_in_maintenance == diagnostico.maintenance_volume` exactamente.
+
+### Resultado principal: los 4 rolls no dependen de nada de lo que falta
+
+Análisis de sensibilidad en
+`docs/research/nq_contract_regime_v2_20260902/nq_regime_sensitivity_v1.json`
+(`DIAGNOSTIC_NOT_CERTIFIED`), corrido con la implementación real de
+`build_contract_regime`, no con una réplica:
+
+| | fechas | contratos | ratios |
+|---|---|---|---|
+| sólo lunes–viernes | 20250917, 20251216, 20260317, 20260616 | 12-25, 03-26, 06-26, 09-26 | 3,3962 / 1,2601 / 1,1258 / 2,2868 |
+| lun–vie **menos 9 feriados US** | idénticas | idénticos | **idénticos a 6 decimales** |
+
+Los 4 rolls también coinciden con los del `c3d575f` invalidado. Ningún feriado cae en la
+ventana de decisión de un roll (el más cercano, Juneteenth 19-jun, está 3 días después del
+roll del 16-jun). Los bordes de intervalo sí se limpiaron: NQ 09-25 arranca **20250804** (no
+el domingo 20250803) y NQ 12-25 cierra en **20251216** (no en el corte espurio 20251215).
+
+**Consecuencia**: el calendario CME sigue siendo necesario para **certificar
+`complete_session`**, pero **no cambia el régimen contractual**. La estructura de rolls no
+dependía de los defectos corregidos ni de la pieza que falta. Sigue sin certificar y EF0
+sigue bloqueado — pero ahora se sabe que certificar no va a mover las fechas.
+
