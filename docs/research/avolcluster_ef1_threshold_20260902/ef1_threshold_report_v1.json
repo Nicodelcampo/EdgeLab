@@ -1,0 +1,164 @@
+{
+  "schema": "avolclusterpoi_ef1_threshold_v1",
+  "status": "PROVISIONAL_DIAGNOSTIC_REGIME_NOT_CERTIFIED",
+  "plan": "specs/avolclusterpoi_ef1_plan_v1.draft.json",
+  "authorized_by": "Nico 2026-09-02, explicito, como diagnostico provisional",
+  "roll_schedule_sha256": "PENDING_REGIME_CERTIFICATION",
+  "questions": [
+    "Q-THRESHOLD-PRESSURE",
+    "Q-ATPRICE-OFFPRICE"
+  ],
+  "axis": "detection_percentile",
+  "levels": [
+    96.0,
+    97.0,
+    97.5,
+    98.0,
+    98.5,
+    99.0
+  ],
+  "baseline": 98.0,
+  "code_commit": "3a2b2abbe5e22a84bc0a1cc29863f301b47ac8ee",
+  "n_blocks": 28147,
+  "replay_control": {
+    "replay_create_at_baseline": 653,
+    "trace_create": 653,
+    "match": true
+  },
+  "per_level": [
+    {
+      "pct": 96.0,
+      "counts": {
+        "CREATE": 1171,
+        "ABSTAIN_NO_HISTORY": 1124,
+        "ABSTAIN_NO_CLUSTER": 1678,
+        "ABSTAIN_BELOW_THRESHOLD": 24174,
+        "ABSTAIN_FEW_CELLS": 0
+      },
+      "n_create": 1171,
+      "n_off_price": 752,
+      "n_at_price": 419
+    },
+    {
+      "pct": 97.0,
+      "counts": {
+        "CREATE": 884,
+        "ABSTAIN_NO_HISTORY": 1124,
+        "ABSTAIN_NO_CLUSTER": 1678,
+        "ABSTAIN_BELOW_THRESHOLD": 24461,
+        "ABSTAIN_FEW_CELLS": 0
+      },
+      "n_create": 884,
+      "n_off_price": 550,
+      "n_at_price": 334
+    },
+    {
+      "pct": 97.5,
+      "counts": {
+        "CREATE": 775,
+        "ABSTAIN_NO_HISTORY": 1124,
+        "ABSTAIN_NO_CLUSTER": 1678,
+        "ABSTAIN_BELOW_THRESHOLD": 24570,
+        "ABSTAIN_FEW_CELLS": 0
+      },
+      "n_create": 775,
+      "n_off_price": 479,
+      "n_at_price": 296
+    },
+    {
+      "pct": 98.0,
+      "counts": {
+        "CREATE": 653,
+        "ABSTAIN_NO_HISTORY": 1124,
+        "ABSTAIN_NO_CLUSTER": 1678,
+        "ABSTAIN_BELOW_THRESHOLD": 24692,
+        "ABSTAIN_FEW_CELLS": 0
+      },
+      "n_create": 653,
+      "n_off_price": 409,
+      "n_at_price": 244
+    },
+    {
+      "pct": 98.5,
+      "counts": {
+        "CREATE": 512,
+        "ABSTAIN_NO_HISTORY": 1124,
+        "ABSTAIN_NO_CLUSTER": 1678,
+        "ABSTAIN_BELOW_THRESHOLD": 24833,
+        "ABSTAIN_FEW_CELLS": 0
+      },
+      "n_create": 512,
+      "n_off_price": 319,
+      "n_at_price": 193
+    },
+    {
+      "pct": 99.0,
+      "counts": {
+        "CREATE": 380,
+        "ABSTAIN_NO_HISTORY": 1124,
+        "ABSTAIN_NO_CLUSTER": 1678,
+        "ABSTAIN_BELOW_THRESHOLD": 24965,
+        "ABSTAIN_FEW_CELLS": 0
+      },
+      "n_create": 380,
+      "n_off_price": 234,
+      "n_at_price": 146
+    }
+  ],
+  "neighbor_turnover": [
+    {
+      "from_pct": 96.0,
+      "to_pct": 97.0,
+      "jaccard_create": 0.75491,
+      "jaccard_off_price": 0.731383,
+      "turnover_create": 0.24509,
+      "blocks_reclassified_at_off": 0,
+      "delta_create": -287
+    },
+    {
+      "from_pct": 97.0,
+      "to_pct": 97.5,
+      "jaccard_create": 0.876697,
+      "jaccard_off_price": 0.870909,
+      "turnover_create": 0.123303,
+      "blocks_reclassified_at_off": 0,
+      "delta_create": -109
+    },
+    {
+      "from_pct": 97.5,
+      "to_pct": 98.0,
+      "jaccard_create": 0.842581,
+      "jaccard_off_price": 0.853862,
+      "turnover_create": 0.157419,
+      "blocks_reclassified_at_off": 0,
+      "delta_create": -122
+    },
+    {
+      "from_pct": 98.0,
+      "to_pct": 98.5,
+      "jaccard_create": 0.784074,
+      "jaccard_off_price": 0.779951,
+      "turnover_create": 0.215926,
+      "blocks_reclassified_at_off": 0,
+      "delta_create": -141
+    },
+    {
+      "from_pct": 98.5,
+      "to_pct": 99.0,
+      "jaccard_create": 0.742188,
+      "jaccard_off_price": 0.733542,
+      "turnover_create": 0.257812,
+      "blocks_reclassified_at_off": 0,
+      "delta_create": -132
+    }
+  ],
+  "stopping_rule": {
+    "rule": "turnover de CREATE entre 97.5 y 98.5 > 50% => fragilidad estructural, detener",
+    "worst_mid_turnover": 0.215926,
+    "triggered": false
+  },
+  "winner_selected": false,
+  "outcomes_accessed": false,
+  "holdout_accessed": false,
+  "promotion_eligible": false
+}
