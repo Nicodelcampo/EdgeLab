@@ -35,19 +35,33 @@ if not parquet_hits:
 parquet_path = parquet_hits[0]
 print("parquet=", parquet_path, flush=True)
 
+oracle_hits = list(Path("/kaggle/input/datasets/nicolasbuttaro/edgelab-avolcluster-nq-oracle").rglob("*v2.csv"))
+if not oracle_hits:
+    oracle_hits = list(Path("/kaggle/input/datasets/nicolasbuttaro/edgelab-avolcluster-nq-oracle").rglob("*20260407_20260612*.csv"))
+if not oracle_hits:
+    raise SystemExit("Oracle CSV not found in dataset")
+oracle_path = oracle_hits[0]
+print("oracle=", oracle_path, flush=True)
+
+bp_hits = list(Path("/kaggle/input/datasets/nicolasbuttaro/edgelab-avolcluster-nq-oracle").rglob("*BARPROFILE*.csv"))
+if bp_hits:
+    print("barprofile=", bp_hits[0], flush=True)
+
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 out_json = OUTPUT_DIR / "paridad_avolclusterpoi_nq0626.json"
 
 cmd = [
     sys.executable, str(REPO_DIR / "tools/paridad_oraculo.py"),
     "--indicador", "avolclusterpoi",
-    "--oraculo", ORACLE_PATH,
+    "--oraculo", str(oracle_path),
     "--parquet", str(parquet_path),
     "--chart-tz", "America/Argentina/Buenos_Aires",
     "--barras", "tick:120",
     "--sesiones-warmup", "20",
     "--out", str(out_json),
 ]
+if bp_hits:
+    cmd.extend(["--barprofile", str(bp_hits[0])])
 print("+", " ".join(cmd), flush=True)
 proc = subprocess.run(cmd, cwd=REPO_DIR, capture_output=True, text=True)
 print(proc.stdout, flush=True)

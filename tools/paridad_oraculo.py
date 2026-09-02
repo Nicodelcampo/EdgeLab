@@ -112,6 +112,8 @@ def main(argv=None):
                          "es apurar: los indicadores que calibran de la sesion previa "
                          "(AdaptiveMode) no necesitan 71 sesiones de warmup -- eso lo "
                          "pedia el perfil de aVolCellPOI2, no este kernel.")
+    ap.add_argument("--barprofile", default=None,
+                    help="Ruta al BARPROFILE CSV de NT8 para resolver fronteras exactas")
     ap.add_argument("--out", required=True)
     a = ap.parse_args(argv)
 
@@ -136,6 +138,8 @@ def main(argv=None):
         kernel_blob=blob_git(REPO / (mod_name.replace(".", "/") + ".py")),
         chart_tz=a.chart_tz,
         bar_spec=a.barras,
+        barprofile=str(a.barprofile) if a.barprofile else None,
+        barprofile_sha256=sha256_archivo(a.barprofile) if a.barprofile else None,
         head_commit=subprocess.check_output(
             ["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True).strip(),
         arbol_limpio=None,   # se completa abajo
@@ -172,7 +176,10 @@ def main(argv=None):
     if spec_tipo == "time":
         bars = bars_mod.build_time_bars(tk, int(spec_val))
     else:
-        bars = bars_mod.build_tick_bars(tk, int(spec_val))
+        if a.barprofile:
+            bars = bars_mod.build_resolved_tick_bars(tk, a.barprofile, int(spec_val))
+        else:
+            bars = bars_mod.build_tick_bars(tk, int(spec_val))
     fps = bars_mod.build_footprints(tk, bars) if usa_fp else None
     tick_size = ticks_mod.instrument_spec(tk.instrument).tick_size
     print("  ticks=%d  barras=%d  tick_size=%s" % (len(tk.ts_ns), len(bars.close_t), tick_size))

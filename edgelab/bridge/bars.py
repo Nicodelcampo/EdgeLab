@@ -149,6 +149,48 @@ def build_tick_bars(ticks: TickSeries, ticks_per_bar: int,
     return BarSeries(s_ns, e_ns, o, h, lo, c, v, ticks.tick_size, "tick", N, tbi)
 
 
+def build_resolved_tick_bars(ticks: TickSeries, bar_profile_path: str | Path,
+                             ticks_per_bar: int = 120) -> BarSeries:
+    """Reconstruye barras de ticks resolviendo la frontera EXACTA de cada barra
+    contra el perfil de volumen reportado por NT8 (P-70 BARPROFILE).
+
+    Garantiza que la partición de barras coincida con la subserie 1-tick de NT8,
+    eliminando la deriva por fluctuaciones de tick-count entre barras.
+    """
+    import pandas as pd
+    df_bp = pd.read_csv(bar_profile_path, skiprows=1)
+    target_vols = df_bp["profile_volume"].values.astype(np.int64)
+    n_bars = len(target_vols)
+    n_ticks = len(ticks)
+
+    vols = ticks.volume.astype(np.int64)
+    starts = []
+    ends = []
+    curr = 0
+
+    for b in range(n_bars):
+        if curr >= n_ticks:
+            break
+        tv = target_vols[b]
+        s = curr
+        cum = 0
+        e = s
+        while e < n_ticks and cum < tv:
+            cum += vols[e]
+            e += 1
+        starts.append(s)
+        ends.append(e)
+        curr = e
+
+    starts = np.asarray(starts, dtype=np.int64)
+    ends = np.asarray(ends, dtype=np.int64)
+    o, h, lo, c, v, tbi = _ohlc(ticks, starts, ends)
+    s_ns = ticks.ts_ns[starts].astype(np.int64)
+    e_ns = ticks.ts_ns[ends - 1].astype(np.int64)
+    return BarSeries(s_ns, e_ns, o, h, lo, c, v, ticks.tick_size, "tick", int(ticks_per_bar), tbi)
+
+
+
 @dataclass
 class Footprints:
     ask: list       # list[dict[int, float]] volumen agresor comprador por tick de precio
