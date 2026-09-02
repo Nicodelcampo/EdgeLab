@@ -39,7 +39,7 @@ from collections import Counter
 from pathlib import Path
 
 REPO_URL = "https://github.com/Nicodelcampo/EdgeLab.git"
-EXPECTED_COMMIT = "PIN_PENDIENTE"
+EXPECTED_COMMIT = "484c5e7b5f175151a64efec8aba16a440f0173a5"
 REPO_DIR = Path("/kaggle/working/EdgeLab")
 KAGGLE_INPUT = Path("/kaggle/input")
 DIAG_CSV = "data/nt8_oracles/avolcluster_v05_NQ0626_120t_DIAG_20260901.csv"
