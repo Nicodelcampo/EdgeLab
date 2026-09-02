@@ -2211,3 +2211,52 @@ el domingo 20250803) y NQ 12-25 cierra en **20251216** (no en el corte espurio 2
 dependía de los defectos corregidos ni de la pieza que falta. Sigue sin certificar y EF0
 sigue bloqueado — pero ahora se sabe que certificar no va a mover las fechas.
 
+## P-69 · Saneamiento de régimen contractual para el resto de los activos — pendiente, con el camino ya abaratado
+
+**Asentada 2026-09-02.** El saneamiento hecho sobre NQ (scan v2 → calendario CME →
+manifiesto de régimen → diagnóstico de anomalía) **no se ha replicado en ningún otro
+activo**. Decisión de Nico: seguir midiendo NQ primero y dejar esto registrado.
+
+**Lo que ya está resuelto y se reutiliza tal cual:**
+- `edgelab/data/contract_regime.py` es genérico (opera sobre `root`, no hardcodea NQ).
+- Los datasets de Kaggle ya existen para **GC, ES, 6E, YM, MES, MBT y ZB**.
+- El scan v2 sólo hardcodea la lista de contratos y el dataset; parametrizarlo es trivial.
+- El chequeo de ticks en ventana de mantenimiento (el que detectó la anomalía de NQ 09-26,
+  P-67) es genérico y barato; **conviene correrlo en todos** — encontró un archivo exportado
+  con plantilla de sesión distinta.
+
+**Ahorro ya capturado**: el endpoint oficial de CME
+(`/services/trading-hours-by-product`) devuelve **los 10 productos en la misma llamada** —
+ZN, ES, CL, ZC, **6E**, **GC**, LE, CSC, BTC, LBR. Las 9 llamadas ya hechas para el
+calendario de NQ (2026-09-02, hashes en
+`docs/research/cme_equity_index_calendar_20260902/`) **ya contienen GC y 6E**: sólo hay que
+extraer otro producto del mismo JSON, con los mismos hashes. No hace falta volver a
+consultar la fuente para esos dos.
+
+**Lo que NO es directo:**
+- **El calendario no es único por fecha.** Los early-close difieren por grupo de producto:
+  en Good Friday 2026, ES cerró **08:15 CT** y ZN cerró **10:15 CT**. El módulo
+  `cme_equity_index_calendar.py` sirve estructuralmente, pero su gate «`NORMAL` debe cerrar
+  16:00 CT» debe verificarse por familia antes de reusarlo en metales, FX o tasas.
+- Nada de lo medido se transporta entre instrumentos (regla permanente de `CLAUDE.md`).
+
+### Riesgo prioritario: GC ya usa una regla de roll distinta
+
+`docs/research/CADENA_FRONTMONTH_GC.json` usa **mínimo 5.000 de volumen y 2
+confirmaciones**; `contract_regime.py` usa **liderazgo estricto con 1 sesión** de
+confirmación causal. Son reglas distintas y **pueden dar fechas de roll distintas**.
+
+Eso importa porque las campañas formales de GC —Gate1, sweep target-free, y el protocolo de
+resolución de aVolClusterPOI (universo de 152 sesiones, `specs/avolclusterpoi_resolution_split_v1.json`)—
+**ya usaron la cadena artesanal** para definir su población. Si los rolls se mueven, hay
+trabajo previo cuya población no coincide con el estándar nuevo.
+
+**Primer paso recomendado, y es barato**: correr `contract_regime.py` sobre el volumen
+diario de GC y comparar contra `CADENA_FRONTMONTH_GC.json`. **No requiere corrida pesada
+nueva** — esa cadena ya tiene el volumen por sesión calculado. En NQ los rolls resultaron
+robustos (P-68), así que es plausible que en GC también, pero es caro descubrirlo después.
+
+Orden sugerido: (1) comparación GC barata → decide si hay que revisar trabajo previo;
+(2) scan v2 por activo, aprovechando que el calendario de GC y 6E ya está capturado;
+(3) chequeo de mantenimiento en los 7 activos.
+
