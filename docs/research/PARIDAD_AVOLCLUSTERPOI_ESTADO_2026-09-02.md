@@ -49,6 +49,20 @@ el `.cs` ni el kernel Python en ninguna fase.
   desfasada cierra en el mismo nanosegundo. La medición no tenía resolución para
   la pregunta que parecía responder.
 
+## El código fuente confirma los dos defectos
+
+Leído después de las mediciones, `aVolClusterPOI.cs` (~288-331) contiene ambos:
+el perfil se acumula en la **subserie de 1 tick** (`Volumes[1]`, `Closes[1]`) y
+se vuelca cuando cierra la **barra primaria** — el orden de entrega entre las dos
+series decide de qué barra es cada tick, y es el lag −1. Y el volcado descarta
+sin reasignar lo que cae fuera de `[Low[0], High[0]]`, con el comentario del
+propio autor: *defensa de borde* — es la pérdida de 0,41 %.
+
+Los dos defectos hallados a ciegas por el barrido están escritos en el código.
+El diagnóstico queda cerrado; lo que no cierra es la **cantidad**, porque el
+orden de entrega entre series no es constante — y esa variabilidad es exactamente
+la firma del residuo de la FASE 7.
+
 ## Qué hace falta para cerrar (requiere decisión de Nico)
 
 El parquet no contiene la información que diría dónde puso NT8 la frontera de
@@ -58,7 +72,8 @@ barra y no por bloque: `bar_first_tick_time`, `bar_last_tick_time`,
 de ser hipótesis y la paridad se cierra o se explica en una corrida.
 
 Toda modificación del `.cs` se consulta con Nico — por eso queda pedida, no
-hecha.
+hecha. El bloque exacto, con cabecera y criterio de refutación, está escrito en
+`docs/research/P70_PROPUESTA_LOGGING_POR_BARRA_aVolClusterPOI.md`.
 
 ## Qué NO hacer mientras tanto
 
