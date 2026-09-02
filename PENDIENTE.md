@@ -2073,3 +2073,49 @@ localizar el código fuente del zone-store NQ para verificar su regla real, y de
 `avolcluster_event_store_extract.py` se re-corre filtrando por la cadena antes de
 integrarse a algo formal.
 
+## P-66 · Scan v2 de régimen NQ ejecutado: abstiene por diseño; falta un calendario CME de research
+
+**Asentada 2026-09-02.** Con autorización explícita de Nico se ejecutó en Kaggle el scan
+pesado v2 sobre los 5 parquets NQ pre-holdout (119.153.201 filas). Resultado:
+`ABSTAIN_COMPLETENESS_EVIDENCE_REQUIRED`. Artefactos en
+`docs/research/nq_contract_regime_v2_20260902/` (README con el detalle).
+
+**El scan funcionó**; los 0 días elegibles son el fail-closed operando: el template de
+evidencia sale con todo en `complete_session=false` / `approved=false`, y sin evidencia
+aprobada el constructor no elige contrato ningún día. Kaggle marca ERROR porque el runner
+sale con exit code 3 al abstenerse — no hay traceback, los 5 contratos se escanearon
+completos. La corrección de calendario sí funcionó: **0 fechas de fin de semana** (v1
+tenía 28).
+
+**Defecto encontrado y corregido en el camino** (`90cb98a`): el gate de schema del runner
+v2 del auditor era **insatisfacible** — comparaba por igualdad ORDENADA la tupla
+`_REQUIRED` de 8 columnas de `edgelab/bridge/ticks.py` (donde se usa como chequeo de
+SUBCONJUNTO) contra el schema real de 13 columnas del parquet canónico F2. Ninguna corrida
+podía pasar. Es el tercer caso consecutivo de código del auditor declarado verificado pero
+nunca ejecutado contra datos reales (ver P-63: refactor de kernel no mencionado; P-64:
+calendario con 28 fines de semana). **Cambio de semántica de validación, declarado a Nico**:
+pasó a chequeo de presencia (superset) y publica el schema realmente observado en
+`source["schema_observed"]`. Confirmado a posteriori que Kaggle tiene las 13 columnas
+completas, sin podar.
+
+**Dos cosas abiertas que requieren decisión:**
+
+1. **NQ 09-26 tiene 363.601 ticks en ventana de mantenimiento (16:00–17:00 CT), 5,8 % de
+   sus filas**, contra 0/10/13 en los otros cuatro contratos. Es el único que fue
+   físicamente recortado por el re-corte del holdout (`source_bytes` 305.577.901 →
+   `bytes` 72.525.040, sha distinto). No se determinó si es artefacto del recorte o real.
+
+2. **No existe un calendario CME de research** que declare por fecha si hubo sesión, si fue
+   media sesión de feriado y su duración esperada. Sin eso `complete_session` no puede
+   distinguir "faltan datos" de "el mercado cerró / abrió medio día". El scan mostró que el
+   criterio ingenuo `active_minutes == 1380` sería erróneo: de 298 sesiones, 219 tienen
+   1380 exactos, y entre las 48 parciales en día hábil conviven tres familias distintas —
+   medias sesiones de feriado con patrón consistente de **1140 minutos** (Labor Day,
+   Thanksgiving, MLK, Presidents Day, Memorial Day), sesiones de 1377–1379 minutos con
+   cientos de miles de ticks (completas, con minutos sin trade), y contratos naciendo o
+   muriendo (sesión abierta, ese contrato casi sin operar). Mismo bloqueo ya registrado
+   para `H-SWEEP-1_YM_PRERANGE`.
+
+Aprobar la evidencia de completitud está reservado a Nico por diseño del contrato v2. **No
+se aprueba acá.** EF0 sigue bloqueado: sin manifiesto certificado no hay período operable
+con el que recortar/reconstruir el trace.
