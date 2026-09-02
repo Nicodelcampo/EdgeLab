@@ -2260,3 +2260,28 @@ Orden sugerido: (1) comparación GC barata → decide si hay que revisar trabajo
 (2) scan v2 por activo, aprovechando que el calendario de GC y 6E ya está capturado;
 (3) chequeo de mantenimiento en los 7 activos.
 
+
+---
+
+## P-70 — Paridad aVolClusterPOI: falta logging por barra en el `.cs` (BLOQUEANTE)
+
+**Estado**: abierta. Requiere **decisión de Nico** (toca el `.cs`).
+**Acta**: `docs/research/PARIDAD_AVOLCLUSTERPOI_ESTADO_2026-09-02.md`.
+
+La campaña de paridad del 2026-09-02 (fases F2–F8, siete kernels en Kaggle, ninguno
+modificó código) llevó los bloques idénticos de **0,07 % a 15,27 %** e identificó dos
+defectos reales: un **lag de perfil de −1 tick** y el **filtro `Low[0]/High[0]`** del
+`.cs`, que sólo muerden combinados. Reproducen el déficit de volumen de 0,41 % medido
+de forma independiente.
+
+El **84,7 % restante no tiene hipótesis viva medible desde el parquet**: el residuo es
+chico (3,5 celdas de 93,6), en el medio del rango, plano a lo largo de la sesión — un
+desajuste de frontera de barra por pocos ticks que se autocorrige. El parquet no
+contiene dónde puso NT8 esa frontera.
+
+**Pedido concreto**: agregar a `aVolClusterPOI.cs` logging **aditivo por barra**
+(`bar_first_tick_time`, `bar_last_tick_time`, `bar_tick_count`). No cambia la lógica del
+indicador. Con ese CSV la paridad se cierra o se explica en una corrida.
+
+**Bloquea**: cualquier barrido de parámetros sobre aVolClusterPOI. Con 15,27 % de
+paridad el barrido mide un indicador que no es el del chart, y nada de eso es promovible.
