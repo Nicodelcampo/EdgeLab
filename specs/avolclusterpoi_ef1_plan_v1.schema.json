@@ -4,12 +4,14 @@
   "title": "aVolClusterPOI EF1 target-free plan",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "status", "parent_ef0_manifest_sha256", "source_config_id", "source_trace_sha256s", "selected_question_ids", "configurations", "metrics", "stopping_rules", "expected_compute", "authorization", "auto_execute", "outcomes_accessed", "holdout_accessed"],
+  "required": ["schema_version", "status", "parent_ef0_manifest_sha256", "source_config_id", "roll_policy_id", "roll_schedule_sha256", "source_trace_sha256s", "selected_question_ids", "configurations", "metrics", "stopping_rules", "expected_compute", "authorization", "auto_execute", "outcomes_accessed", "holdout_accessed"],
   "properties": {
     "schema_version": {"const": "avolclusterpoi_ef1_plan_v1"},
     "status": {"enum": ["DRAFT_NOT_AUTHORIZED", "REVIEWED_PENDING_AUTHORIZATION", "APPROVED"]},
     "parent_ef0_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "source_config_id": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "roll_policy_id": {"const": "previous_complete_session_volume_leader_monotonic_v1"},
+    "roll_schedule_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "source_trace_sha256s": {
       "type": "object", "additionalProperties": false,
       "required": ["all_blocks.json", "zones.json", "summary.json"],
