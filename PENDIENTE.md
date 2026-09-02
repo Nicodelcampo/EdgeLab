@@ -1971,3 +1971,39 @@ por los tests, pero se registra para que quede constancia de que un merge trajo 
 que su propio resumen relataba, y de que verificar "el código compila y los tests que se
 mencionaron pasan" no es lo mismo que verificar "esto es todo lo que trae el commit".
 
+## P-64 · Capa de régimen contractual (`contract_regime.py`) mergeada; rama `audit/notion-ai-sltp-p2b-provenance-20260830` sigue divergente y NO se mergeó completa
+
+**Asentada 2026-09-01.** El auditor publicó una capa transversal de régimen contractual
+causal (`edgelab/data/contract_regime.py`, política `previous_complete_session_volume_leader_monotonic_v1`
+— cruce si el sucesor lideró estrictamente el volumen de la sesión D-1, empate conserva
+vigente, nunca retrocede, sesión faltante bloquea el avance) en `eb8857d`, con su nota de
+auditoría en `fc02d7d`. Verificado antes de traerlo: las 7 pruebas declaradas (causalidad
+D-1→D, no-rollover-mismo-día, no-retroceso, empate, dato faltante, bordes half-open,
+manifiesto adulterado) corren y pasan de verdad.
+
+Al ir a mergear encontré que `fc02d7d` (y el `d3d912c` huérfano de P-63) viven en
+`origin/audit/notion-ai-sltp-p2b-provenance-20260830` — **una rama con cientos de commits**,
+divergente de `foundation` desde muy atrás (todo el desarrollo histórico de Gate1/Gate2/AVol
+NQ, infra Kaggle, etc.), incluyendo `ce31031` (la reconciliación de PENDIENTE.md que P-49/P-59
+ya daban por resuelta) que **tampoco está en `foundation`**. Es la misma familia de falla que
+`docs/AVISO_DIVERGENCIA_DE_RAMAS_2026-08-06.md` y el incidente del 2026-08-10 describen, en
+escala mucho mayor que lo que P-63 había encontrado (4 commits sueltos).
+
+**Decisión tomada**: NO mergear esa rama completa (alto riesgo de conflictos y de repetir
+la colisión de numeración P-56..59 ya vivida). En cambio, cherry-pick quirúrgico de los dos
+commits de auditoría aislados (`d3d912c`→`724bb43`, `fc02d7d`→`1797bff`, cada uno toca un
+solo archivo nuevo en `docs/audits/`, sin dependencias). El resto de esa rama —incluida la
+reconciliación `ce31031`— **sigue sin converger con `foundation`**. Esto requiere una
+decisión de Nico: auditar qué de esa rama sigue vivo/vale la pena traer, o declararla
+histórica y archivarla. No se toma esa decisión acá.
+
+Suite completa post-merge: 1.231 passed (7 más que P-63, los nuevos tests de
+`contract_regime`), mismas 6 fallas preexistentes/ambientales de siempre, ninguna nueva.
+Pusheado (`1797bff`).
+
+**Implicación para EF0/aVolClusterPOI**: el propio auditor señala que el trace actual
+(`NQ_06-26` solo) no alcanza para determinar el período realmente operable de ese contrato
+— hace falta el manifiesto de régimen sobre NQ 03-26/06-26/09-26 solapados, que todavía no
+se generó. Hasta entonces, correr EF0 sobre el trace actual sigue siendo válido como estudio
+provisional del archivo, pero no se puede presentar como el período continuo operable real.
+
