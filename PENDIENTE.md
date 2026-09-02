@@ -2098,6 +2098,13 @@ pasó a chequeo de presencia (superset) y publica el schema realmente observado 
 `source["schema_observed"]`. Confirmado a posteriori que Kaggle tiene las 13 columnas
 completas, sin podar.
 
+**Alcance adjudicado (auditor, 2026-09-02, dictamen preliminar `CORRECCION_COHERENTE`,
+aprobacion formal pendiente)**: el gate prueba **presencia nominal** de columnas. **No**
+valida tipos fisicos/logicos, columnas duplicadas, nulabilidad, orden semantico ni
+invariantes de las columnas opcionales. **No debe describirse como certificacion integral
+del schema.** Anotado en el propio codigo (`nq_contract_regime_manifest_runner.py` y su
+entrypoint).
+
 **Dos cosas abiertas que requieren decisión:**
 
 1. **NQ 09-26 tiene 363.601 ticks en ventana de mantenimiento (16:00–17:00 CT), 5,8 % de

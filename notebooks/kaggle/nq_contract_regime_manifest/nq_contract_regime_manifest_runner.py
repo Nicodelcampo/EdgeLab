@@ -34,6 +34,11 @@ CONTRACTS = ["NQ 09-25", "NQ 12-25", "NQ 03-26", "NQ 06-26", "NQ 09-26"]
 # columnas duplicadas (P-28 / DECISIONES_2026-08-15: `ts_local_ns` es duplicado
 # exacto de `ts_utc_ns` y se declaro podable). El schema completo realmente
 # observado se publica en `source["schema_observed"]` para auditoria.
+#
+# ALCANCE (acotado por el auditor, 2026-09-02): este gate prueba PRESENCIA
+# NOMINAL de columnas. NO valida tipos fisicos/logicos, columnas duplicadas,
+# nulabilidad, orden semantico ni invariantes de las columnas opcionales. No
+# describir como certificacion integral del schema.
 REQUIRED_COLUMNS = ["ts_utc_ns", "price_ticks", "volume", "bid_ticks", "ask_ticks",
                     "sequence", "instrument", "contract"]
 BATCH_ROWS = 1 << 20
