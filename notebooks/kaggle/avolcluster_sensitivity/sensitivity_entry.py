@@ -39,9 +39,22 @@ def sha256(p: Path) -> str:
 def checkout(commit: str) -> str:
     if len(commit) != 40:
         raise SystemExit("EXPECTED_COMMIT debe ser SHA de 40 chars")
+    env = dict(os.environ, GIT_TERMINAL_PROMPT="0")
     if not (REPO_DIR / ".git").exists():
-        subprocess.run(["git", "clone", "--filter=blob:none", "--no-checkout",
-                        REPO_URL, str(REPO_DIR)], check=True)
+        # el clone anonimo puede fallar transitoriamente pidiendo credenciales;
+        # se reintenta antes de abortar la corrida
+        last = None
+        for attempt in range(4):
+            r = subprocess.run(["git", "clone", "--filter=blob:none", "--no-checkout",
+                                REPO_URL, str(REPO_DIR)], env=env)
+            if r.returncode == 0:
+                break
+            last = r.returncode
+            print("clone falló (intento", attempt + 1, "rc=", last, "), reintentando", flush=True)
+            subprocess.run(["rm", "-rf", str(REPO_DIR)])
+            time.sleep(5 * (attempt + 1))
+        else:
+            raise SystemExit(f"git clone fallo tras 4 intentos (rc={last})")
         subprocess.run(["git", "sparse-checkout", "set", "--no-cone", "edgelab/**"],
                        cwd=REPO_DIR, check=True)
     subprocess.run(["git", "fetch", "origin", commit, "--depth", "200"], cwd=REPO_DIR, check=True)
