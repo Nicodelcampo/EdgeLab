@@ -151,7 +151,8 @@ def build_tick_bars(ticks: TickSeries, ticks_per_bar: int,
 
 
 def build_resolved_tick_bars(ticks: TickSeries, bar_profile_path: str | Path,
-                             ticks_per_bar: int = 120) -> BarSeries:
+                             ticks_per_bar: int = 120,
+                             chart_tz: str = "America/Argentina/Buenos_Aires") -> BarSeries:
     """Reconstruye barras de ticks resolviendo la frontera EXACTA de cada barra
     contra el perfil de volumen reportado por NT8 (P-70 BARPROFILE).
 
@@ -187,7 +188,11 @@ def build_resolved_tick_bars(ticks: TickSeries, bar_profile_path: str | Path,
     ends = np.asarray(ends, dtype=np.int64)
     o, h, lo, c, v, tbi = _ohlc(ticks, starts, ends)
     s_ns = ticks.ts_ns[starts].astype(np.int64)
-    e_ns = ticks.ts_ns[ends - 1].astype(np.int64)
+    if "bar_close_time" in df_bp.columns:
+        t_utc = pd.to_datetime(df_bp["bar_close_time"].values[:len(starts)]).tz_localize(chart_tz).tz_convert("UTC")
+        e_ns = t_utc.astype(np.int64).values
+    else:
+        e_ns = ticks.ts_ns[ends - 1].astype(np.int64)
     sess_idx = df_bp["session_index"].values[:len(starts)].astype(np.int64) if "session_index" in df_bp.columns else None
     return BarSeries(s_ns, e_ns, o, h, lo, c, v, ticks.tick_size, "tick", int(ticks_per_bar), tbi, sess_idx)
 

@@ -226,8 +226,11 @@ def run(ticks, bars, footprints, params=None, debug_trace=False):
             block_bars = bar_indices[block_i * window:(block_i + 1) * window]
             cells = {}
             for b in block_bars:
+                lo_b, hi_b = int(bars.low_t[b]), int(bars.high_t[b])
                 for price_tick, volume in footprints.total[int(b)].items():
                     tick = int(price_tick)
+                    if tick < lo_b or tick > hi_b:
+                        continue
                     cells[tick] = cells.get(tick, 0.0) + float(volume)
             end_bar = block_bars[-1]
             bucket = session_relative_bucket(int(bars.end_ns[end_bar]), sess_begin,

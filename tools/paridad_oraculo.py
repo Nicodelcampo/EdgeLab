@@ -177,7 +177,7 @@ def main(argv=None):
         bars = bars_mod.build_time_bars(tk, int(spec_val))
     else:
         if a.barprofile:
-            bars = bars_mod.build_resolved_tick_bars(tk, a.barprofile, int(spec_val))
+            bars = bars_mod.build_resolved_tick_bars(tk, a.barprofile, int(spec_val), chart_tz=a.chart_tz)
         else:
             bars = bars_mod.build_tick_bars(tk, int(spec_val))
     fps = bars_mod.build_footprints(tk, bars) if usa_fp else None
