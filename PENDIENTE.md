@@ -2016,3 +2016,36 @@ la reconciliación histórica de PENDIENTE.md. Camino crítico ahora: cadena NQ 
 → volumen diario causal → `contract_regime_manifest_v1` → recorte del período operable →
 trace estructural → EF0 → preguntas → plan EF1.
 
+## P-65 · Auditoría de qué análisis previos mezclaron sesiones sin filtro de liquidez — parcial, no cerrada
+
+**Asentada 2026-09-01.** Nico preguntó si los resultados anteriores del proyecto venían con
+el defecto de P-62/P-64 (mezclar sesiones sin liquidez real en la población). Verificado
+contra código, no contra memoria:
+
+- **Limpio, confirmado**: las campañas formales de GC (Gate1, sweep target-free, y el
+  protocolo de resolución de aVolClusterPOI de esta sesión) arman su universo de sesiones
+  vía `derive_universe()` en `tools/bt2_absorption_param_sweep.py`, que lee
+  `docs/research/CADENA_FRONTMONTH_GC.json` (regla de front-month artesanal, previa a
+  `contract_regime.py` pero real y aplicada).
+- **Afectado, confirmado**: `diag/tasa_senales/avolcluster_event_store_extract.py`
+  (escrito y corrido en esta misma sesión, commit `66e7069`) — procesa TODAS las sesiones
+  de cada uno de los 5 contratos GC, cero referencias a la cadena front-month. El Event
+  Store que produjo (`E:\DatosNT8\event_store_gc_avolcluster\`) mezcla períodos líquidos
+  e ilíquidos sin filtrar.
+- **Sin verificar**: el zone-store de aVolClusterPOI sobre NQ
+  (`data/backups/avolcluster_nq_zone_store_run_20260828/`, freeze `910c4dd`) — su
+  manifiesto declara 234 sesiones / 5 contratos (un número compatible con deduplicación
+  sesión→contrato, no con "5 contratos × vida completa cada uno"), pero el código fuente
+  que lo construyó (`avolcluster_nq_zone_builder.py` / `build_avolcluster_nq_zone_store.py`)
+  no está en el checkout actual de `foundation` — posiblemente en una rama sin mergear.
+  Ninguna otra campaña de NQ tenía un equivalente de cadena front-month antes de hoy
+  (`contract_regime.py`); cualquiera que haya cargado un contrato completo como población
+  comparte el riesgo de P-62/P-64.
+
+**No se toma acción de remediación todavía** — el Event Store GC afectado
+(`event_store_gc_avolcluster/`) nunca se mergeó al store principal (P-58/P-59 lo dejaron
+target-free y sin usar), así que no contaminó ningún resultado confirmatorio. Pendiente:
+localizar el código fuente del zone-store NQ para verificar su regla real, y decidir si
+`avolcluster_event_store_extract.py` se re-corre filtrando por la cadena antes de
+integrarse a algo formal.
+
