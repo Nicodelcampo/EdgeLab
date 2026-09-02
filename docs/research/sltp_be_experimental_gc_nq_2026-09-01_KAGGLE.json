@@ -1,0 +1,170 @@
+{
+  "schema": "sltp_be_experimental_gc_nq_v1",
+  "status": "EXPERIMENTAL_NON_CONFIRMATORY",
+  "edge_declared": false,
+  "promotion_eligible": false,
+  "outcomes_opened": true,
+  "platform": "kaggle",
+  "repo_commit": "755dc3cb4771eb426ca8988ae1726c3abf382645",
+  "override_authorized_by": "Nico, 2026-09-01, explicito en chat -- override de DRAFT_DESIGN_ONLY_PREAUTHORIZATION (GC) y NO_DIRECTIONAL_MECHANISM (NQ); tambien override explicito del memo CME/Kaggle para esta corrida puntual",
+  "scope": "1 contrato por activo (GC 08-26 / NQ 09-26, elegidos por tamano de archivo -- mas chico = mas rapido en Kaggle), 5 celdas chicas -- NO la grilla de 372+24+16 de la campana real. max_age_bars=200 (no 2000) para acotar el cuello de botella O(n_blocks x n_active_zones) de update_active_zones -- parametro de conveniencia de ESTA corrida experimental, no toca la config de campana congelada",
+  "assets": {
+    "GC": {
+      "asset": "GC",
+      "contract_file": "GC_08-26_ticks.parquet",
+      "n_ticks": 2970014,
+      "n_signals": 1422,
+      "cost_model": "frozen_p2b",
+      "tick_value_usd": 10.0,
+      "cells": {
+        "REF_B9_H100": {
+          "n": 1422,
+          "by_outcome": {
+            "TP_FIRST": 688,
+            "SL_FIRST": 691,
+            "TIMEOUT": 43
+          },
+          "median_gross_ticks": -1.0,
+          "mean_gross_ticks": -0.035864978902953586,
+          "economics": {
+            "median_net_ticks": -6.5,
+            "mean_net_ticks": -4.544303797468355,
+            "median_net_usd": -65.0,
+            "mean_net_usd": -45.44303797468355
+          }
+        },
+        "REF_B18_H100": {
+          "n": 1422,
+          "by_outcome": {
+            "SL_FIRST": 448,
+            "TP_FIRST": 456,
+            "TIMEOUT": 518
+          },
+          "median_gross_ticks": -1.0,
+          "mean_gross_ticks": -0.25035161744022505,
+          "economics": {
+            "median_net_ticks": -6.5,
+            "mean_net_ticks": -4.7883263009845285,
+            "median_net_usd": -65.0,
+            "mean_net_usd": -47.88326300984529
+          }
+        },
+        "ASIM_TP18_SL9_H100": {
+          "n": 1422,
+          "by_outcome": {
+            "SL_FIRST": 819,
+            "TP_FIRST": 395,
+            "TIMEOUT": 208
+          },
+          "median_gross_ticks": -9.0,
+          "mean_gross_ticks": 0.38115330520393814,
+          "economics": {
+            "median_net_ticks": -14.5,
+            "mean_net_ticks": -4.3691983122362865,
+            "median_net_usd": -145.0,
+            "mean_net_usd": -43.69198312236286
+          }
+        },
+        "ASIM_TP9_SL18_H100": {
+          "n": 1422,
+          "by_outcome": {
+            "TP_FIRST": 809,
+            "SL_FIRST": 383,
+            "TIMEOUT": 230
+          },
+          "median_gross_ticks": 9.0,
+          "mean_gross_ticks": -0.6068917018284107,
+          "economics": {
+            "median_net_ticks": 5.5,
+            "mean_net_ticks": -4.90295358649789,
+            "median_net_usd": 55.0,
+            "mean_net_usd": -49.029535864978904
+          }
+        },
+        "BE_G9_TP18_SL18_H100": {
+          "n": 1422,
+          "by_outcome": {
+            "BE_STOP": 324,
+            "TP_FIRST": 383,
+            "SL_FIRST": 383,
+            "TIMEOUT": 332
+          },
+          "median_gross_ticks": 0.0,
+          "mean_gross_ticks": -0.17440225035161744,
+          "economics": {
+            "median_net_ticks": -5.5,
+            "mean_net_ticks": -4.9261603375527425,
+            "median_net_usd": -55.0,
+            "mean_net_usd": -49.26160337552743
+          }
+        }
+      }
+    },
+    "NQ": {
+      "asset": "NQ",
+      "contract_file": "NQ_09-26_ticks.parquet",
+      "n_ticks": 6235464,
+      "n_signals": 3485,
+      "cost_model": "none_validated",
+      "tick_value_usd": 5.0,
+      "cells": {
+        "REF_B9_H100": {
+          "n": 3485,
+          "by_outcome": {
+            "TP_FIRST": 1720,
+            "SL_FIRST": 1677,
+            "TIMEOUT": 88
+          },
+          "median_gross_ticks": 2.0,
+          "mean_gross_ticks": 0.10444763271162123,
+          "economics": null
+        },
+        "REF_B18_H100": {
+          "n": 3485,
+          "by_outcome": {
+            "TP_FIRST": 1340,
+            "SL_FIRST": 1265,
+            "TIMEOUT": 880
+          },
+          "median_gross_ticks": 0.0,
+          "mean_gross_ticks": 0.28809182209469153,
+          "economics": null
+        },
+        "ASIM_TP18_SL9_H100": {
+          "n": 3485,
+          "by_outcome": {
+            "TP_FIRST": 1081,
+            "SL_FIRST": 2080,
+            "TIMEOUT": 324
+          },
+          "median_gross_ticks": -9.0,
+          "mean_gross_ticks": 0.5632711621233859,
+          "economics": null
+        },
+        "ASIM_TP9_SL18_H100": {
+          "n": 3485,
+          "by_outcome": {
+            "TP_FIRST": 2105,
+            "SL_FIRST": 1012,
+            "TIMEOUT": 368
+          },
+          "median_gross_ticks": 9.0,
+          "mean_gross_ticks": -0.28149210903873745,
+          "economics": null
+        },
+        "BE_G9_TP18_SL18_H100": {
+          "n": 3485,
+          "by_outcome": {
+            "TP_FIRST": 1081,
+            "BE_STOP": 862,
+            "SL_FIRST": 1012,
+            "TIMEOUT": 530
+          },
+          "median_gross_ticks": 0.0,
+          "mean_gross_ticks": 0.3124820659971306,
+          "economics": null
+        }
+      }
+    }
+  }
+}

@@ -50,7 +50,7 @@ BT2A_DEFAULTS = dict(
     imbalance_mode="Diagonal", trap_volume_source="AggressiveSide", ticks_per_row=1,
     imbalance_ratio=3.0, min_stacked_rows=2, min_trap_frac=0.2, min_trap_volume=0.0,
     min_export_volume=1.0, use_wick_filter=True, wick_zone_pct=30.0, min_delta_filter=0.0,
-    invalidation="CloseThrough", max_age_bars=2000, bar_ticks=25,
+    invalidation="CloseThrough", max_age_bars=200, bar_ticks=25,
 )
 
 CELLS = [
@@ -69,12 +69,15 @@ ASSETS = {
 }
 
 
-def run_asset(name: str, cfg: dict[str, Any]) -> dict[str, Any]:
+def run_asset(name: str, cfg: dict[str, Any], max_ticks: int | None = None) -> dict[str, Any]:
     path = cfg["path"]
     if not path.exists():
         raise FileNotFoundError(path)
     input_sha = file_sha256(path)
-    ticks, *_ = load_canonical_ticks(path, tick_size=cfg["tick_size"], max_ticks=None)
+    if max_ticks is not None:
+        ticks, *_ = load_canonical_ticks(path, tick_size=cfg["tick_size"], max_ticks=max_ticks, allow_truncation=True)
+    else:
+        ticks, *_ = load_canonical_ticks(path, tick_size=cfg["tick_size"], max_ticks=None)
     session_labels = session_dates_from_ns(ticks.ts_ns)
 
     result = run_bt2a(ticks, params=BT2A_DEFAULTS)
@@ -134,6 +137,12 @@ def run_asset(name: str, cfg: dict[str, Any]) -> dict[str, Any]:
 
 
 def main() -> int:
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--max-ticks", type=int, default=None,
+                     help="Tope de ticks por activo (validacion rapida de pipeline, no corrida completa)")
+    args = ap.parse_args()
+
     out = {
         "schema": "sltp_be_experimental_gc_nq_v1",
         "status": "EXPERIMENTAL_NON_CONFIRMATORY",
@@ -142,14 +151,17 @@ def main() -> int:
         "outcomes_opened": True,
         "override_authorized_by": "Nico, 2026-09-01, explicito en chat -- override de DRAFT_DESIGN_ONLY_PREAUTHORIZATION (GC) y NO_DIRECTIONAL_MECHANISM (NQ)",
         "scope": "1 contrato por activo, 5 celdas chicas -- NO es la grilla de 372+24+16 de la campana real",
+        "pipeline_validation_only": args.max_ticks is not None,
+        "max_ticks_per_asset": args.max_ticks,
         "assets": {},
     }
     for name, cfg in ASSETS.items():
         print(f"[*] {name}: {cfg['contract']}", flush=True)
-        out["assets"][name] = run_asset(name, cfg)
+        out["assets"][name] = run_asset(name, cfg, max_ticks=args.max_ticks)
         print(f"    n_signals={out['assets'][name]['n_signals']}", flush=True)
 
-    out_path = REPO_ROOT / "docs" / "research" / "sltp_be_experimental_gc_nq_2026-09-01.json"
+    suffix = "_PIPELINE_VALIDATION_ONLY" if args.max_ticks is not None else ""
+    out_path = REPO_ROOT / "docs" / "research" / f"sltp_be_experimental_gc_nq_2026-09-01{suffix}.json"
     out_path.write_text(json.dumps(out, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"escrito: {out_path}")
     return 0

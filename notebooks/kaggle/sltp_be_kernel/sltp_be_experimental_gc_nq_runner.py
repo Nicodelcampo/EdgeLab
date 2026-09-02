@@ -22,11 +22,12 @@ import numpy as np
 REPO_URL = "https://github.com/Nicodelcampo/EdgeLab.git"
 EXPECTED_COMMIT = "755dc3cb4771eb426ca8988ae1726c3abf382645"
 REPO_DIR = Path("/kaggle/working/EdgeLab")
-GC_DATA_DIR = "/kaggle/input/edgelab-ticks-gc-preholdout"
-NQ_DATA_DIR = "/kaggle/input/edgelab-ticks-nq-preholdout"
+KAGGLE_INPUT_ROOT = Path("/kaggle/input")
 
 if not (REPO_DIR / ".git").exists():
     subprocess.run(["git", "clone", "--filter=blob:none", "--no-checkout", REPO_URL, str(REPO_DIR)], check=True)
+    subprocess.run(["git", "sparse-checkout", "set", "--no-cone",
+                     "edgelab/**", "tools/**"], cwd=REPO_DIR, check=True)
 subprocess.run(["git", "fetch", "origin", EXPECTED_COMMIT, "--depth", "200"], cwd=REPO_DIR, check=True)
 subprocess.run(["git", "checkout", "-B", "sltp_experimental", EXPECTED_COMMIT], cwd=REPO_DIR, check=True)
 actual = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=REPO_DIR, text=True).strip()
@@ -48,7 +49,7 @@ BT2A_DEFAULTS = dict(
     imbalance_mode="Diagonal", trap_volume_source="AggressiveSide", ticks_per_row=1,
     imbalance_ratio=3.0, min_stacked_rows=2, min_trap_frac=0.2, min_trap_volume=0.0,
     min_export_volume=1.0, use_wick_filter=True, wick_zone_pct=30.0, min_delta_filter=0.0,
-    invalidation="CloseThrough", max_age_bars=2000, bar_ticks=25,
+    invalidation="CloseThrough", max_age_bars=200, bar_ticks=25,
 )
 
 CELLS = [
@@ -60,22 +61,22 @@ CELLS = [
 ]
 
 ASSETS = {
-    "GC": dict(data_dir=GC_DATA_DIR, filename="GC_04-26_ticks.parquet", cost_model="frozen_p2b",
+    "GC": dict(filename="GC_08-26_ticks.parquet", cost_model="frozen_p2b",
                base_friction_ticks=3.5, adverse_friction_ticks=5.5, tick_value_usd=10.0),
-    "NQ": dict(data_dir=NQ_DATA_DIR, filename="NQ_09-25_ticks.parquet", cost_model="none_validated",
+    "NQ": dict(filename="NQ_09-26_ticks.parquet", cost_model="none_validated",
                base_friction_ticks=None, adverse_friction_ticks=None, tick_value_usd=5.0),
 }
 
 
-def pick_one_contract_parquet(data_dir: str, filename: str) -> Path:
-    path = Path(data_dir) / filename
-    if not path.exists():
-        raise FileNotFoundError(path)
-    return path
+def pick_one_contract_parquet(filename: str) -> Path:
+    hits = list(KAGGLE_INPUT_ROOT.rglob(filename))
+    if not hits:
+        raise FileNotFoundError(f"{filename} not found anywhere under {KAGGLE_INPUT_ROOT}")
+    return hits[0]
 
 
 def run_asset(name: str, cfg: dict) -> dict:
-    path = pick_one_contract_parquet(cfg["data_dir"], cfg["filename"])
+    path = pick_one_contract_parquet(cfg["filename"])
     print(f"[*] {name}: {path.name}", flush=True)
     ticks = load_canonical_parquet(str(path))
     session_labels = session_dates_from_ns(ticks.ts_ns)
@@ -133,7 +134,7 @@ def main() -> int:
         "platform": "kaggle",
         "repo_commit": EXPECTED_COMMIT,
         "override_authorized_by": "Nico, 2026-09-01, explicito en chat -- override de DRAFT_DESIGN_ONLY_PREAUTHORIZATION (GC) y NO_DIRECTIONAL_MECHANISM (NQ); tambien override explicito del memo CME/Kaggle para esta corrida puntual",
-        "scope": "1 contrato por activo (el primero alfabetico del dataset preholdout), 5 celdas chicas -- NO la grilla de 372+24+16 de la campana real",
+        "scope": "1 contrato por activo (GC 08-26 / NQ 09-26, elegidos por tamano de archivo -- mas chico = mas rapido en Kaggle), 5 celdas chicas -- NO la grilla de 372+24+16 de la campana real. max_age_bars=200 (no 2000) para acotar el cuello de botella O(n_blocks x n_active_zones) de update_active_zones -- parametro de conveniencia de ESTA corrida experimental, no toca la config de campana congelada",
         "assets": {},
     }
     for name, cfg in ASSETS.items():
