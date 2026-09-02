@@ -1,8 +1,9 @@
 # EdgeLab — instrucciones permanentes de sesión
 
-> **Punto de entrada obligatorio:** `AUDITOR_START_HERE.md`.  
+> **Punto de entrada obligatorio:** `PROJECT_INDEX.md`.  
+> **Arranque del auditor:** `AUDITOR_START_HERE.md`.  
 > **Estado vivo:** `docs/CURRENT.md`.  
-> **Handoff 2026-08-24:** `docs/HANDOFF_AUDITOR_2026-08-24.md`.  
+> **Ramas:** `docs/BRANCH_REGISTRY_2026-09-02.md`.  
 > **Rama viva:** `foundation/f0b-compatibility-probe`.
 
 El referente canónico es `docs/NORTH_STAR.md`; sha256 del cuerpo anterior al marcador: `d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1`. Si Notion, memoria del chat y repo divergen, manda el repo. Un spec o manifest congelado manda sobre un resumen general para el objeto que gobierna.
@@ -20,23 +21,21 @@ Encontrar edges netos, robustos y ejecutables. Prioridad:
 
 Paridad exacta, infraestructura, una zona o un backtest aislado no son un edge.
 
-## Estado obligatorio al 2026-08-24
+## Estado obligatorio al 2026-09-02
 
-- BigTrap2Absorption es la línea primaria.
-- Puerta 0 está firmada en dos ventanas directas.
-- `KERNEL_PARITY_ON_EQUAL_INPUT = ~EXACT`.
-- `GLOBAL_ACCUMULATED_PARITY = FAIL` por el indexado global; `SESSION_RECOVERABLE_PARITY = RECOVERED`.
-- `TAPE_VS_CHART_COVERAGE = ABIERTO`.
-- Universo 152; split congelado 133/19 con regla `i % 8 == 7`.
-- Sweep target-free de 99 configuraciones en curso, parcial sobre GC 02-26.
-- Puerta 1 no se corrió y no existe runner.
-- `CAMPAIGN_OUTCOMES_OPENED=false` describe sólo el sweep actual.
-- `PREEXISTING_OUTCOME_EXPOSURE=YES`: 11/133, la sellada `20260608`, cuatro contratos del holdout y búsquedas de contexto/cross-asset quedaron expuestos por scripts previos.
-- GATE es cimiento ejecutable, pendiente de checkpoint real, no operativo.
-- Crypto/contextos vive en una rama separada; PR #14 tiene CI roja.
-- Hay 26 ramas remotas accesibles y ninguna protegida; ver el registry antes de tocar una.
-
-**Prohibido escribir `OUTCOMES_NOT_OPENED` como afirmación global.**
+- Rama primaria: `foundation/f0b-compatibility-probe`; resolver el HEAD remoto al comenzar. No fijarlo por memoria porque avanzó durante la auditoría.
+- 60 ramas remotas observadas, 17 PR abiertas, 0 ramas protegidas.
+- Línea crítica actual: régimen contractual NQ y paridad/lifecycle de aVolClusterPOI NQ.
+- Manifiesto NQ v1: `PROVISIONAL_INVALID_CALENDAR / DO_NOT_USE_FOR_EF0`.
+- Scan NQ v2: 119.153.201 filas, `ABSTAIN_COMPLETENESS_EVIDENCE_REQUIRED`, 0 rolls certificados.
+- Sensibilidad diagnóstica P-68: los cuatro rolls provisionales son idénticos con weekdays y con weekdays menos nueve feriados; ratios idénticos a 6 decimales. Esto no certifica el manifiesto.
+- El volumen del scan v2 ya excluye mantenimiento. La normalización NQ 09-26 no era una tarea pendiente.
+- Calendario CME: bloqueo de acceso a las horas oficiales por producto, no decisión científica. Sigue faltando capturar y hashear la fuente oficial.
+- NQ 09-26: 363.601 ticks en 16:00–17:00 CT sobre 9 días. Dos hipótesis descartadas; plantilla NT8 distinta es dominante pero `root_cause_status=UNRESOLVED`.
+- Paridad aVolClusterPOI NQ 06-26: FAIL, con 19 `GEOMETRY_DIFF`, 57 `MISSING_IN_NT8` y 48 `MISSING_IN_PYTHON`; primero alinear el borde de ~3 ticks.
+- EF0 sigue bloqueado. Outcomes, P&L y holdout requieren autorización explícita separada.
+- `audit/notion-ai-sltp-p2b-provenance-20260830`: `FROZEN_READ_ONLY / DO_NOT_MERGE / DO_NOT_DELETE`.
+- `CAMPAIGN_OUTCOMES_OPENED=false` nunca se usa como afirmación global: `PREEXISTING_OUTCOME_EXPOSURE=YES`.
 
 ## Primer comando y preflight de cada sesión
 
@@ -72,7 +71,7 @@ Antes de medir:
 - Todo WARN/FAIL requiere causa raíz; no ampliar tolerancias después de ver resultados.
 - Todo cambio de semántica de validación requiere decisión explícita de Nico.
 - Verificar cada commit inmediatamente con su estadística de archivos.
-- No borrar, cerrar ni mergear ramas sin la clasificación de `docs/BRANCH_REGISTRY_2026-08-24.md` y una decisión explícita.
+- No borrar, cerrar ni mergear ramas sin verificar `docs/BRANCH_REGISTRY_2026-09-02.md`, ancestry, patches y decisión explícita.
 
 ## Firewall de outcomes y holdout
 
@@ -84,23 +83,27 @@ Holdout: `2026-07-01 → 2026-12-31`.
 - MAE/MFE, TP/SL, WinRate, Net, retornos futuros y cualquier rescate post-hoc son outcomes.
 - No trasladar costos ni parámetros entre instrumentos sin justificación y preregistro.
 
-## Reanudación del sweep BT2Absorption
+## Camino crítico NQ
 
-- Leer `docs/research/BT2_ABSORPTION_SWEEP_OVERNIGHT_2026-08-24.md` y el estado consolidado.
-- No relanzar a ciegas: inspeccionar proceso, parciales, `run_status`, `config_id`, hashes y procedencia.
-- Continuar con `--resume`.
-- Un subconjunto de contratos se etiqueta `COMPLETE_TARGET_FREE_PARTIAL_CONTRACTS`.
-- No seleccionar un ganador: el sweep sólo mapea sensibilidad estructural.
-- No implementar ni ejecutar Puerta 1 como parte de esa continuidad.
+1. Obtener y hashear horarios oficiales CME Equity Index aplicables al período.
+2. Completar cobertura de fuente por contrato y trade date.
+3. Producir evidencia de completitud aprobable; no usar minutos activos como prueba.
+4. Reconstruir el manifiesto y verificar que sobrevivan los cuatro rolls diagnósticamente robustos.
+5. Reconstruir desde raw cada intervalo contractual con reset total en el roll.
+6. Resolver paridad y lifecycle de aVolClusterPOI.
+7. Recién después considerar EF0.
+
+No recortar post hoc el trace existente de NQ 06-26 ni reutilizar su estado a través del roll.
 
 ## Ramas y módulos
 
 - Primary: `foundation/f0b-compatibility-probe`.
+- Auditoría divergente: congelada; sólo auditoría por merge-base, paths y patches.
 - GATE: `research/gate-regime-context`; no operativo.
-- Crypto/contextos: `work/crypto-context-foundation-20260824`; PR #14 roja.
+- Crypto/contextos: `work/crypto-context-foundation-20260824`; módulo separado.
 - G2: dos contratos rivales (`fix/g2-a1-*`); no adjudicar por check verde.
 - `main`, `backup/*` y `preserve/*` divergen deliberadamente.
-- Las 26 ramas, tips y acciones están en `docs/BRANCH_REGISTRY_2026-08-24.md`.
+- Ver las 60 refs en `docs/BRANCH_REGISTRY_2026-09-02.md`.
 
 ## Datos y material externo
 
@@ -110,7 +113,7 @@ Holdout: `2026-07-01 → 2026-12-31`.
 - `docs/EXTERNAL_ARTIFACTS_MANIFEST_2026-08-24.json`;
 - `docs/incidents/INCIDENTE_OUTCOMES_UNTRACKED_2026-08-24.md`.
 
-Nunca versionar credenciales o secretos para hacerlos «visibles». Visibilidad significa manifest, identidad, procedencia y responsable; no necesariamente payload.
+Nunca versionar credenciales o secretos para hacerlos visibles. Visibilidad significa manifest, identidad, procedencia y responsable; no necesariamente payload.
 
 ## Rituales permanentes
 
@@ -125,19 +128,21 @@ Nunca versionar credenciales o secretos para hacerlos «visibles». Visibilidad 
 
 ## Punteros
 
+- `PROJECT_INDEX.md`
 - `AUDITOR_START_HERE.md`
 - `docs/CURRENT.md`
-- `docs/HANDOFF_AUDITOR_2026-08-24.md`
+- `docs/PROJECT_CHRONOLOGY_2026-09-02.md`
+- `docs/BRANCH_REGISTRY_2026-09-02.md`
+- `docs/OPEN_IDEAS_INDEX_2026-09-02.md`
 - `docs/NORTH_STAR.md`
 - `PENDIENTE.md`
-- `docs/BRANCH_REGISTRY_2026-08-24.md`
 - `docs/REPOSITORY_VISIBILITY_AUDIT_2026-08-24.md`
 - `docs/edge_validation_contract.md`
 - `docs/nt8_indicator_parity_contract.md`
 - `docs/incidents/`
 
-El detalle histórico retirado de este archivo sigue disponible en Git y en los documentos citados. No inferir que una regla histórica desapareció sólo porque su prosa ya no está duplicada acá; verificar la autoridad específica antes de cambiar comportamiento.
+Los documentos del 24 y 28 de agosto preservan historia, pero ya no son el punto de entrada vigente.
 
 ## Aporte al referente
 
-Las instrucciones de sesión ya no arrancan desde el 10-ago ni afirman un holdout intacto. El preflight, el incidente, las ramas y la campaña viva quedan alineados con el estado remoto que el siguiente auditor efectivamente encontrará.
+Las instrucciones de sesión apuntan al corte real del 2-sep, conservan los firewalls y distinguen robustez diagnóstica de certificación contractual.

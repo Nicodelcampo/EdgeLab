@@ -1,33 +1,41 @@
 # AUDITOR START HERE — EdgeLab
 
-> **Punto de entrada único para el traspaso del 2026-08-24.**  
-> Audited scientific base: `9b23c307cb112cdd6392d98673e8ead2e8bc4698`  
-> Handoff package commit: `7b360bf8f6bc4ac54ca72f771520690046f61789`  
-> Rama de continuidad: `foundation/f0b-compatibility-probe`
+> **Punto de entrada operativo actualizado al 2026-09-02.**  
+> Rama de continuidad: `foundation/f0b-compatibility-probe`.  
+> Resolver el HEAD remoto al comenzar; no copiar un hash desde un handoff.
 
 ## Lectura obligatoria
 
-1. [`docs/HANDOFF_AUDITOR_2026-08-24.md`](docs/HANDOFF_AUDITOR_2026-08-24.md)
-2. [`docs/REPOSITORY_VISIBILITY_AUDIT_2026-08-24.md`](docs/REPOSITORY_VISIBILITY_AUDIT_2026-08-24.md)
-3. [`docs/BRANCH_REGISTRY_2026-08-24.md`](docs/BRANCH_REGISTRY_2026-08-24.md)
-4. [`docs/research/ESTADO_BT2_ABSORPTION_2026-08-24.md`](docs/research/ESTADO_BT2_ABSORPTION_2026-08-24.md)
-5. [`docs/incidents/INCIDENTE_OUTCOMES_UNTRACKED_2026-08-24.md`](docs/incidents/INCIDENTE_OUTCOMES_UNTRACKED_2026-08-24.md)
-6. [`PENDIENTE.md`](PENDIENTE.md) y [`docs/NORTH_STAR.md`](docs/NORTH_STAR.md)
+1. [`PROJECT_INDEX.md`](PROJECT_INDEX.md)
+2. [`docs/CURRENT.md`](docs/CURRENT.md)
+3. [`docs/OPEN_IDEAS_INDEX_2026-09-02.md`](docs/OPEN_IDEAS_INDEX_2026-09-02.md)
+4. [`docs/BRANCH_REGISTRY_2026-09-02.md`](docs/BRANCH_REGISTRY_2026-09-02.md)
+5. [`PENDIENTE.md`](PENDIENTE.md)
+6. [`docs/NORTH_STAR.md`](docs/NORTH_STAR.md)
 
-No empezar por el árbol completo de `docs/research/`; mezcla material vigente, sustituido e histórico.
+Para la historia completa: `docs/PROJECT_CHRONOLOGY_2026-09-02.md`. Para material local-only: `docs/REPOSITORY_VISIBILITY_AUDIT_2026-08-24.md`.
+
+No empezar por el árbol completo de `docs/research/`: mezcla evidencia vigente, material sustituido y familias distintas.
 
 ## Estado en 90 segundos
 
-- BigTrap2Absorption: Puerta 0 firmada en dos ventanas directas; paridad sobre insumo igual `~EXACT`.
-- El FAIL global de tres contratos era del indexado acumulado; la paridad se recupera por sesión.
-- `TAPE_VS_CHART_COVERAGE = ABIERTO`.
-- Universo: 152 sesiones; split congelado 133/19, intercalado `i % 8 == 7`.
-- Sweep target-free: 99 configuraciones, corriendo parcial sobre GC 02-26; no elige ganador.
-- Puerta 1: **no corrida** y sin runner.
-- Exposición previa: **sí** — 11/133, una sellada y contratos del holdout fueron tocados por scripts externos a la campaña.
-- GATE: ejecutable como cimiento, pendiente de checkpoint real, no operativo.
-- Crypto/contextos: PR #14 draft, CI roja.
-- Ramas: 26/26 accesibles; ninguna protegida; no borrar ni mergear desde este checklist.
+```text
+REMOTE_BRANCHES                     60
+OPEN_PULL_REQUESTS                  17
+PROTECTED_BRANCHES                  0
+PRIMARY_BRANCH                      foundation/f0b-compatibility-probe
+NQ_SCAN_V2_ROWS                     119153201
+NQ_MANIFEST_STATUS                  ABSTAIN_COMPLETENESS_EVIDENCE_REQUIRED
+NQ_CERTIFIED_ROLLS                  0
+NQ_PROVISIONAL_ROLLS                4, robustos en sensibilidad P-68
+CALENDAR_BLOCKER                    acceso a horas oficiales CME por producto
+SOURCE_COMPLETENESS                 no aprobada
+AVOLCLUSTER_NQ_PARITY               FAIL: 19 / 57 / 48
+EF0                                 BLOQUEADO
+PREEXISTING_OUTCOME_EXPOSURE        YES
+```
+
+Los cuatro rolls sobreviven al diagnóstico con y sin nueve feriados y con ratios idénticos a 6 decimales. Eso reduce el riesgo de que cambien, pero no certifica el calendario, la completitud ni el manifiesto.
 
 ## Primeros comandos
 
@@ -43,16 +51,21 @@ git status --short --untracked-files=all
 .venv\Scripts\python tools\estado.py
 ```
 
-En el clon reciente el remoto se llamó `github`, no `origin`. Detectarlo.
+En clones recientes el remoto se llamó `github`, no `origin`. Detectarlo.
 
-## Antes de retomar el sweep
+## Orden de reanudación
 
-1. confirmar que HEAD sea descendiente del audited base y contenga el handoff package;
-2. comprobar si existe un proceso todavía vivo;
-3. inventariar recursivamente cualquier `??`;
-4. verificar parciales, `run_status`, `config_id`, hashes y `head_start`;
-5. continuar con `--resume`; no borrar ni relanzar a ciegas;
-6. no abrir outcomes, Puerta 1 ni el holdout.
+1. Capturar y hashear horarios oficiales CME Equity Index.
+2. Construir cobertura de fuente por contrato/trade date.
+3. Aprobar evidencia de completitud por vía explícita; no por minutos activos.
+4. Reconstruir y verificar el manifiesto NQ.
+5. Reconstruir intervalos contractuales con reset en el roll.
+6. Alinear el borde de ~3 ticks y resolver paridad/lifecycle aVolClusterPOI.
+7. Sólo entonces evaluar autorización de EF0.
+
+## STOP
+
+No abrir outcomes, P&L, holdout, EF0 ni tolerancias. No certificar los cuatro rolls por el análisis de sensibilidad. No mergear la rama de auditoría divergente. No recortar post hoc el trace existente.
 
 ## Regla de lenguaje crítica
 
@@ -63,10 +76,6 @@ PREEXISTING_OUTCOME_EXPOSURE = YES
 
 No escribir `OUTCOMES_NOT_OPENED` como afirmación global.
 
-## Límite de la auditoría de visibilidad
-
-GitHub prueba que todas las refs remotas inventariadas existen. No puede probar que ninguna máquina tenga archivos adicionales. Los artefactos local-only conocidos, la cuarentena, los clones, el bundle BTC y el contenido legacy de Notion están declarados en el visibility audit y en `docs/EXTERNAL_ARTIFACTS_MANIFEST_2026-08-24.json`.
-
 ## Aporte al referente
 
-El siguiente auditor tiene un único arranque, un estado científico acotado, las 26 ramas clasificadas y una lista explícita de lo que sólo existe fuera de Git; puede continuar sin reconstruir esta conversación ni abrir outcomes.
+El siguiente auditor entra por el estado del 2-sep, ve primero el bloqueo real y no confunde estabilidad diagnóstica de rolls con certificación.

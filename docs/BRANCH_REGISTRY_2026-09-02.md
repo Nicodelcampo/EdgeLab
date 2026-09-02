@@ -1,10 +1,10 @@
 # EdgeLab — registro de ramas remotas 2026-09-02
 
-Corte observado: 2026-09-02 01:35 ART aproximadamente. Cobertura: 60/60 ramas devueltas por GitHub. Protección: 0/60. PR abiertas observadas: 17.
+Corte observado: 2026-09-02 01:42 ART. Cobertura: 60/60 ramas devueltas por GitHub. Protección: 0/60. PR abiertas observadas: 17. La rama primaria es móvil; tip observado inmediatamente antes de esta actualización: `40982ea1`.
 
 Este registro no autoriza merges, cierres ni borrados. `Clase` describe función y riesgo; no prueba ancestry ni patch-equivalence.
 
-| # | Rama | Tip | Clase / lectura |
+| # | Rama | Tip observado | Clase / lectura |
 |---:|---|---|---|
 | 1 | `audit/notion-ai-sltp-p2b-provenance-20260830` | `fc02d7d` | FROZEN_READ_ONLY; no mergear completa |
 | 2 | `audit/p0-bigtrap2-drift` | `1916ffa` | histórica BT2 |
@@ -24,7 +24,7 @@ Este registro no autoriza merges, cierres ni borrados. `Clase` describe función
 | 16 | `fix/g2-a1-calibration-hardening` | `780365c` | PR #8; semántica bloqueada |
 | 17 | `fix/g2-a1-statistical-semantics` | `f3b8263` | contrato rival G2 |
 | 18 | `fix/sweep-finalize-contract-scope` | `ee07c34` | fix MinExportVolume; auditar contención |
-| 19 | `foundation/f0b-compatibility-probe` | `f896ca6` | PRIMARY / integración |
+| 19 | `foundation/f0b-compatibility-probe` | móvil; ≥`40982ea` | PRIMARY / integración |
 | 20 | `infra/kaggle-frozen-execution-v1-20260828` | `efc735f` | PR #24; infraestructura fail-closed |
 | 21 | `main` | `cde6d93` | baseline, no trabajar |
 | 22 | `prep/indicator-onboarding-registry` | `2e8ed3b` | PR #9; aparcada |
@@ -35,7 +35,7 @@ Este registro no autoriza merges, cierres ni borrados. `Clase` describe función
 | 27 | `research/avolcluster-nq-gate1-infra-v1-20260828` | `b5b89bb` | PR #22; 44 decisiones abiertas |
 | 28 | `research/avolcluster-nq-lifecycle-v1-20260830` | `ca1f2b8` | lifecycle draft |
 | 29 | `research/avolcluster-nq-microticks-v1-20260828` | `3961b67` | resultado target-free / base PR #22 |
-| 30 | `research/avolcluster-nq-parity-oracle-20260901` | `eb8857d` | paridad + régimen causal; línea activa |
+| 30 | `research/avolcluster-nq-parity-oracle-20260901` | `eb8857d` | paridad + régimen causal; activa |
 | 31 | `research/bigtrap2-distance-matched-null` | `108823b` | PR #11; histórica |
 | 32 | `research/bigtrap2-local-displacement-null` | `29d78eb` | histórica / base de PR #13 |
 | 33 | `research/bigtrap2-multiframe-ml` | `05d2da7` | aparcada |
@@ -69,28 +69,20 @@ Este registro no autoriza merges, cierres ni borrados. `Clase` describe función
 
 ## Cadenas que no deben leerse como ramas independientes
 
-### AVol NQ
-
-`microticks` → `gate1-infra` → `infra/kaggle` forman una cadena de PR no lineal; lifecycle y parity/regime agregan trabajo posterior fuera de esa cadena.
-
-### BT2A NQ
-
-`tickframes-sweep` → `target-free-selection` → `gate1-v1` / `power-closure` / `nrand-capacity` / `v2-sweep` / `outcomes-runner` / `runner-impl`. La fecha del tip no determina precedencia semántica.
-
-### BT2A GC
-
-`gate2-l2-hardening` → `p2a-freeze` → ramas P2-A y P2-B. P2-A publicó un resultado negativo; P2-B requiere auditoría de procedencia antes de reuso.
+- **AVol NQ:** `microticks` → `gate1-infra` → `infra/kaggle`; lifecycle y parity/regime agregan trabajo posterior fuera de esa cadena.
+- **BT2A NQ:** `tickframes-sweep` → `target-free-selection` → contratos, potencia, capacidad, bindings y runners.
+- **BT2A GC:** `gate2-l2-hardening` → `p2a-freeze` → P2-A/P2-B. P2-A fue negativo; P2-B requiere auditoría de procedencia.
 
 ## PR abiertas observadas
 
 `#8, #9, #11, #12, #13, #14, #15, #16, #17, #18, #19, #20, #21, #22, #23, #24, #25`.
 
-Varias apuntan a bases viejas o a otras ramas de trabajo. Un check verde no resuelve vigencia, causalidad ni semántica.
+Un check verde no resuelve vigencia, causalidad ni semántica.
 
 ## Limitación explícita
 
-Se inspeccionaron las 60 refs, sus tips y los registros históricos disponibles. No se ejecutó localmente `git merge-base`, `git cherry` ni equivalencia binaria de patches. Por eso ninguna rama nueva se declara contenida o segura para borrar.
+Se inspeccionaron las 60 refs, tips y registros históricos. No se ejecutó localmente `git merge-base`, `git cherry` ni equivalencia binaria de patches. Ninguna rama nueva se declara contenida o segura para borrar.
 
 ## Aporte al referente
 
-El inventario vuelve a cubrir 100 % de las refs observadas y separa cadenas de investigación, resultados, backups y ramas congeladas sin fingir una adjudicación de merges.
+El registro cubre todas las refs y evita el falso problema de auto-referenciar el HEAD de la propia rama primaria.

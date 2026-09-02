@@ -1,98 +1,88 @@
 # EdgeLab — índice de ideas y trabajo abierto
 
-Corte: 2026-09-02. Este archivo no autoriza ninguna corrida. Agrupa lo abierto; `PENDIENTE.md`, los specs y los manifiestos conservan la autoridad detallada.
+Corte: 2026-09-02. Este archivo no autoriza corridas. `PENDIENTE.md`, specs y manifests conservan la autoridad detallada.
 
-## Prioridad 0 — bloqueos del camino actual
+## Prioridad 0 — camino actual
 
 | Línea | Estado medido | Próximo cierre verificable | STOP |
 |---|---|---|---|
-| Régimen contractual NQ | scan v2: 119.153.201 filas; 0 rolls certificados; abstención | certificar calendario CME y cobertura de fuente por separado | no EF0/outcomes/holdout |
-| NQ 09-26 mantenimiento | 363.601 ticks, 9 días; causa formal `UNRESOLVED` | inspeccionar plantilla/export NT8 y `.Last.txt` original | no adjudicar causa por inferencia |
-| Manifiesto NQ | v1 inválido; v2 sin evidencia aprobada | producir evidencia de completitud aprobable y reconstruir | aprobación de Nico requerida |
-| Trace NQ operable | trace 06-26 no representa cadena contractual certificada | reconstruir desde raw con reset total en cada roll | no recortar post hoc el trace contaminado |
+| Rolls NQ | 4 fechas/contratos/ratios idénticos a 6 decimales bajo dos calendarios diagnósticos | reconstruir con evidencia aprobada | no llamar certificado |
+| Calendario CME | fechas 2026 visibles; horas por producto no capturadas; 2025 no publicado; WAF bloquea descarga | obtener documento oficial por vía accesible, hashearlo y registrar fecha | no inferir horas de patrones empíricos |
+| Cobertura de fuente | separada conceptualmente; no aprobada | particiones esperadas/presentes, estado de extracción y hash | no usar minutos activos |
+| Manifiesto NQ | v1 inválido; v2 abstiene | aprobar completitud y reconstruir | no EF0/outcomes/holdout |
+| NQ 09-26 | volumen v2 ya excluye mantenimiento | confirmar plantilla NT8 sólo como causa/procedencia residual | no adjudicar causa sin inspección |
+| Trace operable | trace 06-26 no representa cadena certificada | reconstruir desde raw con reset en roll | no recortar post hoc |
 
-Orden obligatorio: plantilla NT8 → documentos CME hasheados → cobertura de fuente → evidencia de completitud → manifiesto → crossovers → reconstrucción del trace → EF0.
+El calendario sigue siendo obligatorio para certificar, pero P-68 midió que excluir nueve feriados no cambia ninguno de los cuatro rolls. El bloqueo es de certificación y acceso a fuente, no evidencia actual de que las fechas vayan a moverse.
 
 ## Prioridad 1 — aVolClusterPOI NQ
 
 | Tema | Estado | Pendiente |
 |---|---|---|
 | Paridad NQ 06-26 | FAIL: 19 geometry, 57 missing NT8, 48 missing Python | alinear secuencias ignorando ~3 ticks de borde y reclasificar |
-| TickBar classifier | `STREAM_MISMATCH` nominal, pero shift +3h correcto | corregir comparación posicional antes de atribuir mismatch |
-| Lifecycle | borrador con 44 decisiones abiertas en la rama Gate1B/Gate3 | decidir semántica de touch, episodio, expiración y colapso |
-| Gate 1B/Gate 3 | infraestructura fail-closed; no resultado | cerrar decisiones y procedencia antes de ejecutar |
-| EF0 | bloqueado por régimen y paridad | no correr hasta cerrar ambos frentes |
+| TickBar classifier | shift +3h correcto; comparación posicional frágil | corregir alineación antes de atribuir mismatch |
+| Lifecycle | 44 decisiones abiertas en Gate1B/Gate3 | decidir touch, episodio, expiración y colapso |
+| Gate 1B/Gate 3 | infraestructura fail-closed; no resultado | cerrar decisiones y procedencia |
+| EF0 | bloqueado por régimen y paridad | no ejecutar todavía |
 
 ## Prioridad 2 — BT2A NQ
 
-La cadena de ramas incluye sweep V2, selección target-free, contrato Gate 1, potencia, capacidad N-RAND, bindings y runner. La adopción `bt2a_nq_7e84981882b0b380` se basó en 2/5 contratos y es informal. El protocolo pedía 4. No reescribir esa historia como selección formal.
+La adopción `bt2a_nq_7e84981882b0b380` se basó en 2/5 contratos. Spearman de `n_events` = 0,976 y top-10 idéntico, pero el protocolo exigía 4: no es `SELECTED_STABLE_NQ_CONFIGURATION` formal.
 
-El resultado posterior `NO_DIRECTIONAL_MECHANISM` no habilita campaña de salida NQ. Las ramas de implementación sirven como evidencia y tooling; no como promoción.
+El resultado posterior `NO_DIRECTIONAL_MECHANISM` no habilita campaña de salida NQ. Tooling y runners no equivalen a promoción.
 
 ## Prioridad 3 — BT2A GC económico y salidas
 
 ### HP-005 — SL/TP asimétrico + breakeven
 
-Diseño en `research/bt2a-gc-sltp-breakeven-design-v1-20260830`.
-
-Bloqueos:
-
-1. suite de verdad conocida para Romano-Wolf y MCS;
-2. artefacto P2-B verificable o retracción formal;
-3. auditoría de capas de trayectoria ya presentes en Event Store;
-4. freeze explícito antes de outcomes reales.
-
-La prueba sintética de 17.408 llamadas demuestra mecánica, no expectativa económica.
+Bloqueos: suite de verdad conocida Romano-Wolf/MCS; artefacto P2-B o retracción; auditoría de capas de trayectoria; freeze explícito antes de outcomes. Las 17.408 simulaciones sintéticas prueban mecánica, no expectativa.
 
 ### P2-A horario GC
 
-Cerrado como resultado negativo: 0/12 contrastes Holm. No crear filtros horarios post hoc con los dos contrastes nominales de `(30t,250t)`.
+Resultado negativo: 0/12 contrastes sobrevivieron Holm. No crear filtros horarios post hoc.
 
 ### P2-B GC
 
-Existe rama económica y corrección del orden `(ts, source_row)`. Antes de reutilizar resultados hay que cerrar identidad del artefacto, población contractual y procedencia. Los costos GC no se transportan a NQ.
+Cerrar identidad de artefacto, población contractual y procedencia antes de reutilizar. Costos GC no se transportan a NQ.
 
 ## Ideas de indicadores
 
-| ID | Idea | Estado correcto | Condición de reentrada |
+| ID | Idea | Estado correcto | Reentrada |
 |---|---|---|---|
-| HP-001 | burst de zonas HFT al cierre en ES | no medida en ES | verificar resolución temporal y comparar contra volumen horario |
-| HP-002 | VolTicksDef | no agregar | rescatar sólo estimador P² para indicador existente o estrategia |
-| HP-003 | aVolClusterPOI | candidato válido, ya convertido en línea activa | EventLog target-free, score descompuesto, paridad y régimen |
-| HP-004 | aVolZonePOI | descartado | conservar sólo como control negativo de diseño |
-| HP-005 | salidas SL/TP+BE GC | diseño pendiente de freeze | cerrar RW/MCS, P2-B y Event Store |
+| HP-001 | burst HFT al cierre en ES | no medida en ES | resolución temporal + control por volumen horario |
+| HP-002 | VolTicksDef | no agregar | rescatar sólo estimador P² |
+| HP-003 | aVolClusterPOI | línea activa | EventLog target-free, score descompuesto, paridad y régimen |
+| HP-004 | aVolZonePOI | descartado | control negativo de diseño |
+| HP-005 | salidas SL/TP+BE GC | diseño sin freeze | RW/MCS, P2-B y Event Store |
 
-Nota de procedencia: `foundation/docs/HIPOTESIS_PENDIENTES.md` contiene HP-001…HP-004. HP-005 sólo está completo en la rama `research/bt2a-gc-sltp-breakeven-design-v1-20260830`; por eso queda indexado acá para que no se pierda.
+HP-005 sólo está completa en `research/bt2a-gc-sltp-breakeven-design-v1-20260830`; se indexa para que no desaparezca de la vista de `foundation`.
 
-## Líneas secundarias abiertas o aparcadas
+## Líneas secundarias
 
 | Línea | Estado | Pregunta pendiente |
 |---|---|---|
-| G2 A1 | dos contratos rivales | adjudicar semántica con verdad conocida, no por CI verde |
-| GATE | cimiento ejecutable, no operativo | checkpoint con datos reales y procedencia |
-| Crypto/contextos | rama/PR separados | historia de `LOT_SIZE`, fuentes y CI; nada de transportar edges |
-| GEX | observacional | cerrar convención de signo GEX-M0 antes de interpretar |
-| YM PreRange | histórica | calendario/sesión y nulo correcto antes de reactivar |
-| ZAMR-1 | infraestructura/parqueada | decidir vigencia frente a líneas actuales |
-| BigTrap2 multiframe ML | aparcada | nuevo manifiesto y STOP antes de reactivar |
-| Coordinate store | PR abierta | auditar si la representación es la fuente canónica para trayectorias |
-| Event Store PIT | código versionado | recomputación y equivalencia contra poblaciones canónicas |
-| ES/MBT a-priori | ramas históricas | adjudicar diff y decidir si conservar sólo como documentación |
+| G2 A1 | dos contratos rivales | adjudicar con verdad conocida, no CI |
+| GATE | cimiento no operativo | checkpoint real y procedencia |
+| Crypto | rama/PR separados | historia de `LOT_SIZE`, fuentes y CI |
+| GEX | observacional | convención de signo GEX-M0 |
+| YM PreRange | histórica | calendario/sesión y nulo antes de reactivar |
+| ZAMR-1 | aparcada | vigencia frente a líneas actuales |
+| BigTrap2 multiframe | aparcada | manifiesto y STOP nuevos |
+| Coordinate store | PR abierta | autoridad para trayectorias |
+| Event Store PIT | versionado | recomputación y equivalencia poblacional |
+| ES/MBT a-priori | históricas | adjudicar diff |
 
 ## Deuda de repositorio
 
-1. 60 ramas remotas observadas; ninguna protegida.
-2. 17 PR abiertas; varias forman cadenas cuya base no es `foundation`.
-3. Los registros del 24 y 28 de agosto quedaron superados.
-4. `docs/CURRENT.md` todavía describe el corte del 24-ago.
-5. La rama de auditoría divergente no debe mergearse completa.
-6. Falta auditoría mecánica de ancestry y equivalencia de patches para clasificar ramas históricas como contenidas.
-7. El JSON del diagnóstico NQ 09-26 conserva las cuatro hipótesis en `hypotheses_not_decided`, aunque el README descarta dos: reconciliar estado machine-readable sin alterar el artefacto original.
+1. 60 ramas; 0 protegidas; 17 PR abiertas.
+2. Falta ancestry/patch-equivalence mecánica para ramas históricas.
+3. El JSON original del diagnóstico NQ 09-26 conserva cuatro hipótesis no decididas aunque el README descarta dos; no alterar el artefacto original, publicar enmienda si se corrige.
+4. Los handoffs del 24/28-ago son históricos, no puntos de entrada.
 
 ## Cómo registrar una idea nueva
 
-Una idea nueva entra con: ID, fecha, origen, instrumento, mecanismo, comparador no nulo, medición que la falsaría, firewall de outcomes y rama responsable. Si ya existe un mecanismo equivalente, se registra como mejora o control, no como indicador nuevo.
+ID, fecha, origen, instrumento, mecanismo, comparador no nulo, criterio de falsación, firewall y rama responsable. Un mecanismo duplicado entra como mejora o control, no como indicador nuevo.
 
 ## Aporte al referente
 
-Las ideas dejan de estar repartidas entre ramas, PR y handoffs: cada una tiene estado, bloqueo y condición de reentrada sin convertir infraestructura en evidencia de edge.
+El backlog distingue tarea de acceso, decisión científica, diagnóstico robusto y certificación pendiente.

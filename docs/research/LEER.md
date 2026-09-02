@@ -1,27 +1,35 @@
 # Research — leé estos, no el directorio
 
-Una sesión nueva **no** abre `docs/research/` de forma indiscriminada. Si un documento histórico contradice `AUDITOR_START_HERE.md` o `docs/CURRENT.md`, manda el corte más reciente, salvo que el objeto tenga un spec/manifest congelado propio.
+El directorio mezcla evidencia vigente, material sustituido e investigaciones independientes. Para una sesión nueva, usar este orden:
 
 | # | Qué | Path |
 |---:|---|---|
-| 1 | Punto de entrada del traspaso | `AUDITOR_START_HERE.md` |
-| 2 | Handoff detallado | `docs/HANDOFF_AUDITOR_2026-08-24.md` |
-| 3 | Visibilidad y material local-only | `docs/REPOSITORY_VISIBILITY_AUDIT_2026-08-24.md` |
-| 4 | Las 26 ramas | `docs/BRANCH_REGISTRY_2026-08-24.md` |
-| 5 | Estado consolidado BT2Absorption | `docs/research/ESTADO_BT2_ABSORPTION_2026-08-24.md` |
-| 6 | Protocolo del sweep | `docs/research/BT2_ABSORPTION_SWEEP_OVERNIGHT_2026-08-24.md` |
-| 7 | Paridad por sesión | `docs/research/PARIDAD_POR_SESION_3_CONTRATOS_2026-08-24.md` |
-| 8 | Incidente de outcomes | `docs/incidents/INCIDENTE_OUTCOMES_UNTRACKED_2026-08-24.md` |
-| 9 | Referente y decisiones | `docs/NORTH_STAR.md` · `PENDIENTE.md` |
+| 1 | Entrada única | `PROJECT_INDEX.md` |
+| 2 | Arranque del auditor | `AUDITOR_START_HERE.md` |
+| 3 | Estado vivo | `docs/CURRENT.md` |
+| 4 | Cronología completa | `docs/PROJECT_CHRONOLOGY_2026-09-02.md` |
+| 5 | Las 60 ramas y 17 PR | `docs/BRANCH_REGISTRY_2026-09-02.md` |
+| 6 | Ideas y bloqueos abiertos | `docs/OPEN_IDEAS_INDEX_2026-09-02.md` |
+| 7 | Decisiones P-NN | `PENDIENTE.md` |
+| 8 | Régimen contractual | `docs/research/CONTRACT_REGIME_STANDARD_2026-09-01.md` |
+| 9 | Scan NQ v2 | `docs/research/nq_contract_regime_v2_20260902/README.md` |
+| 10 | Sensibilidad de rolls P-68 | `docs/research/nq_contract_regime_v2_20260902/nq_regime_sensitivity_v1.json` |
+| 11 | Diagnóstico NQ 09-26 | `docs/research/nq0926_maintenance_diagnostic_20260902/README.md` |
+| 12 | Paridad aVolClusterPOI NQ | `docs/research/AVOLCLUSTERPOI_PARITY_NQ0626_HANDOFF_2026-09-01.md` |
+| 13 | Visibilidad/local-only | `docs/REPOSITORY_VISIBILITY_AUDIT_2026-08-24.md` |
 
-## Líneas secundarias que siguen accesibles
+Los handoffs y registros del 24/28-ago son historia válida, pero ya no son el estado vivo.
 
-- GATE: rama `research/gate-regime-context`; cimiento ejecutable, no operativo.
-- Crypto/contextos: rama `work/crypto-context-foundation-20260824`; PR #14 con CI roja.
-- H-Z2A, HFTZones, GEX, YM, LUX y ZAMR permanecen como historia o líneas aparcadas; su documentación no se borra, pero no es el orden de reanudación actual.
+## Líneas secundarias
 
-El resto de `docs/research/` es archivo, evidencia o una línea distinta. No se mueve ni se borra sólo para ordenar visualmente.
+- BT2A GC económico y HP-005: diseño pendiente de freeze.
+- GATE: cimiento ejecutable, no operativo.
+- Crypto/contextos: rama separada; no trasladar conclusiones.
+- G2: contratos rivales sin adjudicar.
+- H-Z2A, HFTZones, GEX, YM, LUX y ZAMR: historia o líneas aparcadas.
+
+No mover ni borrar documentación histórica sólo para ordenar visualmente. El orden se resuelve por índices y autoridad, no reescribiendo evidencia.
 
 ## Aporte al referente
 
-La prioridad de lectura coincide otra vez con la prioridad real: primero continuidad y visibilidad, luego BT2Absorption; las demás familias quedan disponibles sin competir por el arranque del auditor.
+La lectura empieza por el corte del 2-sep y llega a la evidencia específica sin atravesar cientos de archivos históricos.
