@@ -28,8 +28,23 @@ from typing import Any
 REPO_URL = "https://github.com/Nicodelcampo/EdgeLab.git"
 REPO_DIR = Path("/kaggle/working/EdgeLab")
 CONTRACTS = ["NQ 09-25", "NQ 12-25", "NQ 03-26", "NQ 06-26", "NQ 09-26"]
-EXPECTED_SCHEMA = ["ts_utc_ns", "price_ticks", "volume", "bid_ticks", "ask_ticks",
-                   "sequence", "instrument", "contract"]
+# Columnas de las que este runner DEPENDE. Se exige que esten presentes
+# (superset), no igualdad exacta de lista.
+#
+# Correccion 2026-09-02: la version original comparaba esta lista por igualdad
+# ORDENADA contra el schema real del parquet, con lo cual el gate era
+# insatisfacible: estas 8 columnas son la tupla `_REQUIRED` de
+# edgelab/bridge/ticks.py, donde se usa como chequeo de SUBCONJUNTO, pero el
+# parquet canonico F2 real tiene 13 columnas en otro orden
+# (ts_utc_ns, ts_local_ns, sequence, price_ticks, bid_ticks, ask_ticks, volume,
+#  aggressor, tick_type, instrument, contract, source_file, source_row --
+#  verificado en los 5 parquets NQ locales, un unico schema). Ninguna corrida
+# podia pasar. No se fija la lista de 13 porque el paquete de Kaggle pudo podar
+# columnas duplicadas (P-28 / DECISIONES_2026-08-15: `ts_local_ns` es duplicado
+# exacto de `ts_utc_ns` y se declaro podable). El schema completo realmente
+# observado se publica en `source["schema_observed"]` para auditoria.
+REQUIRED_COLUMNS = ["ts_utc_ns", "price_ticks", "volume", "bid_ticks", "ask_ticks",
+                    "sequence", "instrument", "contract"]
 BATCH_ROWS = 1 << 20
 
 
@@ -91,8 +106,10 @@ def scan_contract(path: Path, expected_label: str):
     from edgelab.research.nq_contract_regime_manifest_build import canonical_contract_from_columns
 
     footer = footer_census(str(path))
-    if footer.get("column_names") != EXPECTED_SCHEMA:
-        raise RuntimeError(f"{path.name}: schema mismatch")
+    observed_schema = list(footer.get("column_names") or [])
+    missing = [c for c in REQUIRED_COLUMNS if c not in observed_schema]
+    if missing:
+        raise RuntimeError(f"{path.name}: faltan columnas requeridas {missing}")
     holdout_open_ns, _ = session_bounds_utc_ns(HOLDOUT_START_YMD)
     if int(footer["ts_max_ns"]) >= holdout_open_ns:
         raise RuntimeError(f"{path.name}: footer reaches holdout; no pages read")
@@ -145,7 +162,9 @@ def scan_contract(path: Path, expected_label: str):
     for rec in sessions.values():
         rec["active_minutes"] = len(rec["active_minutes"])
     source = {"file": path.name, "bytes": path.stat().st_size, "rows": rows,
-              "row_groups": int(footer["row_groups"]), "schema": EXPECTED_SCHEMA,
+              "row_groups": int(footer["row_groups"]),
+              "schema_observed": observed_schema,
+              "required_columns_present": list(REQUIRED_COLUMNS),
               "ts_min_ns": int(footer["ts_min_ns"]), "ts_max_ns": int(footer["ts_max_ns"]),
               "sha256": sha256_file(path),
               "raw_instrument_values": sorted(raw_instruments),
