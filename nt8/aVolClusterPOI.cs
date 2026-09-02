@@ -169,6 +169,13 @@ namespace NinjaTrader.NinjaScript.Indicators
 		private bool diagWriterFailed;
 		private long diagSeq;
 
+		// ---- export diagnostico por BARRA (opcional, off por defecto) ----
+		// P-70: el perfil se acumula en la subserie de 1 tick y se vuelca al cerrar
+		// la barra primaria. El orden de entrega entre las dos series decide de que
+		// barra es cada tick, y el parquet no lo contiene. Este log lo hace dato.
+		private StreamWriter barWriter;
+		private bool barWriterFailed;
+
 		// ---- dashboard (solo visual) ----
 		private int totalZonesCreated;
 		private int sessionZonesCreated;
@@ -222,6 +229,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				EventLogPath = "";
 				DiagBlockExportEnabled = false;
 				DiagBlockExportPath = "";
+				BarProfileLogPath = "";
 				Opacity = 40;
 				VisualExtendBars = 500;
 				MaxRenderedZones = 500;
@@ -277,6 +285,11 @@ namespace NinjaTrader.NinjaScript.Indicators
 					try { diagWriter.Flush(); diagWriter.Close(); } catch { }
 					diagWriter = null;
 				}
+				if (barWriter != null)
+				{
+					try { barWriter.Flush(); barWriter.Close(); } catch { }
+					barWriter = null;
+				}
 			}
 		}
 
@@ -318,6 +331,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 			// === Snapshot del perfil de la barra primaria recien cerrada ===
 			long lowTick = PriceToTick(Low[0]);
 			long highTick = PriceToTick(High[0]);
+			WriteBarProfileLog(lowTick, highTick);   // P-70: aditivo, antes de consumir el perfil
 			if (tickProfile.Count > 0)
 			{
 				foreach (KeyValuePair<long, double> kv in tickProfile)
@@ -941,6 +955,61 @@ namespace NinjaTrader.NinjaScript.Indicators
 			}
 		}
 
+		// === P-70: log por BARRA primaria. Aditivo -- no toca blockCells, ni el filtro,
+		// ni la deteccion. Con BarProfileLogPath vacio el indicador se comporta identico.
+		// Se llama ANTES de volcar tickProfile, para ver el perfil crudo y el filtrado.
+		private void WriteBarProfileLog(long lowTick, long highTick)
+		{
+			if (string.IsNullOrEmpty(BarProfileLogPath) || barWriterFailed) return;
+			try
+			{
+				if (barWriter == null)
+				{
+					string bdir = Path.GetDirectoryName(BarProfileLogPath);
+					if (!string.IsNullOrEmpty(bdir) && !Directory.Exists(bdir)) Directory.CreateDirectory(bdir);
+					barWriter = new StreamWriter(BarProfileLogPath, false, new UTF8Encoding(false));
+					barWriter.AutoFlush = true;
+					barWriter.WriteLine("# meta,indicator=aVolClusterPOI,version=0.5,mode=bar_profile,"
+						+ "instrument=" + Instrument.FullName
+						+ ",tick_size=" + TickSize.ToString(CultureInfo.InvariantCulture)
+						+ ",window_bars=" + WindowBars.ToString(CultureInfo.InvariantCulture)
+						+ ",scope=every_primary_bar,write_mode=overwrite");
+					barWriter.WriteLine("bar_index,bar_close_time,session_index,block_bar_count,"
+						+ "low_tick,high_tick,profile_cells,profile_min_tick,profile_max_tick,"
+						+ "profile_volume,kept_volume,primary_bar_volume");
+					Print(Name + " log de perfil por barra: " + BarProfileLogPath);
+				}
+
+				double profSum = 0.0, keptSum = 0.0;
+				long profMin = long.MaxValue, profMax = long.MinValue;
+				foreach (KeyValuePair<long, double> kv in tickProfile)
+				{
+					profSum += kv.Value;
+					if (kv.Key < profMin) profMin = kv.Key;
+					if (kv.Key > profMax) profMax = kv.Key;
+					if (kv.Key >= lowTick && kv.Key <= highTick) keptSum += kv.Value;
+				}
+
+				barWriter.WriteLine(string.Format(CultureInfo.InvariantCulture,
+					"{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11}",
+					CurrentBar,
+					Time[0].ToString("yyyy-MM-ddTHH:mm:ss.fff", CultureInfo.InvariantCulture),
+					sessionIndex, blockBarCount,
+					lowTick, highTick,
+					tickProfile.Count,
+					tickProfile.Count == 0 ? "" : profMin.ToString(CultureInfo.InvariantCulture),
+					tickProfile.Count == 0 ? "" : profMax.ToString(CultureInfo.InvariantCulture),
+					profSum.ToString("0.######", CultureInfo.InvariantCulture),
+					keptSum.ToString("0.######", CultureInfo.InvariantCulture),
+					Volume[0].ToString("0.######", CultureInfo.InvariantCulture)));
+			}
+			catch (Exception ex)
+			{
+				barWriterFailed = true;
+				Print(Name + " ERROR [bar_profile]: " + ex.Message);
+			}
+		}
+
 		// ------------------------------------------------------------------
 		// Export CSV diagnostico por bloque (opcional, off por defecto).
 		// Un renglon por bloque procesado, CREATE o ABSTAIN, con las celdas
@@ -1177,6 +1246,14 @@ namespace NinjaTrader.NinjaScript.Indicators
 		[Display(Name = "Diag Block Export Path (vacio = off)", Order = 91, GroupName = "9. Diagnostico (opcional)",
 			Description = "Ruta completa del CSV diagnostico. SOBREESCRIBE siempre; usar nombre nuevo por corrida.")]
 		public string DiagBlockExportPath { get; set; }
+
+		[NinjaScriptProperty]
+		[Display(Name = "Bar Profile Log Path (vacio = off)", Order = 92, GroupName = "9. Diagnostico (opcional)",
+			Description = "P-70. CSV con 1 fila por BARRA primaria: el perfil de la subserie de 1 tick "
+				+ "ANTES del filtro Low/High, cuanto sobrevive al filtro, y el volumen de la barra "
+				+ "primaria. Aditivo: no toca blockCells, ni el filtro, ni la deteccion. "
+				+ "SOBREESCRIBE siempre; usar nombre nuevo por corrida.")]
+		public string BarProfileLogPath { get; set; }
 
 		[NinjaScriptProperty]
 		[Range(1, 100)]
