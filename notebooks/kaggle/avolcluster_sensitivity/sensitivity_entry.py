@@ -67,7 +67,9 @@ def checkout(commit: str) -> str:
 
 
 def zone_key(z):
-    return (int(z["lower_tick"]), int(z["upper_tick"]), str(z.get("kind")))
+    # las zonas emitidas por run() traen top/bottom en PRECIO (no lower_tick);
+    # se redondea a 6 decimales para que la clave sea estable
+    return (round(float(z["bottom"]), 6), round(float(z["top"]), 6), str(z.get("kind")))
 
 
 def main() -> int:
