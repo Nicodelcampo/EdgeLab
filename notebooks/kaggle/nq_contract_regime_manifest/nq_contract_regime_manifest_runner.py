@@ -20,7 +20,7 @@ import sys
 from pathlib import Path
 
 REPO_URL = "https://github.com/Nicodelcampo/EdgeLab.git"
-EXPECTED_COMMIT = "PENDIENTE_FIJAR_COMMIT_ANTES_DE_CORRER"
+EXPECTED_COMMIT = "ca1a5c21e9e17fec5767f69b662198031b04367d"
 REPO_DIR = Path("/kaggle/working/EdgeLab")
 KAGGLE_INPUT_ROOT = Path("/kaggle/input")
 NQ_CONTRACTS = ["NQ 03-26", "NQ 06-26", "NQ 09-25", "NQ 09-26", "NQ 12-25"]
