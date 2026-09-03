@@ -52,7 +52,7 @@ def _ohlc(ticks: TickSeries, starts, ends):
     o = np.empty(n, np.int64); h = np.empty(n, np.int64)
     lo = np.empty(n, np.int64); c = np.empty(n, np.int64)
     v = np.empty(n, np.float64)
-    tbi = np.empty(len(ticks), np.int64)
+    tbi = np.full(len(ticks), -1, np.int64)
     for b in range(n):
         i0, i1 = int(starts[b]), int(ends[b])
         p = ticks.price_ticks[i0:i1]
@@ -236,6 +236,8 @@ def build_footprints(ticks: TickSeries, bars: BarSeries) -> Footprints:
     last_dir = 0
     for i in range(len(ticks)):
         b = int(bars.tick_bar_idx[i])
+        if b < 0 or b >= nb:
+            continue
         p = int(ticks.price_ticks[i])
         vol = float(ticks.volume[i])
         side, by_quote = 0, False
