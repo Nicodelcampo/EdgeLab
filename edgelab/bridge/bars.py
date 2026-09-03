@@ -157,27 +157,37 @@ def build_resolved_tick_bars(ticks: TickSeries, bar_profile_path: str | Path,
     contra el perfil de volumen reportado por NT8 (P-70 BARPROFILE).
 
     Garantiza que la partición de barras coincida con la subserie 1-tick de NT8,
-    eliminando la deriva por fluctuaciones de tick-count entre barras.
+    eliminando la deriva por fluctuaciones de tick-count entre barras y reiniciando
+    el puntero en cada frontera de sesión.
     """
     import pandas as pd
+    from .sessions import session_begin_ns
+
     df_bp = pd.read_csv(bar_profile_path, skiprows=1)
     target_vols = df_bp["profile_volume"].values.astype(np.int64)
+    sess_indices = df_bp["session_index"].values.astype(np.int64) if "session_index" in df_bp.columns else None
+    bar_times = None
+    if "bar_close_time" in df_bp.columns:
+        bar_times = pd.to_datetime(df_bp["bar_close_time"]).dt.tz_localize(chart_tz).dt.tz_convert("UTC").astype(np.int64).values
+
     n_bars = len(target_vols)
     n_ticks = len(ticks)
-
     vols = ticks.volume.astype(np.int64)
+    ts_ns = ticks.ts_ns.astype(np.int64)
+
     starts = []
     ends = []
-    if "bar_close_time" in df_bp.columns and len(df_bp) > 0:
-        first_bar_utc = pd.to_datetime(df_bp["bar_close_time"].iloc[0]).tz_localize(chart_tz).tz_convert("UTC")
-        t0_ns = int(first_bar_utc.timestamp() * 1e9)
-        from .sessions import session_begin_ns
-        s_begin = session_begin_ns(t0_ns)
-        curr = int(np.searchsorted(ticks.ts_ns, s_begin))
-    else:
-        curr = 0
+    curr = 0
+    prev_sess = -1
 
     for b in range(n_bars):
+        if sess_indices is not None and bar_times is not None:
+            s_idx = sess_indices[b]
+            if s_idx != prev_sess:
+                s_begin = session_begin_ns(int(bar_times[b]))
+                curr = int(np.searchsorted(ts_ns, s_begin))
+                prev_sess = s_idx
+
         if curr >= n_ticks:
             break
         tv = target_vols[b]
@@ -194,13 +204,12 @@ def build_resolved_tick_bars(ticks: TickSeries, bar_profile_path: str | Path,
     starts = np.asarray(starts, dtype=np.int64)
     ends = np.asarray(ends, dtype=np.int64)
     o, h, lo, c, v, tbi = _ohlc(ticks, starts, ends)
-    s_ns = ticks.ts_ns[starts].astype(np.int64)
-    if "bar_close_time" in df_bp.columns:
-        t_utc = pd.to_datetime(df_bp["bar_close_time"].values[:len(starts)]).tz_localize(chart_tz).tz_convert("UTC")
-        e_ns = t_utc.astype(np.int64).values
+    s_ns = ts_ns[starts]
+    if bar_times is not None:
+        e_ns = bar_times[:len(starts)]
     else:
-        e_ns = ticks.ts_ns[ends - 1].astype(np.int64)
-    sess_idx = df_bp["session_index"].values[:len(starts)].astype(np.int64) if "session_index" in df_bp.columns else None
+        e_ns = ts_ns[ends - 1]
+    sess_idx = sess_indices[:len(starts)] if sess_indices is not None else None
     return BarSeries(s_ns, e_ns, o, h, lo, c, v, ticks.tick_size, "tick", int(ticks_per_bar), tbi, sess_idx)
 
 
