@@ -168,7 +168,14 @@ def build_resolved_tick_bars(ticks: TickSeries, bar_profile_path: str | Path,
     vols = ticks.volume.astype(np.int64)
     starts = []
     ends = []
-    curr = 0
+    if "bar_close_time" in df_bp.columns and len(df_bp) > 0:
+        first_bar_utc = pd.to_datetime(df_bp["bar_close_time"].iloc[0]).tz_localize(chart_tz).tz_convert("UTC")
+        t0_ns = int(first_bar_utc.timestamp() * 1e9)
+        from .sessions import session_begin_ns
+        s_begin = session_begin_ns(t0_ns)
+        curr = int(np.searchsorted(ticks.ts_ns, s_begin))
+    else:
+        curr = 0
 
     for b in range(n_bars):
         if curr >= n_ticks:
