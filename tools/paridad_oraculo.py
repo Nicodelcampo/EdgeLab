@@ -231,6 +231,19 @@ def main(argv=None):
     if max_age and len(bars.end_ns) > max_age:
         frontier_ms = int(bars.end_ns[len(bars.end_ns) - 1 - max_age]) // 1_000_000
 
+    print("DEBUG MATCH:")
+    if kz:
+        print("  kz[0]:", kz[0])
+    if nz:
+        print("  nz[0]:", nz[0])
+    for i, a_z in enumerate(kz[:5]):
+        closest_b = min(nz, key=lambda b: abs((a_z.get("created_ms") or 0) - (b.get("created_ms") or 0))) if nz else None
+        if closest_b:
+            dt = abs(a_z["created_ms"] - closest_b["created_ms"])
+            ga, gb = parity._geom_ticks(a_z, tick_size), parity._geom_ticks(closest_b, tick_size)
+            gd = parity._geom_diff_ticks(ga, gb)
+            print(f"  [Sample {i}] py={a_z['id']} (t={a_z['created_ms']}) vs nt8={closest_b['id']} (t={closest_b['created_ms']}) -> dt={dt}ms, py_geom={ga}, nt8_geom={gb}, gd={gd}ticks")
+
     rep_sin = parity.match_zones(kz, nz, tick_size)
     rep = parity.match_zones(kz, nz, tick_size, maturity_frontier_ms=frontier_ms) \
         if frontier_ms else rep_sin
