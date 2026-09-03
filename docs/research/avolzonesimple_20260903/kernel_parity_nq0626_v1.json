@@ -1,0 +1,49 @@
+{
+  "schema": "avolzonesimple_kernel_parity_v1",
+  "estimand": "paridad del ALGORITMO sobre input igual: se alimenta el kernel Python con las celdas que NT8 escribió. NO valida la reconstrucción del perfil desde los ticks del parquet.",
+  "oraculo": "data\\nt8_oracles\\avolzonesimple_NQ0626_20260903.csv",
+  "oraculo_sha256": "ea5e4c1ac79935c9a3c1ea97355cf5da5e4914ca47d3b381bee7d089b6b8d909",
+  "meta_nt8": {
+    "meta": "",
+    "indicator": "AVolZoneSimple",
+    "version": "1.0",
+    "instrument": "NQ JUN26",
+    "tick_size": "0.25",
+    "bars_per_block": "10",
+    "area_share_pct": "30",
+    "max_zone_ticks": "12",
+    "min_concentration": "1500",
+    "stateless": "true",
+    "history": "none",
+    "write_mode": "overwrite"
+  },
+  "params_usados": {
+    "bars_per_block": 10,
+    "area_share_pct": 30,
+    "max_zone_ticks": 12,
+    "min_concentration": 1500
+  },
+  "convencion_de_vacio": "campo no aplicable: el .cs escribe 0, el kernel Python devuelve None. Se normaliza None -> 0 en los campos numericos. En un CREATE el kernel siempre puebla estos campos con enteros, asi que no enmascara diferencias.",
+  "n_bloques": 5778,
+  "n_identicos": 5778,
+  "pct_identicos": 1.0,
+  "diferencias_por_campo": {},
+  "por_decision_nt8": {
+    "ABSTAIN_TOO_WIDE": {
+      "n": 3480,
+      "iguales": 3480
+    },
+    "CREATE": {
+      "n": 2261,
+      "iguales": 2261
+    },
+    "ABSTAIN_LOW_CONCENTRATION": {
+      "n": 37,
+      "iguales": 37
+    }
+  },
+  "ejemplos_de_diferencia": [],
+  "veredicto": "EXACT",
+  "outcomes_accessed": false,
+  "holdout_accessed": false
+}
