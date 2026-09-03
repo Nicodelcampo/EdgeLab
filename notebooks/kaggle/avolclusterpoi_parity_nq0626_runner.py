@@ -56,6 +56,12 @@ try:
     else:
         log("WARN: No BARPROFILE CSV found")
 
+    diag_hits = list(Path("/kaggle/input").rglob("*DIAG_BLOCKS*.csv"))
+    if diag_hits:
+        log(f"diag_blocks={diag_hits[0]}")
+    else:
+        log("WARN: No DIAG_BLOCKS CSV found")
+
     out_json = OUTPUT_DIR / "paridad_avolclusterpoi_nq0626.json"
 
     cmd = [
@@ -70,6 +76,8 @@ try:
     ]
     if bp_hits:
         cmd.extend(["--barprofile", str(bp_hits[0])])
+    if diag_hits:
+        cmd.extend(["--diag-blocks", str(diag_hits[0])])
     log(f"+ {' '.join(cmd)}")
 
     proc = subprocess.run(cmd, cwd=REPO_DIR, capture_output=True, text=True)
