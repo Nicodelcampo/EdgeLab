@@ -273,3 +273,86 @@ def run(ticks, bars, footprints, params=None, debug_trace=False):
     if debug_trace:
         out["block_trace"] = block_trace
     return out
+
+
+def run_diag_blocks(diag_blocks_path: str, bars=None, chart_tz: str = "America/Argentina/Buenos_Aires",
+                    params: Optional[dict] = None, debug_trace: bool = False) -> dict:
+    """Ejecuta el kernel de aVolClusterPOI sobre las celdas exactas de DIAG_BLOCKS (P-70).
+
+    Verifica la paridad bit-a-bit sobre entradas idénticas (KERNEL_PARITY_ON_EQUAL_INPUT).
+    """
+    import pandas as pd
+    from zoneinfo import ZoneInfo
+    from ..oracle import _to_unix_ms
+
+    p = dict(RESEARCH_DEFAULTS)
+    if params:
+        p.update(params)
+
+    df_diag = pd.read_csv(diag_blocks_path, skiprows=1)
+    tz = ZoneInfo(chart_tz)
+    tick_size = bars.tick_size if bars is not None else 0.25
+
+    profile = SessionProfile(lookback_sessions=int(p["lookback_sessions"]))
+    prev_sess = -1
+    all_zones = []
+    zone_seq = 0
+    block_trace = []
+
+    for _, row in df_diag.iterrows():
+        sess = int(row["session_index"])
+        if sess != prev_sess:
+            if prev_sess != -1:
+                profile.commit()
+            prev_sess = sess
+
+        bucket = int(row["bucket"])
+        raw_cells = str(row["cells"]) if pd.notna(row["cells"]) else ""
+        cells = {}
+        if raw_cells:
+            for item in raw_cells.split("|"):
+                if ":" in item:
+                    t, v = item.split(":")
+                    cells[int(t)] = float(v)
+
+        hist = profile.history_scores(bucket)
+        bar_idx = int(row["bar_index"])
+        close_t = int(bars.close_t[bar_idx]) if bars is not None and bar_idx < len(bars.close_t) else None
+
+        result = detect_block(cells, hist, params=p, close_tick=close_t)
+        profile.add_block(bucket, result["best_score"])
+
+        block_zone_ids = []
+        for zone in result.get("zones", []):
+            if zone.get("kind") != "OFF_PRICE":
+                continue
+            zone_seq += 1
+            lo_t, hi_t = int(zone["lower_tick"]), int(zone["upper_tick"])
+            zid = str(zone_seq)
+            block_zone_ids.append(zid)
+            created_ms = _to_unix_ms(str(row["bar_close_time"]), tz)
+            all_zones.append(dict(
+                id=zid, indicator=NAME,
+                top=(hi_t + 0.5) * tick_size,
+                bottom=(lo_t - 0.5) * tick_size,
+                created_ms=created_ms,
+                created_bar=bar_idx, ended_ms=None,
+                state="ACTIVE", kind="avol_cluster_off_price",
+                touches=0, end_reason=None, timeline=[]
+            ))
+
+        if debug_trace:
+            block_trace.append(dict(
+                session_index=sess, bar_index=bar_idx, bucket=bucket,
+                decision=result.get("decision"), best_score=result.get("best_score"),
+                threshold=result.get("threshold"), history_samples=result.get("history_samples"),
+                clusters=result.get("clusters", []), selected_cluster=result.get("selected_cluster"),
+                zones=block_zone_ids
+            ))
+
+    profile.commit()
+    out = dict(indicator=NAME, params=p, zones=all_zones)
+    if debug_trace:
+        out["block_trace"] = block_trace
+    return out
+

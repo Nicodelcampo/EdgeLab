@@ -114,6 +114,8 @@ def main(argv=None):
                          "pedia el perfil de aVolCellPOI2, no este kernel.")
     ap.add_argument("--barprofile", default=None,
                     help="Ruta al BARPROFILE CSV de NT8 para resolver fronteras exactas")
+    ap.add_argument("--diag-blocks", default=None,
+                    help="Ruta al DIAG_BLOCKS CSV de NT8 para alimentar footprints exactos por bloque")
     ap.add_argument("--out", required=True)
     a = ap.parse_args(argv)
 
@@ -140,6 +142,8 @@ def main(argv=None):
         bar_spec=a.barras,
         barprofile=str(a.barprofile) if a.barprofile else None,
         barprofile_sha256=sha256_archivo(a.barprofile) if a.barprofile else None,
+        diag_blocks=str(a.diag_blocks) if getattr(a, "diag_blocks", None) else None,
+        diag_blocks_sha256=sha256_archivo(a.diag_blocks) if getattr(a, "diag_blocks", None) else None,
         head_commit=subprocess.check_output(
             ["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True).strip(),
         arbol_limpio=None,   # se completa abajo
@@ -186,7 +190,12 @@ def main(argv=None):
 
     # ---- 3. kernel -------------------------------------------------------------
     mod = __import__(mod_name, fromlist=["run"])
-    res = mod.run(tk, bars, fps) if usa_fp else mod.run(tk, bars)
+    if getattr(a, "diag_blocks", None) and hasattr(mod, "run_diag_blocks"):
+        res = mod.run_diag_blocks(a.diag_blocks, bars, chart_tz=a.chart_tz)
+    elif usa_fp:
+        res = mod.run(tk, bars, fps)
+    else:
+        res = mod.run(tk, bars)
     # `run()["zones"]` YA viene con la forma que `match_zones` consume
     # (id/top/bottom/created_ms/ended_ms/state/touches). No se remapea: el remapeo
     # de `build_viewer.py` existe porque ese lee del STORE, que tiene otro esquema
