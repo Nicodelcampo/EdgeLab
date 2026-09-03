@@ -41,6 +41,15 @@ from edgelab.bridge.indicators.avolzonesimple import detect_block  # noqa: E402
 CAMPOS = ("decision", "lower_tick", "upper_tick", "zone_ticks", "zone_volume",
           "block_volume", "block_ticks", "concentration", "side", "distance_ticks")
 
+# Convención de vacío, declarada porque las dos implementaciones difieren en ella
+# y eso NO es una diferencia de algoritmo: cuando un campo no aplica (por ejemplo
+# `zone_ticks` en un `ABSTAIN_TOO_WIDE`), el `.cs` escribe 0 —sus variables
+# arrancan en 0 y las emite siempre— y el kernel Python devuelve `None`.
+# Se normaliza `None` → 0 sólo en los campos NUMÉRICOS. No enmascara nada: en un
+# `CREATE` el kernel Python siempre puebla estos campos con enteros, nunca None.
+CAMPOS_NUMERICOS = ("lower_tick", "upper_tick", "zone_ticks", "zone_volume",
+                    "block_volume", "block_ticks", "concentration", "distance_ticks")
+
 
 def sha256(path: Path) -> str:
     h = hashlib.sha256()
@@ -124,7 +133,10 @@ def comparar(csv_path: Path, max_ejemplos: int = 25) -> dict:
             if campo in ("decision", "side"):
                 v_nt8 = (fila.get(campo) or "").strip() or None
                 v_py = v_py or None
-            # NT8 deja vacías las columnas que no aplican; se comparan como None
+            elif campo in CAMPOS_NUMERICOS:
+                # ver CAMPOS_NUMERICOS: 0 y None son el mismo "no aplica"
+                v_nt8 = 0 if v_nt8 is None else v_nt8
+                v_py = 0 if v_py is None else v_py
             if v_nt8 != v_py:
                 difs[campo] = {"nt8": v_nt8, "python": v_py}
                 por_campo[campo] += 1
@@ -151,6 +163,10 @@ def comparar(csv_path: Path, max_ejemplos: int = 25) -> dict:
         "oraculo_sha256": sha256(csv_path),
         "meta_nt8": meta,
         "params_usados": params,
+        "convencion_de_vacio": ("campo no aplicable: el .cs escribe 0, el kernel Python "
+                                "devuelve None. Se normaliza None -> 0 en los campos "
+                                "numericos. En un CREATE el kernel siempre puebla estos "
+                                "campos con enteros, asi que no enmascara diferencias."),
         "n_bloques": total,
         "n_identicos": iguales,
         "pct_identicos": round(iguales / total, 6) if total else None,

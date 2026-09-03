@@ -139,6 +139,60 @@ La extensión es visual por ahora. Si la vida de la zona pasa a ser parte de la
 hipótesis —hasta que el precio la invalide, por ejemplo— eso es lifecycle y va
 medido, no dibujado: hoy el CSV publica una fila por bloque y nada más.
 
+## Paridad medida — capa 1 (algoritmo): EXACTA
+
+Corrida de NT8 del 2026-09-03: **NQ SEP26, 120 ticks/barra, 10 días**, parámetros
+por defecto (10 / 30 % / 12 t / 1500). Oráculo:
+`data/nt8_oracles/avolzonesimple_NQ_20260903.csv`. Reporte:
+`kernel_parity_v1.json`. Comando:
+
+```
+python tools/paridad_avolzonesimple.py data/nt8_oracles/avolzonesimple_NQ_20260903.csv
+```
+
+| | |
+|---|---:|
+| bloques | **3.086** |
+| idénticos en los diez campos | **3.086 (100,0000 %)** |
+| veredicto | **EXACT** |
+
+Decisiones de NT8: `CREATE` 1.597 · `ABSTAIN_TOO_WIDE` 1.448 ·
+`ABSTAIN_LOW_CONCENTRATION` 41. Las tres ramas quedaron ejercitadas.
+
+### Un defecto propio, encontrado y corregido
+
+La primera corrida dio **51,75 %**. No era desacuerdo del algoritmo: `decision`,
+`lower_tick` y `upper_tick` coincidían en los 3.086 bloques, y **todas** las
+diferencias eran `0` contra `null` en campos que no aplican — el `.cs` inicializa
+sus variables en 0 y las emite siempre; el kernel Python devuelve `None`. Era una
+**convención de vacío** no declarada, y el defecto estaba en el comparador.
+
+Queda declarada en `tools/paridad_avolzonesimple.py` y normalizada sólo en los
+campos numéricos.
+
+### Verificación independiente, para no confiar en la normalización
+
+Una normalización puede tapar una diferencia real, así que se comparó **aparte**
+y **sin normalizar nada**: las 1.597 filas `CREATE`, campo por campo —
+`lower_tick`, `upper_tick`, `zone_ticks`, `zone_volume`, `block_volume`,
+`block_ticks`, `concentration`, `distance_ticks`, más `side` y `decision`.
+
+**0 diferencias.** El 100 % no depende de la normalización.
+
+### Qué queda fuera de este número
+
+Esto es paridad **sobre input igual**: el kernel Python recibe las celdas que NT8
+escribió. Prueba que las dos implementaciones son la misma función. **No** prueba
+que Python reconstruya el mismo perfil desde los ticks del parquet — eso es la
+capa 2, y su techo conocido es la partición de barras al 89,81 %.
+
+Es la distinción que se le señaló a la certificación de aVolClusterPOI, así que
+acá el estimand va escrito en el propio JSON.
+
+**Capa 2 pendiente**: requiere una corrida sobre **NQ 06-26** (pre-holdout, con
+parquet disponible). Ahí se mide lo que el rediseño promete: con 4,97 % de
+turnover en vez de 30,87 %, las diferencias de ticks deberían impactar mucho menos.
+
 ## Justificación económica
 
 Una zona de volumen es una hipótesis sobre dónde quedó inventario que puede
