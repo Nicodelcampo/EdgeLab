@@ -213,6 +213,18 @@
     "aVolClusterPOI.cs :: bool passes = offPrice && quality >= MinQualityScore;": {
       "evidencia": "no compara precios: quality es un score heuristico continuo 0..100 y MinQualityScore es su umbral de corte de ranking. Falso positivo del scanner ULP.",
       "veredicto": "NO_ES_PRECIO"
+    },
+    "AVolZoneSimple.cs :: : side == \"RESISTANCE\" ? ResistanceColor : AtPriceColor;": {
+      "evidencia": "comparacion de STRING, no de precio ni de double. Elige un Brush para dibujar. No participa de la deteccion ni de la geometria: AVolZoneSimple decide con aritmetica entera (ticks y division entera) y el color se resuelve despues de que la zona ya esta fijada.",
+      "veredicto": "NO_ES_PRECIO"
+    },
+    "AVolZoneSimple.cs :: decision == \"CREATE\" || decision == \"ABSTAIN_LOW_CONCENTRATION\" ? lower.ToString(CultureInfo.InvariantCulture) : \"\",": {
+      "evidencia": "comparacion de STRING en el formateo del CSV de auditoria: decide si la columna lleva el tick o queda vacia. No toca la decision, que ya se tomo.",
+      "veredicto": "NO_ES_PRECIO"
+    },
+    "AVolZoneSimple.cs :: decision == \"CREATE\" || decision == \"ABSTAIN_LOW_CONCENTRATION\" ? upper.ToString(CultureInfo.InvariantCulture) : \"\",": {
+      "evidencia": "identica a la anterior, columna upper_tick del CSV de auditoria.",
+      "veredicto": "NO_ES_PRECIO"
     }
   }
 }
