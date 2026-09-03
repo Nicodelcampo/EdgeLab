@@ -1,6 +1,14 @@
 # Paridad aVolClusterPOI — estado al 2026-09-02
 
-**Veredicto: NO VALIDADA.** Mejor configuración conocida: 15,27 % de bloques
+> **SUPERADO PARCIALMENTE — leer primero `PARIDAD_AVOLCLUSTERPOI_INDICE.md`.**
+> Existe una segunda línea de trabajo en la rama
+> `research/avolcluster-nq-parity-oracle-20260901` (commit `6f4e32f`) que corrigió
+> el puente y reporta paridad certificada. Este documento conserva el
+> **diagnóstico** (fases F2–F9), que sigue vigente y que esa línea confirma en lo
+> estructural, pero su veredicto de abajo **ya no es el estado del proyecto**.
+> El índice explica qué aporta cada línea y qué reservas quedan abiertas.
+
+**Veredicto de esta línea al 2026-09-02, hoy superado: NO VALIDADA.** Mejor configuración conocida: 15,27 % de bloques
 idénticos (3.436 de 22.507), contra 0,07 % (16) del kernel actual.
 
 Este documento es el punto de entrada de la campaña de paridad. Las siete actas

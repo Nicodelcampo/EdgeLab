@@ -2263,9 +2263,12 @@ Orden sugerido: (1) comparación GC barata → decide si hay que revisar trabajo
 
 ---
 
-## P-70 — Paridad aVolClusterPOI: falta logging por barra en el `.cs` (BLOQUEANTE)
+## P-70 — Paridad aVolClusterPOI: logging por barra (RESUELTA 2026-09-02/03)
 
-**Estado**: abierta. Requiere **decisión de Nico** (toca el `.cs`).
+**Estado**: **cerrada**. Nico autorizó, el logging se aplicó (`BarProfileLogPath`,
+commit en `foundation`), se corrió sobre NQ SEP26 y sobre NQ 06-26, y confirmó los
+dos defectos con los números del propio NT8. Estado vigente de la paridad:
+`docs/research/PARIDAD_AVOLCLUSTERPOI_INDICE.md`. Lo que sigue abierto es P-71.
 **Acta**: `docs/research/PARIDAD_AVOLCLUSTERPOI_ESTADO_2026-09-02.md`.
 
 La campaña de paridad del 2026-09-02 (fases F2–F8, siete kernels en Kaggle, ninguno
@@ -2285,3 +2288,33 @@ indicador. Con ese CSV la paridad se cierra o se explica en una corrida.
 
 **Bloquea**: cualquier barrido de parámetros sobre aVolClusterPOI. Con 15,27 % de
 paridad el barrido mide un indicador que no es el del chart, y nada de eso es promovible.
+
+
+---
+
+## P-71 — Divergencia de ramas y estimand del gate de paridad (ABIERTA)
+
+**Estado**: abierta. Requiere **decisión de Nico** (merge) y un resultado en curso.
+**Índice**: `docs/research/PARIDAD_AVOLCLUSTERPOI_INDICE.md`.
+
+Dos líneas trabajaron el mismo problema en ramas distintas y las dos dejaron su
+documento de estado. `foundation/f0b-compatibility-probe` tiene 67 commits que
+`research/avolcluster-nq-parity-oracle-20260901` no tiene; esa rama tiene 14 que
+`foundation` no tiene. **Hay que decidir el merge**, no dejarlas correr en paralelo:
+es exactamente `docs/AVISO_DIVERGENCIA_DE_RAMAS_2026-08-06.md`.
+
+Tres reservas sobre la certificación, ninguna la refuta, las tres acotan su alcance:
+
+1. Las capas no miden la misma población: la capa 1 es paridad **sobre input igual**
+   (no valida el footprint) y la capa 3 se mide sobre **203 zonas**, ~2 % de los
+   23.339 bloques. El gate debe declarar su estimand: sobre qué población y a qué
+   nivel (zona, bloque, celda).
+2. La partición de 120 ticks — el cambio que sostiene todo — se validó con **10
+   barras de 233.601**. En auditoría: `notebooks/kaggle/avolcluster_partition_audit/`.
+3. `build_resolved_tick_bars` lee `profile_volume` y no lo usa, y copia `e_ns` del
+   CSV de NT8: el `TIMESTAMP_DIFF = 0 ms` es en parte definicional.
+
+**Dos huecos de procedencia**: el `.cs` instrumentado sólo está en `foundation`, y
+`BARPROFILE_20260902.csv` / `DIAG_BLOCKS_20260902.csv` no están en git (viven en el
+dataset de Kaggle `edgelab-avolcluster-nq-oracle`; tamaños coinciden con el
+manifiesto).
