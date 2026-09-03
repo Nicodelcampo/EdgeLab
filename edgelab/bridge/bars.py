@@ -190,13 +190,8 @@ def build_resolved_tick_bars(ticks: TickSeries, bar_profile_path: str | Path,
 
         if curr >= n_ticks:
             break
-        tv = target_vols[b]
         s = curr
-        cum = 0
-        e = s
-        while e < n_ticks and cum < tv:
-            cum += vols[e]
-            e += 1
+        e = min(s + int(ticks_per_bar), n_ticks)
         starts.append(s)
         ends.append(e)
         curr = e
