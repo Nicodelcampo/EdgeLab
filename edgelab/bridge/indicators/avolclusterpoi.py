@@ -26,6 +26,8 @@ RESEARCH_DEFAULTS = dict(
     lookback_sessions=20,
     detection_percentile=98.0,
     min_samples_per_bucket=20,
+    hot_selection="median",   # "median" (original) | "topk" (robusta)
+    hot_fraction=0.17,
     max_age_bars=0,
     one_cluster_per_block=True,
 )
@@ -57,13 +59,40 @@ def session_relative_bucket(block_end_ns, session_begin_ns, bucket_minutes=30):
     return int((anchor_ns - int(session_begin_ns)) // span)
 
 
-def cluster_hot_ticks(cells, median_multiplier, max_gap_ticks, min_cluster_ticks):
+def select_hot_ticks(cells, median_multiplier, min_cluster_ticks,
+                     hot_selection="median", hot_fraction=0.17):
+    """Elige las celdas «hot» del bloque. Espejo exacto de aVolClusterPOI.cs.
+
+    `median` es la regla original: `vol >= mediana * multiplicador`. Medida sobre
+    los 22.507 bloques de NQ 06-26 120t, **el 89,60 % de los bloques tiene al
+    menos una celda a un contrato del umbral** — un contrato de diferencia entre
+    NT8 y el parquet cambia el conjunto hot. Es el origen de la fragilidad.
+
+    `topk` la reemplaza por un ranking: las K celdas de mayor volumen, con
+    K = round(hot_fraction * n_celdas) y empates por tick ascendente. La fracción
+    por defecto 0,17 sale de la mediana empírica de `hot/n` en esos mismos
+    bloques (0,1687), así que el tamaño del conjunto se preserva.
+
+    Turnover de la geometría bajo ruido de ±1 contrato, mismos bloques:
+    `median` 30,87 % → `topk` 24,47 %. Es una mejora medida, **no** llega al 5 %
+    del contrato de paridad: ver `docs/research/avolcluster_decision_rule_20260903/`.
+    """
     if len(cells) < 3:
         return []
+    if hot_selection == "topk":
+        k = max(int(min_cluster_ticks), round(float(hot_fraction) * len(cells)))
+        ordered = sorted(cells.items(), key=lambda kv: (-kv[1], kv[0]))
+        return sorted(t for t, _ in ordered[:k])
     med = median_upper(cells.values())
     if med is None:
         return []
-    hot = sorted(tick for tick, vol in cells.items() if vol >= med * float(median_multiplier))
+    return sorted(t for t, vol in cells.items() if vol >= med * float(median_multiplier))
+
+
+def cluster_hot_ticks(cells, median_multiplier, max_gap_ticks, min_cluster_ticks,
+                      hot_selection="median", hot_fraction=0.17):
+    hot = select_hot_ticks(cells, median_multiplier, min_cluster_ticks,
+                           hot_selection, hot_fraction)
     if not hot:
         return []
     clusters = []
@@ -119,7 +148,9 @@ def detect_block(cells, history_scores, params=None, close_tick=None):
     median = median_upper(cells.values())
     hot_threshold = median * float(p["median_multiplier"])
     clusters = cluster_hot_ticks(cells, p["median_multiplier"], p["max_gap_ticks"],
-                                 p["min_cluster_ticks"])
+                                 p["min_cluster_ticks"],
+                                 p.get("hot_selection", "median"),
+                                 p.get("hot_fraction", 0.17))
     best = max((score for _ticks, score in clusters), default=0.0)
     threshold = (empirical_quantile(hist, p["detection_percentile"] / 100.0)
                  if enough_history else None)

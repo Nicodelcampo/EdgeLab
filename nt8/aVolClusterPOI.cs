@@ -1,4 +1,4 @@
-﻿// ============================================================================
+// ============================================================================
 // aVolClusterPOI.cs - Anomaly Volume Cluster POI (v0.5, research freeze)
 // ============================================================================
 //
@@ -228,6 +228,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 
 				EventLogPath = "";
 				DiagBlockExportEnabled = false;
+				UseTopKHotCells = false;
+				HotFraction = 0.17;
 				DiagBlockExportPath = "";
 				BarProfileLogPath = "";
 				Opacity = 40;
@@ -391,10 +393,40 @@ namespace NinjaTrader.NinjaScript.Indicators
 				diagMedian = median;
 				diagHotThreshold = hotThreshold;
 
-				// Niveles hot ordenados por tick (entero)
+				// Niveles hot ordenados por tick (entero).
+				// Dos reglas de seleccion; la geometria, el clustering y el umbral
+				// historico de abajo son IDENTICOS en las dos.
 				List<long> hotTicks = new List<long>();
-				foreach (KeyValuePair<long, double> kv in blockCells)
-					if (kv.Value >= hotThreshold) hotTicks.Add(kv.Key);
+				if (UseTopKHotCells)
+				{
+					// REGLA ROBUSTA: las K celdas de mayor volumen, K proporcional al
+					// tamano del bloque, empates por tick ascendente. Medido sobre los
+					// 22.507 bloques de NQ 06-26 120t: el 89,60% de los bloques tiene
+					// al menos una celda a UN contrato del umbral de mediana, asi que
+					// un contrato de diferencia contra el parquet cambia el conjunto.
+					// El ranking no tiene ese borde. Turnover de la geometria bajo
+					// ruido de +-1: 30,87% con mediana -> 24,47% con top-K.
+					// HotFraction 0,17 es la mediana empirica de hot/n_celdas (0,1687),
+					// asi que el TAMANO del conjunto se preserva.
+					int kSel = (int)Math.Round(HotFraction * blockCells.Count,
+						MidpointRounding.AwayFromZero);
+					if (kSel < MinClusterTicks) kSel = MinClusterTicks;
+					if (kSel > blockCells.Count) kSel = blockCells.Count;
+					List<long> byVol = new List<long>(blockCells.Keys);
+					byVol.Sort(delegate (long a, long b)
+					{
+						double va = blockCells[a], vb = blockCells[b];
+						if (va != vb) return vb.CompareTo(va);   // mayor volumen primero
+						return a.CompareTo(b);                   // empate: tick ascendente
+					});
+					for (int i = 0; i < kSel; i++) hotTicks.Add(byVol[i]);
+				}
+				else
+				{
+					// REGLA ORIGINAL v0.5: vol >= mediana * multiplicador
+					foreach (KeyValuePair<long, double> kv in blockCells)
+						if (kv.Value >= hotThreshold) hotTicks.Add(kv.Key);
+				}
 				hotTicks.Sort();
 
 				// Clusters por gap entero (sin epsilons)
@@ -1246,6 +1278,22 @@ namespace NinjaTrader.NinjaScript.Indicators
 		[Display(Name = "Diag Block Export Path (vacio = off)", Order = 91, GroupName = "9. Diagnostico (opcional)",
 			Description = "Ruta completa del CSV diagnostico. SOBREESCRIBE siempre; usar nombre nuevo por corrida.")]
 		public string DiagBlockExportPath { get; set; }
+
+		[NinjaScriptProperty]
+		[Display(Name = "Usar seleccion robusta (top-K)", Order = 12, GroupName = "2. Deteccion",
+			Description = "OFF = regla original v0.5 (vol >= mediana * multiplicador). "
+				+ "ON = las K celdas de mayor volumen, K = HotFraction * n_celdas, empates "
+				+ "por tick ascendente. El clustering, el umbral historico y la geometria no "
+				+ "cambian. Reduce el turnover de la zona ante 1 contrato de diferencia con "
+				+ "el parquet de 30,87% a 24,47% (medido sobre 22.507 bloques NQ 06-26 120t).")]
+		public bool UseTopKHotCells { get; set; }
+
+		[NinjaScriptProperty]
+		[Range(0.01, 1.0)]
+		[Display(Name = "Hot Fraction (solo con top-K)", Order = 13, GroupName = "2. Deteccion",
+			Description = "Fraccion de celdas del bloque que se marcan hot. 0,17 es la mediana "
+				+ "empirica de hot/n_celdas con la regla original, para preservar el tamano.")]
+		public double HotFraction { get; set; }
 
 		[NinjaScriptProperty]
 		[Display(Name = "Bar Profile Log Path (vacio = off)", Order = 92, GroupName = "9. Diagnostico (opcional)",
