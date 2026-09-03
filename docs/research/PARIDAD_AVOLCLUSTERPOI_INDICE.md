@@ -47,10 +47,14 @@ Ninguna la refuta; las tres acotan qué quedó demostrado.
    23.339 bloques — cerca del 2 % de la población. La línea A medía celdas
    exactas por bloque sobre los 22.507. No se contradicen y no son comparables.
 
-2. **La partición se validó con 10 barras de 233.601.** Es el cambio que sostiene
-   toda la certificación y su evidencia declarada es *"10 de 10 barras de muestra"*.
-   **En auditoría**: `notebooks/kaggle/avolcluster_partition_audit/`, que corre la
-   misma comparación sobre las 233.601 filas.
+2. **La partición se validó con 10 barras de 233.601 — y AUDITADA da 89,81 %.**
+   Acta: `avolcluster_partition_audit_20260903/`. Sobre las 233.601 filas, `low`
+   92,64 %, `high` 92,62 %, volumen 92,04 %, los tres a la vez **89,81 %**. El
+   error **crece monótono dentro de la sesión** (decil 0: 97,27 % → decil 9:
+   73,07 %): el resync alinea en cada frontera y la partición se separa después.
+   La muestra de 10 daba 100 % porque el arranque de sesión acierta al 97 %.
+   No refuta las 201/203 zonas —es otra población— pero sí la afirmación tal
+   como está escrita.
 
 3. **`build_resolved_tick_bars` no hace lo que su nombre dice.** Lee
    `profile_volume` y **nunca lo usa**: la partición es un paso fijo de 120 ticks
@@ -72,7 +76,11 @@ Ninguna la refuta; las tres acotan qué quedó demostrado.
 
 ## Qué falta
 
-1. Resultado de la auditoría de partición (en curso).
-2. Decisión de merge entre las dos ramas.
-3. Si la auditoría pasa: declarar el gate con su estimand explícito — *sobre qué
-   población* y *a qué nivel* (zona, bloque o celda) vale cada porcentaje.
+1. **Declarar el estimand del gate.** Hoy conviven sin distinguirse tres números
+   que miden cosas distintas: 100 % de decisión de bloque *sobre input igual*
+   (no valida el footprint), 99,01 % sobre **203 zonas**, y **89,81 % sobre
+   233.601 barras primarias** — el que faltaba y ahora existe.
+2. **Medir si las zonas caen en tramos donde la partición acierta.** Es la
+   pregunta que decide si el 99,01 % sobrevive al 89,81 %: hay que medirla, no
+   suponerla en ninguna de las dos direcciones.
+3. **Decisión de merge entre las dos ramas.**
