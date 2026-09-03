@@ -193,6 +193,65 @@ acá el estimand va escrito en el propio JSON.
 parquet disponible). Ahí se mide lo que el rediseño promete: con 4,97 % de
 turnover en vez de 30,87 %, las diferencias de ticks deberían impactar mucho menos.
 
+## Paridad medida — capa 2 (end-to-end desde los ticks)
+
+Corrida en Kaggle, commit pineado `2d2bc83e`, oráculo
+`avolzonesimple_NQ0626_20260903.csv` (sha256 `5c0c8cf8…ada5`). El perfil se arma
+**desde los ticks del parquet**, sin mirar las celdas de NT8. Reporte:
+`layer2_report_v1.json`.
+
+| | |
+|---|---:|
+| bloques emparejados | 5.371 de 5.778 |
+| **acuerdo de decisión** | **99,27 %** (5.332) |
+| zonas creadas por los dos lados | 2.133 |
+| **geometría exacta entre ellas** | **92,92 %** (1.982) |
+| jaccard mediano | **1,000** |
+| jaccard ≥ 0,8 | 97,66 % |
+| **perfil reconstruido exacto** | **0,24 %** (13 de 5.371) |
+
+### El número que importa es el contraste entre los dos últimos
+
+**Los perfiles casi nunca coinciden —0,24 %— y sin embargo las zonas coinciden
+exacto el 92,92 % de las veces.** Eso es, medido, lo que significa robustez por
+diseño: el indicador absorbe una diferencia de datos que sigue estando ahí entera.
+
+La partición de barras no mejoró —sigue el 89,81 % de siempre, porque los dos
+flujos de ticks no son idénticos transacción por transacción— y el perfil por
+celda es distinto en 5.358 de 5.371 bloques. Lo que cambió es que la zona ya no
+depende de celdas individuales.
+
+Cuando difieren, difieren poco: de 2.133 zonas, **2.028 tienen el borde inferior
+idéntico**, 65 se corren un tick, y sólo 9 se van más de 6.
+
+### El corte de control
+
+En los 13 bloques donde el perfil reconstruido sí coincide exacto con el de NT8,
+hay 8 con `CREATE` en ambos lados y la geometría coincide en **8 de 8 (100 %)**.
+Consistente con la capa 1: dado el mismo input, el resultado es el mismo. La
+muestra es chica y no prueba nada por sí sola — es un control, no evidencia.
+
+### Los desacuerdos, enumerados
+
+`ABSTAIN_TOO_WIDE → CREATE` 18 · `CREATE → ABSTAIN_TOO_WIDE` 15 ·
+`ABSTAIN_LOW_CONCENTRATION → CREATE` 3 · `ABSTAIN_TOO_WIDE → ABSTAIN_LOW_CONCENTRATION` 3.
+Total 39 de 5.371. Todos son bloques al filo de `Max Zone Ticks` o de
+`Min Concentration`, que es donde tiene que estar el desacuerdo si el resto
+funciona.
+
+### Lo que este número NO autoriza a decir
+
+No es comparable de frente con el «201/203 zonas (99,01 %)» de aVolClusterPOI.
+Aquel se midió sobre **203 zonas** salidas de 23.339 bloques (0,9 % de la
+población); éste sobre **2.133 zonas** de 5.371 bloques (39,7 %). Poblaciones
+distintas y tamaños distintos: el porcentaje más alto no es automáticamente el
+mejor resultado. Lo que sí se puede afirmar es que **este acuerdo se sostiene
+sobre una población cuarenta veces más grande en proporción**, y con el perfil
+subyacente coincidiendo apenas el 0,24 % de las veces.
+
+407 bloques quedaron sin emparejar (7 %): efecto del emparejamiento por
+timestamp contra barras desfasadas, ya conocido y no atribuible al indicador.
+
 ## Justificación económica
 
 Una zona de volumen es una hipótesis sobre dónde quedó inventario que puede

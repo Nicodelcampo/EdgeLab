@@ -1,0 +1,56 @@
+{
+  "schema": "avolzonesimple_layer2_endtoend_v1",
+  "status": "PARITY_LAYER2_FROM_TICKS",
+  "estimand": "reconstruccion end-to-end: el perfil se arma DESDE LOS TICKS del parquet, sin mirar las celdas de NT8. Distinto de la capa 1, que usa el perfil del propio NT8 y ya dio EXACT dos veces.",
+  "code_commit": "2d2bc83e7b0c8a70a91a72a5768adcee44bcd2c2",
+  "oraculo": "data/nt8_oracles/avolzonesimple_NQ0626_20260903.csv",
+  "oraculo_sha256": "5c0c8cf88eb572577143e556e2bd193bd435433ae4e464b104d66bd21c49ada5",
+  "params": {
+    "bars_per_block": 10,
+    "area_share_pct": 30,
+    "max_zone_ticks": 12,
+    "min_concentration": 1500
+  },
+  "n_bloques_nt8": 5778,
+  "n_emparejados": 5371,
+  "acuerdo_decision": 0.992739,
+  "acuerdo_decision_n": 5332,
+  "ambos_CREATE": 2133,
+  "geometria_exacta_entre_ambos_CREATE": 1982,
+  "geometria_exacta_pct": 0.929208,
+  "matriz_de_decisiones": {
+    "ABSTAIN_TOO_WIDE -> ABSTAIN_TOO_WIDE": 3166,
+    "CREATE -> CREATE": 2133,
+    "ABSTAIN_LOW_CONCENTRATION -> ABSTAIN_LOW_CONCENTRATION": 33,
+    "ABSTAIN_TOO_WIDE -> ABSTAIN_LOW_CONCENTRATION": 3,
+    "CREATE -> ABSTAIN_TOO_WIDE": 15,
+    "ABSTAIN_LOW_CONCENTRATION -> CREATE": 3,
+    "ABSTAIN_TOO_WIDE -> CREATE": 18
+  },
+  "delta_lower_dist": {
+    "0": 2028,
+    "1": 65,
+    "2": 19,
+    "6+": 9,
+    "4": 3,
+    "3": 7,
+    "5": 2
+  },
+  "jaccard_mediano": 1.0,
+  "jaccard_ge_0_8_pct": 0.976559,
+  "perfil_reconstruido_exacto": 13,
+  "perfil_reconstruido_exacto_pct": 0.00242,
+  "corte_perfil_exacto": {
+    "ambos_CREATE": 8,
+    "geometria_exacta": 8,
+    "geometria_exacta_pct": 1.0,
+    "lectura": "si aca el acuerdo es casi total mientras el global es bajo, la divergencia es 100% de datos y ningun cambio de indicador la mejora"
+  },
+  "referencia_avolclusterpoi": {
+    "bloques_con_celdas_identicas": 0.152664
+  },
+  "elapsed_seconds": 32.6,
+  "outcomes_accessed": false,
+  "holdout_accessed": false,
+  "code_modified": false
+}
