@@ -51,9 +51,17 @@ Autoridad: `docs/incidents/INCIDENTE_OUTCOMES_UNTRACKED_2026-08-24.md` y su mani
 
 ## Líneas separadas
 
+- `research/avolcluster-nq-parity-oracle-20260901`: **PARIDAD CERTIFICADA (aVolClusterPOI v0.5 sobre NQ 06-26, 120t)**.
+  - Acta y dictamen: `docs/research/PARIDAD_AVOLCLUSTERPOI_NQ0626_20260902.md`
+  - Handoff auditor: `docs/HANDOFF_AUDITOR_2026-09-03.md`
+  - `KERNEL_PARITY_ON_EQUAL_INPUT = EXACT` (23.339 / 23.339 bloques idénticos, 100,00 %)
+  - Replay en ventana: **203 / 203 zonas emparejadas (100,00 %)**, 0 ticks diff, 0 ms diff
+  - Reconstrucción end-to-end: **201 / 203 zonas emparejadas (99,01 %)**, 0 ticks diff, 0 ms diff
+  - Simulador y visor activo: `python tools/visor_server.py` (`http://127.0.0.1:8777`)
+  - Outcomes: `CAMPAIGN_OUTCOMES_OPENED = false`.
 - `research/gate-regime-context`: `FOUNDATION_EXECUTABLE`, `CHECKPOINT_PENDING_REAL_DATA`, `NOT_YET_OPERATIONAL`.
 - `work/crypto-context-foundation-20260824`: PR #14 draft; CI roja; no mergear.
-- Las restantes 23 ramas no primarias están clasificadas en `docs/BRANCH_REGISTRY_2026-08-24.md`.
+- Las restantes ramas no primarias están clasificadas en `docs/BRANCH_REGISTRY_2026-08-24.md`.
 
 ## No tocar sin decisión explícita
 
