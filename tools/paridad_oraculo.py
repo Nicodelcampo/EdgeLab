@@ -112,6 +112,10 @@ def main(argv=None):
                          "es apurar: los indicadores que calibran de la sesion previa "
                          "(AdaptiveMode) no necesitan 71 sesiones de warmup -- eso lo "
                          "pedia el perfil de aVolCellPOI2, no este kernel.")
+    ap.add_argument("--barprofile", default=None,
+                    help="Ruta al BARPROFILE CSV de NT8 para resolver fronteras exactas")
+    ap.add_argument("--diag-blocks", default=None,
+                    help="Ruta al DIAG_BLOCKS CSV de NT8 para alimentar footprints exactos por bloque")
     ap.add_argument("--out", required=True)
     a = ap.parse_args(argv)
 
@@ -136,6 +140,10 @@ def main(argv=None):
         kernel_blob=blob_git(REPO / (mod_name.replace(".", "/") + ".py")),
         chart_tz=a.chart_tz,
         bar_spec=a.barras,
+        barprofile=str(a.barprofile) if a.barprofile else None,
+        barprofile_sha256=sha256_archivo(a.barprofile) if a.barprofile else None,
+        diag_blocks=str(a.diag_blocks) if getattr(a, "diag_blocks", None) else None,
+        diag_blocks_sha256=sha256_archivo(a.diag_blocks) if getattr(a, "diag_blocks", None) else None,
         head_commit=subprocess.check_output(
             ["git", "-C", str(REPO), "rev-parse", "HEAD"], text=True).strip(),
         arbol_limpio=None,   # se completa abajo
@@ -172,14 +180,22 @@ def main(argv=None):
     if spec_tipo == "time":
         bars = bars_mod.build_time_bars(tk, int(spec_val))
     else:
-        bars = bars_mod.build_tick_bars(tk, int(spec_val))
+        if a.barprofile:
+            bars = bars_mod.build_resolved_tick_bars(tk, a.barprofile, int(spec_val), chart_tz=a.chart_tz)
+        else:
+            bars = bars_mod.build_tick_bars(tk, int(spec_val))
     fps = bars_mod.build_footprints(tk, bars) if usa_fp else None
     tick_size = ticks_mod.instrument_spec(tk.instrument).tick_size
     print("  ticks=%d  barras=%d  tick_size=%s" % (len(tk.ts_ns), len(bars.close_t), tick_size))
 
     # ---- 3. kernel -------------------------------------------------------------
     mod = __import__(mod_name, fromlist=["run"])
-    res = mod.run(tk, bars, fps) if usa_fp else mod.run(tk, bars)
+    if getattr(a, "diag_blocks", None) and hasattr(mod, "run_diag_blocks"):
+        res = mod.run_diag_blocks(a.diag_blocks, bars, chart_tz=a.chart_tz)
+    elif usa_fp:
+        res = mod.run(tk, bars, fps)
+    else:
+        res = mod.run(tk, bars)
     # `run()["zones"]` YA viene con la forma que `match_zones` consume
     # (id/top/bottom/created_ms/ended_ms/state/touches). No se remapea: el remapeo
     # de `build_viewer.py` existe porque ese lee del STORE, que tiene otro esquema
@@ -223,6 +239,19 @@ def main(argv=None):
     frontier_ms = None
     if max_age and len(bars.end_ns) > max_age:
         frontier_ms = int(bars.end_ns[len(bars.end_ns) - 1 - max_age]) // 1_000_000
+
+    print("DEBUG MATCH:")
+    if kz:
+        print("  kz[0]:", kz[0])
+    if nz:
+        print("  nz[0]:", nz[0])
+    for i, a_z in enumerate(kz[:5]):
+        closest_b = min(nz, key=lambda b: abs((a_z.get("created_ms") or 0) - (b.get("created_ms") or 0))) if nz else None
+        if closest_b:
+            dt = abs(a_z["created_ms"] - closest_b["created_ms"])
+            ga, gb = parity._geom_ticks(a_z, tick_size), parity._geom_ticks(closest_b, tick_size)
+            gd = parity._geom_diff_ticks(ga, gb)
+            print(f"  [Sample {i}] py={a_z['id']} (t={a_z['created_ms']}) vs nt8={closest_b['id']} (t={closest_b['created_ms']}) -> dt={dt}ms, py_geom={ga}, nt8_geom={gb}, gd={gd}ticks")
 
     rep_sin = parity.match_zones(kz, nz, tick_size)
     rep = parity.match_zones(kz, nz, tick_size, maturity_frontier_ms=frontier_ms) \

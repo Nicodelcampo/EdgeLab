@@ -70,6 +70,20 @@ Consecuencia: no afecta la señal causal del roll del 16-jun, que usa D-1. Sí a
 - 17 PR abiertas; varias tienen bases encadenadas o antiguas.
 - Ninguna rama está protegida.
 - Registro: `docs/BRANCH_REGISTRY_2026-09-02.md`.
+- `research/avolcluster-nq-parity-oracle-20260901`: **mergeada a `foundation` el 2026-09-03.**
+  Paridad de aVolClusterPOI v0.5 sobre NQ 06-26 120t. Los tres números miden
+  poblaciones distintas y hay que citarlos con su estimand:
+  - `KERNEL_PARITY_ON_EQUAL_INPUT = EXACT`: 23.339/23.339 bloques (100,00 %) —
+    valida clustering/percentil/geometría **sobre input igual**, no el footprint.
+  - Replay en ventana: 203/203 zonas (100,00 %); end-to-end 201/203 (99,01 %) —
+    sobre **203 zonas**, ~2 % de los bloques.
+  - **Partición de barras: 89,81 %** sobre las 233.601 barras del BARPROFILE
+    (auditado 2026-09-03, `docs/research/avolcluster_partition_audit_20260903/`).
+    El error crece monótono en la sesión: decil 0 97,27 % → decil 9 73,07 %.
+  - Índice y reservas abiertas: `docs/research/PARIDAD_AVOLCLUSTERPOI_INDICE.md` (P-71).
+  - Outcomes: `CAMPAIGN_OUTCOMES_OPENED = false`.
+- `research/gate-regime-context`: `FOUNDATION_EXECUTABLE`, `CHECKPOINT_PENDING_REAL_DATA`, `NOT_YET_OPERATIONAL`.
+- `work/crypto-context-foundation-20260824`: PR #14 draft; CI roja; no mergear.
 
 ## No tocar sin decisión explícita
 

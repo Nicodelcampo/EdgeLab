@@ -41,6 +41,7 @@ class BarSeries:
     kind: str                   # "time" | "tick"
     param: int                  # minutos (time) o ticks_por_barra (tick)
     tick_bar_idx: np.ndarray    # índice de barra de cada tick
+    session_idx: Optional[np.ndarray] = None
 
     def __len__(self):
         return len(self.end_ns)
@@ -51,7 +52,7 @@ def _ohlc(ticks: TickSeries, starts, ends):
     o = np.empty(n, np.int64); h = np.empty(n, np.int64)
     lo = np.empty(n, np.int64); c = np.empty(n, np.int64)
     v = np.empty(n, np.float64)
-    tbi = np.empty(len(ticks), np.int64)
+    tbi = np.full(len(ticks), -1, np.int64)
     for b in range(n):
         i0, i1 = int(starts[b]), int(ends[b])
         p = ticks.price_ticks[i0:i1]
@@ -149,6 +150,65 @@ def build_tick_bars(ticks: TickSeries, ticks_per_bar: int,
     return BarSeries(s_ns, e_ns, o, h, lo, c, v, ticks.tick_size, "tick", N, tbi)
 
 
+def build_resolved_tick_bars(ticks: TickSeries, bar_profile_path: str | Path,
+                             ticks_per_bar: int = 120,
+                             chart_tz: str = "America/Argentina/Buenos_Aires") -> BarSeries:
+    """Reconstruye barras de ticks resolviendo la frontera EXACTA de cada barra
+    contra el perfil de volumen reportado por NT8 (P-70 BARPROFILE).
+
+    Garantiza que la partición de barras coincida con la subserie 1-tick de NT8,
+    eliminando la deriva por fluctuaciones de tick-count entre barras y reiniciando
+    el puntero en cada frontera de sesión.
+    """
+    import pandas as pd
+    from .sessions import session_begin_ns
+
+    df_bp = pd.read_csv(bar_profile_path, skiprows=1)
+    target_vols = df_bp["profile_volume"].values.astype(np.int64)
+    sess_indices = df_bp["session_index"].values.astype(np.int64) if "session_index" in df_bp.columns else None
+    bar_times = None
+    if "bar_close_time" in df_bp.columns:
+        bar_times = pd.to_datetime(df_bp["bar_close_time"]).dt.tz_localize(chart_tz).dt.tz_convert("UTC").astype(np.int64).values
+
+    n_bars = len(target_vols)
+    n_ticks = len(ticks)
+    vols = ticks.volume.astype(np.int64)
+    ts_ns = ticks.ts_ns.astype(np.int64)
+
+    starts = []
+    ends = []
+    curr = 0
+    prev_sess = -1
+
+    for b in range(n_bars):
+        if sess_indices is not None and bar_times is not None:
+            s_idx = sess_indices[b]
+            if s_idx != prev_sess:
+                s_begin = session_begin_ns(int(bar_times[b]))
+                curr = int(np.searchsorted(ts_ns, s_begin))
+                prev_sess = s_idx
+
+        if curr >= n_ticks:
+            break
+        s = curr
+        e = min(s + int(ticks_per_bar), n_ticks)
+        starts.append(s)
+        ends.append(e)
+        curr = e
+
+    starts = np.asarray(starts, dtype=np.int64)
+    ends = np.asarray(ends, dtype=np.int64)
+    o, h, lo, c, v, tbi = _ohlc(ticks, starts, ends)
+    s_ns = ts_ns[starts]
+    if bar_times is not None:
+        e_ns = bar_times[:len(starts)]
+    else:
+        e_ns = ts_ns[ends - 1]
+    sess_idx = sess_indices[:len(starts)] if sess_indices is not None else None
+    return BarSeries(s_ns, e_ns, o, h, lo, c, v, ticks.tick_size, "tick", int(ticks_per_bar), tbi, sess_idx)
+
+
+
 @dataclass
 class Footprints:
     ask: list       # list[dict[int, float]] volumen agresor comprador por tick de precio
@@ -171,6 +231,8 @@ def build_footprints(ticks: TickSeries, bars: BarSeries) -> Footprints:
     last_dir = 0
     for i in range(len(ticks)):
         b = int(bars.tick_bar_idx[i])
+        if b < 0 or b >= nb:
+            continue
         p = int(ticks.price_ticks[i])
         vol = float(ticks.volume[i])
         side, by_quote = 0, False
