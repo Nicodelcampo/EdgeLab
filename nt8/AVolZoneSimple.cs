@@ -11,7 +11,7 @@ using System.Xml.Serialization;
 using NinjaTrader.Data;
 using NinjaTrader.Gui;
 using NinjaTrader.Gui.Chart;
-using NinjaTrader.NinjaScript.DrawingTools;
+using NinjaTrader.Gui.Tools;
 #endregion
 
 // AVolZoneSimple v1.0 -- zonas de volumen con UNA definicion, estable y barrible.
@@ -63,6 +63,23 @@ namespace NinjaTrader.NinjaScript.Indicators
 		private int _sessionIndex = -1;
 		private long _blockSeq;
 		private long _zoneSeq;
+
+		// --- render por SharpDX ---
+		// Draw.Rectangle crea un objeto de dibujo por zona y NT8 los mantiene vivos;
+		// con miles de bloques eso degrada el chart. Aca las zonas son datos y el
+		// pintado ocurre en OnRender, que solo recorre las visibles.
+		private class Zone
+		{
+			public int StartBar;
+			public int EndBar;      // ultima barra cubierta; ver ExtendBars
+			public long LowerTick;
+			public long UpperTick;
+			public string Side;
+		}
+		private List<Zone> _zones;
+		private SharpDX.Direct2D1.Brush _dxSupport;
+		private SharpDX.Direct2D1.Brush _dxResistance;
+		private SharpDX.Direct2D1.Brush _dxAtPrice;
 		private StreamWriter _log;
 		private bool _logFailed;
 
@@ -82,6 +99,9 @@ namespace NinjaTrader.NinjaScript.Indicators
 				AreaSharePct = 30;
 				MaxZoneTicks = 12;
 				MinConcentration = 1500;
+				ExtendBars = 20;
+				ExtendToLastBar = false;
+				MaxZonesRendered = 2000;
 				ZoneOpacity = 30;
 				SupportColor = Brushes.MediumSeaGreen;
 				ResistanceColor = Brushes.IndianRed;
@@ -96,11 +116,14 @@ namespace NinjaTrader.NinjaScript.Indicators
 			{
 				_barProfile = new Dictionary<long, long>();
 				_blockCells = new Dictionary<long, long>();
+				_zones = new List<Zone>();
+				_zoneSeq = 0;
 				OpenLog();
 			}
 			else if (State == State.Terminated)
 			{
 				if (_log != null) { try { _log.Flush(); _log.Close(); } catch { } _log = null; }
+				DisposeDxBrushes();
 			}
 		}
 
@@ -232,7 +255,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 						if (closeTick > upper) { side = "SUPPORT"; distance = (int)(closeTick - upper); }
 						else if (closeTick < lower) { side = "RESISTANCE"; distance = (int)(lower - closeTick); }
 						else { side = "AT_PRICE"; distance = 0; }
-						DrawZone(lower, upper, side);
+						RegisterZone(lower, upper, side);
 					}
 				}
 			}
@@ -241,14 +264,94 @@ namespace NinjaTrader.NinjaScript.Indicators
 				conc, side, distance, closeTick);
 		}
 
-		private void DrawZone(long lower, long upper, string side)
+		private void RegisterZone(long lower, long upper, string side)
 		{
 			_zoneSeq++;
-			Brush b = side == "SUPPORT" ? SupportColor
-				: side == "RESISTANCE" ? ResistanceColor : AtPriceColor;
-			Draw.Rectangle(this, "avzs" + _zoneSeq, false,
-				BarsPerBlock - 1, (lower - 0.5) * TickSize, 0, (upper + 0.5) * TickSize,
-				Brushes.Transparent, b, ZoneOpacity);
+			int start = CurrentBar - (BarsPerBlock - 1);
+			if (start < 0) start = 0;
+			Zone z = new Zone();
+			z.StartBar = start;
+			z.EndBar = CurrentBar + (ExtendBars < 0 ? 0 : ExtendBars);
+			z.LowerTick = lower;
+			z.UpperTick = upper;
+			z.Side = side;
+			_zones.Add(z);
+			// cota de memoria: se descartan las mas viejas, no las visibles
+			if (MaxZonesRendered > 0 && _zones.Count > MaxZonesRendered)
+				_zones.RemoveRange(0, _zones.Count - MaxZonesRendered);
+		}
+
+		private void DisposeDxBrushes()
+		{
+			if (_dxSupport != null) { _dxSupport.Dispose(); _dxSupport = null; }
+			if (_dxResistance != null) { _dxResistance.Dispose(); _dxResistance = null; }
+			if (_dxAtPrice != null) { _dxAtPrice.Dispose(); _dxAtPrice = null; }
+		}
+
+		public override void OnRenderTargetChanged()
+		{
+			// El RenderTarget se recrea al redimensionar o cambiar de pantalla:
+			// los brushes viejos quedan invalidos y hay que soltarlos SIEMPRE.
+			DisposeDxBrushes();
+			if (RenderTarget == null) return;
+			try
+			{
+				float op = ZoneOpacity / 100f;
+				_dxSupport = SupportColor.ToDxBrush(RenderTarget);
+				_dxResistance = ResistanceColor.ToDxBrush(RenderTarget);
+				_dxAtPrice = AtPriceColor.ToDxBrush(RenderTarget);
+				_dxSupport.Opacity = op;
+				_dxResistance.Opacity = op;
+				_dxAtPrice.Opacity = op;
+			}
+			catch { DisposeDxBrushes(); }
+		}
+
+		protected override void OnRender(ChartControl chartControl, ChartScale chartScale)
+		{
+			base.OnRender(chartControl, chartScale);
+			if (Bars == null || ChartBars == null || RenderTarget == null) return;
+			if (_zones == null || _zones.Count == 0) return;
+			if (_dxSupport == null) OnRenderTargetChanged();
+			if (_dxSupport == null) return;
+
+			int from = ChartBars.FromIndex;
+			int to = ChartBars.ToIndex;
+
+			// El antialiasing en modo PerPrimitive deja bordes borrosos en
+			// rectangulos alineados a pixel; Aliased da el borde nitido de una zona.
+			SharpDX.Direct2D1.AntialiasMode prev = RenderTarget.AntialiasMode;
+			RenderTarget.AntialiasMode = SharpDX.Direct2D1.AntialiasMode.Aliased;
+			try
+			{
+				for (int i = 0; i < _zones.Count; i++)
+				{
+					Zone z = _zones[i];
+					int end = ExtendToLastBar ? to : z.EndBar;
+					if (end < from || z.StartBar > to) continue;        // fuera de pantalla
+
+					int a = z.StartBar < from ? from : z.StartBar;
+					int b = end > to ? to : end;
+					float x1 = chartControl.GetXByBarIndex(ChartBars, a);
+					float x2 = chartControl.GetXByBarIndex(ChartBars, b);
+					// media vela a cada lado, para que la zona cubra las barras enteras
+					float half = (float)chartControl.Properties.BarDistance / 2f;
+					x1 -= half; x2 += half;
+
+					float yTop = chartScale.GetYByValue((z.UpperTick + 0.5) * TickSize);
+					float yBot = chartScale.GetYByValue((z.LowerTick - 0.5) * TickSize);
+					float w = x2 - x1; if (w < 1f) w = 1f;
+					float h = yBot - yTop; if (h < 1f) h = 1f;
+
+					SharpDX.Direct2D1.Brush br = z.Side == "SUPPORT" ? _dxSupport
+						: z.Side == "RESISTANCE" ? _dxResistance : _dxAtPrice;
+					RenderTarget.FillRectangle(new SharpDX.RectangleF(x1, yTop, w, h), br);
+				}
+			}
+			finally
+			{
+				RenderTarget.AntialiasMode = prev;
+			}
 		}
 
 		private void WriteRow(string decision, long lower, long upper, int zoneTicks,
@@ -335,6 +438,24 @@ namespace NinjaTrader.NinjaScript.Indicators
 			get { return Serialize.BrushToString(AtPriceColor); }
 			set { AtPriceColor = Serialize.StringToBrush(value); }
 		}
+
+		[NinjaScriptProperty] [Range(0, 100000)]
+		[Display(Name = "Extend Bars", Order = 5, GroupName = "1. Zona",
+			Description = "Barras que la zona se extiende a la DERECHA del bloque que la "
+				+ "creo. 0 = solo el bloque. Es visual: no cambia la deteccion ni el CSV.")]
+		public int ExtendBars { get; set; }
+
+		[NinjaScriptProperty]
+		[Display(Name = "Extend To Last Bar", Order = 6, GroupName = "1. Zona",
+			Description = "Si esta activo, la zona se extiende hasta el borde derecho del "
+				+ "chart e ignora Extend Bars.")]
+		public bool ExtendToLastBar { get; set; }
+
+		[NinjaScriptProperty] [Range(0, 100000)]
+		[Display(Name = "Max Zones Rendered", Order = 7, GroupName = "1. Zona",
+			Description = "Cota de memoria: cuantas zonas se conservan para dibujar. "
+				+ "0 = sin limite. Descarta las mas viejas; el CSV no se recorta nunca.")]
+		public int MaxZonesRendered { get; set; }
 
 		[NinjaScriptProperty] [Range(0, 100)]
 		[Display(Name = "Zone Opacity", Order = 13, GroupName = "2. Visual")]

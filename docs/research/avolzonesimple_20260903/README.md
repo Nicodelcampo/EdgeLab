@@ -109,6 +109,36 @@ La zona **no es invariante** ante un contrato, y el test lo fija explícitamente
 `tests/bridge/test_avolzonesimple.py` fija las tres cosas, incluida la meseta
 plana, para que nadie lo descubra como sorpresa en una campaña.
 
+## Render: SharpDX, y la zona se extiende
+
+El dibujo pasó de `Draw.Rectangle` a **`OnRender` con SharpDX**. `Draw.Rectangle`
+crea un objeto de dibujo por zona y NT8 los mantiene vivos: con miles de bloques
+el chart se degrada. Ahora las zonas son **datos** (`List<Zone>` con índices de
+barra y ticks) y el pintado recorre sólo las visibles, culled contra
+`ChartBars.FromIndex/ToIndex`.
+
+Detalles que importan y son fáciles de arruinar:
+
+- los brushes DX se crean en `OnRenderTargetChanged` y se **liberan siempre** ahí
+  y en `Terminated`: el render target se recrea al redimensionar o cambiar de
+  pantalla, y los brushes viejos quedan inválidos;
+- `AntialiasMode.Aliased` durante el dibujo y restaurado en `finally` — en
+  `PerPrimitive` los bordes de un rectángulo alineado a píxel salen borrosos;
+- `SharpDX` no se importa con `using`: define `Brush` y haría ambiguo el `Brush`
+  de `System.Windows.Media` de las propiedades de color. Se cualifica a mano.
+
+Tres parámetros nuevos, **todos visuales** — no cambian la detección ni el CSV:
+
+| parámetro | default | qué hace |
+|---|---:|---|
+| `Extend Bars` | 20 | barras que la zona se extiende a la derecha del bloque. 0 = sólo el bloque |
+| `Extend To Last Bar` | false | extiende hasta el borde derecho del chart, ignora `Extend Bars` |
+| `Max Zones Rendered` | 2000 | cota de memoria; descarta las más viejas. El CSV **no** se recorta nunca |
+
+La extensión es visual por ahora. Si la vida de la zona pasa a ser parte de la
+hipótesis —hasta que el precio la invalide, por ejemplo— eso es lifecycle y va
+medido, no dibujado: hoy el CSV publica una fila por bloque y nada más.
+
 ## Justificación económica
 
 Una zona de volumen es una hipótesis sobre dónde quedó inventario que puede
