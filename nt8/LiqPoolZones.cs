@@ -73,6 +73,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 			public int SpanBars;
 			public long ExcursionTicks;
 			public long RoundConfluence;
+			public List<int> PivotBars = new List<int>();   // para dibujar la linea
 			public string State;          // ACTIVE / TOUCHED / SWEPT / EXPIRED
 			public int TouchedBar = -1, SweptBar = -1, ExpiredBar = -1;
 			public bool Logged;
@@ -106,7 +107,13 @@ namespace NinjaTrader.NinjaScript.Indicators
 				LiquidityBandTicks = 2;
 				ZoneHeightTicks = 1;
 				MaxAgeBars = 0;
-				InvalidationTicks = 4;
+				InvalidationTicks = 8;      // ZB recorre ~26 ticks por sesion: con 4
+				                            // casi toda zona se marcaba barrida al instante
+				LookbackBars = 400;
+				ShowLiquidityBand = false;  // por defecto: solo la linea, sin tapar el chart
+				HideSwept = true;           // las barridas siguen en el CSV, no en pantalla
+				LineWidthPixels = 2f;
+				PivotMarkPixels = 7f;
 				RoundTicks = 32;          // ZB: 32 ticks de 1/32 = 1 punto entero
 				ExtendBars = 40;
 				MaxZonesRendered = 2000;
@@ -153,6 +160,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 					+ ",zone_height_ticks=" + ZoneHeightTicks
 					+ ",max_age_bars=" + MaxAgeBars
 					+ ",invalidation_ticks=" + InvalidationTicks
+					+ ",lookback_bars=" + LookbackBars
 					+ ",round_ticks=" + RoundTicks
 					+ ",zones_deleted_on_touch=false,write_mode=overwrite");
 				_log.WriteLine("zone_seq,created_bar,bar_close_time_utc,session_index,side,"
@@ -203,17 +211,30 @@ namespace NinjaTrader.NinjaScript.Indicators
 			ActualizarZonas();
 		}
 
+		// El agrupamiento NO es consecutivo, y esa es la correccion clave.
+		// La primera version rompia el grupo si entre dos picos del mismo nivel
+		// aparecia un pivote a otro nivel. Eso dejaba fuera justo el caso de "entre
+		// dos picos el precio se movio y paso tiempo", que es el que hay que marcar.
+		// Ahora cada pivote busca hacia atras, dentro de LookbackBars, TODOS los del
+		// mismo tipo al mismo nivel, sin importar que paso en el medio. Lo del medio
+		// queda en ExcursionTicks y SpanBars: es caracteristica de la zona, no
+		// criterio para descartarla.
 		private void AgregarPivote(Pivot p)
 		{
 			List<Pivot> lista = p.IsHigh ? _pivHi : _pivLo;
-			if (lista.Count > 0 && Math.Abs(p.Tick - lista[lista.Count - 1].Tick) <= LevelToleranceTicks)
-			{
-				lista.Add(p);
-				if (lista.Count >= MinPivots) CrearOActualizarZona(lista, p.IsHigh);
-				return;
-			}
-			lista.Clear();
 			lista.Add(p);
+			if (lista.Count > 5000) lista.RemoveRange(0, lista.Count - 5000);
+
+			List<Pivot> grupo = new List<Pivot>();
+			for (int i = 0; i < lista.Count - 1; i++)
+			{
+				Pivot q = lista[i];
+				if (Math.Abs(q.Tick - p.Tick) <= LevelToleranceTicks
+					&& p.Bar - q.Bar <= LookbackBars)
+					grupo.Add(q);
+			}
+			grupo.Add(p);
+			if (grupo.Count >= MinPivots) CrearOActualizarZona(grupo, p.IsHigh);
 		}
 
 		private void CrearOActualizarZona(List<Pivot> grupo, bool isHigh)
@@ -246,6 +267,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 			z.BandLo = isHigh ? nivel + 1 : nivel - LiquidityBandTicks;
 			z.BandHi = isHigh ? nivel + LiquidityBandTicks : nivel - 1;
 			z.NPivots = grupo.Count; z.FirstBar = a; z.CreatedBar = b;
+			z.PivotBars.Clear();
+			for (int i = 0; i < grupo.Count; i++) z.PivotBars.Add(grupo[i].Bar);
 			z.SpanBars = b - a; z.ExcursionTicks = exc;
 			long m = RoundTicks > 0 ? ((nivel % RoundTicks) + RoundTicks) % RoundTicks : 0;
 			z.RoundConfluence = RoundTicks > 0 ? Math.Min(m, RoundTicks - m) : 0;
@@ -354,35 +377,51 @@ namespace NinjaTrader.NinjaScript.Indicators
 					Zone z = _zones[i];
 					// KeepTouchedZones=false SOLO oculta; el CSV nunca se recorta.
 					if (!KeepTouchedZones && z.State != "ACTIVE") continue;
+					if (HideSwept && z.State == "SWEPT") continue;
 					int end = z.CreatedBar + ExtendBars;
 					if (z.SweptBar >= 0) end = Math.Min(end, z.SweptBar);
 					if (end < from || z.FirstBar > to) continue;
 
 					int a = Math.Max(z.FirstBar, from), b = Math.Min(end, to);
-					float x1 = chartControl.GetXByBarIndex(ChartBars, a) - half;
-					float x2 = chartControl.GetXByBarIndex(ChartBars, b) + half;
+					float x1 = chartControl.GetXByBarIndex(ChartBars, a);
+					float x2 = chartControl.GetXByBarIndex(ChartBars, b);
 					float w = Math.Max(1f, x2 - x1);
 
 					SharpDX.Direct2D1.Brush bl = z.State == "SWEPT" ? _dxSwept
 						: (z.IsHigh ? _dxLevelHi : _dxLevelLo);
-					Pintar(chartScale, x1, w, z.LevelLo, z.LevelHi, bl);
-					if (LiquidityBandTicks > 0)
-						Pintar(chartScale, x1, w, Math.Min(z.BandLo, z.BandHi),
-							Math.Max(z.BandLo, z.BandHi),
+
+					// LINEA en el nivel, del primer al ultimo pico (mas la extension).
+					// Antes se pintaba un rectangulo alto y ancho: con varias zonas
+					// solapadas el chart quedaba tapado y no se veia QUE picos participan.
+					float y = chartScale.GetYByValue(z.Level * TickSize);
+					RenderTarget.FillRectangle(
+						new SharpDX.RectangleF(x1, y - LineWidthPixels / 2f, w, LineWidthPixels), bl);
+
+					// marca en cada pico que participa: se ve de donde sale la zona
+					for (int k = 0; k < z.PivotBars.Count; k++)
+					{
+						int pb = z.PivotBars[k];
+						if (pb < from || pb > to) continue;
+						float px = chartControl.GetXByBarIndex(ChartBars, pb);
+						RenderTarget.FillRectangle(new SharpDX.RectangleF(
+							px - half, y - PivotMarkPixels / 2f, half * 2f, PivotMarkPixels), bl);
+					}
+
+					// banda de liquidez: franja fina MAS ALLA del nivel, opcional
+					if (ShowLiquidityBand && LiquidityBandTicks > 0)
+					{
+						long blo = Math.Min(z.BandLo, z.BandHi), bhi = Math.Max(z.BandLo, z.BandHi);
+						float yTop = chartScale.GetYByValue((bhi + 0.5) * TickSize);
+						float yBot = chartScale.GetYByValue((blo - 0.5) * TickSize);
+						RenderTarget.FillRectangle(
+							new SharpDX.RectangleF(x1, yTop, w, Math.Max(1f, yBot - yTop)),
 							z.State == "SWEPT" ? _dxSwept : _dxBand);
+					}
 				}
 			}
 			finally { RenderTarget.AntialiasMode = prev; }
 		}
 
-		private void Pintar(ChartScale scale, float x, float w, long lo, long hi,
-			SharpDX.Direct2D1.Brush br)
-		{
-			float yTop = scale.GetYByValue((hi + 0.5) * TickSize);
-			float yBot = scale.GetYByValue((lo - 0.5) * TickSize);
-			RenderTarget.FillRectangle(
-				new SharpDX.RectangleF(x, yTop, w, Math.Max(1f, yBot - yTop)), br);
-		}
 		#endregion
 
 		#region Properties
@@ -419,6 +458,35 @@ namespace NinjaTrader.NinjaScript.Indicators
 		[Display(Name = "MaxAgeBars (0 = sin expiracion)", Order = 6, GroupName = "2. Zona",
 			Description = "La literatura mide que la probabilidad de rebote DECAE con el tiempo.")]
 		public int MaxAgeBars { get; set; }
+
+		[NinjaScriptProperty] [Range(1, 100000)]
+		[Display(Name = "LookbackBars", Order = 6, GroupName = "1. Deteccion",
+			Description = "Hasta cuantas barras atras se busca un pico del mismo nivel. "
+				+ "El agrupamiento NO exige que los picos sean consecutivos: entre ellos "
+				+ "puede haber pasado cualquier cosa, y eso queda en SpanBars y "
+				+ "ExcursionTicks.")]
+		public int LookbackBars { get; set; }
+
+		[NinjaScriptProperty]
+		[Display(Name = "ShowLiquidityBand", Order = 17, GroupName = "3. Visual",
+			Description = "Dibuja la franja de stops mas alla del nivel. OFF deja solo la "
+				+ "linea. No afecta al CSV.")]
+		public bool ShowLiquidityBand { get; set; }
+
+		[NinjaScriptProperty]
+		[Display(Name = "HideSwept", Order = 18, GroupName = "3. Visual",
+			Description = "Oculta en pantalla las zonas barridas. Siguen en el CSV: "
+				+ "borrarlas del censo seria sesgo de supervivencia.")]
+		public bool HideSwept { get; set; }
+
+		[NinjaScriptProperty] [Range(1, 20)]
+		[Display(Name = "LineWidthPixels", Order = 19, GroupName = "3. Visual")]
+		public float LineWidthPixels { get; set; }
+
+		[NinjaScriptProperty] [Range(1, 40)]
+		[Display(Name = "PivotMarkPixels", Order = 20, GroupName = "3. Visual",
+			Description = "Alto de la marca en cada pico que participa de la zona.")]
+		public float PivotMarkPixels { get; set; }
 
 		[NinjaScriptProperty] [Range(1, 10000)]
 		[Display(Name = "InvalidationTicks", Order = 7, GroupName = "2. Zona",

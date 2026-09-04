@@ -67,7 +67,10 @@ RESEARCH_DEFAULTS = dict(
     liquidity_band_ticks=2,     # ancho de la banda MÁS ALLÁ del nivel (stops)
     zone_height_ticks=1,        # grosor del nivel mismo (take-profit)
     max_age_bars=0,             # 0 = sin expiración
-    invalidation_ticks=4,       # cuánto debe atravesar para considerarse barrida
+    invalidation_ticks=8,       # cuánto debe atravesar para considerarse barrida.
+                                # 4 era demasiado poco: ZB recorre ~26 ticks por
+                                # sesión, así que casi toda zona quedaba barrida
+    lookback_bars=400,          # hasta dónde atrás se busca un pico del mismo nivel
     round_ticks=32,             # cada cuántos ticks hay un "número redondo" (ZB: 32 = 1 punto)
 )
 
@@ -102,26 +105,42 @@ def find_pivots(high_ticks, low_ticks, strength):
 def build_zones(high_ticks, low_ticks, params=None):
     """Agrupa pivotes en zonas. Sin outcomes: sólo detección.
 
-    Una zona se cierra cuando aparece un pivote del mismo tipo fuera de la
-    tolerancia. El agrupamiento es **secuencial en el tiempo**, no un clustering
-    global: así la zona existe desde su último pivote y no usa información futura.
+    ## El agrupamiento NO es consecutivo, y esa es la corrección clave
+
+    La primera versión sólo unía pivotes **consecutivos**: si entre dos picos del
+    mismo nivel aparecía un pivote a otro nivel, el grupo se rompía. Eso dejaba
+    fuera justamente el caso que Nico describió —*«entre dos picos el precio se
+    movió varios ticks y pasó bastante tiempo»*— y por eso el detector casi no
+    coincidía con lo que él marca a mano.
+
+    Ahora cada pivote nuevo busca hacia atrás, dentro de `lookback_bars`, **todos**
+    los pivotes del mismo tipo a distancia ≤ `level_tolerance_ticks`, sin importar
+    qué pasó en el medio. Lo que pasó en el medio queda registrado en
+    `excursion_ticks` y `span_bars`, que es donde tiene que estar: como
+    característica de la zona, no como criterio para descartarla.
+
+    El agrupamiento es causal: una zona sólo existe desde su último pivote, y ese
+    pivote se confirma `pivot_strength` barras después. No usa información futura.
     """
     p = _params(params)
     tol = int(p["level_tolerance_ticks"])
+    look = int(p["lookback_bars"])
+    minp = int(p["min_pivots"])
+    todos = find_pivots(high_ticks, low_ticks, p["pivot_strength"])
     zonas = []
     for tipo in ("H", "L"):
-        pivots = [x for x in find_pivots(high_ticks, low_ticks, p["pivot_strength"])
-                  if x[1] == tipo]
-        grupo = []
-        for piv in pivots:
-            if grupo and abs(piv[2] - grupo[-1][2]) <= tol:
-                grupo.append(piv)
+        pivots = [x for x in todos if x[1] == tipo]
+        por_primer_bar = {}
+        for k, piv in enumerate(pivots):
+            grupo = [q for q in pivots[:k]
+                     if abs(q[2] - piv[2]) <= tol and piv[0] - q[0] <= look]
+            grupo.append(piv)
+            if len(grupo) < minp:
                 continue
-            if len(grupo) >= int(p["min_pivots"]):
-                zonas.append(_cerrar(grupo, tipo, high_ticks, low_ticks, p))
-            grupo = [piv]
-        if len(grupo) >= int(p["min_pivots"]):
-            zonas.append(_cerrar(grupo, tipo, high_ticks, low_ticks, p))
+            z = _cerrar(grupo, tipo, high_ticks, low_ticks, p)
+            # el mismo nivel puede sumar picos: se actualiza la zona, no se duplica
+            por_primer_bar[(z["first_pivot_bar"], z["level_tick"])] = z
+        zonas.extend(por_primer_bar.values())
     zonas.sort(key=lambda z: (z["created_bar"], z["level_tick"]))
     return zonas
 
