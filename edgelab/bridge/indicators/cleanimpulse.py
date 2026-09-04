@@ -35,6 +35,8 @@ RESEARCH_DEFAULTS = dict(
     top_pct=5.0,          # el 5 % más largo
     window_legs=200,      # sobre cuántos tramos previos se calcula el corte
     min_leg_ticks=0,      # piso absoluto opcional
+    grace_bars=None,      # barras de gracia tras el fin del tramo; None = pivot_right
+    require_price_overlap=True,   # ver zones_inside: la zona tiene que caer DENTRO
 )
 
 
@@ -95,14 +97,45 @@ def _corte(largos, top_pct):
     return v[min(idx, len(v) - 1)]
 
 
-def zones_inside(leg, zones):
-    """Zonas **creadas** dentro del rango de barras del tramo.
+def zones_inside(leg, zones, params=None):
+    """Zonas que el tramo **contiene**: en tiempo y en precio.
 
-    Creadas, no presentes: una zona que existía de antes y sigue viva no cuenta.
-    Lo que el pedido distingue es si el impulso **generó** zonas mientras corría.
+    ## Las dos correcciones
+
+    La primera versión sólo miraba el **rango de barras**, y fallaba por dos vías
+    a la vez:
+
+    1. **No miraba el precio.** Una zona puede crearse durante el tramo pero en
+       otro nivel; y al revés, lo que se ve en el chart es que el impulso
+       *atraviesa* las zonas que creó. «Contener» es sobre todo espacial.
+    2. **El tramo terminaba en el pivote exacto.** La zona que el impulso genera
+       se registra al cerrarse el movimiento, una o dos barras después del pivote,
+       así que caía fuera de la ventana y el impulso quedaba marcado como limpio
+       teniendo zonas propias adentro.
+
+    La gracia por defecto es `pivot_right`, que es **exactamente** el retardo con
+    el que se confirma el pivote: no introduce mirada al futuro, porque en el
+    momento en que el tramo queda cerrado esa zona ya se conocía.
     """
-    return [z for z in zones
-            if leg["start_bar"] <= int(z["start_bar"]) <= leg["end_bar"]]
+    p = _params(params)
+    gracia = p["grace_bars"]
+    if gracia is None:
+        gracia = int(p["pivot_right"])
+    b0, b1 = leg["start_bar"], leg["end_bar"] + int(gracia)
+    lo_leg = min(leg["start_tick"], leg["end_tick"])
+    hi_leg = max(leg["start_tick"], leg["end_tick"])
+    out = []
+    for z in zones:
+        sb = int(z["start_bar"])
+        if not (b0 <= sb <= b1):
+            continue
+        if p["require_price_overlap"] and ("lower_tick" in z or "upper_tick" in z):
+            zlo = int(z.get("lower_tick", z.get("upper_tick")))
+            zhi = int(z.get("upper_tick", z.get("lower_tick")))
+            if zhi < lo_leg or zlo > hi_leg:
+                continue                 # la zona no cae dentro del recorrido
+        out.append(z)
+    return out
 
 
 def detect(high_ticks, low_ticks, zones, params=None):
@@ -123,7 +156,7 @@ def detect(high_ticks, low_ticks, zones, params=None):
         leg["cut_ticks"] = corte
         leg["is_long"] = (corte is not None and leg["length_ticks"] >= corte
                           and leg["length_ticks"] >= piso)
-        dentro = zones_inside(leg, zones)
+        dentro = zones_inside(leg, zones, p)
         leg["zones_inside"] = len(dentro)
         leg["is_clean"] = leg["is_long"] and len(dentro) == 0
         vistos.append(leg["length_ticks"])

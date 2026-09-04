@@ -39,6 +39,18 @@ using NinjaTrader.Gui.Tools;
 //   con informacion de manana, y eso invalida cualquier medicion posterior sin
 //   que se note.
 //
+// QUE SIGNIFICA "CONTENER" UNA ZONA -- y las dos correcciones que costo
+//   La primera version solo miraba el RANGO DE BARRAS, y fallaba por dos vias:
+//     1. NO MIRABA EL PRECIO. Lo que se ve en el chart es que el impulso ATRAVIESA
+//        las zonas que creo: "contener" es sobre todo espacial.
+//     2. El tramo terminaba en el pivote EXACTO. La zona que el impulso genera se
+//        registra al cerrarse el movimiento, una o dos barras despues del pivote,
+//        asi que caia fuera de la ventana y el impulso quedaba marcado como limpio
+//        teniendo zonas propias adentro.
+//   La gracia por defecto es PivotRight, que es EXACTAMENTE el retardo con el que
+//   se confirma el pivote: no introduce mirada al futuro, porque cuando el tramo
+//   queda cerrado esa zona ya se conocia.
+//
 // Este indicador NO dice si un impulso limpio es bueno. Enumera la poblacion.
 
 namespace NinjaTrader.NinjaScript.Indicators
@@ -85,6 +97,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 				TopPct = 5.0;
 				WindowLegs = 200;
 				MinLegTicks = 0;
+				GraceBars = -1;              // -1 = usar PivotRight
+				RequirePriceOverlap = true;
 
 				UpColor = Brushes.LimeGreen;
 				DownColor = Brushes.OrangeRed;
@@ -124,6 +138,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 					+ ",top_pct=" + TopPct.ToString(CultureInfo.InvariantCulture)
 					+ ",window_legs=" + WindowLegs + ",min_leg_ticks=" + MinLegTicks
 					+ ",zone_source=HFTZonesNQPureV4.PublicZones"
+					+ ",grace_bars=" + GraceBars
+					+ ",require_price_overlap=" + RequirePriceOverlap
 					+ ",percentile=causal,write_mode=overwrite");
 				_log.WriteLine("leg_seq,start_bar,end_bar,bar_close_time_utc,session_index,"
 					+ "direction,start_tick,end_tick,length_ticks,cut_ticks,bars,"
@@ -169,18 +185,36 @@ namespace NinjaTrader.NinjaScript.Indicators
 		// zonas CREADAS dentro del rango de barras del tramo. Creadas, no presentes:
 		// una zona previa que sigue viva no cuenta -- lo que interesa es si el
 		// impulso GENERO zonas mientras corria.
-		private int ZonasAdentro(int startBar, int endBar)
+		private int ZonasAdentro(int startBar, int endBar, long loLeg, long hiLeg)
 		{
 			IEnumerable zs = ZonasFuente();
 			if (zs == null) return -1;              // -1 = fuente ausente, no "cero"
+			int gracia = GraceBars >= 0 ? GraceBars : PivotRight;
+			int b1 = endBar + gracia;
 			int n = 0;
 			foreach (object z in zs)
 			{
 				if (z == null) continue;
-				FieldInfo fi = z.GetType().GetField("StartBar");
-				if (fi == null) continue;
-				int sb = (int)fi.GetValue(z);
-				if (sb >= startBar && sb <= endBar) n++;
+				Type t = z.GetType();
+				FieldInfo fSb = t.GetField("StartBar");
+				if (fSb == null) continue;
+				int sb = (int)fSb.GetValue(z);
+				if (sb < startBar || sb > b1) continue;
+
+				if (RequirePriceOverlap)
+				{
+					FieldInfo fU = t.GetField("Upper");
+					FieldInfo fL = t.GetField("Lower");
+					if (fU != null && fL != null)
+					{
+						long zHi = PriceToTick((double)fU.GetValue(z));
+						long zLo = PriceToTick((double)fL.GetValue(z));
+						if (zLo > zHi) { long tmp = zLo; zLo = zHi; zHi = tmp; }
+						// la zona tiene que caer DENTRO del recorrido del impulso
+						if (zHi < loLeg || zLo > hiLeg) continue;
+					}
+				}
+				n++;
 			}
 			return n;
 		}
@@ -243,7 +277,9 @@ namespace NinjaTrader.NinjaScript.Indicators
 			leg.IsLong = leg.CutTicks > 0 && leg.LengthTicks >= leg.CutTicks
 				&& leg.LengthTicks >= MinLegTicks;
 
-			leg.ZonesInside = ZonasAdentro(leg.StartBar, leg.EndBar);
+			long loLeg = Math.Min(leg.StartTick, leg.EndTick);
+			long hiLeg = Math.Max(leg.StartTick, leg.EndTick);
+			leg.ZonesInside = ZonasAdentro(leg.StartBar, leg.EndBar, loLeg, hiLeg);
 			leg.IsClean = leg.IsLong && leg.ZonesInside == 0;
 
 			_legs.Add(leg);
@@ -360,6 +396,20 @@ namespace NinjaTrader.NinjaScript.Indicators
 		[Display(Name = "MinLegTicks", Order = 5, GroupName = "1. Tramos",
 			Description = "Piso absoluto opcional, ademas del percentil.")]
 		public int MinLegTicks { get; set; }
+
+		[NinjaScriptProperty] [Range(-1, 10000)]
+		[Display(Name = "GraceBars (-1 = PivotRight)", Order = 6, GroupName = "1. Tramos",
+			Description = "Barras de gracia despues del pivote para contar una zona como "
+				+ "creada por el impulso. La zona se registra al cerrarse el movimiento, "
+				+ "no en el pivote exacto. Con PivotRight no hay mirada al futuro.")]
+		public int GraceBars { get; set; }
+
+		[NinjaScriptProperty]
+		[Display(Name = "RequirePriceOverlap", Order = 7, GroupName = "1. Tramos",
+			Description = "La zona ademas tiene que caer DENTRO del recorrido de precio del "
+				+ "impulso. Sin esto, una zona creada en otro nivel ensuciaba el tramo, y "
+				+ "una zona propia fuera de la ventana de barras no lo ensuciaba.")]
+		public bool RequirePriceOverlap { get; set; }
 
 		[XmlIgnore] [Display(Name = "UpColor", Order = 10, GroupName = "2. Visual")]
 		public Brush UpColor { get; set; }

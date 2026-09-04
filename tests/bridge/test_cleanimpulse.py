@@ -62,7 +62,9 @@ def test_marca_solo_los_largos_SIN_zonas_creadas_adentro():
 
     # ahora una zona creada dentro del tramo más largo
     mayor = max(legs_sin, key=lambda l: l["length_ticks"])
-    zona = dict(start_bar=(mayor["start_bar"] + mayor["end_bar"]) // 2)
+    medio = (mayor["start_tick"] + mayor["end_tick"]) // 2
+    zona = dict(start_bar=(mayor["start_bar"] + mayor["end_bar"]) // 2,
+                lower_tick=medio - 1, upper_tick=medio + 1)
     legs_con = detect(hi, lo, [zona], P)
     igual = [l for l in legs_con if l["start_bar"] == mayor["start_bar"]][0]
     assert igual["zones_inside"] == 1
@@ -73,15 +75,40 @@ def test_una_zona_FUERA_del_tramo_no_lo_ensucia():
     hi, lo = _zigzag([0, 20, 0, 200, 0])
     legs = detect(hi, lo, [], P)
     mayor = max(legs, key=lambda l: l["length_ticks"])
-    fuera = dict(start_bar=mayor["end_bar"] + 5)
-    assert zones_inside(mayor, [fuera]) == []
+    fuera = dict(start_bar=mayor["end_bar"] + 50)
+    assert zones_inside(mayor, [fuera], P) == []
 
 
 def test_una_zona_creada_ANTES_y_todavia_viva_no_cuenta():
     """El pedido distingue si el impulso GENERO zonas mientras corría."""
-    leg = dict(start_bar=100, end_bar=150)
-    previa = dict(start_bar=40, end_bar=200)      # existía antes y sigue viva
-    assert zones_inside(leg, [previa]) == []
+    leg = dict(start_bar=100, end_bar=150, start_tick=1000, end_tick=1080)
+    previa = dict(start_bar=40, end_bar=200, lower_tick=1020, upper_tick=1030)
+    assert zones_inside(leg, [previa], P) == []
+
+
+def test_la_zona_que_el_impulso_CREA_al_cerrarse_SI_lo_ensucia():
+    """El defecto que Nico vio en el chart, en dos partes.
+
+    La zona que genera el impulso se registra al cerrarse el movimiento, una o dos
+    barras **después** del pivote, así que caía fuera de la ventana y el impulso
+    quedaba marcado como limpio teniendo zonas propias adentro. La gracia por
+    defecto es `pivot_right`, que es el retardo con que se confirma el pivote: no
+    hay mirada al futuro.
+    """
+    leg = dict(start_bar=100, end_bar=150, start_tick=1000, end_tick=1080)
+    propia = dict(start_bar=152, lower_tick=1030, upper_tick=1040)
+    assert len(zones_inside(leg, [propia], dict(P, pivot_right=3))) == 1
+    # sin gracia, la misma zona se escapaba
+    assert zones_inside(leg, [propia], dict(P, grace_bars=0)) == []
+
+
+def test_una_zona_en_OTRO_nivel_no_ensucia_el_tramo():
+    """La otra mitad: «contener» es sobre todo espacial."""
+    leg = dict(start_bar=100, end_bar=150, start_tick=1000, end_tick=1080)
+    lejos = dict(start_bar=120, lower_tick=1500, upper_tick=1510)
+    assert zones_inside(leg, [lejos], P) == []
+    # apagando la condición de precio, vuelve a ensuciar
+    assert len(zones_inside(leg, [lejos], dict(P, require_price_overlap=False))) == 1
 
 
 def test_el_censo_devuelve_TODOS_los_tramos_no_solo_los_marcados():
