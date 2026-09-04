@@ -71,7 +71,10 @@ def _num(v):
 
 
 def comparar(csv_path: Path, max_ejemplos: int = 20) -> dict:
-    lineas = csv_path.read_text(encoding="utf-8", errors="ignore").splitlines()
+    # utf-8-sig: HFTImpulseZones_P escribia con BOM (Encoding.UTF8), y con BOM la
+    # linea de meta no empieza por "# meta", asi que pasaba a ser la cabecera y el
+    # archivo entero se leia mal -- en silencio, dando 0 ventanas.
+    lineas = csv_path.read_text(encoding="utf-8-sig", errors="ignore").splitlines()
     meta = {}
     for parte in next((l for l in lineas if l.startswith("# meta")), "").lstrip("#").split(","):
         k, _, v = parte.partition("=")

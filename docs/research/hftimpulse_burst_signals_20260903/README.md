@@ -121,6 +121,44 @@ auditable completa y no sólo donde hubo señal.
 La meta declara `bursts_counted=non_overlapping` y `signal_scope=one_per_streak`
 para que la convención viaje con el dato.
 
+## Paridad medida: EXACTA en las dos capas
+
+Corrida de NT8 del 2026-09-03: **NQ SEP26, 5 ticks/barra, 3 días**, defaults
+(12 / 16 t / 6000 bps / 3 ráfagas / 40 barras / 48 t). Oráculo
+`data/nt8_oracles/hftimpulse_NQ_20260903.csv`, sha256 `73452fa5…5b14` (126 MB).
+Reporte: `parity_v1.json`. Comando:
+
+```
+python tools/paridad_hftimpulse.py data/nt8_oracles/hftimpulse_NQ_20260903.csv
+```
+
+| | |
+|---|---:|
+| ventanas evaluadas | **365.795** |
+| capa A — ventana | **365.795 (100,0000 %)** |
+| capa B — cadena de racha | **365.795 (100,0000 %)** |
+| señales NT8 / Python | **566 / 566** |
+
+La capa B es la que valía: el estado se reconstruye de cero —conteo no solapado,
+cortes por dirección, por distancia y por sesión, y una señal por racha— y
+coincide fila por fila. Las 566 señales son las mismas, una por una.
+
+### El defecto que casi pasa en silencio
+
+La primera corrida dio **0 ventanas** y veredicto `SIN_DATOS`. Causa: este
+indicador escribía el CSV **con BOM** (`Encoding.UTF8`), mientras `AVolZoneSimple`
+usa `UTF8Encoding(false)`. Con el BOM adelante la línea de meta ya no empieza por
+`# meta`, así que pasaba a ser la cabecera y el archivo entero se leía mal.
+
+**No falló: devolvió vacío.** Es la peor forma de fallar, porque un vacío se
+confunde con «no había nada que medir». Corregido en las dos puntas: el lector
+tolera BOM (`utf-8-sig`) y el `.cs` escribe sin él, igual que los otros dos
+indicadores.
+
+Queda como recordatorio de por qué el validador se prueba **primero contra
+errores inyectados**: si sólo se hubiera probado contra un archivo bueno, este
+caso habría pasado como «no hay diferencias».
+
 ## Cómo podría refutarse el diseño
 
 - **Que las ráfagas no solapadas sigan siendo el mismo movimiento**: si al subir

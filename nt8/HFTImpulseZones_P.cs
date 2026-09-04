@@ -159,7 +159,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 			if (string.IsNullOrWhiteSpace(EventLogPath)) return;
 			try
 			{
-				_log = new StreamWriter(EventLogPath, false, Encoding.UTF8);
+				_log = new StreamWriter(EventLogPath, false, new UTF8Encoding(false));
 				_log.WriteLine("# meta,indicator=HFTImpulseZones_P,version=1.0,contract=parity_first_v1"
 					+ ",window_bars=" + WindowBars
 					+ ",min_displacement_ticks=" + MinDisplacementTicks
