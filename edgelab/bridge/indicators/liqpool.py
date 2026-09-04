@@ -66,6 +66,7 @@ RESEARCH_DEFAULTS = dict(
     max_step_ticks=4,           # salto máximo de precio entre escalones consecutivos
     max_step_bars=200,          # separación máxima en barras entre escalones
     allow_equal_steps=True,     # un escalón plano no rompe la cadena
+    only_compressing_chains=True,   # ver build_chains: sólo dos de las cuatro
     level_tolerance_ticks=1,    # (legado) tolerancia de nivel
     liquidity_band_ticks=2,     # ancho de la banda MÁS ALLÁ del nivel (stops)
     zone_height_ticks=1,        # grosor del nivel mismo (take-profit)
@@ -120,6 +121,10 @@ def build_chains(high_ticks, low_ticks, params=None):
     - la dirección no se invierte: en una cadena descendente de máximos, ningún
       pico **supera** al anterior. El pico que lo supera **corta la cadena** — es
       literalmente el criterio que dio Nico;
+    - y **sólo dos de las cuatro combinaciones son zonas**: mínimos ascendentes
+      (soporte escalonado) y máximos descendentes (resistencia escalonada).
+      Mínimos bajando o máximos subiendo **son la tendencia misma**, no una zona —
+      son las «invertidas que no cuentan». `only_compressing_chains` las filtra;
     - el salto entre escalones no excede `max_step_ticks` (los picos son
       «muy cercanos» en precio);
     - la separación entre escalones no excede `max_step_bars`.
@@ -159,7 +164,13 @@ def build_chains(high_ticks, low_ticks, params=None):
                     break                 # este pico SUPERA al anterior: corta
                 cadena.append(cur)
                 j += 1
-            if len(cadena) >= minp:
+            # Sólo cuentan las cadenas que COMPRIMEN contra el precio: mínimos
+            # ascendentes (soporte) o máximos descendentes (resistencia). Mínimos
+            # bajando o máximos subiendo son la tendencia misma, no una zona.
+            valida = True
+            if bool(p["only_compressing_chains"]) and direccion != 0:
+                valida = (direccion < 0) if tipo == "H" else (direccion > 0)
+            if len(cadena) >= minp and valida:
                 cadenas.append(_cerrar(cadena, tipo, direccion,
                                        high_ticks, low_ticks, p))
             # las cadenas no se solapan: la siguiente arranca donde ésta terminó

@@ -135,3 +135,39 @@ def test_defaults_declarados():
     assert RESEARCH_DEFAULTS["min_pivots"] == 3
     assert RESEARCH_DEFAULTS["allow_equal_steps"] is True
     assert RESEARCH_DEFAULTS["round_ticks"] == 32, "ZB: 32 ticks = 1 punto"
+
+
+def test_solo_dos_de_las_cuatro_combinaciones_son_zonas():
+    """Las «invertidas que no cuentan», señaladas por Nico sobre el chart.
+
+    Mínimos ascendentes son soporte escalonado y máximos descendentes son
+    resistencia escalonada: las dos comprimen contra el precio. Mínimos bajando o
+    máximos subiendo **son la tendencia misma**, no una zona. La versión anterior
+    marcaba las cuatro y por eso el chart quedaba lleno de cadenas sin sentido.
+    """
+    def serieH(pk, largo=140, base=80):
+        hi = [base] * largo
+        lo = [70] * largo
+        for b, v in pk:
+            hi[b] = v
+        return hi, lo
+
+    def serieL(pk, largo=140, base=80):
+        hi = [90] * largo
+        lo = [base] * largo
+        for b, v in pk:
+            lo[b] = v
+        return hi, lo
+
+    casos = [
+        (serieH([(10, 100), (22, 98), (34, 96)]), "H", True),   # resistencia
+        (serieH([(10, 96), (22, 98), (34, 100)]), "H", False),  # subida
+        (serieL([(10, 60), (22, 62), (34, 64)]), "L", True),    # soporte
+        (serieL([(10, 64), (22, 62), (34, 60)]), "L", False),   # bajada
+    ]
+    for (hi, lo), lado, esperada in casos:
+        con = [z for z in build_chains(hi, lo, P) if z["side"] == lado]
+        sin = [z for z in build_chains(hi, lo, dict(P, only_compressing_chains=False))
+               if z["side"] == lado]
+        assert bool(con) is esperada, f"{lado} esperada={esperada}"
+        assert len(sin) == 1, "sin el filtro, las cuatro se detectan igual"

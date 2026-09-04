@@ -28,6 +28,14 @@ using NinjaTrader.Gui.Tools;
 //   La primera version buscaba niveles horizontales y por eso casi no coincidia
 //   con lo que se marca a mano.
 //
+//   SOLO DOS DE LAS CUATRO COMBINACIONES SON ZONAS:
+//     minimos ASCENDENTES  -> soporte escalonado    (valida)
+//     maximos DESCENDENTES -> resistencia escalonada (valida)
+//     minimos descendentes -> es una bajada, no una zona
+//     maximos ascendentes  -> es una subida, no una zona
+//   Las dos ultimas son las "invertidas que no cuentan". La version anterior
+//   marcaba las cuatro. OnlyCompressingChains las filtra.
+//
 // LA ZONA TIENE DOS PARTES, y la separacion sale de la literatura, no del gusto:
 //   - el NIVEL: donde Osler (J. Finance 2003) documenta que se agrupan los
 //     take-profit, y por lo tanto donde el precio tiende a REBOTAR;
@@ -114,6 +122,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				MaxStepTicks = 4;
 				MaxStepBars = 200;
 				AllowEqualSteps = true;
+				OnlyCompressingChains = true;
 				LevelToleranceTicks = 1;
 				MinPivots = 3;
 				LiquidityBandTicks = 2;
@@ -175,6 +184,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 					+ ",max_step_ticks=" + MaxStepTicks
 					+ ",max_step_bars=" + MaxStepBars
 					+ ",allow_equal_steps=" + AllowEqualSteps
+					+ ",only_compressing_chains=" + OnlyCompressingChains
 					+ ",round_ticks=" + RoundTicks
 					+ ",zones_deleted_on_touch=false,write_mode=overwrite");
 				_log.WriteLine("zone_seq,created_bar,bar_close_time_utc,session_index,side,"
@@ -257,7 +267,19 @@ namespace NinjaTrader.NinjaScript.Indicators
 				else _dirLo = paso > 0 ? 1 : -1;
 			}
 			cad.Add(p);
-			if (cad.Count >= MinPivots) CrearOActualizarZona(cad, p.IsHigh);
+			if (cad.Count < MinPivots) return;
+
+			// Solo cuentan las cadenas que COMPRIMEN contra el precio:
+			// minimos subiendo (soporte) o maximos bajando (resistencia).
+			// Minimos bajando o maximos subiendo son la tendencia misma, no una
+			// zona -- son las "invertidas" que hay que descartar.
+			int dirAhora = p.IsHigh ? _dirHi : _dirLo;
+			if (OnlyCompressingChains && dirAhora != 0)
+			{
+				bool valida = p.IsHigh ? (dirAhora < 0) : (dirAhora > 0);
+				if (!valida) return;
+			}
+			CrearOActualizarZona(cad, p.IsHigh);
 		}
 
 		private void CrearOActualizarZona(List<Pivot> grupo, bool isHigh)
@@ -484,7 +506,14 @@ namespace NinjaTrader.NinjaScript.Indicators
 		public int MaxStepBars { get; set; }
 
 		[NinjaScriptProperty]
-		[Display(Name = "AllowEqualSteps", Order = 4, GroupName = "1. Deteccion",
+		[Display(Name = "OnlyCompressingChains", Order = 4, GroupName = "1. Deteccion",
+			Description = "Solo minimos ASCENDENTES (soporte) y maximos DESCENDENTES "
+				+ "(resistencia). Minimos bajando o maximos subiendo son la tendencia "
+				+ "misma, no una zona. OFF marca las cuatro combinaciones.")]
+		public bool OnlyCompressingChains { get; set; }
+
+		[NinjaScriptProperty]
+		[Display(Name = "AllowEqualSteps", Order = 5, GroupName = "1. Deteccion",
 			Description = "Un escalon plano, al mismo precio, NO corta la cadena. Los maximos "
 				+ "iguales son un caso particular de la escalera, no el objeto entero.")]
 		public bool AllowEqualSteps { get; set; }
