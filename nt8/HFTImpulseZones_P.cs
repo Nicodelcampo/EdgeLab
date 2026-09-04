@@ -175,7 +175,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 					+ "end_close_tick,displacement_ticks,path_ticks,efficiency_bps,window_volume,"
 					+ "decision,direction,zone_lower_tick,zone_upper_tick,"
 					+ "burst_dir,burst_count,burst_displacement_ticks,burst_first_bar,"
-					+ "is_signal,signal_seq,closes");
+					+ "is_signal,signal_seq,closes,highs,lows");
 			}
 			catch { _log = null; }
 		}
@@ -466,16 +466,24 @@ namespace NinjaTrader.NinjaScript.Indicators
 			long zLower, long zUpper, int s, int e, bool isSignal)
 		{
 			if (_log == null) return;
-			// REGLA 7: la serie de cierres que decidio, para cruce barra a barra
+			// REGLA 7: las tres series que decidieron -- cierres, maximos y minimos --
+			// para que el cruce de paridad reconstruya TODO, incluida la geometria de
+			// la zona, que se ancla en min(lows) / max(highs). Exportar solo los
+			// cierres dejaria la geometria sin verificar, o la verificaria contra un
+			// agregado ya derivado, que seria circular.
 			StringBuilder sb = new StringBuilder();
+			StringBuilder sbH = new StringBuilder();
+			StringBuilder sbL = new StringBuilder();
 			for (int i = s; i <= e; i++)
 			{
-				if (i > s) sb.Append('|');
+				if (i > s) { sb.Append('|'); sbH.Append('|'); sbL.Append('|'); }
 				sb.Append(_closeTicks[i]);
+				sbH.Append(_highTicks[i]);
+				sbL.Append(_lowTicks[i]);
 			}
 			_log.WriteLine(string.Format(CultureInfo.InvariantCulture,
 				"{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},"
-				+ "{13},{14},{15},{16},{17},{18},{19}",
+				+ "{13},{14},{15},{16},{17},{18},{19},{20},{21}",
 				_windowIndex,
 				Time[0].ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
 				_sessionIndex, startTick, endTick, displacement, path, effBps, windowVolume,
@@ -484,7 +492,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				decision == "CREATE" ? zUpper.ToString(CultureInfo.InvariantCulture) : "",
 				_burstDir, _burstCount, _burstDisplacement, _burstFirstBar,
 				isSignal ? 1 : 0, isSignal ? _signalSeq : 0,
-				sb.ToString()));
+				sb.ToString(), sbH.ToString(), sbL.ToString()));
 			_log.Flush();
 		}
 
