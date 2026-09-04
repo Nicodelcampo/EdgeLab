@@ -41,10 +41,14 @@ using NinjaTrader.Gui.Tools;
 //   que se note.
 //
 // QUE SIGNIFICA "CONTENER" UNA ZONA -- y las dos correcciones que costo
-//   La primera version terminaba el tramo en el pivote EXACTO. La zona que el
-//   impulso genera se registra al cerrarse el movimiento, una o dos barras DESPUES
-//   del pivote, asi que caia fuera de la ventana y el impulso quedaba marcado como
-//   limpio teniendo zonas propias adentro.
+//   SOLO IMPORTA DONDE NACIO LA ZONA, no hasta donde abarca. Es la regla textual:
+//   se mira unicamente StartBar. Ojo con lo que ese campo significa en
+//   HFTZonesNQPureV4: es BarsArray[0].GetBar(tStart), o sea donde ARRANCO LA
+//   SECUENCIA, no donde la zona quedo registrada.
+//
+//   El tramo no termina en el pivote exacto: la zona que el impulso genera se
+//   registra al cerrarse el movimiento, una o dos barras DESPUES del pivote, y la
+//   gracia de PivotRight la captura sin introducir mirada al futuro.
 //   La regla es TEMPORAL: cualquier zona creada durante el impulso lo descalifica,
 //   en cualquier nivel. RequirePriceOverlap existe para contrastar contra la
 //   variante espacial, y viene apagado.
@@ -144,7 +148,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 					+ ",percentile=causal,write_mode=overwrite");
 				_log.WriteLine("leg_seq,start_bar,end_bar,bar_close_time_utc,session_index,"
 					+ "direction,start_tick,end_tick,length_ticks,cut_ticks,bars,"
-					+ "zones_inside,is_long,is_clean");
+					+ "zones_inside,is_long,is_clean,zone_births_near");
 			}
 			catch { _log = null; _logFailed = true; }
 		}
@@ -199,8 +203,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 				Type t = z.GetType();
 				FieldInfo fSb = t.GetField("StartBar");
 				if (fSb == null) continue;
-				int sb = (int)fSb.GetValue(z);
-				if (sb < startBar || sb > b1) continue;
+				int nace = (int)fSb.GetValue(z);       // SOLO donde nacio
+				if (nace < startBar || nace > b1) continue;
 
 				if (RequirePriceOverlap)
 				{
@@ -312,9 +316,32 @@ namespace NinjaTrader.NinjaScript.Indicators
 					Time[0].ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fff", CultureInfo.InvariantCulture),
 					_sessionIndex, leg.Direction, leg.StartTick, leg.EndTick,
 					leg.LengthTicks, leg.CutTicks, leg.EndBar - leg.StartBar,
-					leg.ZonesInside, leg.IsLong ? 1 : 0, leg.IsClean ? 1 : 0));
+					leg.ZonesInside, leg.IsLong ? 1 : 0, leg.IsClean ? 1 : 0,
+					NacimientosCerca(leg.StartBar, leg.EndBar)));
 			}
 			catch (Exception ex) { _logFailed = true; Print(Name + " ERROR [event_log]: " + ex.Message); }
+		}
+
+		// Diagnostico: barras de nacimiento de las zonas cercanas al tramo, para
+		// poder ver POR QUE un tramo quedo limpio en vez de tener que adivinarlo.
+		private string NacimientosCerca(int startBar, int endBar)
+		{
+			IEnumerable zs = ZonasFuente();
+			if (zs == null) return "SIN_FUENTE";
+			StringBuilder sb = new StringBuilder();
+			int n = 0;
+			foreach (object z in zs)
+			{
+				if (z == null) continue;
+				FieldInfo f = z.GetType().GetField("StartBar");
+				if (f == null) continue;
+				int b = (int)f.GetValue(z);
+				if (b < startBar - 50 || b > endBar + 50) continue;
+				if (n++ > 0) sb.Append('|');
+				sb.Append(b);
+				if (n > 30) break;
+			}
+			return sb.ToString();
 		}
 
 		public override void OnRenderTargetChanged()

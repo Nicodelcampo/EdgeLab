@@ -100,25 +100,19 @@ def _corte(largos, top_pct):
 
 
 def zones_inside(leg, zones, params=None):
-    """Zonas que el tramo **contiene**: en tiempo y en precio.
+    """Zonas **nacidas** dentro del tramo. Una sola lo descalifica.
 
-    ## Las dos correcciones
+    Regla de Nico, textual: *«no me importa hasta dónde abarca la zona, me importa
+    únicamente dónde nació»*. Sólo cuenta el `start_bar`; la extensión de la zona
+    es irrelevante, y el nivel de precio también — la regla es **temporal**.
 
-    La primera versión sólo miraba el **rango de barras**, y fallaba por dos vías
-    a la vez:
+    La ventana es `[start_bar del tramo, end_bar + gracia]`. La gracia por defecto
+    es `pivot_right`: el retardo exacto con que se confirma el pivote, así que la
+    zona que el impulso **genera al cerrarse** cuenta como nacida adentro sin que
+    haya mirada al futuro.
 
-    **El tramo terminaba en el pivote exacto.** La zona que el impulso genera se
-    registra al cerrarse el movimiento, una o dos barras después del pivote, así
-    que caía fuera de la ventana y el impulso quedaba marcado como limpio teniendo
-    zonas propias adentro.
-
-    La regla es **temporal**: cualquier zona creada durante el impulso lo
-    descalifica, **en cualquier nivel de precio**. `require_price_overlap` existe
-    para contrastar contra la variante espacial, y viene apagado.
-
-    La gracia por defecto es `pivot_right`, que es **exactamente** el retardo con
-    el que se confirma el pivote: no introduce mirada al futuro, porque en el
-    momento en que el tramo queda cerrado esa zona ya se conocía.
+    `require_price_overlap` exige además solape de precio y viene **apagado**;
+    existe sólo para contrastar contra la variante espacial.
     """
     p = _params(params)
     gracia = p["grace_bars"]
@@ -129,14 +123,14 @@ def zones_inside(leg, zones, params=None):
     hi_leg = max(leg["start_tick"], leg["end_tick"])
     out = []
     for z in zones:
-        sb = int(z["start_bar"])
-        if not (b0 <= sb <= b1):
+        nace = int(z["start_bar"])          # SOLO donde nacio
+        if nace < b0 or nace > b1:
             continue
         if p["require_price_overlap"] and ("lower_tick" in z or "upper_tick" in z):
             zlo = int(z.get("lower_tick", z.get("upper_tick")))
             zhi = int(z.get("upper_tick", z.get("lower_tick")))
             if zhi < lo_leg or zlo > hi_leg:
-                continue                 # la zona no cae dentro del recorrido
+                continue
         out.append(z)
     return out
 

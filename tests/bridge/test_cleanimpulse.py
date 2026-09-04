@@ -82,8 +82,9 @@ def test_una_zona_FUERA_del_tramo_no_lo_ensucia():
 def test_una_zona_creada_ANTES_y_todavia_viva_no_cuenta():
     """El pedido distingue si el impulso GENERO zonas mientras corría."""
     leg = dict(start_bar=100, end_bar=150, start_tick=1000, end_tick=1080)
+    # nacio mucho antes del tramo: no cuenta, aunque siga viva durante el impulso
     previa = dict(start_bar=40, end_bar=200, lower_tick=1020, upper_tick=1030)
-    assert zones_inside(leg, [previa], P) == []
+    assert zones_inside(leg, [previa], P) == [], "solo importa donde NACIO"
 
 
 def test_la_zona_que_el_impulso_CREA_al_cerrarse_SI_lo_ensucia():
