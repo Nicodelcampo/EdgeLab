@@ -19,10 +19,14 @@ using NinjaTrader.Gui.Tools;
 // Espejo exacto de edgelab/bridge/indicators/liqpool.py.
 // Investigacion que lo fundamenta: docs/research/H-LIQPOOL-ZB_ESTADO_DEL_ARTE_2026-09-03.md
 //
-// QUE MARCA
-//   Un PIVOTE es un extremo que domina ESTRICTAMENTE a PivotStrength barras de
-//   cada lado. Varios pivotes del mismo tipo a distancia <= LevelToleranceTicks
-//   forman una ZONA.
+// QUE MARCA -- CORREGIDO
+//   El objeto NO es "picos al mismo precio". Es una ESCALERA: pivotes
+//   CONSECUTIVOS del mismo tipo que bajan (o suben) escalon por escalon.
+//   La cadena se corta cuando un pico SUPERA al anterior -- criterio textual de
+//   Nico. Un escalon PLANO (mismo precio) no la corta: los maximos iguales son un
+//   CASO PARTICULAR de la escalera, no el objeto entero.
+//   La primera version buscaba niveles horizontales y por eso casi no coincidia
+//   con lo que se marca a mano.
 //
 // LA ZONA TIENE DOS PARTES, y la separacion sale de la literatura, no del gusto:
 //   - el NIVEL: donde Osler (J. Finance 2003) documenta que se agrupan los
@@ -73,14 +77,19 @@ namespace NinjaTrader.NinjaScript.Indicators
 			public int SpanBars;
 			public long ExcursionTicks;
 			public long RoundConfluence;
-			public List<int> PivotBars = new List<int>();   // para dibujar la linea
+			public List<int> PivotBars = new List<int>();     // para dibujar la escalera
+			public List<long> PivotLevels = new List<long>();
+			public int Direction;          // +1 ascendente, -1 descendente
+			public long TotalDropTicks;
+			public int FlatSteps;
 			public string State;          // ACTIVE / TOUCHED / SWEPT / EXPIRED
 			public int TouchedBar = -1, SweptBar = -1, ExpiredBar = -1;
 			public bool Logged;
 		}
 
 		private List<long> _hi, _lo;
-		private List<Pivot> _pivHi, _pivLo;
+		private List<Pivot> _cadHi, _cadLo;   // cadena EN CURSO, no historial
+		private int _dirHi, _dirLo;
 		private List<Zone> _zones;
 		private int _sessionIndex = -1;
 		private long _zoneSeq;
@@ -102,14 +111,16 @@ namespace NinjaTrader.NinjaScript.Indicators
 				IsSuspendedWhileInactive = false;
 
 				PivotStrength = 3;
+				MaxStepTicks = 4;
+				MaxStepBars = 200;
+				AllowEqualSteps = true;
 				LevelToleranceTicks = 1;
-				MinPivots = 2;
+				MinPivots = 3;
 				LiquidityBandTicks = 2;
 				ZoneHeightTicks = 1;
 				MaxAgeBars = 0;
 				InvalidationTicks = 8;      // ZB recorre ~26 ticks por sesion: con 4
 				                            // casi toda zona se marcaba barrida al instante
-				LookbackBars = 400;
 				ShowLiquidityBand = false;  // por defecto: solo la linea, sin tapar el chart
 				HideSwept = true;           // las barridas siguen en el CSV, no en pantalla
 				LineWidthPixels = 2f;
@@ -129,7 +140,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 			else if (State == State.DataLoaded)
 			{
 				_hi = new List<long>(); _lo = new List<long>();
-				_pivHi = new List<Pivot>(); _pivLo = new List<Pivot>();
+				_cadHi = new List<Pivot>(); _cadLo = new List<Pivot>();
+				_dirHi = 0; _dirLo = 0;
 				_zones = new List<Zone>();
 				_zoneSeq = 0;
 				OpenLog();
@@ -160,7 +172,9 @@ namespace NinjaTrader.NinjaScript.Indicators
 					+ ",zone_height_ticks=" + ZoneHeightTicks
 					+ ",max_age_bars=" + MaxAgeBars
 					+ ",invalidation_ticks=" + InvalidationTicks
-					+ ",lookback_bars=" + LookbackBars
+					+ ",max_step_ticks=" + MaxStepTicks
+					+ ",max_step_bars=" + MaxStepBars
+					+ ",allow_equal_steps=" + AllowEqualSteps
 					+ ",round_ticks=" + RoundTicks
 					+ ",zones_deleted_on_touch=false,write_mode=overwrite");
 				_log.WriteLine("zone_seq,created_bar,bar_close_time_utc,session_index,side,"
@@ -184,7 +198,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 				// La zona no cruza sesiones: el pivote de ayer no agrupa con el de hoy
 				// sin una decision explicita, y esa decision no esta tomada.
 				_sessionIndex++;
-				_hi.Clear(); _lo.Clear(); _pivHi.Clear(); _pivLo.Clear();
+				_hi.Clear(); _lo.Clear(); _cadHi.Clear(); _cadLo.Clear();
+				_dirHi = 0; _dirLo = 0;
 			}
 
 			_hi.Add(PriceToTick(High[0]));
@@ -211,39 +226,47 @@ namespace NinjaTrader.NinjaScript.Indicators
 			ActualizarZonas();
 		}
 
-		// El agrupamiento NO es consecutivo, y esa es la correccion clave.
-		// La primera version rompia el grupo si entre dos picos del mismo nivel
-		// aparecia un pivote a otro nivel. Eso dejaba fuera justo el caso de "entre
-		// dos picos el precio se movio y paso tiempo", que es el que hay que marcar.
-		// Ahora cada pivote busca hacia atras, dentro de LookbackBars, TODOS los del
-		// mismo tipo al mismo nivel, sin importar que paso en el medio. Lo del medio
-		// queda en ExcursionTicks y SpanBars: es caracteristica de la zona, no
-		// criterio para descartarla.
+		// CADENA MONOTONA de pivotes CONSECUTIVOS.
+		// Se corta cuando: un pico supera al anterior (invierte la direccion), el
+		// salto de precio excede MaxStepTicks, o la separacion excede MaxStepBars.
+		// El escalon plano no corta si AllowEqualSteps.
 		private void AgregarPivote(Pivot p)
 		{
-			List<Pivot> lista = p.IsHigh ? _pivHi : _pivLo;
-			lista.Add(p);
-			if (lista.Count > 5000) lista.RemoveRange(0, lista.Count - 5000);
+			List<Pivot> cad = p.IsHigh ? _cadHi : _cadLo;
+			if (cad.Count == 0) { cad.Add(p); return; }
 
-			List<Pivot> grupo = new List<Pivot>();
-			for (int i = 0; i < lista.Count - 1; i++)
+			Pivot prev = cad[cad.Count - 1];
+			long paso = p.Tick - prev.Tick;
+			int dir = p.IsHigh ? _dirHi : _dirLo;
+			bool corta = (p.Bar - prev.Bar > MaxStepBars)
+				|| (Math.Abs(paso) > MaxStepTicks)
+				|| (paso == 0 && !AllowEqualSteps)
+				|| (paso != 0 && dir != 0 && ((paso > 0) != (dir > 0)));
+
+			if (corta)
 			{
-				Pivot q = lista[i];
-				if (Math.Abs(q.Tick - p.Tick) <= LevelToleranceTicks
-					&& p.Bar - q.Bar <= LookbackBars)
-					grupo.Add(q);
+				cad.Clear();
+				if (p.IsHigh) _dirHi = 0; else _dirLo = 0;
+				cad.Add(p);
+				return;
 			}
-			grupo.Add(p);
-			if (grupo.Count >= MinPivots) CrearOActualizarZona(grupo, p.IsHigh);
+
+			if (paso != 0)
+			{
+				if (p.IsHigh) _dirHi = paso > 0 ? 1 : -1;
+				else _dirLo = paso > 0 ? 1 : -1;
+			}
+			cad.Add(p);
+			if (cad.Count >= MinPivots) CrearOActualizarZona(cad, p.IsHigh);
 		}
 
 		private void CrearOActualizarZona(List<Pivot> grupo, bool isHigh)
 		{
 			int a = grupo[0].Bar, b = grupo[grupo.Count - 1].Bar;          // globales
 			int ia = grupo[0].Idx, ib = grupo[grupo.Count - 1].Idx;        // locales
-			long nivel = grupo[0].Tick;
-			for (int i = 1; i < grupo.Count; i++)
-				nivel = isHigh ? Math.Max(nivel, grupo[i].Tick) : Math.Min(nivel, grupo[i].Tick);
+			// El nivel operativo es el ULTIMO escalon: los previos ya fueron
+			// superados por la propia escalera.
+			long nivel = grupo[grupo.Count - 1].Tick;
 
 			long exc = 0;
 			if (ia >= 0 && ib > ia && ib < _hi.Count)
@@ -267,8 +290,14 @@ namespace NinjaTrader.NinjaScript.Indicators
 			z.BandLo = isHigh ? nivel + 1 : nivel - LiquidityBandTicks;
 			z.BandHi = isHigh ? nivel + LiquidityBandTicks : nivel - 1;
 			z.NPivots = grupo.Count; z.FirstBar = a; z.CreatedBar = b;
-			z.PivotBars.Clear();
-			for (int i = 0; i < grupo.Count; i++) z.PivotBars.Add(grupo[i].Bar);
+			z.PivotBars.Clear(); z.PivotLevels.Clear(); z.FlatSteps = 0;
+			for (int i = 0; i < grupo.Count; i++)
+			{
+				z.PivotBars.Add(grupo[i].Bar); z.PivotLevels.Add(grupo[i].Tick);
+				if (i > 0 && grupo[i].Tick == grupo[i - 1].Tick) z.FlatSteps++;
+			}
+			z.Direction = isHigh ? _dirHi : _dirLo;
+			z.TotalDropTicks = Math.Abs(grupo[grupo.Count - 1].Tick - grupo[0].Tick);
 			z.SpanBars = b - a; z.ExcursionTicks = exc;
 			long m = RoundTicks > 0 ? ((nivel % RoundTicks) + RoundTicks) % RoundTicks : 0;
 			z.RoundConfluence = RoundTicks > 0 ? Math.Min(m, RoundTicks - m) : 0;
@@ -320,12 +349,14 @@ namespace NinjaTrader.NinjaScript.Indicators
 					pb.Append(grupo[i].Bar); pl.Append(grupo[i].Tick);
 				}
 				_log.WriteLine(string.Format(CultureInfo.InvariantCulture,
-					"{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16}",
+					"{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},"
+				+ "{15},{16},{17},{18},{19}",
 					_zoneSeq, z.CreatedBar,
 					Time[0].ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fff", CultureInfo.InvariantCulture),
 					_sessionIndex, z.IsHigh ? "H" : "L",
 					z.Level, z.LevelLo, z.LevelHi, z.BandLo, z.BandHi,
 					z.NPivots, z.FirstBar, z.SpanBars, z.ExcursionTicks, z.RoundConfluence,
+					z.Direction, z.TotalDropTicks, z.FlatSteps,
 					pb.ToString(), pl.ToString()));
 			}
 			catch (Exception ex) { _logFailed = true; Print(Name + " ERROR [event_log]: " + ex.Message); }
@@ -369,7 +400,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 			int from = ChartBars.FromIndex, to = ChartBars.ToIndex;
 			float half = (float)chartControl.Properties.BarDistance / 2f;
 			SharpDX.Direct2D1.AntialiasMode prev = RenderTarget.AntialiasMode;
-			RenderTarget.AntialiasMode = SharpDX.Direct2D1.AntialiasMode.Aliased;
+			RenderTarget.AntialiasMode = SharpDX.Direct2D1.AntialiasMode.PerPrimitive;
 			try
 			{
 				for (int i = 0; i < _zones.Count; i++)
@@ -390,22 +421,32 @@ namespace NinjaTrader.NinjaScript.Indicators
 					SharpDX.Direct2D1.Brush bl = z.State == "SWEPT" ? _dxSwept
 						: (z.IsHigh ? _dxLevelHi : _dxLevelLo);
 
-					// LINEA en el nivel, del primer al ultimo pico (mas la extension).
-					// Antes se pintaba un rectangulo alto y ancho: con varias zonas
-					// solapadas el chart quedaba tapado y no se veia QUE picos participan.
-					float y = chartScale.GetYByValue(z.Level * TickSize);
-					RenderTarget.FillRectangle(
-						new SharpDX.RectangleF(x1, y - LineWidthPixels / 2f, w, LineWidthPixels), bl);
-
-					// marca en cada pico que participa: se ve de donde sale la zona
+					// POLILINEA de la escalera: un segmento por escalon, tal como se
+					// traza a mano. Un rectangulo, o una linea horizontal unica, no
+					// muestran el objeto: lo que importa es el camino escalonado.
 					for (int k = 0; k < z.PivotBars.Count; k++)
 					{
 						int pb = z.PivotBars[k];
-						if (pb < from || pb > to) continue;
 						float px = chartControl.GetXByBarIndex(ChartBars, pb);
-						RenderTarget.FillRectangle(new SharpDX.RectangleF(
-							px - half, y - PivotMarkPixels / 2f, half * 2f, PivotMarkPixels), bl);
+						float py = chartScale.GetYByValue(z.PivotLevels[k] * TickSize);
+						if (k > 0)
+						{
+							float qx = chartControl.GetXByBarIndex(ChartBars, z.PivotBars[k - 1]);
+							float qy = chartScale.GetYByValue(z.PivotLevels[k - 1] * TickSize);
+							RenderTarget.DrawLine(new SharpDX.Vector2(qx, qy),
+								new SharpDX.Vector2(px, py), bl, LineWidthPixels);
+						}
+						if (pb >= from && pb <= to)
+							RenderTarget.FillRectangle(new SharpDX.RectangleF(
+								px - half, py - PivotMarkPixels / 2f, half * 2f, PivotMarkPixels), bl);
 					}
+
+					// prolongacion del ULTIMO escalon, que es el nivel vigente
+					float y = chartScale.GetYByValue(z.Level * TickSize);
+					float xLast = chartControl.GetXByBarIndex(ChartBars, Math.Min(z.CreatedBar, to));
+					if (x2 > xLast)
+						RenderTarget.FillRectangle(new SharpDX.RectangleF(
+							xLast, y - LineWidthPixels / 2f, x2 - xLast, LineWidthPixels), bl);
 
 					// banda de liquidez: franja fina MAS ALLA del nivel, opcional
 					if (ShowLiquidityBand && LiquidityBandTicks > 0)
@@ -431,8 +472,25 @@ namespace NinjaTrader.NinjaScript.Indicators
 				+ "Subirlo da menos pivotes y mas significativos.")]
 		public int PivotStrength { get; set; }
 
+		[NinjaScriptProperty] [Range(1, 10000)]
+		[Display(Name = "MaxStepTicks", Order = 2, GroupName = "1. Deteccion",
+			Description = "Salto maximo de precio entre dos escalones consecutivos. Es el "
+				+ "criterio de que la consecucion sea cercana: mas alla, la cadena se corta.")]
+		public int MaxStepTicks { get; set; }
+
+		[NinjaScriptProperty] [Range(1, 100000)]
+		[Display(Name = "MaxStepBars", Order = 3, GroupName = "1. Deteccion",
+			Description = "Separacion maxima en barras entre dos escalones consecutivos.")]
+		public int MaxStepBars { get; set; }
+
+		[NinjaScriptProperty]
+		[Display(Name = "AllowEqualSteps", Order = 4, GroupName = "1. Deteccion",
+			Description = "Un escalon plano, al mismo precio, NO corta la cadena. Los maximos "
+				+ "iguales son un caso particular de la escalera, no el objeto entero.")]
+		public bool AllowEqualSteps { get; set; }
+
 		[NinjaScriptProperty] [Range(0, 1000)]
-		[Display(Name = "LevelToleranceTicks", Order = 2, GroupName = "1. Deteccion",
+		[Display(Name = "LevelToleranceTicks (legado)", Order = 5, GroupName = "1. Deteccion",
 			Description = "Cuanto pueden diferir dos picos y seguir siendo el mismo nivel. "
 				+ "Con el tick de ZB, 0 y 1 son universos distintos.")]
 		public int LevelToleranceTicks { get; set; }
@@ -458,14 +516,6 @@ namespace NinjaTrader.NinjaScript.Indicators
 		[Display(Name = "MaxAgeBars (0 = sin expiracion)", Order = 6, GroupName = "2. Zona",
 			Description = "La literatura mide que la probabilidad de rebote DECAE con el tiempo.")]
 		public int MaxAgeBars { get; set; }
-
-		[NinjaScriptProperty] [Range(1, 100000)]
-		[Display(Name = "LookbackBars", Order = 6, GroupName = "1. Deteccion",
-			Description = "Hasta cuantas barras atras se busca un pico del mismo nivel. "
-				+ "El agrupamiento NO exige que los picos sean consecutivos: entre ellos "
-				+ "puede haber pasado cualquier cosa, y eso queda en SpanBars y "
-				+ "ExcursionTicks.")]
-		public int LookbackBars { get; set; }
 
 		[NinjaScriptProperty]
 		[Display(Name = "ShowLiquidityBand", Order = 17, GroupName = "3. Visual",

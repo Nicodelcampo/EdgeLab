@@ -62,15 +62,17 @@ VERSION = "1.0"
 
 RESEARCH_DEFAULTS = dict(
     pivot_strength=3,           # barras a cada lado que el extremo debe dominar
-    level_tolerance_ticks=1,    # cuánto pueden diferir dos picos y ser el mismo nivel
-    min_pivots=2,               # 2 = par de picos; 3+ = acumulación
+    min_pivots=3,               # escalones mínimos de la cadena
+    max_step_ticks=4,           # salto máximo de precio entre escalones consecutivos
+    max_step_bars=200,          # separación máxima en barras entre escalones
+    allow_equal_steps=True,     # un escalón plano no rompe la cadena
+    level_tolerance_ticks=1,    # (legado) tolerancia de nivel
     liquidity_band_ticks=2,     # ancho de la banda MÁS ALLÁ del nivel (stops)
     zone_height_ticks=1,        # grosor del nivel mismo (take-profit)
     max_age_bars=0,             # 0 = sin expiración
     invalidation_ticks=8,       # cuánto debe atravesar para considerarse barrida.
                                 # 4 era demasiado poco: ZB recorre ~26 ticks por
                                 # sesión, así que casi toda zona quedaba barrida
-    lookback_bars=400,          # hasta dónde atrás se busca un pico del mismo nivel
     round_ticks=32,             # cada cuántos ticks hay un "número redondo" (ZB: 32 = 1 punto)
 )
 
@@ -102,60 +104,85 @@ def find_pivots(high_ticks, low_ticks, strength):
     return out
 
 
-def build_zones(high_ticks, low_ticks, params=None):
-    """Agrupa pivotes en zonas. Sin outcomes: sólo detección.
+def build_chains(high_ticks, low_ticks, params=None):
+    """Cadenas escalonadas monótonas de pivotes consecutivos.
 
-    ## El agrupamiento NO es consecutivo, y esa es la corrección clave
+    ## Qué es el objeto, corregido
 
-    La primera versión sólo unía pivotes **consecutivos**: si entre dos picos del
-    mismo nivel aparecía un pivote a otro nivel, el grupo se rompía. Eso dejaba
-    fuera justamente el caso que Nico describió —*«entre dos picos el precio se
-    movió varios ticks y pasó bastante tiempo»*— y por eso el detector casi no
-    coincidía con lo que él marca a mano.
+    La primera versión buscaba **picos al mismo precio** (máximos iguales). Está
+    mal: lo que Nico marca a mano son **escaleras** — pivotes consecutivos que van
+    bajando (o subiendo) escalón por escalón, con tramos planos donde dos picos
+    coinciden. Él lo había dicho: *«picos con una consecución creciente o
+    decreciente»*; el error fue leer «cercana» como «mismo nivel».
 
-    Ahora cada pivote nuevo busca hacia atrás, dentro de `lookback_bars`, **todos**
-    los pivotes del mismo tipo a distancia ≤ `level_tolerance_ticks`, sin importar
-    qué pasó en el medio. Lo que pasó en el medio queda registrado en
-    `excursion_ticks` y `span_bars`, que es donde tiene que estar: como
-    característica de la zona, no como criterio para descartarla.
+    Una cadena es un run **maximal** de pivotes consecutivos del mismo tipo donde:
 
-    El agrupamiento es causal: una zona sólo existe desde su último pivote, y ese
-    pivote se confirma `pivot_strength` barras después. No usa información futura.
+    - la dirección no se invierte: en una cadena descendente de máximos, ningún
+      pico **supera** al anterior. El pico que lo supera **corta la cadena** — es
+      literalmente el criterio que dio Nico;
+    - el salto entre escalones no excede `max_step_ticks` (los picos son
+      «muy cercanos» en precio);
+    - la separación entre escalones no excede `max_step_bars`.
+
+    Un escalón **plano** (mismo precio que el anterior) no rompe la cadena si
+    `allow_equal_steps`: es el caso de los máximos iguales, que ahora queda como
+    un caso particular de la escalera y no como el objeto entero.
+
+    Es causal: cada pivote se confirma `pivot_strength` barras después, y la
+    cadena sólo existe hasta su último escalón confirmado.
     """
     p = _params(params)
-    tol = int(p["level_tolerance_ticks"])
-    look = int(p["lookback_bars"])
+    max_step = int(p["max_step_ticks"])
+    max_gap = int(p["max_step_bars"])
     minp = int(p["min_pivots"])
+    eq = bool(p["allow_equal_steps"])
     todos = find_pivots(high_ticks, low_ticks, p["pivot_strength"])
-    zonas = []
+    cadenas = []
     for tipo in ("H", "L"):
         pivots = [x for x in todos if x[1] == tipo]
-        por_primer_bar = {}
-        for k, piv in enumerate(pivots):
-            grupo = [q for q in pivots[:k]
-                     if abs(q[2] - piv[2]) <= tol and piv[0] - q[0] <= look]
-            grupo.append(piv)
-            if len(grupo) < minp:
-                continue
-            z = _cerrar(grupo, tipo, high_ticks, low_ticks, p)
-            # el mismo nivel puede sumar picos: se actualiza la zona, no se duplica
-            por_primer_bar[(z["first_pivot_bar"], z["level_tick"])] = z
-        zonas.extend(por_primer_bar.values())
-    zonas.sort(key=lambda z: (z["created_bar"], z["level_tick"]))
-    return zonas
+        i = 0
+        while i < len(pivots):
+            cadena = [pivots[i]]
+            direccion = 0                 # +1 sube, -1 baja, 0 aún sin definir
+            j = i + 1
+            while j < len(pivots):
+                prev, cur = cadena[-1], pivots[j]
+                paso = cur[2] - prev[2]
+                if cur[0] - prev[0] > max_gap or abs(paso) > max_step:
+                    break
+                if paso == 0:
+                    if not eq:
+                        break
+                elif direccion == 0:
+                    direccion = 1 if paso > 0 else -1
+                elif (paso > 0) != (direccion > 0):
+                    break                 # este pico SUPERA al anterior: corta
+                cadena.append(cur)
+                j += 1
+            if len(cadena) >= minp:
+                cadenas.append(_cerrar(cadena, tipo, direccion,
+                                       high_ticks, low_ticks, p))
+            # las cadenas no se solapan: la siguiente arranca donde ésta terminó
+            i = max(j, i + 1)
+    cadenas.sort(key=lambda z: (z["created_bar"], z["level_tick"]))
+    return cadenas
 
 
-def _cerrar(grupo, tipo, high_ticks, low_ticks, p):
+# alias: el nombre viejo seguía diciendo "zonas", pero el objeto es una cadena
+build_zones = build_chains
+
+
+def _cerrar(grupo, tipo, direccion, high_ticks, low_ticks, p):
     barras = [g[0] for g in grupo]
     niveles = [g[2] for g in grupo]
     a, b = barras[0], barras[-1]
-    # recorrido del precio ENTRE el primer y el último pico: el eje que separa la
-    # microzona de la zona separada
     if b > a:
         exc = int(max(high_ticks[a:b + 1]) - min(low_ticks[a:b + 1]))
     else:
         exc = 0
-    nivel = max(niveles) if tipo == "H" else min(niveles)
+    # El nivel operativo de la cadena es su ÚLTIMO escalón: es el que sigue
+    # vigente. Los anteriores ya fueron superados por la propia escalera.
+    nivel = int(niveles[-1])
     band = int(p["liquidity_band_ticks"])
     h = int(p["zone_height_ticks"])
     if tipo == "H":
@@ -166,11 +193,17 @@ def _cerrar(grupo, tipo, high_ticks, low_ticks, p):
         band_lo, band_hi = nivel - band, nivel - 1
     rt = int(p["round_ticks"])
     dist_redondo = min(nivel % rt, rt - (nivel % rt)) if rt > 0 else None
+    pasos = [niveles[k + 1] - niveles[k] for k in range(len(niveles) - 1)]
     return dict(
-        side=tipo, level_tick=int(nivel),
+        side=tipo,
+        direction=int(direccion),                 # +1 escalera ascendente, -1 descendente
+        level_tick=nivel,
         level_lo=int(lvl_lo), level_hi=int(lvl_hi),
         band_lo=int(band_lo), band_hi=int(band_hi),
         n_pivots=len(grupo), pivot_bars=list(barras), pivot_levels=list(niveles),
+        step_ticks=pasos,
+        total_drop_ticks=int(abs(niveles[-1] - niveles[0])),
+        flat_steps=sum(1 for x in pasos if x == 0),
         first_pivot_bar=int(a), created_bar=int(b),
         span_bars=int(b - a), excursion_ticks=exc,
         round_confluence_ticks=dist_redondo,
@@ -215,7 +248,7 @@ def track_zones(high_ticks, low_ticks, zones, params=None):
 def detect(high_ticks, low_ticks, params=None):
     """Detección completa: zonas con su ciclo de vida marcado."""
     return track_zones(high_ticks, low_ticks,
-                       build_zones(high_ticks, low_ticks, params), params)
+                       build_chains(high_ticks, low_ticks, params), params)
 
 
 def census(zones):
