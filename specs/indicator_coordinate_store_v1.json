@@ -1,0 +1,41 @@
+{
+  "schema_version": "indicator_coordinate_store_v1",
+  "status": "FROZEN_FOR_CODE_AND_SYNTHETIC_VALIDATION",
+  "purpose": "Materialize point-in-time-safe zone coordinates once per dataset, kernel, bar and configuration for reusable multi-indicator joins.",
+  "target_free": true,
+  "holdout": {
+    "start": "2026-07-01",
+    "end": "2026-12-31",
+    "policy": "fail_closed_no_rows_at_or_after_start"
+  },
+  "run_identity": ["dataset_id", "kernel_id", "config_id", "start_utc", "end_utc", "engine_version"],
+  "partition_identity": ["instrument", "contract", "indicator", "kernel_id", "bar_key", "config_id", "run_id"],
+  "coordinate_columns": [
+    "coordinate_key", "run_id", "dataset_id", "kernel_id", "config_id",
+    "indicator", "instrument", "contract", "bar_key", "zone_id", "kind",
+    "side", "direction", "session_id", "created_ms", "created_ns",
+    "created_event_seq", "available_ns", "available_event_seq",
+    "created_source_row", "bottom", "top", "lower_tick", "upper_tick"
+  ],
+  "forbidden_coordinate_columns": [
+    "state", "final_state", "touches", "ended_ms", "ended_ns", "end_reason",
+    "MFE", "MAE", "return", "P&L"
+  ],
+  "direction_policy": "nullable; non-directional indicators must not be coerced to +1 or -1",
+  "availability_policy": "Every coordinate must be tied to a creation event sequence; timestamp ties are ordered by event sequence/source row.",
+  "authorized_parity_states": ["parity_exact", "parity_covered"],
+  "publication": {
+    "compression": "zstd",
+    "immutable": true,
+    "atomic_temp_then_rename": true,
+    "identical_reexecution": "idempotent",
+    "divergent_reexecution": "determinism_error"
+  },
+  "firewall": {
+    "CAMPAIGN_OUTCOMES_OPENED": false,
+    "PNL_ACCESSED": false,
+    "HOLDOUT_TOUCHED": false,
+    "WINNER_SELECTED": false,
+    "EDGE_DECLARED": false
+  }
+}

@@ -1,0 +1,59 @@
+name: Indicator coordinate store integrity
+
+on:
+  push:
+    branches:
+      - work/indicator-coordinate-store-v1-20260827
+    paths:
+      - 'edgelab/bridge/coordinate_store.py'
+      - 'edgelab/bridge/identity.py'
+      - 'edgelab/bridge/indicators/**'
+      - 'tools/build_indicator_coordinate_store.py'
+      - 'specs/indicator_*_v1.json'
+      - 'tests/bridge/test_indicator_coordinate_store.py'
+      - 'tests/bridge/test_store_v2.py'
+      - '.github/workflows/indicator-coordinate-store.yml'
+  pull_request:
+    paths:
+      - 'edgelab/bridge/coordinate_store.py'
+      - 'edgelab/bridge/identity.py'
+      - 'edgelab/bridge/indicators/**'
+      - 'tools/build_indicator_coordinate_store.py'
+      - 'specs/indicator_*_v1.json'
+      - 'tests/bridge/test_indicator_coordinate_store.py'
+      - 'tests/bridge/test_store_v2.py'
+      - '.github/workflows/indicator-coordinate-store.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: indicator-coordinate-store-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: coordinate contract and Store v2
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install locked dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements/core-bridge-dev.lock
+      - name: Compile runner and modules
+        run: |
+          python -m py_compile tools/build_indicator_coordinate_store.py
+          python -m py_compile edgelab/bridge/coordinate_store.py
+          python -m py_compile edgelab/bridge/indicators/bigtrap2absorption_adapter.py
+      - name: Run coordinate and Store v2 tests
+        run: >-
+          python -m pytest -q
+          tests/bridge/test_indicator_coordinate_store.py
+          tests/bridge/test_store_v2.py
