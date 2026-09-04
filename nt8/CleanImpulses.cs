@@ -22,9 +22,10 @@ using NinjaTrader.Gui.Tools;
 // QUE MARCA, en tres pasos y nada mas:
 //   1. Parte la serie en TRAMOS: de un pivote a su pivote OPUESTO. Alcista va de
 //      un minimo a un maximo, bajista al reves. Largo = |ticks|.
-//   2. Se queda con el TopPct % mas largo.
-//   3. De esos, marca solo los que NO tienen ninguna zona CREADA adentro del
-//      rango de barras del tramo.
+//   2. Se queda con el TopPct % mas largo (3 % por defecto).
+//   3. De esos, marca solo los que NO tienen NINGUNA zona CREADA adentro. Una sola
+//      zona creada durante el impulso lo descalifica, EN CUALQUIER NIVEL DE
+//      PRECIO: la regla es temporal, no espacial.
 //
 // DE DONDE SALEN LAS ZONAS
 //   De HFTZonesNQPureV4, que ya expone PublicZones. Este indicador lo BUSCA EN EL
@@ -40,13 +41,13 @@ using NinjaTrader.Gui.Tools;
 //   que se note.
 //
 // QUE SIGNIFICA "CONTENER" UNA ZONA -- y las dos correcciones que costo
-//   La primera version solo miraba el RANGO DE BARRAS, y fallaba por dos vias:
-//     1. NO MIRABA EL PRECIO. Lo que se ve en el chart es que el impulso ATRAVIESA
-//        las zonas que creo: "contener" es sobre todo espacial.
-//     2. El tramo terminaba en el pivote EXACTO. La zona que el impulso genera se
-//        registra al cerrarse el movimiento, una o dos barras despues del pivote,
-//        asi que caia fuera de la ventana y el impulso quedaba marcado como limpio
-//        teniendo zonas propias adentro.
+//   La primera version terminaba el tramo en el pivote EXACTO. La zona que el
+//   impulso genera se registra al cerrarse el movimiento, una o dos barras DESPUES
+//   del pivote, asi que caia fuera de la ventana y el impulso quedaba marcado como
+//   limpio teniendo zonas propias adentro.
+//   La regla es TEMPORAL: cualquier zona creada durante el impulso lo descalifica,
+//   en cualquier nivel. RequirePriceOverlap existe para contrastar contra la
+//   variante espacial, y viene apagado.
 //   La gracia por defecto es PivotRight, que es EXACTAMENTE el retardo con el que
 //   se confirma el pivote: no introduce mirada al futuro, porque cuando el tramo
 //   queda cerrado esa zona ya se conocia.
@@ -94,11 +95,11 @@ namespace NinjaTrader.NinjaScript.Indicators
 
 				PivotLeft = 3;
 				PivotRight = 3;
-				TopPct = 5.0;
+				TopPct = 3.0;
 				WindowLegs = 200;
 				MinLegTicks = 0;
 				GraceBars = -1;              // -1 = usar PivotRight
-				RequirePriceOverlap = true;
+				RequirePriceOverlap = false;   // NINGUNA zona creada dentro, en cualquier nivel
 
 				UpColor = Brushes.LimeGreen;
 				DownColor = Brushes.OrangeRed;
@@ -406,9 +407,9 @@ namespace NinjaTrader.NinjaScript.Indicators
 
 		[NinjaScriptProperty]
 		[Display(Name = "RequirePriceOverlap", Order = 7, GroupName = "1. Tramos",
-			Description = "La zona ademas tiene que caer DENTRO del recorrido de precio del "
-				+ "impulso. Sin esto, una zona creada en otro nivel ensuciaba el tramo, y "
-				+ "una zona propia fuera de la ventana de barras no lo ensuciaba.")]
+			Description = "OFF (default) = cualquier zona creada dentro del impulso lo "
+				+ "descalifica, en cualquier nivel. ON exige ademas que la zona caiga dentro "
+				+ "del recorrido de precio; existe solo para contrastar.")]
 		public bool RequirePriceOverlap { get; set; }
 
 		[XmlIgnore] [Display(Name = "UpColor", Order = 10, GroupName = "2. Visual")]

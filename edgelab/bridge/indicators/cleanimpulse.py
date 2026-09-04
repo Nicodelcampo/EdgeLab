@@ -6,9 +6,10 @@ Espejo Python de `nt8/CleanImpulses.cs`. **Target-free: no mira retornos.**
 
 1. Parte la serie en **tramos** (legs): de un pivote a su pivote opuesto. Un tramo
    alcista va de un mínimo a un máximo, uno bajista al revés. Largo = |ticks|.
-2. Se queda con el **5 % más largo** de los tramos.
-3. De ésos, marca sólo los que **no tienen ninguna zona creada adentro** del rango
-   de barras del tramo.
+2. Se queda con el **3 % más largo** de los tramos.
+3. De ésos, marca sólo los que **no tienen NINGUNA zona creada adentro**. Una sola
+   zona creada durante el impulso lo descalifica, **en cualquier nivel de precio**:
+   la regla es temporal, no espacial.
 
 Es la definición literal del pedido, sin agregados.
 
@@ -32,11 +33,12 @@ VERSION = "1.0"
 RESEARCH_DEFAULTS = dict(
     pivot_left=3,
     pivot_right=3,
-    top_pct=5.0,          # el 5 % más largo
+    top_pct=3.0,          # el 3 % más largo
     window_legs=200,      # sobre cuántos tramos previos se calcula el corte
     min_leg_ticks=0,      # piso absoluto opcional
     grace_bars=None,      # barras de gracia tras el fin del tramo; None = pivot_right
-    require_price_overlap=True,   # ver zones_inside: la zona tiene que caer DENTRO
+    require_price_overlap=False,  # regla de Nico: NINGUNA zona creada dentro del
+                                  # impulso, sin importar en qué nivel caiga
 )
 
 
@@ -105,13 +107,14 @@ def zones_inside(leg, zones, params=None):
     La primera versión sólo miraba el **rango de barras**, y fallaba por dos vías
     a la vez:
 
-    1. **No miraba el precio.** Una zona puede crearse durante el tramo pero en
-       otro nivel; y al revés, lo que se ve en el chart es que el impulso
-       *atraviesa* las zonas que creó. «Contener» es sobre todo espacial.
-    2. **El tramo terminaba en el pivote exacto.** La zona que el impulso genera
-       se registra al cerrarse el movimiento, una o dos barras después del pivote,
-       así que caía fuera de la ventana y el impulso quedaba marcado como limpio
-       teniendo zonas propias adentro.
+    **El tramo terminaba en el pivote exacto.** La zona que el impulso genera se
+    registra al cerrarse el movimiento, una o dos barras después del pivote, así
+    que caía fuera de la ventana y el impulso quedaba marcado como limpio teniendo
+    zonas propias adentro.
+
+    La regla es **temporal**: cualquier zona creada durante el impulso lo
+    descalifica, **en cualquier nivel de precio**. `require_price_overlap` existe
+    para contrastar contra la variante espacial, y viene apagado.
 
     La gracia por defecto es `pivot_right`, que es **exactamente** el retardo con
     el que se confirma el pivote: no introduce mirada al futuro, porque en el

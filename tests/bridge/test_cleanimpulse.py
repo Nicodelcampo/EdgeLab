@@ -102,13 +102,17 @@ def test_la_zona_que_el_impulso_CREA_al_cerrarse_SI_lo_ensucia():
     assert zones_inside(leg, [propia], dict(P, grace_bars=0)) == []
 
 
-def test_una_zona_en_OTRO_nivel_no_ensucia_el_tramo():
-    """La otra mitad: «contener» es sobre todo espacial."""
+def test_NINGUNA_zona_creada_dentro__aunque_este_en_otro_nivel():
+    """Regla de Nico, textual: ninguna zona se puede haber creado dentro.
+
+    Es **temporal**, no espacial. Una zona creada durante el impulso lo descalifica
+    aunque caiga muy lejos en precio. `require_price_overlap` existe sólo para
+    contrastar contra la variante espacial, y viene apagado.
+    """
     leg = dict(start_bar=100, end_bar=150, start_tick=1000, end_tick=1080)
     lejos = dict(start_bar=120, lower_tick=1500, upper_tick=1510)
-    assert zones_inside(leg, [lejos], P) == []
-    # apagando la condición de precio, vuelve a ensuciar
-    assert len(zones_inside(leg, [lejos], dict(P, require_price_overlap=False))) == 1
+    assert len(zones_inside(leg, [lejos], P)) == 1, "descalifica igual"
+    assert zones_inside(leg, [lejos], dict(P, require_price_overlap=True)) == []
 
 
 def test_el_censo_devuelve_TODOS_los_tramos_no_solo_los_marcados():
@@ -126,5 +130,6 @@ def test_min_leg_ticks_es_un_piso_absoluto():
 
 
 def test_defaults_declarados():
-    assert RESEARCH_DEFAULTS["top_pct"] == 5.0, "el 5 % más largo, textual"
+    assert RESEARCH_DEFAULTS["top_pct"] == 3.0, "el 3 % más largo, textual"
     assert RESEARCH_DEFAULTS["window_legs"] == 200
+    assert RESEARCH_DEFAULTS["require_price_overlap"] is False,         "ninguna zona creada dentro, en cualquier nivel"
