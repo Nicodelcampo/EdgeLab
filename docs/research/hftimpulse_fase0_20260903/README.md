@@ -2,6 +2,8 @@
 
 Fecha: 2026-09-03 · Oráculo `data/nt8_oracles/hftimpulse_NQ0626_20260903.csv`
 (1,1 GB, NQ JUN26, 5 ticks/barra, defaults 12/16/6000/3/40/48). Pre-holdout.
+**sha256 `856d235f96298b8154cba6af65b2cce17a08158c18e7addc721aa54c0a94702b`** — el archivo queda fuera del árbol por tamaño, así que
+el hash es su única procedencia: sin él, este acta no es reproducible.
 **No se miraron retornos.** Manifiesto:
 `MANIFIESTO_CAMPANA_HFTIMPULSE_SIGNALS_2026-09-03.md`.
 
