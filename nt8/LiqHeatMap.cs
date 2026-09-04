@@ -22,6 +22,12 @@ using NinjaTrader.Gui.Tools;
 //   ACUMULAN POR NIVEL DE PRECIO. Cada nivel recibe la suma de los pesos de las
 //   zonas que lo cubren y se pinta como una franja horizontal de ANCHO COMPLETO
 //   cuya OPACIDAD es esa intensidad.
+//   CADA ZONA APORTA UN KERNEL TRIANGULAR, no una caja plana. La primera version
+//   sumaba cajas: con muchas zonas sobre los ~20 niveles que ZB muestra en
+//   pantalla, todos los ticks cubiertos quedaban con intensidad casi identica y el
+//   mapa salia BINARIO -- un bloque saturado y huecos blancos, sin gradacion. El
+//   kernel hace que dos zonas cercanas den dos picos con un valle en el medio.
+//
 //   Lo que se mira entonces no son las zonas: son los HUECOS. Un nivel con poca
 //   acumulacion es un tramo por el que el precio pasa sin resistencia.
 //
@@ -100,6 +106,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 				BrokenWeight = 0.0;
 				WeightByPivots = true;
 				MaxZonesTracked = 4000;
+				KernelWidthTicks = 6;
+				UseKernel = true;
 
 				// --- escala y dibujo ---
 				NormalizePct = 95;
@@ -143,6 +151,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 					+ ",touch_decay=" + TouchDecay.ToString(CultureInfo.InvariantCulture)
 					+ ",swept_weight=" + SweptWeight.ToString(CultureInfo.InvariantCulture)
 					+ ",broken_weight=" + BrokenWeight.ToString(CultureInfo.InvariantCulture)
+					+ ",kernel_width_ticks=" + KernelWidthTicks
+					+ ",use_kernel=" + UseKernel
 					+ ",dies_by_distance=false,write_mode=overwrite");
 				_log.WriteLine("bar_index,bar_close_time_utc,session_index,tick,intensity");
 			}
@@ -293,8 +303,22 @@ namespace NinjaTrader.NinjaScript.Indicators
 				if (z.CreatedBar > atBar) continue;
 				double w = Peso(z, atBar);
 				if (w <= 0) continue;
-				long a = Math.Max(z.Lo, tLo), b = Math.Min(z.Hi, tHi);
-				for (long t = a; t <= b; t++) inten[(int)(t - tLo)] += w;
+				if (!UseKernel)
+				{
+					long a0 = Math.Max(z.Lo, tLo), b0 = Math.Min(z.Hi, tHi);
+					for (long t = a0; t <= b0; t++) inten[(int)(t - tLo)] += w;
+					continue;
+				}
+				// kernel triangular: el aporte cae linealmente con la distancia AL
+				// RANGO de la zona y se extingue en KernelWidthTicks
+				int kw = Math.Max(1, KernelWidthTicks);
+				long a = Math.Max(z.Lo - kw, tLo), b = Math.Min(z.Hi + kw, tHi);
+				for (long t = a; t <= b; t++)
+				{
+					long d = t < z.Lo ? z.Lo - t : (t > z.Hi ? t - z.Hi : 0);
+					if (d >= kw) continue;
+					inten[(int)(t - tLo)] += w * (1.0 - (double)d / kw);
+				}
 			}
 
 			// --- normalizacion por PERCENTIL: el mapa se autoescala ---
@@ -306,6 +330,9 @@ namespace NinjaTrader.NinjaScript.Indicators
 				Array.Sort(orden);
 				int idx = Math.Min(span - 1, (int)(span * NormalizePct / 100.0));
 				tope = orden[idx];
+				// con pocos niveles visibles el percentil 95 coincide con el maximo
+				// y todo satura; ahi la referencia honesta es el maximo real
+				if (span < 40) tope = orden[span - 1];
 			}
 			if (tope <= 0) return;
 
@@ -404,6 +431,17 @@ namespace NinjaTrader.NinjaScript.Indicators
 		[NinjaScriptProperty] [Range(100, 100000)]
 		[Display(Name = "MaxZonesTracked", Order = 15, GroupName = "2. Decaimiento")]
 		public int MaxZonesTracked { get; set; }
+
+		[NinjaScriptProperty] [Range(1, 200)]
+		[Display(Name = "KernelWidthTicks", Order = 16, GroupName = "2. Decaimiento",
+			Description = "A cuantos ticks del rango de la zona se extingue su aporte. "
+				+ "Sin kernel el mapa sale binario: un bloque saturado y huecos blancos.")]
+		public int KernelWidthTicks { get; set; }
+
+		[NinjaScriptProperty]
+		[Display(Name = "UseKernel", Order = 17, GroupName = "2. Decaimiento",
+			Description = "OFF vuelve a la caja plana de la primera version, para contrastar.")]
+		public bool UseKernel { get; set; }
 
 		[NinjaScriptProperty] [Range(50, 100)]
 		[Display(Name = "NormalizePct", Order = 20, GroupName = "3. Escala",

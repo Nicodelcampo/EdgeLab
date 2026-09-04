@@ -59,17 +59,42 @@ def test_el_estado_pesa_distinto():
 
 
 def test_las_zonas_se_acumulan_por_nivel():
+    """En modo caja: la versión que salió binaria en el chart."""
     zonas = [_z(far=100, near=100), _z(far=100, near=100), _z(far=105, near=105)]
-    m = intensity_map(zonas, 0, {"half_life_bars": 0, "weight_by_pivots": False})
+    P = {"half_life_bars": 0, "weight_by_pivots": False, "kernel": "box"}
+    m = intensity_map(zonas, 0, P)
     assert m[100] == 2.0, "dos zonas en el mismo nivel suman"
     assert m[105] == 1.0
-    assert 102 not in m, "un nivel sin zonas no aparece: es un hueco"
+    assert 102 not in m, "con caja, un nivel sin zona encima queda en cero"
+
+
+def test_el_KERNEL_crea_gradacion_donde_la_caja_daba_una_meseta():
+    """La corrección: con caja el mapa salía binario y saturado.
+
+    Sobre los ~20 niveles que ZB muestra en pantalla, muchas cajas planas dejaban
+    todos los ticks cubiertos con intensidad casi idéntica. El kernel triangular
+    hace que la intensidad **decaiga con la distancia**, así que aparecen picos,
+    valles y colas — que es lo que hace legible el mapa.
+    """
+    P = {"half_life_bars": 0, "weight_by_pivots": False, "kernel_width_ticks": 6}
+    m = intensity_map([_z(far=100, near=100)], 0, P)
+    assert m[100] > m[102] > m[104] > 0, "decae con la distancia"
+    assert m.get(106, 0.0) == 0.0, "se extingue en kernel_width_ticks"
+
+    # dos zonas separadas dan DOS picos con un valle, no una meseta
+    dos = intensity_map([_z(far=100, near=100), _z(far=110, near=110)], 0, P)
+    assert dos[100] > dos[105] and dos[110] > dos[105], "valle entre los dos picos"
 
 
 def test_la_banda_de_liquidez_entra_en_el_span():
     z = _z(far=100, near=100, band_lo=101, band_hi=103)
-    m = intensity_map([z], 0, {"half_life_bars": 0, "weight_by_pivots": False})
-    assert set(m) == {100, 101, 102, 103}
+    P = {"half_life_bars": 0, "weight_by_pivots": False, "kernel": "box"}
+    assert set(intensity_map([z], 0, P)) == {100, 101, 102, 103}
+    # con kernel, el núcleo del span está al máximo y el aporte se derrama
+    k = intensity_map([z], 0, {"half_life_bars": 0, "weight_by_pivots": False,
+                               "kernel_width_ticks": 4})
+    assert k[100] == k[103] == max(k.values()), "todo el span de la zona, al tope"
+    assert k[105] < k[103] and k[105] > 0, "y se derrama hacia afuera"
 
 
 def test_una_zona_futura_no_cuenta():

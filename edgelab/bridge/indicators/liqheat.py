@@ -61,6 +61,8 @@ RESEARCH_DEFAULTS = dict(
     broken_weight=0.0,       # peso de una zona rota (cierre a través)
     swept_weight=0.5,        # peso de una zona barrida (mecha a través)
     weight_by_pivots=True,   # una zona de 4 pivotes pesa el doble que una de 2
+    kernel_width_ticks=6,    # a cuántos ticks del nivel se extingue el aporte
+    kernel="triangular",     # "triangular" | "box" (box = versión vieja, plana)
     normalize_pct=95,        # percentil de intensidad que mapea a opacidad máxima
     max_intensity=0.0,       # > 0 fuerza escala fija en vez del percentil
 )
@@ -107,11 +109,24 @@ def zone_span(zone):
 def intensity_map(zones, at_bar, params=None):
     """Intensidad por tick en la barra `at_bar`. Devuelve `{tick: intensidad}`.
 
-    Sólo entran las zonas ya creadas. El mapa es el **estado actual**: por eso las
-    franjas ocupan todo el ancho de la pantalla en vez de arrancar donde nació
-    cada zona.
+    ## Por qué un kernel y no una caja
+
+    La primera versión sumaba una **caja plana**: cada zona aportaba su peso, igual,
+    a todos los ticks de su rango. Con muchas zonas sobre los pocos niveles que ZB
+    muestra en pantalla (~20 ticks), todos los ticks cubiertos terminaban con
+    intensidad casi idéntica y el mapa salía **binario**: un bloque saturado y
+    huecos blancos, sin gradación.
+
+    Ahora cada zona aporta un **kernel triangular** centrado en su nivel, que se
+    extingue a `kernel_width_ticks`. Dos zonas a tres ticks de distancia ya no
+    producen una meseta: producen dos picos con un valle en el medio. La gradación
+    aparece sola, que es lo que hace legible el mapa.
+
+    `kernel="box"` recupera el comportamiento viejo, para contrastar.
     """
     p = _params(params)
+    ancho = max(1, int(p["kernel_width_ticks"]))
+    triangular = p["kernel"] == "triangular"
     mapa = {}
     for z in zones:
         if z["created_bar"] > at_bar:
@@ -120,8 +135,16 @@ def intensity_map(zones, at_bar, params=None):
         if w <= 0:
             continue
         lo, hi = zone_span(z)
-        for t in range(lo, hi + 1):
-            mapa[t] = mapa.get(t, 0.0) + w
+        if not triangular:
+            for t in range(lo, hi + 1):
+                mapa[t] = mapa.get(t, 0.0) + w
+            continue
+        # el aporte cae linealmente con la distancia AL RANGO de la zona
+        for t in range(lo - ancho, hi + ancho + 1):
+            d = 0 if lo <= t <= hi else (lo - t if t < lo else t - hi)
+            if d >= ancho:
+                continue
+            mapa[t] = mapa.get(t, 0.0) + w * (1.0 - d / float(ancho))
     return mapa
 
 
@@ -143,6 +166,10 @@ def normalize(mapa, params=None):
         vals = sorted(mapa.values())
         idx = min(len(vals) - 1, int(len(vals) * float(p["normalize_pct"]) / 100.0))
         tope = vals[idx]
+        # con pocos niveles visibles el percentil 95 coincide con el máximo y todo
+        # se satura; el máximo real es la referencia honesta en ese caso
+        if len(vals) < 40:
+            tope = vals[-1]
     if tope <= 0:
         return {t: 0.0 for t in mapa}
     return {t: min(1.0, v / tope) for t, v in mapa.items()}
