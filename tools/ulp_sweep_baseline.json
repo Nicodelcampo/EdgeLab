@@ -225,6 +225,10 @@
     "AVolZoneSimple.cs :: decision == \"CREATE\" || decision == \"ABSTAIN_LOW_CONCENTRATION\" ? upper.ToString(CultureInfo.InvariantCulture) : \"\",": {
       "evidencia": "identica a la anterior, columna upper_tick del CSV de auditoria.",
       "veredicto": "NO_ES_PRECIO"
+    },
+    "LiqPoolZones.cs :: Description = \"Barras a la derecha, con >. Pone el pivote en la ULTIMA barra \"": {
+      "evidencia": "es TEXTO de documentacion, no codigo: la cadena describe que el pivote usa > a la derecha. El detector decide en aritmetica entera de ticks; no hay comparacion de precios en double en ninguna parte de LiqPoolZones.",
+      "veredicto": "NO_ES_PRECIO"
     }
   }
 }
