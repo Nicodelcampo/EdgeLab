@@ -31,8 +31,14 @@ using NinjaTrader.Gui.Tools;
 //   De HFTZonesNQPureV4, que ya expone PublicZones. Este indicador lo BUSCA EN EL
 //   CHART en vez de instanciarlo: instanciarlo obligaria a repetir sus ~37
 //   parametros aca, y cualquier cambio en ese indicador romperia este en silencio.
-//   Hay que tener los dos puestos en el chart. Si falta, se avisa en pantalla en
-//   vez de dibujar cero y parecer que no hay impulsos limpios.
+//   Hay que tener los dos puestos en el chart.
+//
+//   CUIDADO CON LA INSTANCIA. NT8 puede tener mas de un objeto del mismo indicador
+//   asociado al chart, y solo uno es el que calcula: leer el equivocado devuelve
+//   una lista VACIA, cero zonas, y entonces TODOS los impulsos salen "limpios" y
+//   se dibujan igual. Es un fallo invisible. Por eso se elige la instancia con MAS
+//   zonas, se reintenta mientras la lista este vacia, y el conteo leido se muestra
+//   EN PANTALLA: si dice 0, no hay que creerle a ninguna marca.
 //
 // EL PERCENTIL ES CAUSAL
 //   El corte se calcula sobre los ultimos WindowLegs tramos YA CERRADOS, no sobre
@@ -80,6 +86,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 		private List<long> _largos;            // historial de largos, para el corte
 		private object _zonesSrc;              // instancia de HFTZonesNQPureV4
 		private bool _buscado;
+		private int _zonasLeidas = -1;
 		private int _sessionIndex = -1;
 		private StreamWriter _log;
 		private bool _logFailed;
@@ -160,19 +167,41 @@ namespace NinjaTrader.NinjaScript.Indicators
 
 		// Busca HFTZonesNQPureV4 entre los indicadores del chart y lo cachea.
 		// Por reflexion: asi este archivo compila aunque ese indicador no exista.
+		// Elige la instancia con MAS zonas y reintenta mientras la lista este vacia.
+		// Cachear el primer intento fallido convertia el fallo en invisible: cero
+		// zonas leidas hace que todo impulso parezca limpio.
 		private void BuscarFuente()
 		{
-			_buscado = true;
 			try
 			{
 				if (ChartControl == null || ChartControl.Indicators == null) return;
+				object mejor = null;
+				int mejorN = -1;
 				foreach (object ind in ChartControl.Indicators)
 				{
-					if (ind == null) continue;
-					if (ind.GetType().Name == "HFTZonesNQPureV4") { _zonesSrc = ind; return; }
+					if (ind == null || ind.GetType().Name != "HFTZonesNQPureV4") continue;
+					int n = ContarZonas(ind);
+					if (n > mejorN) { mejorN = n; mejor = ind; }
 				}
+				if (mejor != null) { _zonesSrc = mejor; _zonasLeidas = Math.Max(mejorN, 0); }
+				_buscado = mejorN > 0;      // si dio 0, se vuelve a intentar
 			}
 			catch { }
+		}
+
+		private int ContarZonas(object ind)
+		{
+			try
+			{
+				PropertyInfo pi = ind.GetType().GetProperty("PublicZones");
+				if (pi == null) return -1;
+				IEnumerable e = pi.GetValue(ind, null) as IEnumerable;
+				if (e == null) return -1;
+				int n = 0;
+				foreach (object o in e) n++;
+				return n;
+			}
+			catch { return -1; }
 		}
 
 		private IEnumerable ZonasFuente()
@@ -182,7 +211,15 @@ namespace NinjaTrader.NinjaScript.Indicators
 			try
 			{
 				PropertyInfo pi = _zonesSrc.GetType().GetProperty("PublicZones");
-				return pi == null ? null : pi.GetValue(_zonesSrc, null) as IEnumerable;
+				IEnumerable e = pi == null ? null : pi.GetValue(_zonesSrc, null) as IEnumerable;
+				if (e != null)
+				{
+					int n = 0;
+					foreach (object o in e) n++;
+					_zonasLeidas = n;
+					if (n == 0) _buscado = false;   // sigue buscando una instancia con datos
+				}
+				return e;
 			}
 			catch { return null; }
 		}
@@ -363,19 +400,25 @@ namespace NinjaTrader.NinjaScript.Indicators
 			// Si la fuente de zonas no esta en el chart hay que DECIRLO: dibujar
 			// cero impulsos limpios y quedarse callado se lee como "no hay", que es
 			// una conclusion, no un estado de falta de datos.
-			if (ZonasFuente() == null && ShowLabel)
+			if (ShowLabel)
 			{
+				// El conteo va SIEMPRE a la vista: si dice 0, ninguna marca es confiable.
+				string msg = _zonasLeidas < 0
+					? "CleanImpulses: no encuentro HFTZonesNQPureV4 en el chart"
+					: (_zonasLeidas == 0
+						? "CleanImpulses: leo 0 zonas -- las marcas NO son confiables"
+						: "CleanImpulses: " + _zonasLeidas + " zonas leidas");
 				using (SharpDX.DirectWrite.TextFormat tf = new SharpDX.DirectWrite.TextFormat(
 					Core.Globals.DirectWriteFactory, "Arial", 13))
 				using (SharpDX.DirectWrite.TextLayout tl = new SharpDX.DirectWrite.TextLayout(
-					Core.Globals.DirectWriteFactory,
-					"CleanImpulses: falta HFTZonesNQPureV4 en el chart", tf, 600, 20))
+					Core.Globals.DirectWriteFactory, msg, tf, 700, 20))
 				{
 					RenderTarget.DrawTextLayout(
-						new SharpDX.Vector2(ChartPanel.X + 8, ChartPanel.Y + 8), tl, _dxDown);
+						new SharpDX.Vector2(ChartPanel.X + 8, ChartPanel.Y + 8), tl,
+						_zonasLeidas > 0 ? _dxUp : _dxDown);
 				}
-				return;
 			}
+			if (_zonasLeidas <= 0) return;   // sin fuente confiable, no se marca nada
 
 			int from = ChartBars.FromIndex, to = ChartBars.ToIndex;
 			SharpDX.Direct2D1.AntialiasMode prev = RenderTarget.AntialiasMode;
