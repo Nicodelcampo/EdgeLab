@@ -72,9 +72,23 @@ Los brushes se crean en `OnRenderTargetChanged` y se liberan **siempre** ahí y 
 `Terminated` — el render target se recrea al redimensionar o cambiar de pantalla.
 `AntialiasMode.Aliased` durante el dibujo, restaurado en `finally`.
 
-La ráfaga que dispara la señal se marca con una barra vertical llena en el borde
-izquierdo de su zona, opacidad completa: se distingue de una ráfaga suelta de un
-vistazo. Nuevos: `ExtendBars` (20), `MaxZonesRendered` (2000), `SignalColor`.
+### Dónde se marca la señal, y por qué importa
+
+**La señal se dibuja en la barra donde disparó**, que es la del cierre de la
+ventana — con una línea vertical de panel completo más un bloque sólido sobre la
+zona.
+
+La primera versión la marcaba en el **borde izquierdo de la zona**, y eso estaba
+mal: la zona se dibuja hacia atrás porque describe *de dónde arrancó* el impulso,
+así que su borde izquierdo está `WindowBars − 1` barras antes de la decisión.
+Visualmente daba a entender que la señal había disparado antes de lo que
+disparó — justo la confusión que arruina una lectura de timing.
+
+La distinción, dicha una vez: **la zona mira al pasado, la decisión ocurre al
+final**. El CSV nunca tuvo el problema (`bar_close_time_utc` siempre fue la barra
+de la decisión); era sólo el dibujo.
+
+Nuevos: `ExtendBars` (20), `MaxZonesRendered` (2000), `SignalColor`.
 
 ## Export
 

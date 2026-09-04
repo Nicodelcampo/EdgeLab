@@ -368,12 +368,28 @@ namespace NinjaTrader.NinjaScript.Indicators
 					RenderTarget.FillRectangle(new SharpDX.RectangleF(x1, yTop, w, h),
 						z.Direction == 1 ? _dxSupport : _dxResistance);
 
-					// La senal de racha se marca con una barra vertical llena en el
-					// borde izquierdo de la zona que la disparo: se distingue de una
-					// rafaga suelta de un vistazo.
+					// La senal se marca EN LA BARRA DONDE DISPARO, que es la del
+					// cierre de la ventana -- no en el borde izquierdo de la zona, que
+					// esta WindowBars-1 barras antes y haria parecer que disparo antes.
+					// La zona se dibuja hacia atras porque describe de donde arranco el
+					// impulso; la decision, en cambio, ocurre al final.
 					if (z.IsSignal)
-						RenderTarget.FillRectangle(
-							new SharpDX.RectangleF(x1, yTop, 3f, h), _dxSignal);
+					{
+						int barSenal = z.StartBar + WindowBars - 1;
+						if (barSenal >= from && barSenal <= to)
+						{
+							float xs = chartControl.GetXByBarIndex(ChartBars, barSenal);
+							float top = chartScale.GetYByValue(chartScale.MaxValue);
+							float bot = chartScale.GetYByValue(chartScale.MinValue);
+							// linea vertical de panel completo: se ve donde disparo aunque
+							// la zona quede fuera de la vista vertical
+							RenderTarget.FillRectangle(
+								new SharpDX.RectangleF(xs - 1f, top, 2f, bot - top), _dxSignal);
+							// y un bloque solido sobre la zona, para el lado
+							RenderTarget.FillRectangle(
+								new SharpDX.RectangleF(xs - half, yTop, half * 2f, h), _dxSignal);
+						}
+					}
 				}
 			}
 			finally
