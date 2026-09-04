@@ -99,6 +99,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 			public long UpperTick;
 			public int Direction;
 			public bool IsSignal;      // rafaga que disparo la senal de racha
+			public int SignalBar;      // barra del cierre de ventana donde disparo
 		}
 		private List<Zone> _zones;
 		private SharpDX.Direct2D1.Brush _dxSupport;
@@ -128,6 +129,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				ExtendBars = 20;
 				MaxZonesRendered = 2000;
 				SignalColor = Brushes.Gold;
+				ArrowSizePixels = 6f;
 				SupportColor = Brushes.MediumSeaGreen;
 				ResistanceColor = Brushes.IndianRed;
 				ZoneOpacity = 30;
@@ -297,6 +299,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				z.UpperTick = zUpper;
 				z.Direction = direction;
 				z.IsSignal = isSignal;
+				z.SignalBar = CurrentBar;
 				_zones.Add(z);
 				if (MaxZonesRendered > 0 && _zones.Count > MaxZonesRendered)
 					_zones.RemoveRange(0, _zones.Count - MaxZonesRendered);
@@ -375,7 +378,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 					// impulso; la decision, en cambio, ocurre al final.
 					if (z.IsSignal)
 					{
-						int barSenal = z.StartBar + WindowBars - 1;
+						int barSenal = z.SignalBar;
 						if (barSenal >= from && barSenal <= to)
 						{
 							float xs = chartControl.GetXByBarIndex(ChartBars, barSenal);
@@ -389,12 +392,72 @@ namespace NinjaTrader.NinjaScript.Indicators
 							RenderTarget.FillRectangle(
 								new SharpDX.RectangleF(xs - half, yTop, half * 2f, h), _dxSignal);
 						}
+
+						// Flecha de direccion, con la PUNTA en la apertura de la primera
+						// vela POSTERIOR a la senal. Ese es el primer precio disponible
+						// despues de la decision: dibujarla ahi deja explicito que la
+						// senal no se opera en la barra que la genero.
+						int barFlecha = barSenal + 1;
+						if (barFlecha >= from && barFlecha <= to && barFlecha < Bars.Count)
+							DibujarFlecha(chartControl, chartScale, barFlecha, z.Direction);
 					}
 				}
 			}
 			finally
 			{
 				RenderTarget.AntialiasMode = prev;
+			}
+		}
+
+		// Triangulo relleno con la punta EN la apertura de la barra indicada.
+		// Alcista apunta arriba y nace debajo; bajista al reves. La geometria se
+		// crea y se libera en la misma llamada: una PathGeometry que sobreviva al
+		// frame filtra memoria de GPU.
+		private void DibujarFlecha(ChartControl chartControl, ChartScale chartScale,
+			int barIndex, int direction)
+		{
+			if (_dxSignal == null) return;
+			SharpDX.Direct2D1.PathGeometry geo = null;
+			SharpDX.Direct2D1.GeometrySink sink = null;
+			try
+			{
+				float x = chartControl.GetXByBarIndex(ChartBars, barIndex);
+				float yOpen = chartScale.GetYByValue(Bars.GetOpen(barIndex));
+				float w = ArrowSizePixels;
+				float hgt = ArrowSizePixels * 1.4f;
+				// gap de 2 px para que la punta no tape la vela
+				float tipY = direction == 1 ? yOpen + 2f : yOpen - 2f;
+				float baseY = direction == 1 ? tipY + hgt : tipY - hgt;
+
+				geo = new SharpDX.Direct2D1.PathGeometry(NinjaTrader.Core.Globals.D2DFactory);
+				sink = geo.Open();
+				sink.BeginFigure(new SharpDX.Vector2(x, tipY),
+					SharpDX.Direct2D1.FigureBegin.Filled);
+				sink.AddLine(new SharpDX.Vector2(x - w, baseY));
+				sink.AddLine(new SharpDX.Vector2(x + w, baseY));
+				sink.EndFigure(SharpDX.Direct2D1.FigureEnd.Closed);
+				sink.Close();
+
+				// la flecha se ve entera aunque las zonas esten translucidas
+				float prevOp = _dxSignal.Opacity;
+				_dxSignal.Opacity = 1f;
+				// las diagonales del triangulo salen dentadas en Aliased, que es el
+				// modo correcto para los rectangulos de zona. Se cambia solo aca.
+				SharpDX.Direct2D1.AntialiasMode prevAA = RenderTarget.AntialiasMode;
+				RenderTarget.AntialiasMode = SharpDX.Direct2D1.AntialiasMode.PerPrimitive;
+				RenderTarget.FillGeometry(geo, _dxSignal);
+				RenderTarget.AntialiasMode = prevAA;
+				_dxSignal.Opacity = prevOp;
+
+				// marca fina en la apertura misma: es el precio de referencia
+				RenderTarget.FillRectangle(
+					new SharpDX.RectangleF(x - w, yOpen - 0.5f, w * 2f, 1f), _dxSignal);
+			}
+			catch { }
+			finally
+			{
+				if (sink != null) sink.Dispose();
+				if (geo != null) geo.Dispose();
 			}
 		}
 
@@ -486,6 +549,12 @@ namespace NinjaTrader.NinjaScript.Indicators
 			Description = "Desplazamiento ACUMULADO de la racha, en ticks, que hace falta "
 				+ "para la senal. Filtra rachas de muchas rafagas chicas.")]
 		public int MinBurstDisplacementTicks { get; set; }
+
+		[NinjaScriptProperty] [Range(2, 60)]
+		[Display(Name = "ArrowSizePixels", Order = 16, GroupName = "Visual",
+			Description = "Medio ancho de la flecha, en pixeles. La punta va en la apertura "
+				+ "de la primera vela posterior a la senal.")]
+		public float ArrowSizePixels { get; set; }
 
 		[NinjaScriptProperty] [Range(0, 100000)]
 		[Display(Name = "ExtendBars", Order = 13, GroupName = "Zona",

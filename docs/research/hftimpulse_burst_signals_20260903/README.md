@@ -88,7 +88,28 @@ La distinción, dicha una vez: **la zona mira al pasado, la decisión ocurre al
 final**. El CSV nunca tuvo el problema (`bar_close_time_utc` siempre fue la barra
 de la decisión); era sólo el dibujo.
 
-Nuevos: `ExtendBars` (20), `MaxZonesRendered` (2000), `SignalColor`.
+### La flecha, y dónde apunta
+
+Cada señal lleva una **flecha direccional** —arriba si es alcista, abajo si es
+bajista— con la **punta en la apertura de la primera vela POSTERIOR a la señal**,
+más una marca fina horizontal en ese mismo precio.
+
+La elección del ancla no es estética. Ese es **el primer precio disponible después
+de la decisión**: dibujar ahí deja explícito que la señal no se opera en la barra
+que la generó. Un marcador puesto sobre la barra de la señal invita a leer una
+entrada que no existió, y ese es el modo más barato de fabricarse una ventaja
+inexistente.
+
+La flecha se dibuja recién cuando esa barra existe, así que no hay lookahead: la
+señal ya está decidida y cerrada antes de que aparezca.
+
+Detalle de render: la `PathGeometry` del triángulo se crea y se libera en la misma
+llamada —una que sobreviva al frame filtra memoria de GPU— y el antialiasing pasa
+a `PerPrimitive` sólo para el triángulo, porque las diagonales salen dentadas en
+el `Aliased` que necesitan los rectángulos de zona.
+
+Nuevos: `ExtendBars` (20), `MaxZonesRendered` (2000), `SignalColor`,
+`ArrowSizePixels` (6).
 
 ## Export
 
