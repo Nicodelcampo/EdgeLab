@@ -122,11 +122,26 @@ Orden sugerido, de mayor a menor prior y de menor a mayor riesgo de snooping:
 
 ## Riesgos declarados
 
-- **Ambigüedad SL/TP en la misma barra.** Con barras de 5 ticks, SL y TP pueden
-  tocarse dentro de la misma barra y el orden real es desconocido. Hay que
-  resolverlo con datos de tick o declarar una política conservadora — el proyecto
-  ya tiene `diag/ejecucion/ambiguedad_stop.py`. Sin eso, los resultados son
-  optimistas por construcción.
+- **Ambigüedad SL/TP en la misma barra: RIESGO DEGRADADO a residual, medido.**
+  La versión anterior de este manifiesto lo declaraba bloqueante. Nico observó que
+  con spread y comisiones nadie usa un SL y un TP tan juntos como para que una
+  barra de 5 ticks toque los dos. Se midió sobre las 366.075 barras del oráculo:
+
+  | rango de barra | ticks | puntos NQ |
+  |---|---:|---:|
+  | mediana | 3 | 0,75 |
+  | p90 | 6 | 1,50 |
+  | p99 | 12 | 3,00 |
+  | máximo | 70 | 17,50 |
+
+  Barras con rango ≥ 32 ticks: **0,015 %**. ≥ 48 ticks: **0,003 %** (12 de
+  366.075). Con un SL de 16–24 ticks y un TP de 24–48, la separación entre
+  extremos es de 40 a 72 ticks: prácticamente ninguna barra los abarca.
+
+  **Salvedad que queda abierta**: esas barras extremas probablemente ocurren
+  *durante* impulsos, o sea justo cuando disparan las señales, así que la tasa
+  **condicionada a estar cerca de una señal** puede ser mayor que el 0,003 %
+  incondicional. Es un chequeo de una línea en la Fase 2, no un obstáculo.
 - **Costos.** La fricción de NQ se estima para NQ. No se transporta de 6E ni de
   GC. Con un desplazamiento acumulado mediano de 69 ticks (~17 puntos NQ), los
   costos no son un ajuste menor: son parte central del resultado.
