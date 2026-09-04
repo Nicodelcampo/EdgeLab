@@ -61,10 +61,16 @@ NAME = "LiqPool"
 VERSION = "1.0"
 
 RESEARCH_DEFAULTS = dict(
-    pivot_strength=3,           # barras a cada lado que el extremo debe dominar
+    point_mode="bar_extreme",   # "bar_extreme" = cada vela aporta su mecha (default)
+                                # "pivot" = sólo extremos que dominan K barras
+    pivot_strength=3,           # sólo aplica en point_mode="pivot"
     min_pivots=3,               # escalones mínimos de la cadena
-    max_step_ticks=4,           # salto máximo de precio entre escalones consecutivos
-    max_step_bars=200,          # separación máxima en barras entre escalones
+    touch_tolerance_ticks=1,    # cuán cerca del nivel tiene que estar un punto para contar
+    max_slope_ticks=1,          # deriva máxima del nivel cada `slope_per_bars` barras
+    slope_per_bars=50,          # ...la escalera no puede ser empinada
+    max_total_drift_ticks=8,    # deriva total máxima de la cadena entera
+    max_step_bars=400,          # barras máximas SIN un toque nuevo antes de cerrar
+    max_step_ticks=4,           # (legado) salto máximo entre escalones
     allow_equal_steps=True,     # un escalón plano no rompe la cadena
     only_compressing_chains=True,   # ver build_chains: sólo dos de las cuatro
     level_tolerance_ticks=1,    # (legado) tolerancia de nivel
@@ -105,76 +111,103 @@ def find_pivots(high_ticks, low_ticks, strength):
     return out
 
 
-def build_chains(high_ticks, low_ticks, params=None):
-    """Cadenas escalonadas monótonas de pivotes consecutivos.
+def points(high_ticks, low_ticks, tipo, params=None):
+    """Los **puntos** de la serie: por defecto, la mecha de cada vela.
 
-    ## Qué es el objeto, corregido
+    Corrección de Nico: *«un punto sería una mecha o el extremo de una vela»*. La
+    versión anterior sólo tomaba pivotes que dominaran `pivot_strength` barras a
+    cada lado, y con eso tiraba casi todos los puntos y se quedaba con unos pocos
+    dispersos — por eso las cadenas no se parecían a las que él traza.
 
-    La primera versión buscaba **picos al mismo precio** (máximos iguales). Está
-    mal: lo que Nico marca a mano son **escaleras** — pivotes consecutivos que van
-    bajando (o subiendo) escalón por escalón, con tramos planos donde dos picos
-    coinciden. Él lo había dicho: *«picos con una consecución creciente o
-    decreciente»*; el error fue leer «cercana» como «mismo nivel».
-
-    Una cadena es un run **maximal** de pivotes consecutivos del mismo tipo donde:
-
-    - la dirección no se invierte: en una cadena descendente de máximos, ningún
-      pico **supera** al anterior. El pico que lo supera **corta la cadena** — es
-      literalmente el criterio que dio Nico;
-    - y **sólo dos de las cuatro combinaciones son zonas**: mínimos ascendentes
-      (soporte escalonado) y máximos descendentes (resistencia escalonada).
-      Mínimos bajando o máximos subiendo **son la tendencia misma**, no una zona —
-      son las «invertidas que no cuentan». `only_compressing_chains` las filtra;
-    - el salto entre escalones no excede `max_step_ticks` (los picos son
-      «muy cercanos» en precio);
-    - la separación entre escalones no excede `max_step_bars`.
-
-    Un escalón **plano** (mismo precio que el anterior) no rompe la cadena si
-    `allow_equal_steps`: es el caso de los máximos iguales, que ahora queda como
-    un caso particular de la escalera y no como el objeto entero.
-
-    Es causal: cada pivote se confirma `pivot_strength` barras después, y la
-    cadena sólo existe hasta su último escalón confirmado.
+    `point_mode="pivot"` conserva el comportamiento viejo, para poder contrastar.
     """
     p = _params(params)
-    max_step = int(p["max_step_ticks"])
+    if p["point_mode"] == "pivot":
+        return [(b, v) for b, tp, v in find_pivots(high_ticks, low_ticks,
+                                                   p["pivot_strength"]) if tp == tipo]
+    serie = high_ticks if tipo == "H" else low_ticks
+    return [(i, int(v)) for i, v in enumerate(serie)]
+
+
+def build_chains(high_ticks, low_ticks, params=None):
+    """Cadenas de puntos sobre un nivel: seguidillas, serruchos y escaleras suaves.
+
+    ## La regla, con las tres correcciones de Nico incorporadas
+
+    1. **Un punto es la mecha de una vela**, no un pivote de K barras.
+    2. **Lo que corta la cadena es romper el nivel**, no alejarse de él. En un
+       soporte, un mínimo que baja más de `touch_tolerance_ticks` por debajo la
+       corta; que el precio se vaya para arriba y vuelva **no corta nada** — es
+       exactamente el caso donde una línea une dos grupos de mínimos separados por
+       un tramo alto.
+    3. **La escalera no puede ser empinada.** El nivel puede derivar, pero como
+       máximo `max_slope_ticks` cada `slope_per_bars` barras, y
+       `max_total_drift_ticks` en total.
+
+    Con eso, las tres formas son la misma cadena con distinta deriva:
+
+    | forma | deriva |
+    |---|---|
+    | serrucho / seguidilla | 0 |
+    | escalera suave | pequeña, dentro del límite |
+    | escalera empinada | excede el límite → **no es zona** |
+
+    Y sólo dos de las cuatro combinaciones cuentan: mínimos que suben o se
+    mantienen (soporte) y máximos que bajan o se mantienen (resistencia).
+    `only_compressing_chains` descarta las otras dos, que son la tendencia misma.
+
+    Causal: cada punto está disponible al cerrar su vela.
+    """
+    p = _params(params)
+    tol = int(p["touch_tolerance_ticks"])
     max_gap = int(p["max_step_bars"])
     minp = int(p["min_pivots"])
-    eq = bool(p["allow_equal_steps"])
-    todos = find_pivots(high_ticks, low_ticks, p["pivot_strength"])
+    slope, per = int(p["max_slope_ticks"]), int(p["slope_per_bars"])
+    max_drift = int(p["max_total_drift_ticks"])
+    solo_comp = bool(p["only_compressing_chains"])
     cadenas = []
     for tipo in ("H", "L"):
-        pivots = [x for x in todos if x[1] == tipo]
+        pts = points(high_ticks, low_ticks, tipo, p)
+        n = len(pts)
+        sig = -1 if tipo == "H" else 1          # dirección que comprime
         i = 0
-        while i < len(pivots):
-            cadena = [pivots[i]]
-            direccion = 0                 # +1 sube, -1 baja, 0 aún sin definir
+        while i < n:
+            b0, v0 = pts[i]
+            nivel = v0
+            toques = [(b0, v0)]
             j = i + 1
-            while j < len(pivots):
-                prev, cur = cadena[-1], pivots[j]
-                paso = cur[2] - prev[2]
-                if cur[0] - prev[0] > max_gap or abs(paso) > max_step:
+            while j < n:
+                b, v = pts[j]
+                if b - toques[-1][0] > max_gap:
                     break
-                if paso == 0:
-                    if not eq:
+                rompe = (v > nivel + tol) if tipo == "H" else (v < nivel - tol)
+                if rompe:
+                    break                        # rompe el nivel: cierra la cadena
+                cerca = abs(v - nivel) <= tol
+                if cerca:
+                    # deriva permitida: ni empinada ni acumulada de más
+                    d_total = v - v0
+                    d_span = b - b0
+                    empinada = (abs(d_total) * per > slope * max(d_span, 1)
+                                and abs(d_total) > slope)
+                    if abs(d_total) > max_drift or empinada:
                         break
-                elif direccion == 0:
-                    direccion = 1 if paso > 0 else -1
-                elif (paso > 0) != (direccion > 0):
-                    break                 # este pico SUPERA al anterior: corta
-                cadena.append(cur)
+                    if solo_comp and d_total != 0 and (d_total > 0) != (sig > 0):
+                        break
+                    toques.append((b, v))
+                    nivel = v                    # el nivel sigue al último toque
                 j += 1
-            # Sólo cuentan las cadenas que COMPRIMEN contra el precio: mínimos
-            # ascendentes (soporte) o máximos descendentes (resistencia). Mínimos
-            # bajando o máximos subiendo son la tendencia misma, no una zona.
-            valida = True
-            if bool(p["only_compressing_chains"]) and direccion != 0:
-                valida = (direccion < 0) if tipo == "H" else (direccion > 0)
-            if len(cadena) >= minp and valida:
-                cadenas.append(_cerrar(cadena, tipo, direccion,
+            if len(toques) >= minp:
+                niveles = [x[1] for x in toques]
+                direccion = 0
+                if niveles[-1] != niveles[0]:
+                    direccion = 1 if niveles[-1] > niveles[0] else -1
+                grupo = [(b, tipo, v) for b, v in toques]
+                cadenas.append(_cerrar(grupo, tipo, direccion,
                                        high_ticks, low_ticks, p))
-            # las cadenas no se solapan: la siguiente arranca donde ésta terminó
-            i = max(j, i + 1)
+                i = toques[-1][0] + 1 if toques[-1][0] > b0 else i + 1
+            else:
+                i += 1
     cadenas.sort(key=lambda z: (z["created_bar"], z["level_tick"]))
     return cadenas
 

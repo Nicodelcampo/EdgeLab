@@ -28,6 +28,25 @@ using NinjaTrader.Gui.Tools;
 //   La primera version buscaba niveles horizontales y por eso casi no coincidia
 //   con lo que se marca a mano.
 //
+//   UN PUNTO ES LA MECHA DE UNA VELA, no un pivote de K barras. La version que
+//   exigia dominar PivotStrength barras a cada lado tiraba casi todos los puntos
+//   y se quedaba con unos pocos dispersos. Con extremos de vela consecutivos la
+//   regla queda simple: una corrida donde el nivel NO SE DEVUELVE.
+//     escalera  -- cada punto baja (o sube) un escalon
+//     serrucho  -- varios puntos AL MISMO NIVEL; el plano no corta
+//   PointModePivot=true recupera el modo viejo, para contrastar.
+//
+//   LO QUE CORTA LA CADENA ES ROMPER EL NIVEL, NO ALEJARSE DE EL. En un soporte,
+//   un minimo que baja mas de TouchToleranceTicks por debajo la corta; que el
+//   precio se vaya para arriba y vuelva NO CORTA NADA -- es el caso donde una
+//   linea une dos grupos de minimos separados por un tramo alto.
+//
+//   Y LA ESCALERA NO PUEDE SER EMPINADA: el nivel deriva como maximo
+//   MaxSlopeTicks cada SlopePerBars barras, y MaxTotalDriftTicks en total.
+//     serrucho / seguidilla -> deriva 0
+//     escalera suave        -> deriva dentro del limite
+//     escalera empinada     -> NO es zona
+//
 //   SOLO DOS DE LAS CUATRO COMBINACIONES SON ZONAS:
 //     minimos ASCENDENTES  -> soporte escalonado    (valida)
 //     maximos DESCENDENTES -> resistencia escalonada (valida)
@@ -119,9 +138,14 @@ namespace NinjaTrader.NinjaScript.Indicators
 				IsSuspendedWhileInactive = false;
 
 				PivotStrength = 3;
+				TouchToleranceTicks = 1;
+				MaxSlopeTicks = 1;
+				SlopePerBars = 50;
+				MaxTotalDriftTicks = 8;
+				MaxStepBars = 400;
 				MaxStepTicks = 4;
-				MaxStepBars = 200;
 				AllowEqualSteps = true;
+				PointModePivot = false;   // por defecto: un punto por vela
 				OnlyCompressingChains = true;
 				LevelToleranceTicks = 1;
 				MinPivots = 3;
@@ -174,6 +198,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				_log.WriteLine("# meta,indicator=LiqPoolZones,version=1.0"
 					+ ",instrument=" + Instrument.FullName
 					+ ",tick_size=" + TickSize.ToString(CultureInfo.InvariantCulture)
+					+ ",point_mode=" + (PointModePivot ? "pivot" : "bar_extreme")
 					+ ",pivot_strength=" + PivotStrength
 					+ ",level_tolerance_ticks=" + LevelToleranceTicks
 					+ ",min_pivots=" + MinPivots
@@ -181,6 +206,10 @@ namespace NinjaTrader.NinjaScript.Indicators
 					+ ",zone_height_ticks=" + ZoneHeightTicks
 					+ ",max_age_bars=" + MaxAgeBars
 					+ ",invalidation_ticks=" + InvalidationTicks
+					+ ",touch_tolerance_ticks=" + TouchToleranceTicks
+					+ ",max_slope_ticks=" + MaxSlopeTicks
+					+ ",slope_per_bars=" + SlopePerBars
+					+ ",max_total_drift_ticks=" + MaxTotalDriftTicks
 					+ ",max_step_ticks=" + MaxStepTicks
 					+ ",max_step_bars=" + MaxStepBars
 					+ ",allow_equal_steps=" + AllowEqualSteps
@@ -217,69 +246,73 @@ namespace NinjaTrader.NinjaScript.Indicators
 			int n = _hi.Count;
 			int K = PivotStrength;
 
-			// --- pivote confirmado K barras atras (nunca usa informacion futura:
-			//     el pivote de la barra n-1-K recien se confirma ahora) ---
-			int c = n - 1 - K;
-			if (c >= K)
+			if (PointModePivot)
 			{
-				bool esHi = true, esLo = true;
-				for (int d = 1; d <= K && (esHi || esLo); d++)
+				// modo viejo: solo extremos que dominan K barras a cada lado.
+				// El pivote de la barra n-1-K recien se confirma ahora: no mira futuro.
+				int c = n - 1 - K;
+				if (c >= K)
 				{
-					if (!(_hi[c] > _hi[c - d] && _hi[c] > _hi[c + d])) esHi = false;
-					if (!(_lo[c] < _lo[c - d] && _lo[c] < _lo[c + d])) esLo = false;
+					bool esHi = true, esLo = true;
+					for (int d = 1; d <= K && (esHi || esLo); d++)
+					{
+						if (!(_hi[c] > _hi[c - d] && _hi[c] > _hi[c + d])) esHi = false;
+						if (!(_lo[c] < _lo[c - d] && _lo[c] < _lo[c + d])) esLo = false;
+					}
+					int gB = CurrentBar - K;
+					if (esHi) AgregarPivote(new Pivot { Bar = gB, Idx = c, IsHigh = true, Tick = _hi[c] });
+					if (esLo) AgregarPivote(new Pivot { Bar = gB, Idx = c, IsHigh = false, Tick = _lo[c] });
 				}
-				int gBar = CurrentBar - K;      // el pivote local c es esta barra global
-				if (esHi) AgregarPivote(new Pivot { Bar = gBar, Idx = c, IsHigh = true, Tick = _hi[c] });
-				if (esLo) AgregarPivote(new Pivot { Bar = gBar, Idx = c, IsHigh = false, Tick = _lo[c] });
+			}
+			else
+			{
+				// UN PUNTO POR VELA: la mecha. Disponible al cerrar la barra, sin lag.
+				int c = n - 1;
+				AgregarPivote(new Pivot { Bar = CurrentBar, Idx = c, IsHigh = true, Tick = _hi[c] });
+				AgregarPivote(new Pivot { Bar = CurrentBar, Idx = c, IsHigh = false, Tick = _lo[c] });
 			}
 
 			ActualizarZonas();
 		}
 
-		// CADENA MONOTONA de pivotes CONSECUTIVOS.
-		// Se corta cuando: un pico supera al anterior (invierte la direccion), el
-		// salto de precio excede MaxStepTicks, o la separacion excede MaxStepBars.
-		// El escalon plano no corta si AllowEqualSteps.
+		// CADENA SOBRE UN NIVEL. Un punto cuenta como TOQUE si esta a
+		// TouchToleranceTicks del nivel. Rompe -- y cierra la cadena -- solo el punto
+		// que atraviesa el nivel en el sentido que lo invalida. Alejarse no rompe.
 		private void AgregarPivote(Pivot p)
 		{
 			List<Pivot> cad = p.IsHigh ? _cadHi : _cadLo;
 			if (cad.Count == 0) { cad.Add(p); return; }
 
-			Pivot prev = cad[cad.Count - 1];
-			long paso = p.Tick - prev.Tick;
-			int dir = p.IsHigh ? _dirHi : _dirLo;
-			bool corta = (p.Bar - prev.Bar > MaxStepBars)
-				|| (Math.Abs(paso) > MaxStepTicks)
-				|| (paso == 0 && !AllowEqualSteps)
-				|| (paso != 0 && dir != 0 && ((paso > 0) != (dir > 0)));
+			long nivel = cad[cad.Count - 1].Tick;
+			long v0 = cad[0].Tick;
+			int b0 = cad[0].Bar;
 
-			if (corta)
-			{
-				cad.Clear();
-				if (p.IsHigh) _dirHi = 0; else _dirLo = 0;
-				cad.Add(p);
-				return;
-			}
+			if (p.Bar - cad[cad.Count - 1].Bar > MaxStepBars) { Reiniciar(cad, p); return; }
 
-			if (paso != 0)
-			{
-				if (p.IsHigh) _dirHi = paso > 0 ? 1 : -1;
-				else _dirLo = paso > 0 ? 1 : -1;
-			}
+			bool rompe = p.IsHigh ? (p.Tick > nivel + TouchToleranceTicks)
+								  : (p.Tick < nivel - TouchToleranceTicks);
+			if (rompe) { Reiniciar(cad, p); return; }
+
+			if (Math.Abs(p.Tick - nivel) > TouchToleranceTicks) return;   // lejos: se ignora
+
+			long dTotal = p.Tick - v0;
+			int dSpan = p.Bar - b0;
+			bool empinada = Math.Abs(dTotal) * SlopePerBars > (long)MaxSlopeTicks * Math.Max(dSpan, 1)
+				&& Math.Abs(dTotal) > MaxSlopeTicks;
+			if (Math.Abs(dTotal) > MaxTotalDriftTicks || empinada) { Reiniciar(cad, p); return; }
+
+			int sig = p.IsHigh ? -1 : 1;      // direccion que comprime
+			if (OnlyCompressingChains && dTotal != 0 && ((dTotal > 0) != (sig > 0)))
+			{ Reiniciar(cad, p); return; }
+
 			cad.Add(p);
-			if (cad.Count < MinPivots) return;
+			if (cad.Count >= MinPivots) CrearOActualizarZona(cad, p.IsHigh);
+		}
 
-			// Solo cuentan las cadenas que COMPRIMEN contra el precio:
-			// minimos subiendo (soporte) o maximos bajando (resistencia).
-			// Minimos bajando o maximos subiendo son la tendencia misma, no una
-			// zona -- son las "invertidas" que hay que descartar.
-			int dirAhora = p.IsHigh ? _dirHi : _dirLo;
-			if (OnlyCompressingChains && dirAhora != 0)
-			{
-				bool valida = p.IsHigh ? (dirAhora < 0) : (dirAhora > 0);
-				if (!valida) return;
-			}
-			CrearOActualizarZona(cad, p.IsHigh);
+		private void Reiniciar(List<Pivot> cad, Pivot p)
+		{
+			cad.Clear();
+			cad.Add(p);
 		}
 
 		private void CrearOActualizarZona(List<Pivot> grupo, bool isHigh)
@@ -488,14 +521,43 @@ namespace NinjaTrader.NinjaScript.Indicators
 		#endregion
 
 		#region Properties
+		[NinjaScriptProperty]
+		[Display(Name = "PointModePivot", Order = 0, GroupName = "1. Deteccion",
+			Description = "OFF (default) = un punto por vela, su mecha. ON = solo extremos "
+				+ "que dominan PivotStrength barras a cada lado. El modo por vela es el que "
+				+ "reproduce las seguidillas y serruchos que se trazan a mano.")]
+		public bool PointModePivot { get; set; }
+
 		[NinjaScriptProperty] [Range(1, 200)]
-		[Display(Name = "PivotStrength", Order = 1, GroupName = "1. Deteccion",
+		[Display(Name = "PivotStrength (solo si PointModePivot)", Order = 1, GroupName = "1. Deteccion",
 			Description = "Barras a cada lado que el extremo debe dominar ESTRICTAMENTE. "
 				+ "Subirlo da menos pivotes y mas significativos.")]
 		public int PivotStrength { get; set; }
 
+		[NinjaScriptProperty] [Range(0, 1000)]
+		[Display(Name = "TouchToleranceTicks", Order = 2, GroupName = "1. Deteccion",
+			Description = "Cuan cerca del nivel tiene que estar un punto para contar como "
+				+ "toque. Un punto que ATRAVIESA el nivel mas alla de esto corta la cadena; "
+				+ "uno que se aleja para el otro lado simplemente se ignora.")]
+		public int TouchToleranceTicks { get; set; }
+
+		[NinjaScriptProperty] [Range(0, 1000)]
+		[Display(Name = "MaxSlopeTicks", Order = 3, GroupName = "1. Deteccion",
+			Description = "Deriva maxima del nivel cada SlopePerBars barras. La escalera no "
+				+ "puede ser empinada.")]
+		public int MaxSlopeTicks { get; set; }
+
+		[NinjaScriptProperty] [Range(1, 100000)]
+		[Display(Name = "SlopePerBars", Order = 4, GroupName = "1. Deteccion")]
+		public int SlopePerBars { get; set; }
+
+		[NinjaScriptProperty] [Range(0, 100000)]
+		[Display(Name = "MaxTotalDriftTicks", Order = 5, GroupName = "1. Deteccion",
+			Description = "Deriva total maxima de la cadena entera, de punta a punta.")]
+		public int MaxTotalDriftTicks { get; set; }
+
 		[NinjaScriptProperty] [Range(1, 10000)]
-		[Display(Name = "MaxStepTicks", Order = 2, GroupName = "1. Deteccion",
+		[Display(Name = "MaxStepTicks (legado)", Order = 9, GroupName = "1. Deteccion",
 			Description = "Salto maximo de precio entre dos escalones consecutivos. Es el "
 				+ "criterio de que la consecucion sea cercana: mas alla, la cadena se corta.")]
 		public int MaxStepTicks { get; set; }
