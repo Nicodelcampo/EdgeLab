@@ -60,11 +60,15 @@ def git_state(repo_root: Path) -> dict[str, Any]:
 def cme_session_dates(ts_ns: np.ndarray) -> np.ndarray:
     """CME ETH trade date, [17:00 CT, next 17:00 CT), DST-aware."""
     import pandas as pd
-    idx = pd.to_datetime(np.asarray(ts_ns, dtype=np.int64), unit="ns", utc=True)
-    local = idx.tz_convert("America/Chicago")
-    days = np.asarray(local.normalize().tz_localize(None), dtype="datetime64[D]")
-    days = days + (np.asarray(local.hour) >= 17).astype("timedelta64[D]")
-    return np.char.replace(np.datetime_as_string(days, unit="D"), "-", "").astype("U8")
+    sec = np.asarray(ts_ns, dtype=np.int64) // 1_000_000_000
+    if len(sec) == 0:
+        return np.empty(0, dtype="U8")
+    idx = pd.to_datetime(sec, unit="s", utc=True).tz_convert("America/Chicago")
+    days = np.asarray(idx.normalize().tz_localize(None), dtype="datetime64[D]")
+    days = days + (np.asarray(idx.hour) >= 17).astype("timedelta64[D]")
+    u, inv = np.unique(days, return_inverse=True)
+    u_str = np.array([str(d).replace("-", "") for d in u], dtype="U8")
+    return u_str[inv]
 
 
 def _update_partition_hash(handle, arrays: dict[str, np.ndarray], sl: slice) -> None:

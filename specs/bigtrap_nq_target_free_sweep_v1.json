@@ -1,0 +1,33 @@
+{
+  "schema": "bigtrap_nq_target_free_sweep_v1",
+  "status": "APPROVED_FOR_TARGET_FREE_RESEARCH",
+  "instrument": "NQ",
+  "tick_size": 0.25,
+  "data_dir": "E:/EdgeLab/data/nt8/NQ_parquet",
+  "session_registry": "specs/bt2a_gate1_nq_all5_sessions_2026-08-27.json",
+  "input_registry": "specs/bt2a_gate1_nq_all5_input_registry_2026-08-27.json",
+  "firewall": {
+    "target_free_only": true,
+    "outcomes_accessed": false,
+    "holdout_window": "2026-07-01 .. 2026-12-31 (SEALED)",
+    "pnl_forbidden": true
+  },
+  "grid": {
+    "ticks_per_row": [1, 2, 4],
+    "bracket_pooling_ticks": [2, 4],
+    "imbalance_ratio": [2.5, 3.0],
+    "min_trap_volume": [30.0, 50.0],
+    "min_dwell_ms": [0.0, 100.0, 200.0],
+    "max_tape_speed": [500.0],
+    "use_rvol_filter": [false, true],
+    "min_rvol": [1.1],
+    "wick_zone_pct": [35.0],
+    "anti_overshoot_buffer_ticks": [2]
+  },
+  "targets": {
+    "event_density_per_session_min": 2.0,
+    "event_density_per_session_max": 8.0,
+    "min_session_coverage_pct": 80.0,
+    "directional_symmetry_tolerance": 0.15
+  }
+}

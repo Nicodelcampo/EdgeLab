@@ -29,6 +29,7 @@ Must be run on a clean worktree (``--allow-dirty`` available for diagnostics).
 from __future__ import annotations
 
 import argparse
+import gc
 import hashlib
 import json
 import os
@@ -75,7 +76,7 @@ def git_state(root: Path) -> dict:
     commit = _g("rev-parse", "HEAD")
     if commit is None:
         return {"available": False, "commit": None, "branch": None, "dirty": True}
-    status = _g("status", "--porcelain") or ""
+    status = _g("status", "--porcelain", "-uno") or ""
     branch = _g("branch", "--show-current") or ""
     return {"available": True, "commit": commit,
             "branch": branch, "dirty": bool(status.strip())}
@@ -170,6 +171,8 @@ def extract_events_for_contract(
         })
         n_abs += 1
     print(f"    -> {n_abs:,} events (of {len(res_abs.get('zones', [])):,} total)")
+    del res_abs
+    gc.collect()
 
     # ── 2. BigTrap2 ───────────────────────────────────────────────
     print("  [2/4] BigTrap2 ...")
@@ -215,6 +218,8 @@ def extract_events_for_contract(
         })
         n_bt2 += 1
     print(f"    -> {n_bt2:,} events (of {len(res_bt2.get('zones', [])):,} total)")
+    del res_bt2
+    gc.collect()
 
     # ── 3. HFTZones2 ─────────────────────────────────────────────
     print("  [3/4] HFTZones2 ...")
@@ -263,6 +268,8 @@ def extract_events_for_contract(
         })
         n_hft += 1
     print(f"    -> {n_hft:,} events (of {len(res_hft.get('zones', [])):,} total)")
+    del bars1m, res_hft
+    gc.collect()
 
     # ── 4. VolTicksPOC2 ───────────────────────────────────────────
     print("  [4/4] VolTicksPOC2 ...")
@@ -304,17 +311,42 @@ def extract_events_for_contract(
         n_poc += 1
     print(f"    -> {n_poc:,} events (of {len(res_poc.get('zones', [])):,} total)")
 
+    del bars25, fps25, bar_close_indices, res_poc, ticks, sess_mask
+    gc.collect()
+
     return events
 
 
 def process_contract_worker(args_tuple):
+    import gc
     contract, pq_file, valid_sessions, instrument, output_dir = args_tuple
     ckey = contract.replace(" ", "_")
+    out_file = output_dir / f"{ckey}_event_store.parquet"
+    if out_file.is_file() and out_file.stat().st_size > 1000:
+        print(f"  => [{contract}] Found existing {out_file.name} ({out_file.stat().st_size:,} bytes), loading existing summary...")
+        df = pd.read_parquet(out_file)
+        by_ind = df["indicator"].value_counts().to_dict() if not df.empty else {}
+        summary = {
+            "total_events": len(df),
+            "by_indicator": by_ind,
+            "sessions_in_registry": len(valid_sessions),
+            "sessions_with_events": int(df["session_id"].nunique()) if not df.empty else 0,
+            "parquet_file": out_file.name,
+            "parquet_bytes": out_file.stat().st_size,
+            "parquet_sha256": file_sha256(out_file),
+        }
+        del df
+        gc.collect()
+        return contract, summary
+
     events = extract_events_for_contract(
         contract, pq_file, valid_sessions, instrument=instrument)
 
     # Sort and deduplicate
     df = pd.DataFrame(events)
+    del events
+    gc.collect()
+
     if not df.empty:
         df = df.sort_values(
             ["ts_utc_ns", "source_row", "indicator", "direction"]
@@ -342,8 +374,11 @@ def process_contract_worker(args_tuple):
         "parquet_bytes": out_file.stat().st_size,
         "parquet_sha256": file_sha256(out_file),
     }
-    print(f"  => [{contract}] Finished -> {out_file.name}: {len(df):,} events")
-    return contract, summary, events
+    del df
+    gc.collect()
+
+    print(f"  => [{contract}] Finished -> {out_file.name}: {summary['total_events']:,} events")
+    return contract, summary
 
 
 # ── Main ──────────────────────────────────────────────────────────────
@@ -357,8 +392,8 @@ def main():
                     help="Compact session registry JSON (all5)")
     ap.add_argument("--input-registry", type=Path, required=True,
                     help="Input registry JSON (all5)")
-    ap.add_argument("--workers", type=int, default=5,
-                    help="Number of concurrent worker processes (default: 5)")
+    ap.add_argument("--workers", type=int, default=1,
+                    help="Number of concurrent worker processes (default: 1 for memory safety)")
     ap.add_argument("--root", type=Path, default=REPO_ROOT)
     ap.add_argument("--allow-dirty", action="store_true",
                     help="Allow running on dirty worktree (diagnostic only)")
@@ -406,64 +441,88 @@ def main():
                 raise SystemExit(
                     f"INPUT HASH MISMATCH for {contract}: "
                     f"expected {expected_sha[:16]}…, got {actual[:16]}…")
-            print(f"  {contract}: input hash verified ✓")
+            print(f"  {contract}: input hash verified [OK]")
         valid_sessions = sessions_by_contract.get(contract, set())
         worker_tasks.append((contract, pq_file, valid_sessions, instrument, args.output_dir))
 
-    # Process contracts in parallel
+    # Process contracts
     args.output_dir.mkdir(parents=True, exist_ok=True)
-    all_events = []
     contract_summaries = {}
 
-    import concurrent.futures
-    workers = min(args.workers, len(worker_tasks))
-    print(f"\nLaunching {len(worker_tasks)} contract extractions across {workers} parallel processes...")
+    workers = max(1, min(args.workers, len(worker_tasks)))
+    print(f"\nLaunching {len(worker_tasks)} contract extractions (workers={workers})...")
 
     if workers > 1:
+        import concurrent.futures
         with concurrent.futures.ProcessPoolExecutor(max_workers=workers) as executor:
             results = list(executor.map(process_contract_worker, worker_tasks))
     else:
-        results = [process_contract_worker(t) for t in worker_tasks]
+        import gc
+        results = []
+        for t in worker_tasks:
+            results.append(process_contract_worker(t))
+            gc.collect()
 
-    for contract, summary, events in results:
+    for contract, summary in results:
         contract_summaries[contract] = summary
-        all_events.extend(events)
 
-    # Validate: no event past holdout
-    if all_events:
-        holdout_ns = int(pd.Timestamp("2026-07-01", tz="UTC").value)
-        violations = sum(1 for e in all_events
-                         if e["ts_utc_ns"] >= holdout_ns)
-        if violations > 0:
-            raise RuntimeError(
-                f"HOLDOUT VIOLATION: {violations} events at or after 2026-07-01")
+    # Streamed post-validation over written parquets (O(1) memory)
+    import gc
+    total_events = 0
+    total_events_by_indicator = Counter()
+    holdout_violations = 0
+    fill_violations = 0
+    meta_zero_count = 0
+    holdout_ns = int(pd.Timestamp("2026-07-01", tz="UTC").value)
 
-    # Validate: fill strictly after signal
-    fill_violations = sum(
-        1 for e in all_events
-        if (e["fill_ts_utc_ns"], e["fill_source_row"])
-           <= (e["ts_utc_ns"], e["source_row"])
-    )
+    print("\nRunning streaming validation over generated event store parquets...")
+    for contract, summary in contract_summaries.items():
+        pq_path = args.output_dir / summary["parquet_file"]
+        if not pq_path.is_file():
+            continue
+        cdf = pd.read_parquet(pq_path)
+        total_events += len(cdf)
+        for ind, cnt in cdf["indicator"].value_counts().items():
+            total_events_by_indicator[ind] += cnt
+
+        if not cdf.empty:
+            # Holdout check
+            holdout_violations += int((cdf["ts_utc_ns"] >= holdout_ns).sum())
+            # Fill causality check: (fill_ts, fill_source_row) <= (ts, source_row)
+            bad_fill = (
+                (cdf["fill_ts_utc_ns"] < cdf["ts_utc_ns"]) |
+                ((cdf["fill_ts_utc_ns"] == cdf["ts_utc_ns"]) & (cdf["fill_source_row"] <= cdf["source_row"]))
+            )
+            fill_violations += int(bad_fill.sum())
+
+            # Metadata all-zero check
+            for meta_str in cdf["metadata_json"]:
+                md = json.loads(meta_str)
+                num_vals = [v for v in md.values() if isinstance(v, (int, float))]
+                if num_vals and all(v == 0 for v in num_vals):
+                    meta_zero_count += 1
+
+        del cdf
+        gc.collect()
+
+    if holdout_violations > 0:
+        raise RuntimeError(
+            f"HOLDOUT VIOLATION: {holdout_violations} events at or after 2026-07-01")
+
     if fill_violations > 0:
         raise RuntimeError(
             f"FILL CAUSALITY VIOLATION: {fill_violations} events where "
             f"fill is not strictly after signal")
 
-    # Validate: metadata_json has no all-zero placeholders
-    meta_zero_count = 0
-    for e in all_events:
-        md = json.loads(e["metadata_json"])
-        numeric_vals = [v for v in md.values() if isinstance(v, (int, float))]
-        if numeric_vals and all(v == 0 for v in numeric_vals):
-            meta_zero_count += 1
     if meta_zero_count > 0:
         print(f"  WARNING: {meta_zero_count} events have all-zero metadata "
-              f"({meta_zero_count/len(all_events)*100:.1f}%)")
+              f"({meta_zero_count/total_events*100:.1f}%)")
 
     # Write manifest
     manifest = {
-        "schema": "event_store_gc_all5_v2",
+        "schema": "event_store_gc_all5_v2" if instrument == "GC" else f"event_store_{instrument.lower()}_all5_v2",
         "status": "COMPLETE_SESSION_FILTERED",
+        "instrument": instrument,
         "generated_utc": datetime.now(timezone.utc).isoformat(),
         "builder": "tools/build_event_store_all5_v2.py",
         "fixes_applied": [
@@ -472,10 +531,10 @@ def main():
             "metadata_fields_mapped_from_actual_kernel_output",
             "tick_index_resolved_per_indicator_correctly",
             "deduplication_applied",
+            "memory_optimized_streaming",
         ],
-        "total_events": len(all_events),
-        "total_events_by_indicator": dict(
-            sorted(Counter(e["indicator"] for e in all_events).items())),
+        "total_events": total_events,
+        "total_events_by_indicator": dict(sorted(total_events_by_indicator.items())),
         "contracts": contract_summaries,
         "session_registry": {
             "path": str(args.session_registry),
@@ -487,7 +546,7 @@ def main():
             "sha256": file_sha256(args.input_registry),
         },
         "holdout_boundary": sess_reg["selection"]["window_end"],
-        "holdout_violations": 0,
+        "holdout_violations": holdout_violations,
         "fill_causality_violations": fill_violations,
         "metadata_all_zero_count": meta_zero_count,
         "git_state": gs,
@@ -502,9 +561,9 @@ def main():
         encoding="utf-8")
 
     print(f"\n{'=' * 60}")
-    print(f"EVENT STORE v2 COMPLETE: {len(all_events):,} events")
+    print(f"EVENT STORE v2 COMPLETE ({instrument}): {total_events:,} events")
     print(f"Manifest: {manifest_path}")
-    print(f"Holdout violations: 0")
+    print(f"Holdout violations: {holdout_violations}")
     print(f"Fill causality violations: {fill_violations}")
     print(f"Metadata all-zero: {meta_zero_count}")
     print(f"{'=' * 60}")

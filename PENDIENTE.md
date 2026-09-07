@@ -1785,3 +1785,25 @@ Once pares de archivos (.nrd de NinjaTrader Market Replay y .csv exportados) cub
 2. **Acoplamiento al reloj del sistema (ART = UTC-3):** Los timestamps generados por `DumpMarketDepth` adoptan la hora local de la máquina (ART = UTC-3), evidenciado por la coincidencia exacta de la pausa diaria de mantenimiento de CME (16:00–17:00 CDT = 18:00–19:00 ART). Cualquier conversor posterior a Parquet debe normalizar explícitamente el timezone a UTC teniendo en cuenta este offset.
 3. **Ausencia de orden intra-microsegundo:** El CSV carece de columna de secuencia del exchange CME (`seq_num`), y entre el 77 % y el 94 % de las filas comparten microsegundos idénticos.
 
+---
+
+## P-58 — Filtro de Reversión EMA para BigTrap en Oro (`GC` / `MGC`) — Protocolo de Investigación y Falsación
+
+**Asentada 2026-09-06.** Referente: `docs/research/HALLAZGO_FILTRO_EMA_BIGTRAP_GC_2026-09-06.md`.  
+Datos: `docs/research/bigtrap_gc_ema_25tick_results.json` y `tools/audit_gc_ema_reality_check.py`.
+
+**1. Hecho Medido y Falsación:**
+- **Hipótesis tendencial FALSADA:** Comprar sobre la EMA y vender bajo la EMA degrada el sistema en barras de 25 ticks (PF 1.19 vs 1.41 control; OOS Net colapsa en un 70%) y produce pérdidas netas severas en barras de 150 ticks (-$50,008 USD en TP 6.0 pt).
+- **Hipótesis de Reversión CONFIRMADA:** Comprar trampas *bajo* la EMA (`Close < EMA`) y vender trampas *sobre* la EMA (`Close > EMA`) con EMA 100/200 eleva el Profit Factor a **1.98 OOS** (TP 12.0 pt / SL 1.0x) y a **1.43 OOS** (TP 4.0 pt / SL 1.5x) en modo **secuencial realista** (1 posición a la vez, con comisiones $4.50 RT y 1 tick slippage adverso en stops).
+- **Curación del sesgo de drift:** A diferencia del modelo sin filtro (donde los Shorts daban pérdidas o breakeven), el filtro de reversión genera rentabilidad simétrica positiva en Compras (+$12.3k) y Ventas (+$3.3k).
+- **Reducción de ruina:** El Drawdown máximo se reduce de -$14,324 USD a -$7,342 USD, y la racha máxima de pérdidas consecutivas baja de 48 a 34.
+
+**2. Estado del Holdout y Gobernanza:**
+- El contrato protegido `GC 08-26` permanece sellado e intocado.
+- Se mantiene abierto para investigación adicional antes de cualquier promoción a estrategia ejecutable en vivo.
+
+**3. Preguntas Abiertas para Continuidad:**
+- Comparación cuantitativa directa entre el filtro de Reversión EMA vs el filtro de Desviación Gaussiana de Anchored VWAP (`BigTrapVWAP_GC`).
+- Evaluación de umbral mínimo de distancia a la media ($\Delta \text{Ticks} \ge K$).
+- Evaluación de confluencia con clusters de volumen HFT (`HFTZonesNQPureV4`).
+
