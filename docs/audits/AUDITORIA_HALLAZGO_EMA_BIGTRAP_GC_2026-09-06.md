@@ -5,6 +5,10 @@
 > y `..._150tick_results.json` del propio commit. No se corrió nada nuevo: todo lo
 > que sigue sale de recalcular los datos que el hallazgo publica.
 > **Veredicto:** la dirección sobrevive; la magnitud no. **No promover a optimización todavía.**
+> **Actualización 2026-09-06:** re-corrido cobrando el tick de entrada (§8). A 25
+> ticks quedan 4 celdas positivas In-Sample de 44, con PF 1.01–1.04; a 150 ticks,
+> ninguna. El contraste `REVERT − TREND` queda intacto porque un costo constante
+> por trade se cancela en la diferencia.
 
 ---
 
@@ -115,10 +119,62 @@ a favor, con el mismo signo en los dos períodos.*
 **No sobrevive**: PF 1.98, +$21.252, «duplica el profit factor», «reduce el
 drawdown a la mitad», y la falsación de la hipótesis tendencial.
 
-## 8. Antes de optimizar
+## 8. Re-corrida cobrando el tick de entrada (ejecutada 2026-09-06)
 
-1. Cobrar **1 tick de slippage de entrada** y volver a correr las 88 celdas. Si el
-   contraste in-sample no sobrevive, se termina acá.
+Se re-corrieron las 88 celdas con `ENTRY_SLIPPAGE_TICKS = 1`, con los niveles de
+SL/TP anclados al precio pretendido — la misma convención que el código ya usaba
+para el stop: el nivel no se mueve, el costo se paga. La trayectoria no cambia, así
+que el conjunto de trades es idéntico.
+
+**Verificación del parche antes de usarlo:** la misma corrida con
+`ENTRY_SLIP_TICKS=0` reprodujo el JSON original del hallazgo en **440 campos con 0
+diferencias**. Lo que sigue es el efecto del tick, no un cambio de simulador.
+
+### Resultado
+
+| | celdas | positivas IS | positivas OOS | contraste `REV−TRD` estable |
+| :-- | --: | --: | --: | --: |
+| 25 ticks | 44 | **4** | 33 | **18 / 20** |
+| 150 ticks | 44 | **0** | 18 | 3 / 20 |
+
+Celdas clave a 25 ticks, perfil asimétrico (antes → después):
+
+| Filtro | IS | OOS |
+| :-- | --: | --: |
+| `SIN_FILTRO` | −$962 → **−$17.412** (PF 0.87) | +$30.230 → +$23.340 (PF 1.29) |
+| `REVERT_EMA_100` | +$10.610 → **+$2.700** (PF 1.04) | +$20.996 → +$18.366 (PF 1.61) |
+| `REVERT_EMA_200` | +$8.476 → **+$646** (PF 1.01) | +$21.814 → +$19.024 (PF 1.61) |
+| `TREND_EMA_200` | −$9.439 → −$18.059 (PF 0.75) | +$8.415 → +$4.315 (PF 1.09) |
+
+A 150 ticks el control pasa de +$42.652 a **−$8.478** en Out-of-Sample y **ninguna
+de las 44 celdas** queda positiva In-Sample. Esa resolución queda descartada por
+costo, sin necesidad de discutir el filtro.
+
+### Lectura
+
+1. **La rentabilidad absoluta no sobrevive.** De 44 celdas a 25 ticks, sólo 4
+   quedan positivas In-Sample, y las tres mejores dan PF 1.01–1.04. La celda
+   estrella del acta rinde **+$0,83 por trade** contra un tick de $10.
+2. **El contraste condicional sí sobrevive, intacto.** Un costo constante por trade
+   se cancela en la diferencia `REVERT − TREND`: sigue siendo +$21,78 por trade en
+   `EMA 200`, y sigue teniendo el mismo signo en los dos períodos en 18 de 20
+   celdas a 25 ticks. Esta prueba no lo tocaba y no lo tocó.
+3. **Lo que esto significa.** La EMA separa entradas de BigTrap *menos malas* de
+   *más malas*. No convierte a ninguna en buena: In-Sample, con costos realistas,
+   las dos mitades pierden. La rentabilidad del acta venía del tick de entrada
+   regalado y del régimen de `04-26`/`06-26`, no del filtro.
+
+**Reproducción:** `tools/optimize_bigtrap_gc_ema.py` del commit `e50bbf3` con la
+variable de entorno `ENTRY_SLIP_TICKS`, corrido en la worktree
+`E:/EdgeLab_worktrees/ema-audit-20260906`. Salidas en
+`data/nt8_oracles/ema_audit_{25t_slip0,25t_slip1,150t_slip1}.json`.
+
+---
+
+## 9. Antes de optimizar
+
+1. ~~Cobrar 1 tick de slippage de entrada y volver a correr las 88 celdas.~~
+   **HECHO** — ver §8. El contraste sobrevive; la rentabilidad absoluta no.
 2. Estimar el contraste `REVERT − TREND` con **bootstrap clusterizado por sesión**
    y publicar el IC, no el PnL total.
 3. **Congelar una sola configuración** (resolución, SL, TP, período de EMA) por
