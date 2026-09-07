@@ -91,6 +91,10 @@ namespace NinjaTrader.NinjaScript.Indicators
         }
 
         // ===================== IMPULSOS LIMPIOS: estado =====================
+        // La version viaja en el cartel del chart, no en un string muerto: si se
+        // toca la logica y no se sube, se ve en pantalla.
+        private const string VERSION = "1.0.0";
+
         private int    ciSegIni = -1, ciSegHiBar, ciSegLoBar;
         private double ciSegHi, ciSegLo;
         // Diagnostico: "no marca nada" es ambiguo entre no haber tramos largos y
@@ -260,7 +264,8 @@ namespace NinjaTrader.NinjaScript.Indicators
             {
                 ActualizarImpulsos();
                 Draw.TextFixed(this, "ci_diag",
-                    "CleanImpulses: " + ciMarcados + " impulsos marcados  |  tramos="
+                    "CleanImpulses version=" + VERSION + ": " + ciMarcados
+                    + " impulsos marcados  |  tramos="
                     + ciTramos + " lapsos sin zonas"
                     + "  de menos de " + MinLegTicks + " ticks=" + ciCortos
                     + "  zonas=" + zones.Count,
