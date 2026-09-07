@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Rebuild the exact 234-session Gate-1 event population for downstream gates."""
 from __future__ import annotations
-import argparse, hashlib, json, os, subprocess
+import argparse, hashlib, json, os, subprocess, sys
 from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import pandas as pd
 from edgelab.research.all5_runtime.ticks import load_canonical_parquet
 from edgelab.research.bt2_gate1_all5 import (_context,_end,_labels,_raw_abs_events,_raw_bt2_events,_runtime_sha,_start)

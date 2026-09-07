@@ -1,93 +1,104 @@
 # CURRENT — empezar acá
 
-> Estado operativo al 2026-08-24. Para un traspaso nuevo, el primer archivo es `AUDITOR_START_HERE.md`.
+**Fecha:** 2026-08-26
 
-**Rama viva:** `foundation/f0b-compatibility-probe`  
-**Audited scientific base:** `9b23c307cb112cdd6392d98673e8ead2e8bc4698`  
-**Handoff package:** `7b360bf8f6bc4ac54ca72f771520690046f61789`  
-**Referente:** `docs/NORTH_STAR.md` · sha256 del cuerpo `d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1`
+> Estado operativo posterior al hardening Gate 2/L2 y a la reproducción canónica de Gate 1.
+
+**Rama viva propuesta:** `work/bt2a-gate2-p2a-freeze-20260826`
+**Base de hardening:** `761f50ba93158cc78c846b8774b7ac21a31b3b57`
+**Gate 1 canónica:** `3e639e150bcd7b4691da3d1ba8049a33f586c217`
+**Referente:** `docs/NORTH_STAR.md`
 
 ## Línea primaria
 
-**BigTrap2Absorption — sweep target-free parcial sobre GC 02-26.**
+BigTrap2Absorption Gate 1 all5 está cerrada como réplica post-outcome:
 
-- 99 configuraciones únicas: 51 OAT + 48 interacciones.
-- Estado esperado para un subconjunto: `COMPLETE_TARGET_FREE_PARTIAL_CONTRACTS`.
-- El sweep no mira outcomes, no elige ganador y no es Puerta 1.
-- Puerta 1 no se corrió y su runner no existe.
-- No relanzar: inspeccionar proceso, parciales, `run_status`, `config_id`, hashes y procedencia; continuar con `--resume`.
+- 234 sesiones CME;
+- K_ABS=16.940 y K_BT2=5.262;
+- K_ABS−N_RAND=+4,84 ticks, IC95% [+3,36; +6,32];
+- K_ABS−shuffle=+1,74 ticks, IC95% [+0,17; +3,31];
+- K_ABS−K_BT2=+0,10 ticks, IC95% [−3,93; +4,16];
+- `confirmatory_eligible=false`, `promotion_eligible=false`, `EDGE_DECLARED=false`.
 
-Acta: `docs/research/ESTADO_BT2_ABSORPTION_2026-08-24.md`.
+`d_hat` es asimetría de recorrido, no P&L. Gate 1 no se reabre para elegir SL/TP.
 
-## Vector de estado BT2Absorption
+## Event Store canónico
+
+La población fue reproducida bajo Python 3.12.14 y el lock exacto:
 
 ```text
-PUERTA_0_FIRMADA                = SI
-KERNEL_PARITY_ON_EQUAL_INPUT    = ~EXACT
-GLOBAL_ACCUMULATED_PARITY       = FAIL por indexado acumulado
-SESSION_RECOVERABLE_PARITY      = RECOVERED
-TAPE_VS_CHART_COVERAGE          = ABIERTO
-UNIVERSO                        = 152 sesiones
-SPLIT                           = 133 / 19, i % 8 == 7
-SWEEP_TARGET_FREE               = EN CURSO, GC 02-26
-PUERTA_1                        = NO CORRIDA
-CAMPAIGN_OUTCOMES_OPENED        = false
-PREEXISTING_OUTCOME_EXPOSURE    = YES
+sessions = 234
+K_ABS    = 16940
+K_BT2    = 5262
+events   = 22202
 ```
 
-No resumir las dos últimas líneas como `OUTCOMES_NOT_OPENED` global.
+La procedencia y hashes vinculantes viven en `specs/bt2a_gate2_first_passage_v1.json`.
 
-## Incidente vigente
+## Puerta 2
 
-Doce archivos preexistentes sin seguimiento se movieron a cuarentena con verificación bit a bit: 11 contenían outcomes y 1 era target-free.
+- P2-A: implementado, no ejecutado.
+- P2-B: implementado, no ejecutado.
+- El spec P2-A queda congelado por este cambio sólo después de revisión humana del diff.
+- La ejecución exige el token literal `AUTHORIZE_BT2A_P2A_POST_OUTCOME_DIAGNOSTIC`.
+- P2-A es diagnóstico post-outcome; no puede declarar edge ni promoción.
+- La familia primaria son 16 celdas B×H_ticks con Holm; las 12 celdas de reloj son descriptivas secundarias.
+- La regla `P2_DIAGNOSTIC_MECHANISM_SUPPORTED` está codificada y congelada en el spec.
 
-- 11/133 sesiones de Puerta 1 expuestas;
-- sellada `20260608` expuesta;
-- holdout temporal tocado por cuatro contratos;
-- búsqueda previa de contexto × outcomes;
-- familia YM y barrido cross-asset expuestos.
+Runner: `tools/run_bt2a_gate2_p2a.py`.
 
-Autoridad: `docs/incidents/INCIDENTE_OUTCOMES_UNTRACKED_2026-08-24.md` y su manifest.
+Candidato V1-R1: el fail-closed adversarial rechaza checkpoints malformados, mutaciones del contrato, valores no finitos y `NOT_READY` con código de éxito. Validación Python 3.12 exacta: 45 tests aprobados; outcomes no abiertos.
 
-## Líneas separadas
+## Línea C / Gate L2
 
-- `research/gate-regime-context`: `FOUNDATION_EXECUTABLE`, `CHECKPOINT_PENDING_REAL_DATA`, `NOT_YET_OPERATIONAL`.
-- `work/crypto-context-foundation-20260824`: PR #14 draft; CI roja; no mergear.
-- Las restantes 23 ramas no primarias están clasificadas en `docs/BRANCH_REGISTRY_2026-08-24.md`.
+La adquisición L1/L2 sigue target-free. La entrega auditada tiene integridad de bytes, pero no está lista para contexto:
 
-## No tocar sin decisión explícita
+- reloj sin resolver;
+- procedencia parcialmente dirty;
+- contrato y captura común con eventos no acreditados;
+- menos de 40 sesiones efectivas por grupo.
 
-- outcomes, P&L, MAE/MFE o Puerta 1;
-- holdout para diseñar o elegir;
-- specs/splits congelados;
-- ramas G2 rivales;
-- borrado/cierre de ramas;
-- parquets o particiones publicadas;
-- cuarentena del incidente;
-- `TAPE_VS_CHART_COVERAGE` como si estuviera resuelto.
+No ejecutar HMM final, join de outcomes ni CTX-3 hasta pasar los gates de `docs/research/bt2a_gate2_l2_20260826/03_GATE_L2_CONTEXT_CONTRACT.md`.
+
+## Firewall
+
+- Holdout `20260701–20261231` sellado.
+- No abrir P2-A sin spec congelado, Event Store exacto y autorización literal.
+- No abrir P2-B sin autorización separada y costos GC confirmados.
+- No usar `aVolClusterPOI` como oracle.
+- No elegir una celda por el máximo observado.
+
+## Estado compacto
+
+```text
+GATE1_ALL5                    = COMPLETE_POST_OUTCOME_REPLICATION
+CANONICAL_EVENT_STORE_234    = PASS
+P2A_SPEC                      = FROZEN_POST_OUTCOME_DIAGNOSTIC
+P2A                           = IMPLEMENTED_NOT_RUN
+P2B                           = IMPLEMENTED_NOT_RUN
+GATE_L2_SAMPLE_POWER          = NOT_READY
+NEW_P2_OR_L2_OUTCOMES_OPENED  = false
+EDGE_DECLARED                 = false
+```
 
 ## Primer chequeo
 
 ```powershell
-git remote -v
-git fetch --all --prune
-git rev-parse --show-toplevel
-git worktree list
+git rev-parse HEAD
+git branch --show-current
 git status --short --untracked-files=all
-.venv\Scripts\python tools\estado.py
+python -m pytest tests/test_current_md.py tests/research/test_bt2a_gate2_first_passage.py tests/research/test_bt2a_gate2_boundaries.py tests/research/test_bt2a_event_store_identity.py tests/research/test_bt2a_statistical_safety.py
 ```
-
-El remoto reciente se llamó `github`, no `origin`.
 
 ## Índices canónicos
 
 - `AUDITOR_START_HERE.md`
-- `docs/HANDOFF_AUDITOR_2026-08-24.md`
-- `docs/REPOSITORY_VISIBILITY_AUDIT_2026-08-24.md`
-- `docs/BRANCH_REGISTRY_2026-08-24.md`
-- `docs/research/LEER.md`
+- `docs/NORTH_STAR.md`
+- `docs/research/bt2a_gate2_l2_20260826/STATUS.json`
+- `docs/research/bt2a_gate2_l2_20260826/07_FINAL_HARDENING_AUDIT.md`
+- `specs/bt2a_gate2_first_passage_v1.json`
 - `PENDIENTE.md`
 
 ## Aporte al referente
 
-CURRENT vuelve a describir el trabajo realmente vivo y hace explícita la exposición previa. El auditor puede continuar el sweep target-free sin confundirlo con Puerta 1, con un holdout intacto o con evidencia de edge.
+Gate 1 queda cerrada y reproducida; P2-A queda definido ex ante como diagnóstico de first-passage, con identidad, multiplicidad, semillas y regla de decisión explícitas. La apertura de outcomes continúa bloqueada hasta autorización literal.

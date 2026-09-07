@@ -1,58 +1,63 @@
 {
-  "schema": "bt2a_gate2_l2_audit_status_v2",
-  "date": "2026-08-26",
-  "branch": "work/bt2a-gate2-l2-hardening-20260826",
-  "implementation_tip": "6d38294777c103cf6db78a6734f6283032a4cb56",
-  "gate1": {
-    "branch": "work/bt2a-gate1-all5-20260826",
-    "tip": "3e639e150bcd7b4691da3d1ba8049a33f586c217",
-    "status": "COMPLETE_GATE1_ALL5_POST_OUTCOME_REPLICATION",
-    "decision": "EXPANDED_PRIMARY_POSITIVE_NOT_NONINFERIOR_TO_BT2",
-    "n_sessions": 234,
+  "base_tip": "761f50ba93158cc78c846b8774b7ac21a31b3b57",
+  "branch": "work/bt2a-gate2-p2a-freeze-20260826",
+  "canonical_event_store": {
+    "builder_tip": "761f50ba93158cc78c846b8774b7ac21a31b3b57",
+    "events_payload_sha256": "feee6001e88aa69f62a092b253e468531230120a3dccdc2ceac0d488c9684cbd",
+    "n_events": 22202,
     "n_k_abs": 16940,
     "n_k_bt2": 5262,
-    "edge_declared": false
+    "n_sessions": 234,
+    "parquet_sha256": "6f7994b4ff21d2ddd0addcd9d3815b7ae83ff008b5b4774e74f2821efb2a4d77",
+    "runtime_sha256": "bfde56d1c4462665685d0146e1f65bd86fe1008e017986d94c06426b3ea3bbeb",
+    "status": "PASS_RECONCILED_STRICT_PY312",
+    "worktree_clean": true
+  },
+  "date": "2026-08-26",
+  "firewall": {
+    "edge_declared": false,
+    "holdout": "20260701-20261231",
+    "holdout_sealed": true,
+    "new_p2_or_l2_outcomes_opened": false
+  },
+  "gate1": {
+    "branch": "work/bt2a-gate1-all5-20260826",
+    "confirmatory_eligible": false,
+    "decision": "EXPANDED_PRIMARY_POSITIVE_NOT_NONINFERIOR_TO_BT2",
+    "edge_declared": false,
+    "n_k_abs": 16940,
+    "n_k_bt2": 5262,
+    "n_sessions": 234,
+    "status": "COMPLETE_GATE1_ALL5_POST_OUTCOME_REPLICATION",
+    "tip": "3e639e150bcd7b4691da3d1ba8049a33f586c217"
   },
   "gate2": {
-    "p2a": "IMPLEMENTED_NOT_RUN",
-    "p2b": "IMPLEMENTED_NOT_RUN",
-    "spec": "PROPOSED_NOT_FROZEN",
-    "canonical_event_store_234": "NOT_REBUILT_YET",
+    "adversarial_hardening": "PASS_45_TESTS_CP312",
+    "authorization_received": false,
+    "authorization_token_required": "AUTHORIZE_BT2A_P2A_POST_OUTCOME_DIAGNOSTIC",
+    "base_seed": 20260821,
+    "bootstrap_replications": 10000,
+    "control_replications": 10000,
     "cost_identity_gc": "NOT_CONFIRMED",
-    "input_identity_validation": "IMPLEMENTED",
+    "decision_rule": "FROZEN_FAMILYWISE_HOLM_16",
+    "freeze_approval_required": "APRUEBO_CONGELAR_BT2A_P2A_V1_R1",
+    "freeze_candidate_revision": "V1-R1",
+    "freeze_commit_published": false,
+    "p2a": "IMPLEMENTED_NOT_RUN_AUTHORIZATION_REQUIRED",
     "p2a_primary_cells": 16,
-    "p2a_secondary_clock_cells": 12,
     "p2a_primary_multiplicity": "HOLM_OVER_16_PRIMARY_CELLS",
-    "p2b_inference_metrics": [
-      "mean_net_ticks_per_eligible_signal",
-      "mean_net_ticks_per_trade",
-      "mean_net_usd_per_eligible_signal",
-      "mean_net_usd_per_trade"
-    ],
-    "authorization_required": true
+    "p2a_secondary_clock_cells": 12,
+    "p2b": "IMPLEMENTED_NOT_RUN",
+    "spec": "FROZEN_POST_OUTCOME_DIAGNOSTIC"
   },
   "gate_l2": {
-    "validator": "IMPLEMENTED_FAIL_CLOSED",
-    "three_way_model_identity": "REQUIRED",
-    "complete_artifact_hash_inventory": "REQUIRED",
-    "features_parquet": "REQUIRED",
-    "strict_join": "available_source_row < event_source_row",
+    "clock_reference": "UNRESOLVED",
+    "common_capture_identity": "NOT_ESTABLISHED",
     "context_interaction_cluster": "CME_SESSION",
-    "extraction_evidence": "PENDING_LOCAL_AUDIT",
+    "outcomes_opened": false,
     "sample_power": "NOT_READY",
-    "outcomes_opened": false
+    "strict_join": "available_source_row < event_source_row",
+    "validator": "IMPLEMENTED_FAIL_CLOSED"
   },
-  "verification": {
-    "strict_json": "PASS",
-    "cluster_bootstrap": "PASS",
-    "p2a_eligibility_reassertion": "PASS",
-    "p2a_family_structure": "PASS",
-    "p2b_metric_structure": "PASS",
-    "local_secret_scan": "PASS",
-    "github_advanced_security_secret_scan": "UNAVAILABLE_NOT_ENABLED"
-  },
-  "claude_local_audit": "PENDING_RESULTS",
-  "resume_old_sweep_authorized": false,
-  "new_p2_or_l2_outcomes_opened": false,
-  "edge_declared": false
+  "schema": "bt2a_gate2_l2_audit_status_v3"
 }
