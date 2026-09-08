@@ -32,6 +32,24 @@ using NinjaTrader.NinjaScript.DrawingTools;
 using NinjaTrader.Core.FloatingPoint;
 #endregion
 
+// El enum va en el namespace GLOBAL, no dentro de NinjaTrader.NinjaScript.Indicators.
+// Motivo: NT8 genera wrappers de este indicador en los namespaces Strategies y
+// MarketAnalyzerColumns, y las firmas generadas incluyen el tipo de cada
+// NinjaScriptProperty. Desde esos namespaces un tipo declarado en Indicators no se
+// resuelve y la compilacion falla con CS0246. Es el mismo patron que usa BigTrap2.cs
+// para sus cuatro enums.
+//
+// Los otros enums del archivo (HFTClusterState, HFTZoneBucket) SI pueden vivir adentro:
+// nunca son el tipo de una propiedad expuesta, asi que no aparecen en el codigo generado.
+
+/// <summary>Como pesa cada zona en el campo gravitacional del cluster.</summary>
+public enum HFTPesoZona
+{
+    Conteo,      // 1 por zona: reproduce el comportamiento original
+    Volumen,     // proporcional al volumen, normalizado por la mediana del pool
+    LogVolumen   // logaritmico: una zona de 10x el volumen pesa ~2x, no 10x
+}
+
 namespace NinjaTrader.NinjaScript.Indicators
 {
     public enum HFTClusterState
@@ -41,14 +59,6 @@ namespace NinjaTrader.NinjaScript.Indicators
         Depleted,
         Invalidated,
         Expired
-    }
-
-    /// <summary>Como pesa cada zona en el campo gravitacional del cluster.</summary>
-    public enum HFTPesoZona
-    {
-        Conteo,      // 1 por zona: reproduce el comportamiento original
-        Volumen,     // proporcional al volumen, normalizado por la mediana del pool
-        LogVolumen   // logaritmico: una zona de 10x el volumen pesa ~2x, no 10x
     }
 
     public enum HFTZoneBucket
@@ -219,6 +229,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 // tres en curso al momento de escribir esto.
                 PesoZona                 = HFTPesoZona.Volumen;
                 MinContributingZones     = 3;
+                SoloLogEnVivo            = true;
                 HaloSigmaTicks           = 3.0;   // Ancho de banda del kernel gaussiano en ticks
                 MinClusterDensity        = 3.0;   // Umbral de densidad de confluencia continua
                 ClusterLookbackZones     = 120;   // Cantidad de zonas recientes evaluadas en halo
@@ -640,37 +651,70 @@ namespace NinjaTrader.NinjaScript.Indicators
                 }
             }
 
-            // 3. Evaluar Kernel Gaussiano continuo en cada tick
+            // 3. CAMPO GAUSSIANO — dispersion por zona, no barrido por tick.
+            //
+            // POR QUE CAMBIO (2026-09-07). La version anterior recorria CADA tick de la
+            // envolvente (hasta 2.500) y para cada uno evaluaba TODAS las zonas del pool
+            // (hasta 120), llamando Math.Exp cada vez: ~300.000 exponenciales por
+            // llamada. Con MinTotalVolume=10 nacen ~7.000 zonas por sesion y esto corre
+            // en cada nacimiento: ~2.000 millones de exponenciales por sesion. Eso
+            // congelaba NinjaTrader al cargar el chart.
+            //
+            // Ahora cada zona DISPERSA su aporte solo sobre los ticks de su propio radio
+            // (3.5 sigma, ~11 ticks con sigma=3), y la exponencial sale de una tabla
+            // precomputada indexada por distancia entera en ticks. Costo: 120 zonas x 22
+            // ticks = ~2.600 sumas, sin una sola exponencial. Dos ordenes de magnitud.
+            //
+            // EL RESULTADO ES BIT A BIT IDENTICO. La acumulacion de cada tick recorre las
+            // zonas en el MISMO orden del pool que el barrido anterior, asi que la suma
+            // en punto flotante se hace en el mismo orden y da el mismo double. Esto no
+            // es un detalle: si el orden cambiara, dos corridas podrian caer de lados
+            // distintos de MinClusterDensity en un empate.
+            //
+            // La distancia en ticks es ENTERA por construccion: bordes de zona y precios
+            // de grilla son ambos multiplos de TickSize.
+            int radioTicks = (int)Math.Floor(3.5 * HaloSigmaTicks);
             double twoSigmaSq = 2.0 * HaloSigmaTicks * HaloSigmaTicks;
+
+            double[] expLookup = new double[radioTicks + 1];
+            for (int d = 0; d <= radioTicks; d++)
+                expLookup[d] = Math.Exp(-((double)d * d) / twoSigmaSq);
+
             Dictionary<long, double> densityMap   = new Dictionary<long, double>();
             Dictionary<long, double> volWeightMap = new Dictionary<long, double>();
+            Dictionary<long, double> acumD = new Dictionary<long, double>();
+            Dictionary<long, double> acumV = new Dictionary<long, double>();
 
-            for (long tk = minTk; tk <= maxTk; tk++)
+            for (int i = 0; i < pool.Count; i++)
             {
-                double p = tk * TickSize;
-                double sumDensity = 0.0;
-                double sumVol = 0.0;
+                Zone z = pool[i];
+                long zLoTk = (long)Math.Round(Math.Min(z.Lower, z.Upper) / TickSize);
+                long zHiTk = (long)Math.Round(Math.Max(z.Lower, z.Upper) / TickSize);
 
-                for (int i = 0; i < pool.Count; i++)
+                long desde = Math.Max(minTk, zLoTk - radioTicks);
+                long hasta = Math.Min(maxTk, zHiTk + radioTicks);
+
+                for (long tk = desde; tk <= hasta; tk++)
                 {
-                    Zone z = pool[i];
-                    double dTicks = 0.0;
-                    if (p < z.Lower) dTicks = (z.Lower - p) / TickSize;
-                    else if (p > z.Upper) dTicks = (p - z.Upper) / TickSize;
-                    else dTicks = 0.0; // Dentro de la zona: peso máximo 1.0
+                    int d = tk < zLoTk ? (int)(zLoTk - tk)
+                          : tk > zHiTk ? (int)(tk - zHiTk)
+                          : 0;
+                    if (d > radioTicks) continue;
 
-                    if (dTicks <= (3.5 * HaloSigmaTicks))
-                    {
-                        double weight = pesoZona[i] * Math.Exp(-(dTicks * dTicks) / twoSigmaSq);
-                        sumDensity += weight;
-                        sumVol     += (weight * z.TotalVol);
-                    }
+                    double weight = pesoZona[i] * expLookup[d];
+                    double dPrev, vPrev;
+                    acumD[tk] = (acumD.TryGetValue(tk, out dPrev) ? dPrev : 0.0) + weight;
+                    acumV[tk] = (acumV.TryGetValue(tk, out vPrev) ? vPrev : 0.0)
+                                + (weight * z.TotalVol);
                 }
+            }
 
-                if (sumDensity >= MinClusterDensity)
+            foreach (KeyValuePair<long, double> kv in acumD)
+            {
+                if (kv.Value >= MinClusterDensity)
                 {
-                    densityMap[tk]   = sumDensity;
-                    volWeightMap[tk] = sumVol;
+                    densityMap[kv.Key]   = kv.Value;
+                    volWeightMap[kv.Key] = acumV[kv.Key];
                 }
             }
 
@@ -1135,6 +1179,10 @@ namespace NinjaTrader.NinjaScript.Indicators
 
         private void LogClusterEvent(string eventName, Cluster c)
         {
+            // Durante el historico se procesan cientos de miles de ticks viejos; escribir
+            // cada evento a disco ahi multiplica el tiempo de carga sin aportar nada que
+            // no se pueda reproducir desde los parquets. En vivo se registra todo.
+            if (SoloLogEnVivo && State != State.Realtime) return;
             double remCap = Math.Max(0.0, 1.0 - (c.VolumeInside / c.CapacityVolume));
             long nowTs = UnixMs(Times[0][0]);
 
@@ -1258,6 +1306,7 @@ namespace NinjaTrader.NinjaScript.Indicators
         private void PersistZone(Zone z)
         {
             if (!dbReady) return;
+            if (SoloLogEnVivo && State != State.Realtime) return;
             zoneBuf.Add(new object[] {
                 Instrument.FullName, UnixMs(z.StartTime), UnixMs(z.EndTime), z.Bucket.ToString(), z.Direction,
                 z.Upper, z.Lower, (z.Upper + z.Lower) / 2.0, z.HeightTicks, z.Pasos, z.ValidSteps,
@@ -1475,6 +1524,11 @@ namespace NinjaTrader.NinjaScript.Indicators
         [Display(Name="Peso de zona en el campo", Order=1, GroupName="H. Clusters Gravitacionales",
             Description="Conteo = original (cada zona vale 1). Volumen = pondera por volumen: mucho mas estable ante ruido. Ver docs/research/PREREGISTRO_H-CLUSTER-NQ.")]
         public HFTPesoZona PesoZona { get; set; }
+
+        [NinjaScriptProperty]
+        [Display(Name="Loguear solo en vivo", Order=3, GroupName="K. Database & Logs",
+            Description="Saltea la escritura a SQLite y CSV mientras se procesan barras historicas. Reduce mucho el tiempo de carga del chart.")]
+        public bool SoloLogEnVivo { get; set; }
 
         [NinjaScriptProperty][Range(1, 50)]
         [Display(Name="Min zonas contribuyentes", Order=2, GroupName="H. Clusters Gravitacionales",
