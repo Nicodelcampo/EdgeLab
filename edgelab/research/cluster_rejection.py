@@ -39,7 +39,7 @@ from __future__ import annotations
 import math
 
 NAME = "ClusterRejection"
-VERSION = "1.0"
+VERSION = "1.1"
 
 # Escalon 5 del embudo: condicionamiento por intensidad y construccion hold-out.
 #
@@ -286,3 +286,97 @@ def agregado(muestras):
     a, b = out["borde"]["rechazo"], out["sin_borde"]["rechazo"]
     out["contraste"] = (a - b) if (a is not None and b is not None) else None
     return out
+
+
+def agregado_limpio(muestras):
+    """Agregado con el control **limpio**: borde contra nivel LIBRE, sin el interior.
+
+    `agregado` parte por el booleano `borde`, asi que su grupo "sin borde" mezcla los
+    niveles libres con el **interior** de los clusters, que es otro objeto y tiene otra
+    tasa. Esa contaminacion ya se habia encontrado y corregido en la tabla estratificada
+    (`RECHAZO_CLUSTERS_NQ_2026-09-07.md`, punto 3) y vuelve a entrar por el agregado
+    cada vez que se lo lee como si su control fuera "libre".
+
+    Se agrega aparte en vez de cambiar `agregado`: la semantica de un estadistico ya
+    publicado no se toca en silencio.
+    """
+    out = {}
+    for cat in ("borde", "libre", "dentro"):
+        sel = [m for m in muestras
+               if m.get("categoria") == cat and m["desenlace"] != "indefinido"]
+        n = len(sel)
+        out[cat] = dict(
+            n=n,
+            rechazo=(sum(1 for m in sel if m["desenlace"] == "rechaza") / n) if n else None,
+        )
+    a, b = out["borde"]["rechazo"], out["libre"]["rechazo"]
+    out["contraste"] = (a - b) if (a is not None and b is not None) else None
+    return out
+
+
+def _prop(sel):
+    n = len(sel)
+    return n, (sum(1 for m in sel if m["desenlace"] == "rechaza") / n) if n else None
+
+
+def _z_dos_proporciones(n1, p1, n2, p2, deff=1.0):
+    """z y p bilateral para la diferencia de dos proporciones, inflando por `deff`.
+
+    `deff` es el mismo factor de diseno que usa el MDE: las observaciones estan
+    agrupadas por sesion y tratarlas como independientes angosta el error de forma
+    ficticia.
+    """
+    if not n1 or not n2 or p1 is None or p2 is None:
+        return None, None, None
+    se = math.sqrt(deff * (p1 * (1.0 - p1) / n1 + p2 * (1.0 - p2) / n2))
+    if se <= 0.0:
+        return None, None, None
+    z = (p1 - p2) / se
+    return se, z, math.erfc(abs(z) / math.sqrt(2.0))
+
+
+def contraste_lag(muestras, lag, deff=5.0):
+    """Descompone el brazo `borde` en cluster **fresco** y cluster **rancio**.
+
+    El escalon 5b como estaba escrito compara *solo* el subconjunto rancio contra libre
+    y publica un unico numero. Eso no distingue "el efecto desaparece al aislar el
+    objeto" de "el subconjunto rancio no tiene potencia": son lecturas opuestas y el
+    mismo numero es compatible con las dos.
+
+    Aca se publican las tres cantidades que hacen falta para decidir: fresco vs libre,
+    rancio vs libre, y **la diferencia fresco menos rancio**, que es la que dice si la
+    frescura del objeto es lo que produce el contraste.
+
+    Advertencia que no resuelve este estimador: la rancidez no es aleatoria. Un cluster
+    lleva 30 barras sin actualizarse porque el precio estuvo lejos, y el rechazo cae con
+    la distancia de aproximacion. La particion hay que leerla **estratificada** —por eso
+    el runner publica ademas `cr.tabla` sobre cada mitad.
+    """
+    libre = [m for m in muestras
+             if m.get("categoria") == "libre" and m["desenlace"] != "indefinido"]
+    bordes = [m for m in muestras
+              if m.get("categoria") == "borde" and m["desenlace"] != "indefinido"
+              and m.get("lag") is not None]
+    frescos = [m for m in bordes if m["lag"] < lag]
+    rancios = [m for m in bordes if m["lag"] >= lag]
+
+    n_l, p_l = _prop(libre)
+    n_f, p_f = _prop(frescos)
+    n_r, p_r = _prop(rancios)
+
+    se_fl, z_fl, pv_fl = _z_dos_proporciones(n_f, p_f, n_l, p_l, deff)
+    se_rl, z_rl, pv_rl = _z_dos_proporciones(n_r, p_r, n_l, p_l, deff)
+    se_fr, z_fr, pv_fr = _z_dos_proporciones(n_f, p_f, n_r, p_r, deff)
+
+    return dict(
+        lag=lag, deff=deff,
+        libre=dict(n=n_l, rechazo=p_l),
+        fresco=dict(n=n_f, rechazo=p_f,
+                    contraste=(p_f - p_l) if (p_f is not None and p_l is not None) else None,
+                    se=se_fl, z=z_fl, p_valor=pv_fl),
+        rancio=dict(n=n_r, rechazo=p_r,
+                    contraste=(p_r - p_l) if (p_r is not None and p_l is not None) else None,
+                    se=se_rl, z=z_rl, p_valor=pv_rl),
+        diferencia=dict(valor=(p_f - p_r) if (p_f is not None and p_r is not None) else None,
+                        se=se_fr, z=z_fr, p_valor=pv_fr),
+    )

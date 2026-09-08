@@ -187,3 +187,71 @@ def test_estratificar_por_intensidad_puede_APAGAR_el_contraste():
 def test_el_holdout_exige_que_el_objeto_no_se_haya_movido():
     assert cr.DEFAULTS["lag_holdout"] == 30
     assert cr.DEFAULTS["ventana_intensidad"] == 100
+
+
+# --- agregado_limpio: el control no puede incluir el interior del cluster ---
+
+def _c(cat, des, lag=None):
+    d = dict(categoria=cat, borde=(cat == "borde"), desenlace=des,
+             distancia=5.0, sigma=3.0, intensidad=10)
+    if lag is not None:
+        d["lag"] = lag
+    return d
+
+
+def test_agregado_limpio_excluye_el_interior_del_control():
+    # 'dentro' rechaza poco; si entra al control, infla el contraste.
+    ms = ([_c("borde", "rechaza")] * 6 + [_c("borde", "cruza")] * 4 +
+          [_c("libre", "rechaza")] * 5 + [_c("libre", "cruza")] * 5 +
+          [_c("dentro", "rechaza")] * 1 + [_c("dentro", "cruza")] * 9)
+    limpio = cr.agregado_limpio(ms)
+    sucio = cr.agregado(ms)
+    assert limpio["borde"]["n"] == 10 and limpio["libre"]["n"] == 10
+    assert limpio["dentro"]["n"] == 10
+    assert limpio["contraste"] == pytest.approx(0.6 - 0.5)
+    # el agregado por booleano mezcla libre con dentro y da otro numero
+    assert sucio["sin_borde"]["n"] == 20
+    assert sucio["contraste"] == pytest.approx(0.6 - 0.3)
+    assert limpio["contraste"] < sucio["contraste"]
+
+
+def test_agregado_limpio_sin_libres_no_inventa_contraste():
+    ms = [_c("borde", "rechaza"), _c("dentro", "cruza")]
+    assert cr.agregado_limpio(ms)["contraste"] is None
+
+
+# --- contraste_lag: fresco vs rancio ---
+
+def test_contraste_lag_separa_fresco_de_rancio():
+    ms = ([_c("borde", "rechaza", lag=1)] * 80 + [_c("borde", "cruza", lag=1)] * 20 +
+          [_c("borde", "rechaza", lag=50)] * 30 + [_c("borde", "cruza", lag=50)] * 70 +
+          [_c("libre", "rechaza")] * 50 + [_c("libre", "cruza")] * 50)
+    r = cr.contraste_lag(ms, lag=30, deff=1.0)
+    assert r["fresco"]["n"] == 100 and r["fresco"]["rechazo"] == pytest.approx(0.8)
+    assert r["rancio"]["n"] == 100 and r["rancio"]["rechazo"] == pytest.approx(0.3)
+    assert r["libre"]["n"] == 100
+    assert r["fresco"]["contraste"] == pytest.approx(0.3)
+    assert r["rancio"]["contraste"] == pytest.approx(-0.2)
+    assert r["diferencia"]["valor"] == pytest.approx(0.5)
+    assert r["diferencia"]["z"] > 5.0
+    assert r["diferencia"]["p_valor"] < 1e-6
+
+
+def test_contraste_lag_deff_ensancha_el_error():
+    ms = ([_c("borde", "rechaza", lag=1)] * 60 + [_c("borde", "cruza", lag=1)] * 40 +
+          [_c("borde", "rechaza", lag=99)] * 40 + [_c("borde", "cruza", lag=99)] * 60 +
+          [_c("libre", "rechaza")] * 50 + [_c("libre", "cruza")] * 50)
+    a = cr.contraste_lag(ms, lag=30, deff=1.0)
+    b = cr.contraste_lag(ms, lag=30, deff=5.0)
+    assert a["diferencia"]["valor"] == pytest.approx(b["diferencia"]["valor"])
+    assert b["diferencia"]["se"] == pytest.approx(a["diferencia"]["se"] * 5 ** 0.5)
+    assert abs(b["diferencia"]["z"]) < abs(a["diferencia"]["z"])
+
+
+def test_contraste_lag_ignora_bordes_sin_lag_y_los_indefinidos():
+    ms = ([_c("borde", "rechaza", lag=1)] * 10 + [_c("borde", "rechaza")] * 99 +
+          [_c("borde", "indefinido", lag=1)] * 99 + [_c("libre", "cruza")] * 10)
+    r = cr.contraste_lag(ms, lag=30)
+    assert r["fresco"]["n"] == 10
+    assert r["rancio"]["n"] == 0
+    assert r["rancio"]["contraste"] is None

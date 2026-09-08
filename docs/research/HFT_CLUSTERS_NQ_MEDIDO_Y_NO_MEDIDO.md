@@ -19,8 +19,8 @@
 | 5 | Degeneración del peso continuo | Real pero acotada: 8,7 % de clusters de una sola zona en modo `volume`, 0 % en `count`. **Con `min_contributing_zones=3` el turnover no cambia** (0,6 % → 0,6 %): la mejora no era degeneración | commit `c35362e` |
 | 6 | **Ciclo de vida** (escalón 2, riesgos competitivos) | **99,4 % muere INVALIDATED.** 0,4 % agotado, 0,1 % expirado, 4,6 % llega a tocar su POC. 18.851 creados | log real `hft_cluster_events.csv` |
 | 7 | **Decaimiento por consumo** (canal no direccional) | **SIN EFECTO DETECTADO, con cota.** 40 sesiones, 6.468 muestras, **MDE 0,067**. Ningún contraste lo supera; si hay efecto es < 7 pp y no es monótono | `docs/research/DECAIMIENTO_CLUSTERS_NQ_2026-09-07.md` |
-| 8 | **H2 — rechazo en bordes** (canal direccional) | **65 sesiones completadas.** 1,026,840 contactos, 71,641 en borde. Contraste agregado **+0.035**, MDE **0.0214**. | `docs/research/RECHAZO_CLUSTERS_NQ_65S_2026-09-08.md` |
-| 10 | **Escalón 5 (intensidad + hold-out)** | **MEDIDO.** Contraste hold-out: **-0.011** (borde=22,408, libre=264,910). | `docs/research/RECHAZO_CLUSTERS_NQ_65S_2026-09-08.md` |
+| 8 | **H2 — rechazo en bordes** (canal direccional) | **ANULADO POR ESCALA (2026-09-08).** Corrió sobre **50** sesiones (no 65: el parquet de `NQ 06-26` termina el 18-jun), 1.026.840 contactos, 71.641 en borde. El umbral de desenlace (4 ticks) es un tercio del rango mediano de barra (12); el 25 % de los desenlaces los decide un desempate fijo hacia `cruza`; el «borde» de ±1 tick es una astilla de un objeto de 60 ticks. **Ni el +0,035 ni el −0,011 son evidencia** | `docs/research/H2_VOID_POR_ESCALA_2026-09-08.md` |
+| 10 | **Escalón 5 (intensidad + hold-out)** | **ANULADO junto con H2** — corre sobre el mismo desenlace. Además su −0,011 **no supera su propio MDE** (0,0296) y se publicó sin estratificar, que es lo único que el propio estimador prohíbe. La descomposición correcta (fresco vs rancio) existe ahora en `cr.contraste_lag` | `docs/research/H2_VOID_POR_ESCALA_2026-09-08.md` |
 | 9 | **Co-locación del cluster con el precio** | **74 %** de los contactos de nivel caen dentro de un cluster vivo, aunque los clusters cubren sólo 4–9 % del rango. Es la endogeneidad que hace obligatorio el escalón 5 | ídem |
 
 ### Defectos del instrumento, medidos
@@ -36,6 +36,9 @@
 | **Canibalización**: el filtro de fusión excluye `DEPLETED` e `INVALIDATED` y **no** `EXPIRED`, así que un cluster que no muere crece sin techo | corregido con `merge_excluye_expirados`, apagado por default |
 | `hftzones2.py` **no** sirve como espejo: le falta la compuerta de retroceso y sus umbrales son calibrados | verificado |
 | El oráculo SQLite pierde zonas que arrancan en el mismo milisegundo (`UNIQUE` + `INSERT OR IGNORE`) | verificado, 36 de 7.530 |
+| **`desenlace` desempata siempre hacia `cruza`** cuando la barra abarca los dos umbrales — 25 % de los casos. Si se resolvieran al revés la tasa de rechazo pasa de 0,323 a 0,573 | medido 2026-09-08, **sin corregir** |
+| **`agregado` llama «sin borde» a libre + interior**: su control está contaminado y su contraste no es comparable con el de `tabla`. Se agregó `agregado_limpio` aparte | corregido por adición |
+| **`HFTClusterZonesNQ.cs` no dibuja nada en el chart de Nico**: `OcultarInvalidados=true` y el 99,4 % de los clusters muere invalidado | causa raíz identificada 2026-09-08 |
 
 ---
 
@@ -44,10 +47,10 @@
 | # | Qué falta | Por qué importa | Bloqueo |
 | :-- | :-- | :-- | :-- |
 | 1 | **H1 completa**: probabilidad de tocar contra el nulo browniano `2(1−Φ(d/(σ√h)))` condicional a σ local | Es el escalón 1 y el que replicó la muerte del 6E. El módulo de decaimiento cubre el contraste contra placebo, **no** contra el nulo analítico | ninguno, falta implementarlo |
-| 2 | **H2 con potencia suficiente** | **RESUELTO.** Corrida de 65 sesiones ejecutada, MDE=0.0214. Ver item 8 en MEDIDO. | ninguno |
+| 2 | **H2 a la escala del objeto** | El estimador midió a 4 ticks un objeto de 60 y una barra de 12. Hace falta re-pre-registrar la escala con justificación target-free y barrerla publicando el landscape completo | resolver el desenlace sobre ticks primero |
 | 3 | **Escalón 3**: sensibilidad a la vigencia | Todas las mediciones fijaron `max_age_bars=500` sin barrerlo. Herramienta escrita (`tools/vigencia_clusters_nq.py`), no corrida hasta el final | ninguno |
 | 4 | **CIF Fine-Gray** del ciclo de vida | El 99,4 % de invalidación se midió por conteo, no con incidencia acumulada ni riesgos competitivos formales | ninguno |
-| 5 | **Escalón 5**: condicionamiento por intensidad y hold-out | **RESUELTO.** Medido sobre 65 sesiones. Ver item 10 en MEDIDO. | ninguno |
+| 5 | **Escalón 5**: condicionamiento por intensidad y hold-out | Implementado y corrido, pero sobre el desenlace anulado. Se rehace con el estimador nuevo | H2 re-escalada |
 | 6 | **Escalón 6**: Ripley 1-D sobre POCs | Diagnóstico transversal | ninguno |
 | 7 | Paridad de la **capa de clusters** | Sólo la capa de zonas está certificada. El cluster no tiene oráculo comparado | falta correr NT8 sobre una ventana con ticks disponibles |
 | 8 | Paridad sobre **NQ** | El certificado es sobre ES 09-26. Las zonas de NQ en el oráculo son de agosto-septiembre y el parquet llega al 28 de julio | correr el indicador sobre NQ antes del 1 de julio |

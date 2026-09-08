@@ -120,6 +120,22 @@ def una_sesion(path, t0, t1, tick_size, ticks_por_barra, p, vivos_solamente=True
                 clusters=len(eng.clusters), muestras=muestras)
 
 
+def _volcar_muestras(todas, out_json):
+    """Guarda las muestras crudas en un parquet ignorado por git.
+
+    La corrida cuesta ~90 minutos y el runner las descartaba al agregar. Cada pregunta
+    nueva sobre el mismo dato -estratificar el hold-out, otro umbral de lag, bootstrap
+    por sesion- obligaba a repetirla entera. Con esto se responde en segundos.
+    """
+    destino = REPO / "data/research_cache" / (out_json.stem + "_muestras.parquet")
+    try:
+        destino.parent.mkdir(parents=True, exist_ok=True)
+        pd.DataFrame(todas).to_parquet(destino, index=False)
+        print(f"muestras crudas: {destino}  ({len(todas):,} filas)")
+    except Exception as e:
+        print(f"WARN al volcar muestras: {e}")
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--parquet", default="data/nt8/NQ_parquet/NQ_06-26_ticks.parquet")
@@ -214,11 +230,53 @@ def main(argv=None):
     print(f"   libre n={ag_ho['sin_borde']['n']:>7,}  rechazo={ag_ho['sin_borde']['rechazo']}")
     print(f"   contraste = {ag_ho['contraste']}")
 
+    # 5b no se puede leer con un solo numero: el mismo -0,01 es compatible con "el
+    # efecto desaparece al aislar el objeto" y con "el subconjunto rancio no tiene
+    # potencia". Se publica la descomposicion completa y su diferencia.
+    lagd = cr.contraste_lag(todas, lag, deff=5.0)
+    print(f"   fresco (lag<{lag})  n={lagd['fresco']['n']:>7,}  "
+          f"rechazo={lagd['fresco']['rechazo']:.4f}  vs libre {lagd['fresco']['contraste']:+.4f}"
+          f"  z={lagd['fresco']['z']:+.2f}")
+    print(f"   rancio (lag>={lag}) n={lagd['rancio']['n']:>7,}  "
+          f"rechazo={lagd['rancio']['rechazo']:.4f}  vs libre {lagd['rancio']['contraste']:+.4f}"
+          f"  z={lagd['rancio']['z']:+.2f}")
+    print(f"   diferencia fresco-rancio = {lagd['diferencia']['valor']:+.4f}  "
+          f"z={lagd['diferencia']['z']:+.2f}  p={lagd['diferencia']['p_valor']:.2e}")
+
+    # y estratificado: la rancidez no es aleatoria -- un cluster lleva 30 barras sin
+    # tocarse porque el precio estuvo lejos, y el rechazo cae con la distancia. Sin
+    # estratificar, la particion puede ser composicion y no objeto.
+    t_ho = cr.tabla(ho, p)
+    frescos = [m for m in todas if m.get("categoria") == "libre"
+               or (m.get("lag") is not None and m["lag"] < lag)]
+    t_fr = cr.tabla(frescos, p)
+    print("\n--- 5b estratificado: contraste por estrato, rancio | fresco ---")
+    print(f"{'binD':>5}{'binS':>5}{'n_ranc':>9}{'contr_r':>10}{'n_fresco':>10}{'contr_f':>10}")
+    idx = {(f["bin_distancia"], f["bin_sigma"]): f for f in t_fr}
+    for f in t_ho:
+        g = idx.get((f["bin_distancia"], f["bin_sigma"]), {})
+        c_r = "       n/d" if f["contraste"] is None else f"{f['contraste']:>+10.3f}"
+        c_f = "       n/d" if g.get("contraste") is None else f"{g['contraste']:>+10.3f}"
+        print(f"{f['bin_distancia']:>5}{f['bin_sigma']:>5}{f['n_borde']:>9,}{c_r}"
+              f"{g.get('n_borde', 0):>10,}{c_f}")
+
+    ag_limpio = cr.agregado_limpio(todas)
+    print("\n--- agregado con control LIMPIO (borde vs libre, sin el interior) ---")
+    print(f"   borde  n={ag_limpio['borde']['n']:>7,}  rechazo={ag_limpio['borde']['rechazo']:.4f}")
+    print(f"   libre  n={ag_limpio['libre']['n']:>7,}  rechazo={ag_limpio['libre']['rechazo']:.4f}")
+    print(f"   dentro n={ag_limpio['dentro']['n']:>7,}  rechazo={ag_limpio['dentro']['rechazo']:.4f}")
+    print(f"   contraste limpio = {ag_limpio['contraste']:+.4f}   "
+          f"(el de `agregado` mezcla libre con dentro: {ag['contraste']:+.4f})")
+
+    _volcar_muestras(todas, REPO / a.out)
+
     out = REPO / a.out
     out.parent.mkdir(parents=True, exist_ok=True)
     json.dump(dict(config=hc.CAMPAIGN_FROZEN, muestreo=p, sesiones=resumen,
                    n=len(todas), mde=mde, agregado=ag, tabla=t,
-                   escalon5_intensidad=t_int, escalon5_holdout=ag_ho),
+                   escalon5_intensidad=t_int, escalon5_holdout=ag_ho,
+                   agregado_limpio=ag_limpio, escalon5_lag=lagd,
+                   escalon5_tabla_rancio=t_ho, escalon5_tabla_fresco=t_fr),
               open(out, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     print("\nescrito:", out)
     return 0
