@@ -101,8 +101,9 @@ antes de mirar nada relacionado con el precio.** El criterio es el contrato del 
 > Se fijó sin conocer la escala del objeto y las 108 mediciones dieron como máximo
 > 9,6 %, con lo que **ninguna configuración pasaba**. Texto vigente: *existe el objeto
 > (≥ 20 clusters por sesión) y no lo cubre todo (cobertura < 60 %)*. El criterio de
-> estabilidad no se modificó. Ese barrido **no gasta
-presupuesto estadístico**, porque no mira el precio futuro.
+> estabilidad no se modificó.
+
+Ese barrido **no gasta presupuesto estadístico**, porque no mira el precio futuro.
 
 De ahí sale **una** configuración congelada. H1 y H2 se miden sobre esa sola. Si ninguna
 configuración pasa el criterio target-free, la campaña **no arranca** — y ése es un

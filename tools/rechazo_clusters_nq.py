@@ -182,8 +182,7 @@ def main(argv=None):
               f"{f['n_sin_borde']:>9,}{f.get('n_dentro',0):>9,}{rb}{rs:>11}{ct}{marca}")
 
     # --- escalon 5 ---
-    print("
---- escalon 5a: estratificado por INTENSIDAD (nacimientos/100 barras) ---")
+    print("\n--- escalon 5a: estratificado por INTENSIDAD (nacimientos/100 barras) ---")
     t_int = cr.tabla_por(todas, "intensidad", p["bordes_intensidad"])
     print(f"{'bin':>4}{'n_borde':>9}{'n_libre':>9}{'rech_b':>9}{'rech_l':>9}{'contr':>9}")
     for f in t_int:
@@ -197,8 +196,7 @@ def main(argv=None):
     ho = [m for m in todas if m.get("categoria") == "libre"
           or (m.get("lag") is not None and m["lag"] >= lag)]
     ag_ho = cr.agregado(ho)
-    print(f"
---- escalon 5b: objeto HOLD-OUT (cluster sin tocar hace >= {lag} barras) ---")
+    print(f"\n--- escalon 5b: objeto HOLD-OUT (cluster sin tocar hace >= {lag} barras) ---")
     print(f"   borde n={ag_ho['borde']['n']:>7,}  rechazo={ag_ho['borde']['rechazo']}")
     print(f"   libre n={ag_ho['sin_borde']['n']:>7,}  rechazo={ag_ho['sin_borde']['rechazo']}")
     print(f"   contraste = {ag_ho['contraste']}")
