@@ -22,6 +22,10 @@ No es codigo del usuario. Ningun indicador puede causarlo ni arreglarlo.
 1. Borra todo `<Compile Include="obj\...">`.
 2. Agrega `<Compile Remove="obj\**" />` junto a los otros dos `Remove`, para que no
    vuelvan si NT8 regenera el proyecto.
+3. Renombra a `.apartado` los `.resources.cs` que quedaron bajo `obj\`, para que un
+   rescaneo de NT8 no los pueda encontrar. Los dos pasos hacen falta: el `Remove` se
+   pierde si NT8 reescribe el proyecto, y los archivos vuelven si MSBuild los
+   regenera. Renombra en vez de borrar: es reversible y son artefactos regenerables.
 
 Es idempotente: correrlo dos veces no cambia nada la segunda. Deja respaldo la primera
 vez. Si NT8 reescribe el `.csproj` y el error vuelve, se corre de nuevo.
@@ -59,6 +63,25 @@ def limpiar(texto):
     return nuevo, sacados, agrego
 
 
+def apartar_generados(custom):
+    """Renombra los `.resources.cs` generados bajo `obj/` para que el escaneo no los vea.
+
+    La carpeta `obj/` suele estar tomada por NinjaTrader mientras corre, pero los
+    archivos de adentro se renombran igual.
+    """
+    obj = pathlib.Path(custom) / "obj"
+    apartados, bloqueados = [], []
+    if not obj.exists():
+        return apartados, bloqueados
+    for f in sorted(obj.rglob("*.resources.cs")):
+        try:
+            f.rename(f.with_suffix(f.suffix + ".apartado"))
+            apartados.append(f)
+        except OSError as e:
+            bloqueados.append((f, e))
+    return apartados, bloqueados
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--custom", default=str(DEFECTO),
@@ -76,22 +99,39 @@ def main(argv=None):
     texto = crudo.decode(enc)
     nuevo, sacados, agrego = limpiar(texto)
 
-    if nuevo == texto:
+    obj = pathlib.Path(a.custom) / "obj"
+    pendientes = sorted(obj.rglob("*.resources.cs")) if obj.exists() else []
+
+    if nuevo == texto and not pendientes:
         print("ya estaba limpio:", proj)
         return 0
 
-    print("includes de obj sacados: %d | Compile Remove agregado: %s"
-          % (sacados, "si" if agrego else "ya estaba"))
+    if nuevo != texto:
+        print("includes de obj sacados: %d | Compile Remove agregado: %s"
+              % (sacados, "si" if agrego else "ya estaba"))
+    if pendientes:
+        print("generados bajo obj/ a apartar: %d" % len(pendientes))
+
     if a.dry_run:
         print("(dry-run, no se escribio)")
         return 0
 
-    resp = proj.with_suffix(proj.suffix + ".bak")
-    if not resp.exists():
-        resp.write_bytes(crudo)
-        print("respaldo:", resp)
-    proj.write_bytes(nuevo.encode(enc))
-    print("escrito:", proj)
+    if nuevo != texto:
+        resp = proj.with_suffix(proj.suffix + ".bak")
+        if not resp.exists():
+            resp.write_bytes(crudo)
+            print("respaldo:", resp)
+        proj.write_bytes(nuevo.encode(enc))
+        print("escrito:", proj)
+
+    apartados, bloqueados = apartar_generados(a.custom)
+    if apartados:
+        print("apartados: %d generados bajo obj/" % len(apartados))
+    for f, e in bloqueados:
+        print("BLOQUEADO (cerrar NinjaTrader y reintentar): %s -- %s" % (f.name, e))
+    if bloqueados:
+        return 1
+
     print("Ahora compilar en NT8 (F5).")
     return 0
 
