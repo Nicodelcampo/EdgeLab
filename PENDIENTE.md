@@ -2318,3 +2318,38 @@ Tres reservas sobre la certificación, ninguna la refuta, las tres acotan su alc
 `BARPROFILE_20260902.csv` / `DIAG_BLOCKS_20260902.csv` no están en git (viven en el
 dataset de Kaggle `edgelab-avolcluster-nq-oracle`; tamaños coinciden con el
 manifiesto).
+
+---
+
+## P-72 — Banda de no-degeneración del pre-registro H-CLUSTER-NQ, mal calibrada (ABIERTA)
+
+**Qué pasó.** El pre-registro `docs/research/PREREGISTRO_H-CLUSTER-NQ_2026-09-07.md`
+fijó, antes de medir, que una configuración de cluster es aceptable si su cobertura
+media as-of cae entre **15 % y 60 %** del rango de sesión. Las 108 mediciones
+posteriores (36 celdas × 3 sesiones) dan como máximo **9,6 %**. Con el criterio tal como
+está escrito, **ninguna configuración pasa**.
+
+**Por qué está mal y no es que fallen las configuraciones.** La banda se eligió sin
+conocer la escala del objeto — no había forma de saber si la cobertura típica iba a ser
+5 % o 50 %. El propósito del gate era descartar objetos que cubren todo (no discriminan)
+o que no existen. Con 24 a 233 clusters por sesión cubriendo 4–9 % del rango, ninguno de
+los dos casos aplica.
+
+**Propuesta de enmienda.** Reemplazar la banda de cobertura por: *«existe el objeto
+(≥ 20 clusters por sesión) y no lo cubre todo (cobertura media as-of < 60 %)»*.
+
+**Por qué no la aplico solo.** La regla del proyecto es explícita: prohibido ampliar
+tolerancias o relajar gates después de ver resultados. Aunque este gate es target-free y
+no toca P&L, la configuración que elija condiciona todo lo que se mida después.
+
+**Qué depende de esto.** La configuración de campaña queda provisional hasta que se
+decida: `min_total_volume=10`, `weight_mode=volume`, `halo_sigma=3`, `min_density=3`,
+`min_contributing_zones=3`, `merge_excluye_expirados=True`.
+
+**Nota sobre Kaggle.** El pedido de correr 40 sesiones en Kaggle no se ejecutó, por tres
+razones independientes: no hay credenciales en esta máquina; `kaggle_nq_research/`
+incluye `NQ_09-26_ticks.parquet`, que es el contrato del **holdout**, y subirlo
+repetiría el incidente P-18; y las ocho decisiones del 2026-08-15 ya establecen que
+**Kaggle sale del programa**. Se corrió local, después de portar al espejo Python la
+misma optimización de dispersión que se hizo en el `.cs` (verificada idéntica bit a bit,
+4× más rápida).
