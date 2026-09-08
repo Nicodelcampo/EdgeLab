@@ -122,7 +122,31 @@ Cierra **dos** huecos del registro con una sola corrida: la paridad de la capa d
 clusters (nunca tuvo oráculo) y la paridad sobre **NQ** (el certificado vigente es
 sobre ES 09-26).
 
-### Y de paso: las corridas de la campaña incluyeron sesiones muertas
+### Y de paso, dos defectos de los runners
+
+**1. Look-ahead en la entrega de la zona.** El `.cs` llama a `EvaluarHaloClusters` justo
+después de agregar la zona, o sea **al finalizar el streak**. Los runners de
+investigación la entregan en la barra donde el streak **empieza**. Medido sobre 836
+zonas de `NQ 06-26`:
+
+| desfase | zonas | |
+| --: | --: | --: |
+| 0 barras | 15 | 1,8 % |
+| 1 barra | 137 | 16,4 % |
+| **2 barras** | **434** | **51,9 %** |
+| 3 barras | 174 | 20,8 % |
+| 4+ barras | 76 | 9,1 % |
+
+**El 98,2 % de las zonas se entrega antes de tiempo**, con mediana de 2 barras. Y no es
+sólo un corrimiento: el volumen, el CVD y los bordes de una zona recién están completos
+al final de su streak, así que el cluster de la barra `i` se construye con información
+de ticks posteriores a `i`. Es **look-ahead**, chico pero real, y va en la dirección de
+inflar cualquier estructura aparente.
+
+El arnés de paridad (`tools/paridad_hftclusterzones.py`) ya usa el orden correcto y lo
+tiene clavado con tests. **Los runners no están corregidos.**
+
+### Y las corridas de la campaña incluyeron sesiones muertas
 
 Buscando el roll apareció que **3 de las 50 sesiones de H2 no eran sesiones
 operables**: 2026-05-25 (22,7 % de la mediana — feriado), 2026-06-15 (26,9 %) y
