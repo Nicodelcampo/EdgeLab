@@ -97,6 +97,44 @@ Los interruptores nuevos (`invalidacion_activa`, `expira_desde`, `expira_inclusi
 Doce tests nuevos clavan cada regla, incluido el del doble conteo, que documenta el
 comportamiento del `.cs` sin bendecirlo.
 
+## Especificación del oráculo de clusters (Nico lo exporta)
+
+**`NQ 06-26`, lunes 8 → viernes 12 de junio de 2026, chart de 25 ticks.**
+
+Elegida por Nico y verificada en los dos lados: NT8 tiene 111 archivos horarios de
+ticks (5 sesiones completas) y el parquet tiene 3.435.289 ticks en la misma ventana.
+Es más grande que el certificado de zonas sobre ES (2,56 M).
+
+Cierra **dos** huecos del registro con una sola corrida: la paridad de la capa de
+clusters (nunca tuvo oráculo) y la paridad sobre **NQ** (el certificado vigente es
+sobre ES 09-26).
+
+| | |
+| :-- | :-- |
+| contrato | `NQ 06-26` — el mismo de toda la campaña |
+| datos en NT8 | 2026-03-31 → 2026-06-18, 67 días |
+| parquet | 2026-03-12 → 2026-06-18 |
+| holdout | empieza el **2026-07-01**: la ventana queda 3 semanas antes |
+
+Parámetros: **todos en default**, salvo cuatro.
+
+| parámetro | valor | por qué |
+| :-- | :-- | :-- |
+| `SoloLogEnVivo` | **false** | en `true` no escribe nada en histórico (línea 1623) |
+| `EnableDbLogging` | true | |
+| `DbPath` | `C:\LoggerHFT\data\oraculo_clusters_NQ0626_20260908.sqlite` | archivo nuevo: no tocar el oráculo certificado |
+| `EnableEventCsv` + `EventLogPath` | true / `...\oraculo_clusters_NQ0626_20260908.csv` | el flujo de eventos es el censo as-of |
+
+Hacen falta las **dos** tablas del mismo run: `hft_zones` y `hft_clusters`. La de
+zonas sirve de control — su motor no cambió (`ProcesarSweeps` es idéntico byte a byte
+entre v1.1.0 y v2.0.0), así que si las zonas no dan EXACT, el problema es del arnés y
+no de los clusters.
+
+**Advertencia sobre lo que ese oráculo mide:** al reproducir histórico corren los dos
+caminos de consumo, así que el `volume_inside` que quede grabado es el del régimen de
+**doble conteo**. El espejo lo reproduce con `consumo_por_barra=True`, pero la
+paridad va a certificar el objeto histórico, no el que se ve en vivo.
+
 ---
 
 **Aporte al referente:** evita certificar paridad contra un espejo que describía un

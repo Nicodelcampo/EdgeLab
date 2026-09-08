@@ -54,8 +54,8 @@
 | 4 | **CIF Fine-Gray** del ciclo de vida | El 99,4 % de invalidación se midió por conteo, no con incidencia acumulada ni riesgos competitivos formales | ninguno |
 | 5 | **Escalón 5**: condicionamiento por intensidad y hold-out | Implementado y corrido, pero sobre el desenlace anulado. Se rehace con el estimador nuevo | H2 re-escalada |
 | 6 | **Escalón 6**: Ripley 1-D sobre POCs | Diagnóstico transversal | ninguno |
-| 7 | Paridad de la **capa de clusters** | Sólo la capa de zonas está certificada. `hft_clusters` tiene 47.875 filas y **todas caen fuera de los ticks disponibles** (oráculo 28-ago→8-sep; parquet de NQ hasta 28-jul). No hay ni una fila de ES | **Nico exporta el oráculo**: ES 09-26, 14→17 jun, `SoloLogEnVivo=false`. Espejo ya actualizado a v2.0 |
-| 8 | Paridad sobre **NQ** | El certificado es sobre ES 09-26. Las zonas de NQ en el oráculo son de agosto-septiembre y el parquet llega al 28 de julio | correr el indicador sobre NQ antes del 1 de julio |
+| 7 | Paridad de la **capa de clusters** | Sólo la capa de zonas está certificada. `hft_clusters` tiene 47.875 filas y **todas caen fuera de los ticks disponibles** (oráculo 28-ago→8-sep; parquet de NQ hasta 28-jul). No hay ni una fila de ES | **Nico exporta el oráculo**: `NQ 06-26`, 8→12 jun, `SoloLogEnVivo=false`. Cierra también el item 8. Espejo ya en v2.0 |
+| 8 | Paridad sobre **NQ** | El certificado es sobre ES 09-26. El oráculo viejo de NQ era de ago-sep y el parquet llega al 28-jul | **resuelto por la misma corrida del item 7**: NT8 tiene ticks de `NQ 06-26` del 31-mar al 18-jun, pre-holdout |
 | 9 | Cualquier medición de **P&L** | Ni entradas, ni salidas, ni costos | STOP del proyecto: exige manifiesto y presupuesto de hipótesis |
 
 ---
