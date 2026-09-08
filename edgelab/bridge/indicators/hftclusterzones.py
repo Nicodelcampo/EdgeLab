@@ -76,6 +76,25 @@ que parte de la mejora de turnover que muestra el peso continuo podría ser dege
 disfrazada de robustez. `min_contributing_zones` es la compuerta que lo separa: exigir
 confluencia real y volver a medir. Si la mejora sobrevive, es real.
 
+## La canibalización, y por qué `merge_excluye_expirados` existe
+
+El filtro que busca un cluster al cual fusionarse excluye `DEPLETED` e `INVALIDATED`
+pero **no** `EXPIRED`. Un cluster que no muere absorbe todo lo que solape con él —
+`lower = min`, `upper = max`, sin techo — y crece hasta tragarse la sesión entera. En el
+chart se ve como una sola banda gigante.
+
+Con la invalidación activa el efecto queda tapado, porque el 99,4 % de los clusters
+muere perforado antes de crecer. Pero apenas se desactiva la invalidación para poder
+medir el decaimiento por consumo, la canibalización aparece: 40 clusters por sesión en
+vez de cientos, y con eso no hay muestra para estimar nada.
+
+`merge_excluye_expirados=True` corta el ciclo. Viene apagado porque el default reproduce
+el `.cs`, que es lo que la paridad certifica; la campaña lo enciende.
+
+*(El mecanismo lo identificó el agente de Antigravity revisando el chart. Acá estaba
+documentado como rareza —`test_PARIDAD_un_cluster_EXPIRED_todavia_puede_expandirse`—
+sin haberlo conectado con el síntoma.)*
+
 ## Cómo se usa para medir
 
 `ClusterEngine` emite un evento por cada transición. Ese flujo de eventos **es** el
@@ -115,6 +134,7 @@ RESEARCH_DEFAULTS = dict(
     weight_mode="count",        # count | volume | log_volume
     weight_ref_vol=0.0,         # 0 = normalizar por la mediana del pool
     min_contributing_zones=1,   # confluencia minima real; ver nota abajo
+    merge_excluye_expirados=False,  # ver "La canibalizacion" abajo
 )
 
 # Configuracion congelada para la campana H-CLUSTER-NQ por el test de estabilidad
@@ -127,6 +147,7 @@ CAMPAIGN_FROZEN = dict(
     halo_sigma_ticks=3.0,
     min_density=3.0,
     max_age_bars=500,
+    merge_excluye_expirados=True,
 )
 
 ACTIVE = "Active"
@@ -343,6 +364,8 @@ class ClusterEngine:
             match = None
             for c in reversed(self.clusters):
                 if c["state"] in _MUERTOS_PARA_EXPANSION:
+                    continue
+                if p.get("merge_excluye_expirados") and c["state"] == EXPIRED:
                     continue
                 if min(upper, c["upper"]) >= max(lower, c["lower"]):
                     match = c

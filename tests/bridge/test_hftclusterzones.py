@@ -277,3 +277,24 @@ def test_defaults_declarados():
     assert RESEARCH_DEFAULTS["min_density"] == 3.0
     assert RESEARCH_DEFAULTS["max_age_bars"] == 500
     assert RESEARCH_DEFAULTS["invalidation_capacity_pct"] == 0.8
+
+
+def test_merge_excluye_expirados_corta_la_canibalizacion():
+    """Sin esto, un cluster que no muere se traga la sesion entera.
+
+    El filtro original excluye DEPLETED e INVALIDATED pero no EXPIRED, así que un
+    cluster expirado sigue absorbiendo islas nuevas y su geometría crece sin techo.
+    Con la invalidación activa el efecto queda tapado; al desactivarla para medir el
+    decaimiento por consumo, aparece y colapsa la población.
+    """
+    zonas = [_z(100, 104), _z(100, 104)]
+    m = _motor(max_age_bars=5, merge_excluye_expirados=True)
+    m.on_zone_created(zonas, bar=1)
+    m.on_bar(20)
+    assert m.clusters[0]["state"] == EXPIRED
+
+    ev = m.on_zone_created([_z(100, 104, start_bar=19), _z(101, 105, start_bar=19)],
+                           bar=20)
+    assert any(e["event"] == "CLUSTER_CREATED" for e in ev), "nace uno nuevo"
+    assert not any(e["event"] == "CLUSTER_EXPANDED" for e in ev)
+    assert len(m.clusters) == 2, "el expirado ya no absorbe"
