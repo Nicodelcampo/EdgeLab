@@ -145,7 +145,6 @@ namespace NinjaTrader.NinjaScript.Indicators
         private readonly List<Zone> zones = new List<Zone>();
         public IReadOnlyList<Zone> PublicZones { get { return zones; } }
 
-        private bool dibujoInicialHecho = false;
         private int clusterCounter = 0;
         private readonly List<Cluster> clusters = new List<Cluster>();
         private readonly List<string> activeDrawTags = new List<string>();
@@ -287,7 +286,6 @@ namespace NinjaTrader.NinjaScript.Indicators
                 activeDrawTags.Clear();
                 idCounter      = 0;
                 clusterCounter = 0;
-                dibujoInicialHecho = false;
                 lastSide       = 0;
                 flowBucket     = long.MinValue;
                 fTicks         = 0;
@@ -327,13 +325,6 @@ namespace NinjaTrader.NinjaScript.Indicators
 
             if (BarsInProgress != 0) return;
             if (CurrentBars[0] < 2) return;
-
-            // Primera barra en tiempo real: recien aca se dibuja, de una sola vez.
-            if (State == State.Realtime && !dibujoInicialHecho)
-            {
-                dibujoInicialHecho = true;
-                DibujarTodo(true);
-            }
 
             // En cierre de barra primaria: chequear expiración temporal y refrescar visuales
             VerificarExpiracionClusters();
@@ -971,8 +962,21 @@ namespace NinjaTrader.NinjaScript.Indicators
                         continue;
                     }
 
-                    // Refresco dinámico por delta de contratos (para mantener 60 FPS fluidos)
-                    if (Math.Abs(c.VolumeInside - c.LastDrawnVolume) >= RedrawVolumeThreshold)
+                    // Refresco dinamico por delta de contratos.
+                    //
+                    // ESTE es el redibujo caro: se dispara cada RedrawVolumeThreshold
+                    // contratos operados dentro del cluster, o sea muchas veces por
+                    // cluster y por sesion. Durante el historico no aporta nada -- el
+                    // desvanecimiento progresivo sólo se percibe en vivo -- y el estado
+                    // final igual queda bien porque cada cambio de estado (agotado,
+                    // invalidado, expirado) redibuja por su cuenta.
+                    //
+                    // Los dibujos de creacion, expansion y muerte NO se saltean: hacerlo
+                    // dejaba el chart con un solo cluster, porque al diferirlos hasta
+                    // tiempo real los clusters viejos exigen un barsAgo de miles de
+                    // barras y el dibujo falla.
+                    if (State == State.Realtime
+                        && Math.Abs(c.VolumeInside - c.LastDrawnVolume) >= RedrawVolumeThreshold)
                     {
                         DibujarCluster(c);
                     }
@@ -1001,12 +1005,6 @@ namespace NinjaTrader.NinjaScript.Indicators
         // ===================== DIBUJO Y RENDERIZADO VISUAL =====================
         private void DibujarTodo(bool forceRedraw)
         {
-            // Mismo diferimiento que los clusters: durante el historico no se dibuja
-            // nada. Cada zona son dos objetos (rectangulo + texto) que se extienden
-            // ExtensionDibujo barras hacia adelante; crearlos mientras corre la carga es
-            // trabajo puro para algo que nadie mira todavia.
-            if (State != State.Realtime && !forceRedraw) return;
-
             // Zonas individuales (si están habilitadas)
             if (DibujarZonasIndividuales)
             {
@@ -1043,12 +1041,6 @@ namespace NinjaTrader.NinjaScript.Indicators
 
         private void DibujarCluster(Cluster c)
         {
-            // DIBUJO DIFERIDO. Durante el historico un mismo cluster se redibuja en cada
-            // expansion, en cada cambio de estado y cada RedrawVolumeThreshold contratos
-            // consumidos: miles de Draw.Rectangle sobre objetos que nadie va a ver hasta
-            // que termine la carga. Se saltean todos y se hace UNA pasada al pasar a
-            // tiempo real, sobre los clusters que quedaron vivos.
-            if (State != State.Realtime) { c.Drawn = false; return; }
             if (!MostrarClusters) return;
 
             // Manejo de Ocultamiento según estado
