@@ -41,6 +41,19 @@ import math
 NAME = "ClusterRejection"
 VERSION = "1.0"
 
+# Escalon 5 del embudo: condicionamiento por intensidad y construccion hold-out.
+#
+# El cluster nace donde hubo actividad y la actividad ocurre donde estuvo el precio, asi
+# que medir "el precio reacciona al cluster" condiciona sobre una variable
+# co-determinada por el precio. Dos correcciones, que se miden por separado:
+#
+#   INTENSIDAD  cuantas zonas nacieron en las ultimas `ventana_intensidad` barras. Si el
+#               contraste desaparece al estratificar por esto, lo que se medía era el
+#               regimen de actividad, no el objeto.
+#
+#   HOLD-OUT    solo se usan clusters cuya ultima actualizacion ocurrio hace al menos
+#               `lag_holdout` barras. Asi ningun tramo de precio que entra en la
+#               definicion del objeto entra tambien en la ventana de resultado.
 DEFAULTS = dict(
     ventana_previa=30,        # barras sin tocar el nivel para que cuente como contacto
     dist_min_ticks=4,         # de que tan lejos tiene que venir
@@ -49,6 +62,9 @@ DEFAULTS = dict(
     penetracion_ticks=4,      # cuanto tiene que pasar de largo para contar como cruce
     bordes_distancia=(4, 8, 16, 32, 1000),
     bordes_sigma=(0.0, 2.0, 4.0, 1e9),
+    ventana_intensidad=100,
+    bordes_intensidad=(5, 15, 40, 10**9),
+    lag_holdout=30,
 )
 
 
@@ -129,6 +145,19 @@ def es_borde_de_cluster(nivel, clusters, tolerancia=1):
     return False
 
 
+def borde_de(nivel, clusters, tolerancia=1):
+    """Devuelve el cluster cuyo borde toca el nivel, o `None`.
+
+    Hace falta para el escalon 5: sin saber CUAL cluster es, no se puede medir hace
+    cuanto que no se actualiza, que es lo que permite construirlo hold-out.
+    """
+    for c in clusters:
+        if (abs(nivel - c["lower_tk"]) <= tolerancia
+                or abs(nivel - c["upper_tk"]) <= tolerancia):
+            return c
+    return None
+
+
 def esta_dentro(nivel, clusters):
     for c in clusters:
         if c["lower_tk"] <= nivel <= c["upper_tk"]:
@@ -203,6 +232,36 @@ def tabla(muestras, p, minimo=30):
             contraste=(p_con - p_sin) if (p_con is not None and p_sin is not None) else None,
             suficiente=con["n"] >= minimo and sin["n"] >= minimo,
         ))
+    return out
+
+
+def tabla_por(muestras, campo, bordes, minimo=30):
+    """Contraste borde-vs-libre estratificado por un campo cualquiera.
+
+    Se usa para el escalon 5: si el contraste se sostiene dentro de cada estrato de
+    intensidad, no es el regimen de actividad el que lo produce.
+    """
+    celdas = {}
+    for m in muestras:
+        if m["desenlace"] == "indefinido":
+            continue
+        cat = m.get("categoria", m["borde"])
+        if cat not in ("borde", "libre", True, False):
+            continue
+        clave = (_bin(m[campo], bordes), cat in ("borde", True))
+        c = celdas.setdefault(clave, dict(n=0, rechazos=0))
+        c["n"] += 1
+        c["rechazos"] += 1 if m["desenlace"] == "rechaza" else 0
+    out = []
+    for b in sorted({k for k, _ in celdas}):
+        con = celdas.get((b, True), dict(n=0, rechazos=0))
+        sin = celdas.get((b, False), dict(n=0, rechazos=0))
+        p_con = con["rechazos"] / con["n"] if con["n"] else None
+        p_sin = sin["rechazos"] / sin["n"] if sin["n"] else None
+        out.append(dict(bin=b, n_borde=con["n"], n_libre=sin["n"],
+                        rechazo_borde=p_con, rechazo_libre=p_sin,
+                        contraste=(p_con - p_sin) if (p_con is not None and p_sin is not None) else None,
+                        suficiente=con["n"] >= minimo and sin["n"] >= minimo))
     return out
 
 

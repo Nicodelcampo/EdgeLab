@@ -94,8 +94,14 @@ tocar `D_min`, `h` o `k`.
 
 **Decisión: la configuración del instrumento se congela con un criterio target-free,
 antes de mirar nada relacionado con el precio.** El criterio es el contrato del repo
-(turnover < 5 % ante ±1 de volumen en dos tercios de los ticks) más no-degeneración
-(cobertura media as-of entre 15 % y 60 % del rango de sesión). Ese barrido **no gasta
+(turnover < 5 % ante ±1 de volumen en dos tercios de los ticks) más no-degeneración.
+
+> **ENMENDADO el 2026-09-07 — ver `docs/research/ENMIENDA_P72_2026-09-07.md`.**
+> La banda original de no-degeneración decía «cobertura media as-of entre 15 % y 60 %».
+> Se fijó sin conocer la escala del objeto y las 108 mediciones dieron como máximo
+> 9,6 %, con lo que **ninguna configuración pasaba**. Texto vigente: *existe el objeto
+> (≥ 20 clusters por sesión) y no lo cubre todo (cobertura < 60 %)*. El criterio de
+> estabilidad no se modificó. Ese barrido **no gasta
 presupuesto estadístico**, porque no mira el precio futuro.
 
 De ahí sale **una** configuración congelada. H1 y H2 se miden sobre esa sola. Si ninguna

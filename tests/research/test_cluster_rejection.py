@@ -145,3 +145,45 @@ def test_el_agregado_puede_MENTIR_respecto_del_estratificado():
     assert all(f["contraste"] > 0 for f in t), "en CADA estrato el borde rechaza mas"
     a = cr.agregado(ms)
     assert a["contraste"] < 0, "y sin embargo el agregado da al reves"
+
+
+# ------------------------------------------------- escalon 5
+
+def test_borde_de_devuelve_CUAL_cluster_es():
+    """Sin saber cuál, no se puede medir hace cuánto que no se actualiza."""
+    cl = [dict(lower_tk=100, upper_tk=120, ultima=5),
+          dict(lower_tk=200, upper_tk=220, ultima=9)]
+    assert cr.borde_de(200, cl)["ultima"] == 9
+    assert cr.borde_de(110, cl) is None, "el interior no es borde"
+
+
+def _mi(borde, des, intensidad):
+    return dict(borde=borde, categoria="borde" if borde else "libre",
+                desenlace=des, distancia=10, sigma=1.0, intensidad=intensidad)
+
+
+def test_estratificar_por_intensidad_puede_APAGAR_el_contraste():
+    """El punto del escalón 5.
+
+    Si el contraste agregado sale de que los bordes viven en régimen de alta actividad
+    y en ese régimen el precio rechaza más, estratificando desaparece. Este fixture
+    construye exactamente ese caso: dentro de cada estrato el contraste es cero.
+    """
+    ms = []
+    # intensidad BAJA: casi todo libre, tasa de rechazo 20 %
+    ms += [_mi(False, "rechaza", 1)] * 200 + [_mi(False, "cruza", 1)] * 800
+    ms += [_mi(True, "rechaza", 1)] * 2 + [_mi(True, "cruza", 1)] * 8
+    # intensidad ALTA: casi todo borde, tasa 80 % — pero igual para los dos
+    ms += [_mi(False, "rechaza", 100)] * 8 + [_mi(False, "cruza", 100)] * 2
+    ms += [_mi(True, "rechaza", 100)] * 800 + [_mi(True, "cruza", 100)] * 200
+
+    ag = cr.agregado(ms)
+    assert ag["contraste"] > 0.4, "el agregado muestra un efecto grande"
+    t = cr.tabla_por(ms, "intensidad", cr.DEFAULTS["bordes_intensidad"], minimo=1)
+    for f in t:
+        assert abs(f["contraste"]) < 1e-9, "y dentro de cada estrato no hay nada"
+
+
+def test_el_holdout_exige_que_el_objeto_no_se_haya_movido():
+    assert cr.DEFAULTS["lag_holdout"] == 30
+    assert cr.DEFAULTS["ventana_intensidad"] == 100

@@ -2321,7 +2321,7 @@ manifiesto).
 
 ---
 
-## P-72 — Banda de no-degeneración del pre-registro H-CLUSTER-NQ, mal calibrada (ABIERTA)
+## P-72 — Banda de no-degeneración del pre-registro H-CLUSTER-NQ (RESUELTA 2026-09-07)
 
 **Qué pasó.** El pre-registro `docs/research/PREREGISTRO_H-CLUSTER-NQ_2026-09-07.md`
 fijó, antes de medir, que una configuración de cluster es aceptable si su cobertura
@@ -2338,9 +2338,14 @@ los dos casos aplica.
 **Propuesta de enmienda.** Reemplazar la banda de cobertura por: *«existe el objeto
 (≥ 20 clusters por sesión) y no lo cubre todo (cobertura media as-of < 60 %)»*.
 
-**Por qué no la aplico solo.** La regla del proyecto es explícita: prohibido ampliar
+**Por qué no la apliqué solo.** La regla del proyecto es explícita: prohibido ampliar
 tolerancias o relajar gates después de ver resultados. Aunque este gate es target-free y
 no toca P&L, la configuración que elija condiciona todo lo que se mida después.
+
+**RESUELTA.** Nico aprobó la enmienda el 2026-09-07. Acta:
+`docs/research/ENMIENDA_P72_2026-09-07.md`. La configuración de campaña queda congelada
+y deja de ser provisional. Reserva que el acta deja anotada: `max_age_bars` sigue en 500
+**sin haberse barrido nunca** — el escalón 3 del embudo existe y no se corrió.
 
 **Qué depende de esto.** La configuración de campaña queda provisional hasta que se
 decida: `min_total_volume=10`, `weight_mode=volume`, `halo_sigma=3`, `min_density=3`,
