@@ -298,3 +298,136 @@ def test_merge_excluye_expirados_corta_la_canibalizacion():
     assert any(e["event"] == "CLUSTER_CREATED" for e in ev), "nace uno nuevo"
     assert not any(e["event"] == "CLUSTER_EXPANDED" for e in ev)
     assert len(m.clusters) == 2, "el expirado ya no absorbe"
+
+
+# ================= MOTOR v2.0.0 del `.cs` (reescrito 2026-09-08) =================
+#
+# El `.cs` cambio de semantica, no solo de defaults. Estos tests clavan las cuatro
+# diferencias para que el espejo no vuelva a quedar describiendo un motor que ya no
+# existe -- que es exactamente lo que paso entre el 07 y el 08 de septiembre.
+
+from edgelab.bridge.indicators.hftclusterzones import MOTOR_V2  # noqa: E402
+
+
+def _motor_v2(**over):
+    p = dict(MOTOR_V2, min_capacity_volume=100.0, min_density=1.5,
+             min_contributing_zones=1, max_age_bars=500)
+    p.update(over)
+    return ClusterEngine(TICK, p)
+
+
+def test_v2_NO_invalida_por_mas_que_el_precio_perfore():
+    """En v2 ninguna linea asigna INVALIDATED: el estado quedo inalcanzable."""
+    eng = _motor_v2()
+    zs = [_z(100, 101), _z(100, 101, vol=100.0)]
+    eng.on_zone_created(zs, bar=0)
+    assert eng.clusters, "el fixture tiene que crear al menos un cluster"
+    # muy lejos del rango y con capacidad casi intacta: en v1 esto invalidaba
+    eng.on_tick(price=200 * TICK, vol=1.0, side=1, bar=1)
+    assert all(c["state"] != INVALIDATED for c in eng.clusters)
+    assert eng.clusters[0]["state"] == ACTIVE
+
+
+def test_v1_SI_invalida_con_el_mismo_estimulo():
+    """Contraste explicito: la diferencia es del motor, no del fixture."""
+    eng = _motor(invalidation_ticks=8, min_capacity_volume=100.0)
+    eng.on_zone_created([_z(100, 101), _z(100, 101)], bar=0)
+    eng.on_tick(price=200 * TICK, vol=1.0, side=1, bar=1)
+    assert eng.clusters[0]["state"] == INVALIDATED
+
+
+def test_v2_expira_contando_desde_la_ULTIMA_ACTUALIZACION():
+    """Con `end_bar`, un cluster que se sigue expandiendo no envejece nunca."""
+    eng = _motor_v2(max_age_bars=10)
+    zs = [_z(100, 101), _z(100, 101)]
+    eng.on_zone_created(zs, bar=0)
+    c = eng.clusters[0]
+    # se expande en la barra 8: el reloj se reinicia
+    zs.append(_z(100, 101, start_bar=8))
+    eng.on_zone_created(zs, bar=8)
+    assert c["end_bar"] == 8
+    eng.on_bar(bar=15)            # 15 desde el nacimiento, 7 desde la expansion
+    assert c["state"] == ACTIVE, "en v1 ya estaria EXPIRED"
+    eng.on_bar(bar=18)            # 10 desde la expansion
+    assert c["state"] == EXPIRED
+
+
+def test_v2_expira_con_mayor_o_IGUAL_no_con_mayor_estricto():
+    eng = _motor_v2(max_age_bars=10)
+    eng.on_zone_created([_z(100, 101), _z(100, 101)], bar=0)
+    eng.on_bar(bar=9)
+    assert eng.clusters[0]["state"] == ACTIVE
+    eng.on_bar(bar=10)            # edad == limite: v2 mata, v1 no
+    assert eng.clusters[0]["state"] == EXPIRED
+
+
+def test_v2_consumo_por_barra_reparte_en_proporcion_al_SOLAPE():
+    eng = _motor_v2(min_capacity_volume=10_000.0)
+    eng.on_zone_created([_z(100, 104), _z(100, 104)], bar=0)
+    c = eng.clusters[0]
+    alto = c["upper"] - c["lower"]
+    # barra que cubre exactamente el doble del alto del cluster -> mitad del volumen
+    low = c["lower"]
+    high = c["lower"] + 2 * alto
+    eng.on_bar_consumo(low, high, bar_vol=1000.0, bar=1)
+    assert c["volume_inside"] == pytest.approx(500.0)
+
+
+def test_v2_el_toque_de_POC_por_barra_es_GEOMETRICO_no_por_medio_tick():
+    """Por tick exige |precio-poc| < 0.6 ticks; por barra alcanza con contenerlo."""
+    eng = _motor_v2(min_capacity_volume=10_000.0)
+    eng.on_zone_created([_z(100, 104), _z(100, 104)], bar=0)
+    c = eng.clusters[0]
+    eng.on_bar_consumo(c["poc"] - 5 * TICK, c["poc"] + 5 * TICK, bar_vol=10.0, bar=1)
+    assert c["touched_poc"] is True and c["state"] == TOUCHED_POC
+
+
+def test_v2_el_consumo_por_barra_marca_la_primera_entrada():
+    eng = _motor_v2(min_capacity_volume=10_000.0)
+    eng.on_zone_created([_z(100, 104), _z(100, 104)], bar=0)
+    c = eng.clusters[0]
+    assert c["has_entered"] is False and c["first_touch_bar"] is None
+    eng.on_bar_consumo(c["lower"], c["upper"], bar_vol=10.0, bar=7)
+    assert c["has_entered"] is True and c["first_touch_bar"] == 7
+
+
+def test_v2_barra_fuera_del_rango_no_consume_nada():
+    eng = _motor_v2(min_capacity_volume=10_000.0)
+    eng.on_zone_created([_z(100, 104), _z(100, 104)], bar=0)
+    c = eng.clusters[0]
+    eng.on_bar_consumo(c["upper"] + TICK, c["upper"] + 10 * TICK, bar_vol=999.0, bar=1)
+    assert c["volume_inside"] == 0.0 and c["has_entered"] is False
+
+
+def test_v2_DOCUMENTA_que_en_historico_el_volumen_se_cuenta_DOS_veces():
+    """No es un test de lo que *deberia* pasar: clava lo que el `.cs` hace.
+
+    En historico corren los dos caminos —la sub-serie de ticks y la barra primaria—
+    porque la guarda del camino de barra solo se activa en `Realtime`. En vivo corre
+    uno solo. El objeto historico y el objeto en vivo no son el mismo objeto.
+    """
+    eng = _motor_v2(min_capacity_volume=10_000.0)
+    eng.on_zone_created([_z(100, 104), _z(100, 104)], bar=0)
+    c = eng.clusters[0]
+    dentro = c["lower"] + (c["upper"] - c["lower"]) / 2.0
+    eng.on_tick(price=dentro, vol=100.0, side=1, bar=1)          # sub-serie de ticks
+    eng.on_bar_consumo(c["lower"], c["upper"], bar_vol=100.0, bar=1)  # barra primaria
+    assert c["volume_inside"] == pytest.approx(200.0), "el .cs suma los dos caminos"
+
+
+def test_v2_defaults_declarados():
+    """Si el `.cs` cambia un default, este test avisa antes que la paridad."""
+    assert MOTOR_V2["min_density"] == 3.5
+    assert MOTOR_V2["max_age_bars"] == 2500
+    assert MOTOR_V2["min_capacity_volume"] == 400.0
+    assert MOTOR_V2["capacity_multiplier"] == 1.0
+    assert MOTOR_V2["lookback_zones"] == 120
+    assert MOTOR_V2["min_contributing_zones"] == 2
+    assert MOTOR_V2["merge_excluye_expirados"] is True
+    assert MOTOR_V2["invalidacion_activa"] is False
+    assert MOTOR_V2["expira_desde"] == "end"
+    assert MOTOR_V2["expira_inclusive"] is True
+    assert MOTOR_V2["consumo_por_barra"] is True
+    # y el motor viejo queda intacto: es el unico que reproduce el log existente
+    assert RESEARCH_DEFAULTS["invalidacion_activa"] is True
+    assert RESEARCH_DEFAULTS["expira_desde"] == "start"

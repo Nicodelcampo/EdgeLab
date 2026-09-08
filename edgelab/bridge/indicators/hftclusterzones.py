@@ -15,18 +15,36 @@ La diferencia con la caja importa: con cajas la pertenencia es binaria y el mapa
 saturado o vacío; con el kernel hay gradación, y `σ` se vuelve un parámetro de
 investigación barrible en vez de una decisión oculta.
 
-## Ciclo de vida
+## Ciclo de vida — y OJO: hay dos motores
 
-Un cluster nace `ACTIVE` y muere de una de cuatro formas, que son **riesgos
-competitivos** — no censura simple:
+Un cluster nace `ACTIVE` y muere por **riesgos competitivos**, no por censura simple.
+Tratar una muerte como censura sesga la incidencia acumulada: va CIF, no Kaplan-Meier.
 
-- `TOUCHED_POC`  el precio llegó al POC (no es muerte: es el evento de interés);
-- `DEPLETED`     el volumen operado adentro agotó `capacity_volume`;
-- `INVALIDATED`  el precio perforó el rango con menos del 80 % de capacidad consumida;
-- `EXPIRED`      pasaron `max_age_bars` desde el nacimiento.
+Pero las reglas **cambiaron el 2026-09-08**, cuando el `.cs` pasó de v1.1.0 a v2.0.0.
+Los dos motores viven en este módulo porque hacen falta los dos: el viejo es el único
+que reproduce el log de eventos que ya existe, y el nuevo es el único que describe lo
+que el indicador hace hoy.
 
-Tratar cualquiera de las tres muertes como censura simple sesga la incidencia
-acumulada. Va CIF, no Kaplan-Meier.
+| | `RESEARCH_DEFAULTS` (motor v1.x) | `MOTOR_V2` (el `.cs` de hoy) |
+| :-- | :-- | :-- |
+| `TOUCHED_POC` | `|precio − poc| < 0,6` ticks | ídem por tick; **por barra alcanza con contenerlo** |
+| `DEPLETED` | el volumen adentro agotó `capacity_volume` | ídem |
+| `INVALIDATED` | perforación con < 80 % de capacidad | **inalcanzable: ninguna línea lo asigna** |
+| `EXPIRED` | `bar − start_bar > max_age_bars` | `bar − end_bar >= max_age_bars` |
+| consumo | sólo por tick | **dos caminos**: tick y barra |
+
+Tres consecuencias que no son cosméticas:
+
+1. **`InvalidationTicks` es un parámetro muerto en v2**, como `FallosTolerados`. Y el
+   99,4 % de muertes por invalidación que midió el ciclo de vida describe un objeto
+   que ya no existe.
+2. **Con `end_bar`, un cluster que se sigue expandiendo no envejece nunca.** Eso, sin
+   invalidación, deja a la canibalización sin freno — por eso v2 excluye `EXPIRED` del
+   filtro de fusión de forma incondicional.
+3. **El camino de barra se saltea en `Realtime` pero no en histórico**, donde la
+   sub-serie de ticks también corre. En histórico el volumen se cuenta dos veces y en
+   vivo una: el objeto histórico y el objeto en vivo **no son el mismo objeto**.
+   Está clavado en `test_v2_DOCUMENTA_que_en_historico_el_volumen_se_cuenta_DOS_veces`.
 
 ## Divergencias del original que están replicadas a propósito
 
@@ -107,7 +125,7 @@ from __future__ import annotations
 import math
 
 NAME = "HFTClusterZones"
-VERSION = "1.1"
+VERSION = "2.0"
 
 RESEARCH_DEFAULTS = dict(
     # --- construccion del cluster ---
@@ -135,6 +153,33 @@ RESEARCH_DEFAULTS = dict(
     weight_ref_vol=0.0,         # 0 = normalizar por la mediana del pool
     min_contributing_zones=1,   # confluencia minima real; ver nota abajo
     merge_excluye_expirados=False,  # ver "La canibalizacion" abajo
+    # --- interruptores de SEMANTICA del motor ---
+    # El `.cs` cambio de motor el 2026-09-08 (v1.1.0 -> v2.0.0). Las reglas viejas se
+    # conservan porque el UNICO log de eventos que existe las usa; las nuevas se
+    # activan con estos interruptores. Ver `docs/research/MOTOR_CLUSTERS_V2_...`.
+    invalidacion_activa=True,   # v2 la elimino: ninguna linea asigna INVALIDATED
+    expira_desde="start",       # v2 cuenta desde `end_bar` (ultima actualizacion)
+    expira_inclusive=False,     # v2 usa `>=` en vez de `>`
+    consumo_por_barra=False,    # v2 agrega un segundo camino de consumo, por barra
+)
+
+# Motor del `.cs` v2.0.0 (2026-09-08, reescrito por el agente de Antigravity).
+# Reproduce sus defaults Y su semantica. Es lo que hay que espejar para certificar
+# paridad contra cualquier oraculo nuevo.
+MOTOR_V2 = dict(
+    RESEARCH_DEFAULTS,
+    halo_sigma_ticks=3.0,
+    min_density=3.5,
+    lookback_zones=120,
+    max_age_bars=2500,
+    min_capacity_volume=400.0,
+    capacity_multiplier=1.0,
+    min_contributing_zones=2,
+    merge_excluye_expirados=True,   # en v2 no es opcional: EXPIRED siempre se excluye
+    invalidacion_activa=False,      # el estado quedo inalcanzable
+    expira_desde="end",
+    expira_inclusive=True,
+    consumo_por_barra=True,
 )
 
 # Configuracion congelada para la campana H-CLUSTER-NQ por el test de estabilidad
@@ -407,6 +452,9 @@ class ClusterEngine:
                     seed_cvd=seed_cvd, capacity_volume=cap, volume_inside=0.0,
                     delta_inside=0.0, touched_poc=False, state=ACTIVE,
                     contributing_zones=n_zonas,
+                    # v2.0.0: el `.cs` lleva estos tres y los usa para dibujar el tramo
+                    # comerciado y para cortar la proyeccion en la barra de muerte.
+                    has_entered=False, first_touch_bar=None, death_bar=None,
                 )
                 self.clusters.append(nc)
                 emitidos.append(self._emit("CLUSTER_CREATED", nc, bar))
@@ -428,13 +476,17 @@ class ClusterEngine:
             if c["state"] not in _VIVOS_PARA_CONSUMO:
                 continue
 
-            if price > c["upper"] + margen or price < c["lower"] - margen:
+            if p.get("invalidacion_activa", True) and (
+                    price > c["upper"] + margen or price < c["lower"] - margen):
                 if c["volume_inside"] < c["capacity_volume"] * p["invalidation_capacity_pct"]:
                     c["state"] = INVALIDATED
                     emitidos.append(self._emit("CLUSTER_INVALIDATED", c, bar, price))
                     continue
 
             if c["lower"] <= price <= c["upper"]:
+                if not c["has_entered"]:
+                    c["has_entered"] = True
+                    c["first_touch_bar"] = bar
                 c["volume_inside"] += vol
                 c["delta_inside"] += side * vol
 
@@ -447,17 +499,75 @@ class ClusterEngine:
 
                 if self.remaining_pct(c) <= 0.0:
                     c["state"] = DEPLETED
+                    c["death_bar"] = bar
                     emitidos.append(self._emit("CLUSTER_DEPLETED", c, bar, price))
+        return emitidos
+
+    def on_bar_consumo(self, bar_low, bar_high, bar_vol, bar):
+        """Consumo por BARRA primaria — el segundo camino que agrego el `.cs` v2.0.0.
+
+        Reparte el volumen de la barra en proporcion al solape vertical entre la barra
+        y el cluster, con piso de 1 contrato. El toque de POC aca es **geometrico**
+        (`low <= poc <= high`), no por cercania de medio tick como en el camino de tick.
+
+        **Advertencia de semantica, no de implementacion.** En el `.cs`, este camino se
+        saltea en `Realtime` pero NO en historico, donde la sub-serie de ticks tambien
+        corre. Es decir: en historico el volumen se cuenta DOS veces y en vivo una. El
+        espejo lo reproduce tal cual —con `consumo_por_barra`— porque su trabajo es
+        parecerse al oraculo, no arreglarlo; pero eso hace que el objeto historico y el
+        objeto en vivo **no sean el mismo objeto**.
+        """
+        emitidos = []
+        if bar_vol <= 0:
+            return emitidos
+        for c in self.clusters:
+            if c["state"] == DEPLETED:
+                continue
+            if not (bar_high >= c["lower"] and bar_low <= c["upper"]):
+                continue
+
+            if not c["has_entered"]:
+                c["has_entered"] = True
+                c["first_touch_bar"] = bar
+
+            solape_lo = max(bar_low, c["lower"])
+            solape_hi = min(bar_high, c["upper"])
+            rango = bar_high - bar_low
+            fraccion = ((solape_hi - solape_lo) / rango) if rango > 0 else 1.0
+            c["volume_inside"] += max(1.0, bar_vol * fraccion)
+
+            if not c["touched_poc"] and bar_low <= c["poc"] <= bar_high:
+                c["touched_poc"] = True
+                if c["state"] == ACTIVE:
+                    c["state"] = TOUCHED_POC
+                emitidos.append(self._emit("CLUSTER_TOUCHED_POC", c, bar))
+
+            if c["volume_inside"] >= c["capacity_volume"]:
+                c["state"] = DEPLETED
+                c["death_bar"] = bar
+                emitidos.append(self._emit("CLUSTER_DEPLETED", c, bar))
         return emitidos
 
     # ---------- expiracion ----------
     def on_bar(self, bar):
-        """Cierre de barra: mata por edad lo que siga vivo."""
+        """Cierre de barra: mata por edad lo que siga vivo.
+
+        El `.cs` v1.x contaba la edad desde el NACIMIENTO (`start_bar`, con `>`); el
+        v2.0.0 la cuenta desde la ULTIMA ACTUALIZACION (`end_bar`, con `>=`). No es un
+        detalle: con `end_bar`, un cluster que se sigue expandiendo no envejece nunca.
+        """
+        p = self.p
         emitidos = []
+        campo = "end_bar" if p.get("expira_desde") == "end" else "start_bar"
         for c in self.clusters:
             if c["state"] in _VIVOS_PARA_CONSUMO:
-                if bar - c["start_bar"] > self.p["max_age_bars"]:
+                edad = bar - c[campo]
+                vencio = edad >= p["max_age_bars"] if p.get("expira_inclusive") \
+                    else edad > p["max_age_bars"]
+                if vencio:
                     c["state"] = EXPIRED
+                    if c["death_bar"] is None:
+                        c["death_bar"] = c[campo] + p["max_age_bars"]
                     emitidos.append(self._emit("CLUSTER_EXPIRED", c, bar))
         return emitidos
 

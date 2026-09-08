@@ -17,7 +17,7 @@
 | 3 | Estabilidad del cluster (contrato del repo: ±1 de volumen en 2/3 de los ticks, turnover < 5 %) | **Zonas: 32–38 %, no pasan.** Clusters: 6 de 36 celdas pasan en las 3 sesiones, todas con umbral de zona 10 | `docs/research/estabilidad_clusters/` |
 | 4 | Peso continuo vs conteo binario | `volume` ≤ `log_volume` ≤ `count` en fragilidad, en todas las celdas. Con umbral 25 y densidad 8: 53 % → 24 % | `docs/research/estabilidad_clusters/pesos_vs_count.json` |
 | 5 | Degeneración del peso continuo | Real pero acotada: 8,7 % de clusters de una sola zona en modo `volume`, 0 % en `count`. **Con `min_contributing_zones=3` el turnover no cambia** (0,6 % → 0,6 %): la mejora no era degeneración | commit `c35362e` |
-| 6 | **Ciclo de vida** (escalón 2, riesgos competitivos) | **99,4 % muere INVALIDATED.** 0,4 % agotado, 0,1 % expirado, 4,6 % llega a tocar su POC. 18.851 creados | log real `hft_cluster_events.csv` |
+| 6 | **Ciclo de vida** (escalón 2, riesgos competitivos) | **OBSOLETO desde 2026-09-08.** Midió 99,4 % `INVALIDATED` sobre 18.851 clusters del log real — pero el `.cs` v2.0.0 **eliminó esa transición**, así que la distribución de riesgos competitivos del motor actual **no está medida** | `docs/research/MOTOR_CLUSTERS_V2_DIVERGENCIA_2026-09-08.md` |
 | 7 | **Decaimiento por consumo** (canal no direccional) | **SIN EFECTO DETECTADO, con cota.** 40 sesiones, 6.468 muestras, **MDE 0,067**. Ningún contraste lo supera; si hay efecto es < 7 pp y no es monótono | `docs/research/DECAIMIENTO_CLUSTERS_NQ_2026-09-07.md` |
 | 8 | **H2 — rechazo en bordes** (canal direccional) | **ANULADO POR ESCALA (2026-09-08).** Corrió sobre **50** sesiones (no 65: el parquet de `NQ 06-26` termina el 18-jun), 1.026.840 contactos, 71.641 en borde. El umbral de desenlace (4 ticks) es un tercio del rango mediano de barra (12); el 25 % de los desenlaces los decide un desempate fijo hacia `cruza`; el «borde» de ±1 tick es una astilla de un objeto de 60 ticks. **Ni el +0,035 ni el −0,011 son evidencia** | `docs/research/H2_VOID_POR_ESCALA_2026-09-08.md` |
 | 10 | **Escalón 5 (intensidad + hold-out)** | **ANULADO junto con H2** — corre sobre el mismo desenlace. Además su −0,011 **no supera su propio MDE** (0,0296) y se publicó sin estratificar, que es lo único que el propio estimador prohíbe. La descomposición correcta (fresco vs rancio) existe ahora en `cr.contraste_lag` | `docs/research/H2_VOID_POR_ESCALA_2026-09-08.md` |
@@ -38,7 +38,9 @@
 | El oráculo SQLite pierde zonas que arrancan en el mismo milisegundo (`UNIQUE` + `INSERT OR IGNORE`) | verificado, 36 de 7.530 |
 | **`desenlace` desempata siempre hacia `cruza`** cuando la barra abarca los dos umbrales — 25 % de los casos. Si se resolvieran al revés la tasa de rechazo pasa de 0,323 a 0,573 | medido 2026-09-08, **sin corregir** |
 | **`agregado` llama «sin borde» a libre + interior**: su control está contaminado y su contraste no es comparable con el de `tabla`. Se agregó `agregado_limpio` aparte | corregido por adición |
-| **`HFTClusterZonesNQ.cs` no dibuja nada en el chart de Nico**: `OcultarInvalidados=true` y el 99,4 % de los clusters muere invalidado | causa raíz identificada 2026-09-08 |
+| **`HFTClusterZonesNQ.cs` no dibujaba nada**: `DibujarZonasIndividuales=false`, `RenderZonasDx` recorría sólo las últimas ~120 zonas con culling roto, y había carrera entre el hilo de datos y el de render | corregido por Antigravity 2026-09-08 (`syncLock` + culling + flag). Mi diagnóstico previo —`OcultarInvalidados`— valía para el motor viejo y es irrelevante para el actual |
+| **`InvalidationTicks` es un parámetro muerto en v2.0.0**: se declara, se documenta y se escribe en el `# params` del CSV, y ninguna línea lo lee | verificado en fuente 2026-09-08 |
+| **El objeto histórico y el objeto en vivo no son el mismo objeto**: el camino de consumo por barra se saltea en `Realtime` pero no en histórico, donde la sub-serie de ticks también corre. En histórico el volumen se cuenta **dos veces** | verificado en fuente 2026-09-08, **sin corregir — decisión de Nico** |
 
 ---
 
@@ -52,7 +54,7 @@
 | 4 | **CIF Fine-Gray** del ciclo de vida | El 99,4 % de invalidación se midió por conteo, no con incidencia acumulada ni riesgos competitivos formales | ninguno |
 | 5 | **Escalón 5**: condicionamiento por intensidad y hold-out | Implementado y corrido, pero sobre el desenlace anulado. Se rehace con el estimador nuevo | H2 re-escalada |
 | 6 | **Escalón 6**: Ripley 1-D sobre POCs | Diagnóstico transversal | ninguno |
-| 7 | Paridad de la **capa de clusters** | Sólo la capa de zonas está certificada. El cluster no tiene oráculo comparado | falta correr NT8 sobre una ventana con ticks disponibles |
+| 7 | Paridad de la **capa de clusters** | Sólo la capa de zonas está certificada. `hft_clusters` tiene 47.875 filas y **todas caen fuera de los ticks disponibles** (oráculo 28-ago→8-sep; parquet de NQ hasta 28-jul). No hay ni una fila de ES | **Nico exporta el oráculo**: ES 09-26, 14→17 jun, `SoloLogEnVivo=false`. Espejo ya actualizado a v2.0 |
 | 8 | Paridad sobre **NQ** | El certificado es sobre ES 09-26. Las zonas de NQ en el oráculo son de agosto-septiembre y el parquet llega al 28 de julio | correr el indicador sobre NQ antes del 1 de julio |
 | 9 | Cualquier medición de **P&L** | Ni entradas, ni salidas, ni costos | STOP del proyecto: exige manifiesto y presupuesto de hipótesis |
 
