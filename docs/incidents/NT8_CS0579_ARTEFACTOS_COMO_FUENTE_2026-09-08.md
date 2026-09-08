@@ -44,12 +44,44 @@ Faltaba exactamente una línea: la de `Compile`. La exclusión estaba escrita pa
 los tres tipos de item y nadie lo notó, porque sólo falla cuando `obj\` ya tiene una
 build previa **y** NT8 regenera el proyecto.
 
+## Un detalle que cambia el diagnóstico
+
+El proyecto declara `<EnableDefaultCompileItems>false</EnableDefaultCompileItems>`: el
+SDK **no** hace glob, cada fuente está listada explícitamente. Así que esos ocho includes
+**los escribió NT8**, recorriendo el árbol de `Custom\` sin saltear `obj\`.
+
+Eso tiene una consecuencia práctica: **sacar los includes no alcanza**. Mientras los
+archivos existan en disco, el próximo rescaneo de NT8 los vuelve a listar, y el
+`<Compile Remove>` se pierde si NT8 reescribe el proyecto. Hay que hacer las dos cosas.
+
 ## Corrección
 
 1. Se borraron los ocho `<Compile Include="obj\...">` (491 → 483 fuentes).
 2. Se agregó `<Compile Remove="obj\**" />` junto a los otros dos, para que no vuelvan.
+3. Se renombraron a `.apartado` los ocho `.resources.cs` bajo `obj\`, para que un
+   rescaneo no los pueda encontrar. Se renombra en vez de borrar: es reversible y son
+   artefactos que MSBuild regenera.
+
+La carpeta `obj\` entera **no** se puede mover con NinjaTrader abierto —queda tomada—,
+pero los archivos de adentro se renombran igual. Por eso la herramienta opera archivo por
+archivo y avisa cuál quedó bloqueado en vez de fallar entera.
 
 Respaldo en `NinjaTrader.Custom.csproj.bak_20260908`.
+
+## Verificación
+
+El proyecto completo compila **fuera del árbol** con **0 errores**, con el indicador nuevo
+incluido:
+
+```
+dotnet build "...\NinjaTrader.Custom.csproj" -p:BaseIntermediateOutputPath=<tmp>/obj/ -p:OutputPath=<tmp>/bin/
+```
+
+Sólo quedan avisos `CS0436` preexistentes por tipos duplicados entre `GexLevelsAPI.dll` /
+`NinjaTrader.Vendor.dll` y las fuentes de `Custom\` — son de antes y no bloquean.
+
+Esto separa dos cosas que conviene no confundir: **el código compila**, y lo que fallaba
+era la lista de fuentes que NT8 arma.
 
 ## Si vuelve
 
