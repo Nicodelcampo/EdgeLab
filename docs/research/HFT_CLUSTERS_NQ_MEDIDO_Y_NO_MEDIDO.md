@@ -40,6 +40,7 @@
 | **`agregado` llama «sin borde» a libre + interior**: su control está contaminado y su contraste no es comparable con el de `tabla`. Se agregó `agregado_limpio` aparte | corregido por adición |
 | **`HFTClusterZonesNQ.cs` no dibujaba nada**: `DibujarZonasIndividuales=false`, `RenderZonasDx` recorría sólo las últimas ~120 zonas con culling roto, y había carrera entre el hilo de datos y el de render | corregido por Antigravity 2026-09-08 (`syncLock` + culling + flag). Mi diagnóstico previo —`OcultarInvalidados`— valía para el motor viejo y es irrelevante para el actual |
 | **`InvalidationTicks` es un parámetro muerto en v2.0.0**: se declara, se documenta y se escribe en el `# params` del CSV, y ninguna línea lo lee | verificado en fuente 2026-09-08 |
+| **Ningún runner filtra sesiones por liquidez**: 3 de las 50 sesiones de H2 tenían 14-27 % del volumen mediano (un feriado y dos post-roll del `06-26`, que vence el 19-jun) | medido 2026-09-08, **sin corregir** — hace falta una compuerta de sesión reutilizable |
 | **El objeto histórico y el objeto en vivo no son el mismo objeto**: el camino de consumo por barra se saltea en `Realtime` pero no en histórico, donde la sub-serie de ticks también corre. En histórico el volumen se cuenta **dos veces** | verificado en fuente 2026-09-08, **sin corregir — decisión de Nico** |
 
 ---
@@ -54,7 +55,7 @@
 | 4 | **CIF Fine-Gray** del ciclo de vida | El 99,4 % de invalidación se midió por conteo, no con incidencia acumulada ni riesgos competitivos formales | ninguno |
 | 5 | **Escalón 5**: condicionamiento por intensidad y hold-out | Implementado y corrido, pero sobre el desenlace anulado. Se rehace con el estimador nuevo | H2 re-escalada |
 | 6 | **Escalón 6**: Ripley 1-D sobre POCs | Diagnóstico transversal | ninguno |
-| 7 | Paridad de la **capa de clusters** | Sólo la capa de zonas está certificada. `hft_clusters` tiene 47.875 filas y **todas caen fuera de los ticks disponibles** (oráculo 28-ago→8-sep; parquet de NQ hasta 28-jul). No hay ni una fila de ES | **Nico exporta el oráculo**: `NQ 06-26`, 8→12 jun, `SoloLogEnVivo=false`. Cierra también el item 8. Espejo ya en v2.0 |
+| 7 | Paridad de la **capa de clusters** | Sólo la capa de zonas está certificada. `hft_clusters` tiene 47.875 filas y **todas caen fuera de los ticks disponibles** (oráculo 28-ago→8-sep; parquet de NQ hasta 28-jul). No hay ni una fila de ES | **Nico exporta el oráculo**: `NQ 06-26`, 3→11 jun, `SoloLogEnVivo=false`. Cierra también el item 8. Espejo ya en v2.0 |
 | 8 | Paridad sobre **NQ** | El certificado es sobre ES 09-26. El oráculo viejo de NQ era de ago-sep y el parquet llega al 28-jul | **resuelto por la misma corrida del item 7**: NT8 tiene ticks de `NQ 06-26` del 31-mar al 18-jun, pre-holdout |
 | 9 | Cualquier medición de **P&L** | Ni entradas, ni salidas, ni costos | STOP del proyecto: exige manifiesto y presupuesto de hipótesis |
 

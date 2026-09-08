@@ -99,15 +99,39 @@ comportamiento del `.cs` sin bendecirlo.
 
 ## Especificación del oráculo de clusters (Nico lo exporta)
 
-**`NQ 06-26`, lunes 8 → viernes 12 de junio de 2026, chart de 25 ticks.**
+**`NQ 06-26`, miercoles 3 → jueves 11 de junio de 2026, chart de 25 ticks.**
 
-Elegida por Nico y verificada en los dos lados: NT8 tiene 111 archivos horarios de
-ticks (5 sesiones completas) y el parquet tiene 3.435.289 ticks en la misma ventana.
-Es más grande que el certificado de zonas sobre ES (2,56 M).
+Nico marcó que el `06-26` vence en junio y que la ventana podía estar tocando el
+roll. Medido sobre el volumen diario del parquet, tenía razón — y el corte es nítido:
+
+| sesión | volumen | vs. mediana |
+| :-- | --: | --: |
+| … 3 al 11 de junio | 621 k – 1.057 k | **113 % – 192 %** |
+| 12 de junio | 415 k | 75 % |
+| 15 de junio | 148 k | **27 %** |
+| 16 de junio | 75 k | **14 %** |
+| 17 de junio | 35 k | 6 % |
+| 18 de junio | 5,5 k | 1 % |
+
+El contrato vence el 19 y el volumen se va al `09-26` a partir del 12. Las siete
+sesiones del **3 al 11** están todas **por encima de la mediana del contrato**, e
+incluyen las dos de mayor volumen de toda su vida (5 y 9 de junio). No hay
+contaminación de roll.
 
 Cierra **dos** huecos del registro con una sola corrida: la paridad de la capa de
 clusters (nunca tuvo oráculo) y la paridad sobre **NQ** (el certificado vigente es
 sobre ES 09-26).
+
+### Y de paso: las corridas de la campaña incluyeron sesiones muertas
+
+Buscando el roll apareció que **3 de las 50 sesiones de H2 no eran sesiones
+operables**: 2026-05-25 (22,7 % de la mediana — feriado), 2026-06-15 (26,9 %) y
+2026-06-16 (13,6 %), las dos últimas ya post-roll. Entraron a la medición como una
+sesión cualquiera.
+
+Ninguno de los runners filtra por liquidez. H2 ya está anulada por escala, así que
+esto no cambia una conclusión, pero **la próxima corrida tiene que excluirlas** y hace
+falta una compuerta de sesión reutilizable. Queda anotado en el registro.
 
 | | |
 | :-- | :-- |
