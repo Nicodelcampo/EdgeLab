@@ -145,6 +145,7 @@ namespace NinjaTrader.NinjaScript.Indicators
         private readonly List<Zone> zones = new List<Zone>();
         public IReadOnlyList<Zone> PublicZones { get { return zones; } }
 
+        private bool dibujoInicialHecho = false;
         private int clusterCounter = 0;
         private readonly List<Cluster> clusters = new List<Cluster>();
         private readonly List<string> activeDrawTags = new List<string>();
@@ -196,12 +197,20 @@ namespace NinjaTrader.NinjaScript.Indicators
 
                 // C. Filtros volumen
                 MinVolumeRate            = 100;
-                // CAMBIADO 2026-09-07: era 50. Con 50 la mediana de volumen de zona es
-                // 64, asi que casi todas viven pegadas a la compuerta y el turnover de
-                // zonas da 38%. Con 10 el turnover del CLUSTER cae a ~1% (medido, ver
-                // docs/research/). La paridad EXACT esta certificada con 50: para
-                // reproducir el oraculo, volver a 50 y PesoZona=Conteo.
-                MinTotalVolume           = 10;
+                // VUELTO A 50 el 2026-09-07, despues de probarlo en el chart.
+                //
+                // Con 10 nacen ~7.000 zonas por sesion en vez de ~480, y eso rompe el
+                // indicador de dos maneras a la vez: satura el arbol de objetos de dibujo
+                // de NinjaTrader al cargar, y hace que los clusters se fusionen hasta
+                // quedar enormes -- ancho mediano de 70 ticks contra 22 con umbral 50.
+                //
+                // La configuracion de investigacion (umbral 10, peso por volumen) sigue
+                // siendo la elegida por el test de estabilidad, pero vive en Python
+                // (hftzones_nq.CAMPAIGN_FROZEN), donde 7.000 zonas no cuestan nada y no
+                // hay nada que dibujar. El chart es para MIRAR el objeto; la medicion no
+                // pasa por aca. Son dos usos distintos y no tienen por que compartir
+                // defaults.
+                MinTotalVolume           = 50;
 
                 // D. Buckets
                 PredatorAvgMs            = 5;
@@ -227,7 +236,9 @@ namespace NinjaTrader.NinjaScript.Indicators
                 // (turnover 0.6% contra un contrato de 5%; ~55 clusters por sesion
                 // cubriendo ~5% del rango). Provisional: una sesion, validacion de
                 // tres en curso al momento de escribir esto.
-                PesoZona                 = HFTPesoZona.Volumen;
+                // Conteo, no Volumen: es lo que la paridad certifica y lo que el chart
+                // necesita para ser legible. El peso continuo se barre en Python.
+                PesoZona                 = HFTPesoZona.Conteo;
                 MinContributingZones     = 3;
                 SoloLogEnVivo            = true;
                 HaloSigmaTicks           = 3.0;   // Ancho de banda del kernel gaussiano en ticks
@@ -276,6 +287,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 activeDrawTags.Clear();
                 idCounter      = 0;
                 clusterCounter = 0;
+                dibujoInicialHecho = false;
                 lastSide       = 0;
                 flowBucket     = long.MinValue;
                 fTicks         = 0;
@@ -315,6 +327,13 @@ namespace NinjaTrader.NinjaScript.Indicators
 
             if (BarsInProgress != 0) return;
             if (CurrentBars[0] < 2) return;
+
+            // Primera barra en tiempo real: recien aca se dibuja, de una sola vez.
+            if (State == State.Realtime && !dibujoInicialHecho)
+            {
+                dibujoInicialHecho = true;
+                DibujarTodo(true);
+            }
 
             // En cierre de barra primaria: chequear expiración temporal y refrescar visuales
             VerificarExpiracionClusters();
@@ -982,6 +1001,12 @@ namespace NinjaTrader.NinjaScript.Indicators
         // ===================== DIBUJO Y RENDERIZADO VISUAL =====================
         private void DibujarTodo(bool forceRedraw)
         {
+            // Mismo diferimiento que los clusters: durante el historico no se dibuja
+            // nada. Cada zona son dos objetos (rectangulo + texto) que se extienden
+            // ExtensionDibujo barras hacia adelante; crearlos mientras corre la carga es
+            // trabajo puro para algo que nadie mira todavia.
+            if (State != State.Realtime && !forceRedraw) return;
+
             // Zonas individuales (si están habilitadas)
             if (DibujarZonasIndividuales)
             {
@@ -1018,6 +1043,12 @@ namespace NinjaTrader.NinjaScript.Indicators
 
         private void DibujarCluster(Cluster c)
         {
+            // DIBUJO DIFERIDO. Durante el historico un mismo cluster se redibuja en cada
+            // expansion, en cada cambio de estado y cada RedrawVolumeThreshold contratos
+            // consumidos: miles de Draw.Rectangle sobre objetos que nadie va a ver hasta
+            // que termine la carga. Se saltean todos y se hace UNA pasada al pasar a
+            // tiempo real, sobre los clusters que quedaron vivos.
+            if (State != State.Realtime) { c.Drawn = false; return; }
             if (!MostrarClusters) return;
 
             // Manejo de Ocultamiento según estado
