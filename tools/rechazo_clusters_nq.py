@@ -152,8 +152,21 @@ def main(argv=None):
         r["n_muestras"] = len(ms)
         r["n_borde"] = sum(1 for m in ms if m["borde"])
         resumen.append(r)
-        print(f"{t0.date()}  barras={r['barras']:,}  clusters={r['clusters']:>4}  "
-              f"contactos={len(ms):>6,}  en borde={r['n_borde']:>5,}")
+        # Guardado parcial por sesión (checkpointing para no perder progreso)
+        parcial_out = (REPO / a.out).with_name(Path(a.out).stem + "_parcial.json")
+        try:
+            t_p = cr.tabla(todas, p) if todas else []
+            ag_p = cr.agregado(todas) if todas else {}
+            n_b_p = ag_p.get("borde", {}).get("n", 0)
+            mde_p = cd.mde_proporcion(n_b_p, celdas=max(1, len(t_p)), deff=5.0) if n_b_p else None
+            parcial_out.parent.mkdir(parents=True, exist_ok=True)
+            with open(parcial_out, "w", encoding="utf-8") as fp:
+                json.dump(dict(config=hc.CAMPAIGN_FROZEN, muestreo=p, sesiones=resumen,
+                               sesiones_completadas=len(resumen), sesiones_pedidas=len(ventanas),
+                               n=len(todas), mde=mde_p, agregado=ag_p, tabla=t_p),
+                          fp, ensure_ascii=False, indent=1)
+        except Exception as e:
+            print(f"WARN al escribir parcial: {e}")
 
     if not todas:
         print("sin muestras")

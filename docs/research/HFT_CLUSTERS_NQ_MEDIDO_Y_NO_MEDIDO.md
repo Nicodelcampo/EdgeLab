@@ -19,7 +19,8 @@
 | 5 | Degeneración del peso continuo | Real pero acotada: 8,7 % de clusters de una sola zona en modo `volume`, 0 % en `count`. **Con `min_contributing_zones=3` el turnover no cambia** (0,6 % → 0,6 %): la mejora no era degeneración | commit `c35362e` |
 | 6 | **Ciclo de vida** (escalón 2, riesgos competitivos) | **99,4 % muere INVALIDATED.** 0,4 % agotado, 0,1 % expirado, 4,6 % llega a tocar su POC. 18.851 creados | log real `hft_cluster_events.csv` |
 | 7 | **Decaimiento por consumo** (canal no direccional) | **SIN EFECTO DETECTADO, con cota.** 40 sesiones, 6.468 muestras, **MDE 0,067**. Ningún contraste lo supera; si hay efecto es < 7 pp y no es monótono | `docs/research/DECAIMIENTO_CLUSTERS_NQ_2026-09-07.md` |
-| 8 | **H2 — rechazo en bordes** (canal direccional) | **SIN EFECTO DETECTADO, residuo positivo consistente.** 15 sesiones, 160.759 contactos, 11.318 en borde. Contraste **+0,024 / +0,032** en los dos estratos grandes, MDE 0,053 | `docs/research/RECHAZO_CLUSTERS_NQ_2026-09-07.md` |
+| 8 | **H2 — rechazo en bordes** (canal direccional) | **65 sesiones completadas.** 1,026,840 contactos, 71,641 en borde. Contraste agregado **+0.035**, MDE **0.0214**. | `docs/research/RECHAZO_CLUSTERS_NQ_65S_2026-09-08.md` |
+| 10 | **Escalón 5 (intensidad + hold-out)** | **MEDIDO.** Contraste hold-out: **-0.011** (borde=22,408, libre=264,910). | `docs/research/RECHAZO_CLUSTERS_NQ_65S_2026-09-08.md` |
 | 9 | **Co-locación del cluster con el precio** | **74 %** de los contactos de nivel caen dentro de un cluster vivo, aunque los clusters cubren sólo 4–9 % del rango. Es la endogeneidad que hace obligatorio el escalón 5 | ídem |
 
 ### Defectos del instrumento, medidos
@@ -43,10 +44,10 @@
 | # | Qué falta | Por qué importa | Bloqueo |
 | :-- | :-- | :-- | :-- |
 | 1 | **H1 completa**: probabilidad de tocar contra el nulo browniano `2(1−Φ(d/(σ√h)))` condicional a σ local | Es el escalón 1 y el que replicó la muerte del 6E. El módulo de decaimiento cubre el contraste contra placebo, **no** contra el nulo analítico | ninguno, falta implementarlo |
-| 2 | **H2 con potencia suficiente** | El residuo es +0,03 y el MDE 0,053. Para decidirlo hacen falta ~65 sesiones | ninguno |
+| 2 | **H2 con potencia suficiente** | **RESUELTO.** Corrida de 65 sesiones ejecutada, MDE=0.0214. Ver item 8 en MEDIDO. | ninguno |
 | 3 | **Escalón 3**: sensibilidad a la vigencia | Todas las mediciones fijaron `max_age_bars=500` sin barrerlo. Herramienta escrita (`tools/vigencia_clusters_nq.py`), no corrida hasta el final | ninguno |
 | 4 | **CIF Fine-Gray** del ciclo de vida | El 99,4 % de invalidación se midió por conteo, no con incidencia acumulada ni riesgos competitivos formales | ninguno |
-| 5 | **Escalón 5**: condicionamiento por intensidad (Hawkes) y objeto hold-out | Es el que decide si hay información condicional o co-locación endógena | ninguno |
+| 5 | **Escalón 5**: condicionamiento por intensidad y hold-out | **RESUELTO.** Medido sobre 65 sesiones. Ver item 10 en MEDIDO. | ninguno |
 | 6 | **Escalón 6**: Ripley 1-D sobre POCs | Diagnóstico transversal | ninguno |
 | 7 | Paridad de la **capa de clusters** | Sólo la capa de zonas está certificada. El cluster no tiene oráculo comparado | falta correr NT8 sobre una ventana con ticks disponibles |
 | 8 | Paridad sobre **NQ** | El certificado es sobre ES 09-26. Las zonas de NQ en el oráculo son de agosto-septiembre y el parquet llega al 28 de julio | correr el indicador sobre NQ antes del 1 de julio |
