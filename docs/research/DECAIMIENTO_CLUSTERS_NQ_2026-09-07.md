@@ -8,7 +8,41 @@
 
 ---
 
-## Veredicto
+## Actualización — 40 sesiones (2026-09-07, misma jornada)
+
+Se repitió sobre **40 sesiones** de `NQ 06-26` (abril–mayo 2026, pre-holdout):
+**6.468 muestras, MDE 0,0672**. Diez veces más potencia que la corrida de 3 sesiones.
+
+**El resultado se confirma, y se refuerza.** Los contrastes se hicieron **más chicos**,
+no más grandes — que es lo que pasa cuando lo que se veía era ruido.
+
+| consumo | n | reentra | cruza | barras adentro |
+| :-- | --: | --: | --: | --: |
+| 0,0–0,2 | 1.560 | −0,012 | −0,019 | −0,47 |
+| 0,2–0,4 | 824 | −0,010 | +0,005 | −0,33 |
+| 0,4–0,6 | 500 | **−0,062** | −0,020 | −1,41 |
+| 0,6–0,8 | 416 | +0,017 | −0,014 | +0,14 |
+| 0,8–1,0 | 3.168 | −0,018 | −0,002 | −0,29 |
+
+**Ningún contraste supera el MDE de 0,067.** El bin 0,4–0,6, que en la corrida de 3
+sesiones daba −0,351 con n=37, ahora da **−0,062 con n=500**. Era ruido, como se
+sospechaba.
+
+**Lo que ahora sí se puede afirmar:** si existe un efecto de decaimiento en el canal de
+reentrada, es **menor a 7 puntos porcentuales**. Y no hay rastro de monotonía: el
+contraste no cae con el consumo.
+
+**Lo que sigue sin poder afirmarse:** que el efecto sea exactamente cero. El panel es
+por barra y está autocorrelacionado; el MDE asume un efecto de diseño de 5, que es una
+estimación y no una medición. Si el `deff` real fuera 15, el MDE sería ~0,12.
+
+**Y el signo sigue yendo al revés.** La reentrada es negativa en 4 de 5 bins, la
+permanencia en 4 de 5. Dentro del MDE, así que no es evidencia — pero la dirección del
+residuo no favorece la hipótesis de atracción en ninguna de las dos corridas.
+
+---
+
+## Veredicto (corrida original de 3 sesiones)
 
 **SIN EFECTO DETECTADO, NO CERRADO.** No hay curva de decaimiento que ajustar: el
 contraste contra el placebo no decae con el consumo. Y el nivel del contraste tampoco es
