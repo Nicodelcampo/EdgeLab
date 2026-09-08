@@ -1,0 +1,147 @@
+"""Rechazo en bordes de cluster: fija las decisiones del canal direccional.
+
+Lo que se clava acá, más que la aritmética: que un contacto no se cuente varias veces,
+que el desenlace se resuelva por lo que pasa **primero**, que los indefinidos queden
+fuera del denominador, y que el contraste se lea estratificado y no agregado.
+"""
+import pytest
+
+from edgelab.research import cluster_rejection as cr
+
+P = cr._p()
+
+
+def _b(lo, hi, close=None):
+    return dict(lo=lo, hi=hi, close=close if close is not None else hi)
+
+
+# ------------------------------------------------------------------ contactos
+
+def test_un_contacto_exige_venir_DE_LEJOS():
+    """Tocar un nivel a un tick de distancia no es una aproximación."""
+    barras = [_b(100, 100, 100), _b(100, 101, 101)]
+    assert cr.contactos(barras, 1, dict(P, dist_min_ticks=4)) == []
+    barras = [_b(100, 100, 100), _b(100, 110, 110)]
+    niveles = [tk for tk, _ in cr.contactos(barras, 1, dict(P, dist_min_ticks=4))]
+    assert 104 in niveles and 110 in niveles
+    assert 101 not in niveles, "a 1 tick del close previo no cuenta"
+
+
+def test_un_nivel_ya_tocado_NO_vuelve_a_contar():
+    """Si no, la misma aproximación se cuenta muchas veces y N se infla sin información."""
+    barras = [_b(100, 110, 110), _b(100, 100, 100), _b(100, 110, 110)]
+    niveles = [tk for tk, _ in cr.contactos(barras, 2, dict(P, ventana_previa=30))]
+    assert niveles == [], "todos esos niveles se tocaron en la barra 0"
+
+
+def test_el_lado_dice_desde_donde_vino():
+    barras = [_b(100, 100, 100), _b(100, 120, 120)]
+    lados = dict(cr.contactos(barras, 1, P))
+    assert lados[115] == 1, "subiendo"
+    barras = [_b(200, 200, 200), _b(180, 200, 180)]
+    lados = dict(cr.contactos(barras, 1, P))
+    assert lados[185] == -1, "bajando"
+
+
+# ------------------------------------------------------------------ desenlace
+
+def test_rechazo_es_volver_por_donde_vino():
+    barras = [_b(100, 100, 100), _b(100, 110, 110)]
+    barras += [_b(104, 108, 105)]          # vuelve 6 ticks abajo del nivel 110
+    d = cr.desenlace(barras, 1, nivel=110, lado=1, p=dict(P, retro_ticks=4))
+    assert d == "rechaza"
+
+
+def test_cruce_es_seguir_de_largo():
+    barras = [_b(100, 100, 100), _b(100, 110, 110), _b(112, 116, 115)]
+    d = cr.desenlace(barras, 1, nivel=110, lado=1, p=dict(P, penetracion_ticks=4))
+    assert d == "cruza"
+
+
+def test_se_resuelve_por_LO_QUE_PASA_PRIMERO():
+    """No por dónde queda el precio al final: eso dependería del horizonte, que es un
+    parámetro nuestro, no del mercado."""
+    barras = [_b(100, 100, 100), _b(100, 110, 110)]
+    barras += [_b(105, 106, 106)]           # primero rechaza
+    barras += [_b(114, 120, 118)]           # despues cruza
+    assert cr.desenlace(barras, 1, 110, 1, dict(P, retro_ticks=4,
+                                                penetracion_ticks=4)) == "rechaza"
+
+
+def test_indefinido_cuando_no_pasa_ninguna_de_las_dos():
+    barras = [_b(100, 100, 100), _b(100, 110, 110)]
+    barras += [_b(109, 111, 110) for _ in range(5)]
+    assert cr.desenlace(barras, 1, 110, 1, dict(P, horizonte=5)) == "indefinido"
+
+
+def test_sin_horizonte_devuelve_None():
+    barras = [_b(100, 100, 100), _b(100, 110, 110)]
+    assert cr.desenlace(barras, 1, 110, 1, P) is None
+
+
+# ------------------------------------------------------------------ borde vs dentro
+
+def test_borde_y_dentro_son_objetos_DISTINTOS():
+    """La hipótesis es sobre los extremos. Un nivel del medio es otra cosa."""
+    cl = [dict(lower_tk=100, upper_tk=120)]
+    assert cr.es_borde_de_cluster(100, cl) and cr.es_borde_de_cluster(120, cl)
+    assert not cr.es_borde_de_cluster(110, cl), "el medio no es borde"
+    assert cr.esta_dentro(110, cl)
+
+
+def test_la_tolerancia_del_borde_es_explicita():
+    cl = [dict(lower_tk=100, upper_tk=120)]
+    assert cr.es_borde_de_cluster(101, cl, tolerancia=1)
+    assert not cr.es_borde_de_cluster(103, cl, tolerancia=1)
+
+
+# ------------------------------------------------------------------ la tabla
+
+def _m(borde, des, dist=10, sigma=1.0):
+    return dict(borde=borde, desenlace=des, distancia=dist, sigma=sigma)
+
+
+def test_los_INDEFINIDOS_quedan_fuera_del_denominador():
+    """Meterlos adentro haría que la tasa dependa del horizonte elegido."""
+    ms = ([_m(True, "rechaza")] * 3 + [_m(True, "cruza")] * 1
+          + [_m(True, "indefinido")] * 96)
+    a = cr.agregado(ms)
+    assert a["borde"]["n"] == 4
+    assert a["borde"]["rechazo"] == pytest.approx(0.75)
+    assert a["borde"]["indefinidos"] == 96
+
+
+def test_la_tabla_contrasta_borde_contra_no_borde_DENTRO_del_estrato():
+    ms = ([_m(True, "rechaza", dist=5)] * 40 + [_m(True, "cruza", dist=5)] * 60
+          + [_m(False, "rechaza", dist=5)] * 20 + [_m(False, "cruza", dist=5)] * 80)
+    t = cr.tabla(ms, P)
+    assert len(t) == 1
+    f = t[0]
+    assert f["rechazo_borde"] == pytest.approx(0.4)
+    assert f["rechazo_sin_borde"] == pytest.approx(0.2)
+    assert f["contraste"] == pytest.approx(0.2)
+    assert f["suficiente"] is True
+
+
+def test_un_estrato_flaco_se_publica_igual_pero_marcado():
+    ms = [_m(True, "rechaza", dist=5)] * 5 + [_m(False, "cruza", dist=5)] * 5
+    t = cr.tabla(ms, P, minimo=30)
+    assert t[0]["suficiente"] is False
+    assert t[0]["n_borde"] == 5
+
+
+def test_el_agregado_puede_MENTIR_respecto_del_estratificado():
+    """Paradoja de Simpson. Con exposición al cluster dependiente de la distancia no
+    es un riesgo teórico: por eso el agregado se publica junto a la tabla, nunca solo.
+    """
+    ms = []
+    # estrato CERCA, tasas altas: pocos contactos en borde, muchos sin borde
+    ms += [_m(True, "rechaza", dist=5)] * 9 + [_m(True, "cruza", dist=5)] * 1
+    ms += [_m(False, "rechaza", dist=5)] * 80 + [_m(False, "cruza", dist=5)] * 20
+    # estrato LEJOS, tasas bajas: al reves, muchos en borde y pocos sin borde
+    ms += [_m(True, "rechaza", dist=50)] * 20 + [_m(True, "cruza", dist=50)] * 80
+    ms += [_m(False, "rechaza", dist=50)] * 1 + [_m(False, "cruza", dist=50)] * 9
+    t = cr.tabla(ms, P, minimo=1)
+    assert all(f["contraste"] > 0 for f in t), "en CADA estrato el borde rechaza mas"
+    a = cr.agregado(ms)
+    assert a["contraste"] < 0, "y sin embargo el agregado da al reves"

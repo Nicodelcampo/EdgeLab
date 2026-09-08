@@ -220,25 +220,40 @@ def halo_density(zones, tick_size, params=None):
     if hi_tk - lo_tk > p["max_grid_ticks"]:
         return {}, {}
 
+    # DISPERSION, no barrido. La version anterior recorria cada tick de la
+    # envolvente preguntando por todas las zonas: O(grilla x zonas), con un exp() por
+    # par. Con 7.000 nacimientos de zona por sesion eso domina todo el costo del
+    # modulo. Ahora cada zona reparte su aporte sobre los ~2*radio+1 ticks de su
+    # alcance, y la exponencial sale de una tabla indexada por distancia entera.
+    #
+    # El resultado es IDENTICO, no aproximado: cada tick acumula las zonas en el mismo
+    # orden en que aparecen en `zones`, igual que el barrido, asi que la suma en punto
+    # flotante se hace en el mismo orden. Importa: un empate resuelto distinto podria
+    # caer del otro lado de `min_density`.
+    radio = int(cutoff)
+    lookup = [math.exp(-(float(d) * d) / two_sigma_sq) for d in range(radio + 1)]
+
+    acum_d, acum_v = {}, {}
+    for z, w_z in zip(zones, pesos):
+        z_lo = int(round(z["lower"] / tick_size))
+        z_hi = int(round(z["upper"] / tick_size))
+        vol_z = z.get("total_vol", 0.0)
+        desde = max(int(lo_tk), z_lo - radio)
+        hasta = min(int(hi_tk), z_hi + radio)
+        for tk in range(desde, hasta + 1):
+            d = z_lo - tk if tk < z_lo else (tk - z_hi if tk > z_hi else 0)
+            if d > radio:
+                continue
+            w = w_z * lookup[d]
+            acum_d[tk] = acum_d.get(tk, 0.0) + w
+            acum_v[tk] = acum_v.get(tk, 0.0) + w * vol_z
+
     density, vol_w = {}, {}
-    for tk in range(int(lo_tk), int(hi_tk) + 1):
-        precio = tk * tick_size
-        suma_d = 0.0
-        suma_v = 0.0
-        for z, w_z in zip(zones, pesos):
-            if precio < z["lower"]:
-                d = (z["lower"] - precio) / tick_size
-            elif precio > z["upper"]:
-                d = (precio - z["upper"]) / tick_size
-            else:
-                d = 0.0
-            if d <= cutoff:
-                w = w_z * math.exp(-(d * d) / two_sigma_sq)
-                suma_d += w
-                suma_v += w * z.get("total_vol", 0.0)
-        if suma_d >= p["min_density"]:
-            density[tk] = suma_d
-            vol_w[tk] = suma_v
+    umbral = p["min_density"]
+    for tk, val in acum_d.items():
+        if val >= umbral:
+            density[tk] = val
+            vol_w[tk] = acum_v[tk]
     return density, vol_w
 
 
