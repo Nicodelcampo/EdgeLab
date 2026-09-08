@@ -167,3 +167,17 @@ def test_fallos_tolerados_no_existe_como_parametro():
     """
     assert "fallos_tolerados" not in hz.STRUCTURAL_DEFAULTS
     assert "fallos_tolerados" not in hz.ACCEPT_DEFAULTS
+
+
+def test_la_config_de_campana_DIVERGE_del_default_a_proposito():
+    """El default reproduce el `.cs` certificado; la campaña mide otra cosa.
+
+    Si alguien "arregla" la divergencia igualando los dos, el validador de paridad
+    empieza a comparar contra otra población y el certificado queda inaplicable sin
+    que nadie lo note. Este test existe para que ese cambio falle ruidosamente.
+    """
+    assert hz.ACCEPT_DEFAULTS["min_total_volume"] == 50.0, "el certificado es con 50"
+    assert hz.CAMPAIGN_FROZEN["min_total_volume"] == 10, "la campaña mide con 10"
+    otros = {k: v for k, v in hz.CAMPAIGN_FROZEN.items() if k != "min_total_volume"}
+    assert otros == {k: v for k, v in hz.ACCEPT_DEFAULTS.items()
+                     if k != "min_total_volume"}, "sólo ese eje diverge"

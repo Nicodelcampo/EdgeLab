@@ -124,7 +124,12 @@ def correr(instrumento, parquet, tick_size, db=DB):
     if not ts:
         return dict(error="el parquet no cubre la ventana del oraculo")
 
-    espejo, _ = hz.accept_all(hz.detect_candidates(ts, px, vo), tick_size=tick_size)
+    # Umbrales CERTIFICADOS, fijados explicitamente. No se heredan de los defaults del
+    # modulo: si manana alguien mueve un default, este validador tiene que seguir
+    # comparando contra la misma configuracion con la que se emitio el certificado, o
+    # el resultado deja de significar lo que el documento dice que significa.
+    espejo, _ = hz.accept_all(hz.detect_candidates(ts, px, vo),
+                              dict(hz.ACCEPT_DEFAULTS), tick_size=tick_size)
 
     idx = collections.defaultdict(list)
     for c in espejo:

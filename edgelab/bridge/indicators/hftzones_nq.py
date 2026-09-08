@@ -67,6 +67,18 @@ ACCEPT_DEFAULTS = dict(
     retroceso_pct_height=50.0,
 )
 
+# La configuracion de la campana NO es la certificada, y la diferencia es deliberada.
+#
+# ACCEPT_DEFAULTS reproduce el `.cs` v1.0.0 y es lo que el certificado de paridad
+# valida (7.494/7.494 zonas, 20 campos). CAMPAIGN_FROZEN es lo que el test de
+# estabilidad target-free eligio para medir: umbral de volumen 10 en vez de 50, porque
+# con 50 el turnover de zonas da 38% contra un contrato de 5%.
+#
+# Se mantienen SEPARADAS a proposito. Si se hiciera de CAMPAIGN_FROZEN el default, el
+# validador de paridad compararia contra otra poblacion y el certificado quedaria
+# silenciosamente inaplicable. `tests/bridge/test_hftzones_nq.py` fija la divergencia.
+CAMPAIGN_FROZEN = dict(ACCEPT_DEFAULTS, min_total_volume=10)
+
 # Orden en que el .cs evalúa las compuertas. Importa para reportar CUÁL falló:
 # se informa la primera, igual que el original corta en la primera.
 GATE_ORDER = ("pasos", "sweep_o_absorb", "velocidad", "duracion",

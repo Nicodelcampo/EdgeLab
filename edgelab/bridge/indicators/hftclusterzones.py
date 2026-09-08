@@ -64,6 +64,18 @@ puede tener muchas zonas —estable— con picos igual de nítidos.
 `"count"` sigue siendo el default porque es lo que reproduce el `.cs` y lo que la
 paridad certifica. Las otras dos son variantes de investigación y no tienen oráculo.
 
+**Y traen un efecto secundario que hay que acotar.** Con peso continuo, `min_density`
+deja de significar "cuántas zonas confluyen": una zona con volumen ≥ `min_density` veces
+la mediana alcanza el umbral **ella sola**, en los ticks de su propio interior donde el
+gaussiano vale 1. Medido sobre una sesión de NQ con `min_density=3`: en modo `count`
+el 0 % de los clusters tiene una sola zona contribuyente; en `volume`, el 8,7 %.
+
+Eso importa más de lo que parece, porque un cluster de una sola zona es **trivialmente
+estable** ante una perturbación de membresía — no depende de ninguna zona marginal. Así
+que parte de la mejora de turnover que muestra el peso continuo podría ser degeneración
+disfrazada de robustez. `min_contributing_zones` es la compuerta que lo separa: exigir
+confluencia real y volver a medir. Si la mejora sobrevive, es real.
+
 ## Cómo se usa para medir
 
 `ClusterEngine` emite un evento por cada transición. Ese flujo de eventos **es** el
@@ -76,7 +88,7 @@ from __future__ import annotations
 import math
 
 NAME = "HFTClusterZones"
-VERSION = "1.0"
+VERSION = "1.1"
 
 RESEARCH_DEFAULTS = dict(
     # --- construccion del cluster ---
@@ -102,6 +114,19 @@ RESEARCH_DEFAULTS = dict(
     # segun su calidad. Ver la nota "Por que el peso continuo" en el docstring.
     weight_mode="count",        # count | volume | log_volume
     weight_ref_vol=0.0,         # 0 = normalizar por la mediana del pool
+    min_contributing_zones=1,   # confluencia minima real; ver nota abajo
+)
+
+# Configuracion congelada para la campana H-CLUSTER-NQ por el test de estabilidad
+# target-free sobre tres sesiones. NO es el default: el default reproduce el `.cs`
+# v1.0.0, que es lo unico con oraculo. Ver `docs/research/PREREGISTRO_H-CLUSTER-NQ`.
+CAMPAIGN_FROZEN = dict(
+    RESEARCH_DEFAULTS,
+    weight_mode="volume",
+    min_contributing_zones=3,
+    halo_sigma_ticks=3.0,
+    min_density=3.0,
+    max_age_bars=500,
 )
 
 ACTIVE = "Active"
@@ -304,6 +329,12 @@ class ClusterEngine:
                     seed_cvd += z.get("cvd", 0.0)
                     n_zonas += 1
                     start_bar = min(start_bar, z["start_bar"])
+
+            # Confluencia real: cuantas zonas aportan de verdad, sin importar su peso.
+            # Con peso continuo una sola zona gorda puede cruzar min_density; esta
+            # compuerta es lo unico que distingue un cluster de una zona redibujada.
+            if n_zonas < int(p.get("min_contributing_zones", 1)):
+                continue
 
             cap = max(p["min_capacity_volume"], seed_vol * p["capacity_multiplier"])
 

@@ -1,4 +1,4 @@
-﻿// # meta indicator=HFTClusterZonesNQ,version=1.0.0
+﻿// # meta indicator=HFTClusterZonesNQ,version=1.1.0
 // HFTClusterZonesNQ.cs - Detector HFT NQ/MNQ con CLUSTERS POR HALO DE PROXIMIDAD (KDE)
 // y CONSUMO DINÁMICO DE LIQUIDEZ (DESGASTE PROGRESIVO POR CONTRATO NEGOCIADO).
 //
@@ -41,6 +41,14 @@ namespace NinjaTrader.NinjaScript.Indicators
         Depleted,
         Invalidated,
         Expired
+    }
+
+    /// <summary>Como pesa cada zona en el campo gravitacional del cluster.</summary>
+    public enum HFTPesoZona
+    {
+        Conteo,      // 1 por zona: reproduce el comportamiento original
+        Volumen,     // proporcional al volumen, normalizado por la mediana del pool
+        LogVolumen   // logaritmico: una zona de 10x el volumen pesa ~2x, no 10x
     }
 
     public enum HFTZoneBucket
@@ -178,7 +186,12 @@ namespace NinjaTrader.NinjaScript.Indicators
 
                 // C. Filtros volumen
                 MinVolumeRate            = 100;
-                MinTotalVolume           = 50;
+                // CAMBIADO 2026-09-07: era 50. Con 50 la mediana de volumen de zona es
+                // 64, asi que casi todas viven pegadas a la compuerta y el turnover de
+                // zonas da 38%. Con 10 el turnover del CLUSTER cae a ~1% (medido, ver
+                // docs/research/). La paridad EXACT esta certificada con 50: para
+                // reproducir el oraculo, volver a 50 y PesoZona=Conteo.
+                MinTotalVolume           = 10;
 
                 // D. Buckets
                 PredatorAvgMs            = 5;
@@ -200,6 +213,12 @@ namespace NinjaTrader.NinjaScript.Indicators
 
                 // H. Clusters: Kernel de Proximidad & Halo
                 MostrarClusters          = true;
+                // Configuracion congelada por el test de estabilidad target-free
+                // (turnover 0.6% contra un contrato de 5%; ~55 clusters por sesion
+                // cubriendo ~5% del rango). Provisional: una sesion, validacion de
+                // tres en curso al momento de escribir esto.
+                PesoZona                 = HFTPesoZona.Volumen;
+                MinContributingZones     = 3;
                 HaloSigmaTicks           = 3.0;   // Ancho de banda del kernel gaussiano en ticks
                 MinClusterDensity        = 3.0;   // Umbral de densidad de confluencia continua
                 ClusterLookbackZones     = 120;   // Cantidad de zonas recientes evaluadas en halo
@@ -588,6 +607,39 @@ namespace NinjaTrader.NinjaScript.Indicators
             long maxTk = (long)Math.Ceiling(maxP / TickSize);
             if (maxTk - minTk > 2500) return; // Protección contra rangos anómalos
 
+            // 3b. PESO DE CADA ZONA (agregado 2026-09-07 tras el test de estabilidad).
+            //
+            // El indicador usaba kernel suave para la DISTANCIA y conteo binario para la
+            // PERTENENCIA: cada zona que sobrevivia al umbral aportaba 1, y las que no,
+            // 0. Medido con el contrato del repo (volumen +-1 en dos tercios de los
+            // ticks), el turnover de clusters daba 53% con umbral 25 y densidad 8.
+            // Ponderando por volumen baja a 24%, y con umbral 10 baja de 5.8% a 1.0%.
+            //
+            // El peso se normaliza por la MEDIANA de volumen del pool para que
+            // MinClusterDensity siga significando aproximadamente "cuantas zonas" y las
+            // dos variantes sean comparables sin recalibrar el umbral.
+            double[] pesoZona = new double[pool.Count];
+            if (PesoZona == HFTPesoZona.Conteo)
+            {
+                for (int i = 0; i < pool.Count; i++) pesoZona[i] = 1.0;
+            }
+            else
+            {
+                List<double> vols = new List<double>();
+                for (int i = 0; i < pool.Count; i++)
+                    if (pool[i].TotalVol > 0) vols.Add(pool[i].TotalVol);
+                vols.Sort();
+                double refVol = vols.Count > 0 ? vols[vols.Count / 2] : 1.0;
+                if (refVol <= 0) refVol = 1.0;
+                for (int i = 0; i < pool.Count; i++)
+                {
+                    double r = pool[i].TotalVol / refVol;
+                    pesoZona[i] = PesoZona == HFTPesoZona.Volumen
+                        ? r
+                        : Math.Log(1.0 + r) / Math.Log(2.0);   // log comprime la cola
+                }
+            }
+
             // 3. Evaluar Kernel Gaussiano continuo en cada tick
             double twoSigmaSq = 2.0 * HaloSigmaTicks * HaloSigmaTicks;
             Dictionary<long, double> densityMap   = new Dictionary<long, double>();
@@ -609,7 +661,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 
                     if (dTicks <= (3.5 * HaloSigmaTicks))
                     {
-                        double weight = Math.Exp(-(dTicks * dTicks) / twoSigmaSq);
+                        double weight = pesoZona[i] * Math.Exp(-(dTicks * dTicks) / twoSigmaSq);
                         sumDensity += weight;
                         sumVol     += (weight * z.TotalVol);
                     }
@@ -698,6 +750,15 @@ namespace NinjaTrader.NinjaScript.Indicators
                         clusterStartBar = Math.Min(clusterStartBar, z.StartBar);
                     }
                 }
+
+                // CONFLUENCIA REAL. Con peso continuo, MinClusterDensity deja de
+                // significar "cuantas zonas": una zona con volumen >= MinClusterDensity
+                // veces la mediana cruza el umbral ELLA SOLA, en los ticks de su propio
+                // interior donde el gaussiano vale 1. Medido sobre una sesion de NQ: en
+                // modo Conteo el 0% de los clusters tiene una sola zona; en Volumen, 8,7%.
+                // Un cluster de una sola zona es trivialmente estable, asi que sin esta
+                // compuerta la robustez medida podria ser degeneracion disfrazada.
+                if (zCount < MinContributingZones) continue;
 
                 double capacityVol = Math.Max(MinCapacityVolume, seedVol * CapacityMultiplier);
 
@@ -1049,13 +1110,20 @@ namespace NinjaTrader.NinjaScript.Indicators
                 csvWriter = new StreamWriter(new FileStream(EventLogPath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite));
                 csvWriter.AutoFlush = true;
 
+                // PROCEDENCIA: las lineas "#" se escriben SIEMPRE, no solo al crear el
+                // archivo. El FileStream es Append y EventLogPath tiene un default fijo,
+                // asi que una corrida nueva anexaba sus filas debajo del encabezado de
+                // la corrida anterior -- con otra version y otros parametros, y sin
+                // ninguna marca que permitiera separarlas. El archivo quedaba internamente
+                // coherente y con procedencia falsa, que es la peor combinacion.
+                // Empiezan con "#": un parser que saltea comentarios las tolera en el medio.
+                csvWriter.WriteLine("# meta indicator=HFTClusterZonesNQ,version=1.1.0");
+                csvWriter.WriteLine(string.Format("# params sigma={0},minDensity={1},capMult={2},invalTicks={3},peso={4},minTotalVol={5},maxAgeBars={6},lookback={7},minContrib={8},instrument={9}",
+                    HaloSigmaTicks, MinClusterDensity, CapacityMultiplier, InvalidationTicks,
+                    PesoZona, MinTotalVolume, MaxClusterAgeBars, ClusterLookbackZones,
+                    MinContributingZones, Instrument.FullName));
                 if (!fileExists)
-                {
-                    csvWriter.WriteLine("# meta indicator=HFTClusterZonesNQ,version=1.0.0");
-                    csvWriter.WriteLine(string.Format("# params sigma={0},minDensity={1},capMult={2},invalTicks={3}",
-                        HaloSigmaTicks, MinClusterDensity, CapacityMultiplier, InvalidationTicks));
                     csvWriter.WriteLine("timestamp,event,cluster_id,start_ts,end_ts,lower,upper,poc,peak_density,seed_vol,seed_cvd,cap_vol,vol_inside,delta_inside,remaining_cap_pct,state");
-                }
                 csvReady = true;
             }
             catch (Exception ex)
@@ -1402,6 +1470,16 @@ namespace NinjaTrader.NinjaScript.Indicators
         [NinjaScriptProperty]
         [Display(Name="Mostrar Clusters Gravitacionales", Order=1, GroupName="H. Clusters Gravitacionales")]
         public bool MostrarClusters { get; set; }
+
+        [NinjaScriptProperty]
+        [Display(Name="Peso de zona en el campo", Order=1, GroupName="H. Clusters Gravitacionales",
+            Description="Conteo = original (cada zona vale 1). Volumen = pondera por volumen: mucho mas estable ante ruido. Ver docs/research/PREREGISTRO_H-CLUSTER-NQ.")]
+        public HFTPesoZona PesoZona { get; set; }
+
+        [NinjaScriptProperty][Range(1, 50)]
+        [Display(Name="Min zonas contribuyentes", Order=2, GroupName="H. Clusters Gravitacionales",
+            Description="Confluencia minima real. Con peso por volumen, una sola zona grande puede cruzar el umbral de densidad; esto lo impide.")]
+        public int MinContributingZones { get; set; }
 
         [NinjaScriptProperty][Range(0.5, 20.0)]
         [Display(Name="Halo Sigma (ticks)", Order=2, GroupName="H. Clusters Gravitacionales", Description="Ancho de banda del kernel gaussiano de influencia continua. Default 3.0.")]
