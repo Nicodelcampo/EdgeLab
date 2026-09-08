@@ -1,5 +1,5 @@
-// # meta indicator=HFTClusterZonesNQ,version=1.1.0
-// HFTClusterZonesNQ.cs - Detector HFT NQ/MNQ con CLUSTERS POR HALO DE PROXIMIDAD (KDE)
+﻿// # meta indicator=HFTClusterZonesNQDx,version=1.7.0
+// HFTClusterZonesNQDx.cs - Detector HFT NQ/MNQ con CLUSTERS POR HALO DE PROXIMIDAD (KDE)
 // y CONSUMO DINÁMICO DE LIQUIDEZ (DESGASTE PROGRESIVO POR CONTRATO NEGOCIADO).
 //
 // Innovaciones de Arquitectura de Microestructura:
@@ -30,47 +30,38 @@ using NinjaTrader.Data;
 using NinjaTrader.NinjaScript;
 using NinjaTrader.NinjaScript.DrawingTools;
 using NinjaTrader.Core.FloatingPoint;
+using SharpDX;
+using SharpDX.DirectWrite;
 #endregion
 
-// El enum va en el namespace GLOBAL, no dentro de NinjaTrader.NinjaScript.Indicators.
-// Motivo: NT8 genera wrappers de este indicador en los namespaces Strategies y
-// MarketAnalyzerColumns, y las firmas generadas incluyen el tipo de cada
-// NinjaScriptProperty. Desde esos namespaces un tipo declarado en Indicators no se
-// resuelve y la compilacion falla con CS0246. Es el mismo patron que usa BigTrap2.cs
-// para sus cuatro enums.
-//
-// Los otros enums del archivo (HFTClusterState, HFTZoneBucket) SI pueden vivir adentro:
-// nunca son el tipo de una propiedad expuesta, asi que no aparecen en el codigo generado.
-
 /// <summary>Como pesa cada zona en el campo gravitacional del cluster.</summary>
-public enum HFTPesoZona
+public enum HFTPesoZonaDx
 {
-    Conteo,      // 1 por zona: reproduce el comportamiento original
-    Volumen,     // proporcional al volumen, normalizado por la mediana del pool
-    LogVolumen   // logaritmico: una zona de 10x el volumen pesa ~2x, no 10x
+    Conteo,      // 1 por zona: reproduce la definicion de confluencia original
+    Volumen,     // Ponderado continuo por volumen, normalizado por la mediana del pool
+    LogVolumen   // Logaritmico (base 2): comprime valores extremos de volumen
 }
 
 namespace NinjaTrader.NinjaScript.Indicators
 {
-    public enum HFTClusterState
+    public class HFTClusterZonesNQDx : Indicator
     {
-        Active,
-        TouchedPOC,
-        Depleted,
-        Invalidated,
-        Expired
-    }
+        public enum HFTClusterState
+        {
+            Active,
+            TouchedPOC,
+            Depleted,
+            Invalidated,
+            Expired
+        }
 
-    public enum HFTZoneBucket
-    {
-        Predator,
-        Ultra,
-        Fast,
-        Absorb
-    }
-
-    public class HFTClusterZonesNQ : Indicator
-    {
+        public enum HFTZoneBucket
+        {
+            Predator,
+            Ultra,
+            Fast,
+            Absorb
+        }
         public sealed class Zone
         {
             public int          StartBar, EndBar;
@@ -113,6 +104,12 @@ namespace NinjaTrader.NinjaScript.Indicators
             public double           VolumeInside;
             public double           DeltaInside;
             public bool             TouchedPoc;
+            public bool             HasEntered;
+            public int              EntrySide;
+            public int              FirstTouchBar;
+            public DateTime         FirstTouchTime;
+            public int              DeathBar;
+            public DateTime         DeathTime;
             public HFTClusterState  State;
             public int              ContributingZonesCount;
             public Brush            FillBrush;
@@ -164,12 +161,28 @@ namespace NinjaTrader.NinjaScript.Indicators
         private StreamWriter csvWriter;
         private bool         csvReady = false;
 
+        // ===================== SHARPDX / DIRECT2D RECURSOS =====================
+        private SharpDX.Direct2D1.SolidColorBrush dxFillBrush;
+        private SharpDX.Direct2D1.SolidColorBrush dxBorderBrush;
+        private SharpDX.Direct2D1.SolidColorBrush dxPocBrush;
+        private SharpDX.Direct2D1.SolidColorBrush dxTextBrush;
+        private SharpDX.Direct2D1.StrokeStyle     dxPocStrokeStyle;
+        private SharpDX.DirectWrite.TextFormat    dxTextFormat;
+        // Etiquetas ya dibujadas en este frame: evita que los clusters solapados
+        // escriban el texto uno encima del otro y quede ilegible.
+        private readonly List<SharpDX.RectangleF> dxEtiquetasUsadas = new List<SharpDX.RectangleF>();
+        private bool                              dxResourcesCreated = false;
+
+        // ===================== TABLA GAUSSIANA PRECOMPUTADA (KDE) =====================
+        private double[] expLookup;
+        private int      expLookupMaxTicks = 0;
+
         protected override void OnStateChange()
         {
             if (State == State.SetDefaults)
             {
                 Description              = "Detector HFT NQ con Clusters Gravitacionales por Kernel de Proximidad y Consumo Progresivo de Liquidez.";
-                Name                     = "HFTClusterZonesNQ";
+                Name                     = "HFTClusterZonesNQDx";
                 Calculate                = Calculate.OnBarClose;
                 IsOverlay                = true;
                 DisplayInDataBox         = true;
@@ -196,19 +209,6 @@ namespace NinjaTrader.NinjaScript.Indicators
 
                 // C. Filtros volumen
                 MinVolumeRate            = 100;
-                // VUELTO A 50 el 2026-09-07, despues de probarlo en el chart.
-                //
-                // Con 10 nacen ~7.000 zonas por sesion en vez de ~480, y eso rompe el
-                // indicador de dos maneras a la vez: satura el arbol de objetos de dibujo
-                // de NinjaTrader al cargar, y hace que los clusters se fusionen hasta
-                // quedar enormes -- ancho mediano de 70 ticks contra 22 con umbral 50.
-                //
-                // La configuracion de investigacion (umbral 10, peso por volumen) sigue
-                // siendo la elegida por el test de estabilidad, pero vive en Python
-                // (hftzones_nq.CAMPAIGN_FROZEN), donde 7.000 zonas no cuestan nada y no
-                // hay nada que dibujar. El chart es para MIRAR el objeto; la medicion no
-                // pasa por aca. Son dos usos distintos y no tienen por que compartir
-                // defaults.
                 MinTotalVolume           = 50;
 
                 // D. Buckets
@@ -231,42 +231,39 @@ namespace NinjaTrader.NinjaScript.Indicators
 
                 // H. Clusters: Kernel de Proximidad & Halo
                 MostrarClusters          = true;
-                // Configuracion congelada por el test de estabilidad target-free
-                // (turnover 0.6% contra un contrato de 5%; ~55 clusters por sesion
-                // cubriendo ~5% del rango). Provisional: una sesion, validacion de
-                // tres en curso al momento de escribir esto.
-                // Conteo, no Volumen: es lo que la paridad certifica y lo que el chart
-                // necesita para ser legible. El peso continuo se barre en Python.
-                PesoZona                 = HFTPesoZona.Conteo;
-                MinContributingZones     = 3;
-                SoloLogEnVivo            = true;
-                HaloSigmaTicks           = 3.0;   // Ancho de banda del kernel gaussiano en ticks
-                MinClusterDensity        = 3.0;   // Umbral de densidad de confluencia continua
+                PesoZona                 = HFTPesoZonaDx.Conteo;
+                MinContributingZones     = 2;
+                HaloSigmaTicks           = 3.0;   // Ancho de banda del kernel gaussiano en ticks (calibrado empiricamente)
+                MinClusterDensity        = 3.5;   // Umbral de densidad de confluencia continua (calibrado en NQ: ~7-10 clusters/sesion)
                 ClusterLookbackZones     = 120;   // Cantidad de zonas recientes evaluadas en halo
-                MaxClusterAgeBars        = 800;   // Barras antes de que un cluster inactivo expire
+                MaxClusterAgeBars        = 2500;  // Barras antes de que un cluster inactivo expire
 
                 // I. Consumo y Desgaste Dinámico
                 SoloMuertePorBarras       = false; // Si es true, la muerte ocurre exclusivamente por conteo de barras
                 BarrasExtensionMuerte    = 500;   // Cantidad fija de barras que vive y se extiende el cluster
                 ActivarConsumoVolumen    = true;
-                MinCapacityVolume        = 1200;  // Piso de contratos necesarios para agotar un cluster
-                CapacityMultiplier       = 2.5;   // Multiplicador sobre el volumen semilla original
+                MinCapacityVolume        = 400;   // Mitad del volumen requerido para morir (Default 400)
+                CapacityMultiplier       = 1.0;   // Multiplicador reducido a la mitad (Default 1.0)
                 InvalidationTicks        = 14;    // Perforación en ticks para invalidación violenta
                 RedrawVolumeThreshold    = 50;    // Redibujar en sub-serie cada N contratos consumidos
 
                 // J. Visual Clusters
-                OpacidadCluster          = 60;
-                OpacidadMinima           = 8;
+                OpacidadCluster          = 30;    // Mitad de opacidad inicial (Default 30% en vez de 60%)
+                OpacidadMinima           = 4;     // Opacidad remanente reducida a la mitad (Default 4%)
                 ProyectarAlFuturo         = true;
                 MostrarTextoCluster      = true;
                 DibujarPocCluster        = true;
-                OcultarAgotados          = false; // Si false, se mantienen en opacidad mínima como zonas absorbidas
-                OcultarInvalidados       = true;
+                OcultarAgotados          = false; // No ocultar de base: visibles en el pasado pero dejan de prolongarse al morir
+                OcultarInvalidados       = false; // No ocultar de base: dejan de prolongarse al invalidarse
 
                 ColorClusterNeutral      = Brushes.Gold;
                 ColorClusterBull         = Brushes.DeepSkyBlue;
                 ColorClusterBear         = Brushes.Crimson;
                 ColorBordeCluster        = Brushes.DarkOrange;
+
+                // Rendimiento & SharpDX
+                UsarSharpDX              = true;
+                LogOnlyRealtime          = true;
 
                 // K. Logging
                 EnableDbLogging          = true;
@@ -292,6 +289,8 @@ namespace NinjaTrader.NinjaScript.Indicators
                 flowBucket     = long.MinValue;
                 fTicks         = 0;
 
+                InitGaussianLookup();
+
                 if (EnableDbLogging) SetupDb();
                 if (EnableEventCsv)  SetupCsv();
             }
@@ -300,7 +299,27 @@ namespace NinjaTrader.NinjaScript.Indicators
                 CloseCsv();
                 CloseDb();
                 LimpiarDibujos();
+                DisposeDxResources();
             }
+        }
+
+        public override void OnRenderTargetChanged()
+        {
+            base.OnRenderTargetChanged();
+            DisposeDxResources();
+        }
+
+        private void InitGaussianLookup()
+        {
+            double sigma = Math.Max(0.5, HaloSigmaTicks);
+            double twoSigmaSq = 2.0 * sigma * sigma;
+            int maxTicks = (int)Math.Ceiling(3.5 * sigma);
+            expLookup = new double[maxTicks + 1];
+            for (int d = 0; d <= maxTicks; d++)
+            {
+                expLookup[d] = Math.Exp(-(d * d) / twoSigmaSq);
+            }
+            expLookupMaxTicks = maxTicks;
         }
 
         private void ResetState()
@@ -328,9 +347,15 @@ namespace NinjaTrader.NinjaScript.Indicators
             if (BarsInProgress != 0) return;
             if (CurrentBars[0] < 2) return;
 
+            // Consumo de volumen optimizado por barra primaria (cubre datos históricos y gráficos de cualquier resolución)
+            if (ActivarConsumoVolumen && clusters.Count > 0)
+            {
+                ActualizarConsumoBarra(Lows[0][0], Highs[0][0], Volumes[0][0]);
+            }
+
             // En cierre de barra primaria: chequear expiración temporal y refrescar visuales
             VerificarExpiracionClusters();
-            DibujarTodo(false);
+            if (!UsarSharpDX) DibujarTodo(false);
         }
 
         // ===================== DETECTOR DE SWEEPS HFT =====================
@@ -612,39 +637,13 @@ namespace NinjaTrader.NinjaScript.Indicators
 
             if (pool.Count < 2) return;
 
-            // 2. Determinar envolvente global de precios de las zonas activas
-            double minP = double.MaxValue;
-            double maxP = double.MinValue;
-            for (int i = 0; i < pool.Count; i++)
+            if (expLookup == null || expLookup.Length == 0) InitGaussianLookup();
+
+            // Ponderacion de zona segun configuracion (Conteo, Volumen o LogVolumen)
+            double[] pesoZonaArr = new double[pool.Count];
+            if (PesoZona == HFTPesoZonaDx.Conteo)
             {
-                if (pool[i].Lower < minP) minP = pool[i].Lower;
-                if (pool[i].Upper > maxP) maxP = pool[i].Upper;
-            }
-
-            // Margen de 3 sigmas a los extremos
-            double sigmaPrice = HaloSigmaTicks * TickSize;
-            minP -= (3.0 * sigmaPrice);
-            maxP += (3.0 * sigmaPrice);
-
-            long minTk = (long)Math.Floor(minP / TickSize);
-            long maxTk = (long)Math.Ceiling(maxP / TickSize);
-            if (maxTk - minTk > 2500) return; // Protección contra rangos anómalos
-
-            // 3b. PESO DE CADA ZONA (agregado 2026-09-07 tras el test de estabilidad).
-            //
-            // El indicador usaba kernel suave para la DISTANCIA y conteo binario para la
-            // PERTENENCIA: cada zona que sobrevivia al umbral aportaba 1, y las que no,
-            // 0. Medido con el contrato del repo (volumen +-1 en dos tercios de los
-            // ticks), el turnover de clusters daba 53% con umbral 25 y densidad 8.
-            // Ponderando por volumen baja a 24%, y con umbral 10 baja de 5.8% a 1.0%.
-            //
-            // El peso se normaliza por la MEDIANA de volumen del pool para que
-            // MinClusterDensity siga significando aproximadamente "cuantas zonas" y las
-            // dos variantes sean comparables sin recalibrar el umbral.
-            double[] pesoZona = new double[pool.Count];
-            if (PesoZona == HFTPesoZona.Conteo)
-            {
-                for (int i = 0; i < pool.Count; i++) pesoZona[i] = 1.0;
+                for (int i = 0; i < pool.Count; i++) pesoZonaArr[i] = 1.0;
             }
             else
             {
@@ -657,83 +656,54 @@ namespace NinjaTrader.NinjaScript.Indicators
                 for (int i = 0; i < pool.Count; i++)
                 {
                     double r = pool[i].TotalVol / refVol;
-                    pesoZona[i] = PesoZona == HFTPesoZona.Volumen
+                    pesoZonaArr[i] = PesoZona == HFTPesoZonaDx.Volumen
                         ? r
-                        : Math.Log(1.0 + r) / Math.Log(2.0);   // log comprime la cola
+                        : Math.Log(1.0 + r) / Math.Log(2.0);
                 }
             }
 
-            // 3. CAMPO GAUSSIANO — dispersion por zona, no barrido por tick.
-            //
-            // POR QUE CAMBIO (2026-09-07). La version anterior recorria CADA tick de la
-            // envolvente (hasta 2.500) y para cada uno evaluaba TODAS las zonas del pool
-            // (hasta 120), llamando Math.Exp cada vez: ~300.000 exponenciales por
-            // llamada. Con MinTotalVolume=10 nacen ~7.000 zonas por sesion y esto corre
-            // en cada nacimiento: ~2.000 millones de exponenciales por sesion. Eso
-            // congelaba NinjaTrader al cargar el chart.
-            //
-            // Ahora cada zona DISPERSA su aporte solo sobre los ticks de su propio radio
-            // (3.5 sigma, ~11 ticks con sigma=3), y la exponencial sale de una tabla
-            // precomputada indexada por distancia entera en ticks. Costo: 120 zonas x 22
-            // ticks = ~2.600 sumas, sin una sola exponencial. Dos ordenes de magnitud.
-            //
-            // EL RESULTADO ES BIT A BIT IDENTICO. La acumulacion de cada tick recorre las
-            // zonas en el MISMO orden del pool que el barrido anterior, asi que la suma
-            // en punto flotante se hace en el mismo orden y da el mismo double. Esto no
-            // es un detalle: si el orden cambiara, dos corridas podrian caer de lados
-            // distintos de MinClusterDensity en un empate.
-            //
-            // La distancia en ticks es ENTERA por construccion: bordes de zona y precios
-            // de grilla son ambos multiplos de TickSize.
-            int radioTicks = (int)Math.Floor(3.5 * HaloSigmaTicks);
-            double twoSigmaSq = 2.0 * HaloSigmaTicks * HaloSigmaTicks;
-
-            double[] expLookup = new double[radioTicks + 1];
-            for (int d = 0; d <= radioTicks; d++)
-                expLookup[d] = Math.Exp(-((double)d * d) / twoSigmaSq);
-
+            // 2. Acumulacion rapida de densidad gaussiana continua (KDE sin Math.Exp redundante)
             Dictionary<long, double> densityMap   = new Dictionary<long, double>();
             Dictionary<long, double> volWeightMap = new Dictionary<long, double>();
-            Dictionary<long, double> acumD = new Dictionary<long, double>();
-            Dictionary<long, double> acumV = new Dictionary<long, double>();
 
             for (int i = 0; i < pool.Count; i++)
             {
                 Zone z = pool[i];
-                long zLoTk = (long)Math.Round(Math.Min(z.Lower, z.Upper) / TickSize);
-                long zHiTk = (long)Math.Round(Math.Max(z.Lower, z.Upper) / TickSize);
+                double pz = pesoZonaArr[i];
+                long zLoTk = (long)Math.Round(z.Lower / TickSize);
+                long zHiTk = (long)Math.Round(z.Upper / TickSize);
+                long spanLo = zLoTk - expLookupMaxTicks;
+                long spanHi = zHiTk + expLookupMaxTicks;
 
-                long desde = Math.Max(minTk, zLoTk - radioTicks);
-                long hasta = Math.Min(maxTk, zHiTk + radioTicks);
-
-                for (long tk = desde; tk <= hasta; tk++)
+                for (long tk = spanLo; tk <= spanHi; tk++)
                 {
-                    int d = tk < zLoTk ? (int)(zLoTk - tk)
-                          : tk > zHiTk ? (int)(tk - zHiTk)
-                          : 0;
-                    if (d > radioTicks) continue;
+                    int dTicks;
+                    if (tk < zLoTk) dTicks = (int)(zLoTk - tk);
+                    else if (tk > zHiTk) dTicks = (int)(tk - zHiTk);
+                    else dTicks = 0;
 
-                    double weight = pesoZona[i] * expLookup[d];
-                    double dPrev, vPrev;
-                    acumD[tk] = (acumD.TryGetValue(tk, out dPrev) ? dPrev : 0.0) + weight;
-                    acumV[tk] = (acumV.TryGetValue(tk, out vPrev) ? vPrev : 0.0)
-                                + (weight * z.TotalVol);
+                    if (dTicks <= expLookupMaxTicks)
+                    {
+                        double weight = expLookup[dTicks] * pz;
+                        double d; densityMap.TryGetValue(tk, out d); densityMap[tk] = d + weight;
+                        double v; volWeightMap.TryGetValue(tk, out v); volWeightMap[tk] = v + (weight * z.TotalVol);
+                    }
                 }
             }
 
-            foreach (KeyValuePair<long, double> kv in acumD)
+            // 3. Filtrar ticks que superan el umbral de densidad minima
+            List<long> qTicks = new List<long>();
+            foreach (var kvp in densityMap)
             {
-                if (kv.Value >= MinClusterDensity)
+                if (kvp.Value >= MinClusterDensity)
                 {
-                    densityMap[kv.Key]   = kv.Value;
-                    volWeightMap[kv.Key] = acumV[kv.Key];
+                    qTicks.Add(kvp.Key);
                 }
             }
 
-            if (densityMap.Count == 0) return;
+            if (qTicks.Count == 0) return;
 
-            // 4. Segmentar ticks calificados en islas continuas (tolerancia de 1 tick de separación)
-            List<long> qTicks = densityMap.Keys.ToList();
+            // 4. Segmentar ticks calificados en islas continuas (tolerancia de 1 tick de separacion)
             qTicks.Sort();
 
             List<List<long>> islands = new List<List<long>>();
@@ -763,10 +733,10 @@ namespace NinjaTrader.NinjaScript.Indicators
             for (int c = 0; c < islands.Count; c++)
             {
                 List<long> island = islands[c];
-                double cLower = island.Min() * TickSize - (TickSize * 0.5);
-                double cUpper = island.Max() * TickSize + (TickSize * 0.5);
+                double cLower = island[0] * TickSize - (TickSize * 0.5);
+                double cUpper = island[island.Count - 1] * TickSize + (TickSize * 0.5);
 
-                // Encontrar POC de máxima densidad gravitacional
+                // Encontrar POC de maxima densidad gravitacional
                 long pocTk = island[0];
                 double peakDensity = 0.0;
                 double maxVolW = 0.0;
@@ -807,13 +777,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                     }
                 }
 
-                // CONFLUENCIA REAL. Con peso continuo, MinClusterDensity deja de
-                // significar "cuantas zonas": una zona con volumen >= MinClusterDensity
-                // veces la mediana cruza el umbral ELLA SOLA, en los ticks de su propio
-                // interior donde el gaussiano vale 1. Medido sobre una sesion de NQ: en
-                // modo Conteo el 0% de los clusters tiene una sola zona; en Volumen, 8,7%.
-                // Un cluster de una sola zona es trivialmente estable, asi que sin esta
-                // compuerta la robustez medida podria ser degeneracion disfrazada.
+                // Confluencia minima real: un cluster requiere al menos MinContributingZones zonas
                 if (zCount < MinContributingZones) continue;
 
                 double capacityVol = Math.Max(MinCapacityVolume, seedVol * CapacityMultiplier);
@@ -894,6 +858,11 @@ namespace NinjaTrader.NinjaScript.Indicators
                         VolumeInside           = 0,
                         DeltaInside            = 0,
                         TouchedPoc             = false,
+                        HasEntered             = false,
+                        FirstTouchBar          = -1,
+                        FirstTouchTime         = DateTime.MinValue,
+                        DeathBar               = -1,
+                        DeathTime              = DateTime.MinValue,
                         State                  = HFTClusterState.Active,
                         ContributingZonesCount = zCount,
                         FillBrush              = fillCol,
@@ -916,32 +885,78 @@ namespace NinjaTrader.NinjaScript.Indicators
         }
 
         // ===================== CONSUMO DE VOLUMEN Y MÁQUINA DE ESTADOS =====================
-        private void ActualizarConsumoTick(double price, double vol, int side)
+        private void ActualizarConsumoBarra(double barL, double barH, double barV)
         {
-            double invalMargin = InvalidationTicks * TickSize;
+            if (barV <= 0) return;
+
+            // Si estamos en tiempo real y la serie tick está activa, el consumo fino lo maneja ActualizarConsumoTick
+            if (State == State.Realtime && BarsArray.Length > 1 && CurrentBars.Length > 1 && CurrentBars[1] > 0)
+                return;
 
             for (int i = 0; i < clusters.Count; i++)
             {
                 Cluster c = clusters[i];
-                if (c.State == HFTClusterState.Depleted || c.State == HFTClusterState.Invalidated || c.State == HFTClusterState.Expired)
-                    continue;
+                if (c.State == HFTClusterState.Depleted) continue;
 
-                // 1. Detección de Violación / Perforación violenta
-                if (price > (c.Upper + invalMargin) || price < (c.Lower - invalMargin))
+                // Chequeo de solapamiento espacial entre la barra y el cluster
+                if (barH >= c.Lower && barL <= c.Upper)
                 {
-                    // Si el precio atravesó violentamente sin haber agotado la capacidad
-                    if (c.VolumeInside < (c.CapacityVolume * 0.8))
+                    if (!c.HasEntered || c.FirstTouchBar < 0)
                     {
-                        c.State = HFTClusterState.Invalidated;
-                        LogClusterEvent("CLUSTER_INVALIDATED", c);
-                        DibujarCluster(c);
-                        continue;
+                        c.HasEntered = true;
+                        c.FirstTouchBar = CurrentBars[0];
+                        c.FirstTouchTime = Times[0][0];
+                    }
+
+                    // Fracción proporcional del volumen de la barra negociado dentro del cluster
+                    double overlapLo = Math.Max(barL, c.Lower);
+                    double overlapHi = Math.Min(barH, c.Upper);
+                    double barRng = barH - barL;
+                    double fraction = barRng > 0 ? (overlapHi - overlapLo) / barRng : 1.0;
+                    double volInside = Math.Max(1.0, barV * fraction);
+
+                    c.VolumeInside += volInside;
+
+                    // Touch al POC
+                    if (!c.TouchedPoc && barL <= c.PocPrice && barH >= c.PocPrice)
+                    {
+                        c.TouchedPoc = true;
+                        if (c.State == HFTClusterState.Active) c.State = HFTClusterState.TouchedPOC;
+                        LogClusterEvent("CLUSTER_TOUCHED_POC", c);
+                    }
+
+                    // Chequeo de agotamiento / muerte de zona
+                    if (c.VolumeInside >= c.CapacityVolume)
+                    {
+                        if (!SoloMuertePorBarras)
+                        {
+                            c.State = HFTClusterState.Depleted;
+                            c.DeathBar = CurrentBars[0];
+                            c.DeathTime = Times[0][0];
+                            LogClusterEvent("CLUSTER_DEPLETED", c);
+                        }
                     }
                 }
+            }
+        }
 
-                // 2. Consumo Activo: el precio está cotizando dentro del cluster
+        private void ActualizarConsumoTick(double price, double vol, int side)
+        {
+            for (int i = 0; i < clusters.Count; i++)
+            {
+                Cluster c = clusters[i];
+                if (c.State == HFTClusterState.Depleted)
+                    continue;
+
+                // Consumo Activo: el precio está cotizando dentro del cluster
                 if (price >= c.Lower && price <= c.Upper)
                 {
+                    if (!c.HasEntered || c.FirstTouchBar < 0)
+                    {
+                        c.HasEntered = true;
+                        c.FirstTouchBar = CurrentBars[0];
+                        c.FirstTouchTime = Times[0][0];
+                    }
                     c.VolumeInside += vol;
                     c.DeltaInside  += (side * vol);
 
@@ -953,37 +968,25 @@ namespace NinjaTrader.NinjaScript.Indicators
                         LogClusterEvent("CLUSTER_TOUCHED_POC", c);
                     }
 
-                    // Chequeo de Agotamiento de Capacidad
-                    double remainingRatio = Math.Max(0.0, 1.0 - (c.VolumeInside / c.CapacityVolume));
-
-                    if (remainingRatio <= 0.0)
+                    // Chequeo de Agotamiento / muerte de zona
+                    if (c.VolumeInside >= c.CapacityVolume)
                     {
                         if (!SoloMuertePorBarras)
                         {
                             c.State = HFTClusterState.Depleted;
+                            c.DeathBar = CurrentBars[0];
+                            c.DeathTime = Times[0][0];
                             LogClusterEvent("CLUSTER_DEPLETED", c);
-                            DibujarCluster(c);
+                            if (!UsarSharpDX) DibujarCluster(c);
                             continue;
                         }
                     }
 
-                    // Refresco dinamico por delta de contratos.
-                    //
-                    // ESTE es el redibujo caro: se dispara cada RedrawVolumeThreshold
-                    // contratos operados dentro del cluster, o sea muchas veces por
-                    // cluster y por sesion. Durante el historico no aporta nada -- el
-                    // desvanecimiento progresivo sólo se percibe en vivo -- y el estado
-                    // final igual queda bien porque cada cambio de estado (agotado,
-                    // invalidado, expirado) redibuja por su cuenta.
-                    //
-                    // Los dibujos de creacion, expansion y muerte NO se saltean: hacerlo
-                    // dejaba el chart con un solo cluster, porque al diferirlos hasta
-                    // tiempo real los clusters viejos exigen un barsAgo de miles de
-                    // barras y el dibujo falla.
-                    if (State == State.Realtime
-                        && Math.Abs(c.VolumeInside - c.LastDrawnVolume) >= RedrawVolumeThreshold)
+                    // Refresco dinámico por delta de contratos
+                    if (Math.Abs(c.VolumeInside - c.LastDrawnVolume) >= RedrawVolumeThreshold)
                     {
-                        DibujarCluster(c);
+                        if (!UsarSharpDX) DibujarCluster(c);
+                        else c.LastDrawnVolume = c.VolumeInside;
                     }
                 }
             }
@@ -1005,8 +1008,10 @@ namespace NinjaTrader.NinjaScript.Indicators
                     if (currentBar - c.EndBar >= limitBars)
                     {
                         c.State = HFTClusterState.Expired;
+                        if (c.DeathBar < 0) c.DeathBar = c.EndBar + limitBars;
+                        c.DeathTime = Times[0][0];
                         LogClusterEvent("CLUSTER_EXPIRED", c);
-                        DibujarCluster(c);
+                        if (!UsarSharpDX) DibujarCluster(c);
                     }
                 }
             }
@@ -1015,6 +1020,7 @@ namespace NinjaTrader.NinjaScript.Indicators
         // ===================== DIBUJO Y RENDERIZADO VISUAL =====================
         private void DibujarTodo(bool forceRedraw)
         {
+            if (UsarSharpDX) return;
             // Zonas individuales (si están habilitadas)
             if (DibujarZonasIndividuales)
             {
@@ -1051,7 +1057,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 
         private void DibujarCluster(Cluster c)
         {
-            if (!MostrarClusters) return;
+            if (UsarSharpDX || !MostrarClusters) return;
 
             // Manejo de Ocultamiento según estado
             if (c.State == HFTClusterState.Invalidated && OcultarInvalidados)
@@ -1155,9 +1161,396 @@ namespace NinjaTrader.NinjaScript.Indicators
             activeDrawTags.Clear();
         }
 
+        // ===================== RENDERIZADO SHARPDX (DIRECT2D) =====================
+        private void EnsureDxResources()
+        {
+            if (dxResourcesCreated && dxFillBrush != null && !dxFillBrush.IsDisposed) return;
+
+            try
+            {
+                if (RenderTarget != null)
+                {
+                    dxFillBrush   = new SharpDX.Direct2D1.SolidColorBrush(RenderTarget, new SharpDX.Color4(1f, 1f, 1f, 1f));
+                    dxBorderBrush = new SharpDX.Direct2D1.SolidColorBrush(RenderTarget, new SharpDX.Color4(1f, 1f, 1f, 1f));
+                    dxPocBrush    = new SharpDX.Direct2D1.SolidColorBrush(RenderTarget, new SharpDX.Color4(1f, 1f, 1f, 1f));
+                    dxTextBrush   = new SharpDX.Direct2D1.SolidColorBrush(RenderTarget, new SharpDX.Color4(1f, 1f, 1f, 1f));
+
+                    if (NinjaTrader.Core.Globals.D2DFactory != null)
+                    {
+                        var strokeProps = new SharpDX.Direct2D1.StrokeStyleProperties
+                        {
+                            DashStyle = SharpDX.Direct2D1.DashStyle.Dash
+                        };
+                        dxPocStrokeStyle = new SharpDX.Direct2D1.StrokeStyle(NinjaTrader.Core.Globals.D2DFactory, strokeProps);
+                    }
+
+                    if (NinjaTrader.Core.Globals.DirectWriteFactory != null)
+                    {
+                        dxTextFormat = new SharpDX.DirectWrite.TextFormat(
+                            NinjaTrader.Core.Globals.DirectWriteFactory,
+                            "Segoe UI",
+                            SharpDX.DirectWrite.FontWeight.SemiBold,
+                            SharpDX.DirectWrite.FontStyle.Normal,
+                            11f);
+                    }
+
+                    dxResourcesCreated = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Print("[HFTCluster] EnsureDxResources: " + ex.Message);
+            }
+        }
+
+        private void DisposeDxResources()
+        {
+            if (dxFillBrush != null) { dxFillBrush.Dispose(); dxFillBrush = null; }
+            if (dxBorderBrush != null) { dxBorderBrush.Dispose(); dxBorderBrush = null; }
+            if (dxPocBrush != null) { dxPocBrush.Dispose(); dxPocBrush = null; }
+            if (dxTextBrush != null) { dxTextBrush.Dispose(); dxTextBrush = null; }
+            if (dxPocStrokeStyle != null) { dxPocStrokeStyle.Dispose(); dxPocStrokeStyle = null; }
+            if (dxTextFormat != null) { dxTextFormat.Dispose(); dxTextFormat = null; }
+            dxResourcesCreated = false;
+        }
+
+        protected override void OnRender(ChartControl chartControl, ChartScale chartScale)
+        {
+            base.OnRender(chartControl, chartScale);
+            if (!UsarSharpDX) return;
+            if (chartControl == null || ChartBars == null || RenderTarget == null) return;
+            if (ChartBars.Count == 0) return;
+
+            EnsureDxResources();
+            if (dxFillBrush == null || dxBorderBrush == null) return;
+
+            var oldAA = RenderTarget.AntialiasMode;
+            RenderTarget.AntialiasMode = SharpDX.Direct2D1.AntialiasMode.PerPrimitive;
+
+            try
+            {
+                int firstBar = ChartBars.FromIndex;
+                int lastBar  = ChartBars.ToIndex;
+                double minP  = chartScale.MinValue;
+                double maxP  = chartScale.MaxValue;
+                float canvasRight = (float)chartControl.CanvasRight;
+                float chartWidth  = (float)chartControl.ActualWidth;
+
+                // 1. Zonas Individuales si están habilitadas
+                if (DibujarZonasIndividuales && zones.Count > 0)
+                {
+                    RenderZonasDx(chartControl, chartScale, firstBar, lastBar, minP, maxP, canvasRight);
+                }
+
+                // 2. Clusters Gravitacionales
+                if (MostrarClusters && clusters.Count > 0)
+                {
+                    RenderClustersDx(chartControl, chartScale, firstBar, lastBar, minP, maxP, canvasRight, chartWidth);
+                }
+            }
+            finally
+            {
+                RenderTarget.AntialiasMode = oldAA;
+            }
+        }
+
+        private void RenderClustersDx(ChartControl chartControl, ChartScale chartScale, int firstBar, int lastBar, double minP, double maxP, float canvasRight, float chartWidth)
+        {
+            dxEtiquetasUsadas.Clear();
+            for (int i = 0; i < clusters.Count; i++)
+            {
+                Cluster c = clusters[i];
+
+                bool isDead = SoloMuertePorBarras
+                    ? (c.State == HFTClusterState.Expired)
+                    : (c.State == HFTClusterState.Depleted || c.State == HFTClusterState.Invalidated || c.State == HFTClusterState.Expired);
+
+                // Filtros de visibilidad por estado (por defecto false para no ocultar de base)
+                if (c.State == HFTClusterState.Invalidated && OcultarInvalidados) continue;
+                if (c.State == HFTClusterState.Depleted && OcultarAgotados && !SoloMuertePorBarras) continue;
+                if (c.State == HFTClusterState.Expired && OcultarAgotados) continue;
+
+                // Viewport Culling vertical
+                if (c.Upper < minP || c.Lower > maxP) continue;
+
+                // Viewport Culling horizontal
+                int deadEndBar = c.DeathBar >= c.StartBar ? c.DeathBar : c.EndBar;
+                if (isDead)
+                {
+                    // Si está muerta, termina en deadEndBar; si ya quedó atrás del viewport visible a la izquierda, no dibujar
+                    if (deadEndBar < firstBar) continue;
+                }
+                else
+                {
+                    if (SoloMuertePorBarras)
+                    {
+                        if (c.EndBar + BarrasExtensionMuerte < firstBar) continue;
+                    }
+                    else if (!ProyectarAlFuturo && c.EndBar < firstBar) continue;
+                }
+                if (c.StartBar > lastBar) continue;
+
+                float xStart = chartControl.GetXByBarIndex(ChartBars, Math.Max(0, c.StartBar));
+                if (float.IsNaN(xStart) || xStart > chartWidth) continue;
+
+                float xEnd;
+                int lastChartBar = ChartBars.Count - 1;
+                float barDist = (float)chartControl.Properties.BarDistance;
+
+                if (isDead)
+                {
+                    // ZONA MUERTA: SE DEJA DE PROLONGAR a partir del punto exacto donde expiró / murió.
+                    // El rectángulo y POC terminan en la vela de muerte, dejando libre y limpio todo el futuro.
+                    if (deadEndBar <= lastChartBar)
+                        xEnd = chartControl.GetXByBarIndex(ChartBars, Math.Max(0, deadEndBar));
+                    else
+                    {
+                        float xLast = chartControl.GetXByBarIndex(ChartBars, Math.Max(0, lastChartBar));
+                        xEnd = xLast + (deadEndBar - lastChartBar) * barDist;
+                    }
+                    if (float.IsNaN(xEnd) || xEnd <= xStart) xEnd = xStart + 15f;
+                }
+                else if (SoloMuertePorBarras)
+                {
+                    // MODO SOLO MUERTE POR BARRAS (EXTEND): se prolonga exactamente hasta cumplir las barras especificadas
+                    int targetBar = c.EndBar + BarrasExtensionMuerte;
+                    if (targetBar <= lastChartBar)
+                        xEnd = chartControl.GetXByBarIndex(ChartBars, Math.Max(0, targetBar));
+                    else
+                    {
+                        float xLast = chartControl.GetXByBarIndex(ChartBars, Math.Max(0, lastChartBar));
+                        xEnd = xLast + (targetBar - lastChartBar) * barDist;
+                    }
+                    if (float.IsNaN(xEnd) || xEnd <= xStart) xEnd = xStart + 15f;
+                }
+                else if (ProyectarAlFuturo)
+                {
+                    // ZONA VIVA: se prolonga hacia adelante señalando nivel activo
+                    xEnd = Math.Max(xStart + 15f, canvasRight);
+                }
+                else
+                {
+                    xEnd = chartControl.GetXByBarIndex(ChartBars, Math.Min(ChartBars.Count - 1, c.EndBar));
+                    if (float.IsNaN(xEnd) || xEnd <= xStart) xEnd = xStart + 15f;
+                }
+
+                if (xEnd < 0) continue;
+
+                float yUpper = chartScale.GetYByValue(c.Upper);
+                float yLower = chartScale.GetYByValue(c.Lower);
+                if (float.IsNaN(yUpper) || float.IsNaN(yLower)) continue;
+
+                float yTop = Math.Min(yUpper, yLower);
+                float yHeight = Math.Max(2.5f, Math.Abs(yLower - yUpper));
+
+                // 1. Color base según sesgo neto de flujo (preserva color de origen: Bull, Bear o Neutral)
+                SharpDX.Color4 baseCol;
+                if (c.SeedCvd > (0.25 * c.SeedVolume))
+                    baseCol = ToColor4(ColorClusterBull, 1.0f);
+                else if (c.SeedCvd < (-0.25 * c.SeedVolume))
+                    baseCol = ToColor4(ColorClusterBear, 1.0f);
+                else
+                    baseCol = ToColor4(ColorClusterNeutral, 1.0f);
+
+                float maxA = (float)(OpacidadCluster / 100.0);
+                float minA = (float)(OpacidadMinima / 100.0);
+
+                // 2. Opacidad de origen (huella histórica intacta de nacimiento del cluster)
+                float originFillAlpha   = maxA;
+                float originBorderAlpha = Math.Min(1.0f, maxA * 1.8f + 0.15f);
+
+                // 3. Opacidad de decaimiento (tramo comerciado / consumido)
+                double remainingRatio = Math.Max(0.0, 1.0 - (c.VolumeInside / Math.Max(1.0, c.CapacityVolume)));
+                float decayFillAlpha;
+                if (c.State == HFTClusterState.Depleted)
+                {
+                    decayFillAlpha = minA;
+                }
+                else if (c.State == HFTClusterState.Invalidated)
+                {
+                    decayFillAlpha = Math.Min(0.06f, minA);
+                }
+                else
+                {
+                    decayFillAlpha = minA + (maxA - minA) * (float)remainingRatio;
+                }
+                float decayBorderAlpha = Math.Min(1.0f, decayFillAlpha * 1.8f + 0.10f);
+
+                // 4. Determinar coordenada X donde comenzó a ser comerciado (xTouch)
+                bool hasBeenTraded = c.HasEntered && c.FirstTouchBar >= c.StartBar && c.VolumeInside > 0;
+                float xTouch = xEnd;
+
+                if (hasBeenTraded)
+                {
+                    xTouch = chartControl.GetXByBarIndex(ChartBars, Math.Min(ChartBars.Count - 1, c.FirstTouchBar));
+                    if (float.IsNaN(xTouch) || xTouch < xStart) xTouch = xStart;
+                    if (xTouch > xEnd) xTouch = xEnd;
+                }
+
+                // Tramo 1: Origen intacto (desde xStart hasta xTouch)
+                float originWidth = hasBeenTraded ? (xTouch - xStart) : (xEnd - xStart);
+                if (originWidth > 0)
+                {
+                    var rectOrigin = new SharpDX.RectangleF(xStart, yTop, originWidth, yHeight);
+                    dxFillBrush.Color   = new SharpDX.Color4(baseCol.Red, baseCol.Green, baseCol.Blue, originFillAlpha);
+                    dxBorderBrush.Color = new SharpDX.Color4(baseCol.Red, baseCol.Green, baseCol.Blue, originBorderAlpha);
+                    RenderTarget.FillRectangle(rectOrigin, dxFillBrush);
+                    RenderTarget.DrawRectangle(rectOrigin, dxBorderBrush, 1.2f);
+                }
+
+                // Tramo 2: Extensión comerciada en decaimiento progresivo (desde xTouch hasta xEnd)
+                if (hasBeenTraded && xEnd > xTouch)
+                {
+                    var rectDecay = new SharpDX.RectangleF(xTouch, yTop, xEnd - xTouch, yHeight);
+                    dxFillBrush.Color   = new SharpDX.Color4(baseCol.Red, baseCol.Green, baseCol.Blue, decayFillAlpha);
+                    dxBorderBrush.Color = new SharpDX.Color4(baseCol.Red, baseCol.Green, baseCol.Blue, decayBorderAlpha);
+                    RenderTarget.FillRectangle(rectDecay, dxFillBrush);
+                    RenderTarget.DrawRectangle(rectDecay, dxBorderBrush, 1.2f);
+                }
+
+                // POC Line segmentada
+                if (DibujarPocCluster)
+                {
+                    float yPoc = chartScale.GetYByValue(c.PocPrice);
+                    if (!float.IsNaN(yPoc))
+                    {
+                        if (hasBeenTraded && xTouch > xStart)
+                        {
+                            dxPocBrush.Color = new SharpDX.Color4(baseCol.Red, baseCol.Green, baseCol.Blue, originBorderAlpha);
+                            if (dxPocStrokeStyle != null)
+                                RenderTarget.DrawLine(new SharpDX.Vector2(xStart, yPoc), new SharpDX.Vector2(xTouch, yPoc), dxPocBrush, 1.8f, dxPocStrokeStyle);
+                            else
+                                RenderTarget.DrawLine(new SharpDX.Vector2(xStart, yPoc), new SharpDX.Vector2(xTouch, yPoc), dxPocBrush, 1.8f);
+
+                            if (xEnd > xTouch)
+                            {
+                                dxPocBrush.Color = new SharpDX.Color4(baseCol.Red, baseCol.Green, baseCol.Blue, decayBorderAlpha);
+                                if (dxPocStrokeStyle != null)
+                                    RenderTarget.DrawLine(new SharpDX.Vector2(xTouch, yPoc), new SharpDX.Vector2(xEnd, yPoc), dxPocBrush, 1.8f, dxPocStrokeStyle);
+                                else
+                                    RenderTarget.DrawLine(new SharpDX.Vector2(xTouch, yPoc), new SharpDX.Vector2(xEnd, yPoc), dxPocBrush, 1.8f);
+                            }
+                        }
+                        else
+                        {
+                            dxPocBrush.Color = new SharpDX.Color4(baseCol.Red, baseCol.Green, baseCol.Blue, originBorderAlpha);
+                            if (dxPocStrokeStyle != null)
+                                RenderTarget.DrawLine(new SharpDX.Vector2(xStart, yPoc), new SharpDX.Vector2(xEnd, yPoc), dxPocBrush, 1.8f, dxPocStrokeStyle);
+                            else
+                                RenderTarget.DrawLine(new SharpDX.Vector2(xStart, yPoc), new SharpDX.Vector2(xEnd, yPoc), dxPocBrush, 1.8f);
+                        }
+                    }
+                }
+
+                // Telemetry Text
+                if (MostrarTextoCluster && dxTextFormat != null && dxTextBrush != null)
+                {
+                    string stateTxt;
+                    switch (c.State)
+                    {
+                        case HFTClusterState.Depleted:    stateTxt = "DEPLETED"; break;
+                        case HFTClusterState.Invalidated: stateTxt = "INVALIDATED"; break;
+                        case HFTClusterState.TouchedPOC:  stateTxt = "TESTING POC"; break;
+                        case HFTClusterState.Expired:     stateTxt = "EXPIRED"; break;
+                        default:                          stateTxt = "ACTIVE"; break;
+                    }
+
+                    string txt = string.Format("[{0}] {1:F1}x | Cap:{2:P0} ({3:F0}/{4:F0}V) POC:{5:F2}",
+                        stateTxt, c.PeakDensity, remainingRatio, c.VolumeInside, c.CapacityVolume, c.PocPrice);
+
+                    float anchoTxt = Math.Max(350f, xEnd - xStart);
+                    var textRect = BuscarHuecoEtiqueta(xStart + 4f, yTop, anchoTxt);
+                    dxTextBrush.Color = new SharpDX.Color4(baseCol.Red, baseCol.Green, baseCol.Blue, originBorderAlpha);
+                    RenderTarget.DrawText(txt, dxTextFormat, textRect, dxTextBrush);
+                }
+            }
+        }
+
+        // Ubica la etiqueta arriba del cluster y, si ese lugar ya lo ocupa otra,
+        // baja de a 14 px hasta encontrar hueco. Sin esto, dos clusters solapados
+        // -- que es lo normal -- escriben el texto en la misma coordenada.
+        private SharpDX.RectangleF BuscarHuecoEtiqueta(float x, float yTop, float ancho)
+        {
+            const float ALTO = 14f;
+            float y = yTop - ALTO;
+            if (y < 2f) y = yTop + 2f;
+            for (int intento = 0; intento < 12; intento++)
+            {
+                var r = new SharpDX.RectangleF(x, y, ancho, ALTO);
+                bool choca = false;
+                for (int k = 0; k < dxEtiquetasUsadas.Count; k++)
+                {
+                    var u = dxEtiquetasUsadas[k];
+                    // solape solo si comparten franja vertical Y se pisan en horizontal
+                    if (Math.Abs(u.Y - r.Y) < ALTO && r.X < u.X + u.Width && u.X < r.X + r.Width)
+                    {
+                        choca = true;
+                        break;
+                    }
+                }
+                if (!choca)
+                {
+                    dxEtiquetasUsadas.Add(r);
+                    return r;
+                }
+                y += ALTO;
+            }
+            var ult = new SharpDX.RectangleF(x, y, ancho, ALTO);
+            dxEtiquetasUsadas.Add(ult);
+            return ult;
+        }
+
+        private void RenderZonasDx(ChartControl chartControl, ChartScale chartScale, int firstBar, int lastBar, double minP, double maxP, float canvasRight)
+        {
+            int startIdx = Math.Max(0, zones.Count - Math.Max(50, ClusterLookbackZones));
+            float zoneAlpha = (float)(OpacidadZonas / 100.0);
+
+            for (int i = startIdx; i < zones.Count; i++)
+            {
+                Zone z = zones[i];
+                if (z.Upper < minP || z.Lower > maxP) continue;
+                if (z.StartBar > lastBar) continue;
+
+                float xStart = chartControl.GetXByBarIndex(ChartBars, Math.Max(0, z.StartBar));
+                if (float.IsNaN(xStart)) continue;
+                float xEnd = Math.Min(canvasRight, xStart + (ExtensionDibujo * (float)chartControl.Properties.BarDistance));
+
+                float yUpper = chartScale.GetYByValue(z.Upper);
+                float yLower = chartScale.GetYByValue(z.Lower);
+                if (float.IsNaN(yUpper) || float.IsNaN(yLower)) continue;
+
+                float yTop = Math.Min(yUpper, yLower);
+                float yHeight = Math.Max(1.5f, Math.Abs(yLower - yUpper));
+
+                var rect = new SharpDX.RectangleF(xStart, yTop, Math.Max(5f, xEnd - xStart), yHeight);
+                dxFillBrush.Color = ToColor4(z.ColorZ, zoneAlpha);
+                RenderTarget.FillRectangle(rect, dxFillBrush);
+
+                if (MostrarTextoZonas && dxTextFormat != null && dxTextBrush != null && !string.IsNullOrEmpty(z.Reporte))
+                {
+                    dxTextBrush.Color = ToColor4(ColorTexto, 0.8f);
+                    float tY = z.Direction == 1 ? yLower + 2f : yUpper - 12f;
+                    var tRect = new SharpDX.RectangleF(xStart, tY, 350f, 12f);
+                    RenderTarget.DrawText(z.Reporte, dxTextFormat, tRect, dxTextBrush);
+                }
+            }
+        }
+
+        private static SharpDX.Color4 ToColor4(System.Windows.Media.Brush wpfBrush, float alpha)
+        {
+            var scb = wpfBrush as System.Windows.Media.SolidColorBrush;
+            if (scb != null)
+            {
+                var c = scb.Color;
+                return new SharpDX.Color4(c.R / 255f, c.G / 255f, c.B / 255f, alpha);
+            }
+            return new SharpDX.Color4(0.8f, 0.8f, 0.8f, alpha);
+        }
+
         // ===================== FLOW STREAM ACCUMULATOR =====================
         private void AccumFlow(DateTime t, double price, double vol, int side)
         {
+            if (LogOnlyRealtime && State != State.Realtime) return;
             long ms = UnixMs(t);
             int  secs = Math.Max(1, FlowBucketSeconds);
             long bucket = (ms / 1000L) / secs;
@@ -1199,20 +1592,13 @@ namespace NinjaTrader.NinjaScript.Indicators
                 csvWriter = new StreamWriter(new FileStream(EventLogPath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite));
                 csvWriter.AutoFlush = true;
 
-                // PROCEDENCIA: las lineas "#" se escriben SIEMPRE, no solo al crear el
-                // archivo. El FileStream es Append y EventLogPath tiene un default fijo,
-                // asi que una corrida nueva anexaba sus filas debajo del encabezado de
-                // la corrida anterior -- con otra version y otros parametros, y sin
-                // ninguna marca que permitiera separarlas. El archivo quedaba internamente
-                // coherente y con procedencia falsa, que es la peor combinacion.
-                // Empiezan con "#": un parser que saltea comentarios las tolera en el medio.
-                csvWriter.WriteLine("# meta indicator=HFTClusterZonesNQ,version=1.1.0");
-                csvWriter.WriteLine(string.Format("# params sigma={0},minDensity={1},capMult={2},invalTicks={3},peso={4},minTotalVol={5},maxAgeBars={6},lookback={7},minContrib={8},instrument={9}",
-                    HaloSigmaTicks, MinClusterDensity, CapacityMultiplier, InvalidationTicks,
-                    PesoZona, MinTotalVolume, MaxClusterAgeBars, ClusterLookbackZones,
-                    MinContributingZones, Instrument.FullName));
                 if (!fileExists)
+                {
+                    csvWriter.WriteLine("# meta indicator=HFTClusterZonesNQDx,version=1.7.0");
+                    csvWriter.WriteLine(string.Format("# params sigma={0},minDensity={1},capMult={2},invalTicks={3}",
+                        HaloSigmaTicks, MinClusterDensity, CapacityMultiplier, InvalidationTicks));
                     csvWriter.WriteLine("timestamp,event,cluster_id,start_ts,end_ts,lower,upper,poc,peak_density,seed_vol,seed_cvd,cap_vol,vol_inside,delta_inside,remaining_cap_pct,state");
+                }
                 csvReady = true;
             }
             catch (Exception ex)
@@ -1224,10 +1610,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 
         private void LogClusterEvent(string eventName, Cluster c)
         {
-            // Durante el historico se procesan cientos de miles de ticks viejos; escribir
-            // cada evento a disco ahi multiplica el tiempo de carga sin aportar nada que
-            // no se pueda reproducir desde los parquets. En vivo se registra todo.
-            if (SoloLogEnVivo && State != State.Realtime) return;
+            if (LogOnlyRealtime && State != State.Realtime) return;
             double remCap = Math.Max(0.0, 1.0 - (c.VolumeInside / c.CapacityVolume));
             long nowTs = UnixMs(Times[0][0]);
 
@@ -1351,7 +1734,7 @@ namespace NinjaTrader.NinjaScript.Indicators
         private void PersistZone(Zone z)
         {
             if (!dbReady) return;
-            if (SoloLogEnVivo && State != State.Realtime) return;
+            if (LogOnlyRealtime && State != State.Realtime) return;
             zoneBuf.Add(new object[] {
                 Instrument.FullName, UnixMs(z.StartTime), UnixMs(z.EndTime), z.Bucket.ToString(), z.Direction,
                 z.Upper, z.Lower, (z.Upper + z.Lower) / 2.0, z.HeightTicks, z.Pasos, z.ValidSteps,
@@ -1565,19 +1948,14 @@ namespace NinjaTrader.NinjaScript.Indicators
         [Display(Name="Mostrar Clusters Gravitacionales", Order=1, GroupName="H. Clusters Gravitacionales")]
         public bool MostrarClusters { get; set; }
 
-        [NinjaScriptProperty]
+[NinjaScriptProperty]
         [Display(Name="Peso de zona en el campo", Order=1, GroupName="H. Clusters Gravitacionales",
-            Description="Conteo = original (cada zona vale 1). Volumen = pondera por volumen: mucho mas estable ante ruido. Ver docs/research/PREREGISTRO_H-CLUSTER-NQ.")]
-        public HFTPesoZona PesoZona { get; set; }
+            Description="Conteo = original (cada zona vale 1). Volumen = pondera por volumen. LogVolumen = comprime extremos.")]
+        public HFTPesoZonaDx PesoZona { get; set; }
 
-        [NinjaScriptProperty]
-        [Display(Name="Loguear solo en vivo", Order=3, GroupName="K. Database & Logs",
-            Description="Saltea la escritura a SQLite y CSV mientras se procesan barras historicas. Reduce mucho el tiempo de carga del chart.")]
-        public bool SoloLogEnVivo { get; set; }
-
-        [NinjaScriptProperty][Range(1, 50)]
+        [NinjaScriptProperty][Range(1, 20)]
         [Display(Name="Min zonas contribuyentes", Order=2, GroupName="H. Clusters Gravitacionales",
-            Description="Confluencia minima real. Con peso por volumen, una sola zona grande puede cruzar el umbral de densidad; esto lo impide.")]
+            Description="Confluencia minima real. Cantidad minima de zonas HFT requeridas para consolidar un cluster gravitacional. Default 2.")]
         public int MinContributingZones { get; set; }
 
         [NinjaScriptProperty][Range(0.5, 20.0)]
@@ -1609,29 +1987,33 @@ namespace NinjaTrader.NinjaScript.Indicators
         [Display(Name="Activar Consumo por Volumen", Order=2, GroupName="I. Consumo y Desgaste", Description="El cluster pierde opacidad progresivamente con cada contrato negociado en su interior.")]
         public bool ActivarConsumoVolumen { get; set; }
 
-        [NinjaScriptProperty][Range(100, 100000)]
-        [Display(Name="Capacidad minima (contratos)", Order=2, GroupName="I. Consumo y Desgaste", Description="Volumen base necesario dentro del cluster para agotarlo por completo. Default 1200.")]
+        [NinjaScriptProperty][Range(50, 100000)]
+        [Display(Name="Capacidad minima (contratos)", Order=3, GroupName="I. Consumo y Desgaste", Description="Volumen base necesario dentro del cluster para agotarlo y matarlo. Default 400.")]
         public double MinCapacityVolume { get; set; }
 
-        [NinjaScriptProperty][Range(0.5, 10.0)]
-        [Display(Name="Multiplicador de Capacidad", Order=3, GroupName="I. Consumo y Desgaste", Description="Multiplicador sobre el volumen semilla original. Default 2.5.")]
+        [NinjaScriptProperty][Range(0.2, 10.0)]
+        [Display(Name="Multiplicador de Capacidad", Order=4, GroupName="I. Consumo y Desgaste", Description="Multiplicador sobre el volumen semilla original. Default 1.0.")]
         public double CapacityMultiplier { get; set; }
 
         [NinjaScriptProperty][Range(1, 100)]
-        [Display(Name="Ticks de Invalidacion (Perforacion)", Order=4, GroupName="I. Consumo y Desgaste", Description="Excursión adversa violenta más allá del cluster que lo marca como Invalidated.")]
+        [Display(Name="Ticks de Invalidacion (Perforacion)", Order=5, GroupName="I. Consumo y Desgaste", Description="Excursión adversa violenta más allá del cluster que lo marca como Invalidated.")]
         public int InvalidationTicks { get; set; }
 
         [NinjaScriptProperty][Range(10, 1000)]
-        [Display(Name="Umbral Redibujo Volumen (contratos)", Order=5, GroupName="I. Consumo y Desgaste", Description="Redibuja el fading en tiempo real cada N contratos consumidos para optimizar CPU.")]
+        [Display(Name="Umbral Redibujo Volumen (contratos)", Order=6, GroupName="I. Consumo y Desgaste", Description="Redibuja el fading en tiempo real cada N contratos consumidos para optimizar CPU.")]
         public int RedrawVolumeThreshold { get; set; }
 
-        // J. Visual Clusters
+        // J. Visual Clusters & SharpDX
+        [NinjaScriptProperty]
+        [Display(Name="Usar SharpDX (Direct2D)", Order=0, GroupName="J. Visual Clusters", Description="Renderizado nativo por GPU Direct2D de ultra-alta velocidad sin lag en el chart.")]
+        public bool UsarSharpDX { get; set; }
+
         [NinjaScriptProperty][Range(1, 100)]
-        [Display(Name="Opacidad inicial cluster", Order=1, GroupName="J. Visual Clusters")]
+        [Display(Name="Opacidad inicial cluster", Order=1, GroupName="J. Visual Clusters", Description="Opacidad al nacer el cluster. Default 30%.")]
         public int OpacidadCluster { get; set; }
 
         [NinjaScriptProperty][Range(1, 50)]
-        [Display(Name="Opacidad minima (remanente)", Order=2, GroupName="J. Visual Clusters")]
+        [Display(Name="Opacidad minima (remanente)", Order=2, GroupName="J. Visual Clusters", Description="Piso de opacidad remanente al agotarse. Default 4%.")]
         public int OpacidadMinima { get; set; }
 
         [NinjaScriptProperty]
@@ -1702,6 +2084,10 @@ namespace NinjaTrader.NinjaScript.Indicators
         [NinjaScriptProperty][Range(1, 60)]
         [Display(Name="Flow Bucket Seconds", Order=6, GroupName="K. Database & Logs")]
         public int FlowBucketSeconds { get; set; }
+
+        [NinjaScriptProperty]
+        [Display(Name="Log Solo en Realtime", Order=7, GroupName="K. Database & Logs", Description="Si es true, no escribe ticks ni flujo histórico a disco durante la carga inicial, acelerando drásticamente la apertura del chart.")]
+        public bool LogOnlyRealtime { get; set; }
         #endregion
     }
 }
@@ -1712,19 +2098,19 @@ namespace NinjaTrader.NinjaScript.Indicators
 {
 	public partial class Indicator : NinjaTrader.Gui.NinjaScript.IndicatorRenderBase
 	{
-		private HFTClusterZonesNQ[] cacheHFTClusterZonesNQ;
-		public HFTClusterZonesNQ HFTClusterZonesNQ(int tickResolution, int minPasos, int maxRangoTickPorVela, int fallosTolerados, bool filtroDireccionEstricto, int minSweepTicks, int maxRetrocesoTicks, int retrocesoPctHeight, int maxAvgMs, int maxTotalMs, int maxPausaMs, int minVolumeRate, int minTotalVolume, int predatorAvgMs, int ultraAvgMs, bool mostrarAbsorb, int minAbsorbPasos, bool dibujarZonasIndividuales, int extensionDibujo, int opacidadZonas, bool mostrarTextoZonas, Brush colorPredator, Brush colorUltra, Brush colorBull, Brush colorBear, Brush colorAbsorb, Brush colorTexto, bool mostrarClusters, HFTPesoZona pesoZona, bool soloLogEnVivo, int minContributingZones, double haloSigmaTicks, double minClusterDensity, int clusterLookbackZones, int maxClusterAgeBars, bool soloMuertePorBarras, int barrasExtensionMuerte, bool activarConsumoVolumen, double minCapacityVolume, double capacityMultiplier, int invalidationTicks, int redrawVolumeThreshold, int opacidadCluster, int opacidadMinima, bool proyectarAlFuturo, bool mostrarTextoCluster, bool dibujarPocCluster, bool ocultarAgotados, bool ocultarInvalidados, Brush colorClusterNeutral, Brush colorClusterBull, Brush colorClusterBear, Brush colorBordeCluster, bool enableDbLogging, string dbPath, bool enableEventCsv, string eventLogPath, bool enableFlowLog, int flowBucketSeconds)
+		private HFTClusterZonesNQDx[] cacheHFTClusterZonesNQDx;
+		public HFTClusterZonesNQDx HFTClusterZonesNQDx(int tickResolution, int minPasos, int maxRangoTickPorVela, int fallosTolerados, bool filtroDireccionEstricto, int minSweepTicks, int maxRetrocesoTicks, int retrocesoPctHeight, int maxAvgMs, int maxTotalMs, int maxPausaMs, int minVolumeRate, int minTotalVolume, int predatorAvgMs, int ultraAvgMs, bool mostrarAbsorb, int minAbsorbPasos, bool dibujarZonasIndividuales, int extensionDibujo, int opacidadZonas, bool mostrarTextoZonas, Brush colorPredator, Brush colorUltra, Brush colorBull, Brush colorBear, Brush colorAbsorb, Brush colorTexto, bool mostrarClusters, HFTPesoZonaDx pesoZona, int minContributingZones, double haloSigmaTicks, double minClusterDensity, int clusterLookbackZones, int maxClusterAgeBars, bool soloMuertePorBarras, int barrasExtensionMuerte, bool activarConsumoVolumen, double minCapacityVolume, double capacityMultiplier, int invalidationTicks, int redrawVolumeThreshold, bool usarSharpDX, int opacidadCluster, int opacidadMinima, bool proyectarAlFuturo, bool mostrarTextoCluster, bool dibujarPocCluster, bool ocultarAgotados, bool ocultarInvalidados, Brush colorClusterNeutral, Brush colorClusterBull, Brush colorClusterBear, Brush colorBordeCluster, bool enableDbLogging, string dbPath, bool enableEventCsv, string eventLogPath, bool enableFlowLog, int flowBucketSeconds, bool logOnlyRealtime)
 		{
-			return HFTClusterZonesNQ(Input, tickResolution, minPasos, maxRangoTickPorVela, fallosTolerados, filtroDireccionEstricto, minSweepTicks, maxRetrocesoTicks, retrocesoPctHeight, maxAvgMs, maxTotalMs, maxPausaMs, minVolumeRate, minTotalVolume, predatorAvgMs, ultraAvgMs, mostrarAbsorb, minAbsorbPasos, dibujarZonasIndividuales, extensionDibujo, opacidadZonas, mostrarTextoZonas, colorPredator, colorUltra, colorBull, colorBear, colorAbsorb, colorTexto, mostrarClusters, pesoZona, soloLogEnVivo, minContributingZones, haloSigmaTicks, minClusterDensity, clusterLookbackZones, maxClusterAgeBars, soloMuertePorBarras, barrasExtensionMuerte, activarConsumoVolumen, minCapacityVolume, capacityMultiplier, invalidationTicks, redrawVolumeThreshold, opacidadCluster, opacidadMinima, proyectarAlFuturo, mostrarTextoCluster, dibujarPocCluster, ocultarAgotados, ocultarInvalidados, colorClusterNeutral, colorClusterBull, colorClusterBear, colorBordeCluster, enableDbLogging, dbPath, enableEventCsv, eventLogPath, enableFlowLog, flowBucketSeconds);
+			return HFTClusterZonesNQDx(Input, tickResolution, minPasos, maxRangoTickPorVela, fallosTolerados, filtroDireccionEstricto, minSweepTicks, maxRetrocesoTicks, retrocesoPctHeight, maxAvgMs, maxTotalMs, maxPausaMs, minVolumeRate, minTotalVolume, predatorAvgMs, ultraAvgMs, mostrarAbsorb, minAbsorbPasos, dibujarZonasIndividuales, extensionDibujo, opacidadZonas, mostrarTextoZonas, colorPredator, colorUltra, colorBull, colorBear, colorAbsorb, colorTexto, mostrarClusters, pesoZona, minContributingZones, haloSigmaTicks, minClusterDensity, clusterLookbackZones, maxClusterAgeBars, soloMuertePorBarras, barrasExtensionMuerte, activarConsumoVolumen, minCapacityVolume, capacityMultiplier, invalidationTicks, redrawVolumeThreshold, usarSharpDX, opacidadCluster, opacidadMinima, proyectarAlFuturo, mostrarTextoCluster, dibujarPocCluster, ocultarAgotados, ocultarInvalidados, colorClusterNeutral, colorClusterBull, colorClusterBear, colorBordeCluster, enableDbLogging, dbPath, enableEventCsv, eventLogPath, enableFlowLog, flowBucketSeconds, logOnlyRealtime);
 		}
 
-		public HFTClusterZonesNQ HFTClusterZonesNQ(ISeries<double> input, int tickResolution, int minPasos, int maxRangoTickPorVela, int fallosTolerados, bool filtroDireccionEstricto, int minSweepTicks, int maxRetrocesoTicks, int retrocesoPctHeight, int maxAvgMs, int maxTotalMs, int maxPausaMs, int minVolumeRate, int minTotalVolume, int predatorAvgMs, int ultraAvgMs, bool mostrarAbsorb, int minAbsorbPasos, bool dibujarZonasIndividuales, int extensionDibujo, int opacidadZonas, bool mostrarTextoZonas, Brush colorPredator, Brush colorUltra, Brush colorBull, Brush colorBear, Brush colorAbsorb, Brush colorTexto, bool mostrarClusters, HFTPesoZona pesoZona, bool soloLogEnVivo, int minContributingZones, double haloSigmaTicks, double minClusterDensity, int clusterLookbackZones, int maxClusterAgeBars, bool soloMuertePorBarras, int barrasExtensionMuerte, bool activarConsumoVolumen, double minCapacityVolume, double capacityMultiplier, int invalidationTicks, int redrawVolumeThreshold, int opacidadCluster, int opacidadMinima, bool proyectarAlFuturo, bool mostrarTextoCluster, bool dibujarPocCluster, bool ocultarAgotados, bool ocultarInvalidados, Brush colorClusterNeutral, Brush colorClusterBull, Brush colorClusterBear, Brush colorBordeCluster, bool enableDbLogging, string dbPath, bool enableEventCsv, string eventLogPath, bool enableFlowLog, int flowBucketSeconds)
+		public HFTClusterZonesNQDx HFTClusterZonesNQDx(ISeries<double> input, int tickResolution, int minPasos, int maxRangoTickPorVela, int fallosTolerados, bool filtroDireccionEstricto, int minSweepTicks, int maxRetrocesoTicks, int retrocesoPctHeight, int maxAvgMs, int maxTotalMs, int maxPausaMs, int minVolumeRate, int minTotalVolume, int predatorAvgMs, int ultraAvgMs, bool mostrarAbsorb, int minAbsorbPasos, bool dibujarZonasIndividuales, int extensionDibujo, int opacidadZonas, bool mostrarTextoZonas, Brush colorPredator, Brush colorUltra, Brush colorBull, Brush colorBear, Brush colorAbsorb, Brush colorTexto, bool mostrarClusters, HFTPesoZonaDx pesoZona, int minContributingZones, double haloSigmaTicks, double minClusterDensity, int clusterLookbackZones, int maxClusterAgeBars, bool soloMuertePorBarras, int barrasExtensionMuerte, bool activarConsumoVolumen, double minCapacityVolume, double capacityMultiplier, int invalidationTicks, int redrawVolumeThreshold, bool usarSharpDX, int opacidadCluster, int opacidadMinima, bool proyectarAlFuturo, bool mostrarTextoCluster, bool dibujarPocCluster, bool ocultarAgotados, bool ocultarInvalidados, Brush colorClusterNeutral, Brush colorClusterBull, Brush colorClusterBear, Brush colorBordeCluster, bool enableDbLogging, string dbPath, bool enableEventCsv, string eventLogPath, bool enableFlowLog, int flowBucketSeconds, bool logOnlyRealtime)
 		{
-			if (cacheHFTClusterZonesNQ != null)
-				for (int idx = 0; idx < cacheHFTClusterZonesNQ.Length; idx++)
-					if (cacheHFTClusterZonesNQ[idx] != null && cacheHFTClusterZonesNQ[idx].TickResolution == tickResolution && cacheHFTClusterZonesNQ[idx].MinPasos == minPasos && cacheHFTClusterZonesNQ[idx].MaxRangoTickPorVela == maxRangoTickPorVela && cacheHFTClusterZonesNQ[idx].FallosTolerados == fallosTolerados && cacheHFTClusterZonesNQ[idx].FiltroDireccionEstricto == filtroDireccionEstricto && cacheHFTClusterZonesNQ[idx].MinSweepTicks == minSweepTicks && cacheHFTClusterZonesNQ[idx].MaxRetrocesoTicks == maxRetrocesoTicks && cacheHFTClusterZonesNQ[idx].RetrocesoPctHeight == retrocesoPctHeight && cacheHFTClusterZonesNQ[idx].MaxAvgMs == maxAvgMs && cacheHFTClusterZonesNQ[idx].MaxTotalMs == maxTotalMs && cacheHFTClusterZonesNQ[idx].MaxPausaMs == maxPausaMs && cacheHFTClusterZonesNQ[idx].MinVolumeRate == minVolumeRate && cacheHFTClusterZonesNQ[idx].MinTotalVolume == minTotalVolume && cacheHFTClusterZonesNQ[idx].PredatorAvgMs == predatorAvgMs && cacheHFTClusterZonesNQ[idx].UltraAvgMs == ultraAvgMs && cacheHFTClusterZonesNQ[idx].MostrarAbsorb == mostrarAbsorb && cacheHFTClusterZonesNQ[idx].MinAbsorbPasos == minAbsorbPasos && cacheHFTClusterZonesNQ[idx].DibujarZonasIndividuales == dibujarZonasIndividuales && cacheHFTClusterZonesNQ[idx].ExtensionDibujo == extensionDibujo && cacheHFTClusterZonesNQ[idx].OpacidadZonas == opacidadZonas && cacheHFTClusterZonesNQ[idx].MostrarTextoZonas == mostrarTextoZonas && cacheHFTClusterZonesNQ[idx].ColorPredator == colorPredator && cacheHFTClusterZonesNQ[idx].ColorUltra == colorUltra && cacheHFTClusterZonesNQ[idx].ColorBull == colorBull && cacheHFTClusterZonesNQ[idx].ColorBear == colorBear && cacheHFTClusterZonesNQ[idx].ColorAbsorb == colorAbsorb && cacheHFTClusterZonesNQ[idx].ColorTexto == colorTexto && cacheHFTClusterZonesNQ[idx].MostrarClusters == mostrarClusters && cacheHFTClusterZonesNQ[idx].PesoZona == pesoZona && cacheHFTClusterZonesNQ[idx].SoloLogEnVivo == soloLogEnVivo && cacheHFTClusterZonesNQ[idx].MinContributingZones == minContributingZones && cacheHFTClusterZonesNQ[idx].HaloSigmaTicks == haloSigmaTicks && cacheHFTClusterZonesNQ[idx].MinClusterDensity == minClusterDensity && cacheHFTClusterZonesNQ[idx].ClusterLookbackZones == clusterLookbackZones && cacheHFTClusterZonesNQ[idx].MaxClusterAgeBars == maxClusterAgeBars && cacheHFTClusterZonesNQ[idx].SoloMuertePorBarras == soloMuertePorBarras && cacheHFTClusterZonesNQ[idx].BarrasExtensionMuerte == barrasExtensionMuerte && cacheHFTClusterZonesNQ[idx].ActivarConsumoVolumen == activarConsumoVolumen && cacheHFTClusterZonesNQ[idx].MinCapacityVolume == minCapacityVolume && cacheHFTClusterZonesNQ[idx].CapacityMultiplier == capacityMultiplier && cacheHFTClusterZonesNQ[idx].InvalidationTicks == invalidationTicks && cacheHFTClusterZonesNQ[idx].RedrawVolumeThreshold == redrawVolumeThreshold && cacheHFTClusterZonesNQ[idx].OpacidadCluster == opacidadCluster && cacheHFTClusterZonesNQ[idx].OpacidadMinima == opacidadMinima && cacheHFTClusterZonesNQ[idx].ProyectarAlFuturo == proyectarAlFuturo && cacheHFTClusterZonesNQ[idx].MostrarTextoCluster == mostrarTextoCluster && cacheHFTClusterZonesNQ[idx].DibujarPocCluster == dibujarPocCluster && cacheHFTClusterZonesNQ[idx].OcultarAgotados == ocultarAgotados && cacheHFTClusterZonesNQ[idx].OcultarInvalidados == ocultarInvalidados && cacheHFTClusterZonesNQ[idx].ColorClusterNeutral == colorClusterNeutral && cacheHFTClusterZonesNQ[idx].ColorClusterBull == colorClusterBull && cacheHFTClusterZonesNQ[idx].ColorClusterBear == colorClusterBear && cacheHFTClusterZonesNQ[idx].ColorBordeCluster == colorBordeCluster && cacheHFTClusterZonesNQ[idx].EnableDbLogging == enableDbLogging && cacheHFTClusterZonesNQ[idx].DbPath == dbPath && cacheHFTClusterZonesNQ[idx].EnableEventCsv == enableEventCsv && cacheHFTClusterZonesNQ[idx].EventLogPath == eventLogPath && cacheHFTClusterZonesNQ[idx].EnableFlowLog == enableFlowLog && cacheHFTClusterZonesNQ[idx].FlowBucketSeconds == flowBucketSeconds && cacheHFTClusterZonesNQ[idx].EqualsInput(input))
-						return cacheHFTClusterZonesNQ[idx];
-			return CacheIndicator<HFTClusterZonesNQ>(new HFTClusterZonesNQ(){ TickResolution = tickResolution, MinPasos = minPasos, MaxRangoTickPorVela = maxRangoTickPorVela, FallosTolerados = fallosTolerados, FiltroDireccionEstricto = filtroDireccionEstricto, MinSweepTicks = minSweepTicks, MaxRetrocesoTicks = maxRetrocesoTicks, RetrocesoPctHeight = retrocesoPctHeight, MaxAvgMs = maxAvgMs, MaxTotalMs = maxTotalMs, MaxPausaMs = maxPausaMs, MinVolumeRate = minVolumeRate, MinTotalVolume = minTotalVolume, PredatorAvgMs = predatorAvgMs, UltraAvgMs = ultraAvgMs, MostrarAbsorb = mostrarAbsorb, MinAbsorbPasos = minAbsorbPasos, DibujarZonasIndividuales = dibujarZonasIndividuales, ExtensionDibujo = extensionDibujo, OpacidadZonas = opacidadZonas, MostrarTextoZonas = mostrarTextoZonas, ColorPredator = colorPredator, ColorUltra = colorUltra, ColorBull = colorBull, ColorBear = colorBear, ColorAbsorb = colorAbsorb, ColorTexto = colorTexto, MostrarClusters = mostrarClusters, PesoZona = pesoZona, SoloLogEnVivo = soloLogEnVivo, MinContributingZones = minContributingZones, HaloSigmaTicks = haloSigmaTicks, MinClusterDensity = minClusterDensity, ClusterLookbackZones = clusterLookbackZones, MaxClusterAgeBars = maxClusterAgeBars, SoloMuertePorBarras = soloMuertePorBarras, BarrasExtensionMuerte = barrasExtensionMuerte, ActivarConsumoVolumen = activarConsumoVolumen, MinCapacityVolume = minCapacityVolume, CapacityMultiplier = capacityMultiplier, InvalidationTicks = invalidationTicks, RedrawVolumeThreshold = redrawVolumeThreshold, OpacidadCluster = opacidadCluster, OpacidadMinima = opacidadMinima, ProyectarAlFuturo = proyectarAlFuturo, MostrarTextoCluster = mostrarTextoCluster, DibujarPocCluster = dibujarPocCluster, OcultarAgotados = ocultarAgotados, OcultarInvalidados = ocultarInvalidados, ColorClusterNeutral = colorClusterNeutral, ColorClusterBull = colorClusterBull, ColorClusterBear = colorClusterBear, ColorBordeCluster = colorBordeCluster, EnableDbLogging = enableDbLogging, DbPath = dbPath, EnableEventCsv = enableEventCsv, EventLogPath = eventLogPath, EnableFlowLog = enableFlowLog, FlowBucketSeconds = flowBucketSeconds }, input, ref cacheHFTClusterZonesNQ);
+			if (cacheHFTClusterZonesNQDx != null)
+				for (int idx = 0; idx < cacheHFTClusterZonesNQDx.Length; idx++)
+					if (cacheHFTClusterZonesNQDx[idx] != null && cacheHFTClusterZonesNQDx[idx].TickResolution == tickResolution && cacheHFTClusterZonesNQDx[idx].MinPasos == minPasos && cacheHFTClusterZonesNQDx[idx].MaxRangoTickPorVela == maxRangoTickPorVela && cacheHFTClusterZonesNQDx[idx].FallosTolerados == fallosTolerados && cacheHFTClusterZonesNQDx[idx].FiltroDireccionEstricto == filtroDireccionEstricto && cacheHFTClusterZonesNQDx[idx].MinSweepTicks == minSweepTicks && cacheHFTClusterZonesNQDx[idx].MaxRetrocesoTicks == maxRetrocesoTicks && cacheHFTClusterZonesNQDx[idx].RetrocesoPctHeight == retrocesoPctHeight && cacheHFTClusterZonesNQDx[idx].MaxAvgMs == maxAvgMs && cacheHFTClusterZonesNQDx[idx].MaxTotalMs == maxTotalMs && cacheHFTClusterZonesNQDx[idx].MaxPausaMs == maxPausaMs && cacheHFTClusterZonesNQDx[idx].MinVolumeRate == minVolumeRate && cacheHFTClusterZonesNQDx[idx].MinTotalVolume == minTotalVolume && cacheHFTClusterZonesNQDx[idx].PredatorAvgMs == predatorAvgMs && cacheHFTClusterZonesNQDx[idx].UltraAvgMs == ultraAvgMs && cacheHFTClusterZonesNQDx[idx].MostrarAbsorb == mostrarAbsorb && cacheHFTClusterZonesNQDx[idx].MinAbsorbPasos == minAbsorbPasos && cacheHFTClusterZonesNQDx[idx].DibujarZonasIndividuales == dibujarZonasIndividuales && cacheHFTClusterZonesNQDx[idx].ExtensionDibujo == extensionDibujo && cacheHFTClusterZonesNQDx[idx].OpacidadZonas == opacidadZonas && cacheHFTClusterZonesNQDx[idx].MostrarTextoZonas == mostrarTextoZonas && cacheHFTClusterZonesNQDx[idx].ColorPredator == colorPredator && cacheHFTClusterZonesNQDx[idx].ColorUltra == colorUltra && cacheHFTClusterZonesNQDx[idx].ColorBull == colorBull && cacheHFTClusterZonesNQDx[idx].ColorBear == colorBear && cacheHFTClusterZonesNQDx[idx].ColorAbsorb == colorAbsorb && cacheHFTClusterZonesNQDx[idx].ColorTexto == colorTexto && cacheHFTClusterZonesNQDx[idx].MostrarClusters == mostrarClusters && cacheHFTClusterZonesNQDx[idx].PesoZona == pesoZona && cacheHFTClusterZonesNQDx[idx].MinContributingZones == minContributingZones && cacheHFTClusterZonesNQDx[idx].HaloSigmaTicks == haloSigmaTicks && cacheHFTClusterZonesNQDx[idx].MinClusterDensity == minClusterDensity && cacheHFTClusterZonesNQDx[idx].ClusterLookbackZones == clusterLookbackZones && cacheHFTClusterZonesNQDx[idx].MaxClusterAgeBars == maxClusterAgeBars && cacheHFTClusterZonesNQDx[idx].SoloMuertePorBarras == soloMuertePorBarras && cacheHFTClusterZonesNQDx[idx].BarrasExtensionMuerte == barrasExtensionMuerte && cacheHFTClusterZonesNQDx[idx].ActivarConsumoVolumen == activarConsumoVolumen && cacheHFTClusterZonesNQDx[idx].MinCapacityVolume == minCapacityVolume && cacheHFTClusterZonesNQDx[idx].CapacityMultiplier == capacityMultiplier && cacheHFTClusterZonesNQDx[idx].InvalidationTicks == invalidationTicks && cacheHFTClusterZonesNQDx[idx].RedrawVolumeThreshold == redrawVolumeThreshold && cacheHFTClusterZonesNQDx[idx].UsarSharpDX == usarSharpDX && cacheHFTClusterZonesNQDx[idx].OpacidadCluster == opacidadCluster && cacheHFTClusterZonesNQDx[idx].OpacidadMinima == opacidadMinima && cacheHFTClusterZonesNQDx[idx].ProyectarAlFuturo == proyectarAlFuturo && cacheHFTClusterZonesNQDx[idx].MostrarTextoCluster == mostrarTextoCluster && cacheHFTClusterZonesNQDx[idx].DibujarPocCluster == dibujarPocCluster && cacheHFTClusterZonesNQDx[idx].OcultarAgotados == ocultarAgotados && cacheHFTClusterZonesNQDx[idx].OcultarInvalidados == ocultarInvalidados && cacheHFTClusterZonesNQDx[idx].ColorClusterNeutral == colorClusterNeutral && cacheHFTClusterZonesNQDx[idx].ColorClusterBull == colorClusterBull && cacheHFTClusterZonesNQDx[idx].ColorClusterBear == colorClusterBear && cacheHFTClusterZonesNQDx[idx].ColorBordeCluster == colorBordeCluster && cacheHFTClusterZonesNQDx[idx].EnableDbLogging == enableDbLogging && cacheHFTClusterZonesNQDx[idx].DbPath == dbPath && cacheHFTClusterZonesNQDx[idx].EnableEventCsv == enableEventCsv && cacheHFTClusterZonesNQDx[idx].EventLogPath == eventLogPath && cacheHFTClusterZonesNQDx[idx].EnableFlowLog == enableFlowLog && cacheHFTClusterZonesNQDx[idx].FlowBucketSeconds == flowBucketSeconds && cacheHFTClusterZonesNQDx[idx].LogOnlyRealtime == logOnlyRealtime && cacheHFTClusterZonesNQDx[idx].EqualsInput(input))
+						return cacheHFTClusterZonesNQDx[idx];
+			return CacheIndicator<HFTClusterZonesNQDx>(new HFTClusterZonesNQDx(){ TickResolution = tickResolution, MinPasos = minPasos, MaxRangoTickPorVela = maxRangoTickPorVela, FallosTolerados = fallosTolerados, FiltroDireccionEstricto = filtroDireccionEstricto, MinSweepTicks = minSweepTicks, MaxRetrocesoTicks = maxRetrocesoTicks, RetrocesoPctHeight = retrocesoPctHeight, MaxAvgMs = maxAvgMs, MaxTotalMs = maxTotalMs, MaxPausaMs = maxPausaMs, MinVolumeRate = minVolumeRate, MinTotalVolume = minTotalVolume, PredatorAvgMs = predatorAvgMs, UltraAvgMs = ultraAvgMs, MostrarAbsorb = mostrarAbsorb, MinAbsorbPasos = minAbsorbPasos, DibujarZonasIndividuales = dibujarZonasIndividuales, ExtensionDibujo = extensionDibujo, OpacidadZonas = opacidadZonas, MostrarTextoZonas = mostrarTextoZonas, ColorPredator = colorPredator, ColorUltra = colorUltra, ColorBull = colorBull, ColorBear = colorBear, ColorAbsorb = colorAbsorb, ColorTexto = colorTexto, MostrarClusters = mostrarClusters, PesoZona = pesoZona, MinContributingZones = minContributingZones, HaloSigmaTicks = haloSigmaTicks, MinClusterDensity = minClusterDensity, ClusterLookbackZones = clusterLookbackZones, MaxClusterAgeBars = maxClusterAgeBars, SoloMuertePorBarras = soloMuertePorBarras, BarrasExtensionMuerte = barrasExtensionMuerte, ActivarConsumoVolumen = activarConsumoVolumen, MinCapacityVolume = minCapacityVolume, CapacityMultiplier = capacityMultiplier, InvalidationTicks = invalidationTicks, RedrawVolumeThreshold = redrawVolumeThreshold, UsarSharpDX = usarSharpDX, OpacidadCluster = opacidadCluster, OpacidadMinima = opacidadMinima, ProyectarAlFuturo = proyectarAlFuturo, MostrarTextoCluster = mostrarTextoCluster, DibujarPocCluster = dibujarPocCluster, OcultarAgotados = ocultarAgotados, OcultarInvalidados = ocultarInvalidados, ColorClusterNeutral = colorClusterNeutral, ColorClusterBull = colorClusterBull, ColorClusterBear = colorClusterBear, ColorBordeCluster = colorBordeCluster, EnableDbLogging = enableDbLogging, DbPath = dbPath, EnableEventCsv = enableEventCsv, EventLogPath = eventLogPath, EnableFlowLog = enableFlowLog, FlowBucketSeconds = flowBucketSeconds, LogOnlyRealtime = logOnlyRealtime }, input, ref cacheHFTClusterZonesNQDx);
 		}
 	}
 }
@@ -1733,14 +2119,14 @@ namespace NinjaTrader.NinjaScript.MarketAnalyzerColumns
 {
 	public partial class MarketAnalyzerColumn : MarketAnalyzerColumnBase
 	{
-		public Indicators.HFTClusterZonesNQ HFTClusterZonesNQ(int tickResolution, int minPasos, int maxRangoTickPorVela, int fallosTolerados, bool filtroDireccionEstricto, int minSweepTicks, int maxRetrocesoTicks, int retrocesoPctHeight, int maxAvgMs, int maxTotalMs, int maxPausaMs, int minVolumeRate, int minTotalVolume, int predatorAvgMs, int ultraAvgMs, bool mostrarAbsorb, int minAbsorbPasos, bool dibujarZonasIndividuales, int extensionDibujo, int opacidadZonas, bool mostrarTextoZonas, Brush colorPredator, Brush colorUltra, Brush colorBull, Brush colorBear, Brush colorAbsorb, Brush colorTexto, bool mostrarClusters, HFTPesoZona pesoZona, bool soloLogEnVivo, int minContributingZones, double haloSigmaTicks, double minClusterDensity, int clusterLookbackZones, int maxClusterAgeBars, bool soloMuertePorBarras, int barrasExtensionMuerte, bool activarConsumoVolumen, double minCapacityVolume, double capacityMultiplier, int invalidationTicks, int redrawVolumeThreshold, int opacidadCluster, int opacidadMinima, bool proyectarAlFuturo, bool mostrarTextoCluster, bool dibujarPocCluster, bool ocultarAgotados, bool ocultarInvalidados, Brush colorClusterNeutral, Brush colorClusterBull, Brush colorClusterBear, Brush colorBordeCluster, bool enableDbLogging, string dbPath, bool enableEventCsv, string eventLogPath, bool enableFlowLog, int flowBucketSeconds)
+		public Indicators.HFTClusterZonesNQDx HFTClusterZonesNQDx(int tickResolution, int minPasos, int maxRangoTickPorVela, int fallosTolerados, bool filtroDireccionEstricto, int minSweepTicks, int maxRetrocesoTicks, int retrocesoPctHeight, int maxAvgMs, int maxTotalMs, int maxPausaMs, int minVolumeRate, int minTotalVolume, int predatorAvgMs, int ultraAvgMs, bool mostrarAbsorb, int minAbsorbPasos, bool dibujarZonasIndividuales, int extensionDibujo, int opacidadZonas, bool mostrarTextoZonas, Brush colorPredator, Brush colorUltra, Brush colorBull, Brush colorBear, Brush colorAbsorb, Brush colorTexto, bool mostrarClusters, HFTPesoZonaDx pesoZona, int minContributingZones, double haloSigmaTicks, double minClusterDensity, int clusterLookbackZones, int maxClusterAgeBars, bool soloMuertePorBarras, int barrasExtensionMuerte, bool activarConsumoVolumen, double minCapacityVolume, double capacityMultiplier, int invalidationTicks, int redrawVolumeThreshold, bool usarSharpDX, int opacidadCluster, int opacidadMinima, bool proyectarAlFuturo, bool mostrarTextoCluster, bool dibujarPocCluster, bool ocultarAgotados, bool ocultarInvalidados, Brush colorClusterNeutral, Brush colorClusterBull, Brush colorClusterBear, Brush colorBordeCluster, bool enableDbLogging, string dbPath, bool enableEventCsv, string eventLogPath, bool enableFlowLog, int flowBucketSeconds, bool logOnlyRealtime)
 		{
-			return indicator.HFTClusterZonesNQ(Input, tickResolution, minPasos, maxRangoTickPorVela, fallosTolerados, filtroDireccionEstricto, minSweepTicks, maxRetrocesoTicks, retrocesoPctHeight, maxAvgMs, maxTotalMs, maxPausaMs, minVolumeRate, minTotalVolume, predatorAvgMs, ultraAvgMs, mostrarAbsorb, minAbsorbPasos, dibujarZonasIndividuales, extensionDibujo, opacidadZonas, mostrarTextoZonas, colorPredator, colorUltra, colorBull, colorBear, colorAbsorb, colorTexto, mostrarClusters, pesoZona, soloLogEnVivo, minContributingZones, haloSigmaTicks, minClusterDensity, clusterLookbackZones, maxClusterAgeBars, soloMuertePorBarras, barrasExtensionMuerte, activarConsumoVolumen, minCapacityVolume, capacityMultiplier, invalidationTicks, redrawVolumeThreshold, opacidadCluster, opacidadMinima, proyectarAlFuturo, mostrarTextoCluster, dibujarPocCluster, ocultarAgotados, ocultarInvalidados, colorClusterNeutral, colorClusterBull, colorClusterBear, colorBordeCluster, enableDbLogging, dbPath, enableEventCsv, eventLogPath, enableFlowLog, flowBucketSeconds);
+			return indicator.HFTClusterZonesNQDx(Input, tickResolution, minPasos, maxRangoTickPorVela, fallosTolerados, filtroDireccionEstricto, minSweepTicks, maxRetrocesoTicks, retrocesoPctHeight, maxAvgMs, maxTotalMs, maxPausaMs, minVolumeRate, minTotalVolume, predatorAvgMs, ultraAvgMs, mostrarAbsorb, minAbsorbPasos, dibujarZonasIndividuales, extensionDibujo, opacidadZonas, mostrarTextoZonas, colorPredator, colorUltra, colorBull, colorBear, colorAbsorb, colorTexto, mostrarClusters, pesoZona, minContributingZones, haloSigmaTicks, minClusterDensity, clusterLookbackZones, maxClusterAgeBars, soloMuertePorBarras, barrasExtensionMuerte, activarConsumoVolumen, minCapacityVolume, capacityMultiplier, invalidationTicks, redrawVolumeThreshold, usarSharpDX, opacidadCluster, opacidadMinima, proyectarAlFuturo, mostrarTextoCluster, dibujarPocCluster, ocultarAgotados, ocultarInvalidados, colorClusterNeutral, colorClusterBull, colorClusterBear, colorBordeCluster, enableDbLogging, dbPath, enableEventCsv, eventLogPath, enableFlowLog, flowBucketSeconds, logOnlyRealtime);
 		}
 
-		public Indicators.HFTClusterZonesNQ HFTClusterZonesNQ(ISeries<double> input , int tickResolution, int minPasos, int maxRangoTickPorVela, int fallosTolerados, bool filtroDireccionEstricto, int minSweepTicks, int maxRetrocesoTicks, int retrocesoPctHeight, int maxAvgMs, int maxTotalMs, int maxPausaMs, int minVolumeRate, int minTotalVolume, int predatorAvgMs, int ultraAvgMs, bool mostrarAbsorb, int minAbsorbPasos, bool dibujarZonasIndividuales, int extensionDibujo, int opacidadZonas, bool mostrarTextoZonas, Brush colorPredator, Brush colorUltra, Brush colorBull, Brush colorBear, Brush colorAbsorb, Brush colorTexto, bool mostrarClusters, HFTPesoZona pesoZona, bool soloLogEnVivo, int minContributingZones, double haloSigmaTicks, double minClusterDensity, int clusterLookbackZones, int maxClusterAgeBars, bool soloMuertePorBarras, int barrasExtensionMuerte, bool activarConsumoVolumen, double minCapacityVolume, double capacityMultiplier, int invalidationTicks, int redrawVolumeThreshold, int opacidadCluster, int opacidadMinima, bool proyectarAlFuturo, bool mostrarTextoCluster, bool dibujarPocCluster, bool ocultarAgotados, bool ocultarInvalidados, Brush colorClusterNeutral, Brush colorClusterBull, Brush colorClusterBear, Brush colorBordeCluster, bool enableDbLogging, string dbPath, bool enableEventCsv, string eventLogPath, bool enableFlowLog, int flowBucketSeconds)
+		public Indicators.HFTClusterZonesNQDx HFTClusterZonesNQDx(ISeries<double> input , int tickResolution, int minPasos, int maxRangoTickPorVela, int fallosTolerados, bool filtroDireccionEstricto, int minSweepTicks, int maxRetrocesoTicks, int retrocesoPctHeight, int maxAvgMs, int maxTotalMs, int maxPausaMs, int minVolumeRate, int minTotalVolume, int predatorAvgMs, int ultraAvgMs, bool mostrarAbsorb, int minAbsorbPasos, bool dibujarZonasIndividuales, int extensionDibujo, int opacidadZonas, bool mostrarTextoZonas, Brush colorPredator, Brush colorUltra, Brush colorBull, Brush colorBear, Brush colorAbsorb, Brush colorTexto, bool mostrarClusters, HFTPesoZonaDx pesoZona, int minContributingZones, double haloSigmaTicks, double minClusterDensity, int clusterLookbackZones, int maxClusterAgeBars, bool soloMuertePorBarras, int barrasExtensionMuerte, bool activarConsumoVolumen, double minCapacityVolume, double capacityMultiplier, int invalidationTicks, int redrawVolumeThreshold, bool usarSharpDX, int opacidadCluster, int opacidadMinima, bool proyectarAlFuturo, bool mostrarTextoCluster, bool dibujarPocCluster, bool ocultarAgotados, bool ocultarInvalidados, Brush colorClusterNeutral, Brush colorClusterBull, Brush colorClusterBear, Brush colorBordeCluster, bool enableDbLogging, string dbPath, bool enableEventCsv, string eventLogPath, bool enableFlowLog, int flowBucketSeconds, bool logOnlyRealtime)
 		{
-			return indicator.HFTClusterZonesNQ(input, tickResolution, minPasos, maxRangoTickPorVela, fallosTolerados, filtroDireccionEstricto, minSweepTicks, maxRetrocesoTicks, retrocesoPctHeight, maxAvgMs, maxTotalMs, maxPausaMs, minVolumeRate, minTotalVolume, predatorAvgMs, ultraAvgMs, mostrarAbsorb, minAbsorbPasos, dibujarZonasIndividuales, extensionDibujo, opacidadZonas, mostrarTextoZonas, colorPredator, colorUltra, colorBull, colorBear, colorAbsorb, colorTexto, mostrarClusters, pesoZona, soloLogEnVivo, minContributingZones, haloSigmaTicks, minClusterDensity, clusterLookbackZones, maxClusterAgeBars, soloMuertePorBarras, barrasExtensionMuerte, activarConsumoVolumen, minCapacityVolume, capacityMultiplier, invalidationTicks, redrawVolumeThreshold, opacidadCluster, opacidadMinima, proyectarAlFuturo, mostrarTextoCluster, dibujarPocCluster, ocultarAgotados, ocultarInvalidados, colorClusterNeutral, colorClusterBull, colorClusterBear, colorBordeCluster, enableDbLogging, dbPath, enableEventCsv, eventLogPath, enableFlowLog, flowBucketSeconds);
+			return indicator.HFTClusterZonesNQDx(input, tickResolution, minPasos, maxRangoTickPorVela, fallosTolerados, filtroDireccionEstricto, minSweepTicks, maxRetrocesoTicks, retrocesoPctHeight, maxAvgMs, maxTotalMs, maxPausaMs, minVolumeRate, minTotalVolume, predatorAvgMs, ultraAvgMs, mostrarAbsorb, minAbsorbPasos, dibujarZonasIndividuales, extensionDibujo, opacidadZonas, mostrarTextoZonas, colorPredator, colorUltra, colorBull, colorBear, colorAbsorb, colorTexto, mostrarClusters, pesoZona, minContributingZones, haloSigmaTicks, minClusterDensity, clusterLookbackZones, maxClusterAgeBars, soloMuertePorBarras, barrasExtensionMuerte, activarConsumoVolumen, minCapacityVolume, capacityMultiplier, invalidationTicks, redrawVolumeThreshold, usarSharpDX, opacidadCluster, opacidadMinima, proyectarAlFuturo, mostrarTextoCluster, dibujarPocCluster, ocultarAgotados, ocultarInvalidados, colorClusterNeutral, colorClusterBull, colorClusterBear, colorBordeCluster, enableDbLogging, dbPath, enableEventCsv, eventLogPath, enableFlowLog, flowBucketSeconds, logOnlyRealtime);
 		}
 	}
 }
@@ -1749,14 +2135,14 @@ namespace NinjaTrader.NinjaScript.Strategies
 {
 	public partial class Strategy : NinjaTrader.Gui.NinjaScript.StrategyRenderBase
 	{
-		public Indicators.HFTClusterZonesNQ HFTClusterZonesNQ(int tickResolution, int minPasos, int maxRangoTickPorVela, int fallosTolerados, bool filtroDireccionEstricto, int minSweepTicks, int maxRetrocesoTicks, int retrocesoPctHeight, int maxAvgMs, int maxTotalMs, int maxPausaMs, int minVolumeRate, int minTotalVolume, int predatorAvgMs, int ultraAvgMs, bool mostrarAbsorb, int minAbsorbPasos, bool dibujarZonasIndividuales, int extensionDibujo, int opacidadZonas, bool mostrarTextoZonas, Brush colorPredator, Brush colorUltra, Brush colorBull, Brush colorBear, Brush colorAbsorb, Brush colorTexto, bool mostrarClusters, HFTPesoZona pesoZona, bool soloLogEnVivo, int minContributingZones, double haloSigmaTicks, double minClusterDensity, int clusterLookbackZones, int maxClusterAgeBars, bool soloMuertePorBarras, int barrasExtensionMuerte, bool activarConsumoVolumen, double minCapacityVolume, double capacityMultiplier, int invalidationTicks, int redrawVolumeThreshold, int opacidadCluster, int opacidadMinima, bool proyectarAlFuturo, bool mostrarTextoCluster, bool dibujarPocCluster, bool ocultarAgotados, bool ocultarInvalidados, Brush colorClusterNeutral, Brush colorClusterBull, Brush colorClusterBear, Brush colorBordeCluster, bool enableDbLogging, string dbPath, bool enableEventCsv, string eventLogPath, bool enableFlowLog, int flowBucketSeconds)
+		public Indicators.HFTClusterZonesNQDx HFTClusterZonesNQDx(int tickResolution, int minPasos, int maxRangoTickPorVela, int fallosTolerados, bool filtroDireccionEstricto, int minSweepTicks, int maxRetrocesoTicks, int retrocesoPctHeight, int maxAvgMs, int maxTotalMs, int maxPausaMs, int minVolumeRate, int minTotalVolume, int predatorAvgMs, int ultraAvgMs, bool mostrarAbsorb, int minAbsorbPasos, bool dibujarZonasIndividuales, int extensionDibujo, int opacidadZonas, bool mostrarTextoZonas, Brush colorPredator, Brush colorUltra, Brush colorBull, Brush colorBear, Brush colorAbsorb, Brush colorTexto, bool mostrarClusters, HFTPesoZonaDx pesoZona, int minContributingZones, double haloSigmaTicks, double minClusterDensity, int clusterLookbackZones, int maxClusterAgeBars, bool soloMuertePorBarras, int barrasExtensionMuerte, bool activarConsumoVolumen, double minCapacityVolume, double capacityMultiplier, int invalidationTicks, int redrawVolumeThreshold, bool usarSharpDX, int opacidadCluster, int opacidadMinima, bool proyectarAlFuturo, bool mostrarTextoCluster, bool dibujarPocCluster, bool ocultarAgotados, bool ocultarInvalidados, Brush colorClusterNeutral, Brush colorClusterBull, Brush colorClusterBear, Brush colorBordeCluster, bool enableDbLogging, string dbPath, bool enableEventCsv, string eventLogPath, bool enableFlowLog, int flowBucketSeconds, bool logOnlyRealtime)
 		{
-			return indicator.HFTClusterZonesNQ(Input, tickResolution, minPasos, maxRangoTickPorVela, fallosTolerados, filtroDireccionEstricto, minSweepTicks, maxRetrocesoTicks, retrocesoPctHeight, maxAvgMs, maxTotalMs, maxPausaMs, minVolumeRate, minTotalVolume, predatorAvgMs, ultraAvgMs, mostrarAbsorb, minAbsorbPasos, dibujarZonasIndividuales, extensionDibujo, opacidadZonas, mostrarTextoZonas, colorPredator, colorUltra, colorBull, colorBear, colorAbsorb, colorTexto, mostrarClusters, pesoZona, soloLogEnVivo, minContributingZones, haloSigmaTicks, minClusterDensity, clusterLookbackZones, maxClusterAgeBars, soloMuertePorBarras, barrasExtensionMuerte, activarConsumoVolumen, minCapacityVolume, capacityMultiplier, invalidationTicks, redrawVolumeThreshold, opacidadCluster, opacidadMinima, proyectarAlFuturo, mostrarTextoCluster, dibujarPocCluster, ocultarAgotados, ocultarInvalidados, colorClusterNeutral, colorClusterBull, colorClusterBear, colorBordeCluster, enableDbLogging, dbPath, enableEventCsv, eventLogPath, enableFlowLog, flowBucketSeconds);
+			return indicator.HFTClusterZonesNQDx(Input, tickResolution, minPasos, maxRangoTickPorVela, fallosTolerados, filtroDireccionEstricto, minSweepTicks, maxRetrocesoTicks, retrocesoPctHeight, maxAvgMs, maxTotalMs, maxPausaMs, minVolumeRate, minTotalVolume, predatorAvgMs, ultraAvgMs, mostrarAbsorb, minAbsorbPasos, dibujarZonasIndividuales, extensionDibujo, opacidadZonas, mostrarTextoZonas, colorPredator, colorUltra, colorBull, colorBear, colorAbsorb, colorTexto, mostrarClusters, pesoZona, minContributingZones, haloSigmaTicks, minClusterDensity, clusterLookbackZones, maxClusterAgeBars, soloMuertePorBarras, barrasExtensionMuerte, activarConsumoVolumen, minCapacityVolume, capacityMultiplier, invalidationTicks, redrawVolumeThreshold, usarSharpDX, opacidadCluster, opacidadMinima, proyectarAlFuturo, mostrarTextoCluster, dibujarPocCluster, ocultarAgotados, ocultarInvalidados, colorClusterNeutral, colorClusterBull, colorClusterBear, colorBordeCluster, enableDbLogging, dbPath, enableEventCsv, eventLogPath, enableFlowLog, flowBucketSeconds, logOnlyRealtime);
 		}
 
-		public Indicators.HFTClusterZonesNQ HFTClusterZonesNQ(ISeries<double> input , int tickResolution, int minPasos, int maxRangoTickPorVela, int fallosTolerados, bool filtroDireccionEstricto, int minSweepTicks, int maxRetrocesoTicks, int retrocesoPctHeight, int maxAvgMs, int maxTotalMs, int maxPausaMs, int minVolumeRate, int minTotalVolume, int predatorAvgMs, int ultraAvgMs, bool mostrarAbsorb, int minAbsorbPasos, bool dibujarZonasIndividuales, int extensionDibujo, int opacidadZonas, bool mostrarTextoZonas, Brush colorPredator, Brush colorUltra, Brush colorBull, Brush colorBear, Brush colorAbsorb, Brush colorTexto, bool mostrarClusters, HFTPesoZona pesoZona, bool soloLogEnVivo, int minContributingZones, double haloSigmaTicks, double minClusterDensity, int clusterLookbackZones, int maxClusterAgeBars, bool soloMuertePorBarras, int barrasExtensionMuerte, bool activarConsumoVolumen, double minCapacityVolume, double capacityMultiplier, int invalidationTicks, int redrawVolumeThreshold, int opacidadCluster, int opacidadMinima, bool proyectarAlFuturo, bool mostrarTextoCluster, bool dibujarPocCluster, bool ocultarAgotados, bool ocultarInvalidados, Brush colorClusterNeutral, Brush colorClusterBull, Brush colorClusterBear, Brush colorBordeCluster, bool enableDbLogging, string dbPath, bool enableEventCsv, string eventLogPath, bool enableFlowLog, int flowBucketSeconds)
+		public Indicators.HFTClusterZonesNQDx HFTClusterZonesNQDx(ISeries<double> input , int tickResolution, int minPasos, int maxRangoTickPorVela, int fallosTolerados, bool filtroDireccionEstricto, int minSweepTicks, int maxRetrocesoTicks, int retrocesoPctHeight, int maxAvgMs, int maxTotalMs, int maxPausaMs, int minVolumeRate, int minTotalVolume, int predatorAvgMs, int ultraAvgMs, bool mostrarAbsorb, int minAbsorbPasos, bool dibujarZonasIndividuales, int extensionDibujo, int opacidadZonas, bool mostrarTextoZonas, Brush colorPredator, Brush colorUltra, Brush colorBull, Brush colorBear, Brush colorAbsorb, Brush colorTexto, bool mostrarClusters, HFTPesoZonaDx pesoZona, int minContributingZones, double haloSigmaTicks, double minClusterDensity, int clusterLookbackZones, int maxClusterAgeBars, bool soloMuertePorBarras, int barrasExtensionMuerte, bool activarConsumoVolumen, double minCapacityVolume, double capacityMultiplier, int invalidationTicks, int redrawVolumeThreshold, bool usarSharpDX, int opacidadCluster, int opacidadMinima, bool proyectarAlFuturo, bool mostrarTextoCluster, bool dibujarPocCluster, bool ocultarAgotados, bool ocultarInvalidados, Brush colorClusterNeutral, Brush colorClusterBull, Brush colorClusterBear, Brush colorBordeCluster, bool enableDbLogging, string dbPath, bool enableEventCsv, string eventLogPath, bool enableFlowLog, int flowBucketSeconds, bool logOnlyRealtime)
 		{
-			return indicator.HFTClusterZonesNQ(input, tickResolution, minPasos, maxRangoTickPorVela, fallosTolerados, filtroDireccionEstricto, minSweepTicks, maxRetrocesoTicks, retrocesoPctHeight, maxAvgMs, maxTotalMs, maxPausaMs, minVolumeRate, minTotalVolume, predatorAvgMs, ultraAvgMs, mostrarAbsorb, minAbsorbPasos, dibujarZonasIndividuales, extensionDibujo, opacidadZonas, mostrarTextoZonas, colorPredator, colorUltra, colorBull, colorBear, colorAbsorb, colorTexto, mostrarClusters, pesoZona, soloLogEnVivo, minContributingZones, haloSigmaTicks, minClusterDensity, clusterLookbackZones, maxClusterAgeBars, soloMuertePorBarras, barrasExtensionMuerte, activarConsumoVolumen, minCapacityVolume, capacityMultiplier, invalidationTicks, redrawVolumeThreshold, opacidadCluster, opacidadMinima, proyectarAlFuturo, mostrarTextoCluster, dibujarPocCluster, ocultarAgotados, ocultarInvalidados, colorClusterNeutral, colorClusterBull, colorClusterBear, colorBordeCluster, enableDbLogging, dbPath, enableEventCsv, eventLogPath, enableFlowLog, flowBucketSeconds);
+			return indicator.HFTClusterZonesNQDx(input, tickResolution, minPasos, maxRangoTickPorVela, fallosTolerados, filtroDireccionEstricto, minSweepTicks, maxRetrocesoTicks, retrocesoPctHeight, maxAvgMs, maxTotalMs, maxPausaMs, minVolumeRate, minTotalVolume, predatorAvgMs, ultraAvgMs, mostrarAbsorb, minAbsorbPasos, dibujarZonasIndividuales, extensionDibujo, opacidadZonas, mostrarTextoZonas, colorPredator, colorUltra, colorBull, colorBear, colorAbsorb, colorTexto, mostrarClusters, pesoZona, minContributingZones, haloSigmaTicks, minClusterDensity, clusterLookbackZones, maxClusterAgeBars, soloMuertePorBarras, barrasExtensionMuerte, activarConsumoVolumen, minCapacityVolume, capacityMultiplier, invalidationTicks, redrawVolumeThreshold, usarSharpDX, opacidadCluster, opacidadMinima, proyectarAlFuturo, mostrarTextoCluster, dibujarPocCluster, ocultarAgotados, ocultarInvalidados, colorClusterNeutral, colorClusterBull, colorClusterBear, colorBordeCluster, enableDbLogging, dbPath, enableEventCsv, eventLogPath, enableFlowLog, flowBucketSeconds, logOnlyRealtime);
 		}
 	}
 }

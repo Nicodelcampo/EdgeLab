@@ -417,6 +417,38 @@ Pero el output no se consume fuera de orden. Ejemplo: una exportación BigTrap p
 
 ---
 
+### ATJ-18 — El estimador también es una hipótesis: un nulo puede ser suyo y no del mercado
+
+Un resultado nulo tiene **dos** lecturas y el informe tiene que distinguirlas:
+
+1. el efecto no existe en la población medida;
+2. el efecto existe pero **la definición operativa no lo alcanza** — escala equivocada,
+   umbral por debajo del ruido de la unidad de análisis, ventana que no cubre la
+   reacción, categoría que deja el fenómeno fuera de los dos brazos.
+
+Antes de publicar un nulo hay que descartar la segunda, y eso se hace **midiendo la
+escala del objeto y comparándola con la del estimador**, target-free y sin mirar
+resultados: rango típico de la unidad de análisis, tamaño del objeto, dispersión de la
+covariable de apareo, tiempo hasta que el desenlace se resuelve. Si un umbral es menor
+que el ruido de una barra, o una tolerancia es 1/20 del objeto, o el 99 % de la muestra
+cae en un solo bin de la covariable, **el nulo es del estimador**.
+
+Caso que origina la práctica: H-CLUSTER-NQ / H2, 2026-09-08. Un canal direccional con
+1.026.840 observaciones, MDE de 0,0214 y contraste con signo resultó inservible porque
+decidía a 4 ticks sobre barras de 12 y llamaba «borde» a ±1 tick de un objeto de 60.
+Ver `docs/research/H2_VOID_POR_ESCALA_2026-09-08.md`.
+
+Corolario operativo, pedido por Nico: **no angostar el estimador de entrada.** Una
+reacción puede ser real y más compleja que la forma en que se la mide. Cuando hay
+observación humana consistente que la medición no ve, la primera sospecha va sobre la
+definición, no sobre el observador — y se resuelve contrastando **casos concretos con
+marca de tiempo** contra el espejo y el precio real, no discutiendo el agregado.
+
+**Ahorro:** evita enterrar hipótesis vivas con nulos que sólo hablan de su propia
+definición, que es la forma más cara de equivocarse: parece evidencia.
+
+---
+
 ## 4. Matriz rápida: qué puede matar una opción
 
 | Hallazgo | ¿Excluye? | Etapa |
@@ -499,5 +531,6 @@ Antes de proponer otra campaña combinatoria:
 - [ ] ¿La regeneración sigue Commit A → rerun limpio → Commit B?
 - [ ] ¿Cada tasa declara población, numerador y denominador?
 - [ ] ¿Cada afirmación distingue medido, inferido, provisional y retractado?
+- [ ] ¿Se midió la escala del objeto contra la del estimador antes de publicar un nulo?
 
 **Aporte al referente:** estas prácticas reducen exportaciones inútiles, joins ambiguos, recomputaciones, controles post hoc y auditorías de contradicciones. El tiempo ahorrado se desplaza de infraestructura repetida a preguntas que sí pueden acercarse a un edge válido y aplicable.

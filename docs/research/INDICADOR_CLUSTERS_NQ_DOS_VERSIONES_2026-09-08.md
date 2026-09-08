@@ -33,7 +33,41 @@ Las dos últimas filas de sustancia (`MinClusterDensity`, `MinContributingZones`
 más de lo que parecen: **no son el mismo objeto**. Cualquier observación visual hecha
 sobre el chart de Dx describe una población que el espejo Python no está generando.
 
-## Lo que hay que hacer, y no es «unificar» a medias
+## Decisión tomada: se adopta Dx
+
+`HFTClusterZonesNQDx` no es una variante: es un **superconjunto**. Tiene integrado todo
+lo que estaba del otro lado y además lo que faltaba.
+
+| pieza | ¿está en Dx? |
+| :-- | :-- |
+| peso continuo en la densidad (`weight = expLookup[d] * pesoZona`) | sí |
+| `MinContributingZones` | sí |
+| tabla exponencial precalculada + scatter | sí |
+| fix de canibalización (`EXPIRED` en el filtro de fusión) | sí |
+| procedencia en el CSV (`# meta` / `# params`) | sí |
+| modo `SoloMuertePorBarras` + `BarrasExtensionMuerte` | sí |
+| render por GPU (SharpDX) con culling de viewport | **sólo Dx** |
+| defaults que no esconden el objeto | **sólo Dx** |
+
+Mantener dos archivos del mismo objeto sólo agrega superficie para que diverjan. Se
+adopta Dx y `HFTClusterZonesNQ` queda **retirado**: se conserva en el repo como registro
+de lo que corrió, sin uso en chart.
+
+## Lo que se arregló al adoptarlo (v1.6.0 → v1.7.0)
+
+**Etiquetas ilegibles.** El texto de cada cluster se dibujaba en `yTop - 14f`, es decir
+14 px sobre su propio techo. Como los clusters se solapan todo el tiempo, varias
+etiquetas caían en la misma coordenada y se escribían encima —es el amasijo que se ve en
+la captura del 08-09—. Ahora `BuscarHuecoEtiqueta` baja de a 14 px hasta encontrar lugar
+libre, comparando solape vertical **y** horizontal.
+
+Importa más de lo que parece para lo que viene: las capturas con hora que Nico va a
+mandar se contrastan contra el espejo Python leyendo **esas etiquetas** (estado, densidad
+pico, capacidad, POC). Ilegibles, no hay contraste posible.
+
+No se tocó ningún parámetro de comportamiento. El objeto que dibuja es el mismo.
+
+## Lo que sigue, y no es «unificar» a medias
 
 **El archivo que Nico mira no está en el repo.** `HFTClusterZonesNQDx.cs` vive sólo en
 `Documents\NinjaTrader 8\bin\Custom\Indicators\`. Es la misma familia de falla que la
@@ -42,12 +76,15 @@ está registrado**, y cada lado es internamente coherente.
 
 Orden propuesto:
 
-1. **Traer `HFTClusterZonesNQDx.cs` al repo** y versionarlo. Es la versión viva.
-2. **Retirar `HFTClusterZonesNQ.cs`** o dejarlo declarado explícitamente como espejo de
-   paridad congelado, sin uso en chart. Dos indicadores del mismo objeto es peor que uno.
-3. **Re-alinear `hftclusterzones.py`** contra los defaults de Dx, y volver a medir
-   paridad — la capa de clusters todavía no tiene oráculo comparado, así que hoy no hay
-   certificado que se rompa, pero tampoco hay ninguno que ampare al espejo.
+1. **HECHO** — `HFTClusterZonesNQDx.cs` v1.7.0 está en `nt8/` y desplegado en NT8, con
+   respaldo del anterior en `HFTClusterZonesNQDx.cs.bak_20260908`.
+2. **HECHO** — `nt8/HFTClusterZonesNQ.cs` se sincronizó con lo que realmente corría en la
+   máquina (el repo estaba 87 líneas atrás: le faltaban `SoloMuertePorBarras`, la muerte
+   contada desde `EndBar` y el `EXPIRED` del filtro de fusión) y queda **retirado**.
+   Borrarlo de la carpeta de NinjaTrader es decisión de Nico, no se toca su instalación.
+3. **PENDIENTE, y es lo próximo** — re-alinear `hftclusterzones.py` contra los defaults
+   de Dx y medir paridad de la capa de clusters, que **nunca tuvo oráculo comparado**.
+   Recién ahí una captura con hora se puede contrastar contra el espejo.
 
 Hasta el punto 3, cualquier medición Python sobre clusters describe una configuración
 que **no es la que Nico ve**.

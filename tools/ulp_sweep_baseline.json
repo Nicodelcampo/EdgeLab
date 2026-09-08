@@ -182,6 +182,42 @@
    "evidencia": "Declaracion, no comparacion. El detector matchea por el nombre 'price'. La lista alimenta los estadisticos de CVD y de no-movimiento de la zona.",
    "veredicto": "NO_ES_PRECIO"
   },
+  "HFTClusterZonesNQDx.cs :: double tY = z.Direction == 1 ? z.Lower - (TickSize * 4) : z.Upper + (TickSize * 4);": {
+   "evidencia": "coordenada Y del texto de una zona. Solo dibujo; no participa de la deteccion ni del export.",
+   "veredicto": "FUERA_DE_ALCANCE"
+  },
+  "HFTClusterZonesNQDx.cs :: for (int i = 0; i < priceList.Count; i++)": {
+   "evidencia": "compara un indice entero contra Count. No hay double en la comparacion; el detector matchea por el nombre de la lista.",
+   "veredicto": "NO_ES_PRECIO"
+  },
+  "HFTClusterZonesNQDx.cs :: if (!c.TouchedPoc && Math.Abs(price - c.PocPrice) < (TickSize * 0.6))": {
+   "evidencia": "|price - PocPrice| es un multiplo EXACTO del tick (0, 0.25, 0.50...) porque los dos operandos son enteros por TickSize; el umbral es 0.6*TickSize = 0.15. La frontera cae estrictamente entre 0 y el primer valor alcanzable, asi que ningun error de ultimo bit puede cruzarla. Vale porque el tick de NQ es 0.25 = 2^-2: entero*TickSize y medio tick son EXACTOS en binario. NO se transporta a instrumentos con tick no diadico (GC 0.10); si este kernel se corre ahi, hay que rehacer el triaje.",
+   "veredicto": "INMUNE_MEDIOTICK"
+  },
+  "HFTClusterZonesNQDx.cs :: if (!c.TouchedPoc && barL <= c.PocPrice && barH >= c.PocPrice)": {
+   "evidencia": "pocPrice = pocTk * TickSize con pocTk entero (linea 756), y barL/barH son precios de grilla sin aritmetica. Los tres son multiplos exactos del tick, la comparacion preserva orden y empates. Vale porque el tick de NQ es 0.25 = 2^-2: entero*TickSize y medio tick son EXACTOS en binario. NO se transporta a instrumentos con tick no diadico (GC 0.10); si este kernel se corre ahi, hay que rehacer el triaje.",
+   "veredicto": "INMUNE_MONOTONO"
+  },
+  "HFTClusterZonesNQDx.cs :: if (price < fL) fL = price;": {
+   "evidencia": "minimo corriente sobre precios del feed llevados SIN aritmetica. Mismo argumento que el maximo de la linea anterior.",
+   "veredicto": "INMUNE_MONOTONO"
+  },
+  "HFTClusterZonesNQDx.cs :: if (price > fH) fH = price;": {
+   "evidencia": "maximo corriente sobre precios del feed llevados SIN aritmetica. feed() es estrictamente monotona en el indice de tick, asi que preserva orden y empates.",
+   "veredicto": "INMUNE_MONOTONO"
+  },
+  "HFTClusterZonesNQDx.cs :: if (price >= c.Lower && price <= c.Upper)": {
+   "evidencia": "los bordes del cluster viven en el MEDIO TICK por construccion: cLower = island[0]*TickSize - TickSize*0.5 y cUpper = ... + TickSize*0.5 (lineas 736-737). `price` esta siempre en la grilla, asi que la frontera de decision queda a medio tick de cualquier valor alcanzable y el empate no existe. Vale porque el tick de NQ es 0.25 = 2^-2: entero*TickSize y medio tick son EXACTOS en binario. NO se transporta a instrumentos con tick no diadico (GC 0.10); si este kernel se corre ahi, hay que rehacer el triaje.",
+   "veredicto": "INMUNE_MEDIOTICK"
+  },
+  "HFTClusterZonesNQDx.cs :: if (z.Upper < minP || z.Lower > maxP) continue;": {
+   "evidencia": "culling de viewport dentro de RenderZonasDx: decide si un rectangulo se dibuja, no si una zona existe. No participa de la deteccion ni entra en ningun export. Un error de ultimo bit dibujaria un rectangulo de mas o de menos en el borde de la pantalla.",
+   "veredicto": "FUERA_DE_ALCANCE"
+  },
+  "HFTClusterZonesNQDx.cs :: private readonly List<double> priceList = new List<double>();": {
+   "evidencia": "es una DECLARACION de campo, no una comparacion. El detector la matchea por el identificador 'price'. Falso positivo.",
+   "veredicto": "NO_ES_PRECIO"
+  },
   "HFTZones2.cs :: bool valid = (_dir == 1) ? price >= prev : price <= prev;": {
    "evidencia": "ambos operandos son precios de grilla llevados SIN aritmetica. feed() y ticks*tick_size son ambas estrictamente monotonas en el indice de tick, asi que preservan orden Y empates: feed(a)>feed(b) <=> a>b. Es el UNICO caso en que 'los dos son precios' alcanza como argumento.",
    "veredicto": "INMUNE_MONOTONO"
