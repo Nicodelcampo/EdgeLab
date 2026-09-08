@@ -18,7 +18,9 @@
 | 4 | Peso continuo vs conteo binario | `volume` ≤ `log_volume` ≤ `count` en fragilidad, en todas las celdas. Con umbral 25 y densidad 8: 53 % → 24 % | `docs/research/estabilidad_clusters/pesos_vs_count.json` |
 | 5 | Degeneración del peso continuo | Real pero acotada: 8,7 % de clusters de una sola zona en modo `volume`, 0 % en `count`. **Con `min_contributing_zones=3` el turnover no cambia** (0,6 % → 0,6 %): la mejora no era degeneración | commit `c35362e` |
 | 6 | **Ciclo de vida** (escalón 2, riesgos competitivos) | **99,4 % muere INVALIDATED.** 0,4 % agotado, 0,1 % expirado, 4,6 % llega a tocar su POC. 18.851 creados | log real `hft_cluster_events.csv` |
-| 7 | **Decaimiento por consumo** (canal no direccional) | **SIN EFECTO DETECTADO, NO CERRADO.** El contraste contra placebo no decae con el consumo. 690 muestras, MDE 0,206, contrastes ~0,05 | `docs/research/DECAIMIENTO_CLUSTERS_NQ_2026-09-07.md` |
+| 7 | **Decaimiento por consumo** (canal no direccional) | **SIN EFECTO DETECTADO, con cota.** 40 sesiones, 6.468 muestras, **MDE 0,067**. Ningún contraste lo supera; si hay efecto es < 7 pp y no es monótono | `docs/research/DECAIMIENTO_CLUSTERS_NQ_2026-09-07.md` |
+| 8 | **H2 — rechazo en bordes** (canal direccional) | **SIN EFECTO DETECTADO, residuo positivo consistente.** 15 sesiones, 160.759 contactos, 11.318 en borde. Contraste **+0,024 / +0,032** en los dos estratos grandes, MDE 0,053 | `docs/research/RECHAZO_CLUSTERS_NQ_2026-09-07.md` |
+| 9 | **Co-locación del cluster con el precio** | **74 %** de los contactos de nivel caen dentro de un cluster vivo, aunque los clusters cubren sólo 4–9 % del rango. Es la endogeneidad que hace obligatorio el escalón 5 | ídem |
 
 ### Defectos del instrumento, medidos
 
@@ -41,7 +43,7 @@
 | # | Qué falta | Por qué importa | Bloqueo |
 | :-- | :-- | :-- | :-- |
 | 1 | **H1 completa**: probabilidad de tocar contra el nulo browniano `2(1−Φ(d/(σ√h)))` condicional a σ local | Es el escalón 1 y el que replicó la muerte del 6E. El módulo de decaimiento cubre el contraste contra placebo, **no** contra el nulo analítico | ninguno, falta implementarlo |
-| 2 | **H2**: rechazo en los bordes | Canal direccional. Módulo construido y corriendo; una sesión da MDE 0,127 | corriendo |
+| 2 | **H2 con potencia suficiente** | El residuo es +0,03 y el MDE 0,053. Para decidirlo hacen falta ~65 sesiones | ninguno |
 | 3 | **Escalón 3**: sensibilidad a la vigencia | Todas las mediciones fijaron `max_age_bars=500` sin barrerlo. Herramienta escrita (`tools/vigencia_clusters_nq.py`), no corrida hasta el final | ninguno |
 | 4 | **CIF Fine-Gray** del ciclo de vida | El 99,4 % de invalidación se midió por conteo, no con incidencia acumulada ni riesgos competitivos formales | ninguno |
 | 5 | **Escalón 5**: condicionamiento por intensidad (Hawkes) y objeto hold-out | Es el que decide si hay información condicional o co-locación endógena | ninguno |
