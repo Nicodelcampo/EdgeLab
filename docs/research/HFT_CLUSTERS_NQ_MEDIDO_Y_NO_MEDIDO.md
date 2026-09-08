@@ -54,16 +54,29 @@
 
 ---
 
-## Decisiones abiertas que bloquean
+## Configuración congelada (enmienda P-72 aprobada el 2026-09-07)
 
-1. **La banda de no-degeneración del pre-registro está mal calibrada.** Se fijó en
-   15–60 % de cobertura as-of; las 108 mediciones dan como máximo **9,6 %**. Con el
-   criterio escrito, ninguna configuración pasa. Propuesta de enmienda: *«existe el
-   objeto (≥20 clusters por sesión) y no lo cubre todo (<60 %)»*. **Requiere OK de
-   Nico** — cambiar un gate después de ver resultados es lo que la regla restringe.
-2. Sin esa decisión, la configuración de campaña queda **provisional**:
-   `min_total_volume=10`, `weight_mode=volume`, σ=3, densidad=3,
-   `min_contributing_zones=3`, `merge_excluye_expirados=True`.
+La banda de no-degeneración del pre-registro estaba mal calibrada —decía 15–60 % de
+cobertura as-of y las 108 mediciones dieron máximo 9,6 %, con lo que ninguna
+configuración pasaba— y **Nico aprobó la enmienda**: *existe el objeto (≥ 20 clusters
+por sesión) y no lo cubre todo (< 60 %)*. Acta:
+`docs/research/ENMIENDA_P72_2026-09-07.md`. El criterio de estabilidad no se tocó.
+
+Con eso la configuración de campaña deja de ser provisional:
+
+| parámetro | valor |
+| :-- | :-- |
+| `min_total_volume` | 10 |
+| `weight_mode` | volume |
+| `halo_sigma_ticks` | 3 |
+| `min_density` | 3 |
+| `min_contributing_zones` | 3 |
+| `merge_excluye_expirados` | True |
+| `max_age_bars` | 500 — **congelado por omisión, no por medición** |
+
+**La reserva sigue en pie:** `max_age_bars` nunca se barrió. El escalón 3 existe
+(`tools/vigencia_clusters_nq.py`) y no se corrió hasta el final; el deep research lo
+marca como crítico.
 
 ---
 
