@@ -100,7 +100,7 @@ def una_sesion(path, t0, t1, tick_size, ticks_por_barra, p, vivos_solamente=True
                 bar=i, nivel=nivel, lado=lado, sigma=round(sg, 3),
                 distancia=nivel - barras[i - 1]["close"],
                 borde=cr.es_borde_de_cluster(nivel, vivos),
-                dentro=cr.esta_dentro(nivel, vivos),
+                categoria=cr.categoria(nivel, vivos),
                 desenlace=des))
     return dict(desde=str(t0), barras=len(barras), zonas=len(zonas),
                 clusters=len(eng.clusters), muestras=muestras)
@@ -157,14 +157,15 @@ def main(argv=None):
     print(f"   sin borde n={ag['sin_borde']['n']:>6,}  rechazo={ag['sin_borde']['rechazo']}")
     print(f"   contraste = {ag['contraste']}")
     print("\n--- estratificado por distancia x sigma ---")
-    print(f"{'binD':>5}{'binS':>5}{'n_borde':>9}{'n_sin':>9}{'rech_b':>9}{'rech_s':>9}{'contr':>9}")
+    print(f"{'binD':>5}{'binS':>5}{'n_borde':>9}{'n_libre':>9}{'n_dentro':>9}"
+          f"{'rech_b':>9}{'rech_libre':>11}{'contr':>9}")
     for f in t:
         rb = "  n/d" if f["rechazo_borde"] is None else f"{f['rechazo_borde']:>9.3f}"
         rs = "  n/d" if f["rechazo_sin_borde"] is None else f"{f['rechazo_sin_borde']:>9.3f}"
         ct = "  n/d" if f["contraste"] is None else f"{f['contraste']:>+9.3f}"
         marca = "" if f["suficiente"] else "  (flaco)"
         print(f"{f['bin_distancia']:>5}{f['bin_sigma']:>5}{f['n_borde']:>9,}"
-              f"{f['n_sin_borde']:>9,}{rb}{rs}{ct}{marca}")
+              f"{f['n_sin_borde']:>9,}{f.get('n_dentro',0):>9,}{rb}{rs:>11}{ct}{marca}")
 
     out = REPO / a.out
     out.parent.mkdir(parents=True, exist_ok=True)

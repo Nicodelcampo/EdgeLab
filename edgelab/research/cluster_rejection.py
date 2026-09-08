@@ -143,6 +143,22 @@ def _bin(valor, bordes):
     return len(bordes)
 
 
+def categoria(nivel, clusters, tolerancia=1):
+    """`borde`, `dentro` o `libre`. Los tres son objetos distintos.
+
+    Esto **corrige una contaminación del control**: en la primera corrida el grupo de
+    comparación era "todo lo que no es borde", que incluye los niveles del INTERIOR de
+    un cluster. Si el interior se comporta distinto de un nivel libre —y no hay razón
+    para suponer que no—, el control estaba mezclado y el contraste medía otra cosa.
+    El control correcto es el nivel **sin cluster ninguno**.
+    """
+    if es_borde_de_cluster(nivel, clusters, tolerancia):
+        return "borde"
+    if esta_dentro(nivel, clusters):
+        return "dentro"
+    return "libre"
+
+
 def tabla(muestras, p, minimo=30):
     """Tasa de rechazo por estrato, con y sin cluster.
 
@@ -156,12 +172,12 @@ def tabla(muestras, p, minimo=30):
     for m in muestras:
         if m["desenlace"] == "indefinido":
             clave = (_bin(abs(m["distancia"]), p["bordes_distancia"]),
-                     _bin(m["sigma"], p["bordes_sigma"]), m["borde"])
+                     _bin(m["sigma"], p["bordes_sigma"]), m.get("categoria", m["borde"]))
             c = celdas.setdefault(clave, dict(n=0, rechazos=0, indefinidos=0))
             c["indefinidos"] += 1
             continue
         clave = (_bin(abs(m["distancia"]), p["bordes_distancia"]),
-                 _bin(m["sigma"], p["bordes_sigma"]), m["borde"])
+                 _bin(m["sigma"], p["bordes_sigma"]), m.get("categoria", m["borde"]))
         c = celdas.setdefault(clave, dict(n=0, rechazos=0, indefinidos=0))
         c["n"] += 1
         c["rechazos"] += 1 if m["desenlace"] == "rechaza" else 0
@@ -169,14 +185,20 @@ def tabla(muestras, p, minimo=30):
     out = []
     vistos = {(d, s) for d, s, _ in celdas}
     for d, s in sorted(vistos):
-        con = celdas.get((d, s, True), dict(n=0, rechazos=0, indefinidos=0))
-        sin = celdas.get((d, s, False), dict(n=0, rechazos=0, indefinidos=0))
+        con = celdas.get((d, s, "borde"), celdas.get((d, s, True),
+                         dict(n=0, rechazos=0, indefinidos=0)))
+        # control = nivel LIBRE. El interior del cluster es otro objeto y va aparte.
+        sin = celdas.get((d, s, "libre"), celdas.get((d, s, False),
+                         dict(n=0, rechazos=0, indefinidos=0)))
+        adentro = celdas.get((d, s, "dentro"), dict(n=0, rechazos=0, indefinidos=0))
         p_con = con["rechazos"] / con["n"] if con["n"] else None
         p_sin = sin["rechazos"] / sin["n"] if sin["n"] else None
         out.append(dict(
             bin_distancia=d, bin_sigma=s,
             n_borde=con["n"], n_sin_borde=sin["n"],
             indefinidos_borde=con["indefinidos"], indefinidos_sin=sin["indefinidos"],
+            n_dentro=adentro["n"],
+            rechazo_dentro=(adentro["rechazos"] / adentro["n"]) if adentro["n"] else None,
             rechazo_borde=p_con, rechazo_sin_borde=p_sin,
             contraste=(p_con - p_sin) if (p_con is not None and p_sin is not None) else None,
             suficiente=con["n"] >= minimo and sin["n"] >= minimo,
