@@ -43,6 +43,27 @@ de oráculo de paridad. Cada una está marcada en el código con `# PARIDAD:`:
    terminal. Acá sí se emite `EVICTED` para que el censo no tenga agujeros; el `.cs`
    no lo emite (ver `tools/paridad_hftclusterzones.py`).
 
+## Por qué el peso continuo (variante de investigación)
+
+El `.cs` mezcla dos criterios incompatibles. Para la **distancia** usa un kernel suave:
+una zona no está o no está en un nivel, aporta `exp(-d²/2σ²)`. Para la **pertenencia**
+usa un corte duro: la zona entra al campo sólo si su volumen supera un umbral.
+
+Ese corte duro es lo que hace frágil al objeto. Medido con el test del proyecto
+(±1 de volumen sobre dos tercios de los ticks), el turnover de zonas da 32-38 %, contra
+un contrato de 5 %. La mediana de volumen es 64 y el umbral 50: casi todas las zonas
+viven pegadas a su compuerta.
+
+`weight_mode` aplica al eje de calidad el mismo tratamiento que ya recibe el eje de
+distancia. Con `"volume"` o `"log_volume"` la zona aporta `w·exp(-d²/2σ²)`, así que una
+perturbación mueve **pesos**, no membresías. Y rompe el compromiso que el corte duro
+imponía: hoy la única forma de discriminar es subir el umbral, y eso mata la
+estabilidad; con pesos la discriminación viene de la **concentración** del campo, y se
+puede tener muchas zonas —estable— con picos igual de nítidos.
+
+`"count"` sigue siendo el default porque es lo que reproduce el `.cs` y lo que la
+paridad certifica. Las otras dos son variantes de investigación y no tienen oráculo.
+
 ## Cómo se usa para medir
 
 `ClusterEngine` emite un evento por cada transición. Ese flujo de eventos **es** el
@@ -76,6 +97,11 @@ RESEARCH_DEFAULTS = dict(
     poc_touch_ticks=0.6,       # |precio - poc| que cuenta como toque
     invalidation_capacity_pct=0.8,
     max_clusters=300,
+    # --- VARIANTE DE INVESTIGACION, no esta en el .cs ---
+    # "count" reproduce el original: cada zona aporta 1. Las otras dos la hacen aportar
+    # segun su calidad. Ver la nota "Por que el peso continuo" en el docstring.
+    weight_mode="count",        # count | volume | log_volume
+    weight_ref_vol=0.0,         # 0 = normalizar por la mediana del pool
 )
 
 ACTIVE = "Active"
@@ -93,6 +119,30 @@ def _params(overrides=None):
     if overrides:
         p.update({k: v for k, v in overrides.items() if v is not None})
     return p
+
+
+def _pesos(zones, p):
+    """Peso de cada zona en el campo. `count` = 1 para todas, como el `.cs`.
+
+    Las variantes normalizan por un volumen de referencia para que el peso quede en el
+    orden de 1 y `min_density` siga significando aproximadamente "cuántas zonas". Sin
+    esa normalización, cambiar de modo obligaría a re-calibrar el umbral y los dos
+    modos dejarían de ser comparables.
+    """
+    modo = p.get("weight_mode", "count")
+    if modo == "count":
+        return [1.0] * len(zones)
+    vols = [float(z.get("total_vol", 0.0)) for z in zones]
+    ref = float(p.get("weight_ref_vol") or 0.0)
+    if ref <= 0:
+        pos = sorted(v for v in vols if v > 0)
+        ref = pos[len(pos) // 2] if pos else 1.0
+    if modo == "volume":
+        return [v / ref for v in vols]
+    if modo == "log_volume":
+        # comprime la cola: una zona de 10x el volumen pesa ~2x, no 10x
+        return [math.log1p(v / ref) / math.log(2.0) for v in vols]
+    raise ValueError("weight_mode desconocido: %r" % modo)
 
 
 def halo_density(zones, tick_size, params=None):
@@ -113,6 +163,7 @@ def halo_density(zones, tick_size, params=None):
     sigma = float(p["halo_sigma_ticks"])
     if sigma <= 0:
         raise ValueError("halo_sigma_ticks tiene que ser > 0")
+    pesos = _pesos(zones, p)
     two_sigma_sq = 2.0 * sigma * sigma
     cutoff = p["kernel_cutoff_sigmas"] * sigma
 
@@ -128,7 +179,7 @@ def halo_density(zones, tick_size, params=None):
         precio = tk * tick_size
         suma_d = 0.0
         suma_v = 0.0
-        for z in zones:
+        for z, w_z in zip(zones, pesos):
             if precio < z["lower"]:
                 d = (z["lower"] - precio) / tick_size
             elif precio > z["upper"]:
@@ -136,7 +187,7 @@ def halo_density(zones, tick_size, params=None):
             else:
                 d = 0.0
             if d <= cutoff:
-                w = math.exp(-(d * d) / two_sigma_sq)
+                w = w_z * math.exp(-(d * d) / two_sigma_sq)
                 suma_d += w
                 suma_v += w * z.get("total_vol", 0.0)
         if suma_d >= p["min_density"]:
