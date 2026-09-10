@@ -1,0 +1,83 @@
+{
+  "schema_version": "indicator_parity_catalog_v1",
+  "generated_date": "2026-08-27",
+  "target_free": true,
+  "authorization_rule": "Only parity_exact and parity_covered entries may be materialized in the canonical coordinate store.",
+  "entries": [
+    {
+      "parity_ref": "gc_bigtrap2absorption_canonical_v1",
+      "indicator": "BigTrap2Absorption",
+      "state": "parity_covered",
+      "instruments": ["GC"],
+      "config_scope": "canonical defaults",
+      "evidence": [
+        "docs/research/PARIDAD_BT2_ABSORPTION_2026-08-22.md",
+        "docs/research/BT2_ABSORPTION_GATE1_ALL5_RESULT_2026-08-26.md",
+        "docs/research/bt2a_p2a_v1_r1_20260827/README.md"
+      ],
+      "limitations": "Coverage is accepted, not relabeled as byte-exact parity. Bind every run to kernel_id and dataset_id."
+    },
+    {
+      "parity_ref": "gc_bigtrap2_canonical_v252",
+      "indicator": "BigTrap2",
+      "state": "parity_covered",
+      "instruments": ["GC"],
+      "config_scope": "canonical defaults on tick:25",
+      "evidence": ["docs/research/BIGTRAP2_PARIDAD_IMPOSIBLE_2026-08-21.md"],
+      "limitations": "Algorithm covered against GC oracle v2.5.2; residual mismatch is attributed to source-stream drift."
+    },
+    {
+      "parity_ref": "gc_hftzones2_canonical_v1",
+      "indicator": "HFTZones2",
+      "state": "parity_exact",
+      "instruments": ["GC"],
+      "config_scope": "canonical defaults with production sampler",
+      "evidence": [
+        "docs/research/paridad_hftzones2_GC_30d_2026-08-18.json",
+        "docs/research/HFTZONES_DIAGNOSTICO_V2_2026-08-19.md"
+      ],
+      "limitations": "Offline calibration must use the same sampler as the live indicator."
+    },
+    {
+      "parity_ref": "gc_voltickspoc2_canonical_v1",
+      "indicator": "VolTicksPOC2",
+      "state": "parity_exact",
+      "instruments": ["GC"],
+      "config_scope": "canonical defaults",
+      "evidence": ["docs/research/PARIDADES_LOCALES_ANTIGRAVITY_2026-08-14.md"],
+      "limitations": "Direction is non-directional and must remain null in coordinate projections."
+    },
+    {
+      "parity_ref": "gaps2_pending_v1",
+      "indicator": "Gaps2",
+      "state": "parity_pending",
+      "instruments": [],
+      "config_scope": "none authorized",
+      "evidence": ["docs/research/PARIDADES_LOCALES_ANTIGRAVITY_2026-08-14.md"]
+    },
+    {
+      "parity_ref": "aacloseopendiffs_pending_v1",
+      "indicator": "AACloseOpenDiffs",
+      "state": "parity_pending",
+      "instruments": [],
+      "config_scope": "none authorized",
+      "evidence": ["docs/research/PARIDADES_LOCALES_ANTIGRAVITY_2026-08-14.md"]
+    },
+    {
+      "parity_ref": "avolcellpoi2_failed_v1",
+      "indicator": "aVolCellPOI2",
+      "state": "parity_failed",
+      "instruments": [],
+      "config_scope": "none authorized",
+      "evidence": ["docs/research/paridad_avolcellpoi2_30d_w12_2026-08-18.json"]
+    },
+    {
+      "parity_ref": "avolclusterpoi_partial_v1",
+      "indicator": "aVolClusterPOI",
+      "state": "parity_under_review",
+      "instruments": [],
+      "config_scope": "none authorized",
+      "evidence": ["docs/research/AVOLCLUSTERPOI_60T_PARIDAD_INVESTIGACION_2026-08-26.md"]
+    }
+  ]
+}
