@@ -228,3 +228,41 @@ por reloj puede satisfacer eso, con cualquier cantidad de trabajo de traducción
 explicitando qué tiraba y por qué. Lo útil de este archivo es servir de **control
 negativo documentado**: cinco decisiones de diseño que el proyecto ya rechazó,
 con el fuente al lado para mostrar cómo se ven cuando están mal.
+
+---
+
+## HP-005 — reservado (rama SL/TP+BE)
+
+**Reservado, no usar en foundation.** HP-005 («Lógicas de salida SL/TP
+asimétricas + breakeven con gatillo denso, BT2A GC») vive completo en la rama
+`research/bt2a-gc-sltp-breakeven-design-v1-20260830`. Se reserva el número acá
+para que ninguna hipótesis nueva en `foundation` colisione con la numeración ya
+publicada en otra rama (lección P-56…P-59).
+
+---
+
+## HP-006 — Escaleras de liquidez (EQH/EQL) como imanes cerca de clusters HFT, en **NQ**
+
+**Fecha:** 2026-09-10 · **Origen:** observación visual de Nico ·
+**Estado:** promovida a pre-registro — `docs/research/H-NQ-LADDER-1_PREREGISTRO.md`
+(borrador v0, pendiente de corrección de Nico contra el chart) · **Instrumento:** NQ
+
+Nico observa picos consecutivos de highs/lows casi iguales («escaleras de
+liquidez») sobre o debajo de zonas de interés como clusters HFT, y que el
+precio suele ir a tomarlas con fuerza. Hipótesis, no medida: EQH/EQL como imán
+es folklore sin evidencia publicada.
+
+Puntos del diseño ya fijados en el pre-registro:
+
+- El objeto se define por reglas (pivotes + tolerancia + ventana), no por
+  capturas: la visión recupera reglas algebraicas, no las inventa
+  (Cohen/Balch/Veloso, ICAIF 2020). ML sólo si las reglas no reproducen el ojo.
+- Precondición: test de consistencia del etiquetador (re-etiquetar a ciegas,
+  κ ≥ 0,6) antes de entrenar o ajustar nada.
+- Controles ya declarados para la medición final: placebo emparejado por
+  distancia/horario, control de co-localización con clusters (74 % de contactos
+  dentro de cluster vivo, H2), escala de horizonte acorde al rango de barra
+  (lección VOID POR ESCALA), y orden causal corregido de las zonas
+  (look-ahead de runners, `f579ad4`).
+- Escalones 0–4 target-free; el escalón 5 (la hipótesis real) es outcomes y
+  requiere OK escrito de Nico y manifiesto propio.
