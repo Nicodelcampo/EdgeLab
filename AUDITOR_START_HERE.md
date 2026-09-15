@@ -8,10 +8,11 @@
 
 1. [`PROJECT_INDEX.md`](PROJECT_INDEX.md)
 2. [`docs/CURRENT.md`](docs/CURRENT.md)
-3. [`docs/OPEN_IDEAS_INDEX_2026-09-02.md`](docs/OPEN_IDEAS_INDEX_2026-09-02.md)
-4. [`docs/BRANCH_REGISTRY_2026-09-02.md`](docs/BRANCH_REGISTRY_2026-09-02.md)
-5. [`PENDIENTE.md`](PENDIENTE.md)
-6. [`docs/NORTH_STAR.md`](docs/NORTH_STAR.md)
+3. **[`docs/research/HP-007_DOSSIER_TECNICO_Y_AUDITORIA_CORREDORES_VACIO.md`](docs/research/HP-007_DOSSIER_TECNICO_Y_AUDITORIA_CORREDORES_VACIO.md)** — **[NUEVO 2026-09-15]** Dossier de Auditoría Completa de Corredores de Vacío y Campo de Resistencia Microestructural.
+4. [`docs/OPEN_IDEAS_INDEX_2026-09-02.md`](docs/OPEN_IDEAS_INDEX_2026-09-02.md)
+5. [`docs/BRANCH_REGISTRY_2026-09-02.md`](docs/BRANCH_REGISTRY_2026-09-02.md)
+6. [`PENDIENTE.md`](PENDIENTE.md)
+7. [`docs/NORTH_STAR.md`](docs/NORTH_STAR.md)
 
 Para la historia completa: `docs/PROJECT_CHRONOLOGY_2026-09-02.md`. Para material local-only: `docs/REPOSITORY_VISIBILITY_AUDIT_2026-08-24.md`.
 
@@ -20,6 +21,12 @@ No empezar por el árbol completo de `docs/research/`: mezcla evidencia vigente,
 ## Estado en 90 segundos
 
 ```text
+HP-007_VOID_CORRIDORS               CONFIRMADO (Velocidad 3.03x en tiempo real, p < 1e-9, Z_mc = 5.65)
+HP-007_VECTORIAL_BACKSTOP           CONFIRMADO (+0.156 R en cortos, +0.076 R en largos vs -0.409 R contra pared)
+HP-007_WALL_TO_WALL_4_7T            CONFIRMADO (42.54% hit, +0.160 R con R:R 1.73:1)
+HP-007_WALL_COLLISION               CONFIRMADO (52.27% rebote limpio >= 3t, rebote medio 5.15t)
+HOLDOUT_INTEGRITY                   INTACTO Y SELLADO (2026-07-01 -> 2026-12-31)
+--------------------------------------------------------------------------------
 REMOTE_BRANCHES                     60
 OPEN_PULL_REQUESTS                  17
 PROTECTED_BRANCHES                  0

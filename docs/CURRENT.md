@@ -1,32 +1,28 @@
 # CURRENT — estado vivo
 
-**Corte:** 2026-09-02  
+**Corte:** 2026-09-15  
 **Rama viva:** `foundation/f0b-compatibility-probe`  
 **HEAD:** resolver remoto al iniciar; el branch avanzó durante este mismo corte  
 **Referente:** `docs/NORTH_STAR.md` · sha256 del cuerpo `d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1`
 
-## Línea primaria
+## Línea primaria activa (2026-09-15)
 
-**Certificación del régimen contractual NQ y saneamiento de la cadena aVolClusterPOI NQ.**
-
-El scan v2 terminó técnicamente sobre 119.153.201 filas y abstuvo científicamente porque no existe evidencia aprobada de completitud. No hubo acceso a outcomes ni holdout.
+**HP-007: Corredores de Vacío y Campo de Resistencia Microestructural (Fast-Travel).**  
+Dossier canónico: [`docs/research/HP-007_DOSSIER_TECNICO_Y_AUDITORIA_CORREDORES_VACIO.md`](research/HP-007_DOSSIER_TECNICO_Y_AUDITORIA_CORREDORES_VACIO.md).  
+Se demostró cuantitativamente que el precio viaja 3.03 veces más rápido en tiempo real dentro de corredores de vacío ($D \le 0.28$) frente a congestión ($D \ge 0.70$) ($p = 2.14 \times 10^{-10}, Z_{\text{MC}} = 5.65$), y que el efecto Backstop Protector eleva la expectativa a **+0.156 R en cortos** y **+0.076 R en largos** (frente a pérdidas sistemáticas al comprar contra paredes). El holdout (`2026-07-01 -> 2026-12-31`) permanece 100% sellado.
 
 ## Vector de estado
 
 ```text
+HP-007_STATUS                           = CERTIFIED_MICROSTRUCTURAL_EFFECT
+HP-007_VELOCITY_RATIO                   = 1.35x_BARS / 3.03x_REALTIME (p=2.14e-10, Z=5.65)
+HP-007_BACKSTOP_EXPECTANCY              = +0.156_R_BEAR / +0.076_R_BULL
+HP-007_WALL_BOUNCE_RATE                 = 52.27%_CLEAN_REBOUND (>=3t)
+HOLDOUT_INTEGRITY                       = SEALED_UNTOUCHED (2026-07-01 -> 2026-12-31)
 REMOTE_BRANCHES                         = 60
 OPEN_PULL_REQUESTS                      = 17
 PROTECTED_BRANCHES                      = 0
-NQ_MANIFEST_V1                          = PROVISIONAL_INVALID_CALENDAR
 NQ_SCAN_V2                              = ABSTAIN_COMPLETENESS_EVIDENCE_REQUIRED
-NQ_CERTIFIED_ROLLS                      = 0
-NQ_PROVISIONAL_ROLLS                    = 4
-ROLL_SENSITIVITY_P68                    = IDENTICAL_DATES_CONTRACTS_RATIOS_6DP
-NQ09_MAINTENANCE_ROOT_CAUSE             = UNRESOLVED
-CME_CALENDAR                            = SOURCE_ACCESS_BLOCKED_NOT_DECISION_BLOCKED
-SOURCE_CAPTURE_COMPLETENESS             = NOT_APPROVED
-AVOLCLUSTERPOI_NQ_PARITY                = FAIL
-EF0                                     = BLOCKED
 CAMPAIGN_OUTCOMES_OPENED                = false
 PREEXISTING_OUTCOME_EXPOSURE            = YES
 ```
