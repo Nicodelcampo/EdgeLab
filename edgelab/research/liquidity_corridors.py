@@ -15,7 +15,9 @@ from typing import Iterable, Mapping, Sequence
 
 import numpy as np
 
-HOLDOUT_START = date(2026, 7, 1)
+from edgelab.research.holdout_guard import HOLDOUT_START_ISO
+
+HOLDOUT_START = date.fromisoformat(HOLDOUT_START_ISO[:10])
 
 
 class CorridorContractError(ValueError):
