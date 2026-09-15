@@ -1,12 +1,13 @@
 # Especificación Técnica: Estándar Universal de Régimen Contractual Causal (V2)
 
-- **Versión del Estándar:** `UNIVERSAL_CONTRACT_REGIME_V2`
+- **Versión del Estándar:** `CONTRACT_REGIME_V2`
 - **Identificador de Política:** `previous_complete_session_volume_leader_monotonic_v1`
 - **Fecha de Certificación:** `2026-09-15`
 - **Repositorio:** `Nicodelcampo/EdgeLab`
 - **Zona Horaria de Referencia:** `America/Chicago` (CT)
 - **Ajuste de Precios:** `NONE_ACTUAL_TRADED_PRICES` (Precios reales negociados, cero empalme artificial)
 - **Frontera de Estado:** `RESET_AT_CONTRACT_ROLL` (Reinicio mandatorio de acumuladores e indicadores en cada roll)
+- **Estado de Certificación:** `PARTIAL_MULTI_ASSET_CERTIFICATION` (5/11 activos certificados por calendario oficial; 6/11 en abstención por falta de calendario oficial; MNQ condicionado a exclusión de gaps).
 
 ---
 
@@ -22,9 +23,11 @@ graph TD
 ```
 
 1. **Aislamiento de Holdout**: Sellado al `2026-06-30T22:00:00Z` (apertura CME del trade date 2026-07-01). Ninguna lectura de datos posteriores al holdout está permitida.
-2. **Completitud de Sesión**: La existencia de horario oficial de mercado (`market_session_expected`) y la integridad de captura de datos (`source_capture_complete`) son evidencias ontológicamente distintas. La ausencia de evidencia oficial exige abstención (`ABSTAIN`), nunca inferencia heurística.
-3. **Selección Causal de Contrato Líder**: La elección del contrato activo en el trade date $D$ se realiza antes de la apertura de la sesión, basada exclusivamente en el volumen total negociado durante la última sesión completa $D-1$.
-4. **Reconstrucción Continua sin Distorsión**: La serie unificada `<ROOT>_CONT_CAUSAL_D1.parquet` utiliza precios reales de mercado. No se aplican factores multiplicativos ni aditivos (evita sesgos en análisis de microestructura, niveles de soporte/resistencia absolutos y microperfiles de volumen).
+2. **Completitud de Sesión y Desacople Causal**:
+   - `contract_selection_D`: Decisión causal tomada antes de la apertura de la sesión $D$, utilizando exclusivamente el volumen del trade date completo anterior $D-1$.
+   - `capture_quality_D`: Diagnóstico post-sesión de integridad física de la captura para el día $D$. La completitud por defecto es `UNKNOWN` (fail-closed estricto).
+   - `eligible_for_research_D`: Filtro target-free a posteriori para incluir o excluir la sesión $D$ de estudios downstream, sin alterar retrospectivamente el contrato seleccionado en $D-1$.
+3. **Reconstrucción Continua sin Distorsión**: La serie unificada `<ROOT>_CONT_CAUSAL_D1.parquet` utiliza precios reales de mercado. No se aplican factores multiplicativos ni aditivos (evita sesgos en análisis de microestructura, niveles de soporte/resistencia absolutos y microperfiles de volumen).
 
 ---
 
@@ -56,13 +59,14 @@ Para un activo con raíz $R$ y trade date $D$, sea $D-1$ la sesión de negociaci
 
 ---
 
-## 3. Compuerta de Sesiones y Cobertura Rectangular
+## 3. Compuerta de Sesiones y Exclusión de Mantenimiento
 
 ### 3.1. Requisitos de Cobertura Rectangular
 Para cada contrato declarado en el régimen entre su `first_trade_date` y `last_trade_date`, debe existir un registro explícito diario para cada fecha del calendario oficial. Si un contrato no registra transacciones en un día hábil donde estaba activo, debe registrarse con volumen cero y `complete_session = False`. La omisión física de filas genera `SOURCE_INCOMPLETE` y bloquea la elegibilidad de la sesión subsiguiente.
 
 ### 3.2. Ventana de Mantenimiento CME
-El periodo de mantenimiento diario del CME (16:00:00 a 16:59:59.999 CT, lunes a jueves) queda formalmente excluido del cálculo de volumen de sesión regular y de las métricas de elegibilidad intradía. Los ticks registrados dentro de este intervalo se marcan como mantenimiento y no pueden computarse para determinar el volumen causante de rollover.
+El periodo de mantenimiento diario del CME (16:00:00 a 16:59:59.999 CT, lunes a jueves) queda formalmente excluido del cálculo de volumen de sesión regular y de las métricas de elegibilidad intradía.
+La compuerta `ContractSessionEligibilityGateV2` proporciona métodos nativos (`aggregate_session_ticks` y `evaluate_session_from_ticks`) que convierten timestamps UTC a `America/Chicago`, identifican ticks en este intervalo y los descuentan del volumen y conteo de la sesión regular, almacenando métricas diagnósticas separadas (`maintenance_tick_count`, `maintenance_volume`).
 
 ### 3.3. Ciclos de Expiración por Activo
 
@@ -78,7 +82,7 @@ El periodo de mantenimiento diario del CME (16:00:00 a 16:59:59.999 CT, lunes a 
 
 ## 4. Estructura de Linaje y Serie Continua
 
-Cada registro en la serie continua causal `<ROOT>_CONT_CAUSAL_D1.parquet` debe incorporar obligatoriamente las 9 columnas canónicas de linaje criptográfico:
+Cada registro en la serie continua causal `<ROOT>_CONT_CAUSAL_D1.parquet` debe incorporar obligatoriamente las **10 columnas canónicas** de linaje criptográfico:
 
 1. `root` (`string`): Símbolo base del activo (ej. `"NQ"`).
 2. `contract` (`string`): Identificador del contrato específico (ej. `"NQ_06-26"`).
@@ -87,12 +91,16 @@ Cada registro en la serie continua causal `<ROOT>_CONT_CAUSAL_D1.parquet` debe i
 5. `roll_manifest_sha256` (`string`): Hash SHA-256 del manifiesto de régimen contractual inmutable.
 6. `source_file` (`string`): Nombre del archivo parquet primario de origen.
 7. `source_row` (`int64`): Índice de fila original dentro del archivo primario.
-8. `ts_utc_ns` (`int64`): Marca de tiempo UTC en nanosegundos.
-9. `sequence` (`int64`): Número secuencial de transacción.
-10. `state_reset_flag` (`bool`): Indicador booleano (`True` exclusivamente en la primera fila de un nuevo intervalo `regime_id`, `False` en las demás), que ordena el vaciado de acumuladores y reseteo de máquinas de estado en los algoritmos consumidores.
+8. `ts_utc_ns` (`int64`): Marca de tiempo UTC en nanosegundos (estrictamente positiva).
+9. `sequence` (`int64`): Número secuencial de transacción (no opcional, desempata timestamps idénticos).
+10. `state_reset_flag` (`bool`): Evaluado **estrictamente post-ordenamiento** por `(ts_utc_ns, sequence)`. Es `True` en la fila 0 y en la primera fila donde `regime_id[i] != regime_id[i-1]`, forzando el reinicio de acumuladores y máquinas de estado en algoritmos downstream.
+
+### 4.1. Unicidad de Microestructura
+Se prohíben registros duplicados en `(ts_utc_ns, sequence)` dentro de la serie continua. El constructor `build_continuous_series()` valida esta unicidad y aborta ante colisiones.
 
 ---
 
-## 5. Política de Aislamiento Micro / Estándar
+## 5. Política de Aislamiento Micro / Estándar a Nivel de Contenido
 
-Queda estrictamente prohibido mezclar contratos estándar y contratos micro en una misma cadena de régimen o serie continua (ej. mezclar ticks de `MNQ` dentro de `NQ`, o `MES` dentro de `ES`). Las series deben procesarse y certificarse en espacios de nombres y linajes totalmente segregados.
+Queda estrictamente prohibido mezclar contratos estándar y contratos micro en una misma cadena de régimen o serie continua (ej. mezclar ticks de `MNQ` dentro de `NQ`, o `MES` dentro de `ES`).
+El motor `build_continuous_series` verifica no sólo los nombres declarados en el manifiesto y rutas de archivo, sino también los valores internos de las columnas `instrument` y `contract` del parquet cargado, abortando ante cualquier discrepancia.

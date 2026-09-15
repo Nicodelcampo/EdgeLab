@@ -67,6 +67,8 @@ class ContinuousContractTests(unittest.TestCase):
             "bid_ticks": [18000, 18000],
             "ask_ticks": [18001, 18001],
             "volume": [5, 10],
+            "instrument": ["NQ", "NQ"],
+            "contract": ["03-26", "03-26"],
             "trade_date": [20260310, 20260310],
             "source_file": ["NQ_03-26_ticks.parquet", "NQ_03-26_ticks.parquet"],
             "source_row": [0, 1],
@@ -81,6 +83,8 @@ class ContinuousContractTests(unittest.TestCase):
             "bid_ticks": [18099, 18149],
             "ask_ticks": [18100, 18150],
             "volume": [12, 15],
+            "instrument": ["NQ", "NQ"],
+            "contract": ["06-26", "06-26"],
             "trade_date": [20260311, 20260312],
             "source_file": ["NQ_06-26_ticks.parquet", "NQ_06-26_ticks.parquet"],
             "source_row": [0, 1],
@@ -118,7 +122,7 @@ class ContinuousContractTests(unittest.TestCase):
         self.assertEqual(contracts[2:], ["NQ_06-26", "NQ_06-26"])
         self.assertEqual(trade_dates[2:], [20260311, 20260312])
 
-    def test_state_reset_flag_at_rolls(self) -> None:
+    def test_state_reset_flag_at_rolls_post_sort(self) -> None:
         table = build_continuous_series(
             root="NQ",
             regime_manifest=self.manifest,
@@ -132,12 +136,48 @@ class ContinuousContractTests(unittest.TestCase):
         self.assertTrue(flags[2])
         self.assertFalse(flags[3])
 
+    def test_state_reset_flag_with_disordered_source_rows(self) -> None:
+        # Construct source table with inverted timestamp order
+        p_disordered = self.tmp_path / "NQ_03-26_disordered.parquet"
+        t_disordered = pa.table({
+            "ts_utc_ns": [1773100005000000000, 1773100000000000000],  # later first, earlier second
+            "sequence": [2, 1],
+            "price_ticks": [18005, 18000],
+            "bid_ticks": [18005, 18000],
+            "ask_ticks": [18006, 18001],
+            "volume": [1, 1],
+            "instrument": ["NQ", "NQ"],
+            "contract": ["03-26", "03-26"],
+            "trade_date": [20260310, 20260310],
+            "source_file": ["NQ_03-26_disordered.parquet", "NQ_03-26_disordered.parquet"],
+            "source_row": [0, 1],
+        })
+        pq.write_table(t_disordered, p_disordered)
+
+        paths = dict(self.source_paths)
+        paths["NQ_03-26"] = p_disordered
+
+        table = build_continuous_series(
+            root="NQ",
+            regime_manifest=self.manifest,
+            contract_source_paths=paths,
+        )
+        # Verify timestamps are monotonically sorted post-sort
+        ts = table["ts_utc_ns"].to_pylist()
+        self.assertEqual(ts[0], 1773100000000000000)
+        self.assertEqual(ts[1], 1773100005000000000)
+        # Reset flag must be True on earliest row post-sort
+        flags = table["state_reset_flag"].to_pylist()
+        self.assertTrue(flags[0])
+        self.assertFalse(flags[1])
+
     def test_lineage_columns_presence_and_validity(self) -> None:
         table = build_continuous_series(
             root="NQ",
             regime_manifest=self.manifest,
             contract_source_paths=self.source_paths,
         )
+        self.assertEqual(len(LINEAGE_COLUMNS), 10)
         for col in LINEAGE_COLUMNS:
             self.assertIn(col, table.column_names)
 
@@ -145,7 +185,61 @@ class ContinuousContractTests(unittest.TestCase):
         self.assertTrue(all(s == sha for s in table["roll_manifest_sha256"].to_pylist()))
         self.assertTrue(all(r == "NQ" for r in table["root"].to_pylist()))
 
-    def test_rejects_micro_standard_mixing(self) -> None:
+    def test_rejects_duplicate_ts_and_sequence(self) -> None:
+        p_dup = self.tmp_path / "NQ_03-26_dup.parquet"
+        t_dup = pa.table({
+            "ts_utc_ns": [1773100000000000000, 1773100000000000000],  # Identical ts
+            "sequence": [1, 1],                                        # Identical seq
+            "price_ticks": [18000, 18000],
+            "bid_ticks": [18000, 18000],
+            "ask_ticks": [18001, 18001],
+            "volume": [1, 1],
+            "instrument": ["NQ", "NQ"],
+            "contract": ["03-26", "03-26"],
+            "trade_date": [20260310, 20260310],
+            "source_file": ["NQ_03-26_dup.parquet", "NQ_03-26_dup.parquet"],
+            "source_row": [0, 1],
+        })
+        pq.write_table(t_dup, p_dup)
+
+        paths = dict(self.source_paths)
+        paths["NQ_03-26"] = p_dup
+
+        with self.assertRaisesRegex(ContinuousContractError, "Duplicate .* detected"):
+            build_continuous_series(
+                root="NQ",
+                regime_manifest=self.manifest,
+                contract_source_paths=paths,
+            )
+
+    def test_rejects_content_level_micro_standard_mixing(self) -> None:
+        p_mnq_disguised = self.tmp_path / "NQ_03-26_disguised.parquet"
+        t_bad = pa.table({
+            "ts_utc_ns": [1773100000000000000],
+            "sequence": [1],
+            "price_ticks": [18000],
+            "bid_ticks": [18000],
+            "ask_ticks": [18001],
+            "volume": [1],
+            "instrument": ["MNQ"],  # Internal content is MNQ, but file was mapped to NQ!
+            "contract": ["03-26"],
+            "trade_date": [20260310],
+            "source_file": ["NQ_03-26_disguised.parquet"],
+            "source_row": [0],
+        })
+        pq.write_table(t_bad, p_mnq_disguised)
+
+        paths = dict(self.source_paths)
+        paths["NQ_03-26"] = p_mnq_disguised
+
+        with self.assertRaisesRegex(ContinuousContractError, "Content mismatch.*MNQ"):
+            build_continuous_series(
+                root="NQ",
+                regime_manifest=self.manifest,
+                contract_source_paths=paths,
+            )
+
+    def test_rejects_manifest_micro_standard_mixing(self) -> None:
         mixed_contracts = [
             {
                 "root": "NQ",

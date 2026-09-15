@@ -3,10 +3,17 @@
 Evaluates trade session eligibility across all asset classes (Equity Index, FX, Metals, Rates, Crypto)
 in a strictly causal, target-free manner.
 
-Eligibility states:
-- PASS: Session is fully eligible (approved official calendar, sufficient liquidity/volume, pre-roll, complete source).
-- FAIL: Session is excluded (scheduled market closure, holiday early close, low volume/ticks, post-roll).
-- ABSTAIN: Session cannot be certified (missing official calendar evidence, unknown/incomplete source capture).
+Architectural Guarantees:
+1. Strict Causal Separation:
+   - contract_selection_D: determined exclusively by volume leader in session D-1.
+   - capture_quality_D: post-session diagnostic of data integrity for session D.
+   - eligible_for_research_D: target-free filtering for downstream studies.
+2. Fail-Closed Default:
+   - completeness defaults strictly to UNKNOWN (requires explicit verified capture evidence to PASS).
+3. CME Maintenance Window Exclusion:
+   - Ticks between 16:00:00 and 16:59:59.999 CT are identified, segregated, and excluded from regular session volume.
+4. Portable Root-Relative Paths:
+   - Default calendars are located dynamically relative to the repository root.
 """
 from __future__ import annotations
 
@@ -16,8 +23,10 @@ from datetime import date, datetime
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
+# Dynamic repository-relative path resolution
+REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_EQUITY_INDEX_CALENDAR = (
-    Path("E:/EdgeLab")
+    REPO_ROOT
     / "docs"
     / "research"
     / "cme_equity_index_calendar_20260902"
@@ -73,6 +82,8 @@ class SessionEligibilityResultV2:
     completeness: str
     eligibility: str
     exclusion_reason: str | None
+    maintenance_tick_count: int = 0
+    maintenance_volume: float = 0.0
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -139,9 +150,67 @@ class ContractSessionEligibilityGateV2:
         return self._min_ticks.get(r, 10_000)
 
     @staticmethod
-    def is_maintenance_window_ct(hour: int, minute: int) -> bool:
+    def is_maintenance_window_ct(hour: int, minute: int = 0) -> bool:
         """CME daily maintenance halt is 16:00 to 17:00 CT (Monday-Thursday)."""
         return 16 <= hour < 17
+
+    @staticmethod
+    def aggregate_session_ticks(
+        ts_utc_ns: Sequence[int],
+        volume: Sequence[int | float],
+    ) -> dict[str, Any]:
+        """Classify and aggregate ticks, excluding CME daily maintenance (16:00-17:00 CT)."""
+        import pandas as pd
+        ts_series = pd.to_datetime(list(ts_utc_ns), utc=True).tz_convert("America/Chicago")
+        is_maint = (ts_series.hour == 16)
+
+        reg_ticks = int((~is_maint).sum())
+        maint_ticks = int(is_maint.sum())
+
+        vol_arr = pd.Series(list(volume))
+        reg_vol = float(vol_arr[~is_maint].sum()) if reg_ticks > 0 else 0.0
+        maint_vol = float(vol_arr[is_maint].sum()) if maint_ticks > 0 else 0.0
+
+        reg_ts = [ts for ts, m in zip(ts_utc_ns, is_maint) if not m]
+        first_reg_ts = reg_ts[0] if reg_ts else None
+        last_reg_ts = reg_ts[-1] if reg_ts else None
+
+        return {
+            "regular_volume": reg_vol,
+            "regular_tick_count": reg_ticks,
+            "maintenance_volume": maint_vol,
+            "maintenance_tick_count": maint_ticks,
+            "first_regular_ts_utc": first_reg_ts,
+            "last_regular_ts_utc": last_reg_ts,
+        }
+
+    def evaluate_session_from_ticks(
+        self,
+        root: str,
+        trade_date: int | date | str,
+        contract: str,
+        contract_median_volume: float,
+        ts_utc_ns: Sequence[int],
+        volume: Sequence[int | float],
+        roll_state: str = "PRE_ROLL",
+        completeness: str = "UNKNOWN",
+    ) -> SessionEligibilityResultV2:
+        """Evaluate session after filtering out maintenance window ticks deterministically."""
+        agg = self.aggregate_session_ticks(ts_utc_ns, volume)
+        return self.evaluate_session(
+            root=root,
+            trade_date=trade_date,
+            contract=contract,
+            contract_median_volume=contract_median_volume,
+            volume=agg["regular_volume"],
+            tick_count=agg["regular_tick_count"],
+            roll_state=roll_state,
+            first_ts_utc=agg["first_regular_ts_utc"],
+            last_ts_utc=agg["last_regular_ts_utc"],
+            completeness=completeness,
+            maintenance_tick_count=agg["maintenance_tick_count"],
+            maintenance_volume=agg["maintenance_volume"],
+        )
 
     def evaluate_session(
         self,
@@ -154,8 +223,14 @@ class ContractSessionEligibilityGateV2:
         roll_state: str = "PRE_ROLL",
         first_ts_utc: int | None = None,
         last_ts_utc: int | None = None,
-        completeness: str = "COMPLETE",
+        completeness: str = "UNKNOWN",
+        maintenance_tick_count: int = 0,
+        maintenance_volume: float = 0.0,
     ) -> SessionEligibilityResultV2:
+        """Evaluate session eligibility in a fail-closed manner.
+        
+        completeness defaults to UNKNOWN. If not explicitly verified, returns ABSTAIN.
+        """
         clean_root = str(root).upper().strip()
         group = self.get_asset_group(clean_root)
 
@@ -186,6 +261,8 @@ class ContractSessionEligibilityGateV2:
                 completeness=completeness,
                 eligibility="ABSTAIN",
                 exclusion_reason=f"NO_OFFICIAL_CALENDAR_EVIDENCE_FOR_{group}",
+                maintenance_tick_count=maintenance_tick_count,
+                maintenance_volume=maintenance_volume,
             )
 
         cal_session = cal_group.get(td_int)
@@ -207,6 +284,8 @@ class ContractSessionEligibilityGateV2:
                 completeness="UNKNOWN",
                 eligibility="ABSTAIN",
                 exclusion_reason=f"TRADE_DATE_NOT_IN_{group}_CALENDAR",
+                maintenance_tick_count=maintenance_tick_count,
+                maintenance_volume=maintenance_volume,
             )
 
         session_class = str(cal_session.get("session_class", "UNKNOWN"))
@@ -232,6 +311,8 @@ class ContractSessionEligibilityGateV2:
                 completeness=completeness,
                 eligibility="FAIL",
                 exclusion_reason=f"MARKET_CLOSED_{holiday_name or 'SCHEDULED'}",
+                maintenance_tick_count=maintenance_tick_count,
+                maintenance_volume=maintenance_volume,
             )
 
         if session_class == "EARLY_CLOSE":
@@ -252,6 +333,8 @@ class ContractSessionEligibilityGateV2:
                 completeness=completeness,
                 eligibility="FAIL",
                 exclusion_reason=f"EARLY_CLOSE_HOLIDAY_{holiday_name or 'UNSPECIFIED'}",
+                maintenance_tick_count=maintenance_tick_count,
+                maintenance_volume=maintenance_volume,
             )
 
         min_ticks = self.get_min_ticks(clean_root)
@@ -273,6 +356,8 @@ class ContractSessionEligibilityGateV2:
                 completeness=completeness,
                 eligibility="FAIL",
                 exclusion_reason=f"INSUFFICIENT_TICKS_{tick_count}_LT_{min_ticks}",
+                maintenance_tick_count=maintenance_tick_count,
+                maintenance_volume=maintenance_volume,
             )
 
         if roll_state.upper() == "POST_ROLL":
@@ -293,6 +378,8 @@ class ContractSessionEligibilityGateV2:
                 completeness=completeness,
                 eligibility="FAIL",
                 exclusion_reason="POST_ROLL_CONTRACT_EXPIRED_OR_ILLIQUID",
+                maintenance_tick_count=maintenance_tick_count,
+                maintenance_volume=maintenance_volume,
             )
 
         min_ratio = self.get_min_volume_ratio(clean_root)
@@ -314,6 +401,8 @@ class ContractSessionEligibilityGateV2:
                 completeness=completeness,
                 eligibility="FAIL",
                 exclusion_reason=f"LOW_VOLUME_RATIO_{ratio_vs_median:.3f}_LT_{min_ratio:.3f}",
+                maintenance_tick_count=maintenance_tick_count,
+                maintenance_volume=maintenance_volume,
             )
 
         if completeness == "INCOMPLETE":
@@ -334,6 +423,8 @@ class ContractSessionEligibilityGateV2:
                 completeness=completeness,
                 eligibility="FAIL",
                 exclusion_reason="INCOMPLETE_SOURCE_CAPTURE",
+                maintenance_tick_count=maintenance_tick_count,
+                maintenance_volume=maintenance_volume,
             )
 
         if completeness == "UNKNOWN":
@@ -354,6 +445,8 @@ class ContractSessionEligibilityGateV2:
                 completeness=completeness,
                 eligibility="ABSTAIN",
                 exclusion_reason="SOURCE_CAPTURE_COMPLETENESS_UNKNOWN",
+                maintenance_tick_count=maintenance_tick_count,
+                maintenance_volume=maintenance_volume,
             )
 
         return SessionEligibilityResultV2(
@@ -373,4 +466,6 @@ class ContractSessionEligibilityGateV2:
             completeness=completeness,
             eligibility="PASS",
             exclusion_reason=None,
+            maintenance_tick_count=maintenance_tick_count,
+            maintenance_volume=maintenance_volume,
         )

@@ -6,10 +6,12 @@ preserving exact traded prices and asserting state reset boundaries at every con
 Key Guarantees:
 1. Actual traded prices: no back-adjustment, no ratio-adjustment, no price smoothing.
 2. Causal contract selection: uses only previous complete session volume (regime_manifest).
-3. State boundary reset: flags state_reset_flag=True at rolls to force downstream indicator reset.
-4. Micro / Standard isolation: strictly forbids mixing root symbols (e.g. NQ vs MNQ).
-5. Immutable lineage: every row carries root, contract, trade_date, regime_id,
-   roll_manifest_sha256, source_file, source_row, ts_utc_ns, sequence.
+3. Post-sort state boundary reset: evaluates state_reset_flag strictly after global
+   (ts_utc_ns, sequence) sorting, asserting True on row 0 and at every regime_id transition.
+4. Content-level Micro/Standard isolation: validates manifest, file paths, parquet metadata,
+   and internal payload columns (instrument, contract), forbidding micro/standard mixture.
+5. Strict lineage & uniqueness: guarantees 10 mandatory lineage columns and strictly
+   asserts uniqueness of (ts_utc_ns, sequence).
 """
 from __future__ import annotations
 
@@ -17,6 +19,7 @@ import hashlib
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
 import pyarrow as pa
+import pyarrow.compute as pc
 import pyarrow.parquet as pq
 
 from edgelab.data.contract_regime import (
@@ -71,23 +74,21 @@ def build_continuous_series(
         if d["root"] == clean_root
     }
 
-    # Verify no micro/standard mixing in manifest contracts
+    # 1. Verify no micro/standard mixing in manifest contracts
     for c in regime_manifest.get("contracts", []):
         if c["root"] == clean_root:
             c_name = c["contract"]
-            # e.g. NQ_06-26 or 06-26. If it has a root prefix, it must match clean_root
             if "_" in c_name:
                 c_root = c_name.split("_")[0].upper()
                 if c_root != clean_root:
                     raise ContinuousContractError(
-                        f"Mismatched contract root {c_root} in regime for {clean_root}"
+                        f"Mismatched contract root '{c_root}' in manifest for '{clean_root}'"
                     )
 
-    # Process each interval in chronological order
+    # 2. Process each interval
     collected_tables: list[pa.Table] = []
-    current_regime_id: str | None = None
 
-    for interval_idx, interval in enumerate(intervals):
+    for interval in intervals:
         contract_key = interval["contract"]
         start_td = interval["start_trade_date"]
         end_td = interval["end_trade_date_exclusive"]
@@ -108,11 +109,36 @@ def build_continuous_series(
         src_table = pq.read_table(path_candidate)
         src_cols = set(src_table.column_names)
 
+        # Validate mandatory timestamps and sequence in source
+        if "ts_utc_ns" not in src_cols:
+            raise ContinuousContractError(f"Source parquet {path_candidate} missing mandatory 'ts_utc_ns'")
+        if "sequence" not in src_cols:
+            raise ContinuousContractError(f"Source parquet {path_candidate} missing mandatory 'sequence'")
+
+        # Content-level validation: verify internal instrument / contract if present
+        if "instrument" in src_cols:
+            inst_sample = src_table["instrument"].slice(0, min(100, len(src_table))).to_pylist()
+            for inst in inst_sample:
+                inst_clean = str(inst).strip().upper()
+                if inst_clean != clean_root:
+                    raise ContinuousContractError(
+                        f"Content mismatch in {path_candidate}: internal instrument '{inst_clean}' != root '{clean_root}'"
+                    )
+
+        if "contract" in src_cols:
+            cont_sample = src_table["contract"].slice(0, min(100, len(src_table))).to_pylist()
+            expected_suffixes = {contract_key, contract_key.split("_")[-1]}
+            for cont in cont_sample:
+                cont_clean = str(cont).strip()
+                if cont_clean not in expected_suffixes:
+                    raise ContinuousContractError(
+                        f"Content mismatch in {path_candidate}: internal contract '{cont_clean}' not in {expected_suffixes}"
+                    )
+
         # Determine trade_date column or compute from ts_utc_ns
         if "trade_date" in src_cols:
             trade_dates_raw = src_table["trade_date"].to_pylist()
         else:
-            # Derive trade_date using America/Chicago 17:00 CT boundary
             import pandas as pd
             ts_series = pd.to_datetime(src_table["ts_utc_ns"].to_numpy(), utc=True).tz_convert("America/Chicago")
             dates = ts_series.date.copy()
@@ -140,7 +166,6 @@ def build_continuous_series(
         indices = [i for i, k in enumerate(keep_mask) if k]
         sub_table = src_table.take(indices)
 
-        # Build lineage columns
         sub_len = len(sub_table)
         sub_cols = set(sub_table.column_names)
         source_file_name = Path(path_candidate).name
@@ -152,7 +177,6 @@ def build_continuous_series(
         filtered_tds = [trade_dates_raw[i] for i in indices]
         trade_date_col = pa.array(filtered_tds, type=pa.int64())
 
-        # Source file and source row
         if "source_file" in sub_cols:
             source_file_col = sub_table["source_file"]
         else:
@@ -163,14 +187,6 @@ def build_continuous_series(
         else:
             source_row_col = pa.array(indices, type=pa.int64())
 
-        # State reset flag: True on first row of whole series, and True on first row of new regime_id
-        state_reset = [False] * sub_len
-        if current_regime_id != regime_id:
-            state_reset[0] = True
-            current_regime_id = regime_id
-        state_reset_col = pa.array(state_reset, type=pa.bool_())
-
-        # Assemble new / updated table
         cols_to_add = {
             "root": root_col,
             "contract": contract_col,
@@ -179,10 +195,8 @@ def build_continuous_series(
             "roll_manifest_sha256": manifest_sha_col,
             "source_file": source_file_col,
             "source_row": source_row_col,
-            "state_reset_flag": state_reset_col,
         }
 
-        # Preserve original columns, replacing or appending lineage
         existing_cols = list(sub_table.column_names)
         new_cols = []
         new_names = []
@@ -207,20 +221,50 @@ def build_continuous_series(
 
     full_table = pa.concat_tables(collected_tables)
 
-    # Sort strictly by ts_utc_ns, sequence if present
-    if "sequence" in full_table.column_names:
-        sort_keys = [("ts_utc_ns", "ascending"), ("sequence", "ascending")]
-    else:
-        sort_keys = [("ts_utc_ns", "ascending")]
-    
-    # pyarrow sort indices
-    import pyarrow.compute as pc
+    # 3. Global sort strictly by (ts_utc_ns, sequence)
+    sort_keys = [("ts_utc_ns", "ascending"), ("sequence", "ascending")]
     sort_indices = pc.sort_indices(full_table, sort_keys=sort_keys)
     sorted_table = full_table.take(sort_indices)
+
+    # 4. Assert uniqueness of (ts_utc_ns, sequence)
+    ts_arr = sorted_table["ts_utc_ns"].to_numpy()
+    seq_arr = sorted_table["sequence"].to_numpy()
+
+    # Verify no nulls or non-positive timestamps
+    if (ts_arr <= 0).any():
+        raise ContinuousContractError("Encountered non-positive ts_utc_ns in continuous stream")
+
+    # Fast duplicate check on sorted arrays: duplicates must be adjacent
+    if len(ts_arr) > 1:
+        dup_mask = (ts_arr[:-1] == ts_arr[1:]) & (seq_arr[:-1] == seq_arr[1:])
+        if dup_mask.any():
+            first_dup_idx = int(dup_mask.argmax())
+            dup_ts = ts_arr[first_dup_idx]
+            dup_seq = seq_arr[first_dup_idx]
+            raise ContinuousContractError(
+                f"Duplicate (ts_utc_ns, sequence) detected: ts={dup_ts}, seq={dup_seq} at row {first_dup_idx}"
+            )
+
+    # 5. Assign state_reset_flag POST-SORT strictly at chronological regime boundaries
+    sorted_regimes = sorted_table["regime_id"].to_pylist()
+    state_reset = [False] * len(sorted_table)
+    if len(sorted_table) > 0:
+        state_reset[0] = True
+        for i in range(1, len(sorted_table)):
+            if sorted_regimes[i] != sorted_regimes[i - 1]:
+                state_reset[i] = True
+
+    state_reset_col = pa.array(state_reset, type=pa.bool_())
+    final_table = sorted_table.append_column("state_reset_flag", state_reset_col)
+
+    # 6. Final lineage columns verification (exactly 10 columns)
+    missing_lineage = set(LINEAGE_COLUMNS) - set(final_table.column_names)
+    if missing_lineage:
+        raise ContinuousContractError(f"Final continuous series missing lineage columns: {missing_lineage}")
 
     if output_parquet_path:
         out_p = Path(output_parquet_path)
         out_p.parent.mkdir(parents=True, exist_ok=True)
-        pq.write_table(sorted_table, out_p, compression="SNAPPY")
+        pq.write_table(final_table, out_p, compression="SNAPPY")
 
-    return sorted_table
+    return final_table
