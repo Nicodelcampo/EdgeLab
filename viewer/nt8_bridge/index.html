@@ -1615,12 +1615,12 @@
     var sigma = 1.2 * tick;
     var twoSigmaSq = 2 * sigma * sigma;
 
-    // Ponderación Perfil EQUILIBRADO:
-    // W_k = (vol / 20)^0.25 * exp(-ln(2)*dt/14400) * (1 / (1 + 0.5 * touches))^0.60 * penalty
+    // Ponderación Perfil CALIBRADO EMPÍRICO (12h Vida Media + Maduración Bimodal):
+    // Zonas frescas (<15-30m) tienen menor contención (fueron perforadas 68%); alcanzan plenitud entre 1h y 12h.
     for (var az = 0; az < activeZones.length; az++) {
       var zk = activeZones[az];
       var dtSec = Math.max(0, tRef - zk.t0);
-      if (dtSec > 86400) continue; // Descartar zonas con más de 24 horas de antigüedad
+      if (dtSec > 172800) continue; // Ventana extendida de 48 horas para retener memoria intersesión
 
       var vol = Math.max(1.0, zk.vol !== undefined ? zk.vol : 20.0);
       var touches = Math.max(0, zk.touches !== undefined ? zk.touches : 0);
@@ -1628,7 +1628,14 @@
 
       var s0 = Math.min(3.0, Math.max(0.3, vol / 20.0));
       var fVol = Math.pow(s0, 0.25);
-      var fTime = Math.exp(-0.69314718 * dtSec / 14400.0); // Vida media real institucional = 4 horas
+
+      // Factor de maduración empírica: 0.35 en t=0 creciendo hasta 1.0 en 1 hora
+      var fMadurez = Math.min(1.0, 0.35 + 0.65 * (dtSec / 3600.0));
+      // Decaimiento tardío suave con vida media de 12 horas (43,200s) a partir de las 4 horas
+      var dtPostConsolidacion = Math.max(0, dtSec - 14400.0);
+      var fTime = fMadurez * Math.exp(-0.69314718 * dtPostConsolidacion / 43200.0);
+
+      // Desgaste por consumo: el ejecutor primario de la muralla
       var fWear = Math.pow(1.0 / (1.0 + 0.5 * touches), 0.60);
       var penalty = isInv ? 0.35 : 1.0;
 
@@ -1959,12 +1966,12 @@
 
     ctx.font = "bold 10px 'Segoe UI', -apple-system, sans-serif";
     ctx.fillStyle = state.isDark ? "#38bdf8" : "#0284c7";
-    ctx.fillText("⚡ HP-006: CAMPO DE RESISTENCIA MICROESTRUCTURAL (CONTINUO)", hudX + 10, hudY + 15);
+    ctx.fillText("⚡ HP-007: CAMPO DE RESISTENCIA MICROESTRUCTURAL (CALIBRADO)", hudX + 10, hudY + 15);
 
     ctx.font = "9px 'Segoe UI', -apple-system, sans-serif";
     ctx.fillStyle = state.isDark ? "#cbd5e1" : "#334155";
     var runLabel = runToUse ? (runToUse.name || runToUse.id) : "bt2a_25t_sensible";
-    ctx.fillText("Config: " + runLabel + " · EQUILIBRADO (60% Consumo, 25% Vol, 15% Tiempo)", hudX + 10, hudY + 29);
+    ctx.fillText("Config: " + runLabel + " · CALIBRADO (Maduración Bimodal · Vida Media 12h · Filtro Consumo)", hudX + 10, hudY + 29);
 
     ctx.fillStyle = state.isDark ? "#94a3b8" : "#64748b";
     ctx.fillText("As-Of: " + asOfStr + " · D̄ = " + dMean.toFixed(2) + " · " + corridors.length + " Corredores · " + walls.length + " Murallas · Vacío: " + pctVacio + "%", hudX + 10, hudY + 43);
