@@ -266,3 +266,18 @@ Puntos del diseño ya fijados en el pre-registro:
   (look-ahead de runners, `f579ad4`).
 - Escalones 0–4 target-free; el escalón 5 (la hipótesis real) es outcomes y
   requiere OK escrito de Nico y manifiesto propio.
+
+---
+
+## HP-007 — Corredores de Vacío y Campo de Resistencia Microestructural As-Of (Fast-Travel)
+
+**Fecha:** 2026-09-14 / 2026-09-15 · **Origen:** diseño e intuición de Nico del Campo en sesión sobre 6E Continuo 25t ·
+**Estado:** modelo matemático y prototipo visual activo en visor (`viewer/nt8_bridge/index.html`) con validación empírica de terceridad en `docs/research/DIAGNOSTICO_DECAIMIENTO_TEMPORAL_6E.md` · **Instrumentos:** 6E, NQ, ES, GC
+
+Nico observa que las zonas de absorción (1 a 3 ticks) generan un campo continuo de fricción microestructural. Los espacios intermedios desprovistos de zonas pasivas descansadas actúan como corredores de baja fricción donde el precio viaja con alta velocidad y mínimo retroceso (flujo laminar).
+
+Puntos del diseño y calibración empírica ya fijados:
+- **No binario:** Cada nivel de precio tiene una densidad continua $D(p, t)$ calculada por superposición espacial y temporal con kernel gaussiano ($\sigma = 1.2\,\text{tick}$).
+- **Terceridad de datos confirmada:** Contrastado sobre 5.703 eventos reales en `6E 06-26` (Pilar 1) y `6E 03-26` (Pilar 2) frente a control nulo placebo y Monte Carlo ($Z=3.79, p=0.0010$, Pilar 3).
+- **Refutación del decaimiento rápido:** El decaimiento monótono temprano ($T_{\text{half}} = 4\,\text{h}$) es contraproducente; las zonas maduras de 4 a 12 horas presentan la máxima eficacia de contención ($\text{MFE}/\text{MAE} = 1.53$, Hit 8t = 57.3%). La extinción debe gobernarse por consumo y travesía ($f_{\text{desgaste}}$), no por reloj lineal.
+- **Documentos canónicos:** `docs/research/HP-006_CORREDORES_DE_VACIO_Y_CAMPO_FRICCION_2026-09-14.md` y `docs/research/DIAGNOSTICO_DECAIMIENTO_TEMPORAL_6E.md`.

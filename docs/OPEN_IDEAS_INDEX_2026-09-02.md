@@ -54,8 +54,11 @@ Cerrar identidad de artefacto, población contractual y procedencia antes de reu
 | HP-003 | aVolClusterPOI | línea activa | EventLog target-free, score descompuesto, paridad y régimen |
 | HP-004 | aVolZonePOI | descartado | control negativo de diseño |
 | HP-005 | salidas SL/TP+BE GC | diseño sin freeze | RW/MCS, P2-B y Event Store |
+| HP-006 (remote) | Escaleras de liquidez (EQH/EQL) en NQ | pre-registro formal (`2026-09-10`) | Doc: `docs/research/H-NQ-LADDER-1_PREREGISTRO.md` |
+| HP-007 (local HP-006) | Corredores de Vacío y Campo de Resistencia As-Of (Fast-Travel) | prototipo activo + validación triangulada (`2026-09-15`) | Docs: `docs/research/HP-006_CORREDORES_DE_VACIO_Y_CAMPO_FRICCION_2026-09-14.md` y `docs/research/DIAGNOSTICO_DECAIMIENTO_TEMPORAL_6E.md` |
 
 HP-005 sólo está completa en `research/bt2a-gc-sltp-breakeven-design-v1-20260830`; se indexa para que no desaparezca de la vista de `foundation`.
+HP-007 validada el 2026-09-15: modelo continuo de micro-zonas (1-3t), visualizador interactivo y refutación empírica del decaimiento rápido mediante terceridad de datos (06-26 vs 03-26 vs Monte Carlo Z=3.79).
 
 ## Líneas secundarias
 
