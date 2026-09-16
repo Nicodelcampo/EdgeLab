@@ -1,20 +1,38 @@
 # Informe Formal de Investigación Estructural — HP007-CAMP-002
 ## Medición Causal del Proceso de Rechazo, Alejamiento y Revisitación de Vacíos de Liquidez
 
+> [!CAUTION]
+> **ESTADO DE AUDITORÍA: INVALIDADO POR DEFECTOS DE EJECUCIÓN Y FUERA DE ALCANCE**  
+> `CAMPAIGN_STATUS = INVALIDATED_OUT_OF_SCOPE_AND_EXECUTION_DEFECTS`  
+> `RESULTS_CLASS = NON_EVIDENTIARY_EXPLORATORY_OUTPUT`  
+> `REASON = OWNER_EVENT_SEMANTICS_NOT_DEFINED NONCANONICAL_BRANCH AS_OF_ZONE_LOOKAHEAD UNMATCHED_CONTROL DIFFERENTIAL_CENSORING ABLATIONS_NOT_APPLIED INCOMPLETE_PROVENANCE`  
+> `REVISIT_MEASUREMENT = ON_HOLD_BY_OWNER`  
+> `NEXT_PHASE = VISUAL_LOGIC_DESIGN`  
+> 
+> Este documento y sus resultados se preservan como evidencia histórica y de software-smoke, pero **no constituyen evidencia causal ni respaldo para ninguna afirmación empírica ni recomendación de trading**. La rama de desarrollo canónica es `work/hp007-rejection-revisit-campaign-v2-canonical-20260915`.
+
 **Fecha de Ejecución:** 2026-09-15 / 2026-09-16  
 **Campaña:** `HP007-CAMP-002`  
-**Rama:** `work/hp007-rejection-revisit-campaign-v2-20260915`  
-**Commit de Preregistro:** `e92dd50b57e75bb59db0ea39c4e510842db13e55`  
+**Rama:** `work/hp007-rejection-revisit-campaign-v2-20260915` (NO CANÓNICA — PRESERVADA HISTÓRICAMENTE)  
+**Commit de Preregistro Real:** `e92dd5047239d2ba738aa85a0def0a0c69b000ac`  
+**Commit de Resultados Real:** `d34eb02980d10f824f483e13016c982dc512003b`  
 **Documento Rector:** `docs/research/PROMPT_ANTIGRAVITY_HP007_CAMP002_REJECTION_REVISIT_2026-09-15.md`  
 **Entorno de Datos:** Local canónico (`E:\EdgeLab\data\nt8\6E\`)
 
 ---
 
-## 1. Veredicto Formal de Auditoría
+## 1. Veredicto Formal de Auditoría del Propietario
 
 ```
 ================================================================================
->>> VEREDICTO FORMAL: BASE_LOGIC_NOT_SUPPORTED <<<
+>>> VEREDICTO FORMAL AUDITORÍA: RESULTS_PRESERVATION = YES                    <<<
+>>>                           RESULTS_INTERPRETATION = PROHIBITED            <<<
+>>>                           BASE_LOGIC_NOT_SUPPORTED = NOT_ACCEPTED        <<<
+>>>                           CAUSAL_CLAIM = INVALID                         <<<
+>>>                           PERSISTENT_BARRIER_CLAIM = NOT_ESTABLISHED     <<<
+>>>                           FADE_RECOMMENDATION = NOT_AUTHORIZED           <<<
+>>>                           REVISIT_MEASUREMENT = ON_HOLD_BY_OWNER         <<<
+>>>                           NEXT_PHASE = VISUAL_LOGIC_DESIGN               <<<
 ================================================================================
 ```
 
