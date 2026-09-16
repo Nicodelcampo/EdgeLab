@@ -116,6 +116,7 @@ namespace NinjaTrader.NinjaScript.Indicators
         private SQLiteConnection dbConn;
         private SQLiteCommand    flowCmd, zoneCmd;
         private bool   dbReady = false;
+        private bool   hasLoggedFlushError = false;
         private readonly List<object[]> zoneBuf = new List<object[]>();
         private readonly List<object[]> flowBuf = new List<object[]>();
         private long   lastFlushMs = 0;
@@ -233,6 +234,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 clusterCounter = 0;
                 clusterTags.Clear();
                 activeClusters.Clear();
+                hasLoggedFlushError = false;
                 if (EnableDbLogging) SetupDb();
             }
             else if (State == State.Terminated)
@@ -259,6 +261,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 currentSessionId = sessId;
                 currentTickSeq = 0;
                 currentZoneSeq = 0;
+                hasLoggedFlushError = false;
                 ResetState();
             }
         }
@@ -324,7 +327,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                     Instrument.FullName, contractStr, currentSessionId, currentTickSeq,
                     tsNs, pTicks, Volumes[ds][0], bTicks, aTicks
                 });
-                if (tickBuf.Count >= BatchSize)
+                if (tickBuf.Count >= 2000)
                     FlushAll();
             }
 
@@ -1105,9 +1108,9 @@ namespace NinjaTrader.NinjaScript.Indicators
                       CREATE INDEX IF NOT EXISTS idx_hf_ts ON hft_flow(instrument, bar_ts);", dbConn))
                     cmd.ExecuteNonQuery();
 
-                // NOTA CRITICA: Se ELIMINA INSERT OR IGNORE. Todo insert debe ser exitoso o lanzar excepción.
+                // Usamos INSERT OR REPLACE para que reinicios de replay o reconexiones no lancen excepciones de clave unica.
                 zoneCmd = new SQLiteCommand(
-                    @"INSERT INTO hft_zones_v2
+                    @"INSERT OR REPLACE INTO hft_zones_v2
                       (instrument,contract,session_id,zone_seq,start_tick_seq,end_tick_seq,start_ts_ns,end_ts_ns,
                        available_ts_ns,direction,lo_ticks,hi_ticks,pasos,vol,avg_ms,total_ms,volume_rate,
                        parameter_manifest_sha256,indicator_source_sha256,valid_steps,max_retro,cvd_sweep,
@@ -1122,7 +1125,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                     zoneCmd.Parameters.Add(new SQLiteParameter(p));
 
                 tickCmd = new SQLiteCommand(
-                    @"INSERT INTO hft_ticks_v2
+                    @"INSERT OR REPLACE INTO hft_ticks_v2
                       (instrument,contract,session_id,tick_seq,timestamp_ns,price_ticks,volume,bid_ticks,ask_ticks)
                       VALUES (@inst,@ct,@sess,@tseq,@ts_ns,@ptk,@vol,@btk,@atk)", dbConn);
                 foreach (string p in new[]{"@inst","@ct","@sess","@tseq","@ts_ns","@ptk","@vol","@btk","@atk"})
@@ -1206,27 +1209,33 @@ namespace NinjaTrader.NinjaScript.Indicators
                     tickCmd.Transaction = tx;
                     foreach (var r in tickBuf)
                     {
+                        tickCmd.Reset();
                         for (int i = 0; i < r.Length; i++) tickCmd.Parameters[i].Value = r[i];
                         tickCmd.ExecuteNonQuery();
                     }
+                    tickCmd.Reset();
                 }
                 if (zoneCmd != null && zoneBuf.Count > 0)
                 {
                     zoneCmd.Transaction = tx;
                     foreach (var r in zoneBuf)
                     {
+                        zoneCmd.Reset();
                         for (int i = 0; i < r.Length; i++) zoneCmd.Parameters[i].Value = r[i];
                         zoneCmd.ExecuteNonQuery();
                     }
+                    zoneCmd.Reset();
                 }
                 if (flowCmd != null && flowBuf.Count > 0)
                 {
                     flowCmd.Transaction = tx;
                     foreach (var r in flowBuf)
                     {
+                        flowCmd.Reset();
                         for (int i = 0; i < r.Length; i++) flowCmd.Parameters[i].Value = r[i];
                         flowCmd.ExecuteNonQuery();
                     }
+                    flowCmd.Reset();
                 }
                 tx.Commit();
                 zoneBuf.Clear(); flowBuf.Clear(); tickBuf.Clear();
@@ -1235,8 +1244,15 @@ namespace NinjaTrader.NinjaScript.Indicators
             catch (Exception ex)
             {
                 try { if (tx != null) tx.Rollback(); } catch { }
-                Print("[HFTLogger-NQ] flush: " + ex.Message);
-                if (zoneBuf.Count + flowBuf.Count + tickBuf.Count > MaxBuf) { zoneBuf.Clear(); flowBuf.Clear(); tickBuf.Clear(); }
+                try { if (tickCmd != null) tickCmd.Reset(); } catch { }
+                try { if (zoneCmd != null) zoneCmd.Reset(); } catch { }
+                try { if (flowCmd != null) flowCmd.Reset(); } catch { }
+                zoneBuf.Clear(); flowBuf.Clear(); tickBuf.Clear();
+                if (!hasLoggedFlushError)
+                {
+                    hasLoggedFlushError = true;
+                    Print("[HFTLogger-NQ] FlushAll error: " + ex.Message);
+                }
             }
         }
 
