@@ -324,6 +324,8 @@ namespace NinjaTrader.NinjaScript.Indicators
                     Instrument.FullName, contractStr, currentSessionId, currentTickSeq,
                     tsNs, pTicks, Volumes[ds][0], bTicks, aTicks
                 });
+                if (tickBuf.Count >= BatchSize)
+                    FlushAll();
             }
 
             double rng = (Highs[ds][0] - Lows[ds][0]) / TickSize;
@@ -1125,6 +1127,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                       VALUES (@inst,@ct,@sess,@tseq,@ts_ns,@ptk,@vol,@btk,@atk)", dbConn);
                 foreach (string p in new[]{"@inst","@ct","@sess","@tseq","@ts_ns","@ptk","@vol","@btk","@atk"})
                     tickCmd.Parameters.Add(new SQLiteParameter(p));
+                tickCmd.Prepare();
                 zoneCmd.Prepare();
 
                 flowCmd = new SQLiteCommand(
@@ -1193,12 +1196,21 @@ namespace NinjaTrader.NinjaScript.Indicators
         private void FlushAll()
         {
             if (!dbReady) return;
-            if (zoneBuf.Count == 0 && flowBuf.Count == 0) return;
+            if (zoneBuf.Count == 0 && flowBuf.Count == 0 && tickBuf.Count == 0) return;
             SQLiteTransaction tx = null;
             try
             {
                 tx = dbConn.BeginTransaction();
-                if (zoneCmd != null)
+                if (tickCmd != null && tickBuf.Count > 0)
+                {
+                    tickCmd.Transaction = tx;
+                    foreach (var r in tickBuf)
+                    {
+                        for (int i = 0; i < r.Length; i++) tickCmd.Parameters[i].Value = r[i];
+                        tickCmd.ExecuteNonQuery();
+                    }
+                }
+                if (zoneCmd != null && zoneBuf.Count > 0)
                 {
                     zoneCmd.Transaction = tx;
                     foreach (var r in zoneBuf)
@@ -1207,7 +1219,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                         zoneCmd.ExecuteNonQuery();
                     }
                 }
-                if (flowCmd != null)
+                if (flowCmd != null && flowBuf.Count > 0)
                 {
                     flowCmd.Transaction = tx;
                     foreach (var r in flowBuf)
@@ -1217,14 +1229,14 @@ namespace NinjaTrader.NinjaScript.Indicators
                     }
                 }
                 tx.Commit();
-                zoneBuf.Clear(); flowBuf.Clear();
+                zoneBuf.Clear(); flowBuf.Clear(); tickBuf.Clear();
                 lastFlushMs = flowStartMs;
             }
             catch (Exception ex)
             {
                 try { if (tx != null) tx.Rollback(); } catch { }
                 Print("[HFTLogger-NQ] flush: " + ex.Message);
-                if (zoneBuf.Count + flowBuf.Count > MaxBuf) { zoneBuf.Clear(); flowBuf.Clear(); }
+                if (zoneBuf.Count + flowBuf.Count + tickBuf.Count > MaxBuf) { zoneBuf.Clear(); flowBuf.Clear(); tickBuf.Clear(); }
             }
         }
 
@@ -1236,6 +1248,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 FlushAll();
                 if (flowCmd != null) { flowCmd.Dispose(); flowCmd = null; }
                 if (zoneCmd != null) { zoneCmd.Dispose(); zoneCmd = null; }
+                if (tickCmd != null) { tickCmd.Dispose(); tickCmd = null; }
                 if (dbConn  != null) { dbConn.Close(); dbConn.Dispose(); dbConn = null; }
             }
             catch (Exception ex) { Print("[HFTLogger-NQ] CloseDb: " + ex.Message); }
