@@ -279,6 +279,70 @@ class ContinuousContractTests(unittest.TestCase):
                 contract_source_paths=self.source_paths,
             )
 
+    def test_rejects_micro_contract_buried_deep_in_file(self) -> None:
+        # Construct 150 rows where row 0..148 are NQ and row 149 is MNQ
+        n = 150
+        ts_base = 1773100000000000000
+        inst_list = ["NQ"] * 149 + ["MNQ"]  # MNQ only at the very end
+        p_deep = self.tmp_path / "NQ_03-26_deep.parquet"
+        t_deep = pa.table({
+            "ts_utc_ns": [ts_base + i * 1_000_000_000 for i in range(n)],
+            "sequence": [1] * n,
+            "price_ticks": [18000] * n,
+            "bid_ticks": [18000] * n,
+            "ask_ticks": [18001] * n,
+            "volume": [1] * n,
+            "instrument": inst_list,
+            "contract": ["03-26"] * n,
+            "trade_date": [20260310] * n,
+            "source_file": ["NQ_03-26_deep.parquet"] * n,
+            "source_row": list(range(n)),
+        })
+        pq.write_table(t_deep, p_deep)
+
+        paths = dict(self.source_paths)
+        paths["NQ_03-26"] = p_deep
+
+        with self.assertRaisesRegex(ContinuousContractError, "Content mismatch.*MNQ"):
+            build_continuous_series(
+                root="NQ",
+                regime_manifest=self.manifest,
+                contract_source_paths=paths,
+            )
+
+    def test_strips_preexisting_state_reset_flag_from_source(self) -> None:
+        p_flagged = self.tmp_path / "NQ_03-26_flagged.parquet"
+        t_flagged = pa.table({
+            "ts_utc_ns": [1773100000000000000, 1773100001000000000],
+            "sequence": [1, 2],
+            "price_ticks": [18000, 18001],
+            "bid_ticks": [18000, 18000],
+            "ask_ticks": [18001, 18001],
+            "volume": [5, 10],
+            "instrument": ["NQ", "NQ"],
+            "contract": ["03-26", "03-26"],
+            "trade_date": [20260310, 20260310],
+            "source_file": ["NQ_03-26_flagged.parquet", "NQ_03-26_flagged.parquet"],
+            "source_row": [0, 1],
+            "state_reset_flag": [False, False],  # Pre-existing corrupt flag (False on row 0)
+        })
+        pq.write_table(t_flagged, p_flagged)
+
+        paths = dict(self.source_paths)
+        paths["NQ_03-26"] = p_flagged
+
+        table = build_continuous_series(
+            root="NQ",
+            regime_manifest=self.manifest,
+            contract_source_paths=paths,
+        )
+        # Verify exactly one state_reset_flag column exists and row 0 is recomputed as True
+        self.assertEqual(table.column_names.count("state_reset_flag"), 1)
+        flags = table["state_reset_flag"].to_pylist()
+        self.assertTrue(flags[0])
+        self.assertFalse(flags[1])
+
+
     def test_writes_to_disk_with_exact_output_name(self) -> None:
         out_file = self.tmp_path / "NQ_CONT_CAUSAL_D1.parquet"
         build_continuous_series(
@@ -294,3 +358,4 @@ class ContinuousContractTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

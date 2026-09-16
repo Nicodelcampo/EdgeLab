@@ -115,10 +115,10 @@ def build_continuous_series(
         if "sequence" not in src_cols:
             raise ContinuousContractError(f"Source parquet {path_candidate} missing mandatory 'sequence'")
 
-        # Content-level validation: verify internal instrument / contract if present
+        # Content-level validation: verify entire column for internal instrument / contract if present
         if "instrument" in src_cols:
-            inst_sample = src_table["instrument"].slice(0, min(100, len(src_table))).to_pylist()
-            for inst in inst_sample:
+            unique_insts = pc.unique(src_table["instrument"]).to_pylist()
+            for inst in unique_insts:
                 inst_clean = str(inst).strip().upper()
                 if inst_clean != clean_root:
                     raise ContinuousContractError(
@@ -126,9 +126,9 @@ def build_continuous_series(
                     )
 
         if "contract" in src_cols:
-            cont_sample = src_table["contract"].slice(0, min(100, len(src_table))).to_pylist()
+            unique_conts = pc.unique(src_table["contract"]).to_pylist()
             expected_suffixes = {contract_key, contract_key.split("_")[-1]}
-            for cont in cont_sample:
+            for cont in unique_conts:
                 cont_clean = str(cont).strip()
                 if cont_clean not in expected_suffixes:
                     raise ContinuousContractError(
@@ -202,6 +202,9 @@ def build_continuous_series(
         new_names = []
 
         for name in existing_cols:
+            if name == "state_reset_flag":
+                # Pre-existing flag in source must be explicitly discarded to avoid ambiguity
+                continue
             if name in cols_to_add:
                 new_cols.append(cols_to_add.pop(name))
                 new_names.append(name)
@@ -255,6 +258,8 @@ def build_continuous_series(
                 state_reset[i] = True
 
     state_reset_col = pa.array(state_reset, type=pa.bool_())
+    if "state_reset_flag" in sorted_table.column_names:
+        sorted_table = sorted_table.drop(["state_reset_flag"])
     final_table = sorted_table.append_column("state_reset_flag", state_reset_col)
 
     # 6. Final lineage columns verification (exactly 10 columns)

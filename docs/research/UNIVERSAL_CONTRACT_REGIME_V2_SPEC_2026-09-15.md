@@ -1,4 +1,4 @@
-# Especificación Técnica: Estándar Universal de Régimen Contractual Causal (V2)
+# Especificación Técnica: Estándar de Régimen Contractual Causal Multi-Activo (V2)
 
 - **Versión del Estándar:** `CONTRACT_REGIME_V2`
 - **Identificador de Política:** `previous_complete_session_volume_leader_monotonic_v1`
@@ -7,7 +7,10 @@
 - **Zona Horaria de Referencia:** `America/Chicago` (CT)
 - **Ajuste de Precios:** `NONE_ACTUAL_TRADED_PRICES` (Precios reales negociados, cero empalme artificial)
 - **Frontera de Estado:** `RESET_AT_CONTRACT_ROLL` (Reinicio mandatorio de acumuladores e indicadores en cada roll)
-- **Estado de Certificación:** `PARTIAL_MULTI_ASSET_CERTIFICATION` (5/11 activos certificados por calendario oficial; 6/11 en abstención por falta de calendario oficial; MNQ condicionado a exclusión de gaps).
+- **Estado de Certificación:** `PARTIAL_MULTI_ASSET_CERTIFICATION`
+  - **4 Raíces Habilitadas:** `ES`, `MES`, `NQ`, `YM`
+  - **1 Raíz Condicional:** `MNQ` (excluyendo formalmente sus intervalos con gaps)
+  - **6 Raíces en Abstención:** `6B`, `6E`, `6J`, `GC`, `ZB`, `MBT` (`ABSTAIN_CALENDAR_EVIDENCE_REQUIRED`)
 
 ---
 
@@ -20,14 +23,18 @@ graph TD
     A["Recorte de Holdout (<= 2026-06-30)"] --> B["Completitud de Sesiones (Evidencia de Captura vs Calendario)"]
     B --> C["Selección Causal de Contrato Líder (Volumen D-1)"]
     C --> D["Reconstrucción Continua Causal (Precios Reales + Linaje + Reset)"]
+    D --> E["Campaña Estructural HP-007 (Censura de Episodios en Roll)"]
 ```
 
 1. **Aislamiento de Holdout**: Sellado al `2026-06-30T22:00:00Z` (apertura CME del trade date 2026-07-01). Ninguna lectura de datos posteriores al holdout está permitida.
-2. **Completitud de Sesión y Desacople Causal**:
+2. **Desacople Causal Estricto**:
    - `contract_selection_D`: Decisión causal tomada antes de la apertura de la sesión $D$, utilizando exclusivamente el volumen del trade date completo anterior $D-1$.
    - `capture_quality_D`: Diagnóstico post-sesión de integridad física de la captura para el día $D$. La completitud por defecto es `UNKNOWN` (fail-closed estricto).
    - `eligible_for_research_D`: Filtro target-free a posteriori para incluir o excluir la sesión $D$ de estudios downstream, sin alterar retrospectivamente el contrato seleccionado en $D-1$.
 3. **Reconstrucción Continua sin Distorsión**: La serie unificada `<ROOT>_CONT_CAUSAL_D1.parquet` utiliza precios reales de mercado. No se aplican factores multiplicativos ni aditivos (evita sesgos en análisis de microestructura, niveles de soporte/resistencia absolutos y microperfiles de volumen).
+4. **Separación de Niveles de Validación Científica**:
+   $$\text{Contrato y Sesión Elegibles} \neq \text{Paridad de Indicador Validada} \neq \text{Campo Causal Validado} \neq \text{Hipótesis Estructural Confirmada}$$
+   La habilitación contractual no presupone paridad del indicador en otros activos. Cada activo debe auditar su paridad de forma autónoma.
 
 ---
 
@@ -68,16 +75,6 @@ Para cada contrato declarado en el régimen entre su `first_trade_date` y `last_
 El periodo de mantenimiento diario del CME (16:00:00 a 16:59:59.999 CT, lunes a jueves) queda formalmente excluido del cálculo de volumen de sesión regular y de las métricas de elegibilidad intradía.
 La compuerta `ContractSessionEligibilityGateV2` proporciona métodos nativos (`aggregate_session_ticks` y `evaluate_session_from_ticks`) que convierten timestamps UTC a `America/Chicago`, identifican ticks en este intervalo y los descuentan del volumen y conteo de la sesión regular, almacenando métricas diagnósticas separadas (`maintenance_tick_count`, `maintenance_volume`).
 
-### 3.3. Ciclos de Expiración por Activo
-
-| Clase de Activo | Símbolos (Roots) | Ciclo de Expiración | Código de Meses CME |
-|---|---|---|---|
-| **Equity Index** | `ES`, `MES`, `NQ`, `MNQ`, `YM` | Trimestral | Marzo (H), Junio (M), Septiembre (U), Diciembre (Z) |
-| **FX** | `6B`, `6E`, `6J` | Trimestral | Marzo (H), Junio (M), Septiembre (U), Diciembre (Z) |
-| **Metales** | `GC` (Gold) | Bimensual | Febrero (G), Abril (J), Junio (M), Agosto (Q), Diciembre (Z) |
-| **Tasas** | `ZB` (30Y Bond) | Trimestral | Marzo (H), Junio (M), Septiembre (U), Diciembre (Z) |
-| **Cripto** | `MBT` (Micro Bitcoin) | Mensual | Ene (F), Feb (G), Mar (H), Abr (J), May (K), Jun (M), Jul (N), etc. |
-
 ---
 
 ## 4. Estructura de Linaje y Serie Continua
@@ -93,14 +90,34 @@ Cada registro en la serie continua causal `<ROOT>_CONT_CAUSAL_D1.parquet` debe i
 7. `source_row` (`int64`): Índice de fila original dentro del archivo primario.
 8. `ts_utc_ns` (`int64`): Marca de tiempo UTC en nanosegundos (estrictamente positiva).
 9. `sequence` (`int64`): Número secuencial de transacción (no opcional, desempata timestamps idénticos).
-10. `state_reset_flag` (`bool`): Evaluado **estrictamente post-ordenamiento** por `(ts_utc_ns, sequence)`. Es `True` en la fila 0 y en la primera fila donde `regime_id[i] != regime_id[i-1]`, forzando el reinicio de acumuladores y máquinas de estado en algoritmos downstream.
+10. `state_reset_flag` (`bool`): Evaluado **estrictamente post-ordenamiento** por `(ts_utc_ns, sequence)`. Es `True` en la fila 0 y en la primera fila donde `regime_id[i] != regime_id[i-1]`. Cualquier columna `state_reset_flag` preexistente en la fuente se descarta para evitar ambigüedades.
 
 ### 4.1. Unicidad de Microestructura
 Se prohíben registros duplicados en `(ts_utc_ns, sequence)` dentro de la serie continua. El constructor `build_continuous_series()` valida esta unicidad y aborta ante colisiones.
 
+### 4.2. Validación de Contenido Exhaustiva Micro/Estándar
+Se verifica toda la columna (`pc.unique`) de `instrument` y `contract` en el parquet de origen, garantizando que ninguna transacción micro (ej. `MNQ`) se encuentre intercalada dentro de archivos estándar (`NQ`).
+
 ---
 
-## 5. Política de Aislamiento Micro / Estándar a Nivel de Contenido
+## 5. Reglas Mandatorias para Episodios en la Campaña HP-007
 
-Queda estrictamente prohibido mezclar contratos estándar y contratos micro en una misma cadena de régimen o serie continua (ej. mezclar ticks de `MNQ` dentro de `NQ`, o `MES` dentro de `ES`).
-El motor `build_continuous_series` verifica no sólo los nombres declarados en el manifiesto y rutas de archivo, sino también los valores internos de las columnas `instrument` y `contract` del parquet cargado, abortando ante cualquier discrepancia.
+Para el análisis de rechazo, alejamiento y revisita en HP-007:
+
+1. **Prohibición de Cruce de Rollover**:
+   **Ningún episodio puede cruzar un cambio de contrato o un `state_reset_flag == True`**.
+2. **Reinicio Absoluto de Estado**:
+   Cuando `state_reset_flag == True`, deben reiniciarse a cero:
+   - Estado interno de BigTrap2Absorption.
+   - Zonas de liquidez activas.
+   - Conteo de toques (touches).
+   - Campos de fricción y corredores congelados.
+   - Normalizadores rolling.
+   - Máquinas de estado de episodios y matchings pendientes.
+3. **Taxonomía de Censura de Episodios**:
+   Cualquier episodio activo al momento de un roll debe terminar obligatoriamente como **`CENSORED_CONTRACT_ROLL`**. Queda prohibido catalogarlo como rechazo, cruce o `DATA_EDGE`.
+   Los cuatro tipos de censura formales son:
+   - `CENSORED_SESSION_END`: El episodio no completó seguimiento antes del cierre regular de la sesión.
+   - `CENSORED_CONTRACT_ROLL`: El episodio fue interrumpido por un rollover de contrato / `state_reset_flag`.
+   - `CENSORED_DATA_EDGE`: El episodio topó contra el límite exterior del dataset (ej. frontera de holdout).
+   - `CENSORED_MAX_FOLLOWUP`: El episodio alcanzó la ventana temporal máxima de seguimiento sin resolver.

@@ -118,16 +118,35 @@ Se implementaron y probaron exhaustivamente los siguientes componentes:
 3. [`.gitignore`](../../.gitignore):
    - Actualizado para incluir `*.parquet` y `*_CONT_CAUSAL_D1.parquet`, garantizando que ninguna salida pesada sea rastreada o commiteada por Git.
 
-### Reconciliación de Conteo de Tests
+### 4.1. Reglas Mandatorias para Episodios en la Campaña HP-007
+1. **Activos Habilitados Formalmente**:
+   - `ES`, `MES`, `NQ`, `YM` son los únicos activos aprobados para la campaña formal de rechazo, alejamiento y revisita.
+2. **Invalidez de 6E**:
+   - Queda formalmente invalidado el uso de `6E` en la campaña formal. Los contratos de `6E` de `HP007-CAMP-001` permanecen como evidencia exploratoria preliminar, no como base certificada.
+3. **Condición sobre MNQ**:
+   - Para evaluar `MNQ` (como sensibilidad separada), deben excluirse formalmente por código sus dos ventanas de discontinuidad (`2026-03-21 → 2026-04-05` y `2026-06-11 → 2026-06-24`) y publicarse los conteos de sesiones y episodios omitidos.
+4. **Prohibición de Cruce de Rollover y Reinicio Absoluto**:
+   - Ningún episodio puede cruzar un rollover o un `state_reset_flag == True`.
+   - Cuando `state_reset_flag == True`, deben reiniciarse a cero: estado de BigTrap2Absorption, zonas activas, touches, campos de liquidez, normalizadores rolling, corredor congelado y máquinas de estado.
+   - Cualquier episodio activo en el instante del roll debe terminar taxativamente como **`CENSORED_CONTRACT_ROLL`** (nunca como rechazo, cruce o `DATA_EDGE`).
+5. **Taxonomía Formal de Censura**:
+   - `CENSORED_SESSION_END`: Fin de sesión regular antes de resolver el episodio.
+   - `CENSORED_CONTRACT_ROLL`: Corte por rollover de contrato / `state_reset_flag`.
+   - `CENSORED_DATA_EDGE`: Límite exterior de datos (frontera pre-holdout).
+   - `CENSORED_MAX_FOLLOWUP`: Ventana temporal máxima expirada.
+6. **Separación de Niveles de Validación**:
+   Contrato y sesión elegibles $\neq$ Paridad del indicador validada $\neq$ Campo causal validado $\neq$ Hipótesis estructural confirmada. La paridad de BigTrap2Absorption debe verificarse independientemente en cada raíz antes de interpretar señales.
+
+### 4.2. Reconciliación de Conteo de Tests
 Para evitar discrepancias en los informes:
-- **45 tests unitarios específicos** componen el arnés directo de certificación de régimen, compuertas y serie continua:
+- **47 tests unitarios específicos** componen el arnés directo de certificación de régimen, compuertas y serie continua:
   - `tests/data/test_contract_session_gate.py`: 12 tests
-  - `tests/data/test_continuous_contract.py`: 9 tests
+  - `tests/data/test_continuous_contract.py`: 11 tests
   - `tests/data/test_contract_regime.py`: 12 tests
   - `tests/data/test_nq_session_gate.py`: 12 tests
-  *Comando:* `pytest tests/data/test_contract_session_gate.py tests/data/test_continuous_contract.py tests/data/test_contract_regime.py tests/data/test_nq_session_gate.py -v` (45 passed).
-- **67 tests unitarios en total** componen el directorio `tests/data/` (incluyendo los 22 tests preexistentes de `test_cme_equity_index_calendar.py`, `test_l2_source_row.py` y `test_nt8_contract_6j.py`).
-  *Comando:* `pytest tests/data/ -v` (67 passed).
+  *Comando:* `pytest tests/data/test_contract_session_gate.py tests/data/test_continuous_contract.py tests/data/test_contract_regime.py tests/data/test_nq_session_gate.py -v` (47 passed).
+- **69 tests unitarios en total** componen el directorio `tests/data/` (incluyendo los 22 tests preexistentes de `test_cme_equity_index_calendar.py`, `test_l2_source_row.py` y `test_nt8_contract_6j.py`).
+  *Comando:* `pytest tests/data/ -v` (69 passed).
 
 ---
 
