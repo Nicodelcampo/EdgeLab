@@ -92,11 +92,19 @@ def _p(defaults, overrides):
     return out
 
 
-def detect_candidates(ts_ns, price_ticks, volume, params=None):
+def detect_candidates(ts_ns, price_ticks, volume, params=None,
+                      prev_session_close_ticks=None):
     """Todas las rachas finalizadas, con sus estadísticos suficientes.
 
     Entrada: los tres arrays del tick stream, en orden y **de una sola sesión** — el
     motor no cruza sesiones, igual que NT8 reinicia su subserie.
+
+    `prev_session_close_ticks`: precio (en ticks) del último cierre de la sesión
+    anterior. Si se proporciona, replica el comportamiento de NT8 donde el primer
+    tick de la sesión se compara contra `Closes[ds][1]` (que apunta al cierre previo).
+    Esto permite que el tick 0 (idx=0) sea `idx_start` de una racha, exactamente
+    como NT8 puede llamar `Iniciar()` en el primer tick de la sesión.
+    Si es None, el comportamiento es el anterior (loop desde i=1, tick 0 nunca es idx_start).
 
     Salida: una lista de dicts. Ninguno está filtrado: son candidatos, no zonas.
     """
@@ -160,13 +168,43 @@ def detect_candidates(ts_ns, price_ticks, volume, params=None):
         total_vol += vol
         signos.append(sv); vols.append(vol); precios.append(pt)
 
-    def finalizar(i_fin):
+    def finalizar(i_fin, i_avail=None, termination_reason="END_OF_INPUT"):
         if direccion == 0 or streak == 0:
             return
+        # i_avail: primer tick DESPUÉS del cierre de la zona (el tick que rompió la
+        # racha). Reproduce Times[1][0] en NT8 en el momento en que PersistZone es
+        # invocado. Cuando se llega al fin del stream no hay tick posterior, así que
+        # i_avail == i_fin (NT8 también lee Times[1][0] == último tick).
+        _avail = i_fin if i_avail is None else i_avail
         out.append(_estadisticos(
-            idx0, i_fin, direccion, streak, valid, sw_hi, sw_lo, max_retro,
+            idx0, i_fin, _avail, termination_reason, direccion, streak, valid,
+            sw_hi, sw_lo, max_retro,
             list(ms_list), total_vol, list(signos), list(vols), list(precios),
             ts_ns))
+
+    # NT8: en el primer tick de la sesión, Closes[ds][1] apunta al cierre de la sesión
+    # anterior. Si se conoce ese precio, se puede evaluar el tick 0 (índice 0) para
+    # iniciar la racha antes del loop principal, reproduciendo exactamente
+    # el comportamiento de NT8 donde Iniciar() puede ser llamado con currentTickSeq=1.
+    if prev_session_close_ticks is not None and n > 0:
+        cl0 = price_ticks[0]
+        vol0 = float(volume[0])
+        # ms entre el último tick previo y tick 0: usamos 0 (no hay dato real; NT8
+        # calcula ms = Times[ds][0].Subtract(Times[ds][1]) que puede ser cross-session).
+        # Para el cálculo de avg_ms/total_ms, el primer intervalo no se agrega (ms_list
+        # sigue vacío en Iniciar, igual que en NT8 donde msList está limpio).
+        clP = prev_session_close_ticks
+        side0 = 1 if cl0 > clP else (-1 if cl0 < clP else 0)
+        if side0 == 0:
+            side0 = 1
+        last_side = side0
+        sv0 = side0 * vol0
+        is_baja0 = cl0 <= clP
+        is_alza0 = cl0 >= clP
+        if is_baja0:
+            direccion = -1; iniciar(0, vol0, sv0)
+        elif is_alza0:
+            direccion = 1; iniciar(0, vol0, sv0)
 
     for i in range(1, n):
         cl = price_ticks[i]
@@ -185,7 +223,8 @@ def detect_candidates(ts_ns, price_ticks, volume, params=None):
         es_alza = cl >= cl_prev
 
         if direccion != 0 and ms > max_pausa:
-            finalizar(i - 1)
+            # La racha se corta por pausa: el tick i es el "disponible" (primero post-zona)
+            finalizar(i - 1, i_avail=i, termination_reason="MAX_PAUSE")
             direccion = 0
             continue
 
@@ -202,7 +241,8 @@ def detect_candidates(ts_ns, price_ticks, volume, params=None):
                 if retro <= _retro_permitido(sw_hi, sw_lo):
                     continuar(i, ms, vol, sv, False)
                 else:
-                    finalizar(i - 1)
+                    # El tick i rompió la racha por retroceso excesivo
+                    finalizar(i - 1, i_avail=i, termination_reason="REVERSAL")
                     if es_alza:
                         direccion = 1; iniciar(i, vol, sv)
                     else:
@@ -215,12 +255,14 @@ def detect_candidates(ts_ns, price_ticks, volume, params=None):
                 if retro <= _retro_permitido(sw_hi, sw_lo):
                     continuar(i, ms, vol, sv, False)
                 else:
-                    finalizar(i - 1)
+                    # El tick i rompió la racha por retroceso excesivo
+                    finalizar(i - 1, i_avail=i, termination_reason="REVERSAL")
                     if es_baja:
                         direccion = -1; iniciar(i, vol, sv)
                     else:
                         direccion = 0
 
+    # Fin de stream: no hay tick posterior, i_avail = i_fin (igual que NT8)
     finalizar(n - 1)
     return out
 
@@ -237,8 +279,18 @@ def _retro_permitido(sw_hi, sw_lo):
     return max(_RETRO_FLOOR, (_RETRO_PCT / 100.0) * (sw_hi - sw_lo))
 
 
-def _estadisticos(i0, i1, direccion, streak, valid, sw_hi, sw_lo, max_retro,
+def _estadisticos(i0, i1, i_avail, termination_reason, direccion, streak, valid,
+                  sw_hi, sw_lo, max_retro,
                   ms_list, total_vol, signos, vols, precios, ts_ns):
+    """i_avail: índice del primer tick DESPUÉS del cierre de la zona.
+    Reproduce Times[1][0] de NT8 en el momento en que PersistZone es invocado.
+    Cuando la zona finaliza al final del stream (no hay tick siguiente), i_avail == i1.
+
+    termination_reason: causa de cierre de la racha.
+      "REVERSAL"   — tick i excedió el retroceso permitido.
+      "MAX_PAUSE"  — ms entre tick i-1 e i superó max_pausa_ms.
+      "END_OF_INPUT" — fin del stream sin cierre explícito.
+    """
     total_ms = float(sum(ms_list))
     avg_ms = total_ms / max(1, len(ms_list))
     dur_sec = max(total_ms, 1.0) / 1000.0
@@ -287,6 +339,8 @@ def _estadisticos(i0, i1, direccion, streak, valid, sw_hi, sw_lo, max_retro,
     return dict(
         idx_start=i0, idx_end=i1,
         ts_start=int(ts_ns[i0]), ts_end=int(ts_ns[i1]),
+        ts_avail=int(ts_ns[i_avail]),  # = NT8: Times[1][0] en el momento de PersistZone
+        termination_reason=termination_reason,
         direction=direccion,
         pasos=streak, valid_steps=valid,
         sw_hi_tk=int(sw_hi), sw_lo_tk=int(sw_lo),
