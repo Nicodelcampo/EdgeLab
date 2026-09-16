@@ -91,7 +91,7 @@ namespace NinjaTrader.NinjaScript.Indicators
         // Precision disclosure: .NET DateTime resolution is 100-nanosecond ticks (1 tick = 100 ns).
         // Timestamps recorded as nanoseconds multiply .NET ticks by 100 from Unix epoch (1970-01-01T00:00:00Z).
         private const string SOURCE_SHA256 = "841cdbcccbe54ca525e20456d38d1ece0beec5fdd7b820de980bbb01acebeb63";
-        private const string PARAMETER_MANIFEST_SHA256 = "924b0ac562bf122ee0c3e7882fd3b0eea0400aca";
+        private const string PARAMETER_MANIFEST_SHA256 = "0fa994533b03d47a0fb615c3fd4478e91de8c05958eb33bb4004308faaba78a1";
 
         private SQLiteCommand tickCmd;
         private readonly List<object[]> tickBuf = new List<object[]>();
@@ -269,6 +269,8 @@ namespace NinjaTrader.NinjaScript.Indicators
             msList.Clear(); priceList.Clear(); volList.Clear(); signList.Clear();
             totalVol = 0;
             extremo = 0; maxRetroceso = 0;
+            zoneStartTickSeq = 0;
+            zoneEndTickSeq = 0;
         }
 
         protected override void OnBarUpdate()
@@ -424,6 +426,8 @@ namespace NinjaTrader.NinjaScript.Indicators
             totalVol = vol;
             tStart = Times[ds][0];
             tLast  = Times[ds][0];
+            zoneStartTickSeq = currentTickSeq;
+            zoneEndTickSeq   = currentTickSeq;
         }
 
         private void Continuar(double ms, double vol, double cl, double signedVol, bool valid)
@@ -551,7 +555,6 @@ namespace NinjaTrader.NinjaScript.Indicators
                     string txt = string.Format("[{0}] {1}p {2:F1}ms tot{3:F0}ms vR{4:F0} V{5:F0} h{6:F0}t r{7:F0}t d{8:F0}",
                         bucketTxt, pasosTxt, avgMs, total, volRate, totalVol, sweepTicks, maxRetroceso, cvd);
 
-                    zoneEndTickSeq = currentTickSeq;
                     idCounter++;
                     string tag = "HFTNQV4_" + idCounter;
 

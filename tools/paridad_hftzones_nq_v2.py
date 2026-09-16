@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import collections
+import hashlib
 import json
 import sqlite3
 import sys
@@ -35,7 +36,17 @@ V1_DEFAULT_DB = "data/nt8_oracles/hft_zones_nq_20260603_20260611.sqlite"
 V2_DEFAULT_DB = "data/nt8_oracles/hft_zones_nq_v2.sqlite"
 
 EXPECTED_SOURCE_SHA256 = "841cdbcccbe54ca525e20456d38d1ece0beec5fdd7b820de980bbb01acebeb63"
-EXPECTED_PARAM_SHA256 = "924b0ac562bf122ee0c3e7882fd3b0eea0400aca"
+
+def compute_parameter_manifest_sha256(params: Optional[Dict[str, Any]] = None) -> str:
+    """Calcula el SHA-256 canónico del manifiesto de parámetros estructurales y de aceptación."""
+    merged = dict(hz.STRUCTURAL_DEFAULTS)
+    merged.update(hz.ACCEPT_DEFAULTS)
+    if params:
+        merged.update(params)
+    canon_str = json.dumps(merged, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+    return hashlib.sha256(canon_str.encode("utf-8")).hexdigest()
+
+EXPECTED_PARAM_SHA256 = compute_parameter_manifest_sha256()
 
 # Schema de campos V1
 V1_COLS = ("start_ts,end_ts,dir,price_lower,price_upper,valid_steps,pasos,avg_ms,"
@@ -231,6 +242,8 @@ def comparar_v2_exacto(
                 "contract": contract_sess,
                 "session_id": sess,
                 "zone_seq": z_idx,
+                "start_tick_seq": int(z["idx_start"]) + 1,
+                "end_tick_seq": int(z["idx_end"]) + 1,
                 "start_ts_ns": int(z["ts_start"]),
                 "end_ts_ns": int(z["ts_end"]),
                 "available_ts_ns": int(z["ts_end"]),  # Causal: disponible al finalizar la racha
@@ -293,6 +306,10 @@ def comparar_v2_exacto(
 
         # Comparar campos con CERO tolerancia para enteros y timestamps ns
         diffs = []
+        if int(r[4]) != z["start_tick_seq"]:
+            diffs.append(("start_tick_seq", int(r[4]), z["start_tick_seq"]))
+        if int(r[5]) != z["end_tick_seq"]:
+            diffs.append(("end_tick_seq", int(r[5]), z["end_tick_seq"]))
         if int(r[6]) != z["start_ts_ns"]:
             diffs.append(("start_ts_ns", int(r[6]), z["start_ts_ns"]))
         if int(r[7]) != z["end_ts_ns"]:

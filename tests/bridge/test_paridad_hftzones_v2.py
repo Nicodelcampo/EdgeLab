@@ -370,3 +370,30 @@ def test_18_exito_exacto_completo():
     assert res["matched_diffs_count"] == 0
     assert res["nt8_without_python_count"] == 0
     assert res["python_without_nt8_count"] == 0
+
+
+def test_19_diferencia_start_tick_seq_falla():
+    """Una discrepancia de 1 en start_tick_seq debe provocar FAIL con field_difference."""
+    con = _create_v2_db()
+    _seed_standard_run(con, session_id="20260603", n_ticks=15)
+    con.execute("UPDATE hft_zones_v2 SET start_tick_seq = start_tick_seq + 1 WHERE zone_seq = 1")
+    con.commit()
+    res = comparar_v2_exacto(con, "NQ JUN26")
+    assert res["is_pass"] is False
+    assert res["matched_diffs_count"] == 1
+    diff_fields = [d[0] for d in res["matched_diffs_samples"][0]["diffs"]]
+    assert "start_tick_seq" in diff_fields
+
+
+def test_20_diferencia_end_tick_seq_falla():
+    """Una discrepancia de 1 en end_tick_seq debe provocar FAIL con field_difference."""
+    con = _create_v2_db()
+    _seed_standard_run(con, session_id="20260603", n_ticks=15)
+    con.execute("UPDATE hft_zones_v2 SET end_tick_seq = end_tick_seq + 1 WHERE zone_seq = 1")
+    con.commit()
+    res = comparar_v2_exacto(con, "NQ JUN26")
+    assert res["is_pass"] is False
+    assert res["matched_diffs_count"] == 1
+    diff_fields = [d[0] for d in res["matched_diffs_samples"][0]["diffs"]]
+    assert "end_tick_seq" in diff_fields
+
