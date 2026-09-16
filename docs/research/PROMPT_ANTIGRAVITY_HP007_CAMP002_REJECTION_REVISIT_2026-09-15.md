@@ -14,13 +14,18 @@ Primary question: **Does prior rejection followed by qualified separation change
 
 ## 2. Foundation and branch
 
-Start from `work/hp007-campaign-v2-foundation-20260915` at or after `c417d36c05b0a1484b4bf275ffe56119e3f35f97`. Use:
-- `edgelab/research/corridor_campaign_v2.py`
-- `edgelab/research/void_revisit_episodes.py`
-- their tests
-- `HP007_CAMPAIGN_V2_FOUNDATION_2026-09-15.md`
+> [!IMPORTANT]
+> **Canonical Bootstrap Precedence**:
+> As specified in [`docs/research/HP007_CAMP002_CANONICAL_BOOTSTRAP_29CAD93.md`](file:///E:/EdgeLab/docs/research/HP007_CAMP002_CANONICAL_BOOTSTRAP_29CAD93.md), this campaign anchors strictly on canonical contract commit `29cad93d6600ee4c07a7d716be35e4881d78f491` (`PARTIAL_MULTI_ASSET_CERTIFICATION`).
 
-Integrate contract/session logic from `work/universal-contract-regime-v2-20260915` commit `4f84eabb8e6717cc83beb1acd226378d08ca76c6`, preserving history. Create `work/hp007-rejection-revisit-campaign-v2-20260915`. Do not merge to foundation/main.
+- Contractual anchor commit: `29cad93d6600ee4c07a7d716be35e4881d78f491`
+- Canonical branch: `work/hp007-rejection-revisit-campaign-v2-canonical-20260915` (uniquely suffixed replacement branch preserving non-ancestor remote history per bootstrap policy)
+- Additive foundation components:
+  - `edgelab/research/corridor_campaign_v2.py`
+  - `edgelab/research/void_revisit_episodes.py`
+  - their tests
+  - `HP007_CAMPAIGN_V2_FOUNDATION_2026-09-15.md`
+  - `HP007_CAMP002_CANONICAL_BOOTSTRAP_29CAD93.md`
 
 ## 3. Safety
 
