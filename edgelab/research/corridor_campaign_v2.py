@@ -138,3 +138,50 @@ def cache_key(*,data_sha256:str,code_sha256:str,params:Mapping[str,object],contr
 
 def zero_event_status(n_pairs:int)->str:
     return "ABSTAIN_NO_CAUSAL_EVENTS" if n_pairs==0 else "EVALUABLE"
+
+
+@dataclass
+class CampaignState:
+    """Encapsulates active mutable state of the HP-007 campaign.
+
+    Enforces mandatory zeroing of indicator state, active zones, touches, fields,
+    normalizers, frozen corridors, and pending matches whenever a contract roll
+    or state_reset_flag == True occurs.
+    """
+    active_zones: list[ZoneState]
+    touches: dict[str, int]
+    field_cache: dict[str, object]
+    normalizers: dict[str, object]
+    frozen_corridors: list[object]
+    active_episodes: list[object]
+    indicator_state: dict[str, object]
+
+    def reset_on_roll(self) -> list[object]:
+        """Terminate active episodes with CENSORED_CONTRACT_ROLL and wipe all state."""
+        terminated_episodes = []
+        for ep in self.active_episodes:
+            if isinstance(ep, dict):
+                c = dict(ep)
+                c["terminal"] = "CENSORED_CONTRACT_ROLL"
+                terminated_episodes.append(c)
+            elif hasattr(ep, "terminal"):
+                try:
+                    terminated_episodes.append(replace(ep, terminal="CENSORED_CONTRACT_ROLL"))
+                except Exception:
+                    terminated_episodes.append(ep)
+            else:
+                terminated_episodes.append(ep)
+
+        self.active_zones.clear()
+        self.touches.clear()
+        self.field_cache.clear()
+        self.normalizers.clear()
+        self.frozen_corridors.clear()
+        self.active_episodes.clear()
+        self.indicator_state.clear()
+        return terminated_episodes
+
+
+def reset_campaign_state_on_roll(state: CampaignState) -> list[object]:
+    """Executable helper to execute state wipe at roll boundary."""
+    return state.reset_on_roll()

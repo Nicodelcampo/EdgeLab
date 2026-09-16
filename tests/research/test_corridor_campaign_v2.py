@@ -40,3 +40,26 @@ def test_cache_key_changes_with_inputs():
     a=cache_key(data_sha256='a',code_sha256='c',params={'x':1},contract='6E')
     b=cache_key(data_sha256='b',code_sha256='c',params={'x':1},contract='6E')
     assert a!=b
+
+def test_campaign_state_reset_on_roll_clears_all_and_censors_episodes():
+    active_ep = {"episode_id": "ep_01", "terminal": None}
+    state = CampaignState(
+        active_zones=[z()],
+        touches={"z": 5},
+        field_cache={"field_01": np.zeros(10)},
+        normalizers={"rolling_std": 1.5},
+        frozen_corridors=[{"corridor_id": "c1"}],
+        active_episodes=[active_ep],
+        indicator_state={"bt2a_acc": 42.0},
+    )
+    censored = reset_campaign_state_on_roll(state)
+    assert len(censored) == 1
+    assert censored[0]["terminal"] == "CENSORED_CONTRACT_ROLL"
+    assert len(state.active_zones) == 0
+    assert len(state.touches) == 0
+    assert len(state.field_cache) == 0
+    assert len(state.normalizers) == 0
+    assert len(state.frozen_corridors) == 0
+    assert len(state.active_episodes) == 0
+    assert len(state.indicator_state) == 0
+
