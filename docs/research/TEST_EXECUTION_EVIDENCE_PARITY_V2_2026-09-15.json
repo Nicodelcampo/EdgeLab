@@ -1,0 +1,40 @@
+{
+  "schema_version": "test_execution_evidence_v2",
+  "recorded_at_utc": "2026-09-16T12:28:00.000000+00:00",
+  "execution_window_utc": {
+    "started_at": "2026-09-16T12:27:08.000000+00:00",
+    "finished_at": "2026-09-16T12:27:21.000000+00:00",
+    "duration_seconds": 11.32
+  },
+  "python_version": "3.12.7 (tags/v3.12.7:0b05ead, Oct  1 2024, 03:06:41) [MSC v.1941 64 bit (AMD64)]",
+  "node_version": "v24.12.0",
+  "platform": "Windows-10-10.0.19045-SP0",
+  "os": "Windows",
+  "git_head_evaluated": "3cbb86454403215072a5965599a2d3cee0493650",
+  "worktree_path": "E:/EdgeLab_worktrees/fix-hft-parity-corridor-viewer-complete-v1-20260916",
+  "branch": "fix/hft-parity-corridor-viewer-complete-v1-20260916",
+  "worktree_clean_for_tracked_files": true,
+  "test_suites": {
+    "hftzones_parity_corridors_and_viewer_suite": {
+      "command": "python -m pytest tests/data/ tests/research/test_corridor_campaign_v2.py tests/research/test_void_revisit_episodes.py tests/bridge/test_hftzones_nq.py tests/bridge/test_paridad_hftzones_v2.py tests/research/test_density_field_invariance.py tests/research/test_hft_corridors.py tests/research/test_hft_viewer_playwright.py -v",
+      "collected": 160,
+      "passed": 159,
+      "failed": 0,
+      "skipped": 1,
+      "duration_seconds": 11.32,
+      "status": "ALL_PASSED",
+      "return_code": 0
+    },
+    "node_js_cross_validation": {
+      "command": "node tests/research/test_density_field_cross_validation.js",
+      "status": "ALL_PASSED",
+      "checks": [
+        "active_zones_match_exact",
+        "field_mean_match_under_1e4",
+        "field_max_match_under_1e4",
+        "point_by_point_density_exact_match_81_ticks"
+      ],
+      "return_code": 0
+    }
+  }
+}

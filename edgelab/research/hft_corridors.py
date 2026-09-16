@@ -36,35 +36,49 @@ def _first(row: dict, *keys: str) -> Any:
 
 def normalize_hft_zone(row: dict, *, strict: bool = True) -> dict:
     """Map V1/V2 HFT zone exports to the density-field contract."""
-    lo = _first(row, "lo", "bottom", "price_low")
-    hi = _first(row, "hi", "top", "price_high")
-    end = _first(row, "end_ts_ns", "available_ts_ns", "end_ns", "end_ms")
-    start = _first(row, "start_ts_ns", "origin_ts_ns", "start_ns", "start_ms")
+    lo = _first(row, "lo", "bottom", "price_low", "price_lower")
+    hi = _first(row, "hi", "top", "price_high", "price_upper")
+    end = _first(row, "end_ts_ns", "available_ts_ns", "end_ns", "end_ms", "end_ts", "available_ts")
+    start = _first(row, "start_ts_ns", "origin_ts_ns", "start_ns", "start_ms", "start_ts", "origin_ts")
     if lo is None or hi is None or end is None:
         raise ValueError("HFT zone requires lo/hi and detector completion timestamp")
     if strict and start is None:
         raise ValueError("HFT zone requires origin timestamp")
 
-    end_key = next(k for k in ("end_ts_ns", "available_ts_ns", "end_ns", "end_ms") if row.get(k) not in (None, ""))
-    start_key = next((k for k in ("start_ts_ns", "origin_ts_ns", "start_ns", "start_ms") if row.get(k) not in (None, "")), None)
-    available_ns = int(end) * 1_000_000 if end_key == "end_ms" else to_nanoseconds(int(end))
-    origin_ns = (int(start) * 1_000_000 if start_key == "start_ms" else to_nanoseconds(int(start))) if start is not None else available_ns
+    end_candidates = ("end_ts_ns", "available_ts_ns", "end_ns", "end_ms", "end_ts", "available_ts")
+    end_key = next(k for k in end_candidates if row.get(k) not in (None, ""))
+    start_candidates = ("start_ts_ns", "origin_ts_ns", "start_ns", "start_ms", "start_ts", "origin_ts")
+    start_key = next((k for k in start_candidates if row.get(k) not in (None, "")), None)
+
+    val_end = int(float(end))
+    is_ms = (end_key in ("end_ms", "available_ms") or (end_key in ("end_ts", "available_ts") and val_end < 100_000_000_000_000))
+    available_ns = val_end * 1_000_000 if is_ms else to_nanoseconds(val_end)
+
+    if start is not None:
+        val_start = int(float(start))
+        is_start_ms = (start_key in ("start_ms", "origin_ms") or (start_key in ("start_ts", "origin_ts") and val_start < 100_000_000_000_000))
+        origin_ns = val_start * 1_000_000 if is_start_ms else to_nanoseconds(val_start)
+    else:
+        origin_ns = available_ns
+
     if available_ns < origin_ns:
         raise ValueError("HFT completion precedes origin")
+
+    avail_source = "V1_END_MS_DERIVED" if is_ms else "V2_END_NS"
 
     seq = _first(row, "zone_seq", "id")
     session_id = str(_first(row, "session_id", "session") or "LEGACY_SESSION_UNKNOWN")
     contract = str(_first(row, "contract", "instrument") or "NQ_UNKNOWN")
-    direction = int(_first(row, "dir", "direction") or 0)
+    direction = int(float(_first(row, "dir", "direction") or 0))
     zid = f"{contract}:{session_id}:{seq if seq is not None else origin_ns}:{direction}"
     return {
         "id": zid, "source": "HFTZonesNQPureV4",
         "lo": float(min(float(lo), float(hi))), "hi": float(max(float(lo), float(hi))),
         "origin_ts": origin_ns, "available_ts": available_ns,
-        "available_ts_source": "V2_END_NS" if end_key != "end_ms" else "V1_END_MS_DERIVED",
-        "vol": float(_first(row, "vol", "volume") or 1.0), "direction": direction,
+        "available_ts_source": avail_source,
+        "vol": float(_first(row, "vol", "volume", "total_vol") or 1.0), "direction": direction,
         "session_id": session_id, "contract": contract,
-        "zone_seq": int(seq) if seq is not None else None,
+        "zone_seq": int(float(seq)) if seq is not None else None,
         "parity_status": HFT_PARITY_STATUS,
     }
 

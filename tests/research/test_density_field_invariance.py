@@ -471,7 +471,9 @@ def test_golden_fixture_generation(sample_zones, tmp_path):
         "model": "FIELD_RAW_STATIC",
         "kernel": "KERNEL_GAUSS",
         "sigma_ticks": 1.2,
+        "input_zones": sample_zones,
         "active_zone_ids": res["active_zone_ids"],
+        "full_density": res["density"],
         "density_sample_head": res["density"][:10],
         "density_sample_tail": res["density"][-10:],
         "field_mean": res["diagnostics"]["field_mean"],
@@ -488,3 +490,85 @@ def test_golden_fixture_generation(sample_zones, tmp_path):
 
     assert golden_path.exists()
     assert len(res["field_hash"]) == 64
+
+
+def test_16_causal_vref_shuffled_invariance():
+    """B1: compute_causal_v_ref() debe ser estrictamente idéntico ante cualquier orden o permutación."""
+    import random
+    rng = random.Random(42)
+    t0 = 1_000_000_000
+    zones = []
+    for i in range(1, 600):
+        zones.append({
+            "id": f"Z_{i:04d}",
+            "available_ts": t0 + i * 1_000_000,
+            "vol": float(i * 10),
+        })
+
+    t_eval = t0 + 550 * 1_000_000  # 550 zonas causales disponibles
+    v_ref_orig, src_orig = compute_causal_v_ref(zones, t_eval, max_window=500)
+
+    # Permutar aleatoriamente varias veces
+    for seed in (101, 202, 303):
+        shuffled = list(zones)
+        rng.seed(seed)
+        rng.shuffle(shuffled)
+        v_ref_shuffled, src_shuffled = compute_causal_v_ref(shuffled, t_eval, max_window=500)
+        assert v_ref_orig == v_ref_shuffled
+        assert src_orig == src_shuffled
+
+    # En orden inverso
+    reversed_zones = list(reversed(zones))
+    v_ref_rev, src_rev = compute_causal_v_ref(reversed_zones, t_eval, max_window=500)
+    assert v_ref_orig == v_ref_rev
+    assert src_orig == src_rev
+
+
+def test_17_available_ts_sources_classification():
+    """B2: Clasificación estricta de fuentes de timestamp de disponibilidad."""
+    from edgelab.research.density_field import extract_zone_available_source
+
+    z_hft_v2 = {"source": "HFTZonesNQPureV4", "end_ts_ns": 1780000000000000000}
+    assert extract_zone_available_source(z_hft_v2) == "V2_END_NS"
+
+    z_hft_v1 = {"source": "HFTZonesNQPureV4", "end_ms": 1780000000000}
+    assert extract_zone_available_source(z_hft_v1) == "V1_END_MS_DERIVED"
+
+    z_bt2a_sig = {"source": "BigTrap2Absorption", "sig_ts": 1780000000000000000}
+    assert extract_zone_available_source(z_bt2a_sig) == "SIG_TS_CONFIRMED"
+
+    z_bt2a_fallback = {"source": "BigTrap2Absorption", "created_ms": 1780000000000}
+    assert extract_zone_available_source(z_bt2a_fallback) == "LEGACY_CREATED_MS_FALLBACK"
+
+    z_explicit = {"available_ts_source": "CUSTOM_SOURCE"}
+    assert extract_zone_available_source(z_explicit) == "CUSTOM_SOURCE"
+
+
+def test_18_strict_session_and_contract_isolation():
+    """B3: Las zonas de sesiones o contratos anteriores jamás se filtran a la sesión/contrato activa."""
+    tick_size = 0.25
+    t_ref = 2_000_000_000
+    p_min = price_to_tick(100.0, tick_size)
+    p_max = price_to_tick(105.0, tick_size)
+
+    zones = [
+        {"id": "Z_OLD_SESS", "available_ts": 1_000_000_000, "lo": 101.0, "hi": 102.0, "session_id": "20260603", "contract": "NQ 06-26"},
+        {"id": "Z_CURR_SESS", "available_ts": 1_500_000_000, "lo": 101.0, "hi": 102.0, "session_id": "20260604", "contract": "NQ 06-26"},
+        {"id": "Z_OLD_CONTRACT", "available_ts": 1_600_000_000, "lo": 103.0, "hi": 104.0, "session_id": "20260604", "contract": "NQ 03-26"},
+    ]
+
+    # Sin filtro de sesión ni contrato: las 3 zonas entran
+    res_all = compute_field(zones, t_ref, tick_size, p_min, p_max)
+    assert set(res_all["active_zone_ids"]) == {"Z_OLD_SESS", "Z_CURR_SESS", "Z_OLD_CONTRACT"}
+
+    # Con aislamiento de sesión estricta (session_id = 20260604): Z_OLD_SESS queda excluida
+    res_sess = compute_field(zones, t_ref, tick_size, p_min, p_max, {"session_id": "20260604"})
+    assert set(res_sess["active_zone_ids"]) == {"Z_CURR_SESS", "Z_OLD_CONTRACT"}
+
+    # Con aislamiento de contrato estricto (contract = NQ 06-26): Z_OLD_CONTRACT queda excluida
+    res_contract = compute_field(zones, t_ref, tick_size, p_min, p_max, {"contract": "NQ 06-26"})
+    assert set(res_contract["active_zone_ids"]) == {"Z_OLD_SESS", "Z_CURR_SESS"}
+
+    # Con ambos aislados (session_id = 20260604 y contract = NQ 06-26): solo Z_CURR_SESS entra
+    res_both = compute_field(zones, t_ref, tick_size, p_min, p_max, {"session_id": "20260604", "contract": "NQ 06-26"})
+    assert set(res_both["active_zone_ids"]) == {"Z_CURR_SESS"}

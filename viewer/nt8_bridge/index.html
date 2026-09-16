@@ -704,6 +704,7 @@
     <select id="runsel" class="nt8-select" title="Seleccionar run"></select>
     <button class="nt8-btn" id="btn-bt2a-params" style="background:#0284c7;color:#fff;font-weight:700;border-color:#0369a1;" title="Configurar Parámetros y Extensión de Zonas (500 barras)"><span>⚙️ Parámetros</span> <span class="arrow">▾</span></button>
     <button class="nt8-btn" id="btn-corredores-demo" style="background:#0891b2;color:#fff;font-weight:700;border-color:#0e7490;box-shadow:0 0 6px rgba(8,145,178,0.4);" title="Prueba Visual: Corredores de Vacío y Campo de Fricción (HP-006)"><span>⚡ Corredores de Vacío (Demo)</span></button>
+    <button class="nt8-btn" id="btn-hft-corridor" style="background:#7c3aed;color:#fff;font-weight:700;border-color:#6d28d9;box-shadow:0 0 6px rgba(124,58,237,0.4);" title="HFTZonesNQ → Campo Causal de Corredores (HP-007)"><span>🚀 HFT Corredores NQ</span></button>
   </div>
   <div class="tb-right">
     <button class="nt8-btn" id="btn-layers" title="Mostrar/ocultar capas"><span>👁️ Capas</span> <span class="arrow">▾</span></button>
@@ -2043,6 +2044,12 @@
       this.style.color = state.showCorredoresDemo ? "#fff" : "var(--tb-text)";
       this.style.borderColor = state.showCorredoresDemo ? "#0e7490" : "var(--tb-btn-border)";
       requestDraw();
+    });
+  }
+  var btnHft = document.getElementById("btn-hft-corridor");
+  if (btnHft) {
+    btnHft.addEventListener("click", function () {
+      window.location.href = "hft_corridor_preview.html";
     });
   }
   document.getElementById("btn-reset").addEventListener("click", function () {

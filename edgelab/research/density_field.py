@@ -15,6 +15,7 @@ Mandatory invariants:
 """
 from __future__ import annotations
 
+import collections
 import hashlib
 import json
 import math
@@ -76,23 +77,65 @@ def compute_causal_v_ref(
 ) -> tuple[float, str]:
     """Computes rolling causal median volume over past available zones <= t_ref.
 
+    Invariants:
+    - Strictly causal: only zones with available_ts <= t_ref_ns contribute.
+    - Shuffled-input invariant: explicitly sorted by (available_ts, tiebreaker_id).
+    - Window bounded: takes the last min(max_window, N) sorted causal zones.
+
     Returns (v_ref, v_ref_source).
     """
-    past_vols: list[float] = []
+    causal_items: list[tuple[int, str, float]] = []
     for z in zones:
         z_avail = extract_zone_available_ns(z)
-        if z_avail[0] <= t_ref_ns:
+        avail_ns = z_avail[0]
+        if avail_ns <= t_ref_ns:
             vol = float(z.get("vol", z.get("volume", 0.0)))
             if vol > 0.0:
-                past_vols.append(vol)
+                zid = str(z.get("id", z.get("zone_id", "")))
+                causal_items.append((avail_ns, zid, vol))
 
-    if not past_vols:
+    if not causal_items:
         return cold_start_default, "COLD_START_DEFAULT"
 
-    # Take the last max_window zones
-    window_vols = past_vols[-max_window:]
+    # Explicit sort by available_ts_ns, then tiebreaker zone_id (invariant to input order)
+    causal_items.sort(key=lambda x: (x[0], x[1]))
+
+    # Take the last min(max_window, len(causal_items))
+    window_items = causal_items[-max_window:]
+    window_vols = [item[2] for item in window_items]
     med = float(np.median(window_vols))
     return max(1.0, med), f"CAUSAL_ROLLING_MEDIAN_N_{len(window_vols)}"
+
+
+def extract_zone_available_source(z: dict) -> str:
+    """Extracts explicit availability provenance source.
+
+    Possible sources:
+    - V2_END_NS: HFT zone with nanosecond completion timestamp
+    - V1_END_MS_DERIVED: HFT zone derived from millisecond completion timestamp
+    - SIG_TS_CONFIRMED: BigTrap2 / BT2A zone confirmed at signal timestamp
+    - LEGACY_CREATED_MS_FALLBACK: BigTrap2 / legacy fallback on creation timestamp
+    - EXPLICIT_AVAILABLE_TS: Explicit available_ts field present
+    - LEGACY_FALLBACK: Unspecified legacy fallback
+    """
+    if "available_ts_source" in z and z["available_ts_source"]:
+        return str(z["available_ts_source"])
+
+    src = str(z.get("source", "")).lower()
+    if "hft" in src:
+        if "end_ms" in z or "created_ms" in z or ("end_ts_ns" not in z and "available_ts_ns" not in z and "end_ns" not in z):
+            return "V1_END_MS_DERIVED"
+        return "V2_END_NS"
+
+    if "bigtrap" in src or "bt2a" in src:
+        if "sig_ts" in z or "sig_ts_confirmed" in z or "available_ts" in z:
+            return "SIG_TS_CONFIRMED"
+        return "LEGACY_CREATED_MS_FALLBACK"
+
+    avail_ns, is_fallback = extract_zone_available_ns(z)
+    if is_fallback:
+        return "LEGACY_FALLBACK"
+    return "EXPLICIT_AVAILABLE_TS"
 
 
 def extract_zone_available_ns(z: dict) -> tuple[int, bool]:
@@ -210,6 +253,17 @@ def compute_field(
         # Causal gate: available_ts <= t_ref
         if z_avail_ns > t_ref_ns:
             continue
+
+        # Session & roll boundary isolation (B3)
+        if "session_id" in cfg and cfg["session_id"] is not None:
+            z_sess = z.get("session_id")
+            if z_sess is not None and str(z_sess) != str(cfg["session_id"]):
+                continue
+
+        if "contract" in cfg and cfg["contract"] is not None:
+            z_contract = z.get("contract")
+            if z_contract is not None and str(z_contract) != str(cfg["contract"]):
+                continue
 
         ended_ns = extract_zone_ended_ns(z)
         is_ended = (ended_ns is not None and ended_ns <= t_ref_ns)
@@ -366,6 +420,7 @@ def compute_field(
         "total_zones_evaluated": len(zones),
         "legacy_availability_fallbacks": legacy_availability_fallbacks,
         "legacy_touch_fallbacks": legacy_touch_fallbacks,
+        "available_ts_sources": dict(collections.Counter(extract_zone_available_source(z) for z in active_zones)),
         "causal_status": "LEGACY_NON_CAUSAL" if legacy_availability_fallbacks > 0 else "PASS_CAUSAL",
         "price_tick_min": price_tick_min,
         "price_tick_max": price_tick_max,
