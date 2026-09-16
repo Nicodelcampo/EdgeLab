@@ -75,6 +75,19 @@ Para cada contrato declarado en el régimen entre su `first_trade_date` y `last_
 El periodo de mantenimiento diario del CME (16:00:00 a 16:59:59.999 CT, lunes a jueves) queda formalmente excluido del cálculo de volumen de sesión regular y de las métricas de elegibilidad intradía.
 La compuerta `ContractSessionEligibilityGateV2` proporciona métodos nativos (`aggregate_session_ticks` y `evaluate_session_from_ticks`) que convierten timestamps UTC a `America/Chicago`, identifican ticks en este intervalo y los descuentan del volumen y conteo de la sesión regular, almacenando métricas diagnósticas separadas (`maintenance_tick_count`, `maintenance_volume`).
 
+### 3.3. Ciclos de Expiración por Activo
+
+> [!NOTE]
+> Esta tabla describe convenciones generales de ciclos contractuales y no constituye evidencia suficiente de calendario, completitud ni elegibilidad de sesión.
+
+| Clase de Activo | Símbolos (Roots) | Ciclo de Expiración | Código de Meses CME |
+|---|---|---|---|
+| **Equity Index** | `ES`, `MES`, `NQ`, `MNQ`, `YM` | Trimestral | Marzo (H), Junio (M), Septiembre (U), Diciembre (Z) |
+| **FX** | `6B`, `6E`, `6J` | Trimestral | Marzo (H), Junio (M), Septiembre (U), Diciembre (Z) |
+| **Metales** | `GC` (Gold) | Bimensual | Febrero (G), Abril (J), Junio (M), Agosto (Q), Diciembre (Z) |
+| **Tasas** | `ZB` (30Y Bond) | Trimestral | Marzo (H), Junio (M), Septiembre (U), Diciembre (Z) |
+| **Cripto** | `MBT` (Micro Bitcoin) | Mensual | Ene (F), Feb (G), Mar (H), Abr (J), May (K), Jun (M), Jul (N), etc. |
+
 ---
 
 ## 4. Estructura de Linaje y Serie Continua
