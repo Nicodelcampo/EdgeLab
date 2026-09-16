@@ -1,13 +1,14 @@
-"""Visual inspection charts generator for HP007-CAMP-002.
+"""Visual inspection charts generator for HP007-CAMP-002 (Causal & Viewport-Invariant).
 
 Renders neutral, target-free microstructural charts for selected sessions of NQ 06-26.
 Features:
-- 120-tick candle bars
-- Active absorption zones as-of
-- Continuous lateral intensity field profile F(p)
-- Rollover boundary marker (state_reset_flag == True)
+- Explicit reproducible tRef boundary plotted vertically.
+- Active absorption zones strictly as-of (available_ts <= tRef).
+- Zone rectangles terminate at or before tRef (no future leak).
+- Continuous lateral density field profile D(p) computed via pure causal compute_field.
+- Rollover boundary marker (state_reset_flag == True) when applicable.
 - Mandatory prominent watermark: "PARITY_ABSTAIN — PYTHON EXPLORATORY VISUALIZATION ONLY"
-- Absolute prohibition of outcome markers (no trades, no P&L, no traversal classifications).
+- Absolute prohibition of outcome markers (no trades, no targets, no stops, no R:R, no P&L).
 """
 from __future__ import annotations
 
@@ -15,13 +16,22 @@ import json
 import math
 import shutil
 from pathlib import Path
+from typing import Any
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import numpy as np
+import pandas as pd
 
 from edgelab.bridge.indicators import bigtrap2absorption
 from edgelab.bridge.ticks import load_canonical_parquet
+from edgelab.research.density_field import (
+    compute_field,
+    detect_density_intervals,
+    price_to_tick,
+    tick_to_price,
+    to_nanoseconds,
+)
 
 MANIFEST_PATH = Path("docs/research/HP007_CAMP002_SESSION_SELECTION_MANIFEST_2026-09-15.json")
 CATALOG_PATH = Path("docs/research/HP007_CAMP002_BT2A_CONFIG_CATALOG_2026-09-15.json")
@@ -57,12 +67,13 @@ def render_chart(
     cfg_id: str,
     cfg_desc: str,
     bars: list[dict],
-    zones: list[dict],
+    all_zones: list[dict],
+    t_ref_ns: int,
     tick_size: float,
     out_path: Path,
     has_roll: bool = False
 ):
-    """Renders high-resolution chart with neutral visual logic elements."""
+    """Renders high-resolution chart with strictly causal visual logic elements."""
     fig, (ax_main, ax_field) = plt.subplots(
         1, 2, figsize=(16, 9),
         gridspec_kw={"width_ratios": [5, 1]},
@@ -77,11 +88,17 @@ def render_chart(
             spine.set_color("#30363d")
 
     n_bars = len(bars)
-    # Downsample bars for display if session is huge (keep up to 1200 bars for clear rendering)
     step = max(1, n_bars // 1000)
     sub_bars = bars[::step]
 
-    # Plot candlesticks / price range
+    # Find bar index closest to t_ref_ns
+    t_ref_bar_idx = n_bars - 1
+    for i, b in enumerate(bars):
+        if b["t_close"] >= t_ref_ns:
+            t_ref_bar_idx = i
+            break
+
+    # Plot candlesticks
     xs = [b["idx"] for b in sub_bars]
     opens = [b["open"] * tick_size for b in sub_bars]
     highs = [b["high"] * tick_size for b in sub_bars]
@@ -93,216 +110,203 @@ def render_chart(
         ax_main.vlines(x, l, h, color=color, linewidth=1.0, alpha=0.8)
         ax_main.vlines(x, min(o, c), max(o, c), color=color, linewidth=2.5, alpha=0.9)
 
-    # Plot zones as neutral shaded intervals
-    all_prices = highs + lows
-    min_chart_p = min(all_prices) if all_prices else 0.0
-    max_chart_p = max(all_prices) if all_prices else 100.0
+    # Filter zones causally: available_ts <= t_ref_ns
+    active_zones = []
+    for z in all_zones:
+        sig_ts = z.get("sig_ts") or (z.get("created_ms", 0) * 1_000_000)
+        avail_ts = int(sig_ts)
+        if avail_ts <= t_ref_ns:
+            zd = dict(z)
+            zd["available_ts"] = avail_ts
+            zd["bottom"] = float(z.get("lo", 0.0))
+            zd["top"] = float(z.get("hi", 0.0))
+            active_zones.append(zd)
 
-    zone_vol_ref = np.median([z.get("vol", 1.0) for z in zones]) if zones else 100.0
-    for z in zones:
-        z_lo = z["lo"]
-        z_hi = z["hi"]
-        if z_hi < min_chart_p or z_lo > max_chart_p:
-            continue
+    # Plot zones: only active zones, extending from origin to min(t_ref_bar, ended_bar)
+    for z in active_zones:
+        z_lo = z["bottom"]
+        z_hi = z["top"]
         z_col = "#388bfd" if z.get("dir") == "long" else "#d29922"
-        v_weight = min(1.0, max(0.2, (z.get("vol", 1.0) / zone_vol_ref) ** 0.35))
+
+        # Find start bar
+        orig_ts = int(z.get("created_ms", 0) * 1_000_000)
+        x_start = 0
+        for i, b in enumerate(bars):
+            if b["t_close"] >= orig_ts:
+                x_start = i
+                break
+
+        x_end = t_ref_bar_idx
+        if z.get("ended_ms") is not None:
+            ended_ts = int(z["ended_ms"] * 1_000_000)
+            if ended_ts < t_ref_ns:
+                for i in range(x_start, len(bars)):
+                    if bars[i]["t_close"] >= ended_ts:
+                        x_end = i
+                        break
+
+        rect_w = max(2, x_end - x_start)
         rect = patches.Rectangle(
-            (0, z_lo),
-            n_bars,
+            (x_start, z_lo),
+            rect_w,
             max(tick_size, z_hi - z_lo),
             linewidth=0.8,
             edgecolor=z_col,
             facecolor=z_col,
-            alpha=0.18 * v_weight
+            alpha=0.25
         )
         ax_main.add_patch(rect)
 
-    # If roll session, plot vertical line for state reset
+    # Vertical tRef As-Of line
+    t_ref_dt = pd.Timestamp(t_ref_ns, unit="ns", tz="UTC")
+    t_ref_str = t_ref_dt.strftime("%Y-%m-%d %H:%M:%S UTC")
+    ax_main.axvline(
+        x=t_ref_bar_idx, color="#58a6ff", linestyle="--", linewidth=2.0,
+        label=f"tRef As-Of Boundary ({t_ref_str})"
+    )
+
+    # Roll boundary marker if applicable
     if has_roll:
         ax_main.axvline(
-            x=0, color="#da3633", linestyle="--", linewidth=2.5,
-            label="state_reset_flag == True (Roll Boundary Purge)"
+            x=0, color="#da3633", linestyle="--", linewidth=2.0,
+            label="Roll Boundary Purge (state_reset_flag == True)"
         )
-        ax_main.legend(loc="upper left", facecolor="#161b22", edgecolor="#30363d", labelcolor="#f0f6fc")
 
-    # Lateral field profile calculation
-    p_grid = np.linspace(min_chart_p, max_chart_p, 200)
-    sigma_pts = 1.2 * tick_size
-    field_vals = []
-    for p in p_grid:
-        exp_sum = 0.0
-        for z in zones:
-            d = max(0.0, z["lo"] - p, p - z["hi"])
-            if d <= 3.0 * sigma_pts:
-                k = math.exp(-(d ** 2) / (2.0 * (sigma_pts ** 2)))
-                w = (z.get("vol", 1.0) / zone_vol_ref) ** 0.25
-                exp_sum += w * k
-        f_val = 1.0 - math.exp(-exp_sum)
-        field_vals.append(f_val)
+    ax_main.legend(loc="upper left", facecolor="#161b22", edgecolor="#30363d", labelcolor="#f0f6fc", fontsize=8)
 
-    ax_field.plot(field_vals, p_grid, color="#a371f7", linewidth=2.0)
-    ax_field.fill_betweenx(p_grid, 0, field_vals, color="#a371f7", alpha=0.25)
-    ax_field.set_xlim(0, 1.0)
-    ax_field.set_ylim(min_chart_p, max_chart_p)
-    ax_field.set_xlabel("Field Intensity F(p)", color="#8b949e", fontsize=9)
-    ax_field.axvline(0.6, color="#f0883e", linestyle=":", linewidth=1.0, alpha=0.6, label="High-Density (0.6)")
-    ax_field.axvline(0.2, color="#58a6ff", linestyle=":", linewidth=1.0, alpha=0.6, label="Low-Density (0.2)")
+    # Compute causal lateral density field on integer tick domain
+    all_prices = highs + lows
+    min_chart_p = min(all_prices) if all_prices else 18000.0
+    max_chart_p = max(all_prices) if all_prices else 18500.0
+    p_min_tick = price_to_tick(min_chart_p - 5.0, tick_size)
+    p_max_tick = price_to_tick(max_chart_p + 5.0, tick_size)
 
-    # Align main y-limits
-    ax_main.set_ylim(min_chart_p, max_chart_p)
-    ax_main.set_ylabel("Price (NQ pts)", color="#8b949e", fontsize=11)
-    ax_main.set_xlabel("120-Tick Bar Index", color="#8b949e", fontsize=11)
-
-    # Title
-    fig.suptitle(
-        f"EdgeLab Visual Logic Inspection — {session_id} ({trade_date}) | Asset: NQ 06-26\n"
-        f"Config: {cfg_id} ({cfg_desc}) | Criterion: {criterion}",
-        color="#f0f6fc", fontsize=12, fontweight="bold", y=0.97
+    field_res = compute_field(
+        zones=active_zones,
+        t_ref=t_ref_ns,
+        tick_size=tick_size,
+        price_tick_min=p_min_tick,
+        price_tick_max=p_max_tick,
+        field_config={"model": "FIELD_RAW_STATIC", "kernel": "KERNEL_GAUSS", "sigma_ticks": 1.2}
     )
 
-    # MANDATORY PROMINENT WATERMARK
-    fig.text(
-        0.45, 0.52,
+    dp = np.array(field_res["density"], dtype=np.float64)
+    px_grid = np.array([tick_to_price(k, tick_size) for k in field_res["price_ticks"]])
+
+    # Plot lateral profile
+    ax_field.fill_betweenx(px_grid, 0, dp, color="#38bdf8", alpha=0.35)
+    ax_field.plot(dp, px_grid, color="#38bdf8", linewidth=1.2)
+    ax_field.axvline(0.32, color="#22d3ee", linestyle=":", linewidth=1.0, label="Baja Densidad (0.32)")
+    ax_field.axvline(0.70, color="#f59e0b", linestyle=":", linewidth=1.0, label="Alta Densidad (0.70)")
+    ax_field.set_xlabel("D(p, tRef)", color="#8b949e", fontsize=8)
+    ax_field.set_xlim(0, max(1.2, float(np.max(dp)) * 1.15))
+
+    # Sync Y limits
+    y_min = min_chart_p - 2.0
+    y_max = max_chart_p + 2.0
+    ax_main.set_ylim(y_min, y_max)
+    ax_field.set_ylim(y_min, y_max)
+
+    # Titles and metadata
+    f_hash = field_res["field_hash"][:16]
+    ax_main.set_title(
+        f"HP-007 CAMP-002 · {session_id} ({trade_date}) · {cfg_id} · {criterion}\n"
+        f"As-Of tRef: {t_ref_str} | Active Zones: {len(active_zones)} | Field Hash: {f_hash}...",
+        color="#f0f6fc", fontsize=11, fontweight="bold", pad=12
+    )
+
+    # Watermark box
+    ax_main.text(
+        0.5, 0.94,
         "PARITY_ABSTAIN — PYTHON EXPLORATORY VISUALIZATION ONLY",
-        fontsize=18, color="#ffffff", alpha=0.18,
-        ha="center", va="center", rotation=25, fontweight="heavy"
+        transform=ax_main.transAxes,
+        fontsize=10, fontweight="bold", color="#f85149",
+        ha="center", va="top",
+        bbox=dict(boxstyle="round,pad=0.4", facecolor="#1f1414", edgecolor="#f85149", alpha=0.9)
     )
 
-    plt.tight_layout(rect=[0, 0.03, 1, 0.93])
+    plt.tight_layout()
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out_path, dpi=120, facecolor=fig.get_facecolor(), edgecolor="none")
+    plt.savefig(out_path, dpi=120, facecolor=fig.get_facecolor(), edgecolor="none")
     plt.close(fig)
-    print(f"  Rendered: {out_path.name}")
+
+    # Copy to artifact dir for report presentation
+    if ARTIFACT_DIR.exists():
+        shutil.copy(out_path, ARTIFACT_DIR / out_path.name)
+
+    print(f"  Rendered {out_path.name} | tRef: {t_ref_str} | Active zones: {len(active_zones)} | field_hash: {f_hash}")
 
 
 def generate_all_charts():
     with open(MANIFEST_PATH, "r", encoding="utf-8") as f:
-        session_manifest = json.load(f)
+        manifest = json.load(f)
 
     with open(CATALOG_PATH, "r", encoding="utf-8") as f:
-        config_catalog = json.load(f)
+        catalog = json.load(f)
 
-    source_parquet = session_manifest["asset"]["source_parquet"]
-    tick_size = float(session_manifest["asset"]["tick_size"])
-    sessions = session_manifest["selected_sessions"]
+    cfg_lookup = {c["configuration_id"]: c for c in catalog["configurations"]}
+    sessions_lookup = {s["session_id"]: s for s in manifest["selected_sessions"]}
+    source_parquet = manifest["asset"]["source_parquet"]
+    tick_size = float(manifest["asset"]["tick_size"])
 
-    cfg_dict = {c["configuration_id"]: c for c in config_catalog["configurations"]}
-
-    # Target configurations for inspection:
-    # BT2A_CFG_01 (Baseline)
-    # BT2A_CFG_04 (Selective: 95%)
-    # BT2A_CFG_08 (Stacked: min 2 rows)
-    # BT2A_CFG_09 (Directional ScoreMode)
-    target_cfgs = ["BT2A_CFG_01", "BT2A_CFG_04", "BT2A_CFG_08", "BT2A_CFG_09"]
-
-    rendered_files = []
-    print(f"Generating visual inspection charts into {OUTPUT_DIR}...")
-
-    # Cache loaded sessions
-    cached_ticks = {}
-
-    for s in sessions:
-        sid = s["session_id"]
-        tdate = s["trade_date"]
-        crit = s["selection_criterion"]
-        open_ns = s["metrics"]["session_open_utc_ns"]
-        close_ns = s["metrics"]["session_close_utc_ns"]
-
-        if tdate not in cached_ticks:
-            t_series = load_canonical_parquet(
-                source_parquet, start_utc_ns=open_ns, end_utc_ns=close_ns, instrument="NQ"
-            )
-            bars = build_bars(t_series.ts_ns, t_series.price_ticks, bar_size=120)
-            cached_ticks[tdate] = (t_series, bars)
-        else:
-            t_series, bars = cached_ticks[tdate]
-
-        # For SESS_02 (Median session), render all 4 representative configs for comparison
-        if sid == "SESS_02":
-            cfgs_to_run = target_cfgs
-        else:
-            # Baseline config for other sessions
-            cfgs_to_run = ["BT2A_CFG_01"]
-
-        for cid in cfgs_to_run:
-            cfg_info = cfg_dict[cid]
-            res = bigtrap2absorption.run(t_series, params=cfg_info["parameters"])
-            zones = res["zones"]
-
-            has_roll = (sid == "SESS_03")
-            fname = f"HP007_VISUAL_{sid}_{cid}.png"
-            out_file = OUTPUT_DIR / fname
-
-            render_chart(
-                session_id=sid,
-                trade_date=tdate,
-                criterion=crit,
-                cfg_id=cid,
-                cfg_desc=cfg_info["description"],
-                bars=bars,
-                zones=zones,
-                tick_size=tick_size,
-                out_path=out_file,
-                has_roll=has_roll
-            )
-            rendered_files.append((sid, tdate, crit, cid, cfg_info["description"], out_file))
-
-            # Copy to artifact directory for easy IDE preview
-            if ARTIFACT_DIR.exists():
-                shutil.copy2(out_file, ARTIFACT_DIR / fname)
-
-    # Write Visual Index Markdown
-    index_md_path = Path("docs/research/HP007_CAMP002_VISUAL_INDEX_2026-09-15.md")
-    lines = [
-        "# Índice de Inspección Visual Lógica — HP007-CAMP-002",
-        "## Fase de Diseño Visual Target-Free (Visual Logic Design)",
-        "",
-        "- **Activo Canónico:** `NQ 06-26` (Tick size: 0.25)",
-        "- **Ancla Contractual:** [`29cad93d6600ee4c07a7d716be35e4881d78f491`](https://github.com/Nicodelcampo/EdgeLab/commit/29cad93d6600ee4c07a7d716be35e4881d78f491)",
-        "- **Documento Rector:** [`docs/research/HP007_CAMP002_VISUAL_LOGIC_CATALOG_2026-09-15.md`](HP007_CAMP002_VISUAL_LOGIC_CATALOG_2026-09-15.md)",
-        "- **Watermark Mandatorio:** `PARITY_ABSTAIN — PYTHON EXPLORATORY VISUALIZATION ONLY`",
-        "- **Estado Oficial:** `READY_FOR_OWNER_VISUAL_REVIEW = YES`",
-        "",
-        "> [!IMPORTANT]",
-        "> **Directiva del Propietario:** Queda prohibida toda medición empírica o estimación de edge.",
-        "> La función de este índice es permitir la inspección visual neutral de zonas y campos para que el propietario defina la semántica de los eventos.",
-        "",
-        "---",
-        "",
-        "## Tabla de Gráficos Generados",
-        "",
-        "| ID Gráfico | ID Sesión | Fecha CME | Criterio de Selección | Configuración | Descripción de la Variante | Enlace Local |",
-        "|---|---|---|---|---|---|---|"
+    # Chart specifications (8 charts from visual index)
+    chart_specs = [
+        ("HP007_VISUAL_SESS_01_BT2A_CFG_01", "SESS_01", "BT2A_CFG_01", False),
+        ("HP007_VISUAL_SESS_02_BT2A_CFG_01", "SESS_02", "BT2A_CFG_01", False),
+        ("HP007_VISUAL_SESS_02_BT2A_CFG_04", "SESS_02", "BT2A_CFG_04", False),
+        ("HP007_VISUAL_SESS_02_BT2A_CFG_08", "SESS_02", "BT2A_CFG_08", False),
+        ("HP007_VISUAL_SESS_02_BT2A_CFG_09", "SESS_02", "BT2A_CFG_09", False),
+        ("HP007_VISUAL_SESS_03_BT2A_CFG_01", "SESS_03", "BT2A_CFG_01", True),
+        ("HP007_VISUAL_SESS_04_BT2A_CFG_01", "SESS_04", "BT2A_CFG_01", False),
+        ("HP007_VISUAL_SESS_05_BT2A_CFG_01", "SESS_05", "BT2A_CFG_01", False),
     ]
 
-    for sid, tdate, crit, cid, cdesc, out_file in rendered_files:
-        rel_link = f"visual_charts/{out_file.name}"
-        lines.append(f"| `{out_file.stem}` | `{sid}` | `{tdate}` | {crit} | `{cid}` | {cdesc} | [{out_file.name}]({rel_link}) |")
+    # Preload sessions
+    loaded_sessions: dict[str, Any] = {}
+    for _, s_id, _, _ in chart_specs:
+        s_meta = sessions_lookup[s_id]
+        td = s_meta["trade_date"]
+        if td not in loaded_sessions:
+            print(f"Loading {td} ({s_id})...")
+            t_series = load_canonical_parquet(
+                source_parquet,
+                start_utc_ns=s_meta["metrics"]["session_open_utc_ns"],
+                end_utc_ns=s_meta["metrics"]["session_close_utc_ns"],
+                instrument="NQ"
+            )
+            loaded_sessions[td] = t_series
 
-    lines.extend([
-        "",
-        "---",
-        "",
-        "## Checklist para la Inspección Visual del Propietario",
-        "",
-        "1. **Comparación de Sensibilidad en SESS_02 (Mediana de Actividad):**",
-        "   - Compare `HP007_VISUAL_SESS_02_BT2A_CFG_01` (Baseline 90%) con `BT2A_CFG_04` (Restrictiva 95%): ¿Qué densidad de zonas resulta interpretable sin saturar el espacio?",
-        "   - Observe `BT2A_CFG_08` (Zonas agrupadas min 2 filas): ¿Las zonas más gruesas capturan mejor los vacíos o los estrechan excesivamente?",
-        "   - Observe `BT2A_CFG_09` (Direccional): ¿Aporta mejor asimetría entre vacíos superiores e inferiores?",
-        "2. **Verificación de Rollover en SESS_03:**",
-        "   - Verifique en `HP007_VISUAL_SESS_03_BT2A_CFG_01` que la línea roja vertical `state_reset_flag == True` purgue adecuadamente el estado.",
-        "3. **Comportamiento en Extremos de Volatilidad:**",
-        "   - `HP007_VISUAL_SESS_04_BT2A_CFG_01` (Alta volatilidad, rango 3.608t / 902 pts): Evalúe si el desgaste por toques (`NO_WEAR` vs `FULL`) es visualmente perceptible.",
-        "   - `HP007_VISUAL_SESS_05_BT2A_CFG_01` (Bajo rango / compresión, rango 1.252t / 313 pts): Observe si los vacíos estrechos ($W < 5$ ticks) son absorbidos por el kernel gaussiano.",
-        "",
-        "### Aporte al Referente",
-        "Se publica el paquete visual y el índice completo de inspección en `docs/research/HP007_CAMP002_VISUAL_INDEX_2026-09-15.md` y `docs/research/visual_charts/`. Quedan renderizadas las alternativas visuales comparables y neutrales sobre NQ 06-26 con watermark mandatorio, listas para la decisión semántica del propietario."
-    ])
+    print(f"\nGenerating {len(chart_specs)} causal visual inspection charts...")
+    for chart_id, s_id, cfg_id, has_roll in chart_specs:
+        s_meta = sessions_lookup[s_id]
+        td = s_meta["trade_date"]
+        t_series = loaded_sessions[td]
+        cfg = cfg_lookup[cfg_id]
 
-    with open(index_md_path, "w", encoding="utf-8") as f:
-        f.write("\n".join(lines) + "\n")
+        res = bigtrap2absorption.run(t_series, params=cfg["parameters"])
+        bars = build_bars(t_series.ts_ns, t_series.price_ticks, bar_size=120)
 
-    print(f"\nVisual index published to: {index_md_path}")
+        # Reproducible t_ref at 65% of session time
+        open_ns = s_meta["metrics"]["session_open_utc_ns"]
+        close_ns = s_meta["metrics"]["session_close_utc_ns"]
+        t_ref_ns = int(open_ns + 0.65 * (close_ns - open_ns))
+
+        out_path = OUTPUT_DIR / f"{chart_id}.png"
+        render_chart(
+            session_id=s_id,
+            trade_date=td,
+            criterion=s_meta["selection_criterion"],
+            cfg_id=cfg_id,
+            cfg_desc=cfg["description"],
+            bars=bars,
+            all_zones=res["zones"],
+            t_ref_ns=t_ref_ns,
+            tick_size=tick_size,
+            out_path=out_path,
+            has_roll=has_roll
+        )
+
+    print(f"\nAll {len(chart_specs)} charts regenerated and published.")
 
 
 if __name__ == "__main__":

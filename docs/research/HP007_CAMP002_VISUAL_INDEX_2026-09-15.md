@@ -1,3 +1,8 @@
+> [!WARNING]
+> **SUPERSEDED_NON_CAUSAL_VISUAL_ARTIFACT: VIEWPORT_DEPENDENCY_AND_NON_CAUSAL_VREF_DEFECTS**
+> Los gráficos listados en este índice histórico fueron generados antes de la refactorización de invariancia de viewport y semántica as-of. Presentan zonas extendidas a lo largo de toda la sesión sin corte en tRef y normalizador V_ref calculado sobre zonas futuras de la sesión. Se preservan para trazabilidad y auditoría.
+> Para la versión causal e invariante regenerada, consultar la sección de actualización causal.
+
 # Índice de Inspección Visual Lógica — HP007-CAMP-002
 ## Fase de Diseño Visual Target-Free (Visual Logic Design)
 
@@ -28,6 +33,21 @@
 
 ---
 
+
+## Tabla de Gráficos Causalmente Regenerados (Fase H — Viewport-Invariant & As-Of)
+
+| ID Gráfico | Sesión | Fecha | Config | tRef As-Of (UTC) | Zonas Activas | Fallbacks | Field Model | Field Hash | Enlace Local |
+|---|---|---|---|---|---|---|---|---|---|
+| HP007_VISUAL_SESS_01_BT2A_CFG_01 | SESS_01 | 2026-03-17 | BT2A_CFG_01 | 2026-03-17 12:57:00 | 136 | 0 | FIELD_RAW_STATIC | e9197edc9a55134 | [HP007_VISUAL_SESS_01_BT2A_CFG_01.png](visual_charts/HP007_VISUAL_SESS_01_BT2A_CFG_01.png) |
+| HP007_VISUAL_SESS_02_BT2A_CFG_01 | SESS_02 | 2026-04-01 | BT2A_CFG_01 | 2026-04-01 12:57:00 | 248 | 0 | FIELD_RAW_STATIC | edc24d0372c71988 | [HP007_VISUAL_SESS_02_BT2A_CFG_01.png](visual_charts/HP007_VISUAL_SESS_02_BT2A_CFG_01.png) |
+| HP007_VISUAL_SESS_02_BT2A_CFG_04 | SESS_02 | 2026-04-01 | BT2A_CFG_04 | 2026-04-01 12:57:00 | 127 | 0 | FIELD_RAW_STATIC | 64952ca1ac7a4ea0 | [HP007_VISUAL_SESS_02_BT2A_CFG_04.png](visual_charts/HP007_VISUAL_SESS_02_BT2A_CFG_04.png) |
+| HP007_VISUAL_SESS_02_BT2A_CFG_08 | SESS_02 | 2026-04-01 | BT2A_CFG_08 | 2026-04-01 12:57:00 | 186 | 0 | FIELD_RAW_STATIC | edc24d0372c71988 | [HP007_VISUAL_SESS_02_BT2A_CFG_08.png](visual_charts/HP007_VISUAL_SESS_02_BT2A_CFG_08.png) |
+| HP007_VISUAL_SESS_02_BT2A_CFG_09 | SESS_02 | 2026-04-01 | BT2A_CFG_09 | 2026-04-01 12:57:00 | 327 | 0 | FIELD_RAW_STATIC | 1d22052fa4e5605d | [HP007_VISUAL_SESS_02_BT2A_CFG_09.png](visual_charts/HP007_VISUAL_SESS_02_BT2A_CFG_09.png) |
+| HP007_VISUAL_SESS_03_BT2A_CFG_01 | SESS_03 | 2026-03-17 | BT2A_CFG_01 | 2026-03-17 12:57:00 | 136 | 0 | FIELD_RAW_STATIC | e9197edc9a55134 | [HP007_VISUAL_SESS_03_BT2A_CFG_01.png](visual_charts/HP007_VISUAL_SESS_03_BT2A_CFG_01.png) |
+| HP007_VISUAL_SESS_04_BT2A_CFG_01 | SESS_04 | 2026-04-08 | BT2A_CFG_01 | 2026-04-08 12:57:00 | 347 | 0 | FIELD_RAW_STATIC | f99f0dd882b8047 | [HP007_VISUAL_SESS_04_BT2A_CFG_01.png](visual_charts/HP007_VISUAL_SESS_04_BT2A_CFG_01.png) |
+| HP007_VISUAL_SESS_05_BT2A_CFG_01 | SESS_05 | 2026-05-22 | BT2A_CFG_01 | 2026-05-22 12:57:00 | 150 | 0 | FIELD_RAW_STATIC | 2e5f1ee618ea14f7 | [HP007_VISUAL_SESS_05_BT2A_CFG_01.png](visual_charts/HP007_VISUAL_SESS_05_BT2A_CFG_01.png) |
+
+---
 ## Checklist para la Inspección Visual del Propietario
 
 1. **Comparación de Sensibilidad en SESS_02 (Mediana de Actividad):**

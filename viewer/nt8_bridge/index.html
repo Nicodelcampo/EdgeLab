@@ -1533,7 +1533,7 @@
       ctx.restore();
     }
 
-    // 4. DIBUJAR PRUEBA VISUAL DE CORREDORES DE VACÍO (HP-006)
+    // 4. DIBUJAR CAMPO DE DENSIDAD E INTERVALOS (HP-007)
     drawCorredoresDemo(ctx, w, hCanvas);
   }
 
@@ -1550,7 +1550,7 @@
     var vr = tsc.getVisibleRange();
     if (!vr) return;
 
-    // 1. Obtener velas visibles y rango de precio visible
+    // 1. Determinar tRef estrictamente causal: hoverTime o última vela visible
     var visCandles = [];
     for (var ci = 0; ci < candles.length; ci++) {
       if (candles[ci].time >= vr.from && candles[ci].time <= vr.to) {
@@ -1558,167 +1558,227 @@
       }
     }
     if (visCandles.length < 2) return;
-
-    var pMinVis = Infinity, pMaxVis = -Infinity;
-    for (var vi = 0; vi < visCandles.length; vi++) {
-      if (visCandles[vi].low < pMinVis) pMinVis = visCandles[vi].low;
-      if (visCandles[vi].high > pMaxVis) pMaxVis = visCandles[vi].high;
-    }
-    if (pMinVis === Infinity || pMaxVis === -Infinity) return;
-
-    var tick = (state.data && state.data.meta && state.data.meta.tick_size) || 0.00005;
-    var tickVal = (state.data && state.data.meta && state.data.meta.tick_value) || 6.25;
-    var prec = (state.data && state.data.meta && state.data.meta.precision !== undefined) ? state.data.meta.precision : 5;
-
-    // Discretización de precios visible en ticks exactos
-    pMinVis = Math.floor(pMinVis / tick) * tick;
-    pMaxVis = Math.ceil(pMaxVis / tick) * tick;
-    var nTicks = Math.round((pMaxVis - pMinVis) / tick) + 1;
-    if (nTicks < 3) return;
-
-    // Tiempo de referencia As-Of: si el usuario tiene el crosshair en una vela, tomamos ese tRef.
     var tRef = state.hoverTime || visCandles[visCandles.length - 1].time;
 
-    // 2. Obtener las zonas activas del run seleccionado (o run sensible si está disponible)
+    // 2. Usar exactamente el run seleccionado por el usuario. NUNCA sustituir por otro run.
     var runToUse = state.run;
-    if (state.data && state.data.runs) {
-      for (var ri = 0; ri < state.data.runs.length; ri++) {
-        var r = state.data.runs[ri];
-        if (r && (r.id === "bt2a_25t_sensible" || (r.name && r.name.indexOf("Alta Sensibilidad") !== -1))) {
-          if (!runToUse || state.run.id === "bt2a_25t_sensible" || !state.run.zones || !state.run.zones.length) {
-            runToUse = r;
-          }
-          break;
+    if (!runToUse || !runToUse.zones) return;
+    var zones = runToUse.zones;
+
+    var tick = (state.data && state.data.meta && state.data.meta.tick_size) || 0.25;
+
+    // 3. Dominio de precios CAUSAL y FIJO (independiente del viewport)
+    // Se construye con las velas históricas <= tRef y las zonas disponibles <= tRef más padding fijo.
+    var pMinCausal = Infinity, pMaxCausal = -Infinity;
+    for (var vi = 0; vi < candles.length; vi++) {
+      if (candles[vi].time > tRef) break;
+      if (candles[vi].low < pMinCausal) pMinCausal = candles[vi].low;
+      if (candles[vi].high > pMaxCausal) pMaxCausal = candles[vi].high;
+    }
+    if (pMinCausal === Infinity || pMaxCausal === -Infinity) return;
+
+    // 4. Filtrar zonas estrictamente por disponibilidad causal (available_ts <= tRef).
+    // NUNCA filtrar por intersección con el viewport.
+    var activeZones = [];
+    var legacyAvailabilityFallbacks = 0;
+    for (var zi = 0; zi < zones.length; zi++) {
+      var z = zones[zi];
+      var availTs;
+      if (z.available_ts !== undefined && z.available_ts !== null) availTs = z.available_ts;
+      else if (z.availableTime !== undefined && z.availableTime !== null) availTs = z.availableTime;
+      else if (z.available_ns !== undefined && z.available_ns !== null) availTs = z.available_ns / 1e9;
+      else {
+        availTs = (z.t0 !== undefined) ? z.t0 : (z.created_ms ? z.created_ms / 1000 : z.time);
+        legacyAvailabilityFallbacks++;
+      }
+      if (availTs > 1e16) availTs = availTs / 1e9;
+      else if (availTs > 1e11) availTs = availTs / 1e3;
+
+      if (availTs <= tRef) {
+        var zBot = (z.bottom !== undefined) ? z.bottom : z.lo;
+        var zTop = (z.top !== undefined) ? z.top : z.hi;
+        if (zBot < pMinCausal) pMinCausal = zBot;
+        if (zTop > pMaxCausal) pMaxCausal = zTop;
+        activeZones.push({
+          z: z,
+          availTs: availTs,
+          bot: Math.min(zBot, zTop),
+          top: Math.max(zBot, zTop),
+          vol: (z.vol !== undefined) ? z.vol : (z.volume || 1.0)
+        });
+      }
+    }
+
+    // Padding fijo en ticks
+    var paddingTicks = 20;
+    var tickMin = Math.floor(pMinCausal / tick) - paddingTicks;
+    var tickMax = Math.ceil(pMaxCausal / tick) + paddingTicks;
+    var nTicks = (tickMax - tickMin) + 1;
+    if (nTicks < 5) return;
+
+    var gridP = new Float64Array(nTicks);
+    var dp = new Float64Array(nTicks);
+    for (var ti = 0; ti < nTicks; ti++) {
+      gridP[ti] = (tickMin + ti) * tick;
+    }
+
+    // 5. CÁLCULO DEL CAMPO DE DENSIDAD RAW_STATIC
+    // Peso de zona = 1.0, sin maduración temporal, sin decaimiento, sin desgaste post-hoc
+    var sigmaTicks = 1.2;
+    var twoSigmaSq = 2.0 * sigmaTicks * sigmaTicks;
+    var cutoffTicks = Math.ceil(3.0 * sigmaTicks);
+
+    for (var az = 0; az < activeZones.length; az++) {
+      var azObj = activeZones[az];
+      var zLoTick = Math.round(azObj.bot / tick);
+      var zHiTick = Math.round(azObj.top / tick);
+      if (zLoTick > zHiTick) { var tmp = zLoTick; zLoTick = zHiTick; zHiTick = tmp; }
+
+      var kMin = Math.max(tickMin, zLoTick - cutoffTicks);
+      var kMax = Math.min(tickMax, zHiTick + cutoffTicks);
+      var iMin = kMin - tickMin;
+      var iMax = kMax - tickMin;
+
+      for (var idx = iMin; idx <= iMax; idx++) {
+        var k = tickMin + idx;
+        var distTicks = 0.0;
+        if (k < zLoTick) distTicks = zLoTick - k;
+        else if (k > zHiTick) distTicks = k - zHiTick;
+
+        if (distTicks <= 3.0 * sigmaTicks) {
+          var kVal = (distTicks === 0.0) ? 1.0 : Math.exp(-(distTicks * distTicks) / twoSigmaSq);
+          dp[idx] += kVal;
         }
       }
     }
-    var zones = (runToUse && runToUse.zones) ? runToUse.zones : [];
 
-    // Filtrar zonas que nacieron en o antes de tRef y que intersectan el rango visible (con margen de 15 ticks)
-    var marginPrice = 15 * tick;
-    var activeZones = [];
-    for (var zi = 0; zi < zones.length; zi++) {
-      var z = zones[zi];
-      if (z.t0 <= tRef && z.top >= (pMinVis - marginPrice) && z.bottom <= (pMaxVis + marginPrice)) {
-        activeZones.push(z);
-      }
-    }
-
-    // 3. CÁLCULO DEL CAMPO DE RESISTENCIA CONTINUO D(p, tRef)
-    // Inicializar grid de precios y densidad
-    var gridP = new Float64Array(nTicks);
-    var dp = new Float64Array(nTicks);
-    for (var i = 0; i < nTicks; i++) {
-      gridP[i] = pMinVis + i * tick;
-    }
-
-    var sigma = 1.2 * tick;
-    var twoSigmaSq = 2 * sigma * sigma;
-
-    // Ponderación Perfil CALIBRADO EMPÍRICO (12h Vida Media + Maduración Bimodal):
-    // Zonas frescas (<15-30m) tienen menor contención (fueron perforadas 68%); alcanzan plenitud entre 1h y 12h.
-    for (var az = 0; az < activeZones.length; az++) {
-      var zk = activeZones[az];
-      var dtSec = Math.max(0, tRef - zk.t0);
-      if (dtSec > 172800) continue; // Ventana extendida de 48 horas para retener memoria intersesión
-
-      var vol = Math.max(1.0, zk.vol !== undefined ? zk.vol : 20.0);
-      var touches = Math.max(0, zk.touches !== undefined ? zk.touches : 0);
-      var isInv = (tRef > (zk.t1 || (tRef + 1)));
-
-      var s0 = Math.min(3.0, Math.max(0.3, vol / 20.0));
-      var fVol = Math.pow(s0, 0.25);
-
-      // Factor de maduración empírica: 0.35 en t=0 creciendo hasta 1.0 en 1 hora
-      var fMadurez = Math.min(1.0, 0.35 + 0.65 * (dtSec / 3600.0));
-      // Decaimiento tardío suave con vida media de 12 horas (43,200s) a partir de las 4 horas
-      var dtPostConsolidacion = Math.max(0, dtSec - 14400.0);
-      var fTime = fMadurez * Math.exp(-0.69314718 * dtPostConsolidacion / 43200.0);
-
-      // Desgaste por consumo: el ejecutor primario de la muralla
-      var fWear = Math.pow(1.0 / (1.0 + 0.5 * touches), 0.60);
-      var penalty = isInv ? 0.35 : 1.0;
-
-      var wk = fVol * fTime * fWear * penalty;
-      if (wk < 0.01) continue;
-
-      var zBot = zk.bottom;
-      var zTop = zk.top;
-
-      // Optimización de rango de ticks afectados por la zona (+/- 3.5 sigma)
-      var iMin = Math.max(0, Math.floor((zBot - 3.5 * sigma - pMinVis) / tick));
-      var iMax = Math.min(nTicks - 1, Math.ceil((zTop + 3.5 * sigma - pMinVis) / tick));
-
-      for (var idx = iMin; idx <= iMax; idx++) {
-        var p = gridP[idx];
-        var dist = 0.0;
-        if (p < zBot) dist = zBot - p;
-        else if (p > zTop) dist = p - zTop;
-
-        var contrib = (dist === 0.0) ? wk : wk * Math.exp(-(dist * dist) / twoSigmaSq);
-        dp[idx] += contrib;
-      }
-    }
-
-    // Estadísticas globales del campo en la ventana
+    // Estadísticas globales sobre el dominio fijo completo
     var dMin = Infinity, dMax = -Infinity, dSum = 0;
-    var nVacios = 0, nMurallas = 0;
+    var nLow = 0, nHigh = 0;
     for (var si = 0; si < nTicks; si++) {
       var val = dp[si];
       if (val < dMin) dMin = val;
       if (val > dMax) dMax = val;
       dSum += val;
-      if (val <= 0.32) nVacios++;
-      if (val >= 0.70) nMurallas++;
+      if (val <= 0.32) nLow++;
+      if (val >= 0.70) nHigh++;
     }
     var dMean = nTicks > 0 ? (dSum / nTicks) : 0;
-    var pctVacio = nTicks > 0 ? Math.round((nVacios / nTicks) * 100) : 0;
 
-    // Posicionamiento preciso del gauge antes de la escala de precios
+    // 6. DETECCIÓN DE FRANJAS SOBRE EL DOMINIO COMPLETO FIJO
+    // Detectar intervalos de baja densidad (D <= 0.32, span >= 7 ticks)
+    var lowIntervals = [];
+    var inLow = false, lStart = 0;
+    for (var li = 0; li < nTicks; li++) {
+      if (dp[li] <= 0.32) {
+        if (!inLow) { inLow = true; lStart = li; }
+      } else {
+        if (inLow) {
+          var spanL = li - lStart;
+          if (spanL >= 7) {
+            var lSum = 0;
+            for (var lsi = lStart; lsi < li; lsi++) lSum += dp[lsi];
+            lowIntervals.push({
+              pInf: gridP[lStart],
+              pSup: gridP[li - 1] + tick,
+              ticks: spanL,
+              avgD: lSum / spanL
+            });
+          }
+          inLow = false;
+        }
+      }
+    }
+    if (inLow && (nTicks - lStart) >= 7) {
+      var spanLEnd = nTicks - lStart;
+      var lSumEnd = 0;
+      for (var lsi2 = lStart; lsi2 < nTicks; lsi2++) lSumEnd += dp[lsi2];
+      lowIntervals.push({
+        pInf: gridP[lStart],
+        pSup: gridP[nTicks - 1] + tick,
+        ticks: spanLEnd,
+        avgD: lSumEnd / spanLEnd
+      });
+    }
+
+    // Detectar regiones de alta densidad (D >= 0.70, span >= 2 ticks)
+    var highRegions = [];
+    var inHigh = false, hStart = 0;
+    for (var hi2 = 0; hi2 < nTicks; hi2++) {
+      if (dp[hi2] >= 0.70) {
+        if (!inHigh) { inHigh = true; hStart = hi2; }
+      } else {
+        if (inHigh) {
+          var spanH = hi2 - hStart;
+          if (spanH >= 2) {
+            var maxD = 0;
+            for (var hsi = hStart; hsi < hi2; hsi++) if (dp[hsi] > maxD) maxD = dp[hsi];
+            highRegions.push({
+              pInf: gridP[hStart],
+              pSup: gridP[hi2 - 1] + tick,
+              ticks: spanH,
+              maxD: maxD
+            });
+          }
+          inHigh = false;
+        }
+      }
+    }
+    if (inHigh && (nTicks - hStart) >= 2) {
+      var spanHEnd = nTicks - hStart;
+      var maxDEnd = 0;
+      for (var hsi2 = hStart; hsi2 < nTicks; hsi2++) if (dp[hsi2] > maxDEnd) maxDEnd = dp[hsi2];
+      highRegions.push({
+        pInf: gridP[hStart],
+        pSup: gridP[nTicks - 1] + tick,
+        ticks: spanHEnd,
+        maxD: maxDEnd
+      });
+    }
+
+    // 7. RENDERIZADO VISUAL (PROYECCIÓN SOBRE VIEWPORT)
     var chartW = (tsc && typeof tsc.width === "function" && tsc.width() > 0) ? tsc.width() : (w - 65);
     var gW = 62;
     var gX = chartW - gW - 6;
     var xStart = 0;
-    var xEnd = gX - 6; // margen para el gauge lateral D(p)
+    var xEnd = gX - 6;
 
-    // 4. CAMPO CONTINUO: SOMBREADO SUTIL TICK POR TICK EN EL GRÁFICO
-    // Como cada nivel de precio tiene una densidad distinta, pintamos la textura sutil del campo
-    for (var ti = 0; ti < nTicks; ti++) {
-      var dVal = dp[ti];
-      var pCurr = gridP[ti];
+    // Shading continuo sólo para ticks dentro de la ventana vertical de pantalla
+    for (var ti2 = 0; ti2 < nTicks; ti2++) {
+      var pCurr = gridP[ti2];
       var yA = series.priceToCoordinate(pCurr + tick / 2);
       var yB = series.priceToCoordinate(pCurr - tick / 2);
       if (yA === null || yB === null) continue;
       var yTop = Math.min(yA, yB);
       var yBot = Math.max(yA, yB);
-      var hTickPx = Math.max(1, yBot - yTop);
+      if (yBot < 0 || yTop > hCanvas) continue; // fuera de viewport
 
+      var dVal = dp[ti2];
+      var hTickPx = Math.max(1, yBot - yTop);
       if (dVal <= 0.30) {
-        // Franja de muy baja resistencia (vacío): resplandor cyan hiper-sutil
         var alphaV = ((0.30 - dVal) / 0.30) * (state.isDark ? 0.06 : 0.04);
         ctx.fillStyle = "rgba(6, 182, 212, " + alphaV.toFixed(4) + ")";
         ctx.fillRect(xStart, yTop, xEnd - xStart, hTickPx);
       } else if (dVal >= 0.70) {
-        // Franja de alta resistencia (muralla densa): resplandor ámbar sutil
         var alphaW = Math.min(0.18, ((dVal - 0.65) / 1.5) * (state.isDark ? 0.16 : 0.12));
         ctx.fillStyle = "rgba(245, 158, 11, " + alphaW.toFixed(4) + ")";
         ctx.fillRect(xStart, yTop, xEnd - xStart, hTickPx);
       }
     }
 
-    // Helper para dibujar franjas macro interpretadas
+    // Helper para dibujar bandas recortadas por viewport
     function drawBand(pInf, pSup, fillStyle, strokeStyle, isDashed) {
       var yA = series.priceToCoordinate(pSup);
       var yB = series.priceToCoordinate(pInf);
       if (yA === null || yB === null) return null;
       var yMin = Math.min(yA, yB);
       var yMax = Math.max(yA, yB);
+      if (yMax < 0 || yMin > hCanvas) return null;
       var h = Math.max(2, yMax - yMin);
 
       ctx.save();
       ctx.fillStyle = fillStyle;
       ctx.fillRect(xStart, yMin, xEnd - xStart, h);
-
       if (strokeStyle) {
         ctx.strokeStyle = strokeStyle;
         ctx.lineWidth = 1.3;
@@ -1736,94 +1796,18 @@
       return { yMin: yMin, yMax: yMax, h: h };
     }
 
-    // 5. INTERPRETACIÓN MACRO: DETECCIÓN DE CORREDORES DE VACÍO CONTIGUOS (D <= 0.32, span >= 7 ticks)
-    var corridors = [];
-    var inCorr = false;
-    var cStart = 0;
-    for (var ci2 = 0; ci2 < nTicks; ci2++) {
-      if (dp[ci2] <= 0.32) {
-        if (!inCorr) { inCorr = true; cStart = ci2; }
-      } else {
-        if (inCorr) {
-          var cLen = ci2 - cStart;
-          if (cLen >= 7) {
-            var cSum = 0;
-            for (var csi = cStart; csi < ci2; csi++) cSum += dp[csi];
-            corridors.push({
-              pInf: gridP[cStart],
-              pSup: gridP[ci2 - 1] + tick,
-              ticks: cLen,
-              avgD: cSum / cLen
-            });
-          }
-          inCorr = false;
-        }
-      }
-    }
-    if (inCorr) {
-      var cLenEnd = nTicks - cStart;
-      if (cLenEnd >= 7) {
-        var cSum2 = 0;
-        for (var csi2 = cStart; csi2 < nTicks; csi2++) cSum2 += dp[csi2];
-        corridors.push({
-          pInf: gridP[cStart],
-          pSup: gridP[nTicks - 1] + tick,
-          ticks: cLenEnd,
-          avgD: cSum2 / cLenEnd
-        });
-      }
-    }
-
-    // 6. INTERPRETACIÓN MACRO: DETECCIÓN DE MURALLAS DE CONGESTIÓN CONTIGUAS (D >= 0.70, span >= 2 ticks)
-    var walls = [];
-    var inWall = false;
-    var wStart = 0;
-    for (var wi2 = 0; wi2 < nTicks; wi2++) {
-      if (dp[wi2] >= 0.70) {
-        if (!inWall) { inWall = true; wStart = wi2; }
-      } else {
-        if (inWall) {
-          var wLen = wi2 - wStart;
-          if (wLen >= 2) {
-            var maxD = 0;
-            for (var wsi = wStart; wsi < wi2; wsi++) if (dp[wsi] > maxD) maxD = dp[wsi];
-            walls.push({
-              pInf: gridP[wStart],
-              pSup: gridP[wi2 - 1] + tick,
-              ticks: wLen,
-              maxD: maxD
-            });
-          }
-          inWall = false;
-        }
-      }
-    }
-    if (inWall) {
-      var wLenEnd = nTicks - wStart;
-      if (wLenEnd >= 2) {
-        var maxD2 = 0;
-        for (var wsi2 = wStart; wsi2 < nTicks; wsi2++) if (dp[wsi2] > maxD2) maxD2 = dp[wsi2];
-        walls.push({
-          pInf: gridP[wStart],
-          pSup: gridP[nTicks - 1] + tick,
-          ticks: wLenEnd,
-          maxD: maxD2
-        });
-      }
-    }
-
-    // 7. DIBUJAR MURALLAS DE CONGESTIÓN
-    var wallColor = state.isDark ? "rgba(245, 158, 11, 0.14)" : "rgba(217, 119, 6, 0.11)";
-    var wallBorder = state.isDark ? "rgba(245, 158, 11, 0.75)" : "rgba(217, 119, 6, 0.75)";
-    for (var wi = 0; wi < walls.length; wi++) {
-      var wObj = walls[wi];
-      var bW = drawBand(wObj.pInf, wObj.pSup, wallColor, wallBorder, false);
-      if (bW && bW.h >= 10) {
+    // Dibujar regiones de alta densidad (terminología neutral, sin murallas/fricción)
+    var highColor = state.isDark ? "rgba(245, 158, 11, 0.14)" : "rgba(217, 119, 6, 0.11)";
+    var highBorder = state.isDark ? "rgba(245, 158, 11, 0.75)" : "rgba(217, 119, 6, 0.75)";
+    for (var wi = 0; wi < highRegions.length; wi++) {
+      var hObj = highRegions[wi];
+      var bH = drawBand(hObj.pInf, hObj.pSup, highColor, highBorder, false);
+      if (bH && bH.h >= 10) {
         ctx.save();
-        var cardW = Math.min(310, w - 140);
-        var cardH = Math.min(20, bW.h);
+        var cardW = Math.min(280, w - 140);
+        var cardH = Math.min(20, bH.h);
         var cardX = Math.max(16, xStart + 24);
-        var cardY = bW.yMin + (bW.h - cardH) / 2;
+        var cardY = bH.yMin + (bH.h - cardH) / 2;
 
         ctx.fillStyle = state.isDark ? "rgba(30, 25, 15, 0.90)" : "rgba(254, 243, 199, 0.94)";
         ctx.strokeStyle = state.isDark ? "#f59e0b" : "#d97706";
@@ -1835,20 +1819,19 @@
 
         ctx.font = "bold 9px 'Segoe UI', -apple-system, sans-serif";
         ctx.fillStyle = state.isDark ? "#fbbf24" : "#92400e";
-        ctx.fillText("🧱 MURALLA DE CONGESTIÓN · " + wObj.ticks + "t · [D_max = " + wObj.maxD.toFixed(2) + "] · ALTA FRICCIÓN", cardX + 6, cardY + 13);
+        ctx.fillText("■ REGIÓN DE ALTA DENSIDAD · " + hObj.ticks + "t · [D_max = " + hObj.maxD.toFixed(2) + "]", cardX + 6, cardY + 13);
         ctx.restore();
       }
     }
 
-    // 8. DIBUJAR CORREDORES DE VACÍO (FAST-TRAVEL POCKETS)
-    var cFill = state.isDark ? "rgba(6, 182, 212, 0.13)" : "rgba(8, 145, 178, 0.10)";
-    var cBorder = state.isDark ? "rgba(34, 211, 238, 0.88)" : "rgba(8, 145, 178, 0.88)";
-    for (var cj = 0; cj < corridors.length; cj++) {
-      var cObj = corridors[cj];
-      var bC = drawBand(cObj.pInf, cObj.pSup, cFill, cBorder, true);
-      if (bC) {
-        // Línea central de flujo
-        var yMid = (bC.yMin + bC.yMax) / 2;
+    // Dibujar intervalos de baja densidad (terminología neutral, SIN targets, stops o R:R)
+    var lowFill = state.isDark ? "rgba(6, 182, 212, 0.13)" : "rgba(8, 145, 178, 0.10)";
+    var lowBorder = state.isDark ? "rgba(34, 211, 238, 0.88)" : "rgba(8, 145, 178, 0.88)";
+    for (var li2 = 0; li2 < lowIntervals.length; li2++) {
+      var lObj = lowIntervals[li2];
+      var bL = drawBand(lObj.pInf, lObj.pSup, lowFill, lowBorder, true);
+      if (bL) {
+        var yMid = (bL.yMin + bL.yMax) / 2;
         ctx.save();
         ctx.strokeStyle = state.isDark ? "rgba(34, 211, 238, 0.45)" : "rgba(8, 145, 178, 0.40)";
         ctx.lineWidth = 1;
@@ -1859,42 +1842,30 @@
         ctx.stroke();
         ctx.restore();
 
-        // Badge informativo del corredor
-        if (bC.h >= 22) {
+        if (bL.h >= 16) {
           ctx.save();
-          var cCardW = Math.min(360, w - 140);
-          var cCardH = Math.min(46, Math.max(24, bC.h - 6));
-          var cCardX = Math.max(16, xStart + 24);
-          var cCardY = bC.yMin + (bC.h - cCardH) / 2;
+          var lCardW = Math.min(320, w - 140);
+          var lCardH = Math.min(24, Math.max(18, bL.h - 4));
+          var lCardX = Math.max(16, xStart + 24);
+          var lCardY = bL.yMin + (bL.h - lCardH) / 2;
 
           ctx.fillStyle = state.isDark ? "rgba(15, 23, 42, 0.92)" : "rgba(255, 255, 255, 0.94)";
           ctx.strokeStyle = state.isDark ? "#06b6d4" : "#0891b2";
           ctx.lineWidth = 1.2;
           ctx.beginPath();
-          ctx.roundRect ? ctx.roundRect(cCardX, cCardY, cCardW, cCardH, 4) : ctx.rect(cCardX, cCardY, cCardW, cCardH);
+          ctx.roundRect ? ctx.roundRect(lCardX, lCardY, lCardW, lCardH, 4) : ctx.rect(lCardX, lCardY, lCardW, lCardH);
           ctx.fill();
           ctx.stroke();
 
-          ctx.font = "bold 10px 'Segoe UI', -apple-system, sans-serif";
+          ctx.font = "bold 9px 'Segoe UI', -apple-system, sans-serif";
           ctx.fillStyle = state.isDark ? "#22d3ee" : "#0e7490";
-          var tMoney = (cObj.ticks * tickVal).toFixed(2);
-          ctx.fillText("⚡ CORREDOR DE VACÍO (Fast-Travel)", cCardX + 8, cCardY + 14);
-
-          if (cCardH >= 38) {
-            ctx.font = "9px 'Segoe UI', -apple-system, sans-serif";
-            ctx.fillStyle = state.isDark ? "#cbd5e1" : "#475569";
-            ctx.fillText("↕ " + cObj.ticks + " ticks ($" + tMoney + ") · Fricción D ≈ " + cObj.avgD.toFixed(2) + " (Flujo Laminar)", cCardX + 8, cCardY + 27);
-            ctx.fillStyle = state.isDark ? "#94a3b8" : "#64748b";
-            var tgtPx = (cObj.pSup - 1 * tick).toFixed(prec);
-            var slPx = (cObj.pInf - 3 * tick).toFixed(prec);
-            ctx.fillText("Target: " + tgtPx + " (-1t) | Stop: " + slPx + " (-3t) | R:R ≥ 2.5:1", cCardX + 8, cCardY + 39);
-          }
+          ctx.fillText("⚡ INTERVALO DE BAJA DENSIDAD · " + lObj.ticks + "t · [D̄ ≈ " + lObj.avgD.toFixed(2) + "]", lCardX + 8, lCardY + 14);
           ctx.restore();
         }
       }
     }
 
-    // 9. MEDIDOR LATERAL TICK POR TICK DEL CAMPO D(p)
+    // Gauge lateral proyectado sobre viewport
     ctx.save();
     ctx.fillStyle = state.isDark ? "rgba(19, 23, 34, 0.88)" : "rgba(241, 245, 249, 0.92)";
     ctx.fillRect(gX - 2, 32, gW + 4, hCanvas - 64);
@@ -1912,19 +1883,19 @@
     ctx.lineTo(gX + 2, hCanvas - 38);
     ctx.stroke();
 
-    // Dibujar cada tick en el medidor lateral
     for (var gi = 0; gi < nTicks; gi++) {
-      var dG = dp[gi];
       var pG = gridP[gi];
       var yGA = series.priceToCoordinate(pG + tick / 2);
       var yGB = series.priceToCoordinate(pG - tick / 2);
       if (yGA === null || yGB === null) continue;
       var yGTop = Math.min(yGA, yGB);
       var yGBot = Math.max(yGA, yGB);
+      if (yGBot < 48 || yGTop > (hCanvas - 38)) continue; // fuera del marco del gauge
+
+      var dG = dp[gi];
       var hG = Math.max(2, yGBot - yGTop);
       var yGMid = (yGTop + yGBot) / 2;
 
-      // Longitud de barra según densidad (ajustado a gW = 62px)
       var barLen = Math.min(46, Math.max(2, Math.round(dG * 20)));
       var barColor = "#64748b";
       if (dG <= 0.30) barColor = state.isDark ? "#06b6d4" : "#0891b2";
@@ -1935,7 +1906,6 @@
       ctx.fillStyle = barColor;
       ctx.fillRect(gX + 3, yGTop, barLen, hG);
 
-      // Etiquetas en picos de resistencia o en valles profundos
       var isPeak = (gi > 0 && gi < nTicks - 1 && dG > dp[gi - 1] && dG > dp[gi + 1] && dG >= 0.60);
       var isValley = (gi > 0 && gi < nTicks - 1 && dG < dp[gi - 1] && dG < dp[gi + 1] && dG <= 0.15);
       if (isPeak || isValley) {
@@ -1946,10 +1916,10 @@
     }
     ctx.restore();
 
-    // 10. HUD CARD SUPERIOR CON METADATA DINÁMICA AS-OF
+    // 8. HUD CARD SUPERIOR CON METADATA DINÁMICA AS-OF
     ctx.save();
-    var hudW = Math.min(480, w - 30);
-    var hudH = 50;
+    var hudW = Math.min(540, w - 30);
+    var hudH = 52;
     var hudX = 14;
     var hudY = 40;
 
@@ -1966,15 +1936,16 @@
 
     ctx.font = "bold 10px 'Segoe UI', -apple-system, sans-serif";
     ctx.fillStyle = state.isDark ? "#38bdf8" : "#0284c7";
-    ctx.fillText("⚡ HP-007: CAMPO DE RESISTENCIA MICROESTRUCTURAL (CALIBRADO)", hudX + 10, hudY + 15);
+    ctx.fillText("⚡ HP-007: CAMPO DE DENSIDAD DE ZONAS (RAW_STATIC · INVARIANTE)", hudX + 10, hudY + 15);
 
     ctx.font = "9px 'Segoe UI', -apple-system, sans-serif";
     ctx.fillStyle = state.isDark ? "#cbd5e1" : "#334155";
-    var runLabel = runToUse ? (runToUse.name || runToUse.id) : "bt2a_25t_sensible";
-    ctx.fillText("Config: " + runLabel + " · CALIBRADO (Maduración Bimodal · Vida Media 12h · Filtro Consumo)", hudX + 10, hudY + 29);
+    var runLabel = runToUse.name || runToUse.id;
+    var causalStatus = (legacyAvailabilityFallbacks > 0) ? "LEGACY_NON_CAUSAL (fallback t0: " + legacyAvailabilityFallbacks + ")" : "PASS_CAUSAL";
+    ctx.fillText("Config: " + runLabel + " · RAW_STATIC · " + activeZones.length + " zonas as-of · " + causalStatus, hudX + 10, hudY + 29);
 
     ctx.fillStyle = state.isDark ? "#94a3b8" : "#64748b";
-    ctx.fillText("As-Of: " + asOfStr + " · D̄ = " + dMean.toFixed(2) + " · " + corridors.length + " Corredores · " + walls.length + " Murallas · Vacío: " + pctVacio + "%", hudX + 10, hudY + 43);
+    ctx.fillText("As-Of: " + asOfStr + " · D̄ = " + dMean.toFixed(2) + " · D_max = " + dMax.toFixed(2) + " · " + lowIntervals.length + " Int. Baja Densidad · " + highRegions.length + " Reg. Alta Densidad", hudX + 10, hudY + 43);
     ctx.restore();
   }
 
@@ -2221,17 +2192,29 @@
     var el = document.getElementById("paritybody");
     var r = state.run;
     var h = "";
-    if (r.p1a) {
-      h += "<div style='margin-bottom:8px;'><b>P1A Barras/Footprint:</b> <span style='color:#2e7d32;font-weight:700;'>" +
-           r.p1a.status + "</span> (quote_frac " + r.p1a.quote_fraction + ", mismatches " + r.p1a.footprint_mismatches + ")</div>";
-    }
-    if (r.parity) {
+    var isBt2a = r && ((r.name || r.indicator || "").indexOf("BigTrap2") !== -1 || (r.id || "").indexOf("bt2a") !== -1);
+    if (isBt2a) {
+      h += "<div style='margin-bottom:8px;padding:6px;background:rgba(245,158,11,0.15);border:1px solid #f59e0b;border-radius:4px;'><b>Status:</b> <span style='color:#f59e0b;font-weight:700;'>PARITY_ABSTAIN</span> — PYTHON EXPLORATORY VISUALIZATION ONLY<br/><small>Prohibido transportar la paridad HFT hacia BigTrap2Absorption.</small></div>";
+      var pill = document.getElementById("parity-pill");
+      if (pill) {
+        pill.textContent = "PARITY_ABSTAIN";
+        pill.style.background = "#d97706";
+      }
+    } else if (r && r.parity) {
       var s = r.parity;
       var diag = Object.keys(s.counts).map(function (c) { return c + "=" + s.counts[c]; }).join(", ");
       h += "<table><tr><th>Gate</th><th>Python</th><th>NT8</th><th>Match</th><th>Diagnósticos</th></tr>" +
            "<tr><td style='color:#2e7d32;font-weight:700;'>" + s.gate + "</td><td>" + s.py_zones +
            "</td><td>" + s.nt8_zones + "</td><td>" + s.matched_pairs + "</td><td>" + diag + "</td></tr></table>";
-      document.getElementById("parity-pill").textContent = s.gate + " " + s.matched_pairs + "/" + s.nt8_zones;
+      var pill2 = document.getElementById("parity-pill");
+      if (pill2) {
+        pill2.textContent = s.gate + " " + s.matched_pairs + "/" + s.nt8_zones;
+        pill2.style.background = "#2ea043";
+      }
+    }
+    if (r && r.p1a) {
+      h += "<div style='margin-top:8px;'><b>P1A Barras/Footprint:</b> <span style='color:#2e7d32;font-weight:700;'>" +
+           r.p1a.status + "</span> (quote_frac " + r.p1a.quote_fraction + ", mismatches " + r.p1a.footprint_mismatches + ")</div>";
     }
     el.innerHTML = h;
   }
