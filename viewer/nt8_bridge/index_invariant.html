@@ -1,0 +1,156 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>EdgeLab — visor causal e invariante</title>
+<style>body{font:14px Segoe UI,sans-serif;padding:24px}pre{white-space:pre-wrap;color:#991b1b}</style>
+<p>Aplicando corrección causal e invariante al visor…</p>
+<pre id="error"></pre>
+<script>
+/*
+ * Loader fail-closed para la revisión visual HP-007.
+ *
+ * No modifica datos ni bundles. Carga index.html y aplica únicamente cambios
+ * target-free de invariancia:
+ *   1) dominio de precios causal y fijo para un mismo tRef;
+ *   2) conjunto de zonas independiente del viewport;
+ *   3) run exactamente seleccionado, sin fallback implícito;
+ *   4) modo RAW_STATIC: una zona no gana peso sólo por pasar el tiempo;
+ *   5) available_ts cuando existe, con fallback explícito a t0 para bundles
+ *      históricos todavía no migrados.
+ *
+ * Si index.html cambia y un ancla no coincide, aborta: nunca aplica un parche
+ * parcial silencioso.
+ */
+(async function () {
+  "use strict";
+  const res = await fetch("index.html?v=price-invariance-20260915", { cache: "no-store" });
+  if (!res.ok) throw new Error("No se pudo cargar index.html: HTTP " + res.status);
+  let html = await res.text();
+
+  const replacements = [
+    [
+`    // 1. Obtener velas visibles y rango de precio visible
+    var visCandles = [];
+    for (var ci = 0; ci < candles.length; ci++) {
+      if (candles[ci].time >= vr.from && candles[ci].time <= vr.to) {
+        visCandles.push(candles[ci]);
+      }
+    }
+    if (visCandles.length < 2) return;
+
+    var pMinVis = Infinity, pMaxVis = -Infinity;
+    for (var vi = 0; vi < visCandles.length; vi++) {
+      if (visCandles[vi].low < pMinVis) pMinVis = visCandles[vi].low;
+      if (visCandles[vi].high > pMaxVis) pMaxVis = visCandles[vi].high;
+    }
+    if (pMinVis === Infinity || pMaxVis === -Infinity) return;`,
+`    // 1. Tiempo As-Of y dominio causal fijo. El zoom/pan sólo recorta el
+    // dibujo: nunca redefine el dominio sobre el que se detectan franjas.
+    var visCandles = [];
+    for (var ci = 0; ci < candles.length; ci++) {
+      if (candles[ci].time >= vr.from && candles[ci].time <= vr.to) {
+        visCandles.push(candles[ci]);
+      }
+    }
+    if (visCandles.length < 2) return;
+
+    var tRef = state.hoverTime || visCandles[visCandles.length - 1].time;
+    var pMinVis = Infinity, pMaxVis = -Infinity;
+    for (var vi = 0; vi < candles.length; vi++) {
+      // No usar precios futuros para fijar el dominio del campo histórico.
+      if (candles[vi].time > tRef) break;
+      if (candles[vi].low < pMinVis) pMinVis = candles[vi].low;
+      if (candles[vi].high > pMaxVis) pMaxVis = candles[vi].high;
+    }
+    if (pMinVis === Infinity || pMaxVis === -Infinity) return;`
+    ],
+    [
+`    // Tiempo de referencia As-Of: si el usuario tiene el crosshair en una vela, tomamos ese tRef.
+    var tRef = state.hoverTime || visCandles[visCandles.length - 1].time;`,
+`    // tRef ya fue fijado antes de construir el dominio causal del campo.`
+    ],
+    [
+`    // 2. Obtener las zonas activas del run seleccionado (o run sensible si está disponible)
+    var runToUse = state.run;
+    if (state.data && state.data.runs) {
+      for (var ri = 0; ri < state.data.runs.length; ri++) {
+        var r = state.data.runs[ri];
+        if (r && (r.id === "bt2a_25t_sensible" || (r.name && r.name.indexOf("Alta Sensibilidad") !== -1))) {
+          if (!runToUse || state.run.id === "bt2a_25t_sensible" || !state.run.zones || !state.run.zones.length) {
+            runToUse = r;
+          }
+          break;
+        }
+      }
+    }`,
+`    // 2. Usar exactamente el run seleccionado. Nunca cambiar silenciosamente
+    // a "Alta Sensibilidad" por disponibilidad o estado del viewport.
+    var runToUse = state.run;`
+    ],
+    [
+`    // Filtrar zonas que nacieron en o antes de tRef y que intersectan el rango visible (con margen de 15 ticks)
+    var marginPrice = 15 * tick;
+    var activeZones = [];
+    for (var zi = 0; zi < zones.length; zi++) {
+      var z = zones[zi];
+      if (z.t0 <= tRef && z.top >= (pMinVis - marginPrice) && z.bottom <= (pMaxVis + marginPrice)) {
+        activeZones.push(z);
+      }
+    }`,
+`    // Filtrar sólo por disponibilidad causal, nunca por rango de precio visible.
+    // available_ts es obligatorio para bundles certificados. El fallback a t0
+    // queda marcado únicamente para poder abrir bundles históricos.
+    var activeZones = [];
+    var legacyAvailabilityFallbacks = 0;
+    for (var zi = 0; zi < zones.length; zi++) {
+      var z = zones[zi];
+      var availableTs;
+      if (z.available_ts !== undefined && z.available_ts !== null) availableTs = z.available_ts;
+      else if (z.availableTime !== undefined && z.availableTime !== null) availableTs = z.availableTime;
+      else { availableTs = z.t0; legacyAvailabilityFallbacks++; }
+      if (availableTs <= tRef) activeZones.push(z);
+    }`
+    ],
+    [
+`      // Factor de maduración empírica: 0.35 en t=0 creciendo hasta 1.0 en 1 hora
+      var fMadurez = Math.min(1.0, 0.35 + 0.65 * (dtSec / 3600.0));
+      // Decaimiento tardío suave con vida media de 12 horas (43,200s) a partir de las 4 horas
+      var dtPostConsolidacion = Math.max(0, dtSec - 14400.0);
+      var fTime = fMadurez * Math.exp(-0.69314718 * dtPostConsolidacion / 43200.0);
+
+      // Desgaste por consumo: el ejecutor primario de la muralla
+      var fWear = Math.pow(1.0 / (1.0 + 0.5 * touches), 0.60);
+      var penalty = isInv ? 0.35 : 1.0;`,
+`      // RAW_STATIC target-free: sin maduración, decaimiento, desgaste ni
+      // penalización post-hoc. Si no cambia el conjunto causal de zonas, no
+      // puede cambiar el campo.
+      var fMadurez = 1.0;
+      var fTime = 1.0;
+      var fWear = 1.0;
+      var penalty = 1.0;`
+    ],
+    [
+`    ctx.fillText("⚡ HP-007: CAMPO DE RESISTENCIA MICROESTRUCTURAL (CALIBRADO)", hudX + 10, hudY + 15);`,
+`    ctx.fillText("⚡ HP-007: CAMPO DE DENSIDAD DE ZONAS (RAW_STATIC)", hudX + 10, hudY + 15);`
+    ],
+    [
+`    ctx.fillText("Config: " + runLabel + " · CALIBRADO (Maduración Bimodal · Vida Media 12h · Filtro Consumo)", hudX + 10, hudY + 29);`,
+`    ctx.fillText("Config: " + runLabel + " · RAW_STATIC · " + activeZones.length + " zonas as-of · fallback t0: " + legacyAvailabilityFallbacks, hudX + 10, hudY + 29);`
+    ]
+  ];
+
+  for (let i = 0; i < replacements.length; i++) {
+    const [oldText, newText] = replacements[i];
+    const count = html.split(oldText).length - 1;
+    if (count !== 1) {
+      throw new Error("Parche abortado: ancla " + (i + 1) + " apareció " + count + " veces (esperado: 1). No se aplicó un parche parcial.");
+    }
+    html = html.replace(oldText, newText);
+  }
+
+  document.open();
+  document.write(html);
+  document.close();
+})().catch(function (err) {
+  document.getElementById("error").textContent = String(err && err.stack ? err.stack : err);
+});
+</script>
