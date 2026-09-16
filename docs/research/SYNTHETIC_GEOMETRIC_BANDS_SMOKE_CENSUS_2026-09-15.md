@@ -47,23 +47,29 @@ Sobre un rango de cotización de 121.913 a 123.231 ticks (amplitud: 1.318 ticks)
 
 ## 4. Resultados, Censura y Trazabilidad de Etapas
 
-Se detectaron **445 episodios** (incluyendo aquellos censurados en fases tempranas que antes se descartaban silenciosamente):
+Se detectaron **426 episodios** (manteniendo los registros completos de eventos en almacenamiento local off-git, fuera del árbol de Git):
 
 | Estado Terminal | Conteo | Porcentaje | Descripción Causal |
 |---|---|---|---|
-| **`TRAVERSED`** | `262` | 58.88% | Re-aproximó y cruzó la frontera lejana de la banda sintética. |
-| **`REJECTED_AGAIN`** | `139` | 31.24% | Re-aproximó pero volvió a ser rechazado $\ge 8$ ticks. |
-| **`CENSORED_MAX_FOLLOWUP`** | `34` | 7.64% | Transcurrió el plazo máximo de 30 minutos sin resolución. |
-| **`CENSORED_SESSION_END`** | `10` | 2.25% | Cierre de la sesión regular alcanzado con el episodio activo. |
+| **`TRAVERSED`** | `255` | 59.86% | Re-aproximó y cruzó la frontera lejana de la banda sintética. |
+| **`REJECTED_AGAIN`** | `136` | 31.92% | Re-aproximó pero volvió a ser rechazado $\ge 8$ ticks. |
+| **`CENSORED_MAX_FOLLOWUP`** | `33` | 7.75% | Transcurrió el plazo máximo de 30 minutos sin resolución. |
+| **`CENSORED_SESSION_END`** | `2` | 0.47% | Cierre de la sesión regular alcanzado con el episodio activo. |
 | **`CENSORED_CONTRACT_ROLL`** | `0` | 0.00% | Sesión pre-roll (roll forward de NQ 06-26 ocurre el 2026-06-11). |
 | **`CENSORED_DATA_EDGE`** | `0` | 0.00% | Correctamente diferenciado de session end vía `right_boundary_reason`. |
-| **Total** | **`445`** | **100.00%** | **Cero episodios perdidos o descartados silenciosamente** |
+| **Total** | **`426`** | **100.00%** | **No se observaron descartes silenciosos en los casos cubiertos por la suite.** |
 
 ### 4.1. Desglose de Etapa al Censurar (`stage_at_censoring`)
-Para los 44 episodios que no resolvieron terminalmente:
-- `FIRST_APPROACH`: `8` episodios (censurados entre primera aproximación y confirmación de rechazo).
+Para los 35 episodios censurados:
 - `AWAY_ACCUMULATING`: `1` episodio (censurado mientras acumulaba tiempo/volumen de alejamiento).
-- `AWAY_QUALIFIED`: `35` episodios (censurados tras calificar, esperando re-aproximación).
+- `AWAY_QUALIFIED`: `34` episodios (censurados tras calificar, esperando re-aproximación).
+
+### 4.2. Manifiesto del Archivo Event-Level Off-Git
+Siguiendo la política de repositorio liviano, los registros de episodios individuales no se versionan en Git:
+- **Almacenamiento Local Off-Git:** `data/smoke_census/synthetic_geometric_bands_episodes_2026-09-15.json`
+- **Registros Totales:** `426` episodios
+- **Tamaño:** `220.375` bytes
+- **SHA-256:** `a87dc4f9328888b30e0ae7cbc3eaff49ac07858fbea4169d7fcddf1b2eda735e`
 
 ---
 
@@ -74,7 +80,7 @@ Para los 44 episodios que no resolvieron terminalmente:
 > Las 10 bandas se evaluaron en el mismo flujo de ticks. Por ende, los episodios de distintas bandas no son independientes.
 
 - **Máximo de episodios simultáneamente activos:** `11` episodios.
-- **Episodios que solapan temporalmente con otra banda:** `405` de 445 (`91.01%`).
+- **Episodios que solapan temporalmente con otra banda:** `380` de 426 (`89.20%`).
 - **Conclusión metodológica:** Cualquier agregación estadística entre bandas en etapas posteriores requerirá clusterización de errores a nivel de sesión e identificación de propiedad unívoca para evitar inflación espuria de grados de libertad.
 
 ---
@@ -83,14 +89,14 @@ Para los 44 episodios que no resolvieron terminalmente:
 
 | Métrica | Mediana | Mínimo | Máximo |
 |---|---|---|---|
-| **Tiempo de alejamiento (`elapsed_away_seconds`)** | `68.1 s` | `0.0 s` | `1801.4 s` |
-| **Volumen en alejamiento (`volume_away`)** | `1.065` | `0.0` | `96.541` |
-| **Excursión máxima (`max_excursion_ticks`)** | `40.0 ticks` | `0 ticks` | `1.197 ticks` |
+| **Tiempo de alejamiento (`elapsed_away_seconds`)** | `68.5 s` | `43.1 s` | `1804.6 s` |
+| **Volumen en alejamiento (`volume_away`)** | `1.090` | `50` | `96.541` |
+| **Excursión máxima (`max_excursion_ticks`)** | `42.0 ticks` | `8 ticks` | `1.197 ticks` |
 
 ---
 
 ## 7. Dictamen Final del Smoke Census
 
-1. La máquina de estados en [`void_revisit_episodes.py`](../../edgelab/research/void_revisit_episodes.py) resuelve correctamente las 4 censuras, no confunde cierre de sesión con límite de datos y audita el estadio de pérdida de cobertura (`stage_at_censoring`).
+1. La máquina de estados en [`void_revisit_episodes.py`](../../edgelab/research/void_revisit_episodes.py) resuelve correctamente las 4 censuras, no confunde cierre de sesión con límite de datos, preserva la causa específica en `boundary_reason` y audita el estadio de pérdida de cobertura (`stage_at_censoring`).
 2. Se confirma la reproducibilidad total mediante [`tools/run_synthetic_smoke_census.py`](../../tools/run_synthetic_smoke_census.py).
 3. **Condición de Parada Respetada**: No se realizan interpretaciones empíricas de estos datos hacia HP-007; el desarrollo queda detenido a la espera de oráculos reales de NT8.

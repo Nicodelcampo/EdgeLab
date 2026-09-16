@@ -192,16 +192,19 @@ def reset_campaign_state_on_roll(state: CampaignState) -> list[object]:
 
 
 class CampaignProcessor:
-    """Canonical stream processor orchestrator for HP-007.
+    """Canonical stream processor orchestrator scaffold for HP-007.
 
+    Status: ROLL_SAFE_PROCESSOR_SCAFFOLD = IMPLEMENTED.
     Enforces mandatory strict processing order:
-    1. Inspect state_reset_flag.
+    1. Inspect state_reset_flag FIRST.
     2. If state_reset_flag is True:
        a. Censor all active episodes from previous regime as CENSORED_CONTRACT_ROLL.
-       b. Persist / emit those censored episodes.
+       b. Persist / emit those censored episodes into censored_at_rolls.
        c. Wipe all state (zones, touches, fields, normalizers, corridors, indicator state).
        d. Initialize new contract regime.
     3. Only after state wipe, process the tick in the new regime.
+       - Increment touches for active zones containing price_tick.
+       - Execute optional on_tick_hook if provided.
     """
 
     def __init__(self, state: CampaignState | None = None) -> None:
@@ -218,6 +221,20 @@ class CampaignProcessor:
         self.processed_ticks_count: int = 0
         self.last_reset_tick_index: int | None = None
 
+    def add_zone(self, zone: ZoneState) -> None:
+        """Register an active zone in the current regime."""
+        self.state.active_zones.append(zone)
+        if zone.zone_id not in self.state.touches:
+            self.state.touches[zone.zone_id] = 0
+
+    def add_corridor(self, corridor: object) -> None:
+        """Register a frozen corridor in the current regime."""
+        self.state.frozen_corridors.append(corridor)
+
+    def add_episode(self, episode: object) -> None:
+        """Register an active episode in the current regime."""
+        self.state.active_episodes.append(episode)
+
     def process_tick(
         self,
         ts_ns: int,
@@ -226,6 +243,7 @@ class CampaignProcessor:
         sequence: int,
         state_reset_flag: bool = False,
         session_id: object = None,
+        on_tick_hook: object | None = None,
     ) -> dict[str, object]:
         # 1. Inspect state_reset_flag FIRST
         if state_reset_flag:
@@ -238,8 +256,14 @@ class CampaignProcessor:
             self.state.indicator_state["regime_start_ts_ns"] = ts_ns
 
         # 6. Only after reset, process tick in the active regime
-        self.processed_ticks_count += 1
-        return {
+        # Update zone touches if price falls within active zone boundaries
+        for zone in self.state.active_zones:
+            low = getattr(zone, "lower_tick", getattr(zone, "bottom_tick", None))
+            high = getattr(zone, "upper_tick", getattr(zone, "top_tick", None))
+            if low is not None and high is not None and low <= price_tick <= high:
+                self.state.touches[zone.zone_id] = self.state.touches.get(zone.zone_id, 0) + 1
+
+        tick_record = {
             "ts_ns": ts_ns,
             "price_tick": price_tick,
             "volume": volume,
@@ -250,4 +274,10 @@ class CampaignProcessor:
             "active_episodes_count": len(self.state.active_episodes),
             "censored_roll_events_count": len(self.censored_at_rolls),
         }
+
+        if callable(on_tick_hook):
+            on_tick_hook(self.state, tick_record)
+
+        self.processed_ticks_count += 1
+        return tick_record
 

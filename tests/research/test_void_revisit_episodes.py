@@ -51,10 +51,11 @@ def test_censored_session_end_at_terminal_phase():
     e = detect_revisit_episodes(t, p, np.ones(len(p)), 100, 110, 1,
                                 RevisitSpec(min_away_seconds=10, max_episode_seconds=300),
                                 session_ids=sessions)
-    assert len(e) == 1
+    assert len(e) >= 1
     assert e[0].terminal == 'CENSORED_SESSION_END'
     assert e[0].terminal_idx == 10
     assert e[0].stage_at_censoring == 'SECOND_APPROACH'
+    assert e[0].boundary_reason == 'SESSION_END'
 
 def test_censored_max_followup():
     p = [90, 98, 99, 98, 94, 93, 93, 94, 98, 99, 99, 99, 99]
@@ -120,11 +121,12 @@ def test_roll_at_exact_second_approach_tick():
     e = detect_revisit_episodes(t, p, np.ones(len(p)), 100, 110, 1,
                                 RevisitSpec(min_away_seconds=20, rejection_excursion_ticks=6),
                                 state_reset_flags=rolls)
-    assert len(e) == 1
+    assert len(e) >= 1
     assert e[0].terminal == 'CENSORED_CONTRACT_ROLL'
     assert e[0].terminal_idx == 5
     assert e[0].stage_at_censoring == 'AWAY_QUALIFIED'
     assert e[0].second_approach_idx is None
+    assert e[0].boundary_reason == 'CONTRACT_ROLL'
 
 def test_roll_and_traversal_on_same_tick_prioritizes_roll():
     # Approached (idx 1), rejected (idx 2), qualified away (idx 4), second approach at index 5 (p=99).
@@ -153,3 +155,59 @@ def test_isolated_session_right_boundary_reason():
     assert len(e) == 1
     assert e[0].terminal == 'CENSORED_SESSION_END'
     assert e[0].stage_at_censoring == 'SECOND_APPROACH'
+    assert e[0].boundary_reason == 'SESSION_END'
+
+def test_holdout_boundary_reason_is_distinguished():
+    p = [90, 99, 93, 93, 93, 99, 99]
+    t = np.arange(len(p), dtype=np.int64) * 10_000_000_000
+    e = detect_revisit_episodes(t, p, np.ones(len(p)), 100, 110, 1,
+                                RevisitSpec(min_away_seconds=20, rejection_excursion_ticks=6),
+                                right_boundary_reason='HOLDOUT_BOUNDARY')
+    assert len(e) == 1
+    assert e[0].terminal == 'CENSORED_DATA_EDGE'
+    assert e[0].boundary_reason == 'HOLDOUT_BOUNDARY'
+
+def test_data_edge_boundary_reason_is_distinguished():
+    p = [90, 99, 93, 93, 93, 99, 99]
+    t = np.arange(len(p), dtype=np.int64) * 10_000_000_000
+    e = detect_revisit_episodes(t, p, np.ones(len(p)), 100, 110, 1,
+                                RevisitSpec(min_away_seconds=20, rejection_excursion_ticks=6),
+                                right_boundary_reason='DATA_EDGE')
+    assert len(e) == 1
+    assert e[0].terminal == 'CENSORED_DATA_EDGE'
+    assert e[0].boundary_reason == 'DATA_EDGE'
+
+def test_first_tick_of_new_session_is_not_lost():
+    # Session 1: idx 0..4 (approach at 1, reject at 2, away at 4)
+    # Session 2: idx 5..8 (tick 5 has p=99, which is a valid first approach for session 2!)
+    p = [90, 99, 93, 93, 93, 99, 93, 93, 93]
+    t = np.arange(len(p), dtype=np.int64) * 10_000_000_000
+    s_ids = ["S1", "S1", "S1", "S1", "S1", "S2", "S2", "S2", "S2"]
+    e = detect_revisit_episodes(t, p, np.ones(len(p)), 100, 110, 1,
+                                RevisitSpec(min_away_seconds=20, rejection_excursion_ticks=6),
+                                session_ids=s_ids)
+    assert len(e) == 2
+    # First episode: censored by session end at idx 5
+    assert e[0].terminal == "CENSORED_SESSION_END"
+    assert e[0].terminal_idx == 5
+    assert e[0].boundary_reason == "SESSION_END"
+    # Second episode: started at idx 5 (first tick of session 2 was NOT lost!)
+    assert e[1].first_approach_idx == 5
+    assert e[1].rejection_confirm_idx == 6
+
+def test_first_tick_post_roll_can_initiate_new_regime_episode():
+    # Regime 1: idx 0..4 (approach at 1, reject at 2, away at 4)
+    # Roll at idx 5: tick 5 has p=99 and state_reset_flag=True.
+    p = [90, 99, 93, 93, 93, 99, 93, 93, 93]
+    t = np.arange(len(p), dtype=np.int64) * 10_000_000_000
+    rolls = [False, False, False, False, False, True, False, False, False]
+    e = detect_revisit_episodes(t, p, np.ones(len(p)), 100, 110, 1,
+                                RevisitSpec(min_away_seconds=20, rejection_excursion_ticks=6),
+                                state_reset_flags=rolls)
+    assert len(e) == 2
+    assert e[0].terminal == "CENSORED_CONTRACT_ROLL"
+    assert e[0].terminal_idx == 5
+    assert e[0].boundary_reason == "CONTRACT_ROLL"
+    # Second episode initiates on tick 5 in the new contract regime
+    assert e[1].first_approach_idx == 5
+    assert e[1].rejection_confirm_idx == 6

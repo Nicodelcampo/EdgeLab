@@ -6,14 +6,19 @@ NOTE: This is a software sanity and boundary test, NOT structural empirical evid
 """
 from __future__ import annotations
 
+import datetime
 import hashlib
 import json
 import os
+import platform
+import subprocess
 import sys
+import time
 
 sys.path.insert(0, os.path.abspath("."))
 
 import numpy as np
+import pyarrow
 import pyarrow.dataset as ds
 from collections import Counter
 
@@ -24,7 +29,26 @@ from edgelab.research.void_revisit_episodes import (
 )
 
 
+def _file_sha256(filepath: str) -> str:
+    h = hashlib.sha256()
+    with open(filepath, "rb") as f:
+        while chunk := f.read(65536):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def _git_output(args: list[str]) -> str:
+    try:
+        res = subprocess.run(["git"] + args, capture_output=True, text=True, check=True)
+        return res.stdout.strip()
+    except Exception:
+        return "UNKNOWN"
+
+
 def run_synthetic_smoke_census() -> dict:
+    t_start = time.perf_counter()
+    started_at_utc = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
     parquet_path = "data/nt8/NQ_parquet/NQ_06-26_ticks.parquet"
     if not os.path.exists(parquet_path):
         raise FileNotFoundError(f"Missing required parquet: {parquet_path}")
@@ -96,7 +120,6 @@ def run_synthetic_smoke_census() -> dict:
 
     # Cross-band overlap and concurrency analysis
     total_episodes = len(all_episodes_records)
-    # Check simultaneous active intervals
     events = []
     for start_t, end_t, k in time_intervals:
         events.append((start_t, 1))
@@ -109,7 +132,6 @@ def run_synthetic_smoke_census() -> dict:
         curr_simultaneous += delta
         max_simultaneous = max(max_simultaneous, curr_simultaneous)
 
-    # Overlapping episodes count: episodes that overlap with at least one other band episode
     overlapping_count = 0
     for i in range(len(time_intervals)):
         s_i, e_i, k_i = time_intervals[i]
@@ -130,9 +152,54 @@ def run_synthetic_smoke_census() -> dict:
     away_vols = [r["volume_away"] for r in all_episodes_records]
     excursions = [r["max_excursion_ticks"] for r in all_episodes_records]
 
+    # Save full episode event records into local off-git storage
+    off_git_dir = "data/smoke_census"
+    os.makedirs(off_git_dir, exist_ok=True)
+    off_git_file = os.path.join(off_git_dir, "synthetic_geometric_bands_episodes_2026-09-15.json")
+    with open(off_git_file, "w", encoding="utf-8") as f:
+        json.dump(all_episodes_records, f, indent=2)
+    off_git_sha256 = _file_sha256(off_git_file)
+    off_git_bytes = os.path.getsize(off_git_file)
+
+    t_end = time.perf_counter()
+    finished_at_utc = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    duration_sec = round(t_end - t_start, 4)
+
+    # Compute provenance hashes
+    parquet_sha256 = _file_sha256(parquet_path)
+    runner_sha256 = _file_sha256("tools/run_synthetic_smoke_census.py")
+    detector_sha256 = _file_sha256("edgelab/research/void_revisit_episodes.py")
+
     output_data = {
         "census_type": "SYNTHETIC_GEOMETRIC_BANDS_SOFTWARE_SMOKE_CENSUS",
         "purpose": "Software state machine verification on synthetic geometric bands; NOT empirical HP-007 evidence",
+        "provenance": {
+            "recorded_at_utc": finished_at_utc,
+            "execution_window_utc": {
+                "started_at": started_at_utc,
+                "finished_at": finished_at_utc,
+                "duration_seconds": duration_sec,
+            },
+            "environment": {
+                "python_version": sys.version,
+                "platform": platform.platform(),
+                "numpy_version": np.__version__,
+                "pyarrow_version": pyarrow.__version__,
+            },
+            "git_state": {
+                "head_sha": _git_output(["rev-parse", "HEAD"]),
+                "tree_sha": _git_output(["rev-parse", "HEAD^{tree}"]),
+                "branch": _git_output(["rev-parse", "--abbrev-ref", "HEAD"]),
+            },
+            "input_hashes": {
+                "source_parquet_path": parquet_path,
+                "source_parquet_sha256": parquet_sha256,
+                "runner_script_path": "tools/run_synthetic_smoke_census.py",
+                "runner_script_sha256": runner_sha256,
+                "detector_module_path": "edgelab/research/void_revisit_episodes.py",
+                "detector_module_sha256": detector_sha256,
+            },
+        },
         "dataset": {
             "source_file": parquet_path,
             "contract": "NQ 06-26",
@@ -182,13 +249,20 @@ def run_synthetic_smoke_census() -> dict:
                 },
             },
         },
-        "all_episodes": all_episodes_records,
+        "event_level_manifest": {
+            "storage_policy": "LOCAL_OFF_GIT",
+            "relative_path": "data/smoke_census/synthetic_geometric_bands_episodes_2026-09-15.json",
+            "sha256": off_git_sha256,
+            "byte_size": off_git_bytes,
+            "total_records": total_episodes,
+        },
     }
 
     out_json = "docs/research/SYNTHETIC_GEOMETRIC_BANDS_SMOKE_CENSUS_2026-09-15.json"
     with open(out_json, "w", encoding="utf-8") as f:
         json.dump(output_data, f, indent=2)
-    print(f"Saved machine-readable census JSON: {out_json}")
+    print(f"Saved lightweight machine-readable census manifest JSON: {out_json}")
+    print(f"Saved complete event-level records off-git: {off_git_file} ({off_git_bytes} bytes, sha256={off_git_sha256[:12]}...)")
     return output_data
 
 

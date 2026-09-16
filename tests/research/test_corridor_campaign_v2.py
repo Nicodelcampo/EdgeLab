@@ -112,3 +112,62 @@ def test_new_contract_price_never_resolves_prior_episode():
     assert episodes[0].terminal != "TRAVERSED"
 
 
+def test_campaign_processor_stream_end_to_end_integration():
+    from edgelab.research.corridor_campaign_v2 import CampaignProcessor, ZoneState
+
+    proc = CampaignProcessor()
+
+    # 1. Pre-roll regime (NQ 06-26)
+    z_old = ZoneState(zone_id="zone_old_1", source="BT2A", side=1, lower_tick=100, upper_tick=108, created_ns=1_000_000_000, available_ns=1_000_000_000, strength=5.0)
+    proc.add_zone(z_old)
+    proc.add_corridor({"corridor_id": "corr_old_1", "lower": 100, "upper": 108})
+    proc.add_episode({"episode_id": "ep_old_1", "terminal": None, "stage_at_censoring": "AWAY_QUALIFIED"})
+
+    assert len(proc.state.active_zones) == 1
+    assert len(proc.state.active_episodes) == 1
+    assert len(proc.state.frozen_corridors) == 1
+
+    # Ticks within old zone boundary increment touches
+    t1 = proc.process_tick(ts_ns=1_000_000_000, price_tick=104, volume=10.0, sequence=0, state_reset_flag=False, session_id="2026-06-03")
+    assert proc.state.touches["zone_old_1"] == 1
+    assert t1["active_zones_count"] == 1
+
+    t2 = proc.process_tick(ts_ns=1_000_001_000, price_tick=106, volume=5.0, sequence=1, state_reset_flag=False, session_id="2026-06-03")
+    assert proc.state.touches["zone_old_1"] == 2
+    assert len(proc.censored_at_rolls) == 0
+
+    # 2. Roll boundary tick: state_reset_flag = True (rollover to NQ 09-26)
+    t_roll = proc.process_tick(ts_ns=1_000_002_000, price_tick=120, volume=15.0, sequence=2, state_reset_flag=True, session_id="2026-06-04")
+
+    # a) Old episode is censored as CENSORED_CONTRACT_ROLL and persisted
+    assert len(proc.censored_at_rolls) == 1
+    assert proc.censored_at_rolls[0]["episode_id"] == "ep_old_1"
+    assert proc.censored_at_rolls[0]["terminal"] == "CENSORED_CONTRACT_ROLL"
+    assert proc.censored_at_rolls[0]["stage_at_censoring"] == "AWAY_QUALIFIED"
+
+    # b) State is completely wiped clean of old regime entities
+    assert len(proc.state.active_zones) == 0
+    assert len(proc.state.touches) == 0
+    assert len(proc.state.frozen_corridors) == 0
+    assert len(proc.state.active_episodes) == 0
+    assert "zone_old_1" not in proc.state.touches
+
+    # c) New regime initialized
+    assert proc.state.indicator_state.get("regime_initialized") is True
+    assert proc.state.indicator_state.get("regime_start_ts_ns") == 1_000_002_000
+
+    # 3. Process new regime in stream
+    z_new = ZoneState(zone_id="zone_new_1", source="BT2A", side=1, lower_tick=120, upper_tick=128, created_ns=1_000_002_000, available_ns=1_000_002_000, strength=8.0)
+    proc.add_zone(z_new)
+    proc.add_episode({"episode_id": "ep_new_1", "terminal": None, "stage_at_censoring": None})
+
+    t_post = proc.process_tick(ts_ns=1_000_003_000, price_tick=124, volume=8.0, sequence=3, state_reset_flag=False, session_id="2026-06-04")
+    assert proc.state.touches["zone_new_1"] == 1
+    assert "zone_old_1" not in proc.state.touches
+    assert len(proc.state.active_zones) == 1
+    assert proc.state.active_zones[0].zone_id == "zone_new_1"
+    assert len(proc.state.active_episodes) == 1
+    assert proc.state.active_episodes[0]["episode_id"] == "ep_new_1"
+    assert len(proc.censored_at_rolls) == 1
+
+

@@ -56,6 +56,7 @@ class RevisitEpisode:
     corridor_lower_tick: int
     corridor_upper_tick: int
     stage_at_censoring: str | None = None
+    boundary_reason: str | None = None
 
 
 def _validate(ts: np.ndarray, px: np.ndarray, vol: np.ndarray,
@@ -109,23 +110,31 @@ def detect_revisit_episodes(
     _validate(t,p,v, s_ids, r_flags)
     near=lower_tick if side==1 else upper_tick
     far=upper_tick if side==1 else lower_tick
-    approach=lambda x: x>=near-spec.approach_ticks if side==1 else x<=near+spec.approach_ticks
+    first_approach=lambda x: (near-spec.approach_ticks <= x <= near) if side==1 else (near <= x <= near+spec.approach_ticks)
+    second_approach=lambda x: x>=near-spec.approach_ticks if side==1 else x<=near+spec.approach_ticks
     entered=lambda x: x>=near if side==1 else x<=near
     away_dist=lambda x: near-x if side==1 else x-near
     traversed=lambda x: x>=far+spec.crossing_buffer_ticks if side==1 else x<=far-spec.crossing_buffer_ticks
     out=[]; i=0; n=len(t)
-    while i<n:
-        while i < n:
-            if r_flags is not None and r_flags[i]:
-                i += 1
-                continue
-            if approach(p[i]):
-                break
+
+    def _terminal_boundary_reason(term: str, boundary_arg: str) -> str | None:
+        if not term.startswith("CENSORED"):
+            return None
+        if term == "CENSORED_CONTRACT_ROLL":
+            return "CONTRACT_ROLL"
+        if term == "CENSORED_SESSION_END":
+            return "SESSION_END"
+        if term == "CENSORED_MAX_FOLLOWUP":
+            return "MAX_FOLLOWUP"
+        return boundary_arg
+
+    while i < n:
+        # Search for first approach. A tick with state_reset_flag belongs to the new
+        # regime and is eligible to initiate an episode post-reset.
+        while i < n and not first_approach(p[i]):
             i += 1
-        if i >= n: break
-        if r_flags is not None and r_flags[i]:
-            i += 1
-            continue
+        if i >= n:
+            break
 
         a = i
         deadline = t[a] + int(spec.max_episode_seconds * 1e9)
@@ -159,9 +168,10 @@ def detect_revisit_episodes(
                 elapsed_away_seconds=(t[min(c_idx, n - 1)] - t[a]) / 1e9,
                 volume_away=0.0, max_excursion_ticks=max_exc,
                 corridor_lower_tick=lower_tick, corridor_upper_tick=upper_tick,
-                stage_at_censoring="FIRST_APPROACH"
+                stage_at_censoring="FIRST_APPROACH",
+                boundary_reason=_terminal_boundary_reason(c_term, right_boundary_reason),
             ))
-            i = c_idx if c_term == "CENSORED_CONTRACT_ROLL" else c_idx + 1
+            i = c_idx if c_term in ("CENSORED_CONTRACT_ROLL", "CENSORED_SESSION_END") else c_idx + 1
             continue
 
         if j >= n:
@@ -173,7 +183,8 @@ def detect_revisit_episodes(
                 elapsed_away_seconds=(t[n - 1] - t[a]) / 1e9,
                 volume_away=0.0, max_excursion_ticks=max_exc,
                 corridor_lower_tick=lower_tick, corridor_upper_tick=upper_tick,
-                stage_at_censoring="FIRST_APPROACH"
+                stage_at_censoring="FIRST_APPROACH",
+                boundary_reason=right_boundary_reason,
             ))
             break
 
@@ -215,9 +226,10 @@ def detect_revisit_episodes(
                 elapsed_away_seconds=(t[min(c_idx, n - 1)] - t[reject]) / 1e9,
                 volume_away=vol_away, max_excursion_ticks=max_exc,
                 corridor_lower_tick=lower_tick, corridor_upper_tick=upper_tick,
-                stage_at_censoring="AWAY_ACCUMULATING"
+                stage_at_censoring="AWAY_ACCUMULATING",
+                boundary_reason=_terminal_boundary_reason(c_term, right_boundary_reason),
             ))
-            i = c_idx if c_term == "CENSORED_CONTRACT_ROLL" else c_idx + 1
+            i = c_idx if c_term in ("CENSORED_CONTRACT_ROLL", "CENSORED_SESSION_END") else c_idx + 1
             continue
 
         if qualified is None:
@@ -230,7 +242,8 @@ def detect_revisit_episodes(
                     elapsed_away_seconds=(t[n - 1] - t[reject]) / 1e9,
                     volume_away=vol_away, max_excursion_ticks=max_exc,
                     corridor_lower_tick=lower_tick, corridor_upper_tick=upper_tick,
-                    stage_at_censoring="AWAY_ACCUMULATING"
+                    stage_at_censoring="AWAY_ACCUMULATING",
+                    boundary_reason=right_boundary_reason,
                 ))
             break
 
@@ -246,7 +259,7 @@ def detect_revisit_episodes(
             if t[r] > deadline:
                 stage3_censored = (r, "CENSORED_MAX_FOLLOWUP")
                 break
-            if approach(p[r]):
+            if second_approach(p[r]):
                 break
             vol_away += float(v[r])
             max_exc = max(max_exc, int(away_dist(p[r])))
@@ -261,9 +274,10 @@ def detect_revisit_episodes(
                 elapsed_away_seconds=(t[min(c_idx, n - 1)] - t[reject]) / 1e9,
                 volume_away=vol_away, max_excursion_ticks=max_exc,
                 corridor_lower_tick=lower_tick, corridor_upper_tick=upper_tick,
-                stage_at_censoring="AWAY_QUALIFIED"
+                stage_at_censoring="AWAY_QUALIFIED",
+                boundary_reason=_terminal_boundary_reason(c_term, right_boundary_reason),
             ))
-            i = c_idx if c_term == "CENSORED_CONTRACT_ROLL" else c_idx + 1
+            i = c_idx if c_term in ("CENSORED_CONTRACT_ROLL", "CENSORED_SESSION_END") else c_idx + 1
             continue
 
         if r >= n:
@@ -275,7 +289,8 @@ def detect_revisit_episodes(
                 elapsed_away_seconds=(t[n - 1] - t[reject]) / 1e9,
                 volume_away=vol_away, max_excursion_ticks=max_exc,
                 corridor_lower_tick=lower_tick, corridor_upper_tick=upper_tick,
-                stage_at_censoring="AWAY_QUALIFIED"
+                stage_at_censoring="AWAY_QUALIFIED",
+                boundary_reason=right_boundary_reason,
             ))
             break
 
@@ -302,9 +317,13 @@ def detect_revisit_episodes(
         if terminal is None:
             c_term = _censor_code_for_boundary(right_boundary_reason)
             terminal = (n - 1, c_term)
+            reached_array_end = True
+        else:
+            reached_array_end = False
 
         term_idx, term = terminal
         stage_censor = "SECOND_APPROACH" if term.startswith("CENSORED") else None
+        b_reason = _terminal_boundary_reason(term, right_boundary_reason)
         out.append(RevisitEpisode(
             side=side, first_approach_idx=a, rejection_confirm_idx=reject,
             away_qualified_idx=qualified, second_approach_idx=r,
@@ -312,9 +331,12 @@ def detect_revisit_episodes(
             elapsed_away_seconds=(t[r] - t[reject]) / 1e9,
             volume_away=vol_away, max_excursion_ticks=max_exc,
             corridor_lower_tick=lower_tick, corridor_upper_tick=upper_tick,
-            stage_at_censoring=stage_censor
+            stage_at_censoring=stage_censor,
+            boundary_reason=b_reason,
         ))
-        i = term_idx if term == "CENSORED_CONTRACT_ROLL" else (term_idx + 1 if term_idx is not None else n)
+        if reached_array_end:
+            break
+        i = term_idx if term in ("CENSORED_CONTRACT_ROLL", "CENSORED_SESSION_END") else (term_idx + 1 if term_idx is not None else n)
 
     return out
 
