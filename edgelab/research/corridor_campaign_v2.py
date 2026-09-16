@@ -157,20 +157,24 @@ class CampaignState:
     indicator_state: dict[str, object]
 
     def reset_on_roll(self) -> list[object]:
-        """Terminate active episodes with CENSORED_CONTRACT_ROLL and wipe all state."""
+        """Terminate active episodes with CENSORED_CONTRACT_ROLL and wipe all state. Fail closed."""
         terminated_episodes = []
         for ep in self.active_episodes:
             if isinstance(ep, dict):
                 c = dict(ep)
                 c["terminal"] = "CENSORED_CONTRACT_ROLL"
+                c["stage_at_censoring"] = c.get("stage_at_censoring") or "ACTIVE_AT_ROLL"
                 terminated_episodes.append(c)
             elif hasattr(ep, "terminal"):
                 try:
-                    terminated_episodes.append(replace(ep, terminal="CENSORED_CONTRACT_ROLL"))
-                except Exception:
-                    terminated_episodes.append(ep)
+                    kwargs = {"terminal": "CENSORED_CONTRACT_ROLL"}
+                    if hasattr(ep, "stage_at_censoring") and getattr(ep, "stage_at_censoring") is None:
+                        kwargs["stage_at_censoring"] = "ACTIVE_AT_ROLL"
+                    terminated_episodes.append(replace(ep, **kwargs))
+                except Exception as exc:
+                    raise CampaignV2Error(f"cannot censor active episode at roll: {type(ep)!r}") from exc
             else:
-                terminated_episodes.append(ep)
+                raise CampaignV2Error(f"cannot censor active episode at roll: {type(ep)!r}")
 
         self.active_zones.clear()
         self.touches.clear()
@@ -185,3 +189,65 @@ class CampaignState:
 def reset_campaign_state_on_roll(state: CampaignState) -> list[object]:
     """Executable helper to execute state wipe at roll boundary."""
     return state.reset_on_roll()
+
+
+class CampaignProcessor:
+    """Canonical stream processor orchestrator for HP-007.
+
+    Enforces mandatory strict processing order:
+    1. Inspect state_reset_flag.
+    2. If state_reset_flag is True:
+       a. Censor all active episodes from previous regime as CENSORED_CONTRACT_ROLL.
+       b. Persist / emit those censored episodes.
+       c. Wipe all state (zones, touches, fields, normalizers, corridors, indicator state).
+       d. Initialize new contract regime.
+    3. Only after state wipe, process the tick in the new regime.
+    """
+
+    def __init__(self, state: CampaignState | None = None) -> None:
+        self.state = state if state is not None else CampaignState(
+            active_zones=[],
+            touches={},
+            field_cache={},
+            normalizers={},
+            frozen_corridors=[],
+            active_episodes=[],
+            indicator_state={},
+        )
+        self.censored_at_rolls: list[object] = []
+        self.processed_ticks_count: int = 0
+        self.last_reset_tick_index: int | None = None
+
+    def process_tick(
+        self,
+        ts_ns: int,
+        price_tick: int,
+        volume: float,
+        sequence: int,
+        state_reset_flag: bool = False,
+        session_id: object = None,
+    ) -> dict[str, object]:
+        # 1. Inspect state_reset_flag FIRST
+        if state_reset_flag:
+            # 2. Censor episodes of previous regime & 3. Persist & 4. Wipe state
+            censored = self.state.reset_on_roll()
+            self.censored_at_rolls.extend(censored)
+            self.last_reset_tick_index = self.processed_ticks_count
+            # 5. Initialize new regime
+            self.state.indicator_state["regime_initialized"] = True
+            self.state.indicator_state["regime_start_ts_ns"] = ts_ns
+
+        # 6. Only after reset, process tick in the active regime
+        self.processed_ticks_count += 1
+        return {
+            "ts_ns": ts_ns,
+            "price_tick": price_tick,
+            "volume": volume,
+            "sequence": sequence,
+            "state_reset_flag": state_reset_flag,
+            "session_id": session_id,
+            "active_zones_count": len(self.state.active_zones),
+            "active_episodes_count": len(self.state.active_episodes),
+            "censored_roll_events_count": len(self.censored_at_rolls),
+        }
+

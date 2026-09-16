@@ -63,3 +63,52 @@ def test_campaign_state_reset_on_roll_clears_all_and_censors_episodes():
     assert len(state.active_episodes) == 0
     assert len(state.indicator_state) == 0
 
+def test_reset_on_roll_fails_closed_on_unsupported_episode():
+    state = CampaignState(
+        active_zones=[],
+        touches={},
+        field_cache={},
+        normalizers={},
+        frozen_corridors=[],
+        active_episodes=[12345],
+        indicator_state={},
+    )
+    with pytest.raises(CampaignV2Error, match="cannot censor active episode at roll"):
+        state.reset_on_roll()
+
+def test_campaign_processor_stream_resets_before_processing_tick():
+    state = CampaignState(
+        active_zones=[z()],
+        touches={"z": 3},
+        field_cache={},
+        normalizers={},
+        frozen_corridors=[],
+        active_episodes=[{"id": "ep1", "terminal": None}],
+        indicator_state={"acc": 100},
+    )
+    proc = CampaignProcessor(state)
+    r1 = proc.process_tick(ts_ns=1000, price_tick=100, volume=1.0, sequence=0, state_reset_flag=False)
+    assert r1["active_zones_count"] == 1
+    assert r1["active_episodes_count"] == 1
+    assert len(proc.censored_at_rolls) == 0
+
+    r2 = proc.process_tick(ts_ns=2000, price_tick=105, volume=2.0, sequence=1, state_reset_flag=True)
+    assert r2["active_zones_count"] == 0
+    assert r2["active_episodes_count"] == 0
+    assert len(proc.censored_at_rolls) == 1
+    assert proc.censored_at_rolls[0]["terminal"] == "CENSORED_CONTRACT_ROLL"
+    assert proc.state.indicator_state.get("regime_initialized") is True
+
+def test_new_contract_price_never_resolves_prior_episode():
+    from edgelab.research.void_revisit_episodes import detect_revisit_episodes, RevisitSpec
+    p = [90, 99, 93, 93, 93, 99, 120]
+    t = np.arange(len(p), dtype=np.int64) * 10_000_000_000
+    rolls = [False, False, False, False, False, False, True]
+    episodes = detect_revisit_episodes(t, p, np.ones(len(p)), 100, 110, 1,
+                                       RevisitSpec(min_away_seconds=20, rejection_excursion_ticks=6),
+                                       state_reset_flags=rolls)
+    assert len(episodes) == 1
+    assert episodes[0].terminal == "CENSORED_CONTRACT_ROLL"
+    assert episodes[0].terminal != "TRAVERSED"
+
+
