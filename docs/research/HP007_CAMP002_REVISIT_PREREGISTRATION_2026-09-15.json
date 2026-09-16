@@ -1,72 +1,79 @@
 {
-  "preregistration_version": "hp007_camp002_revisit_v1",
-  "campaign_id": "HP007-CAMP-002",
-  "timestamp_registration_utc": "2026-09-15T22:00:00Z",
-  "governing_document": "docs/research/PROMPT_ANTIGRAVITY_HP007_CAMP002_REJECTION_REVISIT_2026-09-15.md",
-  "branch": "work/hp007-rejection-revisit-campaign-v2-20260915",
-  "nature_of_inquiry": "STRUCTURAL_MICROSTRUCTURAL_STATE_TRANSITIONS_TARGET_FREE",
-  "economic_rules_prohibited": true,
-  "holdout_firewall": {
-    "cutoff_iso": "2026-07-01T00:00:00Z",
-    "status": "SEALED",
-    "allowed_read_rows": 0
-  },
-  "instruments_and_contracts": {
-    "train_contract": "6E 03-26",
-    "test_contract": "6E 06-26",
-    "continuous_cross_asset_status": "ABSTAIN",
-    "source_drive": "E:\\EdgeLab\\data\\nt8\\6E\\"
-  },
-  "indicators": {
-    "primary": {
-      "name": "BigTrap2Absorption",
-      "status": "CERTIFIED_P0_PARITY"
+  "audit_status": "INVALIDATED_OUT_OF_SCOPE_AND_EXECUTION_DEFECTS",
+  "results_class": "NON_EVIDENTIARY_EXPLORATORY_OUTPUT",
+  "results_interpretation_allowed": false,
+  "superseding_branch": "work/hp007-rejection-revisit-campaign-v2-canonical-20260915",
+  "superseding_instruction": "docs/research/HP007_CAMP002_VISUAL_LOGIC_DESIGN_HOLD_2026-09-15.md",
+  "historical_payload_preserved": {
+    "preregistration_version": "hp007_camp002_revisit_v1",
+    "campaign_id": "HP007-CAMP-002",
+    "timestamp_registration_utc": "2026-09-15T22:00:00Z",
+    "governing_document": "docs/research/PROMPT_ANTIGRAVITY_HP007_CAMP002_REJECTION_REVISIT_2026-09-15.md",
+    "branch": "work/hp007-rejection-revisit-campaign-v2-20260915",
+    "nature_of_inquiry": "STRUCTURAL_MICROSTRUCTURAL_STATE_TRANSITIONS_TARGET_FREE",
+    "economic_rules_prohibited": true,
+    "holdout_firewall": {
+      "cutoff_iso": "2026-07-01T00:00:00Z",
+      "status": "SEALED",
+      "allowed_read_rows": 0
     },
-    "secondary": {
-      "name": "Gaps2",
-      "status": "ABSTAIN_REAL_ORACLE_PARITY_NOT_PROVEN",
-      "reason": "Visible synthetic tests do not prove real NT8 oracle parity on 6E 03-26 / 06-26"
-    }
-  },
-  "state_machine": {
-    "states": [
-      "FIRST_APPROACH",
-      "REJECTION_CONFIRMED",
-      "AWAY_QUALIFIED",
-      "SECOND_APPROACH",
-      "TERMINAL_OUTCOME"
+    "instruments_and_contracts": {
+      "train_contract": "6E 03-26",
+      "test_contract": "6E 06-26",
+      "continuous_cross_asset_status": "ABSTAIN",
+      "source_drive": "E:\\EdgeLab\\data\\nt8\\6E\\"
+    },
+    "indicators": {
+      "primary": {
+        "name": "BigTrap2Absorption",
+        "status": "CERTIFIED_P0_PARITY"
+      },
+      "secondary": {
+        "name": "Gaps2",
+        "status": "ABSTAIN_REAL_ORACLE_PARITY_NOT_PROVEN",
+        "reason": "Visible synthetic tests do not prove real NT8 oracle parity on 6E 03-26 / 06-26"
+      }
+    },
+    "state_machine": {
+      "states": [
+        "FIRST_APPROACH",
+        "REJECTION_CONFIRMED",
+        "AWAY_QUALIFIED",
+        "SECOND_APPROACH",
+        "TERMINAL_OUTCOME"
+      ],
+      "terminals": [
+        "TRAVERSED",
+        "REJECTED_AGAIN",
+        "CENSORED"
+      ],
+      "geometry_policy": "FROZEN_AT_FIRST_APPROACH"
+    },
+    "estimands": [
+      "conditional_revisit_traversal_probability",
+      "risk_difference_vs_matched_fresh_first_approaches",
+      "dose_response_elapsed_away_time_and_volume",
+      "ablation_contrasts_full_vs_no_maturation_no_time_decay_no_wear",
+      "penetration_depth_milestones_25_50_75_100_percent",
+      "competing_risks_cumulative_incidence"
     ],
-    "terminals": [
-      "TRAVERSED",
-      "REJECTED_AGAIN",
-      "CENSORED"
-    ],
-    "geometry_policy": "FROZEN_AT_FIRST_APPROACH"
-  },
-  "estimands": [
-    "conditional_revisit_traversal_probability",
-    "risk_difference_vs_matched_fresh_first_approaches",
-    "dose_response_elapsed_away_time_and_volume",
-    "ablation_contrasts_full_vs_no_maturation_no_time_decay_no_wear",
-    "penetration_depth_milestones_25_50_75_100_percent",
-    "competing_risks_cumulative_incidence"
-  ],
-  "inference_specification": {
-    "cluster_unit": "cme_session_chicago_tz",
-    "resamples": 100000,
-    "seed": 42,
-    "fwer_control": "Holm-Bonferroni",
-    "n_variants": 24,
-    "n_eff": 18,
-    "alpha": 0.05
-  },
-  "allowed_verdicts": [
-    "BASE_LOGIC_STRUCTURALLY_SUPPORTED",
-    "BASE_LOGIC_PROMISING_BUT_UNSTABLE",
-    "BASE_LOGIC_NOT_SUPPORTED",
-    "ABSTAIN_INSUFFICIENT_EPISODES",
-    "ABSTAIN_CONTRACT_NOT_CERTIFIED",
-    "ABSTAIN_SECONDARY_PARITY_NOT_PROVEN",
-    "INVALIDATED_EXECUTION"
-  ]
+    "inference_specification": {
+      "cluster_unit": "cme_session_chicago_tz",
+      "resamples": 100000,
+      "seed": 42,
+      "fwer_control": "Holm-Bonferroni",
+      "n_variants": 24,
+      "n_eff": 18,
+      "alpha": 0.05
+    },
+    "allowed_verdicts": [
+      "BASE_LOGIC_STRUCTURALLY_SUPPORTED",
+      "BASE_LOGIC_PROMISING_BUT_UNSTABLE",
+      "BASE_LOGIC_NOT_SUPPORTED",
+      "ABSTAIN_INSUFFICIENT_EPISODES",
+      "ABSTAIN_CONTRACT_NOT_CERTIFIED",
+      "ABSTAIN_SECONDARY_PARITY_NOT_PROVEN",
+      "INVALIDATED_EXECUTION"
+    ]
+  }
 }
