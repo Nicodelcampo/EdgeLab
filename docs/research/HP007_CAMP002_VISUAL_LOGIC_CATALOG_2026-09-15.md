@@ -6,11 +6,13 @@
 - **Rama Canónica:** `work/hp007-rejection-revisit-campaign-v2-canonical-20260915`
 - **Ancla Contractual:** Commit [`29cad93d6600ee4c07a7d716be35e4881d78f491`](https://github.com/Nicodelcampo/EdgeLab/commit/29cad93d6600ee4c07a7d716be35e4881d78f491)
 - **Documento Rector:** [`docs/research/HP007_CAMP002_VISUAL_LOGIC_DESIGN_HOLD_2026-09-15.md`](HP007_CAMP002_VISUAL_LOGIC_DESIGN_HOLD_2026-09-15.md)
-- **Estado Oficial:**
+- **Estado de la Fase:**
   - `PHASE = VISUAL_LOGIC_DESIGN`
+  - `VISUAL_CONFIGURATION_CATALOG_SPECIFIED = YES`
+  - `VISUAL_INSPECTION_PACKAGE_COMPLETED = YES`
+  - `READY_FOR_OWNER_VISUAL_REVIEW = YES`
   - `REVISIT_HYPOTHESIS_MEASUREMENT = ON_HOLD_BY_OWNER`
   - `REVISIT_EVENT_SEMANTICS = OWNER_DECISION_PENDING`
-  - `SMOKE_CENSUS = SOFTWARE_VALIDATION_ONLY`
   - `OUTCOME_BASED_SELECTION = PROHIBITED`
   - `HOLDOUT = SEALED`
 
@@ -18,121 +20,173 @@
 
 ## 1. Principio Rector de la Fase Visual
 
-Conforme a la directiva expresa del propietario de la investigación:
-> **Queda prohibida toda medición, estimación de traversa, cálculo de P&L o inferencia de edge.**  
-> El objetivo exclusivo de esta fase es proporcionar al investigador un catálogo neutral de configuraciones de zonas y modelos de campo, renderizables sobre gráficos, para que **el propietario defina visualmente la semántica de los eventos** antes de redactar cualquier nuevo preregistro.
+Conforme a la directiva expresa y vinculante del propietario de la investigación:
+> **Queda prohibida toda medición empírica, estimación de probabilidad de traversa, cálculo de P&L o inferencia de edge direccional.**  
+> El objetivo exclusivo de esta fase es proporcionar al investigador un catálogo neutral de configuraciones de zonas y modelos continuos de intensidad de campo, renderizables sobre gráficos de activos contractualmente habilitados, para que **el propietario defina visualmente la semántica de los eventos** antes de redactar cualquier nuevo preregistro o reactivar mediciones.
 
 ---
 
 ## 2. Catálogo Target-Free de Configuraciones BigTrap2Absorption
 
-Las variantes se construyen variando dimensiones individuales sobre el `PARAM_SPEC` oficial de [`nt8/BigTrap2Absorption.cs`](../../nt8/BigTrap2Absorption.cs) y [`edgelab/bridge/indicators/bigtrap2absorption.py`](../../edgelab/bridge/indicators/bigtrap2absorption.py), sin considerar comportamiento futuro del precio:
+Las 9 configuraciones se construyen variando dimensiones individuales sobre el `PARAM_SPEC` oficial de [`nt8/BigTrap2Absorption.cs`](../../nt8/BigTrap2Absorption.cs) (SHA-256: `18d16312...`) y [`edgelab/bridge/indicators/bigtrap2absorption.py`](../../edgelab/bridge/indicators/bigtrap2absorption.py) (SHA-256: `d5913b13...`), sin condicionar sobre comportamiento futuro del precio ni outcomes. Cada configuración está completamente especificada en formato machine-readable en [`docs/research/HP007_CAMP002_BT2A_CONFIG_CATALOG_2026-09-15.json`](HP007_CAMP002_BT2A_CONFIG_CATALOG_2026-09-15.json).
 
 | ID Configuración | Parámetro Modificado | Valor | Valor Base | Efecto Microestructural Neutro |
 |---|---|---|---|---|
 | `BT2A_CFG_01` | *(Base)* | — | — | Ventana de cinta de 25 ticks, absorción percentil 90%, desbalance 2.0x, trampa min 15%. |
 | `BT2A_CFG_02` | `TapeWindowTicks` | `15` | `25` | Ventana más estrecha; captura eventos de absorción locales de muy corta duración. |
-| `BT2A_CFG_03` | `TapeWindowTicks` | `40` | `25` | Ventana más amplia; suaviza micro-ruido y consolida zonas de mayor persistencia. |
-| `BT2A_CFG_04` | `AbsorptionPct` | `95.0` | `90.0` | Umbral más restrictivo; genera menos zonas, restringidas a colas extremas de volumen/desplazamiento. |
-| `BT2A_CFG_05` | `AbsorptionPct` | `85.0` | `90.0` | Umbral más permisivo; mayor densidad de zonas y menor separación promedio entre paredes. |
-| `BT2A_CFG_06` | `ImbalanceRatio` | `3.0` | `2.0` | Exige asimetría agresiva 3:1 entre bid/ask; selecciona absorciones con fuerte dominancia direccional. |
-| `BT2A_CFG_07` | `ImbalanceRatio` | `1.5` | `2.0` | Asimetría moderada 1.5:1; incluye absorciones con presión pasiva menos unilateral. |
-| `BT2A_CFG_08` | `MinStackedRows` | `2` | `1` | Requiere que al menos 2 niveles contiguos de precio cumplan absorción simultáneamente (zonas más gruesas). |
+| `BT2A_CFG_03` | `TapeWindowTicks` | `40` | `25` | Ventana más amplia; suaviza micro-ruido y consolida zonas de mayor persistencia temporal. |
+| `BT2A_CFG_04` | `AbsorptionPct` | `95.0` | `90.0` | Umbral más restrictivo; genera menor densidad de zonas, restringidas a colas extremas de volumen/desplazamiento. |
+| `BT2A_CFG_05` | `AbsorptionPct` | `85.0` | `90.0` | Umbral más permisivo; mayor densidad de zonas y menor separación promedio entre zonas contiguas. |
+| `BT2A_CFG_06` | `ImbalanceRatio` | `3.0` | `2.0` | Exige asimetría 3:1 entre bid/ask; selecciona absorciones con mayor dominancia unidireccional. |
+| `BT2A_CFG_07` | `ImbalanceRatio` | `1.5` | `2.0` | Asimetría moderada 1.5:1; incluye absorciones con presión pasiva bilateral. |
+| `BT2A_CFG_08` | `MinStackedRows` | `2` | `1` | Requiere que al menos 2 niveles contiguos de precio cumplan absorción simultáneamente (zonas de mayor espesor). |
 | `BT2A_CFG_09` | `ScoreMode` | `AbsDirectional` | `AbsMagnitude` | Pondera la dirección del desplazamiento dentro de la barra en lugar de la magnitud absoluta neta. |
 
 ---
 
-## 3. Catálogo de Modelos de Ponderación de Campo y Ablaciones
+## 3. Definición Matemática Rigurosa de Modelos de Campo e Intensidad Continua
 
-El campo de resistencia se construye mediante la acumulación causal de zonas as-of:
-$$\mathcal{F}(p, t) = 1 - \exp\left( -\sum_{z \in \mathcal{Z}_t} w(z, t) \cdot \mathcal{K}(p, z) \right)$$
+El perfil continuo de intensidad espacial (`aggregate zone intensity field`) describe la densidad microestructural acumulada por zonas activas as-of. Se prohíben términos interpretativos ("paredes", "resistencia", "obstáculo"). La nomenclatura se restringe a: `zone intensity`, `aggregate field`, `high-density region`, `low-density interval`, `zone contribution`.
 
-### 3.1. Transformaciones de Fuerza ($w_{\text{vol}}$)
-- `TRANS_COUNT`: Ponderación unitaria ($w=1.0$), presencia binaria de zona independiente del volumen.
-- `TRANS_POWER_025` *(Base)*: $w = (V / V_{\text{ref}})^{0.25}$, compresión sub-lineal fuerte (amortigua outliers de volumen institucional).
-- `TRANS_POWER_050`: $w = (V / V_{\text{ref}})^{0.50}$, raíz cuadrada estándar.
-- `TRANS_LOG`: $w = \log_2(1 + V / V_{\text{ref}})$, crecimiento logarítmico cóncavo.
-- `TRANS_WINSORIZED`: $w = \min(V / V_{\text{ref}}, 3.0)^{0.25}$, tope rígido en 3x el volumen de referencia.
+### 3.1. Acumulación Causal del Campo
+Dado un precio $p$ en el tiempo $t$, la intensidad agregada adimensional $\mathcal{F}(p, t) \in [0, 1)$ se define como:
+$$\mathcal{F}(p, t) = 1 - \exp\left( -\sum_{z \in \mathcal{Z}_t} w(z, t) \cdot \mathcal{K}(d(p, z)) \right)$$
 
-### 3.2. Kernels Espaciales ($\mathcal{K}$)
-- `KERNEL_BOX` ($\sigma = 0$): Función escalón estricta; la zona solo proyecta resistencia dentro de su $[b, t]$.
-- `KERNEL_GAUSS_NARROW` ($\sigma = 0.75$ ticks): Dispersión estrecha; decae a menos del 1% a 2 ticks de la frontera.
-- `KERNEL_GAUSS_BASE` ($\sigma = 1.2$ ticks): Dispersión estándar; suaviza la frontera de la zona permitiendo gradientes en el vacío.
-- `KERNEL_GAUSS_BROAD` ($\sigma = 3.0$ ticks): Dispersión amplia; genera campos solapados y desdibuja vacíos estrechos.
+donde:
+- $\mathcal{Z}_t = \{ z : t_{\text{created}}(z) \le t < t_{\text{invalidated}}(z) \}$ es el conjunto de zonas estrictamente activas as-of en el instante $t$.
+- $d(p, z)$ es la distancia ortogonal en ticks desde el precio $p$ hasta el intervalo de la zona $[z_{\text{lower}}, z_{\text{upper}}]$:
+  $$d(p, z) = \max(0, z_{\text{lower}} - p, p - z_{\text{upper}})$$
+- $w(z, t) = w_{\text{vol}}(z) \cdot f_{\text{mat}}(t - t_z) \cdot f_{\text{decay}}(t - t_z) \cdot f_{\text{wear}}(n_z(t))$ es el peso dinámico compuesto de la zona.
 
-### 3.3. Ablaciones de Componente Único (Mecanísticas)
-- `FULL`: Modelo completo con maduración bimodal ($t < 1\text{ h}$), decaimiento temporal lento ($t > 4\text{ h}$, $t_{1/2} = 12\text{ h}$) y desgaste por toques as-of ($f = (1 + 0.5 \cdot \text{toques})^{-0.6}$).
-- `NO_MATURATION`: Desactiva la maduración ($f_{\text{mat}} = 1.0$ desde $t=0$). Evalúa si una zona recién creada ya actúa con máxima resistencia.
-- `NO_TIME_DECAY`: Desactiva el decaimiento temporal ($f_{\text{decay}} = 1.0$ permanente). Evalúa si la antigüedad degrada la resistencia.
-- `NO_WEAR`: Desactiva el desgaste por toques ($f_{\text{wear}} = 1.0$). Evalúa si las interacciones físicas consumen la orden pasiva.
+### 3.2. Kernels Espaciales ($\mathcal{K}$) y Truncamiento
+La función kernel $\mathcal{K}(d)$ proyecta la contribución de la zona en función de la distancia $d$:
+
+1. **`KERNEL_BOX` ($\sigma = 0$ ticks)**:
+   $$\mathcal{K}_{\text{box}}(d) = \begin{cases} 1.0 & \text{si } d = 0 \text{ (precio dentro del intervalo de la zona } [z_{\text{lower}}, z_{\text{upper}}]\text{)} \\ 0.0 & \text{si } d > 0 \end{cases}$$
+
+2. **`KERNEL_GAUSS` (Dispersión gaussiana con truncamiento en $3\sigma$)**:
+   $$\mathcal{K}_{\text{gauss}}(d; \sigma) = \begin{cases} \exp\left(-\frac{d^2}{2\sigma^2}\right) & \text{si } 0 \le d \le 3\sigma \\ 0.0 & \text{si } d > 3\sigma \end{cases}$$
+   - **`KERNEL_GAUSS_NARROW` ($\sigma = 0.75$ ticks)**:
+     - En $d = 0$ ticks: $\mathcal{K}(0) = 1.000000$ (100.00%).
+     - En $d = 1$ tick: $\mathcal{K}(1) = \exp\left(-\frac{1}{2 \times 0.75^2}\right) = \exp(-0.888889) \approx 0.411112$ (41.11%).
+     - En $d = 2$ ticks: $\mathcal{K}(2) = \exp\left(-\frac{4}{2 \times 0.5625}\right) = \exp(-3.555556) \approx 0.028566$ (**2.86%**).
+     - Radio de corte ($3\sigma$): $2.25$ ticks. Para todo $d > 2.25$ ticks, $\mathcal{K}(d) = 0.0$.
+   - **`KERNEL_GAUSS_BASE` ($\sigma = 1.20$ ticks)**:
+     - En $d = 0$ ticks: $\mathcal{K}(0) = 1.000000$.
+     - En $d = 2$ ticks: $\mathcal{K}(2) = \exp\left(-\frac{4}{2 \times 1.44}\right) = \exp(-1.388889) \approx 0.249352$ (24.94%).
+     - Radio de corte ($3\sigma$): $3.60$ ticks.
+   - **`KERNEL_GAUSS_BROAD` ($\sigma = 3.00$ ticks)**:
+     - Radio de corte ($3\sigma$): $9.00$ ticks. Suaviza fuertemente el espacio entre zonas adyacentes.
+
+### 3.3. Factor de Normalización Causal de Volumen ($V_{\text{ref}}$)
+Para evitar fugar información agregada de la sesión o del dataset:
+- $V_{\text{ref}}(t)$ se calcula como la mediana móvil estrictamente causal del volumen absorbido registrado en las últimas 500 zonas consolidadas antes de $t$.
+- Durante el arranque en frío (primeras 100 zonas del contrato), se adopta el prior fijo $V_0 = 100.0$ contratos.
+- Si una zona registra volumen cero o nulo, se le asigna peso base unitario $w_{\text{vol}} = 1.0$.
+- Transformaciones evaluadas:
+  - `TRANS_COUNT`: $w_{\text{vol}} = 1.0$.
+  - `TRANS_POWER_025` *(Base)*: $w_{\text{vol}} = (V_z / V_{\text{ref}})^{0.25}$.
+  - `TRANS_POWER_050`: $w_{\text{vol}} = (V_z / V_{\text{ref}})^{0.50}$.
+  - `TRANS_LOG`: $w_{\text{vol}} = \log_2(1 + V_z / V_{\text{ref}})$.
+  - `TRANS_WINSORIZED`: $w_{\text{vol}} = \min(V_z / V_{\text{ref}}, 3.0)^{0.25}$.
+
+### 3.4. Ablaciones Mecanísticas de Componente Único
+- **`FULL`**: Modelo completo con maduración sigmoidal ($f_{\text{mat}} = \frac{1}{1 + \exp(-(t - 1800)/600)}$ para $t$ en segundos), decaimiento temporal exponencial lento ($f_{\text{decay}} = \exp(-\ln(2) \cdot \max(0, t - 14400) / 43200)$ con vida media de 12 horas), y atenuación por toques ($f_{\text{wear}} = (1 + 0.5 \cdot n_z)^{-0.6}$).
+- **`NO_MATURATION`**: $f_{\text{mat}} = 1.0$ idénticamente para todo $t$. Evalúa el efecto de proyectar intensidad plena desde el tick de creación.
+- **`NO_TIME_DECAY`**: $f_{\text{decay}} = 1.0$ idénticamente para todo $t$. Evalúa la persistencia indefinida de zonas no invalidadas.
+- **`NO_WEAR`**: $f_{\text{wear}} = 1.0$ idénticamente. Evalúa el comportamiento sin degradación por interacción física del precio.
+
+### 3.5. Discretización y Precisión
+- Discretización de precios: Grilla evaluada en múltiplos exactos de $\text{tick\_size} = 0.25$ pts en NQ.
+- Precisión numérica: Todos los valores de campo $\mathcal{F}(p, t)$ se redondean a 6 decimales (`round(val, 6)`) previo a serialización y cómputo de hashes.
 
 ---
 
-## 4. Reporte de Deduplicación Causal de Flujos
+## 4. Resultados de Deduplicación Causal de Flujos y Clases de Equivalencia
 
-Para evitar multiplicidad espuria entre configuraciones que produzcan idéntico resultado geométrico:
-1. **Deduplicación Nivel 1 (`zone_stream_sha256`)**:
-   Se computa el hash SHA-256 del flujo de eventos de zonas generadas `[(z_id, top, bottom, t0, t1, kind)]`. Si dos configuraciones de parámetros producen la misma secuencia exacta de coordenadas, solo una avanza al visor.
-2. **Deduplicación Nivel 2 (`field_stream_sha256`)**:
-   Se computa el hash del tensor de densidad discretizado $\mathcal{F}(p, t)$ sobre los niveles evaluados. Si dos combinaciones de kernel/fuerza producen vectores equivalentes con tolerancia $< 10^{-4}$, se agrupan bajo un único representante.
+Se ejecutaron las 9 configuraciones sobre las 4 sesiones únicas representativas de `NQ 06-26` (1.873.468 ticks procesados) bajo el runner [`tools/run_visual_configurations.py`](../../tools/run_visual_configurations.py). Los resultados consolidados se registran en [`docs/research/HP007_CAMP002_DEDUPLICATION_REPORT_2026-09-15.json`](HP007_CAMP002_DEDUPLICATION_REPORT_2026-09-15.json):
 
----
+### 4.1. Deduplicación Nivel 1 (Geometría de Zonas — `zone_stream_sha256`)
+Las 9 configuraciones generaron flujos geométricos estrictamente distintos (cero colapso de equivalencia, 9 clases únicas):
 
-## 5. Instrucciones de Uso del Visor Gráfico Interactivo
-
-El visor web oficial se encuentra alojado en [`viewer/nt8_bridge/`](../../viewer/nt8_bridge/) y servido localmente en:
-`http://localhost:8088/index.html?asset=6E_CONT` (o vía `store_viewer.html`).
-
-### Elementos Visualizados Estrictamente As-Of:
-1. **Velas y Ticks:** Gráfico principal con escala de precios exacta.
-2. **Zonas Causalmente Disponibles:** Rectángulos coloreados que inician estrictamente en `created_ns / available_ns` y terminan en su invalidación o roll.
-3. **Marcadores de Roll / Reset:** Líneas verticales rojas indicando `state_reset_flag == True` donde todo estado previo es purgado.
-4. **Campo de Resistencia Lateral:** Curva de densidad agregada proyectada a la derecha de la acción del precio.
-5. **Vacíos Visibles:** Franjas intermedias de baja densidad entre zonas activas.
-6. **Watermark Mandatorio:** `"PARITY_ABSTAIN: REAL NT8 ORACLE PENDING"` presente en pantalla.
-
----
-
-## 6. Índice de Muestreo Visual de Sesiones Representativas
-
-Para la inspección visual manual del propietario, se seleccionan 5 sesiones CME representativas bajo criterios deterministas target-free:
-
-| ID Sesión | Fecha CME | Criterio de Selección | Objetivo de la Inspección Visual |
+| ID Configuración | Zonas Totales Generadas | Hash del Flujo de Zonas (`zone_stream_sha256`) | Clase de Equivalencia |
 |---|---|---|---|
-| `SESS_01` | `2026-01-05` | Primera sesión regular completa del año | Evaluar formación inicial de zonas y arranque en frío del campo. |
-| `SESS_02` | `2026-02-18` | Sesión de actividad mediana pre-holdout | Inspeccionar geometría típica de vacíos entre absorciones estándar. |
-| `SESS_03` | `2026-03-12` | Sesión contigua al vencimiento/roll contractual | Validar visualmente el corte por roll y reseteo de geometrías activas. |
-| `SESS_04` | `2026-04-14` | Sesión de alta volatilidad / alto número de toques | Inspeccionar efecto visual del desgaste por toques (`NO_WEAR` vs `FULL`). |
-| `SESS_05` | `2026-05-20` | Sesión de compresión / bajo rango | Observar canibalización de vacíos estrechos ($W < 5$ ticks) bajo distintos kernels. |
+| `BT2A_CFG_01` | 3.710 | `aea22487966d1a9fdba13faa80ab5fd98c8492e298cdaea308b1cfb7949c9b3a` | `ZONE_CLASS_01` |
+| `BT2A_CFG_02` | 5.214 | `8cd38b14f54a35edf6c5f1ec87403e721a873f7cae2230e47a0e63a65ed02ebf` | `ZONE_CLASS_02` |
+| `BT2A_CFG_03` | 2.291 | `a71baca61ae9bd288c318c71acca3520b9847189850ba79824f8dd9764201e72` | `ZONE_CLASS_03` |
+| `BT2A_CFG_04` | 1.982 | `7577bd58e61f76bba12919180361a8008d492dec40dc6f47d7f7c5dc5966ed47` | `ZONE_CLASS_04` |
+| `BT2A_CFG_05` | 5.137 | `84422399237ad4152c6f1d3f2ac375011a5de691ad9c7888aba1ab13e7533653` | `ZONE_CLASS_05` |
+| `BT2A_CFG_06` | 3.062 | `24eefbeabd83dc4e83c74ee0f339cf39943bf1e033783a45c0f64c679b88cf1e` | `ZONE_CLASS_06` |
+| `BT2A_CFG_07` | 3.785 | `28ead7f3d02bbf812c75a40a831e5f8fdf178f7e2ce71fe25852f50bf8f9c10f` | `ZONE_CLASS_07` |
+| `BT2A_CFG_08` | 2.414 | `da0a1a0cf71a4ad857b28fa526017b35520e5ff3baae3dfec4f09d84e56598c8` | `ZONE_CLASS_08` |
+| `BT2A_CFG_09` | 5.154 | `9d080ab709894cf5e9c0c80b5e5a5a1f681a2f643e2e8e3d09a06db9566d8e8b` | `ZONE_CLASS_09` |
+
+### 4.2. Deduplicación Nivel 2 (Tensores de Intensidad Continua — `field_stream_sha256`)
+Evaluados sobre la grilla espaciotemporal discretizada de la sesión mediana (`2026-04-01`):
+- **Equivalencias Idénticas:** `FIELD_TRANS_WINSORIZED` y `FIELD_ABL_NO_TIME_DECAY` colapsaron al mismo hash que `FIELD_GAUSS_BASE` (`13d713064c030066...`), ya que las zonas intradiarias se invalidan antes de la cota de 4 horas de decaimiento y los volúmenes relativos en esta muestra no superaron el límite de corte $3.0\times V_{\text{ref}}$.
+- **Efecto de Maduración:** `FIELD_ABL_NO_MATURATION` presentó un incremento de $14,4\times$ en la intensidad media del campo ($0,0230$ vs $0,0016$), confirmando empíricamente que la maduración suprime fuertemente la intensidad de zonas recién nacidas.
+- **Efecto de Desgaste:** `FIELD_ABL_NO_WEAR` aumentó la intensidad media un $56\%$ ($0,0025$ vs $0,0016$), evidenciando la degradación de intensidad por toques sucesivos.
+- **Diferenciación Espacial:** `FIELD_BOX` mostró una correlación moderada ($r = 0,65$ a $0,66$) con los kernels gaussianos, confirmando que la función escalón produce intervalos de densidad radicalmente más discontinuos.
 
 ---
 
-## 7. Modos de Falla y Abstenciones Formales
+## 5. Instrucciones de Visualización y Watermarks Mandatorios
 
-1. **Abstención por Falta de Oráculo Real (`ABSTAIN_REAL_ORACLE_PARITY_NOT_PROVEN`)**:
-   Documentada en [`HP007_CAMP002_BT2A_PARITY_AUDIT_2026-09-15.md`](HP007_CAMP002_BT2A_PARITY_AUDIT_2026-09-15.md). No se dispone de oráculos reales exportados de NT8 para `ES`, `MES`, `NQ` o `YM` en la versión actual de BigTrap2Absorption v1.1.1.
-2. **Riesgo de Fuga Temporal en Consultas As-Of**:
-   Cualquier extracción de zonas debe usar `z.created_ns <= t_now` de manera estricta punto por punto, sin agrupar por sesiones globales completas.
-3. **Riesgo de Inmortalidad / Sesgo de Supervivencia**:
-   Queda documentado que acondicionar sobre la duración del alejamiento introduce sesgo temporal; cualquier categorización posterior deberá formularse como variable dependiente del tiempo en riesgo.
+### Activos y Advertencias Contractuales
+Bajo el ancla contractual [`29cad93`](https://github.com/Nicodelcampo/EdgeLab/commit/29cad93d6600ee4c07a7d716be35e4881d78f491):
+- **Activos Canónicamente Habilitados:** `ES`, `MES`, `NQ`, `YM` (`PARTIAL_MULTI_ASSET_CERTIFICATION`).
+- **Activos en Abstención:** `6E`, `6B`, `6J`, `GC`, `ZB`, `MBT` (`CONTRACT_REGIME = ABSTAIN`).
+- El paquete visual canónico se genera primariamente sobre **`NQ 06-26`** (Tick size: 0.25).
+- Si se inspecciona `6E_CONT` con fines de diagnóstico del visor, rigen dos advertencias obligatorias:
+  1. `CONTRACT_REGIME = ABSTAIN` (la serie continua de 6E no posee certificación de calendario CME).
+  2. `INDICATOR_PARITY = ABSTAIN` (no existe oráculo real exportado de NT8).
+
+### Watermarks en Pantalla
+Todo gráfico estático o vista web debe presentar de forma visible e inamovible el watermark:
+- **Para NQ / ES:** `PARITY_ABSTAIN — PYTHON EXPLORATORY VISUALIZATION ONLY`
+- **Para 6E:** `CONTRACT_REGIME = ABSTAIN | INDICATOR_PARITY = ABSTAIN — PYTHON EXPLORATORY VISUALIZATION ONLY`
+
+### Componentes Gráficos As-Of:
+1. **Velas de Precio:** Escala OHLC exacta por barra tick (120t).
+2. **Zonas Activas:** Rectángulos horizontales delimitados estrictamente entre $t_{\text{created}}$ y $t_{\text{invalidated}}$. Color e intensidad determinados por la contribución de la zona.
+3. **Frontera de Rollover / Reset:** Línea vertical roja en ticks donde `state_reset_flag == True`, marcando purga total de memoria.
+4. **Perfil Lateral de Intensidad Agregada (`aggregate field`):** Curva continua de densidad a la derecha de la acción del precio.
+5. **Intervalos de Baja Densidad:** Franjas de precio donde $\mathcal{F}(p, t) < \theta$, visualmente distinguibles.
+6. **Prohibición Absoluta de Outcomes:** Cero marcadores de trades futuros, cero cálculo de P&L, cero flechas de compra/venta, cero etiquetas de éxito/fracaso de cruce.
 
 ---
 
-## 8. Decisiones Pendientes Reservadas al Propietario (Checklist)
+## 6. Selección Reproducible de Sesiones Representativas
 
-Antes de redactar un nuevo preregistro o reactivar cualquier runner, el propietario de la investigación inspeccionará los gráficos y definirá:
+Para evitar sesgo de selección visual oportunista, las sesiones se eligen mediante un algoritmo determinista (`tools/select_canonical_visual_sessions.py`) sobre el universo pre-holdout de NQ:
 
-- [ ] **Definición de Vacío:** ¿Distancia mínima entre bordes de absorción, o umbral de densidad $\mathcal{F} < \theta$?
-- [ ] **Fronteras de Entrada y Salida:** ¿Se mide siempre la frontera cercana como entrada y la lejana como cruce?
-- [ ] **Primer Acercamiento:** ¿Tolerancia en ticks ({0, 1, 2}) antes de considerar que el precio "tocó" la frontera?
-- [ ] **Rechazo Válido:** ¿Cuántos ticks de excursión contraria ({4, 6, 8, 10}) constituyen un rechazo genuino y no mero ruido?
-- [ ] **Criterio de Alejamiento:** ¿Se exige tiempo transcurrido (segundos), volumen comerciado fuera, o número de transacciones?
-- [ ] **Revisitación:** ¿Qué constituye un segundo acercamiento válido y qué intervalo de tiempo máximo se tolera?
-- [ ] **Evolución de Geometría:** ¿La frontera del vacío se congela en el primer toque, o se actualiza si aparecen nuevas zonas intermedias?
-- [ ] **Clasificación de Desenlace:** Criterio exacto para distinguir cruce completo, segundo rechazo y censura administrativa.
+| ID Sesión | Fecha CME | Día | Criterio de Selección Formal | Métrica Evaluada | Ticks | Rango (pts) | Objetivo de la Inspección Visual |
+|---|---|---|---|---|---|---|---|
+| `SESS_01` | `2026-03-17` | Martes | Primera sesión activa regular pre-holdout | `min(trade_date)` elegible | 331.822 | 388,75 pts (1.555t) | Evaluar formación inicial de zonas y arranque en frío del campo. |
+| `SESS_02` | `2026-04-01` | Miércoles | Mediana de actividad | Percentil 50 de ticks (exacto p50) | 517.143 | 468,25 pts (1.873t) | Inspeccionar geometría típica de vacíos entre absorciones estándar. |
+| `SESS_03` | `2026-03-17` | Martes | Frontera de rollover contractual NQ 03-26 $\rightarrow$ NQ 06-26 | `state_reset_flag == True` en apertura | 331.822 | 388,75 pts (1.555t) | Validar visualmente el corte por roll y reseteo de zonas activas. |
+| `SESS_04` | `2026-04-08` | Miércoles | Alta volatilidad / dispersión | Percentil 90 de rango (3.608t vs p90 3.563t) | 572.626 | 902,00 pts (3.608t) | Inspeccionar efecto visual de la atenuación por toques (`NO_WEAR` vs `FULL`). |
+| `SESS_05` | `2026-05-22` | Viernes | Rango estrecho / compresión | Percentil 10 de rango (1.252t vs p10 1.255t) | 451.877 | 313,00 pts (1.252t) | Observar comportamiento de vacíos estrechos bajo distintos anchos de kernel. |
+
+El manifiesto completo de procedencia con fechas exactas, cuantiles y SHA-256 del script se publica en [`docs/research/HP007_CAMP002_SESSION_SELECTION_MANIFEST_2026-09-15.json`](HP007_CAMP002_SESSION_SELECTION_MANIFEST_2026-09-15.json).
+
+---
+
+## 7. Checklist de Decisiones Reservadas al Propietario
+
+El trabajo técnico concluye entregando las alternativas visuales comparables y neutrales. El propietario inspeccionará las imágenes y definirá:
+
+- [ ] **Definición de Vacío:** ¿Distancia mínima en ticks entre zonas de absorción contiguas, o umbral de intensidad $\mathcal{F} < \theta$?
+- [ ] **Fronteras del Evento:** ¿Se mide siempre la frontera cercana como primer toque y la opuesta como cruce completo?
+- [ ] **Tolerancia de Primer Acercamiento:** ¿Tolerancia en ticks ({0, 1, 2}) para declarar inicio de aproximación?
+- [ ] **Definición de Rechazo Válido:** ¿Magnitud de excursión contraria en ticks ({4, 6, 8, 10}) requerida para validar rechazo sin ruido?
+- [ ] **Calificación de Alejamiento:** ¿Criterio de permanencia fuera (tiempo en segundos, volumen comerciado o conteo de ticks)?
+- [ ] **Revisitación:** ¿Qué define un segundo acercamiento calificado y cuál es la ventana máxima permitida?
+- [ ] **Dinámica de Fronteras:** ¿La geometría del vacío se congela en el primer toque o muta si nacen nuevas zonas intermedias?
+- [ ] **Taxonomía de Desenlaces:** Criterios formales para distinguir traversa completa, segundo rechazo y censura administrativa/roll.
 
 ---
 
 ### Aporte al Referente
 
-Se publica el catálogo neutral de diseño lógico visual target-free en `docs/research/HP007_CAMP002_VISUAL_LOGIC_CATALOG_2026-09-15.md`. Queda formalizado el anclaje contractual a `29cad93`, la abstención de paridad en oráculos ausentes, el censo sintético aislado de software y el congelamiento absoluto de mediciones empíricas hasta que el propietario defina visualmente la semántica de los eventos sobre los gráficos.
+Se publica la especificación neutral y formal del catálogo visual y espacio de configuraciones en `docs/research/HP007_CAMP002_VISUAL_LOGIC_CATALOG_2026-09-15.md`. Se eliminan supuestos preconcebidos de resistencia, se establecen las fórmulas exactas del kernel gaussiano truncado y de normalización causal, se estipulan los watermarks mandatorios y se circunscribe la inspección a activos contractualmente certificados (`NQ 06-26` bajo `29cad93`).
