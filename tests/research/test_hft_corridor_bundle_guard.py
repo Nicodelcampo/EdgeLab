@@ -1,9 +1,10 @@
 import importlib.util
 from pathlib import Path
 
-import pyarrow as pa
-import pyarrow.parquet as pq
 import pytest
+
+pa = pytest.importorskip("pyarrow")
+pq = pytest.importorskip("pyarrow.parquet")
 
 MODULE_PATH = Path(__file__).resolve().parents[2] / "tools" / "build_hft_corridor_bundle.py"
 spec = importlib.util.spec_from_file_location("build_hft_corridor_bundle", MODULE_PATH)
@@ -33,10 +34,12 @@ def test_any_row_group_reaching_holdout_fails_before_decode(tmp_path, monkeypatc
     write_ticks(path, [builder.HOLDOUT_START_NS - 1, builder.HOLDOUT_START_NS])
     called = False
     original = pq.read_table
+
     def forbidden(*args, **kwargs):
         nonlocal called
         called = True
         return original(*args, **kwargs)
+
     monkeypatch.setattr(pq, "read_table", forbidden)
     with pytest.raises(ValueError, match="before decode"):
         builder.parquet_preflight(path)
