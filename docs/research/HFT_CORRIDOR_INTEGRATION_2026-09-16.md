@@ -1,19 +1,27 @@
 # HFTZonesNQ → causal corridor integration
 
-Status: `IMPLEMENTED_AWAITING_LOCAL_DATA_RUN_AND_V2_SHARED_INPUT_EXPORT`.
+Status: `HARDENED_AWAITING_V2_REEXPORT_AND_LOCAL_DATA_RERUN`.
 
-Implemented: strict V1/V2 HFT adapter; availability at detector completion; six target-free visual configurations; neutral ranking by coverage/dynamic range/fragmentation; holdout-blocking bundle builder; dedicated preview that never draws candles after tRef and keeps the field invariant under display zoom.
+The original implementation is superseded by `HFT_CAUSAL_CERTIFICATION_HARDENING_2026-09-17.md` on the hardening branch.
+
+## Corrected invariants
+
+- V2 availability uses `available_ts_ns`, never `end_ts_ns`.
+- V2 identity, provenance and termination fields are mandatory.
+- V1 and V2 inputs cannot be mixed.
+- Legacy bundles are diagnostic and cannot inherit V2 parity status.
+- The canonical holdout boundary is `2026-06-30T22:00:00Z` (`1782856800000000000` ns), not midnight UTC.
+- Every parquet row group must prove `max(timestamp) < holdout` before any row is decoded.
+- Visual ranking remains a target-free display heuristic and is prohibited as scientific model selection.
+
+## Required execution
 
 ```powershell
-python -m pytest tests/research/test_hft_corridors.py -v
-python tools/build_hft_corridor_bundle.py --zones data/nt8_oracles/hft_zones_nq_20260603_20260611.csv --ticks E:/EdgeLab/data/nt8/NQ_parquet/NQ_06-26_ticks.parquet
-python viewer/nt8_bridge/server.py
+python -m pytest tests/research/test_hft_corridors.py tests/research/test_hft_corridor_bundle_guard.py -v
+python tools/validate_hft_v2_certification.py --db data/nt8_oracles/hft_zones_nq_v2.sqlite --instrument "NQ JUN26" --out artifacts/hft_v2_hardened_preflight.json
+python tools/build_hft_corridor_bundle.py --zone-mode V2 --zones data/nt8_oracles/hft_zones_v2_export.csv --ticks E:/EdgeLab/data/nt8/NQ_parquet/NQ_06-26_ticks.parquet
 ```
 
-Open `http://localhost:8088/hft_corridor_preview.html`.
+The existing V2 export does not include `termination_reason`, so it must fail closed until NT8 re-exports that field. The historical 5,438/5,438 result remains preserved but is labelled `PASS_EXACT_ON_COMPARED_FIELDS_SINGLE_SHARED_REPLAY_NOT_FULLY_CERTIFIED`.
 
-Neutral first view: `HFT_RAW_GAUSS_2`. It is not an edge winner. The local target-free ranking may propose a different first view; Nicolas decides visually.
-
-Formal holds: `REVISIT_HYPOTHESIS_MEASUREMENT=ON_HOLD_BY_OWNER`; `OUTCOME_BASED_SELECTION=PROHIBITED`; `HOLDOUT_READS_FOR_SELECTION=0`; `HFT_PARITY=PROVISIONAL_NEAR_EXACT_BLOCKED_BY_SHARED_INPUT_V2_EXPORT`.
-
-Aporte al referente: integra HFTZonesNQ al campo causal sin trasladar paridad a BT2A ni utilizar outcomes para elegir la representación visual.
+No outcomes, P&L or holdout access are authorized.
