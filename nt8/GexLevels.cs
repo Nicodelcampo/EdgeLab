@@ -1,3 +1,4 @@
+// # meta indicator=GexLevels,version=1.0
 // GexLevels.cs — Niveles GEX diarios (Call Wall / Put Wall / Gamma Flip) en el chart.
 //
 // Lee el CSV que genera tools/gex/gex_levels.py:

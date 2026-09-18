@@ -17,8 +17,9 @@ from datetime import date, datetime
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CALENDAR_PATH = (
-    Path("E:/EdgeLab")
+    REPO_ROOT
     / "docs"
     / "research"
     / "cme_equity_index_calendar_20260902"
