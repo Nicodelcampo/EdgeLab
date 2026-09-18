@@ -97,7 +97,8 @@ def verificar_schema_v2(con: sqlite3.Connection) -> Tuple[bool, str]:
         if c not in cols_ticks:
             return False, f"Columna requerida faltante en hft_ticks_v2: {c}"
 
-    cols_zones = [r[1] for r in cur.execute("PRAGMA table_info(hft_zones_v2)").fetchall()]
+    cols_zones_info = {r[1]: r for r in cur.execute("PRAGMA table_info(hft_zones_v2)").fetchall()}
+    cols_zones = list(cols_zones_info.keys())
     req_zones = [
         "instrument", "contract", "session_id", "zone_seq", "start_tick_seq", "end_tick_seq",
         "start_ts_ns", "end_ts_ns", "available_ts_ns", "direction", "lo_ticks", "hi_ticks",
@@ -110,6 +111,12 @@ def verificar_schema_v2(con: sqlite3.Connection) -> Tuple[bool, str]:
     for c in req_zones:
         if c not in cols_zones:
             return False, f"Columna requerida faltante en hft_zones_v2: {c}"
+
+    # Verificación fail-closed de procedencia de esquema: termination_reason debe ser NOT NULL
+    # Si notnull == 0, fue agregado a posteriori vía ALTER TABLE (backfill Python).
+    term_info = cols_zones_info.get("termination_reason")
+    if term_info and term_info[3] == 0:
+        return False, "Columna termination_reason es NULLABLE (indica ALTER TABLE / backfill Python). Requiere creación nativa NT8 con TEXT NOT NULL."
 
     return True, "OK"
 
@@ -440,14 +447,14 @@ def comparar_v2_exacto(
         len(matched_exact) == len(zones_rows) == len(reconstructed_zones)
     )
 
-    status = "PASS_CERTIFIED" if is_pass else "FAIL_V2_DISCREPANCY"
+    status = "PASS_CERTIFIED_FULL_FIELD_PARITY_NATIVE_NT8_38_FIELDS" if is_pass else "FAIL_V2_DISCREPANCY"
 
     return {
         "mode": "V2_NS_EXACT_CERTIFICATION",
         "instrument": instrument,
         "is_pass": is_pass,
         "status": status,
-        "formal_classification": "PASS_CERTIFIED_FULL_FIELD_PARITY" if is_pass else "FAIL_V2_DISCREPANCY",
+        "formal_classification": status,
         "total_nt8_zones": len(zones_rows),
         "total_python_zones": len(reconstructed_zones),
         "matched_exact_count": len(matched_exact),
@@ -458,7 +465,10 @@ def comparar_v2_exacto(
         "py_duplicates_count": py_duplicates,
         "fields_compared_per_zone": 38,
         "fields_compared_total": len(matched_exact) * 38,
+        "independently_compared_fields_per_zone": 38,
+        "independently_compared_fields_total": len(matched_exact) * 38,
         "sub_ms_drift_tolerance_ns": 0,
+        "native_nt8_termination": True,
         "provenance_errors": provenance_errors,
         "matched_diffs_samples": matched_diffs[:10],
         "nt8_without_python_samples": nt8_without_python[:10],
@@ -599,7 +609,7 @@ def main(argv=None) -> int:
             print("Acción requerida: Ejecutar HFTZonesNQPureV4_V2 en NT8 para exportar hft_ticks_v2 y hft_zones_v2.")
             return 2
 
-        con = sqlite3.connect(str(db_path))
+        con = sqlite3.connect(f"file:{db_path.resolve()}?mode=ro", uri=True)
         res = comparar_v2_exacto(con, args.instrumento, tick_size=args.tick_size)
         con.close()
 

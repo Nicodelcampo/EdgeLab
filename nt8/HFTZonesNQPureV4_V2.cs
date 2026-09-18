@@ -181,8 +181,8 @@ namespace NinjaTrader.NinjaScript.Indicators
                 ColorBear                = Brushes.OrangeRed;
                 ColorTexto               = Brushes.Silver;
                 EnableDbLogging          = true;
-                                EnableTickLog            = true;
-                DbPath                   = @"E:\EdgeLab\data\nt8_oracles\hft_zones_nq_v2.sqlite";
+                EnableTickLog            = true;
+                DbPath                   = @"E:\EdgeLab\data\nt8_oracles\hft_zones_nq_v2_native_termination_fresh.sqlite";
                 EnableFlowLog            = true;
                 FlowBucketSeconds        = 1;
                 // Safe default for oracle generation: no WPF drawing.
@@ -260,9 +260,38 @@ namespace NinjaTrader.NinjaScript.Indicators
             return (dt.ToUniversalTime().Ticks - epoch.Ticks) * 100;
         }
 
+        private static readonly TimeZoneInfo ChicagoTz = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
+
+        private static string GetCmeSessionId(DateTime tickTime)
+        {
+            DateTime utcTime = tickTime.ToUniversalTime();
+            DateTime ctTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, ChicagoTz);
+            DateTime tradeDate = ctTime.Date;
+            DayOfWeek dow = ctTime.DayOfWeek;
+
+            if (ctTime.Hour < 17)
+            {
+                if (dow == DayOfWeek.Sunday)
+                    tradeDate = tradeDate.AddDays(1);
+                else if (dow == DayOfWeek.Saturday)
+                    tradeDate = tradeDate.AddDays(2);
+            }
+            else
+            {
+                if (dow == DayOfWeek.Friday)
+                    tradeDate = tradeDate.AddDays(3);
+                else if (dow == DayOfWeek.Saturday)
+                    tradeDate = tradeDate.AddDays(2);
+                else
+                    tradeDate = tradeDate.AddDays(1);
+            }
+
+            return tradeDate.ToString("yyyyMMdd");
+        }
+
         private void CheckSessionBoundary(DateTime tickTime)
         {
-            string sessId = tickTime.ToString("yyyyMMdd");
+            string sessId = GetCmeSessionId(tickTime);
             if (sessId != currentSessionId)
             {
                 if (dir != 0 && streak > 0)
@@ -285,6 +314,7 @@ namespace NinjaTrader.NinjaScript.Indicators
             extremo = 0; maxRetroceso = 0;
             zoneStartTickSeq = 0;
             zoneEndTickSeq = 0;
+            lastSide = 0;
         }
 
         protected override void OnBarUpdate()
@@ -321,6 +351,23 @@ namespace NinjaTrader.NinjaScript.Indicators
         {
             int ds = 1;
             if (CurrentBars[ds] < 1) return;
+
+            string curContract = (Instrument != null && Instrument.MasterInstrument != null)
+                ? (Instrument.MasterInstrument.Name + " " + Instrument.Expiry.ToString("MM-yy"))
+                : "NQ JUN26";
+            if (!string.IsNullOrEmpty(contractStr) && curContract != contractStr)
+            {
+                if (dir != 0 && streak > 0)
+                {
+                    Finalizar("END_OF_SESSION");
+                }
+                contractStr = curContract;
+                currentSessionId = "";
+                currentTickSeq = 0;
+                currentZoneSeq = 0;
+                hasLoggedFlushError = false;
+                ResetState();
+            }
 
             DateTime tickTime = Times[ds][0];
             CheckSessionBoundary(tickTime);
@@ -1057,6 +1104,25 @@ namespace NinjaTrader.NinjaScript.Indicators
                     "PRAGMA journal_mode=WAL; PRAGMA synchronous=NORMAL; PRAGMA busy_timeout=5000;", dbConn))
                     c.ExecuteNonQuery();
 
+                // Verificación fail-closed: la base para una certificación debe nacer vacía
+                using (var checkCmd = new SQLiteCommand(
+                    "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name IN ('hft_ticks_v2', 'hft_zones_v2');", dbConn))
+                {
+                    long tableCount = Convert.ToInt64(checkCmd.ExecuteScalar());
+                    if (tableCount > 0)
+                    {
+                        using (var countCmd = new SQLiteCommand(
+                            "SELECT (SELECT COUNT(*) FROM hft_ticks_v2) + (SELECT COUNT(*) FROM hft_zones_v2);", dbConn))
+                        {
+                            long rowCount = Convert.ToInt64(countCmd.ExecuteScalar());
+                            if (rowCount > 0)
+                            {
+                                throw new InvalidOperationException("La base de datos SQLite '" + DbPath + "' ya contiene " + rowCount + " filas. Se prohíbe reutilizar bases de datos para la certificación: debe ser una base completamente limpia y vacía.");
+                            }
+                        }
+                    }
+                }
+
                 using (var cmd = new SQLiteCommand(
                     @"CREATE TABLE IF NOT EXISTS hft_ticks_v2 (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -1150,7 +1216,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 zoneCmd.Prepare();
 
                 flowCmd = new SQLiteCommand(
-                    @"INSERT OR IGNORE INTO hft_flow
+                    @"INSERT INTO hft_flow
                       (instrument,bar_ts,open,high,low,close,volume,buy_vol,sell_vol,delta,n_ticks)
                       VALUES (@inst,@ts,@o,@h,@l,@c,@v,@bv,@sv,@d,@nt)", dbConn);
                 foreach (string p in new[]{"@inst","@ts","@o","@h","@l","@c","@v","@bv","@sv","@d","@nt"})
@@ -1164,26 +1230,6 @@ namespace NinjaTrader.NinjaScript.Indicators
             {
                 dbReady = false;
                 Print("[HFTLogger-NQ] SetupDb: " + ex.Message);
-            }
-        }
-
-        private void EnsureUnique(string table, string idx, string cols)
-        {
-            try
-            {
-                using (var c = new SQLiteCommand("CREATE UNIQUE INDEX IF NOT EXISTS " + idx + " ON " + table + "(" + cols + ");", dbConn))
-                    c.ExecuteNonQuery();
-            }
-            catch
-            {
-                try
-                {
-                    using (var c = new SQLiteCommand(
-                        "DELETE FROM " + table + " WHERE id NOT IN (SELECT MIN(id) FROM " + table + " GROUP BY " + cols + ");" +
-                        "CREATE UNIQUE INDEX IF NOT EXISTS " + idx + " ON " + table + "(" + cols + ");", dbConn))
-                        c.ExecuteNonQuery();
-                }
-                catch (Exception ex) { Print("[HFTLogger] EnsureUnique " + table + ": " + ex.Message); }
             }
         }
 
@@ -1264,11 +1310,13 @@ namespace NinjaTrader.NinjaScript.Indicators
                 try { if (zoneCmd != null) zoneCmd.Reset(); } catch { }
                 try { if (flowCmd != null) flowCmd.Reset(); } catch { }
                 zoneBuf.Clear(); flowBuf.Clear(); tickBuf.Clear();
+                dbReady = false;
                 if (!hasLoggedFlushError)
                 {
                     hasLoggedFlushError = true;
-                    Print("[HFTLogger-NQ] FlushAll error: " + ex.Message);
+                    Print("[HFTLogger-NQ] CRITICAL DATABASE FLUSH ERROR: " + ex.Message);
                 }
+                throw;
             }
         }
 

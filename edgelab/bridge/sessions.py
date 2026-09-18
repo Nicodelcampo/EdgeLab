@@ -41,3 +41,37 @@ def session_begin_ns(ts_ns: int) -> int:
 def session_key(ts_ns: int) -> str:
     """Trade date (fecha local CT del cierre de la sesion que contiene ts)."""
     return _local(session_end_ns(ts_ns)).strftime("%Y-%m-%d")
+
+
+def cme_session_id(ts_ns_or_dt) -> str:
+    """Calcula el identificador canónico de sesión CME (YYYYMMDD) idéntico a NT8 HFTZonesNQPureV4_V2.
+
+    Frontera CME ETH: 17:00 America/Chicago (DST-aware).
+    Un tick en o después de las 17:00 CT pertenece a la sesión que cierra al día siguiente hábil.
+    """
+    if isinstance(ts_ns_or_dt, (int, float)):
+        dt_utc = datetime.fromtimestamp(ts_ns_or_dt / 1e9, tz=timezone.utc)
+    elif isinstance(ts_ns_or_dt, datetime):
+        dt_utc = ts_ns_or_dt.astimezone(timezone.utc) if ts_ns_or_dt.tzinfo else ts_ns_or_dt.replace(tzinfo=timezone.utc)
+    else:
+        raise TypeError(f"Tipo no soportado: {type(ts_ns_or_dt)}")
+
+    ct_time = dt_utc.astimezone(CT)
+    trade_date = ct_time.date()
+    dow = ct_time.weekday()  # 0=Monday, 4=Friday, 5=Saturday, 6=Sunday
+
+    if ct_time.hour < 17:
+        if dow == 6:  # Sunday
+            trade_date += timedelta(days=1)
+        elif dow == 5:  # Saturday
+            trade_date += timedelta(days=2)
+    else:
+        if dow == 4:  # Friday
+            trade_date += timedelta(days=3)
+        elif dow == 5:  # Saturday
+            trade_date += timedelta(days=2)
+        else:
+            trade_date += timedelta(days=1)
+
+    return trade_date.strftime("%Y%m%d")
+

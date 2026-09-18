@@ -59,10 +59,25 @@ def validate(con: sqlite3.Connection, instrument: str) -> dict:
     if bad_origin:
         errors.append({"code": "END_BEFORE_START", "count": bad_origin})
 
+    # Fail-closed: termination_reason debe ser NOT NULL (creación nativa NT8)
+    cols_zones_info = {r[1]: r for r in con.execute("PRAGMA table_info(hft_zones_v2)").fetchall()}
+    term_info = cols_zones_info.get("termination_reason")
+    if term_info and term_info[3] == 0:
+        errors.append({
+            "code": "PYTHON_BACKFILLED_TERMINATION_REASON",
+            "message": "termination_reason is NULLABLE in schema (indicates ALTER TABLE backfill); requires fresh NT8 export with TEXT NOT NULL"
+        })
+
     placeholders = ",".join("?" for _ in ALLOWED_TERMINATIONS)
     bad_reasons = int(con.execute(f"SELECT COUNT(*) FROM hft_zones_v2 WHERE instrument=? AND termination_reason NOT IN ({placeholders})", (instrument, *ALLOWED_TERMINATIONS)).fetchone()[0])
     if bad_reasons:
         errors.append({"code": "UNCERTIFIABLE_TERMINATION_REASON", "count": bad_reasons})
+
+    # Firewall de holdout: 2026-07-01T00:00:00Z = 1782864000000000000 ns
+    HOLDOUT_START_NS = 1782864000000000000
+    holdout_ticks = int(con.execute("SELECT COUNT(*) FROM hft_ticks_v2 WHERE instrument=? AND timestamp_ns >= ?", (instrument, HOLDOUT_START_NS)).fetchone()[0])
+    if holdout_ticks:
+        errors.append({"code": "HOLDOUT_CONTAMINATION", "count": holdout_ticks})
 
     bad_tick_groups = con.execute("""
         SELECT contract, session_id, COUNT(*) n, MIN(tick_seq) lo, MAX(tick_seq) hi,

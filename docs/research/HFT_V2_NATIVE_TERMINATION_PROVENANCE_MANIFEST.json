@@ -1,0 +1,77 @@
+{
+  "manifest_schema": "edgelab_hft_v2_provenance_v1",
+  "generated_at_utc": "2026-09-18T02:08:00Z",
+  "provenance_adjudication": {
+    "protocol": "NATIVE_NT8_REPLAY_38_FIELDS",
+    "git_branch": "fix/hft-native-termination-fresh-replay-20260918",
+    "base_commit": "2dde9ac523dba48407b3d7060495c0c54ebc55c4",
+    "python_writes_after_export": false,
+    "holdout_accessed": false,
+    "holdout_start_date": "2026-07-01",
+    "holdout_start_ns": 1782864000000000000
+  },
+  "csharp_indicator": {
+    "source_file": "nt8/HFTZonesNQPureV4_V2.cs",
+    "nt8_destination_path": "C:\\Users\\Usuario\\Documents\\NinjaTrader 8\\bin\\Custom\\Indicators\\HFTZonesNQPureV4_V2.cs",
+    "source_file_sha256": "8e45966732ee75bd17e04cbd6061e5e9cc4c0c229e7fde7af87143cbe692d675",
+    "indicator_source_sha256_internal": "841cdbcccbe54ca525e20456d38d1ece0beec5fdd7b820de980bbb01acebeb63",
+    "parameter_manifest_sha256": "0fa994533b03d47a0fb615c3fd4478e91de8c05958eb33bb4004308faaba78a1",
+    "session_boundary_convention": "CME_GLOBEX_1700_CHICAGO_DST_AWARE",
+    "schema_guarantee": {
+      "termination_reason_constraint": "TEXT NOT NULL",
+      "insert_policy": "STRICT INSERT (NO INSERT OR REPLACE, NO INSERT OR IGNORE)",
+      "empty_db_enforced": true
+    }
+  },
+  "input_tick_ledger": {
+    "instrument": "NQ JUN26",
+    "contract": "NQ 06-26",
+    "series_primary": "NQ 06-26 (25 Tick)",
+    "series_sub": "NQ 06-26 (1 Tick, TickResolution=1)",
+    "canonical_dates": "2026-06-01 to 2026-06-12",
+    "total_rows_expected": 5978833,
+    "timestamp_min_ns": 1780351200068000000,
+    "timestamp_max_ns": 1781297997004000000,
+    "timestamp_min_utc": "2026-06-01T22:00:00.068000Z",
+    "timestamp_max_utc": "2026-06-12T20:59:57.004000Z"
+  },
+  "indicator_parameters": {
+    "TickResolution": 1,
+    "MinPasos": 8,
+    "MaxRangoTickPorVela": 1,
+    "FallosTolerados": 1,
+    "FiltroDireccionEstricto": true,
+    "MinSweepTicks": 4,
+    "MaxRetrocesoTicks": 2,
+    "RetrocesoPctHeight": 50,
+    "MaxAvgMs": 25,
+    "MaxTotalMs": 500,
+    "MaxPausaMs": 100,
+    "MinVolumeRate": 100,
+    "MinTotalVolume": 50,
+    "PredatorAvgMs": 5,
+    "UltraAvgMs": 15,
+    "MostrarAbsorb": true,
+    "MinAbsorbPasos": 6,
+    "ModoExportacionPuro": true,
+    "EnableDbLogging": true,
+    "EnableTickLog": true,
+    "EnableFlowLog": true,
+    "FlowBucketSeconds": 1
+  },
+  "export_replay_target": {
+    "sqlite_output_file": "hft_zones_nq_v2_native_termination_fresh.sqlite",
+    "sqlite_relative_path": "data/nt8_oracles/hft_zones_nq_v2_native_termination_fresh.sqlite",
+    "replay_start_time_utc": null,
+    "replay_end_time_utc": null,
+    "sqlite_sha256_at_close": null,
+    "sqlite_size_bytes_at_close": null,
+    "preservation_copy_path": null,
+    "preservation_copy_sha256": null
+  },
+  "certification_verdict": {
+    "status": "AWAITING_MANUAL_NT8_REPLAY_NICOLAS",
+    "preflight_complete": true,
+    "offline_unit_tests_pass": true
+  }
+}
