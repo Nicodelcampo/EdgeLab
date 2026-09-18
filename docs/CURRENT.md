@@ -1,28 +1,36 @@
 # CURRENT — estado vivo
 
-**Corte:** 2026-09-15  
-**Rama viva:** `foundation/f0b-compatibility-probe`  
-**HEAD:** resolver remoto al iniciar; el branch avanzó durante este mismo corte  
+**Corte:** 2026-09-17  
+**Rama viva:** `fix/hft-parity-corridor-viewer-complete-v1-20260916` (y sincronizada en `foundation/f0b-compatibility-probe`)  
 **Referente:** `docs/NORTH_STAR.md` · sha256 del cuerpo `d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1`
 
-## Línea primaria activa (2026-09-15)
+## Líneas primarias activas (2026-09-17)
 
-**HP-007: Corredores de Vacío y Campo de Resistencia Microestructural (Fast-Travel).**  
-Dossier canónico: [`docs/research/HP-007_DOSSIER_TECNICO_Y_AUDITORIA_CORREDORES_VACIO.md`](research/HP-007_DOSSIER_TECNICO_Y_AUDITORIA_CORREDORES_VACIO.md).  
-Se demostró cuantitativamente que el precio viaja 3.03 veces más rápido en tiempo real dentro de corredores de vacío ($D \le 0.28$) frente a congestión ($D \ge 0.70$) ($p = 2.14 \times 10^{-10}, Z_{\text{MC}} = 5.65$), y que el efecto Backstop Protector eleva la expectativa a **+0.156 R en cortos** y **+0.076 R en largos** (frente a pérdidas sistemáticas al comprar contra paredes). El holdout (`2026-07-01 -> 2026-12-31`) permanece 100% sellado.
+1. **HP-008: Clímax HFT Sobre-Extendido con Reversión a la Media y Vuelo Libre en Corredores de Vacío (NQ 25t).**  
+   - Dossier canónico: [`docs/research/INFORME_FALSACION_ABSORCION_HFT_EMA_2026-09-17.md`](research/INFORME_FALSACION_ABSORCION_HFT_EMA_2026-09-17.md).  
+   - Herramientas reproducibles: `tools/research_hft_absorption_probe.py`, `tools/research_ema_reversion_nq.py`, `tools/falsification_battery.py`, `tools/deep_falsification_probe.py`.  
+   - Falsación incondicional: la entrada ciega en $t_0$ es perdedora (-1.62 pt) y el micro-scalping muere por fricción CME ($PF=0.75-0.88$).  
+   - Supervivencia y Alpha: Razón de Varianzas de Lo-MacKinlay confirma $VR=0.9645$ en 20-50 barras 25t. En días rotacionales con Vuelo Libre a través de Corredores de Vacío (HP-007), la expectativa salta a **+7.30 pt (+29.2 ticks)** con Win Rate del **63.6%** y MFE/MAE de **1.45x** (frente a +1.38 pt con obstrucción).
+
+2. **HP-007: Corredores de Vacío y Campo de Resistencia Microestructural (Fast-Travel).**  
+   - Dossier canónico: [`docs/research/HP-007_DOSSIER_TECNICO_Y_AUDITORIA_CORREDORES_VACIO.md`](research/HP-007_DOSSIER_TECNICO_Y_AUDITORIA_CORREDORES_VACIO.md).  
+   - Se demostró cuantitativamente que el precio viaja 3.03 veces más rápido en tiempo real dentro de corredores de vacío ($D \le 0.28$) frente a congestión ($D \ge 0.70$) ($p = 2.14 \times 10^{-10}, Z_{\text{MC}} = 5.65$), y que el efecto Backstop Protector eleva la expectativa a **+0.156 R en cortos** y **+0.076 R en largos**.  
+   - Visor activo e interactivo: `viewer/nt8_bridge/index.html`.
 
 ## Vector de estado
 
 ```text
+HP-008_STATUS                           = FALSIFIED_UNCONDITIONAL_SURVIVES_ROTATIONAL_VACUUM
+HP-008_LO_MACKINLAY_VR                  = 0.9645 (H=20-50 bars, p<0.05, genuine mean reversion)
+HP-008_VACUUM_FREE_FLIGHT               = +7.30 pt (+29.2t), 63.6% WinRate, 1.45x MFE/MAE
+HP-008_CME_FRICTION_BARRIER             = FALSIFIED_MICRO_SCALPING (PF 0.75-0.88; needs wide target)
 HP-007_STATUS                           = CERTIFIED_MICROSTRUCTURAL_EFFECT
 HP-007_VELOCITY_RATIO                   = 1.35x_BARS / 3.03x_REALTIME (p=2.14e-10, Z=5.65)
 HP-007_BACKSTOP_EXPECTANCY              = +0.156_R_BEAR / +0.076_R_BULL
 HP-007_WALL_BOUNCE_RATE                 = 52.27%_CLEAN_REBOUND (>=3t)
 HOLDOUT_INTEGRITY                       = SEALED_UNTOUCHED (2026-07-01 -> 2026-12-31)
-REMOTE_BRANCHES                         = 60
-OPEN_PULL_REQUESTS                      = 17
-PROTECTED_BRANCHES                      = 0
-NQ_SCAN_V2                              = ABSTAIN_COMPLETENESS_EVIDENCE_REQUIRED
+PRIMARY_BRANCH                          foundation/f0b-compatibility-probe
+ACTIVE_RESEARCH_BRANCH                  fix/hft-parity-corridor-viewer-complete-v1-20260916
 CAMPAIGN_OUTCOMES_OPENED                = false
 PREEXISTING_OUTCOME_EXPOSURE            = YES
 ```

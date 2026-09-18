@@ -287,3 +287,23 @@ Puntos del diseño y calibración empírica ya fijados:
   3. *Física de Colisión:* Al impactar una muralla densa ($D \ge 0.75$), se registra **52.27% de Rebote Limpio** (retroceso medio de 5.15 ticks) y 15.91% de absorción.
   4. *Universalidad en Actividad:* Confirmado ratio de velocidad superior en subastas de actividad tanto en futuros CME (**1.41x**, $p < 10^{-5}$) como en Spot OTC Dukascopy (**1.23x**, $p = 0.0109$).
 - **Documentos canónicos:** `docs/research/HP-006_CORREDORES_DE_VACIO_Y_CAMPO_FRICCION_2026-09-14.md`, `docs/research/DIAGNOSTICO_DECAIMIENTO_TEMPORAL_6E.md`, `docs/research/INFORME_CORREDORES_VACIO_VELOCIDAD_2026-09-15.md` e `docs/research/INFORME_ANALISIS_PROFUNDO_CORREDORES_2026-09-15.md`.
+
+---
+
+## HP-008 — Clímax HFT Sobre-Extendido con Reversión a la Media y Vuelo Libre en Corredores de Vacío, en NQ
+
+**Fecha:** 2026-09-17 · **Origen:** observación e hipótesis de Nico del Campo · 
+**Estado:** evaluada, falsada en especificación incondicional, delimitada a régimen rotacional y vuelo libre · **Instrumento:** NQ (E-mini Nasdaq-100) 25t
+
+Nico observa que las zonas HFT tienden a preceder giros contrarios (HFT SELL precede giro alcista, HFT BUY giro bajista) y plantea evaluar la reversión cuando el precio está sobre-extendido respecto a la EMA y realiza un HFT de clímax con reversión inmediata hacia la media.
+
+Puntos clave y resultados empíricos validados (N=239,154 velas 25t, In-Sample junio 2026):
+1. **Falsación de la entrada ciega ($t_0$):** Retorno medio de -1.62 pt (MFE/MAE 0.50x). El flujo agresivo tiene inercia inicial adversa y el proceso sufre trampa de cancelación por bimodalidad simétrica ($\sigma = 20.95$ pt a H=50).
+2. **Falsación del re-test retrospectivo:** Esperar 6 barras para verificar integridad contenía sesgo de supervivencia; en tiempo real estricto el re-test plano rinde solo +0.23 pt.
+3. **Falsación del micro-scalping frente a fricciones CME:** Con SL 3-5 pt y TP 4-10 pt, las comisiones y slippage ($0.75 pt/trade) destruyen la expectativa (Profit Factor 0.75 a 0.88). La monetización exige un target amplio hacia la EMA 200.
+4. **Falsación de la estabilidad interdiaria incondicional:** Solo 4 de 10 días fueron ganadores. Dos días rotacionales cargan el 80% de las ganancias; días direccionales (Kaufman ER > 0.015) generan pérdidas consecutivas.
+5. **Superación del control placebo (+13.5 ticks de alpha neto):** Giros en sobre-extensión genérica sin HFT pierden dinero (-1.44 pt); con HFT clímax el retorno pasa a +1.92 pt (MFE/MAE 1.21x). El HFT aporta +3.37 pt (+13.5 ticks) de alpha puro.
+6. **Sinergia con Corredores de Vacío (HP-007):** Cuando la reversión hacia la EMA cuenta con un Corredor de Vacío despejado de zonas pasivas intermedias (Vuelo Libre), el retorno medio salta a **+7.30 pt (+29.2 ticks)** con Win Rate del **63.6%** y MFE/MAE de **1.45x** (frente a +1.38 pt en camino obstruido).
+7. **Fundamentación econométrica:** Test de Razón de Varianzas de Lo-MacKinlay confirma $VR = 0.9645$ (< 1, reversión) concentrado entre 20 y 50 barras 25t.
+- **Documento canónico:** `docs/research/INFORME_FALSACION_ABSORCION_HFT_EMA_2026-09-17.md` (ID `RESEARCH-HFT-EMA-FALSIFICATION-20260917`).
+- **Herramientas reproducibles:** `tools/research_hft_absorption_probe.py`, `tools/research_ema_reversion_nq.py`, `tools/falsification_battery.py`, `tools/deep_falsification_probe.py`.

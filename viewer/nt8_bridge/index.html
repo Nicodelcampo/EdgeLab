@@ -160,7 +160,7 @@
     position: relative;
     flex: 1 1 auto;
     width: 100%;
-    height: calc(100vh - 60px);
+    height: calc(100vh - 76px);
     overflow: hidden;
   }
   #chart {
@@ -173,6 +173,64 @@
     top: 0;
     pointer-events: none;
     z-index: 5;
+  }
+
+  /* Barra de scroll horizontal rápida (Estilo NinjaTrader 8) */
+  #chart-scrollbar-container {
+    height: 16px;
+    background: var(--tb-bg);
+    border-top: 1px solid var(--tb-border);
+    border-bottom: 1px solid var(--tb-border);
+    display: flex;
+    align-items: center;
+    padding: 0 4px;
+    gap: 4px;
+    user-select: none;
+    z-index: 40;
+    box-sizing: border-box;
+  }
+  .sb-btn {
+    width: 16px;
+    height: 12px;
+    line-height: 10px;
+    background: var(--tb-btn-bg);
+    border: 1px solid var(--tb-btn-border);
+    border-radius: 2px;
+    color: var(--tb-text);
+    font-size: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+  }
+  .sb-btn:hover { background: var(--tb-btn-hover); }
+  .sb-track {
+    flex: 1 1 auto;
+    height: 8px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+  }
+  body.theme-dark .sb-track { background: rgba(255, 255, 255, 0.1); }
+  .sb-thumb {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    background: #8e929b;
+    border-radius: 4px;
+    cursor: grab;
+    min-width: 24px;
+    transition: background 0.1s;
+  }
+  .sb-thumb:hover { background: #6b7280; }
+  body.theme-dark .sb-thumb { background: #4a5268; }
+  body.theme-dark .sb-thumb:hover { background: #606b88; }
+  .sb-thumb.dragging {
+    cursor: grabbing;
+    background: #0284c7 !important;
   }
 
   /* Etiqueta del indicador superior izquierda (idéntica a NT8) */
@@ -212,18 +270,43 @@
     z-index: 50;
   }
   .tab-item {
-    background: var(--tab-active-bg);
-    border: 1px solid var(--tab-active-border);
+    background: var(--tb-bg);
+    border: 1px solid var(--tb-border);
     border-bottom: none;
     height: 25px;
     line-height: 24px;
-    padding: 0 14px;
-    font-weight: 600;
+    padding: 0 10px;
+    font-weight: 500;
     color: var(--tb-text);
-    cursor: default;
+    cursor: pointer;
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    opacity: 0.8;
+    transition: opacity 0.15s, background 0.15s;
+  }
+  .tab-item:hover { opacity: 1; background: var(--tb-btn-hover); }
+  .tab-item.active {
+    background: var(--chart-bg);
+    border-color: var(--tb-border);
+    font-weight: 700;
+    opacity: 1;
     box-shadow: 0 -1px 2px rgba(0,0,0,0.05);
+  }
+  .tab-close {
+    font-size: 10px;
+    padding: 1px 3px;
+    border-radius: 2px;
+    color: #888;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .tab-close:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: #dc2626;
   }
   .tab-add {
     padding: 0 8px;
@@ -231,6 +314,12 @@
     font-size: 14px;
     font-weight: 700;
     cursor: pointer;
+    border-radius: 2px;
+    transition: background 0.15s, color 0.15s;
+  }
+  .tab-add:hover {
+    background: var(--tb-btn-hover);
+    color: #0284c7;
   }
   .tab-spacer { flex: 1; }
   .tab-status {
@@ -704,6 +793,7 @@
     <select id="runsel" class="nt8-select" title="Seleccionar run"></select>
     <button class="nt8-btn" id="btn-bt2a-params" style="background:#0284c7;color:#fff;font-weight:700;border-color:#0369a1;" title="Configurar Parámetros y Extensión de Zonas (500 barras)"><span>⚙️ Parámetros</span> <span class="arrow">▾</span></button>
     <button class="nt8-btn" id="btn-corredores-demo" style="background:#0891b2;color:#fff;font-weight:700;border-color:#0e7490;box-shadow:0 0 6px rgba(8,145,178,0.4);" title="Prueba Visual: Corredores de Vacío y Campo de Fricción (HP-006)"><span>⚡ Corredores de Vacío (Demo)</span></button>
+    <button class="nt8-btn" id="btn-toggle-decay" style="background:#059669;color:#fff;font-weight:700;border-color:#047857;box-shadow:0 0 6px rgba(5,150,105,0.4);" title="Alternar Decaimiento: Sólo Comercio (Sin Tiempo) vs Decaimiento Temporal 12h"><span id="lbl-btn-decay">🛡️ Decaimiento: Sólo Comercio</span></button>
     <button class="nt8-btn" id="btn-hft-corridor" style="background:#7c3aed;color:#fff;font-weight:700;border-color:#6d28d9;box-shadow:0 0 6px rgba(124,58,237,0.4);" title="HFTZonesNQ → Campo Causal de Corredores (HP-007)"><span>🚀 HFT Corredores NQ</span></button>
   </div>
   <div class="tb-right">
@@ -723,9 +813,18 @@
   <canvas id="overlay"></canvas>
 </div>
 
+<!-- Barra de scroll horizontal rápida (Estilo NinjaTrader 8) -->
+<div id="chart-scrollbar-container">
+  <button class="sb-btn" id="sb-btn-left" title="Desplazar hacia la izquierda (Histórico)">◀</button>
+  <div class="sb-track" id="sb-track" title="Clic o arrastrar para navegar velozmente por el historial">
+    <div class="sb-thumb" id="sb-thumb"></div>
+  </div>
+  <button class="sb-btn" id="sb-btn-right" title="Desplazar hacia la derecha (Presente)">▶</button>
+</div>
+
 <footer id="bottom-bar">
-  <div class="tab-item" id="tab-asset-name">6E Continuo (EdgeLab)</div>
-  <div class="tab-add">+</div>
+  <div id="tabs-container" style="display: flex; align-items: center; gap: 2px;"></div>
+  <div class="tab-add" id="btn-add-tab" title="Nuevo gráfico / Data Series (NinjaTrader)">+</div>
   <div class="tab-spacer"></div>
   <div class="tab-status" id="metaline">Cargando datos...</div>
 </footer>
@@ -768,73 +867,137 @@
   </div>
 </div>
 
-<!-- Popover Selector de Parámetros y Extensión BigTrap2Absorption -->
-<div id="pop-bt2a-params" class="nt8-popover pop-left" style="width: 390px; left: 320px;">
+<!-- Popover Selector de Parámetros y Extensión de Zonas -->
+<div id="pop-bt2a-params" class="nt8-popover pop-left" style="width: 410px; left: 320px;">
   <div class="pop-header">
-    <span>⚙️ Parámetros BigTrap2Absorption (6E 25 Tick)</span>
+    <span id="pop-params-title">⚙️ Parámetros del Indicador</span>
     <button class="pop-close" data-close="pop-bt2a-params">✕</button>
   </div>
   <div class="pop-body" style="padding: 12px; display: flex; flex-direction: column; gap: 12px;">
     
-    <!-- 1. Extensión de Zonas Fija -->
+    <!-- 1. Extensión y Consumo de Zonas -->
     <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
       <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
-        <span>📏 Extensión de Zonas (Fija)</span>
-        <span id="lbl-ext-status" style="font-size: 10.5px; color: #0284c7; font-weight: 700;">500 barras</span>
+        <span>📏 Terminación de Zonas</span>
+        <span id="lbl-ext-status" style="font-size: 10px; color: #0284c7; font-weight: 700; background: rgba(2,132,199,0.12); padding: 2px 6px; border-radius: 3px;">500 barras</span>
       </div>
-      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-        <label style="font-size: 11px; color: var(--tb-text);">Extensión fija:</label>
-        <input type="number" id="inp-ext-bars" value="500" min="10" max="5000" step="50" style="width: 75px; padding: 3px 6px; border: 1px solid var(--tb-btn-border); border-radius: 2px; font-weight: 700; background: var(--pop-bg); color: var(--pop-text);">
-        <span style="font-size: 11px; color: #666;">barras hacia adelante</span>
+
+      <!-- Selector de Modo de Terminación: Fija vs Consumo por Volumen -->
+      <div style="display: flex; gap: 4px; margin-bottom: 8px;">
+        <button id="btn-mode-fixed" class="nt8-btn sm active" style="flex: 1; justify-content: center; font-weight: 700; background: #0284c7; color: #fff; border-color: #0369a1;">
+          📏 Barras Fijas
+        </button>
+        <button id="btn-mode-volume" class="nt8-btn sm" style="flex: 1; justify-content: center; font-weight: 700;">
+          ⚡ Consumo por Volumen
+        </button>
       </div>
-      <div style="display: flex; gap: 4px; flex-wrap: wrap;">
-        <button class="nt8-btn sm btn-quick-ext" data-bars="100">100 b</button>
-        <button class="nt8-btn sm btn-quick-ext" data-bars="250">250 b</button>
-        <button class="nt8-btn sm btn-quick-ext active" data-bars="500" style="background:#0284c7;color:#fff;border-color:#0369a1;font-weight:700;">500 b (Fija)</button>
-        <button class="nt8-btn sm btn-quick-ext" data-bars="1000">1000 b</button>
-        <button class="nt8-btn sm btn-quick-ext" data-bars="2000">2000 b</button>
+
+      <!-- Panel Modo 1: Barras Fijas -->
+      <div id="panel-mode-fixed">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <label style="font-size: 11px; color: var(--tb-text);">Extensión fija:</label>
+          <input type="number" id="inp-ext-bars" value="500" min="10" max="5000" step="50" style="width: 75px; padding: 3px 6px; border: 1px solid var(--tb-btn-border); border-radius: 2px; font-weight: 700; background: var(--pop-bg); color: var(--pop-text);">
+          <span style="font-size: 11px; color: #666;">barras hacia adelante</span>
+        </div>
+        <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+          <button class="nt8-btn sm btn-quick-ext" data-bars="100">100 b</button>
+          <button class="nt8-btn sm btn-quick-ext" data-bars="250">250 b</button>
+          <button class="nt8-btn sm btn-quick-ext active" data-bars="500" style="background:#0284c7;color:#fff;border-color:#0369a1;font-weight:700;">500 b (Fija)</button>
+          <button class="nt8-btn sm btn-quick-ext" data-bars="1000">1000 b</button>
+          <button class="nt8-btn sm btn-quick-ext" data-bars="2000">2000 b</button>
+        </div>
+        <div style="font-size: 10px; color: #888; margin-top: 6px; line-height: 1.3;">
+          ✓ Cada zona se dibuja con una longitud fija de barras desde su origen.
+        </div>
       </div>
-      <div style="font-size: 10px; color: #888; margin-top: 6px; line-height: 1.3;">
-        ✓ Cada zona se dibuja con una longitud fija de 500 barras desde su origen.
+
+      <!-- Panel Modo 2: Consumo por Volumen / Nivel de Comercio (Tick a Tick) -->
+      <div id="panel-mode-volume" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <label style="font-size: 11px; font-weight: 600; color: var(--tb-text);">Umbral de Muerte por Tick:</label>
+          <span id="lbl-vol-threshold-badge" style="font-size: 11px; font-weight: 700; color: #059669;">100 contratos</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <input type="range" id="range-vol-threshold" min="10" max="1000" step="10" value="100" style="flex: 1; accent-color: #059669; cursor: pointer;">
+          <input type="number" id="inp-vol-threshold" value="100" min="5" max="5000" step="5" style="width: 75px; padding: 3px 6px; border: 1px solid var(--tb-btn-border); border-radius: 2px; font-weight: 700; background: var(--pop-bg); color: var(--pop-text); text-align: right;">
+          <span style="font-size: 10.5px; color: #666;">ctrs</span>
+        </div>
+        <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px;">
+          <button class="nt8-btn sm btn-quick-vol" data-vol="35">35 c</button>
+          <button class="nt8-btn sm btn-quick-vol" data-vol="50">50 c</button>
+          <button class="nt8-btn sm btn-quick-vol" data-vol="75">75 c</button>
+          <button class="nt8-btn sm btn-quick-vol active" data-vol="100" style="background:#059669;color:#fff;border-color:#047857;font-weight:700;">100 c</button>
+          <button class="nt8-btn sm btn-quick-vol" data-vol="150">150 c</button>
+          <button class="nt8-btn sm btn-quick-vol" data-vol="250">250 c</button>
+          <button class="nt8-btn sm btn-quick-vol" data-vol="500">500 c</button>
+        </div>
+        <div style="font-size: 10px; color: #059669; background: rgba(16,185,129,0.08); padding: 6px 8px; border-radius: 3px; border: 1px solid rgba(16,185,129,0.2); line-height: 1.35;">
+          ✓ <b>Consumo Tick a Tick:</b> Cada tick de precio dentro de la zona se detiene individualmente al alcanzar el volumen requerido. La parte no comerciada continúa extendiéndose hacia adelante.
+        </div>
       </div>
+
     </div>
 
-    <!-- 2. Presets de Sensibilidad -->
+    <!-- 2. Configuraciones / Indicadores Disponibles en el Gráfico -->
     <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
-      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px;">🎯 Presets de Sensibilidad (1 Clic)</div>
-      <div style="display: flex; flex-direction: column; gap: 5px;">
-        <button class="nt8-btn btn-preset" data-run-id="bt2a_25t" style="justify-content: flex-start; text-align: left; padding: 5px 8px; width: 100%;">
-          <span style="font-size: 14px; margin-right: 6px;">🛡️</span>
-          <div>
-            <div style="font-weight: 700; color: #0284c7;">Institucional (775 Zonas) — Puerta 0 Validado</div>
-            <div style="font-size: 9.5px; color: #666;">p97.5 · 1 Fila · Imbalance 3.0x · TrapFrac 20%</div>
-          </div>
+      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+        <span>🎯 Indicadores y Presets Disponibles</span>
+        <span id="lbl-presets-count" style="font-size: 10px; color: #888;"></span>
+      </div>
+      <div id="pop-presets-container" style="display: flex; flex-direction: column; gap: 5px; max-height: 220px; overflow-y: auto;">
+        <!-- Llenado dinámicamente según el activo y los runs disponibles -->
+      </div>
+    </div>
+
+    <!-- 3. Corredores de Vacío HFT (HP-007 Sólidos) -->
+    <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
+      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+        <span>⚡ Corredores de Vacío HFT</span>
+        <label style="font-size: 10px; display: flex; align-items: center; gap: 5px; cursor: pointer;">
+          <input type="checkbox" id="chk-corridors-enable" checked>
+          <span style="font-weight: 700; color: #0284c7;">Habilitado</span>
+        </label>
+      </div>
+      <div id="corridors-options-wrap" style="display: flex; flex-direction: column; gap: 7px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <label style="font-size: 11px; color: var(--tb-text);">Amplitud Mínima (H_min):</label>
+          <span id="lbl-corridor-hmin-badge" style="font-size: 10.5px; font-weight: 700; color: #0284c7;">16 ticks (4.0 pts)</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <input type="range" id="range-corridor-hmin" min="8" max="120" step="4" value="16" style="flex: 1; accent-color: #0284c7; cursor: pointer;">
+          <input type="number" id="inp-corridor-hmin" value="16" min="4" max="200" step="2" style="width: 55px; padding: 2px 4px; border: 1px solid var(--tb-btn-border); border-radius: 2px; font-weight: 700; background: var(--pop-bg); color: var(--pop-text); text-align: right;">
+          <span style="font-size: 10px; color: #666;">ticks</span>
+        </div>
+        <div style="display: flex; gap: 4px;">
+          <button class="nt8-btn sm btn-corridor-dir active" data-dir="all" id="btn-corr-all" style="flex: 1; font-weight: 700; background: #0284c7; color: #fff;">Todos</button>
+          <button class="nt8-btn sm btn-corridor-dir" data-dir="bull" id="btn-corr-bull" style="flex: 1; font-weight: 700;">🟢 Alcistas</button>
+          <button class="nt8-btn sm btn-corridor-dir" data-dir="bear" id="btn-corr-bear" style="flex: 1; font-weight: 700;">🔴 Bajistas</button>
+        </div>
+        <div style="font-size: 9.5px; color: #666; line-height: 1.3;">
+          ✓ Delimitación estricta entre murallas vivas. Sin franjas infinitas ni micro-ruido.
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Modelo de Decaimiento del Campo de Densidad -->
+    <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
+      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+        <span>⏳ Decaimiento del Campo</span>
+        <span id="lbl-decay-status" style="font-size: 10.5px; color: #10b981; font-weight: 700;">Sólo Comercio (Sin Tiempo)</span>
+      </div>
+      <div style="display: flex; gap: 5px; flex-direction: column;">
+        <button class="nt8-btn btn-decay-mode active" data-mode="trade_only" id="opt-decay-trade" style="background:#059669;color:#fff;border-color:#047857;font-weight:700;text-align:left;padding:5px 8px;width:100%;">
+          <div>🛡️ Sólo Comercio / Toques (Recomendado)</div>
+          <div style="font-size:9.5px;opacity:0.9;">Sin decaimiento por tiempo ni corte de fin de semana. La zona sólo decae cuando el precio entra y opera dentro de ella.</div>
         </button>
-        <button class="nt8-btn btn-preset" data-run-id="bt2a_25t_equilibrado" style="justify-content: flex-start; text-align: left; padding: 5px 8px; width: 100%;">
-          <span style="font-size: 14px; margin-right: 6px;">🎯</span>
-          <div>
-            <div style="font-weight: 700;">Equilibrado (1,490 Zonas)</div>
-            <div style="font-size: 9.5px; color: #666;">p95.0 · 1 Fila · Imbalance 2.5x · TrapFrac 20%</div>
-          </div>
-        </button>
-        <button class="nt8-btn btn-preset" data-run-id="bt2a_25t_sensible" style="justify-content: flex-start; text-align: left; padding: 5px 8px; width: 100%;">
-          <span style="font-size: 14px; margin-right: 6px;">⚡</span>
-          <div>
-            <div style="font-weight: 700;">Alta Sensibilidad (2,884 Zonas)</div>
-            <div style="font-size: 9.5px; color: #666;">p90.0 · 1 Fila · Imbalance 2.0x · TrapFrac 15%</div>
-          </div>
-        </button>
-        <button class="nt8-btn btn-preset" data-run-id="bt2a_25t_estricto" style="justify-content: flex-start; text-align: left; padding: 5px 8px; width: 100%;">
-          <span style="font-size: 14px; margin-right: 6px;">🔒</span>
-          <div>
-            <div style="font-weight: 700;">Ultra Conservador (45 Zonas)</div>
-            <div style="font-size: 9.5px; color: #666;">p97.5 · 2 Filas (Configuración anterior que marcaba pocas zonas)</div>
-          </div>
+        <button class="nt8-btn btn-decay-mode" data-mode="calibrated_time" id="opt-decay-time" style="text-align:left;padding:5px 8px;width:100%;">
+          <div>⏱️ Temporal Calibrado (Vida Media 12h)</div>
+          <div style="font-size:9.5px;color:#888;">Decaimiento continuo por tiempo de calendario (12h media, corte 48h).</div>
         </button>
       </div>
     </div>
 
-    <!-- 3. Estilo Visual -->
+    <!-- 4. Estilo Visual -->
     <div style="display: flex; gap: 8px; align-items: center; justify-content: space-between;">
       <div style="display: flex; align-items: center; gap: 4px;">
         <span style="font-size: 10px; font-weight: 600;">Bull:</span>
@@ -910,6 +1073,51 @@
         <button class="nt8-btn-action" id="btn-props-ok">OK</button>
         <button class="nt8-btn-action" id="btn-props-cancel">Cancel</button>
         <button class="nt8-btn-action" id="btn-props-apply">Apply</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =====================================================================
+     MODAL DE NUEVO GRÁFICO / DATA SERIES (EXACTO A NINJATRADER 8)
+     ===================================================================== -->
+<div id="nt8-newchart-modal" class="nt8-modal-backdrop">
+  <div class="nt8-dialog-window" style="width: 580px; max-height: 85vh;">
+    <div class="nt8-dialog-header">
+      <div class="nt8-dialog-title">Data Series — Seleccionar Gráfico</div>
+      <button class="nt8-dialog-close-btn" id="btn-newchart-close">✕</button>
+    </div>
+    <div class="nt8-dialog-body" style="flex-direction: column; padding: 12px; gap: 10px; overflow-y: auto;">
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <input type="text" id="newchart-search" class="nt8-input" placeholder="🔍 Buscar instrumento (ej. NQ, ES, 6E, GC, MBT)..." style="padding: 6px 8px; font-size: 12px;">
+      </div>
+      
+      <div style="font-size: 11px; font-weight: 700; color: #666; margin-top: 4px;">INSTRUMENTOS DISPONIBLES (EDGELAB REGIME):</div>
+      <div id="newchart-list" style="max-height: 250px; overflow-y: auto; border: 1px solid var(--tb-border); border-radius: 3px;">
+        <!-- Se llena dinámicamente desde ASSET_CATALOG -->
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px; padding: 8px; background: var(--tb-bg); border-radius: 4px; border: 1px solid var(--tb-border);">
+        <div style="font-size: 11px; font-weight: 700;">Data Series (Resolución):</div>
+        <div style="display: flex; gap: 10px;" id="newchart-tf-radios">
+          <label style="font-size: 11px; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+            <input type="radio" name="newchart-tf" value="tick_25" checked> ⚡ 25 Tick (Micro)
+          </label>
+          <label style="font-size: 11px; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+            <input type="radio" name="newchart-tf" value="time_5m"> ⏱️ 5 Min
+          </label>
+          <label style="font-size: 11px; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+            <input type="radio" name="newchart-tf" value="time_15m"> 📅 15 Min
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="nt8-dialog-footer">
+      <div style="font-size: 10.5px; color: #666;">Doble clic en un activo para abrirlo inmediatamente.</div>
+      <div class="nt8-footer-actions">
+        <button class="nt8-btn-action" id="btn-newchart-open-tab" style="background:#0284c7;border-color:#0369a1;min-width:130px;font-weight:700;">+ Nueva Pestaña</button>
+        <button class="nt8-btn-action" id="btn-newchart-open-win" style="background:#059669;border-color:#047857;min-width:130px;font-weight:700;">↗ Nueva Ventana</button>
+        <button class="nt8-btn-action" id="btn-newchart-cancel">Cancelar</button>
       </div>
     </div>
   </div>
@@ -1001,7 +1209,12 @@
   ];
 
   var activeProps = {
+    consumption_mode: "fixed", // "fixed" o "volume"
+    volume_threshold: 100,     // contratos acumulados por tick requeridos para terminar su extensión
     extension_bars: 500,
+    corridors_enabled: true,   // Corredores de Vacío HFT sólidos (HP-007 / HP-006)
+    corridors_hmin_ticks: 16,  // Amplitud mínima del corredor en ticks
+    corridors_dir_filter: "all", // "all", "bull", "bear"
     opacidad: 30,
     mostrar_absorb: true,
     mostrar_texto: true,
@@ -1036,8 +1249,10 @@
     states: {},
     onlyOrphans: false,
     showCorredoresDemo: true,
+    decayMode: "trade_only", // "trade_only" (sin decaimiento temporal, sólo comercio/toques) o "calibrated_time" (12h media)
     isDark: false,
-    currentAssetId: "6E_CONT"
+    currentAssetId: "6E_CONT",
+    openTabs: []
   };
 
   var wrapEl = document.getElementById("wrap");
@@ -1140,9 +1355,13 @@
     return true;
   }
 
-  // Mapeo exacto horizontal con proyección continua hacia el futuro y soporte off-screen
-  function timeToX(t) {
+  // Mapeo exacto horizontal con soporte de índice de barra y fallback off-screen
+  function timeToX(t, barIdx) {
     var tsc = chart.timeScale();
+    if (barIdx !== undefined && barIdx !== null && barIdx >= 0) {
+      var cLogical = tsc.logicalToCoordinate(barIdx);
+      if (cLogical !== null && cLogical !== undefined) return cLogical;
+    }
     var c = tsc.timeToCoordinate(t);
     if (c !== null && c !== undefined) return c;
 
@@ -1170,16 +1389,17 @@
       targetLogical = (n - 1) + (t - candles[n - 1].time) / Math.max(1, avgBarSec);
     }
 
-    // Proyección precisa usando el rango lógico visible para velas fuera de pantalla
+    var coord = tsc.logicalToCoordinate(targetLogical);
+    if (coord !== null && coord !== undefined) return coord;
+
     var logRange = tsc.getVisibleLogicalRange();
     if (logRange && logRange.to > logRange.from) {
       var w = wrapEl.clientWidth;
-      var pxPerBar = w / (logRange.to - logRange.from);
+      var priceScaleWidth = 65;
+      var chartW = Math.max(10, w - priceScaleWidth);
+      var pxPerBar = chartW / (logRange.to - logRange.from);
       return (targetLogical - logRange.from) * pxPerBar;
     }
-
-    var coord = tsc.logicalToCoordinate(targetLogical);
-    if (coord !== null && coord !== undefined) return coord;
 
     return 0;
   }
@@ -1217,21 +1437,216 @@
     var avgSecPerBar = (nCandles > 1) ? (candles[nCandles - 1].time - candles[0].time) / (nCandles - 1) : 60;
 
     // 1. Dibujar ZONAS
+    // Culling vertical previo: determinar rango de precio visible en el viewport (+ margen del 20%)
+    var visMaxP = null, visMinP = null;
+    if (series) {
+      var pTop = series.coordinateToPrice(0);
+      var pBot = series.coordinateToPrice(hCanvas);
+      if (pTop !== null && pBot !== null) {
+        var highP = Math.max(pTop, pBot);
+        var lowP = Math.min(pTop, pBot);
+        var pMargin = (highP - lowP) * 0.20;
+        visMaxP = highP + pMargin;
+        visMinP = lowP - pMargin;
+      }
+    }
+
     state.run.zones.forEach(function (z) {
       if (!visible(z)) return;
 
+      var zBot = Math.min(z.top, z.bottom);
+      var zTop = Math.max(z.top, z.bottom);
+
+      // CULLING VERTICAL INSTANTÁNEO: si la zona no está en el rango vertical de la pantalla, descartar de inmediato
+      if (visMaxP !== null && (zBot > visMaxP || zTop < visMinP)) return;
+
+      // CULLING HORIZONTAL TEMPRANO: zonas creadas a la derecha de la ventana visible
+      if (z.t0 > vr.to) return;
+
       var t1_eff = z.t1 || (z.t0 + 5400);
 
-      // Si la extensión fija en barras está habilitada (por defecto 500 barras)
-      if (candles && nCandles > 0 && extBars > 0) {
+      var i0 = (z.start_bar_idx !== undefined && z.start_bar_idx < nCandles && candles[z.start_bar_idx].time === z.t0)
+        ? z.start_bar_idx
+        : -1;
+      if (i0 === -1 && candles && nCandles > 0) {
         var low = 0, high = nCandles - 1;
         while (low <= high) {
           var mid = (low + high) >> 1;
           if (candles[mid].time < z.t0) low = mid + 1;
           else high = mid - 1;
         }
-        var i0 = Math.max(0, Math.min(nCandles - 1, low));
-        var i1 = i0 + extBars;
+        i0 = Math.max(0, Math.min(nCandles - 1, low));
+        z.start_bar_idx = i0; // Cachear en z para no repetir búsqueda binaria en cada frame
+      }
+
+      // --- MODO 2: CONSUMO DE ZONA POR VOLUMEN / NIVEL DE COMERCIO (TICK A TICK) ---
+      var isVolMode = (activeProps.consumption_mode === "volume");
+      if (isVolMode && z.source !== "luxalgo" && candles && nCandles > 0) {
+        var volThresh = (activeProps.volume_threshold !== undefined) ? activeProps.volume_threshold : 100;
+
+        // Si ya está en cache y murió a la izquierda de la pantalla, descartar en O(1)
+        if (z._consCache && z._consCache.thresh === volThresh && z._consCache.barKey === activeKey) {
+          if (z._consCache.maxT1 < vr.from) return;
+        }
+
+        var tickSize = (state.data && state.data.meta && state.data.meta.tick_size) || 0.25;
+        var nTicks = Math.max(1, Math.round((zTop - zBot) / tickSize) + 1);
+
+        if (!z._consCache || z._consCache.thresh !== volThresh || z._consCache.barKey !== activeKey) {
+          var acc = new Float32Array(nTicks);
+          var deathBars = new Int32Array(nTicks);
+          deathBars.fill(-1);
+          var aliveCount = nTicks;
+          var maxSearch = nCandles;
+          var invTick = 1.0 / tickSize;
+
+          for (var ci = i0 + 1; ci < maxSearch; ci++) {
+            var c = candles[ci];
+            if (c.high < zBot || c.low > zTop) continue;
+
+            var cTicks = Math.max(1, Math.round((c.high - c.low) * invTick) + 1);
+            var volTick = Math.max(1.0, (c.volume || 25.0) / cTicks);
+
+            var kMin = Math.max(0, Math.round((c.low - zBot) * invTick));
+            var kMax = Math.min(nTicks - 1, Math.round((c.high - zBot) * invTick));
+
+            for (var k = kMin; k <= kMax; k++) {
+              if (deathBars[k] === -1) {
+                acc[k] += volTick;
+                if (acc[k] >= volThresh) {
+                  deathBars[k] = ci;
+                  aliveCount--;
+                }
+              }
+            }
+            if (aliveCount === 0) break;
+          }
+
+          // Precalcular rebanadas contiguas (slices) una sola vez y guardarlas en cache
+          var slices = [];
+          var curStartK = 0;
+          var curDeath = deathBars[0];
+          var maxDeath = deathBars[0];
+          for (var k = 1; k < nTicks; k++) {
+            var dbk = deathBars[k];
+            if (dbk > maxDeath) maxDeath = dbk;
+            if (dbk !== curDeath) {
+              slices.push({ startK: curStartK, endK: k - 1, deathBar: curDeath });
+              curStartK = k;
+              curDeath = dbk;
+            }
+          }
+          slices.push({ startK: curStartK, endK: nTicks - 1, deathBar: curDeath });
+
+          var maxT1;
+          if (aliveCount > 0) {
+            maxT1 = candles[nCandles - 1].time + 7200;
+          } else if (maxDeath >= 0 && maxDeath < nCandles) {
+            maxT1 = candles[maxDeath].time;
+          } else {
+            maxT1 = z.t0 + 600;
+          }
+
+          z._consCache = {
+            thresh: volThresh,
+            barKey: activeKey,
+            deathBars: deathBars,
+            hasAlive: (aliveCount > 0),
+            aliveCount: aliveCount,
+            deadCount: nTicks - aliveCount,
+            nTicks: nTicks,
+            maxDeathBar: maxDeath,
+            maxT1: maxT1,
+            slices: slices
+          };
+        }
+
+        var cData = z._consCache;
+        if (cData.maxT1 < vr.from) return;
+
+        var x0 = timeToX(z.t0, i0);
+        var col = colorOf(z);
+        var fillAlpha = (activeProps.opacidad !== undefined) ? (activeProps.opacidad / 100) : 0.18;
+        if (fillAlpha > 0.35) fillAlpha = 0.22;
+
+        var longestRw = 0;
+        var topSliceY = Infinity;
+        var nowX = timeToX(candles[nCandles - 1].time, nCandles - 1) + 40;
+
+        // Renderizar cada rebanada precalculada
+        cData.slices.forEach(function (slice) {
+          var isDead = (slice.deathBar !== -1);
+          var x1_s = isDead
+            ? ((slice.deathBar < nCandles) ? timeToX(candles[slice.deathBar].time, slice.deathBar) : nowX)
+            : nowX;
+          if (x1_s <= x0) x1_s = x0 + 10;
+
+          // Culling horizontal estricto de la rebanada
+          if (x1_s < -5 || x0 > w + 5) return;
+
+          var pLow = zBot + slice.startK * tickSize - (slice.startK === 0 ? 0 : tickSize * 0.5);
+          var pHigh = zBot + slice.endK * tickSize + (slice.endK === (cData.nTicks - 1) ? 0 : tickSize * 0.5);
+
+          var yT_s = series.priceToCoordinate(pHigh);
+          var yB_s = series.priceToCoordinate(pLow);
+          if (yT_s === null || yB_s === null) return;
+
+          var yMin_s = Math.min(yT_s, yB_s);
+          var yMax_s = Math.max(yT_s, yB_s);
+          var h_s = Math.max(2, yMax_s - yMin_s);
+          if (yMin_s < topSliceY) topSliceY = yMin_s;
+
+          // Clamping para no forzar al rasterizador canvas a dibujar primitivas de cientos de miles de píxeles
+          var drawX0 = Math.max(-10, x0);
+          var drawX1 = Math.min(w + 10, x1_s);
+          var rw_s = drawX1 - drawX0;
+          if (rw_s <= 0) return;
+
+          // Relleno tenue de la rebanada
+          ctx.fillStyle = hexToRgba(col, isDead ? (fillAlpha * 0.65) : fillAlpha);
+          ctx.fillRect(drawX0, yMin_s, rw_s, h_s);
+
+          // Borde punteado
+          ctx.strokeStyle = col;
+          ctx.lineWidth = isDead ? 1.0 : 1.3;
+          ctx.setLineDash(isDead ? [3, 2] : [5, 3]);
+          ctx.strokeRect(drawX0 + 0.5, yMin_s + 0.5, rw_s, h_s);
+          ctx.setLineDash([]);
+
+          // Indicador vertical de corte en el punto exacto de consumo
+          if (isDead && x1_s >= -5 && x1_s <= w + 5) {
+            ctx.strokeStyle = col;
+            ctx.lineWidth = 2.0;
+            ctx.beginPath();
+            ctx.moveTo(x1_s, yMin_s);
+            ctx.lineTo(x1_s, yMin_s + h_s);
+            ctx.stroke();
+          }
+
+          if (x1_s - x0 > longestRw) longestRw = x1_s - x0;
+        });
+
+        // Etiqueta distintiva
+        if (showLabels && longestRw > 35 && topSliceY !== Infinity) {
+          ctx.fillStyle = activeProps.color_texto || (state.isDark ? "#d1d4dc" : "#333333");
+          ctx.font = "bold 9px 'Segoe UI', -apple-system, sans-serif";
+          var zLabel = (z.kind || "HFT") + (z.pasos ? " " + z.pasos + "p" : "");
+          if (!cData.hasAlive) {
+            zLabel += " ✕ Consumida (" + volThresh + "c)";
+          } else if (cData.deadCount > 0) {
+            var alivePct = Math.round((cData.aliveCount / cData.nTicks) * 100);
+            zLabel += " (" + alivePct + "% viva · " + volThresh + "c)";
+          }
+          ctx.fillText(zLabel, Math.max(4, x0 + 4), Math.max(12, topSliceY - 3));
+        }
+
+        return; // Fin del dibujado para esta zona en modo volumen
+      }
+
+      // --- MODO 1: EXTENSIÓN FIJA POR BARRAS ---
+      // Si la extensión fija en barras está habilitada (por defecto 500 barras)
+      var i1 = (extBars > 0) ? (i0 + extBars) : (z.end_bar_idx !== undefined ? z.end_bar_idx : i0 + 20);
+      if (candles && nCandles > 0) {
         if (i1 < nCandles) {
           t1_eff = candles[i1].time;
         } else {
@@ -1241,8 +1656,8 @@
 
       if (t1_eff < vr.from || z.t0 > vr.to) return;
 
-      var x0 = timeToX(z.t0);
-      var x1 = timeToX(t1_eff);
+      var x0 = timeToX(z.t0, i0);
+      var x1 = timeToX(t1_eff, i1);
       if (x1 <= x0) x1 = x0 + Math.max(15, extBars * 3);
 
       // Mapeo vertical continuo
@@ -1358,12 +1773,25 @@
           ctx.fillText(txt, Math.max(4, x0 + 4), Math.max(12, yMin - 3));
         }
       } else {
+        // Zonas NT8 / HFT: Relleno tenue NinjaTrader + contorno discontinuo elegante
+        var fillAlpha = (activeProps.opacidad !== undefined) ? (activeProps.opacidad / 100) : 0.18;
+        if (fillAlpha > 0.35) fillAlpha = 0.22;
+        ctx.fillStyle = hexToRgba(col, fillAlpha);
+        ctx.fillRect(x0, yMin, rw, h);
+
         ctx.strokeStyle = col;
-        ctx.lineWidth = 1.8;
+        ctx.lineWidth = 1.4;
         ctx.setLineDash([5, 3]);
         ctx.strokeRect(x0 + 0.5, yMin + 0.5, rw, h);
         ctx.lineWidth = 1;
         ctx.setLineDash([]);
+
+        if (showLabels && rw > 35) {
+          ctx.fillStyle = activeProps.color_texto || (state.isDark ? "#d1d4dc" : "#333333");
+          ctx.font = "bold 9px 'Segoe UI', -apple-system, sans-serif";
+          var zLabel = (z.kind || "HFT") + (z.pasos ? " " + z.pasos + "p" : "");
+          ctx.fillText(zLabel, Math.max(4, x0 + 4), Math.max(12, yMin - 3));
+        }
       }
     });
 
@@ -1414,25 +1842,36 @@
     // Detección automática de cortes/huecos temporales en la captura de datos (> 3.5 días = más que un fin de semana estándar)
     var activeKey = state.activeBarKey || (state.run && state.run.bar_key) || (state.data && Object.keys(state.data.bar_series)[0]);
     if (state.data && state.data.bar_series && state.data.bar_series[activeKey] && state.data.bar_series[activeKey].candles) {
-      var cList = state.data.bar_series[activeKey].candles;
-      var range = chart.timeScale().getVisibleRange();
-      if (range) {
-        var fromT = typeof range.from === "number" ? range.from : (range.from && range.from.timestamp ? range.from.timestamp() : 0);
-        var toT = typeof range.to === "number" ? range.to : (range.to && range.to.timestamp ? range.to.timestamp() : 0);
-        
+      var bs = state.data.bar_series[activeKey];
+      if (!bs._gapsCache && bs.candles.length > 1) {
+        var cList = bs.candles;
+        var detectedGaps = [];
         for (var ci = 1; ci < cList.length; ci++) {
-          var cPrev = cList[ci - 1];
-          var cCur = cList[ci];
-          if (cCur.time < fromT) continue;
-          if (cPrev.time > toT) break;
-          
-          var diffSec = cCur.time - cPrev.time;
+          var diffSec = cList[ci].time - cList[ci - 1].time;
           if (diffSec > 86400 * 3.5) {
-            var gx = timeToX(cCur.time);
+            detectedGaps.push({
+              time: cList[ci].time,
+              prevTime: cList[ci - 1].time,
+              diffSec: diffSec
+            });
+          }
+        }
+        bs._gapsCache = detectedGaps;
+      }
+
+      if (bs._gapsCache && bs._gapsCache.length) {
+        var range = chart.timeScale().getVisibleRange();
+        if (range) {
+          var fromT = typeof range.from === "number" ? range.from : (range.from && range.from.timestamp ? range.from.timestamp() : 0);
+          var toT = typeof range.to === "number" ? range.to : (range.to && range.to.timestamp ? range.to.timestamp() : 0);
+          
+          bs._gapsCache.forEach(function (gp) {
+            if (gp.time < fromT || gp.prevTime > toT) return;
+            var gx = timeToX(gp.time);
             if (gx > 5 && gx < w - 10) {
-              var daysMissing = (diffSec / 86400).toFixed(1);
-              var d0Str = new Date(cPrev.time * 1000).toISOString().slice(5, 10);
-              var d1Str = new Date(cCur.time * 1000).toISOString().slice(5, 10);
+              var daysMissing = (gp.diffSec / 86400).toFixed(1);
+              var d0Str = new Date(gp.prevTime * 1000).toISOString().slice(5, 10);
+              var d1Str = new Date(gp.time * 1000).toISOString().slice(5, 10);
               var gapLabel = "⚠️ CORTE EN CAPTURA NT8 (" + d0Str + " → " + d1Str + " · " + daysMissing + " días sin datos en archivo original)";
               
               ctx.save();
@@ -1458,7 +1897,7 @@
               ctx.fillText(gapLabel, gbx + 7, 74);
               ctx.restore();
             }
-          }
+          });
         }
       }
     }
@@ -1538,9 +1977,12 @@
     drawCorredoresDemo(ctx, w, hCanvas);
   }
 
+  // =====================================================================
+  // MOTOR DE CORREDORES DE VACÍO HFT SÓLIDOS (HP-007 / HP-006)
+  // =====================================================================
   function drawCorredoresDemo(ctx, w, hCanvas) {
-    if (!state.showCorredoresDemo) return;
-    if (!series) return;
+    if (!state.showCorredoresDemo || activeProps.corridors_enabled === false) return;
+    if (!series || !state.run || !state.run.zones) return;
 
     var activeKey = state.activeBarKey || (state.run && state.run.bar_key) || (state.data && Object.keys(state.data.bar_series)[0]);
     var bs = state.data && state.data.bar_series && state.data.bar_series[activeKey];
@@ -1551,403 +1993,345 @@
     var vr = tsc.getVisibleRange();
     if (!vr) return;
 
-    // 1. Determinar tRef estrictamente causal: hoverTime o última vela visible
-    var visCandles = [];
-    for (var ci = 0; ci < candles.length; ci++) {
-      if (candles[ci].time >= vr.from && candles[ci].time <= vr.to) {
-        visCandles.push(candles[ci]);
+    var tick = (state.data && state.data.meta && state.data.meta.tick_size) || 0.25;
+    var prec = (state.data && state.data.meta && state.data.meta.precision !== undefined) ? state.data.meta.precision : 2;
+    var hMinTicks = (activeProps.corridors_hmin_ticks !== undefined) ? parseInt(activeProps.corridors_hmin_ticks, 10) : 16;
+    var dirFilter = activeProps.corridors_dir_filter || "all";
+    var extBars = (activeProps.extension_bars !== undefined) ? parseInt(activeProps.extension_bars, 10) : 500;
+    var nCandles = candles.length;
+    var avgSecPerBar = (nCandles > 1) ? (candles[nCandles - 1].time - candles[0].time) / (nCandles - 1) : 60;
+
+    // 1. Determinar tRef causal: hoverTime o borde visible (sin escaneo lineal de 240k velas)
+    var tRef = state.hoverTime;
+    if (!tRef) {
+      tRef = (typeof vr.to === "number") ? vr.to : (vr.to && vr.to.timestamp ? vr.to.timestamp() : candles[candles.length - 1].time);
+    }
+
+    // Rango vertical visible para culling de muros y corredores
+    var visMaxP = null, visMinP = null;
+    if (series) {
+      var pTop = series.coordinateToPrice(0);
+      var pBot = series.coordinateToPrice(hCanvas);
+      if (pTop !== null && pBot !== null) {
+        var highP = Math.max(pTop, pBot);
+        var lowP = Math.min(pTop, pBot);
+        visMaxP = highP + 60; // 60 pts de margen
+        visMinP = lowP - 60;
       }
     }
-    if (visCandles.length < 2) return;
-    var tRef = state.hoverTime || visCandles[visCandles.length - 1].time;
 
-    // 2. Usar exactamente el run seleccionado por el usuario. NUNCA sustituir por otro run.
-    var runToUse = state.run;
-    if (!runToUse || !runToUse.zones) return;
-    var zones = runToUse.zones;
+    // 2. Extraer zonas activas no consumidas as-of tRef
+    var zones = state.run.zones;
+    var livingWalls = [];
+    var isVolMode = (activeProps.consumption_mode === "volume");
 
-    var tick = (state.data && state.data.meta && state.data.meta.tick_size) || 0.25;
-
-    // 3. Dominio de precios CAUSAL y FIJO (independiente del viewport)
-    // Se construye con las velas históricas <= tRef y las zonas disponibles <= tRef más padding fijo.
-    var pMinCausal = Infinity, pMaxCausal = -Infinity;
-    for (var vi = 0; vi < candles.length; vi++) {
-      if (candles[vi].time > tRef) break;
-      if (candles[vi].low < pMinCausal) pMinCausal = candles[vi].low;
-      if (candles[vi].high > pMaxCausal) pMaxCausal = candles[vi].high;
-    }
-    if (pMinCausal === Infinity || pMaxCausal === -Infinity) return;
-
-    // 4. Filtrar zonas estrictamente por disponibilidad causal (available_ts <= tRef).
-    // NUNCA filtrar por intersección con el viewport.
-    var activeZones = [];
-    var legacyAvailabilityFallbacks = 0;
     for (var zi = 0; zi < zones.length; zi++) {
       var z = zones[zi];
-      var availTs;
-      if (z.available_ts !== undefined && z.available_ts !== null) availTs = z.available_ts;
-      else if (z.availableTime !== undefined && z.availableTime !== null) availTs = z.availableTime;
-      else if (z.available_ns !== undefined && z.available_ns !== null) availTs = z.available_ns / 1e9;
-      else {
-        availTs = (z.t0 !== undefined) ? z.t0 : (z.created_ms ? z.created_ms / 1000 : z.time);
-        legacyAvailabilityFallbacks++;
-      }
+      if (!visible(z)) continue;
+
+      var baseBot = Math.min(z.bottom, z.top);
+      var baseTop = Math.max(z.bottom, z.top);
+
+      // CULLING VERTICAL: si el muro está fuera del viewport vertical, ignorar
+      if (visMaxP !== null && (baseBot > visMaxP || baseTop < visMinP)) continue;
+
+      var availTs = (z.available_ts !== undefined && z.available_ts !== null) 
+        ? z.available_ts 
+        : (z.availableTime !== undefined ? z.availableTime : z.t0);
       if (availTs > 1e16) availTs = availTs / 1e9;
       else if (availTs > 1e11) availTs = availTs / 1e3;
 
-      if (availTs <= tRef) {
-        var zBot = (z.bottom !== undefined) ? z.bottom : z.lo;
-        var zTop = (z.top !== undefined) ? z.top : z.hi;
-        if (zBot < pMinCausal) pMinCausal = zBot;
-        if (zTop > pMaxCausal) pMaxCausal = zTop;
-        activeZones.push({
-          z: z,
-          availTs: availTs,
-          bot: Math.min(zBot, zTop),
-          top: Math.max(zBot, zTop),
-          vol: (z.vol !== undefined) ? z.vol : (z.volume || 1.0)
-        });
-      }
-    }
+      if (availTs > vr.to) continue; // Causalidad estricta: zona posterior a la ventana visible
 
-    // Padding fijo en ticks
-    var paddingTicks = 20;
-    var tickMin = Math.floor(pMinCausal / tick) - paddingTicks;
-    var tickMax = Math.ceil(pMaxCausal / tick) + paddingTicks;
-    var nTicks = (tickMax - tickMin) + 1;
-    if (nTicks < 5) return;
-
-    var gridP = new Float64Array(nTicks);
-    var dp = new Float64Array(nTicks);
-    for (var ti = 0; ti < nTicks; ti++) {
-      gridP[ti] = (tickMin + ti) * tick;
-    }
-
-    // 5. CÁLCULO DEL CAMPO DE DENSIDAD RAW_STATIC
-    // Peso de zona = 1.0, sin maduración temporal, sin decaimiento, sin desgaste post-hoc
-    var sigmaTicks = 1.2;
-    var twoSigmaSq = 2.0 * sigmaTicks * sigmaTicks;
-    var cutoffTicks = Math.ceil(3.0 * sigmaTicks);
-
-    for (var az = 0; az < activeZones.length; az++) {
-      var azObj = activeZones[az];
-      var zLoTick = Math.round(azObj.bot / tick);
-      var zHiTick = Math.round(azObj.top / tick);
-      if (zLoTick > zHiTick) { var tmp = zLoTick; zLoTick = zHiTick; zHiTick = tmp; }
-
-      var kMin = Math.max(tickMin, zLoTick - cutoffTicks);
-      var kMax = Math.min(tickMax, zHiTick + cutoffTicks);
-      var iMin = kMin - tickMin;
-      var iMax = kMax - tickMin;
-
-      for (var idx = iMin; idx <= iMax; idx++) {
-        var k = tickMin + idx;
-        var distTicks = 0.0;
-        if (k < zLoTick) distTicks = zLoTick - k;
-        else if (k > zHiTick) distTicks = k - zHiTick;
-
-        if (distTicks <= 3.0 * sigmaTicks) {
-          var kVal = (distTicks === 0.0) ? 1.0 : Math.exp(-(distTicks * distTicks) / twoSigmaSq);
-          dp[idx] += kVal;
+      // Usar start_bar_idx ya cacheado
+      var i0 = (z.start_bar_idx !== undefined && z.start_bar_idx < nCandles && candles[z.start_bar_idx].time === z.t0)
+        ? z.start_bar_idx
+        : -1;
+      if (i0 === -1) {
+        var low = 0, high = nCandles - 1;
+        while (low <= high) {
+          var mid = (low + high) >> 1;
+          if (candles[mid].time < z.t0) low = mid + 1;
+          else high = mid - 1;
         }
+        i0 = Math.max(0, Math.min(nCandles - 1, low));
+        z.start_bar_idx = i0;
       }
-    }
 
-    // Estadísticas globales sobre el dominio fijo completo
-    var dMin = Infinity, dMax = -Infinity, dSum = 0;
-    var nLow = 0, nHigh = 0;
-    for (var si = 0; si < nTicks; si++) {
-      var val = dp[si];
-      if (val < dMin) dMin = val;
-      if (val > dMax) dMax = val;
-      dSum += val;
-      if (val <= 0.32) nLow++;
-      if (val >= 0.70) nHigh++;
-    }
-    var dMean = nTicks > 0 ? (dSum / nTicks) : 0;
-
-    // 6. DETECCIÓN DE FRANJAS SOBRE EL DOMINIO COMPLETO FIJO
-    // Detectar intervalos de baja densidad (D <= 0.32, span >= 7 ticks)
-    var lowIntervals = [];
-    var inLow = false, lStart = 0;
-    for (var li = 0; li < nTicks; li++) {
-      if (dp[li] <= 0.32) {
-        if (!inLow) { inLow = true; lStart = li; }
+      var maxT1;
+      if (isVolMode && z._consCache && z._consCache.thresh === activeProps.volume_threshold) {
+        maxT1 = z._consCache.maxT1;
       } else {
-        if (inLow) {
-          var spanL = li - lStart;
-          if (spanL >= 7) {
-            var lSum = 0;
-            for (var lsi = lStart; lsi < li; lsi++) lSum += dp[lsi];
-            lowIntervals.push({
-              pInf: gridP[lStart],
-              pSup: gridP[li - 1] + tick,
-              ticks: spanL,
-              avgD: lSum / spanL
-            });
+        var endBar = Math.min(nCandles - 1, i0 + extBars);
+        maxT1 = (endBar < nCandles) ? candles[endBar].time : (candles[nCandles - 1].time + (endBar - (nCandles - 1)) * avgSecPerBar);
+      }
+
+      // Descartar zonas que ya expiraron antes de la ventana visible
+      if (maxT1 < vr.from) continue;
+      if (state.hoverTime && (availTs > state.hoverTime || maxT1 < state.hoverTime)) continue;
+
+      var zBot = baseBot;
+      var zTop = baseTop;
+
+      if (isVolMode && z._consCache && z._consCache.thresh === activeProps.volume_threshold) {
+        if (!z._consCache.hasAlive) continue; // Totalmente consumida: no actúa como muralla
+
+        var dBars = z._consCache.deathBars;
+        var aliveMin = -1, aliveMax = -1;
+        for (var tk = 0; tk < dBars.length; tk++) {
+          if (dBars[tk] === -1) {
+            if (aliveMin === -1) aliveMin = tk;
+            aliveMax = tk;
           }
-          inLow = false;
+        }
+        if (aliveMin !== -1 && aliveMax !== -1) {
+          zBot = baseBot + aliveMin * tick;
+          zTop = Math.min(baseTop, baseBot + (aliveMax + 1) * tick);
         }
       }
-    }
-    if (inLow && (nTicks - lStart) >= 7) {
-      var spanLEnd = nTicks - lStart;
-      var lSumEnd = 0;
-      for (var lsi2 = lStart; lsi2 < nTicks; lsi2++) lSumEnd += dp[lsi2];
-      lowIntervals.push({
-        pInf: gridP[lStart],
-        pSup: gridP[nTicks - 1] + tick,
-        ticks: spanLEnd,
-        avgD: lSumEnd / spanLEnd
+
+      var kKind = (z.kind || "").toUpperCase();
+      var isBuy = (kKind.indexOf("BUY") !== -1 || kKind.indexOf("BULL") !== -1);
+      var isSell = (kKind.indexOf("SELL") !== -1 || kKind.indexOf("BEAR") !== -1);
+      var zTs = (availTs && availTs > 0) ? availTs : z.t0;
+
+      livingWalls.push({
+        bot: zBot,
+        top: zTop,
+        t0: z.t0,
+        availTs: zTs,
+        isBuy: isBuy,
+        isSell: isSell,
+        kind: z.kind || "ZONE",
+        vol: z.vol || 25.0
       });
     }
 
-    // Detectar regiones de alta densidad (D >= 0.70, span >= 2 ticks)
-    var highRegions = [];
-    var inHigh = false, hStart = 0;
-    for (var hi2 = 0; hi2 < nTicks; hi2++) {
-      if (dp[hi2] >= 0.70) {
-        if (!inHigh) { inHigh = true; hStart = hi2; }
+    if (livingWalls.length < 2) return;
+
+    // 3. Agrupamiento de zonas contiguas en Murallas (Clustering estricto <= 3 ticks)
+    livingWalls.sort(function (a, b) { return a.bot - b.bot; });
+
+    var clusters = [];
+    var curCluster = {
+      bot: livingWalls[0].bot,
+      top: livingWalls[0].top,
+      tMin: livingWalls[0].availTs,
+      tMax: livingWalls[0].availTs,
+      hasBuy: livingWalls[0].isBuy,
+      hasSell: livingWalls[0].isSell,
+      count: 1
+    };
+
+    var clusterTol = 3 * tick;
+    for (var wi = 1; wi < livingWalls.length; wi++) {
+      var wObj = livingWalls[wi];
+      if (wObj.bot <= (curCluster.top + clusterTol)) {
+        // Se fusiona con el cluster actual
+        if (wObj.top > curCluster.top) curCluster.top = wObj.top;
+        if (wObj.availTs < curCluster.tMin) curCluster.tMin = wObj.availTs;
+        if (wObj.availTs > curCluster.tMax) curCluster.tMax = wObj.availTs;
+        if (wObj.isBuy) curCluster.hasBuy = true;
+        if (wObj.isSell) curCluster.hasSell = true;
+        curCluster.count++;
       } else {
-        if (inHigh) {
-          var spanH = hi2 - hStart;
-          if (spanH >= 2) {
-            var maxD = 0;
-            for (var hsi = hStart; hsi < hi2; hsi++) if (dp[hsi] > maxD) maxD = dp[hsi];
-            highRegions.push({
-              pInf: gridP[hStart],
-              pSup: gridP[hi2 - 1] + tick,
-              ticks: spanH,
-              maxD: maxD
-            });
-          }
-          inHigh = false;
-        }
+        clusters.push(curCluster);
+        curCluster = {
+          bot: wObj.bot,
+          top: wObj.top,
+          tMin: wObj.availTs,
+          tMax: wObj.availTs,
+          hasBuy: wObj.isBuy,
+          hasSell: wObj.isSell,
+          count: 1
+        };
       }
     }
-    if (inHigh && (nTicks - hStart) >= 2) {
-      var spanHEnd = nTicks - hStart;
-      var maxDEnd = 0;
-      for (var hsi2 = hStart; hsi2 < nTicks; hsi2++) if (dp[hsi2] > maxDEnd) maxDEnd = dp[hsi2];
-      highRegions.push({
-        pInf: gridP[hStart],
-        pSup: gridP[nTicks - 1] + tick,
-        ticks: spanHEnd,
-        maxD: maxDEnd
+    clusters.push(curCluster);
+
+    if (clusters.length < 2) return;
+
+    // 4. Extracción de Corredores entre Murallas Consecutivas (Axiomas 1, 2 y 3)
+    var corridors = [];
+    var lastCandleTime = candles[candles.length - 1].time;
+
+    for (var ci2 = 0; ci2 < clusters.length - 1; ci2++) {
+      var cFloor = clusters[ci2];     // Muralla inferior (Suelo)
+      var cCeil = clusters[ci2 + 1];  // Muralla superior (Techo)
+
+      var pFloor = cFloor.top;
+      var pCeil = cCeil.bot;
+      var gap = pCeil - pFloor;
+      var gapTicks = Math.round(gap / tick);
+
+      // Axioma 2: Amplitud mínima económica H_min
+      if (gapTicks < hMinTicks) continue;
+
+      // Clasificación direccional y asimetría vectorial
+      var isBull = cFloor.hasBuy;
+      var isBear = cCeil.hasSell;
+      var dir = "STRUCTURAL";
+      if (isBull && isBear) {
+        dir = "DUAL"; // Suelo BUY soporte + Techo SELL resistencia (Corredor Institucional Completo)
+      } else if (isBull) {
+        dir = "BULL"; // Suelo comprador -> Ruta alcista con respaldo
+      } else if (isBear) {
+        dir = "BEAR"; // Techo vendedor -> Ruta bajista con respaldo
+      }
+
+      // Filtro direccional del usuario
+      if (dirFilter === "bull" && dir !== "BULL" && dir !== "DUAL") continue;
+      if (dirFilter === "bear" && dir !== "BEAR" && dir !== "DUAL") continue;
+
+      // Origen causal en el tiempo: cuando ambas murallas ya existen
+      var tBirth = Math.max(cFloor.tMax, cCeil.tMax);
+
+      corridors.push({
+        id: "CORR_" + Math.round(pFloor) + "_" + Math.round(pCeil),
+        pFloor: pFloor,
+        pCeil: pCeil,
+        gap: gap,
+        gapTicks: gapTicks,
+        dir: dir,
+        tBirth: tBirth,
+        floorCluster: cFloor,
+        ceilCluster: cCeil
       });
     }
 
-    // 7. RENDERIZADO VISUAL (PROYECCIÓN SOBRE VIEWPORT)
+    // 5. RENDERIZADO VISUAL DELIMITADO ESPACIO-TEMPORAL
     var chartW = (tsc && typeof tsc.width === "function" && tsc.width() > 0) ? tsc.width() : (w - 65);
-    var gW = 62;
-    var gX = chartW - gW - 6;
-    var xStart = 0;
-    var xEnd = gX - 6;
 
-    // Shading continuo sólo para ticks dentro de la ventana vertical de pantalla
-    for (var ti2 = 0; ti2 < nTicks; ti2++) {
-      var pCurr = gridP[ti2];
-      var yA = series.priceToCoordinate(pCurr + tick / 2);
-      var yB = series.priceToCoordinate(pCurr - tick / 2);
-      if (yA === null || yB === null) continue;
-      var yTop = Math.min(yA, yB);
-      var yBot = Math.max(yA, yB);
-      if (yBot < 0 || yTop > hCanvas) continue; // fuera de viewport
+    corridors.forEach(function (corr) {
+      var yT = series.priceToCoordinate(corr.pCeil);
+      var yB = series.priceToCoordinate(corr.pFloor);
+      if (yT === null || yB === null) return;
 
-      var dVal = dp[ti2];
-      var hTickPx = Math.max(1, yBot - yTop);
-      if (dVal <= 0.30) {
-        var alphaV = ((0.30 - dVal) / 0.30) * (state.isDark ? 0.06 : 0.04);
-        ctx.fillStyle = "rgba(6, 182, 212, " + alphaV.toFixed(4) + ")";
-        ctx.fillRect(xStart, yTop, xEnd - xStart, hTickPx);
-      } else if (dVal >= 0.70) {
-        var alphaW = Math.min(0.18, ((dVal - 0.65) / 1.5) * (state.isDark ? 0.16 : 0.12));
-        ctx.fillStyle = "rgba(245, 158, 11, " + alphaW.toFixed(4) + ")";
-        ctx.fillRect(xStart, yTop, xEnd - xStart, hTickPx);
+      var yMin = Math.min(yT, yB);
+      var yMax = Math.max(yT, yB);
+      if (yMax < 0 || yMin > hCanvas) return; // Fuera de pantalla vertical
+      var hBox = Math.max(4, yMax - yMin);
+
+      // Proyección temporal causal: Nace en tBirth y se proyecta hacia la derecha
+      var x0 = timeToX(corr.tBirth);
+      var rawX1 = timeToX(lastCandleTime) + 65;
+      var x1 = Math.min(rawX1, chartW + 30);
+      if (x1 <= x0) x1 = x0 + 40;
+      var rw = x1 - x0;
+
+      // Estilo según polaridad
+      var fillColor, strokeCeil, strokeFloor, badgeCol, badgeBg;
+      if (corr.dir === "DUAL") {
+        fillColor = state.isDark ? "rgba(6, 182, 212, 0.08)" : "rgba(6, 182, 212, 0.06)";
+        strokeFloor = "#10b981"; // Suelo verde soporte BUY
+        strokeCeil = "#ef4444";  // Techo rojo resistencia SELL
+        badgeCol = "#0284c7";
+        badgeBg = state.isDark ? "rgba(15, 23, 42, 0.92)" : "rgba(240, 249, 255, 0.95)";
+      } else if (corr.dir === "BULL") {
+        fillColor = state.isDark ? "rgba(16, 185, 129, 0.08)" : "rgba(16, 185, 129, 0.06)";
+        strokeFloor = "#10b981"; // Suelo verde
+        strokeCeil = "#f59e0b";  // Techo ámbar
+        badgeCol = "#10b981";
+        badgeBg = state.isDark ? "rgba(6, 78, 59, 0.90)" : "rgba(209, 250, 229, 0.94)";
+      } else if (corr.dir === "BEAR") {
+        fillColor = state.isDark ? "rgba(239, 68, 68, 0.08)" : "rgba(239, 68, 68, 0.06)";
+        strokeCeil = "#ef4444";  // Techo rojo
+        strokeFloor = "#06b6d4"; // Suelo cyan
+        badgeCol = "#ef4444";
+        badgeBg = state.isDark ? "rgba(127, 29, 29, 0.90)" : "rgba(254, 226, 226, 0.94)";
+      } else {
+        fillColor = state.isDark ? "rgba(6, 182, 212, 0.07)" : "rgba(8, 145, 178, 0.05)";
+        strokeCeil = "#06b6d4";
+        strokeFloor = "#06b6d4";
+        badgeCol = "#0284c7";
+        badgeBg = state.isDark ? "rgba(15, 23, 42, 0.90)" : "rgba(240, 249, 255, 0.94)";
       }
-    }
-
-    // Helper para dibujar bandas recortadas por viewport
-    function drawBand(pInf, pSup, fillStyle, strokeStyle, isDashed) {
-      var yA = series.priceToCoordinate(pSup);
-      var yB = series.priceToCoordinate(pInf);
-      if (yA === null || yB === null) return null;
-      var yMin = Math.min(yA, yB);
-      var yMax = Math.max(yA, yB);
-      if (yMax < 0 || yMin > hCanvas) return null;
-      var h = Math.max(2, yMax - yMin);
 
       ctx.save();
-      ctx.fillStyle = fillStyle;
-      ctx.fillRect(xStart, yMin, xEnd - xStart, h);
-      if (strokeStyle) {
-        ctx.strokeStyle = strokeStyle;
-        ctx.lineWidth = 1.3;
-        ctx.setLineDash(isDashed ? [8, 5] : []);
+      // Fondo tenue de vacío
+      ctx.fillStyle = fillColor;
+      ctx.fillRect(x0, yMin, rw, hBox);
+
+      // Línea de Techo (Ceiling)
+      ctx.strokeStyle = strokeCeil;
+      ctx.lineWidth = 1.4;
+      ctx.setLineDash([6, 3]);
+      ctx.beginPath();
+      ctx.moveTo(x0, yMin);
+      ctx.lineTo(x0 + rw, yMin);
+      ctx.stroke();
+
+      // Línea de Suelo (Floor)
+      ctx.strokeStyle = strokeFloor;
+      ctx.lineWidth = 1.4;
+      ctx.setLineDash([6, 3]);
+      ctx.beginPath();
+      ctx.moveTo(x0, yMax);
+      ctx.lineTo(x0 + rw, yMax);
+      ctx.stroke();
+
+      // Borde vertical de nacimiento causal (si está dentro del canvas)
+      if (x0 >= 0 && x0 <= chartW) {
+        ctx.strokeStyle = (corr.dir === "DUAL") ? "#0284c7" : ((corr.dir === "BULL") ? "#10b981" : "#ef4444");
+        ctx.lineWidth = 2.0;
+        ctx.setLineDash([]);
         ctx.beginPath();
-        ctx.moveTo(xStart, yMin);
-        ctx.lineTo(xEnd, yMin);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(xStart, yMax);
-        ctx.lineTo(xEnd, yMax);
+        ctx.moveTo(x0, yMin);
+        ctx.lineTo(x0, yMax);
         ctx.stroke();
       }
-      ctx.restore();
-      return { yMin: yMin, yMax: yMax, h: h };
-    }
 
-    // Dibujar regiones de alta densidad (terminología neutral, sin murallas/fricción)
-    var highColor = state.isDark ? "rgba(245, 158, 11, 0.14)" : "rgba(217, 119, 6, 0.11)";
-    var highBorder = state.isDark ? "rgba(245, 158, 11, 0.75)" : "rgba(217, 119, 6, 0.75)";
-    for (var wi = 0; wi < highRegions.length; wi++) {
-      var hObj = highRegions[wi];
-      var bH = drawBand(hObj.pInf, hObj.pSup, highColor, highBorder, false);
-      if (bH && bH.h >= 10) {
-        ctx.save();
-        var cardW = Math.min(280, w - 140);
-        var cardH = Math.min(20, bH.h);
-        var cardX = Math.max(16, xStart + 24);
-        var cardY = bH.yMin + (bH.h - cardH) / 2;
+      // Línea de Equilibrio 50% (Midline)
+      var yMid = (yMin + yMax) / 2;
+      ctx.strokeStyle = state.isDark ? "rgba(148, 163, 184, 0.30)" : "rgba(100, 116, 139, 0.25)";
+      ctx.lineWidth = 1.0;
+      ctx.setLineDash([3, 4]);
+      ctx.beginPath();
+      ctx.moveTo(x0, yMid);
+      ctx.lineTo(x0 + rw, yMid);
+      ctx.stroke();
+      ctx.setLineDash([]);
 
-        ctx.fillStyle = state.isDark ? "rgba(30, 25, 15, 0.90)" : "rgba(254, 243, 199, 0.94)";
-        ctx.strokeStyle = state.isDark ? "#f59e0b" : "#d97706";
-        ctx.lineWidth = 1;
+      // Badge informativo compacto
+      if (hBox >= 16 && rw >= 60) {
+        var dirTag = (corr.dir === "DUAL")
+          ? "⚡ VACÍO HFT (BUY/SELL)"
+          : ((corr.dir === "BULL") ? "🟢 CORREDOR ALCISTA" : ((corr.dir === "BEAR") ? "🔴 CORREDOR BAJISTA" : "⚡ VACÍO HFT"));
+        var ptsStr = corr.gap.toFixed(prec) + " pts";
+        var badgeText = dirTag + " · " + corr.gapTicks + "t (" + ptsStr + ")";
+
+        ctx.font = "bold 9.5px 'Segoe UI', -apple-system, sans-serif";
+        var tw = ctx.measureText(badgeText).width;
+        var badgeW = tw + 16;
+        var badgeH = 20;
+
+        // Posición flotante visible en el viewport
+        var bX = Math.max(x0 + 12, 24);
+        if (bX + badgeW > chartW - 20) bX = Math.max(10, chartW - badgeW - 25);
+        var visYMin = Math.max(10, yMin);
+        var visYMax = Math.min(hCanvas - 10, yMax);
+        var bY = (visYMin + visYMax - badgeH) / 2;
+
+        ctx.fillStyle = badgeBg;
+        ctx.strokeStyle = badgeCol;
+        ctx.lineWidth = 1.2;
         ctx.beginPath();
-        ctx.roundRect ? ctx.roundRect(cardX, cardY, cardW, cardH, 3) : ctx.rect(cardX, cardY, cardW, cardH);
+        ctx.roundRect ? ctx.roundRect(bX, bY, badgeW, badgeH, 3) : ctx.rect(bX, bY, badgeW, badgeH);
         ctx.fill();
         ctx.stroke();
 
-        ctx.font = "bold 9px 'Segoe UI', -apple-system, sans-serif";
-        ctx.fillStyle = state.isDark ? "#fbbf24" : "#92400e";
-        ctx.fillText("■ REGIÓN DE ALTA DENSIDAD · " + hObj.ticks + "t · [D_max = " + hObj.maxD.toFixed(2) + "]", cardX + 6, cardY + 13);
-        ctx.restore();
+        ctx.fillStyle = badgeCol;
+        ctx.fillText(badgeText, bX + 8, bY + 14);
       }
+
+      ctx.restore();
+    });
+
+    // Actualizar botón de la barra de herramientas con el número de corredores activos
+    var btnCorrDemo = document.getElementById("btn-corredores-demo");
+    if (btnCorrDemo) {
+      btnCorrDemo.innerHTML = "<span>⚡ Corredores HFT (" + corridors.length + ")</span>";
     }
-
-    // Dibujar intervalos de baja densidad (terminología neutral, SIN targets, stops o R:R)
-    var lowFill = state.isDark ? "rgba(6, 182, 212, 0.13)" : "rgba(8, 145, 178, 0.10)";
-    var lowBorder = state.isDark ? "rgba(34, 211, 238, 0.88)" : "rgba(8, 145, 178, 0.88)";
-    for (var li2 = 0; li2 < lowIntervals.length; li2++) {
-      var lObj = lowIntervals[li2];
-      var bL = drawBand(lObj.pInf, lObj.pSup, lowFill, lowBorder, true);
-      if (bL) {
-        var yMid = (bL.yMin + bL.yMax) / 2;
-        ctx.save();
-        ctx.strokeStyle = state.isDark ? "rgba(34, 211, 238, 0.45)" : "rgba(8, 145, 178, 0.40)";
-        ctx.lineWidth = 1;
-        ctx.setLineDash([4, 6]);
-        ctx.beginPath();
-        ctx.moveTo(xStart, yMid);
-        ctx.lineTo(xEnd, yMid);
-        ctx.stroke();
-        ctx.restore();
-
-        if (bL.h >= 16) {
-          ctx.save();
-          var lCardW = Math.min(320, w - 140);
-          var lCardH = Math.min(24, Math.max(18, bL.h - 4));
-          var lCardX = Math.max(16, xStart + 24);
-          var lCardY = bL.yMin + (bL.h - lCardH) / 2;
-
-          ctx.fillStyle = state.isDark ? "rgba(15, 23, 42, 0.92)" : "rgba(255, 255, 255, 0.94)";
-          ctx.strokeStyle = state.isDark ? "#06b6d4" : "#0891b2";
-          ctx.lineWidth = 1.2;
-          ctx.beginPath();
-          ctx.roundRect ? ctx.roundRect(lCardX, lCardY, lCardW, lCardH, 4) : ctx.rect(lCardX, lCardY, lCardW, lCardH);
-          ctx.fill();
-          ctx.stroke();
-
-          ctx.font = "bold 9px 'Segoe UI', -apple-system, sans-serif";
-          ctx.fillStyle = state.isDark ? "#22d3ee" : "#0e7490";
-          ctx.fillText("⚡ INTERVALO DE BAJA DENSIDAD · " + lObj.ticks + "t · [D̄ ≈ " + lObj.avgD.toFixed(2) + "]", lCardX + 8, lCardY + 14);
-          ctx.restore();
-        }
-      }
-    }
-
-    // Gauge lateral proyectado sobre viewport
-    ctx.save();
-    ctx.fillStyle = state.isDark ? "rgba(19, 23, 34, 0.88)" : "rgba(241, 245, 249, 0.92)";
-    ctx.fillRect(gX - 2, 32, gW + 4, hCanvas - 64);
-    ctx.strokeStyle = state.isDark ? "#2a2e39" : "#cbd5e1";
-    ctx.lineWidth = 1;
-    ctx.strokeRect(gX - 2, 32, gW + 4, hCanvas - 64);
-
-    ctx.font = "bold 9px 'Segoe UI', -apple-system, sans-serif";
-    ctx.fillStyle = state.isDark ? "#94a3b8" : "#475569";
-    ctx.fillText("D(p)", gX + 4, 46);
-
-    ctx.strokeStyle = state.isDark ? "#475569" : "#94a3b8";
-    ctx.beginPath();
-    ctx.moveTo(gX + 2, 54);
-    ctx.lineTo(gX + 2, hCanvas - 38);
-    ctx.stroke();
-
-    for (var gi = 0; gi < nTicks; gi++) {
-      var pG = gridP[gi];
-      var yGA = series.priceToCoordinate(pG + tick / 2);
-      var yGB = series.priceToCoordinate(pG - tick / 2);
-      if (yGA === null || yGB === null) continue;
-      var yGTop = Math.min(yGA, yGB);
-      var yGBot = Math.max(yGA, yGB);
-      if (yGBot < 48 || yGTop > (hCanvas - 38)) continue; // fuera del marco del gauge
-
-      var dG = dp[gi];
-      var hG = Math.max(2, yGBot - yGTop);
-      var yGMid = (yGTop + yGBot) / 2;
-
-      var barLen = Math.min(46, Math.max(2, Math.round(dG * 20)));
-      var barColor = "#64748b";
-      if (dG <= 0.30) barColor = state.isDark ? "#06b6d4" : "#0891b2";
-      else if (dG < 0.70) barColor = state.isDark ? "#38bdf8" : "#0284c7";
-      else if (dG < 1.05) barColor = state.isDark ? "#f59e0b" : "#d97706";
-      else barColor = state.isDark ? "#ef4444" : "#dc2626";
-
-      ctx.fillStyle = barColor;
-      ctx.fillRect(gX + 3, yGTop, barLen, hG);
-
-      var isPeak = (gi > 0 && gi < nTicks - 1 && dG > dp[gi - 1] && dG > dp[gi + 1] && dG >= 0.60);
-      var isValley = (gi > 0 && gi < nTicks - 1 && dG < dp[gi - 1] && dG < dp[gi + 1] && dG <= 0.15);
-      if (isPeak || isValley) {
-        ctx.font = "8px 'Segoe UI', -apple-system, sans-serif";
-        ctx.fillStyle = isPeak ? (state.isDark ? "#fbbf24" : "#b45309") : (state.isDark ? "#22d3ee" : "#0e7490");
-        ctx.fillText(dG.toFixed(1), gX + 3 + barLen + 2, yGMid + 3);
-      }
-    }
-    ctx.restore();
-
-    // 8. HUD CARD SUPERIOR CON METADATA DINÁMICA AS-OF
-    ctx.save();
-    var hudW = Math.min(540, w - 30);
-    var hudH = 52;
-    var hudX = 14;
-    var hudY = 40;
-
-    ctx.fillStyle = state.isDark ? "rgba(15, 23, 42, 0.95)" : "rgba(255, 255, 255, 0.96)";
-    ctx.strokeStyle = state.isDark ? "#0284c7" : "#0369a1";
-    ctx.lineWidth = 1.4;
-    ctx.beginPath();
-    ctx.roundRect ? ctx.roundRect(hudX, hudY, hudW, hudH, 4) : ctx.rect(hudX, hudY, hudW, hudH);
-    ctx.fill();
-    ctx.stroke();
-
-    var dDate = new Date(tRef * 1000);
-    var asOfStr = dDate.toISOString().replace("T", " ").substring(0, 19);
-
-    ctx.font = "bold 10px 'Segoe UI', -apple-system, sans-serif";
-    ctx.fillStyle = state.isDark ? "#38bdf8" : "#0284c7";
-    ctx.fillText("⚡ HP-007: CAMPO DE DENSIDAD DE ZONAS (RAW_STATIC · INVARIANTE)", hudX + 10, hudY + 15);
-
-    ctx.font = "9px 'Segoe UI', -apple-system, sans-serif";
-    ctx.fillStyle = state.isDark ? "#cbd5e1" : "#334155";
-    var runLabel = runToUse.name || runToUse.id;
-    var causalStatus = (legacyAvailabilityFallbacks > 0) ? "LEGACY_NON_CAUSAL (fallback t0: " + legacyAvailabilityFallbacks + ")" : "PASS_CAUSAL";
-    ctx.fillText("Config: " + runLabel + " · RAW_STATIC · " + activeZones.length + " zonas as-of · " + causalStatus, hudX + 10, hudY + 29);
-
-    ctx.fillStyle = state.isDark ? "#94a3b8" : "#64748b";
-    ctx.fillText("As-Of: " + asOfStr + " · D̄ = " + dMean.toFixed(2) + " · D_max = " + dMax.toFixed(2) + " · " + lowIntervals.length + " Int. Baja Densidad · " + highRegions.length + " Reg. Alta Densidad", hudX + 10, hudY + 43);
-    ctx.restore();
   }
 
   var raf = null;
@@ -2024,6 +2408,8 @@
       b.classList.add("active");
       if (popId === "pop-assets") {
         document.getElementById("asset-search-input").focus();
+      } else if (popId === "pop-bt2a-params") {
+        updateParamsPopoverUI();
       }
     }
   }
@@ -2039,13 +2425,73 @@
   if (btnCorredores) {
     btnCorredores.addEventListener("click", function () {
       state.showCorredoresDemo = !state.showCorredoresDemo;
+      activeProps.corridors_enabled = state.showCorredoresDemo;
       this.classList.toggle("active", state.showCorredoresDemo);
       this.style.background = state.showCorredoresDemo ? "#0891b2" : "var(--tb-btn-bg)";
       this.style.color = state.showCorredoresDemo ? "#fff" : "var(--tb-text)";
       this.style.borderColor = state.showCorredoresDemo ? "#0e7490" : "var(--tb-btn-border)";
+      var chk = document.getElementById("chk-corridors-enable");
+      if (chk) chk.checked = state.showCorredoresDemo;
+      var wrapCorr = document.getElementById("corridors-options-wrap");
+      if (wrapCorr) wrapCorr.style.opacity = state.showCorredoresDemo ? "1" : "0.45";
       requestDraw();
     });
   }
+
+  function updateDecayUI() {
+    var isTrade = (state.decayMode === "trade_only");
+    var btn = document.getElementById("btn-toggle-decay");
+    var lblBtn = document.getElementById("lbl-btn-decay");
+    if (lblBtn) lblBtn.textContent = isTrade ? "🛡️ Decaimiento: Sólo Comercio" : "⏱️ Decaimiento: Temporal 12h";
+    if (btn) {
+      btn.style.background = isTrade ? "#059669" : "#0284c7";
+      btn.style.borderColor = isTrade ? "#047857" : "#0369a1";
+    }
+    var lblStatus = document.getElementById("lbl-decay-status");
+    if (lblStatus) {
+      lblStatus.textContent = isTrade ? "Sólo Comercio (Sin Tiempo)" : "Temporal 12h (Corte 48h)";
+      lblStatus.style.color = isTrade ? "#10b981" : "#0284c7";
+    }
+    var optTrade = document.getElementById("opt-decay-trade");
+    var optTime = document.getElementById("opt-decay-time");
+    if (optTrade && optTime) {
+      if (isTrade) {
+        optTrade.style.background = "#059669";
+        optTrade.style.color = "#fff";
+        optTrade.style.borderColor = "#047857";
+        optTime.style.background = "var(--tb-btn-bg)";
+        optTime.style.color = "var(--tb-text)";
+        optTime.style.borderColor = "var(--tb-btn-border)";
+      } else {
+        optTime.style.background = "#0284c7";
+        optTime.style.color = "#fff";
+        optTime.style.borderColor = "#0369a1";
+        optTrade.style.background = "var(--tb-btn-bg)";
+        optTrade.style.color = "var(--tb-text)";
+        optTrade.style.borderColor = "var(--tb-btn-border)";
+      }
+    }
+  }
+
+  var btnToggleDecay = document.getElementById("btn-toggle-decay");
+  if (btnToggleDecay) {
+    btnToggleDecay.addEventListener("click", function () {
+      state.decayMode = (state.decayMode === "trade_only") ? "calibrated_time" : "trade_only";
+      updateDecayUI();
+      requestDraw();
+    });
+  }
+
+  document.querySelectorAll(".btn-decay-mode").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var mode = this.dataset.mode;
+      if (mode) {
+        state.decayMode = mode;
+        updateDecayUI();
+        requestDraw();
+      }
+    });
+  });
   var btnHft = document.getElementById("btn-hft-corridor");
   if (btnHft) {
     btnHft.addEventListener("click", function () {
@@ -2085,22 +2531,293 @@
     renderTable();
   });
 
-  // Manejo de Popover de Parámetros BigTrap2Absorption
+  // =====================================================================
+  // MANEJO DE POPOVER DINÁMICO DE PARÁMETROS Y TERMINACIÓN DE ZONAS
+  // =====================================================================
+  function updateParamsPopoverUI() {
+    var r = state.run;
+    var d = state.data;
+    var m = d ? d.meta : null;
+    var indName = r ? (r.name || r.indicator || r.id) : "Indicador";
+    var cName = m ? (m.contract || m.instrument) : "";
+    var activeKey = state.activeBarKey || (r && r.bar_key) || "time_15m";
+    var bs = d && d.bar_series && d.bar_series[activeKey];
+    var tfStr = bs ? (bs.name || (bs.kind === "tick_25" ? "25 Tick" : (bs.kind === "time_15m" ? "15 Min" : "5 Min"))) : "";
+
+    var titleEl = document.getElementById("pop-params-title");
+    if (titleEl) {
+      titleEl.textContent = "⚙️ Parámetros: " + indName + (cName ? " (" + cName + (tfStr ? " · " + tfStr : "") + ")" : "");
+    }
+
+    var btnParams = document.getElementById("btn-bt2a-params");
+    if (btnParams) {
+      btnParams.title = "Configurar Parámetros y Terminación de Zonas para " + indName;
+    }
+
+    // Sincronizar estado de modo de extensión (fija vs volumen)
+    var isVol = (activeProps.consumption_mode === "volume");
+    var btnFixed = document.getElementById("btn-mode-fixed");
+    var btnVol = document.getElementById("btn-mode-volume");
+    var pnlFixed = document.getElementById("panel-mode-fixed");
+    var pnlVol = document.getElementById("panel-mode-volume");
+    var lblExtStatus = document.getElementById("lbl-ext-status");
+
+    if (btnFixed && btnVol && pnlFixed && pnlVol) {
+      if (isVol) {
+        btnVol.classList.add("active");
+        btnVol.style.background = "#059669";
+        btnVol.style.color = "#fff";
+        btnVol.style.borderColor = "#047857";
+        btnFixed.classList.remove("active");
+        btnFixed.style.background = "";
+        btnFixed.style.color = "";
+        btnFixed.style.borderColor = "";
+        pnlFixed.style.display = "none";
+        pnlVol.style.display = "block";
+        if (lblExtStatus) {
+          lblExtStatus.textContent = (activeProps.volume_threshold || 100) + " c (Volumen)";
+          lblExtStatus.style.color = "#059669";
+          lblExtStatus.style.background = "rgba(5,150,105,0.12)";
+        }
+      } else {
+        btnFixed.classList.add("active");
+        btnFixed.style.background = "#0284c7";
+        btnFixed.style.color = "#fff";
+        btnFixed.style.borderColor = "#0369a1";
+        btnVol.classList.remove("active");
+        btnVol.style.background = "";
+        btnVol.style.color = "";
+        btnVol.style.borderColor = "";
+        pnlFixed.style.display = "block";
+        pnlVol.style.display = "none";
+        if (lblExtStatus) {
+          lblExtStatus.textContent = (activeProps.extension_bars || 500) + " barras";
+          lblExtStatus.style.color = "#0284c7";
+          lblExtStatus.style.background = "rgba(2,132,199,0.12)";
+        }
+      }
+    }
+
+    // Sincronizar inputs de volumen
+    var rangeVol = document.getElementById("range-vol-threshold");
+    var inpVol = document.getElementById("inp-vol-threshold");
+    var lblVolBadge = document.getElementById("lbl-vol-threshold-badge");
+    var curVol = activeProps.volume_threshold || 100;
+    if (rangeVol) rangeVol.value = curVol;
+    if (inpVol) inpVol.value = curVol;
+    if (lblVolBadge) lblVolBadge.textContent = curVol.toLocaleString() + " contratos";
+
+    // Botones rápidos de volumen
+    document.querySelectorAll(".btn-quick-vol").forEach(function (btn) {
+      var v = parseInt(btn.dataset.vol, 10);
+      var isActive = (v === curVol);
+      btn.classList.toggle("active", isActive);
+      btn.style.background = isActive ? "#059669" : "";
+      btn.style.color = isActive ? "#fff" : "";
+      btn.style.borderColor = isActive ? "#047857" : "";
+    });
+
+    // Sincronizar inputs de barras fijas
+    var inpExt = document.getElementById("inp-ext-bars");
+    var curBars = activeProps.extension_bars || 500;
+    if (inpExt) inpExt.value = curBars;
+    document.querySelectorAll(".btn-quick-ext").forEach(function (btn) {
+      var b = parseInt(btn.dataset.bars, 10);
+      var isActive = (b === curBars);
+      btn.classList.toggle("active", isActive);
+      btn.style.background = isActive ? "#0284c7" : "";
+      btn.style.color = isActive ? "#fff" : "";
+      btn.style.borderColor = isActive ? "#0369a1" : "";
+    });
+
+    // Sincronizar sección Corredores de Vacío HFT (HP-007)
+    var chkCorr = document.getElementById("chk-corridors-enable");
+    var rangeCorrHmin = document.getElementById("range-corridor-hmin");
+    var inpCorrHmin = document.getElementById("inp-corridor-hmin");
+    var lblCorrHmin = document.getElementById("lbl-corridor-hmin-badge");
+    var wrapCorr = document.getElementById("corridors-options-wrap");
+
+    var corrEnabled = (activeProps.corridors_enabled !== false && state.showCorredoresDemo !== false);
+    if (chkCorr) chkCorr.checked = corrEnabled;
+    if (wrapCorr) wrapCorr.style.opacity = corrEnabled ? "1" : "0.45";
+
+    var hMinVal = (activeProps.corridors_hmin_ticks !== undefined) ? activeProps.corridors_hmin_ticks : 16;
+    if (rangeCorrHmin) rangeCorrHmin.value = hMinVal;
+    if (inpCorrHmin) inpCorrHmin.value = hMinVal;
+    if (lblCorrHmin) {
+      var tickVal = (state.data && state.data.meta && state.data.meta.tick_size) || 0.25;
+      var ptsVal = (hMinVal * tickVal).toFixed(2);
+      lblCorrHmin.textContent = hMinVal + " ticks (" + ptsVal + " pts)";
+    }
+
+    var dirFilter = activeProps.corridors_dir_filter || "all";
+    document.querySelectorAll(".btn-corridor-dir").forEach(function (b) {
+      var d = b.dataset.dir;
+      var isAct = (d === dirFilter);
+      b.classList.toggle("active", isAct);
+      if (isAct) {
+        b.style.background = (d === "bull" ? "#059669" : (d === "bear" ? "#dc2626" : "#0284c7"));
+        b.style.color = "#fff";
+      } else {
+        b.style.background = "";
+        b.style.color = "";
+      }
+    });
+
+    // Llenar presets dinámicamente con los runs del activo actual
+    var container = document.getElementById("pop-presets-container");
+    var countLabel = document.getElementById("lbl-presets-count");
+    if (!container || !d || !d.runs) return;
+    container.innerHTML = "";
+    if (countLabel) countLabel.textContent = d.runs.length + " disponibles";
+
+    d.runs.forEach(function (rn, idx) {
+      var btn = document.createElement("button");
+      var isCur = (state.run === rn);
+      btn.className = "nt8-btn btn-preset-dynamic" + (isCur ? " active" : "");
+      btn.style.justifyContent = "flex-start";
+      btn.style.textAlign = "left";
+      btn.style.padding = "6px 8px";
+      btn.style.width = "100%";
+      btn.style.borderRadius = "3px";
+      if (isCur) {
+        btn.style.background = state.isDark ? "#1e3a5f" : "#e0f2fe";
+        btn.style.borderColor = "#0284c7";
+      }
+
+      var icon = "🛡️";
+      var rTitle = rn.name || rn.indicator || rn.id || "Run " + (idx + 1);
+      if (rTitle.indexOf("Sensib") !== -1 || rTitle.indexOf("Alta") !== -1) icon = "⚡";
+      else if (rTitle.indexOf("Equilib") !== -1) icon = "🎯";
+      else if (rTitle.indexOf("Ultra") !== -1 || rTitle.indexOf("Estricto") !== -1) icon = "🔒";
+      else if (rTitle.indexOf("Pure V4") !== -1 || rTitle.indexOf("PASS") !== -1) icon = "✅";
+      else if (rTitle.indexOf("Flat") !== -1 || rTitle.indexOf("HFT") !== -1) icon = "🚀";
+      else if (rTitle.indexOf("FVG") !== -1 || rTitle.indexOf("Gap") !== -1) icon = "〓";
+      else if (rTitle.indexOf("POC") !== -1) icon = "📊";
+
+      var zCount = rn.zones ? rn.zones.length : 0;
+      var subTxt = zCount.toLocaleString() + " zonas";
+      if (rn.parity && rn.parity.gate) {
+        subTxt += " · Gate: " + rn.parity.gate;
+      } else if (rn.params) {
+        var pItems = [];
+        if (rn.params.absorption_pct) pItems.push("p" + rn.params.absorption_pct);
+        if (rn.params.imbalance_ratio) pItems.push(rn.params.imbalance_ratio + "x");
+        if (pItems.length) subTxt += " · " + pItems.join(" · ");
+      }
+
+      var inner = "<span style='font-size: 14px; margin-right: 8px;'>" + icon + "</span>" +
+                  "<div style='flex:1; overflow:hidden;'>" +
+                  "  <div style='font-weight: 700; color: " + (isCur ? "#0284c7" : "inherit") + "; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;'>" + rTitle + "</div>" +
+                  "  <div style='font-size: 9.5px; color: " + (isCur ? "#0369a1" : "#666") + ";'>" + subTxt + "</div>" +
+                  "</div>";
+      if (isCur) {
+        inner += "<span style='font-size:10px; font-weight:700; color:#0284c7; margin-left:4px;'>ACTIVO</span>";
+      }
+
+      btn.innerHTML = inner;
+      btn.addEventListener("click", function () {
+        selectRun(idx, { noFocusRoll: true });
+        updateParamsPopoverUI();
+      });
+      container.appendChild(btn);
+    });
+  }
+
+  // Toggles de modo de extensión
+  var btnModeFixed = document.getElementById("btn-mode-fixed");
+  if (btnModeFixed) {
+    btnModeFixed.addEventListener("click", function () {
+      activeProps.consumption_mode = "fixed";
+      updateParamsPopoverUI();
+      requestDraw();
+    });
+  }
+
+  var btnModeVol = document.getElementById("btn-mode-volume");
+  if (btnModeVol) {
+    btnModeVol.addEventListener("click", function () {
+      activeProps.consumption_mode = "volume";
+      if (state.run && state.run.zones) {
+        state.run.zones.forEach(function (z) { delete z._consCache; });
+      }
+      updateParamsPopoverUI();
+      requestDraw();
+    });
+  }
+
+  // Slider y control de volumen por tick (optimizado con debounce para respuesta inmediata)
+  var volDebounceTimer = null;
+  function setVolumeThreshold(val, immediate) {
+    val = parseInt(val, 10);
+    if (isNaN(val) || val <= 0) return;
+    activeProps.volume_threshold = val;
+
+    var lblVolBadge = document.getElementById("lbl-vol-threshold-badge");
+    if (lblVolBadge) lblVolBadge.textContent = val.toLocaleString() + " contratos";
+    var inpVol = document.getElementById("inp-vol-threshold");
+    if (inpVol && inpVol.value != val) inpVol.value = val;
+    var rangeVol = document.getElementById("range-vol-threshold");
+    if (rangeVol && rangeVol.value != val) rangeVol.value = val;
+
+    // Actualizar botones rápidos
+    document.querySelectorAll(".btn-quick-vol").forEach(function (btn) {
+      var v = parseInt(btn.dataset.vol, 10);
+      var isActive = (v === val);
+      btn.classList.toggle("active", isActive);
+      btn.style.background = isActive ? "#059669" : "";
+      btn.style.color = isActive ? "#fff" : "";
+      btn.style.borderColor = isActive ? "#047857" : "";
+    });
+
+    var doUpdate = function () {
+      if (state.run && state.run.zones) {
+        state.run.zones.forEach(function (z) { delete z._consCache; });
+      }
+      updateParamsPopoverUI();
+      requestDraw();
+    };
+
+    if (immediate) {
+      if (volDebounceTimer) clearTimeout(volDebounceTimer);
+      doUpdate();
+    } else {
+      if (volDebounceTimer) clearTimeout(volDebounceTimer);
+      volDebounceTimer = setTimeout(doUpdate, 60);
+    }
+  }
+
+  var rangeVol = document.getElementById("range-vol-threshold");
+  if (rangeVol) {
+    rangeVol.addEventListener("input", function () {
+      setVolumeThreshold(this.value, false);
+    });
+    rangeVol.addEventListener("change", function () {
+      setVolumeThreshold(this.value, true);
+    });
+  }
+
+  var inpVol = document.getElementById("inp-vol-threshold");
+  if (inpVol) {
+    inpVol.addEventListener("change", function () {
+      setVolumeThreshold(this.value, true);
+    });
+  }
+
+  document.querySelectorAll(".btn-quick-vol").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var v = parseInt(this.dataset.vol, 10);
+      setVolumeThreshold(v, true);
+    });
+  });
+
   var inpExt = document.getElementById("inp-ext-bars");
   if (inpExt) {
     inpExt.addEventListener("change", function () {
       var val = parseInt(this.value, 10);
       if (val > 0) {
         activeProps.extension_bars = val;
-        var lblStatus = document.getElementById("lbl-ext-status");
-        if (lblStatus) lblStatus.textContent = val + " barras";
-        document.querySelectorAll(".btn-quick-ext").forEach(function (x) {
-          var bVal = parseInt(x.dataset.bars, 10);
-          x.classList.toggle("active", bVal === val);
-          x.style.background = (bVal === val) ? "#0284c7" : "";
-          x.style.color = (bVal === val) ? "#fff" : "";
-          x.style.borderColor = (bVal === val) ? "#0369a1" : "";
-        });
+        updateParamsPopoverUI();
         updateIndicatorTag();
         requestDraw();
       }
@@ -2110,40 +2827,10 @@
   document.querySelectorAll(".btn-quick-ext").forEach(function (btn) {
     btn.addEventListener("click", function () {
       var bars = parseInt(this.dataset.bars, 10);
-      document.querySelectorAll(".btn-quick-ext").forEach(function (x) {
-        x.classList.remove("active");
-        x.style.background = "";
-        x.style.color = "";
-        x.style.borderColor = "";
-      });
-      this.classList.add("active");
-      this.style.background = "#0284c7";
-      this.style.color = "#fff";
-      this.style.borderColor = "#0369a1";
-      if (inpExt) inpExt.value = bars;
       activeProps.extension_bars = bars;
-      var lblStatus = document.getElementById("lbl-ext-status");
-      if (lblStatus) lblStatus.textContent = bars + " barras";
+      updateParamsPopoverUI();
       updateIndicatorTag();
       requestDraw();
-    });
-  });
-
-  document.querySelectorAll(".btn-preset").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      var runId = this.dataset.runId;
-      if (!state.data || !state.data.runs) return;
-      var foundIdx = -1;
-      for (var i = 0; i < state.data.runs.length; i++) {
-        if (state.data.runs[i].id === runId) {
-          foundIdx = i;
-          break;
-        }
-      }
-      if (foundIdx !== -1) {
-        selectRun(foundIdx, { noFocusRoll: true });
-        closeAllPopovers();
-      }
     });
   });
 
@@ -2170,6 +2857,54 @@
       requestDraw();
     });
   }
+
+  // Controles de Corredores de Vacío HFT (HP-007)
+  var chkCorrEnable = document.getElementById("chk-corridors-enable");
+  if (chkCorrEnable) {
+    chkCorrEnable.addEventListener("change", function () {
+      activeProps.corridors_enabled = this.checked;
+      state.showCorredoresDemo = this.checked;
+      var tbBtn = document.getElementById("btn-corredores-demo");
+      if (tbBtn) {
+        tbBtn.classList.toggle("active", this.checked);
+        tbBtn.style.background = this.checked ? "#0891b2" : "var(--tb-btn-bg)";
+        tbBtn.style.color = this.checked ? "#fff" : "var(--tb-text)";
+        tbBtn.style.borderColor = this.checked ? "#0e7490" : "var(--tb-btn-border)";
+      }
+      updateParamsPopoverUI();
+      requestDraw();
+    });
+  }
+
+  function setCorridorHmin(val) {
+    val = parseInt(val, 10);
+    if (isNaN(val) || val < 2) return;
+    activeProps.corridors_hmin_ticks = val;
+    updateParamsPopoverUI();
+    requestDraw();
+  }
+
+  var rangeCorrHmin = document.getElementById("range-corridor-hmin");
+  if (rangeCorrHmin) {
+    rangeCorrHmin.addEventListener("input", function () {
+      setCorridorHmin(this.value);
+    });
+  }
+
+  var inpCorrHmin = document.getElementById("inp-corridor-hmin");
+  if (inpCorrHmin) {
+    inpCorrHmin.addEventListener("change", function () {
+      setCorridorHmin(this.value);
+    });
+  }
+
+  document.querySelectorAll(".btn-corridor-dir").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      activeProps.corridors_dir_filter = this.dataset.dir || "all";
+      updateParamsPopoverUI();
+      requestDraw();
+    });
+  });
 
   function buildStateFilters() {
     var fs = document.getElementById("f-state-list");
@@ -2374,6 +3109,7 @@
     
     buildTfSelectorList();
     updateIndicatorTag();
+    updateTabs(state.currentAssetId, state.data && state.data.meta && (state.data.meta.contract || state.data.meta.instrument), key);
     
     // Auto-focus en el rango activo de las velas para que no quede la pantalla en blanco
     if (safeCandles.length > 0) {
@@ -2432,18 +3168,22 @@
     var m = data.meta;
     state.currentAssetId = m.id || state.currentAssetId;
 
-    // Seleccionar resolución por defecto (respetar la resolución nativa del run si está especificada)
-    var runKey = (data.runs && data.runs[0] && data.runs[0].bar_key);
-    if (runKey && data.bar_series[runKey]) {
-      state.activeBarKey = runKey;
-    } else if (data.bar_series["time_15m"]) {
-      state.activeBarKey = "time_15m";
-    } else if (data.bar_series["tick_25"]) {
-      state.activeBarKey = "tick_25";
-    } else if (data.bar_series["time_5m"]) {
-      state.activeBarKey = "time_5m";
+    // Seleccionar resolución por defecto (respetar la resolución nativa del run o targetTf si está especificada)
+    if (options.targetTf && data.bar_series[options.targetTf]) {
+      state.activeBarKey = options.targetTf;
     } else {
-      state.activeBarKey = Object.keys(data.bar_series)[0];
+      var runKey = (data.runs && data.runs[0] && data.runs[0].bar_key);
+      if (runKey && data.bar_series[runKey]) {
+        state.activeBarKey = runKey;
+      } else if (data.bar_series["tick_25"]) {
+        state.activeBarKey = "tick_25";
+      } else if (data.bar_series["time_15m"]) {
+        state.activeBarKey = "time_15m";
+      } else if (data.bar_series["time_5m"]) {
+        state.activeBarKey = "time_5m";
+      } else {
+        state.activeBarKey = Object.keys(data.bar_series)[0];
+      }
     }
 
     var bsInit = data.bar_series[state.activeBarKey];
@@ -2453,7 +3193,8 @@
 
     document.getElementById("lbl-asset-name").textContent = m.contract || m.instrument;
     document.title = "NinjaTrader 8 — " + (m.contract || m.instrument);
-    document.getElementById("tab-asset-name").textContent = m.contract || m.instrument;
+
+    updateTabs(state.currentAssetId, m.contract || m.instrument, state.activeBarKey);
 
     var rollsText = (m.rolls && m.rolls.length) ? " · ✂️ " + m.rolls.length + " roll" + (m.rolls.length > 1 ? "s" : "") : "";
     document.getElementById("metaline").textContent =
@@ -2824,6 +3565,7 @@
     renderParity();
     renderTable();
     updateIndicatorTag();
+    updateParamsPopoverUI();
 
     // Focalización inteligente: Si tiene rolls de contratos, mostrar alrededor del último roll para ver el empalme perfecto
     if (d.meta.rolls && d.meta.rolls.length > 0 && !options.noFocusRoll) {
@@ -2848,19 +3590,375 @@
     setTimeout(requestDraw, 600);
   }
 
+  // =====================================================================
+  // PESTAÑAS INFERIORES Y NAVEGACIÓN MULTI-GRÁFICO (NINJATRADER 8)
+  // =====================================================================
+  function renderTabs() {
+    var container = document.getElementById("tabs-container");
+    if (!container) return;
+    container.innerHTML = "";
+
+    state.openTabs.forEach(function (tab, idx) {
+      var tabEl = document.createElement("div");
+      var isActive = (tab.id === state.currentAssetId);
+      tabEl.className = "tab-item" + (isActive ? " active" : "");
+      tabEl.title = tab.name;
+
+      var titleSpan = document.createElement("span");
+      titleSpan.textContent = tab.name;
+      tabEl.appendChild(titleSpan);
+
+      if (state.openTabs.length > 1) {
+        var closeBtn = document.createElement("span");
+        closeBtn.className = "tab-close";
+        closeBtn.textContent = "✕";
+        closeBtn.title = "Cerrar pestaña";
+        closeBtn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          closeTab(idx);
+        });
+        tabEl.appendChild(closeBtn);
+      }
+
+      tabEl.addEventListener("click", function () {
+        if (tab.id !== state.currentAssetId) {
+          loadAsset(tab.id, { targetTf: tab.tf });
+        }
+      });
+
+      container.appendChild(tabEl);
+    });
+  }
+
+  function closeTab(idx) {
+    if (state.openTabs.length <= 1) return;
+    var closingCurrent = (state.openTabs[idx].id === state.currentAssetId);
+    state.openTabs.splice(idx, 1);
+    if (closingCurrent) {
+      var nextTab = state.openTabs[Math.max(0, idx - 1)];
+      loadAsset(nextTab.id, { targetTf: nextTab.tf });
+    } else {
+      renderTabs();
+    }
+  }
+
+  function updateTabs(aid, assetTitle, tfKey) {
+    var tfShort = (tfKey === "tick_25") ? "25t" : ((tfKey === "time_5m") ? "5m" : "15m");
+    var baseTitle = assetTitle || aid;
+    var tabLabel = baseTitle + " (" + tfShort + ")";
+
+    if (!state.openTabs || state.openTabs.length === 0) {
+      state.openTabs = [{
+        id: aid,
+        name: tabLabel,
+        tf: tfKey
+      }];
+    } else {
+      var currentTab = state.openTabs.find(function (t) { return t.id === aid; });
+      if (currentTab) {
+        currentTab.tf = tfKey;
+        currentTab.name = tabLabel;
+      } else {
+        state.openTabs.push({
+          id: aid,
+          name: tabLabel,
+          tf: tfKey
+        });
+      }
+    }
+    renderTabs();
+  }
+
+  // =====================================================================
+  // BARRA DE SCROLL HORIZONTAL ULTRA-RÁPIDA (ESTILO NINJATRADER 8)
+  // =====================================================================
+  function initChartScrollbar() {
+    var sbTrack = document.getElementById("sb-track");
+    var sbThumb = document.getElementById("sb-thumb");
+    var sbLeft = document.getElementById("sb-btn-left");
+    var sbRight = document.getElementById("sb-btn-right");
+    if (!sbTrack || !sbThumb) return;
+
+    var isDragging = false;
+    var dragStartX = 0;
+    var startThumbLeft = 0;
+
+    function updateScrollbarFromChart() {
+      if (isDragging) return;
+      if (!state.data || !state.data.bar_series) return;
+      var activeKey = state.activeBarKey || (state.run && state.run.bar_key) || Object.keys(state.data.bar_series)[0];
+      var bs = state.data.bar_series[activeKey];
+      if (!bs || !bs.candles || bs.candles.length === 0) return;
+      var nCandles = bs.candles.length;
+
+      var tsc = chart.timeScale();
+      var logRange = tsc.getVisibleLogicalRange();
+      if (!logRange) return;
+
+      var span = Math.max(5, logRange.to - logRange.from);
+      var trackW = sbTrack.clientWidth;
+      if (trackW <= 0) return;
+
+      var thumbW = Math.max(24, Math.min(trackW, (span / nCandles) * trackW));
+      var maxFrom = Math.max(0, nCandles - span);
+      var curFrom = Math.max(0, Math.min(maxFrom, logRange.from));
+      var thumbLeft = (maxFrom > 0) ? (curFrom / maxFrom) * (trackW - thumbW) : 0;
+
+      sbThumb.style.width = Math.round(thumbW) + "px";
+      sbThumb.style.left = Math.round(thumbLeft) + "px";
+    }
+
+    chart.timeScale().subscribeVisibleLogicalRangeChange(updateScrollbarFromChart);
+
+    // Arrastre del thumb
+    sbThumb.addEventListener("mousedown", function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      isDragging = true;
+      sbThumb.classList.add("dragging");
+      dragStartX = e.clientX;
+      startThumbLeft = parseFloat(sbThumb.style.left) || 0;
+    });
+
+    window.addEventListener("mousemove", function (e) {
+      if (!isDragging) return;
+      if (!state.data || !state.data.bar_series) return;
+      var activeKey = state.activeBarKey || (state.run && state.run.bar_key) || Object.keys(state.data.bar_series)[0];
+      var bs = state.data.bar_series[activeKey];
+      if (!bs || !bs.candles || bs.candles.length === 0) return;
+      var nCandles = bs.candles.length;
+
+      var dx = e.clientX - dragStartX;
+      var trackW = sbTrack.clientWidth;
+      var thumbW = sbThumb.offsetWidth;
+      var maxThumbLeft = Math.max(0, trackW - thumbW);
+      var newThumbLeft = Math.max(0, Math.min(maxThumbLeft, startThumbLeft + dx));
+
+      sbThumb.style.left = newThumbLeft + "px";
+
+      var fraction = (maxThumbLeft > 0) ? (newThumbLeft / maxThumbLeft) : 0;
+      var logRange = chart.timeScale().getVisibleLogicalRange();
+      var span = logRange ? Math.max(5, logRange.to - logRange.from) : 350;
+      var maxFrom = Math.max(0, nCandles - span);
+      var newFrom = Math.round(fraction * maxFrom);
+
+      chart.timeScale().setVisibleLogicalRange({ from: newFrom, to: newFrom + span });
+      requestDraw();
+    });
+
+    window.addEventListener("mouseup", function () {
+      if (isDragging) {
+        isDragging = false;
+        sbThumb.classList.remove("dragging");
+        updateScrollbarFromChart();
+      }
+    });
+
+    // Clic en la pista para salto instantáneo
+    sbTrack.addEventListener("click", function (e) {
+      if (e.target === sbThumb) return;
+      if (!state.data || !state.data.bar_series) return;
+      var activeKey = state.activeBarKey || (state.run && state.run.bar_key) || Object.keys(state.data.bar_series)[0];
+      var bs = state.data.bar_series[activeKey];
+      if (!bs || !bs.candles || bs.candles.length === 0) return;
+      var nCandles = bs.candles.length;
+
+      var rect = sbTrack.getBoundingClientRect();
+      var clickX = e.clientX - rect.left;
+      var trackW = rect.width;
+      var thumbW = sbThumb.offsetWidth;
+      var targetCenter = clickX - thumbW / 2;
+      var maxThumbLeft = Math.max(0, trackW - thumbW);
+      var newThumbLeft = Math.max(0, Math.min(maxThumbLeft, targetCenter));
+
+      var fraction = (maxThumbLeft > 0) ? (newThumbLeft / maxThumbLeft) : 0;
+      var logRange = chart.timeScale().getVisibleLogicalRange();
+      var span = logRange ? Math.max(5, logRange.to - logRange.from) : 350;
+      var maxFrom = Math.max(0, nCandles - span);
+      var newFrom = Math.round(fraction * maxFrom);
+
+      chart.timeScale().setVisibleLogicalRange({ from: newFrom, to: newFrom + span });
+      updateScrollbarFromChart();
+      requestDraw();
+    });
+
+    // Botones flechas para salto rápido
+    if (sbLeft) {
+      sbLeft.addEventListener("click", function () {
+        var logRange = chart.timeScale().getVisibleLogicalRange();
+        if (!logRange) return;
+        var span = logRange.to - logRange.from;
+        var shift = Math.max(5, Math.round(span * 0.4));
+        chart.timeScale().setVisibleLogicalRange({ from: logRange.from - shift, to: logRange.to - shift });
+        updateScrollbarFromChart();
+        requestDraw();
+      });
+    }
+
+    if (sbRight) {
+      sbRight.addEventListener("click", function () {
+        var logRange = chart.timeScale().getVisibleLogicalRange();
+        if (!logRange) return;
+        var span = logRange.to - logRange.from;
+        var shift = Math.max(5, Math.round(span * 0.4));
+        chart.timeScale().setVisibleLogicalRange({ from: logRange.from + shift, to: logRange.to + shift });
+        updateScrollbarFromChart();
+        requestDraw();
+      });
+    }
+
+    // Scroll de rueda veloz en la pista
+    sbTrack.addEventListener("wheel", function (e) {
+      e.preventDefault();
+      var logRange = chart.timeScale().getVisibleLogicalRange();
+      if (!logRange) return;
+      var span = logRange.to - logRange.from;
+      var shift = Math.round((e.deltaY || e.deltaX) > 0 ? span * 0.3 : -span * 0.3);
+      chart.timeScale().setVisibleLogicalRange({ from: logRange.from + shift, to: logRange.to + shift });
+      updateScrollbarFromChart();
+      requestDraw();
+    }, { passive: false });
+  }
+
+  // =====================================================================
+  // MODAL DATA SERIES / NUEVO GRÁFICO (BOTÓN + DE NINJATRADER 8)
+  // =====================================================================
+  function initNewChartModal() {
+    var modal = document.getElementById("nt8-newchart-modal");
+    var btnAdd = document.getElementById("btn-add-tab");
+    var btnClose = document.getElementById("btn-newchart-close");
+    var btnCancel = document.getElementById("btn-newchart-cancel");
+    var btnOpenTab = document.getElementById("btn-newchart-open-tab");
+    var btnOpenWin = document.getElementById("btn-newchart-open-win");
+    var searchInput = document.getElementById("newchart-search");
+    var listContainer = document.getElementById("newchart-list");
+
+    var selectedAssetId = null;
+
+    function renderAssetList() {
+      if (!listContainer) return;
+      listContainer.innerHTML = "";
+      var catalog = window.ASSET_CATALOG || [];
+      var filter = (searchInput ? searchInput.value : "").toLowerCase().trim();
+
+      catalog.forEach(function (item) {
+        if (filter) {
+          var match = item.name.toLowerCase().indexOf(filter) !== -1 ||
+                      item.instrument.toLowerCase().indexOf(filter) !== -1 ||
+                      item.id.toLowerCase().indexOf(filter) !== -1;
+          if (!match) return;
+        }
+
+        var row = document.createElement("div");
+        var isSelected = (item.id === selectedAssetId);
+        row.className = "nt8-item" + (isSelected ? " active" : "");
+        row.style.display = "flex";
+        row.style.justifyContent = "space-between";
+        row.style.alignItems = "center";
+        row.style.padding = "6px 10px";
+        row.style.borderBottom = "1px solid var(--tb-border)";
+        row.style.cursor = "pointer";
+
+        var isCont = item.id.indexOf("_CONT") !== -1;
+        var badge = isCont ? "<span class='asset-badge-cont' style='margin-right:6px;'>CONTINUO</span>" : "<span class='asset-badge-single' style='margin-right:6px;'>" + item.instrument + "</span>";
+        var rollsInfo = item.rolls ? " · ✂️ " + item.rolls + " roll" + (item.rolls > 1 ? "s" : "") : "";
+        var metaInfo = "<span class='asset-meta-pill'>" + (item.candles ? item.candles.toLocaleString() + " barras" : "") + rollsInfo + "</span>";
+
+        row.innerHTML = "<div style='display:flex;align-items:center;'>" + badge + "<span style='font-weight:600;font-size:11.5px;'>" + item.name + "</span></div>" + metaInfo;
+
+        row.addEventListener("click", function () {
+          selectedAssetId = item.id;
+          renderAssetList();
+        });
+
+        row.addEventListener("dblclick", function () {
+          selectedAssetId = item.id;
+          openSelectedInTab();
+        });
+
+        listContainer.appendChild(row);
+      });
+    }
+
+    if (btnAdd) {
+      btnAdd.addEventListener("click", function () {
+        closeAllPopovers();
+        selectedAssetId = state.currentAssetId || "NQ_0626";
+        renderAssetList();
+        if (modal) modal.classList.add("show");
+        if (searchInput) {
+          searchInput.value = "";
+          setTimeout(function() { searchInput.focus(); }, 50);
+        }
+      });
+    }
+
+    function closeModal() {
+      if (modal) modal.classList.remove("show");
+    }
+
+    if (btnClose) btnClose.addEventListener("click", closeModal);
+    if (btnCancel) btnCancel.addEventListener("click", closeModal);
+
+    if (searchInput) {
+      searchInput.addEventListener("input", renderAssetList);
+    }
+
+    function getSelectedTf() {
+      var radio = document.querySelector("input[name='newchart-tf']:checked");
+      return radio ? radio.value : "tick_25";
+    }
+
+    function openSelectedInTab() {
+      if (!selectedAssetId) return;
+      var catalog = window.ASSET_CATALOG || [];
+      var item = catalog.find(function (a) { return a.id === selectedAssetId; });
+      var targetTf = getSelectedTf();
+      var tabName = (item ? item.instrument : selectedAssetId) + " (" + (targetTf === "tick_25" ? "25t" : (targetTf === "time_5m" ? "5m" : "15m")) + ")";
+
+      var existingTab = state.openTabs.find(function (t) { return t.id === selectedAssetId; });
+      if (!existingTab) {
+        state.openTabs.push({ id: selectedAssetId, name: tabName, tf: targetTf });
+      } else {
+        existingTab.tf = targetTf;
+        existingTab.name = tabName;
+      }
+      loadAsset(selectedAssetId, { targetTf: targetTf });
+      closeModal();
+    }
+
+    if (btnOpenTab) {
+      btnOpenTab.addEventListener("click", openSelectedInTab);
+    }
+
+    if (btnOpenWin) {
+      btnOpenWin.addEventListener("click", function () {
+        if (!selectedAssetId) return;
+        var targetTf = getSelectedTf();
+        var url = "index.html?asset=" + selectedAssetId + "&tf=" + targetTf;
+        window.open(url, "_blank");
+        closeModal();
+      });
+    }
+  }
+
   function init(data) {
     sizeOverlay();
     buildAssetSelectorList();
+    initChartScrollbar();
+    initNewChartModal();
 
-    // Check query params for specific asset
+    // Check query params for specific asset & timeframe
     var params = new URLSearchParams(window.location.search);
     var qAsset = params.get("asset");
+    var qTf = params.get("tf");
+    var opts = qTf ? { targetTf: qTf } : {};
     if (qAsset && window.ASSET_CATALOG && window.ASSET_CATALOG.some(function(a){ return a.id === qAsset; })) {
-      loadAsset(qAsset);
+      loadAsset(qAsset, opts);
     } else if (window.BUNDLE_6E_CONT) {
-      applyLoadedAsset(window.BUNDLE_6E_CONT);
+      applyLoadedAsset(window.BUNDLE_6E_CONT, opts);
     } else if (data) {
-      applyLoadedAsset(data);
+      applyLoadedAsset(data, opts);
     }
   }
 

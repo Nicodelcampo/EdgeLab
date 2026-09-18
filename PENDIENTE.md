@@ -2358,3 +2358,21 @@ repetiría el incidente P-18; y las ocho decisiones del 2026-08-15 ya establecen
 **Kaggle sale del programa**. Se corrió local, después de portar al espejo Python la
 misma optimización de dispersión que se hizo en el `.cs` (verificada idéntica bit a bit,
 4× más rápida).
+
+---
+
+## P-73 — HP-008: Delimitación de régimen rotacional vs direccional y control de fricción CME en reversión HFT con EMA
+
+**Asentada 2026-09-17.** Informe de falsación: `docs/research/INFORME_FALSACION_ABSORCION_HFT_EMA_2026-09-17.md`. Herramientas: `tools/falsification_battery.py` y `tools/deep_falsification_probe.py`.
+
+**Origen y resultados medidos:**
+1. **Falsada la hipótesis incondicional:** La entrada ciega al aparecer el HFT rinde $-1.62$ pt.
+2. **Falsado el micro-scalping:** Fricciones CME devoran targets cortos (<20t, $PF=0.75-0.88$). La monetización requiere target hacia la EMA 200.
+3. **Falsada la estabilidad interdiaria incondicional:** Solo 4 de 10 días son ganadores; días direccionales (Kaufman ER > 0.015) generan pérdidas consecutivas.
+4. **Sobrevive:** Placebo (+13.5t de alpha puro sobre giros sin HFT), Razón de Varianzas de Lo-MacKinlay ($VR=0.9645$ en 20-50 barras 25t), y sinergia de Vuelo Libre con Corredores de Vacío (HP-007): **+7.30 pt (+29.2 ticks), 63.6% WinRate, 1.45x MFE/MAE**.
+
+**Decisiones pendientes para Nico / Auditor:**
+- Decidir el filtro causal de régimen direccional previo (Kaufman ER o pendiente de EMA 200) antes de autorizar Gate 1.
+- Prerregistrar el protocolo de monetización amplia (TP dinámico en EMA 200 vs ratio fijo R:R) con modelado de comisiones CME ($0.75 pt/trade).
+- Mantener la partición de Holdout (`2026-07-01 -> 2026-12-31`) 100% sellada.
+
