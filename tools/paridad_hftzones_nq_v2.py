@@ -98,9 +98,15 @@ def verificar_schema_v2(con: sqlite3.Connection) -> Tuple[bool, str]:
             return False, f"Columna requerida faltante en hft_ticks_v2: {c}"
 
     cols_zones = [r[1] for r in cur.execute("PRAGMA table_info(hft_zones_v2)").fetchall()]
-    req_zones = ["instrument", "contract", "session_id", "zone_seq", "start_tick_seq", "end_tick_seq",
-                 "start_ts_ns", "end_ts_ns", "available_ts_ns", "direction", "lo_ticks", "hi_ticks",
-                 "pasos", "vol", "parameter_manifest_sha256", "indicator_source_sha256"]
+    req_zones = [
+        "instrument", "contract", "session_id", "zone_seq", "start_tick_seq", "end_tick_seq",
+        "start_ts_ns", "end_ts_ns", "available_ts_ns", "direction", "lo_ticks", "hi_ticks",
+        "pasos", "vol", "avg_ms", "total_ms", "volume_rate", "parameter_manifest_sha256",
+        "indicator_source_sha256", "valid_steps", "max_retro", "cvd_sweep", "buy_vol",
+        "sell_vol", "delta_slope", "delta_first", "delta_second", "max_tick_vol",
+        "no_move_ticks", "no_move_vol", "max_level_ticks", "bucket", "price_upper",
+        "price_lower", "price_mid", "height_ticks", "tick_res", "termination_reason",
+    ]
     for c in req_zones:
         if c not in cols_zones:
             return False, f"Columna requerida faltante en hft_zones_v2: {c}"
@@ -142,7 +148,10 @@ def comparar_v2_exacto(
         """SELECT instrument, contract, session_id, zone_seq, start_tick_seq, end_tick_seq,
                   start_ts_ns, end_ts_ns, available_ts_ns, direction, lo_ticks, hi_ticks,
                   pasos, vol, avg_ms, total_ms, volume_rate, parameter_manifest_sha256,
-                  indicator_source_sha256
+                  indicator_source_sha256, valid_steps, max_retro, cvd_sweep, buy_vol,
+                  sell_vol, delta_slope, delta_first, delta_second, max_tick_vol,
+                  no_move_ticks, no_move_vol, max_level_ticks, bucket, price_upper,
+                  price_lower, price_mid, height_ticks, tick_res, termination_reason
            FROM hft_zones_v2
            WHERE instrument=?
            ORDER BY session_id ASC, zone_seq ASC""",
@@ -198,43 +207,55 @@ def comparar_v2_exacto(
             "python_without_nt8_samples": []
         }
 
-    # 1. Verificar secuencia monotónica de ticks y ausencia de gaps por sesión
-    ticks_by_session = collections.defaultdict(list)
+    # 1. Verificar secuencia monotónica de ticks, monotonía temporal y ausencia de gaps por sesión y contrato
+    ticks_by_contract_session = collections.defaultdict(list)
     for r in ticks_rows:
+        ct = r[1]
         sess = r[2]
-        ticks_by_session[sess].append(r)
+        ticks_by_contract_session[(ct, sess)].append(r)
 
     tick_seq_errors = []
-    for sess, t_list in ticks_by_session.items():
+    for (ct, sess), t_list in ticks_by_contract_session.items():
         expected_seq = 1
+        prev_ts = None
         for t in t_list:
             actual_seq = t[3]
+            actual_ts = t[4]
             if actual_seq != expected_seq:
-                tick_seq_errors.append(f"Session {sess}: tick_seq esperado {expected_seq}, encontrado {actual_seq}")
+                tick_seq_errors.append(f"Contract {ct}, Session {sess}: tick_seq esperado {expected_seq}, encontrado {actual_seq}")
                 break
+            if prev_ts is not None and actual_ts < prev_ts:
+                tick_seq_errors.append(f"Contract {ct}, Session {sess}: timestamp_ns no monotónico: prev={prev_ts}, curr={actual_ts}")
+                break
+            prev_ts = actual_ts
             expected_seq += 1
 
     if tick_seq_errors:
         return {
             "mode": "V2_NS_EXACT_CERTIFICATION",
             "is_pass": False,
-            "status": "FAIL_TICK_SEQUENCE_GAP",
+            "status": "FAIL_TICK_SEQUENCE_OR_TIMESTAMP_GAP",
             "error": "; ".join(tick_seq_errors[:5])
         }
 
     # 2. Reconstruir zonas en Python sesión por sesión a partir del ledger compartido
     reconstructed_zones = []
-    session_reset_errors = []
+    prev_close_ticks = None  # Último precio de la sesión anterior dentro del MISMO contrato
+    prev_contract = None
 
-    prev_close_ticks = None  # Último precio de la sesión anterior (para reproducir NT8 Closes[ds][1])
-    for sess, t_list in sorted(ticks_by_session.items()):
+    for (contract_sess, sess), t_list in sorted(ticks_by_contract_session.items()):
+        # Si cambia el contrato, aislar estrictamente: resetear prev_close_ticks = None
+        if contract_sess != prev_contract:
+            prev_close_ticks = None
+        prev_contract = contract_sess
+
         ts_ns = [t[4] for t in t_list]
         px_tk = [t[5] for t in t_list]
         vol = [float(t[6]) for t in t_list]
 
         # NT8: al procesar el primer tick de una sesión, Closes[ds][1] apunta al
-        # cierre de la sesión anterior. Pasamos ese precio para que detect_candidates
-        # pueda iniciar la racha en idx=0 (tick_seq=1), reproduciendo NT8 exactamente.
+        # cierre de la sesión anterior (dentro del mismo contrato). Pasamos ese precio
+        # para que detect_candidates pueda iniciar la racha en idx=0 (tick_seq=1).
         cands = hz.detect_candidates(ts_ns, px_tk, vol,
                                      prev_session_close_ticks=prev_close_ticks)
         acc_zones, _ = hz.accept_all(cands, dict(hz.ACCEPT_DEFAULTS), tick_size=tick_size)
@@ -242,7 +263,6 @@ def comparar_v2_exacto(
         # Actualizar para la próxima sesión
         prev_close_ticks = px_tk[-1] if px_tk else prev_close_ticks
 
-        contract_sess = t_list[0][1]
         for z_idx, z in enumerate(acc_zones, start=1):
             reconstructed_zones.append({
                 "instrument": instrument,
@@ -262,6 +282,25 @@ def comparar_v2_exacto(
                 "avg_ms": float(z["avg_ms"]),
                 "total_ms": float(z["total_ms"]),
                 "volume_rate": float(z["vol_rate"]),
+                "valid_steps": int(z["valid_steps"]),
+                "max_retro": float(z["max_retro_ticks"]),
+                "cvd_sweep": float(z["cvd"]),
+                "buy_vol": float(z["buy_vol"]),
+                "sell_vol": float(z["sell_vol"]),
+                "delta_slope": float(z["delta_slope"]),
+                "delta_first": float(z["delta_first"]),
+                "delta_second": float(z["delta_second"]),
+                "max_tick_vol": float(z["max_tick_vol"]),
+                "no_move_ticks": int(z["no_move_ticks"]),
+                "no_move_vol": float(z["no_move_vol"]),
+                "max_level_ticks": int(z["max_level_ticks"]),
+                "bucket": str(hz.bucket(z)),
+                "price_upper": float(z["sw_hi_tk"] * tick_size),
+                "price_lower": float(z["sw_lo_tk"] * tick_size),
+                "price_mid": float((z["sw_hi_tk"] + z["sw_lo_tk"]) * tick_size / 2.0),
+                "height_ticks": float(z["height_ticks"]),
+                "tick_res": 1,
+                "termination_reason": str(z["termination_reason"]),
             })
 
     # 3. Comparación simétrica uno-a-uno por clave canónica (instrument, contract, session_id, zone_seq)
@@ -311,8 +350,14 @@ def comparar_v2_exacto(
         if source_sha and actual_source_sha != source_sha:
             provenance_errors.append(f"Source SHA mismatch en {key}: {actual_source_sha} != {source_sha}")
 
-        # Comparar campos con CERO tolerancia para enteros y timestamps ns
         diffs = []
+        # Invariantes causales
+        if int(r[8]) < int(r[7]):
+            diffs.append(("available_before_end", int(r[8]), int(r[7])))
+        if int(r[7]) < int(r[6]):
+            diffs.append(("end_before_start", int(r[7]), int(r[6])))
+
+        # Comparar campos con CERO tolerancia para enteros y timestamps ns
         if int(r[4]) != z["start_tick_seq"]:
             diffs.append(("start_tick_seq", int(r[4]), z["start_tick_seq"]))
         if int(r[5]) != z["end_tick_seq"]:
@@ -340,6 +385,46 @@ def comparar_v2_exacto(
         if abs(float(r[16]) - z["volume_rate"]) > 1e-4:
             diffs.append(("volume_rate", float(r[16]), z["volume_rate"]))
 
+        # Secondary metrics, termination_reason y geometría derivada
+        if int(r[19]) != z["valid_steps"]:
+            diffs.append(("valid_steps", int(r[19]), z["valid_steps"]))
+        if abs(float(r[20]) - z["max_retro"]) > 1e-6:
+            diffs.append(("max_retro", float(r[20]), z["max_retro"]))
+        if abs(float(r[21]) - z["cvd_sweep"]) > 1e-6:
+            diffs.append(("cvd_sweep", float(r[21]), z["cvd_sweep"]))
+        if abs(float(r[22]) - z["buy_vol"]) > 1e-6:
+            diffs.append(("buy_vol", float(r[22]), z["buy_vol"]))
+        if abs(float(r[23]) - z["sell_vol"]) > 1e-6:
+            diffs.append(("sell_vol", float(r[23]), z["sell_vol"]))
+        if abs(float(r[24]) - z["delta_slope"]) > 1e-6:
+            diffs.append(("delta_slope", float(r[24]), z["delta_slope"]))
+        if abs(float(r[25]) - z["delta_first"]) > 1e-6:
+            diffs.append(("delta_first", float(r[25]), z["delta_first"]))
+        if abs(float(r[26]) - z["delta_second"]) > 1e-6:
+            diffs.append(("delta_second", float(r[26]), z["delta_second"]))
+        if abs(float(r[27]) - z["max_tick_vol"]) > 1e-6:
+            diffs.append(("max_tick_vol", float(r[27]), z["max_tick_vol"]))
+        if int(r[28]) != z["no_move_ticks"]:
+            diffs.append(("no_move_ticks", int(r[28]), z["no_move_ticks"]))
+        if abs(float(r[29]) - z["no_move_vol"]) > 1e-6:
+            diffs.append(("no_move_vol", float(r[29]), z["no_move_vol"]))
+        if int(r[30]) != z["max_level_ticks"]:
+            diffs.append(("max_level_ticks", int(r[30]), z["max_level_ticks"]))
+        if str(r[31]) != z["bucket"]:
+            diffs.append(("bucket", str(r[31]), z["bucket"]))
+        if abs(float(r[32]) - z["price_upper"]) > 1e-6:
+            diffs.append(("price_upper", float(r[32]), z["price_upper"]))
+        if abs(float(r[33]) - z["price_lower"]) > 1e-6:
+            diffs.append(("price_lower", float(r[33]), z["price_lower"]))
+        if abs(float(r[34]) - z["price_mid"]) > 1e-6:
+            diffs.append(("price_mid", float(r[34]), z["price_mid"]))
+        if abs(float(r[35]) - z["height_ticks"]) > 1e-6:
+            diffs.append(("height_ticks", float(r[35]), z["height_ticks"]))
+        if int(r[36]) != z["tick_res"]:
+            diffs.append(("tick_res", int(r[36]), z["tick_res"]))
+        if str(r[37]) != z["termination_reason"]:
+            diffs.append(("termination_reason", str(r[37]), z["termination_reason"]))
+
         if not diffs:
             matched_exact.append(key)
         else:
@@ -362,6 +447,7 @@ def comparar_v2_exacto(
         "instrument": instrument,
         "is_pass": is_pass,
         "status": status,
+        "formal_classification": "PASS_CERTIFIED_FULL_FIELD_PARITY" if is_pass else "FAIL_V2_DISCREPANCY",
         "total_nt8_zones": len(zones_rows),
         "total_python_zones": len(reconstructed_zones),
         "matched_exact_count": len(matched_exact),
@@ -370,6 +456,9 @@ def comparar_v2_exacto(
         "python_without_nt8_count": len(python_without_nt8),
         "nt8_duplicates_count": nt8_duplicates,
         "py_duplicates_count": py_duplicates,
+        "fields_compared_per_zone": 38,
+        "fields_compared_total": len(matched_exact) * 38,
+        "sub_ms_drift_tolerance_ns": 0,
         "provenance_errors": provenance_errors,
         "matched_diffs_samples": matched_diffs[:10],
         "nt8_without_python_samples": nt8_without_python[:10],

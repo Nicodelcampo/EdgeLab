@@ -8,13 +8,14 @@
 
 1. [`PROJECT_INDEX.md`](PROJECT_INDEX.md)
 2. [`docs/CURRENT.md`](docs/CURRENT.md)
-3. **[`docs/research/INFORME_FALSACION_ABSORCION_HFT_EMA_2026-09-17.md`](docs/research/INFORME_FALSACION_ABSORCION_HFT_EMA_2026-09-17.md)** — **[NUEVO 2026-09-17]** Falsación de Absorción HFT con Reversión a la Media (EMA) y Vuelo Libre en Corredores de Vacío (HP-008).
-4. **[`docs/research/HP-007_DOSSIER_TECNICO_Y_AUDITORIA_CORREDORES_VACIO.md`](docs/research/HP-007_DOSSIER_TECNICO_Y_AUDITORIA_CORREDORES_VACIO.md)** — Dossier de Auditoría Completa de Corredores de Vacío y Campo de Resistencia Microestructural.
-5. [`docs/HIPOTESIS_PENDIENTES.md`](docs/HIPOTESIS_PENDIENTES.md) — Registro canónico de hipótesis (ver HP-007 y HP-008).
-6. [`docs/OPEN_IDEAS_INDEX_2026-09-02.md`](docs/OPEN_IDEAS_INDEX_2026-09-02.md)
-7. [`docs/BRANCH_REGISTRY_2026-09-02.md`](docs/BRANCH_REGISTRY_2026-09-02.md)
-8. [`PENDIENTE.md`](PENDIENTE.md)
-9. [`docs/NORTH_STAR.md`](docs/NORTH_STAR.md)
+3. **[`docs/research/HFT_CAUSAL_CERTIFICATION_HARDENING_2026-09-17.md`](docs/research/HFT_CAUSAL_CERTIFICATION_HARDENING_2026-09-17.md)** — **[NUEVO 2026-09-17]** Certificación Completa de Paridad V2 (38 campos, 5.438 zonas, 0ns drift, monotonía temporal y blindaje causal downstream).
+4. **[`docs/research/INFORME_FALSACION_ABSORCION_HFT_EMA_2026-09-17.md`](docs/research/INFORME_FALSACION_ABSORCION_HFT_EMA_2026-09-17.md)** — Falsación de Absorción HFT con Reversión a la Media (EMA) y Vuelo Libre en Corredores de Vacío (HP-008).
+5. **[`docs/research/HP-007_DOSSIER_TECNICO_Y_AUDITORIA_CORREDORES_VACIO.md`](docs/research/HP-007_DOSSIER_TECNICO_Y_AUDITORIA_CORREDORES_VACIO.md)** — Dossier de Auditoría Completa de Corredores de Vacío y Campo de Resistencia Microestructural.
+6. [`docs/HIPOTESIS_PENDIENTES.md`](docs/HIPOTESIS_PENDIENTES.md) — Registro canónico de hipótesis (ver HP-007 y HP-008).
+7. [`docs/OPEN_IDEAS_INDEX_2026-09-02.md`](docs/OPEN_IDEAS_INDEX_2026-09-02.md)
+8. [`docs/BRANCH_REGISTRY_2026-09-02.md`](docs/BRANCH_REGISTRY_2026-09-02.md)
+9. [`PENDIENTE.md`](PENDIENTE.md)
+10. [`docs/NORTH_STAR.md`](docs/NORTH_STAR.md)
 
 Para la historia completa: `docs/PROJECT_CHRONOLOGY_2026-09-02.md`. Para material local-only: `docs/REPOSITORY_VISIBILITY_AUDIT_2026-08-24.md`.
 
@@ -23,6 +24,9 @@ No empezar por el árbol completo de `docs/research/`: mezcla evidencia vigente,
 ## Estado en 90 segundos
 
 ```text
+HFT_V2_PARITY_STATUS                PASS_CERTIFIED_FULL_FIELD_PARITY (38 campos, 5.438 zonas, 0 discrepancias)
+HFT_CORRIDOR_INTEGRATION            PASS_CAUSAL (available_ts_ns estricto, fail-closed)
+VIEWER_HP007_INVARIANCE             PASS_AUTOMATED (Playwright Chromium: zoom, pan, resize y autoscale invariantes)
 HP-008_HFT_EMA_REVERSION            FALSADO INCONDICIONAL / SOBREVIVE EN ROTACIONAL Y VACIO
 HP-008_LO_MACKINLAY_VR              CONFIRMADO (VR=0.9645 a H=20-50 barras 25t, reversión genuina)
 HP-008_VACUUM_FREE_FLIGHT           CONFIRMADO (+7.30 pt / +29.2 ticks, 63.6% WinRate, MFE/MAE 1.45x)

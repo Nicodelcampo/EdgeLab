@@ -168,7 +168,7 @@ def detect_candidates(ts_ns, price_ticks, volume, params=None,
         total_vol += vol
         signos.append(sv); vols.append(vol); precios.append(pt)
 
-    def finalizar(i_fin, i_avail=None, termination_reason="END_OF_INPUT"):
+    def finalizar(i_fin, i_avail=None, termination_reason="CENSORED_END_OF_INPUT"):
         if direccion == 0 or streak == 0:
             return
         # i_avail: primer tick DESPUÉS del cierre de la zona (el tick que rompió la

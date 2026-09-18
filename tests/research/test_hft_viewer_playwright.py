@@ -76,7 +76,20 @@ def test_preview_loads_and_verifies_causality(browser_context):
     assert state_zoomed_out["field_hash"] == init_hash, "Zoom out altered field hash!"
     assert page.evaluate("() => Array.from(window.__HFT_CORRIDOR_STATE__.d)") == init_density
 
-    # 5. Interactive controls: change config
+    # 5. Invariant: viewport resize / autoscale invariance
+    page.set_viewport_size({"width": 800, "height": 600})
+    page.wait_for_timeout(200)
+    state_resized = page.evaluate("() => window.__HFT_CORRIDOR_STATE__")
+    assert state_resized["field_hash"] == init_hash, "Window resize altered field hash! Viewport invariance violated!"
+    assert page.evaluate("() => Array.from(window.__HFT_CORRIDOR_STATE__.d)") == init_density
+
+    page.set_viewport_size({"width": 1920, "height": 1080})
+    page.wait_for_timeout(200)
+    state_large = page.evaluate("() => window.__HFT_CORRIDOR_STATE__")
+    assert state_large["field_hash"] == init_hash, "Large viewport altered field hash! Viewport invariance violated!"
+    assert page.evaluate("() => Array.from(window.__HFT_CORRIDOR_STATE__.d)") == init_density
+
+    # 6. Interactive controls: change config
     page.select_option("#cfg", "HFT_RAW_BOX")
     state_box = page.evaluate("() => window.__HFT_CORRIDOR_STATE__")
     assert state_box["c"]["id"] == "HFT_RAW_BOX"

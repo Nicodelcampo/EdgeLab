@@ -64,6 +64,7 @@ namespace NinjaTrader.NinjaScript.Indicators
             public bool   Drawn;
             public Brush  ColorZ;
             public string Reporte;
+            public string TerminationReason;
         }
 
         public sealed class ClusterZone
@@ -241,6 +242,10 @@ namespace NinjaTrader.NinjaScript.Indicators
             }
             else if (State == State.Terminated)
             {
+                if (dir != 0 && streak > 0)
+                {
+                    Finalizar("CENSORED_END_OF_INPUT");
+                }
                 CloseDb();
                 LimpiarClusters();
             }
@@ -260,6 +265,10 @@ namespace NinjaTrader.NinjaScript.Indicators
             string sessId = tickTime.ToString("yyyyMMdd");
             if (sessId != currentSessionId)
             {
+                if (dir != 0 && streak > 0)
+                {
+                    Finalizar("END_OF_SESSION");
+                }
                 currentSessionId = sessId;
                 currentTickSeq = 0;
                 currentZoneSeq = 0;
@@ -364,7 +373,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 
             if (dir != 0 && ms > MaxPausaMs)
             {
-                Finalizar();
+                Finalizar("MAX_PAUSE");
                 dir = 0;
                 return;
             }
@@ -391,7 +400,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                     else
                     {
                         // Reversion real
-                        Finalizar();
+                        Finalizar("REVERSAL");
                         if (isUp) { dir = 1; Iniciar(ms, vol, cl, signedVol); }
                         else        dir = 0;
                     }
@@ -413,7 +422,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                     }
                     else
                     {
-                        Finalizar();
+                        Finalizar("REVERSAL");
                         if (isDown) { dir = -1; Iniciar(ms, vol, cl, signedVol); }
                         else          dir = 0;
                     }
@@ -467,7 +476,7 @@ namespace NinjaTrader.NinjaScript.Indicators
             zoneEndTickSeq = currentTickSeq;
         }
 
-        private void Finalizar()
+        private void Finalizar(string reason = "REVERSAL")
         {
             double sweepTicks = (swH - swL) / TickSize;
             bool isSweep  = sweepTicks >= MinSweepTicks;
@@ -579,7 +588,8 @@ namespace NinjaTrader.NinjaScript.Indicators
                         NoMoveTicks = noMoveTicks, NoMoveVol = noMoveVol, MaxLevelTicks = maxLevelTicks,
                         HeightTicks = sweepTicks,
                         TagRect = tag + "_R", TagText = tag + "_T", Drawn = false,
-                        ColorZ = col, Reporte = txt
+                        ColorZ = col, Reporte = txt,
+                        TerminationReason = reason
                     };
                     zones.Add(z);
                     if (EnableDbLogging) PersistZone(z);
@@ -1103,6 +1113,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                         price_mid REAL NOT NULL,
                         height_ticks REAL NOT NULL,
                         tick_res INTEGER NOT NULL,
+                        termination_reason TEXT NOT NULL,
                         CONSTRAINT ux_zone_v2 UNIQUE (instrument, contract, session_id, zone_seq)
                       );
                       CREATE INDEX IF NOT EXISTS idx_hz_v2_session ON hft_zones_v2(session_id, zone_seq);
@@ -1114,24 +1125,23 @@ namespace NinjaTrader.NinjaScript.Indicators
                       CREATE INDEX IF NOT EXISTS idx_hf_ts ON hft_flow(instrument, bar_ts);", dbConn))
                     cmd.ExecuteNonQuery();
 
-                // Usamos INSERT OR REPLACE para que reinicios de replay o reconexiones no lancen excepciones de clave unica.
                 zoneCmd = new SQLiteCommand(
-                    @"INSERT OR REPLACE INTO hft_zones_v2
+                    @"INSERT INTO hft_zones_v2
                       (instrument,contract,session_id,zone_seq,start_tick_seq,end_tick_seq,start_ts_ns,end_ts_ns,
                        available_ts_ns,direction,lo_ticks,hi_ticks,pasos,vol,avg_ms,total_ms,volume_rate,
                        parameter_manifest_sha256,indicator_source_sha256,valid_steps,max_retro,cvd_sweep,
                        buy_vol,sell_vol,delta_slope,delta_first,delta_second,max_tick_vol,no_move_ticks,
-                       no_move_vol,max_level_ticks,bucket,price_upper,price_lower,price_mid,height_ticks,tick_res)
+                       no_move_vol,max_level_ticks,bucket,price_upper,price_lower,price_mid,height_ticks,tick_res,termination_reason)
                       VALUES (@inst,@ct,@sess,@zseq,@stk,@etk,@s_ns,@e_ns,@avail_ns,@dir,@lo_tk,@hi_tk,@p,@v,
                               @am,@tm,@vr,@param_sha,@src_sha,@vs,@mr,@cvd,@buy,@sell,@dsl,@d1,@d2,@mtv,
-                              @nmt,@nmv,@mlt,@b,@pu,@pl,@pm,@ht,@tr)", dbConn);
+                              @nmt,@nmv,@mlt,@b,@pu,@pl,@pm,@ht,@tr,@term_reason)", dbConn);
                 foreach (string p in new[]{"@inst","@ct","@sess","@zseq","@stk","@etk","@s_ns","@e_ns","@avail_ns","@dir",
                     "@lo_tk","@hi_tk","@p","@v","@am","@tm","@vr","@param_sha","@src_sha","@vs","@mr","@cvd",
-                    "@buy","@sell","@dsl","@d1","@d2","@mtv","@nmt","@nmv","@mlt","@b","@pu","@pl","@pm","@ht","@tr"})
+                    "@buy","@sell","@dsl","@d1","@d2","@mtv","@nmt","@nmv","@mlt","@b","@pu","@pl","@pm","@ht","@tr","@term_reason"})
                     zoneCmd.Parameters.Add(new SQLiteParameter(p));
 
                 tickCmd = new SQLiteCommand(
-                    @"INSERT OR REPLACE INTO hft_ticks_v2
+                    @"INSERT INTO hft_ticks_v2
                       (instrument,contract,session_id,tick_seq,timestamp_ns,price_ticks,volume,bid_ticks,ask_ticks)
                       VALUES (@inst,@ct,@sess,@tseq,@ts_ns,@ptk,@vol,@btk,@atk)", dbConn);
                 foreach (string p in new[]{"@inst","@ct","@sess","@tseq","@ts_ns","@ptk","@vol","@btk","@atk"})
@@ -1197,7 +1207,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 z.ValidSteps, z.MaxRetro, z.Cvd, z.BuyVol, z.SellVol, z.DeltaSlope,
                 z.DeltaFirst, z.DeltaSecond, z.MaxTickVol, z.NoMoveTicks, z.NoMoveVol,
                 z.MaxLevelTicks, z.Bucket.ToString(), z.Upper, z.Lower, (z.Upper + z.Lower) / 2.0,
-                z.HeightTicks, TickResolution
+                z.HeightTicks, TickResolution, z.TerminationReason
             });
             FlushAll();
         }

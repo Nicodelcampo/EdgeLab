@@ -89,6 +89,7 @@ def _create_v2_db():
             price_mid REAL NOT NULL,
             height_ticks REAL NOT NULL,
             tick_res INTEGER NOT NULL,
+            termination_reason TEXT NOT NULL,
             CONSTRAINT ux_zone_v2 UNIQUE (instrument, contract, session_id, zone_seq)
         );
     """)
@@ -135,7 +136,7 @@ def _seed_standard_run(con, session_id="20260603", contract="NQ JUN26", n_ticks=
                 indicator_source_sha256, valid_steps, max_retro, cvd_sweep, buy_vol,
                 sell_vol, delta_slope, delta_first, delta_second, max_tick_vol,
                 no_move_ticks, no_move_vol, max_level_ticks, bucket, price_upper,
-                price_lower, price_mid, height_ticks, tick_res
+                price_lower, price_mid, height_ticks, tick_res, termination_reason
             ) VALUES (
                 'NQ JUN26', ?, ?, ?, ?, ?,
                 ?, ?, ?, ?, ?, ?,
@@ -143,7 +144,7 @@ def _seed_standard_run(con, session_id="20260603", contract="NQ JUN26", n_ticks=
                 ?, ?, ?, ?, ?,
                 ?, ?, ?, ?, ?,
                 ?, ?, ?, ?, ?,
-                ?, ?, ?, ?
+                ?, ?, ?, ?, ?
             )
         """, (
             contract, session_id, z_idx, z["idx_start"] + 1, z["idx_end"] + 1,
@@ -155,8 +156,9 @@ def _seed_standard_run(con, session_id="20260603", contract="NQ JUN26", n_ticks=
             float(z["buy_vol"]), float(z["sell_vol"]), float(z["delta_slope"]),
             float(z["delta_first"]), float(z["delta_second"]), float(z["max_tick_vol"]),
             int(z["no_move_ticks"]), float(z["no_move_vol"]), int(z["max_level_ticks"]),
-            str(z["bucket"]), float(z["upper"]), float(z["lower"]),
-            (float(z["upper"]) + float(z["lower"])) / 2.0, float(z["height_ticks"]), 1
+            str(z.get("bucket", hz.bucket(z))), float(z["sw_hi_tk"] * 0.25), float(z["sw_lo_tk"] * 0.25),
+            (float(z["sw_hi_tk"] + z["sw_lo_tk"]) * 0.25) / 2.0, float(z["height_ticks"]), 1,
+            str(z.get("termination_reason", "REVERSAL"))
         ))
     con.commit()
     return px_list[-1] if px_list else None
@@ -203,21 +205,21 @@ def test_4_diferencia_de_un_tick():
 def test_5_zone_seq_duplicado():
     con = _create_v2_db()
     _seed_standard_run(con)
-    # Forzar duplicado de zone_seq insertando en tabla sin constraint directa o temporal
-    con.execute("DROP TABLE hft_zones_v2;")
+    # Duplicar la fila de zone_seq insertándola de nuevo en una tabla sin UNIQUE constraint
+    con.execute("CREATE TABLE hft_zones_v2_temp AS SELECT * FROM hft_zones_v2")
+    con.execute("DROP TABLE hft_zones_v2")
+    con.execute("CREATE TABLE hft_zones_v2 AS SELECT * FROM hft_zones_v2_temp")
     con.execute("""
-        CREATE TABLE hft_zones_v2 (
-            id INTEGER PRIMARY KEY, instrument TEXT, contract TEXT, session_id TEXT, zone_seq INTEGER,
-            start_tick_seq INT, end_tick_seq INT, start_ts_ns INT, end_ts_ns INT, available_ts_ns INT,
-            direction INT, lo_ticks INT, hi_ticks INT, pasos INT, vol REAL, avg_ms REAL, total_ms REAL,
-            volume_rate REAL, parameter_manifest_sha256 TEXT, indicator_source_sha256 TEXT
-        );
+        INSERT INTO hft_zones_v2 SELECT NULL, instrument, contract, session_id, zone_seq,
+            start_tick_seq, end_tick_seq, start_ts_ns, end_ts_ns, available_ts_ns,
+            direction, lo_ticks, hi_ticks, pasos, vol, avg_ms, total_ms, volume_rate,
+            parameter_manifest_sha256, indicator_source_sha256, valid_steps, max_retro,
+            cvd_sweep, buy_vol, sell_vol, delta_slope, delta_first, delta_second,
+            max_tick_vol, no_move_ticks, no_move_vol, max_level_ticks, bucket, price_upper,
+            price_lower, price_mid, height_ticks, tick_res, termination_reason
+        FROM hft_zones_v2 WHERE zone_seq = 1
     """)
-    # Insertar dos filas con zone_seq = 1
-    t0 = 1780437841010000000
-    for i in (1, 2):
-        con.execute("INSERT INTO hft_zones_v2 VALUES (?, 'NQ JUN26', 'NQ JUN26', '20260603', 1, 1, 10, ?, ?, ?, 1, 115001, 115010, 10, 100.0, 10.0, 90.0, 1111.11, ?, ?)",
-                    (i, t0, t0+90000000, t0+90000000, EXPECTED_PARAM_SHA256, EXPECTED_SOURCE_SHA256))
+    con.commit()
     res = comparar_v2_exacto(con, "NQ JUN26")
     assert res["is_pass"] is False
     assert res["nt8_duplicates_count"] > 0
@@ -248,8 +250,9 @@ def test_7_reset_de_sesion():
 def test_8_reset_de_contrato():
     con = _create_v2_db()
     prev = _seed_standard_run(con, session_id="20260603", contract="NQ JUN26")
+    # Al cambiar de contrato a NQ SEP26, la sesión NO debe encadenarse con el cierre de NQ JUN26 (prev_session_close_ticks=None)
     _seed_standard_run(con, session_id="20260616", contract="NQ SEP26",
-                       prev_session_close_ticks=prev)
+                       prev_session_close_ticks=None)
     res = comparar_v2_exacto(con, "NQ JUN26")
     assert res["is_pass"] is True
     assert res["total_nt8_zones"] >= 1
@@ -320,7 +323,7 @@ def test_14_zona_extra_nt8():
             indicator_source_sha256, valid_steps, max_retro, cvd_sweep, buy_vol,
             sell_vol, delta_slope, delta_first, delta_second, max_tick_vol,
             no_move_ticks, no_move_vol, max_level_ticks, bucket, price_upper,
-            price_lower, price_mid, height_ticks, tick_res
+            price_lower, price_mid, height_ticks, tick_res, termination_reason
         ) SELECT
             instrument, contract, '20260604', 1, start_tick_seq, end_tick_seq,
             start_ts_ns, end_ts_ns, available_ts_ns, direction, lo_ticks, hi_ticks,
@@ -328,7 +331,7 @@ def test_14_zona_extra_nt8():
             indicator_source_sha256, valid_steps, max_retro, cvd_sweep, buy_vol,
             sell_vol, delta_slope, delta_first, delta_second, max_tick_vol,
             no_move_ticks, no_move_vol, max_level_ticks, bucket, price_upper,
-            price_lower, price_mid, height_ticks, tick_res
+            price_lower, price_mid, height_ticks, tick_res, termination_reason
         FROM hft_zones_v2 WHERE session_id = '20260603'
     """)
     con.commit()
@@ -341,7 +344,25 @@ def test_15_colision_ambigua():
     con = _create_v2_db()
     _seed_standard_run(con)
     # Insertar una fila con clave idéntica en tabla sin constraint
-    con.execute("INSERT OR REPLACE INTO hft_zones_v2 (id, instrument, contract, session_id, zone_seq, start_tick_seq, end_tick_seq, start_ts_ns, end_ts_ns, available_ts_ns, direction, lo_ticks, hi_ticks, pasos, vol, avg_ms, total_ms, volume_rate, parameter_manifest_sha256, indicator_source_sha256, valid_steps, max_retro, cvd_sweep, buy_vol, sell_vol, delta_slope, delta_first, delta_second, max_tick_vol, no_move_ticks, no_move_vol, max_level_ticks, bucket, price_upper, price_lower, price_mid, height_ticks, tick_res) SELECT 999, instrument, contract, session_id, 99, start_tick_seq, end_tick_seq, start_ts_ns, end_ts_ns, available_ts_ns, direction, lo_ticks, hi_ticks, pasos, vol, avg_ms, total_ms, volume_rate, parameter_manifest_sha256, indicator_source_sha256, valid_steps, max_retro, cvd_sweep, buy_vol, sell_vol, delta_slope, delta_first, delta_second, max_tick_vol, no_move_ticks, no_move_vol, max_level_ticks, bucket, price_upper, price_lower, price_mid, height_ticks, tick_res FROM hft_zones_v2 WHERE zone_seq = 1")
+    con.execute("""
+        INSERT OR REPLACE INTO hft_zones_v2 (
+            id, instrument, contract, session_id, zone_seq, start_tick_seq, end_tick_seq,
+            start_ts_ns, end_ts_ns, available_ts_ns, direction, lo_ticks, hi_ticks,
+            pasos, vol, avg_ms, total_ms, volume_rate, parameter_manifest_sha256,
+            indicator_source_sha256, valid_steps, max_retro, cvd_sweep, buy_vol,
+            sell_vol, delta_slope, delta_first, delta_second, max_tick_vol,
+            no_move_ticks, no_move_vol, max_level_ticks, bucket, price_upper,
+            price_lower, price_mid, height_ticks, tick_res, termination_reason
+        ) SELECT
+            999, instrument, contract, session_id, 99, start_tick_seq, end_tick_seq,
+            start_ts_ns, end_ts_ns, available_ts_ns, direction, lo_ticks, hi_ticks,
+            pasos, vol, avg_ms, total_ms, volume_rate, parameter_manifest_sha256,
+            indicator_source_sha256, valid_steps, max_retro, cvd_sweep, buy_vol,
+            sell_vol, delta_slope, delta_first, delta_second, max_tick_vol,
+            no_move_ticks, no_move_vol, max_level_ticks, bucket, price_upper,
+            price_lower, price_mid, height_ticks, tick_res, termination_reason
+        FROM hft_zones_v2 WHERE zone_seq = 1
+    """)
     con.commit()
     res = comparar_v2_exacto(con, "NQ JUN26")
     assert res["is_pass"] is False
@@ -444,14 +465,14 @@ def test_22_termination_reason_max_pause():
 
 
 def test_23_termination_reason_end_of_input():
-    """Una racha que llega al fin del stream sin reversal ni pausa tiene termination_reason='END_OF_INPUT'."""
+    """Una racha que llega al fin del stream sin reversal ni pausa tiene termination_reason='CENSORED_END_OF_INPUT'."""
     prices = [100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115]
     ts, px, vols = _make_tick_stream(prices)
     cands = hz.detect_candidates(ts, px, vols)
-    # La última racha (que llega al fin) debe ser END_OF_INPUT
+    # La última racha (que llega al fin) debe ser CENSORED_END_OF_INPUT (fail-closed causal)
     assert len(cands) >= 1
     last = cands[-1]
-    assert last["termination_reason"] == "END_OF_INPUT"
+    assert last["termination_reason"] == "CENSORED_END_OF_INPUT"
 
 
 def test_24_available_ts_ns_mayor_o_igual_a_end_ts_ns():
@@ -477,7 +498,7 @@ def test_25_ticks_con_timestamp_identico():
     cands = hz.detect_candidates(ts, prices, vols)
     for c in cands:
         assert c["ts_avail"] >= c["ts_end"]
-        assert c["termination_reason"] in ("REVERSAL", "MAX_PAUSE", "END_OF_INPUT")
+        assert c["termination_reason"] in ("REVERSAL", "MAX_PAUSE", "CENSORED_END_OF_INPUT", "END_OF_INPUT")
 
 
 def test_26_reversal_mismo_timestamp_available_igual_end():
