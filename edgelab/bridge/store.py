@@ -246,7 +246,7 @@ def _write_parquet(rows, path, columns):
 
 def _read_parquet_rows(path):
     import pyarrow.parquet as pq
-    t = pq.read_table(path)
+    t = pq.ParquetFile(path).read()
     cols = t.column_names
     out = []
     pydata = {c: t.column(c).to_pylist() for c in cols}
@@ -306,6 +306,10 @@ def publish_run(root, *, kernel_result, indicator, tick_size, instrument, contra
                 propagate_coverage=True):
     """Publica un run al store (inmutable, content-addressed). Idempotente si los
     digests coinciden; DeterminismError si difieren. Devuelve el manifest."""
+    if "csv_lines" not in kernel_result or kernel_result["csv_lines"] is None:
+        raise ValueError(
+            f"{indicator}: kernel no produce 'csv_lines' requerido por el contrato de eventos del store"
+        )
     csv_lines = kernel_result["csv_lines"]
     header = kernel_result.get("header")
     params_line = kernel_result.get("params_line")

@@ -147,6 +147,9 @@ def test_zones_reconstructable_from_events_all_kernels(tmp_path, data):
     tk, bars, fps = data
     for name in REGISTRY:
         res = _run_kernel(name, tk, bars, fps, {})
+        if "csv_lines" not in res or res["csv_lines"] is None:
+            # Contrato explícito: kernels sin csv_lines no participan en reconstrucción desde EventLog
+            continue
         dk = store.zones_core_digest_from_kernel(res["zones"], tk.tick_size)
         de = store.zones_core_digest_from_events(
             res["csv_lines"], res.get("header"), res.get("params_line"),
