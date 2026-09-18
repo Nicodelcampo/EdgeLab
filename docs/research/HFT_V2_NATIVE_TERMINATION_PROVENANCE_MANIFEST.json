@@ -1,16 +1,18 @@
 {
-  "manifest_schema": "edgelab_hft_v2_provenance_template_v1",
-  "generated_at_utc": "2026-09-18T02:08:00Z",
+  "manifest_schema": "edgelab_hft_v2_provenance_v1",
+  "generated_at_utc": "2026-09-18T15:00:00Z",
+  "evidence_status": "CERTIFIED_NATIVE_REPLAY_EVIDENCE",
   "provenance_adjudication": {
     "protocol": "NATIVE_NT8_REPLAY_38_FIELDS",
     "git_branch": "fix/hft-native-termination-fresh-replay-20260918",
     "base_commit": "2dde9ac523dba48407b3d7060495c0c54ebc55c4",
-    "python_writes_after_export": null,
-    "holdout_accessed": null,
+    "certification_commit": "bb77e2c36f11473f8e836786ab8eb2f3b320faa6",
+    "python_writes_after_export": false,
+    "holdout_accessed": false,
     "holdout_start_date": "2026-07-01",
+    "holdout_start_utc": "2026-06-30T22:00:00Z",
     "holdout_start_ns": 1782856800000000000,
-    "evidence_status": "TEMPLATE_NOT_NATIVE_REPLAY_EVIDENCE",
-    "holdout_start_utc": "2026-06-30T22:00:00Z"
+    "holdout_safety_gap_days": 18.04
   },
   "csharp_indicator": {
     "source_file": "nt8/HFTZonesNQPureV4_V2.cs",
@@ -25,16 +27,32 @@
       "empty_db_enforced": true
     }
   },
+  "python_comparator": {
+    "hftzones_nq_py": "edgelab/bridge/indicators/hftzones_nq.py",
+    "hftzones_nq_py_sha256": "6fb0f6ce13090ade89cb3fcaa2fd9e66ef4e10d5a041a59ec73cbc5560dfafe7",
+    "paridad_hftzones_nq_v2_py": "tools/paridad_hftzones_nq_v2.py",
+    "paridad_hftzones_nq_v2_py_sha256": "0c2eccb8c6006d466c441e958556b006e36205a0c74ff0f7e8a53b02ba06c701",
+    "validate_hft_v2_certification_py": "tools/validate_hft_v2_certification.py",
+    "validate_hft_v2_certification_py_sha256": "fa96baa6817b31f94d1632f0885bacade41c3dbc0603c6010d3cb9a4291b4e90"
+  },
   "input_tick_ledger": {
     "instrument": "NQ JUN26",
     "contract": "NQ 06-26",
     "series_primary": "NQ 06-26 (25 Tick)",
     "series_sub": "NQ 06-26 (1 Tick, TickResolution=1)",
     "canonical_dates": "2026-06-01 to 2026-06-12",
-    "total_rows_expected": 5978833,
-    "timestamp_min_ns": 1780351200068000000,
+    "total_rows_actual": 6493515,
+    "total_rows_historical_template": 5978833,
+    "ledger_reconciliation": {
+      "difference_ticks": 514682,
+      "session_20260601_ticks": 514677,
+      "sessions_20260602_to_20260612_ticks": 5978838,
+      "startup_filter_delta_ticks": 5,
+      "explanation": "El template historico abarcaba 9 sesiones (20260602 a 20260612, 5.978.838 ticks con filtro de arranque de 5 velas). El replay fresco de Nicolas inicio en 01/06/2026 cargando la sesion completa CME Globex 20260601 (apertura domingo 31-mayo 22:00 UTC con 514.677 ticks). La suma exacta es 5.978.838 + 514.677 = 6.493.515 ticks."
+    },
+    "timestamp_min_ns": 1780264800128000000,
     "timestamp_max_ns": 1781297997004000000,
-    "timestamp_min_utc": "2026-06-01T22:00:00.068000Z",
+    "timestamp_min_utc": "2026-05-31T22:00:00.128000Z",
     "timestamp_max_utc": "2026-06-12T20:59:57.004000Z"
   },
   "indicator_parameters": {
@@ -67,9 +85,11 @@
     "replay_start_time_utc": "2026-09-18T14:39:22Z",
     "replay_end_time_utc": "2026-09-18T14:48:28Z",
     "sqlite_sha256_at_close": "a0349af9b5eef1c12005b04311dd31d381f231d1da01d0dee226fe0a94191ec8",
+    "sqlite_sha256_post_python": "a0349af9b5eef1c12005b04311dd31d381f231d1da01d0dee226fe0a94191ec8",
     "sqlite_size_bytes_at_close": 1036443648,
     "preservation_copy_path": "data/nt8_oracles/preservation/hft_zones_nq_v2_native_termination_fresh_preserved_20260918_145003.sqlite",
-    "preservation_copy_sha256": "a0349af9b5eef1c12005b04311dd31d381f231d1da01d0dee226fe0a94191ec8"
+    "preservation_copy_sha256": "a0349af9b5eef1c12005b04311dd31d381f231d1da01d0dee226fe0a94191ec8",
+    "is_read_only_enforced": true
   },
   "certification_verdict": {
     "status": "PASS_CERTIFIED_FULL_FIELD_PARITY_NATIVE_NT8_38_FIELDS",
@@ -82,6 +102,12 @@
     "field_differences": 0,
     "fields_compared_total": 225910,
     "native_nt8_termination": true,
+    "termination_breakdown": {
+      "REVERSAL": 3636,
+      "MAX_PAUSE": 2309,
+      "END_OF_SESSION": 0,
+      "CENSORED_END_OF_INPUT": 0
+    },
     "sub_ms_drift_tolerance_ns": 0
   }
 }
