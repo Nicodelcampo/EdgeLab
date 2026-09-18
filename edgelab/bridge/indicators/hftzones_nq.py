@@ -169,8 +169,10 @@ def detect_candidates(ts_ns, price_ticks, volume, params=None,
         signos.append(sv); vols.append(vol); precios.append(pt)
 
     def finalizar(i_fin, i_avail=None, termination_reason="CENSORED_END_OF_INPUT"):
+        nonlocal last_side
         if direccion == 0 or streak == 0:
             return
+        last_side = 0
         # i_avail: primer tick DESPUÉS del cierre de la zona (el tick que rompió la
         # racha). Reproduce Times[1][0] en NT8 en el momento en que PersistZone es
         # invocado. Cuando se llega al fin del stream no hay tick posterior, así que
