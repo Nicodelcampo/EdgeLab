@@ -6,13 +6,14 @@
     "protocol": "NATIVE_NT8_REPLAY_38_FIELDS",
     "git_branch": "fix/hft-native-termination-fresh-replay-20260918",
     "base_commit": "2dde9ac523dba48407b3d7060495c0c54ebc55c4",
-    "certification_commit": "bb77e2c36f11473f8e836786ab8eb2f3b320faa6",
+    "certification_commit": "8c5fc97ebd542434c843ca43b8925828c9dd6215",
     "python_writes_after_export": false,
     "holdout_accessed": false,
     "holdout_start_date": "2026-07-01",
     "holdout_start_utc": "2026-06-30T22:00:00Z",
     "holdout_start_ns": 1782856800000000000,
-    "holdout_safety_gap_days": 18.04
+    "holdout_safety_gap_days": 18.04,
+    "algorithm_fix_commit": "bb77e2c36f11473f8e836786ab8eb2f3b320faa6"
   },
   "csharp_indicator": {
     "source_file": "nt8/HFTZonesNQPureV4_V2.cs",
@@ -28,12 +29,24 @@
     }
   },
   "python_comparator": {
-    "hftzones_nq_py": "edgelab/bridge/indicators/hftzones_nq.py",
-    "hftzones_nq_py_sha256": "6fb0f6ce13090ade89cb3fcaa2fd9e66ef4e10d5a041a59ec73cbc5560dfafe7",
-    "paridad_hftzones_nq_v2_py": "tools/paridad_hftzones_nq_v2.py",
-    "paridad_hftzones_nq_v2_py_sha256": "0c2eccb8c6006d466c441e958556b006e36205a0c74ff0f7e8a53b02ba06c701",
-    "validate_hft_v2_certification_py": "tools/validate_hft_v2_certification.py",
-    "validate_hft_v2_certification_py_sha256": "fa96baa6817b31f94d1632f0885bacade41c3dbc0603c6010d3cb9a4291b4e90"
+    "hash_policy": "SHA-256 over explicit line-ending representation; Windows execution hashes are CRLF and repository hashes are canonical LF",
+    "files": [
+      {
+        "path": "edgelab/bridge/indicators/hftzones_nq.py",
+        "repository_lf_sha256": "1e41253b4ac5258ce082b39b02269d04183e9a2d5679854351eb8b10aecf525e",
+        "executed_windows_crlf_sha256": "6fb0f6ce13090ade89cb3fcaa2fd9e66ef4e10d5a041a59ec73cbc5560dfafe7"
+      },
+      {
+        "path": "tools/paridad_hftzones_nq_v2.py",
+        "repository_lf_sha256": "3eb11c5f55a1bdc17a9b05ac99f87251463e264122cd4ae27550c7be159a8b83",
+        "executed_windows_crlf_sha256": "0c2eccb8c6006d466c441e958556b006e36205a0c74ff0f7e8a53b02ba06c701"
+      },
+      {
+        "path": "tools/validate_hft_v2_certification.py",
+        "repository_lf_sha256": "a46cfc6e25d42ef5bf21fda00166010578de52b88396b56908fdb80197221a1f",
+        "executed_windows_crlf_sha256": "7c44d83721fbf41fe54f0e3cb470e7cc208c9053a39b82b09fd3cec661b2991d"
+      }
+    ]
   },
   "input_tick_ledger": {
     "instrument": "NQ JUN26",
@@ -109,5 +122,6 @@
       "CENSORED_END_OF_INPUT": 0
     },
     "sub_ms_drift_tolerance_ns": 0
-  }
+  },
+  "repository_evidence_scope": "Committed metadata and outputs are CI-verifiable; physical SQLite bytes remain local and are attested by pre/post/preservation SHA-256 equality."
 }

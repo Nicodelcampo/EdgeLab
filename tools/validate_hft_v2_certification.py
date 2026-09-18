@@ -81,8 +81,17 @@ def validate(con: sqlite3.Connection, instrument: str) -> dict:
         "SELECT COUNT(*) FROM hft_ticks_v2 WHERE instrument=? AND timestamp_ns >= ?",
         (instrument, HOLDOUT_START_NS),
     ).fetchone()[0])
+    holdout_zones = int(con.execute(
+        """SELECT COUNT(*) FROM hft_zones_v2
+           WHERE instrument=? AND (
+             start_ts_ns >= ? OR end_ts_ns >= ? OR available_ts_ns >= ?
+           )""",
+        (instrument, HOLDOUT_START_NS, HOLDOUT_START_NS, HOLDOUT_START_NS),
+    ).fetchone()[0])
     if holdout_ticks:
         errors.append({"code": "HOLDOUT_CONTAMINATION", "count": holdout_ticks})
+    if holdout_zones:
+        errors.append({"code": "HOLDOUT_ZONE_CONTAMINATION", "count": holdout_zones})
 
     bad_tick_groups = con.execute("""
         SELECT contract, session_id, COUNT(*) n, MIN(tick_seq) lo, MAX(tick_seq) hi,
@@ -127,6 +136,9 @@ def validate(con: sqlite3.Connection, instrument: str) -> dict:
         "tick_count": tick_count,
         "zone_count": zone_count,
         "contracts": contracts,
+        "holdout_boundary_ts_ns": HOLDOUT_START_NS,
+        "holdout_ticks": holdout_ticks,
+        "holdout_zones": holdout_zones,
         "errors": errors,
         "certification_scope": "PREFLIGHT_ONLY_REQUIRES_FULL_FIELD_PARITY_RECONSTRUCTION",
     }
