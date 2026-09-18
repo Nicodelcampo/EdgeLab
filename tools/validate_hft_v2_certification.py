@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Fail-closed preflight for an HFTZones V2 shared-input SQLite export.
 
-This does not replace the parity reconstruction.  It prevents the historical
+This does not replace the parity reconstruction. It prevents the historical
 subset comparator from being described as a full certification when causal or
 identity invariants are absent.
 """
@@ -20,6 +20,7 @@ REQUIRED_ZONE_COLUMNS = {
     "pasos", "vol", "avg_ms", "total_ms", "volume_rate", "parameter_manifest_sha256",
     "indicator_source_sha256", "termination_reason",
 }
+HOLDOUT_START_NS = 1782856800000000000  # 2026-06-30T22:00:00Z, session 20260701 open
 
 
 def _columns(con: sqlite3.Connection, table: str) -> set[str]:
@@ -59,10 +60,38 @@ def validate(con: sqlite3.Connection, instrument: str) -> dict:
     if bad_origin:
         errors.append({"code": "END_BEFORE_START", "count": bad_origin})
 
+    # NOT NULL is schema eligibility, not proof of native provenance.
+    cols_zones_info = {r[1]: r for r in con.execute("PRAGMA table_info(hft_zones_v2)").fetchall()}
+    term_info = cols_zones_info.get("termination_reason")
+    if term_info and term_info[3] == 0:
+        errors.append({
+            "code": "PYTHON_BACKFILLED_TERMINATION_REASON",
+            "message": "termination_reason is NULLABLE; fresh NT8 export must create it as TEXT NOT NULL",
+        })
+
     placeholders = ",".join("?" for _ in ALLOWED_TERMINATIONS)
-    bad_reasons = int(con.execute(f"SELECT COUNT(*) FROM hft_zones_v2 WHERE instrument=? AND termination_reason NOT IN ({placeholders})", (instrument, *ALLOWED_TERMINATIONS)).fetchone()[0])
+    bad_reasons = int(con.execute(
+        f"SELECT COUNT(*) FROM hft_zones_v2 WHERE instrument=? AND (termination_reason IS NULL OR termination_reason NOT IN ({placeholders}))",
+        (instrument, *ALLOWED_TERMINATIONS),
+    ).fetchone()[0])
     if bad_reasons:
         errors.append({"code": "UNCERTIFIABLE_TERMINATION_REASON", "count": bad_reasons})
+
+    holdout_ticks = int(con.execute(
+        "SELECT COUNT(*) FROM hft_ticks_v2 WHERE instrument=? AND timestamp_ns >= ?",
+        (instrument, HOLDOUT_START_NS),
+    ).fetchone()[0])
+    holdout_zones = int(con.execute(
+        """SELECT COUNT(*) FROM hft_zones_v2
+           WHERE instrument=? AND (
+             start_ts_ns >= ? OR end_ts_ns >= ? OR available_ts_ns >= ?
+           )""",
+        (instrument, HOLDOUT_START_NS, HOLDOUT_START_NS, HOLDOUT_START_NS),
+    ).fetchone()[0])
+    if holdout_ticks:
+        errors.append({"code": "HOLDOUT_CONTAMINATION", "count": holdout_ticks})
+    if holdout_zones:
+        errors.append({"code": "HOLDOUT_ZONE_CONTAMINATION", "count": holdout_zones})
 
     bad_tick_groups = con.execute("""
         SELECT contract, session_id, COUNT(*) n, MIN(tick_seq) lo, MAX(tick_seq) hi,
@@ -94,19 +123,25 @@ def validate(con: sqlite3.Connection, instrument: str) -> dict:
 
     contracts = [str(row[0]) for row in con.execute("SELECT DISTINCT contract FROM hft_ticks_v2 WHERE instrument=? ORDER BY contract", params)]
     if len(contracts) > 1:
-        errors.append({"code": "MULTICONTRACT_COMPARATOR_NOT_YET_CERTIFIABLE", "contracts": contracts, "reason": "historical comparator carries previous-session close across contract transitions"})
+        errors.append({
+            "code": "MULTICONTRACT_COMPARATOR_NOT_YET_CERTIFIABLE",
+            "contracts": contracts,
+            "reason": "historical comparator carries previous-session close across contract transitions",
+        })
 
-    result = {
+    return {
         "status": "PASS_HARDENED_PREFLIGHT_NOT_FULL_PARITY" if not errors else "FAIL_HARDENED_PREFLIGHT",
         "is_pass": not errors,
         "instrument": instrument,
         "tick_count": tick_count,
         "zone_count": zone_count,
         "contracts": contracts,
+        "holdout_boundary_ts_ns": HOLDOUT_START_NS,
+        "holdout_ticks": holdout_ticks,
+        "holdout_zones": holdout_zones,
         "errors": errors,
         "certification_scope": "PREFLIGHT_ONLY_REQUIRES_FULL_FIELD_PARITY_RECONSTRUCTION",
     }
-    return result
 
 
 def main() -> int:

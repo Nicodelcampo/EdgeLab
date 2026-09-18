@@ -208,7 +208,50 @@ def test_5_zone_seq_duplicado():
     # Duplicar la fila de zone_seq insertándola de nuevo en una tabla sin UNIQUE constraint
     con.execute("CREATE TABLE hft_zones_v2_temp AS SELECT * FROM hft_zones_v2")
     con.execute("DROP TABLE hft_zones_v2")
-    con.execute("CREATE TABLE hft_zones_v2 AS SELECT * FROM hft_zones_v2_temp")
+    con.execute("""
+        CREATE TABLE hft_zones_v2 (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            instrument TEXT NOT NULL,
+            contract TEXT NOT NULL,
+            session_id TEXT NOT NULL,
+            zone_seq INTEGER NOT NULL,
+            start_tick_seq INTEGER NOT NULL,
+            end_tick_seq INTEGER NOT NULL,
+            start_ts_ns INTEGER NOT NULL,
+            end_ts_ns INTEGER NOT NULL,
+            available_ts_ns INTEGER NOT NULL,
+            direction INTEGER NOT NULL,
+            lo_ticks INTEGER NOT NULL,
+            hi_ticks INTEGER NOT NULL,
+            pasos INTEGER NOT NULL,
+            vol REAL NOT NULL,
+            avg_ms REAL NOT NULL,
+            total_ms REAL NOT NULL,
+            volume_rate REAL NOT NULL,
+            parameter_manifest_sha256 TEXT NOT NULL,
+            indicator_source_sha256 TEXT NOT NULL,
+            valid_steps INTEGER NOT NULL,
+            max_retro REAL NOT NULL,
+            cvd_sweep REAL NOT NULL,
+            buy_vol REAL NOT NULL,
+            sell_vol REAL NOT NULL,
+            delta_slope REAL NOT NULL,
+            delta_first REAL NOT NULL,
+            delta_second REAL NOT NULL,
+            max_tick_vol REAL NOT NULL,
+            no_move_ticks INTEGER NOT NULL,
+            no_move_vol REAL NOT NULL,
+            max_level_ticks INTEGER NOT NULL,
+            bucket TEXT NOT NULL,
+            price_upper REAL NOT NULL,
+            price_lower REAL NOT NULL,
+            price_mid REAL NOT NULL,
+            height_ticks REAL NOT NULL,
+            tick_res INTEGER NOT NULL,
+            termination_reason TEXT NOT NULL
+        );
+    """)
+    con.execute("INSERT INTO hft_zones_v2 SELECT * FROM hft_zones_v2_temp")
     con.execute("""
         INSERT INTO hft_zones_v2 SELECT NULL, instrument, contract, session_id, zone_seq,
             start_tick_seq, end_tick_seq, start_ts_ns, end_ts_ns, available_ts_ns,
@@ -393,7 +436,7 @@ def test_18_exito_exacto_completo():
     _seed_standard_run(con, session_id="20260603", n_ticks=15)
     res = comparar_v2_exacto(con, "NQ JUN26")
     assert res["is_pass"] is True
-    assert res["status"] == "PASS_CERTIFIED"
+    assert res["status"] == "PASS_CERTIFIED_FULL_FIELD_PARITY_NATIVE_NT8_38_FIELDS"
     assert res["matched_exact_count"] == 1
     assert res["matched_diffs_count"] == 0
     assert res["nt8_without_python_count"] == 0
@@ -595,3 +638,133 @@ def test_30_available_ts_ns_diferencia_falla_certificacion():
     if diffs:
         diff_fields = [d[0] for d in diffs[0]["diffs"]]
         assert "available_ts_ns" in diff_fields
+
+
+def test_31_frontera_cme_1700_chicago():
+    """Verifica que un tick a 16:59:59.999 CT pertenece a la sesión del día,
+    mientras que a 17:00:00.000 CT avanza a la siguiente sesión CME (trade date)."""
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+    from edgelab.bridge.sessions import cme_session_id
+
+    CT = ZoneInfo("America/Chicago")
+    # Lunes 1 de Junio 2026:
+    # 16:59:59 CT -> sesión 20260601
+    dt_before = datetime(2026, 6, 1, 16, 59, 59, 999000, tzinfo=CT)
+    assert cme_session_id(dt_before) == "20260601"
+
+    # 17:00:00 CT -> sesión 20260602 (trade date del martes)
+    dt_at = datetime(2026, 6, 1, 17, 0, 0, 0, tzinfo=CT)
+    assert cme_session_id(dt_at) == "20260602"
+
+
+def test_32_frontera_cme_dst_transition():
+    """Verifica consistencia en transiciones DST (Spring Forward en marzo, Fall Back en noviembre)."""
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+    from edgelab.bridge.sessions import cme_session_id
+
+    CT = ZoneInfo("America/Chicago")
+    # Transición DST Primavera 2026 (Domingo 8 de Marzo 2026):
+    # Domingo 8 de Marzo a las 17:00 CDT -> sesión 20260309 (Lunes)
+    dt_spring = datetime(2026, 3, 8, 17, 0, 0, tzinfo=CT)
+    assert cme_session_id(dt_spring) == "20260309"
+
+    # Transición DST Otoño 2026 (Domingo 1 de Noviembre 2026):
+    # Domingo 1 de Noviembre a las 17:00 CST -> sesión 20261102 (Lunes)
+    dt_fall = datetime(2026, 11, 1, 17, 0, 0, tzinfo=CT)
+    assert cme_session_id(dt_fall) == "20261102"
+
+
+def test_33_frontera_cme_viernes_domingo():
+    """Verifica que el cierre del viernes a 15:59:59 CT es sesión del viernes,
+    pero ticks a las 17:00 CT del viernes o domingo a las 17:00 CT abren la sesión del lunes."""
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+    from edgelab.bridge.sessions import cme_session_id
+
+    CT = ZoneInfo("America/Chicago")
+    # Viernes 5 de Junio 2026:
+    # 15:59:59 CT -> sesión 20260605 (Viernes)
+    dt_fri_close = datetime(2026, 6, 5, 15, 59, 59, tzinfo=CT)
+    assert cme_session_id(dt_fri_close) == "20260605"
+
+    # Viernes 17:00:00 CT (post-cierre) -> sesión 20260608 (Lunes)
+    dt_fri_post = datetime(2026, 6, 5, 17, 0, 0, tzinfo=CT)
+    assert cme_session_id(dt_fri_post) == "20260608"
+
+    # Domingo 7 de Junio 2026:
+    # 17:00:00 CT (apertura semanal) -> sesión 20260608 (Lunes)
+    dt_sun_open = datetime(2026, 6, 7, 17, 0, 0, tzinfo=CT)
+    assert cme_session_id(dt_sun_open) == "20260608"
+
+
+def test_34_transicion_contrato_reset_prev_close():
+    """Al cambiar de contrato, prev_close_ticks se resetea a None para evitar contaminación causal."""
+    con = _create_v2_db()
+    # Contrato 1: NQ 06-26 termina con un precio
+    p1 = _seed_standard_run(con, session_id="20260603", contract="NQ 06-26", n_ticks=15)
+    # Contrato 2: NQ 09-26 en la siguiente sesión
+    p2 = _seed_standard_run(con, session_id="20260604", contract="NQ 09-26", n_ticks=15)
+
+    # Verificar que el comparador procesa ambos contratos de forma limpia
+    res = comparar_v2_exacto(con, "NQ JUN26")
+    assert res["total_nt8_zones"] == 2
+    assert res["is_pass"] is True
+
+
+def test_35_schema_rechaza_termination_reason_nullable_backfilled():
+    """verificar_schema_v2 debe rechazar como FAIL si termination_reason es NULLABLE
+    (firma típica de ALTER TABLE ADD COLUMN del parcheador Python)."""
+    con = _create_v2_db()
+    # Recrear tabla hft_zones_v2 con columna nullable (simulando parcheador)
+    con.execute("DROP TABLE hft_zones_v2")
+    con.execute("""
+        CREATE TABLE hft_zones_v2 (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            instrument TEXT NOT NULL,
+            contract TEXT NOT NULL,
+            session_id TEXT NOT NULL,
+            zone_seq INTEGER NOT NULL,
+            start_tick_seq INTEGER NOT NULL,
+            end_tick_seq INTEGER NOT NULL,
+            start_ts_ns INTEGER NOT NULL,
+            end_ts_ns INTEGER NOT NULL,
+            available_ts_ns INTEGER NOT NULL,
+            direction INTEGER NOT NULL,
+            lo_ticks INTEGER NOT NULL,
+            hi_ticks INTEGER NOT NULL,
+            pasos INTEGER NOT NULL,
+            vol REAL NOT NULL,
+            avg_ms REAL NOT NULL,
+            total_ms REAL NOT NULL,
+            volume_rate REAL NOT NULL,
+            parameter_manifest_sha256 TEXT NOT NULL,
+            indicator_source_sha256 TEXT NOT NULL,
+            valid_steps INTEGER NOT NULL,
+            max_retro REAL NOT NULL,
+            cvd_sweep REAL NOT NULL,
+            buy_vol REAL NOT NULL,
+            sell_vol REAL NOT NULL,
+            delta_slope REAL NOT NULL,
+            delta_first REAL NOT NULL,
+            delta_second REAL NOT NULL,
+            max_tick_vol REAL NOT NULL,
+            no_move_ticks INTEGER NOT NULL,
+            no_move_vol REAL NOT NULL,
+            max_level_ticks INTEGER NOT NULL,
+            bucket TEXT NOT NULL,
+            price_upper REAL NOT NULL,
+            price_lower REAL NOT NULL,
+            price_mid REAL NOT NULL,
+            height_ticks REAL NOT NULL,
+            tick_res INTEGER NOT NULL,
+            termination_reason TEXT,
+            CONSTRAINT ux_zone_v2 UNIQUE (instrument, contract, session_id, zone_seq)
+        );
+    """)
+    ok, msg = verificar_schema_v2(con)
+    assert ok is False
+    assert "NULLABLE" in msg
+    assert "backfill Python" in msg
+
