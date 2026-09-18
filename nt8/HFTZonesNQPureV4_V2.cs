@@ -184,6 +184,8 @@ namespace NinjaTrader.NinjaScript.Indicators
                 DbPath                   = @"E:\EdgeLab\data\nt8_oracles\hft_zones_nq_v2.sqlite";
                 EnableFlowLog            = true;
                 FlowBucketSeconds        = 1;
+                // Safe default for oracle generation: no WPF drawing.
+                ModoExportacionPuro      = true;
 
                 MostrarVacios     = true;
                 VoidBinTicks      = 2;
@@ -282,10 +284,11 @@ namespace NinjaTrader.NinjaScript.Indicators
             {
                 if (CurrentBars[1] < 5) return;
                 ProcesarSweeps();
-                DibujarPendientes();
+                if (!ModoExportacionPuro) DibujarPendientes();
                 return;
             }
             if (BarsInProgress != 0) return;
+            if (ModoExportacionPuro) return;
             if (CurrentBars[0] < 2) return;
             DibujarPendientes();
             if (!MostrarClusters && clusterTags.Count > 0)
@@ -588,6 +591,7 @@ namespace NinjaTrader.NinjaScript.Indicators
         // ===================== DIBUJO =====================
         private void DibujarPendientes()
         {
+            if (ModoExportacionPuro) return;
             for (int i = 0; i < zones.Count; i++)
             {
                 Zone z = zones[i];
@@ -618,6 +622,7 @@ namespace NinjaTrader.NinjaScript.Indicators
         // ===================== CLUSTERS (HISTOGRAMA DE DENSIDAD DE CONFLUENCIA 4+) =====================
         private void DetectarSolapamientoCluster(int newIdx)
         {
+            if (ModoExportacionPuro) return;
             if (newIdx < 0 || newIdx >= zones.Count) return;
             Zone newZ = zones[newIdx];
             int currentBar = CurrentBars[0];
@@ -837,6 +842,7 @@ namespace NinjaTrader.NinjaScript.Indicators
         // agrupan en regiones conexas y se dibuja un rectangulo (bounding box) por expansion.
         private void DetectarVacios()
         {
+            if (ModoExportacionPuro) return;
             double binSize = Math.Max(1, VoidBinTicks) * TickSize;
             if (binSize <= 0) return;
 
@@ -1394,6 +1400,9 @@ namespace NinjaTrader.NinjaScript.Indicators
         public Brush ColorTexto { get; set; }
         [Browsable(false)] public string ColorTextoSerializable
         { get { return Serialize.BrushToString(ColorTexto); } set { ColorTexto = Serialize.StringToBrush(value); } }
+
+        [Display(Name="Modo Exportacion Puro (sin render)", Order=0, GroupName="F. Database", Description="Desactiva rectangulos, etiquetas, clusters y vacios durante la exportacion.")]
+        public bool ModoExportacionPuro { get; set; }
 
         [NinjaScriptProperty]
         [Display(Name="Enable DB Logging", Order=1, GroupName="F. Database")]

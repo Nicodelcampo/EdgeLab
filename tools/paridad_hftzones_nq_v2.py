@@ -226,14 +226,21 @@ def comparar_v2_exacto(
     reconstructed_zones = []
     session_reset_errors = []
 
+    prev_close_ticks = None  # Último precio de la sesión anterior (para reproducir NT8 Closes[ds][1])
     for sess, t_list in sorted(ticks_by_session.items()):
         ts_ns = [t[4] for t in t_list]
         px_tk = [t[5] for t in t_list]
         vol = [float(t[6]) for t in t_list]
 
-        # Auditoría de reset por sesión: cada sesión debe procesarse de forma aislada
-        cands = hz.detect_candidates(ts_ns, px_tk, vol)
+        # NT8: al procesar el primer tick de una sesión, Closes[ds][1] apunta al
+        # cierre de la sesión anterior. Pasamos ese precio para que detect_candidates
+        # pueda iniciar la racha en idx=0 (tick_seq=1), reproduciendo NT8 exactamente.
+        cands = hz.detect_candidates(ts_ns, px_tk, vol,
+                                     prev_session_close_ticks=prev_close_ticks)
         acc_zones, _ = hz.accept_all(cands, dict(hz.ACCEPT_DEFAULTS), tick_size=tick_size)
+
+        # Actualizar para la próxima sesión
+        prev_close_ticks = px_tk[-1] if px_tk else prev_close_ticks
 
         contract_sess = t_list[0][1]
         for z_idx, z in enumerate(acc_zones, start=1):
@@ -246,7 +253,7 @@ def comparar_v2_exacto(
                 "end_tick_seq": int(z["idx_end"]) + 1,
                 "start_ts_ns": int(z["ts_start"]),
                 "end_ts_ns": int(z["ts_end"]),
-                "available_ts_ns": int(z["ts_end"]),  # Causal: disponible al finalizar la racha
+                "available_ts_ns": int(z["ts_avail"]),  # NT8: Times[1][0] al cierre = primer tick post-zona
                 "direction": int(z["direction"]),
                 "lo_ticks": int(z["sw_lo_tk"]),
                 "hi_ticks": int(z["sw_hi_tk"]),

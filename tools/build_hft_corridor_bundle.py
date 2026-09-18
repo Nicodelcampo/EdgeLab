@@ -1,10 +1,7 @@
-"""Build a target-free NQ HFT corridor bundle for the browser viewer.
+"""Build a target-free NQ HFT corridor bundle.
 
-Invariants:
-1. Strict holdout guard: 2026-07-01 onwards is strictly quarantined (0 reads, 0 writes).
-2. Units validation: detects whether ticks are in price_ticks or dollar price and scales correctly.
-3. Multi-encoding CSV reading (utf-8, utf-8-sig, utf-16).
-4. Deterministic output with companion manifest and SHA-256 hash.
+The builder fails before decoding parquet data unless every row group proves,
+through physical statistics, that it ends before the canonical holdout boundary.
 """
 from __future__ import annotations
 
@@ -21,142 +18,125 @@ if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
 import pandas as pd
+import pyarrow.parquet as pq
 
-from edgelab.research.hft_corridors import (
-    HFT_PARITY_STATUS,
-    HFT_VISUAL_CONFIGS,
-    normalize_hft_zones,
-)
+from edgelab.research.hft_corridors import HFT_PARITY_STATUS, HFT_VISUAL_CONFIGS, normalize_hft_zones
 
-HOLDOUT_START_NS = int(pd.Timestamp("2026-07-01T00:00:00Z").value)
+HOLDOUT_START_NS = 1_782_856_800_000_000_000  # 2026-06-30T22:00:00Z
 
 
 def read_zones(path: Path) -> list[dict]:
-    """Reads zones from JSON or CSV with automatic encoding detection."""
     if path.suffix.lower() == ".json":
         obj = json.loads(path.read_text(encoding="utf-8"))
         return obj["zones"] if isinstance(obj, dict) and "zones" in obj else obj
-
-    # Try utf-8-sig, then utf-16
     content = None
-    for enc in ("utf-8-sig", "utf-16", "latin-1"):
+    for encoding in ("utf-8-sig", "utf-16", "latin-1"):
         try:
-            content = path.read_text(encoding=enc)
+            content = path.read_text(encoding=encoding)
             break
         except (UnicodeDecodeError, UnicodeError):
             continue
-
     if content is None:
         raise ValueError(f"Could not decode zones file: {path}")
+    return [dict(row) for row in csv.DictReader(content.splitlines())]
 
-    lines = content.splitlines()
-    reader = csv.DictReader(lines)
-    return [dict(r) for r in reader]
+
+def parquet_preflight(path: Path) -> tuple[pq.ParquetFile, str, str]:
+    """Prove physical pre-holdout custody before any row is decoded."""
+    parquet = pq.ParquetFile(path)
+    names = parquet.schema_arrow.names
+    ts_col = next((name for name in ("ts_utc_ns", "ts_ns", "timestamp_ns", "time_ns") if name in names), None)
+    px_col = next((name for name in ("price_ticks", "price", "last", "close") if name in names), None)
+    if ts_col is None:
+        raise ValueError(f"No timestamp column found. Available columns: {names}")
+    if px_col is None:
+        raise ValueError(f"No price column found. Available columns: {names}")
+    ts_index = names.index(ts_col)
+    for row_group_index in range(parquet.metadata.num_row_groups):
+        column = parquet.metadata.row_group(row_group_index).column(ts_index)
+        stats = column.statistics
+        if stats is None or not stats.has_min_max or stats.max is None:
+            raise ValueError(f"Row group {row_group_index} lacks timestamp min/max; zero-holdout-read proof unavailable")
+        if int(stats.max) >= HOLDOUT_START_NS:
+            raise ValueError(
+                f"Holdout gate failed before decode: row group {row_group_index} "
+                f"max({ts_col})={int(stats.max)} >= {HOLDOUT_START_NS}"
+            )
+    return parquet, ts_col, px_col
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description="Build HFT corridor bundle for viewer")
-    ap.add_argument("--zones", required=True, type=Path, help="Path to HFT zones CSV/JSON")
-    ap.add_argument("--ticks", required=True, type=Path, help="Path to NQ parquet ticks")
-    ap.add_argument("--output", default=Path("viewer/nt8_bridge/hft_nq_bundle.js"), type=Path)
-    ap.add_argument("--max-bars", default=30000, type=int)
-    ap.add_argument("--tick-size", default=0.25, type=float)
-    args = ap.parse_args()
+    parser = argparse.ArgumentParser(description="Build HFT corridor bundle for viewer")
+    parser.add_argument("--zones", required=True, type=Path)
+    parser.add_argument("--ticks", required=True, type=Path)
+    parser.add_argument("--zone-mode", choices=("V2", "V1_LEGACY"), default="V2")
+    parser.add_argument("--output", default=Path("viewer/nt8_bridge/hft_nq_bundle.js"), type=Path)
+    parser.add_argument("--max-bars", default=30000, type=int)
+    parser.add_argument("--tick-size", default=0.25, type=float)
+    args = parser.parse_args()
 
     raw_zones = read_zones(args.zones)
-    zones = normalize_hft_zones(raw_zones)
+    zones = normalize_hft_zones(raw_zones, mode=args.zone_mode)
     if not zones:
-        raise SystemExit("Error: No valid zones found in input")
+        raise SystemExit("No valid zones found in input")
+    if max(int(zone["available_ts"]) for zone in zones) >= HOLDOUT_START_NS:
+        raise SystemExit("Holdout violation in zone availability")
+    contracts = sorted({zone["contract"] for zone in zones})
+    if len(contracts) != 1:
+        raise SystemExit(f"Bundle requires exactly one contract, found: {contracts}")
 
-    # Verify holdout boundary for zones
-    max_zone_avail = max(int(z["available_ts"]) for z in zones)
-    if max_zone_avail >= HOLDOUT_START_NS:
-        raise SystemExit(f"Holdout violation: zone available_ts ({max_zone_avail}) >= holdout ({HOLDOUT_START_NS})")
+    _, ts_col, px_col = parquet_preflight(args.ticks)
+    # Safe only after every row group passed the physical gate above.
+    table = pq.read_table(args.ticks, columns=[ts_col, px_col])
+    ticks = table.to_pandas()
+    if ticks.empty:
+        raise SystemExit("No eligible pre-holdout ticks")
+    ticks = ticks.sort_values(ts_col, kind="mergesort")
+    if int(ticks[ts_col].max()) >= HOLDOUT_START_NS:
+        raise RuntimeError("Parquet statistics disagreed with decoded timestamps")
 
-    # Read parquet ticks
-    ticks_df = pd.read_parquet(args.ticks)
+    min_zone_ts = min(int(zone["origin_ts"]) for zone in zones)
+    max_zone_ts = max(int(zone["available_ts"]) for zone in zones)
+    margin_ns = 3_600_000_000_000
+    selected = ticks[(ticks[ts_col].astype("int64") >= min_zone_ts - margin_ns) & (ticks[ts_col].astype("int64") <= max_zone_ts + margin_ns)]
+    if selected.empty:
+        raise SystemExit("No ticks overlap the causal zone window")
 
-    # Detect timestamp column
-    ts_candidates = ("ts_utc_ns", "ts_ns", "timestamp_ns", "time_ns")
-    ts_col = next((c for c in ts_candidates if c in ticks_df.columns), None)
-    if ts_col is None:
-        raise ValueError(f"No timestamp column found. Available columns: {ticks_df.columns.tolist()}")
-
-    # Detect price column
-    px_candidates = ("price_ticks", "price", "last", "close")
-    px_col = next((c for c in px_candidates if c in ticks_df.columns), None)
-    if px_col is None:
-        raise ValueError(f"No price column found. Available columns: {ticks_df.columns.tolist()}")
-
-    # Filter pre-holdout and sort
-    ticks_df = ticks_df.sort_values(ts_col)
-    ticks_df = ticks_df[ticks_df[ts_col].astype("int64") < HOLDOUT_START_NS]
-
-    # Filter ticks to the time window of the zones with some margin
-    min_zone_ts = min(int(z["origin_ts"]) for z in zones)
-    max_zone_ts = max(int(z["available_ts"]) for z in zones)
-    margin_ns = 3600 * 1_000_000_000  # 1 hour margin
-    filtered_ticks = ticks_df[
-        (ticks_df[ts_col].astype("int64") >= (min_zone_ts - margin_ns)) &
-        (ticks_df[ts_col].astype("int64") <= (max_zone_ts + margin_ns))
-    ]
-    if len(filtered_ticks) > 0:
-        ticks_to_sample = filtered_ticks
-    else:
-        ticks_to_sample = ticks_df
-
-    if len(ticks_to_sample) == 0:
-        raise SystemExit("Error: No eligible pre-holdout ticks")
-
-    # Handle price scaling: price_ticks vs dollar price
     tick_size = float(args.tick_size)
     if px_col == "price_ticks":
-        raw_px = ticks_to_sample[px_col].astype("float64")
-        dollar_prices = raw_px * tick_size
-        tick_prices = raw_px.astype("int64")
+        raw_price = selected[px_col].astype("float64")
+        prices = raw_price * tick_size
+        price_ticks = raw_price.astype("int64")
     else:
-        raw_px = ticks_to_sample[px_col].astype("float64")
-        dollar_prices = raw_px
-        tick_prices = (dollar_prices / tick_size).round().astype("int64")
+        prices = selected[px_col].astype("float64")
+        price_ticks = (prices / tick_size).round().astype("int64")
 
-    # Sanity check unit consistency between candles and zones
-    median_candle_price = float(dollar_prices.median())
-    median_zone_price = float((zones[0]["lo"] + zones[0]["hi"]) / 2.0)
-    if abs(median_candle_price - median_zone_price) > 5000:
-        raise ValueError(
-            f"Scale mismatch detected! Candle price median ({median_candle_price}) "
-            f"differs substantially from zone price ({median_zone_price}). Check tick_size conversion."
-        )
+    zone_midpoints = [(zone["lo"] + zone["hi"]) / 2.0 for zone in zones]
+    if abs(float(prices.median()) - float(pd.Series(zone_midpoints).median())) > 5000:
+        raise ValueError("Scale mismatch between tick prices and zone prices")
 
-    # Subsample candles to max-bars
-    n_rows = len(ticks_to_sample)
-    stride = max(1, n_rows // args.max_bars)
-    sampled_indices = range(0, n_rows, stride)
-
-    ts_values = ticks_to_sample[ts_col].to_numpy()
-    px_values = dollar_prices.to_numpy()
-    tk_values = tick_prices.to_numpy()
-
+    stride = max(1, len(selected) // args.max_bars)
+    indices = range(0, len(selected), stride)
+    ts_values = selected[ts_col].to_numpy()
+    price_values = prices.to_numpy()
+    tick_values = price_ticks.to_numpy()
     candles = [
-        {
-            "time_ns": int(ts_values[idx]),
-            "price": round(float(px_values[idx]), 4),
-            "price_tick": int(tk_values[idx]),
-        }
-        for idx in sampled_indices
+        {"time_ns": int(ts_values[index]), "price": round(float(price_values[index]), 4), "price_tick": int(tick_values[index])}
+        for index in indices
     ]
 
     payload: dict[str, Any] = {
         "meta": {
             "asset": "NQ",
-            "contract": "NQ 06-26",
+            "contract": contracts[0],
             "tick_size": tick_size,
-            "parity_status": HFT_PARITY_STATUS,
+            "zone_mode": args.zone_mode,
+            "parity_status": HFT_PARITY_STATUS if args.zone_mode == "V2" else "LEGACY_DIAGNOSTIC_NOT_CERTIFIED",
             "outcome_firewall": "ENFORCED",
-            "holdout_reads": 0,
-            "price_units": "POINTS_AND_TICKS_VERIFIED",
-            "t_min_ns": int(candles[0]["time_ns"]) if candles else 0,
-            "t_max_ns": int(candles[-1]["time_ns"]) if candles else 0,
+            "holdout_boundary_ns": HOLDOUT_START_NS,
+            "holdout_rows_decoded": 0,
+            "t_min_ns": int(candles[0]["time_ns"]),
+            "t_max_ns": int(candles[-1]["time_ns"]),
             "candle_count": len(candles),
             "zone_count": len(zones),
         },
@@ -164,38 +144,17 @@ def main() -> None:
         "zones": zones,
         "configurations": list(HFT_VISUAL_CONFIGS),
     }
-
-    # Deterministic payload serialization and hash
-    json_bytes = json.dumps(payload, separators=(",", ":")).encode("utf-8")
-    bundle_sha256 = hashlib.sha256(json_bytes).hexdigest()
+    canonical = json.dumps(payload, separators=(",", ":")).encode("utf-8")
+    bundle_sha256 = hashlib.sha256(canonical).hexdigest()
     payload["meta"]["bundle_sha256"] = bundle_sha256
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    with args.output.open("w", encoding="utf-8") as fh:
-        fh.write("window.HFT_NQ_CORRIDOR_BUNDLE=" + json.dumps(payload, separators=(",", ":")) + ";\n")
-
+    args.output.write_text("window.HFT_NQ_CORRIDOR_BUNDLE=" + json.dumps(payload, separators=(",", ":")) + ";\n", encoding="utf-8")
     manifest_path = args.output.with_suffix(".manifest.json")
-    manifest_data = {
-        "bundle_file": args.output.name,
-        "bundle_sha256": bundle_sha256,
-        "meta": payload["meta"],
-        "configurations": [c["id"] for c in HFT_VISUAL_CONFIGS],
-    }
-    with manifest_path.open("w", encoding="utf-8") as fh:
-        json.dump(manifest_data, fh, indent=2)
+    manifest = {"bundle_file": args.output.name, "bundle_sha256": bundle_sha256, "meta": payload["meta"], "configurations": [cfg["id"] for cfg in HFT_VISUAL_CONFIGS]}
+    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    print(json.dumps({"bundle_js": str(args.output), "manifest_json": str(manifest_path), "bundle_sha256": bundle_sha256, "zone_count": len(zones), "candle_count": len(candles), "parity_status": payload["meta"]["parity_status"]}, indent=2))
 
-    result_summary = {
-        "bundle_js": str(args.output),
-        "manifest_json": str(manifest_path),
-        "bundle_sha256": bundle_sha256,
-        "zone_count": len(zones),
-        "candle_count": len(candles),
-        "parity_status": HFT_PARITY_STATUS,
-        "price_range": [round(float(dollar_prices.min()), 2), round(float(dollar_prices.max()), 2)],
-        "time_range_utc": [
-            str(pd.Timestamp(int(candles[0]["time_ns"]), unit="ns", tz="UTC")),
-            str(pd.Timestamp(int(candles[-1]["time_ns"]), unit="ns", tz="UTC")),
-        ],
-    }
-    print(json.dumps(result_summary, indent=2))
-if __name__=="__main__": main()
+
+if __name__ == "__main__":
+    main()
