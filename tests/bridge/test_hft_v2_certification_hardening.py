@@ -8,7 +8,7 @@ def database(with_reason=True):
     con.execute("""CREATE TABLE hft_ticks_v2 (
       instrument TEXT, contract TEXT, session_id TEXT, tick_seq INTEGER,
       timestamp_ns INTEGER, price_ticks INTEGER, volume REAL)""")
-    reason = ", termination_reason TEXT" if with_reason else ""
+    reason = ", termination_reason TEXT NOT NULL" if with_reason else ""
     con.execute(f"""CREATE TABLE hft_zones_v2 (
       instrument TEXT, contract TEXT, session_id TEXT, zone_seq INTEGER,
       start_tick_seq INTEGER, end_tick_seq INTEGER, start_ts_ns INTEGER,
@@ -68,3 +68,21 @@ def test_multiple_contracts_abstain_until_reset_is_fixed():
     con.execute("UPDATE hft_ticks_v2 SET contract='NQ 09-26' WHERE tick_seq=3")
     result = validate(con, "NQ JUN26")
     assert any(error["code"] == "MULTICONTRACT_COMPARATOR_NOT_YET_CERTIFIABLE" for error in result["errors"])
+
+
+def test_holdout_firewall_uses_cme_session_open_not_midnight():
+    con = database()
+    canonical_open = 1782856800000000000
+    con.execute("UPDATE hft_ticks_v2 SET timestamp_ns=? WHERE tick_seq=3", (canonical_open,))
+    result = validate(con, "NQ JUN26")
+    assert any(error["code"] == "HOLDOUT_CONTAMINATION" for error in result["errors"])
+
+
+def test_last_nanosecond_before_holdout_is_not_contamination():
+    con = database()
+    canonical_open = 1782856800000000000
+    con.execute("UPDATE hft_ticks_v2 SET timestamp_ns=? WHERE tick_seq=1", (canonical_open - 3,))
+    con.execute("UPDATE hft_ticks_v2 SET timestamp_ns=? WHERE tick_seq=2", (canonical_open - 2,))
+    con.execute("UPDATE hft_ticks_v2 SET timestamp_ns=? WHERE tick_seq=3", (canonical_open - 1,))
+    result = validate(con, "NQ JUN26")
+    assert not any(error["code"] == "HOLDOUT_CONTAMINATION" for error in result["errors"])
