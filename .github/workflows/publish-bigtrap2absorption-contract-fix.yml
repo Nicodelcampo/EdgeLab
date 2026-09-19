@@ -44,7 +44,9 @@ jobs:
         run: |
           git config core.whitespace cr-at-eol
           git diff --check
-          test "$(git diff --name-only | sort)" = "$(printf '%s\n' edgelab/bridge/indicators/bigtrap2absorption.py edgelab/bridge/oracle.py tests/bridge/test_bigtrap2absorption_store_contract.py | sort)"
+          actual="$({ git diff --name-only; git ls-files --others --exclude-standard; } | sort)"
+          expected="$(printf '%s\n' edgelab/bridge/indicators/bigtrap2absorption.py edgelab/bridge/oracle.py tests/bridge/test_bigtrap2absorption_store_contract.py | sort)"
+          test "$actual" = "$expected"
       - name: Commit isolated repair
         run: |
           git config user.name 'github-actions[bot]'
