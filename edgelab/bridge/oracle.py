@@ -29,7 +29,9 @@ def _to_unix_ms(s, tz):
         base, frac = s.split(".", 1)
     fmt = "%Y-%m-%dT%H:%M:%S" if "T" in base else "%Y-%m-%d %H:%M:%S"
     d = datetime.strptime(base, fmt).replace(tzinfo=tz)
-    ms = int(round(float("0." + frac) * 1000)) if frac else 0
+    # DateTimeOffset.ToUnixTimeMilliseconds floors sub-millisecond precision;
+    # rounding here makes event reconstruction drift by +1 ms.
+    ms = int((frac + "000")[:3]) if frac else 0
     return int(d.timestamp()) * 1000 + ms
 
 
@@ -88,8 +90,8 @@ def parse_nt8_log(path, chart_tz="UTC", tick_size=None, *, allow_quarantined=Fal
 
 
 def _detect_indicator(meta, header):
-    for name in ("Gaps2", "HFTZones2", "VolTicksPOC2", "aVolClusterPOI", "aVolCellPOI2", "BigTrap2",
-                 "AACloseOpenDiffs"):
+    for name in ("Gaps2", "HFTZones2", "VolTicksPOC2", "aVolClusterPOI", "aVolCellPOI2",
+                 "BigTrap2Absorption", "BigTrap2", "AACloseOpenDiffs"):
         if "indicator=" + name in meta:
             return name
     if "gap_id" in header:
@@ -310,6 +312,10 @@ def _session_starts_ns(events, indicator, tz):
 
 def _parse_pipe(body, meta, tz):
     events, zones = [], {}
+    indicator = _detect_indicator(meta, [])
+    if indicator == "unknown":
+        # Legacy pipe exports predate versioned metadata and belong to BigTrap2.
+        indicator = "BigTrap2"
     for ln in body:
         parts = ln.split("|", 3)
         if len(parts) < 4:
@@ -322,7 +328,7 @@ def _parse_pipe(body, meta, tz):
         if not zid:
             continue
         z = zones.setdefault(zid, dict(
-            id=zid, indicator="BigTrap2",
+            id=zid, indicator=indicator,
             top=_f(kv.get("hi")), bottom=_f(kv.get("lo")),
             created_ms=unix_ms if etype == "ZONE_CREATED" else None,
             ended_ms=None, state="ACTIVE",
@@ -338,5 +344,5 @@ def _parse_pipe(body, meta, tz):
             z["state"] = _END_STATES[etype]
             z["ended_ms"] = unix_ms
             z["end_reason"] = kv.get("reason") or etype.lower()
-    return dict(indicator="BigTrap2", meta=meta, header=None, events=events,
+    return dict(indicator=indicator, meta=meta, header=None, events=events,
                 zones=list(zones.values()))

@@ -69,6 +69,16 @@ PARAM_SPEC = dict(
     DrawZoneBand=dict(type="bool"),
 )
 
+
+def meta_line(p, instrument, tick_size):
+    """Versioned metadata for the canonical pipe event stream."""
+    return (
+        "# meta indicator=BigTrap2Absorption,version=1.1.1,"
+        f"instrument={instrument},tick_size={plain(tick_size)},"
+        "event_format=pipe_v1,availability=causal"
+    )
+
+
 def _percentile(arr, q):
     if len(arr) == 0:
         return float("nan")
@@ -383,6 +393,11 @@ def run(ticks, bars=None, footprints=None, params=None, chart_tz="UTC"):
 
             z_entry = {
                 "id": f"{b_idx}_{'B' if is_bull else 'S'}",
+                "indicator": NAME,
+                "top": z_hi,
+                "bottom": z_lo,
+                "kind": "trapped_buyers" if is_bull else "trapped_sellers",
+                "timeline": [],
                 "created_bar": b_idx,
                 "is_bull": is_bull,
                 "side": "trapped_buyers" if is_bull else "trapped_sellers",
@@ -473,7 +488,10 @@ def run(ticks, bars=None, footprints=None, params=None, chart_tz="UTC"):
     return dict(
         indicator=NAME,
         params=p,
+        header=None,
+        csv_lines=events,
+        events=events,
         zones=zones,
         n_zones=len(zones),
-        events=events
+        params_line=meta_line(p, ticks.instrument, tick_size),
     )
