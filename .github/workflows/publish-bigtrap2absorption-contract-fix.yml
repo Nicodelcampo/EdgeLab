@@ -1,0 +1,152 @@
+name: Publish BigTrap2Absorption contract fix
+
+on:
+  push:
+    branches:
+      - feat/edge-discovery-brain-foundation-20260919
+    paths:
+      - .github/workflows/publish-bigtrap2absorption-contract-fix.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair-test-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/edge-discovery-brain-foundation-20260919
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install canonical bridge dependencies
+        run: python -m pip install -r requirements/core-bridge-dev.lock
+      - name: Apply isolated contract repair
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_one(path, old, new):
+              p = Path(path)
+              data = p.read_bytes()
+              old_b = old.encode()
+              new_b = new.encode()
+              if data.count(old_b) != 1:
+                  old_b = old.replace('\n', '\r\n').encode()
+                  new_b = new.replace('\n', '\r\n').encode()
+              count = data.count(old_b)
+              if count != 1:
+                  raise SystemExit(f'{path}: expected one match, found {count}')
+              p.write_bytes(data.replace(old_b, new_b))
+
+          kernel = 'edgelab/bridge/indicators/bigtrap2absorption.py'
+          replace_one(kernel, ')\n\ndef _percentile(arr, q):', ''' )\n\ndef _percentile(arr, q):'''.replace(' )', ''),)
+          # Insert versioned event metadata before the percentile helper.
+          replace_one(kernel, ')\n\ndef _percentile(arr, q):', ''')
+
+
+def meta_line(p, instrument, tick_size):
+    """Versioned metadata for the canonical pipe event stream."""
+    return (
+        "# meta indicator=BigTrap2Absorption,version=1.1.1,"
+        f"instrument={instrument},tick_size={plain(tick_size)},"
+        "event_format=pipe_v1,availability=causal"
+    )
+
+
+def _percentile(arr, q):''')
+          replace_one(kernel, '''            z_entry = {
+                "id": f"{b_idx}_{'B' if is_bull else 'S'}",
+                "created_bar": b_idx,''', '''            z_entry = {
+                "id": f"{b_idx}_{'B' if is_bull else 'S'}",
+                "indicator": NAME,
+                "top": z_hi,
+                "bottom": z_lo,
+                "kind": "trapped_buyers" if is_bull else "trapped_sellers",
+                "timeline": [],
+                "created_bar": b_idx,''')
+          replace_one(kernel, '''    return dict(
+        indicator=NAME,
+        params=p,
+        zones=zones,
+        n_zones=len(zones),
+        events=events
+    )''', '''    return dict(
+        indicator=NAME,
+        params=p,
+        header=None,
+        csv_lines=events,
+        events=events,
+        zones=zones,
+        n_zones=len(zones),
+        params_line=meta_line(p, ticks.instrument, tick_size),
+    )''')
+
+          oracle = 'edgelab/bridge/oracle.py'
+          replace_one(oracle, '    ms = int(round(float("0." + frac) * 1000)) if frac else 0\n', '''    # DateTimeOffset.ToUnixTimeMilliseconds floors sub-millisecond precision;
+    # rounding here makes event reconstruction drift by +1 ms.
+    ms = int((frac + "000")[:3]) if frac else 0
+''')
+          replace_one(oracle, '''    for name in ("Gaps2", "HFTZones2", "VolTicksPOC2", "aVolClusterPOI", "aVolCellPOI2", "BigTrap2",
+                 "AACloseOpenDiffs"):''', '''    for name in ("Gaps2", "HFTZones2", "VolTicksPOC2", "aVolClusterPOI", "aVolCellPOI2",
+                 "BigTrap2Absorption", "BigTrap2", "AACloseOpenDiffs"):''')
+          replace_one(oracle, '''def _parse_pipe(body, meta, tz):
+    events, zones = [], {}
+    for ln in body:''', '''def _parse_pipe(body, meta, tz):
+    events, zones = [], {}
+    indicator = _detect_indicator(meta, [])
+    if indicator == "unknown":
+        # Legacy pipe exports predate versioned metadata and belong to BigTrap2.
+        indicator = "BigTrap2"
+    for ln in body:''')
+          replace_one(oracle, '            id=zid, indicator="BigTrap2",', '            id=zid, indicator=indicator,')
+          replace_one(oracle, '''    return dict(indicator="BigTrap2", meta=meta, header=None, events=events,
+                zones=list(zones.values()))''', '''    return dict(indicator=indicator, meta=meta, header=None, events=events,
+                zones=list(zones.values()))''')
+
+          Path('tests/bridge/test_bigtrap2absorption_store_contract.py').write_text('''"""Canonical event/store contract for BigTrap2Absorption."""
+
+from edgelab.bridge import oracle, store
+from edgelab.bridge.indicators import bigtrap2absorption
+from edgelab.bridge.ticks import make_synthetic
+
+PERMISSIVE_PARAMS = {
+    "MinHistoryBuckets": 1, "AbsorptionLookback": 10, "AbsorptionPct": 0,
+    "ImbalanceRatio": 1, "MinStackedRows": 1, "MinTrapFrac": 0,
+    "UseWickFilter": False, "RequireFlowSideMatch": False,
+}
+
+def test_bigtrap2absorption_pipe_events_reconstruct_zone_core():
+    ticks = make_synthetic(n_sessions=1, ticks_per_session=1000)
+    result = bigtrap2absorption.run(ticks, params=PERMISSIVE_PARAMS)
+    required = {"indicator", "params", "header", "csv_lines", "events", "zones", "params_line"}
+    assert required <= result.keys()
+    assert result["indicator"] == "BigTrap2Absorption"
+    assert result["header"] is None
+    assert result["csv_lines"] == result["events"]
+    assert result["zones"], "fixture must exercise non-empty reconstruction"
+    parsed = oracle.parse_records([result["params_line"], *result["csv_lines"]], chart_tz="UTC", tick_size=ticks.tick_size)
+    assert parsed["indicator"] == "BigTrap2Absorption"
+    assert parsed["zones"]
+    direct = store.zones_core_digest_from_kernel(result["zones"], ticks.tick_size)
+    reconstructed = store.zones_core_digest_from_events(result["csv_lines"], result["header"], result["params_line"], result["indicator"], "UTC", ticks.tick_size)
+    assert direct == reconstructed
+''', encoding='utf-8')
+          PY
+      - name: Validate focused and bridge suites
+        run: |
+          git config core.whitespace cr-at-eol
+          python -m pytest -q tests/bridge/test_bigtrap2absorption_store_contract.py tests/bridge/test_store_v2.py
+          python -m pytest -q tests/bridge
+          git diff --check
+          test "$(git diff --name-only | sort)" = "$(printf '%s\n' edgelab/bridge/indicators/bigtrap2absorption.py edgelab/bridge/oracle.py tests/bridge/test_bigtrap2absorption_store_contract.py | sort)"
+      - name: Commit isolated repair
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add edgelab/bridge/indicators/bigtrap2absorption.py edgelab/bridge/oracle.py tests/bridge/test_bigtrap2absorption_store_contract.py
+          git commit -m 'fix(bridge): restore BigTrap2Absorption event contract'
+          git push origin HEAD:feat/edge-discovery-brain-foundation-20260919
