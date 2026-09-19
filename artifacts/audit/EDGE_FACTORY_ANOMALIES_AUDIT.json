@@ -1,0 +1,28 @@
+{
+  "checks_defined": 22,
+  "checks_passed": 18,
+  "checks_failed": 4,
+  "failures_detail": [
+    {
+      "id": "CONTRADICTION-01-BULL-BEAR-RATIO",
+      "claim_in_markdown": "BULL 49.9% vs BEAR 50.1% \u2014 Simetr\u00eda casi perfecta",
+      "actual_measured_data": "BULL 19.92% (663,094) vs BEAR 80.08% (2,665,616)",
+      "audit_verdict": "REJECTED_BY_AUDIT",
+      "cause": "The text narrative fabricated a 50/50 balance that contradicted the real measurement in TARGET_FREE_CENSUS.json. HFT absorption in equity indices during 2025-2026 is heavily skewed toward bear absorption walls."
+    },
+    {
+      "id": "CONTRADICTION-02-CORRIDOR-MEDIAN",
+      "claim_in_markdown": "Espesor de Corredores: Mediana de 32 ticks entre murallas activas sucesivas",
+      "actual_measured_data": "Median was 4.0 ticks in original JSON; corridor dataset itself was invalid consecutive-pair artifact",
+      "audit_verdict": "REJECTED_BY_AUDIT",
+      "cause": "Corridor events were pseudo-corridors from zone[i]+zone[i+1]. Both the median 4.0 and narrative 32 ticks are scientifically invalid."
+    },
+    {
+      "id": "CONTRADICTION-03-ZERO-ANOMALIES-CLAIM",
+      "claim_in_markdown": "0 anomal\u00edas cr\u00edticas",
+      "actual_measured_data": "Severe semantic gaps present: synthetic latency fill, missing instrument tick sizes, pseudo-corridor pairing, prose-data ratio contradiction",
+      "audit_verdict": "REJECTED_BY_AUDIT",
+      "cause": "Original script tested only bottom <= top and delay >= 0, failing to audit semantic integrity, tick scale alignment, or narrative consistency."
+    }
+  ]
+}

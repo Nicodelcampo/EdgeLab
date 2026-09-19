@@ -66,7 +66,8 @@ class ExperimentDAG:
                 if not node:
                     raise KeyError(f"Dependency node {n_id} not found in DAG")
                 for dep in node.dependencies:
-                    visit(dep)
+                    if dep in self.nodes:
+                        visit(dep)
                 temp_mark.remove(n_id)
                 visited.add(n_id)
                 order.append(n_id)
