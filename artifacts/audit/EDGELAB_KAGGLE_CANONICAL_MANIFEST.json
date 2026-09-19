@@ -1,5 +1,5 @@
 {
-  "manifest_version": "1.0.0",
+  "manifest_version": "1.1.0",
   "created_at_utc": "2026-09-19T15:50:48.329703+00:00",
   "holdout_boundary": {
     "boundary_ns": 1782856800000000000,
@@ -14,15 +14,33 @@
     "has_certified_roll_methodology": false,
     "eligible_for_continuous_backtest": false,
     "missing_periods_mean_no_data": false,
-    "continuous_cont_files_status": "UNVERIFIED_NOT_AUDITED_REJECTED_AS_CONTINUOUS_PROOF"
+    "continuous_cont_files_status": "UNVERIFIED_NOT_AUDITED_REJECTED_AS_CONTINUOUS_PROOF",
+    "artifact_role": "AUXILIARY_VERSIONED_VIEWER_SNAPSHOT",
+    "canonical_source": false
   },
   "summary": {
-    "total_canonical_raw_contracts": 56,
-    "total_canonical_raw_rows": 1015699983,
-    "total_canonical_raw_size_mb": 16280.3,
+    "derivation": "Computed from CANONICAL_RAW_TICKS; no transcribed figures",
+    "migration_status": "MIGRATION_CANONICAL_RAW_COMPLETE_EXCEPT_NQ_09_26",
+    "reconciliation_status": "MIGRATION_MANIFEST_RECONCILIATION_REQUIRED",
+    "instruments_with_remote_representation": 11,
+    "instruments_with_complete_custody": 10,
+    "total_catalogued_contracts": 56,
+    "total_catalogued_rows": 1015699983,
+    "total_catalogued_size_bytes": 17071130778,
+    "total_catalogued_size_gb_decimal": 17.071130778,
+    "total_catalogued_size_gib_binary": 15.898729467764497,
+    "remote_listed_contracts": 55,
+    "remote_listed_rows": 1009464519,
+    "remote_listed_size_bytes": 16918433631,
+    "remote_listed_size_gb_decimal": 16.918433631,
+    "remote_listed_size_gib_binary": 15.756519167684019,
+    "blocked_contracts": [
+      "NQ_09-26"
+    ],
     "total_hft_zones": 3328710,
     "total_25t_bars_in_slices": 40380402,
-    "viewer_bundles_status": "PAUSED_NOT_UPLOADED"
+    "viewer_bundles_status": "AUTHORIZED_PENDING_BUILD_AND_UPLOAD",
+    "unit_policy": "GB divides by 1e9; GiB divides by 2**30; 2**20 values must be MiB"
   },
   "CANONICAL_RAW_TICKS": [
     {
@@ -34,13 +52,11 @@
       "is_private": true,
       "row_count": 2301401,
       "size_bytes": 41375328,
-      "size_mb": 39.46,
       "min_timestamp_ns": 1765162814704000000,
       "max_timestamp_ns": 1773670041376000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "3a8b60d84ba182120aa9be37df9224082bb732d57352bba34a18e4fbeb98bde5",
-      "downloaded_sha256": "3a8b60d84ba182120aa9be37df9224082bb732d57352bba34a18e4fbeb98bde5",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -96,12 +112,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_6B_03-26",
         "hft_zones_6B_03-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 41375328,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.041375328,
+      "size_gib_binary": 0.0385337769985199,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "6B",
@@ -112,13 +136,11 @@
       "is_private": true,
       "row_count": 2258081,
       "size_bytes": 40489370,
-      "size_mb": 38.61,
       "min_timestamp_ns": 1773025238500000000,
       "max_timestamp_ns": 1781532404864000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "4c2ad189c6cf84016fed892a87597df731a65f697620135d0d8369c0c767b26f",
-      "downloaded_sha256": "4c2ad189c6cf84016fed892a87597df731a65f697620135d0d8369c0c767b26f",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -174,12 +196,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_6B_06-26",
         "hft_zones_6B_06-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 40489370,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.04048937,
+      "size_gib_binary": 0.03770866431295872,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "6B",
@@ -190,13 +220,11 @@
       "is_private": true,
       "row_count": 725162,
       "size_bytes": 13325022,
-      "size_mb": 12.71,
       "min_timestamp_ns": 1754078400024000000,
       "max_timestamp_ns": 1757944970368000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "a74bdf16024f43e2246804ecc0b710cc0f20f3ee2e51ae9cc796e83ab4a35309",
-      "downloaded_sha256": "a74bdf16024f43e2246804ecc0b710cc0f20f3ee2e51ae9cc796e83ab4a35309",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -252,12 +280,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_6B_09-25",
         "hft_zones_6B_09-25"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 13325022,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.013325022,
+      "size_gib_binary": 0.012409893795847893,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "6B",
@@ -268,13 +304,11 @@
       "is_private": true,
       "row_count": 427742,
       "size_bytes": 8889245,
-      "size_mb": 8.48,
       "min_timestamp_ns": 1780887887612000000,
       "max_timestamp_ns": 1782853198296000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "db5488da67687dff0333c17d41ab709d30d1c594b5966c42ec1c0213e4d7a5ce",
-      "downloaded_sha256": "db5488da67687dff0333c17d41ab709d30d1c594b5966c42ec1c0213e4d7a5ce",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -330,12 +364,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_6B_09-26",
         "hft_zones_6B_09-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 8889245,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.008889245,
+      "size_gib_binary": 0.00827875453978777,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "6B",
@@ -346,13 +388,11 @@
       "is_private": true,
       "row_count": 2079366,
       "size_bytes": 36405100,
-      "size_mb": 34.72,
       "min_timestamp_ns": 1757300431568000000,
       "max_timestamp_ns": 1765812721563662700,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "d9d116c42e6bc1b2344d64b4bc0f6e8c4bdf0bb8a37f7481fb76caa41a8e7486",
-      "downloaded_sha256": "d9d116c42e6bc1b2344d64b4bc0f6e8c4bdf0bb8a37f7481fb76caa41a8e7486",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -408,12 +448,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_6B_12-25",
         "hft_zones_6B_12-25"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 36405100,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.0364051,
+      "size_gib_binary": 0.03390489146113396,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "6E",
@@ -424,13 +472,11 @@
       "is_private": true,
       "row_count": 5064128,
       "size_bytes": 85734848,
-      "size_mb": 81.76,
       "min_timestamp_ns": 1765162864192000000,
       "max_timestamp_ns": 1773670560000000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "b54120bfd99b97f218d73a1fe132bd111b997eab6095a529699473131f57cf76",
-      "downloaded_sha256": "b54120bfd99b97f218d73a1fe132bd111b997eab6095a529699473131f57cf76",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -486,12 +532,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_6E_03-26",
         "hft_zones_6E_03-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 85734848,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.085734848,
+      "size_gib_binary": 0.07984679937362671,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "6E",
@@ -502,13 +556,11 @@
       "is_private": true,
       "row_count": 5554201,
       "size_bytes": 93023016,
-      "size_mb": 88.71,
       "min_timestamp_ns": 1773025203596000000,
       "max_timestamp_ns": 1781532792896000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "124b37507b95a1027aa753a75213b15e74f66b1396ca8df3c4324ea835f96cb1",
-      "downloaded_sha256": "124b37507b95a1027aa753a75213b15e74f66b1396ca8df3c4324ea835f96cb1",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -564,12 +616,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_6E_06-26",
         "hft_zones_6E_06-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 93023016,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.093023016,
+      "size_gib_binary": 0.08663443475961685,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "6E",
@@ -580,13 +640,11 @@
       "is_private": true,
       "row_count": 2539857,
       "size_bytes": 44359128,
-      "size_mb": 42.3,
       "min_timestamp_ns": 1753473600028000000,
       "max_timestamp_ns": 1757945629200000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "6719bf4b9057805d09594eb803e01b50ffc2146fae3ad4ebaf52e8935bb8cea0",
-      "downloaded_sha256": "6719bf4b9057805d09594eb803e01b50ffc2146fae3ad4ebaf52e8935bb8cea0",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -642,12 +700,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_6E_09-25",
         "hft_zones_6E_09-25"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 44359128,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.044359128,
+      "size_gib_binary": 0.04131265729665756,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "6E",
@@ -658,13 +724,11 @@
       "is_private": true,
       "row_count": 1084345,
       "size_bytes": 21410542,
-      "size_mb": 20.42,
       "min_timestamp_ns": 1780887792260000000,
       "max_timestamp_ns": 1782853198296000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "5c945991b0387ea9937a849d48431de9cf96424cc3088b07fbc5dc11454a022f",
-      "downloaded_sha256": "5c945991b0387ea9937a849d48431de9cf96424cc3088b07fbc5dc11454a022f",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -720,12 +784,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_6E_09-26",
         "hft_zones_6E_09-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 21410542,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.021410542,
+      "size_gib_binary": 0.019940121099352837,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "6E",
@@ -736,13 +808,11 @@
       "is_private": true,
       "row_count": 4512656,
       "size_bytes": 77016690,
-      "size_mb": 73.45,
       "min_timestamp_ns": 1757300638708000000,
       "max_timestamp_ns": 1765811517604000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "ea8b9f211929658494d952677fe302c33db66086ec1a21731f1f5d7ff74f7336",
-      "downloaded_sha256": "ea8b9f211929658494d952677fe302c33db66086ec1a21731f1f5d7ff74f7336",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -798,12 +868,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_6E_12-25",
         "hft_zones_6E_12-25"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 77016690,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.07701669,
+      "size_gib_binary": 0.07172738201916218,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "6J",
@@ -814,13 +892,11 @@
       "is_private": true,
       "row_count": 4670101,
       "size_bytes": 76833509,
-      "size_mb": 73.27,
       "min_timestamp_ns": 1765163114960000000,
       "max_timestamp_ns": 1773670479140000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "6d253b37c9c471bd3b6ea9d201c7d906f9ba07bed624ad3c90dfd99842b86f9f",
-      "downloaded_sha256": "6d253b37c9c471bd3b6ea9d201c7d906f9ba07bed624ad3c90dfd99842b86f9f",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -876,12 +952,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_6J_03-26",
         "hft_zones_6J_03-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 76833509,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.076833509,
+      "size_gib_binary": 0.07155678141862154,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "6J",
@@ -892,13 +976,11 @@
       "is_private": true,
       "row_count": 4012219,
       "size_bytes": 64704465,
-      "size_mb": 61.71,
       "min_timestamp_ns": 1773025250724000000,
       "max_timestamp_ns": 1781532476308000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "38fa471f49b22ed1a89124e87c7cc69066a248724eaf27e060b6d2b1bb1427fe",
-      "downloaded_sha256": "38fa471f49b22ed1a89124e87c7cc69066a248724eaf27e060b6d2b1bb1427fe",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -954,12 +1036,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_6J_06-26",
         "hft_zones_6J_06-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 64704465,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.064704465,
+      "size_gib_binary": 0.06026072893291712,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "6J",
@@ -970,13 +1060,11 @@
       "is_private": true,
       "row_count": 1474871,
       "size_bytes": 25855208,
-      "size_mb": 24.66,
       "min_timestamp_ns": 1754078400024000000,
       "max_timestamp_ns": 1757945615188000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "a107e8962070c4aa89551d762d75a43d3f28c69f665f07d1aab3ea92624c7791",
-      "downloaded_sha256": "a107e8962070c4aa89551d762d75a43d3f28c69f665f07d1aab3ea92624c7791",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -1032,12 +1120,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_6J_09-25",
         "hft_zones_6J_09-25"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 25855208,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.025855208,
+      "size_gib_binary": 0.024079538881778717,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "6J",
@@ -1048,13 +1144,11 @@
       "is_private": true,
       "row_count": 674550,
       "size_bytes": 12599160,
-      "size_mb": 12.02,
       "min_timestamp_ns": 1780887637188000000,
       "max_timestamp_ns": 1782853195060000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "3dcaf8ca5889dc823f835ef6831811c54650f887f046ef9c3f4b4cde06745114",
-      "downloaded_sha256": "3dcaf8ca5889dc823f835ef6831811c54650f887f046ef9c3f4b4cde06745114",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -1110,12 +1204,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_6J_09-26",
         "hft_zones_6J_09-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 12599160,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.01259916,
+      "size_gib_binary": 0.011733882129192352,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "6J",
@@ -1126,13 +1228,11 @@
       "is_private": true,
       "row_count": 3795837,
       "size_bytes": 63477178,
-      "size_mb": 60.54,
       "min_timestamp_ns": 1757300464532000000,
       "max_timestamp_ns": 1765811735204000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "ff81b325585b7df2e5910f5d85af1e93703db96b39d9398992e2f763a8f6faa5",
-      "downloaded_sha256": "ff81b325585b7df2e5910f5d85af1e93703db96b39d9398992e2f763a8f6faa5",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -1188,12 +1288,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_6J_12-25",
         "hft_zones_6J_12-25"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 63477178,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.063477178,
+      "size_gib_binary": 0.05911772884428501,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "ES",
@@ -1204,13 +1312,11 @@
       "is_private": true,
       "row_count": 68302992,
       "size_bytes": 991106327,
-      "size_mb": 945.19,
       "min_timestamp_ns": 1765422000024000000,
       "max_timestamp_ns": 1774015800000000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "948067cfb66a6c7cd19bed1c6f87c2a0877b1764740a00714e23edd1749a9c35",
-      "downloaded_sha256": "948067cfb66a6c7cd19bed1c6f87c2a0877b1764740a00714e23edd1749a9c35",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -1266,12 +1372,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_ES_03-26",
         "hft_zones_ES_03-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 991106327,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.991106327,
+      "size_gib_binary": 0.9230396961793303,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "ES",
@@ -1282,13 +1396,11 @@
       "is_private": true,
       "row_count": 73268494,
       "size_bytes": 1067128925,
-      "size_mb": 1017.69,
       "min_timestamp_ns": 1773284403180000000,
       "max_timestamp_ns": 1781789399412000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "dc859fa39a6497c832e78259ead6b36c623b61d9a27212af2c41f0b74d68992b",
-      "downloaded_sha256": "dc859fa39a6497c832e78259ead6b36c623b61d9a27212af2c41f0b74d68992b",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -1344,12 +1456,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_ES_06-26",
         "hft_zones_ES_06-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 1067128925,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 1.067128925,
+      "size_gib_binary": 0.9938412578776479,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "ES",
@@ -1360,13 +1480,11 @@
       "is_private": true,
       "row_count": 35045149,
       "size_bytes": 472924404,
-      "size_mb": 451.02,
       "min_timestamp_ns": 1752789600008000000,
       "max_timestamp_ns": 1758288598696000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "00190e32870e176eb404bc6d96fb157087006accfb4b80f201fef0a7cb3cb38e",
-      "downloaded_sha256": "00190e32870e176eb404bc6d96fb157087006accfb4b80f201fef0a7cb3cb38e",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -1422,12 +1540,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_ES_09-25",
         "hft_zones_ES_09-25"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 472924404,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.472924404,
+      "size_gib_binary": 0.4404451735317707,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "ES",
@@ -1438,13 +1564,11 @@
       "is_private": true,
       "row_count": 12743000,
       "size_bytes": 219193735,
-      "size_mb": 209.04,
       "min_timestamp_ns": 1780887600128000000,
       "max_timestamp_ns": 1782853197864000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "557370faee53ef47d6cd4c7bb4c6713b0c54e9902fbda5385b5b29a27c09084d",
-      "downloaded_sha256": "557370faee53ef47d6cd4c7bb4c6713b0c54e9902fbda5385b5b29a27c09084d",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -1500,12 +1624,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_ES_09-26",
         "hft_zones_ES_09-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 219193735,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.219193735,
+      "size_gib_binary": 0.20414007361978292,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "ES",
@@ -1516,13 +1648,11 @@
       "is_private": true,
       "row_count": 73446975,
       "size_bytes": 1019991597,
-      "size_mb": 972.74,
       "min_timestamp_ns": 1757559697168000000,
       "max_timestamp_ns": 1766341561600635500,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "07a34df2e3527ae7e76c8af111a8a5e5537debd850dc2c4aa4377195059cbee8",
-      "downloaded_sha256": "07a34df2e3527ae7e76c8af111a8a5e5537debd850dc2c4aa4377195059cbee8",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -1578,12 +1708,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_ES_12-25",
         "hft_zones_ES_12-25"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 1019991597,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 1.019991597,
+      "size_gib_binary": 0.9499412002041936,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "GC",
@@ -1594,13 +1732,11 @@
       "is_private": true,
       "row_count": 7699219,
       "size_bytes": 152837020,
-      "size_mb": 145.76,
       "min_timestamp_ns": 1763607605968000000,
       "max_timestamp_ns": 1772019664200000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "ec2f4b7eba5c8d662d980369cfd95efd48018fd0198fb720cd11d6ec6f5c4de9",
-      "downloaded_sha256": "ec2f4b7eba5c8d662d980369cfd95efd48018fd0198fb720cd11d6ec6f5c4de9",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -1656,12 +1792,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_GC_02-26",
         "hft_zones_GC_02-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 152837020,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.15283702,
+      "size_gib_binary": 0.14234056696295738,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "GC",
@@ -1672,13 +1816,11 @@
       "is_private": true,
       "row_count": 6827667,
       "size_bytes": 146004659,
-      "size_mb": 139.24,
       "min_timestamp_ns": 1768791691440000000,
       "max_timestamp_ns": 1777352548260000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "a21409204679e933cb4e3074509ffa66944bbdc6216c5f208eed17da72d3802a",
-      "downloaded_sha256": "a21409204679e933cb4e3074509ffa66944bbdc6216c5f208eed17da72d3802a",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -1734,12 +1876,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_GC_04-26",
         "hft_zones_GC_04-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 146004659,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.146004659,
+      "size_gib_binary": 0.135977434925735,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "GC",
@@ -1750,13 +1900,11 @@
       "is_private": true,
       "row_count": 4617492,
       "size_bytes": 98748124,
-      "size_mb": 94.17,
       "min_timestamp_ns": 1774234803376000000,
       "max_timestamp_ns": 1782394435820000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "a8a53f767e947bc4c231b5fd6b8b3272f7c09e03e0c2ff7e151d65cedcf9b1b5",
-      "downloaded_sha256": "a8a53f767e947bc4c231b5fd6b8b3272f7c09e03e0c2ff7e151d65cedcf9b1b5",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -1812,12 +1960,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_GC_06-26",
         "hft_zones_GC_06-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 98748124,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.098748124,
+      "size_gib_binary": 0.09196635708212852,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "GC",
@@ -1828,13 +1984,11 @@
       "is_private": true,
       "row_count": 2804464,
       "size_bytes": 70053164,
-      "size_mb": 66.81,
       "min_timestamp_ns": 1779660000516000000,
       "max_timestamp_ns": 1782853199728000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "7976fbe9814eff0e234b74f36af09d42938bcdb154067ea736a46a571f688b1d",
-      "downloaded_sha256": "7976fbe9814eff0e234b74f36af09d42938bcdb154067ea736a46a571f688b1d",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -1890,12 +2044,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_GC_08-26",
         "hft_zones_GC_08-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 70053164,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.070053164,
+      "size_gib_binary": 0.06524209305644035,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "GC",
@@ -1906,13 +2068,11 @@
       "is_private": true,
       "row_count": 16206084,
       "size_bytes": 310556013,
-      "size_mb": 296.17,
       "min_timestamp_ns": 1754078400028000000,
       "max_timestamp_ns": 1767018898112000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "8e665e0d25c875d212ff5843b186ee457a42fd923b12f902ac493dd378edd24e",
-      "downloaded_sha256": "8e665e0d25c875d212ff5843b186ee457a42fd923b12f902ac493dd378edd24e",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -1968,12 +2128,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_GC_12-25",
         "hft_zones_GC_12-25"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 310556013,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.310556013,
+      "size_gib_binary": 0.289227825589478,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "MBT",
@@ -1984,13 +2152,11 @@
       "is_private": true,
       "row_count": 944986,
       "size_bytes": 20375042,
-      "size_mb": 19.43,
       "min_timestamp_ns": 1759153095056000000,
       "max_timestamp_ns": 1769964316853137700,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "bf9c05d7b83208a668e4d07cc3b1cc5542bf2c812b4e2894668ff2ebc354caac",
-      "downloaded_sha256": "bf9c05d7b83208a668e4d07cc3b1cc5542bf2c812b4e2894668ff2ebc354caac",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -2046,12 +2212,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_MBT_01-26",
         "hft_zones_MBT_01-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 20375042,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.020375042,
+      "size_gib_binary": 0.01897573657333851,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "MBT",
@@ -2062,13 +2236,11 @@
       "is_private": true,
       "row_count": 963219,
       "size_bytes": 21105062,
-      "size_mb": 20.13,
       "min_timestamp_ns": 1758898729180000000,
       "max_timestamp_ns": 1774627194320000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "5d80fac9343c89c9a043c556b96c214c7acd6c1bb3a818ba5d32d95276077af9",
-      "downloaded_sha256": "5d80fac9343c89c9a043c556b96c214c7acd6c1bb3a818ba5d32d95276077af9",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -2124,12 +2296,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_MBT_03-26",
         "hft_zones_MBT_03-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 21105062,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.021105062,
+      "size_gib_binary": 0.0196556206792593,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "MBT",
@@ -2140,13 +2320,11 @@
       "is_private": true,
       "row_count": 696631,
       "size_bytes": 15569908,
-      "size_mb": 14.85,
       "min_timestamp_ns": 1765753201332000000,
       "max_timestamp_ns": 1780066761668000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "8d5a11b804381ab12961f06ace0866cb557b49702f83003b36410ac0c3124918",
-      "downloaded_sha256": "8d5a11b804381ab12961f06ace0866cb557b49702f83003b36410ac0c3124918",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -2202,12 +2380,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_MBT_05-26",
         "hft_zones_MBT_05-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 15569908,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.015569908,
+      "size_gib_binary": 0.014500606805086136,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "MBT",
@@ -2218,13 +2404,11 @@
       "is_private": true,
       "row_count": 126735,
       "size_bytes": 3565243,
-      "size_mb": 3.4,
       "min_timestamp_ns": 1782097204252000000,
       "max_timestamp_ns": 1782856798984000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "6a8b55a923a3d395722cdaee88cea2499fb8cb91abe01c89a51ecc4bf3b05a91",
-      "downloaded_sha256": "6a8b55a923a3d395722cdaee88cea2499fb8cb91abe01c89a51ecc4bf3b05a91",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -2280,12 +2464,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_MBT_07-26",
         "hft_zones_MBT_07-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 3565243,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.003565243,
+      "size_gib_binary": 0.0033203912898898125,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "MBT",
@@ -2296,13 +2488,11 @@
       "is_private": true,
       "row_count": 705040,
       "size_bytes": 15397716,
-      "size_mb": 14.68,
       "min_timestamp_ns": 1755486045252000000,
       "max_timestamp_ns": 1759081975927525000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "0ffa5f0e6e36b2828177a94dd6ee261340f9a83f61029aa1ba52c13b388153fd",
-      "downloaded_sha256": "0ffa5f0e6e36b2828177a94dd6ee261340f9a83f61029aa1ba52c13b388153fd",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -2358,12 +2548,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_MBT_09-25",
         "hft_zones_MBT_09-25"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 15397716,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.015397716,
+      "size_gib_binary": 0.014340240508317947,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "MBT",
@@ -2374,13 +2572,11 @@
       "is_private": true,
       "row_count": 1145383,
       "size_bytes": 25020569,
-      "size_mb": 23.86,
       "min_timestamp_ns": 1756764000068000000,
       "max_timestamp_ns": 1764345593456000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "0b73bf822e3c13d7433a11edcf1095cbb7f4f6a88c30af96e0713aa528bdd48d",
-      "downloaded_sha256": "0b73bf822e3c13d7433a11edcf1095cbb7f4f6a88c30af96e0713aa528bdd48d",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -2436,12 +2632,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_MBT_11-25",
         "hft_zones_MBT_11-25"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 25020569,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.025020569,
+      "size_gib_binary": 0.02330222073942423,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "MES",
@@ -2452,13 +2656,11 @@
       "is_private": true,
       "row_count": 47830405,
       "size_bytes": 804702809,
-      "size_mb": 767.42,
       "min_timestamp_ns": 1765422004844000000,
       "max_timestamp_ns": 1774013399976000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "891589fe51d4e39683bdbabc61bf96c099de0062cbf37867b2b2269341f264f1",
-      "downloaded_sha256": "891589fe51d4e39683bdbabc61bf96c099de0062cbf37867b2b2269341f264f1",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -2514,12 +2716,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_MES_03-26",
         "hft_zones_MES_03-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 804702809,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.804702809,
+      "size_gib_binary": 0.7494378918781877,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "MES",
@@ -2530,13 +2740,11 @@
       "is_private": true,
       "row_count": 53634061,
       "size_bytes": 900403829,
-      "size_mb": 858.69,
       "min_timestamp_ns": 1773284405412000000,
       "max_timestamp_ns": 1781789399996000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "c4e9c1e67bbdb19d6e312dad3919787d22844ea4324b5ee978c5e3c8c15c835c",
-      "downloaded_sha256": "c4e9c1e67bbdb19d6e312dad3919787d22844ea4324b5ee978c5e3c8c15c835c",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -2592,12 +2800,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_MES_06-26",
         "hft_zones_MES_06-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 900403829,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.900403829,
+      "size_gib_binary": 0.8385664122179151,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "MES",
@@ -2608,13 +2824,11 @@
       "is_private": true,
       "row_count": 13712810,
       "size_bytes": 230692820,
-      "size_mb": 220.01,
       "min_timestamp_ns": 1754078400008000000,
       "max_timestamp_ns": 1758295284826217900,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "bf52d6347ac26750e1a84c381e0f1f3a3f231c5bbc4f7e61fef9003b1abb1031",
-      "downloaded_sha256": "bf52d6347ac26750e1a84c381e0f1f3a3f231c5bbc4f7e61fef9003b1abb1031",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -2670,12 +2884,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_MES_09-25",
         "hft_zones_MES_09-25"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 230692820,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.23069282,
+      "size_gib_binary": 0.21484943106770515,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "MES",
@@ -2686,13 +2908,11 @@
       "is_private": true,
       "row_count": 9334111,
       "size_bytes": 195150343,
-      "size_mb": 186.11,
       "min_timestamp_ns": 1780887600660000000,
       "max_timestamp_ns": 1782853199904000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "1bb672f1af7d8711835e0f326b553c7de5fdff234173ec1848f67f10494548af",
-      "downloaded_sha256": "1bb672f1af7d8711835e0f326b553c7de5fdff234173ec1848f67f10494548af",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -2748,12 +2968,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_MES_09-26",
         "hft_zones_MES_09-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 195150343,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.195150343,
+      "size_gib_binary": 0.18174791987985373,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "MES",
@@ -2764,13 +2992,11 @@
       "is_private": true,
       "row_count": 42554473,
       "size_bytes": 710029434,
-      "size_mb": 677.14,
       "min_timestamp_ns": 1757559653080000000,
       "max_timestamp_ns": 1766341567198458700,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "b2ce78118e6d378f2e0f776a452acdd6c2ea4b3fcb53c3f3c7ef8be8bc42e990",
-      "downloaded_sha256": "b2ce78118e6d378f2e0f776a452acdd6c2ea4b3fcb53c3f3c7ef8be8bc42e990",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -2826,12 +3052,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_MES_12-25",
         "hft_zones_MES_12-25"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 710029434,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.710029434,
+      "size_gib_binary": 0.661266440525651,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "MNQ",
@@ -2842,13 +3076,11 @@
       "is_private": true,
       "row_count": 103825550,
       "size_bytes": 1832888718,
-      "size_mb": 1747.98,
       "min_timestamp_ns": 1765422000576000000,
       "max_timestamp_ns": 1774013400000000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "b90503bb581482866b5bb8622da7220f67ce039bb4aa57a8a280c333bb850501",
-      "downloaded_sha256": "b90503bb581482866b5bb8622da7220f67ce039bb4aa57a8a280c333bb850501",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -2904,12 +3136,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_MNQ_03-26",
         "hft_zones_MNQ_03-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 1832888718,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 1.832888718,
+      "size_gib_binary": 1.7070106398314238,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "MNQ",
@@ -2920,13 +3160,11 @@
       "is_private": true,
       "row_count": 85598463,
       "size_bytes": 1498459562,
-      "size_mb": 1429.04,
       "min_timestamp_ns": 1775444400032000000,
       "max_timestamp_ns": 1781125199884000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "2eba52dbb2f7a895d5fd3499494b0d32cedfbee51c4dc1126e8b3ae7b21fcb8a",
-      "downloaded_sha256": "2eba52dbb2f7a895d5fd3499494b0d32cedfbee51c4dc1126e8b3ae7b21fcb8a",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -2982,12 +3220,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_MNQ_06-26",
         "hft_zones_MNQ_06-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 1498459562,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 1.498459562,
+      "size_gib_binary": 1.3955492172390223,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "MNQ",
@@ -2998,13 +3244,11 @@
       "is_private": true,
       "row_count": 34508876,
       "size_bytes": 603910915,
-      "size_mb": 575.93,
       "min_timestamp_ns": 1754078400008000000,
       "max_timestamp_ns": 1758288599508000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "ae98f7897cfcded212908e8a8a54b12588f27a9f7a46d571a59427de6438b927",
-      "downloaded_sha256": "ae98f7897cfcded212908e8a8a54b12588f27a9f7a46d571a59427de6438b927",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -3060,12 +3304,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_MNQ_09-25",
         "hft_zones_MNQ_09-25"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 603910915,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.603910915,
+      "size_gib_binary": 0.5624358681961894,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "MNQ",
@@ -3076,13 +3328,11 @@
       "is_private": true,
       "row_count": 11482403,
       "size_bytes": 240465471,
-      "size_mb": 229.33,
       "min_timestamp_ns": 1782356400040000000,
       "max_timestamp_ns": 1782853198996000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "78ad44b21e265f020b1182a3a4cafd752d78fcae6521de286364fd6620ef7213",
-      "downloaded_sha256": "78ad44b21e265f020b1182a3a4cafd752d78fcae6521de286364fd6620ef7213",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -3138,12 +3388,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_MNQ_09-26",
         "hft_zones_MNQ_09-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 240465471,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.240465471,
+      "size_gib_binary": 0.22395092155784369,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "MNQ",
@@ -3154,13 +3412,11 @@
       "is_private": true,
       "row_count": 99091436,
       "size_bytes": 1738298637,
-      "size_mb": 1657.77,
       "min_timestamp_ns": 1757559634052000000,
       "max_timestamp_ns": 1766341567288829700,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "aa04bc3f007be2a53bc0d0e9dd16d80750ac7b7d66e01646d4118332b0257de5",
-      "downloaded_sha256": "aa04bc3f007be2a53bc0d0e9dd16d80750ac7b7d66e01646d4118332b0257de5",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -3216,12 +3472,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_MNQ_12-25",
         "hft_zones_MNQ_12-25"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 1738298637,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 1.738298637,
+      "size_gib_binary": 1.618916762061417,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "NQ",
@@ -3232,13 +3496,11 @@
       "is_private": true,
       "row_count": 30825016,
       "size_bytes": 601961694,
-      "size_mb": 574.08,
       "min_timestamp_ns": 1765422006472000000,
       "max_timestamp_ns": 1774013398672000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "02d4eebcd04aad981f0567e7837fc89e1125aecf14192fecc9275b4beb1e396c",
-      "downloaded_sha256": "02d4eebcd04aad981f0567e7837fc89e1125aecf14192fecc9275b4beb1e396c",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -3294,12 +3556,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_NQ_03-26",
         "hft_zones_NQ_03-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 601961694,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.601961694,
+      "size_gib_binary": 0.5606205146759748,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "NQ",
@@ -3310,13 +3580,11 @@
       "is_private": true,
       "row_count": 34203535,
       "size_bytes": 675240935,
-      "size_mb": 643.96,
       "min_timestamp_ns": 1773284545604000000,
       "max_timestamp_ns": 1781789395044000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "3de249b9b8d8ada01c5b485aa893ccdf1315ae3f7bbebcaf72024de12e1b25f6",
-      "downloaded_sha256": "3de249b9b8d8ada01c5b485aa893ccdf1315ae3f7bbebcaf72024de12e1b25f6",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -3372,12 +3640,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_NQ_06-26",
         "hft_zones_NQ_06-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 675240935,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.675240935,
+      "size_gib_binary": 0.628867126069963,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "NQ",
@@ -3388,13 +3664,11 @@
       "is_private": true,
       "row_count": 13624675,
       "size_bytes": 258443344,
-      "size_mb": 246.47,
       "min_timestamp_ns": 1754078400008000000,
       "max_timestamp_ns": 1758288594644000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "b0ea15f34ffd4158dbcddccd784d0cce88323f5893727522ffbd9af913014ccb",
-      "downloaded_sha256": "b0ea15f34ffd4158dbcddccd784d0cce88323f5893727522ffbd9af913014ccb",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -3450,12 +3724,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_NQ_09-25",
         "hft_zones_NQ_09-25"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 258443344,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.258443344,
+      "size_gib_binary": 0.24069412052631378,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "NQ",
@@ -3466,13 +3748,11 @@
       "is_private": true,
       "row_count": 6235464,
       "size_bytes": 152697147,
-      "size_mb": 145.62,
       "min_timestamp_ns": 1780887692172000000,
       "max_timestamp_ns": 1782856799856000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "b95222a399de9081ccdff3d442152340ad35421037d5d710727f20483df4cbf6",
-      "downloaded_sha256": "b95222a399de9081ccdff3d442152340ad35421037d5d710727f20483df4cbf6",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -3528,12 +3808,23 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "BLOCKED_BY_CUSTODY",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_NQ_09-26",
         "hft_zones_NQ_09-26"
-      ]
+      ],
+      "remote_listed": false,
+      "remote_listed_size_bytes": null,
+      "remote_size_matches_manifest": false,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.152697147,
+      "size_gib_binary": 0.1422103000804782,
+      "local_status": "LOCAL_RECUT_CANDIDATE",
+      "remote_status": "REMOTE_ABSENT_OR_UNPROVEN",
+      "right_censored_by_holdout": true,
+      "coverage_end_reason": "HOLDOUT_BOUNDARY",
+      "blocking_reason": "Absent from remote Kaggle listing"
     },
     {
       "instrument": "NQ",
@@ -3544,13 +3835,11 @@
       "is_private": true,
       "row_count": 34264511,
       "size_bytes": 657714147,
-      "size_mb": 627.25,
       "min_timestamp_ns": 1757559781528000000,
       "max_timestamp_ns": 1766354460642652200,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "6e0cea584fbe88ebf64451cac2601e55bb5cf289ff199b7cd4bd6d42e8a45da5",
-      "downloaded_sha256": "6e0cea584fbe88ebf64451cac2601e55bb5cf289ff199b7cd4bd6d42e8a45da5",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -3606,12 +3895,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_NQ_12-25",
         "hft_zones_NQ_12-25"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 657714147,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.657714147,
+      "size_gib_binary": 0.6125440327450633,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "YM",
@@ -3622,13 +3919,11 @@
       "is_private": true,
       "row_count": 6460091,
       "size_bytes": 135976710,
-      "size_mb": 129.68,
       "min_timestamp_ns": 1765422124732000000,
       "max_timestamp_ns": 1774013246308000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "831bced8196d14412bef6b177fc072d416cb7fdb307361ed5dbacf9ef62f0065",
-      "downloaded_sha256": "831bced8196d14412bef6b177fc072d416cb7fdb307361ed5dbacf9ef62f0065",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -3684,12 +3979,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_YM_03-26",
         "hft_zones_YM_03-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 135976710,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.13597671,
+      "size_gib_binary": 0.12663817964494228,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "YM",
@@ -3700,13 +4003,11 @@
       "is_private": true,
       "row_count": 6213697,
       "size_bytes": 130901754,
-      "size_mb": 124.84,
       "min_timestamp_ns": 1773284809020000000,
       "max_timestamp_ns": 1781789397560000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "6556d095400bdceb8182874a40c8ef62136e449aff50739dee6a0e41962a0ede",
-      "downloaded_sha256": "6556d095400bdceb8182874a40c8ef62136e449aff50739dee6a0e41962a0ede",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -3762,12 +4063,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_YM_06-26",
         "hft_zones_YM_06-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 130901754,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.130901754,
+      "size_gib_binary": 0.12191175855696201,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "YM",
@@ -3778,13 +4087,11 @@
       "is_private": true,
       "row_count": 1551901,
       "size_bytes": 32200756,
-      "size_mb": 30.71,
       "min_timestamp_ns": 1755212401628000000,
       "max_timestamp_ns": 1758288588560000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "bf51d3d0b0885b8ff549ef1636f928d775039085ddba9b9f54a2581b1d116a88",
-      "downloaded_sha256": "bf51d3d0b0885b8ff549ef1636f928d775039085ddba9b9f54a2581b1d116a88",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -3840,12 +4147,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_YM_09-25",
         "hft_zones_YM_09-25"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 32200756,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.032200756,
+      "size_gib_binary": 0.029989290982484818,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "YM",
@@ -3856,13 +4171,11 @@
       "is_private": true,
       "row_count": 1027629,
       "size_bytes": 26033207,
-      "size_mb": 24.83,
       "min_timestamp_ns": 1780888193248000000,
       "max_timestamp_ns": 1782853198156000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "5efabf0d3c6c2134c8e50607a3d84a0addbaaeb774a5802694afe39d0d05c0a0",
-      "downloaded_sha256": "5efabf0d3c6c2134c8e50607a3d84a0addbaaeb774a5802694afe39d0d05c0a0",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -3918,12 +4231,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_YM_09-26",
         "hft_zones_YM_09-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 26033207,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.026033207,
+      "size_gib_binary": 0.024245313368737698,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "YM",
@@ -3934,13 +4255,11 @@
       "is_private": true,
       "row_count": 5798136,
       "size_bytes": 120757718,
-      "size_mb": 115.16,
       "min_timestamp_ns": 1757562230972000000,
       "max_timestamp_ns": 1766341864940591600,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "869a6770686b91cf6858b012cb74189da73b2c45d10dfb050ca379889ef11b26",
-      "downloaded_sha256": "869a6770686b91cf6858b012cb74189da73b2c45d10dfb050ca379889ef11b26",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -3996,12 +4315,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_YM_12-25",
         "hft_zones_YM_12-25"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 120757718,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.120757718,
+      "size_gib_binary": 0.11246438883244991,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "ZB",
@@ -4012,13 +4339,11 @@
       "is_private": true,
       "row_count": 7624585,
       "size_bytes": 45660198,
-      "size_mb": 43.54,
       "min_timestamp_ns": 1763694505888000000,
       "max_timestamp_ns": 1774019657672000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "c14b4443e88028ecd62f40fe852cbe2896c01748f3a425aec3c34d5b3912c9d9",
-      "downloaded_sha256": "c14b4443e88028ecd62f40fe852cbe2896c01748f3a425aec3c34d5b3912c9d9",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -4074,12 +4399,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_ZB_03-26",
         "hft_zones_ZB_03-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 45660198,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.045660198,
+      "size_gib_binary": 0.04252437315881252,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "ZB",
@@ -4090,13 +4423,11 @@
       "is_private": true,
       "row_count": 9029661,
       "size_bytes": 54603423,
-      "size_mb": 52.07,
       "min_timestamp_ns": 1771815678964000000,
       "max_timestamp_ns": 1781802057824000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "8c20e1bb5351b7cac7967b6acb417c9b9bf63e54774335c77bb4f827343ed621",
-      "downloaded_sha256": "8c20e1bb5351b7cac7967b6acb417c9b9bf63e54774335c77bb4f827343ed621",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -4152,12 +4483,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_ZB_06-26",
         "hft_zones_ZB_06-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 54603423,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.054603423,
+      "size_gib_binary": 0.050853400491178036,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "ZB",
@@ -4168,13 +4507,11 @@
       "is_private": true,
       "row_count": 610102,
       "size_bytes": 4491145,
-      "size_mb": 4.28,
       "min_timestamp_ns": 1755471602448000000,
       "max_timestamp_ns": 1758301254300000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "98c824b7055f506aee2745a9a5607f07bb11b25240ecf178cd29919605307fb2",
-      "downloaded_sha256": "98c824b7055f506aee2745a9a5607f07bb11b25240ecf178cd29919605307fb2",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -4230,12 +4567,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_ZB_09-25",
         "hft_zones_ZB_09-25"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 4491145,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.004491145,
+      "size_gib_binary": 0.004182704724371433,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "ZB",
@@ -4246,13 +4591,11 @@
       "is_private": true,
       "row_count": 2569580,
       "size_bytes": 20196773,
-      "size_mb": 19.26,
       "min_timestamp_ns": 1779678057488000000,
       "max_timestamp_ns": 1782853199988000000,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "5213c91cffbfcb03d89d4bb54f0ff2072e73e52e7217e4dbc567ab4f7b1713c7",
-      "downloaded_sha256": "5213c91cffbfcb03d89d4bb54f0ff2072e73e52e7217e4dbc567ab4f7b1713c7",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -4308,12 +4651,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_ZB_09-26",
         "hft_zones_ZB_09-26"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 20196773,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.020196773,
+      "size_gib_binary": 0.018809710629284382,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     },
     {
       "instrument": "ZB",
@@ -4324,13 +4675,11 @@
       "is_private": true,
       "row_count": 7370765,
       "size_bytes": 44173972,
-      "size_mb": 42.13,
       "min_timestamp_ns": 1755831630384000000,
       "max_timestamp_ns": 1766341872766472300,
       "min_timestamp_utc": "",
       "max_timestamp_utc": "",
       "source_sha256": "954ae29d305df75cbc92d4d60dcb0fcdb77bb8c848ad259754195883d527ceea",
-      "downloaded_sha256": "954ae29d305df75cbc92d4d60dcb0fcdb77bb8c848ad259754195883d527ceea",
       "schema_fingerprint": [
         {
           "name": "ts_utc_ns",
@@ -4386,12 +4735,20 @@
         }
       ],
       "holdout_violations": 0,
-      "custody_status": "REMOTE_VERIFIED",
+      "custody_status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
       "causal_provenance": "CME GLOBEX tick capture via NinjaTrader 8 native recorder, partition per contract",
       "derived_artifacts": [
         "25t_bars_ZB_12-25",
         "hft_zones_ZB_12-25"
-      ]
+      ],
+      "remote_listed": true,
+      "remote_listed_size_bytes": 44173972,
+      "remote_size_matches_manifest": true,
+      "download_evidence": "NONE_LISTING_ONLY",
+      "size_gb_decimal": 0.044173972,
+      "size_gib_binary": 0.04114021733403206,
+      "local_status": "LOCAL_PRESENT",
+      "remote_status": "REMOTE_LISTED_SIZE_MATCHED"
     }
   ],
   "DERIVED_25T_BARS": {
@@ -4423,19 +4780,173 @@
     "mismatches_count": 0,
     "status": "ANALYTICAL_STORE_SUFFICIENT_NO_DUPLICATE_UPLOAD"
   },
-  "VIEWER_ONLY_NOT_MIGRATED": {
-    "status": "PAUSED_NOT_UPLOADED",
-    "decision": "NO autorizo la Opci\u00f3n B de subir los 147 bundles JSON comprimidos. Cola de bundles del visor permanece PAUSED_NOT_UPLOADED.",
-    "excluded_extensions": [
-      ".js",
-      ".json",
-      ".json.zst",
-      "*_CONT",
-      "catalog.json",
-      "manifest.json"
-    ],
+  "PER_INSTRUMENT_DERIVED": {
+    "derivation": "Computed from CANONICAL_RAW_TICKS",
+    "hand_entered_values": false,
+    "instruments": {
+      "6B": {
+        "contract_count": 5,
+        "rows": 7791752,
+        "size_bytes": 140484065,
+        "size_gb_decimal": 0.140484065,
+        "size_gib_binary": 0.13083598110824823,
+        "remote_listed_contract_count": 5,
+        "remote_listed_rows": 7791752,
+        "remote_listed_size_bytes": 140484065,
+        "blocked_contracts": [],
+        "custody_complete": true
+      },
+      "6E": {
+        "contract_count": 5,
+        "rows": 18755187,
+        "size_bytes": 321544224,
+        "size_gb_decimal": 0.321544224,
+        "size_gib_binary": 0.29946139454841614,
+        "remote_listed_contract_count": 5,
+        "remote_listed_rows": 18755187,
+        "remote_listed_size_bytes": 321544224,
+        "blocked_contracts": [],
+        "custody_complete": true
+      },
+      "6J": {
+        "contract_count": 5,
+        "rows": 14627578,
+        "size_bytes": 243469520,
+        "size_gb_decimal": 0.24346952,
+        "size_gib_binary": 0.22674866020679474,
+        "remote_listed_contract_count": 5,
+        "remote_listed_rows": 14627578,
+        "remote_listed_size_bytes": 243469520,
+        "blocked_contracts": [],
+        "custody_complete": true
+      },
+      "ES": {
+        "contract_count": 5,
+        "rows": 262806610,
+        "size_bytes": 3770344988,
+        "size_gb_decimal": 3.770344988,
+        "size_gib_binary": 3.5114074014127254,
+        "remote_listed_contract_count": 5,
+        "remote_listed_rows": 262806610,
+        "remote_listed_size_bytes": 3770344988,
+        "blocked_contracts": [],
+        "custody_complete": true
+      },
+      "GC": {
+        "contract_count": 5,
+        "rows": 38154926,
+        "size_bytes": 778198980,
+        "size_gb_decimal": 0.77819898,
+        "size_gib_binary": 0.7247542776167393,
+        "remote_listed_contract_count": 5,
+        "remote_listed_rows": 38154926,
+        "remote_listed_size_bytes": 778198980,
+        "blocked_contracts": [],
+        "custody_complete": true
+      },
+      "MBT": {
+        "contract_count": 6,
+        "rows": 4581994,
+        "size_bytes": 101033540,
+        "size_gb_decimal": 0.10103354,
+        "size_gib_binary": 0.09409481659531593,
+        "remote_listed_contract_count": 6,
+        "remote_listed_rows": 4581994,
+        "remote_listed_size_bytes": 101033540,
+        "blocked_contracts": [],
+        "custody_complete": true
+      },
+      "MES": {
+        "contract_count": 5,
+        "rows": 167065860,
+        "size_bytes": 2840979235,
+        "size_gb_decimal": 2.840979235,
+        "size_gib_binary": 2.6458680955693126,
+        "remote_listed_contract_count": 5,
+        "remote_listed_rows": 167065860,
+        "remote_listed_size_bytes": 2840979235,
+        "blocked_contracts": [],
+        "custody_complete": true
+      },
+      "MNQ": {
+        "contract_count": 5,
+        "rows": 334506728,
+        "size_bytes": 5914023303,
+        "size_gb_decimal": 5.914023303,
+        "size_gib_binary": 5.507863408885896,
+        "remote_listed_contract_count": 5,
+        "remote_listed_rows": 334506728,
+        "remote_listed_size_bytes": 5914023303,
+        "blocked_contracts": [],
+        "custody_complete": true
+      },
+      "NQ": {
+        "contract_count": 5,
+        "rows": 119153201,
+        "size_bytes": 2346057267,
+        "size_gb_decimal": 2.346057267,
+        "size_gib_binary": 2.184936094097793,
+        "remote_listed_contract_count": 4,
+        "remote_listed_rows": 112917737,
+        "remote_listed_size_bytes": 2193360120,
+        "blocked_contracts": [
+          "NQ 09-26"
+        ],
+        "custody_complete": false
+      },
+      "YM": {
+        "contract_count": 5,
+        "rows": 21051454,
+        "size_bytes": 445870145,
+        "size_gb_decimal": 0.445870145,
+        "size_gib_binary": 0.4152489313855767,
+        "remote_listed_contract_count": 5,
+        "remote_listed_rows": 21051454,
+        "remote_listed_size_bytes": 445870145,
+        "blocked_contracts": [],
+        "custody_complete": true
+      },
+      "ZB": {
+        "contract_count": 5,
+        "rows": 27204693,
+        "size_bytes": 169125511,
+        "size_gb_decimal": 0.169125511,
+        "size_gib_binary": 0.15751040633767843,
+        "remote_listed_contract_count": 5,
+        "remote_listed_rows": 27204693,
+        "remote_listed_size_bytes": 169125511,
+        "blocked_contracts": [],
+        "custody_complete": true
+      }
+    }
+  },
+  "narrative_summary": "55 of 56 contract-month files are remotely listed; 1009464519 rows; 16918433631 bytes. NQ_09-26 is absent and BLOCKED_BY_CUSTODY. Listing proves presence and size only; download hashes remain unproven.",
+  "viewer_bundle_snapshot": {
+    "status": "AUTHORIZED_PENDING_BUILD_AND_UPLOAD",
+    "artifact_role": "AUXILIARY_VERSIONED_VIEWER_SNAPSHOT",
+    "canonical_source": false,
+    "coverage_mode": "PARTIAL_CONTRACT_MONTH_SLICES",
+    "is_complete_continuous_series": false,
+    "includes_all_contracts": false,
+    "eligible_for_continuous_backtest": false,
     "bundle_count": 147,
-    "uncompressed_size_gb": 10.73,
-    "rationale": "Browser-specific formatting (JSON/JS wrappers and simulated continuous files) are ephemeral visual presentations reconstructible on-demand from Tier 1 bars and Tier 2 zones."
+    "format": "json.zst",
+    "js_uploaded": false,
+    "continuous_files_uploaded": false,
+    "excluded_from_upload": [
+      ".js",
+      "*_CONT",
+      "183 general-inventory JSON files"
+    ]
+  },
+  "remote_inventory_ref": {
+    "path": "artifacts/audit/EDGELAB_KAGGLE_REMOTE_INVENTORY.json",
+    "captured_at_utc": "2026-09-19T18:30:00Z",
+    "evidence_class": "REMOTE_LISTING_ONLY_NO_DOWNLOAD"
+  },
+  "rectification": {
+    "rectifies_commit": "e9d065455b49642b4f7f1c8005eaad8bb02756c8",
+    "status": "MIGRATION_MANIFEST_RECONCILIATION_REQUIRED",
+    "ledger_status": "NOT_CANONICAL_PENDING_RECONCILIATION"
   }
 }
