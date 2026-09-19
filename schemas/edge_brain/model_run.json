@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgelab.local/schemas/edge_brain/model_run.json",
+  "title": "EdgeLab External Model Run",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["model_run_id", "provider", "model_id", "execution_location", "task_type", "prompt_hash", "input_artifact_ids", "output_artifact_ids", "parameters", "started_at_utc", "finished_at_utc", "review_status"],
+  "properties": {
+    "model_run_id": {"type": "string", "pattern": "^MRUN-[A-Za-z0-9._:-]+$"},
+    "provider": {"type": "string", "minLength": 1},
+    "model_id": {"type": "string", "minLength": 1},
+    "execution_location": {"enum": ["LOCAL", "HOSTED_FREE_TIER", "HOSTED_PAID", "NOTION_WORKER"]},
+    "task_type": {"enum": ["EXTRACTION", "CLASSIFICATION", "HYPOTHESIS_GENERATION", "CODE_GENERATION", "ADVERSARIAL_REVIEW", "SUMMARIZATION", "OTHER"]},
+    "prompt_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "input_artifact_ids": {"type": "array", "items": {"type": "string"}},
+    "output_artifact_ids": {"type": "array", "items": {"type": "string"}},
+    "parameters": {"type": "object"},
+    "started_at_utc": {"type": "string", "format": "date-time"},
+    "finished_at_utc": {"type": "string", "format": "date-time"},
+    "review_status": {"enum": ["UNREVIEWED_MACHINE_OUTPUT", "HUMAN_REVIEWED", "ADVERSARIALLY_REVIEWED", "REJECTED"]}
+  }
+}
