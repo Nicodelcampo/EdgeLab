@@ -12,7 +12,11 @@ from __future__ import annotations
 
 from pathlib import Path
 import pytest
-from playwright.sync_api import sync_playwright
+
+sync_playwright = pytest.importorskip(
+    "playwright.sync_api",
+    reason="optional Playwright dependency not installed in core CI",
+).sync_playwright
 
 VIEWER_DIR = Path(__file__).resolve().parents[2] / "viewer" / "nt8_bridge"
 
@@ -117,4 +121,3 @@ def test_bidirectional_navigation_between_index_and_preview(browser_context):
     assert "index.html" in page.url
 
     page.close()
-
