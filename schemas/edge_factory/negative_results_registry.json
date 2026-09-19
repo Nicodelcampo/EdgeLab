@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NegativeResultsRegistrySchema",
+  "description": "Registry for falsified, rejected, or non-viable hypotheses in Edge Discovery Factory.",
+  "type": "object",
+  "required": [
+    "falsification_id",
+    "hypothesis_id",
+    "experiment_id",
+    "stage_at_failure",
+    "failure_mode",
+    "null_distribution_summary",
+    "falsification_commit",
+    "timestamp_utc"
+  ],
+  "properties": {
+    "falsification_id": { "type": "string" },
+    "hypothesis_id": { "type": "string" },
+    "experiment_id": { "type": "string" },
+    "stage_at_failure": { "type": "string" },
+    "failure_mode": { "type": "string" },
+    "null_distribution_summary": { "type": "object" },
+    "friction_break_even_multiple": { "type": ["number", "null"] },
+    "loocv_survival_rate": { "type": ["number", "null"] },
+    "falsification_commit": { "type": "string" },
+    "timestamp_utc": { "type": "string" }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ZoneEventsExploratorySchema",
+  "description": "Segregated schema for exploratory, approximate, or fallback-origin zone events. Strictly separated from causal store.",
+  "type": "object",
+  "required": [
+    "instrument",
+    "contract",
+    "session_id",
+    "indicator",
+    "indicator_version",
+    "config_id",
+    "zone_id",
+    "origin_ts",
+    "bar_key",
+    "side",
+    "bottom",
+    "top",
+    "availability_quality",
+    "source_sha256",
+    "engine_version"
+  ],
+  "properties": {
+    "instrument": { "type": "string" },
+    "contract": { "type": "string" },
+    "session_id": { "type": "string" },
+    "indicator": { "type": "string" },
+    "indicator_version": { "type": "string" },
+    "config_id": { "type": "string" },
+    "zone_id": { "type": "string" },
+    "origin_ts": { "type": "integer" },
+    "signal_available_ts": { "type": ["integer", "null"] },
+    "executable_fill_ts": { "type": ["integer", "null"] },
+    "bar_key": { "type": "string" },
+    "side": { "type": "string" },
+    "bottom": { "type": "number" },
+    "top": { "type": "number" },
+    "state": { "type": "string" },
+    "termination_reason": { "type": "string" },
+    "availability_quality": {
+      "type": "string",
+      "enum": ["ORIGIN_FALLBACK_UNVERIFIED", "EXPLORATORY_PROJECTION", "APPROXIMATE"]
+    },
+    "source_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "engine_version": { "type": "string" },
+    "height_ticks": { "type": "number" },
+    "total_vol": { "type": "number" },
+    "vol_rate": { "type": "number" },
+    "pasos": { "type": "integer" }
+  },
+  "additionalProperties": false
+}
