@@ -1,0 +1,39 @@
+{
+  "timestamp_utc": "2026-09-19T14:06:56.618680+00:00",
+  "canonical_boundary_ns": 1782856800000000000,
+  "canonical_boundary_utc": "2026-06-30T22:00:00Z",
+  "blocked_artifacts": [
+    {
+      "artifact": "NQ 09-26",
+      "instrument": "NQ",
+      "contract": "NQ 09-26",
+      "status": "BLOCKED_BY_CUSTODY",
+      "reason": "CUSTODY_RECUT_REQUIRED_PENDING_REVALIDATION. Preserved at expected SHA-256 (6,235,464 ticks), but temporal coverage discrepancy against MNQ requires certified NT8 re-export before canonical promotion.",
+      "holdout_exposure": "NONE_PROVEN",
+      "action": "EXCLUDED_FROM_CANONICAL_DATASETS"
+    },
+    {
+      "artifact": "Pseudo-Corridors",
+      "instrument": "ALL",
+      "status": "EXCLUDED_INVALID_ARTIFACT",
+      "reason": "Arbitrary N-1 adjacent zone pairing with dummy 0.5 density. Semantic invalidation confirmed in foundation audit.",
+      "action": "BLOCKED_PENDING_CANONICAL_CORRIDOR_ENGINE"
+    },
+    {
+      "artifact": "Synthetic Target-Free Fills",
+      "instrument": "ALL",
+      "status": "EXCLUDED_INVALID_ARTIFACT",
+      "reason": "Synthetic 100% executable fills hallucinated from bar extremes without market liquidity / order book execution model.",
+      "action": "NO_EXECUTABLE_FILL_AVAILABLE_STRICTLY_ENFORCED"
+    }
+  ],
+  "mutated_files_count": 0,
+  "holdout_breaches_count": 0,
+  "datasets_status": {
+    "nicolasbuttaro/edgelab-edge-factory-audit-evidence-20260919": "MIGRATED_AND_HASH_VERIFIED",
+    "nicolasbuttaro/edgelab-edge-factory-target-free-audited": "MIGRATED_AND_HASH_VERIFIED",
+    "nicolasbuttaro/edgelab-ticks-6b-preholdout": "MIGRATED_AND_HASH_VERIFIED",
+    "nicolasbuttaro/edgelab-ticks-6j-preholdout": "MIGRATED_AND_HASH_VERIFIED",
+    "nicolasbuttaro/edgelab-ticks-mnq-preholdout": "MIGRATED_AND_HASH_VERIFIED"
+  }
+}

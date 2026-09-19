@@ -1,0 +1,35 @@
+{
+  "audit_target": "Overnight Edge Discovery Factory Run vs Audited Baseline",
+  "dimensions": [
+    {
+      "dimension": "CME Instrument Tick Sizes",
+      "before_audit": "ES default (0.25) hardcoded across foreign currencies (6B, 6E, 6J) and ZB (0.03125)",
+      "after_audit": "Exact contract specifications for all 11 CME instruments (6B=0.0001, 6E=0.00005, 6J=0.0000005, ZB=0.03125, etc.)",
+      "status": "CORRECTED_AND_TEST_VERIFIED"
+    },
+    {
+      "dimension": "Execution Fills in Target-Free Store",
+      "before_audit": "Synthetic 100% executable fills hallucinated from raw bar highs/lows without market structure",
+      "after_audit": "NO_EXECUTABLE_FILL_AVAILABLE strictly enforced. Synthetic fills removed from target-free records.",
+      "status": "CORRECTED_AND_TEST_VERIFIED"
+    },
+    {
+      "dimension": "Corridor Formation",
+      "before_audit": "N-1 pseudo-corridors pairing arbitrary consecutive zones with static dummy density 0.5",
+      "after_audit": "Pseudo-corridors blocked (BLOCKED_PENDING_CANONICAL_CORRIDOR_ENGINE) until spatial multi-zone engine implemented.",
+      "status": "BLOCKED_AND_ISOLATED"
+    },
+    {
+      "dimension": "NQ 09-26 Custody",
+      "before_audit": "Informally excluded by raw file size heuristics comparing against MNQ",
+      "after_audit": "Formally categorized as CUSTODY_RECUT_REQUIRED_PENDING_REVALIDATION based on certified timestamps and session spans.",
+      "status": "RIGOROUSLY_GOVERNED"
+    },
+    {
+      "dimension": "Hypothesis Backlog Outcomes",
+      "before_audit": "180 pseudo-hypotheses with target-leakage and uncalibrated metrics",
+      "after_audit": "Audited JSONL backlog with target_free_only: true, zero outcome leakage, and verified schema compliance.",
+      "status": "CANONICALLY_AUDITED"
+    }
+  ]
+}
