@@ -40,6 +40,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements/core-bridge-dev.lock
+          # Supplemental hashed lock until the next canonical Python 3.12
+          # regeneration of core-bridge-dev.lock.
+          pip install --no-deps --require-hashes -r requirements/jsonschema-ci.lock
 
       - name: Environment fingerprint
         run: |
