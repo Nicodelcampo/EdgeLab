@@ -1,0 +1,46 @@
+{
+  "policy_id": "EDGE-BRAIN-PILOT-20260919",
+  "status": "DRAFT",
+  "purpose": "Validate recursive brain architecture, not trading edge",
+  "holdout_boundary_ns": 1782856800000000000,
+  "holdout_boundary_utc": "2026-06-30T22:00:00Z",
+  "timestamp_enforcement": "STRICT_LESS_THAN",
+  "allowed_dataset": {
+    "public": true,
+    "required_fields": ["timestamp", "open", "high", "low", "close"],
+    "preferred_fields": ["volume"],
+    "forbidden_sources": ["NQ_BLOCKED_BY_CUSTODY", "PROTECTED_DATA", "HOLDOUT"]
+  },
+  "question": "What marginal information does an EMA regime gate add to a momentum trigger?",
+  "required_ablations": [
+    "NO_EMA",
+    "NO_TRIGGER",
+    "SHUFFLED_GATE",
+    "PARAMETER_NEIGHBORHOOD",
+    "ALTERNATE_NORMALIZATION"
+  ],
+  "required_outputs": [
+    "DATASET_MANIFEST",
+    "ANALYSIS_EPISODE",
+    "STEP_EXECUTIONS",
+    "EXPECTATIONS",
+    "CONTEXT_PACK",
+    "INDICATOR_DEFINITIONS",
+    "COMPOSITION_CONTRACT",
+    "FAILURE_EVENTS",
+    "SUCCESS_EVENTS",
+    "COUNTEREXAMPLES",
+    "LESSON_CANDIDATE",
+    "REUSE_OUTCOMES",
+    "REPRODUCIBLE_REPORT"
+  ],
+  "promotion_ceiling": "LESSON_CANDIDATE",
+  "forbidden_claims": ["EDGE_VALIDATED", "CAUSALITY_PROVEN", "GENERAL_RULE_ACTIVE"],
+  "invariants": [
+    "LLM_PROPOSAL_NOT_EVIDENCE",
+    "NOT_OBSERVED_IS_NOT_ZERO_ACTIVITY",
+    "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF_IS_NOT_REMOTE_VERIFIED",
+    "NO_SELF_APPROVAL",
+    "LEDGER_APPEND_ONLY"
+  ]
+}
