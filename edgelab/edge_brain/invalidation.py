@@ -22,7 +22,8 @@ class DependencyEdge:
     relation: str
 
     def __post_init__(self) -> None:
-        allowed = HARD_RELATIONS | SOFT_RELATIONS | {"CONTRADICTED_BY", "INVALIDATED_BY", "SUPERSEDES"}
+        from .typed_registry import TYPED_RELATIONS
+        allowed = HARD_RELATIONS | SOFT_RELATIONS | TYPED_RELATIONS | {"CONTRADICTED_BY", "INVALIDATED_BY", "SUPERSEDES"}
         if self.relation not in allowed:
             raise ValueError(f"Unsupported dependency relation: {self.relation}")
         if self.source_id == self.target_id:

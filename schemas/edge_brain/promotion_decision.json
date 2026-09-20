@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgelab.local/schemas/edge_brain/promotion_decision.json",
+  "title": "EdgeLab Promotion Decision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "promotion_id",
+    "artifact_id",
+    "from_status",
+    "to_status",
+    "triaged_by",
+    "rationale",
+    "gate_checks_passed",
+    "decided_at_utc"
+  ],
+  "properties": {
+    "promotion_id": {
+      "type": "string",
+      "pattern": "^PROM-[A-Za-z0-9._:-]+$"
+    },
+    "artifact_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "from_status": {
+      "type": "string",
+      "minLength": 1
+    },
+    "to_status": {
+      "type": "string",
+      "minLength": 1
+    },
+    "triaged_by": {
+      "type": "string",
+      "minLength": 1
+    },
+    "rationale": {
+      "type": "string",
+      "minLength": 1
+    },
+    "gate_checks_passed": {
+      "type": "boolean"
+    },
+    "decided_at_utc": {
+      "type": "string"
+    }
+  }
+}

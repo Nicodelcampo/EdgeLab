@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgelab.local/schemas/edge_brain/open_question.json",
+  "title": "EdgeLab Open Question",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "question_id",
+    "question",
+    "context",
+    "urgency",
+    "status",
+    "created_at_utc"
+  ],
+  "properties": {
+    "question_id": {
+      "type": "string",
+      "pattern": "^QUEST-[A-Za-z0-9._:-]+$"
+    },
+    "question": {
+      "type": "string",
+      "minLength": 1
+    },
+    "context": {
+      "type": "string",
+      "minLength": 1
+    },
+    "urgency": {
+      "enum": [
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "BLOCKING"
+      ]
+    },
+    "status": {
+      "enum": [
+        "OPEN",
+        "ANSWERED",
+        "OBSOLETE"
+      ]
+    },
+    "resolution_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "created_at_utc": {
+      "type": "string"
+    }
+  }
+}
