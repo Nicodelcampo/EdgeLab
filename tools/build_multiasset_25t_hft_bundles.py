@@ -56,7 +56,7 @@ def build_entry(entry,*,holdout_ns,source_sha256):
  if any(b<a for a,b in zip(times,times[1:])):raise ValueError("output candles are not monotonic")
  if any(int(z["available_ns"])>=holdout_ns for z in all_zones):raise ValueError("output zone reaches holdout")
  status=hft.transfer_status(instrument,entry.get("parity_status"),profile_name);asset_id=safe_id(str(entry.get("asset_id") or f"{instrument}_{contract}_25T"))
- run={"id":f"hft_universal_{asset_id}","name":f"HFT V2 · {profile_name} · {contract}","indicator":"HFTZonesUniversal","bar_key":"tick_25","params":{**hft.profile(profile_name,instrument),**structural},"zones":all_zones,"parity":{"status":status["parity_status"],"gate":status["parity_status"]},**status}
+ run={"id":f"hft_universal_{asset_id}","name":f"HFTZonesNQPureV4 · {profile_name} · {contract}","indicator":"HFTZonesNQPureV4","engine":"HFTZonesUniversal","bar_key":"tick_25","params":{**hft.profile(profile_name,instrument),**structural},"zones":all_zones,"parity":{"status":status["parity_status"],"gate":status["parity_status"]},**status}
  bundle={"meta":{"id":asset_id,"instrument":instrument,"contract":contract,"tick_size":float(resolved_tick_size),"n_zones":len(all_zones),"source_sha256":source_sha256,"holdout_boundary_ns":holdout_ns,"outcome_firewall":"ENFORCED"},"bar_series":{"tick_25":{"kind":"tick_25","name":"25 Tick","candles":all_candles}},"runs":[run]}
  manifest={"asset_id":asset_id,"instrument":instrument,"contract":contract,"source_path":str(path),"source_sha256":source_sha256,"holdout_boundary_ns":holdout_ns,"holdout_rows_decoded":0,"tick25_bars":len(all_candles),"zones":len(all_zones),"profile":profile_name,**status,"sessions":session_reports}
  return bundle,manifest

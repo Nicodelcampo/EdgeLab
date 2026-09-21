@@ -3651,8 +3651,33 @@
       });
   }
 
+  // Indicador único: HFTZonesNQPureV4. Los bundles generados con el motor universal traen el nombre del motor
+  // ("HFT V2 · <perfil> · <contrato>", indicador HFTZonesUniversal): se presentan como HFTZonesNQPureV4 con su perfil.
+  // Si el bundle trae ese indicador, se ocultan las demás corridas (BigTrap2, Gaps2, etc.); si no lo trae, se muestran todas.
+  var V4_INDICATOR = "HFTZonesNQPureV4";
+  function normalizeRuns(data) {
+    if (!data || !data.runs || data._runsNormalized) return;
+    data._runsNormalized = true;
+    data.runs.forEach(function (r) {
+      if (r.indicator === "HFTZonesUniversal") {
+        var parts = String(r.name || "").split("·").map(function (x) { return x.trim(); });
+        var profile = parts.length >= 3 ? parts[1] : (r.parameter_status || "");
+        var contract = parts.length >= 3 ? parts.slice(2).join(" · ") : ((data.meta && data.meta.contract) || "");
+        r.engine = "HFTZonesUniversal";
+        r.indicator = V4_INDICATOR;
+        r.name = V4_INDICATOR + " · " + profile + " · " + contract;
+      }
+    });
+    var v4 = data.runs.filter(function (r) { return r.indicator === V4_INDICATOR; });
+    if (v4.length && v4.length < data.runs.length) {
+      data._runsHidden = data.runs.length - v4.length;
+      data.runs = v4;
+    }
+  }
+
   function applyLoadedAsset(data, options) {
     options = options || {};
+    normalizeRuns(data);
     state.data = data;
     var m = data.meta;
     state.currentAssetId = m.id || state.currentAssetId;

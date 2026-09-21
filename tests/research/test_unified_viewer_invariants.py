@@ -144,3 +144,11 @@ def test_lux_imb_tiene_tope_de_zonas_en_pantalla_y_relleno_tenue():
     assert 'id="inp-lux-max"' in HTML and "lux_max_visible" in HTML
     assert "luxKeep" in HTML and "!luxKeep.has(z)" in HTML
     assert "ctx.fillStyle = hexToRgba(col, 0.45);" not in HTML       # el OG ya no rellena al 45 %
+
+
+def test_el_visor_presenta_un_unico_indicador_hftzonesnqpurev4():
+    """Decision de Nico 2026-09-21: solo aparece HFTZonesNQPureV4 (calibrado por activo). Los bundles del motor universal se
+    renombran y, si el bundle trae ese indicador, se ocultan las demas corridas."""
+    assert "function normalizeRuns" in HTML and 'var V4_INDICATOR = "HFTZonesNQPureV4";' in HTML
+    assert 'r.indicator === "HFTZonesUniversal"' in HTML and "data.runs = v4;" in HTML
+    assert "    normalizeRuns(data);" in HTML
