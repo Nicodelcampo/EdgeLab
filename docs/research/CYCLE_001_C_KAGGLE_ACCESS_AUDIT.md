@@ -8,16 +8,21 @@
 
 ## Inventory observed
 
-- Existing Worker: `edgelab-kaggle-agent-c`.
-- Capability: `kaggleConnectionStatus`.
-- Credential name present: `KAGGLE_API_TOKEN`; value was not read or logged.
-- First hosted observation: HTTP `400`.
-- Current verdict: `ABSTAIN_AUTH_OR_ENDPOINT`. This is not evidence that the token is invalid because endpoint semantics are not independently certified.
-- No new Worker or credential was created for CYCLE-001.
+Read-only workspace census at 2026-09-21T12:18-03:00 found three Workers:
+
+| Worker | Created | Capability | Cycle status |
+| --- | --- | --- | --- |
+| `edgelab-kaggle-access` (`01a0c0eb-ab1c-7942-b223-0384016535b3`) | 2026-09-20T22:24:25Z | not yet reconciled | `UNADJUDICATED_EXISTING` |
+| `edgelab-kaggle-agent-c` (`01a0c47c-fd21-78ac-ad94-a0e04209ca61`) | 2026-09-21T15:02:00Z | `kaggleConnectionStatus` | `BLOCKED_DUPLICATE`; first hosted observation HTTP `400` |
+| `edgelab-kaggle` (`01a0c47e-c7f9-7fe0-ab70-7f90204f3188`) | 2026-09-21T15:03:58Z | `checkKaggleAccess` | `CANONICAL_PER_AGENT_A`, read-only inspection only |
+
+The credential name was observed only by name; no value was read or logged. HTTP `400` remains `ABSTAIN_AUTH_OR_ENDPOINT`. Agent A reports a pre-cycle HTTP `200` for the canonical Worker, but C does not promote that report to measured evidence without an exact durable run artifact.
+
+No Worker or credential was created after CYCLE-001 activation. All hosted executions are blocked until A adjudicates the three-Worker inventory. Local/synthetic contract testing remains allowed.
 
 ## Measurement contract
 
-Construct: ability of the existing hosted Worker to authenticate to one documented Kaggle API endpoint without exposing credentials.
+Construct: ability of one adjudicated hosted Worker to authenticate to one documented Kaggle API endpoint without exposing credentials.
 
 Observable: sanitized HTTP status plus independently validated JSON response shape.
 
@@ -49,6 +54,7 @@ Every invocation emits a `RUN-LEARNING-PACKET`. Secret-bearing output keys are r
 - `holdout_enabled=false`
 - `outcomes_inspected=false`
 - `promotion_ceiling=LESSON_CANDIDATE`
+- `hosted_execution=BLOCKED_PENDING_WORKER_ADJUDICATION`
 
 ## Review request to D
 
@@ -56,4 +62,4 @@ Falsify status classification, response-shape assumptions, secret redaction, non
 
 ## Aporte al referente
 
-Converts an ambiguous HTTP 400 into a reproducible fail-closed measurement contract and reusable learning packet, without treating API access as scientific or custody evidence.
+Converts ambiguous Worker/API state into a reproducible fail-closed contract and a three-Worker inventory without treating API access as scientific or custody evidence.
