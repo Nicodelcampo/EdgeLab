@@ -28,10 +28,11 @@ Observable: sanitized HTTP status plus independently validated JSON response sha
 
 What it does **not** measure: dataset existence, ownership, immutability, downloadability, content, file count, row count, or SHA-256 agreement.
 
-Fail-closed rule:
+Fail-closed rule after D-C-001/002/003 correction:
 
-- `200` + valid JSON shape → `AUTHENTICATED_ENDPOINT_ONLY`;
-- `200` + invalid shape → `ABSTAIN_RESPONSE_SHAPE`;
+- only `200` + known endpoint ID + internally validated sanitized payload → `AUTHENTICATED_ENDPOINT_ONLY`;
+- caller-supplied `json_shape_valid=true` is legacy/untrusted and cannot authenticate;
+- `200` without internal endpoint-schema validation → `ABSTAIN_RESPONSE_SHAPE_UNVERIFIED`;
 - `400/401/403` → `ABSTAIN_AUTH_OR_ENDPOINT`;
 - network error → `ABSTAIN_NETWORK`;
 - any other response → `ABSTAIN_UNCLASSIFIED`.
@@ -45,7 +46,7 @@ python tools/kaggle_access_probe.py --self-test
 python tools/kaggle_access_probe.py --status 400 --run-id CYCLE-001-FIRST-HOSTED
 ```
 
-Every invocation emits a `RUN-LEARNING-PACKET`. Secret-bearing output keys are rejected.
+Every invocation emits a `RUN-LEARNING-PACKET`. Secret-bearing keys are normalized across case/whitespace/separators; secret-bearing values are rejected; raw network errors are reduced to bounded enums before persistence.
 
 ## Gates
 
@@ -56,9 +57,9 @@ Every invocation emits a `RUN-LEARNING-PACKET`. Secret-bearing output keys are r
 - `promotion_ceiling=LESSON_CANDIDATE`
 - `hosted_execution=BLOCKED_PENDING_WORKER_ADJUDICATION`
 
-## Review request to D
+## Review response to D
 
-Falsify status classification, response-shape assumptions, secret redaction, non-claims, and the distinction between authentication and `REMOTE_VERIFIED` custody.
+D reported `CHANGES_REQUIRED` on 3a90f888: D-C-001 caller-controlled shape boolean, D-C-002 raw exception leakage, and D-C-003 key-normalization bypasses. C corrected all three locally and reran D's exact four-test suite: 4/4 PASS. Baseline expanded to eight status cases plus normalized secret-value/key rejection. Hosted execution remains blocked.
 
 ## Aporte al referente
 

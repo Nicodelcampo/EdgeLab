@@ -14,20 +14,24 @@
   },
   "success": {
     "http_status": 200,
-    "json_shape_valid": true,
+    "endpoint_id": "kaggle.datasets.list.v1",
+    "shape_validation": "INTERNAL_ENDPOINT_SCHEMA",
+    "caller_supplied_shape_boolean": "UNTRUSTED_AND_NON_AUTHORITATIVE",
     "verdict": "AUTHENTICATED_ENDPOINT_ONLY"
   },
   "abstentions": {
     "400_401_403": "ABSTAIN_AUTH_OR_ENDPOINT",
     "network_error": "ABSTAIN_NETWORK",
-    "invalid_json_shape": "ABSTAIN_RESPONSE_SHAPE",
+    "invalid_json_shape": "ABSTAIN_RESPONSE_SHAPE_UNVERIFIED",
     "other": "ABSTAIN_UNCLASSIFIED"
   },
   "non_claims": [
     "API authentication does not verify any dataset",
     "API authentication does not verify file hashes",
     "A listed remote object is not REMOTE_VERIFIED",
-    "No outcome or holdout access is authorized"
+    "No outcome or holdout access is authorized",
+    "Raw network exception text is never durable",
+    "Caller-supplied shape booleans cannot authenticate"
   ],
   "gates": {
     "PREEXISTING_OUTCOME_EXPOSURE": "YES",
