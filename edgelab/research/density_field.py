@@ -94,7 +94,7 @@ def compute_causal_v_ref(
         z_avail = extract_zone_available_ns(z)
         avail_ns = z_avail[0]
         if avail_ns <= t_ref_ns:
-            vol = float(z.get("vol", z.get("volume", 0.0)))
+            vol = zone_volume(z, 0.0)
             if vol > 0.0:
                 zid = str(z.get("id", z.get("zone_id", "")))
                 causal_items.append((avail_ns, zid, vol))
@@ -110,6 +110,21 @@ def compute_causal_v_ref(
     window_vols = [item[2] for item in window_items]
     med = float(np.median(window_vols))
     return max(1.0, med), f"CAUSAL_ROLLING_MEDIAN_N_{len(window_vols)}"
+
+
+def zone_volume(z: dict, default: float) -> float:
+    """Volumen de una zona. Un volumen NULO equivale a un volumen AUSENTE (usa `default`).
+
+    Antes la lectura directa del campo reventaba con TypeError cuando la clave existía con valor null, y el
+    puerto JS lo habría tratado en silencio como 0 o NaN (un NaN contamina el campo entero). Lo encontró la
+    paridad sobre bundles reales: hay zonas con `vol: null`. Ambas implementaciones aplican esta regla.
+    """
+    v = z.get("vol")
+    if v is None:
+        v = z.get("volume")
+    if v is None:
+        return float(default)
+    return float(v)
 
 
 def extract_zone_available_source(z: dict) -> str:
@@ -326,7 +341,7 @@ def compute_field(
             w_zone = 1.0
         else:
             # Volume transform
-            z_vol = float(z.get("vol", z.get("volume", 1.0)))
+            z_vol = zone_volume(z, 1.0)
             vol_trans = cfg.get("vol_transform", "TRANS_POWER_025")
             ratio = max(1.0, z_vol) / max(1.0, v_ref)
             if vol_trans == "TRANS_COUNT":

@@ -1,3 +1,7 @@
+> **SUPERADO (2026-09-21).** Este plan nombra `corridor_engine.js` y `crosshair_density_profile.js` como motores del visor.
+> Por decisión de Nico hay UNA definición de corredor (`density_field.py`, HP-007) con un puerto JS verificado
+> (`density_field.js`); ambos archivos fueron archivados. Vigente: `docs/research/VIEWER_UNIFICATION_PROPOSAL_20260921.md`.
+
 # EdgeLab viewer unification plan
 
 ## Decision

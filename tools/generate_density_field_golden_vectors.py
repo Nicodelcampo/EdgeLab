@@ -158,6 +158,19 @@ def build_scenarios() -> list[dict]:
         {"model": "FIELD_RAW_STATIC", "kernel": "KERNEL_BOX"}, t=tb, lo=b0, hi=b0 + 60,
         interval_opts={"low_thresh": 1.0, "high_thresh": 2.0, "min_low_ticks": 5, "min_high_ticks": 5})
 
+    # --- volumenes nulos / ausentes / cero / negativos (lo encontro la paridad sobre bundles REALES)
+    vols = [
+        {"id": "V_NULL", "bottom": 19010.0, "top": 19011.0, "vol": None, "available_ns": BASE_NS + 10 * UNIT},
+        {"id": "V_AUSENTE", "bottom": 19012.0, "top": 19013.0, "available_ns": BASE_NS + 20 * UNIT},
+        {"id": "V_VOLUME", "bottom": 19014.0, "top": 19015.0, "volume": 50.0, "available_ns": BASE_NS + 30 * UNIT},
+        {"id": "V_NULL_CON_VOLUME", "bottom": 19016.0, "top": 19017.0, "vol": None, "volume": 80.0, "available_ns": BASE_NS + 40 * UNIT},
+        {"id": "V_CERO", "bottom": 19018.0, "top": 19019.0, "vol": 0.0, "available_ns": BASE_NS + 50 * UNIT},
+        {"id": "V_NEG", "bottom": 19020.0, "top": 19021.0, "vol": -5.0, "available_ns": BASE_NS + 60 * UNIT},
+        {"id": "V_NORMAL", "bottom": 19022.0, "top": 19023.0, "vol": 40.0, "available_ns": BASE_NS + 70 * UNIT},
+    ]
+    add("volume_null_absent_zero_negative", vols, dict(CAL), t=BASE_NS + 1000 * UNIT)
+    add("volume_null_raw_static", vols, {"model": "FIELD_RAW_STATIC", "kernel": "KERNEL_GAUSS"}, t=BASE_NS + 1000 * UNIT)
+
     # --- campo saturado con una muralla y un corredor claros (caracterización direccional)
     muros = [
         {"id": "W_FLOOR_BUY", "bottom": 19005.0, "top": 19006.0, "vol": 90.0, "kind": "HFT BUY", "available_ns": BASE_NS + 10 * UNIT},

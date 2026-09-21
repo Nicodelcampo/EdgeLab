@@ -37,12 +37,36 @@ def test_no_hay_funciones_declaradas_dos_veces_en_el_mismo_alcance():
     assert repetidas == [], f"funciones declaradas mas de una vez: {repetidas}"
 
 
-def test_disponibilidad_tiene_una_sola_definicion_y_expone_calidad():
-    """`quality` alimenta la insignia EXPLORATORY; si falta, la insignia no puede mostrarse."""
+def test_disponibilidad_tiene_una_sola_definicion_y_sale_del_modulo_canonico():
+    """`quality` alimenta la insignia EXPLORATORY. La resolución de claves/escalas NO se reimplementa
+    en el HTML: se pide a EdgeLabDensityField (verificado contra Python)."""
     assert HTML.count("function zoneAvailabilityInfo(") == 1
-    assert HTML.count("function densityTsSec(") == 1
+    assert "function densityTsSec(" not in HTML
+    assert "window.EdgeLabDensityField.extractZoneAvailableNs(z)" in HTML
     assert 'quality: isExplicit ? "EXPLICIT"' in HTML
     assert '"ORIGIN_FALLBACK_UNVERIFIED"' in HTML
+
+
+def test_el_visor_no_calcula_densidad_ni_corredores_por_su_cuenta():
+    """UNA sola definición (HP-007): index.html llama a EdgeLabDensityField y nada más. Antes había
+    cinco implementaciones. Ningún kernel gaussiano ni agrupamiento de murallas dentro del HTML."""
+    js = _script_inline()
+    assert "DF.computeField(" in js and "DF.detectDensityIntervals(" in js and "DF.characterizeCorridors(" in js
+    # sin kernel propio: el unico exp(-x*x/...) permitido en el HTML seria el de un dibujo, no de densidad
+    assert "Math.exp(-(" not in js
+    assert "clusterTol" not in js and "livingWalls" not in js
+    assert "EdgeLabCorridorEngine" not in js and "EdgeLabCrosshairDensity" not in js
+
+
+def test_la_clasificacion_direccional_se_declara_no_certificada():
+    assert "CHARACTERIZATION_UNCERTIFIED" in (VIEWER / "density_field.js").read_text(encoding="utf-8")
+    assert "characterization" in HTML
+
+
+def test_el_consumo_por_volumen_esta_permitido_pero_rotulado_no_certificado():
+    """Decisión de Nico (2026-09-21): el modo de consumo NO se retira; se rotula."""
+    assert "UNCERTIFIED_CANDLE_VOLUME" in HTML
+    assert "Consumo por volumen de vela: NO certificado" in HTML
 
 
 def test_la_abstencion_por_bar_key_suprime_cajas_pero_no_mata_las_flechas():

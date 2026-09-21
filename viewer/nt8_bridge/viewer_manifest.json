@@ -5,16 +5,15 @@
   "feature_status": {
     "multiasset_tabs": "INTEGRATED",
     "tick_25_series": "INTEGRATED",
-    "hft_liquidity_corridors": "NOT_UNIFIED_MULTIPLE_IMPLEMENTATIONS",
-    "volume_consumption_mode": "INTEGRATED",
-    "crosshair_density_profile_kernel": "INTEGRATED_DUPLICATES_ENGINE_MATH",
+    "hft_liquidity_corridors": "UNIFIED_HP007_DENSITY_FIELD",
+    "volume_consumption_mode": "ALLOWED_UNCERTIFIED_LABELLED",
+    "crosshair_density_profile_kernel": "UNIFIED_SAME_FIELD_AS_CORRIDORS",
     "local_volume_profile_ui": "INTEGRATED_FROM_WORKTREE_2026-09-21",
-    "causal_available_at": "INTEGRATED_STRICT_DEFAULT",
-    "bar_key_mismatch_policy": "BOXES_SUPPRESSED_CAUSAL_ARROWS_KEPT"
+    "causal_available_at": "STRICT_HELPER_EXPLORATORY_VISIBLE_BY_DEFAULT",
+    "bar_key_mismatch_policy": "BOXES_SUPPRESSED_CAUSAL_ARROWS_KEPT",
+    "corridor_direction_characterization": "CHARACTERIZATION_UNCERTIFIED"
   },
   "specialized_noncanonical_pages": {
-    "hft_corridor_preview.html": "corridor research preview",
-    "hft_corridor_certified.html": "certification evidence viewer",
     "index_invariant.html": "viewport invariance fixture",
     "store_viewer.html": "event-store diagnostic viewer"
   },
@@ -30,18 +29,24 @@
     }
   },
   "production_rule": "Do not create another production HTML entrypoint; evolve index.html behind tested feature modules.",
-  "known_gap": "Corridor definition is not unified (see corridor_definition). Non-viewer WIP of EdgeLab-multiasset (bigtrap2absorption.py, nt8_contract.py, ~40 audit tools) lives only in backup/wip-multiasset-worktree-20260921.",
+  "known_gap": "Non-viewer WIP of EdgeLab-multiasset (bigtrap2absorption.py, nt8_contract.py, ~40 audit tools) lives only in backup/wip-multiasset-worktree-20260921. Legacy bundles without available_ts render as EXPLORATORY.",
   "corridor_definition": {
-    "status": "DECISION_PENDING",
-    "single_source_of_truth_target": "one module consumed by index.html; no density math in HTML",
-    "implementations_found": {
-      "index.html:drawCorredoresDemo": "living walls + hMin + volume-consumption mode; no certification; does not use corridor_engine.js",
-      "corridor_engine.js": "sigma=2, w=vol*0.5^(age/12h), corridor = run below 25th percentile, 8..32 ticks; certified for viewport invariance and causality; used ONLY by hft_corridor_certified.html",
-      "edgelab/research/density_field.py": "HP-007 D(p,t): sigma=1.2, FIELD_RAW_STATIC/bimodal weights, causal V_ref median, normalized thresholds; 15 mandatory invariance tests; NOT cross-validated against corridor_engine.js",
-      "crosshair_density_profile.js": "same gaussian kernel as corridor_engine.js with ranges/weights computed inside index.html (48 h cutoff, volume-consumption slices)",
-      "hft_corridor_preview.html": "uncertified inline field with configurable kernels/transforms"
-    },
-    "decision_needed": "which formula is canonical: HP-007 density_field.py (research-measured object) or corridor_engine.js (viewer-certified engine); recommended: density_field.py as reference + JS port with golden-vector parity, keeping corridor_engine.js gates",
-    "note": "the certified engine only accepts zones with available_ts/origin_ts/end_ts/lo/hi/direction/id; _25T_HFT bundles carry the causal fields under different key names (available_ns, origin_ts_ns, end_ts_ns, bottom/top, kind)"
-  }
+    "status": "DECIDED_2026-09-21",
+    "decision": "edgelab/research/density_field.py (HP-007 D(p,t)) is the single reference; viewer/nt8_bridge/density_field.js is its port",
+    "who": "Nico, delegating the choice to whichever definition is closest to the referent; recommendation adopted",
+    "port_verification": "tests/research/test_density_field_js_parity.py against tests/fixtures/density_field_golden_v2.json (generator: tools/generate_density_field_golden_vectors.py); mutation-tested",
+    "viewer_default_preset": "HP007_CALIBRATED / HP007_NO_TIME_DECAY (decayMode)",
+    "not_certified": [
+      "directional characterization BULL/BEAR/DUAL (corridor_geometry.py)",
+      "candle-volume consumption mode"
+    ],
+    "lineage_note": "docs/research/HP-007_DOSSIER... §3.2 describes an earlier calibrated model (clamped f_vol, linear maturation) that differs in constants from density_field.py; reconcile in the 'improve corridor logic' phase",
+    "superseded": [
+      "corridor_engine.js",
+      "crosshair_density_profile.js",
+      "hft_corridor_preview.html",
+      "drawCorredoresDemo (inline)"
+    ]
+  },
+  "retired_2026-09-21": "archive/viewer_retirado_20260921/ (hz2a, visor_server, hft_corridor_preview, parches apply_*, motor certificado anterior)"
 }

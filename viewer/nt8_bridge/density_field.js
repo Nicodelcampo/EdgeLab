@@ -113,6 +113,12 @@
     return [Math.trunc(Number(notNull(z.touches) ? z.touches : 0)), true];
   }
 
+  /** Volumen de una zona. Un volumen NULO equivale a AUSENTE (usa `def`), igual que density_field.zone_volume. */
+  function zoneVolume(z, def) {
+    const v = notNull(z.vol) ? z.vol : (notNull(z.volume) ? z.volume : null);
+    return v === null ? def : Number(v);
+  }
+
   const zoneId = (z) => String(has(z, "id") ? z.id : (has(z, "zone_id") ? z.zone_id : ""));
   const zoneLoPx = (z) => Number(has(z, "lo") ? z.lo : (has(z, "bottom") ? z.bottom : 0.0));
   const zoneHiPx = (z) => Number(has(z, "hi") ? z.hi : (has(z, "top") ? z.top : 0.0));
@@ -130,7 +136,7 @@
     for (const z of zones) {
       const avail = extractZoneAvailableNs(z)[0];
       if (avail <= tRefNs) {
-        const vol = Number(has(z, "vol") ? z.vol : (has(z, "volume") ? z.volume : 0.0));
+        const vol = zoneVolume(z, 0.0);
         if (vol > 0.0) items.push([avail, zoneId(z), vol]);
       }
     }
@@ -197,7 +203,7 @@
       if (modelName === "FIELD_RAW_STATIC") {
         wZone = 1.0;
       } else {
-        const zVol = Number(has(z, "vol") ? z.vol : (has(z, "volume") ? z.volume : 1.0));
+        const zVol = zoneVolume(z, 1.0);
         const volTrans = cfg.vol_transform === undefined ? "TRANS_POWER_025" : cfg.vol_transform;
         const ratio = Math.max(1.0, zVol) / Math.max(1.0, vRef);
         let wVol;
