@@ -6,104 +6,60 @@
 
 ## Mandate
 
-Expand EdgeLab only where a new capability can reduce the distance to a net,
-robust and executable edge. The program does not rescue saturated hypotheses by
-adding thresholds, narratives or exit grids. Every workstream must add a new
-dataset, observable, mechanism or execution contract and must preserve:
-
-- `LLM_PROPOSAL_NOT_EVIDENCE`;
-- `NO_SELF_APPROVAL`;
-- `LEDGER_APPEND_ONLY`;
-- the sealed holdout and explicit outcome authorization;
-- negative-result publication and dependency invalidation.
+Expand EdgeLab only where a new capability can reduce the distance to a net, robust and executable edge. The program does not rescue saturated hypotheses by adding thresholds, narratives or exit grids. Every workstream must add a new dataset, observable, mechanism or execution contract and preserve `LLM_PROPOSAL_NOT_EVIDENCE`, `NO_SELF_APPROVAL`, `LEDGER_APPEND_ONLY`, the sealed holdout, negative results and dependency invalidation.
 
 ## Evidence ladder
 
-1. **Contract:** semantics, observability and abstention states are frozen first.
-2. **Unit/generative checks:** invariants, causality, determinism and malformed input.
-3. **Synthetic replay:** adversarial streams including gaps, resets and ambiguous events.
-4. **Captured-data replay:** only after source identity, packet completeness and hashes pass.
-5. **Shadow:** research/live parity, fill calibration, markouts and drift without capital.
-6. **Economic campaign:** preregistered population, costs, multiplicity and capacity.
-7. **Holdout/live:** separate human authorization; never implied by prior gates.
+1. contract; 2. unit/generative checks; 3. synthetic replay; 4. captured-data replay only after custody; 5. shadow; 6. preregistered economic campaign; 7. separately authorized holdout/live.
 
 ## Workstreams and gates
 
 ### W0 — Canonical integration and reproducibility
-
-Create a reproducible integration line from the current living branches. No research result may depend on an unrecorded local merge. Record source refs, patches, environment and data hashes.
-
-**Gate:** a clean checkout can reproduce contract tests and identify every non-versioned dependency. **Current risk:** this branch inherits a broad research lineage; it is not a declaration that all open PRs are integrated.
+No result may depend on an unrecorded local merge. Record refs, patches, environment and hashes.
 
 ### W1 — Execution Lab
-
-Replace fixed-slippage-only assumptions where the proposed strategy depends on passive fills. Model latency, queue ahead, partial fills, resets, sequence gaps, adverse selection and empirical calibration.
-
-First contract implemented here: `QUEUE_FIFO_L2_V1`.
-
-**Hard semantics:** anonymous cancellations never improve queue priority; observed executions are the only queue-consuming evidence; missing activation depth, packet gaps and resets abstain.
-
-**Gate:** synthetic invariants first; captured L2/MBO calibration later. This module must not silently alter the sealed legacy market simulator.
+Latency, queue ahead, partial fills, resets, gaps, adverse selection and calibration. First contract: `QUEUE_FIFO_L2_V1`.
 
 ### W2 — L2/MBO observability
-
-Define normalized add/cancel/modify/execute/replenishment events, exchange sequence continuity, packet-gap states, order lifetime and source provenance.
-
-**Gate:** `NOT_OBSERVED != ZERO_ACTIVITY`; no fill evidence from reconstructed footprints alone.
+Normalized lifecycle, sequence continuity, gap states, order identity and provenance. `NOT_OBSERVED != ZERO_ACTIVITY`.
 
 ### W3 — Multiasset residual engine
-
-Build point-in-time asynchronous joins, futures roll-safe identities, hedge-ratio formation/trading separation, residual/z-score mechanics and explicit leg risk.
-
-**Gate:** no same-timestamp look-ahead; formation data cannot leak into trading adjudication; stale-leg and missing-leg states abstain.
+Point-in-time asynchronous joins, roll-safe identities, formation/trading separation and leg risk.
 
 ### W4 — Portfolio and capacity
-
-Aggregate independent mechanisms rather than a single winning configuration. Add correlation clustering, risk budgets, turnover, exposure limits, marginal capacity and concentration stress.
-
-**Gate:** portfolio claims require component-level lineage and cost/capacity curves, not just a higher combined Sharpe.
+Independent mechanisms, correlation clustering, risk budgets, turnover, exposure and marginal capacity.
 
 ### W5 — Shadow/live validation
-
-Measure signal-to-order latency, observed-vs-simulated fill deltas, markouts, drift and kill rules. Promotion requires research/live identity and documented operator controls.
+Latency, simulated-vs-observed fill deltas, markouts, drift and kill rules.
 
 ### W6 — Conditional ML validation
-
-CPCV, purging/embargo, triple barrier and meta-labeling are conditional tools, not default sources of edge. They are admitted only when a primary signal exists, labels overlap, tuning is nested and the effective trial count is charged.
+CPCV, purging, triple barrier and meta-labeling only when primary signal, overlapping labels and nested tuning justify them.
 
 ## Research loop
 
-For each increment:
-
-1. state the mechanism and public evidence supporting plausibility;
-2. list the event-space and alternatives before measuring;
-3. declare required new observables and what remains unobserved;
-4. freeze contract plus falsification criteria;
-5. implement the smallest independently testable vertical slice;
-6. run adversarial review and record failures;
-7. update the measured/not-measured ledger in the same commit;
-8. only then decide whether the next slice deserves data or outcome access.
+For every increment: research mechanism; enumerate event-space; declare new observables; freeze falsification; implement smallest slice; adversarial review; update measured/not-measured; only then consider data or outcomes.
 
 ## Checkpoints
 
 ### C1 — Fail-closed passive queue kernel
-
-Implemented the conservative queue-fill kernel and contract tests. EdgeLab can represent a passive order that fails to fill, fills partially, or becomes unknowable because the feed is incomplete. This does **not** claim calibration, profitability or L2 availability.
+Implemented conservative queue fills without claiming calibration or profitability.
 
 ### C2 — L2/MBO observability boundary
+Implemented `L2_MBO_OBSERVABILITY_V1`, separating normalized events from channel packet evidence and forbidding MBP promotion to exact FIFO.
 
-After rereading the existing NT8 MBP intake and researching CME MDP 3.0 recovery, MBO priority and queue-position methodology, implemented `L2_MBO_OBSERVABILITY_V1`. It separates normalized events from channel-level packet evidence, requires source/decoder hashes, and prevents aggregated MBP from being promoted into exact FIFO queue evidence. See `L2_MBO_OBSERVABILITY_CONTRACT_20260921.md`.
+### C3 — Causal trend-context composition
+Reread the North Star, BigTrap2/HFT implementations, target-free context census, EMA audits and rejected continuation campaigns. Research on time-series momentum, volatility scaling, moving-average filters and VWAP was translated into `CAUSAL_TREND_CONTEXT_V1`: a closed-bar, prefix-invariant layer for EMA9/21, SMA20/50 and session VWAP. Existing BigTrap/HFT events can be classified as with-trend, counter-trend or neutral without modifying detectors or opening outcomes. See `TREND_CONTEXT_COMPOSITION_CONTRACT_20260921.md`.
 
 ## Immediate next increments
 
-1. add queue-model property tests and an independent reference implementation;
-2. add post-fill markout/adverse-selection measurement;
-3. design vendor-neutral MBO adapters without opening quarantined holdout data;
-4. calibrate with observed order lifecycle data only if a source passes intake;
-5. implement point-in-time multiasset joins and leg-risk abstention;
-6. add portfolio/capacity contracts;
-7. design shadow-mode reconciliation and kill-rule state machine.
+1. queue-model property tests and independent reference;
+2. post-fill markout/adverse-selection;
+3. vendor-neutral MBO adapters without quarantined holdout data;
+4. calibrate only if a source passes intake;
+5. point-in-time multiasset joins and leg risk;
+6. portfolio/capacity;
+7. shadow reconciliation and kill rules.
 
 ## Aporte al referente
 
-The branch begins to replace hypothetical passive execution with a falsifiable, fail-closed contract while preserving the holdout and refusing to convert missing market-depth evidence into optimistic fills.
+The branch replaces hypothetical execution and indicator folklore with falsifiable, fail-closed contracts while preserving the holdout.
