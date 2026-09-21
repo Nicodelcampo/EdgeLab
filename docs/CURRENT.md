@@ -21,6 +21,10 @@
 3. **Mejorar la lógica de los corredores de liquidez para incluirla en los análisis — DESPUÉS.** Puntos abiertos ya identificados: la clasificación direccional BULL/BEAR/DUAL (`edgelab/research/corridor_geometry.py`) está `CHARACTERIZATION_UNCERTIFIED`; el dossier HP-007 §3.2 describe un modelo calibrado con constantes distintas a las de `density_field.py`; el consumo por volumen de vela no está certificado.
 4. **Cerebro (Edge Brain) y orquestación de análisis en Kaggle.** Revisión y brecha: `docs/research/EDGE_BRAIN_GAP_ANALYSIS_20260921.md`.
 
+5. **HFTZones en los 11 activos — perfil escalado `SCALED_FUNNEL_V1` (2026-09-21).** Mismo motor, umbrales por activo, target-free: la dispersión de densidad de zonas por tick pasó de ~29× a 1,8× (`docs/research/HFTZONES_ESTANDARIZACION_MULTIACTIVO_20260921.md`, `tools/calibrate_hftzones_universal_profiles.py`, `tools/rebuild_hft_bundles_scaled.py`). Sin paridad con NT8 salvo NQ (`PARITY_ABSTAIN`); deriva fuera de muestra en MES/GC/ZB.
+6. **LUX-IMB (OG+VI) reconstruido en Python — validación PARCIAL contra 6E:** 34.179/34.179 zonas exactas (bordes, vencimiento, relleno, toque) con OG cuerpo-a-cuerpo, la geometría del `.cs` (`docs/research/LUX_IMB_VALIDACION_PARCIAL_6E_20260921.md`). Falta: otros activos, barras M1 desde ticks, disponibilidad causal.
+7. **L2 en el visor (GC 08-26, 29 sesiones pre-holdout):** mapa de calor del libro; reconstrucción validada contra L1 (bid ≥99,7 %, ask 100 %). Reloj L2 sin resolver contra ticks: las velas salen de los trades del mismo feed (`tools/build_l2_viewer_bundle.py`). Base para spoofing/iceberg y DeepLOB.
+
 ## Resultados de investigación vigentes
 
 1. **HP-008: Clímax HFT Sobre-Extendido con Reversión a la Media y Vuelo Libre en Corredores de Vacío (NQ 25t).**  
