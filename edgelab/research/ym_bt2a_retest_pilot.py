@@ -63,6 +63,8 @@ class Decision:
     armed_sequence: int | None
     ticks_observed: int
     censor_reason: str | None
+    trigger_ts_ns: int | None = None
+    trigger_sequence: int | None = None
 
 
 def canonical_hash(value: object) -> str:
@@ -149,13 +151,10 @@ def evaluate_policy(event: ZoneEvent, ticks: Iterable[Tick], policy: Policy, *, 
     departure2 = 2 * policy.departure_ticks
     lo, hi = event.zone_lo_half_ticks, event.zone_hi_half_ticks
     raw_target = hi - policy.depth * (hi - lo) if event.direction == "long" else lo + policy.depth * (hi - lo)
-    # Zone edges may live on half ticks while executable trade prices live on
-    # full ticks (even half-tick integers). Quantize toward the zone interior so
-    # depth=1 means the deepest executable price inside the rectangle rather
-    # than an impossible exact print on a half-tick boundary.
     target = _ceil_even(raw_target) if event.direction == "long" else _floor_even(raw_target)
     armed_tick = None
-    for observed, tick in enumerate(eligible[:policy.max_wait_ticks], start=1):
+    window = eligible[:policy.max_wait_ticks]
+    for observed, tick in enumerate(window, start=1):
         price = tick.price_half_ticks
         if armed_tick is None:
             armed = price >= hi + departure2 if event.direction == "long" else price <= lo - departure2
@@ -164,7 +163,11 @@ def evaluate_policy(event: ZoneEvent, ticks: Iterable[Tick], policy: Policy, *, 
             continue
         reached = lo <= price <= target if event.direction == "long" else target <= price <= hi
         if reached:
-            return Decision(event.event_id, policy.policy_id, "ENTERED", tick.ts_ns, tick.sequence, price, armed_tick.ts_ns, armed_tick.sequence, observed, None)
+            if observed >= len(window):
+                reason = "NO_EXECUTABLE_FILL_BEFORE_EXPIRY" if len(eligible) >= policy.max_wait_ticks else "NO_EXECUTABLE_FILL_AVAILABLE"
+                return Decision(event.event_id, policy.policy_id, "CENSORED", None, None, None, armed_tick.ts_ns, armed_tick.sequence, observed, reason, trigger_ts_ns=tick.ts_ns, trigger_sequence=tick.sequence)
+            fill = window[observed]
+            return Decision(event.event_id, policy.policy_id, "ENTERED", fill.ts_ns, fill.sequence, fill.price_half_ticks, armed_tick.ts_ns, armed_tick.sequence, observed + 1, None, trigger_ts_ns=tick.ts_ns, trigger_sequence=tick.sequence)
     expired = len(eligible) >= policy.max_wait_ticks
     if armed_tick:
         reason = "NO_RETEST_BEFORE_EXPIRY" if expired else "SESSION_END_BEFORE_RETEST"

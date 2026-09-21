@@ -17,16 +17,18 @@ def test_zero_duration_tick_bucket_is_valid_when_ordering_is_causal():
     assert run(e,[Tick(201,10,210,"S1")],Policy("P0","IMMEDIATE")).state=="ENTERED"
 def test_immediate_is_strictly_post_available():
     d=run(event(),[Tick(200,9,999,"S1"),Tick(200,10,211,"S1")],Policy("P0","IMMEDIATE")); assert (d.entry_ts_ns,d.entry_sequence)==(200,10)
-def test_formation_touch_is_excluded(): assert run(event(),[Tick(150,1,202,"S1"),Tick(201,2,208,"S1"),Tick(202,3,204,"S1")],Policy("R","RETEST",departure_ticks=2,depth=0,max_wait_ticks=10)).entry_ts_ns==202
-def test_price_inside_zone_must_depart_first(): assert run(event(),ticks(202,203,208,203),Policy("R","RETEST",departure_ticks=2,depth=0,max_wait_ticks=10)).entry_price_half_ticks==203
-def test_half_depth_for_long(): assert run(event(),ticks(208,204,203,202),Policy("R","RETEST",departure_ticks=2,depth=.5,max_wait_ticks=10)).entry_price_half_ticks==202
-def test_short_is_symmetric(): assert run(event(direction="short"),ticks(196,200),Policy("R","RETEST",departure_ticks=2,depth=0,max_wait_ticks=10)).entry_price_half_ticks==200
+def test_formation_touch_is_excluded():
+    d=run(event(),[Tick(150,1,202,"S1"),Tick(201,2,208,"S1"),Tick(202,3,204,"S1"),Tick(203,4,206,"S1")],Policy("R","RETEST",departure_ticks=2,depth=0,max_wait_ticks=10))
+    assert (d.trigger_ts_ns,d.entry_ts_ns)==(202,203)
+def test_price_inside_zone_must_depart_first(): assert run(event(),ticks(202,203,208,203,202),Policy("R","RETEST",departure_ticks=2,depth=0,max_wait_ticks=10)).entry_price_half_ticks==202
+def test_half_depth_for_long(): assert run(event(),ticks(208,204,203,202,204),Policy("R","RETEST",departure_ticks=2,depth=.5,max_wait_ticks=10)).entry_price_half_ticks==204
+def test_short_is_symmetric(): assert run(event(direction="short"),ticks(196,200,202),Policy("R","RETEST",departure_ticks=2,depth=0,max_wait_ticks=10)).entry_price_half_ticks==202
 def test_full_depth_long_quantizes_to_deepest_executable_price_inside_half_tick_zone():
-    e=event(zone_lo_half_ticks=201,zone_hi_half_ticks=205)
-    assert run(e,ticks(210,204,202),Policy("R","RETEST",departure_ticks=2,depth=1,max_wait_ticks=10)).entry_price_half_ticks==202
+    e=event(zone_lo_half_ticks=201,zone_hi_half_ticks=205); d=run(e,ticks(210,204,202,204),Policy("R","RETEST",departure_ticks=2,depth=1,max_wait_ticks=10)); assert (d.trigger_ts_ns,d.entry_price_half_ticks)==(203,204)
 def test_full_depth_short_quantizes_to_deepest_executable_price_inside_half_tick_zone():
-    e=event(zone_lo_half_ticks=201,zone_hi_half_ticks=205,direction="short")
-    assert run(e,ticks(196,202,204),Policy("R","RETEST",departure_ticks=2,depth=1,max_wait_ticks=10)).entry_price_half_ticks==204
+    e=event(zone_lo_half_ticks=201,zone_hi_half_ticks=205,direction="short"); d=run(e,ticks(196,202,204,202),Policy("R","RETEST",departure_ticks=2,depth=1,max_wait_ticks=10)); assert (d.trigger_ts_ns,d.entry_price_half_ticks)==(203,202)
+def test_retest_without_later_tick_abstains():
+    d=run(event(),ticks(208,204),Policy("R","RETEST",departure_ticks=2,depth=0,max_wait_ticks=10)); assert d.state=="CENSORED" and d.censor_reason=="NO_EXECUTABLE_FILL_AVAILABLE"; assert d.trigger_ts_ns==202 and d.entry_ts_ns is None
 def test_no_departure_is_censored_at_expiry(): assert run(event(),ticks(202,203,204),Policy("R","RETEST",departure_ticks=2,depth=0,max_wait_ticks=3)).censor_reason=="NO_DEPARTURE_BEFORE_EXPIRY"
 def test_no_retest_is_censored_at_expiry(): assert run(event(),ticks(208,210,212),Policy("R","RETEST",departure_ticks=2,depth=0,max_wait_ticks=3)).censor_reason=="NO_RETEST_BEFORE_EXPIRY"
 def test_session_end_before_departure_is_distinct_from_expiry(): assert run(event(),ticks(202,203,204),Policy("R","RETEST",departure_ticks=2,depth=0,max_wait_ticks=10)).censor_reason=="SESSION_END_BEFORE_DEPARTURE"
