@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "YM BT2A causal zone event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["event_id", "instrument", "contract", "source_barspec", "formation_start_ns", "formation_end_ns", "available_at_ns", "available_sequence", "signal_price_half_ticks", "zone_lo_half_ticks", "zone_hi_half_ticks", "direction", "semantics", "indicator_parameters_hash", "source_data_hash", "code_commit", "session_id"],
+  "properties": {
+    "event_id": {"type": "string", "minLength": 1}, "instrument": {"const": "YM"}, "contract": {"type": "string", "minLength": 1}, "source_barspec": {"type": "string", "minLength": 1},
+    "formation_start_ns": {"type": "integer"}, "formation_end_ns": {"type": "integer"}, "available_at_ns": {"type": "integer", "exclusiveMaximum": 1782856800000000000}, "available_sequence": {"type": "integer", "minimum": 0},
+    "signal_price_half_ticks": {"type": "integer"}, "zone_lo_half_ticks": {"type": "integer"}, "zone_hi_half_ticks": {"type": "integer"}, "direction": {"enum": ["long", "short"]}, "semantics": {"enum": ["M5_FORMATION", "TICK_BUCKET_FORMATION"]},
+    "indicator_parameters_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "source_data_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "code_commit": {"type": "string", "minLength": 1}, "session_id": {"type": "string", "minLength": 1}
+  }
+}
