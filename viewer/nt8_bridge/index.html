@@ -871,6 +871,7 @@
     <label class="pop-check"><input type="checkbox" id="chk-py" checked> <span class="swatch swatch-py"></span> Python (relleno translúcido)</label>
     <label class="pop-check"><input type="checkbox" id="chk-nt8" checked> <span class="swatch swatch-nt8"></span> NT8 (contorno punteado)</label>
     <label class="pop-check"><input type="checkbox" id="chk-orphans"> Solo huérfanas</label>
+    <label class="pop-check">Máx. zonas LUX-IMB en pantalla (0 = todas) <input type="number" id="inp-lux-max" min="0" max="20000" step="50" value="300" style="width:64px"></label>
     <label class="pop-check"><input type="checkbox" id="chk-show-l2" checked> Mostrar mapa de profundidad L2 (libro de órdenes)</label>
     <label class="pop-check"><input type="checkbox" id="chk-show-exploratory" checked> Mostrar zonas exploratorias (origen sin verificar)</label>
     <hr style="margin: 8px 0; border: none; border-top: 1px solid var(--tb-border);">
@@ -1244,6 +1245,7 @@
     corridors_density_width: 110,
     show_exploratory_zones: true,
     show_l2_depth: true,
+    lux_max_visible: 300,
     include_exploratory_density: false,
     opacidad: 30,
     mostrar_absorb: true,
@@ -1641,8 +1643,29 @@
     var hasRenderedExploratory = false;
     var hiddenNoAvailability = 0;
 
+    // LUX-IMB acumula miles de zonas (cada una vive 500 barras) y tapa las velas: se dibujan las N más recientes
+    // que cruzan la ventana visible (tiempo y precio). 0 = todas.
+    var luxKeep = null;
+    var luxMax = (activeProps.lux_max_visible !== undefined) ? activeProps.lux_max_visible : 300;
+    if (luxMax > 0 && !boxesSuppressed) {
+      var luxVis = [];
+      state.run.zones.forEach(function (z) {
+        if (z.source !== "luxalgo") return;
+        var t1v = (z.t1 !== undefined) ? z.t1 : z.t0 + 86400;
+        if (t1v < vr.from || z.t0 > vr.to) return;
+        var zb = Math.min(z.top, z.bottom), zt = Math.max(z.top, z.bottom);
+        if (visMaxP !== null && (zb > visMaxP || zt < visMinP)) return;
+        luxVis.push(z);
+      });
+      if (luxVis.length > luxMax) {
+        luxVis.sort(function (a, b) { return b.t0 - a.t0; });
+        luxKeep = new Set(luxVis.slice(0, luxMax));
+      }
+    }
+
     (boxesSuppressed ? [] : state.run.zones).forEach(function (z) {
       if (!visible(z)) return;
+      if (luxKeep && z.source === "luxalgo" && !luxKeep.has(z)) return;
 
       // Inicio causal estricto: sin disponibilidad explícita no hay inicio causal. El modo
       // exploratorio es opt-in (casilla) y queda marcado con una insignia persistente.
@@ -1941,9 +1964,9 @@
             ctx.fillText("[FVG] " + statusTxt, Math.max(4, x0 + 4), Math.max(12, yMin - 3));
           }
         } else if (isOG) {
-          ctx.fillStyle = hexToRgba(col, 0.45);
+          ctx.fillStyle = hexToRgba(col, 0.12);
           ctx.fillRect(x0, yMin, rw, h);
-          ctx.strokeStyle = col;
+          ctx.strokeStyle = hexToRgba(col, 0.75);
           ctx.lineWidth = 1.2;
           ctx.setLineDash([]);
           ctx.strokeRect(x0, yMin, rw, h);
@@ -3284,6 +3307,8 @@
   if(chkIncExpDensity)chkIncExpDensity.addEventListener("change",function(){activeProps.include_exploratory_density=this.checked;requestDraw();});
   var chkShowExpl=document.getElementById("chk-show-exploratory");
   if(chkShowExpl)chkShowExpl.addEventListener("change",function(){activeProps.show_exploratory_zones=this.checked;requestDraw();});
+  var inpLuxMax=document.getElementById("inp-lux-max");
+  if(inpLuxMax)inpLuxMax.addEventListener("change",function(){var v=parseInt(this.value,10);activeProps.lux_max_visible=(isFinite(v)&&v>=0)?v:300;requestDraw();});
   var chkL2=document.getElementById("chk-show-l2");
   if(chkL2)chkL2.addEventListener("change",function(){activeProps.show_l2_depth=this.checked;requestDraw();});
   var rangeCorrDensityWidth=document.getElementById("range-corridors-density-width");

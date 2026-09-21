@@ -137,3 +137,10 @@ def test_capa_l2_existe_y_no_usa_logical_fraccionario():
     assert "tsc.logicalToCoordinate(targetLogical)" not in HTML
     assert 'id="chk-show-l2"' in HTML and "show_l2_depth" in HTML
     assert "__l2" not in HTML and "__dbg" not in HTML and "sync=1" not in HTML      # sin instrumentacion de depuracion
+
+
+def test_lux_imb_tiene_tope_de_zonas_en_pantalla_y_relleno_tenue():
+    """LUX-IMB acumula miles de zonas (500 barras de vida cada una) y con relleno opaco tapaba las velas."""
+    assert 'id="inp-lux-max"' in HTML and "lux_max_visible" in HTML
+    assert "luxKeep" in HTML and "!luxKeep.has(z)" in HTML
+    assert "ctx.fillStyle = hexToRgba(col, 0.45);" not in HTML       # el OG ya no rellena al 45 %
