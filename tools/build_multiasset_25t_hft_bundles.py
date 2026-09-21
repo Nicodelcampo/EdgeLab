@@ -38,7 +38,7 @@ def validate_entry(entry,holdout_ns):
   if previous_end is not None and start<previous_end:raise ValueError("session windows overlap")
   previous_end=end
 def build_entry(entry,*,holdout_ns,source_sha256):
- validate_entry(entry,holdout_ns);instrument,contract=str(entry["instrument"]),str(entry["contract"]);path=Path(entry["parquet"]);profile_name=str(entry.get("profile","NQ_LITERAL_TRANSFER"));thresholds=hft.profile(profile_name);structural=dict(entry.get("structural_params") or {});all_candles=[];all_zones=[];session_reports=[];resolved_tick_size=None;seq=0
+ validate_entry(entry,holdout_ns);instrument,contract=str(entry["instrument"]),str(entry["contract"]);path=Path(entry["parquet"]);profile_name=str(entry.get("profile","NQ_LITERAL_TRANSFER"));thresholds=hft.profile(profile_name,instrument);structural=dict(entry.get("structural_params") or {});all_candles=[];all_zones=[];session_reports=[];resolved_tick_size=None;seq=0;carry=None
  for session in entry["sessions"]:
   td=int(session["trade_date"]);start_ns,end_ns=int(session["start_utc_ns"]),int(session["end_utc_ns"])
   tk=load_canonical_parquet(path,contract=contract,instrument=instrument,start_utc_ns=start_ns,end_utc_ns=end_ns)
@@ -48,15 +48,15 @@ def build_entry(entry,*,holdout_ns,source_sha256):
   if int(tk.ts_ns[-1])>=holdout_ns:raise ValueError(f"{instrument} {contract} {td}: holdout row decoded")
   if int(tk.ts_ns[0])<start_ns or int(tk.ts_ns[-1])>=end_ns:raise ValueError("loader escaped declared session window")
   bars=build_tick_bars(tk,25,reiniciar_por_sesion=True)
-  candidates=hft.detect_candidates(tk.ts_ns,tk.price_ticks,tk.volume,params=structural,prev_session_close_ticks=session["prev_session_close_ticks"])
+  candidates=hft.detect_candidates(tk.ts_ns,tk.price_ticks,tk.volume,params=structural,prev_session_close_ticks=(carry if session["prev_session_close_ticks"]=="CARRY" else session["prev_session_close_ticks"]))
   zones,rejected=hft.accept_all(candidates,thresholds,tk.tick_size);all_candles.extend(candles_of(bars,tk.tick_size))
   for z in zones:all_zones.append(zone_of(z,instrument=instrument,contract=contract,trade_date=td,seq=seq,tick_size=tk.tick_size));seq+=1
-  session_reports.append({"trade_date":td,"start_utc_ns":start_ns,"end_utc_ns":end_ns,"ticks":len(tk),"tick25_bars":len(bars),"candidates":len(candidates),"zones":len(zones),"rejected_by_gate":rejected,"first_tick_context":("EXPLICIT" if session["prev_session_close_ticks"] is not None else "ABSTAIN_MISSING_PREV_SESSION_CLOSE")})
+  session_reports.append({"trade_date":td,"start_utc_ns":start_ns,"end_utc_ns":end_ns,"ticks":len(tk),"tick25_bars":len(bars),"candidates":len(candidates),"zones":len(zones),"rejected_by_gate":rejected,"first_tick_context":("EXPLICIT" if (carry if session["prev_session_close_ticks"]=="CARRY" else session["prev_session_close_ticks"]) is not None else "ABSTAIN_MISSING_PREV_SESSION_CLOSE")});carry=int(tk.price_ticks[-1])
  times=[c["time"] for c in all_candles]
  if any(b<a for a,b in zip(times,times[1:])):raise ValueError("output candles are not monotonic")
  if any(int(z["available_ns"])>=holdout_ns for z in all_zones):raise ValueError("output zone reaches holdout")
- status=hft.transfer_status(instrument,entry.get("parity_status"));asset_id=safe_id(str(entry.get("asset_id") or f"{instrument}_{contract}_25T"))
- run={"id":f"hft_universal_{asset_id}","name":f"HFT V2 · {profile_name} · {contract}","indicator":"HFTZonesUniversal","bar_key":"tick_25","params":{**hft.profile(profile_name),**structural},"zones":all_zones,"parity":{"status":status["parity_status"],"gate":status["parity_status"]},**status}
+ status=hft.transfer_status(instrument,entry.get("parity_status"),profile_name);asset_id=safe_id(str(entry.get("asset_id") or f"{instrument}_{contract}_25T"))
+ run={"id":f"hft_universal_{asset_id}","name":f"HFT V2 · {profile_name} · {contract}","indicator":"HFTZonesUniversal","bar_key":"tick_25","params":{**hft.profile(profile_name,instrument),**structural},"zones":all_zones,"parity":{"status":status["parity_status"],"gate":status["parity_status"]},**status}
  bundle={"meta":{"id":asset_id,"instrument":instrument,"contract":contract,"tick_size":float(resolved_tick_size),"n_zones":len(all_zones),"source_sha256":source_sha256,"holdout_boundary_ns":holdout_ns,"outcome_firewall":"ENFORCED"},"bar_series":{"tick_25":{"kind":"tick_25","name":"25 Tick","candles":all_candles}},"runs":[run]}
  manifest={"asset_id":asset_id,"instrument":instrument,"contract":contract,"source_path":str(path),"source_sha256":source_sha256,"holdout_boundary_ns":holdout_ns,"holdout_rows_decoded":0,"tick25_bars":len(all_candles),"zones":len(all_zones),"profile":profile_name,**status,"sessions":session_reports}
  return bundle,manifest
