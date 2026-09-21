@@ -861,6 +861,7 @@
     <label class="pop-check"><input type="checkbox" id="chk-py" checked> <span class="swatch swatch-py"></span> Python (relleno translúcido)</label>
     <label class="pop-check"><input type="checkbox" id="chk-nt8" checked> <span class="swatch swatch-nt8"></span> NT8 (contorno punteado)</label>
     <label class="pop-check"><input type="checkbox" id="chk-orphans"> Solo huérfanas</label>
+    <label class="pop-check"><input type="checkbox" id="chk-show-exploratory"> Mostrar zonas exploratorias (origen sin verificar)</label>
     <hr style="margin: 8px 0; border: none; border-top: 1px solid var(--tb-border);">
     <div style="font-weight:600; margin-bottom:4px;">Estados:</div>
     <div id="f-state-list"></div>
@@ -972,6 +973,20 @@
           <button class="nt8-btn sm btn-corridor-dir active" data-dir="all" id="btn-corr-all" style="flex: 1; font-weight: 700; background: #0284c7; color: #fff;">Todos</button>
           <button class="nt8-btn sm btn-corridor-dir" data-dir="bull" id="btn-corr-bull" style="flex: 1; font-weight: 700;">🟢 Alcistas</button>
           <button class="nt8-btn sm btn-corridor-dir" data-dir="bear" id="btn-corr-bear" style="flex: 1; font-weight: 700;">🔴 Bajistas</button>
+        </div>
+        <!-- EDGELAB_CROSSHAIR_DENSITY_PROFILE_V1 -->
+        <label style="display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px;cursor:pointer;border-top:1px solid var(--tb-border);padding-top:7px;">
+          <span><b>Perfil de densidad</b><br><span style="font-size:9.5px;color:#666;">As-of causal de la crosshair</span></span>
+          <input type="checkbox" id="chk-corridors-density-profile">
+        </label>
+        <label style="display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:10.5px;cursor:pointer;padding-top:4px;">
+          <span>Incluir zonas exploratorias en perfil<br><span style="font-size:9px;color:#d97706;">⚠️ Permite t0 no verificado en densidad</span></span>
+          <input type="checkbox" id="chk-include-exploratory-density">
+        </label>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <label style="font-size:10px;color:#666;">Ancho</label>
+          <input type="range" id="range-corridors-density-width" min="60" max="180" step="10" value="110" style="flex:1;accent-color:#0891b2;">
+          <span id="lbl-corridors-density-width" style="font-size:10px;font-weight:700;color:#0891b2;min-width:38px;text-align:right;">110 px</span>
         </div>
         <div style="font-size: 9.5px; color: #666; line-height: 1.3;">
           ✓ Delimitación estricta entre murallas vivas. Sin franjas infinitas ni micro-ruido.
@@ -1124,8 +1139,7 @@
 </div>
 
 <script src="bundles/manifest.js"></script>
-<script src="bundles/6E_CONT.js"></script>
-<script src="data.js"></script>
+<script src="crosshair_density_profile.js"></script>
 <script>
 (function () {
   "use strict";
@@ -1215,6 +1229,11 @@
     corridors_enabled: true,   // Corredores de Vacío HFT sólidos (HP-007 / HP-006)
     corridors_hmin_ticks: 16,  // Amplitud mínima del corredor en ticks
     corridors_dir_filter: "all", // "all", "bull", "bear"
+    corridors_density_profile: false,
+    corridors_density_width: 110,
+    corridors_density_sigma_ticks: 2,
+    show_exploratory_zones: false,
+    include_exploratory_density: false,
     opacidad: 30,
     mostrar_absorb: true,
     mostrar_texto: true,
@@ -1254,6 +1273,7 @@
     currentAssetId: "6E_CONT",
     openTabs: []
   };
+  window.__EDGELAB_STATE__ = state;
 
   var wrapEl = document.getElementById("wrap");
   var chartEl = document.getElementById("chart");
@@ -1385,29 +1405,24 @@
     var targetLogical = i1 + frac;
 
     if (t > candles[n - 1].time) {
-      var avgBarSec = n > 1 ? (candles[n - 1].time - candles[0].time) / (n - 1) : 60;
-      targetLogical = (n - 1) + (t - candles[n - 1].time) / Math.max(1, avgBarSec);
+      var extraBars = (t - candles[n - 1].time) / (dt > 0 ? dt : 60);
+      targetLogical = (n - 1) + extraBars;
+    } else if (t < candles[0].time) {
+      var negBars = (candles[0].time - t) / (dt > 0 ? dt : 60);
+      targetLogical = -negBars;
     }
-
-    var coord = tsc.logicalToCoordinate(targetLogical);
-    if (coord !== null && coord !== undefined) return coord;
-
-    var logRange = tsc.getVisibleLogicalRange();
-    if (logRange && logRange.to > logRange.from) {
-      var w = wrapEl.clientWidth;
-      var priceScaleWidth = 65;
-      var chartW = Math.max(10, w - priceScaleWidth);
-      var pxPerBar = chartW / (logRange.to - logRange.from);
-      return (targetLogical - logRange.from) * pxPerBar;
-    }
-
-    return 0;
+    var cInterp = tsc.logicalToCoordinate(targetLogical);
+    return (cInterp !== null && cInterp !== undefined) ? cInterp : 0;
   }
 
+  // Conversor robusto de color hex con soporte de canal alfa dinámico
   function hexToRgba(hex, alpha) {
-    var c = (hex || "#888888").replace("#", "");
-    if (c.length === 3) c = c[0]+c[0] + c[1]+c[1] + c[2]+c[2];
+    if (!hex) return "rgba(100,100,100," + alpha + ")";
+    if (hex.indexOf("rgb") === 0) return hex;
+    var c = hex.replace("#", "");
+    if (c.length === 3) c = c[0] + c[0] + c[1] + c[1] + c[2] + c[2];
     var num = parseInt(c, 16);
+    if (isNaN(num)) return "rgba(100,100,100," + alpha + ")";
     var r = (num >> 16) & 255;
     var g = (num >> 8) & 255;
     var b = num & 255;
@@ -1428,6 +1443,41 @@
     if (unit === "m") return n * 60;
     if (unit === "h") return n * 3600;
     if (unit === "d") return n * 86400;
+    return null;
+  }
+
+  function densityTsSec(raw) {
+    if (raw === null || raw === undefined) return null;
+    var value = Number(raw);
+    if (!Number.isFinite(value)) return null;
+    if (value > 1e16) value /= 1e9;
+    else if (value > 1e11) value /= 1e3;
+    return value;
+  }
+
+  function zoneAvailabilityInfo(z) {
+    var isExplicit = (z.available_ts !== undefined && z.available_ts !== null) ||
+                     (z.available_ns !== undefined && z.available_ns !== null) ||
+                     (z.availableTime !== undefined && z.availableTime !== null);
+    var raw = isExplicit
+      ? (z.available_ts !== undefined && z.available_ts !== null
+          ? z.available_ts
+          : (z.available_ns !== undefined && z.available_ns !== null ? z.available_ns : z.availableTime))
+      : ((z.t0 !== undefined && z.t0 !== null && Number.isFinite(Number(z.t0))) ? Number(z.t0) : null);
+    var sec = densityTsSec(raw);
+    return {
+      sec: sec,
+      quality: isExplicit ? "EXPLICIT" : (sec !== null ? "ORIGIN_FALLBACK_UNVERIFIED" : "NONE"),
+      isExplicit: isExplicit
+    };
+  }
+
+  // Inicio causal ESTRICTO. Solo disponibilidad explícita; las zonas científicas no
+  // caen al origen retrospectivo. LuxAlgo es un indicador externo sin exportador causal.
+  function zoneAvailableSec(z) {
+    var info = zoneAvailabilityInfo(z);
+    if (info.isExplicit) return info.sec;
+    if (z.source === "luxalgo" && Number.isFinite(Number(z.t0))) return Number(z.t0);
     return null;
   }
 
@@ -1453,6 +1503,23 @@
     var nCandles = candles ? candles.length : 0;
     var avgSecPerBar = (nCandles > 1) ? (candles[nCandles - 1].time - candles[0].time) / (nCandles - 1) : 60;
 
+    // Una corrida sólo dibuja CAJAS sobre su serie primaria. Si el gráfico activo es otra
+    // serie, las cajas (ancladas a t0) serían retrospectivas y se suprimen; pero la señal
+    // causal sigue visible como flechas (bloque 1b, sin look-ahead). Antes de unificar,
+    // esto era un `return` que dejaba las flechas como código muerto.
+    var runBarKey = state.run && state.run.bar_key;
+    var boxesSuppressed = !!(runBarKey && runBarKey !== activeKey);
+    if (boxesSuppressed) {
+      window.__EDGELAB_ZONE_RENDER_STATUS__ = {status: "ABSTAIN_BAR_KEY_MISMATCH", boxes: "SUPPRESSED", arrows: "CAUSAL_SIGNAL_ONLY", runBarKey: runBarKey, activeBarKey: activeKey};
+      ctx.save();
+      ctx.fillStyle = "rgba(220,38,38,0.95)";
+      ctx.font = "bold 12px 'Segoe UI', -apple-system, sans-serif";
+      ctx.fillText("CAJAS OCULTAS: run " + runBarKey + " ≠ gráfico " + activeKey + " · señal causal en flechas", 12, 22);
+      ctx.restore();
+    } else {
+      window.__EDGELAB_ZONE_RENDER_STATUS__ = {status: "PASS", runBarKey: runBarKey || null, activeBarKey: activeKey};
+    }
+
     // 1. Dibujar ZONAS
     // Culling vertical previo: determinar rango de precio visible en el viewport (+ margen del 20%)
     var visMaxP = null, visMinP = null;
@@ -1468,8 +1535,23 @@
       }
     }
 
-    state.run.zones.forEach(function (z) {
+    var hasRenderedExploratory = false;
+    var hiddenNoAvailability = 0;
+
+    (boxesSuppressed ? [] : state.run.zones).forEach(function (z) {
       if (!visible(z)) return;
+
+      // Inicio causal estricto: sin disponibilidad explícita no hay inicio causal. El modo
+      // exploratorio es opt-in (casilla) y queda marcado con una insignia persistente.
+      var zoneStartTs = zoneAvailableSec(z);
+      if (zoneStartTs === null && activeProps.show_exploratory_zones === true) {
+        var zAvail = zoneAvailabilityInfo(z);
+        if (zAvail.sec !== null) {
+          zoneStartTs = zAvail.sec;
+          hasRenderedExploratory = true;
+        }
+      }
+      if (zoneStartTs === null) { hiddenNoAvailability++; return; }
 
       var zBot = Math.min(z.top, z.bottom);
       var zTop = Math.max(z.top, z.bottom);
@@ -1478,18 +1560,18 @@
       if (visMaxP !== null && (zBot > visMaxP || zTop < visMinP)) return;
 
       // CULLING HORIZONTAL TEMPRANO: zonas creadas a la derecha de la ventana visible
-      if (z.t0 > vr.to) return;
+      if (zoneStartTs > vr.to) return;
 
-      var t1_eff = z.t1 || (z.t0 + 5400);
+      var t1_eff = Math.max(zoneStartTs, z.t1 || (zoneStartTs + 5400));
 
-      var i0 = (z.start_bar_idx !== undefined && z.start_bar_idx < nCandles && candles[z.start_bar_idx].time === z.t0)
+      var i0 = (z.start_bar_idx !== undefined && z.start_bar_idx < nCandles && candles[z.start_bar_idx].time === zoneStartTs)
         ? z.start_bar_idx
         : -1;
       if (i0 === -1 && candles && nCandles > 0) {
         var low = 0, high = nCandles - 1;
         while (low <= high) {
           var mid = (low + high) >> 1;
-          if (candles[mid].time < z.t0) low = mid + 1;
+          if (candles[mid].time < zoneStartTs) low = mid + 1;
           else high = mid - 1;
         }
         i0 = Math.max(0, Math.min(nCandles - 1, low));
@@ -1561,7 +1643,7 @@
           } else if (maxDeath >= 0 && maxDeath < nCandles) {
             maxT1 = candles[maxDeath].time;
           } else {
-            maxT1 = z.t0 + 600;
+            maxT1 = zoneStartTs + 600;
           }
 
           z._consCache = {
@@ -1581,7 +1663,7 @@
         var cData = z._consCache;
         if (cData.maxT1 < vr.from) return;
 
-        var x0 = timeToX(z.t0, i0);
+        var x0 = timeToX(zoneStartTs, i0);
         var col = colorOf(z);
         var fillAlpha = (activeProps.opacidad !== undefined) ? (activeProps.opacidad / 100) : 0.18;
         if (fillAlpha > 0.35) fillAlpha = 0.22;
@@ -1623,12 +1705,27 @@
           ctx.fillStyle = hexToRgba(col, isDead ? (fillAlpha * 0.65) : fillAlpha);
           ctx.fillRect(drawX0, yMin_s, rw_s, h_s);
 
-          // Borde punteado
-          ctx.strokeStyle = col;
-          ctx.lineWidth = isDead ? 1.0 : 1.3;
-          ctx.setLineDash(isDead ? [3, 2] : [5, 3]);
-          ctx.strokeRect(drawX0 + 0.5, yMin_s + 0.5, rw_s, h_s);
-          ctx.setLineDash([]);
+          // Dibujar únicamente los límites EXTERIORES de la zona.
+          // Las divisiones interiores por nivel conservan el relleno, pero no
+          // generan líneas horizontales ni strokeRect por rebanada.
+          var isBottomOuterSlice = (slice.startK === 0);
+          var isTopOuterSlice = (slice.endK === (cData.nTicks - 1));
+          if (isBottomOuterSlice || isTopOuterSlice) {
+            ctx.strokeStyle = col;
+            ctx.lineWidth = isDead ? 1.0 : 1.3;
+            ctx.setLineDash(isDead ? [3, 2] : [5, 3]);
+            ctx.beginPath();
+            if (isTopOuterSlice) {
+              ctx.moveTo(drawX0 + 0.5, yMin_s + 0.5);
+              ctx.lineTo(drawX1, yMin_s + 0.5);
+            }
+            if (isBottomOuterSlice) {
+              ctx.moveTo(drawX0 + 0.5, yMax_s - 0.5);
+              ctx.lineTo(drawX1, yMax_s - 0.5);
+            }
+            ctx.stroke();
+            ctx.setLineDash([]);
+          }
 
           // Indicador vertical de corte en el punto exacto de consumo
           if (isDead && x1_s >= -5 && x1_s <= w + 5) {
@@ -1671,9 +1768,9 @@
         }
       }
 
-      if (t1_eff < vr.from || z.t0 > vr.to) return;
+      if (t1_eff < vr.from || zoneStartTs > vr.to) return;
 
-      var x0 = timeToX(z.t0, i0);
+      var x0 = timeToX(zoneStartTs, i0);
       var x1 = timeToX(t1_eff, i1);
       if (x1 <= x0) x1 = x0 + Math.max(15, extBars * 3);
 
@@ -1952,6 +2049,34 @@
       ctx.restore();
     }
 
+    if (window.__EDGELAB_ZONE_RENDER_STATUS__) window.__EDGELAB_ZONE_RENDER_STATUS__.hiddenNoAvailability = hiddenNoAvailability;
+    if (hiddenNoAvailability > 0) {
+      ctx.save();
+      ctx.fillStyle = "rgba(217,119,6,0.95)";
+      ctx.font = "bold 11px 'Segoe UI', -apple-system, sans-serif";
+      ctx.fillText(hiddenNoAvailability + " zonas ocultas: sin available_ts explícito (activá «zonas exploratorias» para verlas)", 12, boxesSuppressed ? 38 : 22);
+      ctx.restore();
+    }
+    if (hasRenderedExploratory) {
+      ctx.save();
+      var badgeTxt = "EXPLORATORY — t0 USED AS UNVERIFIED AVAILABILITY";
+      ctx.font = "bold 10px 'Segoe UI', -apple-system, sans-serif";
+      var tw = ctx.measureText(badgeTxt).width;
+      var bx = Math.max(10, w - tw - 24);
+      var by = 34;
+      ctx.fillStyle = state.isDark ? "rgba(245, 158, 11, 0.20)" : "rgba(254, 243, 199, 0.90)";
+      ctx.strokeStyle = state.isDark ? "#f59e0b" : "#d97706";
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(bx, by, tw + 16, 22, 4);
+      else ctx.rect(bx, by, tw + 16, 22);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = state.isDark ? "#fbbf24" : "#b45309";
+      ctx.fillText(badgeTxt, bx + 8, by + 15);
+      ctx.restore();
+    }
+
     // 2. Dibujar CORTES Y MERGES DE CONTRATO (RÉGIMEN CANÓNICO EDGELAB)
     if (state.data && state.data.meta && state.data.meta.rolls && state.data.meta.rolls.length) {
       state.data.meta.rolls.forEach(function (r) {
@@ -2137,6 +2262,98 @@
   // =====================================================================
   // MOTOR DE CORREDORES DE VACÍO HFT SÓLIDOS (HP-007 / HP-006)
   // =====================================================================
+  function buildCrosshairDensityRanges(candles, tRef, tick, extBars, activeKey) {
+    var ranges = [], zones = (state.run && state.run.zones) || [], nCandles = candles.length;
+    var avgSecPerBar = nCandles > 1 ? (candles[nCandles-1].time-candles[0].time)/(nCandles-1) : 60;
+    var isVolMode = activeProps.consumption_mode === "volume";
+    var explicitRanges = 0;
+    var exploratoryRanges = 0;
+    var excludedMissingAvailability = 0;
+
+    for (var i = 0; i < zones.length; i++) {
+      var z = zones[i];
+      if (!visible(z)) continue;
+      var info = zoneAvailabilityInfo(z);
+      if (info.sec === null || info.sec > tRef) continue;
+
+      var isExploratory = !info.isExplicit;
+      if (isExploratory && activeProps.include_exploratory_density !== true) {
+        excludedMissingAvailability++;
+        continue;
+      }
+
+      var bottom = Math.min(Number(z.bottom), Number(z.top)), top = Math.max(Number(z.bottom), Number(z.top));
+      if (!Number.isFinite(bottom) || !Number.isFinite(top)) continue;
+      var weight = Math.max(1, Number(z.vol) || 1);
+      if (state.decayMode === "calibrated_time") {
+        var age = Math.max(0, (tRef - info.sec) / 3600);
+        if (age > 48) continue;
+        weight *= Math.pow(.5, age / 12);
+      }
+
+      var cache = z._consCache;
+      var addedAny = false;
+      if (isVolMode && cache && cache.barKey === activeKey && cache.slices) {
+        for (var si = 0; si < cache.slices.length; si++) {
+          var s = cache.slices[si];
+          var death = s.deathBar >= 0 && s.deathBar < nCandles ? candles[s.deathBar].time : null;
+          if (death !== null && death <= tRef) continue;
+          ranges.push({ lo: bottom + s.startK * tick - (s.startK === 0 ? 0 : tick * .5), hi: bottom + s.endK * tick + (s.endK === cache.nTicks - 1 ? 0 : tick * .5), weight: weight });
+          addedAny = true;
+        }
+      } else {
+        var ended = densityTsSec(z.t1);
+        if (ended === null) ended = info.sec + Math.max(1, extBars) * avgSecPerBar;
+        if (ended >= tRef) {
+          ranges.push({ lo: bottom, hi: top, weight: weight });
+          addedAny = true;
+        }
+      }
+
+      if (addedAny) {
+        if (isExploratory) exploratoryRanges++;
+        else explicitRanges++;
+      }
+    }
+    return {
+      ranges: ranges,
+      explicitRanges: explicitRanges,
+      exploratoryRanges: exploratoryRanges,
+      excludedMissingAvailability: excludedMissingAvailability
+    };
+  }
+  function drawCrosshairDensityProfile(ctx,w,hCanvas,candles,tick,extBars,activeKey){
+    if(activeProps.corridors_density_profile!==true){window.__EDGELAB_DENSITY_PROFILE_STATUS__={status:"DISABLED"};return;}
+    if(!state.hoverTime){window.__EDGELAB_DENSITY_PROFILE_STATUS__={status:"ABSTAIN_NO_CROSSHAIR"};return;}
+    if(!window.EdgeLabCrosshairDensity){window.__EDGELAB_DENSITY_PROFILE_STATUS__={status:"ABSTAIN_ENGINE_UNAVAILABLE"};return;}
+    var tRef=densityTsSec(state.hoverTime),pTop=series.coordinateToPrice(0),pBottom=series.coordinateToPrice(hCanvas);
+    if(tRef===null||pTop===null||pBottom===null){window.__EDGELAB_DENSITY_PROFILE_STATUS__={status:"ABSTAIN_INVALID_DOMAIN"};return;}
+    var bundle=buildCrosshairDensityRanges(candles,tRef,tick,extBars,activeKey);
+    var ranges=bundle.ranges;
+    var explicitRanges=bundle.explicitRanges;
+    var exploratoryRanges=bundle.exploratoryRanges;
+    var excludedMissing=bundle.excludedMissingAvailability;
+
+    if(ranges.length===0){
+      var abstainStatus=(excludedMissing>0)?"ABSTAIN_NO_EXPLICIT_AVAILABILITY":"ABSTAIN_NO_RANGES";
+      window.__EDGELAB_DENSITY_PROFILE_STATUS__={status:abstainStatus,asOf:tRef,explicitRanges:explicitRanges,exploratoryRanges:exploratoryRanges,excludedMissingAvailability:excludedMissing,maxDensity:0,activeBarKey:activeKey};
+      return;
+    }
+
+    var profileStatus=(exploratoryRanges>0)
+      ?"PASS_EXPLORATORY_DENSITY_PROFILE"
+      :((explicitRanges>0)?"PASS_CAUSAL_DENSITY_PROFILE":"ABSTAIN_NO_EXPLICIT_AVAILABILITY");
+
+    var profile;
+    try{profile=window.EdgeLabCrosshairDensity.build({ranges:ranges,tickSize:tick,minPrice:Math.min(pTop,pBottom),maxPrice:Math.max(pTop,pBottom),sigmaTicks:activeProps.corridors_density_sigma_ticks||2,maxBins:5000});}
+    catch(error){window.__EDGELAB_DENSITY_PROFILE_STATUS__={status:"ABSTAIN_PROFILE_ERROR",message:String(error&&error.message?error.message:error)};return;}
+    var tsc=chart.timeScale(),chartW=tsc&&typeof tsc.width==="function"&&tsc.width()>0?tsc.width():w-65,width=Math.max(60,Math.min(180,Number(activeProps.corridors_density_width)||110)),rightX=chartW-2,leftX=rightX-width;
+    ctx.save();ctx.fillStyle=state.isDark?"rgba(15,23,42,.76)":"rgba(248,250,252,.80)";ctx.fillRect(leftX,0,width,hCanvas);ctx.strokeStyle=state.isDark?"rgba(34,211,238,.45)":"rgba(8,145,178,.45)";ctx.beginPath();ctx.moveTo(leftX+.5,0);ctx.lineTo(leftX+.5,hCanvas);ctx.stroke();
+    if(profile.maxDensity>0)for(var bi=0;bi<profile.density.length;bi++){var value=profile.density[bi];if(!(value>0))continue;var price=(profile.loTick+bi)*tick,y=series.priceToCoordinate(price);if(y===null||y< -2||y>hCanvas+2)continue;var ratio=value/profile.maxDensity,barW=Math.max(1,ratio*(width-8)),nextY=series.priceToCoordinate(price+tick),barH=nextY===null?2:Math.max(1,Math.abs(nextY-y));ctx.fillStyle="rgba(8,145,178,"+(0.18+ratio*.62).toFixed(3)+")";ctx.fillRect(rightX-barW,y-barH/2,barW,barH);}
+    var label=new Date(tRef*1000).toISOString().slice(11,19);ctx.font="bold 9px 'Segoe UI',sans-serif";ctx.fillStyle=state.isDark?"#67e8f9":"#0e7490";ctx.fillText("DENSIDAD @ "+label+" UTC",leftX+5,13);ctx.restore();
+    window.__EDGELAB_DENSITY_PROFILE_STATUS__={status:profileStatus,asOf:tRef,explicitRanges:explicitRanges,exploratoryRanges:exploratoryRanges,excludedMissingAvailability:excludedMissing,maxDensity:profile.maxDensity,activeBarKey:activeKey};
+  }
+
   function drawCorredoresDemo(ctx, w, hCanvas) {
     if (!state.showCorredoresDemo || activeProps.corridors_enabled === false) return;
     if (!series || !state.run || !state.run.zones) return;
@@ -2278,7 +2495,7 @@
       });
     }
 
-    if (livingWalls.length < 2) return;
+    if (livingWalls.length < 2) { drawCrosshairDensityProfile(ctx,w,hCanvas,candles,tick,extBars,activeKey); return; }
 
     // 3. Agrupamiento de zonas contiguas en Murallas (Clustering estricto <= 3 ticks)
     livingWalls.sort(function (a, b) { return a.bot - b.bot; });
@@ -2320,7 +2537,7 @@
     }
     clusters.push(curCluster);
 
-    if (clusters.length < 2) return;
+    if (clusters.length < 2) { drawCrosshairDensityProfile(ctx,w,hCanvas,candles,tick,extBars,activeKey); return; }
 
     // 4. Extracción de Corredores entre Murallas Consecutivas (Axiomas 1, 2 y 3)
     var corridors = [];
@@ -2498,6 +2715,8 @@
       ctx.restore();
     });
 
+    drawCrosshairDensityProfile(ctx,w,hCanvas,candles,tick,extBars,activeKey);
+
     // Actualizar botón de la barra de herramientas con el número de corredores activos
     var btnCorrDemo = document.getElementById("btn-corredores-demo");
     if (btnCorrDemo) {
@@ -2513,6 +2732,7 @@
       drawZones();
     });
   }
+  window.__EDGELAB_REQUEST_DRAW__ = requestDraw;
 
   // Sincronización continua de zonas al arrastrar o hacer zoom
   var isInteracting = false;
@@ -2811,6 +3031,14 @@
     var corrEnabled = (activeProps.corridors_enabled !== false && state.showCorredoresDemo !== false);
     if (chkCorr) chkCorr.checked = corrEnabled;
     if (wrapCorr) wrapCorr.style.opacity = corrEnabled ? "1" : "0.45";
+    var chkDensity=document.getElementById("chk-corridors-density-profile"),rangeDensityWidth=document.getElementById("range-corridors-density-width"),lblDensityWidth=document.getElementById("lbl-corridors-density-width");
+    if(chkDensity)chkDensity.checked=activeProps.corridors_density_profile===true;
+    if(rangeDensityWidth)rangeDensityWidth.value=activeProps.corridors_density_width||110;
+    if(lblDensityWidth)lblDensityWidth.textContent=(activeProps.corridors_density_width||110)+" px";
+    var chkIncDensity = document.getElementById("chk-include-exploratory-density");
+    if (chkIncDensity) chkIncDensity.checked = activeProps.include_exploratory_density === true;
+    var chkShowExpl = document.getElementById("chk-show-exploratory");
+    if (chkShowExpl) chkShowExpl.checked = activeProps.show_exploratory_zones === true;
 
     var hMinVal = (activeProps.corridors_hmin_ticks !== undefined) ? activeProps.corridors_hmin_ticks : 16;
     if (rangeCorrHmin) rangeCorrHmin.value = hMinVal;
@@ -3077,6 +3305,15 @@
     });
   });
 
+  var chkCorrDensity=document.getElementById("chk-corridors-density-profile");
+  if(chkCorrDensity)chkCorrDensity.addEventListener("change",function(){activeProps.corridors_density_profile=this.checked;requestDraw();});
+  var chkIncExpDensity=document.getElementById("chk-include-exploratory-density");
+  if(chkIncExpDensity)chkIncExpDensity.addEventListener("change",function(){activeProps.include_exploratory_density=this.checked;requestDraw();});
+  var chkShowExpl=document.getElementById("chk-show-exploratory");
+  if(chkShowExpl)chkShowExpl.addEventListener("change",function(){activeProps.show_exploratory_zones=this.checked;requestDraw();});
+  var rangeCorrDensityWidth=document.getElementById("range-corridors-density-width");
+  if(rangeCorrDensityWidth)rangeCorrDensityWidth.addEventListener("input",function(){activeProps.corridors_density_width=parseInt(this.value,10)||110;var l=document.getElementById("lbl-corridors-density-width");if(l)l.textContent=activeProps.corridors_density_width+" px";requestDraw();});
+
   function buildStateFilters() {
     var fs = document.getElementById("f-state-list");
     fs.innerHTML = "";
@@ -3106,8 +3343,9 @@
     var r = state.run;
     var h = "";
     var isBt2a = r && ((r.name || r.indicator || "").indexOf("BigTrap2") !== -1 || (r.id || "").indexOf("bt2a") !== -1);
-    if (isBt2a) {
-      h += "<div style='margin-bottom:8px;padding:6px;background:rgba(245,158,11,0.15);border:1px solid #f59e0b;border-radius:4px;'><b>Status:</b> <span style='color:#f59e0b;font-weight:700;'>PARITY_ABSTAIN</span> — PYTHON EXPLORATORY VISUALIZATION ONLY<br/><small>Prohibido transportar la paridad HFT hacia BigTrap2Absorption.</small></div>";
+    var isAbstain = isBt2a || (r && r.parity && (r.parity.status === "PARITY_ABSTAIN" || r.parity.gate === "PARITY_ABSTAIN"));
+    if (isAbstain) {
+      h += "<div style='margin-bottom:8px;padding:6px;background:rgba(245,158,11,0.15);border:1px solid #f59e0b;border-radius:4px;'><b>Status:</b> <span style='color:#f59e0b;font-weight:700;'>PARITY_ABSTAIN</span> — UNCALIBRATED MULTI-ASSET PROFILE<br/><small>Paridad no certificada para este instrumento/perfil.</small></div>";
       var pill = document.getElementById("parity-pill");
       if (pill) {
         pill.textContent = "PARITY_ABSTAIN";
@@ -3115,13 +3353,16 @@
       }
     } else if (r && r.parity) {
       var s = r.parity;
-      var diag = Object.keys(s.counts).map(function (c) { return c + "=" + s.counts[c]; }).join(", ");
+      var diag = (s.counts && typeof s.counts === "object") ? Object.keys(s.counts).map(function (c) { return c + "=" + s.counts[c]; }).join(", ") : "-";
+      var pyZ = s.py_zones !== undefined ? s.py_zones : "-";
+      var ntZ = s.nt8_zones !== undefined ? s.nt8_zones : "-";
+      var mtP = s.matched_pairs !== undefined ? s.matched_pairs : "-";
       h += "<table><tr><th>Gate</th><th>Python</th><th>NT8</th><th>Match</th><th>Diagnósticos</th></tr>" +
-           "<tr><td style='color:#2e7d32;font-weight:700;'>" + s.gate + "</td><td>" + s.py_zones +
-           "</td><td>" + s.nt8_zones + "</td><td>" + s.matched_pairs + "</td><td>" + diag + "</td></tr></table>";
+           "<tr><td style='color:#2e7d32;font-weight:700;'>" + (s.gate || "-") + "</td><td>" + pyZ +
+           "</td><td>" + ntZ + "</td><td>" + mtP + "</td><td>" + diag + "</td></tr></table>";
       var pill2 = document.getElementById("parity-pill");
       if (pill2) {
-        pill2.textContent = s.gate + " " + s.matched_pairs + "/" + s.nt8_zones;
+        pill2.textContent = (s.gate || "PARITY") + " " + mtP + "/" + ntZ;
         pill2.style.background = "#2ea043";
       }
     }
@@ -4130,6 +4371,9 @@
       applyLoadedAsset(window.BUNDLE_6E_CONT, opts);
     } else if (data) {
       applyLoadedAsset(data, opts);
+    } else if (window.ASSET_CATALOG && window.ASSET_CATALOG.length > 0) {
+      var defaultId = window.ASSET_CATALOG.some(function(a){ return a.id === "6E_CONT"; }) ? "6E_CONT" : window.ASSET_CATALOG[0].id;
+      loadAsset(defaultId, opts);
     }
   }
 
