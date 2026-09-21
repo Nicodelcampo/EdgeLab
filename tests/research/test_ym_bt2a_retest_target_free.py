@@ -18,6 +18,12 @@ def test_formation_touch_is_excluded(): assert run(event(),[Tick(150,1,202,"S1")
 def test_price_inside_zone_must_depart_first(): assert run(event(),ticks(202,203,208,203),Policy("R","RETEST",departure_ticks=2,depth=0,max_wait_ticks=10)).entry_price_half_ticks==203
 def test_half_depth_for_long(): assert run(event(),ticks(208,204,203,202),Policy("R","RETEST",departure_ticks=2,depth=.5,max_wait_ticks=10)).entry_price_half_ticks==202
 def test_short_is_symmetric(): assert run(event(direction="short"),ticks(196,200),Policy("R","RETEST",departure_ticks=2,depth=0,max_wait_ticks=10)).entry_price_half_ticks==200
+def test_full_depth_long_quantizes_to_deepest_executable_price_inside_half_tick_zone():
+    e=event(zone_lo_half_ticks=201,zone_hi_half_ticks=205)
+    assert run(e,ticks(210,204,202),Policy("R","RETEST",departure_ticks=2,depth=1,max_wait_ticks=10)).entry_price_half_ticks==202
+def test_full_depth_short_quantizes_to_deepest_executable_price_inside_half_tick_zone():
+    e=event(zone_lo_half_ticks=201,zone_hi_half_ticks=205,direction="short")
+    assert run(e,ticks(196,202,204),Policy("R","RETEST",departure_ticks=2,depth=1,max_wait_ticks=10)).entry_price_half_ticks==204
 def test_no_departure_is_censored(): assert run(event(),ticks(202,203,204),Policy("R","RETEST",departure_ticks=2,depth=0,max_wait_ticks=3)).censor_reason=="NO_DEPARTURE_BEFORE_LIMIT"
 def test_no_retest_is_censored(): assert run(event(),ticks(208,210,212),Policy("R","RETEST",departure_ticks=2,depth=0,max_wait_ticks=3)).censor_reason=="NO_RETEST_BEFORE_LIMIT"
 def test_session_crossing_is_excluded(): assert run(event(),ticks(208,203,session="S2"),Policy("R","RETEST",departure_ticks=2,depth=0,max_wait_ticks=3)).censor_reason=="NO_POST_AVAILABILITY_TICK"

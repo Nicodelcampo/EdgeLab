@@ -9,6 +9,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 from hashlib import sha256
 import json
+import math
 from typing import Iterable
 
 HOLDOUT_BOUNDARY_NS = 1782856800000000000
@@ -67,6 +68,16 @@ class Decision:
 def canonical_hash(value: object) -> str:
     raw = json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
     return sha256(raw.encode()).hexdigest()
+
+
+def _ceil_even(value: float) -> int:
+    integer = math.ceil(value)
+    return integer if integer % 2 == 0 else integer + 1
+
+
+def _floor_even(value: float) -> int:
+    integer = math.floor(value)
+    return integer if integer % 2 == 0 else integer - 1
 
 
 def validate_event(e: ZoneEvent, *, custody_verified: bool, semantics_resolved: bool) -> None:
@@ -137,7 +148,12 @@ def evaluate_policy(event: ZoneEvent, ticks: Iterable[Tick], policy: Policy, *, 
         raise ValueError("invalid retest policy")
     departure2 = 2 * policy.departure_ticks
     lo, hi = event.zone_lo_half_ticks, event.zone_hi_half_ticks
-    target = round(hi - policy.depth * (hi - lo)) if event.direction == "long" else round(lo + policy.depth * (hi - lo))
+    raw_target = hi - policy.depth * (hi - lo) if event.direction == "long" else lo + policy.depth * (hi - lo)
+    # Zone edges may live on half ticks while executable trade prices live on
+    # full ticks (even half-tick integers). Quantize toward the zone interior so
+    # depth=1 means the deepest executable price inside the rectangle rather
+    # than an impossible exact print on a half-tick boundary.
+    target = _ceil_even(raw_target) if event.direction == "long" else _floor_even(raw_target)
     armed_tick = None
     for observed, tick in enumerate(eligible[:policy.max_wait_ticks], start=1):
         price = tick.price_half_ticks
