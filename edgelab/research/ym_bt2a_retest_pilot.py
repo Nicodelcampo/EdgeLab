@@ -63,124 +63,70 @@ class Decision:
     armed_sequence: int | None
     ticks_observed: int
     censor_reason: str | None
+    trigger_ts_ns: int | None = None
+    trigger_sequence: int | None = None
 
 
 def canonical_hash(value: object) -> str:
-    raw = json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    raw=json.dumps(value,sort_keys=True,separators=(",",":"),allow_nan=False)
     return sha256(raw.encode()).hexdigest()
+def _ceil_even(value:float)->int:
+    integer=math.ceil(value);return integer if integer%2==0 else integer+1
+def _floor_even(value:float)->int:
+    integer=math.floor(value);return integer if integer%2==0 else integer-1
 
-
-def _ceil_even(value: float) -> int:
-    integer = math.ceil(value)
-    return integer if integer % 2 == 0 else integer + 1
-
-
-def _floor_even(value: float) -> int:
-    integer = math.floor(value)
-    return integer if integer % 2 == 0 else integer - 1
-
-
-def validate_event(e: ZoneEvent, *, custody_verified: bool, semantics_resolved: bool) -> None:
-    if not custody_verified:
-        raise ValueError("BLOCKED_BY_CUSTODY")
-    if not semantics_resolved:
-        raise ValueError("BLOCKED_BY_SIGNAL_SEMANTICS")
-    if e.semantics not in SEMANTICS:
-        raise ValueError("unknown signal semantics")
-    if e.direction not in {"long", "short"}:
-        raise ValueError("direction must be long or short")
-    if not e.formation_start_ns <= e.formation_end_ns <= e.available_at_ns:
-        raise ValueError("formation_start <= formation_end <= available_at required")
-    if e.available_at_ns >= HOLDOUT_BOUNDARY_NS:
-        raise ValueError("HOLDOUT_FORBIDDEN")
-    if e.zone_lo_half_ticks > e.zone_hi_half_ticks:
-        raise ValueError("inverted zone")
-    for field in ("indicator_parameters_hash", "source_data_hash"):
-        value = getattr(e, field)
-        if len(value) != 64 or any(c not in "0123456789abcdef" for c in value):
-            raise ValueError(f"invalid {field}")
-
-
-def validate_ticks(ticks: Iterable[Tick]) -> list[Tick]:
-    out = list(ticks)
-    identities = [(t.ts_ns, t.sequence) for t in out]
-    if identities != sorted(identities):
-        raise ValueError("ticks not ordered by (ts_ns, sequence)")
-    if len(identities) != len(set(identities)):
-        raise ValueError("duplicate tick identity")
-    if any(t.ts_ns >= HOLDOUT_BOUNDARY_NS for t in out):
-        raise ValueError("HOLDOUT_FORBIDDEN")
+def validate_event(e:ZoneEvent,*,custody_verified:bool,semantics_resolved:bool)->None:
+    if not custody_verified:raise ValueError("BLOCKED_BY_CUSTODY")
+    if not semantics_resolved:raise ValueError("BLOCKED_BY_SIGNAL_SEMANTICS")
+    if e.semantics not in SEMANTICS:raise ValueError("unknown signal semantics")
+    if e.direction not in {"long","short"}:raise ValueError("direction must be long or short")
+    if not e.formation_start_ns<=e.formation_end_ns<=e.available_at_ns:raise ValueError("formation_start <= formation_end <= available_at required")
+    if e.available_at_ns>=HOLDOUT_BOUNDARY_NS:raise ValueError("HOLDOUT_FORBIDDEN")
+    if e.zone_lo_half_ticks>e.zone_hi_half_ticks:raise ValueError("inverted zone")
+    for field in("indicator_parameters_hash","source_data_hash"):
+        value=getattr(e,field)
+        if len(value)!=64 or any(c not in"0123456789abcdef"for c in value):raise ValueError(f"invalid {field}")
+def validate_ticks(ticks:Iterable[Tick])->list[Tick]:
+    out=list(ticks);identities=[(t.ts_ns,t.sequence)for t in out]
+    if identities!=sorted(identities):raise ValueError("ticks not ordered by (ts_ns, sequence)")
+    if len(identities)!=len(set(identities)):raise ValueError("duplicate tick identity")
+    if any(t.ts_ns>=HOLDOUT_BOUNDARY_NS for t in out):raise ValueError("HOLDOUT_FORBIDDEN")
     return out
-
-
-def policies_v1() -> list[Policy]:
-    out = [Policy("P0_IMMEDIATE", "IMMEDIATE"), Policy("P1_WAIT_25", "WAIT_TICKS", wait_ticks=25), Policy("P2_WAIT_100", "WAIT_TICKS", wait_ticks=100)]
-    index = 3
-    for departure in (2, 4):
-        for depth in (0.0, 0.5, 1.0):
-            for max_wait in (250, 1000):
-                out.append(Policy(f"P{index}_RETEST_D{departure}_Z{int(depth * 100)}_W{max_wait}", "RETEST", departure_ticks=departure, depth=depth, max_wait_ticks=max_wait))
-                index += 1
-    assert len(out) == 15
-    return out
-
-
-def evaluate_policy(event: ZoneEvent, ticks: Iterable[Tick], policy: Policy, *, custody_verified: bool, semantics_resolved: bool) -> Decision:
-    validate_event(event, custody_verified=custody_verified, semantics_resolved=semantics_resolved)
-    ordered = validate_ticks(ticks)
-    available_id = (event.available_at_ns, event.available_sequence)
-    eligible = [t for t in ordered if (t.ts_ns, t.sequence) > available_id and t.session_id == event.session_id]
-    if not eligible:
-        return Decision(event.event_id, policy.policy_id, "CENSORED", None, None, None, None, None, 0, "NO_POST_AVAILABILITY_TICK")
-    if policy.mode == "IMMEDIATE":
-        t = eligible[0]
-        return Decision(event.event_id, policy.policy_id, "ENTERED", t.ts_ns, t.sequence, t.price_half_ticks, None, None, 1, None)
-    if policy.mode == "WAIT_TICKS":
-        if policy.wait_ticks < 1:
-            raise ValueError("wait_ticks must be positive")
-        if len(eligible) <= policy.wait_ticks:
-            return Decision(event.event_id, policy.policy_id, "CENSORED", None, None, None, None, None, len(eligible), "SESSION_END_BEFORE_WAIT")
-        t = eligible[policy.wait_ticks]
-        return Decision(event.event_id, policy.policy_id, "ENTERED", t.ts_ns, t.sequence, t.price_half_ticks, None, None, policy.wait_ticks + 1, None)
-    if policy.mode != "RETEST":
-        raise ValueError("unknown policy mode")
-    if policy.departure_ticks < 0 or not 0 <= policy.depth <= 1 or policy.max_wait_ticks < 1:
-        raise ValueError("invalid retest policy")
-    departure2 = 2 * policy.departure_ticks
-    lo, hi = event.zone_lo_half_ticks, event.zone_hi_half_ticks
-    raw_target = hi - policy.depth * (hi - lo) if event.direction == "long" else lo + policy.depth * (hi - lo)
-    # Zone edges may live on half ticks while executable trade prices live on
-    # full ticks (even half-tick integers). Quantize toward the zone interior so
-    # depth=1 means the deepest executable price inside the rectangle rather
-    # than an impossible exact print on a half-tick boundary.
-    target = _ceil_even(raw_target) if event.direction == "long" else _floor_even(raw_target)
-    armed_tick = None
-    for observed, tick in enumerate(eligible[:policy.max_wait_ticks], start=1):
-        price = tick.price_half_ticks
+def policies_v1()->list[Policy]:
+    out=[Policy("P0_IMMEDIATE","IMMEDIATE"),Policy("P1_WAIT_25","WAIT_TICKS",wait_ticks=25),Policy("P2_WAIT_100","WAIT_TICKS",wait_ticks=100)];index=3
+    for departure in(2,4):
+        for depth in(0.0,.5,1.0):
+            for max_wait in(250,1000):out.append(Policy(f"P{index}_RETEST_D{departure}_Z{int(depth*100)}_W{max_wait}","RETEST",departure_ticks=departure,depth=depth,max_wait_ticks=max_wait));index+=1
+    assert len(out)==15;return out
+def evaluate_policy(event:ZoneEvent,ticks:Iterable[Tick],policy:Policy,*,custody_verified:bool,semantics_resolved:bool)->Decision:
+    validate_event(event,custody_verified=custody_verified,semantics_resolved=semantics_resolved);ordered=validate_ticks(ticks);available_id=(event.available_at_ns,event.available_sequence);eligible=[t for t in ordered if(t.ts_ns,t.sequence)>available_id and t.session_id==event.session_id]
+    if not eligible:return Decision(event.event_id,policy.policy_id,"CENSORED",None,None,None,None,None,0,"NO_POST_AVAILABILITY_TICK")
+    if policy.mode=="IMMEDIATE":
+        t=eligible[0];return Decision(event.event_id,policy.policy_id,"ENTERED",t.ts_ns,t.sequence,t.price_half_ticks,None,None,1,None)
+    if policy.mode=="WAIT_TICKS":
+        if policy.wait_ticks<1:raise ValueError("wait_ticks must be positive")
+        if len(eligible)<=policy.wait_ticks:return Decision(event.event_id,policy.policy_id,"CENSORED",None,None,None,None,None,len(eligible),"SESSION_END_BEFORE_WAIT")
+        t=eligible[policy.wait_ticks];return Decision(event.event_id,policy.policy_id,"ENTERED",t.ts_ns,t.sequence,t.price_half_ticks,None,None,policy.wait_ticks+1,None)
+    if policy.mode!="RETEST":raise ValueError("unknown policy mode")
+    if policy.departure_ticks<0 or not 0<=policy.depth<=1 or policy.max_wait_ticks<1:raise ValueError("invalid retest policy")
+    departure2=2*policy.departure_ticks;lo,hi=event.zone_lo_half_ticks,event.zone_hi_half_ticks;raw_target=hi-policy.depth*(hi-lo)if event.direction=="long"else lo+policy.depth*(hi-lo);target=_ceil_even(raw_target)if event.direction=="long"else _floor_even(raw_target);armed_tick=None;window=eligible[:policy.max_wait_ticks]
+    for observed,tick in enumerate(window,start=1):
+        price=tick.price_half_ticks
         if armed_tick is None:
-            armed = price >= hi + departure2 if event.direction == "long" else price <= lo - departure2
-            if armed:
-                armed_tick = tick
+            armed=price>=hi+departure2 if event.direction=="long"else price<=lo-departure2
+            if armed:armed_tick=tick
             continue
-        reached = lo <= price <= target if event.direction == "long" else target <= price <= hi
+        reached=lo<=price<=target if event.direction=="long"else target<=price<=hi
         if reached:
-            return Decision(event.event_id, policy.policy_id, "ENTERED", tick.ts_ns, tick.sequence, price, armed_tick.ts_ns, armed_tick.sequence, observed, None)
-    expired = len(eligible) >= policy.max_wait_ticks
-    if armed_tick:
-        reason = "NO_RETEST_BEFORE_EXPIRY" if expired else "SESSION_END_BEFORE_RETEST"
-    else:
-        reason = "NO_DEPARTURE_BEFORE_EXPIRY" if expired else "SESSION_END_BEFORE_DEPARTURE"
-    return Decision(event.event_id, policy.policy_id, "CENSORED", None, None, None, armed_tick.ts_ns if armed_tick else None, armed_tick.sequence if armed_tick else None, min(len(eligible), policy.max_wait_ticks), reason)
-
-
-def decision_record(decision: Decision) -> dict:
-    data = asdict(decision)
-    data["record_sha256"] = canonical_hash(data)
-    return data
-
-
-def assert_target_free(record: dict) -> None:
-    forbidden = ("pnl", "return", "mfe", "mae", "profit", "loss", "target", "stop", "win_rate")
-    bad = [key for key in record if any(term in key.lower() for term in forbidden)]
-    if bad:
-        raise ValueError(f"outcome fields forbidden: {bad}")
+            if observed>=len(window):
+                reason="NO_EXECUTABLE_FILL_BEFORE_EXPIRY"if len(eligible)>=policy.max_wait_ticks else"NO_EXECUTABLE_FILL_AVAILABLE";return Decision(event.event_id,policy.policy_id,"CENSORED",None,None,None,armed_tick.ts_ns,armed_tick.sequence,observed,reason,trigger_ts_ns=tick.ts_ns,trigger_sequence=tick.sequence)
+            fill=window[observed];return Decision(event.event_id,policy.policy_id,"ENTERED",fill.ts_ns,fill.sequence,fill.price_half_ticks,armed_tick.ts_ns,armed_tick.sequence,observed+1,None,trigger_ts_ns=tick.ts_ns,trigger_sequence=tick.sequence)
+    expired=len(eligible)>=policy.max_wait_ticks
+    if armed_tick:reason="NO_RETEST_BEFORE_EXPIRY"if expired else"SESSION_END_BEFORE_RETEST"
+    else:reason="NO_DEPARTURE_BEFORE_EXPIRY"if expired else"SESSION_END_BEFORE_DEPARTURE"
+    return Decision(event.event_id,policy.policy_id,"CENSORED",None,None,None,armed_tick.ts_ns if armed_tick else None,armed_tick.sequence if armed_tick else None,min(len(eligible),policy.max_wait_ticks),reason)
+def decision_record(decision:Decision)->dict:
+    data=asdict(decision);data["record_sha256"]=canonical_hash(data);return data
+def assert_target_free(record:dict)->None:
+    forbidden=("pnl","return","mfe","mae","profit","loss","target","stop","win_rate");bad=[key for key in record if any(term in key.lower()for term in forbidden)]
+    if bad:raise ValueError(f"outcome fields forbidden: {bad}")
