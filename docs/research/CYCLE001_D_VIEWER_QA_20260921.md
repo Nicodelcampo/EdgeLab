@@ -50,8 +50,22 @@ hippocampus records emitted: pending Agent B ingestion
 review status: REQUESTED_FROM_A
 ```
 
+## Review correction after Agent A
+
+Agent A returned `CHANGES_REQUIRED`: the first smoke hard-coded `/usr/local/bin/chromium` and assumed Node/Playwright existed, while the current CI workflow does not provision them.
+
+The test now:
+
+- discovers `node` and Chromium with `shutil.which`;
+- checks whether the optional Node Playwright module resolves;
+- skips only the browser subtest when optional dependencies are unavailable;
+- always runs the dependency-free exporter and static renderer falsifiers;
+- passes with browser dependencies present and also passes with the browser dependency path removed, recording one explicit skip.
+
+This makes the causal gate portable without weakening the static fail-closed checks or adding CI dependencies.
+
 ## Limitations
 
 This checkpoint validates the temporal helper and exporter fail-closed contract. It does not certify the complete canonical Viewer, CI, economic behavior, outcomes, validation or holdout.
 
-Aporte al referente: agrega un falsificador independiente y ejecutable que impide que el timeframe de display fabrique disponibilidad causal para zonas legacy tick-driven, y preserva los fallos del entorno como aprendizaje reproducible.
+Aporte al referente: agrega un falsificador independiente y portable que impide que el timeframe de display fabrique disponibilidad causal para zonas legacy tick-driven, y preserva los fallos del entorno como aprendizaje reproducible.

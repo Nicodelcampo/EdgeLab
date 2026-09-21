@@ -5,7 +5,9 @@ Run directly: python tests/qa/test_cycle001_viewer_causal_smoke.py
 """
 from __future__ import annotations
 
+import json
 import re
+import shutil
 import subprocess
 import sys
 import unittest
@@ -48,6 +50,18 @@ class Cycle001ViewerCausalSmoke(unittest.TestCase):
         self.assertGreaterEqual(html.count("parseBarDurationSec(bspec)"), 2)
 
     def test_duration_helper_executes_in_real_chromium(self):
+        node = shutil.which("node")
+        chromium = shutil.which("chromium") or shutil.which("chromium-browser")
+        if not node or not chromium:
+            self.skipTest("optional Node/Chromium browser smoke dependencies unavailable")
+        has_playwright = subprocess.run(
+            [node, "-e", "require.resolve('playwright')"],
+            cwd=ROOT,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        ).returncode == 0
+        if not has_playwright:
+            self.skipTest("optional Node Playwright dependency unavailable")
         html = INDEX.read_text(encoding="utf-8")
         match = re.search(
             r"function parseBarDurationSec\(barKey\) \{.*?\n  \}",
@@ -59,7 +73,7 @@ class Cycle001ViewerCausalSmoke(unittest.TestCase):
         script = f"""
 const {{ chromium }} = require('playwright');
 (async () => {{
-  const browser = await chromium.launch({{headless:true, executablePath:'/usr/local/bin/chromium', args:['--no-sandbox']}});
+  const browser = await chromium.launch({{headless:true, executablePath:{json.dumps(chromium)}, args:['--no-sandbox']}});
   const page = await browser.newPage();
   await page.setContent(`<script>${{{helper!r}}}</script>`);
   const got = await page.evaluate(() => [
@@ -75,7 +89,7 @@ const {{ chromium }} = require('playwright');
   }}
 }})().catch(e => {{ console.error(e); process.exit(1); }});
 """
-        subprocess.run(["node", "-e", script], cwd=ROOT, check=True)
+        subprocess.run([node, "-e", script], cwd=ROOT, check=True)
 
 
 if __name__ == "__main__":
