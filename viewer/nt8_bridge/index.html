@@ -421,6 +421,17 @@
     max-height: 380px;
     overflow-y: auto;
   }
+  .asset-inst-head {
+    display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer;
+    font-size: 12px; background: rgba(0,0,0,0.035); border-bottom: 1px solid rgba(0,0,0,0.06);
+    position: sticky; top: 0; z-index: 1; user-select: none;
+  }
+  .asset-inst-head:hover { background: var(--pop-row-hover); }
+  .asset-inst-head .asset-meta-pill { margin-left: auto; }
+  .asset-caret { width: 10px; color: #888; }
+  .asset-subgroup-title { font-size: 9.5px; font-weight: 700; text-transform: uppercase; color: #777; padding: 5px 12px 2px 26px; letter-spacing: .4px; }
+  body.theme-dark .asset-inst-head { background: rgba(255,255,255,0.05); border-bottom-color: rgba(255,255,255,0.08); }
+  body.theme-dark .asset-subgroup-title { color: #8b949e; }
   .asset-group-title {
     font-size: 10px;
     font-weight: 700;
@@ -3267,6 +3278,26 @@
   // =====================================================================
   // SELECTOR DE ACTIVOS (EDGELAB REGIME)
   // =====================================================================
+  var assetExpanded = {};      // instrumento -> abierto/cerrado (persiste mientras dura la sesion)
+  var contProbed = {};         // instrumento -> ya se busco su bundle continuo
+
+  // Un instrumento aparece UNA vez. Adentro: continuo, contratos individuales y fragmentos mensuales.
+  // El manifiesto puede no listar el continuo aunque el bundle exista: se busca `<INST>_CONT.json` una vez.
+  function probeContinuousBundles(instruments) {
+    instruments.forEach(function (inst) {
+      if (contProbed[inst]) return;
+      contProbed[inst] = true;
+      var cat = window.ASSET_CATALOG || [];
+      if (cat.some(function (a) { return a.id === inst + "_CONT"; })) return;
+      fetch("bundles/" + inst + "_CONT.json", { method: "HEAD" }).then(function (r) {
+        if (!r.ok) return;
+        cat.push({ id: inst + "_CONT", name: inst + " Continuo (back-adjusted)", group: "Continuos " + inst,
+                   instrument: inst, contract: inst + " CONT", candles: 0, rolls: 0 });
+        buildAssetSelectorList();
+      }).catch(function () {});
+    });
+  }
+
   function buildAssetSelectorList() {
     var container = document.getElementById("asset-items-container");
     if (!container) return;
@@ -3275,43 +3306,83 @@
     var catalog = window.ASSET_CATALOG || [];
     var searchVal = (document.getElementById("asset-search-input").value || "").toLowerCase().trim();
 
-    var groups = {};
-    catalog.forEach(function(item) {
-      if (searchVal) {
-        var match = item.name.toLowerCase().indexOf(searchVal) !== -1 ||
-                    item.instrument.toLowerCase().indexOf(searchVal) !== -1 ||
-                    item.id.toLowerCase().indexOf(searchVal) !== -1;
-        if (!match) return;
-      }
-      var g = item.group || "Otros";
-      if (!groups[g]) groups[g] = [];
-      groups[g].push(item);
+    var order = [], byInst = {};
+    catalog.forEach(function (item) {
+      var inst = item.instrument || "Otros";
+      if (!byInst[inst]) { byInst[inst] = { cont: [], singles: [], frags: {} }; order.push(inst); }
+      var g = byInst[inst];
+      if (item.id.indexOf("_CONT") !== -1) g.cont.push(item);
+      else if ((item.group || "").indexOf("Fragmentos") !== -1) {
+        var k = item.contract || item.id;
+        (g.frags[k] = g.frags[k] || []).push(item);
+      } else g.singles.push(item);
     });
+    probeContinuousBundles(order);
 
-    Object.keys(groups).forEach(function(gName) {
-      var gTitle = document.createElement("div");
-      gTitle.className = "asset-group-title";
-      gTitle.textContent = gName;
-      container.appendChild(gTitle);
+    function matches(item, inst) {
+      if (!searchVal) return true;
+      return item.name.toLowerCase().indexOf(searchVal) !== -1 ||
+             inst.toLowerCase().indexOf(searchVal) !== -1 ||
+             item.id.toLowerCase().indexOf(searchVal) !== -1;
+    }
+    function addRow(item, label, badgeHtml, indent) {
+      var row = document.createElement("div");
+      var isActive = state.data && state.data.meta && (state.data.meta.id === item.id || state.currentAssetId === item.id);
+      row.className = "asset-item" + (isActive ? " active" : "");
+      row.dataset.id = item.id;
+      row.style.paddingLeft = (12 + indent) + "px";
+      var rollsInfo = item.rolls ? " · ✂️ " + item.rolls + " roll" + (item.rolls > 1 ? "s" : "") : "";
+      var bars = item.candles ? item.candles.toLocaleString() + " barras" : "";
+      row.innerHTML = "<div>" + badgeHtml + "<span>" + label + "</span></div><span class='asset-meta-pill'>" + bars + rollsInfo + "</span>";
+      row.addEventListener("click", function () { loadAsset(item.id); closeAllPopovers(); });
+      container.appendChild(row);
+    }
+    function addSub(text) {
+      var d = document.createElement("div");
+      d.className = "asset-subgroup-title";
+      d.textContent = text;
+      container.appendChild(d);
+    }
 
-      groups[gName].forEach(function(item) {
-        var row = document.createElement("div");
-        var isActive = state.data && state.data.meta && (state.data.meta.id === item.id || state.currentAssetId === item.id);
-        row.className = "asset-item" + (isActive ? " active" : "");
-        row.dataset.id = item.id;
+    order.forEach(function (inst) {
+      var g = byInst[inst];
+      var cont = g.cont.filter(function (i) { return matches(i, inst); });
+      var singles = g.singles.filter(function (i) { return matches(i, inst); });
+      var fragKeys = Object.keys(g.frags);
+      var frags = {};
+      fragKeys.forEach(function (k) {
+        var f = g.frags[k].filter(function (i) { return matches(i, inst); });
+        if (f.length) frags[k] = f;
+      });
+      var total = cont.length + singles.length + Object.keys(frags).reduce(function (n, k) { return n + frags[k].length; }, 0);
+      if (!total) return;
+      var hasActive = [].concat(g.cont, g.singles, [].concat.apply([], fragKeys.map(function (k) { return g.frags[k]; })))
+        .some(function (i) { return state.currentAssetId === i.id; });
+      var open = searchVal ? true : (assetExpanded[inst] !== undefined ? assetExpanded[inst] : hasActive);
 
-        var isCont = gName.indexOf("Continuos") !== -1;
-        var badge = isCont ? "<span class='asset-badge-cont'>CONTINUO</span>" : "<span class='asset-badge-single'>" + item.instrument + "</span>";
-        var rollsInfo = item.rolls ? " · ✂️ " + item.rolls + " roll" + (item.rolls > 1 ? "s" : "") : "";
-        var metaInfo = "<span class='asset-meta-pill'>" + item.candles.toLocaleString() + " barras" + rollsInfo + "</span>";
+      var head = document.createElement("div");
+      head.className = "asset-inst-head";
+      head.innerHTML = "<span class='asset-caret'>" + (open ? "▾" : "▸") + "</span><b>" + inst + "</b>" +
+                       "<span class='asset-meta-pill'>" + total + " opciones</span>";
+      head.addEventListener("click", function (e) {
+        e.stopPropagation();
+        assetExpanded[inst] = !open;
+        buildAssetSelectorList();
+      });
+      container.appendChild(head);
+      if (!open) return;
 
-        row.innerHTML = "<div>" + badge + "<span>" + item.name + "</span></div>" + metaInfo;
-
-        row.addEventListener("click", function() {
-          loadAsset(item.id);
-          closeAllPopovers();
+      cont.forEach(function (i) { addRow(i, "Contrato continuo", "<span class='asset-badge-cont'>CONTINUO</span>", 14); });
+      if (singles.length) {
+        addSub("Contratos individuales");
+        singles.forEach(function (i) { addRow(i, i.contract || i.name, "<span class='asset-badge-single'>" + inst + "</span>", 14); });
+      }
+      Object.keys(frags).forEach(function (k) {
+        addSub(k + " · fragmentos mensuales");
+        frags[k].forEach(function (i) {
+          var m = /_(\d{4})(\d{2})_/.exec(i.id);
+          addRow(i, m ? m[1] + "-" + m[2] : i.name, "<span class='asset-badge-single'>frag</span>", 14);
         });
-        container.appendChild(row);
       });
     });
   }
