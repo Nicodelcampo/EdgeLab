@@ -656,6 +656,7 @@ def _fixture(root: str, variant: str = "sano"):
         _write(os.path.join(out, "otra", "6B_09-26_ticks.parquet"),
                b"RECORTADO-6B-09-26\n" * 40)
     elif variant == "enlace_roto":
+        os.chmod(out_ok, 0o644)
         os.remove(out_ok)
         shutil.copy2(src_ok, out_ok)
     elif variant == "escribible":
@@ -677,6 +678,7 @@ def _fixture(root: str, variant: str = "sano"):
     elif variant == "veredicto":
         index["verdict"] = "ABSTAIN_BACKEND"
     elif variant == "limpio_ausente":
+        os.chmod(out_ok, 0o644)
         os.remove(out_ok)
     elif variant == "sin_frontera":
         index["cut"] = {}

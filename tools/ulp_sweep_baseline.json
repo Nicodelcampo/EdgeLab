@@ -273,6 +273,234 @@
   "aVolClusterPOI.cs :: bool passes = offPrice && quality >= MinQualityScore;": {
    "evidencia": "no compara precios: quality es un score heuristico continuo 0..100 y MinQualityScore es su umbral de corte de ranking. Falso positivo del scanner ULP.",
    "veredicto": "NO_ES_PRECIO"
+  },
+  "AVolZonePOI_P.cs :: decision == \"CREATE\" ? lo.ToString(CultureInfo.InvariantCulture) : \"\",": {
+   "veredicto": "NO_ES_PRECIO",
+   "evidencia": "Formateo de string en CSV de auditoria. No participa en la evaluacion numerica de precio."
+  },
+  "AVolZoneSimple.cs :: if (_dxAtPrice != null) { _dxAtPrice.Dispose(); _dxAtPrice = null; }": {
+   "veredicto": "NO_ES_PRECIO",
+   "evidencia": "Disposal de objeto grafico DirectX, no es comparacion de precio ni double."
+  },
+  "AVolZoneSimple.cs :: : z.Side == \"RESISTANCE\" ? _dxResistance : _dxAtPrice;": {
+   "veredicto": "NO_ES_PRECIO",
+   "evidencia": "Seleccion de brush DirectX segun string de lado. No es comparacion de precio."
+  },
+  "BigTrap2Absorption.cs :: if (askQ > 0 && bidQ > 0 && askQ >= bidQ)": {
+   "veredicto": "INMUNE_MONOTONO",
+   "evidencia": "Guarda de validez de quote: precios de grilla directos del feed sin aritmetica."
+  },
+  "BigTrap2Absorption.cs :: if (price >= askQ) { side = 1; byQuote = true; }": {
+   "veredicto": "INMUNE_MONOTONO",
+   "evidencia": "Precios de grilla del feed sin aritmetica; orden y empates preservados."
+  },
+  "BigTrap2Absorption.cs :: else if (price <= bidQ) { side = -1; byQuote = true; }": {
+   "veredicto": "INMUNE_MONOTONO",
+   "evidencia": "Precios de grilla del feed sin aritmetica; orden y empates preservados."
+  },
+  "BigTrap2Absorption.cs :: if (price > lastTickPrice) side = 1;": {
+   "veredicto": "INMUNE_MONOTONO",
+   "evidencia": "Precios de grilla del feed sin aritmetica; orden y empates preservados."
+  },
+  "BigTrap2Absorption.cs :: else if (price < lastTickPrice) side = -1;": {
+   "veredicto": "INMUNE_MONOTONO",
+   "evidencia": "Precios de grilla del feed sin aritmetica; orden y empates preservados."
+  },
+  "BigTrap2Absorption.cs :: bool touched = hi >= zLo && lo <= zHi;": {
+   "veredicto": "INMUNE_MEDIOTICK",
+   "evidencia": "Umbral a medio tick de la grilla (tick +/- 0.5); ningun trade cae exactamente encima."
+  },
+  "BigTrap2Absorption.cs :: bool adverse = z.IsBull ? close > zHi : close < zLo;": {
+   "veredicto": "INMUNE_MEDIOTICK",
+   "evidencia": "Umbral a medio tick de la grilla (tick +/- 0.5); ningun trade cae exactamente encima."
+  },
+  "BigTrap2UniversalEdge.cs :: if (askQ > 0 && bidQ > 0 && askQ >= bidQ)": {
+   "veredicto": "INMUNE_MONOTONO",
+   "evidencia": "Guarda de validez de quote: precios de grilla directos del feed sin aritmetica."
+  },
+  "BigTrap2UniversalEdge.cs :: if (price >= askQ) { side = 1; byQuote = true; }": {
+   "veredicto": "INMUNE_MONOTONO",
+   "evidencia": "Precios de grilla del feed sin aritmetica; orden y empates preservados."
+  },
+  "BigTrap2UniversalEdge.cs :: else if (price <= bidQ) { side = -1; byQuote = true; }": {
+   "veredicto": "INMUNE_MONOTONO",
+   "evidencia": "Precios de grilla del feed sin aritmetica; orden y empates preservados."
+  },
+  "BigTrap2UniversalEdge.cs :: if (price > lastTickPrice) side = 1;": {
+   "veredicto": "INMUNE_MONOTONO",
+   "evidencia": "Precios de grilla del feed sin aritmetica; orden y empates preservados."
+  },
+  "BigTrap2UniversalEdge.cs :: else if (price < lastTickPrice) side = -1;": {
+   "veredicto": "INMUNE_MONOTONO",
+   "evidencia": "Precios de grilla del feed sin aritmetica; orden y empates preservados."
+  },
+  "BigTrap2UniversalEdge.cs :: bool touched = hi >= zLo && lo <= zHi;": {
+   "veredicto": "INMUNE_MEDIOTICK",
+   "evidencia": "Umbral a medio tick de la grilla (tick +/- 0.5); ningun trade cae exactamente encima."
+  },
+  "BigTrap2UniversalEdge.cs :: bool adverse = z.IsBull ? close > zHi : close < zLo;": {
+   "veredicto": "INMUNE_MEDIOTICK",
+   "evidencia": "Umbral a medio tick de la grilla (tick +/- 0.5); ningun trade cae exactamente encima."
+  },
+  "BigTrap2UniversalFill.cs :: if (askQ > 0 && bidQ > 0 && askQ >= bidQ)": {
+   "veredicto": "INMUNE_MONOTONO",
+   "evidencia": "Guarda de validez de quote: precios de grilla directos del feed sin aritmetica."
+  },
+  "BigTrap2UniversalFill.cs :: if (price >= askQ) { side = 1; byQuote = true; }": {
+   "veredicto": "INMUNE_MONOTONO",
+   "evidencia": "Precios de grilla del feed sin aritmetica; orden y empates preservados."
+  },
+  "BigTrap2UniversalFill.cs :: else if (price <= bidQ) { side = -1; byQuote = true; }": {
+   "veredicto": "INMUNE_MONOTONO",
+   "evidencia": "Precios de grilla del feed sin aritmetica; orden y empates preservados."
+  },
+  "BigTrap2UniversalFill.cs :: if (price > lastTickPrice) side = 1;": {
+   "veredicto": "INMUNE_MONOTONO",
+   "evidencia": "Precios de grilla del feed sin aritmetica; orden y empates preservados."
+  },
+  "BigTrap2UniversalFill.cs :: else if (price < lastTickPrice) side = -1;": {
+   "veredicto": "INMUNE_MONOTONO",
+   "evidencia": "Precios de grilla del feed sin aritmetica; orden y empates preservados."
+  },
+  "BigTrap2UniversalFill.cs :: bool touched = hi >= zLo && lo <= zHi;": {
+   "veredicto": "INMUNE_MEDIOTICK",
+   "evidencia": "Umbral a medio tick de la grilla (tick +/- 0.5); ningun trade cae exactamente encima."
+  },
+  "BigTrap2UniversalFill.cs :: bool adverse = z.IsBull ? close > zHi : close < zLo;": {
+   "veredicto": "INMUNE_MEDIOTICK",
+   "evidencia": "Umbral a medio tick de la grilla (tick +/- 0.5); ningun trade cae exactamente encima."
+  },
+  "BigTrap2Absorption.cs :: && (!UseWickFilter || (range > 0 && rowPrice >= wickHiFloor));": {
+   "veredicto": "FUERA_DE_ALCANCE",
+   "evidencia": "Variante de investigacion experimental; filtro de mecha offline no portado al bridge estandar."
+  },
+  "BigTrap2Absorption.cs :: && (!UseWickFilter || (range > 0 && rowPrice <= wickLoCeil));": {
+   "veredicto": "FUERA_DE_ALCANCE",
+   "evidencia": "Variante de investigacion experimental; filtro de mecha offline no portado al bridge estandar."
+  },
+  "BigTrap2Absorption.cs :: if (lo < 0) lo = 0;": {
+   "veredicto": "NO_ES_PRECIO",
+   "evidencia": "Indice entero de array en algoritmo de percentil/cuantil; no es precio."
+  },
+  "BigTrap2Absorption.cs :: if (hi >= n) hi = n - 1;": {
+   "veredicto": "NO_ES_PRECIO",
+   "evidencia": "Indice entero de array en algoritmo de percentil/cuantil; no es precio."
+  },
+  "BigTrap2Absorption.cs :: if (lo == hi) return tmp[lo];": {
+   "veredicto": "NO_ES_PRECIO",
+   "evidencia": "Indice entero de array en algoritmo de percentil/cuantil; no es precio."
+  },
+  "BigTrap2UniversalEdge.cs :: && (!UseWickFilter || (range > 0 && rowPrice >= wickHiFloor)))": {
+   "veredicto": "FUERA_DE_ALCANCE",
+   "evidencia": "Variante universal offline; filtro de mecha no portado al bridge estandar."
+  },
+  "BigTrap2UniversalEdge.cs :: && (!UseWickFilter || (range > 0 && rowPrice <= wickLoCeil)))": {
+   "veredicto": "FUERA_DE_ALCANCE",
+   "evidencia": "Variante universal offline; filtro de mecha no portado al bridge estandar."
+  },
+  "BigTrap2UniversalFill.cs :: && (!UseWickFilter || (range > 0 && rowPrice >= wickHiFloor)))": {
+   "veredicto": "FUERA_DE_ALCANCE",
+   "evidencia": "Variante universal offline; filtro de mecha no portado al bridge estandar."
+  },
+  "BigTrap2UniversalFill.cs :: && (!UseWickFilter || (range > 0 && rowPrice <= wickLoCeil)))": {
+   "veredicto": "FUERA_DE_ALCANCE",
+   "evidencia": "Variante universal offline; filtro de mecha no portado al bridge estandar."
+  },
+  "Gaps2.cs :: g.IsBullish = curPrice > prevPrice;": {
+   "veredicto": "INMUNE_MONOTONO",
+   "evidencia": "Precios de grilla del feed sin aritmetica; determina direccion del gap."
+  },
+  "Gaps2.cs :: bool inside = price > g.Bottom && price < g.Top;": {
+   "veredicto": "INMUNE_MEDIOTICK",
+   "evidencia": "Bordes de gap a medio tick de la grilla; ningun precio cae encima."
+  },
+  "Gaps2.cs :: ? price <= g.Bottom - ReversalConfirmTicks * TickSize": {
+   "veredicto": "INMUNE_MEDIOTICK",
+   "evidencia": "Confirmacion de reversal con offset entero de ticks sobre borde de medio tick."
+  },
+  "Gaps2.cs :: : price >= g.Top + ReversalConfirmTicks * TickSize;": {
+   "veredicto": "INMUNE_MEDIOTICK",
+   "evidencia": "Confirmacion de reversal con offset entero de ticks sobre borde de medio tick."
+  },
+  "Gaps2.cs :: bool backThroughProximal = g.IsBullish ? price >= g.Top : price <= g.Bottom;": {
+   "veredicto": "INMUNE_MEDIOTICK",
+   "evidencia": "Paso por borde proximal a medio tick de la grilla; ningun trade cae encima."
+  },
+  "Gaps2.cs :: double px = (CurrentBars != null && CurrentBars.Length > 0 && CurrentBars[0] >= 0) ? Close[0] : 0;": {
+   "veredicto": "INMUNE_MONOTONO",
+   "evidencia": "Lectura de Close[0] del chart para hud visual; precio de grilla sin aritmetica."
+  },
+  "HFTZonesNQPureV4.cs :: private readonly List<double> priceList = new List<double>();": {
+   "veredicto": "NO_ES_PRECIO",
+   "evidencia": "Declaracion de coleccion generica de precios para calculo de mediana/cuantil."
+  },
+  "HFTZonesNQPureV4.cs :: for (int i = 0; i < priceList.Count; i++)": {
+   "veredicto": "NO_ES_PRECIO",
+   "evidencia": "Indice entero de bucle for; no compara precios en double."
+  },
+  "HFTZonesNQPureV4.cs :: double tY = z.Direction == 1 ? z.Lower - (TickSize * 4) : z.Upper + (TickSize * 4);": {
+   "veredicto": "FUERA_DE_ALCANCE",
+   "evidencia": "Coordenada de dibujo grafico para renderizado en NinjaTrader 8; capa puramente visual."
+  },
+  "HFTZonesNQPureV4.cs :: if (zHi >= cLower && zLo <= cUpper)": {
+   "veredicto": "INMUNE_MONOTONO",
+   "evidencia": "Precios de grilla en NQ con TickSize=0.25 (potencia de 2, exactamente representable)."
+  },
+  "HFTZonesNQPureV4.cs :: if (L < lo) lo = L;": {
+   "veredicto": "INMUNE_MONOTONO",
+   "evidencia": "Calculo de envolvente con precios de grilla exactos en NQ (TickSize=0.25)."
+  },
+  "HFTZonesNQPureV4.cs :: if (H > hi) hi = H;": {
+   "veredicto": "INMUNE_MONOTONO",
+   "evidencia": "Calculo de envolvente con precios de grilla exactos en NQ (TickSize=0.25)."
+  },
+  "HFTZonesNQPureV4.cs :: if (hi <= lo) return;": {
+   "veredicto": "INMUNE_MONOTONO",
+   "evidencia": "Comparacion de envolvente de precios de grilla exactos en NQ."
+  },
+  "HFTZonesNQPureV4.cs :: if (price > fH) fH = price;": {
+   "veredicto": "INMUNE_MONOTONO",
+   "evidencia": "Calculo de maximo de sesion con precios de grilla exactos en NQ."
+  },
+  "HFTZonesNQPureV4.cs :: if (price < fL) fL = price;": {
+   "veredicto": "INMUNE_MONOTONO",
+   "evidencia": "Calculo de minimo de sesion con precios de grilla exactos en NQ."
+  },
+  "HFTZonesNQPureV4_V2.cs :: private readonly List<double> priceList = new List<double>();": {
+   "veredicto": "NO_ES_PRECIO",
+   "evidencia": "Declaracion de coleccion generica de precios para calculo de mediana/cuantil."
+  },
+  "HFTZonesNQPureV4_V2.cs :: for (int i = 0; i < priceList.Count; i++)": {
+   "veredicto": "NO_ES_PRECIO",
+   "evidencia": "Indice entero de bucle for; no compara precios en double."
+  },
+  "HFTZonesNQPureV4_V2.cs :: double tY = z.Direction == 1 ? z.Lower - (TickSize * 4) : z.Upper + (TickSize * 4);": {
+   "veredicto": "FUERA_DE_ALCANCE",
+   "evidencia": "Coordenada de dibujo grafico para renderizado en NinjaTrader 8; capa puramente visual."
+  },
+  "HFTZonesNQPureV4_V2.cs :: if (zHi >= cLower && zLo <= cUpper)": {
+   "veredicto": "INMUNE_MONOTONO",
+   "evidencia": "Precios de grilla en NQ con TickSize=0.25 (potencia de 2, exactamente representable)."
+  },
+  "HFTZonesNQPureV4_V2.cs :: if (L < lo) lo = L;": {
+   "veredicto": "INMUNE_MONOTONO",
+   "evidencia": "Calculo de envolvente con precios de grilla exactos en NQ (TickSize=0.25)."
+  },
+  "HFTZonesNQPureV4_V2.cs :: if (H > hi) hi = H;": {
+   "veredicto": "INMUNE_MONOTONO",
+   "evidencia": "Calculo de envolvente con precios de grilla exactos en NQ (TickSize=0.25)."
+  },
+  "HFTZonesNQPureV4_V2.cs :: if (hi <= lo) return;": {
+   "veredicto": "INMUNE_MONOTONO",
+   "evidencia": "Comparacion de envolvente de precios de grilla exactos en NQ."
+  },
+  "HFTZonesNQPureV4_V2.cs :: if (price > fH) fH = price;": {
+   "veredicto": "INMUNE_MONOTONO",
+   "evidencia": "Calculo de maximo de sesion con precios de grilla exactos en NQ."
+  },
+  "HFTZonesNQPureV4_V2.cs :: if (price < fL) fL = price;": {
+   "veredicto": "INMUNE_MONOTONO",
+   "evidencia": "Calculo de minimo de sesion con precios de grilla exactos en NQ."
   }
  }
 }
