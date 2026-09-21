@@ -1468,6 +1468,34 @@
     };
   }
 
+  // Índice de la barra donde NACE la zona (origen de la racha). Prioridad: índice explícito del bundle
+  // (solo válido para la serie por defecto del run), luego el tiempo de origen buscado por bisección.
+  // El resultado se cachea por serie activa; nunca se pisa `start_bar_idx` del bundle.
+  function zoneOriginBarIndex(z, candles, activeKey) {
+    var n = candles ? candles.length : 0;
+    if (!n) return -1;
+    if (z._origCache && z._origCache.key === activeKey && z._origCache.n === n) return z._origCache.idx;
+    var idx = -1;
+    var runKey = state.run && state.run.bar_key;
+    if (Number.isInteger(z.start_bar_idx) && z.start_bar_idx >= 0 && z.start_bar_idx < n &&
+        (!runKey || runKey === activeKey)) {
+      idx = z.start_bar_idx;
+    } else {
+      var t = null;
+      if (z.origin_ts_ns !== undefined && z.origin_ts_ns !== null) t = Number(z.origin_ts_ns) / 1e9;
+      else if (Number.isFinite(Number(z.t0))) t = Number(z.t0);
+      if (t === null) return -1;
+      var lo = 0, hi = n - 1;
+      while (lo <= hi) {
+        var mid = (lo + hi) >> 1;
+        if (candles[mid].time < t) lo = mid + 1; else hi = mid - 1;
+      }
+      idx = Math.max(0, Math.min(n - 1, lo));
+    }
+    z._origCache = { key: activeKey, n: n, idx: idx };
+    return idx;
+  }
+
   // Inicio causal ESTRICTO. Solo disponibilidad explícita; las zonas científicas no
   // caen al origen retrospectivo. LuxAlgo es un indicador externo sin exportador causal.
   function zoneAvailableSec(z) {
@@ -1555,24 +1583,17 @@
       // CULLING VERTICAL INSTANTÁNEO: si la zona no está en el rango vertical de la pantalla, descartar de inmediato
       if (visMaxP !== null && (zBot > visMaxP || zTop < visMinP)) return;
 
+      // ORIGEN VISUAL: la caja nace en la barra donde se formó la zona (inicio de la racha), no en la
+      // barra de disponibilidad. La disponibilidad causal sigue decidiendo SI la zona existe (arriba).
+      // Se resuelve por índice de barra, no por segundos reales: en bundles con eje sintético (una barra
+      // por segundo) los segundos reales caen minutos antes y la caja arrancaba lejos de su origen.
+      var i0 = zoneOriginBarIndex(z, candles, activeKey);
+      zoneStartTs = (i0 >= 0 && candles && i0 < nCandles) ? candles[i0].time : zoneStartTs;
+
       // CULLING HORIZONTAL TEMPRANO: zonas creadas a la derecha de la ventana visible
       if (zoneStartTs > vr.to) return;
 
       var t1_eff = Math.max(zoneStartTs, z.t1 || (zoneStartTs + 5400));
-
-      var i0 = (z.start_bar_idx !== undefined && z.start_bar_idx < nCandles && candles[z.start_bar_idx].time === zoneStartTs)
-        ? z.start_bar_idx
-        : -1;
-      if (i0 === -1 && candles && nCandles > 0) {
-        var low = 0, high = nCandles - 1;
-        while (low <= high) {
-          var mid = (low + high) >> 1;
-          if (candles[mid].time < zoneStartTs) low = mid + 1;
-          else high = mid - 1;
-        }
-        i0 = Math.max(0, Math.min(nCandles - 1, low));
-        z.start_bar_idx = i0; // Cachear en z para no repetir búsqueda binaria en cada frame
-      }
 
       // --- MODO 2: CONSUMO DE ZONA POR VOLUMEN / NIVEL DE COMERCIO (TICK A TICK) ---
       var isVolMode = (activeProps.consumption_mode === "volume");
@@ -4298,7 +4319,7 @@
     var qAsset = params.get("asset");
     var qTf = params.get("tf");
     var opts = qTf ? { targetTf: qTf } : {};
-    if (qAsset && window.ASSET_CATALOG && window.ASSET_CATALOG.some(function(a){ return a.id === qAsset; })) {
+    if (qAsset && window.ASSET_CATALOG && (/^[A-Za-z0-9]+_CONT$/.test(qAsset) || window.ASSET_CATALOG.some(function(a){ return a.id === qAsset; }))) {
       loadAsset(qAsset, opts);
     } else if (window.BUNDLE_6E_CONT) {
       applyLoadedAsset(window.BUNDLE_6E_CONT, opts);

@@ -107,14 +107,19 @@ def test_la_insignia_exploratoria_depende_solo_del_modo_exploratorio():
     assert "hasRenderedExploratory = true" in bloque
 
 
-def test_las_cajas_se_anclan_al_inicio_causal_nunca_a_t0():
-    """Migrado de test_viewer_causal_zone_start.py."""
+def test_las_cajas_nacen_en_la_barra_de_origen_y_la_disponibilidad_solo_decide_si_existen():
+    """Decision de Nico 2026-09-21: la caja empieza donde se creo la zona (barra de origen de la racha).
+    La disponibilidad causal sigue decidiendo si la zona existe, pero ya no ancla el dibujo. El origen se
+    resuelve por indice de barra: los segundos reales no sirven en bundles con eje sintetico (una barra por
+    segundo), donde la caja arrancaba minutos antes de su origen."""
     assert "ABSTAIN_BAR_KEY_MISMATCH" in HTML
-    assert "var zoneStartTs = zoneAvailableSec(z);" in HTML
-    assert "var x0 = timeToX(z.t0, i0);" not in HTML
+    assert "var zoneStartTs = zoneAvailableSec(z);" in HTML          # gating causal intacto
+    assert "var x0 = timeToX(z.t0, i0);" not in HTML                 # nunca t0 crudo en segundos reales
     assert HTML.count("var x0 = timeToX(zoneStartTs, i0);") == 2
-    assert "candles[z.start_bar_idx].time === zoneStartTs" in HTML
-    assert "if (candles[mid].time < zoneStartTs)" in HTML
+    assert "function zoneOriginBarIndex" in HTML
+    assert "var i0 = zoneOriginBarIndex(z, candles, activeKey);" in HTML
+    # el indice de barra del bundle no se pisa con un cache del visor (era valido solo para su serie)
+    assert "z.start_bar_idx = i0" not in HTML
 
 
 def test_solo_se_dibujan_los_bordes_exteriores_de_la_zona():
