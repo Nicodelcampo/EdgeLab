@@ -14,6 +14,7 @@ import hashlib
 import json
 import math
 import os
+import re
 
 
 def param_set_id(params: dict, bar_key: str) -> str:
@@ -23,6 +24,9 @@ def param_set_id(params: dict, bar_key: str) -> str:
 
 
 def bar_key_of(bars) -> str:
+    if bars.kind == "time":
+        # BarSeries.param is expressed in minutes for time bars.
+        return f"time_{bars.param}m"
     return f"{bars.kind}_{bars.param}"
 
 
@@ -36,71 +40,32 @@ def _candles(bars, tick_size):
             volume=float(bars.volume[b])))
     return out
 
-def _bar_duration_s(bar_key: str) -> int | None:
-    """Duración en segundos de una barra temporal, None para bars tick.
 
-    Solo se usa como fallback explícito cuando el kernel no emitió available_at_ns.
-    Nunca debe aplicarse fuera de barras temporales (time_*).
-    """
-    kind, _, val = bar_key.partition("_")
-    if kind != "time":
+def _bar_duration_s(bar_key: str) -> int | None:
+    """Strict temporal duration; ambiguous or non-time specs return None."""
+    match = re.fullmatch(r"time_(\d+)([smhd])", str(bar_key or ""))
+    if match is None:
         return None
     unit_map = {"s": 1, "m": 60, "h": 3600, "d": 86400}
-    # val puede ser '5m', '1h', '15m', etc.
-    for unit, secs in unit_map.items():
-        if val.endswith(unit):
-            try:
-                return int(val[: -len(unit)]) * secs
-            except ValueError:
-                return None
-    try:
-        return int(val)  # si val ya es solo segundos
-    except ValueError:
-        return None
+    value = int(match.group(1))
+    return value * unit_map[match.group(2)] if value > 0 else None
 
 
 def _zone_json(z, source, last_ms, match_id, display_bar_key="", formation_spec=None):
-    """Serializa una zona para el bundle del viewer.
-
-    Campos canónicos de causalidad y geometría:
-    - ``top`` / ``bottom``: límites de precio de la zona (admite alias hi/lo).
-    - ``kind``: clasificación de la zona (admite alias side).
-    - ``formation_spec``: especificación exacta de formación de la cubeta/barra
-      (ej. "tick_count:25", "time_5m"). Separado conceptual y operativamente
-      del timeframe del chart de visualización.
-    - ``display_bar_key``: serie de velas del gráfico primario ("time_5m", "tick_25").
-    - ``formation_start_ts``: inicio de la formación (segundos) desde formation_start_ns.
-    - ``formation_end_ts``: fin de la formación (segundos) desde formation_end_ns.
-    - ``t0``: timestamp inicial de visualización, exportado prioritariamente
-      desde formation_start_ns; fallback a created_ms // 1000.
-    - ``available_ts``: segundo exacto en que la señal es ejecutable sin look-ahead.
-      Proviene de available_at_ns (prioridad 1). Si falta, fallback DERIVED_COMPATIBILITY_FALLBACK
-      se aplica EXCLUSIVAMENTE si formation_spec es temporal (time_*). Para formaciones
-      tick/volumen sin available_at_ns: UNAVAILABLE (None), evitando sumas espurias.
-    - ``available_origin``: etiqueta de auditoría con la procedencia exacta:
-      - 'KERNEL_AVAILABLE_AT_NS': emitido por el productor causal.
-      - 'EXPLICIT_AVAILABLE_TS': valor explícito pre-calculado en la zona.
-      - 'DERIVED_COMPATIBILITY_FALLBACK': fallback t0 + dur restringido a formation_spec temporal.
-      - 'UNAVAILABLE': formación no temporal sin timestamp de kernel disponible.
-    - ``source_barspec``: alias retrocompatible de formation_spec.
-    """
-    # Geometría con soporte dual de alias
+    """Serialize geometry and causal provenance without inferring from display."""
     top = z["top"] if ("top" in z and z["top"] is not None) else z.get("hi")
     bottom = z["bottom"] if ("bottom" in z and z["bottom"] is not None) else z.get("lo")
     kind = z["kind"] if ("kind" in z and z["kind"] is not None) else z.get("side")
 
-    # Identificación estricta de la formación vs visualización
     f_spec = z.get("formation_spec") or formation_spec
     if not f_spec and "TapeWindowTicks" in z:
         f_spec = f"tick_count:{z['TapeWindowTicks']}"
 
-    # Timestamps de formación
     f_start_ns = z.get("formation_start_ns")
     f_end_ns = z.get("formation_end_ns")
     formation_start_ts = int(f_start_ns // 1_000_000_000) if f_start_ns is not None else None
     formation_end_ts = int(f_end_ns // 1_000_000_000) if f_end_ns is not None else None
 
-    # t0: exportado preferentemente desde formation_start_ns
     if formation_start_ts is not None:
         t0 = formation_start_ts
     elif "created_ms" in z and z["created_ms"] is not None:
@@ -110,7 +75,6 @@ def _zone_json(z, source, last_ms, match_id, display_bar_key="", formation_spec=
     else:
         t0 = 0
 
-    # Causalidad de disponibilidad y etiquetado explícito de origen
     avail_ns = z.get("available_at_ns")
     avail_ts = z.get("available_ts")
     if avail_ns is not None:
@@ -120,15 +84,13 @@ def _zone_json(z, source, last_ms, match_id, display_bar_key="", formation_spec=
         available_ts = int(avail_ts)
         available_origin = "EXPLICIT_AVAILABLE_TS"
     else:
-        # Fallback legacy: SOLO si formation_spec es explícitamente temporal (time_*)
-        # Para zonas legacy sin formation_spec, display_bar_key sirve como proxy
-        spec_for_dur = f_spec or display_bar_key
-        dur = _bar_duration_s(spec_for_dur) if spec_for_dur else None
-        if dur is not None:
-            available_ts = t0 + dur
+        # Display bars are never causal evidence. Derive only from an explicit
+        # temporal formation contract; otherwise abstain.
+        duration = _bar_duration_s(f_spec) if f_spec else None
+        if duration is not None:
+            available_ts = t0 + duration
             available_origin = "DERIVED_COMPATIBILITY_FALLBACK"
         else:
-            # Formaciones tick_count:* o sin duration: abstención estricta, jamás sumar dur de display_bar_key
             available_ts = None
             available_origin = "UNAVAILABLE"
 
@@ -143,7 +105,7 @@ def _zone_json(z, source, last_ms, match_id, display_bar_key="", formation_spec=
         formation_end_ts=formation_end_ts,
         available_ts=available_ts,
         available_origin=available_origin,
-        source_barspec=f_spec or display_bar_key or None,
+        source_barspec=f_spec or None,
         state=z.get("state"), kind=kind, touches=z.get("touches"),
         end_reason=z.get("end_reason"), match=match_id)
 
@@ -210,9 +172,7 @@ def write_data_js(bundle, out_dir):
 
 
 def write_zone_store(runs, ticks, out_path):
-    """Zone store (semilla F5): coordenadas de TODAS las zonas de todas las
-    configuraciones, con identidad (indicator, param_set_id, bar_key) para
-    reutilizarlas como features sin recorrer indicadores de nuevo."""
+    """Zone store reutilizable para todas las configuraciones."""
     import pyarrow as pa
     import pyarrow.parquet as pq
 
