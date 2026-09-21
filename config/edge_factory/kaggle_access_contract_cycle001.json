@@ -1,0 +1,31 @@
+{
+  "contract_id": "KAGGLE-ACCESS-CERTIFICATION-V1",
+  "work_id": "CYCLE-001-C-KAGGLE-ACCESS-001",
+  "mode": "TARGET_FREE_FAIL_CLOSED",
+  "credential_value_access": "FORBIDDEN",
+  "success": {
+    "http_status": 200,
+    "json_shape_valid": true,
+    "verdict": "AUTHENTICATED_ENDPOINT_ONLY"
+  },
+  "abstentions": {
+    "400_401_403": "ABSTAIN_AUTH_OR_ENDPOINT",
+    "network_error": "ABSTAIN_NETWORK",
+    "invalid_json_shape": "ABSTAIN_RESPONSE_SHAPE",
+    "other": "ABSTAIN_UNCLASSIFIED"
+  },
+  "non_claims": [
+    "API authentication does not verify any dataset",
+    "API authentication does not verify file hashes",
+    "A listed remote object is not REMOTE_VERIFIED",
+    "No outcome or holdout access is authorized"
+  ],
+  "gates": {
+    "PREEXISTING_OUTCOME_EXPOSURE": "YES",
+    "HOLDOUT_CONTAMINATED_FOR_THIS_HYPOTHESIS": "YES",
+    "holdout_enabled": false,
+    "outcomes_inspected": false,
+    "promotion_ceiling": "LESSON_CANDIDATE"
+  },
+  "reviewer": "D"
+}
