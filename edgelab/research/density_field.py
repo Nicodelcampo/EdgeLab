@@ -23,6 +23,11 @@ from typing import Any
 
 import numpy as np
 
+# Firewall del holdout (2026-07-01 -> 2026-12-31 CT). Ninguna zona disponible en o despues de este
+# instante puede entrar a un campo, ni se puede evaluar el campo en ese instante. Antes vivia solo
+# en `corridor_engine.js`; el campo canonico tiene que llevarlo consigo, en Python y en JS.
+HOLDOUT_NS = 1_782_856_800_000_000_000
+
 
 def to_nanoseconds(t: Any) -> int:
     """Converts a timestamp or epoch representation into integer nanoseconds."""
@@ -238,6 +243,9 @@ def compute_field(
     ended_policy = cfg.get("ended_zone_policy", "exclude_ended")  # "exclude_ended" | "penalize_ended" | "include_all"
 
     t_ref_ns = to_nanoseconds(t_ref)
+    holdout_guard = bool(cfg.get("holdout_guard", True))
+    if holdout_guard and t_ref_ns >= HOLDOUT_NS:
+        raise ValueError(f"t_ref {t_ref_ns} is at or after the sealed holdout boundary {HOLDOUT_NS}")
 
     # Filter and sort causally available zones
     active_zones: list[dict] = []
@@ -247,6 +255,8 @@ def compute_field(
 
     for z in zones:
         z_avail_ns, is_avail_fallback = extract_zone_available_ns(z)
+        if holdout_guard and z_avail_ns >= HOLDOUT_NS:
+            raise ValueError(f"zone {z.get('id', z.get('zone_id', '?'))} is available at or after the sealed holdout boundary")
         if is_avail_fallback:
             legacy_availability_fallbacks += 1
 
