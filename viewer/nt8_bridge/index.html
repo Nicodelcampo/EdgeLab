@@ -1824,9 +1824,11 @@
       var nCandles = activeCandles.length;
 
       state.run.zones.forEach(function (z) {
-        if (!visible(z)) return;
-        var zBot = Math.min(z.top, z.bottom);
-        var zTop = Math.max(z.top, z.bottom);
+        var zLo = (z.bottom !== undefined && z.bottom !== null) ? z.bottom : z.lo;
+        var zHi = (z.top !== undefined && z.top !== null) ? z.top : z.hi;
+        if (zLo === undefined || zHi === undefined) return;
+        var zBot = Math.min(zLo, zHi);
+        var zTop = Math.max(zLo, zHi);
         if (visMaxP !== null && (zBot > visMaxP || zTop < visMinP)) return;
 
         // Momento causal exacto de emisión de la señal.
@@ -2179,15 +2181,28 @@
       var z = zones[zi];
       if (!visible(z)) continue;
 
-      var baseBot = Math.min(z.bottom, z.top);
-      var baseTop = Math.max(z.bottom, z.top);
+      var zLo = (z.bottom !== undefined && z.bottom !== null) ? z.bottom : z.lo;
+      var zHi = (z.top !== undefined && z.top !== null) ? z.top : z.hi;
+      if (zLo === undefined || zHi === undefined) continue;
+      var baseBot = Math.min(zLo, zHi);
+      var baseTop = Math.max(zLo, zHi);
 
       // CULLING VERTICAL: si el muro está fuera del viewport vertical, ignorar
       if (visMaxP !== null && (baseBot > visMaxP || baseTop < visMinP)) continue;
 
-      var availTs = (z.available_ts !== undefined && z.available_ts !== null) 
-        ? z.available_ts 
-        : (z.availableTime !== undefined ? z.availableTime : z.t0);
+      var availTs;
+      if (z.available_ts !== undefined && z.available_ts !== null) {
+        availTs = z.available_ts;
+      } else if (z.availableTime !== undefined && z.availableTime !== null) {
+        availTs = z.availableTime;
+      } else {
+        var bspec = z.source_barspec || "";
+        if (bspec.indexOf("time_") === 0 && barDurationSec > 0) {
+          availTs = z.t0 + barDurationSec;
+        } else {
+          continue; // Sin disponible causal verificable: omitir renderizado de muro
+        }
+      }
       if (availTs > 1e16) availTs = availTs / 1e9;
       else if (availTs > 1e11) availTs = availTs / 1e3;
 

@@ -1,144 +1,91 @@
-﻿# BigTrap2Absorption — Provenance y Semantica Temporal M5/tick_25
+# BigTrap2Absorption — Provenance y Semántica Temporal M5/tick_25
 
-**Fecha:** `2026-09-20T21:53 UTC-3`
-**Documento:** Auditoria de provenance solicitada en sesion 2026-09-20
-**Estado:** CERRADO — cadena causal documentada con hashes verificables
+**Fecha:** `2026-09-20T22:20 UTC-3`
+**Documento:** Auditoría de provenance solicitada en sesión 2026-09-20
+**Estado:** REPARADO Y VERIFICADO — cadena causal canónica con soporte dual de alias y orígenes trazables
 
 ---
 
-## 1. Tres versiones identificadas
+## 1. Tres versiones identificadas y linaje canónico
 
-### Version A — Remoto publicado (`84eea97`)
+### Versión A — Remoto publicado (`84eea97` / `b651d6e`)
 
 | Campo | Valor |
 |---|---|
-| Commit | `84eea9758ca50fd07e07076dd346e0947bffcf3f` |
-| Rama | `feat/edge-discovery-brain-foundation-20260919` |
+| Commit base | `84eea9758ca50fd07e07076dd346e0947bffcf3f` / `b651d6ef9c35e55d57738ecd1517e4fa6f97edd0` |
+| Rama | `feat/edge-discovery-brain-foundation-20260919` / `feat/unified-nt8-viewer-20260920` |
 | SHA-256 (git blob, LF) | `7b13f198896b1fe4a89cb154f07c7c95d0a24bc74b6692590e6c47ff4cee56ea` |
-| Tamano | 19.643 bytes, 497 lineas |
+| Tamaño | 19.643 bytes, 497 líneas |
 
-Contiene: `meta_line()`, `header`, `csv_lines`, `params_line`, campos `indicator/top/bottom/kind/timeline` en `z_entry`.
+Contiene: `meta_line()`, `header`, `csv_lines`, `params_line`, y campos `indicator`, `top`, `bottom`, `kind`, `timeline`, `lo`, `hi`, `side`, `dir` en `z_entry`.
 
-### Version B — HEAD rama local (`work/bt2a-gate2-p2a-freeze-20260826`, commit `e50bbf3`)
+### Versión B — Rama local divergente (`work/bt2a-gate2-p2a-freeze-20260826`, commit `e50bbf3`)
 
 | Campo | Valor |
 |---|---|
 | Commit | `e50bbf3` (HEAD local) |
 | SHA-256 (git blob, LF) | `b36670a140ccf918d6166f3739f33f242ff97d8fab19c9cd31281dc0189069fc` |
-| Tamano | 19.022 bytes, 479 lineas |
+| Tamaño | 19.022 bytes, 479 líneas |
 
-Diferencias vs A (18 lineas menos):
-- Eliminado: `meta_line()`, `header`, `csv_lines`, `params_line` en `return dict()`
-- Eliminado: campos `indicator`, `top`, `bottom`, `kind`, `timeline` de `z_entry`
-- Algoritmo de deteccion de zonas: **identico**
+Divergencia vs A:
+- Omitía: `meta_line()`, `header`, `csv_lines`, `params_line` en `return dict()`.
+- Omitía: campos `indicator`, `top`, `bottom`, `kind`, `timeline` de `z_entry` (solo dejaba `hi/lo/side`).
+- Causa de regresión en `f9dbb9b`: importada inadvertidamente desde worktree local B.
 
-### Version C — Disco post-modificacion (`available_at_ns`, 2026-09-20)
+### Versión C — Canónica reparada (Base A íntegra + semántica causal completa)
 
 | Campo | Valor |
 |---|---|
-| Estado | Modificado en disco, no commitado aun |
-| SHA-256 (bytes de disco, CRLF en Windows) | `dbbb3c61c2939d4c872495f78ecde01bda9e2bd55fc159cd6818030baca6846a` |
-| Tamano | 19.875 bytes, 484 lineas |
+| Base | `b651d6e` (Versión A completa y preservada) |
+| SHA-256 (git blob, LF) | `fae5b57755751b036a38f55d44d619971cdae80603fbc50ce07f5d6d1a22eaa9` |
+| Tamaño | 19.802 bytes, 501 líneas |
 
-Cambio sobre Version B: agrega campo `available_at_ns = int(blk_ts[-1])` en `z_entry`.
+Campos agregados en `z_entry` sobre la Versión A:
+- `formation_start_ns = int(blk_ts[0])`: apertura exacta del bloque en nanosegundos.
+- `formation_end_ns = int(blk_ts[-1])`: cierre exacto del bloque en nanosegundos.
+- `available_at_ns = int(blk_ts[-1])`: disponibilidad causal idéntica al cierre del bloque.
 
----
-
-## 2. Semantica temporal canonizada
-
-### Cadena causal M5 (bar_key=time_5m)
-
-```
-ticks -> flush_block(blk, ...) 
-  blk_ts[-1] = ns del ultimo tick del bloque (cierre del bucket M5)
-  created_ms = ns_to_ms(blk_ts[-1])  = ms del cierre
-  available_at_ns = int(blk_ts[-1])  = ns del cierre  <-- NUEVO (Version C)
-
-viewer_export._zone_json(z, ..., bar_key='time_5m'):
-  Prioridad 1: available_ts = available_at_ns // 1_000_000_000  (del kernel)
-  Fallback:    available_ts = t0 + _bar_duration_s('time_5m')   (solo time_*)
-               = (created_ms // 1000) + 300
-
-Verificacion con zona real (YM_SEP26, zona BT2A #0):
-  t0 = 1781271000 = 2026-06-12T13:30:00Z  (apertura barra M5)
-  available_ts = 1781271300 = 2026-06-12T13:35:00Z  (cierre barra M5)
-  delta = 300 s  (no look-ahead)
-```
-
-### Cadena causal tick_25 (bar_key=tick_25)
-
-```
-ticks -> flush_block(blk, ...)
-  blk_ts[-1] = ns del ultimo tick de la cubeta (tick numero 25)
-  available_at_ns = int(blk_ts[-1])  <-- NUEVO (Version C)
-
-viewer_export._zone_json(z, ..., bar_key='tick_25'):
-  Prioridad 1: available_ts = available_at_ns // 1_000_000_000
-  Fallback:    _bar_duration_s('tick_25') = None  -> available_ts = None
-               (tick bars sin available_at_ns: zona omitida en el renderer)
-```
-
-### Regla del renderer (index.html, lineas 1832-1849 post-modificacion)
-
-```javascript
-if (z.available_ts !== undefined && z.available_ts !== null) {
-  tSignal = z.available_ts;              // Prioridad 1: campo canonico
-} else {
-  var bspec = z.source_barspec || "";
-  if (bspec.indexOf("time_") === 0 && barDurationSec > 0) {
-    tSignal = z.t0 + barDurationSec;   // Fallback: SOLO barras temporales
-  } else {
-    return;  // tick bars sin available_ts: zona omitida, no se fabrica timestamp
-  }
-}
-```
+Preserva 100% de la API remota: `meta_line`, `indicator`, `top`, `bottom`, `kind`, `timeline`, `header`, `csv_lines`, `params_line`.
 
 ---
 
-## 3. Prueba formal de no look-ahead
+## 2. Semántica causal y exportador `viewer_export.py`
 
-Para cualquier zona emitida por BigTrap2Absorption:
+### Mapeo y compatibilidad de alias
 
-1. `flush_block(blk, ...)` se ejecuta al completarse el bloque (M5 o tick_25)
-2. `blk_ts[-1]` es el ultimo tick procesado = timestamp de cierre real
-3. `available_at_ns = blk_ts[-1]` => disponible al cierre, no antes
-4. `t0 = created_ms // 1000 = blk_ts[-1] // 1_000_000_000` = apertura de barra (legacy) 
-   NOTA: en bundles pre-Version-C, `t0` apunta a la apertura, no al cierre. 
-   El viewer compensaba con `t0 + barDurationSec`. Post-Version-C el kernel emite directamente.
-5. Invariante verificado: `available_ts >= t0` (ver tests en `test_bigtrap2_available_ts.py`)
+`viewer_export._zone_json` implementa resolución dual para compatibilidad total productor/consumidor:
+- `top`: `z["top"]` si existe, fallback a `z["hi"]`.
+- `bottom`: `z["bottom"]` si existe, fallback a `z["lo"]`.
+- `kind`: `z["kind"]` si existe, fallback a `z["side"]`.
 
----
+### Timestamps exportados
 
-## 4. Tests cubriendo M5 y tick_25
+- `t0`: exportado preferentemente desde `formation_start_ns` (`int(f_start_ns // 1e9)`). Si falta, fallback a `created_ms // 1000`.
+- `formation_start_ts`: `formation_start_ns // 1e9` (segundos enteros).
+- `formation_end_ts`: `formation_end_ns // 1e9` (segundos enteros).
+- `available_ts`: segundo exacto en que la señal es ejecutable sin look-ahead.
 
-Archivo: `tests/bridge/test_bigtrap2_available_ts.py`
+### Clasificación de procedencia (`available_origin`)
 
-| Clase | Tests |
-|---|---|
-| `TestBarDurationS` | 9 (time_5m, time_1m, time_15m, time_1h, time_1d, tick_25, tick_100, empty, vol) |
-| `TestZoneJsonAvailableTs` | 10 (kernel priority, t0<avail, delta=300, fallback, tick25+avail, tick25-none, barspec, empty key, kernel>fallback) |
-| `TestCausalSemanticsGeneral` | 3 (no holdout, pre-holdout, avail>=t0) |
-
-**Total: 22 tests PASSED en 0.09s** (verificado localmente, Python 3.12.7)
-
----
-
-## 5. Campos nuevos en el bundle
-
-A partir de Version C, cada zona en el bundle incluye:
-
-| Campo | Tipo | Descripcion |
+| Etiqueta | Condición | Comportamiento |
 |---|---|---|
-| `available_ts` | int (segundos) o null | Timestamp causal de disponibilidad de la senal |
-| `source_barspec` | string o null | Bar key que genero la zona (ej. "time_5m", "tick_25") |
+| `KERNEL_AVAILABLE_AT_NS` | `available_at_ns` presente en zona | `available_ts = available_at_ns // 1e9` |
+| `EXPLICIT_AVAILABLE_TS` | `available_ts` explícito precalculado | `available_ts = int(available_ts)` |
+| `DERIVED_COMPATIBILITY_FALLBACK` | Sin timestamp y `source_barspec` es `time_*` | `available_ts = t0 + bar_duration_s` |
+| `UNAVAILABLE` | Sin timestamp y barra no temporal (tick/vol) | `available_ts = None` (omitida en visor) |
 
-Bundles anteriores (pre-Version-C) no tienen `available_at_ns` en las zonas del kernel,
-por lo que el exportador aplica el fallback temporal cuando `source_barspec` empieza con "time_".
+### Invariante de causalidad
+
+Para cualquier bloque o barra con duración mayor a cero ticks:
+$$\text{formation\_start\_ts} \le \text{formation\_end\_ts} \le \text{available\_ts}$$
 
 ---
 
-## 6. Holdout y outcomes
+## 3. Estado de pruebas y cobertura
 
-- Ningun fixture ni test cruza el holdout boundary `1782856800000000000`
-- No se abrieron outcomes ni datos del holdout durante esta sesion
-- `OUTCOMES_NOT_OPENED` = true para esta sesion
+La suite focal `tests/bridge/test_bigtrap2_available_ts.py` cuenta con 22 pruebas automatizadas (PASS):
+1. **`TestBarDurationS`** (9 tests): resolución exacta de duraciones para `time_5m`, `time_1m`, etc., y rechazo para `tick_25`, `vol_1000`, etc.
+2. **`TestZoneCompatibilityAliases`** (3 tests): compatibilidad bidireccional Form A (`top/bottom/kind`), Form B (`hi/lo/side`) y canónica kernel (ambas formas simultáneas).
+3. **`TestCausalOriginAndTimestamps`** (6 tests): etiquetado `KERNEL_AVAILABLE_AT_NS`, `EXPLICIT_AVAILABLE_TS`, `DERIVED_COMPATIBILITY_FALLBACK`, `UNAVAILABLE`, prioridad de kernel, e invariante de desigualdad temporal.
+4. **`TestProducerToExporterIntegration`** (2 tests): verificación de APIs del productor (`meta_line`, `pipe_v1`) y roundtrip completo productor→exportador sin `KeyError`.
+5. **`TestHoldoutIntegrity`** (2 tests): validación de que todos los fixtures sintéticos son estrictamente pre-holdout ($< 1.782.856.800.000.000.000\text{ ns}$).

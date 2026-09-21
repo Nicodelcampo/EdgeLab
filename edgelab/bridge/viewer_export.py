@@ -62,36 +62,71 @@ def _bar_duration_s(bar_key: str) -> int | None:
 def _zone_json(z, source, last_ms, match_id, bar_key=""):
     """Serializa una zona para el bundle del viewer.
 
-    Campos canónicos de causalidad:
-    - ``available_ts``: segundos desde epoch en que la señal es ejecutable.
-      Proviene de ``available_at_ns`` del kernel (prioridad 1); si falta y la
-      barra es temporal (time_*), se calcula t0 + duración de barra (fallback
-      explícito y restringido). Para barras tick sin available_at_ns: None.
+    Campos canónicos de causalidad y geometría:
+    - ``top`` / ``bottom``: límites de precio de la zona (admite alias hi/lo).
+    - ``kind``: clasificación de la zona (admite alias side).
+    - ``formation_start_ts``: inicio de la formación (segundos) desde formation_start_ns.
+    - ``formation_end_ts``: fin de la formación (segundos) desde formation_end_ns.
+    - ``t0``: timestamp inicial de visualización, exportado prioritariamente
+      desde formation_start_ns; fallback a created_ms // 1000.
+    - ``available_ts``: segundo exacto en que la señal es ejecutable sin look-ahead.
+    - ``available_origin``: etiqueta de auditoría con la procedencia exacta:
+      - 'KERNEL_AVAILABLE_AT_NS': emitido por el productor causal.
+      - 'EXPLICIT_AVAILABLE_TS': valor explícito pre-calculado en la zona.
+      - 'DERIVED_COMPATIBILITY_FALLBACK': fallback t0 + dur restringido a barras time_*.
+      - 'UNAVAILABLE': barra no temporal (ej. tick) sin timestamp de kernel disponible.
     - ``source_barspec``: tipo de barra generadora ("time_5m", "tick_25", ...).
-      El renderer usa este campo para validar si puede aplicar fallback temporal.
     """
-    # Prioridad 1: available_at_ns emitido directamente por el kernel
-    avail_ns = z.get("available_at_ns")
-    if avail_ns is not None:
-        available_ts = int(avail_ns) // 1_000_000_000
+    # Geometría con soporte dual de alias
+    top = z["top"] if ("top" in z and z["top"] is not None) else z.get("hi")
+    bottom = z["bottom"] if ("bottom" in z and z["bottom"] is not None) else z.get("lo")
+    kind = z["kind"] if ("kind" in z and z["kind"] is not None) else z.get("side")
+
+    # Timestamps de formación
+    f_start_ns = z.get("formation_start_ns")
+    f_end_ns = z.get("formation_end_ns")
+    formation_start_ts = int(f_start_ns // 1_000_000_000) if f_start_ns is not None else None
+    formation_end_ts = int(f_end_ns // 1_000_000_000) if f_end_ns is not None else None
+
+    # t0: exportado preferentemente desde formation_start_ns
+    if formation_start_ts is not None:
+        t0 = formation_start_ts
+    elif "created_ms" in z and z["created_ms"] is not None:
+        t0 = int(z["created_ms"] // 1000)
+    elif "t0" in z and z["t0"] is not None:
+        t0 = int(z["t0"])
     else:
-        # Fallback EXPLÍCITO y RESTRINGIDO: sólo para barras temporales (time_*)
+        t0 = 0
+
+    # Causalidad de disponibilidad y etiquetado explícito de origen
+    avail_ns = z.get("available_at_ns")
+    avail_ts = z.get("available_ts")
+    if avail_ns is not None:
+        available_ts = int(avail_ns // 1_000_000_000)
+        available_origin = "KERNEL_AVAILABLE_AT_NS"
+    elif avail_ts is not None:
+        available_ts = int(avail_ts)
+        available_origin = "EXPLICIT_AVAILABLE_TS"
+    else:
         dur = _bar_duration_s(bar_key) if bar_key else None
         if dur is not None:
-            # t0 = apertura de barra (created_ms // 1000); t0 + dur = cierre
-            available_ts = int(z["created_ms"] // 1000) + dur
+            available_ts = t0 + dur
+            available_origin = "DERIVED_COMPATIBILITY_FALLBACK"
         else:
-            # Barras tick sin available_at_ns: no inferir, dejar None
             available_ts = None
+            available_origin = "UNAVAILABLE"
 
     return dict(
-        id=str(z["id"]), source=source,
-        top=z["top"], bottom=z["bottom"],
-        t0=int(z["created_ms"] // 1000),
+        id=str(z.get("id", "")), source=source,
+        top=top, bottom=bottom,
+        t0=t0,
         t1=int((z.get("ended_ms") or last_ms) // 1000),
+        formation_start_ts=formation_start_ts,
+        formation_end_ts=formation_end_ts,
         available_ts=available_ts,
+        available_origin=available_origin,
         source_barspec=bar_key or None,
-        state=z.get("state"), kind=z.get("kind"), touches=z.get("touches"),
+        state=z.get("state"), kind=kind, touches=z.get("touches"),
         end_reason=z.get("end_reason"), match=match_id)
 
 
@@ -105,12 +140,14 @@ def build_run(run_id, indicator, bars, result, psid, oracle=None, parity=None,
             by_py[str(py_id)] = str(nt8_id)
             by_nt8[str(nt8_id)] = str(py_id)
     bkey = bar_key_of(bars)
-    zones = [_zone_json(z, "python", last_ms, by_py.get(str(z["id"])), bkey)
-             for z in result["zones"] if z.get("created_ms") is not None]
+    zones = [_zone_json(z, "python", last_ms, by_py.get(str(z.get("id"))), bkey)
+             for z in result["zones"]
+             if (z.get("created_ms") is not None or z.get("formation_start_ns") is not None or z.get("t0") is not None)]
     if oracle:
-        zones += [_zone_json(z, "nt8", last_ms, by_nt8.get(str(z["id"])), bkey)
+        zones += [_zone_json(z, "nt8", last_ms, by_nt8.get(str(z.get("id"))), bkey)
                   for z in oracle["zones"]
-                  if z.get("created_ms") is not None and z.get("top") is not None]
+                  if (z.get("created_ms") is not None or z.get("formation_start_ns") is not None or z.get("t0") is not None)
+                  and (z.get("top") is not None or z.get("hi") is not None)]
     return dict(
         run_id=run_id, indicator=indicator, bar_key=bkey,
         param_set_id=psid, params=result["params"],
