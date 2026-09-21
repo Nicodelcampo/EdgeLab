@@ -89,3 +89,64 @@ review_status: REQUESTED_FROM_B
 ## Aporte al referente
 
 This checkpoint prevents stale-base and red-CI integration from being mistaken for progress, and turns the current PR graph into explicit, falsifiable dependencies before any economic or holdout action.
+
+## Checkpoint 002 — sibling overlap and D review
+
+Observed at `2026-09-21T12:18–12:24-03:00`.
+
+### PR #49 / PR #52 ordering audit
+
+- Both are direct children of PR #46 at `ff8aa2de5e85ad5fe03acae3752d2da33aed9878`.
+- Full changed-file inventories have **zero identical paths**.
+- PR #49 is Factory→Brain adapter/economic-preflight work; PR #52 is SSRN bibliographic-cortex and semantic-debt work.
+- Zero path overlap removes a direct write collision, but does not prove semantic compatibility or authorize either merge.
+- Adjudication: the children may continue in parallel and can be serialized after #46 in either path order only after green CI and focused Brain/Factory compatibility tests. Neither is currently integration-approved.
+
+### REVIEW-CYCLE001-D-001
+
+Reviewed D commit `9fb6e62345e44a616f62fd1728e723b9a5b31688`.
+
+**Verdict:** `CHANGES_REQUIRED`.
+
+The causal abstention/static checks are useful, but the Python test invokes `require('playwright')` although the repository CI workflow provisions only Python locks, and it hard-codes `/usr/local/bin/chromium`. This is a deterministic CI-portability blocker. The packet also records the base plus dirty files rather than the final review commit. D must provision or gate browser dependencies explicitly, resolve Chromium portably, and correct provenance before re-review. The commit does not certify PR #48 or the canonical page/data flow.
+
+### Worker adjudication
+
+The canonical read-only Kaggle worker for this cycle remains `edgelab-kaggle` / `01a0c47e-c7f9-7fe0-ab70-7f90204f3188`, capability `checkKaggleAccess`. C's pre-existing alternate worker is superseded as an operational target for CYCLE-001 but is not deleted. Hosted probes remain blocked pending a new adjudication; local/synthetic contract review continues.
+
+### Updated gates
+
+1. B's claimed packet-ingestion paths do not collide with A/C/D, but B must still deliver the requested review of this map and obtain C review of the adapter.
+2. D's Viewer smoke cannot enter integration until REVIEW-CYCLE001-D-001 is corrected.
+3. D may independently review C's committed synthetic Kaggle contract; no hosted Worker use is implied.
+4. CI common-cause classification remains `ABSTAIN`: status metadata and PR comments do not expose action logs sufficient to prove a single root cause.
+5. Outcomes and holdout remain closed: `PREEXISTING_OUTCOME_EXPOSURE=YES`, `HOLDOUT_CONTAMINATED_FOR_THIS_HYPOTHESIS=YES`, `holdout_enabled=false`, `promotion_ceiling=LESSON_CANDIDATE`.
+
+## RUN-LEARNING-PACKET — checkpoint 002
+
+```txt
+run_id: CYCLE-001-A-OVERLAP-REVIEW-002
+parent_episode: CYCLE-001-A-CURRENTNESS-REMOTE-CROSSCHECK-001
+code_commit + dirty_state: this branch commit assigned by GitHub after write; no local worktree
+dataset_version + hashes: N/A; no dataset accessed
+construct_id + measurement_contract: INTEGRABILITY = exact path overlap + common base + CI gate + independent review
+cardinality/coverage/missingness: complete file inventories for PR #49/#52; D commit two-file patch; action logs unavailable
+result_summary: NO_DIRECT_PATH_COLLISION; D_CHANGES_REQUIRED; INTEGRATION_BLOCKED
+negative_results: zero path overlap did not remove CI or semantic-compatibility blockers
+triangulation_agreement/disagreement: PR file inventory and commits agree; local D browser pass disagrees with remote CI provisioning contract
+measurement_failures: CI common-cause not identifiable from available evidence
+software/data_defects: hard-coded Chromium path; unprovisioned Node/Playwright dependency; stale packet provenance
+repairs_attempted: none by A; corrections assigned to D
+sensitivity/robustness: exact paths and exact SHAs; no title-based or check-name-only inference
+new_counterexamples: a locally passing browser smoke can deterministically fail repository CI
+new_constraints/gates: browser dependencies must be provisioned or explicitly gated; packet provenance names final commit
+novelty_class: architecture/review control
+next_best_hypothesis: D correction and B adapter/review will determine the next integrable checkpoint
+artifacts + hashes: this file; commit hash assigned by GitHub after write
+hippocampus_records_emitted: pending B intake
+review_status: REQUESTED_FROM_B
+```
+
+## Aporte al referente — checkpoint 002
+
+This update converts sibling overlap and local-only browser success into explicit integration gates, while preserving parallel work without weakening CI, provenance, outcomes, or holdout controls.
