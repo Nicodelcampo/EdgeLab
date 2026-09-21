@@ -12,13 +12,13 @@ Read-only workspace census at 2026-09-21T12:18-03:00 found three Workers:
 
 | Worker | Created | Capability | Cycle status |
 | --- | --- | --- | --- |
-| `edgelab-kaggle-access` (`01a0c0eb-ab1c-7942-b223-0384016535b3`) | 2026-09-20T22:24:25Z | not yet reconciled | `UNADJUDICATED_EXISTING` |
-| `edgelab-kaggle-agent-c` (`01a0c47c-fd21-78ac-ad94-a0e04209ca61`) | 2026-09-21T15:02:00Z | `kaggleConnectionStatus` | `BLOCKED_DUPLICATE`; first hosted observation HTTP `400` |
-| `edgelab-kaggle` (`01a0c47e-c7f9-7fe0-ab70-7f90204f3188`) | 2026-09-21T15:03:58Z | `checkKaggleAccess` | `CANONICAL_PER_AGENT_A`, read-only inspection only |
+| `edgelab-kaggle-access` (`01a0c0eb-ab1c-7942-b223-0384016535b3`) | 2026-09-20T22:24:25Z | four metadata/list/download-url capabilities reported by A | `QUARANTINED_NO_USE` |
+| `edgelab-kaggle-agent-c` (`01a0c47c-fd21-78ac-ad94-a0e04209ca61`) | 2026-09-21T15:02:00Z | `kaggleConnectionStatus` | `SUPERSEDED_NO_USE`; first hosted observation HTTP `400` |
+| `edgelab-kaggle` (`01a0c47e-c7f9-7fe0-ab70-7f90204f3188`) | 2026-09-21T15:03:58Z | `checkKaggleAccess` | `CANONICAL_HOSTED_BLOCKED` |
 
 The credential name was observed only by name; no value was read or logged. HTTP `400` remains `ABSTAIN_AUTH_OR_ENDPOINT`. Agent A reports a pre-cycle HTTP `200` for the canonical Worker, but C does not promote that report to measured evidence without an exact durable run artifact.
 
-No Worker or credential was created after CYCLE-001 activation. All hosted executions are blocked until A adjudicates the three-Worker inventory. Local/synthetic contract testing remains allowed.
+No Worker or credential was created after CYCLE-001 activation. Agent A adjudicated the inventory without execution or deletion: canonical Worker remains hosted-blocked, duplicate is superseded/no-use, and the older access Worker is quarantined/no-use. Local/synthetic contract testing remains allowed; hosted execution remains forbidden.
 
 ## Measurement contract
 
