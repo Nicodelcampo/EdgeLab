@@ -139,7 +139,7 @@ def evaluate_policy(event: ZoneEvent, ticks: Iterable[Tick], policy: Policy, *, 
         if policy.wait_ticks < 1:
             raise ValueError("wait_ticks must be positive")
         if len(eligible) <= policy.wait_ticks:
-            return Decision(event.event_id, policy.policy_id, "CENSORED", None, None, None, None, None, len(eligible), "WAIT_NOT_REACHED")
+            return Decision(event.event_id, policy.policy_id, "CENSORED", None, None, None, None, None, len(eligible), "SESSION_END_BEFORE_WAIT")
         t = eligible[policy.wait_ticks]
         return Decision(event.event_id, policy.policy_id, "ENTERED", t.ts_ns, t.sequence, t.price_half_ticks, None, None, policy.wait_ticks + 1, None)
     if policy.mode != "RETEST":
@@ -165,7 +165,12 @@ def evaluate_policy(event: ZoneEvent, ticks: Iterable[Tick], policy: Policy, *, 
         reached = lo <= price <= target if event.direction == "long" else target <= price <= hi
         if reached:
             return Decision(event.event_id, policy.policy_id, "ENTERED", tick.ts_ns, tick.sequence, price, armed_tick.ts_ns, armed_tick.sequence, observed, None)
-    return Decision(event.event_id, policy.policy_id, "CENSORED", None, None, None, armed_tick.ts_ns if armed_tick else None, armed_tick.sequence if armed_tick else None, min(len(eligible), policy.max_wait_ticks), "NO_RETEST_BEFORE_LIMIT" if armed_tick else "NO_DEPARTURE_BEFORE_LIMIT")
+    expired = len(eligible) >= policy.max_wait_ticks
+    if armed_tick:
+        reason = "NO_RETEST_BEFORE_EXPIRY" if expired else "SESSION_END_BEFORE_RETEST"
+    else:
+        reason = "NO_DEPARTURE_BEFORE_EXPIRY" if expired else "SESSION_END_BEFORE_DEPARTURE"
+    return Decision(event.event_id, policy.policy_id, "CENSORED", None, None, None, armed_tick.ts_ns if armed_tick else None, armed_tick.sequence if armed_tick else None, min(len(eligible), policy.max_wait_ticks), reason)
 
 
 def decision_record(decision: Decision) -> dict:

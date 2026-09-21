@@ -27,8 +27,10 @@ def test_full_depth_long_quantizes_to_deepest_executable_price_inside_half_tick_
 def test_full_depth_short_quantizes_to_deepest_executable_price_inside_half_tick_zone():
     e=event(zone_lo_half_ticks=201,zone_hi_half_ticks=205,direction="short")
     assert run(e,ticks(196,202,204),Policy("R","RETEST",departure_ticks=2,depth=1,max_wait_ticks=10)).entry_price_half_ticks==204
-def test_no_departure_is_censored(): assert run(event(),ticks(202,203,204),Policy("R","RETEST",departure_ticks=2,depth=0,max_wait_ticks=3)).censor_reason=="NO_DEPARTURE_BEFORE_LIMIT"
-def test_no_retest_is_censored(): assert run(event(),ticks(208,210,212),Policy("R","RETEST",departure_ticks=2,depth=0,max_wait_ticks=3)).censor_reason=="NO_RETEST_BEFORE_LIMIT"
+def test_no_departure_is_censored_at_expiry(): assert run(event(),ticks(202,203,204),Policy("R","RETEST",departure_ticks=2,depth=0,max_wait_ticks=3)).censor_reason=="NO_DEPARTURE_BEFORE_EXPIRY"
+def test_no_retest_is_censored_at_expiry(): assert run(event(),ticks(208,210,212),Policy("R","RETEST",departure_ticks=2,depth=0,max_wait_ticks=3)).censor_reason=="NO_RETEST_BEFORE_EXPIRY"
+def test_session_end_before_departure_is_distinct_from_expiry(): assert run(event(),ticks(202,203,204),Policy("R","RETEST",departure_ticks=2,depth=0,max_wait_ticks=10)).censor_reason=="SESSION_END_BEFORE_DEPARTURE"
+def test_session_end_before_retest_is_distinct_from_expiry(): assert run(event(),ticks(208,210,212),Policy("R","RETEST",departure_ticks=2,depth=0,max_wait_ticks=10)).censor_reason=="SESSION_END_BEFORE_RETEST"
 def test_session_crossing_is_excluded(): assert run(event(),ticks(208,203,session="S2"),Policy("R","RETEST",departure_ticks=2,depth=0,max_wait_ticks=3)).censor_reason=="NO_POST_AVAILABILITY_TICK"
 def test_duplicate_tick_identity_fails():
     with pytest.raises(ValueError,match="duplicate"): run(event(),[Tick(201,1,208,"S1"),Tick(201,1,204,"S1")],Policy("P0","IMMEDIATE"))
