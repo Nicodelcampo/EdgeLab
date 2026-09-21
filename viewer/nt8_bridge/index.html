@@ -3411,9 +3411,10 @@
     var order = [], byInst = {};
     catalog.forEach(function (item) {
       var inst = item.instrument || "Otros";
-      if (!byInst[inst]) { byInst[inst] = { cont: [], singles: [], frags: {}, l2: [] }; order.push(inst); }
+      if (!byInst[inst]) { byInst[inst] = { cont: [], singles: [], frags: {}, l2: [], m1: [] }; order.push(inst); }
       var g = byInst[inst];
       if (item.id.indexOf("_L2_") !== -1) g.l2.push(item);
+      else if (/_M1$/.test(item.id)) g.m1.push(item);
       else if (item.id.indexOf("_CONT") !== -1) g.cont.push(item);
       else if ((item.group || "").indexOf("Fragmentos") !== -1) {
         var k = item.contract || item.id;
@@ -3458,9 +3459,10 @@
         if (f.length) frags[k] = f;
       });
       var l2s = g.l2.filter(function (i) { return matches(i, inst); });
-      var total = cont.length + singles.length + l2s.length + Object.keys(frags).reduce(function (n, k) { return n + frags[k].length; }, 0);
+      var m1s = g.m1.filter(function (i) { return matches(i, inst); });
+      var total = cont.length + singles.length + l2s.length + m1s.length + Object.keys(frags).reduce(function (n, k) { return n + frags[k].length; }, 0);
       if (!total) return;
-      var hasActive = [].concat(g.cont, g.singles, g.l2, [].concat.apply([], fragKeys.map(function (k) { return g.frags[k]; })))
+      var hasActive = [].concat(g.cont, g.singles, g.l2, g.m1, [].concat.apply([], fragKeys.map(function (k) { return g.frags[k]; })))
         .some(function (i) { return state.currentAssetId === i.id; });
       var open = searchVal ? true : (assetExpanded[inst] !== undefined ? assetExpanded[inst] : hasActive);
 
@@ -3480,6 +3482,12 @@
       if (singles.length) {
         addSub("Contratos individuales");
         singles.forEach(function (i) { addRow(i, i.contract || i.name, "<span class='asset-badge-single'>" + inst + "</span>", 14); });
+      }
+      if (m1s.length) {
+        addSub("Gráfico M1 · LUX-IMB (por contrato)");
+        m1s.forEach(function (i) {
+          addRow(i, i.contract, "<span class='asset-badge-cont' style='background:#0f766e'>M1</span>", 14);
+        });
       }
       if (l2s.length) {
         addSub("Profundidad L2 · libro de órdenes (sesiones)");
