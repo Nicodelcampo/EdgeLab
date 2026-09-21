@@ -39,3 +39,37 @@ def wall_contact_policy_grid_v1():
           for prints in(1,3,5):
            pid=f"OF_S{int(sigma)}_D{int(density*100)}_C{conf}_X{dep}_Z{int(depth*100)}_W{wait}_O{obs}_R{reject}_I{int(imbalance*100)}_P{prints}";out.append((pid,sigma,density,conf,dep,depth,wait,obs,reject,imbalance,prints))
  assert len(out)==3456;return out
+@dataclass(frozen=True)
+class BreachConfirmation:
+ trigger_idx:int;confirmation_idx:int;fill_idx:int;breakout_direction:str;aligned_imbalance:float;wall_prints:int;penetration_ticks:float
+def confirm_breach(*,trigger_idx:int,lo:float,hi:float,zone_direction:str,price:Sequence[float],bid:Sequence[float],ask:Sequence[float],volume:Sequence[float],sessions:Sequence[int],observation_ticks:int,penetration_min:float,imbalance_min:float,wall_prints_max:int):
+ if zone_direction not in {'long','short'}:raise ValueError('bad direction')
+ p=np.asarray(price);b=np.asarray(bid);a=np.asarray(ask);v=np.asarray(volume,dtype=float);s=np.asarray(sessions);end=min(len(p),trigger_idx+observation_ticks)
+ if trigger_idx>=len(p)-1:return None
+ cut=np.flatnonzero(s[trigger_idx:end]!=s[trigger_idx])
+ if cut.size:end=trigger_idx+int(cut[0])
+ breakout='short'if zone_direction=='long'else'long';d=1. if breakout=='long'else-1.;signs=aggressor_sign(p[trigger_idx:end],b[trigger_idx:end],a[trigger_idx:end]);buy=sell=0.;prints=0
+ for off,j in enumerate(range(trigger_idx,end)):
+  if lo<=p[j]<=hi:prints+=1
+  if signs[off]>0:buy+=float(v[j])
+  elif signs[off]<0:sell+=float(v[j])
+  total=buy+sell;aligned=d*(buy-sell)/total if total>0 else 0.;penetration=float(p[j]-hi)if breakout=='long'else float(lo-p[j])
+  if penetration>=penetration_min and aligned>=imbalance_min and prints<=wall_prints_max:
+   fill=j+1
+   if fill>=len(p)or s[fill]!=s[trigger_idx]:return None
+   return BreachConfirmation(trigger_idx,j,fill,breakout,aligned,prints,penetration)
+ return None
+def wall_breach_policy_grid_v1():
+ out=[]
+ for sigma in(1.,4.):
+  for density in(.7,.9):
+   for conf in(2,3):
+    for dep in(4,8):
+     for depth in(0.,.5):
+      for wait in(250,1000):
+       for obs in(5,25):
+        for penetration in(1,2,4):
+         for imbalance in(0.,.15,.30):
+          for prints_max in(3,10):
+           pid=f"BR_S{int(sigma)}_D{int(density*100)}_C{conf}_X{dep}_Z{int(depth*100)}_W{wait}_O{obs}_N{penetration}_I{int(imbalance*100)}_P{prints_max}";out.append((pid,sigma,density,conf,dep,depth,wait,obs,penetration,imbalance,prints_max))
+ assert len(out)==2304;return out
