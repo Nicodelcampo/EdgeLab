@@ -127,3 +127,13 @@ def test_solo_se_dibujan_los_bordes_exteriores_de_la_zona():
     assert "ctx.strokeRect(drawX0 + 0.5, yMin_s + 0.5, rw_s, h_s);" not in HTML
     assert "isBottomOuterSlice" in HTML
     assert "isTopOuterSlice" in HTML
+
+
+def test_capa_l2_existe_y_no_usa_logical_fraccionario():
+    """El mapa de calor L2 se dibuja por foto del libro. `logicalToCoordinate` solo resuelve enteros (con fracciones
+    devuelve 0): toda posicion entre barras pasa por `logicalToX`, que interpola entre enteros."""
+    assert "function drawL2Depth" in HTML and "drawL2Depth(ctx, vr, w, hCanvas);" in HTML
+    assert "function logicalToX" in HTML and "var cInterp = logicalToX(targetLogical);" in HTML
+    assert "tsc.logicalToCoordinate(targetLogical)" not in HTML
+    assert 'id="chk-show-l2"' in HTML and "show_l2_depth" in HTML
+    assert "__l2" not in HTML and "__dbg" not in HTML and "sync=1" not in HTML      # sin instrumentacion de depuracion

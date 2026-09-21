@@ -871,6 +871,7 @@
     <label class="pop-check"><input type="checkbox" id="chk-py" checked> <span class="swatch swatch-py"></span> Python (relleno translúcido)</label>
     <label class="pop-check"><input type="checkbox" id="chk-nt8" checked> <span class="swatch swatch-nt8"></span> NT8 (contorno punteado)</label>
     <label class="pop-check"><input type="checkbox" id="chk-orphans"> Solo huérfanas</label>
+    <label class="pop-check"><input type="checkbox" id="chk-show-l2" checked> Mostrar mapa de profundidad L2 (libro de órdenes)</label>
     <label class="pop-check"><input type="checkbox" id="chk-show-exploratory" checked> Mostrar zonas exploratorias (origen sin verificar)</label>
     <hr style="margin: 8px 0; border: none; border-top: 1px solid var(--tb-border);">
     <div style="font-weight:600; margin-bottom:4px;">Estados:</div>
@@ -1242,6 +1243,7 @@
     corridors_density_profile: false,
     corridors_density_width: 110,
     show_exploratory_zones: true,
+    show_l2_depth: true,
     include_exploratory_density: false,
     opacidad: 30,
     mostrar_absorb: true,
@@ -1384,6 +1386,19 @@
     return true;
   }
 
+  // `logicalToCoordinate` del gráfico solo resuelve índices ENTEROS (con fracciones devuelve 0). Se interpola
+  // linealmente entre los dos enteros vecinos; fuera de rango se extrapola con el paso entre barras.
+  function logicalToX(L) {
+    var tsc = chart.timeScale();
+    var f = Math.floor(L), fr = L - f;
+    var c0 = tsc.logicalToCoordinate(f);
+    if (c0 === null || c0 === undefined) return null;
+    if (fr === 0) return c0;
+    var c1 = tsc.logicalToCoordinate(f + 1);
+    if (c1 === null || c1 === undefined) return null;
+    return c0 + fr * (c1 - c0);
+  }
+
   // Mapeo exacto horizontal con soporte de índice de barra y fallback off-screen
   function timeToX(t, barIdx) {
     var tsc = chart.timeScale();
@@ -1420,7 +1435,7 @@
       var negBars = (candles[0].time - t) / (dt > 0 ? dt : 60);
       targetLogical = -negBars;
     }
-    var cInterp = tsc.logicalToCoordinate(targetLogical);
+    var cInterp = logicalToX(targetLogical);
     return (cInterp !== null && cInterp !== undefined) ? cInterp : 0;
   }
 
@@ -1505,6 +1520,69 @@
     return null;
   }
 
+  // Mapa de calor del libro de órdenes (L2). Cada foto del libro (cada `snap_seconds`) se dibuja como una columna de
+  // celdas por nivel de precio: verde = bid, rojo = ask; la intensidad es el tamaño en escala logarítmica.
+  // Con zoom alejado se saltan fotos para no dibujar más de ~1 columna cada 2 px.
+  function l2SizeScale(l2) {
+    if (l2._scale) return l2._scale;
+    var n = l2.size.length, step = Math.max(1, Math.floor(n / 20000)), a = [];
+    for (var i = 0; i < n; i += step) a.push(Math.abs(l2.size[i]));
+    a.sort(function (x, y) { return x - y; });
+    l2._scale = Math.max(2, a[Math.floor(a.length * 0.99)] || 2);
+    return l2._scale;
+  }
+  function drawL2Depth(ctx, vr, w, h) {
+    var l2 = state.data && state.data.l2;
+    if (!l2 || activeProps.show_l2_depth === false || !series) return;
+    var t = l2.t, off = l2.off, n = t.length;
+    if (!n) return;
+    var akey = state.activeBarKey || (state.run && state.run.bar_key);
+    var bs = state.data.bar_series && state.data.bar_series[akey];
+    var cd = bs && bs.candles;
+    if (!cd || cd.length < 2) return;
+    var tsc = chart.timeScale();
+    // x por índice lógico de barra (interpolado): las fotos caen ENTRE velas y timeToCoordinate no las resuelve
+    function xOfT(tt) {
+      var lo = 0, hi = cd.length - 1;
+      while (lo < hi) { var m = (lo + hi) >> 1; if (cd[m].time < tt) lo = m + 1; else hi = m; }
+      var i1 = Math.max(0, lo - 1), i2 = Math.min(cd.length - 1, lo);
+      var dt = cd[i2].time - cd[i1].time;
+      var L = (tt <= cd[0].time) ? (tt - cd[0].time) / 60 : i1 + (dt > 0 ? (tt - cd[i1].time) / dt : 0);
+      var c = logicalToX(L);
+      return (c === null || c === undefined) ? NaN : c;
+    }
+    var lo2 = 0, hi2 = n - 1;
+    while (lo2 < hi2) { var mm = (lo2 + hi2) >> 1; if (t[mm] < vr.from) lo2 = mm + 1; else hi2 = mm; }
+    var i0 = Math.max(0, lo2 - 1);
+    var tickSize = l2.tick_size, scale = Math.log1p(l2SizeScale(l2));
+    var yMemo = {};
+    function yOf(tick) {
+      var y = yMemo[tick];
+      if (y === undefined) { var c = series.priceToCoordinate(tick * tickSize); y = (c === null || c === undefined) ? NaN : c; yMemo[tick] = y; }
+      return y;
+    }
+    var cellH = Math.abs(yOf(1000) - yOf(1001));
+    if (!isFinite(cellH) || cellH < 1) cellH = 1;
+    var xa0 = xOfT(t[i0]), xa1 = xOfT(t[Math.min(n - 1, i0 + 1)]);
+    var wPx = Math.abs(xa1 - xa0);
+    var stride = (isFinite(wPx) && wPx > 0) ? Math.max(1, Math.ceil(2 / wPx)) : 1;
+    for (var i = i0; i < n && t[i] <= vr.to; i += stride) {
+      var xa = xOfT(t[i]);
+      var nxt = Math.min(n - 1, i + stride);
+      var xb = (nxt > i) ? xOfT(t[nxt]) : xa + 4;
+      if (!isFinite(xa) || !isFinite(xb) || xb < 0 || xa > w) continue;
+      var wcol = Math.max(1, xb - xa);
+      for (var k = off[i]; k < off[i + 1]; k++) {
+        var sz = l2.size[k], y = yOf(l2.tick[k]);
+        if (!isFinite(y) || y < -cellH || y > h + cellH) continue;
+        var al = 0.05 + 0.5 * Math.log1p(Math.abs(sz)) / scale;
+        if (al > 0.55) al = 0.55;
+        ctx.fillStyle = sz > 0 ? "rgba(38,166,154," + al.toFixed(3) + ")" : "rgba(239,83,80," + al.toFixed(3) + ")";
+        ctx.fillRect(xa, y - cellH / 2, wcol, cellH);
+      }
+    }
+  }
+
   function drawZones() {
     var ctx = overlay.getContext("2d");
     var dpr = window.devicePixelRatio || 1;
@@ -1517,6 +1595,7 @@
     if (!vr) return;
     var w = wrapEl.clientWidth;
     var hCanvas = wrapEl.clientHeight;
+    drawL2Depth(ctx, vr, w, hCanvas);
 
     var opacityVal = (activeProps.opacidad || 30) / 100;
     var showLabels = activeProps.mostrar_texto !== false;
@@ -3205,6 +3284,8 @@
   if(chkIncExpDensity)chkIncExpDensity.addEventListener("change",function(){activeProps.include_exploratory_density=this.checked;requestDraw();});
   var chkShowExpl=document.getElementById("chk-show-exploratory");
   if(chkShowExpl)chkShowExpl.addEventListener("change",function(){activeProps.show_exploratory_zones=this.checked;requestDraw();});
+  var chkL2=document.getElementById("chk-show-l2");
+  if(chkL2)chkL2.addEventListener("change",function(){activeProps.show_l2_depth=this.checked;requestDraw();});
   var rangeCorrDensityWidth=document.getElementById("range-corridors-density-width");
   if(rangeCorrDensityWidth)rangeCorrDensityWidth.addEventListener("input",function(){activeProps.corridors_density_width=parseInt(this.value,10)||110;var l=document.getElementById("lbl-corridors-density-width");if(l)l.textContent=activeProps.corridors_density_width+" px";requestDraw();});
 
@@ -3330,9 +3411,10 @@
     var order = [], byInst = {};
     catalog.forEach(function (item) {
       var inst = item.instrument || "Otros";
-      if (!byInst[inst]) { byInst[inst] = { cont: [], singles: [], frags: {} }; order.push(inst); }
+      if (!byInst[inst]) { byInst[inst] = { cont: [], singles: [], frags: {}, l2: [] }; order.push(inst); }
       var g = byInst[inst];
-      if (item.id.indexOf("_CONT") !== -1) g.cont.push(item);
+      if (item.id.indexOf("_L2_") !== -1) g.l2.push(item);
+      else if (item.id.indexOf("_CONT") !== -1) g.cont.push(item);
       else if ((item.group || "").indexOf("Fragmentos") !== -1) {
         var k = item.contract || item.id;
         (g.frags[k] = g.frags[k] || []).push(item);
@@ -3375,9 +3457,10 @@
         var f = g.frags[k].filter(function (i) { return matches(i, inst); });
         if (f.length) frags[k] = f;
       });
-      var total = cont.length + singles.length + Object.keys(frags).reduce(function (n, k) { return n + frags[k].length; }, 0);
+      var l2s = g.l2.filter(function (i) { return matches(i, inst); });
+      var total = cont.length + singles.length + l2s.length + Object.keys(frags).reduce(function (n, k) { return n + frags[k].length; }, 0);
       if (!total) return;
-      var hasActive = [].concat(g.cont, g.singles, [].concat.apply([], fragKeys.map(function (k) { return g.frags[k]; })))
+      var hasActive = [].concat(g.cont, g.singles, g.l2, [].concat.apply([], fragKeys.map(function (k) { return g.frags[k]; })))
         .some(function (i) { return state.currentAssetId === i.id; });
       var open = searchVal ? true : (assetExpanded[inst] !== undefined ? assetExpanded[inst] : hasActive);
 
@@ -3397,6 +3480,13 @@
       if (singles.length) {
         addSub("Contratos individuales");
         singles.forEach(function (i) { addRow(i, i.contract || i.name, "<span class='asset-badge-single'>" + inst + "</span>", 14); });
+      }
+      if (l2s.length) {
+        addSub("Profundidad L2 · libro de órdenes (sesiones)");
+        l2s.forEach(function (i) {
+          var m = /_L2_(\d{4})(\d{2})(\d{2})/.exec(i.id);
+          addRow(i, m ? m[1] + "-" + m[2] + "-" + m[3] : i.name, "<span class='asset-badge-cont' style='background:#7c3aed'>L2</span>", 14);
+        });
       }
       Object.keys(frags).forEach(function (k) {
         addSub(k + " · fragmentos mensuales");
