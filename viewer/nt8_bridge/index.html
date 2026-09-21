@@ -794,7 +794,6 @@
     <button class="nt8-btn" id="btn-bt2a-params" style="background:#0284c7;color:#fff;font-weight:700;border-color:#0369a1;" title="Configurar Parámetros y Extensión de Zonas (500 barras)"><span>⚙️ Parámetros</span> <span class="arrow">▾</span></button>
     <button class="nt8-btn" id="btn-corredores-demo" style="background:#0891b2;color:#fff;font-weight:700;border-color:#0e7490;box-shadow:0 0 6px rgba(8,145,178,0.4);" title="Prueba Visual: Corredores de Vacío y Campo de Fricción (HP-006)"><span>⚡ Corredores de Vacío (Demo)</span></button>
     <button class="nt8-btn" id="btn-toggle-decay" style="background:#059669;color:#fff;font-weight:700;border-color:#047857;box-shadow:0 0 6px rgba(5,150,105,0.4);" title="Alternar Decaimiento: Sólo Comercio (Sin Tiempo) vs Decaimiento Temporal 12h"><span id="lbl-btn-decay">🛡️ Decaimiento: Sólo Comercio</span></button>
-    <button class="nt8-btn" id="btn-hft-corridor" style="background:#7c3aed;color:#fff;font-weight:700;border-color:#6d28d9;box-shadow:0 0 6px rgba(124,58,237,0.4);" title="HFTZonesNQ → Campo Causal de Corredores (HP-007)"><span>🚀 HFT Corredores NQ</span></button>
   </div>
   <div class="tb-right">
     <button class="nt8-btn" id="btn-layers" title="Mostrar/ocultar capas"><span>👁️ Capas</span> <span class="arrow">▾</span></button>
@@ -861,7 +860,7 @@
     <label class="pop-check"><input type="checkbox" id="chk-py" checked> <span class="swatch swatch-py"></span> Python (relleno translúcido)</label>
     <label class="pop-check"><input type="checkbox" id="chk-nt8" checked> <span class="swatch swatch-nt8"></span> NT8 (contorno punteado)</label>
     <label class="pop-check"><input type="checkbox" id="chk-orphans"> Solo huérfanas</label>
-    <label class="pop-check"><input type="checkbox" id="chk-show-exploratory"> Mostrar zonas exploratorias (origen sin verificar)</label>
+    <label class="pop-check"><input type="checkbox" id="chk-show-exploratory" checked> Mostrar zonas exploratorias (origen sin verificar)</label>
     <hr style="margin: 8px 0; border: none; border-top: 1px solid var(--tb-border);">
     <div style="font-weight:600; margin-bottom:4px;">Estados:</div>
     <div id="f-state-list"></div>
@@ -1232,7 +1231,7 @@
     corridors_density_profile: false,
     corridors_density_width: 110,
     corridors_density_sigma_ticks: 2,
-    show_exploratory_zones: false,
+    show_exploratory_zones: true,
     include_exploratory_density: false,
     opacidad: 30,
     mostrar_absorb: true,
@@ -2054,7 +2053,7 @@
       ctx.save();
       ctx.fillStyle = "rgba(217,119,6,0.95)";
       ctx.font = "bold 11px 'Segoe UI', -apple-system, sans-serif";
-      ctx.fillText(hiddenNoAvailability + " zonas ocultas: sin available_ts explícito (activá «zonas exploratorias» para verlas)", 12, boxesSuppressed ? 38 : 22);
+      ctx.fillText(hiddenNoAvailability + " zonas ocultas: sin available_ts explícito (activá «zonas exploratorias» para verlas; se ocultaron porque la desactivaste)", 12, boxesSuppressed ? 38 : 22);
       ctx.restore();
     }
     if (hasRenderedExploratory) {
@@ -2883,12 +2882,6 @@
       }
     });
   });
-  var btnHft = document.getElementById("btn-hft-corridor");
-  if (btnHft) {
-    btnHft.addEventListener("click", function () {
-      window.location.href = "hft_corridor_preview.html";
-    });
-  }
   document.getElementById("btn-reset").addEventListener("click", function () {
     chart.timeScale().fitContent();
     requestDraw();
@@ -3038,7 +3031,7 @@
     var chkIncDensity = document.getElementById("chk-include-exploratory-density");
     if (chkIncDensity) chkIncDensity.checked = activeProps.include_exploratory_density === true;
     var chkShowExpl = document.getElementById("chk-show-exploratory");
-    if (chkShowExpl) chkShowExpl.checked = activeProps.show_exploratory_zones === true;
+    if (chkShowExpl) chkShowExpl.checked = activeProps.show_exploratory_zones !== false;
 
     var hMinVal = (activeProps.corridors_hmin_ticks !== undefined) ? activeProps.corridors_hmin_ticks : 16;
     if (rangeCorrHmin) rangeCorrHmin.value = hMinVal;

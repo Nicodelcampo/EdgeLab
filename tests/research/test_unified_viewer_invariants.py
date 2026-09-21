@@ -56,15 +56,45 @@ def test_la_abstencion_por_bar_key_suprime_cajas_pero_no_mata_las_flechas():
     assert not re.search(r"^\s*return;\s*$", tramo, re.M), "un return mata el bloque de flechas"
 
 
-def test_las_zonas_cientificas_no_caen_a_t0_por_defecto():
-    """El modo exploratorio es opt-in: por defecto falta de available_ts => zona oculta."""
-    assert "show_exploratory_zones: false," in HTML
-    assert 'id="chk-show-exploratory" checked' not in HTML
-    assert "hiddenNoAvailability" in HTML     # y se avisa, no se oculta en silencio
+def test_el_ayudante_estricto_no_cae_a_t0_salvo_luxalgo():
+    """`zoneAvailableSec` es el inicio causal ESTRICTO (gate del repo). Migrado de
+    test_viewer_causal_zone_start.py sin debilitarlo."""
+    helper = HTML[HTML.index("function zoneAvailableSec"):HTML.index("function drawZones")]
+    assert 'z.source === "luxalgo"' in helper
+    assert "return null;" in helper
+    limpio = helper.replace('z.source === "luxalgo" && Number.isFinite(Number(z.t0))) return Number(z.t0);', "")
+    assert "z.t0" not in limpio
 
 
-def test_la_insignia_exploratoria_depende_solo_del_modo_opt_in():
+def test_zonas_exploratorias_visibles_por_defecto_pero_marcadas():
+    """Decisión de Nico (2026-09-21): visibles por defecto, con insignia persistente. El
+    modo exploratorio nunca alimenta la densidad salvo que se lo pida (opt-in aparte)."""
+    assert "show_exploratory_zones: true," in HTML
+    assert 'id="chk-show-exploratory" checked' in HTML
+    assert "EXPLORATORY — t0 USED AS UNVERIFIED AVAILABILITY" in HTML
+    assert "include_exploratory_density: false," in HTML
+    assert "hiddenNoAvailability" in HTML       # y si se desactiva, se avisa lo oculto
+
+
+def test_la_insignia_exploratoria_depende_solo_del_modo_exploratorio():
     i = HTML.index("var zoneStartTs = zoneAvailableSec(z);")
     bloque = HTML[i:i + 600]
     assert "activeProps.show_exploratory_zones === true" in bloque
     assert "hasRenderedExploratory = true" in bloque
+
+
+def test_las_cajas_se_anclan_al_inicio_causal_nunca_a_t0():
+    """Migrado de test_viewer_causal_zone_start.py."""
+    assert "ABSTAIN_BAR_KEY_MISMATCH" in HTML
+    assert "var zoneStartTs = zoneAvailableSec(z);" in HTML
+    assert "var x0 = timeToX(z.t0, i0);" not in HTML
+    assert HTML.count("var x0 = timeToX(zoneStartTs, i0);") == 2
+    assert "candles[z.start_bar_idx].time === zoneStartTs" in HTML
+    assert "if (candles[mid].time < zoneStartTs)" in HTML
+
+
+def test_solo_se_dibujan_los_bordes_exteriores_de_la_zona():
+    """Migrado de test_viewer_zone_outer_borders_only.py."""
+    assert "ctx.strokeRect(drawX0 + 0.5, yMin_s + 0.5, rw_s, h_s);" not in HTML
+    assert "isBottomOuterSlice" in HTML
+    assert "isTopOuterSlice" in HTML
