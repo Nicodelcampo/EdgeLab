@@ -1,37 +1,53 @@
 # CURRENT — estado vivo
 
-**Fecha:** 2026-09-18  
-**Corte:** 2026-09-18  
-**Rama viva:** `fix/hft-parity-corridor-viewer-complete-v1-20260916` (y sincronizada en `foundation/f0b-compatibility-probe`)  
+**Fecha:** 2026-09-21  
+**Corte:** 2026-09-21  
+**Rama viva:** `feat/unified-viewer-canonical-20260921` (parte del head del PR #48 y lo reemplaza; ver Ramas)  
 **Referente:** `docs/NORTH_STAR.md` · sha256 del cuerpo `d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1`
 
-## Líneas primarias activas (2026-09-17)
+## Decisiones vigentes de Nico (2026-09-21)
+
+1. **Una única verdad, una única versión de cada cosa.** Un solo visor (`viewer/nt8_bridge/index.html`) y una sola definición de corredor: `edgelab/research/density_field.py` (HP-007 `D(p,t)`) es la referencia y `viewer/nt8_bridge/density_field.js` su puerto, atado por vectores dorados (`tests/research/test_density_field_js_parity.py`).
+2. **Zonas exploratorias visibles por defecto**, con insignia persistente. Luego se sanea y estandariza el visor y se validan todas las paridades: hoy el visor es una maqueta.
+3. **El modo de consumo por volumen se mantiene**, rotulado «NO certificado».
+4. **Archivados** el visor `hz2a`, `visor_server`, la preview de corredores, los parches `apply_*` y el motor certificado anterior: `archive/viewer_retirado_20260921/README.md`.
+5. **El indicador de clusters HFT queda FUERA del proyecto.** Solo se usa el de zonas individuales (`HFTZonesNQPureV4`): `archive/h_cluster_nq_fuera_del_proyecto/README.md`.
+6. **Los análisis corren en Kaggle** (antes, por los Workers de Notion). Acceso de escritura verificado el 2026-09-21: crear, ejecutar, leer logs y borrar kernels; crear y borrar datasets. Los bundles del visor **no** se suben (`NO_UPLOAD_VIEWER_BUNDLES`).
+
+## Líneas primarias activas (2026-09-21)
+
+1. **Unificación del visor y de la definición de corredor — HECHA en esta rama.** Detalle y evidencia en `docs/research/VIEWER_UNIFICATION_PROPOSAL_20260921.md`. Paridad Python↔JS: 28 escenarios dorados con pruebas de mutación (17 errores deliberados, todos atrapados) y 12 casos sobre bundles reales de 3 activos con diferencia máxima 0,00 (`tools/verify_density_parity_real_bundle.py`). La paridad sobre datos reales destapó un defecto: zonas con `vol: null`.
+2. **Validar la paridad de todos los indicadores en todos los activos — SIGUE.** Después: verlos todos en el visor.
+3. **Mejorar la lógica de los corredores de liquidez para incluirla en los análisis — DESPUÉS.** Puntos abiertos ya identificados: la clasificación direccional BULL/BEAR/DUAL (`edgelab/research/corridor_geometry.py`) está `CHARACTERIZATION_UNCERTIFIED`; el dossier HP-007 §3.2 describe un modelo calibrado con constantes distintas a las de `density_field.py`; el consumo por volumen de vela no está certificado.
+4. **Cerebro (Edge Brain) y orquestación de análisis en Kaggle.** Revisión y brecha: `docs/research/EDGE_BRAIN_GAP_ANALYSIS_20260921.md`.
+
+## Resultados de investigación vigentes
 
 1. **HP-008: Clímax HFT Sobre-Extendido con Reversión a la Media y Vuelo Libre en Corredores de Vacío (NQ 25t).**  
-   - Dossier canónico: [`docs/research/INFORME_FALSACION_ABSORCION_HFT_EMA_2026-09-17.md`](research/INFORME_FALSACION_ABSORCION_HFT_EMA_2026-09-17.md).  
-   - Herramientas reproducibles: `tools/research_hft_absorption_probe.py`, `tools/research_ema_reversion_nq.py`, `tools/falsification_battery.py`, `tools/deep_falsification_probe.py`.  
+   - Dossier: [`docs/research/INFORME_FALSACION_ABSORCION_HFT_EMA_2026-09-17.md`](research/INFORME_FALSACION_ABSORCION_HFT_EMA_2026-09-17.md).  
    - Falsación incondicional: la entrada ciega en $t_0$ es perdedora (-1.62 pt) y el micro-scalping muere por fricción CME ($PF=0.75-0.88$).  
-   - Supervivencia y Alpha: Razón de Varianzas de Lo-MacKinlay confirma $VR=0.9645$ en 20-50 barras 25t. En días rotacionales con Vuelo Libre a través de Corredores de Vacío (HP-007), la expectativa salta a **+7.30 pt (+29.2 ticks)** con Win Rate del **63.6%** y MFE/MAE de **1.45x** (frente a +1.38 pt con obstrucción).
+   - Razón de Varianzas de Lo-MacKinlay $VR=0.9645$ en 20-50 barras 25t; en días rotacionales con vuelo libre a través de corredores de vacío, +7.30 pt con Win Rate 63.6 %.
 
-2. **HP-007: Corredores de Vacío y Campo de Resistencia Microestructural (Fast-Travel).**  
-   - Dossier canónico: [`docs/research/HP-007_DOSSIER_TECNICO_Y_AUDITORIA_CORREDORES_VACIO.md`](research/HP-007_DOSSIER_TECNICO_Y_AUDITORIA_CORREDORES_VACIO.md).  
-   - Se demostró cuantitativamente que el precio viaja 3.03 veces más rápido en tiempo real dentro de corredores de vacío ($D \le 0.28$) frente a congestión ($D \ge 0.70$) ($p = 2.14 \times 10^{-10}, Z_{\text{MC}} = 5.65$), y que el efecto Backstop Protector eleva la expectativa a **+0.156 R en cortos** y **+0.076 R en largos**.  
-   - Visor activo e interactivo: `viewer/nt8_bridge/index.html`.
+2. **HP-007: Corredores de Vacío y Campo de Resistencia Microestructural.**  
+   - Dossier: [`docs/research/HP-007_DOSSIER_TECNICO_Y_AUDITORIA_CORREDORES_VACIO.md`](research/HP-007_DOSSIER_TECNICO_Y_AUDITORIA_CORREDORES_VACIO.md).  
+   - El precio viaja 3.03 veces más rápido en tiempo real dentro de corredores de vacío ($D \le 0.28$) frente a congestión ($D \ge 0.70$) ($p = 2.14 \times 10^{-10}$, $Z_{MC} = 5.65$). Backstop: +0.156 R en cortos y +0.076 R en largos.
+   - **Ojo:** esas cifras se midieron con el modelo del dossier; el visor ahora muestra `density_field.py`, cuyas constantes difieren (ver línea 3 arriba). No están medidas sobre el objeto exacto que muestra el visor.
 
 ## Vector de estado
 
 ```text
 HP-008_STATUS                           = FALSIFIED_UNCONDITIONAL_SURVIVES_ROTATIONAL_VACUUM
-HP-008_LO_MACKINLAY_VR                  = 0.9645 (H=20-50 bars, p<0.05, genuine mean reversion)
-HP-008_VACUUM_FREE_FLIGHT               = +7.30 pt (+29.2t), 63.6% WinRate, 1.45x MFE/MAE
-HP-008_CME_FRICTION_BARRIER             = FALSIFIED_MICRO_SCALPING (PF 0.75-0.88; needs wide target)
-HP-007_STATUS                           = CERTIFIED_MICROSTRUCTURAL_EFFECT
-HP-007_VELOCITY_RATIO                   = 1.35x_BARS / 3.03x_REALTIME (p=2.14e-10, Z=5.65)
-HP-007_BACKSTOP_EXPECTANCY              = +0.156_R_BEAR / +0.076_R_BULL
-HP-007_WALL_BOUNCE_RATE                 = 52.27%_CLEAN_REBOUND (>=3t)
+HP-007_STATUS                           = CERTIFIED_MICROSTRUCTURAL_EFFECT (modelo del dossier)
+CORRIDOR_DEFINITION                     = density_field.py (reference) + density_field.js (port), DECIDED_2026-09-21
+DENSITY_PORT_PARITY                     = 28_golden_scenarios + 12_real_bundle_cases, max_abs_diff=0
+CORRIDOR_DIRECTION_CHARACTERIZATION     = CHARACTERIZATION_UNCERTIFIED
+H_CLUSTER_NQ                            = OUT_OF_PROJECT (archived)
 HOLDOUT_INTEGRITY                       = SEALED_UNTOUCHED (2026-07-01 -> 2026-12-31)
-PRIMARY_BRANCH                          foundation/f0b-compatibility-probe
-ACTIVE_RESEARCH_BRANCH                  fix/hft-parity-corridor-viewer-complete-v1-20260916
+HOLDOUT_BOUNDARY_NS                     = 1782856800000000000
+CI_PR48_BEFORE                          = 19_failed_1_error (causas mecanicas)
+CI_LOCAL_AFTER_MERGE                    = 1567_passed_1_failed (CURRENT.md, resuelto en este commit)
+ULP_TRIAGE                              = 57_entries_PROVISIONAL (lectura, no medicion; medir con tools/ulp_exposure.py)
+KAGGLE_WRITE_ACCESS                     = VERIFIED_2026-09-21
 CAMPAIGN_OUTCOMES_OPENED                = false
 PREEXISTING_OUTCOME_EXPOSURE            = YES
 ```
@@ -70,23 +86,12 @@ Consecuencia: no afecta la señal causal del roll del 16-jun, que usa D-1. Sí a
 
 ## Ramas
 
+- Rama viva: `feat/unified-viewer-canonical-20260921` (reemplaza el head del PR #48 `feat/unified-nt8-viewer-20260920`; se empuja como fast-forward sobre esa rama).
 - `foundation/f0b-compatibility-probe`: integración.
 - `audit/notion-ai-sltp-p2b-provenance-20260830`: congelada, no mergear ni borrar.
-- 17 PR abiertas; varias tienen bases encadenadas o antiguas.
-- Ninguna rama está protegida.
+- Cadena del Edge Brain (#43 → #46 → #52, más #49): sin mergear; arreglo de conexiones sqlite pendiente en `fix/brain-close-sqlite-connections-20260921` (local, no empujada).
 - Registro: `docs/BRANCH_REGISTRY_2026-09-02.md`.
-- `research/avolcluster-nq-parity-oracle-20260901`: **mergeada a `foundation` el 2026-09-03.**
-  Paridad de aVolClusterPOI v0.5 sobre NQ 06-26 120t. Los tres números miden
-  poblaciones distintas y hay que citarlos con su estimand:
-  - `KERNEL_PARITY_ON_EQUAL_INPUT = EXACT`: 23.339/23.339 bloques (100,00 %) —
-    valida clustering/percentil/geometría **sobre input igual**, no el footprint.
-  - Replay en ventana: 203/203 zonas (100,00 %); end-to-end 201/203 (99,01 %) —
-    sobre **203 zonas**, ~2 % de los bloques.
-  - **Partición de barras: 89,81 %** sobre las 233.601 barras del BARPROFILE
-    (auditado 2026-09-03, `docs/research/avolcluster_partition_audit_20260903/`).
-    El error crece monótono en la sesión: decil 0 97,27 % → decil 9 73,07 %.
-  - Índice y reservas abiertas: `docs/research/PARIDAD_AVOLCLUSTERPOI_INDICE.md` (P-71).
-  - Outcomes: `CAMPAIGN_OUTCOMES_OPENED = false`.
+- `research/avolcluster-nq-parity-oracle-20260901`: mergeada a `foundation` el 2026-09-03. Índice y reservas: `docs/research/PARIDAD_AVOLCLUSTERPOI_INDICE.md` (P-71). Outcomes: `CAMPAIGN_OUTCOMES_OPENED = false`.
 - `research/gate-regime-context`: `FOUNDATION_EXECUTABLE`, `CHECKPOINT_PENDING_REAL_DATA`, `NOT_YET_OPERATIONAL`.
 - `work/crypto-context-foundation-20260824`: PR #14 draft; CI roja; no mergear.
 
@@ -110,4 +115,4 @@ Consecuencia: no afecta la señal causal del roll del 16-jun, que usa D-1. Sí a
 
 ## Aporte al referente
 
-CURRENT describe el bloqueo real: los rolls parecen estables, pero la certificación depende todavía de fuente oficial, cobertura y completitud aprobada.
+ Un solo visor y una sola definición de corredor con puerto verificado (28 escenarios dorados + 12 casos reales, diferencia 0); Kaggle con acceso de escritura probado de punta a punta; y medido qué le falta al Brain para orquestar análisis con garantías (corredor de episodios con auditoría de holdout).
