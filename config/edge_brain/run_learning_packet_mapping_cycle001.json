@@ -1,0 +1,33 @@
+{
+  "mapping_id": "RUN-LEARNING-PACKET-TO-EXPERIMENTAL-HIPPOCAMPUS-V1",
+  "work_id": "B-CYCLE001-LEARNING-PACKET-001",
+  "authority_policy": {
+    "access_or_authentication": "OPERATIONAL_OBSERVATION",
+    "generic_run": "RUN_OBSERVATION_UNADJUDICATED",
+    "claims_are_evidence": false,
+    "maximum_promotion": "LESSON_CANDIDATE"
+  },
+  "required_gates": {
+    "outcomes_inspected": false,
+    "holdout_enabled": false,
+    "packet_sha256_required": true,
+    "immutable_source_ref_required": true,
+    "secret_bearing_keys_forbidden": true
+  },
+  "mappings": {
+    "run": "AnalysisEpisode",
+    "observation": "StepExecution",
+    "abstention_error_crash_timeout": "FailureEvent",
+    "successful_non_promoted_observation": "SuccessEvent",
+    "next_action": "LessonCandidate(PROPOSED, evidence_record_ids=[])",
+    "MEASUREMENT_INVALID_or_AMBIGUOUS_MEASUREMENT": "Counterexample"
+  },
+  "non_claims": [
+    "API authentication is not dataset evidence",
+    "Dataset listing is not custody verification",
+    "A positive run is not a promoted claim",
+    "Literature is not EdgeLab empirical evidence",
+    "A packet cannot authorize outcomes or holdout"
+  ],
+  "reviewer": "C"
+}
