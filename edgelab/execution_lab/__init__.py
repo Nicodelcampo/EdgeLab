@@ -6,6 +6,18 @@ new, explicitly versioned execution contracts without silently changing old
 evidence.
 """
 
+from .feed_contract import (
+    BookAction,
+    BookSide,
+    CertificationReason,
+    CertificationStatus,
+    FeedCertification,
+    FeedSchema,
+    NormalizedBookEvent,
+    PacketObservation,
+    SourceProvenance,
+    certify_feed_segment,
+)
 from .queue_model import (
     AbstainReason,
     BookEvent,
@@ -19,11 +31,21 @@ from .queue_model import (
 
 __all__ = [
     "AbstainReason",
+    "BookAction",
+    "BookSide",
     "BookEvent",
+    "CertificationReason",
+    "CertificationStatus",
     "EventKind",
+    "FeedCertification",
+    "FeedSchema",
     "Fill",
+    "NormalizedBookEvent",
+    "PacketObservation",
     "PassiveOrder",
     "QueueSimulationResult",
     "Side",
+    "SourceProvenance",
+    "certify_feed_segment",
     "simulate_fifo_passive_fill",
 ]

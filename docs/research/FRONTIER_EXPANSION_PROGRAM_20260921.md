@@ -31,65 +31,45 @@ dataset, observable, mechanism or execution contract and must preserve:
 
 ### W0 — Canonical integration and reproducibility
 
-Create a reproducible integration line from the current living branches. No
-research result may depend on an unrecorded local merge. Record source refs,
-patches, environment and data hashes.
+Create a reproducible integration line from the current living branches. No research result may depend on an unrecorded local merge. Record source refs, patches, environment and data hashes.
 
-**Gate:** a clean checkout can reproduce contract tests and identify every
-non-versioned dependency. **Current risk:** this branch inherits a broad research
-lineage; it is not a declaration that all open PRs are integrated.
+**Gate:** a clean checkout can reproduce contract tests and identify every non-versioned dependency. **Current risk:** this branch inherits a broad research lineage; it is not a declaration that all open PRs are integrated.
 
 ### W1 — Execution Lab
 
-Replace fixed-slippage-only assumptions where the proposed strategy depends on
-passive fills. Model latency, queue ahead, partial fills, resets, sequence gaps,
-adverse selection and empirical calibration.
+Replace fixed-slippage-only assumptions where the proposed strategy depends on passive fills. Model latency, queue ahead, partial fills, resets, sequence gaps, adverse selection and empirical calibration.
 
 First contract implemented here: `QUEUE_FIFO_L2_V1`.
 
-**Hard semantics:** anonymous cancellations never improve queue priority;
-observed executions are the only queue-consuming evidence; missing activation
-depth, packet gaps and resets abstain.
+**Hard semantics:** anonymous cancellations never improve queue priority; observed executions are the only queue-consuming evidence; missing activation depth, packet gaps and resets abstain.
 
-**Gate:** synthetic invariants first; captured L2/MBO calibration later. This
-module must not silently alter the sealed legacy market simulator.
+**Gate:** synthetic invariants first; captured L2/MBO calibration later. This module must not silently alter the sealed legacy market simulator.
 
 ### W2 — L2/MBO observability
 
-Define normalized add/cancel/modify/execute/replenishment events, exchange
-sequence continuity, packet-gap states, order lifetime and source provenance.
+Define normalized add/cancel/modify/execute/replenishment events, exchange sequence continuity, packet-gap states, order lifetime and source provenance.
 
-**Gate:** `NOT_OBSERVED != ZERO_ACTIVITY`; no fill evidence from reconstructed
-footprints alone.
+**Gate:** `NOT_OBSERVED != ZERO_ACTIVITY`; no fill evidence from reconstructed footprints alone.
 
 ### W3 — Multiasset residual engine
 
-Build point-in-time asynchronous joins, futures roll-safe identities, hedge-ratio
-formation/trading separation, residual/z-score mechanics and explicit leg risk.
+Build point-in-time asynchronous joins, futures roll-safe identities, hedge-ratio formation/trading separation, residual/z-score mechanics and explicit leg risk.
 
-**Gate:** no same-timestamp look-ahead; formation data cannot leak into trading
-adjudication; stale-leg and missing-leg states abstain.
+**Gate:** no same-timestamp look-ahead; formation data cannot leak into trading adjudication; stale-leg and missing-leg states abstain.
 
 ### W4 — Portfolio and capacity
 
-Aggregate independent mechanisms rather than a single winning configuration.
-Add correlation clustering, risk budgets, turnover, exposure limits, marginal
-capacity and concentration stress.
+Aggregate independent mechanisms rather than a single winning configuration. Add correlation clustering, risk budgets, turnover, exposure limits, marginal capacity and concentration stress.
 
-**Gate:** portfolio claims require component-level lineage and cost/capacity
-curves, not just a higher combined Sharpe.
+**Gate:** portfolio claims require component-level lineage and cost/capacity curves, not just a higher combined Sharpe.
 
 ### W5 — Shadow/live validation
 
-Measure signal-to-order latency, observed-vs-simulated fill deltas, markouts,
-drift and kill rules. Promotion requires research/live identity and documented
-operator controls.
+Measure signal-to-order latency, observed-vs-simulated fill deltas, markouts, drift and kill rules. Promotion requires research/live identity and documented operator controls.
 
 ### W6 — Conditional ML validation
 
-CPCV, purging/embargo, triple barrier and meta-labeling are conditional tools,
-not default sources of edge. They are admitted only when a primary signal exists,
-labels overlap, tuning is nested and the effective trial count is charged.
+CPCV, purging/embargo, triple barrier and meta-labeling are conditional tools, not default sources of edge. They are admitted only when a primary signal exists, labels overlap, tuning is nested and the effective trial count is charged.
 
 ## Research loop
 
@@ -104,25 +84,26 @@ For each increment:
 7. update the measured/not-measured ledger in the same commit;
 8. only then decide whether the next slice deserves data or outcome access.
 
-## First checkpoint
+## Checkpoints
 
-Implemented the conservative queue-fill kernel and contract tests. It closes a
-specific methodological gap: EdgeLab can now represent a passive order that
-fails to fill, fills partially, or becomes unknowable because the feed is
-incomplete. It does **not** claim calibration, profitability or L2 availability.
+### C1 — Fail-closed passive queue kernel
+
+Implemented the conservative queue-fill kernel and contract tests. EdgeLab can represent a passive order that fails to fill, fills partially, or becomes unknowable because the feed is incomplete. This does **not** claim calibration, profitability or L2 availability.
+
+### C2 — L2/MBO observability boundary
+
+After rereading the existing NT8 MBP intake and researching CME MDP 3.0 recovery, MBO priority and queue-position methodology, implemented `L2_MBO_OBSERVABILITY_V1`. It separates normalized events from channel-level packet evidence, requires source/decoder hashes, and prevents aggregated MBP from being promoted into exact FIFO queue evidence. See `L2_MBO_OBSERVABILITY_CONTRACT_20260921.md`.
 
 ## Immediate next increments
 
-1. add a normalized L2/MBO event schema with provenance and gap certification;
-2. add queue-model property tests and independent reference implementation;
-3. add post-fill markout/adverse-selection measurement;
-4. calibrate with observed order lifecycle data, if a source passes intake;
+1. add queue-model property tests and an independent reference implementation;
+2. add post-fill markout/adverse-selection measurement;
+3. design vendor-neutral MBO adapters without opening quarantined holdout data;
+4. calibrate with observed order lifecycle data only if a source passes intake;
 5. implement point-in-time multiasset joins and leg-risk abstention;
 6. add portfolio/capacity contracts;
 7. design shadow-mode reconciliation and kill-rule state machine.
 
 ## Aporte al referente
 
-The branch begins to replace hypothetical passive execution with a falsifiable,
-fail-closed contract while preserving the holdout and refusing to convert
-missing market-depth evidence into optimistic fills.
+The branch begins to replace hypothetical passive execution with a falsifiable, fail-closed contract while preserving the holdout and refusing to convert missing market-depth evidence into optimistic fills.
