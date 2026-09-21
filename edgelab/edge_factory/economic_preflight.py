@@ -28,6 +28,10 @@ class EconomicPreflightReport:
     blockers: tuple[str, ...]
 
 
+def _is_nonnegative_number(value: Any) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool) and value >= 0
+
+
 def evaluate_economic_campaign(manifest: Mapping[str, Any]) -> EconomicPreflightReport:
     """Evaluate G0.5 without reading outcomes or data files."""
     blockers: list[str] = []
@@ -63,12 +67,34 @@ def evaluate_economic_campaign(manifest: Mapping[str, Any]) -> EconomicPreflight
     missing_costs = sorted(REQUIRED_COSTS - set(costs))
     if missing_costs:
         blockers.append("COST_MODEL_INCOMPLETE:" + ",".join(missing_costs))
+    for key in (
+        "commission_roundturn",
+        "exchange_fees_roundturn",
+        "spread_ticks",
+        "slippage_ticks_base",
+    ):
+        if key in costs and not _is_nonnegative_number(costs[key]):
+            blockers.append(f"COST_COMPONENT_INVALID:{key}")
+    stress = costs.get("slippage_ticks_stress")
+    if stress is not None and (
+        not isinstance(stress, list)
+        or not stress
+        or any(not _is_nonnegative_number(value) for value in stress)
+    ):
+        blockers.append("COST_COMPONENT_INVALID:slippage_ticks_stress")
+    latency = costs.get("latency_model")
+    if latency is not None and (
+        not isinstance(latency, str)
+        or not latency.strip()
+        or latency.startswith("TO_")
+    ):
+        blockers.append("COST_COMPONENT_INVALID:latency_model")
 
     multiplicity = manifest.get("multiplicity") or {}
     if not multiplicity.get("family_id"):
         blockers.append("MULTIPLICITY_FAMILY_MISSING")
     count = multiplicity.get("effective_hypothesis_count")
-    if not isinstance(count, int) or count < 1:
+    if not isinstance(count, int) or isinstance(count, bool) or count < 1:
         blockers.append("EFFECTIVE_HYPOTHESIS_COUNT_INVALID")
     if not multiplicity.get("correction_method"):
         blockers.append("MULTIPLICITY_CORRECTION_MISSING")

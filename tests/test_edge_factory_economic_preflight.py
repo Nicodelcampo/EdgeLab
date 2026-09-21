@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import json
 import unittest
+from pathlib import Path
 
 from edgelab.edge_factory.economic_preflight import (
     HOLDOUT_BOUNDARY_NS,
@@ -47,15 +49,15 @@ class TestEconomicPreflight(unittest.TestCase):
         self.assertEqual(report.blockers, ())
 
     def test_current_state_is_fail_closed(self):
-        manifest = self._valid()
-        manifest["signal_semantics"] = None
-        manifest["outcomes_enabled"] = False
-        manifest["human_authorized"] = False
+        root = Path(__file__).resolve().parents[1]
+        manifest = json.loads(
+            (root / "config" / "edge_factory" / "ym_bt2a_economic_campaign_blocked_20260920.json").read_text(
+                encoding="utf-8"
+            )
+        )
         report = evaluate_economic_campaign(manifest)
         self.assertFalse(report.executable)
-        self.assertIn("SIGNAL_SEMANTICS_NOT_CERTIFIED", report.blockers)
-        self.assertIn("OUTCOMES_DISABLED", report.blockers)
-        self.assertIn("HUMAN_AUTHORIZATION_MISSING", report.blockers)
+        self.assertEqual(set(report.blockers), set(manifest["expected_blockers"]))
         with self.assertRaises(EconomicPreflightError):
             assert_economic_campaign_executable(manifest)
 
@@ -70,6 +72,14 @@ class TestEconomicPreflight(unittest.TestCase):
         manifest["cost_model"].pop("latency_model")
         report = evaluate_economic_campaign(manifest)
         self.assertTrue(any(b.startswith("COST_MODEL_INCOMPLETE") for b in report.blockers))
+
+    def test_placeholder_costs_are_rejected(self):
+        manifest = self._valid()
+        manifest["cost_model"]["commission_roundturn"] = "TO_FREEZE_BY_CONTRACT"
+        manifest["cost_model"]["latency_model"] = "TO_PREREGISTER"
+        report = evaluate_economic_campaign(manifest)
+        self.assertIn("COST_COMPONENT_INVALID:commission_roundturn", report.blockers)
+        self.assertIn("COST_COMPONENT_INVALID:latency_model", report.blockers)
 
     def test_synthetic_fill_policy_is_rejected(self):
         manifest = self._valid()
