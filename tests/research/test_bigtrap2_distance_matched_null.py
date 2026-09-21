@@ -1492,6 +1492,8 @@ def _instalar_pipeline_cli_fake(monkeypatch, fx, archivo, *, dirty_start, dirty_
     auditoria 2026-08-12): cada call site tiene que decidir su procedencia
     explicitamente, en vez de heredar un `False` silencioso que podria
     esconder un caso no considerado."""
+    # el ticks_mod falso no lee disco: la ruta solo se arma; no exigir un `data/` real (CI no lo tiene)
+    monkeypatch.setattr(m, "data_root", lambda: Path("/fake/data"))
     class _FakeTk:
         sequence = np.arange(10, dtype=np.int64)
         tick_size = fx["tick_size"]
