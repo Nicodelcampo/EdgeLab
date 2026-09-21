@@ -1795,6 +1795,156 @@
       }
     });
 
+    // 1b. Dibujar FLECHAS DE SEÑAL EN TIEMPO REAL (SIN LOOK-AHEAD)
+    //     Cuando el timeframe activo difiere del bar_key del run (ej: viendo 25t, zonas de M5):
+    //     - La vela M5 abre en z.t0 (ej. 13:40:00) pero CIERRA en z.t0 + 300s (ej. 13:45:00).
+    //     - El indicador recién emite la señal al cierre de la barra M5.
+    //     - Por ende, la señal causal real se dispara a las 13:45:00 al precio en que cotiza
+    //       la vela de 25 ticks en ese segundo exacto, NO en z.t0 ni en el mínimo de la zona.
+    var runBarKey = state.run && state.run.bar_key;
+    var isCrossTimeframe = runBarKey && activeKey && activeKey !== runBarKey;
+    var bs = state.data && state.data.bar_series && state.data.bar_series[activeKey];
+    if (isCrossTimeframe && state.run.zones && state.run.zones.length && bs && bs.candles && bs.candles.length) {
+      ctx.save();
+      var arrowSize = 8;
+
+      // Determinar la duración en segundos de la barra que originó la señal
+      var barDurationSec = 300; // default 5m
+      var mMatch = runBarKey.match(/time_(\d+)([smhd])/);
+      if (mMatch) {
+        var bVal = parseInt(mMatch[1], 10);
+        var bUnit = mMatch[2];
+        if (bUnit === "s") barDurationSec = bVal;
+        else if (bUnit === "m") barDurationSec = bVal * 60;
+        else if (bUnit === "h") barDurationSec = bVal * 3600;
+        else if (bUnit === "d") barDurationSec = bVal * 86400;
+      }
+
+      var activeCandles = bs.candles;
+      var nCandles = activeCandles.length;
+
+      state.run.zones.forEach(function (z) {
+        if (!visible(z)) return;
+        var zBot = Math.min(z.top, z.bottom);
+        var zTop = Math.max(z.top, z.bottom);
+        if (visMaxP !== null && (zBot > visMaxP || zTop < visMinP)) return;
+
+        // Momento causal exacto de emisión de la señal.
+        // Prioridad 1: available_ts emitido por el exportador (derivado de available_at_ns del kernel).
+        // Fallback EXPLÍCITO: sólo para barras temporales (source_barspec que empiece con "time_").
+        //   En ese caso usamos t0 + duración de barra. NUNCA una regla universal.
+        // Barras tick sin available_ts: se omite la zona (no se puede inferir el timestamp causal).
+        var tSignal;
+        if (z.available_ts !== undefined && z.available_ts !== null) {
+          tSignal = z.available_ts;
+        } else {
+          var bspec = z.source_barspec || "";
+          if (bspec.indexOf("time_") === 0 && barDurationSec > 0) {
+            // Fallback restringido a barras temporales
+            tSignal = z.t0 + barDurationSec;
+          } else {
+            // tick bars sin available_ts: omitir — no fabricar timestamp causal
+            return;
+          }
+        }
+
+        // Si la señal cae fuera del rango visible en pantalla, omitir
+        if (tSignal > vr.to + 120 || z.t0 < vr.from - 300) return;
+
+        // Localizar la vela exacta del timeframe activo (ej. 25t) en tSignal
+        var lowC = 0, highC = nCandles - 1;
+        while (lowC <= highC) {
+          var midC = (lowC + highC) >> 1;
+          if (activeCandles[midC].time < tSignal) lowC = midC + 1;
+          else highC = midC - 1;
+        }
+        var cIdx = Math.min(nCandles - 1, Math.max(0, lowC));
+        var sigCandle = activeCandles[cIdx];
+        if (!sigCandle) return;
+
+        var xSig = timeToX(sigCandle.time);
+        if (xSig < -15 || xSig > w + 15) return;
+
+        var col = colorOf(z);
+        var k = (z.kind || "").toUpperCase();
+        var isBull = k.indexOf("BULL") !== -1 || k.indexOf("BUY") !== -1;
+
+        // Posicionar en el precio REAL de la vela donde disparó la señal en tiempo real
+        var yCandlePx = isBull ? sigCandle.low : sigCandle.high;
+        var yAnchor = series.priceToCoordinate(yCandlePx);
+        if (yAnchor === null || yAnchor === undefined) return;
+
+        // Línea punteada que conecta el inicio de la formación (t0) con el punto de disparo (tSignal)
+        var xStart = timeToX(z.t0);
+        var yZoneAnchor = series.priceToCoordinate(isBull ? zBot : zTop);
+        if (yZoneAnchor !== null && yZoneAnchor !== undefined && xSig > xStart + 2) {
+          ctx.beginPath();
+          ctx.setLineDash([2, 3]);
+          ctx.strokeStyle = hexToRgba(col, 0.45);
+          ctx.lineWidth = 1;
+          ctx.moveTo(xStart, yZoneAnchor);
+          ctx.lineTo(xSig, yAnchor);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+
+        if (isBull) {
+          // Señal BULL: Flecha ▲ apuntando arriba hacia el LOW de la vela de disparo
+          var yTip = yAnchor + 6;
+          ctx.fillStyle = col;
+          ctx.strokeStyle = state.isDark ? "#000000" : "#ffffff";
+          ctx.lineWidth = 1.4;
+          ctx.beginPath();
+          ctx.moveTo(xSig, yTip);                           // punta apuntando arriba
+          ctx.lineTo(xSig - arrowSize, yTip + arrowSize * 1.6);
+          ctx.lineTo(xSig + arrowSize, yTip + arrowSize * 1.6);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+
+          // Marcador puntual en el precio exacto
+          ctx.beginPath();
+          ctx.arc(xSig, yAnchor, 2.5, 0, 2 * Math.PI);
+          ctx.fillStyle = col;
+          ctx.fill();
+        } else {
+          // Señal BEAR: Flecha ▼ apuntando abajo hacia el HIGH de la vela de disparo
+          var yTip = yAnchor - 6;
+          ctx.fillStyle = col;
+          ctx.strokeStyle = state.isDark ? "#000000" : "#ffffff";
+          ctx.lineWidth = 1.4;
+          ctx.beginPath();
+          ctx.moveTo(xSig, yTip);                           // punta apuntando abajo
+          ctx.lineTo(xSig - arrowSize, yTip - arrowSize * 1.6);
+          ctx.lineTo(xSig + arrowSize, yTip - arrowSize * 1.6);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+
+          // Marcador puntual en el precio exacto
+          ctx.beginPath();
+          ctx.arc(xSig, yAnchor, 2.5, 0, 2 * Math.PI);
+          ctx.fillStyle = col;
+          ctx.fill();
+        }
+      });
+
+      // Badge informativo en la esquina inferior izquierda
+      var tfLabel = runBarKey.replace("time_", "").replace("tick_", "").toUpperCase();
+      var badgeStr = "⚡ SEÑAL REAL AL CIERRE " + tfLabel + " (sin look-ahead) · vista en " + activeKey.replace("time_", "").replace("tick_", "").toUpperCase();
+      ctx.font = "bold 10px 'Segoe UI', -apple-system, sans-serif";
+      var btw = ctx.measureText(badgeStr).width;
+      var bx = 12, by = hCanvas - 32;
+      ctx.fillStyle = state.isDark ? "rgba(15, 23, 42, 0.94)" : "rgba(240, 245, 255, 0.94)";
+      ctx.fillRect(bx, by, btw + 16, 22);
+      ctx.strokeStyle = state.isDark ? "#38bdf8" : "#0284c7";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(bx, by, btw + 16, 22);
+      ctx.fillStyle = state.isDark ? "#38bdf8" : "#0284c7";
+      ctx.fillText(badgeStr, bx + 8, by + 15);
+      ctx.restore();
+    }
+
     // 2. Dibujar CORTES Y MERGES DE CONTRATO (RÉGIMEN CANÓNICO EDGELAB)
     if (state.data && state.data.meta && state.data.meta.rolls && state.data.meta.rolls.length) {
       state.data.meta.rolls.forEach(function (r) {

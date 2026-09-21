@@ -69,16 +69,6 @@ PARAM_SPEC = dict(
     DrawZoneBand=dict(type="bool"),
 )
 
-
-def meta_line(p, instrument, tick_size):
-    """Versioned metadata for the canonical pipe event stream."""
-    return (
-        "# meta indicator=BigTrap2Absorption,version=1.1.1,"
-        f"instrument={instrument},tick_size={plain(tick_size)},"
-        "event_format=pipe_v1,availability=causal"
-    )
-
-
 def _percentile(arr, q):
     if len(arr) == 0:
         return float("nan")
@@ -393,11 +383,6 @@ def run(ticks, bars=None, footprints=None, params=None, chart_tz="UTC"):
 
             z_entry = {
                 "id": f"{b_idx}_{'B' if is_bull else 'S'}",
-                "indicator": NAME,
-                "top": z_hi,
-                "bottom": z_lo,
-                "kind": "trapped_buyers" if is_bull else "trapped_sellers",
-                "timeline": [],
                 "created_bar": b_idx,
                 "is_bull": is_bull,
                 "side": "trapped_buyers" if is_bull else "trapped_sellers",
@@ -409,6 +394,11 @@ def run(ticks, bars=None, footprints=None, params=None, chart_tz="UTC"):
                 "frac": best_run["vol"] / max(bar_vol, 1.0),
                 "touches": 0,
                 "created_ms": ns_to_ms(blk_ts[-1]),
+                # available_at_ns: nanosecond timestamp del último tick del bloque
+                # (cierre de la cubeta). Para time_5m es el cierre de la barra M5;
+                # para tick_25 es el cierre de la cubeta de 25 ticks.
+                # El exportador lo convierte a available_ts (segundos enteros).
+                "available_at_ns": int(blk_ts[-1]),
                 "state": "ACTIVE",
                 "ended_ms": None,
                 "end_reason": None,
@@ -488,10 +478,7 @@ def run(ticks, bars=None, footprints=None, params=None, chart_tz="UTC"):
     return dict(
         indicator=NAME,
         params=p,
-        header=None,
-        csv_lines=events,
-        events=events,
         zones=zones,
         n_zones=len(zones),
-        params_line=meta_line(p, ticks.instrument, tick_size),
+        events=events
     )
