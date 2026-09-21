@@ -409,6 +409,7 @@ def run(ticks, bars=None, footprints=None, params=None, chart_tz="UTC"):
                 "frac": best_run["vol"] / max(bar_vol, 1.0),
                 "touches": 0,
                 "created_ms": ns_to_ms(blk_ts[-1]),
+                "formation_spec": f"tick_count:{tape_window}",
                 "formation_start_ns": int(blk_ts[0]),
                 "formation_end_ns": int(blk_ts[-1]),
                 "available_at_ns": int(blk_ts[-1]),

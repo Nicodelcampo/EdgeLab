@@ -1414,6 +1414,23 @@
     return "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
   }
 
+  // Helper temporal único para parsear la duración de barras temporales (time_<n><unidad>).
+  // Retorna null para barras tick, volumen, o cualquier formato no temporal.
+  // Prohibido asumir defaults universales (como 300 o 5m).
+  function parseBarDurationSec(barKey) {
+    if (!barKey || typeof barKey !== "string") return null;
+    var m = barKey.match(/^time_(\d+)([smhd])$/);
+    if (!m) return null;
+    var n = parseInt(m[1], 10);
+    var unit = m[2];
+    if (isNaN(n) || n <= 0) return null;
+    if (unit === "s") return n;
+    if (unit === "m") return n * 60;
+    if (unit === "h") return n * 3600;
+    if (unit === "d") return n * 86400;
+    return null;
+  }
+
   function drawZones() {
     var ctx = overlay.getContext("2d");
     var dpr = window.devicePixelRatio || 1;
@@ -1808,18 +1825,6 @@
       ctx.save();
       var arrowSize = 8;
 
-      // Determinar la duración en segundos de la barra que originó la señal
-      var barDurationSec = 300; // default 5m
-      var mMatch = runBarKey.match(/time_(\d+)([smhd])/);
-      if (mMatch) {
-        var bVal = parseInt(mMatch[1], 10);
-        var bUnit = mMatch[2];
-        if (bUnit === "s") barDurationSec = bVal;
-        else if (bUnit === "m") barDurationSec = bVal * 60;
-        else if (bUnit === "h") barDurationSec = bVal * 3600;
-        else if (bUnit === "d") barDurationSec = bVal * 86400;
-      }
-
       var activeCandles = bs.candles;
       var nCandles = activeCandles.length;
 
@@ -1833,19 +1838,19 @@
 
         // Momento causal exacto de emisión de la señal.
         // Prioridad 1: available_ts emitido por el exportador (derivado de available_at_ns del kernel).
-        // Fallback EXPLÍCITO: sólo para barras temporales (source_barspec que empiece con "time_").
-        //   En ese caso usamos t0 + duración de barra. NUNCA una regla universal.
-        // Barras tick sin available_ts: se omite la zona (no se puede inferir el timestamp causal).
+        // Fallback EXPLÍCITO: sólo si la formación de la zona es explícitamente temporal (time_*).
+        //   En ese caso usamos t0 + duración de formación. NUNCA una regla universal ni el display chart.
+        // Formaciones tick sin available_ts: se omite la zona (abstención causal estricta).
         var tSignal;
         if (z.available_ts !== undefined && z.available_ts !== null) {
           tSignal = z.available_ts;
         } else {
-          var bspec = z.source_barspec || "";
-          if (bspec.indexOf("time_") === 0 && barDurationSec > 0) {
-            // Fallback restringido a barras temporales
-            tSignal = z.t0 + barDurationSec;
+          var bspec = z.formation_spec || z.source_barspec || "";
+          var fDur = parseBarDurationSec(bspec);
+          if (fDur !== null) {
+            tSignal = z.t0 + fDur;
           } else {
-            // tick bars sin available_ts: omitir — no fabricar timestamp causal
+            // Formaciones tick/volumen sin available_ts: abstención causal estricta
             return;
           }
         }
@@ -2196,11 +2201,12 @@
       } else if (z.availableTime !== undefined && z.availableTime !== null) {
         availTs = z.availableTime;
       } else {
-        var bspec = z.source_barspec || "";
-        if (bspec.indexOf("time_") === 0 && barDurationSec > 0) {
-          availTs = z.t0 + barDurationSec;
+        var bspec = z.formation_spec || z.source_barspec || "";
+        var fDur = parseBarDurationSec(bspec);
+        if (fDur !== null) {
+          availTs = z.t0 + fDur;
         } else {
-          continue; // Sin disponible causal verificable: omitir renderizado de muro
+          continue; // Abstención causal estricta
         }
       }
       if (availTs > 1e16) availTs = availTs / 1e9;

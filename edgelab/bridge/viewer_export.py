@@ -59,28 +59,40 @@ def _bar_duration_s(bar_key: str) -> int | None:
         return None
 
 
-def _zone_json(z, source, last_ms, match_id, bar_key=""):
+def _zone_json(z, source, last_ms, match_id, display_bar_key="", formation_spec=None):
     """Serializa una zona para el bundle del viewer.
 
     Campos canónicos de causalidad y geometría:
     - ``top`` / ``bottom``: límites de precio de la zona (admite alias hi/lo).
     - ``kind``: clasificación de la zona (admite alias side).
+    - ``formation_spec``: especificación exacta de formación de la cubeta/barra
+      (ej. "tick_count:25", "time_5m"). Separado conceptual y operativamente
+      del timeframe del chart de visualización.
+    - ``display_bar_key``: serie de velas del gráfico primario ("time_5m", "tick_25").
     - ``formation_start_ts``: inicio de la formación (segundos) desde formation_start_ns.
     - ``formation_end_ts``: fin de la formación (segundos) desde formation_end_ns.
     - ``t0``: timestamp inicial de visualización, exportado prioritariamente
       desde formation_start_ns; fallback a created_ms // 1000.
     - ``available_ts``: segundo exacto en que la señal es ejecutable sin look-ahead.
+      Proviene de available_at_ns (prioridad 1). Si falta, fallback DERIVED_COMPATIBILITY_FALLBACK
+      se aplica EXCLUSIVAMENTE si formation_spec es temporal (time_*). Para formaciones
+      tick/volumen sin available_at_ns: UNAVAILABLE (None), evitando sumas espurias.
     - ``available_origin``: etiqueta de auditoría con la procedencia exacta:
       - 'KERNEL_AVAILABLE_AT_NS': emitido por el productor causal.
       - 'EXPLICIT_AVAILABLE_TS': valor explícito pre-calculado en la zona.
-      - 'DERIVED_COMPATIBILITY_FALLBACK': fallback t0 + dur restringido a barras time_*.
-      - 'UNAVAILABLE': barra no temporal (ej. tick) sin timestamp de kernel disponible.
-    - ``source_barspec``: tipo de barra generadora ("time_5m", "tick_25", ...).
+      - 'DERIVED_COMPATIBILITY_FALLBACK': fallback t0 + dur restringido a formation_spec temporal.
+      - 'UNAVAILABLE': formación no temporal sin timestamp de kernel disponible.
+    - ``source_barspec``: alias retrocompatible de formation_spec.
     """
     # Geometría con soporte dual de alias
     top = z["top"] if ("top" in z and z["top"] is not None) else z.get("hi")
     bottom = z["bottom"] if ("bottom" in z and z["bottom"] is not None) else z.get("lo")
     kind = z["kind"] if ("kind" in z and z["kind"] is not None) else z.get("side")
+
+    # Identificación estricta de la formación vs visualización
+    f_spec = z.get("formation_spec") or formation_spec
+    if not f_spec and "TapeWindowTicks" in z:
+        f_spec = f"tick_count:{z['TapeWindowTicks']}"
 
     # Timestamps de formación
     f_start_ns = z.get("formation_start_ns")
@@ -108,11 +120,15 @@ def _zone_json(z, source, last_ms, match_id, bar_key=""):
         available_ts = int(avail_ts)
         available_origin = "EXPLICIT_AVAILABLE_TS"
     else:
-        dur = _bar_duration_s(bar_key) if bar_key else None
+        # Fallback legacy: SOLO si formation_spec es explícitamente temporal (time_*)
+        # Para zonas legacy sin formation_spec, display_bar_key sirve como proxy
+        spec_for_dur = f_spec or display_bar_key
+        dur = _bar_duration_s(spec_for_dur) if spec_for_dur else None
         if dur is not None:
             available_ts = t0 + dur
             available_origin = "DERIVED_COMPATIBILITY_FALLBACK"
         else:
+            # Formaciones tick_count:* o sin duration: abstención estricta, jamás sumar dur de display_bar_key
             available_ts = None
             available_origin = "UNAVAILABLE"
 
@@ -121,11 +137,13 @@ def _zone_json(z, source, last_ms, match_id, bar_key=""):
         top=top, bottom=bottom,
         t0=t0,
         t1=int((z.get("ended_ms") or last_ms) // 1000),
+        formation_spec=f_spec,
+        display_bar_key=display_bar_key or None,
         formation_start_ts=formation_start_ts,
         formation_end_ts=formation_end_ts,
         available_ts=available_ts,
         available_origin=available_origin,
-        source_barspec=bar_key or None,
+        source_barspec=f_spec or display_bar_key or None,
         state=z.get("state"), kind=kind, touches=z.get("touches"),
         end_reason=z.get("end_reason"), match=match_id)
 
@@ -139,22 +157,33 @@ def build_run(run_id, indicator, bars, result, psid, oracle=None, parity=None,
         for py_id, nt8_id in parity["pairs"]:
             by_py[str(py_id)] = str(nt8_id)
             by_nt8[str(nt8_id)] = str(py_id)
-    bkey = bar_key_of(bars)
-    zones = [_zone_json(z, "python", last_ms, by_py.get(str(z.get("id"))), bkey)
+    display_bkey = bar_key_of(bars)
+
+    default_f_spec = None
+    params = result.get("params", {})
+    if "TapeWindowTicks" in params:
+        default_f_spec = f"tick_count:{params['TapeWindowTicks']}"
+
+    zones = [_zone_json(z, "python", last_ms, by_py.get(str(z.get("id"))),
+                        display_bar_key=display_bkey, formation_spec=default_f_spec)
              for z in result["zones"]
              if (z.get("created_ms") is not None or z.get("formation_start_ns") is not None or z.get("t0") is not None)]
     if oracle:
-        zones += [_zone_json(z, "nt8", last_ms, by_nt8.get(str(z.get("id"))), bkey)
+        zones += [_zone_json(z, "nt8", last_ms, by_nt8.get(str(z.get("id"))),
+                             display_bar_key=display_bkey, formation_spec=default_f_spec)
                   for z in oracle["zones"]
                   if (z.get("created_ms") is not None or z.get("formation_start_ns") is not None or z.get("t0") is not None)
                   and (z.get("top") is not None or z.get("hi") is not None)]
     return dict(
-        run_id=run_id, indicator=indicator, bar_key=bkey,
-        param_set_id=psid, params=result["params"],
+        run_id=run_id, indicator=indicator,
+        bar_key=display_bkey,
+        display_bar_key=display_bkey,
+        formation_spec=default_f_spec,
+        param_set_id=psid, params=result.get("params"),
         has_oracle=bool(oracle), zones=zones,
         parity=(parity["summary"] if parity else None),
         parity_diagnostics=(parity["diagnostics"] if parity else None),
-        p1a=p1a, n_events=len(result["events"]))
+        p1a=p1a, n_events=len(result.get("events", [])))
 
 
 def build_bundle(ticks, bar_series_by_key, runs, chart_tz="UTC", extra_meta=None):
