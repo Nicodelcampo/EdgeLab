@@ -12,6 +12,9 @@ def test_semantics_are_fail_closed():
     with pytest.raises(ValueError,match="SEMANTICS"): evaluate_policy(event(),ticks(210),policies_v1()[0],custody_verified=True,semantics_resolved=False)
 def test_holdout_is_forbidden():
     with pytest.raises(ValueError,match="HOLDOUT"): run(event(available_at_ns=HOLDOUT_BOUNDARY_NS),[],policies_v1()[0])
+def test_zero_duration_tick_bucket_is_valid_when_ordering_is_causal():
+    e=event(formation_start_ns=200,formation_end_ns=200,available_at_ns=200)
+    assert run(e,[Tick(201,10,210,"S1")],Policy("P0","IMMEDIATE")).state=="ENTERED"
 def test_immediate_is_strictly_post_available():
     d=run(event(),[Tick(200,9,999,"S1"),Tick(200,10,211,"S1")],Policy("P0","IMMEDIATE")); assert (d.entry_ts_ns,d.entry_sequence)==(200,10)
 def test_formation_touch_is_excluded(): assert run(event(),[Tick(150,1,202,"S1"),Tick(201,2,208,"S1"),Tick(202,3,204,"S1")],Policy("R","RETEST",departure_ticks=2,depth=0,max_wait_ticks=10)).entry_ts_ns==202

@@ -89,8 +89,8 @@ def validate_event(e: ZoneEvent, *, custody_verified: bool, semantics_resolved: 
         raise ValueError("unknown signal semantics")
     if e.direction not in {"long", "short"}:
         raise ValueError("direction must be long or short")
-    if not e.formation_start_ns < e.formation_end_ns <= e.available_at_ns:
-        raise ValueError("formation_start < formation_end <= available_at required")
+    if not e.formation_start_ns <= e.formation_end_ns <= e.available_at_ns:
+        raise ValueError("formation_start <= formation_end <= available_at required")
     if e.available_at_ns >= HOLDOUT_BOUNDARY_NS:
         raise ValueError("HOLDOUT_FORBIDDEN")
     if e.zone_lo_half_ticks > e.zone_hi_half_ticks:
