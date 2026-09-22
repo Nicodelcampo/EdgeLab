@@ -1,10 +1,49 @@
+"""Fail-closed tests for the RUN-LEARNING-PACKET adapter.
+
+Dependency hygiene: the tests load hippocampus and the adapter directly from
+file paths so they do not import the full edgelab.edge_brain package __init__,
+which transitively requires optional third-party packages (e.g. jsonschema)
+that repository CI does not provision.
+"""
 from __future__ import annotations
 
 import copy
+import importlib.util
+import sys
+import types
 import unittest
+from pathlib import Path
 
-from edgelab.edge_brain.hippocampus import HippocampusMemory
-from edgelab.edge_brain.run_learning_packet import RunLearningPacketError, canonical_packet_sha256, ingest_run_learning_packet
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def _load(module_name: str, path: Path) -> types.ModuleType:
+    spec = importlib.util.spec_from_file_location(module_name, path)
+    module = importlib.util.module_from_spec(spec)
+    assert spec and spec.loader
+    sys.modules[module_name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+# Stub package hierarchy so the adapter's relative import resolves without
+# executing edgelab/edge_brain/__init__.py.
+for pkg, pkg_path in (
+    ("edgelab", ROOT / "edgelab"),
+    ("edgelab.edge_brain", ROOT / "edgelab" / "edge_brain"),
+):
+    if pkg not in sys.modules:
+        module = types.ModuleType(pkg)
+        module.__path__ = [str(pkg_path)]
+        sys.modules[pkg] = module
+
+hippocampus = _load("edgelab.edge_brain.hippocampus", ROOT / "edgelab" / "edge_brain" / "hippocampus.py")
+adapter = _load("edgelab.edge_brain.run_learning_packet", ROOT / "edgelab" / "edge_brain" / "run_learning_packet.py")
+
+HippocampusMemory = hippocampus.HippocampusMemory
+RunLearningPacketError = adapter.RunLearningPacketError
+canonical_packet_sha256 = adapter.canonical_packet_sha256
+ingest_run_learning_packet = adapter.ingest_run_learning_packet
 
 
 class TestRunLearningPacket(unittest.TestCase):
