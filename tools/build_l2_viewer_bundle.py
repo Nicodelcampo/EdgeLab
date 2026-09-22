@@ -194,7 +194,11 @@ def build(l1_path: Path, l2_path: Path, snap_seconds: int, tick_size: float, *,
     l2 = pq.read_table(l2_path).to_pandas().sort_values("source_row", kind="stable")
 
     tr = l1[l1.side == LAST_SIDE]
-    tr_ts, tr_px, tr_sz = (tr.ts_us // 1_000_000).tolist(), tr.price.tolist(), tr["size"].tolist()
+    # `price` (float64) ya no se guarda en el parquet L1 (redundante con price_tick*tick_size, auditoria
+    # 2026-09-22): se reconstruye aca, igual que en el resto del archivo (ver linea de `c["price"]` abajo).
+    tr_ts = (tr.ts_us // 1_000_000).tolist()
+    tr_px = (tr.price_tick.to_numpy(dtype=float) * tick_size).tolist()
+    tr_sz = tr["size"].tolist()
     bar_series = {k: bin_candles(tr_ts, tr_px, tr_sz, secs) for k, secs in CANDLE_BUCKETS.items()}
 
     # ---- recorrido unico por source_row: aplica L2 al libro, valida cotizaciones L1, clasifica trades L1,

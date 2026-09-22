@@ -44,11 +44,23 @@ primero -- nunca por cercania de timestamp.
 """
 from __future__ import annotations
 
+import hashlib
+import json
+from datetime import datetime, timezone
 from pathlib import Path
 import pandas as pd
 import numpy as np
 import pyarrow as pa
 import pyarrow.parquet as pq
+
+L2_SCHEMA = "NT8_MBP10_REPLAY_V1"          # distingue esta fuente (Market Replay MBP-10) de TAPE_LONG_HORIZON_V1
+                                            # (.Last.txt) -- no se mezclan bajo un mismo nombre "ticks" (auditor).
+PRICE_ROUNDTRIP_TOLERANCE = 1e-6           # residuo maximo tolerado en `price - price_tick*tick_size`. El
+                                            # residuo de punto flotante puro observado en datos reales (GC,
+                                            # tick=0.1) es ~1e-12; esta tolerancia es ~1e6 veces mas laxa que eso
+                                            # y sigue siendo ~4 ordenes de magnitud mas chica que el tick mas fino
+                                            # en uso (6E, 0.00005) -- separa ruido de punto flotante de un precio
+                                            # genuinamente fuera de grilla.
 
 # Rango epoch plausible en MICROSEGUNDOS: 2001-09-09 .. 2065. Sirve de asercion dura
 # contra el bug de unidades descripto abajo.
@@ -119,26 +131,90 @@ def parse_l2_raw_csv(csv_path: str | Path, tick_size: float = 0.00005) -> tuple[
     return df_l2, df_l1
 
 
+class PriceRoundtripError(Exception):
+    """`price` no reconstruye de forma fiable desde `price_tick * tick_size` dentro de la tolerancia -- la fila
+    original no estaba en grilla (dato corrupto/off-tick), no es solo ruido de punto flotante. Fail-closed: no
+    se escribe ningun parquet si esto ocurre (ver PRICE_ROUNDTRIP_TOLERANCE)."""
+
+
+def _validate_price_roundtrip(df: pd.DataFrame, tick_size: float, tolerance: float = PRICE_ROUNDTRIP_TOLERANCE) -> dict:
+    """abs(price - price_tick*tick_size) por fila. NO es un chequeo trivial: `price_tick` se computa con
+    `np.round`, asi que un residuo grande significa que `price` no caia en la grilla del tick para empezar
+    (dato malo), no que el redondeo "fallo". La tolerancia separa eso del piso de precision de float64."""
+    if len(df) == 0:
+        return dict(tolerance=tolerance, max_error=0.0, violations=0, rows_checked=0)
+    reconstructed = df["price_tick"].to_numpy(dtype=np.float64) * tick_size
+    err = np.abs(df["price"].to_numpy(dtype=np.float64) - reconstructed)
+    max_err = float(err.max())
+    violations = int((err > tolerance).sum())
+    return dict(tolerance=tolerance, max_error=max_err, violations=violations, rows_checked=len(df))
+
+
+def _sha256_file(path: Path) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
 def convert_l2_session(csv_path: str | Path, out_dir: str | Path, tick_size: float = 0.00005) -> tuple[Path, Path]:
-    """Convert an L2 raw CSV into compressed L2 and L1 Parquet files."""
+    """Convert an L2 raw CSV into compressed L2 and L1 Parquet files.
+
+    `price` (float64, redundante con `price_tick`+`tick_size`) se valida fila a fila contra su reconstruccion
+    ANTES de eliminarla -- ver `_validate_price_roundtrip` -- y solo se elimina si pasa. Si no pasa, la
+    conversion ABORTA (`PriceRoundtripError`) sin escribir ningun parquet: fail-closed, igual criterio que el
+    resto del pipeline L2 (auditoria 2026-09-21). Escribe ademas `<out_dir>/manifests/<session>.manifest.json`
+    con procedencia, resultado de la validacion y schema version (`L2_SCHEMA`).
+    """
     csv_path = Path(csv_path)
     out_dir = Path(out_dir)
     session_name = csv_path.stem
-    
+
     dir_l2 = out_dir / "l2_depth"
     dir_l1 = out_dir / "l1_quotes"
+    dir_man = out_dir / "manifests"
     dir_l2.mkdir(parents=True, exist_ok=True)
     dir_l1.mkdir(parents=True, exist_ok=True)
-    
+    dir_man.mkdir(parents=True, exist_ok=True)
+
     df_l2, df_l1 = parse_l2_raw_csv(csv_path, tick_size=tick_size)
-    
+
+    rt_l2 = _validate_price_roundtrip(df_l2, tick_size)
+    rt_l1 = _validate_price_roundtrip(df_l1, tick_size)
+    if rt_l2["violations"] or rt_l1["violations"]:
+        raise PriceRoundtripError(
+            f"{session_name}: price fuera de grilla mas alla de tolerancia={PRICE_ROUNDTRIP_TOLERANCE} -- "
+            f"L2 {rt_l2['violations']}/{rt_l2['rows_checked']} filas (max_error={rt_l2['max_error']:.3g}), "
+            f"L1 {rt_l1['violations']}/{rt_l1['rows_checked']} filas (max_error={rt_l1['max_error']:.3g})")
+
+    df_l2 = df_l2.drop(columns=["price"])
+    df_l1 = df_l1.drop(columns=["price"])
+
     p_l2 = dir_l2 / f"{session_name}.parquet"
     p_l1 = dir_l1 / f"{session_name}.parquet"
-    
+    p_man = dir_man / f"{session_name}.manifest.json"
+
     t_l2 = pa.Table.from_pandas(df_l2, preserve_index=False)
     pq.write_table(t_l2, p_l2, compression="zstd", compression_level=7)
-    
+
     t_l1 = pa.Table.from_pandas(df_l1, preserve_index=False)
     pq.write_table(t_l1, p_l1, compression="zstd", compression_level=7)
-    
+
+    manifest = dict(
+        schema=L2_SCHEMA, manifest_schema="edgelab_l2_conversion_manifest_v3", session_name=session_name,
+        created_at_utc=datetime.now(timezone.utc).isoformat(),
+        source=dict(path=str(csv_path), bytes=csv_path.stat().st_size, sha256=_sha256_file(csv_path)),
+        conversion=dict(
+            tick_size=tick_size, tick_size_repr=repr(tick_size),
+            rounding_policy="numpy.round (round-half-to-even) sobre price/tick_size -> price_tick int32",
+            price_roundtrip=dict(
+                tolerance=PRICE_ROUNDTRIP_TOLERANCE,
+                l2=rt_l2, l1=rt_l1,
+                price_column_dropped=True)),
+        outputs=dict(
+            l2_depth=dict(path=str(p_l2), bytes=p_l2.stat().st_size, rows=len(df_l2), sha256=_sha256_file(p_l2)),
+            l1_quotes=dict(path=str(p_l1), bytes=p_l1.stat().st_size, rows=len(df_l1), sha256=_sha256_file(p_l1))))
+    p_man.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+
     return p_l2, p_l1
