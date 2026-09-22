@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0.0",
+  "status": "DRAFT_FAIL_CLOSED",
+  "source_factory_to_brain": {
+    "hypothesis_registry": {
+      "target_record_type": "causal_hypothesis",
+      "relation": "OPERATIONALIZED_AS"
+    },
+    "experiment_registry": {
+      "target_record_type": "analysis_episode",
+      "relation": "IMPLEMENTED_BY"
+    },
+    "dag_step": {
+      "target_record_type": "step_execution",
+      "relation": "USED_IN"
+    },
+    "preregistered_expectation": {
+      "target_record_type": "expectation",
+      "relation": "TESTED_BY"
+    },
+    "negative_result": {
+      "target_record_types": ["failure_event", "counterexample"],
+      "relation": "CONTRADICTED_BY"
+    },
+    "bounded_synthesis": {
+      "target_record_type": "lesson_candidate",
+      "relation": "DERIVED_FROM"
+    }
+  },
+  "temporal_mapping": {
+    "origin_ts": "formation_start_ns",
+    "formation_end_ts": "formation_end_ns",
+    "signal_available_ts": "available_at_ns",
+    "executable_fill_ts": "OBSERVED_FIRST_EXECUTABLE_TICK_ONLY"
+  },
+  "fail_closed_rules": [
+    "DO_NOT_MAP_DISPLAY_BAR_KEY_TO_FORMATION_SPEC",
+    "DO_NOT_SYNTHESIZE_EXECUTABLE_FILL_TS",
+    "DO_NOT_PROMOTE_IF_SOURCE_HASH_OR_CUSTODY_PROOF_MISSING",
+    "DO_NOT_REUSE_INVALIDATED_OR_STALE_DEPENDENCIES",
+    "DO_NOT_CREATE_LEARNING_RULE_FROM_SINGLE_EPISODE"
+  ],
+  "known_blockers": [
+    "ZONE_EVENTS_REQUIRES_NON_NULL_EXECUTABLE_FILL_TS",
+    "BT2A_FORMATION_SPEC_NOT_EMITTED",
+    "VIEWER_PR48_TEMPORAL_SEMANTICS_NOT_CERTIFIED",
+    "CUSTODY_3AE3C3E_NOT_IN_EDGE_DISCOVERY_BASE"
+  ]
+}
