@@ -169,3 +169,20 @@ def test_cinta_de_trades_l2_reusa_la_interpolacion_de_barras_y_tiene_tope():
     assert "return barTimeToX(tt, cd);" in HTML                  # xOfT del heatmap reusa el mismo helper
     assert 'id="chk-show-l2-trades"' in HTML and "show_l2_trades" in HTML
     assert 'id="inp-l2-trade-max"' in HTML and "l2_trade_max_visible" in HTML
+
+
+def test_burbujas_de_trades_agregadas_por_celda_con_tiers_de_radio():
+    """Trades pre-agregados (tools/build_l2_viewer_bundle.py) por celda tiempo/precio: dibujar cada ejecucion suelta
+    saturaba la pantalla (rafagas de cientos por segundo se solapaban en bloques solidos sin informacion)."""
+    assert "function tradeSizeTiers" in HTML and "function sizeToRadius" in HTML
+    assert "TRADE_RADIUS_TIERS" in HTML
+    assert "tr.buy[k]" in HTML and "tr.sell[k]" in HTML
+
+
+def test_marcadores_provisionales_de_iceberg_y_spoofing():
+    """Decision de Nico 2026-09-21: detector provisional visible en el visor, marcado explicitamente como heuristica."""
+    assert "function drawManipulationMarkers" in HTML
+    assert "drawManipulationMarkers(ctx, vr, w, hCanvas);" in HTML
+    assert "manip.icebergs" in HTML and "manip.spoofs" in HTML
+    assert "ICEBERG?" in HTML and "SPOOF?" in HTML                 # el signo de pregunta deja explicito que es heuristica
+    assert 'id="chk-show-l2-icebergs"' in HTML and 'id="chk-show-l2-spoofs"' in HTML

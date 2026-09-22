@@ -875,6 +875,8 @@
     <label class="pop-check"><input type="checkbox" id="chk-show-l2-trades" checked> Mostrar cinta de trades L2 (burbujas por agresor)</label>
     <label class="pop-check">Máx. burbujas de trades en pantalla (0 = todas) <input type="number" id="inp-l2-trade-max" min="0" max="50000" step="500" value="4000" style="width:70px"></label>
     <label class="pop-check"><input type="checkbox" id="chk-show-l2" checked> Mostrar mapa de profundidad L2 (libro de órdenes)</label>
+    <label class="pop-check"><input type="checkbox" id="chk-show-l2-icebergs" checked> Candidatos a iceberg (◆ morado, PROVISIONAL)</label>
+    <label class="pop-check"><input type="checkbox" id="chk-show-l2-spoofs" checked> Candidatos a spoofing (✕ naranja, PROVISIONAL)</label>
     <label class="pop-check"><input type="checkbox" id="chk-show-exploratory" checked> Mostrar zonas exploratorias (origen sin verificar)</label>
     <hr style="margin: 8px 0; border: none; border-top: 1px solid var(--tb-border);">
     <div style="font-weight:600; margin-bottom:4px;">Estados:</div>
@@ -1248,6 +1250,8 @@
     show_exploratory_zones: true,
     show_l2_depth: true,
     show_l2_trades: true,
+    show_l2_icebergs: true,
+    show_l2_spoofs: true,
     l2_trade_max_visible: 4000,
     lux_max_visible: 300,
     include_exploratory_density: false,
@@ -1596,16 +1600,27 @@
     }
   }
 
-  // Cinta de trades estilo Bookmap: cada ejecución del feed L2 como burbuja sobre el heatmap, escalada por tamaño
-  // (log) y coloreada por agresor (clasificación heurística de `meta.trade_classification`, sin validar contra
-  // oráculo). Con zoom alejado se limita a las N burbujas más recientes en la ventana visible.
-  function tradeSizeScale(tr) {
-    if (tr._scale) return tr._scale;
-    var n = tr.size.length, step = Math.max(1, Math.floor(n / 20000)), a = [];
-    for (var i = 0; i < n; i += step) a.push(tr.size[i]);
+  // Cinta de trades estilo Bookmap: los trades vienen PRE-AGREGADOS por (celda de tiempo, precio) en compra/venta/
+  // neutral (tools/build_l2_viewer_bundle.py) — dibujar cada ejecución suelta satura la pantalla con ráfagas de
+  // cientos de trades por segundo que se superponen y forman bloques sólidos sin información. Agregado, el tamaño
+  // de cada burbuja diferencia de verdad. El radio usa TIERS por percentil (no una escala log continua): con log
+  // casi todo cae en 1-2 px de diferencia y las burbujas "se ven todas iguales".
+  var TRADE_RADIUS_TIERS = [2, 3.5, 6, 9.5, 15];   // p0-p50, p50-p75, p75-p90, p90-p97, p97-p100
+  function tradeSizeTiers(tr) {
+    if (tr._tiers) return tr._tiers;
+    var a = [];
+    for (var i = 0; i < tr.buy.length; i++) {
+      if (tr.buy[i] > 0) a.push(tr.buy[i]);
+      if (tr.sell[i] > 0) a.push(tr.sell[i]);
+    }
     a.sort(function (x, y) { return x - y; });
-    tr._scale = Math.max(1, a[Math.floor(a.length * 0.99)] || 1);
-    return tr._scale;
+    var pick = function (p) { return a.length ? a[Math.min(a.length - 1, Math.floor(a.length * p))] : 1; };
+    tr._tiers = [pick(0.50), pick(0.75), pick(0.90), pick(0.97)];
+    return tr._tiers;
+  }
+  function sizeToRadius(size, tiers) {
+    for (var i = 0; i < tiers.length; i++) if (size <= tiers[i]) return TRADE_RADIUS_TIERS[i];
+    return TRADE_RADIUS_TIERS[TRADE_RADIUS_TIERS.length - 1];
   }
   function drawTrades(ctx, vr, w, h) {
     var tr = state.data && state.data.trades;
@@ -1616,29 +1631,79 @@
     if (!cd || cd.length < 2) return;
     var l2 = state.data.l2;
     var tickSize = (l2 && l2.tick_size) || (state.data.meta && state.data.meta.tick_size) || 1;
-    var t = tr.t, n = t.length;
+    var t = tr.t, off = tr.off, n = t.length;
     var lo = 0, hi = n - 1;
     while (lo < hi) { var m = (lo + hi) >> 1; if (t[m] < vr.from) lo = m + 1; else hi = m; }
     var i0 = Math.max(0, lo - 1);
-    var lo2 = i0, hi2 = n - 1;
-    while (lo2 < hi2) { var m2 = (lo2 + hi2 + 1) >> 1; if (t[m2] <= vr.to) lo2 = m2; else hi2 = m2 - 1; }
-    var i1 = lo2;
-    if (i1 < i0) return;
-    var count = i1 - i0 + 1;
-    var maxB = (activeProps.l2_trade_max_visible !== undefined) ? activeProps.l2_trade_max_visible : 4000;
-    var stride = (maxB > 0 && count > maxB) ? Math.ceil(count / maxB) : 1;
-    var scale = Math.log1p(tradeSizeScale(tr));
-    for (var i = i0; i <= i1; i += stride) {
+    var maxCells = (activeProps.l2_trade_max_visible !== undefined) ? activeProps.l2_trade_max_visible : 4000;
+    var cellCount = 0;
+    for (var ii = i0; ii < n && t[ii] <= vr.to; ii++) cellCount += off[ii + 1] - off[ii];
+    var stride = (maxCells > 0 && cellCount > maxCells) ? Math.max(1, Math.ceil(cellCount / maxCells)) : 1;
+    var tiers = tradeSizeTiers(tr);
+    var yOff = 0;
+    var cSeen = 0;
+    for (var i = i0; i < n && t[i] <= vr.to; i++) {
       var x = barTimeToX(t[i], cd);
-      var y = series.priceToCoordinate(tr.tick[i] * tickSize);
-      if (!isFinite(x) || y === null || y === undefined || x < -10 || x > w + 10) continue;
-      var rad = 1.2 + 4.5 * Math.log1p(tr.size[i]) / scale;
-      if (rad > 7) rad = 7;
-      var d = tr.side[i];
-      ctx.fillStyle = d > 0 ? "rgba(38,166,154,0.85)" : (d < 0 ? "rgba(239,83,80,0.85)" : "rgba(150,150,150,0.6)");
-      ctx.beginPath();
-      ctx.arc(x, y, rad, 0, 2 * Math.PI);
-      ctx.fill();
+      if (!isFinite(x) || x < -20 || x > w + 20) continue;
+      for (var k = off[i]; k < off[i + 1]; k++) {
+        cSeen++;
+        if (stride > 1 && (cSeen % stride) !== 0) continue;
+        var yBase = series.priceToCoordinate(tr.tick[k] * tickSize);
+        if (yBase === null || yBase === undefined) continue;
+        if (tr.buy[k] > 0) {
+          var rb = sizeToRadius(tr.buy[k], tiers);
+          ctx.fillStyle = "rgba(38,166,154,0.88)";
+          ctx.beginPath(); ctx.arc(x - 2, yBase - 2, rb, 0, 2 * Math.PI); ctx.fill();
+        }
+        if (tr.sell[k] > 0) {
+          var rs = sizeToRadius(tr.sell[k], tiers);
+          ctx.fillStyle = "rgba(239,83,80,0.88)";
+          ctx.beginPath(); ctx.arc(x + 2, yBase + 2, rs, 0, 2 * Math.PI); ctx.fill();
+        }
+        if (tr.neutral[k] > 0 && tr.buy[k] === 0 && tr.sell[k] === 0) {
+          var rn = sizeToRadius(tr.neutral[k], tiers);
+          ctx.fillStyle = "rgba(150,150,150,0.7)";
+          ctx.beginPath(); ctx.arc(x, yBase, rn, 0, 2 * Math.PI); ctx.fill();
+        }
+      }
+    }
+  }
+
+  // Marcadores PROVISIONALES de iceberg/spoofing (edgelab/research/l2_manipulation_heuristics.py). Heurísticas sin
+  // validar contra ground truth (el feed MBP no trae ID de orden): sirven para ubicar candidatos a revisar a mano,
+  // no para afirmar manipulación. Icono en el precio, con conteo/vida al pasar el filtro de zoom.
+  function drawManipulationMarkers(ctx, vr, w, h) {
+    var manip = state.data && state.data.manipulation;
+    if (!manip || !series) return;
+    var akey = state.activeBarKey || (state.run && state.run.bar_key);
+    var bs = state.data.bar_series && state.data.bar_series[akey];
+    var cd = bs && bs.candles;
+    if (!cd || cd.length < 2) return;
+
+    if (activeProps.show_l2_icebergs !== false && manip.icebergs) {
+      manip.icebergs.forEach(function (c) {
+        var x = barTimeToX(c.first_ts, cd), y = series.priceToCoordinate(c.price);
+        if (!isFinite(x) || y === null || y === undefined || x < -20 || x > w + 20) return;
+        ctx.fillStyle = "#a855f7"; ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(x, y - 6); ctx.lineTo(x + 6, y); ctx.lineTo(x, y + 6); ctx.lineTo(x - 6, y); ctx.closePath();
+        ctx.fill(); ctx.stroke();
+        ctx.fillStyle = "#a855f7"; ctx.font = "bold 9px 'Segoe UI', -apple-system, sans-serif";
+        ctx.fillText("ICEBERG? x" + c.refills, x + 8, y - 8);
+      });
+    }
+    if (activeProps.show_l2_spoofs !== false && manip.spoofs) {
+      manip.spoofs.forEach(function (c) {
+        var x = barTimeToX(c.death_ts, cd), y = series.priceToCoordinate(c.price);
+        if (!isFinite(x) || y === null || y === undefined || x < -20 || x > w + 20) return;
+        ctx.strokeStyle = "#f59e0b"; ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(x - 5, y - 5); ctx.lineTo(x + 5, y + 5);
+        ctx.moveTo(x + 5, y - 5); ctx.lineTo(x - 5, y + 5);
+        ctx.stroke();
+        ctx.fillStyle = "#f59e0b"; ctx.font = "bold 9px 'Segoe UI', -apple-system, sans-serif";
+        ctx.fillText("SPOOF? " + Math.round(c.peak_size), x + 8, y + 12);
+      });
     }
   }
 
@@ -1656,6 +1721,7 @@
     var hCanvas = wrapEl.clientHeight;
     drawL2Depth(ctx, vr, w, hCanvas);
     drawTrades(ctx, vr, w, hCanvas);
+    drawManipulationMarkers(ctx, vr, w, hCanvas);
 
     var opacityVal = (activeProps.opacidad || 30) / 100;
     var showLabels = activeProps.mostrar_texto !== false;
@@ -3373,6 +3439,10 @@
   if(chkL2Trades)chkL2Trades.addEventListener("change",function(){activeProps.show_l2_trades=this.checked;requestDraw();});
   var inpL2TradeMax=document.getElementById("inp-l2-trade-max");
   if(inpL2TradeMax)inpL2TradeMax.addEventListener("change",function(){var v=parseInt(this.value,10);activeProps.l2_trade_max_visible=(isFinite(v)&&v>=0)?v:4000;requestDraw();});
+  var chkL2Iceberg=document.getElementById("chk-show-l2-icebergs");
+  if(chkL2Iceberg)chkL2Iceberg.addEventListener("change",function(){activeProps.show_l2_icebergs=this.checked;requestDraw();});
+  var chkL2Spoof=document.getElementById("chk-show-l2-spoofs");
+  if(chkL2Spoof)chkL2Spoof.addEventListener("change",function(){activeProps.show_l2_spoofs=this.checked;requestDraw();});
   var rangeCorrDensityWidth=document.getElementById("range-corridors-density-width");
   if(rangeCorrDensityWidth)rangeCorrDensityWidth.addEventListener("input",function(){activeProps.corridors_density_width=parseInt(this.value,10)||110;var l=document.getElementById("lbl-corridors-density-width");if(l)l.textContent=activeProps.corridors_density_width+" px";requestDraw();});
 
