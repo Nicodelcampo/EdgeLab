@@ -1499,7 +1499,10 @@
       idx = z.start_bar_idx;
     } else {
       var t = null;
-      if (z.origin_ts_ns !== undefined && z.origin_ts_ns !== null) t = Number(z.origin_ts_ns) / 1e9;
+      // Se redondea hacia abajo al segundo: los candles solo tienen precision de segundo entero, y con velas de
+      // 25 ticks en mercado rapido varias barras pueden compartir el mismo segundo (6B_09-25: 505 de 28.216). Usar
+      // el nanosegundo crudo en la comparacion salta esas barras enteras y ancla la caja varias barras a la derecha.
+      if (z.origin_ts_ns !== undefined && z.origin_ts_ns !== null) t = Math.floor(Number(z.origin_ts_ns) / 1e9);
       else if (Number.isFinite(Number(z.t0))) t = Number(z.t0);
       if (t === null) return -1;
       var lo = 0, hi = n - 1;

@@ -152,3 +152,11 @@ def test_el_visor_presenta_un_unico_indicador_hftzonesnqpurev4():
     assert "function normalizeRuns" in HTML and 'var V4_INDICATOR = "HFTZonesNQPureV4";' in HTML
     assert 'r.indicator === "HFTZonesUniversal"' in HTML and "data.runs = v4;" in HTML
     assert "    normalizeRuns(data);" in HTML
+
+
+def test_origen_de_zona_redondea_hacia_abajo_al_segundo_antes_de_buscar():
+    """Regresion 2026-09-21: con velas de 25 ticks en mercado rapido, varias barras comparten el mismo segundo
+    entero (6B_09-25: 505 de 28.216). Buscar con el nanosegundo crudo de origin_ts_ns salta esas barras completas
+    y ancla la caja varias barras a la derecha de donde se creo la zona."""
+    assert "t = Math.floor(Number(z.origin_ts_ns) / 1e9);" in HTML
+    assert "t = Number(z.origin_ts_ns) / 1e9;" not in HTML
