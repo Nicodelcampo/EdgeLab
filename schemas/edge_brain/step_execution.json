@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgelab.local/schemas/edge_brain/step_execution.json",
+  "title": "EdgeLab Step Execution",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "step_id",
+    "episode_id",
+    "step_index",
+    "action",
+    "tool_name",
+    "status",
+    "input_params",
+    "output_summary",
+    "executed_at_utc"
+  ],
+  "properties": {
+    "step_id": {
+      "type": "string",
+      "pattern": "^STEP-[A-Za-z0-9._:-]+$"
+    },
+    "episode_id": {
+      "type": "string",
+      "pattern": "^EPISODE-[A-Za-z0-9._:-]+$"
+    },
+    "step_index": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "action": {
+      "type": "string",
+      "minLength": 1
+    },
+    "tool_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "PENDING",
+        "RUNNING",
+        "SUCCESS",
+        "FAILURE"
+      ]
+    },
+    "input_params": {
+      "type": "object"
+    },
+    "output_summary": {
+      "type": "string"
+    },
+    "failure_event_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "success_event_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "executed_at_utc": {
+      "type": "string"
+    }
+  }
+}
