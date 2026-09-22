@@ -167,13 +167,10 @@
     width: 100%;
     height: 100%;
   }
-  #overlay {
-    position: absolute;
-    left: 0;
-    top: 0;
-    pointer-events: none;
-    z-index: 5;
-  }
+  #overlay { position:absolute;left:0;top:0;pointer-events:none;z-index:5; }
+  #l2-tooltip { display:none;position:absolute;z-index:20;pointer-events:none;min-width:210px;max-width:340px;
+    padding:8px 10px;border:1px solid rgba(148,163,184,.55);border-radius:6px;background:rgba(15,23,42,.94);
+    color:#f8fafc;box-shadow:0 8px 24px rgba(0,0,0,.32);font:11px/1.38 ui-monospace,monospace;white-space:pre-line; }
 
   /* Barra de scroll horizontal rápida (Estilo NinjaTrader 8) */
   #chart-scrollbar-container {
@@ -821,6 +818,7 @@
   <div id="indicator-tag" title="Doble clic para abrir Propiedades">HFTZonesESPureV2Flat(...)</div>
   <div id="chart"></div>
   <canvas id="overlay"></canvas>
+  <div id="l2-tooltip" role="tooltip"></div>
 </div>
 
 <!-- Barra de scroll horizontal rápida (Estilo NinjaTrader 8) -->
@@ -1299,6 +1297,7 @@
   var wrapEl = document.getElementById("wrap");
   var chartEl = document.getElementById("chart");
   var overlay = document.getElementById("overlay");
+  var l2Tooltip = document.getElementById("l2-tooltip");
 
   var chart = LightweightCharts.createChart(chartEl, {
     layout: {
@@ -1608,11 +1607,9 @@
   var TRADE_RADIUS_TIERS = [2, 3.5, 6, 9.5, 15];   // p0-p50, p50-p75, p75-p90, p90-p97, p97-p100
   function tradeSizeTiers(tr) {
     if (tr._tiers) return tr._tiers;
+    if (tr.size_tiers && tr.size_tiers.length === 4) return tr.size_tiers;
     var a = [];
-    for (var i = 0; i < tr.buy.length; i++) {
-      if (tr.buy[i] > 0) a.push(tr.buy[i]);
-      if (tr.sell[i] > 0) a.push(tr.sell[i]);
-    }
+    for (var i = 0; i < tr.buy.length; i++) a.push((tr.buy[i]||0)+(tr.sell[i]||0)+(tr.neutral[i]||0));
     a.sort(function (x, y) { return x - y; });
     var pick = function (p) { return a.length ? a[Math.min(a.length - 1, Math.floor(a.length * p))] : 1; };
     tr._tiers = [pick(0.50), pick(0.75), pick(0.90), pick(0.97)];
@@ -1622,52 +1619,21 @@
     for (var i = 0; i < tiers.length; i++) if (size <= tiers[i]) return TRADE_RADIUS_TIERS[i];
     return TRADE_RADIUS_TIERS[TRADE_RADIUS_TIERS.length - 1];
   }
-  function drawTrades(ctx, vr, w, h) {
-    var tr = state.data && state.data.trades;
-    if (!tr || !tr.t || !tr.t.length || activeProps.show_l2_trades === false || !series) return;
-    var akey = state.activeBarKey || (state.run && state.run.bar_key);
-    var bs = state.data.bar_series && state.data.bar_series[akey];
-    var cd = bs && bs.candles;
-    if (!cd || cd.length < 2) return;
-    var l2 = state.data.l2;
-    var tickSize = (l2 && l2.tick_size) || (state.data.meta && state.data.meta.tick_size) || 1;
-    var t = tr.t, off = tr.off, n = t.length;
-    var lo = 0, hi = n - 1;
-    while (lo < hi) { var m = (lo + hi) >> 1; if (t[m] < vr.from) lo = m + 1; else hi = m; }
-    var i0 = Math.max(0, lo - 1);
-    var maxCells = (activeProps.l2_trade_max_visible !== undefined) ? activeProps.l2_trade_max_visible : 4000;
-    var cellCount = 0;
-    for (var ii = i0; ii < n && t[ii] <= vr.to; ii++) cellCount += off[ii + 1] - off[ii];
-    var stride = (maxCells > 0 && cellCount > maxCells) ? Math.max(1, Math.ceil(cellCount / maxCells)) : 1;
-    var tiers = tradeSizeTiers(tr);
-    var yOff = 0;
-    var cSeen = 0;
-    for (var i = i0; i < n && t[i] <= vr.to; i++) {
-      var x = barTimeToX(t[i], cd);
-      if (!isFinite(x) || x < -20 || x > w + 20) continue;
-      for (var k = off[i]; k < off[i + 1]; k++) {
-        cSeen++;
-        if (stride > 1 && (cSeen % stride) !== 0) continue;
-        var yBase = series.priceToCoordinate(tr.tick[k] * tickSize);
-        if (yBase === null || yBase === undefined) continue;
-        if (tr.buy[k] > 0) {
-          var rb = sizeToRadius(tr.buy[k], tiers);
-          ctx.fillStyle = "rgba(38,166,154,0.88)";
-          ctx.beginPath(); ctx.arc(x - 2, yBase - 2, rb, 0, 2 * Math.PI); ctx.fill();
-        }
-        if (tr.sell[k] > 0) {
-          var rs = sizeToRadius(tr.sell[k], tiers);
-          ctx.fillStyle = "rgba(239,83,80,0.88)";
-          ctx.beginPath(); ctx.arc(x + 2, yBase + 2, rs, 0, 2 * Math.PI); ctx.fill();
-        }
-        if (tr.neutral[k] > 0 && tr.buy[k] === 0 && tr.sell[k] === 0) {
-          var rn = sizeToRadius(tr.neutral[k], tiers);
-          ctx.fillStyle = "rgba(150,150,150,0.7)";
-          ctx.beginPath(); ctx.arc(x, yBase, rn, 0, 2 * Math.PI); ctx.fill();
-        }
-      }
-    }
+  function drawTradePie(ctx,x,y,r,buy,sell,neutral){
+    var total=buy+sell+neutral;if(!(total>0))return;var v=[buy,sell,neutral],c=["rgba(45,212,191,.94)","rgba(251,113,133,.94)","rgba(148,163,184,.86)"],a0=-Math.PI/2;
+    for(var q=0;q<3;q++){if(!(v[q]>0))continue;var a1=a0+2*Math.PI*v[q]/total;ctx.fillStyle=c[q];ctx.beginPath();ctx.moveTo(x,y);ctx.arc(x,y,r,a0,a1);ctx.closePath();ctx.fill();a0=a1;}
+    ctx.strokeStyle="rgba(255,255,255,.82)";ctx.lineWidth=r>=9?1.25:.75;ctx.beginPath();ctx.arc(x,y,r,0,2*Math.PI);ctx.stroke();
   }
+  function drawTrades(ctx,vr,w,h){
+    var hits=state._l2TradeHits=[];var tr=state.data&&state.data.trades;if(!tr||!tr.t||!tr.t.length||activeProps.show_l2_trades===false||!series)return;
+    var akey=state.activeBarKey||(state.run&&state.run.bar_key),bs=state.data.bar_series&&state.data.bar_series[akey],cd=bs&&bs.candles;if(!cd||cd.length<2)return;
+    var l2=state.data.l2,tickSize=(l2&&l2.tick_size)||(state.data.meta&&state.data.meta.tick_size)||1,t=tr.t,off=tr.off,n=t.length,lo=0,hi=n-1;
+    while(lo<hi){var m=(lo+hi)>>1;if(t[m]<vr.from)lo=m+1;else hi=m;}var i0=Math.max(0,lo-1),maxCells=activeProps.l2_trade_max_visible!==undefined?activeProps.l2_trade_max_visible:4000,cells=0;
+    for(var z=i0;z<n&&t[z]<=vr.to;z++)cells+=off[z+1]-off[z];var stride=maxCells>0&&cells>maxCells?Math.max(1,Math.ceil(cells/maxCells)):1,tiers=tradeSizeTiers(tr),seen=0;
+    for(var i=i0;i<n&&t[i]<=vr.to;i++){var x=barTimeToX(t[i],cd);if(!isFinite(x)||x<-20||x>w+20)continue;for(var k=off[i];k<off[i+1];k++){seen++;if(stride>1&&seen%stride!==0)continue;var y=series.priceToCoordinate(tr.tick[k]*tickSize);if(y===null||y===undefined)continue;
+      var buy=+(tr.buy[k]||0),sell=+(tr.sell[k]||0),neu=+(tr.neutral[k]||0),rad=sizeToRadius(buy+sell+neu,tiers);drawTradePie(ctx,x,y,rad,buy,sell,neu);hits.push({x:x,y:y,r:Math.max(6,rad),k:k,bucket:t[i],price:tr.tick[k]*tickSize,tr:tr});}}
+  }
+
 
   // Marcadores PROVISIONALES de iceberg/spoofing (edgelab/research/l2_manipulation_heuristics.py). Heurísticas sin
   // validar contra ground truth (el feed MBP no trae ID de orden): sirven para ubicar candidatos a revisar a mano,
@@ -2887,12 +2853,17 @@
     setTimeout(requestDraw, 120);
   }
 
+  function hideL2Tooltip(){if(l2Tooltip)l2Tooltip.style.display="none";}
+  function l2Hover(e){var h=state._l2TradeHits||[],best=null,d0=Infinity;for(var i=0;i<h.length;i++){var dx=e.offsetX-h[i].x,dy=e.offsetY-h[i].y,d=dx*dx+dy*dy;if(d<=h[i].r*h[i].r&&d<d0){best=h[i];d0=d;}}
+    if(!best)return hideL2Tooltip();var tr=best.tr,k=best.k,fmt=function(v){return Number.isFinite(+v)?(+v).toLocaleString():"n/a";};
+    l2Tooltip.textContent=["L2 TRADE CELL · HEURISTIC_AGGRESSOR_UNVALIDATED","precio "+fmt(best.price)+" · "+new Date(best.bucket*1000).toISOString(),"vol buy/sell/neutral  "+fmt(tr.buy[k])+" / "+fmt(tr.sell[k])+" / "+fmt(tr.neutral[k]),"trades total/b/s/n    "+fmt(tr.trade_count&&tr.trade_count[k])+" / "+fmt(tr.buy_count&&tr.buy_count[k])+" / "+fmt(tr.sell_count&&tr.sell_count[k])+" / "+fmt(tr.neutral_count&&tr.neutral_count[k]),"máximo individual     "+fmt(tr.max_trade_size&&tr.max_trade_size[k]),"Clasificación heurística; no es ground truth."].join("\n");
+    l2Tooltip.style.display="block";l2Tooltip.style.left=Math.min(wrapEl.clientWidth-350,e.offsetX+14)+"px";l2Tooltip.style.top=Math.max(8,e.offsetY+14)+"px";}
+
   wrapEl.addEventListener("pointerdown", startInteraction);
   window.addEventListener("pointerup", endInteraction);
   window.addEventListener("pointercancel", endInteraction);
-  wrapEl.addEventListener("pointermove", function (e) {
-    if (e.buttons > 0 && !isInteracting) startInteraction();
-  });
+  wrapEl.addEventListener("pointermove", function (e) { if(e.buttons>0){hideL2Tooltip();if(!isInteracting)startInteraction();}else l2Hover(e); });
+  wrapEl.addEventListener("pointerleave", hideL2Tooltip);
   wrapEl.addEventListener("wheel", function () {
     requestDraw();
     setTimeout(requestDraw, 30);

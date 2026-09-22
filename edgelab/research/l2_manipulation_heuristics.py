@@ -162,7 +162,8 @@ class SpoofTracker:
     max_fill_ratio: float = 0.2
     near_ticks: float | None = None                          # solo abre vigilancia cerca del touch (ver `depth`)
     neutral_policy: str = "abstain"
-    _watch: dict = field(default_factory=dict)   # (side,tick) -> {born_ts, peak_size, attributed, ambiguous, seen_birth}
+    _watch: dict = field(default_factory=dict)   # sólo ciclos con nacimiento observado
+    _last_size: dict = field(default_factory=dict)
     _out: list = field(default_factory=list)
 
     def __post_init__(self):
@@ -189,18 +190,19 @@ class SpoofTracker:
     def on_l2_event(self, side: int, op: int, tick: int, size: float, ts_us: int, depth: float | None = None) -> None:
         """`depth`: distancia en ticks al mejor precio DE ESE LADO en el momento del evento (0 = toque)."""
         key = (side, tick)
-        w = self._watch.get(key)
+        w = self._watch.get(key); prev = self._last_size.get(key)
         thr = self.thresholds.get(side, float("inf"))
         if op in (0, 1) and size >= thr:
             if w is None:
+                reason = "OBSERVED_ADD" if op == 0 else ("THRESHOLD_CROSS" if prev is not None and prev < thr else None)
                 near = self.near_ticks is None or depth is None or depth <= self.near_ticks
-                if near:
+                if reason and near:
                     self._watch[key] = dict(born_ts=ts_us, peak_size=size, attributed=0.0, ambiguous=0.0,
-                                            distance_to_touch=depth)
-            else:
-                w["peak_size"] = max(w["peak_size"], size)
-        elif w is not None:                       # cayo por debajo del umbral (op 0/1) o se borro (op 2): cierra
-            self._close(key, w, ts_us)
+                                            distance_to_touch=depth, birth_reason=reason)
+            else: w["peak_size"] = max(w["peak_size"], size)
+        elif w is not None: self._close(key, w, ts_us)
+        if op == 2: self._last_size.pop(key, None)
+        else: self._last_size[key] = size
 
     def _close(self, key: tuple, w: dict, ts_us: int) -> None:
         side, tick = key
@@ -213,6 +215,7 @@ class SpoofTracker:
                 peak_visible_size=w["peak_size"], attributed_fill=w["attributed"], ambiguous_fill=w["ambiguous"],
                 fill_ratio=fill_ratio, distance_to_touch=w["distance_to_touch"],
                 threshold_provenance=dict(threshold=self.thresholds.get(side), side=side),
+                birth_reason=w["birth_reason"], lifecycle_complete=True,
                 provenance="edgelab.research.l2_manipulation_heuristics.SpoofTracker",
                 neutral_policy=self.neutral_policy, status="HEURISTIC_UNVALIDATED"))
         self._watch.pop(key, None)

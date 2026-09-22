@@ -253,3 +253,10 @@ def test_spoof_ventana_de_vida_respeta_el_borde_en_microsegundos():
     assert vive(5 * US - 1) is True      # justo antes del limite
     assert vive(5 * US) is True          # en el limite exacto (inclusive, <=)
     assert vive(5 * US + 1) is False     # justo despues del limite
+
+
+def test_spoof_no_nace_de_primer_change_grande():
+ s=SpoofTracker(thresholds={ASK:100.0},max_fill_ratio=1.0);s.on_l2_event(ASK,1,1,200,0);s.on_l2_event(ASK,2,1,0,1);assert s.candidates()==[]
+
+def test_spoof_cruce_observado_publica_birth_reason():
+ s=SpoofTracker(thresholds={ASK:100.0},max_fill_ratio=1.0);s.on_l2_event(ASK,1,1,20,0);s.on_l2_event(ASK,1,1,200,1);s.on_l2_event(ASK,2,1,0,2);assert s.candidates()[0]["birth_reason"]=="THRESHOLD_CROSS"
