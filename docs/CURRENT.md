@@ -1,5 +1,6 @@
 # CURRENT — estado vivo
 
+**Fecha:** 2026-09-22  
 **Corte:** 2026-09-17  
 **Rama viva:** `fix/hft-parity-corridor-viewer-complete-v1-20260916` (y sincronizada en `foundation/f0b-compatibility-probe`)  
 **Referente:** `docs/NORTH_STAR.md` · sha256 del cuerpo `d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1`
