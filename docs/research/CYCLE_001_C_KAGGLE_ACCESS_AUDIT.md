@@ -61,6 +61,35 @@ Every invocation emits a `RUN-LEARNING-PACKET`. Secret-bearing keys are normaliz
 
 D reported `CHANGES_REQUIRED` on 3a90f888: D-C-001 caller-controlled shape boolean, D-C-002 raw exception leakage, and D-C-003 key-normalization bypasses. C corrected all three locally and reran D's exact four-test suite: 4/4 PASS. Baseline expanded to eight status cases plus normalized secret-value/key rejection. Hosted execution remains blocked.
 
+## Custody incident — dataset publicly listable (2026-09-22)
+
+Recorded from PR #48 head `68182282e613a33b9831f4b8fe51f3a9ff411f1c` commit declaration (not independently re-probed by C):
+
+- Dataset `nicolasbuttaro/edgelab-l2-gc-bookmap-audit-20260921` was **publicly listable** (`isPrivate:false`) despite the authoring session reporting it private.
+- The exposure was confirmed by an unauthenticated public-search listing; the dataset was deleted and recreated, then verified `403` without auth.
+- Lesson for the measurement contract: **authenticated-session privacy reports are not evidence of privacy**. Any future visibility claim requires an unauthenticated probe.
+- This incident is operational/custody metadata only: it does not verify dataset content, hashes, or REMOTE_VERIFIED status, and it does not unblock hosted execution.
+
+```txt
+packet_type: RUN-LEARNING-PACKET
+run_id: CYCLE-001-C-KAGGLE-CUSTODY-INCIDENT-001
+work_id: CYCLE-001-C-KAGGLE-ACCESS-001
+construct_id: KAGGLE-DATASET-VISIBILITY-V1
+source_ref: 68182282e613a33b9831f4b8fe51f3a9ff411f1c (commit declaration; unverified by C)
+verdict: CUSTODY_CONTROL_FAILURE_REMEDIATED_UNVERIFIED
+observation: dataset publicly listable despite private intent; remediation claimed (delete/recreate + 403 unauthenticated check)
+negative_results: authenticated-session report disagreed with unauthenticated reality
+new_constraints: visibility claims require unauthenticated probe; visibility != content/hash/custody verification
+dataset_verified: false
+hashes_verified: false
+outcomes_inspected: false
+holdout_enabled: false
+preexisting_outcome_exposure: true
+holdout_contaminated_for_this_hypothesis: true
+promotion_ceiling: LESSON_CANDIDATE
+next_action: D falsify visibility-probe contract if hosted probes are ever re-enabled; B ingest as Hippocampus lesson
+```
+
 ## Aporte al referente
 
-Converts ambiguous Worker/API state into a reproducible fail-closed contract and a three-Worker inventory without treating API access as scientific or custody evidence.
+Converts ambiguous Worker/API state into a reproducible fail-closed contract and a three-Worker inventory without treating API access as scientific or custody evidence; records the public-dataset incident so privacy-by-report can never again substitute for privacy-by-probe.
