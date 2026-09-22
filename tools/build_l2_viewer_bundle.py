@@ -43,11 +43,15 @@ DETECTORES PROVISIONALES (iceberg / spoofing). Ver `edgelab/research/l2_manipula
 definicion exacta de cada heuristica, la politica de trades neutrales (`--neutral-policy`, default "abstain") y
 sus limites. Se publican en `manipulation.icebergs` / `manipulation.spoofs`, cada uno `status=HEURISTIC_UNVALIDATED`.
 
-RELOJ. `ts_us` es la hora de pared de NT8 leida como UTC y su referencia NO esta resuelta contra los ticks
-(edgelab/data/l2.py, CORRECCION_ESQUEMA_L1_ES_SEP26). Por eso las velas se arman con los trades (L1 `side=2`) del
-MISMO archivo, que comparte reloj con el libro. Nunca se une por cercania de timestamp con los bundles de ticks.
+RELOJ. `ts_us` es la hora de pared de NT8. Para GC 08-26 esta RESUELTA como ART (America/Argentina/Buenos_Aires,
+UTC-3) por evidencia forense contra el calendario CME (30/30 sesiones lunes-jueves con el halt de mantenimiento
+cayendo exacto a las 18:00 leido como UTC = 16:00 CT real; ver docs/research/RESOLUCION_RELOJ_GC_L2_20260922.md).
+Lo que SIGUE sin resolver es la correspondencia absoluta contra los ticks `.Last.txt` (conversor distinto, no
+solo timezone) -- por eso las velas se arman con los trades (L1 `side=2`) del MISMO archivo, que comparte reloj
+con el libro. Nunca se une por cercania de timestamp con los bundles de ticks.
 
-HOLDOUT. Se rechazan sesiones con fecha >= 20260630 (el reloj no esta resuelto: se corta con margen).
+HOLDOUT. Se rechazan sesiones con fecha >= 20260630. El margen de este corte es una decision de holdout, no solo
+de reloj -- resolver el reloj (arriba) no autoriza a estrecharlo sin decision explicita de Nico.
 
 Validacion incluida: cada cotizacion L1 (mejor bid/ask) se compara con el tope del libro reconstruido y se publica
 la tasa en `meta.book_validation`. En el feed la L1 llega ANTES de las filas L2 que la producen, asi que se evalua con
@@ -78,6 +82,27 @@ CUTOFF_DATE = 20260630
 PRICE_PRECISION = {"GC": 1, "6E": 5, "ES": 2, "NQ": 2}
 CANDLE_BUCKETS = {"time_5s": 5, "time_1m": 60}
 CROSSED_RATIO_ABSTAIN = 0.01    # >1% de eventos con libro cruzado degrada la certificacion (ver BookStatus)
+
+# Reloj resuelto POR INSTRUMENTO -- no generalizar de uno a otro sin medir (cada uno tiene su propia conversion
+# NRD->CSV). Ausente de este dict = sigue "sin resolver": el default explicito abajo. GC: 30/30 sesiones
+# lunes-jueves con el halt de mantenimiento CME cayendo exacto a las 18:00 leido como UTC (docs/research/
+# RESOLUCION_RELOJ_GC_L2_20260922.md). ES: evidencia equivalente en docs/research/INTAKE_L2_ES_NRD_2026-08-21.md
+# S5.1 (halt, apertura dominical, cierre RTH), pero esa sesion sigue en cuarentena de holdout (P-56): resuelto el
+# reloj, NO autorizado para uso mas alla de target-free.
+WALL_CLOCK_RESOLVED_TZ = {
+    "GC": ("America/Argentina/Buenos_Aires (ART, UTC-3) -- resuelto 2026-09-22, ver "
+           "docs/research/RESOLUCION_RELOJ_GC_L2_20260922.md"),
+    "ES": ("America/Argentina/Buenos_Aires (ART, UTC-3) -- resuelto 2026-08-21, ver "
+           "docs/research/INTAKE_L2_ES_NRD_2026-08-21.md S5.1"),
+}
+
+
+def _clock_meta(instrument: str) -> tuple[str, str]:
+    """(chart_tz, clock) segun si este instrumento tiene el reloj resuelto por evidencia forense propia."""
+    tz = WALL_CLOCK_RESOLVED_TZ.get(instrument)
+    if tz is None:
+        return "UTC (reloj NT8, referencia sin resolver)", "NT8_WALL_CLOCK_INTERPRETED_AS_UTC_REFERENCE_UNRESOLVED"
+    return tz, f"NT8_WALL_CLOCK_RESOLVED_ART_UTC-3_{instrument}"
 
 PASS = "PASS"
 ABSTAIN_INVALID_LEVEL = "ABSTAIN_INVALID_LEVEL"
@@ -390,11 +415,13 @@ def main(argv=None) -> int:
         raise SystemExit(f"libro NO certificable, build abortado (pasar --exploratory para continuar de todos modos): {e}")
     aid = f"{a.instrument}_L2_{a.date}"
     n_candles = len(bar_series["time_5s"])
+    chart_tz, clock_status = _clock_meta(a.instrument)
     bundle = {
         "meta": dict(id=aid, instrument=a.instrument, contract=f"{a.contract} L2 {a.date}", tick_size=tick_size,
-                     precision=PRICE_PRECISION.get(a.instrument, 2), chart_tz="UTC (reloj NT8, referencia sin resolver)",
+                     precision=PRICE_PRECISION.get(a.instrument, 2),
+                     chart_tz=chart_tz,
                      n_candles=n_candles, n_zones=0, rolls=[], kind="L2_DEPTH_SESSION",
-                     clock="NT8_WALL_CLOCK_INTERPRETED_AS_UTC_REFERENCE_UNRESOLVED", outcome_firewall="ENFORCED",
+                     clock=clock_status, outcome_firewall="ENFORCED",
                      source=dict(l1=str(a.base / "l1_quotes" / f"{a.date}.parquet"), l2=str(a.base / "l2_depth" / f"{a.date}.parquet")),
                      book_validation=val, trade_classification=trclass, book_status=val["book_status"],
                      exploratory_mode=a.exploratory, manipulation_summary=dict(
