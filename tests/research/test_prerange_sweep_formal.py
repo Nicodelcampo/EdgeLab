@@ -14,6 +14,8 @@ import math
 import random
 import sys
 import tempfile
+
+import pytest
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -226,6 +228,15 @@ def test_planted():
 
 
 # ------------------------------------------------ 7. placebos y gates
+@pytest.fixture(scope="module")
+def null_out():
+    """Nulo sintetico compartido: el fixture nunca existio (error de setup en CI).
+    Se reconstruye con el mismo random walk que test_null para no depender del
+    orden de ejecucion ni de datos reales."""
+    p = write_csv("_syn_null_fixture.csv", 160, seed=20260814)
+    return M.run(p, tick=1.0, asset="SYN_NULL")
+
+
 def test_placebos_and_gates(null_out):
     print("\n[7] Familia de placebos y piso de p_perm")
     k = null_out["placebo_permutation"]["n_placebos"]
