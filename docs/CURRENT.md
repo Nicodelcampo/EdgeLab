@@ -23,7 +23,10 @@
 
 5. **HFTZones en los 11 activos — perfil escalado `SCALED_FUNNEL_V1` (2026-09-21).** Mismo motor, umbrales por activo, target-free: la dispersión de densidad de zonas por tick pasó de ~29× a 1,8× (`docs/research/HFTZONES_ESTANDARIZACION_MULTIACTIVO_20260921.md`, `tools/calibrate_hftzones_universal_profiles.py`, `tools/rebuild_hft_bundles_scaled.py`). Sin paridad con NT8 salvo NQ (`PARITY_ABSTAIN`); deriva fuera de muestra en MES/GC/ZB.
 6. **LUX-IMB (OG+VI) reconstruido en Python — validación PARCIAL contra 6E:** 34.179/34.179 zonas exactas (bordes, vencimiento, relleno, toque) con OG cuerpo-a-cuerpo, la geometría del `.cs` (`docs/research/LUX_IMB_VALIDACION_PARCIAL_6E_20260921.md`). Falta: otros activos, barras M1 desde ticks, disponibilidad causal.
-7. **L2 en el visor (GC 08-26, 29 sesiones pre-holdout):** mapa de calor del libro; reconstrucción validada contra L1 (bid ≥99,7 %, ask 100 %). Reloj L2 sin resolver contra ticks: las velas salen de los trades del mismo feed (`tools/build_l2_viewer_bundle.py`). Base para spoofing/iceberg y DeepLOB.
+7. **L2 en el visor (GC 08-26, 29 sesiones pre-holdout) — ampliado tras la línea 7 original.** Mapa de calor del libro a 1 s de resolución (`tools/build_l2_viewer_bundle.py`); reconstrucción validada contra L1 (bid ≥99,7 %, ask ≥99,99 % en las 29 sesiones). Reloj L2 sin resolver contra ticks: las velas (5 s y 1 min) salen de los trades del mismo feed. **Cinta de trades estilo Bookmap:** cada ejecución clasificada por agresor (regla de cotización + tick-test de respaldo, **heurística sin validar contra oráculo**; `meta.trade_classification` publica la fracción por sesión, ~50/50 con <0,03 % neutral en las 29 de GC), agregada por celda tiempo/precio (dibujar cada trade suelto saturaba la pantalla con ráfagas HFT superpuestas — bug real encontrado y corregido) y con radio por percentil (2–15 px) para diferenciar tamaños. **Detectores PROVISIONALES de iceberg y spoofing** (`edgelab/research/l2_manipulation_heuristics.py`, sin ground truth — el feed MBP no trae ID de orden): iceberg = nivel consumido por un trade y rellenado repetidas veces; spoofing = orden grande que aparece y se va rápido sin llenarse. Calibrados por barrido para no marcar el ruido rutinario del touch (4–65 icebergs y 20–300 spoofs por sesión en las 29 de GC); marcados en el visor con signo de pregunta explícito. Base para DeepLOB.
+8. **Indicador HFT único en el visor: `HFTZonesNQPureV4`.** Decisión de Nico 2026-09-21. Los bundles del motor `HFTZonesUniversal` se renombran al cargar (`normalizeRuns` en `index.html`) y, si el bundle trae ese indicador, se ocultan las demás corridas (BigTrap2, Gaps2, etc.). El nombre es una etiqueta: la paridad con NT8 sigue siendo solo de NQ.
+9. **Bug de origen de zona corregido en los 10 activos con motor `HFTZonesUniversal` (no afecta a NQ).** Con velas de 25 ticks en mercado rápido, varias barras comparten el mismo segundo entero (6B 09-25: 505/28.216); comparar el origen de la zona en nanosegundos crudos contra el arreglo de segundos enteros saltaba esas barras y anclaba la caja lejos de su origen real. Corregido redondeando al segundo antes de buscar.
+10. **LUX-IMB (OG+VI) extendido a los 11 activos, sobre barras M1 propias.** `tools/build_lux_imb_m1_bundles.py` arma M1 desde ticks pre-holdout (55 contratos) y corre el detector Python (geometría `body`, validado parcialmente solo en 6E). Sin paridad propia en los otros 10 activos (`PARITY_ABSTAIN`). Disponibles en el visor bajo "Gráfico M1 · LUX-IMB" por activo.
 
 ## Resultados de investigación vigentes
 
@@ -54,6 +57,12 @@ ULP_TRIAGE                              = 57_entries_PROVISIONAL (lectura, no me
 KAGGLE_WRITE_ACCESS                     = VERIFIED_2026-09-21
 CAMPAIGN_OUTCOMES_OPENED                = false
 PREEXISTING_OUTCOME_EXPOSURE            = YES
+HFT_SCALED_DENSITY_SPREAD               = 29x -> 1.8x (11 activos, ver linea 5)
+HFT_VIEWER_INDICATOR                    = SINGLE_HFTZonesNQPureV4 (motor universal renombrado, paridad solo NQ)
+LUX_IMB_PARITY                          = 6E_PARTIAL_34179_of_34179 (otros 10 activos PARITY_ABSTAIN, geometria body)
+L2_BOOK_VALIDATION_GC                   = bid>=99.7pct_ask>=99.99pct (29 sesiones pre-holdout)
+L2_TRADE_CLASSIFICATION                 = HEURISTIC_UNVALIDATED (quote_rule + tick_test)
+L2_MANIPULATION_DETECTORS               = PROVISIONAL_NO_GROUND_TRUTH (iceberg + spoofing, ver linea 7)
 ```
 
 ## Medido: P-68
@@ -119,4 +128,4 @@ Consecuencia: no afecta la señal causal del roll del 16-jun, que usa D-1. Sí a
 
 ## Aporte al referente
 
- Un solo visor y una sola definición de corredor con puerto verificado (28 escenarios dorados + 12 casos reales, diferencia 0); Kaggle con acceso de escritura probado de punta a punta; y medido qué le falta al Brain para orquestar análisis con garantías (corredor de episodios con auditoría de holdout).
+ Un solo visor y una sola definición de corredor con puerto verificado (28 escenarios dorados + 12 casos reales, diferencia 0); Kaggle con acceso de escritura probado de punta a punta; y medido qué le falta al Brain para orquestar análisis con garantías (corredor de episodios con auditoría de holdout). Ampliado en el resto de la sesión (líneas 5–10 y el vector de estado): HFTZones queda con densidad comparable en los 11 activos (29×→1,8×) y un único indicador visible en el visor; se corrigió un desfase real de las cajas HFT en 10 activos (origen de zona con múltiples barras por segundo); LUX-IMB se extendió a los 11 activos sobre M1 propio, con validación parcial solo en 6E; y el visor sumó una vista tipo Bookmap de L2 (libro, trades clasificados por agresor, detectores provisionales de iceberg/spoofing) para GC, con todas las heurísticas explícitamente marcadas como no validadas.
