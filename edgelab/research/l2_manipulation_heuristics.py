@@ -86,8 +86,8 @@ class IcebergTracker:
     near_ticks: float | None = None                          # solo abre vigilancia cerca del touch (ver `depth`)
     neutral_policy: str = "abstain"
     _last_size: dict = field(default_factory=dict)        # (side,tick) -> tamaño vigente
-    _last_trade_ts: dict = field(default_factory=dict)     # (side,tick) -> (ts_us, size) del ultimo trade atribuido
-    _ambiguous_near: dict = field(default_factory=dict)     # (side,tick) -> volumen neutral reciente sin atribuir
+    _attributed_near: dict = field(default_factory=dict)   # (side,tick) -> [(ts_us,size)] aún no consumidos
+    _ambiguous_near: dict = field(default_factory=dict)     # (side,tick) -> [(ts_us,size)] aún no consumidos
     _pending: dict = field(default_factory=dict)            # (side,tick) -> dict(ts, prev_size, attributed, ambiguous)
     _stats: dict = field(default_factory=dict)              # (side,tick) -> lista de refills observados
 
@@ -97,36 +97,48 @@ class IcebergTracker:
 
     def on_trade(self, tick: int, ts_us: int, size: float, aggressor: int) -> None:
         if aggressor > 0:
-            self._last_trade_ts[(ASK, tick)] = (ts_us, size)
+            self._attributed_near.setdefault((ASK, tick), []).append((ts_us, size))
         elif aggressor < 0:
-            self._last_trade_ts[(BID, tick)] = (ts_us, size)
+            self._attributed_near.setdefault((BID, tick), []).append((ts_us, size))
         else:
             for side in _neutral_targets(self.neutral_policy):
-                self._last_trade_ts[(side, tick)] = (ts_us, _neutral_share(self.neutral_policy, size))
-            # el volumen neutral queda registrado como AMBIGUO para los dos lados aunque no se acredite
-            # (policy="abstain"): permite auditar cuanto se descarto sin inflar el conteo de refills.
+                self._attributed_near.setdefault((side, tick), []).append(
+                    (ts_us, _neutral_share(self.neutral_policy, size)))
+            # Cada neutral conserva su timestamp. El acumulado anterior renovaba el timestamp de volumen viejo.
             for side in (ASK, BID):
-                self._ambiguous_near[(side, tick)] = (ts_us, self._ambiguous_near.get((side, tick), (0, 0.0))[1] + size)
+                self._ambiguous_near.setdefault((side, tick), []).append((ts_us, size))
 
     def on_l2_event(self, side: int, op: int, tick: int, size: float, ts_us: int, depth: float | None = None) -> None:
         """`depth`: distancia en ticks al mejor precio DE ESE LADO en el momento del evento (0 = toque). Sin ella,
         no se filtra por cercania (compatibilidad hacia atras / tests)."""
         key = (side, tick)
         prev = self._last_size.get(key)
+        attributed = [(t, v) for t, v in self._attributed_near.get(key, [])
+                      if 0 <= ts_us - t <= self.trade_window_us]
+        ambiguous = [(t, v) for t, v in self._ambiguous_near.get(key, [])
+                     if 0 <= ts_us - t <= self.trade_window_us]
+        self._attributed_near[key] = attributed
+        self._ambiguous_near[key] = ambiguous
         if op in (0, 1) and prev is not None and size < prev:
-            lt = self._last_trade_ts.get(key)
             near = self.near_ticks is None or depth is None or depth <= self.near_ticks
-            if lt is not None and near and 0 <= ts_us - lt[0] <= self.trade_window_us:
-                amb = self._ambiguous_near.get(key, (0, 0.0))
-                ambiguous_vol = amb[1] if amb[0] and 0 <= ts_us - amb[0] <= self.trade_window_us else 0.0
-                self._pending[key] = dict(ts=ts_us, prev_size=prev, attributed=lt[1], ambiguous=ambiguous_vol)
+            if attributed and near:
+                self._pending[key] = dict(ts=ts_us, prev_size=prev,
+                                          attributed=sum(v for _, v in attributed),
+                                          ambiguous=sum(v for _, v in ambiguous),
+                                          attributed_trade_count=len(attributed),
+                                          ambiguous_trade_count=len(ambiguous))
+                # Cada impresión sólo puede explicar un descenso agregado. Esto evita reutilizarla en varios ciclos.
+                self._attributed_near[key] = []
+                self._ambiguous_near[key] = []
         elif op in (0, 1) and size > 0:
             pend = self._pending.get(key)
             if pend is not None and 0 <= ts_us - pend["ts"] <= self.refill_window_us and size >= self.refill_min_ratio * pend["prev_size"]:
                 self._stats.setdefault(key, []).append(dict(
                     first_ts=pend["ts"], last_ts=ts_us, visible_size_before=pend["prev_size"],
                     visible_size_after=size, attributed_trade_volume=pend["attributed"],
-                    ambiguous_trade_volume=pend["ambiguous"]))
+                    ambiguous_trade_volume=pend["ambiguous"],
+                    attributed_trade_count=pend["attributed_trade_count"],
+                    ambiguous_trade_count=pend["ambiguous_trade_count"]))
                 self._pending.pop(key, None)
         if op == 2:
             self._last_size.pop(key, None)
@@ -147,6 +159,8 @@ class IcebergTracker:
                     visible_size_before=refills[-1]["visible_size_before"], visible_size_after=refills[-1]["visible_size_after"],
                     attributed_trade_volume=sum(r["attributed_trade_volume"] for r in refills),
                     ambiguous_trade_volume=sum(r["ambiguous_trade_volume"] for r in refills),
+                    attributed_trade_count=sum(r["attributed_trade_count"] for r in refills),
+                    ambiguous_trade_count=sum(r["ambiguous_trade_count"] for r in refills),
                     avg_size=avg,
                     confidence_components=dict(refill_count=len(refills), min_refills=self.min_refills,
                                                refill_min_ratio=self.refill_min_ratio, avg_size_over_threshold=avg / max(1e-9, self.min_avg_size.get(side, 0.0)) if self.min_avg_size.get(side) else None),

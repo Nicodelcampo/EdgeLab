@@ -133,3 +133,16 @@ def test_microsegundos_dentro_del_mismo_segundo_cambian_el_resultado_del_detecto
     # diferencia entre ambos casos es de UN microsegundo, invisible si el tiempo se trunca a segundos.
     assert candidatos(1) == 1
     assert candidatos(2) == 0
+
+
+def test_trade_cells_v2_publica_conteos_metodos_maximo_y_tiempos():
+    l2=l2_df([(0,B.ASK,0,0,101,5,0),(1,B.BID,0,0,99,5,0)])
+    l1=l1_df([(2,B.LAST_SIDE,101,3,100),(3,B.LAST_SIDE,100,2,200),(4,B.LAST_SIDE,100,4,300)])
+    _,depth,trades,_,_,_,_=_build_direct(l1,l2)
+    assert depth["namespace"]=="l2.depth" and trades["schema"]=="L2_TRADE_CELLS_V2"
+    assert trades["namespace"]=="l2.trades" and trades["tick"]==[100,101]
+    assert trades["trade_count"]==[2,1] and trades["max_trade_size"]==[4.0,3.0]
+    assert trades["first_ts_us"]==[200,100] and trades["last_ts_us"]==[300,100]
+    assert trades["method_quote_rule_count"]==[0,1]
+    assert trades["method_tick_test_count"]==[1,0] and trades["method_neutral_count"]==[1,0]
+    assert trades["scale_scope"]=="SESSION" and len(trades["size_tiers"])==4

@@ -219,7 +219,7 @@ def build(l1_path: Path, l2_path: Path, snap_seconds: int, tick_size: float, *,
     crossed = 0
     empty_book_intervals = 0
     snap_t, snap_off, cell_tick, cell_size = [], [], [], []      # cell_size: + bid / - ask
-    trade_cells = {}                                             # (bucket_s,tick) -> [buy, sell, neutral]
+    trade_cells = {}  # (bucket_s,tick) -> volúmenes, conteos, métodos, máximo y rango temporal
     last_bucket = None
     pending = None                                  # cotizacion L1 pendiente de validar (ver nota de orden)
     prev_trade_tick = None
@@ -271,8 +271,18 @@ def build(l1_path: Path, l2_path: Path, snap_seconds: int, tick_size: float, *,
             key = (bucket_s, tk)
             cell = trade_cells.get(key)
             if cell is None:
-                trade_cells[key] = cell = [0.0, 0.0, 0.0]
-            cell[0 if d > 0 else (1 if d < 0 else 2)] += sz
+                trade_cells[key] = cell = dict(
+                    buy=0.0, sell=0.0, neutral=0.0, buy_count=0, sell_count=0, neutral_count=0,
+                    max_trade_size=0.0, first_ts_us=tsj_us, last_ts_us=tsj_us,
+                    method_quote_rule_count=0, method_tick_test_count=0, method_neutral_count=0,
+                    method_quote_rule_volume=0.0, method_tick_test_volume=0.0, method_neutral_volume=0.0)
+            side_name = "buy" if d > 0 else ("sell" if d < 0 else "neutral")
+            cell[side_name] += sz; cell[side_name + "_count"] += 1
+            cell["max_trade_size"] = max(cell["max_trade_size"], float(sz))
+            cell["first_ts_us"] = min(cell["first_ts_us"], tsj_us)
+            cell["last_ts_us"] = max(cell["last_ts_us"], tsj_us)
+            cell["method_" + method + "_count"] += 1
+            cell["method_" + method + "_volume"] += sz
             iceberg.on_trade(tk, tsj_us, sz, d)
             spoof.on_trade(tk, tsj_us, sz, d)
             return j + 1, pend, tk
@@ -346,17 +356,29 @@ def build(l1_path: Path, l2_path: Path, snap_seconds: int, tick_size: float, *,
                                 method_tick_test=method_counts["tick_test"] / n_tr,
                                 method_neutral=method_counts["neutral"] / n_tr,
                                 method="quote_rule_then_tick_test_HEURISTIC_UNVALIDATED")
-    l2b = dict(snap_seconds=snap_seconds, tick_size=tick_size, t=snap_t, off=snap_off, tick=cell_tick, size=cell_size)
+    l2b = dict(schema="L2_DEPTH_CELLS_V1", namespace="l2.depth", certification=book_status,
+               snap_seconds=snap_seconds, tick_size=tick_size, t=snap_t, off=snap_off, tick=cell_tick, size=cell_size)
 
-    tc_t, tc_off, tc_tick, tc_buy, tc_sell, tc_neu = [], [], [], [], [], []
-    for key in sorted(trade_cells):
-        bucket_ts, tk = key
-        buy, sell, neu = trade_cells[key]
+    names = ("buy", "sell", "neutral", "buy_count", "sell_count", "neutral_count", "max_trade_size",
+             "first_ts_us", "last_ts_us", "method_quote_rule_count", "method_tick_test_count", "method_neutral_count",
+             "method_quote_rule_volume", "method_tick_test_volume", "method_neutral_volume")
+    cols = {name: [] for name in names}; tc_t, tc_off, tc_tick = [], [], []
+    for (bucket_ts, tk), cell in sorted(trade_cells.items()):
         if not tc_t or tc_t[-1] != bucket_ts:
             tc_t.append(bucket_ts); tc_off.append(len(tc_tick))
-        tc_tick.append(tk); tc_buy.append(buy); tc_sell.append(sell); tc_neu.append(neu)
+        tc_tick.append(tk)
+        for name in names: cols[name].append(cell[name])
     tc_off.append(len(tc_tick))
-    trades = dict(snap_seconds=snap_seconds, t=tc_t, off=tc_off, tick=tc_tick, buy=tc_buy, sell=tc_sell, neutral=tc_neu)
+    totals = sorted(c["buy"] + c["sell"] + c["neutral"] for c in trade_cells.values())
+    def percentile(p):
+        return float(totals[min(len(totals) - 1, int(len(totals) * p))]) if totals else 1.0
+    trades = dict(schema="L2_TRADE_CELLS_V2", namespace="l2.trades",
+                  certification="HEURISTIC_AGGRESSOR_UNVALIDATED", snap_seconds=snap_seconds,
+                  scale_scope="SESSION", size_tier_percentiles=[0.50, 0.75, 0.90, 0.97],
+                  size_tiers=[percentile(0.50), percentile(0.75), percentile(0.90), percentile(0.97)],
+                  t=tc_t, off=tc_off, tick=tc_tick,
+                  trade_count=[cols["buy_count"][i] + cols["sell_count"][i] + cols["neutral_count"][i]
+                               for i in range(len(tc_tick))], **cols)
 
     def to_price(cands):
         out = []

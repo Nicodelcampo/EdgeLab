@@ -260,3 +260,18 @@ def test_spoof_no_nace_de_primer_change_grande():
 
 def test_spoof_cruce_observado_publica_birth_reason():
  s=SpoofTracker(thresholds={ASK:100.0},max_fill_ratio=1.0);s.on_l2_event(ASK,1,1,20,0);s.on_l2_event(ASK,1,1,200,1);s.on_l2_event(ASK,2,1,0,2);assert s.candidates()[0]["birth_reason"]=="THRESHOLD_CROSS"
+
+
+def test_iceberg_suma_todos_los_trades_y_poda_ambiguos_viejos():
+    t=IcebergTracker(trade_window_us=2*US,refill_window_us=5*US,refill_min_ratio=.7,min_refills=1)
+    tick=4321;t.on_l2_event(BID,0,tick,100,0);t.on_trade(tick,US,10,0)
+    t.on_trade(tick,3*US,20,-1);t.on_trade(tick,4*US,30,-1)
+    t.on_l2_event(BID,1,tick,10,5*US);t.on_l2_event(BID,1,tick,90,6*US)
+    c=t.candidates()[0];assert c["attributed_trade_volume"]==pytest.approx(50)
+    assert c["attributed_trade_count"]==2 and c["ambiguous_trade_volume"]==0
+
+def test_iceberg_no_reutiliza_el_mismo_trade_en_dos_descensos():
+    t=IcebergTracker(trade_window_us=10*US,refill_window_us=10*US,refill_min_ratio=.7,min_refills=1)
+    t.on_l2_event(BID,0,9,100,0);t.on_trade(9,US,20,-1);t.on_l2_event(BID,1,9,70,2*US)
+    t.on_l2_event(BID,1,9,60,3*US);t.on_l2_event(BID,1,9,95,4*US)
+    c=t.candidates()[0];assert c["attributed_trade_count"]==1 and c["attributed_trade_volume"]==20
