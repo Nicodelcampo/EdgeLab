@@ -17,8 +17,10 @@ from datetime import date, datetime
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
+# Repo-relative default: an absolute workstation path made every CI runner
+# resolve zero sessions and forced ABSTAIN on the whole regression suite.
 DEFAULT_CALENDAR_PATH = (
-    Path("E:/EdgeLab")
+    Path(__file__).resolve().parents[2]
     / "docs"
     / "research"
     / "cme_equity_index_calendar_20260902"

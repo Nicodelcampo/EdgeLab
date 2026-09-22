@@ -111,6 +111,11 @@ def barrer(path: str):
 #                    comparar precios, la expresión cambia y vuelve a saltar.
 BASELINE = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                         "ulp_sweep_baseline.json")
+# Overlay del triaje CYCLE-001 (2026-09-22): las 57 expresiones nuevas del wave
+# #46 se sellan acá para no reescribir ni reformatear el baseline histórico
+# sellado el 2026-07-26. Si el baseline cambia de formato, fusionar ambos.
+OVERLAY = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                       "ulp_sweep_baseline_overlay_cycle001.json")
 VEREDICTOS = {"INMUNE_MONOTONO", "INMUNE_MEDIOTICK", "CORREGIDO",
               "ESPEJADO_BIT_A_BIT", "EXPUESTO_PENDIENTE", "FUERA_DE_ALCANCE",
               "NO_ES_PRECIO"}
@@ -148,6 +153,8 @@ def main(argv=None):
     sellado = {}
     if os.path.exists(BASELINE):
         sellado = json.load(open(BASELINE, encoding="utf-8"))["triaje"]
+    if os.path.exists(OVERLAY):
+        sellado.update(json.load(open(OVERLAY, encoding="utf-8"))["triaje"])
 
     print("=" * 88)
     print("BARRIDO ULP — regla: ningun umbral de precio se compara en double")
