@@ -1680,21 +1680,25 @@
     var cd = bs && bs.candles;
     if (!cd || cd.length < 2) return;
 
+    // Esquema de candidatos (auditoria 2026-09-21): tiempos en MICROSEGUNDOS (`*_ts_us`), campos renombrados
+    // (refill_count, peak_visible_size). state._l2MarkerHits guarda las cajas de hit-test para el tooltip.
+    var hits = state._l2MarkerHits = [];
     if (activeProps.show_l2_icebergs !== false && manip.icebergs) {
       manip.icebergs.forEach(function (c) {
-        var x = barTimeToX(c.first_ts, cd), y = series.priceToCoordinate(c.price);
+        var x = barTimeToX(c.first_observed_ts_us / 1e6, cd), y = series.priceToCoordinate(c.price);
         if (!isFinite(x) || y === null || y === undefined || x < -20 || x > w + 20) return;
         ctx.fillStyle = "#a855f7"; ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(x, y - 6); ctx.lineTo(x + 6, y); ctx.lineTo(x, y + 6); ctx.lineTo(x - 6, y); ctx.closePath();
         ctx.fill(); ctx.stroke();
         ctx.fillStyle = "#a855f7"; ctx.font = "bold 9px 'Segoe UI', -apple-system, sans-serif";
-        ctx.fillText("ICEBERG? x" + c.refills, x + 8, y - 8);
+        ctx.fillText("ICEBERG? x" + c.refill_count, x + 8, y - 8);
+        hits.push({ x: x, y: y, r: 8, kind: "iceberg", c: c });
       });
     }
     if (activeProps.show_l2_spoofs !== false && manip.spoofs) {
       manip.spoofs.forEach(function (c) {
-        var x = barTimeToX(c.death_ts, cd), y = series.priceToCoordinate(c.price);
+        var x = barTimeToX(c.death_ts_us / 1e6, cd), y = series.priceToCoordinate(c.price);
         if (!isFinite(x) || y === null || y === undefined || x < -20 || x > w + 20) return;
         ctx.strokeStyle = "#f59e0b"; ctx.lineWidth = 2;
         ctx.beginPath();
@@ -1702,7 +1706,8 @@
         ctx.moveTo(x + 5, y - 5); ctx.lineTo(x - 5, y + 5);
         ctx.stroke();
         ctx.fillStyle = "#f59e0b"; ctx.font = "bold 9px 'Segoe UI', -apple-system, sans-serif";
-        ctx.fillText("SPOOF? " + Math.round(c.peak_size), x + 8, y + 12);
+        ctx.fillText("SPOOF? " + Math.round(c.peak_visible_size), x + 8, y + 12);
+        hits.push({ x: x, y: y, r: 8, kind: "spoof", c: c });
       });
     }
   }
