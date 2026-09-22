@@ -10,14 +10,20 @@ Que valida, por cada PAR de sesiones consecutivas que aparecen en `--base/manife
 (el orden lo da la fecha, no el calendario -- si falta un dia en disco, el par salta al
 siguiente disponible y eso tambien queda registrado):
 
-1. INVERSION DE RELOJ: `last_ts_us(D)` tiene que ser <= `first_ts_us(D+1)`. Si no, HARD FAIL
-   (`continuity_status=FAIL_CLOCK_INVERSION`) -- esto nunca es aceptable, sea cual sea el gap.
+1. INVERSION DE RELOJ: `last_ts_us(D)` tiene que ser <= `first_ts_us(D+1)`, EXCEPTO un
+   solapamiento negativo chico (>= -30s) en una frontera que de otro modo seria continua --
+   eso es `EXPECTED_BOOTSTRAP_OVERLAP` (`continuity_status=REVIEW_MINOR_OVERLAP`), causa raiz
+   medida fila a fila en docs/research/SOLAPAMIENTO_FRONTERA_SESIONES_L2_20260922.md: la
+   rafaga de bootstrap del dia nuevo queda sellada con la hora nominal de arranque, no con
+   hora de llegada real, y puede quedar "antes" de la cola genuina del dia anterior sin que
+   ningun evento este duplicado. Cualquier otro gap negativo sigue siendo HARD FAIL
+   (`FAIL_CLOCK_INVERSION`) -- esto no relaja el chequeo en general.
 2. CLASIFICACION DEL GAP (HEURISTICA, no un calendario CME certificado -- para eso existe
    `edgelab/data/cme_equity_index_calendar.py`, que es de indices, no metales, y no modela
    el gap intradiario). Se mide contra el patron EMPIRICO observado en GC 08-26
    (docs/research/RESOLUCION_RELOJ_GC_L2_20260922.md): archivos lunes-jueves consecutivos
    empalman con gap < 60s; el cierre de semana (viernes -> proximo dia disponible) da un
-   gap del orden de decenas de horas. Cualquier gap que no calce con ninguno de los dos
+   gap del orden de decenas de horas. Cualquier gap que no calce con ninguno de esos
    patrones queda `GAP_UNCLASSIFIED_REVIEW_NEEDED` -- NUNCA se acepta en silencio.
 3. BOOTSTRAP DEL LIBRO DE D+1 (opcional, `--skip-book-check` para saltarlo): corre
    `build_l2_viewer_bundle.build()` fail-closed sobre D+1 y expone su `book_status`. Una
@@ -50,6 +56,7 @@ if str(REPO) not in sys.path:
 FAIL_CLOCK_INVERSION = "FAIL_CLOCK_INVERSION"
 EXPECTED_CONTINUOUS = "EXPECTED_CONTINUOUS"
 EXPECTED_WEEKEND = "EXPECTED_WEEKEND"
+EXPECTED_BOOTSTRAP_OVERLAP = "EXPECTED_BOOTSTRAP_OVERLAP"
 GAP_UNCLASSIFIED = "GAP_UNCLASSIFIED_REVIEW_NEEDED"
 
 # Umbrales HEURISTICOS calibrados contra el patron real medido en GC 08-26 (30 sesiones,
@@ -59,6 +66,16 @@ GAP_UNCLASSIFIED = "GAP_UNCLASSIFIED_REVIEW_NEEDED"
 CONTINUOUS_GAP_MAX_S = 300.0            # 5 min de margen sobre el 2.2s real observado
 WEEKEND_GAP_MIN_S = 6 * 3600.0          # piso generoso: un fin de semana real nunca es < 6h
 WEEKEND_GAP_MAX_S = 4 * 24 * 3600.0     # techo generoso: cubre un feriado largo pegado al finde
+
+# Solapamiento NEGATIVO chico en fronteras lunes-jueves-domingo->siguiente: causa raiz medida
+# y documentada en docs/research/SOLAPAMIENTO_FRONTERA_SESIONES_L2_20260922.md -- la rafaga de
+# bootstrap (ADD) que reconstruye el libro al arrancar el archivo nuevo queda sellada con la
+# hora NOMINAL de arranque de sesion, no con una hora de llegada real, y puede quedar "antes"
+# de la cola genuina de actividad del dia anterior sin que ningun dato este mal (verificado
+# fila a fila: los precios de la cola de D y la cabeza de D+1 NO coinciden -- no hay evento
+# duplicado). Rango medido: -4.0s a -7.6s en GC 12-26 (5 fronteras) + -5.68s en GC 08-26.
+# -30s es ~4-7x mas laxo que lo medido -- margen, no ajuste para que pasen los tests.
+BOOTSTRAP_OVERLAP_MIN_S = -30.0
 
 
 def _session_ts_bounds(base: Path, session: str) -> tuple[int, int]:
@@ -86,13 +103,23 @@ def classify_gap(day_before: date, day_after: date, gap_seconds: float) -> str:
     lunes en 0-2s, igual que lunes-jueves entre si. La version anterior de esta regla solo
     contemplaba lunes-jueves y marcaba los 5 empalmes domingo->lunes reales como
     GAP_UNCLASSIFIED -- no estaba mal (nunca acepto algo en silencio), pero subcubria un
-    caso legitimo que si se puede clasificar con evidencia."""
-    if gap_seconds < 0:
-        return FAIL_CLOCK_INVERSION
+    caso legitimo que si se puede clasificar con evidencia.
+
+    Un gap NEGATIVO chico (>= BOOTSTRAP_OVERLAP_MIN_S) en una frontera que de otro modo
+    calificaria como EXPECTED_CONTINUOUS es EXPECTED_BOOTSTRAP_OVERLAP, no un fail duro --
+    causa raiz medida en docs/research/SOLAPAMIENTO_FRONTERA_SESIONES_L2_20260922.md. Un
+    gap negativo mas alla de ese margen, o en cualquier otra frontera, sigue siendo
+    FAIL_CLOCK_INVERSION: esto NO relaja el chequeo en general, solo reconoce el patron
+    especifico ya verificado fila a fila (no hay evento duplicado)."""
     dow_before = day_before.weekday()   # 0=lunes ... 6=domingo
     calendar_days = (day_after - day_before).days
     _CONTINUOUS_DOW = (0, 1, 2, 3, 6)   # lunes-jueves y domingo: el dia siguiente empalma liso
-    if calendar_days == 1 and dow_before in _CONTINUOUS_DOW and gap_seconds <= CONTINUOUS_GAP_MAX_S:
+    would_be_continuous = calendar_days == 1 and dow_before in _CONTINUOUS_DOW
+    if gap_seconds < 0:
+        if would_be_continuous and gap_seconds >= BOOTSTRAP_OVERLAP_MIN_S:
+            return EXPECTED_BOOTSTRAP_OVERLAP
+        return FAIL_CLOCK_INVERSION
+    if would_be_continuous and gap_seconds <= CONTINUOUS_GAP_MAX_S:
         return EXPECTED_CONTINUOUS
     if dow_before == 4 and WEEKEND_GAP_MIN_S <= gap_seconds <= WEEKEND_GAP_MAX_S:
         return EXPECTED_WEEKEND
@@ -135,6 +162,8 @@ def validate_boundaries(base: Path, out_dir: Path, tick_size: float, *, skip_boo
             status = "FAIL_CLOCK_INVERSION"
         elif classification == GAP_UNCLASSIFIED:
             status = "REVIEW_GAP_UNCLASSIFIED"
+        elif classification == EXPECTED_BOOTSTRAP_OVERLAP:
+            status = "REVIEW_MINOR_OVERLAP"
         elif not skip_book_check and right_bootstrap != "PASS":
             status = "REVIEW_BOOK_BOOTSTRAP"
         else:

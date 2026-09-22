@@ -17,7 +17,7 @@ import pyarrow.parquet as pq
 import pytest
 
 from tools.validate_l2_session_boundaries import (
-    EXPECTED_CONTINUOUS, EXPECTED_WEEKEND, FAIL_CLOCK_INVERSION, GAP_UNCLASSIFIED,
+    EXPECTED_BOOTSTRAP_OVERLAP, EXPECTED_CONTINUOUS, EXPECTED_WEEKEND, FAIL_CLOCK_INVERSION, GAP_UNCLASSIFIED,
     classify_gap, validate_boundaries)
 
 US = 1_000_000
@@ -60,8 +60,26 @@ def test_viernes_a_domingo_gap_grande_es_fin_de_semana_esperado():
     assert classify_gap(date(2026, 6, 12), date(2026, 6, 14), 48 * 3600) == EXPECTED_WEEKEND
 
 
-def test_gap_negativo_es_inversion_de_reloj_sin_importar_el_dia():
-    assert classify_gap(date(2026, 6, 15), date(2026, 6, 16), -1.0) == FAIL_CLOCK_INVERSION
+def test_solapamiento_chico_en_frontera_continua_es_bootstrap_no_fail():
+    """Causa raiz medida fila a fila (docs/research/SOLAPAMIENTO_FRONTERA_SESIONES_L2_20260922.md):
+    la rafaga de bootstrap del dia nuevo queda sellada con la hora nominal de arranque, no con
+    hora de llegada real -- un solapamiento chico en una frontera que de otro modo seria continua
+    NO es corrupcion de datos (se verifico que los precios de la cola de D y la cabeza de D+1 no
+    coinciden, no hay evento duplicado)."""
+    assert classify_gap(date(2026, 6, 15), date(2026, 6, 16), -1.0) == EXPECTED_BOOTSTRAP_OVERLAP
+    assert classify_gap(date(2026, 6, 15), date(2026, 6, 16), -7.6) == EXPECTED_BOOTSTRAP_OVERLAP
+    assert classify_gap(date(2026, 6, 15), date(2026, 6, 16), -29.9) == EXPECTED_BOOTSTRAP_OVERLAP
+    assert classify_gap(date(2026, 6, 15), date(2026, 6, 16), 0.0) == EXPECTED_CONTINUOUS
+
+
+def test_gap_negativo_grande_o_fuera_de_frontera_continua_sigue_siendo_inversion_de_reloj():
+    """El margen del bootstrap es especifico -- no relaja el chequeo en general."""
+    assert classify_gap(date(2026, 6, 15), date(2026, 6, 16), -30.1) == FAIL_CLOCK_INVERSION
+    assert classify_gap(date(2026, 6, 15), date(2026, 6, 16), -3600.0) == FAIL_CLOCK_INVERSION
+    # viernes -> lunes con gap negativo: no es una frontera "continua", el margen no aplica
+    assert classify_gap(date(2026, 6, 12), date(2026, 6, 15), -1.0) == FAIL_CLOCK_INVERSION
+    # gap de calendario > 1 dia con gap negativo chico: tampoco aplica
+    assert classify_gap(date(2026, 6, 15), date(2026, 6, 18), -1.0) == FAIL_CLOCK_INVERSION
 
 
 def test_lunes_a_martes_con_gap_de_dias_queda_sin_clasificar():
