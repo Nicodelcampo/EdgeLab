@@ -160,3 +160,12 @@ def test_origen_de_zona_redondea_hacia_abajo_al_segundo_antes_de_buscar():
     y ancla la caja varias barras a la derecha de donde se creo la zona."""
     assert "t = Math.floor(Number(z.origin_ts_ns) / 1e9);" in HTML
     assert "t = Number(z.origin_ts_ns) / 1e9;" not in HTML
+
+
+def test_cinta_de_trades_l2_reusa_la_interpolacion_de_barras_y_tiene_tope():
+    """Bookmap-like: burbujas de trades sobre el heatmap L2, coloreadas por agresor (heuristica, sin oraculo)."""
+    assert "function drawTrades" in HTML and "drawTrades(ctx, vr, w, hCanvas);" in HTML
+    assert "function barTimeToX" in HTML
+    assert "return barTimeToX(tt, cd);" in HTML                  # xOfT del heatmap reusa el mismo helper
+    assert 'id="chk-show-l2-trades"' in HTML and "show_l2_trades" in HTML
+    assert 'id="inp-l2-trade-max"' in HTML and "l2_trade_max_visible" in HTML
