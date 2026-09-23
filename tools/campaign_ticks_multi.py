@@ -88,6 +88,8 @@ def _prep(b: pd.DataFrame):
     tr = tr.fillna(b.h - b.l)
     b = b.assign(atr14=tr.rolling(14, min_periods=14).mean(),
                  atr20_prev=tr.rolling(20, min_periods=20).mean().shift(1))
+    et = pd.to_datetime(b.bucket * BAR_S, unit="s", utc=True).dt.tz_convert("America/New_York")
+    b = b.assign(et_date=et.dt.strftime("%Y-%m-%d"))
     tp = (b.h + b.l + b.c) / 3.0
     b = b.assign(vwap=(tp * b.v).groupby(b.date).cumsum() / b.v.groupby(b.date).cumsum())
     return b
@@ -112,6 +114,9 @@ def simulate(b: pd.DataFrame, inst: str, fam: str, p: dict) -> list[tuple]:
         idx = g.index.to_numpy()
         O, H_, L_, C = g.o.to_numpy(float), g.h.to_numpy(float), g.l.to_numpy(float), g.c.to_numpy(float)
         et = g.et_min.to_numpy(); n = len(idx)
+        # RTH de la MANANA de la fecha de trading. BUG corregido 2026-09-23: la sesion CME arranca a las 18:00 ET del
+        # dia anterior, y "primera barra con et >= apertura" tomaba la barra de las 18:00 de la noche previa.
+        morning = (g.et_date.to_numpy() == date) & (et >= o0) & (et < o1)
         if n < 3:
             continue
         pos_until = -1
@@ -139,15 +144,17 @@ def simulate(b: pd.DataFrame, inst: str, fam: str, p: dict) -> list[tuple]:
                 trades.append((date, idx[e], idx[x], d, O[e], C[x], int(g.et_hour.iloc[e])))
                 pos_until = x
         elif fam == "F3":
-            start = np.where(et >= o0)[0]
-            if not len(start):
+            mi = np.where(morning)[0]
+            if len(mi) < 3:
                 continue
-            s0 = start[0]; rng_end = np.where(et >= o0 + p["R"])[0]
+            s0 = mi[0]; rng_end = mi[et[mi] >= o0 + p["R"]]
             if not len(rng_end):
                 continue
             r0 = rng_end[0]
-            hi, lo = H_[s0:r0].max() if r0 > s0 else np.nan, L_[s0:r0].min() if r0 > s0 else np.nan
-            rth_last = np.where(et < o1)[0]; rth_last = rth_last[-1] if len(rth_last) else n - 1
+            if r0 <= s0:
+                continue
+            hi, lo = H_[s0:r0].max(), L_[s0:r0].min()
+            rth_last = mi[-1]
             for i in range(r0, min(rth_last, n - 1)):
                 d = 1 if C[i] > hi else (-1 if C[i] < lo else 0)
                 if d:
@@ -161,14 +168,14 @@ def simulate(b: pd.DataFrame, inst: str, fam: str, p: dict) -> list[tuple]:
             row = daily.loc[date]
             if not (np.isfinite(row.atr_d) and np.isfinite(row.prev_close)):
                 continue
-            start = np.where(et >= o0)[0]
-            if not len(start):
+            mi = np.where(morning)[0]
+            if not len(mi):
                 continue
-            e = start[0]; gap = O[e] - row.prev_close
+            e = mi[0]; gap = O[e] - row.prev_close
             if abs(gap) <= p["g"] * row.atr_d or e >= n - 1:
                 continue
             d = -int(np.sign(gap))
-            rth_last = np.where(et < o1)[0]; rth_last = rth_last[-1] if len(rth_last) else n - 1
+            rth_last = mi[-1]
             x = min(e + 11, n - 1) if p["X"] == "12" else max(e, min(rth_last, n - 1))
             exit_px = C[x]
             for j in range(e, x + 1):                                           # toca el cierre previo -> sale ahi
@@ -261,7 +268,7 @@ def main(argv=None) -> int:
     with measurement_episode(LEDGER, "EP-CAMPAIGN-TICKS-MULTI-20260923", goal="Campaña multi-instrumento sobre ticks",
                              recorded_by="tools/campaign_ticks_multi.py", prereg_ref=PREREG, repo=REPO,
                              inputs={f"bars_{i}": OUT / f"bars_{i}.parquet" for i in DIRS}) as ep:
-        store = DurableHippocampus(LEDGER)
+        store = ep.store                    # un solo escritor: el del episodio
         for fam in FAMILIES:
             store.record_campaign(f"C-TICKS-{fam}", fam, "human:Nico", "agent:claude-code", 20, PREREG,
                                   "research-v2 ticks GC/ES/NQ/YM/6E 2025-08..2026-06 pre-holdout, 5-min bars")

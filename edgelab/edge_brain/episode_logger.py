@@ -40,6 +40,9 @@ def _git(repo: Path, *args: str) -> str:
 
 
 class _Episode:
+    """`ep.store` es EL escritor del ledger durante el episodio: no abrir otro DurableHippocampus sobre el mismo
+    archivo adentro del `with` (el lock de un solo escritor lo rechaza; paso el 2026-09-23 en la campana)."""
+
     def __init__(self, store: DurableHippocampus, episode_id: str, step_id: str):
         self.store, self.episode_id, self.step_id, self.notes = store, episode_id, step_id, []
 
