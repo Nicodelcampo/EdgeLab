@@ -212,9 +212,9 @@ class TestDurableHippocampus(unittest.TestCase):
             def __exit__(self, *_args):
                 return False
 
-            def write(self, text):
+            def write(self, data):
                 with open(path, "ab") as raw:
-                    raw.write(text.encode("utf-8")[:20])
+                    raw.write(data[:20])
                 raise OSError("simulated partial append")
 
         with patch.object(Path, "open", return_value=PartialWriter()):
@@ -226,8 +226,9 @@ class TestDurableHippocampus(unittest.TestCase):
         self.assertEqual(store.tip_hash, store_mod.GENESIS_HASH)
         with self.assertRaisesRegex(LedgerIntegrityError, "disabled after a failed append"):
             store.register_episode(_episode("EP-2"))
-        with self.assertRaisesRegex(LedgerIntegrityError, "invalid JSON"):
-            DurableHippocampus(path)
+        # La cola a medias se trunca al ultimo byte verificado: el ledger sigue siendo reproducible.
+        self.assertEqual(path.read_bytes(), b"")
+        self.assertEqual(DurableHippocampus(path).tip_hash, store_mod.GENESIS_HASH)
 
     def test_successful_write_preserves_supplied_memory_identity(self):
         path = Path(self._tmp())
@@ -278,3 +279,83 @@ class TestDurableHippocampus(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
+
+class TestStoreHardening20260923(unittest.TestCase):
+    """Hallazgos reproducidos en la auditoria del patch (2026-09-23)."""
+
+    def _tmp(self):
+        import tempfile
+        d = tempfile.mkdtemp()
+        return Path(d) / "ledger.jsonl"
+
+    def test_second_writer_is_detected_not_forked(self):
+        path = self._tmp()
+        a = DurableHippocampus(path); b = DurableHippocampus(path)
+        a.register_episode(_episode())
+        with self.assertRaisesRegex(LedgerIntegrityError, "changed on disk"):
+            b.register_episode(_episode("EP-2"))
+        self.assertEqual(DurableHippocampus(path).tip_hash, a.tip_hash)   # sigue siendo legible
+
+    def test_torn_tail_is_refused_at_open(self):
+        path = self._tmp()
+        DurableHippocampus(path).register_episode(_episode())
+        path.write_bytes(path.read_bytes().rstrip(b"\n"))
+        with self.assertRaisesRegex(LedgerIntegrityError, "torn"):
+            DurableHippocampus(path)
+
+    def test_keyboard_interrupt_during_write_truncates_and_poisons(self):
+        path = self._tmp()
+        store = DurableHippocampus(path)
+        store.register_episode(_episode())
+        before = path.read_bytes()
+
+        class Interrupting:
+            def __enter__(self): return self
+            def __exit__(self, *a): return False
+            def write(self, data):
+                with open(path, "ab") as raw:
+                    raw.write(data[:10])
+                raise KeyboardInterrupt
+
+        with patch.object(Path, "open", return_value=Interrupting()):
+            with self.assertRaises(KeyboardInterrupt):
+                store.record_lesson(_lesson())
+        self.assertEqual(path.read_bytes(), before)
+        with self.assertRaisesRegex(LedgerIntegrityError, "disabled"):
+            store.record_lesson(_lesson())
+
+    def test_invalidation_statuses_are_closed_and_stale_views_rejected(self):
+        path = self._tmp()
+        a = DurableHippocampus(path)
+        for bad in ("INVALIDATED", "ELIGIBLE"):
+            with self.assertRaises(ValueError):
+                a.record_invalidation("ART-1", bad)
+        with self.assertRaises(ValueError):
+            a.record_invalidation("ART-1 ", "STALE_BY_DEPENDENCY")
+        b = DurableHippocampus(path)
+        a.record_invalidation("ART-1", "INVALIDATED_BY_MEASUREMENT_ERROR")
+        with self.assertRaisesRegex(LedgerIntegrityError, "changed on disk"):
+            b.reuse_artifact("ART-1")               # antes devolvia ELIGIBLE con una vista vieja
+
+    def test_memory_does_not_alias_caller_objects(self):
+        path = self._tmp()
+        store = DurableHippocampus(path)
+        store.register_episode(_episode())
+        lesson = _lesson()
+        store.record_lesson(lesson)
+        lesson.status, lesson.confidence = "ADOPTED", "HIGH"
+        stored = store.memory.reconstruct_episode("EP-1")["lessons"][0]
+        status = stored["status"] if isinstance(stored, dict) else stored.status
+        self.assertEqual(status, "PROPOSED")
+
+    def test_retrieval_refuses_a_tampered_ledger(self):
+        from edgelab.edge_brain.retrieval import LedgerIndex
+        path = self._tmp()
+        DurableHippocampus(path).register_episode(_episode())
+        rec = json.loads(path.read_text(encoding="utf-8"))
+        rec["payload"]["goal"] = "tampered"
+        path.write_text(json.dumps(rec) + "\n", encoding="utf-8")
+        with self.assertRaisesRegex(Exception, "hash mismatch"):   # clase del paquete real, no la de _load
+            LedgerIndex.from_ledger(path)
+

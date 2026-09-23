@@ -25,6 +25,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
+import sys
+from contextlib import contextmanager
 from copy import deepcopy
 from dataclasses import asdict, is_dataclass
 from pathlib import Path
@@ -74,6 +77,38 @@ def _record_hash(record_type: str, payload: Any, prev_hash: str) -> str:
     return hashlib.sha256(body).hexdigest()
 
 
+INVALIDATION_STATUSES = frozenset({
+    "INVALIDATED_BY_MEASUREMENT_ERROR", "STALE_BY_DEPENDENCY", "REQUIRES_REAUDIT"})
+
+
+@contextmanager
+def _exclusive_lock(ledger_path: Path):
+    """Lock de SO sobre `<ledger>.lock` (un solo escritor por ledger, tambien entre procesos)."""
+    lock_path = ledger_path.with_name(ledger_path.name + ".lock")
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    fh = open(lock_path, "a+b")
+    try:
+        if sys.platform == "win32":
+            import msvcrt
+            fh.seek(0)
+            msvcrt.locking(fh.fileno(), msvcrt.LK_LOCK, 1)
+        else:
+            import fcntl
+            fcntl.flock(fh.fileno(), fcntl.LOCK_EX)
+        yield
+    finally:
+        try:
+            if sys.platform == "win32":
+                import msvcrt
+                fh.seek(0)
+                msvcrt.locking(fh.fileno(), msvcrt.LK_UNLCK, 1)
+            else:
+                import fcntl
+                fcntl.flock(fh.fileno(), fcntl.LOCK_UN)
+        finally:
+            fh.close()
+
+
 def _payload_dict(payload: Any) -> dict[str, Any]:
     if is_dataclass(payload) and not isinstance(payload, type):
         data = asdict(payload)
@@ -108,9 +143,11 @@ class DurableHippocampus:
         self.memory = deepcopy(memory) if memory is not None else HippocampusMemory()
         self._prev_hash = GENESIS_HASH
         self._poisoned = False
+        self._offset = 0          # bytes del ledger que esta instancia verifico (fin de su vista)
         self.invalidations: dict[str, str] = {}
         if self.ledger_path.exists() and self.ledger_path.stat().st_size > 0:
             self._prev_hash = self._replay_into(self.memory)
+            self._offset = self._checked_size()
         if expected_tip_hash is not None and self._prev_hash != expected_tip_hash:
             raise LedgerIntegrityError(
                 "ledger tip does not match externally trusted expected_tip_hash")
@@ -121,7 +158,26 @@ class DurableHippocampus:
 
     # -- write path -------------------------------------------------------
 
-    def _append(self, record_type: str, payload: Any) -> str:
+    def _checked_size(self) -> int:
+        """Tamano del ledger en disco; exige que termine en salto de linea (una cola cortada no se acepta)."""
+        size = self.ledger_path.stat().st_size if self.ledger_path.exists() else 0
+        if size:
+            with self.ledger_path.open("rb") as fh:
+                fh.seek(size - 1)
+                if fh.read(1) != b"\n":
+                    raise LedgerIntegrityError("ledger tail is torn (missing final newline); refuse to append")
+        return size
+
+    def _ensure_current(self) -> None:
+        """La vista de esta instancia debe coincidir con el disco: otro escritor o un truncado la invalidan."""
+        size = self.ledger_path.stat().st_size if self.ledger_path.exists() else 0
+        if size != self._offset:
+            self._poisoned = True
+            raise LedgerIntegrityError(
+                f"ledger changed on disk since this store read it ({self._offset} -> {size} bytes); reopen")
+
+    def _append(self, record_type: str, payload: Any) -> tuple[str, dict[str, Any]]:
+        """Escribe un registro bajo lock exclusivo. Devuelve (hash, payload tal como quedo en disco)."""
         if self._poisoned:
             raise LedgerIntegrityError(
                 "store disabled after a failed append; reopen and verify the ledger")
@@ -136,20 +192,29 @@ class DurableHippocampus:
             "hash": digest,
             "payload": data,
         }, ensure_ascii=False, sort_keys=True)
+        raw = (line + "\n").encode("utf-8")
         self.ledger_path.parent.mkdir(parents=True, exist_ok=True)
-        serialized_line = line + "\n"
-        try:
-            with self.ledger_path.open("a", encoding="utf-8") as fh:
-                written = fh.write(serialized_line)
-                if written != len(serialized_line):
-                    raise OSError("incomplete ledger append")
-        except OSError:
-            # An I/O exception may occur after a partial line reached disk.
-            # Do not append behind an uncertain tail; require reopen/verification.
-            self._poisoned = True
-            raise
+        with _exclusive_lock(self.ledger_path):
+            self._ensure_current()
+            try:
+                with self.ledger_path.open("ab") as fh:
+                    fh.write(raw)
+                    fh.flush()
+                    os.fsync(fh.fileno())
+            except BaseException:
+                # Cualquier interrupcion (OSError, Ctrl-C, SystemExit) puede dejar una linea a medias: se trunca de
+                # vuelta al ultimo byte verificado para que el ledger siga siendo reproducible, y el store queda
+                # envenenado hasta reabrir.
+                self._poisoned = True
+                try:
+                    with open(self.ledger_path, "r+b") as fh:
+                        fh.truncate(self._offset)
+                except Exception:
+                    pass
+                raise
+            self._offset += len(raw)
         self._prev_hash = digest
-        return digest
+        return digest, json.loads(line)["payload"]
 
     @staticmethod
     def _validate_lesson_authority(lesson) -> None:
@@ -159,19 +224,16 @@ class DurableHippocampus:
                 "durable ledger accepts only PROPOSED/LOW lessons; adjudication is separate")
 
     def _record(self, record_type: str, payload: Any, apply_to_memory) -> str:
-        """Validate a record against a shadow state before touching the ledger.
+        """Valida contra una copia del estado, escribe, y recien ahi publica en memoria.
 
-        HippocampusMemory methods enforce semantic invariants (for example,
-        episode existence and duplicate episode IDs). Validate on a copy first
-        so a rejected operation cannot leave an orphaned row in the ledger.
-        Publish the validated state only after the append succeeds.
-        """
+        Lo que se publica NO es el objeto del llamador sino el payload decodificado desde la linea escrita, por el
+        mismo camino que el replay (`_apply`). Asi memoria == replay(ledger) por construccion y un objeto que el
+        llamador modifique despues no altera la memoria (antes una leccion podia quedar ADOPTED/HIGH en memoria
+        mientras el ledger decia PROPOSED/LOW)."""
         candidate = deepcopy(self.memory)
         apply_to_memory(candidate)
-        digest = self._append(record_type, payload)
-        # Preserve the identity of a caller-supplied HippocampusMemory object.
-        self.memory.__dict__.clear()
-        self.memory.__dict__.update(candidate.__dict__)
+        digest, written = self._append(record_type, payload)
+        self._apply(self.memory, record_type, written)
         return digest
 
     def register_episode(self, episode) -> None:
@@ -214,21 +276,21 @@ class DurableHippocampus:
                      lambda memory: memory.record_repair(repair, episode_id))
 
     def record_invalidation(self, artifact_id: str, status: str) -> None:
-        """Persist an artifact invalidation status so restarts cannot forget it."""
-        if not artifact_id.strip() or not status.strip():
-            raise ValueError("artifact_id and status must be non-empty")
-        candidate = dict(self.invalidations)
-        candidate[artifact_id] = status
-        self._append("invalidation_recorded",
-                     {"artifact_id": artifact_id, "status": status})
-        self.invalidations.clear()
-        self.invalidations.update(candidate)
+        """Persiste una invalidacion. Estados cerrados: un error de tipeo o un 'ELIGIBLE' no pueden rehabilitar un
+        artefacto por esta via (la rehabilitacion requiere un registro de adjudicacion aparte, no implementado)."""
+        if not artifact_id or artifact_id != artifact_id.strip():
+            raise ValueError("artifact_id must be non-empty and without surrounding whitespace")
+        if status not in INVALIDATION_STATUSES:
+            raise ValueError(f"status must be one of {sorted(INVALIDATION_STATUSES)}, got {status!r}")
+        self._append("invalidation_recorded", {"artifact_id": artifact_id, "status": status})
+        self.invalidations[artifact_id] = status
 
     def reuse_artifact(self, artifact_id: str, context: str = "") -> dict[str, Any]:
-        """Gate artifact reuse against the *persisted* invalidation map."""
+        """Gate artifact reuse against the *persisted* invalidation map (y exige que la vista este al dia)."""
         if self._poisoned:
             raise LedgerIntegrityError(
                 "store disabled after a failed append; reopen and verify the ledger")
+        self._ensure_current()
         return self.memory.reuse_artifact(artifact_id, self.invalidations, context)
 
     # -- read path ---------------------------------------------------------
@@ -282,10 +344,15 @@ class DurableHippocampus:
             "repair_recorded": lambda: memory.record_repair(
                 h.RepairAction(**{k: v for k, v in payload.items() if k != "episode_id"}),
                 str(payload["episode_id"])),
-            "invalidation_recorded": lambda: self.invalidations.__setitem__(
-                str(payload["artifact_id"]), str(payload["status"])),
+            "invalidation_recorded": lambda: self._replay_invalidation(payload),
         }
         builders[rtype]()
+
+    def _replay_invalidation(self, payload: dict[str, Any]) -> None:
+        status = str(payload["status"])
+        if status not in INVALIDATION_STATUSES:
+            raise LedgerIntegrityError(f"ledger contains an invalidation with unknown status {status!r}")
+        self.invalidations[str(payload["artifact_id"])] = status
 
     def _replay_lesson(self, memory: HippocampusMemory, h, payload: dict[str, Any]) -> None:
         lesson = h.LessonCandidate(**payload)

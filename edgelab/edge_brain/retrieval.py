@@ -72,7 +72,10 @@ class LedgerIndex:
 
     @classmethod
     def from_ledger(cls, ledger_path: str | Path, **kwargs) -> "LedgerIndex":
+        """Indexa SOLO un ledger cuya cadena y techo de autoridad verifican (antes indexaba el JSONL crudo)."""
         import json
+        from .hippocampus_store import DurableHippocampus
+        DurableHippocampus(ledger_path)          # replay completo: LedgerIntegrityError si algo no cierra
         records = []
         with Path(ledger_path).open("r", encoding="utf-8") as fh:
             for raw in fh:
