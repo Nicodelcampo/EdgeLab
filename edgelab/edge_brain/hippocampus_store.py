@@ -223,6 +223,36 @@ class DurableHippocampus:
 
     # -- introspection -----------------------------------------------------
 
+    def render_markdown(self) -> str:
+        """Narrative projection of the ledger (CerebroSSRN parity, 2026-09-23).
+
+        The old brain's LEDGER_EXPERIMENTOS.md proved the value of a readable
+        ledger; the durable JSONL is machine-canonical, this is the human view.
+        Pure function of current memory state; deterministic ordering.
+        """
+        lines = ["# Ledger de experimentos — Hipocampo EdgeLab", ""]
+        for ep_id in sorted(self.memory.episodes):
+            rec = self.memory.reconstruct_episode(ep_id)
+            ep = rec["episode"]
+            lines.append(f"## {ep.episode_id} — {ep.status}")
+            lines.append("")
+            lines.append(f"**Goal**: {ep.goal}")
+            for f in rec["failures"]:
+                lines.append(f"- ❌ **{f.error_type}**: {f.description} (root: {f.root_cause})")
+            for s in rec["successes"]:
+                lines.append(f"- ✅ {s.description}")
+            for l in rec["lessons"]:
+                lines.append(
+                    f"- 📘 **{l.lesson_id}** [{l.status}/{l.confidence}/{l.robustness}] {l.statement}")
+            lines.append("")
+        for target in sorted(self.memory.counterexamples):
+            lines.append(f"## Contraejemplos — {target}")
+            lines.append("")
+            for cx in self.memory.counterexamples[target]:
+                lines.append(f"- **{cx.counterexample_id}** ({cx.status}): {cx.observed_behavior} — {cx.why_it_violates} [{cx.evidence_ref}]")
+            lines.append("")
+        return "\n".join(lines).rstrip() + "\n"
+
     @property
     def tip_hash(self) -> str:
         """SHA-256 tip of the verified chain; genesis when empty."""
