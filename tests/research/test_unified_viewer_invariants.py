@@ -184,7 +184,7 @@ def test_marcadores_provisionales_de_iceberg_y_spoofing():
     assert "function drawManipulationMarkers" in HTML
     assert "drawManipulationMarkers(ctx, vr, w, hCanvas);" in HTML
     assert "manip.icebergs" in HTML and "manip.spoofs" in HTML
-    assert "ICEBERG?" in HTML and "SPOOF?" in HTML                 # el signo de pregunta deja explicito que es heuristica
+    assert "ICEBERG?" in HTML and "FUGAZ" in HTML                  # heuristicas; "spoof" se renombro a liquidez fugaz tras su nulo (2026-09-23)
     assert 'id="chk-show-l2-icebergs"' in HTML and 'id="chk-show-l2-spoofs"' in HTML
 
 

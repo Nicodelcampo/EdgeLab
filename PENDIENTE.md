@@ -2409,7 +2409,7 @@ Falta una fuente **independiente**. Pedido: cotizar 1 día de GC con MBP-10 + `t
 
 ## P-77 — Latencia real de EdgeLab: MEDIDA (2026-09-23)
 
-**2026-09-23.** `nt8/EdgeLabLatencyProbe.cs` está corriendo en la cuenta demo DEMO9294975 (servidor de simulación de NinjaTrader, no Sim101). Primera sonda: 570 ms del envío hasta *Working* y ~220 ms para cancelar. Pendiente: distribución de ~1 h (p50/p90/p99) y recálculo de los umbrales de `L2_FASE0_RESULTADOS_20260923.md` §3–§4 con el p90 medido. Es un **piso** de la latencia real: no incluye el tramo broker→CME.
+**2026-09-23.** `nt8_tools/EdgeLabLatencyProbe.cs` está corriendo en la cuenta demo DEMO9294975 (servidor de simulación de NinjaTrader, no Sim101). Primera sonda: 570 ms del envío hasta *Working* y ~220 ms para cancelar. Pendiente: distribución de ~1 h (p50/p90/p99) y recálculo de los umbrales de `L2_FASE0_RESULTADOS_20260923.md` §3–§4 con el p90 medido. Es un **piso** de la latencia real: no incluye el tramo broker→CME.
 
 ## P-78 — Fase 0 L2 GC pre-holdout (target-free): medida
 
