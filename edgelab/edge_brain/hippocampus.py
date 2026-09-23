@@ -103,6 +103,11 @@ class LessonCandidate:
     status: str = "PROPOSED"
     scope: str = "METHODOLOGICAL"
     created_at_utc: str = ""
+    # CerebroSSRN parity (EDGE-006, 2026-09-23): the old brain declared the
+    # robustness of every finding; lessons without it read as established fact.
+    # Defaults keep v1 ledger payloads replayable unchanged.
+    robustness: str = "UNRATED"
+    conditions: list[str] = field(default_factory=list)
 
 
 @dataclass
