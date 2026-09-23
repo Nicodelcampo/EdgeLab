@@ -168,3 +168,11 @@ Consecuencia: no afecta la señal causal del roll del 16-jun, que usa D-1. Sí a
 - Absorción: **1,41×** su nulo (tamaños permutados), IC [1,36; 1,47].
 - "Spoof": **0,79×**; el 79 % aparece igual sin el vínculo con los trades. **Se renombra "Liquidez fugaz"** en el visor.
 - Además, P-75 quedó resuelta: resincronización del borde con tope de 0,1 %.
+
+**2026-09-23 (L2 Fase 2, pre-registrada, GC 08-26 pre-holdout): el libro no agrega información direccional.**
+- En las 6 pruebas (30, 60 y 300 s; canal direccional y no direccional), ΔIC(M1−M0) no rechaza H0.
+- A 30 s el libro **empeora** (−0,024, IC [−0,038; −0,010]).
+- A 60 s el nulo es informativo (IC [−0,014; 0,011], MDE 0,011). A 300 s tiene poca potencia (MDE 0,040).
+- Con latencia 0 ms da igual que con 250 o 500 ms, así que no es un problema de latencia.
+- **Veredicto con alcance:** se cierra "predicción direccional con el libro" para GC 08-26, mayo–junio 2026, feed NT8. El L2 queda para costos, ejecución y contexto.
+- Acta: `docs/research/L2_FASE2_RESULTADOS_20260923.md`.

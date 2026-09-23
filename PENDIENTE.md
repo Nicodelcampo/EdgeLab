@@ -2435,3 +2435,14 @@ Pendiente: nulos de detectores (en curso) y una segunda réplica en 6E (que tien
 - Primero se probó una versión más estrecha (borrar solo si el precio coincide) y se descartó: solo tapaba el primer síntoma.
 
 **P-76:** queda como pregunta abierta y declarada. Los costos de `L2_FASE0_RESULTADOS_20260923.md` valen para el feed NT8. Las dos vías de NT8 coinciden (spread de 3–4 ticks), lo que es plausible como mercado pero no está confirmado de forma independiente.
+
+## P-79 — L2 Fase 2 cerrada con nulo (GC 08-26); próximos pre-registros posibles: M3 (filtro) y M4 (ejecución)
+
+**2026-09-23.** Pre-registro `aa080a1`, resultado en `docs/research/L2_FASE2_RESULTADOS_20260923.md`. Ninguna de las 6 pruebas rechaza; el libro no agrega información sobre el mid a 30–300 s ni sin latencia.
+
+Decisión de Nico para el paso siguiente:
+- (a) Pre-registrar **M3**: L2 como filtro de una o dos familias vivas (aVolClusterPOI, "vela extrema → carrera asimétrica").
+- (b) Pre-registrar **M4**: ejecución pasiva o agresiva según desequilibrio de cola, con cola pesimista.
+- (c) Detectores con umbral causal, usados como estado en el canal no direccional.
+
+Pendiente también: registrar el contraejemplo en el Edge Brain, cuando la rama del store endurecido esté integrada.
