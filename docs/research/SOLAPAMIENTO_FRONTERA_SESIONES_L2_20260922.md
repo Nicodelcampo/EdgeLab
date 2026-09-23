@@ -1,5 +1,7 @@
 # Solapamiento de reloj en la frontera entre sesiones L2 diarias — causa raíz medida
 
+> **RETRACTADO 2026-09-23.** La causa raiz de este documento es FALSA: el solapamiento lo fabricaba un bug del conversor (fraccion de segundo de NT8 en ticks de 100 ns sumada como microsegundos, x10). Ver `docs/research/L2_VISOR_RESOLUCION_20260923.md` S2. Se conserva el texto original abajo como registro.
+
 - **Fecha:** 2026-09-22
 - **Alcance:** target-free. Solo integridad estructural del reloj entre archivos consecutivos. Sin outcomes, sin P&L.
 - **Dispara desde:** `tools/validate_l2_session_boundaries.py`, corrido contra las 7 sesiones reales de GC 12-26 (`E:\l2_parquet\GC_12-26`) y contra la frontera `20260701→20260702` de GC 08-26 (hallazgo previo, `docs/CURRENT.md`).

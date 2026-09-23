@@ -88,3 +88,23 @@ def test_validate_price_roundtrip_con_dataframe_vacio_no_rompe():
     df = pd.DataFrame({"price": pd.Series(dtype="float64"), "price_tick": pd.Series(dtype="int32")})
     rt = _validate_price_roundtrip(df, TICK)
     assert rt == dict(tolerance=PRICE_ROUNDTRIP_TOLERANCE, max_error=0.0, violations=0, rows_checked=0)
+
+
+def test_subsecond_field_in_100ns_ticks_is_divided_by_ten(tmp_path):
+    """NT8 escribe la fraccion en ticks de 100 ns; sumarla como us la multiplicaba x10 (bug 2026-09-23)."""
+    from edgelab.data.l2 import SUBSEC_100NS, parse_l2_raw_csv
+    csv = tmp_path / "20260609.csv"
+    csv.write_text("L2;0;20260609010001;1960000;0;0;;3400.1;2\n"
+                   "L1;1;20260609010001;2000000;3400.0;1\n", encoding="utf-8")
+    l2, l1 = parse_l2_raw_csv(csv, tick_size=0.1)
+    assert int(l2["ts_us"].iloc[0] % 1_000_000) == 196_000
+    assert int(l1["ts_us"].iloc[0] % 1_000_000) == 200_000
+    assert l2.attrs["subsecond_unit"] == SUBSEC_100NS
+
+
+def test_microsecond_field_is_kept(tmp_path):
+    from edgelab.data.l2 import SUBSEC_US, parse_l2_raw_csv
+    csv = tmp_path / "20260609.csv"
+    csv.write_text("L2;0;20260609010001;196000;0;0;;3400.1;2\n", encoding="utf-8")
+    l2, _ = parse_l2_raw_csv(csv, tick_size=0.1)
+    assert int(l2["ts_us"].iloc[0] % 1_000_000) == 196_000 and l2.attrs["subsecond_unit"] == SUBSEC_US

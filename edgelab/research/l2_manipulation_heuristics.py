@@ -236,3 +236,57 @@ class SpoofTracker:
 
     def candidates(self) -> list[dict]:
         return list(self._out)
+
+
+@dataclass
+class AbsorptionTracker:
+    """ABSORCIÓN (candidato, PROVISIONAL). En una ventana fija de `window_us`, mucho volumen agresivo ATRIBUIDO
+    golpea un mismo precio y el precio NO lo atraviesa dentro de esa misma ventana: compras agresivas en P sin
+    ningún trade por encima de P (vendedores pasivos absorbieron), o ventas agresivas en P sin ningún trade por
+    debajo (compradores pasivos absorbieron). "Mucho" = percentil `pctl` del volumen por (ventana, lado, precio)
+    de la sesión (escala de sesión, igual que `size_tiers`; declarada en `scale_scope`).
+
+    Target-free y causal dentro de la ventana: sólo usa trades de la ventana, y el candidato queda disponible
+    al CIERRE de la ventana (`available_ts_us`). No mira qué pasa después. Distinto de ICEBERG: no exige ver
+    reposiciones del libro, sólo que el precio aguantó el flujo. Mismas limitaciones MBP + clasificación de
+    agresor heurística: `status="HEURISTIC_UNVALIDATED"`. Volumen neutral: nunca se acredita (queda aparte)."""
+    window_us: int = 10_000_000
+    pctl: float = 99.0
+    min_trades: int = 3
+    _cells: dict = field(default_factory=dict)      # (win, side, tick) -> [vol, n, first_ts, last_ts]
+    _range: dict = field(default_factory=dict)      # win -> [min_tick, max_tick]
+    _ambiguous: dict = field(default_factory=dict)  # (win, tick) -> vol neutral
+
+    def on_trade(self, tick: int, ts_us: int, size: float, aggressor: int) -> None:
+        win = ts_us // self.window_us
+        r = self._range.setdefault(win, [tick, tick])
+        r[0] = min(r[0], tick); r[1] = max(r[1], tick)
+        if aggressor == 0:
+            self._ambiguous[(win, tick)] = self._ambiguous.get((win, tick), 0.0) + size
+            return
+        side = ASK if aggressor > 0 else BID           # compra agresiva consume el ASK; venta, el BID
+        c = self._cells.setdefault((win, side, tick), [0.0, 0, ts_us, ts_us])
+        c[0] += size; c[1] += 1; c[3] = ts_us
+
+    def candidates(self) -> list[dict]:
+        if not self._cells:
+            return []
+        thr = float(np.percentile([c[0] for c in self._cells.values()], self.pctl))
+        out = []
+        for (win, side, tick), (vol, n, t0, t1) in self._cells.items():
+            if vol < thr or n < self.min_trades:
+                continue
+            lo, hi = self._range[win]
+            held = hi <= tick if side == ASK else lo >= tick
+            if not held:
+                continue
+            out.append(dict(
+                candidate_id=_candidate_id("ABS", side, tick, win * self.window_us),
+                side=side, tick=tick, window_start_ts_us=win * self.window_us,
+                available_ts_us=(win + 1) * self.window_us, first_trade_ts_us=t0, last_trade_ts_us=t1,
+                attributed_volume=vol, trade_count=n, ambiguous_volume=self._ambiguous.get((win, tick), 0.0),
+                volume_threshold=thr, threshold_pctl=self.pctl, scale_scope="SESSION",
+                window_us=self.window_us, window_price_range_ticks=[lo, hi],
+                provenance="edgelab.research.l2_manipulation_heuristics.AbsorptionTracker",
+                status="HEURISTIC_UNVALIDATED"))
+        return out

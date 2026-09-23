@@ -75,12 +75,13 @@ if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
 from edgelab.research.l2_manipulation_heuristics import (  # noqa: E402
-    IcebergTracker, SpoofTracker, large_size_thresholds)
+    AbsorptionTracker, IcebergTracker, SpoofTracker, large_size_thresholds)
 
 LAST_SIDE, ASK, BID = 2, 0, 1
 CUTOFF_DATE = 20260630
 PRICE_PRECISION = {"GC": 1, "6E": 5, "ES": 2, "NQ": 2}
-CANDLE_BUCKETS = {"time_5s": 5, "time_1m": 60}
+CANDLE_BUCKETS = {"time_5s": 5, "time_15s": 15, "time_30s": 30, "time_1m": 60}
+DEFAULT_BAR_KEY = "time_15s"   # ver docs/research/L2_VISOR_RESOLUCION_20260923.md
 CROSSED_RATIO_ABSTAIN = 0.01    # >1% de eventos con libro cruzado degrada la certificacion (ver BookStatus)
 
 # Reloj resuelto POR INSTRUMENTO -- no generalizar de uno a otro sin medir (cada uno tiene su propia conversion
@@ -94,6 +95,8 @@ WALL_CLOCK_RESOLVED_TZ = {
            "docs/research/RESOLUCION_RELOJ_GC_L2_20260922.md"),
     "ES": ("America/Argentina/Buenos_Aires (ART, UTC-3) -- resuelto 2026-08-21, ver "
            "docs/research/INTAKE_L2_ES_NRD_2026-08-21.md S5.1"),
+    "6E": ("America/Argentina/Buenos_Aires (ART, UTC-3) -- resuelto 2026-09-23, ver "
+           "docs/research/L2_VISOR_RESOLUCION_20260923.md S1"),
 }
 
 
@@ -237,6 +240,7 @@ def build(l1_path: Path, l2_path: Path, snap_seconds: int, tick_size: float, *,
     spf_kwargs.update(spoof_kwargs or {})
     iceberg = IcebergTracker(**ice_kwargs)
     spoof = SpoofTracker(thresholds, **spf_kwargs)
+    absorption = AbsorptionTracker()
 
     def check_quote(j):
         book = bids if l1_side[j] == BID else asks
@@ -285,6 +289,7 @@ def build(l1_path: Path, l2_path: Path, snap_seconds: int, tick_size: float, *,
             cell["method_" + method + "_volume"] += sz
             iceberg.on_trade(tk, tsj_us, sz, d)
             spoof.on_trade(tk, tsj_us, sz, d)
+            absorption.on_trade(tk, tsj_us, sz, d)
             return j + 1, pend, tk
         if l1_side[j] in (ASK, BID):
             if pend is not None:                # la L1 llega ANTES de las filas L2 que la producen: se evalua
@@ -388,11 +393,13 @@ def build(l1_path: Path, l2_path: Path, snap_seconds: int, tick_size: float, *,
             out.append(c)
         return out
 
-    _all_ice = iceberg.candidates(); _all_spf = spoof.candidates()
+    _all_ice = iceberg.candidates(); _all_spf = spoof.candidates(); _all_abs = absorption.candidates()
+    absorptions = sorted(_all_abs, key=lambda c: -c["attributed_volume"])[:300]
     icebergs = sorted(_all_ice, key=lambda c: -c["refill_count"])[:300]
     spoofs = sorted(_all_spf, key=lambda c: c["fill_ratio"])[:300]
     manipulation = dict(
-        icebergs=to_price(icebergs), spoofs=to_price(spoofs),
+        icebergs=to_price(icebergs), spoofs=to_price(spoofs), absorptions=to_price(absorptions),
+        raw_absorption_count=len(_all_abs),
         large_size_threshold_ask=thresholds[ASK], large_size_threshold_bid=thresholds[BID],
         raw_iceberg_count=len(_all_ice), raw_spoof_count=len(_all_spf), neutral_policy=neutral_policy,
         method="PROVISIONAL_HEURISTIC_UNVALIDATED_NO_ORDER_ID (ver edgelab/research/l2_manipulation_heuristics.py)")
@@ -409,7 +416,7 @@ def register(out_dir: Path, bundle: dict) -> bool:
     txt = mf.read_text(encoding="utf-8")
     cat = json.loads(txt[txt.index("["):txt.rindex("]") + 1])
     m = bundle["meta"]
-    entry = dict(id=m["id"], name=f"{m['contract']}", group=f"Profundidad L2 {m['instrument']}", instrument=m["instrument"],
+    entry = dict(id=m["id"], name=f"{m['contract']}", group=m.get("group") or f"Profundidad L2 {m['instrument']}", instrument=m["instrument"],
                  contract=m["contract"], tick_size=m["tick_size"], precision=m["precision"], candles=m["n_candles"],
                  zones=0, rolls=0, parity_status="PARITY_ABSTAIN", kind=m["kind"], book_status=m.get("book_status"))
     cat = [e for e in cat if e.get("id") != entry["id"]] + [entry]
@@ -427,10 +434,15 @@ def main(argv=None) -> int:
     ap.add_argument("--neutral-policy", default="abstain", choices=("abstain", "distribute", "credit_both_exploratory"))
     ap.add_argument("--exploratory", action="store_true",
                     help="no abortar ante libro invalido/cruzado/con inversion de reloj: seguir, marcando el bundle")
+    ap.add_argument("--holdout-view-only", action="store_true",
+                    help="admitir sesiones del holdout SOLO para el visor (target-free); el bundle queda marcado")
+    ap.add_argument("--group", default=None, help="grupo del selector del visor (default: 'Profundidad L2 <inst>')")
     ap.add_argument("--out", type=Path, required=True)
     a = ap.parse_args(argv)
-    if int(a.date) >= CUTOFF_DATE:
-        raise SystemExit(f"sesion {a.date} >= {CUTOFF_DATE}: fuera del limite pre-holdout (el reloj L2 no esta resuelto)")
+    holdout_view = int(a.date) >= CUTOFF_DATE
+    if holdout_view and not a.holdout_view_only:
+        raise SystemExit(f"sesion {a.date} >= {CUTOFF_DATE}: holdout. Solo se admite como dato de VISOR (target-free, "
+                         f"NORTH_STAR: 'Permitido solo para ... visor'); pasar --holdout-view-only para marcarlo asi")
     man = json.loads((a.base / "manifests" / f"{a.date}.manifest.json").read_text(encoding="utf-8"))
     tick_size = float(man["conversion"]["tick_size"])
     try:
@@ -440,7 +452,7 @@ def main(argv=None) -> int:
     except BookAbstain as e:
         raise SystemExit(f"libro NO certificable, build abortado (pasar --exploratory para continuar de todos modos): {e}")
     aid = f"{a.instrument}_L2_{a.date}"
-    n_candles = len(bar_series["time_5s"])
+    n_candles = len(bar_series[DEFAULT_BAR_KEY])
     chart_tz, clock_status = _clock_meta(a.instrument)
     bundle = {
         "meta": dict(id=aid, instrument=a.instrument, contract=f"{a.contract} L2 {a.date}", tick_size=tick_size,
@@ -448,15 +460,19 @@ def main(argv=None) -> int:
                      chart_tz=chart_tz,
                      n_candles=n_candles, n_zones=0, rolls=[], kind="L2_DEPTH_SESSION",
                      clock=clock_status, outcome_firewall="ENFORCED",
+                     holdout_view_only=holdout_view, group=a.group,
                      source=dict(l1=str(a.base / "l1_quotes" / f"{a.date}.parquet"), l2=str(a.base / "l2_depth" / f"{a.date}.parquet")),
                      book_validation=val, trade_classification=trclass, book_status=val["book_status"],
                      exploratory_mode=a.exploratory, manipulation_summary=dict(
-                         icebergs=len(manip["icebergs"]), spoofs=len(manip["spoofs"])), **info),
+                         icebergs=len(manip["icebergs"]), spoofs=len(manip["spoofs"]),
+                         absorptions=len(manip["absorptions"])), **info),
         "bar_series": {
             "time_5s": {"kind": "time_5s", "name": "5 Segundos (trades L1 del feed L2)", "param": 5, "candles": bar_series["time_5s"]},
+            "time_15s": {"kind": "time_15s", "name": "15 Segundos (trades L1 del feed L2)", "param": 15, "candles": bar_series["time_15s"]},
+            "time_30s": {"kind": "time_30s", "name": "30 Segundos (trades L1 del feed L2)", "param": 30, "candles": bar_series["time_30s"]},
             "time_1m": {"kind": "time_1m", "name": "1 Minuto (trades L1 del feed L2)", "param": 1, "candles": bar_series["time_1m"]},
         },
-        "runs": [{"id": "l2_depth_stub", "name": "Profundidad L2 (sin zonas)", "indicator": "L2Depth", "bar_key": "time_5s",
+        "runs": [{"id": "l2_depth_stub", "name": "Profundidad L2 (sin zonas)", "indicator": "L2Depth", "bar_key": DEFAULT_BAR_KEY,
                   "has_oracle": False, "zones": [], "parity": {"status": "PARITY_ABSTAIN", "gate": "PARITY_ABSTAIN"}, "params": {}}],
         "l2": l2b,
         "trades": trades,

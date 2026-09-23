@@ -93,13 +93,42 @@ def _a_microsegundos(serie_ts_str, serie_usec):
     return us
 
 
+SUBSEC_US, SUBSEC_100NS = "microseconds", "100ns_ticks"
+
+
+def _detect_subsecond_unit(fields: np.ndarray) -> str:
+    """Unidad de la columna de fraccion de segundo del CSV de NT8.
+
+    BUG QUE ESTO ARREGLA (2026-09-23; ya corregido el 2026-08-25 en `b3b2a43b`, rama
+    `work/futures-l2-context-foundation-20260825`, que nunca se integro a esta linea). NT8
+    (`MarketReplay.DumpMarketDepth`, la misma llamada que usan NRDToCSV y el Replay Downloader)
+    escribe la fraccion en TICKS de .NET = 100 ns (7 digitos, 0..9.999.999). Sumarla como
+    microsegundos multiplica la fraccion por 10: hasta +9,99 s de error y decenas de miles de
+    inversiones de reloj por sesion. Medido en GC 08-26 20260625: 7.183.327 filas, 0 inversiones
+    con /10, error de hasta 8,964 s sin /10.
+
+    Regla: si algun valor supera 999.999 la columna NO puede ser microsegundos -> 100 ns. Si
+    ninguno lo supera se asume microsegundos (formato de los fixtures y de conversores viejos). La
+    unidad detectada queda escrita en el manifest (`conversion.subsecond_unit`)."""
+    if len(fields) == 0:
+        return SUBSEC_US
+    mx = int(np.max(fields))
+    if mx > 9_999_999 or int(np.min(fields)) < 0:
+        raise ValueError(f"fraccion de segundo fuera de rango para cualquier unidad conocida: [{int(np.min(fields))}, {mx}]")
+    return SUBSEC_100NS if mx > 999_999 else SUBSEC_US
+
+
 def parse_l2_raw_csv(csv_path: str | Path, tick_size: float = 0.00005) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Parse raw CSV into (df_l2_depth, df_l1_quotes)."""
+    """Parse raw CSV into (df_l2_depth, df_l1_quotes). La unidad de la fraccion de segundo se detecta sobre
+    L1+L2 juntos (ver `_detect_subsecond_unit`) y queda en `df.attrs["subsecond_unit"]`."""
     csv_path = Path(csv_path)
     df_raw = pd.read_csv(csv_path, sep=";", header=None, names=list(range(9)), low_memory=False)
     # Indice de linea del CSV ORIGINAL, antes de separar L1 de L2: preserva el orden
     # dentro del mismo microsegundo Y el intercalado entre los dos flujos.
     df_raw["source_row"] = np.arange(len(df_raw), dtype=np.int64)
+    m_any = df_raw[0].isin(["L1", "L2"])
+    unit = _detect_subsecond_unit(df_raw.loc[m_any, 3].astype(np.int64).to_numpy())
+    div = 10 if unit == SUBSEC_100NS else 1
 
     # 1. L2 Depth Book updates
     m_l2 = df_raw[0] == "L2"
@@ -112,7 +141,7 @@ def parse_l2_raw_csv(csv_path: str | Path, tick_size: float = 0.00005) -> tuple[
     df_l2["price"] = df_l2["price"].astype(np.float64)
     df_l2["size"] = df_l2["size"].astype(np.int32)
     
-    df_l2["ts_us"] = _a_microsegundos(df_l2["ts_str"], df_l2["usec"])
+    df_l2["ts_us"] = _a_microsegundos(df_l2["ts_str"], df_l2["usec"].astype(np.int64) // div)
     df_l2["price_tick"] = np.round(df_l2["price"] / tick_size).astype(np.int32)
     df_l2.drop(columns=["ts_str", "usec"], inplace=True)
     
@@ -124,11 +153,19 @@ def parse_l2_raw_csv(csv_path: str | Path, tick_size: float = 0.00005) -> tuple[
     df_l1["price"] = df_l1["price"].astype(np.float64)
     df_l1["size"] = df_l1["size"].astype(np.int32)
     
-    df_l1["ts_us"] = _a_microsegundos(df_l1["ts_str"], df_l1["usec"])
+    df_l1["ts_us"] = _a_microsegundos(df_l1["ts_str"], df_l1["usec"].astype(np.int64) // div)
     df_l1["price_tick"] = np.round(df_l1["price"] / tick_size).astype(np.int32)
     df_l1.drop(columns=["ts_str", "usec"], inplace=True)
-    
+    df_l2.attrs["subsecond_unit"] = df_l1.attrs["subsecond_unit"] = unit
     return df_l2, df_l1
+
+
+def _clock_inversions(df: pd.DataFrame) -> int:
+    """Eventos cuyo ts_us es menor que el del evento anterior en orden de `source_row`."""
+    if len(df) < 2:
+        return 0
+    ts = df.sort_values("source_row", kind="stable")["ts_us"].to_numpy()
+    return int(np.sum(np.diff(ts) < 0))
 
 
 class PriceRoundtripError(Exception):
@@ -179,6 +216,8 @@ def convert_l2_session(csv_path: str | Path, out_dir: str | Path, tick_size: flo
     dir_man.mkdir(parents=True, exist_ok=True)
 
     df_l2, df_l1 = parse_l2_raw_csv(csv_path, tick_size=tick_size)
+    subsecond_unit = df_l2.attrs.get("subsecond_unit")
+    inversions = dict(l2=_clock_inversions(df_l2), l1=_clock_inversions(df_l1))
 
     rt_l2 = _validate_price_roundtrip(df_l2, tick_size)
     rt_l1 = _validate_price_roundtrip(df_l1, tick_size)
@@ -202,11 +241,12 @@ def convert_l2_session(csv_path: str | Path, out_dir: str | Path, tick_size: flo
     pq.write_table(t_l1, p_l1, compression="zstd", compression_level=7)
 
     manifest = dict(
-        schema=L2_SCHEMA, manifest_schema="edgelab_l2_conversion_manifest_v3", session_name=session_name,
+        schema=L2_SCHEMA, manifest_schema="edgelab_l2_conversion_manifest_v4", session_name=session_name,
         created_at_utc=datetime.now(timezone.utc).isoformat(),
         source=dict(path=str(csv_path), bytes=csv_path.stat().st_size, sha256=_sha256_file(csv_path)),
         conversion=dict(
             tick_size=tick_size, tick_size_repr=repr(tick_size),
+            subsecond_unit=subsecond_unit, clock_inversions_in_source_order=inversions,
             rounding_policy="numpy.round (round-half-to-even) sobre price/tick_size -> price_tick int32",
             price_roundtrip=dict(
                 tolerance=PRICE_ROUNDTRIP_TOLERANCE,
