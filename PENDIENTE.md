@@ -2376,3 +2376,47 @@ misma optimización de dispersión que se hizo en el `.cs` (verificada idéntica
 - Prerregistrar el protocolo de monetización amplia (TP dinámico en EMA 200 vs ratio fijo R:R) con modelado de comisiones CME ($0.75 pt/trade).
 - Mantener la partición de Holdout (`2026-07-01 -> 2026-12-31`) 100% sellada.
 
+
+## P-74 — Enmienda de holdout para usar L2 jul–sep: SUSPENDIDA por regla 95 (decide Nico)
+
+**2026-09-23.** Nico aprobó correr el sello al 2026-10-01 para usar el L2 de julio a septiembre en descubrimiento. Al revisar el código **antes de aplicarlo**, la propuesta resultó ser exactamente INC-006: la regla 95 del NORTH_STAR establece que "la frontera es un sello, no un cursor", y `holdout_guard._resolver_frontera` toma `min(sello, declarada)` para que sea imposible atrasarla. **No se tocó nada.**
+
+Alternativa que respeta la regla:
+- El sello queda igual.
+- El L2 se acumula mes a mes, y desde 2027 es dato de descubrimiento.
+- El L2 de julio a diciembre de 2026 queda como examen.
+- Hoy ya hay L2 pre-holdout usable: 29 sesiones de GC 08-26 (ver P-78).
+
+Si Nico igual quiere correr el sello, es una edición constitucional del NORTH_STAR (cambia el hash) y se decide como tal, no como parámetro.
+
+## P-75 — DELETE del nivel 10 sobre un lado con menos de 11 niveles (decide Nico)
+
+**2026-09-23.** NT8 manda `DELETE level=10` cuando el lado reconstruido tiene 10 niveles (índices 0–9). Pasa 1 vez cada ~3,8 M eventos, al abrir la sesión, cuando el libro está incompleto. `tools/build_l2_viewer_bundle.py` (fail-closed) aborta la sesión entera, y `l2_phase0` la marca defectuosa (GC 08-26 20260611).
+
+- **Opción A:** aceptarlo solo si el precio coincide con el último nivel reconstruido, y contarlo aparte.
+- **Opción B:** mantener el aborto y construir en modo `--exploratory` marcado.
+
+Es un cambio de cómo se valida, así que no se toca sin OK. Detalle: `docs/research/L2_VISOR_RESOLUCION_20260923.md` §S3.
+
+## P-76 — Paridad del feed NT8 contra Databento (decide Nico: cotización y licencia)
+
+**2026-09-23.** En este feed, GC 08-26 muestra spread mediano de ~4 ticks y ~1,5–2 contratos en el mejor nivel. Las dos vías de NT8 coinciden: L2 replay y ticks `.Last` dan spread p50 de 3–4 ticks en junio, y los conteos de trades concuerdan (93.051 contra 92.515 el 15/06). Es plausible como mercado: 4 ticks de 0,1 sobre USD 4.300 es menos de 1 bp.
+
+Falta una fuente **independiente**. Pedido: cotizar 1 día de GC con MBP-10 + `trades` (tag 5797 = agresor nativo) en Databento y leer la licencia. Resuelve tres cosas:
+1. La fidelidad del libro.
+2. La verdad del agresor (P-78: los ticks `.Last` tienen agresor **inferido** por regla de cotización, no nativo).
+3. El test de paridad de features.
+
+## P-77 — Latencia real de EdgeLab
+
+**2026-09-23.** `nt8/EdgeLabLatencyProbe.cs` está corriendo en la cuenta demo DEMO9294975 (servidor de simulación de NinjaTrader, no Sim101). Primera sonda: 570 ms del envío hasta *Working* y ~220 ms para cancelar. Pendiente: distribución de ~1 h (p50/p90/p99) y recálculo de los umbrales de `L2_FASE0_RESULTADOS_20260923.md` §3–§4 con el p90 medido. Es un **piso** de la latencia real: no incluye el tramo broker→CME.
+
+## P-78 — Fase 0 L2 GC pre-holdout (target-free): medida
+
+**2026-09-23.** Acta: `docs/research/L2_FASE0_RESULTADOS_20260923.md`.
+- 29/30 sesiones usables de GC 08-26.
+- A 60 s, apostar la dirección requiere acertar el 65–83 % (descartado).
+- A 300 s requiere 56–62 %.
+- El mid cambia 2 veces en 0,14–0,8 s, así que ese horizonte está fuera de alcance.
+
+Pendiente: nulos de detectores (en curso) y una segunda réplica en 6E (que tiene pocas sesiones pre-holdout).
