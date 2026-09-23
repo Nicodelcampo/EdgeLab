@@ -60,7 +60,7 @@ Mediana del |Δmid| a 60 s y a 300 s, en ticks, contra un costo round-trip = spr
 
 - **0.5** Consistencia del agresor: queda **vacía de contenido**. El agresor de los ticks `.Last` es la misma regla de cotización (verificado en 2.804.464 ticks), así que compararlos da acuerdo por construcción. Pendiente útil: la sensibilidad de delta/OFI a signos invertidos. La verdad de referencia requiere tag 5797 (P-76).
 - ~~0.6 Nulos de los detectores~~ → hecho, ver §6. Pendiente: absorción reformulada como residual de impacto.
-- **Latencia real:** parcial, 44 sondas en la cuenta demo DEMO9294975: envío→*Working* p50 227 ms, p90 234 ms; cancelación p50 223 ms. Coincide con los 250 ms supuestos, así que §3 y §4 se sostienen. Falta la hora completa (P-77).
+- **Latencia real:** parcial, 44 sondas en la cuenta demo DEMO9294975: envío→*Working* p50 227 ms, p90 234 ms; cancelación p50 223 ms. Completado: 200 sondas, p50 229 ms, p90 244 ms, p99 468 ms (P-77 cerrada). §3 y §4 se sostienen.
 
 ## Cómo podría refutarse
 

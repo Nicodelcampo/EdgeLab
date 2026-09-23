@@ -2407,7 +2407,7 @@ Falta una fuente **independiente**. Pedido: cotizar 1 día de GC con MBP-10 + `t
 2. La verdad del agresor (P-78: los ticks `.Last` tienen agresor **inferido** por regla de cotización, no nativo).
 3. El test de paridad de features.
 
-## P-77 — Latencia real de EdgeLab
+## P-77 — Latencia real de EdgeLab: MEDIDA (2026-09-23)
 
 **2026-09-23.** `nt8/EdgeLabLatencyProbe.cs` está corriendo en la cuenta demo DEMO9294975 (servidor de simulación de NinjaTrader, no Sim101). Primera sonda: 570 ms del envío hasta *Working* y ~220 ms para cancelar. Pendiente: distribución de ~1 h (p50/p90/p99) y recálculo de los umbrales de `L2_FASE0_RESULTADOS_20260923.md` §3–§4 con el p90 medido. Es un **piso** de la latencia real: no incluye el tramo broker→CME.
 
@@ -2446,3 +2446,31 @@ Decisión de Nico para el paso siguiente:
 - (c) Detectores con umbral causal, usados como estado en el canal no direccional.
 
 Pendiente también: registrar el contraejemplo en el Edge Brain, cuando la rama del store endurecido esté integrada.
+
+**Resolución P-77:**
+- **Muestra:** 200 sondas en la cuenta demo DEMO9294975 (servidor de simulación de NinjaTrader), entre las 16:58 y las 18:1x UTC.
+- **Envío→*Working*:** p50 **229 ms**, p90 **244 ms**, p99 468 ms, máximo 570 ms (la primera sonda, con la conexión en frío).
+- **Cancelación:** p50 230 ms, p90 265 ms.
+- **Seguridad:** 0 ejecuciones inesperadas.
+- **Alcance:** es un **piso** de la latencia real, porque no incluye el tramo broker→CME.
+- **Atraso del feed:** no sirve como valor absoluto; el reloj de la PC está desfasado entre −109 y +135 ms respecto del dato.
+- **Uso:** L = 250 ms (Fase 0/2) queda validado como el p90 medido. El horizonte mínimo con sentido es 3 × p90 ≈ 0,75 s.
+- **Pendiente menor:** medir en la apertura de NY y de noche, cuando se pueda.
+
+## P-80 — Rutina de descarga L2 mensual (NT8 solo sirve 90 días)
+
+Cada ~30 días, con el Replay Downloader **V5** (convierte solo a parquet día por día):
+
+| Campo | Valor |
+|---|---|
+| Exact contracts | los principales del momento (hoy `GC 12-26;6E 12-26`; sumar `ES 12-26;NQ 12-26`) |
+| From | el día siguiente al último descargado |
+| To | ayer |
+| CSV / Parquet / repo / Python | `E:\gcl2` / `E:\l2_parquet` / `E:\EdgeLab-unified-viewer` / `E:\EdgeLab\.venv\Scripts\python.exe` |
+
+Después:
+1. Verificar que los manifests v4 tengan `subsecond_unit=100ns_ticks` y 0 inversiones.
+2. Mover los CSV ya convertidos a una carpeta para borrar.
+3. Opcional: armar los bundles del visor.
+
+Todo lo anterior al 2027-01-01 es holdout (solo visor). Desde 2027 es dato de descubrimiento.
