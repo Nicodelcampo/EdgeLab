@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgelab.local/schemas/edge_brain/experiment_result.json",
+  "title": "EdgeLab Experiment Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "result_id",
+    "experiment_id",
+    "metrics",
+    "passed_invariants",
+    "raw_evidence_id",
+    "outcomes_exposed",
+    "recorded_at_utc"
+  ],
+  "properties": {
+    "result_id": {
+      "type": "string",
+      "pattern": "^RES-[A-Za-z0-9._:-]+$"
+    },
+    "experiment_id": {
+      "type": "string"
+    },
+    "metrics": {
+      "type": "object"
+    },
+    "passed_invariants": {
+      "type": "boolean"
+    },
+    "raw_evidence_id": {
+      "type": "string"
+    },
+    "outcomes_exposed": {
+      "const": false
+    },
+    "recorded_at_utc": {
+      "type": "string"
+    }
+  }
+}
