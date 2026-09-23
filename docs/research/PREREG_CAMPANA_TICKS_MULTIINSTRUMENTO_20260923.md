@@ -68,3 +68,25 @@ Lo que sobrevive queda como `LESSON_CANDIDATE` PROPOSED/LOW. **No es un edge:** 
 ## 9. Cómo podría refutarse la campaña entera
 
 Ninguna variante sobrevive en 2 instrumentos. Las 5 familias quedan cerradas **para estos 5 instrumentos, ago-2025 a jun-2026, costos del feed NT8 y barras de 5 min**, con MDE publicado. Eso también reduce la distancia al referente: descarta la clase más barata de hipótesis antes de invertir en las más caras.
+
+---
+
+## Aprobación y enmienda A1 (2026-09-23, ANTES de ejecutar; ningún resultado visto)
+
+**Aprobado por Nico** ("apruebo, integrá las ramas y corré la campaña"). Se corre desde `integ/viewer-brain-20260923` (visor #48 + Brain #56, suite 1.744 en verde).
+
+**A1.1. Intervalo de validación.** `PrimaryCI` (bootstrap-t estacionario, `studentized_stationary_interval`) exige ≥ 160 sesiones (`MIN_STUDENTIZED_SESSIONS`), y la validación de mar–jun tiene ~85 por instrumento, así que el método autorizado se niega. El criterio 2 usa el **mismo estimand y el mismo bootstrap estacionario por sesión** (`resample_stationary_session_clusters`, 10.000 réplicas, bloque PPW), pero con **intervalo percentil al 95 %** (`percentile_interval`), que el código marca como **diagnóstico, no gate G2**. Consecuencia: **sobrevivir esta campaña NO es pasar el G2.** Un sobreviviente queda como `LESSON_CANDIDATE` y el G2 formal se hace con ≥ 160 sesiones.
+
+**A1.2. Fin de RTH** (salidas "fin de RTH" y rango diario del gap): ES/NQ/YM 16:00 ET, GC 13:30 ET, 6E 15:00 ET. **ATR diario** = media de los últimos 14 rangos RTH.
+
+**A1.3. Mecánica común no escrita antes:**
+- La señal se evalúa al cierre de la barra i y se entra en la apertura de i+1. F4 es la excepción: el gap se conoce en la apertura RTH y se entra en esa apertura.
+- Todas las posiciones se cierran al terminar la fecha de trading CME (sin overnight). No se entra en la última barra.
+- F1, F2 y F5 se reevalúan en cada barra estando flat. F3 y F4 hacen como máximo una operación por día.
+- F2 sale cuando una barra cierra del otro lado del VWAP. F4 sale al tocar el cierre RTH previo, a ese precio.
+
+**A1.4. Fecha de trading CME** = fecha de (ts_utc + 2 h). Se excluyen los días de roll: el día en que cambia el contrato de mayor volumen.
+
+**A1.5. Comisión supuesta:** USD 4,50 round-trip por contrato. En ticks: ES 0,36, NQ 0,9, YM 0,9, GC 0,45, 6E 0,72. **Spread:** mediana de (ask − bid) en los trades del **período de descubrimiento**, por instrumento y hora ET.
+
+**A1.6. Nulo del MCPT:** entradas aleatorias dentro de la misma sesión, con la misma cantidad de trades, duración y dirección que cada variante, y salida al cierre. Estadístico = máximo, sobre las 4 variantes, de la expectativa neta por trade en descubrimiento. 1.000 permutaciones, semilla 20260923.
