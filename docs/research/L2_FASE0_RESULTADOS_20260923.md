@@ -18,7 +18,7 @@ La regla está en `l2_phase0.defect_reasons`: eventos inválidos, inversiones de
 
 | Contrato | Sesiones | Usables | Excluidas |
 |---|---:|---:|---|
-| GC 08-26 | 30 | **29** | 20260611 (`INVALID_EVENTS=1`: el DELETE del nivel 10, ver S3 de `L2_VISOR_RESOLUCION_20260923.md`) |
+| GC 08-26 | 30 | **29** (30 con P-75) | 20260611 (`INVALID_EVENTS=1`). Con la regla de resincronización del borde (P-75, posterior a esta corrida) queda en 1 `EDGE_RESYNC` y pasa a usable. Las tablas de §2–§4 y §6 usan las 29. |
 | GC 06-26 | 26 | 4 | 20260601 (1 evento inválido) y **20260603–20260626: `BOOK_NEVER_FULL`**. En junio es el contrato que vence y su libro nunca llega a 10 niveles por lado. No es un defecto del dato sino una población distinta (el contrato no operable). Queda fuera de la tabla de costos. |
 
 ## 2. Costos mecánicos, GC 08-26 (29 sesiones, en ticks de 0,1)
@@ -30,7 +30,9 @@ Medianas entre sesiones de cada bloque, en reloj ART:
 - **Barrido.** Costo contra el mid de 1 contrato: p50 2 ticks (1,5 en las mejores horas). De 5: ~3 ticks. De 10, p90: ~5 ticks.
 - **Spread efectivo de los trades:** medio spread de ~1,5–2,2 ticks, ponderado por volumen.
 
-**Advertencia central (abierta).** En el oro principal se espera spread de 1 tick y más profundidad. Las cotizaciones L1 crudas confirman lo mismo dentro de este feed (20260615: spread p50 = 4 ticks, 1,5 % del tiempo a 1 tick, tamaño mediano 2). O el mercado de GC 08-26 era así en ese período, o **el feed/replay de NT8 no representa el libro completo**. No se puede resolver con datos propios: lo resuelve el **test de paridad contra Databento** (Fase 4 del plan). Hasta entonces, estos costos valen **para este feed** y no se usan como costo de ejecución real.
+**Advertencia central (acotada después, ver abajo).** En el oro principal se espera spread de 1 tick y más profundidad. Las cotizaciones L1 crudas confirman lo mismo dentro de este feed (20260615: spread p50 = 4 ticks, 1,5 % del tiempo a 1 tick, tamaño mediano 2). O el mercado de GC 08-26 era así en ese período, o **el feed/replay de NT8 no representa el libro completo**. No se puede resolver con datos propios: lo resuelve el **test de paridad contra Databento** (Fase 4 del plan). Hasta entonces, estos costos valen **para este feed** y no se usan como costo de ejecución real.
+
+**Corroboración posterior (mismo día):** los ticks `.Last` de research-v2 (otra vía de exportación de NT8) dan un spread p50 de 3–4 ticks en el momento de cada trade en junio (1 tick solo el 4–12 % del tiempo), y los conteos de trades coinciden con el L2 (93.051 contra 92.515 el 15/06). Las dos vías de NT8 son consistentes. Es plausible como mercado: 4 ticks de 0,10 sobre ~USD 4.300 es menos de 1 bp. Falta confirmación independiente (P-76, postergada).
 
 ## 3. Reloj de eventos (plan 0.4)
 
@@ -56,9 +58,9 @@ Mediana del |Δmid| a 60 s y a 300 s, en ticks, contra un costo round-trip = spr
 
 ## 5. Qué queda de la Fase 0
 
-- **0.5** Consistencia del agresor inferido entre el L2 y los ticks (dos inferencias) y sensibilidad a signos invertidos.
-- **0.6** Nulos de los detectores (iceberg, spoof y absorción/residual de impacto).
-- **Latencia real** (`nt8/EdgeLabLatencyProbe.cs`, lo corre Nico) → recalcular §3 y §4 con la latencia medida.
+- **0.5** Consistencia del agresor: queda **vacía de contenido**. El agresor de los ticks `.Last` es la misma regla de cotización (verificado en 2.804.464 ticks), así que compararlos da acuerdo por construcción. Pendiente útil: la sensibilidad de delta/OFI a signos invertidos. La verdad de referencia requiere tag 5797 (P-76).
+- ~~0.6 Nulos de los detectores~~ → hecho, ver §6. Pendiente: absorción reformulada como residual de impacto.
+- **Latencia real:** parcial, 44 sondas en la cuenta demo DEMO9294975: envío→*Working* p50 227 ms, p90 234 ms; cancelación p50 223 ms. Coincide con los 250 ms supuestos, así que §3 y §4 se sostienen. Falta la hora completa (P-77).
 
 ## Cómo podría refutarse
 
