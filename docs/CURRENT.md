@@ -178,3 +178,10 @@ Consecuencia: no afecta la señal causal del roll del 16-jun, que usa D-1. Sí a
 - Acta: `docs/research/L2_FASE2_RESULTADOS_20260923.md`.
 
 **2026-09-23 (6E, Fase 0 descriptiva, 4 sesiones pre-holdout):** es un mercado de tick grande. Spread ~1,2 ticks, 35–50 contratos en el mejor nivel, barrido 0,5 tick. A 5 min, apostar la dirección cruzando el spread exige 68–95 % de acierto, así que no hay espacio; el espacio posible está en ejecución pasiva (M4) u horizontes largos. El visor tiene 76 sesiones L2 del 6E: 5 pre-holdout y 71 solo visor.
+
+**2026-09-24 (campaña multi-instrumento sobre ticks, pre-registrada y aprobada, 100 pruebas):** **0 sobrevivientes.**
+- Hubo un bug en F3/F4: tomaban la barra de las 18:00 ET de la noche previa como apertura. Esas 40 pruebas quedaron invalidadas en el Brain y se re-corrieron corregidas. Registrar la re-corrida como pruebas espera la aprobación de Nico (P-81).
+- F2 (reversión al VWAP) tiene timing en 5/5 instrumentos, pero su neto es negativo.
+- **F4 (cierre de gap) pasó el MCPT en ES, NQ e YM**, pero su validación no tiene potencia (25–56 trades). Queda como pista para un pre-registro con años de datos diarios. No es sobreviviente.
+- Todo quedó registrado y anclado en el Brain (`campaign_ticks_multi_20260923.jsonl`, 151 registros).
+- Acta: `docs/research/CAMPANA_TICKS_MULTI_RESULTADOS_20260923.md`.

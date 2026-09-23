@@ -2474,3 +2474,15 @@ Después:
 3. Opcional: armar los bundles del visor.
 
 Todo lo anterior al 2027-01-01 es holdout (solo visor). Desde 2027 es dato de descubrimiento.
+
+## P-81 — Registrar la re-corrida corregida de F3/F4 en el Brain (decide Nico)
+
+**2026-09-24.** Las 40 pruebas originales de F3/F4 quedaron invalidadas por un bug de apertura RTH, y el presupuesto de C-TICKS-F3/F4 ya estaba consumido. Para registrar la re-corrida (mismas 40 hipótesis, `artifacts/campaign_ticks_multi/landscape_F3F4_fix.json`) hace falta una campaña de corrección **aprobada por Nico**: `human:Nico`, 40 pruebas, mismo pre-registro. Así lo exige NO_SELF_APPROVAL.
+
+## P-82 — Pista para una campaña nueva: cierre de gap nocturno en índices (requiere datos diarios multi-año)
+
+**2026-09-24.** F4 pasó el MCPT de descubrimiento en ES, NQ e YM, pero la validación no tiene potencia. Para seguir hacen falta años de datos diarios o de 1 min de ES/NQ/YM (baratos) y un pre-registro propio. **No es sobreviviente.**
+
+## Integración pendiente
+
+La rama `integ/viewer-brain-20260923` (visor #48 + Brain #56, suite verde) espera la decisión de mergearla a `foundation`.
