@@ -28,6 +28,7 @@ namespace NinjaTrader.NinjaScript.Strategies
     public class EdgeLabLatencyProbe : Strategy
     {
         private Order probe;
+        private bool cancelSent;
         private long tSubmit;
         private int probes, lastSampleSec = -1;
         private DateTime nextProbeUtc = DateTime.MinValue;
@@ -92,6 +93,7 @@ namespace NinjaTrader.NinjaScript.Strategies
             double px = Instrument.MasterInstrument.RoundToTickSize(bid - OffsetTicks * TickSize);
             probes++;
             tSubmit = Stopwatch.GetTimestamp();
+            cancelSent = false;
             probe = SubmitOrderUnmanaged(0, OrderAction.Buy, OrderType.Limit, 1, px, 0, "", "EL_PROBE_" + probes);
             Write("ORDER", probes, "SubmitCalled", 0, "limit=" + px.ToString(CultureInfo.InvariantCulture) + " bid=" + bid.ToString(CultureInfo.InvariantCulture));
             nextProbeUtc = DateTime.UtcNow.AddSeconds(ProbeIntervalSeconds);
@@ -103,8 +105,8 @@ namespace NinjaTrader.NinjaScript.Strategies
             if (probe == null || order.Name != probe.Name) return;
             double us = (Stopwatch.GetTimestamp() - tSubmit) * TickUs;
             Write("ORDER", probes, orderState.ToString(), us, "error=" + error + " comment=" + comment);
-            if (orderState == OrderState.Working)
-                CancelOrder(order);
+            if (orderState == OrderState.Working && !cancelSent)
+            { cancelSent = true; CancelOrder(order); }   // NT8 puede reportar Working dos veces: una sola cancelacion
             else if (orderState == OrderState.Filled || orderState == OrderState.PartFilled)
             {
                 Write("FILL_UNEXPECTED", probes, orderState.ToString(), us, "sonda ejecutada: estrategia detenida");
