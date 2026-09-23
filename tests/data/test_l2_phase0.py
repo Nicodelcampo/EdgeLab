@@ -20,8 +20,8 @@ def test_sweep_cost_walks_levels_and_reports_insufficient_depth():
 def test_apply_event_rejects_out_of_range_levels():
     b = []
     assert apply_event(b, 0, 0, 100, 5) and b == [[100, 5]]
-    assert not apply_event(b, 2, 3, 100, 0)
-    assert not apply_event(b, 1, 1, 100, 5)
+    assert not apply_event(b, 1, 1, 100, 5)                  # cambio fuera de rango sin lado: invalido
+    assert not apply_event(b, 0, 3, 90, 5)                   # alta mas alla del final sin lado: invalido
 
 
 def test_time_to_k_changes():
@@ -59,3 +59,24 @@ def test_process_session_bootstrap_groups_and_qa():
     rows = block_table(res, instrument="GC", contract="GC 08-26", session="20260615")
     assert rows and rows[0]["sweep1_p50"] == 1.0 and rows[0]["spread_1tick_share"] == 0.0
     assert defect_reasons(res.qa) == [f"FEW_SNAPSHOTS={res.qa['snapshots']}"]
+
+
+def test_edge_resync_rules():
+    """P-75: eventos mas alla de la profundidad reconstruida -> resincronizacion del borde, no abort."""
+    from edgelab.research.l2_phase0 import EDGE_RESYNC, INVALID, OK
+    from tools.build_l2_viewer_bundle import EDGE_RESYNC as B_RESYNC, apply_l2
+    asks = [[101, 1], [102, 1]]
+    assert apply_event(asks, 2, 2, 102, 1, ASK) == EDGE_RESYNC and asks == [[101, 1]]      # precio del ultimo: se borra
+    asks = [[101, 1], [102, 1]]
+    assert apply_event(asks, 2, 5, 109, 1, ASK) == EDGE_RESYNC and asks == [[101, 1], [102, 1]]   # nivel invisible: no-op
+    asks = [[101, 1], [102, 1]]
+    assert apply_event(asks, 0, 4, 105, 2, ASK) == EDGE_RESYNC and asks[-1] == [105, 2]      # alta al final, en orden
+    asks = [[101, 1], [102, 1]]
+    assert apply_event(asks, 0, 4, 100, 2, ASK) == INVALID and asks == [[101, 1], [102, 1]]   # rompe el orden: invalido
+    bids = [[99, 1]]
+    assert apply_event(bids, 1, 3, 97, 4, BID) == EDGE_RESYNC and bids == [[99, 1], [97, 4]]
+    assert apply_event(bids, 1, 3, 98, 4, None) == INVALID                                    # sin lado no se verifica
+    assert apply_event([[101, 1]], 1, 0, 101, 3, ASK) == OK
+    b2 = [[101, 1], [102, 1]]
+    assert apply_l2(b2, 2, 2, 102, 1, ASK) == B_RESYNC and b2 == [[101, 1]]
+    assert apply_l2([[101, 1]], 0, 3, 100, 1, ASK) == "ABSTAIN_INVALID_LEVEL"

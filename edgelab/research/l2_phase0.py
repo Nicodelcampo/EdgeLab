@@ -28,24 +28,55 @@ CLOCK_KS = (2, 10, 100)
 BLOCK_S = 1800
 
 
-def apply_event(book: list, op: int, lvl: int, tick: int, size: int) -> bool:
-    """Aplica un evento MBP a un lado (posicion 0 = mejor precio). False si el nivel era invalido."""
+INVALID, OK, EDGE_RESYNC = 0, 1, 2
+TAIL_DELETE = EDGE_RESYNC      # nombre anterior (2026-09-23 temprano); se conserva por compatibilidad
+
+
+def _ordered_after_last(book: list, side: int, tick: int) -> bool:
+    """True si `tick` va DESPUES del ultimo nivel del lado (ask: mas caro; bid: mas barato) o el lado esta vacio."""
+    if not book:
+        return True
+    return tick > book[-1][0] if side == ASK else tick < book[-1][0]
+
+
+def apply_event(book: list, op: int, lvl: int, tick: int, size: int, side: int | None = None) -> int:
+    """Aplica un evento MBP-10 de NT8 a un lado (posicion 0 = mejor precio). Devuelve INVALID, OK o EDGE_RESYNC.
+
+    RESINCRONIZACION DEL BORDE (decision P-75, 2026-09-23, delegada por Nico). Causa raiz medida: la foto inicial
+    (bootstrap) de NT8 a veces omite un nivel de un lado, y desde ahi NT8 direcciona un nivel mas que el libro
+    reconstruido. Medido en 7 sesiones (GC 08-26/12-26): 0..19 eventos con precio != precio reconstruido en esa
+    posicion, sobre millones (<= 8e-6) y SIN cascada -- el borde profundo se renueva y el libro se resincroniza solo.
+    Por eso un evento que apunta MAS ALLA de la profundidad reconstruida no aborta:
+      - baja en lvl >= n: si su precio es el del ultimo nivel reconstruido se borra ese nivel; si no, no-op;
+      - alta/cambio en lvl > n (alta) o lvl >= n (cambio): se agrega AL FINAL solo si respeta el orden de precios.
+    Todo lo demas sigue INVALID (fail-closed). Sin `side` no se puede verificar orden: se trata como INVALID."""
     n = len(book)
     if op == 0:
-        if lvl > n:
-            return False
-        book.insert(lvl, [tick, size])
-        if len(book) > LEVELS + 1:          # NT8 manda el DELETE del nivel desplazado; esto solo evita crecer sin fin
-            del book[LEVELS + 1:]
-    elif op == 1:
-        if lvl >= n:
-            return False
-        book[lvl] = [tick, size]
-    elif op == 2:
-        if lvl >= n:
-            return False
-        del book[lvl]
-    return True
+        if lvl <= n:
+            book.insert(lvl, [tick, size])
+            if len(book) > LEVELS + 1:      # NT8 manda la baja del nivel desplazado; esto solo evita crecer sin fin
+                del book[LEVELS + 1:]
+            return OK
+        if side is not None and _ordered_after_last(book, side, tick):
+            book.append([tick, size])
+            return EDGE_RESYNC
+        return INVALID
+    if op == 1:
+        if lvl < n:
+            book[lvl] = [tick, size]
+            return OK
+        if side is not None and _ordered_after_last(book, side, tick):
+            book.append([tick, size])
+            return EDGE_RESYNC
+        return INVALID
+    if op == 2:
+        if lvl < n:
+            del book[lvl]
+            return OK
+        if n and book[-1][0] == tick:
+            del book[-1]
+        return EDGE_RESYNC
+    return INVALID
 
 
 def sweep_cost_ticks(levels: list, mid2: int, n: int, side: int) -> float:
@@ -85,7 +116,7 @@ def process_session(l2, l1) -> SessionResult:
     t_ts = np.asarray(l1["ts_us"])[m1][o1]
 
     asks, bids = [], []
-    invalid = inversions = crossed_groups = groups = 0
+    invalid = inversions = crossed_groups = groups = tail_deletes = 0
     full_since = None
     snap = {k: [] for k in ("t", "bid", "ask", "bid_sz", "ask_sz")}
     for n_ in SWEEP_SIZES:
@@ -113,8 +144,11 @@ def process_session(l2, l1) -> SessionResult:
                 tr["t"].append(int(t_ts[ti])); tr["tick"].append(int(t_tick[ti])); tr["size"].append(int(t_size[ti]))
                 tr["eff_half_spread"].append(abs(2 * int(t_tick[ti]) - mid2) / 2); tr["spread"].append(a - b)
             ti += 1
-        if not apply_event(asks if sd[i] == ASK else bids, int(op[i]), int(lv[i]), int(tk[i]), int(sz[i])):
+        rc = apply_event(asks if sd[i] == ASK else bids, int(op[i]), int(lv[i]), int(tk[i]), int(sz[i]), int(sd[i]))
+        if rc == INVALID:
             invalid += 1
+        elif rc == EDGE_RESYNC:
+            tail_deletes += 1
         end_of_group = i == N - 1 or int(ts[i + 1]) != t
         if not end_of_group:
             continue
@@ -141,7 +175,7 @@ def process_session(l2, l1) -> SessionResult:
                 for n_ in SWEEP_SIZES:
                     snap[f"buy{n_}"].append(sweep_cost_ticks(asks, mid2, n_, ASK))
                     snap[f"sell{n_}"].append(sweep_cost_ticks(bids, mid2, n_, BID))
-    qa = dict(l2_events=N, groups=groups, invalid_events=invalid, clock_inversions=inversions,
+    qa = dict(l2_events=N, groups=groups, invalid_events=invalid, edge_resync_events=tail_deletes, clock_inversions=inversions,
               crossed_group_ratio=crossed_groups / max(1, groups), trades=nt, trades_measured=len(tr["t"]),
               bootstrap_complete=full_since is not None, snapshots=len(snap["t"]),
               first_ts_us=int(ts[0]) if N else None, last_ts_us=int(ts[-1]) if N else None)
@@ -150,11 +184,14 @@ def process_session(l2, l1) -> SessionResult:
                          mid_change_ts=np.asarray(mid_changes, dtype=np.int64))
 
 
-def defect_reasons(qa: dict, *, max_crossed=0.01) -> list[str]:
+def defect_reasons(qa: dict, *, max_crossed=0.01, max_edge_resync_rate=1e-3) -> list[str]:
     """Motivos (vacio = sesion usable). Regla fija ANTES de mirar nada economico."""
     out = []
     if qa["invalid_events"]:
         out.append(f"INVALID_EVENTS={qa['invalid_events']}")
+    # P-75: la resincronizacion del borde se tolera, pero no sin limite. Umbral fijado ANTES de mirar nada economico.
+    if qa.get("edge_resync_events", 0) > max_edge_resync_rate * max(1, qa["l2_events"]):
+        out.append(f"EDGE_RESYNC_RATE={qa['edge_resync_events'] / max(1, qa['l2_events']):.2e}")
     if qa["clock_inversions"]:
         out.append(f"CLOCK_INVERSIONS={qa['clock_inversions']}")
     if qa["crossed_group_ratio"] > max_crossed:

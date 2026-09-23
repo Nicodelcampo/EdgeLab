@@ -32,8 +32,11 @@ def test_nivel_fuera_de_rango_devuelve_abstain_y_NO_modifica_el_libro():
     b = [[10, 1]]
     snapshot = [list(x) for x in b]
 
-    assert B.apply_l2(b, 2, 5, 0, 0) == B.ABSTAIN_INVALID_LEVEL      # baja de una posicion inexistente
-    assert b == snapshot                                            # el libro queda intacto, no se repara
+    # P-75 (2026-09-23): la baja de una posicion mas alla de la profundidad reconstruida es una resincronizacion
+    # del borde (bootstrap de NT8 que omitio un nivel), no un abort. Con precio distinto al ultimo nivel es no-op:
+    # el libro queda intacto, no se repara ni se inventa nada.
+    assert B.apply_l2(b, 2, 5, 0, 0) == B.EDGE_RESYNC
+    assert b == snapshot
 
     assert B.apply_l2(b, 1, 3, 9, 4) == B.ABSTAIN_INVALID_LEVEL      # cambio fuera de rango
     assert b == snapshot

@@ -2377,7 +2377,7 @@ misma optimización de dispersión que se hizo en el `.cs` (verificada idéntica
 - Mantener la partición de Holdout (`2026-07-01 -> 2026-12-31`) 100% sellada.
 
 
-## P-74 — Enmienda de holdout para usar L2 jul–sep: SUSPENDIDA por regla 95 (decide Nico)
+## P-74 — Enmienda de holdout para usar L2 jul–sep: RESUELTA — se mantiene el sello (Nico, 2026-09-23)
 
 **2026-09-23.** Nico aprobó correr el sello al 2026-10-01 para usar el L2 de julio a septiembre en descubrimiento. Al revisar el código **antes de aplicarlo**, la propuesta resultó ser exactamente INC-006: la regla 95 del NORTH_STAR establece que "la frontera es un sello, no un cursor", y `holdout_guard._resolver_frontera` toma `min(sello, declarada)` para que sea imposible atrasarla. **No se tocó nada.**
 
@@ -2389,7 +2389,7 @@ Alternativa que respeta la regla:
 
 Si Nico igual quiere correr el sello, es una edición constitucional del NORTH_STAR (cambia el hash) y se decide como tal, no como parámetro.
 
-## P-75 — DELETE del nivel 10 sobre un lado con menos de 11 niveles (decide Nico)
+## P-75 — DELETE del nivel 10 / eventos más allá de la profundidad reconstruida: RESUELTA (delegada por Nico)
 
 **2026-09-23.** NT8 manda `DELETE level=10` cuando el lado reconstruido tiene 10 niveles (índices 0–9). Pasa 1 vez cada ~3,8 M eventos, al abrir la sesión, cuando el libro está incompleto. `tools/build_l2_viewer_bundle.py` (fail-closed) aborta la sesión entera, y `l2_phase0` la marca defectuosa (GC 08-26 20260611).
 
@@ -2398,7 +2398,7 @@ Si Nico igual quiere correr el sello, es una edición constitucional del NORTH_S
 
 Es un cambio de cómo se valida, así que no se toca sin OK. Detalle: `docs/research/L2_VISOR_RESOLUCION_20260923.md` §S3.
 
-## P-76 — Paridad del feed NT8 contra Databento (decide Nico: cotización y licencia)
+## P-76 — Paridad del feed NT8 contra Databento: POSTERGADA (Nico no puede usar Databento por ahora)
 
 **2026-09-23.** En este feed, GC 08-26 muestra spread mediano de ~4 ticks y ~1,5–2 contratos en el mejor nivel. Las dos vías de NT8 coinciden: L2 replay y ticks `.Last` dan spread p50 de 3–4 ticks en junio, y los conteos de trades concuerdan (93.051 contra 92.515 el 15/06). Es plausible como mercado: 4 ticks de 0,1 sobre USD 4.300 es menos de 1 bp.
 
@@ -2420,3 +2420,18 @@ Falta una fuente **independiente**. Pedido: cotizar 1 día de GC con MBP-10 + `t
 - El mid cambia 2 veces en 0,14–0,8 s, así que ese horizonte está fuera de alcance.
 
 Pendiente: nulos de detectores (en curso) y una segunda réplica en 6E (que tiene pocas sesiones pre-holdout).
+
+**Resolución P-74 (2026-09-23):** Nico acepta la recomendación y el sello sigue en 2026-07-01. El L2 de julio a diciembre es solo visor/integridad y examen. El descubrimiento con L2 usa lo pre-holdout (GC 08-26 mayo–junio) y lo que llegue desde 2027.
+
+**Resolución P-75 (2026-09-23, decisión delegada):**
+- **Causa raíz medida:** el bootstrap de NT8 a veces omite un nivel de un lado, y desde ahí NT8 direcciona un nivel más que el libro reconstruido.
+- **Medición:** en 7 sesiones hay entre 0 y 19 eventos con precio distinto al reconstruido en esa posición, sobre millones de eventos (≤ 8e-6), y sin cascada.
+- **Regla, idéntica en `l2_phase0.apply_event` y en `build_l2_viewer_bundle.apply_l2`:** un evento más allá de la profundidad reconstruida es `EDGE_RESYNC`.
+  - Baja: se borra el último nivel si el precio coincide; si no, no-op.
+  - Alta o cambio: se agrega al final solo si respeta el orden de precios.
+  - Lo demás sigue siendo inválido y aborta.
+- **Tope:** una sesión con más del 0,1 % de eventos `EDGE_RESYNC` queda defectuosa (fijado antes de mirar resultados).
+- **Efecto:** GC 08-26 20260611 pasa a usable (1 resync). GC 12-26 20260715 tiene 567 resync (1,5e-4), así que es usable. GC 08-26 20260715 conserva 1 evento inválido real.
+- Primero se probó una versión más estrecha (borrar solo si el precio coincide) y se descartó: solo tapaba el primer síntoma.
+
+**P-76:** queda como pregunta abierta y declarada. Los costos de `L2_FASE0_RESULTADOS_20260923.md` valen para el feed NT8. Las dos vías de NT8 coinciden (spread de 3–4 ticks), lo que es plausible como mercado pero no está confirmado de forma independiente.

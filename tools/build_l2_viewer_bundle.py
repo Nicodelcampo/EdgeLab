@@ -76,6 +76,7 @@ if str(REPO) not in sys.path:
 
 from edgelab.research.l2_manipulation_heuristics import (  # noqa: E402
     AbsorptionTracker, IcebergTracker, SpoofTracker, large_size_thresholds)
+from edgelab.research.l2_phase0 import EDGE_RESYNC as _RESYNC, OK as _OK, apply_event as _apply_event  # noqa: E402
 
 LAST_SIDE, ASK, BID = 2, 0, 1
 CUTOFF_DATE = 20260630
@@ -123,23 +124,20 @@ class BookAbstain(Exception):
         self.row = row
 
 
-def apply_l2(side_book: list, op: int, lvl: int, tick: int, size: float) -> str | None:
-    """Aplica un evento a la lista de un lado (posicion 0 = mejor precio). Devuelve None si el nivel era valido,
-    o el codigo de error si NO lo era (fail-closed: ya no se recorta el nivel a una posicion valida inventada)."""
-    n = len(side_book)
-    if op == 0:                                   # alta
-        if lvl > n:
-            return ABSTAIN_INVALID_LEVEL
-        side_book.insert(lvl, [tick, size])
-    elif op == 1:                                 # cambio
-        if lvl >= n:
-            return ABSTAIN_INVALID_LEVEL
-        side_book[lvl] = [tick, size]
-    elif op == 2:                                 # baja
-        if lvl >= n:
-            return ABSTAIN_INVALID_LEVEL
-        del side_book[lvl]
-    return None
+EDGE_RESYNC = "EDGE_RESYNC"
+TAIL_DELETE_PRICE_MATCHED = EDGE_RESYNC     # nombre anterior, conservado por compatibilidad
+
+
+def apply_l2(side_book: list, op: int, lvl: int, tick: int, size: float, side: int | None = None) -> str | None:
+    """Aplica un evento a la lista de un lado (posicion 0 = mejor precio). None si fue normal, EDGE_RESYNC si fue una
+    resincronizacion del borde profundo (decision P-75, ver `edgelab.research.l2_phase0.apply_event`), o el codigo de
+    error si el nivel era invalido de verdad (fail-closed: no se recorta el nivel a una posicion inventada)."""
+    rc = _apply_event(side_book, op, lvl, tick, size, side)
+    if rc == _OK:
+        return None
+    if rc == _RESYNC:
+        return EDGE_RESYNC
+    return ABSTAIN_INVALID_LEVEL
 
 
 def classify_aggressor(price_tick, bid_tick, ask_tick, prev_trade_tick):
@@ -228,6 +226,7 @@ def build(l1_path: Path, l2_path: Path, snap_seconds: int, tick_size: float, *,
     prev_trade_tick = None
     side_counts = {1: 0, -1: 0, 0: 0}
     invalid_add = invalid_change = invalid_delete = 0
+    tail_deletes = 0
     book_status = PASS
     abstain_row = None
 
@@ -313,7 +312,10 @@ def build(l1_path: Path, l2_path: Path, snap_seconds: int, tick_size: float, *,
             last_bucket = bucket_s
         while li < n1 and l1_row[li] < r_l2[i]:  # filas L1 anteriores a este evento L2
             li, pending, prev_trade_tick = handle_l1_row(li, pending, prev_trade_tick)
-        err = apply_l2(asks if side[i] == ASK else bids, op[i], lvl[i], tick[i], size[i])
+        err = apply_l2(asks if side[i] == ASK else bids, op[i], lvl[i], tick[i], size[i], side[i])
+        if err == EDGE_RESYNC:
+            tail_deletes += 1
+            err = None
         if err is not None:
             if op[i] == 0: invalid_add += 1
             elif op[i] == 1: invalid_change += 1
@@ -350,7 +352,8 @@ def build(l1_path: Path, l2_path: Path, snap_seconds: int, tick_size: float, *,
         best_ask_match=match["ask"][0] / max(1, match["ask"][1]), best_ask_checks=match["ask"][1],
         crossed_book_events=crossed, crossed_book_ratio=crossed_ratio, crossed_ratio_abstain_threshold=CROSSED_RATIO_ABSTAIN,
         l2_events=len(r_l2), invalid_add_count=invalid_add, invalid_change_count=invalid_change,
-        invalid_delete_count=invalid_delete, empty_book_intervals=empty_book_intervals,
+        invalid_delete_count=invalid_delete, edge_resync_events=tail_deletes,
+        empty_book_intervals=empty_book_intervals,
         first_source_row=int(r_l2[0]) if len(r_l2) else None, last_source_row=int(r_l2[-1]) if len(r_l2) else None,
         source_row_monotonic=bool(np.all(np.diff(r_l2) > 0)) if len(r_l2) > 1 else True,
         book_status=book_status, abstain_source_row=abstain_row, exploratory_mode=exploratory)
