@@ -22,6 +22,7 @@ alguna frontera en FAIL.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import sys
@@ -37,9 +38,40 @@ from tools.validate_l2_session_boundaries import validate_boundaries  # noqa: E4
 _SESSION_RX = re.compile(r"^\d{8}$")
 
 
-def pending_sessions(csv_dir: Path, base: Path) -> list[Path]:
+def _known_abstentions(log: Path | None) -> set[tuple[str, str]]:
+    """(sesion, sha256 del CSV) ya registrados como no-PASS en el log de custodia."""
+    if log is None or not log.exists():
+        return set()
+    out = set()
+    for line in log.read_text(encoding="utf-8").splitlines():
+        try:
+            rec = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if rec.get("conversion_status") != "PASS" and rec.get("csv_sha256"):
+            out.add((rec.get("session_date"), rec["csv_sha256"]))
+    return out
+
+
+def _sha256(path: Path) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def pending_sessions(csv_dir: Path, base: Path, log: Path | None = None) -> list[Path]:
+    """CSV sin manifest. Un CSV ya rechazado con el MISMO contenido (mismo sha256) no se
+    reintenta: el rechazo es determinista y reintentarlo solo duplica el log. Si el CSV
+    cambia (otro sha256), vuelve a quedar pendiente."""
     done = {p.name.replace(".manifest.json", "") for p in (base / "manifests").glob("*.manifest.json")}
-    return sorted(p for p in csv_dir.glob("*.csv") if _SESSION_RX.match(p.stem) and p.stem not in done)
+    cands = sorted(p for p in csv_dir.glob("*.csv") if _SESSION_RX.match(p.stem) and p.stem not in done)
+    known = _known_abstentions(log)
+    if not known:
+        return cands
+    known_sessions = {s for s, _ in known}
+    return [p for p in cands if p.stem not in known_sessions or (p.stem, _sha256(p)) not in known]
 
 
 def sweep(*, csv_dir: Path, base: Path, instrument: str, contract: str, tick_size: float,
@@ -47,7 +79,7 @@ def sweep(*, csv_dir: Path, base: Path, instrument: str, contract: str, tick_siz
           continuity: bool = True) -> dict:
     records = []
     log.parent.mkdir(parents=True, exist_ok=True)
-    for csv in pending_sessions(csv_dir, base):
+    for csv in pending_sessions(csv_dir, base, log):
         rec = run_intake(csv_path=csv, base=base, instrument=instrument, contract=contract,
                          tick_size=tick_size, downloader_id=downloader_id,
                          delete_csv_after_validation=delete_csv_after_validation)

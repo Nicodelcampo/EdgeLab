@@ -53,3 +53,18 @@ def test_sweep_without_continuity_only_converts(tmp_path):
               downloader_id="test", log=tmp_path / "log.jsonl", out=tmp_path / "out", continuity=False)
     assert len(s["ingested"]) == 2 and s["conversion_failures"] == 0
     assert s["boundaries_checked"] == 0 and not (tmp_path / "out").exists()
+
+
+def test_known_abstention_is_not_retried_unless_csv_changes(tmp_path):
+    src, base = tmp_path / "csv", tmp_path / "base"
+    src.mkdir()
+    bad = src / "20260915.csv"
+    bad.write_text("L1;2;20260915010000;1;4300.0;1\n", encoding="utf-8")        # sin L2 -> ABSTAIN
+    kw = dict(csv_dir=src, base=base, instrument="GC", contract="GC 12-26", tick_size=TICK,
+              downloader_id="test", log=tmp_path / "log.jsonl", out=tmp_path / "out")
+    assert sweep(**kw)["conversion_failures"] == 1
+    again = sweep(**kw)
+    assert again["ingested"] == [] and again["conversion_failures"] == 0      # no se reintenta
+    assert (tmp_path / "log.jsonl").read_text(encoding="utf-8").count("\n") == 1
+    bad.write_text(_csv("20260915"), encoding="utf-8")                        # CSV nuevo -> pendiente
+    assert [r["conversion_status"] for r in sweep(**kw)["ingested"]] == ["PASS"]
