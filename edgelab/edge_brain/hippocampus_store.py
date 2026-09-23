@@ -9,7 +9,9 @@ weakening any invariant:
   records (LEDGER_APPEND_ONLY).
 - TAMPER-EVIDENT: every record carries the SHA-256 of the canonical payload
   chained to the previous record's hash. Replaying a modified ledger raises
-  `LedgerIntegrityError` at the exact divergence point.
+  `LedgerIntegrityError` at the exact divergence point. A valid suffix rollback
+  requires an externally trusted tip hash to detect; pass it when opening or
+  verifying a ledger.
 - DETERMINISTIC: replaying the same ledger always reconstructs the same
   in-memory hippocampus state.
 - FAIL-CLOSED: outcomes/holdout flags are enforced on ingest; an invalidated
@@ -23,6 +25,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from copy import deepcopy
 from dataclasses import asdict, is_dataclass
 from pathlib import Path
 from typing import Any, Callable
@@ -73,7 +76,16 @@ def _record_hash(record_type: str, payload: Any, prev_hash: str) -> str:
 
 def _payload_dict(payload: Any) -> dict[str, Any]:
     if is_dataclass(payload) and not isinstance(payload, type):
-        return asdict(payload)
+        data = asdict(payload)
+        # `robustness` and `conditions` were added to LessonCandidate after
+        # ledger v1 was pinned. Omit their default values so deterministic v1
+        # builders keep emitting the original canonical bytes; non-default
+        # values remain representable without requiring a migration.
+        if (hasattr(payload, "robustness") and data.get("robustness") == "UNRATED"
+                and data.get("conditions") == []):
+            data.pop("robustness", None)
+            data.pop("conditions", None)
+        return data
     if isinstance(payload, dict):
         return payload
     raise TypeError(f"ledger payload must be a dataclass or dict, got {type(payload)!r}")
@@ -87,17 +99,32 @@ class DurableHippocampus:
     """
 
     def __init__(self, ledger_path: str | Path,
-                 memory: HippocampusMemory | None = None) -> None:
+                 memory: HippocampusMemory | None = None,
+                 expected_tip_hash: str | None = None) -> None:
         self.ledger_path = Path(ledger_path)
-        self.memory = memory if memory is not None else HippocampusMemory()
+        # Replay to a shadow object so an integrity/anchor failure cannot
+        # partially mutate a caller-supplied memory instance.
+        supplied_memory = memory
+        self.memory = deepcopy(memory) if memory is not None else HippocampusMemory()
         self._prev_hash = GENESIS_HASH
+        self._poisoned = False
         self.invalidations: dict[str, str] = {}
         if self.ledger_path.exists() and self.ledger_path.stat().st_size > 0:
             self._prev_hash = self._replay_into(self.memory)
+        if expected_tip_hash is not None and self._prev_hash != expected_tip_hash:
+            raise LedgerIntegrityError(
+                "ledger tip does not match externally trusted expected_tip_hash")
+        if supplied_memory is not None:
+            supplied_memory.__dict__.clear()
+            supplied_memory.__dict__.update(self.memory.__dict__)
+            self.memory = supplied_memory
 
     # -- write path -------------------------------------------------------
 
     def _append(self, record_type: str, payload: Any) -> str:
+        if self._poisoned:
+            raise LedgerIntegrityError(
+                "store disabled after a failed append; reopen and verify the ledger")
         if record_type not in _RECORD_TYPES:
             raise UnknownRecordTypeError(record_type)
         data = _payload_dict(payload)
@@ -110,9 +137,41 @@ class DurableHippocampus:
             "payload": data,
         }, ensure_ascii=False, sort_keys=True)
         self.ledger_path.parent.mkdir(parents=True, exist_ok=True)
-        with self.ledger_path.open("a", encoding="utf-8") as fh:
-            fh.write(line + "\n")
+        serialized_line = line + "\n"
+        try:
+            with self.ledger_path.open("a", encoding="utf-8") as fh:
+                written = fh.write(serialized_line)
+                if written != len(serialized_line):
+                    raise OSError("incomplete ledger append")
+        except OSError:
+            # An I/O exception may occur after a partial line reached disk.
+            # Do not append behind an uncertain tail; require reopen/verification.
+            self._poisoned = True
+            raise
         self._prev_hash = digest
+        return digest
+
+    @staticmethod
+    def _validate_lesson_authority(lesson) -> None:
+        """Enforce the current durable-store ceiling: proposed, low confidence."""
+        if lesson.status != "PROPOSED" or lesson.confidence != "LOW":
+            raise ValueError(
+                "durable ledger accepts only PROPOSED/LOW lessons; adjudication is separate")
+
+    def _record(self, record_type: str, payload: Any, apply_to_memory) -> str:
+        """Validate a record against a shadow state before touching the ledger.
+
+        HippocampusMemory methods enforce semantic invariants (for example,
+        episode existence and duplicate episode IDs). Validate on a copy first
+        so a rejected operation cannot leave an orphaned row in the ledger.
+        Publish the validated state only after the append succeeds.
+        """
+        candidate = deepcopy(self.memory)
+        apply_to_memory(candidate)
+        digest = self._append(record_type, payload)
+        # Preserve the identity of a caller-supplied HippocampusMemory object.
+        self.memory.__dict__.clear()
+        self.memory.__dict__.update(candidate.__dict__)
         return digest
 
     def register_episode(self, episode) -> None:
@@ -120,49 +179,56 @@ class DurableHippocampus:
         # a mutated episode can never be persisted with outcomes open.
         if getattr(episode, "outcomes_inspected", False):
             raise ValueError("outcomes_inspected must be False to enter the ledger")
-        self._append("episode_registered", episode)
-        self.memory.register_episode(episode)
+        self._record("episode_registered", episode,
+                     lambda memory: memory.register_episode(episode))
 
     def record_step(self, step) -> None:
-        self._append("step_recorded", step)
-        self.memory.record_step(step)
+        self._record("step_recorded", step,
+                     lambda memory: memory.record_step(step))
 
     def record_expectation(self, expectation) -> None:
-        self._append("expectation_recorded", expectation)
-        self.memory.record_expectation(expectation)
+        self._record("expectation_recorded", expectation,
+                     lambda memory: memory.record_expectation(expectation))
 
     def record_failure(self, failure) -> None:
-        self._append("failure_recorded", failure)
-        self.memory.record_failure(failure)
+        self._record("failure_recorded", failure,
+                     lambda memory: memory.record_failure(failure))
 
     def record_success(self, success) -> None:
-        self._append("success_recorded", success)
-        self.memory.record_success(success)
+        self._record("success_recorded", success,
+                     lambda memory: memory.record_success(success))
 
     def record_lesson(self, lesson) -> None:
-        self._append("lesson_recorded", lesson)
-        self.memory.record_lesson(lesson)
+        self._validate_lesson_authority(lesson)
+        self._record("lesson_recorded", lesson,
+                     lambda memory: memory.record_lesson(lesson))
 
     def record_counterexample(self, counterexample) -> None:
-        self._append("counterexample_recorded", counterexample)
-        self.memory.record_counterexample(counterexample)
+        self._record("counterexample_recorded", counterexample,
+                     lambda memory: memory.record_counterexample(counterexample))
 
     def record_repair(self, repair, episode_id: str) -> None:
         payload = _payload_dict(repair)
         payload["episode_id"] = episode_id
-        self._append("repair_recorded", payload)
-        self.memory.record_repair(repair, episode_id)
+        self._record("repair_recorded", payload,
+                     lambda memory: memory.record_repair(repair, episode_id))
 
     def record_invalidation(self, artifact_id: str, status: str) -> None:
         """Persist an artifact invalidation status so restarts cannot forget it."""
         if not artifact_id.strip() or not status.strip():
             raise ValueError("artifact_id and status must be non-empty")
+        candidate = dict(self.invalidations)
+        candidate[artifact_id] = status
         self._append("invalidation_recorded",
                      {"artifact_id": artifact_id, "status": status})
-        self.invalidations[artifact_id] = status
+        self.invalidations.clear()
+        self.invalidations.update(candidate)
 
     def reuse_artifact(self, artifact_id: str, context: str = "") -> dict[str, Any]:
         """Gate artifact reuse against the *persisted* invalidation map."""
+        if self._poisoned:
+            raise LedgerIntegrityError(
+                "store disabled after a failed append; reopen and verify the ledger")
         return self.memory.reuse_artifact(artifact_id, self.invalidations, context)
 
     # -- read path ---------------------------------------------------------
@@ -211,7 +277,7 @@ class DurableHippocampus:
             "expectation_recorded": lambda: memory.record_expectation(h.Expectation(**payload)),
             "failure_recorded": lambda: memory.record_failure(h.FailureEvent(**payload)),
             "success_recorded": lambda: memory.record_success(h.SuccessEvent(**payload)),
-            "lesson_recorded": lambda: memory.record_lesson(h.LessonCandidate(**payload)),
+            "lesson_recorded": lambda: self._replay_lesson(memory, h, payload),
             "counterexample_recorded": lambda: memory.record_counterexample(h.Counterexample(**payload)),
             "repair_recorded": lambda: memory.record_repair(
                 h.RepairAction(**{k: v for k, v in payload.items() if k != "episode_id"}),
@@ -220,6 +286,15 @@ class DurableHippocampus:
                 str(payload["artifact_id"]), str(payload["status"])),
         }
         builders[rtype]()
+
+    def _replay_lesson(self, memory: HippocampusMemory, h, payload: dict[str, Any]) -> None:
+        lesson = h.LessonCandidate(**payload)
+        try:
+            self._validate_lesson_authority(lesson)
+        except ValueError as exc:
+            raise LedgerIntegrityError(
+                "ledger contains a lesson above the PROPOSED/LOW authority ceiling") from exc
+        memory.record_lesson(lesson)
 
     # -- introspection -----------------------------------------------------
 
@@ -258,12 +333,21 @@ class DurableHippocampus:
         """SHA-256 tip of the verified chain; genesis when empty."""
         return self._prev_hash
 
-    def verify(self) -> str:
-        """Re-verify the whole chain without mutating anything; returns tip."""
+    def verify(self, expected_tip_hash: str | None = None) -> str:
+        """Re-verify chain; optionally compare its tip to a trusted external hash.
+
+        The expected hash must be stored independently of this ledger (for
+        example, in a reviewed manifest); a value read from the ledger itself
+        does not protect against suffix rollback.
+        """
         probe = HippocampusMemory()
         saved = self.invalidations
         self.invalidations = {}
         try:
-            return self._replay_into(probe)
+            tip = self._replay_into(probe)
+            if expected_tip_hash is not None and tip != expected_tip_hash:
+                raise LedgerIntegrityError(
+                    "ledger tip does not match externally trusted expected_tip_hash")
+            return tip
         finally:
             self.invalidations = saved

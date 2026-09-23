@@ -47,6 +47,9 @@ def test_every_evidence_ref_resolves_to_a_real_file_at_its_commit(entry):
         return                                   # anchor en CLAUDE.md, sin commit pineado
     path, commit = ref.split(":", 1)[1].rsplit("@", 1)
     out = subprocess.run(["git", "cat-file", "-e", f"{commit}:{path}"], cwd=ROOT, capture_output=True)
-    if out.returncode != 0 and b"Not a valid object name" in out.stderr + out.stdout:
+    if out.returncode != 0 and any(
+        marker in out.stderr + out.stdout
+        for marker in (b"Not a valid object name", b"invalid object name")
+    ):
         pytest.skip(f"commit {commit} no disponible en este clon (shallow/CI)")
     assert out.returncode == 0, f"{path} no existe en {commit}"

@@ -12,6 +12,7 @@ import sys
 import types
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -99,18 +100,142 @@ class TestDurableHippocampus(unittest.TestCase):
         with self.assertRaisesRegex(LedgerIntegrityError, "chain break"):
             DurableHippocampus(path)
 
+    def test_suffix_rollback_requires_and_is_detected_by_external_tip_anchor(self):
+        path = Path(self._tmp())
+        store = DurableHippocampus(path)
+        store.register_episode(_episode())
+        store.record_lesson(_lesson())
+        trusted_tip = store.tip_hash
+        lines = path.read_bytes().splitlines(keepends=True)
+        path.write_bytes(lines[0])  # remove a valid suffix; internal links still verify
+
+        caller_memory = h.HippocampusMemory()
+        with self.assertRaisesRegex(LedgerIntegrityError, "externally trusted"):
+            DurableHippocampus(path, memory=caller_memory,
+                               expected_tip_hash=trusted_tip)
+        self.assertEqual(caller_memory.episodes, {})  # failed open did not publish replay
+
+        prefix = DurableHippocampus(path)
+        with self.assertRaisesRegex(LedgerIntegrityError, "externally trusted"):
+            prefix.verify(expected_tip_hash=trusted_tip)
+
     def test_duplicate_episode_rejected_and_ledger_unchanged(self):
         path = Path(self._tmp())
         store = DurableHippocampus(path)
         store.register_episode(_episode())
         before = path.read_text(encoding="utf-8")
-        # The ledger write happens first, so a memory-level rejection leaves an
-        # orphaned record; the contract is that the NEXT replay raises.
         with self.assertRaises(ValueError):
             store.register_episode(_episode())
-        self.assertNotEqual(path.read_text(encoding="utf-8"), before)
-        with self.assertRaises(ValueError):
+        self.assertEqual(path.read_text(encoding="utf-8"), before)
+        reloaded = DurableHippocampus(path)
+        self.assertEqual(reloaded.tip_hash, store.tip_hash)
+        self.assertEqual(len(reloaded.memory.episodes), 1)
+
+    def test_invalid_related_records_do_not_touch_ledger_or_memory(self):
+        invalid_calls = [
+            ("step", lambda store: store.record_step(h.StepExecution(
+                step_id="S-1", episode_id="MISSING", step_index=0,
+                action="test", tool_name="test"))),
+            ("expectation", lambda store: store.record_expectation(h.Expectation(
+                expectation_id="X-1", episode_id="MISSING", statement="test",
+                metric="metric", expected_direction="up"))),
+            ("failure", lambda store: store.record_failure(h.FailureEvent(
+                failure_id="F-1", episode_id="MISSING", step_id="S-1",
+                error_type="test", description="test", root_cause="test"))),
+            ("success", lambda store: store.record_success(h.SuccessEvent(
+                success_id="OK-1", episode_id="MISSING", step_id="S-1",
+                description="test"))),
+            ("lesson", lambda store: store.record_lesson(_lesson("MISSING"))),
+            ("repair", lambda store: store.record_repair(h.RepairAction(
+                repair_id="R-1", failure_id="F-1", description="test"),
+                "MISSING")),
+        ]
+        for name, call in invalid_calls:
+            with self.subTest(record_type=name):
+                path = Path(self._tmp())
+                store = DurableHippocampus(path)
+                before_memory = {
+                    key: dict(value) for key, value in store.memory.__dict__.items()
+                }
+                with self.assertRaises(ValueError):
+                    call(store)
+                self.assertFalse(path.exists())
+                self.assertEqual(store.memory.__dict__, before_memory)
+                reloaded = DurableHippocampus(path)
+                self.assertEqual(reloaded.memory.__dict__, before_memory)
+                self.assertEqual(reloaded.tip_hash, store_mod.GENESIS_HASH)
+
+    def test_lesson_authority_ceiling_is_enforced_on_write_and_replay(self):
+        path = Path(self._tmp())
+        store = DurableHippocampus(path)
+        store.register_episode(_episode())
+        before = path.read_bytes()
+
+        for status, confidence in (("PROMOTED", "HIGH"), ("PROPOSED", "HIGH")):
+            lesson = _lesson()
+            lesson.status = status
+            lesson.confidence = confidence
+            with self.subTest(status=status, confidence=confidence):
+                with self.assertRaisesRegex(ValueError, "PROPOSED/LOW"):
+                    store.record_lesson(lesson)
+                self.assertEqual(path.read_bytes(), before)
+                self.assertEqual(store.memory.reconstruct_episode("EP-1")["lessons"], [])
+
+        # A caller can recompute hashes, so integrity alone is not the authority
+        # gate. Replay must also reject a fully hash-consistent promotion.
+        record = json.loads(before.splitlines()[0])
+        lesson_record = {
+            "schema": store_mod.LEDGER_SCHEMA,
+            "type": "lesson_recorded",
+            "prev_hash": record["hash"],
+            "payload": {
+                **{key: value for key, value in _lesson().__dict__.items()},
+                "status": "PROMOTED",
+                "confidence": "HIGH",
+            },
+        }
+        lesson_record["hash"] = store_mod._record_hash(
+            lesson_record["type"], lesson_record["payload"], lesson_record["prev_hash"])
+        path.write_bytes(before + (json.dumps(lesson_record, sort_keys=True) + "\n").encode())
+        with self.assertRaisesRegex(LedgerIntegrityError, "authority ceiling"):
             DurableHippocampus(path)
+
+    def test_partial_append_fails_closed_and_poisoned_store_cannot_continue(self):
+        path = Path(self._tmp())
+        memory = h.HippocampusMemory()
+        store = DurableHippocampus(path, memory=memory)
+
+        class PartialWriter:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_args):
+                return False
+
+            def write(self, text):
+                with open(path, "ab") as raw:
+                    raw.write(text.encode("utf-8")[:20])
+                raise OSError("simulated partial append")
+
+        with patch.object(Path, "open", return_value=PartialWriter()):
+            with self.assertRaisesRegex(OSError, "partial append"):
+                store.register_episode(_episode())
+
+        self.assertIs(store.memory, memory)
+        self.assertEqual(memory.episodes, {})
+        self.assertEqual(store.tip_hash, store_mod.GENESIS_HASH)
+        with self.assertRaisesRegex(LedgerIntegrityError, "disabled after a failed append"):
+            store.register_episode(_episode("EP-2"))
+        with self.assertRaisesRegex(LedgerIntegrityError, "invalid JSON"):
+            DurableHippocampus(path)
+
+    def test_successful_write_preserves_supplied_memory_identity(self):
+        path = Path(self._tmp())
+        memory = h.HippocampusMemory()
+        store = DurableHippocampus(path, memory=memory)
+        store.register_episode(_episode())
+        self.assertIs(store.memory, memory)
+        self.assertIn("EP-1", memory.episodes)
 
     def test_invalidation_survives_restart_and_blocks_reuse(self):
         path = Path(self._tmp())
