@@ -782,35 +782,92 @@
     border-color: #484f63;
   }
   body.theme-dark .nt8-btn-action:hover { background: #484f63; }
+
+  /* ===== Rediseño 2026-09-23: barra agrupada, estilo sobrio y consistente ===== */
+  :root { --accent:#2563eb; --accent-soft:rgba(37,99,235,.10); --chip-on:#eef2ff; }
+  body.theme-dark { --accent:#60a5fa; --accent-soft:rgba(96,165,250,.14); --chip-on:#1f2a44; }
+  #toolbar { height:42px !important; padding:0 10px !important; gap:10px; background:var(--tb-bg) !important;
+    border-bottom:1px solid var(--tb-border) !important; box-shadow:0 1px 2px rgba(0,0,0,.04); }
+  #toolbar .tb-left, #toolbar .tb-right { display:flex; align-items:center; gap:10px; min-width:0; }
+  #toolbar .tb-left { flex:1 1 auto; overflow-x:auto; scrollbar-width:none; }
+  #toolbar .tb-left::-webkit-scrollbar { display:none; }
+  .tb-group { display:flex; align-items:center; gap:4px; padding-left:10px; border-left:1px solid var(--tb-border); flex:0 0 auto; }
+  .tb-group[hidden] { display:none; }
+  #toolbar .tb-right > .nt8-btn:first-child + .tb-group { }
+  .tb-cap { font-size:10px; text-transform:uppercase; letter-spacing:.04em; opacity:.55; margin-right:6px; font-weight:600; }
+  .tb-cap-out { margin-right:2px; }
+  #toolbar .nt8-badge { background:var(--accent) !important; color:#fff !important; border-radius:6px; padding:4px 9px;
+    font-weight:700; letter-spacing:.02em; flex:0 0 auto; }
+  #toolbar .nt8-btn, #toolbar .nt8-select-btn, #toolbar .nt8-select {
+    background:transparent !important; color:var(--tb-text) !important; border:1px solid transparent !important;
+    box-shadow:none !important; border-radius:6px !important; height:28px; padding:0 9px !important;
+    font-weight:500 !important; display:inline-flex; align-items:center; gap:4px; white-space:nowrap; }
+  #toolbar .nt8-select-btn, #toolbar .nt8-select { border-color:var(--tb-btn-border) !important; background:var(--tb-btn-bg) !important; }
+  #toolbar .nt8-select { max-width:260px; }
+  #toolbar .nt8-btn:hover, #toolbar .nt8-select-btn:hover { background:var(--tb-btn-hover) !important; }
+  #toolbar .nt8-btn.active, #toolbar .nt8-btn[aria-pressed="true"] { background:var(--accent-soft) !important; color:var(--accent) !important; }
+  #toolbar .arrow { opacity:.5; font-size:10px; }
+  #toolbar .tb-icon { width:28px; justify-content:center; padding:0 !important; font-size:14px; }
+  .tb-chip { height:26px; padding:0 9px; border-radius:13px; border:1px solid var(--tb-btn-border); background:transparent;
+    color:var(--tb-text); font:500 11.5px "Segoe UI",-apple-system,sans-serif; display:inline-flex; align-items:center; gap:5px;
+    cursor:pointer; opacity:.55; transition:opacity .12s, background .12s; }
+  .tb-chip.on { opacity:1; background:var(--chip-on); border-color:var(--accent); }
+  .tb-chip:hover { opacity:.9; }
+  .dot { display:inline-block; width:9px; height:9px; border-radius:50%; flex:0 0 auto; }
+  .dot-book { background:linear-gradient(135deg,#f87171 50%,#5eead4 50%); border-radius:2px; }
+  .dot-trades { background:#2dd4bf; box-shadow:4px 0 0 -1px #fb7185; }
+  .dot-ice { background:#a855f7; transform:rotate(45deg); border-radius:1px; }
+  .dot-spoof { background:#f59e0b; }
+  .dot-abs { background:#14b8a6; border-radius:1px; height:5px; width:11px; }
+  .nt8-popover { border-radius:8px !important; box-shadow:0 8px 24px rgba(0,0,0,.14) !important; }
+  .pop-sec { font-size:10px; text-transform:uppercase; letter-spacing:.05em; font-weight:700; opacity:.6; margin:10px 0 4px; }
+  .pop-sec:first-child { margin-top:0; }
+  .pop-tag { text-transform:none; letter-spacing:0; font-weight:600; color:#b45309; margin-left:6px; }
+  .pop-check { display:flex !important; align-items:center; gap:6px; padding:3px 0; }
+  .pop-num input { width:72px; margin-left:auto; }
+  #l2-tooltip { border-radius:8px !important; box-shadow:0 6px 18px rgba(0,0,0,.18) !important; font:11.5px/1.45 "Cascadia Mono",Consolas,monospace !important; }
+  @media (max-width:1750px){ #toolbar .tb-cap{display:none} #toolbar .nt8-select{max-width:170px} .tb-chip{padding:0 7px} }
+  @media (max-width:1400px){ .tb-chip{font-size:0;gap:0;width:26px;justify-content:center;padding:0} .tb-chip .dot{margin:0} #toolbar .nt8-select{max-width:130px} }
 </style>
 </head>
 <body>
 
 <header id="toolbar">
   <div class="tb-left">
-    <span class="nt8-badge">Chart</span>
-    <button class="nt8-select-btn" id="btn-inst" title="Seleccionar activo (EdgeLab Regime)">
-      <span id="lbl-asset-name">6E Continuo (EdgeLab)</span>
-      <span class="arrow">▾</span>
-    </button>
-    <button class="nt8-select-btn" id="btn-tf" title="Data Series / Timeframe (15 Min / 25 Tick)">
-      <span id="lbl-tf-name">15 Min</span>
-      <span class="arrow">▾</span>
-    </button>
-    <div class="divider"></div>
-    <select id="runsel" class="nt8-select" title="Seleccionar run"></select>
-    <button class="nt8-btn" id="btn-bt2a-params" style="background:#0284c7;color:#fff;font-weight:700;border-color:#0369a1;" title="Configurar Parámetros y Extensión de Zonas (500 barras)"><span>⚙️ Parámetros</span> <span class="arrow">▾</span></button>
-    <button class="nt8-btn" id="btn-corredores-demo" style="background:#0891b2;color:#fff;font-weight:700;border-color:#0e7490;box-shadow:0 0 6px rgba(8,145,178,0.4);" title="Prueba Visual: Corredores de Vacío y Campo de Fricción (HP-006)"><span>⚡ Corredores de Vacío (Demo)</span></button>
-    <button class="nt8-btn" id="btn-toggle-decay" style="background:#059669;color:#fff;font-weight:700;border-color:#047857;box-shadow:0 0 6px rgba(5,150,105,0.4);" title="Alternar Decaimiento: Sólo Comercio (Sin Tiempo) vs Decaimiento Temporal 12h"><span id="lbl-btn-decay">🛡️ Decaimiento: Sólo Comercio</span></button>
+    <span class="nt8-badge" title="EdgeLab">EdgeLab</span>
+    <div class="tb-group" aria-label="Datos">
+      <button class="nt8-select-btn" id="btn-inst" title="Activo / sesión"><span class="tb-cap">Activo</span><span id="lbl-asset-name">6E Continuo (EdgeLab)</span><span class="arrow">▾</span></button>
+      <button class="nt8-select-btn" id="btn-tf" title="Temporalidad de las velas"><span class="tb-cap">Velas</span><span id="lbl-tf-name">15 Min</span><span class="arrow">▾</span></button>
+    </div>
+    <div class="tb-group" aria-label="Estudio">
+      <span class="tb-cap tb-cap-out">Estudio</span>
+      <select id="runsel" class="nt8-select" title="Indicador / corrida visible"></select>
+      <button class="nt8-btn" id="btn-bt2a-params" title="Parámetros y extensión de zonas"><span>Parámetros</span> <span class="arrow">▾</span></button>
+    </div>
+    <div class="tb-group" id="tb-l2-chips" aria-label="Capas L2" hidden>
+      <span class="tb-cap tb-cap-out">L2</span>
+      <button class="tb-chip" data-proxy="chk-show-l2" title="Mapa de calor del libro (10 niveles por lado)"><i class="dot dot-book"></i>Libro</button>
+      <button class="tb-chip" data-proxy="chk-show-l2-trades" title="Burbujas de trades por agresor"><i class="dot dot-trades"></i>Trades</button>
+      <button class="tb-chip" data-proxy="chk-show-l2-icebergs" title="Candidatos a iceberg (provisional)"><i class="dot dot-ice"></i>Iceberg</button>
+      <button class="tb-chip" data-proxy="chk-show-l2-spoofs" title="Candidatos a spoofing (provisional)"><i class="dot dot-spoof"></i>Spoof</button>
+      <button class="tb-chip" data-proxy="chk-show-l2-absorptions" title="Candidatos a absorción (provisional)"><i class="dot dot-abs"></i>Absorción</button>
+    </div>
+    <div class="tb-group" aria-label="Análisis HFT">
+      <button class="nt8-btn" id="btn-corredores-demo" title="Corredores de vacío y campo de fricción (HP-006/HP-007)"><span>Corredores</span></button>
+      <button class="nt8-btn" id="btn-toggle-decay" title="Alternar decaimiento: sólo comercio / temporal 12h"><span id="lbl-btn-decay">Decaim.: comercio</span></button>
+    </div>
   </div>
   <div class="tb-right">
-    <button class="nt8-btn" id="btn-layers" title="Mostrar/ocultar capas"><span>👁️ Capas</span> <span class="arrow">▾</span></button>
-    <button class="nt8-btn" id="btn-parity" title="Ver métricas de paridad"><span class="badge-pass" id="parity-pill">PASS</span> <span class="arrow">▾</span></button>
-    <button class="nt8-btn" id="btn-zones" title="Tabla de zonas"><span>📊 Zonas</span> <span class="arrow">▾</span></button>
-    <button class="nt8-btn" id="btn-props" title="Propiedades del indicador (Indicators)"><span>⚙️ Indicadores</span> <span class="arrow">▾</span></button>
-    <div class="divider"></div>
-    <button class="nt8-btn" id="btn-theme" title="Alternar tema claro/oscuro"><span>🌙</span></button>
-    <button class="nt8-btn" id="btn-reset" title="Ajustar escala (Fit Content)"><span>⤢</span></button>
+    <button class="nt8-btn" id="btn-parity" title="Métricas de paridad NT8 / Python"><span class="badge-pass" id="parity-pill">PASS</span> <span class="arrow">▾</span></button>
+    <div class="tb-group" aria-label="Vista">
+      <button class="nt8-btn" id="btn-layers" title="Capas y filtros"><span>Capas</span> <span class="arrow">▾</span></button>
+      <button class="nt8-btn" id="btn-zones" title="Tabla de zonas"><span>Zonas</span> <span class="arrow">▾</span></button>
+      <button class="nt8-btn" id="btn-props" title="Propiedades del indicador"><span>Indicadores</span> <span class="arrow">▾</span></button>
+    </div>
+    <div class="tb-group tb-icons" aria-label="Ventana">
+      <button class="nt8-btn tb-icon" id="btn-theme" title="Tema claro / oscuro"><span>◐</span></button>
+      <button class="nt8-btn tb-icon" id="btn-reset" title="Ajustar a pantalla"><span>⤢</span></button>
+    </div>
   </div>
 </header>
 
@@ -864,21 +921,23 @@
 
 <!-- Popovers flotantes rápidos -->
 <div id="pop-layers" class="nt8-popover">
-  <div class="pop-header">Capas y Filtros <button class="pop-close" data-close="pop-layers">✕</button></div>
+  <div class="pop-header">Capas y filtros <button class="pop-close" data-close="pop-layers">✕</button></div>
   <div class="pop-body">
+    <div class="pop-sec">Zonas</div>
     <label class="pop-check"><input type="checkbox" id="chk-py" checked> <span class="swatch swatch-py"></span> Python (relleno translúcido)</label>
     <label class="pop-check"><input type="checkbox" id="chk-nt8" checked> <span class="swatch swatch-nt8"></span> NT8 (contorno punteado)</label>
     <label class="pop-check"><input type="checkbox" id="chk-orphans"> Solo huérfanas</label>
-    <label class="pop-check">Máx. zonas LUX-IMB en pantalla (0 = todas) <input type="number" id="inp-lux-max" min="0" max="20000" step="50" value="300" style="width:64px"></label>
-    <label class="pop-check"><input type="checkbox" id="chk-show-l2-trades" checked> Mostrar cinta de trades L2 (burbujas por agresor)</label>
-    <label class="pop-check">Máx. burbujas de trades en pantalla (0 = todas) <input type="number" id="inp-l2-trade-max" min="0" max="50000" step="500" value="4000" style="width:70px"></label>
-    <label class="pop-check"><input type="checkbox" id="chk-show-l2" checked> Mostrar mapa de profundidad L2 (libro de órdenes)</label>
-    <label class="pop-check"><input type="checkbox" id="chk-show-l2-icebergs" checked> Candidatos a iceberg (◆ morado, PROVISIONAL)</label>
-    <label class="pop-check"><input type="checkbox" id="chk-show-l2-spoofs" checked> Candidatos a spoofing (✕ naranja, PROVISIONAL)</label>
-    <label class="pop-check"><input type="checkbox" id="chk-show-l2-absorptions" checked> Candidatos a absorción (▬ verde azulado, PROVISIONAL)</label>
-    <label class="pop-check"><input type="checkbox" id="chk-show-exploratory" checked> Mostrar zonas exploratorias (origen sin verificar)</label>
-    <hr style="margin: 8px 0; border: none; border-top: 1px solid var(--tb-border);">
-    <div style="font-weight:600; margin-bottom:4px;">Estados:</div>
+    <label class="pop-check"><input type="checkbox" id="chk-show-exploratory" checked> Zonas exploratorias (origen sin verificar)</label>
+    <label class="pop-check pop-num">Máx. zonas LUX-IMB (0 = todas) <input type="number" id="inp-lux-max" min="0" max="20000" step="50" value="300"></label>
+    <div class="pop-sec">Libro L2</div>
+    <label class="pop-check"><input type="checkbox" id="chk-show-l2" checked> <i class="dot dot-book"></i> Mapa de profundidad (libro de órdenes)</label>
+    <label class="pop-check"><input type="checkbox" id="chk-show-l2-trades" checked> <i class="dot dot-trades"></i> Burbujas de trades por agresor</label>
+    <label class="pop-check pop-num">Máx. burbujas en pantalla (0 = todas) <input type="number" id="inp-l2-trade-max" min="0" max="50000" step="500" value="4000"></label>
+    <div class="pop-sec">Detectores L2 <span class="pop-tag">PROVISIONALES · sin validar</span></div>
+    <label class="pop-check"><input type="checkbox" id="chk-show-l2-icebergs" checked> <i class="dot dot-ice"></i> Iceberg (◆)</label>
+    <label class="pop-check"><input type="checkbox" id="chk-show-l2-spoofs" checked> <i class="dot dot-spoof"></i> Spoofing (✕)</label>
+    <label class="pop-check"><input type="checkbox" id="chk-show-l2-absorptions" checked> <i class="dot dot-abs"></i> Absorción (▬)</label>
+    <div class="pop-sec">Estados</div>
     <div id="f-state-list"></div>
   </div>
 </div>
@@ -2966,7 +3025,7 @@
     var isTrade = (state.decayMode === "trade_only");
     var btn = document.getElementById("btn-toggle-decay");
     var lblBtn = document.getElementById("lbl-btn-decay");
-    if (lblBtn) lblBtn.textContent = isTrade ? "🛡️ Decaimiento: Sólo Comercio" : "⏱️ Decaimiento: Temporal 12h";
+    if (lblBtn) lblBtn.textContent = isTrade ? "Decaim.: comercio" : "Decaim.: 12 h";
     if (btn) {
       btn.style.background = isTrade ? "#059669" : "#0284c7";
       btn.style.borderColor = isTrade ? "#047857" : "#0369a1";
@@ -3816,8 +3875,25 @@
     }
   }
 
+  function syncL2Chips() {
+    var box = document.getElementById("tb-l2-chips"); if (!box) return;
+    var hasL2 = !!(state.data && (state.data.l2 || state.data.trades || state.data.manipulation));
+    box.hidden = !hasL2;
+    box.querySelectorAll(".tb-chip").forEach(function (c) {
+      var cb = document.getElementById(c.getAttribute("data-proxy"));
+      c.classList.toggle("on", !!(cb && cb.checked)); c.setAttribute("aria-pressed", cb && cb.checked ? "true" : "false");
+    });
+  }
+  document.querySelectorAll("#tb-l2-chips .tb-chip").forEach(function (c) {
+    c.addEventListener("click", function () {
+      var cb = document.getElementById(c.getAttribute("data-proxy")); if (!cb) return;
+      cb.checked = !cb.checked; cb.dispatchEvent(new Event("change")); syncL2Chips();
+    });
+  });
+  document.addEventListener("change", function (e) { if (e.target && /^chk-show-l2/.test(e.target.id)) syncL2Chips(); });
   function applyLoadedAsset(data, options) {
     options = options || {};
+    setTimeout(syncL2Chips, 0);
     normalizeRuns(data);
     state.data = data;
     var m = data.meta;
