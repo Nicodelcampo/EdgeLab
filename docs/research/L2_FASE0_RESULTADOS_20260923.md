@@ -66,3 +66,15 @@ Mediana del |Δmid| a 60 s y a 300 s, en ticks, contra un costo round-trip = spr
 - **§4:** si la comisión real supera 0,5 tick por round-trip, todos los umbrales de p suben.
 
 Aporte al referente: hay un primer número económico concreto. Con este feed, apostar la dirección a 1 minuto necesita acertar 65–83 % de las veces, así que se descarta. A 5 minutos hace falta 56–62 %, que es exigente pero no absurdo. Eso ubica cualquier trabajo futuro con el libro en horizontes de minutos y como filtro de señales. Además queda abierta una duda seria sobre si el feed de NT8 muestra el libro completo.
+
+## 6. Detectores contra su nulo (plan 0.6), GC 08-26, 29 sesiones pre-holdout
+
+Herramienta: `tools/l2_detector_nulls.py` (commit `be2c301`, seed 20260923). Artefacto: `artifacts/l2_phase0/GC_GC_08-26/detector_nulls.jsonl`. La unidad es la sesión: IC 95 % por bootstrap del cociente de sumas.
+
+| Detector | Nulo (destruye exactamente lo que el detector dice medir) | Real/nulo | IC 95 % | Sesiones real > nulo | Veredicto |
+|---|---|---:|---:|---:|---|
+| Iceberg | trades desplazados 120–1800 s, mismo libro | **2,34** | [1,74; 3,23] | 25/29 | **Supera al nulo.** Queda. |
+| Absorción | tamaños de trade permutados en la sesión | **1,41** | [1,36; 1,47] | 29/29 | **Supera al nulo.** Queda. |
+| "Spoof" | trades desplazados, mismo libro | 0,79 | [0,73; 0,84] | 0/29 | **No mide spoofing.** El 79 % de lo que marca aparece igual con trades de otro momento: es *liquidez fugaz* (orden grande con vida < 5 s), sea cual sea la ejecución. **Se renombra en el visor a "Liquidez fugaz"** y queda como posible feature de estado (canal no direccional), nunca como intención. |
+
+Superar al nulo significa que **el fenómeno existe más allá del azar**. **No** significa que prediga el precio: eso es información condicional (Fase 2, bajo STOP).

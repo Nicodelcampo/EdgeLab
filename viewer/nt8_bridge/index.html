@@ -849,7 +849,7 @@
       <button class="tb-chip" data-proxy="chk-show-l2" title="Mapa de calor del libro (10 niveles por lado)"><i class="dot dot-book"></i>Libro</button>
       <button class="tb-chip" data-proxy="chk-show-l2-trades" title="Burbujas de trades por agresor"><i class="dot dot-trades"></i>Trades</button>
       <button class="tb-chip" data-proxy="chk-show-l2-icebergs" title="Candidatos a iceberg (provisional)"><i class="dot dot-ice"></i>Iceberg</button>
-      <button class="tb-chip" data-proxy="chk-show-l2-spoofs" title="Candidatos a spoofing (provisional)"><i class="dot dot-spoof"></i>Spoof</button>
+      <button class="tb-chip" data-proxy="chk-show-l2-spoofs" title="Liquidez fugaz: orden grande que desaparece en &lt;5 s casi sin ejecutarse. NO implica spoofing (nulo 2026-09-23: 79% aparece igual con trades desplazados)"><i class="dot dot-spoof"></i>Fugaz</button>
       <button class="tb-chip" data-proxy="chk-show-l2-absorptions" title="Candidatos a absorción (provisional)"><i class="dot dot-abs"></i>Absorción</button>
     </div>
     <div class="tb-group" aria-label="Análisis HFT">
@@ -935,7 +935,7 @@
     <label class="pop-check pop-num">Máx. burbujas en pantalla (0 = todas) <input type="number" id="inp-l2-trade-max" min="0" max="50000" step="500" value="4000"></label>
     <div class="pop-sec">Detectores L2 <span class="pop-tag">PROVISIONALES · sin validar</span></div>
     <label class="pop-check"><input type="checkbox" id="chk-show-l2-icebergs" checked> <i class="dot dot-ice"></i> Iceberg (◆)</label>
-    <label class="pop-check"><input type="checkbox" id="chk-show-l2-spoofs" checked> <i class="dot dot-spoof"></i> Spoofing (✕)</label>
+    <label class="pop-check"><input type="checkbox" id="chk-show-l2-spoofs" checked> <i class="dot dot-spoof"></i> Liquidez fugaz (✕, orden grande &lt;5 s)</label>
     <label class="pop-check"><input type="checkbox" id="chk-show-l2-absorptions" checked> <i class="dot dot-abs"></i> Absorción (▬)</label>
     <div class="pop-sec">Estados</div>
     <div id="f-state-list"></div>
@@ -1737,7 +1737,7 @@
         ctx.moveTo(x + 5, y - 5); ctx.lineTo(x - 5, y + 5);
         ctx.stroke();
         ctx.fillStyle = "#f59e0b"; ctx.font = "bold 9px 'Segoe UI', -apple-system, sans-serif";
-        if (showLabels) ctx.fillText("SPOOF? " + Math.round(c.peak_visible_size), x + 8, y + 12);
+        if (showLabels) ctx.fillText("FUGAZ " + Math.round(c.peak_visible_size), x + 8, y + 12);
         hits.push({ x: x, y: y, r: 8, kind: "spoof", c: c });
       });
     }
@@ -2940,7 +2940,7 @@
   function l2MarkerHover(e){var h=state._l2MarkerHits||[],best=null,d0=Infinity;for(var i=0;i<h.length;i++){var dx=e.offsetX-h[i].x,dy=e.offsetY-h[i].y,d=dx*dx+dy*dy;if(d<=h[i].r*h[i].r&&d<d0){best=h[i];d0=d;}}
     if(!best)return false;var c=best.c,f=function(v){return Number.isFinite(+v)?(+v).toLocaleString():"n/a";},side=c.side===0?"ASK":"BID",L;
     if(best.kind==="iceberg")L=["ICEBERG? · HEURISTIC_UNVALIDATED","precio "+f(c.price)+" · lado "+side,"desde "+l2Clock(c.first_observed_ts_us),"hasta "+l2Clock(c.last_observed_ts_us),"reposiciones "+f(c.refill_count)+" · tamaño medio "+f(Math.round(c.avg_size)),"vol atribuido / ambiguo  "+f(c.attributed_trade_volume)+" / "+f(c.ambiguous_trade_volume)];
-    else if(best.kind==="spoof")L=["SPOOF? · HEURISTIC_UNVALIDATED","precio "+f(c.price)+" · lado "+side,"vida "+f(Math.round(c.lifetime_us/1000))+" ms · pico "+f(c.peak_visible_size),"ejecutado "+f(Math.round(c.fill_ratio*100))+"% · distancia al toque "+f(c.distance_to_touch)+" ticks","murió "+l2Clock(c.death_ts_us)];
+    else if(best.kind==="spoof")L=["LIQUIDEZ FUGAZ · no implica spoofing (ver L2_FASE0_RESULTADOS §6)","precio "+f(c.price)+" · lado "+side,"vida "+f(Math.round(c.lifetime_us/1000))+" ms · pico "+f(c.peak_visible_size),"ejecutado "+f(Math.round(c.fill_ratio*100))+"% · distancia al toque "+f(c.distance_to_touch)+" ticks","murió "+l2Clock(c.death_ts_us)];
     else L=["ABSORCIÓN? · HEURISTIC_UNVALIDATED","precio "+f(c.price)+" · "+(c.side===0?"compras absorbidas por vendedores pasivos":"ventas absorbidas por compradores pasivos"),"vol agresivo "+f(c.attributed_volume)+" en "+f(c.trade_count)+" trades (umbral p"+c.threshold_pctl+" = "+f(Math.round(c.volume_threshold))+")","ventana "+f(c.window_us/1e6)+" s desde "+l2Clock(c.window_start_ts_us),"el precio no atravesó el nivel dentro de la ventana"];
     L.push("Heurística sobre MBP (sin ID de orden); no es ground truth.");
     l2Tooltip.textContent=L.join("\n");l2Tooltip.style.display="block";l2Tooltip.style.left=Math.min(wrapEl.clientWidth-350,e.offsetX+14)+"px";l2Tooltip.style.top=Math.max(8,e.offsetY+14)+"px";return true;}
