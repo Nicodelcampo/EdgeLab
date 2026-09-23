@@ -42,3 +42,14 @@ def test_sweep_reports_conversion_failure(tmp_path):
     s = sweep(csv_dir=src, base=base, instrument="GC", contract="GC 12-26", tick_size=TICK,
               downloader_id="test", log=tmp_path / "log.jsonl", out=tmp_path / "out")
     assert s["conversion_failures"] == 1
+
+
+def test_sweep_without_continuity_only_converts(tmp_path):
+    src, base = tmp_path / "csv", tmp_path / "base"
+    src.mkdir()
+    for d in ("20260915", "20260916"):
+        (src / f"{d}.csv").write_text(_csv(d), encoding="utf-8")
+    s = sweep(csv_dir=src, base=base, instrument="GC", contract="GC 12-26", tick_size=TICK,
+              downloader_id="test", log=tmp_path / "log.jsonl", out=tmp_path / "out", continuity=False)
+    assert len(s["ingested"]) == 2 and s["conversion_failures"] == 0
+    assert s["boundaries_checked"] == 0 and not (tmp_path / "out").exists()
