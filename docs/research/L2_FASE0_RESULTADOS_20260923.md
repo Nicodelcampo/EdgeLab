@@ -80,3 +80,13 @@ Herramienta: `tools/l2_detector_nulls.py` (commit `be2c301`, seed 20260923). Art
 | "Spoof" | trades desplazados, mismo libro | 0,79 | [0,73; 0,84] | 0/29 | **No mide spoofing.** El 79 % de lo que marca aparece igual con trades de otro momento: es *liquidez fugaz* (orden grande con vida < 5 s), sea cual sea la ejecución. **Se renombra en el visor a "Liquidez fugaz"** y queda como posible feature de estado (canal no direccional), nunca como intención. |
 
 Superar al nulo significa que **el fenómeno existe más allá del azar**. **No** significa que prediga el precio: eso es información condicional (Fase 2, bajo STOP).
+
+## 7. 6E 09-26: Fase 0 descriptiva (4 sesiones pre-holdout: 25, 28, 29 y 30/06)
+
+Misma herramienta, otro instrumento. **Los costos no se transportan:** estos valen para el 6E. Tick = 0,00005 = USD 6,25; comisión round-trip **supuesta** = 0,8 tick. Artefactos en `artifacts/l2_phase0/6E_6E_09-26/{qa.jsonl,blocks.parquet,summary_by_hour.parquet}`.
+
+- **Spread:** ~1,2 ticks, con 1 tick el 76–86 % del tiempo. **Mejor nivel:** 35–50 contratos. **Barrido de 1–5 contratos:** 0,5 tick (medio spread). Es un mercado **de tick grande** y muy profundo.
+- **Reloj:** 2 cambios de mid tardan 2–20 s; 100 cambios, entre 100 s y 10 min. El precio casi no se mueve tick a tick.
+- **Movimiento contra costo:** |Δmid| mediano de 1–2,5 ticks a 60 s y 2–5 ticks a 300 s, contra un costo de 1,8 ticks. Para apostar la dirección cruzando el spread hace falta acertar **68–95 % a 5 min** (68 % solo en la apertura de NY). **A ≤ 5 min con órdenes de mercado no hay espacio.**
+- **Implicancia:** en el 6E el espacio económico, si existe, está en **horizontes largos** o en **ejecución pasiva**, cobrando el spread en lugar de pagarlo. Además, en mercados de tick grande el desequilibrio de la cola tiene su máximo poder predictivo (Gould y Bonart 2016). Es la pregunta **M4**, que requiere pre-registro.
+- **Límite:** 4 sesiones son descriptivas. No hay inferencia.
