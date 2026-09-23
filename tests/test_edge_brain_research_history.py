@@ -13,7 +13,7 @@ sys.path.insert(0, str(ROOT))
 from edgelab.edge_brain.hippocampus_store import DurableHippocampus  # noqa: E402
 from tools import build_research_history_ledger as B  # noqa: E402
 
-EXPECTED_TIP = "29ef1a3e353eba01c4ba1e6c00fb613873742c468b81b0457b8d49f2c3e7407a"
+EXPECTED_TIP = "89028d1ef2d53c7e13f89b443e65d9ce3860a353c07668c63271083828dc1ccd"   # 21 registros; el tip previo (15) queda anclado en ANCHORS.json
 
 
 @pytest.fixture(scope="module")

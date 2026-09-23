@@ -26,7 +26,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from edgelab.edge_brain.hippocampus import AnalysisEpisode, Counterexample, LessonCandidate  # noqa: E402
-from edgelab.edge_brain.hippocampus_store import DurableHippocampus  # noqa: E402
+from edgelab.edge_brain.hippocampus_store import DurableHippocampus, LedgerIntegrityError  # noqa: E402
 
 LEDGER = ROOT / "artifacts" / "hippocampus" / "research_history_ledger.jsonl"
 EPISODE_ID = "EPISODE-RESEARCH-HISTORY-INGEST-001"
@@ -91,31 +91,71 @@ ENTRIES = [
      "doc:docs/incidents/AMENDMENT_G2-A1_2026-08-10.md@62ac28cd",
      "Validate what a statistical gate actually measures against its contract before trusting its verdicts.",
      "AMENDED_GATE"),
+    # --- 2026-09-23 (agregadas por append; el prefijo anterior queda anclado en ANCHORS.json) ---
+    ("L2-DIR-GC", "L2-BOOK-ADDS-DIRECTIONAL-INFO-30-300S",
+     "GC 08-26 pre-holdout 2026-05-27..06-30, NT8 MBP-10, ridge M0 (trades) vs M1 (+9 book features), "
+     "L in {0,250,500} ms, preregistered at aa080a1",
+     "DeltaIC(M1-M0) did not reject in 6 Bonferroni tests; 30 s directional significantly negative "
+     "(-0.024); 60 s informative null (CI [-0.014, 0.011], MDE 0.011); identical at L=0",
+     "the order book added no information on the mid at 30-300 s beyond trade flow, independent of latency",
+     "doc:docs/research/L2_FASE2_RESULTADOS_20260923.md@2d9add9",
+     "Book information in GC lives below ~1 s; at retail-reachable horizons it adds nothing over trade flow.",
+     "the same preregistration on another instrument or period, or L2 as signal filter (M3) or execution (M4)"),
+    ("L2-BOOTSTRAP-OVERLAP", "EXPECTED_BOOTSTRAP_OVERLAP-ROOT-CAUSE",
+     "L2 session boundaries, GC 08-26/12-26 reconverted 2026-09-22",
+     "the -4..-8 s cross-day overlap disappears once NT8 sub-second fields (100 ns ticks) are divided by 10",
+     "a published root cause and its 30 s tolerance were artifacts of a unit bug (sub-second x10)",
+     "doc:docs/research/L2_VISOR_RESOLUCION_20260923.md@e3028da",
+     "Before explaining an anomaly, compare against an independent conversion of the same raw data.",
+     "overlap evidence in data converted with the fixed parser"),
+    ("L2-SPOOF-DETECTOR", "SPOOF-HEURISTIC-DETECTS-SPOOFING",
+     "GC 08-26 pre-holdout, 29 sessions, trade-time-shift null",
+     "real/null = 0.79 [0.73, 0.84], 0/29 sessions above null",
+     "the detector measures fleeting large quotes, not spoofing: 79% of flags survive without the trade link",
+     "doc:docs/research/L2_FASE0_RESULTADOS_20260923.md@f0dc78e",
+     "Name a detector by what its null shows it measures, never by an unobservable intention.",
+     "order-level (MBO) data and a null specific to intent"),
 ]
 
 
+def _records(path: Path) -> list[bytes]:
+    return [ln for ln in path.read_bytes().split(b"\n") if ln.strip()] if path.exists() else []
+
+
 def build(path: Path = LEDGER) -> str:
-    if path.exists():
-        path.unlink()
+    """APPEND-ONLY: genera el ledger completo en un temporal y, si ya existe uno, exige que lo existente sea
+    PREFIJO exacto de lo generado; solo agrega lo que falta. Nunca borra ni reescribe historia (antes hacia
+    unlink + regeneracion, y el tip anclado se editaba en el mismo commit)."""
+    import tempfile
+    with tempfile.TemporaryDirectory() as td:
+        tmp = Path(td) / "gen.jsonl"
+        store = DurableHippocampus(tmp)
+        store.register_episode(AnalysisEpisode(
+            episode_id=EPISODE_ID,
+            goal="Retroactively ingest documented closures/falsifications as counterexamples + lesson "
+                 "candidates; no outcomes opened, no promotion",
+            created_at_utc=TS, updated_at_utc=TS, status="COMPLETED_UNADJUDICATED",
+            recorded_by="research-history-ingest", outcomes_inspected=False))
+        for key, claim, context, observed, why, evidence, lesson, reopen in ENTRIES:
+            store.record_counterexample(Counterexample(
+                counterexample_id=f"CX-RH-{key}", target_claim_or_rule_id=claim, context=context,
+                observed_behavior=observed, why_it_violates=why, evidence_ref=evidence,
+                status="CONFIRMED", recorded_at_utc=TS))
+            store.record_lesson(LessonCandidate(
+                lesson_id=f"LESSON-RH-{key}", episode_id=EPISODE_ID,
+                statement=f"{lesson} Reopen only with: {reopen}.",
+                scope="RESEARCH", confidence="LOW", status="PROPOSED",
+                evidence_record_ids=[], created_at_utc=TS))
+        generated = _records(tmp)
+    existing = _records(path)
+    if generated[:len(existing)] != existing:
+        raise LedgerIntegrityError(f"{path}: existing ledger is not a prefix of the generated one; "
+                                   "refusing to rewrite history (append-only)")
     path.parent.mkdir(parents=True, exist_ok=True)
-    store = DurableHippocampus(path)
-    store.register_episode(AnalysisEpisode(
-        episode_id=EPISODE_ID,
-        goal="Retroactively ingest documented closures/falsifications as counterexamples + lesson "
-             "candidates; no outcomes opened, no promotion",
-        created_at_utc=TS, updated_at_utc=TS, status="COMPLETED_UNADJUDICATED",
-        recorded_by="research-history-ingest", outcomes_inspected=False))
-    for key, claim, context, observed, why, evidence, lesson, reopen in ENTRIES:
-        store.record_counterexample(Counterexample(
-            counterexample_id=f"CX-RH-{key}", target_claim_or_rule_id=claim, context=context,
-            observed_behavior=observed, why_it_violates=why, evidence_ref=evidence,
-            status="CONFIRMED", recorded_at_utc=TS))
-        store.record_lesson(LessonCandidate(
-            lesson_id=f"LESSON-RH-{key}", episode_id=EPISODE_ID,
-            statement=f"{lesson} Reopen only with: {reopen}.",
-            scope="RESEARCH", confidence="LOW", status="PROPOSED",
-            evidence_record_ids=[], created_at_utc=TS))
-    return store.verify()
+    if len(generated) > len(existing):
+        with path.open("ab") as fh:
+            fh.write(b"".join(ln + b"\n" for ln in generated[len(existing):]))
+    return DurableHippocampus(path).verify()
 
 
 if __name__ == "__main__":

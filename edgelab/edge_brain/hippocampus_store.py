@@ -48,7 +48,42 @@ _RECORD_TYPES = {
     "counterexample_recorded",
     "repair_recorded",
     "invalidation_recorded",
+    "dependency_recorded",
+    "campaign_approved",
+    "trial_recorded",
 }
+
+
+class CampaignBudgetError(ValueError):
+    """Prueba fuera de una campana aprobada o por encima de su presupuesto (regla STOP ejecutable)."""
+
+
+def ledger_record_hashes(ledger_path: str | Path) -> list[str]:
+    """Hash de cada registro en orden (sin replay semantico: solo lee la cadena ya escrita)."""
+    out = []
+    with Path(ledger_path).open("r", encoding="utf-8") as fh:
+        for raw in fh:
+            raw = raw.strip()
+            if raw:
+                out.append(json.loads(raw)["hash"])
+    return out
+
+
+def verify_anchors(ledger_path: str | Path, anchors: list[dict[str, Any]]) -> None:
+    """APPEND-ONLY ENTRE COMMITS. Cada ancla {"records": n, "tip": h} dice que el registro n-esimo tenia hash h.
+    Si alguna deja de valer, el ledger reescribio su pasado (o se trunco) y se levanta LedgerIntegrityError.
+    Las anclas se agregan, nunca se editan: el archivo de anclas es append-only por la misma regla."""
+    DurableHippocampus(ledger_path)                      # la cadena completa verifica
+    hashes = ledger_record_hashes(ledger_path)
+    last = 0
+    for a in anchors:
+        n, tip = int(a["records"]), str(a["tip"])
+        if n < last:
+            raise LedgerIntegrityError("anchors must be non-decreasing in record count")
+        last = n
+        if n > len(hashes) or hashes[n - 1] != tip:
+            raise LedgerIntegrityError(
+                f"anchor at record {n} no longer holds: ledger history was rewritten or truncated")
 
 
 class LedgerIntegrityError(ValueError):
@@ -145,6 +180,9 @@ class DurableHippocampus:
         self._poisoned = False
         self._offset = 0          # bytes del ledger que esta instancia verifico (fin de su vista)
         self.invalidations: dict[str, str] = {}
+        self.dependencies: list[dict[str, str]] = []
+        self.campaigns: dict[str, dict[str, Any]] = {}
+        self.trials: dict[str, dict[str, Any]] = {}
         if self.ledger_path.exists() and self.ledger_path.stat().st_size > 0:
             self._prev_hash = self._replay_into(self.memory)
             self._offset = self._checked_size()
@@ -285,6 +323,73 @@ class DurableHippocampus:
         self._append("invalidation_recorded", {"artifact_id": artifact_id, "status": status})
         self.invalidations[artifact_id] = status
 
+    # -- dependencias e invalidacion en cascada ------------------------------
+
+    def record_dependency(self, source_id: str, target_id: str, relation: str) -> None:
+        """`source_id` depende de `target_id` (misma semantica que `invalidation.DependencyEdge`)."""
+        from .invalidation import DependencyEdge
+        DependencyEdge(source_id, target_id, relation)          # valida relacion y auto-dependencia
+        row = {"source_id": source_id, "target_id": target_id, "relation": relation}
+        if row in self.dependencies:
+            return
+        self._append("dependency_recorded", row)
+        self.dependencies.append(row)
+
+    def invalidate_with_cascade(self, artifact_id: str, status: str = "INVALIDATED_BY_MEASUREMENT_ERROR") -> dict[str, str]:
+        """Invalida un artefacto y propaga por las dependencias PERSISTIDAS (duras -> STALE_BY_DEPENDENCY,
+        evidenciales -> REQUIRES_REAUDIT). Cada nodo afectado queda como fila propia del ledger."""
+        from .invalidation import DependencyEdge, propagate_invalidation, _STATUS_PRIORITY
+        edges = [DependencyEdge(d["source_id"], d["target_id"], d["relation"]) for d in self.dependencies]
+        statuses = propagate_invalidation([artifact_id], edges)
+        statuses[artifact_id] = status
+        for node, st in sorted(statuses.items()):
+            cur = self.invalidations.get(node)
+            if cur is None or _STATUS_PRIORITY[st] > _STATUS_PRIORITY[cur]:
+                self.record_invalidation(node, st)
+        return statuses
+
+    # -- campanas pre-aprobadas y contabilidad de pruebas ---------------------
+
+    def record_campaign(self, campaign_id: str, family: str, approved_by: str, recorded_by: str,
+                        max_trials: int, prereg_ref: str, data_scope: str) -> None:
+        """Campana aprobada por un HUMANO (`approved_by` = "human:<nombre>"), distinta de quien la registra
+        (NO_SELF_APPROVAL). Fija el presupuesto de pruebas: el agente corre solo adentro, se detiene afuera."""
+        if not approved_by.startswith("human:") or approved_by == recorded_by:
+            raise ValueError("campaign must be approved by a human ('human:<name>') other than the recorder")
+        if campaign_id in self.campaigns or max_trials < 1 or not prereg_ref or not family or not data_scope:
+            raise ValueError("duplicate campaign or missing family/prereg/data_scope/budget")
+        row = dict(campaign_id=campaign_id, family=family, approved_by=approved_by, recorded_by=recorded_by,
+                   max_trials=int(max_trials), prereg_ref=prereg_ref, data_scope=data_scope)
+        self._append("campaign_approved", row)
+        self.campaigns[campaign_id] = row
+
+    def _check_trial(self, row: dict[str, Any]) -> None:
+        camp = self.campaigns.get(row["campaign_id"])
+        if camp is None:
+            raise CampaignBudgetError(f"no approved campaign {row['campaign_id']!r}: trial requires approval (STOP)")
+        if row["trial_id"] in self.trials:
+            raise CampaignBudgetError(f"duplicate trial_id {row['trial_id']!r}")
+        used = sum(1 for t in self.trials.values() if t["campaign_id"] == row["campaign_id"])
+        if used >= camp["max_trials"]:
+            raise CampaignBudgetError(
+                f"campaign {row['campaign_id']!r} exhausted its budget ({camp['max_trials']} trials): stop and ask")
+
+    def record_trial(self, campaign_id: str, trial_id: str, hypothesis: str, variant: str,
+                     metric: str, result: str) -> None:
+        """Cada prueba sobre retornos cuenta, gane o pierda: es el N que entra a DSR/PBO/Bonferroni."""
+        row = dict(campaign_id=campaign_id, trial_id=trial_id, hypothesis=hypothesis, variant=variant,
+                   metric=metric, result=result)
+        self._check_trial(row)
+        self._append("trial_recorded", row)
+        self.trials[trial_id] = row
+
+    def trials_by_family(self) -> dict[str, int]:
+        out: dict[str, int] = {}
+        for t in self.trials.values():
+            fam = self.campaigns[t["campaign_id"]]["family"]
+            out[fam] = out.get(fam, 0) + 1
+        return out
+
     def reuse_artifact(self, artifact_id: str, context: str = "") -> dict[str, Any]:
         """Gate artifact reuse against the *persisted* invalidation map (y exige que la vista este al dia)."""
         if self._poisoned:
@@ -345,8 +450,23 @@ class DurableHippocampus:
                 h.RepairAction(**{k: v for k, v in payload.items() if k != "episode_id"}),
                 str(payload["episode_id"])),
             "invalidation_recorded": lambda: self._replay_invalidation(payload),
+            "dependency_recorded": lambda: self.dependencies.append(dict(payload)),
+            "campaign_approved": lambda: self._replay_campaign(payload),
+            "trial_recorded": lambda: self._replay_trial(payload),
         }
         builders[rtype]()
+
+    def _replay_campaign(self, payload: dict[str, Any]) -> None:
+        if not str(payload.get("approved_by", "")).startswith("human:") or payload.get("approved_by") == payload.get("recorded_by"):
+            raise LedgerIntegrityError("ledger contains a self-approved or non-human campaign")
+        self.campaigns[str(payload["campaign_id"])] = dict(payload)
+
+    def _replay_trial(self, payload: dict[str, Any]) -> None:
+        try:
+            self._check_trial(dict(payload))
+        except CampaignBudgetError as exc:
+            raise LedgerIntegrityError(f"ledger contains a trial outside an approved budget: {exc}") from exc
+        self.trials[str(payload["trial_id"])] = dict(payload)
 
     def _replay_invalidation(self, payload: dict[str, Any]) -> None:
         status = str(payload["status"])
@@ -408,8 +528,8 @@ class DurableHippocampus:
         does not protect against suffix rollback.
         """
         probe = HippocampusMemory()
-        saved = self.invalidations
-        self.invalidations = {}
+        saved = (self.invalidations, self.dependencies, self.campaigns, self.trials)
+        self.invalidations, self.dependencies, self.campaigns, self.trials = {}, [], {}, {}
         try:
             tip = self._replay_into(probe)
             if expected_tip_hash is not None and tip != expected_tip_hash:
@@ -417,4 +537,4 @@ class DurableHippocampus:
                     "ledger tip does not match externally trusted expected_tip_hash")
             return tip
         finally:
-            self.invalidations = saved
+            self.invalidations, self.dependencies, self.campaigns, self.trials = saved
