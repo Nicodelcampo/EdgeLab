@@ -100,3 +100,40 @@ MFE p50 25 contra 22,5; MAE −21,5 contra −23,5.
 3. **Costo:** la primera versión de la salvedad citaba "~4,5 ticks RT" sin fuente. Lo verificado es que `H-GC-BT2-1` declara 1,5 ticks, pero **este feed** tiene spread cotizado p50 de 4 ticks, 3–5 en RTH (Fase 0 §2, P-76; re-chequeado hoy en 01/06, 10/06 y 24/06). Ningún número del perfil se compara contra costo hasta resolver P-76. Un fade de ~1 tick no alcanza ni medio spread de este feed.
 4. **Falta** el rango de 60 s incondicional en el bloque de contexto (solo está en eventos).
 5. Todo el perfil es de un instrumento, un contrato y 15 sesiones. Nada se transporta a 6E ni a otros activos.
+
+## Chequeo de construcción antes de gastar la reserva: la barrera era geometría (2026-09-24)
+
+Nico aprobó usar `P-GC0826-CONF` para confirmar SUG-ABS-BARRIER. Antes de abrirla revisé el código del control y encontré un defecto de construcción:
+- **El control ponía su nivel en el toque** (mejor ask/bid, distancia 0).
+- **El nivel absorbido, en t0, queda mediana +2 ticks más allá del toque.** Un 59 % está más allá, un 17 % en el toque y un 24 % ya detrás.
+- La regla 5 de este documento pedía "misma geometría"; el código no la cumplía.
+
+`tools/l2_absorption_geometry_check.py` repite la medición **solo en exploración**, con un segundo control a la **misma distancia al toque** que el evento. Artefacto `artifacts/l2_atlas/barrier_geometry_check_GC_08-26.json`.
+
+| Horizonte | Ruptura evento − control en el toque (atlas) | Evento − control a igual distancia |
+|---|---|---|
+| 10 s | [−0,11; 0,00] | [0,00; +0,07] |
+| 30 s | **[−0,14; −0,02]** | [−0,03; +0,08] |
+| 60 s | **[−0,15; −0,03]** | [−0,05; +0,04] |
+| 300 s | **[−0,09; −0,03]** | [−0,05; +0,01] |
+
+**La "barrera" desaparece con el control correcto:** era distancia, no absorción. Es la misma familia de falla que F2.8 ("gana porque está más cerca"). En el Brain:
+- SUG-ABS-BARRIER-30 quedó `STALE_BY_DEPENDENCY`;
+- `ATLAS-ABS-GC0826-BARRIER-WITHDRAWN` guarda la lección de diseño: **todo control de un nivel empareja la distancia al toque en t0**;
+- **`P-GC0826-CONF` sigue intacta.**
+
+Las otras sugerencias no dependen del nivel, pero tampoco justifican la reserva:
+- **FADE-60** (~1 tick) no paga un spread de ~4 ticks, aunque fuera real.
+- **VOL-10** (más |movimiento| a 10 s) tiene un control que no empareja actividad reciente. Probablemente sea "mucho volumen anticipa volatilidad", que es genérico.
+
+## Segundo lote: 6E 09-26, solo target-free (4 sesiones pre-holdout)
+
+`python tools/l2_atlas_absorption.py --base E:/l2_parquet/6E_09-26 --tag 6E0926 --target-free-only`. Artefacto `artifacts/l2_atlas/absorption_6E0926.json`. Partición `P-6E0926-PRE` con rol `FUTURE`. No hay perfil de respuesta: con 4 sesiones no hay exploración útil, y mirarlas con retornos las gastaría.
+
+- **Nulo del detector:** 1,08× [0,94; 1,19], 3/4 sesiones. **No se separa del azar** (en GC: 1,33×).
+- **Contexto:** spread 1 tick; profundidad del lado absorbente p50 33 contra 30 incondicional; rango 60 s p50 3 contra 2 ticks.
+- **Estructura:** 263 eventos; CV entre eventos 2,4 (más en racimos que GC); 52 % en el ask; repetición de nivel 11 %.
+- **Iceberg:** 0 candidatos. La calibración del detector no se transporta al 6E.
+- **Lectura:** en un mercado de tick grande el precio casi no se mueve en 10 s, así que "aguantó el flujo" es casi siempre cierto y el detector queda reducido a "celda de mucho volumen". Si se estudia absorción en 6E, hay que **redefinirla**: por ejemplo, volumen consumido respecto del tamaño visible del nivel. Se registra como familia propia antes de medir (`ATLAS-ABS-6E0926-NOT-TRANSPORTABLE`).
+
+**Defecto del Brain encontrado en el camino:** las particiones se comparaban solo por fecha, así que el 6E del 25–30/06 "chocaba" con la reserva de GC. Ahora los ids de sesión llevan el instrumento (`6E0926:20260625`). La falla del primer intento quedó registrada en el ledger.

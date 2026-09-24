@@ -32,8 +32,9 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
 10. **LUX-IMB (OG+VI) extendido a los 11 activos, sobre barras M1 propias.** `tools/build_lux_imb_m1_bundles.py` arma M1 desde ticks pre-holdout (55 contratos) y corre el detector Python (geometría `body`, validado parcialmente solo en 6E). Sin paridad propia en los otros 10 activos (`PARITY_ABSTAIN`). Disponibles en el visor bajo "Gráfico M1 · LUX-IMB" por activo.
 11. **Atlas: capa descriptiva (2026-09-24).** Son observaciones que no promueven ni descartan: registran, apoyan otros análisis y sugieren pruebas. El Brain hace cumplir "explorar ≠ confirmar" con particiones declaradas antes de medir.
    - Primer lote: absorción L2 en GC 08-26. Nulo causal 1,33× [1,27; 1,39]; la cifra vieja de 1,41× usaba información futura y quedó stale.
-   - Exploración: el nivel absorbido se rompe menos y la volatilidad a 10 s es mayor. El fade es débil.
-   - Cinco sugerencias, a confirmar solo en `P-GC0826-CONF`.
+   - Exploración: la "barrera" resultó geometría. Con un control a igual distancia del toque, la diferencia desaparece; se retiró **antes** de gastar la reserva, que sigue intacta. El fade es débil y no paga el spread.
+   - 6E (solo target-free, 4 sesiones): el detector no se separa del nulo (1,08×). La definición de GC no se transporta a un mercado de tick grande.
+   - Regla de partición por potencia: 3/4 y 1/4 para horizontes ≤ 60 s; los horizontes largos necesitan datos futuros (`PARTICIONES_Y_POTENCIA_L2_20260924.md`).
    - `docs/research/ATLAS_CAPA_DESCRIPTIVA_20260924.md`, P-83.
 
 ## Resultados de investigación vigentes

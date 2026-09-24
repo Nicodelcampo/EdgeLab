@@ -377,7 +377,10 @@ class DurableHippocampus:
 
     def record_partition(self, partition_id: str, role: str, description: str, sessions: list[str]) -> None:
         """Particion de datos con su rol, declarada ANTES de medir. EXPLORATION admite perfiles de respuesta;
-        CONFIRMATION_RESERVED no se mira con retornos hasta que la use una prueba pre-registrada."""
+        CONFIRMATION_RESERVED no se mira con retornos hasta que la use una prueba pre-registrada.
+        `sessions` son ids con instrumento ("6E0926:20260625"): el solapamiento se compara por id, y la misma fecha
+        en otro activo es otra sesion. Las particiones GC del 2026-09-24 usan fechas sueltas (legado: son GC 08-26,
+        lo dice su descripcion)."""
         if role not in PARTITION_ROLES:
             raise ValueError(f"role must be one of {sorted(PARTITION_ROLES)}")
         if partition_id in self.partitions or not sessions:

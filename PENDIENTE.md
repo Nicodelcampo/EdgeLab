@@ -2483,16 +2483,16 @@ Todo lo anterior al 2027-01-01 es holdout (solo visor). Desde 2027 es dato de de
 
 **2026-09-24.** F4 pasó el MCPT de descubrimiento en ES, NQ e YM, pero la validación no tiene potencia. Para seguir hacen falta años de datos diarios o de 1 min de ES/NQ/YM (baratos) y un pre-registro propio. **No es sobreviviente.**
 
-## P-83 — Atlas de absorción GC: qué confirmar en la partición reservada (decide Nico)
+## P-83 — Atlas de absorción GC: la reserva sigue intacta
 
-**2026-09-24.** Primer lote de la capa descriptiva (`docs/research/ATLAS_CAPA_DESCRIPTIVA_20260924.md`). El nulo causal de absorción da 1,33× [1,27; 1,39]. En exploración, lo más firme es **no direccional**: el nivel absorbido se rompe menos a 30–300 s y el precio se mueve más a 10 s. El fade a 60 s tiene IC inferior de 0,02 ticks y es candidato a ruido.
+**2026-09-24.** Nico aprobó confirmar "nivel absorbido = barrera" en `P-GC0826-CONF`. **No se ejecutó**: el chequeo de construcción previo mostró que el efecto era geometría (el control estaba en el toque y el nivel absorbido, 2 ticks más allá). Con un control a igual distancia, la diferencia desaparece. Ninguna otra sugerencia justifica gastar la reserva: el fade de ~1 tick no paga ~4 ticks de spread, y VOL-10 no está emparejado por actividad.
 
-Opciones:
-- (a) Escribir spec + revisión ciega de **SUG-ABS-BARRIER-30** (y quizás VOL-10) y confirmar en `P-GC0826-CONF`. Es target-free en lo económico: una barrera no es P&L. Aun así pasa por la regla STOP.
-- (b) Esperar más sesiones L2 (P-80) antes de gastar la reserva.
-- La reserva se puede usar **una sola vez** por candidato.
+Estado:
+- reserva intacta;
+- nulo causal de GC 1,33×; 6E 1,08× (no separa, 4 sesiones);
+- tabla de potencia y regla de partición en `docs/research/PARTICIONES_Y_POTENCIA_L2_20260924.md`.
 
-Antes de cualquier número económico: **P-76** (spread de 4 ticks del feed).
+Próximo candidato natural para la reserva: una hipótesis de horizonte corto (≤ 60 s) con control emparejado por distancia **y** por actividad, y efecto mínimo relevante ≥ el costo. Decide Nico.
 
 ## Integración pendiente
 

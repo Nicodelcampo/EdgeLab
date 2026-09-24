@@ -248,11 +248,14 @@ def _target_free_only(tag: str) -> int:
     raw = json.dumps(body, indent=1, default=float)
     (OUT / f"absorption_{tag}.json").write_text(raw, encoding="utf-8")
     sha = hashlib.sha256(raw.encode()).hexdigest()
-    with measurement_episode(LEDGER, f"EP-ATLAS-L2-ABS-{tag}-TF-20260924", goal=f"Atlas L2: absorción {tag} (solo target-free)",
+    # ids de sesion con instrumento: las particiones se comparan por id, y la misma fecha en otro activo es OTRA
+    # sesion (el 2026-09-24 el 6E choco contra P-GC0826-CONF por comparar solo fechas; la falla quedo en el ledger).
+    with measurement_episode(LEDGER, f"EP-ATLAS-L2-ABS-{tag}-TF-20260924-R2", goal=f"Atlas L2: absorción {tag} (solo target-free)",
                              recorded_by="tools/l2_atlas_absorption.py --target-free-only", repo=REPO,
                              prereg_ref="docs/research/ATLAS_CAPA_DESCRIPTIVA_20260924.md") as ep:
         st = ep.store
-        st.record_partition(f"P-{tag}-PRE", "FUTURE", f"{tag} L2 pre-holdout: sin uso con retornos asignado", usable)
+        st.record_partition(f"P-{tag}-PRE", "FUTURE", f"{tag} L2 pre-holdout: sin uso con retornos asignado",
+                            [f"{tag}:{s}" for s in usable])
         st.record_observation(f"OBS-ABS-{tag}-TARGETFREE", f"L2 absorption {tag}", "TARGET_FREE", [f"P-{tag}-PRE"],
                               {"events_total": int(sum(tf["events_per_session"].values())), "side_ask_share": tf["side_ask_share"],
                                "interarrival_cv": tf["interarrival_cv"], "repeat_same_level_10min": tf["repeat_same_level_10min"],
