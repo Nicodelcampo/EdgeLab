@@ -2557,3 +2557,12 @@ Causas posibles: día distinto entre Tradovate y nuestro archivo (faltan el 16, 
 ## Integración pendiente
 
 La rama `integ/viewer-brain-20260923` (visor #48 + Brain #56, suite verde) espera la decisión de mergearla a `foundation`.
+
+## P-88 — Familia ABS-CTX (absorción × contexto, NQ L2): auditoría y próximos pasos
+
+24/09. La hoja "tendencia 30 min" (SUG-NQ-SYN-B-1…3) se **invalidó**: los controles previos al evento heredaban el camino de aproximación (−6,6 ticks a 300 s). Con controles posteriores al horizonte (corrida C) aparece **V-RND**: absorción a ≤ 8 ticks de un múltiplo de 100 pts → −10,5 ticks a 60 s [−16,3; −4,6]. Es una sinergia pura (cada parte sola ≈ 0). La familia A de la exploración queda `REQUIRES_REAUDIT` por la misma causa. Detalle y variantes: `docs/research/FAMILIA_ABS_CTX_NQ_20260924.md`.
+
+Decisiones de Nico:
+1. ¿Protocolo de confirmación de V-RND ahora (~12 sesiones, MDE ~15 ticks) o esperar a fin de octubre (~34)?
+2. ¿OK a I-1 (dosis y respuesta del número redondo), I-2 (cascada de stops) e I-4 (GC, 6E y ES) sobre sus particiones EXP?
+3. ¿OK a validar la regla de tick para llevar la familia a los ticks pre-holdout (I-5)?
