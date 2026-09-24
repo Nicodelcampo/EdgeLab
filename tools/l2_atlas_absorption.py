@@ -151,26 +151,9 @@ def q(x):
     return None if not len(x) else {f"p{p}": float(np.percentile(x, p)) for p in (10, 25, 50, 75, 90)}
 
 
-def main() -> int:
-    OUT.mkdir(parents=True, exist_ok=True)
-    sessions = sorted(p.stem for p in (BASE / "l2_depth").glob("*.parquet") if int(p.stem) < HOLDOUT_YMD)
-    rng = np.random.default_rng(SEED)
-    per = {}
-    # ---------------- fase A: QA + eventos + target-free (no mira retornos)
-    for s in sessions:
-        l1, l2 = load_session(s)
-        res = process_session(l2, l1)
-        if defect_reasons(res.qa):
-            print(json.dumps(dict(session=s, skipped=defect_reasons(res.qa))), flush=True)
-            continue
-        Q, T, ev = quotes_trades_absorption(l1)
-        ice = iceberg_candidates(l2, T, Q)
-        snaps = res.snaps
-        per[s] = dict(Q=Q, T=T, ev=ev, ice=ice, snaps=snaps, last=int(Q["ts"][-1]))
-        print(json.dumps(dict(session=s, absorptions=len(ev), icebergs=len(ice))), flush=True)
-    usable = sorted(per)
-    exp, conf = usable[:len(usable) // 2], usable[len(usable) // 2:]
-
+def target_free(per, usable, rng):
+    """Observaciones TARGET-FREE (no miran retornos): frecuencia, racimos, repeticion de nivel, estado del libro
+    contra su distribucion incondicional y co-ocurrencia con iceberg. Devuelve (tf, co_ev)."""
     tf = dict(events_per_session={s: len(per[s]["ev"]) for s in usable}, by_hour_art={}, side_ask_share=None,
               interarrival_cv=None, within60s_share=None, repeat_same_level_10min=None, context={}, iceberg_cooccurrence={})
     sides, cvs, w60, rep = [], [], [], []
@@ -205,6 +188,9 @@ def main() -> int:
             bs, as_ = np.asarray(sn["bid_sz"][j]), np.asarray(sn["ask_sz"][j])
             ctx["spread"][1].append(float(sn["ask"][j] - sn["bid"][j])); ctx["depth_absorbing_side"][1].append(float((bs[0] + as_[0]) / 2))
             ctx["qi_toward_absorbing"][1].append(float((bs[0] - as_[0]) / max(bs[0] + as_[0], 1)) * float(rng.choice([-1, 1])))
+            lo = np.searchsorted(d["T"]["ts"], int(sn["t"][j]) - 60 * US); hi = np.searchsorted(d["T"]["ts"], int(sn["t"][j]))
+            if hi > lo:                                            # sin rng: no altera la secuencia aleatoria
+                ctx["range60"][1].append(float(np.ptp(d["T"]["px"][lo:hi])))
         for _ in range(len(ev)):                                   # control de co-ocurrencia: tiempos y lados al azar
             tc = int(rng.integers(int(sn["t"][0]), int(sn["t"][-1]))); sd_ = int(rng.integers(0, 2))
             j = np.searchsorted(sn["t"], tc, side="right") - 1
@@ -219,6 +205,84 @@ def main() -> int:
     pe, pc = float(np.mean(co_ev)) if co_ev else 0.0, float(np.mean(co_ct)) if co_ct else 0.0
     tf["iceberg_cooccurrence"] = dict(event_share=pe, control_share=pc, lift=(pe / pc) if pc > 0 else None,
                                       note="umbral del iceberg = percentil de sesion (no causal): descriptivo, no para entradas")
+    return tf, co_ev
+
+def load_all(sessions):
+    """Fase A: QA por sesion (reglas fijas de `defect_reasons`), absorciones causales e icebergs. Sin retornos."""
+    per = {}
+    for s in sessions:
+        if int(s) >= HOLDOUT_YMD:                          # defensa en profundidad: el holdout no entra nunca
+            raise ValueError(f"holdout session {s}")
+        l1, l2 = load_session(s)
+        res = process_session(l2, l1)
+        if defect_reasons(res.qa):
+            print(json.dumps(dict(session=s, skipped=defect_reasons(res.qa))), flush=True)
+            continue
+        Q, T, ev = quotes_trades_absorption(l1)
+        ice = iceberg_candidates(l2, T, Q)
+        per[s] = dict(Q=Q, T=T, ev=ev, ice=ice, snaps=res.snaps, last=int(Q["ts"][-1]))
+        print(json.dumps(dict(session=s, absorptions=len(ev), icebergs=len(ice))), flush=True)
+    return per
+
+
+def _target_free_only(tag: str) -> int:
+    """Solo observaciones target-free, para instrumentos con muy pocas sesiones pre-holdout (6E: 4). No hay perfil
+    de respuesta: con tan pocas sesiones no hay particion de exploracion util, y mirar retornos gastaria las sesiones
+    que un dia pueden servir para confirmar. Las sesiones se declaran FUTURE (sin uso con retornos asignado)."""
+    from edgelab.edge_brain.episode_logger import measurement_episode
+    OUT.mkdir(parents=True, exist_ok=True)
+    sessions = sorted(p.stem for p in (BASE / "l2_depth").glob("*.parquet") if int(p.stem) < HOLDOUT_YMD)
+    rng = np.random.default_rng(SEED)
+    per = load_all(sessions)
+    usable = sorted(per)
+    if not usable:
+        raise SystemExit("no usable sessions")
+    tf, co_ev = target_free(per, usable, rng)
+    heur = REPO / "edgelab" / "research" / "l2_manipulation_heuristics.py"
+    det_ver = hashlib.sha256(heur.read_bytes()).hexdigest()[:16]
+    body = dict(schema="EDGELAB_ATLAS_OBS_V1", phenomenon=f"L2 absorption (causal) {tag}", status="DESCRIPTIVE",
+                kind="TARGET_FREE_ONLY", base=str(BASE), detector_version=det_ver, code_commit=_git("rev-parse", "HEAD"),
+                tree_dirty=bool(_git("status", "--porcelain")), sessions=usable, skipped=sorted(set(sessions) - set(usable)),
+                target_free=tf, iceberg_events=int(sum(co_ev)),
+                resolution_note=f"{len(usable)} sesiones: descriptivo de baja resolucion; nada se transporta desde/hacia otros activos")
+    raw = json.dumps(body, indent=1, default=float)
+    (OUT / f"absorption_{tag}.json").write_text(raw, encoding="utf-8")
+    sha = hashlib.sha256(raw.encode()).hexdigest()
+    with measurement_episode(LEDGER, f"EP-ATLAS-L2-ABS-{tag}-TF-20260924", goal=f"Atlas L2: absorción {tag} (solo target-free)",
+                             recorded_by="tools/l2_atlas_absorption.py --target-free-only", repo=REPO,
+                             prereg_ref="docs/research/ATLAS_CAPA_DESCRIPTIVA_20260924.md") as ep:
+        st = ep.store
+        st.record_partition(f"P-{tag}-PRE", "FUTURE", f"{tag} L2 pre-holdout: sin uso con retornos asignado", usable)
+        st.record_observation(f"OBS-ABS-{tag}-TARGETFREE", f"L2 absorption {tag}", "TARGET_FREE", [f"P-{tag}-PRE"],
+                              {"events_total": int(sum(tf["events_per_session"].values())), "side_ask_share": tf["side_ask_share"],
+                               "interarrival_cv": tf["interarrival_cv"], "repeat_same_level_10min": tf["repeat_same_level_10min"],
+                               "iceberg_lift": tf["iceberg_cooccurrence"]["lift"]},
+                              {"sessions": len(usable), "note": "baja resolucion"}, sha,
+                              depends_on=[f"CODE:AbsorptionTracker@causal@{det_ver}", f"DATA:{BASE.name}"])
+        ep.note("observations", "1")
+    print(json.dumps(dict(tag=tag, sessions=usable, events=int(sum(tf["events_per_session"].values())), artifact_sha256=sha[:12])))
+    return 0
+
+
+def main(argv=None) -> int:
+    import argparse
+    global BASE
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--base", type=Path, default=BASE)
+    ap.add_argument("--tag", default="GC0826", help="etiqueta de instrumento/contrato para ids del Brain")
+    ap.add_argument("--target-free-only", action="store_true",
+                    help="solo la parte target-free (sin perfil de respuesta): para instrumentos con pocas sesiones")
+    a = ap.parse_args(argv)
+    BASE = a.base
+    if a.target_free_only:
+        return _target_free_only(a.tag)
+    OUT.mkdir(parents=True, exist_ok=True)
+    sessions = sorted(p.stem for p in (BASE / "l2_depth").glob("*.parquet") if int(p.stem) < HOLDOUT_YMD)
+    rng = np.random.default_rng(SEED)
+    per = load_all(sessions)                               # fase A: QA + eventos (no mira retornos)
+    usable = sorted(per)
+    exp, conf = usable[:len(usable) // 2], usable[len(usable) // 2:]
+    tf, co_ev = target_free(per, usable, rng)
 
     # ---------------- fase B: particiones al Brain ANTES de mirar retornos; perfil solo en EXPLORATION
     from edgelab.edge_brain.episode_logger import measurement_episode
