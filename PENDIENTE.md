@@ -2540,6 +2540,12 @@ Contraste independiente: Tradovate en vivo (NQZ6, 24/09 14:51 CDT, RTH), 3 muest
 
 Pendiente para usarlo como costo en una prueba: registro de bid/ask de 30 min en vivo contra el replay de la misma franja.
 
+## P-76 (cierre parcial 2026-09-24) — L2 de NT8 validado contra Tradovate, nivel por nivel
+
+El replay de Tradovate (fuente independiente) de NQZ6 del 23/09 a las 07:00:10 CT se comparó contra el libro reconstruido desde `E:/l2_parquet/NQ_12-26/l2_depth/20260923.parquet`. El mejor calce es con un desfase de 1,75 s: **20 de 20 niveles comparables idénticos** (10 bid y 10 ask, precio y tamaño). Los 3 niveles restantes están más allá del nivel 10 que guarda NT8.
+
+El libro de NT8 es el libro real. El spread ancho y la poca profundidad de NQ son del mercado. Queda pendiente repetir en otro día y en GC para generalizar.
+
 ## Integración pendiente
 
 La rama `integ/viewer-brain-20260923` (visor #48 + Brain #56, suite verde) espera la decisión de mergearla a `foundation`.
