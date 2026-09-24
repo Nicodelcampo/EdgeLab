@@ -2520,6 +2520,20 @@ Pendiente:
 1. **¿V2 se acepta excluyendo 26/06 y 28/06?** El primero es un error de construcción (contratos distintos) y el segundo un reloj corrido medido (con la corrección da 0,999). Es un cambio de semántica de validación.
 2. **¿Cómo sigue la familia?** Propuesta: base = perfil horario más un estado corto (15–60 min). Cualquier sustituto nuevo se elige con datos pre-holdout. La etapa 2 mira retornos: STOP.
 
+## P-86 — Familia TBZ (transición en el borde de una zona de expansión): ¿se registra?
+
+**2026-09-24.** Research en `docs/research/RESEARCH_TRANSICION_BORDE_ZONA_EXPANSION_20260924.md`. El fenómeno sale de dos capturas de MES del 24/09 (holdout).
+
+Contenido:
+- 7 mecanismos candidatos con literatura verificada;
+- qué predice cada uno;
+- definición causal para los dos lados (CONT/ORIG);
+- población enumerada, nulos y etapas.
+
+Decisiones de Nico:
+1. **Registrar la familia y arrancar E1**, el censo target-free en MES y ES pre-holdout.
+2. **¿El holdout sirve como confirmación ciega** de una idea nacida mirando el mercado en vivo durante el holdout? El 24/09 se excluye igual.
+
 ## Integración pendiente
 
 La rama `integ/viewer-brain-20260923` (visor #48 + Brain #56, suite verde) espera la decisión de mergearla a `foundation`.
