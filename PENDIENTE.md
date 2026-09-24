@@ -2534,6 +2534,12 @@ Decisiones de Nico:
 1. **Registrar la familia y arrancar E1**, el censo target-free en MES y ES pre-holdout.
 2. **¿El holdout sirve como confirmación ciega** de una idea nacida mirando el mercado en vivo durante el holdout? El 24/09 se excluye igual.
 
+## P-76 (actualización 2026-09-24) — spread ancho del feed NT8: plausible
+
+Contraste independiente: Tradovate en vivo (NQZ6, 24/09 14:51 CDT, RTH), 3 muestras. Spread de 2–3 ticks con 1–5 contratos en el mejor nivel. Con NQ cerca de 30.800, un tick es ~0,8 bp y el spread de varios ticks es el mercado real, no un artefacto de NT8. Coincide en orden de magnitud con el L2 de NT8 (junio RTH: mediana 4,6 ticks y ~1,4 contratos en el mejor nivel).
+
+Pendiente para usarlo como costo en una prueba: registro de bid/ask de 30 min en vivo contra el replay de la misma franja.
+
 ## Integración pendiente
 
 La rama `integ/viewer-brain-20260923` (visor #48 + Brain #56, suite verde) espera la decisión de mergearla a `foundation`.
