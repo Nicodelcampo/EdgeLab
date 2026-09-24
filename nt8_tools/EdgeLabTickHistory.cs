@@ -39,10 +39,11 @@ namespace NinjaTrader.Gui.NinjaScript
 
  public class EdgeLabTickHistoryWindow:NTWindow,IWorkspacePersistence
  {
-  const string Build="EDGE_TICKHIST_V1";
+  const string Build="EDGE_TICKHIST_V2_PROVENANCE";
   static readonly DateTime HoldoutStart=new DateTime(2026,7,1);
   static readonly Regex ContractRx=new Regex(@"^[A-Za-z0-9]{1,8}\s+[0-9]{2}-[0-9]{2}$",RegexOptions.Compiled);
   const int TimeoutSeconds=600;
+  string feed="";
   TextBox contracts,from,to,root,log;Button probe,download,stop;volatile bool running,cancel;
   public WorkspaceOptions WorkspaceOptions{get;set;}
   public void Restore(System.Xml.Linq.XDocument d,System.Xml.Linq.XElement e){}
@@ -104,6 +105,13 @@ namespace NinjaTrader.Gui.NinjaScript
   void Run(List<string> list,DateTime a,DateTime z,string dir,bool probeOnly)
   {
    TimeZoneInfo tz=Globals.GeneralOptions.TimeZoneInfo;
+   // Procedencia: NT8 comparte UNA base local entre conexiones; cada archivo registra que conexion estaba activa.
+   List<string> conns=new List<string>();
+   try{foreach(Connection c in Connection.Connections)if(c.Status==ConnectionStatus.Connected)conns.Add(c.Options.Name+" ("+c.Options.Provider+")");}
+   catch(Exception ex){conns.Add("unknown:"+ex.GetType().Name);}
+   feed=conns.Count==0?"NONE":string.Join(" | ",conns);
+   Log("Conexiones activas: "+feed);
+   if(conns.Count!=1)Log("AVISO: tiene que haber exactamente UNA conexion activa para que la procedencia sea clara. Los dias que ya estan en la base local salen de ahi, sin importar la conexion.");
    Log((probeOnly?"PROBAR ":"DESCARGAR ")+string.Join(";",list)+" "+a.ToString("yyyy-MM-dd")+" -> "+z.ToString("yyyy-MM-dd")+"  (zona de NT8: "+tz.Id+"; las salidas se escriben en UTC)");
    try
    {
@@ -203,10 +211,10 @@ namespace NinjaTrader.Gui.NinjaScript
    using(SHA256 h=SHA256.Create())using(FileStream fs=File.OpenRead(path)){return BitConverter.ToString(h.ComputeHash(fs)).Replace("-","").ToLowerInvariant();}
   }
 
-  static void Manifest(string cdir,string contract,string day,string status,int ticks,DateTime? u0,DateTime? u1,string sha,TimeZoneInfo tz)
+  void Manifest(string cdir,string contract,string day,string status,int ticks,DateTime? u0,DateTime? u1,string sha,TimeZoneInfo tz)
   {
    string line="{\"build\":\""+Build+"\",\"observed_at_utc\":\""+DateTime.UtcNow.ToString("o",CultureInfo.InvariantCulture)+"\",\"contract\":\""+contract+"\",\"day_nt_local\":\""+day
-    +"\",\"nt_timezone\":\""+tz.Id+"\",\"output_timezone\":\"UTC\",\"status\":\""+status+"\",\"ticks\":"+ticks.ToString(CultureInfo.InvariantCulture)
+    +"\",\"connections\":\""+feed.Replace("\"","'")+"\",\"nt_timezone\":\""+tz.Id+"\",\"output_timezone\":\"UTC\",\"status\":\""+status+"\",\"ticks\":"+ticks.ToString(CultureInfo.InvariantCulture)
     +",\"first_utc\":"+(u0.HasValue?"\""+u0.Value.ToString("o",CultureInfo.InvariantCulture)+"\"":"null")
     +",\"last_utc\":"+(u1.HasValue?"\""+u1.Value.ToString("o",CultureInfo.InvariantCulture)+"\"":"null")
     +",\"sha256\":"+(sha!=null?"\""+sha+"\"":"null")+"}";
