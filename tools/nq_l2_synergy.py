@@ -32,7 +32,7 @@ from edgelab.bridge.indicators import hftzones_universal as hu  # noqa: E402
 from edgelab.research.l2_manipulation_heuristics import ASK  # noqa: E402
 from edgelab.research.tbz_bands import dwell_bands, expansion_bands  # noqa: E402
 
-OUT = REPO / "artifacts" / "nq_l2_synergy"
+OUT = REPO / "artifacts" / "nq_l2_synergy_C"   # corrida C: controles corregidos (la B vive en artifacts/nq_l2_synergy)
 LEDGER = X.LEDGER  # mismo ledger: particiones P-NQL2-* declaradas antes de medir
 MANIF = "docs/research/MANIFIESTO_NQ_L2_SINERGIA_ABSORCION_20260924.md"
 US = X.US
@@ -45,7 +45,11 @@ MIN_EV, MIN_SESS, TOP_K = 30, 15, 5
 ROUND_TICKS, NEAR_EXT, NEAR_ZONE, NEAR_EDGE = 400, 8, 4, 2
 # "-B": la primera corrida del reporte usó hojas del árbol con >= 8 sesiones (MIN_SESS // 2 + 1) contra las >= 15 del
 # manifiesto. Se invalidó en el ledger y se rehízo con el valor del manifiesto (endurece, no relaja).
-TAG = "-B"
+TAG = "-C"
+# "-C": auditoría EP-NQL2-SYN-AUDIT-C. Los controles en [t0-30 min, t0) heredan el camino con el que el precio llegó al
+# nivel del evento (-6,6 ticks a 300 s; -20,7 si se solapan). Desde C, los controles se toman sólo DESPUÉS del horizonte
+# máximo: t_c en (t0 + 900 s + 60 s, t0 + 900 s + 1.800 s].
+CTRL_LO_S, CTRL_HI_S = max(HZ) + 60, max(HZ) + 1800
 
 
 # ---------------------------------------------------------------- construcción causal por sesión
@@ -229,7 +233,7 @@ def session_rows(day, prev_hl):
         for _ in range(80 * X.N_CTRL):
             if got >= X.N_CTRL:
                 break
-            tc = int(t0 + rng.integers(-X.CTRL_SPAN_S, X.CTRL_SPAN_S) * US)
+            tc = int(t0 + rng.integers(CTRL_LO_S, CTRL_HI_S) * US)
             if (len(evt) and np.min(np.abs(evt - tc)) < X.EXCL_S * US) or not ok_t(tc) or terc(X.vol60(T, tc)) != te:
                 continue
             tt = X.touch_at(Q, tc, dirn)
