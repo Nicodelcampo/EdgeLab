@@ -244,7 +244,7 @@ class AbsorptionTracker:
     golpea un mismo precio y el precio NO lo atraviesa dentro de esa misma ventana: compras agresivas en P sin
     ningún trade por encima de P (vendedores pasivos absorbieron), o ventas agresivas en P sin ningún trade por
     debajo (compradores pasivos absorbieron). "Mucho" = percentil `pctl` del volumen por (ventana, lado, precio)
-    de la sesión (escala de sesión, igual que `size_tiers`; declarada en `scale_scope`).
+    de las ventanas ANTERIORES (causal, ver `candidates`; `scale_scope` lo declara).
 
     Target-free y causal dentro de la ventana: sólo usa trades de la ventana, y el candidato queda disponible
     al CIERRE de la ventana (`available_ts_us`). No mira qué pasa después. Distinto de ICEBERG: no exige ver
@@ -253,6 +253,10 @@ class AbsorptionTracker:
     window_us: int = 10_000_000
     pctl: float = 99.0
     min_trades: int = 3
+    causal: bool = True                              # umbral solo con ventanas previas (ver candidates)
+    min_history: int = 200                           # celdas necesarias antes de emitir candidatos
+    refresh_windows: int = 30                        # cada cuantas ventanas se recalcula el umbral (~5 min)
+    prior_volumes: tuple = ()                        # volumenes de sesiones previas (arranque en caliente)
     _cells: dict = field(default_factory=dict)      # (win, side, tick) -> [vol, n, first_ts, last_ts]
     _range: dict = field(default_factory=dict)      # win -> [min_tick, max_tick]
     _ambiguous: dict = field(default_factory=dict)  # (win, tick) -> vol neutral
@@ -269,24 +273,44 @@ class AbsorptionTracker:
         c[0] += size; c[1] += 1; c[3] = ts_us
 
     def candidates(self) -> list[dict]:
+        """CAUSAL (default desde 2026-09-23): el umbral de la ventana w es el percentil `pctl` de los volumenes de
+        celdas de ventanas YA CERRADAS antes de w (historia de la sesion, mas `prior_volumes` si se pasan de
+        sesiones previas). Se recalcula cada `refresh_windows` ventanas; hasta juntar `min_history` celdas no hay
+        umbral y no se emite ningun candidato. `causal=False` reproduce el modo viejo de percentil de sesion
+        completa, que usa informacion futura (solo para comparar; no para probar entradas)."""
         if not self._cells:
             return []
-        thr = float(np.percentile([c[0] for c in self._cells.values()], self.pctl))
+        by_win: dict = {}
+        for key, val in self._cells.items():
+            by_win.setdefault(key[0], []).append((key, val))
         out = []
-        for (win, side, tick), (vol, n, t0, t1) in self._cells.items():
-            if vol < thr or n < self.min_trades:
-                continue
-            lo, hi = self._range[win]
-            held = hi <= tick if side == ASK else lo >= tick
-            if not held:
-                continue
-            out.append(dict(
-                candidate_id=_candidate_id("ABS", side, tick, win * self.window_us),
-                side=side, tick=tick, window_start_ts_us=win * self.window_us,
-                available_ts_us=(win + 1) * self.window_us, first_trade_ts_us=t0, last_trade_ts_us=t1,
-                attributed_volume=vol, trade_count=n, ambiguous_volume=self._ambiguous.get((win, tick), 0.0),
-                volume_threshold=thr, threshold_pctl=self.pctl, scale_scope="SESSION",
-                window_us=self.window_us, window_price_range_ticks=[lo, hi],
-                provenance="edgelab.research.l2_manipulation_heuristics.AbsorptionTracker",
-                status="HEURISTIC_UNVALIDATED"))
+        if not self.causal:
+            thr_full = float(np.percentile([c[0] for c in self._cells.values()], self.pctl))
+        history = list(self.prior_volumes)
+        thr, since = None, 0
+        for win in sorted(by_win):
+            if self.causal:
+                if (thr is None or since >= self.refresh_windows) and len(history) >= self.min_history:
+                    thr, since = float(np.percentile(history, self.pctl)), 0
+                since += 1
+                cur_thr = thr
+            else:
+                cur_thr = thr_full
+            for (w, side, tick), (vol, n, t0, t1) in by_win[win]:
+                if cur_thr is not None and vol >= cur_thr and n >= self.min_trades:
+                    lo, hi = self._range[win]
+                    held = hi <= tick if side == ASK else lo >= tick
+                    if held:
+                        out.append(dict(
+                            candidate_id=_candidate_id("ABS", side, tick, win * self.window_us),
+                            side=side, tick=tick, window_start_ts_us=win * self.window_us,
+                            available_ts_us=(win + 1) * self.window_us, first_trade_ts_us=t0, last_trade_ts_us=t1,
+                            attributed_volume=vol, trade_count=n,
+                            ambiguous_volume=self._ambiguous.get((win, tick), 0.0),
+                            volume_threshold=cur_thr, threshold_pctl=self.pctl,
+                            scale_scope="CAUSAL_PRIOR_WINDOWS" if self.causal else "SESSION",
+                            window_us=self.window_us, window_price_range_ticks=[lo, hi],
+                            provenance="edgelab.research.l2_manipulation_heuristics.AbsorptionTracker",
+                            status="HEURISTIC_UNVALIDATED"))
+            history.extend(val[0] for _, val in by_win[win])     # la ventana entra a la historia AL CERRAR
         return out

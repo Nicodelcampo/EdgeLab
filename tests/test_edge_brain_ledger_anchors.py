@@ -71,7 +71,10 @@ def test_campaign_budget_is_the_executable_stop_rule(tmp_path):
         s.record_trial("C-1", "T-1", "h", "v", "ic", "0.01")
     with pytest.raises(ValueError, match="human"):
         s.record_campaign("C-1", "L2", "agent:claude", "agent:claude", 2, "prereg@x", "GC pre-holdout")
-    s.record_campaign("C-1", "L2", "human:Nico", "agent:claude", 2, "prereg@aa080a1", "GC 08-26 pre-holdout")
+    with pytest.raises(CampaignBudgetError, match="spec confirmed"):
+        s.record_campaign("C-1", "L2", "human:Nico", "agent:claude", 2, "prereg@aa080a1", "GC 08-26 pre-holdout")
+    s.record_spec_confirmation("SPEC-1", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "human:Nico", "agent:claude")
+    s.record_campaign("C-1", "L2", "human:Nico", "agent:claude", 2, "prereg@aa080a1", "GC 08-26 pre-holdout", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
     s.record_trial("C-1", "T-1", "h1", "30s", "dIC", "-0.024")
     s.record_trial("C-1", "T-2", "h1", "60s", "dIC", "-0.003")
     with pytest.raises(CampaignBudgetError, match="exhausted"):
@@ -84,7 +87,8 @@ def test_forged_trial_over_budget_is_rejected_on_replay(tmp_path):
     from edgelab.edge_brain import hippocampus_store as m
     p = tmp_path / "l.jsonl"
     s = DurableHippocampus(p)
-    s.record_campaign("C-1", "L2", "human:Nico", "agent:claude", 1, "prereg@x", "scope")
+    s.record_spec_confirmation("SPEC-1", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "human:Nico", "agent:claude")
+    s.record_campaign("C-1", "L2", "human:Nico", "agent:claude", 1, "prereg@x", "scope", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
     s.record_trial("C-1", "T-1", "h", "v", "m", "r")
     row = dict(campaign_id="C-1", trial_id="T-2", hypothesis="h", variant="v", metric="m", result="r")
     rec = {"schema": m.LEDGER_SCHEMA, "type": "trial_recorded", "prev_hash": s.tip_hash, "payload": row}
@@ -108,3 +112,19 @@ def test_measurement_episode_logs_success_and_failure(tmp_path):
     e1, e2 = s.memory.reconstruct_episode("EP-1"), s.memory.reconstruct_episode("EP-2")
     assert e1["successes"] and not e1["failures"]
     assert e2["failures"] and not e2["successes"]
+
+
+def test_spec_confirmation_must_be_human_and_full_hash(tmp_path):
+    s = DurableHippocampus(tmp_path / "l.jsonl")
+    with pytest.raises(ValueError, match="human"):
+        s.record_spec_confirmation("SPEC-1", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "agent:claude", "agent:claude")
+    with pytest.raises(ValueError, match="sha256"):
+        s.record_spec_confirmation("SPEC-1", "27a450b05bd9", "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "human:Nico", "agent:claude")
+    s.record_spec_confirmation("SPEC-1", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "human:Nico", "agent:claude")
+    assert "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" in DurableHippocampus(tmp_path / "l.jsonl").specs
+
+
+def test_legacy_campaign_without_spec_still_replays():
+    """Las 5 campanas del 2026-09-23 (anteriores a la regla) siguen reproduciendose."""
+    s = DurableHippocampus(HIPPO / "campaign_ticks_multi_20260923.jsonl")
+    assert len(s.campaigns) == 5 and len(s.trials) == 100

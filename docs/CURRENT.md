@@ -185,3 +185,10 @@ Consecuencia: no afecta la señal causal del roll del 16-jun, que usa D-1. Sí a
 - **F4 (cierre de gap) pasó el MCPT en ES, NQ e YM**, pero su validación no tiene potencia (25–56 trades). Queda como pista para un pre-registro con años de datos diarios. No es sobreviviente.
 - Todo quedó registrado y anclado en el Brain (`campaign_ticks_multi_20260923.jsonl`, 151 registros).
 - Acta: `docs/research/CAMPANA_TICKS_MULTI_RESULTADOS_20260923.md`.
+
+**2026-09-24 (revisión ciega de specs + absorción causal):**
+- Antes de correr una prueba de entradas, Nico la revisa en `spec_review.html`: ejemplos, stop/target/BE/tiempo con barra deslizante, acierto necesario y alertas, **sin ningún precio posterior a la entrada en los datos**.
+- El Brain exige una spec confirmada por `human:` para aceptar campañas nuevas.
+- `AbsorptionTracker` pasa a ser causal por defecto. El nulo de absorción de la Fase 0 hay que re-medirlo.
+- Primer caso: absorción L2 en 6E (814 eventos, 24 ejemplos).
+- Protocolo: `docs/research/REVISION_CIEGA_DE_SPECS_20260924.md`.

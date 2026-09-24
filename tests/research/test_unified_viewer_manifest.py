@@ -26,4 +26,4 @@ def test_corridor_definition_is_decided_and_points_at_the_reference():
 
 def test_no_hay_paginas_competidoras_en_el_visor():
     html = sorted(p.name for p in VIEWER.glob("*.html"))
-    assert html == ["index.html", "index_invariant.html", "store_viewer.html"], html
+    assert html == ["index.html", "index_invariant.html", "spec_review.html", "store_viewer.html"], html

@@ -41,3 +41,28 @@ def test_sell_side_and_neutral_not_credited():
     c = [x for x in t.candidates() if x["tick"] == 3000]
     assert len(c) == 1 and c[0]["side"] == BID and c[0]["attributed_volume"] == 250.0
     assert c[0]["ambiguous_volume"] == 2500.0
+
+
+def test_causal_threshold_never_uses_future_windows():
+    """Volumen grande ANTES de tener historia: no hay umbral, no hay candidato (antes el percentil de la sesion
+    completa lo marcaba usando las ventanas futuras)."""
+    t = AbsorptionTracker(pctl=99.0)
+    for k in range(5):
+        t.on_trade(2000, 1 * W + k * 1000, 50.0, +1)      # ventana 1: grande y temprano
+    _noise_after = [t.on_trade(1000 + i % 7, (10 + i) * W + 1, 1.0, 1 if i % 2 else -1) for i in range(300)]
+    assert not [x for x in t.candidates() if x["tick"] == 2000]
+    legacy = AbsorptionTracker(pctl=99.0, causal=False)
+    for k in range(5):
+        legacy.on_trade(2000, 1 * W + k * 1000, 50.0, +1)
+    for i in range(300):
+        legacy.on_trade(1000 + i % 7, (10 + i) * W + 1, 1.0, 1 if i % 2 else -1)
+    assert [x for x in legacy.candidates() if x["tick"] == 2000]     # el modo viejo si lo marcaba (fuga)
+
+
+def test_causal_candidate_threshold_comes_from_the_past():
+    t = AbsorptionTracker(pctl=99.0)
+    _noise(t)
+    for k in range(5):
+        t.on_trade(2000, 500 * W + k * 1000, 50.0, +1)
+    c = [x for x in t.candidates() if x["tick"] == 2000][0]
+    assert c["scale_scope"] == "CAUSAL_PRIOR_WINDOWS" and c["volume_threshold"] <= 1.0

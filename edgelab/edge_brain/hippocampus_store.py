@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import os
 import sys
 from contextlib import contextmanager
@@ -51,6 +52,7 @@ _RECORD_TYPES = {
     "dependency_recorded",
     "campaign_approved",
     "trial_recorded",
+    "spec_confirmed",
 }
 
 
@@ -183,6 +185,7 @@ class DurableHippocampus:
         self.dependencies: list[dict[str, str]] = []
         self.campaigns: dict[str, dict[str, Any]] = {}
         self.trials: dict[str, dict[str, Any]] = {}
+        self.specs: dict[str, dict[str, Any]] = {}
         if self.ledger_path.exists() and self.ledger_path.stat().st_size > 0:
             self._prev_hash = self._replay_into(self.memory)
             self._offset = self._checked_size()
@@ -350,16 +353,33 @@ class DurableHippocampus:
 
     # -- campanas pre-aprobadas y contabilidad de pruebas ---------------------
 
+    def record_spec_confirmation(self, spec_id: str, spec_sha256: str, preview_sha256: str,
+                                 confirmed_by: str, recorded_by: str) -> None:
+        """Nico confirmo VISUALMENTE (revision ciega en `spec_review.html`) que la especificacion con este hash es lo
+        que quiere probar. Solo un humano distinto de quien registra (NO_SELF_APPROVAL)."""
+        if not confirmed_by.startswith("human:") or confirmed_by == recorded_by:
+            raise ValueError("spec must be confirmed by a human ('human:<name>') other than the recorder")
+        if not re.fullmatch(r"[0-9a-f]{64}", spec_sha256 or "") or not re.fullmatch(r"[0-9a-f]{64}", preview_sha256 or ""):
+            raise ValueError("spec_sha256 and preview_sha256 must be full sha256 hex digests")
+        row = dict(spec_id=spec_id, spec_sha256=spec_sha256, preview_sha256=preview_sha256,
+                   confirmed_by=confirmed_by, recorded_by=recorded_by)
+        self._append("spec_confirmed", row)
+        self.specs[spec_sha256] = row
+
     def record_campaign(self, campaign_id: str, family: str, approved_by: str, recorded_by: str,
-                        max_trials: int, prereg_ref: str, data_scope: str) -> None:
+                        max_trials: int, prereg_ref: str, data_scope: str, spec_sha256: str | None = None) -> None:
         """Campana aprobada por un HUMANO (`approved_by` = "human:<nombre>"), distinta de quien la registra
-        (NO_SELF_APPROVAL). Fija el presupuesto de pruebas: el agente corre solo adentro, se detiene afuera."""
+        (NO_SELF_APPROVAL). Fija el presupuesto de pruebas: el agente corre solo adentro, se detiene afuera.
+        Desde 2026-09-24 exige `spec_sha256` de una especificacion CONFIRMADA en revision ciega: sin eso no hay
+        campana (las campanas anteriores, sin ese campo, siguen reproduciendose en el replay)."""
         if not approved_by.startswith("human:") or approved_by == recorded_by:
             raise ValueError("campaign must be approved by a human ('human:<name>') other than the recorder")
         if campaign_id in self.campaigns or max_trials < 1 or not prereg_ref or not family or not data_scope:
             raise ValueError("duplicate campaign or missing family/prereg/data_scope/budget")
+        if spec_sha256 is None or spec_sha256 not in self.specs:
+            raise CampaignBudgetError("campaign requires a spec confirmed in blind visual review (record_spec_confirmation)")
         row = dict(campaign_id=campaign_id, family=family, approved_by=approved_by, recorded_by=recorded_by,
-                   max_trials=int(max_trials), prereg_ref=prereg_ref, data_scope=data_scope)
+                   max_trials=int(max_trials), prereg_ref=prereg_ref, data_scope=data_scope, spec_sha256=spec_sha256)
         self._append("campaign_approved", row)
         self.campaigns[campaign_id] = row
 
@@ -453,12 +473,20 @@ class DurableHippocampus:
             "dependency_recorded": lambda: self.dependencies.append(dict(payload)),
             "campaign_approved": lambda: self._replay_campaign(payload),
             "trial_recorded": lambda: self._replay_trial(payload),
+            "spec_confirmed": lambda: self._replay_spec(payload),
         }
         builders[rtype]()
+
+    def _replay_spec(self, payload: dict[str, Any]) -> None:
+        if not str(payload.get("confirmed_by", "")).startswith("human:") or payload.get("confirmed_by") == payload.get("recorded_by"):
+            raise LedgerIntegrityError("ledger contains a self-confirmed or non-human spec confirmation")
+        self.specs[str(payload["spec_sha256"])] = dict(payload)
 
     def _replay_campaign(self, payload: dict[str, Any]) -> None:
         if not str(payload.get("approved_by", "")).startswith("human:") or payload.get("approved_by") == payload.get("recorded_by"):
             raise LedgerIntegrityError("ledger contains a self-approved or non-human campaign")
+        if "spec_sha256" in payload and payload["spec_sha256"] not in self.specs:
+            raise LedgerIntegrityError("ledger contains a campaign citing an unconfirmed spec")
         self.campaigns[str(payload["campaign_id"])] = dict(payload)
 
     def _replay_trial(self, payload: dict[str, Any]) -> None:
@@ -528,8 +556,8 @@ class DurableHippocampus:
         does not protect against suffix rollback.
         """
         probe = HippocampusMemory()
-        saved = (self.invalidations, self.dependencies, self.campaigns, self.trials)
-        self.invalidations, self.dependencies, self.campaigns, self.trials = {}, [], {}, {}
+        saved = (self.invalidations, self.dependencies, self.campaigns, self.trials, self.specs)
+        self.invalidations, self.dependencies, self.campaigns, self.trials, self.specs = {}, [], {}, {}, {}
         try:
             tip = self._replay_into(probe)
             if expected_tip_hash is not None and tip != expected_tip_hash:
@@ -537,4 +565,4 @@ class DurableHippocampus:
                     "ledger tip does not match externally trusted expected_tip_hash")
             return tip
         finally:
-            self.invalidations, self.dependencies, self.campaigns, self.trials = saved
+            self.invalidations, self.dependencies, self.campaigns, self.trials, self.specs = saved

@@ -1,0 +1,45 @@
+{
+  "spec_id": "SPEC-6E-L2-ABS-20260924",
+  "title": "Reversión tras absorción L2 en 6E",
+  "status": "BORRADOR — para revisión ciega en el visor; no autoriza ninguna corrida",
+  "north_star_sha256": "d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1",
+  "hypothesis": "Cuando flujo agresivo grande golpea un precio y el precio no lo atraviesa (absorción), la liquidez pasiva que absorbió ya se expuso: el precio tiende a alejarse del nivel en contra del flujo que fue absorbido.",
+  "economic_rationale": "Un participante grande con órdenes pasivas (posiblemente iceberg) está dispuesto a vender/comprar en ese nivel; el flujo agresivo que no lo mueve se agota y los agresores atrapados cierran contra sí mismos.",
+  "refutation": "La expectativa neta por operación (después de spread + comisión) en validación tiene IC inferior <= 0, o el efecto no supera un nulo de entradas aleatorias con la misma geometría.",
+  "instrument": "6E",
+  "contract": "6E 09-26",
+  "tick_size": 0.00005,
+  "tick_value_usd": 6.25,
+  "price_precision": 5,
+  "data": {
+    "base": "E:/l2_parquet/6E_09-26",
+    "preview_sessions": ["20260625", "20260628", "20260629", "20260630", "20260707", "20260716", "20260723", "20260805", "20260813", "20260820", "20260827", "20260903"],
+    "note": "La vista previa es CIEGA (target-free): puede usar días del holdout porque no contiene ningún precio posterior a la entrada. El test real necesita más historia pre-holdout (hoy solo hay 4 sesiones)."
+  },
+  "population": {
+    "event": "Candidato de absorción CAUSAL: ventana 10 s, volumen agresivo atribuido >= p99 de ventanas previas, >= 3 trades, el precio no atraviesa el nivel en la ventana.",
+    "alternatives_enumerated": [
+      "creación (primera detección) — ELEGIDA",
+      "segunda absorción en el mismo nivel (toque n-ésimo)",
+      "absorción + iceberg en el mismo nivel (confluencia)",
+      "estado continuo: distancia a la última absorción activa"
+    ],
+    "why_chosen": "Es la definición más simple y la que el visor ya muestra; las alternativas quedan como hipótesis separadas.",
+    "detector": "edgelab.research.l2_manipulation_heuristics.AbsorptionTracker(causal=True, pctl=99, window_us=10_000_000, min_trades=3)"
+  },
+  "entry": {
+    "direction": "FADE: absorción en el ASK (compras absorbidas) -> SHORT; absorción en el BID (ventas absorbidas) -> LONG.",
+    "timing": "Al cierre de la ventana (available_ts) + latencia medida 250 ms.",
+    "price": "Orden de mercado: SHORT al bid vigente, LONG al ask vigente, en el instante de llegada.",
+    "one_position_at_a_time": true
+  },
+  "grid": {
+    "stop_ticks_beyond_level": [2, 4, 6],
+    "target_ticks_from_entry": [2, 4, 8],
+    "break_even_after_ticks": [null, 2],
+    "max_hold_s": [60, 300]
+  },
+  "exits": "El primero que ocurra: stop, target, o fin del tiempo máximo (salida a mercado). Con break-even activo, el stop pasa a la entrada cuando el precio avanza esa cantidad de ticks a favor.",
+  "costs": {"spread_ticks": 1.0, "commission_ticks": 0.72, "note": "6E: spread medido ~1,2 ticks (Fase 0 §7); comisión supuesta USD 4,50 RT."},
+  "sample": {"examples": 24, "seed": 20260924, "method": "estratificado por sesión (una por sesión en ronda), al azar"}
+}
