@@ -2499,6 +2499,27 @@ Estado:
 
 Próximo candidato natural para la reserva: una hipótesis de horizonte corto (≤ 60 s) con control emparejado por distancia **y** por actividad, y efecto mínimo relevante ≥ el costo. Decide Nico.
 
+## P-84 — Reloj L2 por archivo: 5 de 194 archivos corridos
+
+**2026-09-24.** El reloj de los parquets L2 se validó como ART con la pausa de lunes a jueves, pero **no vale para todos los archivos**:
+- 6E 28/06: +8 min 54 s;
+- NQ 28/06: ~+13 min;
+- ES y GC 12-26 del 11/08: +4 a 5 min;
+- 6E 11/08: +13 h 07 min.
+
+Se midió con el escaneo de pausa y apertura (`artifacts/regimes_6e/l2_clock_scan.json`) y, en el 6E 28/06, calzando trade por trade contra `research-v2`. La causa (NT8 `DumpMarketDepth`, el `.nrd` o la exportación) está **sin resolver**.
+
+Pendiente:
+1. Convertir el escaneo en una compuerta del intake (`CLOCK_UNCERTIFIED` por archivo).
+2. Reexportar esos días desde el `.nrd` si todavía existe.
+3. Los análisis que cruzan relojes excluyen los archivos no certificados.
+
+## P-85 — 6E-REGIMES etapa 1: dos decisiones de Nico
+
+`docs/research/FAMILIA_6E_REGIMENES_LIQUIDEZ_20260924.md`, sección de resultados. Resultado: V1 WEAK (0,34; 0,17 sin reloj), V2 FAIL tal como se congeló, V3 INCONCLUSIVE (0,094 a 1 h sin reloj).
+1. **¿V2 se acepta excluyendo 26/06 y 28/06?** El primero es un error de construcción (contratos distintos) y el segundo un reloj corrido medido (con la corrección da 0,999). Es un cambio de semántica de validación.
+2. **¿Cómo sigue la familia?** Propuesta: base = perfil horario más un estado corto (15–60 min). Cualquier sustituto nuevo se elige con datos pre-holdout. La etapa 2 mira retornos: STOP.
+
 ## Integración pendiente
 
 La rama `integ/viewer-brain-20260923` (visor #48 + Brain #56, suite verde) espera la decisión de mergearla a `foundation`.

@@ -98,3 +98,41 @@ Regla de `PARTICIONES_Y_POTENCIA_L2_20260924.md`: con ~230 sesiones conviene 3/4
 | `P-6E-REG-L2HOLDOUT` | FUTURE (sin retornos, holdout) | L2 del 01/07 al 22/09, ids `6E-L2:<fecha>` |
 
 La etapa 2 (información condicional al régimen) mira retornos: **pasa por el STOP** con manifiesto propio.
+
+## Resultados de la etapa 1 (2026-09-24)
+
+Artefactos en `artifacts/regimes_6e/`: `stage1_report.json` (sha `79901a0cbbfd…`), `ticks_v3.json`, `l2_sessions.jsonl` y `l2_clock_scan.json`. Ledger de la familia anclado. El acceso al holdout quedó asentado en `docs/holdout_access_log.md` (`target_free_validation`). Código en el commit que precede a esta sección, con árbol limpio al correr.
+
+| Prueba | Veredicto (umbrales congelados) | Números |
+|---|---|---|
+| **V1** validez de P1 | **WEAK** | Mediana ρ(P1, T1) = 0,34 en 76 sesiones (88 % con ρ > 0; p10 −0,04, p90 0,54). Con T2 (5 niveles): 0,41. **Sin perfil horario: 0,17.** Junio 0,21 (5 sesiones); holdout 0,35 (71). Excluidas 6 por defectos o pocos bloques (fines de semana y dos días `BOOK_NEVER_FULL`). |
+| **V2** puente ticks↔L2 | **FAIL** tal como se congeló | 25/06: 0,997; 29/06: 0,996; 30/06: 0,990; **26/06: 0,09**; **28/06: −0,06**. Causas abajo. |
+| **V3** persistencia | **INCONCLUSIVE** | Autocorrelación a 1 h sin perfil horario = **0,094 [0,076; 0,113]** (240 sesiones). A 15 min 0,26; a 4 h 0,02. Con el perfil incluido: 0,47 / 0,34 / 0,24. El perfil horario explica el 23 % de la varianza de log P1. |
+
+**Causa raíz de V2** (regla: todo FAIL tiene causa raíz):
+- **26/06:** para esa fecha solo existe archivo L2 del contrato **12-26** (el de atrás), y los ticks son del 09-26. V2 comparó contratos distintos: es un **error de construcción mío**. El puente tiene que comparar el mismo contrato.
+- **28/06:** el archivo L2 tiene el reloj corrido **+8 min 54 s** sobre la corrección ART. Lo medí calzando trade por trade contra `research-v2`: con −534 s calzan ~1.500 de 1.500. **Con el desfase medido, el puente da 0,999.**
+- En los tres días sin problemas de datos, el puente da ≥ 0,99.
+- **Aceptar V2 excluyendo esos dos días es un cambio de semántica de validación: lo decide Nico** (P-85). No se relajó ningún umbral.
+
+**Hallazgo de integridad colateral (P-84):** revisé los 194 archivos L2 de todos los activos por la posición de la pausa diaria y de la apertura del domingo. Tienen el reloj corrido:
+- 6E 28/06: +8 min 54 s;
+- NQ 28/06: ~+13 min;
+- ES y GC 12-26 del 11/08: +4 a 5 min;
+- 6E 11/08: **+13 h 07 min**.
+
+Los análisis dentro de un mismo archivo no se afectan, salvo el perfil horario y la exclusión de la pausa. Los que crucen el reloj L2 con otra fuente sí.
+
+**Diagnóstico exploratorio (fuera del protocolo):** en las 5 sesiones L2 de junio, la profundidad real del mejor nivel tiene autocorrelación 0,66 a 15 min, 0,39 a 1 h y ≈ 0 a 4 h (con el reloj incluido). P1 la ve atenuada: 0,44, 0,28 y 0,01.
+
+## Lectura
+
+1. **El sustituto de ticks mide la profundidad, pero mal** (V1 WEAK). Buena parte de lo que comparte con la profundidad real es el reloj: sin perfil horario queda en 0,17. Con la historia de ticks se puede describir la liquidez del 6E de forma gruesa, no seguirla bloque a bloque.
+2. **Los "regímenes" de varias horas son el reloj** (Asia / Londres / Nueva York). Lo que queda por encima del reloj dura 15–60 min y a 4 h desaparece, tanto en P1 como en la profundidad real. La hipótesis de regímenes largos de liquidez **no se sostiene en 6E**. Queda un estado de liquidez de corto plazo más un perfil horario fuerte.
+3. **V3 no alcanzó ninguno de los dos umbrales** (sí > 0,3; no < 0,1): con P1 a 15 min no se distingue "régimen corto débil" de "ruido de medición".
+
+## Qué sigue (propuesta; decide Nico)
+
+- **No elegir un sustituto nuevo mirando el L2 del holdout:** ya se usó una vez para P1. Cualquier variante se elige con datos pre-holdout y el holdout solo la valida una vez más, con autorización propia.
+- La población (f), perfil horario, pasa a ser la base natural. La etapa 2, si se hace, pregunta por **información condicional a la franja más el estado corto** (15–60 min), no a "regímenes".
+- Antes de cualquier estudio que cruce relojes: certificar el reloj por archivo (P-84).

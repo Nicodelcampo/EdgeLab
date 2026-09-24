@@ -36,6 +36,12 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
    - 6E (solo target-free, 4 sesiones): el detector no se separa del nulo (1,08×). La definición de GC no se transporta a un mercado de tick grande.
    - Regla de partición por potencia: 3/4 y 1/4 para horizontes ≤ 60 s; los horizontes largos necesitan datos futuros (`PARTICIONES_Y_POTENCIA_L2_20260924.md`).
    - `docs/research/ATLAS_CAPA_DESCRIPTIVA_20260924.md`, P-83.
+12. **6E-REGIMES (familia registrada 2026-09-24): regímenes de liquidez en 6E.** Se usan ~260 sesiones de ticks pre-holdout con un sustituto de la profundidad; el L2 (junio y holdout, autorizado por Nico solo para esto) lo valida.
+   - Etapa 1: el sustituto mide la profundidad de forma débil (V1 WEAK: 0,34; 0,17 sin reloj).
+   - Los regímenes largos son el reloj. Por encima del reloj queda un estado de 15–60 min.
+   - V2 falló por un error de construcción y un archivo con reloj corrido (P-85).
+   - Hallazgo de integridad: 5 de 194 archivos L2 tienen el reloj corrido (P-84).
+   - `docs/research/FAMILIA_6E_REGIMENES_LIQUIDEZ_20260924.md`.
 
 ## Resultados de investigación vigentes
 
