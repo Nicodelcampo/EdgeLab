@@ -403,16 +403,25 @@ class DurableHippocampus:
                 raise ValueError(f"unknown partition {pid!r}")
             if row["kind"] == "RESPONSE_PROFILE" and part["role"] != "EXPLORATION":
                 raise ValueError(f"a response profile (looks at returns) can only use EXPLORATION partitions, not {pid!r}")
+        if "design" in row:                                  # filas previas al 2026-09-24 no lo traen: se reproducen
+            from .control_guard import check_observation_design
+            check_observation_design(row["kind"], row["design"], row.get("control_audit"))
 
     def record_observation(self, observation_id: str, phenomenon: str, kind: str, partitions: list[str],
                            metrics: dict[str, Any], resolution: dict[str, Any], artifact_sha256: str,
-                           depends_on: list[str] = ()) -> None:
+                           depends_on: list[str] = (), design: str | None = None,
+                           control_audit: dict[str, Any] | None = None) -> None:
         """Observacion descriptiva del atlas. Nunca promueve ni descarta: estado unico DESCRIPTIVE. Sus
-        dependencias (detector, datos) quedan como aristas, asi una invalidacion aguas arriba la vuelve STALE."""
+        dependencias (detector, datos) quedan como aristas, asi una invalidacion aguas arriba la vuelve STALE.
+        Desde 2026-09-24 toda observacion nueva declara `design`. Un RESPONSE_PROFILE evento-contra-control exige
+        `control_audit` PASS (edgelab.edge_brain.control_guard, leccion LES-CTRL-TIMING-20260924)."""
+        from .control_guard import check_observation_design
         if observation_id in self.observations:
             raise ValueError("duplicate observation_id")
+        check_observation_design(kind, design, control_audit)
         row = dict(observation_id=observation_id, phenomenon=phenomenon, kind=kind, partitions=list(partitions),
-                   metrics=metrics, resolution=resolution, artifact_sha256=artifact_sha256, status="DESCRIPTIVE")
+                   metrics=metrics, resolution=resolution, artifact_sha256=artifact_sha256, status="DESCRIPTIVE",
+                   design=design, control_audit=control_audit)
         self._check_observation(row)
         self._append("observation_recorded", row)
         self.observations[observation_id] = row

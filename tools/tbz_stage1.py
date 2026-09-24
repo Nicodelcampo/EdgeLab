@@ -252,10 +252,10 @@ def step_report():
         st.record_observation("OBS-TBZ-E1A-CENSUS", "censo de franjas por variante (MES, ES)", "TARGET_FREE", ["P-TBZ-EXP", "P-TBZ-CONF"],
                               {i: {"sessions": c2["sessions"], "exp_per_session": {k: e["per_session"] for k, e in c2["exp"].items()},
                                    "dwell_share_with_gap": {k: dd["share_with_gap"] for k, dd in c2["dwell"].items()}}
-                               for i, c2 in rep["census"].items()}, {"note": "construcción, sin precio posterior"}, sha, depends_on=dep)
+                               for i, c2 in rep["census"].items()}, {"note": "construcción, sin precio posterior"}, sha, depends_on=dep, design="OTHER")
         st.record_observation("OBS-TBZ-E1B-OVERLAP", "solapamiento entre variantes contra franjas al azar", "TARGET_FREE",
                               ["P-TBZ-EXP", "P-TBZ-CONF"], {"verdicts": verdicts}, {"null": "desplazamiento al azar, 20 réplicas"},
-                              sha, depends_on=dep)
+                              sha, depends_on=dep, design="OTHER")
     print(json.dumps(dict(verdicts=verdicts, sha=sha[:12]), indent=1))
 
 

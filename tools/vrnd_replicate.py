@@ -28,6 +28,7 @@ import pyarrow.parquet as pq  # noqa: E402
 
 import nq_l2_explore as X  # noqa: E402
 import nq_l2_synergy as S  # noqa: E402
+from edgelab.edge_brain.control_guard import audit_event_controls  # noqa: E402
 from edgelab.research.l2_manipulation_heuristics import ASK  # noqa: E402
 
 L2 = Path(r"E:\l2_parquet")
@@ -224,8 +225,12 @@ def step_report():
                 if tag == "primario" and h == 60:
                     cell["verdict"] = verdict(cell["I"], lo, hi, cell["mde"], st["n_ev_in"], cfg["nq_scaled"], spread)
                 out[f"{tag}_{h}"] = cell
+        ev_t = D[D.kind == 1].set_index(["session", "match"]).t0
+        C = D[D.kind == 0]
+        te = ev_t.reindex(pd.MultiIndex.from_frame(C[["session", "match"]])).to_numpy()
+        audit = audit_event_controls(te, C.t0.to_numpy(), H_FILTER, control_y=C.sig60.to_numpy())
         res[inst] = dict(sessions=len(used), events=int((D.kind == 1).sum()), cells=out,
-                         verdict=out["primario_60"]["verdict"])
+                         verdict=out["primario_60"]["verdict"], control_audit=audit)
     v = {k: r["verdict"] for k, r in res.items()}
     indep_ok = any(v.get(k, "").startswith("REPLICA") for k in ("GC", "6E"))
     contra = any(x == "CONTRADICE" for x in v.values())
@@ -247,7 +252,8 @@ def step_report():
             if "cells" in r:
                 ep.store.record_observation(f"OBS-VRND-{inst}", f"V-RND réplica {inst}: absorción × redondo, sig60", "RESPONSE_PROFILE",
                                             [INSTR[inst]["part"]], dict(verdict=r["verdict"], primario_60=r["cells"]["primario_60"]),
-                                            {"sessions": r["sessions"]}, sha, depends_on=["CODE:AbsorptionTracker@causal"])
+                                            {"sessions": r["sessions"]}, sha, depends_on=["CODE:AbsorptionTracker@causal"],
+                                            design="EVENT_VS_CONTROL", control_audit=r["control_audit"])
     print(json.dumps(dict(verdicts=v, family=fam, sha=sha[:12])))
 
 

@@ -300,9 +300,11 @@ def step_report():
     with measurement_episode(LEDGER, "EP-NQL2-EXPLORE-20260924", goal="NQ L2 exploración A+B", recorded_by="tools/nq_l2_explore.py report",
                              repo=REPO, prereg_ref=MANIF) as ep:
         ep.store.record_observation("OBS-NQL2-A", "absorción NQ vs control igual distancia+actividad", "RESPONSE_PROFILE", ["P-NQL2-EXP"],
-                                    {k: v for k, v in A.items()}, {"sessions": len(ok)}, sha, depends_on=dep)
+                                    {k: v for k, v in A.items()}, {"sessions": len(ok)}, sha, depends_on=dep,
+                                    design="EVENT_VS_CONTROL")   # controles en +-30 min: el Brain lo rechaza (LES-CTRL-TIMING)
         ep.store.record_observation("OBS-NQL2-B", "desequilibrio de filas NQ", "RESPONSE_PROFILE", ["P-NQL2-EXP"],
-                                    {m: B[m]["top_minus_bottom"] for m in ("up", "mv1", "mv10", "mv60")}, {"sessions": len(ok)}, sha, depends_on=dep)
+                                    {m: B[m]["top_minus_bottom"] for m in ("up", "mv1", "mv10", "mv60")}, {"sessions": len(ok)}, sha, depends_on=dep,
+                                    design="NO_CONTROL")
         for i, t in sug:
             ep.store.record_lesson(LessonCandidate(lesson_id=i, episode_id="EP-NQL2-EXPLORE-20260924", statement=t + " Confirmar SOLO en P-NQL2-CONF.",
                                                    confidence="LOW", status="PROPOSED", scope="SUGGESTED_ANALYSIS"))

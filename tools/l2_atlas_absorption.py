@@ -261,7 +261,7 @@ def _target_free_only(tag: str) -> int:
                                "interarrival_cv": tf["interarrival_cv"], "repeat_same_level_10min": tf["repeat_same_level_10min"],
                                "iceberg_lift": tf["iceberg_cooccurrence"]["lift"]},
                               {"sessions": len(usable), "note": "baja resolucion"}, sha,
-                              depends_on=[f"CODE:AbsorptionTracker@causal@{det_ver}", f"DATA:{BASE.name}"])
+                              depends_on=[f"CODE:AbsorptionTracker@causal@{det_ver}", f"DATA:{BASE.name}"], design="OTHER")
         ep.note("observations", "1")
     print(json.dumps(dict(tag=tag, sessions=usable, events=int(sum(tf["events_per_session"].values())), artifact_sha256=sha[:12])))
     return 0
@@ -380,10 +380,11 @@ def main(argv=None) -> int:
                               ["P-GC0826-EXP", "P-GC0826-CONF"],
                               {"events_total": int(sum(tf["events_per_session"].values())), "side_ask_share": tf["side_ask_share"],
                                "interarrival_cv": tf["interarrival_cv"], "repeat_same_level_10min": tf["repeat_same_level_10min"],
-                               "iceberg_lift": lift}, {"sessions": len(usable)}, sha, depends_on=deps)
+                               "iceberg_lift": lift}, {"sessions": len(usable)}, sha, depends_on=deps, design="OTHER")
         st.record_observation("OBS-ABS-GC0826-RESPONSE", "L2 absorption GC 08-26", "RESPONSE_PROFILE", ["P-GC0826-EXP"],
                               {h: {k: prof["by_horizon"][h][k]["session_diff_ci"] for k in ("fade", "abs", "break")} for h in prof["by_horizon"]},
-                              {"sessions": len(exp), "events": prof["n_events"], "controls": prof["n_controls"]}, sha, depends_on=deps)
+                              {"sessions": len(exp), "events": prof["n_events"], "controls": prof["n_controls"]}, sha, depends_on=deps,
+                              design="EVENT_VS_CONTROL")   # controles +-30 min: el Brain lo rechaza (LES-CTRL-TIMING)
         for sid, text in sug:
             st.record_lesson(LessonCandidate(lesson_id=sid, episode_id="EP-ATLAS-L2-ABS-GC0826-20260924",
                                              statement=f"{text} Confirmar SOLO en P-GC0826-CONF o datos futuros; motivated_by=OBS-ABS-GC0826-*.",

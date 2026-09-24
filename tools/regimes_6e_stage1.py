@@ -258,15 +258,15 @@ def step_report():
         st.record_observation("OBS-6E-REG-V1", "log P1 (ticks) vs profundidad L2 en el mejor nivel", "TARGET_FREE",
                               ["P-6E-REG-L2VAL", "P-6E-REG-L2HOLDOUT"],
                               {k: summary["V1"][k] for k in ("verdict", "median_rho_t1", "median_rho_t2", "median_rho_deseasonalized", "share_rho_pos")},
-                              {"sessions": len(ok)}, sha, depends_on=dep)
+                              {"sessions": len(ok)}, sha, depends_on=dep, design="OTHER")
         st.record_observation("OBS-6E-REG-V2", "puente P1 research-v2 vs P1 archivo L2 (junio)", "TARGET_FREE",
                               ["P-6E-REG-L2VAL", "P-6E-REG-CONF"], {"verdict": v2, "per_session": summary["V2"]["per_session"]},
-                              {"sessions": len(bridge)}, sha, depends_on=dep)
+                              {"sessions": len(bridge)}, sha, depends_on=dep, design="OTHER")
         st.record_observation("OBS-6E-REG-V3", "persistencia de log P1 sin perfil horario", "TARGET_FREE",
                               ["P-6E-REG-EXP", "P-6E-REG-CONF"],
                               {"verdict": v3v, "ac_1h_deseasonalized": ac,
                                "variance_share_explained_by_hour": summary["V3"]["variance_share_explained_by_hour"]},
-                              {"sessions": v3["sessions"]}, sha, depends_on=dep)
+                              {"sessions": v3["sessions"]}, sha, depends_on=dep, design="OTHER")
     print(json.dumps(dict(V1=v1, V1_median=med, V2=v2, V3=v3v, ac1h=ac, artifact=sha[:12]), default=float))
 
 

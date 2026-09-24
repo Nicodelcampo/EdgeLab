@@ -137,9 +137,9 @@ def test_atlas_exploration_cannot_be_confirmed_on_the_same_data(tmp_path):
     with pytest.raises(ValueError, match="overlaps"):
         s.record_partition("P-X", "FUTURE", "pisa", ["d2", "d9"])
     with pytest.raises(ValueError, match="EXPLORATION"):          # mirar retornos en la reserva: prohibido
-        s.record_observation("O-0", "abs", "RESPONSE_PROFILE", ["P-CONF"], {}, {}, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+        s.record_observation("O-0", "abs", "RESPONSE_PROFILE", ["P-CONF"], {}, {}, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", design="OTHER")
     s.record_observation("O-1", "abs", "RESPONSE_PROFILE", ["P-EXP"], {"x": 1}, {"ci_half_width": 0.2}, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-                         depends_on=["CODE:AbsorptionTracker@causal"])
+                         depends_on=["CODE:AbsorptionTracker@causal"], design="OTHER")
     s.record_spec_confirmation("SPEC-1", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "human:Nico", "agent:claude")
     with pytest.raises(CampaignBudgetError, match="EXPLORATION"):
         s.record_campaign("C-1", "ABS", "human:Nico", "agent:claude", 4, "p@1", "GC", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", ("O-1",), "P-EXP")

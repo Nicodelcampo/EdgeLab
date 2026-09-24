@@ -31,6 +31,7 @@ import nq_l2_explore as X  # noqa: E402
 from edgelab.bridge.indicators import hftzones_universal as hu  # noqa: E402
 from edgelab.research.l2_manipulation_heuristics import ASK  # noqa: E402
 from edgelab.research.tbz_bands import dwell_bands, expansion_bands  # noqa: E402
+from edgelab.edge_brain.control_guard import audit_event_controls  # noqa: E402
 
 OUT = REPO / "artifacts" / "nq_l2_synergy_C"   # corrida C: controles corregidos (la B vive en artifacts/nq_l2_synergy)
 LEDGER = X.LEDGER  # mismo ledger: particiones P-NQL2-* declaradas antes de medir
@@ -512,6 +513,11 @@ def step_report():
                 n_rows=int(len(D)), n_events=int((D.kind == 1).sum()), n_cells=len(cells), n_fdr_pass=int(passed.sum()),
                 stage1=cells, stage2=trees, grow_sessions=sorted(grow_s), est_sessions=sorted(est_s),
                 top_suggestions=[dict(src=s, **{k: v for k, v in c.items()}) for s, c, _ in ranked])
+    ev_t = D[D.kind == 1].set_index(["session", "match"]).t0
+    Cc = D[D.kind == 0]
+    audit = audit_event_controls(ev_t.reindex(pd.MultiIndex.from_frame(Cc[["session", "match"]])).to_numpy(),
+                                 Cc.t0.to_numpy(), max(HZ), control_y=Cc.sig300.to_numpy())
+    body["control_audit"] = audit
     raw = json.dumps(body, indent=1, default=lambda o: (float(o) if isinstance(o, (np.floating, np.integer)) else str(o)))
     (OUT / "report.json").write_text(raw, encoding="utf-8")
     sha = hashlib.sha256(raw.encode()).hexdigest()
@@ -520,9 +526,11 @@ def step_report():
         ep.store.record_observation(f"OBS-NQL2-SYN-S1{TAG}", "interacción absorción × C1–C12", "RESPONSE_PROFILE", ["P-NQL2-EXP"],
                                     dict(n_cells=len(cells), n_fdr_pass=int(passed.sum()), n_candidates=len(sug)),
                                     {"sessions": n_s}, sha, depends_on=["CODE:AbsorptionTracker@causal", "CODE:HFTZonesUniversal@NQ_LITERAL",
-                                                                        "DATA:l2_parquet/NQ_09-26"])
+                                                                        "DATA:l2_parquet/NQ_09-26"],
+                                    design="EVENT_VS_CONTROL", control_audit=audit)
         ep.store.record_observation(f"OBS-NQL2-SYN-S2{TAG}", "árbol honesto sobre τ", "RESPONSE_PROFILE", ["P-NQL2-EXP"],
-                                    dict(leaves=len(trees), candidates=sum(t["candidate"] for t in trees)), {"sessions": n_s}, sha)
+                                    dict(leaves=len(trees), candidates=sum(t["candidate"] for t in trees)), {"sessions": n_s}, sha,
+                                    design="EVENT_VS_CONTROL", control_audit=audit)
         for i, (s, c, _) in enumerate(ranked):
             txt = (f"{c['context']}={c['level']} {c['channel']}{c['h']}s: I={c['I_ticks']:.2f} ticks (lo {c['ci_lo_ticks']:.2f})"
                    if s == "S1" else f"hoja {c['path']} {c['channel']}{c['h']}s: τ={c['est_mean']:.2f} (lo {c['est_ci'][0]:.2f})")
