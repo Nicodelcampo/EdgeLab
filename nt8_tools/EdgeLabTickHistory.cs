@@ -115,9 +115,11 @@ namespace NinjaTrader.Gui.NinjaScript
      string cdir=Path.Combine(dir,contract.Replace(' ','_'));
      if(!probeOnly)Directory.CreateDirectory(cdir);
      long total=0;int withData=0,noData=0;string first=null,last=null;
-     for(DateTime d=a;d<=z&&!cancel;d=d.AddDays(probeOnly?7:1))
+     for(DateTime w0=a;w0<=z&&!cancel;w0=w0.AddDays(probeOnly?7:1))
      {
-      if(d.DayOfWeek==DayOfWeek.Saturday)continue;
+      DateTime d=w0;
+      if(probeOnly)while(d.DayOfWeek==DayOfWeek.Saturday||d.DayOfWeek==DayOfWeek.Sunday)d=d.AddDays(1);   // probar siempre un dia habil
+      if(d>z||d.DayOfWeek==DayOfWeek.Saturday)continue;
       string day=d.ToString("yyyyMMdd",CultureInfo.InvariantCulture);
       string outPath=Path.Combine(cdir,day+".Last.utc.txt");
       if(!probeOnly&&File.Exists(outPath)){Log("SKIP "+contract+" "+day+" (ya existe)");continue;}
