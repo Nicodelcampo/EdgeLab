@@ -72,3 +72,14 @@ MES y ES son el mismo subyacente: **no suman como sesiones independientes**. La 
 
 - Días excluidos de cualquier confirmación de esta familia, porque de ahí salieron las observaciones de Nico: **24/09/2026** (MES/ES).
 - La decisión sobre usar el resto del holdout como confirmación ciega sigue abierta (P-86).
+
+## Enmiendas del mismo día (antes de ver cualquier resultado de E1b)
+
+1. **Escala por defecto del visor para EXP:** pasa de W20 · k2,5 a **W20 · k4**. W20 · k2,5 produce ~340 franjas por día en MES (censo target-free del primer bundle) y tapa el gráfico. Es una decisión de **visualización**: la medición E1 sigue usando la grilla completa.
+2. **HFTGAP, hallazgo de construcción:** con el preset por defecto (`HP007_NO_TIME_DECAY`) el campo acumula **todas las zonas desde el inicio del bundle mensual** y queda saturado casi en todo el rango. Un corredor aparece solo donde no hubo ninguna zona en todo el mes, y eso no es lo mismo que los huecos locales que Nico ve en NT8. E1b mide los dos presets: `HP007_NO_TIME_DECAY` (el declarado) y `HP007_CALIBRATED` (12 h de vida media) como sensibilidad, publicados ambos.
+3. **Desgaste por toque calibrable** (pedido de Nico): `density_field` acepta `wear_alpha` y `wear_exp` (peso = (1 + a·toques)^−b; de fábrica 0,5 y 0,6), con la misma implementación en Python y JS (test de paridad nuevo). En el visor son dos controles. **La calibración a ojo es de visualización** y no entra a E1. Si se congela un valor para medir, se registra como parámetro antes de usarlo.
+4. **Bundles MES con parámetros literales de NQ** (`tools/build_mes_nqlit_bundles.py`, ids `*_NQLIT`), como cuando Nico aplica HFTZonesNQPureV4 sobre MES en NT8:
+   - ~63 mil zonas por mes (contra ~8,5 mil del perfil escalado);
+   - cada zona trae sus **toques causales** (entrada de una vela de 25 ticks al rango, después de estar disponible; hasta 40);
+   - sin estos toques el desgaste no tiene efecto, porque los bundles existentes no los traen;
+   - paridad NT8 en MES: `PARITY_ABSTAIN`.

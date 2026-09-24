@@ -1087,6 +1087,39 @@
       </div>
     </div>
 
+    <!-- EDGELAB_WEAR_CONTROLS_V1: desgaste por toque calibrable (density_field wear_alpha / wear_exp) -->
+    <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
+      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px;">🪨 Desgaste por toque</div>
+      <div title="Cuánto pesa cada toque: peso = (1 + a·toques)^-b. De fábrica a = 0,5 y b = 0,6 (HP-007)." style="display:flex;flex-direction:column;gap:5px;font-size:10.5px;">
+        <div style="display:flex;align-items:center;gap:6px;"><span style="min-width:74px;">Intensidad a</span>
+          <input type="range" id="range-wear-alpha" min="0" max="5" step="0.1" value="0.5" style="flex:1;accent-color:#b45309;">
+          <span id="lbl-wear-alpha" style="min-width:30px;font-weight:700;color:#b45309;text-align:right;">0.5</span></div>
+        <div style="display:flex;align-items:center;gap:6px;"><span style="min-width:74px;">Curvatura b</span>
+          <input type="range" id="range-wear-exp" min="0.1" max="3" step="0.05" value="0.6" style="flex:1;accent-color:#b45309;">
+          <span id="lbl-wear-exp" style="min-width:30px;font-weight:700;color:#b45309;text-align:right;">0.60</span></div>
+        <div id="lbl-wear-preview" style="font-size:9.5px;color:#666;"></div>
+        <button class="nt8-btn sm" id="btn-wear-reset" style="align-self:flex-start;">Volver a fábrica (0,5 / 0,6)</button>
+        <div style="font-size:9px;color:#888;line-height:1.3;">Solo tiene efecto en bundles con toques registrados (los «· NQ literal»). Los toques se cuentan as-of: sin mirar el futuro.</div>
+      </div>
+    </div>
+
+    <!-- EDGELAB_TBZ_LAYER_V1: familia TBZ, franjas de baja permanencia (construcción, sin desenlaces) -->
+    <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
+      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px;">🧭 Franjas TBZ (baja permanencia)</div>
+      <div style="display:flex;flex-direction:column;gap:5px;font-size:10.5px;">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-tbz-exp">
+          <span><b>Expansiones A→B</b> (EXP)</span>
+          <select id="sel-tbz-exp" style="margin-left:auto;font-size:10px;">
+            <option value="W20_k4.0" selected>W20 · k4 (~50/día)</option><option value="W60_k2.5">W60 · k2,5 (~30/día)</option>
+            <option value="W60_k4.0">W60 · k4 (~5/día)</option><option value="W20_k2.5">W20 · k2,5 (~300/día)</option></select></label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-tbz-dwell">
+          <span><b>Huecos de permanencia</b> (DWELL)</span>
+          <select id="sel-tbz-dwell" style="margin-left:auto;font-size:10px;"><option value="L60" selected>ventana 60 min</option><option value="L240">ventana 240 min</option></select></label>
+        <div id="lbl-tbz-status" style="font-size:9.5px;color:#666;">Sin datos TBZ para este bundle.</div>
+        <div style="font-size:9px;color:#888;line-height:1.3;">EXP: tramo claro = formación; recuadro = franja vigente (desde que está disponible, hasta 4 h). Los corredores (HFTGAP) son la capa «Corredores». Registro: docs/research/FAMILIA_TBZ_FRANJAS_BAJA_PERMANENCIA_20260924.md</div>
+      </div>
+    </div>
+
     <!-- 4. Estilo Visual -->
     <div style="display: flex; gap: 8px; align-items: center; justify-content: space-between;">
       <div style="display: flex; align-items: center; gap: 4px;">
@@ -1214,6 +1247,7 @@
 </div>
 
 <script src="bundles/manifest.js"></script>
+<script src="bundles/manifest_nqlit.js" onerror="void 0"></script>
 <script src="density_field.js"></script>
 <script>
 (function () {
@@ -1303,6 +1337,9 @@
     extension_bars: 500,
     corridors_enabled: true,   // Corredores de Vacío HFT sólidos (HP-007 / HP-006)
     corridors_hmin_ticks: 16,  // Amplitud mínima del corredor en ticks
+    wear_alpha: 0.5,           // desgaste por toque: peso = (1 + a·toques)^-b (HP-007 de fábrica)
+    wear_exp: 0.6,
+    tbz_exp: false, tbz_exp_key: "W20_k4.0", tbz_dwell: false, tbz_dwell_key: "L60",
     corridors_dir_filter: "all", // "all", "bull", "bear"
     corridors_density_profile: false,
     corridors_density_width: 110,
@@ -1617,6 +1654,69 @@
     l2._scale = Math.max(2, a[Math.floor(a.length * 0.99)] || 2);
     return l2._scale;
   }
+  // Familia TBZ: franjas EXP y huecos DWELL (tools/tbz_stage1.py -> bundles/tbz/<bundle>.json). Solo construcción.
+  function drawTbz(ctx, vr, w, h) {
+    var tb = state.tbz;
+    if (!tb || !series || (!activeProps.tbz_exp && !activeProps.tbz_dwell)) return;
+    var akey = state.activeBarKey || (state.run && state.run.bar_key);
+    var bs = state.data && state.data.bar_series && state.data.bar_series[akey];
+    var cd = bs && bs.candles;
+    if (!cd || cd.length < 2) return;
+    var tick = tb.tick_size, lastT = cd[cd.length - 1].time;
+    function X(t) { return barTimeToX(Math.min(t, lastT), cd); }
+    function Y(tk) { var c = series.priceToCoordinate(tk * tick); return (c === null || c === undefined) ? NaN : c; }
+    ctx.save();
+    if (activeProps.tbz_dwell && tb.dwell && tb.dwell[activeProps.tbz_dwell_key]) {
+      var dw = tb.dwell[activeProps.tbz_dwell_key], step = dw.step_s || 300;
+      ctx.fillStyle = "rgba(124,58,237,0.22)";
+      for (var i = 0; i < dw.t.length; i++) {
+        var t0 = dw.t[i];
+        if (t0 + step < vr.from || t0 > vr.to) continue;
+        var xa = X(t0), xb = X(t0 + step);
+        if (!isFinite(xa) || !isFinite(xb)) continue;
+        for (var k = 0; k < dw.bands[i].length; k++) {
+          var b = dw.bands[i][k], ya = Y(b[1] + 0.5), yb = Y(b[0] - 0.5);
+          if (!isFinite(ya) || !isFinite(yb)) continue;
+          ctx.fillRect(xa, Math.min(ya, yb), Math.max(1, xb - xa), Math.abs(yb - ya));
+        }
+      }
+    }
+    if (activeProps.tbz_exp && tb.exp && tb.exp[activeProps.tbz_exp_key]) {
+      var ex = tb.exp[activeProps.tbz_exp_key], ext = tb.exp_extend_s || 14400, drawn = 0;
+      for (var j = 0; j < ex.length; j++) {
+        var e = ex[j], ts = e[0], ta = e[1], lo = e[2], hi = e[3], dir = e[4];
+        if (ta + ext < vr.from || ts > vr.to) continue;
+        var x0 = X(ts), x1 = X(ta), x2 = X(ta + ext), y0 = Y(hi + 0.5), y1 = Y(lo - 0.5);
+        if (!isFinite(x0) || !isFinite(x2) || !isFinite(y0) || !isFinite(y1) || x2 < 0 || x0 > w) continue;
+        var col = dir > 0 ? "13,148,136" : "234,88,12";
+        ctx.fillStyle = "rgba(" + col + ",0.10)";
+        ctx.fillRect(x0, Math.min(y0, y1), Math.max(1, x1 - x0), Math.abs(y1 - y0));
+        ctx.strokeStyle = "rgba(" + col + ",0.85)"; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(x1, y0); ctx.lineTo(x2, y0); ctx.moveTo(x1, y1); ctx.lineTo(x2, y1); ctx.stroke();
+        ctx.fillStyle = "rgba(" + col + ",0.05)";
+        ctx.fillRect(x1, Math.min(y0, y1), Math.max(1, x2 - x1), Math.abs(y1 - y0));
+        drawn++;
+      }
+      state._tbzDrawn = drawn;
+    }
+    ctx.restore();
+  }
+
+  function loadTbz(aid) {
+    state.tbz = null;
+    var base = String(aid).replace(/_NQLIT$/, "");
+    var st = document.getElementById("lbl-tbz-status");
+    fetch("bundles/tbz/" + base + ".json?v=" + Date.now(), { cache: "reload" })
+      .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(function (d) {
+        if (state.currentAssetId !== aid) return;
+        state.tbz = d;
+        if (st) st.textContent = "TBZ cargado: " + Object.keys(d.exp).map(function (k) { return k + "=" + d.exp[k].length; }).join(", ");
+        requestDraw();
+      })
+      .catch(function () { if (st) st.textContent = "Sin datos TBZ para este bundle."; });
+  }
+
   function drawL2Depth(ctx, vr, w, h) {
     var l2 = state.data && state.data.l2;
     if (!l2 || activeProps.show_l2_depth === false || !series) return;
@@ -1774,6 +1874,7 @@
     drawL2Depth(ctx, vr, w, hCanvas);
     drawTrades(ctx, vr, w, hCanvas);
     drawManipulationMarkers(ctx, vr, w, hCanvas);
+    drawTbz(ctx, vr, w, hCanvas);
 
     var opacityVal = (activeProps.opacidad || 30) / 100;
     var showLabels = activeProps.mostrar_texto !== false;
@@ -2566,10 +2667,11 @@
   var DF = window.EdgeLabDensityField;
   var canonCache = { key: null, value: null };
   var CANON_MAX_GRID_TICKS = 20000;
-  var CANON_MAX_ZONES = 40000;
+  var CANON_MAX_ZONES = 100000;   // 2026-09-24: MES con parámetros literales de NQ trae ~63 mil zonas por mes
 
   function fieldPreset() {
-    return Object.assign({}, DF.PRESETS[state.decayMode === "calibrated_time" ? "HP007_CALIBRATED" : "HP007_NO_TIME_DECAY"]);
+    return Object.assign({}, DF.PRESETS[state.decayMode === "calibrated_time" ? "HP007_CALIBRATED" : "HP007_NO_TIME_DECAY"],
+                         { wear_alpha: Number(activeProps.wear_alpha), wear_exp: Number(activeProps.wear_exp) });
   }
 
   // Adaptador zona-del-visor -> zona canónica. Reglas explícitas, sin inventar campos:
@@ -2624,7 +2726,8 @@
     var includeExpl = (activeProps.include_exploratory_density === true);
     var runZones = state.run.zones;
     var key = [state.run.run_id || state.run.id || state.run.bar_key, runZones.length, Math.floor(tRef), state.decayMode,
-               hMinTicks, includeExpl, activeProps.consumption_mode, activeProps.volume_threshold].join("|");
+               hMinTicks, includeExpl, activeProps.consumption_mode, activeProps.volume_threshold,
+               activeProps.wear_alpha, activeProps.wear_exp].join("|");
     if (canonCache.key === key) return canonCache.value;
 
     var res = { status: "PASS", field: null, inter: null, chars: [], fingerprint: null, tRef: tRef,
@@ -3470,6 +3573,39 @@
     requestDraw();
   }
 
+  function wearPreview() {
+    var a = Number(activeProps.wear_alpha), b = Number(activeProps.wear_exp);
+    var f = function (n) { return Math.pow(1 + a * n, -b).toFixed(2); };
+    var el = document.getElementById("lbl-wear-preview");
+    if (el) el.textContent = "Peso de la zona tras 1 / 5 / 20 toques: " + f(1) + " / " + f(5) + " / " + f(20);
+    var la = document.getElementById("lbl-wear-alpha"), lb = document.getElementById("lbl-wear-exp");
+    if (la) la.textContent = a.toFixed(1);
+    if (lb) lb.textContent = b.toFixed(2);
+  }
+  function setWear(a, b) {
+    if (a !== null) activeProps.wear_alpha = a;
+    if (b !== null) activeProps.wear_exp = b;
+    var ra = document.getElementById("range-wear-alpha"), rb = document.getElementById("range-wear-exp");
+    if (ra) ra.value = activeProps.wear_alpha;
+    if (rb) rb.value = activeProps.wear_exp;
+    wearPreview();
+    requestDraw();
+  }
+  (function () {
+    var ra = document.getElementById("range-wear-alpha"), rb = document.getElementById("range-wear-exp"),
+        rr = document.getElementById("btn-wear-reset");
+    if (ra) ra.addEventListener("input", function () { setWear(parseFloat(this.value), null); });
+    if (rb) rb.addEventListener("input", function () { setWear(null, parseFloat(this.value)); });
+    if (rr) rr.addEventListener("click", function () { setWear(0.5, 0.6); });
+    wearPreview();
+    var ce = document.getElementById("chk-tbz-exp"), cw = document.getElementById("chk-tbz-dwell"),
+        se = document.getElementById("sel-tbz-exp"), sw = document.getElementById("sel-tbz-dwell");
+    if (ce) ce.addEventListener("change", function () { activeProps.tbz_exp = this.checked; requestDraw(); });
+    if (cw) cw.addEventListener("change", function () { activeProps.tbz_dwell = this.checked; requestDraw(); });
+    if (se) se.addEventListener("change", function () { activeProps.tbz_exp_key = this.value; requestDraw(); });
+    if (sw) sw.addEventListener("change", function () { activeProps.tbz_dwell_key = this.value; requestDraw(); });
+  })();
+
   var rangeCorrHmin = document.getElementById("range-corridor-hmin");
   if (rangeCorrHmin) {
     rangeCorrHmin.addEventListener("input", function () {
@@ -3833,6 +3969,7 @@
       .then(function(data) {
         window["BUNDLE_" + aid] = data;
         applyLoadedAsset(data, options);
+        loadTbz(aid);
       })
       .catch(function(err) {
         console.warn("Fallo fetch para " + aid + ", intentando script tag...", err);

@@ -99,3 +99,31 @@ def test_el_estado_economico_no_depende_del_viewport():
     r = subprocess.run(["node", "-e", js, str(ROOT / "viewer" / "nt8_bridge" / "density_field.js")],
                        capture_output=True, text=True, encoding="utf-8")
     assert r.stdout.strip() == "true", r.stderr
+
+
+def test_el_desgaste_por_toque_parametrizado_coincide_en_JS_y_en_Python():
+    """2026-09-24: wear_alpha / wear_exp se exponen para calibrar corredores en el visor. Con valores distintos a los
+    de fábrica, Python y JS tienen que dar el mismo campo (y los de fábrica no cambian)."""
+    from edgelab.research.density_field import compute_field
+    base = 1780000000000000000
+    zones = [{"id": "a", "bottom": 100, "top": 101, "vol": 5, "available_ns": base + 4096 * 1000,
+              "touch_events": [base + 9000 * 1000, base + 12000 * 1000, base + 15000 * 1000]},
+             {"id": "b", "bottom": 103, "top": 104, "vol": 9, "available_ns": base + 8192 * 1000, "touch_events": []}]
+    t = base + 4096 * 1000 * 100
+    for wa, we in ((0.5, 0.60), (2.0, 1.5), (0.0, 0.6)):
+        cfg = dict(model="FIELD_TRANS", kernel="KERNEL_GAUSS", sigma_ticks=1.2, vol_transform="TRANS_POWER_025",
+                   use_maturation=True, use_time_decay=False, use_wear=True, saturation=True, wear_alpha=wa, wear_exp=we)
+        py = compute_field(zones, t, 0.25, 380, 440, cfg)["density"]
+        js = r"""
+          const DF = require(process.argv[1]); const [zs, t, cfg] = JSON.parse(process.argv[2]);
+          console.log(JSON.stringify(DF.computeField(zs, t, 0.25, 380, 440, cfg).density));
+        """
+        r = subprocess.run(["node", "-e", js, str(ROOT / "viewer" / "nt8_bridge" / "density_field.js"),
+                            json.dumps([zones, t, cfg])], capture_output=True, text=True, encoding="utf-8")
+        assert r.returncode == 0, r.stderr
+        jsd = json.loads(r.stdout)
+        assert max(abs(a - b) for a, b in zip(py, jsd)) < 1e-12, (wa, we)
+    # el desgaste realmente cambia el campo
+    hi = compute_field(zones, t, 0.25, 380, 440, dict(cfg, wear_alpha=2.0, wear_exp=1.5))["density"]
+    lo = compute_field(zones, t, 0.25, 380, 440, dict(cfg, wear_alpha=0.0))["density"]
+    assert hi != lo

@@ -227,7 +227,9 @@
         if (cfg.use_wear) {
           const tw = reconstructZoneTouchesAsof(z, tRefNs);
           if (tw[1]) legacyTouch++;
-          fWear = Math.pow(1.0 + 0.5 * tw[0], -0.60);
+          // (1 + a·toques)^-b; por defecto a=0.5, b=0.60 (igual que density_field.py)
+          fWear = Math.pow(1.0 + (cfg.wear_alpha !== undefined ? Number(cfg.wear_alpha) : 0.5) * tw[0],
+                           -(cfg.wear_exp !== undefined ? Number(cfg.wear_exp) : 0.60));
         }
         const penalty = (isEnded && endedPolicy === "penalize_ended")
           ? Number(cfg.invalidation_penalty === undefined ? 0.35 : cfg.invalidation_penalty) : 1.0;

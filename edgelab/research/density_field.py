@@ -373,7 +373,8 @@ def compute_field(
                 touches_asof, is_touch_fb = reconstruct_zone_touches_asof(z, t_ref_ns)
                 if is_touch_fb:
                     legacy_touch_fallbacks += 1
-                f_wear = (1.0 + 0.5 * touches_asof) ** -0.60
+                # (1 + a·toques)^-b. Por defecto a=0.5, b=0.60 (HP-007); ajustable para calibrar el tamaño de corredores.
+                f_wear = (1.0 + float(cfg.get("wear_alpha", 0.5)) * touches_asof) ** -float(cfg.get("wear_exp", 0.60))
             else:
                 f_wear = 1.0
 
