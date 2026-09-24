@@ -2546,6 +2546,14 @@ El replay de Tradovate (fuente independiente) de NQZ6 del 23/09 a las 07:00:10 C
 
 El libro de NT8 es el libro real. El spread ancho y la poca profundidad de NQ son del mercado. Queda pendiente repetir en otro día y en GC para generalizar.
 
+## P-87 — GC L2 no verificado contra Tradovate
+
+24/09: captura del replay de Tradovate de GCZ6, "22/09" 07:00:06 CDT (ask 4346.1 / bid 4345.8). En `E:/l2_parquet/GC_12-26` no aparece ese libro en ningún momento de los días 14, 15, 17 y 22/09: el mejor calce es de 8 de 20 niveles. El 22/09 a las 07:00 CT el archivo marca 4360.
+
+Causas posibles: día distinto entre Tradovate y nuestro archivo (faltan el 16, el 18 y el 21), o un problema propio de los archivos de GC (ver relojes, P-84).
+
+Próximo paso: GCZ6 15/09 09:00 CDT en Tradovate contra el archivo. Hasta resolverlo, **el L2 de GC queda como NO verificado** (NQ sí: 20/20).
+
 ## Integración pendiente
 
 La rama `integ/viewer-brain-20260923` (visor #48 + Brain #56, suite verde) espera la decisión de mergearla a `foundation`.
