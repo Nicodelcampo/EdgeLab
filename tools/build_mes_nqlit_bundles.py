@@ -98,7 +98,7 @@ def main():
     extra = {}
     if extra_path.exists():
         t2 = extra_path.read_text(encoding="utf-8")
-        extra = {it["id"]: it for it in json.loads(t2[t2.index("["):t2.rindex("]") + 1])}
+        extra = {it["id"]: it for it in json.loads(t2[t2.index(".concat(") + 8:t2.rindex(")")])}
     with ProcessPoolExecutor(a.workers) as ex:
         for base, aid, nz, nb, nt in ex.map(_build, entries):
             print(f"{aid:40s} zonas={nz:7d} barras={nb:8d} toques={nt:8d}", flush=True)
