@@ -45,6 +45,7 @@ primero -- nunca por cercania de timestamp.
 from __future__ import annotations
 
 import hashlib
+import os
 import json
 from datetime import datetime, timezone
 from pathlib import Path
@@ -118,17 +119,22 @@ def _detect_subsecond_unit(fields: np.ndarray) -> str:
     return SUBSEC_100NS if mx > 999_999 else SUBSEC_US
 
 
-def parse_l2_raw_csv(csv_path: str | Path, tick_size: float = 0.00005) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Parse raw CSV into (df_l2_depth, df_l1_quotes). La unidad de la fraccion de segundo se detecta sobre
-    L1+L2 juntos (ver `_detect_subsecond_unit`) y queda en `df.attrs["subsecond_unit"]`."""
-    csv_path = Path(csv_path)
-    df_raw = pd.read_csv(csv_path, sep=";", header=None, names=list(range(9)), low_memory=False)
-    # Indice de linea del CSV ORIGINAL, antes de separar L1 de L2: preserva el orden
-    # dentro del mismo microsegundo Y el intercalado entre los dos flujos.
-    df_raw["source_row"] = np.arange(len(df_raw), dtype=np.int64)
-    m_any = df_raw[0].isin(["L1", "L2"])
-    unit = _detect_subsecond_unit(df_raw.loc[m_any, 3].astype(np.int64).to_numpy())
-    div = 10 if unit == SUBSEC_100NS else 1
+# Tipos fijos del CSV de NT8 (`L2;side;yyyyMMddHHmmss;frac;op;level;;price;size` y `L1;side;ts;frac;price;size`).
+# Se fijan para que la lectura por bloques no infiera tipos distintos en cada bloque. float64 es exacto para todos
+# los enteros en juego (ts de 14 digitos < 2^53) y usa el MISMO parser de read_csv que la inferencia vieja.
+_RAW_DTYPES = {0: str, **{i: np.float64 for i in range(1, 9)}}
+STREAM_CHUNK_ROWS = 2_000_000       # ~40 M filas por dia en NQ: leer entero pedia decenas de GB (crash 2026-09-24)
+
+
+def _read_raw(csv_path: Path, **kw):
+    return pd.read_csv(csv_path, sep=";", header=None, names=list(range(9)), dtype=_RAW_DTYPES, **kw)
+
+
+def _frames_from_raw(df_raw: pd.DataFrame, tick_size: float, div: int) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Bloque crudo (con `source_row` ya asignado) -> (l2, l1). Unica implementacion de la transformacion: la usan
+    la lectura entera (`parse_l2_raw_csv`) y la de a bloques (`convert_l2_session`), asi no pueden divergir."""
+    df_raw = df_raw.copy()
+    df_raw[2] = df_raw[2].astype(np.int64)          # ts yyyyMMddHHmmss: entero antes de pasarlo a texto
 
     # 1. L2 Depth Book updates
     m_l2 = df_raw[0] == "L2"
@@ -156,8 +162,36 @@ def parse_l2_raw_csv(csv_path: str | Path, tick_size: float = 0.00005) -> tuple[
     df_l1["ts_us"] = _a_microsegundos(df_l1["ts_str"], df_l1["usec"].astype(np.int64) // div)
     df_l1["price_tick"] = np.round(df_l1["price"] / tick_size).astype(np.int32)
     df_l1.drop(columns=["ts_str", "usec"], inplace=True)
+    return df_l2, df_l1
+
+
+def parse_l2_raw_csv(csv_path: str | Path, tick_size: float = 0.00005) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Parse raw CSV into (df_l2_depth, df_l1_quotes) LEYENDO EL ARCHIVO ENTERO (tests y archivos chicos; para
+    sesiones reales usar `convert_l2_session`, que va por bloques). La unidad de la fraccion de segundo se detecta
+    sobre L1+L2 juntos (ver `_detect_subsecond_unit`) y queda en `df.attrs["subsecond_unit"]`."""
+    csv_path = Path(csv_path)
+    df_raw = _read_raw(csv_path)
+    # Indice de linea del CSV ORIGINAL, antes de separar L1 de L2: preserva el orden
+    # dentro del mismo microsegundo Y el intercalado entre los dos flujos.
+    df_raw["source_row"] = np.arange(len(df_raw), dtype=np.int64)
+    m_any = df_raw[0].isin(["L1", "L2"])
+    unit = _detect_subsecond_unit(df_raw.loc[m_any, 3].astype(np.int64).to_numpy())
+    df_l2, df_l1 = _frames_from_raw(df_raw, tick_size, 10 if unit == SUBSEC_100NS else 1)
     df_l2.attrs["subsecond_unit"] = df_l1.attrs["subsecond_unit"] = unit
     return df_l2, df_l1
+
+
+def _scan_subsecond_unit(csv_path: Path, chunk_rows: int) -> str:
+    """Primera pasada, solo columnas 0 y 3: la unidad depende del maximo de TODO el archivo."""
+    mn, mx = None, None
+    for ch in _read_raw(csv_path, chunksize=chunk_rows):       # sin usecols: falla si el archivo tiene solo L1
+        v = ch.loc[ch[0].isin(["L1", "L2"]), 3].to_numpy()
+        if len(v):
+            mn = v.min() if mn is None else min(mn, v.min())
+            mx = v.max() if mx is None else max(mx, v.max())
+    if mn is None:
+        return _detect_subsecond_unit(np.array([], dtype=np.int64))
+    return _detect_subsecond_unit(np.array([mn, mx]).astype(np.int64))
 
 
 def _clock_inversions(df: pd.DataFrame) -> int:
@@ -195,7 +229,8 @@ def _sha256_file(path: Path) -> str:
     return h.hexdigest()
 
 
-def convert_l2_session(csv_path: str | Path, out_dir: str | Path, tick_size: float = 0.00005) -> tuple[Path, Path]:
+def convert_l2_session(csv_path: str | Path, out_dir: str | Path, tick_size: float = 0.00005,
+                       chunk_rows: int = STREAM_CHUNK_ROWS) -> tuple[Path, Path]:
     """Convert an L2 raw CSV into compressed L2 and L1 Parquet files.
 
     `price` (float64, redundante con `price_tick`+`tick_size`) se valida fila a fila contra su reconstruccion
@@ -215,30 +250,69 @@ def convert_l2_session(csv_path: str | Path, out_dir: str | Path, tick_size: flo
     dir_l1.mkdir(parents=True, exist_ok=True)
     dir_man.mkdir(parents=True, exist_ok=True)
 
-    df_l2, df_l1 = parse_l2_raw_csv(csv_path, tick_size=tick_size)
-    subsecond_unit = df_l2.attrs.get("subsecond_unit")
-    inversions = dict(l2=_clock_inversions(df_l2), l1=_clock_inversions(df_l1))
-
-    rt_l2 = _validate_price_roundtrip(df_l2, tick_size)
-    rt_l1 = _validate_price_roundtrip(df_l1, tick_size)
-    if rt_l2["violations"] or rt_l1["violations"]:
-        raise PriceRoundtripError(
-            f"{session_name}: price fuera de grilla mas alla de tolerancia={PRICE_ROUNDTRIP_TOLERANCE} -- "
-            f"L2 {rt_l2['violations']}/{rt_l2['rows_checked']} filas (max_error={rt_l2['max_error']:.3g}), "
-            f"L1 {rt_l1['violations']}/{rt_l1['rows_checked']} filas (max_error={rt_l1['max_error']:.3g})")
-
-    df_l2 = df_l2.drop(columns=["price"])
-    df_l1 = df_l1.drop(columns=["price"])
+    # POR BLOQUES (2026-09-24): una sesion de NQ son ~40 M filas; leerla entera colgo la maquina (16 GB). Dos
+    # pasadas: (1) unidad de la fraccion de segundo sobre todo el archivo; (2) transformar y escribir por bloques a
+    # `.partial`. Fail-closed igual que antes: si algun bloque tiene precio fuera de grilla se borran los parciales
+    # y no queda ningun parquet. Solo con todo validado se renombran (atomico) y despues se escribe el manifest.
+    subsecond_unit = _scan_subsecond_unit(csv_path, chunk_rows)
+    div = 10 if subsecond_unit == SUBSEC_100NS else 1
 
     p_l2 = dir_l2 / f"{session_name}.parquet"
     p_l1 = dir_l1 / f"{session_name}.parquet"
     p_man = dir_man / f"{session_name}.manifest.json"
-
-    t_l2 = pa.Table.from_pandas(df_l2, preserve_index=False)
-    pq.write_table(t_l2, p_l2, compression="zstd", compression_level=7)
-
-    t_l1 = pa.Table.from_pandas(df_l1, preserve_index=False)
-    pq.write_table(t_l1, p_l1, compression="zstd", compression_level=7)
+    part = {"l2": p_l2.with_name(p_l2.name + ".partial"), "l1": p_l1.with_name(p_l1.name + ".partial")}
+    writers: dict = {}
+    rt = {k: dict(tolerance=PRICE_ROUNDTRIP_TOLERANCE, max_error=0.0, violations=0, rows_checked=0) for k in part}
+    inversions = {"l2": 0, "l1": 0}
+    last_ts: dict = {"l2": None, "l1": None}
+    rows = {"l2": 0, "l1": 0}
+    offset = 0
+    try:
+        for df_raw in _read_raw(csv_path, chunksize=chunk_rows):
+            df_raw["source_row"] = np.arange(offset, offset + len(df_raw), dtype=np.int64)
+            offset += len(df_raw)
+            frames = dict(zip(("l2", "l1"), _frames_from_raw(df_raw, tick_size, div)))
+            for k, df in frames.items():
+                v = _validate_price_roundtrip(df, tick_size)
+                rt[k]["violations"] += v["violations"]
+                rt[k]["rows_checked"] += v["rows_checked"]
+                rt[k]["max_error"] = max(rt[k]["max_error"], v["max_error"])
+                if v["violations"]:
+                    raise PriceRoundtripError(
+                        f"{session_name}: price fuera de grilla mas alla de tolerancia={PRICE_ROUNDTRIP_TOLERANCE} -- "
+                        f"{k.upper()} {v['violations']} filas en el bloque que empieza en la fila "
+                        f"{offset - len(df_raw)} (max_error={v['max_error']:.3g})")
+                if len(df):
+                    ts = df["ts_us"].to_numpy()      # el bloque ya viene en orden de source_row
+                    inversions[k] += int(np.sum(np.diff(ts) < 0))
+                    if last_ts[k] is not None and ts[0] < last_ts[k]:
+                        inversions[k] += 1
+                    last_ts[k] = int(ts[-1])
+                    t = pa.Table.from_pandas(df.drop(columns=["price"]), preserve_index=False)
+                    if k not in writers:
+                        writers[k] = pq.ParquetWriter(part[k], t.schema, compression="zstd", compression_level=7)
+                    writers[k].write_table(t.cast(writers[k].schema))
+                    rows[k] += len(df)
+        for w in writers.values():
+            w.close()
+        writers = {}
+        if offset == 0:
+            raise ValueError(f"{session_name}: CSV vacio")
+        for k, final in (("l2", p_l2), ("l1", p_l1)):
+            if not part[k].exists():                  # ese flujo no tuvo filas: tabla vacia con el mismo esquema
+                empty = _frames_from_raw(pd.DataFrame({i: pd.Series(dtype=_RAW_DTYPES[i]) for i in range(9)})
+                                         .assign(source_row=pd.Series(dtype=np.int64)), tick_size, div)
+                df0 = empty[0] if k == "l2" else empty[1]
+                pq.write_table(pa.Table.from_pandas(df0.drop(columns=["price"]), preserve_index=False), part[k],
+                               compression="zstd", compression_level=7)
+            os.replace(part[k], final)
+    except BaseException:
+        for w in writers.values():
+            w.close()
+        for f in part.values():
+            f.unlink(missing_ok=True)
+        raise
+    rt_l2, rt_l1 = rt["l2"], rt["l1"]
 
     manifest = dict(
         schema=L2_SCHEMA, manifest_schema="edgelab_l2_conversion_manifest_v4", session_name=session_name,
@@ -253,8 +327,9 @@ def convert_l2_session(csv_path: str | Path, out_dir: str | Path, tick_size: flo
                 l2=rt_l2, l1=rt_l1,
                 price_column_dropped=True)),
         outputs=dict(
-            l2_depth=dict(path=str(p_l2), bytes=p_l2.stat().st_size, rows=len(df_l2), sha256=_sha256_file(p_l2)),
-            l1_quotes=dict(path=str(p_l1), bytes=p_l1.stat().st_size, rows=len(df_l1), sha256=_sha256_file(p_l1))))
+            l2_depth=dict(path=str(p_l2), bytes=p_l2.stat().st_size, rows=rows["l2"], sha256=_sha256_file(p_l2)),
+            l1_quotes=dict(path=str(p_l1), bytes=p_l1.stat().st_size, rows=rows["l1"], sha256=_sha256_file(p_l1))),
+        reading=dict(mode="chunked", chunk_rows=chunk_rows))
     p_man.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 
     return p_l2, p_l1

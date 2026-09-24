@@ -6,6 +6,7 @@ y la conversion tiene que abortar sin escribir nada (fail-closed).
 """
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pyarrow.parquet as pq
@@ -108,3 +109,29 @@ def test_microsecond_field_is_kept(tmp_path):
     csv.write_text("L2;0;20260609010001;196000;0;0;;3400.1;2\n", encoding="utf-8")
     l2, _ = parse_l2_raw_csv(csv, tick_size=0.1)
     assert int(l2["ts_us"].iloc[0] % 1_000_000) == 196_000 and l2.attrs["subsecond_unit"] == SUBSEC_US
+
+
+def test_conversion_por_bloques_es_identica_a_la_lectura_entera(tmp_path):
+    """2026-09-24: la conversion lee por bloques (una sesion de NQ son ~40 M filas y leerla entera colgo una
+    maquina de 16 GB). Con bloques de 2 filas -- cortes en todos lados, L1 y L2 intercalados -- el resultado tiene
+    que ser identico al de la lectura entera, incluidos source_row, la unidad y las inversiones de reloj."""
+    import pyarrow.parquet as pq
+    from edgelab.data.l2 import parse_l2_raw_csv
+    csv = tmp_path / "20260609.csv"
+    csv.write_text("L2;0;20260609010001;1960000;0;0;;3400.1;2\n"
+                   "L1;1;20260609010001;2000000;3400.0;1\n"
+                   "L2;1;20260609010001;2000000;0;0;;3400.0;4\n"
+                   "L1;0;20260609010001;2100000;3400.1;2\n"
+                   "L1;2;20260609010000;2200000;3400.1;1\n"          # reloj hacia atras en L1: 1 inversion
+                   "L2;0;20260609010002;100;1;0;;3400.2;7\n", encoding="utf-8")
+    whole_l2, whole_l1 = parse_l2_raw_csv(csv, tick_size=TICK)
+    out = tmp_path / "out"
+    convert_l2_session(csv, out, tick_size=TICK, chunk_rows=2)
+    got_l2 = pq.read_table(out / "l2_depth" / "20260609.parquet").to_pandas()
+    got_l1 = pq.read_table(out / "l1_quotes" / "20260609.parquet").to_pandas()
+    assert got_l2.equals(whole_l2.drop(columns=["price"]).reset_index(drop=True))
+    assert got_l1.equals(whole_l1.drop(columns=["price"]).reset_index(drop=True))
+    man = json.loads((out / "manifests" / "20260609.manifest.json").read_text(encoding="utf-8"))
+    assert man["conversion"]["subsecond_unit"] == "100ns_ticks"
+    assert man["conversion"]["clock_inversions_in_source_order"] == {"l2": 0, "l1": 1}
+    assert not list(out.rglob("*.partial"))
