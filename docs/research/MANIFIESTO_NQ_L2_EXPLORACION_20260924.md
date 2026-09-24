@@ -44,3 +44,32 @@ El L2 está validado contra Tradovate: 20/20 niveles (P-76). Se excluyen los arc
 
 - Octubre (se baja mensualmente).
 - Adaptar la herramienta del atlas: rutas, controles corregidos e ids de NQ. Se hace después del OK.
+
+## Resultados de la exploración (2026-09-24, OK de Nico)
+
+Artefacto `artifacts/nq_l2/report.json` (sha `b35f40204437…`), ledger `artifacts/hippocampus/nq_l2_20260924.jsonl`. Se usaron 41 sesiones de `P-NQL2-EXP`; se excluyeron 3 por defectos de la Fase 0 y 5 por poca actividad (sábados). Todo está en **ticks de NQ** (0,25). La reserva no se tocó.
+
+**A. Absorción, contra controles a igual distancia y con igual actividad reciente:**
+- **Casi nada.** El fade no se separa de cero en ningún horizonte (10 s: [−0,71; +0,81]; 300 s: [−1,55; +7,30]).
+- La ruptura del nivel es un poco menor a 10 s (−2,7 puntos porcentuales, IC [−4,7; −0,9]) y no se sostiene a 30 s o más.
+- \|movimiento\| a 60 s es menor: −1,4 ticks, IC [−2,7; −0,1], en el límite.
+- **Lectura:** con los controles bien emparejados, la absorción en NQ no anticipa nada útil. Es un negativo bien construido: lo que se veía en GC con controles defectuosos no aparece acá.
+
+**B. Desequilibrio de filas (QI), decil más alto menos el más bajo:**
+
+| Medida | Diferencia | IC 95 % por sesión |
+|---|---:|---|
+| P(el próximo cambio del medio es para arriba) − P(abajo) | **+0,39** | [0,37; 0,40] |
+| Movimiento del medio a 1 s | +0,46 ticks | [0,41; 0,51] |
+| a 10 s | **+0,57 ticks** | [0,44; 0,71] |
+| a 60 s | +0,62 ticks | [0,07; 1,21] |
+
+- **Efecto muy fuerte y estable** en la dirección del próximo tick, el clásico de la literatura (Gould y Bonart).
+- **Pero es chico en ticks:** medio tick a 10 s, contra un spread de ~4,6 ticks en RTH. **No paga como señal de entrada agresiva.** Su valor está en la **ejecución** (cuándo y dónde poner una orden pasiva, pregunta M4) y como **variable de contexto** para otras familias.
+- Varios deciles salen vacíos: el QI es muy discreto porque en el mejor nivel hay pocos contratos. Para la confirmación conviene definir los grupos con cortes fijos (por ejemplo QI < −0,5, ≈ 0, > 0,5).
+
+**Sugerencias registradas** (PROPOSED/LOW; se confirman solo en `P-NQL2-CONF`):
+- SUG-NQ-ABS-BARRIER-10;
+- SUG-NQ-QI-UP, -MV10 y -MV60.
+
+La que tiene sentido económico es **QI aplicado a ejecución pasiva**. Necesita su propio manifiesto: probabilidad de llenado y selección adversa por nivel de QI.
