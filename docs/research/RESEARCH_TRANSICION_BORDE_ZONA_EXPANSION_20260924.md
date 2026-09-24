@@ -270,3 +270,22 @@ Además, en todos los casos:
 2. **Arrancar por E1**, el censo target-free en MES y ES pre-holdout: cuántas zonas hay por escala, cuánto duran, cuántas se censuran. Sin OK adicional.
 3. **Después, E1b en exploración y E2 con manifiesto.** La primera pregunta es la del §5.4: ¿el riesgo de cruce baja con los contactos (M1) y sube con la penetración creciente o el volumen acumulado afuera (la observación de Nico)?
 4. **Contrastar casos concretos con hora** (ATJ-18): cuando el detector esté, se corre sobre los casos que Nico marque en días **pre-holdout**, para verificar que el detector ve lo mismo que el ojo antes de medir agregados.
+
+---
+
+## 13. Addendum (24/09, tarde): corredores entre zonas HFT = el mismo objeto
+
+Nico mostró dos capturas más de MES del **24/09 (holdout: el día ya está en la lista de exclusión)**:
+- `HFTZonesNQPureV4` aplicado a MES: zonas densas con **huecos**;
+- `HFTZonesESPureV2`: pocas zonas y fuertes.
+
+**Lectura:**
+- El hueco de ~7738–7740 (10:16–10:25) es una franja por donde el precio pasó **rápido**, no una franja que nunca visitó. Es una expansión vista como "ausencia de zona".
+- Hay rechazos en el borde del hueco y la travesía llega después: el mismo fenómeno que §1.
+- La zona fuerte del indicador de ES (7754–7755) actuó como **pared** dos veces: es el complemento del corredor.
+
+**Consecuencia de diseño:**
+1. **Unificar** corredor (HP-006/HP-007), zona de expansión y campo de densidad en **una sola familia**, con un solo objeto: franja de **baja permanencia** (tiempo y volumen negociado por nivel de precio en una ventana causal).
+2. Para definir corredores sirve un detector **denso** (Nico tiene razón en preferir el de NQ antes que el de ES). Pero la densidad de `HFTZonesNQPureV4` en MES depende de parámetros calibrados para NQ, y su paridad NT8 es solo NQ (MES: `PARITY_ABSTAIN`). Por eso, **la medición usa la permanencia por precio calculada desde ticks** (sin parámetros de otro instrumento y comparable entre MES, ES y NQ). El indicador queda como representación visual.
+3. **Chequeo target-free previo:** el solapamiento entre los huecos del indicador de NQ (y del perfil multiactivo `SCALED_FUNNEL_V1`) y las franjas de baja permanencia. Si coinciden, se valida la representación; si no, la diferencia es un hallazgo.
+4. La pregunta central (§5.4) no cambia: el riesgo de pasar de rechazar a atravesar, según el estado.
