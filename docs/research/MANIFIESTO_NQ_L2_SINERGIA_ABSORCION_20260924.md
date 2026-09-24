@@ -3,7 +3,7 @@
 **North Star:** `ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8`
 **Estado:** PROPUESTO. Hace falta el OK de Nico (regla STOP: mira el precio después de los eventos).
 **Pedido de Nico (24/09):** la absorción no como entrada pura, sino como **sinergia**. Si el evento solo da ≈ 0 y la absorción sola da ≈ 0, ¿el evento más la absorción da una ventaja asimétrica? No se sabe qué evento. Las mediciones tienen que **sugerir qué eventos vale la pena medir**.
-**Ledger:** `artifacts/hippocampus/nq_l2_sinergia_20260924.jsonl`. Toma las particiones de `MANIFIESTO_NQ_L2_EXPLORACION_20260924.md`, sin tocar `P-NQL2-CONF`.
+**Ledger:** `artifacts/hippocampus/nq_l2_20260924.jsonl` (el de la exploración, donde las particiones ya estaban declaradas). Toma las particiones de `MANIFIESTO_NQ_L2_EXPLORACION_20260924.md`, sin tocar `P-NQL2-CONF`.
 
 ## Estimando
 
@@ -83,3 +83,39 @@ A cada contexto se le asigna una dirección. La absorción queda **alineada**, *
 - En `tools/nq_l2_explore.py`, un paso `synergy`: contextos causales, las cuatro celdas, canales de asimetría y carrera, y MDE.
 - Velas de 25 ticks y zonas HFT desde L1: se reutiliza `hftzones_universal` con el perfil de NQ.
 - Árbol honesto: implementación propia chica, sin dependencias nuevas.
+
+## Resultados (2026-09-24, corrida B, OK de Nico)
+
+Reporte `artifacts/nq_l2_synergy/report.json` (sha `79627b67399f…`). Hay 41 sesiones de `P-NQL2-EXP`, 3.132 absorciones con 5 controles cada una y 900 celdas en la etapa 1. La reserva no se tocó.
+
+**Desvío de procedimiento, corregido antes de interpretar.**
+- La corrida A del reporte armaba el árbol con hojas de ≥ 8 sesiones; el manifiesto pide ≥ 15.
+- Se invalidó en el ledger (`EP-NQL2-SYN-INVALIDATE-A`: OBS-S2 y SUG-NQ-SYN-1…4) y se rehízo con 15. El cambio **endurece** el criterio.
+- `tree_dirty=True` en el reporte: la herramienta todavía no estaba commiteada cuando corrió. El código que corrió es exactamente el de este commit.
+
+**Etapa 1 (C1–C12 pre-listados): ninguna sugerencia.**
+- Una sola celda pasa el FDR, y no tiene dirección:
+  - **absorción dentro de una zona HFT con ≥ 3 toques → |movimiento| a 900 s menor que su control en la misma zona**;
+  - I = −21 ticks, IC [−32; −11], n = 1.363, 40 sesiones;
+  - la zona gastada sola se mueve más (+31), y la absorción adentro la "calma".
+- **Lectura:** es información de **volatilidad**, no de dirección. Puede servir para el tamaño de la posición o para el stop, no para entrar. Los canales abs a 30, 60 y 300 s van en el mismo sentido, pero no pasan el FDR.
+- **Potencia:** el MDE típico de la interacción es de 5 a 7 ticks a 30–60 s y de 15 a 25 ticks a 300–900 s. Con 41 sesiones sólo se ven sinergias grandes.
+
+**Etapa 2 (árbol honesto, 21 sesiones de estimación):** 3 hojas pasan las reglas, y **las tres dependen de la tendencia de 30 min** (`C5_r30`, medida en la dirección que implica la absorción):
+
+| Hoja | Canal | τ en la mitad de estimación (ticks) | IC | n / sesiones |
+|---|---|---:|---|---|
+| −374 < r30 ≤ 84 y r5 ≤ 63 (el precio **no** corrió todavía hacia donde apunta la absorción) | sig 300 s | **+13,7** | [5,6; 21,8] | 984 / 21 |
+| la misma, con r30 ≤ 105 y r5 ≤ 56 | asym 300 s | +13,2 | [5,1; 21,7] | 1.015 / 21 |
+| r30 ≤ −352 (el precio corrió **en contra**) y lejos de un hueco DWELL | sig 60 s | +12,1 | [3,7; 22,6] | 68 / 15 |
+
+- **Lado espejo, a modo descriptivo:** si el precio ya corrió a favor (r30 > 84), la absorción da **en contra**: −24,5 ticks [−36,6; −13,5] cerca de un extremo.
+- **Lectura:** la absorción parece aportar dirección **sólo cuando el precio todavía no se movió hacia donde ella apunta**. Si ya se movió, marca agotamiento.
+- **Advertencia fuerte:** la etapa 1, con los terciles pre-listados de C5 (±0,5σ), **no** lo ve (todos los IC cruzan 0). Por eso es una sugerencia débil: sale de una sola mitad de sesiones y el corte no coincide con la discretización declarada.
+
+**Sugerencias para `P-NQL2-CONF`** (PROPOSED/LOW): **SUG-NQ-SYN-B-1…3**. Antes de abrir la reserva hay que firmar un protocolo con los cortes congelados (los de la hoja) y un solo canal y horizonte primario.
+
+**Qué sugieren medir (el objetivo del pedido):**
+1. **Tendencia de 30 min × absorción**, como contexto de agotamiento o continuación. Candidata natural a filtro de dirección.
+2. **Zona HFT gastada × absorción**, como predictor de **baja volatilidad** (tamaño o stop, no entrada).
+3. **Nada** en los contextos C3, C4, C6, C7, C8, C9, C11 y C12 a esta potencia. No se descartan: no hubo potencia para verlos.
