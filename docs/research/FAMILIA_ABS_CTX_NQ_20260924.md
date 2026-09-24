@@ -106,3 +106,12 @@ La hipótesis de familia que se desprende, **H-DISPUTA**, se enuncia así: *una 
    - se acepta si el límite superior del IC < 0 y |efecto| ≥ el spread p50.
    - Hoy hay ~12 sesiones; a fin de octubre, ~34. El MDE con 12 sesiones es de ~15 ticks, así que conviene esperar a octubre o sumar I-4 e I-5 antes.
 2. Mientras tanto, **I-1, I-2 e I-4 sobre las particiones EXP**. Son descriptivos, cada uno con su manifiesto corto.
+
+## Anexo: el detector no es ruido en NQ (nulo causal, target-free)
+
+`artifacts/l2_phase0/NQ_NQ_09-26/detector_nulls_abs_causal_dev.jsonl`, NQ 09-26 del 01/07 al 11/09. Cuenta absorciones reales contra el mismo tape con los trades permutados. No mira el precio posterior.
+
+- **EXP (49 sesiones):** 1,59× el nulo, IC [1,53; 1,66]; real > nulo en 43 de 49 sesiones.
+- **Todo el tramo (67 sesiones):** 1,57× [1,51; 1,63].
+
+Mismo orden que junio (1,60×). La absorción que usa ABS-CTX es un fenómeno del tape, no un artefacto del umbral.
