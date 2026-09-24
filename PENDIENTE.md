@@ -2475,6 +2475,11 @@ Después:
 
 Todo lo anterior al 2027-01-01 es holdout (solo visor). Desde 2027 es dato de descubrimiento.
 
+**Actualización 2026-09-24 (NQ).** Un día de NQ pesa ~2 GB de CSV, ~250 MB de `.nrd` y ~200 MB de parquet, unas 10 veces más que GC. El conversor leía el CSV entero y colgó la máquina (16 GB de RAM) el 24/09 a las 10:40. **Corregido:** ahora convierte por bloques, con resultado idéntico al anterior (commit del 24/09) y la RAM libre nunca bajó de 6,3 GB. Consecuencias para NQ/ES:
+- **Descargar por tramos de ~3 semanas.** El CSV no se borra solo: 90 días de NQ serían ~200 GB en E. Entre tramos, Claude mueve CSV y `.nrd` a `E:\_PARA_BORRAR_*` y Nico borra.
+- **Contrato 12-26 de NQ solo desde el roll** (~10/09). Antes era el contrato de atrás.
+- NQ 09-26 25/06 y 26/06 (pre-holdout) ya convertidos. El parcial del crash quedó en `E:\l2_parquet\_cuarentena_crash_20260924`.
+
 ## P-81 — Registrar la re-corrida corregida de F3/F4 en el Brain (decide Nico)
 
 **2026-09-24.** Las 40 pruebas originales de F3/F4 quedaron invalidadas por un bug de apertura RTH, y el presupuesto de C-TICKS-F3/F4 ya estaba consumido. Para registrar la re-corrida (mismas 40 hipótesis, `artifacts/campaign_ticks_multi/landscape_F3F4_fix.json`) hace falta una campaña de corrección **aprobada por Nico**: `human:Nico`, 40 pruebas, mismo pre-registro. Así lo exige NO_SELF_APPROVAL.
