@@ -115,3 +115,26 @@ La hipótesis de familia que se desprende, **H-DISPUTA**, se enuncia así: *una 
 - **Todo el tramo (67 sesiones):** 1,57× [1,51; 1,63].
 
 Mismo orden que junio (1,60×). La absorción que usa ABS-CTX es un fenómeno del tape, no un artefacto del umbral.
+
+## Réplica pre-registrada de V-RND en ES, GC y 6E (2026-09-24)
+
+Protocolo `PROTOCOLO_REPLICA_VRND_ES_GC_6E_20260924.md` (commit `96c664f`, antes de mirar). Reporte `artifacts/vrnd_replica/report.json` (sha `fb35c6b128de…`). Ledger `artifacts/hippocampus/vrnd_20260924.jsonl`.
+
+| Inst. | Sesiones | Eventos en R | I sig 60 s (ticks) | IC | MDE | NQ escalado | Veredicto |
+|---|---:|---:|---:|---|---:|---:|---|
+| ES | 41 | 197 | −0,58 | [−1,70; +0,51] | 1,58 | −2,7 | **NO_REPLICA** |
+| GC | 31 | 164 | +1,11 | [−2,59; +4,64] | 5,19 | −3,6 | **SIN_POTENCIA** |
+| 6E | 38 | 114 | −0,40 | [−1,05; +0,18] | 0,87 | −2,0 | **NO_REPLICA** |
+
+**Decisión de familia según el protocolo: `NO_CONCLUYENTE`.** Ningún instrumento independiente replica. Ninguno contradice, y GC no tiene potencia.
+
+**Lectura:**
+- En ES y 6E el signo es el predicho, pero el tamaño es **menos de 1/4 del de NQ escalado**, y el MDE alcanza para descartar el tamaño de NQ.
+- Aunque existiera en ES, −0,6 ticks no llega al spread (1 tick).
+- **V-RND no se transporta como edge económico.**
+- Lo más probable es que el −10,5 de NQ esté inflado por haber salido de 900 celdas (maldición del ganador), o que sea propio de NQ (libro fino, 3 contratos en el tope).
+- Eso lo decide solamente `P-NQL2-CONF`, con el protocolo de una celda de §6, cuando haya suficientes sesiones.
+
+**Sensibilidades (no deciden):**
+- Denominación siguiente (ES 50 pts, 6E 0,0100): mismo signo, IC que cruza 0.
+- GC 25 USD: +5,7 [0,1; 11,1], signo opuesto con n = 54, que no se interpreta.

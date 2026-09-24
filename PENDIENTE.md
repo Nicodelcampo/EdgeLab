@@ -2566,3 +2566,5 @@ Decisiones de Nico:
 1. ¿Protocolo de confirmación de V-RND ahora (~12 sesiones, MDE ~15 ticks) o esperar a fin de octubre (~34)?
 2. ¿OK a I-1 (dosis y respuesta del número redondo), I-2 (cascada de stops) e I-4 (GC, 6E y ES) sobre sus particiones EXP?
 3. ¿OK a validar la regla de tick para llevar la familia a los ticks pre-holdout (I-5)?
+
+**Actualización 24/09 (réplica V-RND):** ES y 6E dan NO_REPLICA (mismo signo, menos de 1/4 del tamaño de NQ escalado, por debajo del spread); GC da SIN_POTENCIA. Familia: `NO_CONCLUYENTE`. V-RND no se transporta como edge. Queda sólo la confirmación propia de NQ en `P-NQL2-CONF` (decisión 1 de arriba). Herramienta reutilizable: `tools/vrnd_replicate.py`.
