@@ -85,13 +85,13 @@ def load_l1(day):
     pa, pb = ask.shift(1)[tr], bid.shift(1)[tr]              # cotización vigente ANTES del trade
     px = t.price_tick[tr]
     agg = np.where(px >= pa, 1, np.where(px <= pb, -1, 0))
-    T = pd.DataFrame(dict(ts=t.ts_us[tr], px=px, sz=t["size"][tr], agg=agg))
+    T = pd.DataFrame(dict(ts=t.ts_us[tr], px=px, sz=t["size"][tr], aggr=agg))
     return Q.reset_index(drop=True), T.reset_index(drop=True)
 
 
 def absorption_events(T):
     ab = AbsorptionTracker()
-    for p, ts, sz, a in zip(T.px.to_numpy(), T.ts.to_numpy(), T.sz.to_numpy(), T.agg.to_numpy()):
+    for p, ts, sz, a in zip(T.px.to_numpy(), T.ts.to_numpy(), T.sz.to_numpy(), T.aggr.to_numpy()):
         ab.on_trade(int(p), int(ts), float(sz), int(a))
     return sorted(ab.candidates(), key=lambda c: c["available_ts_us"])
 
