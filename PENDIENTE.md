@@ -2483,6 +2483,17 @@ Todo lo anterior al 2027-01-01 es holdout (solo visor). Desde 2027 es dato de de
 
 **2026-09-24.** F4 pasó el MCPT de descubrimiento en ES, NQ e YM, pero la validación no tiene potencia. Para seguir hacen falta años de datos diarios o de 1 min de ES/NQ/YM (baratos) y un pre-registro propio. **No es sobreviviente.**
 
+## P-83 — Atlas de absorción GC: qué confirmar en la partición reservada (decide Nico)
+
+**2026-09-24.** Primer lote de la capa descriptiva (`docs/research/ATLAS_CAPA_DESCRIPTIVA_20260924.md`). El nulo causal de absorción da 1,33× [1,27; 1,39]. En exploración, lo más firme es **no direccional**: el nivel absorbido se rompe menos a 30–300 s y el precio se mueve más a 10 s. El fade a 60 s tiene IC inferior de 0,02 ticks y es candidato a ruido.
+
+Opciones:
+- (a) Escribir spec + revisión ciega de **SUG-ABS-BARRIER-30** (y quizás VOL-10) y confirmar en `P-GC0826-CONF`. Es target-free en lo económico: una barrera no es P&L. Aun así pasa por la regla STOP.
+- (b) Esperar más sesiones L2 (P-80) antes de gastar la reserva.
+- La reserva se puede usar **una sola vez** por candidato.
+
+Antes de cualquier número económico: **P-76** (spread de 4 ticks del feed).
+
 ## Integración pendiente
 
 La rama `integ/viewer-brain-20260923` (visor #48 + Brain #56, suite verde) espera la decisión de mergearla a `foundation`.

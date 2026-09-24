@@ -76,8 +76,10 @@ Herramienta: `tools/l2_detector_nulls.py` (commit `be2c301`, seed 20260923). Art
 | Detector | Nulo (destruye exactamente lo que el detector dice medir) | Real/nulo | IC 95 % | Sesiones real > nulo | Veredicto |
 |---|---|---:|---:|---:|---|
 | Iceberg | trades desplazados 120–1800 s, mismo libro | **2,34** | [1,74; 3,23] | 25/29 | **Supera al nulo.** Queda. |
-| Absorción | tamaños de trade permutados en la sesión | **1,41** | [1,36; 1,47] | 29/29 | **Supera al nulo.** Queda. |
+| Absorción | tamaños de trade permutados en la sesión | ~~1,41~~ → **1,33** (umbral causal, 2026-09-24) | ~~[1,36; 1,47]~~ → **[1,27; 1,39]** | ~~29/29~~ → **26/29** | **Supera al nulo.** Queda. Ver la nota de abajo. |
 | "Spoof" | trades desplazados, mismo libro | 0,79 | [0,73; 0,84] | 0/29 | **No mide spoofing.** El 79 % de lo que marca aparece igual con trades de otro momento: es *liquidez fugaz* (orden grande con vida < 5 s), sea cual sea la ejecución. **Se renombra en el visor a "Liquidez fugaz"** y queda como posible feature de estado (canal no direccional), nunca como intención. |
+
+**Re-medición de absorción con umbral causal (2026-09-24).** El 1,41× usaba el percentil 99 de **toda** la sesión, o sea información futura. `AbsorptionTracker` ahora es causal por defecto: el umbral sale solo de ventanas ya cerradas. Con la misma herramienta, semilla y 29 sesiones: **1,33× [1,27; 1,39], real > nulo en 26/29**. Real 76,7 eventos por sesión contra 57,7 del nulo. El fenómeno sigue existiendo, un poco más chico. Artefacto: `artifacts/l2_phase0/GC_GC_08-26/detector_nulls_abs_causal.jsonl`. En el Brain queda como `OBS-ABS-GC0826-NULL-CAUSAL` (ledger `artifacts/hippocampus/atlas_l2_20260924.jsonl`), y la fila vieja como `STALE_BY_DEPENDENCY`.
 
 Superar al nulo significa que **el fenómeno existe más allá del azar**. **No** significa que prediga el precio: eso es información condicional (Fase 2, bajo STOP).
 

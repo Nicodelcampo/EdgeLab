@@ -30,6 +30,11 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
 8. **Indicador HFT único en el visor: `HFTZonesNQPureV4`.** Decisión de Nico 2026-09-21. Los bundles del motor `HFTZonesUniversal` se renombran al cargar (`normalizeRuns` en `index.html`) y, si el bundle trae ese indicador, se ocultan las demás corridas (BigTrap2, Gaps2, etc.). El nombre es una etiqueta: la paridad con NT8 sigue siendo solo de NQ.
 9. **Bug de origen de zona corregido en los 10 activos con motor `HFTZonesUniversal` (no afecta a NQ).** Con velas de 25 ticks en mercado rápido, varias barras comparten el mismo segundo entero (6B 09-25: 505/28.216); comparar el origen de la zona en nanosegundos crudos contra el arreglo de segundos enteros saltaba esas barras y anclaba la caja lejos de su origen real. Corregido redondeando al segundo antes de buscar.
 10. **LUX-IMB (OG+VI) extendido a los 11 activos, sobre barras M1 propias.** `tools/build_lux_imb_m1_bundles.py` arma M1 desde ticks pre-holdout (55 contratos) y corre el detector Python (geometría `body`, validado parcialmente solo en 6E). Sin paridad propia en los otros 10 activos (`PARITY_ABSTAIN`). Disponibles en el visor bajo "Gráfico M1 · LUX-IMB" por activo.
+11. **Atlas: capa descriptiva (2026-09-24).** Son observaciones que no promueven ni descartan: registran, apoyan otros análisis y sugieren pruebas. El Brain hace cumplir "explorar ≠ confirmar" con particiones declaradas antes de medir.
+   - Primer lote: absorción L2 en GC 08-26. Nulo causal 1,33× [1,27; 1,39]; la cifra vieja de 1,41× usaba información futura y quedó stale.
+   - Exploración: el nivel absorbido se rompe menos y la volatilidad a 10 s es mayor. El fade es débil.
+   - Cinco sugerencias, a confirmar solo en `P-GC0826-CONF`.
+   - `docs/research/ATLAS_CAPA_DESCRIPTIVA_20260924.md`, P-83.
 
 ## Resultados de investigación vigentes
 
