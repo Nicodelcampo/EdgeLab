@@ -1,6 +1,6 @@
 # Enmienda PROPUESTA: holdout propio para modelos de L2 (2026-09-24)
 
-**Estado:** BORRADOR, pendiente de firma de Nico. Hasta que se firme, rige la regla 95 sin cambios.
+**Estado:** FIRMADA por Nico el 2026-09-24 (chat). Incorporada al North Star (nuevo sha256 del cuerpo: `ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8`).
 **North Star:** `d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1` (la enmienda lo modifica; al firmarse cambia el hash).
 
 ## Qué cambia
