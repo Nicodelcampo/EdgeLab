@@ -2552,7 +2552,7 @@ El libro de NT8 es el libro real. El spread ancho y la poca profundidad de NQ so
 
 Causas posibles: día distinto entre Tradovate y nuestro archivo (faltan el 16, el 18 y el 21), o un problema propio de los archivos de GC (ver relojes, P-84).
 
-Próximo paso: GCZ6 15/09 09:00 CDT en Tradovate contra el archivo. Hasta resolverlo, **el L2 de GC queda como NO verificado** (NQ sí: 20/20).
+**Resuelto el mismo día:** las capturas anteriores eran de otra fecha del replay. Con GCZ6 del 22/09 a las 07:00:04 CDT (bid 4359.9 / ask 4360.3) el calce es de **20 de 20 niveles, con un desfase de 0,5 s**. El L2 de GC queda **verificado**, igual que NQ.
 
 ## Integración pendiente
 
