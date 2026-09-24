@@ -5,7 +5,7 @@
 
 ## Qué cambia
 
-Solo para **modelos entrenados con datos L2 (MBP-10)**, por ejemplo DeepLOB, y solo en los instrumentos con L2 capturado (GC, 6E, NQ, ES, MES, MNQ, ZB):
+Para **toda investigación que use datos L2 (MBP-10)**: modelos como DeepLOB, detectores, atlas y familias medidas sobre el libro. Solo en los instrumentos con L2 capturado (GC, 6E, NQ, ES, MES, MNQ, ZB). Ampliado el 24/09 a pedido de Nico ("balancear rigurosidad y disponibilidad"):
 
 | Tramo | Rol |
 |---|---|
@@ -22,7 +22,7 @@ Solo para **modelos entrenados con datos L2 (MBP-10)**, por ejemplo DeepLOB, y s
 
 1. Julio a octubre de 2026 **deja de ser holdout ciego** en esos instrumentos para cualquier hipótesis que después use L2. Un resultado de ticks sobre esos meses sigue valiendo, porque el holdout de ticks no cambia, pero **no se puede combinar** con un modelo L2 entrenado ahí.
 2. El holdout L2 queda en **~40 sesiones por instrumento**: menos potencia que seis meses.
-3. Todo modelo L2 registra en el Brain su partición de entrenamiento y su apertura del holdout L2, igual que las familias.
+3. Toda familia o modelo L2 registra en el Brain su partición de entrenamiento y su apertura del holdout L2, igual que las familias.
 
 ## Firma
 
