@@ -1305,7 +1305,7 @@
       group: "E. Visual",
       props: [
         { key: "mostrar_absorb", name: "Mostrar zonas ABSORB", type: "bool", default: true },
-        { key: "mostrar_texto", name: "Mostrar etiquetas de texto", type: "bool", default: true },
+        { key: "mostrar_texto", name: "Mostrar etiquetas de texto", type: "bool", default: false },
         { key: "opacidad", name: "Opacidad de relleno (%)", type: "number", min: 0, max: 100, default: 30 },
         { key: "color_absorb_bear", name: "Color Absorb BEAR", type: "color", default: "#22c55e" },
         { key: "color_absorb_bull", name: "Color Absorb BULL", type: "color", default: "#ff6b35" },
@@ -1354,7 +1354,7 @@
     include_exploratory_density: false,
     opacidad: 30,
     mostrar_absorb: true,
-    mostrar_texto: true,
+    mostrar_texto: false,          // 2026-09-24: apagadas por defecto (contaminan el gráfico con miles de zonas)
     color_absorb_bull: "#ff6b35",
     color_absorb_bear: "#22c55e",
     color_predator: "#0288d1",
@@ -1398,6 +1398,24 @@
   var overlay = document.getElementById("overlay");
   var l2Tooltip = document.getElementById("l2-tooltip");
 
+  var MONTHS_ES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+  function axisToReal(t) {
+    var m = state._axisMap;
+    if (!m || !m.syn.length || typeof t !== "number") return t;
+    var lo = 0, hi = m.syn.length - 1;
+    if (t >= m.syn[hi]) return m.real[hi] + (t - m.syn[hi]);
+    while (lo < hi) { var mid = (lo + hi) >> 1; if (m.syn[mid] < t) lo = mid + 1; else hi = mid; }
+    return m.real[lo];
+  }
+  function fmtRealTime(t, full, tickType) {
+    var d = new Date(axisToReal(t) * 1000), p2 = function (x) { return (x < 10 ? "0" : "") + x; };
+    var hm = p2(d.getUTCHours()) + ":" + p2(d.getUTCMinutes());
+    if (full) return p2(d.getUTCDate()) + " " + MONTHS_ES[d.getUTCMonth()] + " '" + String(d.getUTCFullYear()).slice(2) + "  " + hm + ":" + p2(d.getUTCSeconds());
+    if (tickType === 0 || tickType === 1) return String(d.getUTCFullYear());
+    if (tickType === 2) return p2(d.getUTCDate()) + " " + MONTHS_ES[d.getUTCMonth()];
+    return hm;
+  }
+
   var chart = LightweightCharts.createChart(chartEl, {
     layout: {
       background: { color: "#ffffff" },
@@ -1424,8 +1442,12 @@
       timeVisible: true,
       secondsVisible: true,
       rightOffset: 12,
-      barSpacing: 6
+      barSpacing: 6,
+      tickMarkFormatter: function (t, tickType) { return fmtRealTime(t, false, tickType); }
     },
+    // El eje y el cursor muestran la HORA REAL de la vela (ver realVisibleRange): el eje interno está corrido
+    // +1 s por cada vela que comparte segundo, y en MES 25t eso llega a horas.
+    localization: { timeFormatter: function (t) { return fmtRealTime(t, true); } },
     handleScroll: { mouseWheel: true, pressedMouseMove: true, horzTouchDrag: true, vertTouchDrag: true },
     handleScale: { axisPressedMouseMove: true, mouseWheel: true, pinch: true }
   });
@@ -1505,6 +1527,30 @@
     var c1 = tsc.logicalToCoordinate(f + 1);
     if (c1 === null || c1 === undefined) return null;
     return c0 + fr * (c1 - c0);
+  }
+
+  // HORA REAL vs HORA DEL EJE (2026-09-24). Las velas de 25 ticks comparten segundos; getMonotonicCandles corre cada
+  // repetida +1 s, y en mercado rápido el corrimiento se ACUMULA (minutos). getVisibleRange() y param.time del cursor
+  // están en esa hora corrida; las zonas, en hora real. Compararlas descartaba zonas visibles según el scroll y hacía
+  // que el campo "as-of cursor" incluyera zonas futuras. Todo lo que compara contra zonas usa la hora REAL, obtenida
+  // por índice lógico de vela (que no se corre).
+  function activeCandlesArr() {
+    if (!state.data || !state.data.bar_series) return null;
+    var k = state.activeBarKey || (state.run && state.run.bar_key) || Object.keys(state.data.bar_series)[0];
+    var bs = state.data.bar_series[k];
+    return (bs && bs.candles && bs.candles.length) ? bs.candles : null;
+  }
+  function realTimeOfLogical(L) {
+    var cd = activeCandlesArr();
+    if (!cd || L === null || L === undefined || !isFinite(L)) return null;
+    var i = Math.max(0, Math.min(cd.length - 1, Math.round(L)));
+    return cd[i].time;
+  }
+  function realVisibleRange() {
+    var tsc = chart.timeScale(), cd = activeCandlesArr(), lr = tsc.getVisibleLogicalRange();
+    if (!cd || !lr) return tsc.getVisibleRange();
+    var a = Math.max(0, Math.min(cd.length - 1, Math.floor(lr.from))), b = Math.max(0, Math.min(cd.length - 1, Math.ceil(lr.to)));
+    return { from: cd[a].time, to: cd[b].time + (lr.to > cd.length - 1 ? 7200 : 0) };
   }
 
   // Mapeo exacto horizontal con soporte de índice de barra y fallback off-screen
@@ -1867,7 +1913,7 @@
     if (!state.run) return;
 
     var tsc = chart.timeScale();
-    var vr = tsc.getVisibleRange();
+    var vr = realVisibleRange();
     if (!vr) return;
     var w = wrapEl.clientWidth;
     var hCanvas = wrapEl.clientHeight;
@@ -2538,7 +2584,7 @@
       }
 
       if (bs._gapsCache && bs._gapsCache.length) {
-        var range = chart.timeScale().getVisibleRange();
+        var range = realVisibleRange();
         if (range) {
           var fromT = typeof range.from === "number" ? range.from : (range.from && range.from.timestamp ? range.from.timestamp() : 0);
           var toT = typeof range.to === "number" ? range.to : (range.to && range.to.timestamp ? range.to.timestamp() : 0);
@@ -2827,7 +2873,7 @@
     if (!candles || !candles.length) return;
 
     var tsc = chart.timeScale();
-    var vr = tsc.getVisibleRange();
+    var vr = realVisibleRange();
     if (!vr) return;
 
     var tick = (state.data && state.data.meta && state.data.meta.tick_size) || 0.25;
@@ -3068,7 +3114,8 @@
   chart.timeScale().subscribeVisibleLogicalRangeChange(requestDraw);
   chart.subscribeCrosshairMove(function (param) {
     if (param && param.time) {
-      state.hoverTime = param.time;
+      var rt = (param.logical !== undefined && param.logical !== null) ? realTimeOfLogical(param.logical) : null;
+      state.hoverTime = (rt !== null) ? rt : param.time;     // hora REAL de la vela bajo el cursor
     } else {
       state.hoverTime = null;
     }
@@ -3900,9 +3947,12 @@
     if (!rawCandles || !rawCandles.length) return [];
     var safe = [];
     var prevT = 0;
+    var axisSyn = new Float64Array(rawCandles.length), axisReal = new Float64Array(rawCandles.length);
+    state._axisMap = { syn: axisSyn, real: axisReal };   // hora del eje (corrida) -> hora real de la vela
     for (var i = 0; i < rawCandles.length; i++) {
       var c = rawCandles[i];
       var t = Math.max(c.time, prevT + 1);
+      axisSyn[i] = t; axisReal[i] = c.time;
       safe.push({
         time: t,
         open: c.open,
@@ -4144,7 +4194,7 @@
         { key: "opacidad", name: "Opacidad de relleno (%)", type: "number", min: 0, max: 100, default: 30 },
         { key: "color_absorb_bull", name: "Color Absorb BULL", type: "color", default: "#ff6b35" },
         { key: "color_absorb_bear", name: "Color Absorb BEAR", type: "color", default: "#22c55e" },
-        { key: "mostrar_texto", name: "Mostrar etiquetas", type: "bool", default: true }
+        { key: "mostrar_texto", name: "Mostrar etiquetas", type: "bool", default: false }
       ]
     }
   ];
