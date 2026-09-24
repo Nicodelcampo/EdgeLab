@@ -112,6 +112,11 @@ def _resolver_frontera(declarada_iso=None, sello_iso=None):
 
 HOLDOUT_START_ISO = _resolver_frontera()
 
+# Enmienda L2 firmada por Nico (2026-09-24, docs/research/ENMIENDA_PROPUESTA_HOLDOUT_L2_20260924.md): SOLO para
+# investigacion con datos L2 (MBP-10) el holdout empieza el 2026-11-01; jul-oct 2026 es desarrollo. Ticks y barras
+# siguen usando HOLDOUT_START_ISO. Es una frontera nueva y fija: no se resuelve contra ninguna declarada.
+L2_HOLDOUT_START_ISO = "2026-11-01T00:00:00"
+
 
 def verificar_sello(ahora=None, *, frontera_iso=None):
     """Levanta `SelloInvalido` si el sello no protege nada. Corre contra reloj.

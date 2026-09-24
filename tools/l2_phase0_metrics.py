@@ -23,7 +23,7 @@ if str(REPO) not in sys.path:
 import pandas as pd  # noqa: E402
 import pyarrow.parquet as pq  # noqa: E402
 
-from edgelab.research.holdout_guard import HOLDOUT_START_ISO  # noqa: E402
+from edgelab.research.holdout_guard import L2_HOLDOUT_START_ISO as HOLDOUT_START_ISO  # enmienda L2 2026-09-24  # noqa: E402
 from edgelab.research.l2_phase0 import block_table, defect_reasons, process_session  # noqa: E402
 
 HOLDOUT_YMD = int(HOLDOUT_START_ISO[:10].replace("-", ""))

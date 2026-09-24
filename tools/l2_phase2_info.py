@@ -27,7 +27,7 @@ import pandas as pd  # noqa: E402
 import pyarrow.parquet as pq  # noqa: E402
 from statistics import NormalDist  # noqa: E402
 
-from edgelab.research.holdout_guard import HOLDOUT_START_ISO  # noqa: E402
+from edgelab.research.holdout_guard import L2_HOLDOUT_START_ISO as HOLDOUT_START_ISO  # enmienda L2 2026-09-24  # noqa: E402
 from edgelab.research.l2_phase0 import (ASK, BID, BOOTSTRAP_S, EDGE_RESYNC, INVALID, LEVELS,  # noqa: E402
                                         apply_event, defect_reasons)
 

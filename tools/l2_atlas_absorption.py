@@ -26,7 +26,7 @@ if str(REPO) not in sys.path:
 import numpy as np  # noqa: E402
 import pyarrow.parquet as pq  # noqa: E402
 
-from edgelab.research.holdout_guard import HOLDOUT_START_ISO  # noqa: E402
+from edgelab.research.holdout_guard import L2_HOLDOUT_START_ISO as HOLDOUT_START_ISO  # enmienda L2 2026-09-24  # noqa: E402
 from edgelab.research.l2_manipulation_heuristics import ASK, AbsorptionTracker, IcebergTracker, large_size_thresholds  # noqa: E402
 from edgelab.research.l2_phase0 import apply_event, defect_reasons, process_session  # noqa: E402
 from tools.build_l2_viewer_bundle import DEFAULT_ICEBERG_KWARGS, ICEBERG_MIN_AVG_SIZE_PCTL  # noqa: E402
