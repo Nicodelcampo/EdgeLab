@@ -92,6 +92,7 @@ def main(argv=None) -> int:
     ap.add_argument("--shifts", type=int, default=3)
     ap.add_argument("--seed", type=int, default=20260923)
     ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument("--only-abs", action="store_true", help="solo absorcion (real vs tamanos permutados)")
     a = ap.parse_args(argv)
     rng = np.random.default_rng(a.seed)
     a.out.parent.mkdir(parents=True, exist_ok=True)
@@ -109,11 +110,14 @@ def main(argv=None) -> int:
             tr = dict(ts=t1.ts_us.to_numpy(np.int64), tick=t1.price_tick.to_numpy(), size=t1["size"].to_numpy())
             lo, hi = int(l2["ts_us"].min()), int(l2["ts_us"].max())
             span = hi - lo
-            rec = dict(session=s, real=run(l2, tr, detectors=("ice", "spoof", "abs")), null_shift=[], null_permute=[])
+            dets = ("abs",) if a.only_abs else ("ice", "spoof", "abs")
+            rec = dict(session=s, real=run(l2, tr, detectors=dets), null_shift=[], null_permute=[],
+                       absorption_threshold="causal" if AbsorptionTracker().causal else "session")
             for _ in range(a.shifts):
                 d = int(rng.integers(120, 1800)) * 1_000_000
                 sh = dict(tr, ts=lo + (tr["ts"] - lo + d) % span)
-                rec["null_shift"].append(dict(shift_s=d // 1_000_000, **run(l2, sh, detectors=("ice", "spoof"))))
+                if not a.only_abs:
+                    rec["null_shift"].append(dict(shift_s=d // 1_000_000, **run(l2, sh, detectors=("ice", "spoof"))))
                 pm = dict(tr, size=rng.permutation(tr["size"]))
                 rec["null_permute"].append(run(l2, pm, detectors=("abs",)))
             f.write(json.dumps(rec) + "\n"); f.flush()

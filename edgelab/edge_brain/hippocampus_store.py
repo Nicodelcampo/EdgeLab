@@ -53,7 +53,12 @@ _RECORD_TYPES = {
     "campaign_approved",
     "trial_recorded",
     "spec_confirmed",
+    "partition_declared",
+    "observation_recorded",
 }
+
+PARTITION_ROLES = frozenset({"EXPLORATION", "CONFIRMATION_RESERVED", "FUTURE"})
+OBSERVATION_KINDS = frozenset({"TARGET_FREE", "RESPONSE_PROFILE"})
 
 
 class CampaignBudgetError(ValueError):
@@ -186,6 +191,8 @@ class DurableHippocampus:
         self.campaigns: dict[str, dict[str, Any]] = {}
         self.trials: dict[str, dict[str, Any]] = {}
         self.specs: dict[str, dict[str, Any]] = {}
+        self.partitions: dict[str, dict[str, Any]] = {}
+        self.observations: dict[str, dict[str, Any]] = {}
         if self.ledger_path.exists() and self.ledger_path.stat().st_size > 0:
             self._prev_hash = self._replay_into(self.memory)
             self._offset = self._checked_size()
@@ -366,8 +373,52 @@ class DurableHippocampus:
         self._append("spec_confirmed", row)
         self.specs[spec_sha256] = row
 
+    # -- atlas: capa descriptiva (docs/research/ATLAS_CAPA_DESCRIPTIVA_20260924.md) ------------------
+
+    def record_partition(self, partition_id: str, role: str, description: str, sessions: list[str]) -> None:
+        """Particion de datos con su rol, declarada ANTES de medir. EXPLORATION admite perfiles de respuesta;
+        CONFIRMATION_RESERVED no se mira con retornos hasta que la use una prueba pre-registrada."""
+        if role not in PARTITION_ROLES:
+            raise ValueError(f"role must be one of {sorted(PARTITION_ROLES)}")
+        if partition_id in self.partitions or not sessions:
+            raise ValueError("duplicate partition or empty session list")
+        overlap = {p for p, row in self.partitions.items() if set(row["sessions"]) & set(sessions)}
+        if overlap:
+            raise ValueError(f"partition overlaps declared partitions {sorted(overlap)}")
+        row = dict(partition_id=partition_id, role=role, description=description, sessions=sorted(sessions))
+        self._append("partition_declared", row)
+        self.partitions[partition_id] = row
+
+    def _check_observation(self, row: dict[str, Any]) -> None:
+        if row["kind"] not in OBSERVATION_KINDS:
+            raise ValueError(f"kind must be one of {sorted(OBSERVATION_KINDS)}")
+        if row.get("status") != "DESCRIPTIVE":
+            raise ValueError("observations are DESCRIPTIVE only: they never promote or reject")
+        for pid in row["partitions"]:
+            part = self.partitions.get(pid)
+            if part is None:
+                raise ValueError(f"unknown partition {pid!r}")
+            if row["kind"] == "RESPONSE_PROFILE" and part["role"] != "EXPLORATION":
+                raise ValueError(f"a response profile (looks at returns) can only use EXPLORATION partitions, not {pid!r}")
+
+    def record_observation(self, observation_id: str, phenomenon: str, kind: str, partitions: list[str],
+                           metrics: dict[str, Any], resolution: dict[str, Any], artifact_sha256: str,
+                           depends_on: list[str] = ()) -> None:
+        """Observacion descriptiva del atlas. Nunca promueve ni descarta: estado unico DESCRIPTIVE. Sus
+        dependencias (detector, datos) quedan como aristas, asi una invalidacion aguas arriba la vuelve STALE."""
+        if observation_id in self.observations:
+            raise ValueError("duplicate observation_id")
+        row = dict(observation_id=observation_id, phenomenon=phenomenon, kind=kind, partitions=list(partitions),
+                   metrics=metrics, resolution=resolution, artifact_sha256=artifact_sha256, status="DESCRIPTIVE")
+        self._check_observation(row)
+        self._append("observation_recorded", row)
+        self.observations[observation_id] = row
+        for dep in depends_on:
+            self.record_dependency(f"OBS:{observation_id}", dep, "DEPENDS_ON")
+
     def record_campaign(self, campaign_id: str, family: str, approved_by: str, recorded_by: str,
-                        max_trials: int, prereg_ref: str, data_scope: str, spec_sha256: str | None = None) -> None:
+                        max_trials: int, prereg_ref: str, data_scope: str, spec_sha256: str | None = None,
+                        motivated_by: tuple = (), partition_id: str | None = None) -> None:
         """Campana aprobada por un HUMANO (`approved_by` = "human:<nombre>"), distinta de quien la registra
         (NO_SELF_APPROVAL). Fija el presupuesto de pruebas: el agente corre solo adentro, se detiene afuera.
         Desde 2026-09-24 exige `spec_sha256` de una especificacion CONFIRMADA en revision ciega: sin eso no hay
@@ -378,8 +429,21 @@ class DurableHippocampus:
             raise ValueError("duplicate campaign or missing family/prereg/data_scope/budget")
         if spec_sha256 is None or spec_sha256 not in self.specs:
             raise CampaignBudgetError("campaign requires a spec confirmed in blind visual review (record_spec_confirmation)")
+        if motivated_by:
+            # EXPLORAR != CONFIRMAR: una campana motivada por observaciones no puede usar sus particiones
+            if partition_id is None or partition_id not in self.partitions:
+                raise CampaignBudgetError("campaign motivated by observations must declare a registered partition_id")
+            if self.partitions[partition_id]["role"] == "EXPLORATION":
+                raise CampaignBudgetError("cannot confirm on an EXPLORATION partition")
+            for oid in motivated_by:
+                obs = self.observations.get(oid)
+                if obs is None:
+                    raise CampaignBudgetError(f"unknown observation {oid!r}")
+                if partition_id in obs["partitions"]:
+                    raise CampaignBudgetError(f"partition {partition_id!r} was already explored by {oid!r}")
         row = dict(campaign_id=campaign_id, family=family, approved_by=approved_by, recorded_by=recorded_by,
-                   max_trials=int(max_trials), prereg_ref=prereg_ref, data_scope=data_scope, spec_sha256=spec_sha256)
+                   max_trials=int(max_trials), prereg_ref=prereg_ref, data_scope=data_scope, spec_sha256=spec_sha256,
+                   motivated_by=list(motivated_by), partition_id=partition_id)
         self._append("campaign_approved", row)
         self.campaigns[campaign_id] = row
 
@@ -474,8 +538,17 @@ class DurableHippocampus:
             "campaign_approved": lambda: self._replay_campaign(payload),
             "trial_recorded": lambda: self._replay_trial(payload),
             "spec_confirmed": lambda: self._replay_spec(payload),
+            "partition_declared": lambda: self.partitions.__setitem__(str(payload["partition_id"]), dict(payload)),
+            "observation_recorded": lambda: self._replay_observation(payload),
         }
         builders[rtype]()
+
+    def _replay_observation(self, payload: dict[str, Any]) -> None:
+        try:
+            self._check_observation(dict(payload))
+        except ValueError as exc:
+            raise LedgerIntegrityError(f"ledger contains an invalid observation: {exc}") from exc
+        self.observations[str(payload["observation_id"])] = dict(payload)
 
     def _replay_spec(self, payload: dict[str, Any]) -> None:
         if not str(payload.get("confirmed_by", "")).startswith("human:") or payload.get("confirmed_by") == payload.get("recorded_by"):
@@ -556,8 +629,10 @@ class DurableHippocampus:
         does not protect against suffix rollback.
         """
         probe = HippocampusMemory()
-        saved = (self.invalidations, self.dependencies, self.campaigns, self.trials, self.specs)
-        self.invalidations, self.dependencies, self.campaigns, self.trials, self.specs = {}, [], {}, {}, {}
+        saved = (self.invalidations, self.dependencies, self.campaigns, self.trials, self.specs,
+                 self.partitions, self.observations)
+        (self.invalidations, self.dependencies, self.campaigns, self.trials, self.specs,
+         self.partitions, self.observations) = {}, [], {}, {}, {}, {}, {}
         try:
             tip = self._replay_into(probe)
             if expected_tip_hash is not None and tip != expected_tip_hash:
@@ -565,4 +640,5 @@ class DurableHippocampus:
                     "ledger tip does not match externally trusted expected_tip_hash")
             return tip
         finally:
-            self.invalidations, self.dependencies, self.campaigns, self.trials, self.specs = saved
+            (self.invalidations, self.dependencies, self.campaigns, self.trials, self.specs,
+             self.partitions, self.observations) = saved

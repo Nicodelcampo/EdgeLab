@@ -128,3 +128,38 @@ def test_legacy_campaign_without_spec_still_replays():
     """Las 5 campanas del 2026-09-23 (anteriores a la regla) siguen reproduciendose."""
     s = DurableHippocampus(HIPPO / "campaign_ticks_multi_20260923.jsonl")
     assert len(s.campaigns) == 5 and len(s.trials) == 100
+
+
+def test_atlas_exploration_cannot_be_confirmed_on_the_same_data(tmp_path):
+    s = DurableHippocampus(tmp_path / "l.jsonl")
+    s.record_partition("P-EXP", "EXPLORATION", "primeras 15", ["d1", "d2"])
+    s.record_partition("P-CONF", "CONFIRMATION_RESERVED", "ultimas 15", ["d3", "d4"])
+    with pytest.raises(ValueError, match="overlaps"):
+        s.record_partition("P-X", "FUTURE", "pisa", ["d2", "d9"])
+    with pytest.raises(ValueError, match="EXPLORATION"):          # mirar retornos en la reserva: prohibido
+        s.record_observation("O-0", "abs", "RESPONSE_PROFILE", ["P-CONF"], {}, {}, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+    s.record_observation("O-1", "abs", "RESPONSE_PROFILE", ["P-EXP"], {"x": 1}, {"ci_half_width": 0.2}, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                         depends_on=["CODE:AbsorptionTracker@causal"])
+    s.record_spec_confirmation("SPEC-1", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "human:Nico", "agent:claude")
+    with pytest.raises(CampaignBudgetError, match="EXPLORATION"):
+        s.record_campaign("C-1", "ABS", "human:Nico", "agent:claude", 4, "p@1", "GC", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", ("O-1",), "P-EXP")
+    s.record_campaign("C-1", "ABS", "human:Nico", "agent:claude", 4, "p@1", "GC", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", ("O-1",), "P-CONF")
+    st = s.invalidate_with_cascade("CODE:AbsorptionTracker@causal")                  # el detector cambia -> STALE
+    assert st["OBS:O-1"] == "STALE_BY_DEPENDENCY"
+    r = DurableHippocampus(tmp_path / "l.jsonl")
+    assert set(r.partitions) == {"P-EXP", "P-CONF"} and r.observations["O-1"]["status"] == "DESCRIPTIVE"
+
+
+def test_observation_can_never_carry_a_verdict(tmp_path):
+    from edgelab.edge_brain import hippocampus_store as m
+    p = tmp_path / "l.jsonl"
+    s = DurableHippocampus(p)
+    s.record_partition("P-EXP", "EXPLORATION", "x", ["d1"])
+    row = dict(observation_id="O-9", phenomenon="abs", kind="TARGET_FREE", partitions=["P-EXP"], metrics={},
+               resolution={}, artifact_sha256="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", status="PROMOTED")
+    rec = {"schema": m.LEDGER_SCHEMA, "type": "observation_recorded", "prev_hash": s.tip_hash, "payload": row}
+    rec["hash"] = m._record_hash("observation_recorded", row, s.tip_hash)
+    with p.open("ab") as fh:
+        fh.write((json.dumps(rec, sort_keys=True) + "\n").encode())
+    with pytest.raises(LedgerIntegrityError, match="DESCRIPTIVE"):
+        DurableHippocampus(p)
