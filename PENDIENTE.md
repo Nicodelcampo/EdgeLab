@@ -2568,3 +2568,7 @@ Decisiones de Nico:
 3. ¿OK a validar la regla de tick para llevar la familia a los ticks pre-holdout (I-5)?
 
 **Actualización 24/09 (réplica V-RND):** ES y 6E dan NO_REPLICA (mismo signo, menos de 1/4 del tamaño de NQ escalado, por debajo del spread); GC da SIN_POTENCIA. Familia: `NO_CONCLUYENTE`. V-RND no se transporta como edge. Queda sólo la confirmación propia de NQ en `P-NQL2-CONF` (decisión 1 de arriba). Herramienta reutilizable: `tools/vrnd_replicate.py`.
+
+## P-89 — EXEC-QI: modelo de costo de ejecución condicionado al libro (propuesto 24/09)
+
+Manifiesto `docs/research/MANIFIESTO_EJECUCION_QI_L2_20260924.md`, con la tabla de priorización frente a V-RND, volatilidad, momentum intradía y re-auditorías. Mira el precio después del fill (selección adversa): **espera el OK de Nico** (regla STOP). Además: guardia `CTRL_TIMING_V1` activa en el Brain desde hoy; `OBS-ABS-GC0826-RESPONSE` y `OBS-NQL2-A` quedan `REQUIRES_REAUDIT`.
