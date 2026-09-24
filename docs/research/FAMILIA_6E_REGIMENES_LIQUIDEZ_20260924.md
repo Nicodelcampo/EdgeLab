@@ -74,6 +74,13 @@ Sesiones con defectos por `l2_phase0.defect_reasons` quedan afuera y se cuentan.
   - La versión con perfil horario incluido se publica al lado.
   - Sensibilidad: bloques de 5 y 60 min, publicados todos, sin elegir el mejor.
 
+**Mínimos mecánicos (agregados antes de medir, mismo día):**
+- En V1, un bloque entra si tiene ≥ 1 trade y ≥ 60 fotos de libro válidas (1 min).
+- Una sesión entra en V1 si tiene ≥ 8 bloques.
+- En V3, una sesión aporta autocorrelación si tiene ≥ 10 pares de bloques; si no, queda NaN y se cuenta.
+- En el L2, el contrato de cada día es el que tiene más trades en su archivo.
+- Ninguna otra exclusión.
+
 **Cómo se refuta la etapa 1:**
 - V1 INVALID → los ticks no sirven para medir liquidez en 6E y la familia no puede usar la historia larga.
 - V2 FAIL → hay que investigar por qué dos vías de NT8 difieren antes de seguir.
