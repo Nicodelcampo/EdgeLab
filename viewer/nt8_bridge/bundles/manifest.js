@@ -1,7 +1,7 @@
 window.ASSET_CATALOG = [
   {
     "id": "6B_09-25_25T",
-    "name": "6B 09-25 (25 Tick · HFT V2)",
+    "name": "6B 09-25 (25 Tick \u00b7 HFT V2)",
     "group": "Contratos Individuales 6B",
     "instrument": "6B",
     "contract": "6B 09-25",
@@ -15,7 +15,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6B_12-25_25T",
-    "name": "6B 12-25 (25 Tick · HFT V2)",
+    "name": "6B 12-25 (25 Tick \u00b7 HFT V2)",
     "group": "Contratos Individuales 6B",
     "instrument": "6B",
     "contract": "6B 12-25",
@@ -29,7 +29,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6B_03-26_25T",
-    "name": "6B 03-26 (25 Tick · HFT V2)",
+    "name": "6B 03-26 (25 Tick \u00b7 HFT V2)",
     "group": "Contratos Individuales 6B",
     "instrument": "6B",
     "contract": "6B 03-26",
@@ -43,7 +43,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6B_06-26_25T",
-    "name": "6B 06-26 (25 Tick · HFT V2)",
+    "name": "6B 06-26 (25 Tick \u00b7 HFT V2)",
     "group": "Contratos Individuales 6B",
     "instrument": "6B",
     "contract": "6B 06-26",
@@ -57,7 +57,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6B_09-26_25T",
-    "name": "6B 09-26 (25 Tick · HFT V2)",
+    "name": "6B 09-26 (25 Tick \u00b7 HFT V2)",
     "group": "Contratos Individuales 6B",
     "instrument": "6B",
     "contract": "6B 09-26",
@@ -71,7 +71,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6E_09-25_25T",
-    "name": "6E 09-25 (25 Tick · HFT V2)",
+    "name": "6E 09-25 (25 Tick \u00b7 HFT V2)",
     "group": "Contratos Individuales 6E",
     "instrument": "6E",
     "contract": "6E 09-25",
@@ -85,7 +85,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6E_12-25_202509_25T_HFT",
-    "name": "6E 12-25 202509 (25 Tick · Fragmento)",
+    "name": "6E 12-25 202509 (25 Tick \u00b7 Fragmento)",
     "group": "6E 6E 12-25 (Fragmentos Mensuales)",
     "instrument": "6E",
     "contract": "6E 12-25",
@@ -99,7 +99,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6E_12-25_202510_25T_HFT",
-    "name": "6E 12-25 202510 (25 Tick · Fragmento)",
+    "name": "6E 12-25 202510 (25 Tick \u00b7 Fragmento)",
     "group": "6E 6E 12-25 (Fragmentos Mensuales)",
     "instrument": "6E",
     "contract": "6E 12-25",
@@ -113,7 +113,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6E_12-25_202511_25T_HFT",
-    "name": "6E 12-25 202511 (25 Tick · Fragmento)",
+    "name": "6E 12-25 202511 (25 Tick \u00b7 Fragmento)",
     "group": "6E 6E 12-25 (Fragmentos Mensuales)",
     "instrument": "6E",
     "contract": "6E 12-25",
@@ -127,7 +127,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6E_12-25_202512_25T_HFT",
-    "name": "6E 12-25 202512 (25 Tick · Fragmento)",
+    "name": "6E 12-25 202512 (25 Tick \u00b7 Fragmento)",
     "group": "6E 6E 12-25 (Fragmentos Mensuales)",
     "instrument": "6E",
     "contract": "6E 12-25",
@@ -141,7 +141,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6E_03-26_202512_25T_HFT",
-    "name": "6E 03-26 202512 (25 Tick · Fragmento)",
+    "name": "6E 03-26 202512 (25 Tick \u00b7 Fragmento)",
     "group": "6E 6E 03-26 (Fragmentos Mensuales)",
     "instrument": "6E",
     "contract": "6E 03-26",
@@ -155,7 +155,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6E_03-26_202601_25T_HFT",
-    "name": "6E 03-26 202601 (25 Tick · Fragmento)",
+    "name": "6E 03-26 202601 (25 Tick \u00b7 Fragmento)",
     "group": "6E 6E 03-26 (Fragmentos Mensuales)",
     "instrument": "6E",
     "contract": "6E 03-26",
@@ -169,7 +169,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6E_03-26_202602_25T_HFT",
-    "name": "6E 03-26 202602 (25 Tick · Fragmento)",
+    "name": "6E 03-26 202602 (25 Tick \u00b7 Fragmento)",
     "group": "6E 6E 03-26 (Fragmentos Mensuales)",
     "instrument": "6E",
     "contract": "6E 03-26",
@@ -183,7 +183,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6E_03-26_202603_25T_HFT",
-    "name": "6E 03-26 202603 (25 Tick · Fragmento)",
+    "name": "6E 03-26 202603 (25 Tick \u00b7 Fragmento)",
     "group": "6E 6E 03-26 (Fragmentos Mensuales)",
     "instrument": "6E",
     "contract": "6E 03-26",
@@ -197,7 +197,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6E_06-26_202603_25T_HFT",
-    "name": "6E 06-26 202603 (25 Tick · Fragmento)",
+    "name": "6E 06-26 202603 (25 Tick \u00b7 Fragmento)",
     "group": "6E 6E 06-26 (Fragmentos Mensuales)",
     "instrument": "6E",
     "contract": "6E 06-26",
@@ -211,7 +211,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6E_06-26_202604_25T_HFT",
-    "name": "6E 06-26 202604 (25 Tick · Fragmento)",
+    "name": "6E 06-26 202604 (25 Tick \u00b7 Fragmento)",
     "group": "6E 6E 06-26 (Fragmentos Mensuales)",
     "instrument": "6E",
     "contract": "6E 06-26",
@@ -225,7 +225,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6E_06-26_202605_25T_HFT",
-    "name": "6E 06-26 202605 (25 Tick · Fragmento)",
+    "name": "6E 06-26 202605 (25 Tick \u00b7 Fragmento)",
     "group": "6E 6E 06-26 (Fragmentos Mensuales)",
     "instrument": "6E",
     "contract": "6E 06-26",
@@ -239,7 +239,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6E_06-26_202606_25T_HFT",
-    "name": "6E 06-26 202606 (25 Tick · Fragmento)",
+    "name": "6E 06-26 202606 (25 Tick \u00b7 Fragmento)",
     "group": "6E 6E 06-26 (Fragmentos Mensuales)",
     "instrument": "6E",
     "contract": "6E 06-26",
@@ -253,7 +253,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6E_09-26_25T",
-    "name": "6E 09-26 (25 Tick · HFT V2)",
+    "name": "6E 09-26 (25 Tick \u00b7 HFT V2)",
     "group": "Contratos Individuales 6E",
     "instrument": "6E",
     "contract": "6E 09-26",
@@ -267,7 +267,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6J_09-25_25T",
-    "name": "6J 09-25 (25 Tick · HFT V2)",
+    "name": "6J 09-25 (25 Tick \u00b7 HFT V2)",
     "group": "Contratos Individuales 6J",
     "instrument": "6J",
     "contract": "6J 09-25",
@@ -281,7 +281,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6J_12-25_202509_25T_HFT",
-    "name": "6J 12-25 202509 (25 Tick · Fragmento)",
+    "name": "6J 12-25 202509 (25 Tick \u00b7 Fragmento)",
     "group": "6J 6J 12-25 (Fragmentos Mensuales)",
     "instrument": "6J",
     "contract": "6J 12-25",
@@ -295,7 +295,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6J_12-25_202510_25T_HFT",
-    "name": "6J 12-25 202510 (25 Tick · Fragmento)",
+    "name": "6J 12-25 202510 (25 Tick \u00b7 Fragmento)",
     "group": "6J 6J 12-25 (Fragmentos Mensuales)",
     "instrument": "6J",
     "contract": "6J 12-25",
@@ -309,7 +309,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6J_12-25_202511_25T_HFT",
-    "name": "6J 12-25 202511 (25 Tick · Fragmento)",
+    "name": "6J 12-25 202511 (25 Tick \u00b7 Fragmento)",
     "group": "6J 6J 12-25 (Fragmentos Mensuales)",
     "instrument": "6J",
     "contract": "6J 12-25",
@@ -323,7 +323,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6J_12-25_202512_25T_HFT",
-    "name": "6J 12-25 202512 (25 Tick · Fragmento)",
+    "name": "6J 12-25 202512 (25 Tick \u00b7 Fragmento)",
     "group": "6J 6J 12-25 (Fragmentos Mensuales)",
     "instrument": "6J",
     "contract": "6J 12-25",
@@ -337,7 +337,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6J_03-26_202512_25T_HFT",
-    "name": "6J 03-26 202512 (25 Tick · Fragmento)",
+    "name": "6J 03-26 202512 (25 Tick \u00b7 Fragmento)",
     "group": "6J 6J 03-26 (Fragmentos Mensuales)",
     "instrument": "6J",
     "contract": "6J 03-26",
@@ -351,7 +351,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6J_03-26_202601_25T_HFT",
-    "name": "6J 03-26 202601 (25 Tick · Fragmento)",
+    "name": "6J 03-26 202601 (25 Tick \u00b7 Fragmento)",
     "group": "6J 6J 03-26 (Fragmentos Mensuales)",
     "instrument": "6J",
     "contract": "6J 03-26",
@@ -365,7 +365,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6J_03-26_202602_25T_HFT",
-    "name": "6J 03-26 202602 (25 Tick · Fragmento)",
+    "name": "6J 03-26 202602 (25 Tick \u00b7 Fragmento)",
     "group": "6J 6J 03-26 (Fragmentos Mensuales)",
     "instrument": "6J",
     "contract": "6J 03-26",
@@ -379,7 +379,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6J_03-26_202603_25T_HFT",
-    "name": "6J 03-26 202603 (25 Tick · Fragmento)",
+    "name": "6J 03-26 202603 (25 Tick \u00b7 Fragmento)",
     "group": "6J 6J 03-26 (Fragmentos Mensuales)",
     "instrument": "6J",
     "contract": "6J 03-26",
@@ -393,7 +393,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6J_06-26_202603_25T_HFT",
-    "name": "6J 06-26 202603 (25 Tick · Fragmento)",
+    "name": "6J 06-26 202603 (25 Tick \u00b7 Fragmento)",
     "group": "6J 6J 06-26 (Fragmentos Mensuales)",
     "instrument": "6J",
     "contract": "6J 06-26",
@@ -407,7 +407,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6J_06-26_202604_25T_HFT",
-    "name": "6J 06-26 202604 (25 Tick · Fragmento)",
+    "name": "6J 06-26 202604 (25 Tick \u00b7 Fragmento)",
     "group": "6J 6J 06-26 (Fragmentos Mensuales)",
     "instrument": "6J",
     "contract": "6J 06-26",
@@ -421,7 +421,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6J_06-26_202605_25T_HFT",
-    "name": "6J 06-26 202605 (25 Tick · Fragmento)",
+    "name": "6J 06-26 202605 (25 Tick \u00b7 Fragmento)",
     "group": "6J 6J 06-26 (Fragmentos Mensuales)",
     "instrument": "6J",
     "contract": "6J 06-26",
@@ -435,7 +435,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6J_06-26_202606_25T_HFT",
-    "name": "6J 06-26 202606 (25 Tick · Fragmento)",
+    "name": "6J 06-26 202606 (25 Tick \u00b7 Fragmento)",
     "group": "6J 6J 06-26 (Fragmentos Mensuales)",
     "instrument": "6J",
     "contract": "6J 06-26",
@@ -449,7 +449,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6J_09-26_25T",
-    "name": "6J 09-26 (25 Tick · HFT V2)",
+    "name": "6J 09-26 (25 Tick \u00b7 HFT V2)",
     "group": "Contratos Individuales 6J",
     "instrument": "6J",
     "contract": "6J 09-26",
@@ -463,7 +463,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ES_09-25_202507_25T_HFT",
-    "name": "ES 09-25 202507 (25 Tick · Fragmento)",
+    "name": "ES 09-25 202507 (25 Tick \u00b7 Fragmento)",
     "group": "ES ES 09-25 (Fragmentos Mensuales)",
     "instrument": "ES",
     "contract": "ES 09-25",
@@ -477,7 +477,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ES_09-25_202508_25T_HFT",
-    "name": "ES 09-25 202508 (25 Tick · Fragmento)",
+    "name": "ES 09-25 202508 (25 Tick \u00b7 Fragmento)",
     "group": "ES ES 09-25 (Fragmentos Mensuales)",
     "instrument": "ES",
     "contract": "ES 09-25",
@@ -491,7 +491,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ES_09-25_202509_25T_HFT",
-    "name": "ES 09-25 202509 (25 Tick · Fragmento)",
+    "name": "ES 09-25 202509 (25 Tick \u00b7 Fragmento)",
     "group": "ES ES 09-25 (Fragmentos Mensuales)",
     "instrument": "ES",
     "contract": "ES 09-25",
@@ -505,7 +505,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ES_12-25_202509_25T_HFT",
-    "name": "ES 12-25 202509 (25 Tick · Fragmento)",
+    "name": "ES 12-25 202509 (25 Tick \u00b7 Fragmento)",
     "group": "ES ES 12-25 (Fragmentos Mensuales)",
     "instrument": "ES",
     "contract": "ES 12-25",
@@ -519,7 +519,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ES_12-25_202510_25T_HFT",
-    "name": "ES 12-25 202510 (25 Tick · Fragmento)",
+    "name": "ES 12-25 202510 (25 Tick \u00b7 Fragmento)",
     "group": "ES ES 12-25 (Fragmentos Mensuales)",
     "instrument": "ES",
     "contract": "ES 12-25",
@@ -533,7 +533,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ES_12-25_202511_25T_HFT",
-    "name": "ES 12-25 202511 (25 Tick · Fragmento)",
+    "name": "ES 12-25 202511 (25 Tick \u00b7 Fragmento)",
     "group": "ES ES 12-25 (Fragmentos Mensuales)",
     "instrument": "ES",
     "contract": "ES 12-25",
@@ -547,7 +547,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ES_12-25_202512_25T_HFT",
-    "name": "ES 12-25 202512 (25 Tick · Fragmento)",
+    "name": "ES 12-25 202512 (25 Tick \u00b7 Fragmento)",
     "group": "ES ES 12-25 (Fragmentos Mensuales)",
     "instrument": "ES",
     "contract": "ES 12-25",
@@ -561,7 +561,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ES_03-26_202512_25T_HFT",
-    "name": "ES 03-26 202512 (25 Tick · Fragmento)",
+    "name": "ES 03-26 202512 (25 Tick \u00b7 Fragmento)",
     "group": "ES ES 03-26 (Fragmentos Mensuales)",
     "instrument": "ES",
     "contract": "ES 03-26",
@@ -575,7 +575,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ES_03-26_202601_25T_HFT",
-    "name": "ES 03-26 202601 (25 Tick · Fragmento)",
+    "name": "ES 03-26 202601 (25 Tick \u00b7 Fragmento)",
     "group": "ES ES 03-26 (Fragmentos Mensuales)",
     "instrument": "ES",
     "contract": "ES 03-26",
@@ -589,7 +589,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ES_03-26_202602_25T_HFT",
-    "name": "ES 03-26 202602 (25 Tick · Fragmento)",
+    "name": "ES 03-26 202602 (25 Tick \u00b7 Fragmento)",
     "group": "ES ES 03-26 (Fragmentos Mensuales)",
     "instrument": "ES",
     "contract": "ES 03-26",
@@ -603,7 +603,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ES_03-26_202603_25T_HFT",
-    "name": "ES 03-26 202603 (25 Tick · Fragmento)",
+    "name": "ES 03-26 202603 (25 Tick \u00b7 Fragmento)",
     "group": "ES ES 03-26 (Fragmentos Mensuales)",
     "instrument": "ES",
     "contract": "ES 03-26",
@@ -617,7 +617,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ES_06-26_202603_25T_HFT",
-    "name": "ES 06-26 202603 (25 Tick · Fragmento)",
+    "name": "ES 06-26 202603 (25 Tick \u00b7 Fragmento)",
     "group": "ES ES 06-26 (Fragmentos Mensuales)",
     "instrument": "ES",
     "contract": "ES 06-26",
@@ -631,7 +631,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ES_06-26_202604_25T_HFT",
-    "name": "ES 06-26 202604 (25 Tick · Fragmento)",
+    "name": "ES 06-26 202604 (25 Tick \u00b7 Fragmento)",
     "group": "ES ES 06-26 (Fragmentos Mensuales)",
     "instrument": "ES",
     "contract": "ES 06-26",
@@ -645,7 +645,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ES_06-26_202605_25T_HFT",
-    "name": "ES 06-26 202605 (25 Tick · Fragmento)",
+    "name": "ES 06-26 202605 (25 Tick \u00b7 Fragmento)",
     "group": "ES ES 06-26 (Fragmentos Mensuales)",
     "instrument": "ES",
     "contract": "ES 06-26",
@@ -659,7 +659,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ES_06-26_202606_25T_HFT",
-    "name": "ES 06-26 202606 (25 Tick · Fragmento)",
+    "name": "ES 06-26 202606 (25 Tick \u00b7 Fragmento)",
     "group": "ES ES 06-26 (Fragmentos Mensuales)",
     "instrument": "ES",
     "contract": "ES 06-26",
@@ -673,7 +673,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ES_09-26_202606_25T_HFT",
-    "name": "ES 09-26 202606 (25 Tick · Fragmento)",
+    "name": "ES 09-26 202606 (25 Tick \u00b7 Fragmento)",
     "group": "ES ES 09-26 (Fragmentos Mensuales)",
     "instrument": "ES",
     "contract": "ES 09-26",
@@ -687,7 +687,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "GC_12-25_202508_25T_HFT",
-    "name": "GC 12-25 202508 (25 Tick · Fragmento)",
+    "name": "GC 12-25 202508 (25 Tick \u00b7 Fragmento)",
     "group": "GC GC 12-25 (Fragmentos Mensuales)",
     "instrument": "GC",
     "contract": "GC 12-25",
@@ -701,7 +701,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "GC_12-25_202509_25T_HFT",
-    "name": "GC 12-25 202509 (25 Tick · Fragmento)",
+    "name": "GC 12-25 202509 (25 Tick \u00b7 Fragmento)",
     "group": "GC GC 12-25 (Fragmentos Mensuales)",
     "instrument": "GC",
     "contract": "GC 12-25",
@@ -715,7 +715,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "GC_12-25_202510_25T_HFT",
-    "name": "GC 12-25 202510 (25 Tick · Fragmento)",
+    "name": "GC 12-25 202510 (25 Tick \u00b7 Fragmento)",
     "group": "GC GC 12-25 (Fragmentos Mensuales)",
     "instrument": "GC",
     "contract": "GC 12-25",
@@ -729,7 +729,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "GC_12-25_202511_25T_HFT",
-    "name": "GC 12-25 202511 (25 Tick · Fragmento)",
+    "name": "GC 12-25 202511 (25 Tick \u00b7 Fragmento)",
     "group": "GC GC 12-25 (Fragmentos Mensuales)",
     "instrument": "GC",
     "contract": "GC 12-25",
@@ -743,7 +743,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "GC_12-25_202512_25T_HFT",
-    "name": "GC 12-25 202512 (25 Tick · Fragmento)",
+    "name": "GC 12-25 202512 (25 Tick \u00b7 Fragmento)",
     "group": "GC GC 12-25 (Fragmentos Mensuales)",
     "instrument": "GC",
     "contract": "GC 12-25",
@@ -757,7 +757,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "GC_02-26_202511_25T_HFT",
-    "name": "GC 02-26 202511 (25 Tick · Fragmento)",
+    "name": "GC 02-26 202511 (25 Tick \u00b7 Fragmento)",
     "group": "GC GC 02-26 (Fragmentos Mensuales)",
     "instrument": "GC",
     "contract": "GC 02-26",
@@ -771,7 +771,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "GC_02-26_202512_25T_HFT",
-    "name": "GC 02-26 202512 (25 Tick · Fragmento)",
+    "name": "GC 02-26 202512 (25 Tick \u00b7 Fragmento)",
     "group": "GC GC 02-26 (Fragmentos Mensuales)",
     "instrument": "GC",
     "contract": "GC 02-26",
@@ -785,7 +785,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "GC_02-26_202601_25T_HFT",
-    "name": "GC 02-26 202601 (25 Tick · Fragmento)",
+    "name": "GC 02-26 202601 (25 Tick \u00b7 Fragmento)",
     "group": "GC GC 02-26 (Fragmentos Mensuales)",
     "instrument": "GC",
     "contract": "GC 02-26",
@@ -799,7 +799,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "GC_02-26_202602_25T_HFT",
-    "name": "GC 02-26 202602 (25 Tick · Fragmento)",
+    "name": "GC 02-26 202602 (25 Tick \u00b7 Fragmento)",
     "group": "GC GC 02-26 (Fragmentos Mensuales)",
     "instrument": "GC",
     "contract": "GC 02-26",
@@ -813,7 +813,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "GC_04-26_202601_25T_HFT",
-    "name": "GC 04-26 202601 (25 Tick · Fragmento)",
+    "name": "GC 04-26 202601 (25 Tick \u00b7 Fragmento)",
     "group": "GC GC 04-26 (Fragmentos Mensuales)",
     "instrument": "GC",
     "contract": "GC 04-26",
@@ -827,7 +827,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "GC_04-26_202602_25T_HFT",
-    "name": "GC 04-26 202602 (25 Tick · Fragmento)",
+    "name": "GC 04-26 202602 (25 Tick \u00b7 Fragmento)",
     "group": "GC GC 04-26 (Fragmentos Mensuales)",
     "instrument": "GC",
     "contract": "GC 04-26",
@@ -841,7 +841,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "GC_04-26_202603_25T_HFT",
-    "name": "GC 04-26 202603 (25 Tick · Fragmento)",
+    "name": "GC 04-26 202603 (25 Tick \u00b7 Fragmento)",
     "group": "GC GC 04-26 (Fragmentos Mensuales)",
     "instrument": "GC",
     "contract": "GC 04-26",
@@ -855,7 +855,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "GC_04-26_202604_25T_HFT",
-    "name": "GC 04-26 202604 (25 Tick · Fragmento)",
+    "name": "GC 04-26 202604 (25 Tick \u00b7 Fragmento)",
     "group": "GC GC 04-26 (Fragmentos Mensuales)",
     "instrument": "GC",
     "contract": "GC 04-26",
@@ -869,7 +869,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "GC_06-26_202603_25T_HFT",
-    "name": "GC 06-26 202603 (25 Tick · Fragmento)",
+    "name": "GC 06-26 202603 (25 Tick \u00b7 Fragmento)",
     "group": "GC GC 06-26 (Fragmentos Mensuales)",
     "instrument": "GC",
     "contract": "GC 06-26",
@@ -883,7 +883,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "GC_06-26_202604_25T_HFT",
-    "name": "GC 06-26 202604 (25 Tick · Fragmento)",
+    "name": "GC 06-26 202604 (25 Tick \u00b7 Fragmento)",
     "group": "GC GC 06-26 (Fragmentos Mensuales)",
     "instrument": "GC",
     "contract": "GC 06-26",
@@ -897,7 +897,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "GC_06-26_202605_25T_HFT",
-    "name": "GC 06-26 202605 (25 Tick · Fragmento)",
+    "name": "GC 06-26 202605 (25 Tick \u00b7 Fragmento)",
     "group": "GC GC 06-26 (Fragmentos Mensuales)",
     "instrument": "GC",
     "contract": "GC 06-26",
@@ -911,7 +911,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "GC_06-26_202606_25T_HFT",
-    "name": "GC 06-26 202606 (25 Tick · Fragmento)",
+    "name": "GC 06-26 202606 (25 Tick \u00b7 Fragmento)",
     "group": "GC GC 06-26 (Fragmentos Mensuales)",
     "instrument": "GC",
     "contract": "GC 06-26",
@@ -925,7 +925,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "GC_08-26_25T",
-    "name": "GC 08-26 (25 Tick · HFT V2)",
+    "name": "GC 08-26 (25 Tick \u00b7 HFT V2)",
     "group": "Contratos Individuales GC",
     "instrument": "GC",
     "contract": "GC 08-26",
@@ -939,7 +939,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MBT_09-25_25T",
-    "name": "MBT 09-25 (25 Tick · HFT V2)",
+    "name": "MBT 09-25 (25 Tick \u00b7 HFT V2)",
     "group": "Contratos Individuales MBT",
     "instrument": "MBT",
     "contract": "MBT 09-25",
@@ -953,7 +953,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MBT_11-25_25T",
-    "name": "MBT 11-25 (25 Tick · HFT V2)",
+    "name": "MBT 11-25 (25 Tick \u00b7 HFT V2)",
     "group": "Contratos Individuales MBT",
     "instrument": "MBT",
     "contract": "MBT 11-25",
@@ -967,7 +967,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MBT_01-26_25T",
-    "name": "MBT 01-26 (25 Tick · HFT V2)",
+    "name": "MBT 01-26 (25 Tick \u00b7 HFT V2)",
     "group": "Contratos Individuales MBT",
     "instrument": "MBT",
     "contract": "MBT 01-26",
@@ -981,7 +981,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MBT_03-26_25T",
-    "name": "MBT 03-26 (25 Tick · HFT V2)",
+    "name": "MBT 03-26 (25 Tick \u00b7 HFT V2)",
     "group": "Contratos Individuales MBT",
     "instrument": "MBT",
     "contract": "MBT 03-26",
@@ -995,7 +995,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MBT_05-26_25T",
-    "name": "MBT 05-26 (25 Tick · HFT V2)",
+    "name": "MBT 05-26 (25 Tick \u00b7 HFT V2)",
     "group": "Contratos Individuales MBT",
     "instrument": "MBT",
     "contract": "MBT 05-26",
@@ -1009,7 +1009,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MBT_07-26_25T",
-    "name": "MBT 07-26 (25 Tick · HFT V2)",
+    "name": "MBT 07-26 (25 Tick \u00b7 HFT V2)",
     "group": "Contratos Individuales MBT",
     "instrument": "MBT",
     "contract": "MBT 07-26",
@@ -1023,7 +1023,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MES_09-25_202508_25T_HFT",
-    "name": "MES 09-25 202508 (25 Tick · Fragmento)",
+    "name": "MES 09-25 202508 (25 Tick \u00b7 Fragmento)",
     "group": "MES MES 09-25 (Fragmentos Mensuales)",
     "instrument": "MES",
     "contract": "MES 09-25",
@@ -1037,7 +1037,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MES_09-25_202509_25T_HFT",
-    "name": "MES 09-25 202509 (25 Tick · Fragmento)",
+    "name": "MES 09-25 202509 (25 Tick \u00b7 Fragmento)",
     "group": "MES MES 09-25 (Fragmentos Mensuales)",
     "instrument": "MES",
     "contract": "MES 09-25",
@@ -1051,7 +1051,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MES_12-25_202509_25T_HFT",
-    "name": "MES 12-25 202509 (25 Tick · Fragmento)",
+    "name": "MES 12-25 202509 (25 Tick \u00b7 Fragmento)",
     "group": "MES MES 12-25 (Fragmentos Mensuales)",
     "instrument": "MES",
     "contract": "MES 12-25",
@@ -1065,7 +1065,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MES_12-25_202510_25T_HFT",
-    "name": "MES 12-25 202510 (25 Tick · Fragmento)",
+    "name": "MES 12-25 202510 (25 Tick \u00b7 Fragmento)",
     "group": "MES MES 12-25 (Fragmentos Mensuales)",
     "instrument": "MES",
     "contract": "MES 12-25",
@@ -1079,7 +1079,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MES_12-25_202511_25T_HFT",
-    "name": "MES 12-25 202511 (25 Tick · Fragmento)",
+    "name": "MES 12-25 202511 (25 Tick \u00b7 Fragmento)",
     "group": "MES MES 12-25 (Fragmentos Mensuales)",
     "instrument": "MES",
     "contract": "MES 12-25",
@@ -1093,7 +1093,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MES_12-25_202512_25T_HFT",
-    "name": "MES 12-25 202512 (25 Tick · Fragmento)",
+    "name": "MES 12-25 202512 (25 Tick \u00b7 Fragmento)",
     "group": "MES MES 12-25 (Fragmentos Mensuales)",
     "instrument": "MES",
     "contract": "MES 12-25",
@@ -1107,7 +1107,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MES_03-26_202512_25T_HFT",
-    "name": "MES 03-26 202512 (25 Tick · Fragmento)",
+    "name": "MES 03-26 202512 (25 Tick \u00b7 Fragmento)",
     "group": "MES MES 03-26 (Fragmentos Mensuales)",
     "instrument": "MES",
     "contract": "MES 03-26",
@@ -1121,7 +1121,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MES_03-26_202601_25T_HFT",
-    "name": "MES 03-26 202601 (25 Tick · Fragmento)",
+    "name": "MES 03-26 202601 (25 Tick \u00b7 Fragmento)",
     "group": "MES MES 03-26 (Fragmentos Mensuales)",
     "instrument": "MES",
     "contract": "MES 03-26",
@@ -1135,7 +1135,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MES_03-26_202602_25T_HFT",
-    "name": "MES 03-26 202602 (25 Tick · Fragmento)",
+    "name": "MES 03-26 202602 (25 Tick \u00b7 Fragmento)",
     "group": "MES MES 03-26 (Fragmentos Mensuales)",
     "instrument": "MES",
     "contract": "MES 03-26",
@@ -1149,7 +1149,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MES_03-26_202603_25T_HFT",
-    "name": "MES 03-26 202603 (25 Tick · Fragmento)",
+    "name": "MES 03-26 202603 (25 Tick \u00b7 Fragmento)",
     "group": "MES MES 03-26 (Fragmentos Mensuales)",
     "instrument": "MES",
     "contract": "MES 03-26",
@@ -1163,7 +1163,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MES_06-26_202603_25T_HFT",
-    "name": "MES 06-26 202603 (25 Tick · Fragmento)",
+    "name": "MES 06-26 202603 (25 Tick \u00b7 Fragmento)",
     "group": "MES MES 06-26 (Fragmentos Mensuales)",
     "instrument": "MES",
     "contract": "MES 06-26",
@@ -1177,7 +1177,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MES_06-26_202604_25T_HFT",
-    "name": "MES 06-26 202604 (25 Tick · Fragmento)",
+    "name": "MES 06-26 202604 (25 Tick \u00b7 Fragmento)",
     "group": "MES MES 06-26 (Fragmentos Mensuales)",
     "instrument": "MES",
     "contract": "MES 06-26",
@@ -1191,7 +1191,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MES_06-26_202605_25T_HFT",
-    "name": "MES 06-26 202605 (25 Tick · Fragmento)",
+    "name": "MES 06-26 202605 (25 Tick \u00b7 Fragmento)",
     "group": "MES MES 06-26 (Fragmentos Mensuales)",
     "instrument": "MES",
     "contract": "MES 06-26",
@@ -1205,7 +1205,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MES_06-26_202606_25T_HFT",
-    "name": "MES 06-26 202606 (25 Tick · Fragmento)",
+    "name": "MES 06-26 202606 (25 Tick \u00b7 Fragmento)",
     "group": "MES MES 06-26 (Fragmentos Mensuales)",
     "instrument": "MES",
     "contract": "MES 06-26",
@@ -1219,7 +1219,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MES_09-26_202606_25T_HFT",
-    "name": "MES 09-26 202606 (25 Tick · Fragmento)",
+    "name": "MES 09-26 202606 (25 Tick \u00b7 Fragmento)",
     "group": "MES MES 09-26 (Fragmentos Mensuales)",
     "instrument": "MES",
     "contract": "MES 09-26",
@@ -1233,7 +1233,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MNQ_09-25_202508_25T_HFT",
-    "name": "MNQ 09-25 202508 (25 Tick · Fragmento)",
+    "name": "MNQ 09-25 202508 (25 Tick \u00b7 Fragmento)",
     "group": "MNQ MNQ 09-25 (Fragmentos Mensuales)",
     "instrument": "MNQ",
     "contract": "MNQ 09-25",
@@ -1247,7 +1247,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MNQ_09-25_202509_25T_HFT",
-    "name": "MNQ 09-25 202509 (25 Tick · Fragmento)",
+    "name": "MNQ 09-25 202509 (25 Tick \u00b7 Fragmento)",
     "group": "MNQ MNQ 09-25 (Fragmentos Mensuales)",
     "instrument": "MNQ",
     "contract": "MNQ 09-25",
@@ -1261,7 +1261,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MNQ_12-25_202509_25T_HFT",
-    "name": "MNQ 12-25 202509 (25 Tick · Fragmento)",
+    "name": "MNQ 12-25 202509 (25 Tick \u00b7 Fragmento)",
     "group": "MNQ MNQ 12-25 (Fragmentos Mensuales)",
     "instrument": "MNQ",
     "contract": "MNQ 12-25",
@@ -1275,7 +1275,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MNQ_12-25_202510_25T_HFT",
-    "name": "MNQ 12-25 202510 (25 Tick · Fragmento)",
+    "name": "MNQ 12-25 202510 (25 Tick \u00b7 Fragmento)",
     "group": "MNQ MNQ 12-25 (Fragmentos Mensuales)",
     "instrument": "MNQ",
     "contract": "MNQ 12-25",
@@ -1289,7 +1289,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MNQ_12-25_202511_25T_HFT",
-    "name": "MNQ 12-25 202511 (25 Tick · Fragmento)",
+    "name": "MNQ 12-25 202511 (25 Tick \u00b7 Fragmento)",
     "group": "MNQ MNQ 12-25 (Fragmentos Mensuales)",
     "instrument": "MNQ",
     "contract": "MNQ 12-25",
@@ -1303,7 +1303,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MNQ_12-25_202512_25T_HFT",
-    "name": "MNQ 12-25 202512 (25 Tick · Fragmento)",
+    "name": "MNQ 12-25 202512 (25 Tick \u00b7 Fragmento)",
     "group": "MNQ MNQ 12-25 (Fragmentos Mensuales)",
     "instrument": "MNQ",
     "contract": "MNQ 12-25",
@@ -1317,7 +1317,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MNQ_03-26_202512_25T_HFT",
-    "name": "MNQ 03-26 202512 (25 Tick · Fragmento)",
+    "name": "MNQ 03-26 202512 (25 Tick \u00b7 Fragmento)",
     "group": "MNQ MNQ 03-26 (Fragmentos Mensuales)",
     "instrument": "MNQ",
     "contract": "MNQ 03-26",
@@ -1331,7 +1331,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MNQ_03-26_202601_25T_HFT",
-    "name": "MNQ 03-26 202601 (25 Tick · Fragmento)",
+    "name": "MNQ 03-26 202601 (25 Tick \u00b7 Fragmento)",
     "group": "MNQ MNQ 03-26 (Fragmentos Mensuales)",
     "instrument": "MNQ",
     "contract": "MNQ 03-26",
@@ -1345,7 +1345,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MNQ_03-26_202602_25T_HFT",
-    "name": "MNQ 03-26 202602 (25 Tick · Fragmento)",
+    "name": "MNQ 03-26 202602 (25 Tick \u00b7 Fragmento)",
     "group": "MNQ MNQ 03-26 (Fragmentos Mensuales)",
     "instrument": "MNQ",
     "contract": "MNQ 03-26",
@@ -1359,7 +1359,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MNQ_03-26_202603_25T_HFT",
-    "name": "MNQ 03-26 202603 (25 Tick · Fragmento)",
+    "name": "MNQ 03-26 202603 (25 Tick \u00b7 Fragmento)",
     "group": "MNQ MNQ 03-26 (Fragmentos Mensuales)",
     "instrument": "MNQ",
     "contract": "MNQ 03-26",
@@ -1373,7 +1373,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MNQ_06-26_202604_25T_HFT",
-    "name": "MNQ 06-26 202604 (25 Tick · Fragmento)",
+    "name": "MNQ 06-26 202604 (25 Tick \u00b7 Fragmento)",
     "group": "MNQ MNQ 06-26 (Fragmentos Mensuales)",
     "instrument": "MNQ",
     "contract": "MNQ 06-26",
@@ -1387,7 +1387,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MNQ_06-26_202605_25T_HFT",
-    "name": "MNQ 06-26 202605 (25 Tick · Fragmento)",
+    "name": "MNQ 06-26 202605 (25 Tick \u00b7 Fragmento)",
     "group": "MNQ MNQ 06-26 (Fragmentos Mensuales)",
     "instrument": "MNQ",
     "contract": "MNQ 06-26",
@@ -1401,7 +1401,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MNQ_06-26_202606_25T_HFT",
-    "name": "MNQ 06-26 202606 (25 Tick · Fragmento)",
+    "name": "MNQ 06-26 202606 (25 Tick \u00b7 Fragmento)",
     "group": "MNQ MNQ 06-26 (Fragmentos Mensuales)",
     "instrument": "MNQ",
     "contract": "MNQ 06-26",
@@ -1415,7 +1415,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MNQ_09-26_202606_25T_HFT",
-    "name": "MNQ 09-26 202606 (25 Tick · Fragmento)",
+    "name": "MNQ 09-26 202606 (25 Tick \u00b7 Fragmento)",
     "group": "MNQ MNQ 09-26 (Fragmentos Mensuales)",
     "instrument": "MNQ",
     "contract": "MNQ 09-26",
@@ -1429,7 +1429,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "NQ_09-25_202508_25T_HFT",
-    "name": "NQ 09-25 202508 (25 Tick · Fragmento)",
+    "name": "NQ 09-25 202508 (25 Tick \u00b7 Fragmento)",
     "group": "NQ NQ 09-25 (Fragmentos Mensuales)",
     "instrument": "NQ",
     "contract": "NQ 09-25",
@@ -1442,7 +1442,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "NQ_09-25_202509_25T_HFT",
-    "name": "NQ 09-25 202509 (25 Tick · Fragmento)",
+    "name": "NQ 09-25 202509 (25 Tick \u00b7 Fragmento)",
     "group": "NQ NQ 09-25 (Fragmentos Mensuales)",
     "instrument": "NQ",
     "contract": "NQ 09-25",
@@ -1455,7 +1455,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "NQ_12-25_202509_25T_HFT",
-    "name": "NQ 12-25 202509 (25 Tick · Fragmento)",
+    "name": "NQ 12-25 202509 (25 Tick \u00b7 Fragmento)",
     "group": "NQ NQ 12-25 (Fragmentos Mensuales)",
     "instrument": "NQ",
     "contract": "NQ 12-25",
@@ -1468,7 +1468,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "NQ_12-25_202510_25T_HFT",
-    "name": "NQ 12-25 202510 (25 Tick · Fragmento)",
+    "name": "NQ 12-25 202510 (25 Tick \u00b7 Fragmento)",
     "group": "NQ NQ 12-25 (Fragmentos Mensuales)",
     "instrument": "NQ",
     "contract": "NQ 12-25",
@@ -1481,7 +1481,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "NQ_12-25_202511_25T_HFT",
-    "name": "NQ 12-25 202511 (25 Tick · Fragmento)",
+    "name": "NQ 12-25 202511 (25 Tick \u00b7 Fragmento)",
     "group": "NQ NQ 12-25 (Fragmentos Mensuales)",
     "instrument": "NQ",
     "contract": "NQ 12-25",
@@ -1494,7 +1494,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "NQ_12-25_202512_25T_HFT",
-    "name": "NQ 12-25 202512 (25 Tick · Fragmento)",
+    "name": "NQ 12-25 202512 (25 Tick \u00b7 Fragmento)",
     "group": "NQ NQ 12-25 (Fragmentos Mensuales)",
     "instrument": "NQ",
     "contract": "NQ 12-25",
@@ -1507,7 +1507,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "NQ_03-26_202512_25T_HFT",
-    "name": "NQ 03-26 202512 (25 Tick · Fragmento)",
+    "name": "NQ 03-26 202512 (25 Tick \u00b7 Fragmento)",
     "group": "NQ NQ 03-26 (Fragmentos Mensuales)",
     "instrument": "NQ",
     "contract": "NQ 03-26",
@@ -1520,7 +1520,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "NQ_03-26_202601_25T_HFT",
-    "name": "NQ 03-26 202601 (25 Tick · Fragmento)",
+    "name": "NQ 03-26 202601 (25 Tick \u00b7 Fragmento)",
     "group": "NQ NQ 03-26 (Fragmentos Mensuales)",
     "instrument": "NQ",
     "contract": "NQ 03-26",
@@ -1533,7 +1533,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "NQ_03-26_202602_25T_HFT",
-    "name": "NQ 03-26 202602 (25 Tick · Fragmento)",
+    "name": "NQ 03-26 202602 (25 Tick \u00b7 Fragmento)",
     "group": "NQ NQ 03-26 (Fragmentos Mensuales)",
     "instrument": "NQ",
     "contract": "NQ 03-26",
@@ -1546,7 +1546,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "NQ_03-26_202603_25T_HFT",
-    "name": "NQ 03-26 202603 (25 Tick · Fragmento)",
+    "name": "NQ 03-26 202603 (25 Tick \u00b7 Fragmento)",
     "group": "NQ NQ 03-26 (Fragmentos Mensuales)",
     "instrument": "NQ",
     "contract": "NQ 03-26",
@@ -1559,7 +1559,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "NQ_06-26_202603_25T_HFT",
-    "name": "NQ 06-26 202603 (25 Tick · Fragmento)",
+    "name": "NQ 06-26 202603 (25 Tick \u00b7 Fragmento)",
     "group": "NQ NQ 06-26 (Fragmentos Mensuales)",
     "instrument": "NQ",
     "contract": "NQ 06-26",
@@ -1572,7 +1572,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "NQ_06-26_202604_25T_HFT",
-    "name": "NQ 06-26 202604 (25 Tick · Fragmento)",
+    "name": "NQ 06-26 202604 (25 Tick \u00b7 Fragmento)",
     "group": "NQ NQ 06-26 (Fragmentos Mensuales)",
     "instrument": "NQ",
     "contract": "NQ 06-26",
@@ -1585,7 +1585,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "NQ_06-26_202605_25T_HFT",
-    "name": "NQ 06-26 202605 (25 Tick · Fragmento)",
+    "name": "NQ 06-26 202605 (25 Tick \u00b7 Fragmento)",
     "group": "NQ NQ 06-26 (Fragmentos Mensuales)",
     "instrument": "NQ",
     "contract": "NQ 06-26",
@@ -1598,7 +1598,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "NQ_06-26_202606_25T_HFT",
-    "name": "NQ 06-26 202606 (25 Tick · Fragmento)",
+    "name": "NQ 06-26 202606 (25 Tick \u00b7 Fragmento)",
     "group": "NQ NQ 06-26 (Fragmentos Mensuales)",
     "instrument": "NQ",
     "contract": "NQ 06-26",
@@ -1611,7 +1611,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "YM_09-25_25T",
-    "name": "YM 09-25 (25 Tick · HFT V2)",
+    "name": "YM 09-25 (25 Tick \u00b7 HFT V2)",
     "group": "Contratos Individuales YM",
     "instrument": "YM",
     "contract": "YM 09-25",
@@ -1625,7 +1625,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "YM_12-25_202509_25T_HFT",
-    "name": "YM 12-25 202509 (25 Tick · Fragmento)",
+    "name": "YM 12-25 202509 (25 Tick \u00b7 Fragmento)",
     "group": "YM YM 12-25 (Fragmentos Mensuales)",
     "instrument": "YM",
     "contract": "YM 12-25",
@@ -1639,7 +1639,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "YM_12-25_202510_25T_HFT",
-    "name": "YM 12-25 202510 (25 Tick · Fragmento)",
+    "name": "YM 12-25 202510 (25 Tick \u00b7 Fragmento)",
     "group": "YM YM 12-25 (Fragmentos Mensuales)",
     "instrument": "YM",
     "contract": "YM 12-25",
@@ -1653,7 +1653,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "YM_12-25_202511_25T_HFT",
-    "name": "YM 12-25 202511 (25 Tick · Fragmento)",
+    "name": "YM 12-25 202511 (25 Tick \u00b7 Fragmento)",
     "group": "YM YM 12-25 (Fragmentos Mensuales)",
     "instrument": "YM",
     "contract": "YM 12-25",
@@ -1667,7 +1667,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "YM_12-25_202512_25T_HFT",
-    "name": "YM 12-25 202512 (25 Tick · Fragmento)",
+    "name": "YM 12-25 202512 (25 Tick \u00b7 Fragmento)",
     "group": "YM YM 12-25 (Fragmentos Mensuales)",
     "instrument": "YM",
     "contract": "YM 12-25",
@@ -1681,7 +1681,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "YM_03-26_202512_25T_HFT",
-    "name": "YM 03-26 202512 (25 Tick · Fragmento)",
+    "name": "YM 03-26 202512 (25 Tick \u00b7 Fragmento)",
     "group": "YM YM 03-26 (Fragmentos Mensuales)",
     "instrument": "YM",
     "contract": "YM 03-26",
@@ -1695,7 +1695,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "YM_03-26_202601_25T_HFT",
-    "name": "YM 03-26 202601 (25 Tick · Fragmento)",
+    "name": "YM 03-26 202601 (25 Tick \u00b7 Fragmento)",
     "group": "YM YM 03-26 (Fragmentos Mensuales)",
     "instrument": "YM",
     "contract": "YM 03-26",
@@ -1709,7 +1709,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "YM_03-26_202602_25T_HFT",
-    "name": "YM 03-26 202602 (25 Tick · Fragmento)",
+    "name": "YM 03-26 202602 (25 Tick \u00b7 Fragmento)",
     "group": "YM YM 03-26 (Fragmentos Mensuales)",
     "instrument": "YM",
     "contract": "YM 03-26",
@@ -1723,7 +1723,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "YM_03-26_202603_25T_HFT",
-    "name": "YM 03-26 202603 (25 Tick · Fragmento)",
+    "name": "YM 03-26 202603 (25 Tick \u00b7 Fragmento)",
     "group": "YM YM 03-26 (Fragmentos Mensuales)",
     "instrument": "YM",
     "contract": "YM 03-26",
@@ -1737,7 +1737,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "YM_06-26_202603_25T_HFT",
-    "name": "YM 06-26 202603 (25 Tick · Fragmento)",
+    "name": "YM 06-26 202603 (25 Tick \u00b7 Fragmento)",
     "group": "YM YM 06-26 (Fragmentos Mensuales)",
     "instrument": "YM",
     "contract": "YM 06-26",
@@ -1751,7 +1751,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "YM_06-26_202604_25T_HFT",
-    "name": "YM 06-26 202604 (25 Tick · Fragmento)",
+    "name": "YM 06-26 202604 (25 Tick \u00b7 Fragmento)",
     "group": "YM YM 06-26 (Fragmentos Mensuales)",
     "instrument": "YM",
     "contract": "YM 06-26",
@@ -1765,7 +1765,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "YM_06-26_202605_25T_HFT",
-    "name": "YM 06-26 202605 (25 Tick · Fragmento)",
+    "name": "YM 06-26 202605 (25 Tick \u00b7 Fragmento)",
     "group": "YM YM 06-26 (Fragmentos Mensuales)",
     "instrument": "YM",
     "contract": "YM 06-26",
@@ -1779,7 +1779,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "YM_06-26_202606_25T_HFT",
-    "name": "YM 06-26 202606 (25 Tick · Fragmento)",
+    "name": "YM 06-26 202606 (25 Tick \u00b7 Fragmento)",
     "group": "YM YM 06-26 (Fragmentos Mensuales)",
     "instrument": "YM",
     "contract": "YM 06-26",
@@ -1793,7 +1793,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "YM_09-26_25T",
-    "name": "YM 09-26 (25 Tick · HFT V2)",
+    "name": "YM 09-26 (25 Tick \u00b7 HFT V2)",
     "group": "Contratos Individuales YM",
     "instrument": "YM",
     "contract": "YM 09-26",
@@ -1807,7 +1807,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ZB_09-25_25T",
-    "name": "ZB 09-25 (25 Tick · HFT V2)",
+    "name": "ZB 09-25 (25 Tick \u00b7 HFT V2)",
     "group": "Contratos Individuales ZB",
     "instrument": "ZB",
     "contract": "ZB 09-25",
@@ -1821,7 +1821,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ZB_12-25_202508_25T_HFT",
-    "name": "ZB 12-25 202508 (25 Tick · Fragmento)",
+    "name": "ZB 12-25 202508 (25 Tick \u00b7 Fragmento)",
     "group": "ZB ZB 12-25 (Fragmentos Mensuales)",
     "instrument": "ZB",
     "contract": "ZB 12-25",
@@ -1835,7 +1835,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ZB_12-25_202509_25T_HFT",
-    "name": "ZB 12-25 202509 (25 Tick · Fragmento)",
+    "name": "ZB 12-25 202509 (25 Tick \u00b7 Fragmento)",
     "group": "ZB ZB 12-25 (Fragmentos Mensuales)",
     "instrument": "ZB",
     "contract": "ZB 12-25",
@@ -1849,7 +1849,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ZB_12-25_202510_25T_HFT",
-    "name": "ZB 12-25 202510 (25 Tick · Fragmento)",
+    "name": "ZB 12-25 202510 (25 Tick \u00b7 Fragmento)",
     "group": "ZB ZB 12-25 (Fragmentos Mensuales)",
     "instrument": "ZB",
     "contract": "ZB 12-25",
@@ -1863,7 +1863,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ZB_12-25_202511_25T_HFT",
-    "name": "ZB 12-25 202511 (25 Tick · Fragmento)",
+    "name": "ZB 12-25 202511 (25 Tick \u00b7 Fragmento)",
     "group": "ZB ZB 12-25 (Fragmentos Mensuales)",
     "instrument": "ZB",
     "contract": "ZB 12-25",
@@ -1877,7 +1877,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ZB_12-25_202512_25T_HFT",
-    "name": "ZB 12-25 202512 (25 Tick · Fragmento)",
+    "name": "ZB 12-25 202512 (25 Tick \u00b7 Fragmento)",
     "group": "ZB ZB 12-25 (Fragmentos Mensuales)",
     "instrument": "ZB",
     "contract": "ZB 12-25",
@@ -1891,7 +1891,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ZB_03-26_202511_25T_HFT",
-    "name": "ZB 03-26 202511 (25 Tick · Fragmento)",
+    "name": "ZB 03-26 202511 (25 Tick \u00b7 Fragmento)",
     "group": "ZB ZB 03-26 (Fragmentos Mensuales)",
     "instrument": "ZB",
     "contract": "ZB 03-26",
@@ -1905,7 +1905,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ZB_03-26_202512_25T_HFT",
-    "name": "ZB 03-26 202512 (25 Tick · Fragmento)",
+    "name": "ZB 03-26 202512 (25 Tick \u00b7 Fragmento)",
     "group": "ZB ZB 03-26 (Fragmentos Mensuales)",
     "instrument": "ZB",
     "contract": "ZB 03-26",
@@ -1919,7 +1919,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ZB_03-26_202601_25T_HFT",
-    "name": "ZB 03-26 202601 (25 Tick · Fragmento)",
+    "name": "ZB 03-26 202601 (25 Tick \u00b7 Fragmento)",
     "group": "ZB ZB 03-26 (Fragmentos Mensuales)",
     "instrument": "ZB",
     "contract": "ZB 03-26",
@@ -1933,7 +1933,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ZB_03-26_202602_25T_HFT",
-    "name": "ZB 03-26 202602 (25 Tick · Fragmento)",
+    "name": "ZB 03-26 202602 (25 Tick \u00b7 Fragmento)",
     "group": "ZB ZB 03-26 (Fragmentos Mensuales)",
     "instrument": "ZB",
     "contract": "ZB 03-26",
@@ -1947,7 +1947,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ZB_03-26_202603_25T_HFT",
-    "name": "ZB 03-26 202603 (25 Tick · Fragmento)",
+    "name": "ZB 03-26 202603 (25 Tick \u00b7 Fragmento)",
     "group": "ZB ZB 03-26 (Fragmentos Mensuales)",
     "instrument": "ZB",
     "contract": "ZB 03-26",
@@ -1961,7 +1961,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ZB_06-26_202602_25T_HFT",
-    "name": "ZB 06-26 202602 (25 Tick · Fragmento)",
+    "name": "ZB 06-26 202602 (25 Tick \u00b7 Fragmento)",
     "group": "ZB ZB 06-26 (Fragmentos Mensuales)",
     "instrument": "ZB",
     "contract": "ZB 06-26",
@@ -1975,7 +1975,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ZB_06-26_202603_25T_HFT",
-    "name": "ZB 06-26 202603 (25 Tick · Fragmento)",
+    "name": "ZB 06-26 202603 (25 Tick \u00b7 Fragmento)",
     "group": "ZB ZB 06-26 (Fragmentos Mensuales)",
     "instrument": "ZB",
     "contract": "ZB 06-26",
@@ -1989,7 +1989,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ZB_06-26_202604_25T_HFT",
-    "name": "ZB 06-26 202604 (25 Tick · Fragmento)",
+    "name": "ZB 06-26 202604 (25 Tick \u00b7 Fragmento)",
     "group": "ZB ZB 06-26 (Fragmentos Mensuales)",
     "instrument": "ZB",
     "contract": "ZB 06-26",
@@ -2003,7 +2003,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ZB_06-26_202605_25T_HFT",
-    "name": "ZB 06-26 202605 (25 Tick · Fragmento)",
+    "name": "ZB 06-26 202605 (25 Tick \u00b7 Fragmento)",
     "group": "ZB ZB 06-26 (Fragmentos Mensuales)",
     "instrument": "ZB",
     "contract": "ZB 06-26",
@@ -2017,7 +2017,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ZB_06-26_202606_25T_HFT",
-    "name": "ZB 06-26 202606 (25 Tick · Fragmento)",
+    "name": "ZB 06-26 202606 (25 Tick \u00b7 Fragmento)",
     "group": "ZB ZB 06-26 (Fragmentos Mensuales)",
     "instrument": "ZB",
     "contract": "ZB 06-26",
@@ -2031,7 +2031,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ZB_09-26_25T",
-    "name": "ZB 09-26 (25 Tick · HFT V2)",
+    "name": "ZB 09-26 (25 Tick \u00b7 HFT V2)",
     "group": "Contratos Individuales ZB",
     "instrument": "ZB",
     "contract": "ZB 09-26",
@@ -2045,7 +2045,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6B_03-26_M1",
-    "name": "6B 03-26 · M1 · LUX-IMB",
+    "name": "6B 03-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB 6B",
     "instrument": "6B",
     "contract": "6B 03-26",
@@ -2059,7 +2059,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6B_06-26_M1",
-    "name": "6B 06-26 · M1 · LUX-IMB",
+    "name": "6B 06-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB 6B",
     "instrument": "6B",
     "contract": "6B 06-26",
@@ -2073,7 +2073,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6B_09-25_M1",
-    "name": "6B 09-25 · M1 · LUX-IMB",
+    "name": "6B 09-25 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB 6B",
     "instrument": "6B",
     "contract": "6B 09-25",
@@ -2087,7 +2087,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6B_09-26_M1",
-    "name": "6B 09-26 · M1 · LUX-IMB",
+    "name": "6B 09-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB 6B",
     "instrument": "6B",
     "contract": "6B 09-26",
@@ -2101,7 +2101,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6B_12-25_M1",
-    "name": "6B 12-25 · M1 · LUX-IMB",
+    "name": "6B 12-25 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB 6B",
     "instrument": "6B",
     "contract": "6B 12-25",
@@ -2115,7 +2115,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6E_03-26_M1",
-    "name": "6E 03-26 · M1 · LUX-IMB",
+    "name": "6E 03-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB 6E",
     "instrument": "6E",
     "contract": "6E 03-26",
@@ -2129,7 +2129,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6E_06-26_M1",
-    "name": "6E 06-26 · M1 · LUX-IMB",
+    "name": "6E 06-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB 6E",
     "instrument": "6E",
     "contract": "6E 06-26",
@@ -2143,7 +2143,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6E_09-25_M1",
-    "name": "6E 09-25 · M1 · LUX-IMB",
+    "name": "6E 09-25 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB 6E",
     "instrument": "6E",
     "contract": "6E 09-25",
@@ -2157,7 +2157,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6E_09-26_M1",
-    "name": "6E 09-26 · M1 · LUX-IMB",
+    "name": "6E 09-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB 6E",
     "instrument": "6E",
     "contract": "6E 09-26",
@@ -2171,7 +2171,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6E_12-25_M1",
-    "name": "6E 12-25 · M1 · LUX-IMB",
+    "name": "6E 12-25 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB 6E",
     "instrument": "6E",
     "contract": "6E 12-25",
@@ -2185,7 +2185,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6J_03-26_M1",
-    "name": "6J 03-26 · M1 · LUX-IMB",
+    "name": "6J 03-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB 6J",
     "instrument": "6J",
     "contract": "6J 03-26",
@@ -2199,7 +2199,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6J_06-26_M1",
-    "name": "6J 06-26 · M1 · LUX-IMB",
+    "name": "6J 06-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB 6J",
     "instrument": "6J",
     "contract": "6J 06-26",
@@ -2213,7 +2213,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6J_09-25_M1",
-    "name": "6J 09-25 · M1 · LUX-IMB",
+    "name": "6J 09-25 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB 6J",
     "instrument": "6J",
     "contract": "6J 09-25",
@@ -2227,7 +2227,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6J_09-26_M1",
-    "name": "6J 09-26 · M1 · LUX-IMB",
+    "name": "6J 09-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB 6J",
     "instrument": "6J",
     "contract": "6J 09-26",
@@ -2241,7 +2241,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "6J_12-25_M1",
-    "name": "6J 12-25 · M1 · LUX-IMB",
+    "name": "6J 12-25 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB 6J",
     "instrument": "6J",
     "contract": "6J 12-25",
@@ -2255,7 +2255,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ES_03-26_M1",
-    "name": "ES 03-26 · M1 · LUX-IMB",
+    "name": "ES 03-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB ES",
     "instrument": "ES",
     "contract": "ES 03-26",
@@ -2269,7 +2269,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ES_06-26_M1",
-    "name": "ES 06-26 · M1 · LUX-IMB",
+    "name": "ES 06-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB ES",
     "instrument": "ES",
     "contract": "ES 06-26",
@@ -2283,7 +2283,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ES_09-25_M1",
-    "name": "ES 09-25 · M1 · LUX-IMB",
+    "name": "ES 09-25 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB ES",
     "instrument": "ES",
     "contract": "ES 09-25",
@@ -2297,7 +2297,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ES_09-26_M1",
-    "name": "ES 09-26 · M1 · LUX-IMB",
+    "name": "ES 09-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB ES",
     "instrument": "ES",
     "contract": "ES 09-26",
@@ -2311,7 +2311,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ES_12-25_M1",
-    "name": "ES 12-25 · M1 · LUX-IMB",
+    "name": "ES 12-25 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB ES",
     "instrument": "ES",
     "contract": "ES 12-25",
@@ -2325,7 +2325,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "GC_02-26_M1",
-    "name": "GC 02-26 · M1 · LUX-IMB",
+    "name": "GC 02-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB GC",
     "instrument": "GC",
     "contract": "GC 02-26",
@@ -2339,7 +2339,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "GC_04-26_M1",
-    "name": "GC 04-26 · M1 · LUX-IMB",
+    "name": "GC 04-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB GC",
     "instrument": "GC",
     "contract": "GC 04-26",
@@ -2353,7 +2353,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "GC_06-26_M1",
-    "name": "GC 06-26 · M1 · LUX-IMB",
+    "name": "GC 06-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB GC",
     "instrument": "GC",
     "contract": "GC 06-26",
@@ -2367,7 +2367,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "GC_08-26_M1",
-    "name": "GC 08-26 · M1 · LUX-IMB",
+    "name": "GC 08-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB GC",
     "instrument": "GC",
     "contract": "GC 08-26",
@@ -2381,7 +2381,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "GC_12-25_M1",
-    "name": "GC 12-25 · M1 · LUX-IMB",
+    "name": "GC 12-25 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB GC",
     "instrument": "GC",
     "contract": "GC 12-25",
@@ -2395,7 +2395,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MBT_01-26_M1",
-    "name": "MBT 01-26 · M1 · LUX-IMB",
+    "name": "MBT 01-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB MBT",
     "instrument": "MBT",
     "contract": "MBT 01-26",
@@ -2409,7 +2409,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MBT_03-26_M1",
-    "name": "MBT 03-26 · M1 · LUX-IMB",
+    "name": "MBT 03-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB MBT",
     "instrument": "MBT",
     "contract": "MBT 03-26",
@@ -2423,7 +2423,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MBT_05-26_M1",
-    "name": "MBT 05-26 · M1 · LUX-IMB",
+    "name": "MBT 05-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB MBT",
     "instrument": "MBT",
     "contract": "MBT 05-26",
@@ -2437,7 +2437,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MBT_07-26_M1",
-    "name": "MBT 07-26 · M1 · LUX-IMB",
+    "name": "MBT 07-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB MBT",
     "instrument": "MBT",
     "contract": "MBT 07-26",
@@ -2451,7 +2451,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MBT_09-25_M1",
-    "name": "MBT 09-25 · M1 · LUX-IMB",
+    "name": "MBT 09-25 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB MBT",
     "instrument": "MBT",
     "contract": "MBT 09-25",
@@ -2465,7 +2465,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MBT_11-25_M1",
-    "name": "MBT 11-25 · M1 · LUX-IMB",
+    "name": "MBT 11-25 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB MBT",
     "instrument": "MBT",
     "contract": "MBT 11-25",
@@ -2479,7 +2479,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MES_03-26_M1",
-    "name": "MES 03-26 · M1 · LUX-IMB",
+    "name": "MES 03-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB MES",
     "instrument": "MES",
     "contract": "MES 03-26",
@@ -2493,7 +2493,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MES_06-26_M1",
-    "name": "MES 06-26 · M1 · LUX-IMB",
+    "name": "MES 06-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB MES",
     "instrument": "MES",
     "contract": "MES 06-26",
@@ -2507,7 +2507,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MES_09-25_M1",
-    "name": "MES 09-25 · M1 · LUX-IMB",
+    "name": "MES 09-25 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB MES",
     "instrument": "MES",
     "contract": "MES 09-25",
@@ -2521,7 +2521,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MES_09-26_M1",
-    "name": "MES 09-26 · M1 · LUX-IMB",
+    "name": "MES 09-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB MES",
     "instrument": "MES",
     "contract": "MES 09-26",
@@ -2535,7 +2535,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MES_12-25_M1",
-    "name": "MES 12-25 · M1 · LUX-IMB",
+    "name": "MES 12-25 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB MES",
     "instrument": "MES",
     "contract": "MES 12-25",
@@ -2549,7 +2549,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MNQ_03-26_M1",
-    "name": "MNQ 03-26 · M1 · LUX-IMB",
+    "name": "MNQ 03-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB MNQ",
     "instrument": "MNQ",
     "contract": "MNQ 03-26",
@@ -2563,7 +2563,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MNQ_06-26_M1",
-    "name": "MNQ 06-26 · M1 · LUX-IMB",
+    "name": "MNQ 06-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB MNQ",
     "instrument": "MNQ",
     "contract": "MNQ 06-26",
@@ -2577,7 +2577,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MNQ_09-25_M1",
-    "name": "MNQ 09-25 · M1 · LUX-IMB",
+    "name": "MNQ 09-25 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB MNQ",
     "instrument": "MNQ",
     "contract": "MNQ 09-25",
@@ -2591,7 +2591,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MNQ_09-26_M1",
-    "name": "MNQ 09-26 · M1 · LUX-IMB",
+    "name": "MNQ 09-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB MNQ",
     "instrument": "MNQ",
     "contract": "MNQ 09-26",
@@ -2605,7 +2605,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "MNQ_12-25_M1",
-    "name": "MNQ 12-25 · M1 · LUX-IMB",
+    "name": "MNQ 12-25 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB MNQ",
     "instrument": "MNQ",
     "contract": "MNQ 12-25",
@@ -2619,7 +2619,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "NQ_03-26_M1",
-    "name": "NQ 03-26 · M1 · LUX-IMB",
+    "name": "NQ 03-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB NQ",
     "instrument": "NQ",
     "contract": "NQ 03-26",
@@ -2633,7 +2633,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "NQ_06-26_M1",
-    "name": "NQ 06-26 · M1 · LUX-IMB",
+    "name": "NQ 06-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB NQ",
     "instrument": "NQ",
     "contract": "NQ 06-26",
@@ -2647,7 +2647,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "NQ_09-25_M1",
-    "name": "NQ 09-25 · M1 · LUX-IMB",
+    "name": "NQ 09-25 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB NQ",
     "instrument": "NQ",
     "contract": "NQ 09-25",
@@ -2661,7 +2661,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "NQ_12-25_M1",
-    "name": "NQ 12-25 · M1 · LUX-IMB",
+    "name": "NQ 12-25 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB NQ",
     "instrument": "NQ",
     "contract": "NQ 12-25",
@@ -2675,7 +2675,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "YM_03-26_M1",
-    "name": "YM 03-26 · M1 · LUX-IMB",
+    "name": "YM 03-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB YM",
     "instrument": "YM",
     "contract": "YM 03-26",
@@ -2689,7 +2689,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "YM_06-26_M1",
-    "name": "YM 06-26 · M1 · LUX-IMB",
+    "name": "YM 06-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB YM",
     "instrument": "YM",
     "contract": "YM 06-26",
@@ -2703,7 +2703,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "YM_09-25_M1",
-    "name": "YM 09-25 · M1 · LUX-IMB",
+    "name": "YM 09-25 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB YM",
     "instrument": "YM",
     "contract": "YM 09-25",
@@ -2717,7 +2717,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "YM_09-26_M1",
-    "name": "YM 09-26 · M1 · LUX-IMB",
+    "name": "YM 09-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB YM",
     "instrument": "YM",
     "contract": "YM 09-26",
@@ -2731,7 +2731,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "YM_12-25_M1",
-    "name": "YM 12-25 · M1 · LUX-IMB",
+    "name": "YM 12-25 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB YM",
     "instrument": "YM",
     "contract": "YM 12-25",
@@ -2745,7 +2745,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ZB_03-26_M1",
-    "name": "ZB 03-26 · M1 · LUX-IMB",
+    "name": "ZB 03-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB ZB",
     "instrument": "ZB",
     "contract": "ZB 03-26",
@@ -2759,7 +2759,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ZB_06-26_M1",
-    "name": "ZB 06-26 · M1 · LUX-IMB",
+    "name": "ZB 06-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB ZB",
     "instrument": "ZB",
     "contract": "ZB 06-26",
@@ -2773,7 +2773,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ZB_09-25_M1",
-    "name": "ZB 09-25 · M1 · LUX-IMB",
+    "name": "ZB 09-25 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB ZB",
     "instrument": "ZB",
     "contract": "ZB 09-25",
@@ -2787,7 +2787,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ZB_09-26_M1",
-    "name": "ZB 09-26 · M1 · LUX-IMB",
+    "name": "ZB 09-26 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB ZB",
     "instrument": "ZB",
     "contract": "ZB 09-26",
@@ -2801,7 +2801,7 @@ window.ASSET_CATALOG = [
   },
   {
     "id": "ZB_12-25_M1",
-    "name": "ZB 12-25 · M1 · LUX-IMB",
+    "name": "ZB 12-25 \u00b7 M1 \u00b7 LUX-IMB",
     "group": "M1 LUX-IMB ZB",
     "instrument": "ZB",
     "contract": "ZB 12-25",
@@ -3218,5 +3218,33 @@ window.ASSET_CATALOG = [
     "rolls": 0,
     "parity_status": "PARITY_ABSTAIN",
     "kind": "L2_DEPTH_SESSION"
+  },
+  {
+    "id": "MYM_03-26_202601_25T_HFT",
+    "name": "MYM 03-26 202601 (25 Tick \u00b7 HFT & BT2A)",
+    "group": "MYM MYM 03-26 (Fragmentos Mensuales)",
+    "instrument": "MYM",
+    "contract": "MYM 03-26",
+    "tick_size": 1.0,
+    "precision": 0,
+    "candles": 88159,
+    "zones": 3798,
+    "rolls": 0,
+    "parity_status": "PARITY_ABSTAIN",
+    "profile": "SCALED_FUNNEL_V1"
+  },
+  {
+    "id": "MYM_03-26_25T",
+    "name": "MYM 03-26 (25 Tick \u00b7 HFT & BT2A)",
+    "group": "Contratos Individuales MYM",
+    "instrument": "MYM",
+    "contract": "MYM 03-26",
+    "tick_size": 1.0,
+    "precision": 0,
+    "candles": 88159,
+    "zones": 3798,
+    "rolls": 0,
+    "parity_status": "PARITY_ABSTAIN",
+    "profile": "SCALED_FUNNEL_V1"
   }
 ];
