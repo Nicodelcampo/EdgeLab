@@ -39,6 +39,10 @@ PEN_BARS = 50      # velas para medir la penetración después de reingresar
 N_PH = 3           # fantasmas por franja
 TOD_TOL_S = 900
 SEED = 20260925
+# nulo N-VOL (agregado DESPUÉS de ver el primer reporte, más estricto; ver manifiesto §4b)
+VOL_TOD_TOL_S = 3600
+VOL_TOL = 0.25
+VOL_CAP = 20000
 PART = "P-TBZX-ES-EXP"
 N_BOOT = 2000
 
@@ -252,13 +256,50 @@ def declare_partition(keys):
                                       [f"ES:{k}" for k in keys])
 
 
+def trailing(x, W):
+    """Rango (máx. H − mín. L) y segundos de las W velas que terminan en cada vela: actividad previa, causal."""
+    n = len(x["c"])
+    from numpy.lib.stride_tricks import sliding_window_view
+    rg = np.full(n, np.nan); sec = np.full(n, np.nan)
+    if n > W:
+        rg[W:] = sliding_window_view(x["h"], W + 1).max(axis=1) - sliding_window_view(x["l"], W + 1).min(axis=1)
+        sec[W:] = x["t"][W:] - x["t"][:-W]
+    return rg, sec
+
+
+def vol_phantom(S, keys, s, mb, clock, rg0, sec0, rng):
+    """Otra sesión, misma hora (± 1 h), con rango y duración de las últimas `mb` velas a ± 25 % de los reales."""
+    others = [k for k in keys if k != s]
+    for _ in range(40):
+        o = others[int(rng.integers(len(others)))]
+        y = S[o]
+        a, b = np.searchsorted(y["clock"], clock - VOL_TOD_TOL_S), np.searchsorted(y["clock"], clock + VOL_TOD_TOL_S)
+        if b <= a:
+            continue
+        rg, sec = y[f"rg{mb}"][a:b], y[f"sec{mb}"][a:b]
+        ok = (np.abs(rg - rg0) <= VOL_TOL * rg0) & (np.abs(np.log(np.maximum(sec, 1e-3) / max(sec0, 1e-3))) <= np.log(1 + VOL_TOL))
+        ok &= (np.arange(a, b) + H < len(y["c"]) - 1)
+        idx = np.flatnonzero(ok)
+        if len(idx):
+            return o, a + int(idx[int(rng.integers(len(idx)))])
+    return None, None
+
+
 def step_measure():
     S = _load_all()
     keys = sorted(S)
     assert max(keys) <= TB.EXP_END
     declare_partition(keys)
+    for k in keys:
+        for mb in sorted({g[0] for g in GRID}):
+            S[k][f"rg{mb}"], S[k][f"sec{mb}"] = trailing(S[k], mb)
     rng = np.random.default_rng(SEED)
+    vol_rng = np.random.default_rng(SEED + 1)
     rows = []
+    # fracción de franjas con N-VOL: todas si son <= VOL_CAP, si no una muestra aleatoria fija
+    counts = {f"B{mb}_W{mw}": sum(len(detect(S[k]["t"], S[k]["h"], S[k]["l"], S[k]["c"], S[k]["v"], mb, mw, E0, R_END)) for k in keys)
+              for mb, mw in GRID}
+    vol_frac = {c: min(1.0, VOL_CAP / max(n, 1)) for c, n in counts.items()}
     for mb, mw in GRID:
         cfg = f"B{mb}_W{mw}"
         for s in keys:
@@ -295,6 +336,17 @@ def step_measure():
                     m = path_metrics(y["t"], y["h"], y["l"], y["c"], y["v"], q, d, A + sh, B + sh, W, H, PEN_BARS)
                     rows.append(dict(base, kind="fantasma", ph_session=o, ph_t=float(y["t"][q]), **dict(zip(MET, m))))
                     got += 1
+                # N-VOL: misma actividad previa (sólo una muestra de hasta VOL_CAP franjas por configuración)
+                if vol_rng.random() < vol_frac[cfg]:
+                    rg0, sec0 = x[f"rg{mb}"][iend], x[f"sec{mb}"][iend]
+                    for _ in range(N_PH):
+                        o, q = vol_phantom(S, keys, s, mb, base["clock"], rg0, sec0, rng)
+                        if o is None:
+                            break
+                        y = S[o]; sh = int(y["c"][q]) - c_e
+                        m = path_metrics(y["t"], y["h"], y["l"], y["c"], y["v"], q, d, A + sh, B + sh, W, H, PEN_BARS)
+                        pdir = float(np.sign(y["c"][q] - y["c"][max(q - mb, 0)]))
+                        rows.append(dict(base, kind="fantasma_vol", ph_session=o, ph_t=float(y["t"][q]), ph_prev_dir=pdir, **dict(zip(MET, m))))
         print(cfg, sum(1 for r in rows if r["cfg"] == cfg and r["kind"] == "real"), flush=True)
     D = pd.DataFrame(rows)
     OUT.mkdir(parents=True, exist_ok=True)
@@ -308,10 +360,10 @@ PRIMARY = [("side_B", "sale por el lado B (continuación)"), ("exc_W", "excursi�
            ("pen_W", "penetración al reingresar / W"), ("reach_opp", "llega al borde opuesto"), ("re_tpb", "velocidad de reingreso (t/vela)")]
 
 
-def _pair(D, col):
-    """Por franja: valor real y media de sus fantasmas."""
+def _pair(D, col, null="fantasma"):
+    """Por franja: valor real y media de sus fantasmas (del nulo pedido)."""
     R = D[D.kind == "real"].set_index(["cfg", "session", "band"])[col]
-    P = D[D.kind == "fantasma"].groupby(["cfg", "session", "band"])[col].mean()
+    P = D[D.kind == null].groupby(["cfg", "session", "band"])[col].mean()
     J = pd.concat([R.rename("r"), P.rename("p")], axis=1).dropna()
     return J
 
@@ -347,19 +399,21 @@ def step_report():
     rng = np.random.default_rng(SEED)
     cells = []
     for cfg, g in D.groupby("cfg", sort=False):
+      for null in ("fantasma", "fantasma_vol"):
         for col, lab in PRIMARY:
-            J = _pair(g, col)
+            J = _pair(g, col, null)
             if len(J) < 30:
-                cells.append(dict(cfg=cfg, metric=col, label=lab, n=len(J), status="POCOS"))
+                cells.append(dict(cfg=cfg, null=null, metric=col, label=lab, n=len(J), status="POCOS"))
                 continue
             obs, lo, hi, se, p = _boot(J, rng)
-            cells.append(dict(cfg=cfg, metric=col, label=lab, n=int(len(J)), sessions=int(J.index.get_level_values("session").nunique()),
+            cells.append(dict(cfg=cfg, null=null, metric=col, label=lab, n=int(len(J)), sessions=int(J.index.get_level_values("session").nunique()),
                               real=float(J.r.mean()), fantasma=float(J.p.mean()), diff=float(obs), ci=[float(lo), float(hi)],
                               mde=float(2.8 * se), p=float(p), status="OK"))
     ok = [c for c in cells if c["status"] == "OK"]
-    fl = _bh([c["p"] for c in ok])
-    for c, f in zip(ok, fl):
-        c["fdr"] = bool(f)
+    for null in ("fantasma", "fantasma_vol"):                     # BH por nulo: cada uno es su propia familia de 96
+        oo = [c for c in ok if c["null"] == null]
+        for c, f in zip(oo, _bh([c["p"] for c in oo])):
+            c["fdr"] = bool(f)
     # combinaciones: cortes descriptivos sobre la configuración de Nico
     g = D[D.cfg == f"B{NICO[0]}_W{NICO[1]}"].copy()
     r = g[g.kind == "real"]
@@ -374,17 +428,18 @@ def step_report():
         for lvl, gg in g.groupby(cut):
             row = {}
             for col, lab in PRIMARY + [("exc_ticks", "excursión (t)"), ("out_secs", "segundos afuera"), ("reach_mirror", "espejo completo")]:
-                J = _pair(gg, col)
+                J = _pair(gg, col); Jv = _pair(gg, col, "fantasma_vol")
                 if len(J) >= 30:
-                    row[col] = [round(float(J.r.mean()), 3), round(float(J.p.mean()), 3), int(len(J))]
+                    row[col] = [round(float(J.r.mean()), 3), round(float(J.p.mean()), 3), int(len(J)),
+                                [round(float(Jv.r.mean()), 3), round(float(Jv.p.mean()), 3), int(len(Jv))] if len(Jv) >= 30 else None]
             cuts[f"{cut}={lvl}"] = row
     # distribución completa (real y fantasma) sobre Nico
     dist = {}
     for col in ("exc_ticks", "exc_W", "out_bars", "out_secs", "out_vol", "pen_W", "re_tpb", "re_eff", "re_vpt"):
-        for k in ("real", "fantasma"):
+        for k in ("real", "fantasma", "fantasma_vol"):
             v = g[g.kind == k][col].dropna()
             dist[f"{col}|{k}"] = [round(float(x), 3) for x in np.percentile(v, [10, 25, 50, 75, 90])] if len(v) else None
-    ph = D[D.kind == "fantasma"]
+    ph = D[D.kind.isin(["fantasma", "fantasma_vol"])]
     from edgelab.edge_brain.control_guard import audit_event_controls
     audit = audit_event_controls((ph.t_end * 1e6).astype(np.int64).to_numpy(), (ph.ph_t * 1e6).astype(np.int64).to_numpy(),
                                  H * 60.0, same_session=(ph.session == ph.ph_session).to_numpy())
@@ -396,12 +451,13 @@ def step_report():
     (OUT / "report_ES.json").write_text(raw, encoding="utf-8")
     sha = hashlib.sha256(raw.encode()).hexdigest()
     from edgelab.edge_brain.episode_logger import measurement_episode
-    with measurement_episode(LEDGER, "EP-TBZX-ESPEJO-ES-20260925", goal="TBZX: afuera y reingreso de la franja vs fantasma misma hora",
+    with measurement_episode(LEDGER, "EP-TBZX-ESPEJO-ES-20260925B", goal="TBZX: afuera y reingreso vs fantasma misma hora y fantasma misma actividad (N-VOL)",
                              recorded_by="tools/tbzx_espejo.py report", repo=REPO, prereg_ref=DOC) as ep:
-        ep.store.record_observation("OBS-TBZX-ESPEJO-ES", "franja TBZX: afuera y reingreso", "RESPONSE_PROFILE", [PART],
-                                    {f"{c['cfg']}|{c['metric']}": (c.get("diff"), c.get("fdr")) for c in cells},
+        ep.store.record_observation("OBS-TBZX-ESPEJO-ES-V2", "franja TBZX: afuera y reingreso, 2 nulos", "RESPONSE_PROFILE", [PART],
+                                    {f"{c['cfg']}|{c['null']}|{c['metric']}": (c.get("diff"), c.get("fdr")) for c in cells},
                                     {"horizon_bars": H, "phantoms": N_PH}, sha, design="EVENT_VS_CONTROL", control_audit=audit)
-    print(json.dumps(dict(celdas=len(ok), fdr=int(sum(c["fdr"] for c in ok)), sha=sha[:12], audit=audit["status"])))
+    print(json.dumps(dict(celdas=len(ok), fdr={n: int(sum(c["fdr"] for c in ok if c["null"] == n)) for n in ("fantasma", "fantasma_vol")},
+                          sha=sha[:12], audit=audit["status"])))
 
 
 def main(argv=None):

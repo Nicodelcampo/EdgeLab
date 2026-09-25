@@ -40,6 +40,12 @@ Nada de stops, targets ni R. Se describe el camino del precio después de la fra
 
 **Fantasma:** para cada franja, 3 sesiones distintas de la misma partición, en la vela más cercana a la **misma hora del día (ET, ± 15 min)**. Se pone la misma geometría relativa al cierre de esa vela (misma dirección, mismos A y B relativos) y se miden las mismas cosas. Contesta si lo observado es propio de la franja o es lo que hace cualquier franja del mismo ancho a esa hora. Es un control de otra sesión, exento de CTRL_TIMING_V1, y se audita igual.
 
+### 4b. Segundo nulo, agregado DESPUÉS de ver el primer reporte (25/09, más estricto, no relaja nada)
+
+El primer reporte (sha d4762a655722, ledger OBS-TBZX-ESPEJO-ES) dio diferencias grandes contra el fantasma en casi todo, y todas en la dirección de un mercado más rápido y fino: más excursión, más penetración, reingreso más veloz, menos segundos afuera y menos volumen por tick. Eso es lo que produce la volatilidad alta de después de un impulso, haya franja o no, y el fantasma a la misma hora no la tiene.
+
+**N-VOL:** otra sesión, misma hora (± 1 h), en una vela cuyas últimas maxBars velas tuvieron **el mismo rango de precio y la misma duración en reloj (± 25 %)** que las del impulso real. Misma geometría relativa. Hasta 20.000 franjas por configuración (muestra aleatoria fija si hay más). Contesta si lo que se ve es propio de los niveles A/B o sólo de la actividad reciente. BH por nulo (dos familias de 96). **Si una diferencia desaparece contra N-VOL, se atribuye a la actividad, no a la franja.**
+
 ## 5. Reporte y multiplicidad (fijados ahora)
 
 - Por configuración (12): cada medida real, fantasma y diferencia pareada, con IC por bootstrap por sesión (2.000 réplicas) y su MDE.
