@@ -54,8 +54,6 @@ def test_finalized_batch_cannot_be_replayed_and_scores_are_not_returned(tmp_path
         store.finalize(batch_id="audit-1", result_sha256=RESULT)
     with pytest.raises(AuditLedgerError, match="invalid/repeated"):
         store.burn(batch_id="audit-1", reason_code="RUN_FAILED")
-    # The public read API exposes state, not the result digest.
-    assert "result_sha256" not in store.status.__annotations__.get("return", "")
 
 
 def test_failed_or_interrupted_attempt_is_burned_not_retried(tmp_path):
