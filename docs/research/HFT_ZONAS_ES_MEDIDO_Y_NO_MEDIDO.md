@@ -354,3 +354,8 @@ aquellos números compara dos poblaciones distintas.
 - **MEDIDO:** divergencia de RSI (y de delta en NQ) en extremos de pivote, ES y NQ, 24 celdas: **0 sugerencias**. En la ruptura la divergencia **empeora** ir contra el extremo; en la confirmación no agrega nada. Ver `MANIFIESTO_AGOTAMIENTO_EN_EXTREMO_20260925.md` §10.
 - **MEDIDO (lateral):** ir contra un extremo nuevo confirmado acierta menos que el azar en ES y NQ (persistencia a la escala del pivote).
 - **NO MEDIDO:** la divergencia como salida o como filtro de otra familia; la pista "comprar el retroceso tras un máximo confirmado" pre-registrada sola.
+
+## Anexo 2026-09-25 (3): TBZ-E2 en ES
+
+- **MEDIDO:** la franja de expansión como área de patinaje (E0–E3 × 4 detecciones × target A/HVN; hacia B como secundaria) en ES, 181 sesiones: **0 sugerencias**. El acierto hacia A queda levemente **por debajo** de la geometría sola, y las franjas TBZ se revierten menos que un tramo común. Ver `TBZ_E2_PARAMETRIZACION_HOLISTICA_20260924.md` §8.
+- **NO MEDIDO:** detectores por velocidad y volumen relativo como detección primaria; descriptores G2–G5 como filtros pre-registrados; L2 (G7); MES (en curso).

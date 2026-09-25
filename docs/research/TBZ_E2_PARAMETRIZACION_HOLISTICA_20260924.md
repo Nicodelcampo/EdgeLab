@@ -152,3 +152,26 @@ La "expansión rápida" de Nico no es lo mismo que la franja TBZ. La velocidad q
 Con distancias chicas (franjas de 13 ticks), eso inflaba el nulo: en ES del 31/07/2025 daba 0,544 contra un acierto de 0,468.
 
 **N1 corregido:** el camino es el de los precios de trade desde el último trade al entrar, con el stop a distancia `tdir·(x0 − stop)` y el target efectivo a `tdir·(target + tdir − x0)`. En esa sesión: acierto 0,468 contra N1 0,463. **El nulo queda calibrado**: un camino sin memoria con estas convenciones reproduce la tasa observada.
+
+## 8. Resultado E2b en ES (25/09, madrugada): el patinaje no aparece
+
+Reporte `artifacts/tbz_e2/report_E2b_ES.json` (sha `117d1037e192…`). Censo `artifacts/tbz_e2/census_summary_ES.json`. Ledger `artifacts/hippocampus/tbz_20260924.jsonl`. 181 sesiones de `P-TBZ-EXP`; 48 celdas (32 primarias hacia A, 16 secundarias hacia B). Guardia de controles N3: PASS.
+
+**Veredicto: 0 sugerencias.** Las 48 celdas pierden (−0,8 a −2,1 ticks netos por operación) y pasan el FDR por ser negativas.
+
+**Lo que decide la hipótesis (acierto de llegar a A antes del stop):**
+- **Contra N1** (la geometría sola, con las mismas convenciones): el acierto queda **0,4 a 2,9 pts por debajo** en todas las celdas. En W20 k2,5 E0: 0,419 contra 0,426, IC del exceso [−1,0; −0,4]. **La franja no se cruza más rápido que un camino aleatorio**, sino apenas más lento.
+- **Contra N2** (tramos del mismo ancho que no son TBZ): igual o **peor**. En E1 (profundización) da −4 a −6 pts: las franjas TBZ se revierten **menos** que un tramo cualquiera.
+- **Contra N3** (otra sesión a la misma hora, mismas distancias): +1,5 a +7 pts. **Esto no es evidencia a favor**: los eventos ocurren en momentos activos y un instante al azar tiene menos volatilidad, así que en 30 min llega menos seguido a cualquier target. N1 compara sobre el mismo camino y es el nulo que manda.
+- **Árbol honesto:** todas las hojas son negativas. La menos mala son las franjas anchas (W > 22 t, −0,08 R), donde los costos pesan menos, no donde hay ventaja.
+- **Hacia B (continuación):** tampoco; en E0 queda por debajo de N1 (−1,8 pts).
+
+**Censo (target-free), ES:**
+- W20 k2,5 da ~625 franjas por sesión y W60 k4 ~13 por sesión.
+- Velocidad mediana de las franjas TBZ: 0,85 t/s; de los tramos N2: 0,60 t/s (más angostos: mediana 5 t contra 10 t).
+
+**Alcance de la muerte:**
+- **Muere:** "la expansión TBZ-EXP funciona como área de patinaje hacia A" (y la continuación hacia B), con E0–E3, las 4 detecciones de la grilla, target A o HVN, stop B + 0,25W, 30 min, en ES, jul-2025 a mar-2026.
+- **No se midieron:** los descriptores G2–G5 como filtros primarios (sólo entraron por el árbol, sin nada positivo); los detectores por velocidad (`speed_min`) y volumen relativo (`vol_rel_min`) de G1; el L2 (G7).
+
+MES (apoyo, no decide) se agrega cuando termine su corrida.

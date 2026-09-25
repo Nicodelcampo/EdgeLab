@@ -350,8 +350,8 @@ def step_summary(inst):
     E = pd.concat([pd.read_parquet(str(f).replace("_bands", "")) for f in files], ignore_index=True)
     ns = B.session.nunique()
     summ = dict(sessions=int(ns))
-    summ["franjas_por_sesion"] = (B.groupby(["kind", "cfg"]).size() / ns).round(1).to_dict()
-    summ["eventos_por_sesion"] = (E.groupby(["kind", "cfg", "event"]).size() / ns).round(1).to_dict()
+    summ["franjas_por_sesion"] = {"|".join(k): v for k, v in (B.groupby(["kind", "cfg"]).size() / ns).round(1).to_dict().items()}
+    summ["eventos_por_sesion"] = {"|".join(k): v for k, v in (E.groupby(["kind", "cfg", "event"]).size() / ns).round(1).to_dict().items()}
     desc_b = ["W", "W_sigma", "dur_s", "speed_tps", "efficiency", "vol_rel", "max_pullback_inside", "lvn_frac_inside", "n_lvn_inside"]
     desc_e = ["depth", "age_s", "ext_beyond_B", "n_prior_touches_B", "approach_speed", "approach_vol_rel", "skate_len",
               "tp_hvn_dist", "lvn_at_event", "ema20_align", "ema50_align", "sma200_align", "vwap_align"]
@@ -364,7 +364,7 @@ def step_summary(inst):
     cb = B[B.kind == "rapida"][desc_b].corr(method="spearman").round(2)
     summ["pares_redundantes_franjas_|rho|>=0.7"] = [(a, b, float(cb.loc[a, b])) for i, a in enumerate(desc_b) for b in desc_b[i + 1:]
                                                      if abs(cb.loc[a, b]) >= 0.7]
-    summ["n2_vs_tbz"] = {k: B[B.kind == k][["W", "speed_tps", "dur_s"]].quantile([.25, .5, .75]).round(2).to_dict() for k in ("rapida", "tramo_N2")}
+    summ["n2_vs_tbz"] = {k: {c: B[B.kind == k][c].quantile([.25, .5, .75]).round(2).tolist() for c in ("W", "speed_tps", "dur_s")} for k in ("rapida", "tramo_N2")}
     body = dict(schema="EDGELAB_TBZ_E2A_CENSUS_V1", doc=DOC, inst=inst, code_commit=_git("rev-parse", "HEAD"),
                 tree_dirty=bool(_git("status", "--porcelain", "--", "tools", "edgelab")), summary=summ)
     raw = json.dumps(body, indent=1, default=str)

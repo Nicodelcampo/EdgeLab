@@ -2616,3 +2616,5 @@ Manifiesto `docs/research/MANIFIESTO_AGOTAMIENTO_EN_EXTREMO_20260925.md`: 24 cel
 ## P-95 — RETRO-PIV: comprar el retroceso tras un extremo confirmado (propuesto 25/09)
 
 Manifiesto `docs/research/MANIFIESTO_COMPRAR_RETROCESO_20260925.md`. Sale del hallazgo lateral de AGOT-EXT; es una **confirmación fuera de muestra** (abr–jun 2026), con 2 pruebas y Bonferroni. Requiere: OK de Nico (STOP), spec confirmada en revisión ciega y campaña en el Brain. Antes de abrir la reserva hay que reproducir el número de origen en exploración.
+
+**Actualización 25/09 (TBZ-E2 en ES medido):** 0 sugerencias en 48 celdas. El precio no cruza la franja más rápido que la geometría sola (acierto 0,4–2,9 pts por debajo de N1), y las franjas TBZ se revierten menos que un tramo cualquiera del mismo ancho. Patinaje muerto en su alcance declarado. MES en curso (apoyo).
