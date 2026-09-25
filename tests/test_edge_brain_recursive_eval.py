@@ -74,14 +74,17 @@ def test_rejects_budget_drift_and_safety_regression():
 
 def test_rejects_mismatched_or_insufficient_or_overlapping_eval_sets():
     base = pairs("1" * 64, {"s1": True, "s2": True}, "selection") + pairs("1" * 64, {"h1": True, "h2": True}, "holdout")
+    new = pairs("2" * 64, {"s1": True, "s2": True}, "selection") + pairs("2" * 64, {"h1": True, "h2": True}, "holdout")
     with pytest.raises(ValueError, match="exactly paired"):
-        assess_rewrite(PROTOCOL, base, base[:-1])
+        assess_rewrite(PROTOCOL, base, new[:-1])
     with pytest.raises(ValueError, match="disjoint"):
-        overlap = pairs("1" * 64, {"same1": True, "same2": True}, "selection") + pairs("1" * 64, {"same1": True, "same2": True}, "holdout")
-        assess_rewrite(PROTOCOL, overlap, overlap)
+        overlap_base = pairs("1" * 64, {"same1": True, "same2": True}, "selection") + pairs("1" * 64, {"same1": True, "same2": True}, "holdout")
+        overlap_candidate = pairs("2" * 64, {"same1": True, "same2": True}, "selection") + pairs("2" * 64, {"same1": True, "same2": True}, "holdout")
+        assess_rewrite(PROTOCOL, overlap_base, overlap_candidate)
     with pytest.raises(ValueError, match="insufficient"):
-        few = pairs("1" * 64, {"s1": True}, "selection") + pairs("1" * 64, {"h1": True}, "holdout")
-        assess_rewrite(PROTOCOL, few, few)
+        few_base = pairs("1" * 64, {"s1": True}, "selection") + pairs("1" * 64, {"h1": True}, "holdout")
+        few_candidate = pairs("2" * 64, {"s1": True}, "selection") + pairs("2" * 64, {"h1": True}, "holdout")
+        assess_rewrite(PROTOCOL, few_base, few_candidate)
 
 
 def test_detects_receipt_or_protocol_tampering_and_mixed_candidate_versions():
