@@ -52,3 +52,12 @@ En lenguaje aplicable es un **barrido con falla de continuación**: ruptura del 
 - hasta dónde tiene que llegar la inversión para contar (el otro borde, el POC, A).
 
 Lecturas candidatas dentro del barrido: volumen y delta **durante** la ruptura (¿agresores que quedan atrapados?), absorción en el extremo del barrido y velocidad del regreso. Es complejo: queda registrado, sin medir.
+
+## Corrección de Nico (25/09): son PARÁMETROS, no definiciones a fijar a ojo
+Lo de «cuántos ticks cuentan como barrido», «en cuánto tiempo vuelve» y «hasta dónde se invierte» no se decide en el visor como un número único: son **parámetros** del detector. Se exponen como controles deslizantes (igual que el diseñador de expansiones) y después se barren como grilla pre-registrada, con el paisaje completo publicado y la multiplicidad contada. Parámetros iniciales del barrido:
+- `sweep_ticks`: penetración más allá del borde de la zona de volumen;
+- `sweep_max_bars` / `sweep_max_s`: tiempo máximo del regreso para que sea «automático»;
+- `reversal_target`: hasta dónde llega la inversión (otro borde de la zona, POC, A, o fracción de W);
+- definición de la zona: inicio, fin, ancho y bins del perfil;
+- lecturas en la ruptura (delta, volumen relativo, absorción, velocidad), como descriptores y no como filtros elegidos a mano.
+En el visor, Nico elige qué rangos tiene sentido explorar; la medición barre esos rangos, no un valor elegido.
