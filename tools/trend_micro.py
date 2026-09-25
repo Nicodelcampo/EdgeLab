@@ -229,8 +229,10 @@ def run_session(args):
             if i_in >= len(ts):
                 continue
             entry_ref = int(ask[i_in] if d == 1 else bid[i_in])
-            risk = max(d * (entry_ref - stop), 2)
-            st = entry_ref - d * risk
+            if d * (entry_ref - stop) < 2:
+                continue                                    # la señal ya se invalidó antes de poder entrar
+            risk = int(d * (entry_ref - stop))
+            st = stop
             for mlt in MULTS:
                 target = entry_ref + d * mlt * risk
                 r = simulate(ts, px, bid, ask, t_in, d, st, target, s["end"], cfg["comm"])
