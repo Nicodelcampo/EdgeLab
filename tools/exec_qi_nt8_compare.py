@@ -60,6 +60,8 @@ def main(argv=None):
     a = ap.parse_args(argv)
     files = sorted(glob.glob(a.csv))
     D = pd.concat([pd.read_csv(f) for f in files], ignore_index=True)
+    n0 = len(D)                                                  # re-arranques de Playback repiten decisiones: queda la última
+    D = D.drop_duplicates(subset=["account", "instrument", "decision_time"], keep="last").reset_index(drop=True)
     D["tick"] = D.tick_size
     D["mid0"] = (D.bid + D.ask) / 2
     D["cost"] = D.dir * (D.fill_price - D.mid0) / D.tick                     # ticks, positivo = costo
@@ -68,7 +70,7 @@ def main(argv=None):
     D["day"] = D.decision_time.str.slice(0, 10)
     if D.day.nunique() < 5:                                   # con pocos días el bloque es la hora (declarado en el protocolo)
         D["day"] = D.decision_time.str.slice(0, 13)
-    out = {"files": files, "n": int(len(D))}
+    out = {"files": files, "n": int(len(D)), "duplicados_descartados": int(n0 - len(D))}
     for acct, G in D.groupby("account"):
         res = {}
         for qb in ["contra", "neutral", "a_favor", "todos"]:
