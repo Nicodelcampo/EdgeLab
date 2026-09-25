@@ -61,3 +61,19 @@ dispara la entrada, con TP de 3 ticks.
 - Miles de celdas sobre los mismos datos: exploración; FDR y reserva de abr–jun.
 - Celdas anidadas (p, r, D comparten disparos): no son independientes; el FDR es orientativo.
 - El fill realista sin QI es el lado conservador de EXEC-QI (ES: +0,12 vs +0,18 t/lado con QI).
+
+## 8. Enmienda — iteración 2 (25/09, después de ver 46 sesiones jul–sep 2025, corrida local)
+
+**Qué se vio:** con ejecución perfecta al precio de trade, «sigue» con r >= 1 da ~+5,5 pp sobre 50 % y «rebota» con r = 0
+~+4,7 pp, pero el **fantasma da lo mismo o más** (+6,5 a +8 pp): es rebote bid/ask de los precios de trade, genérico, no de
+la zona (real − fantasma ≈ 0). Realista: todas las celdas negativas (media −1,6 t, mejor −0,63). Una celda pasa todo
+(mb40_mw12, B, D 8, p 0,75W, r 1, sigue: 54,8 % vs fantasma 49,5 %, n 1.506), a verificar en la muestra completa.
+
+**Cambios (no eligen celdas; corrigen la medida):**
+1. Nueva ejecución **perfecta sobre el precio medio** (bid+ask)/2: entrada en el medio del disparo, TP/SL por toque del medio.
+   Pasa a ser la **familia primaria** (SL = 3). La perfecta al precio de trade queda como descriptiva. Verificada: con
+   bid/ask simétricos alrededor del trade da idéntico a la de trade en las 30.350 celdas.
+2. **3 fantasmas por zona** (antes 1), para bajar el ruido del nulo.
+3. Paralelo por sesión (4 núcleos). Semilla por sesión.
+
+La corrida 1 (kernel `edgelab-tbzx-r3`) se conserva como referencia; la 2 corre como `edgelab-tbzx-r3-v2`.

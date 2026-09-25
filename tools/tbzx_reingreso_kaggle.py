@@ -41,12 +41,13 @@ HOLD_S = 300         # salida por tiempo
 LAT_NS = 250_000_000
 PASS_T_S = 30        # ventana de la límite pasiva
 COMM = 0.2           # ticks por lado (ES)
-EXECS = ("perfecta", "realista", "agresiva")
+EXECS = ("perfecta", "realista", "agresiva", "perfecta_mid")
 MIN_ZONES_PER_SESS = 2.0
 MIN_N = 100
 N_BOOT = 1000
 SEED = 20260925
 TOD_TOL_S = 900
+N_PH = 3             # fantasmas por zona (iteración 2)
 
 NC, NSIDE, ND, NR, NDIR, NSL, NEX, NNULL = len(GRID), 2, len(DS), len(RS), 2, len(SLS), len(EXECS), 2
 SHAPE = (NC, NSIDE, ND, NP, NR, NDIR, NSL, NEX, NNULL)
@@ -299,10 +300,11 @@ def exits(ts, px, bid, ask, k0, E, q, SLs, tp, hold_ns, perfect, comm, pnl, hit,
 
 
 @njit(cache=True)
-def simulate(ts, px, bid, ask, k_t, lvl, up, SLs, tp, hold_ns, lat_ns, pass_ns, comm):
+def simulate(ts, px, bid, ask, mid2, k_t, lvl, up, SLs, tp, hold_ns, lat_ns, pass_ns, comm):
     """pnl/hit [nSL, dir(0=sigue,1=rebota), exec(0=perfecta,1=realista,2=agresiva)]."""
     nS = len(SLs)
-    pnl = np.zeros((nS, 2, 3)); hit = np.zeros((nS, 2, 3))
+    pnl = np.zeros((nS, 2, 4)); hit = np.zeros((nS, 2, 4))
+    SL2 = SLs * 2
     n = len(px)
     ka = k_t
     while ka + 1 < n and ts[ka] < ts[k_t] + lat_ns:
@@ -312,6 +314,8 @@ def simulate(ts, px, bid, ask, k_t, lvl, up, SLs, tp, hold_ns, lat_ns, pass_ns, 
         # perfecta = sin slippage al precio del trade que dispara (no al nivel: si el trade lo saltó, entrar en el
         # nivel regala ticks; detectado en la prueba sintética)
         exits(ts, px, bid, ask, k_t, px[k_t], q, SLs, tp, hold_ns, True, 0.0, pnl, hit, 0, idir)
+        # perfecta sobre el precio medio (en medios ticks): sin rebote bid/ask (iteración 2)
+        exits(ts, mid2, bid, ask, k_t, mid2[k_t], q, SL2, 2 * tp, hold_ns, True, 0.0, pnl, hit, 3, idir)
         Ea = ask[ka] if q > 0 else bid[ka]
         exits(ts, px, bid, ask, ka, Ea, q, SLs, tp, hold_ns, False, comm, pnl, hit, 2, idir)
         L = bid[ka] if q > 0 else ask[ka]
@@ -328,15 +332,19 @@ def simulate(ts, px, bid, ask, k_t, lvl, up, SLs, tp, hold_ns, lat_ns, pass_ns, 
             kc = min(k, n - 1)
             Ec = ask[kc] if q > 0 else bid[kc]
             exits(ts, px, bid, ask, kc, Ec, q, SLs, tp, hold_ns, False, comm, pnl, hit, 1, idir)
+    for i in range(nS):
+        for j in range(2):
+            pnl[i, j, 3] /= 2.0
     return pnl, hit
 
 
 @njit(cache=True)
 def simulate_many(ts, px, bid, ask, TR, SLs, tp, hold_ns, lat_ns, pass_ns, comm):
     m = len(TR)
-    P = np.zeros((m, len(SLs), 2, 3)); Hh = np.zeros((m, len(SLs), 2, 3))
+    P = np.zeros((m, len(SLs), 2, 4)); Hh = np.zeros((m, len(SLs), 2, 4))
+    mid2 = bid + ask
     for i in range(m):
-        pnl, hit = simulate(ts, px, bid, ask, TR[i, 5], TR[i, 6], TR[i, 4] == 1, SLs, tp, hold_ns, lat_ns, pass_ns, comm)
+        pnl, hit = simulate(ts, px, bid, ask, mid2, TR[i, 5], TR[i, 6], TR[i, 4] == 1, SLs, tp, hold_ns, lat_ns, pass_ns, comm)
         P[i] = pnl; Hh[i] = hit
     return P, Hh
 
@@ -347,57 +355,78 @@ def depths(W):
 
 
 # ------------------------------------------------------------------ corrida
+_SS = []
+_TODS = []
+
+
+def _session(si):
+    """Una sesión: zonas de las 12 configs, un fantasma por zona, disparos y simulación. Semilla por sesión."""
+    ss, tods = _SS, _TODS
+    S = len(ss); s = ss[si]
+    rng = np.random.default_rng(SEED + si)
+    strides = np.array([int(np.prod(SHAPE[i + 1:])) for i in range(len(SHAPE))], np.int64)
+    ii = np.indices((NSL, NDIR, NEX)).reshape(3, -1)   # orden del bloque de simulate
+    row = np.zeros((NCELL, 3), np.float32)             # n, suma pnl, suma aciertos
+    zc = np.zeros(NC, np.int64); nt = np.zeros((NC, NNULL), np.int64)
+    ts, px, bid, ask = s["ts"], s["px"], s["bid"], s["ask"]
+    t, H, L, C, V, bend = bars25(s)
+    for ci, (mb, mw) in enumerate(GRID):
+        Z = detect(t, H, L, C, V, mb, mw, E0, R_END)
+        zc[ci] = len(Z)
+        for z in Z:
+            d, a, b, j = int(z[0]), int(z[1]), int(z[2]), int(z[5])
+            lo, hi = min(a, b), max(a, b)
+            k0 = int(bend[j])
+            dep = depths(hi - lo)
+            # real y un fantasma: otra sesión, misma hora ET +-15 min, geometría relativa al último trade
+            cands = [(0, ts, px, bid, ask, k0, lo, hi)]
+            for _ in range(8 * N_PH):
+                if len(cands) > N_PH:
+                    break
+                oi = int(rng.integers(0, S))
+                if oi == si:
+                    continue
+                tod = (ts[k0] // NS + s["off"]) % 86400 + int(rng.integers(-TOD_TOL_S, TOD_TOL_S + 1))
+                ko = int(np.argmin(np.abs(tods[oi] - tod)))
+                if abs(int(tods[oi][ko]) - tod) > TOD_TOL_S or ko >= len(ss[oi]["px"]) - 100:
+                    continue
+                o = ss[oi]; sh = int(o["px"][ko]) - int(px[k0])
+                cands.append((1, o["ts"], o["px"], o["bid"], o["ask"], ko, lo + sh, hi + sh))
+            for nul, T_, P_, B_, A_, kk, l_, h_ in cands:
+                TR = zone_triggers(T_, P_, kk, l_, h_, d, dep, DS, RS, HZ_S * NS, WAIT_S * NS)
+                nt[ci, nul] += len(TR)
+                if len(TR) == 0:
+                    continue
+                pnl, hit = simulate_many(T_, P_, B_, A_, TR, SLS, TP, HOLD_S * NS, LAT_NS, PASS_T_S * NS, COMM)
+                base = (ci * strides[0] + (1 - TR[:, 3]) * strides[1] + TR[:, 0] * strides[2]
+                        + TR[:, 1] * strides[3] + TR[:, 2] * strides[4])
+                cell = (base[:, None] + (ii[1] * strides[5] + ii[0] * strides[6] + ii[2] * strides[7] + nul)[None, :]).ravel()
+                np.add.at(row[:, 0], cell, 1)
+                np.add.at(row[:, 1], cell, pnl.reshape(-1))
+                np.add.at(row[:, 2], cell, hit.reshape(-1))
+    return si, row, zc, nt
+
+
 def run():
+    global _SS, _TODS
     out_dir = os.environ.get("R3_OUT", "/kaggle/working")
     os.makedirs(out_dir, exist_ok=True)
     t0 = time.time()
     ss = load_sessions(int(os.environ.get("R3_MAXSESS", "0")))
     S = len(ss)
     print("sesiones", S, ss[0]["td"], ss[-1]["td"], f"{time.time() - t0:.0f}s", flush=True)
-    rng = np.random.default_rng(SEED)
-    tods = [((s["ts"] // NS + s["off"]) % 86400) for s in ss]
-    agg = np.zeros((S, NCELL, 3), np.float32)       # n, suma pnl, suma aciertos
+    _SS = ss
+    _TODS = [((s["ts"] // NS + s["off"]) % 86400) for s in ss]
+    agg = np.zeros((S, NCELL, 3), np.float32)
     zcount = np.zeros((S, NC), np.int64)
     ntrig = np.zeros((S, NC, NNULL), np.int64)
-    strides = np.array([int(np.prod(SHAPE[i + 1:])) for i in range(len(SHAPE))], np.int64)
-    ii = np.indices((NSL, NDIR, NEX)).reshape(3, -1)   # orden del bloque de simulate
-    for si, s in enumerate(ss):
-        ts, px, bid, ask = s["ts"], s["px"], s["bid"], s["ask"]
-        t, H, L, C, V, bend = bars25(s)
-        for ci, (mb, mw) in enumerate(GRID):
-            Z = detect(t, H, L, C, V, mb, mw, E0, R_END)
-            zcount[si, ci] = len(Z)
-            for z in Z:
-                d, a, b, j = int(z[0]), int(z[1]), int(z[2]), int(z[5])
-                lo, hi = min(a, b), max(a, b)
-                k0 = int(bend[j])
-                dep = depths(hi - lo)
-                # real y un fantasma: otra sesión, misma hora ET +-15 min, geometría relativa al último trade
-                cands = [(0, ts, px, bid, ask, k0, lo, hi)]
-                for _ in range(8):
-                    oi = int(rng.integers(0, S))
-                    if oi == si:
-                        continue
-                    tod = (ts[k0] // NS + s["off"]) % 86400 + int(rng.integers(-TOD_TOL_S, TOD_TOL_S + 1))
-                    ko = int(np.argmin(np.abs(tods[oi] - tod)))
-                    if abs(int(tods[oi][ko]) - tod) > TOD_TOL_S or ko >= len(ss[oi]["px"]) - 100:
-                        continue
-                    o = ss[oi]; sh = int(o["px"][ko]) - int(px[k0])
-                    cands.append((1, o["ts"], o["px"], o["bid"], o["ask"], ko, lo + sh, hi + sh))
-                    break
-                for nul, T_, P_, B_, A_, kk, l_, h_ in cands:
-                    TR = zone_triggers(T_, P_, kk, l_, h_, d, dep, DS, RS, HZ_S * NS, WAIT_S * NS)
-                    ntrig[si, ci, nul] += len(TR)
-                    if len(TR) == 0:
-                        continue
-                    pnl, hit = simulate_many(T_, P_, B_, A_, TR, SLS, TP, HOLD_S * NS, LAT_NS, PASS_T_S * NS, COMM)
-                    base = (ci * strides[0] + (1 - TR[:, 3]) * strides[1] + TR[:, 0] * strides[2]
-                            + TR[:, 1] * strides[3] + TR[:, 2] * strides[4])
-                    cell = (base[:, None] + (ii[1] * strides[5] + ii[0] * strides[6] + ii[2] * strides[7] + nul)[None, :]).ravel()
-                    np.add.at(agg[si, :, 0], cell, 1)
-                    np.add.at(agg[si, :, 1], cell, pnl.reshape(-1))
-                    np.add.at(agg[si, :, 2], cell, hit.reshape(-1))
-        print(si, s["td"], "zonas", zcount[si].sum(), "disparos", ntrig[si].sum(), f"{time.time() - t0:.0f}s", flush=True)
+    workers = int(os.environ.get("R3_WORKERS", str(os.cpu_count() or 1)))
+    _session(0)   # compila numba antes de forkear
+    import multiprocessing as mp
+    with mp.get_context("fork").Pool(workers) as pool:
+        for si, row, zc, nt in pool.imap_unordered(_session, range(S)):
+            agg[si] = row; zcount[si] = zc; ntrig[si] = nt
+            print(si, ss[si]["td"], "zonas", zc.sum(), "disparos", nt.sum(), f"{time.time() - t0:.0f}s", flush=True)
     np.savez_compressed(f"{out_dir}/r3_agg.npz", agg=agg, zcount=zcount, ntrig=ntrig,
                         tds=np.array([s["td"] for s in ss]))
     report(agg, zcount, ntrig, [s["td"] for s in ss], out_dir)
@@ -471,7 +500,7 @@ def report(agg, zcount, ntrig, tds, out_dir):
                 meses_pos=float(mpos[j])))
     D = pd.DataFrame(rows)
     D["fdr"] = False; D["sugerencia"] = False
-    prim = (D["exec"] == "perfecta") & (D.SL == 3)
+    prim = (D["exec"] == "perfecta_mid") & (D.SL == 3)   # iteración 2: primaria sobre el medio
     D.loc[prim, "fdr"] = bh(np.maximum(D.loc[prim, "p_N1"], D.loc[prim, "p_fant"].fillna(1)), 0.10)
     sec = D["exec"] == "realista"
     D.loc[sec, "fdr"] = bh(D.loc[sec, "p_pnl"], 0.10)
