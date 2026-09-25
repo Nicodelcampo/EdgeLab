@@ -111,3 +111,24 @@ Autorizada por Nico: «iterá sobre todo lo que tenga riesgo de engañar, y sobr
 - **B3. Réplica en NQ** (exploración jul-2025 a mar-2026, partición propia `P-TBZX-NQ-EXP`). Grilla `maxBars` ∈ {10, 20, 40} × `minW` ∈ {12, 17, 24, 34, 48, 68}. **Configuración equivalente**, elegida sólo por conteo y sin mirar resultados: `maxBars` = 20 y el `minW` cuya cantidad de franjas por día sea la más cercana a la de ES (20, 17). **Criterio de réplica:** en esa configuración, `llega_A_por_B` y `pen_W` contra N-VOL con el mismo signo que en ES e IC 95 % que excluye 0. El resto de NQ es paisaje descriptivo.
 
 **Multiplicidad:** N-REV es una familia nueva (96 en ES, BH q = 0,10). La réplica de NQ son 2 pruebas pre-registradas. Lo demás es descriptivo.
+
+## 9. Resultado de la iteración 2 (25/09; reporte `artifacts/tbzx/report_iter2.json`, sha `6a6be242886d`, OBS-TBZX-ITER2)
+
+Referencia: ES (20 velas, 17 t). NQ equivalente por conteo: (20 velas, 68 t). `llega_A_por_B` = salió por B y al volver llegó a A.
+
+| | ES real / nulo | NQ real / nulo |
+|---|---|---|
+| contra N-VOL (misma actividad) | 0,139 / 0,086, **+0,053** (+0,042; +0,063) | 0,225 / 0,153, **+0,071** (+0,055; +0,085) |
+| contra N-REV (mismo tamaño, recién dio la vuelta, lento o sucio) | 0,145 / 0,079, **+0,066** (+0,048; +0,085) | 0,229 / 0,237, **−0,007** (−0,030; +0,013) |
+| contra N-VOLSTR (actividad y estiramiento) | 0,132 / 0,109, +0,023 (+0,010; +0,035) | 0,220 / 0,184, +0,036 (+0,018; +0,053) |
+
+- **Réplica pre-registrada (contra N-VOL): PASA** en `llega_A_por_B` y en `pen_W`.
+- **Contra N-REV, NQ NO replica:** en NQ la franja rápida no se distingue de cualquier tramo del mismo tamaño que recién dio la vuelta, y en casi todas las configuraciones queda por debajo. En ES sí se distingue, con 71 de 96 celdas que pasan FDR.
+- **Estiramiento extremo:** el efecto desaparece contra el nulo emparejado por estiramiento en los dos instrumentos (ES −0,012; NQ −0,011). Lo que parecía propio de la franja en contexto estirado es lo que hace cualquier precio igual de estirado. **Descartado como rasgo de la franja.**
+- **Estabilidad (ES contra N-VOL):** positivo en 8 de 9 meses y en las dos mitades; sesiones con real > nulo: 57 %. NQ: negativo en ago–sep, positivo desde oct.
+- **Ventana de penetración:** el signo se mantiene a 20, 50 y 100 velas.
+- **Excursión afuera:** con N-VOLSTR ya no se distingue en ES; en NQ, poco.
+
+**Veredicto de exploración:** el reingreso más hondo y la llegada a A son robustos a la actividad previa en ES y en NQ. En ES son además robustos al estado de reversión, **en NQ no**. El único rasgo que sobrevive a todos los controles es «reingreso hasta A en ES», de unos +5 a +7 puntos. Es chico, depende del instrumento y no hay nada de ejecución. El contexto de estiramiento queda descartado.
+
+**Integridad pendiente:** la selección de contrato por sesión usa la regla «más ticks el mismo día» y no la canónica (`contract_regime`, líder de volumen de la sesión anterior). Difieren en 3 sesiones de ES y 2 de NQ dentro de la exploración, siempre el día del vencimiento. Se corrige antes de cualquier confirmación.
