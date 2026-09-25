@@ -249,6 +249,9 @@ def step_parity():
 def declare_partition(keys):
     """Partición de exploración de esta familia, declarada en su propio ledger ANTES de medir."""
     from edgelab.edge_brain.episode_logger import measurement_episode
+    from edgelab.edge_brain.hippocampus_store import DurableHippocampus
+    if LEDGER.exists() and PART in DurableHippocampus(LEDGER).partitions:
+        return                                                   # ya declarada (antes de la primera medición)
     with measurement_episode(LEDGER, "EP-TBZX-PARTICION-20260925", goal="declarar partición TBZX antes de medir",
                              recorded_by="tools/tbzx_espejo.py measure", repo=REPO, prereg_ref=DOC) as ep:
         if PART not in ep.store.partitions:
@@ -285,6 +288,33 @@ def vol_phantom(S, keys, s, mb, clock, rg0, sec0, rng):
     return None, None
 
 
+def stretch_context(x):
+    """Estiramiento causal en cada vela (pedido de Nico, 25/09): distancia del cierre a EMA20, EMA50 y SMA200 de 1 min
+    y al VWAP de la sesión, en unidades de ATR14 de 1 min. Las medias usan sólo minutos YA CERRADOS antes de la vela.
+    El VWAP usa los cierres de las velas de 25 ticks (aproximación documentada: las velas no traen el precio medio)."""
+    t, c, h, l, v = x["t"], x["c"].astype(float), x["h"].astype(float), x["l"].astype(float), x["v"]
+    m = (t // 60).astype(np.int64)
+    last = np.r_[m[1:] != m[:-1], True]
+    mm = m[last]; mc = c[last]
+    mh = pd.Series(h).groupby(m).max().to_numpy(); ml = pd.Series(l).groupby(m).min().to_numpy()
+    prev = np.r_[mc[0], mc[:-1]]
+    tr = np.maximum(mh - ml, np.maximum(np.abs(mh - prev), np.abs(ml - prev)))
+    atr = pd.Series(tr).ewm(alpha=1 / 14, adjust=False).mean().to_numpy()
+    e20 = pd.Series(mc).ewm(span=20, adjust=False).mean().to_numpy()
+    e50 = pd.Series(mc).ewm(span=50, adjust=False).mean().to_numpy()
+    s200 = pd.Series(mc).rolling(200).mean().to_numpy()
+    k = np.searchsorted(mm, m, "left") - 1                     # último minuto cerrado antes de la vela
+    ok = k >= 0
+    kk = np.where(ok, k, 0)
+    vw = np.cumsum(c * v) / np.maximum(np.cumsum(v), 1)
+    out = {}
+    for name, ma in (("ema20", e20), ("ema50", e50), ("sma200", s200)):
+        out[name] = np.where(ok, (c - ma[kk]) / np.maximum(atr[kk], 1), np.nan)
+        out[name][k < 13] = np.nan                               # ATR sin historia
+    out["vwap"] = (c - vw) / np.where(ok, np.maximum(atr[kk], 1), np.nan)
+    return out
+
+
 def step_measure():
     S = _load_all()
     keys = sorted(S)
@@ -293,6 +323,7 @@ def step_measure():
     for k in keys:
         for mb in sorted({g[0] for g in GRID}):
             S[k][f"rg{mb}"], S[k][f"sec{mb}"] = trailing(S[k], mb)
+        S[k]["str"] = stretch_context(S[k])
     rng = np.random.default_rng(SEED)
     vol_rng = np.random.default_rng(SEED + 1)
     rows = []
@@ -315,7 +346,9 @@ def step_measure():
                             imp_secs=float(x["t"][iext] - x["t"][i0]), imp_vol=float(vimp), imp_vpt=float(vimp) / W,
                             imp_eff=float(abs(x["c"][iext] - x["c"][i0]) / max(np.abs(np.diff(x["c"][i0:iext + 1])).sum(), 1)),
                             end_why=int(why), t_end=float(x["t"][iend]), clock=int(x["clock"][iend]),
-                            phase=TB.phase_et(int(x["t"][iend] * NS)))
+                            phase=TB.phase_et(int(x["t"][iend] * NS)),
+                            # estiramiento EN LA DIRECCIÓN del impulso al inicio (i0): > 0 = compra ya sobre la media
+                            **{f"str_{nm}": float(d * x["str"][nm][i0]) for nm in ("ema20", "ema50", "sma200", "vwap")})
                 real = path_metrics(x["t"], x["h"], x["l"], x["c"], x["v"], iend, d, A, B, W, H, PEN_BARS)
                 rows.append(dict(base, kind="real", ph_session=s, **dict(zip(MET, real))))
                 # fantasmas: otra sesión, misma hora del día, misma geometría relativa al cierre de iend
@@ -395,6 +428,8 @@ def _bh(p, q=0.10):
 
 def step_report():
     D = pd.read_parquet(OUT / "measure_ES.parquet")
+    if not (D.kind == "fantasma_vol").any():
+        raise SystemExit("measure_ES.parquet no tiene el nulo N-VOL: correr `measure` antes del reporte")
     D["out_vol_rel"] = D.out_vol / D.imp_vol.clip(lower=1)
     rng = np.random.default_rng(SEED)
     cells = []
@@ -417,6 +452,10 @@ def step_report():
     # combinaciones: cortes descriptivos sobre la configuración de Nico
     g = D[D.cfg == f"B{NICO[0]}_W{NICO[1]}"].copy()
     r = g[g.kind == "real"]
+    for col in ("str_ema20", "str_ema50", "str_sma200", "str_vwap"):
+        f = g.groupby(["session", "band"])[col].transform("first")
+        q = f[g.kind == "real"].quantile([1 / 3, 2 / 3, 0.9]).to_numpy()
+        g[f"{col}_q"] = np.select([f.isna(), f >= q[2], f >= q[1], f >= q[0]], ["nan", "extremo_d10", "alto", "medio"], "bajo")
     for col in ("imp_vpt", "imp_bars", "imp_eff", "W"):
         try:
             g[f"{col}_q"] = g.groupby(["session", "band"])[col].transform("first")
@@ -424,7 +463,8 @@ def step_report():
         except ValueError:
             g[f"{col}_q"] = "único"
     cuts = {}
-    for cut in ("phase", "imp_vpt_q", "imp_bars_q", "imp_eff_q", "W_q", "dir"):
+    for cut in ("phase", "imp_vpt_q", "imp_bars_q", "imp_eff_q", "W_q", "dir",
+                "str_ema20_q", "str_ema50_q", "str_sma200_q", "str_vwap_q"):
         for lvl, gg in g.groupby(cut):
             row = {}
             for col, lab in PRIMARY + [("exc_ticks", "excursión (t)"), ("out_secs", "segundos afuera"), ("reach_mirror", "espejo completo")]:
@@ -451,9 +491,9 @@ def step_report():
     (OUT / "report_ES.json").write_text(raw, encoding="utf-8")
     sha = hashlib.sha256(raw.encode()).hexdigest()
     from edgelab.edge_brain.episode_logger import measurement_episode
-    with measurement_episode(LEDGER, "EP-TBZX-ESPEJO-ES-20260925B", goal="TBZX: afuera y reingreso vs fantasma misma hora y fantasma misma actividad (N-VOL)",
+    with measurement_episode(LEDGER, "EP-TBZX-ESPEJO-ES-20260925D", goal="TBZX: afuera y reingreso vs fantasma misma hora y fantasma misma actividad (N-VOL)",
                              recorded_by="tools/tbzx_espejo.py report", repo=REPO, prereg_ref=DOC) as ep:
-        ep.store.record_observation("OBS-TBZX-ESPEJO-ES-V2", "franja TBZX: afuera y reingreso, 2 nulos", "RESPONSE_PROFILE", [PART],
+        ep.store.record_observation("OBS-TBZX-ESPEJO-ES-V4", "franja TBZX: afuera y reingreso, 2 nulos", "RESPONSE_PROFILE", [PART],
                                     {f"{c['cfg']}|{c['null']}|{c['metric']}": (c.get("diff"), c.get("fdr")) for c in cells},
                                     {"horizon_bars": H, "phantoms": N_PH}, sha, design="EVENT_VS_CONTROL", control_audit=audit)
     print(json.dumps(dict(celdas=len(ok), fdr={n: int(sum(c["fdr"] for c in ok if c["null"] == n)) for n in ("fantasma", "fantasma_vol")},

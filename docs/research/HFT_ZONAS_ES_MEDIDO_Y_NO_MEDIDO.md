@@ -359,3 +359,8 @@ aquellos números compara dos poblaciones distintas.
 
 - **MEDIDO:** la franja de expansión como área de patinaje (E0–E3 × 4 detecciones × target A/HVN; hacia B como secundaria) en ES, 181 sesiones: **0 sugerencias**. El acierto hacia A queda levemente **por debajo** de la geometría sola, y las franjas TBZ se revierten menos que un tramo común. Ver `TBZ_E2_PARAMETRIZACION_HOLISTICA_20260924.md` §8.
 - **NO MEDIDO:** detectores por velocidad y volumen relativo como detección primaria; descriptores G2–G5 como filtros pre-registrados; L2 (G7); MES (en curso).
+
+## Anexo 2026-09-25 (4): TBZX (impulsos por velas y distancia, afuera y reingreso) en ES
+
+- **MEDIDO (exploración, 181 sesiones, 12 configuraciones, dos nulos):** el tiempo y el volumen afuera de la franja no se distinguen del nulo con la misma actividad previa (N-VOL). La excursión afuera, la penetración al reingresar, su velocidad y la llegada al borde opuesto A sí: en la configuración de Nico, 0,152 contra 0,094 llegan a A. Contra el fantasma a la misma hora el efecto era el doble: la mitad era volatilidad posterior al impulso. Más fuerte con estiramiento extremo respecto de las medias, poco volumen por tick y fuera de RTH (descriptivo). `docs/research/MANIFIESTO_TBZX_ESPEJO_20260925.md` §7.
+- **NO MEDIDO:** nulo con el mismo estado de reversión; cortes emparejados por estiramiento; NQ; reserva abr–jun; ejecución.
