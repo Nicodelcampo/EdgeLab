@@ -36,6 +36,7 @@ from edgelab.research.tbz_bands import causal_sigma, expansion_bands  # noqa: E4
 
 BUNDLES = REPO / "viewer" / "nt8_bridge" / "bundles"
 OUT = REPO / "artifacts" / "tbz_e2"
+LEDGER_TBZ = REPO / "artifacts" / "hippocampus" / "tbz_20260924.jsonl"
 DOC = "docs/research/TBZ_E2_PARAMETRIZACION_HOLISTICA_20260924.md"
 HOLDOUT_NS = 1_782_864_000 * 1_000_000_000          # 2026-07-01T00:00Z (frontera dura; los bundles ya la cumplen)
 GRID = [(20, 2.5), (20, 4.0), (60, 2.5), (60, 4.0)]  # G1 primaria (la de E1)
@@ -677,7 +678,7 @@ def step_report(inst):
     raw = json.dumps(body, indent=1, default=float)
     (OUT / f"report_E2b_{inst}.json").write_text(raw, encoding="utf-8")
     sha = hashlib.sha256(raw.encode()).hexdigest()
-    LED = REPO / "artifacts" / "hippocampus" / "tbz_20260924.jsonl"
+    LED = LEDGER_TBZ
     with measurement_episode(LED, f"EP-TBZ-E2B-{inst}-20260924", goal="TBZ-E2b: patinaje en la franja, 32+16 celdas y 3 nulos",
                              recorded_by="tools/tbz_e2.py report", repo=REPO, prereg_ref=DOC) as ep:
         ep.store.record_observation(f"OBS-TBZ-E2B-{inst}", "expansión como área de patinaje (E2b)", "RESPONSE_PROFILE",
