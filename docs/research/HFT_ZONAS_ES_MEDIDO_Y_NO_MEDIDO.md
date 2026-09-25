@@ -348,3 +348,9 @@ aquellos números compara dos poblaciones distintas.
 - **MEDIDO:** rupturas B1, B2 y B3 × filtros F0 y F3 (y F1/F2 en NQ) × 2R/4R, en ES y NQ, jul-2025 a mar-2026. **0 sugerencias.** Ver `MANIFIESTO_TREND_MICRO_20260924.md` §8.
 - **MEDIDO:** la continuación de una expansión (B3) llega al target menos que un camino aleatorio (ES −3,4 pts, NQ −6,2 pts).
 - **NO MEDIDO:** F1/F2 con muestra suficiente; ES con agresor válido; la pista NQ B2 F3 pre-registrada sola.
+
+## Anexo 2026-09-25 (2): AGOT-EXT
+
+- **MEDIDO:** divergencia de RSI (y de delta en NQ) en extremos de pivote, ES y NQ, 24 celdas: **0 sugerencias**. En la ruptura la divergencia **empeora** ir contra el extremo; en la confirmación no agrega nada. Ver `MANIFIESTO_AGOTAMIENTO_EN_EXTREMO_20260925.md` §10.
+- **MEDIDO (lateral):** ir contra un extremo nuevo confirmado acierta menos que el azar en ES y NQ (persistencia a la escala del pivote).
+- **NO MEDIDO:** la divergencia como salida o como filtro de otra familia; la pista "comprar el retroceso tras un máximo confirmado" pre-registrada sola.

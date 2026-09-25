@@ -2610,3 +2610,5 @@ Validación contra el L2 en el solapamiento pre-holdout (NQ 25–30/06, ES 29–
 ## P-94 — AGOT-EXT: agotamiento en extremo (divergencia RSI y de delta), propuesto 25/09
 
 Manifiesto `docs/research/MANIFIESTO_AGOTAMIENTO_EN_EXTREMO_20260925.md`: 24 celdas (ES 8, NQ 16). Decide la **sinergia** (extremo nuevo con divergencia contra sin divergencia), además de N1 y costos. Requiere dos cosas de Nico en el mismo OK: (1) STOP, porque es búsqueda sobre P&L; (2) **levantar F9 para esta familia**, porque abre un indicador nuevo.
+
+**Actualización 25/09 (AGOT-EXT medido):** 0 sugerencias. La divergencia del RSI empeora ir contra el extremo en la ruptura (NQ −0,13 R y ES −0,05 R de sinergia) y no agrega nada en la confirmación; la de delta, tampoco. Hallazgo lateral: ir contra un extremo confirmado acierta menos que el azar en ES y NQ. F9 vuelve a quedar pausada para otros indicadores.

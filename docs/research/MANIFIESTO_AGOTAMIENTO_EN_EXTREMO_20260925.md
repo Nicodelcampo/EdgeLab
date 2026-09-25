@@ -118,3 +118,34 @@ A lo sumo **3** pasan a `P-AGOT-*-CONF`, con una spec en revisión ciega y una c
 ## 9. Herramienta (reutilizable)
 
 `tools/agotamiento.py` (`declare` → `run` → `report`): recibe el instrumento, las sesiones y la resolución. Reusa el zigzag de `tools/tbz_e2.py`, la simulación con las convenciones de N1 y el esqueleto de reporte de TREND-MICRO. Se escribe **después** del OK.
+
+## 10. Resultado (25/09, madrugada): ninguna sugerencia; la divergencia no anticipa la vuelta
+
+Reporte `artifacts/agot_ext/report.json` (sha `381d3cc81039…`). Ledger `artifacts/hippocampus/agot_ext_20260925.jsonl`. Exploración jul-2025 a mar-2026: NQ en 171 sesiones y ES en ~180. **24 celdas, 0 sugerencias.** Las 24 pasan el FDR, todas por ser **negativas**.
+
+**La pregunta central: ¿la divergencia agrega algo a "hizo un extremo nuevo"? (sinergia, R neto)**
+
+| Momento | Resolución | NQ D-RSI | NQ D-DELTA | ES D-RSI |
+|---|---|---|---|---|
+| En la ruptura (V-RUP) | 1 min | **−0,13** [−0,16; −0,10] | −0,00 [−0,03; +0,02] | **−0,05** [−0,08; −0,02] |
+| En la ruptura (V-RUP) | 5 min | **−0,10** [−0,17; −0,03] | −0,04 [−0,09; +0,01] | −0,02 [−0,10; +0,06] |
+| En la confirmación (V-CONF) | 1 min | +0,01 [−0,01; +0,03] | −0,02 [−0,05; +0,00] | **+0,03** [+0,01; +0,06] |
+| En la confirmación (V-CONF) | 5 min | −0,02 [−0,07; +0,03] | +0,01 [−0,05; +0,06] | −0,01 [−0,06; +0,04] |
+
+(Target 1R; 2R da lo mismo. Sensibilidad: RSI 7 y 21 dan el mismo signo en la ruptura: NQ −0,17 y −0,11; ES −0,08 y −0,04.)
+
+**Lectura:**
+1. **En la ruptura, la divergencia del RSI empeora ir contra el extremo, en los dos instrumentos**, y es robusta al largo del RSI. Es lo contrario de lo que promete el folklore.
+2. **En la confirmación no agrega nada**, salvo +0,03 R en ES 1 min. Ese valor es chico y la celda sigue perdiendo: R −0,17.
+3. **La divergencia de delta (NQ) tampoco agrega nada** en ningún momento ni resolución.
+4. **Hallazgo lateral (ES y NQ): ir contra un extremo nuevo ya confirmado acierta menos que el azar.**
+   - ES 1 min: 0,394 contra N1 0,446 a 1R, y 0,207 contra 0,302 a 2R.
+   - NQ 1 min: 0,43 contra 0,475.
+   - Después de un máximo más alto confirmado (retroceso del 30 %), el precio tiende a volver a buscar el máximo: persistencia a la escala del pivote.
+   - Junto con TREND-MICRO B3 (la continuación en el disparo de una expansión también falla más que el azar), dibuja un patrón de "vender el impulso, comprar el retroceso". **Es una pista descriptiva, no una sugerencia**: invertir las operaciones no da automáticamente una esperanza positiva (cambia la geometría y los costos), y necesitaría su propio pre-registro.
+
+**Alcance de la muerte:**
+- **Muere:** la divergencia de RSI (7, 14 y 21) o de delta como señal para ir contra un extremo nuevo de pivote, en ruptura o en confirmación, en 1 y 5 min, en ES y NQ, jul-2025 a mar-2026, con estas salidas.
+- **No muere:** otros usos de la divergencia (salida de una posición a favor, filtro de otras familias); no se midieron.
+
+**F9:** esta familia la usó y queda cerrada; la pausa sigue para cualquier otro indicador.
