@@ -68,3 +68,11 @@ Política y dirección **no** dependen del QI. El QI se anota y se usa después 
   - Si las reglas de Lucid prohíben estrategias automáticas o tenencias tan cortas, **no se corre ahí**.
 - **Motores simulados:** ninguno modela la cola real. Validan la **dirección** y el **orden de magnitud**, no el número final.
 - **Etapa 2 en vivo:** usa días que después hay que bajar como L2. Caen en el tramo de desarrollo (hasta el 31/10) si se corre antes de noviembre. Después de esa fecha sería holdout L2: **no correr la etapa 2 en noviembre o diciembre** sin decidirlo antes.
+
+## Decisión de Nico (24/09): no se corre en Lucid
+
+Riesgo de romper las reglas de la evaluación. Queda **sólo NT8**:
+- **Playback101** como etapa principal: varios días con L2 ya bajado, comparación exacta contra el modelo.
+- **Sim101** en vivo como chequeo de latencia y feed en vivo. Es el **mismo motor** que Playback, así que no aporta un motor independiente.
+
+Se pierde el motor independiente del prop. La validación de la cola real sigue siendo la etapa 3 (cuenta real con micros).
