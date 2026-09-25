@@ -1,7 +1,7 @@
 # Manifiesto: agotamiento en extremo (familia AGOT-EXT), ES · NQ, 2026-09-25
 
 **North Star:** `ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8`
-**Estado:** PROPUESTO. Es una búsqueda sobre P&L: **STOP, necesita el OK de Nico.**
+**Estado:** **APROBADO** por Nico el 25/09: "OK manifiesto AGOT-EXT, levanto F9, adelante con todo". **F9 queda levantada sólo para esta familia**; para cualquier otro indicador nuevo sigue pausada.
 
 **Excepción a F9, a decidir en el mismo OK.** F9 (indicadores nuevos) está pausada por decisión sellada. Esta familia **abre un indicador nuevo** (RSI y divergencia de delta). Correrla exige levantar la pausa para esta familia y sólo para ella. El argumento está en §1.
 
