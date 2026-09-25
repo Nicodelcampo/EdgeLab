@@ -31,7 +31,7 @@ def receipt(system: str, partition: str, task: str, seed: int, passed: bool,
 
 def protocol(**kwargs):
     values = dict(benchmark_sha256=B, per_trial_budget=10,
-                  minimum_paired_trials_per_partition=2, minimum_holdout_gain=0.25,
+                  minimum_paired_trials_per_partition=2, minimum_development_gain=0.25,
                   maximum_safety_regressions=0)
     values.update(kwargs)
     return create_protocol(**values)
@@ -45,57 +45,58 @@ def pairs(system: str, passed_by_task: dict[str, bool], partition: str):
             for task in passed_by_task for seed in (1, 2)]
 
 
-def test_accepts_only_preregistered_holdout_gain_with_matched_budget():
-    base = pairs("1" * 64, {"s1": False, "s2": True}, "selection") + pairs("1" * 64, {"h1": False, "h2": False}, "holdout")
-    new = pairs("2" * 64, {"s1": True, "s2": True}, "selection") + pairs("2" * 64, {"h1": True, "h2": True}, "holdout")
+def test_nominates_only_preregistered_development_gain_for_final_audit():
+    base = pairs("1" * 64, {"s1": False, "s2": True}, "selection") + pairs("1" * 64, {"d1": False, "d2": False}, "development")
+    new = pairs("2" * 64, {"s1": True, "s2": True}, "selection") + pairs("2" * 64, {"d1": True, "d2": True}, "development")
     result = assess_rewrite(PROTOCOL, base, new)
-    assert result.accepted
-    assert result.holdout_delta == 1.0
+    assert result.eligible_for_final_audit
+    assert result.development_delta == 1.0
     assert result.same_budget
+    assert result.reason == "DEVELOPMENT_GAIN_NOMINATE_FOR_SEALED_AUDIT"
 
 
-def test_selection_improvement_without_holdout_improvement_is_rejected():
-    base = pairs("1" * 64, {"s1": False, "s2": True}, "selection") + pairs("1" * 64, {"h1": True, "h2": True}, "holdout")
-    new = pairs("2" * 64, {"s1": True, "s2": True}, "selection") + pairs("2" * 64, {"h1": True, "h2": False}, "holdout")
+def test_selection_improvement_without_development_improvement_is_rejected():
+    base = pairs("1" * 64, {"s1": False, "s2": True}, "selection") + pairs("1" * 64, {"d1": True, "d2": True}, "development")
+    new = pairs("2" * 64, {"s1": True, "s2": True}, "selection") + pairs("2" * 64, {"d1": True, "d2": False}, "development")
     result = assess_rewrite(PROTOCOL, base, new)
-    assert not result.accepted
-    assert result.reason == "REJECT_NO_HOLDOUT_GAIN_OR_SAFETY_REGRESSION"
+    assert not result.eligible_for_final_audit
+    assert result.reason == "REJECT_NO_DEVELOPMENT_GAIN_OR_SAFETY_REGRESSION"
 
 
 def test_rejects_budget_drift_and_safety_regression():
-    base = pairs("1" * 64, {"s1": True, "s2": True}, "selection") + pairs("1" * 64, {"h1": False, "h2": False}, "holdout")
-    new = pairs("2" * 64, {"s1": True, "s2": True}, "selection") + [receipt("2" * 64, "holdout", "h1", 1, True, safe=False), receipt("2" * 64, "holdout", "h1", 2, True), receipt("2" * 64, "holdout", "h2", 1, True), receipt("2" * 64, "holdout", "h2", 2, True)]
-    assert not assess_rewrite(PROTOCOL, base, new).accepted
+    base = pairs("1" * 64, {"s1": True, "s2": True}, "selection") + pairs("1" * 64, {"d1": False, "d2": False}, "development")
+    new = pairs("2" * 64, {"s1": True, "s2": True}, "selection") + [receipt("2" * 64, "development", "d1", 1, True, safe=False), receipt("2" * 64, "development", "d1", 2, True), receipt("2" * 64, "development", "d2", 1, True), receipt("2" * 64, "development", "d2", 2, True)]
+    assert not assess_rewrite(PROTOCOL, base, new).eligible_for_final_audit
     too_expensive = [receipt("2" * 64, "selection", t, s, True, cost=9) if part == "selection" else receipt("2" * 64, part, t, s, True)
-                     for part in ("selection", "holdout") for t in (("s1", "s2") if part == "selection" else ("h1", "h2")) for s in (1, 2)]
+                     for part in ("selection", "development") for t in (("s1", "s2") if part == "selection" else ("d1", "d2")) for s in (1, 2)]
     with pytest.raises(ValueError, match="equal per-trial"):
         assess_rewrite(PROTOCOL, base, too_expensive)
 
 
 def test_rejects_mismatched_or_insufficient_or_overlapping_eval_sets():
-    base = pairs("1" * 64, {"s1": True, "s2": True}, "selection") + pairs("1" * 64, {"h1": True, "h2": True}, "holdout")
-    new = pairs("2" * 64, {"s1": True, "s2": True}, "selection") + pairs("2" * 64, {"h1": True, "h2": True}, "holdout")
+    base = pairs("1" * 64, {"s1": True, "s2": True}, "selection") + pairs("1" * 64, {"d1": True, "d2": True}, "development")
+    new = pairs("2" * 64, {"s1": True, "s2": True}, "selection") + pairs("2" * 64, {"d1": True, "d2": True}, "development")
     with pytest.raises(ValueError, match="exactly paired"):
         assess_rewrite(PROTOCOL, base, new[:-1])
     with pytest.raises(ValueError, match="disjoint"):
-        overlap_base = pairs("1" * 64, {"same1": True, "same2": True}, "selection") + pairs("1" * 64, {"same1": True, "same2": True}, "holdout")
-        overlap_candidate = pairs("2" * 64, {"same1": True, "same2": True}, "selection") + pairs("2" * 64, {"same1": True, "same2": True}, "holdout")
+        overlap_base = pairs("1" * 64, {"same1": True, "same2": True}, "selection") + pairs("1" * 64, {"same1": True, "same2": True}, "development")
+        overlap_candidate = pairs("2" * 64, {"same1": True, "same2": True}, "selection") + pairs("2" * 64, {"same1": True, "same2": True}, "development")
         assess_rewrite(PROTOCOL, overlap_base, overlap_candidate)
     with pytest.raises(ValueError, match="insufficient"):
-        few_base = pairs("1" * 64, {"s1": True}, "selection") + pairs("1" * 64, {"h1": True}, "holdout")
-        few_candidate = pairs("2" * 64, {"s1": True}, "selection") + pairs("2" * 64, {"h1": True}, "holdout")
+        few_base = pairs("1" * 64, {"s1": True}, "selection") + pairs("1" * 64, {"d1": True}, "development")
+        few_candidate = pairs("2" * 64, {"s1": True}, "selection") + pairs("2" * 64, {"d1": True}, "development")
         assess_rewrite(PROTOCOL, few_base, few_candidate)
 
 
 def test_detects_receipt_or_protocol_tampering_and_mixed_candidate_versions():
-    base = pairs("1" * 64, {"s1": True, "s2": True}, "selection") + pairs("1" * 64, {"h1": True, "h2": True}, "holdout")
-    new = pairs("2" * 64, {"s1": True, "s2": True}, "selection") + pairs("2" * 64, {"h1": True, "h2": True}, "holdout")
+    base = pairs("1" * 64, {"s1": True, "s2": True}, "selection") + pairs("1" * 64, {"d1": True, "d2": True}, "development")
+    new = pairs("2" * 64, {"s1": True, "s2": True}, "selection") + pairs("2" * 64, {"d1": True, "d2": True}, "development")
     tampered = [dataclasses.replace(new[0], safe=False), *new[1:]]
     with pytest.raises(ValueError, match="checksum mismatch"):
         assess_rewrite(PROTOCOL, base, tampered)
-    changed_protocol = dataclasses.replace(PROTOCOL, minimum_holdout_gain=0.0)
+    changed_protocol = dataclasses.replace(PROTOCOL, minimum_development_gain=0.0)
     with pytest.raises(ValueError, match="protocol checksum mismatch"):
         assess_rewrite(changed_protocol, base, new)
-    mixed = [*new[:-1], receipt("3" * 64, "holdout", "h2", 2, True)]
+    mixed = [*new[:-1], receipt("3" * 64, "development", "d2", 2, True)]
     with pytest.raises(ValueError, match="one system identity"):
         assess_rewrite(PROTOCOL, base, mixed)
