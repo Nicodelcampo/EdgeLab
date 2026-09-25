@@ -66,6 +66,8 @@ def main(argv=None):
     D["dqi"] = D.dir * D.qi
     D["qib"] = pd.cut(D.dqi, [-9, -E.QI_CUT, E.QI_CUT - 1e-12, 9], labels=["contra", "neutral", "a_favor"])
     D["day"] = D.decision_time.str.slice(0, 10)
+    if D.day.nunique() < 5:                                   # con pocos días el bloque es la hora (declarado en el protocolo)
+        D["day"] = D.decision_time.str.slice(0, 13)
     out = {"files": files, "n": int(len(D))}
     for acct, G in D.groupby("account"):
         res = {}
@@ -77,7 +79,7 @@ def main(argv=None):
         out[acct] = res
         if a.base:
             base = Path(r"E:\l2_parquet") / a.base
-            P_ = G[G.policy == "P"].copy()
+            P_ = G.copy()                                            # todas las decisiones: el modelo evalúa A y P en cada una
             P_["t0"] = wall_us(P_.submit_time) + X.LAT
             rows = []
             for day, g in P_.groupby(P_.decision_time.str.slice(0, 10).str.replace("-", "")):
@@ -87,16 +89,25 @@ def main(argv=None):
                 Q, T = X.load_l1(day)
                 arr = (Q.ts.to_numpy(), Q.bid.to_numpy(), Q.ask.to_numpy(), Q.bsz.to_numpy().astype(float), Q.asz.to_numpy().astype(float),
                        T.ts.to_numpy(), T.px.to_numpy(), T.sz.to_numpy().astype(float), T.aggr.to_numpy())
+                qts, qb, qa = arr[0], arr[1], arr[2]
                 for _, r in g.iterrows():
-                    pm, filled, _ = E.simulate_passive(*arr, int(r.t0), int(r.dir), int(r.timeout_s), 1.0)
-                    rows.append(dict(day=day, nt8_filled=int(1 - r.crossed_after_timeout), model_filled=filled,
-                                     nt8_price_t=r.fill_price / r.tick, model_price_t=pm, dir=int(r.dir)))
+                    d = int(r.dir)
+                    pm, filled, _ = E.simulate_passive(*arr, int(r.t0), d, int(r.timeout_s), 1.0)
+                    j = max(np.searchsorted(qts, int(r.t0), "right") - 1, 0)
+                    pa = float(qa[j] if d == 1 else qb[j])
+                    rows.append(dict(day=day, policy=r.policy, qib=r.qib, nt8_filled=int(1 - r.crossed_after_timeout), model_filled=filled,
+                                     nt8_price_t=r.fill_price / r.tick, model_price_t=pm, model_A_t=pa, dir=d,
+                                     model_save=d * (pa - pm)))
             if rows:
                 M = pd.DataFrame(rows)
+                MP, MA = M[M.policy == "P"], M[M.policy == "A"]
                 out[acct + "_vs_modelo"] = dict(
-                    n=len(M), fill_nt8=float(M.nt8_filled.mean()), fill_modelo=float(M.model_filled.mean()),
-                    acuerdo_fill=float((M.nt8_filled == M.model_filled).mean()),
-                    diff_precio_ticks=float((M.dir * (M.nt8_price_t - M.model_price_t)).mean()))
+                    n_P=len(MP), fill_nt8=float(MP.nt8_filled.mean()), fill_modelo=float(MP.model_filled.mean()),
+                    acuerdo_fill=float((MP.nt8_filled == MP.model_filled).mean()),
+                    P_nt8_menos_modelo_ticks=float((MP.dir * (MP.nt8_price_t - MP.model_price_t)).mean()),
+                    A_nt8_menos_modelo_ticks=float((MA.dir * (MA.nt8_price_t - MA.model_A_t)).mean()),
+                    ahorro_modelo_mismos_instantes={q: float(M.model_save[M.qib == q].mean()) for q in ["contra", "neutral", "a_favor"]}
+                    | {"todos": float(M.model_save.mean())})
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "compare.json").write_text(json.dumps(out, indent=1, default=float), encoding="utf-8")
     print(json.dumps(out, indent=1, default=float)[:3000])

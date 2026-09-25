@@ -76,3 +76,25 @@ Riesgo de romper las reglas de la evaluación. Queda **sólo NT8**:
 - **Sim101** en vivo como chequeo de latencia y feed en vivo. Es el **mismo motor** que Playback, así que no aporta un motor independiente.
 
 Se pierde el motor independiente del prop. La validación de la cola real sigue siendo la etapa 3 (cuenta real con micros).
+
+## Resultado de la etapa 1, día 1: Playback NQ 09-26, 20/08/2026 (24/09)
+
+Datos: `artifacts/exec_qi_nt8/Playback101_NQ_SEP26_20260820.csv`, 684 decisiones (350 A, 334 P), velocidad 500x. Las decisiones se separaron por una mediana de 106 s, sin huecos salvo la pausa de CME y el reinicio por el tope de pérdida. Comparación: `artifacts/exec_qi_nt8/compare.json`. Bloque del bootstrap: la hora, porque hay menos de 5 días.
+
+| Qué | NT8 (Playback) | Modelo pesimista, mismos instantes |
+|---|---|---|
+| Fill de P antes de T = 30 s | **90 %** | 79 % (acuerdo por decisión: 87 %) |
+| Precio de P (NT8 − modelo, en la dirección) | **−0,59 ticks**: NT8 llena mejor | — |
+| Precio de A (NT8 − cotización en t0) | **+0,23 ticks**: NT8 llena peor, ~0,5 s después | — |
+| Ahorro A − P realizado | +0,93 [−0,91; +2,36] | −0,43 (ese día el promedio de la grilla completa fue +0,09) |
+
+**Lectura (un solo día):**
+- **El modelo es conservador frente al motor de NT8**, en los dos sentidos:
+  - NT8 llena más la orden pasiva y a mejor precio (no tiene cola);
+  - NT8 cobra más en la orden a mercado.
+- Juntos, **NT8 favorece a la orden pasiva ~0,8 ticks más que nuestro modelo**. Se cumple el criterio "modelo conservador" en fill (79 % ≤ 90 %).
+- **El ahorro realizado no se puede juzgar todavía:** el IC es de ±1,6 ticks con un día. Hacen falta unos 8 a 10 días para bajarlo a ±0,5.
+- **El orden por QI no se puede ver:** en NQ el tope tiene 1 a 3 contratos, el QI casi siempre da 0 y 573 de 684 decisiones cayeron en "neutral".
+- **Paridad** de `simulate_passive` con el loop de `exec_qi.py` en el mismo día: 0,13 ± 0,20 contra 0,09. Coinciden.
+
+**Siguiente:** 8 días más de NQ (21, 22, 23 y 28/07; 5, 6, 13 y 18/08, todos de `P-NQL2-EXP`), con la misma configuración, `MaxLossTicks` = 100000 y `MaxDecisions` = 2000.
