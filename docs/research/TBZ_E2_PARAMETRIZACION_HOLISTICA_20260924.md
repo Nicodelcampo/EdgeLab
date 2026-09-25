@@ -130,3 +130,17 @@ Verificado contra `edgelab/research/tbz_bands.py::expansion_bands`, contra los d
 - positiva en ≥ 55 % de los meses.
 
 **I9. Recursos** (hubo dos cuelgues de la PC): se procesa sesión por sesión, leyendo los parquet por row group filtrado a la ventana. Como máximo 2 procesos.
+
+**I4b (24/09, construyendo el censo, antes de cualquier resultado).** El N2 "detector con ventana ×6" no sirve: en ES del 02/03/2026 da 11 franjas en una configuración y 0 en las otras tres. El umbral k·σ crece con la ventana, y la eficiencia ≥ 0,6 casi nunca se cumple en ventanas largas.
+
+**Nuevo N2 = "tramo que no es expansión":**
+- Tramos de un zigzag con **la misma regla de fin** (retroceso ≥ max(2 t, 0,3·tramo)) que **no terminan donde termina una franja TBZ** (mismo B a ≤ 1 t y t_avail a ≤ 3 velas).
+- Llevan las mismas reglas E0–E3.
+- En el reporte se **emparejan por ancho**: pesos por bin de ancho de las franjas TBZ (4–8, 8–16, 16–32 y ≥ 32 t).
+- La pregunta pasa a ser: ¿importa que haya sido una **expansión TBZ**, o cualquier tramo del mismo ancho con la misma vuelta da lo mismo?
+
+**Hallazgo del censo que cambia la lectura del fenómeno.** En esa sesión las franjas TBZ **no son los movimientos más rápidos**:
+- en 8–16 ticks, las franjas TBZ van a una mediana de **1,2 ticks/s** y los tramos que no son TBZ a **5,9 ticks/s**;
+- el detector TBZ captura desplazamientos **sostenidos** (k·σ en W velas con eficiencia), no veloces.
+
+La "expansión rápida" de Nico no es lo mismo que la franja TBZ. La velocidad queda como descriptor (G2 `speed_tps`) y como candidata a detector (G1 `speed_min`). Se cuantifica en el censo completo.
