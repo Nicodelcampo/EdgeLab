@@ -98,3 +98,19 @@ Datos: `artifacts/exec_qi_nt8/Playback101_NQ_SEP26_20260820.csv`, 684 decisiones
 - **Paridad** de `simulate_passive` con el loop de `exec_qi.py` en el mismo día: 0,13 ± 0,20 contra 0,09. Coinciden.
 
 **Siguiente:** 8 días más de NQ (21, 22, 23 y 28/07; 5, 6, 13 y 18/08, todos de `P-NQL2-EXP`), con la misma configuración, `MaxLossTicks` = 100000 y `MaxDecisions` = 2000.
+
+## Evidencia externa (búsqueda del 24/09, a pedido de Nico: "¿no hay manera de investigar eso en internet?")
+
+- **Motor de NT8, según el soporte de NinjaTrader:** para una compra límite en el bid, anota el tamaño del bid (X), sigue los trades en ese precio (Y) y llena cuando Y > X. Suma componentes aleatorios y demoras simuladas, y Playback usa la misma configuración que Sim101. **En la regla es igual a nuestro modelo pesimista**, pero:
+  - usuarios reportan fills "on touch" en la demo en vivo;
+  - también reportan que muchas órdenes que en la demo se llenan **no se llenan en cuentas reales o de prop**.
+
+  Encaja con lo medido: NT8 llena el 90 % y nuestro modelo el 79 %. **Conclusión:** la demo de NT8 es optimista frente al mercado, y el modelo pesimista es el lado correcto para usar como costo.
+- **Literatura:**
+  - el valor de la posición en la cola es del orden de medio spread en activos de tick grande (Moallemi y Yuan 2016, calibrado en NASDAQ);
+  - la probabilidad de fill depende de la posición en la cola y del estado del libro (Lokin y Yu 2024; trabajos con MBO de CME).
+
+  No se encontraron **números públicos de fill para NQ o ES** que reemplacen una medición propia. Harían falta datos MBO de CME (Databento), que hoy no están disponibles.
+- **Qué no puede resolver internet:** el fill de *nuestras* órdenes, con nuestra latencia y nuestro broker. Eso sigue saliendo sólo de órdenes reales (etapa 3).
+
+Fuentes: foro de soporte de NinjaTrader (hilos 97305, 104492, 1121714, 1323152, 1255422); Moallemi y Yuan, *A Model for Queue Position Valuation in a Limit Order Book* (SSRN 2996221); Lokin y Yu, arXiv 2403.02572.
