@@ -105,3 +105,33 @@ A lo sumo 3 pasan a `*-CONF`, con una spec en revisión ciega y una campaña.
 **T7. F2 (cascada).** p90 del volumen agresivo en ventanas de 10 s, calculado sobre la **sesión previa** (causal).
 
 **T8. Recursos:** sesión por sesión y por row group. Como máximo 2 procesos.
+
+## 8. Resultado (25/09, madrugada): ninguna sugerencia; dos hallazgos para registrar
+
+Reporte `artifacts/trend_micro/report.json` (sha `eac81f53e90b…`). Ledger `artifacts/hippocampus/trend_micro_20260924.jsonl`. Exploración hasta el 31/03/2026: ES en 176–178 sesiones y NQ en 158–169. Unidad: la señal, R neto con costo. IC bootstrap por sesión.
+
+**Veredicto por la regla fija (§5): 0 sugerencias.** 26 celdas con muestra; 18 pasan el FDR, todas por ser **negativas**.
+
+| Instrumento | Base | Filtro | Target | n | R neto | Acierto vs N1 (ruina del jugador) | Lectura |
+|---|---|---|---|---:|---|---|---|
+| ES | B1 (PDH/PDL, ONH/ONL) | F0 | 2R | 364 | −0,31 [−0,44; −0,15] | 0,261 vs 0,276 | camino aleatorio menos costos |
+| ES | B2 (número redondo) | F0 | 2R | 578 | −0,25 [−0,36; −0,13] | 0,280 vs 0,272 | ídem |
+| ES | B3 (disparo de expansión) | F0 | 2R | 12.003 | −0,15 [−0,18; −0,11] | **0,278 vs 0,312** | **peor que el camino aleatorio** |
+| NQ | B3 | F0 | 2R | 1.984 | −0,11 [−0,18; −0,04] | **0,265 vs 0,326** | **peor que el camino aleatorio** |
+| NQ | B2 | **F3** (VWAP y EMA50 a favor) | 2R | 347 | +0,08 [−0,09; +0,22] | **0,386 vs 0,299** | pista (no pasa la regla) |
+
+**Hallazgo 1: la continuación de una expansión falla más que el azar (ES y NQ).**
+- Cuando se dispara una expansión nueva en la misma dirección que la anterior, el precio llega al target **menos** de lo que da un camino aleatorio con las mismas distancias: −3,4 pts en ES, con IC [−4,5; −2,2] y 12.003 señales, y −6,2 pts en NQ, con IC [−8,8; −3,6].
+- Es un sesgo de **reversión después de desplazamientos sostenidos**. Es coherente con la VR < 1 medida en HP-008 y apunta en la misma dirección que la hipótesis de patinaje hacia A de TBZ-E2, aunque es otro objeto: no se transporta, se anota.
+- No es operable tal cual: invertir la señal paga los costos al revés, y la pérdida de B3 es −0,11 a −0,15 R.
+
+**Hallazgo 2 (pista, no sugerencia): en NQ, la ruptura de un número redondo a favor de VWAP y EMA50 mejora sobre su base.**
+- Acierto +8,6 pts sobre N1, con IC [+3,5; +13,5].
+- Sinergia contra la base sola +0,22 R, con IC [+0,09; +0,37].
+- **Pero** el R neto tiene IC [−0,09; +0,22], no pasa el FDR y los meses positivos son el 50 %, por debajo del 55 %. Por la regla fija no es sugerencia.
+- Encaja con V-RND (absorción en número redondo → ruptura, NQ) y con el mecanismo de stops de Osler, pero sale de 347 señales en una exploración de 26 celdas.
+- Si se quiere seguir, necesita su propio pre-registro con una celda sola.
+
+**F1 y F2 (absorción que cede, cascada):** no hay muestra. En NQ hay 6 a 34 señales por celda: la absorción causal a ±2 ticks del nivel en los 5 min previos es rara. En ES no se corrieron (P-93). **No se descartan: no hubo potencia.** B2 F1 en NQ va en la dirección esperada (acierto 0,41 contra 0,31, n = 34), sin potencia.
+
+**Alcance de la muerte:** las rupturas B1, B2 y B3 con entrada agresiva y stop estructural, en ES y NQ entre jul-2025 y mar-2026, no tienen esperanza neta positiva. No muere la microestructura como filtro: F1 y F2 no tuvieron muestra.

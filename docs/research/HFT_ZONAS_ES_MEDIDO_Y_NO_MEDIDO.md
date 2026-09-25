@@ -342,3 +342,9 @@ aquellos números compara dos poblaciones distintas.
 - **NO MEDIDO:**
   - una corrección del agresor de ES que llegue al 90 % (se probaron la cotización del trade anterior y la anterior a la ráfaga; ninguna mejora);
   - market making con información adicional.
+
+## Anexo 2026-09-25: TREND-MICRO
+
+- **MEDIDO:** rupturas B1, B2 y B3 × filtros F0 y F3 (y F1/F2 en NQ) × 2R/4R, en ES y NQ, jul-2025 a mar-2026. **0 sugerencias.** Ver `MANIFIESTO_TREND_MICRO_20260924.md` §8.
+- **MEDIDO:** la continuación de una expansión (B3) llega al target menos que un camino aleatorio (ES −3,4 pts, NQ −6,2 pts).
+- **NO MEDIDO:** F1/F2 con muestra suficiente; ES con agresor válido; la pista NQ B2 F3 pre-registrada sola.

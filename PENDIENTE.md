@@ -2604,3 +2604,5 @@ Validación contra el L2 en el solapamiento pre-holdout (NQ 25–30/06, ES 29–
 - **Abierto:** reconstruir el agresor de ES desde el L2 cuando haya L2 pre-holdout suficiente, o validar otra regla contra el L2.
 
 **P-90 (MM-QI) cerrada:** muerta en su alcance declarado. Ver el manifiesto §7.
+
+**Actualización 25/09 (TREND-MICRO medido):** 0 sugerencias. Dos hallazgos: (1) la continuación de una expansión (B3) falla más que el azar en ES y NQ (sesgo de reversión, no operable tal cual); (2) pista NQ: ruptura de número redondo a favor de VWAP/EMA50, acierto +8,6 pts sobre N1 y sinergia +0,22 R, con R neto sin IC positivo. Seguirla exige pre-registro de una celda (decide Nico).
