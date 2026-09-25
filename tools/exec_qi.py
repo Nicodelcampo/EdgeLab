@@ -62,6 +62,24 @@ def plans():
     return out
 
 
+def simulate_passive(qts, bid, ask, bsz, asz, tts, tpx, tsz, tag, t0, d, T_s, frac):
+    """Una orden límite en el mejor precio propio puesta en t0 (ya con latencia), con la misma regla que `session`:
+    cola = tamaño visible × frac + 1, sin avance por cancelaciones; llena si el volumen agresivo contrario en ese
+    precio supera la cola o si hay un trade que atraviesa el precio. Si no se llena en T_s, cruza al precio contrario.
+    Devuelve (precio, lleno, t_fill_us)."""
+    j = max(np.searchsorted(qts, t0, "right") - 1, 0)
+    L, q0 = (bid[j], bsz[j]) if d == 1 else (ask[j], asz[j])
+    a, b = np.searchsorted(tts, t0, "right"), np.searchsorted(tts, t0 + T_s * US, "right")
+    px, sz, ag, ts = tpx[a:b], tsz[a:b], tag[a:b], tts[a:b]
+    through = (px < L) if d == 1 else (px > L)
+    hit = (px == L) & (ag == (-1 if d == 1 else 1))
+    ok = through | (np.cumsum(np.where(hit, sz, 0.0)) >= q0 * frac + 1)
+    if ok.any():
+        return float(L), 1, int(ts[int(np.argmax(ok))])
+    jT = max(np.searchsorted(qts, t0 + T_s * US, "right") - 1, 0)
+    return float(ask[jT] if d == 1 else bid[jT]), 0, None
+
+
 def session(args):
     inst, day, base = args
     X.BASE = L2 / base
