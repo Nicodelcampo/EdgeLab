@@ -114,3 +114,22 @@ Datos: `artifacts/exec_qi_nt8/Playback101_NQ_SEP26_20260820.csv`, 684 decisiones
 - **Qué no puede resolver internet:** el fill de *nuestras* órdenes, con nuestra latencia y nuestro broker. Eso sigue saliendo sólo de órdenes reales (etapa 3).
 
 Fuentes: foro de soporte de NinjaTrader (hilos 97305, 104492, 1121714, 1323152, 1255422); Moallemi y Yuan, *A Model for Queue Position Valuation in a Limit Order Book* (SSRN 2996221); Lokin y Yu, arXiv 2403.02572.
+
+## Resultado de la etapa 1 cerrada: 3 días de Playback NQ (20/08, 21/07 y 22/07), 24/09
+
+Datos: `artifacts/exec_qi_nt8/Playback101_NQ_SEP26_all.csv`, con 2.238 decisiones después de descartar 2 duplicadas por re-arranque. Comparación: `artifacts/exec_qi_nt8/compare.json`. El IC usa bootstrap por bloque de hora porque hay menos de 5 días. Por decisión de Nico, la etapa se corta en 3 días: alcanzan para el fill.
+
+| Qué | NT8 (Playback) | Modelo pesimista, mismos instantes |
+|---|---|---|
+| Fill de P antes de T = 30 s | **90 %** | **79 %** (acuerdo por decisión: 87 %) |
+| Precio de P (NT8 − modelo, en la dirección) | **−1,20 ticks**: NT8 llena mejor | — |
+| Precio de A (NT8 − cotización en t0) | **+0,39 ticks**: NT8 llena peor | — |
+| Ahorro A − P, todos | **+1,49** [0,96; 2,17] | **+0,18** |
+| Ahorro con QI "contra" / "neutral" / "a favor" | +1,89 / +1,60 / +0,03 | +0,41 / +0,13 / +0,39 |
+
+**Conclusiones:**
+1. **El modelo pesimista es conservador frente a NT8**, en fill y en precio. Se cumple el criterio "modelo conservador".
+2. **El simulador de NT8 infla la ventaja de la orden pasiva en ~1,3 ticks por lado en NQ** (≈ USD 6,5 por lado), y lo hace por los dos lados: llena mejor la pasiva y peor la agresiva. Coincide con los reportes de usuarios citados arriba.
+3. **Lección para todo el proyecto:** ningún backtest ni ninguna prueba en demo o Playback de NT8 con órdenes límite es admisible como costo sin corregirla. El costo oficial es el del modelo pesimista (`tools/exec_qi.py`).
+4. **Orden por QI:** en NT8 aparece monótono (+1,89 > +1,60 > +0,03). En el modelo, en estos mismos 2.238 instantes, no se ve, porque "contra" y "a favor" tienen n chico (~180 y ~220). En la grilla completa sí era monótono. Nada de esto cambia la regla.
+5. **Lo que sigue sin medirse:** el fill real (etapa 3, órdenes reales) y la sesión en vivo en Sim101, que Nico descartó por ser el mismo motor.

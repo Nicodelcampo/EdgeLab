@@ -2574,3 +2574,5 @@ Decisiones de Nico:
 Manifiesto `docs/research/MANIFIESTO_EJECUCION_QI_L2_20260924.md`, con la tabla de priorización frente a V-RND, volatilidad, momentum intradía y re-auditorías. Mira el precio después del fill (selección adversa): **espera el OK de Nico** (regla STOP). Además: guardia `CTRL_TIMING_V1` activa en el Brain desde hoy; `OBS-ABS-GC0826-RESPONSE` y `OBS-NQL2-A` quedan `REQUIRES_REAUDIT`.
 
 **Actualización 24/09 (EXEC-QI medido):** pasivo ahorra en los 4 instrumentos. Regla óptima a T=30 s, pesimista: NQ +0,43 t/lado (USD 2,15), GC +0,36 (USD 3,6), ES +0,18 (USD 2,25; ahí conviene cruzar si el QI va a favor), 6E +0,11. Simulación sobre grilla uniforme: falta medir en instantes de señal y con fills reales de la sim de NT8.
+
+**Actualización 24/09 (EXEC-QI, etapa 1 en Playback, 3 días NQ):** NT8 llena el 90 % de las límites contra el 79 % del modelo y favorece a la pasiva en ~1,3 ticks por lado. El modelo pesimista es conservador. Lección `LES-NT8-SIM-FILLS-OPTIMISTIC-20260924`: no usar fills límite de NT8 sim como costo. Pendiente: órdenes reales (etapa 3), decisión de Nico.
