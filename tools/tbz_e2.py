@@ -626,7 +626,8 @@ def step_report(inst):
                         tb_hit_b = (W @ Sh) / (W @ Nh); tb_pnl_b = (W @ S) / (W @ N)
                     dh = tb_hit_b - n2_hit_b; dp = tb_pnl_b - n2_pnl_b
                     # N3 pareado
-                    M = T_.merge(P[["session", "band", "mode", "pnl_n3", "hit_n3"]], on=["session", "band", "mode"], how="inner") \
+                    M = T_.merge(P[["session", "band", "event", "mode", "pnl_n3", "hit_n3"]],
+                                 on=["session", "band", "event", "mode"], how="inner") \
                         if mode.startswith("hacia_A") else pd.DataFrame()
                     if len(M) >= 30:
                         M = M.assign(dp3=M.pnl - M.pnl_n3, dh3=M.hit - M.hit_n3)
@@ -667,7 +668,8 @@ def step_report(inst):
     # árbol honesto sobre R neto (franjas rápidas, hacia A con target A), rasgos del censo
     tree = _honest_tree(inst, D, sess)
     # guardia de controles para N3 (controles de otra sesión)
-    q = Qn.merge(D[["session", "band", "mode", "t_event"]].rename(columns={"session": "src"}), on=["src", "band", "mode"], how="inner")
+    q = Qn.merge(D[["session", "band", "event", "mode", "t_event"]].rename(columns={"session": "src"}),
+                 on=["src", "band", "event", "mode"], how="inner")
     audit = audit_event_controls(q.t_event.to_numpy(), q.t.to_numpy(), TMAX_S, same_session=(q.src == q.host).to_numpy())
     body = dict(schema="EDGELAB_TBZ_E2B_V1", doc=DOC, inst=inst, code_commit=_git("rev-parse", "HEAD"),
                 tree_dirty=bool(_git("status", "--porcelain", "--", "tools", "edgelab")), sesiones=n_s,
