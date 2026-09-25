@@ -78,7 +78,7 @@ def expansion_bands(t_s, o, h, l, c, tick: float, W: int = 20, k: float = 2.5, e
             if best is not None:
                 _, d, i0, a, ext = best
                 if all(t_s[q] - t_s[q - 1] <= SESSION_GAP_S for q in range(i0 + 1, j + 1)):
-                    state = dict(dir=d, i0=i0, a=a, ext=ext, iext=j, sigma=float(s))
+                    state = dict(dir=d, i0=i0, a=a, ext=ext, iext=j, sigma=float(s), itrig=j)
             continue
         d = state["dir"]
         if d == 1 and H[j] > state["ext"]:
@@ -92,7 +92,9 @@ def expansion_bands(t_s, o, h, l, c, tick: float, W: int = 20, k: float = 2.5, e
                             lo_tick=int(min(state["a"], state["ext"])), hi_tick=int(max(state["a"], state["ext"])),
                             width_ticks=int(total), sigma_ticks=state["sigma"],
                             t_start=int(t_s[state["i0"]]), t_ext=int(t_s[state["iext"]]), t_avail=int(t_s[j]),
-                            i_start=int(state["i0"]), i_ext=int(state["iext"]), i_avail=int(j)))
+                            i_start=int(state["i0"]), i_ext=int(state["iext"]), i_avail=int(j),
+                            # disparo (TREND-MICRO B3, 24/09): vela en la que se creó el estado, conocible a su cierre
+                            t_trigger=int(t_s[state["itrig"]]), i_trigger=int(state["itrig"])))
             state = None
     return out
 

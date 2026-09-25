@@ -144,3 +144,11 @@ Verificado contra `edgelab/research/tbz_bands.py::expansion_bands`, contra los d
 - el detector TBZ captura desplazamientos **sostenidos** (k·σ en W velas con eficiencia), no veloces.
 
 La "expansión rápida" de Nico no es lo mismo que la franja TBZ. La velocidad queda como descriptor (G2 `speed_tps`) y como candidata a detector (G1 `speed_min`). Se cuantifica en el censo completo.
+
+**I1c (24/09, probando la simulación en una sesión, antes de la corrida).** El N1 original (s/(d + s) con distancias desde el precio de entrada) no usaba las convenciones de la simulación:
+- el stop se ejecuta con sólo tocarlo, y el target hay que atravesarlo por 1 tick;
+- la entrada paga el spread.
+
+Con distancias chicas (franjas de 13 ticks), eso inflaba el nulo: en ES del 31/07/2025 daba 0,544 contra un acierto de 0,468.
+
+**N1 corregido:** el camino es el de los precios de trade desde el último trade al entrar, con el stop a distancia `tdir·(x0 − stop)` y el target efectivo a `tdir·(target + tdir − x0)`. En esa sesión: acierto 0,468 contra N1 0,463. **El nulo queda calibrado**: un camino sin memoria con estas convenciones reproduce la tasa observada.
