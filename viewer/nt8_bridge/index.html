@@ -1122,6 +1122,17 @@
     </div>
 
 
+
+    <!-- EDGELAB_TBZX_DESIGNER_V1: diseño interactivo de expansiones (sin desenlaces) -->
+    <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
+      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px;">✏️ Diseño de expansiones (interactivo)</div>
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:10.5px;"><input type="checkbox" id="chk-tbzx"><b>Mostrar</b></label>
+      <div id="tbzx-sliders" style="display:flex;flex-direction:column;gap:3px;font-size:10px;margin-top:5px;"></div>
+      <div id="lbl-tbzx-status" style="font-size:9.5px;color:#666;margin-top:4px;"></div>
+      <div style="display:flex;gap:6px;margin-top:4px;"><button class="nt8-btn sm" id="btn-tbzx-reset">Volver a E2 (W20 k4)</button><button class="nt8-btn sm" id="btn-tbzx-copy">Copiar parámetros</button></div>
+      <div style="font-size:9px;color:#888;line-height:1.3;margin-top:4px;">Se recalcula al mover cada control. Caja fuerte = formación (A hasta el extremo B); punteado = extensión. Clic = detalle y motivo del fin; Esc lo cierra. Sólo construcción: no muestra desenlaces.</div>
+    </div>
+
     <!-- EDGELAB_TBZ_E2_LAYER_V1: TBZ-E2 como se midió (todas las franjas, eventos y operaciones a la vez) -->
     <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
       <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px;">🔬 TBZ-E2 medido (revisión visual)</div>
@@ -2074,6 +2085,123 @@
     });
   }
 
+
+  // EDGELAB_TBZX_DESIGNER_V1 (2026-09-25): diseño interactivo de expansiones sobre las velas cargadas. Target-free:
+  // sólo dibuja la construcción (sin desenlaces), así que sirve en cualquier bundle. Nada de esto es la medición E2.
+  var TBZX_P = [
+    ["W", "Ventana de detección (velas)", 5, 120, 1, 20], ["k", "Umbral k·σ", 1, 8, 0.5, 4], ["e0", "Eficiencia de arranque", 0.3, 1, 0.05, 0.6],
+    ["r", "Fin: retroceso (fracción del tramo)", 0.1, 0.8, 0.05, 0.3], ["stall", "Fin: velas sin nuevo extremo (0 = no)", 0, 80, 1, 0],
+    ["effTail", "Fin: eficiencia de las últimas N velas < (0 = no)", 0, 0.9, 0.05, 0], ["tailN", "   N velas para esa eficiencia", 5, 60, 1, 15],
+    ["maxBars", "Máx. velas (0 = sin tope)", 0, 400, 5, 0], ["maxSec", "Máx. tiempo, s (0 = sin tope)", 0, 1800, 10, 0],
+    ["maxVol", "Máx. volumen dentro (0 = sin tope)", 0, 20000, 100, 0],
+    ["minW", "Distancia mín. A→B (ticks)", 2, 80, 1, 4], ["minAgr", "Agresividad mín. (ticks por vela)", 0, 3, 0.05, 0],
+    ["minSpd", "Velocidad mín. (ticks/s)", 0, 3, 0.02, 0], ["ext", "Extensión dibujada (velas)", 0, 1000, 10, 200]
+  ];
+  var tbzx = { on: false, p: {}, bands: [], sigKey: null, sig: null, sel: null };
+  TBZX_P.forEach(function (q) { tbzx.p[q[0]] = q[5]; });
+  function tbzxCompute() {
+    var cd = activeCandlesArr();
+    tbzx.bands = [];
+    if (!cd || cd.length < 50) return;
+    var p = tbzx.p, tick = (state.data && state.data.meta && state.data.meta.tick_size) || 0.25, n = cd.length, W = p.W | 0;
+    var H = new Int32Array(n), L = new Int32Array(n), C = new Int32Array(n);
+    for (var i = 0; i < n; i++) { H[i] = Math.round(cd[i].high / tick); L[i] = Math.round(cd[i].low / tick); C[i] = Math.round(cd[i].close / tick); }
+    var key = (state.currentAssetId || "") + "|" + W + "|" + n;
+    if (tbzx.sigKey !== key) {                               // σ causal = mediana de |c_t − c_{t−W}| de las 3000 velas previas
+      // diferencias enteras en ticks: conteo deslizante + mediana por acumulado (misma cuenta que causal_sigma, rápida)
+      var sig = new Float32Array(n).fill(NaN), d = new Int32Array(n).fill(-1), HIST = 3000, STEP = 50, MX = 4096, cnt = new Int32Array(MX), tot = 0;
+      for (i = W; i < n; i++) d[i] = Math.min(MX - 1, Math.abs(C[i] - C[i - W]));
+      var lo = 0;
+      for (var j = W + HIST; j < n; j += STEP) {
+        while (lo < j) { if (lo >= j - HIST) break; lo++; }
+        cnt.fill(0); tot = 0;
+        for (var q = j - HIST; q < j; q++) if (d[q] >= 0) { cnt[d[q]]++; tot++; }
+        var m = NaN;
+        if (tot) {
+          var h1 = (tot - 1) >> 1, h2 = tot >> 1, acc = 0, v1 = -1, v2 = -1;
+          for (var v = 0; v < MX && v2 < 0; v++) { acc += cnt[v]; if (v1 < 0 && acc > h1) v1 = v; if (acc > h2) v2 = v; }
+          m = (v1 + v2) / 2;
+        }
+        for (q = j; q < Math.min(n, j + STEP); q++) sig[q] = m;
+      }
+      tbzx.sig = sig; tbzx.sigKey = key;
+    }
+    var S = tbzx.sig, path = new Float64Array(n);
+    for (i = 1; i < n; i++) path[i] = path[i - 1] + Math.abs(C[i] - C[i - 1]);
+    var st = null;
+    for (j = W; j < n; j++) {
+      if (cd[j].time - cd[j - 1].time > 1800) st = null;    // pausa de sesión: corta
+      if (!st) {
+        var s = S[j]; if (!(s === s)) continue;
+        var thr = Math.max(p.k * s, 4), best = null, ia = j - W, ib = j - W;
+        for (q = j - W; q <= j; q++) { if (L[q] < L[ia]) ia = q; if (H[q] > H[ib]) ib = q; }
+        if (ia < j) { var net = C[j] - L[ia], pp = path[j] - path[ia]; if (net >= thr && pp > 0 && (C[j] - C[ia]) / pp >= p.e0) best = [net, 1, ia, L[ia], H[j]]; }
+        if (ib < j) { var net2 = H[ib] - C[j], pp2 = path[j] - path[ib]; if (net2 >= thr && pp2 > 0 && (C[ib] - C[j]) / pp2 >= p.e0 && (!best || net2 > best[0])) best = [net2, -1, ib, H[ib], L[j]]; }
+        if (best) st = { dir: best[1], i0: best[2], a: best[3], ext: best[4], iext: j, itrig: j, vol: 0, sig: s, thr: thr };
+        if (st) for (q = st.i0 + 1; q <= j; q++) st.vol += cd[q].volume || 0;
+        continue;
+      }
+      var dd = st.dir;
+      if (dd === 1 && H[j] > st.ext) { st.ext = H[j]; st.iext = j; } else if (dd === -1 && L[j] < st.ext) { st.ext = L[j]; st.iext = j; }
+      st.vol += cd[j].volume || 0;
+      var tot = Math.abs(st.ext - st.a), retr = dd === 1 ? st.ext - L[j] : H[j] - st.ext, why = null;
+      if (retr >= Math.max(2, p.r * tot)) why = "retroceso";
+      else if (p.stall > 0 && j - st.iext >= p.stall) why = "estancado";
+      else if (p.effTail > 0 && j - st.i0 >= p.tailN) {
+        var k0 = j - p.tailN, pth = path[j] - path[k0];
+        if (pth > 0 && dd * (C[j] - C[k0]) / pth < p.effTail) why = "se desacelera";
+      }
+      if (!why && p.maxBars > 0 && j - st.i0 >= p.maxBars) why = "máx. velas";
+      if (!why && p.maxSec > 0 && cd[j].time - cd[st.i0].time >= p.maxSec) why = "máx. tiempo";
+      if (!why && p.maxVol > 0 && st.vol >= p.maxVol) why = "máx. volumen";
+      if (!why) continue;
+      var bars = Math.max(1, st.iext - st.i0), secs = Math.max(1e-3, cd[st.iext].time - cd[st.i0].time);
+      if (tot >= p.minW && tot / bars >= p.minAgr && tot / secs >= p.minSpd)
+        tbzx.bands.push({ dir: dd, A: st.a, B: st.ext, W: tot, i0: st.i0, iext: st.iext, iend: j, itrig: st.itrig, why: why, bars: bars, secs: secs,
+                          vol: st.vol, sig: st.sig, thr: st.thr });
+      st = null;
+    }
+    var lb = document.getElementById("lbl-tbzx-status");
+    if (lb) { var days = Math.max(1, (cd[n - 1].time - cd[0].time) / 86400 * 5 / 7); lb.textContent = tbzx.bands.length + " expansiones (~" + Math.round(tbzx.bands.length / days) + " por día hábil)"; }
+  }
+  function drawTbzx(ctx, vr, w, h) {
+    tbzx.hits = [];
+    if (!tbzx.on || !series) return;
+    var cd = activeCandlesArr(); if (!cd) return;
+    var tick = (state.data.meta && state.data.meta.tick_size) || 0.25, n = cd.length;
+    function X(i) { var c = logicalToX(i); return (c === null || c === undefined) ? NaN : c; }
+    function Y(t) { var c = series.priceToCoordinate(t * tick); return (c === null || c === undefined) ? NaN : c; }
+    ctx.save(); ctx.font = "10px -apple-system, Segoe UI, sans-serif";
+    tbzx.bands.forEach(function (b, bi) {
+      var iz = Math.min(n - 1, b.iext + tbzx.p.ext);
+      if (cd[iz].time < vr.from || cd[b.i0].time > vr.to) return;
+      var col = b.dir > 0 ? "13,148,136" : "234,88,12", x0 = X(b.i0), xe = X(b.iext), xz = X(iz), yA = Y(b.A), yB = Y(b.B);
+      if (![x0, xe, xz, yA, yB].every(isFinite)) return;
+      var sel = tbzx.sel === bi, top = Math.min(yA, yB), hh = Math.abs(yB - yA);
+      ctx.fillStyle = "rgba(" + col + "," + (sel ? 0.25 : 0.14) + ")"; ctx.fillRect(x0, top, Math.max(1, xe - x0), hh);
+      ctx.strokeStyle = "rgba(" + col + ",0.9)"; ctx.lineWidth = sel ? 2 : 1; ctx.strokeRect(x0, top, Math.max(1, xe - x0), hh);
+      ctx.fillStyle = "rgba(" + col + ",0.05)"; ctx.fillRect(xe, top, Math.max(0, xz - xe), hh);
+      ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(xe, yA); ctx.lineTo(xz, yA); ctx.moveTo(xe, yB); ctx.lineTo(xz, yB); ctx.stroke(); ctx.setLineDash([]);
+      if (sel) {
+        var xt = X(b.itrig), xd = X(b.iend);
+        ctx.strokeStyle = "rgba(" + col + ",1)"; ctx.beginPath(); ctx.moveTo(xt, top); ctx.lineTo(xt, top + hh); ctx.stroke();
+        ctx.setLineDash([2, 2]); ctx.beginPath(); ctx.moveTo(xd, top - 6); ctx.lineTo(xd, top + hh + 6); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle = "#111"; ctx.textAlign = "left";
+        [ "W " + b.W + " t · " + b.bars + " velas · " + b.secs.toFixed(1) + " s", "agresividad " + (b.W / b.bars).toFixed(2) + " t/vela · velocidad " + (b.W / b.secs).toFixed(2) + " t/s",
+          "volumen dentro " + Math.round(b.vol) + " · σ " + b.sig + " t → umbral " + b.thr.toFixed(1) + " t", "fin: " + b.why + " (línea punteada = vela que lo decide)" ]
+          .forEach(function (s, k) { ctx.fillText(s, x0, top - 8 - 12 * (3 - k)); });
+      }
+      tbzx.hits.push({ b: bi, x0: x0, x1: xe, y0: top, y1: top + hh });
+    });
+    ctx.restore();
+  }
+  function tbzxPick(px, py) {
+    var best = null, area = Infinity;
+    (tbzx.hits || []).forEach(function (h) { if (px >= h.x0 - 2 && px <= h.x1 + 2 && py >= h.y0 - 2 && py <= h.y1 + 2) { var a = (h.x1 - h.x0 + 4) * (h.y1 - h.y0 + 4); if (a < area) { area = a; best = h; } } });
+    if (best) { tbzx.sel = best.b; requestDraw(); }
+    return !!best;
+  }
+
   function drawL2Depth(ctx, vr, w, h) {
     var l2 = state.data && state.data.l2;
     if (!l2 || activeProps.show_l2_depth === false || !series) return;
@@ -2232,8 +2360,8 @@
     drawL2Depth(ctx, vr, w, hCanvas);
     drawTrades(ctx, vr, w, hCanvas);
     drawManipulationMarkers(ctx, vr, w, hCanvas);
-    drawTbz(ctx, vr, w, hCanvas); drawTbzE2(ctx, vr, w, hCanvas);
-    if (tbze2Opt.on && tbze2Opt.solo) return;             // revisión TBZ-E2 sin las zonas HFT encima
+    drawTbz(ctx, vr, w, hCanvas); drawTbzE2(ctx, vr, w, hCanvas); drawTbzx(ctx, vr, w, hCanvas);
+    if ((tbze2Opt.on || tbzx.on) && tbze2Opt.solo) return;             // revisión TBZ-E2 sin las zonas HFT encima
 
     var opacityVal = (activeProps.opacidad || 30) / 100;
     var showLabels = activeProps.mostrar_texto !== false;
@@ -3977,6 +4105,31 @@
       });
       chart.subscribeClick(function (p) { if (tbze2Opt.on && p && p.point) tbze2Pick(p.point.x, p.point.y); });
     })();
+
+    (function () {
+      var box = document.getElementById("tbzx-sliders"); if (!box) return;
+      var tmr = null;
+      function recalc() { clearTimeout(tmr); tmr = setTimeout(function () { tbzx.sel = null; tbzxCompute(); requestDraw(); }, 120); }
+      TBZX_P.forEach(function (q) {
+        var row = document.createElement("div"); row.style.cssText = "display:flex;align-items:center;gap:6px;";
+        row.innerHTML = "<span style='min-width:170px'>" + q[1] + "</span><input type='range' min='" + q[2] + "' max='" + q[3] + "' step='" + q[4] + "' value='" + q[5] +
+          "' style='flex:1'><span style='min-width:38px;text-align:right;font-weight:700'>" + q[5] + "</span>";
+        var rg = row.querySelector("input"), lb = row.querySelectorAll("span")[1];
+        rg.id = "rng-tbzx-" + q[0];
+        rg.addEventListener("input", function () { tbzx.p[q[0]] = Number(this.value); lb.textContent = this.value; if (q[0] === "ext") requestDraw(); else if (tbzx.on) recalc(); });
+        box.appendChild(row);
+      });
+      document.getElementById("chk-tbzx").addEventListener("change", function () { tbzx.on = this.checked; if (tbzx.on) tbzxCompute(); requestDraw(); });
+      document.getElementById("btn-tbzx-reset").addEventListener("click", function () {
+        TBZX_P.forEach(function (q) { tbzx.p[q[0]] = q[5]; var r = document.getElementById("rng-tbzx-" + q[0]); r.value = q[5]; r.nextSibling.textContent = q[5]; });
+        if (tbzx.on) recalc();
+      });
+      document.getElementById("btn-tbzx-copy").addEventListener("click", function () {
+        var t = JSON.stringify(tbzx.p); try { navigator.clipboard.writeText(t); } catch (e) {} this.textContent = "Copiado"; var b = this; setTimeout(function () { b.textContent = "Copiar parámetros"; }, 1200);
+      });
+      document.addEventListener("keydown", function (ev) { if (ev.key === "Escape" && tbzx.sel !== null) { tbzx.sel = null; requestDraw(); } });
+      chart.subscribeClick(function (p) { if (tbzx.on && p && p.point) tbzxPick(p.point.x, p.point.y); });
+    })();
     if (cw) cw.addEventListener("change", function () { activeProps.tbz_dwell = this.checked; requestDraw(); });
     if (se) se.addEventListener("change", function () { activeProps.tbz_exp_key = this.value; requestDraw(); });
     if (sw) sw.addEventListener("change", function () { activeProps.tbz_dwell_key = this.value; requestDraw(); });
@@ -4350,6 +4503,7 @@
         applyLoadedAsset(data, options);
         loadTbz(aid);
         loadTbzE2(aid);
+        tbzx.sigKey = null; tbzx.sel = null; if (tbzx.on) tbzxCompute();
       })
       .catch(function(err) {
         console.warn("Fallo fetch para " + aid + ", intentando script tag...", err);
