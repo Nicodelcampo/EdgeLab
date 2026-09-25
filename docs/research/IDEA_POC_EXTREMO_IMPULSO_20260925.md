@@ -39,3 +39,16 @@ Suele pasar muchas veces en ciertas franjas horarias (captura: ES 28/01/2026, 11
 1. Nico, en el visor, decide la definición de la ZVE: desde cuándo, hasta cuándo, ancho, y cómo se ve «V» vs «nivel respetado».
 2. Agregar al visor la capa de la ZVE con perfil de volumen y delta por nivel.
 3. Recién ahí: manifiesto con event-space enumerado (creación, primer toque, toque n-ésimo, estado), nulos, presupuesto y STOP.
+
+## Precisión de Nico (25/09): el resultado buscado es un BARRIDO en V
+Lo que interesa no es cualquier V, sino una **V que barre las órdenes del rango**:
+1. el precio sale de la zona de volumen del extremo **en la dirección del impulso original** (intenta continuar);
+2. **atraviesa** el rango de volumen y lo supera (toma los stops y las órdenes que quedaron de ese lado);
+3. **se invierte enseguida** hacia el otro lado (el intento de continuación falla).
+
+En lenguaje aplicable es un **barrido con falla de continuación**: ruptura del borde de la zona de volumen en el sentido del impulso, seguida de un regreso rápido adentro y más allá del otro borde. A definir en el visor:
+- cuántos ticks más allá del borde cuentan como barrido;
+- en cuánto tiempo o cuántas velas tiene que volver para que sea «automático»;
+- hasta dónde tiene que llegar la inversión para contar (el otro borde, el POC, A).
+
+Lecturas candidatas dentro del barrido: volumen y delta **durante** la ruptura (¿agresores que quedan atrapados?), absorción en el extremo del barrido y velocidad del regreso. Es complejo: queda registrado, sin medir.
