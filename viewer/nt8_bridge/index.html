@@ -1895,6 +1895,18 @@
         if (tEnd < vr.from || t0 > vr.to) return;
         var isSel = sel && sel.td === D.trade_date && sel.b === bi;
         var col = b.kind !== "rapida" ? "100,116,139" : (b.dir > 0 ? "13,148,136" : "234,88,12");
+        if (!isSel) {                                          // vista inicial: sólo la franja, extendida 200 velas
+          var lo = 0, hi = cd.length - 1;
+          while (lo < hi) { var mm = (lo + hi) >> 1; if (cd[mm].time < b.t_avail) lo = mm + 1; else hi = mm; }
+          var t200 = cd[Math.min(cd.length - 1, lo + 200)].time;
+          if (t200 < vr.from || b.t_start > vr.to) return;
+          var sx0 = X(b.t_start), sx1 = X(t200), sy0 = Y(b.A), sy1 = Y(b.B);
+          if (!isFinite(sx0) || !isFinite(sx1) || !isFinite(sy0) || !isFinite(sy1)) return;
+          ctx.fillStyle = "rgba(" + col + ",0.10)"; ctx.fillRect(sx0, Math.min(sy0, sy1), Math.max(1, sx1 - sx0), Math.abs(sy1 - sy0));
+          ctx.strokeStyle = "rgba(" + col + ",0.7)"; ctx.lineWidth = 1; ctx.strokeRect(sx0, Math.min(sy0, sy1), Math.max(1, sx1 - sx0), Math.abs(sy1 - sy0));
+          state.tbze2Hits.push({ k: "b", td: D.trade_date, b: bi, x0: sx0, x1: sx1, y0: Math.min(sy0, sy1), y1: Math.max(sy0, sy1) });
+          return;
+        }
         var xs = X(b.t_start), xe = X(b.t_ext), xa = X(b.t_avail), xz = X(tEnd);
         var yA = Y(b.A), yB = Y(b.B);
         if (!isFinite(xs) || !isFinite(xz) || !isFinite(yA) || !isFinite(yB) || xz < -50 || xs > w + 50) return;
@@ -1936,6 +1948,7 @@
       // 5. eventos y 6. operaciones del modo elegido
       D.events.forEach(function (e, ei) {
         var b = D.bands[e.b];
+        if (!sel || sel.td !== D.trade_date || sel.b !== e.b) return;   // eventos y operaciones: sólo de la franja abierta
         if (!tbze2BandOk(b) || !tbze2Opt.ev[e.ev]) return;
         var tr = e.tr[tbze2Opt.mode];
         var tLast = tr ? tr.t_out : e.t;
@@ -2019,7 +2032,8 @@
         }
       });
     }
-    state.tbze2Sel = best ? { td: best.td, b: best.b, e: best.k === "e" ? best.e : null } : null;
+    if (!best) return false;                                  // clic en vacío no cierra: se cierra con Esc
+    state.tbze2Sel = { td: best.td, b: best.b, e: best.k === "e" ? best.e : null };
     tbze2Info(); requestDraw();
     return !!best;
   }
@@ -3958,6 +3972,9 @@
       document.getElementById("sel-tbze2-mode").addEventListener("change", function () { tbze2Opt.mode = this.value; requestDraw(); });
       document.querySelectorAll(".chk-tbze2-ev").forEach(function (x) { x.addEventListener("change", function () { tbze2Opt.ev[this.value] = this.checked; requestDraw(); }); });
       document.querySelectorAll(".chk-tbze2-ly").forEach(function (x) { x.addEventListener("change", function () { tbze2Opt.ly[this.value] = this.checked; requestDraw(); }); });
+      document.addEventListener("keydown", function (ev) {
+        if (ev.key === "Escape" && state.tbze2Sel) { state.tbze2Sel = null; tbze2Info(); requestDraw(); }
+      });
       chart.subscribeClick(function (p) { if (tbze2Opt.on && p && p.point) tbze2Pick(p.point.x, p.point.y); });
     })();
     if (cw) cw.addEventListener("change", function () { activeProps.tbz_dwell = this.checked; requestDraw(); });
