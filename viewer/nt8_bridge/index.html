@@ -1129,7 +1129,7 @@
       <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:10.5px;"><input type="checkbox" id="chk-tbzx"><b>Mostrar</b></label>
       <div id="tbzx-sliders" style="display:flex;flex-direction:column;gap:3px;font-size:10px;margin-top:5px;"></div>
       <div id="lbl-tbzx-status" style="font-size:9.5px;color:#666;margin-top:4px;"></div>
-      <div style="display:flex;gap:6px;margin-top:4px;"><button class="nt8-btn sm" id="btn-tbzx-reset">Volver a E2 (W20 k4)</button><button class="nt8-btn sm" id="btn-tbzx-copy">Copiar parámetros</button></div>
+      <div style="display:flex;gap:6px;margin-top:4px;"><button class="nt8-btn sm" id="btn-tbzx-reset">Valores iniciales</button><button class="nt8-btn sm" id="btn-tbzx-copy">Copiar parámetros</button></div>
       <div style="font-size:9px;color:#888;line-height:1.3;margin-top:4px;">Se recalcula al mover cada control. Caja fuerte = formación (A hasta el extremo B); punteado = extensión. Clic = detalle y motivo del fin; Esc lo cierra. Sólo construcción: no muestra desenlaces.</div>
     </div>
 
@@ -2089,12 +2089,13 @@
   // EDGELAB_TBZX_DESIGNER_V1 (2026-09-25): diseño interactivo de expansiones sobre las velas cargadas. Target-free:
   // sólo dibuja la construcción (sin desenlaces), así que sirve en cualquier bundle. Nada de esto es la medición E2.
   var TBZX_P = [
-    ["W", "Ventana de detección (velas)", 5, 120, 1, 20], ["k", "Umbral k·σ", 1, 8, 0.5, 4], ["e0", "Eficiencia de arranque", 0.3, 1, 0.05, 0.6],
+    ["maxBars", "Máx. velas del impulso (A→B)", 2, 200, 1, 20], ["minW", "Distancia mín. A→B (ticks)", 2, 80, 1, 8],
+    ["k", "Umbral relativo k·σ (0 = no)", 0, 8, 0.5, 0], ["e0", "Eficiencia mín. del impulso", 0.3, 1, 0.05, 0.6],
     ["r", "Fin: retroceso (fracción del tramo)", 0.1, 0.8, 0.05, 0.3], ["stall", "Fin: velas sin nuevo extremo (0 = no)", 0, 80, 1, 0],
     ["effTail", "Fin: eficiencia de las últimas N velas < (0 = no)", 0, 0.9, 0.05, 0], ["tailN", "   N velas para esa eficiencia", 5, 60, 1, 15],
-    ["maxBars", "Máx. velas (0 = sin tope)", 0, 400, 5, 0], ["maxSec", "Máx. tiempo, s (0 = sin tope)", 0, 1800, 10, 0],
+    ["maxSec", "Máx. tiempo, s (0 = sin tope)", 0, 1800, 10, 0],
     ["maxVol", "Máx. volumen dentro (0 = sin tope)", 0, 20000, 100, 0],
-    ["minW", "Distancia mín. A→B (ticks)", 2, 80, 1, 4], ["minAgr", "Agresividad mín. (ticks por vela)", 0, 3, 0.05, 0],
+    ["minAgr", "Agresividad mín. (ticks por vela)", 0, 3, 0.05, 0],
     ["minSpd", "Velocidad mín. (ticks/s)", 0, 3, 0.02, 0], ["ext", "Extensión dibujada (velas)", 0, 1000, 10, 200]
   ];
   var tbzx = { on: false, p: {}, bands: [], sigKey: null, sig: null, sel: null };
@@ -2103,7 +2104,7 @@
     var cd = activeCandlesArr();
     tbzx.bands = [];
     if (!cd || cd.length < 50) return;
-    var p = tbzx.p, tick = (state.data && state.data.meta && state.data.meta.tick_size) || 0.25, n = cd.length, W = p.W | 0;
+    var p = tbzx.p, tick = (state.data && state.data.meta && state.data.meta.tick_size) || 0.25, n = cd.length, W = p.maxBars | 0;
     var H = new Int32Array(n), L = new Int32Array(n), C = new Int32Array(n);
     for (var i = 0; i < n; i++) { H[i] = Math.round(cd[i].high / tick); L[i] = Math.round(cd[i].low / tick); C[i] = Math.round(cd[i].close / tick); }
     var key = (state.currentAssetId || "") + "|" + W + "|" + n;
@@ -2128,13 +2129,14 @@
     }
     var S = tbzx.sig, path = new Float64Array(n);
     for (i = 1; i < n; i++) path[i] = path[i - 1] + Math.abs(C[i] - C[i - 1]);
-    var st = null;
+    var st = null, floorI = 0;                                // un impulso nuevo no puede arrancar antes del extremo del anterior
     for (j = W; j < n; j++) {
       if (cd[j].time - cd[j - 1].time > 1800) st = null;    // pausa de sesión: corta
       if (!st) {
-        var s = S[j]; if (!(s === s)) continue;
-        var thr = Math.max(p.k * s, 4), best = null, ia = j - W, ib = j - W;
-        for (q = j - W; q <= j; q++) { if (L[q] < L[ia]) ia = q; if (H[q] > H[ib]) ib = q; }
+        var s = S[j]; if (p.k > 0 && !(s === s)) continue;
+        var w0 = Math.max(j - W, floorI); if (w0 >= j) continue;
+        var thr = Math.max(p.k > 0 ? p.k * s : 0, p.minW, 2), best = null, ia = w0, ib = w0;
+        for (q = w0; q <= j; q++) { if (L[q] < L[ia]) ia = q; if (H[q] > H[ib]) ib = q; }
         if (ia < j) { var net = C[j] - L[ia], pp = path[j] - path[ia]; if (net >= thr && pp > 0 && (C[j] - C[ia]) / pp >= p.e0) best = [net, 1, ia, L[ia], H[j]]; }
         if (ib < j) { var net2 = H[ib] - C[j], pp2 = path[j] - path[ib]; if (net2 >= thr && pp2 > 0 && (C[ib] - C[j]) / pp2 >= p.e0 && (!best || net2 > best[0])) best = [net2, -1, ib, H[ib], L[j]]; }
         if (best) st = { dir: best[1], i0: best[2], a: best[3], ext: best[4], iext: j, itrig: j, vol: 0, sig: s, thr: thr };
@@ -2159,7 +2161,7 @@
       if (tot >= p.minW && tot / bars >= p.minAgr && tot / secs >= p.minSpd)
         tbzx.bands.push({ dir: dd, A: st.a, B: st.ext, W: tot, i0: st.i0, iext: st.iext, iend: j, itrig: st.itrig, why: why, bars: bars, secs: secs,
                           vol: st.vol, sig: st.sig, thr: st.thr });
-      st = null;
+      floorI = st.iext; st = null;
     }
     var lb = document.getElementById("lbl-tbzx-status");
     if (lb) { var days = Math.max(1, (cd[n - 1].time - cd[0].time) / 86400 * 5 / 7); lb.textContent = tbzx.bands.length + " expansiones (~" + Math.round(tbzx.bands.length / days) + " por día hábil)"; }
@@ -2188,7 +2190,7 @@
         ctx.setLineDash([2, 2]); ctx.beginPath(); ctx.moveTo(xd, top - 6); ctx.lineTo(xd, top + hh + 6); ctx.stroke(); ctx.setLineDash([]);
         ctx.fillStyle = "#111"; ctx.textAlign = "left";
         [ "W " + b.W + " t · " + b.bars + " velas · " + b.secs.toFixed(1) + " s", "agresividad " + (b.W / b.bars).toFixed(2) + " t/vela · velocidad " + (b.W / b.secs).toFixed(2) + " t/s",
-          "volumen dentro " + Math.round(b.vol) + " · σ " + b.sig + " t → umbral " + b.thr.toFixed(1) + " t", "fin: " + b.why + " (línea punteada = vela que lo decide)" ]
+          "volumen dentro " + Math.round(b.vol) + " · umbral " + b.thr.toFixed(1) + " t" + (tbzx.p.k > 0 ? " (σ " + b.sig + " t)" : ""), "fin: " + b.why + " (línea punteada = vela que lo decide)" ]
           .forEach(function (s, k) { ctx.fillText(s, x0, top - 8 - 12 * (3 - k)); });
       }
       tbzx.hits.push({ b: bi, x0: x0, x1: xe, y0: top, y1: top + hh });
