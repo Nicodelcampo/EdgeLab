@@ -157,3 +157,9 @@ Referencia: ES (20 velas, 17 t). NQ equivalente por conteo: (20 velas, 68 t). `l
 ### 10b. Ejecución reducida (25/09, antes de correr)
 
 Por créditos se corre sólo el núcleo de §10 con el código ya testeado de la iteración 2: ES con contrato canónico; métrica principal `llega_A_por_B` contra **N-REV** en las 12 configuraciones (BH q = 0,10) y piso de sesiones positivas ≥ 60 % en la de referencia (20, 17). El abanico (árbol, tick a tick, contexto de B, escala NQ) queda pendiente. El archivo de NQ con contrato viejo se aparta (`iter2_NQ.parquet.contrato_viejo`).
+
+### 10c. Resultado ES corregido (25/09; sha `7397205aa9cb`, OBS-TBZX-ITER2-ES-CANON)
+
+- `llega_A_por_B` contra N-REV, en la referencia (20, 17): 0,145 contra 0,081, **+0,063** (IC +0,043; +0,085). **Pasa FDR en las 12 configuraciones.**
+- **Sesiones positivas: 55 %. NO alcanza el piso pre-registrado de 60 %.** Es un efecto de promedio, no algo que aparezca en la mayoría de los días.
+- **Por hora** (Argentina, descriptivo): positivo en las 24 horas. Más fuerte a la 01 h (+0,146), a las 17 h (+0,136, cierre) y a las 19 h (+0,108). Entre 20 y 22 h hay mucha cantidad (unas 640 franjas por hora) con efecto medio (+0,06 a +0,09). Más débil entre las 9 y las 14 h (horario regular), con tasas absolutas bajas.

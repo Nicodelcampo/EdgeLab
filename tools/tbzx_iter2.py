@@ -369,10 +369,10 @@ def step_report():
     (OUT / "report_iter2.json").write_text(raw, encoding="utf-8")
     sha = hashlib.sha256(raw.encode()).hexdigest()
     from edgelab.edge_brain.episode_logger import measurement_episode
-    with measurement_episode(LEDGER, "EP-TBZX-ITER2-20260926", goal="TBZX iteración 2: N-REV, N-VOLSTR, estabilidad, réplica NQ",
+    with measurement_episode(LEDGER, "EP-TBZX-ITER2-ES-CANON-20260926", goal="TBZX iteración 2: N-REV, N-VOLSTR, estabilidad, réplica NQ",
                              recorded_by="tools/tbzx_iter2.py report", repo=REPO, prereg_ref=DOC) as ep:
         parts = [f"P-TBZX-{i}-EXP" for i in ("ES", "NQ") if i in body]
-        ep.store.record_observation("OBS-TBZX-ITER2", "franja TBZX: afuera y reingreso, nulos estrictos y réplica", "RESPONSE_PROFILE",
+        ep.store.record_observation("OBS-TBZX-ITER2-ES-CANON", "franja TBZX: afuera y reingreso, nulos estrictos y réplica", "RESPONSE_PROFILE",
                                     parts, {f"{i}|{k}": (v.get("diff"), v.get("ci")) for i in ("ES", "NQ") if i in body
                                             for k, v in body[i]["robust"].items() if isinstance(v, dict) and "status" in v},
                                     {"horizon_bars": H}, sha, design="EVENT_VS_CONTROL", control_audit=audit)
