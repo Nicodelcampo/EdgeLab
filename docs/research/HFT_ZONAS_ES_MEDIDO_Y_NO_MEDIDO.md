@@ -325,3 +325,12 @@ Cuidado con estos, que vienen del censo sobre el oráculo **V2 original con el b
 
 La población Flat tiene **9.486 zonas en 62 sesiones**. Cualquier comparación contra
 aquellos números compara dos poblaciones distintas.
+
+## Anexo 2026-09-24: costo de ejecución condicionado al libro (EXEC-QI; no es HFTZones, se registra acá por la regla del mismo commit)
+
+- **MEDIDO:** ahorro de orden pasiva frente a agresiva, por tercil de QI, T ∈ {5, 30, 120} s, en NQ, ES, GC y 6E L2 de julio y agosto, sobre una grilla uniforme de 1 s. Ver `MANIFIESTO_EJECUCION_QI_L2_20260924.md` §10.
+- **NO MEDIDO:**
+  - el ahorro en instantes de señal de una estrategia;
+  - fills reales (sim de NT8);
+  - liquidez oculta y cola real;
+  - la confirmación en `P-NQL2-CONF` y en el holdout L2.

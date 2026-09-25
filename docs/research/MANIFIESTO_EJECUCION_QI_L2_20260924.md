@@ -73,3 +73,42 @@ Las dos direcciones, compra y venta, se miden por separado y juntas.
 ## 8. Guardia de controles
 
 No hay diseño evento-contra-control: se compara A contra P en el **mismo instante**. Se registra `design="OTHER"`. La guardia `CTRL_TIMING_V1` no aplica y queda anotado.
+
+## 9. Aclaración de la métrica (antes de correr)
+
+Las dos políticas terminan con la misma posición, porque P cruza al vencer T. Evaluadas a un horizonte común, la diferencia de P&L entre ellas es **exactamente** `d·(p_A − p_P)`. La selección adversa ya queda incluida: el que se llena justo antes de un movimiento en contra lo paga igual que el agresivo. El markout de 60 s de los fills pasivos se publica sólo como diagnóstico. Así se reemplaza la suma "shortfall + adversa" del §4, que contaba dos veces.
+
+## 10. Resultados (2026-09-24)
+
+Reporte `artifacts/exec_qi/report.json` (sha `049c009e27ce…`). Ledger `artifacts/hippocampus/exec_qi_20260924.jsonl`. Sesiones: NQ 41, ES 41, GC 31, 6E 38. Ahorro de pasivo frente a agresivo, en ticks **por lado**, cola pesimista, T = 30 s, IC bootstrap por sesión:
+
+| Inst. | Spread p50 | QI en contra (el precio viene hacia vos) | Neutral | QI a favor (el precio se va) | Siempre pasivo | **Regla QI** (agresivo si d·QI ≥ 1/3) |
+|---|---:|---|---|---|---:|---:|
+| NQ | 5 | **+0,74** [0,67; 0,80] | +0,40 | +0,18 | +0,43 | +0,38 [0,34; 0,42] |
+| GC | 4 | **+0,56** [0,51; 0,61] | +0,33 | +0,20 | +0,36 | +0,30 [0,27; 0,34] |
+| ES | 1 | **+0,44** [0,42; 0,46] | +0,15 | **−0,25** | +0,12 | **+0,18** [0,17; 0,19] |
+| 6E | 1 | +0,23 [0,22; 0,24] | +0,11 | **−0,29** | +0,04 | **+0,11** [0,11; 0,12] |
+
+**Lectura:**
+1. **La orden pasiva ahorra costo en los cuatro instrumentos**, y el QI ordena el ahorro de forma monótona en todos: más cuando el libro "empuja" el precio hacia la orden. Es el efecto de la exploración B convertido en plata.
+2. **En contratos de tick grande (ES, 6E; spread de 1 tick)**, cuando el QI va a favor del movimiento la orden pasiva **pierde** contra la agresiva. Ahí la regla QI (cruzar si d·QI ≥ 1/3) mejora a "siempre pasivo": ES pasa de +0,12 a +0,18 y 6E de +0,04 a +0,11.
+3. **En NQ y GC (spread ancho)** conviene pasivo en los tres terciles. La regla QI no mejora a "siempre pasivo" a T = 30 s.
+4. **En dólares por lado**, regla óptima por instrumento a T = 30 s, pesimista:
+   - NQ ≈ 0,43 × USD 5 = **USD 2,15**;
+   - GC ≈ 0,36 × USD 10 = **USD 3,6**;
+   - ES ≈ 0,18 × USD 12,5 = **USD 2,25**;
+   - 6E ≈ 0,11 × USD 6,25 = **USD 0,7**.
+
+   Por ida y vuelta se duplica. Contra la mitad del spread que paga el agresivo (NQ 2,5 ticks; ES 0,5), el ahorro es de **17 % en NQ y 36 % en ES**.
+5. **Selección adversa (markout de los fills pasivos a 60 s):** NQ −1,7, GC −1,3, ES −0,4 y 6E −0,5 ticks. Es real y grande, y ya está descontada del ahorro.
+6. **Robustez:** el supuesto de cola casi no cambia NQ, donde la cola es de 1 a 3 contratos. En ES y 6E la banda optimista suma unos 0,1 tick.
+7. **Hora del día (NQ, T = 30):** el ahorro es mayor en Asia (+0,52) y en el cierre (+0,49) que en RTH (+0,21), donde el spread es más angosto.
+
+**Sugerencias** (PROPOSED/LOW, 6): NQ contra (T 5, 30 y 120), NQ neutral T120, GC contra (T 30 y 120). Todas pasan la regla en los dos supuestos de cola.
+
+**Límites (para que nadie lo lea como más de lo que es):**
+- Es **simulación sobre libro L1 de NT8**: sin cola real, sin liquidez oculta y sin el impacto de la propia orden.
+- La grilla es **uniforme** en el tiempo. En los instantes de una señal real (por ejemplo, momentum) el precio tiende a irse, y el ahorro puede ser menor o incluso negativo. **Cada estrategia tiene que medir su ahorro en sus propios instantes**, con esta misma herramienta.
+- Nada de esto se confirma en exploración. Lo confirman `P-NQL2-CONF`, el holdout L2 y, sobre todo, **fills reales en la sim de NT8**.
+
+**Aporte al cerebro:** `tools/exec_qi.py` es el modelo de costo que cualquier candidato puede pedir. Se le pasa el instrumento, las sesiones y (a futuro) los instantes de la señal, y devuelve el costo neto por política de orden.
