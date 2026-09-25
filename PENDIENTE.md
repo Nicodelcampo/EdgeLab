@@ -2593,3 +2593,14 @@ MM-QI se colgó en ES 21/08. Causa raíz: el archivo viene de un NRD parcial (co
 - **Gate nuevo:** `nq_l2_explore.clock_ok` exige trades monótonos (fail-closed). Lo usan todas las herramientas L2.
 - **Re-medido sin ese día** (ES pasa de 41 a 40 sesiones): EXEC-QI ES y V-RND ES quedan **iguales** a dos decimales (V-RND ES: −0,59 [−1,80; +0,52], NO_REPLICA). Observaciones viejas invalidadas; nuevas `OBS-EXECQI-ES-R2` y `OBS-VRND-ES-R2`.
 - **Pendiente:** agregar el chequeo de monotonía interna al conversor (`edgelab/data/l2.py`), para que falle en la conversión y no en el research.
+
+## P-93 — Agresor de research-v2: NQ válido, ES no (24/09)
+
+Validación contra el L2 en el solapamiento pre-holdout (NQ 25–30/06, ES 29–30/06). **NQ: 98,7–99,3 %.** **ES: 78,5–80,8 %**: no pasa el umbral del 90 % fijado en TBZ-E2 §7 I6 y TREND-MICRO §7 T1.
+
+- **Causa raíz:** el bid/ask que trae `research-v2` en ES es posterior a que el trade consumiera el nivel. Con spread de 1 tick, el lado queda invertido justo en los trades que rompen un nivel.
+- **Correcciones probadas sin éxito:** la cotización del trade anterior (80 %) y la anterior a la ráfaga (70–74 %).
+- **Por la regla pre-registrada:** en ES quedan afuera los descriptores de agresor (delta y absorción). TREND-MICRO F1/F2 corre sólo en NQ.
+- **Abierto:** reconstruir el agresor de ES desde el L2 cuando haya L2 pre-holdout suficiente, o validar otra regla contra el L2.
+
+**P-90 (MM-QI) cerrada:** muerta en su alcance declarado. Ver el manifiesto §7.

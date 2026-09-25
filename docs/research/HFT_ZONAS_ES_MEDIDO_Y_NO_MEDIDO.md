@@ -334,3 +334,11 @@ aquellos números compara dos poblaciones distintas.
   - fills reales (sim de NT8);
   - liquidez oculta y cola real;
   - la confirmación en `P-NQL2-CONF` y en el holdout L2.
+
+## Anexo 2026-09-24 (2): MM-QI y validación del agresor
+
+- **MEDIDO:** provisión pasiva de liquidez con filtro de QI en NQ, GC, ES y 6E: **muerta** (24 variantes negativas, 0 % de sesiones positivas). Ver `MANIFIESTO_MM_QI_L2_20260924.md` §7.
+- **MEDIDO:** agresor de `research-v2` contra el L2, en el solapamiento de junio. **NQ: 99 %** de acuerdo. **ES: 78–81 %**: no pasa el umbral del 90 %, porque la cotización pegada es posterior a que el trade consumiera el nivel. Ver `artifacts/aggressor_validation.json`.
+- **NO MEDIDO:**
+  - una corrección del agresor de ES que llegue al 90 % (se probaron la cotización del trade anterior y la anterior a la ráfaga; ninguna mejora);
+  - market making con información adicional.

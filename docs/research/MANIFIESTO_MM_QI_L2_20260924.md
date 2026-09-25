@@ -66,3 +66,31 @@ No se elige la mejor variante por su punto máximo. Se publican las 24.
 3. **Relojes de P-84:** los días no certificados quedan excluidos.
 4. **24 miradas:** mitigado porque todo es exploración y la reserva no se toca.
 5. **No se transportan costos entre instrumentos:** cada uno tiene su comisión en ticks y su propia simulación.
+
+## 7. Resultado (24/09): MUERTA en su alcance declarado
+
+Reporte `artifacts/mm_qi/report.json` (sha `06cf0bb8e624…`). Sesiones: NQ 41, ES 40 (sin el 21/08, P-92), GC 31 y 6E 38. Ninguna sugerencia.
+
+| Inst. | P&L neto por intento (rango de las 6 variantes) | Por trade | Sesiones positivas | Latencia 1 s / cola ×2 |
+|---|---|---|---|---|
+| NQ | −3,77 a −3,91 t | ≈ −4,5 t | **0 %** | igual o peor |
+| GC | −2,16 a −2,30 t | ≈ −3,4 t | **0 %** | igual o peor |
+| ES | −0,85 a −0,90 t | ≈ −1,2 t | **0 %** | igual o peor |
+| 6E | −0,34 a −0,74 t | ≈ −1,9 t | **0 %** | igual |
+
+**Lectura:**
+- Proveer liquidez de forma pasiva **pierde en todos los instrumentos, variantes y escenarios**, y ninguna sesión termina positiva.
+- El mecanismo, medido en NQ:
+  - la entrada pasiva se llena cuando el precio ya va ~2 ticks en contra;
+  - la salida pasiva cobra sólo ~+0,5 t;
+  - las salidas que no se llenan cuestan ~−25 t.
+- **El filtro de QI no rescata nada**: los tres terciles dan prácticamente lo mismo.
+- Este modelo de fill es **más favorable** que la realidad (P-89: NT8 y los foros coinciden en que el fill real es peor), así que el resultado real sólo puede ser peor.
+
+**Alcance de la muerte:**
+- **Muere:** la provisión pasiva de ida y vuelta, con esta regla y con filtro de QI, en NQ, GC, ES y 6E.
+- **No muere:**
+  - el uso de la orden pasiva para **entrar** en una estrategia con otra fuente de ventaja (EXEC-QI);
+  - el market making con información adicional, que no se midió.
+
+**Lección para las estrategias tendenciales** (Nico, 24/09): en las operaciones que dependen de movimientos que se escapan, la orden pasiva se llena cuando uno se equivoca. TBZ-E2 y TREND-MICRO usan entrada agresiva por diseño.
