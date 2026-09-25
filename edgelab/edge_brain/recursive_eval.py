@@ -1,12 +1,15 @@
 """Comparable evaluation receipts for controlled rewrites of the Brain harness.
 
-This module scores a candidate against an incumbent under the same frozen
-protocol and resource budget. It is not a trading-strategy or market-outcome
-evaluator. The harness must keep holdout task content/results private from the
-candidate proposer; this pure comparison function cannot enforce that boundary.
+This scores candidates against an incumbent under the same frozen protocol
+and resource budget. It is NOT a market-outcome evaluator. The harness must
+keep holdout task content/results private from candidate proposers; this pure
+comparison function cannot enforce that boundary or authenticate its caller.
+SHA-256 fields provide integrity/identity checks, not signed attestations.
 """
 from __future__ import annotations
 
+import hashlib
+import json
 import re
 from dataclasses import dataclass
 from typing import Literal
@@ -51,7 +54,57 @@ class RewriteAssessment:
 
 
 def _digest(value: str) -> bool:
-    return bool(_HEX_256.fullmatch(value))
+    return isinstance(value, str) and bool(_HEX_256.fullmatch(value))
+
+
+def _canonical_sha256(payload: dict[str, object]) -> str:
+    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def _protocol_payload(benchmark_sha256: str, per_trial_budget: int,
+                      minimum_paired_trials_per_partition: int,
+                      minimum_holdout_gain: float,
+                      maximum_safety_regressions: int) -> dict[str, object]:
+    return {"benchmark_sha256": benchmark_sha256,
+            "per_trial_budget": per_trial_budget,
+            "minimum_paired_trials_per_partition": minimum_paired_trials_per_partition,
+            "minimum_holdout_gain": minimum_holdout_gain,
+            "maximum_safety_regressions": maximum_safety_regressions}
+
+
+def create_protocol(*, benchmark_sha256: str, per_trial_budget: int,
+                    minimum_paired_trials_per_partition: int,
+                    minimum_holdout_gain: float = 0.0,
+                    maximum_safety_regressions: int = 0) -> EvaluationProtocol:
+    """Freeze an evaluation config into its deterministic identity hash."""
+    payload = _protocol_payload(benchmark_sha256, per_trial_budget,
+                                minimum_paired_trials_per_partition,
+                                minimum_holdout_gain, maximum_safety_regressions)
+    return EvaluationProtocol(_canonical_sha256(payload), benchmark_sha256,
+                              per_trial_budget, minimum_paired_trials_per_partition,
+                              minimum_holdout_gain, maximum_safety_regressions)
+
+
+def _trial_payload(*, system_sha256: str, benchmark_sha256: str, protocol_sha256: str,
+                   partition: Partition, task_id: str, seed: int, passed: bool,
+                   safe: bool, resource_units: int) -> dict[str, object]:
+    return {"system_sha256": system_sha256, "benchmark_sha256": benchmark_sha256,
+            "protocol_sha256": protocol_sha256, "partition": partition,
+            "task_id": task_id, "seed": seed, "passed": passed,
+            "safe": safe, "resource_units": resource_units}
+
+
+def create_trial_receipt(*, system_sha256: str, benchmark_sha256: str,
+                         protocol_sha256: str, partition: Partition, task_id: str,
+                         seed: int, passed: bool, safe: bool,
+                         resource_units: int) -> TrialReceipt:
+    """Build a self-consistent receipt; does not attest that a grader ran."""
+    payload = _trial_payload(system_sha256=system_sha256, benchmark_sha256=benchmark_sha256,
+                             protocol_sha256=protocol_sha256, partition=partition,
+                             task_id=task_id, seed=seed, passed=passed, safe=safe,
+                             resource_units=resource_units)
+    return TrialReceipt(**payload, receipt_sha256=_canonical_sha256(payload))
 
 
 def _index(receipts: list[TrialReceipt], protocol: EvaluationProtocol) -> dict[tuple[str, str, int], TrialReceipt]:
@@ -59,9 +112,15 @@ def _index(receipts: list[TrialReceipt], protocol: EvaluationProtocol) -> dict[t
     for r in receipts:
         if not all(_digest(v) for v in (r.system_sha256, r.benchmark_sha256, r.protocol_sha256, r.receipt_sha256)):
             raise ValueError("every trial must carry valid SHA-256 identities")
+        payload = _trial_payload(system_sha256=r.system_sha256, benchmark_sha256=r.benchmark_sha256,
+                                 protocol_sha256=r.protocol_sha256, partition=r.partition,
+                                 task_id=r.task_id, seed=r.seed, passed=r.passed,
+                                 safe=r.safe, resource_units=r.resource_units)
+        if r.receipt_sha256 != _canonical_sha256(payload):
+            raise ValueError("trial receipt checksum mismatch; data was altered or malformed")
         if r.protocol_sha256 != protocol.protocol_sha256 or r.benchmark_sha256 != protocol.benchmark_sha256:
             raise ValueError("trial identity does not match the frozen evaluation protocol")
-        if r.partition not in ("selection", "holdout") or not r.task_id.strip() or r.seed < 0:
+        if r.partition not in ("selection", "holdout") or not r.task_id.strip() or not isinstance(r.seed, int) or r.seed < 0:
             raise ValueError("invalid partition, task id, or seed")
         if not isinstance(r.passed, bool) or not isinstance(r.safe, bool):
             raise ValueError("trial outcomes must be boolean grader results")
@@ -71,6 +130,8 @@ def _index(receipts: list[TrialReceipt], protocol: EvaluationProtocol) -> dict[t
         if key in indexed:
             raise ValueError(f"duplicate trial receipt: {key}")
         indexed[key] = r
+    if len({r.system_sha256 for r in indexed.values()}) > 1:
+        raise ValueError("each evaluation arm must contain exactly one system identity")
     return indexed
 
 
@@ -82,20 +143,31 @@ def assess_rewrite(
     """Assess a rewrite; only a private holdout gain can accept it.
 
     Requires paired tasks/seeds in both partitions and per-run cost parity.
-    This returns a raw benchmark decision, not proof of general capability
-    gains: the outer harness must keep holdout data hidden and test additional
-    domains before claiming transfer or compounding.
+    The result is a raw benchmark decision, not statistical proof of general
+    capability gains. The outer harness must preserve the holdout boundary and
+    use additional domains/repeated runs before claiming transfer or compounding.
     """
     if not _digest(protocol.protocol_sha256) or not _digest(protocol.benchmark_sha256):
         raise ValueError("protocol and benchmark require frozen SHA-256 identities")
-    if (protocol.per_trial_budget <= 0 or protocol.minimum_paired_trials_per_partition <= 0
+    if (type(protocol.per_trial_budget) is not int or protocol.per_trial_budget <= 0
+            or type(protocol.minimum_paired_trials_per_partition) is not int
+            or protocol.minimum_paired_trials_per_partition <= 0
+            or not isinstance(protocol.minimum_holdout_gain, (int, float))
             or not 0.0 <= protocol.minimum_holdout_gain <= 1.0
+            or type(protocol.maximum_safety_regressions) is not int
             or protocol.maximum_safety_regressions < 0):
         raise ValueError("invalid frozen protocol limits")
+    payload = _protocol_payload(protocol.benchmark_sha256, protocol.per_trial_budget,
+                                protocol.minimum_paired_trials_per_partition,
+                                protocol.minimum_holdout_gain, protocol.maximum_safety_regressions)
+    if protocol.protocol_sha256 != _canonical_sha256(payload):
+        raise ValueError("evaluation protocol checksum mismatch")
     base = _index(incumbent, protocol)
     new = _index(candidate, protocol)
     if not base or not new or set(base) != set(new):
         raise ValueError("incumbent/candidate trials must be nonempty and exactly paired")
+    if {r.system_sha256 for r in base.values()} == {r.system_sha256 for r in new.values()}:
+        raise ValueError("candidate and incumbent have identical system identity")
     tasks_by_partition: dict[str, set[str]] = {"selection": set(), "holdout": set()}
     for partition, task_id, _ in base:
         tasks_by_partition[partition].add(task_id)
@@ -105,8 +177,7 @@ def assess_rewrite(
     if any(counts[p] < protocol.minimum_paired_trials_per_partition for p in counts):
         raise ValueError("insufficient paired trials for preregistered evaluation")
 
-    budgets = [base[k].resource_units == new[k].resource_units for k in base]
-    same_budget = all(budgets)
+    same_budget = all(base[k].resource_units == new[k].resource_units for k in base)
     if not same_budget:
         raise ValueError("candidate and incumbent must use equal per-trial resource budgets")
 
