@@ -194,3 +194,18 @@ Las operaciones se re-simulan con la misma función de la medición y se compara
 **Ceguera:** la capa muestra desenlaces, así que el constructor sólo acepta bundles de exploración (≤ 2026-03-31, ya medidos). Abr–jun sigue sin mirar.
 
 **Retraso del SL/TP «tarde»:** la causa era que todas las capas se pintaban en un canvas aparte, un cuadro después del gráfico. Ahora se pintan dentro del ciclo de pintado de la serie (primitiva `attachPrimitive`), así que se mueven junto con las velas.
+
+## 10. El nulo N2 no es comparable (observación de Nico en el visor, 25/09)
+
+Nico vio en el visor que los tramos N2 son «completamente distintos: menos frecuentes y más chicos». Medido sobre las primeras 60 sesiones de ES, W20_k4:
+
+| ancho (ticks) | 4–7 | 8–15 | 16–31 | ≥32 |
+|---|---|---|---|---|
+| expansiones | 2.194 | 4.553 | 946 | 138 |
+| tramos N2 | 3.264 | 424 | 47 | 1 |
+
+Mediana del ancho: 15 t en las expansiones contra 5 t en N2; eficiencia 0,67 contra 0,33. El emparejamiento por bin de ancho del reporte (§8) se apoya en **47 tramos N2** para el bin donde vive buena parte de las expansiones, y dentro de cada bin N2 se carga hacia el borde chico. **Consecuencia:** la afirmación «las franjas TBZ se revierten menos que N2» (§8) queda **sin soporte** hasta tener un nulo comparable. El veredicto contra N1 (geometría pura) no cambia.
+
+Por qué pasa: N2 es el zigzag de todos los tramos menos los que terminan donde termina una expansión. Los tramos grandes y eficientes son justamente expansiones, así que el resto es, por construcción, lo chico y lento.
+
+Nulo candidato, **no ejecutado** (va con la corrida nueva y con OK de Nico): tramos del zigzag con el **mismo ancho exacto** (± 1 t) y la **misma duración** (± 25 %) que cada expansión, tomados de otros momentos de la misma sesión, sin la condición de velocidad/eficiencia. Si no alcanzan, se reporta cuántos faltan en lugar de relajar el emparejamiento.
