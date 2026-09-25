@@ -71,3 +71,37 @@ A lo sumo 3 pasan a `*-CONF`, con una spec en revisión ciega y una campaña.
 - **Agresor inferido:** hay que validarlo antes (§4).
 - **Solapamiento con TBZ-E2 y ABS-CTX:** B3 usa las franjas de TBZ y F1 usa el detector de ABS-CTX. **No se transportan resultados**: cada familia lleva su ledger. Los tres comparten herramientas y el registro de parámetros.
 - **Costo real de entradas agresivas en ruptura:** puede haber más slippage que el spread observado. Sensibilidad: +1 tick por lado.
+
+## 7. Iteración 1 (24/09, antes de medir; manda sobre §2–§6 donde choquen)
+
+**T1. Validación del agresor en otra ventana.** `research-v2` fue re-cortado en el 01/07 (holdout), así que **no tiene julio ni agosto**. El único solapamiento pre-holdout con el L2 es NQ 09-26 del 25 al 30/06 y ES 09-26 del 29 y 30/06.
+- **Qué se valida ahí** (target-free): la columna `aggressor` de `research-v2` contra el agresor por cotización del L2, trade por trade, emparejando con un desfase de reloj que se detecta automáticamente (el L2 guarda la hora de pared ART como UTC).
+- **Umbral:** acuerdo ≥ 90 %. Si no se alcanza, F1 y F2 no se corren.
+
+**T2. B3 corregido.** t_avail es el **fin** de una expansión, no una ruptura.
+- **B3 = vela en la que se dispara una expansión nueva** (el estado se crea al cierre de la vela j, causal), en la misma dirección que la franja anterior todavía viva (≤ 240 min).
+- **Cambio de código:** `expansion_bands` expone `t_trigger`. Es un campo nuevo; no cambia los que ya existen.
+
+**T3. Una señal por nivel y sesión.**
+- **B1:** primera ruptura del máximo o mínimo de la sesión en curso, y primera ruptura del máximo o mínimo de la sesión previa.
+- **B2:** primera ruptura de cada número redondo en la sesión.
+- **B3:** una por disparo.
+
+**T4. Ejecución.**
+- Una posición a la vez por celda.
+- **Entrada:** agresiva en el primer trade posterior a señal + 250 ms.
+- **Stop:** nivel roto − 0,5σ₅ (para compras); a mercado en el primer trade posterior a tocarlo.
+- **Target:** límite que se llena sólo si el precio lo atraviesa por 1 t.
+- **Salida por tiempo:** 60 min.
+- **σ₅:** mediana causal de |Δ5 min| en las 3.000 velas de 1 min previas.
+- **Comisión por lado:** ES 0,2 t y NQ 0,5 t.
+
+**T5. Instrumentos:** **ES y NQ** son los primarios. MES sale porque es redundante con ES. Siguen siendo 24 celdas por instrumento, **48 en total**.
+
+**T6. Sesiones:** salen de los manifiestos de los bundles de 25 ticks (ES: 313 sesiones hasta el 30/06; NQ: 279 hasta el 18/06). Con contratos solapados, se toma el de más ticks. Particiones:
+- **ES:** `P-TBZ-EXP` y `P-TBZ-CONF`, ya declaradas.
+- **NQ:** `P-TMIC-NQ-EXP` (hasta el 31/03) y `P-TMIC-NQ-CONF` (01/04–18/06), que se declaran antes de medir.
+
+**T7. F2 (cascada).** p90 del volumen agresivo en ventanas de 10 s, calculado sobre la **sesión previa** (causal).
+
+**T8. Recursos:** sesión por sesión y por row group. Como máximo 2 procesos.

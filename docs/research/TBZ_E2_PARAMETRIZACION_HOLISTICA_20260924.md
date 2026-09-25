@@ -80,3 +80,53 @@ Una celda le gana al azar si supera a **los tres**, en tasa de toque de A **y** 
 1. `tools/tbz_e2_census.py` (E2a): lee el registro JSON, calcula G0 a G5 por franja y por evento, y escribe `artifacts/tbz_e2/`. Todo es causal y cada campo lleva su `available_at`.
 2. `tools/tbz_e2_explore.py` (E2b, después del OK): la grilla primaria, los tres nulos y el árbol honesto.
 3. Visor: una capa de reingresos con sus descriptores, que Nico recorre a ojo antes de E2b, en la línea de la revisión ciega.
+
+## 7. Iteración 1 (24/09, antes de medir; manda sobre §2–§6 donde choquen)
+
+Verificado contra `edgelab/research/tbz_bands.py::expansion_bands`, contra los datos de `research-v2` y contra los manifiestos de los bundles.
+
+**I1. Las poblaciones de entrada estaban mal definidas.**
+- La expansión termina cuando una vela retrocede ≥ max(2 t, r·W) desde B. **En t_avail el precio ya está dentro de la franja por construcción**, a una profundidad ≥ r·W.
+- Por eso "primer toque de B desde afuera" y "penetración 25 %" no tienen sentido tal como estaban (con r = 0,3, la penetración del 25 % se cumple siempre).
+- Las cuatro poblaciones correctas, que reemplazan a las de G4:
+
+  | Evento | Definición | Ventana |
+  |---|---|---|
+  | **E0 confirmación** | en t_avail (cierre de la vela que confirma): el precio pegó la vuelta | — |
+  | **E1 profundización** | primera vez después de t_avail que el precio llega a una profundidad ≥ 0,5W, sin haber hecho antes un extremo nuevo más allá de B | ≤ 240 min |
+  | **E2 reingreso tras extensión** | después de t_avail el precio supera B por ≥ 2 t y después vuelve a una profundidad ≥ r·W | ≤ 240 min |
+  | **E3 retesteo de B desde adentro** | después de t_avail el precio vuelve a ≤ 1 t de B sin superarlo y después baja otra vez a una profundidad ≥ r·W | ≤ 240 min |
+
+**I2. Dirección.**
+- **Primaria: patinar hacia A** (contra la expansión, lo que describió Nico).
+- **Secundaria, con su propia corrección FDR: hacia B** (continuación). No se mezclan en la misma familia de pruebas.
+
+**I3. Ejecución y salida por evento.**
+- Entrada **agresiva** en el primer trade posterior a evento + 250 ms, al precio contrario (ask para comprar, bid para vender).
+- **Stop:** B + 0,25W más allá de B. Se ejecuta a mercado en el primer trade posterior a tocarlo.
+- **Target:** A, o el HVN del perfil izquierdo entre la entrada y A (si no hay, A). Se ejecuta como límite y se llena **sólo si el precio lo atraviesa por 1 tick** (conservador).
+- **Tiempo máximo:** 1.800 s, a mercado.
+- **Comisión por lado:** ES USD 2,50 (0,2 t) y MES USD 0,85 (0,68 t).
+- **Unidad primaria:** el **evento**, con solapamientos permitidos y bootstrap por sesión. Se agrega como descriptiva una versión "una posición a la vez".
+
+**I4. Nulos redefinidos para que respondan la pregunta.**
+- **N1:** ruina del jugador con las distancias reales de cada evento: s/(d_A + s).
+- **N2, "recorrido lento del mismo tamaño":** el mismo detector con ventana W×6 (movimientos del mismo ancho pero lentos), sin superposición con franjas rápidas, emparejado por ancho en σ y con las mismas reglas E0–E3. Contesta si **importa que haya sido rápido** (la baja permanencia), que es la hipótesis.
+- **N3, otra sesión a la misma hora:** mismas distancias de stop y target en ticks y misma dirección, desde un instante al azar de otra sesión a ±5 min de la misma hora. Controla la deriva y la estacionalidad. Cumple `CTRL_TIMING_V1`.
+
+**I5. Instrumento primario:** ES. MES es el mismo subyacente con otro reloj de 25 ticks: se reporta como apoyo y **no decide**.
+
+**I6. Datos.**
+- Ticks de `research-v2`. Las velas de 25 ticks se rearman con `build_tick_bars(..., reiniciar_por_sesion=True)`, igual que los bundles.
+- Las sesiones y el contrato del día salen de los manifiestos de los bundles: ES tiene 313 sesiones entre el 18/07/2025 y el 30/06/2026; ante un solapamiento de contratos, se toma el de más ticks.
+- **El agresor viene en la columna `aggressor` de `research-v2`.** Antes de usar delta o absorción se valida contra el agresor del L2 en el único solapamiento pre-holdout: ES del 29 y 30/06 y NQ del 25 al 30/06 (target-free). Si el acuerdo es < 90 %, esos descriptores quedan afuera.
+
+**I7. Presupuesto.** Primaria: 4 detecciones × 4 eventos × 2 TP = **32 celdas** (hacia A). Secundaria: 32 (hacia B), con su propio FDR.
+
+**I8. Regla de sugerencia.** Una celda es SUGERENCIA si cumple todo esto:
+- pasa FDR q = 0,10 dentro de su familia;
+- esperanza neta por evento con IC > 0;
+- tasa de "A antes del stop" por encima de N1, N2 y N3 con IC;
+- positiva en ≥ 55 % de los meses.
+
+**I9. Recursos** (hubo dos cuelgues de la PC): se procesa sesión por sesión, leyendo los parquet por row group filtrado a la ventana. Como máximo 2 procesos.

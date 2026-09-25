@@ -17,120 +17,581 @@
       "id": "G0_BARRAS",
       "name": "Resolucion sobre la que se detecta",
       "params": [
-        {"id": "bar_spec", "role": "DETECTOR", "data": "TICKS", "grid": ["25t", "50t", "100t", "1m"], "default": "25t", "note": "eje distinto de cualquier parametro del indicador (regla del proyecto)"}
+        {
+          "id": "bar_spec",
+          "role": "DETECTOR",
+          "data": "TICKS",
+          "grid": [
+            "25t",
+            "50t",
+            "100t",
+            "1m"
+          ],
+          "default": "25t",
+          "note": "eje distinto de cualquier parametro del indicador (regla del proyecto)"
+        }
       ]
     },
     {
       "id": "G1_DETECCION",
       "name": "Que cuenta como expansion (cambia cantidad y tipo de franjas)",
       "params": [
-        {"id": "W_bars", "role": "DETECTOR", "data": "TICKS", "grid": [10, 20, 40, 60], "default": 20, "def": "ventana en velas donde se mide el desplazamiento neto"},
-        {"id": "k_sigma", "role": "DETECTOR", "data": "TICKS", "grid": [2.5, 4.0, 6.0], "default": 4.0, "def": "desplazamiento neto >= k * sigma_W causal"},
-        {"id": "sigma_hist", "role": "DETECTOR", "data": "TICKS", "grid": [1000, 3000], "default": 3000, "def": "velas previas para la mediana causal de |c_t - c_{t-W}|"},
-        {"id": "eff_min", "role": "DETECTOR", "data": "TICKS", "grid": [0.5, 0.6, 0.75], "default": 0.6, "def": "neto / recorrido de cierres (rectitud)"},
-        {"id": "retr_end", "role": "DETECTOR", "data": "TICKS", "grid": [0.2, 0.3, 0.5], "default": 0.3, "def": "fin cuando el retroceso desde B >= r * ancho"},
-        {"id": "min_net_ticks", "role": "DETECTOR", "data": "TICKS", "grid": [4, 8, 16], "default": 4},
-        {"id": "speed_min", "role": "DETECTOR", "data": "TICKS", "grid": [null, "p75", "p90"], "default": null, "def": "ticks/segundo de la expansion >= percentil causal (alternativa por velocidad)"},
-        {"id": "vol_rel_min", "role": "DETECTOR", "data": "TICKS", "grid": [null, 1.5, 2.5], "default": null, "def": "volumen de la expansion / volumen tipico del mismo tiempo (percentil causal por hora)"},
-        {"id": "max_duration_s", "role": "DETECTOR", "data": "TICKS", "grid": [300, 1800, 7200], "default": 1800},
-        {"id": "gap_censor_s", "role": "DETECTOR", "data": "TICKS", "grid": [1800], "default": 1800, "def": "hueco de tiempo que descarta la expansion en curso"}
+        {
+          "id": "W_bars",
+          "role": "DETECTOR",
+          "data": "TICKS",
+          "grid": [
+            10,
+            20,
+            40,
+            60
+          ],
+          "default": 20,
+          "def": "ventana en velas donde se mide el desplazamiento neto"
+        },
+        {
+          "id": "k_sigma",
+          "role": "DETECTOR",
+          "data": "TICKS",
+          "grid": [
+            2.5,
+            4.0,
+            6.0
+          ],
+          "default": 4.0,
+          "def": "desplazamiento neto >= k * sigma_W causal"
+        },
+        {
+          "id": "sigma_hist",
+          "role": "DETECTOR",
+          "data": "TICKS",
+          "grid": [
+            1000,
+            3000
+          ],
+          "default": 3000,
+          "def": "velas previas para la mediana causal de |c_t - c_{t-W}|"
+        },
+        {
+          "id": "eff_min",
+          "role": "DETECTOR",
+          "data": "TICKS",
+          "grid": [
+            0.5,
+            0.6,
+            0.75
+          ],
+          "default": 0.6,
+          "def": "neto / recorrido de cierres (rectitud)"
+        },
+        {
+          "id": "retr_end",
+          "role": "DETECTOR",
+          "data": "TICKS",
+          "grid": [
+            0.2,
+            0.3,
+            0.5
+          ],
+          "default": 0.3,
+          "def": "fin cuando el retroceso desde B >= r * ancho"
+        },
+        {
+          "id": "min_net_ticks",
+          "role": "DETECTOR",
+          "data": "TICKS",
+          "grid": [
+            4,
+            8,
+            16
+          ],
+          "default": 4
+        },
+        {
+          "id": "speed_min",
+          "role": "DETECTOR",
+          "data": "TICKS",
+          "grid": [
+            null,
+            "p75",
+            "p90"
+          ],
+          "default": null,
+          "def": "ticks/segundo de la expansion >= percentil causal (alternativa por velocidad)"
+        },
+        {
+          "id": "vol_rel_min",
+          "role": "DETECTOR",
+          "data": "TICKS",
+          "grid": [
+            null,
+            1.5,
+            2.5
+          ],
+          "default": null,
+          "def": "volumen de la expansion / volumen tipico del mismo tiempo (percentil causal por hora)"
+        },
+        {
+          "id": "max_duration_s",
+          "role": "DETECTOR",
+          "data": "TICKS",
+          "grid": [
+            300,
+            1800,
+            7200
+          ],
+          "default": 1800
+        },
+        {
+          "id": "gap_censor_s",
+          "role": "DETECTOR",
+          "data": "TICKS",
+          "grid": [
+            1800
+          ],
+          "default": 1800,
+          "def": "hueco de tiempo que descarta la expansion en curso"
+        }
       ]
     },
     {
       "id": "G2_DESCRIPTORES_EXPANSION",
       "name": "Como es la expansion (en t_avail)",
       "params": [
-        {"id": "W_ticks", "role": "DESCRIPTOR", "data": "TICKS"},
-        {"id": "W_sigma", "role": "DESCRIPTOR", "data": "TICKS", "def": "ancho / sigma causal"},
-        {"id": "dur_s", "role": "DESCRIPTOR", "data": "TICKS"},
-        {"id": "speed_tps", "role": "DESCRIPTOR", "data": "TICKS", "def": "W / duracion"},
-        {"id": "efficiency", "role": "DESCRIPTOR", "data": "TICKS"},
-        {"id": "vol_total", "role": "DESCRIPTOR", "data": "TICKS"},
-        {"id": "vol_rel", "role": "DESCRIPTOR", "data": "TICKS", "def": "volumen / tipico causal por minuto del dia"},
-        {"id": "delta_share", "role": "DESCRIPTOR", "data": "TICKS", "def": "(vol agresor a favor - en contra) / vol, agresor por regla de cotizacion"},
-        {"id": "max_pullback_inside", "role": "DESCRIPTOR", "data": "TICKS", "def": "mayor retroceso durante la expansion / W"},
-        {"id": "dwell_profile_inside", "role": "DESCRIPTOR", "data": "TICKS", "def": "fraccion del ancho con volumen < q*mediana (LVN internos); posicion del minimo de volumen"},
-        {"id": "n_lvn_inside", "role": "DESCRIPTOR", "data": "TICKS"},
-        {"id": "session_phase", "role": "DESCRIPTOR", "data": "TICKS", "grid": ["Asia", "Europa", "apertura_RTH", "RTH", "cierre"]},
-        {"id": "dir_vs_trend", "role": "DESCRIPTOR", "data": "TICKS", "def": "signo de la expansion vs tendencia de 30 min y de la sesion"}
+        {
+          "id": "W_ticks",
+          "role": "DESCRIPTOR",
+          "data": "TICKS"
+        },
+        {
+          "id": "W_sigma",
+          "role": "DESCRIPTOR",
+          "data": "TICKS",
+          "def": "ancho / sigma causal"
+        },
+        {
+          "id": "dur_s",
+          "role": "DESCRIPTOR",
+          "data": "TICKS"
+        },
+        {
+          "id": "speed_tps",
+          "role": "DESCRIPTOR",
+          "data": "TICKS",
+          "def": "W / duracion"
+        },
+        {
+          "id": "efficiency",
+          "role": "DESCRIPTOR",
+          "data": "TICKS"
+        },
+        {
+          "id": "vol_total",
+          "role": "DESCRIPTOR",
+          "data": "TICKS"
+        },
+        {
+          "id": "vol_rel",
+          "role": "DESCRIPTOR",
+          "data": "TICKS",
+          "def": "volumen / tipico causal por minuto del dia"
+        },
+        {
+          "id": "delta_share",
+          "role": "DESCRIPTOR",
+          "data": "TICKS",
+          "def": "(vol agresor a favor - en contra) / vol, agresor por regla de cotizacion"
+        },
+        {
+          "id": "max_pullback_inside",
+          "role": "DESCRIPTOR",
+          "data": "TICKS",
+          "def": "mayor retroceso durante la expansion / W"
+        },
+        {
+          "id": "dwell_profile_inside",
+          "role": "DESCRIPTOR",
+          "data": "TICKS",
+          "def": "fraccion del ancho con volumen < q*mediana (LVN internos); posicion del minimo de volumen"
+        },
+        {
+          "id": "n_lvn_inside",
+          "role": "DESCRIPTOR",
+          "data": "TICKS"
+        },
+        {
+          "id": "session_phase",
+          "role": "DESCRIPTOR",
+          "data": "TICKS",
+          "grid": [
+            "Asia",
+            "Europa",
+            "apertura_RTH",
+            "RTH",
+            "cierre"
+          ]
+        },
+        {
+          "id": "dir_vs_trend",
+          "role": "DESCRIPTOR",
+          "data": "TICKS",
+          "def": "signo de la expansion vs tendencia de 30 min y de la sesion"
+        }
       ]
     },
     {
       "id": "G3_POST_EXPANSION",
       "name": "Que pasa despues de t_avail y antes de volver a la franja",
       "params": [
-        {"id": "ext_beyond_B", "role": "DESCRIPTOR", "data": "TICKS", "def": "recorrido maximo mas alla de B antes del reingreso, en ticks y en /W", "available_at": "reingreso"},
-        {"id": "t_to_reentry_s", "role": "DESCRIPTOR", "data": "TICKS", "available_at": "reingreso"},
-        {"id": "vol_between", "role": "DESCRIPTOR", "data": "TICKS", "def": "volumen negociado entre t_avail y el reingreso (y relativo)", "available_at": "reingreso"},
-        {"id": "delta_between", "role": "DESCRIPTOR", "data": "TICKS", "available_at": "reingreso"},
-        {"id": "n_prior_touches_B", "role": "DESCRIPTOR", "data": "TICKS", "def": "veces que el precio toco B y se fue antes de este reingreso", "available_at": "reingreso"},
-        {"id": "age_s", "role": "DESCRIPTOR", "data": "TICKS", "def": "edad de la franja al reingreso", "available_at": "reingreso"}
+        {
+          "id": "ext_beyond_B",
+          "role": "DESCRIPTOR",
+          "data": "TICKS",
+          "def": "recorrido maximo mas alla de B antes del reingreso, en ticks y en /W",
+          "available_at": "reingreso"
+        },
+        {
+          "id": "t_to_reentry_s",
+          "role": "DESCRIPTOR",
+          "data": "TICKS",
+          "available_at": "reingreso"
+        },
+        {
+          "id": "vol_between",
+          "role": "DESCRIPTOR",
+          "data": "TICKS",
+          "def": "volumen negociado entre t_avail y el reingreso (y relativo)",
+          "available_at": "reingreso"
+        },
+        {
+          "id": "delta_between",
+          "role": "DESCRIPTOR",
+          "data": "TICKS",
+          "available_at": "reingreso"
+        },
+        {
+          "id": "n_prior_touches_B",
+          "role": "DESCRIPTOR",
+          "data": "TICKS",
+          "def": "veces que el precio toco B y se fue antes de este reingreso",
+          "available_at": "reingreso"
+        },
+        {
+          "id": "age_s",
+          "role": "DESCRIPTOR",
+          "data": "TICKS",
+          "def": "edad de la franja al reingreso",
+          "available_at": "reingreso"
+        }
       ]
     },
     {
       "id": "G4_REINGRESO",
       "name": "El precio dentro de la franja (pegando la vuelta): el evento",
       "params": [
-        {"id": "entry_event", "role": "ENTRY", "data": "TICKS", "grid": ["primer_toque_B", "penetracion_25pct", "cierre_vela_dentro", "segundo_toque_B"], "default": "penetracion_25pct", "def": "poblaciones enumeradas (regla del proyecto: cada una es una familia de entradas distinta)"},
-        {"id": "approach_speed", "role": "DESCRIPTOR", "data": "TICKS", "def": "ticks/s en los 60 s previos al evento"},
-        {"id": "approach_vol_rel", "role": "DESCRIPTOR", "data": "TICKS"},
-        {"id": "approach_delta", "role": "DESCRIPTOR", "data": "TICKS"},
-        {"id": "absorption_at_B", "role": "FILTER", "data": "TICKS", "grid": [null, "hubo", "hubo_y_cedio"], "def": "AbsorptionTracker causal con agresor por regla de cotizacion en +-2 t de B en los 5 min previos"},
-        {"id": "skate_len_ticks", "role": "DESCRIPTOR", "data": "TICKS", "def": "distancia del evento al borde lejano A (lo que queda por patinar)"},
-        {"id": "ma_filter", "role": "FILTER", "data": "TICKS", "grid": [null, "EMA20_1m", "EMA50_1m", "SMA200_1m", "VWAP_sesion"], "def": "lado del precio respecto de la media; alineado si la direccion del patinaje coincide"},
-        {"id": "ma_slope", "role": "DESCRIPTOR", "data": "TICKS"}
+        {
+          "id": "entry_event",
+          "role": "ENTRY",
+          "data": "TICKS",
+          "grid": [
+            "E0_confirmacion",
+            "E1_profundizacion_50",
+            "E2_reingreso_tras_extension",
+            "E3_retesteo_B"
+          ],
+          "default": "E0_confirmacion",
+          "def": "Iteracion 1: en t_avail el precio ya esta dentro a profundidad >= r*W por construccion; ver doc §7 I1"
+        },
+        {
+          "id": "approach_speed",
+          "role": "DESCRIPTOR",
+          "data": "TICKS",
+          "def": "ticks/s en los 60 s previos al evento"
+        },
+        {
+          "id": "approach_vol_rel",
+          "role": "DESCRIPTOR",
+          "data": "TICKS"
+        },
+        {
+          "id": "approach_delta",
+          "role": "DESCRIPTOR",
+          "data": "TICKS"
+        },
+        {
+          "id": "absorption_at_B",
+          "role": "FILTER",
+          "data": "TICKS",
+          "grid": [
+            null,
+            "hubo",
+            "hubo_y_cedio"
+          ],
+          "def": "AbsorptionTracker causal con agresor por regla de cotizacion en +-2 t de B en los 5 min previos"
+        },
+        {
+          "id": "skate_len_ticks",
+          "role": "DESCRIPTOR",
+          "data": "TICKS",
+          "def": "distancia del evento al borde lejano A (lo que queda por patinar)"
+        },
+        {
+          "id": "ma_filter",
+          "role": "FILTER",
+          "data": "TICKS",
+          "grid": [
+            null,
+            "EMA20_1m",
+            "EMA50_1m",
+            "SMA200_1m",
+            "VWAP_sesion"
+          ],
+          "def": "lado del precio respecto de la media; alineado si la direccion del patinaje coincide"
+        },
+        {
+          "id": "ma_slope",
+          "role": "DESCRIPTOR",
+          "data": "TICKS"
+        },
+        {
+          "id": "trade_dir",
+          "role": "ENTRY",
+          "data": "TICKS",
+          "grid": [
+            "hacia_A",
+            "hacia_B"
+          ],
+          "default": "hacia_A",
+          "def": "hacia_A primaria (patinaje, reversion); hacia_B secundaria con FDR propio"
+        }
       ]
     },
     {
       "id": "G5_PERFIL_IZQUIERDO",
       "name": "Perfil de volumen trazado desde la expansion hacia la izquierda",
       "params": [
-        {"id": "vp_lookback", "role": "DESCRIPTOR", "data": "TICKS", "grid": ["1h", "4h", "sesion", "sesion_previa"], "default": "4h", "def": "ventana ANTERIOR al inicio de la expansion"},
-        {"id": "vp_bin_ticks", "role": "DESCRIPTOR", "data": "TICKS", "grid": [1, 2, 4], "default": 2},
-        {"id": "vp_smooth", "role": "DESCRIPTOR", "data": "TICKS", "grid": [0, 3], "default": 3, "def": "suavizado en bins"},
-        {"id": "hvn_prominence", "role": "DESCRIPTOR", "data": "TICKS", "grid": [0.5, 1.0], "default": 1.0, "def": "prominencia minima (en desvios) de un pico"},
-        {"id": "lvn_depth", "role": "DESCRIPTOR", "data": "TICKS", "grid": [0.25, 0.4], "default": 0.25, "def": "valle < q * mediana"},
-        {"id": "hvn_in_band", "role": "DESCRIPTOR", "data": "TICKS", "def": "posiciones de HVN/POC dentro de [A,B] como fraccion de W"},
-        {"id": "lvn_in_band", "role": "DESCRIPTOR", "data": "TICKS"},
-        {"id": "tp_mode", "role": "EXIT", "data": "TICKS", "grid": ["borde_A", "HVN_mas_cercano", "POC_izquierdo", "R_multiple"], "default": "borde_A"},
-        {"id": "entry_at_lvn", "role": "ENTRY", "data": "TICKS", "grid": [false, true], "default": false, "def": "evento sólo si el reingreso ocurre en un LVN del perfil izquierdo"}
+        {
+          "id": "vp_lookback",
+          "role": "DESCRIPTOR",
+          "data": "TICKS",
+          "grid": [
+            "1h",
+            "4h",
+            "sesion",
+            "sesion_previa"
+          ],
+          "default": "4h",
+          "def": "ventana ANTERIOR al inicio de la expansion"
+        },
+        {
+          "id": "vp_bin_ticks",
+          "role": "DESCRIPTOR",
+          "data": "TICKS",
+          "grid": [
+            1,
+            2,
+            4
+          ],
+          "default": 2
+        },
+        {
+          "id": "vp_smooth",
+          "role": "DESCRIPTOR",
+          "data": "TICKS",
+          "grid": [
+            0,
+            3
+          ],
+          "default": 3,
+          "def": "suavizado en bins"
+        },
+        {
+          "id": "hvn_prominence",
+          "role": "DESCRIPTOR",
+          "data": "TICKS",
+          "grid": [
+            0.5,
+            1.0
+          ],
+          "default": 1.0,
+          "def": "prominencia minima (en desvios) de un pico"
+        },
+        {
+          "id": "lvn_depth",
+          "role": "DESCRIPTOR",
+          "data": "TICKS",
+          "grid": [
+            0.25,
+            0.4
+          ],
+          "default": 0.25,
+          "def": "valle < q * mediana"
+        },
+        {
+          "id": "hvn_in_band",
+          "role": "DESCRIPTOR",
+          "data": "TICKS",
+          "def": "posiciones de HVN/POC dentro de [A,B] como fraccion de W"
+        },
+        {
+          "id": "lvn_in_band",
+          "role": "DESCRIPTOR",
+          "data": "TICKS"
+        },
+        {
+          "id": "tp_mode",
+          "role": "EXIT",
+          "data": "TICKS",
+          "grid": [
+            "borde_A",
+            "HVN_mas_cercano",
+            "POC_izquierdo",
+            "R_multiple"
+          ],
+          "default": "borde_A"
+        },
+        {
+          "id": "entry_at_lvn",
+          "role": "ENTRY",
+          "data": "TICKS",
+          "grid": [
+            false,
+            true
+          ],
+          "default": false,
+          "def": "evento sólo si el reingreso ocurre en un LVN del perfil izquierdo"
+        }
       ]
     },
     {
       "id": "G6_SALIDAS",
       "name": "Operacion (solo E2b)",
       "params": [
-        {"id": "stop_mode", "role": "EXIT", "data": "TICKS", "grid": ["mas_alla_B_0.25W", "mas_alla_extremo_post", "sigma_1"], "default": "mas_alla_B_0.25W"},
-        {"id": "t_max_s", "role": "EXIT", "data": "TICKS", "grid": [300, 1800], "default": 1800},
-        {"id": "entry_exec", "role": "EXIT", "data": "TICKS", "grid": ["agresiva"], "default": "agresiva", "def": "entrada agresiva: la leccion de MM-QI y EXEC-QI (la pasiva se llena cuando te equivocas)"},
-        {"id": "cost_model", "role": "EXIT", "data": "TICKS", "grid": ["spread_observado+comision"], "default": "spread_observado+comision"}
+        {
+          "id": "stop_mode",
+          "role": "EXIT",
+          "data": "TICKS",
+          "grid": [
+            "B_mas_0.25W"
+          ],
+          "default": "B_mas_0.25W"
+        },
+        {
+          "id": "t_max_s",
+          "role": "EXIT",
+          "data": "TICKS",
+          "grid": [
+            300,
+            1800
+          ],
+          "default": 1800
+        },
+        {
+          "id": "entry_exec",
+          "role": "EXIT",
+          "data": "TICKS",
+          "grid": [
+            "agresiva"
+          ],
+          "default": "agresiva",
+          "def": "entrada agresiva: la leccion de MM-QI y EXEC-QI (la pasiva se llena cuando te equivocas)"
+        },
+        {
+          "id": "cost_model",
+          "role": "EXIT",
+          "data": "TICKS",
+          "grid": [
+            "spread_observado+comision"
+          ],
+          "default": "spread_observado+comision"
+        },
+        {
+          "id": "tp_fill",
+          "role": "EXIT",
+          "data": "TICKS",
+          "grid": [
+            "atravesar_1t"
+          ],
+          "default": "atravesar_1t"
+        },
+        {
+          "id": "commission_side",
+          "role": "EXIT",
+          "data": "TICKS",
+          "grid": [
+            {
+              "ES": 0.2,
+              "MES": 0.68
+            }
+          ],
+          "default": {
+            "ES": 0.2,
+            "MES": 0.68
+          },
+          "def": "ticks por lado"
+        }
       ]
     },
     {
       "id": "G7_L2",
       "name": "Extensiones con libro (menos sesiones; se registran, no se miden en E2)",
       "params": [
-        {"id": "qi_at_B", "role": "DESCRIPTOR", "data": "L2"},
-        {"id": "depth_refill_at_B", "role": "DESCRIPTOR", "data": "L2", "def": "reposicion del nivel (iceberg)"},
-        {"id": "cancel_ratio_near", "role": "DESCRIPTOR", "data": "L2", "def": "cancelaciones/adiciones cerca del precio (spoofing aparente; cuidado con P-28: sequence no es del exchange)"},
-        {"id": "absorption_l2", "role": "FILTER", "data": "L2"}
+        {
+          "id": "qi_at_B",
+          "role": "DESCRIPTOR",
+          "data": "L2"
+        },
+        {
+          "id": "depth_refill_at_B",
+          "role": "DESCRIPTOR",
+          "data": "L2",
+          "def": "reposicion del nivel (iceberg)"
+        },
+        {
+          "id": "cancel_ratio_near",
+          "role": "DESCRIPTOR",
+          "data": "L2",
+          "def": "cancelaciones/adiciones cerca del precio (spoofing aparente; cuidado con P-28: sequence no es del exchange)"
+        },
+        {
+          "id": "absorption_l2",
+          "role": "FILTER",
+          "data": "L2"
+        }
       ]
     },
     {
       "id": "G8_RESULTADOS",
       "name": "Que se mide (solo E2b, con OK)",
       "params": [
-        {"id": "hit_A_before_stop", "role": "OUTCOME"},
-        {"id": "hit_tp_before_stop", "role": "OUTCOME"},
-        {"id": "mfe_mae_W", "role": "OUTCOME"},
-        {"id": "time_to_exit_s", "role": "OUTCOME"},
-        {"id": "net_R", "role": "OUTCOME", "def": "resultado neto en multiplos del riesgo, con costo"}
+        {
+          "id": "hit_A_before_stop",
+          "role": "OUTCOME"
+        },
+        {
+          "id": "hit_tp_before_stop",
+          "role": "OUTCOME"
+        },
+        {
+          "id": "mfe_mae_W",
+          "role": "OUTCOME"
+        },
+        {
+          "id": "time_to_exit_s",
+          "role": "OUTCOME"
+        },
+        {
+          "id": "net_R",
+          "role": "OUTCOME",
+          "def": "resultado neto en multiplos del riesgo, con costo"
+        }
       ]
     }
   ],
   "nulls": {
-    "N1_ruina": "P(tocar A antes del stop) = s/(d_A + s) para camino sin deriva (con correccion por discretizacion); referencia analitica",
-    "N2_franja_falsa": "misma regla sobre franjas del mismo ancho y edad colocadas al azar en el rango negociado sin expansion (construccion de E1b), emparejadas por hora y volatilidad",
-    "N3_otra_sesion": "misma geometria en otra sesion a la misma hora (control fuera de sesion; guardia CTRL_TIMING_V1)"
-  }
+    "N1_ruina": "s/(d_A+s) con distancias reales del evento",
+    "N2_recorrido_lento": "mismo detector con W x6, sin superposicion con franjas rapidas, emparejado por ancho en sigma, mismas reglas E0-E3",
+    "N3_otra_sesion": "mismas distancias y direccion desde un instante al azar de otra sesion a +-5 min de la misma hora (CTRL_TIMING_V1)"
+  },
+  "iteration": "IT1 2026-09-24: ver doc §7"
 }
