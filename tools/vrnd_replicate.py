@@ -197,7 +197,7 @@ def verdict(I, lo, hi, mde, n_ev, scaled, spread):
     return "NO_REPLICA" if mde <= abs(scaled) else "SIN_POTENCIA"
 
 
-def step_report():
+def step_report(tag="", record=None):
     from edgelab.edge_brain.episode_logger import measurement_episode
     res = {}
     for inst, cfg in INSTR.items():
@@ -246,11 +246,13 @@ def step_report():
     raw = json.dumps(body, indent=1, default=float)
     (OUT / "report.json").write_text(raw, encoding="utf-8")
     sha = hashlib.sha256(raw.encode()).hexdigest()
-    with measurement_episode(LEDGER, "EP-VRND-REPLICA-20260924", goal="V-RND réplica pre-registrada ES/GC/6E",
+    with measurement_episode(LEDGER, f"EP-VRND-REPLICA-20260924{tag}", goal="V-RND réplica pre-registrada ES/GC/6E",
                              recorded_by="tools/vrnd_replicate.py report", repo=REPO, prereg_ref=PROTO) as ep:
         for inst, r in res.items():
+            if record and inst not in record:
+                continue
             if "cells" in r:
-                ep.store.record_observation(f"OBS-VRND-{inst}", f"V-RND réplica {inst}: absorción × redondo, sig60", "RESPONSE_PROFILE",
+                ep.store.record_observation(f"OBS-VRND-{inst}{tag}", f"V-RND réplica {inst}: absorción × redondo, sig60", "RESPONSE_PROFILE",
                                             [INSTR[inst]["part"]], dict(verdict=r["verdict"], primario_60=r["cells"]["primario_60"]),
                                             {"sessions": r["sessions"]}, sha, depends_on=["CODE:AbsorptionTracker@causal"],
                                             design="EVENT_VS_CONTROL", control_audit=r["control_audit"])
@@ -261,8 +263,9 @@ def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("step", choices=["declare", "run", "report"])
     ap.add_argument("--workers", type=int, default=4)
+    ap.add_argument("--tag", default=""); ap.add_argument("--record", nargs="*")
     a = ap.parse_args(argv)
-    {"declare": step_declare, "run": lambda: step_run(a.workers), "report": step_report}[a.step]()
+    {"declare": step_declare, "run": lambda: step_run(a.workers), "report": lambda: step_report(a.tag, a.record)}[a.step]()
     return 0
 
 

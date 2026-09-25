@@ -52,7 +52,12 @@ def sessions_in(rng):
 
 
 def clock_ok(tr_ts_us, day):
-    """P-84: la pausa diaria (18:00-19:00 del reloj crudo ART) vacía de trades de lunes a jueves; domingo abre a las 19:00."""
+    """P-84: la pausa diaria (18:00-19:00 del reloj crudo ART) vacía de trades de lunes a jueves; domingo abre a las 19:00.
+    Además (24/09, P-92): los timestamps de los trades en orden de archivo tienen que ser monótonos. ES 09-26 del 21/08
+    (NRD parcial, cortado a las 11:57) traía 31.553 retrocesos de hasta 9 s. Con timestamps desordenados, `searchsorted`
+    devuelve basura y un simulador por eventos puede no avanzar nunca (así se colgó MM-QI)."""
+    if len(tr_ts_us) > 1 and bool((np.diff(np.asarray(tr_ts_us)) < 0).any()):
+        return False
     wd = pd.Timestamp(day).dayofweek
     sod_min = (tr_ts_us // 60_000_000) % 1440
     if wd <= 3:

@@ -71,7 +71,10 @@ def run_config(arr, qi_at, t_start, t_end, halt, bin_name, t_out, lat, frac, rng
         p_out, f_out, t_out_fill = E.simulate_passive(*arr, t1, -d, t_out, frac)
         exits_passive += f_out
         trades.append(d * (p_out - p_in))
-        t = (t_out_fill if f_out else t1 + t_out * US) + US
+        t_next = (t_out_fill if f_out else t1 + t_out * US) + US
+        if t_next <= t:                                     # guardia: el reloj del simulador nunca retrocede
+            raise RuntimeError(f"el simulador no avanza: t={t} t_next={t_next}")
+        t = t_next
     return attempts, trades, exits_passive
 
 
@@ -122,8 +125,11 @@ def step_run(workers):
     p = json.loads((OUT / "plan.json").read_text(encoding="utf-8"))
     (OUT / "sessions").mkdir(parents=True, exist_ok=True)
     jobs = [(i, d, b) for i, ss in p.items() for d, b in ss if not (OUT / "sessions" / f"{i}_{d}.json").exists()]
-    with ProcessPoolExecutor(workers) as ex:
-        for inst, day, res in ex.map(session, jobs):
+    from concurrent.futures import as_completed
+    with ProcessPoolExecutor(workers) as ex:                 # as_completed: una sesión lenta no bloquea a las demás
+        futs = [ex.submit(session, j) for j in jobs]
+        for fu in as_completed(futs):
+            inst, day, res = fu.result()
             (OUT / "sessions" / f"{inst}_{day}.json").write_text(json.dumps(res), encoding="utf-8")
             print(inst, day, None if res is None else res["base|contra|30"]["trades"], flush=True)
 

@@ -180,7 +180,7 @@ def boot(S, N):
     return [float(S.sum() / N.sum()), float(np.percentile(b, 2.5)), float(np.percentile(b, 97.5)), int(len(S))]
 
 
-def step_report():
+def step_report(tag="", record=None):
     from edgelab.edge_brain.episode_logger import measurement_episode
     p = json.loads((OUT / "plan.json").read_text(encoding="utf-8"))
     qnames, qib = list(QUEUES), ["contra", "neutral", "a_favor"]
@@ -226,15 +226,19 @@ def step_report():
     (OUT / "report.json").write_text(raw, encoding="utf-8")
     sha = hashlib.sha256(raw.encode()).hexdigest()
     from edgelab.edge_brain.hippocampus import LessonCandidate
-    with measurement_episode(LEDGER, "EP-EXECQI-20260924", goal="EXEC-QI: costo pasivo vs agresivo según QI",
+    with measurement_episode(LEDGER, f"EP-EXECQI-20260924{tag}", goal="EXEC-QI: costo pasivo vs agresivo según QI",
                              recorded_by="tools/exec_qi.py report", repo=REPO, prereg_ref=MANIF) as ep:
         for inst, r in res.items():
-            ep.store.record_observation(f"OBS-EXECQI-{inst}", f"ahorro pasivo vs agresivo por QI, {inst}", "RESPONSE_PROFILE",
+            if record and inst not in record:
+                continue
+            ep.store.record_observation(f"OBS-EXECQI-{inst}{tag}", f"ahorro pasivo vs agresivo por QI, {inst}", "RESPONSE_PROFILE",
                                         [f"P-EXECQI-{inst}"], {k: {q: v["ahorro"] for q, v in row.items()} for k, row in r["cells"].items()},
                                         {"sessions": r["sessions"], "spread_p50": r["spread_p50"]}, sha, design="OTHER")
         for i, s in enumerate(sug):
+            if record and s["inst"] not in record:
+                continue
             ep.store.record_lesson(LessonCandidate(
-                lesson_id=f"SUG-EXECQI-{s['inst']}-{s['qi']}-T{s['T']}", episode_id="EP-EXECQI-20260924",
+                lesson_id=f"SUG-EXECQI-{s['inst']}-{s['qi']}-T{s['T']}{tag}", episode_id=f"EP-EXECQI-20260924{tag}",
                 statement=(f"{s['inst']}: entrar pasivo con QI {s['qi']} y T={s['T']}s ahorra {s['ahorro_pes'][0]:.2f} ticks "
                            f"(pesimista, IC {s['ahorro_pes'][1]:.2f}..{s['ahorro_pes'][2]:.2f}). Confirmar en P-NQL2-CONF / holdout L2 y en sim NT8."),
                 confidence="LOW", status="PROPOSED", scope="SUGGESTED_ANALYSIS"))
@@ -246,6 +250,7 @@ def main(argv=None):
     ap.add_argument("step", choices=["declare", "run", "report", "one"])
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--inst"); ap.add_argument("--day"); ap.add_argument("--base")
+    ap.add_argument("--tag", default=""); ap.add_argument("--record", nargs="*")
     a = ap.parse_args(argv)
     if a.step == "one":
         import time
@@ -253,7 +258,7 @@ def main(argv=None):
         r = session((a.inst, a.day, a.base))
         print(r[2], r[3]["n_grid"] if r[3] else None, round(time.time() - t, 1), "s")
         return 0
-    {"declare": step_declare, "run": lambda: step_run(a.workers), "report": step_report}[a.step]()
+    {"declare": step_declare, "run": lambda: step_run(a.workers), "report": lambda: step_report(a.tag, a.record)}[a.step]()
     return 0
 
 

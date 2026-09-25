@@ -2585,3 +2585,11 @@ Manifiesto `docs/research/MANIFIESTO_MM_QI_L2_20260924.md`: 24 variantes en expl
 
 - `docs/research/TBZ_E2_PARAMETRIZACION_HOLISTICA_20260924.md` + registro `docs/specs/TBZ_E2_PARAM_REGISTRY.json` (8 grupos de parámetros, 3 nulos). E2a target-free se puede correr; **E2b (resultados) espera el OK de Nico**.
 - `docs/research/MANIFIESTO_TREND_MICRO_20260924.md`: 3 bases × 4 filtros × 2 targets. **Espera el OK de Nico.**
+
+## P-92 — Timestamps no monótonos en un archivo L2 (ES 09-26, 21/08): detectado y excluido (24/09)
+
+MM-QI se colgó en ES 21/08. Causa raíz: el archivo viene de un NRD parcial (cortado a las 11:57; el completo quedó en cuarentena como `.invalid`) y trae **31.553 retrocesos de timestamp de hasta 9 s** en el orden del archivo. El conversor no chequea la monotonía interna, sólo las fronteras entre días. Auditoría de las 151 sesiones usadas en EXEC-QI, V-RND y MM-QI: **es la única**.
+
+- **Gate nuevo:** `nq_l2_explore.clock_ok` exige trades monótonos (fail-closed). Lo usan todas las herramientas L2.
+- **Re-medido sin ese día** (ES pasa de 41 a 40 sesiones): EXEC-QI ES y V-RND ES quedan **iguales** a dos decimales (V-RND ES: −0,59 [−1,80; +0,52], NO_REPLICA). Observaciones viejas invalidadas; nuevas `OBS-EXECQI-ES-R2` y `OBS-VRND-ES-R2`.
+- **Pendiente:** agregar el chequeo de monotonía interna al conversor (`edgelab/data/l2.py`), para que falle en la conversión y no en el research.
