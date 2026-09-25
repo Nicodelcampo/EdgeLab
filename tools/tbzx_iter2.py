@@ -148,13 +148,13 @@ def rev_pool(S, keys, mb):
             path = np.abs(np.diff(x["c"][i0:iext + 1])).sum()
             eff = abs(x["c"][iext] - x["c"][i0]) / path if path > 0 else 0.0
             qual = (iext - i0) <= mb and eff >= TX.E0
-            rows.append((abs(B - A), int(x["clock"][iend]), s, iend, d, A, B, qual))
-    P = pd.DataFrame(rows, columns=["W", "clock", "s", "iend", "d", "A", "B", "qual"])
+            rows.append((abs(B - A), int(x["clock"][iend]), s, iend, d, A, B, qual, x[f"rg{mb}"][iend], x[f"sec{mb}"][iend]))
+    P = pd.DataFrame(rows, columns=["W", "clock", "s", "iend", "d", "A", "B", "qual", "rg", "sec"])
     P = P[~P.qual].sort_values(["W", "clock"])
     return {w: g.reset_index(drop=True) for w, g in P.groupby("W")}
 
 
-def pick_rev(pool, W, clock, s, rng):
+def pick_rev(pool, W, clock, s, rng, rg0=None, sec0=None):
     tol = max(1, int(round(0.1 * W)))
     parts = []
     for w in range(W - tol, W + tol + 1):
@@ -168,6 +168,8 @@ def pick_rev(pool, W, clock, s, rng):
         return []
     C = pd.concat(parts)
     C = C[C.s != s]
+    if rg0 is not None:                                   # N-REVVOL: además, la misma actividad previa (± 25 %)
+        C = C[(np.abs(C.rg - rg0) <= TOL * rg0) & (np.abs(np.log(np.maximum(C.sec, 1e-3) / max(sec0, 1e-3))) <= np.log(1 + TOL))]
     if C.empty:
         return []
     return [C.iloc[int(i)] for i in rng.choice(len(C), size=min(N_PH, len(C)), replace=False)]
@@ -255,6 +257,9 @@ def step_measure(inst):
                 for p in pick_rev(pools[mb], W, clock, s, rng):
                     run(S[p.s], int(p.iend), int(p.d), int(p.A), int(p.B), int(abs(p.B - p.A)), "fantasma_rev",
                         ph_session=p.s, ph_t=float(S[p.s]["t"][int(p.iend)]))
+                for p in pick_rev(pools[mb], W, clock, s, rng, rg0, sec0):
+                    run(S[p.s], int(p.iend), int(p.d), int(p.A), int(p.B), int(abs(p.B - p.A)), "fantasma_revvol",
+                        ph_session=p.s, ph_t=float(S[p.s]["t"][int(p.iend)]))
                 if isref and np.isfinite(base["str_ema20_end"]):
                     for _ in range(N_PH):
                         o, q = pick_vol(S, keys, s, mb, clock, rg0, sec0, rng, str0=base["str_ema20_end"], d=d)
@@ -304,12 +309,12 @@ def report_inst(inst, rng):
     ref = D[D.ref].cfg.iloc[0]
     cells = []
     for cfg, g in D.groupby("cfg", sort=False):
-        for null in ("fantasma_vol", "fantasma_rev"):
+        for null in ("fantasma_vol", "fantasma_rev", "fantasma_revvol"):
             for col, lab in PRIM:
                 if col == "out_vol_rel":
                     continue
                 cells.append(cell(pair(g, col, null), rng, cfg=cfg, null=null, metric=col, label=lab))
-    for null in ("fantasma_vol", "fantasma_rev"):
+    for null in ("fantasma_vol", "fantasma_rev", "fantasma_revvol"):
         oo = [c for c in cells if c["status"] == "OK" and c["null"] == null]
         for c, f in zip(oo, TX._bh([c["p"] for c in oo])):
             c["fdr"] = bool(f)
@@ -318,7 +323,7 @@ def report_inst(inst, rng):
     months = pd.to_datetime(g.session, format="%Y%m%d")
     g = g.assign(half=np.where(months < "2025-12-01", "jul-nov", "dic-mar"), month=months.dt.strftime("%Y-%m"))
     for col in ("reachA_viaB", "pen_W", "exc_W", "re_tpb"):
-        for null in ("fantasma_vol", "fantasma_rev", "fantasma_volstr"):
+        for null in ("fantasma_vol", "fantasma_rev", "fantasma_revvol", "fantasma_volstr"):
             robust[f"{col}|{null}|todo"] = cell(pair(g, col, null), rng)
             for h, gh in g.groupby("half"):
                 robust[f"{col}|{null}|{h}"] = cell(pair(gh, col, null), rng)
@@ -369,10 +374,10 @@ def step_report():
     (OUT / "report_iter2.json").write_text(raw, encoding="utf-8")
     sha = hashlib.sha256(raw.encode()).hexdigest()
     from edgelab.edge_brain.episode_logger import measurement_episode
-    with measurement_episode(LEDGER, "EP-TBZX-ITER2-ES-CANON-20260926", goal="TBZX iteración 2: N-REV, N-VOLSTR, estabilidad, réplica NQ",
+    with measurement_episode(LEDGER, "EP-TBZX-ITER2-ES-REVVOL-20260926", goal="TBZX iteración 2: N-REV, N-VOLSTR, estabilidad, réplica NQ",
                              recorded_by="tools/tbzx_iter2.py report", repo=REPO, prereg_ref=DOC) as ep:
         parts = [f"P-TBZX-{i}-EXP" for i in ("ES", "NQ") if i in body]
-        ep.store.record_observation("OBS-TBZX-ITER2-ES-CANON", "franja TBZX: afuera y reingreso, nulos estrictos y réplica", "RESPONSE_PROFILE",
+        ep.store.record_observation("OBS-TBZX-ITER2-ES-REVVOL", "franja TBZX: afuera y reingreso, nulos estrictos y réplica", "RESPONSE_PROFILE",
                                     parts, {f"{i}|{k}": (v.get("diff"), v.get("ci")) for i in ("ES", "NQ") if i in body
                                             for k, v in body[i]["robust"].items() if isinstance(v, dict) and "status" in v},
                                     {"horizon_bars": H}, sha, design="EVENT_VS_CONTROL", control_audit=audit)

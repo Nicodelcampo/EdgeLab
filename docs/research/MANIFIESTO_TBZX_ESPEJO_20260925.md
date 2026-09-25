@@ -163,3 +163,7 @@ Por créditos se corre sólo el núcleo de §10 con el código ya testeado de la
 - `llega_A_por_B` contra N-REV, en la referencia (20, 17): 0,145 contra 0,081, **+0,063** (IC +0,043; +0,085). **Pasa FDR en las 12 configuraciones.**
 - **Sesiones positivas: 55 %. NO alcanza el piso pre-registrado de 60 %.** Es un efecto de promedio, no algo que aparezca en la mayoría de los días.
 - **Por hora** (Argentina, descriptivo): positivo en las 24 horas. Más fuerte a la 01 h (+0,146), a las 17 h (+0,136, cierre) y a las 19 h (+0,108). Entre 20 y 22 h hay mucha cantidad (unas 640 franjas por hora) con efecto medio (+0,06 a +0,09). Más débil entre las 9 y las 14 h (horario regular), con tasas absolutas bajas.
+
+### 10d. Nulo N-REVVOL (25/09, antes de correr)
+
+Revisión del control: N-REV empareja tamaño y estado de reversión pero **no** la actividad. Sus tramos son lentos o sucios, y vienen de un mercado más tranquilo; la franja real viene de uno más movido. **N-REVVOL** = N-REV + misma actividad previa (rango y duración de las últimas `maxBars` velas, ± 25 %). Pasa a ser el **nulo primario**. Criterio sin cambios: `llega_A_por_B`, BH q = 0,10 en 12 configuraciones, sesiones positivas ≥ 60 % en (20, 17). Si faltan tramos que cumplan todo, se informa el N; no se relaja el emparejamiento.
