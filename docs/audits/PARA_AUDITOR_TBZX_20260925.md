@@ -14,7 +14,7 @@ Impulso A→B en velas de 25 ticks (≤ `maxBars` velas, ≥ `minW` ticks, efici
 | N-REV: tramo del mismo tamaño que recién dio la vuelta, lento o sucio | 0,145 / 0,081 (+6,3 pts, FDR 12/12; **sesiones positivas 55 % < piso 60 %**) |
 | N-VOLSTR: actividad + estiramiento vs EMA20 | el contexto de estiramiento **desaparece** (descartado) |
 | NQ, contra N-REV | **no replica** (−0,7 pts) |
-| **N-REVVOL: N-REV + misma actividad (primario)** | **corriendo al commitear; resultado en §10e cuando esté** |
+| **N-REVVOL: N-REV + misma actividad (primario)** | **0,138 / 0,173 (−3,5 pts; 26 % sesiones+): el efecto MUERE** |
 
 ## Preguntas concretas para el auditor
 1. ¿N-REVVOL cierra el sesgo de actividad de N-REV, o queda otro confundidor (p. ej., que el impulso rápido deja el precio con momentum de reingreso por construcción del fin por retroceso)?

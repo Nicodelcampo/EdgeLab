@@ -167,3 +167,9 @@ Por créditos se corre sólo el núcleo de §10 con el código ya testeado de la
 ### 10d. Nulo N-REVVOL (25/09, antes de correr)
 
 Revisión del control: N-REV empareja tamaño y estado de reversión pero **no** la actividad. Sus tramos son lentos o sucios, y vienen de un mercado más tranquilo; la franja real viene de uno más movido. **N-REVVOL** = N-REV + misma actividad previa (rango y duración de las últimas `maxBars` velas, ± 25 %). Pasa a ser el **nulo primario**. Criterio sin cambios: `llega_A_por_B`, BH q = 0,10 en 12 configuraciones, sesiones positivas ≥ 60 % en (20, 17). Si faltan tramos que cumplan todo, se informa el N; no se relaja el emparejamiento.
+
+### 10e. Resultado contra N-REVVOL (primario) — el efecto NO sobrevive
+
+`llega_A_por_B`, ES (20, 17): real 0,138 contra N-REVVOL 0,173, **−0,035** (IC −0,053; −0,021); sesiones positivas 26 %. Negativo en ambas mitades y en 8 de 9 meses. En las 12 configuraciones la diferencia es ≤ 0 (7 significativamente negativas por FDR, ninguna positiva).
+
+**Conclusión (alcance preciso):** en ES, la mayor llegada a A de la franja de impulso se explicaba por la **actividad del mercado después de un tramo que acaba de dar la vuelta**, no por el impulso rápido ni por los niveles A/B. Emparejando las dos cosas, la franja llega a A **menos** que un tramo cualquiera comparable. La hipótesis del «espejo» como propiedad de la franja TBZX **muere** en su alcance declarado: ES, exploración, este detector, esta métrica. La réplica de NQ con contrato canónico pierde sentido como confirmación; queda opcional como diagnóstico.
