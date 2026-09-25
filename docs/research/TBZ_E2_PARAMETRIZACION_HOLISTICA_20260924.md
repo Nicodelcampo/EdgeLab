@@ -175,3 +175,5 @@ Reporte `artifacts/tbz_e2/report_E2b_ES.json` (sha `117d1037e192…`). Censo `ar
 - **No se midieron:** los descriptores G2–G5 como filtros primarios (sólo entraron por el árbol, sin nada positivo); los detectores por velocidad (`speed_min`) y volumen relativo (`vol_rel_min`) de G1; el L2 (G7).
 
 MES (apoyo, no decide) se agrega cuando termine su corrida.
+
+**MES (apoyo, no decide; 171 sesiones, reporte `artifacts/tbz_e2/report_E2b_MES.json`, sha `32cc5b50f553…`):** 0 sugerencias. El exceso de acierto sobre N1 hacia A va de −5,6 a +2,8 pts (mediana −1,1) y **ninguna celda tiene IC > 0**. Las únicas celdas con P&L puntual cerca de cero o positivo son W60 k4 (n = 272–430, IC de −3 a +3 ticks): sin potencia, no son evidencia. **Coincide con ES:** el patinaje no aparece.
