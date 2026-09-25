@@ -2580,3 +2580,8 @@ Manifiesto `docs/research/MANIFIESTO_EJECUCION_QI_L2_20260924.md`, con la tabla 
 ## P-90 — MM-QI: provisión pasiva de liquidez filtrada por QI (propuesto 24/09)
 
 Manifiesto `docs/research/MANIFIESTO_MM_QI_L2_20260924.md`: 24 variantes en exploración, riesgo principal el modelo de fill. Búsqueda sobre P&L: **espera el OK de Nico** (STOP).
+
+## P-91 — TBZ-E2 (expansión como área de patinaje) y TREND-MICRO (propuestos 24/09)
+
+- `docs/research/TBZ_E2_PARAMETRIZACION_HOLISTICA_20260924.md` + registro `docs/specs/TBZ_E2_PARAM_REGISTRY.json` (8 grupos de parámetros, 3 nulos). E2a target-free se puede correr; **E2b (resultados) espera el OK de Nico**.
+- `docs/research/MANIFIESTO_TREND_MICRO_20260924.md`: 3 bases × 4 filtros × 2 targets. **Espera el OK de Nico.**
