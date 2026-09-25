@@ -153,3 +153,7 @@ Referencia: ES (20 velas, 17 t). NQ equivalente por conteo: (20 velas, 68 t). `l
 - **Por qué NQ difiere:** misma grilla en NQ con W escalado por volatilidad (ATR) en lugar de por conteo, para ver si la diferencia es de escala.
 
 **Presupuesto:** una sola métrica principal contra N-REV en 12 configuraciones (12 pruebas, BH q = 0,10). Todo lo demás es descriptivo. La reserva abr–jun se abre sólo después, con spec confirmada y campaña.
+
+### 10b. Ejecución reducida (25/09, antes de correr)
+
+Por créditos se corre sólo el núcleo de §10 con el código ya testeado de la iteración 2: ES con contrato canónico; métrica principal `llega_A_por_B` contra **N-REV** en las 12 configuraciones (BH q = 0,10) y piso de sesiones positivas ≥ 60 % en la de referencia (20, 17). El abanico (árbol, tick a tick, contexto de B, escala NQ) queda pendiente. El archivo de NQ con contrato viejo se aparta (`iter2_NQ.parquet.contrato_viejo`).
