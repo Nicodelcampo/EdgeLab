@@ -2030,7 +2030,7 @@
       while (lo < hi) { var m = (lo + hi) >> 1; if (cd[m].time < gotoT) lo = m + 1; else hi = m; }
       chart.timeScale().setVisibleLogicalRange({ from: lo - (nBars || 150) / 2, to: lo + (nBars || 150) / 2 });
     }
-    return { opt: tbze2Opt, T: state.tbze2, hits: state.tbze2Hits, sel: state.tbze2Sel, vr: realVisibleRange() };
+    return { opt: tbze2Opt, T: state.tbze2, hits: state.tbze2Hits, sel: state.tbze2Sel, vr: realVisibleRange(), tbzx: tbzx, cd: activeCandlesArr(), recompute: tbzxCompute };
   };
   function tbze2Pick(px, py) {
     var H = state.tbze2Hits || [], best = null, bd = 9;
