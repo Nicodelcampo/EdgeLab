@@ -10,7 +10,7 @@
 En el visor (diseñador de expansiones, borrador `docs/specs/TBZX_CONFIG_BORRADOR_20260925.json`) Nico nota que, en ciertos contextos, después de crearse la franja A→B el precio la **«espeja»**: vuelve y la recorre hacia A, a veces más allá. Si es frecuente, permite entradas con RR alto (stop corto detrás de B, objetivo en A o más allá).
 
 **Justificación económica:** un impulso que recorrió muchos ticks con poco volumen dejó poca posición abierta adentro; al volver, hay poco que defender y la franja se atraviesa fácil (idea de hueco de volumen).
-**Cómo podría refutarse:** la tasa de llegada a A (o al espejo) desde la franja no supera a la de la **misma geometría puesta a la misma hora del día en otra sesión** (control fantasma), ni a la ruina del jugador.
+**Cómo podría refutarse:** la salida, la permanencia afuera, la excursión y el reingreso (profundidad, velocidad) de la franja real no se distinguen de los de la **misma geometría puesta a la misma hora del día en otra sesión** (control fantasma).
 
 ## 2. Detector (el mismo del visor, portado a Python)
 
@@ -18,36 +18,37 @@ Velas de 25 ticks por sesión. Un impulso arranca en la vela j si dentro de las 
 
 **Grilla (12 configuraciones):** `maxBars` ∈ {10, 20, 40} × `minW` ∈ {8, 12, 17, 24}. Eficiencia 0,6 y retroceso 0,3 fijos (los eligió Nico). La de Nico es (20, 17).
 
-## 3. Qué se mide (horizonte H = 200 velas después de `iend`)
+## 3. Qué se mide (enmienda de Nico, 25/09, antes de ver números: **no se buscan entradas**)
 
-- **a) Sobreextensión:** ticks más allá de B antes de llegar a la mitad de la franja; velas hasta reingresar. Descriptivo.
-- **b) Permanencia:** fracción de las H velas con cierre dentro de la franja.
-- **c) Bordes:** en cada toque de A o de B desde adentro (a ≤ 1 t), ¿rebota (vuelve 0,25·W hacia adentro) antes de cerrar ≥ 2 t del otro lado dentro de 10 velas? Tasa de rebote en A y en B por separado.
-- **Espejo:**
-  - `M1` = llega a A (lo atraviesa por 1 tick);
-  - `M2` = llega al espejo completo A − d·W.
+Nada de stops, targets ni R. Se describe el camino del precio después de la franja, en un horizonte de H = 200 velas desde `iend`. «Afuera» = cierre de vela fuera de [min(A,B), max(A,B)]; lado **B** = hacia donde iba el impulso, lado **A** = el opuesto.
 
-  Cada uno antes de tocar el stop, en dos entradas:
-  - `E0`: cierre de la vela `iend`; stop = B + 1 t.
-  - `E2`: tras pasar B por ≥ 2 t, primer cierre de vuelta adentro; stop = extremo más allá de B + 1 t.
+**Primera salida** (el primer episodio afuera después de `iend`):
+1. **lado** (B o A) y velas hasta salir;
+2. **cuánto se aleja:** excursión máxima más allá del borde, en ticks y en fracción de W;
+3. **cuánto tiempo pasa afuera:** velas y segundos hasta volver a cerrar adentro;
+4. **cuánto volumen hace afuera:** contratos durante el episodio, y en relación al volumen del impulso;
 
-  Si target y stop caen en la misma vela, cuenta como stop (conservador). Sin llegar en H velas = no llegó. Se reporta el acierto, su RR y el **R neto** con 1,4 t de costo por operación (spread 1 t + comisión), marcando a mercado al vencer.
+**Reingreso** (si vuelve a cerrar adentro dentro de H):
 
-## 4. Nulos
+5. **reingresa o no** dentro de H;
+6. **qué tanto ingresa:** penetración máxima en las 50 velas siguientes, medida desde el borde por el que entró, en fracción de W. 1 = llega al borde opuesto; 2 = espejo completo (una franja entera más allá);
+7. **de qué manera:** velocidad del tramo de reingreso (ticks por vela y por segundo), su eficiencia y su volumen por tick, comparado con los del impulso.
 
-- **Fantasma (primario):** para cada evento, 3 sesiones distintas de la misma partición, en la vela más cercana a la **misma hora del día (ET, ± 15 min)**; se aplica la misma geometría relativa al cierre de esa vela (misma dirección, mismas distancias a A, B, stop y target). Control de OTRA sesión: exento de la regla CTRL_TIMING_V1 y auditado igual.
-- **N1:** ruina del jugador con las mismas convenciones, p0 = s / (s + r + 1).
+**Totales en H** (todos los episodios): velas afuera de cada lado, volumen afuera de cada lado, excursión máxima de cada lado.
 
-## 5. Pruebas y criterio (fijados ahora)
+## 4. Nulo
 
-- Diferencia real − fantasma, pareada por evento, bootstrap por sesión (2.000 réplicas).
-- Familia de pruebas: 12 configuraciones × {M1, M2} × {E0, E2} (48), más permanencia y rebote en A y en B (36): **84 pruebas**, BH-FDR q = 0,10.
-- Se publica el **paisaje completo** (todas las celdas, con su N y su MDE), nunca la mejor sola.
-- **Contextos** («en ciertos contextos»): fase de la sesión (Asia/Europa/RTH) y tercil de volumen por tick, **sólo descriptivos** sobre la configuración de Nico. No entran en la prueba.
-- Lo que salga es **sugerencia**. Confirmar exige spec confirmada, campaña aprobada en el Brain y la reserva abr–jun, una sola vez.
+**Fantasma:** para cada franja, 3 sesiones distintas de la misma partición, en la vela más cercana a la **misma hora del día (ET, ± 15 min)**. Se pone la misma geometría relativa al cierre de esa vela (misma dirección, mismos A y B relativos) y se miden las mismas cosas. Contesta si lo observado es propio de la franja o es lo que hace cualquier franja del mismo ancho a esa hora. Es un control de otra sesión, exento de CTRL_TIMING_V1, y se audita igual.
+
+## 5. Reporte y multiplicidad (fijados ahora)
+
+- Por configuración (12): cada medida real, fantasma y diferencia pareada, con IC por bootstrap por sesión (2.000 réplicas) y su MDE.
+- Medidas primarias (8 por configuración: lado B, excursión/W, velas afuera, volumen afuera relativo, reingresa, penetración/W, llega al borde opuesto, velocidad de reingreso): **96 diferencias**, BH-FDR q = 0,10.
+- **Combinaciones** («según qué combinación»): sobre la configuración de Nico, cortes descriptivos por fase de sesión, tercil de volumen por tick del impulso, tercil de velas del impulso y tercil de eficiencia, más un árbol honesto (mitad de sesiones arma, mitad estima). **Son sugerencias, no pruebas.**
+- Se publica el paisaje completo.
 
 ## 6. Riesgos
 
 - Selección de parámetros sobre los mismos datos: es exploración; la corrección y la reserva lo contienen.
 - Sesgo de horario (de noche todo es fino): el nulo a la misma hora lo neutraliza.
-- Velas de 25 ticks: los niveles se evalúan con máximos y mínimos de vela, no con ticks. La conversión a ejecución real va en una etapa posterior.
+- Velas de 25 ticks: los niveles se evalúan con cierres, máximos y mínimos de vela, no con ticks.
