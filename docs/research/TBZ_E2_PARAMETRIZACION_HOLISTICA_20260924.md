@@ -177,3 +177,20 @@ Reporte `artifacts/tbz_e2/report_E2b_ES.json` (sha `117d1037e192…`). Censo `ar
 MES (apoyo, no decide) se agrega cuando termine su corrida.
 
 **MES (apoyo, no decide; 171 sesiones, reporte `artifacts/tbz_e2/report_E2b_MES.json`, sha `32cc5b50f553…`):** 0 sugerencias. El exceso de acierto sobre N1 hacia A va de −5,6 a +2,8 pts (mediana −1,1) y **ninguna celda tiene IC > 0**. Las únicas celdas con P&L puntual cerca de cero o positivo son W60 k4 (n = 272–430, IC de −3 a +3 ticks): sin potencia, no son evidencia. **Coincide con ES:** el patinaje no aparece.
+
+## 9. Revisión visual sobre el gráfico continuo (25/09)
+
+Antes de una corrida nueva, Nico revisa en el visor unificado que lo medido sea lo que quiere medir. Capa **«🔬 TBZ-E2 medido»** (`viewer/nt8_bridge/index.html`, marcador `EDGELAB_TBZ_E2_LAYER_V1`), datos de `tools/build_tbz_e2_layer.py --asset <bundle>`:
+
+- gráfico continuo de 25 ticks, **todas** las franjas, eventos y operaciones a la vez, desplazándose libremente;
+- por franja: ventana de detección [j−W, j] y vela de disparo con σ y umbral, movimiento A→B, línea de confirmación (retroceso ≥ max(2 t, 0,3·W)) y franja vigente durante la ventana de eventos (240 min);
+- niveles que definen los eventos (0,3W, 0,5W, B+2 t, B−1 t) y el stop B+0,25W;
+- eventos E0–E3 con forma y color propios; operaciones de los tres modos con caja de SL/TP desde la entrada (+250 ms) hasta la **salida real**, y la marca de salida (target, stop o tiempo);
+- clic en un evento o franja: todos sus parámetros y descriptores, los tres desenlaces con N1 p0, el tope de 30 min y el perfil de volumen izquierdo (HVN, LVN, POC, as-of el inicio);
+- filtros por configuración, tipo de tramo (expansión / N2), evento, modo y capas; EMA20/EMA50/SMA200 de 1 min y VWAP opcionales.
+
+Las operaciones se re-simulan con la misma función de la medición y se comparan contra `artifacts/tbz_e2/explore`: **0 diferencias** en las 20 sesiones de enero de 2026 (≈190 mil operaciones).
+
+**Ceguera:** la capa muestra desenlaces, así que el constructor sólo acepta bundles de exploración (≤ 2026-03-31, ya medidos). Abr–jun sigue sin mirar.
+
+**Retraso del SL/TP «tarde»:** la causa era que todas las capas se pintaban en un canvas aparte, un cuadro después del gráfico. Ahora se pintan dentro del ciclo de pintado de la serie (primitiva `attachPrimitive`), así que se mueven junto con las velas.

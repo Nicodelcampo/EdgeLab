@@ -876,6 +876,7 @@
   <div id="indicator-tag" title="Doble clic para abrir Propiedades">HFTZonesESPureV2Flat(...)</div>
   <div id="chart"></div>
   <canvas id="overlay"></canvas>
+  <div id="tbze2-info" style="display:none;position:absolute;left:8px;bottom:36px;z-index:20;max-width:560px;max-height:55%;overflow:auto;background:rgba(255,255,255,0.93);color:#111;border:1px solid #cbd5e1;border-radius:4px;padding:6px 8px;font-size:10.5px;line-height:1.45;box-shadow:0 2px 8px rgba(0,0,0,.15);"></div>
   <div id="l2-tooltip" role="tooltip"></div>
 </div>
 
@@ -1117,6 +1118,37 @@
           <select id="sel-tbz-dwell" style="margin-left:auto;font-size:10px;"><option value="L60" selected>ventana 60 min</option><option value="L240">ventana 240 min</option></select></label>
         <div id="lbl-tbz-status" style="font-size:9.5px;color:#666;">Sin datos TBZ para este bundle.</div>
         <div style="font-size:9px;color:#888;line-height:1.3;">EXP: tramo claro = formación; recuadro = franja vigente (desde que está disponible, hasta 4 h). Los corredores (HFTGAP) son la capa «Corredores». Registro: docs/research/FAMILIA_TBZ_FRANJAS_BAJA_PERMANENCIA_20260924.md</div>
+      </div>
+    </div>
+
+
+    <!-- EDGELAB_TBZ_E2_LAYER_V1: TBZ-E2 como se midió (todas las franjas, eventos y operaciones a la vez) -->
+    <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
+      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px;">🔬 TBZ-E2 medido (revisión visual)</div>
+      <div style="display:flex;flex-direction:column;gap:5px;font-size:10.5px;">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-tbze2"><b>Mostrar</b>
+          <select id="sel-tbze2-cfg" style="margin-left:auto;font-size:10px;"><option value="W20_k2.5">W20 · k2,5</option><option value="W20_k4.0" selected>W20 · k4</option><option value="W60_k2.5">W60 · k2,5</option><option value="W60_k4.0">W60 · k4</option></select></label>
+        <div style="display:flex;gap:6px;align-items:center;"><span>Tramos</span>
+          <select id="sel-tbze2-kind" style="font-size:10px;"><option value="rapida" selected>expansiones</option><option value="N2">tramos N2 (nulo)</option><option value="ambas">ambos</option></select>
+          <span>Operación</span>
+          <select id="sel-tbze2-mode" style="font-size:10px;"><option value="hacia_A_A" selected>hacia A · TP A</option><option value="hacia_A_HVN">hacia A · TP HVN</option><option value="hacia_B_B">hacia B · TP B</option></select></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">Eventos:
+          <label><input type="checkbox" class="chk-tbze2-ev" value="E0" checked><span style="color:#2563eb">● E0 conf.</span></label>
+          <label><input type="checkbox" class="chk-tbze2-ev" value="E1" checked><span style="color:#7c3aed">■ E1 0,5W</span></label>
+          <label><input type="checkbox" class="chk-tbze2-ev" value="E2" checked><span style="color:#db2777">▲ E2 reingreso</span></label>
+          <label><input type="checkbox" class="chk-tbze2-ev" value="E3" checked><span style="color:#0891b2">◆ E3 retesteo B</span></label></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">Capas:
+          <label><input type="checkbox" class="chk-tbze2-ly" value="det" checked>detección</label>
+          <label><input type="checkbox" class="chk-tbze2-ly" value="mov" checked>A→B + conf.</label>
+          <label><input type="checkbox" class="chk-tbze2-ly" value="band" checked>franja</label>
+          <label><input type="checkbox" class="chk-tbze2-ly" value="depth">niveles (0,3W/0,5W/B±/SL)</label>
+          <label><input type="checkbox" class="chk-tbze2-ly" value="ev" checked>eventos</label>
+          <label><input type="checkbox" class="chk-tbze2-ly" value="trade" checked>SL/TP y salida</label>
+          <label><input type="checkbox" class="chk-tbze2-ly" value="lines">EMA20/50·SMA200·VWAP</label>
+          <label><input type="checkbox" class="chk-tbze2-ly" value="labels" checked>rótulos</label></div>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-tbze2-solo" checked>Ocultar zonas y corredores HFT mientras reviso</label>
+        <div id="lbl-tbze2-status" style="font-size:9.5px;color:#666;">Sin capa TBZ-E2 para este bundle.</div>
+        <div style="font-size:9px;color:#888;line-height:1.3;">Clic en un evento o una franja: todos sus parámetros, sus niveles y el perfil de volumen izquierdo. Verde/rojo = TP/SL desde la entrada hasta la salida real; ✕ = salida (verde target, rojo stop, gris tiempo). Muestra desenlaces: sólo sesiones de exploración ya medidas.</div>
       </div>
     </div>
 
@@ -1462,6 +1494,22 @@
     wickDownColor: "#dc2626",
     priceFormat: { type: "price", precision: 5, minMove: 0.00005 }
   });
+  var zonesPrim = {
+    _req: null,
+    attached: function (p) { this._req = p.requestUpdate; },
+    detached: function () { this._req = null; },
+    updateAllViews: function () {},
+    // requestUpdate a veces cae en un cuadro que el gráfico ya cerró (datos que llegan por fetch): se repite una vez.
+    update: function () { var self = this; if (!self._req) return; self._req(); clearTimeout(self._t); self._t = setTimeout(function () { if (self._req) self._req(); }, 60); },
+    paneViews: function () {
+      return [{ zOrder: function () { return "top"; }, renderer: function () { return { draw: function (target) {
+        target.useMediaCoordinateSpace(function (sc) { try { drawZones(sc.context, sc.mediaSize.width, sc.mediaSize.height); } catch (err) { console.error(err); } });
+      } }; } }];
+    }
+  };
+  series.attachPrimitive(zonesPrim);
+  window.__EDGELAB_ZONES_PRIM__ = zonesPrim;
+
 
   function applyTheme(isDark) {
     state.isDark = isDark;
@@ -1763,6 +1811,255 @@
       .catch(function () { if (st) st.textContent = "Sin datos TBZ para este bundle."; });
   }
 
+
+  // EDGELAB_TBZ_E2_LAYER_V1 (2026-09-25): TBZ-E2 tal como se MIDIÓ, sobre el gráfico continuo. Cada sesión se carga
+  // cuando entra en pantalla (bundles/tbze2/<bundle>/<fecha>.json, tools/build_tbz_e2_layer.py). Sólo exploración.
+  var TBZE2_EV = { E0: "#2563eb", E1: "#7c3aed", E2: "#db2777", E3: "#0891b2" };
+  var tbze2Opt = { on: false, cfg: "W20_k4.0", kind: "rapida", mode: "hacia_A_A",
+    ev: { E0: true, E1: true, E2: true, E3: true },
+    solo: true,
+    ly: { det: true, mov: true, band: true, depth: false, ev: true, trade: true, lines: false, labels: true } };
+  function loadTbzE2(aid) {
+    state.tbze2 = null; state.tbze2Sel = null; tbze2Info();
+    var st = document.getElementById("lbl-tbze2-status");
+    fetch("bundles/tbze2/" + aid + "/index.json?v=" + Date.now(), { cache: "reload" })
+      .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(function (ix) {
+        if (state.currentAssetId !== aid) return;
+        state.tbze2 = { aid: aid, index: ix, ses: {} };
+        if (st) st.textContent = ix.spec_id + " · " + ix.partition + " · " + ix.sessions.length + " sesiones";
+        requestDraw();
+      })
+      .catch(function () { if (st) st.textContent = "Sin capa TBZ-E2 para este bundle (sólo exploración, ver tools/build_tbz_e2_layer.py)."; });
+  }
+  function tbze2Session(meta) {
+    var T = state.tbze2, td = meta.trade_date;
+    if (T.ses[td] === undefined) {
+      T.ses[td] = "cargando";
+      fetch("bundles/tbze2/" + T.aid + "/" + td + ".json", { cache: "reload" })
+        .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+        .then(function (d) { if (state.tbze2 === T) { T.ses[td] = d; requestDraw(); } })
+        .catch(function () { T.ses[td] = "falta"; });
+    }
+    return typeof T.ses[td] === "object" ? T.ses[td] : null;
+  }
+  function tbze2BandOk(b) {
+    if (b.cfg !== tbze2Opt.cfg) return false;
+    if (tbze2Opt.kind === "rapida") return b.kind === "rapida";
+    if (tbze2Opt.kind === "N2") return b.kind === "tramo_N2";
+    return true;
+  }
+  function drawTbzE2(ctx, vr, w, h) {
+    var T = state.tbze2;
+    state.tbze2Hits = [];
+    if (!T || !tbze2Opt.on || !series) return;
+    var cd = activeCandlesArr();
+    if (!cd || cd.length < 2) return;
+    var lastT = cd[cd.length - 1].time, L = tbze2Opt.ly, sel = state.tbze2Sel;
+    ctx.save();
+    ctx.font = "10px -apple-system, Segoe UI, sans-serif";
+    T.index.sessions.forEach(function (meta) {
+      if (meta.end < vr.from - 3600 || meta.start > vr.to + 3600) return;
+      var D = tbze2Session(meta);
+      if (!D) return;
+      var tick = D.tick_size;
+      function X(t) { return barTimeToX(Math.min(t, lastT), cd); }
+      function Y(tk) { var c = series.priceToCoordinate(tk * tick); return (c === null || c === undefined) ? NaN : c; }
+      function hline(tk, x0, x1, col, dash, lw) {
+        var y = Y(tk); if (!isFinite(y)) return;
+        ctx.strokeStyle = col; ctx.lineWidth = lw || 1; ctx.setLineDash(dash || []);
+        ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke(); ctx.setLineDash([]);
+      }
+      function tag(txt, x, y, col, align) {
+        if (!L.labels || !isFinite(x) || !isFinite(y)) return;
+        ctx.fillStyle = col; ctx.textAlign = align || "left"; ctx.fillText(txt, x, y);
+      }
+      if (L.lines && D.lines) {
+        [["ema20", "#f59e0b"], ["ema50", "#10b981"], ["sma200", "#6366f1"], ["vwap", "#e11d48"]].forEach(function (p) {
+          var arr = D.lines[p[0]], tt = D.lines.t, on = false;
+          ctx.strokeStyle = p[1]; ctx.lineWidth = 1.2; ctx.beginPath();
+          for (var i = 0; i < tt.length; i++) {
+            if (tt[i] < vr.from - 120 || tt[i] > vr.to + 120 || arr[i] === null) { on = false; continue; }
+            var x = X(tt[i]), y = Y(arr[i]);
+            if (!isFinite(x) || !isFinite(y)) { on = false; continue; }
+            if (on) ctx.lineTo(x, y); else { ctx.moveTo(x, y); on = true; }
+          }
+          ctx.stroke();
+        });
+      }
+      var win = D.event_window_s;
+      D.bands.forEach(function (b, bi) {
+        if (!tbze2BandOk(b)) return;
+        var tEnd = Math.min(b.t_avail + win, D.end);
+        var t0 = b.t_win0 || b.t_start;
+        if (tEnd < vr.from || t0 > vr.to) return;
+        var isSel = sel && sel.td === D.trade_date && sel.b === bi;
+        var col = b.kind !== "rapida" ? "100,116,139" : (b.dir > 0 ? "13,148,136" : "234,88,12");
+        var xs = X(b.t_start), xe = X(b.t_ext), xa = X(b.t_avail), xz = X(tEnd);
+        var yA = Y(b.A), yB = Y(b.B);
+        if (!isFinite(xs) || !isFinite(xz) || !isFinite(yA) || !isFinite(yB) || xz < -50 || xs > w + 50) return;
+        // 1. detección: ventana [j-W, j] y vela de disparo con su umbral
+        if (L.det && b.kind === "rapida" && b.t_win0) {
+          var xw = X(b.t_win0), xt = X(b.t_trigger), yT = Y(b.trig_close);
+          ctx.strokeStyle = "rgba(" + col + ",0.55)"; ctx.setLineDash([2, 3]); ctx.lineWidth = 1;
+          ctx.strokeRect(xw, Math.min(yA, yT), Math.max(1, xt - xw), Math.abs(yT - yA)); ctx.setLineDash([]);
+          ctx.fillStyle = "rgba(" + col + ",0.9)"; ctx.fillRect(xt - 1, Math.min(yA, yT), 2, Math.abs(yT - yA));
+          if (isSel || (xz - xs) > 60) tag("W" + b.W_bars + " k" + b.k + " σ" + b.sigma + " ≥" + b.thr + "t", xw, Math.min(yA, yT) - 3, "rgba(" + col + ",1)");
+        }
+        // 2. movimiento A→B y confirmación del fin (retroceso >= max(2, r·W))
+        if (L.mov) {
+          ctx.strokeStyle = "rgba(" + col + ",0.95)"; ctx.lineWidth = isSel ? 2.5 : 1.5;
+          ctx.beginPath(); ctx.moveTo(xs, yA); ctx.lineTo(xe, yB); ctx.stroke();
+          var rl = b.B - b.dir * Math.max(2, D.r_end * b.W);
+          hline(rl, xe, xa, "rgba(" + col + ",0.9)", [3, 2]);
+          ctx.fillStyle = "rgba(" + col + ",1)";
+          ctx.beginPath(); ctx.arc(xa, Y(rl), 3, 0, 6.3); ctx.fill();
+          tag("A", xs - 3, yA + (b.dir > 0 ? 11 : -3), "rgba(" + col + ",1)", "right");
+          tag("B", xe, yB + (b.dir > 0 ? -3 : 11), "rgba(" + col + ",1)", "center");
+        }
+        // 3. franja vigente (desde que está disponible hasta la ventana de eventos)
+        if (L.band || isSel) {
+          ctx.fillStyle = "rgba(" + col + "," + (isSel ? 0.14 : 0.035) + ")";
+          ctx.fillRect(xa, Math.min(yA, yB), Math.max(1, xz - xa), Math.abs(yB - yA));
+          hline(b.A, xa, xz, "rgba(" + col + ",0.7)"); hline(b.B, xa, xz, "rgba(" + col + ",0.7)");
+          state.tbze2Hits.push({ k: "b", td: D.trade_date, b: bi, x0: Math.min(xs, xa), x1: xz, y0: Math.min(yA, yB), y1: Math.max(yA, yB) });
+        }
+        // 4. niveles que definen los eventos y el stop
+        if (L.depth || isSel) {
+          var lv = [[b.B - b.dir * D.r_end * b.W, "0,3W (E0/E2/E3)", [4, 3]], [b.B - b.dir * 0.5 * b.W, "0,5W (E1)", [4, 3]],
+                    [b.B + b.dir * 2, "B+2t (extensión E2)", [1, 2]], [b.B - b.dir * 1, "B−1t (retesteo E3)", [1, 2]]];
+          lv.forEach(function (q) { hline(q[0], xa, xz, "rgba(" + col + ",0.8)", q[2]); tag(q[1], xz + 2, Y(q[0]) + 3, "rgba(" + col + ",1)"); });
+          var sl = b.B + b.dir * Math.ceil(0.25 * b.W);
+          hline(sl, xa, xz, "rgba(220,38,38,0.85)", [5, 3]); tag("SL B+0,25W", xz + 2, Y(sl) + 3, "#dc2626");
+        }
+      });
+      // 5. eventos y 6. operaciones del modo elegido
+      D.events.forEach(function (e, ei) {
+        var b = D.bands[e.b];
+        if (!tbze2BandOk(b) || !tbze2Opt.ev[e.ev]) return;
+        var tr = e.tr[tbze2Opt.mode];
+        var tLast = tr ? tr.t_out : e.t;
+        if (tLast < vr.from || e.t > vr.to) return;
+        var isSel = sel && sel.td === D.trade_date && (sel.e === ei || (sel.e == null && sel.b === e.b));
+        var x = X(e.t), y = Y(e.p);
+        if (!isFinite(x) || !isFinite(y)) return;
+        if (L.trade && tr) {
+          var xi = X(tr.t_in), xo = X(tr.t_out), xm = X(Math.min(tr.t_in + D.tmax_s, D.end));
+          var yE = Y(tr.entry), yT = Y(tr.target), yS = Y(tr.stop);
+          if (isFinite(xi) && isFinite(xo)) {
+            var a = isSel ? 0.30 : 0.045;                         // sin seleccionar: tenue + contorno, para ver muchas a la vez
+            ctx.fillStyle = "rgba(22,163,74," + a + ")"; ctx.fillRect(xi, Math.min(yE, yT), Math.max(2, xo - xi), Math.abs(yT - yE));
+            ctx.fillStyle = "rgba(220,38,38," + a + ")"; ctx.fillRect(xi, Math.min(yE, yS), Math.max(2, xo - xi), Math.abs(yS - yE));
+            if (!isSel) {
+              ctx.lineWidth = 1;
+              ctx.strokeStyle = "rgba(22,163,74,0.55)"; ctx.strokeRect(xi, Math.min(yE, yT), Math.max(2, xo - xi), Math.abs(yT - yE));
+              ctx.strokeStyle = "rgba(220,38,38,0.55)"; ctx.strokeRect(xi, Math.min(yE, yS), Math.max(2, xo - xi), Math.abs(yS - yE));
+            }
+            if (isSel && isFinite(xm)) {
+              ctx.strokeStyle = "rgba(100,100,100,0.8)"; ctx.setLineDash([2, 3]);
+              ctx.strokeRect(xi, Math.min(yT, yS), Math.max(2, xm - xi), Math.abs(yS - yT)); ctx.setLineDash([]);
+              tag("máx. " + Math.round(D.tmax_s / 60) + " min", xm, Math.min(yT, yS) - 3, "#666", "right");
+            }
+            var yO = Y(tr.exit), cO = tr.why === "target" ? "#16a34a" : (tr.why === "stop" ? "#dc2626" : "#737373");
+            ctx.strokeStyle = cO; ctx.lineWidth = 1; ctx.setLineDash([3, 2]);
+            ctx.beginPath(); ctx.moveTo(xi, yE); ctx.lineTo(xo, yO); ctx.stroke(); ctx.setLineDash([]);
+            ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(xo - 4, yO - 4); ctx.lineTo(xo + 4, yO + 4); ctx.moveTo(xo - 4, yO + 4); ctx.lineTo(xo + 4, yO - 4); ctx.stroke();
+            ctx.fillStyle = "#111"; ctx.fillRect(xi - 1, yE - 1, 3, 3);
+          }
+        }
+        if (L.ev) {
+          var c = TBZE2_EV[e.ev], r = isSel ? 6 : 4.5;
+          ctx.fillStyle = c; ctx.strokeStyle = "#fff"; ctx.lineWidth = 1; ctx.beginPath();
+          if (e.ev === "E0") ctx.arc(x, y, r, 0, 6.3);
+          else if (e.ev === "E1") ctx.rect(x - r, y - r, 2 * r, 2 * r);
+          else if (e.ev === "E2") { ctx.moveTo(x, y - r - 1); ctx.lineTo(x + r, y + r); ctx.lineTo(x - r, y + r); ctx.closePath(); }
+          else { ctx.moveTo(x, y - r - 1); ctx.lineTo(x + r + 1, y); ctx.lineTo(x, y + r + 1); ctx.lineTo(x - r - 1, y); ctx.closePath(); }
+          ctx.fill(); ctx.stroke();
+          tag(e.ev, x + 6, y - 5, c);
+          state.tbze2Hits.push({ k: "e", td: D.trade_date, b: e.b, e: ei, x: x, y: y });
+        }
+      });
+      // 7. perfil de volumen izquierdo (as-of el inicio del tramo) de la franja elegida
+      if (sel && sel.td === D.trade_date) {
+        var sb = D.bands[sel.b], vp = sb && D.vp[sb.vp_key];
+        if (vp) {
+          var xr = X(sb.t_start), mx = Math.max.apply(null, vp.v) || 1, lvn = {};
+          vp.lvn.forEach(function (i) { lvn[i] = 1; });
+          for (var i = 0; i < vp.v.length; i++) {
+            var ya = Y(vp.lo + i * vp.bin + vp.bin), yb = Y(vp.lo + i * vp.bin);
+            if (!isFinite(ya) || !isFinite(yb)) continue;
+            var len = 140 * vp.v[i] / mx;
+            ctx.fillStyle = lvn[i] ? "rgba(234,179,8,0.55)" : "rgba(100,116,139,0.35)";
+            ctx.fillRect(xr - len, Math.min(ya, yb), len, Math.max(1, Math.abs(yb - ya) - 0.5));
+          }
+          vp.hvn.forEach(function (p) { hline(p, xr - 150, xr + 30, "rgba(79,70,229,0.9)", [4, 2], 1.5); tag("HVN", xr - 150, Y(p) - 2, "#4f46e5"); });
+          hline(vp.poc, xr - 150, xr + 30, "rgba(0,0,0,0.8)", [], 1.5); tag("POC", xr - 150, Y(vp.poc) - 2, "#000");
+          tag("perfil izq. 4 h (as-of inicio)", xr - 150, Y(vp.lo + vp.v.length * vp.bin) - 6, "#475569");
+        }
+      }
+    });
+    ctx.restore();
+  }
+  window.__EDGELAB_TBZE2__ = function (gotoT, nBars) {
+    if (gotoT) {
+      var cd = activeCandlesArr(), lo = 0, hi = cd.length - 1;
+      while (lo < hi) { var m = (lo + hi) >> 1; if (cd[m].time < gotoT) lo = m + 1; else hi = m; }
+      chart.timeScale().setVisibleLogicalRange({ from: lo - (nBars || 150) / 2, to: lo + (nBars || 150) / 2 });
+    }
+    return { opt: tbze2Opt, T: state.tbze2, hits: state.tbze2Hits, sel: state.tbze2Sel, vr: realVisibleRange() };
+  };
+  function tbze2Pick(px, py) {
+    var H = state.tbze2Hits || [], best = null, bd = 9;
+    H.forEach(function (h) { if (h.k === "e") { var d = Math.hypot(h.x - px, h.y - py); if (d < bd) { bd = d; best = h; } } });
+    if (!best) {
+      var area = Infinity;
+      H.forEach(function (h) {
+        if (h.k === "b" && px >= h.x0 && px <= h.x1 && py >= h.y0 - 2 && py <= h.y1 + 2) {
+          var a = (h.x1 - h.x0) * (h.y1 - h.y0 + 4); if (a < area) { area = a; best = h; }
+        }
+      });
+    }
+    state.tbze2Sel = best ? { td: best.td, b: best.b, e: best.k === "e" ? best.e : null } : null;
+    tbze2Info(); requestDraw();
+    return !!best;
+  }
+  function tbze2Info() {
+    var el = document.getElementById("tbze2-info");
+    if (!el) return;
+    var s = state.tbze2Sel, T = state.tbze2;
+    if (!s || !T || typeof T.ses[s.td] !== "object") { el.style.display = "none"; return; }
+    var D = T.ses[s.td], b = D.bands[s.b], e = s.e != null ? D.events[s.e] : null;
+    function f(v) { return v === null || v === undefined ? "—" : v; }
+    function ts(t) { var d = new Date(t * 1000); return d.toISOString().substr(11, 12) + " UTC"; }
+    var rows = [["Sesión", D.trade_date + " · " + D.contract], ["Franja", b.id], ["Dirección", b.dir > 0 ? "alcista (A abajo, B arriba)" : "bajista (A arriba, B abajo)"],
+      ["A / B / W", b.A * D.tick_size + " / " + b.B * D.tick_size + " / " + b.W + " t"]];
+    if (b.kind === "rapida") rows.push(["Detección", "W=" + b.W_bars + " velas, k=" + b.k + ", σ=" + b.sigma + " t → umbral " + b.thr + " t, eficiencia ≥ 0,6"],
+      ["Ventana / disparo", ts(b.t_win0) + " → " + ts(b.t_trigger)]);
+    else rows.push(["Tramo N2", "zigzag sin condición de arranque; σ20=" + f(b.sigma)]);
+    rows.push(["Inicio → extremo → conf.", ts(b.t_start) + " → " + ts(b.t_ext) + " → " + ts(b.t_avail)],
+      ["Fin (confirmación)", "retroceso ≥ max(2 t, " + D.r_end + "·W) = " + Math.max(2, D.r_end * b.W).toFixed(1) + " t"],
+      ["Duración / velocidad", f(b.dur_s) + " s / " + f(b.speed_tps) + " t/s"], ["Eficiencia / W/σ", f(b.efficiency) + " / " + f(b.W_sigma)],
+      ["Vol. rel. / pullback máx.", f(b.vol_rel) + " / " + f(b.max_pullback_inside) + " W"], ["LVN adentro", f(b.lvn_frac_inside) + " (" + b.n_lvn_inside + " huecos)"],
+      ["Fase / vs tendencia 30'", b.phase + " / " + f(b.dir_vs_trend30)]);
+    if (e) {
+      rows.push(["— Evento", e.ev + " · " + ts(e.t) + " @ " + e.p * D.tick_size], ["Profundidad / edad", f(e.depth) + " W / " + f(e.age_s) + " s"],
+        ["Más allá de B / toques B", f(e.ext_beyond_B) + " t / " + e.n_prior_touches_B], ["Aproximación", f(e.approach_speed) + " t/s · vol.rel " + f(e.approach_vol_rel)],
+        ["Patinaje hasta A / TP HVN", f(e.skate_len) + " t / " + f(e.tp_hvn_dist) + " t"], ["LVN en evento / POC izq.", f(e.lvn_at_event) + " / " + f(e.poc_left_dist) + " t"],
+        ["Alineación EMA20/50/SMA200/VWAP", [e.ema20_align, e.ema50_align, e.sma200_align, e.vwap_align].map(f).join(" / ")]);
+      Object.keys(e.tr).forEach(function (m) {
+        var t = e.tr[m];
+        rows.push(["— " + m.replace(/_/g, " "), (t.tdir > 0 ? "compra" : "venta") + " " + t.entry * D.tick_size + " (+" + D.lat_s * 1000 + " ms) · SL " + t.stop * D.tick_size + " · TP " + t.target * D.tick_size],
+          ["   salida", t.why + " @ " + t.exit * D.tick_size + " · " + ts(t.t_out) + " · " + t.pnl + " t netos = " + t.R + " R · N1 p0=" + f(t.p0)]);
+      });
+    } else rows.push(["Eventos", D.events.filter(function (x) { return x.b === s.b; }).map(function (x) { return x.ev; }).join(", ") || "—"]);
+    el.innerHTML = "<div style='display:flex;justify-content:space-between;font-weight:700;margin-bottom:4px'><span>TBZ-E2 · parámetros</span><span id='tbze2-close' style='cursor:pointer;padding:0 4px' title='Cerrar y quitar la selección'>✕</span></div>" +
+      rows.map(function (r) { return "<div style='display:flex;gap:8px'><span style='min-width:150px;color:#64748b'>" + r[0] + "</span><span>" + r[1] + "</span></div>"; }).join("");
+    el.style.display = "block";
+    document.getElementById("tbze2-close").addEventListener("pointerdown", function (ev) {
+      ev.stopPropagation(); state.tbze2Sel = null; tbze2Info(); requestDraw();
+    });
+  }
+
   function drawL2Depth(ctx, vr, w, h) {
     var l2 = state.data && state.data.l2;
     if (!l2 || activeProps.show_l2_depth === false || !series) return;
@@ -1905,22 +2202,24 @@
     }
   }
 
-  function drawZones() {
-    var ctx = overlay.getContext("2d");
-    var dpr = window.devicePixelRatio || 1;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, wrapEl.clientWidth, wrapEl.clientHeight);
+  // EDGELAB_ZONES_PRIMITIVE_V1 (2026-09-25): las capas se dibujan DENTRO del ciclo de pintado del gráfico (primitiva
+  // de la serie), no en un canvas aparte un cuadro después. Antes las zonas y niveles quedaban "tarde" al desplazar.
+  // Llamada sin argumentos = pedir un repintado; la primitiva llama con (ctx, ancho, alto) del panel.
+  function drawZones(ctxArg, wArg, hArg) {
+    if (!ctxArg) { if (window.__EDGELAB_ZONES_PRIM__) window.__EDGELAB_ZONES_PRIM__.update(); return; }
+    var ctx = ctxArg;
     if (!state.run) return;
 
     var tsc = chart.timeScale();
     var vr = realVisibleRange();
     if (!vr) return;
-    var w = wrapEl.clientWidth;
-    var hCanvas = wrapEl.clientHeight;
+    var w = wArg;
+    var hCanvas = hArg;
     drawL2Depth(ctx, vr, w, hCanvas);
     drawTrades(ctx, vr, w, hCanvas);
     drawManipulationMarkers(ctx, vr, w, hCanvas);
-    drawTbz(ctx, vr, w, hCanvas);
+    drawTbz(ctx, vr, w, hCanvas); drawTbzE2(ctx, vr, w, hCanvas);
+    if (tbze2Opt.on && tbze2Opt.solo) return;             // revisión TBZ-E2 sin las zonas HFT encima
 
     var opacityVal = (activeProps.opacidad || 30) / 100;
     var showLabels = activeProps.mostrar_texto !== false;
@@ -3648,6 +3947,19 @@
     var ce = document.getElementById("chk-tbz-exp"), cw = document.getElementById("chk-tbz-dwell"),
         se = document.getElementById("sel-tbz-exp"), sw = document.getElementById("sel-tbz-dwell");
     if (ce) ce.addEventListener("change", function () { activeProps.tbz_exp = this.checked; requestDraw(); });
+
+    (function () {
+      var c = document.getElementById("chk-tbze2");
+      if (!c) return;
+      c.addEventListener("change", function () { tbze2Opt.on = this.checked; if (!this.checked) { state.tbze2Sel = null; tbze2Info(); } requestDraw(); });
+      document.getElementById("sel-tbze2-cfg").addEventListener("change", function () { tbze2Opt.cfg = this.value; state.tbze2Sel = null; tbze2Info(); requestDraw(); });
+      document.getElementById("chk-tbze2-solo").addEventListener("change", function () { tbze2Opt.solo = this.checked; requestDraw(); });
+      document.getElementById("sel-tbze2-kind").addEventListener("change", function () { tbze2Opt.kind = this.value; requestDraw(); });
+      document.getElementById("sel-tbze2-mode").addEventListener("change", function () { tbze2Opt.mode = this.value; requestDraw(); });
+      document.querySelectorAll(".chk-tbze2-ev").forEach(function (x) { x.addEventListener("change", function () { tbze2Opt.ev[this.value] = this.checked; requestDraw(); }); });
+      document.querySelectorAll(".chk-tbze2-ly").forEach(function (x) { x.addEventListener("change", function () { tbze2Opt.ly[this.value] = this.checked; requestDraw(); }); });
+      chart.subscribeClick(function (p) { if (tbze2Opt.on && p && p.point) tbze2Pick(p.point.x, p.point.y); });
+    })();
     if (cw) cw.addEventListener("change", function () { activeProps.tbz_dwell = this.checked; requestDraw(); });
     if (se) se.addEventListener("change", function () { activeProps.tbz_exp_key = this.value; requestDraw(); });
     if (sw) sw.addEventListener("change", function () { activeProps.tbz_dwell_key = this.value; requestDraw(); });
@@ -4020,6 +4332,7 @@
         window["BUNDLE_" + aid] = data;
         applyLoadedAsset(data, options);
         loadTbz(aid);
+        loadTbzE2(aid);
       })
       .catch(function(err) {
         console.warn("Fallo fetch para " + aid + ", intentando script tag...", err);
