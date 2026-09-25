@@ -69,8 +69,42 @@ def _bars_session(args):
     return s["trade_date"], "OK"
 
 
+def canonical_sessions(inst):
+    """Contrato por sesión con la regla canónica (edgelab/data/contract_regime.py): para el día D, el líder de la
+    sesión COMPLETA anterior (D-1), sólo hacia adelante, empate conserva el vigente. Proxy de volumen: ticks por
+    sesión de los manifiestos de bundles (no traen volumen). Reemplaza la regla vieja «más ticks el mismo día»."""
+    import glob
+    from collections import defaultdict
+    per = defaultdict(dict)
+    for f in glob.glob(str(TB.BUNDLES / f"{inst}_[0-9]*_25T_HFT.manifest.json")):
+        m = json.loads(Path(f).read_text(encoding="utf-8"))
+        for s in m["sessions"]:
+            if int(s["end_utc_ns"]) > TB.HOLDOUT_NS:
+                continue
+            per[str(s["trade_date"])][m["contract"]] = dict(trade_date=str(s["trade_date"]), path=m["source_path"], contract=m["contract"],
+                                                             start=int(s["start_utc_ns"]), end=int(s["end_utc_ns"]), ticks=int(s.get("ticks", 0)))
+    key = lambda c: (int(c.split()[1][3:]), int(c.split()[1][:2]))
+    days, cur, out = sorted(per), None, []
+    for i, d in enumerate(days):
+        if i == 0:
+            cur = max(per[d], key=lambda c: per[d][c]["ticks"])     # sin sesión previa: arranque (se documenta)
+        else:
+            prev = per[days[i - 1]]
+            lead = max(prev, key=lambda c: prev[c]["ticks"])
+            if key(lead) > key(cur) and prev[lead]["ticks"] > prev.get(cur, {}).get("ticks", 0):
+                cur = lead
+        if cur in per[d]:
+            out.append(per[d][cur])
+    return out
+
+
 def step_bars(inst, workers):
-    ss = [s for s in TB.sessions(inst) if s["trade_date"] <= TB.EXP_END]
+    ss = [s for s in canonical_sessions(inst) if s["trade_date"] <= TB.EXP_END]
+    for s in ss:                                  # caché con otro contrato: se aparta (no se borra) y se reconstruye
+        f = bars_dir(inst) / f"{s['trade_date']}.npz"
+        if f.exists() and str(np.load(f)["contract"]) != s["contract"]:
+            f.rename(f.with_suffix(".npz.otro_contrato"))
+            print("REEMPLAZA", s["trade_date"], s["contract"], flush=True)
     with ProcessPoolExecutor(max_workers=workers) as ex:
         for fu in as_completed([ex.submit(_bars_session, (inst, s)) for s in ss]):
             print(*fu.result(), flush=True)

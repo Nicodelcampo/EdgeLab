@@ -132,3 +132,24 @@ Referencia: ES (20 velas, 17 t). NQ equivalente por conteo: (20 velas, 68 t). `l
 **Veredicto de exploración:** el reingreso más hondo y la llegada a A son robustos a la actividad previa en ES y en NQ. En ES son además robustos al estado de reversión, **en NQ no**. El único rasgo que sobrevive a todos los controles es «reingreso hasta A en ES», de unos +5 a +7 puntos. Es chico, depende del instrumento y no hay nada de ejecución. El contexto de estiramiento queda descartado.
 
 **Integridad pendiente:** la selección de contrato por sesión usa la regla «más ticks el mismo día» y no la canónica (`contract_regime`, líder de volumen de la sesión anterior). Difieren en 3 sesiones de ES y 2 de NQ dentro de la exploración, siempre el día del vencimiento. Se corrige antes de cualquier confirmación.
+
+## 10. Próxima medición en ES: plan (25/09, NO ejecutado; corre sólo con OK de Nico)
+
+**Corregido ya:** selección de contrato canónica en `tools/tbzx_iter2.py` (`canonical_sessions`: líder de la sesión anterior, sólo hacia adelante; proxy de volumen = ticks). Se reconstruyeron ES 15/09 y 16/03, NQ 16/09 y 16/03; las cachés viejas quedaron apartadas como `.npz.otro_contrato`.
+
+**Debilidades que salda:**
+1. **Nulo primario = N-REV** (el más duro), no N-VOL. N-VOL y el fantasma común quedan como diagnóstico.
+2. **Una sola métrica principal:** `llega_A_por_B` (la limpia). Las demás son secundarias, con su propia familia FDR.
+3. **Efecto de promedio (57 % de sesiones):** se reporta la distribución por sesión y la fracción de sesiones positivas, con el piso escrito antes: ≥ 60 %.
+4. **Estiramiento:** descartado; no vuelve como contexto.
+5. **Resolución de vela:** en una muestra de 30 sesiones, el toque de A se verifica tick a tick.
+
+**Fortalezas en las que se apoya:** el detector es idéntico al del visor; el efecto es robusto a la actividad en ES y NQ y a la reversión en ES, con signo estable en 8 de 9 meses; más fuerte con impulsos cortos (10 velas) y anchos.
+
+**Abanico que se abre** (descriptivo, contra N-REV, sólo exploración):
+- **Qué del impulso explica la diferencia:** velas, eficiencia, velocidad en segundos, volumen por tick, cantidad de retrocesos internos. Árbol honesto (mitad de las sesiones arma, mitad estima).
+- **Cómo es la llegada a A:** velas y segundos hasta A, si llega de un solo tramo o en escalones, y si después de A sigue hacia el espejo.
+- **Dónde está B respecto del día:** B en máximo o mínimo de sesión, del día anterior o de un número redondo.
+- **Por qué NQ difiere:** misma grilla en NQ con W escalado por volatilidad (ATR) en lugar de por conteo, para ver si la diferencia es de escala.
+
+**Presupuesto:** una sola métrica principal contra N-REV en 12 configuraciones (12 pruebas, BH q = 0,10). Todo lo demás es descriptivo. La reserva abr–jun se abre sólo después, con spec confirmada y campaña.
