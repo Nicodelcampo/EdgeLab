@@ -1,8 +1,20 @@
 from __future__ import annotations
 
+import importlib.util
+from pathlib import Path
+import sys
+
 import pytest
 
-from edgelab.edge_brain.work_governor import Candidate, feedback, plan
+# Load only this module: importing edgelab.edge_brain runs the package-wide
+# initializer and optional research dependencies, unrelated to planner tests.
+_PATH = Path(__file__).resolve().parents[1] / "edgelab/edge_brain/work_governor.py"
+_SPEC = importlib.util.spec_from_file_location("edge_brain_work_governor_tested", _PATH)
+assert _SPEC and _SPEC.loader
+work_governor = importlib.util.module_from_spec(_SPEC)
+sys.modules[_SPEC.name] = work_governor
+_SPEC.loader.exec_module(work_governor)
+Candidate, feedback, plan = work_governor.Candidate, work_governor.feedback, work_governor.plan
 
 
 def candidate(task_id: str, **kwargs) -> Candidate:
@@ -27,8 +39,7 @@ def test_research_and_outcome_access_wait_for_human():
 
 
 def test_missing_provenance_and_stalls_do_not_run():
-    decisions = plan([candidate("no-ref", evidence_ref=""),
-                      candidate("stalled", failure_count=3)],
+    decisions = plan([candidate("no-ref", evidence_ref=""), candidate("stalled", failure_count=3)],
                      completed_ids=frozenset(), cycle=5, available_units=10)
     assert {d.task_id: d.status for d in decisions} == {"no-ref": "BLOCKED", "stalled": "PARKED"}
 
