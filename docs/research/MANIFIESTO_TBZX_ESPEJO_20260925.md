@@ -94,3 +94,20 @@ Configuración de Nico (20 velas, 17 t), franja real / fantasma N-VOL:
 2. Los cortes por contexto no están emparejados por estiramiento en el nulo.
 3. Velas de 25 ticks: los niveles se evalúan con máximos y mínimos de vela.
 4. Réplica en NQ y confirmación en abr–jun (una sola apertura, con spec y campaña).
+
+## 8. Iteración 2 (25/09): lo que puede engañar y lo que da robustez. Escrita antes de correr
+
+Autorizada por Nico: «iterá sobre todo lo que tenga riesgo de engañar, y sobre todo lo que aporte robustez». Sigue siendo exploración.
+
+**Riesgos de engaño:**
+- **R1. Estado de reversión (nulo N-REV).** Otra sesión, misma hora (± 1 h), un tramo del precio del **mismo tamaño** (± max(1 t, 10 %)) que también **acaba de retroceder 0,3 de su recorrido**, con **sus propios** A y B, pero que **no** califica como impulso: tardó más de `maxBars` velas o tuvo eficiencia < 0,6. Tramos detectados con la misma regla y ventana de 3·`maxBars` sin exigir eficiencia. Contesta si importa que el tramo haya sido rápido y limpio, o si cualquier tramo del mismo tamaño que recién dio la vuelta hace lo mismo. Hasta 20.000 franjas por configuración.
+- **R2. Métrica limpia.** «Llega al borde opuesto» mezclaba dos casos: salir por B y llegar a A, y salir por A y llegar a B. Se agrega `llega_A_por_B` (salió por B y reingresando llegó a A) como medida principal del espejo.
+- **R3. Contexto de estiramiento con nulo emparejado.** Sólo con la configuración de Nico: N-VOL que además tenga el mismo estiramiento alineado respecto de la EMA20 en la vela final (± 0,5 ATR de 1 min). Contesta si «estirado» agrega algo o si sólo es más actividad.
+- **R4. Ventana de penetración.** Con la configuración de Nico, `llega a A` medido a 20 y a 100 velas después del reingreso, además de 50.
+
+**Robustez:**
+- **B1. Estabilidad en el tiempo:** mitades jul–nov 2025 y dic 2025–mar 2026, y signo mes a mes.
+- **B2. Por sesión:** fracción de sesiones con real > N-VOL.
+- **B3. Réplica en NQ** (exploración jul-2025 a mar-2026, partición propia `P-TBZX-NQ-EXP`). Grilla `maxBars` ∈ {10, 20, 40} × `minW` ∈ {12, 17, 24, 34, 48, 68}. **Configuración equivalente**, elegida sólo por conteo y sin mirar resultados: `maxBars` = 20 y el `minW` cuya cantidad de franjas por día sea la más cercana a la de ES (20, 17). **Criterio de réplica:** en esa configuración, `llega_A_por_B` y `pen_W` contra N-VOL con el mismo signo que en ES e IC 95 % que excluye 0. El resto de NQ es paisaje descriptivo.
+
+**Multiplicidad:** N-REV es una familia nueva (96 en ES, BH q = 0,10). La réplica de NQ son 2 pruebas pre-registradas. Lo demás es descriptivo.
