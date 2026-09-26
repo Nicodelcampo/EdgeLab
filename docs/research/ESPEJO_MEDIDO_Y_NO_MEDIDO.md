@@ -51,6 +51,14 @@ artefactos.
 - **Tamiz: SÍ.** Siguiente paso sugerido: mapa de MAE/MFE de los eventos del 75 % para mejorar la entrada y el stop
   (análisis micro dentro de la ventaja macro).
 
+
+### Actualización 2026-09-26 — replicación de ESPEJO-SIM en MNQ (25 ticks)
+
+- **La semejanza (T3 − T1) SOSTIENE en MNQ** en 09-25, 12-25 y 03-26 con `minW` 17 y 24: de +2 a +5 pp, con IC > 0
+  en las tres. Son 43 de 52 pruebas candidatas.
+- **Es la primera evidencia replicada de la familia.** A esta escala no paga (costo/W ≈ 10–14 pp). Sirve como
+  **filtro micro** dentro de la ventaja macro.
+
 ## 3. NO MEDIDO (por eso un NO de hoy no alcanza para descartar la idea)
 
 ### 3.1 La definición del impulso — **el hueco más grande**
