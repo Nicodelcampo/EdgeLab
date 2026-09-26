@@ -56,3 +56,14 @@ Nico: la ventaja puede estar (a) en entradas **muy cercanas en el tiempo a la cr
 - **C-SW en 500t:** el pivote reciente se busca en las últimas **100 velas** (≈ 1,5 h), no 300 (300 velas de 500t son media sesión). Decidido antes de medir.
 - **Horizonte:** fin de sesión (las series son por sesión).
 - Pasa a B: INFO+ contra C-SZ con FDR, mismo signo en las dos mitades, e IC inferior > 0 contra C-SW. Se publica la mediana de D (ticks) por celda para el criterio de fricción.
+
+## Resultado etapa A (26/09, reporte sha `59f9d855deff`, árbol limpio, auditoría de controles PASS)
+- 181 sesiones de exploración, 916 zonas, **519 eventos** (estándar 329, estricto 190). Cobertura de controles: C-SZ 100 %, C-SW 99,6 %. Mediana de edad al alejamiento: 16 velas (k 2) y 66 (k 4).
+- **Las 28 celdas: SIN_POTENCIA.** 5 celdas llegaron a N ≥ 50; las demás tienen N < 50. Ninguna pasa a B.
+- Lo que se ve en las 5 medibles (descriptivo, **no es evidencia**):
+  - **alejamiento, estándar, k 2, virgen:** n 116, real 0,47 vs C-SZ 0,38 (+0,09, IC −0,01 a +0,18, MDE 0,14; las dos mitades positivas), **pero contra C-SW +0,00** (IC −0,11 a +0,11). La versión temprana, parecida (+0,11 vs C-SZ, +0,03 vs C-SW).
+  - **alejamiento, estricto, k 2, virgen:** −0,01 vs C-SZ; −0,14 vs C-SW.
+  - **regreso, estándar, k 2:** −0,03 vs C-SZ; −0,10 vs C-SW. **regreso, estricto, k 2:** −0,12 vs C-SZ; **−0,16 vs C-SW (IC −0,30 a −0,03)**.
+- **Lectura con alcance:** en 500t no hay potencia para decidir nada. Lo poco que hay no apunta a un imán propio de la acumulación: donde aparece algo contra el nivel sin zona, desaparece contra un pico reciente cualquiera, y el regreso a zona virgen va, si acaso, en contra. **No se da por muerta** la hipótesis macro: el límite es N (~3 eventos por sesión).
+- **D mediana:** 21–29 ticks en k 2 y 42–77 en k 4 (contra 8–16 en 25t): la escala sí cumple su objetivo de fricción; lo que falta es muestra.
+- **Qué la destrabaría:** más sesiones (la reserva no se usa para esto), otros índices con la misma regla (con su propia validación), o un detector menos exigente (validado de nuevo con juicios).

@@ -378,3 +378,8 @@ aquellos números compara dos poblaciones distintas.
   - **Alcance por celda.**
 - **NO MEDIDO:** agotamiento por flujo/L2, escala diaria, geometrías de más recorrido. `MANIFIESTO_VREVA_VCONT_E1_20260926.md` §6.
 - **MEDIDO (26/09, AXF etapa A, NQ):** agotamiento por delta → barrido → reversión confirmada (256 detecciones × 3 filtros de tendencia × 2 horizontes). Rinde **menos** que el control de misma inercia (240 INFO− de 246 con evidencia; las 6 INFO+ son 50 eventos de una sola mitad). **NO MEDIDO:** absorción con eventos suficientes, L2, otras ventanas, ES y otros activos, salidas (etapa B no corrida por protocolo). `MANIFIESTO_AXF_NQ_20260926.md` §6.
+
+## Anexo 2026-09-26 (2): IPC macro (acumulaciones de picos como imán) en ES 500t
+- **MEDIDO:** etapa A, 28 celdas (alejamiento con momento temprano/tardío, regreso a zona virgen; k 2 y 4; dos detectores), contra C-SZ y C-SW. Reporte sha `59f9d855deff`, manifiesto `MANIFIESTO_IPC_MACRO_ES_500T_20260926.md`.
+- **Estado:** 28/28 **SIN_POTENCIA** (519 eventos en 181 sesiones). Lo visible en las 5 celdas medibles: +0,09 contra nivel sin zona que se anula contra pico reciente; el regreso va en contra (−0,16 contra C-SW en la estricta). No hay candidato para B.
+- **NO MEDIDO:** RTH vs ETH, otras escalas (2000t, tiempo), zonas entre sesiones, otros activos, primer pico.
