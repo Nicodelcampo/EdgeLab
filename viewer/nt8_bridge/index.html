@@ -1153,8 +1153,9 @@
       <label style="display:flex;align-items:center;gap:6px;font-size:10.5px;margin-top:4px;"><input type="checkbox" id="chk-det"> Mostrar detecciones del modelo (naranja = techo, verde = piso)</label>
       <div id="lbl-det-status" style="font-size:9.5px;color:#666;"></div>
       <button class="nt8-btn sm" id="btn-rev" style="margin-top:5px;" title="El modelo te muestra sus zonas de a una y vos juzgás: sí, no o saltar">🔍 Revisar detecciones (✓/✗)</button>
-      <div id="rev-controls" style="display:none;gap:5px;margin-top:4px;">
+      <div id="rev-controls" style="display:none;gap:5px;margin-top:4px;flex-wrap:wrap;">
         <button class="nt8-btn sm" id="btn-rev-si" style="color:#16a34a;font-weight:700;">✓ Sí (S)</button>
+        <button class="nt8-btn sm" id="btn-rev-ext" style="color:#16a34a;" title="Es una acumulación, pero la serie debería empezar antes o terminar después">✓ más larga (E)</button>
         <button class="nt8-btn sm" id="btn-rev-no" style="color:#dc2626;font-weight:700;">✗ No (N)</button>
         <button class="nt8-btn sm" id="btn-rev-skip">Saltar (espacio)</button>
         <button class="nt8-btn sm" id="btn-rev-back">← Anterior</button>
@@ -2650,7 +2651,7 @@
     chart.timeScale().setVisibleLogicalRange({ from: a0 - pad, to: a1 + pad });
     var nj = (lab.data.judgments || []).length, si = (lab.data.judgments || []).filter(function (j) { return j.verdict === "si"; }).length;
     if (el) el.textContent = "Zona " + (rev.k + 1) + " de " + rev.queue.length + " · " + (z.kind === "H" ? "techo" : "piso") + " ×" + z.toques +
-      " · juzgadas: " + nj + " (✓ " + si + " / ✗ " + (nj - si) + ") · teclas: S = sí, N = no, espacio = saltar, ← = anterior";
+      " · juzgadas: " + nj + " (✓ " + si + " / ✗ " + (nj - si) + ") · teclas: S = sí, E = sí pero más larga, N = no, espacio = saltar, ← = anterior";
     requestDraw();
   }
   function revJudge(v) {
@@ -2658,7 +2659,7 @@
     var z = rev.cur;
     lab.data.judgments = (lab.data.judgments || []).filter(function (j) { return !(j.kind === z.kind && j.i0 === z.i0 && j.i1 === z.i1); });
     if (v) lab.data.judgments.push({ kind: z.kind, i0: z.i0, i1: z.i1, t0: z.t0, t1: z.t1, p0: z.p0, p1: z.p1, toques: z.toques, picos: z.picos || [],
-                                     verdict: v, model: peaksDet.data.schema, at: new Date().toISOString() });
+                                     verdict: v === "si_ext" ? "si" : v, ajuste: v === "si_ext" ? "extender" : null, model: peaksDet.data.schema, at: new Date().toISOString() });
     labSave(); rev.k++; revShow();
   }
   function revToggle() {
@@ -4807,6 +4808,7 @@
       document.getElementById("btn-rev").addEventListener("click", function (ev) { ev.stopPropagation(); revToggle(); });
       document.getElementById("btn-rev-si").addEventListener("click", function (ev) { ev.stopPropagation(); revJudge("si"); });
       document.getElementById("btn-rev-no").addEventListener("click", function (ev) { ev.stopPropagation(); revJudge("no"); });
+      document.getElementById("btn-rev-ext").addEventListener("click", function (ev) { ev.stopPropagation(); revJudge("si_ext"); });
       document.getElementById("btn-rev-skip").addEventListener("click", function (ev) { ev.stopPropagation(); rev.k++; revShow(); });
       document.getElementById("btn-rev-back").addEventListener("click", function (ev) { ev.stopPropagation(); rev.k = Math.max(0, rev.k - 1); revShow(); });
       document.addEventListener("keydown", function (ev) {
@@ -4814,6 +4816,7 @@
         var k = ev.key.toLowerCase();
         if (k === "s") { revJudge("si"); ev.preventDefault(); }
         else if (k === "n") { revJudge("no"); ev.preventDefault(); }
+        else if (k === "e") { revJudge("si_ext"); ev.preventDefault(); }
         else if (k === " ") { rev.k++; revShow(); ev.preventDefault(); }
         else if (ev.key === "ArrowLeft") { rev.k = Math.max(0, rev.k - 1); revShow(); ev.preventDefault(); }
         else if (ev.key === "Escape") { revToggle(); }
