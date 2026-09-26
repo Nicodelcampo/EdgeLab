@@ -1123,6 +1123,21 @@
 
 
 
+
+    <!-- EDGELAB_EMA_VWAP_V1 -->
+    <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
+      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px;">📈 EMA y VWAP</div>
+      <div style="display:flex;flex-direction:column;gap:5px;font-size:10.5px;">
+        <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" id="chk-ema-f"><span style="color:#f59e0b">━</span> EMA rápida
+          <input type="number" id="num-ema-f" value="9" min="2" max="500" style="width:50px;margin-left:auto;font-size:10px;"> velas</label>
+        <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" id="chk-ema-s"><span style="color:#2563eb">━</span> EMA lenta
+          <input type="number" id="num-ema-s" value="21" min="2" max="2000" style="width:50px;margin-left:auto;font-size:10px;"> velas</label>
+        <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" id="chk-vwap"><span style="color:#e11d48">━</span> VWAP de sesión (reinicia en la pausa diaria)</label>
+        <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" id="chk-cross"> Marcar cruces (● EMA rápida/lenta, ◆ cierre/VWAP; verde = alcista)</label>
+        <div style="font-size:9px;color:#888;line-height:1.3;">Se calculan sobre las velas del gráfico activo (25 ticks: los períodos son en velas, no en minutos).</div>
+      </div>
+    </div>
+
     <!-- EDGELAB_TBZX_DESIGNER_V1: diseño interactivo de expansiones (sin desenlaces) -->
     <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
       <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px;">✏️ Diseño de expansiones (interactivo)</div>
@@ -2211,6 +2226,67 @@
     return !!best;
   }
 
+
+  // EDGELAB_EMA_VWAP_V1 (2026-09-26): EMA rápida/lenta y VWAP de sesión sobre las velas activas, más marcas de cruce.
+  // Causal: cada punto usa sólo velas cerradas hasta ese índice. VWAP con precio típico (H+L+C)/3 y reinicio en cada
+  // pausa de sesión (hueco > 30 min, la pausa diaria del CME). Se dibuja en la misma capa y ciclo que el resto.
+  var maOpt = { fast: false, slow: false, vwap: false, cross: false, pf: 9, ps: 21 };
+  var maCache = { cd: null, key: "" };
+  function maCompute(cd) {
+    var key = cd.length + "|" + maOpt.pf + "|" + maOpt.ps + "|" + (cd.length ? cd[cd.length - 1].time : 0);
+    if (maCache.cd === cd && maCache.key === key) return maCache;
+    var n = cd.length, ef = new Float64Array(n), es = new Float64Array(n), vw = new Float64Array(n);
+    var af = 2 / (maOpt.pf + 1), as = 2 / (maOpt.ps + 1), pv = 0, vv = 0;
+    for (var i = 0; i < n; i++) {
+      var c = cd[i].close;
+      ef[i] = i ? af * c + (1 - af) * ef[i - 1] : c;
+      es[i] = i ? as * c + (1 - as) * es[i - 1] : c;
+      if (i && cd[i].time - cd[i - 1].time > 1800) { pv = 0; vv = 0; }
+      var v = cd[i].volume || 1, tp = (cd[i].high + cd[i].low + c) / 3;
+      pv += tp * v; vv += v; vw[i] = pv / vv;
+    }
+    maCache = { cd: cd, key: key, ef: ef, es: es, vw: vw };
+    return maCache;
+  }
+  function drawMaVwap(ctx, w, h) {
+    if (!series || !(maOpt.fast || maOpt.slow || maOpt.vwap || maOpt.cross)) return;
+    var cd = activeCandlesArr(); if (!cd || cd.length < 3) return;
+    var lr = chart.timeScale().getVisibleLogicalRange(); if (!lr) return;
+    var M = maCompute(cd), a = Math.max(1, Math.floor(lr.from) - 1), b = Math.min(cd.length - 1, Math.ceil(lr.to) + 1);
+    function line(arr, col, width) {
+      ctx.strokeStyle = col; ctx.lineWidth = width; ctx.beginPath(); var on = false;
+      for (var i = a; i <= b; i++) {
+        if (arr === M.vw && cd[i].time - cd[i - 1].time > 1800) on = false;   // no unir sesiones
+        var x = logicalToX(i), y = series.priceToCoordinate(arr[i]);
+        if (x === null || y === null) { on = false; continue; }
+        if (on) ctx.lineTo(x, y); else { ctx.moveTo(x, y); on = true; }
+      }
+      ctx.stroke();
+    }
+    ctx.save();
+    if (maOpt.vwap) line(M.vw, "rgba(225,29,72,0.95)", 1.6);
+    if (maOpt.slow) line(M.es, "rgba(37,99,235,0.95)", 1.4);
+    if (maOpt.fast) line(M.ef, "rgba(245,158,11,0.95)", 1.4);
+    if (maOpt.cross) {                              // cruce EMA rápida/lenta (círculo) y cierre vs VWAP (rombo)
+      for (var i = a; i <= b; i++) {
+        var x = logicalToX(i); if (x === null) continue;
+        var d0 = M.ef[i - 1] - M.es[i - 1], d1 = M.ef[i] - M.es[i];
+        if (d0 <= 0 && d1 > 0 || d0 >= 0 && d1 < 0) {
+          var y = series.priceToCoordinate(M.ef[i]);
+          ctx.fillStyle = d1 > 0 ? "#16a34a" : "#dc2626"; ctx.beginPath(); ctx.arc(x, y, 4, 0, 6.3); ctx.fill();
+        }
+        if (cd[i].time - cd[i - 1].time > 1800) continue;
+        var v0 = cd[i - 1].close - M.vw[i - 1], v1 = cd[i].close - M.vw[i];
+        if (v0 <= 0 && v1 > 0 || v0 >= 0 && v1 < 0) {
+          var yv = series.priceToCoordinate(M.vw[i]);
+          ctx.fillStyle = v1 > 0 ? "#15803d" : "#b91c1c"; ctx.beginPath();
+          ctx.moveTo(x, yv - 5); ctx.lineTo(x + 4, yv); ctx.lineTo(x, yv + 5); ctx.lineTo(x - 4, yv); ctx.closePath(); ctx.fill();
+        }
+      }
+    }
+    ctx.restore();
+  }
+
   function drawL2Depth(ctx, vr, w, h) {
     var l2 = state.data && state.data.l2;
     if (!l2 || activeProps.show_l2_depth === false || !series) return;
@@ -2369,7 +2445,7 @@
     drawL2Depth(ctx, vr, w, hCanvas);
     drawTrades(ctx, vr, w, hCanvas);
     drawManipulationMarkers(ctx, vr, w, hCanvas);
-    drawTbz(ctx, vr, w, hCanvas); drawTbzE2(ctx, vr, w, hCanvas); drawTbzx(ctx, vr, w, hCanvas);
+    drawMaVwap(ctx, w, hCanvas); drawTbz(ctx, vr, w, hCanvas); drawTbzE2(ctx, vr, w, hCanvas); drawTbzx(ctx, vr, w, hCanvas);
     if ((tbze2Opt.on || tbzx.on) && tbze2Opt.solo) return;             // revisión TBZ-E2 sin las zonas HFT encima
 
     var opacityVal = (activeProps.opacidad || 30) / 100;
@@ -4119,6 +4195,13 @@
     var ce = document.getElementById("chk-tbz-exp"), cw = document.getElementById("chk-tbz-dwell"),
         se = document.getElementById("sel-tbz-exp"), sw = document.getElementById("sel-tbz-dwell");
     if (ce) ce.addEventListener("change", function () { activeProps.tbz_exp = this.checked; requestDraw(); });
+
+    (function () {
+      function bind(id, key) { var el = document.getElementById(id); if (el) el.addEventListener("change", function () { maOpt[key] = this.checked; requestDraw(); }); }
+      bind("chk-ema-f", "fast"); bind("chk-ema-s", "slow"); bind("chk-vwap", "vwap"); bind("chk-cross", "cross");
+      function num(id, key) { var el = document.getElementById(id); if (el) el.addEventListener("change", function () { var v = parseInt(this.value, 10); if (v >= 2) { maOpt[key] = v; requestDraw(); } }); }
+      num("num-ema-f", "pf"); num("num-ema-s", "ps");
+    })();
 
     (function () {
       var c = document.getElementById("chk-tbze2");
