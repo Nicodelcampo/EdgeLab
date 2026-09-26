@@ -158,7 +158,7 @@ def step_e1(inst):
 def declare(inst, keys):
     from edgelab.edge_brain.episode_logger import measurement_episode
     from edgelab.edge_brain.hippocampus_store import DurableHippocampus
-    for fam in ("VREVA", "VCONT"):
+    for fam in ("VREV2",):                                   # una partición por activo, compartida por VREV-A y VCONT (misma corrida)
         part = f"P-{fam}-{inst}-EXP"
         if LEDGER.exists() and part in DurableHippocampus(LEDGER).partitions:
             continue
@@ -213,7 +213,7 @@ def step_report():
     (OUT / "report_e1.json").write_text(raw, encoding="utf-8")
     sha = hashlib.sha256(raw.encode()).hexdigest()
     from edgelab.edge_brain.episode_logger import measurement_episode
-    parts = [f"P-{f}-{i}-EXP" for f in ("VREVA", "VCONT") for i in ASSETS if (OUT / f"e1_{i}.parquet").exists()]
+    parts = [f"P-VREV2-{i}-EXP" for i in ASSETS if (OUT / f"e1_{i}.parquet").exists()]
     with measurement_episode(LEDGER, f"EP-VREVA-VCONT-E1-{sha[:8]}", goal="VREV-A y VCONT E1 por celda",
                              recorded_by="tools/vrev2.py report", repo=REPO, prereg_ref=DOC) as ep:
         ep.store.record_observation(f"OBS-VREVA-VCONT-E1-{sha[:8]}", "VREV-A y VCONT E1 (alcance por celda)", "RESPONSE_PROFILE", parts,
