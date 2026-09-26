@@ -117,4 +117,4 @@ EV = W · (p − f) − costo. **El exceso mínimo sobre el nulo es costo / W:**
   - en SPY se mide información, no P&L;
   - costos de ES medidos, no transportados.
 - **Qué la mataría:** exceso ≈ 0 en SPY, que no replique en ES, o que replique por debajo de costo / W.
-- **Siguiente paso:** escribir el pre-registro y commitearlo antes de tocar SPY.
+- **Pre-registro escrito:** `docs/research/MANIFIESTO_ESPEJO_MACRO_ES_20260926.md` (espera el OK de Nico).
