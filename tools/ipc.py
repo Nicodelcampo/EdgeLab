@@ -146,6 +146,40 @@ def control(S, A, keys, k, e, s, lvl_dist, far_dist, rng, zone_levels, R):
     return (float(np.mean(vals)) if vals else np.nan, len(vals), pht, phs)
 
 
+def control_sw(S, A, keys, k, e, s, lvl_dist, far_dist, rng, zone_levels, R, piv):
+    """C-SW (agregado tras la corrida corregida, más estricto): el nivel es un máximo (o mínimo) RECIENTE real (pivote de
+    2 velas en las últimas 300), todavía no superado, a la misma distancia (± R), que NO es parte de una acumulación.
+    Contesta si atrae la acumulación o cualquier pico reciente."""
+    a = A[k]; s0 = a["st"][:, e]; rg0, sec0 = a["rg20"][e], a["sec20"][e]; clock = int(S[k]["clock"][e])
+    others = [o for o in keys if o != k]; vals = []
+    for oi in rng.permutation(len(others)):
+        if len(vals) >= N_PH:
+            break
+        o = others[int(oi)]; y = A[o]
+        lo_, hi_ = np.searchsorted(S[o]["clock"], clock - TOD), np.searchsorted(S[o]["clock"], clock + TOD)
+        lo_ = max(lo_, 300)
+        if hi_ <= lo_:
+            continue
+        st = y["st"][:, lo_:hi_]
+        tol = np.maximum(TOL * np.abs(s0)[:, None], ABS_TOL)
+        ok = np.all(np.abs(st - s0[:, None]) <= tol, axis=0)
+        rg, sec = y["rg20"][lo_:hi_], y["sec20"][lo_:hi_]
+        ok &= (np.abs(rg - rg0) <= TOL * rg0) & (np.abs(np.log(np.maximum(sec, 1e-3) / max(sec0, 1e-3))) <= np.log(1 + TOL))
+        src = y["h"] if s > 0 else y["l"]
+        for qi in rng.permutation(np.flatnonzero(ok))[:15]:
+            q = lo_ + int(qi)
+            target = y["c"][q] + s * lvl_dist
+            cand = [u for u in piv[o][s][(piv[o][s] >= q - 300) & (piv[o][s] < q - 2)] if abs(src[u] - target) <= R]
+            cand = [u for u in cand if s * (src[u + 1:q + 1].max() if s > 0 else src[u + 1:q + 1].min()) <= s * src[u]]   # no superado
+            cand = [u for u in cand if not any(abs(src[u] - zl) < R for zl in zone_levels.get(o, []))]
+            if not cand:
+                continue
+            u = cand[-1]; lvl = src[u]; far = y["c"][q] - s * far_dist
+            hit, _ = race(y["h"], y["l"], q, s, lvl, far, len(y["c"]))
+            vals.append(hit); break
+    return (float(np.mean(vals)) if vals else np.nan, len(vals))
+
+
 def declare(inst, keys):
     from edgelab.edge_brain.episode_logger import measurement_episode
     from edgelab.edge_brain.hippocampus_store import DurableHippocampus
@@ -169,6 +203,9 @@ def step_measure(inst):
         cd = dict(t=S[k]["t"], h=A[k]["h"], l=A[k]["l"])
         Zs[k] = PR.series(cd, 1.0, p["w"], p["max_gap"], p["max_step"], p["min_pull"], p["nmin"], extend_back=True, max_slope=None)
     zone_levels = {k: [z["picos"][-1][2] for z in Zs[k]] + [z["picos"][0][2] for z in Zs[k]] for k in keys}
+    piv = {}
+    for k in keys:
+        piv[k] = {1: np.flatnonzero(PR.pivots(A[k]["h"], 2)), -1: np.flatnonzero(PR.pivots(-A[k]["l"], 2))}
     rng = np.random.default_rng(SEED)
     rows = []
     for vname, var in cfg["variants"].items():
@@ -176,7 +213,8 @@ def step_measure(inst):
             for r in events(S[k], A[k], Zs[k], var, p["w"], cap=cap):
                 s = 1 if r["kind"] == "H" else -1
                 cm, cn, pht, phs = control(S, A, keys, k, r["ev"], s, r["lvl_dist"], r["far_dist"], rng, zone_levels, r["R"])
-                rows.append(dict(r, inst=inst, detector=vname, session=k, ctrl=cm, n_ctrl=cn, ph_t=pht, ph_session=phs, t_ev=float(S[k]["t"][r["ev"]])))
+                sw, swn = control_sw(S, A, keys, k, r["ev"], s, r["lvl_dist"], r["far_dist"], rng, zone_levels, r["R"], piv)
+                rows.append(dict(r, inst=inst, detector=vname, session=k, ctrl=cm, n_ctrl=cn, ctrl_sw=sw, n_sw=swn, ph_t=pht, ph_session=phs, t_ev=float(S[k]["t"][r["ev"]])))
         print(inst, vname, "eventos", sum(1 for r in rows if r["detector"] == vname), flush=True)
     D = pd.DataFrame(rows)
     OUT.mkdir(parents=True, exist_ok=True)
@@ -204,6 +242,7 @@ def step_report():
                                 g = g[g.vol_rel <= t1]
                             elif vol == "alto":
                                 g = g[g.vol_rel >= t2]
+                            g_sw = g.dropna(subset=["ctrl_sw"]) if "ctrl_sw" in g else g.iloc[0:0]
                             g = g.dropna(subset=["ctrl"])
                             base = dict(inst=inst, detector=det, virgen=virg, k=k, volumen=vol, nivel=niv, n=int(len(g)))
                             if len(g) < 50:
@@ -211,7 +250,11 @@ def step_report():
                             d, lo, hi, mde, pv = EV.boot(g.hit.to_numpy(float), g.ctrl.to_numpy(), g.session.to_numpy(), rng)
                             h1 = (pd.to_datetime(g.session, format="%Y%m%d") < pd.Timestamp("2025-12-01")).to_numpy()
                             halves = [float((g.hit - g.ctrl)[m].mean()) if m.sum() >= 20 else None for m in (h1, ~h1)]
-                            cells.append(dict(base, sessions=int(g.session.nunique()), real=float(g.hit.mean()), control=float(g.ctrl.mean()),
+                            sw = None
+                            if len(g_sw) >= 50:
+                                d2, lo2, hi2, mde2, pv2 = EV.boot(g_sw.hit.to_numpy(float), g_sw.ctrl_sw.to_numpy(), g_sw.session.to_numpy(), rng)
+                                sw = dict(n=int(len(g_sw)), real=float(g_sw.hit.mean()), control=float(g_sw.ctrl_sw.mean()), diff=d2, ci=[lo2, hi2], pval=pv2)
+                            cells.append(dict(base, c_sw=sw, sessions=int(g.session.nunique()), real=float(g.hit.mean()), control=float(g.ctrl.mean()),
                                               diff=d, ci=[lo, hi], mde=mde, pval=pv, halves=halves, bars_med=float(g[g.hit == 1].bars.median()) if g.hit.sum() else None,
                                               status="OK"))
     ok = [c for c in cells if c["status"] == "OK"]
@@ -224,7 +267,8 @@ def step_report():
             c["estado"] = "INFO+" if c["diff"] > 0 else "INFO-"
         else:
             c["estado"] = "SIN_INFO" if c["mde"] <= 0.10 else "SIN_POTENCIA"
-        c["pasa_B"] = bool(c["estado"] == "INFO+" and c.get("halves") and all(v is not None and v > 0 for v in c["halves"]))
+        c["pasa_B"] = bool(c["estado"] == "INFO+" and c.get("halves") and all(v is not None and v > 0 for v in c["halves"])
+                           and c.get("c_sw") and c["c_sw"]["ci"][0] > 0)   # además tiene que ganarle al pico reciente (C-SW)
     from collections import Counter
     from edgelab.edge_brain.control_guard import audit_event_controls
     X = pd.concat([pd.read_parquet(OUT / f"A_{i}.parquet") for i in ("ES", "NQ") if (OUT / f"A_{i}.parquet").exists()]).dropna(subset=["ph_t"])

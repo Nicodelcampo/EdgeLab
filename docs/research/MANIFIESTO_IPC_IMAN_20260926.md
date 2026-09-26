@@ -62,3 +62,6 @@ El estado continuo (zona virgen a distancia x); otros niveles (banda completa, P
 
 ### Corrección antes de interpretar (26/09)
 La primera corrida (reporte sha `daa3b0f3bbd3`, 32 INFO+) aplicaba el tope de pendiente y, en NQ, la duración mínima **con la serie completa**, que incluye picos formados después del evento. Si el precio volvía y armaba más picos, cambiaba qué zonas entraban: mirada al futuro. Se corrige usando sólo los picos conocidos en la creación, y **se descarta esa corrida sin interpretarla**; queda en el Cerebro como invalidada.
+
+### Segundo control, más estricto (26/09, tras la corrida corregida `f156dc68d907` y antes de pasar a B)
+Riesgo detectado: el nivel real es un pico **recién negociado**; el fantasma de C-SZ es un precio cualquiera a la misma distancia, que puede estar fuera del rango reciente. Parte del efecto podría ser «volver al rango reciente». **C-SW:** el nivel de control es un **máximo o mínimo reciente real** (pivote en las últimas 300 velas), todavía no superado, a la misma distancia (± R), que **no** es parte de una acumulación; misma hora, estado y actividad, en otra sesión. **Para pasar a B una celda tiene que ganarles a C-SZ y a C-SW** (IC inferior > 0 contra C-SW).
