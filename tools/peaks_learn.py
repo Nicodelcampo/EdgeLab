@@ -154,10 +154,15 @@ def main(argv=None):
         win = [(int(np.searchsorted(cd["t"], s["t0"])), int(np.searchsorted(cd["t"], s["t1"], "right")) - 1) for s in lab["reviewed"]]
         win_note = "sesiones marcadas como revisadas"
     else:
-        a0 = min(r["i0"] for r in R); a1 = max(r["i1"] for r in R)
-        t0, t1 = cd["t"][a0] - 1800, cd["t"][a1] + 600
-        win = [(int(np.searchsorted(cd["t"], t0)), int(np.searchsorted(cd["t"], t1)))]
-        win_note = "SUPUESTO: 30 min antes del primer rango a 10 min después del último (no hay sesiones revisadas)"
+        # una ventana por sesión CME (reinicio 17:00 CT ≈ 22:00/23:00 UTC; se agrupa por tramos sin huecos > 30 min)
+        gaps = np.flatnonzero(np.diff(cd["t"]) > 1800) + 1
+        sess_of = np.searchsorted(gaps, np.arange(len(cd["t"])), side="right")
+        win = []
+        for sidx in sorted({int(sess_of[r["i0"]]) for r in R}):
+            rs = [r for r in R if sess_of[r["i0"]] == sidx]
+            t0, t1 = cd["t"][min(r["i0"] for r in rs)] - 1800, cd["t"][max(r["i1"] for r in rs)] + 600
+            win.append((int(np.searchsorted(cd["t"], t0)), int(np.searchsorted(cd["t"], t1))))
+        win_note = f"SUPUESTO: por sesión, 30 min antes del primer rango a 10 min después del último ({len(win)} sesiones; ninguna marcada como revisada)"
     res = []
     for W, tau, nmin, w in itertools.product(GRID["W"], GRID["tau"], GRID["nmin"], GRID["w"]):
         Z0 = zones(cd, tick, W, tau, nmin, w)
