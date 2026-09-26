@@ -32,6 +32,15 @@ idea del espejo?», no «¿el espejo existe?».
 n < 30 por tercil. Con 3–15 eventos, el bootstrap por sesión colapsa y produce «significativos» de ±30–40 pp que son
 artefactos.
 
+
+### Actualización 2026-09-26 (noche) — replicación ES de ESPEJO-MACRO
+
+- **Sin potencia:** 198 días RTH; MDE ≈ 30 pp en la prueba principal, contra un efecto en SPY de 4–11 pp. Ninguna
+  prueba sostiene y E2 no se calcula.
+- **Concordancia de signo con SPY:** 10 de 10 en la prueba principal, 11 de 15 en el exceso general. Es descriptiva.
+- **Tamiz: sigue en SÍ.** Lo que falta es muestra, no una idea distinta.
+- **Nuevo ítem NO MEDIDO:** ES con muestra suficiente (más historia, sesión completa, NQ o YM macro).
+
 ## 3. NO MEDIDO (por eso un NO de hoy no alcanza para descartar la idea)
 
 ### 3.1 La definición del impulso — **el hueco más grande**

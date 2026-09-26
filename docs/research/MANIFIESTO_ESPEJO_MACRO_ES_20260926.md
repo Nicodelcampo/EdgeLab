@@ -187,3 +187,41 @@ veredicto sobre el espejo. Qué midió exactamente, qué no y la regla para cerr
   artefactos.
 - **Alcance:** es una regla de lectura. No cambia ningún número, ninguna prueba ni el FDR publicado, y no rescata ni
   descarta nada que la regla de sostenido no decida.
+
+## Resultado (2026-09-26): SPY descubre, ES **sin potencia**; el tamiz sigue en SÍ
+
+**Procedencia:** código `tools/espejo_macro.py` en `8595910` (velas de ES por bloques, mismo resultado que `193eea3`).
+- SPY: 3.347 días, `artifacts/research/espejo_macro/SPY/`.
+- ES RTH: 198 días (18-jul-2025 a 31-mar-2026), `artifacts/research/espejo_macro/ES_RTH/` (sha `356142b2c42b`).
+- E2: `artifacts/research/espejo_macro/E2/e2.json`.
+
+**SPY (descubrimiento):**
+- **Semejanza (prueba principal):** en 5 min, las vueltas parecidas completan el espejo +3 a +11 pp más que las poco
+  parecidas.
+- **Por fracción recorrida:**
+
+| x | Exceso sobre f (al cierre) |
+|---|---|
+| 0,4 | −2 a −12 pp |
+| 0,75 | +6 a +16 pp, en todas las configuraciones con muestra |
+
+**ES (replicación):**
+- Ninguna prueba cumple la regla de sostenido, así que **E2 no se calcula** (`sostenidos: []`).
+- **La razón es potencia, no ausencia:** con 198 días, la media amplitud del IC es ~21 pp en la prueba principal
+  (MDE ≈ 30 pp) y ~11 pp en el exceso general (MDE ≈ 15 pp). El efecto de SPY es de 4–11 pp: ES no podía detectarlo.
+
+**Concordancia de signo** (descriptiva, celdas con n ≥ 20 en ES; no entra en la regla de sostenido):
+
+| Prueba | Mismo signo que SPY |
+|---|---|
+| Parecidas − poco parecidas | **10 de 10** |
+| Exceso general al cierre | 11 de 15 |
+
+Si no hubiera relación, que las 10 coincidan tiene una probabilidad de ~0,1 %. Pero las celdas se solapan (mismos
+días, configuraciones vecinas), así que es una señal para seguir, no una prueba.
+
+**Estado:** `ESPEJO_MACRO_ES_SIN_POTENCIA`. **No es una muerte.**
+- En los términos de `ESPEJO_MEDIDO_Y_NO_MEDIDO.md`, el tamiz sigue en **SÍ**.
+- Hace falta más muestra de ES o un instrumento macro equivalente con más historia: NQ o YM macro, ES en sesión
+  completa, ES anterior a jul-2025 si se consigue.
+- La confirmación de abr–jun **no** se abre: no hay candidato.
