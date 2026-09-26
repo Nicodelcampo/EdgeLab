@@ -47,3 +47,20 @@ NQ, research-v2, contrato canónico, sesiones de exploración ≤ 2026-03-31. Ve
 
 ## 5. No medido (abierto)
 Otros `exhW` y `lookN`; agotamiento por L2 (icebergs, cola del libro); otros activos (ES con L2 de NT8, YM/MYM tras validar el agresor); trailing; velas de tiempo; eventos macro.
+
+## 6. Resultado etapa A (26/09; `artifacts/axf/reportA.json`, sha `c19ad91c77f9`, cobertura de controles 99,6 %, auditoría PASS)
+- **Estados:** INFO− 240 · INFO+ 6 · SIN_POTENCIA 522 (celdas con < 50 eventos o MDE > 0,25 ATR). **Ninguna celda pasa a B**, así que B y C no se corren, como estaba pre-registrado.
+- **Eventos:** 6.235 confirmaciones distintas en 171 sesiones (unión de las 256 detecciones).
+- **Lo dominante:** la secuencia **rinde menos** que el control de mismo estado. En la variante más poblada (sin filtro de alejamiento, D05, barrido 2 t, reversión de 1 ATR), a 60 velas da 0,13 contra 0,66 ATR (diferencia −0,53, IC −0,80; −0,25) y a 1.000 velas 0,98 contra 4,30 ATR. Es negativo en las dos mitades del período.
+- **Por qué el control es alto:** empareja la pendiente de la EMA(21) en la vela de confirmación, cuando el precio ya viene girando. Por eso rinde a favor de la operación en las dos direcciones (compras +5,1 y ventas +3,4 ATR a 1.000 velas): es **inercia genérica**. La pregunta que contesta es exactamente la de Nico: ¿el agotamiento con barrido agrega algo a un giro con fuerza? **No, en estas variantes: resta.**
+- **Las 6 INFO+** son la misma muestra de 50 eventos (D20, reversión de 3 ATR con desplazamiento 0,7, a 60 velas), de 36 sesiones y **todas de la segunda mitad** (la primera no tiene eventos suficientes). No pasa el requisito de las dos mitades. Queda como observación de muestra chica, no como pista.
+- **Sin potencia (no descartadas):**
+  - las variantes de **absorción** (A2 y A3) casi no producen eventos con esta definición;
+  - el filtro de **tendencia a favor** también: una reversión casi nunca va a favor de la EMA(200).
+
+**Alcance:** con extremo de 200 velas, zona de 30 velas, agotamiento por delta del 5 % o 20 %, barrido de 2 o 6 ticks y reversión de 1 o 3 ATR (delta 5 % o 20 %, desplazamiento 0,4 o 0,7), en NQ en exploración, entrar tras la secuencia rinde **menos** que una barra con la misma inercia a la misma hora. No se descarta:
+- el agotamiento por absorción, que hay que redefinir para que tenga eventos;
+- el agotamiento por L2 (icebergs, cola del libro);
+- otras ventanas (`exhW`, `lookN`);
+- ES (con L2 de NT8) y otros activos;
+- las salidas (B no se corrió).

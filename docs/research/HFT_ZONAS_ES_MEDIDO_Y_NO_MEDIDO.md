@@ -377,3 +377,4 @@ aquellos números compara dos poblaciones distintas.
   - **Continuación tras el primer alejamiento:** 8/96 INFO+, todas en el Dow (MYM/YM) con X = 6, pero con neto de costo negativo.
   - **Alcance por celda.**
 - **NO MEDIDO:** agotamiento por flujo/L2, escala diaria, geometrías de más recorrido. `MANIFIESTO_VREVA_VCONT_E1_20260926.md` §6.
+- **MEDIDO (26/09, AXF etapa A, NQ):** agotamiento por delta → barrido → reversión confirmada (256 detecciones × 3 filtros de tendencia × 2 horizontes). Rinde **menos** que el control de misma inercia (240 INFO− de 246 con evidencia; las 6 INFO+ son 50 eventos de una sola mitad). **NO MEDIDO:** absorción con eventos suficientes, L2, otras ventanas, ES y otros activos, salidas (etapa B no corrida por protocolo). `MANIFIESTO_AXF_NQ_20260926.md` §6.
