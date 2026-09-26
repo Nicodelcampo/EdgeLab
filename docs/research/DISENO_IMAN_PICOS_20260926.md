@@ -37,3 +37,11 @@
 1. Resultado de la tanda de ES (validar el 85 %).
 2. Definir con Nico qué distancia significa «se alejó», y si «tocar» es llegar al último pico o a la banda completa.
 3. Registrar la familia IPC (ledger propio) y escribir el manifiesto con el número efectivo de hipótesis.
+
+## Decisiones (26/09)
+- **Alejamiento relativo (Nico):** D = k × retroceso medio entre los picos de la zona, con k ∈ {2, 4, 8}. Se usa el retroceso y no el ancho de la banda porque muchas zonas son casi horizontales (ancho ≈ 0), mientras que el retroceso mide su tamaño real.
+- **Tocar y TP (lo decidió Claude a pedido de Nico), en dos niveles:**
+  - **primario: el último pico** (el más cercano y reciente: liquidez nueva, y el primer objetivo de un imán);
+  - **secundario: el primer pico** (barrido completo de la zona: dice si atrae la zona entera o sólo el borde).
+  - «Tocar» = el máximo (o mínimo) de la vela llega al nivel. Como TP operable: atravesarlo por 1 tick.
+- **Validación del detector antes de la corrida:** ES, 69 % de precisión fuera de muestra (100 juicios, 26/09); NQ, filtro nuevo (70 % en muestra) todavía sin validar. La calidad de detección entra como parámetro (variante estricta: ≥ 12 picos).
