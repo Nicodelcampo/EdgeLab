@@ -367,3 +367,7 @@ aquellos números compara dos poblaciones distintas.
 - **MEDIDO (iteración 2, 25/09):** con los nulos N-REV (tramo del mismo tamaño que recién dio la vuelta) y N-VOLSTR (actividad y estiramiento) y la réplica en NQ. La llegada a A es robusta a la actividad en ES y NQ, y al estado de reversión sólo en ES (NQ: −0,007). El contexto de estiramiento no es propio de la franja (desaparece con el nulo emparejado). §9 del manifiesto.
 - **NO MEDIDO:** selección de contrato canónica (`contract_regime`; difiere en 3 sesiones de ES y 2 de NQ); reserva abr–jun; ejecución.
 - **MEDIDO (25/09, N-REVVOL, primario):** contra un tramo del mismo tamaño que recién dio la vuelta **y** con la misma actividad, la franja TBZX llega a A **menos** (−3,5 pts, sesiones positivas 26 %). El «espejo» era actividad más reversión. **Hipótesis muerta** en ES, exploración, con este detector.
+
+## Anexo 2026-09-26: EVX (cruces EMA × VWAP) en MYM, YM, ES y NQ
+- **MEDIDO:** E0 y E1. 0 de 448 celdas con información direccional frente al control de mismo estado (MDE ~0,5 ATR). El embudo se detiene en E1. `docs/research/MANIFIESTO_EVX_E0_E1_20260926.md` §6.
+- **NO MEDIDO:** estado continuo «EMA de un lado» (en lugar del cruce); otras resoluciones (1 min); efectos menores que el MDE.

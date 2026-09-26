@@ -39,3 +39,11 @@ Con MYM, la tolerancia de estado ±25 % / ±0,1 ATR y la búsqueda en 40 sesione
 2. la tolerancia pasa a **±50 % / ±0,15 ATR** (cobertura **94 %**, 81 % con 3 controles).
 
 Los eventos sin control no difieren en los filtros (medianas: 94 contra 113 velas del otro lado, 2,48 contra 2,46 ATR de alejamiento). No se miró ningún retorno antes de este cambio.
+
+## 6. Resultado E0–E1 (26/09; `artifacts/evx/report_e1.json`, sha `014c4ed67893`, auditoría de controles PASS)
+- **E0:** todas las celdas pasan el censo. Cruces por día: MYM 3,7–14 · YM 3,2–12 · ES 11–43 · NQ 6,9–26, según el período de la EMA.
+- **E1:** **0 de 448** celdas pasan BH-FDR. **Ninguna pasa a E2.** Media de las diferencias −0,014 ATR; 41 % positivas (lo esperable por azar, o algo peor). Las celdas más «significativas» sin corregir son **negativas**: ES EMA55, a 20–60 velas, el cruce rinde menos que el control (−0,1 a −0,27 ATR).
+- **Potencia:** MDE mediano 0,49 ATR. Se descarta un efecto direccional del cruce **mayor que ~0,5 ATR** en estos horizontes; uno menor no se puede distinguir con 6–9 meses de datos (y sería muy chico frente al costo).
+- **Canal no direccional:** el movimiento absoluto después del cruce no es mayor que el del control con el mismo estado.
+
+**Conclusión (alcance preciso):** con la EMA en 21, 55, 144 o 377 velas de 25 ticks, en MYM, YM, ES y NQ, en exploración, **el cruce EMA × VWAP no aporta información direccional** frente a una barra con el mismo estado (pendiente, distancia a la EMA y al VWAP, actividad) a la misma hora de otra sesión. Tampoco con los filtros de tiempo, alejamiento o volumen. El embudo se detiene en E1, como estaba pre-registrado: E2–E5 no se corren. No se tocó abr–jun ni el holdout.
