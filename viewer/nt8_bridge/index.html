@@ -1126,6 +1126,16 @@
 
 
 
+
+    <!-- EDGELAB_AXF_DESIGNER_V1 -->
+    <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
+      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px;">🌊 Agotamiento por flujo → barrido → reversión (diseño)</div>
+      <label style="display:flex;align-items:center;gap:6px;font-size:10.5px;"><input type="checkbox" id="chk-axf"><b>Mostrar</b></label>
+      <div id="axf-sliders" style="display:flex;flex-direction:column;gap:3px;font-size:10px;margin-top:5px;"></div>
+      <div id="lbl-axf-status" style="font-size:9.5px;color:#666;margin-top:4px;"></div>
+      <div style="font-size:9px;color:#888;line-height:1.3;margin-top:4px;">Caja = zona de agotamiento (roja: agotamiento arriba → venta; verde: abajo → compra). Línea violeta = último extremo participante; ● violeta = barrido. Línea negra = tramo de reversión confirmada; ● negro = entrada (apertura siguiente) con SL/TP. Clic en una zona = sus valores; Esc cierra. Sólo diseño: sin desenlaces.</div>
+    </div>
+
     <!-- EDGELAB_LABELER_V1 -->
     <div id="lab-anchor"></div>
     <div id="lab-panel" style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
@@ -2586,6 +2596,142 @@
     ctx.restore();
   }
 
+
+  // EDGELAB_AXF_DESIGNER_V1 (2026-09-26): agotamiento por flujo → barrido del último extremo participante → reversión
+  // confirmada → recién ahí entrada. Idea de Nico: docs/research/IDEA_AGOTAMIENTO_FLUJO_BARRIDO_20260926.md.
+  // Delta desde bundles/delta/<activo>.json (tools/build_delta_layer.py; agresor válido sólo en NQ). Todo causal.
+  var AXF_P = [
+    ["lookN", "Extremo: máximo/mínimo de las últimas N velas", 20, 1000, 10, 200],
+    ["exhType", "Agotamiento: 0 delta en contra · 1 absorción (volumen sin avance)", 0, 1, 1, 0],
+    ["exhW", "Velas de la zona de agotamiento", 5, 200, 1, 30],
+    ["divMin", "Tipo 0: delta de la zona en contra ≥ (fracción del volumen)", 0, 0.6, 0.02, 0.05],
+    ["volMult", "Tipo 1: volumen de la zona ≥ x veces el normal", 1, 6, 0.1, 2],
+    ["progMax", "Tipo 1: avance de la zona ≤ x ATR", 0.2, 5, 0.1, 1.5],
+    ["lastDef", "Último extremo participante: 0 vela de más volumen · 1 vela de más delta a favor", 0, 1, 1, 0],
+    ["sweepTicks", "Barrido: pasar ese extremo por (ticks)", 1, 40, 1, 2], ["sweepMax", "Barrido: velas máx. después de la zona", 5, 300, 5, 60],
+    ["revDist", "Reversión: distancia (ATR)", 0.5, 10, 0.25, 2], ["revDelta", "Reversión: delta a favor ≥ (fracción del volumen)", 0, 0.6, 0.02, 0.1],
+    ["revDisp", "Reversión: coeficiente de desplazamiento (neto / recorrido) ≥", 0.2, 1, 0.05, 0.5],
+    ["revSpeed", "Reversión: velocidad ≥ (ticks por vela)", 0, 5, 0.1, 0.5], ["revMax", "Reversión: velas máx. después del barrido", 5, 300, 5, 60],
+    ["slTicks", "SL: ticks por encima o debajo del extremo post-barrido", 1, 80, 1, 8],
+    ["tpMode", "TP: 0 múltiplo de R · 1 zona (extremo opuesto de la zona) · 2 VWAP · 3 ATR fijos", 0, 3, 1, 0],
+    ["tpR", "TP: múltiplo de R / ATR fijos", 0.5, 10, 0.5, 2], ["hold", "Caja dibujada (velas)", 10, 1000, 10, 200]
+  ];
+  var axf = { on: false, p: {}, ev: [], delta: null, sel: null, hits: [] };
+  AXF_P.forEach(function (q) { axf.p[q[0]] = q[5]; });
+  function axfLoadDelta(aid) {
+    axf.delta = null;
+    fetch("bundles/delta/" + aid + ".json", { cache: "reload" }).then(function (r) { if (!r.ok) throw 0; return r.json(); })
+      .then(function (d) { axf.delta = d; if (axf.on) { axfCompute(); requestDraw(); } axfStatus(); })
+      .catch(function () { axfStatus(); });
+  }
+  function axfStatus(txt) {
+    var el = document.getElementById("lbl-axf-status"); if (!el) return;
+    if (!axf.delta) { el.textContent = "Sin capa de delta para este activo (tools/build_delta_layer.py). El agresor es válido sólo en NQ."; return; }
+    el.textContent = txt || ("Delta: " + axf.delta.instrument + " · agresor " + axf.delta.aggressor_validity);
+  }
+  function axfCompute() {
+    axf.ev = []; axf.sel = null;
+    var cd = activeCandlesArr(), D = axf.delta; if (!cd || !D || D.n !== cd.length) { axfStatus(D ? "El delta no coincide con estas velas (otro gráfico activo)" : null); return; }
+    var P = axf.p, n = cd.length, tick = (state.data.meta && state.data.meta.tick_size) || 0.25;
+    var atr = new Float64Array(n), vw = new Float64Array(n), sb = new Int32Array(n), pv = 0, vv = 0, k = 0;
+    for (var i = 0; i < n; i++) {
+      var c = cd[i], gap = i && c.time - cd[i - 1].time > 1800;
+      if (gap) { pv = 0; vv = 0; k = 0; }
+      var tr = i && !gap ? Math.max(c.high - c.low, Math.abs(c.high - cd[i - 1].close), Math.abs(c.low - cd[i - 1].close)) : c.high - c.low;
+      atr[i] = i && !gap ? atr[i - 1] + (tr - atr[i - 1]) / 100 : Math.max(tr, tick);
+      var v = c.volume || 1; pv += (c.high + c.low + c.close) / 3 * v; vv += v; vw[i] = pv / vv; sb[i] = k++;
+    }
+    var volAvg = new Float64Array(n), acc = 0;                                    // volumen normal: media móvil de 500 velas
+    for (i = 0; i < n; i++) { acc += cd[i].volume || 0; if (i >= 500) acc -= cd[i - 500].volume || 0; volAvg[i] = acc / Math.min(i + 1, 500); }
+    var busyUntil = -1;
+    for (var j = P.lookN; j < n - 2; j++) {
+      if (sb[j] < P.lookN || j <= busyUntil) continue;
+      var up = true, dn = true;                                                   // ¿nuevo extremo de N velas?
+      for (var q = j - P.lookN; q < j; q++) { if (cd[q].high >= cd[j].high) up = false; if (cd[q].low <= cd[j].low) dn = false; if (!up && !dn) break; }
+      if (!up && !dn) continue;
+      var d = up ? 1 : -1, z0 = j - P.exhW + 1; if (z0 < 1 || sb[z0] === 0) continue;
+      var zb = 0, zs = 0, zv = 0; for (q = z0; q <= j; q++) { zb += D.buy[q]; zs += D.sell[q]; zv += cd[q].volume || 0; }
+      var fav = d * (zb - zs) / Math.max(zb + zs, 1), prog = d * (cd[j].close - cd[z0].open) / atr[j];
+      var exh = P.exhType === 0 ? (-fav >= P.divMin) : (zv >= P.volMult * volAvg[j] * P.exhW && prog <= P.progMax);
+      if (!exh) continue;
+      var li = z0, best = -Infinity;                                              // último extremo participante
+      for (q = z0; q <= j; q++) { var sc = P.lastDef === 0 ? (cd[q].volume || 0) : d * (D.buy[q] - D.sell[q]); if (sc >= best) { best = sc; li = q; } }
+      var L = d > 0 ? cd[li].high : cd[li].low, zlo = Infinity, zhi = -Infinity;
+      for (q = z0; q <= j; q++) { zlo = Math.min(zlo, cd[q].low); zhi = Math.max(zhi, cd[q].high); }
+      var e = { j: j, z0: z0, dir: d, li: li, L: L, zlo: zlo, zhi: zhi, fav: fav, prog: prog, s: -1, c: -1 };
+      for (q = j + 1; q <= Math.min(n - 1, j + P.sweepMax) && sb[q] > 0; q++) {  // barrido
+        if (d > 0 ? cd[q].high >= L + P.sweepTicks * tick : cd[q].low <= L - P.sweepTicks * tick) { e.s = q; break; }
+      }
+      if (e.s >= 0) {                                                            // reversión confirmada después del barrido
+        var E = d > 0 ? cd[e.s].high : cd[e.s].low, Ei = e.s;
+        for (q = e.s; q <= Math.min(n - 2, e.s + P.revMax) && sb[q] > 0; q++) {
+          if (d > 0 ? cd[q].high > E : cd[q].low < E) { E = d > 0 ? cd[q].high : cd[q].low; Ei = q; }
+          var dist = d * (E - cd[q].close) / atr[q];
+          if (dist < P.revDist || q === Ei) continue;
+          var rb = 0, rs = 0, pth = 0;
+          for (var r2 = Ei + 1; r2 <= q; r2++) { rb += D.buy[r2]; rs += D.sell[r2]; pth += Math.abs(cd[r2].close - cd[r2 - 1].close); }
+          var rdel = -d * (rb - rs) / Math.max(rb + rs, 1), disp = Math.abs(cd[q].close - E) / Math.max(pth + Math.abs(cd[Ei].close - E), tick);
+          var speed = Math.abs(E - cd[q].close) / tick / (q - Ei);
+          if (rdel >= P.revDelta && disp >= P.revDisp && speed >= P.revSpeed) {
+            e.c = q; e.E = E; e.Ei = Ei; e.rdel = rdel; e.disp = disp; e.speed = speed; e.dist = dist;
+            e.entryI = q + 1; e.entry = cd[q + 1].open; e.sl = E + d * P.slTicks * tick;
+            var risk = Math.abs(e.sl - e.entry);
+            e.tp = P.tpMode === 0 ? e.entry - d * P.tpR * risk : P.tpMode === 1 ? (d > 0 ? zlo : zhi) : P.tpMode === 2 ? vw[q] : e.entry - d * P.tpR * atr[q];
+            e.rr = d * (e.entry - e.tp) / risk;
+            break;
+          }
+        }
+      }
+      axf.ev.push(e);
+      busyUntil = j + P.exhW;                                                    // una zona por tramo
+    }
+    var days = new Set(cd.map(function (x) { return Math.floor((x.time - 79200) / 86400); })).size || 1;
+    var nS = axf.ev.filter(function (x) { return x.s >= 0; }).length, nC = axf.ev.filter(function (x) { return x.c >= 0; }).length;
+    axfStatus(axf.ev.length + " zonas de agotamiento (" + (axf.ev.length / days).toFixed(1) + "/día) · con barrido " + nS + " · con reversión confirmada " + nC + " (" + (nC / days).toFixed(1) + "/día)");
+  }
+  function drawAxf(ctx, w, h) {
+    axf.hits = [];
+    if (!axf.on || !series) return;
+    var cd = activeCandlesArr(); if (!cd) return;
+    var lr = chart.timeScale().getVisibleLogicalRange(); if (!lr) return;
+    function X(i) { var c = logicalToX(i); return c === null ? NaN : c; }
+    function Y(p) { var c = series.priceToCoordinate(p); return c === null ? NaN : c; }
+    ctx.save(); ctx.font = "10px -apple-system, Segoe UI, sans-serif";
+    axf.ev.forEach(function (e, k) {
+      var last = e.c >= 0 ? e.entryI + axf.p.hold : (e.s >= 0 ? e.s : e.j);
+      if (last < lr.from - 5 || e.z0 > lr.to + 5) return;
+      var col = e.dir > 0 ? "220,38,38" : "22,163,74", sel = axf.sel === k;
+      var x0 = X(e.z0), x1 = X(e.j), yh = Y(e.zhi), yl = Y(e.zlo);
+      ctx.fillStyle = "rgba(" + col + "," + (sel ? 0.18 : 0.08) + ")"; ctx.fillRect(x0, yh, x1 - x0, yl - yh);
+      ctx.strokeStyle = "rgba(" + col + ",0.8)"; ctx.setLineDash([3, 2]); ctx.strokeRect(x0, yh, x1 - x0, yl - yh); ctx.setLineDash([]);
+      var yL = Y(e.L), xe = X(e.s >= 0 ? e.s : Math.min(e.j + axf.p.sweepMax, cd.length - 1));
+      ctx.strokeStyle = "rgba(124,58,237,0.9)"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(X(e.li), yL); ctx.lineTo(xe, yL); ctx.stroke();
+      axf.hits.push({ k: k, x0: x0, x1: x1, y0: Math.min(yh, yl), y1: Math.max(yh, yl) });
+      if (e.s >= 0) {
+        var xs = X(e.s); ctx.fillStyle = "#7c3aed"; ctx.beginPath(); ctx.arc(xs, yL, 4, 0, 6.3); ctx.fill();
+        if (sel) ctx.fillText("barrido", xs + 5, yL - 5);
+      }
+      if (e.c >= 0) {
+        var xE = X(e.Ei), yE = Y(e.E), xc = X(e.c), yc = Y(cd[e.c].close);
+        ctx.strokeStyle = "rgba(17,17,17,0.85)"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(xE, yE); ctx.lineTo(xc, yc); ctx.stroke();
+        var xi = X(e.entryI), yi = Y(e.entry), xh = X(Math.min(cd.length - 1, e.entryI + axf.p.hold)), ys = Y(e.sl), yt = Y(e.tp);
+        ctx.fillStyle = "#111"; ctx.beginPath(); ctx.arc(xi, yi, 4, 0, 6.3); ctx.fill();
+        var al = sel ? 0.28 : 0.10;
+        ctx.fillStyle = "rgba(22,163,74," + al + ")"; ctx.fillRect(xi, Math.min(yi, yt), xh - xi, Math.abs(yt - yi));
+        ctx.fillStyle = "rgba(220,38,38," + al + ")"; ctx.fillRect(xi, Math.min(yi, ys), xh - xi, Math.abs(ys - yi));
+      }
+      if (sel) {
+        var t = ["zona: delta a favor " + (e.fav * 100).toFixed(0) + "% · avance " + e.prog.toFixed(2) + " ATR", "último extremo participante: " + e.L,
+                 e.s >= 0 ? "barrido: sí" : "barrido: no (dentro de " + axf.p.sweepMax + " velas)",
+                 e.c >= 0 ? "reversión: " + e.dist.toFixed(2) + " ATR · delta " + (e.rdel * 100).toFixed(0) + "% · desplaz. " + e.disp.toFixed(2) + " · " + e.speed.toFixed(2) + " t/vela" : "reversión: no confirmada",
+                 e.c >= 0 ? "RR " + e.rr.toFixed(2) : ""];
+        ctx.fillStyle = "rgba(255,255,255,0.93)"; ctx.fillRect(x1 + 8, yh - 70, 300, 66);
+        ctx.fillStyle = "#111"; t.forEach(function (s, q) { ctx.fillText(s, x1 + 12, yh - 56 + 12 * q); });
+      }
+    });
+    ctx.restore();
+  }
+
   function drawL2Depth(ctx, vr, w, h) {
     var l2 = state.data && state.data.l2;
     if (!l2 || activeProps.show_l2_depth === false || !series) return;
@@ -2744,8 +2890,8 @@
     drawL2Depth(ctx, vr, w, hCanvas);
     drawTrades(ctx, vr, w, hCanvas);
     drawManipulationMarkers(ctx, vr, w, hCanvas);
-    drawMaVwap(ctx, w, hCanvas); drawEvx(ctx, w, hCanvas); drawLabels(ctx, w, hCanvas); drawTbz(ctx, vr, w, hCanvas); drawTbzE2(ctx, vr, w, hCanvas); drawTbzx(ctx, vr, w, hCanvas);
-    if ((tbze2Opt.on || tbzx.on || evx.on) && tbze2Opt.solo) return;             // revisión TBZ-E2 sin las zonas HFT encima
+    drawMaVwap(ctx, w, hCanvas); drawEvx(ctx, w, hCanvas); drawAxf(ctx, w, hCanvas); drawLabels(ctx, w, hCanvas); drawTbz(ctx, vr, w, hCanvas); drawTbzE2(ctx, vr, w, hCanvas); drawTbzx(ctx, vr, w, hCanvas);
+    if ((tbze2Opt.on || tbzx.on || evx.on || axf.on) && tbze2Opt.solo) return;             // revisión TBZ-E2 sin las zonas HFT encima
 
     var opacityVal = (activeProps.opacidad || 30) / 100;
     var showLabels = activeProps.mostrar_texto !== false;
@@ -4503,6 +4649,28 @@
     })();
 
     (function () {
+      var box = document.getElementById("axf-sliders"); if (!box) return;
+      var tmr = null;
+      function recalc() { clearTimeout(tmr); tmr = setTimeout(function () { axfCompute(); requestDraw(); }, 150); }
+      AXF_P.forEach(function (q) {
+        var row = document.createElement("div"); row.style.cssText = "display:flex;align-items:center;gap:6px;";
+        row.innerHTML = "<span style='min-width:190px'>" + q[1] + "</span><input type='range' min='" + q[2] + "' max='" + q[3] + "' step='" + q[4] + "' value='" + q[5] +
+          "' style='flex:1'><span style='min-width:40px;text-align:right;font-weight:700'>" + q[5] + "</span>";
+        var rg = row.querySelector("input"), lb = row.querySelectorAll("span")[1];
+        rg.addEventListener("input", function () { axf.p[q[0]] = Number(this.value); lb.textContent = this.value; if (axf.on) { if (q[0] === "hold") requestDraw(); else recalc(); } });
+        box.appendChild(row);
+      });
+      document.getElementById("chk-axf").addEventListener("change", function () { axf.on = this.checked; if (axf.on) axfCompute(); requestDraw(); });
+      document.addEventListener("keydown", function (ev) { if (ev.key === "Escape" && axf.sel !== null) { axf.sel = null; requestDraw(); } });
+      chart.subscribeClick(function (p) {
+        if (!axf.on || !p || !p.point) return;
+        var best = null, area = Infinity;
+        axf.hits.forEach(function (h) { if (p.point.x >= h.x0 - 3 && p.point.x <= h.x1 + 3 && p.point.y >= h.y0 - 3 && p.point.y <= h.y1 + 3) { var a = (h.x1 - h.x0 + 6) * (h.y1 - h.y0 + 6); if (a < area) { area = a; best = h; } } });
+        if (best) { axf.sel = best.k; requestDraw(); }
+      });
+    })();
+
+    (function () {
       if (!document.getElementById("btn-lab-range")) return;
       labInit();
       document.getElementById("btn-lab-range").addEventListener("click", function () { labSetMode("range"); });
@@ -5012,6 +5180,7 @@
         tbzx.sigKey = null; tbzx.sel = null; if (tbzx.on) tbzxCompute();
         if (evx.on) evxCompute();
         labLoad(aid);
+        axfLoadDelta(aid);
       })
       .catch(function(err) {
         console.warn("Fallo fetch para " + aid + ", intentando script tag...", err);

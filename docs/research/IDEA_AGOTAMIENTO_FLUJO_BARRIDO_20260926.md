@@ -18,3 +18,8 @@ El lado del agresor de research-v2 es **válido en NQ (99 %)** y **no en ES (80 
 - Mismo estado y actividad en otra sesión a la misma hora (N-REVVOL).
 - **Entrada al azar con las mismas salidas.**
 - **Nulo de secuencia:** la misma reversión confirmada (paso 3) **sin** agotamiento ni barrido previos. Contesta si la secuencia completa agrega algo sobre «el precio revirtió x con fuerza».
+
+## Diseñador en el visor (26/09)
+Parámetros → **🌊 Agotamiento por flujo → barrido → reversión (diseño)**. Necesita la capa de delta `bundles/delta/<activo>.json` (`tools/build_delta_layer.py`, sólo NQ por ahora, alineada y verificada vela por vela contra el bundle). Construida para NQ 03-26 de dic-2025 a mar-2026.
+- **Dibujo:** caja de la zona de agotamiento, línea del último extremo participante, marca de barrido, tramo de reversión confirmada, entrada en la apertura siguiente y SL/TP. Clic en una zona muestra delta de la zona, avance, datos de la reversión (distancia, delta, desplazamiento, velocidad) y RR.
+- **Primera observación de diseño (sin desenlaces):** con los valores iniciales, 480 de 488 zonas de NQ en enero terminan «barridas», porque el último extremo participante suele quedar por debajo del extremo final y el precio lo supera casi siempre. La definición del extremo participante y el barrido mínimo son lo primero a ajustar.
