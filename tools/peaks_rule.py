@@ -206,6 +206,7 @@ def main(argv=None):
         rr = sum(any(P.iou(z["i0"], z["i1"], r["i0"], r["i1"]) >= 0.3 for z in byk[r["kind"]]) for r in R)
         prec = tp / max(tp + fp, 1); rec = (rr + tp) / max(len(R) + len(Jsi), 1)
         return 2 * prec * rec / max(prec + rec, 1e-9), prec, rec, tp, fp
+    MAX_ZONES = 2023                                 # zonas del modelo que Nico juzgó (26/09): no marcar más que eso
     res = []                                         # sólo puntajes: guardar las zonas de 576 combinaciones colgó la PC (26/09)
     for w, mg, ms, mp, nm in itertools.product(*GRID.values()):
         Z = series(cd, tick, w, mg, ms, mp, nm, extend_back=True, max_slope=cap)
@@ -215,8 +216,10 @@ def main(argv=None):
             rs = [r for r in R if so[r["i0"]] == s]
             per[s] = P.score(Z, rs, win_of(rs))
         fj, pj, rj, tpj, fpj = score_j(Z) if J else (f1, pr, rc, 0, 0)
+        if J and len(Z) > MAX_ZONES:                     # la precisión sólo mira zonas juzgadas: sin tope, marcar de más es gratis
+            fj = -1.0
         f1, pr, rc = fj, pj, rj                          # con juicios, el puntaje es el de los juicios
-        res.append(dict(w=w, max_gap=mg, max_step=ms, min_pull=mp, nmin=nm, f1=round(f1, 3), precision=round(pr, 3), cobertura=round(rc, 3), si_halladas=tpj, no_halladas=fpj,
+        res.append(dict(w=w, max_gap=mg, max_step=ms, min_pull=mp, nmin=nm, f1=round(f1, 3), precision=round(pr, 3), cobertura=round(rc, 3), si_halladas=tpj, no_halladas=fpj, zonas_total=len(Z),
                         zonas_en_ventana=nz, por_sesion={int(s): [round(v, 3) for v in per[s][:3]] for s in S}))
     res.sort(key=lambda r: (-r["f1"], -r["cobertura"]))
     # validación entre sesiones: elegir en una, medir en la otra
