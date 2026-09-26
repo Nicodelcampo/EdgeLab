@@ -34,3 +34,14 @@ Entrada al confirmarse el alejamiento, TP en el nivel + 1 tick, SL a otros D, co
 
 ## No medido
 RTH vs ETH; otras escalas (2000t, tiempo); zonas que cruzan sesiones; otros activos.
+
+## Validación del detector 500t (26/09, target-free)
+- **Punto de partida** (sin ajustar con marcas): w 2, separación ≤ 30 velas, escalón ≤ 6 t, retroceso ≥ 6 t, ≥ 5 picos → 113 zonas en enero (~4,7 por sesión).
+- **Juicios de Nico:** 103 zonas, 69 ✓ / 34 ✗ → **67 %** de precisión sin filtro (`viewer/nt8_bridge/labels/ES_03-26_202601_500T.json`).
+- Los ✓ tienen más picos (mediana 7 vs 5), duran más (44 vs 26 velas) y son menos empinados (0,31 vs 0,48 t/vela).
+- **Validación cruzada por mitades de enero** (umbral elegido en una mitad, medido en la otra, conservando ≥ 50 % de las zonas): las dos mitades eligen el **tope de pendiente ≤ 0,45 t/vela**. Fuera de muestra: **73 %** (A→B) y **86 %** (B→A).
+- **Congelado:**
+  - **estándar:** punto de partida + pendiente ≤ 0,45 t/vela (validado fuera de muestra, ≥ 70 %);
+  - **estricto:** estándar + ≥ 6 picos (89 % en muestra, 45 zonas; **no validado** fuera de muestra, se reporta como tal).
+- **Nota sobre el paso a ATR:** el borrador decía escalón/retroceso en ATR; se congela en **ticks fijos** porque es lo que Nico validó. ATR queda como no medido.
+- **Potencia esperada:** ~3 zonas por sesión con el estándar → del orden de 500–600 zonas en las sesiones de exploración, y menos eventos por celda (sólo las que se alejan k·R). Riesgo alto de SIN_POTENCIA en k = 4 y en la variante estricta; se publica el MDE.
