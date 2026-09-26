@@ -35,8 +35,8 @@ GAP_S = 1800
 ATR_N = 100
 N_PH = 3
 TOD = 3600
-TOL = 0.25
-ABS_TOL = 0.1
+TOL = 0.5
+ABS_TOL = 0.15
 SEED = 20260926
 N_BOOT = 2000
 ASSETS = ("MYM", "YM", "ES", "NQ")
@@ -119,10 +119,10 @@ def step_e1(inst):
                 s0 = ST[k][:, i]; rg0, sec0 = A[k]["rg20"][i], A[k]["sec20"][i]
                 others = [o for o in keys if o != k]
                 got = 0
-                for _ in range(40):
+                for oi in rng.permutation(len(others)):          # todas las otras sesiones, en orden aleatorio
                     if got >= N_PH:
                         break
-                    o = others[int(rng.integers(len(others)))]
+                    o = others[int(oi)]
                     y = S[o]
                     a_, b_ = np.searchsorted(y["clock"], base["clock"] - TOD), np.searchsorted(y["clock"], base["clock"] + TOD)
                     a_ = max(a_, WARMUP)

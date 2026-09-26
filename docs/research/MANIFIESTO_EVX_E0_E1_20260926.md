@@ -32,3 +32,10 @@ E2 (P&L bruto de entradas × salidas, con control de entrada al azar con las mis
 
 ### Nota de implementación (26/09, antes de medir)
 La caché de velas no guarda la apertura. En velas de tick contiguas, la apertura de i+1 es el trade siguiente al cierre de i (a ±1 tick). E1 usa el **cierre de i** como referencia, y la diferencia se absorbe igual en el evento y en el control. El ATR de 25 ticks tiene un piso de 1 tick.
+
+### Enmienda de cobertura del control (26/09, ANTES de mirar retornos)
+Con MYM, la tolerancia de estado ±25 % / ±0,1 ATR y la búsqueda en 40 sesiones al azar dejaban **sin control al 68 %** de los eventos. El resto habría sido un subconjunto sesgado. Mirando sólo la cobertura (target-free):
+1. el control se busca en **todas** las otras sesiones, en orden aleatorio (cobertura 59 %);
+2. la tolerancia pasa a **±50 % / ±0,15 ATR** (cobertura **94 %**, 81 % con 3 controles).
+
+Los eventos sin control no difieren en los filtros (medianas: 94 contra 113 velas del otro lado, 2,48 contra 2,46 ATR de alejamiento). No se miró ningún retorno antes de este cambio.
