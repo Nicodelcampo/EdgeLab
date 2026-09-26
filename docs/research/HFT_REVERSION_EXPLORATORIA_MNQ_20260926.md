@@ -129,3 +129,37 @@ Las 12 celdas están en `reporte.md`. **MDE ≈ 1,5 pp** (media amplitud del IC 
   control de nivel.
 - **Replicación** en MNQ 12-25 y 03-26 (pre-abril) antes de creer cualquier corte.
 - **Población alternativa:** estado continuo (distancia a la zona activa más cercana en cada barra), con más potencia.
+
+## Enmienda 1 — cortes por contexto (escrita antes de medirlos, 2026-09-26)
+
+**Celdas fijas:** D = 20; R = 40 y R = 80. Se eligen porque son las del tamaño que se ve en las capturas, no por su
+resultado: el exceso en D = 40 era apenas mayor y queda afuera a propósito.
+
+**Variables:** terciles del descubrimiento, salvo que se indique otra cosa. Los cortes de replicación reusan esos
+mismos límites.
+
+| Variable | Qué mide | Se calcula en |
+|---|---|---|
+| `vol` | volumen del barrido | la zona (el control hereda el de su zona real) |
+| `avg_ms` | velocidad del barrido | la zona |
+| `W` | ancho | la zona |
+| `bucket` | Predator / Ultra / Absorb | la zona |
+| `edad` | segundos entre disponibilidad y toque | el evento |
+| `alejamiento` | máximo alejamiento antes de volver, en ticks | el evento |
+| `tend15`, `tend60` | cambio de precio en los 15 / 60 min previos al toque, orientado (negativo = llega a favor de la caída hacia una verde) | el evento |
+| `confluencia` | 0 / 1 / 2+ otras zonas reales disponibles que cubren el borde cercano (±2 t) al tocar | el evento |
+| `hora` | ETH (18:00–9:30 ET), apertura (9:30–11:00), mediodía (11:00–14:00), cierre (14:00–16:00) | el evento |
+| `color` | verde / roja | la zona |
+
+**Estimand:** en cada corte, tasa real − tasa del control de nivel en el mismo corte. IC 95 % por bootstrap de
+sesiones; p bilateral por aproximación normal; **BH-FDR q = 0,10 sobre todas las pruebas** (≈ 30 cortes × 2 R).
+
+**Regla de sostenido, fijada ahora:** un corte cuenta sólo si pasa las tres condiciones:
+1. pasa FDR en 09-25;
+2. tiene el mismo signo con IC > 0 en MNQ 12-25;
+3. tiene el mismo signo con IC > 0 en MNQ 03-26, recortado al 2026-04-01.
+
+Todo lo demás se reporta sin elegir nada.
+
+**Cómo podría refutarse:** si ningún corte sostiene, el exceso promedio de 1–2 pp es difuso y no hay un «cuándo»
+anticipable con estas variables.
