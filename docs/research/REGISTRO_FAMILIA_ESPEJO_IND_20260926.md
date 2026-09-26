@@ -121,3 +121,11 @@ juicio no distingue entre los dos grupos, la semejanza calculada no es la que é
 2. **Afloja:** ¿A1 retroceso r·W como primaria?
 3. **Parecido:** ¿S3 en el censo + S2 (vel y forma ≥ mediana) como marca?
 4. **Horizonte:** ¿3 × duración del impulso, con tope en fin de sesión?
+
+## 5. OK de Nico (26/09) y estado
+Nico: «estoy de acuerdo con todo eso, armalo» → se congelan las recomendaciones de §3 (censo completo con etiqueta I1 ∨ I2, A1 como agotamiento, S3 + S2, horizonte 3 × duración con tope de sesión).
+**Estado al cortar la sesión:** código **no empezado**. Plan de implementación:
+1. Núcleo causal en `edgelab/bridge/indicators/espejo_impulsos.py`: impulso con `tools/espejo_macro.py::detect_var` (umbral constante 17 t en 25t; 3·ATR previo en tiempo), e_min 0,3, r 0,3; sólo `why == 1` confirma B (los `why == 2` quedan en el censo como impulso sin confirmar).
+2. Semejanza con `tools/espejo_semejanza.py::eventos` (sólo los componentes, que usan datos ≤ vela k; el desenlace se calcula aparte y de forma causal); percentiles contra la referencia de sesiones anteriores.
+3. Estados y eventos de §3.4, por sesión; tests sintéticos de §3.6.
+4. Capa del visor `bundles/espejo/<asset>.json` + dibujo con primitiva en `index.html` (tick_25, time_5m, time_15m).

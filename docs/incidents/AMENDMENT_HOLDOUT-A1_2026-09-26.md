@@ -26,3 +26,7 @@
 
 ## Publicación
 No se sube a Kaggle: los ticks de CME vía el proveedor de NT8 siguen bajo `ABSTAIN_LICENSE` (P-18), y la V1 del dataset ya tiene ese problema abierto.
+
+## Actualización (26/09, más tarde)
+- **NQ jul–sep también canonizado:** 57 sesiones completas, 6 excluidas (3-jul, 7-sep, 10-sep con hueco > 30 min, 15–17-sep durante el roll); roll a NQ 12-26 el 18-sep. Catálogo `docs/research/contract_regimes/NQ_ext_2026q3_sessions_catalog.json`.
+- **Subido a Kaggle con autorización explícita de Nico** («subilos igual… yo te autorizo»): dataset **privado** `nicolasbuttaro/edgelab-ticks-es-nq-2026q3-ext` (4 parquets + `files.sha256` + catálogos + esta enmienda). El bloqueo de licencia (P-18) sigue abierto y aplica igual a este dataset.
