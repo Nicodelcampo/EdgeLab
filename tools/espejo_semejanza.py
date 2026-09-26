@@ -58,7 +58,7 @@ def _norm_path(y):
     return np.interp(np.linspace(0, 1, NPTS), u, y)
 
 
-def eventos(t, H, L, C, imp):
+def eventos(t, H, L, C, imp):  # noqa: C901
     """Un evento por impulso y por x. Devuelve dicts con semejanza, f alcanzado y desenlace."""
     out = []
     n = len(C)
@@ -110,6 +110,81 @@ def eventos(t, H, L, C, imp):
             if len(done) == len(XS):
                 break
     return out
+
+
+GRID = [(mb, mw) for mb in (10, 20, 40) for mw in (17, 24, 34, 48, 68)]
+
+
+def collect_grid(parquet, instrument, contract, grid, max_sessions=None):
+    """Una sola pasada por los ticks: velas por sesión y detector para cada configuración de la grilla."""
+    import pyarrow.parquet as pq
+    from edgelab.bridge.bars import build_tick_bars
+    from edgelab.bridge.ticks import load_canonical_parquet
+    from edgelab.kaggle.sessions_cme import is_maintenance_break, trade_date_ymd
+    from tbzx_espejo import detect
+
+    ts_all = pq.read_table(parquet, columns=["ts_utc_ns"])["ts_utc_ns"].to_numpy()
+    ts_all = ts_all[ts_all < HOLDOUT_NS]
+    tds = trade_date_ymd(ts_all); ok = ~is_maintenance_break(ts_all)
+    out = {g: [] for g in grid}
+    for n, td in enumerate(sorted(np.unique(tds[ok]))):
+        if max_sessions and n >= max_sessions:
+            break
+        m = np.where((tds == td) & ok)[0]
+        if len(m) < 5000:
+            continue
+        tk = load_canonical_parquet(parquet, contract=contract, instrument=instrument,
+                                    start_utc_ns=int(ts_all[m[0]]), end_utc_ns=int(ts_all[m[-1]]) + 1)
+        b = build_tick_bars(tk, 25, reiniciar_por_sesion=True)
+        t = (b.end_ns / NS).astype(np.float64)
+        Hh, Ll, Cc = b.high_t.astype(np.float64), b.low_t.astype(np.float64), b.close_t.astype(np.float64)
+        Vv = b.volume.astype(np.float64)
+        del tk
+        for g in grid:
+            ev = eventos(t, Hh, Ll, Cc, detect(t, Hh, Ll, Cc, Vv, g[0], g[1], EFF, RETR))
+            for e in ev:
+                e["sesion"] = int(td)
+            out[g] += ev
+        print(f"{td}: " + ", ".join(f"{g}:{len(v)}" for g, v in out.items() if g[0] == 20), flush=True)
+    return out
+
+
+def main_grid(a):
+    out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
+    cache = out / "eventos_grilla.json"
+    if cache.exists():
+        data = {tuple(map(int, k.split("_"))): v for k, v in json.loads(cache.read_text()).items()}
+    else:
+        data = collect_grid(a.parquet, a.instrument, a.contract, GRID, a.max_sessions)
+        cache.write_text(json.dumps({f"{k[0]}_{k[1]}": v for k, v in data.items()}))
+    refs = json.loads(Path(a.referencia).read_text()) if a.referencia else {}
+    todas, refs_out = [], {}
+    for g, rows in data.items():
+        key = f"{g[0]}_{g[1]}"
+        if key in refs:
+            ref, cS = refs[key]["ref"], refs[key]["cortes_S"]
+        else:
+            ref = referencia(rows); score(rows, ref)
+            s = np.array([r["S"] for r in rows if r["S"] == r["S"]])
+            cS = [float(np.percentile(s, 33.333)), float(np.percentile(s, 66.667))]
+        refs_out[key] = dict(ref=ref, cortes_S=cS)
+        for t_ in analizar(rows, ref, cS):
+            t_.update(maxBars=g[0], minW=g[1], eventos=len(rows))
+            todas.append(t_)
+    ok = bh([t_["est"][3] for t_ in todas])                  # FDR sobre toda la grilla
+    for t_, o in zip(todas, ok):
+        t_["fdr_grilla"] = bool(o)
+    (out / "referencia_grilla.json").write_text(json.dumps(refs_out))
+    (out / "reporte_grilla.json").write_text(json.dumps(dict(contrato=a.contract, pruebas=todas), indent=1,
+                                                       ensure_ascii=False))
+    L = [f"# ESPEJO-SIM grilla — {a.contract}", "",
+         "| maxBars | minW | eventos | x | prueba | n | estimación [IC 95 %] | FDR grilla |", "|---|---|---|---|---|---|---|---|"]
+    for t_ in todas:
+        e = t_["est"]
+        L.append(f"| {t_['maxBars']} | {t_['minW']} | {t_['eventos']} | {t_['x']} | {t_['prueba']} | {t_.get('n_T3', t_['n'])} | "
+                 f"{100 * e[0]:+.1f} pp [{100 * e[1]:+.1f}, {100 * e[2]:+.1f}] | {'sí' if t_['fdr_grilla'] else ''} |")
+    (out / "reporte_grilla.md").write_text("\n".join(L) + "\n", encoding="utf-8")
+    print(f"{len(todas)} pruebas, {sum(t_['fdr_grilla'] for t_ in todas)} pasan FDR de grilla")
 
 
 def collect(parquet, instrument, contract, max_sessions=None):
@@ -233,7 +308,10 @@ def main(argv=None):
     ap.add_argument("--parquet", required=True); ap.add_argument("--instrument", default="MNQ")
     ap.add_argument("--contract", required=True); ap.add_argument("--out", required=True)
     ap.add_argument("--referencia"); ap.add_argument("--max-sessions", type=int)
+    ap.add_argument("--grilla", action="store_true", help="enmienda 2: las 15 configuraciones")
     a = ap.parse_args(argv)
+    if a.grilla:
+        return main_grid(a)
     out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
     cache = out / "eventos.json"
     if cache.exists():

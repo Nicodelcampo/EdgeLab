@@ -80,3 +80,23 @@ primero lo último que recorrió el impulso.
 - **Qué no toca:** la prueba principal (tercil alto − tercil bajo de S) sigue igual.
 - **Alcance:** este cambio es posterior a ver datos, así que ningún resultado contra `f_cierre` se promueve por sí
   solo. Sólo cuenta si replica en 12-25 y 03-26.
+
+## Enmienda 2 — grilla del detector para ganar muestra (pedido de Nico, 2026-09-26)
+
+**Contexto:** el descubrimiento en (20, 68) dio 854 eventos, unos 60 por tercil. Nico pide más zonas. La grilla se fija
+ahora y se publica **entera**; no se elige la mejor configuración.
+
+- **Grilla:** `maxBars` ∈ {10, 20, 40} × `minW` ∈ {17, 24, 34, 48, 68} ticks = 15 configuraciones. Eficiencia 0,6 y
+  retroceso 0,3 fijos. Piso de 17 ticks (4 pts): por debajo, el impulso es ruido de vela y el espejo no tiene tamaño
+  económico.
+- **Pruebas:**
+  - la principal de §4 (S T3 − T1 en cada x), en cada configuración;
+  - las secundarias, iguales;
+  - BH-FDR q = 0,10 sobre **todas las pruebas de todas las configuraciones juntas**.
+- **Referencia y terciles:** propios de cada configuración, fijados en 09-25 y reusados en la replicación.
+- **Sostenido:** la misma configuración y la misma prueba pasan FDR en 09-25 y tienen el mismo signo con IC > 0 en
+  12-25 y en 03-26.
+- **Alcance:** la configuración (20, 68) ya fue vista y queda incluida sin privilegio: su resultado de x = 0,75 cuenta
+  como una prueba más de la grilla.
+- **Costo:** los impulsos chicos tienen más fricción relativa. Si sólo sostienen los de 17–24 ticks, el paso siguiente
+  es estimar si el espejo cubre el costo antes de seguir.
