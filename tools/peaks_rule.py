@@ -242,3 +242,26 @@ def main(argv=None):
 
 if __name__ == "__main__":
     main()
+
+
+def transfer(src_asset, dst_asset, scale, tag):
+    """Aplica a otro activo los parámetros ajustados en `src_asset`, escalando lo que está en ticks (escalón, retroceso,
+    tope de pendiente) por `scale` = rango típico de vela destino / origen. Sin etiquetas del destino todavía."""
+    src = json.loads((VIEW / "bundles" / "peaks_det" / f"{src_asset}.json").read_text(encoding="utf-8"))
+    b = json.loads((VIEW / "bundles" / f"{dst_asset}.json").read_text(encoding="utf-8"))
+    tick = float(b["meta"]["tick_size"])
+    c = b["bar_series"][next(iter(b["bar_series"]))]["candles"]
+    cd = dict(t=np.array([x["time"] for x in c], float), h=np.array([x["high"] for x in c]), l=np.array([x["low"] for x in c]))
+    del b, c
+    p = dict(src["parametros"])
+    pars = dict(w=p["w"], max_gap=p["max_gap"], max_step=p["max_step"] * scale, min_pull=p["min_pull"] * scale, nmin=p["nmin"])
+    cap = src.get("tope_pendiente_p90")
+    cap = cap * scale if cap else None
+    minp = src.get("filtro_juicios", {}).get("min_picos", pars["nmin"])
+    Z = [z for z in series(cd, tick, *[pars[k] for k in GRID], extend_back=True, max_slope=cap) if z["toques"] >= minp]
+    days = len(set((cd["t"] // 86400).astype(int)))
+    out = dict(schema="EDGELAB_PEAKS_DET_V2_REGLA", asset=dst_asset, variante=tag, transferido_de=src_asset, escala=scale,
+               parametros=dict(pars, cobertura=None, precision=None), tope_pendiente=cap, min_picos=minp, zonas=Z,
+               zonas_por_dia=round(len(Z) / max(days, 1), 1), nota="sin etiquetas del destino: para juzgar en el visor")
+    (VIEW / "bundles" / "peaks_det" / f"{dst_asset}.json").write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    print(json.dumps(dict(destino=dst_asset, variante=tag, parametros=pars, tope=cap, zonas=len(Z), por_dia=out["zonas_por_dia"]), ensure_ascii=False))
