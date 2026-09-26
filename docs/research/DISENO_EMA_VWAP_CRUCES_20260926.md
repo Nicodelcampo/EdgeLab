@@ -29,3 +29,29 @@ El VWAP de sesión es la referencia de precio de los institucionales; que la EMA
 
 ## En el visor
 Parámetros → **✖ Cruces EMA × VWAP (diseño)**. Todos los parámetros de arriba tienen control deslizante. Cruce que pasa los filtros = triángulo de color; filtrado = gris. Entrada según el modo = punto negro con etiqueta. Clic en un cruce → sus valores. Muestra el conteo de cruces por día.
+
+## Salidas (26/09)
+Dentro de cada vela, orden conservador: primero el **SL** (se toca) y después el **TP** (hay que atravesarlo por 1 tick). Las salidas por cierre se ejecutan en la apertura de la vela siguiente:
+- `xOpp`: **cruce opuesto** EMA × VWAP;
+- `xTrail`: cierre del otro lado de la EMA (trailing por la media);
+- `beR`: stop a break-even cuando el precio llega a x R;
+- `xSession`: cierre al final de la sesión (al último cierre);
+- `hold`: tiempo máximo en velas.
+
+`showOut` muestra la salida y el R bruto de cada operación. **Sólo se habilita en bundles de exploración** (última vela ≤ 2026-03-31); el visor lo bloquea en los demás.
+
+## Revisión de las reglas (26/09, antes de medir)
+Corregido:
+1. **M0 y M2** entraban al cierre de la vela de la señal, que no se puede operar. Ahora entran en la **apertura de la vela siguiente**.
+2. **M1 y M3** se llenaban con sólo tocar el nivel. Ahora el precio tiene que **atravesarlo por 1 tick**, la misma convención que en el resto del proyecto.
+3. **SL «más allá del VWAP»**: usaba el VWAP de la vela de entrada. Ahora usa el de la **vela anterior**.
+4. **SL «más allá del extremo»**: incluía la vela de entrada. Ahora corta en la **vela anterior**.
+
+Conocido y aceptado:
+
+5. La EMA no se reinicia por sesión y el VWAP sí; `warmup` cubre el arranque.
+6. El VWAP usa el precio típico de las velas de 25 ticks (H+L+C)/3 como aproximación del precio promedio de cada trade.
+7. Límite en velas: sin ticks, el orden dentro de la vela es conservador y la cola de la orden límite no se modela.
+
+## Correr en otros activos
+El diseñador ya funciona sobre cualquier bundle del visor (ES, NQ, YM, 6E, GC…). La prueba masiva corre en Python sobre ticks con contrato canónico por activo, con los **costos propios de cada instrumento** (no se transportan). Candidatos: MYM, YM, ES, NQ, 6E, GC. Cada activo es una prueba de la misma familia y cuenta en la multiplicidad.

@@ -2310,7 +2310,12 @@
     ["slMode", "SL: 0 ticks fijos · 1 más allá del VWAP · 2 más allá del extremo previo", 0, 2, 1, 0],
     ["slTicks", "SL: ticks (fijo, o margen en modos 1 y 2)", 1, 200, 1, 20],
     ["tpMode", "TP: 0 múltiplo de R · 1 ticks fijos", 0, 1, 1, 0], ["tpR", "TP: múltiplo de R", 0.5, 10, 0.5, 2],
-    ["tpTicks", "TP: ticks fijos", 1, 400, 1, 40], ["hold", "Tiempo máx. dibujado (velas)", 10, 1000, 10, 200]
+    ["tpTicks", "TP: ticks fijos", 1, 400, 1, 40], ["hold", "Tiempo máx. (velas)", 10, 2000, 10, 200],
+    ["xOpp", "Salida por cruce opuesto (0 no · 1 sí)", 0, 1, 1, 1],
+    ["xTrail", "Salida por cierre del otro lado de la EMA (0 no · 1 sí)", 0, 1, 1, 0],
+    ["beR", "Stop a break-even al llegar a x R (0 = no)", 0, 5, 0.25, 0],
+    ["xSession", "Cerrar al final de la sesión (0 no · 1 sí)", 0, 1, 1, 1],
+    ["showOut", "Mostrar salidas (muestra desenlaces: sólo exploración)", 0, 1, 1, 0]
   ];
   var evx = { on: false, p: {}, ev: [], sel: null, hits: [] };
   EVX_P.forEach(function (q) { evx.p[q[0]] = q[5]; });
@@ -2339,28 +2344,28 @@
       var ok = sideBars >= P.minSideBars && sideSecs >= P.minSideSecs && maxD >= P.minMaxDist && volS >= P.volMin && (!P.volMax || volS <= P.volMax);
       var e = { i: i, dir: dir, sideBars: sideBars, sideSecs: sideSecs, maxDist: maxD, vol: volS, ok: ok, ema: ema[i], vwap: vw[i], entryI: -1, entryPx: null };
       if (ok) {                                            // modos de entrada (sin mirar más allá de lo que el modo espera)
-        if (P.mode === 0) { e.entryI = i; e.entryPx = cd[i].close; }
+        if (P.mode === 0) { if (i + 1 < n && sb[i + 1] > 0) { e.entryI = i + 1; e.entryPx = cd[i + 1].open; } }
         else if (P.mode === 1) {
           for (var j = i + 1; j <= Math.min(n - 1, i + P.pbBars) && sb[j] > 0; j++) {
-            if (dir > 0 ? cd[j].low <= ema[j - 1] : cd[j].high >= ema[j - 1]) { e.entryI = j; e.entryPx = ema[j - 1]; break; }
+            if (dir > 0 ? cd[j].low <= ema[j - 1] - tick : cd[j].high >= ema[j - 1] + tick) { e.entryI = j; e.entryPx = ema[j - 1]; break; }
           }
         } else {
           if (P.mode === 3) {
             for (var j3 = i + 1; j3 <= Math.min(n - 1, i + P.pbBars) && sb[j3] > 0; j3++) {
-              if (dir > 0 ? cd[j3].low <= vw[j3 - 1] : cd[j3].high >= vw[j3 - 1]) { e.entryI = j3; e.entryPx = vw[j3 - 1]; break; }
+              if (dir > 0 ? cd[j3].low <= vw[j3 - 1] - tick : cd[j3].high >= vw[j3 - 1] + tick) { e.entryI = j3; e.entryPx = vw[j3 - 1]; break; }
             }
           } else {
           var jj = i + P.confBars, good = jj < n;
           for (j = i + 1; good && j <= jj; j++) if (sb[j] === 0 || (ema[j] - vw[j]) * dir <= 0) good = false;
-          if (good) { e.entryI = jj; e.entryPx = cd[jj].close; }
+          if (good && jj + 1 < n && sb[jj + 1] > 0) { e.entryI = jj + 1; e.entryPx = cd[jj + 1].open; }
           }
         }
         if (e.entryI >= 0) {                               // SL y TP (niveles al momento de entrar; sin simular salida)
           var tk = tick, ex = e.entryPx, sl;
           if (P.slMode === 0) sl = ex - dir * P.slTicks * tk;
-          else if (P.slMode === 1) sl = vw[e.entryI] - dir * P.slTicks * tk;
+          else if (P.slMode === 1) sl = vw[e.entryI - 1] - dir * P.slTicks * tk;
           else { var q0 = Math.max(0, lastI < 0 ? i - sideBars : lastI), xt = dir > 0 ? Infinity : -Infinity;
-                 for (var q = q0; q <= e.entryI; q++) xt = dir > 0 ? Math.min(xt, cd[q].low) : Math.max(xt, cd[q].high);
+                 for (var q = q0; q <= e.entryI - 1; q++) xt = dir > 0 ? Math.min(xt, cd[q].low) : Math.max(xt, cd[q].high);
                  sl = xt - dir * P.slTicks * tk; }
           if ((ex - sl) * dir <= 0) sl = ex - dir * tk;      // stop del lado equivocado: 1 tick
           var risk = Math.abs(ex - sl);
@@ -2372,6 +2377,28 @@
       lastI = i; maxD = 0; volS = 0;
     }
     evx.ema = ema; evx.vw = vw;
+    // Salidas. Orden conservador dentro de cada vela: primero SL, después TP (atravesado por 1 tick); las salidas por
+    // cierre (EMA, cruce opuesto, tiempo, fin de sesión) se ejecutan en la apertura de la vela siguiente.
+    var crossAt = new Int8Array(n); evx.ev.forEach(function (x) { crossAt[x.i] = x.dir; });
+    evx.ev.forEach(function (e) {
+      if (e.entryI < 0) return;
+      var d = e.dir, sl = e.sl, risk = Math.abs(e.entryPx - e.sl), be = false, j = e.entryI, end = Math.min(n - 1, e.entryI + P.hold), why = null, px = null, xi = -1;
+      for (; j <= end; j++) {
+        var c = cd[j];
+        if (d > 0 ? c.low <= sl : c.high >= sl) { why = be ? "break-even" : "SL"; px = sl; xi = j; break; }
+        if (d > 0 ? c.high >= e.tp + tick : c.low <= e.tp - tick) { why = "TP"; px = e.tp; xi = j; break; }
+        if (P.beR > 0 && !be && (d > 0 ? c.high : -c.low) >= (d > 0 ? e.entryPx + P.beR * risk : -(e.entryPx - P.beR * risk))) { be = true; sl = e.entryPx; }
+        var nx = j + 1 < n ? j + 1 : j, newSess = j + 1 < n && sb[j + 1] === 0;
+        var w2 = null;
+        if (P.xOpp && crossAt[j] === -d && j > e.i) w2 = "cruce opuesto";
+        else if (P.xTrail && (c.close - ema[j]) * d < 0) w2 = "cierre del otro lado de la EMA";
+        else if (P.xSession && newSess) w2 = "fin de sesión";
+        else if (j === end) w2 = "tiempo";
+        if (w2) { why = w2; xi = nx; px = (w2 === "fin de sesión" || nx === j) ? c.close : cd[nx].open; break; }
+      }
+      e.exitI = xi; e.exitPx = px; e.why = why;
+      e.R = px === null ? null : d * (px - e.entryPx) / risk;
+    });
     var nOk = evx.ev.filter(function (x) { return x.ok; }).length, nIn = evx.ev.filter(function (x) { return x.entryI >= 0; }).length;
     var days = new Set(cd.map(function (x) { return Math.floor((x.time - 79200) / 86400); })).size || 1;
     var lb = document.getElementById("lbl-evx-status");
@@ -2409,6 +2436,11 @@
           ctx.fillStyle = "#111"; ctx.beginPath(); ctx.arc(xe, ye, 3.5, 0, 6.3); ctx.fill();
           ctx.fillText(["M0", "M1", "M2", "M3"][evx.p.mode], xe + 5, ye - 4);
           var xh = logicalToX(Math.min(cd.length - 1, e.entryI + evx.p.hold)), ys = series.priceToCoordinate(e.sl), yt = series.priceToCoordinate(e.tp);
+          if (evx.p.showOut && e.exitI >= 0) {
+            var xo = logicalToX(e.exitI), yo = series.priceToCoordinate(e.exitPx);
+            if (xo !== null && yo !== null) { xh = xo; ctx.strokeStyle = e.R > 0 ? "#16a34a" : "#dc2626"; ctx.lineWidth = 2;
+              ctx.beginPath(); ctx.moveTo(xo - 4, yo - 4); ctx.lineTo(xo + 4, yo + 4); ctx.moveTo(xo - 4, yo + 4); ctx.lineTo(xo + 4, yo - 4); ctx.stroke(); }
+          }
           if (xh !== null && ys !== null && yt !== null) {
             var al = evx.sel === k ? 0.28 : 0.10;
             ctx.fillStyle = "rgba(22,163,74," + al + ")"; ctx.fillRect(xe, Math.min(ye, yt), xh - xe, Math.abs(yt - ye));
@@ -2420,9 +2452,10 @@
       if (evx.sel === k) {
         var t = ["otro lado: " + e.sideBars + " velas / " + Math.round(e.sideSecs) + " s", "alejamiento máx.: " + e.maxDist.toFixed(1) + " t",
                  "volumen desde el cruce anterior: " + Math.round(e.vol), e.ok ? "pasa filtros" : "filtrado",
-                 e.entryI >= 0 ? "riesgo " + e.riskT.toFixed(1) + " t · RR " + e.rr.toFixed(2) : "sin entrada en el modo elegido"];
-        ctx.fillStyle = "rgba(255,255,255,0.92)"; ctx.fillRect(x + 8, y - 70, 260, 66);
-        ctx.fillStyle = "#111"; t.forEach(function (s, q) { ctx.fillText(s, x + 12, y - 56 + 12 * q); });
+                 e.entryI >= 0 ? "riesgo " + e.riskT.toFixed(1) + " t · RR " + e.rr.toFixed(2) : "sin entrada en el modo elegido",
+                 evx.p.showOut && e.why ? "salida: " + e.why + " · " + (e.R >= 0 ? "+" : "") + e.R.toFixed(2) + " R bruto" : ""];
+        ctx.fillStyle = "rgba(255,255,255,0.92)"; ctx.fillRect(x + 8, y - 82, 280, 78);
+        ctx.fillStyle = "#111"; t.forEach(function (s, q) { ctx.fillText(s, x + 12, y - 68 + 12 * q); });
       }
     });
     ctx.restore();
@@ -4353,7 +4386,12 @@
         row.innerHTML = "<span style='min-width:170px'>" + q[1] + "</span><input type='range' min='" + q[2] + "' max='" + q[3] + "' step='" + q[4] + "' value='" + q[5] +
           "' style='flex:1'><span style='min-width:42px;text-align:right;font-weight:700'>" + q[5] + "</span>";
         var rg = row.querySelector("input"), lb = row.querySelectorAll("span")[1];
-        rg.addEventListener("input", function () { evx.p[q[0]] = Number(this.value); lb.textContent = this.value; if (evx.on) recalc(); });
+        rg.addEventListener("input", function () {
+          if (q[0] === "showOut" && Number(this.value) === 1) {
+            var cdx = activeCandlesArr();
+            if (!cdx || cdx[cdx.length - 1].time > 1774915200) { this.value = 0; alert("Este bundle tiene datos posteriores a 2026-03-31: las salidas no se muestran fuera de exploración."); return; }
+          }
+          evx.p[q[0]] = Number(this.value); lb.textContent = this.value; if (evx.on) recalc(); });
         box.appendChild(row);
       });
       document.getElementById("chk-evx").addEventListener("change", function () { evx.on = this.checked; if (evx.on) evxCompute(); requestDraw(); });
