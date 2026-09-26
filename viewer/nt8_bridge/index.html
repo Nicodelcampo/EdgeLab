@@ -2612,20 +2612,6 @@
     });
     return true;
   }
-  function drawPeaksDet(ctx, cd, vr, X, Y) {
-    if (!peaksDet.on || !peaksDet.data || rev.on) return;          // en revisión no se muestran las demás detecciones
-    ctx.font = "9px sans-serif";
-    peaksDet.data.zonas.forEach(function (z) {
-      if (z.t1 < vr.from || z.t0 > vr.to) return;
-      var x0 = X(z.i0, z.t0), x1 = X(z.i1, z.t1), y0 = Y(z.p1), y1 = Y(z.p0);
-      if (![x0, x1, y0, y1].every(isFinite)) return;
-      var col = z.var === "chico" ? "124,58,237" : (z.kind === "H" ? "234,88,12" : "13,148,136");   // violeta = serrucho chico
-      if (!drawPeakPath(ctx, z, X, Y, "rgba(" + col + ",0.9)", 1.5, true)) {      // detecciones viejas sin picos: rectángulo
-        ctx.strokeStyle = "rgba(" + col + ",0.95)"; ctx.lineWidth = 1.5; ctx.setLineDash([2, 2]); ctx.strokeRect(x0, y0, x1 - x0, Math.max(2, y1 - y0)); ctx.setLineDash([]);
-      }
-      ctx.fillStyle = "rgba(" + col + ",0.95)"; ctx.fillText((z.var ? z.var + " · " : "") + (z.kind === "H" ? "techo" : "piso") + " ×" + z.toques, x0, z.kind === "H" ? y0 - 10 : y1 + 16);
-    });
-  }
   // Modo ✓/✗: el modelo propone zonas de a una (fuera de lo ya marcado o juzgado) y Nico juzga. Cada ✗ es un negativo
   // verdadero para el entrenamiento; las dudosas se saltean (no cuentan). Se guarda en labels/<activo>.json → judgments.
   var rev = { on: false, queue: [], k: 0, cur: null };
@@ -2654,14 +2640,6 @@
       " · juzgadas: " + nj + " (✓ " + si + " / ✗ " + (nj - si) + ") · teclas: S = sí, E = sí pero más larga, N = no, espacio = saltar, ← = anterior";
     requestDraw();
   }
-  function revJudge(v) {
-    if (!rev.cur) return;
-    var z = rev.cur;
-    lab.data.judgments = (lab.data.judgments || []).filter(function (j) { return !(j.kind === z.kind && j.i0 === z.i0 && j.i1 === z.i1); });
-    if (v) lab.data.judgments.push({ kind: z.kind, i0: z.i0, i1: z.i1, t0: z.t0, t1: z.t1, p0: z.p0, p1: z.p1, toques: z.toques, picos: z.picos || [],
-                                     verdict: v === "si_ext" ? "si" : v, ajuste: v === "si_ext" ? "extender" : null, model: peaksDet.data.schema, at: new Date().toISOString() });
-    labSave(); rev.k++; revShow();
-  }
   function revToggle() {
     rev.on = !rev.on;
     var b = document.getElementById("btn-rev"); if (b) b.textContent = rev.on ? "■ Terminar revisión" : "🔍 Revisar detecciones (✓/✗)";
@@ -2671,59 +2649,6 @@
       peaksDet.on = true; var c = document.getElementById("chk-det"); if (c) c.checked = true;
       rev.queue = revBuild(); rev.k = 0; revShow();
     } else { rev.cur = null; document.getElementById("lbl-rev-status").textContent = ""; requestDraw(); }
-  }
-  function drawLabels(ctx, w, h) {
-    if ((!lab.data && !peaksDet.on) || !series) return;
-    if (!lab.data) lab.data = labEmpty();
-    var cd = activeCandlesArr(); if (!cd) return;
-    var vr = realVisibleRange(); if (!vr) return;
-    function X(t) { var c = logicalToX(labIdxOfTime(cd, t)); return c === null ? NaN : c; }
-    function XI(i, t) {                                   // índice exacto; varias velas de 25 ticks comparten el mismo segundo
-      var idx = (i != null && cd[i] && cd[i].time === t) ? i : labIdxOfTime(cd, t);
-      var c = logicalToX(idx); return c === null ? NaN : c;
-    }
-    function Y(p) { var c = series.priceToCoordinate(p); return c === null ? NaN : c; }
-    ctx.save();
-    drawPeaksDet(ctx, cd, vr, XI, Y);
-    (lab.data.judgments || []).forEach(function (j) {
-      if (j.t1 < vr.from || j.t0 > vr.to) return;
-      var x0 = XI(j.i0, j.t0), x1 = XI(j.i1, j.t1), y0 = Y(j.p1), y1 = Y(j.p0);
-      ctx.strokeStyle = j.verdict === "si" ? "rgba(22,163,74,0.95)" : "rgba(220,38,38,0.95)"; ctx.lineWidth = 2;
-      if (!drawPeakPath(ctx, j, XI, Y, ctx.strokeStyle, 2, true)) ctx.strokeRect(x0, y0, x1 - x0, Math.max(2, y1 - y0));
-      ctx.fillStyle = ctx.strokeStyle; ctx.font = "bold 12px sans-serif"; ctx.fillText(j.verdict === "si" ? "✓" : "✗", x1 + 3, y0 + 10);
-    });
-    if (rev.on && rev.cur) {
-      var z = rev.cur, zx0 = XI(z.i0, z.t0), zx1 = XI(z.i1, z.t1), zy0 = Y(z.p1), zy1 = Y(z.p0);
-      if (!drawPeakPath(ctx, z, XI, Y, "#111", 2.5, true)) {
-        ctx.strokeStyle = "#111"; ctx.lineWidth = 3; ctx.setLineDash([6, 3]);
-        ctx.strokeRect(zx0 - 3, zy0 - 3, zx1 - zx0 + 6, Math.max(2, zy1 - zy0) + 6); ctx.setLineDash([]);
-      }
-    }
-    lab.data.reviewed.forEach(function (s) {
-      if (s.t1 < vr.from || s.t0 > vr.to) return;
-      var x0 = X(s.t0), x1 = X(s.t1); ctx.fillStyle = "rgba(34,197,94,0.35)"; ctx.fillRect(x0, 0, x1 - x0, 4);
-    });
-    var rs = lab.data.ranges.slice(); if (lab.drag) rs.push({ t0: Math.min(lab.drag.a.t, lab.drag.b.t), t1: Math.max(lab.drag.a.t, lab.drag.b.t), p0: Math.min(lab.drag.a.p, lab.drag.b.p), p1: Math.max(lab.drag.a.p, lab.drag.b.p) });
-    rs.forEach(function (r) {
-      if (r.t1 < vr.from || r.t0 > vr.to) return;
-      var x0 = XI(r.i0, r.t0), x1 = XI(r.i1, r.t1), y0 = Y(r.p1), y1 = Y(r.p0);
-      if (![x0, x1, y0, y1].every(isFinite)) return;
-      ctx.fillStyle = "rgba(124,58,237,0.10)"; ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
-      ctx.strokeStyle = "rgba(124,58,237,0.9)"; ctx.setLineDash([5, 3]); ctx.lineWidth = 1.5; ctx.strokeRect(x0, y0, x1 - x0, y1 - y0); ctx.setLineDash([]);
-    });
-    lab.data.zigzags.forEach(function (z) {
-      if (!z.length || z[z.length - 1].t < vr.from || z[0].t > vr.to) return;
-      ctx.strokeStyle = "rgba(234,88,12,0.7)"; ctx.lineWidth = 1; ctx.setLineDash([3, 3]); ctx.beginPath();
-      z.forEach(function (pt, k) { var x = XI(pt.i, pt.t), y = Y(pt.price); if (k) ctx.lineTo(x, y); else ctx.moveTo(x, y); });
-      ctx.stroke(); ctx.setLineDash([]);
-      z.forEach(function (pt, k) {                        // ▼ sobre cada high, ▲ bajo cada low, en la mecha exacta
-        var x = XI(pt.i, pt.t), y = Y(pt.price), H = pt.kind === "H", o = H ? -1 : 1;
-        ctx.fillStyle = H ? "#dc2626" : "#16a34a"; ctx.beginPath();
-        ctx.moveTo(x, y); ctx.lineTo(x - 5, y + o * 9); ctx.lineTo(x + 5, y + o * 9); ctx.closePath(); ctx.fill();
-        ctx.font = "9px sans-serif"; ctx.textAlign = "center"; ctx.fillText(String(k + 1), x, y + o * 18); ctx.textAlign = "left";
-      });
-    });
-    ctx.restore();
   }
 
 
@@ -3800,6 +3725,83 @@
 
     // 4. DIBUJAR CAMPO DE DENSIDAD E INTERVALOS (HP-007)
     drawCorridors(ctx, w, hCanvas);
+  }
+  // Dibujo de picos y revisión (movido debajo de drawZones, 2026-09-26): el test causal de `zoneAvailableSec` audita
+  // el tramo zoneAvailableSec→drawZones y estas funciones usan z.t0 de sus propias figuras, no de zonas.
+  function drawPeaksDet(ctx, cd, vr, X, Y) {
+    if (!peaksDet.on || !peaksDet.data || rev.on) return;          // en revisión no se muestran las demás detecciones
+    ctx.font = "9px sans-serif";
+    peaksDet.data.zonas.forEach(function (z) {
+      if (z.t1 < vr.from || z.t0 > vr.to) return;
+      var x0 = X(z.i0, z.t0), x1 = X(z.i1, z.t1), y0 = Y(z.p1), y1 = Y(z.p0);
+      if (![x0, x1, y0, y1].every(isFinite)) return;
+      var col = z.var === "chico" ? "124,58,237" : (z.kind === "H" ? "234,88,12" : "13,148,136");   // violeta = serrucho chico
+      if (!drawPeakPath(ctx, z, X, Y, "rgba(" + col + ",0.9)", 1.5, true)) {      // detecciones viejas sin picos: rectángulo
+        ctx.strokeStyle = "rgba(" + col + ",0.95)"; ctx.lineWidth = 1.5; ctx.setLineDash([2, 2]); ctx.strokeRect(x0, y0, x1 - x0, Math.max(2, y1 - y0)); ctx.setLineDash([]);
+      }
+      ctx.fillStyle = "rgba(" + col + ",0.95)"; ctx.fillText((z.var ? z.var + " · " : "") + (z.kind === "H" ? "techo" : "piso") + " ×" + z.toques, x0, z.kind === "H" ? y0 - 10 : y1 + 16);
+    });
+  }
+  function revJudge(v) {
+    if (!rev.cur) return;
+    var z = rev.cur;
+    lab.data.judgments = (lab.data.judgments || []).filter(function (j) { return !(j.kind === z.kind && j.i0 === z.i0 && j.i1 === z.i1); });
+    if (v) lab.data.judgments.push({ kind: z.kind, i0: z.i0, i1: z.i1, t0: z.t0, t1: z.t1, p0: z.p0, p1: z.p1, toques: z.toques, picos: z.picos || [],
+                                     verdict: v === "si_ext" ? "si" : v, ajuste: v === "si_ext" ? "extender" : null, model: peaksDet.data.schema, at: new Date().toISOString() });
+    labSave(); rev.k++; revShow();
+  }
+  function drawLabels(ctx, w, h) {
+    if ((!lab.data && !peaksDet.on) || !series) return;
+    if (!lab.data) lab.data = labEmpty();
+    var cd = activeCandlesArr(); if (!cd) return;
+    var vr = realVisibleRange(); if (!vr) return;
+    function X(t) { var c = logicalToX(labIdxOfTime(cd, t)); return c === null ? NaN : c; }
+    function XI(i, t) {                                   // índice exacto; varias velas de 25 ticks comparten el mismo segundo
+      var idx = (i != null && cd[i] && cd[i].time === t) ? i : labIdxOfTime(cd, t);
+      var c = logicalToX(idx); return c === null ? NaN : c;
+    }
+    function Y(p) { var c = series.priceToCoordinate(p); return c === null ? NaN : c; }
+    ctx.save();
+    drawPeaksDet(ctx, cd, vr, XI, Y);
+    (lab.data.judgments || []).forEach(function (j) {
+      if (j.t1 < vr.from || j.t0 > vr.to) return;
+      var x0 = XI(j.i0, j.t0), x1 = XI(j.i1, j.t1), y0 = Y(j.p1), y1 = Y(j.p0);
+      ctx.strokeStyle = j.verdict === "si" ? "rgba(22,163,74,0.95)" : "rgba(220,38,38,0.95)"; ctx.lineWidth = 2;
+      if (!drawPeakPath(ctx, j, XI, Y, ctx.strokeStyle, 2, true)) ctx.strokeRect(x0, y0, x1 - x0, Math.max(2, y1 - y0));
+      ctx.fillStyle = ctx.strokeStyle; ctx.font = "bold 12px sans-serif"; ctx.fillText(j.verdict === "si" ? "✓" : "✗", x1 + 3, y0 + 10);
+    });
+    if (rev.on && rev.cur) {
+      var z = rev.cur, zx0 = XI(z.i0, z.t0), zx1 = XI(z.i1, z.t1), zy0 = Y(z.p1), zy1 = Y(z.p0);
+      if (!drawPeakPath(ctx, z, XI, Y, "#111", 2.5, true)) {
+        ctx.strokeStyle = "#111"; ctx.lineWidth = 3; ctx.setLineDash([6, 3]);
+        ctx.strokeRect(zx0 - 3, zy0 - 3, zx1 - zx0 + 6, Math.max(2, zy1 - zy0) + 6); ctx.setLineDash([]);
+      }
+    }
+    lab.data.reviewed.forEach(function (s) {
+      if (s.t1 < vr.from || s.t0 > vr.to) return;
+      var x0 = X(s.t0), x1 = X(s.t1); ctx.fillStyle = "rgba(34,197,94,0.35)"; ctx.fillRect(x0, 0, x1 - x0, 4);
+    });
+    var rs = lab.data.ranges.slice(); if (lab.drag) rs.push({ t0: Math.min(lab.drag.a.t, lab.drag.b.t), t1: Math.max(lab.drag.a.t, lab.drag.b.t), p0: Math.min(lab.drag.a.p, lab.drag.b.p), p1: Math.max(lab.drag.a.p, lab.drag.b.p) });
+    rs.forEach(function (r) {
+      if (r.t1 < vr.from || r.t0 > vr.to) return;
+      var x0 = XI(r.i0, r.t0), x1 = XI(r.i1, r.t1), y0 = Y(r.p1), y1 = Y(r.p0);
+      if (![x0, x1, y0, y1].every(isFinite)) return;
+      ctx.fillStyle = "rgba(124,58,237,0.10)"; ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
+      ctx.strokeStyle = "rgba(124,58,237,0.9)"; ctx.setLineDash([5, 3]); ctx.lineWidth = 1.5; ctx.strokeRect(x0, y0, x1 - x0, y1 - y0); ctx.setLineDash([]);
+    });
+    lab.data.zigzags.forEach(function (z) {
+      if (!z.length || z[z.length - 1].t < vr.from || z[0].t > vr.to) return;
+      ctx.strokeStyle = "rgba(234,88,12,0.7)"; ctx.lineWidth = 1; ctx.setLineDash([3, 3]); ctx.beginPath();
+      z.forEach(function (pt, k) { var x = XI(pt.i, pt.t), y = Y(pt.price); if (k) ctx.lineTo(x, y); else ctx.moveTo(x, y); });
+      ctx.stroke(); ctx.setLineDash([]);
+      z.forEach(function (pt, k) {                        // ▼ sobre cada high, ▲ bajo cada low, en la mecha exacta
+        var x = XI(pt.i, pt.t), y = Y(pt.price), H = pt.kind === "H", o = H ? -1 : 1;
+        ctx.fillStyle = H ? "#dc2626" : "#16a34a"; ctx.beginPath();
+        ctx.moveTo(x, y); ctx.lineTo(x - 5, y + o * 9); ctx.lineTo(x + 5, y + o * 9); ctx.closePath(); ctx.fill();
+        ctx.font = "9px sans-serif"; ctx.textAlign = "center"; ctx.fillText(String(k + 1), x, y + o * 18); ctx.textAlign = "left";
+      });
+    });
+    ctx.restore();
   }
 
   // =====================================================================
