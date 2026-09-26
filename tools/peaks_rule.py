@@ -151,7 +151,11 @@ def series(cd, tick, w, max_gap, max_step, min_pull, nmin, extend_back=False, ma
 def main(argv=None):
     ap = argparse.ArgumentParser(); ap.add_argument("--asset", required=True)
     ap.add_argument("--reuse-best", action="store_true", help="no buscar en la grilla: reusar los parámetros del último ajuste")
+    ap.add_argument("--grid", default="es", choices=["es", "nq"], help="nq: grilla medida sobre las marcas de NQ de Nico (26/09)")
     a = ap.parse_args(argv)
+    global GRID
+    if a.grid == "nq":   # escalón mediana 5 t / p90 21 / máx 45; retroceso p10 18 / mediana 44; 5 a 14 picos
+        GRID = dict(w=(1, 2, 3), max_gap=(30, 60, 110), max_step=(7, 14, 21, 45), min_pull=(7, 14, 18, 28), nmin=(5, 6, 8))
     lab = json.loads((VIEW / "labels" / f"{a.asset}.json").read_text(encoding="utf-8"))
     b = json.loads((VIEW / "bundles" / f"{a.asset}.json").read_text(encoding="utf-8"))
     tick = float(b["meta"]["tick_size"])
