@@ -26,7 +26,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-NORTH_STAR_SHA256 = "d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1"
+NORTH_STAR_SHA256 = "ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8"
 DEFAULT_SPEC = REPO_ROOT / "specs" / "bt2_absorption_target_free_sweep_v1.json"
 DEFAULT_SPLIT = REPO_ROOT / "specs" / "bt2_absorption_gate1_split_v1.json"
 DEFAULT_CHAIN = REPO_ROOT / "docs" / "research" / "CADENA_FRONTMONTH_GC.json"
