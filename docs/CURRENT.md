@@ -48,6 +48,9 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
    - La zona sí difiere del fantasma: «sigue» con r = 0 acierta +2,1 pp y «rebota» con r ≥ 2 acierta +1,5 a +1,9 pp. Son ~0,2 t, contra un costo de ~1,5 t.
    - En curso: TP/SL 3–20 (iteración 3) y escenarios macro con descubrimiento jul–nov y validación dic–mar (iteración 4). Abr–jun sigue sin tocar.
 
+13. **IVC (2026-09-26): mapa de información contra costo por horizonte, ES/NQ/YM.** Resultados: `docs/research/IVC_RESULTADOS_20260926.md`; pre-registro `docs/research/MANIFIESTO_MAPA_INFO_COSTO_20260926.md`; cerebro `artifacts/hippocampus/ivc_20260926.jsonl` (partición `P-IVC-EXP`). 477 celdas, 38 FDR, **0 prometedoras**. Horizonte corto: hay información (reversión, |IC| 0,01–0,05) y su borde (0,1–1,6 t) no llega al costo agresivo (2,4–7 t). Horizonte ≥ 60 min, cierre y última media hora: el borde bruto se acerca al costo, pero sin potencia (MDE del IC 0,04–0,24). **Siguiente paso: historia de 1 min de varios años.** Pista sin significancia: primera media hora → última media hora con reversión en ES y YM (mismo signo en descubrimiento y validación).
+14. **TBZX-R3 (2026-09-25/26):** 181 sesiones de ES, 0 de 66.000 celdas realistas positivas con TP 3; la zona aporta ~+3 pp de dirección, unos 0,2 t, contra ~1,5 t de costo. Iteraciones 3 (TP 3–20) y 4 (escenarios macro) en curso. `docs/research/MANIFIESTO_TBZX_REINGRESO_3T_20260925.md`, ledger `artifacts/hippocampus/tbzx_r3_20260926.jsonl`.
+
 ## Resultados de investigación vigentes
 
 1. **HP-008: Clímax HFT Sobre-Extendido con Reversión a la Media y Vuelo Libre en Corredores de Vacío (NQ 25t).**  
