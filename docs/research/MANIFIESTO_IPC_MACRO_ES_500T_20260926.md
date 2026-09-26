@@ -45,3 +45,14 @@ RTH vs ETH; otras escalas (2000t, tiempo); zonas que cruzan sesiones; otros acti
   - **estricto:** estándar + ≥ 6 picos (89 % en muestra, 45 zonas; **no validado** fuera de muestra, se reporta como tal).
 - **Nota sobre el paso a ATR:** el borrador decía escalón/retroceso en ATR; se congela en **ticks fijos** porque es lo que Nico validó. ATR queda como no medido.
 - **Potencia esperada:** ~3 zonas por sesión con el estándar → del orden de 500–600 zonas en las sesiones de exploración, y menos eventos por celda (sólo las que se alejan k·R). Riesgo alto de SIN_POTENCIA en k = 4 y en la variante estricta; se publica el MDE.
+
+## Variantes de entrada (pedido de Nico, 26/09, antes de medir; reemplaza la grilla de 8 celdas)
+Nico: la ventaja puede estar (a) en entradas **muy cercanas en el tiempo a la creación**, o (b) en entradas cuando el precio **primero se alejó de una zona virgen y después volvió**. Se miden las dos, además del alejamiento general.
+- **E1 alejamiento** (el de 25t): evento = primer cierre a ≥ D = k·R del último pico, zona sin romper.
+  - **Momento (eje nuevo):** edad = velas entre la creación y el evento. **temprano** = edad ≤ mediana, **tardío** = edad > mediana. La mediana se calcula por detector y k **sobre las edades, sin mirar resultados**, y se publica. Más «todos».
+  - Celdas: detector (2) × virgen / no virgen (2) × k 2, 4 (2) × momento todos / temprano / tardío (3) = **24**.
+- **E2 regreso** (sólo zonas vírgenes): después del alejamiento E1, la primera vela cuyo cierre vuelve a ≤ D/2 del último pico **sin haberlo tocado** (si lo toca antes, la zona deja de ser virgen y no hay evento). Resultado: toca el nivel antes de volver a alejarse a D. Controles con las mismas distancias desde el cierre del evento. Celdas: detector (2) × k (2) = **4**.
+- **Total: 28 celdas.** BH q = 0,10 sobre las 28 (y se informa también dentro de la familia IPC completa). Sólo último pico.
+- **C-SW en 500t:** el pivote reciente se busca en las últimas **100 velas** (≈ 1,5 h), no 300 (300 velas de 500t son media sesión). Decidido antes de medir.
+- **Horizonte:** fin de sesión (las series son por sesión).
+- Pasa a B: INFO+ contra C-SZ con FDR, mismo signo en las dos mitades, e IC inferior > 0 contra C-SW. Se publica la mediana de D (ticks) por celda para el criterio de fricción.
