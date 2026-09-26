@@ -110,7 +110,7 @@ def run_zones(ts, px, zones, D, R, B=B_BREAK, horizons_s=HORIZONS_S):
         r = dict(zid=z.get("zid"), pol=z["pol"], W=w, estado=int(st), desenlace=int(oc), pen=float(pen),
                  pen_frac=float(pen / w) if w > 0 else float("nan"), rw=(w + B) / (R + w + B))
         if st == TOUCHED:
-            r.update(t_toque_s=(ts[it] - ts[z["i_avail"]]) / NS, t_desenlace_s=(ts[io] - ts[it]) / NS,
+            r.update(i_toque=int(it), t_toque_s=(ts[it] - ts[z["i_avail"]]) / NS, t_desenlace_s=(ts[io] - ts[it]) / NS,
                      mfe={h: float(ext[k, 0]) for k, h in enumerate(horizons_s)},
                      mae={h: float(ext[k, 1]) for k, h in enumerate(horizons_s)})
         rows.append(r)
