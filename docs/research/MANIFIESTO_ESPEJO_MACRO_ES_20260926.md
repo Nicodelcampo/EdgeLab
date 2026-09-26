@@ -173,3 +173,17 @@ sobre los ticks de ES, con una salida realista.
 - `artifacts/research/espejo_macro/ES_RTH/`: replicación.
 - Ledger del cerebro: lecciones y evidencias con sha de cada reporte. Se actualiza el registro MEDIDO/NO MEDIDO en el
   mismo commit que cada resultado.
+
+---
+**Alcance (2026-09-26, pedido de Nico):** este estudio es un **tamiz** («¿seguir con la idea del espejo?»), no un
+veredicto sobre el espejo. Qué midió exactamente, qué no y la regla para cerrar la familia:
+`docs/research/ESPEJO_MEDIDO_Y_NO_MEDIDO.md`. Un NO de acá invalida sólo su población, su detector (impulsos
+**eficientes**, eficiencia ≥ 0,6), su semejanza y su horizonte.
+
+## Enmienda 1 — regla de lectura de muestra mínima (después de ver SPY, 2026-09-26)
+
+- **Regla:** no se interpreta ninguna celda con n < 30 por tercil.
+- **Por qué:** con 3 a 15 eventos, el bootstrap por sesión colapsa y el FDR marca diferencias de ±30–40 pp que son
+  artefactos.
+- **Alcance:** es una regla de lectura. No cambia ningún número, ninguna prueba ni el FDR publicado, y no rescata ni
+  descarta nada que la regla de sostenido no decida.

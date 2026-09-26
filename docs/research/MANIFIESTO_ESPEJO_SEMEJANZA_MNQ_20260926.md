@@ -100,3 +100,9 @@ ahora y se publica **entera**; no se elige la mejor configuración.
   como una prueba más de la grilla.
 - **Costo:** los impulsos chicos tienen más fricción relativa. Si sólo sostienen los de 17–24 ticks, el paso siguiente
   es estimar si el espejo cubre el costo antes de seguir.
+
+---
+**Alcance (2026-09-26, pedido de Nico):** este estudio es un **tamiz** («¿seguir con la idea del espejo?»), no un
+veredicto sobre el espejo. Qué midió exactamente, qué no y la regla para cerrar la familia:
+`docs/research/ESPEJO_MEDIDO_Y_NO_MEDIDO.md`. Un NO de acá invalida sólo su población, su detector (impulsos
+**eficientes**, eficiencia ≥ 0,6), su semejanza y su horizonte.
