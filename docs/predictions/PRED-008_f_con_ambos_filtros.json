@@ -1,0 +1,43 @@
+{
+  "id": "PRED-008",
+  "titulo": "La frecuencia con AMBOS filtros -sep_min y excursion T=34- cae muy por debajo del f~=8,3 publicado en v0.3 §6.3",
+  "fecha_registro": "2026-08-09T12:40:00-03:00",
+  "estado": "PREREGISTRADA_ANTES_DE_MEDIR",
+  "autoriza": "Nico -- 'avanza con el paso 3 y redacta E-R1' + habilitacion del canal multimodelo con Codex",
+  "registrada_por": "Claude, ANTES de pedirle la medicion a Codex, para que su resultado se contraste contra un numero escrito de antemano",
+
+  "que_resuelve": "E-R1 v0.3 §9 quedo bloqueado porque nadie aplico los dos filtros juntos. El censo autoritativo aplica sep_min pero no la excursion (1.825 eventos, 9,08/ses). recuento_kT aplica la excursion pero NO sep_min -verificado: no menciona sep_min en ninguna linea- (1.655 retornos validos a T=34, 8,23/ses). v0.3 §6.3 publica f ~= 8,3 para esta celda, que coincide con 8,23 y por lo tanto viene de la poblacion SIN sep_min. f entra directo al MDE.",
+
+  "trampa_que_motiva_el_preregistro": "1.825 y 1.655 se parecen mucho. Es coincidencia entre dos filtros DISTINTOS, no confirmacion. Casi la tomo como confirmacion.",
+
+  "prediccion_central": {
+    "id": "P1",
+    "medida": "f_ambos = eventos por sesion que cumplen SIMULTANEAMENTE (a) ser primer toque superviviente de sep_min=120 con ancla first_touch_ms, y (b) tener excursion valida k_T>0 a T=34 con retorno j>k_T",
+    "esperado": "f_ambos < 3,0 eventos/sesion",
+    "punto_estimado": 1.2,
+    "razonamiento": "Si los filtros fueran independientes: 1.825 x (1.655/17.192) ~= 176 eventos = 0,87/ses. Pero probablemente esten POSITIVAMENTE correlacionados: sep_min conserva eventos temporalmente aislados, y un primer toque aislado tiene mas chance de venir de una excursion grande -el precio llego de lejos-. Eso empuja f_ambos por encima de 0,87. De ahi la banda.",
+    "refuta_si": "f_ambos >= 3,0 -- entonces los filtros estan mucho mas correlacionados de lo que supongo, o alguno de los dos conteos previos mide otra cosa"
+  },
+
+  "predicciones_secundarias": [
+    {"id":"P2","medida":"cociente f_ambos / 8,23","esperado":"entre 0,10 y 0,35","refuta_si":"fuera de esa banda"},
+    {"id":"P3","medida":"la celda BigTrap2 T=34 contra el MDE de su f real","esperado":"si f_ambos < 3,0 la celda es CIEGA o marginal; hay que recalcular el MDE a esa f y decirlo","refuta_si":"el MDE a f_ambos sigue dentro del margen 1,60x"},
+    {"id":"P4","medida":"conservacion del orden temporal","esperado":"todo evento contado cumple created_bar < touch_bar y k_T>0 y j>k_T; cero violaciones","refuta_si":"aparece alguna violacion -- seria defecto del modulo nuevo, no hallazgo"}
+  ],
+
+  "regla_de_lectura": "Si f_ambos sale MUY por encima de 3,0 -digamos >= 6- la primera hipotesis es un defecto en el modulo nuevo, no un hallazgo: significaria que sep_min casi no filtra sobre esta subpoblacion, y eso contradiria el 11,7 % de supervivencia medido en PRED-007.",
+
+  "consecuencia_de_cada_resultado": {
+    "si_P1_se_confirma": "H1 NO se puede sellar con f ~= 8,3. Hay que recalcular el MDE a la f real y volver a pasar el gate de §6.2 -'descartar geometrias ciegas al MDE de su frecuencia real'-. Es posible que BigTrap2 T=34 resulte ciega, y entonces cae la unica hipotesis confirmatoria que quedaba.",
+    "si_P1_se_refuta": "f ~= 8,3 se sostiene aproximadamente y E-R1 §9 se cierra con el numero medido. Igual hay que registrar que el valor publicado venia de la poblacion equivocada y coincidio por casualidad."
+  },
+
+  "que_NO_decide": [
+    "no elige T: T=34 quedo congelado en el Paso 3 sin argmax",
+    "no adjudica H1: solo produce la columna f que E-R1 necesita",
+    "no dice nada economico: es outcome-free"
+  ],
+
+  "outcomes_accessed": false,
+  "holdout_accessed": false
+}

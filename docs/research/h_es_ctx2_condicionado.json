@@ -1,0 +1,219 @@
+{
+ "schema_version": "h_es_ctx2_condicionado_v1",
+ "run_id": "fe483af4ad20e31a",
+ "run_scope": "full",
+ "publishable": true,
+ "preregistro": "docs/research/H-ES-CTX-2_PREREGISTRO.md",
+ "outcomes_accessed": false,
+ "pnl_accessed": false,
+ "holdout_included": false,
+ "contextos": {
+  "C_A_primario": "pct_rv en terciles (percentil expansivo, bucket 15 min)",
+  "C_B_secundario": "es_primera_5s (sin zona en los 5 s previos)",
+  "rechazado": "fase de sesion: corr -0,255 con el ancho"
+ },
+ "parametros_congelados": {
+  "B": 10000,
+  "seed": 20260821,
+  "margen_relativo": 0.05,
+  "margen_absoluto": 7.9104,
+  "terciles": [
+   "bajo",
+   "medio",
+   "alto"
+  ],
+  "hueco_episodio_ms": 5000,
+  "metrica_primaria": "ticks_por_ancho",
+  "mde": "derivado del MISMO bootstrap: (z.975+z.80)*SE",
+  "multiplicidad": "Holm sobre los 3 terciles"
+ },
+ "soporte": "comun: solo zonas con control emparejado. R2 midio 81,7%, sesgado a angostas (ancho mediano 3,28 vs 7,76)",
+ "pares_sin_percentil": 806,
+ "resultado": {
+  "bajo": {
+   "n_pares": 883,
+   "n_sesiones": 57,
+   "punto": 3.5,
+   "ci95": [
+    0.0,
+    20.25
+   ],
+   "ci90": [
+    0.0,
+    18.125
+   ],
+   "cruza_cero": true,
+   "punto_sesion_ponderada": 8.0,
+   "mismo_signo_que_ponderada": true,
+   "B": 10000,
+   "seed": 20260821,
+   "mde": 14.4727,
+   "p_bootstrap": 0.6287,
+   "equivalencia": {
+    "margen": 7.9104,
+    "ci90": [
+     0.0,
+     18.125
+    ],
+    "equivalencia": false,
+    "nota": "equivalencia declarada solo si el IC 90% queda ENTERAMENTE dentro de +-margen. El margen NO es economico: la metrica cuenta operaciones por unidad de ancho, no dinero"
+   },
+   "p_holm": 1.0
+  },
+  "medio": {
+   "n_pares": 1807,
+   "n_sesiones": 56,
+   "punto": 0.0,
+   "ci95": [
+    -2.6666,
+    0.6667
+   ],
+   "ci90": [
+    -0.5,
+    0.0
+   ],
+   "cruza_cero": true,
+   "punto_sesion_ponderada": 0.0,
+   "mismo_signo_que_ponderada": true,
+   "B": 10000,
+   "seed": 20260821,
+   "mde": 2.3823,
+   "p_bootstrap": 1.0,
+   "equivalencia": {
+    "margen": 7.9104,
+    "ci90": [
+     -0.5,
+     0.0
+    ],
+    "equivalencia": true,
+    "nota": "equivalencia declarada solo si el IC 90% queda ENTERAMENTE dentro de +-margen. El margen NO es economico: la metrica cuenta operaciones por unidad de ancho, no dinero"
+   },
+   "p_holm": 1.0
+  },
+  "alto": {
+   "n_pares": 3561,
+   "n_sesiones": 58,
+   "punto": 4.5,
+   "ci95": [
+    0.0,
+    13.4
+   ],
+   "ci90": [
+    0.0,
+    12.0
+   ],
+   "cruza_cero": true,
+   "punto_sesion_ponderada": 2.25,
+   "mismo_signo_que_ponderada": true,
+   "B": 10000,
+   "seed": 20260821,
+   "mde": 9.577,
+   "p_bootstrap": 0.3618,
+   "equivalencia": {
+    "margen": 7.9104,
+    "ci90": [
+     0.0,
+     12.0
+    ],
+    "equivalencia": false,
+    "nota": "equivalencia declarada solo si el IC 90% queda ENTERAMENTE dentro de +-margen. El margen NO es economico: la metrica cuenta operaciones por unidad de ancho, no dinero"
+   },
+   "p_holm": 1.0
+  },
+  "primera_5s": {
+   "n_pares": 4767,
+   "n_sesiones": 62,
+   "punto": 2.5,
+   "ci95": [
+    0.0,
+    9.75
+   ],
+   "ci90": [
+    0.0,
+    9.0
+   ],
+   "cruza_cero": true,
+   "punto_sesion_ponderada": 7.3333,
+   "mismo_signo_que_ponderada": true,
+   "B": 10000,
+   "seed": 20260821,
+   "mde": 6.9684,
+   "p_bootstrap": 0.4546,
+   "equivalencia": {
+    "margen": 7.9104,
+    "ci90": [
+     0.0,
+     9.0
+    ],
+    "equivalencia": false,
+    "nota": "equivalencia declarada solo si el IC 90% queda ENTERAMENTE dentro de +-margen. El margen NO es economico: la metrica cuenta operaciones por unidad de ancho, no dinero"
+   }
+  },
+  "no_primera_5s": {
+   "n_pares": 2290,
+   "n_sesiones": 59,
+   "punto": 0.0,
+   "ci95": [
+    0.0,
+    5.0
+   ],
+   "ci90": [
+    0.0,
+    3.2
+   ],
+   "cruza_cero": true,
+   "punto_sesion_ponderada": 1.0,
+   "mismo_signo_que_ponderada": true,
+   "B": 10000,
+   "seed": 20260821,
+   "mde": 3.5735,
+   "p_bootstrap": 1.0,
+   "equivalencia": {
+    "margen": 7.9104,
+    "ci90": [
+     0.0,
+     3.2
+    ],
+    "equivalencia": true,
+    "nota": "equivalencia declarada solo si el IC 90% queda ENTERAMENTE dentro de +-margen. El margen NO es economico: la metrica cuenta operaciones por unidad de ancho, no dinero"
+   }
+  },
+  "TODAS": {
+   "n_pares": 7057,
+   "n_sesiones": 62,
+   "punto": 0.6667,
+   "ci95": [
+    0.0,
+    6.25
+   ],
+   "ci90": [
+    0.0,
+    5.5
+   ],
+   "cruza_cero": true,
+   "punto_sesion_ponderada": 1.65,
+   "mismo_signo_que_ponderada": true,
+   "B": 10000,
+   "seed": 20260821,
+   "mde": 4.4669,
+   "p_bootstrap": 0.8797,
+   "equivalencia": {
+    "margen": 7.9104,
+    "ci90": [
+     0.0,
+     5.5
+    ],
+    "equivalencia": true,
+    "nota": "equivalencia declarada solo si el IC 90% queda ENTERAMENTE dentro de +-margen. El margen NO es economico: la metrica cuenta operaciones por unidad de ancho, no dinero"
+   }
+  }
+ },
+ "procedencia": {
+  "head_commit": "2f91d40d942c7438818cd77564d56ed24a8ccc10",
+  "arbol_limpio": true,
+  "archivos_sucios": [],
+  "snapshot": "E:\\EdgeLab\\runs\\oraculo_espurev2flat_ES_snapshot.sqlite",
+  "parquet": "E:\\EdgeLab\\data\\nt8\\ES_parquet\\ES_03-26_ticks.parquet",
+  "comando": "diag/tasa_senales/h_es_ctx2_condicionado.py --snapshot E:/EdgeLab/runs/oraculo_espurev2flat_ES_snapshot.sqlite --parquet E:/EdgeLab/data/nt8/ES_parquet/ES_03-26_ticks.parquet"
+ }
+}

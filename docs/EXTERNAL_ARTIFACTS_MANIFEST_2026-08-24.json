@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0",
+  "generated_at_utc": "2026-08-24T17:22:39Z",
+  "repository": "Nicodelcampo/EdgeLab",
+  "audited_base_sha": "9b23c307cb112cdd6392d98673e8ead2e8bc4698",
+  "scope_note": "Declares known artifacts outside normal Git tracking. It cannot prove that no other local files exist.",
+  "artifacts": [
+    {
+      "id": "INC_OUTCOMES_UNTRACKED_20260824",
+      "availability": "local_only_quarantine",
+      "local_path": "C:\\Users\\nicoc\\OneDrive\\Documentos\\DataNT8\\quarantine\\INC_OUTCOMES_UNTRACKED_20260824\\",
+      "tracked_manifest": "docs/incidents/INCIDENTE_OUTCOMES_UNTRACKED_2026-08-24.manifest.json",
+      "tracked_report": "docs/incidents/INCIDENTE_OUTCOMES_UNTRACKED_2026-08-24.md",
+      "payload_committed": false,
+      "file_count": 12,
+      "outcome_bearing_file_count": 11,
+      "target_free_file_count": 1,
+      "access_rule": "Nico must provide read-only access; preserve timestamps and hashes; do not commit outcome payloads."
+    },
+    {
+      "id": "BTCUSDT_BT2_PILOT_2024-03-30",
+      "availability": "local_only_data_root",
+      "local_path": "/data/BTCUSDT_BT2_PILOT_2024-03-30_bundle.zip",
+      "sha256": "f5a38af8c60307a643ce89140901c2b4aad6ea5ac3eb29c279b04f32efaf4dd1",
+      "payload_committed": false,
+      "interpretation": "engineering pilot only; not evidence of edge"
+    },
+    {
+      "id": "RAW_ROOT_DATA",
+      "availability": "gitignored",
+      "path_pattern": "/data/*",
+      "exceptions_tracked": ["/data/nt8_oracles/*"],
+      "payload_committed": false,
+      "access_rule": "Resolve each input through a tracked manifest and sha256."
+    },
+    {
+      "id": "NT8_LAST_TAPES",
+      "availability": "gitignored",
+      "path_pattern": "*.Last.txt",
+      "payload_committed": false,
+      "access_rule": "Required tape hashes and windows must be read from parity/campaign manifests."
+    },
+    {
+      "id": "RUNTIME_OUTPUTS",
+      "availability": "partially_gitignored",
+      "path_pattern": "runs/*",
+      "tracked_exceptions": ["runs/censo/manifiesto_universo.json", "runs/intake_l2/*"],
+      "payload_committed": false,
+      "access_rule": "A path under runs is not a citable artifact unless its exact file is tracked or independently hashed."
+    },
+    {
+      "id": "REAL_ORACLES",
+      "availability": "partially_gitignored",
+      "path_pattern": "oracles/**/*.csv|txt|bak",
+      "payload_committed": false,
+      "access_rule": "Selected TSV/GZ artifacts may be tracked; verify the exact path and blob before use."
+    },
+    {
+      "id": "NOTION_AUDIT_CHANNEL_001_005",
+      "availability": "notion_only_legacy",
+      "tracked_index": "docs/audits/CANAL_AUDITOR.md",
+      "tracked_contract": "docs/TRACEABILITY.md",
+      "payload_committed": false,
+      "access_rule": "Use tracked summaries and corrections. Request a sealed export from Nico only if verbatim source text is necessary."
+    }
+  ],
+  "known_clone_paths_from_repository_history": [
+    "E:\\EdgeLab",
+    "E:\\ProyectosQuant\\EdgeLab-sync-desktop",
+    "D:\\EdgeLab"
+  ],
+  "reported_recent_remote_name": "github",
+  "security": {
+    "commit_credentials": false,
+    "commit_secrets": false,
+    "visibility_means_manifest_not_payload": true
+  }
+}

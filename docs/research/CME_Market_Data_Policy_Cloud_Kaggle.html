@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>CME Market Data Policy & Cloud Compliance Memo</title>
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 15mm 15mm 15mm 15mm;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #1a202c;
+            line-height: 1.45;
+            font-size: 11pt;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            border-bottom: 2px solid #2b6cb0;
+            padding-bottom: 8px;
+            margin-bottom: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        .title {
+            font-size: 16pt;
+            font-weight: 700;
+            color: #1a365d;
+            margin: 0 0 4px 0;
+        }
+        .subtitle {
+            font-size: 10pt;
+            color: #4a5568;
+            font-weight: 500;
+        }
+        .meta-box {
+            background-color: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-left: 4px solid #2b6cb0;
+            padding: 8px 12px;
+            margin-bottom: 14px;
+            font-size: 9.5pt;
+        }
+        .meta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px 16px;
+        }
+        .section-title {
+            font-size: 11.5pt;
+            font-weight: 700;
+            color: #2b6cb0;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 3px;
+            margin-top: 12px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        p {
+            margin: 0 0 8px 0;
+            text-align: justify;
+        }
+        ul {
+            margin: 0 0 8px 0;
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 4px;
+        }
+        .warning-box {
+            background-color: #fffaf0;
+            border: 1px solid #feebc8;
+            border-left: 4px solid #dd6b20;
+            padding: 8px 12px;
+            margin: 10px 0;
+            font-size: 9.5pt;
+        }
+        .footer {
+            margin-top: 14px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 6px;
+            font-size: 8.5pt;
+            color: #718096;
+            text-align: center;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 8pt;
+            font-weight: bold;
+            background-color: #edf2f7;
+            color: #2d3748;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div>
+            <div class="title">MEMORÁNDUM DE CUMPLIMIENTO REGULATORIO</div>
+            <div class="subtitle">Política de Datos de Mercado CME Group respecto a Nubes de Terceros y Plataformas Públicas (Kaggle)</div>
+        </div>
+    </div>
+
+    <div class="meta-box">
+        <div class="meta-grid">
+            <div><strong>Destinatario:</strong> Auditoría Cuantitativa / Equipo de Investigación</div>
+            <div><strong>Fecha de Emisión:</strong> 14 de Agosto de 2026</div>
+            <div><strong>Marco Legal:</strong> CME Information License Agreement (ILA)</div>
+            <div><strong>Clasificación:</strong> Dictamen de Gobernanza y Licenciamiento</div>
+        </div>
+    </div>
+
+    <div class="section-title">1. Inexistencia de Autorizaciones Genéricas y Marco Contractual CME</div>
+    <p>
+        <strong>CME Group no otorga cartas de autorización genéricas ni exenciones públicas</strong> para alojar datos de ticks crudos (Time & Sales, L1 o L2) en plataformas de terceros como Kaggle. El uso de datos de mercado provistos por vendors autorizados (CQG, Rithmic, NinjaTrader, Kinetick) está estrictamente restringido al uso interno del licenciatario conforme a la <em>CME Information License Agreement (ILA)</em> y su <em>Schedule 4 (Information Fee Schedule)</em>.
+    </p>
+
+    <div class="section-title">2. Conflicto Legal: Términos de Kaggle vs. Licencia CME</div>
+    <p>
+        La prohibición de subir datos de ticks de futuros CME a Kaggle responde a dos barreras legales y contractuales insalvables:
+    </p>
+    <ul>
+        <li><strong>Cesión Involuntaria de Derechos a Terceros:</strong> Los Términos de Servicio de Kaggle (Sección 8 / User Content) establecen que al subir datasets (incluso marcados como privados), se otorga a la plataforma una licencia operativa sobre el contenido, lo cual <strong>viola la cláusula de no redistribución y propiedad intelectual exclusiva de CME Group</strong>.</li>
+        <li><strong>Falta de Sistema de Titularidad (Entitlement & Audit Trail):</strong> CME exige que cualquier infraestructura en la nube cuente con un contrato formal de <em>Service Facilitator (Schedule 1a)</em> y sistemas de control de acceso auditables. Kaggle no califica como Service Facilitator homologado por CME.</li>
+    </ul>
+
+    <div class="warning-box">
+        <strong>Dictamen de Auditoría:</strong> El criterio del auditor (<em>"Kaggle no recibe ticks. Ni dataset privado. CQG/CME + términos de Kaggle = tercero"</em>) es <strong>100% correcto y de obligado cumplimiento</strong>. Subir parquets a Kaggle expone al proyecto a infracción de propiedad intelectual y cancelación de feeds.
+    </div>
+
+    <div class="section-title">3. Arquitectura Operativa y Segregación Aprobada en EdgeLab</div>
+    <ul>
+        <li><strong>Entorno Local (EdgeLab Local Storage):</strong> Todos los archivos de ticks reales (<code>.parquet</code>), matrices de microestructura y cómputo pesado de combinaciones residen exclusivamente en discos locales cifrados e inmutables (<code>D:\EdgeLab\data\</code>).</li>
+        <li><strong>Entorno Remoto (Kaggle / CI):</strong> Se limita estrictamente a la ejecución de algoritmos sobre <strong>fixtures sintéticos deterministas</strong>, suites de verificación de código, tests unitarios y auditoría de ledger <code>Z0</code> libre de ticks propietarios.</li>
+    </ul>
+
+    <div class="section-title">4. Referencias Oficiales de CME Group</div>
+    <p style="font-size: 9pt; margin-bottom: 0;">
+        1. <em>CME Group Information Policies & Non-Display Usage Schedule</em> (Capítulo: External Distribution & Cloud Hosting).<br>
+        2. <em>CME Group Policy Education Center:</em> <a href="https://www.cmegroup.com/market-data/distributor.html">www.cmegroup.com/market-data/distributor.html</a>.<br>
+        3. <em>CME Client Systems Wiki & Service Facilitator Guidelines (Schedule 1a).</em>
+    </p>
+
+    <div class="footer">
+        EdgeLab Quantitative Research — Documento oficial de políticas y gobernanza de datos de mercado.
+    </div>
+
+</body>
+</html>

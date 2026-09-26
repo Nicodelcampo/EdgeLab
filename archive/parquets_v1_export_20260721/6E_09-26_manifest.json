@@ -1,0 +1,60 @@
+{
+  "schema_version": "canonical_tick_v1",
+  "tool": "build_nt8_ticks",
+  "generated_utc": "2026-07-21T23:19:00.101594+00:00",
+  "source_file": "C:\\ProyectosQuant\\EdgeLab\\TickData\\6E 09-26.Last.txt",
+  "source_sha256": "a218b7c0fc71f3ad767d7b2f5ea9728648333f9b803a8c699f3035f94dfc673e",
+  "instrument": "6E",
+  "contract": "6E 09-26",
+  "rows": 2085208,
+  "tz": {
+    "declared_tz": "UTC",
+    "canonical_offset_s": 0,
+    "verified_utc": true,
+    "score_utc": 0.01731,
+    "min_offset_s": 7200,
+    "min_score": 0.014155,
+    "art_score": 0.0761,
+    "note": "offset=0s score=0.01731; min@7200s=0.01415; ART=0.07610; VERIFICADO",
+    "scores_s": {
+      "-43200": 0.15398,
+      "-39600": 0.142055,
+      "-36000": 0.14467,
+      "-32400": 0.18001,
+      "-28800": 0.17377,
+      "-25200": 0.171985,
+      "-21600": 0.11757,
+      "-18000": 0.079225,
+      "-14400": 0.06243,
+      "-10800": 0.0761,
+      "-7200": 0.05478,
+      "-3600": 0.01934,
+      "0": 0.01731,
+      "3600": 0.014865,
+      "7200": 0.014155,
+      "10800": 0.023965,
+      "14400": 0.0276,
+      "18000": 0.02616,
+      "21600": 0.025955,
+      "25200": 0.028365,
+      "28800": 0.03596,
+      "32400": 0.058085,
+      "36000": 0.078505,
+      "39600": 0.094195,
+      "43200": 0.09064
+    }
+  },
+  "transformations": [
+    "parseo .Last.txt (yyyyMMdd HHmmss fffffff;last;bid;ask;vol), frac 100ns",
+    "ts_utc_ns = ts_local_ns (offset 0; UTC verificado por schedule-fit CME DST-aware)",
+    "precios -> ticks enteros (/5e-05), alineación exacta validada",
+    "sequence/source_row = orden estable del archivo (sin dedup, sin reorden)",
+    "SIN empalme ni ajuste de precios (por contrato)"
+  ],
+  "known_deviations": [
+    "quantum 4 ms: resolution_limited",
+    "1.73% ticks fuera de sesión al offset UTC (probables feriados CME; días: 2026-06-26, 2026-06-22, 2026-06-29, 2026-06-30, 2026-06-24, 2026-06-25)",
+    "20 huecos 30min–6h (posible baja liquidez/feriado)"
+  ],
+  "parquet_sha256": "19fe398a39bd1a925f1c0b7deb422184fdeba52125ceff6aa9fab04e5263778f"
+}

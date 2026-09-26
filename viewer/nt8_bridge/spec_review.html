@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Revisión de especificación</title>
+<script src="vendor/lightweight-charts.standalone.production.js"></script>
+<style>
+  :root {
+    --bg:#f6f7f9; --panel:#ffffff; --ink:#15181e; --muted:#667085; --line:#e4e7ec; --accent:#2563eb;
+    --accent-soft:rgba(37,99,235,.09); --tp:#16a34a; --tp-soft:rgba(22,163,74,.14); --sl:#dc2626; --sl-soft:rgba(220,38,38,.13);
+    --be:#d97706; --lvl:#7c3aed; --chip:#f1f3f7; --warn:#b45309; --warn-soft:#fff7e6; --ok:#15803d;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg:#0f1115; --panel:#171a21; --ink:#e7e9ee; --muted:#98a2b3; --line:#262a33; --accent:#60a5fa;
+    --accent-soft:rgba(96,165,250,.12); --tp:#22c55e; --tp-soft:rgba(34,197,94,.16); --sl:#f87171; --sl-soft:rgba(248,113,113,.15);
+    --be:#f59e0b; --lvl:#a78bfa; --chip:#20242c; --warn:#fbbf24; --warn-soft:#2a2210; --ok:#4ade80; } }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:13px/1.45 "Segoe UI",-apple-system,Roboto,sans-serif; height:100vh; display:flex; flex-direction:column; }
+  header { display:flex; align-items:center; gap:14px; padding:10px 16px; background:var(--panel); border-bottom:1px solid var(--line); flex-wrap:wrap; }
+  .brand { background:var(--accent); color:#fff; font-weight:700; border-radius:6px; padding:3px 9px; }
+  h1 { font-size:15px; margin:0; font-weight:650; }
+  .sub { color:var(--muted); font-size:12px; }
+  .badge { font-size:11px; font-weight:650; padding:3px 9px; border-radius:999px; border:1px solid var(--line); }
+  .badge.blind { background:var(--accent-soft); color:var(--accent); border-color:transparent; }
+  .spacer { flex:1; }
+  main { flex:1; display:grid; grid-template-columns:250px 1fr 360px; min-height:0; }
+  aside, section { min-height:0; overflow:auto; }
+  #list { border-right:1px solid var(--line); background:var(--panel); }
+  #list .hd { position:sticky; top:0; background:var(--panel); padding:10px 12px; font-weight:650; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; }
+  .ex { display:grid; grid-template-columns:26px 1fr auto; gap:8px; align-items:center; padding:9px 12px; border-bottom:1px solid var(--line); cursor:pointer; }
+  .ex:hover { background:var(--accent-soft); }
+  .ex.on { background:var(--accent-soft); box-shadow:inset 3px 0 0 var(--accent); }
+  .ex .n { color:var(--muted); font-variant-numeric:tabular-nums; }
+  .ex .t { font-variant-numeric:tabular-nums; } .ex .t small { color:var(--muted); display:block; }
+  .side { font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:4px; }
+  .side.LONG { background:var(--tp-soft); color:var(--tp); } .side.SHORT { background:var(--sl-soft); color:var(--sl); }
+  #center { display:flex; flex-direction:column; min-width:0; }
+  #chartwrap { position:relative; flex:1; min-height:320px; }
+  #chart { position:absolute; inset:0; }
+  #overlay { position:absolute; left:0; top:0; width:100%; height:100%; pointer-events:none; z-index:3; }
+  .cap { display:flex; gap:16px; flex-wrap:wrap; padding:8px 14px; border-top:1px solid var(--line); background:var(--panel); color:var(--muted); font-size:12px; }
+  .cap b { color:var(--ink); font-weight:600; }
+  .legend i { display:inline-block; width:10px; height:10px; border-radius:2px; margin:0 4px -1px 10px; }
+  #panel { border-left:1px solid var(--line); background:var(--panel); padding:14px; display:flex; flex-direction:column; gap:14px; }
+  .card { border:1px solid var(--line); border-radius:10px; padding:12px; }
+  .card h3 { margin:0 0 8px; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); font-weight:700; }
+  .combo { font-size:16px; font-weight:650; font-variant-numeric:tabular-nums; margin-bottom:8px; }
+  input[type=range] { width:100%; accent-color:var(--accent); }
+  .dims { display:grid; gap:6px; margin-top:10px; }
+  .dim { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+  .dim span.l { width:92px; color:var(--muted); font-size:12px; }
+  .chip { border:1px solid var(--line); background:var(--chip); color:var(--ink); border-radius:999px; padding:2px 10px; font-size:12px; cursor:pointer; }
+  .chip.on { border-color:var(--accent); background:var(--accent-soft); color:var(--accent); font-weight:650; }
+  .kv { display:grid; grid-template-columns:1fr auto; gap:5px 10px; font-variant-numeric:tabular-nums; }
+  .kv .k { color:var(--muted); }
+  .big { font-size:22px; font-weight:700; }
+  .flag { background:var(--warn-soft); color:var(--warn); border-radius:8px; padding:7px 9px; font-size:12px; margin-top:8px; }
+  .okline { color:var(--ok); font-size:12px; margin-top:8px; }
+  details summary { cursor:pointer; font-weight:600; }
+  details p { margin:6px 0; color:var(--muted); }
+  .bars { display:flex; align-items:flex-end; gap:3px; height:46px; margin-top:6px; }
+  .bars div { flex:1; background:var(--accent); opacity:.55; border-radius:2px 2px 0 0; }
+  .confirm { background:var(--accent-soft); border-color:transparent; }
+  code.h { font-family:"Cascadia Mono",Consolas,monospace; font-size:12px; background:var(--chip); padding:2px 6px; border-radius:4px; word-break:break-all; }
+  button.copy { margin-top:8px; border:0; background:var(--accent); color:#fff; border-radius:6px; padding:6px 12px; font-weight:600; cursor:pointer; }
+  .kbd { color:var(--muted); font-size:11px; }
+  @media (max-width: 1100px) { main { grid-template-columns:1fr; } #list { max-height:180px; border-right:0; border-bottom:1px solid var(--line); } #panel { border-left:0; } #chartwrap { min-height:380px; } }
+</style>
+</head>
+<body>
+<header>
+  <span class="brand">EdgeLab</span>
+  <div><h1 id="title">Revisión de especificación</h1><div class="sub" id="subtitle"></div></div>
+  <span class="badge blind" title="El archivo no contiene precios posteriores a la entrada">REVISIÓN CIEGA · el futuro no está en los datos</span>
+  <span class="spacer"></span>
+  <span class="kbd">↑/↓ ejemplo · ←/→ combinación</span>
+</header>
+<main>
+  <aside id="list"><div class="hd"><span>Ejemplos</span><span class="sub" id="nex"></span></div><div id="items"></div></aside>
+  <section id="center">
+    <div id="chartwrap"><div id="chart"></div><canvas id="overlay"></canvas></div>
+    <div class="cap" id="cap"></div>
+  </section>
+  <aside id="panel">
+    <div class="card">
+      <h3>Combinación a probar</h3>
+      <div class="combo" id="comboLabel"></div>
+      <input type="range" id="slider" min="0" value="0">
+      <div class="sub" id="comboIdx"></div>
+      <div class="dims" id="dims"></div>
+    </div>
+    <div class="card">
+      <h3>Qué exige esta combinación</h3>
+      <div class="kv" id="need"></div>
+      <div id="flags"></div>
+    </div>
+    <div class="card">
+      <h3>Población (sin resultados)</h3>
+      <div class="kv" id="pop"></div>
+      <div class="bars" id="bars" title="eventos por sesión"></div>
+    </div>
+    <div class="card">
+      <h3>Especificación</h3>
+      <details open><summary>Hipótesis</summary><p id="hyp"></p><p id="refu"></p></details>
+      <details><summary>Evento y entrada</summary><p id="evt"></p><p id="ent"></p></details>
+      <details><summary>Salidas y costos</summary><p id="ext"></p><p id="cst"></p></details>
+    </div>
+    <div class="card confirm">
+      <h3>Confirmar</h3>
+      <div>Si esto es exactamente lo que querés probar, respondé en el chat:</div>
+      <p><code class="h" id="confirmText"></code></p>
+      <button class="copy" id="copyBtn">Copiar</button>
+      <div class="sub" style="margin-top:8px">El hash identifica la especificación completa. Si algo no es lo que querés, decime qué cambiar: se genera una nueva con otro hash.</div>
+    </div>
+  </aside>
+</main>
+<script>
+(async function () {
+  const q = new URLSearchParams(location.search);
+  const specId = q.get("spec") || "SPEC-6E-L2-ABS-20260924";
+  const D = await (await fetch(`bundles/spec_${specId}.json`, {cache: "no-store"})).json();
+  const S = D.spec, tick = S.tick_size, prec = S.price_precision || 2, cost = S.costs.spread_ticks + S.costs.commission_ticks;
+  const $ = id => document.getElementById(id);
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  $("title").textContent = S.title;
+  $("subtitle").textContent = `${S.spec_id} · ${S.instrument} ${S.contract} · ${D.summary.sessions} sesiones · ${D.summary.events_total} eventos`;
+  $("hyp").textContent = S.hypothesis; $("refu").innerHTML = "<b>Se refuta si:</b> " + S.refutation;
+  $("evt").textContent = S.population.event; $("ent").textContent = `${S.entry.direction} ${S.entry.timing} ${S.entry.price}`;
+  $("ext").textContent = S.exits; $("cst").textContent = `Costo por operación: ${cost.toFixed(2)} ticks (spread ${S.costs.spread_ticks} + comisión ${S.costs.commission_ticks}). ${S.costs.note || ""}`;
+  const confirm = `confirmo ${S.spec_id} ${D.spec_sha256.slice(0, 12)}`;
+  $("confirmText").textContent = confirm;
+  $("copyBtn").onclick = () => { navigator.clipboard && navigator.clipboard.writeText(confirm); $("copyBtn").textContent = "Copiado"; setTimeout(() => $("copyBtn").textContent = "Copiar", 1400); };
+
+  // --- grilla: producto cartesiano en el orden de la spec
+  const G = S.grid, dimsDef = [["stop_ticks_beyond_level", "Stop (tras nivel)", v => v + "t"], ["target_ticks_from_entry", "Target", v => v + "t"],
+    ["break_even_after_ticks", "Break-even", v => v === null ? "off" : "+" + v + "t"], ["max_hold_s", "Tiempo máx.", v => v >= 60 ? (v / 60) + " min" : v + " s"]];
+  const combos = [];
+  (function rec(i, cur) { if (i === dimsDef.length) { combos.push(Object.assign({}, cur)); return; }
+    for (const v of G[dimsDef[i][0]]) { cur[dimsDef[i][0]] = v; rec(i + 1, cur); } })(0, {});
+  const slider = $("slider"); slider.max = combos.length - 1;
+  const dimsEl = $("dims");
+  dimsDef.forEach(([k, label, fmt]) => {
+    const row = document.createElement("div"); row.className = "dim";
+    row.innerHTML = `<span class="l">${label}</span>` + G[k].map(v => `<button class="chip" data-k="${k}" data-v='${JSON.stringify(v)}'>${fmt(v)}</button>`).join("");
+    dimsEl.appendChild(row);
+  });
+  dimsEl.addEventListener("click", e => {
+    const b = e.target.closest(".chip"); if (!b) return;
+    const want = Object.assign({}, combos[+slider.value], {[b.dataset.k]: JSON.parse(b.dataset.v)});
+    const i = combos.findIndex(c => dimsDef.every(([k]) => c[k] === want[k])); if (i >= 0) { slider.value = i; render(); }
+  });
+
+  // --- lista de ejemplos
+  const ex = D.examples; $("nex").textContent = ex.length;
+  const fmtT = us => { const d = new Date(us / 1000); return d.toISOString().slice(11, 19); };
+  const fmtD = s => `${s.slice(6, 8)}/${s.slice(4, 6)}`;
+  $("items").innerHTML = ex.map((e, i) => `<div class="ex" data-i="${i}"><span class="n">${e.id}</span>
+    <span class="t">${fmtD(e.session)} · ${fmtT(e.entry_ts_us)}<small>vol ${Math.round(e.absorbed_volume)} · rango 60s ${e.range60_ticks}t</small></span>
+    <span class="side ${e.side}">${e.side}</span></div>`).join("");
+  let cur = 0;
+  $("items").addEventListener("click", e => { const r = e.target.closest(".ex"); if (r) { cur = +r.dataset.i; render(true); } });
+
+  // --- gráfico
+  const chart = LightweightCharts.createChart($("chart"), {
+    layout: {background: {color: css("--panel")}, textColor: css("--muted"), fontFamily: "Segoe UI, sans-serif"},
+    grid: {vertLines: {color: css("--line")}, horzLines: {color: css("--line")}},
+    rightPriceScale: {borderColor: css("--line")}, timeScale: {borderColor: css("--line"), timeVisible: true, secondsVisible: false, rightOffset: 30},
+    crosshair: {mode: 0}, localization: {priceFormatter: p => p.toFixed(prec)}});
+  const series = chart.addCandlestickSeries({upColor: css("--tp"), downColor: css("--sl"), wickUpColor: css("--tp"), wickDownColor: css("--sl"), borderVisible: false,
+    priceFormat: {type: "price", precision: prec, minMove: tick}});
+  let lines = [];
+  const overlay = $("overlay"), ctx = overlay.getContext("2d");
+
+  function geom(e, c) {
+    const L = e.level_tick, E = e.entry_tick, s = e.side === "SHORT" ? -1 : 1;
+    const stop = e.side === "SHORT" ? L + c.stop_ticks_beyond_level : L - c.stop_ticks_beyond_level;
+    const tgt = E + s * c.target_ticks_from_entry;
+    const be = c.break_even_after_ticks === null ? null : E + s * c.break_even_after_ticks;
+    return {L, E, stop, tgt, be, dsl: Math.abs(E - stop), dtp: c.target_ticks_from_entry};
+  }
+  const med = a => { const b = [...a].sort((x, y) => x - y); return b.length ? b[Math.floor(b.length / 2)] : NaN; };
+
+  function drawOverlay(e, c, g) {
+    const dpr = window.devicePixelRatio || 1, W = overlay.clientWidth, h = overlay.clientHeight;
+    const w = W - chart.priceScale("right").width();          // no tapar el eje de precios
+    overlay.width = W * dpr; overlay.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, h);
+    ctx.save(); ctx.beginPath(); ctx.rect(0, 0, w, h); ctx.clip();
+    const ts = chart.timeScale(), last = e.candles[e.candles.length - 1];
+    if (!last) return;
+    const xl = ts.timeToCoordinate(last.time); if (xl === null) return;
+    const bs = ts.options().barSpacing, cs = D.candle_s;
+    const x0 = xl + ((e.entry_ts_us / 1e6 - last.time) / cs) * bs, x1 = x0 + (c.max_hold_s / cs) * bs;
+    const y = t => series.priceToCoordinate(t * tick);
+    // futuro oculto
+    ctx.save(); ctx.fillStyle = css("--chip"); ctx.globalAlpha = .55; ctx.fillRect(x0, 0, w - x0, h); ctx.restore();
+    ctx.save(); ctx.strokeStyle = css("--line"); ctx.lineWidth = 1; ctx.beginPath();
+    for (let k = -h; k < w; k += 12) { ctx.moveTo(Math.max(x0, k), k < x0 ? h - (x0 - k) : h); ctx.lineTo(k + h, 0); }
+    ctx.rect(x0, 0, w - x0, h); ctx.clip(); ctx.stroke(); ctx.restore();
+    // cajas TP / SL
+    const box = (pa, pb, fill, stroke) => { const ya = y(pa), yb = y(pb); if (ya === null || yb === null) return;
+      ctx.fillStyle = fill; ctx.fillRect(x0, Math.min(ya, yb), x1 - x0, Math.abs(ya - yb));
+      ctx.strokeStyle = stroke; ctx.lineWidth = 1; ctx.strokeRect(x0 + .5, Math.min(ya, yb) + .5, x1 - x0, Math.abs(ya - yb)); };
+    box(g.E, g.tgt, css("--tp-soft"), css("--tp")); box(g.E, g.stop, css("--sl-soft"), css("--sl"));
+    const label = (t, txt, col, dy) => { const yy = y(t); if (yy === null) return; ctx.fillStyle = col; ctx.font = "600 11px Segoe UI";
+      ctx.fillText(txt, x1 + 6, yy + dy); };
+    label(g.tgt, `TP ${g.dtp}t`, css("--tp"), 4); label(g.stop, `SL ${g.dsl}t`, css("--sl"), 4);
+    if (g.be !== null) { const yb = y(g.be); if (yb !== null) { ctx.setLineDash([5, 4]); ctx.strokeStyle = css("--be"); ctx.beginPath(); ctx.moveTo(x0, yb); ctx.lineTo(x1, yb); ctx.stroke(); ctx.setLineDash([]); label(g.be, "BE", css("--be"), 4); } }
+    // entrada
+    const ye = y(g.E); if (ye !== null) { ctx.fillStyle = css("--ink"); ctx.beginPath(); const d = e.side === "SHORT" ? -1 : 1;
+      ctx.moveTo(x0, ye); ctx.lineTo(x0 - 9, ye + 6 * d); ctx.lineTo(x0 - 9, ye - 6 * d); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = css("--ink"); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x0, 0); ctx.lineTo(x0, h); ctx.stroke(); }
+    ctx.fillStyle = css("--muted"); ctx.font = "600 11px Segoe UI"; ctx.fillText("futuro oculto (ciego) · ancho = tiempo máximo", x0 + 8, 16);
+    // ventana de la absorción
+    const xa = ts.timeToCoordinate(Math.floor(e.window_start_ts_us / 1e6 / cs) * cs);
+    if (xa !== null) { ctx.fillStyle = css("--lvl"); ctx.globalAlpha = .14; ctx.fillRect(xa, 0, Math.max(3, x0 - xa - (D.latency_ms / 1000 / cs) * bs), h); ctx.globalAlpha = 1; }
+    ctx.restore();
+  }
+
+  function render(fit) {
+    const e = ex[cur], c = combos[+slider.value], g = geom(e, c);
+    document.querySelectorAll(".ex").forEach((n, i) => n.classList.toggle("on", i === cur));
+    series.setData(e.candles.map(k => ({time: k.time, open: k.open * tick, high: k.high * tick, low: k.low * tick, close: k.close * tick})));
+    // la escala de precios incluye siempre stop, target y break-even (si no, una combinacion grande quedaria afuera)
+    const lvls = [g.stop, g.tgt, g.E, g.L].concat(g.be === null ? [] : [g.be]);
+    const lo = Math.min(...lvls, ...e.candles.map(k => k.low)) - 1, hi = Math.max(...lvls, ...e.candles.map(k => k.high)) + 1;
+    series.applyOptions({autoscaleInfoProvider: () => ({priceRange: {minValue: lo * tick, maxValue: hi * tick}})});
+    lines.forEach(l => series.removePriceLine(l));
+    lines = [series.createPriceLine({price: g.L * tick, color: css("--lvl"), lineWidth: 2, lineStyle: 0, axisLabelVisible: true, title: "nivel absorbido"})];
+    if (fit) chart.timeScale().fitContent();
+    const fmt = dimsDef.map(([k, , f]) => f(c[k]));
+    $("comboLabel").textContent = `SL ${fmt[0]} · TP ${fmt[1]} · BE ${fmt[2]} · ${fmt[3]}`;
+    $("comboIdx").textContent = `combinación ${+slider.value + 1} de ${combos.length}`;
+    document.querySelectorAll(".chip").forEach(b => b.classList.toggle("on", JSON.stringify(c[b.dataset.k]) === b.dataset.v));
+    // exigencias (sin resultados): hit-rate necesario = (SL + costo) / (SL + TP)
+    const dsl = ex.map(x => geom(x, c).dsl), mdsl = med(dsl);
+    const pNeed = (mdsl + cost) / (mdsl + c.target_ticks_from_entry), pThis = (g.dsl + cost) / (g.dsl + g.dtp);
+    const usd = t => "US$ " + (t * S.tick_value_usd).toFixed(0);
+    $("need").innerHTML = `<span class="k">Acierto necesario (mediana)</span><span class="big">${(pNeed * 100).toFixed(0)}%</span>
+      <span class="k">… en este ejemplo</span><span>${(pThis * 100).toFixed(0)}%</span>
+      <span class="k">Stop medio (entrada→stop)</span><span>${mdsl}t · ${usd(mdsl)}</span>
+      <span class="k">Target</span><span>${c.target_ticks_from_entry}t · ${usd(c.target_ticks_from_entry)}</span>
+      <span class="k">Costo por operación</span><span>${cost.toFixed(2)}t · ${usd(cost)}</span>
+      <span class="k">Relación target / stop</span><span>${(c.target_ticks_from_entry / mdsl).toFixed(2)}R</span>`;
+    const flags = [];
+    if (c.target_ticks_from_entry <= cost * 1.5) flags.push(`El target (${c.target_ticks_from_entry}t) es menos de 1,5× el costo (${cost.toFixed(2)}t): el costo se come casi todo.`);
+    if (mdsl <= D.summary.median_range60_ticks) flags.push(`El stop medio (${mdsl}t) no supera el rango típico de 60 s (${D.summary.median_range60_ticks}t): puede saltar por ruido.`);
+    const ov = D.summary.overlap_fraction_by_hold[String(c.max_hold_s)];
+    if (ov > .25) flags.push(`${(ov * 100).toFixed(0)}% de los eventos caen dentro de una posición abierta y se saltean (una posición a la vez).`);
+    $("flags").innerHTML = flags.length ? flags.map(f => `<div class="flag">${f}</div>`).join("") : `<div class="okline">Sin alertas geométricas para esta combinación.</div>`;
+    $("cap").innerHTML = `<span><b>${e.side}</b> · ${fmtD(e.session)} ${fmtT(e.entry_ts_us)} (ART)</span>
+      <span>nivel <b>${(g.L * tick).toFixed(prec)}</b> · entrada <b>${(g.E * tick).toFixed(prec)}</b> · spread ${e.spread_ticks}t</span>
+      <span>absorbido <b>${Math.round(e.absorbed_volume)}</b> contratos en ${e.trades_in_window} trades (umbral causal ${Math.round(e.threshold)})</span>
+      <span class="legend"><i style="background:var(--tp)"></i>target<i style="background:var(--sl)"></i>stop<i style="background:var(--be)"></i>break-even<i style="background:var(--lvl)"></i>nivel/ventana</span>`;
+    requestAnimationFrame(() => drawOverlay(e, c, g));
+  }
+  const S2 = D.summary, vals = Object.values(S2.events_per_session), mx = Math.max(...vals);
+  $("pop").innerHTML = `<span class="k">Eventos en ${S2.sessions} sesiones</span><span><b>${S2.events_total}</b> (~${Math.round(S2.events_total / S2.sessions)}/día)</span>
+    <span class="k">Superpuestos a 60 s / 300 s</span><span>${Object.values(S2.overlap_fraction_by_hold).map(v => (v * 100).toFixed(0) + "%").join(" / ")}</span>
+    <span class="k">Rango típico 60 s previo</span><span>${S2.median_range60_ticks}t</span>
+    <span class="k">Spread mediano</span><span>${S2.median_spread_ticks}t</span>
+    <span class="k">Muestra mostrada</span><span>${ex.length} (estratificada, semilla ${S.sample.seed})</span>`;
+  $("bars").innerHTML = vals.map(v => `<div style="height:${Math.max(4, 46 * v / mx)}px" title="${v}"></div>`).join("");
+  slider.addEventListener("input", () => render());
+  chart.timeScale().subscribeVisibleLogicalRangeChange(() => render());
+  new ResizeObserver(() => { chart.applyOptions({width: $("chart").clientWidth, height: $("chart").clientHeight}); render(); }).observe($("chartwrap"));
+  addEventListener("keydown", ev => {
+    if (ev.key === "ArrowDown") { cur = Math.min(ex.length - 1, cur + 1); render(true); ev.preventDefault(); }
+    if (ev.key === "ArrowUp") { cur = Math.max(0, cur - 1); render(true); ev.preventDefault(); }
+    if (ev.key === "ArrowRight") { slider.value = Math.min(combos.length - 1, +slider.value + 1); render(); ev.preventDefault(); }
+    if (ev.key === "ArrowLeft") { slider.value = Math.max(0, +slider.value - 1); render(); ev.preventDefault(); }
+  });
+  render(true);
+})();
+</script>
+</body>
+</html>

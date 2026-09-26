@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>EdgeLab · Visor Paridad Exacta NT8 — BigTrap2Absorption</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="lightweight-charts.standalone.production.js"></script>
+<script src="gc_multi_res_data.js"></script>
+<script src="trazas.js"></script>
+<style>
+  :root{
+    --bg:#ffffff; --surface:#f6f8fa; --surface2:#eaeef2; --surface3:#d0d7de;
+    --border:#d0d7de; --border2:#afb8c1;
+    --text:#1f2328; --dim:#656d76; --dim2:#8c959f;
+    --accent:#0969da; --accent-dim:#ddf4ff;
+    --ok:#1a7f37; --info:#0969da; --warn:#9a6700; --err:#cf222e; --cyan:#0598bc;
+    --teal:#008080; --red:#ef5350;
+    --s1:4px; --s2:8px; --s3:12px; --s4:16px; --r:6px; --rs:4px;
+    --mono:ui-monospace,"Cascadia Code",Consolas,monospace;
+    --font:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  
+  body.theme-dark {
+    --bg:#0b0e14; --surface:#11151d; --surface2:#161b25; --surface3:#1c2230;
+    --border:#232a37; --border2:#2d3547;
+    --text:#e6edf3; --dim:#8b95a5; --dim2:#5c6675;
+    --accent:#3b82f6; --accent-dim:#1e3a5f;
+    --ok:#3fb950; --info:#58a6ff; --warn:#d9a441; --err:#f0616d; --cyan:#40c4c4;
+    color-scheme: dark;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{height:100%;margin:0;}
+  body{background:var(--bg);color:var(--text);font:13px/1.45 var(--font);
+    display:grid;grid-template-rows:46px 1fr;overflow:hidden;}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums;}
+  button{font:inherit;color:var(--text);background:var(--surface2);border:1px solid var(--border2);
+    border-radius:var(--rs);padding:4px 9px;cursor:pointer;}
+  button:hover{border-color:var(--accent);}
+  ::-webkit-scrollbar{width:8px;height:8px;} ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+
+  header{display:flex;align-items:center;gap:var(--s3);padding:0 var(--s3);
+    background:var(--surface);border-bottom:1px solid var(--border);}
+  .marca{font-weight:700;display:flex;align-items:center;gap:8px;}
+  .badge{font-size:11px;padding:2px 8px;border-radius:12px;background:var(--accent-dim);color:var(--info);border:1px solid var(--accent);font-weight:600;}
+  .badge-pass{background:#dafbe1;color:#1a7f37;border:1px solid #4ac26b;}
+  body.theme-dark .badge-pass{background:#1e4620;color:var(--ok);border:1px solid #2ea043;}
+
+  .tabs{display:flex;gap:3px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rs);padding:2px;}
+  .tabs button{background:transparent;border:none;padding:3px 10px;border-radius:3px;color:var(--dim);font-weight:600;}
+  .tabs button.on{background:var(--bg);color:var(--text);border:1px solid var(--border2);box-shadow:0 1px 2px rgba(0,0,0,.05);}
+  body.theme-dark .tabs button.on{background:var(--accent-dim);color:var(--text);border:1px solid var(--accent);}
+
+  .vista{display:none;min-height:0;height:100%;}
+  .vista.on{display:grid;}
+
+  /* VISTA GRAFICO */
+  #vistaGrafico{grid-template-rows:40px 1fr;height:100%;}
+  .barra-tool{display:flex;align-items:center;gap:var(--s2);padding:0 var(--s3);background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap;}
+  .grupo{display:flex;align-items:center;gap:3px;}
+  .grupo>span{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.05em;margin-right:2px;font-weight:600;}
+  .grupo button{padding:3px 8px;font-size:12px;font-family:var(--mono);}
+  .grupo button.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700;}
+  .sep{width:1px;height:16px;background:var(--border2);}
+
+  .main-chart-grid{display:grid;grid-template-columns:1fr 360px;min-height:0;height:100%;position:relative;}
+  #chartContainer{position:relative;width:100%;height:100%;min-height:0;overflow:hidden;}
+  #chartCanvas{position:absolute;top:0;left:0;right:0;bottom:0;}
+  #sharpDxOverlay{position:absolute;top:0;left:0;pointer-events:none;z-index:3;}
+
+  /* Tooltip Hover */
+  #chartTooltip{position:absolute;display:none;background:rgba(22,27,37,0.92);color:#fff;border:1px solid var(--accent);padding:6px 10px;border-radius:4px;font-size:11px;font-family:var(--mono);pointer-events:none;z-index:10;box-shadow:0 4px 12px rgba(0,0,0,0.3);}
+
+  /* Switch Master Indicador */
+  .switch-container{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;}
+  .toggle-switch{position:relative;display:inline-block;width:32px;height:17px;}
+  .toggle-switch input{opacity:0;width:0;height:0;}
+  .slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:var(--surface3);transition:.2s;border-radius:17px;border:1px solid var(--border2);}
+  .slider:before{position:absolute;content:"";height:11px;width:11px;left:2px;bottom:2px;background-color:#fff;transition:.2s;border-radius:50%;}
+  input:checked + .slider{background-color:var(--accent);border-color:var(--accent);}
+  input:checked + .slider:before{transform:translateX(15px);}
+
+  /* Panel Lateral Derecho NT8 */
+  #sidePanel{background:var(--surface);border-left:1px solid var(--border);display:grid;grid-template-rows:auto 1fr auto;min-height:0;height:100%;}
+  .side-header{padding:8px 12px;background:var(--surface2);border-bottom:1px solid var(--border);font-weight:700;display:flex;justify-content:space-between;align-items:center;}
+  .side-tabs{display:flex;border-bottom:1px solid var(--border);background:var(--surface);}
+  .side-tabs button{flex:1;border-radius:0;border:none;border-bottom:2px solid transparent;background:transparent;padding:7px 0;font-size:12px;color:var(--dim);}
+  .side-tabs button.on{color:var(--text);border-bottom-color:var(--accent);font-weight:700;background:var(--surface2);}
+  
+  .side-content{overflow-y:auto;padding:10px 12px;min-height:0;}
+  
+  .form-group{margin-bottom:8px;display:grid;grid-template-columns:1fr 100px;gap:6px;align-items:center;}
+  .form-group label{color:var(--dim);font-size:11px;font-family:var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .form-group input[type=number], .form-group select{background:var(--bg);border:1px solid var(--border2);color:var(--text);border-radius:3px;padding:3px 5px;font-size:11px;font-family:var(--mono);width:100%;}
+  .form-group input[type=checkbox]{justify-self:start;}
+  
+  .form-actions{padding:8px 12px;background:var(--surface2);border-top:1px solid var(--border);display:flex;gap:6px;}
+  .btn-primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600;flex:1;}
+  .btn-secondary{background:var(--surface3);color:var(--dim);border-color:var(--border2);}
+
+  /* Tabla Zonas */
+  table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11px;}
+  th{position:sticky;top:0;background:var(--surface2);color:var(--dim);text-align:left;padding:5px 6px;border-bottom:1px solid var(--border2);font-weight:600;}
+  td{padding:4px 6px;border-bottom:1px solid var(--border);}
+  tr.z-row:hover td{background:var(--surface2);cursor:pointer;}
+  tr.z-row.selected td{background:var(--accent-dim) !important;font-weight:700;}
+  .tag-bull{color:#008080;font-weight:700;}
+  .tag-bear{color:#ef5350;font-weight:700;}
+</style>
+</head>
+<body class="theme-light">
+
+<header>
+  <div class="marca">
+    <span>NinjaTrader 8 & EdgeLab</span> · Visor Paridad
+    <span class="badge">GC 12-26</span>
+    <span class="badge badge-pass">NT8 Fill-Anchored</span>
+  </div>
+  <div class="tabs" style="margin-left:auto;">
+    <button id="themeBtn" onclick="toggleTheme()">🌙 Modo Oscuro</button>
+  </div>
+</header>
+
+<!-- 1. VISTA GRAFICO -->
+<div id="vistaGrafico" class="vista on">
+  <div class="barra-tool">
+    <div class="grupo">
+      <span>Tiempo:</span>
+      <button data-res="M1" onclick="setResolution('M1')">M1 (1m)</button>
+    </div>
+    <div class="sep"></div>
+    <div class="grupo">
+      <span>Tickframes:</span>
+      <button class="on" data-res="2t" onclick="setResolution('2t')">2 ticks</button>
+      <button data-res="5t" onclick="setResolution('5t')">5 ticks</button>
+      <button data-res="10t" onclick="setResolution('10t')">10 ticks</button>
+      <button data-res="25t" onclick="setResolution('25t')">25 ticks</button>
+      <button data-res="150t" onclick="setResolution('150t')">150 ticks</button>
+    </div>
+    <div class="sep"></div>
+    <div class="switch-container">
+      <span>BigTrap2Absorption:</span>
+      <label class="toggle-switch">
+        <input type="checkbox" id="toggleIndicator" checked onchange="toggleIndicatorDisplay()">
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div style="margin-left:auto; display:flex; gap:10px; font-size:11px; color:var(--dim);">
+      <span>Zonas Activas: <b id="statZones" style="color:var(--text)">599</b></span>
+      <span>Anclaje: <b style="color:var(--ok)">Precio de Fill Exacto</b></span>
+    </div>
+  </div>
+
+  <div class="main-chart-grid">
+    <div id="chartContainer">
+      <div id="chartCanvas"></div>
+      <canvas id="sharpDxOverlay"></canvas>
+      <div id="chartTooltip"></div>
+    </div>
+
+    <!-- Panel Lateral NT8 -->
+    <div id="sidePanel">
+      <div class="side-header">
+        <span>BigTrap2Absorption</span>
+        <span style="font-size:11px; color:var(--dim);">v1.1.1</span>
+      </div>
+      <div class="side-tabs">
+        <button id="tabBtnParams" class="on" onclick="setSideTab('params')">⚙️ Parámetros NT8</button>
+        <button id="tabBtnZones" onclick="setSideTab('zones')">📋 Zonas (<span id="tabZoneCount">599</span>)</button>
+      </div>
+
+      <!-- Tab Contenido: Parámetros NT8 -->
+      <div id="sideTabParams" class="side-content">
+        <div class="form-group"><label title="TapeWindowTicks">Tape Window Ticks</label><input type="number" id="p_TapeWindowTicks" value="25" min="2" max="1000"></div>
+        <div class="form-group"><label title="AbsorptionPct">Absorption Pct (%)</label><input type="number" id="p_AbsorptionPct" value="90.0" step="0.5" min="0" max="100"></div>
+        <div class="form-group"><label title="AbsorptionLookback">Absorption Lookback</label><input type="number" id="p_AbsorptionLookback" value="500" min="10" max="5000"></div>
+        <div class="form-group"><label title="MinHistoryBuckets">Min History Buckets</label><input type="number" id="p_MinHistoryBuckets" value="200" min="1" max="2000"></div>
+        <div class="form-group">
+          <label title="ScoreMode">Score Mode</label>
+          <select id="p_ScoreMode">
+            <option value="AbsDirectional" selected>AbsDirectional</option>
+            <option value="AbsMagnitude">AbsMagnitude</option>
+          </select>
+        </div>
+        <div class="form-group"><label title="RequireFlowSideMatch">Require Flow Side Match</label><input type="checkbox" id="p_RequireFlowSideMatch" checked></div>
+        <div class="form-group">
+          <label title="ImbalanceMode">Imbalance Mode</label>
+          <select id="p_ImbalanceMode">
+            <option value="Diagonal" selected>Diagonal</option>
+            <option value="SameLevel">SameLevel</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label title="TrapVolumeSource">Trap Volume Source</label>
+          <select id="p_TrapVolumeSource">
+            <option value="AggressiveSide" selected>AggressiveSide</option>
+            <option value="TotalLevel">TotalLevel</option>
+          </select>
+        </div>
+        <div class="form-group"><label title="TicksPerRow">Ticks Per Row</label><input type="number" id="p_TicksPerRow" value="1" min="1" max="20"></div>
+        <div class="form-group"><label title="ImbalanceRatio">Imbalance Ratio</label><input type="number" id="p_ImbalanceRatio" value="3.0" step="0.1" min="1" max="20"></div>
+        <div class="form-group"><label title="MinStackedRows">Min Stacked Rows</label><input type="number" id="p_MinStackedRows" value="2" min="1" max="20"></div>
+        <div class="form-group"><label title="MinTrapFrac">Min Trap Frac (0-1)</label><input type="number" id="p_MinTrapFrac" value="0.20" step="0.05" min="0" max="1"></div>
+        <div class="form-group"><label title="UseWickFilter">Use Wick Filter</label><input type="checkbox" id="p_UseWickFilter" checked></div>
+        <div class="form-group"><label title="WickZonePct">Wick Zone Pct (%)</label><input type="number" id="p_WickZonePct" value="30.0" step="1" min="0" max="50"></div>
+        <div class="form-group"><label title="DrawZoneBand">Draw Zone Band</label><input type="checkbox" id="p_DrawZoneBand" checked onchange="drawOverlay()"></div>
+        <div class="form-group">
+          <label title="InvalidationMode">Invalidation Mode</label>
+          <select id="p_InvalidationMode">
+            <option value="CloseThrough" selected>CloseThrough</option>
+            <option value="FirstTouch">FirstTouch</option>
+            <option value="None">None</option>
+          </select>
+        </div>
+        <div class="form-group"><label title="MaxAgeBars">Max Age Bars</label><input type="number" id="p_MaxAgeBars" value="2000" min="0" max="20000"></div>
+      </div>
+
+      <!-- Tab Contenido: Lista de Zonas -->
+      <div id="sideTabZones" class="side-content" style="display:none; padding:0;">
+        <table id="zoneTable">
+          <thead>
+            <tr>
+              <th>Hora</th>
+              <th>Tipo</th>
+              <th>Zona (Lo - Hi)</th>
+              <th>Fill Px</th>
+              <th>Vol (Frac)</th>
+            </tr>
+          </thead>
+          <tbody id="zoneTableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-primary" onclick="applyParamsAndRecalc()">⚡ Aplicar y Recalcular</button>
+        <button class="btn-secondary" onclick="resetDefaults()">Restablecer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let chart = null, candleSeries = null;
+let currentRes = "2t";
+let indicatorEnabled = true;
+let isDarkTheme = false;
+let currentZones = [];
+let overlayCanvas = null, overlayCtx = null;
+
+function toggleTheme() {
+  isDarkTheme = !isDarkTheme;
+  document.body.className = isDarkTheme ? "theme-dark" : "theme-light";
+  document.getElementById("themeBtn").innerText = isDarkTheme ? "☀️ Modo Claro (NT8)" : "🌙 Modo Oscuro";
+  
+  if (chart) {
+    chart.applyOptions({
+      layout: {
+        backgroundColor: isDarkTheme ? '#0b0e14' : '#ffffff',
+        textColor: isDarkTheme ? '#8b95a5' : '#1f2328',
+      },
+      grid: {
+        vertLines: { color: isDarkTheme ? '#161b25' : '#f0f2f5' },
+        horzLines: { color: isDarkTheme ? '#161b25' : '#f0f2f5' },
+      },
+      priceScale: { borderColor: isDarkTheme ? '#232a37' : '#d0d7de' },
+      timeScale: { borderColor: isDarkTheme ? '#232a37' : '#d0d7de' },
+    });
+  }
+  drawOverlay();
+}
+
+function initChart() {
+  const cont = document.getElementById("chartCanvas");
+  const parent = document.getElementById("chartContainer");
+  overlayCanvas = document.getElementById("sharpDxOverlay");
+  overlayCtx = overlayCanvas.getContext("2d");
+
+  const w = parent.clientWidth || 900;
+  const h = parent.clientHeight || 600;
+
+  chart = LightweightCharts.createChart(cont, {
+    width: w,
+    height: h,
+    layout: {
+      backgroundColor: '#ffffff',
+      textColor: '#1f2328',
+      fontSize: 12,
+      fontFamily: 'ui-monospace, Consolas, monospace'
+    },
+    grid: {
+      vertLines: { color: '#f0f2f5' },
+      horzLines: { color: '#f0f2f5' },
+    },
+    crosshair: { mode: LightweightCharts.CrosshairMode.Normal },
+    priceScale: { borderColor: '#d0d7de', scaleMargins: { top: 0.1, bottom: 0.1 } },
+    timeScale: { borderColor: '#d0d7de', timeVisible: true, secondsVisible: true },
+  });
+
+  candleSeries = chart.addCandlestickSeries({
+    upColor: '#26a69a',
+    downColor: '#ef5350',
+    borderVisible: true,
+    borderUpColor: '#26a69a',
+    borderDownColor: '#ef5350',
+    wickUpColor: '#26a69a',
+    wickDownColor: '#ef5350',
+  });
+
+  if (window.GC_DATA && window.GC_DATA.zones) {
+    currentZones = window.GC_DATA.zones;
+  }
+
+  setResolution("2t");
+  renderZoneTable();
+
+  // Sync overlay with chart viewport
+  chart.timeScale().subscribeVisibleTimeRangeChange(drawOverlay);
+  chart.timeScale().subscribeVisibleLogicalRangeChange(drawOverlay);
+
+  window.addEventListener("resize", syncSize);
+  syncSize();
+
+  cont.addEventListener("mousemove", onChartMouseMove);
+  
+  // High-frequency render loop for smooth drag & zoom
+  function loop() {
+    drawOverlay();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+}
+
+function syncSize() {
+  const parent = document.getElementById("chartContainer");
+  if (!parent || !chart || !overlayCanvas) return;
+  const w = parent.clientWidth;
+  const h = parent.clientHeight;
+  chart.applyOptions({ width: w, height: h });
+  overlayCanvas.width = w;
+  overlayCanvas.height = h;
+  drawOverlay();
+}
+
+function setResolution(res) {
+  currentRes = res;
+  document.querySelectorAll("[data-res]").forEach(btn => btn.classList.toggle("on", btn.dataset.res === res));
+  
+  if (!window.GC_DATA || !window.GC_DATA.resolutions || !window.GC_DATA.resolutions[res]) return;
+  const candles = window.GC_DATA.resolutions[res];
+  
+  candleSeries.setData(candles);
+  candleSeries.setMarkers([]); // Markers drawn on exact fill coordinates by overlay!
+  
+  // Focus on the active zone cluster
+  if (candles.length > 0) {
+    const endIdx = candles.length - 1;
+    const startIdx = Math.max(0, endIdx - 400);
+    chart.timeScale().setVisibleRange({
+      from: candles[startIdx].time,
+      to: candles[endIdx].time
+    });
+  }
+  setTimeout(drawOverlay, 50);
+}
+
+function findNearestCandleTime(candles, targetTime) {
+  let low = 0, high = candles.length - 1;
+  while (low <= high) {
+    let mid = (low + high) >> 1;
+    if (candles[mid].time === targetTime) return candles[mid].time;
+    if (candles[mid].time < targetTime) low = mid + 1;
+    else high = mid - 1;
+  }
+  let best = candles[0].time;
+  let minDiff = Infinity;
+  for (let i = Math.max(0, high - 1); i <= Math.min(candles.length - 1, low + 1); i++) {
+    let diff = Math.abs(candles[i].time - targetTime);
+    if (diff < minDiff) {
+      minDiff = diff;
+      best = candles[i].time;
+    }
+  }
+  return best;
+}
+
+// -------------------------------------------------------------
+// EXACT NT8 SHARPDX RENDERER AT FILL PRICE (NO CANDLE EXTREMES)
+// -------------------------------------------------------------
+function drawOverlay() {
+  if (!overlayCtx || !chart || !candleSeries || !overlayCanvas) return;
+  const w = overlayCanvas.width;
+  const h = overlayCanvas.height;
+  overlayCtx.clearRect(0, 0, w, h);
+
+  if (!indicatorEnabled || !currentZones || currentZones.length === 0) return;
+
+  const candles = window.GC_DATA.resolutions[currentRes];
+  if (!candles || candles.length === 0) return;
+
+  const timeScale = chart.timeScale();
+  const visibleRange = timeScale.getVisibleRange();
+  if (!visibleRange) return;
+
+  const minT = visibleRange.from;
+  const maxT = visibleRange.to;
+  const drawBand = document.getElementById("p_DrawZoneBand").checked;
+
+  const timeProp = (currentRes === "M1") ? "time_m1" : 
+                   (currentRes === "2t") ? "time_2t" :
+                   (currentRes === "5t") ? "time_5t" :
+                   (currentRes === "10t") ? "time_10t" :
+                   (currentRes === "25t") ? "time_25t" : "time_150t";
+
+  currentZones.forEach(z => {
+    const rawT = z[timeProp] || z.time_25t;
+    if (rawT < minT - 500 || rawT > maxT + 500) return;
+
+    const matchedT = findNearestCandleTime(candles, rawT);
+    const x = timeScale.timeToCoordinate(matchedT);
+    if (x === null || isNaN(x) || x < -20 || x > w + 20) return;
+
+    // EXACT FILL PRICE (NOT CANDLE EXTREMES!)
+    const yFill = candleSeries.priceToCoordinate(z.fill_px);
+    const yLo = candleSeries.priceToCoordinate(z.lo);
+    const yHi = candleSeries.priceToCoordinate(z.hi);
+
+    if (yFill === null || isNaN(yFill)) return;
+
+    const isBull = (z.side === "trapped_buyers");
+    const color = isBull ? '#008080' : '#ef5350';
+
+    // 1. Zone Vertical Band [ZoneLo, ZoneHi] (NT8 SharpDX DrawLine)
+    if (drawBand && yLo !== null && yHi !== null) {
+      overlayCtx.lineWidth = 1.5;
+      overlayCtx.strokeStyle = color;
+      overlayCtx.beginPath();
+      overlayCtx.moveTo(x - 6, yLo);
+      overlayCtx.lineTo(x - 6, yHi);
+      overlayCtx.stroke();
+    }
+
+    // 2. Exact Fill Dot (NT8 SharpDX FillEllipse at FillPrice)
+    overlayCtx.fillStyle = color;
+    overlayCtx.beginPath();
+    overlayCtx.arc(x, yFill, 5.5, 0, 2 * Math.PI);
+    overlayCtx.fill();
+
+    overlayCtx.lineWidth = 1;
+    overlayCtx.strokeStyle = isDarkTheme ? '#ffffff' : '#000000';
+    overlayCtx.stroke();
+  });
+}
+
+function onChartMouseMove(e) {
+  const tooltip = document.getElementById("chartTooltip");
+  const rect = overlayCanvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+
+  let found = null;
+  const timeScale = chart.timeScale();
+  const candles = window.GC_DATA.resolutions[currentRes];
+  if (!candles) return;
+
+  const timeProp = (currentRes === "M1") ? "time_m1" : 
+                   (currentRes === "2t") ? "time_2t" :
+                   (currentRes === "5t") ? "time_5t" :
+                   (currentRes === "10t") ? "time_10t" :
+                   (currentRes === "25t") ? "time_25t" : "time_150t";
+
+  if (indicatorEnabled && currentZones) {
+    for (let i = 0; i < currentZones.length; i++) {
+      const z = currentZones[i];
+      const rawT = z[timeProp] || z.time_25t;
+      const matchedT = findNearestCandleTime(candles, rawT);
+      const x = timeScale.timeToCoordinate(matchedT);
+      const y = candleSeries.priceToCoordinate(z.fill_px);
+
+      if (x !== null && y !== null) {
+        const dist = Math.hypot(mx - x, my - y);
+        if (dist <= 10) {
+          found = z;
+          break;
+        }
+      }
+    }
+  }
+
+  if (found) {
+    tooltip.style.display = "block";
+    tooltip.style.left = (mx + 15) + "px";
+    tooltip.style.top = (my - 15) + "px";
+    const isBull = (found.side === "trapped_buyers");
+    tooltip.innerHTML = `
+      <b style="color:${isBull ? '#00e676' : '#ff5252'}">${isBull ? 'TRAPPED BUYERS (Short Signal)' : 'TRAPPED SELLERS (Long Signal)'}</b><br>
+      Fill Price: <b>${found.fill_px.toFixed(1)}</b><br>
+      Zona: <b>${found.lo.toFixed(1)} - ${found.hi.toFixed(1)}</b><br>
+      A-Score: <b>${found.a_score.toFixed(1)}</b> (Umbral: ${found.a_thr.toFixed(1)})<br>
+      Volumen Trap: <b>${found.vol}</b> (${(found.frac*100).toFixed(0)}% de barra)<br>
+      Hora: <b>${found.time_str}</b>
+    `;
+  } else {
+    tooltip.style.display = "none";
+  }
+}
+
+function toggleIndicatorDisplay() {
+  indicatorEnabled = document.getElementById("toggleIndicator").checked;
+  drawOverlay();
+}
+
+function setSideTab(tab) {
+  document.getElementById("tabBtnParams").classList.toggle("on", tab === "params");
+  document.getElementById("tabBtnZones").classList.toggle("on", tab === "zones");
+  document.getElementById("sideTabParams").style.display = tab === "params" ? "block" : "none";
+  document.getElementById("sideTabZones").style.display = tab === "zones" ? "block" : "none";
+}
+
+function renderZoneTable() {
+  if (!currentZones) return;
+  const tbody = document.getElementById("zoneTableBody");
+  tbody.innerHTML = "";
+  
+  currentZones.forEach(z => {
+    const tr = document.createElement("tr");
+    tr.className = "z-row";
+    const isBull = (z.side === "trapped_buyers");
+    const tFormatted = z.time_str ? z.time_str.split(" ")[1].substring(0,8) : "";
+    
+    tr.innerHTML = `
+      <td>${tFormatted}</td>
+      <td class="${isBull ? 'tag-bull' : 'tag-bear'}">${isBull ? 'BUY TRAP' : 'SELL TRAP'}</td>
+      <td><b>${z.lo.toFixed(1)}</b> - <b>${z.hi.toFixed(1)}</b></td>
+      <td><b>${z.fill_px.toFixed(1)}</b></td>
+      <td>${z.vol} (${(z.frac*100).toFixed(0)}%)</td>
+    `;
+
+    tr.onclick = () => {
+      document.querySelectorAll("tr.z-row").forEach(r => r.classList.remove("selected"));
+      tr.classList.add("selected");
+      const candles = window.GC_DATA.resolutions[currentRes];
+      const timeProp = (currentRes === "M1") ? "time_m1" : 
+                       (currentRes === "2t") ? "time_2t" :
+                       (currentRes === "5t") ? "time_5t" :
+                       (currentRes === "10t") ? "time_10t" :
+                       (currentRes === "25t") ? "time_25t" : "time_150t";
+      const rawT = z[timeProp] || z.time_25t;
+      const t = findNearestCandleTime(candles, rawT);
+      chart.timeScale().setVisibleRange({
+        from: t - 200,
+        to: t + 200
+      });
+    };
+
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById("statZones").innerText = currentZones.length;
+  document.getElementById("tabZoneCount").innerText = currentZones.length;
+}
+
+function applyParamsAndRecalc() {
+  const minFrac = parseFloat(document.getElementById("p_MinTrapFrac").value);
+  const minRows = parseInt(document.getElementById("p_MinStackedRows").value);
+  
+  if (window.GC_DATA && window.GC_DATA.zones) {
+    currentZones = window.GC_DATA.zones.filter(z => {
+      return (z.frac >= minFrac) && (z.rows >= minRows);
+    });
+    
+    document.getElementById("statZones").innerText = currentZones.length;
+    document.getElementById("tabZoneCount").innerText = currentZones.length;
+    
+    drawOverlay();
+    renderZoneTable();
+  }
+}
+
+function resetDefaults() {
+  if (!window.GC_DATA || !window.GC_DATA.nt8_defaults) return;
+  const d = window.GC_DATA.nt8_defaults;
+  Object.keys(d).forEach(k => {
+    const el = document.getElementById("p_" + k);
+    if (el) {
+      if (el.type === "checkbox") el.checked = d[k];
+      else el.value = d[k];
+    }
+  });
+  applyParamsAndRecalc();
+}
+
+window.addEventListener("load", () => {
+  setTimeout(initChart, 50);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+{
+  "schema_version": "bigtrap2_f29_bar_classifier_v0",
+  "status": "PREREGISTERED_NOT_RUN",
+  "date": "2026-08-13",
+  "campaign": "F2.9",
+  "title": "BigTrap2 as a creator-bar classifier, not a magnetic zone",
+  "inherits": {
+    "f27": "specs/bigtrap2_local_reflection_null_v2.json",
+    "f28": "specs/bigtrap2_f28_distance_coverage_v0.json",
+    "kernel_frozen": true,
+    "same_201_sessions": true,
+    "same_canonical_parquets": true,
+    "same_r_i": true
+  },
+  "why_this_and_not_far_zones": {
+    "f28_reported": {
+      "delta_global": 0.0482,
+      "delta_d_ge_6": 0.0768,
+      "delta_control_global": 0.0405,
+      "delta_control_d_ge_6": 0.0643,
+      "contrast_global_ci95": [-0.0170, 0.0322],
+      "contrast_d_ge_6_ci95": [-0.0378, 0.0628]
+    },
+    "audit": "OPEN_FAR_ZONE_FAMILY does not fire: tail contrast ci95_lower is not > 0. The tail itself is also present on non-trap bars with the same (d,w,side). The valid label is OPEN_BAR_CLASSIFIER.",
+    "object": "the creator bar and the geometry it licenses, not the kernel zone as a magnet"
+  },
+  "purpose": {
+    "not_only_falsification": true,
+    "also_discovery": true,
+    "statement": "If BigTrap2 is a detector of a bar regime, F2.9 asks which cheaper description recovers the race, whether the kernel zone still adds a residual, and whether the mark persists to neighboring bars. That residual, if any, is the only honest input to a later aVol combination."
+  },
+  "kernel_facts_used_as_priors_not_as_results": {
+    "trapped_buyers": "aggressive ask rows ABOVE close, in the upper wick_zone_pct of the bar, ratio>=3, vol>=30",
+    "trapped_sellers": "aggressive bid rows BELOW close, in the lower wick_zone_pct of the bar",
+    "creator_bar_never_touches_own_zone": true,
+    "simple_rules_are_ohlc_volume_only": "Do not put footprint imbalance into the simple rules. That would restate the kernel. Footprint is a separate ladder rung."
+  },
+  "population": {
+    "research_end_inclusive": "2026-06-30",
+    "session_count_required": 201,
+    "bar_spec": "time:1",
+    "include_r_i_zeros_in_session_mean": true,
+    "holdout_forbidden": true,
+    "outcomes_accessed": false,
+    "pnl_accessed": false
+  },
+  "canonical_probe": {
+    "id": "P_mode",
+    "d_ticks": 2,
+    "width_ticks_inclusive": 1,
+    "side_rule": "upper_wick >= lower_wick => bull probe above close; else bear probe below close",
+    "bull_interval": "[close+d, close+d+width-1]",
+    "bear_interval": "[close-d-width+1, close-d]",
+    "why": "Mode of F2.7/F2.8 distance is 2; median width is 1. The probe must be computable on EVERY bar, including non-creators. Do not reuse the kernel zone interval as the only probe: that cannot be placed on non-creators without matching."
+  },
+  "families": {
+    "A_bar_portrait": {
+      "question": "What observable marks a creator bar before any race is computed?",
+      "unit": "bar",
+      "features_predeclared": [
+        "range_ticks",
+        "body_ticks",
+        "upper_wick_frac",
+        "lower_wick_frac",
+        "close_loc = (close-low)/max(range,1)",
+        "log_volume",
+        "volume_session_rank"
+      ],
+      "contrast": "creator vs non-creator, session-equal-weight mean difference, HAC",
+      "no_race": true,
+      "no_feature_fishing": true
+    },
+    "B_canonical_probe_ladder": {
+      "question": "On the same P_mode probe, who has the race?",
+      "rungs_in_order": [
+        {"id": "K0", "selects": "bars that actually created a BigTrap2 zone"},
+        {"id": "S0", "selects": "OHLC only: range_ticks>=3 and max(upper_wick_frac,lower_wick_frac)>=0.30"},
+        {"id": "S1", "selects": "S0 and volume >= session median"},
+        {"id": "S2", "selects": "S1 and close_loc not in (0.40, 0.60)"},
+        {"id": "N0", "selects": "non-creator bars matched to a K0 bar on session, range quintile, close_loc quintile, volume quintile; nearest in time"}
+      ],
+      "note": "S0 wick 30% and range>=3 are read from the kernel wick filter and from d=2+width=1, not from F2.9 peeking.",
+      "estimand": "session-equal-weight mean of r_i on P_mode, zeros included, HAC",
+      "required_contrast": "K0 minus N0 paired by session; K0 minus S1 paired by session"
+    },
+    "C_zone_residual": {
+      "question": "After the bar is fixed, does the kernel zone still beat P_mode on that same bar?",
+      "population": "creator bars only",
+      "arms": ["kernel_zone_vs_its_mirror", "P_mode_vs_its_mirror_on_same_bar"],
+      "contrast": "paired per bar, then session mean, HAC",
+      "interpretation": "If this contrast is compatible with zero, the zone geometry is not incremental given the bar. If it is positive, a residual zone object still exists and can later meet aVol."
+    },
+    "D_persistence": {
+      "question": "Is the mark instantaneous or a short regime?",
+      "offsets": [-2, -1, +1, +2],
+      "probe": "P_mode on the neighbor bar",
+      "reference": "P_mode on the creator bar",
+      "interpretation": "If +1/+2 keep the race, the product is a regime window. If only 0 has it, the product is a single-bar stamp."
+    },
+    "E_almost_kernel": {
+      "question": "How much of K0 is just footprint imbalance in the wick, before min_trap_volume?",
+      "rung": "F0 = bars that would emit TRAP (export) even if vol < min_trap_volume",
+      "not_a_parameter_sweep": true,
+      "interpretation": "If F0≈K0, the trap-volume floor is cosmetic. If S1<<F0≈K0, the object is footprint, not OHLC. If K0>F0, multi-row trap geometry still adds something."
+    }
+  },
+  "gates": {
+    "require_201_sessions": true,
+    "resolution_rate_min": 0.30,
+    "technical_ties_max": 0.01,
+    "stratum_min_sessions": 30,
+    "stratum_min_resolved_pairs": 200,
+    "match_rate_min": 0.40,
+    "include_zeros": true,
+    "paired_contrast_not_independent_se": true,
+    "clean_tree": true,
+    "canonical_hashes_only": true
+  },
+  "decision_labels": [
+    "OPEN_SIMPLE_BAR_RULE",
+    "OPEN_FOOTPRINT_OBJECT",
+    "OPEN_ZONE_RESIDUAL",
+    "OPEN_REGIME_WINDOW",
+    "OPEN_SINGLE_BAR_STAMP",
+    "KEEP_BT2_AS_DETECTOR",
+    "CLOSE_BAR_OBJECT",
+    "CONTINUE_AMBIGUOUS"
+  ],
+  "decision_rules": {
+    "OPEN_SIMPLE_BAR_RULE": "S1 has ci95_lower>0 and (K0-S1) paired contrast is compatible with zero, with support gates",
+    "OPEN_FOOTPRINT_OBJECT": "F0 has ci95_lower>0 and S1 is compatible with zero or (F0-S1) ci95_lower>0 while (K0-F0) is compatible with zero",
+    "OPEN_ZONE_RESIDUAL": "family C paired contrast ci95_lower>0 with support",
+    "OPEN_REGIME_WINDOW": "offset +1 or +2 has ci95_lower>0",
+    "OPEN_SINGLE_BAR_STAMP": "K0 or S1 positive and both +1 and +2 compatible with zero",
+    "KEEP_BT2_AS_DETECTOR": "(K0-S1) ci95_lower>0 and (K0-N0) ci95_lower>0: the kernel still selects better than the simple rule and the matched non-creator",
+    "CLOSE_BAR_OBJECT": "no rung has a positive race after gates",
+    "CONTINUE_AMBIGUOUS": "point estimates interesting but underpowered",
+    "multiple_labels_allowed": true,
+    "forbidden_reinterpretation": "Do not relabel OPEN_ZONE_RESIDUAL as far-zone magnetism. Do not open Z2."
+  },
+  "what_this_unlocks": {
+    "if_OPEN_SIMPLE_BAR_RULE": "later aVol can condition on a cheap OHLC stamp, not on BigTrap2 zones",
+    "if_OPEN_FOOTPRINT_OBJECT": "the combinable object is imbalance-in-wick, which is closer to aVol's language",
+    "if_OPEN_ZONE_RESIDUAL": "only then is a BigTrap2 x aVol interaction even eligible",
+    "if_OPEN_REGIME_WINDOW": "timing product: a short window after the stamp, still target-free",
+    "if_KEEP_BT2_AS_DETECTOR": "keep the kernel as the selector; do not replace it with S1"
+  },
+  "forbidden": [
+    "tick:25",
+    "holdout",
+    "returns",
+    "pnl",
+    "trading_direction",
+    "parameter_sweep",
+    "z2_authorization",
+    "far_zone_campaign",
+    "kaggle_joint_bt2_avol",
+    "kernel_modification",
+    "dropping_r_i_zeros",
+    "independent_se_sum_as_primary_contrast"
+  ]
+}

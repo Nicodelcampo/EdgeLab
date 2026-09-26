@@ -1,0 +1,100 @@
+{
+  "schema_version": "bigtrap2_soporte_balance_curve_prereg_v1",
+  "status": "PREREGISTERED_NOT_RUN",
+  "date": "2026-08-12",
+  "author": "auditor",
+  "code_schema_version": "F2.5_curva_soporte_balance_v1",
+  "code_path": "diag/tasa_senales/F2.5_curva_soporte_balance.py",
+  "base_commit": "2374832466c0436d9ccac708800e7e229552f313",
+  "relacion_con_el_nulo_por_distancia": "NO supersede specs/bigtrap2_distance_matched_null_v3.json y no lo modifica. Esta curva es DIAGNOSTICO de matching (soporte, balance, cobertura), no el estimand. El estimand del nulo por distancia sigue definido, congelado y sin ejecutar en v3.",
+  "outcomes_accessed": false,
+  "holdout_opened": false,
+  "estimand_suppressed": true,
+  "endpoint_forbidden": "zone_lifecycle y endpoint_binario no se importan ni se llaman desde este script. La curva no puede producir un efecto ni por accidente.",
+  "motivacion": {
+    "medicion_previa": "F2.4 en 2374832, smoke sobre 6E_09-26_ticks.parquet, 13 sesiones, 988 zonas con covariables finitas, tamano_pool_p50=9, n_sin_pool=0",
+    "valor_esperado_bajo_intercambiabilidad": "con un pool de n candidatos y la fuente excluida del pool, el rango de la fuente entre los n+1 valores es uniforme, asi que P(fuente > max del pool) = 1/(n+1). Con n=9 eso es 0.100 por cola y 0.200 fuera de rango en total. Las fracciones de F2.4 NO se leen contra cero.",
+    "log1p_sigma60_ticks": "frac_fuera_de_rango 0.2126 contra ~0.20 esperado (1.06x). No hay problema de soporte comun: el smd_post de 0.416 es el efecto censo de K=8 sobre un pool de 9.6.",
+    "log1p_bar_volume": "frac_above_max 0.3613 contra ~0.10 esperado (3.6x), frac_below_min 0.0040, pct_p50 0.8889, decil inferior 9 zonas donde se esperan ~99. Distribucion corrida, no cola alta.",
+    "causa_declarada": "BigTrap2 dispara con una condicion de volumen (min_trap_volume=30). Balancear bar_volume mientras el tratamiento esta DEFINIDO por el volumen es condicionar sobre una funcion casi determinista de la asignacion: la positividad falla por construccion del indicador.",
+    "pregunta_de_esta_curva": "el corrimiento en volumen es LOCAL (artefacto del pool de 9 candidatos del mismo minuto de sesion) o GLOBAL (la fuente supera tambien al maximo del archivo entero)?"
+  },
+  "multiverse": {
+    "congelado": true,
+    "regla": "la rejilla del codigo se serializa canonicamente y se hashea (multiverse_manifest_sha256). El script compara ese hash contra esta declaracion y aborta con exit 6 si difieren, ANTES de computar nada. Ninguna celda puede agregarse despues de ver resultados.",
+    "rejilla": {
+      "ventanas_minuto": [0, 1, 5, 15, "todo_el_archivo"],
+      "k": [1, 3, 5, 8, 12, "todos"],
+      "caliper_en_mad": ["ninguno", 0.1, 0.2, 0.5],
+      "celda_central": {
+        "ventana_minutos": 0,
+        "k": 8,
+        "caliper": "ninguno"
+      },
+      "min_controls_regla": "min(k, MIN_CONTROLS) si k es entero; MIN_CONTROLS si k es 'todos'",
+      "sd_ref_regla": "congelado en la definicion within-stratum de ventana 0"
+    },
+    "n_celdas": 120,
+    "celda_central_reproduce": "la celda (ventana 0, k=8, sin caliper) debe reproducir exactamente el matcher pre-registrado de bigtrap2_distance_matched_null_v3. Dos tests de equivalencia lo pinnean: pool_por_ventana(w=0) contra construir_pool_candidatos, y scores_del_pool+seleccionar contra emparejar_controles."
+  },
+  "definiciones": {
+    "ventana_minutos": "se aceptan candidatos con abs(minuto_candidato - minuto_fuente) <= w. w=null ('todo_el_archivo') quita la restriccion de minuto por completo. TODOS los demas filtros de construir_pool_candidatos se mantienen intactos en toda la rejilla: otra sesion, barra no creadora de ninguna zona, y >= H_i barras futuras disponibles.",
+    "caliper": "se descartan candidatos con score > caliper ANTES de tomar los k mas cercanos. El score es la distancia euclidea robustamente estandarizada por el MAD del pool candidato, la misma de emparejar_controles, asi que el caliper ya esta en unidades de MAD. NO es un caliper sobre la SD del logit de un propensity score: aca no hay propensity score.",
+    "sd_ref": "desvio pooled within-stratum sqrt(SS_within/(N-G)) sobre (fuentes del universo UNION pool real de candidatos) dentro de cada estrato (archivo x minuto_de_sesion), calculado con muestra_pre_matching() de F1.1 en VENTANA 0 y pooleado entre todos los archivos. Se CONGELA y se usa como denominador de todas las celdas.",
+    "por_que_congelado": "si el denominador se mueve con la celda, las celdas no son comparables entre si ni contra el umbral 0.10, y una celda puede 'mejorar' solo porque agrando su propia varianza de referencia. Es exactamente el defecto que F2.2 introdujo y F2.3 corrigio. Se reporta ademas la diferencia CRUDA de medias por celda, que no depende de ningun denominador.",
+    "smd_reportado": "matched_sets: media(fuentes) - media(promedio de sus propios controles), estandarizado por sd_ref congelado. Es la variante que no depende de la ponderacion por k.",
+    "ratio_seleccion": "suma(k_efectivo) / suma(n_pool) sobre las zonas OK de la celda. Mide cuan censal es la seleccion: ~0.83 en la celda central es un censo del minuto, no un matching.",
+    "acumulacion": "CRUDA. Por archivo se acumulan sumas y conteos (suma_fuente, suma_ctrl, n_zonas_ok, suma_n_pool, suma_k_efectivo) y listas de percentiles; las fracciones, ratios, medias y deciles se calculan UNA SOLA VEZ al final sobre el total pooleado. Prohibido promediar fracciones ya reducidas por archivo."
+  },
+  "regla_de_decision": {
+    "declarada_antes_del_dato": true,
+    "corrige": "la regla de la seccion 11.5 del documento del auditor asumia UN veredicto para las dos covariables y tres ramas mutuamente excluyentes. F2.4 mostro que las dos covariables caen en ramas distintas. Esta regla se evalua POR COVARIABLE y el gate es la conjuncion, asi que la covariable que decide es log1p_bar_volume.",
+    "local": {
+      "criterio": "existe alguna ventana w en la rejilla donde frac_above_max de log1p_bar_volume cae a nivel de azar (<= 0.13, cota superior del 1/(n+1) esperado admitiendo pools chicos)",
+      "lectura": "el corrimiento era un artefacto del pool diminuto inducido por el exact matching de minuto",
+      "accion": "proponer enmienda EXPLICITA del pre-registro convirtiendo el minuto de restriccion dura en penalidad blanda (|delta minuto| <= w mas |delta minuto| como tercera dimension de la distancia con su propio MAD), y recien entonces A/B con barrido de K sobre la curva"
+    },
+    "global": {
+      "criterio": "frac_above_max de log1p_bar_volume se mantiene > 0.25 incluso con ventana 'todo_el_archivo'",
+      "lectura": "el corrimiento es estructural: no existe barra ordinaria comparable en volumen en ningun momento del archivo, porque el indicador se define por volumen",
+      "accion": "rama C (controles de casi-evento) es el unico camino que ataca la causa. El estimand tal como esta pre-registrado en v3 debe declararse NO MEDIBLE y registrarse como tal, sin relajar ningun gate"
+    },
+    "intermedio": {
+      "criterio": "cae entre 0.13 y 0.25 con la ventana mas ancha",
+      "lectura": "hay solapamiento parcial recuperable pero insuficiente",
+      "accion": "reportar la curva entera y decidir entre C y D (normalizar por una tasa base modelada monotona en volumen) con la cobertura de cada celda a la vista. Prohibido elegir la celda que mejor queda"
+    },
+    "prediccion_del_auditor": {
+      "escrita_antes_del_dato": true,
+      "frac_above_max_bar_volume_con_ventana_todo_el_archivo": "entre 0.15 y 0.25",
+      "rama_esperada": "intermedio, con sesgo hacia global",
+      "nota": "la prediccion anterior del auditor (F2.4: 'las fuentes van a estar dentro del rango, en el decil superior') acerto para sigma60 y fallo para bar_volume. Queda registrada igual, acertada o no."
+    }
+  },
+  "limites_declarados": [
+    "Las fracciones de soporte son MARGENES por covariable, no el soporte conjunto. El matcher trabaja en 2-D: estar dentro del rango en cada covariable por separado no implica estar dentro de la region conjunta. 0.365 es COTA INFERIOR de la fraccion fuera del soporte conjunto, cuyo rango es 0.365 a 0.578 por la cota de la union.",
+    "frac_above_max con pool de 9 es un estadistico ruidoso por zona; solo es interpretable agregado.",
+    "El umbral 0.10 de |SMD| es convencional (Stuart 2010, Austin 2009) y esta definido sobre la SD dentro del estrato de comparacion. Con sd_ref congelado en la definicion de ventana 0, una celda de ventana ancha se mide con la vara del estrato estrecho: es lo que hace comparables las celdas, pero hay que decirlo.",
+    "Ampliar la ventana de minuto RELAJA el control de hora del dia. Una celda con mejor balance en volumen y peor control temporal no es automaticamente mejor: la curva se reporta entera, nunca solo su mejor celda.",
+    "Ninguna celda de esta curva autoriza por si sola la corrida formal. La curva alimenta una decision de pre-registro, que es humana y explicita."
+  ],
+  "presupuesto": {
+    "anclaje": "el smoke estructural de F2.4 corrio un archivo, 13 sesiones y 988 zonas en 4.15 s con una sola configuracion",
+    "costo_dominante": "la ventana 'todo_el_archivo' evalua ~6122 candidatos por zona en vez de ~9.6",
+    "estimacion_smoke": "orden de decenas de segundos para un archivo, las 120 celdas incluidas: los scores se calculan UNA vez por (zona, ventana) y las 24 celdas de k x caliper reusan esos scores",
+    "advertencia_201_sesiones": "la pasada completa con ventana 'todo_el_archivo' es de orden minutos por archivo. Correr primero el smoke y medir antes de lanzar las 201 sesiones. Superar el presupuesto produce ABSTAIN_CAPACITY, no una corrida partida hasta que entre."
+  },
+  "forbidden": [
+    "tick:25",
+    "holdout",
+    "returns",
+    "pnl",
+    "direction",
+    "target_stop",
+    "quality_score",
+    "endpoint_binario",
+    "zone_lifecycle",
+    "post_result_grid_extension",
+    "elegir_la_celda_que_mejor_queda"
+  ]
+}

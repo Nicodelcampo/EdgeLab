@@ -1,8 +1,8 @@
-# === EdgeLab .gitignore (F0A baseline) ===
-# Datos, caches y artefactos grandes quedan FUERA de Git.
-# Preservados en el backup inmutable + manifest de _baselines\.
+# === EdgeLab .gitignore ===
+# Datos, caches, secretos y artefactos regenerables quedan fuera de Git.
+# IMPORTANTE: /data/ está anclado a la raíz. edgelab/data/ contiene código.
 
-# --- Python ---
+# Python
 __pycache__/
 *.py[cod]
 *.pyo
@@ -14,38 +14,92 @@ __pycache__/
 .coverage
 htmlcov/
 
-# --- Entornos ---
+# Entornos
 .venv/
+.venv-*/
 venv/
 env/
+_env_probes/
 
-# --- Configuración local y secretos ---
+# Configuración local y secretos
 .env
 .env.*
 config.local.*
 *.local.toml
+config/local.toml
 secrets.*
 credentials.*
 
-# --- Datos grandes (fuera de Git; ver manifest + Data Contract futuro) ---
-data/*.parquet
-data/**/*.parquet
+# Datos grandes — SOLO raíz
+/data/*
+!/data/nt8_oracles/
+!/data/nt8_oracles/*
+/TickData/
+*.Last.txt
 *.zip
 *.rar
 *.7z
+*.parquet
+*_CONT_CAUSAL_D1.parquet
 
-# --- Artefactos de runtime ---
-runs/
+# Checkpoints parciales
+diag/**/*.checkpoint.json
+
+# Runtime
+runs/*
+!runs/censo/
+runs/censo/*
+!runs/censo/manifiesto_universo.json
+!runs/intake_l2/
+!runs/intake_l2/*
 cache/
-artifacts/
+artifacts/*
+!artifacts/audit/
+!artifacts/audit/**
+!artifacts/migration/
+!artifacts/migration/**
+dist/
 logs/
 *.log
-
-# --- Artefactos generados grandes (regenerables) ---
+!diag/tasa_senales/rss_y_equivalencia_70s.log
 suspicious_trades.csv
+viewer/nt8_bridge/bundles/
+# Excepcion: el catalogo (manifest.js) es chico y es la unica lista versionada de que activos/sesiones existen
+# en los bundles locales (los bundles en si -- datos de mercado -- siguen sin versionarse). Hallazgo de auditoria
+# 2026-09-21: se afirmo que estaba versionado y no lo estaba; corregido aca.
+!viewer/nt8_bridge/bundles/manifest.js
+viewer/nt8_bridge/data.js
+scratch/
 
-# --- SO / IDE ---
+# Oráculos reales
+oracles/**/*.csv
+oracles/**/*.txt
+oracles/**/*.bak
+oracles/*.csv
+oracles/*.txt
+oracles/*.bak
+
+# SO / IDE
 Thumbs.db
 .DS_Store
 .idea/
 .vscode/
+
+# Modelos externos
+sidecar/kronos_env/
+sidecar/Kronos/
+sidecar/pesos/
+
+# Backups locales NT8
+archive/nt8_cs_backup/
+
+# salidas descargadas de kernels de Kaggle (artefactos locales, no fuente)
+notebooks/kaggle/**/output/
+notebooks/kaggle/**/output_v2/
+
+# Oraculos de gran tamano (>100MB): la evidencia vive fuera del arbol, con su sha256 en el acta
+data/nt8_oracles/hftimpulse_NQ0626_20260903.csv
+data/nt8_oracles/hft_zones_nq_v2.sqlite
+*.sqlite-wal
+*.sqlite-shm
+

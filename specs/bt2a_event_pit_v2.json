@@ -1,0 +1,41 @@
+{
+  "schema": "bt2a_event_pit_v2_spec",
+  "status": "FROZEN_RECOMPUTE_REQUIRED",
+  "frozen_at_utc": "2026-08-24T18:30:00Z",
+  "target_free": true,
+  "outcomes_opened": false,
+  "event_time": {
+    "source": "zone.sig_ts",
+    "meaning": "close/publication timestamp of the completed TapeWindowTicks bucket",
+    "forbidden_source": "ABS_SCORE.t_start"
+  },
+  "event_identity": ["contract", "cme_session_id", "side", "event_time_ns", "zone_lo_half_ticks", "zone_hi_half_ticks"],
+  "tape": {
+    "window_ticks": 500,
+    "window_status": "PREREGISTERED_PARAMETER",
+    "end_boundary": "zone.sig_idx inclusive",
+    "ordering": ["ts_ns", "sequence"],
+    "session_policy": "FAIL_ROW_CLOSED_IF_WINDOW_CROSSES_SESSION",
+    "rate_definition": "(N-1) intervals divided by elapsed seconds from first to last of N ticks",
+    "locked_book_policy": "ALLOW_AND_COUNT",
+    "crossed_book_policy": "ABORT"
+  },
+  "geometry": {
+    "storage": "integer half ticks",
+    "float_geometry_allowed": false
+  },
+  "integrity": {
+    "event_keys_to_rows": "ONE_TO_ONE_OR_ABORT",
+    "record_sha256": true,
+    "rows_sha256": true,
+    "event_keys_sha256": true,
+    "per_session_counts": true,
+    "as_of_coverage": true
+  },
+  "migration": {
+    "invalidated_schema": "bt2a_event_pit_v1",
+    "old_partials_reusable": false,
+    "required_action": "recompute kernel partials and PIT rows from raw canonical ticks"
+  },
+  "forbidden_fields": ["MFE", "MAE", "return", "PnL", "hit_rate", "d_hat", "net_ticks", "fill outcome"]
+}

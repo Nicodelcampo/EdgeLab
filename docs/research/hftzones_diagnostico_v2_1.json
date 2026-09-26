@@ -1,0 +1,547 @@
+{
+  "schema_version": "hftzones_diagnostico_v2_1_sampler_completo",
+  "reemplaza": "docs/research/hftzones_calib_catalog.json (19e8713, SUPERSEDED)",
+  "motivo": "el catalogo anterior agrupaba sesiones con (t+7h)//dia -> cortes a las 17:00 UTC, no 17:00 CT, ignorando DST; filtraba ms sin rechazar negativos; y su `resolution_limited_en_alguna` es un any() que se leyo como universal",
+  "outcomes_accessed": false,
+  "pnl_accessed": false,
+  "holdout_included": false,
+  "congelado": {
+    "H_FLOOR": 2,
+    "Q_HEIGHT": 0.9,
+    "min_pasos": 8,
+    "nota": "citados para reproducir; NO se tocan"
+  },
+  "instrumentos_sin_datos": [],
+  "procedencia": {
+    "head_commit": "3af5bb1eafc8c3b7050cc795aa8532a44ec03c32",
+    "archivos_sucios": [
+      "diag/tasa_senales/hftzones_diagnostico.py",
+      "docs/audits/CANAL_AUDITOR.md",
+      "docs/research/HFTZONES_DIAGNOSTICO_V2_2026-08-19.md"
+    ],
+    "archivos_no_trackeados": [
+      "AGENTS.md",
+      "kaggle_bundle_v2/",
+      "kaggle_dataset/"
+    ],
+    "alcance_comprometida": [
+      "edgelab/",
+      "diag/"
+    ],
+    "medicion_comprometida": true,
+    "nota_medicion": "medicion_comprometida=false significa: NINGUN archivo sucio dentro del alcance declarado (edgelab/, diag/). NO significa arbol limpio -- puede haber sucios fuera de ese alcance, y estan listados en `archivos_sucios`. Tampoco significa que la medicion sea metodologicamente valida: el catalogo de 19e8713 tenia este campo en false y estaba mal segmentado."
+  },
+  "diagnostico": {
+    "6E": {
+      "n_sesiones": 260,
+      "n_sesiones_limited": 260,
+      "frac_sesiones_limited": 1.0,
+      "p50_ms": {
+        "mediana": 0.0,
+        "p25": 0.0,
+        "p75": 0.0
+      },
+      "q_dt_mediano": {
+        "q002": 0.0,
+        "q005": 0.0,
+        "q015": 0.0,
+        "q050": 0.0,
+        "q075": 0.0,
+        "q095": 344.0
+      },
+      "n_dt_negativos_total": 0,
+      "sesiones_no_monotonas": 0,
+      "frac_dt_cero_mediana": 0.6548,
+      "trades_mismo_ts_max": 246,
+      "trades_mismo_ts_p95_mediano": 8.0,
+      "frac_volume_1_mediana": 0.6767,
+      "q_vol_mediano": {
+        "q050": 1.0,
+        "q075": 2.0,
+        "q090": 4.0,
+        "q095": 6.0,
+        "q099": 10.0
+      },
+      "sweep_ticks_mediano": 2,
+      "n_sesiones_pegadas_a_floor": 260,
+      "frac_sesiones_pegadas_a_floor": 1.0,
+      "sampler": {
+        "stride_mediano": 1,
+        "n_muestra_mediana": 57014,
+        "n_total_mediana": 57014,
+        "dif_max_por_campo": {
+          "eff_predator_ms": 0.0,
+          "eff_ultra_ms": 0.0,
+          "eff_max_avg_ms": 0.0,
+          "eff_max_pausa_ms": 0.0,
+          "eff_max_total_ms": 0.0,
+          "eff_min_total_vol": 0.0,
+          "eff_min_vol_rate": 0.0,
+          "_p50_ms": 0.0,
+          "_median_vol": 0.0
+        },
+        "sesiones_que_discrepan_por_campo": {
+          "eff_predator_ms": 0,
+          "eff_ultra_ms": 0,
+          "eff_max_avg_ms": 0,
+          "eff_max_pausa_ms": 0,
+          "eff_max_total_ms": 0,
+          "eff_min_total_vol": 0,
+          "eff_min_vol_rate": 0,
+          "_p50_ms": 0,
+          "_median_vol": 0
+        },
+        "sesiones_que_discrepan_resolution_limited": 0,
+        "campos_comparados": 10,
+        "identicos_vector_completo": true
+      },
+      "eff_completo": {
+        "eff_predator_ms": 1.0,
+        "eff_ultra_ms": 1.0,
+        "eff_max_avg_ms": 1.0,
+        "eff_max_pausa_ms": 5.0,
+        "eff_max_total_ms": 16.0,
+        "eff_min_total_vol": 24.0,
+        "eff_min_vol_rate": 1500.0
+      }
+    },
+    "6J": {
+      "n_sesiones": 253,
+      "n_sesiones_limited": 253,
+      "frac_sesiones_limited": 1.0,
+      "p50_ms": {
+        "mediana": 0.0,
+        "p25": 0.0,
+        "p75": 0.0
+      },
+      "q_dt_mediano": {
+        "q002": 0.0,
+        "q005": 0.0,
+        "q015": 0.0,
+        "q050": 0.0,
+        "q075": 0.0,
+        "q095": 248.0
+      },
+      "n_dt_negativos_total": 0,
+      "sesiones_no_monotonas": 0,
+      "frac_dt_cero_mediana": 0.6947,
+      "trades_mismo_ts_max": 319,
+      "trades_mismo_ts_p95_mediano": 10.0,
+      "frac_volume_1_mediana": 0.685,
+      "q_vol_mediano": {
+        "q050": 1.0,
+        "q075": 2.0,
+        "q090": 5.0,
+        "q095": 7.0,
+        "q099": 12.0
+      },
+      "sweep_ticks_mediano": 2,
+      "n_sesiones_pegadas_a_floor": 253,
+      "frac_sesiones_pegadas_a_floor": 1.0,
+      "sampler": {
+        "stride_mediano": 1,
+        "n_muestra_mediana": 44044,
+        "n_total_mediana": 44044,
+        "dif_max_por_campo": {
+          "eff_predator_ms": 0.0,
+          "eff_ultra_ms": 0.0,
+          "eff_max_avg_ms": 0.0,
+          "eff_max_pausa_ms": 0.0,
+          "eff_max_total_ms": 0.0,
+          "eff_min_total_vol": 0.0,
+          "eff_min_vol_rate": 0.0,
+          "_p50_ms": 0.0,
+          "_median_vol": 0.0
+        },
+        "sesiones_que_discrepan_por_campo": {
+          "eff_predator_ms": 0,
+          "eff_ultra_ms": 0,
+          "eff_max_avg_ms": 0,
+          "eff_max_pausa_ms": 0,
+          "eff_max_total_ms": 0,
+          "eff_min_total_vol": 0,
+          "eff_min_vol_rate": 0,
+          "_p50_ms": 0,
+          "_median_vol": 0
+        },
+        "sesiones_que_discrepan_resolution_limited": 0,
+        "campos_comparados": 10,
+        "identicos_vector_completo": true
+      },
+      "eff_completo": {
+        "eff_predator_ms": 1.0,
+        "eff_ultra_ms": 1.0,
+        "eff_max_avg_ms": 1.0,
+        "eff_max_pausa_ms": 5.0,
+        "eff_max_total_ms": 16.0,
+        "eff_min_total_vol": 24.0,
+        "eff_min_vol_rate": 1500.0
+      }
+    },
+    "ES": {
+      "n_sesiones": 276,
+      "n_sesiones_limited": 273,
+      "frac_sesiones_limited": 0.9891,
+      "p50_ms": {
+        "mediana": 0.0,
+        "p25": 0.0,
+        "p75": 0.0
+      },
+      "q_dt_mediano": {
+        "q002": 0.0,
+        "q005": 0.0,
+        "q015": 0.0,
+        "q050": 0.0,
+        "q075": 0.0,
+        "q095": 184.0
+      },
+      "n_dt_negativos_total": 0,
+      "sesiones_no_monotonas": 0,
+      "frac_dt_cero_mediana": 0.8017,
+      "trades_mismo_ts_max": 739,
+      "trades_mismo_ts_p95_mediano": 17.85,
+      "frac_volume_1_mediana": 0.8509,
+      "q_vol_mediano": {
+        "q050": 1.0,
+        "q075": 1.0,
+        "q090": 2.0,
+        "q095": 3.0,
+        "q099": 5.0
+      },
+      "sweep_ticks_mediano": 2,
+      "n_sesiones_pegadas_a_floor": 230,
+      "frac_sesiones_pegadas_a_floor": 0.8333,
+      "sampler": {
+        "stride_mediano": 4,
+        "n_muestra_mediana": 182654,
+        "n_total_mediana": 922342,
+        "dif_max_por_campo": {
+          "eff_predator_ms": 0.0,
+          "eff_ultra_ms": 0.0,
+          "eff_max_avg_ms": 0.0,
+          "eff_max_pausa_ms": 0.0,
+          "eff_max_total_ms": 0.0,
+          "eff_min_total_vol": 0.0,
+          "eff_min_vol_rate": 0.0,
+          "_p50_ms": 0.0,
+          "_median_vol": 0.0
+        },
+        "sesiones_que_discrepan_por_campo": {
+          "eff_predator_ms": 0,
+          "eff_ultra_ms": 0,
+          "eff_max_avg_ms": 0,
+          "eff_max_pausa_ms": 0,
+          "eff_max_total_ms": 0,
+          "eff_min_total_vol": 0,
+          "eff_min_vol_rate": 0,
+          "_p50_ms": 0,
+          "_median_vol": 0
+        },
+        "sesiones_que_discrepan_resolution_limited": 0,
+        "campos_comparados": 10,
+        "identicos_vector_completo": true
+      },
+      "eff_completo": {
+        "eff_predator_ms": 1.0,
+        "eff_ultra_ms": 1.0,
+        "eff_max_avg_ms": 1.0,
+        "eff_max_pausa_ms": 5.0,
+        "eff_max_total_ms": 16.0,
+        "eff_min_total_vol": 24.0,
+        "eff_min_vol_rate": 1500.0
+      }
+    },
+    "GC": {
+      "n_sesiones": 255,
+      "n_sesiones_limited": 236,
+      "frac_sesiones_limited": 0.9255,
+      "p50_ms": {
+        "mediana": 0.0,
+        "p25": 0.0,
+        "p75": 0.0
+      },
+      "q_dt_mediano": {
+        "q002": 0.0,
+        "q005": 0.0,
+        "q015": 0.0,
+        "q050": 0.0,
+        "q075": 60.0,
+        "q095": 648.0
+      },
+      "n_dt_negativos_total": 0,
+      "sesiones_no_monotonas": 0,
+      "frac_dt_cero_mediana": 0.4753,
+      "trades_mismo_ts_max": 334,
+      "trades_mismo_ts_p95_mediano": 5.0,
+      "frac_volume_1_mediana": 0.9407,
+      "q_vol_mediano": {
+        "q050": 1.0,
+        "q075": 1.0,
+        "q090": 1.0,
+        "q095": 2.0,
+        "q099": 4.0
+      },
+      "sweep_ticks_mediano": 5,
+      "n_sesiones_pegadas_a_floor": 22,
+      "frac_sesiones_pegadas_a_floor": 0.0863,
+      "sampler": {
+        "stride_mediano": 1,
+        "n_muestra_mediana": 115975,
+        "n_total_mediana": 115975,
+        "dif_max_por_campo": {
+          "eff_predator_ms": 0.0,
+          "eff_ultra_ms": 0.0,
+          "eff_max_avg_ms": 0.0,
+          "eff_max_pausa_ms": 0.0,
+          "eff_max_total_ms": 0.0,
+          "eff_min_total_vol": 0.0,
+          "eff_min_vol_rate": 0.0,
+          "_p50_ms": 0.0,
+          "_median_vol": 0.0
+        },
+        "sesiones_que_discrepan_por_campo": {
+          "eff_predator_ms": 0,
+          "eff_ultra_ms": 0,
+          "eff_max_avg_ms": 0,
+          "eff_max_pausa_ms": 0,
+          "eff_max_total_ms": 0,
+          "eff_min_total_vol": 0,
+          "eff_min_vol_rate": 0,
+          "_p50_ms": 0,
+          "_median_vol": 0
+        },
+        "sesiones_que_discrepan_resolution_limited": 0,
+        "campos_comparados": 10,
+        "identicos_vector_completo": true
+      },
+      "eff_completo": {
+        "eff_predator_ms": 1.0,
+        "eff_ultra_ms": 1.0,
+        "eff_max_avg_ms": 1.0,
+        "eff_max_pausa_ms": 5.0,
+        "eff_max_total_ms": 16.0,
+        "eff_min_total_vol": 24.0,
+        "eff_min_vol_rate": 1500.0
+      }
+    },
+    "NQ": {
+      "n_sesiones": 263,
+      "n_sesiones_limited": 226,
+      "frac_sesiones_limited": 0.8593,
+      "p50_ms": {
+        "mediana": 0.0,
+        "p25": 0.0,
+        "p75": 0.0
+      },
+      "q_dt_mediano": {
+        "q002": 0.0,
+        "q005": 0.0,
+        "q015": 0.0,
+        "q050": 0.0,
+        "q075": 52.0,
+        "q095": 408.0
+      },
+      "n_dt_negativos_total": 0,
+      "sesiones_no_monotonas": 0,
+      "frac_dt_cero_mediana": 0.5192,
+      "trades_mismo_ts_max": 14837,
+      "trades_mismo_ts_p95_mediano": 5.0,
+      "frac_volume_1_mediana": 0.9632,
+      "q_vol_mediano": {
+        "q050": 1.0,
+        "q075": 1.0,
+        "q090": 1.0,
+        "q095": 1.0,
+        "q099": 3.0
+      },
+      "sweep_ticks_mediano": 9,
+      "n_sesiones_pegadas_a_floor": 0,
+      "frac_sesiones_pegadas_a_floor": 0.0,
+      "sampler": {
+        "stride_mediano": 2,
+        "n_muestra_mediana": 190541,
+        "n_total_mediana": 463752,
+        "dif_max_por_campo": {
+          "eff_predator_ms": 0.0,
+          "eff_ultra_ms": 0.0,
+          "eff_max_avg_ms": 0.0,
+          "eff_max_pausa_ms": 15.0,
+          "eff_max_total_ms": 0.0,
+          "eff_min_total_vol": 0.0,
+          "eff_min_vol_rate": 0.0,
+          "_p50_ms": 4.0,
+          "_median_vol": 0.0
+        },
+        "sesiones_que_discrepan_por_campo": {
+          "eff_predator_ms": 0,
+          "eff_ultra_ms": 0,
+          "eff_max_avg_ms": 0,
+          "eff_max_pausa_ms": 2,
+          "eff_max_total_ms": 0,
+          "eff_min_total_vol": 0,
+          "eff_min_vol_rate": 0,
+          "_p50_ms": 2,
+          "_median_vol": 0
+        },
+        "sesiones_que_discrepan_resolution_limited": 2,
+        "campos_comparados": 10,
+        "identicos_vector_completo": false
+      },
+      "eff_completo": {
+        "eff_predator_ms": 1.0,
+        "eff_ultra_ms": 1.0,
+        "eff_max_avg_ms": 1.0,
+        "eff_max_pausa_ms": 5.0,
+        "eff_max_total_ms": 16.0,
+        "eff_min_total_vol": 24.0,
+        "eff_min_vol_rate": 1500.0
+      }
+    },
+    "YM": {
+      "n_sesiones": 244,
+      "n_sesiones_limited": 115,
+      "frac_sesiones_limited": 0.4713,
+      "p50_ms": {
+        "mediana": 4.0,
+        "p25": 0.0,
+        "p75": 4.0
+      },
+      "q_dt_mediano": {
+        "q002": 0.0,
+        "q005": 0.0,
+        "q015": 0.0,
+        "q050": 4.0,
+        "q075": 142.0,
+        "q095": 696.0
+      },
+      "n_dt_negativos_total": 0,
+      "sesiones_no_monotonas": 0,
+      "frac_dt_cero_mediana": 0.4101,
+      "trades_mismo_ts_max": 1697,
+      "trades_mismo_ts_p95_mediano": 4.0,
+      "frac_volume_1_mediana": 0.9576,
+      "q_vol_mediano": {
+        "q050": 1.0,
+        "q075": 1.0,
+        "q090": 1.0,
+        "q095": 1.0,
+        "q099": 3.0
+      },
+      "sweep_ticks_mediano": 3,
+      "n_sesiones_pegadas_a_floor": 90,
+      "frac_sesiones_pegadas_a_floor": 0.3689,
+      "sampler": {
+        "stride_mediano": 1,
+        "n_muestra_mediana": 72154,
+        "n_total_mediana": 72154,
+        "dif_max_por_campo": {
+          "eff_predator_ms": 0.0,
+          "eff_ultra_ms": 0.0,
+          "eff_max_avg_ms": 0.0,
+          "eff_max_pausa_ms": 0.0,
+          "eff_max_total_ms": 0.0,
+          "eff_min_total_vol": 0.0,
+          "eff_min_vol_rate": 0.0,
+          "_p50_ms": 0.0,
+          "_median_vol": 0.0
+        },
+        "sesiones_que_discrepan_por_campo": {
+          "eff_predator_ms": 0,
+          "eff_ultra_ms": 0,
+          "eff_max_avg_ms": 0,
+          "eff_max_pausa_ms": 0,
+          "eff_max_total_ms": 0,
+          "eff_min_total_vol": 0,
+          "eff_min_vol_rate": 0,
+          "_p50_ms": 0,
+          "_median_vol": 0
+        },
+        "sesiones_que_discrepan_resolution_limited": 0,
+        "campos_comparados": 10,
+        "identicos_vector_completo": true
+      },
+      "eff_completo": {
+        "eff_predator_ms": 1.0,
+        "eff_ultra_ms": 1.0,
+        "eff_max_avg_ms": 1.0,
+        "eff_max_pausa_ms": 20.0,
+        "eff_max_total_ms": 16.0,
+        "eff_min_total_vol": 24.0,
+        "eff_min_vol_rate": 1500.0
+      }
+    },
+    "ZB": {
+      "n_sesiones": 242,
+      "n_sesiones_limited": 242,
+      "frac_sesiones_limited": 1.0,
+      "p50_ms": {
+        "mediana": 0.0,
+        "p25": 0.0,
+        "p75": 0.0
+      },
+      "q_dt_mediano": {
+        "q002": 0.0,
+        "q005": 0.0,
+        "q015": 0.0,
+        "q050": 0.0,
+        "q075": 0.0,
+        "q095": 8.0
+      },
+      "n_dt_negativos_total": 0,
+      "sesiones_no_monotonas": 0,
+      "frac_dt_cero_mediana": 0.8568,
+      "trades_mismo_ts_max": 1714,
+      "trades_mismo_ts_p95_mediano": 28.0,
+      "frac_volume_1_mediana": 0.6703,
+      "q_vol_mediano": {
+        "q050": 1.0,
+        "q075": 3.0,
+        "q090": 8.0,
+        "q095": 12.0,
+        "q099": 37.0
+      },
+      "sweep_ticks_mediano": 2,
+      "n_sesiones_pegadas_a_floor": 242,
+      "frac_sesiones_pegadas_a_floor": 1.0,
+      "sampler": {
+        "stride_mediano": 1,
+        "n_muestra_mediana": 105816,
+        "n_total_mediana": 105816,
+        "dif_max_por_campo": {
+          "eff_predator_ms": 0.0,
+          "eff_ultra_ms": 0.0,
+          "eff_max_avg_ms": 0.0,
+          "eff_max_pausa_ms": 0.0,
+          "eff_max_total_ms": 0.0,
+          "eff_min_total_vol": 0.0,
+          "eff_min_vol_rate": 0.0,
+          "_p50_ms": 0.0,
+          "_median_vol": 0.0
+        },
+        "sesiones_que_discrepan_por_campo": {
+          "eff_predator_ms": 0,
+          "eff_ultra_ms": 0,
+          "eff_max_avg_ms": 0,
+          "eff_max_pausa_ms": 0,
+          "eff_max_total_ms": 0,
+          "eff_min_total_vol": 0,
+          "eff_min_vol_rate": 0,
+          "_p50_ms": 0,
+          "_median_vol": 0
+        },
+        "sesiones_que_discrepan_resolution_limited": 0,
+        "campos_comparados": 10,
+        "identicos_vector_completo": true
+      },
+      "eff_completo": {
+        "eff_predator_ms": 1.0,
+        "eff_ultra_ms": 1.0,
+        "eff_max_avg_ms": 1.0,
+        "eff_max_pausa_ms": 5.0,
+        "eff_max_total_ms": 16.0,
+        "eff_min_total_vol": 24.0,
+        "eff_min_vol_rate": 1500.0
+      }
+    }
+  }
+}

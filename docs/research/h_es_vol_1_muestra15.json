@@ -1,0 +1,194 @@
+{
+ "schema_version": "h_es_vol_1_tasa_dentro_vs_excursion_v2_horizonte_fijo",
+ "protocolo": "docs/research/H-ES-VOL-1_PROTOCOLO.md",
+ "outcomes_accessed": true,
+ "pnl_accessed": false,
+ "holdout_included": false,
+ "estimando": "Spearman(tasa de volumen DENTRO de la zona antes de separarse, excursion maxima despues) medido DENTRO de cada sesion; el estimando es el contraste zona - espejo, no el valor absoluto",
+ "confundidor_declarado": "volatilidad de sesion: eleva a la vez la tasa y la excursion. Por eso rho_agregado_CONFUNDIDO se publica para contraste y NO se interpreta",
+ "advertencia_poblacion": "92% de zonas bajistas por el bug isDown-first: exc_signed_ticks se guarda y NO se lee",
+ "piloto": true,
+ "parametros": {
+  "grilla_separacion": [
+   2,
+   5,
+   10
+  ],
+  "min_ticks_dentro": 5,
+  "min_zonas_por_sesion": 8,
+  "horizonte_outcome_ms": 600000
+ },
+ "universo": {
+  "n_zonas": 2514,
+  "n_sesiones": 15,
+  "sin_parquet": 0
+ },
+ "por_separacion": {
+  "2": {
+   "zona": {
+    "n_sesiones": 15,
+    "n_zonas": 2347,
+    "rho_intra_sesion": {
+     "mediana": -0.0019,
+     "p25": -0.1205,
+     "p75": 0.0955,
+     "frac_sesiones_positivas": 0.4667
+    },
+    "rho_agregado_CONFUNDIDO": 0.0856,
+    "exc_abs_mediana_por_tercil_de_tasa": {
+     "T1": 14.0,
+     "T2": 19.0,
+     "T3": 14.0
+    },
+    "tasa_vol_por_seg": {
+     "p25": 43.57,
+     "mediana": 106.176,
+     "p75": 354.356
+    }
+   },
+   "espejo": {
+    "n_sesiones": 15,
+    "n_zonas": 2048,
+    "rho_intra_sesion": {
+     "mediana": 0.0633,
+     "p25": -0.0717,
+     "p75": 0.1254,
+     "frac_sesiones_positivas": 0.6
+    },
+    "rho_agregado_CONFUNDIDO": 0.1144,
+    "exc_abs_mediana_por_tercil_de_tasa": {
+     "T1": 15.0,
+     "T2": 20.0,
+     "T3": 16.0
+    },
+    "tasa_vol_por_seg": {
+     "p25": 42.483,
+     "mediana": 108.295,
+     "p75": 378.151
+    }
+   },
+   "contraste_rho_zona_menos_espejo": -0.0652
+  },
+  "5": {
+   "zona": {
+    "n_sesiones": 15,
+    "n_zonas": 2452,
+    "rho_intra_sesion": {
+     "mediana": -0.0709,
+     "p25": -0.1291,
+     "p75": 0.0953,
+     "frac_sesiones_positivas": 0.4
+    },
+    "rho_agregado_CONFUNDIDO": 0.0796,
+    "exc_abs_mediana_por_tercil_de_tasa": {
+     "T1": 14.0,
+     "T2": 20.0,
+     "T3": 15.0
+    },
+    "tasa_vol_por_seg": {
+     "p25": 35.975,
+     "mediana": 82.466,
+     "p75": 293.347
+    }
+   },
+   "espejo": {
+    "n_sesiones": 15,
+    "n_zonas": 2358,
+    "rho_intra_sesion": {
+     "mediana": -0.0106,
+     "p25": -0.0975,
+     "p75": 0.1066,
+     "frac_sesiones_positivas": 0.4667
+    },
+    "rho_agregado_CONFUNDIDO": 0.0934,
+    "exc_abs_mediana_por_tercil_de_tasa": {
+     "T1": 15.0,
+     "T2": 21.0,
+     "T3": 15.0
+    },
+    "tasa_vol_por_seg": {
+     "p25": 35.026,
+     "mediana": 86.147,
+     "p75": 323.516
+    }
+   },
+   "contraste_rho_zona_menos_espejo": -0.0603
+  },
+  "10": {
+   "zona": {
+    "n_sesiones": 15,
+    "n_zonas": 2379,
+    "rho_intra_sesion": {
+     "mediana": -0.067,
+     "p25": -0.1148,
+     "p75": 0.0086,
+     "frac_sesiones_positivas": 0.2667
+    },
+    "rho_agregado_CONFUNDIDO": 0.0434,
+    "exc_abs_mediana_por_tercil_de_tasa": {
+     "T1": 18.0,
+     "T2": 23.0,
+     "T3": 17.0
+    },
+    "tasa_vol_por_seg": {
+     "p25": 30.719,
+     "mediana": 65.797,
+     "p75": 187.0
+    }
+   },
+   "espejo": {
+    "n_sesiones": 15,
+    "n_zonas": 2331,
+    "rho_intra_sesion": {
+     "mediana": -0.0471,
+     "p25": -0.129,
+     "p75": -0.0088,
+     "frac_sesiones_positivas": 0.2
+    },
+    "rho_agregado_CONFUNDIDO": 0.0311,
+    "exc_abs_mediana_por_tercil_de_tasa": {
+     "T1": 18.0,
+     "T2": 24.0,
+     "T3": 17.0
+    },
+    "tasa_vol_por_seg": {
+     "p25": 31.25,
+     "mediana": 68.269,
+     "p75": 194.762
+    }
+   },
+   "contraste_rho_zona_menos_espejo": -0.0199
+  }
+ },
+ "procedencia": {
+  "head_commit": "1d7d1e02e8bcc8b019e7c2f602ebbfee238ecbb4",
+  "snapshot": "E:\\EdgeLab\\runs\\oraculo_espurev2_ES_snapshot.sqlite",
+  "archivos_sucios": [
+   "AGENTS.md",
+   "data/nt8_oracles/hftzonesespurev2_ES_0626_pre_firewall.csv",
+   "diag/tasa_senales/vol_tiempo_dentro_es.py",
+   "docs/research/H-ES-VOL-1_PROTOCOLO.md",
+   "docs/research/comparacion_v2_vs_flat.json",
+   "docs/research/h_es_vol_1_muestra15.json",
+   "docs/research/retorno_a_zona_es.json",
+   "docs/research/retorno_a_zona_es_muestra15.json",
+   "kaggle_bundle_v2/",
+   "kaggle_dataset/"
+  ],
+  "medicion_comprometida": true
+ },
+ "zonas_omitidas_del_json": {
+  "n": 2514,
+  "motivo": "el detalle por zona pesa; el JSON versionado guarda los agregados. Se reproduce corriendo diag/tasa_senales/vol_tiempo_dentro_es.py"
+ },
+ "diagnostico_confundidor_reloj": {
+  "v1_outcome": "hasta fin de sesion",
+  "v1_rho_ticks_restantes_vs_excursion": 0.89,
+  "v1_rho_minuto_creacion_vs_excursion": -0.9,
+  "v1_rho_tasa_vs_excursion": -0.35,
+  "v2_outcome": "horizonte fijo 600000 ms",
+  "v2_rho_minuto_creacion_vs_excursion": -0.5,
+  "v2_rho_tasa_vs_excursion": -0.07,
+  "lectura": "el -0,35 de v1 era la longitud variable de la ventana, no un mecanismo"
+ }
+}

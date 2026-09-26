@@ -1,0 +1,131 @@
+{
+ "schema_version": "h_es_cruce_1_primer_pasaje_v3_pareado_y_ventana",
+ "outcomes_accessed": false,
+ "pnl_accessed": false,
+ "holdout_included": false,
+ "poblacion": "oraculo Flat HFTZonesESPureV2Flat, ES 03-26, pre-firewall. CORREGIDA: 51,8%/48,2% por direccion, contra 8,1% alcista del original con el bug isDown-first",
+ "definicion_cruce": "primer pasaje borde a borde: el precio sale de la banda, vuelve a tocar el borde mas cercano (arranca el cronometro) y alcanza el borde opuesto (termina)",
+ "estimando": "contraste zona - control de la mediana por sesion, sobre las zonas que cruzan LAS DOS bandas; nunca el valor absoluto",
+ "confundidores_declarados": [
+  "ancho: trivialmente mas ancho cuesta mas; el control se empareja por ancho exacto",
+  "actividad de sesion: por eso el contraste es dentro de sesion",
+  "distancia: el espejo se construye a la misma distancia del precio de creacion",
+  "zonas de altura 0: excluidas y contadas"
+ ],
+ "universo": {
+  "n_zonas": 1677,
+  "n_sesiones": 15,
+  "altura_cero_excluidas": 129,
+  "sin_parquet": 0
+ },
+ "tasas": {
+  "zona": {
+   "cruzan": 1601,
+   "entran_sin_cruzar": 64,
+   "nunca_salen": 0
+  },
+  "control": {
+   "cruzan": 1326,
+   "entran_sin_cruzar": 39,
+   "nunca_salen": 0
+  }
+ },
+ "metricas": {
+  "ticks": {
+   "n_sesiones": 15,
+   "n_pares": 1275,
+   "zona_mediana": 481.0,
+   "control_mediana": 398.0,
+   "delta_pareada_mediana": 0.0,
+   "delta_pareada_p25": 0.0,
+   "delta_pareada_p75": 4.75,
+   "frac_zonas_mas_caras": 0.4755,
+   "dispersion_pares": {
+    "p05": -12279.0,
+    "p25": -480.0,
+    "p50": 0.0,
+    "p75": 686.5,
+    "p95": 10171.3
+   }
+  },
+  "ms": {
+   "n_sesiones": 15,
+   "n_pares": 1275,
+   "zona_mediana": 5584.0,
+   "control_mediana": 5178.0,
+   "delta_pareada_mediana": 0.0,
+   "delta_pareada_p25": 0.0,
+   "delta_pareada_p75": 5.0,
+   "frac_zonas_mas_caras": 0.4595,
+   "dispersion_pares": {
+    "p05": -438319.2,
+    "p25": -8614.0,
+    "p50": 0.0,
+    "p75": 9860.0,
+    "p95": 337624.0
+   }
+  },
+  "volumen": {
+   "n_sesiones": 15,
+   "n_pares": 1275,
+   "zona_mediana": 848.0,
+   "control_mediana": 668.0,
+   "delta_pareada_mediana": 0.0,
+   "delta_pareada_p25": 0.0,
+   "delta_pareada_p75": 0.0,
+   "frac_zonas_mas_caras": 0.4726,
+   "dispersion_pares": {
+    "p05": -21206.0,
+    "p25": -847.0,
+    "p50": 0.0,
+    "p75": 1019.5,
+    "p95": 17011.5
+   }
+  },
+  "ticks_por_ancho": {
+   "n_sesiones": 15,
+   "n_pares": 1275,
+   "zona_mediana": 240.625,
+   "control_mediana": 214.2,
+   "delta_pareada_mediana": 0.0,
+   "delta_pareada_p25": 0.0,
+   "delta_pareada_p75": 4.0,
+   "frac_zonas_mas_caras": 0.4755,
+   "dispersion_pares": {
+    "p05": -6459.6,
+    "p25": -271.4,
+    "p50": 0.0,
+    "p75": 361.8,
+    "p95": 4911.7
+   }
+  },
+  "vol_por_ancho": {
+   "n_sesiones": 15,
+   "n_pares": 1275,
+   "zona_mediana": 362.0,
+   "control_mediana": 362.75,
+   "delta_pareada_mediana": 0.0,
+   "delta_pareada_p25": 0.0,
+   "delta_pareada_p75": 0.0,
+   "frac_zonas_mas_caras": 0.4726,
+   "dispersion_pares": {
+    "p05": -11102.4,
+    "p25": -468.8,
+    "p50": 0.0,
+    "p75": 569.7,
+    "p95": 8092.9
+   }
+  }
+ },
+ "procedencia": {
+  "head_commit": "ce4a06e22dbb7c4207e7f5c7a67570a12b8ad0ce",
+  "snapshot": "E:\\EdgeLab\\runs\\oraculo_espurev2flat_ES_snapshot.sqlite",
+  "archivos_sucios": [
+   "diag/tasa_senales/velocidad_cruce_es.py",
+   "docs/research/h_es_cruce_1_muestra15.json",
+   "edgelab/bridge/kernels/hftzones_es_pure_v2_flat.py"
+  ],
+  "medicion_comprometida": true
+ },
+ "n_zonas_detalle_omitido": 1677
+}

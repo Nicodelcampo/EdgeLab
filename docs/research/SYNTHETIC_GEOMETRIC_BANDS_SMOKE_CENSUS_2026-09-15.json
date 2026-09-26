@@ -1,0 +1,187 @@
+{
+  "census_type": "SYNTHETIC_GEOMETRIC_BANDS_SOFTWARE_SMOKE_CENSUS",
+  "purpose": "Software state machine verification on synthetic geometric bands; NOT empirical HP-007 evidence",
+  "provenance": {
+    "recorded_at_utc": "2026-09-16T01:55:23.932327+00:00",
+    "execution_window_utc": {
+      "started_at": "2026-09-16T01:55:17.580755+00:00",
+      "finished_at": "2026-09-16T01:55:23.932327+00:00",
+      "duration_seconds": 6.3509
+    },
+    "environment": {
+      "python_version": "3.12.7 (tags/v3.12.7:0b05ead, Oct  1 2024, 03:06:41) [MSC v.1941 64 bit (AMD64)]",
+      "platform": "Windows-10-10.0.19045-SP0",
+      "numpy_version": "1.26.4",
+      "pyarrow_version": "20.0.0"
+    },
+    "git_state": {
+      "head_sha": "8690435d07ac9fb3eafb75472f3e0860379af69b",
+      "tree_sha": "d84b8b1b82c90fbf57066b9b7a62cb59e80f7e07",
+      "branch": "work/hp007-rejection-revisit-campaign-v2-canonical-20260915"
+    },
+    "input_hashes": {
+      "source_parquet_path": "data/nt8/NQ_parquet/NQ_06-26_ticks.parquet",
+      "source_parquet_sha256": "3de249b9b8d8ada01c5b485aa893ccdf1315ae3f7bbebcaf72024de12e1b25f6",
+      "runner_script_path": "tools/run_synthetic_smoke_census.py",
+      "runner_script_sha256": "d5e6dc71cd4cfed483409cdf64d475ead6835f59a7eb319756dc5d90005fd483",
+      "detector_module_path": "edgelab/research/void_revisit_episodes.py",
+      "detector_module_sha256": "595bd0adc8d0032c72d663b2670d38a0fa7d70980e73a8040aeca7722894cf5f"
+    }
+  },
+  "dataset": {
+    "source_file": "data/nt8/NQ_parquet/NQ_06-26_ticks.parquet",
+    "contract": "NQ 06-26",
+    "session_trade_date": "2026-06-03",
+    "ticks_count": 572504,
+    "price_min_ticks": 121913,
+    "price_max_ticks": 123231,
+    "spread_ticks": 1318,
+    "holdout_firewall_status": "SEALED_ZERO_READS",
+    "max_timestamp_utc": "2026-06-03T21:00:00Z"
+  },
+  "spec": {
+    "approach_ticks": 2,
+    "rejection_excursion_ticks": 8,
+    "min_away_seconds": 60.0,
+    "min_away_volume": 50.0,
+    "max_episode_seconds": 1800.0,
+    "right_boundary_reason": "SESSION_END"
+  },
+  "bands": [
+    {
+      "band_id": "BAND_01",
+      "lower_tick": 121963,
+      "upper_tick": 121971,
+      "width_ticks": 8,
+      "band_sha256": "2f97339c5bc2ab1cf2d62ef0322cfb01a4ea59cea3018acf479c6623ab89bac8"
+    },
+    {
+      "band_id": "BAND_02",
+      "lower_tick": 122098,
+      "upper_tick": 122106,
+      "width_ticks": 8,
+      "band_sha256": "781a12b582efde8cff3e741b92c8fce9bda400f730ac567ccf937bbe895b7dab"
+    },
+    {
+      "band_id": "BAND_03",
+      "lower_tick": 122233,
+      "upper_tick": 122241,
+      "width_ticks": 8,
+      "band_sha256": "a1dd5e8e25855a9a61ecaf1224364d449d8e1da48b046e62a0f2182b0471cb99"
+    },
+    {
+      "band_id": "BAND_04",
+      "lower_tick": 122369,
+      "upper_tick": 122377,
+      "width_ticks": 8,
+      "band_sha256": "d5561c6187e06f1361c1fa2d03fec5d6c6b6c0a4583ae7eea5180853aa02a4ea"
+    },
+    {
+      "band_id": "BAND_05",
+      "lower_tick": 122504,
+      "upper_tick": 122512,
+      "width_ticks": 8,
+      "band_sha256": "685f2789af7709e1ea99dac898f3da35111cc51c1d014961b3888bafae3d1103"
+    },
+    {
+      "band_id": "BAND_06",
+      "lower_tick": 122639,
+      "upper_tick": 122647,
+      "width_ticks": 8,
+      "band_sha256": "b935d75d749a7bfb1970833856aaf1e19487f9c80313ef8947b8437cdf55361d"
+    },
+    {
+      "band_id": "BAND_07",
+      "lower_tick": 122775,
+      "upper_tick": 122783,
+      "width_ticks": 8,
+      "band_sha256": "8bb95eef3f103e569fe702e1bf73fe8cee536cd8a72323fa80c19f559c046133"
+    },
+    {
+      "band_id": "BAND_08",
+      "lower_tick": 122910,
+      "upper_tick": 122918,
+      "width_ticks": 8,
+      "band_sha256": "c3f17a72e64075679bde7a08ccb912dd6f2eb13ce595d045ae7fca2299bc2136"
+    },
+    {
+      "band_id": "BAND_09",
+      "lower_tick": 123045,
+      "upper_tick": 123053,
+      "width_ticks": 8,
+      "band_sha256": "f58ba8a3d28d77423889690b295f4950991b2d7b6aa6c47fbbe7df960ca02c7b"
+    },
+    {
+      "band_id": "BAND_10",
+      "lower_tick": 123181,
+      "upper_tick": 123189,
+      "width_ticks": 8,
+      "band_sha256": "eb6dc5e3189d921356a75ce29178e3f913cf59052fa9462f6d07b1903a891ca2"
+    }
+  ],
+  "results": {
+    "total_episodes": 426,
+    "episodes_by_band_and_direction": {
+      "BAND_01_LONG": 3,
+      "BAND_01_SHORT": 3,
+      "BAND_02_LONG": 11,
+      "BAND_02_SHORT": 6,
+      "BAND_03_LONG": 15,
+      "BAND_03_SHORT": 22,
+      "BAND_04_LONG": 26,
+      "BAND_04_SHORT": 26,
+      "BAND_05_LONG": 27,
+      "BAND_05_SHORT": 27,
+      "BAND_06_LONG": 21,
+      "BAND_06_SHORT": 18,
+      "BAND_07_LONG": 59,
+      "BAND_07_SHORT": 59,
+      "BAND_08_LONG": 33,
+      "BAND_08_SHORT": 29,
+      "BAND_09_LONG": 18,
+      "BAND_09_SHORT": 16,
+      "BAND_10_LONG": 6,
+      "BAND_10_SHORT": 1
+    },
+    "cross_band_dependency": {
+      "max_simultaneous_active_episodes": 11,
+      "episodes_overlapping_other_bands": 380,
+      "episodes_overlapping_pct": 89.2,
+      "independent_episodes_warning": "Episodes from different synthetic bands share underlying price action and cannot be treated as statistically independent observations."
+    },
+    "terminals_distribution": {
+      "CENSORED_MAX_FOLLOWUP": 33,
+      "CENSORED_SESSION_END": 2,
+      "REJECTED_AGAIN": 136,
+      "TRAVERSED": 255
+    },
+    "stages_at_censoring_distribution": {
+      "AWAY_ACCUMULATING": 1,
+      "AWAY_QUALIFIED": 34
+    },
+    "metrics": {
+      "away_time_seconds": {
+        "median": 68.5,
+        "min": 43.1,
+        "max": 1804.6
+      },
+      "away_volume_contracts": {
+        "median": 1090.0,
+        "min": 50.0,
+        "max": 96541.0
+      },
+      "max_excursion_ticks": {
+        "median": 42.0,
+        "min": 8,
+        "max": 1197
+      }
+    }
+  },
+  "event_level_manifest": {
+    "storage_policy": "LOCAL_OFF_GIT",
+    "relative_path": "data/smoke_census/synthetic_geometric_bands_episodes_2026-09-15.json",
+    "sha256": "a87dc4f9328888b30e0ae7cbc3eaff49ac07858fbea4169d7fcddf1b2eda735e",
+    "byte_size": 220375,
+    "total_records": 426
+  }
+}

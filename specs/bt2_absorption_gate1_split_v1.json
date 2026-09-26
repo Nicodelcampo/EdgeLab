@@ -1,0 +1,87 @@
+{
+  "schema": "bt2_absorption_gate1_split_v1",
+  "status": "FROZEN_BEFORE_OUTCOMES",
+  "frozen_at": "2026-08-24",
+  "amends": "specs/bt2_absorption_gate1_v1.json",
+  "decided_by": "Nico eligio la opcion (c) y delego el numero; Claude Opus 5 fijo la regla",
+
+  "motivo": {
+    "problema": "Un nulo global es un promedio sobre contextos: puede ocultar un efecto contextual real que se cancela en el agregado. Rechazar la hipotesis de contexto por un nulo global es una falacia.",
+    "restriccion": "Buscar el contexto DESPUES de ver el nulo es post_null_subgroup_search, prohibido por firewall.forbidden[0]. Con 10.289 eventos siempre aparece un subgrupo positivo.",
+    "solucion": "Reservar una submuestra ANTES de abrir outcomes, para que un test de contexto futuro tenga datos no usados por Puerta 1."
+  },
+
+  "universo_base": {
+    "fuente": "docs/research/CADENA_FRONTMONTH_GC.json",
+    "regla": "cadena front-month rule-based desde el primer roll determinado por la regla",
+    "primer_roll": "20251126",
+    "sesiones": 152,
+    "rango": ["20251126", "20260630"],
+    "nota": "151 de las 152 tienen >= 1 evento K_ABS; la restante no aporta cluster"
+  },
+
+  "regla_de_particion": {
+    "tipo": "intercalado_sistematico",
+    "definicion": "ordenar las sesiones ascendente por trade date; indice i base 0; sellada si i % 8 == 7",
+    "determinista": true,
+    "sin_semilla": true,
+    "gameable": false,
+    "n_puerta1": 133,
+    "n_sellado": 19
+  },
+
+  "por_que_intercalado_y_no_cola": {
+    "descartado": "corte cronologico (ultimas 19)",
+    "razon": "el bloque sellado quedaba integramente GC 08-26 y integramente junio 2026: un test de contexto ahi confunde contexto con contrato y con periodo",
+    "balance_intercalado": {
+      "puerta1": {"GC 02-26": 39, "GC 04-26": 37, "GC 06-26": 36, "GC 08-26": 21},
+      "sellado": {"GC 02-26": 5, "GC 04-26": 5, "GC 06-26": 6, "GC 08-26": 3}
+    },
+    "proposito_del_bloque": "una hipotesis DISTINTA (contexto), no una prediccion hacia adelante; por eso se busca una submuestra comparable, no una cola temporal"
+  },
+
+  "por_que_133": {
+    "origen": "es el valor que specs/bt2_absorption_gate1_v1.json ya tenia congelado en power_planning.sessions_for_80pct_2_5_ticks, escrito antes de ver datos",
+    "consecuencia": "el test primario cumple su propio criterio pre-registrado y NO se le adjunta P1_UNDERPOWERED_FOR_2P5T",
+    "descartado_120": "habria sellado 31 en vez de 19, pero ni 19 ni 31 alcanzan para una interaccion bien potenciada: la ganancia marginal para contexto es chica y el costo en el test primario (76,1% y la etiqueta de subpotenciado) es concreto y permanente",
+    "asimetria": "se pueden conseguir sesiones nuevas; no se puede des-gastar el presupuesto de outcomes sobre estas"
+  },
+
+  "potencia": {
+    "sd_por_sesion_ratio": 0.282,
+    "ratio_por_tick": 0.0275,
+    "vara_ticks": 2.5,
+    "vara_en_ratio": 0.06875,
+    "criterio": "limite inferior del IC 95% bilateral > 0",
+    "G": 133,
+    "potencia": 0.803,
+    "mde_80pct_ticks": 2.49
+  },
+
+  "bloque_sellado": {
+    "estado": "SEALED_NOT_OPENED",
+    "proposito_unico": "test de contexto con interaccion PRE-REGISTRADA",
+    "prohibido": [
+      "mirar outcomes del bloque antes de pre-registrar la interaccion",
+      "usarlo para reintentar Puerta 1",
+      "usarlo para elegir el contexto"
+    ],
+    "condiciones_para_abrirlo": [
+      "existe un modelo de contexto funcional y auditado",
+      "la interaccion esta pre-registrada por escrito con su propia potencia",
+      "el contexto es ortogonal a a_thr, hora del dia y tick rate (context_policy del spec base)"
+    ]
+  },
+
+  "limitaciones_declaradas": [
+    "NO es un holdout temporal: el intercalado no prueba generalizacion hacia adelante. Una afirmacion predictiva requiere datos nuevos, no este bloque.",
+    "19 sesiones alcanzan para un contexto binario con efecto grande; no para una interaccion exigente.",
+    "El anillo causal (abs_ring, 500) cruza fronteras de sesion, asi que el a_thr de una sesion sellada esta calculado con historial de sesiones usadas. No hay fuga de outcomes: a_thr es target-free."
+  ],
+
+  "firewall": {
+    "outcomes_opened": false,
+    "sealed_block_opened": false,
+    "edge_declared": false
+  }
+}

@@ -1,0 +1,137 @@
+{
+ "schema_version": "h_es_cruce_1_primer_pasaje_v3_pareado_y_ventana",
+ "outcomes_accessed": false,
+ "pnl_accessed": false,
+ "holdout_included": false,
+ "poblacion": "oraculo Flat HFTZonesESPureV2Flat, ES 03-26, pre-firewall. CORREGIDA: 51,8%/48,2% por direccion, contra 8,1% alcista del original con el bug isDown-first",
+ "definicion_cruce": "primer pasaje borde a borde: el precio sale de la banda, vuelve a tocar el borde mas cercano (arranca el cronometro) y alcanza el borde opuesto (termina)",
+ "estimando": "contraste zona - control de la mediana por sesion, sobre las zonas que cruzan LAS DOS bandas; nunca el valor absoluto",
+ "confundidores_declarados": [
+  "ancho: trivialmente mas ancho cuesta mas; el control se empareja por ancho exacto",
+  "actividad de sesion: por eso el contraste es dentro de sesion",
+  "distancia: el espejo se construye a la misma distancia del precio de creacion",
+  "zonas de altura 0: excluidas y contadas"
+ ],
+ "universo": {
+  "n_zonas": 9234,
+  "n_sesiones": 62,
+  "altura_cero_excluidas": 251,
+  "sin_parquet": 0
+ },
+ "tasas": {
+  "zona": {
+   "denominador": 7542,
+   "cruzan": 7287,
+   "frac_cruzan": 0.9662,
+   "entran_sin_cruzar": 221
+  },
+  "control": {
+   "denominador": 7542,
+   "cruzan": 7271,
+   "frac_cruzan": 0.9641,
+   "entran_sin_cruzar": 233
+  },
+  "zona_sobre_todas": {
+   "denominador": 9234,
+   "cruzan": 8876,
+   "frac_cruzan": 0.9612,
+   "entran_sin_cruzar": 316
+  },
+  "nota": "las tasas primarias van sobre las 7542 zonas CON control emparejado. Dividir los cruces del control por las 9234 zonas totales daba 0,787 contra 0,961: brecha de emparejamiento, no de mercado.",
+  "zonas_sin_control": 1692
+ },
+ "metricas": {
+  "ticks": {
+   "n_sesiones": 60,
+   "n_pares": 7052,
+   "zona_mediana": 468.5,
+   "control_mediana": 431.75,
+   "delta_pareada_mediana": 1.5,
+   "delta_pareada_p25": -2.0,
+   "delta_pareada_p75": 22.75,
+   "frac_zonas_mas_caras": 0.4927,
+   "dispersion_pares": {
+    "p05": -17314.5,
+    "p25": -704.5,
+    "p50": 1.0,
+    "p75": 881.2,
+    "p95": 21188.9
+   }
+  },
+  "ms": {
+   "n_sesiones": 60,
+   "n_pares": 7052,
+   "zona_mediana": 5498.0,
+   "control_mediana": 5396.0,
+   "delta_pareada_mediana": 0.0,
+   "delta_pareada_p25": -122.0,
+   "delta_pareada_p75": 183.0,
+   "frac_zonas_mas_caras": 0.4855,
+   "dispersion_pares": {
+    "p05": -411799.0,
+    "p25": -9039.0,
+    "p50": 0.0,
+    "p75": 12011.0,
+    "p95": 454094.6
+   }
+  },
+  "volumen": {
+   "n_sesiones": 60,
+   "n_pares": 7052,
+   "zona_mediana": 663.5,
+   "control_mediana": 645.0,
+   "delta_pareada_mediana": 0.0,
+   "delta_pareada_p25": -7.875,
+   "delta_pareada_p75": 37.0,
+   "frac_zonas_mas_caras": 0.494,
+   "dispersion_pares": {
+    "p05": -27370.8,
+    "p25": -1059.2,
+    "p50": 4.5,
+    "p75": 1256.8,
+    "p95": 32891.4
+   }
+  },
+  "ticks_por_ancho": {
+   "n_sesiones": 60,
+   "n_pares": 7052,
+   "zona_mediana": 167.562,
+   "control_mediana": 158.208,
+   "delta_pareada_mediana": 0.75,
+   "delta_pareada_p25": -1.062,
+   "delta_pareada_p75": 13.563,
+   "frac_zonas_mas_caras": 0.4927,
+   "dispersion_pares": {
+    "p05": -5841.7,
+    "p25": -262.1,
+    "p50": 0.5,
+    "p75": 304.1,
+    "p95": 6530.4
+   }
+  },
+  "vol_por_ancho": {
+   "n_sesiones": 60,
+   "n_pares": 7052,
+   "zona_mediana": 252.0,
+   "control_mediana": 254.25,
+   "delta_pareada_mediana": 0.0,
+   "delta_pareada_p25": -3.438,
+   "delta_pareada_p75": 19.0,
+   "frac_zonas_mas_caras": 0.494,
+   "dispersion_pares": {
+    "p05": -9325.7,
+    "p25": -390.0,
+    "p50": 2.0,
+    "p75": 440.3,
+    "p95": 10273.8
+   }
+  }
+ },
+ "procedencia": {
+  "head_commit": "0db8ecaaea9aba9b347c1714208561fde622d8b4",
+  "snapshot": "E:\\EdgeLab\\runs\\oraculo_espurev2flat_ES_snapshot.sqlite",
+  "archivos_sucios": [],
+  "medicion_comprometida": false
+ },
+ "n_zonas_detalle_omitido": 9234
+}

@@ -1,0 +1,45 @@
+{
+  "id": "PRED-007",
+  "titulo": "La saturacion de sep_min es un artefacto de medir CREACIONES; sobre PRIMEROS TOQUES la tasa vuelve a discriminar",
+  "fecha_registro": "2026-08-09T01:10:00-03:00",
+  "estado": "PREREGISTRADA_ANTES_DE_CORRER",
+  "autoriza": "Nico -- 'avancemos con D3, razona y decidi lo que te parezca mejor'",
+
+  "que_resuelve": "D3 pregunta si la tasa post-sep_min sirve como criterio de seleccion para §3.3. Se midio sobre CREACIONES y colapsaba: crudas en factor 83, post-filtro en factor 3.2. Pero la enmienda EXPLORE-001-2026-08-04_first_touch_decongestion declara que las creaciones son la poblacion EQUIVOCADA -la entrada primaria es el primer toque- y que las tasas de creaciones son solo DIAGNOSTICAS. Nunca se midio sobre la poblacion autoritativa.",
+
+  "estado_verificado_antes_de_correr": {
+    "contrato_de_eventos": "5 de 6 lo cumplen HOY. El commit 1f0f62d (2026-08-05) normalizo zone_id a str en voltickspoc2 y avolcellpoi2, y expuso touch_count tipado en gaps2 y hftzones2 -el ordinal que YA calculaban, enterrado en texto libre 'epoch=N'-.",
+    "documento_D3_desactualizado": "docs/D3_CENSO_AUTORITATIVO_PRIMEROS_TOQUES.md describe el estado ANTERIOR a esa normalizacion y dice que entra UNO. Hoy entran CINCO. Verificado en fuente: touch_count presente en bigtrap2, voltickspoc2, avolcellpoi2, gaps2, hftzones2.",
+    "AACloseOpenDiffs": "queda FUERA por decision de la spec v0.3 §4.1, no por falta de trabajo. §4.2: 'no existe una definicion canonica de primer toque' e 'introducirla ahora agregaria una definicion nueva DESPUES DE VER LA CURVA de los demas indicadores'. Definirla hoy seria data snooping.",
+    "paridad_no_afectada": "verificado de forma independiente: grep zone_id en parity.py -> 0. match_zones consume `zones`, no `events`, y empareja por created_ms + geometria comparando created_ms/geometria/state/touches. Los oraculos en PASS no se tocan."
+  },
+
+  "prediccion_central": {
+    "id": "S1",
+    "medida": "factor de dispersion de la tasa post-sep_min entre los 5 indicadores admisibles, sobre PRIMEROS TOQUES",
+    "esperado": "MAYOR que el factor 3.2 medido sobre creaciones",
+    "razonamiento": "sep_min=120 satura sobre creaciones porque los indicadores de tasa cruda alta generan zonas mucho mas rapido que una cada 2 h, asi que el filtro corta casi todo y lo que queda es cuantas ventanas de 120 min entran en una sesion -estructura de sesion, no del indicador-. Los primeros toques son intrinsecamente mas raros que las creaciones: no toda zona se toca. Si la poblacion ya esta por debajo del techo mecanico, sep_min deja de ser el binding constraint y la tasa vuelve a reflejar al indicador.",
+    "refuta_si": "el factor se mantiene <= 3.2, o sea la saturacion persiste sobre la poblacion autoritativa"
+  },
+
+  "predicciones_secundarias": [
+    {"id":"S2","medida":"supervivencia post-sep_min por indicador","esperado":"mas alta y mas dispersa que sobre creaciones (1.8% a 46.6%)","refuta_si":"todos colapsan a supervivencias parecidas"},
+    {"id":"S3","medida":"indicadores admitidos por el censo","esperado":"5 -- bigtrap2, voltickspoc2, avolcellpoi2, gaps2, hftzones2","refuta_si":"alguno es RECHAZADO: la premisa 'el censo correcto es corrible hoy' seria falsa y el bloqueo pasaria al emisor"},
+    {"id":"S4","medida":"AACloseOpenDiffs","esperado":"SIN_POBLACION, clasificado aparte, no un censo de cero","refuta_si":"sale status=COMPLETE con raw_count=0 -- el fail-open que efe0397 arreglo"},
+    {"id":"S5","medida":"MIN_STUDENTIZED_SESSIONS=160","esperado":"se declara cuantos indicadores lo superan sobre esta poblacion","refuta_si":"no se reporta -- sin eso no se puede congelar H1-H3"}
+  ],
+
+  "que_NO_decide_este_censo": [
+    "no elige H1-H3: produce la tabla que §3.3 necesita, la eleccion es de Nico y el auditor",
+    "no dice nada de expectativa economica: es outcome-free",
+    "las tasas de BigTrap2 siguen siendo de time:1, que es su laboratorio y no su habitat -sus barras de tick recien ahora tienen atribucion verificada (PRED-006)-"
+  ],
+
+  "consecuencia_de_cada_resultado": {
+    "si_S1_se_confirma": "D3 SE DISUELVE: era un artefacto de medir la poblacion equivocada. La tasa post-sep_min vuelve a ser un criterio informativo y §3.3 puede llenarse con la tabla autoritativa.",
+    "si_S1_se_refuta": "D3 es REAL sobre la poblacion correcta. Entonces hay que decidir el criterio de seleccion -medir antes del anti-solapamiento, o un sep_min que no sature- y eso es decision de Nico y el auditor, no mia."
+  },
+
+  "outcomes_accessed": false,
+  "holdout_accessed": false
+}

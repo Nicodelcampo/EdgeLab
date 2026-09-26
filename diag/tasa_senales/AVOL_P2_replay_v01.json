@@ -1,0 +1,377 @@
+{
+  "schema_version": "avolcluster_p2_replay_v0_1",
+  "label": "ABSTAIN_P2",
+  "source_of_truth": {
+    "nt8_cs": "nt8/aVolClusterPOI.cs",
+    "nt8_git_blob": "d512d91a606d41609b21ef244c896ead1dc52a10",
+    "oracle": "data\\nt8_oracles\\avolcluster_v05_07jun2026.csv",
+    "oracle_meta_instrument": "6E 09-26",
+    "oracle_timezone": "America/Argentina/Buenos_Aires"
+  },
+  "input": {
+    "parquet": "D:\\EdgeLab\\data\\nt8\\6E\\6E_09-26_ticks.parquet",
+    "expected_sha256": "6ffcdf041f8d77a2d6fb7cfe85d63bd8b176a081caa8ad8cd0aaae57c6f178f4",
+    "actual_sha256": "6ffcdf041f8d77a2d6fb7cfe85d63bd8b176a081caa8ad8cd0aaae57c6f178f4",
+    "hash_ok": true,
+    "oracle_instrument_ok": true
+  },
+  "window": {
+    "timezone": "America/Chicago",
+    "oracle_timezone": "America/Argentina/Buenos_Aires",
+    "start_inclusive": "2026-06-08T00:00:00",
+    "end_exclusive": "2026-07-01T00:00:00",
+    "warmup": "all complete sessions available before first compared zone",
+    "first_session_trim": "drop leading bars until session-minute % 10 == 0"
+  },
+  "oracle_rows": 53,
+  "outcomes_accessed": false,
+  "pnl_accessed": false,
+  "holdout_included": false,
+  "formal_race_executed": false,
+  "p1a_gate": {
+    "status": "PASS",
+    "n_bars": 54112,
+    "n_ticks": 2784986,
+    "n_quote": 2784986,
+    "n_rule": 0,
+    "quote_fraction": 1.0,
+    "footprint_mismatches": 0,
+    "diagnostics": []
+  },
+  "python_rows": 53,
+  "p2_gate": {
+    "p2_pass": false,
+    "match_rule": "one-to-one exact (lower_tick,upper_tick), |dt|<=60s after ART->CT",
+    "pass_rule": "P1A PASS AND zero unmatched oracle AND zero unmatched Python",
+    "matched": 50,
+    "match_rate_oracle": 0.9433962264150944,
+    "unmatched_oracle_count": 3,
+    "unmatched_python_count": 3,
+    "unmatched_oracle": [
+      {
+        "time": "2026-06-17T13:26:00",
+        "lower_tick": 23184,
+        "upper_tick": 23185,
+        "direction": -1,
+        "score": 1107.0,
+        "threshold": 750.0,
+        "history_samples": 20
+      },
+      {
+        "time": "2026-06-17T20:03:00",
+        "lower_tick": 23107,
+        "upper_tick": 23110,
+        "direction": 1,
+        "score": 1437.0,
+        "threshold": 434.0,
+        "history_samples": 21
+      },
+      {
+        "time": "2026-06-17T23:39:00",
+        "lower_tick": 23125,
+        "upper_tick": 23127,
+        "direction": 1,
+        "score": 478.0,
+        "threshold": 164.0,
+        "history_samples": 20
+      }
+    ],
+    "unmatched_python": [
+      {
+        "time": "2026-06-18T12:01:00",
+        "lower_tick": 23005,
+        "upper_tick": 23008,
+        "direction": 1,
+        "score": 1093.0,
+        "threshold": 740.0,
+        "history_samples": 24,
+        "bucket": 38
+      },
+      {
+        "time": "2026-06-25T09:08:00",
+        "lower_tick": 22827,
+        "upper_tick": 22837,
+        "direction": -1,
+        "score": 3584.0,
+        "threshold": 3232.0,
+        "history_samples": 39,
+        "bucket": 32
+      },
+      {
+        "time": "2026-06-30T21:35:00",
+        "lower_tick": 22880,
+        "upper_tick": 22882,
+        "direction": -1,
+        "score": 220.0,
+        "threshold": 174.0,
+        "history_samples": 41,
+        "bucket": 9
+      }
+    ]
+  },
+  "replay_diagnostics": {
+    "n_ticks": 2784986,
+    "n_bars": 54112,
+    "n_sessions_processed": 42,
+    "first_session_clock_trim": {
+      "applied": true,
+      "bars_dropped": 10,
+      "aligned_minute": 320
+    },
+    "sessions": [
+      {
+        "session_id": 20612,
+        "bars": 924,
+        "complete_blocks": 92,
+        "off_price_zones": 0
+      },
+      {
+        "session_id": 20613,
+        "bars": 1082,
+        "complete_blocks": 108,
+        "off_price_zones": 0
+      },
+      {
+        "session_id": 20614,
+        "bars": 1138,
+        "complete_blocks": 113,
+        "off_price_zones": 0
+      },
+      {
+        "session_id": 20615,
+        "bars": 1315,
+        "complete_blocks": 131,
+        "off_price_zones": 0
+      },
+      {
+        "session_id": 20616,
+        "bars": 1366,
+        "complete_blocks": 136,
+        "off_price_zones": 0
+      },
+      {
+        "session_id": 20619,
+        "bars": 1370,
+        "complete_blocks": 137,
+        "off_price_zones": 0
+      },
+      {
+        "session_id": 20620,
+        "bars": 1335,
+        "complete_blocks": 133,
+        "off_price_zones": 0
+      },
+      {
+        "session_id": 20621,
+        "bars": 1314,
+        "complete_blocks": 131,
+        "off_price_zones": 9
+      },
+      {
+        "session_id": 20622,
+        "bars": 1369,
+        "complete_blocks": 136,
+        "off_price_zones": 15
+      },
+      {
+        "session_id": 20623,
+        "bars": 1130,
+        "complete_blocks": 113,
+        "off_price_zones": 7
+      },
+      {
+        "session_id": 20626,
+        "bars": 1352,
+        "complete_blocks": 135,
+        "off_price_zones": 5
+      },
+      {
+        "session_id": 20627,
+        "bars": 1333,
+        "complete_blocks": 133,
+        "off_price_zones": 2
+      },
+      {
+        "session_id": 20628,
+        "bars": 1354,
+        "complete_blocks": 135,
+        "off_price_zones": 3
+      },
+      {
+        "session_id": 20629,
+        "bars": 1347,
+        "complete_blocks": 134,
+        "off_price_zones": 2
+      },
+      {
+        "session_id": 20630,
+        "bars": 1369,
+        "complete_blocks": 136,
+        "off_price_zones": 7
+      },
+      {
+        "session_id": 20633,
+        "bars": 1327,
+        "complete_blocks": 132,
+        "off_price_zones": 0
+      },
+      {
+        "session_id": 20634,
+        "bars": 1326,
+        "complete_blocks": 132,
+        "off_price_zones": 2
+      },
+      {
+        "session_id": 20635,
+        "bars": 1352,
+        "complete_blocks": 135,
+        "off_price_zones": 2
+      },
+      {
+        "session_id": 20636,
+        "bars": 1327,
+        "complete_blocks": 132,
+        "off_price_zones": 4
+      },
+      {
+        "session_id": 20637,
+        "bars": 1107,
+        "complete_blocks": 110,
+        "off_price_zones": 4
+      },
+      {
+        "session_id": 20640,
+        "bars": 1338,
+        "complete_blocks": 133,
+        "off_price_zones": 0
+      },
+      {
+        "session_id": 20641,
+        "bars": 1331,
+        "complete_blocks": 133,
+        "off_price_zones": 1
+      },
+      {
+        "session_id": 20642,
+        "bars": 1360,
+        "complete_blocks": 136,
+        "off_price_zones": 4
+      },
+      {
+        "session_id": 20643,
+        "bars": 1354,
+        "complete_blocks": 135,
+        "off_price_zones": 0
+      },
+      {
+        "session_id": 20644,
+        "bars": 1337,
+        "complete_blocks": 133,
+        "off_price_zones": 6
+      },
+      {
+        "session_id": 20647,
+        "bars": 1357,
+        "complete_blocks": 135,
+        "off_price_zones": 3
+      },
+      {
+        "session_id": 20648,
+        "bars": 1356,
+        "complete_blocks": 135,
+        "off_price_zones": 3
+      },
+      {
+        "session_id": 20649,
+        "bars": 1355,
+        "complete_blocks": 135,
+        "off_price_zones": 3
+      },
+      {
+        "session_id": 20650,
+        "bars": 1323,
+        "complete_blocks": 132,
+        "off_price_zones": 2
+      },
+      {
+        "session_id": 20651,
+        "bars": 1304,
+        "complete_blocks": 130,
+        "off_price_zones": 3
+      },
+      {
+        "session_id": 20654,
+        "bars": 1340,
+        "complete_blocks": 134,
+        "off_price_zones": 1
+      },
+      {
+        "session_id": 20655,
+        "bars": 1292,
+        "complete_blocks": 129,
+        "off_price_zones": 0
+      },
+      {
+        "session_id": 20656,
+        "bars": 1319,
+        "complete_blocks": 131,
+        "off_price_zones": 1
+      },
+      {
+        "session_id": 20657,
+        "bars": 1348,
+        "complete_blocks": 134,
+        "off_price_zones": 3
+      },
+      {
+        "session_id": 20658,
+        "bars": 1272,
+        "complete_blocks": 127,
+        "off_price_zones": 2
+      },
+      {
+        "session_id": 20661,
+        "bars": 1346,
+        "complete_blocks": 134,
+        "off_price_zones": 6
+      },
+      {
+        "session_id": 20662,
+        "bars": 1355,
+        "complete_blocks": 135,
+        "off_price_zones": 0
+      },
+      {
+        "session_id": 20663,
+        "bars": 1366,
+        "complete_blocks": 136,
+        "off_price_zones": 8
+      },
+      {
+        "session_id": 20664,
+        "bars": 1366,
+        "complete_blocks": 136,
+        "off_price_zones": 7
+      },
+      {
+        "session_id": 20665,
+        "bars": 1377,
+        "complete_blocks": 137,
+        "off_price_zones": 5
+      },
+      {
+        "session_id": 20668,
+        "bars": 1372,
+        "complete_blocks": 137,
+        "off_price_zones": 4
+      },
+      {
+        "session_id": 20669,
+        "bars": 397,
+        "complete_blocks": 39,
+        "off_price_zones": 0
+      }
+    ]
+  },
+  "payload_sha256": "3af7a8dec69dfb99e5777567c6dc6b29ee77ce48fb5857894a6cfd532b85c9c9"
+}
