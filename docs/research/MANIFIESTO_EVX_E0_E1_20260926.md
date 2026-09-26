@@ -29,3 +29,6 @@ Por activo y período: cruces por día, eventos totales y terciles de los filtro
 
 ## 5. Lo que sigue (ya pre-registrado en el diseño)
 E2 (P&L bruto de entradas × salidas, con control de entrada al azar con las mismas salidas), E3 (neto con costos propios), E4 (PBO, DSR, mesetas) y E5 (abr–jun, ≤ 3 configuraciones), sólo sobre los sobrevivientes de E1.
+
+### Nota de implementación (26/09, antes de medir)
+La caché de velas no guarda la apertura. En velas de tick contiguas, la apertura de i+1 es el trade siguiente al cierre de i (a ±1 tick). E1 usa el **cierre de i** como referencia, y la diferencia se absorbe igual en el evento y en el control. El ATR de 25 ticks tiene un piso de 1 tick.
