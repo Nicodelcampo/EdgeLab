@@ -1124,6 +1124,16 @@
 
 
 
+
+    <!-- EDGELAB_EVX_DESIGNER_V1 -->
+    <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
+      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px;">✖ Cruces EMA × VWAP (diseño)</div>
+      <label style="display:flex;align-items:center;gap:6px;font-size:10.5px;"><input type="checkbox" id="chk-evx"><b>Mostrar</b></label>
+      <div id="evx-sliders" style="display:flex;flex-direction:column;gap:3px;font-size:10px;margin-top:5px;"></div>
+      <div id="lbl-evx-status" style="font-size:9.5px;color:#666;margin-top:4px;"></div>
+      <div style="font-size:9px;color:#888;line-height:1.3;margin-top:4px;">▲▼ = cruce de la EMA (violeta) con el VWAP (rojo); gris = filtrado. ● = entrada del modo elegido. Clic en un cruce = sus valores; Esc lo cierra. Sólo diseño: sin desenlaces. Doc: docs/research/DISENO_EMA_VWAP_CRUCES_20260926.md</div>
+    </div>
+
     <!-- EDGELAB_EMA_VWAP_V1 -->
     <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
       <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px;">📈 EMA y VWAP</div>
@@ -2287,6 +2297,137 @@
     ctx.restore();
   }
 
+
+  // EDGELAB_EVX_DESIGNER_V1 (2026-09-26): cruces EMA × VWAP de sesión, filtros y modos de entrada. Sólo diseño:
+  // no hay desenlaces. Doc: docs/research/DISENO_EMA_VWAP_CRUCES_20260926.md
+  var EVX_P = [
+    ["p", "EMA del cruce (velas)", 5, 400, 1, 200], ["warmup", "Ignorar primeras velas de sesión", 0, 500, 10, 50],
+    ["minSideBars", "Mín. velas del otro lado", 0, 2000, 10, 0], ["minSideSecs", "Mín. segundos del otro lado", 0, 7200, 60, 0],
+    ["minMaxDist", "Mín. alejamiento EMA–VWAP previo (ticks)", 0, 200, 1, 0],
+    ["volMin", "Volumen mín. desde el cruce anterior", 0, 50000, 250, 0], ["volMax", "Volumen máx. (0 = sin tope)", 0, 100000, 500, 0],
+    ["mode", "Entrada: 0 cruce · 1 vuelve a EMA · 2 confirmación · 3 vuelve a VWAP", 0, 3, 1, 0],
+    ["pbBars", "M1/M3: velas máx. para el regreso", 1, 200, 1, 30], ["confBars", "M2: velas de confirmación", 1, 100, 1, 5],
+    ["slMode", "SL: 0 ticks fijos · 1 más allá del VWAP · 2 más allá del extremo previo", 0, 2, 1, 0],
+    ["slTicks", "SL: ticks (fijo, o margen en modos 1 y 2)", 1, 200, 1, 20],
+    ["tpMode", "TP: 0 múltiplo de R · 1 ticks fijos", 0, 1, 1, 0], ["tpR", "TP: múltiplo de R", 0.5, 10, 0.5, 2],
+    ["tpTicks", "TP: ticks fijos", 1, 400, 1, 40], ["hold", "Tiempo máx. dibujado (velas)", 10, 1000, 10, 200]
+  ];
+  var evx = { on: false, p: {}, ev: [], sel: null, hits: [] };
+  EVX_P.forEach(function (q) { evx.p[q[0]] = q[5]; });
+  function evxCompute() {
+    var cd = activeCandlesArr(); evx.ev = []; evx.sel = null;
+    if (!cd || cd.length < 10) return;
+    var P = evx.p, n = cd.length, tick = (state.data && state.data.meta && state.data.meta.tick_size) || 0.25;
+    var a = 2 / (P.p + 1), ema = new Float64Array(n), vw = new Float64Array(n), sb = new Int32Array(n);
+    var pv = 0, vv = 0, k = 0;
+    for (var i = 0; i < n; i++) {
+      var c = cd[i].close, gap = i && cd[i].time - cd[i - 1].time > 1800;
+      if (gap) { pv = 0; vv = 0; k = 0; }
+      ema[i] = i ? a * c + (1 - a) * ema[i - 1] : c;
+      var v = cd[i].volume || 1; pv += (cd[i].high + cd[i].low + c) / 3 * v; vv += v; vw[i] = pv / vv;
+      sb[i] = k++;                                         // vela dentro de la sesión
+    }
+    var lastI = -1, maxD = 0, volS = 0;
+    for (i = 1; i < n; i++) {
+      if (sb[i] === 0) { lastI = -1; maxD = 0; volS = 0; continue; }
+      var d0 = ema[i - 1] - vw[i - 1], d1 = ema[i] - vw[i];
+      volS += cd[i].volume || 0;
+      if (sb[i] >= P.warmup) maxD = Math.max(maxD, Math.abs(d1) / tick);
+      if (sb[i] < P.warmup || !(d0 <= 0 && d1 > 0 || d0 >= 0 && d1 < 0)) continue;
+      var dir = d1 > 0 ? 1 : -1, sideBars = lastI < 0 ? sb[i] - P.warmup : i - lastI;
+      var sideSecs = cd[i].time - cd[lastI < 0 ? i - sideBars : lastI].time;
+      var ok = sideBars >= P.minSideBars && sideSecs >= P.minSideSecs && maxD >= P.minMaxDist && volS >= P.volMin && (!P.volMax || volS <= P.volMax);
+      var e = { i: i, dir: dir, sideBars: sideBars, sideSecs: sideSecs, maxDist: maxD, vol: volS, ok: ok, ema: ema[i], vwap: vw[i], entryI: -1, entryPx: null };
+      if (ok) {                                            // modos de entrada (sin mirar más allá de lo que el modo espera)
+        if (P.mode === 0) { e.entryI = i; e.entryPx = cd[i].close; }
+        else if (P.mode === 1) {
+          for (var j = i + 1; j <= Math.min(n - 1, i + P.pbBars) && sb[j] > 0; j++) {
+            if (dir > 0 ? cd[j].low <= ema[j - 1] : cd[j].high >= ema[j - 1]) { e.entryI = j; e.entryPx = ema[j - 1]; break; }
+          }
+        } else {
+          if (P.mode === 3) {
+            for (var j3 = i + 1; j3 <= Math.min(n - 1, i + P.pbBars) && sb[j3] > 0; j3++) {
+              if (dir > 0 ? cd[j3].low <= vw[j3 - 1] : cd[j3].high >= vw[j3 - 1]) { e.entryI = j3; e.entryPx = vw[j3 - 1]; break; }
+            }
+          } else {
+          var jj = i + P.confBars, good = jj < n;
+          for (j = i + 1; good && j <= jj; j++) if (sb[j] === 0 || (ema[j] - vw[j]) * dir <= 0) good = false;
+          if (good) { e.entryI = jj; e.entryPx = cd[jj].close; }
+          }
+        }
+        if (e.entryI >= 0) {                               // SL y TP (niveles al momento de entrar; sin simular salida)
+          var tk = tick, ex = e.entryPx, sl;
+          if (P.slMode === 0) sl = ex - dir * P.slTicks * tk;
+          else if (P.slMode === 1) sl = vw[e.entryI] - dir * P.slTicks * tk;
+          else { var q0 = Math.max(0, lastI < 0 ? i - sideBars : lastI), xt = dir > 0 ? Infinity : -Infinity;
+                 for (var q = q0; q <= e.entryI; q++) xt = dir > 0 ? Math.min(xt, cd[q].low) : Math.max(xt, cd[q].high);
+                 sl = xt - dir * P.slTicks * tk; }
+          if ((ex - sl) * dir <= 0) sl = ex - dir * tk;      // stop del lado equivocado: 1 tick
+          var risk = Math.abs(ex - sl);
+          e.sl = sl; e.tp = P.tpMode === 0 ? ex + dir * P.tpR * risk : ex + dir * P.tpTicks * tk;
+          e.riskT = risk / tk; e.rr = Math.abs(e.tp - ex) / risk;
+        }
+      }
+      evx.ev.push(e);
+      lastI = i; maxD = 0; volS = 0;
+    }
+    evx.ema = ema; evx.vw = vw;
+    var nOk = evx.ev.filter(function (x) { return x.ok; }).length, nIn = evx.ev.filter(function (x) { return x.entryI >= 0; }).length;
+    var days = new Set(cd.map(function (x) { return Math.floor((x.time - 79200) / 86400); })).size || 1;
+    var lb = document.getElementById("lbl-evx-status");
+    if (lb) lb.textContent = evx.ev.length + " cruces (" + (evx.ev.length / days).toFixed(1) + "/día) · pasan filtros " + nOk + " · con entrada " + nIn + " (" + (nIn / days).toFixed(1) + "/día)";
+  }
+  function drawEvx(ctx, w, h) {
+    evx.hits = [];
+    if (!evx.on || !series || !evx.ema) return;
+    var cd = activeCandlesArr(); if (!cd) return;
+    var lr = chart.timeScale().getVisibleLogicalRange(); if (!lr) return;
+    var a = Math.max(1, Math.floor(lr.from) - 1), b = Math.min(cd.length - 1, Math.ceil(lr.to) + 1);
+    function line(arr, col) {
+      ctx.strokeStyle = col; ctx.lineWidth = 1.5; ctx.beginPath(); var on = false;
+      for (var i = a; i <= b; i++) {
+        if (cd[i].time - cd[i - 1].time > 1800) on = false;
+        var x = logicalToX(i), y = series.priceToCoordinate(arr[i]);
+        if (x === null || y === null) { on = false; continue; }
+        if (on) ctx.lineTo(x, y); else { ctx.moveTo(x, y); on = true; }
+      }
+      ctx.stroke();
+    }
+    ctx.save(); ctx.font = "10px -apple-system, Segoe UI, sans-serif";
+    line(evx.vw, "rgba(225,29,72,0.9)"); line(evx.ema, "rgba(124,58,237,0.9)");
+    evx.ev.forEach(function (e, k) {
+      if (e.i < a || e.i > b) return;
+      var x = logicalToX(e.i), y = series.priceToCoordinate(e.ema); if (x === null || y === null) return;
+      var col = !e.ok ? "rgba(148,163,184,0.9)" : (e.dir > 0 ? "#16a34a" : "#dc2626"), r = evx.sel === k ? 8 : 6;
+      ctx.fillStyle = col; ctx.beginPath();
+      if (e.dir > 0) { ctx.moveTo(x, y - r); ctx.lineTo(x + r, y + r); ctx.lineTo(x - r, y + r); } else { ctx.moveTo(x, y + r); ctx.lineTo(x + r, y - r); ctx.lineTo(x - r, y - r); }
+      ctx.closePath(); ctx.fill();
+      evx.hits.push({ k: k, x: x, y: y });
+      if (e.entryI >= 0) {
+        var xe = logicalToX(e.entryI), ye = series.priceToCoordinate(e.entryPx);
+        if (xe !== null && ye !== null) {
+          ctx.fillStyle = "#111"; ctx.beginPath(); ctx.arc(xe, ye, 3.5, 0, 6.3); ctx.fill();
+          ctx.fillText(["M0", "M1", "M2", "M3"][evx.p.mode], xe + 5, ye - 4);
+          var xh = logicalToX(Math.min(cd.length - 1, e.entryI + evx.p.hold)), ys = series.priceToCoordinate(e.sl), yt = series.priceToCoordinate(e.tp);
+          if (xh !== null && ys !== null && yt !== null) {
+            var al = evx.sel === k ? 0.28 : 0.10;
+            ctx.fillStyle = "rgba(22,163,74," + al + ")"; ctx.fillRect(xe, Math.min(ye, yt), xh - xe, Math.abs(yt - ye));
+            ctx.fillStyle = "rgba(220,38,38," + al + ")"; ctx.fillRect(xe, Math.min(ye, ys), xh - xe, Math.abs(ys - ye));
+          }
+          if (xe !== x) { ctx.strokeStyle = "rgba(17,17,17,0.5)"; ctx.setLineDash([2, 2]); ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(xe, ye); ctx.stroke(); ctx.setLineDash([]); }
+        }
+      }
+      if (evx.sel === k) {
+        var t = ["otro lado: " + e.sideBars + " velas / " + Math.round(e.sideSecs) + " s", "alejamiento máx.: " + e.maxDist.toFixed(1) + " t",
+                 "volumen desde el cruce anterior: " + Math.round(e.vol), e.ok ? "pasa filtros" : "filtrado",
+                 e.entryI >= 0 ? "riesgo " + e.riskT.toFixed(1) + " t · RR " + e.rr.toFixed(2) : "sin entrada en el modo elegido"];
+        ctx.fillStyle = "rgba(255,255,255,0.92)"; ctx.fillRect(x + 8, y - 70, 260, 66);
+        ctx.fillStyle = "#111"; t.forEach(function (s, q) { ctx.fillText(s, x + 12, y - 56 + 12 * q); });
+      }
+    });
+    ctx.restore();
+  }
+
   function drawL2Depth(ctx, vr, w, h) {
     var l2 = state.data && state.data.l2;
     if (!l2 || activeProps.show_l2_depth === false || !series) return;
@@ -2445,8 +2586,8 @@
     drawL2Depth(ctx, vr, w, hCanvas);
     drawTrades(ctx, vr, w, hCanvas);
     drawManipulationMarkers(ctx, vr, w, hCanvas);
-    drawMaVwap(ctx, w, hCanvas); drawTbz(ctx, vr, w, hCanvas); drawTbzE2(ctx, vr, w, hCanvas); drawTbzx(ctx, vr, w, hCanvas);
-    if ((tbze2Opt.on || tbzx.on) && tbze2Opt.solo) return;             // revisión TBZ-E2 sin las zonas HFT encima
+    drawMaVwap(ctx, w, hCanvas); drawEvx(ctx, w, hCanvas); drawTbz(ctx, vr, w, hCanvas); drawTbzE2(ctx, vr, w, hCanvas); drawTbzx(ctx, vr, w, hCanvas);
+    if ((tbze2Opt.on || tbzx.on || evx.on) && tbze2Opt.solo) return;             // revisión TBZ-E2 sin las zonas HFT encima
 
     var opacityVal = (activeProps.opacidad || 30) / 100;
     var showLabels = activeProps.mostrar_texto !== false;
@@ -4204,6 +4345,28 @@
     })();
 
     (function () {
+      var box = document.getElementById("evx-sliders"); if (!box) return;
+      var tmr = null;
+      function recalc() { clearTimeout(tmr); tmr = setTimeout(function () { evxCompute(); requestDraw(); }, 120); }
+      EVX_P.forEach(function (q) {
+        var row = document.createElement("div"); row.style.cssText = "display:flex;align-items:center;gap:6px;";
+        row.innerHTML = "<span style='min-width:170px'>" + q[1] + "</span><input type='range' min='" + q[2] + "' max='" + q[3] + "' step='" + q[4] + "' value='" + q[5] +
+          "' style='flex:1'><span style='min-width:42px;text-align:right;font-weight:700'>" + q[5] + "</span>";
+        var rg = row.querySelector("input"), lb = row.querySelectorAll("span")[1];
+        rg.addEventListener("input", function () { evx.p[q[0]] = Number(this.value); lb.textContent = this.value; if (evx.on) recalc(); });
+        box.appendChild(row);
+      });
+      document.getElementById("chk-evx").addEventListener("change", function () { evx.on = this.checked; if (evx.on) evxCompute(); requestDraw(); });
+      document.addEventListener("keydown", function (ev) { if (ev.key === "Escape" && evx.sel !== null) { evx.sel = null; requestDraw(); } });
+      chart.subscribeClick(function (p) {
+        if (!evx.on || !p || !p.point) return;
+        var best = null, bd = 10;
+        evx.hits.forEach(function (h) { var d = Math.hypot(h.x - p.point.x, h.y - p.point.y); if (d < bd) { bd = d; best = h; } });
+        if (best) { evx.sel = best.k; requestDraw(); }
+      });
+    })();
+
+    (function () {
       var c = document.getElementById("chk-tbze2");
       if (!c) return;
       c.addEventListener("change", function () { tbze2Opt.on = this.checked; if (!this.checked) { state.tbze2Sel = null; tbze2Info(); } requestDraw(); });
@@ -4617,6 +4780,7 @@
         loadTbz(aid);
         loadTbzE2(aid);
         tbzx.sigKey = null; tbzx.sel = null; if (tbzx.on) tbzxCompute();
+        if (evx.on) evxCompute();
       })
       .catch(function(err) {
         console.warn("Fallo fetch para " + aid + ", intentando script tag...", err);
