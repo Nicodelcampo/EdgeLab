@@ -58,7 +58,7 @@ INSTRUMENTS = {
     "MYM": MYM,
 }
 
-# Los 11 futuros del dataset de Kaggle + MYM. `INSTRUMENTS` queda intacto (incluye
+# Los 11 futuros del dataset de Kaggle (MYM NO: sale de Lucid y no es publicable; vive en INSTRUMENTS). `INSTRUMENTS` queda intacto (incluye
 # EURUSD, que es spot y no tiene contrato) para no cambiarle la semántica a los
 # consumidores existentes; los que necesiten el universo de futuros usan esto.
 CME_UNIVERSE = {
@@ -70,7 +70,6 @@ CME_UNIVERSE = {
     "MBT": MBT,
     "MES": MES,
     "MNQ": MNQ,
-    "MYM": MYM,
     "NQ": NQ,
     "YM": YM,
     "ZB": ZB,
