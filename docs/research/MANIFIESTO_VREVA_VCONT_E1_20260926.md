@@ -42,3 +42,17 @@ Primer alejamiento |cierre − VWAP| ≥ X·ATR (ATR de velas de 25 ticks, como 
 
 ## 5. No medido (queda abierto)
 X en escala diaria o en bandas σ del VWAP; VWAP anclado; disparos de flujo (delta, absorción, L2); salidas por tiempo o trailing; objetivos parciales; velas de tiempo; filtros de régimen (tipo de día, gap); otros activos.
+
+## 6. Resultado E1 (26/09; `artifacts/vrev2/report_e1.json`, sha `4affcca82cd0`, cobertura de controles ≥ 99 %, auditoría PASS)
+
+### VREV-A (reversión tras agotamiento): 0 INFO+ · 33 INFO− · 63 SIN_INFO
+Con los cuatro disparos de agotamiento (10 o 20 velas sin nuevo extremo, retroceso de 1 ATR, giro de la pendiente de la EMA21), X de 3 a 6 y stop detrás del extremo, **ninguna celda llega al VWAP más que el control** del mismo estado. Las INFO− se concentran en ES (el agotamiento no borra la inercia) y en X = 6 de MYM y YM. El neto de costo es negativo en todas.
+**Alcance:** sólo estos disparos y esta geometría. Sigue abierto: agotamiento por flujo (delta, absorción, L2), X en escala diaria o por bandas σ, VWAP anclado y objetivos parciales.
+
+### VCONT (continuación tras el primer alejamiento): 8 INFO+ · 19 INFO− · 69 SIN_INFO
+- **Las 8 INFO+ son todas del Dow (MYM e YM) con X = 6**, sin ninguna en ES ni NQ. Ejemplos: YM K1 m2 k2, 53,4 % contra 45,0 % (+8,4 pts); MYM K1 m2 k2, 53,2 % contra 46,6 %; YM K0 m2 k1, 36,5 % contra 32,8 %. Hay coherencia entre los dos contratos del mismo subyacente.
+- **Ninguna pasa a E2:** el neto de costo es negativo en todas (la mejor, YM K1 X6 m4 k2, −0,2 t).
+- En ES y NQ, las INFO− se concentran en objetivos lejanos con stop corto (m4 k1): la continuación hasta 4 ATR con 1 ATR de riesgo ocurre **menos** que en el control.
+
+**Lectura por celda:** en el Dow, con alejamientos grandes (6 ATR de vela de 25 ticks), hay información de continuación medible pero chica, que con estas geometrías no paga el costo. No se generaliza a «la continuación funciona en el Dow» ni a «no funciona en ES».
+**Queda abierto:** geometrías con más recorrido (trailing, objetivos por estructura), X > 6 y en escala diaria, filtros de régimen, y la réplica de la pista del Dow en abr–jun, que sólo tendría sentido con una geometría que pague el costo en exploración.
