@@ -30,7 +30,7 @@ sys.path.insert(0, str(REPO / "tools"))
 import peaks_learn as P  # noqa: E402
 
 VIEW = P.VIEW
-GRID = dict(w=(1, 2, 3), max_gap=(15, 30, 60, 110), max_step=(0, 2, 4, 6), min_pull=(0, 1, 2), nmin=(4, 6, 8, 10))
+GRID = dict(w=(1, 2, 3), max_gap=(15, 30, 60, 110), max_step=(0, 1, 2, 4), min_pull=(0, 1, 2), nmin=(6, 8, 10, 13))
 
 
 @njit(cache=True)
@@ -178,18 +178,24 @@ def main(argv=None):
         prev = json.loads(outp.read_text(encoding="utf-8"))
         best = prev["parametros"]
         # tope de pendiente = la pendiente total máxima de las series marcadas por Nico (su propio criterio, no ajustado)
-        sl = [abs(g[-1]["price"] - g[0]["price"]) / tick / max(g[-1]["i"] - g[0]["i"], 1) for g in lab["zigzags"] if len(g) > 2]
-        max_slope = float(max(sl)) if sl else None
-        Z = series(cd, tick, *[best[k] for k in GRID], extend_back=True, max_slope=max_slope)
-        prev["max_slope_de_etiquetas"] = max_slope
+        # criterio de Nico, tomado de sus marcas: pendiente total ≤ su percentil 90 y picos ≥ su percentil 10
+        G = [g for g in lab["zigzags"] if len(g) > 2]
+        sl = [abs(g[-1]["price"] - g[0]["price"]) / tick / max(g[-1]["i"] - g[0]["i"], 1) for g in G]
+        max_slope = float(np.percentile(sl, 90)) if sl else None
+        nmin_eff = max(int(best["nmin"]), int(np.percentile([len(g) for g in G], 10))) if G else int(best["nmin"])
+        pars = dict({k: best[k] for k in GRID}, nmin=nmin_eff)
+        Z = series(cd, tick, *[pars[k] for k in GRID], extend_back=True, max_slope=max_slope)
+        prev["criterio_de_etiquetas"] = dict(max_slope_p90=max_slope, nmin_p10=nmin_eff)
         f1, pr, rc, nz = P.score(Z, R, wins_all)
         prev.update(zonas=Z, extension_atras=True, puntaje_con_extension=dict(f1=round(f1, 3), precision=round(pr, 3), cobertura=round(rc, 3), zonas_en_ventana=nz))
         outp.write_text(json.dumps(prev, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
         print(json.dumps(dict(parametros={k: best[k] for k in GRID}, con_extension=prev["puntaje_con_extension"], sin_extension={k: best[k] for k in ("f1", "precision", "cobertura")}), ensure_ascii=False))
         return
+    G = [g for g in lab["zigzags"] if len(g) > 2]      # criterio de Nico desde sus marcas: pendiente ≤ su p90
+    cap = float(np.percentile([abs(g[-1]["price"] - g[0]["price"]) / tick / max(g[-1]["i"] - g[0]["i"], 1) for g in G], 90)) if G else None
     res = []                                         # sólo puntajes: guardar las zonas de 576 combinaciones colgó la PC (26/09)
     for w, mg, ms, mp, nm in itertools.product(*GRID.values()):
-        Z = series(cd, tick, w, mg, ms, mp, nm)
+        Z = series(cd, tick, w, mg, ms, mp, nm, extend_back=True, max_slope=cap)
         f1, pr, rc, nz = P.score(Z, R, wins_all)
         per = {}
         for s in S:
@@ -207,9 +213,9 @@ def main(argv=None):
                          cobertura=best["por_sesion"][te][2]))
     best = res[0]
     del Z
-    Z = series(cd, tick, *[best[k] for k in GRID], extend_back=True)
+    Z = series(cd, tick, *[best[k] for k in GRID], extend_back=True, max_slope=cap)
     days = len(set((cd["t"] // 86400).astype(int)))
-    out = dict(schema="EDGELAB_PEAKS_DET_V2_REGLA", asset=a.asset, regla="cada pico no supera al anterior (highs ≤, lows ≥), sin superación entre picos",
+    out = dict(schema="EDGELAB_PEAKS_DET_V2_REGLA", tope_pendiente_p90=cap, asset=a.asset, regla="cada pico no supera al anterior (highs ≤, lows ≥), sin superación entre picos",
                parametros=best, top5=res[:5], validacion_entre_sesiones=cruz, zonas=Z, zonas_por_dia=round(len(Z) / max(days, 1), 1),
                supuesto="precisión con ventana supuesta revisada (zonas grises sin marcar): está subestimada")
     (VIEW / "bundles" / "peaks_det" / f"{a.asset}.json").write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
