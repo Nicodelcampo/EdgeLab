@@ -151,17 +151,38 @@ def spy_bars(csv, minutes):
     return out, dups
 
 
-def es_bars(parquets, minutes):
-    """Velas RTH de ES, un contrato por vez (memoria). Por día se queda el contrato de más volumen RTH (el frente),
-    para no mezclar precios de dos vencimientos."""
+def _rth_partial(ts, px, v, minutes):
+    et = pd.to_datetime(ts, utc=True).tz_convert("America/New_York")
+    mins = et.hour * 60 + et.minute
+    k = np.asarray((mins >= 570) & (mins < 960))
+    if not k.any():
+        return None
+    df = pd.DataFrame(dict(day=np.asarray(et.date)[k], b=np.asarray((mins - 570) // minutes)[k], p=px[k], v=v[k], ts=ts[k]))
+    return df.groupby(["day", "b"], sort=False).agg(O=("p", "first"), H=("p", "max"), L=("p", "min"), C=("p", "last"),
+                                                     V=("v", "sum"), ts0=("ts", "first"), ts=("ts", "last")).reset_index()
+
+
+def es_bars(parquets, minutes, batch=4_000_000):
+    """Velas RTH de ES leyendo cada parquet en bloques (memoria acotada) y combinando parciales. Por día queda el
+    contrato de más volumen RTH (el frente), para no mezclar precios de dos vencimientos."""
     import pyarrow.parquet as pq
     allb = []
     for i, p in enumerate(parquets):
-        tb = pq.read_table(p, columns=["ts_utc_ns", "price_ticks", "volume"])
-        ts = tb["ts_utc_ns"].to_numpy(); k = (ts >= ES_LO_NS) & (ts < HOLDOUT_NS)
-        b = rth_bars(ts[k], tb["price_ticks"].to_numpy()[k], minutes, tb["volume"].to_numpy()[k])
-        b["contrato"] = i
-        allb.append(b); del tb, ts
+        parts = []
+        for rb in pq.ParquetFile(p).iter_batches(batch_size=batch, columns=["ts_utc_ns", "price_ticks", "volume"]):
+            ts = rb.column(0).to_numpy(); k = (ts >= ES_LO_NS) & (ts < HOLDOUT_NS)
+            if not k.any():
+                continue
+            part = _rth_partial(ts[k], rb.column(1).to_numpy()[k], rb.column(2).to_numpy()[k].astype(np.int64), minutes)
+            if part is not None:
+                parts.append(part)
+        if not parts:
+            continue
+        pp = pd.concat(parts, ignore_index=True).sort_values("ts0", kind="stable")
+        b = pp.groupby(["day", "b"], sort=True).agg(O=("O", "first"), H=("H", "max"), L=("L", "min"), C=("C", "last"),
+                                                      V=("V", "sum"), ts=("ts", "max")).reset_index()
+        b["t"] = b.ts / 1e9; b["contrato"] = i
+        allb.append(b)
     b = pd.concat(allb, ignore_index=True)
     vol = b.groupby(["day", "contrato"]).V.sum().reset_index().sort_values("V").groupby("day").tail(1)
     b = b.merge(vol[["day", "contrato"]], on=["day", "contrato"])
