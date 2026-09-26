@@ -151,18 +151,27 @@ def spy_bars(csv, minutes):
     return out, dups
 
 
-def _rth_partial(ts, px, v, minutes):
+def _rth_partial(ts, px, v, minutes, modo="rth"):
+    """Velas parciales de un bloque de ticks. `rth`: 9:30–16:00 ET, día calendario. `full`: sesión CME completa, de las
+    18:00 ET al día siguiente (trade date = día del cierre), sin la pausa de 17:00–18:00 ET."""
     et = pd.to_datetime(ts, utc=True).tz_convert("America/New_York")
-    mins = et.hour * 60 + et.minute
-    k = np.asarray((mins >= 570) & (mins < 960))
+    mins = np.asarray(et.hour * 60 + et.minute)
+    if modo == "rth":
+        k = (mins >= 570) & (mins < 960)
+        day = np.asarray(et.date); b = (mins - 570) // minutes
+    else:
+        m = (mins - 1080) % 1440                       # minutos desde las 18:00 ET
+        k = m < 1380                                   # fuera la pausa 17:00–18:00 ET
+        day = np.asarray((et + pd.to_timedelta((mins >= 1080).astype(int), unit="D")).date)
+        b = m // minutes
     if not k.any():
         return None
-    df = pd.DataFrame(dict(day=np.asarray(et.date)[k], b=np.asarray((mins - 570) // minutes)[k], p=px[k], v=v[k], ts=ts[k]))
+    df = pd.DataFrame(dict(day=day[k], b=b[k], p=px[k], v=v[k], ts=ts[k]))
     return df.groupby(["day", "b"], sort=False).agg(O=("p", "first"), H=("p", "max"), L=("p", "min"), C=("p", "last"),
                                                      V=("v", "sum"), ts0=("ts", "first"), ts=("ts", "last")).reset_index()
 
 
-def es_bars(parquets, minutes, batch=4_000_000):
+def es_bars(parquets, minutes, batch=4_000_000, modo="rth"):
     """Velas RTH de ES leyendo cada parquet en bloques (memoria acotada) y combinando parciales. Por día queda el
     contrato de más volumen RTH (el frente), para no mezclar precios de dos vencimientos."""
     import pyarrow.parquet as pq
@@ -173,7 +182,7 @@ def es_bars(parquets, minutes, batch=4_000_000):
             ts = rb.column(0).to_numpy(); k = (ts >= ES_LO_NS) & (ts < HOLDOUT_NS)
             if not k.any():
                 continue
-            part = _rth_partial(ts[k], rb.column(1).to_numpy()[k], rb.column(2).to_numpy()[k].astype(np.int64), minutes)
+            part = _rth_partial(ts[k], rb.column(1).to_numpy()[k], rb.column(2).to_numpy()[k].astype(np.int64), minutes, modo)
             if part is not None:
                 parts.append(part)
         if not parts:
@@ -273,9 +282,9 @@ def ganancia(rows, cost, slip=SLIP_T):
     return np.array(g)
 
 
-def e2(es_dir, spy_dir, out):
+def e2(es_dir, spy_dir, out, sost_dir=None):
     spy_rep = json.loads((Path(spy_dir) / "reporte.json").read_text())
-    es_rep = json.loads((Path(es_dir) / "reporte.json").read_text())
+    es_rep = json.loads((Path(sost_dir or es_dir) / "reporte.json").read_text())
     data = json.loads((Path(es_dir) / "eventos.json").read_text())
     refs = json.loads((Path(spy_dir) / "referencia.json").read_text())
     filas = []
@@ -308,10 +317,33 @@ def main(argv=None):
     s2 = sub.add_parser("es"); s2.add_argument("--parquet", nargs="+", required=True)
     s2.add_argument("--referencia", required=True); s2.add_argument("--out", required=True)
     s3 = sub.add_parser("e2"); s3.add_argument("--es", required=True); s3.add_argument("--spy", required=True)
-    s3.add_argument("--out", required=True)
+    s3.add_argument("--out", required=True); s3.add_argument("--sostenido", help="reporte que decide el sostenido (combinada)")
+    s4 = sub.add_parser("fut"); s4.add_argument("--inst", required=True); s4.add_argument("--parquet", nargs="+", required=True)
+    s4.add_argument("--modo", choices=("rth", "full"), default="rth")
+    s4.add_argument("--referencia", required=True); s4.add_argument("--out", required=True)
+    s5 = sub.add_parser("combinada"); s5.add_argument("--dirs", nargs="+", required=True)
+    s5.add_argument("--referencia", required=True); s5.add_argument("--out", required=True)
     a = ap.parse_args(argv)
     if a.cmd == "e2":
-        return e2(a.es, a.spy, a.out)
+        return e2(a.es, a.spy, a.out, a.sostenido)
+    if a.cmd == "fut":
+        refs_in = json.loads(Path(a.referencia).read_text()); data = {}
+        for mn in (5, 15):
+            bars = es_bars(a.parquet, mn, modo=a.modo)
+            data.update(run_grid(bars, mn, a.inst))
+        todas, refs = analyze(data, refs_in)
+        meta = dict(fuente=f"{a.inst} {a.modo.upper()} hasta 2026-03-31", parquets=[Path(p).name for p in a.parquet],
+                    dias=int(bars.day.nunique()))
+        return write(Path(a.out), f"{a.inst} {a.modo.upper()} (replicación)", todas, refs, meta, data)
+    if a.cmd == "combinada":
+        # eventos de varios instrumentos; `sesion` = día calendario: un día con eventos en los tres es UN cluster
+        refs_in = json.loads(Path(a.referencia).read_text()); data = {}
+        for d in a.dirs:
+            for k_, rows in json.loads((Path(d) / "eventos.json").read_text()).items():
+                data.setdefault(k_, []).extend(rows)
+        todas, refs = analyze(data, refs_in)
+        meta = dict(fuente="combinada " + " + ".join(Path(d).name for d in a.dirs), bootstrap="por día calendario")
+        return write(Path(a.out), "Combinada (replicación)", todas, refs, meta, data)
     if a.cmd == "spy":
         data, dups = {}, 0
         for mn in (5, 15):
