@@ -1144,7 +1144,7 @@
         <button class="nt8-btn sm" id="btn-lab-float" style="margin-left:auto;" title="Sacar el panel como ventana flotante sobre el gráfico (arrastrable)">⧉ Flotante</button></div>
       <div style="display:flex;gap:5px;flex-wrap:wrap;">
         <button class="nt8-btn sm" id="btn-lab-range" title="Arrastrá un rectángulo sobre el rango donde ocurre el fenómeno">▭ Rango</button>
-        <button class="nt8-btn sm" id="btn-lab-zz" title="Clic en cada pico (se pega al máximo o mínimo de la vela); Enter termina el zigzag">⟋ Zigzag</button>
+        <button class="nt8-btn sm" id="btn-lab-zz" title="Marcá los highs (o los lows) consecutivos de la zona: el primer clic define si son highs o lows; cada clic se pega al extremo real de ±3 velas; Enter termina el grupo">▼▲ Picos</button>
         <button class="nt8-btn sm" id="btn-lab-rev" title="Marca como revisada la sesión en pantalla: lo que no marcaste ahí cuenta como negativo">✓ Sesión revisada</button>
         <button class="nt8-btn sm" id="btn-lab-undo">↶ Deshacer</button>
         <button class="nt8-btn sm" id="btn-lab-exp">⭳ Exportar</button>
@@ -2515,8 +2515,8 @@
   function labStatus(msg) {
     var el = document.getElementById("lbl-lab-status"); if (!el) return;
     var d = lab.data || { ranges: [], zigzags: [], reviewed: [] };
-    el.textContent = (lab.mode ? "Modo: " + { range: "rango (arrastrá)", zz: "zigzag (clic por pico; Enter termina)" }[lab.mode] + " · " : "") +
-      d.ranges.length + " rangos · " + d.zigzags.length + " zigzags · " + d.reviewed.length + " sesiones revisadas" + (msg ? " · " + msg : "");
+    el.textContent = (lab.mode ? "Modo: " + { range: "rango (arrastrá)", zz: "picos (" + (lab.zz && lab.zz.length ? (lab.zz[0].kind === "H" ? "highs" : "lows") + ": " + lab.zz.length : "el 1er clic define highs o lows") + "; Enter termina el grupo)" }[lab.mode] + " · " : "") +
+      d.ranges.length + " rangos · " + d.zigzags.length + " grupos de picos · " + d.reviewed.length + " sesiones revisadas" + (msg ? " · " + msg : "");
     ["btn-lab-range", "btn-lab-zz"].forEach(function (id) { var b = document.getElementById(id); if (b) b.style.outline = (lab.mode === (id === "btn-lab-range" ? "range" : "zz")) ? "2px solid #7c3aed" : ""; });
   }
   function labSetMode(m) {
@@ -2544,10 +2544,22 @@
       var q = labPoint(ev); if (!q) return;
       ev.preventDefault(); ev.stopPropagation();
       if (lab.mode === "range") { lab.drag = { a: q, b: q }; }
-      else {                                              // zigzag: se pega al máximo o al mínimo de la vela, el más cercano al clic
-        var c = q.cd[q.i], hi = Math.abs(c.high - q.p) <= Math.abs(c.low - q.p);
+      else {                                              // picos: todos highs o todos lows del mismo grupo
+        var c = q.cd[q.i], kind = lab.zz && lab.zz.length ? lab.zz[0].kind : (Math.abs(c.high - q.p) <= Math.abs(c.low - q.p) ? "H" : "L");
+        // se pega al extremo real: el mejor de ±2 velas y después «sube la colina» hacia el máximo (o mínimo) local, hasta 8 velas
+        var better = function (a2, b2) { return kind === "H" ? q.cd[a2].high > q.cd[b2].high : q.cd[a2].low < q.cd[b2].low; };
+        var bi = q.i, k;
+        for (k = Math.max(0, q.i - 2); k <= Math.min(q.cd.length - 1, q.i + 2); k++) if (better(k, bi)) bi = k;
+        for (var step = 0; step < 8; step++) {
+          var nb = bi;
+          for (k = Math.max(0, bi - 1); k <= Math.min(q.cd.length - 1, bi + 1); k++) if (better(k, nb)) nb = k;
+          if (nb === bi) break; bi = nb;
+        }
         if (!lab.zz) { lab.zz = []; lab.data.zigzags.push(lab.zz); }
-        lab.zz.push({ t: q.t, i: q.i, price: hi ? c.high : c.low, kind: hi ? "H" : "L" });
+        if (!lab.zz.some(function (pt) { return pt.i === bi; })) {
+          lab.zz.push({ t: q.cd[bi].time, i: bi, price: kind === "H" ? q.cd[bi].high : q.cd[bi].low, kind: kind, bar_key: state.activeBarKey || null });
+          lab.zz.sort(function (a, b) { return a.i - b.i; });
+        }
         labStatus(); requestDraw();
       }
     }, true);
@@ -2556,7 +2568,8 @@
       if (!lab.drag) return;
       var a = lab.drag.a, b = lab.drag.b; lab.drag = null;
       if (a.i !== b.i) {
-        lab.data.ranges.push({ t0: Math.min(a.t, b.t), t1: Math.max(a.t, b.t), p0: Math.min(a.p, b.p), p1: Math.max(a.p, b.p), created: new Date().toISOString() });
+        lab.data.ranges.push({ t0: Math.min(a.t, b.t), t1: Math.max(a.t, b.t), i0: Math.min(a.i, b.i), i1: Math.max(a.i, b.i),
+                               p0: Math.min(a.p, b.p), p1: Math.max(a.p, b.p), bar_key: state.activeBarKey || null, created: new Date().toISOString() });
         labSave();
       }
       labStatus(); requestDraw();
@@ -2572,6 +2585,10 @@
     var cd = activeCandlesArr(); if (!cd) return;
     var vr = realVisibleRange(); if (!vr) return;
     function X(t) { var c = logicalToX(labIdxOfTime(cd, t)); return c === null ? NaN : c; }
+    function XI(i, t) {                                   // índice exacto; varias velas de 25 ticks comparten el mismo segundo
+      var idx = (i != null && cd[i] && cd[i].time === t) ? i : labIdxOfTime(cd, t);
+      var c = logicalToX(idx); return c === null ? NaN : c;
+    }
     function Y(p) { var c = series.priceToCoordinate(p); return c === null ? NaN : c; }
     ctx.save();
     lab.data.reviewed.forEach(function (s) {
@@ -2581,17 +2598,22 @@
     var rs = lab.data.ranges.slice(); if (lab.drag) rs.push({ t0: Math.min(lab.drag.a.t, lab.drag.b.t), t1: Math.max(lab.drag.a.t, lab.drag.b.t), p0: Math.min(lab.drag.a.p, lab.drag.b.p), p1: Math.max(lab.drag.a.p, lab.drag.b.p) });
     rs.forEach(function (r) {
       if (r.t1 < vr.from || r.t0 > vr.to) return;
-      var x0 = X(r.t0), x1 = X(r.t1), y0 = Y(r.p1), y1 = Y(r.p0);
+      var x0 = XI(r.i0, r.t0), x1 = XI(r.i1, r.t1), y0 = Y(r.p1), y1 = Y(r.p0);
       if (![x0, x1, y0, y1].every(isFinite)) return;
       ctx.fillStyle = "rgba(124,58,237,0.10)"; ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
       ctx.strokeStyle = "rgba(124,58,237,0.9)"; ctx.setLineDash([5, 3]); ctx.lineWidth = 1.5; ctx.strokeRect(x0, y0, x1 - x0, y1 - y0); ctx.setLineDash([]);
     });
     lab.data.zigzags.forEach(function (z) {
       if (!z.length || z[z.length - 1].t < vr.from || z[0].t > vr.to) return;
-      ctx.strokeStyle = "rgba(234,88,12,0.95)"; ctx.lineWidth = 2; ctx.beginPath();
-      z.forEach(function (pt, k) { var x = X(pt.t), y = Y(pt.price); if (k) ctx.lineTo(x, y); else ctx.moveTo(x, y); });
-      ctx.stroke();
-      z.forEach(function (pt) { var x = X(pt.t), y = Y(pt.price); ctx.fillStyle = pt.kind === "H" ? "#dc2626" : "#16a34a"; ctx.beginPath(); ctx.arc(x, y, 4, 0, 6.3); ctx.fill(); });
+      ctx.strokeStyle = "rgba(234,88,12,0.7)"; ctx.lineWidth = 1; ctx.setLineDash([3, 3]); ctx.beginPath();
+      z.forEach(function (pt, k) { var x = XI(pt.i, pt.t), y = Y(pt.price); if (k) ctx.lineTo(x, y); else ctx.moveTo(x, y); });
+      ctx.stroke(); ctx.setLineDash([]);
+      z.forEach(function (pt, k) {                        // ▼ sobre cada high, ▲ bajo cada low, en la mecha exacta
+        var x = XI(pt.i, pt.t), y = Y(pt.price), H = pt.kind === "H", o = H ? -1 : 1;
+        ctx.fillStyle = H ? "#dc2626" : "#16a34a"; ctx.beginPath();
+        ctx.moveTo(x, y); ctx.lineTo(x - 5, y + o * 9); ctx.lineTo(x + 5, y + o * 9); ctx.closePath(); ctx.fill();
+        ctx.font = "9px sans-serif"; ctx.textAlign = "center"; ctx.fillText(String(k + 1), x, y + o * 18); ctx.textAlign = "left";
+      });
     });
     ctx.restore();
   }
