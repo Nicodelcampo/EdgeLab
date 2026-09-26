@@ -224,13 +224,73 @@ def write(out, name, todas, refs, meta, data):
     print(f"{len(todas)} pruebas, {sum(t_['fdr'] for t_ in todas)} pasan FDR")
 
 
+def sostenidos(spy_rep, es_rep):
+    """E1 sostenido (manifiesto §6): la prueba principal pasa FDR en SPY y en ES tiene el mismo signo con IC > 0.
+    Regla de lectura (enmienda 1): n >= 30 por tercil en los dos."""
+    key = lambda t: (t["config"], t["x"], t["prueba"])
+    es = {key(t): t for t in es_rep["pruebas"]}
+    out = []
+    for t in spy_rep["pruebas"]:
+        if not t["prueba"].startswith("S T3 − T1") or not t["fdr"] or t.get("n_T3", 0) < 30:
+            continue
+        e = es.get(key(t))
+        if e is None or e.get("n_T3", 0) < 30:
+            continue
+        if np.sign(e["est"][0]) == np.sign(t["est"][0]) and e["est"][1] > 0:
+            out.append((t["config"], t["x"]))
+    return out
+
+
+def ganancia(rows, cost, slip=SLIP_T):
+    """G por evento en ticks (manifiesto §5): entrada al cierre de la vela del evento, objetivo A, stop B."""
+    g = []
+    for r in rows:
+        if r["res"] not in (1, 2):
+            continue
+        f = r["f_cierre"]; W = r["W"]
+        g.append(((1 - f) * W if r["res"] == 1 else -f * W - slip) - cost)
+    return np.array(g)
+
+
+def e2(es_dir, spy_dir, out):
+    spy_rep = json.loads((Path(spy_dir) / "reporte.json").read_text())
+    es_rep = json.loads((Path(es_dir) / "reporte.json").read_text())
+    data = json.loads((Path(es_dir) / "eventos.json").read_text())
+    refs = json.loads((Path(spy_dir) / "referencia.json").read_text())
+    filas = []
+    for cfg, x in sostenidos(spy_rep, es_rep):
+        rows = data[cfg]; ES.score(rows, refs[cfg]["ref"])
+        hi = [r for r in rows if r["x"] == x and r["S"] == r["S"] and r["S"] > refs[cfg]["cortes_S"][1]]
+        rng = np.random.default_rng(20260926)
+        for cost in (COST_T, COST_T_ALT):
+            ses = sorted({r["sesion"] for r in hi})
+            por = {s: ganancia([r for r in hi if r["sesion"] == s], cost) for s in ses}
+            tot = np.concatenate(list(por.values())) if por else np.array([])
+            bs = []
+            for _ in range(1000):
+                smp = rng.choice(len(ses), len(ses))
+                v = np.concatenate([por[ses[i]] for i in smp])
+                bs.append(v.mean() if len(v) else np.nan)
+            filas.append(dict(config=cfg, x=x, costo_t=cost, n=int(len(tot)), G_medio_t=float(tot.mean()),
+                              ic=[float(np.nanpercentile(bs, 2.5)), float(np.nanpercentile(bs, 97.5))],
+                              W_medio_t=float(np.mean([r["W"] for r in hi])),
+                              candidato=bool(np.nanpercentile(bs, 2.5) > 0)))
+    out = Path(out); out.mkdir(parents=True, exist_ok=True)
+    (out / "e2.json").write_text(json.dumps(dict(sostenidos=sostenidos(spy_rep, es_rep), filas=filas), indent=1))
+    print(json.dumps(dict(sostenidos=sostenidos(spy_rep, es_rep), filas=filas), indent=1))
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
     s1 = sub.add_parser("spy"); s1.add_argument("--csv", required=True); s1.add_argument("--out", required=True)
     s2 = sub.add_parser("es"); s2.add_argument("--parquet", nargs="+", required=True)
     s2.add_argument("--referencia", required=True); s2.add_argument("--out", required=True)
+    s3 = sub.add_parser("e2"); s3.add_argument("--es", required=True); s3.add_argument("--spy", required=True)
+    s3.add_argument("--out", required=True)
     a = ap.parse_args(argv)
+    if a.cmd == "e2":
+        return e2(a.es, a.spy, a.out)
     if a.cmd == "spy":
         data, dups = {}, 0
         for mn in (5, 15):
