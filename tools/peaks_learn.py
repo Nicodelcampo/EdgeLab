@@ -31,7 +31,9 @@ GRID = dict(W=(100, 150, 250), tau=(2, 4, 6), nmin=(4, 6, 8), w=(1, 2), gap=(0, 
 
 @njit(cache=True)
 def detect(h, l, t, tick, W, tau, nmin, w, kind):
-    """Zonas (i0, i1, piso, techo, toques). kind = 1 máximos, -1 mínimos. Causal: el pivote q se conoce en q + w."""
+    """Zonas (i0, i1, piso, techo, toques) y los pivotes que cada zona usó (pares zona, índice). kind = 1 máximos,
+    -1 mínimos. Causal: el pivote q se conoce en q + w. Los pivotes de una zona son los que estuvieron dentro de la
+    banda en alguna vela mientras la zona estaba activa."""
     n = len(h)
     x = h if kind == 1 else -l                      # trabajar siempre como «techo»
     piv = np.zeros(n, np.bool_)
@@ -42,12 +44,16 @@ def detect(h, l, t, tick, W, tau, nmin, w, kind):
                 ok = False
                 break
         piv[q] = ok
+    used = np.full(n, -1, np.int64)
     out = np.zeros((n // 10 + 10, 5))
     m = 0
     active = False
     z0 = 0; top = 0.0; cnt = 0
     for j in range(W + w, n):
         if t[j] - t[j - 1] > 1800:                  # no cruzar sesiones
+            if active:
+                out[m, 0] = z0; out[m, 1] = j - 1; out[m, 2] = top - tau * tick; out[m, 3] = top; out[m, 4] = cnt
+                m += 1
             active = False
         a = j - W
         hi = -1e18
@@ -62,15 +68,19 @@ def detect(h, l, t, tick, W, tau, nmin, w, kind):
                     first = q
         broke = x[j] > hi + tau * tick
         cond = c >= nmin and not broke
-        if cond and not active:
-            active = True; z0 = first; top = hi; cnt = c
-        elif cond and active:
-            top = max(top, hi); cnt = max(cnt, c)
-        elif active and not cond:
+        if cond:
+            if not active:
+                active = True; z0 = first; top = hi; cnt = c
+            else:
+                top = max(top, hi); cnt = max(cnt, c)
+            for q in range(a, j - w + 1):
+                if piv[q] and x[q] >= hi - tau * tick and used[q] < 0:
+                    used[q] = m
+        elif active:
             out[m, 0] = z0; out[m, 1] = j; out[m, 2] = top - tau * tick; out[m, 3] = top; out[m, 4] = cnt
             m += 1
             active = False
-    return out[:m]
+    return out[:m], used
 
 
 def merge(Z, gap, dmin):
@@ -81,8 +91,12 @@ def merge(Z, gap, dmin):
         cur = None
         for z in zs:
             if cur and z["i0"] - cur["i1"] <= gap and z["p0"] <= cur["p1"] and z["p1"] >= cur["p0"]:
+                pk = {q[0]: q for q in cur.get("picos", []) + z.get("picos", [])}
+                pv = [q[2] for q in pk.values()]
+                if pv and max(pv) - min(pv) > 2 * max(abs(cur["p1"] - cur["p0"]), 1e-9):   # unir no puede volverla inclinada
+                    out.append(cur); cur = dict(z); continue
                 cur.update(i1=max(cur["i1"], z["i1"]), t1=max(cur["t1"], z["t1"]), p0=min(cur["p0"], z["p0"]), p1=max(cur["p1"], z["p1"]),
-                           toques=max(cur["toques"], z["toques"]))
+                           picos=[pk[k] for k in sorted(pk)], toques=len(pk))
             else:
                 if cur:
                     out.append(cur)
@@ -95,11 +109,20 @@ def merge(Z, gap, dmin):
 def zones(cd, tick, W, tau, nmin, w):
     Z = []
     for kind in (1, -1):
-        for r in detect(cd["h"], cd["l"], cd["t"], tick, W, tau, nmin, w, kind):
+        rows, used = detect(cd["h"], cd["l"], cd["t"], tick, W, tau, nmin, w, kind)
+        src = cd["h"] if kind == 1 else cd["l"]
+        by = {}
+        for q in np.flatnonzero(used >= 0):
+            by.setdefault(int(used[q]), []).append(int(q))
+        for zi, r in enumerate(rows):
             i0, i1 = int(r[0]), int(r[1])
             p0, p1 = (r[2], r[3]) if kind == 1 else (-r[3], -r[2])
+            pk = by.get(zi, [])
+            if pk and (src[pk].max() - src[pk].min()) > 2 * tau * tick:
+                continue                                # la banda se fue moviendo con la tendencia: no es un techo/piso horizontal
             Z.append(dict(kind="H" if kind == 1 else "L", i0=i0, i1=i1, t0=float(cd["t"][i0]), t1=float(cd["t"][i1]),
-                          p0=float(p0), p1=float(p1), toques=int(r[4])))
+                          p0=float(p0), p1=float(p1), toques=len(pk) or int(r[4]),
+                          picos=[[q, float(cd["t"][q]), float(src[q])] for q in pk]))
     return Z
 
 
