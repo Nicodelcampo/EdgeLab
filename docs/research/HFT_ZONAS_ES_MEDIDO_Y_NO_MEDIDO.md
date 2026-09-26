@@ -248,6 +248,12 @@ modelo.**
 ---
 
 ## MEDIDO — y vivo
+- **HFT-REV-EXP cortes (MNQ 09-25, 2026-09-26, exploratorio).** Exceso difuso de +1 a +3 pp en casi todos los cortes;
+  ningún contexto concentra el efecto. Replicación: 03-26 hecha (sin leer contra la regla), 12-25 pendiente.
+  Ver `docs/research/HANDOFF_2026-09-26_HFT_REV_Y_ESPEJO.md`.
+- **ESPEJO-SIM (MNQ 09-25, familia TBZX, exploratorio).** Con `minW` = 17, las vueltas parecidas al impulso completan el
+  espejo +1,5 a +4,9 pp más que las poco parecidas (FDR de grilla). **Sin replicar.** No operable en esa escala
+  (costo/W ≈ 14 pp). Nulo al extremo de la vela sesgado: se usa el del cierre (enmienda 1).
 
 - **HFT-REV-EXP (MNQ 09-25, otra familia, no ES — registrado acá por visibilidad, 2026-09-26).** Primer retorno a zonas
   `HFTZonesNQPureV4` `SCALED_FUNNEL_V1`: 29.635 zonas, 36 sesiones. Revierte 40 t el 26 % de las que vuelven, contra 25 %
