@@ -65,3 +65,15 @@ La primera corrida (reporte sha `daa3b0f3bbd3`, 32 INFO+) aplicaba el tope de pe
 
 ### Segundo control, más estricto (26/09, tras la corrida corregida `f156dc68d907` y antes de pasar a B)
 Riesgo detectado: el nivel real es un pico **recién negociado**; el fantasma de C-SZ es un precio cualquiera a la misma distancia, que puede estar fuera del rango reciente. Parte del efecto podría ser «volver al rango reciente». **C-SW:** el nivel de control es un **máximo o mínimo reciente real** (pivote en las últimas 300 velas), todavía no superado, a la misma distancia (± R), que **no** es parte de una acumulación; misma hora, estado y actividad, en otra sesión. **Para pasar a B una celda tiene que ganarles a C-SZ y a C-SW** (IC inferior > 0 contra C-SW).
+
+## Resultado etapa A con los dos controles (26/09, reporte sha `ff25451223b2`, árbol limpio, auditoría PASS)
+- Estados (144 celdas): **INFO+ 32**, INFO− 13, SIN_INFO 13, SIN_POTENCIA 86. Cobertura de control: ES alta, NQ 0,91.
+- **Pasan a B: 23 celdas** (INFO+ contra C-SZ con FDR, mismo signo en las dos mitades, IC inferior > 0 contra C-SW).
+- **El control del pico reciente (C-SW) achica el efecto pero no lo anula.** Ejemplos:
+  - ES estándar, no virgen, k 4, último pico: n 1.335, +0,20 contra C-SZ y **+0,155 contra C-SW (IC +0,12 a +0,19)**;
+  - ES estándar, no virgen, k 8, último pico: n 295, +0,25 / **+0,18 (IC +0,12 a +0,24)**;
+  - ES estricto, virgen, k 4, volumen alto: n 73, +0,33 / +0,32 (IC +0,18 a +0,47);
+  - NQ estándar, virgen, k 2: n 173–179, +0,11 a +0,17 / +0,10 a +0,12.
+- El primer pico gana menos que el último en k 4 (varias celdas de primer pico no pasan C-SW).
+- **Tensión con 500t:** en 500t (`MANIFIESTO_IPC_MACRO_ES_500T_20260926.md`) la única celda medible daba +0,09 contra C-SZ y 0 contra C-SW, sin potencia. No es una contradicción demostrada (MDE 0,14), pero **si el efecto fuera sólo de 25t, la fricción podría comérselo**: esa es la pregunta de B.
+- **Siguiente:** etapa B (economía) sólo sobre las 23 celdas, según §6: entrada al confirmarse el alejamiento, TP en el nivel + 1 tick, SL a otros D, costos propios de cada activo y control de entrada al azar con las mismas salidas.

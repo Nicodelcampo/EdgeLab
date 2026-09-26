@@ -394,3 +394,8 @@ aquellos números compara dos poblaciones distintas.
 - **MEDIDO:** etapa A, 28 celdas (alejamiento con momento temprano/tardío, regreso a zona virgen; k 2 y 4; dos detectores), contra C-SZ y C-SW. Reporte sha `59f9d855deff`, manifiesto `MANIFIESTO_IPC_MACRO_ES_500T_20260926.md`.
 - **Estado:** 28/28 **SIN_POTENCIA** (519 eventos en 181 sesiones). Lo visible en las 5 celdas medibles: +0,09 contra nivel sin zona que se anula contra pico reciente; el regreso va en contra (−0,16 contra C-SW en la estricta). No hay candidato para B.
 - **NO MEDIDO:** RTH vs ETH, otras escalas (2000t, tiempo), zonas entre sesiones, otros activos, primer pico.
+
+## Anexo 2026-09-26 (3): IPC 25t (acumulaciones de picos como imán) en ES y NQ
+- **MEDIDO:** etapa A, 144 celdas, contra C-SZ (nivel sin zona) y C-SW (pico reciente no superado, sin acumulación). Reporte sha `ff25451223b2`. Corrida anterior con fuga (`daa3b0f3bbd3`) invalidada.
+- **Estado:** 32 INFO+, 23 pasan a B. El efecto sobrevive al pico reciente: ES k 4 último pico +0,155 [+0,12, +0,19] con n 1.335.
+- **NO MEDIDO:** economía (B), estado continuo, banda completa, otros activos, holdout.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-r"""Canoniza la extensión jul-sep 2026 de ES (enmienda HOLDOUT-A1, 26/09) desde la historia del AddOn de NT8.
+r"""Canoniza la extensión jul-sep 2026 de ES o NQ (enmienda HOLDOUT-A1, 26/09) desde la historia del AddOn de NT8.
 
 - Fuente: E:\DatosNT8\tick_history\ES_09-26 y ES_12-26 (*.Last.utc.txt, días locales de NT8 en hora argentina,
   timestamps en UTC) + manifest.jsonl de procedencia del AddOn.
@@ -11,7 +11,7 @@ r"""Canoniza la extensión jul-sep 2026 de ES (enmienda HOLDOUT-A1, 26/09) desde
   quedan fuera del catálogo canónico.
 - Contrato por sesión: regla canónica (líder de la sesión completa anterior, sólo hacia adelante).
 
-    .venv\Scripts\python tools\build_es_ext_2026q3.py
+    .venv\Scripts\python tools\build_es_ext_2026q3.py [ES|NQ]
 """
 from __future__ import annotations
 
@@ -41,6 +41,18 @@ END_NS = 1_790_805_600 * 1_000_000_000        # 2026-09-30 17:00 CT = apertura d
 TICK = 0.25
 CATS = ["buy", "sell", "unclassified"]
 CONTRACTS = {"ES 09-26": "ES_09-26", "ES 12-26": "ES_12-26"}
+INST = "ES"
+
+
+def set_inst(inst):
+    """ES o NQ (tick 0,25 los dos): rutas, contratos y catálogo del instrumento."""
+    global INST, OUT, CAT, CONTRACTS
+    INST = inst
+    OUT = Path(r"E:\EdgeLab\data\nt8_ext_2026q3") / f"{inst}_parquet"
+    CAT = REPO / "docs" / "research" / "contract_regimes" / f"{inst}_ext_2026q3_sessions_catalog.json"
+    CONTRACTS = {f"{inst} 09-26": f"{inst}_09-26", f"{inst} 12-26": f"{inst}_12-26"}
+
+
 MIN_TICKS, MAX_GAP_S, MIN_SPAN_H = 200_000, 1800, 22.5   # sesión CME 17:00-16:00 CT = 23 h
 
 
@@ -92,7 +104,7 @@ def build(contract, folder):
             t = pa.table({"ts_utc_ns": ts, "ts_local_ns": ts, "sequence": seq, "price_ticks": px, "bid_ticks": bd, "ask_ticks": ak,
                           "volume": vol.astype(np.int32),
                           "aggressor": pa.DictionaryArray.from_arrays(pa.array(cod, pa.int8()), pa.array(CATS)).cast(pa.string()),
-                          "tick_type": pa.array(["trade"] * k), "instrument": pa.array(["ES"] * k), "contract": pa.array([contract] * k),
+                          "tick_type": pa.array(["trade"] * k), "instrument": pa.array([INST] * k), "contract": pa.array([contract] * k),
                           "source_file": pa.array([str(f)] * k), "source_row": seq})
             if writer is None:
                 writer = pq.ParquetWriter(pq_path, t.schema, compression="snappy")
@@ -101,7 +113,7 @@ def build(contract, folder):
     if nonmono:
         raise ValueError(f"{contract}: {nonmono} timestamps no monótonos")
     man = dict(schema_version="canonical_tick_v1", tool="tools/build_es_ext_2026q3.py", amendment="HOLDOUT-A1 (2026-09-26)",
-               generated_utc=datetime.now(timezone.utc).isoformat(), instrument="ES", contract=contract, rows=n, tick_size=TICK,
+               generated_utc=datetime.now(timezone.utc).isoformat(), instrument=INST, contract=contract, rows=n, tick_size=TICK,
                window_utc_ns=[START_NS, END_NS], rows_outside_window_dropped=dropped, lineas_no_parseadas=bad,
                parquet_sha256=file_sha256(pq_path), source_files_sha256=src_sha,
                nota="ts_local_ns duplica ts_utc_ns y sequence es índice de fila (igual que research-v2, P-28)")
@@ -112,6 +124,7 @@ def build(contract, folder):
 
 
 def main():
+    set_inst(sys.argv[1] if len(sys.argv) > 1 else "ES")
     per_c, paths = {}, {}
     for c, f in CONTRACTS.items():
         paths[c], per_c[c] = build(c, f)
@@ -120,7 +133,7 @@ def main():
     for i, d in enumerate(days):
         cands = {c: per_c[c][d] for c in CONTRACTS if d in per_c[c]}
         if cur is None:
-            cur = "ES 09-26"                                     # continuidad con research-v2 (ES 09-26 al 30-jun)
+            cur = f"{INST} 09-26"                                   # continuidad con research-v2 (ES 09-26 al 30-jun)
         elif i > 0:
             prev = {c: per_c[c].get(days[i - 1], {}).get("ticks", 0) for c in CONTRACTS}
             lead = max(prev, key=prev.get)
