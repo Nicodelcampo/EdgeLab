@@ -55,3 +55,50 @@ Conocido y aceptado:
 
 ## Correr en otros activos
 El diseñador ya funciona sobre cualquier bundle del visor (ES, NQ, YM, 6E, GC…). La prueba masiva corre en Python sobre ticks con contrato canónico por activo, con los **costos propios de cada instrumento** (no se transportan). Candidatos: MYM, YM, ES, NQ, 6E, GC. Cada activo es una prueba de la misma familia y cuenta en la multiplicidad.
+
+## Plan de la prueba masiva EVX v1 (26/09) — BORRADOR para OK de Nico, sin ejecutar
+
+### Principio: embudo, no fuerza bruta
+Probar todo contra P&L de una vez multiplica la selección espuria y el cómputo. Se usa un **embudo pre-registrado**: cada etapa es barata y descarta lo que no merece la siguiente. El P&L sólo se mira en lo que ya mostró información.
+
+| Etapa | Qué mira | Costo | Mata si |
+|---|---|---|---|
+| **E0 censo** (target-free) | cruces por día, por activo y período; duración de los tramos; distribución de los filtros | segundos | < 1 cruce por día, o < 300 eventos en la exploración |
+| **E1 información** (sin P&L) | retorno direccional a 5, 20, 60 y 200 velas después del cruce, contra el control | minutos | IC que cruza 0 contra el control, o efecto < MDE |
+| **E2 P&L bruto** | grilla de entradas × salidas, sólo en las celdas que sobrevivieron E1 | minutos | expectativa bruta ≤ control con las mismas salidas |
+| **E3 neto** | costos propios del activo (spread observado + comisión + 1 tick de slippage en stops) | segundos | IC neto ≤ 0 |
+| **E4 robustez** | mitades, meses, vecinos en la grilla, PBO (CSCV) y DSR (`edgelab/research/g2.py`) | minutos | PBO > 0,5, DSR < 0,95, o pico aislado (los vecinos no acompañan) |
+| **E5 confirmación** | abr–jun, una sola apertura, sólo 1–3 configuraciones | — | según los gates G0–G5 |
+
+### Controles (lo aprendido en TBZX)
+1. **Control de evento:** cruce fantasma en **otra sesión, a la misma hora, con la misma actividad previa y el mismo estado** (distancia |EMA − VWAP| y pendiente de la EMA a ±25 %). Corta la trampa «mercado movido + estado».
+2. **Control de salidas:** **entradas al azar con las mismas reglas de salida** (misma hora, misma dirección). El trailing por la EMA, el cruce opuesto o el break-even pueden generar resultado sin que el cruce aporte nada. Una celda sólo sobrevive si le gana a **las dos** cosas: al cruce fantasma y a la entrada al azar con sus salidas.
+3. **Signo invertido** como diagnóstico: si el lado contrario da parecido, es volatilidad y no dirección.
+
+### Robustez de las lógicas
+- **Parámetros portables entre activos:** las distancias (SL, TP fijo, alejamiento, margen) se expresan en **unidades de ATR de sesión**, no en ticks, y los filtros de tiempo y volumen en **cuantiles del propio activo** (terciles). La misma regla significa lo mismo en MYM y en 6E, y la grilla se achica.
+- **Dos resoluciones:** velas de 25 ticks (principal) y de 1 minuto (réplica). Una lógica que sólo vive en una resolución es sospechosa.
+- **Mesetas, no picos:** en E4 se exige que la celda elegida y sus vecinas inmediatas en la grilla tengan el mismo signo.
+- **Contrato canónico** por activo (`contract_regime`), holdout y reserva cerrados.
+
+### Grilla (tamaño controlado)
+- **EMA:** 21, 55, 144, 377 (4, espaciado log). **Filtros por terciles:** tiempo del otro lado, alejamiento y volumen, cada uno {sin filtro, ≥ T1, ≥ T2} → 27 combinaciones, pero **en E1 se prueban de a un filtro** (1 + 3×2 = 7).
+- **Entradas:** M0, M1, M2 (3 velas), M3; esperas de 10 y 30 velas.
+- **SL:** 0,5 · 1 · 2 ATR; VWAP + 0,25 ATR; extremo + 0,25 ATR (5). **TP:** 1 · 2 · 3 R, o ninguno (4).
+- **Salidas:** {cruce opuesto} × {trailing EMA sí/no} × {break-even en 1 R sí/no} × fin de sesión siempre, con tiempo máximo de 200 velas (4).
+- **E1:** 4 EMA × 7 filtros × 4 horizontes = 112 celdas por activo. **E2**, sólo sobre los sobrevivientes: hasta 5 × 4 × 5 × 4 × 4 = 1.600 variantes de salida por celda.
+
+### Cómputo
+- **Precálculo único por sesión:** velas de 25 ticks (ya en caché para ES y NQ; MYM desde los parquets canónicos), EMA de los 4 períodos, VWAP y ATR. Los cruces dependen sólo del período, no de filtros ni salidas: **se detectan una vez**. Los filtros son máscaras sobre la tabla de eventos.
+- **Simulación en numba:** un kernel recorre cada evento una sola vez y evalúa **todas las variantes de salida a la vez** (vector de estados por variante), en lugar de una pasada por configuración. Estimado: MYM, 181 sesiones × ~10 cruces por día × 1.600 variantes × ≤ 200 velas ≈ 6·10⁸ pasos, unos minutos por activo en esta PC.
+- **Máquina:** máximo 2 procesos pesados, lectura por sesión (nunca archivos enteros). Si crece, al kernel de Kaggle, con el mismo patrón que TBZX-R3.
+- **Orden de activos:** MYM (objetivo), YM (mismo subyacente: réplica natural), ES, NQ; después 6E y GC. Cada activo es una prueba más de la familia.
+
+### Multiplicidad y presupuesto
+- **E1:** BH q = 0,10 sobre 112 × activos. **E2–E4:** PBO y DSR con el número **real** de variantes evaluadas (se registra en el Cerebro); nunca «la mejor» sola: se publica el paisaje completo.
+- **Límite:** a E5 pasan 3 configuraciones como máximo, pre-registradas antes de abrir abr–jun.
+
+### Qué necesito de Nico para lanzar
+1. OK a este embudo, la grilla y los activos.
+2. Confirmar si SL y TP en ATR (portables) está bien, o si preferís ticks.
+3. Registro de la familia EVX (independiente de TBZ y TBZX) y OK de STOP para mirar retornos desde E1.
