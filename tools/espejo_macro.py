@@ -261,13 +261,15 @@ def sostenidos(spy_rep, es_rep):
     es = {key(t): t for t in es_rep["pruebas"]}
     out = []
     for t in spy_rep["pruebas"]:
-        if not t["prueba"].startswith("S T3 − T1") or not t["fdr"] or t.get("n_T3", 0) < 30:
+        # el manifiesto (§6) define «sostenido» por prueba: principal (T3 − T1) y exceso general al cierre
+        pobl = "T3" if t["prueba"].startswith("S T3 − T1") else ("todos" if t["prueba"].startswith("todos: exceso vs f al cierre") else None)
+        if pobl is None or not t["fdr"] or t.get("n_T3", t["n"]) < 30:
             continue
         e = es.get(key(t))
-        if e is None or e.get("n_T3", 0) < 30:
+        if e is None or e.get("n_T3", e["n"]) < 30:
             continue
         if np.sign(e["est"][0]) == np.sign(t["est"][0]) and e["est"][1] > 0:
-            out.append((t["config"], t["x"]))
+            out.append((t["config"], t["x"], pobl))
     return out
 
 
@@ -288,9 +290,12 @@ def e2(es_dir, spy_dir, out, sost_dir=None):
     data = json.loads((Path(es_dir) / "eventos.json").read_text())
     refs = json.loads((Path(spy_dir) / "referencia.json").read_text())
     filas = []
-    for cfg, x in sostenidos(spy_rep, es_rep):
+    for cfg, x, pobl in sostenidos(spy_rep, es_rep):
         rows = data[cfg]; ES.score(rows, refs[cfg]["ref"])
-        hi = [r for r in rows if r["x"] == x and r["S"] == r["S"] and r["S"] > refs[cfg]["cortes_S"][1]]
+        if pobl == "T3":
+            hi = [r for r in rows if r["x"] == x and r["S"] == r["S"] and r["S"] > refs[cfg]["cortes_S"][1]]
+        else:
+            hi = [r for r in rows if r["x"] == x]
         rng = np.random.default_rng(20260926)
         for cost in (COST_T, COST_T_ALT):
             ses = sorted({r["sesion"] for r in hi})
@@ -301,7 +306,7 @@ def e2(es_dir, spy_dir, out, sost_dir=None):
                 smp = rng.choice(len(ses), len(ses))
                 v = np.concatenate([por[ses[i]] for i in smp])
                 bs.append(v.mean() if len(v) else np.nan)
-            filas.append(dict(config=cfg, x=x, costo_t=cost, n=int(len(tot)), G_medio_t=float(tot.mean()),
+            filas.append(dict(config=cfg, x=x, poblacion=pobl, costo_t=cost, n=int(len(tot)), G_medio_t=float(tot.mean()),
                               ic=[float(np.nanpercentile(bs, 2.5)), float(np.nanpercentile(bs, 97.5))],
                               W_medio_t=float(np.mean([r["W"] for r in hi])),
                               candidato=bool(np.nanpercentile(bs, 2.5) > 0)))

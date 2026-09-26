@@ -41,6 +41,16 @@ artefactos.
 - **Tamiz: sigue en SÍ.** Lo que falta es muestra, no una idea distinta.
 - **Nuevo ítem NO MEDIDO:** ES con muestra suficiente (más historia, sesión completa, NQ o YM macro).
 
+
+### Actualización 2026-09-26 (madrugada) — NQ, YM y ES sesión completa (enmienda 2 de ESPEJO-MACRO)
+
+- **Semejanza (T3 − T1):** no replica en la combinada RTH de futuros. En ES sesión completa es positiva en todas las
+  celdas (descriptiva). Queda **sin confirmar, no muerta**.
+- **Exceso al 75 %:** replica en futuros. En 5m_12_4: combinada +9,4 pp [+2,2, +16,1], con signo + en ES, NQ e YM.
+- **E2 en ES:** G positivo, de +1,5 a +2,6 t en sesión completa, con IC que cruza el cero. Sin candidato robusto.
+- **Tamiz: SÍ.** Siguiente paso sugerido: mapa de MAE/MFE de los eventos del 75 % para mejorar la entrada y el stop
+  (análisis micro dentro de la ventaja macro).
+
 ## 3. NO MEDIDO (por eso un NO de hoy no alcanza para descartar la idea)
 
 ### 3.1 La definición del impulso — **el hueco más grande**

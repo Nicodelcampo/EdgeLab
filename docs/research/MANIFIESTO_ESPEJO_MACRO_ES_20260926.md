@@ -249,3 +249,66 @@ semejanza, nulo al cierre, grilla, terciles y referencias de SPY quedan iguales.
 - **Regla de lectura:** n ≥ 30 por tercil, igual que la enmienda 1.
 - **Riesgo declarado:** NQ, YM y ES están muy correlacionados. La combinada gana potencia por los días en que los
   instrumentos difieren, no por triplicar. El bootstrap por día lo refleja.
+
+## Enmienda 3 — aclaración de E2 (después de ver la combinada, 2026-09-26)
+
+- **Qué pasó:** la implementación de E2 (`sostenidos()`) sólo miraba la prueba principal (T3 − T1). El §6 define
+  «sostenido» **por prueba**, y el exceso general al cierre es una de las pruebas publicadas. Una celda cumple la
+  regla de la enmienda 2 en esa prueba: 5 min, `maxBars` = 12, k = 4, x = 0,75.
+
+| Muestra | Resultado |
+|---|---|
+| SPY | +7,8 pp, pasa FDR |
+| Combinada | +9,4 pp [+2,2, +16,1], n = 90 |
+| Signo por instrumento | ES +, NQ +, YM + |
+
+- **Corrección:** E2 se calcula para toda prueba sostenida, sobre **la población de esa prueba**: T3 para la principal,
+  todos los eventos en x para el exceso general. No se agregan pruebas ni se cambia ningún umbral.
+- **Alcance:** la corrección es posterior a ver datos, así que cualquier resultado de E2 queda como **candidato a
+  confirmar**, nunca como edge. Además, hay que contar que la celda salió de 54 × 2 pruebas revisadas contra la regla.
+
+## Resultado de la enmienda 2 (2026-09-26): la semejanza no replica en futuros; el exceso al 75 % sí, sin margen económico robusto
+
+**Procedencia:** código en `5a92195` más la aclaración de E2 (enmienda 3). Artefactos en
+`artifacts/research/espejo_macro/{NQ_RTH,YM_RTH,COMB_RTH,ES_FULL,NQ_FULL,YM_FULL,E2_ES_RTH,E2_ES_FULL}/`
+(combinada sha `d57451f593fe`).
+- Días RTH: ES 198, NQ 186, YM 169.
+- ES sesión completa: 203 trade dates.
+
+**E1 — semejanza (prueba principal, T3 − T1):**
+- **No replica en la combinada RTH:** signos mezclados entre instrumentos e IC muy anchos.
+- En ES sesión completa (descriptiva, fuera de la regla) es positiva en todas las celdas con n ≥ 30, de +3 a +14 pp,
+  con dos IC > 0.
+- **Estado: sin confirmar en futuros.**
+
+**E1 — exceso general al cierre en x = 0,75 (el giro que ya recorrió tres cuartos):**
+
+| Celda | SPY | Combinada | Signo ES / NQ / YM | ¿Cumple la regla? |
+|---|---|---|---|---|
+| 5 min, 12 velas, k = 4 | +7,8 pp, FDR | +9,4 pp [+2,2, +16,1] | + / + / + | **sí** |
+| 5 min, 24 velas, k = 4 | +7,2 pp, FDR | +9,8 pp [+0,0, +18,0] | + / + / + | **en el límite** |
+| 5 min, 12 velas, k = 3 | +6,3 pp, FDR | +4,9 pp [+0,6, +9,2] | + / + / **−** | **no**: falla el signo de YM |
+
+`sostenidos()` no verifica el signo por instrumento: esa condición se chequeó a mano, y por eso se descarta 5m_12_3.
+
+**E2 — económico en ES, entrada al cierre del evento, objetivo A, stop B:**
+
+| Celda | Muestra | n | G con costo 2,4 t | G con costo 1,5 t |
+|---|---|---|---|---|
+| 5m_12_4 | ES RTH | 32 | +12,2 t [−0,5, +23,9] | +13,1 t [+0,5, +24,4] |
+| 5m_12_4 | ES sesión completa | 311 | +1,5 t [−2,2, +5,4] | +2,4 t [−1,3, +6,2] |
+| 5m_24_4 | ES RTH | 24 | +9,9 t [−9,8, +25,1] | — |
+| 5m_24_4 | ES sesión completa | 279 | +1,7 t [−2,2, +5,4] | +2,6 t [−1,4, +6,6] |
+
+**Lectura:**
+- El único «candidato» formal (5m_12_4 RTH con costo 1,5 t) tiene n = 32 y sale de una enmienda posterior. **No se
+  promueve.**
+- Con la muestra más grande (sesión completa), el G medio es **positivo pero chico** (+1,5 a +2,6 t) y su IC cruza el
+  cero.
+- **No se abre la confirmación de abr–jun.**
+
+**Estado:** `ESPEJO_MACRO_EXCESO_075_REPLICA_SIN_MARGEN_ROBUSTO`.
+- La información existe: el giro que ya recorrió el 75 % completa el espejo más que el azar en SPY 2008–2021 y en
+  ES, NQ e YM 2025–26.
+- Hoy es chica frente al costo. El tamiz sigue en **SÍ**, y la dirección que señala es mejorar la entrada y el stop
+  dentro de la ventaja macro (análisis «micro»), o sea el mapa de MAE/MFE, antes que buscar más semejanza.
