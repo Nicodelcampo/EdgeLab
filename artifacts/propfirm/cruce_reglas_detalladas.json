@@ -1,0 +1,406 @@
+[
+ {
+  "cuenta": "Apex|EOD_50K",
+  "verificada": false,
+  "algoritmos": "prohibido",
+  "aplica_a_edgelab": false,
+  "tenencia": "",
+  "prohibido": [
+   "automatización o algoritmos",
+   "operar sin stop (pendiente o mental)",
+   "TP chico con SL desproporcionado (ej. 5 ticks vs 150)",
+   "usar el umbral de drawdown como stop",
+   "acumular evaluaciones para quemarlas",
+   "HFT y brackets no direccionales",
+   "cobertura en el mismo instrumento o correlacionados",
+   "mantener posiciones al cierre",
+   "copiar trades entre traders, VPN para ocultar ubicación"
+  ],
+  "estrategias": [
+   {
+    "nombre": "TBZX-R3 sigue r=0 (ES, SL=TP=3, realista)",
+    "ev": -349.0,
+    "ev_se": 0.0,
+    "p_pass": 0.0,
+    "p_payout": 0.0,
+    "ev_ventaja_cero": -349.0,
+    "aporte": 0.0
+   },
+   {
+    "nombre": "TBZX-R3 mejor escenario macro (ES, SL=TP=20, descubrimiento, no sostenido)",
+    "ev": -301.9266666666667,
+    "ev_se": 8.634592983180225,
+    "p_pass": 0.06,
+    "p_payout": 0.02033333333333333,
+    "ev_ventaja_cero": -349.5416666666667,
+    "aporte": 47.61500000000001
+   },
+   {
+    "nombre": "IVC mejor celda de corto plazo (ES, SL=TP=4)",
+    "ev": -349.0,
+    "ev_se": 0.0,
+    "p_pass": 0.0,
+    "p_payout": 0.0,
+    "ev_ventaja_cero": -349.0,
+    "aporte": 0.0
+   },
+   {
+    "nombre": "IVC-L gap -> 10:00-cierre (ES, SL=TP=40, 1/día, validación, margen IC inf. < 0)",
+    "ev": -210.39766666666668,
+    "ev_se": 15.32569243164224,
+    "p_pass": 0.15233333333333332,
+    "p_payout": 0.053,
+    "ev_ventaja_cero": -324.76933333333335,
+    "aporte": 114.37166666666667
+   }
+  ],
+  "requisitos": [
+   {
+    "instrumento": "ES",
+    "tp_ticks": 16,
+    "sl_ticks": 16,
+    "trades_por_dia": 2,
+    "acierto_minimo": 0.6429687499999999,
+    "acierto_sin_ventaja": 0.5,
+    "ventaja_neta_min_ticks": 2.1749999999999954
+   },
+   {
+    "instrumento": "ES",
+    "tp_ticks": 40,
+    "sl_ticks": 40,
+    "trades_por_dia": 1,
+    "acierto_minimo": 0.571484375,
+    "acierto_sin_ventaja": 0.5,
+    "ventaja_neta_min_ticks": 3.3187500000000023
+   },
+   {
+    "instrumento": "MES",
+    "tp_ticks": 80,
+    "sl_ticks": 80,
+    "trades_por_dia": 2,
+    "acierto_minimo": NaN,
+    "acierto_sin_ventaja": 0.5,
+    "ventaja_neta_min_ticks": NaN
+   }
+  ]
+ },
+ {
+  "cuenta": "Tradeify|Select_Flex_50K",
+  "verificada": false,
+  "algoritmos": "condicional",
+  "aplica_a_edgelab": true,
+  "tenencia": "en fondeada: más del 50 % de los trades Y de las ganancias con tenencia > 10 s; si no, no hay retiro",
+  "prohibido": [
+   "HFT",
+   "cobertura, incluso entre cuentas o productos correlacionados",
+   "explotar errores de plataforma",
+   "estrategia algorítmica compartida o no propia"
+  ],
+  "estrategias": [
+   {
+    "nombre": "TBZX-R3 sigue r=0 (ES, SL=TP=3, realista)",
+    "ev": -165.0,
+    "ev_se": 0.0,
+    "p_pass": 0.0,
+    "p_payout": 0.0,
+    "ev_ventaja_cero": -165.0,
+    "aporte": 0.0
+   },
+   {
+    "nombre": "TBZX-R3 mejor escenario macro (ES, SL=TP=20, descubrimiento, no sostenido)",
+    "ev": 49.527744140625,
+    "ev_se": 12.6079907248985,
+    "p_pass": 0.246,
+    "p_payout": 0.15466666666666667,
+    "ev_ventaja_cero": -158.8155,
+    "aporte": 208.343244140625
+   },
+   {
+    "nombre": "IVC mejor celda de corto plazo (ES, SL=TP=4)",
+    "ev": -165.0,
+    "ev_se": 0.0,
+    "p_pass": 0.0,
+    "p_payout": 0.0,
+    "ev_ventaja_cero": -165.0,
+    "aporte": 0.0
+   },
+   {
+    "nombre": "IVC-L gap -> 10:00-cierre (ES, SL=TP=40, 1/día, validación, margen IC inf. < 0)",
+    "ev": 112.348259765625,
+    "ev_se": 16.384203936230698,
+    "p_pass": 0.2896666666666667,
+    "p_payout": 0.181,
+    "ev_ventaja_cero": -72.90866015625,
+    "aporte": 185.256919921875
+   }
+  ],
+  "requisitos": [
+   {
+    "instrumento": "ES",
+    "tp_ticks": 16,
+    "sl_ticks": 16,
+    "trades_por_dia": 2,
+    "acierto_minimo": 0.5796874999999999,
+    "acierto_sin_ventaja": 0.5,
+    "ventaja_neta_min_ticks": 0.14999999999999772
+   },
+   {
+    "instrumento": "ES",
+    "tp_ticks": 40,
+    "sl_ticks": 40,
+    "trades_por_dia": 1,
+    "acierto_minimo": 0.5199218749999999,
+    "acierto_sin_ventaja": 0.5,
+    "ventaja_neta_min_ticks": -0.8062500000000091
+   },
+   {
+    "instrumento": "MES",
+    "tp_ticks": 80,
+    "sl_ticks": 80,
+    "trades_por_dia": 2,
+    "acierto_minimo": 0.5667968749999999,
+    "acierto_sin_ventaja": 0.5,
+    "ventaja_neta_min_ticks": 8.287499999999977
+   }
+  ]
+ },
+ {
+  "cuenta": "Tradeify|Select_Daily_50K",
+  "verificada": false,
+  "algoritmos": "condicional",
+  "aplica_a_edgelab": true,
+  "tenencia": "en fondeada: más del 50 % de los trades Y de las ganancias con tenencia > 10 s",
+  "prohibido": [
+   "HFT",
+   "cobertura",
+   "explotar errores de plataforma"
+  ],
+  "estrategias": [
+   {
+    "nombre": "TBZX-R3 sigue r=0 (ES, SL=TP=3, realista)",
+    "ev": -165.0,
+    "ev_se": 0.0,
+    "p_pass": 0.0,
+    "p_payout": 0.0,
+    "ev_ventaja_cero": -165.0,
+    "aporte": 0.0
+   },
+   {
+    "nombre": "TBZX-R3 mejor escenario macro (ES, SL=TP=20, descubrimiento, no sostenido)",
+    "ev": 10.236,
+    "ev_se": 13.383930168975033,
+    "p_pass": 0.246,
+    "p_payout": 0.08566666666666667,
+    "ev_ventaja_cero": -163.56,
+    "aporte": 173.796
+   },
+   {
+    "nombre": "IVC mejor celda de corto plazo (ES, SL=TP=4)",
+    "ev": -165.0,
+    "ev_se": 0.0,
+    "p_pass": 0.0,
+    "p_payout": 0.0,
+    "ev_ventaja_cero": -165.0,
+    "aporte": 0.0
+   },
+   {
+    "nombre": "IVC-L gap -> 10:00-cierre (ES, SL=TP=40, 1/día, validación, margen IC inf. < 0)",
+    "ev": 68.043,
+    "ev_se": 16.954257097171787,
+    "p_pass": 0.2896666666666667,
+    "p_payout": 0.10533333333333333,
+    "ev_ventaja_cero": -104.214,
+    "aporte": 172.257
+   }
+  ],
+  "requisitos": [
+   {
+    "instrumento": "ES",
+    "tp_ticks": 16,
+    "sl_ticks": 16,
+    "trades_por_dia": 2,
+    "acierto_minimo": 0.58671875,
+    "acierto_sin_ventaja": 0.5,
+    "ventaja_neta_min_ticks": 0.3749999999999977
+   },
+   {
+    "instrumento": "ES",
+    "tp_ticks": 40,
+    "sl_ticks": 40,
+    "trades_por_dia": 1,
+    "acierto_minimo": 0.528125,
+    "acierto_sin_ventaja": 0.5,
+    "ventaja_neta_min_ticks": -0.15000000000000227
+   },
+   {
+    "instrumento": "MES",
+    "tp_ticks": 80,
+    "sl_ticks": 80,
+    "trades_por_dia": 2,
+    "acierto_minimo": 0.580859375,
+    "acierto_sin_ventaja": 0.5,
+    "ventaja_neta_min_ticks": 10.537499999999989
+   }
+  ]
+ },
+ {
+  "cuenta": "Topstep|Combine_NoActivation_50K_Standard",
+  "verificada": false,
+  "algoritmos": "condicional",
+  "aplica_a_edgelab": true,
+  "tenencia": "prohibido: algoritmos de scalping que exploten fills irreales del SIM; cientos de trades rápidos",
+  "prohibido": [
+   "explotar el simulador",
+   "cobertura entre cuentas",
+   "trading coordinado"
+  ],
+  "estrategias": [
+   {
+    "nombre": "TBZX-R3 sigue r=0 (ES, SL=TP=3, realista)",
+    "ev": -95.0,
+    "ev_se": 0.0,
+    "p_pass": 0.0,
+    "p_payout": 0.0,
+    "ev_ventaja_cero": -95.0,
+    "aporte": 0.0
+   },
+   {
+    "nombre": "TBZX-R3 mejor escenario macro (ES, SL=TP=20, descubrimiento, no sostenido)",
+    "ev": 134.001759765625,
+    "ev_se": 13.554671060433863,
+    "p_pass": 0.251,
+    "p_payout": 0.17066666666666666,
+    "ev_ventaja_cero": -88.81325,
+    "aporte": 222.815009765625
+   },
+   {
+    "nombre": "IVC mejor celda de corto plazo (ES, SL=TP=4)",
+    "ev": -95.0,
+    "ev_se": 0.0,
+    "p_pass": 0.0,
+    "p_payout": 0.0,
+    "ev_ventaja_cero": -95.0,
+    "aporte": 0.0
+   },
+   {
+    "nombre": "IVC-L gap -> 10:00-cierre (ES, SL=TP=40, 1/día, validación, margen IC inf. < 0)",
+    "ev": 187.814962890625,
+    "ev_se": 16.415540284969108,
+    "p_pass": 0.3006666666666667,
+    "p_payout": 0.20533333333333334,
+    "ev_ventaja_cero": 0.40214453125,
+    "aporte": 187.412818359375
+   }
+  ],
+  "requisitos": [
+   {
+    "instrumento": "ES",
+    "tp_ticks": 16,
+    "sl_ticks": 16,
+    "trades_por_dia": 2,
+    "acierto_minimo": 0.569140625,
+    "acierto_sin_ventaja": 0.5,
+    "ventaja_neta_min_ticks": -0.18750000000000228
+   },
+   {
+    "instrumento": "ES",
+    "tp_ticks": 40,
+    "sl_ticks": 40,
+    "trades_por_dia": 1,
+    "acierto_minimo": 0.49999999999999994,
+    "acierto_sin_ventaja": 0.5,
+    "ventaja_neta_min_ticks": -2.400000000000002
+   },
+   {
+    "instrumento": "MES",
+    "tp_ticks": 80,
+    "sl_ticks": 80,
+    "trades_por_dia": 2,
+    "acierto_minimo": 0.5562499999999999,
+    "acierto_sin_ventaja": 0.5,
+    "ventaja_neta_min_ticks": 6.599999999999989
+   }
+  ]
+ },
+ {
+  "cuenta": "MyFundedFutures|Rapid_50K",
+  "verificada": false,
+  "algoritmos": "condicional",
+  "aplica_a_edgelab": true,
+  "tenencia": "sin HFT; sin explotar el fill del simulador",
+  "prohibido": [
+   "HFT",
+   "órdenes límite múltiples al mismo precio para manipular fills",
+   "operar gaps o mercados ilíquidos buscando fills aislados",
+   "brackets ajustados que explotan la ausencia de slippage",
+   "copy trading entre traders"
+  ],
+  "estrategias": [
+   {
+    "nombre": "TBZX-R3 sigue r=0 (ES, SL=TP=3, realista)",
+    "ev": -209.0,
+    "ev_se": 0.0,
+    "p_pass": 0.0,
+    "p_payout": 0.0,
+    "ev_ventaja_cero": -209.0,
+    "aporte": 0.0
+   },
+   {
+    "nombre": "TBZX-R3 mejor escenario macro (ES, SL=TP=20, descubrimiento, no sostenido)",
+    "ev": -39.722,
+    "ev_se": 13.034249175614221,
+    "p_pass": 0.246,
+    "p_payout": 0.09033333333333333,
+    "ev_ventaja_cero": -207.938,
+    "aporte": 168.21599999999998
+   },
+   {
+    "nombre": "IVC mejor celda de corto plazo (ES, SL=TP=4)",
+    "ev": -209.0,
+    "ev_se": 0.0,
+    "p_pass": 0.0,
+    "p_payout": 0.0,
+    "ev_ventaja_cero": -209.0,
+    "aporte": 0.0
+   },
+   {
+    "nombre": "IVC-L gap -> 10:00-cierre (ES, SL=TP=40, 1/día, validación, margen IC inf. < 0)",
+    "ev": 25.798,
+    "ev_se": 16.989100498025195,
+    "p_pass": 0.2896666666666667,
+    "p_payout": 0.11433333333333333,
+    "ev_ventaja_cero": -147.215,
+    "aporte": 173.013
+   }
+  ],
+  "requisitos": [
+   {
+    "instrumento": "ES",
+    "tp_ticks": 16,
+    "sl_ticks": 16,
+    "trades_por_dia": 2,
+    "acierto_minimo": 0.5902343750000001,
+    "acierto_sin_ventaja": 0.5,
+    "ventaja_neta_min_ticks": 0.48750000000000226
+   },
+   {
+    "instrumento": "ES",
+    "tp_ticks": 40,
+    "sl_ticks": 40,
+    "trades_por_dia": 1,
+    "acierto_minimo": 0.536328125,
+    "acierto_sin_ventaja": 0.5,
+    "ventaja_neta_min_ticks": 0.5062500000000023
+   },
+   {
+    "instrumento": "MES",
+    "tp_ticks": 80,
+    "sl_ticks": 80,
+    "trades_por_dia": 2,
+    "acierto_minimo": 0.584375,
+    "acierto_sin_ventaja": 0.5,
+    "ventaja_neta_min_ticks": 11.1
+   }
+  ]
+ }
+]
