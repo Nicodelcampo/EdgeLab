@@ -150,12 +150,17 @@ def referencia(rows):
     return ref
 
 
+def _pct(ref, v):
+    """Rango percentil con empates al medio (medidas como `ondas` tienen muchos valores iguales)."""
+    return float((np.searchsorted(ref, v, "left") + np.searchsorted(ref, v, "right")) / 2 / 101)
+
+
 def score(rows, ref):
     for r in rows:
-        ps = [np.searchsorted(ref[c], r[c]) / 101 for c in COMP if r[c] == r[c]]
+        ps = [_pct(ref[c], r[c]) for c in COMP if r[c] == r[c]]
         r["S"] = float(np.mean(ps)) if ps else float("nan")
         for c in COMP:
-            r[f"p_{c}"] = float(np.searchsorted(ref[c], r[c]) / 101) if r[c] == r[c] else float("nan")
+            r[f"p_{c}"] = _pct(ref[c], r[c]) if r[c] == r[c] else float("nan")
 
 
 def boot(rows_a, rows_b=None, n=1000, seed=20260926):
@@ -170,6 +175,8 @@ def boot(rows_a, rows_b=None, n=1000, seed=20260926):
         return d
     A = agg(rows_a); B = agg(rows_b) if rows_b is not None else {}
     ses = sorted(set(A) | set(B))
+    if not A or (rows_b is not None and not B):
+        return (float("nan"),) * 3 + (1.0,)
     a = np.array([A.get(s, [0, 0]) for s in ses], float); b = np.array([B.get(s, [0, 0]) for s in ses], float)
     idx = rng.integers(0, len(ses), (n, len(ses)))
     ea = a[idx, 0].sum(1) / np.maximum(a[idx, 1].sum(1), 1)
@@ -221,7 +228,13 @@ def main(argv=None):
     ap.add_argument("--contract", required=True); ap.add_argument("--out", required=True)
     ap.add_argument("--referencia"); ap.add_argument("--max-sessions", type=int)
     a = ap.parse_args(argv)
-    rows = collect(a.parquet, a.instrument, a.contract, a.max_sessions)
+    out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
+    cache = out / "eventos.json"
+    if cache.exists():
+        rows = json.loads(cache.read_text())
+    else:
+        rows = collect(a.parquet, a.instrument, a.contract, a.max_sessions)
+        cache.write_text(json.dumps(rows))
     if a.referencia:
         R = json.loads(Path(a.referencia).read_text()); ref, cS = R["ref"], R["cortes_S"]
     else:
@@ -229,7 +242,6 @@ def main(argv=None):
         s = np.array([r["S"] for r in rows if r["S"] == r["S"]])
         cS = [float(np.percentile(s, 33.333)), float(np.percentile(s, 66.667))]
     tests = analizar(rows, ref, cS)
-    out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
     (out / "referencia.json").write_text(json.dumps(dict(ref=ref, cortes_S=cS)))
     cens = sum(r["res"] == 0 for r in rows)
     (out / "reporte.json").write_text(json.dumps(dict(contrato=a.contract, eventos=len(rows), censurados=cens,
