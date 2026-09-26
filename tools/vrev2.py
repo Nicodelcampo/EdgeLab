@@ -27,7 +27,7 @@ import vrev as V  # noqa: E402
 
 OUT = REPO / "artifacts" / "vrev2"
 DOC = "docs/research/MANIFIESTO_VREVA_VCONT_E1_20260926.md"
-LEDGER = REPO / "artifacts" / "hippocampus" / "vrev2_20260926.jsonl"   # ledger propio: particiones independientes de VREV
+LEDGER = REPO / "artifacts" / "hippocampus" / "vreva_vcont_20260926.jsonl"   # ledger propio: particiones independientes de VREV
 XS = (3, 4, 6)
 W_EXH, W_CONT = 60, 30
 SEED = 20260927
