@@ -1125,6 +1125,21 @@
 
 
 
+
+    <!-- EDGELAB_LABELER_V1 -->
+    <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
+      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px;">🏷 Etiquetado: picos consecutivos</div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;">
+        <button class="nt8-btn sm" id="btn-lab-range" title="Arrastrá un rectángulo sobre el rango donde ocurre el fenómeno">▭ Rango</button>
+        <button class="nt8-btn sm" id="btn-lab-zz" title="Clic en cada pico (se pega al máximo o mínimo de la vela); Enter termina el zigzag">⟋ Zigzag</button>
+        <button class="nt8-btn sm" id="btn-lab-rev" title="Marca como revisada la sesión en pantalla: lo que no marcaste ahí cuenta como negativo">✓ Sesión revisada</button>
+        <button class="nt8-btn sm" id="btn-lab-undo">↶ Deshacer</button>
+        <button class="nt8-btn sm" id="btn-lab-exp">⭳ Exportar</button>
+      </div>
+      <div id="lbl-lab-status" style="font-size:9.5px;color:#666;margin-top:4px;"></div>
+      <div style="font-size:9px;color:#888;line-height:1.3;margin-top:4px;">Mientras un modo está activo, el gráfico no se desplaza: salí con Esc (o con el mismo botón) para moverte. Marcá todo lo que veas en una sesión y después «Sesión revisada»: sin eso, el aprendizaje no sabe qué es negativo.</div>
+    </div>
+
     <!-- EDGELAB_EVX_DESIGNER_V1 -->
     <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
       <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px;">✖ Cruces EMA × VWAP (diseño)</div>
@@ -2461,6 +2476,113 @@
     ctx.restore();
   }
 
+
+  // EDGELAB_LABELER_V1 (2026-09-26): etiquetado humano de «picos consecutivos» (acumulaciones de liquidez).
+  // Rango (rectángulo tiempo × precio), zigzag (puntos que se pegan al máximo o mínimo de la vela) y «sesión revisada»
+  // (todo lo no marcado en una sesión revisada es negativo para el aprendizaje). Se guarda por activo en
+  // labels/<activo>.json (POST al servidor del visor) y en el navegador como respaldo.
+  var lab = { mode: null, data: null, drag: null, zz: null, aid: null, dirty: false };
+  function labKey() { return "edgelab_labels_" + (state.currentAssetId || "x"); }
+  function labEmpty() { return { schema: "EDGELAB_LABELS_V1", asset: state.currentAssetId, tick: (state.data && state.data.meta && state.data.meta.tick_size) || null,
+                                 bar_key: state.activeBarKey || null, ranges: [], zigzags: [], reviewed: [] }; }
+  function labLoad(aid) {
+    lab.aid = aid; lab.data = null; lab.mode = null; lab.zz = null; labStatus();
+    fetch("labels/" + aid + ".json?v=" + Date.now(), { cache: "reload" }).then(function (r) { if (!r.ok) throw 0; return r.json(); })
+      .then(function (d) { if (lab.aid === aid) { lab.data = d; labStatus(); requestDraw(); } })
+      .catch(function () { try { var x = localStorage.getItem(labKey()); lab.data = x ? JSON.parse(x) : labEmpty(); } catch (e) { lab.data = labEmpty(); } labStatus(); requestDraw(); });
+  }
+  function labSave() {
+    if (!lab.data) return;
+    lab.data.saved_at = new Date().toISOString();
+    try { localStorage.setItem(labKey(), JSON.stringify(lab.data)); } catch (e) {}
+    fetch("api/labels/" + lab.aid, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(lab.data) })
+      .then(function (r) { lab.dirty = !r.ok; labStatus(r.ok ? "guardado en labels/" + lab.aid + ".json" : "no se pudo guardar en el servidor (queda en el navegador; usá Exportar)"); })
+      .catch(function () { lab.dirty = true; labStatus("servidor sin guardado: quedó en el navegador (usá Exportar)"); });
+  }
+  function labStatus(msg) {
+    var el = document.getElementById("lbl-lab-status"); if (!el) return;
+    var d = lab.data || { ranges: [], zigzags: [], reviewed: [] };
+    el.textContent = (lab.mode ? "Modo: " + { range: "rango (arrastrá)", zz: "zigzag (clic por pico; Enter termina)" }[lab.mode] + " · " : "") +
+      d.ranges.length + " rangos · " + d.zigzags.length + " zigzags · " + d.reviewed.length + " sesiones revisadas" + (msg ? " · " + msg : "");
+    ["btn-lab-range", "btn-lab-zz"].forEach(function (id) { var b = document.getElementById(id); if (b) b.style.outline = (lab.mode === (id === "btn-lab-range" ? "range" : "zz")) ? "2px solid #7c3aed" : ""; });
+  }
+  function labSetMode(m) {
+    lab.mode = lab.mode === m ? null : m; lab.zz = null;
+    chart.applyOptions({ handleScroll: !lab.mode, handleScale: !lab.mode });
+    labStatus(); requestDraw();
+  }
+  function labIdxOfTime(cd, t) { var lo = 0, hi = cd.length - 1; while (lo < hi) { var m = (lo + hi) >> 1; if (cd[m].time < t) lo = m + 1; else hi = m; } return lo; }
+  function labPoint(ev) {
+    var r = wrapEl.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top;
+    var L = chart.timeScale().coordinateToLogical(x), pr = series.coordinateToPrice(y), cd = activeCandlesArr();
+    if (L === null || pr === null || !cd) return null;
+    var i = Math.max(0, Math.min(cd.length - 1, Math.round(L)));
+    return { i: i, t: cd[i].time, p: pr, cd: cd };
+  }
+  function labSession(cd, i) {                             // sesión = tramo entre huecos > 30 min
+    var a = i, b = i;
+    while (a > 0 && cd[a].time - cd[a - 1].time <= 1800) a--;
+    while (b < cd.length - 1 && cd[b + 1].time - cd[b].time <= 1800) b++;
+    return { t0: cd[a].time, t1: cd[b].time };
+  }
+  function labInit() {
+    wrapEl.addEventListener("pointerdown", function (ev) {
+      if (!lab.mode || !lab.data || ev.button !== 0) return;
+      var q = labPoint(ev); if (!q) return;
+      ev.preventDefault(); ev.stopPropagation();
+      if (lab.mode === "range") { lab.drag = { a: q, b: q }; }
+      else {                                              // zigzag: se pega al máximo o al mínimo de la vela, el más cercano al clic
+        var c = q.cd[q.i], hi = Math.abs(c.high - q.p) <= Math.abs(c.low - q.p);
+        if (!lab.zz) { lab.zz = []; lab.data.zigzags.push(lab.zz); }
+        lab.zz.push({ t: q.t, i: q.i, price: hi ? c.high : c.low, kind: hi ? "H" : "L" });
+        labStatus(); requestDraw();
+      }
+    }, true);
+    wrapEl.addEventListener("pointermove", function (ev) { if (lab.drag) { var q = labPoint(ev); if (q) { lab.drag.b = q; requestDraw(); } } }, true);
+    window.addEventListener("pointerup", function () {
+      if (!lab.drag) return;
+      var a = lab.drag.a, b = lab.drag.b; lab.drag = null;
+      if (a.i !== b.i) {
+        lab.data.ranges.push({ t0: Math.min(a.t, b.t), t1: Math.max(a.t, b.t), p0: Math.min(a.p, b.p), p1: Math.max(a.p, b.p), created: new Date().toISOString() });
+        labSave();
+      }
+      labStatus(); requestDraw();
+    });
+    document.addEventListener("keydown", function (ev) {
+      if (!lab.mode) return;
+      if (ev.key === "Enter" && lab.zz) { if (lab.zz.length < 2) lab.data.zigzags.pop(); lab.zz = null; labSave(); labStatus(); requestDraw(); }
+      if (ev.key === "Escape") { if (lab.zz && lab.zz.length < 2) lab.data.zigzags.pop(); lab.zz = null; labSetMode(lab.mode); if (lab.data) labSave(); }
+    });
+  }
+  function drawLabels(ctx, w, h) {
+    if (!lab.data || !series) return;
+    var cd = activeCandlesArr(); if (!cd) return;
+    var vr = realVisibleRange(); if (!vr) return;
+    function X(t) { var c = logicalToX(labIdxOfTime(cd, t)); return c === null ? NaN : c; }
+    function Y(p) { var c = series.priceToCoordinate(p); return c === null ? NaN : c; }
+    ctx.save();
+    lab.data.reviewed.forEach(function (s) {
+      if (s.t1 < vr.from || s.t0 > vr.to) return;
+      var x0 = X(s.t0), x1 = X(s.t1); ctx.fillStyle = "rgba(34,197,94,0.35)"; ctx.fillRect(x0, 0, x1 - x0, 4);
+    });
+    var rs = lab.data.ranges.slice(); if (lab.drag) rs.push({ t0: Math.min(lab.drag.a.t, lab.drag.b.t), t1: Math.max(lab.drag.a.t, lab.drag.b.t), p0: Math.min(lab.drag.a.p, lab.drag.b.p), p1: Math.max(lab.drag.a.p, lab.drag.b.p) });
+    rs.forEach(function (r) {
+      if (r.t1 < vr.from || r.t0 > vr.to) return;
+      var x0 = X(r.t0), x1 = X(r.t1), y0 = Y(r.p1), y1 = Y(r.p0);
+      if (![x0, x1, y0, y1].every(isFinite)) return;
+      ctx.fillStyle = "rgba(124,58,237,0.10)"; ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
+      ctx.strokeStyle = "rgba(124,58,237,0.9)"; ctx.setLineDash([5, 3]); ctx.lineWidth = 1.5; ctx.strokeRect(x0, y0, x1 - x0, y1 - y0); ctx.setLineDash([]);
+    });
+    lab.data.zigzags.forEach(function (z) {
+      if (!z.length || z[z.length - 1].t < vr.from || z[0].t > vr.to) return;
+      ctx.strokeStyle = "rgba(234,88,12,0.95)"; ctx.lineWidth = 2; ctx.beginPath();
+      z.forEach(function (pt, k) { var x = X(pt.t), y = Y(pt.price); if (k) ctx.lineTo(x, y); else ctx.moveTo(x, y); });
+      ctx.stroke();
+      z.forEach(function (pt) { var x = X(pt.t), y = Y(pt.price); ctx.fillStyle = pt.kind === "H" ? "#dc2626" : "#16a34a"; ctx.beginPath(); ctx.arc(x, y, 4, 0, 6.3); ctx.fill(); });
+    });
+    ctx.restore();
+  }
+
   function drawL2Depth(ctx, vr, w, h) {
     var l2 = state.data && state.data.l2;
     if (!l2 || activeProps.show_l2_depth === false || !series) return;
@@ -2619,7 +2741,7 @@
     drawL2Depth(ctx, vr, w, hCanvas);
     drawTrades(ctx, vr, w, hCanvas);
     drawManipulationMarkers(ctx, vr, w, hCanvas);
-    drawMaVwap(ctx, w, hCanvas); drawEvx(ctx, w, hCanvas); drawTbz(ctx, vr, w, hCanvas); drawTbzE2(ctx, vr, w, hCanvas); drawTbzx(ctx, vr, w, hCanvas);
+    drawMaVwap(ctx, w, hCanvas); drawEvx(ctx, w, hCanvas); drawLabels(ctx, w, hCanvas); drawTbz(ctx, vr, w, hCanvas); drawTbzE2(ctx, vr, w, hCanvas); drawTbzx(ctx, vr, w, hCanvas);
     if ((tbze2Opt.on || tbzx.on || evx.on) && tbze2Opt.solo) return;             // revisión TBZ-E2 sin las zonas HFT encima
 
     var opacityVal = (activeProps.opacidad || 30) / 100;
@@ -4378,6 +4500,30 @@
     })();
 
     (function () {
+      if (!document.getElementById("btn-lab-range")) return;
+      labInit();
+      document.getElementById("btn-lab-range").addEventListener("click", function () { labSetMode("range"); });
+      document.getElementById("btn-lab-zz").addEventListener("click", function () { labSetMode("zz"); });
+      document.getElementById("btn-lab-rev").addEventListener("click", function () {
+        var cd = activeCandlesArr(), lr = chart.timeScale().getVisibleLogicalRange(); if (!cd || !lr || !lab.data) return;
+        var s = labSession(cd, Math.max(0, Math.min(cd.length - 1, Math.round((lr.from + lr.to) / 2))));
+        if (!lab.data.reviewed.some(function (x) { return x.t0 === s.t0; })) lab.data.reviewed.push({ t0: s.t0, t1: s.t1, at: new Date().toISOString() });
+        labSave(); requestDraw();
+      });
+      document.getElementById("btn-lab-undo").addEventListener("click", function () {
+        if (!lab.data) return;
+        if (lab.zz && lab.zz.length) { lab.zz.pop(); if (!lab.zz.length) { lab.data.zigzags.pop(); lab.zz = null; } }
+        else if (lab.mode === "zz" && lab.data.zigzags.length) lab.data.zigzags.pop();
+        else if (lab.data.ranges.length) lab.data.ranges.pop();
+        labSave(); requestDraw();
+      });
+      document.getElementById("btn-lab-exp").addEventListener("click", function () {
+        var b = new Blob([JSON.stringify(lab.data, null, 1)], { type: "application/json" }), a = document.createElement("a");
+        a.href = URL.createObjectURL(b); a.download = (lab.aid || "labels") + ".json"; a.click();
+      });
+    })();
+
+    (function () {
       var box = document.getElementById("evx-sliders"); if (!box) return;
       var tmr = null;
       function recalc() { clearTimeout(tmr); tmr = setTimeout(function () { evxCompute(); requestDraw(); }, 120); }
@@ -4819,6 +4965,7 @@
         loadTbzE2(aid);
         tbzx.sigKey = null; tbzx.sel = null; if (tbzx.on) tbzxCompute();
         if (evx.on) evxCompute();
+        labLoad(aid);
       })
       .catch(function(err) {
         console.warn("Fallo fetch para " + aid + ", intentando script tag...", err);
