@@ -77,3 +77,24 @@ la zona (real − fantasma ≈ 0). Realista: todas las celdas negativas (media �
 3. Paralelo por sesión (4 núcleos). Semilla por sesión.
 
 La corrida 1 (kernel `edgelab-tbzx-r3`) se conserva como referencia; la 2 corre como `edgelab-tbzx-r3-v2`.
+
+## 9. Enmienda — iteración 3 (26/09, Nico: «Dale y que todo pase por el cerebro»)
+
+**Qué se vio (iteración 2, 46 sesiones jul–sep, local):** sobre el medio, la zona sí difiere del fantasma: «sigue» con
+r = 0 acierta 56,8 % vs 52,4 % y «rebota» con r >= 2 56,1 % vs 52,8 % (SL = TP = 3). Pero la ventaja (~0,2 t) es mucho
+menor que el costo realista (~1,5 t): ninguna de ~57.000 celdas realistas da P&L > 0.
+
+**Pregunta nueva:** ¿la información direccional se sostiene a mayor distancia, donde el costo pesa menos?
+
+**Cambios:**
+1. TP y SL ∈ {3, 6, 10, 20} (16 combinaciones); salida por tiempo a 1.800 s.
+2. r ∈ {0, 2, 4} (los dos patrones vistos). El resto de la grilla (D, p, configs, filtros de pocas zonas) no cambia.
+3. Primaria: dirección simétrica (SL = TP) sobre el medio, contra N1 y fantasma. Secundaria: P&L realista neto > 0 y
+   mayor que el fantasma (IC inferior de la diferencia > 0). BH-FDR q = 0,10 en cada familia.
+4. Salidas resueltas en una pasada (primer tick de cada nivel de excursión), validado contra el random walk.
+5. **Cerebro:** todo se asienta en `artifacts/hippocampus/tbzx_r3_20260926.jsonl` con `tools/tbzx_r3_brain.py`:
+   partición `P-TBZX-R3-EXP`, lecciones de método (entrada en el nivel con salto; rebote bid/ask), una observación
+   `RESPONSE_PROFILE` / `EVENT_VS_CONTROL` por corrida con auditoría CTRL_TIMING_V1 (fantasmas de otra sesión) y cada
+   sugerencia realista como lección `SUGGESTED_ANALYSIS` de confianza baja. Nada se promueve: confirmar exige abr–jun.
+
+Kernel: `edgelab-tbzx-r3-v3`.
