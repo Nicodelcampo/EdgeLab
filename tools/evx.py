@@ -212,10 +212,10 @@ def step_report():
                     nd = float(np.mean(np.abs(rr[ok])) - np.mean(np.abs(cc[ok])))
                     halves = {k: float(np.mean(rr[ok][hh[ok] == k] - cc[ok][hh[ok] == k])) if (hh[ok] == k).sum() >= 15 else None for k in ("h1", "h2")}
                     cells.append(dict(inst=inst, p=p, filtro=fn, h=h, n=int(ok.sum()), sessions=int(len(set(ses[ok]))), real=float(rr[ok].mean()),
-                                      control=float(cc[ok].mean()), diff=d, ci=[lo, hi], mde=mde, p=pv, no_dir=nd, halves=halves,
+                                      control=float(cc[ok].mean()), diff=d, ci=[lo, hi], mde=mde, pval=pv, no_dir=nd, halves=halves,
                                       status="OK", e0_ok=e0_ok))
     ok = [c for c in cells if c["status"] == "OK" and c["e0_ok"]]
-    for c, f in zip(ok, T2.TX._bh([c["p"] for c in ok])):
+    for c, f in zip(ok, T2.TX._bh([c["pval"] for c in ok])):
         c["fdr"] = bool(f)
     for c in ok:
         hv = [v for v in c["halves"].values() if v is not None]
