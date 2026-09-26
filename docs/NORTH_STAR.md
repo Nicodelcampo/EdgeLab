@@ -89,6 +89,15 @@ conforme a protocolo pre-declarado.
 - **Permitido** solo para validaciones target-free (paridad, determinismo,
   geometría, integridad, visor).
 
+> **Enmienda L2 (firmada por Nico el 2026-09-24,
+> `docs/research/ENMIENDA_PROPUESTA_HOLDOUT_L2_20260924.md`).** Solo para
+> investigación con datos L2 (MBP-10) en GC, 6E, NQ, ES, MES, MNQ y ZB:
+> L2 del **2026-07-01 al 2026-10-31 = desarrollo**; L2 del **2026-11-01 al
+> 2026-12-31 = holdout L2 sellado**, con una apertura por candidato. Es una frontera nueva,
+> fijada antes de que existan esos datos; no mueve la frontera de ticks y
+> barras, que sigue en 2026-07-01 → 2026-12-31. Julio a octubre deja de ser
+> ciego para toda hipótesis que use L2 en esos instrumentos.
+
 ## Rituales permanentes
 
 - Todo checkpoint de turno termina con **"Aporte al referente: …"** (1–2 líneas:
@@ -110,4 +119,4 @@ Ver también: `edge_validation_contract.md` (gates G0–G5), `kernel_contract.md
 
 <!-- SHA256-BODY-ABOVE -->
 
-**sha256 (cuerpo hasta el marcador):** `d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1`
+**sha256 (cuerpo hasta el marcador):** `ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8`

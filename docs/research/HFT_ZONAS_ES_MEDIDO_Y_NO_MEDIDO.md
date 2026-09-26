@@ -325,3 +325,56 @@ Cuidado con estos, que vienen del censo sobre el oráculo **V2 original con el b
 
 La población Flat tiene **9.486 zonas en 62 sesiones**. Cualquier comparación contra
 aquellos números compara dos poblaciones distintas.
+
+## Anexo 2026-09-24: costo de ejecución condicionado al libro (EXEC-QI; no es HFTZones, se registra acá por la regla del mismo commit)
+
+- **MEDIDO:** ahorro de orden pasiva frente a agresiva, por tercil de QI, T ∈ {5, 30, 120} s, en NQ, ES, GC y 6E L2 de julio y agosto, sobre una grilla uniforme de 1 s. Ver `MANIFIESTO_EJECUCION_QI_L2_20260924.md` §10.
+- **NO MEDIDO:**
+  - el ahorro en instantes de señal de una estrategia;
+  - fills reales (sim de NT8);
+  - liquidez oculta y cola real;
+  - la confirmación en `P-NQL2-CONF` y en el holdout L2.
+
+## Anexo 2026-09-24 (2): MM-QI y validación del agresor
+
+- **MEDIDO:** provisión pasiva de liquidez con filtro de QI en NQ, GC, ES y 6E: **muerta** (24 variantes negativas, 0 % de sesiones positivas). Ver `MANIFIESTO_MM_QI_L2_20260924.md` §7.
+- **MEDIDO:** agresor de `research-v2` contra el L2, en el solapamiento de junio. **NQ: 99 %** de acuerdo. **ES: 78–81 %**: no pasa el umbral del 90 %, porque la cotización pegada es posterior a que el trade consumiera el nivel. Ver `artifacts/aggressor_validation.json`.
+- **NO MEDIDO:**
+  - una corrección del agresor de ES que llegue al 90 % (se probaron la cotización del trade anterior y la anterior a la ráfaga; ninguna mejora);
+  - market making con información adicional.
+
+## Anexo 2026-09-25: TREND-MICRO
+
+- **MEDIDO:** rupturas B1, B2 y B3 × filtros F0 y F3 (y F1/F2 en NQ) × 2R/4R, en ES y NQ, jul-2025 a mar-2026. **0 sugerencias.** Ver `MANIFIESTO_TREND_MICRO_20260924.md` §8.
+- **MEDIDO:** la continuación de una expansión (B3) llega al target menos que un camino aleatorio (ES −3,4 pts, NQ −6,2 pts).
+- **NO MEDIDO:** F1/F2 con muestra suficiente; ES con agresor válido; la pista NQ B2 F3 pre-registrada sola.
+
+## Anexo 2026-09-25 (2): AGOT-EXT
+
+- **MEDIDO:** divergencia de RSI (y de delta en NQ) en extremos de pivote, ES y NQ, 24 celdas: **0 sugerencias**. En la ruptura la divergencia **empeora** ir contra el extremo; en la confirmación no agrega nada. Ver `MANIFIESTO_AGOTAMIENTO_EN_EXTREMO_20260925.md` §10.
+- **MEDIDO (lateral):** ir contra un extremo nuevo confirmado acierta menos que el azar en ES y NQ (persistencia a la escala del pivote).
+- **NO MEDIDO:** la divergencia como salida o como filtro de otra familia; la pista "comprar el retroceso tras un máximo confirmado" pre-registrada sola.
+
+## Anexo 2026-09-25 (3): TBZ-E2 en ES
+
+- **MEDIDO:** la franja de expansión como área de patinaje (E0–E3 × 4 detecciones × target A/HVN; hacia B como secundaria) en ES, 181 sesiones: **0 sugerencias**. El acierto hacia A queda levemente **por debajo** de la geometría sola, y las franjas TBZ se revierten menos que un tramo común. Ver `TBZ_E2_PARAMETRIZACION_HOLISTICA_20260924.md` §8.
+- **NO MEDIDO:** detectores por velocidad y volumen relativo como detección primaria; descriptores G2–G5 como filtros pre-registrados; L2 (G7); MES (en curso).
+
+## Anexo 2026-09-25 (4): TBZX (impulsos por velas y distancia, afuera y reingreso) en ES
+
+- **MEDIDO (exploración, 181 sesiones, 12 configuraciones, dos nulos):** el tiempo y el volumen afuera de la franja no se distinguen del nulo con la misma actividad previa (N-VOL). La excursión afuera, la penetración al reingresar, su velocidad y la llegada al borde opuesto A sí: en la configuración de Nico, 0,152 contra 0,094 llegan a A. Contra el fantasma a la misma hora el efecto era el doble: la mitad era volatilidad posterior al impulso. Más fuerte con estiramiento extremo respecto de las medias, poco volumen por tick y fuera de RTH (descriptivo). `docs/research/MANIFIESTO_TBZX_ESPEJO_20260925.md` §7.
+- **NO MEDIDO:** nulo con el mismo estado de reversión; cortes emparejados por estiramiento; NQ; reserva abr–jun; ejecución.
+- **MEDIDO (iteración 2, 25/09):** con los nulos N-REV (tramo del mismo tamaño que recién dio la vuelta) y N-VOLSTR (actividad y estiramiento) y la réplica en NQ. La llegada a A es robusta a la actividad en ES y NQ, y al estado de reversión sólo en ES (NQ: −0,007). El contexto de estiramiento no es propio de la franja (desaparece con el nulo emparejado). §9 del manifiesto.
+- **NO MEDIDO:** selección de contrato canónica (`contract_regime`; difiere en 3 sesiones de ES y 2 de NQ); reserva abr–jun; ejecución.
+- **MEDIDO (25/09, N-REVVOL, primario):** contra un tramo del mismo tamaño que recién dio la vuelta **y** con la misma actividad, la franja TBZX llega a A **menos** (−3,5 pts, sesiones positivas 26 %). El «espejo» era actividad más reversión. **Hipótesis muerta** en ES, exploración, con este detector.
+
+## Anexo 2026-09-26: EVX (cruces EMA × VWAP) en MYM, YM, ES y NQ
+- **MEDIDO:** E0 y E1. 0 de 448 celdas con información direccional frente al control de mismo estado (MDE ~0,5 ATR). El embudo se detiene en E1. `docs/research/MANIFIESTO_EVX_E0_E1_20260926.md` §6.
+- **NO MEDIDO:** estado continuo «EMA de un lado» (en lugar del cruce); otras resoluciones (1 min); efectos menores que el MDE.
+- **MEDIDO (26/09, VREV E1):** reversión al VWAP entrando en el **primer** alejamiento ≥ X ATR de vela de 25 ticks (X 2–6), con 4 confirmaciones y 2 stops, en MYM/YM/ES/NQ: llega al VWAP **menos** que el control de mismo estado (96/128 INFO−). **Alcance:** sólo esa variante. **NO MEDIDO:** reversión con alejamiento en escala diaria o por bandas σ, VWAP anclado, entrada tras agotamiento, confirmaciones de flujo/L2, velas de tiempo, filtros de régimen. Ver `MANIFIESTO_VREV_E1_20260926.md` §5–§6.
+- **MEDIDO (26/09, VREV-A y VCONT E1):**
+  - **Reversión al VWAP tras 4 disparos de agotamiento:** 0/96 INFO+.
+  - **Continuación tras el primer alejamiento:** 8/96 INFO+, todas en el Dow (MYM/YM) con X = 6, pero con neto de costo negativo.
+  - **Alcance por celda.**
+- **NO MEDIDO:** agotamiento por flujo/L2, escala diaria, geometrías de más recorrido. `MANIFIESTO_VREVA_VCONT_E1_20260926.md` §6.
+- **MEDIDO (26/09, AXF etapa A, NQ):** agotamiento por delta → barrido → reversión confirmada (256 detecciones × 3 filtros de tendencia × 2 horizontes). Rinde **menos** que el control de misma inercia (240 INFO− de 246 con evidencia; las 6 INFO+ son 50 eventos de una sola mitad). **NO MEDIDO:** absorción con eventos suficientes, L2, otras ventanas, ES y otros activos, salidas (etapa B no corrida por protocolo). `MANIFIESTO_AXF_NQ_20260926.md` §6.

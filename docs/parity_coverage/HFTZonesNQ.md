@@ -1,4 +1,9 @@
-# Paridad — motor de zonas HFT (`hftzones_nq` ↔ `HFTClusterZonesNQ.cs`)
+# Paridad — motor de zonas HFT (`hftzones_nq` ↔ detector de `HFTZonesNQPureV4.cs`)
+
+> **Actualización 2026-09-21.** Este certificado (2026-09-07) se emitió contra el detector de rachas de
+> `HFTClusterZonesNQ.cs`, indicador de clusters que **salió del proyecto** (archivado en
+> `archive/h_cluster_nq_fuera_del_proyecto/`). El indicador vigente es `HFTZonesNQPureV4(_V2).cs`; su paridad
+> vigente es la de HP-007 V2 (`PASS_CERTIFIED 5438/5438`, 38 campos). Este documento se conserva como historia.
 
 > **Resultado: EXACT, 7.494 / 7.494 zonas, 20 campos, 0 diferencias.**
 > Reproducción: `.venv\Scripts\python tools\paridad_hftzones_nq.py` (sale 0).

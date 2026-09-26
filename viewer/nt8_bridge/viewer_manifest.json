@@ -1,0 +1,53 @@
+{
+  "schema": "edgelab_unified_viewer_manifest_v1",
+  "canonical_entrypoint": "viewer/nt8_bridge/index.html",
+  "status": "UNIFICATION_IN_PROGRESS",
+  "feature_status": {
+    "multiasset_tabs": "INTEGRATED",
+    "tick_25_series": "INTEGRATED",
+    "hft_liquidity_corridors": "UNIFIED_HP007_DENSITY_FIELD",
+    "volume_consumption_mode": "ALLOWED_UNCERTIFIED_LABELLED",
+    "crosshair_density_profile_kernel": "UNIFIED_SAME_FIELD_AS_CORRIDORS",
+    "local_volume_profile_ui": "INTEGRATED_FROM_WORKTREE_2026-09-21",
+    "causal_available_at": "STRICT_HELPER_EXPLORATORY_VISIBLE_BY_DEFAULT",
+    "bar_key_mismatch_policy": "BOXES_SUPPRESSED_CAUSAL_ARROWS_KEPT",
+    "corridor_direction_characterization": "CHARACTERIZATION_UNCERTIFIED"
+  },
+  "specialized_noncanonical_pages": {
+    "index_invariant.html": "viewport invariance fixture",
+    "store_viewer.html": "event-store diagnostic viewer",
+    "spec_review.html": "revision ciega de especificaciones antes de correr una prueba (no es visor de mercado; ver docs/research/REVISION_CIEGA_DE_SPECS_20260924.md)"
+  },
+  "source_lineages": {
+    "canonical_shell": "feat/edge-discovery-brain-foundation-20260919@84eea9758ca50fd07e07076dd346e0947bffcf3f",
+    "crosshair_density_profile": "feat/crosshair-density-profile-20260918@d2d24933abf235d1e64f62b1f23f91be7c8be797",
+    "multiasset_25t_builder": "feat/multiasset-25t-hft-bundles-20260918@2658a16f2ac39e9983c3f83f67b11bc61c8b6482",
+    "causal_corridors": "fix/causal-viewport-invariant-corridors-20260917@9299b13cbd0b1df83fc406a8bcf25275ef2d45f6",
+    "merge_2026-09-21": {
+      "base": "feat/unified-nt8-viewer-20260920@ba970b39dcbee867ce5ab5a78f6e1d26b83158b1",
+      "merged_worktree": "backup/wip-multiasset-worktree-20260921@5c8e5e5e (index.html bff07dab, uncommitted)",
+      "superseded_variant": "backup/wip-main-checkout-20260921@fa5b3823 (index.html 2a3685f0, uncommitted; its bar_key abstention contradicted the PR48 causal arrows and was reconciled)"
+    }
+  },
+  "production_rule": "Do not create another production HTML entrypoint; evolve index.html behind tested feature modules.",
+  "known_gap": "Non-viewer WIP of EdgeLab-multiasset (bigtrap2absorption.py, nt8_contract.py, ~40 audit tools) lives only in backup/wip-multiasset-worktree-20260921. Legacy bundles without available_ts render as EXPLORATORY.",
+  "corridor_definition": {
+    "status": "DECIDED_2026-09-21",
+    "decision": "edgelab/research/density_field.py (HP-007 D(p,t)) is the single reference; viewer/nt8_bridge/density_field.js is its port",
+    "who": "Nico, delegating the choice to whichever definition is closest to the referent; recommendation adopted",
+    "port_verification": "tests/research/test_density_field_js_parity.py against tests/fixtures/density_field_golden_v2.json (generator: tools/generate_density_field_golden_vectors.py); mutation-tested",
+    "viewer_default_preset": "HP007_CALIBRATED / HP007_NO_TIME_DECAY (decayMode)",
+    "not_certified": [
+      "directional characterization BULL/BEAR/DUAL (corridor_geometry.py)",
+      "candle-volume consumption mode"
+    ],
+    "lineage_note": "docs/research/HP-007_DOSSIER... §3.2 describes an earlier calibrated model (clamped f_vol, linear maturation) that differs in constants from density_field.py; reconcile in the 'improve corridor logic' phase",
+    "superseded": [
+      "corridor_engine.js",
+      "crosshair_density_profile.js",
+      "hft_corridor_preview.html",
+      "drawCorredoresDemo (inline)"
+    ]
+  },
+  "retired_2026-09-21": "archive/viewer_retirado_20260921/ (hz2a, visor_server, hft_corridor_preview, parches apply_*, motor certificado anterior)"
+}

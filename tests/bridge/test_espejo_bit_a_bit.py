@@ -153,7 +153,7 @@ def test_un_reordenamiento_razonable_SI_rompe_el_espejado():
 def test_el_baseline_declara_la_clase_nueva():
     import json
     d = json.load(open("tools/ulp_sweep_baseline.json", encoding="utf-8"))
-    wick = [v for k, v in d["triaje"].items() if "wick" in k]
+    wick = [v for k, v in d["triaje"].items() if "BigTrap2.cs" in k and "wick" in k]
     assert len(wick) == 2
     for v in wick:
         assert v["veredicto"] == "ESPEJADO_BIT_A_BIT"

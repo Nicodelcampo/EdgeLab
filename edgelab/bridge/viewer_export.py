@@ -14,6 +14,7 @@ import hashlib
 import json
 import math
 import os
+import re
 
 
 def param_set_id(params: dict, bar_key: str) -> str:
@@ -23,6 +24,9 @@ def param_set_id(params: dict, bar_key: str) -> str:
 
 
 def bar_key_of(bars) -> str:
+    if bars.kind == "time":
+        # BarSeries.param is expressed in minutes for time bars.
+        return f"time_{bars.param}m"
     return f"{bars.kind}_{bars.param}"
 
 
@@ -37,13 +41,72 @@ def _candles(bars, tick_size):
     return out
 
 
-def _zone_json(z, source, last_ms, match_id):
+def _bar_duration_s(bar_key: str) -> int | None:
+    """Strict temporal duration; ambiguous or non-time specs return None."""
+    match = re.fullmatch(r"time_(\d+)([smhd])", str(bar_key or ""))
+    if match is None:
+        return None
+    unit_map = {"s": 1, "m": 60, "h": 3600, "d": 86400}
+    value = int(match.group(1))
+    return value * unit_map[match.group(2)] if value > 0 else None
+
+
+def _zone_json(z, source, last_ms, match_id, display_bar_key="", formation_spec=None):
+    """Serialize geometry and causal provenance without inferring from display."""
+    top = z["top"] if ("top" in z and z["top"] is not None) else z.get("hi")
+    bottom = z["bottom"] if ("bottom" in z and z["bottom"] is not None) else z.get("lo")
+    kind = z["kind"] if ("kind" in z and z["kind"] is not None) else z.get("side")
+
+    f_spec = z.get("formation_spec") or formation_spec
+    if not f_spec and "TapeWindowTicks" in z:
+        f_spec = f"tick_count:{z['TapeWindowTicks']}"
+
+    f_start_ns = z.get("formation_start_ns")
+    f_end_ns = z.get("formation_end_ns")
+    formation_start_ts = int(f_start_ns // 1_000_000_000) if f_start_ns is not None else None
+    formation_end_ts = int(f_end_ns // 1_000_000_000) if f_end_ns is not None else None
+
+    if formation_start_ts is not None:
+        t0 = formation_start_ts
+    elif "created_ms" in z and z["created_ms"] is not None:
+        t0 = int(z["created_ms"] // 1000)
+    elif "t0" in z and z["t0"] is not None:
+        t0 = int(z["t0"])
+    else:
+        t0 = 0
+
+    avail_ns = z.get("available_at_ns")
+    avail_ts = z.get("available_ts")
+    if avail_ns is not None:
+        available_ts = int(avail_ns // 1_000_000_000)
+        available_origin = "KERNEL_AVAILABLE_AT_NS"
+    elif avail_ts is not None:
+        available_ts = int(avail_ts)
+        available_origin = "EXPLICIT_AVAILABLE_TS"
+    else:
+        # Display bars are never causal evidence. Derive only from an explicit
+        # temporal formation contract; otherwise abstain.
+        duration = _bar_duration_s(f_spec) if f_spec else None
+        if duration is not None:
+            available_ts = t0 + duration
+            available_origin = "DERIVED_COMPATIBILITY_FALLBACK"
+        else:
+            available_ts = None
+            available_origin = "UNAVAILABLE"
+
     return dict(
-        id=str(z["id"]), source=source,
-        top=z["top"], bottom=z["bottom"],
-        t0=int(z["created_ms"] // 1000),
+        id=str(z.get("id", "")), source=source,
+        top=top, bottom=bottom,
+        t0=t0,
         t1=int((z.get("ended_ms") or last_ms) // 1000),
-        state=z.get("state"), kind=z.get("kind"), touches=z.get("touches"),
+        formation_spec=f_spec,
+        display_bar_key=display_bar_key or None,
+        formation_start_ts=formation_start_ts,
+        formation_end_ts=formation_end_ts,
+        available_ts=available_ts,
+        available_origin=available_origin,
+        source_barspec=f_spec or None,
+        state=z.get("state"), kind=kind, touches=z.get("touches"),
         end_reason=z.get("end_reason"), match=match_id)
 
 
@@ -56,19 +119,33 @@ def build_run(run_id, indicator, bars, result, psid, oracle=None, parity=None,
         for py_id, nt8_id in parity["pairs"]:
             by_py[str(py_id)] = str(nt8_id)
             by_nt8[str(nt8_id)] = str(py_id)
-    zones = [_zone_json(z, "python", last_ms, by_py.get(str(z["id"])))
-             for z in result["zones"] if z.get("created_ms") is not None]
+    display_bkey = bar_key_of(bars)
+
+    default_f_spec = None
+    params = result.get("params", {})
+    if "TapeWindowTicks" in params:
+        default_f_spec = f"tick_count:{params['TapeWindowTicks']}"
+
+    zones = [_zone_json(z, "python", last_ms, by_py.get(str(z.get("id"))),
+                        display_bar_key=display_bkey, formation_spec=default_f_spec)
+             for z in result["zones"]
+             if (z.get("created_ms") is not None or z.get("formation_start_ns") is not None or z.get("t0") is not None)]
     if oracle:
-        zones += [_zone_json(z, "nt8", last_ms, by_nt8.get(str(z["id"])))
+        zones += [_zone_json(z, "nt8", last_ms, by_nt8.get(str(z.get("id"))),
+                             display_bar_key=display_bkey, formation_spec=default_f_spec)
                   for z in oracle["zones"]
-                  if z.get("created_ms") is not None and z.get("top") is not None]
+                  if (z.get("created_ms") is not None or z.get("formation_start_ns") is not None or z.get("t0") is not None)
+                  and (z.get("top") is not None or z.get("hi") is not None)]
     return dict(
-        run_id=run_id, indicator=indicator, bar_key=bar_key_of(bars),
-        param_set_id=psid, params=result["params"],
+        run_id=run_id, indicator=indicator,
+        bar_key=display_bkey,
+        display_bar_key=display_bkey,
+        formation_spec=default_f_spec,
+        param_set_id=psid, params=result.get("params"),
         has_oracle=bool(oracle), zones=zones,
         parity=(parity["summary"] if parity else None),
         parity_diagnostics=(parity["diagnostics"] if parity else None),
-        p1a=p1a, n_events=len(result["events"]))
+        p1a=p1a, n_events=len(result.get("events", [])))
 
 
 def build_bundle(ticks, bar_series_by_key, runs, chart_tz="UTC", extra_meta=None):
@@ -95,9 +172,7 @@ def write_data_js(bundle, out_dir):
 
 
 def write_zone_store(runs, ticks, out_path):
-    """Zone store (semilla F5): coordenadas de TODAS las zonas de todas las
-    configuraciones, con identidad (indicator, param_set_id, bar_key) para
-    reutilizarlas como features sin recorrer indicadores de nuevo."""
+    """Zone store reutilizable para todas las configuraciones."""
     import pyarrow as pa
     import pyarrow.parquet as pq
 

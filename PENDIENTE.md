@@ -2376,3 +2376,245 @@ misma optimización de dispersión que se hizo en el `.cs` (verificada idéntica
 - Prerregistrar el protocolo de monetización amplia (TP dinámico en EMA 200 vs ratio fijo R:R) con modelado de comisiones CME ($0.75 pt/trade).
 - Mantener la partición de Holdout (`2026-07-01 -> 2026-12-31`) 100% sellada.
 
+
+## P-74 — Enmienda de holdout para usar L2 jul–sep: RESUELTA — se mantiene el sello (Nico, 2026-09-23)
+
+**2026-09-23.** Nico aprobó correr el sello al 2026-10-01 para usar el L2 de julio a septiembre en descubrimiento. Al revisar el código **antes de aplicarlo**, la propuesta resultó ser exactamente INC-006: la regla 95 del NORTH_STAR establece que "la frontera es un sello, no un cursor", y `holdout_guard._resolver_frontera` toma `min(sello, declarada)` para que sea imposible atrasarla. **No se tocó nada.**
+
+Alternativa que respeta la regla:
+- El sello queda igual.
+- El L2 se acumula mes a mes, y desde 2027 es dato de descubrimiento.
+- El L2 de julio a diciembre de 2026 queda como examen.
+- Hoy ya hay L2 pre-holdout usable: 29 sesiones de GC 08-26 (ver P-78).
+
+Si Nico igual quiere correr el sello, es una edición constitucional del NORTH_STAR (cambia el hash) y se decide como tal, no como parámetro.
+
+## P-75 — DELETE del nivel 10 / eventos más allá de la profundidad reconstruida: RESUELTA (delegada por Nico)
+
+**2026-09-23.** NT8 manda `DELETE level=10` cuando el lado reconstruido tiene 10 niveles (índices 0–9). Pasa 1 vez cada ~3,8 M eventos, al abrir la sesión, cuando el libro está incompleto. `tools/build_l2_viewer_bundle.py` (fail-closed) aborta la sesión entera, y `l2_phase0` la marca defectuosa (GC 08-26 20260611).
+
+- **Opción A:** aceptarlo solo si el precio coincide con el último nivel reconstruido, y contarlo aparte.
+- **Opción B:** mantener el aborto y construir en modo `--exploratory` marcado.
+
+Es un cambio de cómo se valida, así que no se toca sin OK. Detalle: `docs/research/L2_VISOR_RESOLUCION_20260923.md` §S3.
+
+## P-76 — Paridad del feed NT8 contra Databento: POSTERGADA (Nico no puede usar Databento por ahora)
+
+**2026-09-23.** En este feed, GC 08-26 muestra spread mediano de ~4 ticks y ~1,5–2 contratos en el mejor nivel. Las dos vías de NT8 coinciden: L2 replay y ticks `.Last` dan spread p50 de 3–4 ticks en junio, y los conteos de trades concuerdan (93.051 contra 92.515 el 15/06). Es plausible como mercado: 4 ticks de 0,1 sobre USD 4.300 es menos de 1 bp.
+
+Falta una fuente **independiente**. Pedido: cotizar 1 día de GC con MBP-10 + `trades` (tag 5797 = agresor nativo) en Databento y leer la licencia. Resuelve tres cosas:
+1. La fidelidad del libro.
+2. La verdad del agresor (P-78: los ticks `.Last` tienen agresor **inferido** por regla de cotización, no nativo).
+3. El test de paridad de features.
+
+## P-77 — Latencia real de EdgeLab: MEDIDA (2026-09-23)
+
+**2026-09-23.** `nt8_tools/EdgeLabLatencyProbe.cs` está corriendo en la cuenta demo DEMO9294975 (servidor de simulación de NinjaTrader, no Sim101). Primera sonda: 570 ms del envío hasta *Working* y ~220 ms para cancelar. Pendiente: distribución de ~1 h (p50/p90/p99) y recálculo de los umbrales de `L2_FASE0_RESULTADOS_20260923.md` §3–§4 con el p90 medido. Es un **piso** de la latencia real: no incluye el tramo broker→CME.
+
+## P-78 — Fase 0 L2 GC pre-holdout (target-free): medida
+
+**2026-09-23.** Acta: `docs/research/L2_FASE0_RESULTADOS_20260923.md`.
+- 29/30 sesiones usables de GC 08-26.
+- A 60 s, apostar la dirección requiere acertar el 65–83 % (descartado).
+- A 300 s requiere 56–62 %.
+- El mid cambia 2 veces en 0,14–0,8 s, así que ese horizonte está fuera de alcance.
+
+Pendiente: nulos de detectores (en curso) y una segunda réplica en 6E (que tiene pocas sesiones pre-holdout).
+
+**Resolución P-74 (2026-09-23):** Nico acepta la recomendación y el sello sigue en 2026-07-01. El L2 de julio a diciembre es solo visor/integridad y examen. El descubrimiento con L2 usa lo pre-holdout (GC 08-26 mayo–junio) y lo que llegue desde 2027.
+
+**Resolución P-75 (2026-09-23, decisión delegada):**
+- **Causa raíz medida:** el bootstrap de NT8 a veces omite un nivel de un lado, y desde ahí NT8 direcciona un nivel más que el libro reconstruido.
+- **Medición:** en 7 sesiones hay entre 0 y 19 eventos con precio distinto al reconstruido en esa posición, sobre millones de eventos (≤ 8e-6), y sin cascada.
+- **Regla, idéntica en `l2_phase0.apply_event` y en `build_l2_viewer_bundle.apply_l2`:** un evento más allá de la profundidad reconstruida es `EDGE_RESYNC`.
+  - Baja: se borra el último nivel si el precio coincide; si no, no-op.
+  - Alta o cambio: se agrega al final solo si respeta el orden de precios.
+  - Lo demás sigue siendo inválido y aborta.
+- **Tope:** una sesión con más del 0,1 % de eventos `EDGE_RESYNC` queda defectuosa (fijado antes de mirar resultados).
+- **Efecto:** GC 08-26 20260611 pasa a usable (1 resync). GC 12-26 20260715 tiene 567 resync (1,5e-4), así que es usable. GC 08-26 20260715 conserva 1 evento inválido real.
+- Primero se probó una versión más estrecha (borrar solo si el precio coincide) y se descartó: solo tapaba el primer síntoma.
+
+**P-76:** queda como pregunta abierta y declarada. Los costos de `L2_FASE0_RESULTADOS_20260923.md` valen para el feed NT8. Las dos vías de NT8 coinciden (spread de 3–4 ticks), lo que es plausible como mercado pero no está confirmado de forma independiente.
+
+## P-79 — L2 Fase 2 cerrada con nulo (GC 08-26); próximos pre-registros posibles: M3 (filtro) y M4 (ejecución)
+
+**2026-09-23.** Pre-registro `aa080a1`, resultado en `docs/research/L2_FASE2_RESULTADOS_20260923.md`. Ninguna de las 6 pruebas rechaza; el libro no agrega información sobre el mid a 30–300 s ni sin latencia.
+
+Decisión de Nico para el paso siguiente:
+- (a) Pre-registrar **M3**: L2 como filtro de una o dos familias vivas (aVolClusterPOI, "vela extrema → carrera asimétrica").
+- (b) Pre-registrar **M4**: ejecución pasiva o agresiva según desequilibrio de cola, con cola pesimista.
+- (c) Detectores con umbral causal, usados como estado en el canal no direccional.
+
+Pendiente también: registrar el contraejemplo en el Edge Brain, cuando la rama del store endurecido esté integrada.
+
+**Resolución P-77:**
+- **Muestra:** 200 sondas en la cuenta demo DEMO9294975 (servidor de simulación de NinjaTrader), entre las 16:58 y las 18:1x UTC.
+- **Envío→*Working*:** p50 **229 ms**, p90 **244 ms**, p99 468 ms, máximo 570 ms (la primera sonda, con la conexión en frío).
+- **Cancelación:** p50 230 ms, p90 265 ms.
+- **Seguridad:** 0 ejecuciones inesperadas.
+- **Alcance:** es un **piso** de la latencia real, porque no incluye el tramo broker→CME.
+- **Atraso del feed:** no sirve como valor absoluto; el reloj de la PC está desfasado entre −109 y +135 ms respecto del dato.
+- **Uso:** L = 250 ms (Fase 0/2) queda validado como el p90 medido. El horizonte mínimo con sentido es 3 × p90 ≈ 0,75 s.
+- **Pendiente menor:** medir en la apertura de NY y de noche, cuando se pueda.
+
+## P-80 — Rutina de descarga L2 mensual (NT8 solo sirve 90 días)
+
+Cada ~30 días, con el Replay Downloader **V5** (convierte solo a parquet día por día):
+
+| Campo | Valor |
+|---|---|
+| Exact contracts | los principales del momento (hoy `GC 12-26;6E 12-26`; sumar `ES 12-26;NQ 12-26`) |
+| From | el día siguiente al último descargado |
+| To | ayer |
+| CSV / Parquet / repo / Python | `E:\gcl2` / `E:\l2_parquet` / `E:\EdgeLab-unified-viewer` / `E:\EdgeLab\.venv\Scripts\python.exe` |
+
+Después:
+1. Verificar que los manifests v4 tengan `subsecond_unit=100ns_ticks` y 0 inversiones.
+2. Mover los CSV ya convertidos a una carpeta para borrar.
+3. Opcional: armar los bundles del visor.
+
+Todo lo anterior al 2027-01-01 es holdout (solo visor). Desde 2027 es dato de descubrimiento.
+
+**Actualización 2026-09-24 (NQ).** Un día de NQ pesa ~2 GB de CSV, ~250 MB de `.nrd` y ~200 MB de parquet, unas 10 veces más que GC. El conversor leía el CSV entero y colgó la máquina (16 GB de RAM) el 24/09 a las 10:40. **Corregido:** ahora convierte por bloques, con resultado idéntico al anterior (commit del 24/09) y la RAM libre nunca bajó de 6,3 GB. Consecuencias para NQ/ES:
+- **Descargar por tramos de ~3 semanas.** El CSV no se borra solo: 90 días de NQ serían ~200 GB en E. Entre tramos, Claude mueve CSV y `.nrd` a `E:\_PARA_BORRAR_*` y Nico borra.
+- **Contrato 12-26 de NQ solo desde el roll** (~10/09). Antes era el contrato de atrás.
+- NQ 09-26 25/06 y 26/06 (pre-holdout) ya convertidos. El parcial del crash quedó en `E:\l2_parquet\_cuarentena_crash_20260924`.
+
+## P-81 — Registrar la re-corrida corregida de F3/F4 en el Brain (decide Nico)
+
+**2026-09-24.** Las 40 pruebas originales de F3/F4 quedaron invalidadas por un bug de apertura RTH, y el presupuesto de C-TICKS-F3/F4 ya estaba consumido. Para registrar la re-corrida (mismas 40 hipótesis, `artifacts/campaign_ticks_multi/landscape_F3F4_fix.json`) hace falta una campaña de corrección **aprobada por Nico**: `human:Nico`, 40 pruebas, mismo pre-registro. Así lo exige NO_SELF_APPROVAL.
+
+## P-82 — Pista para una campaña nueva: cierre de gap nocturno en índices (requiere datos diarios multi-año)
+
+**2026-09-24.** F4 pasó el MCPT de descubrimiento en ES, NQ e YM, pero la validación no tiene potencia. Para seguir hacen falta años de datos diarios o de 1 min de ES/NQ/YM (baratos) y un pre-registro propio. **No es sobreviviente.**
+
+## P-83 — Atlas de absorción GC: la reserva sigue intacta
+
+**2026-09-24.** Nico aprobó confirmar "nivel absorbido = barrera" en `P-GC0826-CONF`. **No se ejecutó**: el chequeo de construcción previo mostró que el efecto era geometría (el control estaba en el toque y el nivel absorbido, 2 ticks más allá). Con un control a igual distancia, la diferencia desaparece. Ninguna otra sugerencia justifica gastar la reserva: el fade de ~1 tick no paga ~4 ticks de spread, y VOL-10 no está emparejado por actividad.
+
+Estado:
+- reserva intacta;
+- nulo causal de GC 1,33×; 6E 1,08× (no separa, 4 sesiones);
+- tabla de potencia y regla de partición en `docs/research/PARTICIONES_Y_POTENCIA_L2_20260924.md`.
+
+Próximo candidato natural para la reserva: una hipótesis de horizonte corto (≤ 60 s) con control emparejado por distancia **y** por actividad, y efecto mínimo relevante ≥ el costo. Decide Nico.
+
+## P-84 — Reloj L2 por archivo: 5 de 194 archivos corridos
+
+**2026-09-24.** El reloj de los parquets L2 se validó como ART con la pausa de lunes a jueves, pero **no vale para todos los archivos**:
+- 6E 28/06: +8 min 54 s;
+- NQ 28/06: ~+13 min;
+- ES y GC 12-26 del 11/08: +4 a 5 min;
+- 6E 11/08: +13 h 07 min.
+
+Se midió con el escaneo de pausa y apertura (`artifacts/regimes_6e/l2_clock_scan.json`) y, en el 6E 28/06, calzando trade por trade contra `research-v2`. La causa (NT8 `DumpMarketDepth`, el `.nrd` o la exportación) está **sin resolver**.
+
+Pendiente:
+1. Convertir el escaneo en una compuerta del intake (`CLOCK_UNCERTIFIED` por archivo).
+2. Reexportar esos días desde el `.nrd` si todavía existe.
+3. Los análisis que cruzan relojes excluyen los archivos no certificados.
+
+## P-85 — 6E-REGIMES etapa 1: dos decisiones de Nico
+
+`docs/research/FAMILIA_6E_REGIMENES_LIQUIDEZ_20260924.md`, sección de resultados. Resultado: V1 WEAK (0,34; 0,17 sin reloj), V2 FAIL tal como se congeló, V3 INCONCLUSIVE (0,094 a 1 h sin reloj).
+1. **¿V2 se acepta excluyendo 26/06 y 28/06?** El primero es un error de construcción (contratos distintos) y el segundo un reloj corrido medido (con la corrección da 0,999). Es un cambio de semántica de validación.
+2. **¿Cómo sigue la familia?** Propuesta: base = perfil horario más un estado corto (15–60 min). Cualquier sustituto nuevo se elige con datos pre-holdout. La etapa 2 mira retornos: STOP.
+
+## P-86 — Familia TBZ (transición en el borde de una zona de expansión): ¿se registra?
+
+**2026-09-24.** Research en `docs/research/RESEARCH_TRANSICION_BORDE_ZONA_EXPANSION_20260924.md`. El fenómeno sale de dos capturas de MES del 24/09 (holdout).
+
+Contenido:
+- 7 mecanismos candidatos con literatura verificada;
+- qué predice cada uno;
+- definición causal para los dos lados (CONT/ORIG);
+- población enumerada, nulos y etapas.
+
+Decisiones de Nico:
+1. **Registrar la familia y arrancar E1**, el censo target-free en MES y ES pre-holdout.
+2. **¿El holdout sirve como confirmación ciega** de una idea nacida mirando el mercado en vivo durante el holdout? El 24/09 se excluye igual.
+
+## P-76 (actualización 2026-09-24) — spread ancho del feed NT8: plausible
+
+Contraste independiente: Tradovate en vivo (NQZ6, 24/09 14:51 CDT, RTH), 3 muestras. Spread de 2–3 ticks con 1–5 contratos en el mejor nivel. Con NQ cerca de 30.800, un tick es ~0,8 bp y el spread de varios ticks es el mercado real, no un artefacto de NT8. Coincide en orden de magnitud con el L2 de NT8 (junio RTH: mediana 4,6 ticks y ~1,4 contratos en el mejor nivel).
+
+Pendiente para usarlo como costo en una prueba: registro de bid/ask de 30 min en vivo contra el replay de la misma franja.
+
+## P-76 (cierre parcial 2026-09-24) — L2 de NT8 validado contra Tradovate, nivel por nivel
+
+El replay de Tradovate (fuente independiente) de NQZ6 del 23/09 a las 07:00:10 CT se comparó contra el libro reconstruido desde `E:/l2_parquet/NQ_12-26/l2_depth/20260923.parquet`. El mejor calce es con un desfase de 1,75 s: **20 de 20 niveles comparables idénticos** (10 bid y 10 ask, precio y tamaño). Los 3 niveles restantes están más allá del nivel 10 que guarda NT8.
+
+El libro de NT8 es el libro real. El spread ancho y la poca profundidad de NQ son del mercado. Queda pendiente repetir en otro día y en GC para generalizar.
+
+## P-87 — GC L2 no verificado contra Tradovate
+
+24/09: captura del replay de Tradovate de GCZ6, "22/09" 07:00:06 CDT (ask 4346.1 / bid 4345.8). En `E:/l2_parquet/GC_12-26` no aparece ese libro en ningún momento de los días 14, 15, 17 y 22/09: el mejor calce es de 8 de 20 niveles. El 22/09 a las 07:00 CT el archivo marca 4360.
+
+Causas posibles: día distinto entre Tradovate y nuestro archivo (faltan el 16, el 18 y el 21), o un problema propio de los archivos de GC (ver relojes, P-84).
+
+**Resuelto el mismo día:** las capturas anteriores eran de otra fecha del replay. Con GCZ6 del 22/09 a las 07:00:04 CDT (bid 4359.9 / ask 4360.3) el calce es de **20 de 20 niveles, con un desfase de 0,5 s**. El L2 de GC queda **verificado**, igual que NQ.
+
+## Integración pendiente
+
+La rama `integ/viewer-brain-20260923` (visor #48 + Brain #56, suite verde) espera la decisión de mergearla a `foundation`.
+
+## P-88 — Familia ABS-CTX (absorción × contexto, NQ L2): auditoría y próximos pasos
+
+24/09. La hoja "tendencia 30 min" (SUG-NQ-SYN-B-1…3) se **invalidó**: los controles previos al evento heredaban el camino de aproximación (−6,6 ticks a 300 s). Con controles posteriores al horizonte (corrida C) aparece **V-RND**: absorción a ≤ 8 ticks de un múltiplo de 100 pts → −10,5 ticks a 60 s [−16,3; −4,6]. Es una sinergia pura (cada parte sola ≈ 0). La familia A de la exploración queda `REQUIRES_REAUDIT` por la misma causa. Detalle y variantes: `docs/research/FAMILIA_ABS_CTX_NQ_20260924.md`.
+
+Decisiones de Nico:
+1. ¿Protocolo de confirmación de V-RND ahora (~12 sesiones, MDE ~15 ticks) o esperar a fin de octubre (~34)?
+2. ¿OK a I-1 (dosis y respuesta del número redondo), I-2 (cascada de stops) e I-4 (GC, 6E y ES) sobre sus particiones EXP?
+3. ¿OK a validar la regla de tick para llevar la familia a los ticks pre-holdout (I-5)?
+
+**Actualización 24/09 (réplica V-RND):** ES y 6E dan NO_REPLICA (mismo signo, menos de 1/4 del tamaño de NQ escalado, por debajo del spread); GC da SIN_POTENCIA. Familia: `NO_CONCLUYENTE`. V-RND no se transporta como edge. Queda sólo la confirmación propia de NQ en `P-NQL2-CONF` (decisión 1 de arriba). Herramienta reutilizable: `tools/vrnd_replicate.py`.
+
+## P-89 — EXEC-QI: modelo de costo de ejecución condicionado al libro (propuesto 24/09)
+
+Manifiesto `docs/research/MANIFIESTO_EJECUCION_QI_L2_20260924.md`, con la tabla de priorización frente a V-RND, volatilidad, momentum intradía y re-auditorías. Mira el precio después del fill (selección adversa): **espera el OK de Nico** (regla STOP). Además: guardia `CTRL_TIMING_V1` activa en el Brain desde hoy; `OBS-ABS-GC0826-RESPONSE` y `OBS-NQL2-A` quedan `REQUIRES_REAUDIT`.
+
+**Actualización 24/09 (EXEC-QI medido):** pasivo ahorra en los 4 instrumentos. Regla óptima a T=30 s, pesimista: NQ +0,43 t/lado (USD 2,15), GC +0,36 (USD 3,6), ES +0,18 (USD 2,25; ahí conviene cruzar si el QI va a favor), 6E +0,11. Simulación sobre grilla uniforme: falta medir en instantes de señal y con fills reales de la sim de NT8.
+
+**Actualización 24/09 (EXEC-QI, etapa 1 en Playback, 3 días NQ):** NT8 llena el 90 % de las límites contra el 79 % del modelo y favorece a la pasiva en ~1,3 ticks por lado. El modelo pesimista es conservador. Lección `LES-NT8-SIM-FILLS-OPTIMISTIC-20260924`: no usar fills límite de NT8 sim como costo. Pendiente: órdenes reales (etapa 3), decisión de Nico.
+
+## P-90 — MM-QI: provisión pasiva de liquidez filtrada por QI (propuesto 24/09)
+
+Manifiesto `docs/research/MANIFIESTO_MM_QI_L2_20260924.md`: 24 variantes en exploración, riesgo principal el modelo de fill. Búsqueda sobre P&L: **espera el OK de Nico** (STOP).
+
+## P-91 — TBZ-E2 (expansión como área de patinaje) y TREND-MICRO (propuestos 24/09)
+
+- `docs/research/TBZ_E2_PARAMETRIZACION_HOLISTICA_20260924.md` + registro `docs/specs/TBZ_E2_PARAM_REGISTRY.json` (8 grupos de parámetros, 3 nulos). E2a target-free se puede correr; **E2b (resultados) espera el OK de Nico**.
+- `docs/research/MANIFIESTO_TREND_MICRO_20260924.md`: 3 bases × 4 filtros × 2 targets. **Espera el OK de Nico.**
+
+## P-92 — Timestamps no monótonos en un archivo L2 (ES 09-26, 21/08): detectado y excluido (24/09)
+
+MM-QI se colgó en ES 21/08. Causa raíz: el archivo viene de un NRD parcial (cortado a las 11:57; el completo quedó en cuarentena como `.invalid`) y trae **31.553 retrocesos de timestamp de hasta 9 s** en el orden del archivo. El conversor no chequea la monotonía interna, sólo las fronteras entre días. Auditoría de las 151 sesiones usadas en EXEC-QI, V-RND y MM-QI: **es la única**.
+
+- **Gate nuevo:** `nq_l2_explore.clock_ok` exige trades monótonos (fail-closed). Lo usan todas las herramientas L2.
+- **Re-medido sin ese día** (ES pasa de 41 a 40 sesiones): EXEC-QI ES y V-RND ES quedan **iguales** a dos decimales (V-RND ES: −0,59 [−1,80; +0,52], NO_REPLICA). Observaciones viejas invalidadas; nuevas `OBS-EXECQI-ES-R2` y `OBS-VRND-ES-R2`.
+- **Pendiente:** agregar el chequeo de monotonía interna al conversor (`edgelab/data/l2.py`), para que falle en la conversión y no en el research.
+
+## P-93 — Agresor de research-v2: NQ válido, ES no (24/09)
+
+Validación contra el L2 en el solapamiento pre-holdout (NQ 25–30/06, ES 29–30/06). **NQ: 98,7–99,3 %.** **ES: 78,5–80,8 %**: no pasa el umbral del 90 % fijado en TBZ-E2 §7 I6 y TREND-MICRO §7 T1.
+
+- **Causa raíz:** el bid/ask que trae `research-v2` en ES es posterior a que el trade consumiera el nivel. Con spread de 1 tick, el lado queda invertido justo en los trades que rompen un nivel.
+- **Correcciones probadas sin éxito:** la cotización del trade anterior (80 %) y la anterior a la ráfaga (70–74 %).
+- **Por la regla pre-registrada:** en ES quedan afuera los descriptores de agresor (delta y absorción). TREND-MICRO F1/F2 corre sólo en NQ.
+- **Abierto:** reconstruir el agresor de ES desde el L2 cuando haya L2 pre-holdout suficiente, o validar otra regla contra el L2.
+
+**P-90 (MM-QI) cerrada:** muerta en su alcance declarado. Ver el manifiesto §7.
+
+**Actualización 25/09 (TREND-MICRO medido):** 0 sugerencias. Dos hallazgos: (1) la continuación de una expansión (B3) falla más que el azar en ES y NQ (sesgo de reversión, no operable tal cual); (2) pista NQ: ruptura de número redondo a favor de VWAP/EMA50, acierto +8,6 pts sobre N1 y sinergia +0,22 R, con R neto sin IC positivo. Seguirla exige pre-registro de una celda (decide Nico).
+
+## P-94 — AGOT-EXT: agotamiento en extremo (divergencia RSI y de delta), propuesto 25/09
+
+Manifiesto `docs/research/MANIFIESTO_AGOTAMIENTO_EN_EXTREMO_20260925.md`: 24 celdas (ES 8, NQ 16). Decide la **sinergia** (extremo nuevo con divergencia contra sin divergencia), además de N1 y costos. Requiere dos cosas de Nico en el mismo OK: (1) STOP, porque es búsqueda sobre P&L; (2) **levantar F9 para esta familia**, porque abre un indicador nuevo.
+
+**Actualización 25/09 (AGOT-EXT medido):** 0 sugerencias. La divergencia del RSI empeora ir contra el extremo en la ruptura (NQ −0,13 R y ES −0,05 R de sinergia) y no agrega nada en la confirmación; la de delta, tampoco. Hallazgo lateral: ir contra un extremo confirmado acierta menos que el azar en ES y NQ. F9 vuelve a quedar pausada para otros indicadores.
+
+## P-95 — RETRO-PIV: comprar el retroceso tras un extremo confirmado (propuesto 25/09)
+
+Manifiesto `docs/research/MANIFIESTO_COMPRAR_RETROCESO_20260925.md`. Sale del hallazgo lateral de AGOT-EXT; es una **confirmación fuera de muestra** (abr–jun 2026), con 2 pruebas y Bonferroni. Requiere: OK de Nico (STOP), spec confirmada en revisión ciega y campaña en el Brain. Antes de abrir la reserva hay que reproducir el número de origen en exploración.
+
+**Actualización 25/09 (TBZ-E2 en ES medido):** 0 sugerencias en 48 celdas. El precio no cruza la franja más rápido que la geometría sola (acierto 0,4–2,9 pts por debajo de N1), y las franjas TBZ se revierten menos que un tramo cualquiera del mismo ancho. Patinaje muerto en su alcance declarado. MES en curso (apoyo).

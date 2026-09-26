@@ -52,6 +52,12 @@ GC = InstrumentSpec(symbol="GC", tick_size=0.1, tick_value=10.0, multiplier=100.
 SIX_J = InstrumentSpec(symbol="6J", tick_size=0.0000005, tick_value=6.25,
                        multiplier=12_500_000.0)
 
+SIX_B = InstrumentSpec(symbol="6B", tick_size=0.0001, tick_value=6.25, multiplier=62500.0)
+MBT = InstrumentSpec(symbol="MBT", tick_size=5.0, tick_value=0.5, multiplier=0.1)
+MES = InstrumentSpec(symbol="MES", tick_size=0.25, tick_value=1.25, multiplier=5.0)
+MNQ = InstrumentSpec(symbol="MNQ", tick_size=0.25, tick_value=0.5, multiplier=2.0)
+MYM = InstrumentSpec(symbol="MYM", tick_size=1.0, tick_value=0.5, multiplier=0.5)
+
 INSTRUMENT_SPECS: dict[str, InstrumentSpec] = {
     "6E": SIX_E,
     "YM": YM,
@@ -60,6 +66,11 @@ INSTRUMENT_SPECS: dict[str, InstrumentSpec] = {
     "ZB": ZB,
     "GC": GC,
     "6J": SIX_J,
+    "6B": SIX_B,
+    "MBT": MBT,
+    "MES": MES,
+    "MNQ": MNQ,
+    "MYM": MYM,
 }
 
 

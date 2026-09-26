@@ -1,0 +1,113 @@
+{
+  "catalog": {
+    "catalog_id": "ATLAS-FOUNDATION",
+    "title": "Foundation Measurement Atlas",
+    "version": "1.0.0",
+    "partitions": ["METHODOLOGICAL_CORTEX"],
+    "indicator_ids": ["IND-EMA", "IND-RSI"],
+    "composition_ids": ["COMP-EMA-RSI-REGIME-TRIGGER"],
+    "concept_ids": ["TREND_STRENGTH"],
+    "status": "DRAFT",
+    "asserts_edge": false,
+    "created_at_utc": "2026-09-19T00:00:00Z"
+  },
+  "indicators": [
+    {
+      "indicator_id": "IND-EMA",
+      "name": "Exponential Moving Average",
+      "role": "REGIME_GATE",
+      "formula_description": "Standard exponential smoothing over close prices with multiplier alpha = 2/(N+1)",
+      "parameters": {
+        "period": 20
+      },
+      "units": "price_ticks",
+      "timing": "bar_close",
+      "normalization": "raw_or_percentage_distance",
+      "ablations": [
+        "no_smoothing",
+        "simple_moving_average",
+        "shuffled_bars"
+      ],
+      "failure_modes": [
+        "whipsaw_in_range",
+        "lag_on_structural_break"
+      ],
+      "status": "DRAFT",
+      "asserts_edge": false,
+      "created_at_utc": "2026-09-19T00:00:00Z"
+    },
+    {
+      "indicator_id": "IND-RSI",
+      "name": "Relative Strength Index",
+      "role": "TRIGGER",
+      "formula_description": "Wilder's RSI measuring ratio of smoothed positive gains to smoothed negative losses",
+      "parameters": {
+        "period": 14
+      },
+      "units": "bounded_oscillator_0_100",
+      "timing": "bar_close",
+      "normalization": "fixed_range_0_100",
+      "ablations": [
+        "unbounded_momentum",
+        "stochastic_oscillator",
+        "randomized_signal"
+      ],
+      "failure_modes": [
+        "pinned_in_strong_trend",
+        "divergence_failure"
+      ],
+      "status": "PROPOSED",
+      "asserts_edge": false,
+      "created_at_utc": "2026-09-19T00:00:00Z"
+    }
+  ],
+  "compositions": [
+    {
+      "composition_id": "COMP-EMA-RSI-REGIME-TRIGGER",
+      "name": "EMA Regime Gate with RSI Momentum Trigger",
+      "components": [
+        "IND-EMA",
+        "IND-RSI"
+      ],
+      "composition_logic": "Gate active when price > EMA(20); Trigger fires when RSI(14) crosses threshold under gate condition",
+      "required_roles": [
+        "REGIME_GATE",
+        "TRIGGER"
+      ],
+      "interaction_hypothesis": "EMA gate reduces false trigger density without introducing future lookahead",
+      "ablations": [
+        "no_regime_gate",
+        "no_trigger",
+        "shuffled_gate",
+        "alternate_normalization"
+      ],
+      "status": "DRAFT",
+      "asserts_edge": false,
+      "created_at_utc": "2026-09-19T00:00:00Z"
+    }
+  ],
+  "concepts": [
+    {
+      "concept_id": "TREND_STRENGTH",
+      "name": "Trend Strength Concept",
+      "role": "MEASUREMENT_CONCEPT",
+      "formula_description": "Directional persistence of displacement relative to local volatility",
+      "parameters": {
+        "lookback_bars": 50
+      },
+      "units": "ratio_dimensionless",
+      "timing": "rolling_window",
+      "normalization": "z_score_or_unit_ratio",
+      "ablations": [
+        "raw_slope",
+        "unnormalized_displacement"
+      ],
+      "failure_modes": [
+        "regime_transition_delay"
+      ],
+      "status": "PROPOSED",
+      "asserts_edge": false,
+      "created_at_utc": "2026-09-19T00:00:00Z"
+    }
+  ]
+}

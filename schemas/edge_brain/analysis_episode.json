@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgelab.local/schemas/edge_brain/analysis_episode.json",
+  "title": "EdgeLab Analysis Episode",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "episode_id",
+    "goal",
+    "status",
+    "step_ids",
+    "expectation_ids",
+    "context_pack_id",
+    "created_at_utc",
+    "updated_at_utc",
+    "recorded_by",
+    "outcomes_inspected"
+  ],
+  "properties": {
+    "episode_id": {
+      "type": "string",
+      "pattern": "^EPISODE-[A-Za-z0-9._:-]+$"
+    },
+    "goal": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "enum": [
+        "PLANNING",
+        "IN_PROGRESS",
+        "COMPLETED",
+        "FAILED",
+        "ABANDONED"
+      ]
+    },
+    "step_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "expectation_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "context_pack_id": {
+      "type": "string"
+    },
+    "created_at_utc": {
+      "type": "string"
+    },
+    "updated_at_utc": {
+      "type": "string"
+    },
+    "recorded_by": {
+      "type": "string",
+      "minLength": 1
+    },
+    "outcomes_inspected": {
+      "const": false
+    }
+  }
+}
