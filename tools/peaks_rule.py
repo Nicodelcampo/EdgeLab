@@ -120,7 +120,7 @@ def pivots(x, w):
     return piv
 
 
-def series(cd, tick, w, max_gap, max_step, min_pull, nmin, extend_back=False):
+def series(cd, tick, w, max_gap, max_step, min_pull, nmin, extend_back=False, max_slope=None):
     Z = []
     for kind in (1, -1):
         rows, member = chains(cd["h"], cd["l"], cd["t"], tick, w, max_gap, max_step, min_pull, nmin, kind)
@@ -136,6 +136,10 @@ def series(cd, tick, w, max_gap, max_step, min_pull, nmin, extend_back=False):
                 continue
             if extend_back:
                 pk = backfill(pk, xx, piv, cd["t"], tick, max_gap, max_step)
+            if max_slope is not None:                  # tope de pendiente total: la serie más empinada que marcó Nico
+                slope = abs(src[pk[-1]] - src[pk[0]]) / tick / max(pk[-1] - pk[0], 1)
+                if slope > max_slope:
+                    continue
             i0, i1 = int(pk[0]), int(r[1])
             pr = src[pk]
             Z.append(dict(kind="H" if kind == 1 else "L", i0=i0, i1=i1, t0=float(cd["t"][i0]), t1=float(cd["t"][i1]),
@@ -173,7 +177,11 @@ def main(argv=None):
     if a.reuse_best and outp.exists():
         prev = json.loads(outp.read_text(encoding="utf-8"))
         best = prev["parametros"]
-        Z = series(cd, tick, *[best[k] for k in GRID], extend_back=True)
+        # tope de pendiente = la pendiente total máxima de las series marcadas por Nico (su propio criterio, no ajustado)
+        sl = [abs(g[-1]["price"] - g[0]["price"]) / tick / max(g[-1]["i"] - g[0]["i"], 1) for g in lab["zigzags"] if len(g) > 2]
+        max_slope = float(max(sl)) if sl else None
+        Z = series(cd, tick, *[best[k] for k in GRID], extend_back=True, max_slope=max_slope)
+        prev["max_slope_de_etiquetas"] = max_slope
         f1, pr, rc, nz = P.score(Z, R, wins_all)
         prev.update(zonas=Z, extension_atras=True, puntaje_con_extension=dict(f1=round(f1, 3), precision=round(pr, 3), cobertura=round(rc, 3), zonas_en_ventana=nz))
         outp.write_text(json.dumps(prev, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
