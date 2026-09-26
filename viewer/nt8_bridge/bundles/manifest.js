@@ -588,6 +588,20 @@ window.ASSET_CATALOG = [
     "profile": "SCALED_FUNNEL_V1"
   },
   {
+    "id": "ES_03-26_202601_500T",
+    "name": "ES 03-26 202601 (500 Tick · IPC macro)",
+    "group": "ES ES 03-26 (Fragmentos Mensuales)",
+    "instrument": "ES",
+    "contract": "ES 03-26",
+    "tick_size": 0.25,
+    "precision": 2,
+    "candles": 41095,
+    "zones": 0,
+    "rolls": 0,
+    "parity_status": "PARITY_ABSTAIN",
+    "profile": "AGG_20x25T"
+  },
+  {
     "id": "ES_03-26_202602_25T_HFT",
     "name": "ES 03-26 202602 (25 Tick \u00b7 Fragmento)",
     "group": "ES ES 03-26 (Fragmentos Mensuales)",
@@ -3246,5 +3260,20 @@ window.ASSET_CATALOG = [
     "rolls": 0,
     "parity_status": "PARITY_ABSTAIN",
     "profile": "SCALED_FUNNEL_V1"
+  },
+  {
+    "id": "AUDUSD_M1",
+    "name": "AUDUSD · M1 (Forex Dukascopy)",
+    "group": "Forex Spot M1",
+    "instrument": "AUDUSD",
+    "contract": "AUDUSD M1",
+    "tick_size": 0.00001,
+    "precision": 5,
+    "candles": 125464,
+    "zones": 0,
+    "rolls": 0,
+    "parity_status": "PARITY_ABSTAIN",
+    "kind": "M1_FOREX"
   }
 ];
+
