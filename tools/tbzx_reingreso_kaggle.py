@@ -57,9 +57,9 @@ NCELL = int(np.prod(SHAPE))
 
 # ------------------------------------------------------------------ datos
 def find_files():
-    fs = sorted(glob.glob("/kaggle/input/**/ES_*_ticks.parquet", recursive=True))
+    fs = sorted(glob.glob(f"/kaggle/input/**/{INST}_*_ticks.parquet", recursive=True))
     if not fs:
-        fs = sorted(glob.glob(os.environ.get("R3_DATA", "data") + "/ES_*_ticks.parquet"))
+        fs = sorted(glob.glob(os.environ.get("R3_DATA", "data") + f"/{INST}_*_ticks.parquet"))
     return [f for f in fs if "_09-26_" not in f]   # contrato sin sesiones de exploración
 
 
