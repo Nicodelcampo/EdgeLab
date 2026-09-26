@@ -42,31 +42,51 @@ def declare(ctrl_dir: Path):
     from edgelab.edge_brain.episode_logger import measurement_episode
     from edgelab.edge_brain.hippocampus import LessonCandidate
     from edgelab.edge_brain.hippocampus_store import DurableHippocampus
-    if LEDGER.exists() and PART in DurableHippocampus(LEDGER).partitions:
+    have = DurableHippocampus(LEDGER) if LEDGER.exists() else None
+    if have is not None and PART in have.partitions and "LES-R3-TRADE-PRICE-BOUNCE-20260925" in have.memory.lessons:
         print("ya declarada"); return
-    tds = [str(x) for x in np.load(ctrl_dir / "r3_ctrl.npz")["tds"]]
-    with measurement_episode(LEDGER, "EP-TBZX-R3-DECLARE-20260926", goal="declarar partición y lecciones de método TBZX-R3",
+    f = ctrl_dir / "r3_ctrl.npz"
+    tds = [str(x) for x in np.load(f if f.exists() else ctrl_dir / "r3_agg.npz")["tds"]]
+    ep_id = "EP-TBZX-R3-DECLARE-20260926" + ("B" if have is not None else "")
+    with measurement_episode(LEDGER, ep_id, goal="declarar partición y lecciones de método TBZX-R3",
                              recorded_by="tools/tbzx_r3_brain.py declare", repo=REPO, prereg_ref=DOC) as ep:
-        ep.store.record_partition(PART, "EXPLORATION",
+        if PART not in ep.store.partitions:
+          ep.store.record_partition(PART, "EXPLORATION",
                                   "ES 25T jul-2025 a mar-2026 (mismas sesiones que P-TBZ-EXP; fijada en el pre-registro del "
                                   "25/09; asentada acá el 26/09, después de las corridas locales 1 y 2)",
                                   [f"ES:{d}" for d in tds])
         ep.store.record_lesson(LessonCandidate(
-            lesson_id="LES-R3-ENTRY-AT-LEVEL-GAP-20260925", episode_id="EP-TBZX-R3-DECLARE-20260926",
+            lesson_id="LES-R3-ENTRY-AT-LEVEL-GAP-20260925", episode_id=ep_id,
             statement=("Entrada 'perfecta' al precio del NIVEL cuando el trade que dispara ya lo saltó regala ticks: sobre un "
                        "random walk sintético dio ~+2,5 pp de acierto a 'sigue' (r = 0). La entrada perfecta debe ser el "
                        "precio del trade que dispara (o el medio)."),
-            confidence="HIGH", status="PROPOSED", scope="METHODOLOGICAL", robustness="REPLICATED",
+            confidence="LOW", status="PROPOSED", scope="METHODOLOGICAL", robustness="REPLICATED",
             conditions=["simulaciones de entrada por toque de nivel", "precios con saltos"]))
         ep.store.record_lesson(LessonCandidate(
-            lesson_id="LES-R3-TRADE-PRICE-BOUNCE-20260925", episode_id="EP-TBZX-R3-DECLARE-20260926",
+            lesson_id="LES-R3-TRADE-PRICE-BOUNCE-20260925", episode_id=ep_id,
             statement=("Con TP/SL chicos medidos sobre precios de trade, el rebote bid/ask domina: en ES (46 sesiones) "
                        "'sigue' con r >= 1 dio +5,5 pp sobre 50 % y el fantasma de otra sesión dio lo mismo o más. Medir la "
                        "dirección sobre el medio (bid+ask)/2 y comparar siempre contra un control."),
-            confidence="HIGH", status="PROPOSED", scope="METHODOLOGICAL", robustness="REPLICATED",
+            confidence="LOW", status="PROPOSED", scope="METHODOLOGICAL", robustness="REPLICATED",
             conditions=["ES, tick de 1 = spread", "TP <= 3 ticks"]))
         ep.note("particion", PART)
     print("declarada", PART, len(tds), "sesiones")
+
+
+def evidence(tag: str, d: Path, statement: str):
+    """Corrida sin pares de control guardados (iteración 1): no puede ser observación EVENT_VS_CONTROL auditada;
+    queda como evidencia en una lección, con el sha de su artefacto."""
+    from edgelab.edge_brain.episode_logger import measurement_episode
+    from edgelab.edge_brain.hippocampus import LessonCandidate
+    cp = _celdas(d)
+    with measurement_episode(LEDGER, f"EP-TBZX-R3-{tag}", goal=f"TBZX-R3 {tag}: evidencia sin auditoría de controles",
+                             recorded_by="tools/tbzx_r3_brain.py evidence", repo=REPO, prereg_ref=DOC,
+                             inputs={"celdas": cp, "resumen": d / "r3_resumen.json"}) as ep:
+        ep.store.record_lesson(LessonCandidate(
+            lesson_id=f"LES-TBZX-R3-{tag}", episode_id=f"EP-TBZX-R3-{tag}", statement=statement + f" (sha {_sha(cp)[:12]})",
+            confidence="LOW", status="PROPOSED", scope="EMPIRICAL", robustness="SINGLE_SAMPLE",
+            conditions=["ES", "jul-2025..mar-2026", "exploración"]))
+    print("evidencia", tag)
 
 
 def ingest(tag: str, d: Path, ctrl_dir: Path, note: str, hold_s: float):
@@ -118,12 +138,15 @@ def ingest(tag: str, d: Path, ctrl_dir: Path, note: str, hold_s: float):
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("step", choices=["declare", "ingest"])
+    ap.add_argument("step", choices=["declare", "ingest", "evidence"])
+    ap.add_argument("--statement", default="")
     ap.add_argument("--dir"); ap.add_argument("--ctrl", required=True); ap.add_argument("--tag")
     ap.add_argument("--note", default=""); ap.add_argument("--hold", type=float, default=HOLD_S)
     a = ap.parse_args(argv)
     if a.step == "declare":
         declare(Path(a.ctrl))
+    elif a.step == "evidence":
+        evidence(a.tag, Path(a.dir), a.statement)
     else:
         ingest(a.tag, Path(a.dir), Path(a.ctrl), a.note, a.hold)
 
