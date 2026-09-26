@@ -104,7 +104,8 @@ def eventos(t, H, L, C, imp):
                     q1 = min(n, k + 1 + HZ)
                     far = (ext - L[k:q1].min()) if d == 1 else (H[k:q1].max() - ext)
                     over = far / W - 1.0
-                out.append(dict(x=x, f=f, res=res, vel=vel, efi=-abs(efi(seg_v) - efi(seg_m)), forma=forma,
+                fc = min(max(((ext - C[k]) if d == 1 else (C[k] - ext)) / W, 0.0), 1.0)
+                out.append(dict(x=x, f=f, f_cierre=fc, res=res, vel=vel, efi=-abs(efi(seg_v) - efi(seg_m)), forma=forma,
                                 ondas=ondas, W=W, sobrepaso_W=over, velas=k - iext))
             if len(done) == len(XS):
                 break
@@ -163,7 +164,7 @@ def score(rows, ref):
             r[f"p_{c}"] = _pct(ref[c], r[c]) if r[c] == r[c] else float("nan")
 
 
-def boot(rows_a, rows_b=None, n=1000, seed=20260926):
+def boot(rows_a, rows_b=None, n=1000, seed=20260926, fk="f"):
     """Exceso medio (espejo − f); con rows_b, diferencia de excesos. Bootstrap por sesión."""
     rng = np.random.default_rng(seed)
 
@@ -171,7 +172,7 @@ def boot(rows_a, rows_b=None, n=1000, seed=20260926):
         d = {}
         for r in rows:
             s = d.setdefault(r["sesion"], [0.0, 0])
-            s[0] += (r["res"] == 1) - r["f"]; s[1] += 1
+            s[0] += (r["res"] == 1) - r[fk]; s[1] += 1
         return d
     A = agg(rows_a); B = agg(rows_b) if rows_b is not None else {}
     ses = sorted(set(A) | set(B))
@@ -207,6 +208,8 @@ def analizar(rows, ref, cortes_S):
         base = dict(x=x, n=len(rx), espejo=float(np.mean([r["res"] == 1 for r in rx])) if rx else float("nan"),
                     f_medio=float(np.mean([r["f"] for r in rx])) if rx else float("nan"))
         tests.append(dict(base, prueba="todos: exceso vs f", est=boot(rx)))
+        base_c = dict(base, f_medio=float(np.mean([r["f_cierre"] for r in rx])) if rx else float("nan"))
+        tests.append(dict(base_c, prueba="todos: exceso vs f al cierre (enmienda 1)", est=boot(rx, fk="f_cierre")))
         for var, lims in [("S", cortes_S)] + [(f"p_{c}", [1 / 3, 2 / 3]) for c in COMP]:
             lo = [r for r in rx if r[var] == r[var] and r[var] <= lims[0]]
             hi = [r for r in rx if r[var] == r[var] and r[var] > lims[1]]
@@ -216,6 +219,9 @@ def analizar(rows, ref, cortes_S):
                               espejo_T1=float(np.mean([r["res"] == 1 for r in lo])) if lo else float("nan"),
                               est=boot(hi, lo)))
             tests.append(dict(base, prueba=f"{var} T3: exceso vs f", n_T3=len(hi), est=boot(hi)))
+            if var == "S":
+                tests.append(dict(base_c, prueba="S T3: exceso vs f al cierre (enmienda 1)", n_T3=len(hi),
+                                  est=boot(hi, fk="f_cierre")))
     ok = bh([t["est"][3] for t in tests])
     for t, o in zip(tests, ok):
         t["fdr"] = bool(o)

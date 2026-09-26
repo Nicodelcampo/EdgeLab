@@ -69,3 +69,14 @@ primero lo último que recorrió el impulso.
   sólo refleja volatilidad (la velocidad sola explica todo y la forma no suma).
 - **Se refuta** si la prueba principal no sostiene. Si sólo sostiene `vel` y no `forma` ni `ondas`, lo que hay es
   momentum de la vuelta, no espejo.
+
+## Enmienda 1 — nulo al cierre (después de ver el descubrimiento, 2026-09-26)
+
+- **Qué se vio:** en MNQ 09-25 todas las pruebas de exceso contra f dieron entre −10 y −14 pp.
+- **Causa probable:** f se toma del extremo de la vela del evento. El evento recién se conoce al cierre de esa vela,
+  cuando el precio pudo haber rebotado, así que la posición real es menor que f y el nulo queda inflado.
+- **Cambio:** se agrega `f_cierre` (el retroceso al cierre de la vela del evento) como **segundo** nulo. El nulo
+  original **no se reemplaza** y los dos se publican.
+- **Qué no toca:** la prueba principal (tercil alto − tercil bajo de S) sigue igual.
+- **Alcance:** este cambio es posterior a ver datos, así que ningún resultado contra `f_cierre` se promueve por sí
+  solo. Sólo cuenta si replica en 12-25 y 03-26.
