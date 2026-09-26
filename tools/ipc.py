@@ -55,7 +55,7 @@ def arrays(x):
     return a
 
 
-def events(x, a, Z, variant, w, tick=1.0):
+def events(x, a, Z, variant, w, tick=1.0, cap=None):
     """Eventos causales por zona: se recorre vela a vela desde la creación; el último pico vigente es el último pico ya
     confirmado (índice + w). Evento = primer cierre a ≥ D del último pico, del lado contrario, con la zona sin romper."""
     h, l, c, v = a["h"], a["l"], a["c"], x["v"].astype(float)
@@ -63,7 +63,14 @@ def events(x, a, Z, variant, w, tick=1.0):
     rows = []
     for z in Z:
         pk = z["picos"]
-        if len(pk) < variant["minp"] or pk[-1][0] - pk[0][0] < variant["minbars"]:
+        if len(pk) < variant["minp"]:
+            continue
+        # CAUSAL (corrección 26/09): filtros de pendiente y duración con los picos conocidos en la creación, no con la serie
+        # completa (incluía picos posteriores al evento: si el precio volvía, cambiaba qué zonas pasaban)
+        pk0 = pk[:variant["minp"]]
+        if pk0[-1][0] - pk0[0][0] < variant["minbars"]:
+            continue
+        if cap is not None and abs(pk0[-1][2] - pk0[0][2]) / tick / max(pk0[-1][0] - pk0[0][0], 1) > cap:
             continue
         H = z["kind"] == "H"; s = 1 if H else -1                     # s: dirección de los picos (arriba en un techo)
         idx = [p[0] for p in pk]; pr = [p[2] for p in pk]
@@ -160,13 +167,13 @@ def step_measure(inst):
     Zs = {}
     for k in keys:
         cd = dict(t=S[k]["t"], h=A[k]["h"], l=A[k]["l"])
-        Zs[k] = PR.series(cd, 1.0, p["w"], p["max_gap"], p["max_step"], p["min_pull"], p["nmin"], extend_back=True, max_slope=cap)
+        Zs[k] = PR.series(cd, 1.0, p["w"], p["max_gap"], p["max_step"], p["min_pull"], p["nmin"], extend_back=True, max_slope=None)
     zone_levels = {k: [z["picos"][-1][2] for z in Zs[k]] + [z["picos"][0][2] for z in Zs[k]] for k in keys}
     rng = np.random.default_rng(SEED)
     rows = []
     for vname, var in cfg["variants"].items():
         for k in keys:
-            for r in events(S[k], A[k], Zs[k], var, p["w"]):
+            for r in events(S[k], A[k], Zs[k], var, p["w"], cap=cap):
                 s = 1 if r["kind"] == "H" else -1
                 cm, cn, pht, phs = control(S, A, keys, k, r["ev"], s, r["lvl_dist"], r["far_dist"], rng, zone_levels, r["R"])
                 rows.append(dict(r, inst=inst, detector=vname, session=k, ctrl=cm, n_ctrl=cn, ph_t=pht, ph_session=phs, t_ev=float(S[k]["t"][r["ev"]])))

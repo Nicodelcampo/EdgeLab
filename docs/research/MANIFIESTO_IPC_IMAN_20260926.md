@@ -59,3 +59,6 @@ Por activo, sobre sesiones de exploración (jul-2025 a mar-2026, contrato canón
 
 ## 8. No medido (queda abierto)
 El estado continuo (zona virgen a distancia x); otros niveles (banda completa, POC de la zona); relación con el volumen del libro (L2); otros activos (YM, MYM, 6E); detectores de otras formas.
+
+### Corrección antes de interpretar (26/09)
+La primera corrida (reporte sha `daa3b0f3bbd3`, 32 INFO+) aplicaba el tope de pendiente y, en NQ, la duración mínima **con la serie completa**, que incluye picos formados después del evento. Si el precio volvía y armaba más picos, cambiaba qué zonas entraban: mirada al futuro. Se corrige usando sólo los picos conocidos en la creación, y **se descarta esa corrida sin interpretarla**; queda en el Cerebro como invalidada.
