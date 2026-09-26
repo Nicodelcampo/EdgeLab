@@ -1,7 +1,7 @@
 # CURRENT — estado vivo
 
-**Fecha:** 2026-09-23  
-**Corte:** 2026-09-23  
+**Fecha:** 2026-09-26  
+**Corte:** 2026-09-26  
 **Rama del PR #48 (head real, la que ve GitHub):** `feat/unified-nt8-viewer-20260920`.
 **Rama de trabajo local (se empuja como fast-forward sobre la de arriba):** `feat/unified-viewer-canonical-20260921`.
 Hallazgo de auditoría 2026-09-21: esta sección llamaba "rama viva" solo a la de trabajo local, sin nombrar cuál es
@@ -42,6 +42,11 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
    - V2 falló por un error de construcción y un archivo con reloj corrido (P-85).
    - Hallazgo de integridad: 5 de 194 archivos L2 tienen el reloj corrido (P-84).
    - `docs/research/FAMILIA_6E_REGIMENES_LIQUIDEZ_20260924.md`.
+
+13. **TBZX-R3 (2026-09-25/26): reingreso a la franja TBZX y dirección de los ticks siguientes, ES en Kaggle.** Secuencia: se crea la zona → el precio se aleja D → vuelve → penetra p → retrocede r → entrada. Manifiesto con enmiendas escritas antes de medir: `docs/research/MANIFIESTO_TBZX_REINGRESO_3T_20260925.md`. Kernel: `tools/tbzx_reingreso_kaggle.py`. Cerebro: `tools/tbzx_r3_brain.py`, ledger `artifacts/hippocampus/tbzx_r3_20260926.jsonl`, partición `P-TBZX-R3-EXP` (181 sesiones, jul-2025 a mar-2026).
+   - Iteración 1 (181 sesiones, TP 3): con ejecución realista, 0 de 66.000 celdas con P&L > 0 (mejor −1,15 t).
+   - La zona sí difiere del fantasma: «sigue» con r = 0 acierta +2,1 pp y «rebota» con r ≥ 2 acierta +1,5 a +1,9 pp. Son ~0,2 t, contra un costo de ~1,5 t.
+   - En curso: TP/SL 3–20 (iteración 3) y escenarios macro con descubrimiento jul–nov y validación dic–mar (iteración 4). Abr–jun sigue sin tocar.
 
 ## Resultados de investigación vigentes
 
