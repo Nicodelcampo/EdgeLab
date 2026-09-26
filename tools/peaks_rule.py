@@ -87,11 +87,46 @@ def chains(h, l, t, tick, w, max_gap, max_step, min_pull, nmin, kind):
     return out[:m], member
 
 
-def series(cd, tick, w, max_gap, max_step, min_pull, nmin):
+def backfill(pk, x, piv, t, tick, max_gap, max_step):
+    """Extiende la serie hacia atrás (pedido de Nico, 26/09): prepende picos anteriores que cumplen la regla respecto del
+    primero (igual o más alto en el espacio «techo», escalón ≤ max_step, ninguna vela intermedia lo supera, misma sesión).
+    Causal: sólo usa velas anteriores al primer pico."""
+    first = pk[0]
+    while True:
+        best = -1
+        for q in range(first - 1, max(first - max_gap, 0) - 1, -1):
+            if t[q + 1] - t[q] > 1800:
+                break
+            if not piv[q]:
+                continue
+            step = (x[q] - x[first]) / tick
+            if -1e-9 <= step <= max_step and x[q + 1:first].max(initial=-1e18) <= x[q] + 1e-9:
+                best = q
+                break
+        if best < 0:
+            return pk
+        pk = [best] + pk
+        first = best
+
+
+def pivots(x, w):
+    n = len(x); piv = np.zeros(n, bool)
+    for o in range(1, w + 1):
+        pass
+    core = np.ones(n - 2 * w, bool)
+    for o in range(1, w + 1):
+        core &= (x[w:n - w] >= x[w - o:n - w - o]) & (x[w:n - w] >= x[w + o:n - w + o])
+    piv[w:n - w] = core
+    return piv
+
+
+def series(cd, tick, w, max_gap, max_step, min_pull, nmin, extend_back=False):
     Z = []
     for kind in (1, -1):
         rows, member = chains(cd["h"], cd["l"], cd["t"], tick, w, max_gap, max_step, min_pull, nmin, kind)
         src = cd["h"] if kind == 1 else cd["l"]
+        xx = cd["h"] if kind == 1 else -cd["l"]
+        piv = pivots(xx, w) if extend_back else None
         by = {}
         for q in np.flatnonzero(member >= 0):
             by.setdefault(int(member[q]), []).append(int(q))
@@ -99,6 +134,8 @@ def series(cd, tick, w, max_gap, max_step, min_pull, nmin):
             pk = by.get(zi, [])
             if len(pk) < nmin:
                 continue
+            if extend_back:
+                pk = backfill(pk, xx, piv, cd["t"], tick, max_gap, max_step)
             i0, i1 = int(pk[0]), int(r[1])
             pr = src[pk]
             Z.append(dict(kind="H" if kind == 1 else "L", i0=i0, i1=i1, t0=float(cd["t"][i0]), t1=float(cd["t"][i1]),
@@ -108,7 +145,9 @@ def series(cd, tick, w, max_gap, max_step, min_pull, nmin):
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(); ap.add_argument("--asset", required=True); a = ap.parse_args(argv)
+    ap = argparse.ArgumentParser(); ap.add_argument("--asset", required=True)
+    ap.add_argument("--reuse-best", action="store_true", help="no buscar en la grilla: reusar los parámetros del último ajuste")
+    a = ap.parse_args(argv)
     lab = json.loads((VIEW / "labels" / f"{a.asset}.json").read_text(encoding="utf-8"))
     b = json.loads((VIEW / "bundles" / f"{a.asset}.json").read_text(encoding="utf-8"))
     tick = float(b["meta"]["tick_size"])
@@ -130,6 +169,16 @@ def main(argv=None):
         return [(int(np.searchsorted(cd["t"], cd["t"][min(r["i0"] for r in rs)] - 1800)),
                  int(np.searchsorted(cd["t"], cd["t"][max(r["i1"] for r in rs)] + 600)))]
     wins_all = [wn for s in S for wn in win_of([r for r in R if so[r["i0"]] == s])]
+    outp = VIEW / "bundles" / "peaks_det" / f"{a.asset}.json"
+    if a.reuse_best and outp.exists():
+        prev = json.loads(outp.read_text(encoding="utf-8"))
+        best = prev["parametros"]
+        Z = series(cd, tick, *[best[k] for k in GRID], extend_back=True)
+        f1, pr, rc, nz = P.score(Z, R, wins_all)
+        prev.update(zonas=Z, extension_atras=True, puntaje_con_extension=dict(f1=round(f1, 3), precision=round(pr, 3), cobertura=round(rc, 3), zonas_en_ventana=nz))
+        outp.write_text(json.dumps(prev, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+        print(json.dumps(dict(parametros={k: best[k] for k in GRID}, con_extension=prev["puntaje_con_extension"], sin_extension={k: best[k] for k in ("f1", "precision", "cobertura")}), ensure_ascii=False))
+        return
     res = []                                         # sólo puntajes: guardar las zonas de 576 combinaciones colgó la PC (26/09)
     for w, mg, ms, mp, nm in itertools.product(*GRID.values()):
         Z = series(cd, tick, w, mg, ms, mp, nm)
@@ -150,7 +199,7 @@ def main(argv=None):
                          cobertura=best["por_sesion"][te][2]))
     best = res[0]
     del Z
-    Z = series(cd, tick, *[best[k] for k in GRID])
+    Z = series(cd, tick, *[best[k] for k in GRID], extend_back=True)
     days = len(set((cd["t"] // 86400).astype(int)))
     out = dict(schema="EDGELAB_PEAKS_DET_V2_REGLA", asset=a.asset, regla="cada pico no supera al anterior (highs ≤, lows ≥), sin superación entre picos",
                parametros=best, top5=res[:5], validacion_entre_sesiones=cruz, zonas=Z, zonas_por_dia=round(len(Z) / max(days, 1), 1),
