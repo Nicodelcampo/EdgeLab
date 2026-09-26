@@ -371,3 +371,4 @@ aquellos números compara dos poblaciones distintas.
 ## Anexo 2026-09-26: EVX (cruces EMA × VWAP) en MYM, YM, ES y NQ
 - **MEDIDO:** E0 y E1. 0 de 448 celdas con información direccional frente al control de mismo estado (MDE ~0,5 ATR). El embudo se detiene en E1. `docs/research/MANIFIESTO_EVX_E0_E1_20260926.md` §6.
 - **NO MEDIDO:** estado continuo «EMA de un lado» (en lugar del cruce); otras resoluciones (1 min); efectos menores que el MDE.
+- **MEDIDO (26/09, VREV E1):** reversión al VWAP entrando en el **primer** alejamiento ≥ X ATR de vela de 25 ticks (X 2–6), con 4 confirmaciones y 2 stops, en MYM/YM/ES/NQ: llega al VWAP **menos** que el control de mismo estado (96/128 INFO−). **Alcance:** sólo esa variante. **NO MEDIDO:** reversión con alejamiento en escala diaria o por bandas σ, VWAP anclado, entrada tras agotamiento, confirmaciones de flujo/L2, velas de tiempo, filtros de régimen. Ver `MANIFIESTO_VREV_E1_20260926.md` §5–§6.

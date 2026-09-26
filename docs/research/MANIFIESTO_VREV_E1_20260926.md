@@ -43,3 +43,20 @@
 
 ## 5. Lo que NO se mide aquí (queda abierto, no descartado)
 Otras distancias (X < 2 o X en σ de bandas de VWAP); VWAP anclado (semanal, desde eventos, desde el máximo o mínimo del día); objetivo parcial (50 % del camino) o por bandas; entradas límite o escalonadas; confirmaciones de flujo (delta, absorción, L2, icebergs); velas de tiempo (1 o 5 min); otros horizontes o salidas; otros activos (6E, GC, ZB); filtros de régimen (tendencia del día, gap, tipo de día); la variante del mapa de costos (timing fino, horizonte corto).
+
+## 6. Resultado E1 (26/09; `artifacts/vrev/report_e1.json`, sha `cc24e6443d72`, controles con cobertura ≥ 98 %, auditoría PASS)
+**Estados de las 128 celdas:** INFO− 96 · SIN_INFO 32 · INFO+ 0 · SIN_POTENCIA 0. **Ninguna pasa a E2.**
+
+**Qué dice, con alcance preciso:**
+- En las 4 activos, 4 confirmaciones, 4 X y 2 stops, entrar hacia el VWAP **en el primer alejamiento ≥ X ATR de vela de 25 ticks** (o hasta 30 velas después, con C1–C3) llega al VWAP **menos** que una barra con el mismo estado, a la misma hora, en otra sesión. La brecha crece con X: ES X6 C0 k1, 14,2 % contra 16,3 %; MYM X6 C0 k2, 22,7 % contra 30,7 %; YM X6 C0 k1, 13,6 % contra 22,0 %.
+- La distancia al objetivo está emparejada (real 5,38 contra control 5,35 ATR en ES X6), así que no es un sesgo del control.
+- **Lectura:** el momento del **primer** alejamiento lleva **inercia de continuación**. Es coherente con AGOT-EXT (ir contra un extremo recién confirmado rinde peor que el azar). Ninguna de las confirmaciones probadas (C1–C3) la neutraliza.
+- **Económico:** el recorrido neto de costo es negativo en 127 de 128 celdas; la única positiva (YM C0 X4 k2, +0,3 t) es INFO−.
+
+**Lo que esto NO descarta (regla §0):**
+- **La reversión al VWAP como mecanismo general.** Ni siquiera la variante del mapa información/costo, que tenía timing fino y horizonte corto.
+- **Alejamientos grandes en escala diaria:** acá X está en ATR de vela de 25 ticks, así que X = 6 es un alejamiento moderado dentro del día. Faltan X en ATR diario o en σ de bandas de VWAP.
+- **Entrar después del agotamiento de la inercia**, no en el primer alejamiento: por ejemplo, tras N velas sin nuevo extremo, tras una divergencia de flujo o tras absorción en el extremo.
+- Todo lo del §5 (VWAP anclado, objetivos parciales, confirmaciones de flujo/L2, velas de tiempo, filtros de régimen, otros activos).
+
+**Candidata nueva, no evaluada acá:** la continuación después del primer alejamiento (el signo inverso de INFO−). Es otra hipótesis: requiere registro y manifiesto propios, y no se reinterpreta este resultado como prueba de ella.
