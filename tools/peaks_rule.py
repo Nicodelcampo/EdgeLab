@@ -30,7 +30,7 @@ sys.path.insert(0, str(REPO / "tools"))
 import peaks_learn as P  # noqa: E402
 
 VIEW = P.VIEW
-GRID = dict(w=(1, 2, 3), max_gap=(15, 30, 60, 110), max_step=(0, 1, 2, 4), min_pull=(0, 1, 2), nmin=(6, 8, 10, 13))
+GRID = dict(w=(1, 2, 3), max_gap=(15, 30, 60, 110), max_step=(0, 1, 2, 4), min_pull=(0, 1, 2), nmin=(6, 8, 10, 13, 16))
 
 
 @njit(cache=True)
@@ -193,6 +193,19 @@ def main(argv=None):
         return
     G = [g for g in lab["zigzags"] if len(g) > 2]      # criterio de Nico desde sus marcas: pendiente ≤ su p90
     cap = float(np.percentile([abs(g[-1]["price"] - g[0]["price"]) / tick / max(g[-1]["i"] - g[0]["i"], 1) for g in G], 90)) if G else None
+    J = [dict(j, i0=j["picos"][0][0], i1=j["picos"][-1][0]) for j in lab.get("judgments", []) if j.get("picos")]
+    Jsi = [j for j in J if j["verdict"] == "si"]; Jno = [j for j in J if j["verdict"] == "no"]
+
+    def score_j(Z):
+        """Con juicios ✓/✗ (verdad de Nico): precisión = ✓ encontradas / (✓ + ✗ encontradas); cobertura = sobre sus
+        rangos marcados + sus ✓. Una zona «encuentra» un juicio si es del mismo tipo y sus picos se superponen (IoU ≥ 0,5)."""
+        byk = {"H": [z for z in Z if z["kind"] == "H"], "L": [z for z in Z if z["kind"] == "L"]}
+        def hit(o, thr):
+            return any(P.iou(z["picos"][0][0], z["picos"][-1][0], o["i0"], o["i1"]) >= thr for z in byk[o["kind"]] if z["picos"])
+        tp = sum(hit(j, 0.5) for j in Jsi); fp = sum(hit(j, 0.5) for j in Jno)
+        rr = sum(any(P.iou(z["i0"], z["i1"], r["i0"], r["i1"]) >= 0.3 for z in byk[r["kind"]]) for r in R)
+        prec = tp / max(tp + fp, 1); rec = (rr + tp) / max(len(R) + len(Jsi), 1)
+        return 2 * prec * rec / max(prec + rec, 1e-9), prec, rec, tp, fp
     res = []                                         # sólo puntajes: guardar las zonas de 576 combinaciones colgó la PC (26/09)
     for w, mg, ms, mp, nm in itertools.product(*GRID.values()):
         Z = series(cd, tick, w, mg, ms, mp, nm, extend_back=True, max_slope=cap)
@@ -201,7 +214,9 @@ def main(argv=None):
         for s in S:
             rs = [r for r in R if so[r["i0"]] == s]
             per[s] = P.score(Z, rs, win_of(rs))
-        res.append(dict(w=w, max_gap=mg, max_step=ms, min_pull=mp, nmin=nm, f1=round(f1, 3), precision=round(pr, 3), cobertura=round(rc, 3),
+        fj, pj, rj, tpj, fpj = score_j(Z) if J else (f1, pr, rc, 0, 0)
+        f1, pr, rc = fj, pj, rj                          # con juicios, el puntaje es el de los juicios
+        res.append(dict(w=w, max_gap=mg, max_step=ms, min_pull=mp, nmin=nm, f1=round(f1, 3), precision=round(pr, 3), cobertura=round(rc, 3), si_halladas=tpj, no_halladas=fpj,
                         zonas_en_ventana=nz, por_sesion={int(s): [round(v, 3) for v in per[s][:3]] for s in S}))
     res.sort(key=lambda r: (-r["f1"], -r["cobertura"]))
     # validación entre sesiones: elegir en una, medir en la otra
@@ -217,7 +232,7 @@ def main(argv=None):
     days = len(set((cd["t"] // 86400).astype(int)))
     out = dict(schema="EDGELAB_PEAKS_DET_V2_REGLA", tope_pendiente_p90=cap, asset=a.asset, regla="cada pico no supera al anterior (highs ≤, lows ≥), sin superación entre picos",
                parametros=best, top5=res[:5], validacion_entre_sesiones=cruz, zonas=Z, zonas_por_dia=round(len(Z) / max(days, 1), 1),
-               supuesto="precisión con ventana supuesta revisada (zonas grises sin marcar): está subestimada")
+               supuesto="con juicios ✓/✗: precisión sobre las zonas que Nico juzgó; cobertura sobre sus rangos marcados y sus ✓", juicios=dict(si=len(Jsi), no=len(Jno)))
     (VIEW / "bundles" / "peaks_det" / f"{a.asset}.json").write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     print(json.dumps(dict(mejor=best, validacion_entre_sesiones=cruz, zonas=len(Z), por_dia=out["zonas_por_dia"]), ensure_ascii=False, indent=1))
 
