@@ -225,3 +225,27 @@ días, configuraciones vecinas), así que es una señal para seguir, no una prue
 - Hace falta más muestra de ES o un instrumento macro equivalente con más historia: NQ o YM macro, ES en sesión
   completa, ES anterior a jul-2025 si se consigue.
 - La confirmación de abr–jun **no** se abre: no hay candidato.
+
+## Enmienda 2 — potencia: NQ, YM y ES en sesión completa (pedido de Nico, 2026-09-26, antes de bajar esos datos)
+
+**Motivo:** con 198 días de ES RTH el MDE (~30 pp) triplica el efecto de SPY. No cambia ninguna definición: evento,
+semejanza, nulo al cierre, grilla, terciles y referencias de SPY quedan iguales.
+
+- **Nuevas muestras de replicación,** mismas ventanas (inicio de datos a 2026-03-31) y mismo código:
+  - NQ RTH;
+  - YM RTH;
+  - ES sesión completa (18:00–17:00 ET del trade date, sin la pausa, velas desde la apertura de la sesión).
+  - NQ e YM también en sesión completa, descriptivos.
+- **Prueba de replicación combinada (nueva, fijada ahora):** eventos de ES + NQ + YM en RTH juntos. El bootstrap es
+  **por día calendario**, y un día con eventos en los tres instrumentos cuenta como **un** cluster. Así, la
+  correlación entre índices no infla la muestra efectiva.
+- **Sostenido (reemplaza al de §6 para la replicación):**
+  1. la prueba pasa FDR en SPY;
+  2. la muestra combinada tiene el mismo signo con IC 95 % > 0;
+  3. cada instrumento por separado tiene el mismo signo, sin exigir IC.
+- ES sesión completa se reporta aparte y no entra en la regla.
+- **E2 sigue siendo sólo sobre ES,** porque sus costos son los medidos. Si la combinada sostiene, se calcula E2 en ES
+  RTH y en ES sesión completa, y el IC de ES solo se reporta tal cual.
+- **Regla de lectura:** n ≥ 30 por tercil, igual que la enmienda 1.
+- **Riesgo declarado:** NQ, YM y ES están muy correlacionados. La combinada gana potencia por los días en que los
+  instrumentos difieren, no por triplicar. El bootstrap por día lo refleja.
