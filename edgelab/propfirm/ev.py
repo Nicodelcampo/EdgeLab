@@ -24,6 +24,7 @@ from numba import njit
 from .rules import Rules
 
 _DD = {"static": 0, "eod_trailing": 1, "intraday_trailing": 2}
+_NOCAPS = np.zeros(0, dtype=np.float64)
 
 
 @dataclass
@@ -48,15 +49,16 @@ class Strategy:
 
 @njit(cache=True)
 def _stage(rng_u, ptr, n_days, p_win, tp, sl, cost, n_tr, k, mae, target, max_loss, ddk, lock, dll, dll_fail,
-           cons, min_days, funded, pay_min_days, pay_min_profit, pay_frac, split, pay_cap, pay_max):
+           cons, min_days, funded, pay_min_days, pay_min_profit, pay_frac, split, pay_cap, pay_max,
+           pay_caps, pay_min_amt, day_min_profit, buffer, basis_total, pay_cons, close_at_max):
     """Simula una etapa. Evaluación (funded=0): devuelve (1 pase / 0 falla / -1 horizonte, días, 0).
     Fondeada (funded=1): devuelve (n retiros, días, suma de pagos al participante). `rng_u` es un vector de
     uniformes compartido; `ptr` el índice de arranque."""
     bal = 0.0; peak = 0.0; floor = -max_loss; locked = False
     best_day = 0.0; total_green = 0.0; days = 0
-    cycle_start = 0.0; days_in_cycle = 0; n_pay = 0; paid = 0.0
+    cycle_start = 0.0; days_in_cycle = 0; n_pay = 0; paid = 0.0; best_cycle = 0.0
     for d in range(n_days):
-        day_pnl = 0.0; days += 1; days_in_cycle += 1
+        day_pnl = 0.0; days += 1
         for t in range(n_tr):
             u1 = rng_u[ptr]; ptr += 1
             u2 = rng_u[ptr]; ptr += 1
@@ -93,15 +95,31 @@ def _stage(rng_u, ptr, n_days, p_win, tp, sl, cost, n_tr, k, mae, target, max_lo
             if bal >= target and days >= min_days and (cons <= 0 or best_day <= cons * bal):
                 return 1, days, 0.0
         else:
+            # día que cuenta para el retiro: cualquiera si no hay umbral, o el que gana al menos `day_min_profit`
+            if day_min_profit <= 0 or day_pnl >= day_min_profit:
+                days_in_cycle += 1
+            if day_pnl > best_cycle:
+                best_cycle = day_pnl
             prof = bal - cycle_start
-            if days_in_cycle >= pay_min_days and prof >= pay_min_profit and prof > 0:
-                gross = prof * pay_frac
-                if pay_cap > 0 and gross * split > pay_cap:
-                    gross = pay_cap / split
-                paid += gross * split; bal -= gross; n_pay += 1
-                cycle_start = bal; days_in_cycle = 0
-                if n_pay >= pay_max:
-                    return n_pay, days, paid
+            ok = days_in_cycle >= pay_min_days and prof >= pay_min_profit and prof > 0
+            if ok and pay_cons > 0 and best_cycle > pay_cons * prof:   # consistencia desde el último retiro
+                ok = False
+            if ok:
+                base = bal if basis_total == 1 else prof
+                gross = base * pay_frac
+                room = bal - buffer                                 # no se retira el colchón
+                if gross > room:
+                    gross = room
+                cap = pay_cap
+                if pay_caps.shape[0] > 0:
+                    cap = pay_caps[min(n_pay, pay_caps.shape[0] - 1)]
+                if cap > 0 and gross > cap:                         # el tope es sobre el monto pedido
+                    gross = cap
+                if gross >= pay_min_amt and gross > 0:
+                    paid += gross * split; bal -= gross; n_pay += 1
+                    cycle_start = bal; days_in_cycle = 0; best_cycle = 0.0
+                    if n_pay >= pay_max and close_at_max == 1:
+                        return n_pay, days, paid
     return (-1 if funded == 0 else n_pay), days, paid
 
 
@@ -110,21 +128,29 @@ def simulate(rules: Rules, strat: Strategy, n_paths: int = 20000, eval_days: int
     """Ciclo completo por intento. Devuelve probabilidades, pagos, costos y EV por intento (USD)."""
     f = rules.funded()
     rng = np.random.default_rng(seed)
+    if rules.eval_access_days:                            # acceso en días corridos → días hábiles (~5/7)
+        eval_days = min(eval_days, int(rules.eval_access_days * 5 / 7))
+    dll_fail = int(daily_loss_fails or rules.daily_loss_mode == "fail")
+    caps = np.asarray(rules.payout_caps or [], dtype=np.float64)
     need = 2 * strat.trades_per_day * (eval_days + funded_days) + 8
     passed = np.zeros(n_paths, np.int8); ev_days = np.zeros(n_paths); n_pay = np.zeros(n_paths); paid = np.zeros(n_paths)
     for i in range(n_paths):
         u = rng.random(need)
         r, dd, _ = _stage(u, 0, eval_days, strat.p_win, strat.tp, strat.sl, strat.cost_rt, strat.trades_per_day,
                           strat.contracts, strat.mae_win, rules.profit_target, rules.max_loss, _DD[rules.drawdown_kind],
-                          rules.lock_at_profit or 0.0, rules.daily_loss_limit or 0.0, int(daily_loss_fails),
-                          rules.consistency_cap or 0.0, rules.min_trading_days, 0, 0, 0.0, 0.0, 0.0, 0.0, 0)
+                          rules.lock_at_profit or 0.0, rules.daily_loss_limit or 0.0, dll_fail,
+                          rules.consistency_cap or 0.0, rules.min_trading_days, 0, 0, 0.0, 0.0, 0.0, 0.0, 0,
+                          _NOCAPS, 0.0, 0.0, 0.0, 0, 0.0, 1)
         passed[i] = r; ev_days[i] = dd
         if r == 1:
             k, _, pay = _stage(u, 2 * strat.trades_per_day * eval_days, funded_days, strat.p_win, strat.tp, strat.sl,
                                strat.cost_rt, strat.trades_per_day, strat.contracts, strat.mae_win, 1e18, f.max_loss,
                                _DD[f.drawdown_kind], f.lock_at_profit or 0.0, f.daily_loss_limit or 0.0,
-                               int(daily_loss_fails), 0.0, 1, 1, rules.payout_min_days, rules.payout_min_profit, 0.5,
-                               rules.payout_split, rules.payout_cap or 0.0, rules.payout_max_count)
+                               dll_fail, 0.0, 1, 1, rules.payout_min_days, rules.payout_min_profit,
+                               rules.payout_fraction, rules.payout_split, rules.payout_cap or 0.0, rules.payout_max_count,
+                               caps, rules.payout_min_amount, rules.payout_day_min_profit, rules.payout_buffer,
+                               int(rules.payout_basis == "total"), f.consistency_cap or 0.0,
+                               int(rules.close_after_max_payouts))
             n_pay[i] = k; paid[i] = pay
     periods = np.ceil(ev_days / fee_period_days) if fee_period_days else np.ones(n_paths)
     fees = rules.eval_fee * periods + rules.activation_fee * (passed == 1)

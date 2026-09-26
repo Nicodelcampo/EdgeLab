@@ -40,6 +40,22 @@ class Rules:
     payout_split: float = 0.9
     payout_cap: float | None = None       # tope por retiro
     payout_max_count: int = 5
+    # reglas de retiro «escondidas» (2026-09-26, extraídas de los centros de ayuda; ver docs/research/PROPFIRM_REGLAS_*)
+    payout_caps: list[float] | None = None   # tope por número de retiro (1.º, 2.º, …); el último se repite
+    payout_min_amount: float = 0.0           # retiro mínimo por pedido
+    payout_day_min_profit: float = 0.0       # un día cuenta para `payout_min_days` sólo si gana al menos esto
+    payout_buffer: float = 0.0               # colchón sobre el saldo inicial que no se puede retirar (safety net)
+    payout_fraction: float = 0.5             # fracción retirable de la base
+    payout_basis: str = "cycle"              # base de la fracción: beneficio del ciclo o beneficio total ("total")
+    close_after_max_payouts: bool = True     # la cuenta se cierra al llegar a `payout_max_count`
+    daily_loss_mode: str = "pause"           # "pause": corta el día; "fail": elimina la cuenta
+    eval_access_days: int | None = None      # días corridos de acceso a la evaluación (Apex: 30)
+    # filtros de aplicabilidad (no se simulan: deciden si la estrategia puede operar esa cuenta)
+    algo_policy: str = "desconocido"         # "permitido" | "condicional" | "prohibido" | "desconocido"
+    min_hold_rule: str = ""                  # p. ej. ">50% de trades y ganancias con tenencia > 10 s"
+    news_rule: str = ""
+    flat_by: str = ""                        # hora de cierre obligatorio
+    prohibited: list[str] = field(default_factory=list)
     # procedencia
     source_url: str = ""
     fetched_at: str = ""
@@ -54,6 +70,12 @@ class Rules:
             raise ValueError(f"funded_drawdown_kind debe ser uno de {DRAWDOWN_KINDS}")
         if self.profit_target <= 0 or self.max_loss <= 0:
             raise ValueError("profit_target y max_loss deben ser positivos")
+        if self.payout_basis not in ("cycle", "total"):
+            raise ValueError("payout_basis debe ser 'cycle' o 'total'")
+        if self.daily_loss_mode not in ("pause", "fail"):
+            raise ValueError("daily_loss_mode debe ser 'pause' o 'fail'")
+        if self.algo_policy not in ("permitido", "condicional", "prohibido", "desconocido"):
+            raise ValueError("algo_policy inválida")
         if self.consistency_cap is not None and not 0 < self.consistency_cap <= 1:
             raise ValueError("consistency_cap en (0, 1]")
 
@@ -65,6 +87,10 @@ class Rules:
         """Techo de pase para un participante sin ventaja, piso fijo y trayectoria continua: L / (T + L)
         (Villahermosa 2026, Prop. 1). El piso móvil, los saltos y el horizonte finito sólo lo bajan."""
         return self.max_loss / (self.profit_target + self.max_loss)
+
+    def admits_algorithms(self) -> bool:
+        """Una estrategia de EdgeLab es un algoritmo: sólo aplica a cuentas que no prohíben la automatización."""
+        return self.algo_policy in ("permitido", "condicional")
 
     def funded(self) -> "Rules":
         """Las reglas de la etapa fondeada, con los defaults heredados de la evaluación."""
@@ -85,7 +111,8 @@ def load_catalog(path: str | Path) -> list[Rules]:
     for f in files:
         raw = json.loads(f.read_text(encoding="utf-8"))
         for r in raw if isinstance(raw, list) else [raw]:
-            out.append(Rules(**r))
+            if isinstance(r, dict) and "profit_target" in r and "firm" in r:   # ignora crawl.json, sources.json
+                out.append(Rules(**r))
     return out
 
 

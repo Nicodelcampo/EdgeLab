@@ -111,6 +111,7 @@ La esperanza de la cuenta pide cosas concretas a la investigación:
 
 ## 5. Limitaciones y pendientes
 
+- **Actualización (mismo día):** las reglas de retiro escondidas ya se simulan y hay un catálogo detallado de 50K; ver `PROPFIRM_REGLAS_DETALLADAS_20260926.md`.
 - El modelo de retiros es **simplificado y permisivo**: fracción fija del beneficio del ciclo y días mínimos, sin «días
   ganadores» ni saldo buffer. Sesga el EV hacia arriba, así que hay que completarlo por firma con las reglas verificadas.
 - El piso intradía aproxima el camino de cada trade: el perdedor baja directo al SL y el ganador retrocede como mucho

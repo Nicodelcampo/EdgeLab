@@ -76,3 +76,47 @@ def test_compuerta_usa_el_ic_inferior():
     g = gate(r, "ES", 20, 20, 2, net_ticks_point=3.0, net_ticks_lo=-1.0, n_paths=1500, eval_days=60, funded_days=60)
     assert not g["pasa"]                                          # sólo paga en el punto: no pasa
     assert g["punto"]["ev"] > g["ic_inferior"]["ev"]
+
+
+# --- reglas de retiro «escondidas» (2026-09-26) ---
+
+def _funded_only(**kw):
+    """Evaluación trivial (objetivo mínimo) para aislar la etapa fondeada."""
+    base = dict(profit_target=1.0, min_trading_days=1, payout_min_days=1, payout_max_count=50,
+                close_after_max_payouts=False, payout_fraction=1.0, payout_split=1.0)
+    base.update(kw)
+    return _rules(**base)
+
+
+def _sure_win():
+    return Strategy(p_win=1.0, tp=100.0, sl=100.0, cost_rt=0.0, trades_per_day=1, contracts=1, mae_win=0.0)
+
+
+def test_topes_por_numero_de_retiro():
+    r = _funded_only(payout_caps=[50.0, 70.0], payout_max_count=3, close_after_max_payouts=True)
+    s = simulate(r, _sure_win(), n_paths=50, eval_days=5, funded_days=30)
+    assert abs(s["pagos_medios"] - (50 + 70 + 70)) < 1e-6          # el último tope se repite; 3 retiros y cierra
+
+
+def test_colchon_no_se_retira_y_dias_con_minimo():
+    sin = simulate(_funded_only(), _sure_win(), n_paths=50, eval_days=5, funded_days=10)["pagos_medios"]
+    con = simulate(_funded_only(payout_buffer=500.0), _sure_win(), n_paths=50, eval_days=5, funded_days=10)["pagos_medios"]
+    assert con < sin
+    dias = simulate(_funded_only(payout_min_days=2, payout_day_min_profit=150.0), _sure_win(), n_paths=50, eval_days=5,
+                    funded_days=10)["pagos_medios"]
+    assert dias == 0.0                                            # ningún día gana 150: nunca califica
+
+
+def test_retiro_minimo_bloquea_pagos_chicos():
+    r = _funded_only(payout_min_amount=150.0)
+    assert simulate(r, _sure_win(), n_paths=50, eval_days=5, funded_days=1)["pagos_medios"] == 0.0
+
+
+def test_catalogo_ignora_json_ajenos_y_politica_algoritmica(tmp_path):
+    import json
+    from edgelab.propfirm.rules import load_catalog
+    (tmp_path / "crawl.json").write_text(json.dumps([{"firm": "X", "sitemaps": []}]))
+    (tmp_path / "c.json").write_text(json.dumps([dict(firm="A", plan="p", account_size=1, eval_fee=1, profit_target=1,
+                                                      max_loss=1, algo_policy="prohibido")]))
+    cat = load_catalog(tmp_path)
+    assert len(cat) == 1 and not cat[0].admits_algorithms()
