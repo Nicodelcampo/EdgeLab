@@ -856,8 +856,8 @@
       <button class="nt8-btn" id="btn-corredores-demo" title="Corredores de vacío y campo de fricción (HP-006/HP-007)"><span>Corredores</span></button>
       <button class="nt8-btn" id="btn-toggle-decay" title="Alternar decaimiento: sólo comercio / temporal 12h"><span id="lbl-btn-decay">Decaim.: comercio</span></button>
     </div>
-  </div>
   <div class="tb-right">
+    <button class="nt8-btn" id="btn-tz" title="Zona horaria del eje temporal (clic para alternar ART / UTC)"><span id="lbl-tz">ART (UTC-3)</span></button>
     <button class="nt8-btn" id="btn-parity" title="Métricas de paridad NT8 / Python"><span class="badge-pass" id="parity-pill">PASS</span> <span class="arrow">▾</span></button>
     <div class="tb-group" aria-label="Vista">
       <button class="nt8-btn" id="btn-layers" title="Capas y filtros"><span>Capas</span> <span class="arrow">▾</span></button>
@@ -1450,10 +1450,17 @@
     while (lo < hi) { var mid = (lo + hi) >> 1; if (m.syn[mid] < t) lo = mid + 1; else hi = mid; }
     return m.real[lo];
   }
+  var currentTz = localStorage.getItem("edgelab_tz") || "ART";
+
+  function getTzOffsetSeconds() {
+    return currentTz === "UTC" ? 0 : -3 * 3600;
+  }
+
   function fmtRealTime(t, full, tickType) {
-    var d = new Date(axisToReal(t) * 1000), p2 = function (x) { return (x < 10 ? "0" : "") + x; };
+    var off = getTzOffsetSeconds();
+    var d = new Date((axisToReal(t) + off) * 1000), p2 = function (x) { return (x < 10 ? "0" : "") + x; };
     var hm = p2(d.getUTCHours()) + ":" + p2(d.getUTCMinutes());
-    if (full) return p2(d.getUTCDate()) + " " + MONTHS_ES[d.getUTCMonth()] + " '" + String(d.getUTCFullYear()).slice(2) + "  " + hm + ":" + p2(d.getUTCSeconds());
+    if (full) return p2(d.getUTCDate()) + " " + MONTHS_ES[d.getUTCMonth()] + " '" + String(d.getUTCFullYear()).slice(2) + "  " + hm + ":" + p2(d.getUTCSeconds()) + (currentTz === "ART" ? " (ART)" : " (UTC)");
     if (tickType === 0 || tickType === 1) return String(d.getUTCFullYear());
     if (tickType === 2) return p2(d.getUTCDate()) + " " + MONTHS_ES[d.getUTCMonth()];
     return hm;
@@ -3589,6 +3596,27 @@
         updateParamsPopoverUI();
       }
     }
+  }
+
+  var btnTz = document.getElementById("btn-tz");
+  var lblTz = document.getElementById("lbl-tz");
+  function updateTzUI() {
+    if (lblTz) lblTz.textContent = (currentTz === "ART" ? "ART (UTC-3)" : "UTC");
+  }
+  if (btnTz) {
+    updateTzUI();
+    btnTz.addEventListener("click", function () {
+      currentTz = (currentTz === "ART" ? "UTC" : "ART");
+      localStorage.setItem("edgelab_tz", currentTz);
+      updateTzUI();
+      chart.timeScale().applyOptions({
+        tickMarkFormatter: function (t, tickType) { return fmtRealTime(t, false, tickType); }
+      });
+      chart.applyOptions({
+        localization: { timeFormatter: function (t) { return fmtRealTime(t, true); } }
+      });
+      requestDraw();
+    });
   }
 
   document.getElementById("btn-inst").addEventListener("click", function () { togglePopover("pop-assets", "btn-inst"); });

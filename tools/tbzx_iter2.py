@@ -73,6 +73,16 @@ def canonical_sessions(inst):
     """Contrato por sesión con la regla canónica (edgelab/data/contract_regime.py): para el día D, el líder de la
     sesión COMPLETA anterior (D-1), sólo hacia adelante, empate conserva el vigente. Proxy de volumen: ticks por
     sesión de los manifiestos de bundles (no traen volumen). Reemplaza la regla vieja «más ticks el mismo día»."""
+    if inst == "MYM":
+        cat_file = REPO / "docs" / "research" / "contract_regimes" / "MYM_canonical_sessions_catalog_20260925.json"
+        cat = json.loads(cat_file.read_text(encoding="utf-8"))
+        out = []
+        for s in cat["sessions"]:
+            if int(s["end"]) > TB.HOLDOUT_NS:
+                continue
+            out.append(dict(trade_date=str(s["trade_date"]), path=s["path"], contract=s["contract"],
+                            start=int(s["start"]), end=int(s["end"]), ticks=int(s.get("ticks", 0))))
+        return out
     import glob
     from collections import defaultdict
     per = defaultdict(dict)
