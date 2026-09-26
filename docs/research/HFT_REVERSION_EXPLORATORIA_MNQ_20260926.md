@@ -60,3 +60,72 @@ Diferencias con IC 95 % por bootstrap de sesiones (las zonas de una misma sesió
   Es lo que pasó con BigTrap2 imán (F2.8: un control sin zona con la misma geometría daba lo mismo).
 - **Se refuta** si la tasa de reversión real no supera al control de nivel con IC que excluya el cero, en el tamaño de
   reversión útil (R ≥ 40 ticks). Todo nulo publica su MDE.
+
+## Resultado — MNQ 09-25 (2026-09-26)
+
+**Procedencia:** código `tools/hft_reversion_explore.py` idéntico al de `b4bcfd1`. La corrida arrancó con el archivo
+sin commitear y el contenido no cambió después. Artefacto `artifacts/research/hft_rev_exp/MNQ_09-25/reporte.json`
+(sha256 `214ee3f6afb7536e…`). 36 sesiones, 29.635 zonas.
+
+### Cuántas zonas hay «así»
+
+| Paso | D = 20 ticks | D = 40 ticks |
+|---|---|---|
+| Zonas | 29.635 (≈ 820 por sesión) | 29.635 |
+| Se alejan D y vuelven al borde | 6.224 (21 %) | 3.670 (12 %) |
+| Revierten 40 ticks (10 pts) antes de romper | 1.617 (26 % de las que vuelven) | 26 % |
+| Revierten 80 ticks (20 pts) | 963 (15,5 %) | 15,8 % |
+
+### Penetración y excursión (D = 20)
+
+- **Antes de revertir, el precio entra 6 ticks de mediana (1,5 pts)**, 6,9 de media, 14 en el percentil 90. Es la
+  mitad del ancho de la zona (49 % de W en promedio).
+- **Tiempo hasta el toque:** 48 s de mediana.
+- **Excursión desde el toque, simétrica:**
+
+| Horizonte | MFE media | MAE media |
+|---|---|---|
+| 5 min | +68 t | −68 t |
+| 1 h | +209 t | −197 t |
+
+  No hay sesgo direccional apreciable. Las zonas reales se mueven más que las del control de nivel (1 h: ±200 contra
+  ±180): **aparecen en momentos de más volatilidad, no de más dirección.**
+
+### ¿Distinto al azar? Todas las celdas
+
+| D | R | Real | Caminata aleatoria | Real − nivel [IC 95 %] | Real − polaridad [IC 95 %] |
+|---|---|---|---|---|---|
+| 8 | 40 | 0,250 | 0,244 | +1,1 pp [−0,1, +2,4] | +2,5 pp [+1,2, +3,9] |
+| 20 | 40 | 0,260 | 0,253 | +1,9 pp [+0,8, +3,1] | +2,7 pp [+1,1, +4,4] |
+| 20 | 80 | 0,155 | 0,148 | +1,5 pp [+0,6, +2,4] | +2,4 pp [+1,0, +3,7] |
+| 40 | 40 | 0,264 | 0,258 | +2,4 pp [+0,9, +3,9] | +1,9 pp [−0,2, +4,0] |
+| 40 | 80 | 0,158 | 0,151 | +1,8 pp [+0,8, +2,8] | +1,6 pp [−0,0, +3,2] |
+| 40 | 160 | 0,082 | 0,083 | +1,1 pp [+0,0, +2,2] | +0,8 pp [−0,6, +2,3] |
+
+Las 12 celdas están en `reporte.md`. **MDE ≈ 1,5 pp** (media amplitud del IC ≈ 1,1 pp × 1,4).
+
+### Lectura
+
+1. **La mayoría de las reversiones que se ven en el chart son las que daría el azar.**
+   - Con el ancho típico de la zona, una caminata sin memoria revierte 40 ticks el 25 % de las veces; la zona real,
+     el 26 %.
+   - Lo que el ojo ve como «la zona predijo el giro» es, casi siempre, la geometría: 3 de cada 4 veces el precio
+     atraviesa, y la vez que no, queda dibujada.
+2. **Hay un exceso chico pero real, de +1 a +2,5 pp**, contra el control de nivel y contra la polaridad opuesta. Crece
+   con el alejamiento previo D. El color importa un poco: la zona revierte más en su dirección que leída al revés. Es
+   del mismo orden que la información de TBZX en ES (+2–3 pp) y del mapa IVC: existe y es mucho más chica que la
+   fricción.
+3. **El mecanismo candidato no queda demostrado.** Un exceso de 1–2 pp es compatible con órdenes pasivas defendidas,
+   pero también con la reversión de corto plazo después de un alejamiento grande: el control de nivel también se
+   aleja D. Separarlos exige el control de estado de abajo.
+4. **Por subtipo:** Predator y Ultra se comportan igual. Absorb (zonas de < 4 ticks) revierte poco, lo que la
+   caminata predice para su ancho.
+
+### Qué sigue (exploratorio, sin P&L)
+
+- **¿Cuándo pasa?** El exceso promedio es chico; la pregunta es si se concentra. Próximo corte, sobre el mismo censo:
+  velocidad y volumen del barrido, edad de la zona al toque, confluencia con otras zonas, tendencia de 15/60 min, hora
+  del día y lado. Se publica el landscape completo con corrección por multiplicidad y se compara siempre contra el
+  control de nivel.
+- **Replicación** en MNQ 12-25 y 03-26 (pre-abril) antes de creer cualquier corte.
+- **Población alternativa:** estado continuo (distancia a la zona activa más cercana en cada barra), con más potencia.

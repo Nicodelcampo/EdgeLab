@@ -249,6 +249,11 @@ modelo.**
 
 ## MEDIDO — y vivo
 
+- **HFT-REV-EXP (MNQ 09-25, otra familia, no ES — registrado acá por visibilidad, 2026-09-26).** Primer retorno a zonas
+  `HFTZonesNQPureV4` `SCALED_FUNNEL_V1`: 29.635 zonas, 36 sesiones. Revierte 40 t el 26 % de las que vuelven, contra 25 %
+  de la caminata aleatoria. Exceso sobre el control de nivel de +1 a +2,5 pp (IC excluye 0 en D ≥ 20; MDE ≈ 1,5 pp).
+  Penetración mediana 6 t (≈ 50 % de W). Exploratorio, sin P&L. `docs/research/HFT_REVERSION_EXPLORATORIA_MNQ_20260926.md`.
+
 | qué | resultado |
 |---|---|
 | **Paridad NT8 → Python** | 9.481/9.486 zonas EXACT (**99,95 %**); el residual son claves `start_ts` en ms degeneradas dentro de ráfagas de hasta 182 ticks en el mismo milisegundo |
