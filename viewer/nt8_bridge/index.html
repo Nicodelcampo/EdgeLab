@@ -588,6 +588,12 @@
     background: #131722;
     border-color: #363c4e;
   }
+  .ind-off { opacity: 0.5; font-style: italic; }
+  .ind-na { font-size: 11px; color: #b45309; background: #fef3c7; border: 1px solid #f59e0b; border-radius: 3px; padding: 5px 7px; margin-bottom: 6px; }
+  .ind-props { display: flex; flex-direction: column; gap: 8px; }
+  .ind-readonly { opacity: 0.7; }
+  .ind-ro-val { font-size: 11px; color: #555; padding-left: 4px; }
+  .ind-panel .pop-check { display: flex; align-items: center; gap: 6px; font-size: 11px; margin: 3px 0; }
   .nt8-avail-list { height: 180px; }
   .nt8-configured-list { height: 170px; }
 
@@ -840,9 +846,7 @@
       <button class="nt8-select-btn" id="btn-tf" title="Temporalidad de las velas"><span class="tb-cap">Velas</span><span id="lbl-tf-name">15 Min</span><span class="arrow">▾</span></button>
     </div>
     <div class="tb-group" aria-label="Estudio">
-      <span class="tb-cap tb-cap-out">Estudio</span>
-      <select id="runsel" class="nt8-select" title="Indicador / corrida visible"></select>
-      <button class="nt8-btn" id="btn-bt2a-params" title="Parámetros y extensión de zonas"><span>Parámetros</span> <span class="arrow">▾</span></button>
+      <button class="nt8-btn" id="btn-bt2a-params" title="Herramientas de investigación: diseño, etiquetado y revisión (no son indicadores)"><span>Investigación</span> <span class="arrow">▾</span></button>
     </div>
     <div class="tb-group" id="tb-l2-chips" aria-label="Capas L2" hidden>
       <span class="tb-cap tb-cap-out">L2</span>
@@ -852,7 +856,7 @@
       <button class="tb-chip" data-proxy="chk-show-l2-spoofs" title="Liquidez fugaz: orden grande que desaparece en &lt;5 s casi sin ejecutarse. NO implica spoofing (nulo 2026-09-23: 79% aparece igual con trades desplazados)"><i class="dot dot-spoof"></i>Fugaz</button>
       <button class="tb-chip" data-proxy="chk-show-l2-absorptions" title="Candidatos a absorción (provisional)"><i class="dot dot-abs"></i>Absorción</button>
     </div>
-    <div class="tb-group" aria-label="Análisis HFT">
+    <div class="tb-group" aria-label="Análisis HFT" hidden><!-- se configuran en Indicadores → Corredores HFT -->
       <button class="nt8-btn" id="btn-corredores-demo" title="Corredores de vacío y campo de fricción (HP-006/HP-007)"><span>Corredores</span></button>
       <button class="nt8-btn" id="btn-toggle-decay" title="Alternar decaimiento: sólo comercio / temporal 12h"><span id="lbl-btn-decay">Decaim.: comercio</span></button>
     </div>
@@ -862,10 +866,9 @@
     <div class="tb-group" aria-label="Vista">
       <button class="nt8-btn" id="btn-layers" title="Capas y filtros"><span>Capas</span> <span class="arrow">▾</span></button>
       <button class="nt8-btn" id="btn-zones" title="Tabla de zonas"><span>Zonas</span> <span class="arrow">▾</span></button>
-      <button class="nt8-btn" id="btn-props" title="Propiedades del indicador"><span>Indicadores</span> <span class="arrow">▾</span></button>
+      <button class="nt8-btn" id="btn-props" title="Indicadores: agregar, quitar y configurar (una sola configuración para todos los activos)"><span>Indicadores</span> <span class="arrow">▾</span></button>
     </div>
     <div class="tb-group tb-icons" aria-label="Ventana">
-      <a class="nt8-btn" id="btn-spec-review" href="spec_review.html" target="_blank" title="Revisión ciega de especificaciones antes de correr una prueba" style="text-decoration:none"><span>Revisión de spec</span></a>
       <button class="nt8-btn tb-icon" id="btn-theme" title="Tema claro / oscuro"><span>◐</span></button>
       <button class="nt8-btn tb-icon" id="btn-reset" title="Ajustar a pantalla"><span>⤢</span></button>
     </div>
@@ -929,16 +932,6 @@
     <label class="pop-check"><input type="checkbox" id="chk-py" checked> <span class="swatch swatch-py"></span> Python (relleno translúcido)</label>
     <label class="pop-check"><input type="checkbox" id="chk-nt8" checked> <span class="swatch swatch-nt8"></span> NT8 (contorno punteado)</label>
     <label class="pop-check"><input type="checkbox" id="chk-orphans"> Solo huérfanas</label>
-    <label class="pop-check"><input type="checkbox" id="chk-show-exploratory" checked> Zonas exploratorias (origen sin verificar)</label>
-    <label class="pop-check pop-num">Máx. zonas LUX-IMB (0 = todas) <input type="number" id="inp-lux-max" min="0" max="20000" step="50" value="300"></label>
-    <div class="pop-sec">Libro L2</div>
-    <label class="pop-check"><input type="checkbox" id="chk-show-l2" checked> <i class="dot dot-book"></i> Mapa de profundidad (libro de órdenes)</label>
-    <label class="pop-check"><input type="checkbox" id="chk-show-l2-trades" checked> <i class="dot dot-trades"></i> Burbujas de trades por agresor</label>
-    <label class="pop-check pop-num">Máx. burbujas en pantalla (0 = todas) <input type="number" id="inp-l2-trade-max" min="0" max="50000" step="500" value="4000"></label>
-    <div class="pop-sec">Detectores L2 <span class="pop-tag">PROVISIONALES · sin validar</span></div>
-    <label class="pop-check"><input type="checkbox" id="chk-show-l2-icebergs" checked> <i class="dot dot-ice"></i> Iceberg (◆)</label>
-    <label class="pop-check"><input type="checkbox" id="chk-show-l2-spoofs" checked> <i class="dot dot-spoof"></i> Liquidez fugaz (✕, orden grande &lt;5 s)</label>
-    <label class="pop-check"><input type="checkbox" id="chk-show-l2-absorptions" checked> <i class="dot dot-abs"></i> Absorción (▬)</label>
     <div class="pop-sec">Estados</div>
     <div id="f-state-list"></div>
   </div>
@@ -947,186 +940,12 @@
 <!-- Popover Selector de Parámetros y Extensión de Zonas -->
 <div id="pop-bt2a-params" class="nt8-popover pop-left" style="width: 410px; left: 320px;">
   <div class="pop-header">
-    <span id="pop-params-title">⚙️ Parámetros del Indicador</span>
+    <span id="pop-params-title">🔬 Investigación (diseño, etiquetado y revisión)</span>
     <button class="pop-close" data-close="pop-bt2a-params">✕</button>
   </div>
+  <div style="padding:6px 10px 0;"><a class="nt8-btn" id="btn-spec-review" href="spec_review.html" target="_blank" title="Revisión ciega de especificaciones antes de correr una prueba" style="text-decoration:none"><span>📋 Revisión de spec</span></a></div>
   <div class="pop-body" style="padding: 12px; display: flex; flex-direction: column; gap: 12px;">
     
-    <!-- 1. Extensión y Consumo de Zonas -->
-    <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
-      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
-        <span>📏 Terminación de Zonas</span>
-        <span id="lbl-ext-status" style="font-size: 10px; color: #0284c7; font-weight: 700; background: rgba(2,132,199,0.12); padding: 2px 6px; border-radius: 3px;">500 barras</span>
-      </div>
-
-      <!-- Selector de Modo de Terminación: Fija vs Consumo por Volumen -->
-      <div style="display: flex; gap: 4px; margin-bottom: 8px;">
-        <button id="btn-mode-fixed" class="nt8-btn sm active" style="flex: 1; justify-content: center; font-weight: 700; background: #0284c7; color: #fff; border-color: #0369a1;">
-          📏 Barras Fijas
-        </button>
-        <button id="btn-mode-volume" class="nt8-btn sm" style="flex: 1; justify-content: center; font-weight: 700;">
-          ⚡ Consumo por Volumen
-        </button>
-      </div>
-
-      <!-- Panel Modo 1: Barras Fijas -->
-      <div id="panel-mode-fixed">
-        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-          <label style="font-size: 11px; color: var(--tb-text);">Extensión fija:</label>
-          <input type="number" id="inp-ext-bars" value="500" min="10" max="5000" step="50" style="width: 75px; padding: 3px 6px; border: 1px solid var(--tb-btn-border); border-radius: 2px; font-weight: 700; background: var(--pop-bg); color: var(--pop-text);">
-          <span style="font-size: 11px; color: #666;">barras hacia adelante</span>
-        </div>
-        <div style="display: flex; gap: 4px; flex-wrap: wrap;">
-          <button class="nt8-btn sm btn-quick-ext" data-bars="100">100 b</button>
-          <button class="nt8-btn sm btn-quick-ext" data-bars="250">250 b</button>
-          <button class="nt8-btn sm btn-quick-ext active" data-bars="500" style="background:#0284c7;color:#fff;border-color:#0369a1;font-weight:700;">500 b (Fija)</button>
-          <button class="nt8-btn sm btn-quick-ext" data-bars="1000">1000 b</button>
-          <button class="nt8-btn sm btn-quick-ext" data-bars="2000">2000 b</button>
-        </div>
-        <div style="font-size: 10px; color: #888; margin-top: 6px; line-height: 1.3;">
-          ✓ Cada zona se dibuja con una longitud fija de barras desde su origen.
-        </div>
-      </div>
-
-      <!-- Panel Modo 2: Consumo por Volumen / Nivel de Comercio (Tick a Tick) -->
-      <div id="panel-mode-volume" style="display: none;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-          <label style="font-size: 11px; font-weight: 600; color: var(--tb-text);">Umbral de Muerte por Tick:</label>
-          <span id="lbl-vol-threshold-badge" style="font-size: 11px; font-weight: 700; color: #059669;">100 contratos</span>
-        </div>
-        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-          <input type="range" id="range-vol-threshold" min="10" max="1000" step="10" value="100" style="flex: 1; accent-color: #059669; cursor: pointer;">
-          <input type="number" id="inp-vol-threshold" value="100" min="5" max="5000" step="5" style="width: 75px; padding: 3px 6px; border: 1px solid var(--tb-btn-border); border-radius: 2px; font-weight: 700; background: var(--pop-bg); color: var(--pop-text); text-align: right;">
-          <span style="font-size: 10.5px; color: #666;">ctrs</span>
-        </div>
-        <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px;">
-          <button class="nt8-btn sm btn-quick-vol" data-vol="35">35 c</button>
-          <button class="nt8-btn sm btn-quick-vol" data-vol="50">50 c</button>
-          <button class="nt8-btn sm btn-quick-vol" data-vol="75">75 c</button>
-          <button class="nt8-btn sm btn-quick-vol active" data-vol="100" style="background:#059669;color:#fff;border-color:#047857;font-weight:700;">100 c</button>
-          <button class="nt8-btn sm btn-quick-vol" data-vol="150">150 c</button>
-          <button class="nt8-btn sm btn-quick-vol" data-vol="250">250 c</button>
-          <button class="nt8-btn sm btn-quick-vol" data-vol="500">500 c</button>
-        </div>
-        <div style="font-size: 10px; color: #059669; background: rgba(16,185,129,0.08); padding: 6px 8px; border-radius: 3px; border: 1px solid rgba(16,185,129,0.2); line-height: 1.35;">
-          ✓ <b>Consumo Tick a Tick:</b> Cada tick de precio dentro de la zona se detiene individualmente al alcanzar el volumen requerido. La parte no comerciada continúa extendiéndose hacia adelante.
-        </div>
-      </div>
-
-    </div>
-
-    <!-- 2. Configuraciones / Indicadores Disponibles en el Gráfico -->
-    <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
-      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
-        <span>🎯 Indicadores y Presets Disponibles</span>
-        <span id="lbl-presets-count" style="font-size: 10px; color: #888;"></span>
-      </div>
-      <div id="pop-presets-container" style="display: flex; flex-direction: column; gap: 5px; max-height: 220px; overflow-y: auto;">
-        <!-- Llenado dinámicamente según el activo y los runs disponibles -->
-      </div>
-    </div>
-
-    <!-- 3. Corredores de Vacío HFT (HP-007 Sólidos) -->
-    <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
-      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
-        <span>⚡ Corredores de Vacío HFT</span>
-        <label style="font-size: 10px; display: flex; align-items: center; gap: 5px; cursor: pointer;">
-          <input type="checkbox" id="chk-corridors-enable" checked>
-          <span style="font-weight: 700; color: #0284c7;">Habilitado</span>
-        </label>
-      </div>
-      <div id="corridors-options-wrap" style="display: flex; flex-direction: column; gap: 7px;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <label style="font-size: 11px; color: var(--tb-text);">Amplitud Mínima (H_min):</label>
-          <span id="lbl-corridor-hmin-badge" style="font-size: 10.5px; font-weight: 700; color: #0284c7;">16 ticks (4.0 pts)</span>
-        </div>
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <input type="range" id="range-corridor-hmin" min="8" max="120" step="4" value="16" style="flex: 1; accent-color: #0284c7; cursor: pointer;">
-          <input type="number" id="inp-corridor-hmin" value="16" min="4" max="200" step="2" style="width: 55px; padding: 2px 4px; border: 1px solid var(--tb-btn-border); border-radius: 2px; font-weight: 700; background: var(--pop-bg); color: var(--pop-text); text-align: right;">
-          <span style="font-size: 10px; color: #666;">ticks</span>
-        </div>
-        <div style="display: flex; gap: 4px;">
-          <button class="nt8-btn sm btn-corridor-dir active" data-dir="all" id="btn-corr-all" style="flex: 1; font-weight: 700; background: #0284c7; color: #fff;">Todos</button>
-          <button class="nt8-btn sm btn-corridor-dir" data-dir="bull" id="btn-corr-bull" style="flex: 1; font-weight: 700;">🟢 Alcistas</button>
-          <button class="nt8-btn sm btn-corridor-dir" data-dir="bear" id="btn-corr-bear" style="flex: 1; font-weight: 700;">🔴 Bajistas</button>
-        </div>
-        <!-- EDGELAB_CROSSHAIR_DENSITY_PROFILE_V1 -->
-        <label style="display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px;cursor:pointer;border-top:1px solid var(--tb-border);padding-top:7px;">
-          <span><b>Perfil de densidad</b><br><span style="font-size:9.5px;color:#666;">As-of causal de la crosshair</span></span>
-          <input type="checkbox" id="chk-corridors-density-profile">
-        </label>
-        <label style="display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:10.5px;cursor:pointer;padding-top:4px;">
-          <span>Incluir zonas exploratorias en perfil<br><span style="font-size:9px;color:#d97706;">⚠️ Permite t0 no verificado en densidad</span></span>
-          <input type="checkbox" id="chk-include-exploratory-density">
-        </label>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <label style="font-size:10px;color:#666;">Ancho</label>
-          <input type="range" id="range-corridors-density-width" min="60" max="180" step="10" value="110" style="flex:1;accent-color:#0891b2;">
-          <span id="lbl-corridors-density-width" style="font-size:10px;font-weight:700;color:#0891b2;min-width:38px;text-align:right;">110 px</span>
-        </div>
-        <div style="font-size: 9.5px; color: #666; line-height: 1.3;">
-          ✓ Delimitación estricta entre murallas vivas. Sin franjas infinitas ni micro-ruido.
-        </div>
-      </div>
-    </div>
-
-    <!-- 4. Modelo de Decaimiento del Campo de Densidad -->
-    <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
-      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
-        <span>⏳ Decaimiento del Campo</span>
-        <span id="lbl-decay-status" style="font-size: 10.5px; color: #10b981; font-weight: 700;">Sólo Comercio (Sin Tiempo)</span>
-      </div>
-      <div style="display: flex; gap: 5px; flex-direction: column;">
-        <button class="nt8-btn btn-decay-mode active" data-mode="trade_only" id="opt-decay-trade" style="background:#059669;color:#fff;border-color:#047857;font-weight:700;text-align:left;padding:5px 8px;width:100%;">
-          <div>🛡️ Sólo Comercio / Toques (Recomendado)</div>
-          <div style="font-size:9.5px;opacity:0.9;">Sin decaimiento por tiempo ni corte de fin de semana. La zona sólo decae cuando el precio entra y opera dentro de ella.</div>
-        </button>
-        <button class="nt8-btn btn-decay-mode" data-mode="calibrated_time" id="opt-decay-time" style="text-align:left;padding:5px 8px;width:100%;">
-          <div>⏱️ Temporal Calibrado (Vida Media 12h)</div>
-          <div style="font-size:9.5px;color:#888;">Decaimiento continuo por tiempo de calendario (12h media, corte 48h).</div>
-        </button>
-      </div>
-    </div>
-
-    <!-- EDGELAB_WEAR_CONTROLS_V1: desgaste por toque calibrable (density_field wear_alpha / wear_exp) -->
-    <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
-      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px;">🪨 Desgaste por toque</div>
-      <div title="Cuánto pesa cada toque: peso = (1 + a·toques)^-b. De fábrica a = 0,5 y b = 0,6 (HP-007)." style="display:flex;flex-direction:column;gap:5px;font-size:10.5px;">
-        <div style="display:flex;align-items:center;gap:6px;"><span style="min-width:74px;">Intensidad a</span>
-          <input type="range" id="range-wear-alpha" min="0" max="5" step="0.1" value="0.5" style="flex:1;accent-color:#b45309;">
-          <span id="lbl-wear-alpha" style="min-width:30px;font-weight:700;color:#b45309;text-align:right;">0.5</span></div>
-        <div style="display:flex;align-items:center;gap:6px;"><span style="min-width:74px;">Curvatura b</span>
-          <input type="range" id="range-wear-exp" min="0.1" max="3" step="0.05" value="0.6" style="flex:1;accent-color:#b45309;">
-          <span id="lbl-wear-exp" style="min-width:30px;font-weight:700;color:#b45309;text-align:right;">0.60</span></div>
-        <div id="lbl-wear-preview" style="font-size:9.5px;color:#666;"></div>
-        <button class="nt8-btn sm" id="btn-wear-reset" style="align-self:flex-start;">Volver a fábrica (0,5 / 0,6)</button>
-        <div style="font-size:9px;color:#888;line-height:1.3;">Solo tiene efecto en bundles con toques registrados (los «· NQ literal»). Los toques se cuentan as-of: sin mirar el futuro.</div>
-      </div>
-    </div>
-
-    <!-- EDGELAB_TBZ_LAYER_V1: familia TBZ, franjas de baja permanencia (construcción, sin desenlaces) -->
-    <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
-      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px;">🧭 Franjas TBZ (baja permanencia)</div>
-      <div style="display:flex;flex-direction:column;gap:5px;font-size:10.5px;">
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-tbz-exp">
-          <span><b>Expansiones A→B</b> (EXP)</span>
-          <select id="sel-tbz-exp" style="margin-left:auto;font-size:10px;">
-            <option value="W20_k4.0" selected>W20 · k4 (~50/día)</option><option value="W60_k2.5">W60 · k2,5 (~30/día)</option>
-            <option value="W60_k4.0">W60 · k4 (~5/día)</option><option value="W20_k2.5">W20 · k2,5 (~300/día)</option></select></label>
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-tbz-dwell">
-          <span><b>Huecos de permanencia</b> (DWELL)</span>
-          <select id="sel-tbz-dwell" style="margin-left:auto;font-size:10px;"><option value="L60" selected>ventana 60 min</option><option value="L240">ventana 240 min</option></select></label>
-        <div id="lbl-tbz-status" style="font-size:9.5px;color:#666;">Sin datos TBZ para este bundle.</div>
-        <div style="font-size:9px;color:#888;line-height:1.3;">EXP: tramo claro = formación; recuadro = franja vigente (desde que está disponible, hasta 4 h). Los corredores (HFTGAP) son la capa «Corredores». Registro: docs/research/FAMILIA_TBZ_FRANJAS_BAJA_PERMANENCIA_20260924.md</div>
-      </div>
-    </div>
-
-
-
-
-
-
-
     <!-- EDGELAB_AXF_DESIGNER_V1 -->
     <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
       <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px;">🌊 Agotamiento por flujo → barrido → reversión (diseño)</div>
@@ -1171,20 +990,6 @@
       <div id="evx-sliders" style="display:flex;flex-direction:column;gap:3px;font-size:10px;margin-top:5px;"></div>
       <div id="lbl-evx-status" style="font-size:9.5px;color:#666;margin-top:4px;"></div>
       <div style="font-size:9px;color:#888;line-height:1.3;margin-top:4px;">▲▼ = cruce de la EMA (violeta) con el VWAP (rojo); gris = filtrado. ● = entrada del modo elegido. Clic en un cruce = sus valores; Esc lo cierra. Sólo diseño: sin desenlaces. Doc: docs/research/DISENO_EMA_VWAP_CRUCES_20260926.md</div>
-    </div>
-
-    <!-- EDGELAB_EMA_VWAP_V1 -->
-    <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
-      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px;">📈 EMA y VWAP</div>
-      <div style="display:flex;flex-direction:column;gap:5px;font-size:10.5px;">
-        <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" id="chk-ema-f"><span style="color:#f59e0b">━</span> EMA rápida
-          <input type="number" id="num-ema-f" value="9" min="2" max="500" style="width:50px;margin-left:auto;font-size:10px;"> velas</label>
-        <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" id="chk-ema-s"><span style="color:#2563eb">━</span> EMA lenta
-          <input type="number" id="num-ema-s" value="21" min="2" max="2000" style="width:50px;margin-left:auto;font-size:10px;"> velas</label>
-        <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" id="chk-vwap"><span style="color:#e11d48">━</span> VWAP de sesión (reinicia en la pausa diaria)</label>
-        <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" id="chk-cross"> Marcar cruces (● EMA rápida/lenta, ◆ cierre/VWAP; verde = alcista)</label>
-        <div style="font-size:9px;color:#888;line-height:1.3;">Se calculan sobre las velas del gráfico activo (25 ticks: los períodos son en velas, no en minutos).</div>
-      </div>
     </div>
 
     <!-- EDGELAB_TBZX_DESIGNER_V1: diseño interactivo de expansiones (sin desenlaces) -->
@@ -1266,34 +1071,236 @@
       <button class="nt8-dialog-close-btn" id="btn-props-x">✕</button>
     </div>
     <div class="nt8-dialog-body">
-      <!-- Columna Izquierda: Available / Configured -->
+      <!-- EDGELAB_INDICATORS_V2 (2026-09-26): un único diálogo de indicadores para todos los activos. Available = todos los
+           indicadores del visor; Configured = los encendidos. La configuración es global: en un activo donde el
+           indicador no aplica (no trae sus datos) se conserva y simplemente no dibuja nada. -->
       <div class="nt8-col-left">
         <div class="nt8-section-title">Available</div>
-        <div class="nt8-list-box nt8-avail-list">
-          <div class="nt8-item">ATR</div>
-          <div class="nt8-item">Bollinger Bands</div>
-          <div class="nt8-item">EMA</div>
-          <div class="nt8-item active">HFTZonesESPureV2Flat</div>
-          <div class="nt8-item">MACD</div>
-          <div class="nt8-item">RSI</div>
-          <div class="nt8-item">SMA</div>
-          <div class="nt8-item">Volume</div>
-        </div>
+        <div class="nt8-list-box nt8-avail-list" id="ind-avail"></div>
         <div class="nt8-list-actions">
-          <button class="nt8-dialog-btn sm" id="btn-add-dummy">add</button>
-          <button class="nt8-dialog-btn sm" id="btn-rem-dummy">remove</button>
+          <button class="nt8-dialog-btn sm" id="btn-ind-add">add</button>
+          <button class="nt8-dialog-btn sm" id="btn-ind-rem">remove</button>
         </div>
         <div class="nt8-section-title" style="margin-top:10px;">Configured</div>
-        <div class="nt8-list-box nt8-configured-list">
-          <div class="nt8-item active">HFTZonesESPureV2Flat</div>
+        <div class="nt8-list-box nt8-configured-list" id="ind-conf"></div>
+      </div>
+      <div class="nt8-col-right">
+        <div class="nt8-section-title" id="ind-title">Properties</div>
+        <div id="ind-na" class="ind-na" hidden>No disponible en este activo: la configuración se guarda y se aplica en los activos que lo tengan.</div>
+        <div class="nt8-prop-grid-container ind-props" id="ind-props">
+        <div class="ind-panel" data-ind="zonas" hidden>
+          <label class="pop-check">Corrida visible <select id="runsel" class="nt8-select" title="Corrida de zonas visible"></select></label>
+    <label class="pop-check"><input type="checkbox" id="chk-show-exploratory" checked> Zonas exploratorias (origen sin verificar)</label>
+    <!-- 2. Configuraciones / Indicadores Disponibles en el Gráfico -->
+    <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
+      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+        <span>🎯 Indicadores y Presets Disponibles</span>
+        <span id="lbl-presets-count" style="font-size: 10px; color: #888;"></span>
+      </div>
+      <div id="pop-presets-container" style="display: flex; flex-direction: column; gap: 5px; max-height: 220px; overflow-y: auto;">
+        <!-- Llenado dinámicamente según el activo y los runs disponibles -->
+      </div>
+    </div>
+
+    <!-- 1. Extensión y Consumo de Zonas -->
+    <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
+      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+        <span>📏 Terminación de Zonas</span>
+        <span id="lbl-ext-status" style="font-size: 10px; color: #0284c7; font-weight: 700; background: rgba(2,132,199,0.12); padding: 2px 6px; border-radius: 3px;">500 barras</span>
+      </div>
+
+      <!-- Selector de Modo de Terminación: Fija vs Consumo por Volumen -->
+      <div style="display: flex; gap: 4px; margin-bottom: 8px;">
+        <button id="btn-mode-fixed" class="nt8-btn sm active" style="flex: 1; justify-content: center; font-weight: 700; background: #0284c7; color: #fff; border-color: #0369a1;">
+          📏 Barras Fijas
+        </button>
+        <button id="btn-mode-volume" class="nt8-btn sm" style="flex: 1; justify-content: center; font-weight: 700;">
+          ⚡ Consumo por Volumen
+        </button>
+      </div>
+
+      <!-- Panel Modo 1: Barras Fijas -->
+      <div id="panel-mode-fixed">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <label style="font-size: 11px; color: var(--tb-text);">Extensión fija:</label>
+          <input type="number" id="inp-ext-bars" value="500" min="10" max="5000" step="50" style="width: 75px; padding: 3px 6px; border: 1px solid var(--tb-btn-border); border-radius: 2px; font-weight: 700; background: var(--pop-bg); color: var(--pop-text);">
+          <span style="font-size: 11px; color: #666;">barras hacia adelante</span>
+        </div>
+        <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+          <button class="nt8-btn sm btn-quick-ext" data-bars="100">100 b</button>
+          <button class="nt8-btn sm btn-quick-ext" data-bars="250">250 b</button>
+          <button class="nt8-btn sm btn-quick-ext active" data-bars="500" style="background:#0284c7;color:#fff;border-color:#0369a1;font-weight:700;">500 b (Fija)</button>
+          <button class="nt8-btn sm btn-quick-ext" data-bars="1000">1000 b</button>
+          <button class="nt8-btn sm btn-quick-ext" data-bars="2000">2000 b</button>
+        </div>
+        <div style="font-size: 10px; color: #888; margin-top: 6px; line-height: 1.3;">
+          ✓ Cada zona se dibuja con una longitud fija de barras desde su origen.
         </div>
       </div>
 
-      <!-- Columna Derecha: Property Grid -->
-      <div class="nt8-col-right">
-        <div class="nt8-section-title">Properties</div>
-        <div class="nt8-prop-grid-container" id="prop-grid-container">
-          <!-- Grupos y campos de propiedades generados dinámicamente -->
+      <!-- Panel Modo 2: Consumo por Volumen / Nivel de Comercio (Tick a Tick) -->
+      <div id="panel-mode-volume" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <label style="font-size: 11px; font-weight: 600; color: var(--tb-text);">Umbral de Muerte por Tick:</label>
+          <span id="lbl-vol-threshold-badge" style="font-size: 11px; font-weight: 700; color: #059669;">100 contratos</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+          <input type="range" id="range-vol-threshold" min="10" max="1000" step="10" value="100" style="flex: 1; accent-color: #059669; cursor: pointer;">
+          <input type="number" id="inp-vol-threshold" value="100" min="5" max="5000" step="5" style="width: 75px; padding: 3px 6px; border: 1px solid var(--tb-btn-border); border-radius: 2px; font-weight: 700; background: var(--pop-bg); color: var(--pop-text); text-align: right;">
+          <span style="font-size: 10.5px; color: #666;">ctrs</span>
+        </div>
+        <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px;">
+          <button class="nt8-btn sm btn-quick-vol" data-vol="35">35 c</button>
+          <button class="nt8-btn sm btn-quick-vol" data-vol="50">50 c</button>
+          <button class="nt8-btn sm btn-quick-vol" data-vol="75">75 c</button>
+          <button class="nt8-btn sm btn-quick-vol active" data-vol="100" style="background:#059669;color:#fff;border-color:#047857;font-weight:700;">100 c</button>
+          <button class="nt8-btn sm btn-quick-vol" data-vol="150">150 c</button>
+          <button class="nt8-btn sm btn-quick-vol" data-vol="250">250 c</button>
+          <button class="nt8-btn sm btn-quick-vol" data-vol="500">500 c</button>
+        </div>
+        <div style="font-size: 10px; color: #059669; background: rgba(16,185,129,0.08); padding: 6px 8px; border-radius: 3px; border: 1px solid rgba(16,185,129,0.2); line-height: 1.35;">
+          ✓ <b>Consumo Tick a Tick:</b> Cada tick de precio dentro de la zona se detiene individualmente al alcanzar el volumen requerido. La parte no comerciada continúa extendiéndose hacia adelante.
+        </div>
+      </div>
+
+    </div>
+
+          <div id="prop-grid-container"></div>
+        </div>
+        <div class="ind-panel" data-ind="corredores" hidden>
+    <!-- 3. Corredores de Vacío HFT (HP-007 Sólidos) -->
+    <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
+      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+        <span>⚡ Corredores de Vacío HFT</span>
+        <label style="font-size: 10px; display: flex; align-items: center; gap: 5px; cursor: pointer;">
+          <input type="checkbox" id="chk-corridors-enable" checked>
+          <span style="font-weight: 700; color: #0284c7;">Habilitado</span>
+        </label>
+      </div>
+      <div id="corridors-options-wrap" style="display: flex; flex-direction: column; gap: 7px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <label style="font-size: 11px; color: var(--tb-text);">Amplitud Mínima (H_min):</label>
+          <span id="lbl-corridor-hmin-badge" style="font-size: 10.5px; font-weight: 700; color: #0284c7;">16 ticks (4.0 pts)</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <input type="range" id="range-corridor-hmin" min="8" max="120" step="4" value="16" style="flex: 1; accent-color: #0284c7; cursor: pointer;">
+          <input type="number" id="inp-corridor-hmin" value="16" min="4" max="200" step="2" style="width: 55px; padding: 2px 4px; border: 1px solid var(--tb-btn-border); border-radius: 2px; font-weight: 700; background: var(--pop-bg); color: var(--pop-text); text-align: right;">
+          <span style="font-size: 10px; color: #666;">ticks</span>
+        </div>
+        <div style="display: flex; gap: 4px;">
+          <button class="nt8-btn sm btn-corridor-dir active" data-dir="all" id="btn-corr-all" style="flex: 1; font-weight: 700; background: #0284c7; color: #fff;">Todos</button>
+          <button class="nt8-btn sm btn-corridor-dir" data-dir="bull" id="btn-corr-bull" style="flex: 1; font-weight: 700;">🟢 Alcistas</button>
+          <button class="nt8-btn sm btn-corridor-dir" data-dir="bear" id="btn-corr-bear" style="flex: 1; font-weight: 700;">🔴 Bajistas</button>
+        </div>
+        <!-- EDGELAB_CROSSHAIR_DENSITY_PROFILE_V1 -->
+        <label style="display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px;cursor:pointer;border-top:1px solid var(--tb-border);padding-top:7px;">
+          <span><b>Perfil de densidad</b><br><span style="font-size:9.5px;color:#666;">As-of causal de la crosshair</span></span>
+          <input type="checkbox" id="chk-corridors-density-profile">
+        </label>
+        <label style="display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:10.5px;cursor:pointer;padding-top:4px;">
+          <span>Incluir zonas exploratorias en perfil<br><span style="font-size:9px;color:#d97706;">⚠️ Permite t0 no verificado en densidad</span></span>
+          <input type="checkbox" id="chk-include-exploratory-density">
+        </label>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <label style="font-size:10px;color:#666;">Ancho</label>
+          <input type="range" id="range-corridors-density-width" min="60" max="180" step="10" value="110" style="flex:1;accent-color:#0891b2;">
+          <span id="lbl-corridors-density-width" style="font-size:10px;font-weight:700;color:#0891b2;min-width:38px;text-align:right;">110 px</span>
+        </div>
+        <div style="font-size: 9.5px; color: #666; line-height: 1.3;">
+          ✓ Delimitación estricta entre murallas vivas. Sin franjas infinitas ni micro-ruido.
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Modelo de Decaimiento del Campo de Densidad -->
+    <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
+      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+        <span>⏳ Decaimiento del Campo</span>
+        <span id="lbl-decay-status" style="font-size: 10.5px; color: #10b981; font-weight: 700;">Sólo Comercio (Sin Tiempo)</span>
+      </div>
+      <div style="display: flex; gap: 5px; flex-direction: column;">
+        <button class="nt8-btn btn-decay-mode active" data-mode="trade_only" id="opt-decay-trade" style="background:#059669;color:#fff;border-color:#047857;font-weight:700;text-align:left;padding:5px 8px;width:100%;">
+          <div>🛡️ Sólo Comercio / Toques (Recomendado)</div>
+          <div style="font-size:9.5px;opacity:0.9;">Sin decaimiento por tiempo ni corte de fin de semana. La zona sólo decae cuando el precio entra y opera dentro de ella.</div>
+        </button>
+        <button class="nt8-btn btn-decay-mode" data-mode="calibrated_time" id="opt-decay-time" style="text-align:left;padding:5px 8px;width:100%;">
+          <div>⏱️ Temporal Calibrado (Vida Media 12h)</div>
+          <div style="font-size:9.5px;color:#888;">Decaimiento continuo por tiempo de calendario (12h media, corte 48h).</div>
+        </button>
+      </div>
+    </div>
+
+    <!-- EDGELAB_WEAR_CONTROLS_V1: desgaste por toque calibrable (density_field wear_alpha / wear_exp) -->
+    <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
+      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px;">🪨 Desgaste por toque</div>
+      <div title="Cuánto pesa cada toque: peso = (1 + a·toques)^-b. De fábrica a = 0,5 y b = 0,6 (HP-007)." style="display:flex;flex-direction:column;gap:5px;font-size:10.5px;">
+        <div style="display:flex;align-items:center;gap:6px;"><span style="min-width:74px;">Intensidad a</span>
+          <input type="range" id="range-wear-alpha" min="0" max="5" step="0.1" value="0.5" style="flex:1;accent-color:#b45309;">
+          <span id="lbl-wear-alpha" style="min-width:30px;font-weight:700;color:#b45309;text-align:right;">0.5</span></div>
+        <div style="display:flex;align-items:center;gap:6px;"><span style="min-width:74px;">Curvatura b</span>
+          <input type="range" id="range-wear-exp" min="0.1" max="3" step="0.05" value="0.6" style="flex:1;accent-color:#b45309;">
+          <span id="lbl-wear-exp" style="min-width:30px;font-weight:700;color:#b45309;text-align:right;">0.60</span></div>
+        <div id="lbl-wear-preview" style="font-size:9.5px;color:#666;"></div>
+        <button class="nt8-btn sm" id="btn-wear-reset" style="align-self:flex-start;">Volver a fábrica (0,5 / 0,6)</button>
+        <div style="font-size:9px;color:#888;line-height:1.3;">Solo tiene efecto en bundles con toques registrados (los «· NQ literal»). Los toques se cuentan as-of: sin mirar el futuro.</div>
+      </div>
+    </div>
+
+        </div>
+        <div class="ind-panel" data-ind="tbz" hidden>
+    <!-- EDGELAB_TBZ_LAYER_V1: familia TBZ, franjas de baja permanencia (construcción, sin desenlaces) -->
+    <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
+      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px;">🧭 Franjas TBZ (baja permanencia)</div>
+      <div style="display:flex;flex-direction:column;gap:5px;font-size:10.5px;">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-tbz-exp">
+          <span><b>Expansiones A→B</b> (EXP)</span>
+          <select id="sel-tbz-exp" style="margin-left:auto;font-size:10px;">
+            <option value="W20_k4.0" selected>W20 · k4 (~50/día)</option><option value="W60_k2.5">W60 · k2,5 (~30/día)</option>
+            <option value="W60_k4.0">W60 · k4 (~5/día)</option><option value="W20_k2.5">W20 · k2,5 (~300/día)</option></select></label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-tbz-dwell">
+          <span><b>Huecos de permanencia</b> (DWELL)</span>
+          <select id="sel-tbz-dwell" style="margin-left:auto;font-size:10px;"><option value="L60" selected>ventana 60 min</option><option value="L240">ventana 240 min</option></select></label>
+        <div id="lbl-tbz-status" style="font-size:9.5px;color:#666;">Sin datos TBZ para este bundle.</div>
+        <div style="font-size:9px;color:#888;line-height:1.3;">EXP: tramo claro = formación; recuadro = franja vigente (desde que está disponible, hasta 4 h). Los corredores (HFTGAP) son la capa «Corredores». Registro: docs/research/FAMILIA_TBZ_FRANJAS_BAJA_PERMANENCIA_20260924.md</div>
+      </div>
+    </div>
+
+
+
+
+
+
+
+        </div>
+        <div class="ind-panel" data-ind="ema" hidden>
+    <!-- EDGELAB_EMA_VWAP_V1 -->
+    <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
+      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px;">📈 EMA y VWAP</div>
+      <div style="display:flex;flex-direction:column;gap:5px;font-size:10.5px;">
+        <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" id="chk-ema-f"><span style="color:#f59e0b">━</span> EMA rápida
+          <input type="number" id="num-ema-f" value="9" min="2" max="500" style="width:50px;margin-left:auto;font-size:10px;"> velas</label>
+        <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" id="chk-ema-s"><span style="color:#2563eb">━</span> EMA lenta
+          <input type="number" id="num-ema-s" value="21" min="2" max="2000" style="width:50px;margin-left:auto;font-size:10px;"> velas</label>
+        <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" id="chk-vwap"><span style="color:#e11d48">━</span> VWAP de sesión (reinicia en la pausa diaria)</label>
+        <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" id="chk-cross"> Marcar cruces (● EMA rápida/lenta, ◆ cierre/VWAP; verde = alcista)</label>
+        <div style="font-size:9px;color:#888;line-height:1.3;">Se calculan sobre las velas del gráfico activo (25 ticks: los períodos son en velas, no en minutos).</div>
+      </div>
+    </div>
+
+        </div>
+        <div class="ind-panel" data-ind="l2" hidden>
+    <div class="pop-sec">Libro L2</div>
+    <label class="pop-check"><input type="checkbox" id="chk-show-l2" checked> <i class="dot dot-book"></i> Mapa de profundidad (libro de órdenes)</label>
+    <label class="pop-check"><input type="checkbox" id="chk-show-l2-trades" checked> <i class="dot dot-trades"></i> Burbujas de trades por agresor</label>
+    <label class="pop-check pop-num">Máx. burbujas en pantalla (0 = todas) <input type="number" id="inp-l2-trade-max" min="0" max="50000" step="500" value="4000"></label>
+    <div class="pop-sec">Detectores L2 <span class="pop-tag">PROVISIONALES · sin validar</span></div>
+    <label class="pop-check"><input type="checkbox" id="chk-show-l2-icebergs" checked> <i class="dot dot-ice"></i> Iceberg (◆)</label>
+    <label class="pop-check"><input type="checkbox" id="chk-show-l2-spoofs" checked> <i class="dot dot-spoof"></i> Liquidez fugaz (✕, orden grande &lt;5 s)</label>
+    <label class="pop-check"><input type="checkbox" id="chk-show-l2-absorptions" checked> <i class="dot dot-abs"></i> Absorción (▬)</label>
+        </div>
+        <div class="ind-panel" data-ind="lux" hidden>
+    <label class="pop-check pop-num">Máx. zonas LUX-IMB (0 = todas) <input type="number" id="inp-lux-max" min="0" max="20000" step="50" value="300"></label>
+        </div>
         </div>
       </div>
     </div>
@@ -2935,7 +2942,7 @@
   function drawZones(ctxArg, wArg, hArg) {
     if (!ctxArg) { if (window.__EDGELAB_ZONES_PRIM__) window.__EDGELAB_ZONES_PRIM__.update(); return; }
     var ctx = ctxArg;
-    if (!state.run) return;
+    if (!state.run || state.zonesHidden) return;
 
     var tsc = chart.timeScale();
     var vr = realVisibleRange();
@@ -4398,7 +4405,7 @@
 
     var titleEl = document.getElementById("pop-params-title");
     if (titleEl) {
-      titleEl.textContent = "⚙️ Parámetros: " + indName + (cName ? " (" + cName + (tfStr ? " · " + tfStr : "") + ")" : "");
+      titleEl.textContent = "🔬 Investigación" + (cName ? " (" + cName + (tfStr ? " · " + tfStr : "") + ")" : "");
     }
 
     var btnParams = document.getElementById("btn-bt2a-params");
@@ -5467,6 +5474,7 @@
 
     buildAssetSelectorList();
     buildTfSelectorList();
+    if (typeof indApplyAll === "function") indApplyAll();
   }
 
   // =====================================================================
@@ -5515,10 +5523,9 @@
     var isBt2a = state.run && ((state.run.name || state.run.indicator || "").indexOf("BigTrap2") !== -1 || (state.run.id || "").indexOf("bt2a") !== -1);
     var schema = isBt2a ? BT2A_PROPERTIES_SCHEMA : NT8_PROPERTIES_SCHEMA;
 
-    var cfgList = document.querySelector(".nt8-configured-list");
-    if (cfgList && state.run) {
-      cfgList.innerHTML = "<div class='nt8-item active'>" + (state.run.name || state.run.indicator || "Indicator") + "</div>";
-    }
+    // Los parámetros de DETECCIÓN vienen fijos en la corrida (el visor no recalcula zonas): se muestran en sólo lectura con
+    // el valor con que se generó. Sólo lo visual y la extensión son editables.
+    var runParams = (state.run && state.run.params) || {};
 
     schema.forEach(function (cat, catIdx) {
       var catHeader = document.createElement("div");
@@ -5548,7 +5555,9 @@
         var valCell = document.createElement("div");
         valCell.className = "nt8-prop-val";
 
-        var curVal = (activeProps[p.key] !== undefined) ? activeProps[p.key] : p.default;
+        var editable = IND_EDITABLE_KEYS.indexOf(p.key) !== -1;
+        var curVal = editable ? ((activeProps[p.key] !== undefined) ? activeProps[p.key] : p.default)
+                              : ((runParams[p.key] !== undefined) ? runParams[p.key] : "—");
 
         if (p.type === "bool") {
           var chk = document.createElement("input");
@@ -5621,6 +5630,14 @@
           valCell.appendChild(txt);
         }
 
+        if (!editable) {
+          row.classList.add("ind-readonly");
+          nameCell.title = p.name + " — fijado en la corrida (sólo lectura)";
+          valCell.innerHTML = "";
+          var ro = document.createElement("span"); ro.className = "ind-ro-val";
+          ro.textContent = (curVal === true ? "sí" : curVal === false ? "no" : String(curVal));
+          valCell.appendChild(ro);
+        }
         row.appendChild(nameCell);
         row.appendChild(valCell);
         rowContainer.appendChild(row);
@@ -5651,6 +5668,7 @@
     closeAllPopovers();
     backupProps = JSON.parse(JSON.stringify(activeProps));
     buildPropertyGrid();
+    indRender();
     modalEl.classList.add("show");
   }
 
@@ -5663,6 +5681,7 @@
     var schema = isBt2a ? BT2A_PROPERTIES_SCHEMA : NT8_PROPERTIES_SCHEMA;
     schema.forEach(function (cat) {
       cat.props.forEach(function (p) {
+        if (IND_EDITABLE_KEYS.indexOf(p.key) === -1) return;
         var el = document.getElementById("prop-input-" + p.key);
         if (!el) return;
         if (p.type === "bool") {
@@ -5683,6 +5702,85 @@
     updateIndicatorTag();
     requestDraw();
   }
+
+
+  // =====================================================================
+  // EDGELAB_INDICATORS_V2 — registro único de indicadores (igual para todos los activos)
+  // =====================================================================
+  var IND_EDITABLE_KEYS = ["opacidad", "color_absorb_bull", "color_absorb_bear", "color_predator", "color_ultra",
+    "color_texto", "mostrar_texto", "mostrar_absorb", "extension_bars", "extension_dibujo"];
+  function indRunText(r) { return ((r && (r.id || "")) + " " + (r && (r.name || "")) + " " + (r && (r.indicator || ""))).toLowerCase(); }
+  function indSetChk(id, on) {
+    var el = document.getElementById(id);
+    if (el && el.checked !== on) { el.checked = on; el.dispatchEvent(new Event("change", { bubbles: true })); }
+  }
+  var INDICATORS = [
+    { id: "zonas", name: "Zonas (HFTZones · BigTrap2 · corridas del activo)",
+      applies: function (d) { return !!(d && d.runs && d.runs.length); },
+      isOn: function () { return !state.zonesHidden; },
+      set: function (on) { state.zonesHidden = !on; } },
+    { id: "corredores", name: "Corredores HFT (HP-007)",
+      applies: function (d) { return !!(d && d.runs && d.runs.some(function (r) { return indRunText(r).indexOf("hft") !== -1; })); },
+      isOn: function () { return state.showCorredoresDemo !== false && activeProps.corridors_enabled !== false; },
+      set: function (on) { var b = document.getElementById("btn-corredores-demo"); if (b && (state.showCorredoresDemo !== false) !== on) b.click(); activeProps.corridors_enabled = on; } },
+    { id: "tbz", name: "Franjas TBZ (baja permanencia)",
+      applies: function () { return !!state.tbz; },
+      isOn: function () { return !!(activeProps.tbz_exp || activeProps.tbz_dwell); },
+      set: function (on) { indSetChk("chk-tbz-exp", on); if (!on) indSetChk("chk-tbz-dwell", false); } },
+    { id: "ema", name: "EMA y VWAP",
+      applies: function (d) { return !!(d && d.bar_series); },
+      isOn: function () { return ["chk-ema-f", "chk-ema-s", "chk-vwap"].some(function (k) { var e = document.getElementById(k); return e && e.checked; }); },
+      set: function (on) { indSetChk("chk-ema-f", on); indSetChk("chk-vwap", on); if (!on) { indSetChk("chk-ema-s", false); indSetChk("chk-cross", false); } } },
+    { id: "l2", name: "Libro L2 (profundidad, trades, detectores)",
+      applies: function (d) { return !!(d && (d.l2 || d.trades || d.manipulation)); },
+      isOn: function () { return activeProps.show_l2_depth !== false || activeProps.show_l2_trades !== false; },
+      set: function (on) { indSetChk("chk-show-l2", on); indSetChk("chk-show-l2-trades", on); } },
+    { id: "lux", name: "LuxAlgo Imbalance (LUX-IMB)",
+      applies: function (d) { return !!(d && d.runs && d.runs.some(function (r) { return (r.zones || []).some(function (z) { return z.source === "luxalgo"; }); })); },
+      isOn: function () { return state.srcs.luxalgo !== false; },
+      set: function (on) { state.srcs.luxalgo = on; } }
+  ];
+  var indSel = "zonas";
+  function indFind(id) { for (var i = 0; i < INDICATORS.length; i++) if (INDICATORS[i].id === id) return INDICATORS[i]; return null; }
+  function indItem(ind, active) {
+    var d = document.createElement("div"), ok = ind.applies(state.data);
+    d.className = "nt8-item" + (active ? " active" : "") + (ok ? "" : " ind-off");
+    d.textContent = ind.name + (ok ? "" : " — no disponible en este activo");
+    d.dataset.ind = ind.id;
+    d.addEventListener("click", function () { indSel = ind.id; indRender(); });
+    return d;
+  }
+  function indRender() {
+    var av = document.getElementById("ind-avail"), cf = document.getElementById("ind-conf");
+    if (!av || !cf) return;
+    av.innerHTML = ""; cf.innerHTML = "";
+    INDICATORS.forEach(function (ind) {
+      av.appendChild(indItem(ind, ind.id === indSel));
+      if (ind.isOn()) cf.appendChild(indItem(ind, ind.id === indSel));
+    });
+    var cur = indFind(indSel);
+    Array.prototype.forEach.call(document.querySelectorAll(".ind-panel"), function (p) { p.hidden = p.dataset.ind !== indSel; });
+    var t = document.getElementById("ind-title"); if (t && cur) t.textContent = "Properties — " + cur.name;
+    var na = document.getElementById("ind-na"); if (na && cur) na.hidden = cur.applies(state.data);
+  }
+  function indPersist() {
+    var on = {}; INDICATORS.forEach(function (ind) { on[ind.id] = ind.isOn(); });
+    try { localStorage.setItem("edgelab_indicators_v2", JSON.stringify(on)); } catch (e) {}
+  }
+  // Configuración global: al cargar cualquier activo se reaplica; donde el indicador no aplica, no dibuja nada.
+  function indApplyAll() {
+    var on = null;
+    try { on = JSON.parse(localStorage.getItem("edgelab_indicators_v2") || "null"); } catch (e) { on = null; }
+    if (on) INDICATORS.forEach(function (ind) { if (on[ind.id] !== undefined && ind.isOn() !== on[ind.id]) ind.set(on[ind.id]); });
+    requestDraw();
+  }
+  document.getElementById("btn-ind-add").addEventListener("click", function () {
+    var ind = indFind(indSel); if (ind && !ind.isOn()) { ind.set(true); indPersist(); requestDraw(); } indRender();
+  });
+  document.getElementById("btn-ind-rem").addEventListener("click", function () {
+    var ind = indFind(indSel); if (ind && ind.isOn()) { ind.set(false); indPersist(); requestDraw(); } indRender();
+  });
+  document.getElementById("nt8-props-modal").addEventListener("change", function () { setTimeout(function () { indPersist(); indRender(); }, 0); });
 
   document.getElementById("btn-props").addEventListener("click", openPropertiesModal);
   document.getElementById("indicator-tag").addEventListener("dblclick", openPropertiesModal);
