@@ -87,7 +87,7 @@ En el repo sí están: `artifacts/ivc/ivc_mapa.csv`, `ivcl_celdas.csv` y sus res
 
 ## 6. Pendientes
 
-1. **Kernel `edgelab-tbzx-r3-v3`** (iteración 3 sobre 181 sesiones) seguía corriendo a las 14:02 UTC del 26/09. Si
+1. **Kernel `edgelab-tbzx-r3-v3`**: terminó CANCEL_ACKNOWLEDGED a las ~15:30 UTC del 26/09, sin salida (registrado en el cerebro como `LES-TBZX-R3-IT3-KAGGLE181-CANCEL`; no se relanza). Texto original: Si
    terminó: `kaggle kernels output nicolasbuttaro/edgelab-tbzx-r3-v3 -p kout3` y
    `python tools/tbzx_r3_brain.py ingest --tag IT3-KAGGLE181 --dir kout3 --ctrl kout3`. Sólo reabre el acta si contradice
    a la corrida local de 46 sesiones (0 FDR realista). Si murió por tiempo, no relanzar sin decisión de Nico.
