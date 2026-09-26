@@ -1152,6 +1152,14 @@
       <div id="lbl-lab-status" style="font-size:9.5px;color:#666;margin-top:4px;"></div>
       <label style="display:flex;align-items:center;gap:6px;font-size:10.5px;margin-top:4px;"><input type="checkbox" id="chk-det"> Mostrar detecciones del modelo (naranja = techo, verde = piso)</label>
       <div id="lbl-det-status" style="font-size:9.5px;color:#666;"></div>
+      <button class="nt8-btn sm" id="btn-rev" style="margin-top:5px;" title="El modelo te muestra sus zonas de a una y vos juzgás: sí, no o saltar">🔍 Revisar detecciones (✓/✗)</button>
+      <div id="rev-controls" style="display:none;gap:5px;margin-top:4px;">
+        <button class="nt8-btn sm" id="btn-rev-si" style="color:#16a34a;font-weight:700;">✓ Sí (S)</button>
+        <button class="nt8-btn sm" id="btn-rev-no" style="color:#dc2626;font-weight:700;">✗ No (N)</button>
+        <button class="nt8-btn sm" id="btn-rev-skip">Saltar (espacio)</button>
+        <button class="nt8-btn sm" id="btn-rev-back">← Anterior</button>
+      </div>
+      <div id="lbl-rev-status" style="font-size:9.5px;color:#444;margin-top:3px;"></div>
       <div style="font-size:9px;color:#888;line-height:1.3;margin-top:4px;">Mientras un modo está activo, el gráfico no se desplaza: salí con Esc (o con el mismo botón) para moverte. Marcá todo lo que veas en una sesión y después «Sesión revisada»: sin eso, el aprendizaje no sabe qué es negativo.</div>
     </div>
 
@@ -2593,7 +2601,7 @@
       .catch(function () { var el = document.getElementById("lbl-det-status"); if (el) el.textContent = "Sin detecciones para este activo (tools/peaks_learn.py)."; });
   }
   function drawPeaksDet(ctx, cd, vr, X, Y) {
-    if (!peaksDet.on || !peaksDet.data) return;
+    if (!peaksDet.on || !peaksDet.data || rev.on) return;          // en revisión no se muestran las demás detecciones
     ctx.font = "9px sans-serif";
     peaksDet.data.zonas.forEach(function (z) {
       if (z.t1 < vr.from || z.t0 > vr.to) return;
@@ -2603,6 +2611,51 @@
       ctx.strokeStyle = "rgba(" + col + ",0.95)"; ctx.lineWidth = 1.5; ctx.setLineDash([2, 2]); ctx.strokeRect(x0, y0, x1 - x0, Math.max(2, y1 - y0)); ctx.setLineDash([]);
       ctx.fillStyle = "rgba(" + col + ",0.95)"; ctx.fillText((z.kind === "H" ? "techo" : "piso") + " ×" + z.toques, x0, z.kind === "H" ? y0 - 3 : y1 + 10);
     });
+  }
+  // Modo ✓/✗: el modelo propone zonas de a una (fuera de lo ya marcado o juzgado) y Nico juzga. Cada ✗ es un negativo
+  // verdadero para el entrenamiento; las dudosas se saltean (no cuentan). Se guarda en labels/<activo>.json → judgments.
+  var rev = { on: false, queue: [], k: 0, cur: null };
+  function revBuild() {
+    if (!peaksDet.data || !lab.data) return [];
+    lab.data.judgments = lab.data.judgments || [];
+    var judged = lab.data.judgments, R = lab.data.ranges;
+    var q = peaksDet.data.zonas.filter(function (z) {
+      if (judged.some(function (j) { return j.kind === z.kind && j.i0 === z.i0 && j.i1 === z.i1; })) return false;
+      return !R.some(function (r) { return r.i0 != null && Math.min(r.i1, z.i1) - Math.max(r.i0, z.i0) > 0 && Math.abs(r.p1 - z.p1) < 5 * (lab.data.tick || 0.25) + (r.p1 - r.p0); });
+    });
+    var seed = 20260926;                                     // orden aleatorio reproducible, mezclando sesiones
+    function rnd() { seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; }
+    for (var i = q.length - 1; i > 0; i--) { var j = Math.floor(rnd() * (i + 1)); var t = q[i]; q[i] = q[j]; q[j] = t; }
+    return q;
+  }
+  function revShow() {
+    var el = document.getElementById("lbl-rev-status");
+    rev.cur = rev.queue[rev.k] || null;
+    if (!rev.cur) { if (el) el.textContent = "No quedan zonas para revisar."; requestDraw(); return; }
+    var z = rev.cur, pad = Math.max(80, (z.i1 - z.i0));
+    chart.timeScale().setVisibleLogicalRange({ from: z.i0 - pad, to: z.i1 + pad });
+    var nj = (lab.data.judgments || []).length, si = (lab.data.judgments || []).filter(function (j) { return j.verdict === "si"; }).length;
+    if (el) el.textContent = "Zona " + (rev.k + 1) + " de " + rev.queue.length + " · " + (z.kind === "H" ? "techo" : "piso") + " ×" + z.toques +
+      " · juzgadas: " + nj + " (✓ " + si + " / ✗ " + (nj - si) + ") · teclas: S = sí, N = no, espacio = saltar, ← = anterior";
+    requestDraw();
+  }
+  function revJudge(v) {
+    if (!rev.cur) return;
+    var z = rev.cur;
+    lab.data.judgments = (lab.data.judgments || []).filter(function (j) { return !(j.kind === z.kind && j.i0 === z.i0 && j.i1 === z.i1); });
+    if (v) lab.data.judgments.push({ kind: z.kind, i0: z.i0, i1: z.i1, t0: z.t0, t1: z.t1, p0: z.p0, p1: z.p1, toques: z.toques,
+                                     verdict: v, model: peaksDet.data.schema, at: new Date().toISOString() });
+    labSave(); rev.k++; revShow();
+  }
+  function revToggle() {
+    rev.on = !rev.on;
+    var b = document.getElementById("btn-rev"); if (b) b.textContent = rev.on ? "■ Terminar revisión" : "🔍 Revisar detecciones (✓/✗)";
+    document.getElementById("rev-controls").style.display = rev.on ? "flex" : "none";
+    if (rev.on) {
+      if (!peaksDet.data) { rev.on = false; document.getElementById("lbl-rev-status").textContent = "No hay detecciones del modelo para este activo."; return; }
+      peaksDet.on = true; var c = document.getElementById("chk-det"); if (c) c.checked = true;
+      rev.queue = revBuild(); rev.k = 0; revShow();
+    } else { rev.cur = null; document.getElementById("lbl-rev-status").textContent = ""; requestDraw(); }
   }
   function drawLabels(ctx, w, h) {
     if ((!lab.data && !peaksDet.on) || !series) return;
@@ -2617,6 +2670,18 @@
     function Y(p) { var c = series.priceToCoordinate(p); return c === null ? NaN : c; }
     ctx.save();
     drawPeaksDet(ctx, cd, vr, XI, Y);
+    (lab.data.judgments || []).forEach(function (j) {
+      if (j.t1 < vr.from || j.t0 > vr.to) return;
+      var x0 = XI(j.i0, j.t0), x1 = XI(j.i1, j.t1), y0 = Y(j.p1), y1 = Y(j.p0);
+      ctx.strokeStyle = j.verdict === "si" ? "rgba(22,163,74,0.95)" : "rgba(220,38,38,0.95)"; ctx.lineWidth = 2;
+      ctx.strokeRect(x0, y0, x1 - x0, Math.max(2, y1 - y0));
+      ctx.fillStyle = ctx.strokeStyle; ctx.font = "bold 12px sans-serif"; ctx.fillText(j.verdict === "si" ? "✓" : "✗", x1 + 3, y0 + 10);
+    });
+    if (rev.on && rev.cur) {
+      var z = rev.cur, zx0 = XI(z.i0, z.t0), zx1 = XI(z.i1, z.t1), zy0 = Y(z.p1), zy1 = Y(z.p0);
+      ctx.strokeStyle = "#111"; ctx.lineWidth = 3; ctx.setLineDash([6, 3]);
+      ctx.strokeRect(zx0 - 3, zy0 - 3, zx1 - zx0 + 6, Math.max(2, zy1 - zy0) + 6); ctx.setLineDash([]);
+    }
     lab.data.reviewed.forEach(function (s) {
       if (s.t1 < vr.from || s.t0 > vr.to) return;
       var x0 = X(s.t0), x1 = X(s.t1); ctx.fillStyle = "rgba(34,197,94,0.35)"; ctx.fillRect(x0, 0, x1 - x0, 4);
@@ -2939,7 +3004,7 @@
     drawTrades(ctx, vr, w, hCanvas);
     drawManipulationMarkers(ctx, vr, w, hCanvas);
     drawMaVwap(ctx, w, hCanvas); drawEvx(ctx, w, hCanvas); drawAxf(ctx, w, hCanvas); drawLabels(ctx, w, hCanvas); drawTbz(ctx, vr, w, hCanvas); drawTbzE2(ctx, vr, w, hCanvas); drawTbzx(ctx, vr, w, hCanvas);
-    if ((tbze2Opt.on || tbzx.on || evx.on || axf.on) && tbze2Opt.solo) return;             // revisión TBZ-E2 sin las zonas HFT encima
+    if (((tbze2Opt.on || tbzx.on || evx.on || axf.on) && tbze2Opt.solo) || (typeof rev !== "undefined" && rev.on)) return;   // en revisión ✓/✗ sólo se ve la zona a juzgar             // revisión TBZ-E2 sin las zonas HFT encima
 
     var opacityVal = (activeProps.opacidad || 30) / 100;
     var showLabels = activeProps.mostrar_texto !== false;
@@ -4723,6 +4788,20 @@
       labInit();
       document.getElementById("btn-lab-range").addEventListener("click", function () { labSetMode("range"); });
       document.getElementById("chk-det").addEventListener("change", function () { peaksDet.on = this.checked; requestDraw(); });
+      document.getElementById("btn-rev").addEventListener("click", function (ev) { ev.stopPropagation(); revToggle(); });
+      document.getElementById("btn-rev-si").addEventListener("click", function (ev) { ev.stopPropagation(); revJudge("si"); });
+      document.getElementById("btn-rev-no").addEventListener("click", function (ev) { ev.stopPropagation(); revJudge("no"); });
+      document.getElementById("btn-rev-skip").addEventListener("click", function (ev) { ev.stopPropagation(); rev.k++; revShow(); });
+      document.getElementById("btn-rev-back").addEventListener("click", function (ev) { ev.stopPropagation(); rev.k = Math.max(0, rev.k - 1); revShow(); });
+      document.addEventListener("keydown", function (ev) {
+        if (!rev.on || lab.mode || (ev.target && /INPUT|TEXTAREA|SELECT/.test(ev.target.tagName))) return;
+        var k = ev.key.toLowerCase();
+        if (k === "s") { revJudge("si"); ev.preventDefault(); }
+        else if (k === "n") { revJudge("no"); ev.preventDefault(); }
+        else if (k === " ") { rev.k++; revShow(); ev.preventDefault(); }
+        else if (ev.key === "ArrowLeft") { rev.k = Math.max(0, rev.k - 1); revShow(); ev.preventDefault(); }
+        else if (ev.key === "Escape") { revToggle(); }
+      });
       document.getElementById("btn-lab-zz").addEventListener("click", function () { labSetMode("zz"); });
       document.getElementById("btn-lab-rev").addEventListener("click", function () {
         var cd = activeCandlesArr(), lr = chart.timeScale().getVisibleLogicalRange(); if (!cd || !lr || !lab.data) return;
