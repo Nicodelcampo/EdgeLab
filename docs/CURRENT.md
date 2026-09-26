@@ -1,12 +1,13 @@
 # CURRENT — estado vivo
 
-**Fecha:** 2026-09-23  
-**Corte:** 2026-09-23  
+**Fecha:** 2026-09-26  
+**Corte:** 2026-09-26  
 **Rama del PR #48 (head real, la que ve GitHub):** `feat/unified-nt8-viewer-20260920`.
 **Rama de trabajo local (se empuja como fast-forward sobre la de arriba):** `feat/unified-viewer-canonical-20260921`.
 Hallazgo de auditoría 2026-09-21: esta sección llamaba "rama viva" solo a la de trabajo local, sin nombrar cuál es
 el head real que ve el PR — confuso para cualquiera que solo tenga acceso al repo remoto. Corregido acá.  
-**Referente:** `docs/NORTH_STAR.md` · sha256 del cuerpo `d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1`
+**Traspaso de la sesión en la nube del 26/09 (TBZX-R3, IVC, IVC-L; rama `claude/focused-fermat-qjt805`, PR #59):** `docs/research/HANDOFF_2026-09-26_SESION_NUBE.md`.  
+**Referente:** `docs/NORTH_STAR.md` · sha256 del cuerpo `ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8`
 
 ## Decisiones vigentes de Nico (2026-09-21)
 
@@ -42,6 +43,16 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
    - V2 falló por un error de construcción y un archivo con reloj corrido (P-85).
    - Hallazgo de integridad: 5 de 194 archivos L2 tienen el reloj corrido (P-84).
    - `docs/research/FAMILIA_6E_REGIMENES_LIQUIDEZ_20260924.md`.
+
+13. **TBZX-R3 (2026-09-25/26): reingreso a la franja TBZX y dirección de los ticks siguientes, ES en Kaggle.** Secuencia: se crea la zona → el precio se aleja D → vuelve → penetra p → retrocede r → entrada. Manifiesto con enmiendas escritas antes de medir: `docs/research/MANIFIESTO_TBZX_REINGRESO_3T_20260925.md`. Kernel: `tools/tbzx_reingreso_kaggle.py`. Cerebro: `tools/tbzx_r3_brain.py`, ledger `artifacts/hippocampus/tbzx_r3_20260926.jsonl`, partición `P-TBZX-R3-EXP` (181 sesiones, jul-2025 a mar-2026).
+   - Iteración 1 (181 sesiones, TP 3): con ejecución realista, 0 de 66.000 celdas con P&L > 0 (mejor −1,15 t).
+   - La zona sí difiere del fantasma: «sigue» con r = 0 acierta +2,1 pp y «rebota» con r ≥ 2 acierta +1,5 a +1,9 pp. Son ~0,2 t, contra un costo de ~1,5 t.
+   - En curso: TP/SL 3–20 (iteración 3) y escenarios macro con descubrimiento jul–nov y validación dic–mar (iteración 4). Abr–jun sigue sin tocar.
+
+13. **IVC (2026-09-26): mapa de información contra costo por horizonte, ES/NQ/YM.** Resultados: `docs/research/IVC_RESULTADOS_20260926.md`; pre-registro `docs/research/MANIFIESTO_MAPA_INFO_COSTO_20260926.md`; cerebro `artifacts/hippocampus/ivc_20260926.jsonl` (partición `P-IVC-EXP`). 477 celdas, 38 FDR, **0 prometedoras**. Horizonte corto: hay información (reversión, |IC| 0,01–0,05) y su borde (0,1–1,6 t) no llega al costo agresivo (2,4–7 t). Horizonte ≥ 60 min, cierre y última media hora: el borde bruto se acerca al costo, pero sin potencia (MDE del IC 0,04–0,24). **Siguiente paso: historia de 1 min de varios años.** Pista sin significancia: primera media hora → última media hora con reversión en ES y YM (mismo signo en descubrimiento y validación).
+14. **TBZX-R3 — CERRADA (2026-09-26), acta `docs/research/TBZX_R3_ACTA_CIERRE_20260926.md`.** La zona aporta ~+2 a +3 pp de dirección sobre el fantasma (~0,2 t). Con costo realista no alcanza en ES: 0 de 66.000 celdas con TP 3; 0 FDR con TP/SL 3–20; 0 de 14.464 escenarios macro sostenidos. Alcance: reingreso, TP/SL ≤ 20 t, horizonte ≤ 30 min. Ledger `artifacts/hippocampus/tbzx_r3_20260926.jsonl`.
+
+15. **IVC-L (2026-09-26): horizonte largo con años de historia (proxies ETF).** `docs/research/IVC_LARGO_RESULTADOS_20260926.md`. 8 celdas, 4 FDR (concentradas en 2008–2014), **0 prometedoras**. El gap diario no predice el día (30 años de SPY/QQQ/DIA, IC ≈ 0). Única pista con el mismo signo en las dos mitades: gap → continuación 10:00–cierre en SPY 1 min (IC 0,080 / 0,050), sin margen en validación. Re-medir en futuros sólo si llega historia de NT8.
 
 ## Resultados de investigación vigentes
 
