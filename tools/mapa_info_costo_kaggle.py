@@ -24,7 +24,7 @@ NS_ = 1_000_000_000
 STEP_S = 300
 HORIZ = {"h1": 60, "h5": 300, "h15": 900, "h60": 3600, "h240": 14400}
 RTH_OPEN, RTH_CLOSE = 9 * 3600 + 30 * 60, 16 * 3600
-COMM_SIDE = {"ES": 0.2, "NQ": 0.45}
+COMM_SIDE = {"ES": 0.2, "NQ": 0.45, "YM": 0.45}
 ZONE_CFG = (20, 8)                                 # mb20_mw8
 
 
@@ -86,6 +86,20 @@ def session_grid(s, prev_close):
     p935 = np.nonzero(out["tod"] == RTH_OPEN + 300)[0]
     if prev_close is not None and len(p935) and rth_open_k < n:
         out["gap"][p935[0]] = px[rth_open_k] - prev_close
+    # momentum intradía de la última media hora: en el punto de 15:30 ET, primera media hora (9:30→10:00) y gap
+    # como estados; el objetivo es 15:30→16:00 (literatura: la primera media hora predice la última)
+    out["ap30"] = np.full(len(k), np.nan); out["gap15"] = np.full(len(k), np.nan)
+    out["fwd_u30"] = np.full(len(k), np.nan); out["sp_u30"] = np.full(len(k), np.nan)
+    p1530 = np.nonzero(out["tod"] == 15 * 3600 + 1800)[0]
+    k1000 = np.searchsorted(ts, (day_last + 10 * 3600 - s["off"]) * NS_, side="right") - 1
+    k1600 = np.searchsorted(ts, (day_last + RTH_CLOSE - s["off"]) * NS_, side="right") - 1
+    if len(p1530) and rth_open_k < n and k1000 > rth_open_k and (day_last + RTH_CLOSE - s["off"]) * NS_ <= ts[-1]:
+        i = p1530[0]
+        out["ap30"][i] = (_mid2(s, np.array([k1000]))[0] - _mid2(s, np.array([rth_open_k]))[0]) / 2
+        if prev_close is not None:
+            out["gap15"][i] = px[rth_open_k] - prev_close
+        out["fwd_u30"][i] = (_mid2(s, np.array([k1600]))[0] - m2[i]) / 2
+        out["sp_u30"][i] = float(s["ask"][k1600] - s["bid"][k1600])
     # retornos futuros del medio y costo
     spread_t = (s["ask"][k] - s["bid"][k]).astype(np.float64)
     out["spread"] = spread_t

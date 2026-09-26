@@ -76,3 +76,15 @@ Por instrumento × variable × horizonte × subconjunto (todo / RTH 9:30–16:00
 - El costo agresivo es conservador; puede esconder márgenes que la ejecución pasiva recuperaría (lectura secundaria).
 - 9 meses son pocos para el gap (≈ 180 observaciones): puede quedar sin potencia; el MDE lo dirá.
 - `sequence` no es secuencia del exchange (P-28): el tick-rule usa sólo el orden por timestamp.
+
+## 8. Enmienda — iteración de diseño antes de medir (26/09, Nico: «Primero iterá y luego lanzalo»; OK a lanzar)
+
+Sin mirar resultados (sólo 4 filas de julio para verificar el formato de las columnas nuevas):
+1. **YM** se agrega como tercer instrumento: el gap nocturno pasó el nulo también en YM (campaña de ticks,
+   p = 0,019). Costo propio: comisión 0,45 t/lado; sin ahorro pasivo (EXEC-QI no midió YM).
+2. **Momentum intradía de la última media hora** (efecto publicado: la primera media hora y el retorno nocturno
+   predicen la última media hora). En el punto de 15:30 ET: `ap30` = medio 10:00 − medio 9:30 y `gap15` = gap de
+   apertura; objetivo `u30` = medio 16:00 − medio 15:30. Un punto por día.
+3. Celdas: (10 variables × 6 horizontes − 5 del gap) × 3 subconjuntos + 2 × 1 × 3 → **~171 por instrumento, ~513 en
+   total**. FDR sobre todas.
+Prueba nula repetida con el análisis nuevo: 0 FDR, 0 prometedoras.

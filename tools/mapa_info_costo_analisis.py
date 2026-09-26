@@ -14,12 +14,13 @@ import numpy as np
 import pandas as pd
 from scipy.stats import rankdata
 
-VARS = ["mom5", "mom15", "mom60", "mom240", "vwap", "ofi5", "ofi60", "zona", "gap", "vol30"]
+VARS = ["mom5", "mom15", "mom60", "mom240", "vwap", "ofi5", "ofi60", "zona", "gap", "vol30", "ap30", "gap15"]
+ONLY_H = {"gap": "cierre", "ap30": "u30", "gap15": "u30"}      # estados de un punto por día
 NONDIR = {"vol30"}
-HS = {"h1": 60, "h5": 300, "h15": 900, "h60": 3600, "h240": 14400, "cierre": None}
+HS = {"h1": 60, "h5": 300, "h15": 900, "h60": 3600, "h240": 14400, "cierre": None, "u30": 1800}
 SPLIT = "20251130"
 RTH_OPEN, RTH_CLOSE = 9 * 3600 + 30 * 60, 16 * 3600
-PASSIVE = {"ES": 0.12, "NQ": 0.43}          # ahorro EXEC-QI por lado (pesimista, sin QI en ES)
+PASSIVE = {"ES": 0.12, "NQ": 0.43, "YM": 0.0}          # YM sin medición EXEC-QI: sin ahorro          # ahorro EXEC-QI por lado (pesimista, sin QI en ES)
 N_BOOT, N_NULL, SEED, Q = 1000, 200, 20260926, 0.10
 MIN_SES = 20                                  # con menos, el nulo entre sesiones es degenerado (prueba nula)
 
@@ -94,7 +95,7 @@ def main(argv=None):
         for sub, gm in (("todo", np.ones(len(G), bool)), ("rth", G.rth.to_numpy()), ("eth", ~G.rth.to_numpy())):
             for var in VARS:
                 for h in HS:
-                    if var == "gap" and h != "cierre":
+                    if (h != ONLY_H[var]) if var in ONLY_H else (h == "u30"):
                         continue
                     fcol, scol = f"fwd_{h}", f"sp_{h}"
                     base = gm & G[var].notna().to_numpy() & G[fcol].notna().to_numpy()
