@@ -3,7 +3,7 @@
 **North Star:** `ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8`
 **Aprobación:** Nico en chat, 26/09: «probá la reversión tras agotamiento y la continuación».
 **Origen:** VREV E1 (§6 de `MANIFIESTO_VREV_E1_20260926.md`) dejó abiertas las dos hipótesis. **Son familias propias**: no reinterpretan el resultado de VREV.
-**Herramienta:** `tools/vrev2.py`. Ledger: `artifacts/hippocampus/vrev_20260926.jsonl` (mismo ledger; particiones propias `P-VREVA-*`, `P-VCONT-*`).
+**Herramienta:** `tools/vrev2.py`. Ledger propio: `artifacts/hippocampus/vrev2_20260926.jsonl`, con particiones `P-VREVA-*` y `P-VCONT-*`. Las particiones no pueden superponerse dentro de un mismo ledger: la corrida en el ledger de VREV falló por eso, antes de medir.
 **Regla de alcance (§0 de VREV, vigente):** conclusiones sólo por celda; estados INFO+ / INFO− / SIN_INFO (MDE ≤ 0,1) / SIN_POTENCIA; lista explícita de lo no medido.
 
 ## 0. Corpus consultado antes (Cerebro SSRN, local `E:\$ACerebroSSRN`, 26/09)
