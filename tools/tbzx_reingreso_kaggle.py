@@ -442,6 +442,117 @@ def run():
     print("listo", f"{time.time() - t0:.0f}s", flush=True)
 
 
+# ------------------------------------------------------------------ iteración 4: un registro por disparo con contexto
+EV_D = (1, 2, 3)            # D = 4, 8, 12
+EV_P = (0, 2, 8, 9)         # p = 0t, 2t, 0,25W, 0,5W
+EV_R = (0, 1)               # r = 0, 2
+EV_EX = (3, 1)              # perfecta_mid, realista
+FEAT = ["tr15", "tr60", "tr240", "vol30", "vwapd", "opend", "tod", "age_s", "W"]
+
+
+def prep_context(s):
+    """Rango de los 30 minutos previos (sin el minuto en curso), VWAP acumulado de la sesión. Todo causal."""
+    ts, px = s["ts"], s["px"]
+    mi = ((ts - ts[0]) // (60 * NS)).astype(np.int64)
+    nm = int(mi[-1]) + 1
+    mh = pd.Series(px).groupby(mi).max().reindex(range(nm)).ffill().to_numpy()
+    ml = pd.Series(px).groupby(mi).min().reindex(range(nm)).ffill().to_numpy()
+    rh = pd.Series(mh).rolling(30, min_periods=5).max().shift(1).to_numpy()
+    rl = pd.Series(ml).rolling(30, min_periods=5).min().shift(1).to_numpy()
+    s["mi"] = mi; s["r30"] = (rh - rl).astype(np.float32)
+    s["cpv"] = np.cumsum(px * s["vol"]); s["cv"] = np.cumsum(s["vol"])
+
+
+def features(s, K, k_av):
+    ts, px, bid, ask = s["ts"], s["px"], s["bid"], s["ask"]
+    m2 = (bid[K] + ask[K]).astype(np.float64)
+    out = {}
+    for name, mins in (("tr15", 15), ("tr60", 60), ("tr240", 240)):
+        j = np.searchsorted(ts, ts[K] - mins * 60 * NS)
+        v = (m2 - (bid[j] + ask[j])) / 2
+        out[name] = np.where(ts[K] - ts[0] >= mins * 60 * NS, v, np.nan)
+    out["vol30"] = s["r30"][s["mi"][K]]
+    out["vwapd"] = px[K] - s["cpv"][K] / np.maximum(s["cv"][K], 1)
+    out["opend"] = (px[K] - px[0]).astype(np.float64)
+    out["tod"] = ((ts[K] // NS + s["off"]) % 86400) / 60.0
+    out["age_s"] = (ts[K] - ts[k_av]) / NS
+    return out
+
+
+def _session_events(si):
+    ss, tods = _SS, _TODS
+    S = len(ss); s = ss[si]
+    rng = np.random.default_rng(SEED + si)
+    ts, px, bid, ask = s["ts"], s["px"], s["bid"], s["ask"]
+    t, H, L, C, V, bend = bars25(s)
+    sel = lambda TR: TR[np.isin(TR[:, 0], EV_D) & np.isin(TR[:, 1], EV_P) & np.isin(TR[:, 2], EV_R)]
+    rows = []
+    for ci, (mb, mw) in enumerate(GRID):
+        Z = detect(t, H, L, C, V, mb, mw, E0, R_END)   # el filtro de pocas zonas se aplica en el análisis
+        for z in Z:
+            d, a, b, j = int(z[0]), int(z[1]), int(z[2]), int(z[5])
+            lo, hi = min(a, b), max(a, b)
+            k0 = int(bend[j]); dep = depths(hi - lo)
+            cands = [(0, s, k0, lo, hi)]
+            for _ in range(8):
+                oi = int(rng.integers(0, S))
+                if oi == si:
+                    continue
+                tod = (ts[k0] // NS + s["off"]) % 86400 + int(rng.integers(-TOD_TOL_S, TOD_TOL_S + 1))
+                ko = int(np.argmin(np.abs(tods[oi] - tod)))
+                if abs(int(tods[oi][ko]) - tod) > TOD_TOL_S or ko >= len(ss[oi]["px"]) - 100:
+                    continue
+                o = ss[oi]; sh = int(o["px"][ko]) - int(px[k0])
+                cands.append((1, o, ko, lo + sh, hi + sh)); break
+            for nul, o, kk, l_, h_ in cands:
+                TR = sel(zone_triggers(o["ts"], o["px"], kk, l_, h_, d, dep, DS, RS, HZ_S * NS, WAIT_S * NS))
+                if len(TR) == 0:
+                    continue
+                pnl, _ = simulate_many(o["ts"], o["px"], o["bid"], o["ask"], TR, SLC, TPC, HOLD_S * NS, LAT_NS,
+                                       PASS_T_S * NS, COMM)
+                f = features(o, TR[:, 5], kk)
+                blk = dict(si=np.full(len(TR), si, np.int16), cfg=np.full(len(TR), ci, np.int8),
+                           nul=np.full(len(TR), nul, np.int8), dimp=np.full(len(TR), d, np.int8),
+                           ladoB=TR[:, 3].astype(np.int8), D=DS[TR[:, 0]].astype(np.int8), ip=TR[:, 1].astype(np.int8),
+                           r=RS[TR[:, 2]].astype(np.int8), up=TR[:, 4].astype(np.int8),
+                           W=np.full(len(TR), hi - lo, np.int16))
+                for k_, v_ in f.items():
+                    blk[k_] = np.asarray(v_, np.float32)
+                for ie, ex in enumerate(EV_EX):
+                    for idr, dn in enumerate(("sigue", "rebota")):
+                        for kc in range(len(SLC)):
+                            blk[f"{EXECS[ex]}|{dn}|SL{SLC[kc]}|TP{TPC[kc]}"] = pnl[:, kc, idr, ex].astype(np.float16)
+                rows.append(pd.DataFrame(blk))
+    if not rows:
+        return si, 0
+    out = pd.concat(rows, ignore_index=True)
+    out["td"] = s["td"]
+    out.to_parquet(f"{_OUTDIR}/ev/{s['td']}.parquet", index=False)
+    return si, len(out)
+
+
+_OUTDIR = "."
+
+
+def run_events():
+    global _SS, _TODS, _OUTDIR
+    _OUTDIR = os.environ.get("R3_OUT", "/kaggle/working")
+    os.makedirs(f"{_OUTDIR}/ev", exist_ok=True)
+    t0 = time.time()
+    ss = load_sessions(int(os.environ.get("R3_MAXSESS", "0")))
+    for s in ss:
+        prep_context(s)
+    print("sesiones", len(ss), ss[0]["td"], ss[-1]["td"], f"{time.time() - t0:.0f}s", flush=True)
+    _SS = ss
+    _TODS = [((s["ts"] // NS + s["off"]) % 86400) for s in ss]
+    workers = int(os.environ.get("R3_WORKERS", str(os.cpu_count() or 1)))
+    import multiprocessing as mp
+    with mp.get_context("fork").Pool(workers) as pool:
+        for si, n in pool.imap_unordered(_session_events, range(len(ss))):
+            print(si, ss[si]["td"], "filas", n, f"{time.time() - t0:.0f}s", flush=True)
+    print("listo", f"{time.time() - t0:.0f}s", flush=True)
+
+
 def bh(p, q):
     p = np.asarray(p); m = len(p)
     if m == 0:
@@ -530,4 +641,4 @@ def report(agg, zcount, ntrig, tds, out_dir, chunk=20000):
 
 
 if __name__ == "__main__":
-    run()
+    run_events() if os.environ.get("R3_MODE", "eventos") == "eventos" else run()

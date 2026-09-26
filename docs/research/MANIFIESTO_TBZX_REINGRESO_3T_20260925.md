@@ -98,3 +98,33 @@ menor que el costo realista (~1,5 t): ninguna de ~57.000 celdas realistas da P&L
    sugerencia realista como lección `SUGGESTED_ANALYSIS` de confianza baja. Nada se promueve: confirmar exige abr–jun.
 
 Kernel: `edgelab-tbzx-r3-v3`.
+
+## 10. Enmienda — iteración 4: escenarios macro contra la fricción (26/09, Nico: «iterá … escenarios más macro, útiles para ganarle a la fricción»)
+
+**Motivo:** la zona aporta ~0,2 t de información direccional y el costo realista es ~1,5 t. Hace falta un contexto
+que multiplique el acierto o que permita objetivos grandes. Escrito **antes** de ver las iteraciones 3 y 4.
+
+**Datos (kernel `edgelab-tbzx-r3-v4`, modo `eventos`):** un registro por disparo (real y 1 fantasma por zona) con la
+subgrilla D ∈ {4, 8, 12}, p ∈ {0 t, 2 t, 0,25 W, 0,5 W}, r ∈ {0, 2}, y el P&L de las 16 combinaciones SL/TP en las
+dos direcciones, perfecta sobre el medio y realista. Contexto, todo causal (antes del disparo): tendencia del medio a
+15/60/240 min, rango de los 30 min previos, distancia al VWAP de la sesión y a la apertura, hora ET, antigüedad de la
+zona y ancho W.
+
+**Partición interna (fija ahora):** DESCUBRIMIENTO = sesiones jul–nov 2025; VALIDACIÓN = dic 2025–mar 2026. Las dos
+son exploración (`P-TBZX-R3-EXP`); abr–jun sigue sin tocar para la confirmación.
+
+**Escenarios:** patrón base (dirección, r) × hasta 2 condiciones macro de esta lista, con cortes por terciles
+calculados SÓLO en descubrimiento:
+- tendencia 60 min y 240 min relativa a la dirección de la entrada (en contra / neutral / a favor);
+- rango de 30 min (volatilidad baja / media / alta) y W / rango 30 min;
+- distancia al VWAP relativa a la dirección;
+- franja horaria ET: Asia (18–3), Europa (3–9:30), apertura RTH (9:30–10:30), mediodía (10:30–14), cierre (14–17);
+- lado B/A.
+Configuraciones con < 2 zonas por sesión y escenarios con < 200 disparos reales en descubrimiento quedan afuera.
+
+**Selección en descubrimiento:** P&L realista medio > 0 con IC 95 % inferior > 0 (bootstrap por sesión, 1.000),
+mayor que el P&L realista del fantasma en el mismo escenario, BH-FDR q = 0,10 sobre todos los escenarios × SL/TP.
+
+**Validación (una sola vez, sin re-elegir):** los seleccionados se evalúan en dic–mar. Cuenta como sostenido si el
+P&L realista medio es > 0 con IC inferior > 0. Se publica el paisaje completo y un árbol honesto (profundidad 3,
+entrenado en descubrimiento) como descriptivo. Todo va al cerebro; lo sostenido queda como sugerencia para abr–jun.
