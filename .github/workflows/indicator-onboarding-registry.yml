@@ -1,0 +1,27 @@
+name: Indicator onboarding registry
+
+on:
+  pull_request:
+    paths:
+      - "config/indicator_registry_v1.json"
+      - "edgelab/onboarding/**"
+      - "tools/indicator_inventory.py"
+      - "tools/prepare_nt8_candidate.py"
+      - "tests/onboarding/**"
+      - "incoming/nt8/**"
+      - "nt8/candidates/**"
+      - ".github/workflows/indicator-onboarding-registry.yml"
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate inventory
+        run: python tools/indicator_inventory.py --check
+      - name: Run onboarding tests
+        run: python -m unittest discover -s tests/onboarding -p "test_*.py" -v
