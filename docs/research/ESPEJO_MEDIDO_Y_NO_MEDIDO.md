@@ -167,3 +167,12 @@ Artefacto: `artifacts/research/espejo_macro/CURVA/`.
     el total.
   - En RTH 5m_12_4, 7 de 9 meses positivos con sólo 32 eventos.
 - **Tasa de acierto de 70–80 %:** es mecánica (objetivo a 0,25 W, stop a 0,75 W), no es la ventaja.
+
+### 2026-09-27 — ESPEJO-MÁS-ALLÁ Fase 0 (medido)
+
+- **Qué se midió:** la extensión más allá de A después del primer toque, contra un placebo de misma geometría. El
+  placebo va de dos formas: vela al azar, y misma hora del día en otra sesión.
+- **Resultado:** no hay dos clases de casos a simple vista. Hay, como mucho, un corrimiento leve hacia pasar A por
+  poco. No se ve una cola lejana ni más casos que mueren en A.
+- **Qué sigue sin medir:** el mismo análisis condicionado a imanes, dirección o agotamiento.
+- **Tamiz:** sigue en SÍ; esto no lo mueve.

@@ -177,3 +177,30 @@ vista» no hay dos clases, y cualquier diferencia que se vea en un chart es la q
 - La enmienda es posterior a ver datos, así que ningún resultado contra el placebo por hora se promueve con SPY solo:
   cuenta sólo si replica en los futuros.
 - Las 18 pruebas y el FDR no cambian.
+
+## Resultado de la Fase 0 (2026-09-27)
+
+Artefactos: `artifacts/research/espejo_mas_alla/{SPY,ES_RTH,NQ_RTH,YM_RTH,COMB_RTH,ES_FULL}/`.
+- En cada carpeta están `reporte.md` y `supervivencia.svg` (contra el placebo de vela al azar) y `reporte_hora.md` y
+  `supervivencia_hora.svg` (contra el placebo emparejado por hora, F0-1).
+
+**Contra el placebo al azar (pre-registrado):**
+- El real se extiende menos: de −5 a −16 pp en SPY y en la combinada de futuros.
+- La causa es el sesgo de la hora del día que explica la enmienda F0-1: más censura en el real.
+- En ES sesión completa, con la censura pareja (22–28 % contra 22–30 %), real ≈ placebo en todas las celdas.
+
+**Contra el placebo por hora (F0-1):**
+- SPY: más extensión corta, de +4 a +12 pp a 0,25–0,5 W. A 2 W, igual o menos que el azar.
+- Combinada RTH: signo + a 0,25–0,5 W. Ninguna prueba pasa FDR y las muestras son chicas (n = 56–229).
+- ES sesión completa: real ≈ placebo. Ninguna prueba pasa FDR.
+
+**Heterogeneidad («dos clases de casos»): NO se ve.**
+- La parte que muere en A **nunca** es mayor que en el placebo; es igual o menor.
+- La parte que se va lejos (M ≥ 1) no supera al placebo de forma replicada.
+- Lo que aparece es, como mucho, un corrimiento leve hacia pasar A por poco. No aparece una población separada que
+  siga de largo.
+
+**Estado:** `ESPEJO_MAS_ALLA_F0_SIN_HETEROGENEIDAD_VISIBLE`.
+- **Alcance:** sin condicionantes; detector TBZX eficiente; velas de 5 min; horizonte de sesión; barrera en 0,5 W.
+- **No invalida:** que un condicionante (imán, dirección, agotamiento) separe una cola. Sólo dice que esa cola, si
+  existe, no se ve en el agregado. Para buscarla hace falta el condicionante; mirar más el agregado no la va a mostrar.
