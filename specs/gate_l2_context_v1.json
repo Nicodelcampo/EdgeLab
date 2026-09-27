@@ -1,0 +1,105 @@
+{
+  "schema": "edgelab.context.gate_l2_spec/1.0.0",
+  "status": "IMPLEMENTED_SYNTHETICALLY_TESTED_REAL_EXTRACTION_PENDING",
+  "date": "2026-08-25",
+  "branch": "work/futures-l2-context-foundation-20260825",
+  "base_head": "44baf8f11ede62cda6deff60337df1b3aae7e962",
+  "instrument": "GC 06-26",
+  "instrument_role": "NON_FRONT_MONTH_DIAGNOSTIC",
+  "tick_size": 0.1,
+  "sessions": [
+    "20260609", "20260610", "20260611", "20260612", "20260614",
+    "20260615", "20260616", "20260617", "20260619", "20260621",
+    "20260622", "20260623", "20260624"
+  ],
+  "forbidden_sessions": ["20260618"],
+  "clock": {
+    "column": "ts_us",
+    "semantics": "NT8_WALL_CLOCK_INTERPRETED_AS_UTC_REFERENCE_UNRESOLVED",
+    "reference_resolved": false,
+    "join_external_last_parquet": "FORBIDDEN_NO_SOURCE_ROW"
+  },
+  "stream_contract": {
+    "ordering_key": "source_row",
+    "merge": "strict_interleave_l1_l2",
+    "l2_side_codes": {"0": "ASK", "1": "BID"},
+    "l2_operation_codes": {"0": "ADD", "1": "UPDATE", "2": "REMOVE"},
+    "l1_market_data_type_codes": {
+      "0": "ASK", "1": "BID", "2": "LAST", "3": "OPENING",
+      "4": "HIGH", "5": "DAILY_VOLUME", "6": "LOW",
+      "7": "SETTLEMENT", "8": "OPEN_INTEREST"
+    },
+    "signal_roles": {
+      "quotes": [0, 1],
+      "trades": [2],
+      "diagnostic_session_stats_only": [3, 4, 5, 6, 7, 8]
+    }
+  },
+  "feature_clock": {
+    "bar": "one_minute_half_open",
+    "availability": "minute_end",
+    "causal_invariant": "data_window_end_us <= feature_available_at_us",
+    "event_join_primary": "available_source_row < event_source_row"
+  },
+  "features": {
+    "base_hmm": [
+      "rv_ticks_15m", "event_rate_per_second", "spread_ticks_close",
+      "abs_ofi_normalized", "efficiency_ratio_10m", "log_depth_top5"
+    ],
+    "toxicity_overlay": [
+      "abs_ofi_normalized", "abs_tape_imbalance", "spread_ticks_close",
+      "l2_remove_rate", "depth_depletion_ratio"
+    ],
+    "additional_target_free": [
+      "depth_bid_top5", "depth_ask_top5", "depth_imbalance_top5",
+      "l2_replenished_size", "l2_depleted_size", "trade_classification_coverage",
+      "locked_crossed_book_diagnostics"
+    ]
+  },
+  "model": {
+    "family": "gate_gc_l2_hmm3_toxic_forward_v1",
+    "base": "three_state_diagonal_gaussian_hmm",
+    "base_states": ["calm", "normal", "volatile"],
+    "inference": "forward_filter_only",
+    "normalization": "train_only_mean_std",
+    "sticky": {"base_confirm_bars": 3, "base_min_posterior": 0.45},
+    "toxic": {
+      "type": "sticky_l2_flow_toxicity_overlay_not_vpin",
+      "entry": "train_only_q90_with_two_bar_confirmation",
+      "release": "train_only_q75_with_three_bar_confirmation"
+    },
+    "transformer": "DEFERRED_NOT_A_FORMAL_V1_MODEL"
+  },
+  "time_split": {
+    "train_through": "20260617",
+    "train_sessions": [
+      "20260609", "20260610", "20260611", "20260612",
+      "20260614", "20260615", "20260616", "20260617"
+    ],
+    "target_free_evaluation_sessions": [
+      "20260619", "20260621", "20260622", "20260623", "20260624"
+    ],
+    "rule": "evaluation labels use a frozen checkpoint fitted only on earlier sessions"
+  },
+  "context_vocabulary": {
+    "calm": "G-operable",
+    "normal": "G-operable",
+    "volatile": "G-stress",
+    "toxic": "G-stress"
+  },
+  "target_free_gates_before_ctx3": {
+    "label_coverage_min": 0.99,
+    "sessions_per_primary_cell_min": 40,
+    "absolute_corr_context_vs_zone_width_max": 0.2,
+    "publish_persistence_and_flip": true,
+    "event_adapter": "strict_point_in_time"
+  },
+  "scope": {
+    "outcomes_computed": false,
+    "returns_computed": false,
+    "pnl_computed": false,
+    "mae_mfe_computed": false,
+    "edge_declared": false
+  },
+  "north_star_sha256": "d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1"
+}
