@@ -19,3 +19,7 @@
 - `tools/tbzx_iter2.py::canonical_sessions`: suma los catálogos `docs/research/contract_regimes/{ES,NQ}_ext_2026q3_sessions_catalog.json`.
 - Herramientas de familias cerradas con su propio `EXP_END` (`agotamiento`, `trend_micro`, `regimes_6e_stage1`, `tbz_stage1`, `build_delta_layer`, `tbzx_reingreso_kaggle`, `espejo_semejanza`) **no se tocan**: reproducen lo que ya se midió.
 - Los otros instrumentos (YM, MYM, 6E…) siguen hasta el 30-jun: su jul–sep no está descargado.
+
+## Velas construidas (27/09) — sesiones realmente utilizables
+- **ES: 298** sesiones con velas de 25t (181 de jul-2025–mar-2026 + 65 de abr–jun + 52 de jul–sep). **NQ: 284.**
+- Las que figuran en el catálogo pero no tienen velas (34 en ES, 27 en NQ) **no son sesiones**: son fragmentos de sábado/domingo que los manifiestos de los bundles cuentan como trade date propio, más el 25-dic. El constructor las rechaza por tener < 5.000 ticks. Esto explica la diferencia 213 vs 181 que quedó pendiente.
