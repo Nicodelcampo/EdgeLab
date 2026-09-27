@@ -11,7 +11,7 @@ import pytest
 
 from edgelab.bridge.indicators import espejo_impulsos as K
 
-from .test_espejo_impulsos import P, _serie_larga
+from test_espejo_impulsos import P, _serie_larga
 
 JS = Path(__file__).resolve().parents[2] / "viewer" / "nt8_bridge" / "espejo_impulsos.js"
 
