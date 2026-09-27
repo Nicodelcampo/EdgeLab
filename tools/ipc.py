@@ -188,7 +188,7 @@ def declare(inst, keys, part_tag="EXP"):
         return
     with measurement_episode(LEDGER, f"EP-IPC-PARTICION-{inst}" + ("" if part_tag == "EXP" else f"-{part_tag}"), goal=f"declarar partición IPC {inst} antes de medir",
                              recorded_by="tools/ipc.py measure", repo=REPO, prereg_ref=DOC) as ep:
-        kind = "EXPLORATION" if part_tag == "EXP" else "REPLICATION"
+        kind = "EXPLORATION" if part_tag == "EXP" else "CONFIRMATION_RESERVED"   # replicación HOLDOUT-A3: uso único
         ep.store.record_partition(part, kind, f"{inst} 25T {part_tag} ({keys[0]}..{keys[-1]}), contrato canónico",
                                   [f"{inst}:{k}" for k in keys])
 
