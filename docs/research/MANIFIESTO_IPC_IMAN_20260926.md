@@ -85,3 +85,6 @@ Riesgo detectado: el nivel real es un pico **recién negociado**; el fantasma de
 - **Replica** una celda si: diferencia contra **C-SW** > 0 con p unilateral significativo por **BH q = 0,10 sobre las 23**, y diferencia contra C-SZ > 0. Se publican las 23, repliquen o no, con n, IC y MDE.
 - **Familia replicada** si al menos la mitad de las 23 replican y ninguna da diferencia significativa negativa. Si no, IPC 25t queda como «no replicó» con alcance por celda, y B no se corre.
 - Si replica: el efecto se reporta con 298 sesiones (ES) y B se corre sobre las celdas replicadas.
+
+## Replicación de las 23 celdas: descartada antes de abrir (27/09)
+Nico revisó la spec ciega `SPEC-IPC-REP-20260927` (hash `2edc23b3bc4f`) y la objetó: con 2,5 t de fricción las geometrías de ES k 4 (nivel y barrera a 5–12 t) no pueden pagar, y el experimento cubría una parte chica de los mecanismos posibles. **No se confirmó, no se registró campaña y `artifacts/ipc/reportREP.json` no se abrió.** El nuevo diseño está en `DISENO_IPC_ABANICO_DE_MECANISMOS_20260927.md`. La partición de replicación (abr–sep) sigue sin usar por IPC.
