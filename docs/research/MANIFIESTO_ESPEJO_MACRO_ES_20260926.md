@@ -173,3 +173,142 @@ sobre los ticks de ES, con una salida realista.
 - `artifacts/research/espejo_macro/ES_RTH/`: replicación.
 - Ledger del cerebro: lecciones y evidencias con sha de cada reporte. Se actualiza el registro MEDIDO/NO MEDIDO en el
   mismo commit que cada resultado.
+
+---
+**Alcance (2026-09-26, pedido de Nico):** este estudio es un **tamiz** («¿seguir con la idea del espejo?»), no un
+veredicto sobre el espejo. Qué midió exactamente, qué no y la regla para cerrar la familia:
+`docs/research/ESPEJO_MEDIDO_Y_NO_MEDIDO.md`. Un NO de acá invalida sólo su población, su detector (impulsos
+**eficientes**, eficiencia ≥ 0,6), su semejanza y su horizonte.
+
+## Enmienda 1 — regla de lectura de muestra mínima (después de ver SPY, 2026-09-26)
+
+- **Regla:** no se interpreta ninguna celda con n < 30 por tercil.
+- **Por qué:** con 3 a 15 eventos, el bootstrap por sesión colapsa y el FDR marca diferencias de ±30–40 pp que son
+  artefactos.
+- **Alcance:** es una regla de lectura. No cambia ningún número, ninguna prueba ni el FDR publicado, y no rescata ni
+  descarta nada que la regla de sostenido no decida.
+
+## Resultado (2026-09-26): SPY descubre, ES **sin potencia**; el tamiz sigue en SÍ
+
+**Procedencia:** código `tools/espejo_macro.py` en `8595910` (velas de ES por bloques, mismo resultado que `193eea3`).
+- SPY: 3.347 días, `artifacts/research/espejo_macro/SPY/`.
+- ES RTH: 198 días (18-jul-2025 a 31-mar-2026), `artifacts/research/espejo_macro/ES_RTH/` (sha `356142b2c42b`).
+- E2: `artifacts/research/espejo_macro/E2/e2.json`.
+
+**SPY (descubrimiento):**
+- **Semejanza (prueba principal):** en 5 min, las vueltas parecidas completan el espejo +3 a +11 pp más que las poco
+  parecidas.
+- **Por fracción recorrida:**
+
+| x | Exceso sobre f (al cierre) |
+|---|---|
+| 0,4 | −2 a −12 pp |
+| 0,75 | +6 a +16 pp, en todas las configuraciones con muestra |
+
+**ES (replicación):**
+- Ninguna prueba cumple la regla de sostenido, así que **E2 no se calcula** (`sostenidos: []`).
+- **La razón es potencia, no ausencia:** con 198 días, la media amplitud del IC es ~21 pp en la prueba principal
+  (MDE ≈ 30 pp) y ~11 pp en el exceso general (MDE ≈ 15 pp). El efecto de SPY es de 4–11 pp: ES no podía detectarlo.
+
+**Concordancia de signo** (descriptiva, celdas con n ≥ 20 en ES; no entra en la regla de sostenido):
+
+| Prueba | Mismo signo que SPY |
+|---|---|
+| Parecidas − poco parecidas | **10 de 10** |
+| Exceso general al cierre | 11 de 15 |
+
+Si no hubiera relación, que las 10 coincidan tiene una probabilidad de ~0,1 %. Pero las celdas se solapan (mismos
+días, configuraciones vecinas), así que es una señal para seguir, no una prueba.
+
+**Estado:** `ESPEJO_MACRO_ES_SIN_POTENCIA`. **No es una muerte.**
+- En los términos de `ESPEJO_MEDIDO_Y_NO_MEDIDO.md`, el tamiz sigue en **SÍ**.
+- Hace falta más muestra de ES o un instrumento macro equivalente con más historia: NQ o YM macro, ES en sesión
+  completa, ES anterior a jul-2025 si se consigue.
+- La confirmación de abr–jun **no** se abre: no hay candidato.
+
+## Enmienda 2 — potencia: NQ, YM y ES en sesión completa (pedido de Nico, 2026-09-26, antes de bajar esos datos)
+
+**Motivo:** con 198 días de ES RTH el MDE (~30 pp) triplica el efecto de SPY. No cambia ninguna definición: evento,
+semejanza, nulo al cierre, grilla, terciles y referencias de SPY quedan iguales.
+
+- **Nuevas muestras de replicación,** mismas ventanas (inicio de datos a 2026-03-31) y mismo código:
+  - NQ RTH;
+  - YM RTH;
+  - ES sesión completa (18:00–17:00 ET del trade date, sin la pausa, velas desde la apertura de la sesión).
+  - NQ e YM también en sesión completa, descriptivos.
+- **Prueba de replicación combinada (nueva, fijada ahora):** eventos de ES + NQ + YM en RTH juntos. El bootstrap es
+  **por día calendario**, y un día con eventos en los tres instrumentos cuenta como **un** cluster. Así, la
+  correlación entre índices no infla la muestra efectiva.
+- **Sostenido (reemplaza al de §6 para la replicación):**
+  1. la prueba pasa FDR en SPY;
+  2. la muestra combinada tiene el mismo signo con IC 95 % > 0;
+  3. cada instrumento por separado tiene el mismo signo, sin exigir IC.
+- ES sesión completa se reporta aparte y no entra en la regla.
+- **E2 sigue siendo sólo sobre ES,** porque sus costos son los medidos. Si la combinada sostiene, se calcula E2 en ES
+  RTH y en ES sesión completa, y el IC de ES solo se reporta tal cual.
+- **Regla de lectura:** n ≥ 30 por tercil, igual que la enmienda 1.
+- **Riesgo declarado:** NQ, YM y ES están muy correlacionados. La combinada gana potencia por los días en que los
+  instrumentos difieren, no por triplicar. El bootstrap por día lo refleja.
+
+## Enmienda 3 — aclaración de E2 (después de ver la combinada, 2026-09-26)
+
+- **Qué pasó:** la implementación de E2 (`sostenidos()`) sólo miraba la prueba principal (T3 − T1). El §6 define
+  «sostenido» **por prueba**, y el exceso general al cierre es una de las pruebas publicadas. Una celda cumple la
+  regla de la enmienda 2 en esa prueba: 5 min, `maxBars` = 12, k = 4, x = 0,75.
+
+| Muestra | Resultado |
+|---|---|
+| SPY | +7,8 pp, pasa FDR |
+| Combinada | +9,4 pp [+2,2, +16,1], n = 90 |
+| Signo por instrumento | ES +, NQ +, YM + |
+
+- **Corrección:** E2 se calcula para toda prueba sostenida, sobre **la población de esa prueba**: T3 para la principal,
+  todos los eventos en x para el exceso general. No se agregan pruebas ni se cambia ningún umbral.
+- **Alcance:** la corrección es posterior a ver datos, así que cualquier resultado de E2 queda como **candidato a
+  confirmar**, nunca como edge. Además, hay que contar que la celda salió de 54 × 2 pruebas revisadas contra la regla.
+
+## Resultado de la enmienda 2 (2026-09-26): la semejanza no replica en futuros; el exceso al 75 % sí, sin margen económico robusto
+
+**Procedencia:** código en `5a92195` más la aclaración de E2 (enmienda 3). Artefactos en
+`artifacts/research/espejo_macro/{NQ_RTH,YM_RTH,COMB_RTH,ES_FULL,NQ_FULL,YM_FULL,E2_ES_RTH,E2_ES_FULL}/`
+(combinada sha `d57451f593fe`).
+- Días RTH: ES 198, NQ 186, YM 169.
+- ES sesión completa: 203 trade dates.
+
+**E1 — semejanza (prueba principal, T3 − T1):**
+- **No replica en la combinada RTH:** signos mezclados entre instrumentos e IC muy anchos.
+- En ES sesión completa (descriptiva, fuera de la regla) es positiva en todas las celdas con n ≥ 30, de +3 a +14 pp,
+  con dos IC > 0.
+- **Estado: sin confirmar en futuros.**
+
+**E1 — exceso general al cierre en x = 0,75 (el giro que ya recorrió tres cuartos):**
+
+| Celda | SPY | Combinada | Signo ES / NQ / YM | ¿Cumple la regla? |
+|---|---|---|---|---|
+| 5 min, 12 velas, k = 4 | +7,8 pp, FDR | +9,4 pp [+2,2, +16,1] | + / + / + | **sí** |
+| 5 min, 24 velas, k = 4 | +7,2 pp, FDR | +9,8 pp [+0,0, +18,0] | + / + / + | **en el límite** |
+| 5 min, 12 velas, k = 3 | +6,3 pp, FDR | +4,9 pp [+0,6, +9,2] | + / + / **−** | **no**: falla el signo de YM |
+
+`sostenidos()` no verifica el signo por instrumento: esa condición se chequeó a mano, y por eso se descarta 5m_12_3.
+
+**E2 — económico en ES, entrada al cierre del evento, objetivo A, stop B:**
+
+| Celda | Muestra | n | G con costo 2,4 t | G con costo 1,5 t |
+|---|---|---|---|---|
+| 5m_12_4 | ES RTH | 32 | +12,2 t [−0,5, +23,9] | +13,1 t [+0,5, +24,4] |
+| 5m_12_4 | ES sesión completa | 311 | +1,5 t [−2,2, +5,4] | +2,4 t [−1,3, +6,2] |
+| 5m_24_4 | ES RTH | 24 | +9,9 t [−9,8, +25,1] | — |
+| 5m_24_4 | ES sesión completa | 279 | +1,7 t [−2,2, +5,4] | +2,6 t [−1,4, +6,6] |
+
+**Lectura:**
+- El único «candidato» formal (5m_12_4 RTH con costo 1,5 t) tiene n = 32 y sale de una enmienda posterior. **No se
+  promueve.**
+- Con la muestra más grande (sesión completa), el G medio es **positivo pero chico** (+1,5 a +2,6 t) y su IC cruza el
+  cero.
+- **No se abre la confirmación de abr–jun.**
+
+**Estado:** `ESPEJO_MACRO_EXCESO_075_REPLICA_SIN_MARGEN_ROBUSTO`.
+- La información existe: el giro que ya recorrió el 75 % completa el espejo más que el azar en SPY 2008–2021 y en
+  ES, NQ e YM 2025–26.
+- Hoy es chica frente al costo. El tamiz sigue en **SÍ**, y la dirección que señala es mejorar la entrada y el stop
+  dentro de la ventaja macro (análisis «micro»), o sea el mapa de MAE/MFE, antes que buscar más semejanza.

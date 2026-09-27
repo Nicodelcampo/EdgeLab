@@ -63,3 +63,9 @@ correcto es la posición **al cierre** de la vela en que el evento se conoce.
    resultados de TBZX ni de ESPEJO-SIM.
 5. **Paridad NT8 ↔ Python** si se lleva a NinjaTrader (`docs/nt8_indicator_parity_contract.md`).
 6. Holdout 2026-07-01+ intocable; abr–jun 2026 reservado para confirmación.
+
+---
+**Alcance (2026-09-26, pedido de Nico):** este estudio es un **tamiz** («¿seguir con la idea del espejo?»), no un
+veredicto sobre el espejo. Qué midió exactamente, qué no y la regla para cerrar la familia:
+`docs/research/ESPEJO_MEDIDO_Y_NO_MEDIDO.md`. Un NO de acá invalida sólo su población, su detector (impulsos
+**eficientes**, eficiencia ≥ 0,6), su semejanza y su horizonte.

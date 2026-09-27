@@ -100,3 +100,37 @@ ahora y se publica **entera**; no se elige la mejor configuración.
   como una prueba más de la grilla.
 - **Costo:** los impulsos chicos tienen más fricción relativa. Si sólo sostienen los de 17–24 ticks, el paso siguiente
   es estimar si el espejo cubre el costo antes de seguir.
+
+---
+**Alcance (2026-09-26, pedido de Nico):** este estudio es un **tamiz** («¿seguir con la idea del espejo?»), no un
+veredicto sobre el espejo. Qué midió exactamente, qué no y la regla para cerrar la familia:
+`docs/research/ESPEJO_MEDIDO_Y_NO_MEDIDO.md`. Un NO de acá invalida sólo su población, su detector (impulsos
+**eficientes**, eficiencia ≥ 0,6), su semejanza y su horizonte.
+
+## Resultado de la replicación (MNQ 12-25 y 03-26, grilla de la enmienda 2, 2026-09-26)
+
+**Regla de sostenido (§4 y enmienda 2):**
+1. pasa FDR de grilla en 09-25, con n ≥ 30 por tercil;
+2. tiene el mismo signo con IC 95 % que excluye el cero en 12-25;
+3. y lo mismo en 03-26.
+
+Artefactos: `artifacts/research/espejo_sim/grilla_MNQ_{09-25,12-25,03-26}/`.
+
+**De 52 pruebas candidatas, sostienen 43.**
+- **Semejanza (prueba principal):** sostiene en `minW` 17 y 24, en las tres duraciones.
+
+| Configuración y x | 09-25 | 12-25 | 03-26 |
+|---|---|---|---|
+| (10, 17), x = 0,4 | +4,9 pp | +4,8 pp | +5,3 pp |
+| (20, 17), x = 0,5 | +1,9 pp | +4,2 pp | +4,6 pp |
+| (20, 17), x = 0,75 | +2,1 pp | +2,2 pp | +2,0 pp |
+
+- **Exceso sobre el nulo al cierre:** positivo en las tres muestras, de +1 a +3 pp.
+- **Con `minW` ≥ 34 no hay muestra suficiente** para la regla. Queda sin concluir, no muerto.
+
+**Lectura:**
+- **En escala micro, la semejanza de la vuelta con el impulso es información real y estable en MNQ**, sin depender
+  del período.
+- No paga la fricción a esta escala: con W ≈ 17–24 t hace falta un exceso ≈ costo/W ≈ 10–14 pp.
+- Queda disponible como **filtro o timing** dentro de una estrategia macro. Es el insumo natural del «análisis micro»
+  dentro de la ventaja de ESPEJO-MACRO.

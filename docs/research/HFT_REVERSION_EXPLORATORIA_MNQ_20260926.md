@@ -163,3 +163,12 @@ Todo lo demás se reporta sin elegir nada.
 
 **Cómo podría refutarse:** si ningún corte sostiene, el exceso promedio de 1–2 pp es difuso y no hay un «cuándo»
 anticipable con estas variables.
+
+## Replicación de los cortes (MNQ 12-25 y 03-26, 2026-09-26)
+
+- Los 9 cortes que pasaron FDR en 09-25 tienen el mismo signo con IC > 0 en 12-25 y en 03-26 (+1 a +4 pp).
+- **Pero son terciles del medio o cortes que abarcan casi toda la muestra** (Predator, verde, confluencia 2+). Lo que
+  replica es el **exceso promedio difuso** de +1 a +3 pp, no una concentración en algún contexto.
+- **Estado:** `HFT_REV_EXCESO_DIFUSO_REPLICADO`. La zona HFT agrega +1–3 pp de reversión sobre un nivel cualquiera, de
+  forma estable. No hay un «cuándo» con estas variables, y es chico frente al costo.
+- **Sin medir:** estado continuo, toque n-ésimo, otras variables de contexto y otros instrumentos.

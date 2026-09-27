@@ -122,10 +122,99 @@ juicio no distingue entre los dos grupos, la semejanza calculada no es la que é
 3. **Parecido:** ¿S3 en el censo + S2 (vel y forma ≥ mediana) como marca?
 4. **Horizonte:** ¿3 × duración del impulso, con tope en fin de sesión?
 
-## 5. OK de Nico (26/09) y estado
+## 5b. OK de Nico (26/09) y plan de la sesión local
 Nico: «estoy de acuerdo con todo eso, armalo» → se congelan las recomendaciones de §3 (censo completo con etiqueta I1 ∨ I2, A1 como agotamiento, S3 + S2, horizonte 3 × duración con tope de sesión).
-**Estado al cortar la sesión:** código **no empezado**. Plan de implementación:
+**Nota (27/09, merge):** este plan quedó **superado** por la implementación de §6 (sesión en la nube); se conserva como registro.
+Plan que se había escrito:
 1. Núcleo causal en `edgelab/bridge/indicators/espejo_impulsos.py`: impulso con `tools/espejo_macro.py::detect_var` (umbral constante 17 t en 25t; 3·ATR previo en tiempo), e_min 0,3, r 0,3; sólo `why == 1` confirma B (los `why == 2` quedan en el censo como impulso sin confirmar).
 2. Semejanza con `tools/espejo_semejanza.py::eventos` (sólo los componentes, que usan datos ≤ vela k; el desenlace se calcula aparte y de forma causal); percentiles contra la referencia de sesiones anteriores.
 3. Estados y eventos de §3.4, por sesión; tests sintéticos de §3.6.
 4. Capa del visor `bundles/espejo/<asset>.json` + dibujo con primitiva en `index.html` (tick_25, time_5m, time_15m).
+
+## 6. Implementación (2026-09-27) y encuadre de Nico: «zonas que no estuvieron listas»
+
+**Nico (27/09):** el indicador tiene que marcar las zonas que no estuvieron «listas» para ser comerciadas, apostando a
+que el precio las atraviese una vez que haya resuelto cierto nivel de comercio en otra área.
+
+**Cómo entra al kernel.** Entra como **atributos del censo, no como filtros**: la regla de población sigue vigente y el
+censo sigue completo.
+- **`no_lista_lo` / `no_lista_hi` / `no_lista_frac`: la zona no lista.**
+  - Se arma el perfil de volumen del impulso: el volumen de cada vela se reparte parejo en su rango, recortado a
+    [A, B].
+  - La zona es el tramo contiguo más ancho con densidad menor que 0,25 × la mediana del perfil. Es el precio que el
+    impulso cruzó casi sin negociar.
+  - El visor lo dibuja como una franja propia.
+- **`aceptacion_B` y `velas_en_B`: si ya resolvió comercio en otra área.**
+  - Es el volumen negociado en la banda de 0,25·W junto a B, desde B hasta cada evento de la vuelta, dividido por el
+    volumen del impulso.
+  - Se calcula en cada evento de la vuelta. Mide cuánto comerció el precio en B antes de volver.
+- Los dos parámetros (0,25 de densidad y 0,25·W de banda) se congelan ahora, antes de mirar censos.
+
+**Cómo podría refutarse el encuadre:**
+- Nico juzga ✓/✗ en el visor una muestra de franjas «no listas».
+- Si la precisión es menor que 70 %, el perfil no captura lo que él ve.
+- Medir si el precio atraviesa esas franjas más que el azar después de aceptar en B es **campaña**: pre-registro y OK
+  de Nico.
+
+**Estado del código:**
+- **Kernel:** `edgelab/bridge/indicators/espejo_impulsos.py`.
+  - El detector está portado de `detect_var`, con test de paridad exacta.
+  - Tiene todos los estados de §3.4 y los atributos de §3.1, §3.3 y §6.
+- **Port JS del visor:** `viewer/nt8_bridge/espejo_impulsos.js`, con paridad de eventos Python ↔ JS testeada.
+- **Tests:** `tests/research/test_espejo_impulsos.py` y `test_espejo_impulsos_js.py`. Cubren determinismo,
+  anti-lookahead, los cuatro estados, fin de sesión, censo cerrado, zona no lista y paridad.
+- **Causalidad:** el fin de sesión sale del calendario (`last_of_session`), no del final del arreglo. Una serie cortada
+  deja los estados abiertos, sin inventar vencimientos.
+
+## 7. Semejanza v2 por nivel de precio (2026-09-27, pedido de Nico: «lo más parecido posible, pero en espejo»)
+
+### Qué estaba mal en la v1
+Los componentes `forma`, `ondas` y `efi` comparan **caminos de cierres** con el tiempo normalizado. Con pocas velas no
+miden nada. Diagnóstico target-free en ES RTH a 5 min, jul-2025 a mar-2026 (`tools/espejo_semejanza_diag.py`):
+630 impulsos y 809 eventos de vuelta.
+
+| x | vueltas de ≤ 2 velas | `ondas` = 0 | `efi` = 0 |
+|---|---|---|---|
+| 0,25 | **91 %** | 69 % | 41 % |
+| 0,5 | 48 % | 50 % | 17 % |
+| 0,75 | 16 % | 38 % | 9 % |
+
+Con una vuelta de 2 cierres, `forma` compara el tramo espejo contra una **recta**. Así mide la curvatura del impulso,
+no la de la vuelta.
+
+### Qué mide la v2 (`semejanza_niveles`)
+El espejo recorre **los mismos niveles** que el impulso, en orden inverso. Por eso la v2 se alinea por **nivel de
+precio** y no por tiempo. Se mide sobre el tramo ya retrocedido [B − f·W, B], y cada vela aporta su rango H–L, no sólo
+su cierre.
+
+- **`sim_t`:** solapamiento (1 − ½·L1) entre el **tiempo pasado en cada nivel** durante el tramo espejo del impulso y
+  durante la vuelta. Si el impulso frenó en un nivel, el espejo también frena ahí.
+- **`sim_v`:** lo mismo con el **volumen por nivel**. Es la contracara de la zona no lista: donde el impulso no negoció,
+  el espejo tampoco.
+- **`sim_vel`:** exp(−|log(duración de la vuelta / duración del tramo espejo)|). Es absoluta, en [0, 1].
+- **`sim_abs`:** (`sim_vel` + `sim_t`) / 2. Es absoluta: 1 significa espejo idéntico.
+  - `sim_v` queda fuera del promedio porque en ES correlaciona 0,87–0,95 (Spearman) con `sim_t`: son casi la misma
+    información.
+- **Marca «parecida» (`S2v2`):** `sim_vel` y `sim_t` quedan en o por encima de la mediana de las sesiones anteriores.
+  Es la misma regla que S2 (§3.3), con la forma por nivel en vez de la forma por cierres.
+
+### Por qué es mejor, verificado sin mirar desenlaces
+- **Tiene sentido con 1–2 velas de vuelta**, que es el caso del 91 % de los candidatos al 25 %.
+- **Aporta información nueva:** `sim_t` casi no correlaciona con la velocidad (ρ ≈ −0,1). Separa forma de velocidad,
+  que era la intención de las dos palabras de Nico («velocidad y forma de las ondas»).
+- **Coincide con la v1 donde la v1 sí funciona:** al 75 %, donde el 84 % de las vueltas tiene 3 o más velas, ρ(`sim_t`,
+  `forma`) = 0,63. Al 25 %, donde la v1 degenera, baja a 0,17.
+- **Tests sintéticos:**
+  - espejo exacto: `sim_t` y `sim_v` > 0,85 y `sim_vel` > 0,8;
+  - la misma vuelta con la pausa en otro nivel y la misma velocidad baja `sim_t` en más de 0,15;
+  - con una vuelta de una vela, `forma_fiable` = False, pero `sim_t` sigue definida.
+
+### Qué se conserva
+- La v1 sigue en el censo, sin cambios: `vel`, `efi`, `forma`, `ondas`, `S` y `S2`. Así los resultados de ESPEJO-SIM y
+  ESPEJO-MACRO siguen siendo comparables.
+- Cada evento lleva además `velas_vuelta` y `forma_fiable` (3 o más velas).
+- El visor usa `S2v2` para el borde grueso.
+
+### Cómo podría refutarse
+Nico juzga ✓/✗ una muestra de vueltas `S2v2` y otra de no-`S2v2`. Si su juicio no las separa, la semejanza por nivel
+tampoco es la que él ve. Medir si `S2v2` completa el espejo más que el azar es **campaña**: pre-registro y OK.
