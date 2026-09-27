@@ -4133,6 +4133,14 @@
     });
     if (rev.on && rev.cur) {
       var z = rev.cur, zx0 = XI(z.i0, z.t0), zx1 = XI(z.i1, z.t1), zy0 = Y(z.p1), zy1 = Y(z.p0);
+      // CORTINA (27/09, pedido de Nico): tapa todo lo posterior al último pico (+2 velas de confirmación), para juzgar la
+      // forma de la zona sin ver si el precio volvió. Opaca: no es ciega por CSS del chart, pero no deja ver el futuro.
+      var lp = z.picos && z.picos.length ? z.picos[z.picos.length - 1] : [z.i1, z.t1], cx = XI(lp[0] + 2, cd[lp[0] + 2] ? cd[lp[0] + 2].time : lp[1]);
+      if (isFinite(cx) && cx < w) {
+        ctx.fillStyle = state.isDark ? "#1f2937" : "#e5e7eb"; ctx.fillRect(Math.max(0, cx), 0, w - Math.max(0, cx), h);
+        ctx.fillStyle = state.isDark ? "#9ca3af" : "#6b7280"; ctx.font = "600 12px 'Segoe UI', sans-serif";
+        ctx.fillText("futuro oculto: juzgá sólo la forma de la zona", Math.max(0, cx) + 10, 22);
+      }
       if (!drawPeakPath(ctx, z, XI, Y, "#111", 2.5, true)) {
         ctx.strokeStyle = "#111"; ctx.lineWidth = 3; ctx.setLineDash([6, 3]);
         ctx.strokeRect(zx0 - 3, zy0 - 3, zx1 - zx0 + 6, Math.max(2, zy1 - zy0) + 6); ctx.setLineDash([]);
