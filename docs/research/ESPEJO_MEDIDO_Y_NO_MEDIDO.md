@@ -149,3 +149,10 @@ Si no se cumple, el estado es **«NO PROBADO»**, nunca «muerto».
 
 Cada resultado nuevo de la familia se agrega en §2 **en el mismo commit** que el resultado, y se tacha lo
 correspondiente de §3.
+
+### 2026-09-27 — ESPEJO-MÁS-ALLÁ registrado (borrador, sin medir)
+
+- **Qué es:** extensión más allá de A, condicionada a dirección, agotamiento e imanes.
+- **Documento:** `MANIFIESTO_ESPEJO_MAS_ALLA_BORRADOR_20260927.md`.
+- **Qué falta para correrlo:** la definición de imán, que queda a cargo de Nico, y el OK del STOP.
+- **Estado:** NO MEDIDO.
