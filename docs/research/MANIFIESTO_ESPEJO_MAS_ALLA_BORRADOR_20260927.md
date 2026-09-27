@@ -111,3 +111,49 @@ Requisitos que la definición tendrá que cumplir, fijados ahora:
 
 **Un NO acá** invalida sólo la extensión más allá de A con este detector, estas barreras y estos condicionantes.
 No invalida el espejo.
+
+## Fase 0 — ¿hay a simple vista casos que van más allá y casos que no? (pedido de Nico, 2026-09-27)
+
+Escrita y commiteada **antes** de medir. **No usa imanes ni condicionantes**: sólo pregunta si la extensión más allá
+de A se reparte distinto de lo que produce el azar. Nico lo pidió explícitamente.
+- Descriptiva, sin entradas ni costos.
+- Es un chequeo de heterogeneidad, no una búsqueda de reglas.
+
+**Población:** P1 de §2.
+- El primer toque de A en impulsos TBZX cuyo espejo se completó dentro de la sesión.
+- Velas de 5 minutos, configuraciones `5m_12_3`, `5m_12_4` y `5m_24_4`: las tres que sostuvieron en ESPEJO-MACRO,
+  fijadas de antemano.
+
+**Medida:** M es la extensión máxima más allá de A, en unidades de W.
+- Se corta cuando el precio vuelve hasta la barrera A ± 0,5·W (hacia B), o al terminar la sesión. Si termina la
+  sesión, el evento queda censurado y se reporta aparte.
+- La vela del toque cuenta: para pasar de A, el precio tuvo que tocar A primero.
+- En las velas siguientes, si la barrera y una extensión nueva caen en la misma vela, se toma primero la barrera. Es
+  la opción pesimista, y se aplica igual al real y al placebo.
+
+**Nulos:**
+- **Principal: placebo empírico.** Por cada evento real se toma una vela al azar de la misma sesión (semilla fija).
+  - El nivel es la apertura de esa vela.
+  - Mismo W, misma dirección de continuación, mismo algoritmo.
+  - Controla la discretización, la volatilidad del día y el censurado por fin de sesión.
+- **Referencia teórica:** P(M ≥ o) = 0,5 / (0,5 + o).
+
+**Pruebas:** 18 en total.
+- **Supervivencia:** en o ∈ {0,25; 0,5; 1; 2}, la diferencia entre P(M ≥ o) del real y del placebo. Son 4 × 3 = 12
+  pruebas.
+- **Heterogeneidad** («casos que sí y casos que no»):
+  - la parte que muere en A (M < 0,1), real menos placebo;
+  - la parte que se va lejos (M ≥ 1), real menos placebo;
+  - 2 × 3 = 6 pruebas.
+  - Si las **dos** son positivas, hay más casos de los dos extremos que en el azar: dos clases de casos.
+- **Estadística:** bootstrap por sesión (1.000) y BH-FDR con q = 0,10 sobre las 18 pruebas en SPY (descubrimiento).
+- **Replicación:** ES, NQ e YM RTH combinados, con el mismo signo e IC > 0. ES sesión completa se reporta como
+  descriptivo.
+- Se publica el MDE de cada prueba y **la distribución completa de M**.
+- Holdout y abr–jun intactos.
+
+**Justificación económica:** si hay una clase de espejos que siguen de largo, P1 tiene una cola aprovechable que
+después se puede buscar con condicionantes (dirección, agotamiento, imanes).
+
+**Cómo podría refutarse:** la distribución de M real es indistinguible de la del placebo. En ese caso, «a simple
+vista» no hay dos clases, y cualquier diferencia que se vea en un chart es la que produce el azar.
