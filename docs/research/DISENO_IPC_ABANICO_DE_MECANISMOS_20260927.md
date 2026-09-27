@@ -110,3 +110,14 @@ para el diseño de ahora:
   tocada, rota) en cada vela.
 - **No se transportan resultados:** que la zona atraiga en IPC no es evidencia para espejos. Espejos la usa como objeto
   y hace su propia prueba, con sus controles (espejo sin zona, zona sin espejo).
+
+## 7. Tanda ciega de definiciones de zona (27/09, congelada antes de juzgar y antes de cualquier curva)
+Herramienta: `tools/build_zone_def_batch.py`. ES febrero 2026 (fuera de la muestra de enero con que se ajustó el detector). 125 zonas: 25 por definición, sin repetir, mezcladas; el visor no muestra a qué definición pertenece cada una (la membresía está en `artifacts/ipc/zone_defs/tanda_20260927.json`).
+| Definición | Regla | Zonas en febrero |
+|---|---|---|
+| D1 validada | w 2, separación ≤ 60, escalón ≤ 2 t, retroceso ≥ 2 t, ≥ 8 picos, tope de pendiente p90 | 1.259 |
+| D2 estricta | D1 con ≥ 12 picos | 776 |
+| D3 horizontal | escalón 0 t (retesteo exacto), ≥ 5 picos | 949 |
+| D4 comercio | D1 + volumen por vela entre picos ≥ 1,2 × la mediana previa de la sesión | 266 |
+| D5 laxa | w 1, separación ≤ 30, escalón ≤ 4 t, retroceso ≥ 1 t, ≥ 5 picos, sin tope | 31.729 |
+Criterio: precisión fuera de muestra por definición (✓ / juzgadas); vara ~70 %. D5 es de referencia (probablemente demasiado laxa).
