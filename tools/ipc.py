@@ -186,7 +186,7 @@ def declare(inst, keys, part_tag="EXP"):
     part = f"P-IPC-{inst}-{part_tag}"
     if LEDGER.exists() and part in DurableHippocampus(LEDGER).partitions:
         return
-    with measurement_episode(LEDGER, f"EP-IPC-PARTICION-{inst}", goal=f"declarar partición IPC {inst} antes de medir",
+    with measurement_episode(LEDGER, f"EP-IPC-PARTICION-{inst}" + ("" if part_tag == "EXP" else f"-{part_tag}"), goal=f"declarar partición IPC {inst} antes de medir",
                              recorded_by="tools/ipc.py measure", repo=REPO, prereg_ref=DOC) as ep:
         kind = "EXPLORATION" if part_tag == "EXP" else "REPLICATION"
         ep.store.record_partition(part, kind, f"{inst} 25T {part_tag} ({keys[0]}..{keys[-1]}), contrato canónico",
