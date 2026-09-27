@@ -157,3 +157,23 @@ después se puede buscar con condicionantes (dirección, agotamiento, imanes).
 
 **Cómo podría refutarse:** la distribución de M real es indistinguible de la del placebo. En ese caso, «a simple
 vista» no hay dos clases, y cualquier diferencia que se vea en un chart es la que produce el azar.
+
+### Enmienda F0-1 — placebo emparejado por hora (**posterior a ver SPY**)
+
+**Qué se vio en SPY:** el real se extiende menos que el placebo, de −3 a −16 pp en P(M ≥ o).
+
+**Por qué ese contraste está sesgado en contra del real:**
+- Los toques de A caen más tarde en la sesión, porque el espejo tardó en completarse.
+- Por eso tienen menos tiempo por delante y más censura por fin de sesión: 51–62 % contra 45–50 % del placebo.
+- Una vela elegida al azar en la sesión no tiene ese problema, así que ese contraste mide en parte «hora del día» y no
+  sólo el espejo.
+
+**Cambio:** se agrega un segundo placebo.
+- Se toma la misma vela del día que el toque (mismo índice de vela), en otra sesión al azar.
+- Mismo nivel relativo (la apertura), mismo W y misma dirección.
+
+**Alcance:**
+- Los dos placebos se publican.
+- La enmienda es posterior a ver datos, así que ningún resultado contra el placebo por hora se promueve con SPY solo:
+  cuenta sólo si replica en los futuros.
+- Las 18 pruebas y el FDR no cambian.

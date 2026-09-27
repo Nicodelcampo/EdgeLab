@@ -156,3 +156,14 @@ correspondiente de §3.
 - **Documento:** `MANIFIESTO_ESPEJO_MAS_ALLA_BORRADOR_20260927.md`.
 - **Qué falta para correrlo:** la definición de imán, que queda a cargo de Nico, y el OK del STOP.
 - **Estado:** NO MEDIDO.
+
+### 2026-09-27 — diagnóstico de curva de ESPEJO-MACRO al 75 % (en muestra)
+
+Artefacto: `artifacts/research/espejo_macro/CURVA/`.
+
+- **SPY bruto:** estable. 14 de 14 años positivos en 5m_12_3.
+- **ES neto:** no es pareja.
+  - En sesión completa, la caída máxima supera la ganancia total y el 10 % mejor de los eventos explica 2,6–3 veces
+    el total.
+  - En RTH 5m_12_4, 7 de 9 meses positivos con sólo 32 eventos.
+- **Tasa de acierto de 70–80 %:** es mecánica (objetivo a 0,25 W, stop a 0,75 W), no es la ventaja.
