@@ -1248,20 +1248,28 @@
 
         </div>
         <div class="ind-panel" data-ind="espejo" hidden>
-    <!-- EDGELAB_ESPEJO_IND_V1 (2026-09-27): impulsos espejados y zonas «no listas» (registro ESPEJO-IND §3 y §6) -->
+    <!-- EDGELAB_ESPEJO_IND_V1 (2026-09-27): calibración de impulsos espejados y zonas «no listas» -->
     <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
-      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px;">🪞 Espejo: impulsos y zonas no listas</div>
+      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px;">🪞 Calibración de Zonas Espejo</div>
       <div style="display:flex;flex-direction:column;gap:5px;font-size:10.5px;">
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-imp" checked><span>Impulso A→B y su vuelta (niveles A y B)</span></label>
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-nl" checked><span><b>Zona no lista</b> (tramo cruzado casi sin volumen)</span></label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-completed" checked><span><b>Sólo zonas espejadas</b> (MIRROR_COMPLETED)</span></label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-imp" checked><span>Trazar <b>Ida (A→B)</b> y <b>Vuelta (B→A)</b></span></label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-box" checked><span>Caja sombreada de la zona espejada</span></label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-nl" checked><span><b>Zona «no lista»</b> (tramo cruzado sin volumen)</span></label>
         <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-inef"><span>Sólo impulsos ineficientes (I1 ∨ I2)</span></label>
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-cand"><span>Sólo los que llegaron a candidato (x = 0,25)</span></label>
-        <div id="lbl-esp-status" style="font-size:9.5px;color:#666;"></div>
-        <div style="font-size:9px;color:#888;line-height:1.35;">Colores: gris = impulso confirmado · ámbar = vuelta candidata (borde grueso si «parecida»: velocidad y tiempo por nivel ≥ mediana, semejanza v2) · verde = tocó A · rojo = extremo nuevo · gris claro = venció.
-          Franja violeta = zona no lista, desde B hasta el desenlace. Parámetros congelados: 25t → 17 t y 20 velas; tiempo → 3·ATR(14) y 24 velas; e_min 0,3; r 0,3.
-          Se dibuja sólo lo conocido al cierre de cada vela. Descriptivo: no dice si paga.</div>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-s2"><span>Sólo vueltas parecidas (S2v2: vel/tiempo)</span></label>
+        <div id="lbl-esp-status" style="font-size:9.5px;color:#666;line-height:1.35;margin-top:2px;"></div>
+        <div style="font-size:9px;color:#888;line-height:1.35;margin-top:4px;">
+          <b>Guía de calibración:</b><br>
+          • <span style="color:#2563eb;font-weight:600;">Azul:</span> Ida del impulso A→B.<br>
+          • <span style="color:#16a34a;font-weight:600;">Verde:</span> Vuelta B→A (recorrido inverso a nivel A).<br>
+          • <span style="color:#10b981;font-weight:600;">Caja verde suave:</span> Zona espejada delimitada.<br>
+          • <span style="color:#7c3aed;font-weight:600;">Franja violeta:</span> Zona «no lista» (inyección sin volumen).<br>
+          • <span style="color:#d97706;font-weight:600;">★:</span> Vuelta parecida en velocidad y tiempo (S2v2).
+        </div>
       </div>
     </div>
+        </div>
         </div>
         <div class="ind-panel" data-ind="tbz" hidden>
     <!-- EDGELAB_TBZ_LAYER_V1: familia TBZ, franjas de baja permanencia (construcción, sin desenlaces) -->
@@ -2294,7 +2302,7 @@
   }
   // EDGELAB_ESPEJO_IND_V1 (2026-09-27): kernel EspejoImpulsos (espejo_impulsos.js, paridad con Python) sobre las velas
   // activas. Sesión = hueco > 30 min; fin de sesión = la vela antes del hueco (la última del arreglo queda abierta).
-  var espejo = { on: false, key: null, res: null, imp: true, nl: true, inef: false, cand: false };
+  var espejo = { on: false, key: null, res: null, completed: true, imp: true, box: true, nl: true, inef: false, s2: false };
   function espejoCompute() {
     var cd = activeCandlesArr(); if (!cd || cd.length < 50) { espejo.res = null; return null; }
     var bk = state.activeBarKey || (state.run && state.run.bar_key) || "";
@@ -2312,8 +2320,12 @@
     espejo.key = key;
     var st = {}; espejo.res.impulses.forEach(function (m) { var k = m.estado_final || "abierto"; st[k] = (st[k] || 0) + 1; });
     var lb = document.getElementById("lbl-esp-status");
-    if (lb) lb.textContent = espejo.res.impulses.length + " impulsos (" + (isTime ? "3·ATR, 24 velas" : "17 t, 20 velas") + ") · " +
-      Object.keys(st).map(function (k) { return k.replace("MIRROR_", "").replace("IMP_", "").toLowerCase() + " " + st[k]; }).join(" · ");
+    if (lb) {
+      var nComp = st["MIRROR_COMPLETED"] || 0;
+      var total = espejo.res.impulses.length;
+      lb.innerHTML = "<b>" + nComp + " espejos completados</b> (" + total + " impulsos totales)<br>" +
+        "<span style='color:#777;'>" + (isTime ? "3·ATR, 24 velas" : "17 t, 20 velas") + " · fallidos " + (st["MIRROR_FAILED"] || 0) + " · vencidos " + (st["MIRROR_EXPIRED"] || 0) + "</span>";
+    }
     return espejo.res;
   }
   function drawEspejo(ctx, vr, w, h) {
@@ -2324,43 +2336,122 @@
     function Y(v) { var c = series.priceToCoordinate(v * tick); return (c === null || c === undefined) ? NaN : c; }
     var byImp = {}; res.events.forEach(function (e) { (byImp[e.imp_id] = byImp[e.imp_id] || []).push(e); });
     var FIN = { MIRROR_COMPLETED: "22,163,74", MIRROR_FAILED: "220,38,38", MIRROR_EXPIRED: "156,163,175", IMP_NO_MIRROR: "203,213,225" };
-    ctx.save(); ctx.font = "10px -apple-system, Segoe UI, sans-serif";
+
+    ctx.save();
     res.impulses.forEach(function (m) {
       if (m.estado_final === "IMP_UNCONFIRMED") return;
+      if (espejo.completed && m.estado_final !== "MIRROR_COMPLETED") return;
       if (espejo.inef && !m.ineficiente) return;
-      var ev = byImp[m.imp_id] || [], cand = null;
-      ev.forEach(function (e) { if (e.kind === "MIRROR_CANDIDATE") cand = e; });
-      if (espejo.cand && !cand) return;
+      if (espejo.s2 && !m.S2v2) return;
+
       var iEnd = m.bar_final !== null ? m.bar_final : n - 1;
       if (cd[Math.min(n - 1, iEnd)].time < vr.from || cd[m.bar_A].time > vr.to) return;
       var xA = X(m.bar_A), xB = X(m.bar_B), xC = X(m.bar_conf), xE = X(iEnd), yA = Y(m.A), yB = Y(m.B);
-      if (![xA, xB, xC, xE, yA, yB].every(isFinite)) return;
+      if (![xA, xB, xE, yA, yB].every(isFinite)) return;
+
+      var isComp = (m.estado_final === "MIRROR_COMPLETED");
+      var yTop = Math.min(yA, yB), boxH = Math.abs(yB - yA);
+      var xSpan = Math.max(1, xE - xA);
+
+      // 1. CAJA DE ZONA ESPEJADA (sombreado entre niveles A y B desde xA hasta xE)
+      if (espejo.box) {
+        if (isComp) {
+          ctx.fillStyle = "rgba(16, 185, 129, 0.08)";
+          ctx.fillRect(xA, yTop, xSpan, boxH);
+          ctx.strokeStyle = "rgba(16, 185, 129, 0.35)";
+          ctx.lineWidth = 1;
+          ctx.setLineDash([3, 3]);
+          ctx.strokeRect(xA, yTop, xSpan, boxH);
+          ctx.setLineDash([]);
+        } else {
+          ctx.fillStyle = "rgba(107, 114, 128, 0.05)";
+          ctx.fillRect(xA, yTop, xSpan, boxH);
+        }
+      }
+
+      // 2. ZONA «NO LISTA» (tramo de bajo volumen donde el precio pasó sin contrapartida)
       if (espejo.nl && m.no_lista_lo !== null) {
         var y1 = Y(m.no_lista_lo), y2 = Y(m.no_lista_hi);
         if (isFinite(y1) && isFinite(y2)) {
-          ctx.fillStyle = "rgba(124,58,237,0.16)"; ctx.fillRect(xA, Math.min(y1, y2), Math.max(1, xE - xA), Math.abs(y2 - y1));
-          ctx.strokeStyle = "rgba(124,58,237,0.6)"; ctx.lineWidth = 1; ctx.strokeRect(xA, Math.min(y1, y2), Math.max(1, xE - xA), Math.abs(y2 - y1));
+          var yNlTop = Math.min(y1, y2), hNl = Math.abs(y2 - y1);
+          ctx.fillStyle = "rgba(139, 92, 246, 0.22)";
+          ctx.fillRect(xA, yNlTop, xSpan, hNl);
+          ctx.strokeStyle = "rgba(124, 58, 237, 0.75)";
+          ctx.lineWidth = 1.2;
+          ctx.strokeRect(xA, yNlTop, xSpan, hNl);
         }
       }
-      if (!espejo.imp) return;
-      ctx.strokeStyle = "rgba(75,85,99," + (m.ineficiente ? 0.9 : 0.5) + ")"; ctx.lineWidth = m.ineficiente ? 1.6 : 1;
-      ctx.beginPath(); ctx.moveTo(xA, yA); ctx.lineTo(xB, yB); ctx.stroke();
-      var xK = cand ? X(cand.bar) : xE;
-      ctx.setLineDash([4, 3]); ctx.lineWidth = 1; ctx.strokeStyle = "rgba(107,114,128,0.8)";
-      ctx.beginPath(); ctx.moveTo(xB, yA); ctx.lineTo(xK, yA); ctx.moveTo(xB, yB); ctx.lineTo(xK, yB); ctx.stroke();
-      if (cand && isFinite(xK)) {
-        var s2 = ev.some(function (e) { return e.S2v2 === true; });   // marca «parecida»: semejanza v2 por nivel
-        ctx.strokeStyle = "rgba(217,119,6,0.95)"; ctx.lineWidth = s2 ? 2.2 : 1.2;
-        ctx.beginPath(); ctx.moveTo(xK, yA); ctx.lineTo(xE, yA); ctx.moveTo(xK, yB); ctx.lineTo(xE, yB); ctx.stroke();
-      }
+
+      // 3. NIVELES HORIZONTALES DE REFERENCIA (Nivel A y Nivel B)
+      ctx.setLineDash([4, 3]);
+      ctx.lineWidth = 1;
+      // Nivel A de xA a xE
+      ctx.strokeStyle = isComp ? "rgba(16, 185, 129, 0.6)" : "rgba(107, 114, 128, 0.5)";
+      ctx.beginPath(); ctx.moveTo(xA, yA); ctx.lineTo(xE, yA); ctx.stroke();
+      // Nivel B de xB a xE
+      ctx.strokeStyle = isComp ? "rgba(245, 158, 11, 0.6)" : "rgba(107, 114, 128, 0.5)";
+      ctx.beginPath(); ctx.moveTo(xB, yB); ctx.lineTo(xE, yB); ctx.stroke();
       ctx.setLineDash([]);
-      if (m.estado_final && FIN[m.estado_final]) {
-        ctx.fillStyle = "rgb(" + FIN[m.estado_final] + ")"; ctx.beginPath(); ctx.arc(xE, m.estado_final === "MIRROR_COMPLETED" ? yA : yB, 3.5, 0, 6.2832); ctx.fill();
+
+      // 4. TRAZADO DE LA IDA (A -> B) Y LA VUELTA (B -> A)
+      if (espejo.imp) {
+        // --- IDA (A -> B) ---
+        ctx.strokeStyle = isComp ? "#2563eb" : (m.ineficiente ? "rgba(75,85,99,0.9)" : "rgba(75,85,99,0.5)");
+        ctx.lineWidth = isComp ? 2.5 : (m.ineficiente ? 1.6 : 1);
+        ctx.beginPath();
+        ctx.moveTo(xA, yA);
+        ctx.lineTo(xB, yB);
+        ctx.stroke();
+
+        // Punto A de partida
+        ctx.fillStyle = isComp ? "#2563eb" : "rgba(75,85,99,0.8)";
+        ctx.beginPath(); ctx.arc(xA, yA, isComp ? 3.5 : 2.5, 0, 6.2832); ctx.fill();
+
+        // Extremo B (pico/valle del espejo)
+        ctx.fillStyle = isComp ? "#f59e0b" : "rgba(107,114,128,0.8)";
+        ctx.beginPath(); ctx.arc(xB, yB, isComp ? 4 : 3, 0, 6.2832); ctx.fill();
+
+        // --- VUELTA (B -> A) ---
+        if (isComp) {
+          ctx.strokeStyle = "#16a34a"; // Verde esmeralda para la vuelta completa
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          ctx.moveTo(xB, yB);
+          ctx.lineTo(xE, yA);
+          ctx.stroke();
+
+          // Marcador de llegada a nivel A en xE
+          ctx.fillStyle = "#16a34a";
+          ctx.beginPath(); ctx.arc(xE, yA, 5, 0, 6.2832); ctx.fill();
+          ctx.fillStyle = "#ffffff";
+          ctx.beginPath(); ctx.arc(xE, yA, 2, 0, 6.2832); ctx.fill();
+
+          // Etiqueta del espejo (con fondo para máxima legibilidad)
+          ctx.font = "bold 10px -apple-system, Segoe UI, sans-serif";
+          var durBars = Math.max(1, iEnd - m.bar_B);
+          var labelText = "🪞 #" + m.imp_id + " (" + (m.W).toFixed(0) + "t, " + durBars + "v)";
+          if (m.S2v2) labelText += " ★";
+          var txtY = (m.dir === 1) ? Math.min(yA, yB) - 6 : Math.max(yA, yB) + 14;
+          var tw = ctx.measureText(labelText).width;
+          ctx.fillStyle = "rgba(255, 255, 255, 0.88)";
+          ctx.fillRect(xB - 12, txtY - 9, tw + 6, 12);
+          ctx.strokeStyle = "rgba(16, 185, 129, 0.5)";
+          ctx.lineWidth = 0.8;
+          ctx.strokeRect(xB - 12, txtY - 9, tw + 6, 12);
+          ctx.fillStyle = "#047857";
+          ctx.fillText(labelText, xB - 9, txtY);
+        }
+      }
+
+      // Marcador de desenlace si no es completado (sólo visible si desmarca el filtro)
+      if (!isComp && m.estado_final && FIN[m.estado_final]) {
+        ctx.fillStyle = "rgb(" + FIN[m.estado_final] + ")";
+        ctx.beginPath(); ctx.arc(xE, m.estado_final === "MIRROR_COMPLETED" ? yA : yB, 3.5, 0, 6.2832); ctx.fill();
       }
     });
     ctx.restore();
   }
-  [["chk-esp-imp", "imp"], ["chk-esp-nl", "nl"], ["chk-esp-inef", "inef"], ["chk-esp-cand", "cand"]].forEach(function (q) {
+  [["chk-esp-completed", "completed"], ["chk-esp-imp", "imp"], ["chk-esp-box", "box"], ["chk-esp-nl", "nl"], ["chk-esp-inef", "inef"], ["chk-esp-s2", "s2"]].forEach(function (q) {
     var el = document.getElementById(q[0]); if (el) el.addEventListener("change", function () { espejo[q[1]] = el.checked; requestDraw(); });
   });
 
@@ -3058,7 +3149,7 @@
     // causal sigue visible como flechas (bloque 1b, sin look-ahead). Antes de unificar,
     // esto era un `return` que dejaba las flechas como código muerto.
     var runBarKey = state.run && state.run.bar_key;
-    var boxesSuppressed = !!(runBarKey && runBarKey !== activeKey);
+    var boxesSuppressed = !!(runBarKey && runBarKey !== activeKey && state.run.zones && state.run.zones.length > 0);
     if (boxesSuppressed) {
       window.__EDGELAB_ZONE_RENDER_STATUS__ = {status: "ABSTAIN_BAR_KEY_MISMATCH", boxes: "SUPPRESSED", arrows: "CAUSAL_SIGNAL_ONLY", runBarKey: runBarKey, activeBarKey: activeKey};
       ctx.save();
@@ -5559,6 +5650,20 @@
         }
       }
       selectRun(defaultRunIdx, options);
+    } else {
+      var bKeys = Object.keys(data.bar_series || {});
+      var activeBk = (options && options.targetTf) || bKeys[0];
+      state.activeBarKey = activeBk;
+      state.run = { id: "none", name: "Espejo", indicator: "EspejoImpulsos", zones: [] };
+      if (data.bar_series && data.bar_series[activeBk]) {
+        series.setData(data.bar_series[activeBk].candles);
+        chart.timeScale().fitContent();
+      }
+      var lblEl = document.getElementById("lbl-tf-name");
+      if (lblEl && data.bar_series[activeBk]) lblEl.textContent = data.bar_series[activeBk].name;
+      document.getElementById("metaline").textContent =
+        (m.contract || m.instrument) + " · " + (data.bar_series[activeBk] ? data.bar_series[activeBk].name : activeBk) + " · tick " + m.tick_size + " · " + (data.bar_series[activeBk] ? data.bar_series[activeBk].candles.length.toLocaleString() : 0) + " barras · Calibración Espejo";
+      requestDraw();
     }
 
     buildAssetSelectorList();
@@ -6374,6 +6479,10 @@
     var qAsset = params.get("asset");
     var qTf = params.get("tf");
     var opts = qTf ? { targetTf: qTf } : {};
+    if (params.get("espejo") === "1" || (qAsset && qAsset.indexOf("ESPEJO") !== -1)) {
+      espejo.on = true;
+      indSel = "espejo";
+    }
     if (qAsset && window.ASSET_CATALOG && (/^[A-Za-z0-9]+_CONT$/.test(qAsset) || window.ASSET_CATALOG.some(function(a){ return a.id === qAsset; }))) {
       loadAsset(qAsset, opts);
     } else if (window.BUNDLE_6E_CONT) {
