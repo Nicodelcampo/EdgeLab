@@ -133,7 +133,8 @@
   $("copyBtn").onclick = () => { navigator.clipboard && navigator.clipboard.writeText(confirm); $("copyBtn").textContent = "Copiado"; setTimeout(() => $("copyBtn").textContent = "Copiar", 1400); };
 
   // --- grilla: producto cartesiano en el orden de la spec
-  const G = S.grid, dimsDef = [["stop_ticks_beyond_level", "Stop (tras nivel)", v => v + "t"], ["target_ticks_from_entry", "Target", v => v + "t"],
+  const RACE = S.kind === "race";                          // modo carrera (IPC): objetivo y barrera por ejemplo, una dimensión = celda
+  const G = RACE ? {cell: D.cells} : S.grid, dimsDef = RACE ? [["cell", "Celda", v => v]] : [["stop_ticks_beyond_level", "Stop (tras nivel)", v => v + "t"], ["target_ticks_from_entry", "Target", v => v + "t"],
     ["break_even_after_ticks", "Break-even", v => v === null ? "off" : "+" + v + "t"], ["max_hold_s", "Tiempo máx.", v => v >= 60 ? (v / 60) + " min" : v + " s"]];
   const combos = [];
   (function rec(i, cur) { if (i === dimsDef.length) { combos.push(Object.assign({}, cur)); return; }
@@ -156,7 +157,7 @@
   const fmtT = us => { const d = new Date(us / 1000); return d.toISOString().slice(11, 19); };
   const fmtD = s => `${s.slice(6, 8)}/${s.slice(4, 6)}`;
   $("items").innerHTML = ex.map((e, i) => `<div class="ex" data-i="${i}"><span class="n">${e.id}</span>
-    <span class="t">${fmtD(e.session)} · ${fmtT(e.entry_ts_us)}<small>vol ${Math.round(e.absorbed_volume)} · rango 60s ${e.range60_ticks}t</small></span>
+    <span class="t">${fmtD(e.session)} · ${fmtT(e.entry_ts_us)}<small>${RACE ? `k${e.k} · D ${Math.round(e.D_ticks)}t` : `vol ${Math.round(e.absorbed_volume)} · rango 60s ${e.range60_ticks}t`}</small></span>
     <span class="side ${e.side}">${e.side}</span></div>`).join("");
   let cur = 0;
   $("items").addEventListener("click", e => { const r = e.target.closest(".ex"); if (r) { cur = +r.dataset.i; render(true); } });
@@ -173,6 +174,8 @@
   const overlay = $("overlay"), ctx = overlay.getContext("2d");
 
   function geom(e, c) {
+    if (RACE) return {L: e.level_tick, E: e.entry_tick, stop: e.stop_tick, tgt: e.level_tick, be: null,
+                      dsl: Math.abs(e.entry_tick - e.stop_tick), dtp: Math.abs(e.level_tick - e.entry_tick)};
     const L = e.level_tick, E = e.entry_tick, s = e.side === "SHORT" ? -1 : 1;
     const stop = e.side === "SHORT" ? L + c.stop_ticks_beyond_level : L - c.stop_ticks_beyond_level;
     const tgt = E + s * c.target_ticks_from_entry;
@@ -190,7 +193,7 @@
     if (!last) return;
     const xl = ts.timeToCoordinate(last.time); if (xl === null) return;
     const bs = ts.options().barSpacing, cs = D.candle_s;
-    const x0 = xl + ((e.entry_ts_us / 1e6 - last.time) / cs) * bs, x1 = x0 + (c.max_hold_s / cs) * bs;
+    const x0 = RACE ? xl + bs : xl + ((e.entry_ts_us / 1e6 - last.time) / cs) * bs, x1 = x0 + (RACE ? 60 : c.max_hold_s / cs) * bs;
     const y = t => series.priceToCoordinate(t * tick);
     // futuro oculto
     ctx.save(); ctx.fillStyle = css("--chip"); ctx.globalAlpha = .55; ctx.fillRect(x0, 0, w - x0, h); ctx.restore();
@@ -212,13 +215,16 @@
       ctx.strokeStyle = css("--ink"); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x0, 0); ctx.lineTo(x0, h); ctx.stroke(); }
     ctx.fillStyle = css("--muted"); ctx.font = "600 11px Segoe UI"; ctx.fillText("futuro oculto (ciego) · ancho = tiempo máximo", x0 + 8, 16);
     // ventana de la absorción
-    const xa = ts.timeToCoordinate(Math.floor(e.window_start_ts_us / 1e6 / cs) * cs);
+    const xa = RACE ? null : ts.timeToCoordinate(Math.floor(e.window_start_ts_us / 1e6 / cs) * cs);
     if (xa !== null) { ctx.fillStyle = css("--lvl"); ctx.globalAlpha = .14; ctx.fillRect(xa, 0, Math.max(3, x0 - xa - (D.latency_ms / 1000 / cs) * bs), h); ctx.globalAlpha = 1; }
     ctx.restore();
   }
 
   function render(fit) {
-    const e = ex[cur], c = combos[+slider.value], g = geom(e, c);
+    const c = combos[+slider.value];
+    if (RACE && !fit && ex[cur].cell !== c.cell) { const k = ex.findIndex(x => x.cell === c.cell); if (k >= 0) cur = k; }
+    if (RACE && fit) { const k = combos.findIndex(x => x.cell === ex[cur].cell); if (k >= 0) slider.value = k; }
+    const e = ex[cur], g = geom(e, c);
     document.querySelectorAll(".ex").forEach((n, i) => n.classList.toggle("on", i === cur));
     series.setData(e.candles.map(k => ({time: k.time, open: k.open * tick, high: k.high * tick, low: k.low * tick, close: k.close * tick})));
     // la escala de precios incluye siempre stop, target y break-even (si no, una combinacion grande quedaria afuera)
@@ -226,29 +232,33 @@
     const lo = Math.min(...lvls, ...e.candles.map(k => k.low)) - 1, hi = Math.max(...lvls, ...e.candles.map(k => k.high)) + 1;
     series.applyOptions({autoscaleInfoProvider: () => ({priceRange: {minValue: lo * tick, maxValue: hi * tick}})});
     lines.forEach(l => series.removePriceLine(l));
-    lines = [series.createPriceLine({price: g.L * tick, color: css("--lvl"), lineWidth: 2, lineStyle: 0, axisLabelVisible: true, title: "nivel absorbido"})];
+    lines = [series.createPriceLine({price: g.L * tick, color: css("--lvl"), lineWidth: 2, lineStyle: 0, axisLabelVisible: true, title: RACE ? "nivel (último/primer pico)" : "nivel absorbido"})];
     if (fit) chart.timeScale().fitContent();
     const fmt = dimsDef.map(([k, , f]) => f(c[k]));
-    $("comboLabel").textContent = `SL ${fmt[0]} · TP ${fmt[1]} · BE ${fmt[2]} · ${fmt[3]}`;
+    $("comboLabel").textContent = RACE ? `Celda ${+slider.value + 1}: ${c.cell}` : `SL ${fmt[0]} · TP ${fmt[1]} · BE ${fmt[2]} · ${fmt[3]}`;
     $("comboIdx").textContent = `combinación ${+slider.value + 1} de ${combos.length}`;
     document.querySelectorAll(".chip").forEach(b => b.classList.toggle("on", JSON.stringify(c[b.dataset.k]) === b.dataset.v));
     // exigencias (sin resultados): hit-rate necesario = (SL + costo) / (SL + TP)
     const dsl = ex.map(x => geom(x, c).dsl), mdsl = med(dsl);
-    const pNeed = (mdsl + cost) / (mdsl + c.target_ticks_from_entry), pThis = (g.dsl + cost) / (g.dsl + g.dtp);
+    const tgtT = RACE ? med(ex.map(x => geom(x, c).dtp)) : c.target_ticks_from_entry;
+    const pNeed = (mdsl + cost) / (mdsl + tgtT), pThis = (g.dsl + cost) / (g.dsl + g.dtp);
     const usd = t => "US$ " + (t * S.tick_value_usd).toFixed(0);
     $("need").innerHTML = `<span class="k">Acierto necesario (mediana)</span><span class="big">${(pNeed * 100).toFixed(0)}%</span>
       <span class="k">… en este ejemplo</span><span>${(pThis * 100).toFixed(0)}%</span>
       <span class="k">Stop medio (entrada→stop)</span><span>${mdsl}t · ${usd(mdsl)}</span>
-      <span class="k">Target</span><span>${c.target_ticks_from_entry}t · ${usd(c.target_ticks_from_entry)}</span>
+      <span class="k">${RACE ? "Distancia al nivel (mediana)" : "Target"}</span><span>${tgtT}t · ${usd(tgtT)}</span>
       <span class="k">Costo por operación</span><span>${cost.toFixed(2)}t · ${usd(cost)}</span>
-      <span class="k">Relación target / stop</span><span>${(c.target_ticks_from_entry / mdsl).toFixed(2)}R</span>`;
+      <span class="k">Relación target / stop</span><span>${(tgtT / mdsl).toFixed(2)}R</span>`;
     const flags = [];
-    if (c.target_ticks_from_entry <= cost * 1.5) flags.push(`El target (${c.target_ticks_from_entry}t) es menos de 1,5× el costo (${cost.toFixed(2)}t): el costo se come casi todo.`);
-    if (mdsl <= D.summary.median_range60_ticks) flags.push(`El stop medio (${mdsl}t) no supera el rango típico de 60 s (${D.summary.median_range60_ticks}t): puede saltar por ruido.`);
+    if (RACE) flags.push("Etapa A (información): no es una operación. El «acierto necesario» es sólo referencia; la replicación compara contra los controles C-SZ y C-SW.");
+    if (!RACE && c.target_ticks_from_entry <= cost * 1.5) flags.push(`El target (${c.target_ticks_from_entry}t) es menos de 1,5× el costo (${cost.toFixed(2)}t): el costo se come casi todo.`);
+    if (!RACE && mdsl <= D.summary.median_range60_ticks) flags.push(`El stop medio (${mdsl}t) no supera el rango típico de 60 s (${D.summary.median_range60_ticks}t): puede saltar por ruido.`);
     const ov = D.summary.overlap_fraction_by_hold[String(c.max_hold_s)];
     if (ov > .25) flags.push(`${(ov * 100).toFixed(0)}% de los eventos caen dentro de una posición abierta y se saltean (una posición a la vez).`);
     $("flags").innerHTML = flags.length ? flags.map(f => `<div class="flag">${f}</div>`).join("") : `<div class="okline">Sin alertas geométricas para esta combinación.</div>`;
-    $("cap").innerHTML = `<span><b>${e.side}</b> · ${fmtD(e.session)} ${fmtT(e.entry_ts_us)} (ART)</span>
+    $("cap").innerHTML = RACE ? `<span><b>${e.cell}</b> · ${fmtD(e.session)}</span>
+      <span>nivel <b>${(g.L * tick).toFixed(prec)}</b> · cierre del evento <b>${(g.E * tick).toFixed(prec)}</b> · barrera de fallo <b>${(g.stop * tick).toFixed(prec)}</b> (D = ${Math.round(e.D_ticks)}t)</span>
+      <span class="legend"><i style="background:var(--tp)"></i>hasta el nivel<i style="background:var(--sl)"></i>hasta la barrera</span>` : `<span><b>${e.side}</b> · ${fmtD(e.session)} ${fmtT(e.entry_ts_us)} (ART)</span>
       <span>nivel <b>${(g.L * tick).toFixed(prec)}</b> · entrada <b>${(g.E * tick).toFixed(prec)}</b> · spread ${e.spread_ticks}t</span>
       <span>absorbido <b>${Math.round(e.absorbed_volume)}</b> contratos en ${e.trades_in_window} trades (umbral causal ${Math.round(e.threshold)})</span>
       <span class="legend"><i style="background:var(--tp)"></i>target<i style="background:var(--sl)"></i>stop<i style="background:var(--be)"></i>break-even<i style="background:var(--lvl)"></i>nivel/ventana</span>`;
