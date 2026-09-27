@@ -69,3 +69,44 @@ confirmada en revisión ciega → campaña → prueba). Después, el holdout a f
 2. ¿Agrega ejes que no estén en §2? (el pedido nombraba virginidad, alejamiento, volumen previo, entrada a mitad y al
    final del acercamiento, objetivo al final / al inicio de la zona, atravesando 3 y 10 t: están todos).
 3. El atlas mira resultados (retornos) aunque sea descriptivo: por la regla STOP va con manifiesto propio y su OK.
+
+## 5. Parametrización de la zona misma (pedido de Nico, 27/09)
+Al entrenar el detector se vio que hay muchas maneras de decidir qué cuenta como zona. **Ese es un eje del abanico por
+derecho propio**, y además el más delicado: si la definición de zona se elige mirando si atrae, se fabrica el imán.
+
+### 5.1 Parámetros de la definición (hoy en `tools/peaks_rule.py`)
+| Parámetro | Qué controla | Hoy (ES 25t) | Alternativas a enumerar |
+|---|---|---|---|
+| `w` | qué es un pico (pivote de w velas a cada lado) | 2 | 1, 2, 3 |
+| `nmin` / picos mínimos | cuántos picos forman zona | 6 (+ filtro 8 estándar / 12 estricto) | 5 … 16 |
+| `max_step` | cuánto puede cambiar un pico respecto del anterior (horizontalidad) | 2 t | 0, 1, 2, 4 t; en ATR |
+| `min_pull` | retroceso mínimo entre picos (que sean picos de verdad) | 2 t | 0, 1, 2, 4 t; en ATR |
+| `max_gap` | cercanía temporal entre picos | 60 velas | 15, 30, 60, 110 |
+| tope de pendiente | qué tan empinada puede ser la serie | p90 de las marcas de Nico | sin tope, p75, p90 |
+| duración mínima | tiempo total de la acumulación | 0 (ES), 40 velas (NQ) | 0, 20, 40, 80 |
+| **comercio entre picos** | volumen negociado entre picos (liquidez acumulada) | no existe | volumen total, por pico, relativo a la sesión |
+| **retesteo exacto** | picos al mismo precio vs escalonados | no existe | proporción de picos iguales al anterior |
+| backfill | extender la serie hacia atrás | sí | sí / no |
+| escala de vela | 25t, 500t, tiempo | 25t (y 500t aparte) | — |
+
+### 5.2 Cómo elegirlos sin mirar si atraen
+1. **Target-free primero:** la definición se valida con los juicios de Nico (✓/✗ en el visor, precisión fuera de
+   muestra), como ya se hizo en ES (69 %), NQ (filtro sin validar) y 500t (73–86 %). La calidad de detección no mira
+   retornos.
+2. **Pocas definiciones, declaradas antes:** 3–5 definiciones de zona que cubran el espacio (p. ej. la validada, una
+   estricta por cantidad de picos, una por horizontalidad exacta, una por comercio entre picos), congeladas antes del
+   atlas. Cada una entra al atlas como un corte más y **cuenta en la multiplicidad**.
+3. **Censo as-of de todas:** incluye zonas rotas y vencidas (regla de supervivencia del render).
+4. **Prohibido** ajustar parámetros de zona después de ver curvas de atracción. Si el atlas sugiere que una
+   definición atrae más, eso se prueba en replicación, no se re-optimiza en descubrimiento.
+
+## 6. Uso posterior como imán en el experimento de espejos
+Esta zona de picos es el candidato a «zona de alta liquidez» de la idea
+`IDEA_ESPEJO_INTENTO_FALLIDO_LIQUIDEZ_20260927.md` (espejo como intento fallido de llegar a liquidez). Consecuencias
+para el diseño de ahora:
+- La definición de zona se implementa como **módulo único y causal** (conocida en el instante en que existe), para que
+  el experimento de espejos use exactamente el mismo objeto, con su hash.
+- Se publica, por zona, la geometría que espejos va a necesitar: nivel, banda, fecha de creación, estado (virgen,
+  tocada, rota) en cada vela.
+- **No se transportan resultados:** que la zona atraiga en IPC no es evidencia para espejos. Espejos la usa como objeto
+  y hace su propia prueba, con sus controles (espejo sin zona, zona sin espejo).
