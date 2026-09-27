@@ -123,9 +123,10 @@ amplía el espacio de búsqueda y el data snooping sin evidencia de que haga fal
 
 ## Firewall del holdout (desde la sesión CME del 1-oct-2026, a futuro)
 
-> Enmiendas `HOLDOUT-A1` (26/09) y `HOLDOUT-A2` (27/09), firmadas por Nico: para **ES y NQ**, jul-2025 → 30-sep-2026
-> es exploración y **ya no hay reserva**; todo candidato se confirma sólo en el holdout a futuro. Los demás
-> instrumentos siguen hasta el 30-jun (su jul–sep no está descargado). Ver `docs/incidents/AMENDMENT_HOLDOUT-A2_2026-09-27.md`.
+> Enmiendas `HOLDOUT-A1`/`A2`/`A3` (26–27/09), firmadas por Nico. Para **ES y NQ**: **descubrimiento** jul-2025 → 31-mar-2026;
+> **replicación** 1-abr → 30-sep-2026, una vez por familia y sólo sobre celdas sobrevivientes, sin elegir nada ahí;
+> **holdout** a futuro desde la sesión del 1-oct. Los demás instrumentos siguen hasta el 30-jun (su jul–sep no está
+> descargado). Ver `docs/incidents/AMENDMENT_HOLDOUT-A3_2026-09-27.md`.
 
 - **Prohibido** usar el holdout para elegir dirección, entradas/salidas,
   thresholds, bar_spec, costos o candidatos.

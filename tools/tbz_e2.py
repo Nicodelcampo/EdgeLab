@@ -374,7 +374,8 @@ def step_summary(inst):
 
 
 # ============================================================== E2b: resultados (sólo P-TBZ-EXP; OK de Nico) =====
-EXP_END = "20260930"                                 # HOLDOUT-A2 (27/09): reserva abr-jun y jul-sep pasan a exploración
+EXP_END = "20260331"                                 # descubrimiento (HOLDOUT-A3, 27/09)
+REP_START, REP_END = "20260401", "20260930"          # replicación: una vez por familia, sólo celdas sobrevivientes
 LAT_NS = 250_000_000
 TMAX_S = 1800
 COMM = {"ES": 0.2, "MES": 0.68}

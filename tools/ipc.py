@@ -180,22 +180,27 @@ def control_sw(S, A, keys, k, e, s, lvl_dist, far_dist, rng, zone_levels, R, piv
     return (float(np.mean(vals)) if vals else np.nan, len(vals))
 
 
-def declare(inst, keys):
+def declare(inst, keys, part_tag="EXP"):
     from edgelab.edge_brain.episode_logger import measurement_episode
     from edgelab.edge_brain.hippocampus_store import DurableHippocampus
-    part = f"P-IPC-{inst}-EXP"
+    part = f"P-IPC-{inst}-{part_tag}"
     if LEDGER.exists() and part in DurableHippocampus(LEDGER).partitions:
         return
     with measurement_episode(LEDGER, f"EP-IPC-PARTICION-{inst}", goal=f"declarar partición IPC {inst} antes de medir",
                              recorded_by="tools/ipc.py measure", repo=REPO, prereg_ref=DOC) as ep:
-        ep.store.record_partition(part, "EXPLORATION", f"{inst} 25T exploración (<= 2026-03-31), contrato canónico",
+        kind = "EXPLORATION" if part_tag == "EXP" else "REPLICATION"
+        ep.store.record_partition(part, kind, f"{inst} 25T {part_tag} ({keys[0]}..{keys[-1]}), contrato canónico",
                                   [f"{inst}:{k}" for k in keys])
 
 
-def step_measure(inst):
+def step_measure(inst, part="disc"):
     S = T2.load(inst)
-    keys = [k for k in sorted(S) if k <= TB.EXP_END]
-    declare(inst, keys)
+    if part == "rep":                                   # HOLDOUT-A3: replicación abr-sep, controles dentro de la misma partición
+        keys = [k for k in sorted(S) if TB.REP_START <= k <= TB.REP_END]
+        S = {k: S[k] for k in keys}
+    else:
+        keys = [k for k in sorted(S) if k <= TB.EXP_END]
+    declare(inst, keys, "REP" if part == "rep" else "EXP")
     A = {k: arrays(S[k]) for k in keys}
     cfg = DET[inst]; cap = cap_of(inst); p = cfg["pars"]
     Zs = {}
@@ -218,7 +223,7 @@ def step_measure(inst):
         print(inst, vname, "eventos", sum(1 for r in rows if r["detector"] == vname), flush=True)
     D = pd.DataFrame(rows)
     OUT.mkdir(parents=True, exist_ok=True)
-    D.to_parquet(OUT / f"A_{inst}.parquet", index=False)
+    D.to_parquet(OUT / (f"A_{inst}_rep.parquet" if part == "rep" else f"A_{inst}.parquet"), index=False)
     print(inst, "filas", len(D), "cobertura control", round(float((D.n_ctrl > 0).mean()), 3) if len(D) else None)
 
 
@@ -290,12 +295,63 @@ def step_report():
     print(json.dumps(dict(sha=sha[:12], estados=body["estados"], familia=len(ok), pasan_B=len(body["pasan_B"]), audit=audit["status"])))
 
 
+def step_replicate():
+    """Replicación pre-registrada (manifiesto, HOLDOUT-A3): sólo las 23 celdas de `pasan_B`, unilateral, BH sobre las 23."""
+    rng = np.random.default_rng(SEED)
+    rep_src = json.loads((OUT / "reportA.json").read_text(encoding="utf-8"))
+    assert rep_src["code_commit"] and len(rep_src["pasan_B"]) == 23
+    cells = []
+    for c0 in rep_src["pasan_B"]:
+        D = pd.read_parquet(OUT / f"A_{c0['inst']}_rep.parquet")
+        g0 = D[D.detector == c0["detector"]]
+        t1, t2 = g0.vol_rel.quantile([1 / 3, 2 / 3])       # terciles del volumen: los de la replicación (el corte es relativo a la muestra)
+        g = g0[(g0.virgen == c0["virgen"]) & (g0.k == c0["k"]) & (g0.nivel == c0["nivel"])]
+        if c0["volumen"] == "bajo":
+            g = g[g.vol_rel <= t1]
+        elif c0["volumen"] == "alto":
+            g = g[g.vol_rel >= t2]
+        out = dict({k: c0[k] for k in ("inst", "detector", "virgen", "k", "volumen", "nivel")}, desc_diff=c0["diff"], desc_sw=c0["c_sw"]["diff"])
+        for name, col in (("sz", "ctrl"), ("sw", "ctrl_sw")):
+            h = g.dropna(subset=[col])
+            if len(h) < 20:
+                out[name] = dict(n=int(len(h))); continue
+            d, lo, hi, mde, p2 = EV.boot(h.hit.to_numpy(float), h[col].to_numpy(), h.session.to_numpy(), rng)
+            out[name] = dict(n=int(len(h)), sessions=int(h.session.nunique()), real=float(h.hit.mean()), control=float(h[col].mean()),
+                             diff=d, ci=[lo, hi], mde=mde, p1=(p2 / 2 if d > 0 else 1 - p2 / 2))
+        cells.append(out)
+    ps = [c["sw"].get("p1", 1.0) for c in cells]
+    for c, f in zip(cells, T2.TX._bh(ps)):
+        c["replica"] = bool(f and c["sw"].get("diff", 0) > 0 and c["sz"].get("diff", 0) > 0)
+        c["negativa_sig"] = bool(c["sw"].get("ci", [0, 0])[1] < 0)
+    nrep = sum(c["replica"] for c in cells)
+    veredicto = "REPLICA" if nrep >= 12 and not any(c["negativa_sig"] for c in cells) else "NO_REPLICA"
+    body = dict(schema="EDGELAB_IPC_REP_V1", doc=DOC, fuente=rep_src.get("code_commit"), code_commit=TB._git("rev-parse", "HEAD"),
+                tree_dirty=bool(TB._git("status", "--porcelain", "--", "tools", "edgelab")), replican=nrep, veredicto=veredicto, celdas=cells)
+    raw = json.dumps(body, indent=1, default=float, ensure_ascii=False)
+    (OUT / "reportREP.json").write_text(raw, encoding="utf-8")
+    sha = hashlib.sha256(raw.encode()).hexdigest()
+    from edgelab.edge_brain.episode_logger import measurement_episode
+    parts = [f"P-IPC-{i}-REP" for i in ("ES", "NQ") if (OUT / f"A_{i}_rep.parquet").exists()]
+    with measurement_episode(LEDGER, f"EP-IPC-REP-{sha[:8]}", goal="IPC replicación abr-sep de las 23 celdas", recorded_by="tools/ipc.py replicate",
+                             repo=REPO, prereg_ref=DOC) as ep:
+        ep.store.record_observation(f"OBS-IPC-REP-{sha[:8]}", "IPC replicación (alcance por celda)", "RESPONSE_PROFILE", parts,
+                                    {f"{c['inst']}|{c['detector']}|v{c['virgen']}|k{c['k']}|{c['volumen']}|{c['nivel']}": (c["sw"].get("diff"), c["replica"]) for c in cells},
+                                    {"hmax": HMAX}, sha)
+    print(json.dumps(dict(sha=sha[:12], replican=nrep, veredicto=veredicto)))
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("step", choices=["measure", "report"])
+    ap.add_argument("step", choices=["measure", "report", "replicate"])
     ap.add_argument("--inst", default="ES")
+    ap.add_argument("--part", default="disc", choices=["disc", "rep"])
     a = ap.parse_args(argv)
-    step_measure(a.inst) if a.step == "measure" else step_report()
+    if a.step == "measure":
+        step_measure(a.inst, a.part)
+    elif a.step == "report":
+        step_report()
+    else:
+        step_replicate()
 
 
 if __name__ == "__main__":

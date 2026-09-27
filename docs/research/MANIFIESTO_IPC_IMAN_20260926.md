@@ -77,3 +77,11 @@ Riesgo detectado: el nivel real es un pico **recién negociado**; el fantasma de
 - El primer pico gana menos que el último en k 4 (varias celdas de primer pico no pasan C-SW).
 - **Tensión con 500t:** en 500t (`MANIFIESTO_IPC_MACRO_ES_500T_20260926.md`) la única celda medible daba +0,09 contra C-SZ y 0 contra C-SW, sin potencia. No es una contradicción demostrada (MDE 0,14), pero **si el efecto fuera sólo de 25t, la fricción podría comérselo**: esa es la pregunta de B.
 - **Siguiente:** etapa B (economía) sólo sobre las 23 celdas, según §6: entrada al confirmarse el alejamiento, TP en el nivel + 1 tick, SL a otros D, costos propios de cada activo y control de entrada al azar con las mismas salidas.
+
+## Pre-registro de la replicación (HOLDOUT-A3, 27/09, antes de medir abr–sep)
+- **Celdas:** exactamente las **23** que pasaron a B en el reporte `ff25451223b2` (lista en `artifacts/ipc/reportA.json`, campo `pasan_B`). Ninguna otra.
+- **Datos:** sesiones de replicación 1-abr → 30-sep-2026 (ES y NQ), mismo código de eventos, detector congelado, mismos controles C-SZ y C-SW, misma semilla.
+- **Estimand y dirección:** acierto real − control, pareado, bootstrap por sesión; hipótesis **unilateral** (diferencia > 0).
+- **Replica** una celda si: diferencia contra **C-SW** > 0 con p unilateral significativo por **BH q = 0,10 sobre las 23**, y diferencia contra C-SZ > 0. Se publican las 23, repliquen o no, con n, IC y MDE.
+- **Familia replicada** si al menos la mitad de las 23 replican y ninguna da diferencia significativa negativa. Si no, IPC 25t queda como «no replicó» con alcance por celda, y B no se corre.
+- Si replica: el efecto se reporta con 298 sesiones (ES) y B se corre sobre las celdas replicadas.
