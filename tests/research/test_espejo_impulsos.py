@@ -142,3 +142,12 @@ def test_paridad_con_detect_var():
         for g, r in zip(got, ref):
             assert (g["d"], g["a"], g["ext"], g["i0"], g["iext"], g["jconf"], g["why"]) == \
                 (r[0], r[1], r[2], r[3], r[4], r[5], r[8])
+
+
+def test_impulso_que_termina_con_la_sesion():
+    # el impulso y su confirmación caen en la última vela de la sesión: no puede quedar abierto
+    r = _ruta((100, 12), (130, 6)) + [121.0]
+    b = _bars(r)
+    last = np.zeros(len(r), bool); last[-1] = True
+    res = K.run(*b, last_of_session=last, params=P)
+    assert res["impulses"] and all(m["estado_final"] is not None for m in res["impulses"])

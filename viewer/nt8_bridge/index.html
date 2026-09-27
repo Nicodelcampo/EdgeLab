@@ -1247,6 +1247,22 @@
     </div>
 
         </div>
+        <div class="ind-panel" data-ind="espejo" hidden>
+    <!-- EDGELAB_ESPEJO_IND_V1 (2026-09-27): impulsos espejados y zonas «no listas» (registro ESPEJO-IND §3 y §6) -->
+    <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
+      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px;">🪞 Espejo: impulsos y zonas no listas</div>
+      <div style="display:flex;flex-direction:column;gap:5px;font-size:10.5px;">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-imp" checked><span>Impulso A→B y su vuelta (niveles A y B)</span></label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-nl" checked><span><b>Zona no lista</b> (tramo cruzado casi sin volumen)</span></label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-inef"><span>Sólo impulsos ineficientes (I1 ∨ I2)</span></label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-cand"><span>Sólo los que llegaron a candidato (x = 0,25)</span></label>
+        <div id="lbl-esp-status" style="font-size:9.5px;color:#666;"></div>
+        <div style="font-size:9px;color:#888;line-height:1.35;">Colores: gris = impulso confirmado · ámbar = vuelta candidata (borde grueso si «parecida», S2) · verde = tocó A · rojo = extremo nuevo · gris claro = venció.
+          Franja violeta = zona no lista, desde B hasta el desenlace. Parámetros congelados: 25t → 17 t y 20 velas; tiempo → 3·ATR(14) y 24 velas; e_min 0,3; r 0,3.
+          Se dibuja sólo lo conocido al cierre de cada vela. Descriptivo: no dice si paga.</div>
+      </div>
+    </div>
+        </div>
         <div class="ind-panel" data-ind="tbz" hidden>
     <!-- EDGELAB_TBZ_LAYER_V1: familia TBZ, franjas de baja permanencia (construcción, sin desenlaces) -->
     <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
@@ -1363,6 +1379,7 @@
 <script src="bundles/manifest.js"></script>
 <script src="bundles/manifest_nqlit.js" onerror="void 0"></script>
 <script src="density_field.js"></script>
+<script src="espejo_impulsos.js"></script>
 <script>
 (function () {
   "use strict";
@@ -2275,6 +2292,78 @@
     });
     ctx.restore();
   }
+  // EDGELAB_ESPEJO_IND_V1 (2026-09-27): kernel EspejoImpulsos (espejo_impulsos.js, paridad con Python) sobre las velas
+  // activas. Sesión = hueco > 30 min; fin de sesión = la vela antes del hueco (la última del arreglo queda abierta).
+  var espejo = { on: false, key: null, res: null, imp: true, nl: true, inef: false, cand: false };
+  function espejoCompute() {
+    var cd = activeCandlesArr(); if (!cd || cd.length < 50) { espejo.res = null; return null; }
+    var bk = state.activeBarKey || (state.run && state.run.bar_key) || "";
+    var key = (state.currentAssetId || "") + "|" + bk + "|" + cd.length + "|" + cd[cd.length - 1].time;
+    if (espejo.key === key) return espejo.res;
+    var tick = (state.data && state.data.meta && state.data.meta.tick_size) || 0.25, n = cd.length;
+    var t = new Float64Array(n), O = new Float64Array(n), H = new Float64Array(n), L = new Float64Array(n), C = new Float64Array(n), V = new Float64Array(n), S = [], last = new Uint8Array(n), ses = 0;
+    for (var i = 0; i < n; i++) {
+      if (i && cd[i].time - cd[i - 1].time > 1800) { ses++; last[i - 1] = 1; }
+      t[i] = cd[i].time; O[i] = Math.round(cd[i].open / tick); H[i] = Math.round(cd[i].high / tick); L[i] = Math.round(cd[i].low / tick);
+      C[i] = Math.round(cd[i].close / tick); V[i] = cd[i].volume || 0; S.push(ses);
+    }
+    var isTime = /time|min/i.test(bk);
+    espejo.res = EspejoImpulsos.run(t, O, H, L, C, V, S, last, isTime ? { atr_k: 3, max_bars: 24 } : { min_w: 17, max_bars: 20 });
+    espejo.key = key;
+    var st = {}; espejo.res.impulses.forEach(function (m) { var k = m.estado_final || "abierto"; st[k] = (st[k] || 0) + 1; });
+    var lb = document.getElementById("lbl-esp-status");
+    if (lb) lb.textContent = espejo.res.impulses.length + " impulsos (" + (isTime ? "3·ATR, 24 velas" : "17 t, 20 velas") + ") · " +
+      Object.keys(st).map(function (k) { return k.replace("MIRROR_", "").replace("IMP_", "").toLowerCase() + " " + st[k]; }).join(" · ");
+    return espejo.res;
+  }
+  function drawEspejo(ctx, vr, w, h) {
+    if (!espejo.on || !series) return;
+    var res = espejoCompute(); if (!res) return;
+    var cd = activeCandlesArr(), n = cd.length, tick = (state.data.meta && state.data.meta.tick_size) || 0.25;
+    function X(i) { var c = logicalToX(i); return (c === null || c === undefined) ? NaN : c; }
+    function Y(v) { var c = series.priceToCoordinate(v * tick); return (c === null || c === undefined) ? NaN : c; }
+    var byImp = {}; res.events.forEach(function (e) { (byImp[e.imp_id] = byImp[e.imp_id] || []).push(e); });
+    var FIN = { MIRROR_COMPLETED: "22,163,74", MIRROR_FAILED: "220,38,38", MIRROR_EXPIRED: "156,163,175", IMP_NO_MIRROR: "203,213,225" };
+    ctx.save(); ctx.font = "10px -apple-system, Segoe UI, sans-serif";
+    res.impulses.forEach(function (m) {
+      if (m.estado_final === "IMP_UNCONFIRMED") return;
+      if (espejo.inef && !m.ineficiente) return;
+      var ev = byImp[m.imp_id] || [], cand = null;
+      ev.forEach(function (e) { if (e.kind === "MIRROR_CANDIDATE") cand = e; });
+      if (espejo.cand && !cand) return;
+      var iEnd = m.bar_final !== null ? m.bar_final : n - 1;
+      if (cd[Math.min(n - 1, iEnd)].time < vr.from || cd[m.bar_A].time > vr.to) return;
+      var xA = X(m.bar_A), xB = X(m.bar_B), xC = X(m.bar_conf), xE = X(iEnd), yA = Y(m.A), yB = Y(m.B);
+      if (![xA, xB, xC, xE, yA, yB].every(isFinite)) return;
+      if (espejo.nl && m.no_lista_lo !== null) {
+        var y1 = Y(m.no_lista_lo), y2 = Y(m.no_lista_hi);
+        if (isFinite(y1) && isFinite(y2)) {
+          ctx.fillStyle = "rgba(124,58,237,0.16)"; ctx.fillRect(xA, Math.min(y1, y2), Math.max(1, xE - xA), Math.abs(y2 - y1));
+          ctx.strokeStyle = "rgba(124,58,237,0.6)"; ctx.lineWidth = 1; ctx.strokeRect(xA, Math.min(y1, y2), Math.max(1, xE - xA), Math.abs(y2 - y1));
+        }
+      }
+      if (!espejo.imp) return;
+      ctx.strokeStyle = "rgba(75,85,99," + (m.ineficiente ? 0.9 : 0.5) + ")"; ctx.lineWidth = m.ineficiente ? 1.6 : 1;
+      ctx.beginPath(); ctx.moveTo(xA, yA); ctx.lineTo(xB, yB); ctx.stroke();
+      var xK = cand ? X(cand.bar) : xE;
+      ctx.setLineDash([4, 3]); ctx.lineWidth = 1; ctx.strokeStyle = "rgba(107,114,128,0.8)";
+      ctx.beginPath(); ctx.moveTo(xB, yA); ctx.lineTo(xK, yA); ctx.moveTo(xB, yB); ctx.lineTo(xK, yB); ctx.stroke();
+      if (cand && isFinite(xK)) {
+        var s2 = ev.some(function (e) { return e.S2 === true; });
+        ctx.strokeStyle = "rgba(217,119,6,0.95)"; ctx.lineWidth = s2 ? 2.2 : 1.2;
+        ctx.beginPath(); ctx.moveTo(xK, yA); ctx.lineTo(xE, yA); ctx.moveTo(xK, yB); ctx.lineTo(xE, yB); ctx.stroke();
+      }
+      ctx.setLineDash([]);
+      if (m.estado_final && FIN[m.estado_final]) {
+        ctx.fillStyle = "rgb(" + FIN[m.estado_final] + ")"; ctx.beginPath(); ctx.arc(xE, m.estado_final === "MIRROR_COMPLETED" ? yA : yB, 3.5, 0, 6.2832); ctx.fill();
+      }
+    });
+    ctx.restore();
+  }
+  [["chk-esp-imp", "imp"], ["chk-esp-nl", "nl"], ["chk-esp-inef", "inef"], ["chk-esp-cand", "cand"]].forEach(function (q) {
+    var el = document.getElementById(q[0]); if (el) el.addEventListener("change", function () { espejo[q[1]] = el.checked; requestDraw(); });
+  });
+
   function tbzxPick(px, py) {
     var best = null, area = Infinity;
     (tbzx.hits || []).forEach(function (h) { if (px >= h.x0 - 2 && px <= h.x1 + 2 && py >= h.y0 - 2 && py <= h.y1 + 2) { var a = (h.x1 - h.x0 + 4) * (h.y1 - h.y0 + 4); if (a < area) { area = a; best = h; } } });
@@ -2952,7 +3041,7 @@
     drawL2Depth(ctx, vr, w, hCanvas);
     drawTrades(ctx, vr, w, hCanvas);
     drawManipulationMarkers(ctx, vr, w, hCanvas);
-    drawMaVwap(ctx, w, hCanvas); drawEvx(ctx, w, hCanvas); drawAxf(ctx, w, hCanvas); drawLabels(ctx, w, hCanvas); drawTbz(ctx, vr, w, hCanvas); drawTbzE2(ctx, vr, w, hCanvas); drawTbzx(ctx, vr, w, hCanvas);
+    drawMaVwap(ctx, w, hCanvas); drawEvx(ctx, w, hCanvas); drawAxf(ctx, w, hCanvas); drawLabels(ctx, w, hCanvas); drawTbz(ctx, vr, w, hCanvas); drawTbzE2(ctx, vr, w, hCanvas); drawTbzx(ctx, vr, w, hCanvas); drawEspejo(ctx, vr, w, hCanvas);
     if (((tbze2Opt.on || tbzx.on || evx.on || axf.on) && tbze2Opt.solo) || (typeof rev !== "undefined" && rev.on)) return;   // en revisión ✓/✗ sólo se ve la zona a juzgar             // revisión TBZ-E2 sin las zonas HFT encima
 
     var opacityVal = (activeProps.opacidad || 30) / 100;
@@ -5735,6 +5824,10 @@
       applies: function (d) { return !!(d && (d.l2 || d.trades || d.manipulation)); },
       isOn: function () { return activeProps.show_l2_depth !== false || activeProps.show_l2_trades !== false; },
       set: function (on) { indSetChk("chk-show-l2", on); indSetChk("chk-show-l2-trades", on); } },
+    { id: "espejo", name: "Espejo: impulsos y zonas no listas (ESPEJO-IND)",
+      applies: function () { return !!activeCandlesArr() && typeof EspejoImpulsos !== "undefined"; },
+      isOn: function () { return espejo.on; },
+      set: function (on) { espejo.on = on; } },
     { id: "lux", name: "LuxAlgo Imbalance (LUX-IMB)",
       applies: function (d) { return !!(d && d.runs && d.runs.some(function (r) { return (r.zones || []).some(function (z) { return z.source === "luxalgo"; }); })); },
       isOn: function () { return state.srcs.luxalgo !== false; },

@@ -7,7 +7,7 @@ DIALOG = HTML[HTML.index('id="nt8-props-modal"'):HTML.index("MODAL DE NUEVO GRÁ
 
 
 def test_registro_y_paneles_de_todos_los_indicadores():
-    for ind in ("zonas", "corredores", "tbz", "ema", "l2", "lux"):
+    for ind in ("zonas", "corredores", "tbz", "ema", "l2", "lux", "espejo"):
         assert f'id: "{ind}"' in HTML
         assert f'data-ind="{ind}"' in DIALOG
 

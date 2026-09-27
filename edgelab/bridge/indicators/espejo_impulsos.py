@@ -350,3 +350,5 @@ def _procesar(im, a0, b0, t, H, L, C, V, last, p, corte_i2, ref_comp, ses_comp, 
             reason = "horizon" if k >= horizon else "session_end"
             emit("MIRROR_EXPIRED" if candidato else "IMP_NO_MIRROR", kk, reason=reason)
             return
+    if iext + 1 >= b0 and last[b0 - 1]:       # el impulso terminó en la última vela de la sesión: no hay vuelta
+        emit("IMP_NO_MIRROR", max(b0 - 1, jc), reason="session_end")

@@ -155,6 +155,7 @@
       if (cand && f >= 1) { var far = d === 1 ? a - L[k] : H[k] - a; emit("MIRROR_COMPLETED", kk, { sobrepaso_W: Math.max(far, 0) / W, velas: k - iext }); return; }
       if (k >= horizon || last[k]) { emit(cand ? "MIRROR_EXPIRED" : "IMP_NO_MIRROR", kk, { reason: k >= horizon ? "horizon" : "session_end" }); return; }
     }
+    if (iext + 1 >= b0 && last[b0 - 1]) emit("IMP_NO_MIRROR", Math.max(b0 - 1, jc), { reason: "session_end" });
   }
   var api = { run: run, params: params, DEFAULTS: DEF, FINAL: FINAL };
   if (typeof module !== "undefined" && module.exports) module.exports = api; else root.EspejoImpulsos = api;
