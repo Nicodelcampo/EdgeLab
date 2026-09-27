@@ -6,7 +6,7 @@
   var DEF = { max_bars: 20, min_w: 17, atr_k: null, atr_n: 14, e_min: 0.3, e_max: 0.6, retr: 0.3, xs: [0.25, 0.5, 0.75],
               horizon_mult: 3, gap_reset_s: 1800, i2_pct: 33.3, ref_min: 30, thin_frac: 0.25, accept_band: 0.25, npts: 20 };
   var FINAL = { MIRROR_COMPLETED: 1, MIRROR_FAILED: 1, MIRROR_EXPIRED: 1, IMP_NO_MIRROR: 1, IMP_UNCONFIRMED: 1 };
-  var COMP = ["vel", "efi", "forma", "ondas"];
+  var COMP = ["vel", "efi", "forma", "ondas"], COMP2 = ["sim_vel", "sim_t", "sim_v"];
 
   function params(o) { var p = {}, k; for (k in DEF) p[k] = DEF[k]; if (o) for (k in o) if (o[k] !== null && o[k] !== undefined) p[k] = o[k]; return p; }
   function percentile(a, q) {                     // numpy.percentile, interpolación lineal
@@ -88,9 +88,41 @@
     return out;
   }
   function efiSeg(s) { var pp = 0; for (var i = 1; i < s.length; i++) pp += Math.abs(s[i] - s[i - 1]); return pp > 0 ? Math.abs(s[s.length - 1] - s[0]) / pp : 1; }
+  function tramoEspejo(C, d, a, ext, i0, iext, f) {
+    var W = Math.abs(ext - a), m = i0, hit = false;
+    for (var q = i0; q <= iext; q++) if (d * (C[q] - a) / W <= 1 - f) { m = q; hit = true; }
+    return hit ? m : i0;
+  }
+  // Semejanza v2 por NIVEL de precio (ver semejanza_niveles en el kernel Python).
+  function semejanzaNiveles(t, H, L, V, d, a, ext, iext, m, k, f, a0, p) {
+    var W = Math.abs(ext - a), lo = d === 1 ? ext - f * W : ext, hi = d === 1 ? ext : ext + f * W;
+    var nb = Math.max(1, Math.min(p.npts, Math.round(hi - lo))), edges = [];
+    for (var e = 0; e <= nb; e++) edges.push(lo + (hi - lo) * e / nb);
+    function dt(q) { if (q > a0) return Math.max(t[q] - t[q - 1], 1e-9); return q + 1 < t.length ? Math.max(t[q + 1] - t[q], 1e-9) : 1; }
+    function perfil(q0, q1, peso) {
+      var out = new Float64Array(nb), dur = 0;
+      for (var q = q0; q <= q1; q++) {
+        dur += dt(q);
+        var l = Math.max(L[q], lo), h = Math.min(H[q], hi); if (h < l) continue;
+        var w = peso(q);
+        if (h === l) { out[hi > lo ? Math.min(Math.floor((l - lo) / (hi - lo) * nb), nb - 1) : 0] += w; continue; }
+        for (var j = 0; j < nb; j++) { var ov = Math.min(edges[j + 1], h) - Math.max(edges[j], l); if (ov > 0) out[j] += w * ov / (h - l); }
+      }
+      return [out, dur];
+    }
+    function solape(x, y) {
+      var sx = 0, sy = 0, j; for (j = 0; j < nb; j++) { sx += x[j]; sy += y[j]; }
+      if (sx <= 0 || sy <= 0) return NaN;
+      var l1 = 0; for (j = 0; j < nb; j++) l1 += Math.abs(x[j] / sx - y[j] / sy);
+      return 1 - 0.5 * l1;
+    }
+    var vol = function (q) { return V[q]; };
+    var tm = perfil(m, iext, dt), tv = perfil(iext + 1, k, dt), vm = perfil(m, iext, vol), vv = perfil(iext + 1, k, vol);
+    var sv = tm[1] > 0 && tv[1] > 0 ? Math.exp(-Math.abs(Math.log(tv[1] / tm[1]))) : NaN, st = solape(tm[0], tv[0]), sw = solape(vm[0], vv[0]);
+    return { sim_vel: sv, sim_t: st, sim_v: sw, sim_abs: (sv === sv && st === st) ? (sv + st) / 2 : NaN, velas_vuelta: k - iext };
+  }
   function semejanza(t, C, d, a, ext, i0, iext, k, f, p) {
-    var W = Math.abs(ext - a), m = i0;
-    for (var q = i0; q <= iext; q++) if (d * (C[q] - a) / W <= 1 - f) m = q;
+    var W = Math.abs(ext - a), m = tramoEspejo(C, d, a, ext, i0, iext, f), q;
     var segM = [], segV = [];
     for (q = iext; q >= m; q--) segM.push(C[q]);
     for (q = iext; q <= k; q++) segV.push(C[q]);
@@ -109,17 +141,17 @@
     var thr = p.atr_k ? atrPrev(H, L, C, p.atr_n).map(function (v) { return p.atr_k * v; }) : new Float64Array(n).fill(p.min_w);
     var cuts = [0]; for (i = 1; i < n; i++) if (session[i] !== session[i - 1]) cuts.push(i); cuts.push(n);
     var refVpt = [], refComp = {}, impulses = [], events = [];
-    p.xs.forEach(function (x) { refComp[x] = { vel: [], efi: [], forma: [], ondas: [] }; });
+    p.xs.forEach(function (x) { refComp[x] = { vel: [], efi: [], forma: [], ondas: [], sim_vel: [], sim_t: [], sim_v: [] }; });
     for (var s = 0; s + 1 < cuts.length; s++) {
       var a0 = cuts[s], b0 = cuts[s + 1], imps = detect(t, H, L, C, V, thr, p, a0, b0), sesVpt = [], sesComp = {};
-      p.xs.forEach(function (x) { sesComp[x] = { vel: [], efi: [], forma: [], ondas: [] }; });
+      p.xs.forEach(function (x) { sesComp[x] = { vel: [], efi: [], forma: [], ondas: [], sim_vel: [], sim_t: [], sim_v: [] }; });
       var corte = refVpt.length >= p.ref_min ? percentile(refVpt, p.i2_pct) : null;
       imps.forEach(function (im) {
         procesar(im, a0, b0, t, H, L, C, V, last, p, corte, refComp, sesComp, impulses, events);
         if (im.why === 1) sesVpt.push(im.vol / Math.abs(im.ext - im.a));
       });
       refVpt = refVpt.concat(sesVpt);
-      p.xs.forEach(function (x) { COMP.forEach(function (c) { refComp[x][c] = refComp[x][c].concat(sesComp[x][c]); }); });
+      p.xs.forEach(function (x) { COMP.concat(COMP2).forEach(function (c) { refComp[x][c] = refComp[x][c].concat(sesComp[x][c]); }); });
     }
     events.sort(function (x, y) { return x.bar - y.bar || x.imp_id - y.imp_id || x.seq - y.seq; });
     return { params: p, impulses: impulses, events: events };
@@ -144,9 +176,17 @@
         var comp = semejanza(t, C, d, a, ext, i0, iext, k, f, p), pc = {}, all = true, sum = 0;
         COMP.forEach(function (c) { pc[c] = refComp[x][c].length >= p.ref_min ? pct(comp[c], refComp[x][c]) : NaN; if (pc[c] !== pc[c]) all = false; else sum += pc[c]; });
         var s2 = (pc.vel === pc.vel && pc.forma === pc.forma) ? (pc.vel >= 0.5 && pc.forma >= 0.5) : null, acc = aceptacion(H, L, V, iext, k, ext, W, d, p);
+        var niv = semejanzaNiveles(t, H, L, V, d, a, ext, iext, tramoEspejo(C, d, a, ext, i0, iext, f), k, f, a0, p), p2 = {};
+        COMP2.forEach(function (c) { p2[c] = refComp[x][c].length >= p.ref_min ? pct(niv[c], refComp[x][c]) : NaN; });
+        var s2v2 = (p2.sim_vel === p2.sim_vel && p2.sim_t === p2.sim_t) ? (p2.sim_vel >= 0.5 && p2.sim_t >= 0.5) : null;
         COMP.forEach(function (c) { sesComp[x][c].push(comp[c]); });
+        COMP2.forEach(function (c) { if (niv[c] === niv[c]) sesComp[x][c].push(niv[c]); });
         var kw = { x: x, f: f, S: all ? sum / 4 : NaN, S2: s2, aceptacion_B: im.vol > 0 ? acc[0] / im.vol : NaN, velas_en_B: acc[1] };
         COMP.forEach(function (c) { kw[c] = comp[c]; kw["p_" + c] = pc[c]; });
+        ["sim_vel", "sim_t", "sim_v", "sim_abs", "velas_vuelta"].forEach(function (c) { kw[c] = niv[c]; });
+        COMP2.forEach(function (c) { kw["p_" + c] = p2[c]; });
+        kw.S2v2 = s2v2; kw.forma_fiable = niv.velas_vuelta >= 3;
+        if (s2v2 !== null) rec.S2v2 = s2v2;
         emit(cand ? "MIRROR_PROGRESS" : "MIRROR_CANDIDATE", kk, kw);
         if (s2 !== null) rec.S2 = s2;
         cand = true;

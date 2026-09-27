@@ -1257,7 +1257,7 @@
         <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-inef"><span>Sólo impulsos ineficientes (I1 ∨ I2)</span></label>
         <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-cand"><span>Sólo los que llegaron a candidato (x = 0,25)</span></label>
         <div id="lbl-esp-status" style="font-size:9.5px;color:#666;"></div>
-        <div style="font-size:9px;color:#888;line-height:1.35;">Colores: gris = impulso confirmado · ámbar = vuelta candidata (borde grueso si «parecida», S2) · verde = tocó A · rojo = extremo nuevo · gris claro = venció.
+        <div style="font-size:9px;color:#888;line-height:1.35;">Colores: gris = impulso confirmado · ámbar = vuelta candidata (borde grueso si «parecida»: velocidad y tiempo por nivel ≥ mediana, semejanza v2) · verde = tocó A · rojo = extremo nuevo · gris claro = venció.
           Franja violeta = zona no lista, desde B hasta el desenlace. Parámetros congelados: 25t → 17 t y 20 velas; tiempo → 3·ATR(14) y 24 velas; e_min 0,3; r 0,3.
           Se dibuja sólo lo conocido al cierre de cada vela. Descriptivo: no dice si paga.</div>
       </div>
@@ -2349,7 +2349,7 @@
       ctx.setLineDash([4, 3]); ctx.lineWidth = 1; ctx.strokeStyle = "rgba(107,114,128,0.8)";
       ctx.beginPath(); ctx.moveTo(xB, yA); ctx.lineTo(xK, yA); ctx.moveTo(xB, yB); ctx.lineTo(xK, yB); ctx.stroke();
       if (cand && isFinite(xK)) {
-        var s2 = ev.some(function (e) { return e.S2 === true; });
+        var s2 = ev.some(function (e) { return e.S2v2 === true; });   // marca «parecida»: semejanza v2 por nivel
         ctx.strokeStyle = "rgba(217,119,6,0.95)"; ctx.lineWidth = s2 ? 2.2 : 1.2;
         ctx.beginPath(); ctx.moveTo(xK, yA); ctx.lineTo(xE, yA); ctx.moveTo(xK, yB); ctx.lineTo(xE, yB); ctx.stroke();
       }

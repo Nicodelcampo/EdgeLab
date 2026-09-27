@@ -64,6 +64,7 @@ RESEARCH_DEFAULTS = dict(
 )
 FINAL = ("MIRROR_COMPLETED", "MIRROR_FAILED", "MIRROR_EXPIRED", "IMP_NO_MIRROR", "IMP_UNCONFIRMED")
 COMP = ("vel", "efi", "forma", "ondas")
+COMP2 = ("sim_vel", "sim_t", "sim_v")
 
 
 def params_of(overrides=None):
@@ -215,13 +216,19 @@ def _norm(y, npts):
     return np.interp(np.linspace(0, 1, npts), np.linspace(0, 1, len(y)), y)
 
 
+def _tramo_espejo(C, imp, f):
+    """Última vela del impulso con avance (por cierres) ≤ 1 − f: desde ahí hasta B está el tramo que la vuelta espeja."""
+    d, a, ext, i0, iext = imp["d"], imp["a"], imp["ext"], imp["i0"], imp["iext"]
+    prog = d * (C[i0:iext + 1] - a) / abs(ext - a)
+    idx = np.where(prog <= 1 - f)[0]
+    return i0 + (int(idx[-1]) if len(idx) else 0)
+
+
 def semejanza(t, C, imp, k, f, p):
     """Los 4 componentes de `tools/espejo_semejanza.py::eventos` con datos ≤ vela k."""
     d, a, ext, i0, iext = imp["d"], imp["a"], imp["ext"], imp["i0"], imp["iext"]
     W = abs(ext - a)
-    prog = d * (C[i0:iext + 1] - a) / W
-    idx = np.where(prog <= 1 - f)[0]
-    m = i0 + (int(idx[-1]) if len(idx) else 0)
+    m = _tramo_espejo(C, imp, f)
     seg_m = C[m:iext + 1][::-1]; seg_v = C[iext:k + 1]
     dt_m = max(t[iext] - t[m], 1.0); dt_v = max(t[k] - t[iext], 1.0)
     vel = -abs(math.log(max(f * W / dt_v, 1e-12) / (max(abs(ext - C[m]), 1.0) / dt_m)))
@@ -234,6 +241,66 @@ def semejanza(t, C, imp, k, f, p):
              if len(ym) > 1 and len(yv) > 1 else float("nan"))
     ondas = -abs(_zigzag(yv, 0.1 / f) / f - _zigzag(ym, 0.1 / f) / f)
     return dict(vel=float(vel), efi=float(-abs(efi(seg_v) - efi(seg_m))), forma=forma, ondas=float(ondas))
+
+
+def semejanza_niveles(t, H, L, V, imp, k, f, a0, p):
+    """Semejanza v2 (2026-09-27, pedido de Nico: «lo más parecido posible, pero en espejo»), alineada por NIVEL de precio
+    en vez de por tiempo normalizado.
+
+    El espejo recorre los mismos niveles que el impulso, en orden inverso. Por eso se comparan, sobre el tramo ya
+    retrocedido R = [B − f·W, B] (o su simétrico si el impulso es bajista):
+    - `sim_t`: cuánto **tiempo** pasó el precio en cada nivel de R durante el tramo espejo del impulso y durante la
+      vuelta. Cada vela reparte su duración pareja en su rango H–L recortado a R. La similitud es el solapamiento de las
+      dos distribuciones (1 − ½·L1), en [0, 1]. Si el impulso frenó en un nivel, el espejo también frena ahí.
+    - `sim_v`: lo mismo con el **volumen** por nivel. Es la contracara de la «zona no lista»: si el impulso cruzó un nivel
+      casi sin negociar, el espejo lo cruza igual.
+    - `sim_vel`: exp(−|log(duración de la vuelta / duración del tramo espejo)|), en [0, 1]. Recorren la misma distancia
+      f·W, así que es el cociente de velocidades.
+    - `sim_abs`: promedio de `sim_vel` y `sim_t`, en [0, 1]. Es absoluta, no depende de una referencia. `sim_v` queda
+      fuera del promedio porque en ES a 5 min correlaciona 0,87–0,95 con `sim_t` (diagnóstico del 27/09); se guarda como
+      atributo.
+
+    Usa H y L de cada vela, no sólo los cierres, así que tiene sentido aunque la vuelta dure una o dos velas. La forma
+    v1, que compara caminos de cierres, con dos puntos no mide nada."""
+    d, a, ext, i0, iext = imp["d"], imp["a"], imp["ext"], imp["i0"], imp["iext"]
+    W = abs(ext - a)
+    m = imp["m"]                                   # tramo espejo: el mismo de v1 (`_tramo_espejo`)
+    lo, hi = (ext - f * W, ext) if d == 1 else (ext, ext + f * W)
+    nb = int(max(1, min(p["npts"], round(hi - lo))))
+    edges = np.linspace(lo, hi, nb + 1)
+
+    def dt(q):
+        if q > a0:
+            return max(t[q] - t[q - 1], 1e-9)
+        return max(t[q + 1] - t[q], 1e-9) if q + 1 < len(t) else 1.0
+
+    def perfil(q0, q1, peso):
+        out = np.zeros(nb); dur = 0.0
+        for q in range(q0, q1 + 1):
+            dur += dt(q)
+            l, h = max(L[q], lo), min(H[q], hi)
+            if h < l:
+                continue
+            w = peso(q)
+            if h == l:
+                j = min(int((l - lo) / (hi - lo) * nb), nb - 1) if hi > lo else 0
+                out[j] += w
+            else:
+                out += w * np.clip(np.minimum(edges[1:], h) - np.maximum(edges[:-1], l), 0, None) / (h - l)
+        return out, dur
+
+    def solape(x, y):
+        sx, sy = x.sum(), y.sum()
+        if sx <= 0 or sy <= 0:
+            return float("nan")
+        return float(1.0 - 0.5 * np.abs(x / sx - y / sy).sum())
+    tm, dur_m = perfil(m, iext, dt); tv, dur_v = perfil(iext + 1, k, dt)
+    vm, _ = perfil(m, iext, lambda q: V[q]); vv, _ = perfil(iext + 1, k, lambda q: V[q])
+    sim_vel = float(math.exp(-abs(math.log(dur_v / dur_m)))) if dur_m > 0 and dur_v > 0 else float("nan")
+    sim_t, sim_v = solape(tm, tv), solape(vm, vv)
+    return dict(sim_vel=sim_vel, sim_t=sim_t, sim_v=sim_v,
+                sim_abs=float((sim_vel + sim_t) / 2) if sim_vel == sim_vel and sim_t == sim_t else float("nan"),
+                velas_vuelta=int(k - iext))
 
 
 def _pct(v, ref):
@@ -267,12 +334,12 @@ def run(t, O, H, L, C, V, session, last_of_session=None, params=None):
         thr_all = np.full(n, float(p["min_w"]))
     cuts = np.r_[0, np.where(session[1:] != session[:-1])[0] + 1, n] if n else np.array([0])
     ref_vpt = []                             # V/W de impulsos de sesiones anteriores (I2)
-    ref_comp = {x: {c: [] for c in COMP} for x in p["xs"]}
+    ref_comp = {x: {c: [] for c in COMP + COMP2} for x in p["xs"]}
     impulses, events = [], []
     for a0, b0 in zip(cuts[:-1], cuts[1:]):
         sl = slice(a0, b0)
         imps = detect(t[sl], H[sl], L[sl], C[sl], V[sl], thr_all[sl], p)
-        ses_vpt, ses_comp = [], {x: {c: [] for c in COMP} for x in p["xs"]}
+        ses_vpt, ses_comp = [], {x: {c: [] for c in COMP + COMP2} for x in p["xs"]}
         corte_i2 = float(np.percentile(ref_vpt, p["i2_pct"])) if len(ref_vpt) >= p["ref_min"] else None
         for im in imps:
             _procesar(im, a0, b0, t, H, L, C, V, last_of_session, p, corte_i2, ref_comp, ses_comp, impulses, events)
@@ -280,7 +347,7 @@ def run(t, O, H, L, C, V, session, last_of_session=None, params=None):
                 ses_vpt.append(im["vol"] / abs(im["ext"] - im["a"]))
         ref_vpt += ses_vpt
         for x in p["xs"]:
-            for c in COMP:
+            for c in COMP + COMP2:
                 ref_comp[x][c] += ses_comp[x][c]
     events.sort(key=lambda e: (e["bar"], e["imp_id"], e["seq"]))
     return dict(indicator=NAME, version=VERSION, params=p, impulses=impulses, events=events)
@@ -333,11 +400,21 @@ def _procesar(im, a0, b0, t, H, L, C, V, last, p, corte_i2, ref_comp, ses_comp, 
                 S = float(np.mean(vals)) if len(vals) == len(COMP) else float("nan")
                 s2 = bool(pct["vel"] >= 0.5 and pct["forma"] >= 0.5) if pct["vel"] == pct["vel"] and pct["forma"] == pct["forma"] else None
                 accV, accN = aceptacion_B(H, L, V, iext, k, ext, W, d, p)
+                imp_d = dict(d=d, a=a, ext=ext, i0=i0, iext=iext)
+                imp_d["m"] = _tramo_espejo(C, imp_d, f)
+                niv = semejanza_niveles(t, H, L, V, imp_d, k, f, a0, p)
+                p2 = {c: _pct(niv[c], ref_comp[x][c]) if len(ref_comp[x][c]) >= p["ref_min"] else float("nan") for c in COMP2}
+                s2v2 = (bool(p2["sim_vel"] >= 0.5 and p2["sim_t"] >= 0.5)
+                        if p2["sim_vel"] == p2["sim_vel"] and p2["sim_t"] == p2["sim_t"] else None)
                 for c in COMP:
                     ses_comp[x][c].append(comp[c])
+                for c in COMP2:
+                    if niv[c] == niv[c]:
+                        ses_comp[x][c].append(niv[c])
                 emit("MIRROR_CANDIDATE" if not candidato else "MIRROR_PROGRESS", kk, x=x, f=f, **comp,
                      **{f"p_{c}": pct[c] for c in COMP}, S=S, S2=s2,
-                     aceptacion_B=accV / im["vol"] if im["vol"] > 0 else float("nan"), velas_en_B=accN)
+                     aceptacion_B=accV / im["vol"] if im["vol"] > 0 else float("nan"), velas_en_B=accN,
+                     **niv, **{f"p_{c}": p2[c] for c in COMP2}, S2v2=s2v2, forma_fiable=bool(niv["velas_vuelta"] >= 3))
                 candidato = True
         if newext:
             emit("MIRROR_FAILED" if candidato else "IMP_NO_MIRROR", kk, reason="new_extreme")

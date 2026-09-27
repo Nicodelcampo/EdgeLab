@@ -151,3 +151,34 @@ def test_impulso_que_termina_con_la_sesion():
     last = np.zeros(len(r), bool); last[-1] = True
     res = K.run(*b, last_of_session=last, params=P)
     assert res["impulses"] and all(m["estado_final"] is not None for m in res["impulses"])
+
+
+# ---------------------------------------------------------------- semejanza v2 por niveles
+def _ultimo_evento(r, vol=None):
+    res = K.run(*_bars(r, vol=vol), params=dict(P, max_bars=16))
+    ev = [e for e in res["events"] if e["imp_id"] == 0 and e["kind"] in ("MIRROR_CANDIDATE", "MIRROR_PROGRESS")]
+    return ev[-1]
+
+
+IMPULSO = list(np.linspace(108, 100, 8)) + [103, 106, 109, 111, 111, 111, 111, 114, 118, 122, 126, 130]
+
+
+def test_espejo_exacto_es_casi_identico():
+    vuelta = [126, 122, 118, 114, 111, 111, 111, 111, 109, 106, 103, 100]
+    e = _ultimo_evento(IMPULSO + vuelta)
+    assert e["x"] == 0.75
+    assert e["sim_t"] > 0.85 and e["sim_v"] > 0.85 and e["sim_vel"] > 0.8
+
+
+def test_pausa_en_otro_nivel_baja_la_semejanza_por_nivel():
+    espejo = [126, 122, 118, 114, 111, 111, 111, 111, 109, 106, 103, 100]
+    otra = [126, 122, 120, 120, 120, 120, 117, 114, 110, 106, 103, 100]   # misma duración, pausa en 120 y no en 111
+    e1, e2 = _ultimo_evento(IMPULSO + espejo), _ultimo_evento(IMPULSO + otra)
+    assert e1["sim_vel"] == pytest.approx(e2["sim_vel"], abs=0.2)     # misma velocidad media
+    assert e1["sim_t"] - e2["sim_t"] > 0.15                            # la forma por nivel las separa
+
+
+def test_vuelta_de_una_vela_marca_forma_no_fiable_pero_mide_por_nivel():
+    e = _ultimo_evento(IMPULSO + [100, 100])
+    assert e["velas_vuelta"] <= 2 and e["forma_fiable"] is False
+    assert e["sim_t"] == e["sim_t"] and e["sim_vel"] < 0.3               # definida, y rapidísima frente al impulso
