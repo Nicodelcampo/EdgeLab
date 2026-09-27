@@ -324,9 +324,14 @@ def step_replicate():
         c["replica"] = bool(f and c["sw"].get("diff", 0) > 0 and c["sz"].get("diff", 0) > 0)
         c["negativa_sig"] = bool(c["sw"].get("ci", [0, 0])[1] < 0)
     nrep = sum(c["replica"] for c in cells)
+    from edgelab.edge_brain.control_guard import audit_event_controls
+    X = pd.concat([pd.read_parquet(OUT / f"A_{i}_rep.parquet") for i in ("ES", "NQ") if (OUT / f"A_{i}_rep.parquet").exists()]).dropna(subset=["ph_t"])
+    audit = audit_event_controls((X.t_ev * 1e6).astype(np.int64).to_numpy(), (X.ph_t * 1e6).astype(np.int64).to_numpy(), HMAX * 60.0,
+                                 same_session=(X.session == X.ph_session).to_numpy())
     veredicto = "REPLICA" if nrep >= 12 and not any(c["negativa_sig"] for c in cells) else "NO_REPLICA"
     body = dict(schema="EDGELAB_IPC_REP_V1", doc=DOC, fuente=rep_src.get("code_commit"), code_commit=TB._git("rev-parse", "HEAD"),
-                tree_dirty=bool(TB._git("status", "--porcelain", "--", "tools", "edgelab")), replican=nrep, veredicto=veredicto, celdas=cells)
+                tree_dirty=bool(TB._git("status", "--porcelain", "--", "tools", "edgelab")), replican=nrep, veredicto=veredicto, celdas=cells,
+                control_audit=audit)
     raw = json.dumps(body, indent=1, default=float, ensure_ascii=False)
     (OUT / "reportREP.json").write_text(raw, encoding="utf-8")
     sha = hashlib.sha256(raw.encode()).hexdigest()
@@ -336,8 +341,8 @@ def step_replicate():
                              repo=REPO, prereg_ref=DOC) as ep:
         ep.store.record_observation(f"OBS-IPC-REP-{sha[:8]}", "IPC replicación (alcance por celda)", "RESPONSE_PROFILE", parts,
                                     {f"{c['inst']}|{c['detector']}|v{c['virgen']}|k{c['k']}|{c['volumen']}|{c['nivel']}": (c["sw"].get("diff"), c["replica"]) for c in cells},
-                                    {"hmax": HMAX}, sha)
-    print(json.dumps(dict(sha=sha[:12], replican=nrep, veredicto=veredicto)))
+                                    {"hmax": HMAX}, sha, design="EVENT_VS_CONTROL", control_audit=audit)
+    print(json.dumps(dict(sha=sha[:12], replican=nrep, veredicto=veredicto, audit=audit["status"])))
 
 
 def main(argv=None):
