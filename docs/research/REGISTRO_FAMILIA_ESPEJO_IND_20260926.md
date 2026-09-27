@@ -218,3 +218,11 @@ su cierre.
 ### Cómo podría refutarse
 Nico juzga ✓/✗ una muestra de vueltas `S2v2` y otra de no-`S2v2`. Si su juicio no las separa, la semejanza por nivel
 tampoco es la que él ve. Medir si `S2v2` completa el espejo más que el azar es **campaña**: pre-registro y OK.
+
+## 8. Corrección de Nico (27/09): qué es la «zona no lista»
+- **Nico:** la zona no lista es **el espejo completo** (el rango A–B recorrido de ida y vuelta), no el tramo que el impulso cruzó sin negociar. La interpretación de §6 (`no_lista_*`) **no se descarta**: queda como atributo complementario.
+- **Dos análisis distintos** (ninguno medido todavía):
+  1. **Completar el espejo:** la vuelta B→A llega a A (lo que midieron ESPEJO-SIM y ESPEJO-MACRO, con impulsos eficientes).
+  2. **El rango del espejo como zona a atravesar en el futuro:** después de completarse, el precio vuelve a cruzar A–B con más facilidad que el azar.
+- **Sobre la definición del análisis 2 (Nico):** una carrera «llega a B antes de alejarse otro W» es demasiado restrictiva: el precio puede alejarse otro W del lado contrario y **aun así** atravesar el espejo después más que el azar. La definición tiene que permitir eso (p. ej. probabilidad o tiempo hasta atravesar dentro de un horizonte, sin barrera de fracaso, contra rangos de igual ancho, edad y distancia que no fueron espejo).
+- **Estado:** Nico pide **no medir nada** hasta entender los mecanismos, calibrar y confirmar cuestiones de definición.
