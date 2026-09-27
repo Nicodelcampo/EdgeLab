@@ -121,3 +121,38 @@ juicio no distingue entre los dos grupos, la semejanza calculada no es la que é
 2. **Afloja:** ¿A1 retroceso r·W como primaria?
 3. **Parecido:** ¿S3 en el censo + S2 (vel y forma ≥ mediana) como marca?
 4. **Horizonte:** ¿3 × duración del impulso, con tope en fin de sesión?
+
+## 6. Implementación (2026-09-27) y encuadre de Nico: «zonas que no estuvieron listas»
+
+**Nico (27/09):** el indicador tiene que marcar las zonas que no estuvieron «listas» para ser comerciadas, apostando a
+que el precio las atraviese una vez que haya resuelto cierto nivel de comercio en otra área.
+
+**Cómo entra al kernel.** Entra como **atributos del censo, no como filtros**: la regla de población sigue vigente y el
+censo sigue completo.
+- **`no_lista_lo` / `no_lista_hi` / `no_lista_frac`: la zona no lista.**
+  - Se arma el perfil de volumen del impulso: el volumen de cada vela se reparte parejo en su rango, recortado a
+    [A, B].
+  - La zona es el tramo contiguo más ancho con densidad menor que 0,25 × la mediana del perfil. Es el precio que el
+    impulso cruzó casi sin negociar.
+  - El visor lo dibuja como una franja propia.
+- **`aceptacion_B` y `velas_en_B`: si ya resolvió comercio en otra área.**
+  - Es el volumen negociado en la banda de 0,25·W junto a B, desde B hasta cada evento de la vuelta, dividido por el
+    volumen del impulso.
+  - Se calcula en cada evento de la vuelta. Mide cuánto comerció el precio en B antes de volver.
+- Los dos parámetros (0,25 de densidad y 0,25·W de banda) se congelan ahora, antes de mirar censos.
+
+**Cómo podría refutarse el encuadre:**
+- Nico juzga ✓/✗ en el visor una muestra de franjas «no listas».
+- Si la precisión es menor que 70 %, el perfil no captura lo que él ve.
+- Medir si el precio atraviesa esas franjas más que el azar después de aceptar en B es **campaña**: pre-registro y OK
+  de Nico.
+
+**Estado del código:**
+- **Kernel:** `edgelab/bridge/indicators/espejo_impulsos.py`.
+  - El detector está portado de `detect_var`, con test de paridad exacta.
+  - Tiene todos los estados de §3.4 y los atributos de §3.1, §3.3 y §6.
+- **Port JS del visor:** `viewer/nt8_bridge/espejo_impulsos.js`, con paridad de eventos Python ↔ JS testeada.
+- **Tests:** `tests/research/test_espejo_impulsos.py` y `test_espejo_impulsos_js.py`. Cubren determinismo,
+  anti-lookahead, los cuatro estados, fin de sesión, censo cerrado, zona no lista y paridad.
+- **Causalidad:** el fin de sesión sale del calendario (`last_of_session`), no del final del arreglo. Una serie cortada
+  deja los estados abiertos, sin inventar vencimientos.
