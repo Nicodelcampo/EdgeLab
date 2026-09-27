@@ -93,6 +93,12 @@ def canonical_sessions(inst):
                 continue
             per[str(s["trade_date"])][m["contract"]] = dict(trade_date=str(s["trade_date"]), path=m["source_path"], contract=m["contract"],
                                                              start=int(s["start_utc_ns"]), end=int(s["end_utc_ns"]), ticks=int(s.get("ticks", 0)))
+    ext = REPO / "docs" / "research" / "contract_regimes" / f"{inst}_ext_2026q3_sessions_catalog.json"
+    if ext.exists():                               # jul-sep 2026 (HOLDOUT-A1): catálogo propio, ya con contrato canónico y sólo sesiones completas
+        extra = [dict(trade_date=s["trade_date"], path=s["path"], contract=s["contract"], start=int(s["start"]), end=int(s["end"]),
+                      ticks=int(s["ticks"])) for s in json.loads(ext.read_text(encoding="utf-8"))["sessions"] if int(s["end"]) <= TB.HOLDOUT_NS]
+    else:
+        extra = []
     key = lambda c: (int(c.split()[1][3:]), int(c.split()[1][:2]))
     days, cur, out = sorted(per), None, []
     for i, d in enumerate(days):
@@ -105,7 +111,7 @@ def canonical_sessions(inst):
                 cur = lead
         if cur in per[d]:
             out.append(per[d][cur])
-    return out
+    return out + [e for e in extra if e["trade_date"] > (out[-1]["trade_date"] if out else "")]
 
 
 def step_bars(inst, workers):

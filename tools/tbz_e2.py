@@ -38,7 +38,7 @@ BUNDLES = REPO / "viewer" / "nt8_bridge" / "bundles"
 OUT = REPO / "artifacts" / "tbz_e2"
 LEDGER_TBZ = REPO / "artifacts" / "hippocampus" / "tbz_20260924.jsonl"
 DOC = "docs/research/TBZ_E2_PARAMETRIZACION_HOLISTICA_20260924.md"
-HOLDOUT_NS = 1_782_864_000 * 1_000_000_000          # 2026-07-01T00:00Z (frontera dura; los bundles ya la cumplen)
+HOLDOUT_NS = 1_790_805_600 * 1_000_000_000          # 2026-09-30 17:00 CT = sesión CME del 1-oct (enmiendas HOLDOUT-A1/A2, 26-27/09)
 GRID = [(20, 2.5), (20, 4.0), (60, 2.5), (60, 4.0)]  # G1 primaria (la de E1)
 R_END = 0.3                                           # retr_end por defecto
 EVENT_WIN_S = 240 * 60
@@ -374,7 +374,7 @@ def step_summary(inst):
 
 
 # ============================================================== E2b: resultados (sólo P-TBZ-EXP; OK de Nico) =====
-EXP_END = "20260331"
+EXP_END = "20260930"                                 # HOLDOUT-A2 (27/09): reserva abr-jun y jul-sep pasan a exploración
 LAT_NS = 250_000_000
 TMAX_S = 1800
 COMM = {"ES": 0.2, "MES": 0.68}
