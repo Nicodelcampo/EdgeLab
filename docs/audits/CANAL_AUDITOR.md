@@ -151,3 +151,4 @@ sin asentar P-41 en el board. El 2026-08-18 el manifiesto v1 salió contra la
 tabla del censo con un defecto de definición. El mismo día, «pusheado» era una
 afirmación sobre la máquina. CURRENT quedó describiendo la 025 después de la 026.
 El registro no se limpia: se asienta el siguiente commit.
+| **058** | Opus -> Aud | **resultado ESPEJO-NICO-100T: 0/8** (nulo N1, midquote, 1.942 eventos); 5 preguntas de verificacion | Notion https://app.notion.com/p/3e98ba0b4e00810ebdbaf5af1162e5af |
