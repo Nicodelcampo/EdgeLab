@@ -31,6 +31,17 @@ import ipc_nivel_run as B  # noqa: E402
 
 OUT = REPO / "artifacts" / "ipc_nivel_hft"
 EXT_BARS, MAXD, MIN_N, N_BOOT, SEED = 500, 20, 30, 1000, 20260928
+# 28/09 (Nico: «usá la regla de desgaste por comercio del visor»): consumo por volumen tick a tick, réplica de
+# index.html (MODO 2): cada tick de la zona acumula vol_vela / ticks_de_la_vela de cada vela que lo cruza después de la
+# vela de origen; muere al llegar al umbral; la zona vive en su parte no consumida. Umbral principal 100 contratos (default
+# del visor; en MES ~12 contratos por tick y vela ≈ 8–9 pasadas); 35 y 500 (extremos de los botones) como sensibilidad.
+CONSUMO = "volumen"
+UMBRAL = 100.0
+for _a in sys.argv:
+    if _a.startswith("--umbral="):
+        UMBRAL = float(_a.split("=")[1])
+    if _a == "--consumo=fijo":
+        CONSUMO = "fijo"
 
 
 def month_data(month):
@@ -42,12 +53,12 @@ def month_data(month):
             continue
         b = json.loads(f.read_text(encoding="utf-8")); tick = float(b["meta"]["tick_size"])
         cd = b["bar_series"]["tick_25"]["candles"]
-        zs = [(float(z["available_ts"]), z["bottom"] / tick, z["top"] / tick) for z in b["runs"][0]["zones"]]
+        zs = [(float(z["available_ts"]), z["bottom"] / tick, z["top"] / tick, z["origin_ts_ns"] / 1e9) for z in b["runs"][0]["zones"]]
         del b
         t = np.array([x["time"] for x in cd], float)
         O, H, L, C = (np.round(np.array([x[k] for x in cd]) / tick) for k in ("open", "high", "low", "close"))
         V = np.array([x["volume"] for x in cd], float); del cd
-        za = np.array(zs, float) if zs else np.zeros((0, 3))
+        za = np.array(zs, float) if zs else np.zeros((0, 4))
         cuts = np.r_[0, np.flatnonzero(np.diff(t) > 1800) + 1, len(t)]
         for a0, b0 in zip(cuts[:-1], cuts[1:]):
             if b0 - a0 < 500:
@@ -59,18 +70,51 @@ def month_data(month):
                 T = t[a0:b0]
                 zz = za[(za[:, 0] >= T[0]) & (za[:, 0] <= T[-1])] if len(za) else za
                 best[key] = dict(asset=f"MES_{c}_{month}", O=O[a0:b0], H=H[a0:b0], L=L[a0:b0], C=C[a0:b0], V=V[a0:b0], T=T, Z=zz)
+                if CONSUMO == "volumen":
+                    best[key]["death"] = consumption(best[key])
     return best
+
+
+def consumption(S):
+    """Por zona: lista de (tick_bajo, tick_alto, vela_de_muerte o −1) por tick, réplica del visor."""
+    T, H, L, V, Z = S["T"], S["H"], S["L"], S["V"], S["Z"]
+    cT = np.maximum(1, H - L + 1); vt = np.maximum(1.0, V / cT)
+    out = []
+    for z in Z:
+        bot, top = int(round(z[1])), int(round(z[2])); i0 = int(np.searchsorted(T, z[3], side="left"))
+        lv = np.arange(bot, top + 1)
+        death = np.full(len(lv), -1)
+        ov = np.flatnonzero((H[i0 + 1:] >= bot) & (L[i0 + 1:] <= top)) + i0 + 1
+        if len(ov):
+            m = (L[ov][None, :] <= lv[:, None]) & (H[ov][None, :] >= lv[:, None])
+            acc = np.cumsum(m * vt[ov][None, :], axis=1)
+            hit = acc >= UMBRAL
+            anyh = hit.any(1)
+            death[anyh] = ov[hit[anyh].argmax(1)]
+        out.append((lv, death))
+    return out
 
 
 def hft_feature(S, j, ref, s):
     T, Z = S["T"], S["Z"]
     if not len(Z):
         return 0.0, 0, 0
-    abar = np.searchsorted(T, Z[:, 0], side="left")            # vela en que la zona queda disponible
-    act = (Z[:, 0] <= T[j]) & (abar >= j - EXT_BARS)
-    if not act.any():
-        return 0.0, 0, 0
-    lo, hi = Z[act, 1], Z[act, 2]
+    if CONSUMO == "fijo":
+        abar = np.searchsorted(T, Z[:, 0], side="left")        # vela en que la zona queda disponible
+        act = (Z[:, 0] <= T[j]) & (abar >= j - EXT_BARS)
+        if not act.any():
+            return 0.0, 0, 0
+        lo, hi = Z[act, 1], Z[act, 2]
+    else:                                                      # parte viva as-of j (ticks no consumidos hasta j)
+        los, his = [], []
+        for zi in np.flatnonzero(Z[:, 0] <= T[j]):
+            lv, death = S["death"][zi]
+            alive = lv[(death == -1) | (death > j)]
+            if len(alive):
+                los.append(alive.min()); his.append(alive.max())
+        if not los:
+            return 0.0, 0, 0
+        lo, hi = np.array(los, float), np.array(his, float)
     dist = np.where(ref < lo, lo - ref, np.where(ref > hi, ref - hi, 0.0))
     near = dist <= MAXD
     score = float(np.sum(1.0 / (1.0 + dist[near] / 2.0)))
@@ -123,6 +167,8 @@ def main():
                 out_r.append(dict(r, S=sc, beyond=bey, before=bef))
         print(m, "formación", len(out_f), "regreso", len(out_r), flush=True)
         del data
+    global OUT
+    OUT = OUT.parent / (f"ipc_nivel_hft_vol{int(UMBRAL)}" if CONSUMO == "volumen" else "ipc_nivel_hft")
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "eventos.json").write_text(json.dumps(dict(formacion=out_f, regreso=out_r), default=float), encoding="utf-8")
     rng = np.random.default_rng(SEED); cells = []; reglas = {}
@@ -160,7 +206,7 @@ def main():
     for i, c in enumerate(cells):
         c["bh_q10"] = i in surv
     ctrl = [r for r in out_f if r["grupo"] == "control"]
-    rep = dict(pedido="Nico 28/09, prioritario", code_commit=head, tree_dirty=dirty, reglas_niveles=reglas,
+    rep = dict(pedido="Nico 28/09, prioritario", consumo=CONSUMO, umbral_contratos=UMBRAL if CONSUMO == "volumen" else None, code_commit=head, tree_dirty=dirty, reglas_niveles=reglas,
                eventos=dict(formacion_zona=sum(r["grupo"] == "zona" for r in out_f), formacion_control=len(ctrl), regreso=len(out_r)),
                control_S_medio=float(np.mean([r["S"] for r in ctrl])) if ctrl else None,
                zona_S_medio=float(np.mean([r["S"] for r in out_f if r["grupo"] == "zona"])) if out_f else None,
