@@ -416,3 +416,6 @@ aquellos números compara dos poblaciones distintas.
   (3) libro L2: un cruce (preapertura CME) ya no vacía el libro; 20260626 pasa de 1021 a 1371/1381 minutos elegibles.
 - **MEDIDO 28/09 — ESPEJO-NICO-100T descubrimiento (ES, 181 sesiones, 1.942 eventos, nulo N1, midquote):** 0/8 pruebas
   sobreviven; P2 negativa en 3/4 celdas; MDE 0,07–0,16. Sin replicación. `RESULTADO_ESPEJO_NICO_100T_DESCUBRIMIENTO_20260928.md`.
+- **PROVISIONAL 28/09 — ESPEJO-VOLLIMP-100T (ES, 3.863 eventos, 24 pruebas):** 0/24 sobreviven BH; la de p menor (R-VL x=0,75
+  otros, −0,12, p 0,038) va en contra. **Ambas corridas del espejo usaron un pool del nulo que incluía la vela del evento
+  (auditoría 059)**: son descriptivas hasta re-correr con el pool corregido (decisión de Nico).

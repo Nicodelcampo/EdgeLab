@@ -77,7 +77,7 @@ CORRIDOR_DEFINITION                     = density_field.py (reference) + density
 DENSITY_PORT_PARITY                     = 28_golden_scenarios + 12_real_bundle_cases, max_abs_diff=0
 CORRIDOR_DIRECTION_CHARACTERIZATION     = CHARACTERIZATION_UNCERTIFIED
 H_CLUSTER_NQ                            = OUT_OF_PROJECT (archived)
-HOLDOUT_INTEGRITY                       = SEALED_UNTOUCHED (2026-07-01 -> 2026-12-31)
+HOLDOUT_INTEGRITY                       = SEALED_UNTOUCHED (HOLDOUT-A3: forward desde la sesion del 2026-10-01; abr-sep = replicacion, una vez por familia)
 HOLDOUT_BOUNDARY_NS                     = 1782856800000000000
 CI_PR48_BEFORE                          = 19_failed_1_error (causas mecanicas)
 CI_LOCAL_AFTER_MERGE                    = 1567_passed_1_failed (CURRENT.md, resuelto en este commit)

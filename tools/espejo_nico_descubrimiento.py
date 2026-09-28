@@ -51,6 +51,16 @@ def agg100(h, l, c):
     return H, L, C
 
 
+def null_pool(trip, k, prev_triples, min_n=50, fill_to=200):
+    """Pool del nulo N1: ternas 25t que terminan ESTRICTAMENTE antes de la vela 100t del evento (k).
+    Auditoría 059 §1: antes era trip[:(k + 1) * MULT] e incluía las 4 subvelas de la propia vela del evento.
+    Si quedan < min_n, se completa con la cola de la sesión anterior hasta fill_to."""
+    pre = trip[:k * MULT]
+    if len(pre) < min_n and prev_triples is not None and len(prev_triples):
+        pre = np.vstack([prev_triples[-(fill_to - len(pre)):], pre])
+    return pre
+
+
 def score(it, fr):
     f = features(it)
     return float(sum(fr["pesos"][k] * f[k] / fr["escala_diferencias"][k] for k in fr["feats"])), f
@@ -117,9 +127,7 @@ def session_events(s, prev_triples, fr, xs=XS):
                 seg = slice(k + 1, (jm if r["res_mid"] != "censurada" else hz) + 1)
                 exc_a = (d * (B - (ML[seg] if d == 1 else MH[seg]))).max() if seg.stop > seg.start else 0.0
                 r["exc_max_W"] = float(max(exc_a, 0) / W)
-                pre = trip[:(k + 1) * MULT]
-                if len(pre) < 50 and prev_triples is not None:
-                    pre = np.vstack([prev_triples[-(200 - len(pre)):], pre])
+                pre = null_pool(trip, k, prev_triples)
                 if len(pre) < 50:
                     r["p0"] = None
                 else:
