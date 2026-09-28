@@ -123,6 +123,12 @@ def build(contract, folder):
     return pq_path, per
 
 
+def _exp(contract):
+    """Vencimiento ordenable (año, mes) de 'ES 03-26': comparar el texto fallaba entre años (03-26 < 12-25)."""
+    mm, yy = contract.split()[1].split("-")
+    return (int(yy), int(mm))
+
+
 def session_complete(s):
     """Sesión completa: mismos criterios que el catálogo (ticks, span y hueco máximo). Lo usa también la regla de roll."""
     return bool(s and s["ticks"] >= MIN_TICKS and (s["last"] - s["first"]) / 3.6e12 >= MIN_SPAN_H and s["max_gap_s"] <= MAX_GAP_S)
@@ -162,7 +168,7 @@ def main():
         elif i > 0:
             prev = {c: per_c[c].get(days[i - 1], {}).get("ticks", 0) for c in CONTRACTS}
             lead = max(prev, key=prev.get)
-            if lead > cur and prev[lead] > prev[cur] and session_complete(per_c[lead].get(days[i - 1])):   # auditoría 046 §5: el líder tiene que tener la sesión anterior COMPLETA (ticks, span y huecos), no sólo ticks
+            if _exp(lead) > _exp(cur) and prev[lead] > prev[cur] and session_complete(per_c[lead].get(days[i - 1])):   # auditoría 046 §5: el líder tiene que tener la sesión anterior COMPLETA (ticks, span y huecos), no sólo ticks
                 cur = lead
         s = cands.get(cur)
         row = dict(trade_date=str(d), contract=cur, path=str(paths[cur]), ticks=(s or {}).get("ticks", 0),
