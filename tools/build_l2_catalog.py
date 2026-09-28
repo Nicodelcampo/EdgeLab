@@ -19,6 +19,7 @@ al siguiente. Target-free: sólo volumen negociado, continuidad y horario; no mi
 from __future__ import annotations
 
 import json
+import os
 import sys
 from collections import defaultdict
 from datetime import datetime
@@ -32,8 +33,11 @@ sys.path.insert(0, str(REPO)); sys.path.insert(0, str(REPO / "tools"))
 from edgelab.kaggle.sessions_cme import is_maintenance_break, trade_date_ymd  # noqa: E402
 
 BASE = Path(r"E:\l2_parquet")
-OUT = REPO / "docs" / "research" / "contract_regimes" / "L2_sessions_catalog_20260927.json"
-CACHE = BASE / "_catalog_scan_20260927_utc.json"
+# TAG por variable de entorno: el catálogo 20260927 está congelado en el protocolo NQ (su sha entra al preflight);
+# los reescaneos con datos nuevos se escriben en un archivo con otra fecha, nunca encima.
+TAG = os.environ.get("L2_CATALOG_TAG", "20260927")
+OUT = REPO / "docs" / "research" / "contract_regimes" / f"L2_sessions_catalog_{TAG}.json"
+CACHE = BASE / f"_catalog_scan_{TAG}_utc.json"
 MIN_SPAN_H, MAX_GAP_S, MIN_VOL_FRAC = 22.5, 1800, 0.5
 LAST = 2
 ART_TO_UTC_NS = 3 * 3600 * 1_000_000_000   # docs/research/RESOLUCION_RELOJ_GC_L2_20260922.md: ts_us = hora de pared ART (UTC-3)
@@ -56,6 +60,8 @@ def scan():
             for rg in range(pf.metadata.num_row_groups):
                 t = pf.read_row_group(rg, columns=["ts_us", "side", "size"])
                 ts = t.column("ts_us").to_numpy().astype(np.int64) * 1000 + ART_TO_UTC_NS   # ts_us es hora de pared ART, no UTC
+                if not len(ts):
+                    continue                                    # archivo/row group vacío (28/09: rompía el reescaneo)
                 side = t.column("side").to_numpy(); size = t.column("size").to_numpy()
                 td = trade_date_ymd(ts); mb = is_maintenance_break(ts)
                 gaps = np.diff(np.r_[prev if prev is not None else ts[0], ts]) / 1e9
