@@ -176,3 +176,12 @@ Artefacto: `artifacts/research/espejo_macro/CURVA/`.
   poco. No se ve una cola lejana ni más casos que mueren en A.
 - **Qué sigue sin medir:** el mismo análisis condicionado a imanes, dirección o agotamiento.
 - **Tamiz:** sigue en SÍ; esto no lo mueve.
+
+### 2026-09-28 — ESPEJO-SIM-COMP pre-registrado (sin correr)
+
+- **Qué es:** cruces de la semejanza replicada en MNQ con eficiencia, aceptación en B, dirección y la semejanza v2.
+  Son 10 pruebas.
+- **Documento:** `MANIFIESTO_ESPEJO_SIM_COMPLEMENTOS_MNQ_20260928.md`.
+- **Orden:** se corre después de PIVOTES-BARRIDO-MES y necesita el OK para correr.
+- **Aviso:** el exceso sobre f de ESPEJO-MACRO está en duda por el sesgo del nulo f que verificó la rama `foundation`
+  (auditoría 056). Hay que re-medirlo con el nulo simulado N1 antes de tomar el SÍ del tamiz como firme.
