@@ -469,3 +469,6 @@ aquellos números compara dos poblaciones distintas.
 - **MEDIDO 28/09 — ESPEJO-CONT-100T MNQ (NT8):** 1/1.050 (VWAP a favor, TP 0,25), R bruto negativo. **Continuación tras el
   espejo cerrada como edge en 6 instrumentos y 2 proveedores.** `RESULTADO_ESPEJO_CONT_100T_MNQ_20260928.md`.
 - **MEDIDO 28/09 — ESPEJO-REV-100T YM:** 0 sobreviven; cruce y reversión en el azar. `RESULTADO_ESPEJO_REV_100T_YM_20260928.md`.
+- **MEDIDO 28/09 — ESPEJO-REV-100T NQ, re-corrida con sesiones sorteadas (disjunta de la primera):** el primer 25 % del cruce
+  hacia B vuelve a superar al azar (+2,2 a +2,9 pp; overshoot medio +3,7 a +4,6 pp); 75–100 % en el azar. Se repite en
+  dos muestras sin sesiones en común. Opuesto a ES; nulo en GC y YM.
