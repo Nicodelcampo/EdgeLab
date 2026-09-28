@@ -27,7 +27,7 @@ REPO = Path(__file__).resolve().parents[1]
 VIEW = REPO / "viewer" / "nt8_bridge"
 TRAIN = "MES_03-26_202603_25T_HFT"
 MAX_GAP = 200          # velas entre visitas: los ejemplos de Nico llegan a 147 (28/09); fijo, no se ajusta
-GRID = dict(R=(12, 16, 20, 24, 28, 32, 40, 48), tol=(2, 3, 4, 6, 8), sep=(0, 15, 30, 60))
+GRID = dict(R=(3, 4, 6, 8, 10, 12), tol=(2, 3, 4, 6, 8), sep=(0,))
 
 
 def load(asset):
@@ -60,7 +60,14 @@ def zigzag(h, l, t, R):
     return piv
 
 
-def levels(piv, tol, sep, t=None):
+MIN_VISITS = 3         # 28/09, Nico: «no pueden haber sólo 2 picos»; sus 10 grupos tienen 3–5 visitas
+BIG_EXIT = 14          # ticks: salida mínima para que la vuelta siguiente cuente como otra visita (sus grupos: ≥ 14)
+
+
+def levels(piv, tol, sep, t=None, h=None, l=None):
+    """Pivotes finos del mismo tipo a ≤ tol del primero (1,5·tol desde la 3.ª visita). Una visita nueva empieza cuando
+    entre dos pivotes consecutivos del nivel el precio se alejó ≥ BIG_EXIT ticks; si no, es la misma visita (picos
+    pegados). Zona = ≥ MIN_VISITS visitas. `sep` queda sin uso (se conserva por la grilla)."""
     out = []
     for kind in ("H", "L"):
         P = [p for p in piv if p[1] == kind]
@@ -71,24 +78,33 @@ def levels(piv, tol, sep, t=None):
                 continue
             lvl = P[a][2]; visits = [[P[a]]]
             for b in range(a + 1, len(P)):
-                q = P[b]; tl = tol if len(visits) < 2 else 1.5 * tol
-                if q[0] - visits[-1][-1][0] > MAX_GAP or (t is not None and np.any(np.diff(t[visits[-1][-1][0]:q[0] + 1]) > 1800)):
-                    break                                   # demasiado lejos o cruza la frontera de sesión: el nivel se cierra
+                q = P[b]; last = visits[-1][-1]
+                if q[0] - last[0] > MAX_GAP or (t is not None and np.any(np.diff(t[last[0]:q[0] + 1]) > 1800)):
+                    break
+                tl = tol if len(visits) < 2 else 1.5 * tol
                 over = s * (q[2] - lvl)
                 if over > tl:
-                    break                                   # pasó el nivel: lo rompe
+                    break
                 if over < -tl:
-                    continue                                # se quedó corto: no suma ni rompe
-                if q[0] - visits[-1][-1][0] < sep:
-                    visits[-1].append(q)                     # pico pegado: misma visita
-                else:
+                    continue
+                exc = (lvl - l[last[0]:q[0] + 1].min()) if kind == "H" else (h[last[0]:q[0] + 1].max() - lvl)
+                if exc >= BIG_EXIT:
                     visits.append([q])
+                else:
+                    visits[-1].append(q)
                 used.add(b)
-            if len(visits) >= 2:
+            if len(visits) >= MIN_VISITS:
                 pk = [p for v in visits for p in v]
-                out.append(dict(kind=kind, visitas=len(visits), n3=len(visits) >= 3, picos=pk,
+                out.append(dict(kind=kind, visitas=len(visits), n3=len(visits) >= 4, picos=pk,
                                 i0=pk[0][0], i1=pk[-1][0], lo=min(p[2] for p in pk), hi=max(p[2] for p in pk)))
-    return out
+    # la misma zona vista desde distintos picos de arranque: entre zonas del mismo tipo superpuestas en el tiempo,
+    # queda la de más visitas (y, a igualdad, la más temprana)
+    out.sort(key=lambda z: (-z["visitas"], z["i0"]))
+    keep = []
+    for z in out:
+        if not any(k["kind"] == z["kind"] and min(k["i1"], z["i1"]) >= max(k["i0"], z["i0"]) for k in keep):
+            keep.append(z)
+    return sorted(keep, key=lambda z: z["i0"])
 
 
 def score(zones, lab, t):
@@ -110,7 +126,7 @@ def fit():
     lab = json.loads((VIEW / "labels" / f"{TRAIN}.json").read_text(encoding="utf-8"))
     res = []
     for R, tol, sep in itertools.product(*GRID.values()):
-        z = levels(zigzag(h, l, t, R), tol, sep, t)
+        z = levels(zigzag(h, l, t, R), tol, sep, t, h, l)
         res.append(dict(R=R, tol=tol, sep=sep, **score(z, lab, t)))
     res.sort(key=lambda r: (-r["f1"], -r["cobertura"], r["R"]))
     out = dict(entrenado_con=TRAIN, grilla=GRID, elegido=res[0], top10=res[:10],
@@ -123,7 +139,7 @@ def fit():
 def detect(asset):
     fr = json.loads((REPO / "docs" / "research" / "IPC_NIVEL_PARAMETROS_CONGELADOS_20260928.json").read_text(encoding="utf-8"))["elegido"]
     t, h, l, tick = load(asset)
-    Z = levels(zigzag(h, l, t, fr["R"]), fr["tol"], fr["sep"], t)
+    Z = levels(zigzag(h, l, t, fr["R"]), fr["tol"], fr["sep"], t, h, l)
     zonas = [dict(kind=z["kind"], i0=int(z["i0"]), i1=int(z["i1"]), t0=float(t[z["i0"]]), t1=float(t[z["i1"]]),
                   p0=float(z["lo"] * tick), p1=float(z["hi"] * tick), toques=int(z["visitas"]), n3=bool(z["n3"]),
                   picos=[[int(p[0]), float(t[p[0]]), float(p[2] * tick)] for p in z["picos"]]) for z in Z]
