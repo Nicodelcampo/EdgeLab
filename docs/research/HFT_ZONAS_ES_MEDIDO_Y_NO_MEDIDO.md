@@ -439,3 +439,5 @@ aquellos números compara dos poblaciones distintas.
 - **MEDIDO 28/09 — IPC-NIVEL-REGRESO (MES, 2.214 regresos vírgenes):** 1/36 sobrevive (piso, cerca + poco volumen: −6,8 pp
   vs pivote suelto); techo igual −7,2 (p 0,008, no pasa BH). Lejos + mucho volumen: sin diferencia. No hay imán.
   `RESULTADO_IPC_NIVEL_REGRESO_MES_20260928.md`.
+- **MEDIDO 28/09 — IPC-NIVEL × densidad HFT (MES):** 0/16; la cercanía/densidad de zonas HFTZonesNQPureV4 (sin paridad
+  validada) no discrimina barrido vs resistencia del nivel. `RESULTADO_IPC_NIVEL_HFT_MES_20260928.md`.
