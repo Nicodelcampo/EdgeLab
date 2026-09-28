@@ -468,3 +468,4 @@ aquellos números compara dos poblaciones distintas.
   y contra-tendencia negativa; R bruto negativo. `RESULTADO_ESPEJO_CONT_100T_MYM_20260928.md`.
 - **MEDIDO 28/09 — ESPEJO-CONT-100T MNQ (NT8):** 1/1.050 (VWAP a favor, TP 0,25), R bruto negativo. **Continuación tras el
   espejo cerrada como edge en 6 instrumentos y 2 proveedores.** `RESULTADO_ESPEJO_CONT_100T_MNQ_20260928.md`.
+- **MEDIDO 28/09 — ESPEJO-REV-100T YM:** 0 sobreviven; cruce y reversión en el azar. `RESULTADO_ESPEJO_REV_100T_YM_20260928.md`.
