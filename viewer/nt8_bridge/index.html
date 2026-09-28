@@ -3298,7 +3298,7 @@
   function drawZones(ctxArg, wArg, hArg) {
     if (!ctxArg) { if (window.__EDGELAB_ZONES_PRIM__) window.__EDGELAB_ZONES_PRIM__.update(); return; }
     var ctx = ctxArg;
-    if (!state.run || state.zonesHidden) return;
+    if (!state.run) return;               // «Zonas» apagado (zonesHidden) oculta SÓLO las zonas HFT, no las demás capas (27/09)
 
     var tsc = chart.timeScale();
     var vr = realVisibleRange();
@@ -3315,7 +3315,7 @@
      ["tbz", function () { drawTbz(ctx, vr, w, hCanvas); }], ["tbze2", function () { drawTbzE2(ctx, vr, w, hCanvas); }],
      ["tbzx", function () { drawTbzx(ctx, vr, w, hCanvas); }], ["espejo", function () { drawEspejo(ctx, vr, w, hCanvas); }]
     ].forEach(function (L) { try { ctx.save(); L[1](); } catch (err) { console.error("capa " + L[0] + ":", err); } finally { ctx.restore(); } });
-    if (((tbze2Opt.on || tbzx.on || evx.on || axf.on) && tbze2Opt.solo) || (typeof rev !== "undefined" && rev.on)) return;   // en revisión ✓/✗ sólo se ve la zona a juzgar             // revisión TBZ-E2 sin las zonas HFT encima
+    if (state.zonesHidden || ((tbze2Opt.on || tbzx.on || evx.on || axf.on) && tbze2Opt.solo) || (typeof rev !== "undefined" && rev.on)) return;   // en revisión ✓/✗ sólo se ve la zona a juzgar             // revisión TBZ-E2 sin las zonas HFT encima
 
     var opacityVal = (activeProps.opacidad || 30) / 100;
     var showLabels = activeProps.mostrar_texto !== false;
