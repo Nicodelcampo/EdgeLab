@@ -447,3 +447,6 @@ aquellos números compara dos poblaciones distintas.
   (techo −0,8 pp, piso +0,2). El +5 pp del control C-PIV del IPC-NIVEL era selección del evento de control. Sólo la
   distancia separa (+1,7 a +2,6 pp, sin relevancia económica). **Corrige LES-PIVOT-SWEPT-20260928.**
   `RESULTADO_PIVOTES_BARRIDO_MES_20260928.md`.
+- **MEDIDO 28/09 — ESPEJO-CONT-100T ES (Kaggle, Lucid, nulo corregido):** 0/1.035 celdas; exceso ≈ 0 en todos los niveles.
+  El R bruto negativo de la continuación es mecánica de entrada (toque por mecha), no reversión. Corrige la lectura de
+  CONT-TPSL ES 25t. `RESULTADO_ESPEJO_CONT_100T_ES_20260928.md`.
