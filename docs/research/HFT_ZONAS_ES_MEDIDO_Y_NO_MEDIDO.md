@@ -443,3 +443,7 @@ aquellos números compara dos poblaciones distintas.
   validada) no discrimina barrido vs resistencia del nivel. `RESULTADO_IPC_NIVEL_HFT_MES_20260928.md`.
   Con desgaste por comercio del visor (umbral 100; sensibilidad 35 y 500): también 0/16 en las tres.
   **Estado: exploratorio, diseño a revisar con Nico en el visor. No es una muerte del cruce IPC × HFT.**
+- **MEDIDO 28/09 — PIVOTES-BARRIDO-MES (censo, 272.331 pivotes):** en la confirmación los pivotes se barren **como el azar**
+  (techo −0,8 pp, piso +0,2). El +5 pp del control C-PIV del IPC-NIVEL era selección del evento de control. Sólo la
+  distancia separa (+1,7 a +2,6 pp, sin relevancia económica). **Corrige LES-PIVOT-SWEPT-20260928.**
+  `RESULTADO_PIVOTES_BARRIDO_MES_20260928.md`.
