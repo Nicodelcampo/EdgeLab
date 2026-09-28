@@ -464,3 +464,5 @@ aquellos números compara dos poblaciones distintas.
 - **MEDIDO 28/09 — ESPEJO-REV-100T GC (sin feb-2026):** cruce hacia B sin efecto; **TP/SL de reversión 2 W / 1 W: R bruto
   +0,026 W (≈ +3,6 t), exceso +0,106, sobrevive** (n 2.103). Primer R bruto positivo que sobrevive. Candidato a
   confirmación abr–jun con fricción GC propia. `RESULTADO_ESPEJO_REV_100T_GC_20260928.md`.
+- **MEDIDO 28/09 — ESPEJO-CONT-100T MYM (NT8):** 41/1.050; TP 0,25 positivos en cualquier filtro (patrón sospechoso del nulo)
+  y contra-tendencia negativa; R bruto negativo. `RESULTADO_ESPEJO_CONT_100T_MYM_20260928.md`.
