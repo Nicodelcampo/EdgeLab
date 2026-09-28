@@ -17,10 +17,12 @@ def test_transient_cross_inside_batch_is_not_invalid():
     assert b.ready and b.asks.levels[0][0] == 100 and b.bids.levels[0][0] == 99 and b.crossed_events == 0
 
 
-def test_cross_at_batch_end_still_resets():
+def test_cross_at_batch_end_is_counted_but_book_survives():
     b = L2Book(); _snap(b, 100, 101)
-    b.apply(1, 0, 0, 102, 1)
-    assert b.crossed_events == 1 and not b.ready
+    b.apply(1, 0, 0, 102, 1)                  # cruce real (preapertura): se cuenta, no se vacía
+    assert b.crossed_events == 1 and b.ready
+    b.apply(1, 2, 0, 102, 0)                  # sale el bid cruzado: el libro vuelve a estar sano
+    assert b.bids.levels[0][0] == 100 and b.crossed_events == 1
 
 
 def _rows(ts0, bid, ask, start_row, resync):
@@ -35,7 +37,7 @@ def _rows(ts0, bid, ask, start_row, resync):
 
 def test_resync_rebuilds_book_after_reset():
     a = _rows(0, 100, 101, 0, True)
-    cross = pd.DataFrame([dict(side=1, operation=0, level=0, price_tick=105, size=1, ts_us=1, source_row=100, resync=False)])
+    cross = pd.DataFrame([dict(side=1, operation=2, level=7, price_tick=105, size=1, ts_us=1, source_row=100, resync=False)])
     b = _rows(120_000_000, 200, 201, 200, True)
     l2 = pd.concat([a, cross, b], ignore_index=True)
     l1 = pd.DataFrame(dict(side=pd.Series([], dtype="int64"), price_tick=pd.Series([], dtype="int64"),

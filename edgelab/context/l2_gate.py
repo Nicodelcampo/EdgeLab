@@ -167,8 +167,9 @@ class L2Book:
                 result["valid"] = False
                 if self.strict:
                     raise ValueError("crossed L2 book")
-                self.asks.reset()
-                self.bids.reset()
+                # 28/09: NO se vacía el libro. En la preapertura CME (16:45-17:00 CT) el libro se cruza
+                # legítimamente; cada lado sigue consistente. Vaciarlo perdía 6 h por día hasta el archivo
+                # siguiente. El minuto queda no elegible por l2_crossed_count (no_new_cross).
             elif best_bid == best_ask:
                 self.locked_events += 1
         return result
