@@ -1294,6 +1294,10 @@
         <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-nl" checked><span><b>Zona «no lista»</b> (tramo cruzado sin volumen)</span></label>
         <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-inef"><span>Sólo impulsos ineficientes (I1 ∨ I2)</span></label>
         <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-s2"><span>Sólo vueltas parecidas (S2v2: vel/tiempo)</span></label>
+        <label style="display:flex;align-items:center;gap:6px;" title="Mínimo de distancia de los tramos (W = |B − A|) en ticks. Vacío = el del slider de permisividad. Sirve para instrumentos con tick chico (GC: 0,1).">
+          <span><b>W mínimo</b> (ticks, pisa el slider):</span>
+          <input type="number" id="inp-esp-minw" min="1" step="1" placeholder="slider" style="width:70px;font-size:10.5px;padding:1px 4px;">
+        </label>
         <div id="lbl-esp-status" style="font-size:9.5px;color:#666;line-height:1.35;margin-top:2px;"></div>
         <div style="font-size:9px;color:#888;line-height:1.35;margin-top:4px;">
           <b>Guía de calibración:</b><br>
@@ -2354,7 +2358,8 @@
     var lvl = espejo.permLevel || 3;
     var cfg = PERM_CONFIGS[lvl] || PERM_CONFIGS[3];
     var prm = isTime ? { atr_k: cfg.atr_k, max_bars: cfg.max_bars } : { min_w: cfg.min_w, max_bars: cfg.max_bars };
-    var key = (state.currentAssetId || "") + "|" + bk + "|" + cd.length + "|" + cd[cd.length - 1].time + "|lvl" + lvl;
+    if (!isTime && espejo.minW > 0) prm.min_w = espejo.minW;     // 28/09 (Nico): W mínimo manual, pisa el del slider
+    var key = (state.currentAssetId || "") + "|" + bk + "|" + cd.length + "|" + cd[cd.length - 1].time + "|lvl" + lvl + "|w" + (espejo.minW || 0);
     if (espejo.key === key) return espejo.res;
     var tick = (state.data && state.data.meta && state.data.meta.tick_size) || 0.25, n = cd.length;
     var t = new Float64Array(n), O = new Float64Array(n), H = new Float64Array(n), L = new Float64Array(n), C = new Float64Array(n), V = new Float64Array(n), S = [], last = new Uint8Array(n), ses = 0;
@@ -2371,7 +2376,7 @@
       var nComp = st["MIRROR_COMPLETED"] || 0;
       var total = espejo.res.impulses.length;
       lb.innerHTML = "<b>" + nComp + " espejos completados</b> (" + total + " impulsos totales)<br>" +
-        "<span style='color:#777;'>" + (isTime ? (cfg.atr_k + "·ATR, " + cfg.max_bars + " velas") : (cfg.min_w + " t, " + cfg.max_bars + " velas")) + " · fallidos " + (st["MIRROR_FAILED"] || 0) + " · vencidos " + (st["MIRROR_EXPIRED"] || 0) + "</span>";
+        "<span style='color:#777;'>" + (isTime ? (cfg.atr_k + "·ATR, " + cfg.max_bars + " velas") : ((espejo.minW > 0 ? espejo.minW : cfg.min_w) + " t, " + cfg.max_bars + " velas")) + " · fallidos " + (st["MIRROR_FAILED"] || 0) + " · vencidos " + (st["MIRROR_EXPIRED"] || 0) + "</span>";
     }
     return espejo.res;
   }
@@ -2533,7 +2538,7 @@
       if (desc) {
         desc.textContent = isTime
           ? ("Filtro: W ≥ " + cfg.atr_k + "·ATR(14), máx " + cfg.max_bars + " velas")
-          : ("Filtro: W ≥ " + cfg.min_w + " ticks, máx " + cfg.max_bars + " velas");
+          : ("Filtro: W ≥ " + (espejo.minW > 0 ? espejo.minW + " ticks (manual)" : cfg.min_w + " ticks") + ", máx " + cfg.max_bars + " velas");
       }
     }
 
@@ -2625,6 +2630,12 @@
     }
   }
 
+  (function () {
+    var inp = document.getElementById("inp-esp-minw"); if (!inp) return;
+    inp.addEventListener("change", function () {
+      var v = parseInt(inp.value, 10); espejo.minW = (v > 0) ? v : 0; espejo.key = null; requestDraw();
+    });
+  })();
   [["chk-esp-completed", "completed"], ["chk-esp-imp", "imp"], ["chk-esp-box", "box"], ["chk-esp-nl", "nl"], ["chk-esp-inef", "inef"], ["chk-esp-s2", "s2"]].forEach(function (q) {
     var el = document.getElementById(q[0]); if (el) el.addEventListener("change", function () { espejo[q[1]] = el.checked; requestDraw(); });
   });
