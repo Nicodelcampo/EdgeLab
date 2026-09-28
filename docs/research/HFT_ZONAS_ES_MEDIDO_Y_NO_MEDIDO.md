@@ -442,3 +442,4 @@ aquellos números compara dos poblaciones distintas.
 - **MEDIDO 28/09 — IPC-NIVEL × densidad HFT (MES):** 0/16; la cercanía/densidad de zonas HFTZonesNQPureV4 (sin paridad
   validada) no discrimina barrido vs resistencia del nivel. `RESULTADO_IPC_NIVEL_HFT_MES_20260928.md`.
   Con desgaste por comercio del visor (umbral 100; sensibilidad 35 y 500): también 0/16 en las tres.
+  **Estado: exploratorio, diseño a revisar con Nico en el visor. No es una muerte del cruce IPC × HFT.**

@@ -1,6 +1,9 @@
 # IPC-NIVEL × zonas HFT (MES) — resultado (2026-09-28)
 
-**Veredicto: 0 de 16 sobreviven (BH q = 0,10).** Pedido prioritario de Nico. Código `tools/ipc_nivel_hft.py`, commit
+**Estado: EXPLORATORIO, DISEÑO A REVISAR (Nico, 28/09: «desconfío de la forma en que lo mediste»).** No cuenta como
+muerte del cruce IPC × HFT: se rediseña revisando en el visor qué zonas HFT cuentan como «cercanas», su vida y el puntaje.
+
+**Resultado de esta versión: 0 de 16 sobreviven (BH q = 0,10).** Pedido prioritario de Nico. Código `tools/ipc_nivel_hft.py`, commit
 `063c3be7`, árbol limpio. Reusa resultados y nulos de la formación (3.381 zonas) y del regreso virgen (2.214) y agrega el
 rasgo: zonas HFTZonesNQPureV4 (SCALED_FUNNEL_V1, **paridad no validada**, usadas como están) activas as-of (disponibles
 y hasta 500 velas después, la extensión del visor) a ≤ 20 t del nivel; S = Σ 1/(1 + d/2); niveles baja/media/alta por terciles.
