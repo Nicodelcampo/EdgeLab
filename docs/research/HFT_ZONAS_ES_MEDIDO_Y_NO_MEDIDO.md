@@ -419,3 +419,9 @@ aquellos números compara dos poblaciones distintas.
 - **PROVISIONAL 28/09 — ESPEJO-VOLLIMP-100T (ES, 3.863 eventos, 24 pruebas):** 0/24 sobreviven BH; la de p menor (R-VL x=0,75
   otros, −0,12, p 0,038) va en contra. **Ambas corridas del espejo usaron un pool del nulo que incluía la vela del evento
   (auditoría 059)**: son descriptivas hasta re-correr con el pool corregido (decisión de Nico).
+- **Re-corrida 28/09 con pool del nulo corregido (OK de Nico):** ESPEJO-NICO 0/8 (árbol limpio, cambios ≤ 0,002);
+  VOLLIMP 0/24 (menor p: R-VL x=0,75 otros −0,12, p 0,042, en contra; árbol marcado dirty sólo por `tools/ipc_nivel.py`
+  sin trackear, no importado). Las dos dejan de ser provisionales: **sin efecto detectado**, con el alcance de sus actas.
+- **IPC-NIVEL — parámetros congelados (target-free):** zigzag R = 40 t, tolerancia 3 t (3.ª visita 4,5 t), sep 0;
+  en la sesión revisada de Nico cubre 8/10 grupos con precisión 50 % (F1 0,62; n chico). Tanda ✓/✗ en MES feb-2026
+  (102 zonas, 14 con ≥ 3 visitas). **NO MEDIDO:** ningún desenlace.

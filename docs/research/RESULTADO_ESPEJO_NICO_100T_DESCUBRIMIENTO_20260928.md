@@ -1,6 +1,7 @@
 # ESPEJO-NICO-100T — resultado del descubrimiento (2026-09-28)
 
-**PROVISIONAL (auditoría 059: el pool del nulo incluía la vela del evento; pendiente re-corrida con OK de Nico).**
+**RE-CORRIDO 28/09 con el pool corregido (auditoría 059, OK de Nico), árbol limpio: mismo veredicto, 0/8.** Los números de
+abajo son de la primera corrida; la re-corrida difiere en ≤ 0,002 por celda (P1 x=0,50 otros: +0,068, p 0,056). `reporte.json` es el de la re-corrida.
 
 **Veredicto: SIN EFECTO DETECTADO. 0 de 8 pruebas primarias sobreviven (BH q = 0,10). No hay celdas para replicar.**
 Corrido con el OK de Nico (28/09) sobre el manifiesto `MANIFIESTO_ESPEJO_SEMEJANZA_NICO_100T_20260928.md` con la
