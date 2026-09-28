@@ -26,7 +26,8 @@ def triples_from_bars(open_, high, low, close, tick):
     return np.column_stack([(c - o) / tick, (h - o) / tick, (l - o) / tick])
 
 
-def simulate_null(start, a_level, beyond_b_level, direction, triples, horizon_100t, *, n=2000, seed=0):
+def simulate_null(start, a_level, beyond_b_level, direction, triples, horizon_100t, *, n=2000, seed=0,
+                  bars_per_step=BARS_25_PER_100):
     """Probabilidades nulas (completa, falla, ambigua, censurada) para un evento.
 
     start, a_level, beyond_b_level: precios en ticks (enteros o float) sobre la misma serie que el resultado real
@@ -43,14 +44,15 @@ def simulate_null(start, a_level, beyond_b_level, direction, triples, horizon_10
     # distancias en el eje "hacia A": d(A) > 0, d(beyond B) < 0
     to_a = (a_level - start) * s; to_b = (beyond_b_level - start) * s
     rng = np.random.default_rng(seed)
-    steps = horizon_100t * BARS_25_PER_100
+    m = int(bars_per_step)                                  # 28/09: 1 = velas de 25t sin agrupar (IPC-NIVEL, CONT)
+    steps = horizon_100t * m
     idx = rng.integers(0, len(t), size=(n, steps))
     dc, dh, dl = t[idx, 0], t[idx, 1], t[idx, 2]
     if s < 0:                                                          # en el eje hacia A, máximo y mínimo se invierten
         dc, dh, dl = -dc, -dl, -dh
     opens = np.cumsum(np.concatenate([np.zeros((n, 1)), dc[:, :-1]], axis=1), axis=1)
-    hi = (opens + dh).reshape(n, horizon_100t, BARS_25_PER_100).max(2)
-    lo = (opens + dl).reshape(n, horizon_100t, BARS_25_PER_100).min(2)
+    hi = (opens + dh).reshape(n, horizon_100t, m).max(2)
+    lo = (opens + dl).reshape(n, horizon_100t, m).min(2)
     hit_a = hi >= to_a; hit_b = lo <= to_b
     first = lambda m: np.where(m.any(1), m.argmax(1), horizon_100t)
     fa, fb = first(hit_a), first(hit_b)
