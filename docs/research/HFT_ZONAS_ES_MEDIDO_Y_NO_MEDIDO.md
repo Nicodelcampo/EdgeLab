@@ -454,3 +454,5 @@ aquellos números compara dos poblaciones distintas.
   R bruto negativo (−0,025 W). Pista chica, no rentable. `RESULTADO_ESPEJO_CONT_100T_YM_20260928.md`.
 - **MEDIDO 28/09 — ESPEJO-CONT-100T NQ:** 71/1.050 sobreviven, todas TP 0,25 W en casi cualquier filtro; R bruto negativo.
   Sospecha de residuo del nulo en TP chicos (también en YM): pendiente control empírico. `RESULTADO_ESPEJO_CONT_100T_NQ_20260928.md`.
+- **MEDIDO 28/09 — ESPEJO-CONT-100T MES (NT8):** 4/1.020 sobreviven, todas negativas (nivel 5, VWAP en contra / ineficiente).
+  Igual que ES: la continuación no supera al azar. `RESULTADO_ESPEJO_CONT_100T_MES_20260928.md`.
