@@ -180,6 +180,14 @@ def main():
     for c, f in CONTRACTS.items():
         paths[c], per_c[c] = build(c, f)
     days = sorted(set().union(*[set(p) for p in per_c.values()]))
+    global MIN_TICKS
+    if MODE == "NT8_2025_2026Q3":
+        # 28/09: 200.000 ticks estaba calibrado para ES; YM/MYM/RTY operan menos y nunca rolaban. Umbral relativo:
+        # 25 % de la mediana, sobre los días hábiles, del contrato con más ticks de cada día (no mira precios ni retornos).
+        lead = [max(per_c[c].get(d, {}).get("ticks", 0) for c in CONTRACTS) for d in days
+                if datetime.strptime(str(d), "%Y%m%d").weekday() < 5]
+        MIN_TICKS = int(0.25 * float(np.median([x for x in lead if x > 0])))
+        print("min_ticks", INST, MIN_TICKS, flush=True)
     cur, out, bad = None, [], []
     for i, d in enumerate(days):
         cands = {c: per_c[c][d] for c in CONTRACTS if d in per_c[c]}
