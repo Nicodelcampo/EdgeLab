@@ -252,7 +252,9 @@ modelo.**
   ningún contexto concentra el efecto. **Replicado en 12-25 y 03-26:** los 9 cortes sostienen, pero son el exceso difuso de +1–3 pp, sin concentración.
   Ver `docs/research/HANDOFF_2026-09-26_HFT_REV_Y_ESPEJO.md`.
 - **ESPEJO-SIM (MNQ 09-25, familia TBZX, exploratorio).** Con `minW` = 17, las vueltas parecidas al impulso completan el
-  espejo +1,5 a +4,9 pp más que las poco parecidas (FDR de grilla). **Sin replicar.** No operable en esa escala
+  espejo +1,5 a +4,9 pp más que las poco parecidas (FDR de grilla). **Replicado en MNQ 12-25 y 03-26 (43/52; commit
+  `079d2bd`, corrección 28/09: esta línea decía «sin replicar»).** El contraste parecidas − poco parecidas no depende del
+  nulo; el «exceso sobre f» (+1–3 pp) sí, y f está sesgado +1 a +5 pp (Entrada 057): ese exceso no se sostiene. No operable en esa escala
   (costo/W ≈ 14 pp). Nulo al extremo de la vela sesgado: se usa el del cierre (enmienda 1).
 
 - **HFT-REV-EXP (MNQ 09-25, otra familia, no ES — registrado acá por visibilidad, 2026-09-26).** Primer retorno a zonas
