@@ -30,6 +30,6 @@ Un diseño válido tiene que poder dar cualquiera de los tres resultados.
 - Zona fantasma a la misma distancia (el control C-SZ de IPC) y pico reciente (C-SW).
 
 ## Relación con lo ya medido
-- IPC 25t: las acumulaciones de picos atraen más que un nivel sin zona y más que un pico reciente (descubrimiento; replicación en curso).
+- IPC 25t: las acumulaciones de picos atraen más que un nivel sin zona y más que un pico reciente (descubrimiento; la replicación de las 23 celdas se **descartó sin abrir** el 27/09 y el positivo está bajo auditoría: entrada 046).
 - ESPEJO-SIM / ESPEJO-MACRO: completar el espejo; nunca se miró qué había más allá de B.
 - L2 (ES 09-26, 78 días de Market Replay, jul–sep): permitiría ver si en B se consumió liquidez; cae en la ventana de replicación de HOLDOUT-A3.

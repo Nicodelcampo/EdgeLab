@@ -552,7 +552,9 @@ def attach_context_at_t0(events, contexts, *, require_source_row=True, max_age_m
     context_required = {"instrument", "contract", "cme_session", "context_state",
                         "context_model_id", "context_as_of_ok", "feature_available_at_us",
                         "available_source_row"}
-    event_required.add("source_row" if require_source_row else "event_ts_us")
+    event_required.add("event_ts_us")                     # auditoría 046 §7: el orden por fila no alcanza; la feature del minuto se publica al cierre
+    if require_source_row:
+        event_required.add("source_row")
     missing_event = sorted(event_required - set(events.columns)); missing_context = sorted(context_required - set(contexts.columns))
     if missing_event or missing_context: raise ValueError(f"missing event={missing_event} context={missing_context}")
     if events["event_id"].astype(str).duplicated().any(): raise ValueError("duplicate event_id")
@@ -568,8 +570,14 @@ def attach_context_at_t0(events, contexts, *, require_source_row=True, max_age_m
             group = group.sort_values("available_source_row", kind="mergesort")
             values = group["available_source_row"].to_numpy(dtype=np.int64)
             pos = int(np.searchsorted(values, int(event["source_row"]), side="left") - 1)
+            avail = group["feature_available_at_us"].to_numpy(dtype=np.int64)
+            while pos >= 0 and avail[pos] > int(event["event_ts_us"]):   # fila anterior, pero el minuto todavía no cerró
+                pos -= 1
             if pos < 0: reason = "NO_PRIOR_CONTEXT"
-            else: chosen = group.iloc[pos]
+            else:
+                chosen = group.iloc[pos]
+                if int(event["event_ts_us"]) - int(chosen["feature_available_at_us"]) > max_age_minutes * 60_000_000:
+                    reason = "STALE_CONTEXT"; chosen = None
         else:
             group = group.sort_values("feature_available_at_us", kind="mergesort")
             values = group["feature_available_at_us"].to_numpy(dtype=np.int64)

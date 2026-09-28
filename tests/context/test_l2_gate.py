@@ -85,11 +85,25 @@ class L2GateTests(unittest.TestCase):
             "p_volatile": [.1], "flow_toxicity_score": [.2]})
         events = pd.DataFrame({"event_id": ["same", "after"], "instrument": ["GC", "GC"],
             "contract": ["GC 06-26", "GC 06-26"],
-            "cme_session": ["20260619", "20260619"], "source_row": [10, 11]})
+            "cme_session": ["20260619", "20260619"], "source_row": [10, 11], "event_ts_us": [150, 150]})
         joined, report = attach_context_at_t0(events, contexts)
         self.assertFalse(bool(joined.iloc[0].context_as_of_ok))
         self.assertTrue(bool(joined.iloc[1].context_as_of_ok))
         self.assertEqual(report["n_as_of_ok"], 1)
+
+    def test_source_row_join_waits_for_minute_close(self):
+        """Auditoría 046 §7: la fila de la feature es anterior al evento, pero el minuto cierra DESPUÉS del evento."""
+        contexts = pd.DataFrame({"instrument": ["GC", "GC"], "contract": ["GC 06-26"] * 2,
+            "cme_session": ["20260619"] * 2, "context_state": ["calm", "volatile"],
+            "context_group": ["G-operable", "G-stress"], "context_model_id": ["model"] * 2,
+            "context_as_of_ok": [True, True], "feature_available_at_us": [60_000_000, 120_000_000],
+            "available_source_row": [5, 10], "p_calm": [.8, .1], "p_normal": [.1, .1],
+            "p_volatile": [.1, .8], "flow_toxicity_score": [.1, .9]})
+        events = pd.DataFrame({"event_id": ["dentro_del_minuto"], "instrument": ["GC"], "contract": ["GC 06-26"],
+            "cme_session": ["20260619"], "source_row": [11], "event_ts_us": [90_000_000]})
+        joined, _ = attach_context_at_t0(events, contexts)
+        self.assertTrue(bool(joined.iloc[0].context_as_of_ok))
+        self.assertEqual(joined.iloc[0].context_state, "calm")          # el minuto de las 120 s todavía no estaba publicado
 
 
 if __name__ == "__main__": unittest.main()
