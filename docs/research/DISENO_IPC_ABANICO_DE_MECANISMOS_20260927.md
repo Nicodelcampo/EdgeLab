@@ -121,3 +121,15 @@ Herramienta: `tools/build_zone_def_batch.py`. ES febrero 2026 (fuera de la muest
 | D4 comercio | D1 + volumen por vela entre picos ≥ 1,2 × la mediana previa de la sesión | 266 |
 | D5 laxa | w 1, separación ≤ 30, escalón ≤ 4 t, retroceso ≥ 1 t, ≥ 5 picos, sin tope | 31.729 |
 Criterio: precisión fuera de muestra por definición (✓ / juzgadas); vara ~70 %. D5 es de referencia (probablemente demasiado laxa).
+
+### 7.1 Resultado de la tanda (28/09, juicios de Nico a ciegas con cortina; 125 zonas: 64 ✓ (2 «más larga»), 61 ✗)
+| Definición | Juzgadas que la contienen | ✓ | Precisión |
+|---|---|---|---|
+| D1 validada | 77 | 61 | **79 %** |
+| D2 estricta | 60 | 50 | **83 %** |
+| D3 horizontal (retesteo exacto) | 25 | 2 | **8 %** — rechazada |
+| D4 comercio entre picos | 38 | 26 | **68 %** — en el límite |
+| D5 laxa | 47 | 14 | **30 %** — rechazada |
+- Pasan a la etapa siguiente **D1, D2 y D4** (D4 en el límite de la vara del 70 %, se declara así). D3 y D5 quedan en el censo de **definiciones rechazadas** (auditoría 046 §9).
+- La membresía se superpone (una zona puede estar en varias definiciones): las precisiones no son independientes.
+- **Sólo precisión.** La cobertura (recall: zonas reales que cada definición no detecta) no está medida; requiere rangos marcados por Nico.
