@@ -65,6 +65,11 @@ def trade(H, L, C, k, fill, c, tp, sl, end):
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--config", required=True, choices=list(CONFIGS)); a = ap.parse_args()
     cf = CONFIGS[a.config]; m = cf["mult"]
+    OUT.mkdir(parents=True, exist_ok=True)
+    lock = OUT / f"lock_{a.config}"                    # 28/09: una sola corrida por configuración (colas paralelas)
+    if lock.exists():
+        print(a.config, "ya corriendo o terminada (candado", lock.name + "): se saltea"); return
+    lock.write_text(str(__import__("os").getpid()), encoding="utf-8")
     head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=REPO, capture_output=True, text=True).stdout.strip()
     dirty = bool(subprocess.run(["git", "status", "--porcelain", "--", "edgelab", "tools"], cwd=REPO, capture_output=True, text=True).stdout.strip())
     bd = T2.bars_dir(cf["inst"])
