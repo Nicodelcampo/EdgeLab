@@ -148,7 +148,10 @@ class L2Book:
         return ready
 
     def apply(self, side: int, operation: int, level: int,
-              price_tick: int, size: int) -> dict[str, int | bool]:
+              price_tick: int, size: int, *, check_cross: bool = True) -> dict[str, int | bool]:
+        """`check_cross=False` mientras el lote del mismo timestamp no terminó: NT8 inserta el ask nuevo antes de
+        borrar el bid viejo dentro de un mismo mensaje, y el cruce intermedio no es un libro inválido (28/09: en NQ
+        vaciaba el libro para siempre, 0 minutos elegibles)."""
         if side not in L2_SIDES:
             raise ValueError(f"invalid L2 side {side}")
         target = self.asks if side == 0 else self.bids
@@ -156,7 +159,7 @@ class L2Book:
                               strict=self.strict, bootstrap=not self.ever_ready)
         if len(target.levels) > self.max_depth:
             del target.levels[self.max_depth:]
-        if self.ready:
+        if check_cross and self.ready:
             best_ask = self.asks.levels[0][0]
             best_bid = self.bids.levels[0][0]
             if best_bid > best_ask:
@@ -169,6 +172,10 @@ class L2Book:
             elif best_bid == best_ask:
                 self.locked_events += 1
         return result
+
+    def resync(self) -> None:
+        """Nueva foto del proveedor (comienzo de archivo diario): vacía el libro y vuelve a permitir bootstrap."""
+        self.asks.reset(); self.bids.reset(); self.ever_ready = False
 
     def snapshot(self, levels: int = 5) -> dict[str, float | int | bool | None]:
         ready = self.ready
@@ -304,6 +311,12 @@ def extract_minute_features(l2: Any, l1: Any, *, session: str,
                ("side", "operation", "level", "price_tick", "size", "source_row", "ts_us")}
     l1_data = {name: _array(l1, name, np.int64) for name in
                ("side", "price_tick", "size", "source_row", "ts_us")}
+    # columna opcional `resync`: True en la primera fila de cada archivo del proveedor (trae foto nueva del libro)
+    has_resync = ("resync" in l2.columns if isinstance(l2, pd.DataFrame)
+                  else "resync" in l2 if isinstance(l2, Mapping) else hasattr(l2, "resync"))
+    if has_resync:
+        l2_data["resync"] = _array(l2, "resync", bool)
+    resync_count = 0
     for label, data in (("l2", l2_data), ("l1", l1_data)):
         if len(data["source_row"]) and np.any(np.diff(data["source_row"]) <= 0):
             raise ValueError(f"{label}.source_row must be strictly increasing")
@@ -352,10 +365,14 @@ def extract_minute_features(l2: Any, l1: Any, *, session: str,
             ts_us = int(l2_data["ts_us"][l2_index])
             current = ensure_acc(ts_us); current.touch(ts_us, source_row)
             operation = int(l2_data["operation"][l2_index]); current.l2_counts[operation] += 1
+            if has_resync and bool(l2_data["resync"][l2_index]):
+                book.resync(); resync_count += 1
+            batch_end = (l2_index + 1 >= len(l2_data["ts_us"])
+                         or int(l2_data["ts_us"][l2_index + 1]) != ts_us)
             change = book.apply(int(l2_data["side"][l2_index]), operation,
                                 int(l2_data["level"][l2_index]),
                                 int(l2_data["price_tick"][l2_index]),
-                                int(l2_data["size"][l2_index]))
+                                int(l2_data["size"][l2_index]), check_cross=batch_end)
             current.added_size += int(change["added_size"])
             current.removed_size += int(change["removed_size"])
             current.replenished_size += int(change["replenished_size"])
@@ -398,7 +415,9 @@ def extract_minute_features(l2: Any, l1: Any, *, session: str,
                 elif sign < 0: current.sell_volume += size
                 else: current.unclassified_volume += size
                 previous_trade_tick, previous_trade_sign = price_tick, sign
-            if bid_tick is not None and ask_tick is not None:
+            l1_batch_end = (l1_index + 1 >= len(l1_data["ts_us"])
+                            or int(l1_data["ts_us"][l1_index + 1]) != ts_us)   # mismo criterio de lote que L2
+            if l1_batch_end and bid_tick is not None and ask_tick is not None:
                 if bid_tick > ask_tick: current.crossed_l1 += 1
                 elif bid_tick == ask_tick: current.locked_l1 += 1
             current.observe_mid((bid_tick + ask_tick) / 2.0 if _valid_bbo(bid_tick, ask_tick) else None)
@@ -444,6 +463,7 @@ def extract_minute_features(l2: Any, l1: Any, *, session: str,
         "minute_rows": int(len(features)),
         "eligible_minutes": int(features["feature_eligible"].sum()) if len(features) else 0,
         "book_invalid_events": int(book.asks.invalid_events + book.bids.invalid_events),
+        "book_resyncs": int(resync_count),
         "clock_inversions_interleaved": int(clock_inversions_total),
         "stale_bbo_trades": int(features["stale_bbo_trades"].sum()) if len(features) else 0,
         "stale_bbo_minutes": int(features["bbo_age_s_close"].isna().sum()) if len(features) else 0,

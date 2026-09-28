@@ -83,14 +83,31 @@ def preflight():
 
 
 def _load(s, kind):
-    """Filas de las dos jornadas de archivo que cubren la sesión, recortadas a la ventana CME de la sesión (en ART)."""
-    lo = s["start_ns"] // 1000 - ART_TO_UTC_US; hi = s["end_ns"] // 1000 - ART_TO_UTC_US
-    parts = []
-    for k, f in enumerate(s["files"]):
-        t = pq.read_table(L2 / s["contract"] / kind / f"{f}.parquet", filters=[("ts_us", ">=", lo), ("ts_us", "<", hi)]).to_pandas()
+    """Archivos diarios COMPLETOS que cubren la sesión (28/09: recortar a la ventana perdía la foto inicial del libro
+    que trae cada archivo, y el libro nunca quedaba listo). Entre archivos consecutivos hay unos segundos de
+    solapamiento: del archivo siguiente se descartan las filas con reloj anterior al último del archivo previo."""
+    parts, last = [], None
+    for k, f in enumerate(sorted(s["files"])):
+        t = pq.read_table(L2 / s["contract"] / kind / f"{f}.parquet").to_pandas()
+        t = t.sort_values("source_row", kind="mergesort")
+        if last is not None:
+            t = t[t["ts_us"] >= last]
+        if len(t):
+            last = int(t["ts_us"].iloc[-1])
         t["source_row"] = t["source_row"].astype(np.int64) + k * 10**12        # los source_row reinician por archivo
+        if kind == "l2_depth":
+            t["resync"] = False
+            if len(t):
+                t.iloc[0, t.columns.get_loc("resync")] = True                    # sólo si la foto inicial sobrevivió
         parts.append(t)
-    return pd.concat(parts, ignore_index=True).sort_values("source_row", kind="mergesort").reset_index(drop=True)
+    return pd.concat(parts, ignore_index=True).reset_index(drop=True)
+
+
+def _in_session(feats, s):
+    """Minutos (reloj ART de minute_id) dentro de la ventana CME de la sesión."""
+    lo = (s["start_ns"] // 10**9 - 10800) // 60; hi = (s["end_ns"] // 10**9 - 10800) // 60
+    m = feats["minute_id"]
+    return feats[(m >= lo) & (m <= hi)].reset_index(drop=True)
 
 
 def extract():
@@ -103,9 +120,11 @@ def extract():
             continue
         l2 = _load(s, "l2_depth"); l1 = _load(s, "l1_quotes")
         feats, diag = extract_minute_features(l2, l1, session=s["trade_date"], instrument="NQ", contract=s["contract"])
+        feats = _in_session(feats, s)
+        diag["minute_rows_session"] = int(len(feats)); diag["eligible_minutes_session"] = int(feats["feature_eligible"].sum())
         feats.to_parquet(f, index=False)
         (CACHE / f"{s['trade_date']}.diag.json").write_text(json.dumps(diag, indent=1), encoding="utf-8")
-        print(s["trade_date"], "minutos", len(feats), "elegibles", diag["eligible_minutes"], "inversiones",
+        print(s["trade_date"], "minutos", len(feats), "elegibles", diag["eligible_minutes_session"], "libro inválido", diag["book_invalid_events"], "inversiones",
               diag["clock_inversions_interleaved"], "trades BBO vieja", diag["stale_bbo_trades"], flush=True)
         del l2, l1, feats
 
