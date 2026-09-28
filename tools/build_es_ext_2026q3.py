@@ -128,8 +128,27 @@ def session_complete(s):
     return bool(s and s["ticks"] >= MIN_TICKS and (s["last"] - s["first"]) / 3.6e12 >= MIN_SPAN_H and s["max_gap_s"] <= MAX_GAP_S)
 
 
+def set_overlap(inst):
+    """Modo SOLAPE (28/09): ticks de NT8 jul-2025 → jun-2026 para la paridad de proveedor con Lucid (research-v2).
+    Fuente, salida y catálogo propios; no toca la extensión jul–sep ni research-v2."""
+    global INST, SRC, OUT, CAT, CONTRACTS, START_NS, END_NS, MODE
+    INST = inst; MODE = "SOLAPE_NT8"
+    SRC = Path(r"E:\DatosNT8\tick_history_nt8_solape")
+    OUT = Path(r"E:\EdgeLab\data\nt8_overlap_2025_2026") / f"{inst}_parquet"
+    CAT = REPO / "docs" / "research" / "contract_regimes" / f"{inst}_nt8_overlap_sessions_catalog.json"
+    CONTRACTS = {f"{inst} {c}": f"{inst}_{c}" for c in ("09-25", "12-25", "03-26", "06-26", "09-26")}
+    START_NS = 1_751_320_800 * 1_000_000_000      # 2025-06-30 17:00 CT
+    END_NS = 1_782_856_800 * 1_000_000_000        # 2026-06-30 17:00 CT (frontera de research-v2)
+
+
+MODE = "EXT_A1"
+
+
 def main():
-    set_inst(sys.argv[1] if len(sys.argv) > 1 else "ES")
+    if len(sys.argv) > 2 and sys.argv[2] == "--solape":
+        set_overlap(sys.argv[1])
+    else:
+        set_inst(sys.argv[1] if len(sys.argv) > 1 else "ES")
     per_c, paths = {}, {}
     for c, f in CONTRACTS.items():
         paths[c], per_c[c] = build(c, f)
@@ -138,7 +157,8 @@ def main():
     for i, d in enumerate(days):
         cands = {c: per_c[c][d] for c in CONTRACTS if d in per_c[c]}
         if cur is None:
-            cur = f"{INST} 09-26"                                   # continuidad con research-v2 (ES 09-26 al 30-jun)
+            cur = (f"{INST} 09-26" if MODE == "EXT_A1"                # continuidad con research-v2 (ES 09-26 al 30-jun)
+                   else max(cands, key=lambda c: cands[c]["ticks"]) if cands else next(iter(CONTRACTS)))
         elif i > 0:
             prev = {c: per_c[c].get(days[i - 1], {}).get("ticks", 0) for c in CONTRACTS}
             lead = max(prev, key=prev.get)
@@ -158,7 +178,7 @@ def main():
             bad.append(dict(row, span_h=round(span_h, 2), motivo="ilíquida: < 50 % de la mediana de las 20 sesiones previas (contrato migrado o día flojo)"))
         else:
             out.append(row)
-    cat = dict(schema="ES_EXT_SESSIONS_V1", amendment="HOLDOUT-A1 (2026-09-26)", window_utc_ns=[START_NS, END_NS],
+    cat = dict(schema="ES_EXT_SESSIONS_V1", modo=MODE, amendment="HOLDOUT-A1 (2026-09-26)" if MODE == "EXT_A1" else "solape de proveedor (no canónico para research)", window_utc_ns=[START_NS, END_NS],
                criterio=dict(min_ticks=MIN_TICKS, max_gap_s=MAX_GAP_S, min_span_h=MIN_SPAN_H, liquidez="≥ 50 % de la mediana de las 20 sesiones previas incluidas", contrato="líder de la sesión anterior COMPLETA, sólo hacia adelante (auditoría 046 §5)"),
                sessions=out, excluidas=bad)
     CAT.write_text(json.dumps(cat, indent=1, ensure_ascii=False), encoding="utf-8")
