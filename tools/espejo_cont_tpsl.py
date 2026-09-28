@@ -8,7 +8,7 @@ Grilla TP {0,25; 0,5; 1; 1,5; 2}×W × SL {0,25; 0,5; 1}×W; SL primero si la ve
 extremo de las 2×duración velas previas, sin espejo, misma sesión, misma W.
 Multiplicidad: máximo estadístico de la grilla (bootstrap por sesión, recentrado) + BH q = 0,10 por celda.
 
-    .venv\Scripts\python tools\espejo_cont_tpsl.py --config C1     # ES 25t
+    .venv\Scripts\python tools\espejo_cont_tpsl.py --config C1N5   # ES 25t nivel 5 (también C1N4, C2N5, C3N4, C3N5)
     .venv\Scripts\python tools\espejo_cont_tpsl.py --config C2     # ES 100t
     .venv\Scripts\python tools\espejo_cont_tpsl.py --config C3     # MNQ 25t (requiere velas en artifacts/tbzx/bars_MNQ)
 """
@@ -32,9 +32,13 @@ from edgelab.bridge.indicators import espejo_impulsos as K  # noqa: E402
 from edgelab.research.espejo_nulo import simulate_null  # noqa: E402
 
 OUT = REPO / "artifacts" / "espejo" / "cont_tpsl"
-CONFIGS = {"C1": dict(inst="ES", mult=1, min_w=17.0, hz=600),
-           "C2": dict(inst="ES", mult=4, min_w=34.0, hz=150),
-           "C3": dict(inst="MNQ", mult=1, min_w=17.0, hz=600)}
+# Enmienda 1 (28/09, Nico: «es necesario que haya muchos más trades»; antes de mirar resultados): niveles 4 y 5 del
+# slider de permisividad del visor (13 t/25 velas y 9 t/30 velas); el nivel 3 daba ~0,8 completados por sesión en ES 25t.
+CONFIGS = {"C1N4": dict(inst="ES", mult=1, min_w=13.0, max_bars=25, hz=600),
+           "C1N5": dict(inst="ES", mult=1, min_w=9.0, max_bars=30, hz=600),
+           "C2N5": dict(inst="ES", mult=4, min_w=18.0, max_bars=30, hz=150),
+           "C3N4": dict(inst="MNQ", mult=1, min_w=13.0, max_bars=25, hz=600),
+           "C3N5": dict(inst="MNQ", mult=1, min_w=9.0, max_bars=30, hz=600)}
 TPS = (0.25, 0.5, 1.0, 1.5, 2.0); SLS = (0.25, 0.5, 1.0)
 N_NULL, N_BOOT, SEED, SLIP = 1000, 1000, 20260928, 1.0
 MIN_N = 30                                   # trades mínimos por estrato para probar
@@ -65,7 +69,7 @@ def main():
     dirty = bool(subprocess.run(["git", "status", "--porcelain", "--", "edgelab", "tools"], cwd=REPO, capture_output=True, text=True).stdout.strip())
     bd = T2.bars_dir(cf["inst"])
     ss = [s["trade_date"] for s in T2.canonical_sessions(cf["inst"]) if s["trade_date"] <= TB.EXP_END and (bd / f"{s['trade_date']}.npz").exists()]
-    kp = dict(e_max=1.01, atr_k=None, min_w=cf["min_w"], max_bars=20)
+    kp = dict(e_max=1.01, atr_k=None, min_w=cf["min_w"], max_bars=cf["max_bars"])
     rows, prev = [], None
     for si, s in enumerate(ss):
         z = np.load(bd / f"{s}.npz")

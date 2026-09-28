@@ -30,6 +30,13 @@ estado continuo. **Se congela: el completado**, que es donde Nico propone entrar
 | C3 | MNQ | 25t | W ≥ 17 t, ≤ 20 velas (donde la semejanza sí se sostuvo, ESPEJO-SIM) |
 Estratos: TBZ (eficiencia ≥ 0,6) y otros (0,3–0,6).
 
+**Enmienda 1 (28/09, antes de mirar resultados, pedido de Nico: «es necesario que haya muchos más trades»).**
+El nivel 3 daba ~0,8 completados por sesión en ES 25t (~144 en el descubrimiento) y ~0,2 en 100t. Se reemplazan las
+configuraciones por los niveles 4 y 5 del slider de permisividad del visor: **C1N4** ES 25t 13 t/25 velas (~1.000 trades),
+**C1N5** ES 25t 9 t/30 velas (~10.000), **C2N5** ES 100t 18 t/30 velas (~1.900), **C3N4** y **C3N5** MNQ 25t. Son 150 celdas;
+la prueba primaria sigue siendo el máximo estadístico por configuración y estrato. En N5 la fricción es ~1/3 de W: se
+reporta la señal bruta; la viabilidad a mayor escala queda para después (Nico).
+
 ## 4. Entrada, salida, nulo y control
 - **Entrada:** orden stop en A en la dirección de la vuelta; llenado = A + 1 tick de deslizamiento en contra (se toca A
   con la mecha; el stop se dispara ahí).
