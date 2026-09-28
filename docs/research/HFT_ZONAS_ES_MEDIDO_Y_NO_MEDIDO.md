@@ -410,3 +410,7 @@ aquellos números compara dos poblaciones distintas.
   ESPEJO-NICO-100T; su reemplazo es decisión de Nico. Entrada 057.
 - **Corregido (integridad, no resultado):** extractor L2 NQ con 0 minutos elegibles por cruce transitorio intra-lote.
   20260626: 1021/1381 minutos elegibles tras el fix. **NO MEDIDO todavía:** los climas L2 NQ (extracción en curso).
+- **Decisiones de Nico 28/09:** (1) nulo del espejo = simulado (enmienda N1, `edgelab/research/espejo_nulo.py`, 5 tests
+  con probabilidades conocidas); **NO MEDIDO** sobre datos reales, el pre-registro sigue en STOP. (2) NT8 canónico
+  prospectivo (`DECISION_PROVEEDOR_CANONICO_NT8_20260928.md`); lo medido con Lucid queda etiquetado Lucid.
+  (3) libro L2: un cruce (preapertura CME) ya no vacía el libro; 20260626 pasa de 1021 a 1371/1381 minutos elegibles.

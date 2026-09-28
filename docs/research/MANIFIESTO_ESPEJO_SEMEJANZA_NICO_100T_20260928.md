@@ -20,15 +20,25 @@
 - **Evento:** primer cierre de vela en que la vuelta recorrió x ∈ {0,50; 0,75} del impulso, sin extremo nuevo más allá de B.
 - **Resultado:** completa (toca A) antes de un extremo nuevo más allá de B; horizonte 3 × duración de la ida o fin de sesión.
 - **Nulo exacto:** sin memoria, desde la fracción f **al cierre** de la vela del evento, P(completar) = f (lección de ESPEJO-SIM: el nulo con el extremo de la vela está sesgado).
-  - **RETIRADO 28/09 (auditoría 056 §4, verificado en sintético): f NO es exacto.** Paseo simétrico sintético con velas 100t, toque por mecha, falla = extremo nuevo más allá de B y horizonte 3x: sesgo sobre resueltas de +1 a +5 pp sin censura y hasta +25 pp con censura (`tools/espejo_nulo_sintetico.py`, `artifacts/espejo/nulo_sintetico_20260928.json`). Antes de cualquier outcome: reemplazar por un nulo simulado que preserve barreras, regla de toque, 100t y horizonte, y tratar censura como categoría propia. **Decisión de Nico** (cambia el pre-registro).
+  - **RETIRADO 28/09 (auditoría 056 §4, verificado en sintético): f NO es exacto.** Paseo simétrico sintético con velas 100t, toque por mecha, falla = extremo nuevo más allá de B y horizonte 3x: sesgo sobre resueltas de +1 a +5 pp sin censura y hasta +25 pp con censura (`tools/espejo_nulo_sintetico.py`, `artifacts/espejo/nulo_sintetico_20260928.json`). Antes de cualquier outcome: reemplazar por un nulo simulado que preserve barreras, regla de toque, 100t y horizonte, y tratar censura como categoría propia. **Decisión de Nico: SÍ (28/09) → enmienda N1 abajo.**
+- **Enmienda N1 — nulo simulado (aprobada por Nico 28/09, antes de mirar cualquier desenlace):**
+  - Por evento, `edgelab/research/espejo_nulo.py::simulate_null` (tests `tests/research/test_espejo_nulo.py`) da
+    p0(completa), p0(falla), p0(ambigua), p0(censurada) con 2.000 trayectorias sin memoria que remuestrean i.i.d. las
+    velas de 25t **anteriores al evento** de la misma sesión (≥ 50; si hay menos, se completan con el final de la sesión
+    previa; si aun así no alcanza, el evento se excluye y se cuenta). Ternas (cierre, máximo, mínimo) − apertura, centradas
+    para no imponer deriva. Mismas barreras en ticks, mismo toque por mecha, misma agregación a 100t, mismo horizonte
+    recortado por fin de sesión. Semilla = hash del id del evento.
+  - **Estimand primario nuevo:** exceso = media(completa_i − p0_completa_i) sobre **todos** los eventos (no sólo los
+    resueltos: condicionar a resueltos reintroduce el sesgo de censura). La censura se publica aparte: observada vs p0.
+  - f queda sólo como descriptivo.
 - **Medición sobre el precio de trade y sobre el midquote** (lección del Cerebro `LES-R3-TRADE-PRICE-BOUNCE`); el primario es **midquote**.
 
 ## 4. Pruebas (celdas primarias)
 Terciles del puntaje de semejanza fijados **sobre el descubrimiento completo sin mirar resultados** (sólo el puntaje).
 | # | Contraste primario | Celdas |
 |---|---|---|
-| P1 | completado − f en el tercil **más parecido** | x (2) × estrato (2) = 4 |
-| P2 | (completado − f) tercil más parecido − tercil menos parecido | x (2) × estrato (2) = 4 |
+| P1 | completado − p0 en el tercil **más parecido** | x (2) × estrato (2) = 4 |
+| P2 | (completado − p0) tercil más parecido − tercil menos parecido | x (2) × estrato (2) = 4 |
 **8 pruebas primarias**, BH q = 0,10. Bootstrap por sesión (1.000). Se publican MDE, n por celda, la distribución completa del exceso y los dos canales (direccional: completa; no direccional: excursión máxima en W). Descriptivos no contados: sensibilidad con DTW solo, trade vs mid.
 
 ## 5. Datos y particiones
@@ -36,7 +46,7 @@ Terciles del puntaje de semejanza fijados **sobre el descubrimiento completo sin
 - Las 32 + 31 tandas que juzgó Nico (ene–mar 2026 y oct–dic 2025) usaron eventos de estos meses **sin desenlace**: no contaminan el resultado, pero se reporta el resultado **con y sin** esos 189 impulsos.
 
 ## 6. Economía (sólo si P1/P2 sobreviven; pre-registro aparte)
-- Fricción ES propia (~2,5 t ida y vuelta con deslizamiento). Con W mediano ≈ 39 t, el exceso sobre f necesario para cubrir costos es ≈ **2,5 / 39 ≈ 6,4 puntos** en la geometría «entrada en x, objetivo A, stop más allá de B». Si P1 da un exceso menor, se reporta como información sin viabilidad a esta escala.
+- Fricción ES propia (~2,5 t ida y vuelta con deslizamiento). Con W mediano ≈ 39 t, el exceso sobre p0 necesario para cubrir costos es ≈ **2,5 / 39 ≈ 6,4 puntos** en la geometría «entrada en x, objetivo A, stop más allá de B». Si P1 da un exceso menor, se reporta como información sin viabilidad a esta escala.
 
 ## 7. Riesgos declarados
 - Potencia: ~290 vueltas llegan al 75 % por trimestre en ES; por tercil y estrato puede quedar SIN_POTENCIA; se publica el MDE.
