@@ -18,3 +18,6 @@
 ## Código
 - `tools/tbz_e2.py`: `EXP_END = "20260331"` (descubrimiento, vuelve a su valor), `REP_START = "20260401"`, `REP_END = "20260930"`; `HOLDOUT_NS` = 2026-09-30 22:00 UTC.
 - Las herramientas seleccionan la partición explícitamente (`--part rep`); por defecto usan descubrimiento.
+
+## Adenda (28/09, decisión de Nico sobre la auditoría 051 §6)
+Para toda pregunta **condicionada por los climas L2** (contextos calm/normal/volatile/toxic, u otra definición aprendida con L2 de jun–sep), la ventana abr–sep **no** funciona como replicación independiente: se declara **desarrollo target-free** para esa pregunta, y la confirmación se hace sólo con datos de **octubre en adelante**. No se reetiqueta ninguna replicación ya usada.

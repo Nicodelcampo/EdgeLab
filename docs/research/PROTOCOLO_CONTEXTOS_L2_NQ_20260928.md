@@ -30,3 +30,12 @@
 ## Cómo podría refutarse (que los climas sirvan)
 - Acuerdo entre semillas bajo, estados que son sólo la hora del día, o persistencia de 1–2 minutos (ruido).
 - Más adelante, con eventos: ninguna diferencia del estimand entre celdas con MDE adecuado (eso ya mira retornos y requiere su propio manifiesto y OK de Nico).
+
+## Enmienda 1 (28/09, tras la auditoría 051; antes de extraer)
+- Runner nuevo `tools/build_l2_contexts_nq.py` con **preflight que aborta** (60 sesiones exactas, contrato, archivos y tamaños, unidad 100 ns por archivo, plan congelado con hash `f88ccbfc…`).
+- Extractor: inversión de reloj intercalada, BBO > 60 s al cierre y libro invalidado vuelven el minuto **no elegible**; trades sin BBO fresca (≤ 5 s) se clasifican por tick rule y se cuentan; ventanas por tiempo transcurrido, sin cruzar huecos.
+- Overlay `toxic` **desestacionalizado** también.
+- Verosimilitud final recalculada con los parámetros guardados.
+- Reporte con **PASS/STOP automático** sólo sobre evaluación: cobertura ≥ 99 %, estabilidad por semilla y **por estado** ≥ 0,80 en evaluación, **STOP por estado** si > 80 % de sus minutos cae en 2 h, **STOP global** si un clasificador de sólo-hora acierta ≥ 90 %, deriva antes/después del roll (15-sep).
+- Compuerta de eventos (≥ 40 sesiones con eventos por celda): con 40 sesiones de evaluación se espera **SIN_POTENCIA**; no se relaja.
+- Gobernanza: preguntas condicionadas por estos climas se confirman sólo en oct+ (adenda de A3).
