@@ -34,3 +34,10 @@ Criterio de Nico: simetría ida/vuelta; retroceso en la ida sin retroceso en la 
 | velocidad espejada | 66 % |
 | **logística (5 rasgos), dejando una tanda afuera** | **80 %** |
 Pesos del modelo completo: DTW 1,49 y n.º de retrocesos 1,40 dominan; velocidad 0,31; profundidad 0,18; eficiencia 0,03. **Falta validación fuera de muestra** con tandas nuevas (descubrimiento sep–dic 2025) antes de congelarla como definición operativa.
+
+## Validación fuera de muestra (28/09, modelo congelado en `ESPEJO_SEMEJANZA_NICO_CONGELADA_20260928.json` antes de generar la tanda)
+Tanda nueva: ES oct–dic 2025, 100t, 31 tandas (93 pares), fuga del corte corregida. Juicios: `viewer/nt8_bridge/labels/espejo_triads_ES_2025Q4_100t.json`.
+- **Modelo congelado: 73 % de pares (IC 95 % por tanda: 62–83 %) → PASA** el criterio fijado (≥ 70 %).
+- Por rasgo: **DTW 75 %** (estable: 77 % en entrenamiento); velocidad 63 %; eficiencia 63 %; profundidad de retroceso 59 %; **n.º de retrocesos 55 %** (75 % en entrenamiento: no se sostiene solo).
+- «¿Alguna es un espejo de verdad?»: sí en 30/31.
+- **Lectura:** la forma del camino ida vs vuelta (DTW) es el rasgo robusto de la semejanza de Nico; el conteo de retrocesos se sobreajustó en la primera tanda. El modelo congelado queda como **definición operativa de «parecido»** para futuras pruebas (se usa tal cual, sin reajuste). Alternativa más simple y casi igual de buena: DTW solo.
