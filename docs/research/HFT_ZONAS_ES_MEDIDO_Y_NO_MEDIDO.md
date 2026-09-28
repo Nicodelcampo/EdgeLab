@@ -414,3 +414,5 @@ aquellos números compara dos poblaciones distintas.
   con probabilidades conocidas); **NO MEDIDO** sobre datos reales, el pre-registro sigue en STOP. (2) NT8 canónico
   prospectivo (`DECISION_PROVEEDOR_CANONICO_NT8_20260928.md`); lo medido con Lucid queda etiquetado Lucid.
   (3) libro L2: un cruce (preapertura CME) ya no vacía el libro; 20260626 pasa de 1021 a 1371/1381 minutos elegibles.
+- **MEDIDO 28/09 — ESPEJO-NICO-100T descubrimiento (ES, 181 sesiones, 1.942 eventos, nulo N1, midquote):** 0/8 pruebas
+  sobreviven; P2 negativa en 3/4 celdas; MDE 0,07–0,16. Sin replicación. `RESULTADO_ESPEJO_NICO_100T_DESCUBRIMIENTO_20260928.md`.
