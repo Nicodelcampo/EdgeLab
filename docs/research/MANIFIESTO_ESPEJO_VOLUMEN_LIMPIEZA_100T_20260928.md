@@ -19,7 +19,12 @@ ESPEJO-NICO-100T (`MANIFIESTO_ESPEJO_SEMEJANZA_NICO_100T_20260928.md` + enmienda
 - **R-VOL:** (volumen de la vuelta / ticks recorridos por la vuelta) ÷ (volumen de la ida / W).
 - **R-LIMP:** eficiencia de la vuelta ÷ eficiencia de la ida; eficiencia = avance neto / camino recorrido por cierres.
   Menor = vuelta más sucia que la ida.
-- **R-VL (conjunción):** R-VOL en el tercil alto **y** R-LIMP en el tercil bajo, contra el resto.
+- **R-VL (conjunción):** R-VOL en el tercil alto **y** R-LIMP en el tercil bajo, contra el resto (el volumen y la
+  suciedad están del lado de la **vuelta**).
+- **R-VL-INV (conjunción invertida, Nico 28/09):** R-VOL en el tercil bajo **y** R-LIMP en el tercil alto, contra el resto
+  (el volumen y la suciedad están del lado de la **ida**; la vuelta vuelve limpia y liviana).
+- R-VOL se reporta con sus dos extremos por separado: vuelta con más volumen que la ida (R-VOL > 1) e ida con más volumen
+  que la vuelta (R-VOL < 1), además del contraste de terciles.
 - Terciles fijados por x sobre todo el descubrimiento, sólo con el rasgo, sin mirar resultados.
 
 ## 3. Alturas («a qué altura»)
@@ -32,8 +37,9 @@ x ∈ {0,25; 0,50; 0,75}: primer cierre de vela 100t en que la vuelta recorrió 
 | R-VOL | exceso(tercil alto) − exceso(tercil bajo) | 3 x × 2 estratos = 6 |
 | R-LIMP | exceso(tercil bajo) − exceso(tercil alto) | 6 |
 | R-VL | exceso(conjunción) − exceso(resto) | 6 |
+| R-VL-INV | exceso(conjunción invertida) − exceso(resto) | 6 |
 
-**18 pruebas**, BH q = 0,10, bilaterales. Exceso = completa − p0 (nulo N1, todos los eventos, censura aparte). Bootstrap
+**24 pruebas**, BH q = 0,10, bilaterales. Exceso = completa − p0 (nulo N1, todos los eventos, censura aparte). Bootstrap
 por sesión (1.000); se publican MDE, n por celda, distribución completa y los dos canales (completa; excursión máxima en W).
 Descriptivo no contado: control por velocidad de la vuelta (terciles de duración), trade frente a midquote.
 
@@ -50,7 +56,8 @@ Mismo umbral que ESPEJO-NICO: con W mediano ≈ 39 t y fricción ES ≈ 2,5 t, h
 geometría «entrada en x, objetivo A, stop más allá de B». Una diferencia entre terciles menor que eso es información, no sistema.
 
 ## 7. Riesgos
-- Potencia: en ESPEJO-NICO el MDE por celda fue 0,07–0,16; con terciles y 18 celdas se espera similar. x = 0,25 suma eventos.
+- Potencia: en ESPEJO-NICO el MDE por celda fue 0,07–0,16; con terciles y 24 celdas (las conjunciones tienen ~1/9 de
+  los eventos cada una: son las celdas con menos potencia) se espera similar. x = 0,25 suma eventos.
 - R-VOL depende del volumen de trade de Lucid; el de NT8 difiere en ticks sueltos (paridad 054): la confirmación usa Lucid.
 - R-LIMP y la velocidad están correlacionadas: por eso el control por velocidad va como descriptivo obligatorio.
 
