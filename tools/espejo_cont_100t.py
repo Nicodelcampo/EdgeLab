@@ -147,7 +147,7 @@ def report(out_dir):
     for inst in sorted({p.name.split("_")[1] for p in out_dir.glob("trades_*_N*.json")}):
         blocks = []                                          # (nivel, subset, E (n×15), R, sesiones)
         for p in sorted(out_dir.glob(f"trades_{inst}_N*.json")):
-            X = json.loads(p.read_text(encoding="utf-8")); nivel = int(p.stem.split("_N")[1])
+            X = json.loads(p.read_text(encoding="utf-8")); nivel = int(p.stem.rsplit("_N", 1)[1])
             if not X:
                 continue
             E = np.array([r["exc"] for r in X]); Rr = np.array([r["R"] for r in X]); ses = np.array([r["session"] for r in X])
