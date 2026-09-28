@@ -461,3 +461,6 @@ aquellos números compara dos poblaciones distintas.
   `RESULTADO_CONTEXTOS_L2_NQ_20260928.md`.
 - **MEDIDO 28/09 — ESPEJO-REV-100T ES:** el cruce hacia B llega MENOS que el azar (−1 a −4 pp), sobre todo con overshoot
   bajo; TP/SL de reversión R bruto negativo. Contrario a NQ parcial. `RESULTADO_ESPEJO_REV_100T_ES_20260928.md`.
+- **MEDIDO 28/09 — ESPEJO-REV-100T GC (sin feb-2026):** cruce hacia B sin efecto; **TP/SL de reversión 2 W / 1 W: R bruto
+  +0,026 W (≈ +3,6 t), exceso +0,106, sobrevive** (n 2.103). Primer R bruto positivo que sobrevive. Candidato a
+  confirmación abr–jun con fricción GC propia. `RESULTADO_ESPEJO_REV_100T_GC_20260928.md`.
