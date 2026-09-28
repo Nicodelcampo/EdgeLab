@@ -450,3 +450,5 @@ aquellos números compara dos poblaciones distintas.
 - **MEDIDO 28/09 — ESPEJO-CONT-100T ES (Kaggle, Lucid, nulo corregido):** 0/1.035 celdas; exceso ≈ 0 en todos los niveles.
   El R bruto negativo de la continuación es mecánica de entrada (toque por mecha), no reversión. Corrige la lectura de
   CONT-TPSL ES 25t. `RESULTADO_ESPEJO_CONT_100T_ES_20260928.md`.
+- **MEDIDO 28/09 — ESPEJO-CONT-100T YM:** 7/1.050 sobreviven, todas TP/SL 0,25/0,25 W con VWAP/EMA a favor: exceso +1,2–1,7 % W,
+  R bruto negativo (−0,025 W). Pista chica, no rentable. `RESULTADO_ESPEJO_CONT_100T_YM_20260928.md`.
