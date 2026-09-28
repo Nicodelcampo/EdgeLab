@@ -8,7 +8,9 @@
  "criterio": {
   "min_ticks": 200000,
   "max_gap_s": 1800,
-  "contrato": "líder de la sesión anterior, sólo hacia adelante"
+  "min_span_h": 22.5,
+  "liquidez": "≥ 50 % de la mediana de las 20 sesiones previas incluidas",
+  "contrato": "líder de la sesión anterior COMPLETA, sólo hacia adelante (auditoría 046 §5)"
  },
  "sessions": [
   {
@@ -426,15 +428,6 @@
    "max_gap_s": 48.2
   },
   {
-   "trade_date": "20260915",
-   "contract": "ES 12-26",
-   "path": "E:\\EdgeLab\\data\\nt8_ext_2026q3\\ES_parquet\\ES_12-26_ticks_ext.parquet",
-   "ticks": 838067,
-   "start": 1789423200008000000,
-   "end": 1789505998172000001,
-   "max_gap_s": 62.8
-  },
-  {
    "trade_date": "20260921",
    "contract": "ES 12-26",
    "path": "E:\\EdgeLab\\data\\nt8_ext_2026q3\\ES_parquet\\ES_12-26_ticks_ext.parquet",
@@ -557,6 +550,17 @@
    "max_gap_s": 63.0,
    "span_h": 19.0,
    "motivo": "pocos ticks"
+  },
+  {
+   "trade_date": "20260915",
+   "contract": "ES 09-26",
+   "path": "E:\\EdgeLab\\data\\nt8_ext_2026q3\\ES_parquet\\ES_09-26_ticks_ext.parquet",
+   "ticks": 202491,
+   "start": 1789423200008000000,
+   "end": 1789505999432000001,
+   "max_gap_s": 90.8,
+   "span_h": 23.0,
+   "motivo": "ilíquida: < 50 % de la mediana de las 20 sesiones previas (contrato migrado o día flojo)"
   },
   {
    "trade_date": "20260916",

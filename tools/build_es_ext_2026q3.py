@@ -123,6 +123,11 @@ def build(contract, folder):
     return pq_path, per
 
 
+def session_complete(s):
+    """Sesión completa: mismos criterios que el catálogo (ticks, span y hueco máximo). Lo usa también la regla de roll."""
+    return bool(s and s["ticks"] >= MIN_TICKS and (s["last"] - s["first"]) / 3.6e12 >= MIN_SPAN_H and s["max_gap_s"] <= MAX_GAP_S)
+
+
 def main():
     set_inst(sys.argv[1] if len(sys.argv) > 1 else "ES")
     per_c, paths = {}, {}
@@ -137,7 +142,7 @@ def main():
         elif i > 0:
             prev = {c: per_c[c].get(days[i - 1], {}).get("ticks", 0) for c in CONTRACTS}
             lead = max(prev, key=prev.get)
-            if lead > cur and prev[lead] > prev[cur] and prev[lead] >= MIN_TICKS:   # sólo hacia adelante; un día sin datos del vigente no es roll
+            if lead > cur and prev[lead] > prev[cur] and session_complete(per_c[lead].get(days[i - 1])):   # auditoría 046 §5: el líder tiene que tener la sesión anterior COMPLETA (ticks, span y huecos), no sólo ticks
                 cur = lead
         s = cands.get(cur)
         row = dict(trade_date=str(d), contract=cur, path=str(paths[cur]), ticks=(s or {}).get("ticks", 0),
@@ -149,10 +154,12 @@ def main():
         if s is None or s["ticks"] < MIN_TICKS or s["max_gap_s"] > MAX_GAP_S or span_h < MIN_SPAN_H:
             bad.append(dict(row, span_h=round(span_h, 2), motivo="sin datos" if s is None else ("pocos ticks" if s["ticks"] < MIN_TICKS else
                             ("hueco > 30 min" if s["max_gap_s"] > MAX_GAP_S else "sesión corta (feriado o datos truncos)"))))
+        elif len(out) >= 5 and s["ticks"] < 0.5 * float(np.median([o["ticks"] for o in out[-20:]])):
+            bad.append(dict(row, span_h=round(span_h, 2), motivo="ilíquida: < 50 % de la mediana de las 20 sesiones previas (contrato migrado o día flojo)"))
         else:
             out.append(row)
     cat = dict(schema="ES_EXT_SESSIONS_V1", amendment="HOLDOUT-A1 (2026-09-26)", window_utc_ns=[START_NS, END_NS],
-               criterio=dict(min_ticks=MIN_TICKS, max_gap_s=MAX_GAP_S, contrato="líder de la sesión anterior, sólo hacia adelante"),
+               criterio=dict(min_ticks=MIN_TICKS, max_gap_s=MAX_GAP_S, min_span_h=MIN_SPAN_H, liquidez="≥ 50 % de la mediana de las 20 sesiones previas incluidas", contrato="líder de la sesión anterior COMPLETA, sólo hacia adelante (auditoría 046 §5)"),
                sessions=out, excluidas=bad)
     CAT.write_text(json.dumps(cat, indent=1, ensure_ascii=False), encoding="utf-8")
     print(json.dumps(dict(completas=len(out), excluidas=[(b["trade_date"], b["contract"], b["motivo"]) for b in bad],
