@@ -472,3 +472,5 @@ aquellos números compara dos poblaciones distintas.
 - **MEDIDO 28/09 — ESPEJO-REV-100T NQ, re-corrida con sesiones sorteadas (disjunta de la primera):** el primer 25 % del cruce
   hacia B vuelve a superar al azar (+2,2 a +2,9 pp; overshoot medio +3,7 a +4,6 pp); 75–100 % en el azar. Se repite en
   dos muestras sin sesiones en común. Opuesto a ES; nulo en GC y YM.
+- **MEDIDO 28/09 — Control empírico GC reversión:** TP 2 W / SL 1 W, R espejo +0,023 vs R azar −0,055 → exceso empírico
+  **+0,078 W [+0,042; +0,119]**. El candidato sobrevive; el nulo sobreestimaba (+0,101). Siguiente: fricción GC y confirmación.

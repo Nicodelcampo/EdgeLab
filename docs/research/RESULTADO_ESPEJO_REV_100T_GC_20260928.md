@@ -25,3 +25,19 @@ Las 12 capturas de febrero eran una racha: fuera de febrero, el cruce no se apar
 **Candidato para la confirmación única abr–jun 2026 (Lucid GC):** reversión TP 2 W / SL 1 W, W ≥ 100 t / 30 velas; como
 variante, con «no lista» + ineficiente. Antes: estimar la fricción GC y el control empírico del nulo (misma entrada en
 momentos al azar), pendiente también para NQ/YM.
+
+## Control empírico (28/09, Kaggle `edgelab-nullctl-gc-rev-w100-20260928`, 2.076 trades)
+Misma operación en 3 velas al azar de la misma sesión (mismo W, TP/SL, dirección y distancia cierre→entrada).
+| TP / SL | R espejo | R azar | Exceso empírico (IC 90 %) | Calibración del nulo |
+|---|---|---|---|---|
+| **2 W / 1 W** | **+0,023** | −0,055 | **+0,078 [+0,042; +0,119]** | +0,025 [−0,000; +0,047] |
+| 1,5 W / 1 W | +0,010 | −0,055 | +0,066 [+0,028; +0,105] | −0,012 |
+| 1 W / 1 W | −0,011 | −0,052 | +0,041 [+0,011; +0,079] | −0,029 |
+| 1,5 W / 0,5 W | −0,009 | −0,043 | +0,033 [+0,008; +0,061] | −0,011 |
+| TP 0,25 W (todas) | −0,035 a −0,052 | ≈ igual | ≈ 0 | −0,003 a −0,016 |
+- **El espejo aporta contra el momento al azar:** la misma operación en velas cualesquiera pierde (−0,055 W); en la
+  completación del espejo gana algo (+0,023 W). El exceso empírico, sin modelo, es +0,078 W y su IC excluye el 0.
+- El nulo está algo sesgado a favor en TP amplios (+0,025 en 2 W / 1 W) y en contra en TP chicos: el exceso con nulo
+  (+0,101) sobreestimaba; el empírico (+0,078) es el número a usar.
+- En TP 0,25 W no hay nada: en GC el nulo no produce el falso positivo de NQ/YM/MYM.
+**El candidato sobrevive el control.** Siguiente: fricción GC propia y confirmación única abr–jun 2026.
