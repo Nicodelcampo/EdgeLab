@@ -88,3 +88,6 @@ Riesgo detectado: el nivel real es un pico **recién negociado**; el fantasma de
 
 ## Replicación de las 23 celdas: descartada antes de abrir (27/09)
 Nico revisó la spec ciega `SPEC-IPC-REP-20260927` (hash `2edc23b3bc4f`) y la objetó: con 2,5 t de fricción las geometrías de ES k 4 (nivel y barrera a 5–12 t) no pueden pagar, y el experimento cubría una parte chica de los mecanismos posibles. **No se confirmó, no se registró campaña y `artifacts/ipc/reportREP.json` no se abrió.** El nuevo diseño está en `DISENO_IPC_ABANICO_DE_MECANISMOS_20260927.md`. La partición de replicación (abr–sep) sigue sin usar por IPC.
+
+## Estado tras la auditoría 046 (27/09): PROVISIONAL BAJO AUDITORÍA
+La auditoría multimodelo (GPT-6 Sol, entrada 046; respuesta en `docs/audits/ENTRADA_047_RESPUESTA_A_046_2026-09-27.md`) encontró, verificado contra el código: controles que excluyen niveles usando zonas formadas después (`zone_levels`), C-SW emparejado sólo a ± R, carrera sobre precio de trade (rebote bid/ask), `vol_rel` no causal y bootstrap que no remuestrea donantes. **El positivo de la etapa A 25t no se interpreta** hasta la prueba de robustez en descubrimiento (§3 de la 047), que requiere manifiesto y OK de Nico.
