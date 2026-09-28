@@ -66,6 +66,8 @@ def regreso(ref, j0, kind, H, L, V, vmed):
 
 
 def main():
+    if "--solo-reporte" in sys.argv:
+        return report(json.loads((OUT / "eventos.json").read_text(encoding="utf-8")), {"zona": None, "control": None}, None)
     head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=REPO, capture_output=True, text=True).stdout.strip()
     dirty = bool(subprocess.run(["git", "status", "--porcelain", "--", "edgelab", "tools"], cwd=REPO, capture_output=True, text=True).stdout.strip())
     fr = json.loads(B.FROZEN.read_text(encoding="utf-8"))["elegido"]; R, tol = fr["R"], fr["tol"]
@@ -109,6 +111,16 @@ def main():
         prev_trip = trip
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "eventos.json").write_text(json.dumps(rows, default=float), encoding="utf-8")
+    report(rows, en_vela, len(allses))
+
+
+def report(rows, en_vela, nses):
+    head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=REPO, capture_output=True, text=True).stdout.strip()
+    dirty = bool(subprocess.run(["git", "status", "--porcelain", "--", "edgelab", "tools"], cwd=REPO, capture_output=True, text=True).stdout.strip())
+    if en_vela.get("zona") is None and (OUT / "reporte.json").exists():
+        en_vela = json.loads((OUT / "reporte.json").read_text(encoding="utf-8")).get("barre_en_la_vela_del_regreso", en_vela)
+    if nses is None:
+        nses = len({r["session"] for r in rows})
     Z = [r for r in rows if r["grupo"] == "zona"]
     qD = np.quantile([r["D"] for r in Z], [1 / 3, 2 / 3]); qV = np.quantile([r["V"] for r in Z], [1 / 3, 2 / 3])
     ter = lambda x, q: 0 if x <= q[0] else (2 if x > q[1] else 1)
@@ -134,7 +146,9 @@ def main():
                 for name, est, bs in (("P1", ez.mean() if len(ez) else np.nan, b1),
                                       ("P2", (ez.mean() - ec.mean()) if len(ez) and len(ec) else np.nan, b2)):
                     ok = ~np.isnan(bs)
-                    p = float(min(1.0, 2 * min(np.mean(bs[ok] <= 0), np.mean(bs[ok] >= 0)))) if ok.sum() > 50 else 1.0
+                    # 28/09: con n < 30 el bootstrap es degenerado (n = 1 daba p = 0): la celda se publica sin prueba
+                    p = (float(min(1.0, 2 * min(np.mean(bs[ok] <= 0), np.mean(bs[ok] >= 0))))
+                         if ok.sum() > 50 and len(z) >= 30 and (name == "P1" or len(c) >= 30) else 1.0)
                     cells.append(dict(prueba=name, lado=kind, distancia=NAMES[tD], volumen=NAMES[tV], n_zona=len(z), n_control=len(c),
                                       estimado=float(est), ic90=[float(np.nanquantile(bs, .05)), float(np.nanquantile(bs, .95))] if ok.any() else None,
                                       p_bilateral=p, mde80=2.8 * float(np.nanstd(bs)) if ok.any() else None,
@@ -146,8 +160,8 @@ def main():
     surv = set(o[:kmax].tolist())
     for i, c in enumerate(cells):
         c["bh_q10"] = i in surv
-    rep = dict(manifiesto="docs/research/MANIFIESTO_IPC_NIVEL_REGRESO_VIRGEN_MES_20260928.md", code_commit=head, tree_dirty=dirty,
-               sesiones=len(allses), eventos_zona=len(Z), eventos_control=sum(r["grupo"] == "control" for r in rows),
+    rep = dict(manifiesto="docs/research/MANIFIESTO_IPC_NIVEL_REGRESO_VIRGEN_MES_20260928.md", code_commit=head, tree_dirty=dirty, reporte_recalculado="--solo-reporte" in sys.argv,
+               sesiones=nses, eventos_zona=len(Z), eventos_control=sum(r["grupo"] == "control" for r in rows),
                barre_en_la_vela_del_regreso=en_vela, cortes_D=qD.tolist(), cortes_V=qV.tolist(), pruebas=cells,
                sobreviven=[f"{c['prueba']} {c['lado']} D={c['distancia']} V={c['volumen']}" for c in cells if c["bh_q10"]])
     (OUT / "reporte.json").write_text(json.dumps(rep, indent=1, default=float, ensure_ascii=False), encoding="utf-8")
