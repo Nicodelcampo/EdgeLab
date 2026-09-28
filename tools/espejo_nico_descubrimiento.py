@@ -70,7 +70,7 @@ def outcome(H, L, k, A, beyond, d, horizon_end):
     return "censurada", horizon_end
 
 
-def session_events(s, prev_triples, fr):
+def session_events(s, prev_triples, fr, xs=XS):
     z = np.load(T2.bars_dir("ES") / f"{s}.npz"); m = np.load(MID / f"{s}.npz")
     h, l, c, v = (z[k].astype(float) for k in ("h", "l", "c", "v")); t = z["t"].astype(float)
     mh, ml, mc = (m[k].astype(float) for k in ("h", "l", "c"))
@@ -100,7 +100,7 @@ def session_events(s, prev_triples, fr):
             if (d == 1 and H[k] > B) or (d == -1 and L[k] < B):
                 break
             f_close = d * (B - C[k]) / W
-            for x in XS:
+            for x in xs:
                 if x in done or f_close < x:
                     continue
                 done.add(x)
@@ -126,8 +126,15 @@ def session_events(s, prev_triples, fr):
                     seed = int(hashlib.sha256(f"{s}|{k}|{x}|{iB}".encode()).hexdigest()[:8], 16)
                     r["p0"] = simulate_null(MC[k] / TICK, A / TICK, beyond / TICK, -d, pre, hz - k, n=N_NULL, seed=seed)
                 r["f_close_mid"] = float(d * (B - MC[k]) / W)
+                # rasgos VOLLIMP (causales: hasta la vela k)
+                net_v = d * (B - C[k])
+                path_v = float(np.abs(np.diff(C[iB:k + 1])).sum())
+                r["vol_ratio"] = float((V[iB + 1:k + 1].sum() / max(net_v, 1e-9)) / (V[i0:iB + 1].sum() / W)) if V[i0:iB + 1].sum() > 0 else float("nan")
+                r["eff_vuelta"] = float(net_v / path_v) if path_v > 0 else 1.0
+                r["eff_ratio"] = float(r["eff_vuelta"] / max(eff, 1e-9))
+                r["velas_vuelta"] = int(k - iB)
                 rows.append(r)
-            if len(done) == len(XS):
+            if len(done) == len(xs):
                 break
     return rows, trip
 
