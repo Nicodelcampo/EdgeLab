@@ -21,7 +21,9 @@ def test_los_controles_de_indicadores_viven_en_el_dialogo():
 
 
 def test_no_aplica_no_dibuja_y_config_global():
-    assert "if (!state.run || state.zonesHidden) return;" in HTML
+    # «Zonas» apagado oculta las zonas HFT pero NO las demás capas (27/09: cortaba también la revisión ✓/✗ de picos)
+    assert "if (!state.run) return;" in HTML
+    assert "if (state.zonesHidden ||" in HTML
     assert "no disponible en este activo" in HTML
     assert "indApplyAll()" in HTML                             # se reaplica al cargar cualquier activo
     assert "edgelab_indicators_v2" in HTML
