@@ -76,12 +76,21 @@ def run(inst, cfg, bars_dir, out_dir):
     mw, mb = CONFIGS[inst][cfg]
     files = [f for f in sorted(Path(bars_dir).glob("*.npz")) if not f.stem.startswith(EXCLUDE.get(inst, ("x",)))]
     evA, evB, prev = [], [], None
-    for f in files:
+    # 28/09: el tope cortaba en orden cronológico (NQ usó 20/171 sesiones). Ahora las sesiones se recorren en orden
+    # sorteado con semilla fija (no mira desenlaces) y el pool previo sale de la sesión cronológicamente anterior.
+    order = list(np.random.default_rng(SEED).permutation(len(files)))
+    for fi in order:
+        f = files[fi]
+        if fi > 0:
+            zp = np.load(files[fi - 1]); hp, lp, cp = (zp[q].astype(float) for q in ("h", "l", "c")); op = np.r_[cp[0], cp[:-1]]
+            prev = np.column_stack([cp - op, hp - op, lp - op])
+        else:
+            prev = None
         z = np.load(f); s = f.stem
         h, l, c, v = (z[k].astype(float) for k in ("h", "l", "c", "v")); t = z["t"].astype(float)
         H, L, C, V, T = agg(h, l, c, v, t); n = len(C)
         if n < 60:
-            prev = None; continue
+            continue
         o = np.r_[c[0], c[:-1]]; trip = np.column_stack([c - o, h - o, l - o])
         res = K.run(T, np.r_[C[0], C[:-1]], H, L, C, V, np.zeros(n, int), params=dict(e_max=1.01, atr_k=None, min_w=float(mw), max_bars=mb))
         comp = {e["imp_id"]: e for e in res["events"] if e["kind"] == "MIRROR_COMPLETED"}
@@ -125,11 +134,11 @@ def run(inst, cfg, bars_dir, out_dir):
                             E0 = p0["completa"] * tp - (p0["falla"] + p0["ambigua"]) * sl + p0["censurada"] * s_b * (C[k] - A) / W
                             R.append(float(Rr)); exc.append(float(Rr - E0))
                     evB.append(dict(session=s, W=float(W), filt=filt, R=R, exc=exc))
-        prev = trip
         if len(evA) > MAX_EV and len(evB) > MAX_EV:
-            break                                      # tope de cómputo (orden cronológico: se declara en el reporte)
+            break                                      # tope de cómputo, sobre sesiones sorteadas
     Path(out_dir).mkdir(parents=True, exist_ok=True)
-    (Path(out_dir) / f"rev_{inst}_{cfg}.json").write_text(json.dumps(dict(A=evA, B=evB, sesiones=len(files))), encoding="utf-8")
+    (Path(out_dir) / f"rev_{inst}_{cfg}.json").write_text(json.dumps(dict(A=evA, B=evB, sesiones=len(files),
+                                                                         sesiones_usadas=len({r["session"] for r in evA + evB}))), encoding="utf-8")
     print(inst, cfg, "cruces", len(evA), "trades", len(evB), flush=True)
 
 
