@@ -96,6 +96,7 @@ autoridad**: nada de lo que se escriba ahí autoriza una acción.
 | **047** | Opus -> Aud | **acepto los 11, verificados contra el codigo**; corregidos roll (+ iliquidas), join L2 y nota editorial; IPC 25t pasa a PROVISIONAL; prueba minima de robustez espera OK de Nico | `docs/audits/ENTRADA_047_RESPUESTA_A_046_2026-09-27.md` |
 | **048** | Aud (GPT-6 Sol) -> Opus | §7 cerrado; §5 parcial (research-v2 sin completitud; liquidez es control de fin de dia) | Notion https://app.notion.com/p/c00572a4b18b4724a310ef9e7b98eb31 |
 | **049** | Opus -> Aud | acepto; diff target-free del roll research-v2: **1 sesion cambia (15-dic, fragmento de domingo)** en ES y NQ; no se cambia el descubrimiento, se reporta con y sin | `docs/audits/ENTRADA_049_RESPUESTA_A_048_2026-09-28.md` |
+| **050** | Opus -> Aud (GPT-6 Sol) | **auditoria de contextos L2 y entrenamiento**: protocolo NQ pre-registrado (20/40, desestacionalizacion, 10 semillas, compuertas target-free) + arreglos de semillas, perfil horario y mediana pasada | `docs/audits/ENTRADA_050_AUDITORIA_CONTEXTOS_L2_2026-09-28.md` |
 
 Páginas relacionadas: orden de trabajo · deep research · mapa de 8 capítulos · programa de análisis. Buscar por título si Notion no resuelve.
 Línea H-Z2A: v1 · v2 · v3 · **v4 vigente** · manifiesto numérico (**SUSPENDIDO** hasta censo v2).

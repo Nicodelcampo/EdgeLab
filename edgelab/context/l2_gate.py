@@ -447,13 +447,57 @@ def _toxicity_score(frame, calibration):
     return np.sort(np.vstack(values).T, axis=1)[:, -3:].mean(axis=1)
 
 
+SEASONAL_BUCKET_MIN = 5
+ART_TO_UTC_S = 3 * 3600                     # minute_id viene del reloj de pared ART (RESOLUCION_RELOJ_GC_L2_20260922.md)
+
+
+def _ct_bucket(frame):
+    """Franja de 5 min del día en hora de Chicago (el calendario CME), desde `minute_id` (ART)."""
+    utc = pd.to_datetime((frame["minute_id"].to_numpy(dtype=np.int64) * 60 + ART_TO_UTC_S), unit="s", utc=True)
+    ct = utc.tz_convert("America/Chicago")
+    return ((ct.hour * 60 + ct.minute) // SEASONAL_BUCKET_MIN).to_numpy()
+
+
+def fit_seasonal_profile(train, names, *, min_rows=20):
+    """Perfil por franja horaria estimado SÓLO con entrenamiento (auditoría 046 §10). Variables siempre positivas:
+    log(valor / mediana de la franja); el resto: valor − mediana de la franja. Franjas con < min_rows: mediana global."""
+    buckets = _ct_bucket(train); prof = {}
+    for name in names:
+        values = train[name].to_numpy(dtype=float); mode = "log_ratio" if (values > 0).all() else "diff"
+        glob = float(np.median(values)); per = {}
+        for b in np.unique(buckets):
+            v = values[buckets == b]
+            per[str(int(b))] = float(np.median(v)) if len(v) >= min_rows else glob
+        prof[name] = {"mode": mode, "global": glob, "per_bucket": per}
+    return {"bucket_min": SEASONAL_BUCKET_MIN, "clock": "America/Chicago", "features": prof}
+
+
+def apply_seasonal(frame, profile):
+    out = frame.copy(); buckets = _ct_bucket(frame)
+    for name, p in profile["features"].items():
+        ref = np.array([p["per_bucket"].get(str(int(b)), p["global"]) for b in buckets], dtype=float)
+        v = out[name].to_numpy(dtype=float)
+        out[name] = np.log(np.maximum(v, 1e-12) / np.maximum(ref, 1e-12)) if p["mode"] == "log_ratio" else v - ref
+    return out
+
+
 def fit_regime4_model(features, *, train_sessions, code_identity,
                       config=None, base_confirm_bars=3, base_min_posterior=0.45,
-                      toxic_confirm_bars=2, toxic_release_bars=3):
+                      toxic_confirm_bars=2, toxic_release_bars=3, deseasonalize=False, seeds=None):
     config = config or HMM3Config(); train = _training_frame(features, train_sessions, config)
-    checkpoint = fit_hmm3(train[list(config.feature_names)].to_numpy(dtype=float),
-                          train["cme_session"].astype(str).tolist(),
-                          code_identity=code_identity, config=config)
+    seasonal = fit_seasonal_profile(train, list(config.feature_names)) if deseasonalize else None
+    train_hmm = apply_seasonal(train, seasonal) if seasonal else train
+    seeds_report = None
+    if seeds:
+        from .hmm3 import fit_hmm3_seeds
+        multi = fit_hmm3_seeds(train_hmm[list(config.feature_names)].to_numpy(dtype=float),
+                               train_hmm["cme_session"].astype(str).tolist(), seeds=seeds,
+                               code_identity=code_identity, config=config)
+        checkpoint = multi["best"]; seeds_report = {k: v for k, v in multi.items() if k != "best"}
+    else:
+        checkpoint = fit_hmm3(train_hmm[list(config.feature_names)].to_numpy(dtype=float),
+                              train_hmm["cme_session"].astype(str).tolist(),
+                              code_identity=code_identity, config=config)
     unsigned = {
         "schema": "edgelab.context.l2_regime4_model/1.0.0", "model_family": MODEL_FAMILY,
         "base_hmm_checkpoint": checkpoint, "state_names": list(FINAL_STATES),
@@ -468,6 +512,10 @@ def fit_regime4_model(features, *, train_sessions, code_identity,
         "causal_contract": "checkpoint_fit_on_declared_prior_sessions; forward_filter_only; minute_published_at_end",
         "outcomes_accessed": False, "code_identity": code_identity,
     }
+    if seasonal is not None:
+        unsigned["seasonal_profile"] = seasonal
+    if seeds_report is not None:
+        unsigned["seeds_report"] = seeds_report
     model_hash = digest(unsigned)
     return {**unsigned, "model_sha256": model_hash,
             "model_id": f"{MODEL_FAMILY}:{model_hash[:16]}"}
@@ -506,7 +554,8 @@ def label_regime4(features, model, *, evaluation_sessions=None):
     eligible, segment_ids = _eligible_segments(output)
     if not len(eligible): return output
     checkpoint = model["base_hmm_checkpoint"]; names = list(checkpoint["feature_names"])
-    posterior = forward_filter(eligible[names].to_numpy(dtype=float), segment_ids, checkpoint)
+    hmm_input = apply_seasonal(eligible, model["seasonal_profile"]) if model.get("seasonal_profile") else eligible
+    posterior = forward_filter(hmm_input[names].to_numpy(dtype=float), segment_ids, checkpoint)
     scores = _toxicity_score(eligible, model["toxicity_overlay"]["calibration"])
     entry = float(model["toxicity_overlay"]["calibration"]["entry_threshold_q90"])
     release = float(model["toxicity_overlay"]["calibration"]["release_threshold_q75"])

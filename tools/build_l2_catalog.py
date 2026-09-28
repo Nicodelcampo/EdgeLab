@@ -83,14 +83,17 @@ def main():
     for cdir, per in raw.items():
         by_inst[cdir.split("_")[0]][cdir] = per
     cat = dict(schema="EDGELAB_L2_SESSIONS_V1", fuente=str(BASE), criterio=dict(min_span_h=MIN_SPAN_H, max_gap_s=MAX_GAP_S,
-               min_vol_frac_mediana=MIN_VOL_FRAC, contrato="líder por volumen de la sesión completa anterior, sólo hacia adelante",
+               min_vol_frac_mediana_previa_20=MIN_VOL_FRAC, calidad="control de fin de día, no elegibilidad al abrir (048)", contrato="líder por volumen de la sesión completa anterior, sólo hacia adelante",
                liquidez="volumen negociado L1 (LAST)"), instrumentos={})
     for inst, cs in sorted(by_inst.items()):
         days = sorted({d for per in cs.values() for d in per if datetime.strptime(d, "%Y%m%d").weekday() < 5})
-        vols = [max(cs[c].get(d, {}).get("vol", 0) for c in cs) for d in days]
-        med = float(np.median([v for v in vols if v > 0])) if any(vols) else 0.0
+        # auditoría 046 §6: la mediana de liquidez usa SÓLO el pasado (las 20 sesiones incluidas anteriores; con < 5, sin
+        # criterio de volumen). Es un control de calidad de fin de día (048), no una condición conocida al abrir.
+        def med_prev(ses):
+            v = [x["vol"] for x in ses[-20:]]
+            return float(np.median(v)) if len(v) >= 5 else 0.0
 
-        def complete(c, d):
+        def complete(c, d, med):
             s = cs[c].get(d)
             return bool(s and (s["last"] - s["first"]) / 3.6e12 >= MIN_SPAN_H and s["max_gap_s"] <= MAX_GAP_S and s["vol"] >= MIN_VOL_FRAC * med)
         cur, ses, exc = None, [], []
@@ -100,20 +103,21 @@ def main():
             elif i > 0:
                 p = days[i - 1]
                 lead = max(cs, key=lambda c: cs[c].get(p, {}).get("vol", 0))
-                if expiry_key(lead) > expiry_key(cur) and cs[lead].get(p, {}).get("vol", 0) > cs[cur].get(p, {}).get("vol", 0) and complete(lead, p):
+                if expiry_key(lead) > expiry_key(cur) and cs[lead].get(p, {}).get("vol", 0) > cs[cur].get(p, {}).get("vol", 0) and complete(lead, p, med_prev(ses)):
                     cur = lead
             s = cs[cur].get(d)
             row = dict(trade_date=d, contract=cur, vol=(s or {}).get("vol", 0), files=(s or {}).get("files", []),
                        start_ns=(s or {}).get("first"), end_ns=((s or {}).get("last") or 0) + 1,
                        span_h=round(((s["last"] - s["first"]) / 3.6e12) if s else 0.0, 2), max_gap_s=round((s or {}).get("max_gap_s", 0.0), 1))
-            if complete(cur, d):
+            med = med_prev(ses)
+            if complete(cur, d, med):
                 ses.append(row)
             else:
                 motivo = ("sin datos del contrato vigente" if s is None else "volumen < 50 % de la mediana" if s["vol"] < MIN_VOL_FRAC * med
                           else "hueco > 30 min" if s["max_gap_s"] > MAX_GAP_S else "sesión corta (feriado o datos truncos)")
                 exc.append(dict(row, motivo=motivo))
         rolls = [s["trade_date"] for i, s in enumerate(ses) if i and s["contract"] != ses[i - 1]["contract"]]
-        cat["instrumentos"][inst] = dict(mediana_vol=med, sesiones=ses, excluidas=exc, rolls=rolls)
+        cat["instrumentos"][inst] = dict(mediana_vol_final=med_prev(ses), sesiones=ses, excluidas=exc, rolls=rolls)
         print(f"{inst:4s} incluidas {len(ses):3d}  excluidas {len(exc):3d}  rolls {rolls}  rango {ses[0]['trade_date'] if ses else '-'}..{ses[-1]['trade_date'] if ses else '-'}")
     for inst in ("ES", "NQ"):                          # cruce con el catálogo de ticks
         f = REPO / "docs" / "research" / "contract_regimes" / f"{inst}_ext_2026q3_sessions_catalog.json"

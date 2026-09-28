@@ -72,12 +72,15 @@ class HMM3Config:
     min_variance: float = 1e-4
     pseudocount: float = 1e-3
     seed: int = 20260825
+    init_mode: str = "terciles"      # "terciles" (determinista, histórico) | "random" (usa seed; auditoría 046 §10)
 
     def __post_init__(self) -> None:
         if self.rv_feature not in self.feature_names:
             raise ValueError("rv_feature absent from feature_names")
         if len(set(self.feature_names)) != len(self.feature_names):
             raise ValueError("duplicate feature_names")
+        if self.init_mode not in ("terciles", "random"):
+            raise ValueError("init_mode must be 'terciles' or 'random'")
         if self.max_iter < 1 or self.tolerance <= 0 or self.min_variance <= 0:
             raise ValueError("invalid HMM configuration")
 
@@ -136,9 +139,17 @@ def _forward_backward(log_emission: np.ndarray, start: np.ndarray,
 
 def _initial_parameters(matrix: np.ndarray, rv_index: int,
                         sequences: Sequence[slice], config: HMM3Config):
-    q1, q2 = np.quantile(matrix[:, rv_index], [1.0 / 3.0, 2.0 / 3.0])
-    labels = np.where(matrix[:, rv_index] <= q1, 0,
-                      np.where(matrix[:, rv_index] <= q2, 1, 2))
+    if config.init_mode == "random":                  # centros al azar según la semilla: varias semillas = óptimos distintos
+        rng = np.random.default_rng(config.seed)
+        centers = matrix[rng.choice(len(matrix), size=3, replace=False)]
+        labels = np.argmin(((matrix[:, None, :] - centers[None, :, :]) ** 2).sum(axis=2), axis=1)
+        for state in range(3):                         # ningún estado vacío
+            if not (labels == state).any():
+                labels[rng.integers(len(labels))] = state
+    else:
+        q1, q2 = np.quantile(matrix[:, rv_index], [1.0 / 3.0, 2.0 / 3.0])
+        labels = np.where(matrix[:, rv_index] <= q1, 0,
+                          np.where(matrix[:, rv_index] <= q2, 1, 2))
     means = np.vstack([matrix[labels == state].mean(axis=0) for state in range(3)])
     variances = np.vstack([
         matrix[labels == state].var(axis=0) + config.min_variance
@@ -290,3 +301,21 @@ def forward_filter(matrix: np.ndarray, sequence_ids: Sequence[object],
     if not np.allclose(posterior.sum(axis=1), 1.0, rtol=0, atol=1e-10):
         raise AssertionError("posterior rows do not sum to one")
     return posterior
+
+
+def fit_hmm3_seeds(matrix: np.ndarray, sequence_ids: Sequence[object], *, seeds: Sequence[int],
+                   code_identity: str, config: HMM3Config | None = None) -> dict[str, object]:
+    """Varias semillas con inicialización aleatoria; se elige la mejor verosimilitud DE ENTRENAMIENTO y se publica el
+    acuerdo de etiquetas (argmax del filtro hacia adelante, estados ordenados por RV) entre la elegida y cada otra.
+    Un acuerdo bajo dice que el clima no es estable y no debe usarse (auditoría 046 §10)."""
+    from dataclasses import replace
+    base = config or HMM3Config()
+    fits = [fit_hmm3(matrix, sequence_ids, code_identity=code_identity, config=replace(base, seed=int(s), init_mode="random"))
+            for s in seeds]
+    best = max(range(len(fits)), key=lambda i: fits[i]["final_log_likelihood"])
+    ref = forward_filter(matrix, sequence_ids, fits[best]).argmax(axis=1)
+    agreement = [float((forward_filter(matrix, sequence_ids, f).argmax(axis=1) == ref).mean()) for f in fits]
+    return {"best": fits[best], "best_seed": int(seeds[best]),
+            "per_seed": [{"seed": int(s), "final_log_likelihood": float(f["final_log_likelihood"]), "agreement_with_best": a}
+                         for s, f, a in zip(seeds, fits, agreement)],
+            "min_agreement": float(min(agreement))}
