@@ -150,3 +150,10 @@ Que una celda no pague costos por sí sola **no la descarta**: puede servir como
 - **Rasgos medidos en los 10 ejemplos de Nico (MES 25t, mar-2026):** dispersión del nivel mediana ~4 t (0–8; un caso 15);
   recorrido entre vueltas mediana ~17 t (4–33); separación muy variable (4–150 velas).
 - Parámetros a congelar con estos ejemplos (sin mirar resultados): tolerancia del nivel, salida mínima en ticks y en velas.
+
+### Idea registrada (28/09, Nico; NO corrida): variante IPC-N2L — 2 visitas con salida grande
+- 2 visitas bastan si entre la 1.ª y la 2.ª el precio se alejó **≥ 28 t** (el cuartil alto de las salidas entre visitas
+  en los 10 grupos de Nico; mediana ~22 t; el doble de la salida de 14 t que exige la regla de ≥ 3 visitas). «No vale que
+  se aleje poco.» Resto igual a v2 (picos monótonos, paso ≤ 2 t, misma sesión, ≤ 200 velas).
+- Motivo: más eventos (potencia) para los cruces con HFT/L2; ver `RESULTADO_IPC_NIVEL_HFT_MES_20260928.md`.
+- Antes de medir: revisar en el visor que las zonas N2L se vean como zonas, y registrar el umbral de 28 t como congelado.
