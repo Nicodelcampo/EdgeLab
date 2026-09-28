@@ -36,3 +36,13 @@ Placebo incluido: C-SW emparejado es el «pivote solitario emparejado» de la 04
 - Una celda **sostiene** si el IC inferior de D > 0 y pasa BH.
 - **IPC 25t es robusto** si sostienen ≥ 12 de las 23 celdas originales. Si no, **cae** con alcance: la etapa A 25t con este evento y estas definiciones. Las D4 se reportan aparte.
 - **Justificación económica / cómo podría refutarse:** las del manifiesto IPC; esta prueba es exactamente su refutación más barata.
+
+## Resultado (28/09, reporte sha `f8e68b1a404b`, árbol limpio): **NO_ROBUSTO — 0 de 23 celdas sostienen**
+- ES 36.350 filas, NQ 1.822; cobertura del C-SW emparejado 79 % (ES) y 68 % (NQ); velas ambiguas 0 %.
+- **Qué mató el efecto, en orden** (celda más grande, ES estándar, no virgen, k 4, último pico; etapa A original: +0,204 contra C-SZ):
+  - **A** (misma comparación, pero excluyendo sólo zonas ya existentes en el momento del control): **+0,062** [+0,03, +0,09]. La corrección de la fuga en los controles (auditoría 046 §1) sola se lleva ~70 % del efecto.
+  - B (C-SW actual): +0,044; C (C-SW emparejado, trade): +0,048.
+  - **D (primario: midquote contra C-SW emparejado): −0,040** [−0,08, +0,00]; E (mid contra C-SZ): −0,022. Sobre el precio medio el efecto desaparece o se invierte (rebote bid/ask, `LES-R3-TRADE-PRICE-BOUNCE`).
+- Patrón general: A > B ≈ C > D en casi todas las celdas; varias D significativamente negativas (ES estándar virgen k 4: −0,12; D4 no virgen k 4: −0,21).
+- Única zona con signo positivo sostenido en C y D: **ES k 8, último pico** (D +0,076 [−0,01, +0,16], n 221; volumen bajo +0,149, n 57), no significativa y con n chico. Queda anotada como pista, no como resultado.
+- **Veredicto con alcance:** cae IPC 25t **como fue medido en la etapa A** (evento alejamiento, carrera al último/primer pico, detectores estándar/estricto/D4, ES y NQ, descubrimiento Lucid). El positivo era mayormente **controles contaminados por zonas futuras** más **rebote de precio de trade**. No cae el abanico del diseño (`DISENO_IPC_ABANICO_DE_MECANISMOS_20260927.md`): otros eventos, objetivos sin barrera, escalas y el uso como componente siguen sin medir.

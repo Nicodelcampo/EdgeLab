@@ -399,3 +399,7 @@ aquellos números compara dos poblaciones distintas.
 - **MEDIDO:** etapa A, 144 celdas, contra C-SZ (nivel sin zona) y C-SW (pico reciente no superado, sin acumulación). Reporte sha `ff25451223b2`. Corrida anterior con fuga (`daa3b0f3bbd3`) invalidada.
 - **Estado:** 32 INFO+, 23 pasan a B. El efecto sobrevive al pico reciente: ES k 4 último pico +0,155 [+0,12, +0,19] con n 1.335.
 - **NO MEDIDO:** economía (B), estado continuo, banda completa, otros activos, holdout.
+
+## Anexo 2026-09-28: IPC 25t, prueba de robustez (auditoría 046)
+- **MEDIDO:** las 23 celdas de la etapa A + 5 D4 con zonas as-of, midquote, C-SW emparejado, volumen causal (reporte `f8e68b1a404b`). **0/23 sostienen: NO_ROBUSTO.** La corrección de controles con zonas futuras baja el efecto principal de +0,20 a +0,06; sobre midquote contra el pico reciente emparejado queda en −0,04.
+- **NO MEDIDO (sigue abierto):** el resto del abanico IPC (otros eventos, objetivo sin barrera, penetración, estado continuo, escalas, IPC como componente o imán en espejos). Pista débil: ES k 8 último pico (+0,08 en midquote, no significativa).
