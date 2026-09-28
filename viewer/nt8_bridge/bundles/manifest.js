@@ -1,5 +1,18 @@
 window.ASSET_CATALOG = [
   {
+    "id": "ES_03-26_ESPEJO",
+    "name": "ES 03-26 \u00b7 Espejo (5m / 15m / 25t)",
+    "group": "ES (Espejo Impulsos)",
+    "instrument": "ES",
+    "contract": "ES 03-26",
+    "tick_size": 0.25,
+    "precision": 2,
+    "candles": 19116,
+    "zones": 0,
+    "rolls": 0,
+    "parity_status": "PARITY_ABSTAIN"
+  },
+  {
     "id": "6B_09-25_25T",
     "name": "6B 09-25 (25 Tick \u00b7 HFT V2)",
     "group": "Contratos Individuales 6B",

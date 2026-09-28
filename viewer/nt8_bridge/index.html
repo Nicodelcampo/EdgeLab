@@ -881,6 +881,42 @@
   <canvas id="overlay"></canvas>
   <div id="tbze2-info" style="display:none;position:absolute;left:8px;bottom:36px;z-index:20;max-width:560px;max-height:55%;overflow:auto;background:rgba(255,255,255,0.93);color:#111;border:1px solid #cbd5e1;border-radius:4px;padding:6px 8px;font-size:10.5px;line-height:1.45;box-shadow:0 2px 8px rgba(0,0,0,.15);"></div>
   <div id="l2-tooltip" role="tooltip"></div>
+  <!-- FLOATING HUD FOR ESPEJO CALIBRATION -->
+  <div id="espejo-hud" style="display:none; position:absolute; top:14px; right:20px; z-index:25; background:rgba(15,23,42,0.92); border:1px solid rgba(148,163,184,0.35); backdrop-filter:blur(10px); border-radius:8px; padding:10px 14px; box-shadow:0 8px 24px rgba(0,0,0,0.4); color:#f8fafc; font-family:-apple-system, Segoe UI, sans-serif; width:290px; user-select:none;">
+    <div id="espejo-hud-header" style="display:flex; justify-content:space-between; align-items:center; cursor:move; padding-bottom:6px; border-bottom:1px solid rgba(148,163,184,0.2); margin-bottom:8px;">
+      <div style="font-weight:700; font-size:11.5px; display:flex; align-items:center; gap:6px;">
+        <span>🪞</span><span>Calibración de Espejos</span>
+      </div>
+      <button id="btn-hud-collapse" style="background:none; border:none; color:#94a3b8; cursor:pointer; font-size:13px; padding:0 4px;" title="Minimizar panel">—</button>
+    </div>
+    <div id="espejo-hud-body">
+      <div style="display:flex; justify-content:space-between; align-items:center; font-size:10px; margin-bottom:4px;">
+        <span style="color:#94a3b8; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Permisividad</span>
+        <span id="hud-perm-badge" style="background:rgba(16,185,129,0.2); color:#34d399; font-weight:700; padding:2px 6px; border-radius:4px; border:1px solid rgba(16,185,129,0.4); font-size:10.5px;">Nivel 3 · Estándar</span>
+      </div>
+      <input type="range" id="hud-esp-slider" min="1" max="5" step="1" value="3" style="width:100%; margin:6px 0 2px 0; accent-color:#10b981; cursor:pointer;">
+      <div style="display:flex; justify-content:space-between; font-size:9px; color:#64748b; margin-bottom:8px;">
+        <span>1: Exigente</span>
+        <span>3: Base (17t)</span>
+        <span>5: Permisivo</span>
+      </div>
+      <div id="hud-perm-desc" style="font-size:10px; color:#cbd5e1; background:rgba(30,41,59,0.7); padding:4px 8px; border-radius:4px; margin-bottom:8px; line-height:1.35;">
+        Calibración base de Nico (W ≥ 17 t, 20 velas)
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center; font-size:11px; margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid rgba(148,163,184,0.15);">
+        <span style="color:#94a3b8;">Zonas completadas:</span>
+        <span id="hud-count-badge" style="font-weight:700; color:#38bdf8;">321 espejos</span>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:5px; font-size:10px;">
+        <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" id="hud-chk-s2"><span>★ Sólo vueltas simétricas (S2v2)</span></label>
+        <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" id="hud-chk-nl"><span>🟣 Sólo con zona «no lista» (vacío vol.)</span></label>
+        <label style="display:flex; align-items:center; gap:6px; cursor:pointer;"><input type="checkbox" id="hud-chk-box" checked><span>📦 Caja sombreada del rango A–B</span></label>
+      </div>
+    </div>
+    <div id="espejo-hud-minimized" style="display:none; cursor:pointer; font-size:11px; font-weight:600; color:#34d399; text-align:center; padding:2px 0;">
+      🪞 <span id="hud-min-text">Nivel 3 (321)</span> ⚙
+    </div>
+  </div>
 </div>
 
 <!-- Barra de scroll horizontal rápida (Estilo NinjaTrader 8) -->
@@ -1248,20 +1284,28 @@
 
         </div>
         <div class="ind-panel" data-ind="espejo" hidden>
-    <!-- EDGELAB_ESPEJO_IND_V1 (2026-09-27): impulsos espejados y zonas «no listas» (registro ESPEJO-IND §3 y §6) -->
+    <!-- EDGELAB_ESPEJO_IND_V1 (2026-09-27): calibración de impulsos espejados y zonas «no listas» -->
     <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
-      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px;">🪞 Espejo: impulsos y zonas no listas</div>
+      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px;">🪞 Calibración de Zonas Espejo</div>
       <div style="display:flex;flex-direction:column;gap:5px;font-size:10.5px;">
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-imp" checked><span>Impulso A→B y su vuelta (niveles A y B)</span></label>
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-nl" checked><span><b>Zona no lista</b> (tramo cruzado casi sin volumen)</span></label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-completed" checked><span><b>Sólo zonas espejadas</b> (MIRROR_COMPLETED)</span></label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-imp" checked><span>Trazar <b>Ida (A→B)</b> y <b>Vuelta (B→A)</b></span></label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-box" checked><span>Caja sombreada de la zona espejada</span></label>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-nl" checked><span><b>Zona «no lista»</b> (tramo cruzado sin volumen)</span></label>
         <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-inef"><span>Sólo impulsos ineficientes (I1 ∨ I2)</span></label>
-        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-cand"><span>Sólo los que llegaron a candidato (x = 0,25)</span></label>
-        <div id="lbl-esp-status" style="font-size:9.5px;color:#666;"></div>
-        <div style="font-size:9px;color:#888;line-height:1.35;">Colores: gris = impulso confirmado · ámbar = vuelta candidata (borde grueso si «parecida»: velocidad y tiempo por nivel ≥ mediana, semejanza v2) · verde = tocó A · rojo = extremo nuevo · gris claro = venció.
-          Franja violeta = zona no lista, desde B hasta el desenlace. Parámetros congelados: 25t → 17 t y 20 velas; tiempo → 3·ATR(14) y 24 velas; e_min 0,3; r 0,3.
-          Se dibuja sólo lo conocido al cierre de cada vela. Descriptivo: no dice si paga.</div>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="chk-esp-s2"><span>Sólo vueltas parecidas (S2v2: vel/tiempo)</span></label>
+        <div id="lbl-esp-status" style="font-size:9.5px;color:#666;line-height:1.35;margin-top:2px;"></div>
+        <div style="font-size:9px;color:#888;line-height:1.35;margin-top:4px;">
+          <b>Guía de calibración:</b><br>
+          • <span style="color:#2563eb;font-weight:600;">Azul:</span> Ida del impulso A→B.<br>
+          • <span style="color:#16a34a;font-weight:600;">Verde:</span> Vuelta B→A (recorrido inverso a nivel A).<br>
+          • <span style="color:#10b981;font-weight:600;">Caja verde suave:</span> Zona espejada delimitada.<br>
+          • <span style="color:#7c3aed;font-weight:600;">Franja violeta:</span> Zona «no lista» (inyección sin volumen).<br>
+          • <span style="color:#d97706;font-weight:600;">★:</span> Vuelta parecida en velocidad y tiempo (S2v2).
+        </div>
       </div>
     </div>
+        </div>
         </div>
         <div class="ind-panel" data-ind="tbz" hidden>
     <!-- EDGELAB_TBZ_LAYER_V1: familia TBZ, franjas de baja permanencia (construcción, sin desenlaces) -->
@@ -2294,11 +2338,23 @@
   }
   // EDGELAB_ESPEJO_IND_V1 (2026-09-27): kernel EspejoImpulsos (espejo_impulsos.js, paridad con Python) sobre las velas
   // activas. Sesión = hueco > 30 min; fin de sesión = la vela antes del hueco (la última del arreglo queda abierta).
-  var espejo = { on: false, key: null, res: null, imp: true, nl: true, inef: false, cand: false };
+  var PERM_CONFIGS = {
+    1: { name: "Nivel 1 · Ultra Exigente", min_w: 28, max_bars: 16, atr_k: 4.5, desc: "Grandes impulsos limpios (W ≥ 28 t, 16 velas)" },
+    2: { name: "Nivel 2 · Selectivo", min_w: 22, max_bars: 18, atr_k: 3.8, desc: "Mayor convicción y fuerza (W ≥ 22 t, 18 velas)" },
+    3: { name: "Nivel 3 · Estándar", min_w: 17, max_bars: 20, atr_k: 3.0, desc: "Calibración base de Nico (W ≥ 17 t, 20 velas)" },
+    4: { name: "Nivel 4 · Permisivo", min_w: 13, max_bars: 25, atr_k: 2.2, desc: "Oscilaciones y giros medianos (W ≥ 13 t, 25 velas)" },
+    5: { name: "Nivel 5 · Ultra Permisivo", min_w: 9, max_bars: 30, atr_k: 1.5, desc: "Micro-espejos y rebotes rápidos (W ≥ 9 t, 30 velas)" }
+  };
+  var espejo = { on: false, key: null, res: null, completed: true, imp: true, box: true, nl: true, inef: false, s2: false, nlOnly: false, permLevel: 3 };
+
   function espejoCompute() {
     var cd = activeCandlesArr(); if (!cd || cd.length < 50) { espejo.res = null; return null; }
     var bk = state.activeBarKey || (state.run && state.run.bar_key) || "";
-    var key = (state.currentAssetId || "") + "|" + bk + "|" + cd.length + "|" + cd[cd.length - 1].time;
+    var isTime = /time|min/i.test(bk);
+    var lvl = espejo.permLevel || 3;
+    var cfg = PERM_CONFIGS[lvl] || PERM_CONFIGS[3];
+    var prm = isTime ? { atr_k: cfg.atr_k, max_bars: cfg.max_bars } : { min_w: cfg.min_w, max_bars: cfg.max_bars };
+    var key = (state.currentAssetId || "") + "|" + bk + "|" + cd.length + "|" + cd[cd.length - 1].time + "|lvl" + lvl;
     if (espejo.key === key) return espejo.res;
     var tick = (state.data && state.data.meta && state.data.meta.tick_size) || 0.25, n = cd.length;
     var t = new Float64Array(n), O = new Float64Array(n), H = new Float64Array(n), L = new Float64Array(n), C = new Float64Array(n), V = new Float64Array(n), S = [], last = new Uint8Array(n), ses = 0;
@@ -2307,16 +2363,22 @@
       t[i] = cd[i].time; O[i] = Math.round(cd[i].open / tick); H[i] = Math.round(cd[i].high / tick); L[i] = Math.round(cd[i].low / tick);
       C[i] = Math.round(cd[i].close / tick); V[i] = cd[i].volume || 0; S.push(ses);
     }
-    var isTime = /time|min/i.test(bk);
-    espejo.res = EspejoImpulsos.run(t, O, H, L, C, V, S, last, isTime ? { atr_k: 3, max_bars: 24 } : { min_w: 17, max_bars: 20 });
+    espejo.res = EspejoImpulsos.run(t, O, H, L, C, V, S, last, prm);
     espejo.key = key;
     var st = {}; espejo.res.impulses.forEach(function (m) { var k = m.estado_final || "abierto"; st[k] = (st[k] || 0) + 1; });
     var lb = document.getElementById("lbl-esp-status");
-    if (lb) lb.textContent = espejo.res.impulses.length + " impulsos (" + (isTime ? "3·ATR, 24 velas" : "17 t, 20 velas") + ") · " +
-      Object.keys(st).map(function (k) { return k.replace("MIRROR_", "").replace("IMP_", "").toLowerCase() + " " + st[k]; }).join(" · ");
+    if (lb) {
+      var nComp = st["MIRROR_COMPLETED"] || 0;
+      var total = espejo.res.impulses.length;
+      lb.innerHTML = "<b>" + nComp + " espejos completados</b> (" + total + " impulsos totales)<br>" +
+        "<span style='color:#777;'>" + (isTime ? (cfg.atr_k + "·ATR, " + cfg.max_bars + " velas") : (cfg.min_w + " t, " + cfg.max_bars + " velas")) + " · fallidos " + (st["MIRROR_FAILED"] || 0) + " · vencidos " + (st["MIRROR_EXPIRED"] || 0) + "</span>";
+    }
     return espejo.res;
   }
+
   function drawEspejo(ctx, vr, w, h) {
+    var hud = document.getElementById("espejo-hud");
+    if (hud) hud.style.display = espejo.on ? "block" : "none";
     if (!espejo.on || !series) return;
     var res = espejoCompute(); if (!res) return;
     var cd = activeCandlesArr(), n = cd.length, tick = (state.data.meta && state.data.meta.tick_size) || 0.25;
@@ -2324,43 +2386,246 @@
     function Y(v) { var c = series.priceToCoordinate(v * tick); return (c === null || c === undefined) ? NaN : c; }
     var byImp = {}; res.events.forEach(function (e) { (byImp[e.imp_id] = byImp[e.imp_id] || []).push(e); });
     var FIN = { MIRROR_COMPLETED: "22,163,74", MIRROR_FAILED: "220,38,38", MIRROR_EXPIRED: "156,163,175", IMP_NO_MIRROR: "203,213,225" };
-    ctx.save(); ctx.font = "10px -apple-system, Segoe UI, sans-serif";
+
+    var visibleMirrorsCount = 0;
+    ctx.save();
     res.impulses.forEach(function (m) {
       if (m.estado_final === "IMP_UNCONFIRMED") return;
+      if (espejo.completed && m.estado_final !== "MIRROR_COMPLETED") return;
       if (espejo.inef && !m.ineficiente) return;
-      var ev = byImp[m.imp_id] || [], cand = null;
-      ev.forEach(function (e) { if (e.kind === "MIRROR_CANDIDATE") cand = e; });
-      if (espejo.cand && !cand) return;
+      if (espejo.s2 && !m.S2v2) return;
+      if (espejo.nlOnly && m.no_lista_lo === null) return;
+
       var iEnd = m.bar_final !== null ? m.bar_final : n - 1;
       if (cd[Math.min(n - 1, iEnd)].time < vr.from || cd[m.bar_A].time > vr.to) return;
       var xA = X(m.bar_A), xB = X(m.bar_B), xC = X(m.bar_conf), xE = X(iEnd), yA = Y(m.A), yB = Y(m.B);
-      if (![xA, xB, xC, xE, yA, yB].every(isFinite)) return;
+      if (![xA, xB, xE, yA, yB].every(isFinite)) return;
+
+      var isComp = (m.estado_final === "MIRROR_COMPLETED");
+      if (isComp) visibleMirrorsCount++;
+
+      var yTop = Math.min(yA, yB), boxH = Math.abs(yB - yA);
+      var xSpan = Math.max(1, xE - xA);
+
+      // 1. CAJA DE ZONA ESPEJADA (sombreado entre niveles A y B desde xA hasta xE)
+      if (espejo.box) {
+        if (isComp) {
+          ctx.fillStyle = "rgba(16, 185, 129, 0.08)";
+          ctx.fillRect(xA, yTop, xSpan, boxH);
+          ctx.strokeStyle = "rgba(16, 185, 129, 0.35)";
+          ctx.lineWidth = 1;
+          ctx.setLineDash([3, 3]);
+          ctx.strokeRect(xA, yTop, xSpan, boxH);
+          ctx.setLineDash([]);
+        } else {
+          ctx.fillStyle = "rgba(107, 114, 128, 0.05)";
+          ctx.fillRect(xA, yTop, xSpan, boxH);
+        }
+      }
+
+      // 2. ZONA «NO LISTA» (tramo de bajo volumen donde el precio pasó sin contrapartida)
       if (espejo.nl && m.no_lista_lo !== null) {
         var y1 = Y(m.no_lista_lo), y2 = Y(m.no_lista_hi);
         if (isFinite(y1) && isFinite(y2)) {
-          ctx.fillStyle = "rgba(124,58,237,0.16)"; ctx.fillRect(xA, Math.min(y1, y2), Math.max(1, xE - xA), Math.abs(y2 - y1));
-          ctx.strokeStyle = "rgba(124,58,237,0.6)"; ctx.lineWidth = 1; ctx.strokeRect(xA, Math.min(y1, y2), Math.max(1, xE - xA), Math.abs(y2 - y1));
+          var yNlTop = Math.min(y1, y2), hNl = Math.abs(y2 - y1);
+          ctx.fillStyle = "rgba(139, 92, 246, 0.22)";
+          ctx.fillRect(xA, yNlTop, xSpan, hNl);
+          ctx.strokeStyle = "rgba(124, 58, 237, 0.75)";
+          ctx.lineWidth = 1.2;
+          ctx.strokeRect(xA, yNlTop, xSpan, hNl);
         }
       }
-      if (!espejo.imp) return;
-      ctx.strokeStyle = "rgba(75,85,99," + (m.ineficiente ? 0.9 : 0.5) + ")"; ctx.lineWidth = m.ineficiente ? 1.6 : 1;
-      ctx.beginPath(); ctx.moveTo(xA, yA); ctx.lineTo(xB, yB); ctx.stroke();
-      var xK = cand ? X(cand.bar) : xE;
-      ctx.setLineDash([4, 3]); ctx.lineWidth = 1; ctx.strokeStyle = "rgba(107,114,128,0.8)";
-      ctx.beginPath(); ctx.moveTo(xB, yA); ctx.lineTo(xK, yA); ctx.moveTo(xB, yB); ctx.lineTo(xK, yB); ctx.stroke();
-      if (cand && isFinite(xK)) {
-        var s2 = ev.some(function (e) { return e.S2v2 === true; });   // marca «parecida»: semejanza v2 por nivel
-        ctx.strokeStyle = "rgba(217,119,6,0.95)"; ctx.lineWidth = s2 ? 2.2 : 1.2;
-        ctx.beginPath(); ctx.moveTo(xK, yA); ctx.lineTo(xE, yA); ctx.moveTo(xK, yB); ctx.lineTo(xE, yB); ctx.stroke();
-      }
+
+      // 3. NIVELES HORIZONTALES DE REFERENCIA (Nivel A y Nivel B)
+      ctx.setLineDash([4, 3]);
+      ctx.lineWidth = 1;
+      // Nivel A de xA a xE
+      ctx.strokeStyle = isComp ? "rgba(16, 185, 129, 0.6)" : "rgba(107, 114, 128, 0.5)";
+      ctx.beginPath(); ctx.moveTo(xA, yA); ctx.lineTo(xE, yA); ctx.stroke();
+      // Nivel B de xB a xE
+      ctx.strokeStyle = isComp ? "rgba(245, 158, 11, 0.6)" : "rgba(107, 114, 128, 0.5)";
+      ctx.beginPath(); ctx.moveTo(xB, yB); ctx.lineTo(xE, yB); ctx.stroke();
       ctx.setLineDash([]);
-      if (m.estado_final && FIN[m.estado_final]) {
-        ctx.fillStyle = "rgb(" + FIN[m.estado_final] + ")"; ctx.beginPath(); ctx.arc(xE, m.estado_final === "MIRROR_COMPLETED" ? yA : yB, 3.5, 0, 6.2832); ctx.fill();
+
+      // 4. TRAZADO DE LA IDA (A -> B) Y LA VUELTA (B -> A)
+      if (espejo.imp) {
+        // --- IDA (A -> B) ---
+        ctx.strokeStyle = isComp ? "#2563eb" : (m.ineficiente ? "rgba(75,85,99,0.9)" : "rgba(75,85,99,0.5)");
+        ctx.lineWidth = isComp ? 2.5 : (m.ineficiente ? 1.6 : 1);
+        ctx.beginPath();
+        ctx.moveTo(xA, yA);
+        ctx.lineTo(xB, yB);
+        ctx.stroke();
+
+        // Punto A de partida
+        ctx.fillStyle = isComp ? "#2563eb" : "rgba(75,85,99,0.8)";
+        ctx.beginPath(); ctx.arc(xA, yA, isComp ? 3.5 : 2.5, 0, 6.2832); ctx.fill();
+
+        // Extremo B (pico/valle del espejo)
+        ctx.fillStyle = isComp ? "#f59e0b" : "rgba(107,114,128,0.8)";
+        ctx.beginPath(); ctx.arc(xB, yB, isComp ? 4 : 3, 0, 6.2832); ctx.fill();
+
+        // --- VUELTA (B -> A) ---
+        if (isComp) {
+          ctx.strokeStyle = "#16a34a"; // Verde esmeralda para la vuelta completa
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          ctx.moveTo(xB, yB);
+          ctx.lineTo(xE, yA);
+          ctx.stroke();
+
+          // Marcador de llegada a nivel A en xE
+          ctx.fillStyle = "#16a34a";
+          ctx.beginPath(); ctx.arc(xE, yA, 5, 0, 6.2832); ctx.fill();
+          ctx.fillStyle = "#ffffff";
+          ctx.beginPath(); ctx.arc(xE, yA, 2, 0, 6.2832); ctx.fill();
+
+          // Etiqueta del espejo (con fondo para máxima legibilidad)
+          ctx.font = "bold 10px -apple-system, Segoe UI, sans-serif";
+          var durBars = Math.max(1, iEnd - m.bar_B);
+          var labelText = "🪞 #" + m.imp_id + " (" + (m.W).toFixed(0) + "t, " + durBars + "v)";
+          if (m.S2v2) labelText += " ★";
+          var txtY = (m.dir === 1) ? Math.min(yA, yB) - 6 : Math.max(yA, yB) + 14;
+          var tw = ctx.measureText(labelText).width;
+          ctx.fillStyle = "rgba(255, 255, 255, 0.88)";
+          ctx.fillRect(xB - 12, txtY - 9, tw + 6, 12);
+          ctx.strokeStyle = "rgba(16, 185, 129, 0.5)";
+          ctx.lineWidth = 0.8;
+          ctx.strokeRect(xB - 12, txtY - 9, tw + 6, 12);
+          ctx.fillStyle = "#047857";
+          ctx.fillText(labelText, xB - 9, txtY);
+        }
+      }
+
+      // Marcador de desenlace si no es completado
+      if (!isComp && m.estado_final && FIN[m.estado_final]) {
+        ctx.fillStyle = "rgb(" + FIN[m.estado_final] + ")";
+        ctx.beginPath(); ctx.arc(xE, m.estado_final === "MIRROR_COMPLETED" ? yA : yB, 3.5, 0, 6.2832); ctx.fill();
       }
     });
     ctx.restore();
+
+    // Actualizar contadores dinámicos del HUD
+    var hudCount = document.getElementById("hud-count-badge");
+    if (hudCount) hudCount.textContent = visibleMirrorsCount + (visibleMirrorsCount === 1 ? " espejo" : " espejos");
+    var hudMin = document.getElementById("hud-min-text");
+    if (hudMin) hudMin.textContent = "Nivel " + (espejo.permLevel || 3) + " (" + visibleMirrorsCount + ")";
   }
-  [["chk-esp-imp", "imp"], ["chk-esp-nl", "nl"], ["chk-esp-inef", "inef"], ["chk-esp-cand", "cand"]].forEach(function (q) {
+
+  function initEspejoHud() {
+    var hud = document.getElementById("espejo-hud");
+    if (!hud) return;
+    var slider = document.getElementById("hud-esp-slider");
+    var badge = document.getElementById("hud-perm-badge");
+    var desc = document.getElementById("hud-perm-desc");
+    var chkS2 = document.getElementById("hud-chk-s2");
+    var chkNl = document.getElementById("hud-chk-nl");
+    var chkBox = document.getElementById("hud-chk-box");
+    var btnCollapse = document.getElementById("btn-hud-collapse");
+    var hudBody = document.getElementById("espejo-hud-body");
+    var hudMin = document.getElementById("espejo-hud-minimized");
+
+    function updateHudLabels(lvl) {
+      var bk = state.activeBarKey || (state.run && state.run.bar_key) || "";
+      var isTime = /time|min/i.test(bk);
+      var cfg = PERM_CONFIGS[lvl] || PERM_CONFIGS[3];
+      if (badge) badge.textContent = cfg.name;
+      if (desc) {
+        desc.textContent = isTime
+          ? ("Filtro: W ≥ " + cfg.atr_k + "·ATR(14), máx " + cfg.max_bars + " velas")
+          : ("Filtro: W ≥ " + cfg.min_w + " ticks, máx " + cfg.max_bars + " velas");
+      }
+    }
+
+    if (slider) {
+      slider.addEventListener("input", function (e) {
+        var lvl = parseInt(e.target.value, 10);
+        espejo.permLevel = lvl;
+        updateHudLabels(lvl);
+        requestDraw();
+      });
+    }
+
+    if (chkS2) {
+      chkS2.addEventListener("change", function () {
+        espejo.s2 = chkS2.checked;
+        var modalChk = document.getElementById("chk-esp-s2");
+        if (modalChk) modalChk.checked = chkS2.checked;
+        requestDraw();
+      });
+    }
+
+    if (chkNl) {
+      chkNl.addEventListener("change", function () {
+        espejo.nlOnly = chkNl.checked;
+        requestDraw();
+      });
+    }
+
+    if (chkBox) {
+      chkBox.addEventListener("change", function () {
+        espejo.box = chkBox.checked;
+        var modalBox = document.getElementById("chk-esp-box");
+        if (modalBox) modalBox.checked = chkBox.checked;
+        requestDraw();
+      });
+    }
+
+    // Minimizar / Expandir panel
+    if (btnCollapse) {
+      btnCollapse.addEventListener("click", function () {
+        hudBody.style.display = "none";
+        btnCollapse.style.display = "none";
+        hudMin.style.display = "block";
+        hud.style.width = "auto";
+        hud.style.padding = "6px 12px";
+      });
+    }
+    if (hudMin) {
+      hudMin.addEventListener("click", function () {
+        hudBody.style.display = "block";
+        btnCollapse.style.display = "inline";
+        hudMin.style.display = "none";
+        hud.style.width = "290px";
+        hud.style.padding = "10px 14px";
+      });
+    }
+
+    // Panel flotante arrastrable (Draggable)
+    var header = document.getElementById("espejo-hud-header");
+    if (header) {
+      var isDragging = false, startX = 0, startY = 0, origLeft = 0, origTop = 0;
+      header.addEventListener("mousedown", function (e) {
+        if (e.target === btnCollapse) return;
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        var rect = hud.getBoundingClientRect();
+        var parentRect = hud.parentElement.getBoundingClientRect();
+        origLeft = rect.left - parentRect.left;
+        origTop = rect.top - parentRect.top;
+        hud.style.right = "auto";
+        hud.style.left = origLeft + "px";
+        hud.style.top = origTop + "px";
+        document.body.style.userSelect = "none";
+      });
+      window.addEventListener("mousemove", function (e) {
+        if (!isDragging) return;
+        var dx = e.clientX - startX;
+        var dy = e.clientY - startY;
+        hud.style.left = Math.max(0, origLeft + dx) + "px";
+        hud.style.top = Math.max(0, origTop + dy) + "px";
+      });
+      window.addEventListener("mouseup", function () {
+        if (isDragging) {
+          isDragging = false;
+          document.body.style.userSelect = "";
+        }
+      });
+    }
+  }
+
+  [["chk-esp-completed", "completed"], ["chk-esp-imp", "imp"], ["chk-esp-box", "box"], ["chk-esp-nl", "nl"], ["chk-esp-inef", "inef"], ["chk-esp-s2", "s2"]].forEach(function (q) {
     var el = document.getElementById(q[0]); if (el) el.addEventListener("change", function () { espejo[q[1]] = el.checked; requestDraw(); });
   });
 
@@ -3058,7 +3323,7 @@
     // causal sigue visible como flechas (bloque 1b, sin look-ahead). Antes de unificar,
     // esto era un `return` que dejaba las flechas como código muerto.
     var runBarKey = state.run && state.run.bar_key;
-    var boxesSuppressed = !!(runBarKey && runBarKey !== activeKey);
+    var boxesSuppressed = !!(runBarKey && runBarKey !== activeKey && state.run.zones && state.run.zones.length > 0);
     if (boxesSuppressed) {
       window.__EDGELAB_ZONE_RENDER_STATUS__ = {status: "ABSTAIN_BAR_KEY_MISMATCH", boxes: "SUPPRESSED", arrows: "CAUSAL_SIGNAL_ONLY", runBarKey: runBarKey, activeBarKey: activeKey};
       ctx.save();
@@ -5559,6 +5824,20 @@
         }
       }
       selectRun(defaultRunIdx, options);
+    } else {
+      var bKeys = Object.keys(data.bar_series || {});
+      var activeBk = (options && options.targetTf) || bKeys[0];
+      state.activeBarKey = activeBk;
+      state.run = { id: "none", name: "Espejo", indicator: "EspejoImpulsos", zones: [] };
+      if (data.bar_series && data.bar_series[activeBk]) {
+        series.setData(data.bar_series[activeBk].candles);
+        chart.timeScale().fitContent();
+      }
+      var lblEl = document.getElementById("lbl-tf-name");
+      if (lblEl && data.bar_series[activeBk]) lblEl.textContent = data.bar_series[activeBk].name;
+      document.getElementById("metaline").textContent =
+        (m.contract || m.instrument) + " · " + (data.bar_series[activeBk] ? data.bar_series[activeBk].name : activeBk) + " · tick " + m.tick_size + " · " + (data.bar_series[activeBk] ? data.bar_series[activeBk].candles.length.toLocaleString() : 0) + " barras · Calibración Espejo";
+      requestDraw();
     }
 
     buildAssetSelectorList();
@@ -6368,12 +6647,17 @@
     buildAssetSelectorList();
     initChartScrollbar();
     initNewChartModal();
+    initEspejoHud();
 
     // Check query params for specific asset & timeframe
     var params = new URLSearchParams(window.location.search);
     var qAsset = params.get("asset");
     var qTf = params.get("tf");
     var opts = qTf ? { targetTf: qTf } : {};
+    if (params.get("espejo") === "1" || (qAsset && qAsset.indexOf("ESPEJO") !== -1)) {
+      espejo.on = true;
+      indSel = "espejo";
+    }
     if (qAsset && window.ASSET_CATALOG && (/^[A-Za-z0-9]+_CONT$/.test(qAsset) || window.ASSET_CATALOG.some(function(a){ return a.id === qAsset; }))) {
       loadAsset(qAsset, opts);
     } else if (window.BUNDLE_6E_CONT) {
