@@ -75,7 +75,7 @@ Antes de medir:
 
 ## Firewall de outcomes y holdout
 
-Holdout: `2026-07-01 → 2026-12-31`.
+Holdout (enmienda `HOLDOUT-A3`, aprobada por Nico, `docs/incidents/AMENDMENT_HOLDOUT-A3_2026-09-27.md`): descubrimiento hasta `2026-03-31`; `2026-04-01 → 2026-09-30` es replicación, **una sola apertura por familia** y con manifiesto aprobado; holdout sellado **forward desde la sesión del 1-oct-2026**. Para preguntas condicionadas a climas L2, abr–sep es desarrollo y la confirmación sólo usa oct+. (Hasta el 28/09 este archivo seguía diciendo `2026-07-01 → 2026-12-31`; lo señaló la auditoría 054/056.)
 
 - Prohibido usarlo para elegir dirección, parámetros, contexto, entradas/salidas, costos o candidatos.
 - Una validación target-free no autoriza outcomes.

@@ -20,6 +20,7 @@
 - **Evento:** primer cierre de vela en que la vuelta recorrió x ∈ {0,50; 0,75} del impulso, sin extremo nuevo más allá de B.
 - **Resultado:** completa (toca A) antes de un extremo nuevo más allá de B; horizonte 3 × duración de la ida o fin de sesión.
 - **Nulo exacto:** sin memoria, desde la fracción f **al cierre** de la vela del evento, P(completar) = f (lección de ESPEJO-SIM: el nulo con el extremo de la vela está sesgado).
+  - **RETIRADO 28/09 (auditoría 056 §4, verificado en sintético): f NO es exacto.** Paseo simétrico sintético con velas 100t, toque por mecha, falla = extremo nuevo más allá de B y horizonte 3x: sesgo sobre resueltas de +1 a +5 pp sin censura y hasta +25 pp con censura (`tools/espejo_nulo_sintetico.py`, `artifacts/espejo/nulo_sintetico_20260928.json`). Antes de cualquier outcome: reemplazar por un nulo simulado que preserve barreras, regla de toque, 100t y horizonte, y tratar censura como categoría propia. **Decisión de Nico** (cambia el pre-registro).
 - **Medición sobre el precio de trade y sobre el midquote** (lección del Cerebro `LES-R3-TRADE-PRICE-BOUNCE`); el primario es **midquote**.
 
 ## 4. Pruebas (celdas primarias)

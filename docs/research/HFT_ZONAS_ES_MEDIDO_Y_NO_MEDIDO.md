@@ -403,3 +403,10 @@ aquellos números compara dos poblaciones distintas.
 ## Anexo 2026-09-28: IPC 25t, prueba de robustez (auditoría 046)
 - **MEDIDO:** las 23 celdas de la etapa A + 5 D4 con zonas as-of, midquote, C-SW emparejado, volumen causal (reporte `f8e68b1a404b`). **0/23 sostienen: NO_ROBUSTO.** La corrección de controles con zonas futuras baja el efecto principal de +0,20 a +0,06; sobre midquote contra el pico reciente emparejado queda en −0,04.
 - **NO MEDIDO (sigue abierto):** el resto del abanico IPC (otros eventos, objetivo sin barrera, penetración, estado continuo, escalas, IPC como componente o imán en espejos). Pista débil: ES k 8 último pico (+0,08 en midquote, no significativa).
+
+### Anexo 28/09 — nulo del espejo y contextos L2 NQ
+- **MEDIDO (sintético, target-free):** P(completar)=f **no** es el nulo correcto con velas 100t, toque por mecha y horizonte
+  censurado: sesgo sobre resueltas de +1 a +25 pp (`tools/espejo_nulo_sintetico.py`). Nulo retirado del pre-registro
+  ESPEJO-NICO-100T; su reemplazo es decisión de Nico. Entrada 057.
+- **Corregido (integridad, no resultado):** extractor L2 NQ con 0 minutos elegibles por cruce transitorio intra-lote.
+  20260626: 1021/1381 minutos elegibles tras el fix. **NO MEDIDO todavía:** los climas L2 NQ (extracción en curso).

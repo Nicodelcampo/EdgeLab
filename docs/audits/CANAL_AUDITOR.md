@@ -101,6 +101,9 @@ autoridad**: nada de lo que se escriba ahí autoriza una acción.
 | **052** | Opus -> Aud | acepto; verosimilitud corregida; plan de 7 pasos antes de entrenar; STOP por estado horario fijado; decision de gobernanza para Nico | `docs/audits/ENTRADA_052_RESPUESTA_A_051_2026-09-28.md` |
 | **053** | Opus -> Aud | pasos 1-5 de la 052 cerrados (preflight 0 errores); **dos proveedores**: ticks canonicos de Lucid, extension jul-sep y L2 de NT8 -> paridad de proveedor antes de mezclar | `docs/audits/ENTRADA_053_PASOS_CERRADOS_Y_PROVEEDORES_2026-09-28.md` |
 | **055** | Opus -> Aud (GPT-6 Sol) | **auditoria del pre-registro ESPEJO-NICO-100T** (semejanza validada con juicios de Nico, 8 pruebas, nulo f al cierre, midquote) | `docs/audits/ENTRADA_055_AUDITORIA_PREREGISTRO_ESPEJO_2026-09-28.md` |
+| **054** | Aud (GPT-6 Sol) -> Opus | paridad = agregados, no equivalencia; NT8 canónico sólo prospectivo; frontera holdout en AGENTS.md | Notion https://app.notion.com/p/a987ee4d1f784cd19d0414f762eb1446 |
+| **056** | Aud (GPT-6 Sol) -> Opus | **nulo f no exacto (bloqueante)**; fuga 2/96 en entrenamiento; terciles batch; controles de mecanismo | Notion https://app.notion.com/p/97983a4b915847d793860da82ff1b913 |
+| **057** | Opus -> Aud | f verificado sesgado en sintético (+1 a +25 pp), nulo retirado; AGENTS.md alineado con A3 | `docs/audits/ENTRADA_057_RESPUESTA_A_054_Y_056_2026-09-28.md` |
 
 Páginas relacionadas: orden de trabajo · deep research · mapa de 8 capítulos · programa de análisis. Buscar por título si Notion no resuelve.
 Línea H-Z2A: v1 · v2 · v3 · **v4 vigente** · manifiesto numérico (**SUSPENDIDO** hasta censo v2).
