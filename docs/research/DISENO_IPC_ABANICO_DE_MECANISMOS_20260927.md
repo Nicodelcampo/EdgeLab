@@ -155,5 +155,8 @@ Que una celda no pague costos por sí sola **no la descarta**: puede servir como
 - 2 visitas bastan si entre la 1.ª y la 2.ª el precio se alejó **≥ 28 t** (el cuartil alto de las salidas entre visitas
   en los 10 grupos de Nico; mediana ~22 t; el doble de la salida de 14 t que exige la regla de ≥ 3 visitas). «No vale que
   se aleje poco.» Resto igual a v2 (picos monótonos, paso ≤ 2 t, misma sesión, ≤ 200 velas).
+- **Corrección de Nico (28/09):** además, **después de la 2.ª visita el precio también tiene que alejarse** (≥ 28 t,
+  mismo umbral, a confirmar al diseñar). La zona recién existe cuando se cumple ese segundo alejamiento: ese es el
+  instante causal de formación, no el toque de la 2.ª visita.
 - Motivo: más eventos (potencia) para los cruces con HFT/L2; ver `RESULTADO_IPC_NIVEL_HFT_MES_20260928.md`.
 - Antes de medir: revisar en el visor que las zonas N2L se vean como zonas, y registrar el umbral de 28 t como congelado.
