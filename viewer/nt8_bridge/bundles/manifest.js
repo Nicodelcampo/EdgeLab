@@ -1,5 +1,44 @@
 window.ASSET_CATALOG = [
   {
+    "id": "GC_04-26_202602_ESPEJO",
+    "name": "GC 04-26 · Espejo (25t / 100t) · 2602",
+    "group": "GC (Espejo Impulsos)",
+    "instrument": "GC",
+    "contract": "GC 04-26",
+    "tick_size": 0.1,
+    "precision": 2,
+    "candles": 89001,
+    "zones": 0,
+    "rolls": 0,
+    "parity_status": "PARITY_ABSTAIN"
+  },
+  {
+    "id": "YM_03-26_202602_ESPEJO",
+    "name": "YM 03-26 · Espejo (25t / 100t) · 2602",
+    "group": "YM (Espejo Impulsos)",
+    "instrument": "YM",
+    "contract": "YM 03-26",
+    "tick_size": 1.0,
+    "precision": 2,
+    "candles": 85645,
+    "zones": 0,
+    "rolls": 0,
+    "parity_status": "PARITY_ABSTAIN"
+  },
+  {
+    "id": "NQ_03-26_202602_ESPEJO",
+    "name": "NQ 03-26 · Espejo (25t / 100t) · 2602",
+    "group": "NQ (Espejo Impulsos)",
+    "instrument": "NQ",
+    "contract": "NQ 03-26",
+    "tick_size": 0.25,
+    "precision": 2,
+    "candles": 97076,
+    "zones": 0,
+    "rolls": 0,
+    "parity_status": "PARITY_ABSTAIN"
+  },
+  {
     "id": "ES_03-26_ESPEJO",
     "name": "ES 03-26 \u00b7 Espejo (5m / 15m / 25t)",
     "group": "ES (Espejo Impulsos)",

@@ -2351,8 +2351,22 @@
   };
   var espejo = { on: false, key: null, res: null, completed: false, imp: true, box: true, nl: true, inef: false, s2: false, nlOnly: false, permLevel: 3 };
 
+  // 28/09 (Nico): W mínimo recordado por instrumento. GC (tick 0,1) con el W del slider (17 t) da ~28 mil impulsos en
+  // 25t y congela la página al cargar; arranca con 100 t. Vacío en el campo = volver al slider (se guarda 0).
+  var ESP_MINW_DEFAULT = { GC: 100, MGC: 100 };
+  function espejoSyncMinW() {
+    var inst = (state.data && state.data.meta && state.data.meta.instrument) || "";
+    if (espejo.minWInst === inst) return;
+    espejo.minWInst = inst;
+    var saved = null;
+    try { saved = localStorage.getItem("esp_minw_" + inst); } catch (e) {}
+    espejo.minW = saved !== null ? (parseInt(saved, 10) || 0) : (ESP_MINW_DEFAULT[inst] || 0);
+    var inp = document.getElementById("inp-esp-minw"); if (inp) inp.value = espejo.minW > 0 ? espejo.minW : "";
+  }
+
   function espejoCompute() {
     var cd = activeCandlesArr(); if (!cd || cd.length < 50) { espejo.res = null; return null; }
+    espejoSyncMinW();
     var bk = state.activeBarKey || (state.run && state.run.bar_key) || "";
     var isTime = /time|min/i.test(bk);
     var lvl = espejo.permLevel || 3;
@@ -2633,7 +2647,9 @@
   (function () {
     var inp = document.getElementById("inp-esp-minw"); if (!inp) return;
     inp.addEventListener("change", function () {
-      var v = parseInt(inp.value, 10); espejo.minW = (v > 0) ? v : 0; espejo.key = null; requestDraw();
+      var v = parseInt(inp.value, 10); espejo.minW = (v > 0) ? v : 0; espejo.key = null;
+      try { localStorage.setItem("esp_minw_" + (espejo.minWInst || ""), String(espejo.minW)); } catch (e) {}
+      requestDraw();
     });
   })();
   [["chk-esp-completed", "completed"], ["chk-esp-imp", "imp"], ["chk-esp-box", "box"], ["chk-esp-nl", "nl"], ["chk-esp-inef", "inef"], ["chk-esp-s2", "s2"]].forEach(function (q) {
