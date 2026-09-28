@@ -3,7 +3,7 @@
 **Veredicto: SIN EFECTO DETECTADO. 0 de 8 pruebas primarias sobreviven (BH q = 0,10). No hay celdas para replicar.**
 Corrido con el OK de Nico (28/09) sobre el manifiesto `MANIFIESTO_ESPEJO_SEMEJANZA_NICO_100T_20260928.md` con la
 enmienda N1 (nulo simulado). Código `tools/espejo_nico_descubrimiento.py`, commit `95d676e7`; el árbol figura dirty sólo por
-archivos sin trackear ajenos a la corrida (`tools/apply_viewer_*.py`, `tools/run_h2_and_suspend.ps1`). Artefactos:
+`tools/build_es_ext_2026q3.py` (modo NT8 del canonizador, sin commitear en ese momento), que la corrida no importa. Artefactos:
 `artifacts/espejo/nico_100t/{eventos,reporte}.json`.
 
 **Datos:** ES, research-v2 (Lucid), 181 sesiones jul-2025 → mar-2026, velas 100t (4 × 25t dentro de la sesión).

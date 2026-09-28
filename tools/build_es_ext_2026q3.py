@@ -112,7 +112,7 @@ def build(contract, folder):
     writer.close()
     if nonmono:
         raise ValueError(f"{contract}: {nonmono} timestamps no monótonos")
-    man = dict(schema_version="canonical_tick_v1", tool="tools/build_es_ext_2026q3.py", amendment="HOLDOUT-A1 (2026-09-26)",
+    man = dict(schema_version="canonical_tick_v1", tool="tools/build_es_ext_2026q3.py", amendment="HOLDOUT-A1 (2026-09-26)", modo=MODE,
                generated_utc=datetime.now(timezone.utc).isoformat(), instrument=INST, contract=contract, rows=n, tick_size=TICK,
                window_utc_ns=[START_NS, END_NS], rows_outside_window_dropped=dropped, lineas_no_parseadas=bad,
                parquet_sha256=file_sha256(pq_path), source_files_sha256=src_sha,
@@ -147,12 +147,33 @@ def set_overlap(inst):
     END_NS = 1_782_856_800 * 1_000_000_000        # 2026-06-30 17:00 CT (frontera de research-v2)
 
 
+TICKS = {"ES": 0.25, "NQ": 0.25, "MES": 0.25, "MNQ": 0.25, "MYM": 1.0, "YM": 1.0, "RTY": 0.1}
+
+
+def set_nt8(inst):
+    """Modo NT8 (28/09, NT8 canónico prospectivo por decisión de Nico): todos los contratos de NT8 de `inst` desde
+    jul-2025 hasta la apertura del holdout (sesión del 1-oct-2026). Salida y catálogo propios; no toca Lucid/research-v2,
+    ni la extensión, ni el solape ES/NQ."""
+    global INST, SRC, OUT, CAT, CONTRACTS, START_NS, END_NS, MODE, TICK
+    INST = inst; MODE = "NT8_2025_2026Q3"; TICK = TICKS[inst]
+    SRC = Path(r"E:\DatosNT8\tick_history_nt8_solape")
+    OUT = Path(r"E:\EdgeLab\data\nt8_2025_2026q3") / f"{inst}_parquet"
+    CAT = REPO / "docs" / "research" / "contract_regimes" / f"{inst}_nt8_2025_2026q3_sessions_catalog.json"
+    folders = sorted((p.name for p in SRC.iterdir() if p.is_dir() and p.name.split("_")[0] == inst),
+                     key=lambda n: (int(n[-2:]), int(n[-5:-3])))
+    CONTRACTS = {f"{inst} {f.split('_')[1]}": f for f in folders}
+    START_NS = 1_751_320_800 * 1_000_000_000      # 2025-06-30 17:00 CT
+    END_NS = 1_790_805_600 * 1_000_000_000        # 2026-09-30 17:00 CT = apertura de la sesión del 1-oct (holdout A3)
+
+
 MODE = "EXT_A1"
 
 
 def main():
     if len(sys.argv) > 2 and sys.argv[2] == "--solape":
         set_overlap(sys.argv[1])
+    elif len(sys.argv) > 2 and sys.argv[2] == "--nt8":
+        set_nt8(sys.argv[1])
     else:
         set_inst(sys.argv[1] if len(sys.argv) > 1 else "ES")
     per_c, paths = {}, {}
@@ -184,7 +205,7 @@ def main():
             bad.append(dict(row, span_h=round(span_h, 2), motivo="ilíquida: < 50 % de la mediana de las 20 sesiones previas (contrato migrado o día flojo)"))
         else:
             out.append(row)
-    cat = dict(schema="ES_EXT_SESSIONS_V1", modo=MODE, amendment="HOLDOUT-A1 (2026-09-26)" if MODE == "EXT_A1" else "solape de proveedor (no canónico para research)", window_utc_ns=[START_NS, END_NS],
+    cat = dict(schema="ES_EXT_SESSIONS_V1", modo=MODE, amendment="HOLDOUT-A1 (2026-09-26)" if MODE == "EXT_A1" else ("NT8 canónico prospectivo (decisión Nico 28/09)" if MODE == "NT8_2025_2026Q3" else "solape de proveedor (no canónico para research)"), window_utc_ns=[START_NS, END_NS],
                criterio=dict(min_ticks=MIN_TICKS, max_gap_s=MAX_GAP_S, min_span_h=MIN_SPAN_H, liquidez="≥ 50 % de la mediana de las 20 sesiones previas incluidas", contrato="líder de la sesión anterior COMPLETA, sólo hacia adelante (auditoría 046 §5)"),
                sessions=out, excluidas=bad)
     CAT.write_text(json.dumps(cat, indent=1, ensure_ascii=False), encoding="utf-8")
