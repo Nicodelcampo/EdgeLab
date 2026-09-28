@@ -436,3 +436,6 @@ aquellos números compara dos poblaciones distintas.
   va **contra el imán**: el techo v2 se barre 6,2 pp menos que un pivote suelto emparejado (IC 90 % [−8,8; −3,5]).
   Pivotes sueltos se barren ~5 pp más que el azar; las zonas no. Candidato a confirmación abr–jun (Lucid) en ese sentido.
   `RESULTADO_IPC_NIVEL_MES_DESCUBRIMIENTO_20260928.md`.
+- **MEDIDO 28/09 — IPC-NIVEL-REGRESO (MES, 2.214 regresos vírgenes):** 1/36 sobrevive (piso, cerca + poco volumen: −6,8 pp
+  vs pivote suelto); techo igual −7,2 (p 0,008, no pasa BH). Lejos + mucho volumen: sin diferencia. No hay imán.
+  `RESULTADO_IPC_NIVEL_REGRESO_MES_20260928.md`.
