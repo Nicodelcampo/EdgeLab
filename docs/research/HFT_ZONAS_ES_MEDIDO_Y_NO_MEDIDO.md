@@ -466,3 +466,5 @@ aquellos números compara dos poblaciones distintas.
   confirmación abr–jun con fricción GC propia. `RESULTADO_ESPEJO_REV_100T_GC_20260928.md`.
 - **MEDIDO 28/09 — ESPEJO-CONT-100T MYM (NT8):** 41/1.050; TP 0,25 positivos en cualquier filtro (patrón sospechoso del nulo)
   y contra-tendencia negativa; R bruto negativo. `RESULTADO_ESPEJO_CONT_100T_MYM_20260928.md`.
+- **MEDIDO 28/09 — ESPEJO-CONT-100T MNQ (NT8):** 1/1.050 (VWAP a favor, TP 0,25), R bruto negativo. **Continuación tras el
+  espejo cerrada como edge en 6 instrumentos y 2 proveedores.** `RESULTADO_ESPEJO_CONT_100T_MNQ_20260928.md`.
