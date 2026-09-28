@@ -133,3 +133,10 @@ Criterio: precisión fuera de muestra por definición (✓ / juzgadas); vara ~70
 - Pasan a la etapa siguiente **D1, D2 y D4** (D4 en el límite de la vara del 70 %, se declara así). D3 y D5 quedan en el censo de **definiciones rechazadas** (auditoría 046 §9).
 - La membresía se superpone (una zona puede estar en varias definiciones): las precisiones no son independientes.
 - **Sólo precisión.** La cobertura (recall: zonas reales que cada definición no detecta) no está medida; requiere rangos marcados por Nico.
+
+## 8. IPC como componente, no sólo como estrategia sola (Nico, 28/09)
+Que una celda no pague costos por sí sola **no la descarta**: puede servir como filtro o confirmación de otras lógicas (espejos), o pagar condicionada. Condicionantes propuestos por Nico: **tendencia**, **ubicación de la zona** (p. ej. **sobre un cluster de zonas HFT**). Reglas para usarlo sin fabricar un edge:
+- Un componente necesita **información propia** primero: si la prueba de robustez muestra que la atracción era artefacto (trade vs mid, control mal emparejado), no hay nada que combinar.
+- Cada condicionante (tendencia, confluencia con HFT, lado del VWAP…) es una **hipótesis nueva** con su alternativa escrita y **cuenta en la multiplicidad**; se pre-registra en descubrimiento antes de mirarlo (P-55: un nulo agregado puede esconder dos efectos opuestos por contexto).
+- La confluencia con zonas HFT exige el objeto HFT **as-of** y su propio censo (HFTZones sobre ES: 5 mediciones sin efecto propio; no se transporta nada).
+- En espejos, IPC entra como la «zona de liquidez» del diseño `IDEA_ESPEJO_INTENTO_FALLIDO_LIQUIDEZ_20260927.md`, con diseño factorial (zona sí/no × espejo sí/no).
