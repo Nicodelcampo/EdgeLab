@@ -140,3 +140,13 @@ Que una celda no pague costos por sí sola **no la descarta**: puede servir como
 - Cada condicionante (tendencia, confluencia con HFT, lado del VWAP…) es una **hipótesis nueva** con su alternativa escrita y **cuenta en la multiplicidad**; se pre-registra en descubrimiento antes de mirarlo (P-55: un nulo agregado puede esconder dos efectos opuestos por contexto).
 - La confluencia con zonas HFT exige el objeto HFT **as-of** y su propio censo (HFTZones sobre ES: 5 mediciones sin efecto propio; no se transporta nada).
 - En espejos, IPC entra como la «zona de liquidez» del diseño `IDEA_ESPEJO_INTENTO_FALLIDO_LIQUIDEZ_20260927.md`, con diseño factorial (zona sí/no × espejo sí/no).
+
+## Variante IPC-NIVEL (Nico, 28/09, ejemplos en `viewer/nt8_bridge/labels/MES_03-26_202603_25T_HFT.json`)
+- **Idea:** el precio se dio vuelta al menos dos veces en el mismo nivel, después de recorrer mucha distancia entre
+  una vuelta y otra. El nivel es casi plano: el objetivo no admite interpretación.
+- **Toques:** 2 obligatorios; un 3.º es "lo ideal, casi imperativo", aunque puede ser menos evidente. Se registran
+  dos niveles: **IPC-N2** (≥ 2 vueltas) e **IPC-N3** (≥ 3, candidato principal). El 3.º toque admite tolerancia algo mayor.
+- **Picos pegados** dentro de una misma visita al nivel se agrupan: no suman toques ni se les exige recorrido.
+- **Rasgos medidos en los 10 ejemplos de Nico (MES 25t, mar-2026):** dispersión del nivel mediana ~4 t (0–8; un caso 15);
+  recorrido entre vueltas mediana ~17 t (4–33); separación muy variable (4–150 velas).
+- Parámetros a congelar con estos ejemplos (sin mirar resultados): tolerancia del nivel, salida mínima en ticks y en velas.
