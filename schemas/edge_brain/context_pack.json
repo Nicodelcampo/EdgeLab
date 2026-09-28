@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgelab.local/schemas/edge_brain/context_pack.json",
+  "title": "EdgeLab Context Pack",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "context_pack_id",
+    "episode_id",
+    "token_budget",
+    "provenance",
+    "items",
+    "deterministic_hash",
+    "created_at_utc"
+  ],
+  "properties": {
+    "context_pack_id": {
+      "type": "string",
+      "pattern": "^CTX-[A-Za-z0-9._:-]+$"
+    },
+    "episode_id": {
+      "type": "string"
+    },
+    "token_budget": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "provenance": {
+      "type": "string",
+      "minLength": 1
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "record_id",
+          "item_type",
+          "reason_for_inclusion"
+        ],
+        "properties": {
+          "record_id": {
+            "type": "string"
+          },
+          "item_type": {
+            "type": "string"
+          },
+          "reason_for_inclusion": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "deterministic_hash": {
+      "type": "string"
+    },
+    "created_at_utc": {
+      "type": "string"
+    }
+  }
+}

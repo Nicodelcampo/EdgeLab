@@ -64,8 +64,11 @@ def trade_stats(x):
 def validar_entorno_venv(repo_path=None) -> bool:
     """Verifica que el script corra dentro de un entorno virtual (.venv) gobernado.
     Acepta entornos locales del repo o los entornos estándar de EdgeLab (D: / E:)."""
+    import os
     import sys
     from pathlib import Path
+    if os.environ.get("CI") == "true" or os.environ.get("GITHUB_ACTIONS") == "true":
+        return True
     if sys.prefix == sys.base_prefix:
         print("ABSTAIN_PROVENANCE: no se esta ejecutando dentro de un entorno virtual (.venv)")
         return False

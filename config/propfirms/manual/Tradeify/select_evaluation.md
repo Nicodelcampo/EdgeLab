@@ -1,0 +1,4 @@
+https://help.tradeify.co/en/articles/12853921-select-evaluation-accounts
+Select Evaluation. Minimum 3 trading days due to 40% consistency (2 days with 50% add-on). No Daily Loss Limit during evaluation. End of Day drawdown enforced in real time.
+25K: profit target $1,500, max drawdown $1,000 EOD, max contracts 1 mini / 10 micro. 50K: profit target $3,000, max drawdown $2,000 EOD, max contracts 4 mini / 40 micro. 100K: profit target $6,000, drawdown $3,000, 8 mini. 150K: profit target $9,000, drawdown $4,500, 12 mini.
+Tier 1 News Trading allowed. Maximum 15 evaluations purchased within any 30-day period. Each evaluation can be reset up to 10 times within 30 days. Up to 5 funded accounts simultaneously. Payout policy choice after passing is permanent. Drawdown locks at $100 above starting balance. Consistency rule removed in funded mode. Funded breach: terminated, new evaluation needed. Passed evaluation must be activated within the allowed timeframe.

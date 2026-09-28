@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgelab.local/schemas/edge_brain/source_artifact.json",
+  "title": "EdgeLab Source Artifact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "source_id",
+    "source_type",
+    "title_or_uri",
+    "sha256",
+    "is_primary_source",
+    "status",
+    "created_at_utc"
+  ],
+  "properties": {
+    "source_id": {
+      "type": "string",
+      "pattern": "^SRC-[A-Za-z0-9._:-]+$"
+    },
+    "source_type": {
+      "enum": [
+        "PAPER",
+        "CODE_REPO",
+        "TICK_DATASET",
+        "MANUAL",
+        "SPECIFICATION"
+      ]
+    },
+    "title_or_uri": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sha256": {
+      "type": "string"
+    },
+    "is_primary_source": {
+      "type": "boolean"
+    },
+    "status": {
+      "enum": [
+        "REGISTERED",
+        "VERIFIED",
+        "ARCHIVED"
+      ]
+    },
+    "created_at_utc": {
+      "type": "string"
+    }
+  }
+}

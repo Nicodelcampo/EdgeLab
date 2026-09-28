@@ -1,0 +1,26 @@
+{
+  "spec_id": "SPEC-IPC-REP-20260927",
+  "kind": "race",
+  "title": "IPC 25t — replicación de las 23 celdas (acumulaciones de picos como imán), ES y NQ",
+  "instrument": "ES / NQ",
+  "contract": "canónico por sesión",
+  "tick_size": 0.25,
+  "tick_value_usd": 12.5,
+  "price_precision": 2,
+  "hypothesis": "Después de alejarse k·R de una acumulación de picos consecutivos (cada pico no supera al anterior), el precio vuelve a tocar el nivel antes de alejarse otro tanto más seguido que hacia un nivel sin zona (C-SZ) y que hacia un máximo/mínimo reciente sin acumulación (C-SW), en las mismas condiciones de hora, estado y actividad.",
+  "economic_justification": "Una serie de picos que no se superan deja stops acumulados justo detrás del último pico; si esa liquidez atrae al precio, el regreso al nivel es más frecuente que a un nivel cualquiera a la misma distancia.",
+  "refutation": "En abr–sep 2026 (sesiones no vistas) menos de 12 de las 23 celdas superan a C-SW con BH q = 0,10 (unilateral) y a C-SZ, o alguna celda da una diferencia significativamente negativa.",
+  "population": {
+    "event": "Alejamiento: primer cierre a ≥ D = k·R del último pico, del lado contrario, con la zona sin romper (causal; detector congelado de tools/ipc.py DET).",
+    "alternatives_enumerated": "creación, alejamiento, primera aproximación, primer toque, toque n-ésimo, ruptura, vencimiento, estado continuo (manifiesto §2); se congela alejamiento.",
+    "cells": "las 23 celdas de `pasan_B` del reporte de descubrimiento sha ff25451223b2 (detector, virgen, k, tercil de volumen, nivel)."
+  },
+  "entry": {"direction": "hacia el nivel", "timing": "al cierre de la vela del evento", "price": "(medición de información, no operación)"},
+  "exits": "Carrera: toca el nivel (acierto) o se aleja otros D (fallo), máximo 2.000 velas o fin de sesión. No es una operación: es la etapa A (información). La economía (B) se corre sólo si replica.",
+  "costs": {"spread_ticks": 1.0, "commission_ticks": 0.4, "note": "Sólo referencia para leer el acierto necesario; la replicación no mide P&L."},
+  "grid": {"cell": "ver population.cells"},
+  "criterion": "Por celda: diferencia real − C-SW > 0 con p unilateral (bootstrap por sesión) significativo por BH q = 0,10 sobre las 23, y diferencia real − C-SZ > 0. Familia replicada: ≥ 12 celdas replican y ninguna es significativamente negativa. Terciles de volumen recalculados dentro de la muestra de replicación.",
+  "data": {"replication_sessions": "ES y NQ 2026-04-01 → 2026-09-30 (HOLDOUT-A3), velas 25t canónicas", "preview_sessions": "descubrimiento (sólo velas previas al evento)"},
+  "sample": {"seed": 20260927, "per_cell": 3},
+  "prereg_ref": "docs/research/MANIFIESTO_IPC_IMAN_20260926.md#pre-registro-de-la-replicación"
+}

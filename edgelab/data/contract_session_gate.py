@@ -34,7 +34,7 @@ DEFAULT_EQUITY_INDEX_CALENDAR = (
 )
 
 # Product root classifications
-EQUITY_INDEX_ROOTS = {"ES", "MES", "NQ", "MNQ", "YM"}
+EQUITY_INDEX_ROOTS = {"ES", "MES", "NQ", "MNQ", "YM", "MYM"}
 FX_ROOTS = {"6B", "6E", "6J"}
 METALS_ROOTS = {"GC"}
 RATES_ROOTS = {"ZB"}
@@ -55,6 +55,7 @@ DEFAULT_MIN_TICKS: dict[str, int] = {
     "ES": 50_000,
     "MES": 50_000,
     "YM": 10_000,
+    "MYM": 5_000,
     "6E": 10_000,
     "6B": 5_000,
     "6J": 5_000,

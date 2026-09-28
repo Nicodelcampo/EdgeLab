@@ -127,12 +127,20 @@ def detect_opening_gaps(
     *,
     width_filter: WidthFilter = WidthFilter(),
     atr: float | None = None,
+    og_geometry: Literal["wick", "body"] = "wick",
 ) -> tuple[ImbalanceZone, ...]:
-    """Detecta OG con geometría wick-a-wick."""
+    """Detecta OG. `wick` (defecto): mecha a mecha, coherente con la condicion de deteccion (correccion deliberada).
+    `body`: cuerpo a cuerpo, tal cual el `.cs` recibido; es la que reproduce el export de NT8 (ver
+    `tools/verify_lux_imb_vs_6e_oracle.py`)."""
     _validate_pair(previous, current)
     zones: list[ImbalanceZone] = []
+    if og_geometry not in ("wick", "body"):
+        raise GeometryError("og_geometry debe ser 'wick' o 'body'")
     if current.low > previous.high:
-        top, bottom = current.low, previous.high
+        if og_geometry == "wick":
+            top, bottom = current.low, previous.high
+        else:
+            top, bottom = min(current.open, current.close), max(previous.open, previous.close)
         if _passes_width(top, bottom, width_filter, atr=atr):
             zones.append(
                 ImbalanceZone(
@@ -141,7 +149,10 @@ def detect_opening_gaps(
                 )
             )
     if current.high < previous.low:
-        top, bottom = previous.low, current.high
+        if og_geometry == "wick":
+            top, bottom = previous.low, current.high
+        else:
+            top, bottom = min(previous.open, previous.close), max(current.open, current.close)
         if _passes_width(top, bottom, width_filter, atr=atr):
             zones.append(
                 ImbalanceZone(
@@ -213,12 +224,14 @@ def detect_og_vi(
     og_width: WidthFilter = WidthFilter(),
     vi_width: WidthFilter = WidthFilter(),
     atr: float | None = None,
+    og_geometry: Literal["wick", "body"] = "wick",
 ) -> tuple[ImbalanceZone, ...]:
     zones: list[ImbalanceZone] = []
     if show_og:
         zones.extend(
             detect_opening_gaps(
-                previous, current, width_filter=og_width, atr=atr
+                previous, current, width_filter=og_width, atr=atr,
+                og_geometry=og_geometry,
             )
         )
     if show_vi:

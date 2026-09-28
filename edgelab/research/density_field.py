@@ -23,6 +23,11 @@ from typing import Any
 
 import numpy as np
 
+# Firewall del holdout (2026-07-01 -> 2026-12-31 CT). Ninguna zona disponible en o despues de este
+# instante puede entrar a un campo, ni se puede evaluar el campo en ese instante. Antes vivia solo
+# en `corridor_engine.js`; el campo canonico tiene que llevarlo consigo, en Python y en JS.
+HOLDOUT_NS = 1_782_856_800_000_000_000
+
 
 def to_nanoseconds(t: Any) -> int:
     """Converts a timestamp or epoch representation into integer nanoseconds."""
@@ -89,7 +94,7 @@ def compute_causal_v_ref(
         z_avail = extract_zone_available_ns(z)
         avail_ns = z_avail[0]
         if avail_ns <= t_ref_ns:
-            vol = float(z.get("vol", z.get("volume", 0.0)))
+            vol = zone_volume(z, 0.0)
             if vol > 0.0:
                 zid = str(z.get("id", z.get("zone_id", "")))
                 causal_items.append((avail_ns, zid, vol))
@@ -105,6 +110,21 @@ def compute_causal_v_ref(
     window_vols = [item[2] for item in window_items]
     med = float(np.median(window_vols))
     return max(1.0, med), f"CAUSAL_ROLLING_MEDIAN_N_{len(window_vols)}"
+
+
+def zone_volume(z: dict, default: float) -> float:
+    """Volumen de una zona. Un volumen NULO equivale a un volumen AUSENTE (usa `default`).
+
+    Antes la lectura directa del campo reventaba con TypeError cuando la clave existía con valor null, y el
+    puerto JS lo habría tratado en silencio como 0 o NaN (un NaN contamina el campo entero). Lo encontró la
+    paridad sobre bundles reales: hay zonas con `vol: null`. Ambas implementaciones aplican esta regla.
+    """
+    v = z.get("vol")
+    if v is None:
+        v = z.get("volume")
+    if v is None:
+        return float(default)
+    return float(v)
 
 
 def extract_zone_available_source(z: dict) -> str:
@@ -238,6 +258,9 @@ def compute_field(
     ended_policy = cfg.get("ended_zone_policy", "exclude_ended")  # "exclude_ended" | "penalize_ended" | "include_all"
 
     t_ref_ns = to_nanoseconds(t_ref)
+    holdout_guard = bool(cfg.get("holdout_guard", True))
+    if holdout_guard and t_ref_ns >= HOLDOUT_NS:
+        raise ValueError(f"t_ref {t_ref_ns} is at or after the sealed holdout boundary {HOLDOUT_NS}")
 
     # Filter and sort causally available zones
     active_zones: list[dict] = []
@@ -247,6 +270,8 @@ def compute_field(
 
     for z in zones:
         z_avail_ns, is_avail_fallback = extract_zone_available_ns(z)
+        if holdout_guard and z_avail_ns >= HOLDOUT_NS:
+            raise ValueError(f"zone {z.get('id', z.get('zone_id', '?'))} is available at or after the sealed holdout boundary")
         if is_avail_fallback:
             legacy_availability_fallbacks += 1
 
@@ -316,7 +341,7 @@ def compute_field(
             w_zone = 1.0
         else:
             # Volume transform
-            z_vol = float(z.get("vol", z.get("volume", 1.0)))
+            z_vol = zone_volume(z, 1.0)
             vol_trans = cfg.get("vol_transform", "TRANS_POWER_025")
             ratio = max(1.0, z_vol) / max(1.0, v_ref)
             if vol_trans == "TRANS_COUNT":
@@ -348,7 +373,8 @@ def compute_field(
                 touches_asof, is_touch_fb = reconstruct_zone_touches_asof(z, t_ref_ns)
                 if is_touch_fb:
                     legacy_touch_fallbacks += 1
-                f_wear = (1.0 + 0.5 * touches_asof) ** -0.60
+                # (1 + a·toques)^-b. Por defecto a=0.5, b=0.60 (HP-007); ajustable para calibrar el tamaño de corredores.
+                f_wear = (1.0 + float(cfg.get("wear_alpha", 0.5)) * touches_asof) ** -float(cfg.get("wear_exp", 0.60))
             else:
                 f_wear = 1.0
 

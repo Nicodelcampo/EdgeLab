@@ -165,8 +165,26 @@ def test_venv_tiene_precedencia_sobre_repo():
     se clasificaria como codigo del proyecto y un cambio de pandas se leeria
     como un cambio de codigo."""
     import numpy
-    ambito, ident = S._ident(numpy.__file__)
-    assert ambito == "venv" and ident.startswith("venv:"), ident
+    from pathlib import Path
+    try:
+        Path(numpy.__file__).resolve().relative_to(S.VENV)
+        numpy_in_venv = True
+    except ValueError:
+        numpy_in_venv = False
+
+    if numpy_in_venv:
+        ambito, ident = S._ident(numpy.__file__)
+        assert ambito == "venv" and ident.startswith("venv:"), ident
+    else:
+        fake_pkg = S.VENV / "test_precedence_probe.py"
+        try:
+            fake_pkg.parent.mkdir(parents=True, exist_ok=True)
+            fake_pkg.write_text("# probe\n", encoding="utf-8")
+            ambito, ident = S._ident(fake_pkg)
+            assert ambito == "venv" and ident.startswith("venv:"), ident
+        finally:
+            if fake_pkg.exists():
+                fake_pkg.unlink()
 
 
 #: Las limitaciones que la implementación **de esta versión** declara no cubrir.

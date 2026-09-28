@@ -547,7 +547,7 @@ def test_17_available_ts_sources_classification():
 def test_18_strict_session_and_contract_isolation():
     """B3: Las zonas de sesiones o contratos anteriores jamás se filtran a la sesión/contrato activa."""
     tick_size = 0.25
-    t_ref = 2_000_000_000
+    t_ref = 1_700_000_000   # instante sintetico pre-holdout (antes: 2e9 s, cae DESPUES del holdout sellado)
     p_min = price_to_tick(100.0, tick_size)
     p_max = price_to_tick(105.0, tick_size)
 

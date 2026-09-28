@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgelab.local/schemas/edge_brain/reuse_event.json",
+  "title": "EdgeLab Reuse Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "reuse_id",
+    "artifact_id",
+    "context",
+    "reused_in_episode_id",
+    "reused_at_utc",
+    "expected_transfer"
+  ],
+  "properties": {
+    "reuse_id": {
+      "type": "string",
+      "pattern": "^REUSE-[A-Za-z0-9._:-]+$"
+    },
+    "artifact_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "context": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reused_in_episode_id": {
+      "type": "string"
+    },
+    "reused_at_utc": {
+      "type": "string"
+    },
+    "expected_transfer": {
+      "type": "string"
+    }
+  }
+}

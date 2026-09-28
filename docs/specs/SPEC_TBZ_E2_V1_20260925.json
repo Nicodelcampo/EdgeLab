@@ -1,0 +1,40 @@
+{
+  "spec_id": "SPEC-TBZ-E2-V1-20260925",
+  "kind": "TBZ_BAND_PREVIEW",
+  "title": "TBZ-E2 v1: la expansión como área de patinaje (lo que se midió el 25/09)",
+  "instrument": "ES",
+  "tick_size": 0.25,
+  "tick_value_usd": 12.5,
+  "price_precision": 2,
+  "hypothesis": "Después de una expansión rápida A→B, cuando el precio vuelve a entrar a la franja (pega la vuelta), la cruza hacia A más seguido de lo que da la geometría sola, porque es una zona de poca permanencia.",
+  "refutation": "El acierto de llegar a A antes del stop no supera a N1 (ruina del jugador con las mismas convenciones), ni a los tramos del mismo ancho que no son expansión (N2).",
+  "detection": {
+    "bar_spec": "25 ticks, reinicio por sesión",
+    "grid_W_k": [[20, 2.5], [20, 4.0], [60, 2.5], [60, 4.0]],
+    "efficiency_min": 0.6,
+    "retr_end": 0.3,
+    "min_net_ticks": 4,
+    "sigma_hist_bars": 3000,
+    "rule": "Una expansión arranca en la vela j si, en la ventana [j-W, j], el cierre de j se alejó del extremo opuesto de la ventana al menos max(k·σ_W, 4 t) con eficiencia (neto / recorrido de cierres) >= 0,6. Termina en la primera vela cuyo retroceso desde el extremo B es >= max(2 t, 0,3·W). A = extremo opuesto de la ventana; B = extremo alcanzado; disponible al cierre de la vela que confirma el fin."
+  },
+  "events": {
+    "E0": "confirmación: al cierre de la vela que termina la expansión (el precio ya está adentro a >= 0,3·W de B)",
+    "E1": "profundización: primera vez que el precio llega a >= 0,5·W de B, sin haber pasado antes B por 2 t",
+    "E2": "reingreso tras extensión: el precio supera B por >= 2 t y después vuelve a >= 0,3·W adentro",
+    "E3": "retesteo de B desde adentro: el precio vuelve a <= 1 t de B sin superarlo y después baja otra vez a >= 0,3·W",
+    "window_min": 240
+  },
+  "trade": {
+    "direction_primary": "hacia A (contra la expansión)",
+    "entry": "agresiva en el primer trade >= evento + 250 ms (ask para comprar, bid para vender)",
+    "stop": "B + 0,25·W más allá de B, a mercado al tocarlo",
+    "targets": ["A", "HVN del perfil izquierdo entre la entrada y A (si no hay, A)"],
+    "target_fill": "límite: se llena sólo si el precio lo atraviesa por 1 tick",
+    "max_hold_s": 1800
+  },
+  "left_volume_profile": {"lookback_s": 14400, "bin_ticks": 2, "smooth_bins": 3, "hvn_prominence_sd": 1.0, "lvn_below_median": 0.25},
+  "filters_shown": ["EMA20 1m", "EMA50 1m", "SMA200 1m", "VWAP de sesión"],
+  "costs": {"spread_ticks": 1.0, "commission_ticks": 0.4, "note": "ES: spread típico 1 tick; comisión USD 2,50 por lado = 0,2 t por lado"},
+  "data": {"census": "artifacts/tbz_e2/census/ES", "partition": "P-TBZ-EXP (jul-2025 a mar-2026)"},
+  "sample": {"seed": 20260925, "sessions": 16, "per_cell": 3, "n2_examples": 8}
+}

@@ -2,7 +2,7 @@
 
 > Este archivo se carga en cada sesión de Claude Code. El documento canónico
 > versionado es **`docs/NORTH_STAR.md`** — sha256 del cuerpo anterior al
-> marcador `SHA256-BODY-ABOVE`: `d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1`
+> marcador `SHA256-BODY-ABOVE`: `05df5c7c3ec4cf3a1f14f62bb8e2ade4b61dd29203b610a308964ac46995f421`
 > (no es el hash del archivo completo; el archivo se autocita a su propio pie,
 > ver `tests/test_north_star_hash.py`). Si hay conflicto, manda ese doc. Punto
 > de entrada operativo del día: `docs/ESTADO_2026-08-10_EMPEZAR_ACA.md`.
@@ -121,7 +121,12 @@ amplía el espacio de búsqueda y el data snooping sin evidencia de que haga fal
 - **Registro MEDIDO/NO MEDIDO actualizado en el mismo commit** que cualquier
   resultado nuevo — no en un commit aparte, no "después".
 
-## Firewall del holdout (2026-07-01 → 2026-12-31)
+## Firewall del holdout (desde la sesión CME del 1-oct-2026, a futuro)
+
+> Enmiendas `HOLDOUT-A1`/`A2`/`A3` (26–27/09), firmadas por Nico. Para **ES y NQ**: **descubrimiento** jul-2025 → 31-mar-2026;
+> **replicación** 1-abr → 30-sep-2026, una vez por familia y sólo sobre celdas sobrevivientes, sin elegir nada ahí;
+> **holdout** a futuro desde la sesión del 1-oct. Los demás instrumentos siguen hasta el 30-jun (su jul–sep no está
+> descargado). Ver `docs/incidents/AMENDMENT_HOLDOUT-A3_2026-09-27.md`.
 
 - **Prohibido** usar el holdout para elegir dirección, entradas/salidas,
   thresholds, bar_spec, costos o candidatos.

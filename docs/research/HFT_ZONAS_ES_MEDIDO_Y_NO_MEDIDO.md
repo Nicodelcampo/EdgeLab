@@ -248,6 +248,17 @@ modelo.**
 ---
 
 ## MEDIDO — y vivo
+- **HFT-REV-EXP cortes (MNQ 09-25, 2026-09-26, exploratorio).** Exceso difuso de +1 a +3 pp en casi todos los cortes;
+  ningún contexto concentra el efecto. **Replicado en 12-25 y 03-26:** los 9 cortes sostienen, pero son el exceso difuso de +1–3 pp, sin concentración.
+  Ver `docs/research/HANDOFF_2026-09-26_HFT_REV_Y_ESPEJO.md`.
+- **ESPEJO-SIM (MNQ 09-25, familia TBZX, exploratorio).** Con `minW` = 17, las vueltas parecidas al impulso completan el
+  espejo +1,5 a +4,9 pp más que las poco parecidas (FDR de grilla). **Sin replicar.** No operable en esa escala
+  (costo/W ≈ 14 pp). Nulo al extremo de la vela sesgado: se usa el del cierre (enmienda 1).
+
+- **HFT-REV-EXP (MNQ 09-25, otra familia, no ES — registrado acá por visibilidad, 2026-09-26).** Primer retorno a zonas
+  `HFTZonesNQPureV4` `SCALED_FUNNEL_V1`: 29.635 zonas, 36 sesiones. Revierte 40 t el 26 % de las que vuelven, contra 25 %
+  de la caminata aleatoria. Exceso sobre el control de nivel de +1 a +2,5 pp (IC excluye 0 en D ≥ 20; MDE ≈ 1,5 pp).
+  Penetración mediana 6 t (≈ 50 % de W). Exploratorio, sin P&L. `docs/research/HFT_REVERSION_EXPLORATORIA_MNQ_20260926.md`.
 
 | qué | resultado |
 |---|---|
@@ -325,3 +336,70 @@ Cuidado con estos, que vienen del censo sobre el oráculo **V2 original con el b
 
 La población Flat tiene **9.486 zonas en 62 sesiones**. Cualquier comparación contra
 aquellos números compara dos poblaciones distintas.
+
+## Anexo 2026-09-24: costo de ejecución condicionado al libro (EXEC-QI; no es HFTZones, se registra acá por la regla del mismo commit)
+
+- **MEDIDO:** ahorro de orden pasiva frente a agresiva, por tercil de QI, T ∈ {5, 30, 120} s, en NQ, ES, GC y 6E L2 de julio y agosto, sobre una grilla uniforme de 1 s. Ver `MANIFIESTO_EJECUCION_QI_L2_20260924.md` §10.
+- **NO MEDIDO:**
+  - el ahorro en instantes de señal de una estrategia;
+  - fills reales (sim de NT8);
+  - liquidez oculta y cola real;
+  - la confirmación en `P-NQL2-CONF` y en el holdout L2.
+
+## Anexo 2026-09-24 (2): MM-QI y validación del agresor
+
+- **MEDIDO:** provisión pasiva de liquidez con filtro de QI en NQ, GC, ES y 6E: **muerta** (24 variantes negativas, 0 % de sesiones positivas). Ver `MANIFIESTO_MM_QI_L2_20260924.md` §7.
+- **MEDIDO:** agresor de `research-v2` contra el L2, en el solapamiento de junio. **NQ: 99 %** de acuerdo. **ES: 78–81 %**: no pasa el umbral del 90 %, porque la cotización pegada es posterior a que el trade consumiera el nivel. Ver `artifacts/aggressor_validation.json`.
+- **NO MEDIDO:**
+  - una corrección del agresor de ES que llegue al 90 % (se probaron la cotización del trade anterior y la anterior a la ráfaga; ninguna mejora);
+  - market making con información adicional.
+
+## Anexo 2026-09-25: TREND-MICRO
+
+- **MEDIDO:** rupturas B1, B2 y B3 × filtros F0 y F3 (y F1/F2 en NQ) × 2R/4R, en ES y NQ, jul-2025 a mar-2026. **0 sugerencias.** Ver `MANIFIESTO_TREND_MICRO_20260924.md` §8.
+- **MEDIDO:** la continuación de una expansión (B3) llega al target menos que un camino aleatorio (ES −3,4 pts, NQ −6,2 pts).
+- **NO MEDIDO:** F1/F2 con muestra suficiente; ES con agresor válido; la pista NQ B2 F3 pre-registrada sola.
+
+## Anexo 2026-09-25 (2): AGOT-EXT
+
+- **MEDIDO:** divergencia de RSI (y de delta en NQ) en extremos de pivote, ES y NQ, 24 celdas: **0 sugerencias**. En la ruptura la divergencia **empeora** ir contra el extremo; en la confirmación no agrega nada. Ver `MANIFIESTO_AGOTAMIENTO_EN_EXTREMO_20260925.md` §10.
+- **MEDIDO (lateral):** ir contra un extremo nuevo confirmado acierta menos que el azar en ES y NQ (persistencia a la escala del pivote).
+- **NO MEDIDO:** la divergencia como salida o como filtro de otra familia; la pista "comprar el retroceso tras un máximo confirmado" pre-registrada sola.
+
+## Anexo 2026-09-25 (3): TBZ-E2 en ES
+
+- **MEDIDO:** la franja de expansión como área de patinaje (E0–E3 × 4 detecciones × target A/HVN; hacia B como secundaria) en ES, 181 sesiones: **0 sugerencias**. El acierto hacia A queda levemente **por debajo** de la geometría sola, y las franjas TBZ se revierten menos que un tramo común. Ver `TBZ_E2_PARAMETRIZACION_HOLISTICA_20260924.md` §8.
+- **NO MEDIDO:** detectores por velocidad y volumen relativo como detección primaria; descriptores G2–G5 como filtros pre-registrados; L2 (G7); MES (en curso).
+
+## Anexo 2026-09-25 (4): TBZX (impulsos por velas y distancia, afuera y reingreso) en ES
+
+- **MEDIDO (exploración, 181 sesiones, 12 configuraciones, dos nulos):** el tiempo y el volumen afuera de la franja no se distinguen del nulo con la misma actividad previa (N-VOL). La excursión afuera, la penetración al reingresar, su velocidad y la llegada al borde opuesto A sí: en la configuración de Nico, 0,152 contra 0,094 llegan a A. Contra el fantasma a la misma hora el efecto era el doble: la mitad era volatilidad posterior al impulso. Más fuerte con estiramiento extremo respecto de las medias, poco volumen por tick y fuera de RTH (descriptivo). `docs/research/MANIFIESTO_TBZX_ESPEJO_20260925.md` §7.
+- **NO MEDIDO:** nulo con el mismo estado de reversión; cortes emparejados por estiramiento; NQ; reserva abr–jun; ejecución.
+- **MEDIDO (iteración 2, 25/09):** con los nulos N-REV (tramo del mismo tamaño que recién dio la vuelta) y N-VOLSTR (actividad y estiramiento) y la réplica en NQ. La llegada a A es robusta a la actividad en ES y NQ, y al estado de reversión sólo en ES (NQ: −0,007). El contexto de estiramiento no es propio de la franja (desaparece con el nulo emparejado). §9 del manifiesto.
+- **NO MEDIDO:** selección de contrato canónica (`contract_regime`; difiere en 3 sesiones de ES y 2 de NQ); reserva abr–jun; ejecución.
+- **MEDIDO (25/09, N-REVVOL, primario):** contra un tramo del mismo tamaño que recién dio la vuelta **y** con la misma actividad, la franja TBZX llega a A **menos** (−3,5 pts, sesiones positivas 26 %). El «espejo» era actividad más reversión. **Hipótesis muerta** en ES, exploración, con este detector.
+
+## Anexo 2026-09-26: EVX (cruces EMA × VWAP) en MYM, YM, ES y NQ
+- **MEDIDO:** E0 y E1. 0 de 448 celdas con información direccional frente al control de mismo estado (MDE ~0,5 ATR). El embudo se detiene en E1. `docs/research/MANIFIESTO_EVX_E0_E1_20260926.md` §6.
+- **NO MEDIDO:** estado continuo «EMA de un lado» (en lugar del cruce); otras resoluciones (1 min); efectos menores que el MDE.
+- **MEDIDO (26/09, VREV E1):** reversión al VWAP entrando en el **primer** alejamiento ≥ X ATR de vela de 25 ticks (X 2–6), con 4 confirmaciones y 2 stops, en MYM/YM/ES/NQ: llega al VWAP **menos** que el control de mismo estado (96/128 INFO−). **Alcance:** sólo esa variante. **NO MEDIDO:** reversión con alejamiento en escala diaria o por bandas σ, VWAP anclado, entrada tras agotamiento, confirmaciones de flujo/L2, velas de tiempo, filtros de régimen. Ver `MANIFIESTO_VREV_E1_20260926.md` §5–§6.
+- **MEDIDO (26/09, VREV-A y VCONT E1):**
+  - **Reversión al VWAP tras 4 disparos de agotamiento:** 0/96 INFO+.
+  - **Continuación tras el primer alejamiento:** 8/96 INFO+, todas en el Dow (MYM/YM) con X = 6, pero con neto de costo negativo.
+  - **Alcance por celda.**
+- **NO MEDIDO:** agotamiento por flujo/L2, escala diaria, geometrías de más recorrido. `MANIFIESTO_VREVA_VCONT_E1_20260926.md` §6.
+- **MEDIDO (26/09, AXF etapa A, NQ):** agotamiento por delta → barrido → reversión confirmada (256 detecciones × 3 filtros de tendencia × 2 horizontes). Rinde **menos** que el control de misma inercia (240 INFO− de 246 con evidencia; las 6 INFO+ son 50 eventos de una sola mitad). **NO MEDIDO:** absorción con eventos suficientes, L2, otras ventanas, ES y otros activos, salidas (etapa B no corrida por protocolo). `MANIFIESTO_AXF_NQ_20260926.md` §6.
+
+## Anexo 2026-09-26 (2): IPC macro (acumulaciones de picos como imán) en ES 500t
+- **MEDIDO:** etapa A, 28 celdas (alejamiento con momento temprano/tardío, regreso a zona virgen; k 2 y 4; dos detectores), contra C-SZ y C-SW. Reporte sha `59f9d855deff`, manifiesto `MANIFIESTO_IPC_MACRO_ES_500T_20260926.md`.
+- **Estado:** 28/28 **SIN_POTENCIA** (519 eventos en 181 sesiones). Lo visible en las 5 celdas medibles: +0,09 contra nivel sin zona que se anula contra pico reciente; el regreso va en contra (−0,16 contra C-SW en la estricta). No hay candidato para B.
+- **NO MEDIDO:** RTH vs ETH, otras escalas (2000t, tiempo), zonas entre sesiones, otros activos, primer pico.
+
+## Anexo 2026-09-26 (3): IPC 25t (acumulaciones de picos como imán) en ES y NQ
+- **MEDIDO:** etapa A, 144 celdas, contra C-SZ (nivel sin zona) y C-SW (pico reciente no superado, sin acumulación). Reporte sha `ff25451223b2`. Corrida anterior con fuga (`daa3b0f3bbd3`) invalidada.
+- **Estado:** 32 INFO+, 23 pasan a B. El efecto sobrevive al pico reciente: ES k 4 último pico +0,155 [+0,12, +0,19] con n 1.335.
+- **NO MEDIDO:** economía (B), estado continuo, banda completa, otros activos, holdout.
+
+## Anexo 2026-09-28: IPC 25t, prueba de robustez (auditoría 046)
+- **MEDIDO:** las 23 celdas de la etapa A + 5 D4 con zonas as-of, midquote, C-SW emparejado, volumen causal (reporte `f8e68b1a404b`). **0/23 sostienen: NO_ROBUSTO.** La corrección de controles con zonas futuras baja el efecto principal de +0,20 a +0,06; sobre midquote contra el pico reciente emparejado queda en −0,04.
+- **NO MEDIDO (sigue abierto):** el resto del abanico IPC (otros eventos, objetivo sin barrera, penetración, estado continuo, escalas, IPC como componente o imán en espejos). Pista débil: ES k 8 último pico (+0,08 en midquote, no significativa).

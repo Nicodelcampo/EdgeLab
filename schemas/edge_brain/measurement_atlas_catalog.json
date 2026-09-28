@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgelab.local/schemas/edge_brain/measurement_atlas_catalog.json",
+  "title": "EdgeLab Measurement Atlas Catalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "catalog_id",
+    "title",
+    "version",
+    "partitions",
+    "indicator_ids",
+    "composition_ids",
+    "concept_ids",
+    "status",
+    "asserts_edge",
+    "created_at_utc"
+  ],
+  "properties": {
+    "catalog_id": {
+      "type": "string",
+      "pattern": "^ATLAS-[A-Za-z0-9._:-]+$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string"
+    },
+    "partitions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "indicator_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "composition_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "concept_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "status": {
+      "enum": [
+        "DRAFT",
+        "PROPOSED",
+        "ACTIVE",
+        "DEPRECATED"
+      ]
+    },
+    "asserts_edge": {
+      "type": "boolean"
+    },
+    "created_at_utc": {
+      "type": "string"
+    }
+  }
+}

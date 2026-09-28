@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Espejos: ordenar por semejanza</title>
+<script src="vendor/lightweight-charts.standalone.production.js"></script>
+<style>
+  :root { --bg:#f5f6f8; --panel:#fff; --ink:#111827; --muted:#6b7280; --line:#e5e7eb; --accent:#2563eb; --a:#0ea5e9; --b:#f59e0b; --ok:#16a34a; }
+  body { margin:0; font-family:"Segoe UI",sans-serif; background:var(--bg); color:var(--ink); }
+  header { display:flex; align-items:center; gap:16px; padding:10px 16px; background:var(--panel); border-bottom:1px solid var(--line); }
+  header h1 { font-size:16px; margin:0; }
+  header .muted { color:var(--muted); font-size:13px; }
+  .row { display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; padding:12px 16px; }
+  .card { background:var(--panel); border:2px solid var(--line); border-radius:8px; position:relative; cursor:pointer; }
+  .card.r1 { border-color:var(--ok); } .card.r2 { border-color:#84cc16; } .card.r3 { border-color:#f97316; }
+  .chart { height:420px; }
+  .badge { position:absolute; top:8px; left:8px; z-index:5; background:var(--ink); color:#fff; border-radius:14px; padding:2px 10px; font-weight:700; font-size:14px; }
+  .hint { position:absolute; top:8px; right:10px; z-index:5; font-size:11px; color:var(--muted); background:#fffc; padding:1px 6px; border-radius:4px; }
+  .bar { display:flex; gap:10px; align-items:center; padding:0 16px 16px; flex-wrap:wrap; }
+  button { font:inherit; padding:7px 14px; border-radius:6px; border:1px solid var(--line); background:#fff; cursor:pointer; }
+  button.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
+  button.on { background:var(--ink); color:#fff; }
+  button:disabled { opacity:.45; cursor:default; }
+  .help { padding:0 16px 16px; color:var(--muted); font-size:13px; line-height:1.5; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Espejos: ordenar de más a menos parecido</h1>
+  <span class="muted" id="prog"></span>
+  <span class="muted" id="save"></span>
+</header>
+<div class="row" id="row"></div>
+<div class="bar">
+  <span>¿Alguna de las tres es un espejo de verdad?</span>
+  <button id="yes">Sí, alguna</button><button id="no">No, ninguna</button>
+  <span style="flex:1"></span>
+  <button id="reset">Reiniciar esta tanda</button>
+  <button id="prev">← Anterior</button>
+  <button id="next" class="primary" disabled>Guardar y siguiente →</button>
+</div>
+<div class="help">
+  Tocá los gráficos en orden: primero el que tiene la vuelta <b>más parecida</b> a la ida (1), después el 2 y el 3.
+  Cada gráfico muestra la ida A→B (líneas <span style="color:var(--a)">A</span> y <span style="color:var(--b)">B</span>) y la vuelta
+  <b>hasta el 75 %</b>; lo que pasó después está oculto a propósito. Juzgá sólo la forma y la velocidad de la vuelta frente a la ida.
+</div>
+<script>
+(async function () {
+  const NAME = new URLSearchParams(location.search).get("set") || "espejo_triads_ES_2026Q1_100t";
+  const D = await (await fetch("bundles/" + NAME + ".json", {cache: "no-store"})).json();
+  let L = {schema: "EDGELAB_ESPEJO_TRIAD_JUDGMENTS_V1", source: NAME, judgments: {}};
+  try { const r = await fetch("labels/" + NAME + ".json", {cache: "no-store"}); if (r.ok) L = await r.json(); } catch (e) {}
+  let k = Math.min(Object.keys(L.judgments).length, D.triads.length - 1);
+  let order = [], any = null, charts = [];
+  const $ = id => document.getElementById(id);
+
+  function save() {
+    fetch("api/labels/" + NAME, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(L)})
+      .then(r => $("save").textContent = r.ok ? "guardado" : "no se pudo guardar").catch(() => $("save").textContent = "no se pudo guardar");
+  }
+  function refresh() {
+    document.querySelectorAll(".card").forEach((el, i) => {
+      const r = order.indexOf(i); el.className = "card" + (r >= 0 ? " r" + (r + 1) : "");
+      el.querySelector(".badge").textContent = r >= 0 ? String(r + 1) : "";
+      el.querySelector(".badge").style.display = r >= 0 ? "" : "none";
+    });
+    $("yes").classList.toggle("on", any === true); $("no").classList.toggle("on", any === false);
+    $("next").disabled = !(order.length === 3 && any !== null);
+    $("prev").disabled = k === 0;
+    $("prog").textContent = "Tanda " + (k + 1) + " de " + D.triads.length + " · juzgadas " + Object.keys(L.judgments).length;
+  }
+  function render() {
+    charts.forEach(c => c.remove()); charts = [];
+    const row = $("row"); row.innerHTML = "";
+    const prevJ = L.judgments[String(k)];
+    order = prevJ ? prevJ.order.slice() : []; any = prevJ ? prevJ.any_true_mirror : null;
+    D.triads[k].forEach((itemId, i) => {
+      const it = D.items[itemId];
+      const card = document.createElement("div"); card.className = "card";
+      card.innerHTML = '<span class="badge" style="display:none"></span><span class="hint">vuelta hasta el 75 %</span><div class="chart"></div>';
+      row.appendChild(card);
+      const ch = LightweightCharts.createChart(card.querySelector(".chart"), {
+        layout: {background: {color: "#fff"}, textColor: "#6b7280"}, grid: {vertLines: {color: "#f1f5f9"}, horzLines: {color: "#f1f5f9"}},
+        timeScale: {visible: false}, rightPriceScale: {borderColor: "#e5e7eb"}, crosshair: {mode: 0}, handleScroll: false, handleScale: false});
+      const s = ch.addCandlestickSeries({upColor: "#16a34a", downColor: "#dc2626", wickUpColor: "#16a34a", wickDownColor: "#dc2626", borderVisible: false,
+        priceFormat: {type: "price", precision: 2, minMove: D.tick}});
+      s.setData(it.candles.map(c => ({time: c.time + 1, open: c.open * D.tick, high: c.high * D.tick, low: c.low * D.tick, close: c.close * D.tick})));
+      s.createPriceLine({price: it.A * D.tick, color: "#0ea5e9", lineWidth: 2, lineStyle: 2, title: "A"});
+      s.createPriceLine({price: it.B * D.tick, color: "#f59e0b", lineWidth: 2, lineStyle: 2, title: "B"});
+      s.setMarkers([{time: it.iA + 1, position: it.dir > 0 ? "belowBar" : "aboveBar", color: "#0ea5e9", shape: "circle", text: "A"},
+                    {time: it.iB + 1, position: it.dir > 0 ? "aboveBar" : "belowBar", color: "#f59e0b", shape: "circle", text: "B"}]);
+      ch.timeScale().fitContent();
+      charts.push(ch);
+      card.addEventListener("click", () => { if (order.indexOf(i) < 0 && order.length < 3) { order.push(i); if (order.length === 2) order.push([0, 1, 2].find(x => order.indexOf(x) < 0)); refresh(); } });
+    });
+    refresh();
+  }
+  $("yes").onclick = () => { any = true; refresh(); };
+  $("no").onclick = () => { any = false; refresh(); };
+  $("reset").onclick = () => { order = []; any = null; refresh(); };
+  $("prev").onclick = () => { if (k > 0) { k--; render(); } };
+  $("next").onclick = () => {
+    const ids = D.triads[k];
+    L.judgments[String(k)] = {items: ids, order: order.slice(), ranked_items: order.map(i => ids[i]), any_true_mirror: any, at: new Date().toISOString()};
+    save(); if (k < D.triads.length - 1) { k++; render(); } else { $("prog").textContent = "Listo: " + Object.keys(L.judgments).length + " tandas juzgadas."; }
+  };
+  document.addEventListener("keydown", e => {
+    if (["1", "2", "3"].includes(e.key)) { const i = +e.key - 1; if (order.indexOf(i) < 0 && order.length < 3) { order.push(i); if (order.length === 2) order.push([0, 1, 2].find(x => order.indexOf(x) < 0)); refresh(); } }
+    if (e.key === "Enter" && !$("next").disabled) $("next").click();
+  });
+  render();
+})();
+</script>
+</body>
+</html>

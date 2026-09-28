@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgelab.local/schemas/edge_brain/evidence_artifact.json",
+  "title": "EdgeLab Evidence Artifact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "evidence_id",
+    "source_id",
+    "evidence_type",
+    "sha256",
+    "uri_or_path",
+    "holdout_boundary_checked",
+    "created_at_utc"
+  ],
+  "properties": {
+    "evidence_id": {
+      "type": "string",
+      "pattern": "^EVID-[A-Za-z0-9._:-]+$"
+    },
+    "source_id": {
+      "type": "string"
+    },
+    "evidence_type": {
+      "enum": [
+        "DATASET_HASH",
+        "EXECUTION_LOG",
+        "PARQUET_PROJECTION",
+        "STATISTICAL_TEST_RUN"
+      ]
+    },
+    "sha256": {
+      "type": "string"
+    },
+    "uri_or_path": {
+      "type": "string"
+    },
+    "holdout_boundary_checked": {
+      "const": true
+    },
+    "created_at_utc": {
+      "type": "string"
+    }
+  }
+}

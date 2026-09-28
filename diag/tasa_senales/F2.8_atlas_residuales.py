@@ -86,7 +86,7 @@ from edgelab.research.f28.residual_atlas import (  # noqa: E402
 
 SCHEMA_VERSION = "bigtrap2_f28_distance_coverage_v0"
 NORTH_STAR_BODY_SHA256_EXPECTED = (
-    "d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1"
+    "ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8"
 )
 SPEC_PATH = REPO_PATH / "specs" / "bigtrap2_f28_distance_coverage_v0.json"
 RESEARCH_END_INCLUSIVE = "2026-06-30"

@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgelab.local/schemas/edge_brain/failure_event.json",
+  "title": "EdgeLab Failure Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "failure_id",
+    "episode_id",
+    "step_id",
+    "error_type",
+    "description",
+    "root_cause",
+    "occurred_at_utc"
+  ],
+  "properties": {
+    "failure_id": {
+      "type": "string",
+      "pattern": "^FAIL-[A-Za-z0-9._:-]+$"
+    },
+    "episode_id": {
+      "type": "string"
+    },
+    "step_id": {
+      "type": "string"
+    },
+    "error_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "root_cause": {
+      "type": "string"
+    },
+    "causal_hypothesis_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "repair_action_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "occurred_at_utc": {
+      "type": "string"
+    }
+  }
+}

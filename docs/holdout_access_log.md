@@ -78,3 +78,5 @@
 | 2026-07-31T22:27:06Z | target_free_validation | ALLOWED | 2026-07-01T00:00:00 | 2026-07-26T23:59:59 | correr_gates:6E_09-26_ticks.parquet |
 | 2026-07-31T23:46:56Z | target_free_validation | ALLOWED | 2026-07-01T00:00:00 | 2026-07-26T23:59:59 | correr_gates:6E_09-26_ticks.parquet |
 | 2026-08-01T00:13:46Z | target_free_validation | ALLOWED | 2026-07-01T00:00:00 | 2026-07-26T23:59:59 | diag |
+| 2026-09-24T14:16:11Z | target_free_validation | ALLOWED | 2026-07-01T00:00:00 | 2026-09-22T23:59:59 | tools/regimes_6e_stage1.py l2 (familia 6E-REGIMES, V1): proxy de profundidad vs L2, sin retornos; autorizacion Nico chat 2026-09-24: L2 6E jul-sep solo para validar el sustituto de profundidad, sin retornos |
+| 2026-09-24T20:10:00Z | amendment | SIGNED_BY_NICO | 2026-07-01T00:00:00 | 2026-10-31T23:59:59 | Enmienda L2: L2 jul-oct = desarrollo; L2 nov-dic = holdout L2 sellado (docs/research/ENMIENDA_PROPUESTA_HOLDOUT_L2_20260924.md). Ticks/barras sin cambio |

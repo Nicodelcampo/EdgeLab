@@ -171,8 +171,7 @@ def write_csv(name, n_sessions, seed, direction=0, bias=0.5):
 
 
 # ------------------------------------------------ 5. nulo
-def test_null():
-    print("\n[4] NULO: random walk -> estimando ~0 sin simular nada")
+def _run_null():
     p = write_csv("_syn_null.csv", 160, seed=20260814)
     out = M.run(p, tick=1.0, asset="SYN_NULL")
     pr = out["primary"]
@@ -191,6 +190,11 @@ def test_null():
           "%.3f" % pr["coverage"])
     check("pnl no accedido", out["pnl_accessed"] is False)
     return out
+
+
+def test_null():
+    print("\n[4] NULO: random walk -> estimando ~0 sin simular nada")
+    _run_null()
 
 
 # ------------------------------------------------ 6. efectos plantados
@@ -222,11 +226,11 @@ def test_planted():
           % (ic2["mean"], ic2["ci95_lower"], ic2["ci95_upper"], out2["label"]))
     check("detecta continuacion (mean<0)", ic2["mean"] < 0, str(ic2["mean"]))
     check("label FADE", out2["label"] == "PRERANGE_FADE", out2["label"])
-    return out
 
 
 # ------------------------------------------------ 7. placebos y gates
-def test_placebos_and_gates(null_out):
+def test_placebos_and_gates():
+    null_out = _run_null()
     print("\n[7] Familia de placebos y piso de p_perm")
     k = null_out["placebo_permutation"]["n_placebos"]
     usable = sum(1 for v in null_out["placebo_permutation"]["means"].values() if v is not None)

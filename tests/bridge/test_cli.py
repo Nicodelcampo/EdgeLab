@@ -24,7 +24,7 @@ def test_cli_synthetic_end_to_end(tmp_path):
     ids = {r["param_set_id"] for r in man["runs"]}
     assert len(ids) == 2                                  # identidades distintas
     keys = {r["bar_key"] for r in man["runs"]}
-    assert keys == {"time_1", "tick_50"}                  # bar spec por param set
+    assert keys == {"time_1m", "tick_50"}      # desde c873604 (2026-09-20) el bar_key lleva unidad: nunca se asume "minutos"                  # bar spec por param set
     for r in man["runs"]:
         assert (out / r["events_csv"]).exists()
         assert r["p1a"] == "PASS"
@@ -42,7 +42,7 @@ def test_cli_synthetic_end_to_end(tmp_path):
     data_js = (out / "viewer" / "data.js").read_text(encoding="utf-8")
     assert data_js.startswith("window.BRIDGE_DATA = ")
     bundle = json.loads(data_js[len("window.BRIDGE_DATA = "):].rstrip().rstrip(";"))
-    assert set(bundle["bar_series"].keys()) == {"time_1", "tick_50"}
+    assert set(bundle["bar_series"].keys()) == {"time_1m", "tick_50"}
     assert len(bundle["runs"]) == 2
     assert all(r["zones"] for r in bundle["runs"])
     assert (out / "viewer" / "index.html").exists()

@@ -46,6 +46,7 @@ GC = Instrument(symbol="GC", tick_size=0.10, tick_value=10.0)  # 100 oz troy
 MBT = Instrument(symbol="MBT", tick_size=5.0, tick_value=0.5)  # 0,1 BTC
 MES = Instrument(symbol="MES", tick_size=0.25, tick_value=1.25)  # multiplicador 5
 MNQ = Instrument(symbol="MNQ", tick_size=0.25, tick_value=0.5)  # multiplicador 2
+MYM = Instrument(symbol="MYM", tick_size=1.0, tick_value=0.5)  # multiplicador 0.5
 
 INSTRUMENTS = {
     "ES": ES,
@@ -54,9 +55,10 @@ INSTRUMENTS = {
     "6E": SIX_E,
     "YM": YM,
     "ZB": ZB,
+    "MYM": MYM,
 }
 
-# Los 11 futuros del dataset de Kaggle. `INSTRUMENTS` queda intacto (incluye
+# Los 11 futuros del dataset de Kaggle (MYM NO: sale de Lucid y no es publicable; vive en INSTRUMENTS). `INSTRUMENTS` queda intacto (incluye
 # EURUSD, que es spot y no tiene contrato) para no cambiarle la semántica a los
 # consumidores existentes; los que necesiten el universo de futuros usan esto.
 CME_UNIVERSE = {

@@ -89,6 +89,25 @@ conforme a protocolo pre-declarado.
 - **Permitido** solo para validaciones target-free (paridad, determinismo,
   geometría, integridad, visor).
 
+> **Enmienda L2 (firmada por Nico el 2026-09-24,
+> `docs/research/ENMIENDA_PROPUESTA_HOLDOUT_L2_20260924.md`).** Solo para
+> investigación con datos L2 (MBP-10) en GC, 6E, NQ, ES, MES, MNQ y ZB:
+> L2 del **2026-07-01 al 2026-10-31 = desarrollo**; L2 del **2026-11-01 al
+> 2026-12-31 = holdout L2 sellado**, con una apertura por candidato. Es una frontera nueva,
+> fijada antes de que existan esos datos; no mueve la frontera de ticks y
+> barras, que sigue en 2026-07-01 → 2026-12-31. Julio a octubre deja de ser
+> ciego para toda hipótesis que use L2 en esos instrumentos.
+
+> **Enmiendas HOLDOUT-A1 / A2 / A3 (firmadas por Nico el 2026-09-26/27,
+> `docs/incidents/AMENDMENT_HOLDOUT-A3_2026-09-27.md`).** Sólo para **ticks de ES y NQ**:
+> **descubrimiento** 2025-07-18 → 2026-03-31; **replicación** 2026-04-01 → 2026-09-30, una
+> sola apertura por familia, sólo sobre celdas sobrevivientes y sin elegir nada en ella;
+> **holdout** desde la sesión CME del 2026-10-01 (apertura 2026-09-30 17:00 CT), a futuro.
+> Motivo: potencia (la fuente no tiene historia anterior). Se implementa con las fronteras
+> propias de las herramientas de research (`tools/tbz_e2.py`); **el sello general de
+> `edgelab/research/holdout_guard.py` no se mueve** y sigue protegiendo al resto de los
+> instrumentos y a todo código que lo use. Para los demás instrumentos rige 2026-07-01.
+
 ## Rituales permanentes
 
 - Todo checkpoint de turno termina con **"Aporte al referente: …"** (1–2 líneas:
@@ -110,4 +129,4 @@ Ver también: `edge_validation_contract.md` (gates G0–G5), `kernel_contract.md
 
 <!-- SHA256-BODY-ABOVE -->
 
-**sha256 (cuerpo hasta el marcador):** `d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1`
+**sha256 (cuerpo hasta el marcador):** `05df5c7c3ec4cf3a1f14f62bb8e2ade4b61dd29203b610a308964ac46995f421`

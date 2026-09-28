@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgelab.local/schemas/edge_brain/contamination_event.json",
+  "title": "EdgeLab Contamination Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event_id",
+    "affected_artifact_ids",
+    "nature",
+    "severity",
+    "description",
+    "quarantine_path",
+    "recorded_at_utc"
+  ],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "pattern": "^CONTAM-[A-Za-z0-9._:-]+$"
+    },
+    "affected_artifact_ids": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      }
+    },
+    "nature": {
+      "enum": [
+        "HOLDOUT_BREACH",
+        "OUTCOME_LOOKAHEAD",
+        "CODE_TAMPERING",
+        "DATA_LEAKAGE"
+      ]
+    },
+    "severity": {
+      "enum": [
+        "WARNING",
+        "CRITICAL_FATAL"
+      ]
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "quarantine_path": {
+      "type": "string"
+    },
+    "recorded_at_utc": {
+      "type": "string"
+    }
+  }
+}

@@ -75,7 +75,7 @@ from edgelab.research.f210.labels import decide_labels, is_s1, is_t1  # noqa: E4
 SCHEMA = "bigtrap2_f210_regime_window_v0"
 SPEC_PATH = REPO_PATH / "specs" / "bigtrap2_f210_regime_window_v0.json"
 NORTH_STAR_BODY_SHA256_EXPECTED = (
-    "d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1"
+    "ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8"
 )
 RESEARCH_END_INCLUSIVE = "2026-06-30"
 REQUIRED_SOURCE_SESSIONS = 201

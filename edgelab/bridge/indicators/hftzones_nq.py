@@ -1,4 +1,11 @@
-"""HFTZonesNQ — motor de rachas HFT, espejo de `nt8/HFTClusterZonesNQ.cs`.
+"""HFTZonesNQ — motor de rachas HFT, espejo del detector de `nt8/HFTZonesNQPureV4.cs` (y V4_V2).
+
+> **Nota de linaje (2026-09-21).** Este módulo se escribió y certificó (2026-09-07, EXACT sobre ES) contra
+> el detector de rachas que compartía `HFTClusterZonesNQ.cs`. Ese indicador de **clusters** salió del
+> proyecto (decisión de Nico, 2026-09-21) y está archivado en
+> `archive/h_cluster_nq_fuera_del_proyecto/`. El indicador vigente de zonas individuales es
+> `HFTZonesNQPureV4(_V2).cs`, con paridad HP-007 V2 (5.438/5.438) y `ProcesarSweeps` idéntico byte a
+> byte al de aquel. Las referencias a números de línea de abajo apuntan al archivo archivado.
 
 **Target-free.** Detecta candidatos; no evalúa nada contra retornos.
 
