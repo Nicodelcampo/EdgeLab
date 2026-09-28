@@ -23,8 +23,13 @@ import numpy as np  # noqa: E402
 
 from edgelab.bridge.indicators import espejo_impulsos as K  # noqa: E402
 
-ASSETS = ["ES_03-26_202601_25T_HFT", "ES_03-26_202602_25T_HFT", "ES_03-26_202603_25T_HFT"]   # ene–mar (descubrimiento)
-ASSET = "ES_03-26_2026Q1"
+SETS = {   # nombre -> meses (todos de descubrimiento)
+    "espejo_triads_ES_2026Q1_100t": ["ES_03-26_202601_25T_HFT", "ES_03-26_202602_25T_HFT", "ES_03-26_202603_25T_HFT"],
+    "espejo_triads_ES_2025Q4_100t": ["ES_12-25_202510_25T_HFT", "ES_12-25_202511_25T_HFT", "ES_12-25_202512_25T_HFT"],  # validación
+}
+SET = sys.argv[1] if len(sys.argv) > 1 else "espejo_triads_ES_2026Q1_100t"
+ASSETS = SETS[SET]
+ASSET = SET
 VIEW = REPO / "viewer" / "nt8_bridge"
 TICK = 0.25
 SEED = 20260928
@@ -32,7 +37,7 @@ N_TBZ, N_OTROS, LOOK = 60, 40, 30
 MULT = 4                     # 100t = 4 velas de 25t agrupadas dentro de la sesión (exacto: cada 25t tiene 25 ticks)
 CUT_X = 0.75                 # el gráfico termina donde la vuelta cruza el 75 % (a 25t y 50 % casi no había vuelta: 28/09)
 KPARAMS = dict(e_max=1.01, atr_k=None, min_w=34.0, max_bars=20)   # impulso ≥ 34 t (2 × los 17 t de Nico en 25t) en ≤ 20 velas; 3·ATR daba mediana 12 t
-NAME = "espejo_triads_ES_2026Q1_100t"
+NAME = SET
 
 
 def census(asset):
@@ -81,9 +86,17 @@ def main():
     rng.shuffle(sel)
     n3 = len(sel) // 3 * 3
     items, meta = [], []
+    sel = [p for p in sel if not (((p["L"][p["e"]["bar"]] <= p["im"]["A"]) if p["im"]["dir"] > 0 else (p["H"][p["e"]["bar"]] >= p["im"]["A"]))
+                                  and p["e"]["bar"] - 1 <= p["im"]["bar_B"])]
+    n3 = len(sel) // 3 * 3
     for j, p in enumerate(sel[:n3]):
         im, e = p["im"], p["e"]; O, H, L, C = p["O"], p["H"], p["L"], p["C"]
         lo = max(0, im["bar_A"] - LOOK); hi = e["bar"]                       # termina donde la vuelta cruza el 75 %
+        touchesA = (L[hi] <= im["A"]) if im["dir"] > 0 else (H[hi] >= im["A"])
+        if touchesA and hi - 1 > im["bar_B"]:
+            hi -= 1                  # fuga (Nico, 28/09): la vela de corte ya toca A -> se corta en la anterior
+        elif touchesA:
+            continue                 # vuelta de una sola vela que ya llega a A: no se puede mostrar sin desenlace
         candles = [dict(time=i - lo, open=float(O[i]), high=float(H[i]), low=float(L[i]), close=float(C[i])) for i in range(lo, hi + 1)]
         items.append(dict(id=j, candles=candles, A=float(im["A"]), B=float(im["B"]), iA=int(im["bar_A"] - lo),
                           iB=int(im["bar_B"] - lo), dir=int(im["dir"])))
