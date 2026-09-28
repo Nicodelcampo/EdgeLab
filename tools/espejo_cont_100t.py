@@ -124,8 +124,10 @@ def run(inst, nivel, bars_dir, out_dir):
             for sl in SLS:
                 R = cd * (trade(H, L, C, k, fill, cd, tp * W, sl * W, end) - fill) / W
                 seed = int(hashlib.sha256(f"{inst}|{nivel}|{s}|{k}|{tp}|{sl}".encode()).hexdigest()[:8], 16)
-                p0 = simulate_null(fill, fill + cd * tp * W, fill - cd * sl * W, cd, pool, end - k, n=N_NULL, seed=seed, bars_per_step=M)
-                exc.append((float(R), float(R - (p0["completa"] * tp - (p0["falla"] + p0["ambigua"]) * sl))))
+                # nulo desde el CIERRE de la vela de entrada (ver espejo_cont_tpsl.py, fix 28/09)
+                p0 = simulate_null(C[k], fill + cd * tp * W, fill - cd * sl * W, cd, pool, end - k, n=N_NULL, seed=seed, bars_per_step=M)
+                E0 = p0["completa"] * tp - (p0["falla"] + p0["ambigua"]) * sl + p0["censurada"] * cd * (C[k] - fill) / W
+                exc.append((float(R), float(R - E0)))
         rows.append(dict(session=s, W=float(W), **feat, R=[x[0] for x in exc], exc=[x[1] for x in exc]))
     Path(out_dir).mkdir(parents=True, exist_ok=True)
     (Path(out_dir) / f"trades_{inst}_N{nivel}.json").write_text(json.dumps(rows), encoding="utf-8")

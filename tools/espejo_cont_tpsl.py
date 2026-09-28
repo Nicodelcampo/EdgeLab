@@ -120,8 +120,11 @@ def main():
                     px, why = trade(H, L, C, k, fill, cdir, tp * W, sl * W, end)
                     R = cdir * (px - fill) / W
                     seed = int(hashlib.sha256(f"{a.config}|{s}|{k}|{key}".encode()).hexdigest()[:8], 16)
-                    p0 = simulate_null(fill, fill + cdir * tp * W, fill - cdir * sl * W, cdir, pool, end - k, n=N_NULL, seed=seed, bars_per_step=m)
-                    Ep = p0["completa"] * tp - (p0["falla"] + p0["ambigua"]) * sl
+                    # 28/09: el nulo arranca en el CIERRE de la vela de entrada (el toque de A es por mecha y la vela suele
+                    # cerrar del lado de B); antes arrancaba en `fill` y sesgaba el exceso en contra. Censura: el cierre
+                    # esperado de un paseo sin deriva es el punto de partida → aporta cdir·(C[k] − fill)/W.
+                    p0 = simulate_null(C[k], fill + cdir * tp * W, fill - cdir * sl * W, cdir, pool, end - k, n=N_NULL, seed=seed, bars_per_step=m)
+                    Ep = p0["completa"] * tp - (p0["falla"] + p0["ambigua"]) * sl + p0["censurada"] * cdir * (C[k] - fill) / W
                     rec["cells"][key] = dict(R=float(R), E0=float(Ep), exc=float(R - Ep), why=why)
                     if kc is not None:
                         fc = C[kc]; endc = min(kc + cf["hz"], n - 1)
