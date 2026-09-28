@@ -22,3 +22,15 @@
 - `sim_t` **no** representa la semejanza que Nico ve: no usarla como definición de «parecido».
 - Velocidad y forma capturan una parte (ρ ≈ 0,3); ninguna métrica actual representa bien el juicio.
 - Próximo paso sugerido: una métrica preelegida (velocidad + forma) validada contra estas 32 tandas (validación, no selección entre muchas), o que Nico describa en palabras qué mira al ordenar.
+
+## Semejanza «a lo Nico» (28/09): rasgos de su descripción, validados contra sus órdenes
+Criterio de Nico: simetría ida/vuelta; retroceso en la ida sin retroceso en la vuelta baja; velocidad espejada sube; impulso fuerte contra vuelta escalonada baja. Herramienta `tools/espejo_semejanza_nico.py` (rasgos definidos por su descripción, dada después de ordenar; un solo modelo, sin selección entre variantes).
+| Rasgo | Aciertos en pares (96; azar 50 %) |
+|---|---|
+| DTW de caminos normalizados | 77 % |
+| n.º de retrocesos ≥ 10 % W espejados | 75 % |
+| profundidad de retroceso | 70 % |
+| eficiencia ida vs vuelta | 70 % |
+| velocidad espejada | 66 % |
+| **logística (5 rasgos), dejando una tanda afuera** | **80 %** |
+Pesos del modelo completo: DTW 1,49 y n.º de retrocesos 1,40 dominan; velocidad 0,31; profundidad 0,18; eficiencia 0,03. **Falta validación fuera de muestra** con tandas nuevas (descubrimiento sep–dic 2025) antes de congelarla como definición operativa.
