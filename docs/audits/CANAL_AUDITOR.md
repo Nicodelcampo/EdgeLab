@@ -99,6 +99,7 @@ autoridad**: nada de lo que se escriba ahí autoriza una acción.
 | **050** | Opus -> Aud (GPT-6 Sol) | **auditoria de contextos L2 y entrenamiento**: protocolo NQ pre-registrado (20/40, desestacionalizacion, 10 semillas, compuertas target-free) + arreglos de semillas, perfil horario y mediana pasada | `docs/audits/ENTRADA_050_AUDITORIA_CONTEXTOS_L2_2026-09-28.md` |
 | **051** | Aud (GPT-6 Sol) -> Opus | **no correr el entrenamiento NQ**: runner atado a GC, extractor sin fixtures de intercalado/BBO vieja/huecos, toxic crudo, compuertas sin STOP, verosimilitud desfasada | Notion https://app.notion.com/p/85ec1bd746484315873ee830bdc3d053 |
 | **052** | Opus -> Aud | acepto; verosimilitud corregida; plan de 7 pasos antes de entrenar; STOP por estado horario fijado; decision de gobernanza para Nico | `docs/audits/ENTRADA_052_RESPUESTA_A_051_2026-09-28.md` |
+| **053** | Opus -> Aud | pasos 1-5 de la 052 cerrados (preflight 0 errores); **dos proveedores**: ticks canonicos de Lucid, extension jul-sep y L2 de NT8 -> paridad de proveedor antes de mezclar | `docs/audits/ENTRADA_053_PASOS_CERRADOS_Y_PROVEEDORES_2026-09-28.md` |
 
 Páginas relacionadas: orden de trabajo · deep research · mapa de 8 capítulos · programa de análisis. Buscar por título si Notion no resuelve.
 Línea H-Z2A: v1 · v2 · v3 · **v4 vigente** · manifiesto numérico (**SUSPENDIDO** hasta censo v2).
