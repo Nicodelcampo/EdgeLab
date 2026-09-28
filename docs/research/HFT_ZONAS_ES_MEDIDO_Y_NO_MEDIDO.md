@@ -459,3 +459,5 @@ aquellos números compara dos poblaciones distintas.
 - **MEDIDO 28/09 — Contextos L2 NQ: PASS** (cobertura 100 %, semillas ≥ 0,958, sin concentración horaria; hora sola no
   predice el clima). Deriva en el roll a vigilar. Habilitados como filtro en jul–sep (desarrollo), confirmación oct+.
   `RESULTADO_CONTEXTOS_L2_NQ_20260928.md`.
+- **MEDIDO 28/09 — ESPEJO-REV-100T ES:** el cruce hacia B llega MENOS que el azar (−1 a −4 pp), sobre todo con overshoot
+  bajo; TP/SL de reversión R bruto negativo. Contrario a NQ parcial. `RESULTADO_ESPEJO_REV_100T_ES_20260928.md`.
