@@ -26,6 +26,7 @@ import numpy as np
 REPO = Path(__file__).resolve().parents[1]
 VIEW = REPO / "viewer" / "nt8_bridge"
 TRAIN = "MES_03-26_202603_25T_HFT"
+MAX_GAP = 200          # velas entre visitas: los ejemplos de Nico llegan a 147 (28/09); fijo, no se ajusta
 GRID = dict(R=(12, 16, 20, 24, 28, 32, 40, 48), tol=(2, 3, 4, 6, 8), sep=(0, 15, 30, 60))
 
 
@@ -59,7 +60,7 @@ def zigzag(h, l, t, R):
     return piv
 
 
-def levels(piv, tol, sep):
+def levels(piv, tol, sep, t=None):
     out = []
     for kind in ("H", "L"):
         P = [p for p in piv if p[1] == kind]
@@ -71,6 +72,8 @@ def levels(piv, tol, sep):
             lvl = P[a][2]; visits = [[P[a]]]
             for b in range(a + 1, len(P)):
                 q = P[b]; tl = tol if len(visits) < 2 else 1.5 * tol
+                if q[0] - visits[-1][-1][0] > MAX_GAP or (t is not None and np.any(np.diff(t[visits[-1][-1][0]:q[0] + 1]) > 1800)):
+                    break                                   # demasiado lejos o cruza la frontera de sesión: el nivel se cierra
                 over = s * (q[2] - lvl)
                 if over > tl:
                     break                                   # pasó el nivel: lo rompe
@@ -107,7 +110,7 @@ def fit():
     lab = json.loads((VIEW / "labels" / f"{TRAIN}.json").read_text(encoding="utf-8"))
     res = []
     for R, tol, sep in itertools.product(*GRID.values()):
-        z = levels(zigzag(h, l, t, R), tol, sep)
+        z = levels(zigzag(h, l, t, R), tol, sep, t)
         res.append(dict(R=R, tol=tol, sep=sep, **score(z, lab, t)))
     res.sort(key=lambda r: (-r["f1"], -r["cobertura"], r["R"]))
     out = dict(entrenado_con=TRAIN, grilla=GRID, elegido=res[0], top10=res[:10],
@@ -120,7 +123,7 @@ def fit():
 def detect(asset):
     fr = json.loads((REPO / "docs" / "research" / "IPC_NIVEL_PARAMETROS_CONGELADOS_20260928.json").read_text(encoding="utf-8"))["elegido"]
     t, h, l, tick = load(asset)
-    Z = levels(zigzag(h, l, t, fr["R"]), fr["tol"], fr["sep"])
+    Z = levels(zigzag(h, l, t, fr["R"]), fr["tol"], fr["sep"], t)
     zonas = [dict(kind=z["kind"], i0=int(z["i0"]), i1=int(z["i1"]), t0=float(t[z["i0"]]), t1=float(t[z["i1"]]),
                   p0=float(z["lo"] * tick), p1=float(z["hi"] * tick), toques=int(z["visitas"]), n3=bool(z["n3"]),
                   picos=[[int(p[0]), float(t[p[0]]), float(p[2] * tick)] for p in z["picos"]]) for z in Z]
