@@ -533,7 +533,8 @@ def fit_regime4_model(features, *, train_sessions, code_identity,
         multi = fit_hmm3_seeds(train_hmm[list(config.feature_names)].to_numpy(dtype=float),
                                train_hmm["cme_session"].astype(str).tolist(), seeds=seeds,
                                code_identity=code_identity, config=config)
-        checkpoint = multi["best"]; seeds_report = {k: v for k, v in multi.items() if k != "best"}
+        checkpoint = multi["best"]; seeds_report = {k: v for k, v in multi.items() if k not in ("best", "all_checkpoints")}
+        seeds_report["checkpoints"] = multi["all_checkpoints"]            # para medir estabilidad en evaluación
     else:
         checkpoint = fit_hmm3(train_hmm[list(config.feature_names)].to_numpy(dtype=float),
                               train_hmm["cme_session"].astype(str).tolist(),
@@ -723,3 +724,104 @@ def target_free_report(labels):
         "vpin": "NOT_IMPLEMENTED; flow_toxicity_overlay_not_vpin",
         "outcomes_accessed": False, "returns_computed": False,
         "pnl_computed": False, "edge_declared": False}
+
+
+
+# ------------------------------------------------------------------ compuertas target-free con PASS/STOP (auditoría 051 §4-§5)
+GATE_MIN_COVERAGE = 0.99
+GATE_MIN_SEED_AGREEMENT = 0.80
+GATE_MAX_HOUR_CONCENTRATION = 0.80      # > 80 % de los minutos de un estado en una franja de 2 h => STOP para ese estado
+GATE_MAX_HOUR_ONLY_ACCURACY = 0.90      # si la hora sola predice el estado con >= 90 % => el clima es la hora: STOP global
+
+
+def _ct_hour(frame):
+    utc = pd.to_datetime(frame["minute_id"].to_numpy(dtype=np.int64) * 60 + ART_TO_UTC_S, unit="s", utc=True)
+    return utc.tz_convert("America/Chicago").hour.to_numpy()
+
+
+def seed_labels(features, model, sessions):
+    """Etiqueta base (argmax del filtro hacia adelante) de cada semilla sobre los minutos elegibles de `sessions`."""
+    rep = model.get("seeds_report") or {}
+    cps = rep.get("checkpoints") or [model["base_hmm_checkpoint"]]
+    sub = features[features["cme_session"].astype(str).isin([str(v) for v in sessions])]
+    eligible, seg = _eligible_segments(sub)
+    x = apply_seasonal(eligible, model["seasonal_profile"]) if model.get("seasonal_profile") else eligible
+    names = list(model["base_hmm_checkpoint"]["feature_names"])
+    return eligible, [forward_filter(x[names].to_numpy(dtype=float), seg, cp).argmax(axis=1) for cp in cps]
+
+
+def context_gate_report(labels, model, *, train_sessions, evaluation_sessions, roll_date=None, seed_label_sets=None):
+    """Reporte SÓLO de evaluación, con numeradores/denominadores y PASS/STOP automático. No mira retornos."""
+    ev_set = {str(v) for v in evaluation_sessions}
+    ev = labels[labels["cme_session"].astype(str).isin(ev_set)].copy()
+    elig = ev[ev["feature_eligible"].astype(bool)]
+    lab = elig[elig["context_as_of_ok"].astype(bool)].copy()
+    out = {"schema": "edgelab.context.gate_report/1.0.0", "model_id": model["model_id"], "outcomes_accessed": False,
+           "evaluation_sessions": sorted(ev_set), "train_sessions": [str(v) for v in train_sessions]}
+    cov = len(lab) / max(len(elig), 1)
+    out["coverage"] = {"labeled": int(len(lab)), "eligible": int(len(elig)), "value": cov, "pass": cov >= GATE_MIN_COVERAGE}
+    states = list(FINAL_STATES)
+    lab = lab.sort_values(["cme_session", "minute_id"], kind="mergesort")
+    lab["hour_ct"] = _ct_hour(lab)
+    # persistencia y cambios
+    runs = {s_: [] for s_ in states}; flips = 0
+    for _, g in lab.groupby("cme_session", sort=False):
+        seq = g["context_state"].astype(str).to_numpy(); mids = g["minute_id"].to_numpy()
+        start = 0
+        for i in range(1, len(seq) + 1):
+            if i == len(seq) or seq[i] != seq[i - 1] or mids[i] != mids[i - 1] + 1:
+                runs[seq[start]].append(i - start)
+                if i < len(seq) and seq[i] != seq[i - 1]:
+                    flips += 1
+                start = i
+    hours = len(lab) / 60.0
+    out["persistence"] = {s_: {"minutes": int((lab["context_state"] == s_).sum()),
+                               "median_run_min": float(np.median(runs[s_])) if runs[s_] else None} for s_ in states}
+    out["flips_per_hour"] = flips / max(hours, 1e-9)
+    # concentración horaria por estado (ventana de 2 h, circular)
+    conc = {}
+    for s_ in states:
+        h = lab.loc[lab["context_state"] == s_, "hour_ct"].to_numpy()
+        if not len(h):
+            conc[s_] = {"max_share_2h": None, "pass": None}; continue
+        counts = np.bincount(h, minlength=24).astype(float)
+        share = max((counts[k] + counts[(k + 1) % 24]) / counts.sum() for k in range(24))
+        conc[s_] = {"max_share_2h": float(share), "pass": bool(share <= GATE_MAX_HOUR_CONCENTRATION)}
+    out["hour_concentration"] = conc
+    out["hour_by_state"] = {str(int(k)): {s_: int(v) for s_, v in g["context_state"].value_counts().items()}
+                            for k, g in lab.groupby("hour_ct")}
+    # clasificador que sólo conoce la hora: estado modal por hora aprendido en ENTRENAMIENTO, aplicado a evaluación
+    tr = labels[labels["cme_session"].astype(str).isin({str(v) for v in train_sessions}) & labels["context_as_of_ok"].astype(bool)].copy()
+    if len(tr):
+        tr["hour_ct"] = _ct_hour(tr)
+        modal = tr.groupby("hour_ct")["context_state"].agg(lambda x: x.value_counts().index[0]).to_dict()
+        pred = lab["hour_ct"].map(modal)
+        acc = float((pred == lab["context_state"]).mean()) if len(lab) else None
+        majority = float(lab["context_state"].value_counts(normalize=True).iloc[0]) if len(lab) else None
+        out["hour_only"] = {"accuracy": acc, "majority_baseline": majority,
+                            "pass": None if acc is None else bool(acc < GATE_MAX_HOUR_ONLY_ACCURACY)}
+    # deriva por roll
+    if roll_date:
+        pre = lab[lab["cme_session"].astype(str) < str(roll_date)]["context_state"].value_counts(normalize=True).to_dict()
+        post = lab[lab["cme_session"].astype(str) >= str(roll_date)]["context_state"].value_counts(normalize=True).to_dict()
+        out["roll_drift"] = {"roll_date": str(roll_date), "pre": {k: float(v) for k, v in pre.items()},
+                             "post": {k: float(v) for k, v in post.items()}}
+    # estabilidad por semilla y por estado base (en evaluación)
+    if seed_label_sets:
+        best = seed_label_sets[0]; per_state = {}
+        for st in range(3):
+            m = best == st
+            per_state[("calm", "normal", "volatile")[st]] = (
+                float(min(((ls == st)[m].mean() if m.any() else 1.0) for ls in seed_label_sets[1:])) if len(seed_label_sets) > 1 else 1.0)
+        glob = float(min((ls == best).mean() for ls in seed_label_sets[1:])) if len(seed_label_sets) > 1 else 1.0
+        out["seed_stability_eval"] = {"global_min_agreement": glob, "per_state_min_agreement": per_state,
+                                      "pass": bool(glob >= GATE_MIN_SEED_AGREEMENT and min(per_state.values()) >= GATE_MIN_SEED_AGREEMENT)}
+    stops = []
+    if not out["coverage"]["pass"]: stops.append("COVERAGE")
+    for s_, c in conc.items():
+        if c["pass"] is False: stops.append(f"HOUR_STATE:{s_}")
+    if out.get("hour_only", {}).get("pass") is False: stops.append("HOUR_ONLY_CLASSIFIER")
+    if out.get("seed_stability_eval", {}).get("pass") is False: stops.append("SEED_INSTABILITY")
+    out["stops"] = stops
+    out["verdict"] = "PASS" if not stops else "STOP"
+    return out

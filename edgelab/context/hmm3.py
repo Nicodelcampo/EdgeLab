@@ -319,7 +319,7 @@ def fit_hmm3_seeds(matrix: np.ndarray, sequence_ids: Sequence[object], *, seeds:
     best = max(range(len(fits)), key=lambda i: fits[i]["final_log_likelihood"])
     ref = forward_filter(matrix, sequence_ids, fits[best]).argmax(axis=1)
     agreement = [float((forward_filter(matrix, sequence_ids, f).argmax(axis=1) == ref).mean()) for f in fits]
-    return {"best": fits[best], "best_seed": int(seeds[best]),
+    return {"best": fits[best], "best_seed": int(seeds[best]), "all_checkpoints": fits,
             "per_seed": [{"seed": int(s), "final_log_likelihood": float(f["final_log_likelihood"]), "agreement_with_best": a}
                          for s, f, a in zip(seeds, fits, agreement)],
             "min_agreement": float(min(agreement))}
