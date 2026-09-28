@@ -428,3 +428,7 @@ aquellos números compara dos poblaciones distintas.
   mínimos más bajos que el anterior, un techo no hace máximos más altos; los 10 grupos de Nico lo cumplen sin excepción);
   paso ≤ 2 t contra el pico anterior (3 t desde la 3.ª visita); zigzag fino R = 6 t; ≤ 200 velas entre picos; misma sesión.
   Cubre 9/10, precisión 18 % → tanda ✓/✗ en MES feb-2026. **NO MEDIDO:** ningún desenlace.
+- **IPC-NIVEL v2 validada por juicio (28/09):** Nico juzgó 121 detecciones de MES feb-2026 (fuera de la muestra de
+  ajuste): 99 ✓ / 22 ✗ = **82 % de acuerdo**. Los ✗ tienen menos picos (mediana 3 vs 4) y duran menos (110 vs 165 velas);
+  salida y deriva no distinguen. Variante estricta **IPC-N4** (≥ 4 picos): 90 % (70 ✓ / 8 ✗), pierde 29 ✓.
+  Definición congelada: v2 como principal, N4 como variante. **NO MEDIDO:** ningún desenlace.
