@@ -456,3 +456,6 @@ aquellos números compara dos poblaciones distintas.
   Sospecha de residuo del nulo en TP chicos (también en YM): pendiente control empírico. `RESULTADO_ESPEJO_CONT_100T_NQ_20260928.md`.
 - **MEDIDO 28/09 — ESPEJO-CONT-100T MES (NT8):** 4/1.020 sobreviven, todas negativas (nivel 5, VWAP en contra / ineficiente).
   Igual que ES: la continuación no supera al azar. `RESULTADO_ESPEJO_CONT_100T_MES_20260928.md`.
+- **MEDIDO 28/09 — Contextos L2 NQ: PASS** (cobertura 100 %, semillas ≥ 0,958, sin concentración horaria; hora sola no
+  predice el clima). Deriva en el roll a vigilar. Habilitados como filtro en jul–sep (desarrollo), confirmación oct+.
+  `RESULTADO_CONTEXTOS_L2_NQ_20260928.md`.
