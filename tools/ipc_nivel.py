@@ -27,7 +27,7 @@ REPO = Path(__file__).resolve().parents[1]
 VIEW = REPO / "viewer" / "nt8_bridge"
 TRAIN = "MES_03-26_202603_25T_HFT"
 MAX_GAP = 200          # velas entre visitas: los ejemplos de Nico llegan a 147 (28/09); fijo, no se ajusta
-GRID = dict(R=(3, 4, 6, 8, 10, 12), tol=(2, 3, 4, 6, 8), sep=(0,))
+GRID = dict(R=(4, 6, 8, 10, 12), tol=(2, 3, 4, 6, 9), sep=(0,))
 
 
 def load(asset):
@@ -82,11 +82,12 @@ def levels(piv, tol, sep, t=None, h=None, l=None):
                 if q[0] - last[0] > MAX_GAP or (t is not None and np.any(np.diff(t[last[0]:q[0] + 1]) > 1800)):
                     break
                 tl = tol if len(visits) < 2 else 1.5 * tol
-                over = s * (q[2] - lvl)
-                if over > tl:
-                    break
-                if over < -tl:
-                    continue
+                if s * (q[2] - last[2]) > 0:
+                    break                                   # 28/09 Nico: un piso no hace mínimos más bajos que el anterior
+                                                            # (ni un techo máximos más altos): perforar cierra el nivel
+                if -s * (q[2] - last[2]) > tl:
+                    continue                                # se quedó corto respecto del pico anterior (el nivel puede
+                                                            # correrse de a pasos ≤ tol: un piso de Nico sube 15 t en 4 pasos)
                 exc = (lvl - l[last[0]:q[0] + 1].min()) if kind == "H" else (h[last[0]:q[0] + 1].max() - lvl)
                 if exc >= BIG_EXIT:
                     visits.append([q])

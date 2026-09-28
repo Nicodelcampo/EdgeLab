@@ -424,7 +424,7 @@ aquellos números compara dos poblaciones distintas.
 - **Re-corrida 28/09 con pool del nulo corregido (OK de Nico):** ESPEJO-NICO 0/8 (árbol limpio, cambios ≤ 0,002);
   VOLLIMP 0/24 (menor p: R-VL x=0,75 otros −0,12, p 0,042, en contra; árbol marcado dirty sólo por `tools/ipc_nivel.py`
   sin trackear, no importado). Las dos dejan de ser provisionales: **sin efecto detectado**, con el alcance de sus actas.
-- **IPC-NIVEL v1 (target-free, 28/09):** ≥ 3 visitas al nivel separadas por salidas ≥ 14 t (los 10 grupos de Nico
-  tienen 3–5; «no alcanzan 2 picos»), picos finos por zigzag R = 8 t, tolerancia 2 t (3 t desde la 3.ª visita), ≤ 200 velas
-  entre picos, misma sesión, sin duplicados. Cubre 9/10 grupos, precisión 19 % → tanda ✓/✗ en MES feb-2026.
-  **NO MEDIDO:** ningún desenlace.
+- **IPC-NIVEL v2 (target-free, 28/09):** ≥ 3 visitas separadas por salidas ≥ 14 t; **picos monótonos** (un piso no hace
+  mínimos más bajos que el anterior, un techo no hace máximos más altos; los 10 grupos de Nico lo cumplen sin excepción);
+  paso ≤ 2 t contra el pico anterior (3 t desde la 3.ª visita); zigzag fino R = 6 t; ≤ 200 velas entre picos; misma sesión.
+  Cubre 9/10, precisión 18 % → tanda ✓/✗ en MES feb-2026. **NO MEDIDO:** ningún desenlace.
