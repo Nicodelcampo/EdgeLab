@@ -5767,10 +5767,35 @@
     });
   });
   document.addEventListener("change", function (e) { if (e.target && /^chk-show-l2/.test(e.target.id)) syncL2Chips(); });
+  // 28/09 (Nico): serie de 100 ticks derivada de la de 25: 4 velas de 25t agrupadas dentro de la sesión (hueco > 30 min
+  // = sesión nueva; la cola incompleta de la sesión no forma vela), la misma regla que usan las mediciones (ESPEJO-NICO,
+  // CONT-TPSL). Sólo para visualizar; no se escribe en ningún bundle.
+  function addDerivedTick100(data) {
+    if (!data || !data.bar_series || !data.bar_series["tick_25"] || data.bar_series["tick_100"]) return;
+    var src = data.bar_series["tick_25"].candles || [], out = [], grp = [];
+    function flush() {
+      if (grp.length === 4) {
+        var h = -Infinity, l = Infinity, v = 0;
+        grp.forEach(function (c) { if (c.high > h) h = c.high; if (c.low < l) l = c.low; v += c.volume || 0; });
+        out.push({ time: grp[3].time, open: grp[0].open, high: h, low: l, close: grp[3].close, volume: v });
+      }
+      grp = [];
+    }
+    for (var i = 0; i < src.length; i++) {
+      if (i && src[i].time - src[i - 1].time > 1800) grp = [];
+      grp.push(src[i]);
+      if (grp.length === 4) flush();
+    }
+    // tiempos estrictamente crecientes para el gráfico (varias velas pueden cerrar en el mismo segundo)
+    for (var k = 1; k < out.length; k++) if (out[k].time <= out[k - 1].time) out[k].time = out[k - 1].time + 1;
+    data.bar_series["tick_100"] = { kind: "tick_100", name: "100 Tick (4 × 25t, derivada)", candles: out };
+  }
+
   function applyLoadedAsset(data, options) {
     options = options || {};
     setTimeout(syncL2Chips, 0);
     normalizeRuns(data);
+    addDerivedTick100(data);
     state.data = data;
     var m = data.meta;
     state.currentAssetId = m.id || state.currentAssetId;
@@ -5846,7 +5871,9 @@
       state.activeBarKey = activeBk;
       state.run = { id: "none", name: "Espejo", indicator: "EspejoImpulsos", zones: [] };
       if (data.bar_series && data.bar_series[activeBk]) {
-        series.setData(data.bar_series[activeBk].candles);
+        // 28/09: sin corridas se cargaban las velas crudas; en 25t varias cierran en el mismo segundo y el gráfico
+        // fallaba («Value is null»). Mismo saneo de tiempos que switchTimeframe/selectRun.
+        series.setData(getMonotonicCandles(data.bar_series[activeBk].candles));
         chart.timeScale().fitContent();
       }
       var lblEl = document.getElementById("lbl-tf-name");
