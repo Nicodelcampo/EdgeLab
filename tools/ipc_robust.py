@@ -167,7 +167,96 @@ def near_zone_asof(zidx, q, price, R):
     return False
 
 
-def controls(S, A, M, keys, k, r, rng, zidx, piv):
+def zone_fast(zidx):
+    """Niveles as-of vectorizados: cada pico de cada zona se conoce desde max(creación, confirmación del pico).
+    Ordenados por ese instante: `near` = ¿hay algún nivel conocido en q a menos de R del precio? (idéntico a
+    near_zone_asof, en O(log n + k) con numpy)."""
+    t, pr = [], []
+    for cr, pks in zidx:
+        for ci, p_ in pks:
+            t.append(max(cr, ci)); pr.append(p_)
+    o = np.argsort(t, kind="stable")
+    return np.asarray(t, np.int64)[o], np.asarray(pr, float)[o]
+
+
+def near_fast(zf, q, price, R):
+    t, pr = zf
+    k = int(np.searchsorted(t, q, side="right"))
+    return bool(k and np.any(np.abs(pr[:k] - price) < R))
+
+
+def next_exceed(src, idx, s):
+    """Para cada pivote u, primera vela > u donde el precio SUPERA estrictamente a src[u] (techo si s>0, piso si s<0).
+    «No superado hasta q» <=> next_exceed[u] > q. Pila monótona, O(n)."""
+    x = src * s
+    n = len(x); nxt = np.full(n, n, np.int64); st = []
+    for i in range(n):
+        while st and x[i] > x[st[-1]]:
+            nxt[st.pop()] = i
+        st.append(i)
+    return nxt[idx]
+
+
+def controls(S, A, M, keys, k, r, rng, zidx, piv, zf=None, nx=None):
+    if zf is not None:
+        return controls_fast(S, A, M, keys, k, r, rng, zf, piv, nx)
+    return controls_ref(S, A, M, keys, k, r, rng, zidx, piv)
+
+
+def controls_fast(S, A, M, keys, k, r, rng, zf, piv, nx):
+    """Idéntica a controls_ref (misma secuencia de números aleatorios y mismos filtros), con búsquedas vectorizadas."""
+    a = A[k]; e = r["ev"]; s = r["s"]; s0 = a["st"][:, e]; rg0, sec0 = a["rg20"][e], a["sec20"][e]; clock = int(S[k]["clock"][e])
+    others = [o for o in keys if o != k]
+    res = {n_: [] for n_ in ("sz_t", "sz_m", "swa_t", "swa_m", "swm_t", "swm_m")}
+    donors = {n_: [] for n_ in ("sz", "swa", "swm")}
+    tol_d = max(1.0, 0.1 * r["lvl_dist"])
+    for oi in rng.permutation(len(others)):
+        if all(len(res[x]) >= I.N_PH for x in ("sz_t", "swa_t", "swm_t")):
+            break
+        o = others[int(oi)]; y = A[o]; my = M.get(o)
+        lo_, hi_ = np.searchsorted(S[o]["clock"], clock - I.TOD), np.searchsorted(S[o]["clock"], clock + I.TOD)
+        lo_ = max(lo_, 300)
+        if hi_ <= lo_:
+            continue
+        tol = np.maximum(I.TOL * np.abs(s0)[:, None], I.ABS_TOL)
+        ok = np.all(np.abs(y["st"][:, lo_:hi_] - s0[:, None]) <= tol, axis=0)
+        rg, sec = y["rg20"][lo_:hi_], y["sec20"][lo_:hi_]
+        ok &= (np.abs(rg - rg0) <= I.TOL * rg0) & (np.abs(np.log(np.maximum(sec, 1e-3) / max(sec0, 1e-3))) <= np.log(1 + I.TOL))
+        ny = len(y["c"]); src = y["h"] if s > 0 else y["l"]
+        pv = piv[o][s]; nxo = nx[o][s]
+        for qi in rng.permutation(np.flatnonzero(ok))[:15]:
+            q = lo_ + int(qi)
+            target = y["c"][q] + s * r["lvl_dist"]; far = y["c"][q] - s * r["far_dist"]
+            if len(res["sz_t"]) < I.N_PH and not near_fast(zf[o], q, target, r["R"]):
+                res["sz_t"].append(race(y["h"], y["l"], q, s, target, far, ny)[0])
+                if my is not None:
+                    res["sz_m"].append(race(my["h"], my["l"], q, s, target, far, ny)[0])
+                donors["sz"].append(o)
+            a_ = int(np.searchsorted(pv, q - 300, side="left")); b_ = int(np.searchsorted(pv, q - 2, side="left"))
+            us = pv[a_:b_]; ne = nxo[a_:b_]
+            keep = ne > q                                            # no superado hasta q (incluida)
+            us = us[keep]
+            cand = [int(u) for u in us if not near_fast(zf[o], q, src[u], r["R"])]
+            if len(res["swa_t"]) < I.N_PH:
+                ca = [u for u in cand if abs(src[u] - target) <= r["R"]]
+                if ca:
+                    u = ca[-1]; res["swa_t"].append(race(y["h"], y["l"], q, s, src[u], far, ny)[0])
+                    if my is not None:
+                        res["swa_m"].append(race(my["h"], my["l"], q, s, src[u], far, ny)[0])
+                    donors["swa"].append(o)
+            if len(res["swm_t"]) < I.N_PH and (ny - q) >= 0.8 * r["restantes"]:
+                cm = [u for u in cand if abs(src[u] - target) <= tol_d and 0.5 * r["edad"] <= (q - u) <= 2.0 * r["edad"]]
+                if cm:
+                    u = cm[-1]; res["swm_t"].append(race(y["h"], y["l"], q, s, src[u], far, ny)[0])
+                    if my is not None:
+                        res["swm_m"].append(race(my["h"], my["l"], q, s, src[u], far, ny)[0])
+                    donors["swm"].append(o)
+    out = {k_: (float(np.mean(v_)) if v_ else np.nan) for k_, v_ in res.items()}
+    out.update({f"don_{k_}": ",".join(v_) for k_, v_ in donors.items()})
+    return out
+
+
+def controls_ref(S, A, M, keys, k, r, rng, zidx, piv):
     """C-SZ (as-of), C-SW actual (± R, as-of) y C-SW emparejado (distancia ± max(1 t, 10 %), edad 0,5–2×, exposición ≥ 0,8), en trade y mid."""
     a = A[k]; e = r["ev"]; s = r["s"]; s0 = a["st"][:, e]; rg0, sec0 = a["rg20"][e], a["sec20"][e]; clock = int(S[k]["clock"][e])
     others = [o for o in keys if o != k]
@@ -242,7 +331,11 @@ def step_measure(inst):
     rows = []
     for vname, var in VARIANTS[inst].items():
         zidx = {k: zone_index(Zs[k], dict(minp=p["nmin"]), p["w"]) for k in keys}      # toda zona detectada, as-of
-        for k in keys:
+        zf = {k: zone_fast(zidx[k]) for k in keys}
+        nx = {k: {1: next_exceed(A[k]["h"], piv[k][1], 1), -1: next_exceed(A[k]["l"], piv[k][-1], -1)} for k in keys}
+        for ki, k in enumerate(keys):
+            if ki % 10 == 0:
+                print(inst, vname, f"sesión {ki + 1}/{len(keys)}", "eventos hasta ahora", sum(1 for x in rows if x["detector"] == vname), flush=True)
             for r in events(A[k], Zs[k], var, p["w"], cap):
                 if r["nivel"] == "primero" and vname == "D4_comercio":
                     pass
@@ -252,7 +345,7 @@ def step_measure(inst):
                 if k in M:
                     hm, _, amb_m = race(M[k]["h"], M[k]["l"], r["ev"], r["s"], r["lvl"], r["far"], n)
                 _, ht1, _ = race(h, l, r["ev"], r["s"], r["lvl"], r["far"], n)
-                cc = controls(S, A, M, keys, k, r, rng, zidx, piv)
+                cc = controls(S, A, M, keys, k, r, rng, zidx, piv, zf=zf, nx=nx)
                 rows.append(dict(r, inst=inst, detector=vname, session=k, hit_t=ht, hit_t_amb1=ht1, amb_t=amb_t,
                                  hit_m=hm, amb_m=amb_m, **cc))
         print(inst, vname, "eventos", sum(1 for x in rows if x["detector"] == vname), flush=True)
