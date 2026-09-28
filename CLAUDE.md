@@ -2,7 +2,7 @@
 
 > Este archivo se carga en cada sesión de Claude Code. El documento canónico
 > versionado es **`docs/NORTH_STAR.md`** — sha256 del cuerpo anterior al
-> marcador `SHA256-BODY-ABOVE`: `ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8`
+> marcador `SHA256-BODY-ABOVE`: `05df5c7c3ec4cf3a1f14f62bb8e2ade4b61dd29203b610a308964ac46995f421`
 > (no es el hash del archivo completo; el archivo se autocita a su propio pie,
 > ver `tests/test_north_star_hash.py`). Si hay conflicto, manda ese doc. Punto
 > de entrada operativo del día: `docs/ESTADO_2026-08-10_EMPEZAR_ACA.md`.
