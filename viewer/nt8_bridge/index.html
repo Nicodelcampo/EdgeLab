@@ -2958,7 +2958,9 @@
     peaksDet.data = null;
     fetch("bundles/peaks_det/" + aid + ".json", { cache: "reload" }).then(function (r) { if (!r.ok) throw 0; return r.json(); })
       .then(function (d) { peaksDet.data = d; var el = document.getElementById("lbl-det-status");
-        if (el) { var pp = d.parametros; el.textContent = "Modelo v0: " + d.zonas.length + " zonas (" + d.zonas_por_dia + "/día) · en lo que marcaste: cobertura " + Math.round(pp.cobertura * 100) + "% · precisión " + Math.round(pp.precision * 100) + "% (con el supuesto de ventana revisada)"; }
+        if (el) { var pp = d.parametros;
+          el.textContent = (pp && pp.cobertura != null) ? "Modelo v0: " + d.zonas.length + " zonas (" + d.zonas_por_dia + "/día) · en lo que marcaste: cobertura " + Math.round(pp.cobertura * 100) + "% · precisión " + Math.round(pp.precision * 100) + "% (con el supuesto de ventana revisada)"
+                                                        : d.zonas.length + " zonas cargadas" + (d.variante ? " (" + d.variante + ")" : "") + "."; }
         requestDraw(); })
       .catch(function () { var el = document.getElementById("lbl-det-status"); if (el) el.textContent = "Sin detecciones para este activo (tools/peaks_learn.py)."; });
   }
@@ -3306,7 +3308,13 @@
     drawL2Depth(ctx, vr, w, hCanvas);
     drawTrades(ctx, vr, w, hCanvas);
     drawManipulationMarkers(ctx, vr, w, hCanvas);
-    drawMaVwap(ctx, w, hCanvas); drawEvx(ctx, w, hCanvas); drawAxf(ctx, w, hCanvas); drawLabels(ctx, w, hCanvas); drawTbz(ctx, vr, w, hCanvas); drawTbzE2(ctx, vr, w, hCanvas); drawTbzx(ctx, vr, w, hCanvas); drawEspejo(ctx, vr, w, hCanvas);
+    // cada capa aislada (27/09): una capa que falla (p. ej. configuración guardada en el navegador para otro activo) no
+    // puede impedir que se dibujen las demás; el error queda en la consola con el nombre de la capa
+    [["ma_vwap", function () { drawMaVwap(ctx, w, hCanvas); }], ["evx", function () { drawEvx(ctx, w, hCanvas); }],
+     ["axf", function () { drawAxf(ctx, w, hCanvas); }], ["etiquetas", function () { drawLabels(ctx, w, hCanvas); }],
+     ["tbz", function () { drawTbz(ctx, vr, w, hCanvas); }], ["tbze2", function () { drawTbzE2(ctx, vr, w, hCanvas); }],
+     ["tbzx", function () { drawTbzx(ctx, vr, w, hCanvas); }], ["espejo", function () { drawEspejo(ctx, vr, w, hCanvas); }]
+    ].forEach(function (L) { try { ctx.save(); L[1](); } catch (err) { console.error("capa " + L[0] + ":", err); } finally { ctx.restore(); } });
     if (((tbze2Opt.on || tbzx.on || evx.on || axf.on) && tbze2Opt.solo) || (typeof rev !== "undefined" && rev.on)) return;   // en revisión ✓/✗ sólo se ve la zona a juzgar             // revisión TBZ-E2 sin las zonas HFT encima
 
     var opacityVal = (activeProps.opacidad || 30) / 100;
