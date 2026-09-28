@@ -206,6 +206,8 @@ class MinuteAccumulator:
         self.added_size = self.removed_size = 0
         self.replenished_size = self.depleted_size = 0
         self.crossed_l1 = self.locked_l1 = 0
+        self.clock_inversions = 0            # auditoría 051 §2: inversiones del reloj en el flujo INTERCALADO
+        self.stale_bbo_trades = 0            # trades clasificados sin BBO fresca (se usa la tick rule)
 
     def touch(self, ts_us: int, source_row: int) -> None:
         if self.first_ts_us is None:
@@ -229,10 +231,16 @@ def _valid_bbo(bid_tick, ask_tick) -> bool:
             and bid_tick > 0 and ask_tick > 0 and bid_tick <= ask_tick)
 
 
+MAX_BBO_AGE_US = 60_000_000         # BBO más vieja que esto al cierre del minuto: el minuto no es elegible
+MAX_TRADE_BBO_AGE_US = 5_000_000    # para clasificar un trade contra el BBO, la cotización tiene que ser de los últimos 5 s
+
+
 def _finalize_minute(acc, book, *, session, instrument, contract,
-                     bid_tick, ask_tick, bid_size, ask_size):
+                     bid_tick, ask_tick, bid_size, ask_size, bbo_ts_us=None, invalid_before=0):
     snap = book.snapshot()
-    valid_bbo = _valid_bbo(bid_tick, ask_tick)
+    close_us = (acc.minute_id + 1) * 60_000_000
+    bbo_age_us = (close_us - bbo_ts_us) if bbo_ts_us is not None else None
+    valid_bbo = _valid_bbo(bid_tick, ask_tick) and bbo_age_us is not None and bbo_age_us <= MAX_BBO_AGE_US
     mid = (bid_tick + ask_tick) / 2.0 if valid_bbo else None
     spread = ask_tick - bid_tick if valid_bbo else None
     trade_volume = acc.buy_volume + acc.sell_volume
@@ -276,6 +284,9 @@ def _finalize_minute(acc, book, *, session, instrument, contract,
         "l2_crossed_count_cumulative": book.crossed_events,
         "l2_locked_count_cumulative": book.locked_events,
         "book_invalid_events_cumulative": book.asks.invalid_events + book.bids.invalid_events,
+        "book_invalid_events_minute": book.asks.invalid_events + book.bids.invalid_events - invalid_before,
+        "clock_inversions": acc.clock_inversions, "stale_bbo_trades": acc.stale_bbo_trades,
+        "bbo_age_s_close": (bbo_age_us / 1e6) if bbo_age_us is not None else None,
         **snap,
     }
     row["wall_clock_minute_of_day_unresolved"] = int((acc.minute_id % 1440 + 1440) % 1440)
@@ -308,17 +319,28 @@ def extract_minute_features(l2: Any, l1: Any, *, session: str,
     acc = None
     l2_index = l1_index = 0
     l1_side_counts = Counter()
+    last_ts = None; bid_ts = ask_ts = None; invalid_before = 0; clock_inversions_total = 0
+
+    def _bbo_ts():
+        return min(bid_ts, ask_ts) if bid_ts is not None and ask_ts is not None else None
 
     def ensure_acc(ts_us):
-        nonlocal acc
+        nonlocal acc, last_ts, invalid_before, clock_inversions_total
+        inverted = last_ts is not None and ts_us < last_ts        # el orden es por source_row: el reloj no puede retroceder
         minute = int(ts_us // 60_000_000)
         if acc is None:
             acc = MinuteAccumulator(minute)
-        elif minute != acc.minute_id:
+        elif minute != acc.minute_id and not inverted:
             rows.append(_finalize_minute(acc, book, session=session, instrument=instrument,
                                          contract=contract, bid_tick=bid_tick, ask_tick=ask_tick,
-                                         bid_size=bid_size, ask_size=ask_size))
+                                         bid_size=bid_size, ask_size=ask_size, bbo_ts_us=_bbo_ts(),
+                                         invalid_before=invalid_before))
+            invalid_before = book.asks.invalid_events + book.bids.invalid_events
             acc = MinuteAccumulator(minute)
+        if inverted:
+            acc.clock_inversions += 1; clock_inversions_total += 1
+        else:
+            last_ts = ts_us
         return acc
 
     while l2_index < len(l2_data["source_row"]) or l1_index < len(l1_data["source_row"]):
@@ -353,16 +375,19 @@ def extract_minute_features(l2: Any, l1: Any, *, session: str,
                 if old_price is not None and old_size is not None:
                     increment = (-size if price_tick <= old_price else 0) + (old_size if price_tick >= old_price else 0)
                     current.ofi_sum += increment; current.ofi_abs_sum += abs(increment)
-                ask_tick, ask_size = price_tick, size
+                ask_tick, ask_size = price_tick, size; ask_ts = ts_us
             elif side == 1:
                 old_price, old_size = bid_tick, bid_size
                 if old_price is not None and old_size is not None:
                     increment = (size if price_tick >= old_price else 0) - (old_size if price_tick <= old_price else 0)
                     current.ofi_sum += increment; current.ofi_abs_sum += abs(increment)
-                bid_tick, bid_size = price_tick, size
+                bid_tick, bid_size = price_tick, size; bid_ts = ts_us
             elif side == 2:
                 sign = 0
-                if _valid_bbo(bid_tick, ask_tick):
+                fresh = _bbo_ts() is not None and ts_us - _bbo_ts() <= MAX_TRADE_BBO_AGE_US
+                if _valid_bbo(bid_tick, ask_tick) and not fresh:
+                    current.stale_bbo_trades += 1
+                if _valid_bbo(bid_tick, ask_tick) and fresh:
                     if price_tick >= ask_tick: sign = 1
                     elif price_tick <= bid_tick: sign = -1
                 if sign == 0 and previous_trade_tick is not None:
@@ -381,15 +406,22 @@ def extract_minute_features(l2: Any, l1: Any, *, session: str,
     if acc is not None:
         rows.append(_finalize_minute(acc, book, session=session, instrument=instrument,
                                      contract=contract, bid_tick=bid_tick, ask_tick=ask_tick,
-                                     bid_size=bid_size, ask_size=ask_size))
+                                     bid_size=bid_size, ask_size=ask_size, bbo_ts_us=_bbo_ts(),
+                                     invalid_before=invalid_before))
     features = pd.DataFrame(rows)
     if len(features):
         features = features.sort_values("minute_id", kind="mergesort").reset_index(drop=True)
-        returns = features["mid_tick_close"].astype(float).diff()
+        # auditoría 051 §2: ventanas por TIEMPO transcurrido; un retorno que cruza un hueco de minutos no existe
+        mid = features["mid_tick_close"].astype(float)
+        contiguous = features["minute_id"].diff() == 1
+        returns = mid.diff().where(contiguous)
         features["mid_return_ticks"] = returns
-        features["rv_ticks_15m"] = returns.pow(2).rolling(15, min_periods=5).sum().pow(0.5)
-        path = returns.abs().rolling(10, min_periods=10).sum()
-        net = (features["mid_tick_close"].astype(float) - features["mid_tick_close"].astype(float).shift(10)).abs()
+        tindex = pd.to_datetime(features["minute_id"].to_numpy(dtype=np.int64) * 60, unit="s")
+        r2 = pd.Series(returns.pow(2).to_numpy(), index=tindex)
+        features["rv_ticks_15m"] = r2.rolling("15min", min_periods=5).sum().pow(0.5).to_numpy()
+        span10 = features["minute_id"] - features["minute_id"].shift(10) == 10
+        path = returns.abs().rolling(10, min_periods=10).sum().where(span10)
+        net = (mid - mid.shift(10)).abs().where(span10)
         features["efficiency_ratio_10m"] = (net / path.replace(0, np.nan)).clip(0, 1)
         depth = features["depth_bid_top5"].astype(float) + features["depth_ask_top5"].astype(float)
         features["log_depth_top5"] = np.log1p(depth)
@@ -398,7 +430,10 @@ def extract_minute_features(l2: Any, l1: Any, *, session: str,
             features["l2_crossed_count_cumulative"]) == 0)
         features["feature_eligible"] = (features["book_ready"].fillna(False)
                                          & features[required].notna().all(axis=1)
-                                         & (features["l1_crossed_count"] == 0) & no_new_cross)
+                                         & (features["l1_crossed_count"] == 0) & no_new_cross
+                                         & (features["clock_inversions"] == 0)
+                                         & (features["book_invalid_events_minute"] == 0)
+                                         & features["bbo_age_s_close"].notna())
         if not (features["data_window_end_us"] <= features["feature_available_at_us"]).all():
             raise AssertionError("feature published before its source window closed")
     diagnostics = {
@@ -409,6 +444,9 @@ def extract_minute_features(l2: Any, l1: Any, *, session: str,
         "minute_rows": int(len(features)),
         "eligible_minutes": int(features["feature_eligible"].sum()) if len(features) else 0,
         "book_invalid_events": int(book.asks.invalid_events + book.bids.invalid_events),
+        "clock_inversions_interleaved": int(clock_inversions_total),
+        "stale_bbo_trades": int(features["stale_bbo_trades"].sum()) if len(features) else 0,
+        "stale_bbo_minutes": int(features["bbo_age_s_close"].isna().sum()) if len(features) else 0,
         "l2_crossed_events": int(book.crossed_events), "l2_locked_events": int(book.locked_events),
         "outcomes_computed": False,
     }
@@ -485,7 +523,9 @@ def fit_regime4_model(features, *, train_sessions, code_identity,
                       config=None, base_confirm_bars=3, base_min_posterior=0.45,
                       toxic_confirm_bars=2, toxic_release_bars=3, deseasonalize=False, seeds=None):
     config = config or HMM3Config(); train = _training_frame(features, train_sessions, config)
-    seasonal = fit_seasonal_profile(train, list(config.feature_names)) if deseasonalize else None
+    # auditoría 051 §3: el overlay tóxico también se desestacionaliza (si no, «toxic» puede ser sólo la hora)
+    seasonal_names = list(dict.fromkeys(list(config.feature_names) + list(TOXIC_FEATURES)))
+    seasonal = fit_seasonal_profile(train, seasonal_names) if deseasonalize else None
     train_hmm = apply_seasonal(train, seasonal) if seasonal else train
     seeds_report = None
     if seeds:
@@ -504,7 +544,8 @@ def fit_regime4_model(features, *, train_sessions, code_identity,
         "state_groups": STATE_GROUP, "train_sessions": [str(v) for v in train_sessions],
         "training_rows": int(len(train)),
         "toxicity_overlay": {"name": "l2_flow_toxicity_overlay_not_vpin",
-            "features": list(TOXIC_FEATURES), "calibration": _robust_calibration(train),
+            "features": list(TOXIC_FEATURES), "calibration": _robust_calibration(train_hmm),
+            "deseasonalized": bool(seasonal),
             "entry_confirm_bars": int(toxic_confirm_bars),
             "release_confirm_bars": int(toxic_release_bars)},
         "sticky": {"base_confirm_bars": int(base_confirm_bars),
@@ -556,7 +597,8 @@ def label_regime4(features, model, *, evaluation_sessions=None):
     checkpoint = model["base_hmm_checkpoint"]; names = list(checkpoint["feature_names"])
     hmm_input = apply_seasonal(eligible, model["seasonal_profile"]) if model.get("seasonal_profile") else eligible
     posterior = forward_filter(hmm_input[names].to_numpy(dtype=float), segment_ids, checkpoint)
-    scores = _toxicity_score(eligible, model["toxicity_overlay"]["calibration"])
+    scores = _toxicity_score(hmm_input if model["toxicity_overlay"].get("deseasonalized") else eligible,
+                             model["toxicity_overlay"]["calibration"])
     entry = float(model["toxicity_overlay"]["calibration"]["entry_threshold_q90"])
     release = float(model["toxicity_overlay"]["calibration"]["release_threshold_q75"])
     base_confirm = int(model["sticky"]["base_confirm_bars"]); pmin = float(model["sticky"]["base_min_posterior"])
