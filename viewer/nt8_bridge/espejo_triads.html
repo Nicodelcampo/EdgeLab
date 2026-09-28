@@ -42,11 +42,11 @@
 <div class="help">
   Tocá los gráficos en orden: primero el que tiene la vuelta <b>más parecida</b> a la ida (1), después el 2 y el 3.
   Cada gráfico muestra la ida A→B (líneas <span style="color:var(--a)">A</span> y <span style="color:var(--b)">B</span>) y la vuelta
-  <b>hasta el 50 %</b>; lo que pasó después está oculto a propósito. Juzgá sólo la forma y la velocidad de la vuelta frente a la ida.
+  <b>hasta el 75 %</b>; lo que pasó después está oculto a propósito. Juzgá sólo la forma y la velocidad de la vuelta frente a la ida.
 </div>
 <script>
 (async function () {
-  const NAME = "espejo_triads_ES_202602";
+  const NAME = new URLSearchParams(location.search).get("set") || "espejo_triads_ES_2026Q1_100t";
   const D = await (await fetch("bundles/" + NAME + ".json", {cache: "no-store"})).json();
   let L = {schema: "EDGELAB_ESPEJO_TRIAD_JUDGMENTS_V1", source: NAME, judgments: {}};
   try { const r = await fetch("labels/" + NAME + ".json", {cache: "no-store"}); if (r.ok) L = await r.json(); } catch (e) {}
@@ -77,7 +77,7 @@
     D.triads[k].forEach((itemId, i) => {
       const it = D.items[itemId];
       const card = document.createElement("div"); card.className = "card";
-      card.innerHTML = '<span class="badge" style="display:none"></span><span class="hint">vuelta hasta el 50 %</span><div class="chart"></div>';
+      card.innerHTML = '<span class="badge" style="display:none"></span><span class="hint">vuelta hasta el 75 %</span><div class="chart"></div>';
       row.appendChild(card);
       const ch = LightweightCharts.createChart(card.querySelector(".chart"), {
         layout: {background: {color: "#fff"}, textColor: "#6b7280"}, grid: {vertLines: {color: "#f1f5f9"}, horzLines: {color: "#f1f5f9"}},
