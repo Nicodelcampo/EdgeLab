@@ -58,6 +58,13 @@ def _require_columns(table: Any, required: Sequence[str], label: str) -> None:
         raise ValueError(f"{label}: missing columns {missing}")
 
 
+# 28/09 (NQ 20260729): el MBP10 de NT8 tiene 10 niveles pero la foto de un archivo puede traer 9. Desde ahí, NT8 opera
+# sobre un nivel que nuestro libro no conoce y todos los índices profundos quedaban corridos. Excepción ACOTADA a la cola:
+# en niveles >= TAIL_LEVEL un hueco de a lo sumo 1 nivel se rellena con un nivel desconocido (precio None) para mantener
+# los índices alineados, y borrar un nivel que no tenemos ahí es no-op. Fuera de la cola todo sigue fallando cerrado.
+TAIL_LEVEL = 8
+
+
 @dataclass
 class BookSide:
     is_bid: bool
@@ -70,7 +77,7 @@ class BookSide:
         self.valid = False
 
     def _ordered(self) -> bool:
-        prices = [value[0] for value in self.levels]
+        prices = [value[0] for value in self.levels if value[0] is not None]
         if self.is_bid:
             return all(a > b for a, b in zip(prices, prices[1:]))
         return all(a < b for a, b in zip(prices, prices[1:]))
@@ -87,8 +94,13 @@ class BookSide:
             "replenished_size": 0, "depleted_size": 0,
         }
         invalid = False
+        tail_gap = level >= TAIL_LEVEL and level - len(self.levels) <= 1
         if operation == 0:
-            if level > len(self.levels):
+            if level > len(self.levels) and tail_gap:
+                self.levels.extend([(None, 0)] * (level - len(self.levels)))
+                self.levels.append((price_tick, size))
+                output["added_size"] = size
+            elif level > len(self.levels):
                 invalid = True
             else:
                 self.levels.insert(level, (price_tick, size))
@@ -102,7 +114,8 @@ class BookSide:
                         output["replenished_size"] = delta
                     elif delta < 0:
                         output["depleted_size"] = -delta
-            elif bootstrap and level == len(self.levels):
+            elif (bootstrap and level == len(self.levels)) or tail_gap:
+                self.levels.extend([(None, 0)] * (level - len(self.levels)))
                 self.levels.append((price_tick, size))
                 output["added_size"] = size
             else:
@@ -112,6 +125,8 @@ class BookSide:
                 _, removed = self.levels.pop(level)
                 output["removed_size"] = removed
                 output["depleted_size"] = removed
+            elif level >= TAIL_LEVEL:
+                pass                                     # nivel de la cola que no tenemos: nada que borrar
             else:
                 invalid = True
         if not invalid and not self._ordered():
@@ -142,7 +157,9 @@ class L2Book:
     def ready(self) -> bool:
         ready = (self.asks.valid and self.bids.valid
                  and len(self.asks.levels) >= self.min_ready_levels
-                 and len(self.bids.levels) >= self.min_ready_levels)
+                 and len(self.bids.levels) >= self.min_ready_levels
+                 and all(p is not None for p, _ in self.asks.levels[:5])
+                 and all(p is not None for p, _ in self.bids.levels[:5]))
         if ready:
             self.ever_ready = True
         return ready

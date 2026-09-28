@@ -47,3 +47,16 @@ def test_resync_rebuilds_book_after_reset():
     assert diag["book_resyncs"] == 2
     last = feats.sort_values("minute_id").iloc[-1]
     assert bool(last["book_ready"])
+
+
+def test_tail_gap_keeps_indices_aligned_and_deep_gaps_still_fail():
+    b = L2Book()
+    for i in range(9):                         # foto de 9 niveles en un libro de 10
+        b.apply(0, 0, i, 101 + i, 1); b.apply(1, 0, i, 100 - i, 1)
+    b.apply(0, 2, 0, 101, 0)                   # sale el mejor ask (quedan 8)...
+    b.apply(0, 0, 9, 115, 1)                   # ...y NT8 inserta su 10.º nivel: hueco de 1 en la cola
+    assert b.asks.invalid_events == 0 and b.asks.levels[8] == (None, 0) and b.asks.levels[9] == (115, 1)
+    b.apply(0, 1, 8, 111, 2)                   # llega el nivel desconocido: se completa
+    assert b.asks.levels[8] == (111, 2) and b.ready
+    bad = b.apply(1, 1, 7 + 20, 50, 1)         # salto grande fuera de la regla: sigue fallando cerrado
+    assert bad["valid"] is False
