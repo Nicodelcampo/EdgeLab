@@ -227,6 +227,10 @@ def fit_hmm3(matrix: np.ndarray, sequence_ids: Sequence[object], *,
             break
         previous = likelihood
 
+    # auditoría 051 §4: la verosimilitud del bucle es la de los parámetros ANTERIORES a la última actualización; se
+    # recalcula con los parámetros finales que efectivamente se guardan
+    emission = _log_emission(standardized, means, variances)
+    final_likelihood = float(sum(_forward_backward(emission[sq], start, transition)[0] for sq in sequences))
     order = np.argsort(means[:, rv_index])
     start = start[order]
     transition = transition[np.ix_(order, order)]
