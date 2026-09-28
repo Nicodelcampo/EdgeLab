@@ -432,3 +432,7 @@ aquellos números compara dos poblaciones distintas.
   ajuste): 99 ✓ / 22 ✗ = **82 % de acuerdo**. Los ✗ tienen menos picos (mediana 3 vs 4) y duran menos (110 vs 165 velas);
   salida y deriva no distinguen. Variante estricta **IPC-N4** (≥ 4 picos): 90 % (70 ✓ / 8 ✗), pierde 29 ✓.
   Definición congelada: v2 como principal, N4 como variante. **NO MEDIDO:** ningún desenlace.
+- **MEDIDO 28/09 — IPC-NIVEL-MES descubrimiento (MES 25t, 171 sesiones, 3.381 zonas, árbol limpio):** 1/8 sobrevive y
+  va **contra el imán**: el techo v2 se barre 6,2 pp menos que un pivote suelto emparejado (IC 90 % [−8,8; −3,5]).
+  Pivotes sueltos se barren ~5 pp más que el azar; las zonas no. Candidato a confirmación abr–jun (Lucid) en ese sentido.
+  `RESULTADO_IPC_NIVEL_MES_DESCUBRIMIENTO_20260928.md`.
