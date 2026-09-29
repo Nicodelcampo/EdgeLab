@@ -499,3 +499,12 @@ aquellos números compara dos poblaciones distintas.
 - **MEDIDO 29/09 — TOXIC-ES-1 (capa toxic de ES, target-free):** **FAIL por deriva** (13,3 % → 8,4 % entre mitades de
   evaluación, IC excluye 0; semana 37 al 4,5 %). Persistencia, hora, concentración y nivel vs entrenamiento: PASS.
   La capa no se usa. `RESULTADO_TOXIC_ES_1_20260929.md`. **NO MEDIDO:** si la caída es mercado o deriva del score.
+
+
+## Anexo 29/09 — revisión ES/NQ L2 y nueva idea espejo × IPC (sin nuevos outcomes)
+
+- **MEDIDO target-free:** auditoría de 1.509 intervalos ES; 48 sesiones, 65.134 minutos; evaluación 32 sesiones y 43.238 minutos, reconciliados contra gate report. Toxic: 402 rachas y 4.666 minutos en evaluación. Sin solapamientos; 7 huecos internos conservados.
+- **AUDITADO en código:** la compuerta de semillas compara argmax HMM base, antes de sticky/overlay. Toxic es un overlay de estrés independiente de la semilla HMM. Su determinismo no prueba utilidad ni estabilidad temporal. El STOP ES cuatro climas NO se levanta; calm no equivale a no-toxic.
+- **NO MEDIDO:** validación temporal del overlay aislado, costo/riesgo incremental, nuevos outcomes ES/NQ, espejo × IPC y veto imbalance. NQ 0/12 max-T conserva alcance de cruce25/entrada al cierre/control del mismo clima.
+- **DISEÑO PARA NICO:** `INVESTIGACION_ES_NQ_L2_ESPEJO_IPC_20260929.md`; revisión anotable de la captura (sin precios/timestamps, no tanda ciega certificada) en plantilla `viewer/nt8_bridge/reviews/espejo_ipc_capture_review.html`. No sustituye al visor único; IPC antes de A, entradas parciales online, imbalance por definir.
+- Evidencia reproducible: `artifacts/es_nq_ipc_review_20260929/evidence.json`, herramienta `tools/diagnose_es_context_intervals_20260929.py`. Holdout intacto.
