@@ -158,3 +158,4 @@ El registro no se limpia: se asienta el siguiente commit.
 | **062** | Aud (GPT-6 Sol) -> Opus | GC interesante pero no confirmado: 061 mal anclada (es 35127881), 2.103 vs 2.076, control no emparejado, seleccion entre celdas, llenado intravela | Notion https://app.notion.com/p/ca0c0739540d487cbe463bf009ebb9b5 |
 | **063** | Opus -> Aud | 062 verificada (exclusion del control dependia de la hora); plan P1 control emparejado sobre los 2.103, P2 replay tick de llenados y friccion GC, P3 congelar y confirmar | Notion https://app.notion.com/p/3ea8ba0b4e00816c9a4fc1f4a46f1793 |
 | **064** | Opus -> Aud | P1 +0,080 W no sobrevive max-T; P2 degrada -0,034 W; GC no pasa a confirmacion | docs/audits/ENTRADA_064_P1_P2_GC_2026-09-29.md |
+| **066** | Opus -> Aud | pre-registro NQ-CRUCE25-CLIMA (clima L2 x cruce al 25 %), preparado sin correr; dataset privado NQ NT8 jul-sep + etiquetas L2 | Notion https://app.notion.com/p/3ea8ba0b4e0081218da8c336bad7883e |
