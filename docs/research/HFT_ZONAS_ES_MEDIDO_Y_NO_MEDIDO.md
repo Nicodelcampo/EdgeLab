@@ -496,3 +496,6 @@ aquellos números compara dos poblaciones distintas.
 - **MEDIDO:** sandbox, NQ NT8 v1 Q3, 56 sesiones catalogadas, reglas congeladas sin L2. IB→VWAP: 5 trades, +0,7211 R después de 2 ticks, antes de comisión: **INCONCLUSA por muestra**. PMH/PML: 36 trades, −0,0687 R; media observada negativa, no significancia demostrada.
 - **NO MEDIDO:** inferencia max-T conjunta (gate previo exige ≥30 trades en ambas y falla IB), fills/latencia/comisiones reales, confirmación, otras reglas y filtros. No decir “0/2 sobreviven”: no hubo test familiar calculado.
 - Acta: `RESULTADO_IB_VWAP_PMH_PML_NQ_20260929.md`; código/preflight previo `01dd9a5…`, 41 ejecuciones auditadas independientemente contra raw ticks. Holdout intacto.
+- **MEDIDO 29/09 — TOXIC-ES-1 (capa toxic de ES, target-free):** **FAIL por deriva** (13,3 % → 8,4 % entre mitades de
+  evaluación, IC excluye 0; semana 37 al 4,5 %). Persistencia, hora, concentración y nivel vs entrenamiento: PASS.
+  La capa no se usa. `RESULTADO_TOXIC_ES_1_20260929.md`. **NO MEDIDO:** si la caída es mercado o deriva del score.
