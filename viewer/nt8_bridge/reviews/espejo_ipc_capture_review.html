@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EdgeLab · revisión espejo × IPC</title>
+<style>
+:root{color-scheme:light dark;--bg:#fff;--surface:#f9f8f7;--text:#2c2c2b;--muted:#625f5a;--border:#dedcd8;--blue:#1769aa;--soft:#e5f2fc;--warn:#805016}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,sans-serif}
+main{max-width:1120px;margin:auto;padding:24px}h1{font-size:26px;line-height:1.2;margin:0 0 8px}h2{font-size:18px;margin:0 0 12px}p{margin:8px 0 16px}.muted{color:var(--muted);font-size:14px}
+.tag{font-size:14px;font-weight:650;color:var(--warn)}.grid{display:grid;grid-template-columns:minmax(300px,1fr) minmax(320px,1fr);gap:24px}
+.pane{background:var(--surface);padding:16px;border:1px solid var(--border);border-radius:8px}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+button,select,input,textarea{font:inherit;color:inherit;background:var(--bg);border:1px solid var(--border);border-radius:6px}
+button{min-height:44px;padding:8px 12px;cursor:pointer}button[aria-pressed=true],.primary{background:var(--blue);color:white;border-color:var(--blue)}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #d5803b;outline-offset:2px}
+label{display:block;font-size:14px;font-weight:600;margin:12px 0 6px}select,input,textarea{width:100%;min-height:44px;padding:8px}textarea{min-height:78px;resize:vertical}
+.stage{position:relative;width:100%;max-width:400px;margin:0 auto;background:#fff;cursor:crosshair;aspect-ratio:514/720;overflow:hidden}
+.stage img{width:100%;height:100%;display:block;object-fit:fill}.mark{position:absolute;width:16px;height:16px;border:3px solid white;box-shadow:0 0 0 2px var(--blue);background:var(--blue);border-radius:50%;transform:translate(-50%,-50%);pointer-events:none}
+.peak{background:#855414;box-shadow:0 0 0 2px #855414;width:12px;height:12px}.entry{background:#923d76;box-shadow:0 0 0 2px #923d76}.zone{position:absolute;border:2px dashed #855414;background:rgba(234,194,107,.16);pointer-events:none}
+.coords{font-size:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px}.list{font-size:14px;margin-top:12px}
+details{margin-top:16px}summary{cursor:pointer;font-weight:600;min-height:44px;padding:8px 0}
+#json{font:13px/1.5 ui-monospace,monospace;min-height:220px}footer{margin-top:24px;border-top:1px solid var(--border);padding-top:16px}
+@media(max-width:720px){main{padding:16px}.grid{grid-template-columns:1fr}.stage{max-width:340px}h1{font-size:23px}}
+@media(prefers-color-scheme:dark){:root{--bg:#191919;--surface:#202020;--text:#fff;--muted:#c0bcb5;--border:#55534f;--blue:#256fae;--soft:#263b50;--warn:#edba83}}
+</style></head><body><main>
+<div class="tag">REVISIÓN DE DEFINICIÓN · SIN BACKTEST</div>
+<h1>¿Qué espejo y qué picos cuentan?</h1>
+<p class="muted">Tu captura, recortada a la izquierda del desenlace. Los marcadores iniciales son una interpretación para corregir, no detecciones certificadas. No hay activo, fechas ni precios identificables.</p>
+<div class="grid">
+<section class="pane"><h2>1. Señalá la geometría</h2>
+<div class="toolbar" role="group" aria-label="Marcador que se modifica">
+<button data-tool="A" aria-pressed="true">A · inicio</button><button data-tool="B" aria-pressed="false">B · extremo</button>
+<button data-tool="E" aria-pressed="false">E · entrada</button><button data-tool="pico" aria-pressed="false">Añadir pico</button>
+</div>
+<div class="stage" id="stage" role="img" aria-label="Captura suministrada: impulso ascendente desde A, vuelta desde B, tres marcas de picos anteriores debajo de A. Marcadores corregibles con los controles.">
+<img src="__IMAGE_DATA__" alt="Recorte de la captura original de Nico, sin generar velas ni precios nuevos">
+<div class="zone" id="zone"></div><div id="marks"></div>
+</div>
+<p class="muted">Elegí un marcador y tocá la imagen. Alternativa de teclado: coordenadas normalizadas de imagen, no ticks.</p>
+<div class="coords"><div><label for="mx">Posición X (0–100)</label><input id="mx" type="number" min="0" max="100" step=".1"></div>
+<div><label for="my">Posición Y (0–100)</label><input id="my" type="number" min="0" max="100" step=".1"></div></div>
+<div class="toolbar" style="margin-top:12px"><button id="apply">Aplicar posición</button><button id="undo">Quitar último pico</button><button id="reset">Restablecer</button></div>
+<div id="readout" class="list" aria-live="polite"></div>
+</section>
+<section class="pane"><h2>2. Confirmá las reglas, no el resultado</h2>
+<label for="family">Familia IPC</label><select id="family"><option value="pendiente">Pendiente de elegir</option value="picos">Acumulación de picos / banda</option><option value="nivel">IPC-NIVEL / visitas con alejamiento</option><option value="ambas">Ambas, como hipótesis separadas</option></select>
+<label for="before">“Justo antes de A” significa…</label><select id="before"><option value="pendiente">Pendiente de confirmar</option><option value="ambos">Picos anteriores en tiempo y detrás de A en precio</option><option value="temporal">Sólo anteriores en tiempo</option><option value="precio">Ubicación en precio; revisar disponibilidad temporal</option></select>
+<label for="entry">Momento de entrada</label><select id="entry"><option value="completo">Al completarse el retorno a A</option><option value="parcial">Durante la vuelta, antes de alcanzar A</option><option value="ambas">Comparar ambas, sin elegir por resultado</option></select>
+<label for="completion">¿Qué confirma el espejo?</label><select id="completion"><option value="pendiente">Pendiente</option><option value="mecha">Toque / mecha</option><option value="cierre">Cierre de vela</option><option value="otro">Otra regla, describir abajo</option></select>
+<label for="imbalance">“Imbalance justifica no entrar” se refiere a…</label><select id="imbalance"><option value="pendiente">Pendiente: no asumir equivalencia</option><option value="zona_precio">Zona de precio tipo LUX / OG / VI</option><option value="libro">Desequilibrio L2, QI u OFI</option><option value="otro">Otro, describir abajo</option></select>
+<label for="rules">Qué picos cuentan / distancia a A / entrada parcial / veto</label>
+<textarea id="rules" placeholder="Ej.: excluir picos dentro de una misma visita; zona ya confirmada antes de A; explicar qué imbalance y dónde…"></textarea>
+<label for="judgement">Juicio sobre esta interpretación</label><select id="judgement"><option value="pendiente">Aún no confirmado</option><option value="corregir">Corregir antes de una tanda real</option><option value="geometria_aprobada">Geometría entendida; falta congelar parámetros</option></select>
+<p class="muted">La captura no prueba que IPC existiera causalmente ni que el trade fuera operable. Elegir entrada parcial obliga a incluir también intentos que nunca completan el espejo.</p>
+<button class="primary" id="export">Generar juicio JSON</button><button id="download" hidden>Descargar juicio</button>
+<details id="output"><summary>Juicio para copiar o enviar</summary><textarea id="json" readonly aria-label="Juicio JSON exportable"></textarea></details>
+</section></div>
+<footer><details><summary>Qué estamos poniendo a prueba</summary>
+<p>IPC presente podría aumentar la probabilidad de completar el recorrido o mejorar la economía. Su ausencia no se considera fracaso automático. Hay que comparar IPC sí/no e imbalance sí/no, incluyendo todos los intentos.</p>
+<p>ES: los cuatro climas siguen en STOP. Se propone investigar la capa toxic por separado. NQ: el nulo del cruce al 25 % no descarta otros usos, pero no se elige toxic por el resultado exploratorio.</p>
+<p class="muted">Este archivo es una ficha de revisión de la captura, no un segundo motor del visor. Próximo paso: tanda real con barras físicas cortadas en cada decisión, en el visor canónico de EdgeLab. Sin P&amp;L ni datos de holdout.</p>
+</details></footer>
+</main><script>
+(() => {
+ const $=id=>document.getElementById(id);
+ const initial={A:{x:290/514*100,y:573/720*100},B:{x:450/514*100,y:63/720*100},E:{x:503/514*100,y:573/720*100},
+  peaks:[{x:99/514*100,y:674/720*100},{x:175/514*100,y:658/720*100},{x:211/514*100,y:641/720*100}]};
+ let state=JSON.parse(JSON.stringify(initial)),tool='A',url=null;
+ const fmt=n=>(Math.round(n*10)/10).toFixed(1);
+ function render(){
+  $('marks').replaceChildren();
+  [['A',state.A],['B',state.B],['E',state.E],...state.peaks.map((p,i)=>['P'+(i+1),p])].forEach(([key,p])=>{
+    const mark=document.createElement('div');mark.className='mark'+(key[0]==='P'?' peak':key==='E'?' entry':'');
+    mark.style.left=p.x+'%';mark.style.top=p.y+'%';mark.title=key;mark.setAttribute('aria-label',key);$('marks').append(mark);
+  });
+  const z=$('zone');z.hidden=!state.peaks.length;
+  if(state.peaks.length){const xs=state.peaks.map(p=>p.x),ys=state.peaks.map(p=>p.y);
+    const lo=Math.max(0,Math.min(...xs)-3),top=Math.max(0,Math.min(...ys)-3),right=Math.min(100,Math.max(...xs)+3),bottom=Math.min(100,Math.max(...ys)+3);
+    z.style.left=lo+'%';z.style.top=top+'%';z.style.width=(right-lo)+'%';z.style.height=(bottom-top)+'%';}
+  const p=state[tool]||{x:50,y:85};$('mx').value=fmt(p.x);$('my').value=fmt(p.y);
+  $('readout').textContent='A: '+fmt(state.A.x)+', '+fmt(state.A.y)+' · B: '+fmt(state.B.x)+', '+fmt(state.B.y)+' · E: '+fmt(state.E.x)+', '+fmt(state.E.y)+' · Picos marcados: '+state.peaks.length;
+  document.querySelectorAll('[data-tool]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.tool===tool)));
+ }
+ function place(x,y){if(!Number.isFinite(x)||!Number.isFinite(y))return;const p={x:Math.max(0,Math.min(100,x)),y:Math.max(0,Math.min(100,y))};if(tool==='pico')state.peaks.push(p);else state[tool]=p;render();}
+ document.querySelectorAll('[data-tool]').forEach(b=>b.addEventListener('click',()=>{tool=b.dataset.tool;render()}));
+ $('stage').addEventListener('click',ev=>{const r=$('stage').getBoundingClientRect();place((ev.clientX-r.left)/r.width*100,(ev.clientY-r.top)/r.height*100)});
+ $('apply').addEventListener('click',()=>place(Number($('mx').value),Number($('my').value)));
+ $('undo').addEventListener('click',()=>{state.peaks.pop();render()});
+ $('reset').addEventListener('click',()=>{state=JSON.parse(JSON.stringify(initial));render()});
+ $('export').addEventListener('click',()=>{
+   const fields={};['family','before','entry','completion','imbalance','rules','judgement'].forEach(id=>fields[id]=$(id).value);
+   const payload={schema:'edgelab.human_review.espejo_ipc_capture/1',source:'user_capture_5bf9db84-2e3b-4569-af5d-5c249113acb6',
+     scope:'IMAGE_GEOMETRY_ONLY_NOT_CAUSAL_DATA_OR_SPEC_CONFIRMATION',created_at:new Date().toISOString(),
+     geometry:state,coordinate_units:'percent_of_cropped_image',choices:fields,outcomes_computed:false,
+     pending:['real_blind_batch','causal_zone_lifecycle','frozen_numeric_parameters','signal_cost_protocol','human_manifest_approval']};
+   $('json').value=JSON.stringify(payload,null,2);$('output').open=true;$('download').hidden=false;
+   if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(new Blob([$('json').value],{type:'application/json'}));
+ });
+ $('download').addEventListener('click',()=>{if(!url)return;const a=document.createElement('a');a.href=url;a.download='juicio_espejo_ipc.json';a.click()});
+ render();
+})();
+</script></body></html>
