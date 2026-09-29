@@ -2894,10 +2894,13 @@
   // (todo lo no marcado en una sesión revisada es negativo para el aprendizaje). Se guarda por activo en
   // labels/<activo>.json (POST al servidor del visor) y en el navegador como respaldo.
   var lab = { mode: null, data: null, drag: null, zz: null, aid: null, dirty: false };
-  function labKey() { return "edgelab_labels_" + (state.currentAssetId || "x"); }
+  // ?det=<variante>: cada familia de detector tiene su propio archivo de juicios (labels/<activo>__<variante>.json)
+  function labDetVar() { var v = new URLSearchParams(window.location.search).get("det"); return v && /^[A-Za-z0-9_\-]{1,40}$/.test(v) ? v : null; }
+  function labKey() { return "edgelab_labels_" + (state.currentAssetId || "x") + (labDetVar() ? "__" + labDetVar() : ""); }
   function labEmpty() { return { schema: "EDGELAB_LABELS_V1", asset: state.currentAssetId, tick: (state.data && state.data.meta && state.data.meta.tick_size) || null,
                                  bar_key: state.activeBarKey || null, ranges: [], zigzags: [], reviewed: [] }; }
   function labLoad(aid) {
+    if (labDetVar()) aid = aid + "__" + labDetVar();
     lab.aid = aid; lab.data = null; lab.mode = null; lab.zz = null; labStatus();
     fetch("labels/" + aid + ".json?v=" + Date.now(), { cache: "reload" }).then(function (r) { if (!r.ok) throw 0; return r.json(); })
       .then(function (d) { if (lab.aid === aid) { lab.data = d; labStatus(); requestDraw(); } })
@@ -2983,7 +2986,9 @@
   var peaksDet = { on: false, data: null };
   function peaksDetLoad(aid) {
     peaksDet.data = null;
-    fetch("bundles/peaks_det/" + aid + ".json", { cache: "reload" }).then(function (r) { if (!r.ok) throw 0; return r.json(); })
+    var detVar = new URLSearchParams(window.location.search).get("det");   // ?det=<variante> → peaks_det/<activo>__<variante>.json
+    if (detVar && !/^[A-Za-z0-9_\-]{1,40}$/.test(detVar)) detVar = null;
+    fetch("bundles/peaks_det/" + aid + (detVar ? "__" + detVar : "") + ".json", { cache: "reload" }).then(function (r) { if (!r.ok) throw 0; return r.json(); })
       .then(function (d) { peaksDet.data = d; var el = document.getElementById("lbl-det-status");
         if (el) { var pp = d.parametros;
           el.textContent = (pp && pp.cobertura != null) ? "Modelo v0: " + d.zonas.length + " zonas (" + d.zonas_por_dia + "/día) · en lo que marcaste: cobertura " + Math.round(pp.cobertura * 100) + "% · precisión " + Math.round(pp.precision * 100) + "% (con el supuesto de ventana revisada)"
