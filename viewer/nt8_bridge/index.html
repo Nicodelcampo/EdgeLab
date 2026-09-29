@@ -6206,6 +6206,7 @@
     var na = document.getElementById("ind-na"); if (na && cur) na.hidden = cur.applies(state.data);
   }
   function indPersist() {
+    if (new URLSearchParams(window.location.search).get("solo") === "det") return;   // modo sólo-detecciones: no pisa la config global
     var on = {}; INDICATORS.forEach(function (ind) { on[ind.id] = ind.isOn(); });
     try { localStorage.setItem("edgelab_indicators_v2", JSON.stringify(on)); } catch (e) {}
   }
@@ -6214,6 +6215,12 @@
     var on = null;
     try { on = JSON.parse(localStorage.getItem("edgelab_indicators_v2") || "null"); } catch (e) { on = null; }
     if (on) INDICATORS.forEach(function (ind) { if (on[ind.id] !== undefined && ind.isOn() !== on[ind.id]) ind.set(on[ind.id]); });
+    // ?solo=det: sólo la capa de detecciones (bundles/peaks_det/<activo>.json), sin ningún otro indicador.
+    // No se persiste: la configuración global de indicadores queda como estaba.
+    if (new URLSearchParams(window.location.search).get("solo") === "det") {
+      INDICATORS.forEach(function (ind) { if (ind.isOn()) ind.set(false); });
+      peaksDet.on = true; var cDet = document.getElementById("chk-det"); if (cDet) cDet.checked = true;
+    }
     requestDraw();
   }
   document.getElementById("btn-ind-add").addEventListener("click", function () {
