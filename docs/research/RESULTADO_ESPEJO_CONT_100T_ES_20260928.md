@@ -23,3 +23,10 @@ Artefactos `artifacts/espejo/cont100t_kaggle/ES/out/`. 213 sesiones de descubrim
   selección adversa: se mide aparte en ESPEJO-REV, sin darla por buena.
 - Filtros (VWAP, EMA 20/50/200, S2v2, «no lista», ineficiente): ninguna combinación sobrevive. Los R brutos positivos
   (35/1.035) están en celdas chicas (n 69–385) y no pasan la corrección.
+
+## Control empírico (28/09, Kaggle `edgelab-nullctl-es-cont-n3-20260928`, 4.000 trades, nivel 3)
+- **Exceso empírico (espejo − mismo trade al azar) ≈ 0 en las 15 celdas** (−0,021 a +0,004, IC que cruzan 0): la
+  continuación en ES no aporta nada contra el momento al azar. Cierre confirmado.
+- **Calibración del nulo en ES:** ≈ 0 con TP chicos, pero **muy positiva con TP amplios** (+0,042 en 1,5/1; +0,064 en 2/0,5;
+  **+0,108 en 2/1**). En NQ el sesgo en TP amplios era −2 % y en GC +2,5 %: **el sesgo del nulo cambia de signo y tamaño
+  según el instrumento.** El nulo simulado no sirve como referencia en TP amplios; sólo el control empírico.

@@ -477,3 +477,5 @@ aquellos números compara dos poblaciones distintas.
 - **MEDIDO 28/09 — Control empírico NQ continuación:** el nulo simulado está sesgado +1,2 % de W en TP 0,25 (también en velas
   al azar) y −2 % en TP amplios. Las celdas «sobrevivientes» de TP 0,25 en NQ/YM/MYM/MNQ son mayormente sesgo del nulo.
   El exceso se lee contra el control empírico.
+- **MEDIDO 28/09 — Control empírico ES continuación:** exceso empírico ≈ 0 en todas las celdas (cierre confirmado); el nulo
+  simulado sesgado hasta +0,108 W en TP 2/SL 1 en ES (−0,02 en NQ, +0,025 en GC): el sesgo depende del instrumento.
