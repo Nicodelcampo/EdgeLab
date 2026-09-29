@@ -474,3 +474,6 @@ aquellos números compara dos poblaciones distintas.
   dos muestras sin sesiones en común. Opuesto a ES; nulo en GC y YM.
 - **MEDIDO 28/09 — Control empírico GC reversión:** TP 2 W / SL 1 W, R espejo +0,023 vs R azar −0,055 → exceso empírico
   **+0,078 W [+0,042; +0,119]**. El candidato sobrevive; el nulo sobreestimaba (+0,101). Siguiente: fricción GC y confirmación.
+- **MEDIDO 28/09 — Control empírico NQ continuación:** el nulo simulado está sesgado +1,2 % de W en TP 0,25 (también en velas
+  al azar) y −2 % en TP amplios. Las celdas «sobrevivientes» de TP 0,25 en NQ/YM/MYM/MNQ son mayormente sesgo del nulo.
+  El exceso se lee contra el control empírico.
