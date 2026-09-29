@@ -78,6 +78,46 @@ def detectar(cd, f):
     return Z
 
 
+TOQUE_TICKS = 1      # visual: la vela «toca» el nivel si llega a 1 tick de él (límite apenas antes del pico anterior)
+
+
+def candidatas(cd, f, zonas):
+    """Opción 3 (Nico, 29/09): con 2 picos propios confirmados la serie es CANDIDATA; nivel = último pico; ENTRADA = primera
+    vela posterior que llega a TOQUE_TICKS del nivel antes de max_gap velas. Causal. No mide resultados."""
+    C = []
+    det_by = {(z["kind"], z["picos"][0][0]) for z in zonas}
+    n = len(cd["t"])
+    for kind in (1, -1):
+        rows, member = R.chains(cd["h"], cd["l"], cd["t"], TICK, f["w"], f["max_gap"], f["max_step"], f["min_pull"], 2, kind)
+        src = cd["h"] if kind == 1 else cd["l"]
+        xx = cd["h"] if kind == 1 else -cd["l"]
+        piv = R.pivots(xx, f["w"])
+        by = {}
+        for q in np.flatnonzero(member >= 0):
+            by.setdefault(int(member[q]), []).append(int(q))
+        for zi, r in enumerate(rows):
+            own = by.get(zi, [])
+            if len(own) < 2:
+                continue
+            ci = own[1] + f["w"]
+            if ci >= n:
+                continue
+            pk = R.backfill(own[:2], xx, piv, cd["t"], TICK, f["max_gap"], f["max_step"])
+            if pk[-1] - pk[0] > f["dmax"]:
+                continue
+            lvl = float(src[own[1]]); ent = None
+            for j in range(ci + 1, min(own[1] + f["max_gap"], n - 1) + 1):
+                if cd["t"][j] - cd["t"][j - 1] > 1800:
+                    break
+                if (kind == 1 and cd["h"][j] >= lvl - TOQUE_TICKS * TICK) or (kind == -1 and cd["l"][j] <= lvl + TOQUE_TICKS * TICK):
+                    ent = j; break
+            C.append(dict(kind="H" if kind == 1 else "L", cand_i=int(ci), cand_t=float(cd["t"][ci]), nivel=lvl,
+                          picos=[[int(q), float(cd["t"][q]), float(src[q])] for q in pk],
+                          entrada_i=None if ent is None else int(ent), entrada_t=None if ent is None else float(cd["t"][ent]),
+                          se_confirmo=("H" if kind == 1 else "L", int(pk[0])) in det_by or ("H" if kind == 1 else "L", int(own[0])) in det_by))
+    return C
+
+
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--asset", required=True); a = ap.parse_args()
     b = json.loads((VIEW / "bundles" / f"{a.asset}.json").read_text(encoding="utf-8"))
@@ -86,12 +126,13 @@ def main():
     days = len(set((cd["t"] // 86400).astype(int)))
     for fam, f in FAMILIAS.items():
         Z = detectar(cd, f)
+        CA = candidatas(cd, f, Z)
         lag = [z["det_i"] - z["picos"][-1][0] for z in Z]
         out = dict(schema="EDGELAB_PEAKS_DET_V2_REGLA", asset=a.asset, variante=f["nombre"] + " · con vela de detección",
-                   parametros={k: v for k, v in f.items() if k not in ("sufijo", "nombre")}, causal=True, zonas=Z,
+                   parametros={k: v for k, v in f.items() if k not in ("sufijo", "nombre")}, causal=True, zonas=Z, candidatas=CA,
                    zonas_por_dia=round(len(Z) / max(days, 1), 1))
         (VIEW / "bundles" / "peaks_det" / f"{a.asset}{f['sufijo']}.json").write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-        print(json.dumps(dict(familia=fam, zonas=len(Z), por_dia=out["zonas_por_dia"],
+        print(json.dumps(dict(familia=fam, candidatas=len(CA), con_entrada=sum(c["entrada_i"] is not None for c in CA), zonas=len(Z), por_dia=out["zonas_por_dia"],
                               det_pico={int(k): int(v) for k, v in zip(*np.unique([z["det_pico"] for z in Z], return_counts=True))} if Z else {},
                               velas_desde_det_hasta_ultimo_pico_mediana=float(np.median(lag)) if Z else None), default=int, ensure_ascii=False))
 

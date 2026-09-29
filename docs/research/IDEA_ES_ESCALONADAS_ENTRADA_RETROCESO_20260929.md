@@ -32,3 +32,9 @@ mucho sobre R); fills de límite en el retroceso dependen de la cola (P2 de GC: 
   de 3, total ≥ 5 ticks, retroceso ≥ 6, ≥ 3 picos, ≤ 35 velas. Precisión 0,66 (cobertura 1,0 por construcción: se juzgó
   la salida de este mismo detector). ≈ 35 zonas/día. Los ✗ son más largos (mediana 25 velas vs 18) y de 4 picos.
 Visor: `?solo=det` (planas) y `?solo=det&det=empinadas`. Parámetros NO congelados todavía para test de outcomes.
+
+## Descriptivo 29/09 (formación, sin P&L) — entrada anticipada con 2 picos (opción 3)
+Candidata = 2 picos propios confirmados; ENTRADA = primera vela que vuelve a 1 tick del nivel del 2.º pico (≤ max_gap).
+Feb-2026: planas 16.591 candidatas (≈ 690/día), 83 % tocan; **sólo 15 % de las que tocan terminan formando la zona**
+(empinadas: 12.341, 82 %, **5 %**). La entrada anticipada entra mayoritariamente en series que NO se convierten en zona:
+el test de outcomes debe medirse sobre TODAS las entradas, no sobre las que luego se confirmaron. Visor: `&cand=1`.

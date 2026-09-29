@@ -4132,6 +4132,26 @@
   function drawPeaksDet(ctx, cd, vr, X, Y) {
     if (!peaksDet.on || !peaksDet.data || rev.on) return;          // en revisión no se muestran las demás detecciones
     ctx.font = "9px sans-serif";
+    // ?cand=1: candidatas de 2 picos (tools/escalonadas_det.py): nivel del 2.º pico y ENTRADA si el precio vuelve a tocarlo
+    if (new URLSearchParams(window.location.search).get("cand") === "1" && peaksDet.data.candidatas) {
+      peaksDet.data.candidatas.forEach(function (c) {
+        var tEnd = c.entrada_t != null ? c.entrada_t : (cd[Math.min(c.cand_i + 15, cd.length - 1)] || {}).time;
+        if (tEnd < vr.from || c.cand_t > vr.to) return;
+        var xc = X(c.cand_i, c.cand_t), yl = Y(c.nivel);
+        var ie = c.entrada_i != null ? c.entrada_i : Math.min(c.cand_i + 15, cd.length - 1);
+        var xe = X(ie, (cd[ie] || {}).time);
+        if (![xc, yl, xe].every(isFinite)) return;
+        ctx.strokeStyle = "rgba(100,116,139,0.8)"; ctx.lineWidth = 1; ctx.setLineDash([1, 2]);
+        ctx.beginPath(); ctx.moveTo(X(c.picos[0][0], c.picos[0][1]), Y(c.picos[0][2]));
+        c.picos.forEach(function (p) { ctx.lineTo(X(p[0], p[1]), Y(p[2])); }); ctx.lineTo(xc, yl); ctx.lineTo(xe, yl); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle = "rgba(100,116,139,0.9)"; ctx.fillRect(xc - 2, yl - 2, 4, 4);
+        if (c.entrada_i != null) {
+          ctx.fillStyle = c.se_confirmo ? "rgba(22,163,74,0.95)" : "rgba(220,38,38,0.9)";
+          ctx.beginPath(); ctx.arc(xe, yl, 3.5, 0, 6.2832); ctx.fill();
+          ctx.fillText(c.se_confirmo ? "E✓" : "E", xe + 4, yl + (c.kind === "H" ? -4 : 10));
+        }
+      });
+    }
     peaksDet.data.zonas.forEach(function (z) {
       if (z.t1 < vr.from || z.t0 > vr.to) return;
       var x0 = X(z.i0, z.t0), x1 = X(z.i1, z.t1), y0 = Y(z.p1), y1 = Y(z.p0);
