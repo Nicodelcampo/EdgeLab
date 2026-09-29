@@ -46,7 +46,7 @@ Se publica el landscape completo, los n por clima y los eventos «sin clima» / 
 ## 6. Enmienda v2 (2026-09-29, antes de correr nada) — respuesta a la Entrada 067 del auditor
 Nada de esto se decidió mirando outcomes: el runner no se ejecutó nunca. Cambios, en orden de la 067:
 1. **Procedencia (067 §1).** `entry.py` hace preflight y falla salvo: `CODE_COMMIT.txt` = commit esperado, sha256 de los 5
-   archivos que deciden el resultado, sha256 de los 11 archivos del dataset privado (manifiesto embebido), fin del catálogo
+   archivos que deciden el resultado, sha256 de los **10** archivos del dataset privado que el notebook o el runner leen (manifiesto embebido; el README no se hashea: no se lee) — corregido de «11» por la Entrada 069 §3, fin del catálogo
    ≤ `HOLDOUT_NS` y `tbz_e2.HOLDOUT_NS` idéntico (ya no se sobreescribe: vale lo mismo). Publica `preflight.json`.
 2. **Reloj (067 §2).** La conversión ART→UTC queda versionada en `tools/l2_labels_utc.py` (una sola vez, sobre
    `feature_available_at_us`, enteros, falla ante doble conversión); reproduce **exactamente** el parquet subido (83.421 filas,
@@ -69,3 +69,19 @@ Nada de esto se decidió mirando outcomes: el runner no se ejecutó nunca. Cambi
 Fixtures sintéticos (sin outcomes): `tests/test_nq_cruce25_clima_design.py` — ida y vuelta de reloj y doble conversión, frontera
 de disponibilidad, edad, fila inelegible, control del mismo clima y sin soporte, volatilidad firmada, bootstrap conjunto,
 hash de sesiones y frontera del holdout.
+
+## 7. Enmienda v3 (2026-09-29, antes de correr nada) — respuesta a la Entrada 069
+1. **Script ejecutado (069 §1).** Un script no puede contener su propio hash, y `kaggle kernels push` lanza la corrida al
+   subir, así que no hay pull previo posible. Protocolo congelado: (a) antes del push, `git hash-object`/sha256 del
+   `entry.py` local = blob del commit declarado en la entrada de lanzamiento; (b) el preflight calcula el sha256 del archivo
+   que efectivamente se ejecuta (`__file__`) y lo escribe en `preflight.json` (sin archivo legible, aborta); (c) después de
+   la corrida, `kaggle kernels pull` de esa versión y comparación con el mismo blob. **Se lee `preflight.json` ANTES que
+   `nq_cruce25_clima.json`; si (a), (b) o (c) no coinciden con el blob, el resultado se descarta sin interpretarlo** y se
+   documenta. Prueba de sabotaje local: cambiar un byte de un archivo de código o de datos hace fallar el preflight.
+2. **Objetivo respecto del cierre de señal (069 §2).** Pregunta congelada: la (b) del auditor — **operación ejecutable al
+   cierre de `j`**. Entrada = cierre de `j`; barreras desde `j+1`; si `C[j]` ya está en o más allá del objetivo, el evento
+   se clasifica «objetivo ya alcanzado al cierre», no hay operación, se excluye de esa x y se cuenta por celda
+   (`ya_alcanzado_al_cierre`). Una mecha de `j` que toca el objetivo con cierre antes no cuenta. El control usa la misma
+   regla con la geometría trasladada al cierre (su objetivo siempre queda del lado correcto, así que nunca se excluye).
+   Fixtures: cierre de `j` ya pasado, sólo mecha de `j`, toque posterior. Se eligió (b) porque es la única operable; (a) y (c)
+   no se corren.

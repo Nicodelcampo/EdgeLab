@@ -91,3 +91,12 @@ def test_eval_ids_hash_congelado():
 def test_holdout_frontera():
     import tbz_e2 as TB
     assert R.HOLDOUT_NS == TB.HOLDOUT_NS == 1_790_805_600_000_000_000
+
+
+def test_objetivo_desde_el_cierre_de_senal():
+    # d=+1, objetivo 10, falla 0, señal en j=1
+    H = np.array([5., 11, 9, 12]); L = np.array([4., 5, 6, 8]); C = np.array([5., 10.5, 8, 11])
+    assert R.outcome_from_close(H, L, C, 1, 10, 0, 1, 3) is None          # cierre de j ya pasó el objetivo: sin operación
+    C2 = np.array([5., 7, 8, 11]); H2 = np.array([5., 11, 9, 12])         # sólo la mecha de j tocó: no cuenta, se mide desde j+1
+    assert R.outcome_from_close(H2, L, C2, 1, 10, 0, 1, 2) == 0           # j+1 (máx 9) no llega
+    assert R.outcome_from_close(H2, L, C2, 1, 10, 0, 1, 3) == 1           # llega en j+2

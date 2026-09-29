@@ -63,6 +63,16 @@ def race(H, L, j, tgt, fail, s, end):
     return 0
 
 
+def outcome_from_close(H, L, C, j, tgt, fail, s, end):
+    """Convención congelada (Entrada 069 §2): la señal es el CIERRE de la vela j y la entrada es ese cierre.
+    Barreras medidas desde j+1. Si C[j] ya está en o más allá del objetivo → None («objetivo ya alcanzado al cierre»):
+    no hay operación; se excluye de la prueba y se cuenta. Mecha de j que toca el objetivo con cierre antes: no cuenta
+    (ocurrió antes de poder actuar); cuenta sólo lo que pase desde j+1. Misma regla para el control (geometría relativa al cierre)."""
+    if s * (C[j] - tgt) >= 0:
+        return None
+    return race(H, L, j, tgt, fail, s, end)
+
+
 def vol_prev(C, k=20):
     """RMS de los cambios firmados de cierre en las k velas previas (sin incluir la actual)."""
     d = np.diff(C, prepend=C[0]).astype(float); out = np.full(len(C), np.nan)
@@ -223,15 +233,17 @@ def main():
                 p = D["trip"][:j * M]
                 for x in XS:
                     tgt = A + d * x * W
-                    r["ev"][str(x)] = race(H, L, j, tgt, fail, d, end)
+                    r["ev"][str(x)] = outcome_from_close(H, L, C, j, tgt, fail, d, end)
+                    if r["ev"][str(x)] is None:
+                        continue
                     for key, pick in (("ctrl", cp), ("ctrl_sc", cp2)):
                         if pick is None:
                             continue
                         hits = []
                         for ci in pick:
                             Dc = S[pool["ses"][ci]]; q = int(pool["q"][ci])
-                            hits.append(race(Dc["H"], Dc["L"], q, Dc["C"][q] + (tgt - C[j]), Dc["C"][q] + (fail - C[j]), d,
-                                             min(q + (end - j), Dc["n"] - 1)))
+                            hits.append(outcome_from_close(Dc["H"], Dc["L"], Dc["C"], q, Dc["C"][q] + (tgt - C[j]), Dc["C"][q] + (fail - C[j]), d,
+                                                           min(q + (end - j), Dc["n"] - 1)))
                         r[key][str(x)] = hits
                     if len(p) >= 50:
                         seed = int(hashlib.sha256(f"{lvl}|{s}|{j}|{x}".encode()).hexdigest()[:8], 16)
@@ -241,7 +253,7 @@ def main():
         print(lvl, "eventos", len(rows), cnt, flush=True)
 
     def build(X, x="0.25", key="ctrl", seskey="ctrl_ses"):
-        X = [r for r in X if r.get(seskey)]
+        X = [r for r in X if r.get(seskey) and r["ev"].get(x) is not None]
         return dict(ev=np.array([r["ev"][x] for r in X], float), ctrl=np.array([r[key][x] for r in X], float).reshape(len(X), N_CTRL),
                     ev_ses=np.array([sid[r["session"]] for r in X], int),
                     ctrl_ses=np.array([[sid[c] for c in r[seskey]] for r in X], int).reshape(len(X), N_CTRL), n_ses=len({r["session"] for r in X}), n=len(X))
@@ -251,7 +263,7 @@ def main():
     for lvl, O in out.items():
         for cl in CLIMAS:
             c = build([r for r in O["eventos"] if r["clima"] == cl])
-            info = dict(nivel=lvl, clima=cl, n_eventos=c["n"], n_sesiones=c["n_ses"], n_controles=c["n"] * N_CTRL)
+            info = dict(nivel=lvl, clima=cl, ya_alcanzado_al_cierre=sum(1 for r in O["eventos"] if r["clima"] == cl and r["ev"].get("0.25") is None), n_eventos=c["n"], n_sesiones=c["n_ses"], n_controles=c["n"] * N_CTRL)
             if c["n"] < MIN_EVENTOS or c["n_ses"] < MIN_SESIONES:
                 info["inconclusa_por_potencia"] = True
             else:
