@@ -1,6 +1,6 @@
 # Pre-registro: IB→VWAP y PMH/PML en NQ (2026-09-29)
 
-**Estado:** preregistro elaborado; no se han inspeccionado resultados ni corrido estrategias. **Repositorio:** Nicodelcampo/EdgeLab, rama `foundation/f0b-compatibility-probe`. **Datos:** dataset privado Kaggle `nicolasbuttaro/edgelab-nq-nt8-2026q3-l2ctx`, versión 1; desarrollo Q3-2026 solamente. No es confirmación y no toca sesiones desde la apertura CME del 1-oct-2026.
+**Estado inicial (histórico):** preregistro elaborado; no se habían inspeccionado resultados ni corrido estrategias. **Repositorio:** Nicodelcampo/EdgeLab, rama `foundation/f0b-compatibility-probe`. **Datos:** dataset privado Kaggle `nicolasbuttaro/edgelab-nq-nt8-2026q3-l2ctx`, versión 1; desarrollo Q3-2026 solamente. No es confirmación y no toca sesiones desde la apertura CME del 1-oct-2026.
 
 ## Research y selección de variantes
 
@@ -40,3 +40,8 @@ Las fuentes públicas describen reglas de práctica, no evidencia independiente 
 
 [^1]: Kathy Lien, “How to Trade the Initial Balance Like a Pro”, https://www.investing.com/analysis/how-to-trade-the-initial-balance-like-a-pro-200678607 — regla de IB de 60 minutos, ruptura y retroceso a VWAP/FVG; no valida rentabilidad independiente.
 [^2]: Kathy Lien, “Trading Nasdaq 100 Premarket Levels With Sweeps and Reclaim”, https://www.investing.com/analysis/trading-nasdaq-100-premarket-levels-with-sweeps-and-reclaim-200686034 — ejemplo de rango 04:00–09:30, ORB 15 min, cierre de 5 min de vuelta al rango y objetivo en punto medio; no valida rentabilidad independiente.
+
+
+## Actualización de ejecución — 29/09/2026
+
+Nico autorizó «Retoma y correas». Ambas corridas se completaron en sandbox, con el dataset privado Kaggle v1 descargado. Código/precisiones/fixtures/preflight registrados antes de outcomes en `01dd9a5c6a83157a667b74638dd303af0ffd4f49`. Acta: `RESULTADO_IB_VWAP_PMH_PML_NQ_20260929.md`. IB: 5 trades, inconclusa; PM: 36 trades, punto negativo. Sin inferencia conjunta por gate previo de muestra, sin comisión ni fills reales, holdout intacto. Las puertas de permisos/L2 anteriores se conservan como historia, no como estado actual. No se alteran las reglas originales por estos resultados.

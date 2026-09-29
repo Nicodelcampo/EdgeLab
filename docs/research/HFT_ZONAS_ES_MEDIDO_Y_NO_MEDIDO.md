@@ -486,3 +486,10 @@ aquellos números compara dos poblaciones distintas.
   con entrada al cierre de señal vs control del mismo clima: **0/12 celdas sobreviven max-T** (t crít 3,17). *calm* −1,7 pp
   (t ≈ −1,9), *toxic* +7 a +9 pp (MDE 0,125), global −1 a −2 pp: el +2–4,6 pp de Lucid no aparece con esta convención.
   **NO MEDIDO:** 10/09 y 15–18/09 (sin ticks NT8), deriva de roll (sólo 3 sesiones post-roll). `RESULTADO_NQ_CRUCE25_POR_CLIMA_L2_20260929.md`.
+
+
+## Anexo 29/09 — IB→VWAP / PMH-PML en NQ (no HFTZones; registrado por visibilidad)
+
+- **MEDIDO:** sandbox, NQ NT8 v1 Q3, 56 sesiones catalogadas, reglas congeladas sin L2. IB→VWAP: 5 trades, +0,7211 R después de 2 ticks, antes de comisión: **INCONCLUSA por muestra**. PMH/PML: 36 trades, −0,0687 R; media observada negativa, no significancia demostrada.
+- **NO MEDIDO:** inferencia max-T conjunta (gate previo exige ≥30 trades en ambas y falla IB), fills/latencia/comisiones reales, confirmación, otras reglas y filtros. No decir “0/2 sobreviven”: no hubo test familiar calculado.
+- Acta: `RESULTADO_IB_VWAP_PMH_PML_NQ_20260929.md`; código/preflight previo `01dd9a5…`, 41 ejecuciones auditadas independientemente contra raw ticks. Holdout intacto.

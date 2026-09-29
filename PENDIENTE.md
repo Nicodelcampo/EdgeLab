@@ -2630,3 +2630,8 @@ Pedido de Nico: registrar y empezar pruebas exploratorias en sandbox. Cinco lín
 Plan: `docs/research/PENDIENTES_L2_APLICACIONES_20260929.md`. Primer piloto: `docs/research/RESULTADO_L2_PUBLICO_P0_20260929.md`, script `tools/l2_public_pilot.py`, evidencia `artifacts/l2_public_pilot_20260929/evidence.json`.
 
 Estado: **investigación abierta**, no estrategia. P0 BTC a un minuto no mejora el baseline agregado. Absorción/fills y transferencia NQ/ES siguen **NO MEDIDOS**; pedir mensajes sincronizados de desarrollo. R01/R05 extienden EXEC-QI, no reabren MM-QI. No tocar corrida vigente, reservas ni holdout. `research` no estuvo disponible: se usaron las herramientas de fuentes expuestas.
+
+
+## IB-VWAP-PMH-PML-20260929 — primera corrida completada, no promovida
+
+Nico autorizó retomar y correr. Acta `docs/research/RESULTADO_IB_VWAP_PMH_PML_NQ_20260929.md`: 56 sesiones NQ NT8; IB 5 trades (+0,7211 R con 2 ticks, inconclusa); PM 36 (−0,0687 R descriptiva). Bootstrap familiar no calculado por gate de muestra de IB. Sin comisiones ni fills reales. Pendiente: más desarrollo autorizado para IB sin relajar reglas; auditoría antes de cualquier nueva variante/inferencia. No abrir confirmación automáticamente.
