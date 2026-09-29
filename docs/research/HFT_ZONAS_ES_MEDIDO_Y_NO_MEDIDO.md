@@ -508,3 +508,7 @@ aquellos números compara dos poblaciones distintas.
 - **NO MEDIDO:** validación temporal del overlay aislado, costo/riesgo incremental, nuevos outcomes ES/NQ, espejo × IPC y veto imbalance. NQ 0/12 max-T conserva alcance de cruce25/entrada al cierre/control del mismo clima.
 - **DISEÑO PARA NICO:** `INVESTIGACION_ES_NQ_L2_ESPEJO_IPC_20260929.md`; revisión anotable de la captura (sin precios/timestamps, no tanda ciega certificada) en plantilla `viewer/nt8_bridge/reviews/espejo_ipc_capture_review.html`. No sustituye al visor único; IPC antes de A, entradas parciales online, imbalance por definir.
 - Evidencia reproducible: `artifacts/es_nq_ipc_review_20260929/evidence.json`, herramienta `tools/diagnose_es_context_intervals_20260929.py`. Holdout intacto.
+- **MEDIDO 29/09 — CLIMA-NQ-EST-1 (estabilidad temporal de los climas L2 de NQ, target-free):** calm/normal/volatile
+  **FAIL** (calm 15 % en W31 → 91 % en W39; normal y volatile colapsan); **toxic PASS** (9,9 % vs 9,5 % entre mitades).
+  El modelo de 4 climas NQ no es usable; sólo el binario toxic/no-toxic. La lectura por calm/normal/volatile de
+  NQ-CRUCE25-CLIMA queda sin sentido. `RESULTADO_CLIMAS_NQ_ESTABILIDAD_20260929.md`.
