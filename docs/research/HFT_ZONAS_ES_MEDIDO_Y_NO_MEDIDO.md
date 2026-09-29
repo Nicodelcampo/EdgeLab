@@ -479,3 +479,6 @@ aquellos números compara dos poblaciones distintas.
   El exceso se lee contra el control empírico.
 - **MEDIDO 28/09 — Control empírico ES continuación:** exceso empírico ≈ 0 en todas las celdas (cierre confirmado); el nulo
   simulado sesgado hasta +0,108 W en TP 2/SL 1 en ES (−0,02 en NQ, +0,025 en GC): el sesgo depende del instrumento.
+- **MEDIDO 29/09 — GC P1/P2:** control emparejado +0,080 W [+0,035; +0,123] pero **no sobrevive max-T de 30 celdas**
+  (t 2,93 < 3,09); llenado tick a tick degrada −0,034 W por trade → R neto esperado ≈ −0,01 W. **No pasa a confirmación.**
+  Bid/ask de Lucid en GC sospechoso (spread mediano 4 t). `RESULTADO_GC_P1_P2_20260929.md`.
