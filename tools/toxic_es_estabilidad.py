@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-"""TOXIC-ES-1 — docs/research/PREREG_TOXIC_ES_ESTABILIDAD_20260929.md. Target-free (sin retornos).
+"""TOXIC-ES-1 (docs/research/PREREG_TOXIC_ES_ESTABILIDAD_20260929.md) y CLIMA-NQ-EST-1
+(docs/research/PREREG_CLIMAS_NQ_ESTABILIDAD_20260929.md). Target-free (sin retornos). Mismos criterios E1–E5 por estado.
 
-    python tools/toxic_es_estabilidad.py [--labels artifacts/l2_contexts/ES/labels.parquet] [--gate ...gate_report.json]
+    python tools/toxic_es_estabilidad.py                                   # ES, sólo toxic (lo corrido en TOXIC-ES-1)
+    python tools/toxic_es_estabilidad.py --inst NQ --estados calm,normal,volatile,toxic --excl 20260915,...
 """
 from __future__ import annotations
 
@@ -73,25 +75,34 @@ def criterios(ev, tr, ses_order):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--labels", default=str(REPO / "artifacts/l2_contexts/ES/labels.parquet"))
-    ap.add_argument("--gate", default=str(REPO / "artifacts/l2_contexts/ES/gate_report.json"))
-    ap.add_argument("--out", default=str(REPO / "docs/research/l2_contexts_ES/TOXIC_ES_1_resultado.json"))
+    ap.add_argument("--inst", default="ES"); ap.add_argument("--estados", default="toxic")
+    ap.add_argument("--excl", default=",".join(EXCL)); ap.add_argument("--out", default=None)
     a = ap.parse_args()
+    a.labels = str(REPO / f"artifacts/l2_contexts/{a.inst}/labels.parquet"); a.gate = str(REPO / f"artifacts/l2_contexts/{a.inst}/gate_report.json")
+    a.out = a.out or str(REPO / ("docs/research/l2_contexts_ES/TOXIC_ES_1_resultado.json" if a.inst == "ES"
+                                 else f"docs/research/l2_contexts_{a.inst}/CLIMA_{a.inst}_EST_1_resultado.json"))
+    excl = tuple(x for x in a.excl.split(",") if x)
     plan = json.loads(Path(a.gate).read_text(encoding="utf-8"))["plan"]
     lab = pd.read_parquet(a.labels)
     lab = lab[lab["context_state"].notna()].copy()
     lab["cme_session"] = lab["cme_session"].astype(str)
-    lab["tox"] = lab["context_state"].astype(str) == "toxic"
     ct = pd.to_datetime(lab["minute_start_us"] + 3 * 3600 * 10**6, unit="us", utc=True).dt.tz_convert("America/Chicago")
     lab["slot30"] = ct.dt.hour * 2 + ct.dt.minute // 30; lab["slot2h"] = ct.dt.hour // 2
     lab["semana"] = ct.dt.strftime("%G-W%V")
     ev_ids = sorted(map(str, plan["eval_ids"])); tr_ids = set(map(str, plan["train_ids"]))
-    ev = lab[lab.cme_session.isin(ev_ids) & lab["evaluation_eligible"].fillna(False)]
-    tr = lab[lab.cme_session.isin(tr_ids)]
-    out = dict(n_eval_min=int(len(ev)), n_train_min=int(len(tr)), sesiones_eval=len(ev_ids),
-               primaria=criterios(ev, tr, ev_ids),
-               sensibilidad_sin_11_12_ago=criterios(ev[~ev.cme_session.isin(EXCL)], tr, [s for s in ev_ids if s not in EXCL]),
-               semanal=ev.groupby("semana")["tox"].mean().round(4).to_dict())
+    ev0 = lab[lab.cme_session.isin(ev_ids) & lab["evaluation_eligible"].fillna(False)]
+    tr0 = lab[lab.cme_session.isin(tr_ids)]
+    out = dict(instrumento=a.inst, n_eval_min=int(len(ev0)), n_train_min=int(len(tr0)), sesiones_eval=len(ev_ids), excluidas_sensibilidad=list(excl), estados={})
+    for st in a.estados.split(","):
+        ev = ev0.assign(tox=ev0["context_state"].astype(str) == st); tr = tr0.assign(tox=tr0["context_state"].astype(str) == st)
+        r = dict(primaria=criterios(ev, tr, ev_ids),
+                 sensibilidad=criterios(ev[~ev.cme_session.isin(excl)], tr, [s for s in ev_ids if s not in excl]),
+                 semanal=ev.groupby("semana")["tox"].mean().round(4).to_dict())
+        if a.inst == "ES" and a.estados == "toxic":   # formato original de TOXIC-ES-1
+            out.update(primaria=r["primaria"], sensibilidad_sin_11_12_ago=r["sensibilidad"], semanal=r["semanal"]); out.pop("estados", None)
+        else:
+            out["estados"][st] = r
+    Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text(json.dumps(out, indent=1, default=float), encoding="utf-8")
     print(json.dumps(out, indent=1, default=float))
 
