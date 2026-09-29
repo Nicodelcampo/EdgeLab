@@ -19,3 +19,8 @@ pero R bruto −0,023.
 ## Lectura
 La reversión después del espejo no es una propiedad general: en ES va en contra, en NQ (parcial) a favor en el primer
 cuarto. Sin R bruto positivo en ningún lado. La observación de GC queda para su propia corrida (en curso).
+
+## Re-corrida con sesiones sorteadas (28/09, `rev100t_kaggle/ES_v2/`)
+N3 176/181, N4 164/181, N5 79/181 sesiones (sorteadas en todo el período). t crítico 3,62; 14 sobreviven, 13 negativas.
+Cruce hacia B: −0,7 a −2,5 pp en todos los tramos y niveles — **se confirma que en ES el cruce llega menos que el azar**.
+TP/SL de reversión: R bruto máximo +0,029 W (N3), sin sobrevivir con signo positivo.
