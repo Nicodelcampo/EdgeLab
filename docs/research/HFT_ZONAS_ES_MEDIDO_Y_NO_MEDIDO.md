@@ -489,3 +489,10 @@ aquellos números compara dos poblaciones distintas.
 - **MEDIDO 29/09 — Contextos L2 ES (NT8 jul–sep, 16+32 sesiones):** **STOP** por inestabilidad de semillas (0,61 global;
   normal 0,21, volatile 0,05). Cobertura 100 %, no es sólo-hora. ES queda sin climas. Etiquetas de diagnóstico publicadas.
   `RESULTADO_CONTEXTOS_L2_ES_20260929.md`. **NO MEDIDO:** dos regímenes (calm/toxic) como hipótesis propia.
+
+
+## Anexo 29/09 — IB→VWAP / PMH-PML en NQ (no HFTZones; registrado por visibilidad)
+
+- **MEDIDO:** sandbox, NQ NT8 v1 Q3, 56 sesiones catalogadas, reglas congeladas sin L2. IB→VWAP: 5 trades, +0,7211 R después de 2 ticks, antes de comisión: **INCONCLUSA por muestra**. PMH/PML: 36 trades, −0,0687 R; media observada negativa, no significancia demostrada.
+- **NO MEDIDO:** inferencia max-T conjunta (gate previo exige ≥30 trades en ambas y falla IB), fills/latencia/comisiones reales, confirmación, otras reglas y filtros. No decir “0/2 sobreviven”: no hubo test familiar calculado.
+- Acta: `RESULTADO_IB_VWAP_PMH_PML_NQ_20260929.md`; código/preflight previo `01dd9a5…`, 41 ejecuciones auditadas independientemente contra raw ticks. Holdout intacto.
