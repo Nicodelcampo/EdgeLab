@@ -482,3 +482,7 @@ aquellos números compara dos poblaciones distintas.
 - **MEDIDO 29/09 — GC P1/P2:** control emparejado +0,080 W [+0,035; +0,123] pero **no sobrevive max-T de 30 celdas**
   (t 2,93 < 3,09); llenado tick a tick degrada −0,034 W por trade → R neto esperado ≈ −0,01 W. **No pasa a confirmación.**
   Bid/ask de Lucid en GC sospechoso (spread mediano 4 t). `RESULTADO_GC_P1_P2_20260929.md`.
+- **MEDIDO 29/09 — NQ-CRUCE25-CLIMA (desarrollo A3, NT8 jul–sep, 35/40 sesiones de evaluación con velas):** cruce al 25 %
+  con entrada al cierre de señal vs control del mismo clima: **0/12 celdas sobreviven max-T** (t crít 3,17). *calm* −1,7 pp
+  (t ≈ −1,9), *toxic* +7 a +9 pp (MDE 0,125), global −1 a −2 pp: el +2–4,6 pp de Lucid no aparece con esta convención.
+  **NO MEDIDO:** 10/09 y 15–18/09 (sin ticks NT8), deriva de roll (sólo 3 sesiones post-roll). `RESULTADO_NQ_CRUCE25_POR_CLIMA_L2_20260929.md`.
