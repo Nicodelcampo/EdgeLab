@@ -6,7 +6,7 @@ import json
 import os
 import sys
 from concurrent.futures import ProcessPoolExecutor
-from pathlib import Path
+from pathlib import Path, PureWindowsPath  # el catálogo guarda rutas de Windows
 
 EXPECTED_CODE_COMMIT = "2a3e50865eda07f5fd5f9aebee1ae98b26e261b1"
 EXPECTED_CODE_SHA256 = {  # archivos que deciden el resultado
@@ -74,7 +74,7 @@ if True:
 
 
 def build_one(s):
-    return T2._bars_session(("NQ", dict(trade_date=s["trade_date"], path=str(FILES[Path(s["path"]).name]), contract=s["contract"],
+    return T2._bars_session(("NQ", dict(trade_date=s["trade_date"], path=str(FILES[PureWindowsPath(s["path"]).name]), contract=s["contract"],
                                         start=int(s["start"]), end=int(s["end"]))))
 
 
