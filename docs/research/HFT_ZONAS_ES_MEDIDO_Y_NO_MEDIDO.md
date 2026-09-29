@@ -486,3 +486,6 @@ aquellos números compara dos poblaciones distintas.
   con entrada al cierre de señal vs control del mismo clima: **0/12 celdas sobreviven max-T** (t crít 3,17). *calm* −1,7 pp
   (t ≈ −1,9), *toxic* +7 a +9 pp (MDE 0,125), global −1 a −2 pp: el +2–4,6 pp de Lucid no aparece con esta convención.
   **NO MEDIDO:** 10/09 y 15–18/09 (sin ticks NT8), deriva de roll (sólo 3 sesiones post-roll). `RESULTADO_NQ_CRUCE25_POR_CLIMA_L2_20260929.md`.
+- **MEDIDO 29/09 — Contextos L2 ES (NT8 jul–sep, 16+32 sesiones):** **STOP** por inestabilidad de semillas (0,61 global;
+  normal 0,21, volatile 0,05). Cobertura 100 %, no es sólo-hora. ES queda sin climas. Etiquetas de diagnóstico publicadas.
+  `RESULTADO_CONTEXTOS_L2_ES_20260929.md`. **NO MEDIDO:** dos regímenes (calm/toxic) como hipótesis propia.
