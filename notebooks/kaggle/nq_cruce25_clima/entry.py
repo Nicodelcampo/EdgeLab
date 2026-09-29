@@ -8,9 +8,9 @@ import sys
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
-EXPECTED_CODE_COMMIT = "b221f7978283c4c3c0a6bbabfcb2c75e10d0d7e8"
+EXPECTED_CODE_COMMIT = "d1e36ea63d3e86815fe25d9609d2a27b1d22ed1f"
 EXPECTED_CODE_SHA256 = {  # archivos que deciden el resultado
-    "tools/nq_cruce25_clima.py": "ff4bd7cc11480f210b947b41b69620cb16cc322683745e151a067c57c3536cfc",
+    "tools/nq_cruce25_clima.py": "317d48fd7b491a736717bcfce23ad1da893c703af16a13d040b4418dd65372a0",
     "tools/tbzx_iter2.py": "4376739c6bf5a9994c58cf4d22601b5f99fbbd9eb6ff200528a3196c86221c84",
     "tools/tbz_e2.py": "78fca19c64eededfbe274e6ff2f49da362257c7c3840e50221c3706a3fd5672f",
     "edgelab/bridge/indicators/espejo_impulsos.py": "c023db31077ea13fd23817b2e446a121c7b91e1014a6e5bc10e311ba91fdfbf9",
@@ -55,7 +55,11 @@ def preflight():
     cat = json.loads(next(DATA.rglob("NQ_ext_2026q3_sessions_catalog.json")).read_text(encoding="utf-8"))
     ends = [int(s["end"]) for s in cat["sessions"]]
     assert max(ends) <= HOLDOUT_NS, "el catálogo llega al holdout"
-    return cat, dict(code_commit=got, dataset_sha256=seen, sesiones=[(s["trade_date"], s["contract"]) for s in cat["sessions"]])
+    try:  # el script ejecutado se atestigua a sí mismo en la salida; sin archivo legible no se corre
+        me = sha(os.path.abspath(__file__))
+    except Exception as e:  # noqa: BLE001
+        raise SystemExit(f"no se puede leer el script ejecutado: {e}")
+    return cat, dict(entry_sha256=me, code_commit=got, dataset_sha256=seen, sesiones=[(s["trade_date"], s["contract"]) for s in cat["sessions"]])
 
 
 # módulo (también en los workers del pool)
@@ -78,7 +82,7 @@ if __name__ == "__main__":
     CAT, prov = preflight()
     (W / "out").mkdir(parents=True, exist_ok=True)
     (W / "out" / "preflight.json").write_text(json.dumps(prov, indent=1), encoding="utf-8")
-    print("preflight OK", prov["code_commit"], len(prov["sesiones"]), "sesiones", flush=True)
+    print("preflight OK entry", prov["entry_sha256"], prov["code_commit"], len(prov["sesiones"]), "sesiones", flush=True)
     BARS.mkdir(parents=True, exist_ok=True)
     with ProcessPoolExecutor(max_workers=os.cpu_count()) as ex:  # _bars_session falla si un tick llega al holdout
         st = list(ex.map(build_one, CAT["sessions"]))
