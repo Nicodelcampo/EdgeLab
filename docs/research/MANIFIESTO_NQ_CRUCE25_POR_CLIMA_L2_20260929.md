@@ -42,3 +42,30 @@ Se publica el landscape completo, los n por clima y los eventos «sin clima» / 
 - Deriva de climas en el roll.
 - El efecto original es chico (+2–4,6 pp) y se apaga hacia el 75 %: aun si sobrevive, su uso operable exige objetivos
   cortos, donde la ejecución tick a tick degrada (lección LES-BAR-FILL-OPTIMISM).
+
+## 6. Enmienda v2 (2026-09-29, antes de correr nada) — respuesta a la Entrada 067 del auditor
+Nada de esto se decidió mirando outcomes: el runner no se ejecutó nunca. Cambios, en orden de la 067:
+1. **Procedencia (067 §1).** `entry.py` hace preflight y falla salvo: `CODE_COMMIT.txt` = commit esperado, sha256 de los 5
+   archivos que deciden el resultado, sha256 de los 11 archivos del dataset privado (manifiesto embebido), fin del catálogo
+   ≤ `HOLDOUT_NS` y `tbz_e2.HOLDOUT_NS` idéntico (ya no se sobreescribe: vale lo mismo). Publica `preflight.json`.
+2. **Reloj (067 §2).** La conversión ART→UTC queda versionada en `tools/l2_labels_utc.py` (una sola vez, sobre
+   `feature_available_at_us`, enteros, falla ante doble conversión); reproduce **exactamente** el parquet subido (83.421 filas,
+   todas las columnas iguales). Las velas guardan `t_ns` entero y el evento usa ese tiempo, no segundos float.
+   Regla: la fila con mayor `available_utc_us` ≤ t debe ser válida por sí misma (elegible, as-of ok) y tener edad ≤ 120 s;
+   si no, «sin clima» (no se salta a una fila válida anterior).
+3. **Control del mismo clima (067 §3) — primaria.** Cada vela candidata de control recibe clima con la misma regla; el control
+   primario exige mismo clima + franja ±30 min + tercil de volatilidad + otra sesión. Sin 3 controles así: «sin control del
+   mismo clima» (se reporta). El control sin condición de clima queda como **secundario** (otra pregunta).
+4. **Potencia (067 §4).** Celda evaluable sólo con **≥ 30 eventos y ≥ 8 sesiones distintas**; si no, «inconclusa por potencia»,
+   fuera de la familia max-T. Se publican n_eventos, n_sesiones, n_controles, MDE y soporte de control por clima.
+   No se fusionan climas ni se cambia la regla después.
+5. **max-T conjunto (067 §5A).** Pesos multinomiales comunes sobre las 40 sesiones de evaluación por réplica, aplicados a la
+   sesión del evento y a la sesión fuente de cada control; mismo vector para todas las celdas de la familia.
+6. **Sesiones (067 §5B).** Universo = las 40 `eval_ids` congeladas del plan del modelo (sha256 de la lista ordenada
+   `f59aee57…3958`), no las que tienen etiquetas válidas; sesiones sin velas o sin etiquetas se cuentan.
+7. **Volatilidad (067 §5C).** Congelada: RMS de los cambios firmados de cierre 100t en las 20 velas previas. Se publica el
+   acuerdo de terciles con la definición v1 (std de |Δ|), sólo descriptivo.
+
+Fixtures sintéticos (sin outcomes): `tests/test_nq_cruce25_clima_design.py` — ida y vuelta de reloj y doble conversión, frontera
+de disponibilidad, edad, fila inelegible, control del mismo clima y sin soporte, volatilidad firmada, bootstrap conjunto,
+hash de sesiones y frontera del holdout.

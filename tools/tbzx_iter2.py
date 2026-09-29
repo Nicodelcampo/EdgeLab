@@ -64,7 +64,7 @@ def _bars_session(args):
         raise ValueError("holdout decodificado")
     b = build_tick_bars(tk, 25, reiniciar_por_sesion=True)
     f.parent.mkdir(parents=True, exist_ok=True)
-    np.savez(f, t=(b.end_ns / NS).astype(np.float64), h=b.high_t.astype(np.int32), l=b.low_t.astype(np.int32),
+    np.savez(f, t=(b.end_ns / NS).astype(np.float64), t_ns=np.asarray(b.end_ns, dtype=np.int64), h=b.high_t.astype(np.int32), l=b.low_t.astype(np.int32),
              c=b.close_t.astype(np.int32), v=b.volume.astype(np.float32), contract=s["contract"])
     return s["trade_date"], "OK"
 
