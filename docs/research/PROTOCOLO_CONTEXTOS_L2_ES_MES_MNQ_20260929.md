@@ -36,3 +36,17 @@ Etiquetas a UTC con `tools/l2_labels_utc.py`.
 ## Cómo podría refutarse
 Acuerdo entre semillas bajo, estados que son sólo la hora, persistencia de 1–2 minutos, o elegibilidad de minutos baja por
 problemas de libro propios del instrumento (causa raíz antes de seguir, como en NQ).
+
+## Enmienda 1 (29/09, durante la extracción de ES y ANTES de entrenar ningún modelo)
+- **Hallazgo:** ES 12/08 dio 0 minutos elegibles (5,7 M eventos de libro inválido). Causa raíz: el archivo L2 del 11/08
+  empieza a las 14:11 ART (grabación NT8 incompleta) y termina 01:04 del 12/08, **después** del inicio del archivo del
+  12/08 (01:00). La regla de carga heredada de NQ descartaba el comienzo del archivo siguiente y con él su foto inicial
+  del libro. Solapamientos > 5 s: ES 11→12/08 (241 s); MES y MNQ 11→12/08 (13 h); fuera del catálogo 28→29/06.
+- **Cambio de carga (sin cambio de método):** se recorta la cola del archivo previo y el siguiente se conserva entero.
+  Como también hay solapamientos de pocos segundos (donde las dos reglas difieren en qué filas se descartan), se
+  **re-extraen todas las sesiones de ES** con la regla nueva: una sola regla para todo el instrumento. La caché vieja se
+  movió a `E:\_PARA_BORRAR_l2ctx_ES_regla_vieja`.
+- **NQ (ya entrenado):** la misma regla afectó su sesión 29/06 (entrenamiento; 793 s de solapamiento). Falló cerrada:
+  1.291 de ~1.371 minutos elegibles, sin minutos contaminados. No se re-entrena NQ; queda anotado.
+- **Pérdida por el dato, no corregible:** ES 11/08, libro cruzado 12:11–16:04 CT (grabación del 11/08 incompleta);
+  1.102/1.393 minutos elegibles. ES 06/08: libro inválido fuera de la ventana de sesión, sin efecto.

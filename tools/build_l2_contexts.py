@@ -89,22 +89,23 @@ def preflight():
 
 
 def _load(s, kind):
-    """Archivos diarios COMPLETOS que cubren la sesión (28/09: recortar a la ventana perdía la foto inicial del libro
-    que trae cada archivo, y el libro nunca quedaba listo). Entre archivos consecutivos hay unos segundos de
-    solapamiento: del archivo siguiente se descartan las filas con reloj anterior al último del archivo previo."""
-    parts, last = [], None
+    """Archivos diarios COMPLETOS que cubren la sesión. Enmienda 1 del protocolo ES/MES/MNQ (29/09, antes de entrenar):
+    ante solapamiento se recorta la COLA del archivo previo (filas con reloj ≥ al inicio del siguiente) y el archivo
+    siguiente se conserva entero, con su foto inicial del libro. La regla anterior (descartar el comienzo del siguiente)
+    borraba esa foto cuando el solapamiento superaba unos segundos (ES/MES/MNQ 11→12/08: 241 s a 13 h) y el libro
+    quedaba inválido todo el día."""
+    parts = []
     for k, f in enumerate(sorted(s["files"])):
         t = pq.read_table(L2 / s["contract"] / kind / f"{f}.parquet").to_pandas()
         t = t.sort_values("source_row", kind="mergesort")
-        if last is not None:
-            t = t[t["ts_us"] >= last]
-        if len(t):
-            last = int(t["ts_us"].iloc[-1])
+        if parts and len(t):
+            first = int(t["ts_us"].iloc[0])
+            parts[-1] = parts[-1][parts[-1]["ts_us"] < first]
         t["source_row"] = t["source_row"].astype(np.int64) + k * 10**12        # los source_row reinician por archivo
         if kind == "l2_depth":
             t["resync"] = False
             if len(t):
-                t.iloc[0, t.columns.get_loc("resync")] = True                    # sólo si la foto inicial sobrevivió
+                t.iloc[0, t.columns.get_loc("resync")] = True                    # foto inicial del archivo, intacta
         parts.append(t)
     return pd.concat(parts, ignore_index=True).reset_index(drop=True)
 
