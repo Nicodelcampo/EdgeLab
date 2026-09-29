@@ -8,9 +8,9 @@ import sys
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
-EXPECTED_CODE_COMMIT = "d1e36ea63d3e86815fe25d9609d2a27b1d22ed1f"
+EXPECTED_CODE_COMMIT = "2a3e50865eda07f5fd5f9aebee1ae98b26e261b1"
 EXPECTED_CODE_SHA256 = {  # archivos que deciden el resultado
-    "tools/nq_cruce25_clima.py": "317d48fd7b491a736717bcfce23ad1da893c703af16a13d040b4418dd65372a0",
+    "tools/nq_cruce25_clima.py": "c7908a4cdc9d9a26f1dd8dc8ad77acaa46cbcb5606a15b757c65a7a933d3cd13",
     "tools/tbzx_iter2.py": "4376739c6bf5a9994c58cf4d22601b5f99fbbd9eb6ff200528a3196c86221c84",
     "tools/tbz_e2.py": "78fca19c64eededfbe274e6ff2f49da362257c7c3840e50221c3706a3fd5672f",
     "edgelab/bridge/indicators/espejo_impulsos.py": "c023db31077ea13fd23817b2e446a121c7b91e1014a6e5bc10e311ba91fdfbf9",
