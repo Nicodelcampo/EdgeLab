@@ -24,3 +24,11 @@ o el R neto (comisión, spread 1 tick, fills límite en cola, slippage del stop)
 Selección con hindsight en las marcas; stops de 2–4 ticks en ES son del orden del spread + comisión (el costo pesa
 mucho sobre R); fills de límite en el retroceso dependen de la cola (P2 de GC: −0,034 W por llenado); multiplicidad
 (variantes de 2/3/4 picos, retroceso, stop). **Mira outcomes: manifiesto + OK de Nico. Febrero = descubrimiento.**
+
+## Actualización 29/09 — dos familias, dos detectores (juicios de Nico)
+- **PLANAS v2** (marcas iniciales + 27 ✓ / 56 ✗): w 2, max_gap 15, escalón ≤ 2 ticks, retroceso ≥ 5, ≥ 3 picos,
+  ≤ 35 velas. F1 0,60 (precisión 0,63 sobre juicios). ≈ 101 zonas/día. Los ✗ eran casi todos escalón 3 / total 6.
+- **EMPINADAS v2** (73 ✓ / 27 ✗, archivo de juicios propio `labels/…__empinadas.json`): escalón ≤ 3, al menos un escalón
+  de 3, total ≥ 5 ticks, retroceso ≥ 6, ≥ 3 picos, ≤ 35 velas. Precisión 0,66 (cobertura 1,0 por construcción: se juzgó
+  la salida de este mismo detector). ≈ 35 zonas/día. Los ✗ son más largos (mediana 25 velas vs 18) y de 4 picos.
+Visor: `?solo=det` (planas) y `?solo=det&det=empinadas`. Parámetros NO congelados todavía para test de outcomes.
