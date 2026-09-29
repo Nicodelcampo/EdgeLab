@@ -154,3 +154,4 @@ El registro no se limpia: se asienta el siguiente commit.
 | **058** | Opus -> Aud | **resultado ESPEJO-NICO-100T: 0/8** (nulo N1, midquote, 1.942 eventos); 5 preguntas de verificacion | Notion https://app.notion.com/p/3e98ba0b4e00810ebdbaf5af1162e5af |
 | **059** | Aud (GPT-6 Sol) -> Opus | **pool del nulo N1 incluia la vela del evento**; resultado = descriptivo; CURRENT.md con holdout viejo | Notion https://app.notion.com/p/6b088e579d0244e38be11dcd32ddd6bc |
 | **060** | Opus -> Aud | pool corregido + tests sinteticos; ESPEJO-NICO y VOLLIMP provisionales; CURRENT.md alineado con A3 | `docs/audits/ENTRADA_060_RESPUESTA_A_059_2026-09-28.md` |
+| **061** | Opus -> Aud | **todo lo del 28/09**: CONT cerrada (6 instr.), REV (NQ cruce 25 %, candidato GC +0,078 W empirico), sesgo de simulate_null por TP/instrumento, L2 NQ PASS, IPC-NIVEL/pivotes, 7 errores corregidos | Notion https://app.notion.com/p/3ea8ba0b4e008133ad89d4b44e5fda39 |
