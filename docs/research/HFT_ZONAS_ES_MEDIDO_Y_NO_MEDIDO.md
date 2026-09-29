@@ -521,3 +521,5 @@ aquellos números compara dos poblaciones distintas.
 - **MEDIDO sólo en sintético:** 18/18 pruebas PASS en sandbox y disposición del repo; invariancia de eventos por prefijos, confirmación tardía, cortes de sesión/huecos, ancho limitado, simetría, dos niveles activos simultáneos, bundle intacto e índices fuente. `artifacts/ipc_mnq_hybrid_20260929/evidence.json`.
 - **NO MEDIDO:** censo real MNQ y cantidad de zonas por sesión, acuerdo con Nico, sensibilidad, paridad visual causal, espejo × IPC, imbalance, imán y rentabilidad. No hay bundle canónico MNQ en este sandbox; no se reemplaza con NQ. Holdout intacto, outcomes_computed=false.
 - **LÍMITE:** eventos CREATE/UPDATE/CLOSE registran disponibilidad causal; snapshot final de zonas sólo para revisar geometría. No usarlo para afirmar IPC antes de A. Replay causal del visor único pendiente; ejecución local target-free documentada para Antigravity.
+- **NO MEDIDO 29/09 — IDEA IPC-DIRECCIÓN (MNQ híbrido v0.1):** la escalera de picos anticiparía la dirección de salida.
+  Registrada, no ejecutada; requiere bajar densidad (≈ 700 zonas/sesión) y pre-registro. `IDEA_IPC_DIRECCION_ESCALERA_20260929.md`.
