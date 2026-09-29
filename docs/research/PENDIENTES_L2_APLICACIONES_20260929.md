@@ -45,3 +45,7 @@ Presupuesto: dos proxies, un horizonte y una comparación de modelos; sin grilla
 ## Aporte al referente
 
 Se separan opciones de investigación, trabajo ya medido y datos realmente necesarios, antes de probar retornos; se preservan la corrida vigente y las reservas.
+
+## Actualización tras P0
+
+Primer piloto BTC a un minuto ejecutado y publicado en `RESULTADO_L2_PUBLICO_P0_20260929.md`: no mejora agregada frente al baseline. R01–R05 permanecen pendientes en su alcance de estrategia; fuentes Optiver/10 niveles todavía sin pruebas. Próximo requisito: temporización/semántica auditada y mensajes sincronizados. No promover ni cambiar parámetros a partir del tercio final ya expuesto.
