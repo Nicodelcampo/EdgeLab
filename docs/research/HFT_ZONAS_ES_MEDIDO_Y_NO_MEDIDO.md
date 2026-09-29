@@ -523,3 +523,5 @@ aquellos números compara dos poblaciones distintas.
 - **LÍMITE:** eventos CREATE/UPDATE/CLOSE registran disponibilidad causal; snapshot final de zonas sólo para revisar geometría. No usarlo para afirmar IPC antes de A. Replay causal del visor único pendiente; ejecución local target-free documentada para Antigravity.
 - **NO MEDIDO 29/09 — IDEA IPC-DIRECCIÓN (MNQ híbrido v0.1):** la escalera de picos anticiparía la dirección de salida.
   Registrada, no ejecutada; requiere bajar densidad (≈ 700 zonas/sesión) y pre-registro. `IDEA_IPC_DIRECCION_ESCALERA_20260929.md`.
+- **NO MEDIDO 29/09 — IDEA ES-ESCALONADAS (3–4 picos) + entrada en retroceso:** geometría de 45 marcas de Nico y
+  detector ajustado (F1 0,49), pendiente de juicio ✓/✗. Sin outcomes causales. `IDEA_ES_ESCALONADAS_ENTRADA_RETROCESO_20260929.md`.
