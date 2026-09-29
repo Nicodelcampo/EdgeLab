@@ -508,3 +508,12 @@ aquellos números compara dos poblaciones distintas.
 - **NO MEDIDO:** validación temporal del overlay aislado, costo/riesgo incremental, nuevos outcomes ES/NQ, espejo × IPC y veto imbalance. NQ 0/12 max-T conserva alcance de cruce25/entrada al cierre/control del mismo clima.
 - **DISEÑO PARA NICO:** `INVESTIGACION_ES_NQ_L2_ESPEJO_IPC_20260929.md`; revisión anotable de la captura (sin precios/timestamps, no tanda ciega certificada) en plantilla `viewer/nt8_bridge/reviews/espejo_ipc_capture_review.html`. No sustituye al visor único; IPC antes de A, entradas parciales online, imbalance por definir.
 - Evidencia reproducible: `artifacts/es_nq_ipc_review_20260929/evidence.json`, herramienta `tools/diagnose_es_context_intervals_20260929.py`. Holdout intacto.
+
+
+## Anexo 29/09 — IPC híbrido MNQ v0.1 (borrador geométrico; no HFTZones)
+
+- **LEÍDO:** IPC NQ de `tools/ipc.py`/`peaks_rule.py` y familia IPC-NIVEL de `tools/ipc_nivel.py` (referencia MES; no confundir con calibración MNQ). Originales y parámetros congelados sin cambios.
+- **IMPLEMENTADO, SIN CALIBRAR:** detector MNQ con evidencia `picos + 2*(visitas-1) >= 6`, al menos 3 picos: 6/1 densa, 4/2 mixta, 3/3 separada. IDs independientes; varias zonas pueden coexistir. `docs/research/IPC_MNQ_HYBRID_DRAFT_20260929.md` y JSON.
+- **MEDIDO sólo en sintético:** 18/18 pruebas PASS en sandbox y disposición del repo; invariancia de eventos por prefijos, confirmación tardía, cortes de sesión/huecos, ancho limitado, simetría, dos niveles activos simultáneos, bundle intacto e índices fuente. `artifacts/ipc_mnq_hybrid_20260929/evidence.json`.
+- **NO MEDIDO:** censo real MNQ y cantidad de zonas por sesión, acuerdo con Nico, sensibilidad, paridad visual causal, espejo × IPC, imbalance, imán y rentabilidad. No hay bundle canónico MNQ en este sandbox; no se reemplaza con NQ. Holdout intacto, outcomes_computed=false.
+- **LÍMITE:** eventos CREATE/UPDATE/CLOSE registran disponibilidad causal; snapshot final de zonas sólo para revisar geometría. No usarlo para afirmar IPC antes de A. Replay causal del visor único pendiente; ejecución local target-free documentada para Antigravity.
