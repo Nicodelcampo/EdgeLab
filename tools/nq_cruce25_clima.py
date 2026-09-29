@@ -73,6 +73,19 @@ def outcome_from_close(H, L, C, j, tgt, fail, s, end):
     return race(H, L, j, tgt, fail, s, end)
 
 
+def reconciliar(rows, sin_ctrl, x="0.25"):
+    """Entrada 071: por clima, señales con clima = evaluables (3 controles del mismo clima y objetivo no alcanzado)
+    + ya alcanzadas al cierre + sin control del mismo clima (con sesiones afectadas). Las «sin clima» no tienen clima
+    y se reportan aparte, por nivel. Nada se imputa ni se oculta."""
+    rep = {}
+    for cl in CLIMAS:
+        R_ = [r for r in rows if r["clima"] == cl]; SC = [e for e in sin_ctrl if e["clima"] == cl]
+        ev = sum(1 for r in R_ if r["ev"].get(x) is not None); ya = len(R_) - ev
+        rep[cl] = dict(senales=len(R_) + len(SC), evaluables=ev, ya_alcanzado_al_cierre=ya, sin_control_mismo_clima=len(SC),
+                       sesiones_sin_control=sorted({e["session"] for e in SC}), cierra=len(R_) + len(SC) == ev + ya + len(SC))
+    return rep
+
+
 def vol_prev(C, k=20):
     """RMS de los cambios firmados de cierre en las k velas previas (sin incluir la actual)."""
     d = np.diff(C, prepend=C[0]).astype(float); out = np.full(len(C), np.nan)
@@ -197,7 +210,7 @@ def main():
     rng = np.random.default_rng(SEED)
     out = {}
     for lvl, (mw, mb) in LEVELS.items():
-        rows, cnt = [], dict(sin_clima=0, sin_control_mismo_clima=0, sin_W=0, sesiones_cortas=0)
+        rows, sin_ctrl, cnt = [], [], dict(sin_clima=0, sin_control_mismo_clima=0, sin_W=0, sesiones_cortas=0)
         for s, D in S.items():
             n = D["n"]
             if n < 60:
@@ -225,7 +238,7 @@ def main():
                 ter = ter_of(D["vol"][j], cut); tod = tod_s(T[j])
                 cp = pick_controls(pool, s, tod, ter, clima, rng)
                 if cp is None:
-                    cnt["sin_control_mismo_clima"] += 1; continue
+                    cnt["sin_control_mismo_clima"] += 1; sin_ctrl.append(dict(clima=clima, session=s)); continue
                 cp2 = pick_controls(pool, s, tod, ter, None, rng)
                 fail = E - d * 1
                 r = dict(session=s, clima=clima, post_roll=s >= ROLL, O=float(d * (A - E) / W), ev={}, ctrl={}, ctrl_ses=[str(pool["ses"][i]) for i in cp],
@@ -249,7 +262,7 @@ def main():
                         seed = int(hashlib.sha256(f"{lvl}|{s}|{j}|{x}".encode()).hexdigest()[:8], 16)
                         r["sint"][str(x)] = simulate_null(C[j], tgt, fail, d, p, end - j, n=300, seed=seed, bars_per_step=M)["completa"]
                 rows.append(r)
-        out[lvl] = dict(eventos=rows, **cnt)
+        out[lvl] = dict(eventos=rows, sin_control=sin_ctrl, reconciliacion=reconciliar(rows, sin_ctrl), **cnt)
         print(lvl, "eventos", len(rows), cnt, flush=True)
 
     def build(X, x="0.25", key="ctrl", seskey="ctrl_ses"):
@@ -263,7 +276,7 @@ def main():
     for lvl, O in out.items():
         for cl in CLIMAS:
             c = build([r for r in O["eventos"] if r["clima"] == cl])
-            info = dict(nivel=lvl, clima=cl, ya_alcanzado_al_cierre=sum(1 for r in O["eventos"] if r["clima"] == cl and r["ev"].get("0.25") is None), n_eventos=c["n"], n_sesiones=c["n_ses"], n_controles=c["n"] * N_CTRL)
+            info = dict(nivel=lvl, clima=cl, estudio="barreras desde el cierre de señal (no ejecución ni rentabilidad)", **O["reconciliacion"][cl], n_eventos=c["n"], n_sesiones=c["n_ses"], n_controles=c["n"] * N_CTRL)
             if c["n"] < MIN_EVENTOS or c["n_ses"] < MIN_SESIONES:
                 info["inconclusa_por_potencia"] = True
             else:

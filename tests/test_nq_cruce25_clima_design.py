@@ -100,3 +100,13 @@ def test_objetivo_desde_el_cierre_de_senal():
     C2 = np.array([5., 7, 8, 11]); H2 = np.array([5., 11, 9, 12])         # sólo la mecha de j tocó: no cuenta, se mide desde j+1
     assert R.outcome_from_close(H2, L, C2, 1, 10, 0, 1, 2) == 0           # j+1 (máx 9) no llega
     assert R.outcome_from_close(H2, L, C2, 1, 10, 0, 1, 3) == 1           # llega en j+2
+
+
+def test_reconciliacion_soporte_por_clima():
+    rows = [dict(clima="calm", ev={"0.25": 1}), dict(clima="calm", ev={"0.25": None}), dict(clima="toxic", ev={"0.25": 0})]
+    sc = [dict(clima="calm", session="20260801"), dict(clima="volatile", session="20260802"), dict(clima="volatile", session="20260802")]
+    rep = R.reconciliar(rows, sc)
+    assert rep["calm"] == dict(senales=3, evaluables=1, ya_alcanzado_al_cierre=1, sin_control_mismo_clima=1,
+                               sesiones_sin_control=["20260801"], cierra=True)
+    assert rep["volatile"]["senales"] == 2 and rep["volatile"]["evaluables"] == 0 and rep["volatile"]["sesiones_sin_control"] == ["20260802"]
+    assert rep["normal"]["senales"] == 0

@@ -85,3 +85,12 @@ hash de sesiones y frontera del holdout.
    regla con la geometría trasladada al cierre (su objetivo siempre queda del lado correcto, así que nunca se excluye).
    Fixtures: cierre de `j` ya pasado, sólo mecha de `j`, toque posterior. Se eligió (b) porque es la única operable; (a) y (c)
    no se corren.
+
+## 8. Enmienda v4 (2026-09-29, antes de correr nada) — respuesta a la Entrada 071
+1. **Soporte por clima.** Cada celda primaria publica su reconciliación: `senales` = `evaluables` + `ya_alcanzado_al_cierre` +
+   `sin_control_mismo_clima`, con las sesiones sin control y un flag `cierra`. Las «sin clima» se publican por nivel (no
+   tienen clima). La lista de señales sin control queda en el JSON (`detalle[nivel].sin_control`). Nada se imputa. Fixture:
+   `test_reconciliacion_soporte_por_clima`.
+2. **Alcance.** Es un **estudio de barreras desde el cierre de señal**. No prueba una entrada ejecutable ni rentabilidad; el
+   JSON lo etiqueta así en cada celda. Una afirmación de trading exigiría una prueba aparte: entrada en la primera cotización
+   ejecutable posterior, con costos y latencia NQ fijados de antemano.
