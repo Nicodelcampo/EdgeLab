@@ -627,3 +627,14 @@ aquellos números compara dos poblaciones distintas.
   Todos los intentos, no sólo espejos completos;
   `IDEA_ESPEJO_L2_LANDMARK_50_20260930.md`. Semántica por confirmar.
 - Climas STOP no rescatados; visor/raw no modificados; nada de retornos ni holdout.
+
+
+### MNQ primera sesión L2 + requisito de potencia + GC pendiente, 30/09/2026
+
+- **MEDIDO (QA target-free MNQ real, 20260629):** procedencia adjunto/código CRLF exacta, 19.569 velas150 y31 señales reproducidas. Raw hashes sólo recibo local, no rehash independiente de raw en nube.
+- **MEDIDO (soporte propuesto en decisión V1):** 26 nivel fuera top10, 3 visible false, 1 visible true, 1 libro no disponible =31. 27 máscaras null; NO false. Libro válido18.870/19.569 velas; 699 ausentes, causa por racha pendiente.
+- **STOP V1 PUBLICACIÓN LIVE:** reconoce fin de grupo al observar fila siguiente pero etiqueta disponibilidad al grupo viejo. No seguir52 ni calcular fills/outcomes así. V1 congelado; V2 candidato separa snapshot/publicación/observación pre-pico y asociación posterior, requiere opt-in explícito.
+- **MEDIDO QA V2:** 5 tests; smoke GC9.000 grupos/7velas/0señales, prefijo4velas publicadas idéntico. NO validación V2 MNQ ni adaptación GC.
+- **NO MEDIDO:** persistencia útil, retorno/costos, potencia económica/MDE, soporte de V2 en MNQ. Nico exige suficientes señales OBSERVABLES e independientes; no ajustar por ganancias.
+- **GC PENDIENTE:** Nico propone adaptar escalonadas por alta frecuencia visual. Falta identificar configuración elegida, paridad, frecuencia por sesión, soporte L2 y muestra propia. No copiar MNQ ni costos.
+- Acta `RESULTADO_MNQ_ESCALONADAS_L2_PRIMERA_SESION_TARGETFREE_20260930.md`; evidencia agregada `artifacts/mnq_l2_first_session_20260930/`; handoff `HANDOFF_MNQ_L2_V2_DIAGNOSTICO_UNA_SESION_20260930.md`; plan `PLAN_MNQ_GC_ESCALONADAS_MUESTRA_Y_POTENCIA_20260930.md`. Nada de raw/precios público; sin outcomes nuevos; holdout oct+ intacto.

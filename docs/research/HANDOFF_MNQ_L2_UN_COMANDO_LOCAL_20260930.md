@@ -1,5 +1,7 @@
 # MNQ L2 — una ejecución local, diseño y análisis en la nube
 
+> **Actualización 30/09/2026: STOP para seguir las 52 con V1.** Primera sesión recibida: procedencia/geometría PASS, publicación live no certificada y 27/31 máscaras desconocidas. Este handoff se conserva histórico. Para el siguiente diagnóstico con opt-in explícito leer `HANDOFF_MNQ_L2_V2_DIAGNOSTICO_UNA_SESION_20260930.md`; no aplicar el GO del §3 de este documento automáticamente. Nada de outcomes sin manifiesto + OK.
+
 **Preparado, NO MEDIDO en MNQ real.** El L2 MNQ no fue encontrado en Kaggle
 conectado (sólo ticks MNQ, GC L2 y contextos NQ). La PC tiene los parquets necesarios.
 No hace falta que Claude diseñe filtros ni haga research: sólo ejecutar el exporter.

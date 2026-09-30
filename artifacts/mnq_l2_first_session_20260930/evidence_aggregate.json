@@ -1,0 +1,121 @@
+{
+  "scope": "ONE_MNQ_SESSION_TARGETFREE_DIAGNOSTIC_NOT_EDGE",
+  "input_zip_sha256": "1e332feeb2dae1d2d91d0395b441df03ef33d98ec94c2f53162b8c6b9fe22e48",
+  "input_files": {
+    "20260629_bars_private.jsonl": {
+      "bytes": 11145585,
+      "sha256": "213e87c267de6b458df678398a13d4ea28dc69f1e1860114199703acf229ee53"
+    },
+    "20260629_signals_private.jsonl": {
+      "bytes": 18865,
+      "sha256": "f7ce9a1f6fc5f46249d1c7a4f4dfe07c30f50d8307b1d8090f3ff09892156d4e"
+    },
+    "evidence.json": {
+      "bytes": 2224,
+      "sha256": "a9d103559d06668a16ee3d881552273fae4f4e48306f0db9bd90635d0a59f975"
+    }
+  },
+  "code_provenance": {
+    "code_sha256": {
+      "received": "e49af20c292d2d3951bfbad2e2bb256208bc23ba2ccd968cd89c980d195fa7e8",
+      "canonical_lf": "768f5ab3ec79f61cd94dd758d479368a6b8af57cc58b2d7e6035778e21287775",
+      "windows_crlf": "e49af20c292d2d3951bfbad2e2bb256208bc23ba2ccd968cd89c980d195fa7e8",
+      "match": "EXACT_CRLF_BYTES"
+    },
+    "detector_sha256": {
+      "received": "e0b1b246168f5aa79a178d89bf90614f275453e0ad466d0a48b0b71d0a81722e",
+      "canonical_lf": "e1dcf96e9f588a6f5393396eeefae9c525d941d0959bd4513d5226ccb89cb2a3",
+      "windows_crlf": "e0b1b246168f5aa79a178d89bf90614f275453e0ad466d0a48b0b71d0a81722e",
+      "match": "EXACT_CRLF_BYTES"
+    },
+    "book_module_sha256": {
+      "received": "657d36b88c3a0a3bcd2b27d80373fa05b5a8d1fc7b07277ab1d5e86f988049d1",
+      "canonical_lf": "a65e377ecc7e6b59b92c0c0c6bedd8b1c1aee7c41c142addb0dfeb01b588c891",
+      "windows_crlf": "657d36b88c3a0a3bcd2b27d80373fa05b5a8d1fc7b07277ab1d5e86f988049d1",
+      "match": "EXACT_CRLF_BYTES"
+    },
+    "catalog_sha256": {
+      "received": "60d9a5ebc8d54d595e2eb9ae3b9bddbe1b26dc383ce0a83238e3679f2196d696",
+      "canonical_lf": "a853dcee8ad15f0cc570df1d5b4f68afa89b5e2790b45e438274f7de507570f2",
+      "windows_crlf": "60d9a5ebc8d54d595e2eb9ae3b9bddbe1b26dc383ce0a83238e3679f2196d696",
+      "match": "EXACT_CRLF_BYTES"
+    }
+  },
+  "source_raw_independently_rehashed_here": false,
+  "whole_export_qa_pass": true,
+  "all_19569_bars_geometry_replayed": true,
+  "all_31_signals_geometry_match": true,
+  "statistics": {
+    "bars": 19569,
+    "signals": 31,
+    "eligible_last_prints": 2935440,
+    "bars_book_valid": 18870,
+    "bars_book_unavailable": 699,
+    "bars_book_valid_fraction": 0.9642802391537636,
+    "signal_states": {
+      "level_outside_top10": 26,
+      "visible_defense_false": 3,
+      "book_unavailable": 1,
+      "defense_true": 1
+    },
+    "signal_valid_book": 30,
+    "signal_level_observable": 4,
+    "signal_level_observable_fraction": 0.12903225806451613,
+    "signal_defense_known": 4,
+    "signal_defense_unknown": 27,
+    "distance_to_side_touch_median_ticks": 26.0,
+    "distance_to_side_touch_min_max_ticks": [
+      3,
+      81
+    ],
+    "book_unavailable_runs": 19,
+    "max_unavailable_run_bars": 141,
+    "source_rows_after_bar_close_median": 42.0,
+    "same_availability_for_multiple_bars": 6,
+    "event_space_before_financial_outcomes": true
+  },
+  "causality_audit": {
+    "geometry_bar_prefix": "PASS",
+    "reported_feature_rows": "ORDER_CHECK_PASS_BUT_NOT_LIVE_AVAILABILITY_CERTIFIED",
+    "issue": "V1 knows a timestamp group is finished only after reading the first next-timestamp row, but labels its snapshot/event available at last row of old group. Financial use must wait for that observed closing row; EOF is diagnostic only.",
+    "raw_next_group_boundary_rows_not_in_attachment": true,
+    "financial_use": "STOP_PENDING_EXPLICIT_BOUNDARY_AVAILABILITY"
+  },
+  "decision": "NO_GO_FULL_52_WITH_V1; collect gate reasons and earlier peak-level observation using explicit publication boundary",
+  "outcomes_computed": false,
+  "session": {
+    "trade_date": "20260629",
+    "contract": "MNQ_09-26",
+    "files": [
+      "20260628",
+      "20260629"
+    ]
+  },
+  "source_receipt_counts": {
+    "groups": 4299562,
+    "invalid_book_groups": 490,
+    "eligible_last_prints": 2935440,
+    "partial_prints_at_end": 90,
+    "bars": 19569,
+    "signals": 31,
+    "signals_valid_book": 30,
+    "signals_defense_mask": 1,
+    "price_outcomes_computed": false
+  },
+  "source_receipt_code_params": {
+    "w": 2,
+    "max_gap": 15,
+    "max_step": 25,
+    "min_pull": 62,
+    "nmin": 3,
+    "dmax": 35,
+    "total_min": 0,
+    "step_min": 0,
+    "confirm_ticks": 25
+  },
+  "provenance_scope": "Attachment bytes rehashed and all bar/signal geometry replayed; raw MNQ input parquets unavailable here, raw hashes only transcribed from local receipt.",
+  "head_start": "b78f27f05b91ec437d8ee030a086c8b468aae2ab",
+  "head_end_before_publish": "b78f27f05b91ec437d8ee030a086c8b468aae2ab",
+  "sandbox_worktree": "NOT_APPLICABLE_ISOLATED_GENERATED_FILES; source references at known commit; MCP batch writes paths only",
+  "user_requirement": "Sufficient observable signals across independent sessions before financial measurement; no tuning to returns."
+}
