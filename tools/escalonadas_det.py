@@ -192,9 +192,13 @@ def main():
     ap.add_argument("--escala", type=float, default=1.0, help="multiplica todo lo que está en ticks (transferencia a otro activo sin re-marcar)")
     ap.add_argument("--w", type=int, default=None, help="pivote de w velas (por defecto el de la familia, 2); sufijo __w<w>")
     ap.add_argument("--solo-planas", action="store_true")
+    ap.add_argument("--nmin", type=int, default=None, help="mínimo de picos para disparar (por defecto 3); sufijo __n<nmin>")
     a = ap.parse_args()
     if a.solo_planas:
         FAMILIAS.pop("empinadas", None)
+    if a.nmin:
+        for f in FAMILIAS.values():
+            f["nmin"] = a.nmin; f["sufijo"] = f["sufijo"] + f"__n{a.nmin}"
     if a.w:
         for f in FAMILIAS.values():
             f["w"] = a.w; f["sufijo"] = f["sufijo"] + f"__w{a.w}"
