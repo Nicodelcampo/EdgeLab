@@ -580,3 +580,27 @@ aquellos números compara dos poblaciones distintas.
   `artifacts/gc_l2_fixed_price_p0_20260930/evidence.json`,
   `RESULTADO_GC_L2_PRECIO_FIJO_P0_20260930.md`. Raw y episodios con precios quedan
   privados. Retornos requieren manifiesto/pre-registro + OK de Nico.
+
+
+### GC L2 P1 — controles históricos y traspaso local, 30/09/2026
+
+- **MEDIDO (descriptivo mecánico, continuación P0 R02/I-3):** controles históricos
+  1:1 sin reemplazo ni selección por desenlace, mismo lado y bandas de profundidad,
+  tamaño, caída y actividad. 3.992 y 31.577 pares;
+  recuperación observada / todos los pares: 29,5 % vs
+  37,0 % y 38,0 % vs
+  45,5 % (positivos con prints vs control sin prints).
+  **No mayor recuperación con prints**, no inferencia causal/predictiva, censuras incluidas.
+- **MEDIDO (QA):** reproducción exacta P0; 12 tests nuevos, dos prefijos reales
+  invariantes y balances independientes. Pérdida puntual de diez niveles visibles
+  [10,5] cerró 15 episodios no positivos en 20260615, sin alterar los eventos P0.
+- **MEDIDO (feature descriptiva):** recuperación previa al mismo precio en 60 s:
+  127/1.282 y 3.347/12.818. No significa iceberg ni defensa efectiva.
+- **NO MEDIDO:** persistencia/defensa incremental, utilidad en señales, ES/MNQ,
+  retorno/fills/costos. Controles P0 antes pendientes quedan medidos aquí bajo
+  este alcance; no confirmación independiente (mismos dos ejemplos).
+- Acta `RESULTADO_GC_L2_CONTROLES_P1_20260930.md`; plan homónimo; código
+  `tools/gc_l2_historical_controls.py`; evidencia `artifacts/gc_l2_controls_p1_20260930/`.
+  Visor, datos y adapter propios ES/MNQ pendientes para Claude local:
+  `HANDOFF_LOCAL_CLAUDE_GC_L2_P1_20260930.md`. No se lanzó otra sesión.
+  Nada de retornos sin manifiesto + OK; nada de raw público; holdout intacto.
