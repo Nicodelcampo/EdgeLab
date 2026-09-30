@@ -199,7 +199,7 @@ def main():
                 f[k] = int(round(f[k] * a.escala))
             f["nombre"] = f["nombre"].replace("ES ", a.asset.split("_")[0] + " ") + f" (transferido de ES ×{a.escala:g}, sin marcas propias)"
     b = json.loads((VIEW / "bundles" / f"{a.asset}.json").read_text(encoding="utf-8"))
-    c = b["bar_series"]["tick_25"]["candles"]; del b
+    c = b["bar_series"][next(iter(b["bar_series"]))]["candles"]; del b
     cd = {k: np.array([x[v] for x in c], float) for k, v in (("t", "time"), ("h", "high"), ("l", "low"), ("c", "close"))}; del c
     days = len(set((cd["t"] // 86400).astype(int)))
     for fam, f in FAMILIAS.items():
