@@ -540,3 +540,7 @@ aquellos números compara dos poblaciones distintas.
 - **MEDIDO 30/09 — ES-ESCALONADAS v2 ene-2026 (180 celdas: stops amplios, V-shape, BE, tendencia; control misma
   mecánica):** **0/180 sobre max-T**; el filtro de tendencia empeora todo. **Familia cerrada en ES** con ese alcance.
   `RESULTADO_ES_ESCALONADAS_V2_202601_20260930.md`. **NO MEDIDO:** marzo (no abierto), defensa L2, otros activos.
+- **MEDIDO 30/09 — MNQ escalonadas (ES ×4,5, confirmación por precio) · posición visual SL 5 t / TP 10R / BE 2R, feb-2026
+  (1.720 zonas; caso elegido mirando el gráfico, sin control):** velas como el visor +0,487 R/op (réplica exacta del
+  tablero); ticks sin costos +0,371; ticks con bid/ask sin comisión −0,226; con comisión 1,5 t −0,526; con 3 t −0,826.
+  El spread solo se come ≈ 0,6 R con un stop de 5 ticks. `tools/escalonadas_posicion_visual.py`, `es_escalonadas/posicion_visual_MNQ_*`.
