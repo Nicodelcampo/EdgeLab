@@ -533,3 +533,7 @@ aquellos números compara dos poblaciones distintas.
 - **MEDIDO sólo sintético:** 128 caminos (64 semillas × 2 familias), 101 detecciones, 0 discrepancias de campos de detección frente a sus prefijos. Referencia AST sin JIT; no certifica CLI completo, precio intravela ni fills. `artifacts/es_escalonadas_audit_20260929/synthetic_evidence.json`.
 - **BLOQUEOS:** `det_t` copia `candles.time` sin contrato de apertura/cierre ni timestamp del cruce; `det_precio` es umbral, no fill; geometría final no es estado al disparo. Faltan bundle/ticks fuente, proveedor, sesiones canónicas, versión por tanda de juicios y paridad detector/visor. `AUDITORIA_PRECONGELAMIENTO_ES_ESCALONADAS_20260929.md`.
 - **NO MEDIDO:** retornos, costos, MDE/test familiar, réplica, defensa L2. Manifiesto + OK de Nico siguen obligatorios. No se publicaron capas ni resultados derivados de geometrías con proveedor sin verificar; sólo código/configuración existente y sintético. Holdout intacto.
+- **MEDIDO 30/09 — ES-ESCALONADAS feb-2026 (32 celdas, replay tick a tick):** R neto y bruto negativos en las 32.
+  Contra control: velas 0/16; precio 6/16 sobre max-T, atribuibles a la mecánica de entrada stop (el control entraba a
+  mercado: falla de diseño). Sin edge; réplica de marzo no abierta. `RESULTADO_ES_ESCALONADAS_202602_20260930.md`.
+  **NO MEDIDO:** control con misma mecánica stop; filtro de tendencia; defensa L2 (sólo jul–sep).
