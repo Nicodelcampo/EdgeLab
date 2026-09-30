@@ -37,3 +37,9 @@ medido en feb-2026: 25t ×4,5; 150t ×12,42; 500t ×23,49 (`tools/escalonadas_de
 ## Riesgos
 Enero con 21 sesiones: 500t tendrá ~50 zonas (probable «inconclusa»); SL base elegido mirando febrero (sólo escala la
 grilla, no la decide); transferencia ES→MNQ sin marcas propias; tres escalas del mismo detector están correlacionadas.
+
+## Enmienda 1 (30/09, antes de correr nada): meses de descubrimiento
+Enero solo da 41 zonas en 150t y 14 en 500t (sin potencia). Con OK de Nico, **descubrimiento = ago-2025 → ene-2026**
+(sin feb-2026), contrato principal por tramo con roll el jueves 8 días antes del vencimiento: MNQ 09-25 hasta el
+10/09/2025, MNQ 12-25 del 11/09 al 10/12/2025, MNQ 03-26 desde el 11/12/2025. Controles tomados de otras sesiones del
+mismo bundle mensual. **Réplica única: mar-2026** (hasta el roll). Resto sin cambios.
