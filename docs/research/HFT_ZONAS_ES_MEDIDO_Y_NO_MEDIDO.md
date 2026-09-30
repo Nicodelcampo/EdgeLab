@@ -677,3 +677,12 @@ Acta: `docs/research/RESULTADO_GC_EXACT4_CENSO_TARGETFREE_20260930.md`. Handoff:
 **IMPLEMENTADO / BORRADOR:** `tools/l2_asof_features.py`, `tools/mirror_l2_attempts.py`, smoke legacy y 39 tests. Pregunta propuesta B→A al50%, baseline precio vs precio+L2; instrumento/horizonte/invalidación/splits/potencia requieren manifest y OK separado. OFI externo contemporáneo y QI siguiente-mid no prueban un impulso entero. Mid ponderado y QI touch algebraicamente redundantes.
 
 Acta: `RESULTADO_L2_ASOF_GC_Y_PREPARACION_ESPEJO_20260930.md`; plan, protocolo y handoff en docs/research. Evidencia agregada: `artifacts/l2_event_research_20260930/evidence.json`. Ejecución staging aislado con hashes exactos desde767e30b; no se afirma ejecutar un commit limpio posterior. Código/acta/registro se publican juntos.
+
+
+## GC Kaggle ticks × L2 — identidad y barras target-free, 30/09/2026
+
+**MEDIDO:** ticksGC08-26 KaggleV2 SHA7976fbe9… bitwiseverificado. May31: cinta COMPLETA de13.913trades idéntica por(timestamp+3h,precio,volumen) y orden.556barras25operaciones,546conlibro previoPASS/10bootstrap,545ventanaOFIcompleta;13tradesenbarra parcial.80barras deprefijo2000trades idénticas. Verificaciónindependiente de todas556barras y546fórmulas;4testsidentidadPASS. Libro publicado ESTRICTAMENTE ANTES deltimestamptick; jamás grupo simultáneo ni nearest-neighbor.
+
+**ABSTAIN separado:** June15 precio/volumen secuencia completa coincide pero5timestampdifieren6,877–34,877ms. Sin reparar/redondear/rellenar. Correspondencia certificadaempíricamente sóloMay31/política previa, nootrasfechas/fills/latencia/interleavingMBO.
+
+**NO MEDIDO:** zonas/espejosreales enlazados, predictibilidad/retornos/modelos/P&L/potencia/ventaja. No sustituyebarrasGCfeb niapruebacalibración detector. Holdout intacto. Datos/eventos/preciosprivados, acta/código/registro enmismocommit. Acta: `RESULTADO_GC_KAGGLE_TICKS_X_L2_TARGETFREE_20260930.md`; plan aparte; evidencia `artifacts/gc_tick_l2_join_20260930/evidence.json`.
