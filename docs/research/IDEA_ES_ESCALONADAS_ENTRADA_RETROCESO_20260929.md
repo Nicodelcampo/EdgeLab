@@ -38,3 +38,10 @@ Candidata = 2 picos propios confirmados; ENTRADA = primera vela que vuelve a 1 t
 Feb-2026: planas 16.591 candidatas (≈ 690/día), 83 % tocan; **sólo 15 % de las que tocan terminan formando la zona**
 (empinadas: 12.341, 82 %, **5 %**). La entrada anticipada entra mayoritariamente en series que NO se convierten en zona:
 el test de outcomes debe medirse sobre TODAS las entradas, no sobre las que luego se confirmaron. Visor: `&cand=1`.
+
+## Confirmación por precio (opción 2, elegida por Nico 29/09) — sin anticipar: 3 picos y dispara
+Un pico se confirma cuando el extremo opuesto se aleja **2 ticks** sin que se supere el pico (media de la distancia a la
+detección por velas: 2,5 ticks). Planas 2.705 zonas, empinadas 927; detección 1 vela antes (mediana). En las zonas
+comunes con la versión por velas: ahorro medio 0,65 ticks, ≥ 2 ticks en el 25 %, ≥ 3 en el 10 %; en ~30 % dispara más
+lejos que la versión por velas (allí el cierre ya estaba a 0–1 tick del pico). El disparo es un nivel intravela (orden
+stop): el llenado real exige replay con deslizamiento. Visor: `&det=precio` y `&det=empinadas__precio`.

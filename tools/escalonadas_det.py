@@ -118,20 +118,93 @@ def candidatas(cd, f, zonas):
     return C
 
 
+CONF_TICKS = 2       # confirmación por precio (Nico, 29/09): < 2,5 ticks = distancia media de la detección por velas
+
+
+def chains_px(h, l, t, w, max_gap, max_step, min_pull, nmin, kind, X):
+    """Como peaks_rule.chains, pero el pico q se CONFIRMA en la primera vela j > q cuyo extremo opuesto se aleja X ticks
+    de él sin que ninguna vela entre q y j lo supere (izquierda: w velas no mayores, igual que el pivote por velas).
+    Devuelve series [(picos, confirmaciones, fin)] en orden causal de confirmación."""
+    n = len(h); x = h if kind == 1 else -l; y = l if kind == 1 else -h
+    ev = []
+    for q in range(w, n - 1):
+        if any(x[q] < x[q - o] for o in range(1, w + 1)):
+            continue
+        for j in range(q + 1, min(q + 60, n)):
+            if t[j] - t[j - 1] > 1800 or x[j] > x[q] + 1e-9:
+                break
+            if (x[q] - y[j]) / TICK >= X - 1e-9:
+                ev.append((j, q)); break
+    ev.sort()
+    out, cur, conf = [], [], []
+    P = None
+    def close(fin):
+        if len(cur) >= nmin:
+            out.append((list(cur), list(conf), fin))
+    ei = 0
+    for j in range(n):
+        if cur and ((t[j] - t[j - 1] > 1800) or (x[j] > P + 1e-9 and j > cur[-1]) or (j - cur[-1] > max_gap)):
+            close(j); cur.clear(); conf.clear(); P = None
+        while ei < len(ev) and ev[ei][0] == j:
+            q = ev[ei][1]; ei += 1
+            if cur and q <= cur[-1]:
+                continue
+            if not cur:
+                cur.append(q); conf.append(j); P = x[q]; continue
+            mn = min(y[cur[-1] + 1:q]) if q > cur[-1] + 1 else None
+            pull = (P - mn) / TICK if mn is not None else 0.0
+            step = (P - x[q]) / TICK
+            if x[q] <= P + 1e-9 and step <= max_step and pull >= min_pull:
+                cur.append(q); conf.append(j); P = x[q]
+    close(n - 1)
+    return out
+
+
+def detectar_px(cd, f, X=CONF_TICKS):
+    Z = []
+    for kind in (1, -1):
+        src = cd["h"] if kind == 1 else cd["l"]; xx = cd["h"] if kind == 1 else -cd["l"]
+        piv = R.pivots(xx, f["w"])
+        for own, conf, fin in chains_px(cd["h"], cd["l"], cd["t"], f["w"], f["max_gap"], f["max_step"], f["min_pull"], f["nmin"], kind, X):
+            det = None
+            for k in range(f["nmin"], len(own) + 1):
+                pk = R.backfill(own[:k], xx, piv, cd["t"], TICK, f["max_gap"], f["max_step"])
+                if pasa(pk, src, f):
+                    det = (k, pk); break
+            if det is None:
+                continue
+            k, pk_det = det; di = conf[k - 1]
+            trig = float(src[own[k - 1]] - (1 if kind == 1 else -1) * X * TICK)      # precio exacto del disparo
+            full = R.backfill(own, xx, piv, cd["t"], TICK, f["max_gap"], f["max_step"])
+            full = [q for q in full if q - full[0] <= f["dmax"]] or pk_det
+            pr = src[full]
+            Z.append(dict(kind="H" if kind == 1 else "L", i0=int(full[0]), i1=int(full[-1]), t0=float(cd["t"][full[0]]),
+                          t1=float(cd["t"][full[-1]]), p0=float(pr.min()), p1=float(pr.max()), toques=len(full),
+                          picos=[[int(q), float(cd["t"][q]), float(src[q])] for q in full],
+                          det_i=int(di), det_t=float(cd["t"][di]), det_pico=len(pk_det), det_precio=trig,
+                          det_nivel=float(src[pk_det[-1]]), fin_serie_i=int(fin), confirmacion=f"precio {X} ticks"))
+    return Z
+
+
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument("--asset", required=True); a = ap.parse_args()
+    ap = argparse.ArgumentParser(); ap.add_argument("--asset", required=True)
+    ap.add_argument("--conf", default="velas", choices=["velas", "precio"], help="precio: confirmación a CONF_TICKS del pico")
+    a = ap.parse_args()
     b = json.loads((VIEW / "bundles" / f"{a.asset}.json").read_text(encoding="utf-8"))
     c = b["bar_series"]["tick_25"]["candles"]; del b
     cd = {k: np.array([x[v] for x in c], float) for k, v in (("t", "time"), ("h", "high"), ("l", "low"), ("c", "close"))}; del c
     days = len(set((cd["t"] // 86400).astype(int)))
     for fam, f in FAMILIAS.items():
-        Z = detectar(cd, f)
-        CA = candidatas(cd, f, Z)
+        Z = detectar_px(cd, f) if a.conf == "precio" else detectar(cd, f)
+        CA = candidatas(cd, f, Z) if a.conf == "velas" else []
         lag = [z["det_i"] - z["picos"][-1][0] for z in Z]
-        out = dict(schema="EDGELAB_PEAKS_DET_V2_REGLA", asset=a.asset, variante=f["nombre"] + " · con vela de detección",
+        out = dict(schema="EDGELAB_PEAKS_DET_V2_REGLA", asset=a.asset, variante=f["nombre"] + (f" · confirmación por precio ({CONF_TICKS} ticks)" if a.conf == "precio" else " · con vela de detección"),
                    parametros={k: v for k, v in f.items() if k not in ("sufijo", "nombre")}, causal=True, zonas=Z, candidatas=CA,
                    zonas_por_dia=round(len(Z) / max(days, 1), 1))
-        (VIEW / "bundles" / "peaks_det" / f"{a.asset}{f['sufijo']}.json").write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+        suf = f["sufijo"] + ("__precio" if a.conf == "precio" else "")
+        if a.conf == "precio" and not suf.startswith("__"):
+            suf = "__precio"
+        (VIEW / "bundles" / "peaks_det" / f"{a.asset}{suf}.json").write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
         print(json.dumps(dict(familia=fam, candidatas=len(CA), con_entrada=sum(c["entrada_i"] is not None for c in CA), zonas=len(Z), por_dia=out["zonas_por_dia"],
                               det_pico={int(k): int(v) for k, v in zip(*np.unique([z["det_pico"] for z in Z], return_counts=True))} if Z else {},
                               velas_desde_det_hasta_ultimo_pico_mediana=float(np.median(lag)) if Z else None), default=int, ensure_ascii=False))
