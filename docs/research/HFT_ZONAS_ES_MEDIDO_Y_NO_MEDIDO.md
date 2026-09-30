@@ -666,3 +666,14 @@ aquellos números compara dos poblaciones distintas.
 **IMPLEMENTADO:** `tools/gc_exact4_review.py` + `viewer/nt8_bridge/gc_exact4_review_guard.js`, 13 tests Python/12 JS nuevos PASS además de los 26 del core. Exporta sólo con hash/paridad del bundle y crea copia `index_gc_exact4.html`, sin modificar índice original ni C0, sin posiciones; raw pendiente visible. QA sintético desktop/mobile; geometría febrero sin revisar. Cortina no certifica tanda ciega.
 
 Acta: `docs/research/RESULTADO_GC_EXACT4_CENSO_TARGETFREE_20260930.md`. Handoff: `docs/research/HANDOFF_LOCAL_GC_EXACT4_REVIEW_20260930.md`. Evidencia agregada: `artifacts/gc_exact4_censo_audit_20260930/evidence_aggregate.json`. Material privado no se publica. STOP antes de outcomes sin manifiesto+OK de Nico.
+
+
+## L2 as-of GC y preparación de espejo — 30/09/2026
+
+**MEDIDO QA/target-free:** extractor neutral de presión/soporte y publicación en primera fila real posterior; registro A/B congelado de todos los intentos, sin backdate ni selección de espejos completos. 39 tests PASS; replay de 6.281.338 filas de los DOS ejemplos GC legacy ya expuestos; 1.619 paquetes contrastados con raw y fórmulas; 97 paquetes de prefijos reales idénticos. Gates concilian; EOF no publicado; ventana OFI incompleta null, precio fuera top-10 UNKNOWN. No son trades independientes ni datos nuevos de confirmación.
+
+**NO MEDIDO:** eventos reales GC/MNQ/espejo enlazados (0), utilidad predictiva, labels/modelos/outcomes, retorno, fills/costos, potencia o ventaja. GC febrero/raw-publicación y calibración siguen pendientes. Climas STOP no se rescatan; no ampliar automáticamente 52 sesiones MNQ. Holdout octubre+ intacto; privados/precios/packets fuera del repo.
+
+**IMPLEMENTADO / BORRADOR:** `tools/l2_asof_features.py`, `tools/mirror_l2_attempts.py`, smoke legacy y 39 tests. Pregunta propuesta B→A al50%, baseline precio vs precio+L2; instrumento/horizonte/invalidación/splits/potencia requieren manifest y OK separado. OFI externo contemporáneo y QI siguiente-mid no prueban un impulso entero. Mid ponderado y QI touch algebraicamente redundantes.
+
+Acta: `RESULTADO_L2_ASOF_GC_Y_PREPARACION_ESPEJO_20260930.md`; plan, protocolo y handoff en docs/research. Evidencia agregada: `artifacts/l2_event_research_20260930/evidence.json`. Ejecución staging aislado con hashes exactos desde767e30b; no se afirma ejecutar un commit limpio posterior. Código/acta/registro se publican juntos.
