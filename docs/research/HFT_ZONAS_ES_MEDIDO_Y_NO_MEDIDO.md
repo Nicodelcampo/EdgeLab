@@ -553,3 +553,6 @@ aquellos números compara dos poblaciones distintas.
   sesiones, tick a tick con costos y control):** **0/648 sobre max-T**. 25t negativo en todo; 150t ≈ 0 neto; 500t sin
   potencia. Marzo no abierto. `RESULTADO_MNQ_ESCALONADAS_ESCALAS_20260930.md`. **NO MEDIDO:** defensa L2 (jul–sep),
   marcas propias de MNQ, filtros.
+- **MEDIDO 30/09 (exploratorio) — espejo × picos antes de A, ES ene-2026, 80 espejos juzgados a ciegas por Nico:**
+  continuación más allá de A: «con picos» (25) peor que «sin picos» (55) en las 4 celdas (−0,20 a −0,83 R).
+  `IDEA_ESPEJO_X_PICOS_ES_20260930.md`.
