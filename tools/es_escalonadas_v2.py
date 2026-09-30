@@ -62,6 +62,31 @@ def vshape(px, i0, i1, side, ext, sweep_ticks, rec_ticks, max_ticks_after):
     return -1, -1, 0.0
 
 
+@njit(cache=True)
+def sim_be(side, i0, i_end, entry, stop_lvl, tgt_lvl, be_lvl, use_be, px, bid, ask):
+    """Como V1.sim, con break even opcional: si opera en be_lvl (a favor), el stop pasa al precio de entrada."""
+    st = stop_lvl; mfe = 0.0; mae = 0.0
+    for i in range(i0, i_end):
+        p = px[i]
+        fav = (p - entry) * side; mfe = max(mfe, fav); mae = max(mae, -fav)
+        if side == 1:
+            if p <= st:
+                return bid[i] - entry, -1, mfe, mae, i
+            if p >= tgt_lvl + 1:
+                return tgt_lvl - entry, 1, mfe, mae, i
+            if use_be and p >= be_lvl:
+                st = max(st, entry)
+        else:
+            if p >= st:
+                return entry - ask[i], -1, mfe, mae, i
+            if p <= tgt_lvl - 1:
+                return entry - tgt_lvl, 1, mfe, mae, i
+            if use_be and p <= be_lvl:
+                st = min(st, entry)
+    j = i_end - 1
+    return ((bid[j] - entry) if side == 1 else (entry - ask[j])), 0, mfe, mae, j
+
+
 def ema(x, n):
     a = 2 / (n + 1); out = np.empty_like(x); out[0] = x[0]
     for i in range(1, len(x)):
@@ -104,7 +129,7 @@ def main():
                 out.append((q, int(f)))
         return out if len(out) == N_CTRL else None
 
-    def run(side, fill, stop_lvl, k_bar, R):
+    def run(side, fill, stop_lvl, k_bar, R, be=False):
         entry = bid[fill] if side == -1 else ask[fill]
         risk = abs(entry - stop_lvl)
         if risk < 1:
@@ -112,7 +137,7 @@ def main():
         end = end_tick(k_bar)
         if fill + 1 >= end:
             return None
-        pnl, why, mfe, mae, ix = V1.sim(side, fill + 1, end, entry, stop_lvl, entry + side * R * risk, px, bid, ask)
+        pnl, why, mfe, mae, ix = sim_be(side, fill + 1, end, entry, stop_lvl, entry + side * R * risk, entry + side * risk, be, px, bid, ask)
         return ((pnl - V1.COMISION_TICKS) / risk, pnl / risk, int(why), float(risk), int(ix))
 
     rows = {}; desc = {}
@@ -143,11 +168,11 @@ def main():
         for E in (evA, evB):
             for e in E:
                 e["ctrl"] = ctrl_fills(e["k"], e["side"])
-        specs = [("A", s, R) for s in A_STOPS for R in RS] + [("B", s, R) for s in B_STOPS for R in RS]
-        for tipo, s, R in specs:
+        specs = [("A", s, R, be) for s in A_STOPS for R in RS for be in (False, True) if not (be and R == 1)] +                 [("B", s, R, be) for s in B_STOPS for R in RS for be in (False, True) if not (be and R == 1)]
+        for tipo, s, R, be in specs:
             E = evA if tipo == "A" else evB
             for filt in ("todas", "a_favor"):
-                key = f"{fam}|{tipo}|{'stop=' + str(s)}|{R}R|{filt}"
+                key = f"{fam}|{tipo}|{'stop=' + str(s)}|{R}R|{'BE1R' if be else 'sinBE'}|{filt}"
                 out = []; last = {1: -1, -1: -1}
                 for e in E:
                     if e["ctrl"] is None or e["fill"] <= last[e["side"]] or (filt == "a_favor" and e["tr"] != 1):
@@ -158,13 +183,13 @@ def main():
                         stop_lvl = (e["ext"] - side * 2) if s == "zona+2" else (entry0 - side * (10 if s == "fijo10" else 16))
                     else:
                         stop_lvl = e["xtr"] - side * s
-                    r = run(side, e["fill"], stop_lvl, e["k"], R)
+                    r = run(side, e["fill"], stop_lvl, e["k"], R, be)
                     if r is None:
                         continue
                     cr = []
                     for q, cf in e["ctrl"]:
                         ce = bid[cf] if side == -1 else ask[cf]
-                        rc = run(side, cf, ce - side * r[3], q, R)
+                        rc = run(side, cf, ce - side * r[3], q, R, be)
                         cr.append(rc[0] if rc else np.nan)
                     if np.isnan(cr).any():
                         continue

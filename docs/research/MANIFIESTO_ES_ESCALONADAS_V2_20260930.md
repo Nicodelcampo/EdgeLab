@@ -19,12 +19,15 @@ Febrero queda como descriptivo. Holdout desde el 1-oct y abr–sep intactos.
   el azar. Justificación: barrido de stops sobre una defensa visible y reabsorción (trampa).
 - **Refutación:** ninguna celda supera al control tras max-T, o el R neto ≤ 0.
 
-## Celdas — número efectivo de hipótesis = 100 (enmienda de Nico antes de correr: «más SL y TP, sobre todo TP largos»)
+## Celdas — número efectivo de hipótesis = 140 (enmienda de Nico antes de correr: «más SL y TP, sobre todo TP largos»)
 - **A:** familia (planas/empinadas) × stop (**extremo de la zona conocida al detectar + 2 ticks** / **fijo 10** / **fijo 16
   ticks**) × objetivo (**1R, 2R, 3R, 5R, 8R**) = 30.
 - **B:** familia (2) × stop (**extremo del barrido + 2** / **+ 6 ticks**) × objetivo (1R, 2R, 3R, 5R, 8R) = 20; entrada stop al
   recuperar.
-- **Filtro de tendencia** sobre las 50: **todas** / **sólo a favor de tendencia** → 100. max-T sobre las 100.
+- **Break even (enmienda 2 de Nico, antes de ver resultados; la primera corrida se detuvo sin producir salida):** para
+  objetivos ≥ 2R, variante con stop movido al precio de entrada cuando el precio opera a +1R a favor (sin BE / BE a 1R);
+  con objetivo 1R el BE no aplica. A: 30 + 12 con BE; B: 20 + 8 con BE → 70.
+- **Filtro de tendencia** sobre las 70: **todas** / **sólo a favor de tendencia** → **140. max-T sobre las 140.**
   Tendencia al momento de la entrada: cierre 25t vs EMA de 200 velas, y pendiente de esa EMA en 50 velas; «a favor» =
   dirección de la operación igual al signo compartido (si no coinciden, no hay tendencia → la operación sólo cuenta en «todas»).
 - Horizonte 150 velas o fin de sesión. Una operación a la vez por celda y dirección.
@@ -35,7 +38,7 @@ Febrero queda como descriptivo. Holdout desde el 1-oct y abr–sep intactos.
 - **Control con la MISMA mecánica** (corrige la falla de v1): 3 por evento, velas al azar de otras sesiones del mes,
   misma franja ±30 min, mismo tercil de volatilidad, misma dirección y mismo estado de tendencia si el filtro está activo;
   desde el cierre de esa vela se coloca la **misma orden stop a 2 ticks** en la dirección de la operación (A y B) con el mismo riesgo y objetivo en ticks; si no se llena en 20 velas, se re-sortea.
-- Bootstrap por sesión con pesos comunes, **max-T sobre 100**, celda evaluable con ≥ 30 operaciones y ≥ 8 sesiones, MDE.
+- Bootstrap por sesión con pesos comunes, **max-T sobre 140**, celda evaluable con ≥ 30 operaciones y ≥ 8 sesiones, MDE.
 - Descriptivos: R bruto, tasa de objetivo, MFE/MAE; en B, cuántas zonas se barren y cuántas se recuperan.
 
 ## Riesgos
