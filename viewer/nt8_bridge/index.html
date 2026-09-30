@@ -4159,8 +4159,8 @@
       var col = z.var === "chico" ? "124,58,237" : (z.kind === "H" ? "234,88,12" : "13,148,136");   // violeta = serrucho chico
       if (z.det_i != null && z.picos && z.picos.length) {           // zona con vela de detección (tools/escalonadas_det.py)
         var pk = z.picos, kd = pk.length - 1;                       // último pico conocido al detectar
-        for (var q = 0; q < pk.length; q++) if (pk[q][0] + 2 > z.det_i) { kd = q - 1; break; }
-        if (kd < 0) kd = pk.length - 1;
+        if (z.det_idx != null) kd = z.det_idx;                      // lo guarda el detector (vale para confirmación por velas o por precio)
+        else { for (var q = 0; q < pk.length; q++) if (pk[q][0] + 2 > z.det_i) { kd = q - 1; break; } if (kd < 0) kd = pk.length - 1; }
         ctx.strokeStyle = "rgba(" + col + ",0.95)"; ctx.lineWidth = 1.8; ctx.beginPath();
         for (var a = 0; a <= kd; a++) { var xa = X(pk[a][0], pk[a][1]), ya = Y(pk[a][2]); if (a) ctx.lineTo(xa, ya); else ctx.moveTo(xa, ya); }
         ctx.stroke();

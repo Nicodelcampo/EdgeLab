@@ -74,7 +74,7 @@ def detectar(cd, f):
                           t1=float(cd["t"][full[-1]]), p0=float(pr.min()), p1=float(pr.max()), toques=len(full),
                           picos=[[int(q), float(cd["t"][q]), float(src[q])] for q in full],
                           det_i=int(di), det_t=float(cd["t"][di]), det_pico=len(pk_det), det_precio=float(cd["c"][di]),
-                          det_nivel=float(src[pk_det[-1]]), fin_serie_i=int(r[1])))
+                          det_nivel=float(src[pk_det[-1]]), det_idx=int(full.index(pk_det[-1])) if pk_det[-1] in full else len(full) - 1, fin_serie_i=int(r[1])))
     return Z
 
 
@@ -182,7 +182,7 @@ def detectar_px(cd, f, X=CONF_TICKS):
                           t1=float(cd["t"][full[-1]]), p0=float(pr.min()), p1=float(pr.max()), toques=len(full),
                           picos=[[int(q), float(cd["t"][q]), float(src[q])] for q in full],
                           det_i=int(di), det_t=float(cd["t"][di]), det_pico=len(pk_det), det_precio=trig,
-                          det_nivel=float(src[pk_det[-1]]), fin_serie_i=int(fin), confirmacion=f"precio {X} ticks"))
+                          det_nivel=float(src[pk_det[-1]]), det_idx=int(full.index(pk_det[-1])) if pk_det[-1] in full else len(full) - 1, fin_serie_i=int(fin), confirmacion=f"precio {X} ticks"))
     return Z
 
 
