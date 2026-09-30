@@ -556,3 +556,6 @@ aquellos números compara dos poblaciones distintas.
 - **MEDIDO 30/09 (exploratorio) — espejo × picos antes de A, ES ene-2026, 80 espejos juzgados a ciegas por Nico:**
   continuación más allá de A: «con picos» (25) peor que «sin picos» (55) en las 4 celdas (−0,20 a −0,83 R).
   `IDEA_ESPEJO_X_PICOS_ES_20260930.md`.
+- **MEDIDO 30/09 — Contextos L2 MES y MNQ:** ambos **STOP** por semillas (MES 0,56; MNQ 0,71 con calm 0,98 y
+  normal/volatile 0,45/0,31). Sin climas de 4 estados en ES, MES ni MNQ. `RESULTADO_CONTEXTOS_L2_MES_MNQ_20260930.md`.
+  **NO MEDIDO:** estabilidad temporal de *toxic* en MES/MNQ.
