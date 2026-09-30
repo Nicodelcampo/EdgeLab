@@ -26,6 +26,10 @@ import peaks_rule as R  # noqa: E402
 VIEW = REPO / "viewer" / "nt8_bridge"
 TICK = 0.25
 # parámetros ajustados a las marcas y juicios de Nico (29/09); ver docs/research/IDEA_ES_ESCALONADAS_ENTRADA_RETROCESO_20260929.md
+# familia «nq»: parámetros IPC de NQ (tools/ipc.py, ajustados a marcas de Nico en NQ ene-2026), en ticks de NQ; sin tope
+# de duración ni pendiente. Se elige con --familia nq (disparo por precio: 8 ticks NQ ≈ 2 ticks ES × 4,17).
+FAMILIA_NQ = dict(sufijo="__nq", nombre="IPC estilo NQ", w=1, max_gap=30, max_step=14, min_pull=7, nmin=5, dmax=10**6,
+                  total_min=0, step_min=0, conf=8)
 FAMILIAS = {
     "planas": dict(sufijo="", nombre="ES escalonadas PLANAS v2", w=2, max_gap=15, max_step=2, min_pull=5, nmin=3,
                    dmax=35, total_min=0, step_min=0),
@@ -193,7 +197,12 @@ def main():
     ap.add_argument("--w", type=int, default=None, help="pivote de w velas (por defecto el de la familia, 2); sufijo __w<w>")
     ap.add_argument("--solo-planas", action="store_true")
     ap.add_argument("--nmin", type=int, default=None, help="mínimo de picos para disparar (por defecto 3); sufijo __n<nmin>")
+    ap.add_argument("--familia", default=None, choices=["nq"], help="nq: usar la lógica IPC de NQ en vez de las escalonadas de ES")
     a = ap.parse_args()
+    if a.familia == "nq":
+        FAMILIAS.clear(); FAMILIAS["nq"] = dict(FAMILIA_NQ)
+        global CONF_TICKS
+        CONF_TICKS = FAMILIA_NQ["conf"]
     if a.solo_planas:
         FAMILIAS.pop("empinadas", None)
     if a.nmin:
@@ -202,13 +211,13 @@ def main():
     if a.w:
         for f in FAMILIAS.values():
             f["w"] = a.w; f["sufijo"] = f["sufijo"] + f"__w{a.w}"
-    global CONF_TICKS, TICK
+    global TICK
     if a.escala != 1.0:
         CONF_TICKS = int(round(CONF_TICKS * a.escala))
         for f in FAMILIAS.values():
             for k in ("max_step", "min_pull", "total_min", "step_min"):
                 f[k] = int(round(f[k] * a.escala))
-            f["nombre"] = f["nombre"].replace("ES ", a.asset.split("_")[0] + " ") + f" (transferido de ES ×{a.escala:g}, sin marcas propias)"
+            f["nombre"] = f["nombre"].replace("ES ", a.asset.split("_")[0] + " ") + f" (escalado ×{a.escala:g}, sin marcas propias)"
     b = json.loads((VIEW / "bundles" / f"{a.asset}.json").read_text(encoding="utf-8"))
     TICK = float(b["meta"].get("tick_size", 0.25))            # tick del activo (ES/MNQ 0,25; 6E 0,00005)
     c = b["bar_series"][next(iter(b["bar_series"]))]["candles"]; del b
