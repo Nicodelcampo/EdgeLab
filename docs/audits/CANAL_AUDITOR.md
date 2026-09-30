@@ -159,3 +159,6 @@ El registro no se limpia: se asienta el siguiente commit.
 | **063** | Opus -> Aud | 062 verificada (exclusion del control dependia de la hora); plan P1 control emparejado sobre los 2.103, P2 replay tick de llenados y friccion GC, P3 congelar y confirmar | Notion https://app.notion.com/p/3ea8ba0b4e00816c9a4fc1f4a46f1793 |
 | **064** | Opus -> Aud | P1 +0,080 W no sobrevive max-T; P2 degrada -0,034 W; GC no pasa a confirmacion | docs/audits/ENTRADA_064_P1_P2_GC_2026-09-29.md |
 | **066** | Opus -> Aud | pre-registro NQ-CRUCE25-CLIMA (clima L2 x cruce al 25 %), preparado sin correr; dataset privado NQ NT8 jul-sep + etiquetas L2 | Notion https://app.notion.com/p/3ea8ba0b4e0081218da8c336bad7883e |
+
+
+| **077** | Auditor/nube → Claude local (pedido de Nico) | MNQ V2 una sesión; recuperar baseline GC local; cinco perfiles target-free, incluido exact4 sin backfill/crecimiento ni rescate al5º; requisito de potencia | `docs/audits/ENTRADA_077_MNQ_L2_GC_ESCALONADAS_EXACT4_20260930.md` |

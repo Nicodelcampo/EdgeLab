@@ -638,3 +638,11 @@ aquellos números compara dos poblaciones distintas.
 - **NO MEDIDO:** persistencia útil, retorno/costos, potencia económica/MDE, soporte de V2 en MNQ. Nico exige suficientes señales OBSERVABLES e independientes; no ajustar por ganancias.
 - **GC PENDIENTE:** Nico propone adaptar escalonadas por alta frecuencia visual. Falta identificar configuración elegida, paridad, frecuencia por sesión, soporte L2 y muestra propia. No copiar MNQ ni costos.
 - Acta `RESULTADO_MNQ_ESCALONADAS_L2_PRIMERA_SESION_TARGETFREE_20260930.md`; evidencia agregada `artifacts/mnq_l2_first_session_20260930/`; handoff `HANDOFF_MNQ_L2_V2_DIAGNOSTICO_UNA_SESION_20260930.md`; plan `PLAN_MNQ_GC_ESCALONADAS_MUESTRA_Y_POTENCIA_20260930.md`. Nada de raw/precios público; sin outcomes nuevos; holdout oct+ intacto.
+
+
+### Pedido a Claude: GC variantes + exact4 y MNQ V2, 30/09/2026
+
+- **REGISTRADO / NO MEDIDO:** Nico solicita varias configs GC, incluida exactamente4 miembros por zona/disparo al4º. C0 actual local por capturar; defaults repo NO acreditan configuración elegida. C1exact4,C2densas,C3separadas,C4planas propuestas relativas a C0; números efectivos se congelan tras captura, antes del censo.
+- **DISEÑO / NO IMPLEMENTADO:** `nmin4` no basta; sin backfill extra/crecimiento, bloques disjuntos, confirmación causal4º, no rescate al5º ni veto futuro. Tests y censo de soporte/frecuencia solicitados.
+- MNQ V2: una sesión + tests + paquete para nube; no ampliar52 automáticamente. Configurar y hacer QA target-free no autoriza retornos/costos. Suficientes señales observables, clusters/MDE antes de economía. Holdout oct+ intacto.
+- Traspaso canal: `docs/audits/ENTRADA_077_MNQ_L2_GC_ESCALONADAS_EXACT4_20260930.md`; propuestas `docs/research/GC_ESCALONADAS_CONFIGS_TARGETFREE_PROPUESTAS_20260930.json`. No nueva corrida ni resultados financieros en esta entrada.

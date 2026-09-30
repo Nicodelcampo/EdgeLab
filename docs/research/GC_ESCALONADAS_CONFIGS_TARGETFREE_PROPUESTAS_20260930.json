@@ -1,0 +1,54 @@
+{
+  "schema": "edgelab.gc_escalonadas.targetfree_config_proposals/1",
+  "scope": "DRAFT_TARGETFREE_ONLY_NO_OUTCOMES",
+  "head_reference": "e9fa30275e72760cb6f02376566d3ac774959bed",
+  "current_gc_config_status": "LOCAL_CAPTURE_REQUIRED_NOT_KNOWN_IN_REPO",
+  "baseline_source": {
+    "path": "tools/escalonadas_det.py",
+    "blob": "bcf4fce0476c0570712f1b08b5a081b93c80685c"
+  },
+  "rounding": "floor(x+0.5) nonnegative; gap/pull minimum1; max_step minimum0",
+  "common": "same asset/bar grain/window/clock as verified C0; no future-selected rows",
+  "variants": [
+    {
+      "id": "C0_ACTUAL",
+      "inherit": "LOCAL_VERIFIED_CONFIG",
+      "override": {},
+      "lifecycle": "unchanged"
+    },
+    {
+      "id": "C1_EXACT4",
+      "inherit": "C0_ACTUAL",
+      "override": {},
+      "lifecycle": "EXACTLY4_DISTINCT_CAUSAL_MEMBERS; freeze on first confirmation of4; disjoint blocks; no backfill extras; no fifth rescue"
+    },
+    {
+      "id": "C2_EXACT4_DENSAS",
+      "inherit": "C1_EXACT4",
+      "override": {
+        "max_gap": "round(0.75*C0.max_gap) min1",
+        "min_pull": "round(0.75*C0.min_pull) min1"
+      }
+    },
+    {
+      "id": "C3_EXACT4_SEPARADAS",
+      "inherit": "C1_EXACT4",
+      "override": {
+        "max_gap": "round(1.5*C0.max_gap) min1",
+        "min_pull": "round(1.5*C0.min_pull) min1",
+        "dmax": "round(1.5*C0.dmax) if finite active maximum; else preserve unbounded mode"
+      }
+    },
+    {
+      "id": "C4_EXACT4_PLANAS",
+      "inherit": "C1_EXACT4",
+      "override": {
+        "max_step": "round(0.5*C0.max_step) min0",
+        "total_min": 0,
+        "step_min": 0
+      }
+    }
+  ],
+  "finance_authorized": false,
+  "deduplicate_identical_effective_profiles_before_census": true
+}
