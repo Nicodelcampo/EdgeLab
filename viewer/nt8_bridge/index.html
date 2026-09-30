@@ -4174,6 +4174,29 @@
           ctx.fillStyle = idx <= kd ? "rgba(" + col + ",0.95)" : "rgba(" + col + ",0.35)";
           ctx.beginPath(); ctx.moveTo(xp, yp); ctx.lineTo(xp - 4, yp + o * 7); ctx.lineTo(xp + 4, yp + o * 7); ctx.closePath(); ctx.fill();
         });
+        // ?sl=<ticks>&tp=<R>: posición visual desde el punto de detección (exploración, sin costos; orden intravela
+        // ambiguo: si una vela toca SL y TP, se marca SL)
+        var qsp = new URLSearchParams(window.location.search), slT = parseFloat(qsp.get("sl")), tpR = parseFloat(qsp.get("tp"));
+        if (isFinite(slT) && isFinite(tpR) && slT > 0 && tpR > 0) {
+          var tkz = (state.data && state.data.meta && state.data.meta.tick_size) || 0.25, sd = z.kind === "H" ? -1 : 1;
+          var en = z.det_precio, slP = en - sd * slT * tkz, tpP = en + sd * slT * tpR * tkz;
+          if (z._pos === undefined || z._posKey !== slT + "|" + tpR) {
+            var ex = null, why = "fin";
+            for (var kk = z.det_i + 1; kk < Math.min(cd.length, z.det_i + 1500); kk++) {
+              var bb = cd[kk], hitS = sd === -1 ? bb.high >= slP : bb.low <= slP, hitT = sd === -1 ? bb.low <= tpP : bb.high >= tpP;
+              if (hitS) { ex = kk; why = "SL"; break; } if (hitT) { ex = kk; why = "TP"; break; }
+            }
+            z._pos = { ex: ex === null ? Math.min(cd.length - 1, z.det_i + 1500) : ex, why: why }; z._posKey = slT + "|" + tpR;
+          }
+          var xs = X(z.det_i, z.det_t), xe2 = X(z._pos.ex, (cd[z._pos.ex] || {}).time);
+          if (isFinite(xs) && isFinite(xe2)) {
+            var ye = Y(en), ys = Y(slP), yt = Y(tpP);
+            ctx.fillStyle = "rgba(220,38,38,0.18)"; ctx.fillRect(xs, Math.min(ye, ys), xe2 - xs, Math.abs(ys - ye));
+            ctx.fillStyle = "rgba(22,163,74,0.16)"; ctx.fillRect(xs, Math.min(ye, yt), xe2 - xs, Math.abs(yt - ye));
+            ctx.fillStyle = z._pos.why === "TP" ? "rgba(22,163,74,1)" : (z._pos.why === "SL" ? "rgba(220,38,38,1)" : "rgba(100,116,139,1)");
+            ctx.fillText(z._pos.why + (z._pos.why === "TP" ? " +" + tpR + "R" : z._pos.why === "SL" ? " −1R" : ""), xe2 + 3, z._pos.why === "TP" ? yt : ys);
+          }
+        }
         var xd = X(z.det_i, z.det_t), yd = Y(z.det_precio), yn = Y(z.det_nivel);
         if (isFinite(xd)) {
           ctx.strokeStyle = "rgba(37,99,235,0.9)"; ctx.lineWidth = 1; ctx.setLineDash([2, 2]);
