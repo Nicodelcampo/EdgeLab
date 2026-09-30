@@ -711,3 +711,9 @@ Acta: `RESULTADO_L2_ASOF_GC_Y_PREPARACION_ESPEJO_20260930.md`; plan, protocolo y
 Quotes abiertas positivas, por registro:ES21.174.154/22.835.655=92,7240930904% de1tick;GC97.852/2.546.869=3,8420507690%. Proxy export, no tiempo ponderado ni costo ejecutable. Auditoría pandas independiente concilia raw;6tests/8prefijos/48paridades familia-fecha con detector original PASS; repetición igual.
 
 **NO MEDIDO:** L2 ES, ventaja/predicción/fills/P&L/potencia independiente. Publicación raw ABSTAIN; climas ES STOP no rescatados. Acta `RESULTADO_ES_IPC_TICK_SUPPORT_20260930.md`; evidencia `artifacts/es_ipc_tick_support_20260930/evidence.json`; código `tools/es_ipc_tick_support.py`. Sin recalibración/visores/raw al repo.
+
+## Continuación puente L2 GC / ES — 30/09/2026
+
+**MEDIDO ingeniería target-free:** preflight instrument-neutral con custodia/manifiesto/grilla propia y tape ordenado sinnearest.14testsPASS, fixtureES sintética end-to-endPASS (NO L2ESreal). Semántica NT8 conserva L1 DAILY_VOLUME/otros no-trade y cola level10; solo LAST=2 al tape. GCMay31 13.913printsPASS;Jun15 92.515prints/5timestampsdistintos yprecio/volumenidénticos ABSTAIN. Raw sincorregir.
+
+**NO MEDIDO:** bookESreal/másGC/replaynuevo/predicción/P&L/fills/costos/potencia. ListadoKaggleaccesible sólo2L2GC;noESrawexpuesto. Pedido mínimo local en `ENTREGA_LOCAL_L2_GC_ES_20260930.md`;borradormanifiesto50%vsbaseline precio NO aprobado/noejecutable. Acta `RESULTADO_L2_PAIRING_GC_ES_20260930.md`;evidencia `artifacts/l2_pairing_next_20260930/evidence.json`. Visores/C0/climasSTOP/holdoutintactos.
