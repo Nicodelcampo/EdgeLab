@@ -190,7 +190,14 @@ def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--asset", required=True)
     ap.add_argument("--conf", default="velas", choices=["velas", "precio"], help="precio: confirmación a CONF_TICKS del pico")
     ap.add_argument("--escala", type=float, default=1.0, help="multiplica todo lo que está en ticks (transferencia a otro activo sin re-marcar)")
+    ap.add_argument("--w", type=int, default=None, help="pivote de w velas (por defecto el de la familia, 2); sufijo __w<w>")
+    ap.add_argument("--solo-planas", action="store_true")
     a = ap.parse_args()
+    if a.solo_planas:
+        FAMILIAS.pop("empinadas", None)
+    if a.w:
+        for f in FAMILIAS.values():
+            f["w"] = a.w; f["sufijo"] = f["sufijo"] + f"__w{a.w}"
     global CONF_TICKS
     if a.escala != 1.0:
         CONF_TICKS = int(round(CONF_TICKS * a.escala))

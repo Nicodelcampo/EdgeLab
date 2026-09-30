@@ -25,6 +25,7 @@ VIEW = REPO / "viewer" / "nt8_bridge"
 TICK, RT, HZ, N_CTRL, SEED, TOD_WIN = 0.25, 3.0, 1500, 3, 20260930, 1800
 ESCALAS = {1: 5, 6: 14, 20: 26}                     # k → SL base en ticks
 MULT, TPS, BES = (1, 2, 4), (1, 2, 3, 5, 10), (0, 1, 2)
+ENTRADAS = ("velas_w2", "velas_w1", "precio_stop", "precio_lim50", "precio_lim25", "anticipada_2p")
 FASES = {
     "descubrimiento": [("MNQ_09-25_202508", None, None), ("MNQ_09-25_202509", None, "20250910"),
                        ("MNQ_12-25_202509", "20250911", None), ("MNQ_12-25_202510", None, None), ("MNQ_12-25_202511", None, None),
@@ -35,18 +36,19 @@ FASES = {
 
 def celdas():
     out = []
-    for k, base in ESCALAS.items():
-        for m in MULT:
-            for tp in TPS:
-                for be in BES:
-                    if be == 0 or tp > be:
-                        out.append((k, base * m, tp, be))
+    for ent in ENTRADAS:
+        for k, base in ESCALAS.items():
+            for m in MULT:
+                for tp in TPS:
+                    for be in BES:
+                        if be == 0 or tp > be:
+                            out.append((ent, k, base * m, tp, be))
     return out
 
 
 def key(c):
-    k, sl, tp, be = c
-    return f"{25 * k}t|SL{sl}|TP{tp}R|BE{be}"
+    ent, k, sl, tp, be = c
+    return f"{ent}|{25 * k}t|SL{sl}|TP{tp}R|BE{be}"
 
 
 def load_asset(aid):
@@ -106,8 +108,9 @@ def main():
         okses = np.array([(lo is None or s >= lo) and (hi is None or s <= hi) for s in D["ses"]])
         for k in ESCALAS:
             G = agg(D, k); nb = len(G["c"])
-            layer = f"{aid}_25T_HFT__precio" if k == 1 else f"{aid}_{25 * k}T__precio"
-            Z = json.loads((VIEW / "bundles" / "peaks_det" / f"{layer}.json").read_text(encoding="utf-8"))["zonas"]
+            base = f"{aid}_25T_HFT" if k == 1 else f"{aid}_{25 * k}T"
+            capas = {suf: json.loads((VIEW / "bundles" / "peaks_det" / f"{base}{suf}.json").read_text(encoding="utf-8"))
+                     for suf in ("__precio", "", "__w1")}
             vol = vol_rms(G["c"]); cut = np.nanquantile(vol, [1 / 3, 2 / 3]); ter = np.where(np.isnan(vol), -1, np.digitize(vol, cut))
             tod = G["t"].astype(np.int64) % 86400
             same_next = np.r_[G["bar_ses"][1:], -1] == G["bar_ses"]
@@ -120,48 +123,96 @@ def main():
                 e = G["bar_tick"][kk] if G["bar_ses"][kk] == G["bar_ses"][kb] else ses_last_tick[G["bar_ses"][kb]]
                 return min(e, ses_last_tick[G["bar_ses"][kb]], n_ticks)
 
+            def win_end(kb, nbars):
+                kk = min(kb + nbars, nb - 1)
+                return min(G["bar_tick"][kk], ses_last_tick[G["bar_ses"][kb]], n_ticks)
+
             def fill_stop(i0, i1, side, lvl):
                 for i in range(i0, min(i1, n_ticks)):
                     if (side == 1 and D["px"][i] >= lvl) or (side == -1 and D["px"][i] <= lvl):
                         return i
                 return -1
 
-            ev = []
-            for z in Z:
+            def fill_limit(i0, i1, side, lvl, through):
+                for i in range(i0, min(i1, n_ticks)):
+                    if (side == 1 and D["px"][i] <= lvl - through) or (side == -1 and D["px"][i] >= lvl + through):
+                        return i
+                return -1
+
+            def pool_for(kb, s):
+                dt = np.abs(tod[cand] - tod[kb]); dt = np.minimum(dt, 86400 - dt)
+                return cand[(G["bar_ses"][cand] != s) & okses[G["bar_ses"][cand]] & (dt <= TOD_WIN) & (ter[cand] == ter[kb])]
+
+            def controles(kb, s, side, modo, dist, vig, through):
+                pool = pool_for(kb, s); out = []; tries = 0
+                while len(out) < N_CTRL and tries < 30 and len(pool):
+                    q = int(rng.choice(pool)); tries += 1
+                    t0 = G["bar_tick"][q + 1]; ref = D["px"][t0]
+                    if modo == "mercado":
+                        out.append((q, t0, D["bid"][t0] if side == -1 else D["ask"][t0])); continue
+                    if modo == "stop":
+                        cf = fill_stop(t0, win_end(q, 21), side, ref + side * dist)
+                        if cf >= 0:
+                            out.append((q, cf, D["bid"][cf] if side == -1 else D["ask"][cf]))
+                    else:
+                        lv = ref - side * dist
+                        cf = fill_limit(t0, win_end(q, vig + 1), side, lv, through)
+                        if cf >= 0:
+                            out.append((q, cf, lv))
+                return out if len(out) == N_CTRL else None
+
+            ev = {e: [] for e in ENTRADAS}
+            for z in capas["__precio"]["zonas"]:
                 kb = z["det_i"]; s = G["bar_ses"][kb]
                 if not okses[s] or kb + 1 >= nb or not same_next[kb]:
                     continue
-                side = -1 if z["kind"] == "H" else 1; lvl = z["det_precio"] / TICK; a0 = G["bar_tick"][kb]
-                f = fill_stop(a0, a0 + 25 * k, side, lvl)
+                side = -1 if z["kind"] == "H" else 1; T = z["det_precio"] / TICK; P = z["det_nivel"] / TICK; a0 = G["bar_tick"][kb]
+                f = fill_stop(a0, a0 + 25 * k, side, T)
                 if f < 0:
                     continue
-                dist = max(1.0, abs(G["o"][kb] - lvl))
-                dt = np.abs(tod[cand] - tod[kb]); dt = np.minimum(dt, 86400 - dt)
-                pool = cand[(G["bar_ses"][cand] != s) & okses[G["bar_ses"][cand]] & (dt <= TOD_WIN) & (ter[cand] == ter[kb])]
-                ctrl = []; tries = 0
-                while len(ctrl) < N_CTRL and tries < 30 and len(pool):
-                    q = int(rng.choice(pool)); tries += 1
-                    t0 = G["bar_tick"][q + 1]; ref = D["px"][t0]
-                    cf = fill_stop(t0, G["bar_tick"][min(q + 21, nb - 1)], side, ref + side * dist)
-                    if cf >= 0:
-                        ctrl.append((q, cf))
-                if len(ctrl) == N_CTRL:
-                    ev.append((kb, side, f, ctrl, s))
-            desc[f"{aid}|{25 * k}t"] = dict(zonas=len(Z), eventos=len(ev))
-            print(aid, 25 * k, "zonas", len(Z), "eventos", len(ev), flush=True)
-            for c in CELLS:
-                if c[0] != k:
+                c0 = controles(kb, s, side, "stop", max(1.0, abs(G["o"][kb] - T)), 20, 0)
+                if c0:
+                    ev["precio_stop"].append((kb, side, f, D["bid"][f] if side == -1 else D["ask"][f], c0, s))
+                for nm, x in (("precio_lim50", 0.5), ("precio_lim25", 0.75)):
+                    L = float(np.round(T + (P - T) * x))
+                    fl = fill_limit(f + 1, win_end(kb, 21), side, L, 1)
+                    if fl >= 0:
+                        cl = controles(kb, s, side, "limite", max(1.0, abs(L - T)), 20, 1)
+                        if cl:
+                            ev[nm].append((kb, side, fl, L, cl, s))
+            for suf, nm in (("", "velas_w2"), ("__w1", "velas_w1")):
+                for z in capas[suf]["zonas"]:
+                    kb = z["det_i"]; s = G["bar_ses"][kb]
+                    if not okses[s] or kb + 1 >= nb or not same_next[kb]:
+                        continue
+                    side = -1 if z["kind"] == "H" else 1; f = G["bar_tick"][kb + 1]
+                    cm = controles(kb, s, side, "mercado", 0, 0, 0)
+                    if cm:
+                        ev[nm].append((kb, side, f, D["bid"][f] if side == -1 else D["ask"][f], cm, s))
+            for cnd in capas[""].get("candidatas", []):
+                kb = cnd["cand_i"]; s = G["bar_ses"][kb]
+                if not okses[s] or kb + 1 >= nb or not same_next[kb]:
                     continue
-                _, sl, tp, be = c
-                for kb, side, f, ctrl, s in ev:          # todas las detecciones (el manifiesto no limita superposición)
-                    entry = D["bid"][f] if side == -1 else D["ask"][f]
+                side = -1 if cnd["kind"] == "H" else 1; N = cnd["nivel"] / TICK; L = N + side
+                fl = fill_limit(G["bar_tick"][kb + 1], win_end(kb, 16), side, L, 1)
+                if fl >= 0:
+                    cl = controles(kb, s, side, "limite", max(1.0, abs(G["c"][kb] - L)), 15, 1)
+                    if cl:
+                        ev["anticipada_2p"].append((kb, side, fl, L, cl, s))
+            desc[f"{aid}|{25 * k}t"] = {e: len(v) for e, v in ev.items()}
+            print(aid, 25 * k, desc[f"{aid}|{25 * k}t"], flush=True)
+            for c in CELLS:
+                ent, kc, sl, tp, be = c
+                if kc != k:
+                    continue
+                for kb, side, f, entry, ctrl, s in ev[ent]:
                     e = end_tick(kb)
                     if f + 1 >= e:
                         continue
                     pnl, why = PV.ticks_sim(side, f + 1, e, entry, float(sl), float(tp), float(be), D["px"], D["bid"], D["ask"], 1)
                     cr = []
-                    for q, cf in ctrl:
-                        ce = D["bid"][cf] if side == -1 else D["ask"][cf]; e2 = end_tick(q)
+                    for q, cf, ce in ctrl:
+                        e2 = end_tick(q)
                         if cf + 1 >= e2:
                             cr.append(np.nan); continue
                         p2, _ = PV.ticks_sim(side, cf + 1, e2, ce, float(sl), float(tp), float(be), D["px"], D["bid"], D["ask"], 1)
@@ -169,7 +220,7 @@ def main():
                     if np.isnan(cr).any():
                         continue
                     rows[key(c)].append(dict(ses=base_ses + int(s), R=(pnl - RT) / sl, Rb=pnl / sl, why=int(why), ctrl=cr,
-                                             ctrl_ses=[base_ses + int(G["bar_ses"][q]) for q, _ in ctrl]))
+                                             ctrl_ses=[base_ses + int(G["bar_ses"][q]) for q, _, _ in ctrl]))
         del D
     info, fam = [], []
     for kk, X in rows.items():
