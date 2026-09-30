@@ -198,7 +198,7 @@ def main():
     if a.w:
         for f in FAMILIAS.values():
             f["w"] = a.w; f["sufijo"] = f["sufijo"] + f"__w{a.w}"
-    global CONF_TICKS
+    global CONF_TICKS, TICK
     if a.escala != 1.0:
         CONF_TICKS = int(round(CONF_TICKS * a.escala))
         for f in FAMILIAS.values():
@@ -206,6 +206,7 @@ def main():
                 f[k] = int(round(f[k] * a.escala))
             f["nombre"] = f["nombre"].replace("ES ", a.asset.split("_")[0] + " ") + f" (transferido de ES ×{a.escala:g}, sin marcas propias)"
     b = json.loads((VIEW / "bundles" / f"{a.asset}.json").read_text(encoding="utf-8"))
+    TICK = float(b["meta"].get("tick_size", 0.25))            # tick del activo (ES/MNQ 0,25; 6E 0,00005)
     c = b["bar_series"][next(iter(b["bar_series"]))]["candles"]; del b
     cd = {k: np.array([x[v] for x in c], float) for k, v in (("t", "time"), ("h", "high"), ("l", "low"), ("c", "close"))}; del c
     days = len(set((cd["t"] // 86400).astype(int)))
