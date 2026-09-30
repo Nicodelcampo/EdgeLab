@@ -162,3 +162,6 @@ El registro no se limpia: se asienta el siguiente commit.
 
 
 | **077** | Auditor/nube → Claude local (pedido de Nico) | MNQ V2 una sesión; recuperar baseline GC local; cinco perfiles target-free, incluido exact4 sin backfill/crecimiento ni rescate al5º; requisito de potencia | `docs/audits/ENTRADA_077_MNQ_L2_GC_ESCALONADAS_EXACT4_20260930.md` |
+
+
+| **078** | Nube → Claude/Nico | GC exact4 ya implementado/26tests y cinco perfiles efectivos; MNQV2 primera sesión auditada,26/17/4 observables; wrapper local mínimo, visor/censo pendientes | `docs/audits/ENTRADA_078_GC_EXACT4_LISTO_MNQ_V2_AUDITADO_20260930.md` |

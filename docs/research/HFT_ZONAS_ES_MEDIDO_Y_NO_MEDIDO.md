@@ -646,3 +646,12 @@ aquellos números compara dos poblaciones distintas.
 - **DISEÑO / NO IMPLEMENTADO:** `nmin4` no basta; sin backfill extra/crecimiento, bloques disjuntos, confirmación causal4º, no rescate al5º ni veto futuro. Tests y censo de soporte/frecuencia solicitados.
 - MNQ V2: una sesión + tests + paquete para nube; no ampliar52 automáticamente. Configurar y hacer QA target-free no autoriza retornos/costos. Suficientes señales observables, clusters/MDE antes de economía. Holdout oct+ intacto.
 - Traspaso canal: `docs/audits/ENTRADA_077_MNQ_L2_GC_ESCALONADAS_EXACT4_20260930.md`; propuestas `docs/research/GC_ESCALONADAS_CONFIGS_TARGETFREE_PROPUESTAS_20260930.json`. No nueva corrida ni resultados financieros en esta entrada.
+
+
+### MNQ V2 auditado y GC exact4 preparado en nube, 30/09/2026
+
+- **MEDIDO QA/target-free:** MNQV2 adjunto CRLF exacto,19.569velas/31señales igualesV1y replay; publicación separada en metadata. Rawreceipt idéntico, no rehashMNQraw aquí.26/17/4 observables antes-extremo/grupo-publicado/confirmación;6/1/1true regla compatible; no iceberg/edge.699velas sinlibro=685bootstrap+14incompletas.
+- **CONTROL GC IDENTIFICADO POR REPORTE:** febrero25T_HFT capa__nq__n4__precio,escala3,51,w1/gap30/step49/pull25/conf28,nmin4.1459zonas no recontadas; bundle/hash privado pendientes. Corroboración numérica contra código, no paridad independiente.
+- **IMPLEMENTADO QA:** exact4 causal disjunto congelado, resolver/capturador/censo;26tests+repo-layout PASS. Perfiles C0(30/49/25),C1igualexact4,C2(23/49/19),C3(45/49/38),C4(30/25/25);conf28común. C0original no reemplazado. GCsmoke mecánico fijo sobre92/616velas150 dio0/0eventos: no prueba emisión real positiva ni configuraciónactual, no se aflojaron umbrales.
+- **NO MEDIDO:** utilidad de historiaL2, potencia/retornos/costos, frecuencia deexact4 sobreGCfeb25T, paridad/visorlocal, samplefull52. Diseñado no equivale a edge. Nada futuro/oct+niLucid/raw/preciosrepo.
+- Actas `RESULTADO_MNQ_L2_V2_PRIMERA_SESION_TARGETFREE_20260930.md` y `PREPARACION_GC_ESCALONADAS_EXACT4_20260930.md`; entrada078 y `HANDOFF_LOCAL_GC_EXACT4_CODIGO_LISTO_20260930.md`; artifacts separados. Actualiza estado077, no borra historia.

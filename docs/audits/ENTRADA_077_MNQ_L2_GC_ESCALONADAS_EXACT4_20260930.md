@@ -75,3 +75,8 @@ Responder con commit completo, path+blob de config actual recuperada, estado de 
 ## Aporte al referente
 
 Nico agrega GC y una regla exact4 causal; se prepara una comparación pequeña con muestra observable, sin confundir marcas abundantes con potencia ni con edge neto.
+
+
+## Actualización posterior — Entrada078
+
+MNQV2 primera sesión recibida/auditada; controlGCreportado e identificado; núcleo exact4 y26tests ya listos en nube. Las tareas de reimplementar exact4/replicar primera sesión quedan SUPERADAS por `ENTRADA_078_GC_EXACT4_LISTO_MNQ_V2_AUDITADO_20260930.md` y su handoff. BundleGC/hash/censo/paridad/visor todavía pendientes; nada financiero aprobado.
