@@ -686,3 +686,14 @@ Acta: `RESULTADO_L2_ASOF_GC_Y_PREPARACION_ESPEJO_20260930.md`; plan, protocolo y
 **ABSTAIN separado:** June15 precio/volumen secuencia completa coincide pero5timestampdifieren6,877–34,877ms. Sin reparar/redondear/rellenar. Correspondencia certificadaempíricamente sóloMay31/política previa, nootrasfechas/fills/latencia/interleavingMBO.
 
 **NO MEDIDO:** zonas/espejosreales enlazados, predictibilidad/retornos/modelos/P&L/potencia/ventaja. No sustituyebarrasGCfeb niapruebacalibración detector. Holdout intacto. Datos/eventos/preciosprivados, acta/código/registro enmismocommit. Acta: `RESULTADO_GC_KAGGLE_TICKS_X_L2_TARGETFREE_20260930.md`; plan aparte; evidencia `artifacts/gc_tick_l2_join_20260930/evidence.json`.
+
+
+## GC eventos × L2 con lógicas actuales — 30/09/2026
+
+**MEDIDO target-free:** May31GC08-26,556barras25operaciones, fuenteKaggle y L2 verificada. C0min4/C1exact4/C2densas/C3separadas/C4planas=8/8/10/5/3eventos; libroestructuralprevioPASS en todos. Nivelvisible=1/1/1/0/0.34registros NOindependientes,18claves(barra,lado,nivel), no18trades iid. Parámetros sinajuste.
+
+**Espejo:** `.detect`defaults(minW17,maxbars20,retr0.3), sinrun/procesar/estadosposteriores:161A/Bconfirmados y1sinconfirmarpor tiempo.161registrosL2PASS, Avisible17.50%:58prospectivosL2PASS/Avisible5;30tardíos enprimeraobservación,3Ayaalcanzado y70nuevoextremoBanteslandmark. Todosreceiptsconciliados. Noacierto/fracaso económico ni llegadasposteriores aA.
+
+**QA:** 7tests yprefix200barrasPASS;286paquetesverificadoscontrafronterasraw/fórmulas/visibilidad. PublicaciónL2 estrictamenteanterior; eventoenprimerrawtimestampmayor al cierre. Edadmax zonas2880ms/registros3688ms/landmarks6904ms;freshnessoperativono ratificado.
+
+**NO MEDIDO:** predicción/retornos/P&L/fills/costos/potencia; no selección deperfilporbeneficio ni ajusteparamétrico; noGCfeb,Jun15ABSTAIN,holdoutintacto. Acta `RESULTADO_GC_EVENTOS_L2_LOGICAS_ACTUALES_20260930.md`; código `tools/gc_current_logic_l2_census.py`; evidencia `artifacts/gc_events_l2_20260930/evidence.json`. Privados/eventos/preciosfuera repo. Código/acta/registroen mismocommit.
