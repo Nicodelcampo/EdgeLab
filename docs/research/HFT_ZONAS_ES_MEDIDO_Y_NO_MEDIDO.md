@@ -525,3 +525,11 @@ aquellos números compara dos poblaciones distintas.
   Registrada, no ejecutada; requiere bajar densidad (≈ 700 zonas/sesión) y pre-registro. `IDEA_IPC_DIRECCION_ESCALERA_20260929.md`.
 - **NO MEDIDO 29/09 — IDEA ES-ESCALONADAS (3–4 picos) + entrada en retroceso:** geometría de 45 marcas de Nico y
   detector ajustado (F1 0,49), pendiente de juicio ✓/✗. Sin outcomes causales. `IDEA_ES_ESCALONADAS_ENTRADA_RETROCESO_20260929.md`.
+
+
+## Anexo 29/09 — ES-ESCALONADAS: auditoría de precongelamiento (sin retornos)
+
+- **SNAPSHOT, NO CONGELAMIENTO OPERATIVO:** PLANAS/EMPINADAS v2 y confirmación por precio 2 ticks registrados con hash de parámetros y de `escalonadas_det.py`/`peaks_rule.py` en `ES_ESCALONADAS_SNAPSHOT_PRECONGELAMIENTO_20260929.json`; originales y visor intactos.
+- **MEDIDO sólo sintético:** 128 caminos (64 semillas × 2 familias), 101 detecciones, 0 discrepancias de campos de detección frente a sus prefijos. Referencia AST sin JIT; no certifica CLI completo, precio intravela ni fills. `artifacts/es_escalonadas_audit_20260929/synthetic_evidence.json`.
+- **BLOQUEOS:** `det_t` copia `candles.time` sin contrato de apertura/cierre ni timestamp del cruce; `det_precio` es umbral, no fill; geometría final no es estado al disparo. Faltan bundle/ticks fuente, proveedor, sesiones canónicas, versión por tanda de juicios y paridad detector/visor. `AUDITORIA_PRECONGELAMIENTO_ES_ESCALONADAS_20260929.md`.
+- **NO MEDIDO:** retornos, costos, MDE/test familiar, réplica, defensa L2. Manifiesto + OK de Nico siguen obligatorios. No se publicaron capas ni resultados derivados de geometrías con proveedor sin verificar; sólo código/configuración existente y sintético. Holdout intacto.
