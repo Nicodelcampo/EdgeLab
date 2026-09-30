@@ -38,7 +38,7 @@
   function J() { var id = cur().id; L.juicios[id] = L.juicios[id] || { veredicto: null, picos: [] }; return L.juicios[id]; }
   function status() {
     var n = Object.values(L.juicios).filter(function (j) { return j.veredicto; }).length;
-    return "Espejo " + (k + 1) + " de " + D.eventos.length + " (" + cur().id + ", " + (cur().dir === 1 ? "impulso alcista" : "impulso bajista") + ") · juzgados " + n +
+    return (q.get("revisar") === "picos" ? "[marcar picos] " : "") + "Espejo " + (k + 1) + " de " + D.eventos.length + " (" + cur().id + ", " + (cur().dir === 1 ? "impulso alcista" : "impulso bajista") + ") · juzgados " + n +
       (J().veredicto ? " · este: " + J().veredicto : "");
   }
   function show() {
@@ -84,7 +84,12 @@
   Promise.all([fetch("bundles/blind/espejo_" + asset + ".json").then(function (r) { return r.json(); }),
                fetch("labels/" + labName + ".json?v=" + Date.now()).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })])
     .then(function (r) { D = r[0]; if (r[1]) L = r[1];
+      if (q.get("revisar") === "picos") {                 // sólo los juzgados «hay picos», para marcar sus picos
+        D.eventos = D.eventos.filter(function (e) { return L.juicios[e.id] && L.juicios[e.id].veredicto === "picos"; });
+        var sinMarcar = D.eventos.findIndex(function (e) { return !L.juicios[e.id].picos.length; }); k = sinMarcar < 0 ? 0 : sinMarcar;
+      } else {
       var firstOpen = D.eventos.findIndex(function (e) { return !(L.juicios[e.id] && L.juicios[e.id].veredicto); }); k = firstOpen < 0 ? 0 : firstOpen;
+      }
       chart.applyOptions({ width: el.clientWidth, height: el.clientHeight }); show(); });
 })();
 </script>
