@@ -43,3 +43,18 @@ Enero solo da 41 zonas en 150t y 14 en 500t (sin potencia). Con OK de Nico, **de
 (sin feb-2026), contrato principal por tramo con roll el jueves 8 días antes del vencimiento: MNQ 09-25 hasta el
 10/09/2025, MNQ 12-25 del 11/09 al 10/12/2025, MNQ 03-26 desde el 11/12/2025. Controles tomados de otras sesiones del
 mismo bundle mensual. **Réplica única: mar-2026** (hasta el roll). Resto sin cambios.
+
+## Enmienda 2 (30/09, antes de ver resultados; la corrida se detuvo sin producir salida): eje de ENTRADA
+Pedido de Nico: las tres lógicas de detección/entrada propuestas al inicio + grillas de entrada en el retroceso.
+**6 entradas**, cada una sobre las 108 celdas escala × SL × TP × BE → **648 celdas, max-T sobre 648.**
+1. `velas_w2` — pico confirmado por 2 velas; entrada a mercado en el primer tick de la vela siguiente a la detección.
+2. `velas_w1` — igual, pivote de 1 vela (detector con w = 1, resto de parámetros iguales).
+3. `precio_stop` — confirmación por precio; orden stop en el nivel de disparo (la entrada original).
+4. `precio_lim50` — misma detección; orden límite al 50 % del camino disparo → pico, colocada al disparar, válida 20
+   velas de la escala; llena si opera 1 tick más allá del límite.
+5. `precio_lim25` — igual, al 25 % del pico (límite más profundo).
+6. `anticipada_2p` — candidata con 2 picos (w = 2); orden límite 1 tick antes del nivel del 2.º pico, válida 15 velas;
+   llena si el precio opera en el nivel.
+SL/TP/BE se miden siempre desde el precio de entrada. **Control con la misma mecánica de cada entrada:** mercado en vela
+al azar (1–2), stop a la misma distancia (3), límite a la misma distancia en contra y misma vigencia (4–6); si no se
+llena en su vigencia se re-sortea (máx. 30). Resto sin cambios.
