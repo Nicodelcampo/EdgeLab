@@ -44,6 +44,9 @@ jobs:
           # regeneration of core-bridge-dev.lock.
           pip install --no-deps --require-hashes -r requirements/jsonschema-ci.lock
 
+      - name: Install Playwright Chromium
+        run: python -m playwright install --with-deps chromium
+
       - name: Environment fingerprint
         run: |
           python -c "import sys, platform; print(sys.version); print(platform.platform())"
