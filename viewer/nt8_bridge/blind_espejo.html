@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Espejo × picos — calibración a ciegas</title>
+<script src="vendor/lightweight-charts.standalone.production.js"></script>
+<style>
+  :root { --bg:#fff; --fg:#0f172a; --mut:#64748b; --bd:#cbd5e1; --acc:#2563eb; }
+  body { margin:0; font:13px/1.4 system-ui,sans-serif; background:var(--bg); color:var(--fg); display:flex; flex-direction:column; height:100vh; }
+  header { padding:8px 12px; border-bottom:1px solid var(--bd); display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  header b { font-size:14px; }
+  #chart { flex:1; position:relative; }
+  button { font:inherit; padding:5px 10px; border:1px solid var(--bd); background:#f8fafc; border-radius:5px; cursor:pointer; }
+  button.si { background:#dcfce7; border-color:#16a34a; } button.no { background:#fee2e2; border-color:#dc2626; }
+  #st { color:var(--mut); } #hint { color:var(--mut); font-size:12px; }
+</style></head><body>
+<header>
+  <b>Espejo × picos · a ciegas</b><span id="st"></span>
+  <button id="prev">← anterior</button><button id="next">siguiente →</button>
+  <button class="si" id="bsi">Hay picos (P)</button><button class="no" id="bno">No hay picos (N)</button>
+  <button id="bdu">Dudoso (D)</button><button id="bz">Deshacer pico (Z)</button>
+  <span id="hint">Clic en una vela = marcar un pico (se pega al máximo o mínimo más cercano). El gráfico termina en el momento de decidir: el precio acaba de volver a A.</span>
+</header>
+<div id="chart"></div>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search), asset = q.get("asset") || "ES_03-26_202601_25T_HFT";
+  var labName = "blind_espejo_" + asset.replace(/[^A-Za-z0-9_\-]/g, "");
+  var D = null, L = { schema: "EDGELAB_BLIND_ESPEJO_V1", asset: asset, juicios: {} }, k = 0;
+  var el = document.getElementById("chart");
+  var chart = LightweightCharts.createChart(el, { layout: { background: { color: "#fff" }, textColor: "#334155" },
+    grid: { vertLines: { color: "#f1f5f9" }, horzLines: { color: "#f1f5f9" } }, timeScale: { timeVisible: true, secondsVisible: false } });
+  var ser = chart.addCandlestickSeries({ upColor: "#16a34a", downColor: "#dc2626", borderVisible: false, wickUpColor: "#16a34a", wickDownColor: "#dc2626" });
+  var lineA = null, lineB = null, ab = chart.addLineSeries({ color: "#2563eb", lineWidth: 2, lastValueVisible: false, priceLineVisible: false });
+  function save() {
+    fetch("api/labels/" + labName, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(L) })
+      .then(function (r) { document.getElementById("st").textContent = status() + (r.ok ? " · guardado" : " · NO se pudo guardar"); });
+  }
+  function cur() { return D.eventos[k]; }
+  function J() { var id = cur().id; L.juicios[id] = L.juicios[id] || { veredicto: null, picos: [] }; return L.juicios[id]; }
+  function status() {
+    var n = Object.values(L.juicios).filter(function (j) { return j.veredicto; }).length;
+    return "Espejo " + (k + 1) + " de " + D.eventos.length + " (" + cur().id + ", " + (cur().dir === 1 ? "impulso alcista" : "impulso bajista") + ") · juzgados " + n +
+      (J().veredicto ? " · este: " + J().veredicto : "");
+  }
+  function show() {
+    var e = cur(), t0 = e.velas.map(function (v) { return v[0]; });
+    // tiempos estrictamente crecientes para el gráfico (varias velas 100t pueden compartir segundo)
+    var tt = [], last = -1; t0.forEach(function (t) { var x = Math.max(Math.floor(t), last + 1); tt.push(x); last = x; });
+    e._tt = tt;
+    ser.setData(e.velas.map(function (v, i) { return { time: tt[i], open: v[1], high: v[2], low: v[3], close: v[4] }; }));
+    if (lineA) ser.removePriceLine(lineA); if (lineB) ser.removePriceLine(lineB);
+    lineA = ser.createPriceLine({ price: e.A, color: "#7c3aed", lineWidth: 1, lineStyle: 2, title: "A" });
+    lineB = ser.createPriceLine({ price: e.B, color: "#94a3b8", lineWidth: 1, lineStyle: 2, title: "B" });
+    ab.setData([{ time: tt[e.iA], value: e.A }, { time: tt[e.iB], value: e.B }, { time: tt[e.iCorte], value: e.A }]);
+    marks(); chart.timeScale().fitContent();
+    document.getElementById("st").textContent = status();
+  }
+  function marks() {
+    var e = cur(), m = [{ time: e._tt[e.iA], position: e.dir === 1 ? "belowBar" : "aboveBar", color: "#7c3aed", shape: "circle", text: "A" },
+                        { time: e._tt[e.iCorte], position: "inBar", color: "#7c3aed", shape: "square", text: "decidir" }];
+    J().picos.forEach(function (p) { m.push({ time: e._tt[p[0]], position: p[2] === "H" ? "aboveBar" : "belowBar", color: "#b45309", shape: p[2] === "H" ? "arrowDown" : "arrowUp", text: "pico" }); });
+    m.sort(function (a, b) { return a.time - b.time; }); ser.setMarkers(m);
+  }
+  chart.subscribeClick(function (p) {
+    if (!p || p.time == null || !D) return;
+    var e = cur(), i = e._tt.indexOf(p.time); if (i < 0) return;
+    var price = ser.coordinateToPrice(p.point.y), v = e.velas[i];
+    var kind = Math.abs(price - v[2]) <= Math.abs(price - v[3]) ? "H" : "L";
+    J().picos.push([i, kind === "H" ? v[2] : v[3], kind]); marks(); save();
+  });
+  function verdict(v) { J().veredicto = v; J().at = new Date().toISOString(); save(); if (k < D.eventos.length - 1) { k++; show(); } }
+  document.getElementById("bsi").onclick = function () { verdict("picos"); };
+  document.getElementById("bno").onclick = function () { verdict("sin_picos"); };
+  document.getElementById("bdu").onclick = function () { verdict("dudoso"); };
+  document.getElementById("bz").onclick = function () { J().picos.pop(); marks(); save(); };
+  document.getElementById("prev").onclick = function () { if (k > 0) { k--; show(); } };
+  document.getElementById("next").onclick = function () { if (k < D.eventos.length - 1) { k++; show(); } };
+  document.addEventListener("keydown", function (ev) {
+    var x = ev.key.toLowerCase();
+    if (x === "p") verdict("picos"); else if (x === "n") verdict("sin_picos"); else if (x === "d") verdict("dudoso");
+    else if (x === "z") { J().picos.pop(); marks(); save(); } else if (ev.key === "ArrowLeft") document.getElementById("prev").click();
+    else if (ev.key === "ArrowRight") document.getElementById("next").click();
+  });
+  window.addEventListener("resize", function () { chart.applyOptions({ width: el.clientWidth, height: el.clientHeight }); });
+  Promise.all([fetch("bundles/blind/espejo_" + asset + ".json").then(function (r) { return r.json(); }),
+               fetch("labels/" + labName + ".json?v=" + Date.now()).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; })])
+    .then(function (r) { D = r[0]; if (r[1]) L = r[1];
+      var firstOpen = D.eventos.findIndex(function (e) { return !(L.juicios[e.id] && L.juicios[e.id].veredicto); }); k = firstOpen < 0 ? 0 : firstOpen;
+      chart.applyOptions({ width: el.clientWidth, height: el.clientHeight }); show(); });
+})();
+</script>
+</body></html>
