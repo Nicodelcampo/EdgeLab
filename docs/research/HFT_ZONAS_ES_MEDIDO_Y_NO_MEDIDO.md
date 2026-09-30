@@ -655,3 +655,14 @@ aquellos números compara dos poblaciones distintas.
 - **IMPLEMENTADO QA:** exact4 causal disjunto congelado, resolver/capturador/censo;26tests+repo-layout PASS. Perfiles C0(30/49/25),C1igualexact4,C2(23/49/19),C3(45/49/38),C4(30/25/25);conf28común. C0original no reemplazado. GCsmoke mecánico fijo sobre92/616velas150 dio0/0eventos: no prueba emisión real positiva ni configuraciónactual, no se aflojaron umbrales.
 - **NO MEDIDO:** utilidad de historiaL2, potencia/retornos/costos, frecuencia deexact4 sobreGCfeb25T, paridad/visorlocal, samplefull52. Diseñado no equivale a edge. Nada futuro/oct+niLucid/raw/preciosrepo.
 - Actas `RESULTADO_MNQ_L2_V2_PRIMERA_SESION_TARGETFREE_20260930.md` y `PREPARACION_GC_ESCALONADAS_EXACT4_20260930.md`; entrada078 y `HANDOFF_LOCAL_GC_EXACT4_CODIGO_LISTO_20260930.md`; artifacts separados. Actualiza estado077, no borra historia.
+
+
+## GC exact4 — censo febrero auditado y puente de visor (2026-09-30)
+
+**MEDIDO target-free:** ZIP privado recontado C1 1.605 (784H/821L), C2 1.817 (893H/924L), C3 1.091 (545H/546L), C4 665 (359H/306L). 101.889 velas declaradas; 20 IDs de sesión con eventos, 21 listados con uno cero. Hash de captura/configs/código CRLF verificados. Cuatro miembros congelados, sin reutilización dentro de perfil/lado, conciliación completa de picos elegibles.
+
+**NO MEDIDO / ABSTAIN:** no raw ni bundle original en ZIP; hash de barras/bundle sólo declarado. C0 1.459 reportado, no recontado. Cero PASS de publicación = todos los metadatos raw nulos: ABSTAIN, no FAIL ni certificación de ejecución. No retornos, MAE/MFE, TP/SL, fills, costos, potencia o ventaja. Los 5.178 registros de perfiles solapados no son muestra independiente.
+
+**IMPLEMENTADO:** `tools/gc_exact4_review.py` + `viewer/nt8_bridge/gc_exact4_review_guard.js`, 13 tests Python/12 JS nuevos PASS además de los 26 del core. Exporta sólo con hash/paridad del bundle y crea copia `index_gc_exact4.html`, sin modificar índice original ni C0, sin posiciones; raw pendiente visible. QA sintético desktop/mobile; geometría febrero sin revisar. Cortina no certifica tanda ciega.
+
+Acta: `docs/research/RESULTADO_GC_EXACT4_CENSO_TARGETFREE_20260930.md`. Handoff: `docs/research/HANDOFF_LOCAL_GC_EXACT4_REVIEW_20260930.md`. Evidencia agregada: `artifacts/gc_exact4_censo_audit_20260930/evidence_aggregate.json`. Material privado no se publica. STOP antes de outcomes sin manifiesto+OK de Nico.
