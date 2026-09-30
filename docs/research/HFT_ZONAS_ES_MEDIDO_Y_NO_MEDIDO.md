@@ -604,3 +604,26 @@ aquellos números compara dos poblaciones distintas.
   Visor, datos y adapter propios ES/MNQ pendientes para Claude local:
   `HANDOFF_LOCAL_CLAUDE_GC_L2_P1_20260930.md`. No se lanzó otra sesión.
   Nada de retornos sin manifiesto + OK; nada de raw público; holdout intacto.
+
+
+### MNQ escalonadas × L2 — preparación nube, 30/09/2026
+
+- **PREPARADO / NO MEDIDO EN MNQ REAL:** emisor incremental de PLANAS150t,
+  confirmación precio ES×12,42 (X25/max_step25/min_pull62), cierre de vela/grupo
+  como disponibilidad conservadora; distinto del fill intrabar previo.
+- **MEDIDO (QA técnica):** 19 tests, paridad geométrica por prefijos sintéticos;
+  exporter smoke GC9.000 grupos, 7 velas150t y0 señales (NO evidencia MNQ).
+  Schema nativo sin price, hashes, overlap/reset, features null y landmarks causales.
+- **NO MEDIDO:** utilidad/filter support de MNQ, fills/costos/retornos, persistencia
+  de defensa. Raw L2 MNQ no encontrado en Kaggle conectado; está en la PC.
+  Exporter `tools/mnq_l2_prepare.py` + handoff de UN comando; no trabajo de diseño
+  pendiente para Claude. Nuevo filtro2 recoveries10s es propuesta, no validado.
+- **BORRADOR, requiere OK antes de outcomes:**
+  `BORRADOR_MNQ_ESCALONADAS_L2_20260930.md`; preparación
+  `PREPARACION_MNQ_ESCALONADAS_L2_20260930.md`;
+  `HANDOFF_MNQ_L2_UN_COMANDO_LOCAL_20260930.md`. No hay runner financiero aprobado.
+- **IDEA separada / NO MEDIDA:** segundo impulso B→A, landmark50 % con L2;
+  helper `tools/mirror_landmark.py` no detecta A/B ni predice precio.
+  Todos los intentos, no sólo espejos completos;
+  `IDEA_ESPEJO_L2_LANDMARK_50_20260930.md`. Semántica por confirmar.
+- Climas STOP no rescatados; visor/raw no modificados; nada de retornos ni holdout.
