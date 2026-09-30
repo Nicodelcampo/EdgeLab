@@ -549,3 +549,7 @@ aquellos números compara dos poblaciones distintas.
   (PF 1,29, DD 26 R). 500t (51 zonas, SL 26): +0,28 · +0,06 · **−0,37** (deslizamiento de entrada ≈ 3 ticks). Primera
   variante con neto > 0, pero elegida mirando febrero, n chico y sin control: **no es evidencia**; va a la grilla
   pre-registrada (descubrimiento enero, réplica marzo).
+- **MEDIDO 30/09 — MNQ-ESCALONADAS-ESCALAS (648 celdas: 6 entradas × 3 escalas × SL/TP/BE; ago-2025..ene-2026, 175
+  sesiones, tick a tick con costos y control):** **0/648 sobre max-T**. 25t negativo en todo; 150t ≈ 0 neto; 500t sin
+  potencia. Marzo no abierto. `RESULTADO_MNQ_ESCALONADAS_ESCALAS_20260930.md`. **NO MEDIDO:** defensa L2 (jul–sep),
+  marcas propias de MNQ, filtros.
