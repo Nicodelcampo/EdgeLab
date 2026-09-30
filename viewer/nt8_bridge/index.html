@@ -4129,8 +4129,53 @@
   }
   // Dibujo de picos y revisión (movido debajo de drawZones, 2026-09-26): el test causal de `zoneAvailableSec` audita
   // el tramo zoneAvailableSec→drawZones y estas funciones usan z.t0 de sus propias figuras, no de zonas.
+  // posición visual SL/TP/BE desde el punto de detección (exploración; velas, sin costos; SL gana si la vela toca ambos)
+  function posCompute(z, cd, slT, tpR, beR, tkz) {
+    var key = slT + "|" + tpR + "|" + beR;
+    if (z._pos !== undefined && z._posKey === key) return z._pos;
+    var sd = z.kind === "H" ? -1 : 1, en = z.det_precio, slP = en - sd * slT * tkz, tpP = en + sd * slT * tpR * tkz;
+    var beP = isFinite(beR) && beR > 0 ? en + sd * slT * beR * tkz : null;
+    var ex = null, why = "fin", stp = slP, beOn = false;
+    for (var kk = z.det_i + 1; kk < Math.min(cd.length, z.det_i + 1500); kk++) {
+      var bb = cd[kk], hitS = sd === -1 ? bb.high >= stp : bb.low <= stp, hitT = sd === -1 ? bb.low <= tpP : bb.high >= tpP;
+      if (hitS) { ex = kk; why = beOn ? "BE" : "SL"; break; } if (hitT) { ex = kk; why = "TP"; break; }
+      if (beP !== null && !beOn && (sd === -1 ? bb.low <= beP : bb.high >= beP)) { beOn = true; stp = en; }
+    }
+    ex = ex === null ? Math.min(cd.length - 1, z.det_i + 1500) : ex;
+    var r = why === "TP" ? tpR : why === "SL" ? -1 : why === "BE" ? 0 : ((cd[ex].close - en) * sd) / (slT * tkz);
+    z._pos = { ex: ex, why: why, r: r }; z._posKey = key;
+    return z._pos;
+  }
+  // tablero de estadísticas de las posiciones visuales (todas las zonas del activo, no sólo las visibles)
+  var posDash = { key: null };
+  function posDashboard(cd) {
+    var q = new URLSearchParams(window.location.search), slT = parseFloat(q.get("sl")), tpR = parseFloat(q.get("tp")), beR = parseFloat(q.get("be"));
+    if (!(isFinite(slT) && isFinite(tpR) && slT > 0 && tpR > 0) || !peaksDet.data) return;
+    var key = (peaksDet.data.variante || "") + "|" + slT + "|" + tpR + "|" + beR + "|" + cd.length;
+    if (posDash.key === key) return; posDash.key = key;
+    var tkz = (state.data && state.data.meta && state.data.meta.tick_size) || 0.25;
+    var Zs = peaksDet.data.zonas.filter(function (z) { return z.det_i != null; }).slice().sort(function (a, b) { return a.det_i - b.det_i; });
+    var st = { TP: 0, SL: 0, BE: 0, fin: 0 }, R = [], byK = { H: [], L: [] }, eq = 0, pk = 0, dd = 0, gp = 0, gl = 0;
+    Zs.forEach(function (z) { var p = posCompute(z, cd, slT, tpR, beR, tkz); st[p.why]++; R.push(p.r); byK[z.kind].push(p.r);
+      eq += p.r; pk = Math.max(pk, eq); dd = Math.max(dd, pk - eq); if (p.r > 0) gp += p.r; else gl -= p.r; });
+    var n = R.length, sum = R.reduce(function (a, b) { return a + b; }, 0), win = R.filter(function (x) { return x > 0; }).length;
+    function f(x, d) { return (x >= 0 ? "+" : "") + x.toFixed(d == null ? 3 : d); }
+    function mk(a) { var s2 = a.reduce(function (u, v) { return u + v; }, 0); return a.length + " · " + f(a.length ? s2 / a.length : 0) + " R/op"; }
+    var el = document.getElementById("pos-dash");
+    if (!el) { el = document.createElement("div"); el.id = "pos-dash";
+      el.style.cssText = "position:fixed;right:12px;bottom:40px;z-index:50;background:rgba(255,255,255,0.96);border:1px solid #cbd5e1;border-radius:6px;padding:8px 10px;font:11px/1.45 sans-serif;color:#0f172a;box-shadow:0 2px 8px rgba(0,0,0,.15);max-width:260px";
+      document.body.appendChild(el); }
+    el.innerHTML = "<b>Trades simulados (visual)</b><br>SL " + slT + " ticks · TP " + tpR + "R" + (isFinite(beR) && beR > 0 ? " · BE a " + beR + "R" : "") +
+      "<br>Operaciones: <b>" + n + "</b> · ganadoras " + (n ? Math.round(100 * win / n) : 0) + " %" +
+      "<br>TP " + st.TP + " · SL " + st.SL + " · BE " + st.BE + " · fin " + st.fin +
+      "<br>R total: <b>" + f(sum, 1) + "</b> · por operación: <b>" + f(n ? sum / n : 0) + "</b>" +
+      "<br>Profit factor: " + (gl > 0 ? (gp / gl).toFixed(2) : "∞") + " · máx. drawdown: " + dd.toFixed(1) + " R" +
+      "<br>Techos: " + mk(byK.H) + "<br>Pisos: " + mk(byK.L) +
+      "<br><span style='color:#b91c1c'>Sin spread ni comisión; velas (SL gana si la vela toca ambos); operaciones superpuestas permitidas. Exploración, no evidencia.</span>";
+  }
   function drawPeaksDet(ctx, cd, vr, X, Y) {
     if (!peaksDet.on || !peaksDet.data || rev.on) return;          // en revisión no se muestran las demás detecciones
+    posDashboard(cd);
     ctx.font = "9px sans-serif";
     // ?cand=1: candidatas de 2 picos (tools/escalonadas_det.py): nivel del 2.º pico y ENTRADA si el precio vuelve a tocarlo
     if (new URLSearchParams(window.location.search).get("cand") === "1" && peaksDet.data.candidatas) {
@@ -4181,15 +4226,7 @@
           var tkz = (state.data && state.data.meta && state.data.meta.tick_size) || 0.25, sd = z.kind === "H" ? -1 : 1;
           var en = z.det_precio, slP = en - sd * slT * tkz, tpP = en + sd * slT * tpR * tkz;
           var beR = parseFloat(qsp.get("be")), beP = isFinite(beR) && beR > 0 ? en + sd * slT * beR * tkz : null;   // &be=<R>: stop a la entrada al llegar a beR
-          if (z._pos === undefined || z._posKey !== slT + "|" + tpR + "|" + beR) {
-            var ex = null, why = "fin", stp = slP, beOn = false;
-            for (var kk = z.det_i + 1; kk < Math.min(cd.length, z.det_i + 1500); kk++) {
-              var bb = cd[kk], hitS = sd === -1 ? bb.high >= stp : bb.low <= stp, hitT = sd === -1 ? bb.low <= tpP : bb.high >= tpP;
-              if (hitS) { ex = kk; why = beOn ? "BE" : "SL"; break; } if (hitT) { ex = kk; why = "TP"; break; }
-              if (beP !== null && !beOn && (sd === -1 ? bb.low <= beP : bb.high >= beP)) { beOn = true; stp = en; }   // desde la vela siguiente
-            }
-            z._pos = { ex: ex === null ? Math.min(cd.length - 1, z.det_i + 1500) : ex, why: why }; z._posKey = slT + "|" + tpR + "|" + beR;
-          }
+          posCompute(z, cd, slT, tpR, beR, tkz);
           var xs = X(z.det_i, z.det_t), xe2 = X(z._pos.ex, (cd[z._pos.ex] || {}).time);
           if (isFinite(xs) && isFinite(xe2)) {
             var ye = Y(en), ys = Y(slP), yt = Y(tpP);
