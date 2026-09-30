@@ -4180,13 +4180,15 @@
         if (isFinite(slT) && isFinite(tpR) && slT > 0 && tpR > 0) {
           var tkz = (state.data && state.data.meta && state.data.meta.tick_size) || 0.25, sd = z.kind === "H" ? -1 : 1;
           var en = z.det_precio, slP = en - sd * slT * tkz, tpP = en + sd * slT * tpR * tkz;
-          if (z._pos === undefined || z._posKey !== slT + "|" + tpR) {
-            var ex = null, why = "fin";
+          var beR = parseFloat(qsp.get("be")), beP = isFinite(beR) && beR > 0 ? en + sd * slT * beR * tkz : null;   // &be=<R>: stop a la entrada al llegar a beR
+          if (z._pos === undefined || z._posKey !== slT + "|" + tpR + "|" + beR) {
+            var ex = null, why = "fin", stp = slP, beOn = false;
             for (var kk = z.det_i + 1; kk < Math.min(cd.length, z.det_i + 1500); kk++) {
-              var bb = cd[kk], hitS = sd === -1 ? bb.high >= slP : bb.low <= slP, hitT = sd === -1 ? bb.low <= tpP : bb.high >= tpP;
-              if (hitS) { ex = kk; why = "SL"; break; } if (hitT) { ex = kk; why = "TP"; break; }
+              var bb = cd[kk], hitS = sd === -1 ? bb.high >= stp : bb.low <= stp, hitT = sd === -1 ? bb.low <= tpP : bb.high >= tpP;
+              if (hitS) { ex = kk; why = beOn ? "BE" : "SL"; break; } if (hitT) { ex = kk; why = "TP"; break; }
+              if (beP !== null && !beOn && (sd === -1 ? bb.low <= beP : bb.high >= beP)) { beOn = true; stp = en; }   // desde la vela siguiente
             }
-            z._pos = { ex: ex === null ? Math.min(cd.length - 1, z.det_i + 1500) : ex, why: why }; z._posKey = slT + "|" + tpR;
+            z._pos = { ex: ex === null ? Math.min(cd.length - 1, z.det_i + 1500) : ex, why: why }; z._posKey = slT + "|" + tpR + "|" + beR;
           }
           var xs = X(z.det_i, z.det_t), xe2 = X(z._pos.ex, (cd[z._pos.ex] || {}).time);
           if (isFinite(xs) && isFinite(xe2)) {
@@ -4194,7 +4196,8 @@
             ctx.fillStyle = "rgba(220,38,38,0.18)"; ctx.fillRect(xs, Math.min(ye, ys), xe2 - xs, Math.abs(ys - ye));
             ctx.fillStyle = "rgba(22,163,74,0.16)"; ctx.fillRect(xs, Math.min(ye, yt), xe2 - xs, Math.abs(yt - ye));
             ctx.fillStyle = z._pos.why === "TP" ? "rgba(22,163,74,1)" : (z._pos.why === "SL" ? "rgba(220,38,38,1)" : "rgba(100,116,139,1)");
-            ctx.fillText(z._pos.why + (z._pos.why === "TP" ? " +" + tpR + "R" : z._pos.why === "SL" ? " −1R" : ""), xe2 + 3, z._pos.why === "TP" ? yt : ys);
+            ctx.fillText(z._pos.why + (z._pos.why === "TP" ? " +" + tpR + "R" : z._pos.why === "SL" ? " −1R" : z._pos.why === "BE" ? " 0R" : ""), xe2 + 3, z._pos.why === "TP" ? yt : (z._pos.why === "BE" ? ye : ys));
+            if (beP !== null) { ctx.strokeStyle = "rgba(37,99,235,0.6)"; ctx.setLineDash([2, 3]); ctx.beginPath(); ctx.moveTo(xs, Y(beP)); ctx.lineTo(xe2, Y(beP)); ctx.stroke(); ctx.setLineDash([]); }
           }
         }
         var xd = X(z.det_i, z.det_t), yd = Y(z.det_precio), yn = Y(z.det_nivel);
