@@ -544,3 +544,8 @@ aquellos números compara dos poblaciones distintas.
   (1.720 zonas; caso elegido mirando el gráfico, sin control):** velas como el visor +0,487 R/op (réplica exacta del
   tablero); ticks sin costos +0,371; ticks con bid/ask sin comisión −0,226; con comisión 1,5 t −0,526; con 3 t −0,826.
   El spread solo se come ≈ 0,6 R con un stop de 5 ticks. `tools/escalonadas_posicion_visual.py`, `es_escalonadas/posicion_visual_MNQ_*`.
+- **MEDIDO 30/09 — MNQ escalonadas a otras escalas (exploración, feb-2026, sin control, SL escalado del caso visual,
+  TP 10R, BE 2R, comisión 3 t):** 150t (185 zonas, SL 14): velas +1,05 · ticks sin costos +0,88 · **con costos +0,25 R/op**
+  (PF 1,29, DD 26 R). 500t (51 zonas, SL 26): +0,28 · +0,06 · **−0,37** (deslizamiento de entrada ≈ 3 ticks). Primera
+  variante con neto > 0, pero elegida mirando febrero, n chico y sin control: **no es evidencia**; va a la grilla
+  pre-registrada (descubrimiento enero, réplica marzo).

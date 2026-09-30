@@ -110,9 +110,19 @@ def main():
     ap.add_argument("--inst", default="MNQ"); ap.add_argument("--mes", default="202602"); ap.add_argument("--capa", default="__precio")
     ap.add_argument("--sl", type=float, default=5); ap.add_argument("--tp", type=float, default=10); ap.add_argument("--be", type=float, default=2)
     ap.add_argument("--rt", type=float, default=3.0, help="comisión+fees ida y vuelta en ticks")
+    ap.add_argument("--k", type=int, default=1, help="velas agregadas de k×25t (150t = 6, 500t = 20), dentro de cada sesión")
     a = ap.parse_args()
     D = load(a.inst, a.mes)
-    Z = json.loads((VIEW / "bundles" / "peaks_det" / f"{a.inst}_03-26_{a.mes}_25T_HFT{a.capa}.json").read_text(encoding="utf-8"))["zonas"]
+    aid = f"{a.inst}_03-26_{a.mes}_25T_HFT" if a.k == 1 else f"{a.inst}_03-26_{a.mes}_{25 * a.k}T"
+    if a.k > 1:                                   # velas agregadas: primer vela 25t de cada grupo, por sesión
+        first = []
+        for s in np.unique(D["bar_ses"]):
+            idx = np.flatnonzero(D["bar_ses"] == s); first.extend(idx[::a.k].tolist())
+        first = np.array(first); nxt = np.r_[first[1:], len(D["bar_ses"])]
+        h = np.array([D["h"][f:e].max() for f, e in zip(first, nxt)]); l = np.array([D["l"][f:e].min() for f, e in zip(first, nxt)])
+        c = D["c"][nxt - 1]
+        D.update(h=h, l=l, c=c, bar_tick=D["bar_tick"][first], bar_ses=D["bar_ses"][first])
+    Z = json.loads((VIEW / "bundles" / "peaks_det" / f"{aid}{a.capa}.json").read_text(encoding="utf-8"))["zonas"]
     Z = sorted([z for z in Z if z.get("det_i") is not None], key=lambda z: z["det_i"])
     nb = len(D["c"]); out = {}
     r1 = [velas(D, z, a.sl, a.tp, a.be) for z in Z]
@@ -123,7 +133,7 @@ def main():
         for z in Z:
             side = -1 if z["kind"] == "H" else 1; k = z["det_i"]; lvl = z["det_precio"] / TICK
             a0 = D["bar_tick"][k]; fill = None
-            for i in range(a0, min(a0 + 25, len(D["px"]))):
+            for i in range(a0, min(a0 + 25 * a.k, len(D["px"]))):
                 if (side == -1 and D["px"][i] <= lvl) or (side == 1 and D["px"][i] >= lvl):
                     fill = i; break
             if fill is None:
@@ -131,7 +141,7 @@ def main():
             entry = lvl if costos == 0 else (D["bid"][fill] if side == -1 else D["ask"][fill])
             spread_in.append((lvl - entry) * side if side == -1 else (entry - lvl))
             kk = min(k + HZ, nb - 1)
-            end = D["bar_tick"][kk] if D["bar_ses"][kk] == D["bar_ses"][k] else D["bar_tick"][np.searchsorted(D["bar_ses"], D["bar_ses"][k], side="right") - 1] + 25
+            end = D["bar_tick"][kk] if D["bar_ses"][kk] == D["bar_ses"][k] else D["bar_tick"][np.searchsorted(D["bar_ses"], D["bar_ses"][k], side="right") - 1] + 25 * a.k
             end = min(end, len(D["px"]))
             pnl, w = ticks_sim(side, fill + 1, end, entry, a.sl, a.tp, a.be, D["px"], D["bid"], D["ask"], costos)
             R.append((pnl - rt) / a.sl); W.append(names[int(w)])
@@ -141,7 +151,7 @@ def main():
             out[key]["deslizamiento_entrada_medio_ticks"] = round(float(np.mean(spread_in)), 2)
     print(json.dumps(dict(config=vars(a), zonas=len(Z), **out), indent=1, ensure_ascii=False))
     o = REPO / "docs" / "research" / "es_escalonadas"; o.mkdir(parents=True, exist_ok=True)
-    (o / f"posicion_visual_{a.inst}_{a.mes}_sl{a.sl:g}_tp{a.tp:g}_be{a.be:g}.json").write_text(json.dumps(dict(config=vars(a), **out), indent=1, ensure_ascii=False), encoding="utf-8")
+    (o / f"posicion_visual_{a.inst}_{a.mes}_{25 * a.k}t_sl{a.sl:g}_tp{a.tp:g}_be{a.be:g}.json").write_text(json.dumps(dict(config=vars(a), **out), indent=1, ensure_ascii=False), encoding="utf-8")
 
 
 if __name__ == "__main__":
