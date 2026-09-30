@@ -697,3 +697,17 @@ Acta: `RESULTADO_L2_ASOF_GC_Y_PREPARACION_ESPEJO_20260930.md`; plan, protocolo y
 **QA:** 7tests yprefix200barrasPASS;286paquetesverificadoscontrafronterasraw/fórmulas/visibilidad. PublicaciónL2 estrictamenteanterior; eventoenprimerrawtimestampmayor al cierre. Edadmax zonas2880ms/registros3688ms/landmarks6904ms;freshnessoperativono ratificado.
 
 **NO MEDIDO:** predicción/retornos/P&L/fills/costos/potencia; no selección deperfilporbeneficio ni ajusteparamétrico; noGCfeb,Jun15ABSTAIN,holdoutintacto. Acta `RESULTADO_GC_EVENTOS_L2_LOGICAS_ACTUALES_20260930.md`; código `tools/gc_current_logic_l2_census.py`; evidencia `artifacts/gc_events_l2_20260930/evidence.json`. Privados/eventos/preciosfuera repo. Código/acta/registroen mismocommit.
+
+## GC presión C2 y espejo50 — 30/09/2026
+
+**MEDIDO target-free:** C2 congelado w1/gap23/step49/pull19/conf28, cuatro exactos. Censo febrero1817zonas:20/21 IDs≥4;20260201=0 preservado, no garantía diaria. Captura May31:C2 10/10 primarias con book estrictamente previo/frescura≤1s; espejo50 53/58,5 stale. QI/OFI históricos sin score/modelo;101filas baseline auditadas/9testsPASS;161receipts conservados.
+
+**NO MEDIDO:** predictibilidad del espejo, retorno/costos/potencia, frecuencia de L2 fresco en múltiples sesiones. Acta `RESULTADO_GC_PRESION_C2_20260930.md`; evidencia y config `artifacts/gc_pressure_c2_20260930/`; código `tools/gc_pressure_panel.py`. C0/visor intactos; holdout intacto; privado fuera repo.
+
+## ES IPC y tick relativo — 30/09/2026
+
+**MEDIDO target-free:** exportKaggle v2 ES03/GC04, febrero UTC. ES22.835.690prints/913.414barras25t. Familias originales conf2:PLANAS2706eventos,24/24fechas observadas≥4 (min5);EMPINADAS937,20/24≥4 (min1). Cuatro fechas calendario sin datos separadas, no cero inventado. Ancla UTC nueva: NO paridad con bundle del visor.15claves de evento compartidas no iid.
+
+Quotes abiertas positivas, por registro:ES21.174.154/22.835.655=92,7240930904% de1tick;GC97.852/2.546.869=3,8420507690%. Proxy export, no tiempo ponderado ni costo ejecutable. Auditoría pandas independiente concilia raw;6tests/8prefijos/48paridades familia-fecha con detector original PASS; repetición igual.
+
+**NO MEDIDO:** L2 ES, ventaja/predicción/fills/P&L/potencia independiente. Publicación raw ABSTAIN; climas ES STOP no rescatados. Acta `RESULTADO_ES_IPC_TICK_SUPPORT_20260930.md`; evidencia `artifacts/es_ipc_tick_support_20260930/evidence.json`; código `tools/es_ipc_tick_support.py`. Sin recalibración/visores/raw al repo.
