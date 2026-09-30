@@ -556,3 +556,24 @@ aquellos números compara dos poblaciones distintas.
 - **MEDIDO 30/09 (exploratorio) — espejo × picos antes de A, ES ene-2026, 80 espejos juzgados a ciegas por Nico:**
   continuación más allá de A: «con picos» (25) peor que «sin picos» (55) en las 4 celdas (−0,20 a −0,83 R).
   `IDEA_ESPEJO_X_PICOS_ES_20260930.md`.
+
+
+### GC L2 a precio fijo — piloto P0, 30/09/2026 (R02 / I-3)
+
+- **MEDIDO (mecánico, sin retornos):** dos ejemplos privados GC NT8 de Kaggle v2,
+  cuatro parquet reconciliados. 863.066 caídas netas de tamaño a precio fijo; 39.020
+  con prints compatibles previos; 14.100 recuperaciones observadas en ≤5 s y hasta
+  ≥70 % del tamaño previo. Son episodios compatibles, **NO icebergs ni absorción
+  confirmada**. Publicación causal al observar recuperación; no backdating.
+- **MEDIDO (QA):** 12/12 unit tests del tracker; sin errores de grilla/filas/reloj
+  relativo en los cuatro archivos. 34 grupos de inicialización inválidos excluidos
+  antes del primer LAST del archivo corto. Conteos y censuras reconciliados.
+- **NO MEDIDO:** utilidad como filtro, controles negativos emparejados, defensa
+  efectiva, transferibilidad ES/MNQ, cola/fills, retornos y costos. MBP no proporciona
+  IDs de orden; reloj absoluto de estos manifiestos sin certificar. No se rescatan
+  climas STOP ni se modifica la validación MNQ en curso. Holdout intacto.
+- Plan, código, evidencia y acta: `PLAN_GC_L2_PRECIO_FIJO_P0_20260930.md`,
+  `tools/gc_l2_fixed_price_probe.py`,
+  `artifacts/gc_l2_fixed_price_p0_20260930/evidence.json`,
+  `RESULTADO_GC_L2_PRECIO_FIJO_P0_20260930.md`. Raw y episodios con precios quedan
+  privados. Retornos requieren manifiesto/pre-registro + OK de Nico.
