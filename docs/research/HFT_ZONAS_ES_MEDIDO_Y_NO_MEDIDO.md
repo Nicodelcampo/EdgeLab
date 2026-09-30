@@ -537,3 +537,6 @@ aquellos números compara dos poblaciones distintas.
   Contra control: velas 0/16; precio 6/16 sobre max-T, atribuibles a la mecánica de entrada stop (el control entraba a
   mercado: falla de diseño). Sin edge; réplica de marzo no abierta. `RESULTADO_ES_ESCALONADAS_202602_20260930.md`.
   **NO MEDIDO:** control con misma mecánica stop; filtro de tendencia; defensa L2 (sólo jul–sep).
+- **MEDIDO 30/09 — ES-ESCALONADAS v2 ene-2026 (180 celdas: stops amplios, V-shape, BE, tendencia; control misma
+  mecánica):** **0/180 sobre max-T**; el filtro de tendencia empeora todo. **Familia cerrada en ES** con ese alcance.
+  `RESULTADO_ES_ESCALONADAS_V2_202601_20260930.md`. **NO MEDIDO:** marzo (no abierto), defensa L2, otros activos.
