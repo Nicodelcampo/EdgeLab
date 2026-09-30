@@ -189,13 +189,21 @@ def detectar_px(cd, f, X=CONF_TICKS):
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--asset", required=True)
     ap.add_argument("--conf", default="velas", choices=["velas", "precio"], help="precio: confirmación a CONF_TICKS del pico")
+    ap.add_argument("--escala", type=float, default=1.0, help="multiplica todo lo que está en ticks (transferencia a otro activo sin re-marcar)")
     a = ap.parse_args()
+    global CONF_TICKS
+    if a.escala != 1.0:
+        CONF_TICKS = int(round(CONF_TICKS * a.escala))
+        for f in FAMILIAS.values():
+            for k in ("max_step", "min_pull", "total_min", "step_min"):
+                f[k] = int(round(f[k] * a.escala))
+            f["nombre"] = f["nombre"].replace("ES ", a.asset.split("_")[0] + " ") + f" (transferido de ES ×{a.escala:g}, sin marcas propias)"
     b = json.loads((VIEW / "bundles" / f"{a.asset}.json").read_text(encoding="utf-8"))
     c = b["bar_series"]["tick_25"]["candles"]; del b
     cd = {k: np.array([x[v] for x in c], float) for k, v in (("t", "time"), ("h", "high"), ("l", "low"), ("c", "close"))}; del c
     days = len(set((cd["t"] // 86400).astype(int)))
     for fam, f in FAMILIAS.items():
-        Z = detectar_px(cd, f) if a.conf == "precio" else detectar(cd, f)
+        Z = detectar_px(cd, f, CONF_TICKS) if a.conf == "precio" else detectar(cd, f)
         CA = candidatas(cd, f, Z) if a.conf == "velas" else []
         lag = [z["det_i"] - z["picos"][-1][0] for z in Z]
         out = dict(schema="EDGELAB_PEAKS_DET_V2_REGLA", asset=a.asset, variante=f["nombre"] + (f" · confirmación por precio ({CONF_TICKS} ticks)" if a.conf == "precio" else " · con vela de detección"),
