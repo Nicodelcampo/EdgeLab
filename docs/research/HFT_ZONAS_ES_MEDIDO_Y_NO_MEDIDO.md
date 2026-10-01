@@ -786,3 +786,7 @@ Cierra la preparación NO MEDIDO previa. Kaggleprivatev1COMPLETE y auditada;0/6v
 
 ## MNQ pullback extension43 / combined197 — NO MEDIDO (2026-10-01)
 Protocolo congelado antes de nuevos desenlaces; manifiesto 59b07eca201487a0de40e7a1f818c1882aec08d94430a6b38844146b642ca134. BASE/SEP1min,30min, controles y costos invariantes.43 sesiones previas y197 combinadas; sin holdout.23 tests dirigidos; no suite completa. Pendiente corrida y auditoría.
+
+
+## MNQ pullback extension43 / combined197 — MEDIDO (2026-10-01)
+Manifiesto59b07eca, sin retuning/holdout.43anteriores BASE249trades +0,92USD/SEP227 −2,84;197 BASE1127 +3,24/SEP1018 +2,76USD, costos supuestos. Alpha de controles negativo, intervalos neto/alpha incluyen0;0/4pantallas pasan.43 bootstrap-t bloqueado<160;197 ajustado20 calculado pero no edge. G1 combinadoSEP falla sinbest5.23tests,1129links,10quotes raw; límitesdeG0/PBO/DSR/WF/vecinos/fees/MAEMFE vigentes. Acta RESULTADO_MNQ_PULLBACK_EXTENSION_20261001.md y evidencia en mismo commit.
