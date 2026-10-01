@@ -772,3 +772,8 @@ V2 ERROR exportJSON tras24fileTF en248s; no censo/ledger final. Castbool() en fr
 ## MEDIDO target-free — Retroceso EMA20 MNQ/RTY/YM (2026-10-01)
 
 V3COMPLETE, sólo frecuencia, sinL2/outcomes/modelos. Fechas154/175/177pre-julio; TF1BASE878/975/984intenciones (medias5,70/5,57/5,56;mediana6cadaactivo,actividad100%). TF5BASE333/399/411,mediana2cadaactivo: NO_SUPPORTfrecuencia. Regla congeladaeligeTF1enlos3,noPnL. Separación791/871/889subsetBASE,mediana5, no independientes/noreprogramación.9directedtests+72sampleprefixPASS,12sourcehashesMATCH/24catalogprofilesreconciled,3980uniqueledgerrowsauditadas;24perfileTFcountsigualv2fallidaexport. V1mountERROR yV2NumPyboolERRORconservados;v3castboolsinchangedetector/popu. NO MEDIDO:quotes/fills/fees/reloj/outcomes/rentabilidad/MDE/G2. DesarrolloNOblindOOS,holdoutcerrado;MNQ154<160. ActaRESULTADO_EMA_PULLBACK_TARGETFREE_20261001.md,evidencia+MEDIDOjuntos,sinmerge/raw/ledgerspreciosalrepo.
+
+
+## NO MEDIDO — EMA20 pullback económica multi-activo (2026-10-01)
+
+Censo BASE1min MNQ878/154sesiones,RTY975/175,YM984/177; detector intacto. Autorización Nico «dale adelante». Manifiesto económico56d3f991... congelado en Notion antes de ejecutar retornos. Salida30min,bidask,fees supuestas+slippage; BASE/SEP,controles de misma sesión/tendencia/vol.17tests dirigidos. Kaggleprivatev1RUNNING/sourceMATCH; aún NO resultado confirmado. Holdoutjulio+ cerrado; no blind/OOS ni promoción G2. Ver PREPARACION_EMA_PULLBACK_ECONOMIC_20261001.md.
