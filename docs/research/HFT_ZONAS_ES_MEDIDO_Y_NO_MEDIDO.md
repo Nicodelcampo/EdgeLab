@@ -767,3 +767,8 @@ Nueva hipótesis, no rescate RTY60 ni cruces anteriores. MNQ154/RTY175/YM177 fec
 ### Incidente técnico EMA pullback v2 → v3
 
 V2 ERROR exportJSON tras24fileTF en248s; no censo/ledger final. Castbool() en frequency_support, detect() idéntico, no cambio de parámetros/muestra/selección.9directedtestsPASS (regresiónJSON true/false). Custodia12files ymanifestoriginalMATCH, log preservado. V3 enviada; censo real aún no validado. NO MEDIDO outcomes/PNL/edge. Manifiesto original preservado, nuevo462928c6… registrado antes del reintento.
+
+
+## MEDIDO target-free — Retroceso EMA20 MNQ/RTY/YM (2026-10-01)
+
+V3COMPLETE, sólo frecuencia, sinL2/outcomes/modelos. Fechas154/175/177pre-julio; TF1BASE878/975/984intenciones (medias5,70/5,57/5,56;mediana6cadaactivo,actividad100%). TF5BASE333/399/411,mediana2cadaactivo: NO_SUPPORTfrecuencia. Regla congeladaeligeTF1enlos3,noPnL. Separación791/871/889subsetBASE,mediana5, no independientes/noreprogramación.9directedtests+72sampleprefixPASS,12sourcehashesMATCH/24catalogprofilesreconciled,3980uniqueledgerrowsauditadas;24perfileTFcountsigualv2fallidaexport. V1mountERROR yV2NumPyboolERRORconservados;v3castboolsinchangedetector/popu. NO MEDIDO:quotes/fills/fees/reloj/outcomes/rentabilidad/MDE/G2. DesarrolloNOblindOOS,holdoutcerrado;MNQ154<160. ActaRESULTADO_EMA_PULLBACK_TARGETFREE_20261001.md,evidencia+MEDIDOjuntos,sinmerge/raw/ledgerspreciosalrepo.
