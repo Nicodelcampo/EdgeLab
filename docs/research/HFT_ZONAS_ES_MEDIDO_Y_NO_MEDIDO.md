@@ -722,3 +722,10 @@ Quotes abiertas positivas, por registro:ES21.174.154/22.835.655=92,7240930904% d
 ## 2026-09-30 — RTY sin L2, seis pruebas5/15min (rama independiente)
 
 **MEDIDO exploratorio;0/6pasan compuerta conjunta.**56fechas desarrollo20251007–20251231;425eventos-celda/344evaluados/81censurados. MOM60mediasnetas+41,62/+42,66ticks pero límites inferioresBonferroni−0,89/−3,97. VWAP2medias−39,46/−52,99. ORFAIL29/17eventos: muestra insuficiente. PNL porquotes/costes supuestos, nofills; censura de extremo futuro limita generalización. Validaciónenero–marzo y holdoutNO ABIERTOS. No inversión de señales ni rescate de umbrales. Acta `RESULTADO_RTY_SIN_L2_6TESTS_20260930.md` y código congelado en mismo commit. No es IPC × L2 ni estudio de zonas ES.
+
+
+## MEDIDO · EMA3 multi-activo sin L2 · 2026-10-01
+
+Pantalla exploratoria autorizada porNico: MNQ/YM/RTY,5min,EMAs20/50/200,cruce/barrido y BASE/DWELL30/SLOPE200/ADX25.54fechas comunesOct–Dic2025. **0/24 SCREEN_PASS;10 NO_SUPPORT,14 INCONCLUSIVE_SAMPLE.**231eventos BASE únicos simulados con entrada/salida por quote,0 salida desconocida; variantes filtradas no son operaciones independientes. No confirmación, live ni apertura de holdout. Muestras de cruces insuficientes tras filtros; pendienteEMA200 redundante en barridosMNQ/YM. No equivalencia/inutilidad universal deEMAs.
+
+Acta: `docs/research/RESULTADO_EMA3_MULTI_ACTIVO_20261001.md`; manifest/código/aggregates/audit en `docs/research/ema3_multiasset_20261001/`. Kaggle privado v1 COMPLETE. Código9bbafc0e…, manifest4ebd5366…, resultadose99d2346…. Costos supuestos, quotes no certificados comofills. Contrato/inferencia y límites completos enacta. **NO MEDIDO**: separaciónATR, volumen relativo porhora, confirmación superior, eventos1min, valor incremental formal de filtros, validación nueva ni reservas. Rama aislada, sin tocar IPC×L2deCodex.
