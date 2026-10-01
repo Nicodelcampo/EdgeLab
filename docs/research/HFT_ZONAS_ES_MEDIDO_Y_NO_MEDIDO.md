@@ -782,3 +782,7 @@ Censo BASE1min MNQ878/154sesiones,RTY975/175,YM984/177; detector intacto. Autori
 ## MEDIDO — EMA20 pullback económica multi-activo (2026-10-01)
 
 Cierra la preparación NO MEDIDO previa. Kaggleprivatev1COMPLETE y auditada;0/6variantes pasan screen congelado. TF1/salida30min, BASE MNQ878 RTY975 YM984, 154/175/177sesiones. MediasUSD/trade(BASE/SEP): MNQ+3,89/+4,36;RTY−2,14/+7,17;YM−18,31/−11,76. Todoslosalphaemparejados negativos, soporte89–91%.RTYSEP netoU−0,068, quitando mejores5 suma−1062USD y estrés2tick/leg media−2,83USD. MNQG1parcialPASS peroIC cruza0 y matchedalpha negativo,154sesiones<160. NoG2/edge/promoción. Fees/slippage supuestos, no fillsreales.36prefixPASS,12custodias,12745enlaces y ledgeraritméticoPASS;10quotes raw independientes(1díaRTY),noauditoríaexhaustiva. DesarrolloNOOOS;holdoutjulio+cerrado. MAE/MFE/reloj/quoteage/fills sincertificar. VerRESULTADO_EMA_PULLBACK_ECONOMIC_20261001.md y aggregates/manifest. Acta y registro en mismo commit, no raw/ledgersprivados.
+
+
+## MNQ pullback extension43 / combined197 — NO MEDIDO (2026-10-01)
+Protocolo congelado antes de nuevos desenlaces; manifiesto 59b07eca201487a0de40e7a1f818c1882aec08d94430a6b38844146b642ca134. BASE/SEP1min,30min, controles y costos invariantes.43 sesiones previas y197 combinadas; sin holdout.23 tests dirigidos; no suite completa. Pendiente corrida y auditoría.
