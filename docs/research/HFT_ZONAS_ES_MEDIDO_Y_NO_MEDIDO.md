@@ -747,3 +747,8 @@ MEDIDO: batería congelada54fechas expuestas; MOM5/MOM15 ningunoG1(concentració
 
 ## Momentum frecuencia target-free36perfiles —2026-10-01
 MEDIDO:54fechasexpuestas,3activos,216prefijos+593baselineparityPASS;21/36metafrecuencia. RTY5/K1,H120108,H60243,H30440intenciones,noPnL. V1fallamecánica-lotevacío;V2corrigelector,sinreglasnuevas. NO MEDIDO:rentabilidadnuevahorizontes,fill/salidas/quoteage,potenciareal/G2. VerRESULTADO_MOMENTUM_FRECUENCIA_TARGETFREE_20261001.md.
+
+
+## MEDIDO — Momentum frecuente RTY/MNQ/YM 60/30min (2026-10-01)
+
+Campaña aparte, SIN L2, sin atribuir estos resultados a zonas ES/IPC. Acta `RESULTADO_MOMENTUM_SHORT_ECONOMIC_20261001.md`. Misma población54fechas20251007–20251231 ya expuestas; seis celdas5min/ROC60/umbral1. Trades simulados RTY243/440, MNQ238/428, YM245/438; mediana4–8porfecha. 0/6 pasan screen conjunto netU+alphaU Bonf12; 0/6G1; G2 bloqueado54<160. RTY60 positivo con costos declarados, pero concentración112,9%en12-25 y03-26negativo; RTY30 falla al quitar5mejoresTRADES. MNQ/YM negativos en ambas salidas. 36prefixPASS,48directedtests; fuente privada Kaggle v1 exacta y 6parquets hashMATCH; todos los intentos completos, sin unknown/overlap registrados. No fullsuite, no fills/quoteage/clock/fees reales/paridad certificada ni nuevoOOS. NativefeesYM2,40/pata (histórico, no usuario) frente2,25supuesto anterior, declarado antes. Raw yledgers privados; allowlist yholdout general2026 intactos. Más trades NO igual a más sesiones/potencia formal.

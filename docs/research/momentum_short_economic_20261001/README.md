@@ -1,0 +1,5 @@
+# Reproduction boundary
+
+economic.py is the exact executed runner. census.py is the exact previous detector module. manifest.json fixes the executed source hashes, 54dates, costs and inference. Native modules must be from foundation@391314907dec889599493c4a38282171d94a2f25 under `repo/`. The full `past_price_producer.py` with private catalog/hash adapter is not published; `past_price_functions_PUBLIC.py` supplies exact functions only and is NOT hash-identical to the executed private adapter. Obtain the authorized private metadata adapter to reproduce; do not invent paths/catalogs. Private parquet/raw, quote/price/event ledgers and signed URLs are excluded. Public manifest hashes certify identity, not independent execution. Only aggregates are public.
+
+48 directed tests, not full suite. Existing native tests are copied unchanged from the foundation commit; the Gaps2 real log fixture is required, not fabricated. New test_economic.py covers quoted replay boundaries/costs. `audit.py` verifies private ledgers and recorded arithmetic; requires private outputs and does not independently recertify quote availability. Isolated branch, no merge.
