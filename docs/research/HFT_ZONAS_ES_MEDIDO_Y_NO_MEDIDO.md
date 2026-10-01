@@ -717,3 +717,8 @@ Quotes abiertas positivas, por registro:ES21.174.154/22.835.655=92,7240930904% d
 **MEDIDO ingeniería target-free:** preflight instrument-neutral con custodia/manifiesto/grilla propia y tape ordenado sinnearest.14testsPASS, fixtureES sintética end-to-endPASS (NO L2ESreal). Semántica NT8 conserva L1 DAILY_VOLUME/otros no-trade y cola level10; solo LAST=2 al tape. GCMay31 13.913printsPASS;Jun15 92.515prints/5timestampsdistintos yprecio/volumenidénticos ABSTAIN. Raw sincorregir.
 
 **NO MEDIDO:** bookESreal/másGC/replaynuevo/predicción/P&L/fills/costos/potencia. ListadoKaggleaccesible sólo2L2GC;noESrawexpuesto. Pedido mínimo local en `ENTREGA_LOCAL_L2_GC_ES_20260930.md`;borradormanifiesto50%vsbaseline precio NO aprobado/noejecutable. Acta `RESULTADO_L2_PAIRING_GC_ES_20260930.md`;evidencia `artifacts/l2_pairing_next_20260930/evidence.json`. Visores/C0/climasSTOP/holdoutintactos.
+
+
+## 2026-09-30 — RTY sin L2, seis pruebas5/15min (rama independiente)
+
+**MEDIDO exploratorio;0/6pasan compuerta conjunta.**56fechas desarrollo20251007–20251231;425eventos-celda/344evaluados/81censurados. MOM60mediasnetas+41,62/+42,66ticks pero límites inferioresBonferroni−0,89/−3,97. VWAP2medias−39,46/−52,99. ORFAIL29/17eventos: muestra insuficiente. PNL porquotes/costes supuestos, nofills; censura de extremo futuro limita generalización. Validaciónenero–marzo y holdoutNO ABIERTOS. No inversión de señales ni rescate de umbrales. Acta `RESULTADO_RTY_SIN_L2_6TESTS_20260930.md` y código congelado en mismo commit. No es IPC × L2 ni estudio de zonas ES.
