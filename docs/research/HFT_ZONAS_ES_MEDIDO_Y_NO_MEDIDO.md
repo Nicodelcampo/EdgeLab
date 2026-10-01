@@ -729,3 +729,12 @@ Quotes abiertas positivas, por registro:ES21.174.154/22.835.655=92,7240930904% d
 Pantalla exploratoria autorizada porNico: MNQ/YM/RTY,5min,EMAs20/50/200,cruce/barrido y BASE/DWELL30/SLOPE200/ADX25.54fechas comunesOct–Dic2025. **0/24 SCREEN_PASS;10 NO_SUPPORT,14 INCONCLUSIVE_SAMPLE.**231eventos BASE únicos simulados con entrada/salida por quote,0 salida desconocida; variantes filtradas no son operaciones independientes. No confirmación, live ni apertura de holdout. Muestras de cruces insuficientes tras filtros; pendienteEMA200 redundante en barridosMNQ/YM. No equivalencia/inutilidad universal deEMAs.
 
 Acta: `docs/research/RESULTADO_EMA3_MULTI_ACTIVO_20261001.md`; manifest/código/aggregates/audit en `docs/research/ema3_multiasset_20261001/`. Kaggle privado v1 COMPLETE. Código9bbafc0e…, manifest4ebd5366…, resultadose99d2346…. Costos supuestos, quotes no certificados comofills. Contrato/inferencia y límites completos enacta. **NO MEDIDO**: separaciónATR, volumen relativo porhora, confirmación superior, eventos1min, valor incremental formal de filtros, validación nueva ni reservas. Rama aislada, sin tocar IPC×L2deCodex.
+
+
+## MEDIDO · cruces más frecuentes y momentum multi-activo ·2026-10-01
+
+Nueva pantalla autorizada porNico, no rescate deEMA3v1. MNQ/YM/RTY:18celdas cruce1/5min(BASE/SOFT200/ADX15) conhold30min y6momentum60min(5/15min) hold2h.54fechascomunesOct–Dic2025. **0/24 SCREEN_PASS;12 NO_SUPPORT,12 INCONCLUSIVE_SAMPLE.**1224eventosBASE conquoteentrada/salida,0salidainobservable;notfills. Cruces1minBASE173/176/161,ADX15 135/124/126;SOFT200 y5min noalcanzan100.
+
+RTYmomentum medias netas+0.892/+0.652ATR,108/86casos;bounds corregidosnegativos−0.307/−0.333. Conserva media positiva sin5mejoresfechas yfricciónextra, sólo diagnóstico descriptivo,no prueba deventaja. MNQ/YM frágiles. Horarios/intensidad expuestos,nousarlos comofiltroganador.
+
+Acta `docs/research/RESULTADO_CRUCES_MOMENTUM_MULTI_ACTIVO_20261001.md`;código/manifests/agregados/censo/QA en `docs/research/cross_momentum_multiasset_20261001/`.Kaggleprivadov1COMPLETE;entry020dabbe…,manifestf74a02d1…,results0a6d793e….Enmiendawarmupdocumentaciónpreviaaabrirresultados,600barrasporTF,nocambiocódigo. Costos/quotes/fillscaveats enacta. **NO MEDIDO**:validaciónfuerademuestra,ventajacausaldefiltros,subgruposconfirmatorios,deployment,holdout;IPC×L2separado.

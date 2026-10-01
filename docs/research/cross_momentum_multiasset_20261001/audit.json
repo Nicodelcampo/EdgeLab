@@ -1,0 +1,44 @@
+{
+  "status": "PASS",
+  "unique_base_events": 1224,
+  "quote_simulated_completed": 1224,
+  "no_entry": 0,
+  "unknown_exit": 0,
+  "cells": 24,
+  "cell_status_counts": {
+    "NO_SUPPORT": 12,
+    "INCONCLUSIVE_SAMPLE": 12
+  },
+  "max_entry_lag_s": 14.252,
+  "max_exit_lag_s": 12.928,
+  "profiles_rows": 340804863,
+  "invalid_quote_rows": 456,
+  "catalog_reconciliation": true,
+  "checks": [
+    "source/manifest exact match before opening tables",
+    "ledger identities and filter subsets",
+    "entry/exit timing, no censored filled positions",
+    "quote net costs and mid alpha independently recomputed",
+    "all 24 cells, bootstrap bounds and sample gates reproduced",
+    "no position overlap within asset/family",
+    "momentum clock/strength partitions and best5-date diagnostic independently reconciled"
+  ],
+  "caveats": [
+    "same independent recalculation script does not recertify raw quote freshness or timezone",
+    "20k bootstrap at 0.05/48 tail approximately21draws, bounds approximate",
+    "bootstrap replication reuses frozen inference implementation; quote arithmetic independent"
+  ],
+  "output_sha256": {
+    "preflight.json": "e083e60b861883d1456b68f61c87d4094f4fb7902d80d87602c37d01648aafd8",
+    "manifest.json": "f74a02d1c4d647ed5de7d4850ffcc1e88caa4530735c69a1be03d6ecbfab4460",
+    "selftests.json": "96431f08333dc65c2bbe389090a372ccabc6f464141759abf3e8ad238bc5afdd",
+    "targetfree_census.json": "069a47ace3c62ba5828c21c7ca6e7f58780c2f6eb9fd7b7c271e96d317b7b2b0",
+    "results.json": "0a6d793e176ae731574fca0cafed98d37a3aac8774a7f9ebf59f10af8320e467",
+    "profiles.json": "c121b39fc5370fdb58ca0e9ed0c878a476647f750b7692b431138f64cb510d48",
+    "momentum_descriptive.json": "6c1314ff8b76a75fee08ed9d34a089fdb3bd3b169c629e706a197002621e8b6d",
+    "execution_log.json": "59f384fc9637cdb008aa45e32f17994d8a5c234254cc2e6a6ad417d1d79ac31f"
+  },
+  "unique_profile_records": 113601621,
+  "unique_invalid_quote_rows": 152,
+  "scan_multiplicity": 3
+}
