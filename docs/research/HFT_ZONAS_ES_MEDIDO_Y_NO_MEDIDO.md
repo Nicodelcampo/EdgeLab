@@ -743,3 +743,7 @@ Acta `docs/research/RESULTADO_CRUCES_MOMENTUM_MULTI_ACTIVO_20261001.md`;código/
 ## RTY momentum — herramientas y falsificación desarrollo (2026-10-01)
 
 MEDIDO: batería congelada54fechas expuestas; MOM5/MOM15 ningunoG1(concentración; MOM15n86). Top5TRADES positivo; WF contractual diagnóstico negativo. G2BLOCKED54<160; PBO48ABSTAIN; DSRnominal bajo; no promoción ni reservas abiertas. Ver `RESULTADO_RTY_MOMENTUM_VALIDACION_20261001.md` y agregados `rty_momentum_validation_20261001/`. NO MEDIDO/certificado: réplica nueva, G2formal, paridad/fills/quoteage/tarifaRTY/sizing. SinL2; no raw/ledgers privados.
+
+
+## Momentum frecuencia target-free36perfiles —2026-10-01
+MEDIDO:54fechasexpuestas,3activos,216prefijos+593baselineparityPASS;21/36metafrecuencia. RTY5/K1,H120108,H60243,H30440intenciones,noPnL. V1fallamecánica-lotevacío;V2corrigelector,sinreglasnuevas. NO MEDIDO:rentabilidadnuevahorizontes,fill/salidas/quoteage,potenciareal/G2. VerRESULTADO_MOMENTUM_FRECUENCIA_TARGETFREE_20261001.md.
