@@ -777,3 +777,8 @@ V3COMPLETE, sólo frecuencia, sinL2/outcomes/modelos. Fechas154/175/177pre-julio
 ## NO MEDIDO — EMA20 pullback económica multi-activo (2026-10-01)
 
 Censo BASE1min MNQ878/154sesiones,RTY975/175,YM984/177; detector intacto. Autorización Nico «dale adelante». Manifiesto económico56d3f991... congelado en Notion antes de ejecutar retornos. Salida30min,bidask,fees supuestas+slippage; BASE/SEP,controles de misma sesión/tendencia/vol.17tests dirigidos. Kaggleprivatev1RUNNING/sourceMATCH; aún NO resultado confirmado. Holdoutjulio+ cerrado; no blind/OOS ni promoción G2. Ver PREPARACION_EMA_PULLBACK_ECONOMIC_20261001.md.
+
+
+## MEDIDO — EMA20 pullback económica multi-activo (2026-10-01)
+
+Cierra la preparación NO MEDIDO previa. Kaggleprivatev1COMPLETE y auditada;0/6variantes pasan screen congelado. TF1/salida30min, BASE MNQ878 RTY975 YM984, 154/175/177sesiones. MediasUSD/trade(BASE/SEP): MNQ+3,89/+4,36;RTY−2,14/+7,17;YM−18,31/−11,76. Todoslosalphaemparejados negativos, soporte89–91%.RTYSEP netoU−0,068, quitando mejores5 suma−1062USD y estrés2tick/leg media−2,83USD. MNQG1parcialPASS peroIC cruza0 y matchedalpha negativo,154sesiones<160. NoG2/edge/promoción. Fees/slippage supuestos, no fillsreales.36prefixPASS,12custodias,12745enlaces y ledgeraritméticoPASS;10quotes raw independientes(1díaRTY),noauditoríaexhaustiva. DesarrolloNOOOS;holdoutjulio+cerrado. MAE/MFE/reloj/quoteage/fills sincertificar. VerRESULTADO_EMA_PULLBACK_ECONOMIC_20261001.md y aggregates/manifest. Acta y registro en mismo commit, no raw/ledgersprivados.
