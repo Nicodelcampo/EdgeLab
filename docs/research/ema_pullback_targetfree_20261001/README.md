@@ -1,0 +1,1 @@
+Exact public detector code; authorized private producer/catalog and source ticks required, not published. Native modules from foundation3913149 pinned in manifest. Public-only producer functions already delivered in parent momentum-short branch; NOT equal to full private executed producer hash. No outcomes. See preparation acta for current observed status and blockers.
