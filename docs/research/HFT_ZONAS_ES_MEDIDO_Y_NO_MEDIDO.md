@@ -738,3 +738,8 @@ Nueva pantalla autorizada porNico, no rescate deEMA3v1. MNQ/YM/RTY:18celdas cruc
 RTYmomentum medias netas+0.892/+0.652ATR,108/86casos;bounds corregidosnegativos−0.307/−0.333. Conserva media positiva sin5mejoresfechas yfricciónextra, sólo diagnóstico descriptivo,no prueba deventaja. MNQ/YM frágiles. Horarios/intensidad expuestos,nousarlos comofiltroganador.
 
 Acta `docs/research/RESULTADO_CRUCES_MOMENTUM_MULTI_ACTIVO_20261001.md`;código/manifests/agregados/censo/QA en `docs/research/cross_momentum_multiasset_20261001/`.Kaggleprivadov1COMPLETE;entry020dabbe…,manifestf74a02d1…,results0a6d793e….Enmiendawarmupdocumentaciónpreviaaabrirresultados,600barrasporTF,nocambiocódigo. Costos/quotes/fillscaveats enacta. **NO MEDIDO**:validaciónfuerademuestra,ventajacausaldefiltros,subgruposconfirmatorios,deployment,holdout;IPC×L2separado.
+
+
+## RTY momentum — herramientas y falsificación desarrollo (2026-10-01)
+
+MEDIDO: batería congelada54fechas expuestas; MOM5/MOM15 ningunoG1(concentración; MOM15n86). Top5TRADES positivo; WF contractual diagnóstico negativo. G2BLOCKED54<160; PBO48ABSTAIN; DSRnominal bajo; no promoción ni reservas abiertas. Ver `RESULTADO_RTY_MOMENTUM_VALIDACION_20261001.md` y agregados `rty_momentum_validation_20261001/`. NO MEDIDO/certificado: réplica nueva, G2formal, paridad/fills/quoteage/tarifaRTY/sizing. SinL2; no raw/ledgers privados.

@@ -1,0 +1,52 @@
+{
+  "independent_checks": {
+    "MOM5": {
+      "quote_arithmetic": true,
+      "counts_unique": true,
+      "best5_trades_reconciled": true,
+      "contract_and_month_crossfoot": true
+    },
+    "MOM15": {
+      "quote_arithmetic": true,
+      "counts_unique": true,
+      "best5_trades_reconciled": true,
+      "contract_and_month_crossfoot": true
+    }
+  },
+  "contract_mean_ticks": {
+    "MOM5": {
+      "RTY 03-26": -16.114285714285714,
+      "RTY 12-25": 42.33404255319149
+    },
+    "MOM15": {
+      "RTY 03-26": 24.725,
+      "RTY 12-25": 39.77948717948718
+    }
+  },
+  "visual_plan": [
+    {
+      "grain": "contract x frozen RTY momentum timeframe",
+      "population": "54 already exposed common Oct-Dec2025 dates; unequal exposure",
+      "unit": "mean net ticks/trade",
+      "finding": "MOM5 reverses sign in March2026 contract; MOM15 positive but only8 trades",
+      "derivation": "sum immutable netticks / contract tradecount",
+      "disposition": "chart",
+      "reason": "aggregate obscures contractual failure"
+    },
+    {
+      "grain": "month x timeframe",
+      "unit": "mean ticks/trade",
+      "finding": "all3 months positive, not monotonic",
+      "disposition": "table",
+      "reason": "secondary to contractual G1gate"
+    },
+    {
+      "grain": "profile",
+      "unit": "counts and gates",
+      "finding": "neither passesG1;G2blocked",
+      "disposition": "prose",
+      "reason": "gate classification, not a comparable magnitude"
+    }
+  ],
+  "result_sha256": "65d99a6efc4fd87118bd5d895b1fcac864125b01e97423788a29d7dcf20c0ca4"
+}
