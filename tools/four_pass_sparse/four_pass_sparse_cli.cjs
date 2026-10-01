@@ -2,7 +2,7 @@ const fs=require('node:fs'),readline=require('node:readline');const A=require('.
 async function main(){const args=process.argv.slice(2);function arg(k,def){const i=args.indexOf(k);return i<0?def:args[i+1];}
  const input=arg('--input'),out=arg('--out');if(!input||!out)throw Error('Use --input ticks.jsonl --out layer.json --tick-size0.25 --asset ASSET_ID');
  const size=Number(arg('--tick-size',null));if(!(size>0))throw Error('TICK_SIZE_REQUIRED');
- const cfgPath=arg('--config'),d=new A.Detector(cfgPath?JSON.parse(fs.readFileSync(cfgPath)):{}),start=BigInt(arg('--from-ns','0'));
+ const cfgPath=arg('--config'),cfg=cfgPath?JSON.parse(fs.readFileSync(cfgPath)):{},minimum=arg('--min-width-ticks');if(minimum!==undefined)cfg.min_width_ticks=Number(minimum);const d=new A.Detector(cfg),start=BigInt(arg('--from-ns','0'));
  const file=fs.createReadStream(input),rl=readline.createInterface({input:file,crlfDelay:Infinity});let rowsRead=0;
  try{for await(const line of rl){if(!line.trim())continue;const r=JSON.parse(line);if(BigInt(String(r.ts_ns))<start)continue;rowsRead++;d.push(r);if(d.status!=='SEARCHING')break;}}
  finally{rl.close();file.destroy();}

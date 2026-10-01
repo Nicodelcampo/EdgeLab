@@ -1,5 +1,5 @@
 const vm=require('node:vm'),fs=require('node:fs'),assert=require('node:assert/strict');const A=require('./four_pass_sparse.js');let tests=0;
-async function worker(file){const msgs=[];const self={postMessage:x=>msgs.push(x)};const sandbox={self,importScripts:()=>{},EdgeLabFourPass:A,TextDecoderStream};vm.runInNewContext(fs.readFileSync('four_pass_sparse_worker.js','utf8'),sandbox);await self.onmessage({data:{file,start_ns:'0'}});return msgs;}
+async function worker(file){const msgs=[];const self={postMessage:x=>msgs.push(x)};const sandbox={self,importScripts:()=>{},EdgeLabFourPass:A,TextDecoderStream};vm.runInNewContext(fs.readFileSync('four_pass_sparse_worker.js','utf8'),sandbox);await self.onmessage({data:{file,start_ns:'0',configuration:{min_width_ticks:4}}});return msgs;}
 (async()=>{const text=fs.readFileSync('synthetic_ticks.jsonl','utf8');const result=await worker(new Blob([text]));assert.equal(result.at(-1).detector.status,'STOPPED_FIRST_ZONE');tests++;
  const expected=JSON.parse(fs.readFileSync('synthetic_layer.json')).detector;assert.deepEqual(JSON.parse(JSON.stringify(result.at(-1).detector.zone)),expected.zone);tests++;
  const bad=await worker(new Blob(['{"ts_ns":"123","price_tick":1,"sequence":1}\n']));assert.equal(bad.at(-1).detector.status,'ABSTAIN_INPUT');tests++;

@@ -24,10 +24,11 @@ def run(z):
                 if count>=z.max_rows or (z.before_ns and batch.column(0)[-1].as_py()>=int(z.before_ns)):break
         args=['node',str(Path(__file__).with_name('four_pass_sparse_cli.cjs')),'--input',str(dump),'--out',str(out),'--tick-size',str(z.tick_size),'--asset',z.asset,'--from-ns',z.from_ns]
         if z.config:args+=['--config',z.config]
+        if z.min_width_ticks is not None:args+=['--min-width-ticks',str(z.min_width_ticks)]
         result=subprocess.run(args,check=False,capture_output=True,text=True)
         if not out.exists():raise RuntimeError(result.stderr)
         layer=json.load(open(out));layer.update(source_sha256=digest,source_rows_metadata=pf.metadata.num_rows,input_rows_serialized=count,source='CANONICAL_RAW_TICKS',clock_status='NOT_CERTIFIED',semantic_limit='ordered LAST observations; no fabricated interpolation, future outcomes or fills')
         if layer['detector']['status']=='SEARCHING':layer['search_limit']='INPUT_EOF_OR_EXPLICIT_MAX_ROWS;not no-zone proof'
         out.write_text(json.dumps(layer,indent=2)+'\n');print(result.stdout.strip());return result.returncode
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--source',required=True);p.add_argument('--expected-sha256',required=True);p.add_argument('--out',required=True);p.add_argument('--asset',required=True);p.add_argument('--tick-size',type=float,required=True);p.add_argument('--max-rows',type=int,default=200000);p.add_argument('--from-ns',default='0');p.add_argument('--before-ns');p.add_argument('--config');raise SystemExit(run(p.parse_args()))
+    p=argparse.ArgumentParser();p.add_argument('--source',required=True);p.add_argument('--expected-sha256',required=True);p.add_argument('--out',required=True);p.add_argument('--asset',required=True);p.add_argument('--tick-size',type=float,required=True);p.add_argument('--max-rows',type=int,default=200000);p.add_argument('--from-ns',default='0');p.add_argument('--before-ns');p.add_argument('--config');p.add_argument('--min-width-ticks',type=int);raise SystemExit(run(p.parse_args()))

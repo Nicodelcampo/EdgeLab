@@ -721,3 +721,12 @@ Quotes abiertas positivas, por registro:ES21.174.154/22.835.655=92,7240930904% d
 
 ## FP4 rango amplio / poco comercio — target-free MEDIDO; utilidad NO MEDIDA (2026-10-01)
 Opción2 aprobada: primera zona válida de cuatro pasadas detiene toda la búsqueda; reinicio manual, sin vencimiento temporal. Núcleo tick-only, X=max2ticks/25%ancho; pesos30/20/30/20, tamaño+comercio.39tests dirigidos; dos prefijos MNQ09-25/RTY12-25 de200kprints serializados, primera zona en22148/40631ticks consumidos; cuatropasadas auditadas por activo. No sesión completa/censo diario, no P&L. QA visual local, reloj, continuidad, máscaras de tiempo y calibración pendientes. No raw público ni edición de index.html/visores/IPC/L2. Acta FOUR_PASS_SPARSE_INDICATOR_20261001.md y evidencia en mismo commit.
+
+
+## FP4 v0.2 — escala visual MNQ, target-free (2026-10-01)
+
+MEDIDO: 46 tests dirigidos (31 núcleo,9 worker/puente,6 instalador), no suite completa. Prefijo congelado de 200.000 ticks MNQ09-25: mínimo de banda30ticks, giro8ticks; SEARCHING sin zona publicada. 34 candidatas completaron cuatro pasadas:27 rechazadas,7 sin soporte. Conteo/orden/dominio raw y sumas reconciliados. Evidencia separada en `four_pass_sparse_20261001/evidence_v02.json`.
+
+DECISIÓN GEOMÉTRICA: referencia azul30837.50–aprox30830.00=7.5puntos; etiqueta blanca30830.25 no es límite. Mínimo físico complementa los percentiles, no los sustituye. No retocar umbrales para forzar detecciones.
+
+NO MEDIDO: frecuencia en sesiones completas, perfiles de escala otros activos, utilidad predictiva, outcomes, costos/fills, QA visual real y reloj. No usar smokes v0.1 como validación de este mínimo. Sin raw/capas reales en Git, sin merge ni cambio del visor activo.

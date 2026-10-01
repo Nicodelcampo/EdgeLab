@@ -1,3 +1,5 @@
+# FP4 v0.2 — mínimo físico según captura de Nico
+
 # FP4 — franja amplia con cuatro pasadas y poco comercio
 
 **Prototipo v0.2, para revisión geométrica. No indicador de entrada ni edge validado.**
@@ -108,3 +110,7 @@ Evidencia histórica v0.1, no aplicable al mínimo nuevo: dos smokes target-free
 Pendiente LOCAL: inspeccionar el overlay realmente renderizado y confirmar geometría contra la captura; reloj del bundle; continuidad/fuentes raw; tiempo activo de negociación; censo de tiempo hasta primera zona con inicios explícitos, varias sesiones/activos. No ajustar contra retornos; conservar cambios de parámetros como versiones explícitas.
 
 Sin outcomes, modelos, P&L, raw público o modificación de IPC/L2. Límite4096candidatas y2millones de prints por impulso: abstención explícita, nunca expiración silenciosa. Es instrument-neutral en coordenadas de ticks; **no está calibrado para todos los instrumentos**.
+
+## Procedencia de esta revisión
+
+Anterior v0.1: 41f221cd79bef33b7419d3304b17ac2ab7a2a76d. Evidencia v0.2 separada en evidence_v02.json. La capa real sin zona permanece privada; se publican sólo los conteos y hashes. El intento del auditor geométrico antiguo asumía una zona y falló sobre null; se registró como NO APLICABLE y se verificaron de forma independiente conteo, orden, dominio y reconciliación del prefijo. No se cambió el detector para corregir ese fallo del auditor.

@@ -1,12 +1,14 @@
-/* Four-pass sparse corridors v0.1. Tick-only, causal, STOP_FIRST globally. */
+/* Four-pass sparse corridors v0.2. Tick-only, causal, STOP_FIRST globally. */
 (function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;root.EdgeLabFourPass=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){
 'use strict';
-const DEFAULTS=Object.freeze({departure_fraction:.25,departure_min_ticks:2,impulse_reversal_ticks:3,impulse_min_ticks:12,
+const DEFAULTS=Object.freeze({departure_fraction:.25,departure_min_ticks:2,min_width_ticks:null,width_minimums:{MNQ:30,NQ:30},impulse_reversal_fraction:.25,impulse_reversal_ticks:3,impulse_min_ticks:12,
  fractions:[[.125,.875],[.25,.75],[.375,.625]],reference_window:1000,min_reference:32,width_percentile_min:.80,
  sparse_percentile_min:.50,joint_min:.82,size_weight:.55,weights:{volume:.30,prints:.20,time:.30,lateral:.20},max_candidates:4096,max_leg_ticks:2000000});
 const clone=x=>JSON.parse(JSON.stringify(x));
-function config(x){const c=Object.assign({},DEFAULTS,x||{});c.weights=Object.assign({},DEFAULTS.weights,(x||{}).weights||{});c.fractions=clone((x||{}).fractions||DEFAULTS.fractions);
- for(const k of ['departure_fraction','size_weight','width_percentile_min','sparse_percentile_min','joint_min'])if(!Number.isFinite(c[k])||c[k]<0||c[k]>1)throw Error('INVALID_CONFIG_'+k);
+function config(x){const c=Object.assign({},DEFAULTS,x||{});c.weights=Object.assign({},DEFAULTS.weights,(x||{}).weights||{});c.fractions=clone((x||{}).fractions||DEFAULTS.fractions);c.width_minimums=Object.assign({},DEFAULTS.width_minimums,(x||{}).width_minimums||{});
+ if(c.min_width_ticks!==null&&(!Number.isSafeInteger(c.min_width_ticks)||c.min_width_ticks<4))throw Error("INVALID_MIN_WIDTH");
+ for(const [k,v] of Object.entries(c.width_minimums))if(!Number.isSafeInteger(v)||v<4||((k==="MNQ"||k==="NQ")&&v<30))throw Error("INVALID_INSTRUMENT_WIDTH_FLOOR");
+ for(const k of ['departure_fraction','impulse_reversal_fraction','size_weight','width_percentile_min','sparse_percentile_min','joint_min'])if(!Number.isFinite(c[k])||c[k]<0||c[k]>1)throw Error('INVALID_CONFIG_'+k);
  for(const k of ['departure_min_ticks','impulse_reversal_ticks','impulse_min_ticks','reference_window','min_reference','max_candidates','max_leg_ticks'])if(!Number.isSafeInteger(c[k])||c[k]<1)throw Error('INVALID_CONFIG_'+k);
  if(c.min_reference>c.reference_window)throw Error('REFERENCE_WINDOW_TOO_SMALL');
  if(Object.values(c.weights).some(x=>!Number.isFinite(x)||x<0)||Math.abs(Object.values(c.weights).reduce((a,b)=>a+b,0)-1)>1e-9)throw Error('INVALID_WEIGHTS');
@@ -47,11 +49,11 @@ function assess(c){const width=c.hi-c.lo,all=c.refs,peers=all.filter(z=>z.width>
  Object.assign(result,{status:wp>=c.cfg.width_percentile_min&&sp>=c.cfg.sparse_percentile_min&&joint>=c.cfg.joint_min?'QUALIFIED':'REJECTED',width_percentile:wp,low_commerce_percentile:sp,joint});return result;}
 class Detector{
  constructor(options){this.cfg=config(options);this.reset();}
- reset(){this.status='SEARCHING';this.zone=null;this.candidates=[];this.references=this.cfg.fractions.map(()=>[]);this.leg=[];this.anchor=null;this.extreme=null;this.direction=0;this.previous=null;this.seen=0;this.impulses=0;this.completed4=0;this.rejected4=0;this.insufficient4=0;this.error=null;}
- snapshot(){return clone({schema:'edgelab.four_pass_sparse/1',status:this.status,zone:this.zone,seen:this.seen,impulses:this.impulses,active_candidates:this.candidates.length,completed4:this.completed4,rejected4:this.rejected4,insufficient4:this.insufficient4,error:this.error,configuration:this.cfg,outcomes_computed:false});}
+ reset(){this.status='SEARCHING';this.zone=null;this.candidates=[];this.references=this.cfg.fractions.map(()=>[]);this.leg=[];this.anchor=null;this.extreme=null;this.direction=0;this.previous=null;this.seen=0;this.impulses=0;this.completed4=0;this.rejected4=0;this.insufficient4=0;this.error=null;this.width_floor=null;this.reversal_floor=null;}
+ snapshot(){return clone({schema:'edgelab.four_pass_sparse/1',status:this.status,zone:this.zone,seen:this.seen,impulses:this.impulses,active_candidates:this.candidates.length,completed4:this.completed4,rejected4:this.rejected4,insufficient4:this.insufficient4,error:this.error,configuration:this.cfg,resolved_min_width_ticks:this.width_floor,resolved_reversal_ticks:this.reversal_floor,outcomes_computed:false});}
  seed(impulse,available){const lo=Math.min(impulse[0].price_tick,impulse[impulse.length-1].price_tick),hi=Math.max(impulse[0].price_tick,impulse[impulse.length-1].price_tick),w=hi-lo;
  if(w<this.cfg.impulse_min_ticks)return;
- for(let f=0;f<this.cfg.fractions.length;f++){const a=this.cfg.fractions[f],bottom=Math.ceil(lo+w*a[0]),top=Math.floor(lo+w*a[1]);if(top-bottom<4)continue;
+ for(let f=0;f<this.cfg.fractions.length;f++){const a=this.cfg.fractions[f],bottom=Math.ceil(lo+w*a[0]),top=Math.floor(lo+w*a[1]);if(top-bottom<this.width_floor)continue;
  if(this.candidates.some(z=>z.family===f&&z.lo===bottom&&z.hi===top))continue;
  if(this.candidates.length>=this.cfg.max_candidates){this.status='ABSTAIN_CAPACITY';this.error='No candidate expiration or silent eviction; restart manually';return;}
  const c=new Corridor(bottom,top,'FP4_'+available.sequence+'_'+f,this.cfg,available.ts_ns,f,clone(this.references[f]));
@@ -64,6 +66,7 @@ class Detector{
  this.references[f].push({width:top-bottom,metrics:metrics,available_ns:available.ts_ns});if(this.references[f].length>this.cfg.reference_window)this.references[f].shift();}
  }
  push(raw){if(this.status!=='SEARCHING')return false;let r;try{r=tick(raw);}catch(e){this.status='ABSTAIN_INPUT';this.error=e.message;return false;}
+ if(this.width_floor===null){const known=this.cfg.width_minimums[r.instrument.toUpperCase()]||0,explicit=this.cfg.min_width_ticks||0;this.width_floor=Math.max(known,explicit);if(this.width_floor<4){this.status='ABSTAIN_WIDTH_PROFILE';this.error='Set a volatility-transferred physical minimum; no universal30tick fallback';return false;}this.reversal_floor=Math.max(this.cfg.impulse_reversal_ticks,Math.ceil(this.width_floor*this.cfg.impulse_reversal_fraction));}
  if(r.gap){this.status='ABSTAIN_GAP';this.error='Unobserved intervening path; not a time-based expiry';return false;}
  if(this.previous&&(BigInt(r.ts_ns)<BigInt(this.previous.ts_ns)||r.sequence<=this.previous.sequence)){this.status='ABSTAIN_ORDER';this.error='Time nondecreasing, sequence strictly increasing required';return false;}
  if(this.previous&&(r.contract!==this.previous.contract||r.instrument!==this.previous.instrument)){this.status='ABSTAIN_DOMAIN_CHANGE';this.error='Manual restart per instrument/natural contract required';return false;}
@@ -75,13 +78,14 @@ class Detector{
  this.status='STOPPED_FIRST_ZONE';this.candidates=[];this.previous=r;return true;}
  if(!this.anchor){this.anchor=r;this.extreme=r;this.leg=[r];this.previous=r;return false;}
  this.leg.push(r);if(this.leg.length>this.cfg.max_leg_ticks){this.status='ABSTAIN_CAPACITY';this.error='Impulse path capacity, no silent truncation';return false;}
- if(!this.direction){if(Math.abs(r.price_tick-this.anchor.price_tick)>=this.cfg.impulse_reversal_ticks){this.direction=r.price_tick>this.anchor.price_tick?1:-1;this.extreme=r;}}
+ if(!this.direction){if(Math.abs(r.price_tick-this.anchor.price_tick)>=this.reversal_floor){this.direction=r.price_tick>this.anchor.price_tick?1:-1;this.extreme=r;}}
  else if((r.price_tick-this.extreme.price_tick)*this.direction>=0)this.extreme=r;
- else if((this.extreme.price_tick-r.price_tick)*this.direction>=this.cfg.impulse_reversal_ticks){
+ else if((this.extreme.price_tick-r.price_tick)*this.direction>=this.reversal_floor){
  const end=this.leg.findIndex(z=>z.sequence===this.extreme.sequence),impulse=this.leg.slice(0,end+1);this.impulses++;this.seed(impulse,r);
  this.leg=this.leg.slice(end);this.anchor=this.extreme;this.direction=-this.direction;this.extreme=r;
  }
  this.previous=r;return false;}
 }
-return {VERSION:'0.1.0',DEFAULTS:DEFAULTS,Detector:Detector,Corridor:Corridor,assess:assess,summary:summary,percentile:percentile};
+function transferMinWidth(anchorMinTicks,anchorRangeTicks,targetRangeTicks){if(![anchorMinTicks,anchorRangeTicks,targetRangeTicks].every(v=>Number.isFinite(v)&&v>0))throw Error('MEASURED_POSITIVE_VOLATILITY_REFERENCES_REQUIRED');return Math.max(4,Math.ceil(anchorMinTicks*targetRangeTicks/anchorRangeTicks));}
+return {VERSION:'0.2.0',transferMinWidth:transferMinWidth,DEFAULTS:DEFAULTS,Detector:Detector,Corridor:Corridor,assess:assess,summary:summary,percentile:percentile};
 });
