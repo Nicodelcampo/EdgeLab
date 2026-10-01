@@ -22,3 +22,14 @@ def test_prefix_stability():
  b=fixture();b.loc[[601,633],'l']=94;raw,s=detect(b,'X','X',{'20251007'},1);_,ss=detect(b.iloc[:620],'X','X',{'20251007'},1);assert ss==[x for x in s if x['signal_ns']<=619*60*NS]
 def test_ten_bar_episode_expiry():
  b=fixture();b.loc[601:612,'l']=94;b.loc[601:611,'c']=94;b['e200']=80;b['e50']=90;raw,s=detect(b,'X','X',{'20251007'},1);assert not s
+
+def test_summary_json_serialization_both_support_cases():
+ import json
+ from pullback import summarize
+ days=[str(i) for i in range(60)]
+ for per_day,expected in [(1,False),(5,True)]:
+  rows=[{'day':d,'contract':'X','separated':True} for d in days for j in range(per_day)]
+  summary=summarize(rows,rows,days)
+  assert type(summary['frequency_support']) is bool
+  assert summary['frequency_support'] is expected
+  assert json.loads(json.dumps(summary,allow_nan=False))==summary

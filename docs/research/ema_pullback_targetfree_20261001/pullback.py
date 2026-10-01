@@ -42,7 +42,7 @@ def detect(b,asset,contract,days,tf):
 
 def summarize(rows,raw,days):
  counts=[sum(s['day']==d for s in rows) for d in days]
- return {'eligible_sessions':len(days),'episodes_unthinned':len(raw),'reserved_intents':len(rows),'separated_subset':sum(s['separated'] for s in rows),'mean_per_session':float(np.mean(counts)),'median_per_session':float(np.median(counts)),'active_sessions':sum(x>0 for x in counts),'zero_sessions':sum(x==0 for x in counts),'q25_q75':list(map(float,np.quantile(counts,[.25,.75]))),'by_month':{m:sum(s['day'][:6]==m for s in rows) for m in sorted({d[:6] for d in days})},'by_contract':dict(collections.Counter(s['contract'] for s in rows)),'frequency_support':len(rows)>=200 and np.median(counts)>=4 and sum(x>0 for x in counts)>=.8*len(days),'not_trades':True,'outcomes_computed':False}
+ return {'eligible_sessions':len(days),'episodes_unthinned':len(raw),'reserved_intents':len(rows),'separated_subset':sum(s['separated'] for s in rows),'mean_per_session':float(np.mean(counts)),'median_per_session':float(np.median(counts)),'active_sessions':sum(x>0 for x in counts),'zero_sessions':sum(x==0 for x in counts),'q25_q75':list(map(float,np.quantile(counts,[.25,.75]))),'by_month':{m:sum(s['day'][:6]==m for s in rows) for m in sorted({d[:6] for d in days})},'by_contract':dict(collections.Counter(s['contract'] for s in rows)),'frequency_support':bool(len(rows)>=200 and np.median(counts)>=4 and sum(x>0 for x in counts)>=.8*len(days)),'not_trades':True,'outcomes_computed':False}
 
 def run(root,out):
  here=Path(__file__).parent;out.mkdir(parents=True,exist_ok=True);m=json.load(open(here/'manifest.json'))

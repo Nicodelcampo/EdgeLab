@@ -2,7 +2,7 @@
 
 ## Estado
 
-Censo real enviado a Kaggle v2. Estado observado RUNNING; aún NO hay un censo completo certificado ni resultados económicos. No convertir esta preparación en evidencia de edge.
+V2 ERROR al guardar resumen tras recorrer24combinaciones archivo/TF (unos248s): booleano NumPy en frequency_support no serializable. No censo/ledger final persistido. V3 enviada después de registrar corrección técnica: bool() nativo, detector idéntico. Nueve tests dirigidos PASS, incluida regresión JSON positiva/negativa. Sin cambios en reglas/población/selección. Aún NO hay censo completo validado ni resultado económico.
 
 Nueva hipótesis, no rescate de RTY60 ni réplica de cruces/barridos anteriores: aprovechar un retroceso a EMA20 dentro de una tendencia ya establecida. ES no está en el dataset canónico verificado; se difiere. MNQ, RTY y YM tienen respectivamente 154, 175 y 177 fechas elegibles propias del catálogo entre 20251007 y 20260630. La intersección común sólo sería 151: no se descartan fechas para igualar denominadores. Desarrollo expuesto, NO ciego/OOS. Activos de índices correlacionados no son tres réplicas independientes. Holdout general julio+ intacto.
 
@@ -44,3 +44,8 @@ Manifiesto SHA256 3409f5c3a47ac8858a7e5ea6e83efdcc423c8a5cc643f6208d2db1d67d31f9
 Entregar código/manifest/QA y MEDIDO/NO MEDIDO en rama research/ema-pullback-census-20261001, sin merge. Productor privado completo, catálogo embebido/URLs/raw y ledgers de precio quedan privados; reproducción pública incompleta sin fuentes autorizadas.
 
 Aporte al referente: se plantea una mecánica de entrada distinta y se exige frecuencia causal antes de gastar presupuesto en buscar ganancias.
+
+
+## Enmienda de serialización previa a v3
+
+Manifiesto original conservado en manifest_v2.json; nuevo manifiesto 462928c6e045ed05cd98051d5b3dfab11d8d2afd81ae7a379945dd98d90a055f; runner 801b066bfb09416982e6d45f87ba1800551415f278219789221eb41a84f46724. Source de detect() exacta sin cambio. Log y preflight v2 preservados privados; doce hashes/custodia y manifiesto original MATCH. El fallo no habilita relajar criterios ni abrir retornos.

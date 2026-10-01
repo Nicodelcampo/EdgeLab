@@ -762,3 +762,8 @@ Acta `RESULTADO_RTY60_EXPANDED_20261001.md`. Configuración fija SIN L2, DEVELOP
 ## PREPARADO / NO MEDIDO — Retroceso EMA20 multi-activo (2026-10-01)
 
 Nueva hipótesis, no rescate RTY60 ni cruces anteriores. MNQ154/RTY175/YM177 fechas propias pre-julio, ESdiferido por no estar en datasetcanónico. TF1/5, EMAprev20/50/200, touch/reclaim una vez por episodio, reserve31min; separación .25TR20SMA subsetnoreschedule. Selección target-free:5min si>=200intenciones/mediana>=4/actividad>=80%;else1min;elseSTOP sinrelajar.8synthetictestsPASS+RTY1date scalarEMA/U/6prefixPASS, nofullsuite. V1 mountERRORantesdecenso, V2transporteautorizadoigualfuenteexactaverificada, observadoRUNNING, censo real no recuperado todavía. NO MEDIDO: frecuenciafull/entradasquote/outcomes/modelos/costos reales/edge/potenciaformal. Holdoutjulio+ cerrado, developmentNOTblindOOS. Ver PREPARACION_EMA_PULLBACK_TARGETFREE_20261001.md; acta/registro juntos; rama aisladasinmerge.
+
+
+### Incidente técnico EMA pullback v2 → v3
+
+V2 ERROR exportJSON tras24fileTF en248s; no censo/ledger final. Castbool() en frequency_support, detect() idéntico, no cambio de parámetros/muestra/selección.9directedtestsPASS (regresiónJSON true/false). Custodia12files ymanifestoriginalMATCH, log preservado. V3 enviada; censo real aún no validado. NO MEDIDO outcomes/PNL/edge. Manifiesto original preservado, nuevo462928c6… registrado antes del reintento.
