@@ -38,18 +38,22 @@ Régimen:
 | MGC_04-26 | 20260129 | 20260330 | 20,793,514 |
 | MGC_06-26 | 20260330 | holdout | 649,171 |
 
+## Corrección TICKBAR-001
+
+El artefacto `7655ce91a20b897dc45b` quedó formalmente invalidado: descartaba el remanente final de cada sesión. El bridge recuperado documenta que NT8 cierra una barra corta en la frontera y reinicia el contador en la apertura siguiente. La versión v2 emite esas barras parciales, preserva los 56.575.239 ticks y obliga a rehacer features, señales y resultados.
+
 ## Arrays versionados
 
-- Barras 25T: 2,262,954; sólo se descartan 1,389 ticks de colas incompletas de sesión.
+- Barras 25T: 2,263,074; se emiten 120 barras finales cortas, una por cada sesión con remanente; no se descarta ningún tick.
 - Cada `.npy` tiene dtype, shape y SHA-256 en `manifest.json` del artefacto local.
 - IDs observados en esta corrida:
-  - barras: `7655ce91a20b897dc45b`;
+  - barras: `8c52391adf32f82b9c84`;
   - ticks: `b8e5942297c925d6ff9b`.
 - Los builders escriben artefactos inmutables derivados del hash de fuente/política/código y un puntero `LATEST` local.
 
 ## Señal reconstruida
 
-El snapshot del repositorio no contenía el runner MGC original ni el registro exacto de sus 126 celdas. La definición que reproduce la escala reportada (1,728 señales viejas; 1,641 con el continuo corregido) es:
+El snapshot del repositorio no contenía el runner MGC original ni el registro exacto de sus 126 celdas. La definición que reproduce la escala reportada (1,728 señales viejas; 1,643 con el continuo corregido) es:
 
 - EMA 200 cruza EMA 500;
 - EMA 500 debe estar del mismo lado de EMA 2000;
@@ -66,9 +70,9 @@ Finalistas tick-exact con el mismo contrato causal de EdgeLab:
 
 | SL | TP | Trades | Neto ticks | Ticks/trade | Win rate |
 |---:|---:|---:|---:|---:|---:|
-| 200 | 300 | 713 | 6,252.5 | 8.77 | 42.22% |
-| 200 | 400 | 623 | 9,920.5 | 15.92 | 36.44% |
-| 200 | 450 | 592 | 8,535.0 | 14.42 | 33.45% |
+| 200 | 300 | 713 | 5,750.5 | 8.07 | 42.08% |
+| 200 | 400 | 623 | 9,918.5 | 15.92 | 36.44% |
+| 200 | 450 | 592 | 8,533.0 | 14.42 | 33.45% |
 
 El mejor screening fue TP 400, no TP 450. Ninguna cifra abre el holdout ni constituye validación final.
 
@@ -80,13 +84,13 @@ Sobre el grid bar-level de 42 celdas:
 - prefix causality: PASS;
 - sintéticos del kernel stateful: PASS;
 - replay Python independiente: PASS en 200 trades de cada uno de 3 finalistas;
-- PBO/CSCV: 0.2897 (252 splits);
+- PBO/CSCV: 0.2937 (252 splits);
 - DSR > 0.95: 0/42;
 - BH q < 0.05: 0/42;
-- TP400 bootstrap por sesión positivo: 94.235% en el ledger tick-exact;
-- MCPT full-pipeline (500 permutaciones intrasesión): p=0.02395;
+- TP400 bootstrap por sesión positivo: 94.23% en el ledger tick-exact;
+- MCPT full-pipeline (500 permutaciones intrasesión): p=0.02595;
 - SPA/Reality Check sobre 42 modelos diarios: p=0.342;
-- TP400 OOS cronológico 30% de discovery: +2,731.5 ticks tick-exact;
+- TP400 OOS cronológico 30% de discovery: +2,729.5 ticks tick-exact;
 - febrero 2026 negativo y MGC_06-26 levemente negativo (muestra muy corta).
 
 Conclusión: sigue siendo candidato de investigación, **no edge validado**. El MCPT rechaza el null temporal para TP400, pero DSR, BH y SPA no sostienen significancia corregida por selección; además falta estabilidad completa por contrato/régimen. El holdout no debe abrirse.
@@ -95,11 +99,11 @@ Conclusión: sigue siendo candidato de investigación, **no edge validado**. El 
 
 En la máquina de 2 CPU y sin GPU usada en esta corrida:
 
-- barras 25T por streaming/vectorización: 6.7 s;
-- screening 42 celdas con Numba: 5.6 s;
+- barras 25T por streaming/vectorización: 4.2 s;
+- screening 42 celdas con Numba: 4.0 s;
 - arrays tick-exact: 23.9 s;
-- replay tick-exact de 3 finalistas: 1.5 s;
-- gauntlet 42 celdas: 2.0 s.
+- replay tick-exact de 3 finalistas: 1.0 s;
+- gauntlet 42 celdas: 2.7 s.
 
 El runner preliminar tardaba ~39m22s porque reconstruía/reprocesaba caminos dentro de bucles Python por celda. La nueva ruta paga I/O y features una vez y reserva el tick replay para finalistas.
 
@@ -124,5 +128,5 @@ python tools/verify_mgc_stateful_kernel.py
 1. Recuperar el registro original de 126 configuraciones (pullback/timeout/BE). No reconstruirlo post-hoc.
 2. Convertir ese registro a un JSON inmutable con hash y rerun sin cambiar parámetros.
 3. Implementar pullback/BE en el motor compartido, con sintéticos y doble simulador, no dentro de la estrategia.
-4. Ejecutar MCPT del pipeline completo; SPA/Reality Check sobre la familia registrada.
+4. Ejecutar la paridad CPU/GPU sintética en Kaggle cuando la credencial permita `api.kaggle.com`.
 5. Aumentar cobertura de contratos/regímenes y sólo después decidir si se abre una única vez el holdout.
