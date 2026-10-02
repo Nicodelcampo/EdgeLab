@@ -84,10 +84,12 @@ Sobre el grid bar-level de 42 celdas:
 - DSR > 0.95: 0/42;
 - BH q < 0.05: 0/42;
 - TP400 bootstrap por sesión positivo: 92.895%;
+- MCPT full-pipeline (500 permutaciones intrasesión): p=0.02395;
+- SPA/Reality Check sobre 42 modelos diarios: p=0.342;
 - TP400 OOS cronológico 30% de discovery: +1,729.5 ticks bar-level;
 - febrero 2026 negativo y MGC_06-26 levemente negativo (muestra muy corta).
 
-Conclusión: sigue siendo candidato de investigación, **no edge validado**. Falla aún evidencia ajustada por multiplicidad (DSR/BH) y estabilidad completa por contrato/régimen. El holdout no debe abrirse.
+Conclusión: sigue siendo candidato de investigación, **no edge validado**. El MCPT rechaza el null temporal para TP400, pero DSR, BH y SPA no sostienen significancia corregida por selección; además falta estabilidad completa por contrato/régimen. El holdout no debe abrirse.
 
 ## Rendimiento
 
@@ -111,7 +113,9 @@ python tools/build_mgc_25t_arrays.py
 python tools/run_mgc_ema_screen.py
 python tools/build_mgc_tick_arrays.py
 python tools/run_mgc_tick_exact_finalists.py
+python tools/run_mgc_tick_exact_grid.py
 python tools/validate_mgc_ema.py
+python tools/mcpt_mgc_ema.py
 python tools/verify_mgc_stateful_kernel.py
 ```
 
