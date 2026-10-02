@@ -2,6 +2,7 @@ from __future__ import annotations
 import hashlib,json
 from pathlib import Path
 import numpy as np
+from validation.pbo import pbo_cscv
 from .screen import iter_screen_batches
 from .splits import make_splits,mask_for,to_dict
 from .survivors import write_survivors
@@ -20,5 +21,21 @@ class FunnelRunner:
         surv=[r for r in rows if r['survives_e1_e2']];heads=[]
         for fam in sorted({r['family_id'] for r in surv}):
             f=[r for r in surv if r['family_id']==fam];heads.append(max(f,key=lambda r:min(r['d0_mean'],r['d1_mean'])-abs(r['d0_mean']-r['d1_mean'])))
-        art=write_survivors(surv,self.out/'survivors.parquet',{'split_hash':self.split.split_hash,'backend':dev.backend,'confirmatory':False});payload={'stage':'E1_E3','device':dev.__dict__,'split':to_dict(self.split),'tested':len(rows),'survivors':len(surv),'headlines':heads,'artifact':art,'asserts_edge':False};rid='FUNNEL-'+hashlib.sha256(json.dumps(payload,sort_keys=True).encode()).hexdigest()[:16];self.ledger.append('trial_recorded',rid,payload);(self.out/'summary.json').write_text(json.dumps(payload,indent=2));return payload
+        meta={'split_hash':self.split.split_hash,'backend':dev.backend,'confirmatory':False}
+        trial_art=write_survivors(rows,self.out/'trials.parquet',meta)
+        survivor_art=write_survivors(surv,self.out/'survivors.parquet',meta)
+        multiplicity={'status':'NOT_RUN_INSUFFICIENT_SURVIVORS','pbo':None,'candidates':len(surv)}
+        if len(surv)>=2:
+            keep=[self.cfg.index(next(c for c in self.cfg if c['candidate_id']==r['candidate_id'])) for r in surv]
+            days=np.unique(sigdays[np.isin(sigdays,np.r_[self.split.d0_dates,self.split.d1_dates])])
+            daily=np.zeros((len(days),len(keep)),np.float64)
+            day_pos={int(d):i for i,d in enumerate(days)}
+            for start,end,matrix,_ in iter_screen_batches(self.si,self.sd,self.h,self.l,self.bo,self.ao,sl[keep],tp[keep],mult[keep],backend=self.backend):
+                for local in range(end-start):
+                    col=keep[start+local]
+                    for day,val in zip(sigdays,matrix[:,local]):
+                        if int(day) in day_pos and np.isfinite(val):daily[day_pos[int(day)],start+local]+=val
+            pbo=pbo_cscv(daily,S=10)
+            multiplicity={'status':'COMPLETE','pbo':float(pbo['pbo']),'splits':int(pbo['n_splits']),'candidates':len(surv)}
+        payload={'stage':'E1_E2_WITH_E3_IF_ELIGIBLE','device':dev.__dict__,'split':to_dict(self.split),'tested':len(rows),'survivors':len(surv),'headlines':heads,'multiplicity':multiplicity,'trial_artifact':trial_art,'survivor_artifact':survivor_art,'asserts_edge':False};rid='FUNNEL-'+hashlib.sha256(json.dumps(payload,sort_keys=True).encode()).hexdigest()[:16];self.ledger.append('trial_recorded',rid,payload);(self.out/'summary.json').write_text(json.dumps(payload,indent=2));return payload
     def d2_mask(self,unlock_token=None):return mask_for(self.split,self.td,'D2',unlock_token=unlock_token)
