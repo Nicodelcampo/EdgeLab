@@ -83,10 +83,10 @@ Sobre el grid bar-level de 42 celdas:
 - PBO/CSCV: 0.2897 (252 splits);
 - DSR > 0.95: 0/42;
 - BH q < 0.05: 0/42;
-- TP400 bootstrap por sesión positivo: 92.895%;
+- TP400 bootstrap por sesión positivo: 94.235% en el ledger tick-exact;
 - MCPT full-pipeline (500 permutaciones intrasesión): p=0.02395;
 - SPA/Reality Check sobre 42 modelos diarios: p=0.342;
-- TP400 OOS cronológico 30% de discovery: +1,729.5 ticks bar-level;
+- TP400 OOS cronológico 30% de discovery: +2,731.5 ticks tick-exact;
 - febrero 2026 negativo y MGC_06-26 levemente negativo (muestra muy corta).
 
 Conclusión: sigue siendo candidato de investigación, **no edge validado**. El MCPT rechaza el null temporal para TP400, pero DSR, BH y SPA no sostienen significancia corregida por selección; además falta estabilidad completa por contrato/régimen. El holdout no debe abrirse.
