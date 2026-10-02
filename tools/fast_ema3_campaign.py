@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import argparse,json
+import argparse,json,hashlib
 from pathlib import Path
 import numpy as np,pandas as pd,pyarrow.parquet as pq
 
@@ -11,16 +11,35 @@ def ema(x,p):
 def load(root,tick,cut):
  rows=[]; inv=[]
  for p in sorted(Path(root).rglob('*.parquet')):
-  pf=pq.ParquetFile(p); cols=pf.schema.names
-  if not {'ts_utc_ns','last','bid','ask'}.issubset(cols): continue
-  x=pd.read_parquet(p,columns=['ts_utc_ns','last','bid','ask']+(['source_day_nt_local'] if 'source_day_nt_local' in cols else []))
-  if 'source_day_nt_local' not in x: x['source_day_nt_local']=pd.to_datetime(x.ts_utc_ns,unit='ns',utc=True).dt.strftime('%Y%m%d').astype(int)
-  x=x[x.source_day_nt_local<=cut].copy(); x['contract']=p.stem.split('_ticks')[0].replace('.parquet','')
-  inv.append({'file':p.name,'rows_total':pf.metadata.num_rows,'rows_discovery':len(x)})
-  if len(x): rows.append(x)
+  pf=pq.ParquetFile(p); cols=set(pf.schema.names)
+  raw={'ts_utc_ns','last','bid','ask'}.issubset(cols)
+  canonical={'ts_utc_ns','price_ticks','bid_ticks','ask_ticks','contract'}.issubset(cols)
+  if not (raw or canonical): continue
+  if canonical:
+   use=['ts_utc_ns','price_ticks','bid_ticks','ask_ticks','contract']+(['source_file'] if 'source_file' in cols else [])
+   x=pd.read_parquet(p,columns=use).rename(columns={'price_ticks':'last','bid_ticks':'bid','ask_ticks':'ask'})
+   if 'source_file' in x:
+    day=x.source_file.astype(str).str.extract(r'(\d{8})(?=\.Last)',expand=False)
+    fallback=pd.to_datetime(x.ts_utc_ns,unit='ns',utc=True).dt.strftime('%Y%m%d')
+    x['source_day_nt_local']=pd.to_numeric(day.fillna(fallback),errors='raise').astype('int32')
+    x=x.drop(columns=['source_file'])
+   else:
+    x['source_day_nt_local']=pd.to_datetime(x.ts_utc_ns,unit='ns',utc=True).dt.strftime('%Y%m%d').astype('int32')
+   price_encoding='INTEGER_TICKS'
+  else:
+   use=['ts_utc_ns','last','bid','ask']+(['source_day_nt_local'] if 'source_day_nt_local' in cols else [])
+   x=pd.read_parquet(p,columns=use)
+   if 'source_day_nt_local' not in x: x['source_day_nt_local']=pd.to_datetime(x.ts_utc_ns,unit='ns',utc=True).dt.strftime('%Y%m%d').astype('int32')
+   x['contract']=p.stem.split('_ticks')[0].replace('.parquet','')
+   for c in ['last','bid','ask']: x[c]=np.rint(x[c].astype(float)/tick).astype('int64')
+   price_encoding='DECIMAL_PRICE_TO_TICKS'
+  x=x[x.source_day_nt_local<=cut].copy()
+  inv.append({'file':p.name,'rows_total':pf.metadata.num_rows,'rows_discovery':len(x),'price_encoding':price_encoding})
+  if len(x): rows.append(x[['ts_utc_ns','last','bid','ask','contract','source_day_nt_local']])
  if not rows: raise ValueError('no eligible parquet')
- x=pd.concat(rows,ignore_index=True); x=x[np.isfinite(x[['last','bid','ask']]).all(axis=1)&(x['last']>0)&(x['ask']>=x['bid'])]
- for c in ['last','bid','ask']: x[c]=np.rint(x[c]/tick).astype('int64')
+ x=pd.concat(rows,ignore_index=True)
+ x=x[np.isfinite(x[['last','bid','ask']]).all(axis=1)&(x['last']>0)&(x['ask']>=x['bid'])]
+ for c in ['last','bid','ask']: x[c]=x[c].astype('int64')
  return x.sort_values(['contract','source_day_nt_local','ts_utc_ns'],kind='stable').reset_index(drop=True),inv
 
 def bars25(x):
