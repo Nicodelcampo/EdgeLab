@@ -1,0 +1,15 @@
+schema_version: edgelab_hypothesis_v1
+hypothesis_id: HYP-AUCTION-VWAP-RECLAIM-001
+family_id: AUCTION_VWAP_RECLAIM
+source_type: LLM_PROPOSAL
+asserts_edge: false
+economic_story: Price rejection beyond session value followed by a VWAP reclaim may identify failed auction inventory.
+roles:
+  location: {family: SESSION_VWAP_BAND, params_coarse: [1.0, 2.0]}
+  regime: {family: VOLATILITY_TERCILE, params_coarse: [LOW, MID, HIGH]}
+  trigger: {family: VWAP_RECLAIM, params_coarse: [ONE_CLOSE]}
+  invalidate: {rule: RETURN_BEYOND_EXCURSION_EXTREME}
+n_free_params: 3
+ablations: [shuffle_within_session, remove_regime, replace_vwap_with_session_mid]
+data_requirements: [L1_ticks]
+forbidden: [continuous_period_search, post_hoc_grid_expansion]
