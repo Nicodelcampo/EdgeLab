@@ -5,7 +5,7 @@ const worker = new Worker()
 export default worker
 const API = "https://www.kaggle.com/api/v1"
 
-worker.credential("KAGGLE_API_TOKEN", { network: [{ domain: "www.kaggle.com", transform: [{ headers: { Authorization: `Bearer ${CREDENTIAL_VALUE}` } }] }] })
+worker.credential("KAGGLE_API_TOKEN", { network: [{ domain: "www.kaggle.com", transform: [{ headers: { Authorization: `Bearer ${CREDENTIAL_VALUE}` } }] }, { domain: "api.kaggle.com", transform: [{ headers: { Authorization: `Bearer ${CREDENTIAL_VALUE}` } }] }] })
 
 type J = string | number | boolean | null | J[] | { [k: string]: J }
 function json(v: unknown): J { return JSON.parse(JSON.stringify(v)) as J }
@@ -52,4 +52,27 @@ worker.tool("getKaggleDatasetArchiveUrl", {
  title:"Get Kaggle dataset archive URL", description:"Create a short-lived signed URL for a complete Kaggle dataset archive.",
  schema:j.object({dataset:j.string()}),
  execute:async({dataset})=>{const[o,s]=parts(dataset); const r=await fetch(`${API}/datasets/download/${encodeURIComponent(o)}/${encodeURIComponent(s)}`,{redirect:"manual"}); if(r.status>=300&&r.status<400){const location=r.headers.get("location"); if(!location)throw new Error("Kaggle redirect had no Location header"); return {dataset,url:location}} if(!r.ok)throw new Error(`Kaggle ${r.status}: ${(await r.text()).slice(0,500)}`); return {dataset,url:r.url}}
+})
+
+
+async function rpc(service:string, method:string, body:Record<string,J>) {
+ const r=await fetch(`https://api.kaggle.com/v1/${service}/${method}`,{method:"POST",headers:{Accept:"application/json","Content-Type":"application/json"},body:JSON.stringify(body)});
+ if(!r.ok)throw new Error(`Kaggle RPC ${r.status}: ${(await r.text()).slice(0,1000)}`);
+ return json(await r.json())
+}
+
+worker.tool("pushKaggleKernel", {
+ title:"Push a private Kaggle kernel", description:"Create or update a private Kaggle Python script and start it on CPU or GPU.",
+ schema:j.object({id:j.string(),title:j.string(),script:j.string(),accelerator:j.string().nullable(),datasetSourcesCsv:j.string().nullable()}),
+ execute:async({id,title,script,accelerator,datasetSourcesCsv})=>{
+  const acc=(accelerator??"cpu").toLowerCase(); if(!["cpu","gpu"].includes(acc))throw new Error("accelerator must be cpu or gpu");
+  const sources=(datasetSourcesCsv??"").split(",").map(x=>x.trim()).filter(Boolean);
+  return rpc("kernels.KernelsApiService","SaveKernel",{slug:id,newTitle:title,text:script,language:"python",kernelType:"script",datasetDataSources:sources,kernelDataSources:[],competitionDataSources:[],modelDataSources:[],categoryIds:[],isPrivate:true,enableGpu:acc==="gpu",enableTpu:false,enableInternet:false,sessionTimeoutSeconds:3600})
+ }
+})
+
+worker.tool("getKaggleKernelStatus", {
+ title:"Get Kaggle kernel status", description:"Return the execution status of a Kaggle kernel.",
+ schema:j.object({owner:j.string(),slug:j.string(),versionLabel:j.string().nullable()}),
+ execute:async({owner,slug,versionLabel})=>rpc("kernels.KernelsApiService","GetKernelSessionStatus",{userName:owner,kernelSlug:slug,...(versionLabel?{versionLabel}:{})})
 })

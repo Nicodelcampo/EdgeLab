@@ -24,3 +24,7 @@ ntn workers deploy
 ```
 
 El `workers.json` de enlace a workspace es local y no se versiona.
+
+## Private kernel execution
+
+`pushKaggleKernel` and `getKaggleKernelStatus` use Kaggle's official RPC host (`api.kaggle.com`) to launch private CPU/GPU scripts and monitor them. Expanding an existing credential to this host requires a new secure approval. The synthetic parity script is `gpu_parity.py`; it never reads D2 or market data.
