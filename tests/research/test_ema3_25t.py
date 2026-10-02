@@ -32,6 +32,6 @@ def test_pullback_touch_then_next_quote():
  assert d.iloc[0].entry_ns==10**18+5; assert d.iloc[0].entry_ticks==101
 
 def test_breakeven_moves_stop_only_after_trigger():
- x=ticks([100,101,102,103,105,104,103,102,101,100]); bars=build_25t_bars(x,3)
+ x=ticks([100,101,102,103,106,105,104,103,102,101]); bars=build_25t_bars(x,3)
  d=simulate_cell(x,bars,event(),GridCell("NORMAL",0,20,10,20,2,0),0)
  assert d.iloc[0].reason=="BE"; assert bool(d.iloc[0].be_active)
