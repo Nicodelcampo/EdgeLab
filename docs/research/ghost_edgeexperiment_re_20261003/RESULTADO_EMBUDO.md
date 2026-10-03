@@ -14,7 +14,7 @@ Pre-registro: `PREREGISTRO_EMBUDO.md` (y su enmienda 1, escrita al ver los resul
 | | IS (hasta 2026-05-27) | OOS (desde 2026-05-28) |
 |---|---:|---:|
 | Trades / sesiones | 1.837 / 198 | 122 / 13 |
-| Media neta, fills de libro | **+23,9** (IC95 ≈ +14 a +34) | **+83,8** (IC95 +26,5 a +142,3) |
+| Media neta, fills de libro | **+23,9** (IC95 +12,3 a +35,4) | **+83,8** (IC95 +26,5 a +142,3) |
 | Media neta, fills al open de barra (réplica del proveedor) | +25,8 | +86,0 |
 | Nulo de dirección por sesión (5.000) | p = 0,0002 | p = 0,007 |
 | Nulo de dirección que preserva la exposición (5.000) | p = 0,0002 | p = 0,001 |
