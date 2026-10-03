@@ -84,7 +84,10 @@ class RunnerRouteTests(unittest.TestCase):
             def append(self,*a):pass
         ledger.FunnelLedger=Ledger
         pbo=types.ModuleType('validation.pbo');pbo.pbo_cscv=lambda *a,**kw:None
-        modules={'fake_runner':fake,'fake_runner.isolation':iso_mod,'fake_runner.splits':splits,'fake_runner.survivors':surv,'fake_runner.ledger':ledger,'validation':types.ModuleType('validation'),'validation.pbo':pbo}
+        def load_pure(name):
+            sp=importlib.util.spec_from_file_location('fake_runner.'+name,ROOT/f'edgelab/funnel/{name}.py');m=importlib.util.module_from_spec(sp);sys.modules[sp.name]=m;sp.loader.exec_module(m);return m
+        screen_stub=types.ModuleType('fake_runner.screen');screen_stub.kernel_manifest=lambda backend:{'kernel_id':'stub'}
+        modules={'fake_runner.custody':load_pure('custody'),'fake_runner.multiplicity':load_pure('multiplicity'),'fake_runner.screen':screen_stub,'fake_runner':fake,'fake_runner.isolation':iso_mod,'fake_runner.splits':splits,'fake_runner.survivors':surv,'fake_runner.ledger':ledger,'validation':types.ModuleType('validation'),'validation.pbo':pbo}
         with patch.dict(sys.modules,modules),tempfile.TemporaryDirectory() as out:
             spec=importlib.util.spec_from_file_location('fake_runner.runner',ROOT/'edgelab/funnel/runner.py')
             module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)

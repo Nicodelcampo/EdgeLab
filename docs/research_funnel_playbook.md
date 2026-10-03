@@ -74,3 +74,20 @@ El kernel GPU es screening no confirmatorio. Los sobrevivientes vuelven al motor
 ## Limitaciones actuales
 
 El snapshot privado contenía el código central de Edge Brain pero no sus schemas JSON. Se integró sólo el subconjunto completo y ejecutable de memoria, ledger, invalidación, elegibilidad y promoción. El atlas schema-dependent debe incorporarse cuando aparezcan sus schemas originales; no se recrean post-hoc.
+
+## Estado de implementación EF0–EF5 (2026-10-03)
+
+| Etapa | Estado | Dónde |
+|---|---|---|
+| EF0 elegibilidad | Implementada: chequeos automáticos; UNKNOWN bloquea | `edgelab/funnel/eligibility.py` |
+| EF1 atlas target-free | BLOQUEADA: faltan los schemas JSON originales de Edge Brain (no se recrean) | — |
+| EF2 cheap kill D0 | Implementada (CPU Numba / GPU CuPy, mismo contrato) | `screen.py`, `runner.py` |
+| EF3 familias D1 + plateau | Plateau implementado (regla fijada de antemano) | `multiplicity.plateau_report` |
+| EF4 multiplicidad | Contador global encadenado + nulo de máximo con dirección aleatoria por sesión | `multiplicity.py`, `FunnelRunner.run_e4` |
+| EF5 confirmación D2 | Sin implementar la apertura; existe guardia de holdout y registro de fechas ya vistas | `custody.py` |
+
+Reglas nuevas:
+- `forbid_holdout` se llama en el constructor del runner (`holdout_first_date`) y en todo script que lea precios.
+- `SeenLedger` registra qué fechas tuvieron **resultados** examinados. Un D2 con contaminación > 0 no es confirmación limpia.
+- El nulo de máximo evalúa el MEJOR de todo el grid (no una celda elegida a posteriori). `p_max > 0.05` o ausencia de meseta → `NOT_REJECTED_NO_DIRECTIONAL_EVIDENCE`.
+- Cada corrida registra `kernel_id`, versión, backend, precisión y hash del código del kernel.

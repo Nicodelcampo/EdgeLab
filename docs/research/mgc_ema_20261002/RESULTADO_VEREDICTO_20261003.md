@@ -30,3 +30,10 @@ Poder bajo: ~5 trades/día, sd por trade ≈ 291 ticks, efecto en muestra ≈ 16
 3. Sólo entonces, apertura única del holdout.
 
 Reproducir: `python tools/mgc_direction_diagnostic.py`, `python tools/mgc_direction_maxnull.py` (PYTHONPATH=raíz; raw en /data/raw/mgc).
+
+## Anexo: etapas nuevas del embudo aplicadas a MGC (misma fecha)
+- **EF0** (`eligibility_ef0.json`): NO elegible. Falla `contract_coverage` (falta MGC_10-25) y `clock_certified` queda UNKNOWN. Evidencia de plausibilidad del reloj (`clock_plausibility.json`): la pausa 16:00–17:00 CT está vacía en los tres regímenes de horario (CDT/CST/CDT), con picos 8–9 CT. No es certificación.
+- **Custodia** (`seen_ledger.jsonl`): D0, D1 y D2 del embudo tienen contaminación 1.0; ninguna partición es virgen.
+- **EF3 plateau** (tick-exact, todo el descubrimiento, `plateau_tickexact_alldata.json`): PLATEAU (5/5 vecinos positivos, mediana 7.119 vs headline 9.918). La región SL≥150 / TP≥350 es consistentemente positiva.
+- **EF4 sólo D0+D1** (screening de barras, criterio del embudo `min(D0,D1)-|D0-D1|`, 2000 sorteos, `funnel_e4_multiplicity.json`): mejor estadístico −1,64 ticks/trade, **p_max = 0,63**, sin meseta. Veredicto `NOT_REJECTED_NO_DIRECTIONAL_EVIDENCE`. Contador global de pruebas: 42 (`trial_registry.jsonl`).
+- Lectura: la meseta en el período completo coincide con el PnL concentrado en feb–mar (D2 del embudo, +4.745 de los +9.918); con sólo D0+D1 el criterio exigente del embudo no encuentra señal. Las dos lecturas apuntan a que el resultado depende del tramo final y no se sostiene fuera de él. Sigue sin ser edge validado.
