@@ -47,6 +47,8 @@ El subconjunto SEP26 son los trades íntegramente dentro de la cobertura de barr
 ## Lo que no se puede identificar con estos datos
 `parameter_identifiability` del paquete original lo demuestra con dos ejemplos: el calentamiento inicial y el margen de sesión admiten varios valores que dan exactamente los mismos 577 trades. Tampoco quedan identificados el orden de eventos simultáneos que no aparece en la muestra, límites internos de entradas, comportamiento con datos fuera de sesión, reinicios y lógica en tiempo real. 577/577 es equivalencia empírica en la muestra, no recuperación literal del código.
 
+> **Actualización:** la evaluación en el embudo de EdgeLab está en `PREREGISTRO_EMBUDO.md` y `RESULTADO_EMBUDO.md` (más abajo, lo que dice este apartado sobre «no se evaluó» quedó superado).
+
 ## Lectura para EdgeLab (y lo que NO se concluye)
 - Se aprendió una **estrategia de calendario**: entradas programadas por hora y día de la semana con un filtro simple de signo, no una señal de microestructura.
 - **No se evaluó si tiene edge.** Las cifras de rentabilidad son las del backtest del analizador; 60 reglas elegidas por el proveedor implican un riesgo de selección que no se midió (sin PBO/DSR/SPA ni nulo de máximo del embudo de EdgeLab), y el rendimiento en SEP26 corresponde a un período corto.
