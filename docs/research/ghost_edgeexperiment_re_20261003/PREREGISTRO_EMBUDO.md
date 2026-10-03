@@ -36,3 +36,10 @@ Escrito **antes** de calcular ninguna rentabilidad de la réplica sobre datos de
 
 ## Fuera de alcance / no se hará
 No se abre el holdout; no se reoptimizan reglas, horas, tenencias ni filtros; no se evalúa en otros activos hasta tener datos (el análisis sobre «otros activos» será conceptual, no medido).
+
+## Enmienda 1 (escrita tras ver los resultados de las pruebas 1–5, antes de correr las nuevas)
+Los resultados 1–5 no fallaron ninguna regla de descarte en OOS. Quedaba sin descartar que el resultado fuera **deriva del mercado** (la réplica es neta compradora: más largos que cortos), como ocurrió con el ORB de PLAN.md. Se añaden, sin cambiar nada de lo anterior:
+- **T2b — nulo de dirección que preserva la exposición**: dentro de cada sesión se permutan las direcciones entre sus trades (mismo número de largos y cortos por sesión). 5.000 sorteos. Si p > 0,05 en OOS, la ventaja se atribuye a deriva/exposición.
+- **T6 — concentración**: neto sin la mejor sesión y sin las 3 mejores; reparto largo/corto; neto por mes.
+- **T7 — línea base «siempre largo»**: mismas horas, filtros y tenencias, pero todas las entradas largas. Si la línea base explica la mayor parte del neto OOS, se atribuye a la deriva.
+Regla: si T2b o T7 explican el resultado OOS, el veredicto pasa a `EDGE_NO_CONFIRMADO`.
