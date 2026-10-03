@@ -2,8 +2,20 @@
 
 Pre-registro: `PREREGISTRO_EMBUDO.md` (y su enmienda 1, escrita al ver los resultados 1–5 y antes de correr los controles de deriva). Números: `resultados_embudo.json`. Contador de pruebas: `trial_registry.jsonl` (63 pruebas, cadena válida). La lógica de la estrategia no está en este repositorio.
 
-## Veredicto (regla pre-registrada)
-**`CANDIDATO_REQUIERE_CONFIRMACION_FUTURA` — no es un edge validado.** Pasa todas las reglas de descarte en la muestra fuera de la ventana de ajuste del proveedor, pero la muestra es corta, no es virgen y la prueba del mejor de 60 reglas no rechaza el azar.
+## Veredicto final
+**`EDGE_NO_CONFIRMADO`.** Antes del holdout la réplica era un candidato (ver abajo); la confirmación única en el holdout de MNQ (jul–sep 2026) **falló** los criterios pre-registrados.
+
+| Holdout MNQ, serie correctamente especificada (corrida 3, enmienda 4) | |
+|---|---:|
+| Trades / sesiones | 395 / 41 |
+| Media neta por trade (fills de libro, comisión real) | **−4,4 ticks** (−USD 2,2) |
+| IC95 por bootstrap de sesiones | −32,4 a +23,5 |
+| «Siempre largo», mismas horas | +3,4 |
+| p nulo de dirección / que preserva exposición / calendario placebo | 0,46 / 0,60 / 0,26 |
+
+Éxito exigía media > 0, IC que excluya 0, los tres p ≤ 0,05 y superar a «siempre largo»: no se cumple ninguno. El IC de ±28 ticks es ancho, por lo que **no demuestra que el efecto sea cero**: su extremo superior (+23,5) queda justo por debajo del IS (+23,9), es decir, el holdout es compatible con «sin edge» y casi excluye un efecto del tamaño observado en IS.
+
+**Cómo llegamos a esa cifra (transparencia).** Hubo tres lecturas del mismo tramo; las dos primeras fueron ejecuciones defectuosas mías (roll mal especificado que dejó a MNQ_12-26, ilíquido, como líder en julio–agosto), documentadas en las enmiendas 3 y 4 antes de repetir: corrida 1 −18,1 ticks (307 trades), corrida 2 −17,5 (309), corrida 3 −4,4 (395). La corrida 3 no es ciega. Los datos del holdout en Kaggle **tienen cobertura incompleta** (5 sesiones faltantes y varias truncadas en MNQ_09-26); se excluyeron las sesiones con menos del 50 % del volumen mediano. Un test limpio requiere el histórico 1 minuto completo de MNQ jul–sep exportado desde NinjaTrader, o datos nuevos (trading en demo hacia adelante).
 
 ## Datos y réplica
 - MNQ, ticks de Kaggle, 2025-08-01 a 2026-06-30 (holdout de EdgeLab `2026-06-30T22:00Z` sin tocar), 211 sesiones; huecos 03-20→04-06 y 06-10→06-25.
@@ -44,5 +56,21 @@ Pre-registro: `PREREGISTRO_EMBUDO.md` (y su enmienda 1, escrita al ver los resul
 
 Comisión USD 1,90 convertida a ticks de cada activo (para YM y GC es menor que la real de un contrato completo). Lectura: **sólo se transfiere a otro índice bursátil**; no a oro, bonos ni yen. Un índice correlacionado no es una réplica independiente (YM y MNQ comparten el flujo intradía de EEUU).
 
-## Siguiente paso para confirmar
-Una **única** apertura del holdout de MNQ (desde 2026-07-01, ticks de `edgelab-ticks-nt8-canonical`) con la especificación congelada y estos umbrales: media neta > 0, IC95 excluye 0 y p de dirección y de calendario placebo ≤ 0,05. Requiere decisión explícita del usuario porque consume el holdout; no se hizo.
+## Transferencia a otros índices (solo datos previos al holdout; sus holdouts no se abrieron)
+Mismo calendario congelado, ejecución de libro, comisión USD 1,90 en micros y USD 4,50 en contratos completos (supuesto). OOS = sesiones 2026-05-28 a 06-30 (24 sesiones por la mayor cobertura de estos activos).
+
+| Activo | IS media neta (ticks) / trades | OOS media neta / trades / IC95 | p OOS (dirección, exposición, calendario) |
+|---|---|---|---|
+| ES | +4,9 / 2.045 | +15,8 / 230 / +9,9 a +22,0 | todos < 0,001 |
+| NQ | +31,1 / 1.974 | +114,8 / 227 / +71,7 a +156,6 | todos < 0,001 |
+| MES | +3,8 / 1.629 | +15,1 / 230 / +9,1 a +21,2 | todos < 0,001 |
+| RTY | +3,9 (IC −1,7 a +9,3) / 694 | +16,8 / 234 / +10,1 a +23,8 | todos < 0,001 |
+| YM (USD 4,50) | +3,3 / 1.875 | +15,3 / 227 / +5,7 a +24,6 | < 0,001 / 0,002 / < 0,001 |
+
+(p < 0,001 = ningún sorteo igualó el resultado real.) Las predicciones registradas (ES, NQ y MES parecidos a YM) se cumplieron. **Pero estos cinco índices están muy correlacionados con MNQ y comparten el mismo período OOS y el mismo régimen, así que no son confirmaciones independientes**; y el holdout de MNQ, que cubre el período posterior, no confirmó. Oro, bonos y yen siguen sin evidencia (tabla de la sección anterior).
+
+## Lectura final
+1. Hay un patrón de calendario que funcionó en 2025-08 a 2026-06 en todos los índices de acciones y que no es deriva ni suerte de una sola regla; es coherente con una estacionalidad intradía real o con un régimen de esos diez meses.
+2. No sobrevivió al período siguiente (jul–sep 2026) en MNQ, aunque ese test tiene cobertura incompleta y es estadísticamente ancho.
+3. La explicación más parsimoniosa: un calendario minado por el proveedor sobre datos hasta mayo-2026 con sobreajuste parcial más un junio excepcionalmente favorable. No se puede descartar un efecto menor.
+4. Qué haría falta para cerrar: histórico MNQ 1 minuto completo jul–sep desde NinjaTrader (o datos hacia adelante) y, si se quiere seguir, correr el mismo calendario congelado en demo antes de arriesgar capital.
