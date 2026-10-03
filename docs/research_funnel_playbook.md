@@ -91,3 +91,5 @@ Reglas nuevas:
 - `SeenLedger` registra qué fechas tuvieron **resultados** examinados. Un D2 con contaminación > 0 no es confirmación limpia.
 - El nulo de máximo evalúa el MEJOR de todo el grid (no una celda elegida a posteriori). `p_max > 0.05` o ausencia de meseta → `NOT_REJECTED_NO_DIRECTIONAL_EVIDENCE`.
 - Cada corrida registra `kernel_id`, versión, backend, precisión y hash del código del kernel.
+
+Revisión independiente (2026-10-03) corrigió antes de integrar: guardia de holdout que fallaba abierta (ahora obligatoria: `holdout_first_date`, o `allow_unguarded=True` sólo en tests sintéticos); contador de pruebas registrado ANTES de examinar resultados, idempotente, con bloqueo de archivo y detección de truncado por `head`; el contador ahora entra en la decisión (Bonferroni por número de campañas); nulo de máximo calculado con una pasada de kernel por partición y dirección (verificado contra fuerza bruta en tests); meseta que cuenta los vecinos sin muestra suficiente como no positivos; huella de kernel por partición; `SeenLedger` marcado por el runner. Gate abierto: la revisión humana.

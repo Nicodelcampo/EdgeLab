@@ -7,14 +7,18 @@ from .isolation import bounded_batches,stage_window
 from .splits import make_splits,mask_for,to_dict
 from .survivors import write_survivors
 from .ledger import FunnelLedger
-from .custody import forbid_holdout
-from .multiplicity import max_null_direction,plateau_report,TrialRegistry
+from .custody import forbid_holdout,SeenLedger
+from .multiplicity import candidate_statistic,max_null_batched,plateau_report,sidak_bonferroni,TrialRegistry
 from .screen import kernel_manifest
 
 class FunnelRunner:
-    def __init__(self,*,trade_dates,signal_idx,signal_dir,high,low,bid_open,ask_open,configs,out_dir,backend="auto",holdout_first_date=None):
+    def __init__(self,*,trade_dates,signal_idx,signal_dir,high,low,bid_open,ask_open,configs,out_dir,backend="auto",holdout_first_date=None,allow_unguarded=False,campaign_id=None,trial_registry=None,seen_ledger=None):
         self.td=np.asarray(trade_dates);self.si=np.asarray(signal_idx);self.sd=np.asarray(signal_dir);self.h=np.asarray(high);self.l=np.asarray(low);self.bo=np.asarray(bid_open);self.ao=np.asarray(ask_open);self.cfg=list(configs);self.out=Path(out_dir);self.out.mkdir(parents=True,exist_ok=True);self.backend=backend;self.split=make_splits(self.td);self.ledger=FunnelLedger(self.out/'edge_brain.jsonl')
+        # Fail closed: the holdout guard is mandatory unless a test explicitly opts out.
+        if holdout_first_date is None and not allow_unguarded: raise ValueError('holdout_first_date is required (guard fails closed); pass allow_unguarded=True only in synthetic tests')
         if holdout_first_date is not None: forbid_holdout(self.td,holdout_first_date)
+        self.holdout_first_date=holdout_first_date;self.campaign_id=campaign_id;self.reg=TrialRegistry(trial_registry) if trial_registry else None;self.seen=SeenLedger(seen_ledger) if seen_ledger else None
+        if self.reg and not campaign_id: raise ValueError('campaign_id is required with trial_registry')
         if not self.cfg: raise ValueError('empty candidate registry')
         ids=[c['candidate_id'] for c in self.cfg]
         if len(ids)!=len(set(ids)): raise ValueError('duplicate candidate_id')
@@ -22,8 +26,19 @@ class FunnelRunner:
         if len(self.si)!=len(self.sd): raise ValueError('signal lengths disagree')
         if any(c.get('direction','normal') not in {'normal','reverse','inverse'} for c in self.cfg): raise ValueError('invalid candidate direction')
 
+    def _mult(self):return np.array([1 if c.get('direction','normal')=='normal' else -1 for c in self.cfg],np.int8)
+    def _register_trials(self,note):
+        # Count BEFORE any outcome is examined, so a crash can never leave examined-but-uncounted candidates.
+        if not self.reg:return None
+        for fam in sorted({c['family_id'] for c in self.cfg}):self.reg.ensure(self.campaign_id,fam,sum(c['family_id']==fam for c in self.cfg),note)
+        return self.reg.verify()
+    def _mark_seen(self,analysis_id):
+        if not self.seen:return
+        for part,dates in(('D0',self.split.d0_dates),('D1',self.split.d1_dates)):self.seen.mark(analysis_id,min(dates),max(dates),f'{part} outcomes examined by funnel')
+    def _guard(self):return {'first_date':self.holdout_first_date,'enforced':self.holdout_first_date is not None}
     def run_e1_e3(self,min_trades=30,max_hold_bars=200,max_matrix_bytes=512*1024*1024):
         if min_trades<1: raise ValueError('min_trades must be positive')
+        self._register_trials('run_e1_e3');self._mark_seen(f'{self.campaign_id}:e1_e3')
         sl=np.array([c['sl_ticks'] for c in self.cfg]);tp=np.array([c['tp_ticks'] for c in self.cfg]);mult=np.array([1 if c.get('direction','normal')=='normal' else -1 for c in self.cfg],np.int8)
         windows={part:stage_window(self.td,self.si,dates,max_hold_bars) for part,dates in [('D0',self.split.d0_dates),('D1',self.split.d1_dates)]}
         # Never pass the full price arrays to a kernel: slice one stage only.
@@ -46,7 +61,7 @@ class FunnelRunner:
             rows.append({**c,'d0_n':n0,'d0_mean':a,'d1_n':n1,'d1_mean':b,'survives_e1_e2':bool(survive)})
         surv=[r for r in rows if r['survives_e1_e2']];heads=[]
         for fam in sorted({r['family_id'] for r in surv}):
-            f=[r for r in surv if r['family_id']==fam];heads.append(max(f,key=lambda r:min(r['d0_mean'],r['d1_mean'])-abs(r['d0_mean']-r['d1_mean'])))
+            f=[r for r in surv if r['family_id']==fam];heads.append(max(f,key=lambda r:candidate_statistic(r['d0_mean'],r['d1_mean'])))
         isolation={'policy':'complete_horizon_stage_local_v1','max_hold_bars':int(max_hold_bars),'visited_bars_per_horizon':int(max_hold_bars)+1,'d2_prices_passed_to_kernel':False,'boundary_excluded':{p:w.excluded_boundary_signals for p,w in windows.items()},'eligible_signals':{p:len(w.signal_positions) for p,w in windows.items()},'max_matrix_bytes':int(max_matrix_bytes),'budget_scope':'one_output_matrix_not_total_memory'}
         meta={'split_hash':self.split.split_hash,'backend':self.backend,'confirmatory':False,'isolation_policy':isolation['policy']}
         trial_art=write_survivors(rows,self.out/'trials.parquet',meta)
@@ -64,34 +79,49 @@ class FunnelRunner:
                             if np.isfinite(val): daily[day_pos[int(day)],start+local]+=val
             pbo=pbo_cscv(daily,S=10)
             multiplicity.update(status='COMPLETE_DIAGNOSTIC_ONLY',pbo=float(pbo['pbo']),splits=int(pbo['n_splits']))
-        payload={'stage':'E1_E2_WITH_E3_IF_ELIGIBLE','devices':devices,'split':to_dict(self.split),'isolation':isolation,'tested':len(rows),'survivors':len(surv),'headlines':heads,'multiplicity':multiplicity,'trial_artifact':trial_art,'survivor_artifact':survivor_art,'asserts_edge':False,'holdout_opened':False,'promotion_allowed':False,'kernel':kernel_manifest(next(iter(devices.values()))['backend'] if devices else self.backend)}
+        payload={'stage':'E1_E2_WITH_E3_IF_ELIGIBLE','devices':devices,'split':to_dict(self.split),'isolation':isolation,'tested':len(rows),'survivors':len(surv),'headlines':heads,'multiplicity':multiplicity,'trial_artifact':trial_art,'survivor_artifact':survivor_art,'asserts_edge':False,'holdout_guard':self._guard(),'holdout_opened':False if self.holdout_first_date is not None else 'UNVERIFIED','promotion_allowed':False,'kernels':{p:kernel_manifest(d['backend']) for p,d in devices.items()},'trial_registry':{'path':str(self.reg.path),'head':self.reg.head(),'total_trials':self.reg.total()} if self.reg else None}
         rid='FUNNEL-'+hashlib.sha256(json.dumps(payload,sort_keys=True).encode()).hexdigest()[:16]
         self.ledger.append('trial_recorded',rid,payload);(self.out/'summary.json').write_text(json.dumps(payload,indent=2));return payload
 
     def d2_mask(self,unlock_token=None):return mask_for(self.split,self.td,'D2',unlock_token=unlock_token)
 
-    def run_e4(self,*,campaign_id,registry_path,n_sims=500,seed=20261004,min_trades=30,max_hold_bars=200,max_matrix_bytes=512*1024*1024,flip='session'):
-        """EF3/EF4 on D0+D1 only: max-statistic null under randomized direction, plateau, global trial count."""
-        sl=np.array([c['sl_ticks'] for c in self.cfg]);tp=np.array([c['tp_ticks'] for c in self.cfg]);mult=np.array([1 if c.get('direction','normal')=='normal' else -1 for c in self.cfg],np.int8)
+    def run_e4(self,*,n_sims=500,seed=20261004,min_trades=30,max_hold_bars=200,max_matrix_bytes=512*1024*1024,flip='session'):
+        """EF3/EF4 on D0+D1 only: max-statistic null under randomized direction, plateau, global trial count.
+
+        Requires a trial registry (the counter is mandatory). Trials are counted BEFORE the simulation runs.
+        Each partition is screened twice (own direction and the opposite one); simulations are sign-matrix products.
+        """
+        if not self.reg:raise ValueError('run_e4 requires trial_registry and campaign_id')
+        self._register_trials('run_e4');self._mark_seen(f'{self.campaign_id}:e4')
+        sl=np.array([c['sl_ticks'] for c in self.cfg]);tp=np.array([c['tp_ticks'] for c in self.cfg]);mult=self._mult()
         wins={part:stage_window(self.td,self.si,dates,max_hold_bars) for part,dates in [('D0',self.split.d0_dates),('D1',self.split.d1_dates)]}
-        sizes=[len(wins['D0'].signal_positions),len(wins['D1'].signal_positions)]
+        sizes=[len(w.signal_positions) for w in wins.values()]
         if min(sizes)==0:raise ValueError('empty D0 or D1 window; cannot run E4')
-        days=np.concatenate([self.td[self.si[w.signal_positions]+1] for w in wins.values()])
-        def stat_fn(sign):
-            parts=[];off=0
-            for (part,w),n in zip(wins.items(),sizes):
-                s=sign[off:off+n];off+=n;bar=slice(w.bar_start,w.bar_stop);mean=np.full(len(self.cfg),np.nan);cnt=np.zeros(len(self.cfg),int)
-                for start,end,m,_ in bounded_batches(w.local_signals(self.si),(self.sd[w.signal_positions]*s).astype(np.int8),self.h[bar],self.l[bar],self.bo[bar],self.ao[bar],sl,tp,mult,max_hold_bars=max_hold_bars,backend=self.backend,max_matrix_bytes=max_matrix_bytes):
-                    fin=np.isfinite(m);c=fin.sum(0);mean[start:end]=np.where(c>0,np.where(fin,m,0).sum(0)/np.maximum(c,1),np.nan);cnt[start:end]=c
-                parts.append((mean,cnt))
-            (a,na),(b,nb)=parts;ok=(na>=min_trades)&(nb>=min_trades)&np.isfinite(a)&np.isfinite(b)
-            return np.where(ok,np.minimum(a,b)-np.abs(a-b),-np.inf)
-        res=max_null_direction(stat_fn,days,n_sims,seed,flip)
-        obs=stat_fn(np.ones(len(days),np.int8));normal=[i for i,c in enumerate(self.cfg) if c.get('direction','normal')=='normal']
-        nets={(int(sl[i]),int(tp[i])):float(obs[i]) for i in normal if np.isfinite(obs[i])}
-        head=max(nets,key=nets.get) if nets else None
-        plateau=plateau_report(nets,(sorted({k[0] for k in nets}),sorted({k[1] for k in nets})),head) if head else {'status':'NO_FINITE_CANDIDATE'}
-        reg=TrialRegistry(registry_path);reg.register(campaign_id,'ALL_FAMILIES',len(self.cfg),'run_e4');total=reg.total()
-        verdict='NOT_REJECTED_NO_DIRECTIONAL_EVIDENCE' if res['p_max']>.05 or plateau['status']!='PLATEAU' else 'CANDIDATE_REQUIRES_FUTURE_CONFIRMATION'
-        payload={'stage':'E4_MULTIPLICITY','max_null':res,'plateau':plateau,'headline':list(head) if head else None,'global_trials_registered':total,'campaign_trials':len(self.cfg),'registry_valid':reg.verify()['valid'],'verdict':verdict,'d2_prices_passed':False,'holdout_opened':False,'promotion_allowed':False,'asserts_edge':False,'kernel':kernel_manifest(self.backend if self.backend!='auto' else 'cpu')}
-        rid='FUNNEL-E4-'+hashlib.sha256(json.dumps(payload,sort_keys=True).encode()).hexdigest()[:16];self.ledger.append('multiplicity_recorded',rid,payload);(self.out/'multiplicity.json').write_text(json.dumps(payload,indent=2));return payload
+        days=np.concatenate([self.td[self.si[w.signal_positions]+1] for w in wins.values()]);devs={}
+        def gen():
+            its={}
+            for part,w in wins.items():
+                bar=slice(w.bar_start,w.bar_stop);ls=w.local_signals(self.si);dr=self.sd[w.signal_positions].astype(np.int8)
+                its[part]=(bounded_batches(ls,dr,self.h[bar],self.l[bar],self.bo[bar],self.ao[bar],sl,tp,mult,max_hold_bars=max_hold_bars,backend=self.backend,max_matrix_bytes=max_matrix_bytes),
+                           bounded_batches(ls,(-dr).astype(np.int8),self.h[bar],self.l[bar],self.bo[bar],self.ao[bar],sl,tp,mult,max_hold_bars=max_hold_bars,backend=self.backend,max_matrix_bytes=max_matrix_bytes))
+            for (a0,b0,mp0,d0),(_,_,mm0,_),(a1,b1,mp1,d1),(_,_,mm1,_) in zip(its['D0'][0],its['D0'][1],its['D1'][0],its['D1'][1]):
+                devs['D0'],devs['D1']=d0,d1
+                if (a0,b0)!=(a1,b1):raise RuntimeError('D0/D1 config batches misaligned')
+                yield a0,b0,[(mp0,mm0),(mp1,mm1)]
+        res,obs=max_null_batched(gen(),sizes,days,n_sims,seed,flip,min_trades)
+        normal=[i for i,c in enumerate(self.cfg) if c.get('direction','normal')=='normal']
+        head_i=max(normal,key=lambda i:obs[i]) if normal else None
+        plateau={'status':'NO_FINITE_CANDIDATE'};head=None
+        if head_i is not None and np.isfinite(obs[head_i]):
+            fam=self.cfg[head_i]['family_id'];cells={}
+            for i in normal:
+                if self.cfg[i]['family_id']!=fam:continue
+                k=(int(sl[i]),int(tp[i]))
+                if k in cells:raise ValueError(f'duplicate (sl,tp) {k} in family {fam}; plateau needs one cell per grid point')
+                cells[k]=float(obs[i])  # -inf (too few trades) stays in the grid as a non-positive neighbour
+            head=(int(sl[head_i]),int(tp[head_i]));plateau=plateau_report(cells,(sorted({k[0] for k in cells}),sorted({k[1] for k in cells})),head);plateau['family_id']=fam
+        n_camp=self.reg.n_campaigns();adj=sidak_bonferroni(res['p_max'],n_camp)
+        rejected=adj['bonferroni']<=.05 and plateau['status']=='PLATEAU'
+        verdict='CANDIDATE_REQUIRES_FUTURE_CONFIRMATION' if rejected else 'NOT_REJECTED_NO_DIRECTIONAL_EVIDENCE'
+        payload={'stage':'E4_MULTIPLICITY','max_null':res,'p_max_campaigns_adjusted':{**adj,'n_campaigns':n_camp},'plateau':plateau,'headline':list(head) if head else None,'global_trials_registered':self.reg.total(),'campaign_trials':len(self.cfg),'registry':self.reg.verify(),'verdict':verdict,'d2_prices_passed':False,'holdout_guard':self._guard(),'holdout_opened':False if self.holdout_first_date is not None else 'UNVERIFIED','promotion_allowed':False,'asserts_edge':False,'kernels':{p:kernel_manifest(d.backend) for p,d in devs.items()}}
+        rid='FUNNEL-E4-'+hashlib.sha256(json.dumps(payload,sort_keys=True,default=str).encode()).hexdigest()[:16];self.ledger.append('multiplicity_recorded',rid,payload);(self.out/'multiplicity.json').write_text(json.dumps(payload,indent=2,default=str));return payload

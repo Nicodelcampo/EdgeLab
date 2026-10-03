@@ -29,9 +29,9 @@ class SeenLedger:
         for r in self._rows():m|=(d>=r['first_date'])&(d<=r['last_date'])
         return m
     def contamination(self,split):
-        """Fraction of each partition's dates already examined. D2 must be 0 for a clean confirmation."""
+        """Fraction of each partition's dates already examined. D2 must be non-empty and 0 for a clean confirmation."""
         out={}
         for part in('d0','d1','d2'):
             ds=np.asarray(getattr(split,part+'_dates'));out[part]=float(self.seen_mask(ds).mean()) if ds.size else 0.
-        out['d2_clean']=out['d2']==0.
+        out['d2_clean']=bool(len(split.d2_dates) and out['d2']==0.)
         return out

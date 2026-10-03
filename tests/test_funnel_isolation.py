@@ -92,7 +92,7 @@ class RunnerRouteTests(unittest.TestCase):
             spec=importlib.util.spec_from_file_location('fake_runner.runner',ROOT/'edgelab/funnel/runner.py')
             module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
             h=np.full(24,105);l=np.full(24,95);h[16:]=999999;l[16:]=-999999
-            runner=module.FunnelRunner(trade_dates=np.repeat([1,2,3],8),signal_idx=np.arange(24),signal_dir=np.ones(24),high=h,low=l,bid_open=np.full(24,99),ask_open=np.full(24,101),configs=[{'candidate_id':'one','family_id':'f','sl_ticks':3,'tp_ticks':4}],out_dir=out,backend='cpu')
+            runner=module.FunnelRunner(trade_dates=np.repeat([1,2,3],8),signal_idx=np.arange(24),signal_dir=np.ones(24),high=h,low=l,bid_open=np.full(24,99),ask_open=np.full(24,101),configs=[{'candidate_id':'one','family_id':'f','sl_ticks':3,'tp_ticks':4}],out_dir=out,backend='cpu',holdout_first_date=99)
             result=runner.run_e1_e3(min_trades=1,max_hold_bars=2)
             self.assertEqual(len(seen),2)
             self.assertTrue(all(len(h)==8 and np.max(h)==105 and np.min(l)==95 for h,l in seen))
