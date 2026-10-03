@@ -43,3 +43,21 @@ Los resultados 1–5 no fallaron ninguna regla de descarte en OOS. Quedaba sin d
 - **T6 — concentración**: neto sin la mejor sesión y sin las 3 mejores; reparto largo/corto; neto por mes.
 - **T7 — línea base «siempre largo»**: mismas horas, filtros y tenencias, pero todas las entradas largas. Si la línea base explica la mayor parte del neto OOS, se atribuye a la deriva.
 Regla: si T2b o T7 explican el resultado OOS, el veredicto pasa a `EDGE_NO_CONFIRMADO`.
+
+## Enmienda 2 — confirmación única en el holdout de MNQ y transferencia a otros activos (escrita antes de leer datos posteriores al 2026-06-30)
+Autorización: el usuario aprobó explícitamente abrir **una sola vez** el holdout de MNQ y probar el resto de activos recomendados.
+
+### A. Confirmación en el holdout de MNQ (una apertura)
+- Datos: `MNQ_09-26` y `MNQ_12-26` (`edgelab-ticks-nt8-canonical`, `*_ticks_ext.parquet`); sesiones con fecha de trading ≥ 2026-07-01, hasta la última sesión completa disponible. Roll por volumen de la sesión anterior (misma política).
+- Especificación **congelada**: réplica, calendario de sesión, ejecución B (ask/bid en el primer tick), comisión 3,8 ticks. Se corre **una vez**; el resultado se registra sea cual sea. No se modifica nada después de verlo. Los feriados 2026-07-03 y 2026-09-07 se tratan como cierre a las 12:00 CT (supuesto declarado).
+- **Éxito** (todas): media neta > 0; IC95 por bootstrap de sesiones excluye 0; p ≤ 0,05 en nulo de dirección por sesión, nulo que preserva exposición y calendarios placebo; y la media de «siempre largo» < la media de la estrategia.
+- **Fracaso** si falla cualquiera. Un fracaso se reporta como tal y el candidato queda descartado como edge; un éxito eleva el estado a «confirmado en una muestra independiente», no a «edge garantizado» (queda pendiente tamaño de muestra y régimen).
+- Aviso de custodia: el holdout de MNQ queda consumido tras esta corrida.
+
+### B. Transferencia: ES, NQ, MES, RTY (solo datos previos al holdout)
+- Mismo calendario congelado, mismas particiones IS/OOS, mismas pruebas (T1, T2, T2b, T4, T7). **No se abre el holdout de estos activos.**
+- Datos: `edgelab-ticks-es-preholdout`, `edgelab-ticks-nq-preholdout`; MES y RTY desde los `*_ticks_ext.parquet` de `nt8-canonical`, cortados estrictamente en `< 2026-06-30T22:00Z` al construir las barras (las filas posteriores se descartan sin analizarlas).
+- Comisión ida y vuelta: USD 1,90 para micros (MNQ, MES); USD 4,50 para ES, NQ y RTY (referencia habitual de contratos completos; supuesto declarado). Para YM, ya medido con USD 1,90, se reporta además con USD 4,50.
+- Criterio de «se transfiere»: OOS con media neta > 0, IC95 que excluye 0 y p ≤ 0,05 en dirección y calendario placebo.
+- Predicción registrada antes de medir: ES, NQ y MES se parecerán a YM (positivo); RTY incierto.
+- Contador global: +4 campañas (una por activo, 60 reglas cada una → 240 pruebas) y +1 del holdout.
