@@ -19,3 +19,19 @@ def test_placebo_schedule_flags_special_slots_only():
     assert placebo_schedule_null(S,actual,3000,1)['p']<.01
     S2=rng.normal(0,10,(R,K));assert placebo_schedule_null(S2,actual,3000,1)['p']>.05
     with pytest.raises(ValueError):placebo_schedule_null(S2,actual[:5])
+
+def test_exposure_preserving_null_ignores_drift_but_sees_timing():
+    from edgelab.funnel.schedule_nulls import exposure_preserving_direction_null
+    rng=np.random.default_rng(5);n=400;s=np.repeat(np.arange(40),10)
+    drift=np.repeat(rng.normal(0,20,40),10)                    # market goes up or down for the whole session
+    d=np.where(drift>0,1,-1)                                   # strategy is simply on the side of the drift of its session
+    long_out=drift+rng.normal(0,3,n);short_out=-drift+rng.normal(0,3,n)
+    plus=np.where(d==1,long_out,short_out);minus=np.where(d==1,short_out,long_out)
+    # same-side-per-session exposure: permuting within a session cannot change anything -> p ~ 1, drift explains it
+    assert exposure_preserving_direction_null(plus,minus,d,s,500,1)['p']>.5
+    # now directions vary inside sessions and the strategy picks the right one each time -> real timing skill
+    d2=rng.choice([-1,1],n);edge=rng.normal(0,3,n)
+    lg=rng.normal(0,3,n)+np.where(d2==1,6,-6);sh=-lg
+    p2=np.where(d2==1,lg,sh);m2=np.where(d2==1,sh,lg)
+    assert exposure_preserving_direction_null(p2,m2,d2,s,500,1)['p']<.01
+    with pytest.raises(ValueError):exposure_preserving_direction_null([1.],[1.],[0],[0])

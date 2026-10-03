@@ -40,3 +40,19 @@ def placebo_schedule_null(S,actual_slots,n_draws=2000,seed=0,allowed_slots=None)
     draws=pool[rng.integers(0,len(pool),(n_draws,R))]
     null=S[np.arange(R)[None,:],draws].sum(1)
     return {'real_total':real,'n_draws':int(n_draws),'null_mean':float(null.mean()),'null_sd':float(null.std()),'null_q95':float(np.quantile(null,.95)),'p':float((np.sum(null>=real)+1)/(n_draws+1))}
+
+
+def exposure_preserving_direction_null(plus,minus,direction,sessions,n_sims=5000,seed=0):
+    """Permute trade directions WITHIN each session (same longs/shorts per session), so market drift cannot explain the result.
+
+    plus/minus: net outcome in the trade's own / opposite direction; direction: +1/-1 of each trade."""
+    p=np.asarray(plus,float);m=np.asarray(minus,float);d=np.asarray(direction);s=np.asarray(sessions)
+    if not (p.shape==m.shape==d.shape==s.shape) or not np.isin(d,(-1,1)).all() or not np.isfinite(p).all() or not np.isfinite(m).all():raise ValueError('aligned finite arrays and +/-1 directions required')
+    lg=np.where(d==1,p,m);sh=np.where(d==1,m,p);u,inv=np.unique(s,return_inverse=True)
+    groups=[np.where(inv==g)[0] for g in range(len(u))];rng=np.random.default_rng(seed);null=np.empty(n_sims)
+    for i in range(n_sims):
+        tot=0.
+        for ix in groups:tot+=np.where(rng.permutation(d[ix])==1,lg[ix],sh[ix]).sum()
+        null[i]=tot
+    real=float(p.sum())
+    return {'real_total':real,'n_sims':int(n_sims),'null_mean':float(null.mean()),'null_q95':float(np.quantile(null,.95)),'p':float((np.sum(null>=real)+1)/(n_sims+1))}
