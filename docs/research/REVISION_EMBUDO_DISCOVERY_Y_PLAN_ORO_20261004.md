@@ -54,3 +54,23 @@ M1 de Dukascopy = M1 derivado de ticks. `tools/barrido_horario_etapa_c_spot.py` 
 
 Registro en el contador global: estas campañas se registran al correrlas (H1+H2 = 2; EMA T1+T2 = 21 + 5).
 **Se corren sólo con OK de Nico.**
+
+## 4. Enmienda P1 (2026-10-04, pedida por Nico, ANTES de cargar los datos de spot en ningún test)
+Motivo: potencia. Cálculo previo (sin resultados): con efecto realista 0,15–0,25 desvíos por operación, 80 % de potencia
+con α = 0,025 (Holm de 2) exige ≈ 200–350 operaciones; la EMA de MGC estima 4.351 operaciones (≈ 860 sesiones) para su
+efecto ajustado por maldición del ganador, y el doble de spread del spot lo vuelve inalcanzable en neto.
+
+1. **Celda 04:15 (§3.2):** la muestra nueva pasa a ser **2022-07-01 → 2025-07-31** (≈ 780 días; H1 ≈ 445 operaciones,
+   H2 ≈ 780). La selección de la celda usó GC 2025-08-01 → 2026-06-30, así que todo el tramo es fuera de muestra.
+   H1/H2, nulo, semilla 20261011, Holm y regla de decisión, sin cambios. Descriptivo adicional por año (2022 a 2025).
+2. **EMA 200/500/2000 (§3.3):** muestra spot **2022-07-01 → 2025-10-07** (el primer día de MGC usado es 2025-10-08,
+   `mgc_ema_20261002/README.md`). **Prueba primaria: T2** (información direccional bruta por horizonte, máximo z sobre
+   15 min/30 min/1 h/2 h/4 h, nulo de dirección por sesión, 200.000 sorteos, semilla 20261012, umbral 0,05). **T1** (media
+   neta de las 21 celdas con costos de spot) queda **descriptiva**: con el spread del spot no tiene potencia y no decide.
+   Si T2 da información, el costo real se evalúa después en futuros (MGC/GC), con su propio pre-registro.
+3. **Integridad antes de correr:** los días 2022-07-06, 07-12, 07-14 y 07-15 se vuelven a bajar (dos instancias de
+   descarga se pisaron) y el control de calidad (`calidad.json`) debe dar 0 desordenados y 0 bid > ask en todo el rango;
+   cualquier día que falle se excluye y se lista, no se corrige.
+
+Registro en el contador global al correr: celda H1 + H2 = 2 pruebas; EMA T2 = 5 horizontes (T1 descriptiva).
+**Se corren sólo con OK de Nico, después de completar la descarga.**
