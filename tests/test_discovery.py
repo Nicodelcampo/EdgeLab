@@ -68,4 +68,24 @@ def test_backend_cpu_and_gpu_parity_if_available():
 
 def test_end_to_end_synthetic_scan_runs():
     tk=synth_ticks(45);spec=small_spec();T,_=build_T(tk,spec);M,N=P.cell_matrices(T);r=S.scan(M,N,spec.min_trades,spec.n_sims,spec.seed)
-    assert r["n_cells"]>0 and 0<r["p_max"]<=1 and r["real_max_abs_z"]>0;rep=S.replicate(M,N,int(0.7*len(T.dates)),spec.min_trades,3,1000,1);assert len(rep)==3
+    assert r["n_cells"]>0 and 0<r["p_max"]<=1 and r["real_max_abs_z"]>0;cut=int(0.7*len(T.dates));rep=S.replicate(M,N,np.arange(cut),np.arange(cut,len(T.dates)),spec.min_trades,3,1000,1);assert len(rep)==3
+
+def test_blocked_null_is_identical_to_unblocked():
+    """El bloqueo por memoria no cambia el resultado: mismos signos en todos los bloques."""
+    rng=np.random.default_rng(4);A=(rng.standard_normal((90,5000))/np.sqrt(90)).astype(np.float32)
+    a=S.max_null(A,300,11,max_matrix_bytes=2**31);b=S.max_null(A,300,11,max_matrix_bytes=2**18);c=S.max_null(A,300,11,max_matrix_bytes=2**16)
+    assert np.allclose(a,b,atol=1e-5) and np.allclose(a,c,atol=1e-5)
+
+def test_family_headlines_and_plateau():
+    from edgelab.discovery import families as Fm
+    S_,H_=6,3;keys=["none","mom_15:gt:0","absorb_30:zgt:1","mom_15:gt:0&absorb_30:zgt:1"];K=len(keys);cells=np.arange(S_*H_*K);z=np.random.default_rng(0).standard_normal(len(cells))*0.5
+    c=(2*H_+1)*K+1;z[c]=4.0
+    for ds,dh in((-1,0),(1,0),(0,-1),(0,1),(-1,-1),(1,1),(-1,1),(1,-1)):z[((2+ds)*H_+(1+dh))*K+1]=2.0
+    hs=Fm.headlines(z,cells,keys,S_,H_);top=hs[0];assert top["family"]=="mom" and top["cell"]==c and top["plateau"] is True
+    assert Fm.family_of("a_15:gt:0&b_15:zgt:1")=="pair:a+b" and Fm.family_of("none")=="none"
+
+def test_staged_scan_keeps_d2_sealed():
+    from edgelab.funnel.splits import make_splits
+    tk=synth_ticks(45);spec=small_spec();T,_=build_T(tk,spec);M,N=P.cell_matrices(T);split=make_splits(T.dates);r=S.staged_scan(M,N,T.dates,split,spec)
+    assert r["D2_sealed"] is True and r["D0_sessions"]+r["D1_sessions"]<len(T.dates) and r["split_hash"]==split.split_hash
+    d2=np.isin(T.dates,np.array(split.d2_dates));assert d2.sum()>0 and not r["D0_mask"][d2].any()

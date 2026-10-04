@@ -13,7 +13,9 @@ from edgelab.discovery import scan as S,get_backend
 npz=sorted(glob.glob("/kaggle/input/**/*.npz",recursive=True))[0];Z=np.load(npz);M,N=Z["M"],Z["N"]
 cpu=get_backend("cpu");gpu=get_backend("gpu");rep={"npz":npz,"npz_sha256":hashlib.sha256(open(npz,"rb").read()).hexdigest(),"shape":list(M.shape)}
 z,Sg,use,Ms=S.cell_z(M,N,int(Z["min_trades"]) if "min_trades" in Z else 40);sub=Ms[:,:20000]
-a=S.max_null(sub,2048,7,cpu);b=S.max_null(sub,2048,7,gpu);rep["parity_max_abs_diff"]=float(np.abs(a-b).max());rep["parity"]="PASS" if rep["parity_max_abs_diff"]<1e-3 else "FAIL"
+a=S.max_null(sub,2048,7,cpu);b=S.max_null(sub,2048,7,gpu,max_matrix_bytes=2**28);rep["parity_max_abs_diff"]=float(np.abs(a-b).max());rep["parity"]="PASS" if rep["parity_max_abs_diff"]<1e-3 else "FAIL";rep["kernel_id"]=S.KERNEL_ID
+if rep["parity"]!="PASS":
+    json.dump(rep,open("/kaggle/working/gpu_scan_report.json","w"),indent=1);raise SystemExit("paridad CPU/GPU FALLÓ: no se usa el resultado de GPU")
 t=time.time();nul=S.max_null(Ms,int(Z["n_sims"]) if "n_sims" in Z else 20000,int(Z["seed"]) if "seed" in Z else 1,gpu);rep["gpu_null_seconds"]=round(time.time()-t,2)
 real=float(np.abs(z).max());rep.update({"n_cells":int(len(z)),"real_max_abs_z":real,"null_max_q95":float(np.quantile(nul,.95)),"p_max":S.p_value(real,nul)})
 json.dump(rep,open("/kaggle/working/gpu_scan_report.json","w"),indent=1);print(json.dumps(rep,indent=1))
