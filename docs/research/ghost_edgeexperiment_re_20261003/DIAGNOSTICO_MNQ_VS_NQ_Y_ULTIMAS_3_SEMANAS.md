@@ -52,3 +52,17 @@ Planteamiento: si las reglas se eligieron con datos hasta su publicación (≈ 2
 - Efecto estandarizado medio (en desvíos de cada activo): antes +0,058, después −0,171. En MNQ por sesión, la diferencia después − antes tiene t = −1,40 (no significativa).
 - Solo el IC de NQ excluye 0 en las tres semanas, con 7 sesiones. Los seis activos no son seis pruebas independientes: son el mismo episodio de mercado, y dos días (14 y 24-sep) explican el 84 % de la pérdida de NQ.
 - Consecuencia para la lectura anterior: si el proveedor eligió con datos hasta la publicación, los tramos que aquí se llamaron «OOS» (junio) y «posterior» (julio a septiembre) tampoco eran fuera de muestra para su selección. La única muestra limpia es la posterior a la publicación (las 3 semanas y, sobre todo, el holdout formal desde el 1 de octubre), y por ahora es negativa pero demasiado corta para concluir.
+
+### 3.1 Corte con la fecha de la publicación (2026-09-10 12:00 CT)
+El usuario aportó el enlace de la publicación (Instagram, reel `DdHUqDQBmgc`). No se pudo leer su contenido (requiere sesión iniciada); la fecha se derivó decodificando el código del reel (ID de medio: 2026-09-10 17:00:19 UTC), no se leyó de la página. Con ese corte (antes: sesiones del 1-jul al 10-sep; después: del 11-sep al 30-sep), puntos de índice netos por operación:
+
+| Activo | Antes | Después |
+|---|---|---|
+| MNQ | +3,77 [−3,11, +11,26], 305 op., 32 ses. | −5,44 [−15,94, +5,44], 130 op., 13 ses. |
+| NQ | +7,28 [+0,80, +14,82], 476 op., 49 ses. | −13,00 [−23,79, +0,34], 84 op., 8 ses. |
+| ES | +0,53 [−0,57, +1,86] | −1,93 [−3,86, +0,15] |
+| MES | −0,28 [−1,07, +0,59] | −1,55 [−3,68, +0,15] |
+| RTY | +0,17 [−0,33, +0,81] | −0,11 [−1,12, +0,99] |
+| YM | +4,52 [−2,91, +13,54] | −6,07 [−13,10, +2,22] |
+
+Efecto estandarizado medio: antes +0,058, después −0,153. MNQ por sesión: t = −1,27 (después − antes). Con este corte ningún IC posterior excluye 0. El resultado cualitativo no cambia respecto del corte del 14-sep: negativo o plano en los seis activos, con muestra corta (8 a 13 sesiones) y activos correlacionados.
