@@ -133,6 +133,14 @@ namespace NinjaTrader.Gui.NinjaScript
       if(!probeOnly&&File.Exists(outPath)){Log("SKIP "+contract+" "+day+" (ya existe)");continue;}
       string err;List<double[]> rows;List<DateTime> times;
       if(!Fetch(inst,d,d.AddDays(1),out times,out rows,out err)){Log("ERROR "+contract+" "+day+" "+err);continue;}
+      // El servidor a veces devuelve vacio al instante en dias habiles con mercado: reintentar antes de aceptar NO_DATA.
+      for(int k=0;k<3&&!probeOnly&&!cancel&&times.Count==0&&d.DayOfWeek!=DayOfWeek.Sunday;k++)
+      {
+       Thread.Sleep(5000*(k+1));
+       if(!Fetch(inst,d,d.AddDays(1),out times,out rows,out err)){Log("ERROR "+contract+" "+day+" "+err);break;}
+       if(times.Count>0)Log("REINTENTO "+(k+1)+" OK "+contract+" "+day);
+      }
+      if(err!=null)continue;
       if(times.Count==0){noData++;Log("NO_DATA "+contract+" "+day);if(!probeOnly)Manifest(cdir,contract,day,"NO_DATA",0,null,null,null,tz);continue;}
       withData++;total+=times.Count;
       DateTime u0=ToUtc(times[0],tz);
