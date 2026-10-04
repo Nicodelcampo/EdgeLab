@@ -59,7 +59,7 @@ def validate_mnq_tick_batch(columns, *,expected_contract,previous_key=None):
         prior=key
         if 'instrument' in columns and columns['instrument'][i]!='MNQ':
             raise AssetSafetyError('standard/micro mixture')
-        if 'contract' in columns and columns['contract'][i] not in (expected_contract,expected_contract.split('_')[1]):
+        if 'contract' in columns and columns['contract'][i] not in (expected_contract,expected_contract.split('_')[1],expected_contract.replace('_',' ',1)):
             raise AssetSafetyError('mixed contract payload')
     return prior
 
