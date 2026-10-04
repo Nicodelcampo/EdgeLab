@@ -2,6 +2,9 @@
 
 Todo lo que hay en Kaggle (cuenta `nicolasbuttaro`), inventariado: qué datasets existen, qué contiene cada archivo, qué contratos y fechas cubre, cuándo hay rolls, qué sesiones tienen liquidez, qué días faltan y dónde dos fuentes se contradicen. **Antes de bajar o usar un dato, consultá acá.**
 
+## Regla de oro
+**Antes de analizar, usá solo lo aprobado en `CURATED.md`.** Si necesitás algo que no figura, mirá `REEXPORT.md`. Las reglas son las mismas para todos los instrumentos y están en `tools/data_curate.py`.
+
 ## Cómo encontrar un dato (30 segundos)
 ```bash
 python tools/data_find.py --list                                   # qué instrumentos hay y su cobertura
@@ -16,6 +19,9 @@ Archivos de este catálogo (todos generados por `tools/data_catalog_build.py`; *
 | `INSTRUMENTS.md` | Por instrumento: contratos y fuentes, serie líder y rolls, liquidez, calendario, conflictos entre fuentes |
 | `TICK_FILES.md` | Una fila por archivo de ticks (rango, trades, libro, agresor, anomalías) |
 | `DATASETS.md` | Los datasets de Kaggle, su tipo, tamaño, privacidad y README |
+| `CURATED.md` / `curated.json` | **Qué datos usar:** veredicto por instrumento, rangos aprobados, fuente primaria por contrato y rol de cada dataset (reglas fijas en `tools/data_curate.py`) |
+| `REEXPORT.md` | **Qué hay que re-exportar o re-subir** (contratos faltantes, sesiones faltantes, archivos vacíos, fuentes en conflicto, cobertura corta) |
+| `sessions.json` | Una fila por sesión elegible (fuente elegida, volumen, minutos, banderas) |
 | `ISSUES.md` | Problemas conocidos y reglas de uso (léelo antes de elegir una fuente) |
 
 ## Convenciones de los ticks (comunes a los archivos canónicos)
@@ -32,5 +38,6 @@ Archivos de este catálogo (todos generados por `tools/data_catalog_build.py`; *
 ```bash
 python tools/data_inventory.py --out /data/catalog        # lista y escanea cada parquet de ticks (reanuda; usa copias locales si existen)
 python tools/data_catalog_build.py --scan-root /data/catalog --out docs/data_catalog
+python tools/data_curate.py                                  # veredictos, rangos aprobados, roles y lista de re-exportación
 ```
 El escaneo por sesión (`scan/…json`) queda además en el dataset privado `nicolasbuttaro/edgelab-data-catalog` (minutos por sesión, trades, volumen).

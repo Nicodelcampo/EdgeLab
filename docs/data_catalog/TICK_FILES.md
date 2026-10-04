@@ -104,13 +104,11 @@
 | `edgelab-ticks-nt8-canonical` | `MNQ/MNQ_12-26_ticks_ext.parquet` | MNQ_12-26 | 2026-06-12 a 2026-09-28 | 63 | 13,457,190 | sí | sí | 0 | 0 / 0 / 0 |
 | `edgelab-ticks-nt8-canonical` | `MYM/MYM_03-26_ticks_ext.parquet` | MYM_03-26 | 2025-09-30 a 2026-03-20 | 135 | 8,028,629 | sí | sí | 0 | 0 / 0 / 0 |
 | `edgelab-ticks-nt8-canonical` | `MYM/MYM_06-26_ticks_ext.parquet` | MYM_06-26 | 2025-12-12 a 2026-06-18 | 138 | 7,290,347 | sí | sí | 0 | 0 / 0 / 0 |
-| `edgelab-ticks-nt8-canonical` | `MYM/MYM_09-25_ticks_ext.parquet` | MYM_09-25 | 2025-09-20 a 2025-09-21 | 2 | 2 | sí | sí | 0 | 0 / 0 / 0 |
 | `edgelab-ticks-nt8-canonical` | `MYM/MYM_09-26_ticks_ext.parquet` | MYM_09-26 | 2026-03-13 a 2026-09-18 | 129 | 5,310,909 | sí | sí | 0 | 0 / 0 / 0 |
 | `edgelab-ticks-nt8-canonical` | `MYM/MYM_12-25_ticks_ext.parquet` | MYM_12-25 | 2025-09-30 a 2025-12-21 | 67 | 5,921,462 | sí | sí | 0 | 0 / 0 / 0 |
 | `edgelab-ticks-nt8-canonical` | `MYM/MYM_12-26_ticks_ext.parquet` | MYM_12-26 | 2026-06-12 a 2026-09-28 | 64 | 1,018,988 | sí | sí | 0 | 0 / 0 / 0 |
 | `edgelab-ticks-nt8-canonical` | `RTY/RTY_03-26_ticks_ext.parquet` | RTY_03-26 | 2025-10-02 a 2026-03-20 | 135 | 10,146,896 | sí | sí | 0 | 0 / 0 / 0 |
 | `edgelab-ticks-nt8-canonical` | `RTY/RTY_06-26_ticks_ext.parquet` | RTY_06-26 | 2025-12-12 a 2026-06-18 | 139 | 10,277,057 | sí | sí | 0 | 0 / 0 / 0 |
-| `edgelab-ticks-nt8-canonical` | `RTY/RTY_09-25_ticks_ext.parquet` | RTY_09-25 | 2025-09-21 a 2025-09-21 | 1 | 1 | sí | sí | 0 | 0 / 0 / 0 |
 | `edgelab-ticks-nt8-canonical` | `RTY/RTY_09-26_ticks_ext.parquet` | RTY_09-26 | 2026-03-16 a 2026-09-18 | 135 | 8,261,672 | sí | sí | 0 | 0 / 0 / 0 |
 | `edgelab-ticks-nt8-canonical` | `RTY/RTY_12-25_ticks_ext.parquet` | RTY_12-25 | 2025-10-03 a 2025-12-21 | 67 | 8,512,225 | sí | sí | 0 | 0 / 0 / 0 |
 | `edgelab-ticks-nt8-canonical` | `RTY/RTY_12-26_ticks_ext.parquet` | RTY_12-26 | 2026-06-12 a 2026-09-28 | 77 | 1,381,216 | sí | sí | 0 | 0 / 0 / 0 |

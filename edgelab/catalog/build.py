@@ -13,6 +13,8 @@ SPECS={ # tamaño de tick y valor por tick en USD (por contrato); verificar ante
  "ZB":(1/32,31.25),"6E":(0.00005,6.25),"6J":(0.0000005,6.25),"6B":(0.0001,6.25)}
 CYCLES={"GC":(2,4,6,8,10,12),"MGC":(2,4,6,8,10,12),"ES":(3,6,9,12),"MES":(3,6,9,12),"NQ":(3,6,9,12),"MNQ":(3,6,9,12),"YM":(3,6,9,12),"MYM":(3,6,9,12),"RTY":(3,6,9,12),
         "ZB":(3,6,9,12),"6E":(3,6,9,12),"6J":(3,6,9,12),"6B":(3,6,9,12)}      # meses de vencimiento de la serie estándar
+PRIORITY=("edgelab-ticks-nt8-canonical","edgelab-nt8-historical-missing-20261001","edgelab-ticks-es-nq-2026q3-ext","edgelab-nq-nt8-2026q3-l2ctx","edgelab-mgc-nt8-raw-parquet-20261002")
+def prio(ds:str)->int:return PRIORITY.index(ds) if ds in PRIORITY else (len(PRIORITY) if ds.endswith("-preholdout") else len(PRIORITY)+1)   # menor = preferida; mnq-parquet y demás al final
 HOLDOUT_FIRST=dt.date(2026,10,1).toordinal()          # HOLDOUT-A1: holdout formal = sesiones de trading desde 2026-10-01
 CUT_PRE=dt.date(2026,6,30).toordinal()
 
@@ -57,7 +59,7 @@ def build(root:Path)->dict:
         datasets.append({"slug":d["slug"],"private":d["private"],"bytes":d["bytes"],"last_updated":d["last_updated"],"kind":kind,"n_files":len(files),"readme_excerpt":readme,
                          "tick_files":[s["file"] for s in tick],"unrecognized_parquet":[{"file":s["file"],"columns":s["columns"]} for s in other],"top_level_files":[f["name"] for f in files if "/" not in f["name"]][:40]})
     # --- fuentes por contrato
-    files=[];spot=defaultdict(lambda:{"ticks":{},"m1":{}})
+    files=[];stubs=[];spot=defaultdict(lambda:{"ticks":{},"m1":{}})
     SPOT_RE=re.compile(r"(?P<sym>[A-Z]{6})_(?:m1_)?(?P<ym>\d{4}-\d{2})")
     for s in scans:
         if s.get("recognized") and s.get("quote_only") and s.get("days"):
@@ -69,6 +71,7 @@ def build(root:Path)->dict:
             continue
         if not s.get("recognized") or not s.get("days"):continue
         root_sym,exp=parse_contract(s["file"],s);days=s["days"]
+        if s["trades"]<1000:stubs.append({"dataset":s["dataset"],"file":s["file"],"contract":f"{root_sym}_{exp}","trades":s["trades"],"rows":s["rows"],"bytes":s["bytes"]});continue      # archivo vacío o de relleno
         files.append({"dataset":s["dataset"],"file":s["file"],"instrument":root_sym,"contract":f"{root_sym}_{exp}","bytes":s["bytes"],"rows":s["rows"],"trades":s["trades"],
             "first_trade_date":iso(days[0]["td"]),"last_trade_date":iso(days[-1]["td"]),"sessions":len(days),"first_ts_utc":s["ts_utc_first"],"last_ts_utc":s["ts_utc_last"],
             "tick_types":s["tick_types"],"has_book":s["has_book"],"has_aggressor":s["has_aggressor"],"aggressor":s["aggressor"],"unsorted_events":s["unsorted_events"],"crossed_book":s["crossed_book"],
@@ -76,17 +79,18 @@ def build(root:Path)->dict:
             "post_holdout_sessions":sum(1 for x in days if x["td"]>=HOLDOUT_FIRST),"days":days})
     inst=defaultdict(lambda:defaultdict(list))
     for f in files:inst[f["instrument"]][f["contract"]].append(f)
-    instruments={}
+    instruments={};session_tables={}
     for sym,cons in sorted(inst.items()):
         def key(c):mm,yy=c.split("_")[1].split("-");return (int(yy),int(mm))
-        order=sorted(cons,key=key);daily={};cinfo={};conflicts=[]
+        order=sorted(cons,key=key);daily={};cinfo={};conflicts=[];best={};best_src={}
         for c in order:
-            srcs=cons[c];dd={}
+            srcs=cons[c];dd={};cand=defaultdict(list)
             for f in srcs:
-                for x in f["days"]:
-                    cur=dd.get(x["td"])
-                    if cur is None or x["volume"]>cur["volume"]:dd[x["td"]]=x
-            daily[c]={t:v["volume"] for t,v in dd.items()}
+                for x in f["days"]:cand[x["td"]].append((x,f))
+            for t,lst in cand.items():
+                mx=max(x["volume"] for x,_ in lst);near=[(x,f) for x,f in lst if x["volume"]>=0.99*mx]      # empates (dentro de 1 %): manda la prioridad de la fuente
+                dd[t]=min(near,key=lambda xf:prio(xf[1]["dataset"]))[0]
+            daily[c]={t:v["volume"] for t,v in dd.items()};best[c]=dd;best_src[c]={t:f for f in srcs for t,x in {x["td"]:x for x in f["days"]}.items() if dd.get(t) is x}
             if len(srcs)>1:
                 a=srcs[0];both=0;eq=0;diffs=[]
                 for b in srcs[1:]:
@@ -129,6 +133,15 @@ def build(root:Path)->dict:
                     if lab not in cons and life_start<=hi and life_end>=lo and life_end-30<=hi:exp_missing.append(lab)
         lv=[daily[order[r]][t] for r,d0,d1 in segs for t in range(d0,d1+1) if t in elig and elig[t]==r and t in daily[order[r]]];med_lv=float(np.median(lv)) if lv else 0.
         thin_vs=[t for t in elig if daily[order[elig[t]]].get(t,0)<0.25*med_lv]
+        conf_days={}
+        for k in conflicts:
+            pass
+        sess=[]
+        for t in sorted(elig):
+            c=order[elig[t]];x=best[c][t];f=best_src[c].get(t)
+            sess.append({"date":iso(t),"contract":c,"dataset":f["dataset"] if f else None,"file":f["file"] if f else None,"volume":x["volume"],"minutes":x["minutes"],"trades":x["trades"],
+                         "below_25pct_instrument_median":bool(x["volume"]<0.25*med_lv),"thin_minutes":bool(x["minutes"]<0.5*med_m),"post_holdout":bool(t>=HOLDOUT_FIRST)})
+        session_tables[sym]=sess
         tk,tv=SPECS.get(sym,(None,None))
         instruments[sym]={"tick_size":tk,"tick_value_usd":tv,"first_date":iso(lo),"last_date":iso(hi),"sessions_with_data":len(allt),"contracts":cinfo,
             "leader_segments":[{"contract":order[r],"first":iso(a),"last":iso(b)} for r,a,b in segs],"rolls":rolls,"eligible_sessions":len(elig),
@@ -145,4 +158,4 @@ def build(root:Path)->dict:
                        "price_fields":"bid/ask (spot cotizado, sin operaciones ni volumen real)","quality_file_days":len(qual["dias"]) if qual and "dias" in qual else None,
                        "post_holdout_sessions":sum(x["post_holdout_sessions"] for x in v["ticks"].values())}
     return {"generated_utc":dt.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"),"holdout_first_trade_date":iso(HOLDOUT_FIRST),"datasets":datasets,
-            "tick_files":[{k:v for k,v in f.items() if k!="days"} for f in files],"instruments":instruments,"spot_series":spot_out}
+            "tick_files":[{k:v for k,v in f.items() if k!="days"} for f in files],"instruments":instruments,"spot_series":spot_out,"stub_files":stubs,"_session_tables":session_tables}

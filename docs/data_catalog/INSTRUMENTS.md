@@ -1,6 +1,6 @@
 # Catálogo de instrumentos (generado)
 
-Generado 2026-10-04T23:03:20Z. Fuente de verdad: `catalog.json`. Holdout formal: sesiones de trading desde **2026-10-01** (HOLDOUT-A1): no leer.
+Generado 2026-10-04T23:11:53Z. Fuente de verdad: `catalog.json`. Holdout formal: sesiones de trading desde **2026-10-01** (HOLDOUT-A1): no leer.
 
 ## Índice rápido
 
@@ -15,9 +15,9 @@ Generado 2026-10-04T23:03:20Z. Fuente de verdad: `catalog.json`. Holdout formal:
 | MES | 0.25 (1.25) | 2025-08-01 a 2026-09-28 | 334 | 274 | 6 | sí | 2 rangos | - | 0 |
 | MGC | 0.1 (1.0) | 2025-10-07 a 2026-10-01 | 263 | 213 | 6 | sí | 6 rangos | MGC_10-25, MGC_10-26 | 0 |
 | MNQ | 0.25 (0.5) | 2025-08-01 a 2026-10-02 | 334 | 270 | 6 | sí | 3 rangos | - | 0 |
-| MYM | 1.0 (0.5) | 2025-09-20 a 2026-09-28 | 272 | 2 | 6 | sí | 7 rangos | - | 0 |
+| MYM | 1.0 (0.5) | 2025-09-30 a 2026-09-28 | 270 | 184 | 5 | sí | 5 rangos | - | 53 |
 | NQ | 0.25 (5.0) | 2025-08-01 a 2026-09-25 | 335 | 278 | 6 | sí | 0 rangos | - | 0 |
-| RTY | 0.1 (5.0) | 2025-09-21 a 2026-09-28 | 275 | 1 | 6 | sí | 2 rangos | - | 0 |
+| RTY | 0.1 (5.0) | 2025-10-02 a 2026-09-28 | 274 | 182 | 5 | sí | 0 rangos | - | 39 |
 | YM | 1.0 (5.0) | 2025-08-15 a 2026-09-28 | 312 | 260 | 6 | sí | 1 rangos | - | 0 |
 | ZB | 0.03125 (31.25) | 2025-08-18 a 2026-06-30 | 250 | 211 | 5 | no | 0 rangos | - | 0 |
 
@@ -82,11 +82,11 @@ Tick 5e-05 = USD 6.25 por contrato. Sesiones con datos 329; elegibles 288; sesio
 
 | Contrato | Rango | Sesiones | Trades | Fuente(s): dataset / archivo (libro, agresor) |
 |---|---|---:|---:|---|
-| 6E_09-25 | 2025-07-25 a 2025-09-15 | 45 | 2,540,223 | `edgelab-nt8-historical-missing-20261001` / `6E_09-25_ticks_nt8.parquet` (2025-08-01..2025-09-15, 38 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-6e-preholdout` / `6E_09-25_ticks.parquet` (2025-07-25..2025-09-15, 43 ses.; libro=sí, agresor=sí) |
-| 6E_12-25 | 2025-09-08 a 2025-12-15 | 85 | 4,512,931 | `edgelab-nt8-historical-missing-20261001` / `6E_12-25_ticks_nt8.parquet` (2025-09-08..2025-12-15, 81 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-6e-preholdout` / `6E_12-25_ticks.parquet` (2025-09-08..2025-12-15, 82 ses.; libro=sí, agresor=sí) |
-| 6E_03-26 | 2025-10-02 a 2026-03-16 | 114 | 5,083,884 | `edgelab-nt8-historical-missing-20261001` / `6E_03-26_ticks_nt8.parquet` (2025-10-02..2026-03-16, 114 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-6e-preholdout` / `6E_03-26_ticks.parquet` (2025-12-08..2026-03-16, 76 ses.; libro=sí, agresor=sí) |
+| 6E_09-25 | 2025-07-25 a 2025-09-15 | 45 | 2,540,159 | `edgelab-nt8-historical-missing-20261001` / `6E_09-25_ticks_nt8.parquet` (2025-08-01..2025-09-15, 38 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-6e-preholdout` / `6E_09-25_ticks.parquet` (2025-07-25..2025-09-15, 43 ses.; libro=sí, agresor=sí) |
+| 6E_12-25 | 2025-09-08 a 2025-12-15 | 85 | 4,512,630 | `edgelab-nt8-historical-missing-20261001` / `6E_12-25_ticks_nt8.parquet` (2025-09-08..2025-12-15, 81 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-6e-preholdout` / `6E_12-25_ticks.parquet` (2025-09-08..2025-12-15, 82 ses.; libro=sí, agresor=sí) |
+| 6E_03-26 | 2025-10-02 a 2026-03-16 | 114 | 5,083,888 | `edgelab-nt8-historical-missing-20261001` / `6E_03-26_ticks_nt8.parquet` (2025-10-02..2026-03-16, 114 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-6e-preholdout` / `6E_03-26_ticks.parquet` (2025-12-08..2026-03-16, 76 ses.; libro=sí, agresor=sí) |
 | 6E_06-26 | 2025-12-14 a 2026-06-15 | 120 | 5,596,112 | `edgelab-nt8-historical-missing-20261001` / `6E_06-26_ticks_nt8.parquet` (2025-12-14..2026-06-15, 120 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-6e-preholdout` / `6E_06-26_ticks.parquet` (2026-03-09..2026-06-15, 71 ses.; libro=sí, agresor=sí) |
-| 6E_09-26 | 2026-03-13 a 2026-09-14 | 129 | 4,222,519 | `edgelab-nt8-historical-missing-20261001` / `6E_09-26_ticks_nt8.parquet` (2026-03-13..2026-09-14, 129 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-6e-preholdout` / `6E_09-26_ticks.parquet` (2026-06-08..2026-06-30, 17 ses.; libro=sí, agresor=sí) |
+| 6E_09-26 | 2026-03-13 a 2026-09-14 | 129 | 4,222,418 | `edgelab-nt8-historical-missing-20261001` / `6E_09-26_ticks_nt8.parquet` (2026-03-13..2026-09-14, 129 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-6e-preholdout` / `6E_09-26_ticks.parquet` (2026-06-08..2026-06-30, 17 ses.; libro=sí, agresor=sí) |
 | 6E_12-26 | 2026-06-12 a 2026-09-25 | 63 | 899,776 | `edgelab-nt8-historical-missing-20261001` / `6E_12-26_ticks_nt8.parquet` (2026-06-12..2026-09-25, 63 ses.; libro=sí, agresor=sí) |
 
 ### Serie líder (mayor volumen de la sesión anterior; sin retroceso) y rolls
@@ -103,7 +103,7 @@ Tick 5e-05 = USD 6.25 por contrato. Sesiones con datos 329; elegibles 288; sesio
 | Roll | Primera sesión del nuevo líder | Volumen previo viejo → nuevo | Razón |
 |---|---|---|---:|
 | 6E_09-25 → 6E_12-25 | 2025-09-13 | 18968.0 → 106698.0 | 5.63 |
-| 6E_12-25 → 6E_03-26 | 2025-12-14 | 16725.0 → 130182.0 | 7.78 |
+| 6E_12-25 → 6E_03-26 | 2025-12-14 | 16724.0 → 130182.0 | 7.78 |
 | 6E_03-26 → 6E_06-26 | 2026-03-16 | 26891.0 → 211629.0 | 7.87 |
 | 6E_06-26 → 6E_09-26 | 2026-06-15 | 20678.0 → 149745.0 | 7.24 |
 | 6E_09-26 → 6E_12-26 | 2026-09-14 | 19980.0 → 164539.0 | 8.24 |
@@ -111,7 +111,7 @@ Tick 5e-05 = USD 6.25 por contrato. Sesiones con datos 329; elegibles 288; sesio
 ### Liquidez y calendario
 
 - **Contratos del ciclo estándar que faltan en los datos (y debieron ser líder en algún momento del rango):** ninguno.
-- Volumen diario mediano del líder en este instrumento: 139,264. **Sesiones del líder por debajo del 25 % de esa mediana** (liquidez baja respecto del resto del instrumento, aunque pasen el filtro relativo): 0; rangos: ninguna.
+- Volumen diario mediano del líder en este instrumento: 139,263. **Sesiones del líder por debajo del 25 % de esa mediana** (liquidez baja respecto del resto del instrumento, aunque pasen el filtro relativo): 0; rangos: ninguna.
 - Sesiones no elegibles por volumen bajo (< 50 % de la mediana del contrato como líder): 41. Rangos: 2025-07-25, 2025-08-03, 2025-08-09..2025-08-10, 2025-08-16, 2025-08-24, 2025-09-07, 2025-09-12..2025-09-14, 2025-09-28, 2025-10-05, 2025-10-12, 2025-10-19, 2025-10-26, 2025-11-02, 2025-11-09, 2025-11-16 ….
 - Días hábiles sin datos por feriado de EE.UU. o Viernes Santo: 2025-12-25, 2026-01-01.
 - **Días hábiles sin datos y sin explicación:** 2026-09-03.
@@ -139,7 +139,7 @@ Tick 5e-07 = USD 6.25 por contrato. Sesiones con datos 324; elegibles 267; sesio
 | 6J_12-25 | 2025-09-08 a 2025-12-15 | 83 | 3,795,838 | `edgelab-nt8-historical-missing-20261001` / `6J_12-25_ticks_nt8.parquet` (2025-09-08..2025-12-15, 79 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-6j-preholdout` / `6J_12-25_ticks.parquet` (2025-09-08..2025-12-15, 83 ses.; libro=sí, agresor=sí) |
 | 6J_03-26 | 2025-10-02 a 2026-03-16 | 113 | 4,693,355 | `edgelab-nt8-historical-missing-20261001` / `6J_03-26_ticks_nt8.parquet` (2025-10-02..2026-03-16, 111 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-6j-preholdout` / `6J_03-26_ticks.parquet` (2025-12-08..2026-03-16, 75 ses.; libro=sí, agresor=sí) |
 | 6J_06-26 | 2025-12-14 a 2026-06-15 | 119 | 4,036,656 | `edgelab-nt8-historical-missing-20261001` / `6J_06-26_ticks_nt8.parquet` (2025-12-14..2026-06-15, 119 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-6j-preholdout` / `6J_06-26_ticks.parquet` (2026-03-09..2026-06-15, 71 ses.; libro=sí, agresor=sí) |
-| 6J_09-26 | 2026-03-13 a 2026-09-14 | 121 | 4,324,227 | `edgelab-nt8-historical-missing-20261001` / `6J_09-26_ticks_nt8.parquet` (2026-03-13..2026-09-14, 121 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-6j-preholdout` / `6J_09-26_ticks.parquet` (2026-06-08..2026-06-30, 18 ses.; libro=sí, agresor=sí) |
+| 6J_09-26 | 2026-03-13 a 2026-09-14 | 121 | 4,324,226 | `edgelab-nt8-historical-missing-20261001` / `6J_09-26_ticks_nt8.parquet` (2026-03-13..2026-09-14, 121 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-6j-preholdout` / `6J_09-26_ticks.parquet` (2026-06-08..2026-06-30, 18 ses.; libro=sí, agresor=sí) |
 | 6J_12-26 | 2026-06-12 a 2026-09-25 | 77 | 1,017,847 | `edgelab-nt8-historical-missing-20261001` / `6J_12-26_ticks_nt8.parquet` (2026-06-12..2026-09-25, 77 ses.; libro=sí, agresor=sí) |
 
 ### Serie líder (mayor volumen de la sesión anterior; sin retroceso) y rolls
@@ -190,9 +190,9 @@ Tick 0.25 = USD 12.5 por contrato. Sesiones con datos 346; elegibles 247; sesion
 |---|---|---:|---:|---|
 | ES_09-25 | 2025-07-18 a 2025-09-21 | 57 | 35,045,150 | `edgelab-nt8-historical-missing-20261001` / `ES_09-25_ticks_ext.parquet` (2025-07-18..2025-09-21, 53 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-es-preholdout` / `ES_09-25_ticks.parquet` (2025-07-18..2025-09-19, 56 ses.; libro=sí, agresor=sí) |
 | ES_12-25 | 2025-09-11 a 2025-12-21 | 88 | 73,446,976 | `edgelab-nt8-historical-missing-20261001` / `ES_12-25_ticks_ext.parquet` (2025-09-11..2025-12-21, 83 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-es-preholdout` / `ES_12-25_ticks.parquet` (2025-09-11..2025-12-21, 88 ses.; libro=sí, agresor=sí) |
-| ES_03-26 | 2025-09-12 a 2026-03-20 | 154 | 68,389,026 | `edgelab-nt8-historical-missing-20261001` / `ES_03-26_ticks_ext.parquet` (2025-09-12..2026-03-20, 152 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-es-preholdout` / `ES_03-26_ticks.parquet` (2025-12-11..2026-03-20, 79 ses.; libro=sí, agresor=sí) |
-| ES_06-26 | 2025-12-12 a 2026-06-18 | 139 | 73,583,681 | `edgelab-nt8-historical-missing-20261001` / `ES_06-26_ticks_ext.parquet` (2025-12-12..2026-06-18, 139 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-es-preholdout` / `ES_06-26_ticks.parquet` (2026-03-12..2026-06-18, 72 ses.; libro=sí, agresor=sí) |
-| ES_09-26 | 2026-03-13 a 2026-09-18 | 135 | 59,055,779 | `edgelab-nt8-historical-missing-20261001` / `ES_09-26_ticks_ext.parquet` (2026-03-13..2026-06-30, 79 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-es-nq-2026q3-ext` / `ES_parquet/ES_09-26_ticks_ext.parquet` (2026-07-01..2026-09-18, 56 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-es-preholdout` / `ES_09-26_ticks.parquet` (2026-06-08..2026-06-30, 18 ses.; libro=sí, agresor=sí) |
+| ES_03-26 | 2025-09-12 a 2026-03-20 | 154 | 68,386,742 | `edgelab-nt8-historical-missing-20261001` / `ES_03-26_ticks_ext.parquet` (2025-09-12..2026-03-20, 152 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-es-preholdout` / `ES_03-26_ticks.parquet` (2025-12-11..2026-03-20, 79 ses.; libro=sí, agresor=sí) |
+| ES_06-26 | 2025-12-12 a 2026-06-18 | 139 | 73,575,928 | `edgelab-nt8-historical-missing-20261001` / `ES_06-26_ticks_ext.parquet` (2025-12-12..2026-06-18, 139 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-es-preholdout` / `ES_06-26_ticks.parquet` (2026-03-12..2026-06-18, 72 ses.; libro=sí, agresor=sí) |
+| ES_09-26 | 2026-03-13 a 2026-09-18 | 135 | 59,055,778 | `edgelab-nt8-historical-missing-20261001` / `ES_09-26_ticks_ext.parquet` (2026-03-13..2026-06-30, 79 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-es-nq-2026q3-ext` / `ES_parquet/ES_09-26_ticks_ext.parquet` (2026-07-01..2026-09-18, 56 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-es-preholdout` / `ES_09-26_ticks.parquet` (2026-06-08..2026-06-30, 18 ses.; libro=sí, agresor=sí) |
 | ES_12-26 | 2026-07-02 a 2026-09-25 | 51 | 7,965,244 | `edgelab-ticks-es-nq-2026q3-ext` / `ES_parquet/ES_12-26_ticks_ext.parquet` (2026-07-02..2026-09-25, 51 ses.; libro=sí, agresor=sí) |
 
 ### Serie líder (mayor volumen de la sesión anterior; sin retroceso) y rolls
@@ -210,7 +210,7 @@ Tick 0.25 = USD 12.5 por contrato. Sesiones con datos 346; elegibles 247; sesion
 |---|---|---|---:|
 | ES_09-25 → ES_12-25 | 2025-09-16 | 433348.0 → 698739.0 | 1.61 |
 | ES_12-25 → ES_03-26 | 2025-10-06 | 1.0 → 2.0 | 2.0 |
-| ES_03-26 → ES_06-26 | 2026-03-17 | 798836.0 → 1055293.0 | 1.32 |
+| ES_03-26 → ES_06-26 | 2026-03-17 | 798821.0 → 1055286.0 | 1.32 |
 | ES_06-26 → ES_09-26 | 2026-06-16 | 579431.0 → 923610.0 | 1.59 |
 | ES_09-26 → ES_12-26 | 2026-09-15 | 737362.0 → 825590.0 | 1.12 |
 
@@ -328,7 +328,7 @@ Tick 0.25 = USD 1.25 por contrato. Sesiones con datos 334; elegibles 274; sesion
 |---|---|---:|---:|---|
 | MES_09-25 | 2025-08-01 a 2025-09-21 | 47 | 13,712,811 | `edgelab-ticks-mes-preholdout` / `MES_09-25_ticks.parquet` (2025-08-01..2025-09-19, 46 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-nt8-canonical` / `MES/MES_09-25_ticks_ext.parquet` (2025-08-01..2025-09-21, 44 ses.; libro=sí, agresor=sí) |
 | MES_12-25 | 2025-09-11 a 2025-12-21 | 91 | 42,554,473 | `edgelab-ticks-mes-preholdout` / `MES_12-25_ticks.parquet` (2025-09-11..2025-12-21, 91 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-nt8-canonical` / `MES/MES_12-25_ticks_ext.parquet` (2025-09-11..2025-12-21, 86 ses.; libro=sí, agresor=sí) |
-| MES_03-26 | 2025-10-03 a 2026-03-20 | 119 | 47,883,613 | `edgelab-ticks-mes-preholdout` / `MES_03-26_ticks.parquet` (2025-12-11..2026-03-20, 78 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-nt8-canonical` / `MES/MES_03-26_ticks_ext.parquet` (2025-10-03..2026-03-20, 117 ses.; libro=sí, agresor=sí) |
+| MES_03-26 | 2025-10-03 a 2026-03-20 | 119 | 47,883,606 | `edgelab-ticks-mes-preholdout` / `MES_03-26_ticks.parquet` (2025-12-11..2026-03-20, 78 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-nt8-canonical` / `MES/MES_03-26_ticks_ext.parquet` (2025-10-03..2026-03-20, 117 ses.; libro=sí, agresor=sí) |
 | MES_06-26 | 2025-12-14 a 2026-06-18 | 123 | 53,720,454 | `edgelab-ticks-mes-preholdout` / `MES_06-26_ticks.parquet` (2026-03-12..2026-06-18, 71 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-nt8-canonical` / `MES/MES_06-26_ticks_ext.parquet` (2025-12-14..2026-06-18, 123 ses.; libro=sí, agresor=sí) |
 | MES_09-26 | 2026-03-13 a 2026-09-18 | 122 | 35,996,985 | `edgelab-ticks-mes-preholdout` / `MES_09-26_ticks.parquet` (2026-06-08..2026-06-30, 18 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-nt8-canonical` / `MES/MES_09-26_ticks_ext.parquet` (2026-03-13..2026-09-18, 122 ses.; libro=sí, agresor=sí) |
 | MES_12-26 | 2026-06-12 a 2026-09-28 | 63 | 4,008,810 | `edgelab-ticks-nt8-canonical` / `MES/MES_12-26_ticks_ext.parquet` (2026-06-12..2026-09-28, 63 ses.; libro=sí, agresor=sí) |
@@ -424,7 +424,7 @@ Tick 0.25 = USD 0.5 por contrato. Sesiones con datos 334; elegibles 270; sesione
 |---|---|---:|---:|---|
 | MNQ_09-25 | 2025-08-01 a 2025-09-21 | 47 | 34,508,877 | `edgelab-ticks-mnq-preholdout` / `MNQ_09-25_ticks.parquet` (2025-08-01..2025-09-19, 46 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-nt8-canonical` / `MNQ/MNQ_09-25_ticks_ext.parquet` (2025-08-01..2025-09-21, 43 ses.; libro=sí, agresor=sí) |
 | MNQ_12-25 | 2025-09-11 a 2025-12-21 | 87 | 99,091,437 | `edgelab-ticks-mnq-preholdout` / `MNQ_12-25_ticks.parquet` (2025-09-11..2025-12-21, 87 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-nt8-canonical` / `MNQ/MNQ_12-25_ticks_ext.parquet` (2025-09-11..2025-12-21, 82 ses.; libro=sí, agresor=sí) |
-| MNQ_03-26 | 2025-10-03 a 2026-03-20 | 119 | 103,921,558 | `edgelab-ticks-mnq-preholdout` / `MNQ_03-26_ticks.parquet` (2025-12-11..2026-03-20, 78 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-nt8-canonical` / `MNQ/MNQ_03-26_ticks_ext.parquet` (2025-10-03..2026-03-20, 118 ses.; libro=sí, agresor=sí) |
+| MNQ_03-26 | 2025-10-03 a 2026-03-20 | 119 | 103,921,545 | `edgelab-ticks-mnq-preholdout` / `MNQ_03-26_ticks.parquet` (2025-12-11..2026-03-20, 78 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-nt8-canonical` / `MNQ/MNQ_03-26_ticks_ext.parquet` (2025-10-03..2026-03-20, 118 ses.; libro=sí, agresor=sí) |
 | MNQ_06-26 | 2025-12-14 a 2026-06-18 | 118 | 107,359,077 | `edgelab-ticks-mnq-preholdout` / `MNQ_06-26_ticks.parquet` (2026-04-06..2026-06-10, 46 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-nt8-canonical` / `MNQ/MNQ_06-26_ticks_ext.parquet` (2025-12-14..2026-06-18, 118 ses.; libro=sí, agresor=sí) |
 | MNQ_09-26 | 2026-03-13 a 2026-09-18 | 122 | 138,584,118 | `edgelab-ticks-mnq-preholdout` / `MNQ_09-26_ticks.parquet` (2026-06-25..2026-06-30, 4 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-nt8-canonical` / `MNQ/MNQ_09-26_ticks_ext.parquet` (2026-03-13..2026-09-18, 112 ses.; libro=sí, agresor=sí)<br>`mnq-parquet` / `MNQ 09-26.Lasttt.parquet` (2026-06-08..2026-08-28, 48 ses.; libro=sí, agresor=no) |
 | MNQ_12-26 | 2026-06-12 a 2026-10-02 | 82 | 28,779,038 | `edgelab-ticks-nt8-canonical` / `MNQ/MNQ_12-26_ticks_ext.parquet` (2026-06-12..2026-09-28, 63 ses.; libro=sí, agresor=sí)<br>`mnq-parquet` / `MNQ 12-26.Lasttick.parquet` (2026-06-12..2026-10-02, 82 ses.; libro=sí, agresor=no) |
@@ -471,13 +471,12 @@ Tick 0.25 = USD 0.5 por contrato. Sesiones con datos 334; elegibles 270; sesione
 
 ## MYM
 
-Tick 1.0 = USD 0.5 por contrato. Sesiones con datos 272; elegibles 2; sesiones desde el holdout formal: 0.
+Tick 1.0 = USD 0.5 por contrato. Sesiones con datos 270; elegibles 184; sesiones desde el holdout formal: 0.
 
 ### Contratos y fuentes
 
 | Contrato | Rango | Sesiones | Trades | Fuente(s): dataset / archivo (libro, agresor) |
 |---|---|---:|---:|---|
-| MYM_09-25 | 2025-09-20 a 2025-09-21 | 2 | 2 | `edgelab-ticks-nt8-canonical` / `MYM/MYM_09-25_ticks_ext.parquet` (2025-09-20..2025-09-21, 2 ses.; libro=sí, agresor=sí) |
 | MYM_12-25 | 2025-09-30 a 2025-12-21 | 67 | 5,921,462 | `edgelab-ticks-nt8-canonical` / `MYM/MYM_12-25_ticks_ext.parquet` (2025-09-30..2025-12-21, 67 ses.; libro=sí, agresor=sí) |
 | MYM_03-26 | 2025-09-30 a 2026-03-20 | 135 | 8,028,629 | `edgelab-ticks-nt8-canonical` / `MYM/MYM_03-26_ticks_ext.parquet` (2025-09-30..2026-03-20, 135 ses.; libro=sí, agresor=sí) |
 | MYM_06-26 | 2025-12-12 a 2026-06-18 | 138 | 7,290,347 | `edgelab-ticks-nt8-canonical` / `MYM/MYM_06-26_ticks_ext.parquet` (2025-12-12..2026-06-18, 138 ses.; libro=sí, agresor=sí) |
@@ -488,16 +487,27 @@ Tick 1.0 = USD 0.5 por contrato. Sesiones con datos 272; elegibles 2; sesiones d
 
 | Contrato líder | Desde | Hasta |
 |---|---|---|
-| MYM_09-25 | 2025-09-20 | 2025-09-21 |
+| MYM_12-25 | 2025-09-30 | 2025-10-05 |
+| MYM_03-26 | 2025-10-06 | 2026-01-11 |
+| MYM_06-26 | 2026-01-12 | 2026-06-15 |
+| MYM_09-26 | 2026-06-16 | 2026-09-14 |
+| MYM_12-26 | 2026-09-15 | 2026-09-28 |
+
+| Roll | Primera sesión del nuevo líder | Volumen previo viejo → nuevo | Razón |
+|---|---|---|---:|
+| MYM_12-25 → MYM_03-26 | 2025-10-06 | 1.0 → 2.0 | 2.0 |
+| MYM_03-26 → MYM_06-26 | 2026-01-12 | 1.0 → 2.0 | 2.0 |
+| MYM_06-26 → MYM_09-26 | 2026-06-16 | 35674.0 → 93397.0 | 2.62 |
+| MYM_09-26 → MYM_12-26 | 2026-09-15 | 50967.0 → 76134.0 | 1.49 |
 
 ### Liquidez y calendario
 
 - **Contratos del ciclo estándar que faltan en los datos (y debieron ser líder en algún momento del rango):** ninguno.
-- Volumen diario mediano del líder en este instrumento: 1. **Sesiones del líder por debajo del 25 % de esa mediana** (liquidez baja respecto del resto del instrumento, aunque pasen el filtro relativo): 0; rangos: ninguna.
-- Sesiones no elegibles por volumen bajo (< 50 % de la mediana del contrato como líder): 0. Rangos: ninguna.
+- Volumen diario mediano del líder en este instrumento: 106,461. **Sesiones del líder por debajo del 25 % de esa mediana** (liquidez baja respecto del resto del instrumento, aunque pasen el filtro relativo): 53; rangos: 2025-10-09..2025-10-10, 2025-10-13..2025-10-17, 2025-10-22, 2025-10-24, 2025-10-28..2025-10-31, 2025-11-03..2025-11-07, 2025-11-10..2025-11-14, 2025-11-17..2025-11-21, 2025-11-24..2025-11-26, 2025-12-01..2025-12-05, 2025-12-08..2025-12-12, 2026-03-05..2026-03-06, 2026-03-09..2026-03-10, 2026-03-12..2026-03-13, 2026-03-25.
+- Sesiones no elegibles por volumen bajo (< 50 % de la mediana del contrato como líder): 80. Rangos: 2025-10-05..2025-10-08, 2025-10-12, 2025-10-19..2025-10-21, 2025-10-23, 2025-10-26..2025-10-27, 2025-11-01, 2025-11-09, 2025-11-23, 2025-11-27..2025-11-28, 2025-12-07, 2025-12-21, 2025-12-25, 2026-01-04, 2026-01-11..2026-01-16, 2026-01-19..2026-01-23 ….
 - Días hábiles sin datos por feriado de EE.UU. o Viernes Santo: 2026-01-01.
-- **Días hábiles sin datos y sin explicación:** 2025-09-22..2025-09-26, 2025-09-29, 2026-07-09, 2026-07-16, 2026-07-23, 2026-07-30, 2026-08-20.
-- Sesiones del líder con menos de la mitad de los minutos típicos (cierres tempranos o truncadas): ninguna.
+- **Días hábiles sin datos y sin explicación:** 2026-07-09, 2026-07-16, 2026-07-23, 2026-07-30, 2026-08-20.
+- Sesiones del líder con menos de la mitad de los minutos típicos (cierres tempranos o truncadas): 2025-10-09, 2025-10-10, 2025-10-13, 2025-10-14, 2025-10-15, 2025-10-16, 2025-10-17, 2025-10-22, 2025-10-24, 2025-10-28, 2025-10-29, 2025-10-30, 2025-10-31, 2025-11-03, 2025-11-04, 2025-11-05, 2025-11-06, 2025-11-07, 2025-11-10, 2025-11-11, 2025-11-12, 2025-11-13, 2025-11-14, 2025-11-17, 2025-11-18, 2025-11-19, 2025-11-20, 2025-11-21, 2025-11-24, 2025-11-25, 2025-11-26, 2025-12-01, 2025-12-02, 2025-12-03, 2025-12-04, 2025-12-05, 2025-12-08, 2025-12-09, 2025-12-10, 2026-03-05, 2026-03-25, 2026-04-01, 2026-04-08, 2026-05-06, 2026-05-26, 2026-06-09.
 
 ## NQ
 
@@ -507,10 +517,10 @@ Tick 0.25 = USD 5.0 por contrato. Sesiones con datos 335; elegibles 278; sesione
 
 | Contrato | Rango | Sesiones | Trades | Fuente(s): dataset / archivo (libro, agresor) |
 |---|---|---:|---:|---|
-| NQ_09-25 | 2025-08-01 a 2025-09-21 | 43 | 13,624,720 | `edgelab-nt8-historical-missing-20261001` / `NQ_09-25_ticks_ext.parquet` (2025-08-28..2025-09-21, 16 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-nq-preholdout` / `NQ_09-25_ticks.parquet` (2025-08-01..2025-09-19, 42 ses.; libro=sí, agresor=sí) |
-| NQ_12-25 | 2025-09-11 a 2025-12-21 | 91 | 34,264,956 | `edgelab-nt8-historical-missing-20261001` / `NQ_12-25_ticks_ext.parquet` (2025-09-11..2025-12-21, 87 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-nq-preholdout` / `NQ_12-25_ticks.parquet` (2025-09-11..2025-12-21, 86 ses.; libro=sí, agresor=sí) |
-| NQ_03-26 | 2025-10-03 a 2026-03-20 | 122 | 30,845,398 | `edgelab-nt8-historical-missing-20261001` / `NQ_03-26_ticks_ext.parquet` (2025-10-03..2026-03-20, 118 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-nq-preholdout` / `NQ_03-26_ticks.parquet` (2025-12-11..2026-03-20, 79 ses.; libro=sí, agresor=sí) |
-| NQ_06-26 | 2025-12-12 a 2026-06-18 | 124 | 34,258,711 | `edgelab-nt8-historical-missing-20261001` / `NQ_06-26_ticks_ext.parquet` (2025-12-12..2026-06-18, 120 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-nq-preholdout` / `NQ_06-26_ticks.parquet` (2026-03-12..2026-06-18, 72 ses.; libro=sí, agresor=sí) |
+| NQ_09-25 | 2025-08-01 a 2025-09-21 | 43 | 13,624,714 | `edgelab-nt8-historical-missing-20261001` / `NQ_09-25_ticks_ext.parquet` (2025-08-28..2025-09-21, 16 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-nq-preholdout` / `NQ_09-25_ticks.parquet` (2025-08-01..2025-09-19, 42 ses.; libro=sí, agresor=sí) |
+| NQ_12-25 | 2025-09-11 a 2025-12-21 | 91 | 34,264,556 | `edgelab-nt8-historical-missing-20261001` / `NQ_12-25_ticks_ext.parquet` (2025-09-11..2025-12-21, 87 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-nq-preholdout` / `NQ_12-25_ticks.parquet` (2025-09-11..2025-12-21, 86 ses.; libro=sí, agresor=sí) |
+| NQ_03-26 | 2025-10-03 a 2026-03-20 | 122 | 30,844,307 | `edgelab-nt8-historical-missing-20261001` / `NQ_03-26_ticks_ext.parquet` (2025-10-03..2026-03-20, 118 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-nq-preholdout` / `NQ_03-26_ticks.parquet` (2025-12-11..2026-03-20, 79 ses.; libro=sí, agresor=sí) |
+| NQ_06-26 | 2025-12-12 a 2026-06-18 | 124 | 34,258,654 | `edgelab-nt8-historical-missing-20261001` / `NQ_06-26_ticks_ext.parquet` (2025-12-12..2026-06-18, 120 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-nq-preholdout` / `NQ_06-26_ticks.parquet` (2026-03-12..2026-06-18, 72 ses.; libro=sí, agresor=sí) |
 | NQ_09-26 | 2026-03-13 a 2026-09-18 | 135 | 31,389,418 | `edgelab-nq-nt8-2026q3-l2ctx` / `NQ_parquet/NQ_09-26_ticks_ext.parquet` (2026-07-01..2026-09-18, 58 ses.; libro=sí, agresor=sí)<br>`edgelab-nt8-historical-missing-20261001` / `NQ_09-26_ticks_ext.parquet` (2026-03-13..2026-06-30, 75 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-es-nq-2026q3-ext` / `NQ_parquet/NQ_09-26_ticks_ext.parquet` (2026-07-01..2026-09-18, 58 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-nq-preholdout` / `NQ_09-26_ticks.parquet` (2026-06-08..2026-06-30, 19 ses.; libro=sí, agresor=sí) |
 | NQ_12-26 | 2026-07-02 a 2026-09-25 | 50 | 3,620,624 | `edgelab-nq-nt8-2026q3-l2ctx` / `NQ_parquet/NQ_12-26_ticks_ext.parquet` (2026-07-02..2026-09-25, 50 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-es-nq-2026q3-ext` / `NQ_parquet/NQ_12-26_ticks_ext.parquet` (2026-07-02..2026-09-25, 50 ses.; libro=sí, agresor=sí) |
 
@@ -527,16 +537,16 @@ Tick 0.25 = USD 5.0 por contrato. Sesiones con datos 335; elegibles 278; sesione
 
 | Roll | Primera sesión del nuevo líder | Volumen previo viejo → nuevo | Razón |
 |---|---|---|---:|
-| NQ_09-25 → NQ_12-25 | 2025-09-17 | 94421.0 → 320669.0 | 3.4 |
-| NQ_12-25 → NQ_03-26 | 2025-12-16 | 241994.0 → 304943.0 | 1.26 |
-| NQ_03-26 → NQ_06-26 | 2026-03-17 | 249343.0 → 280702.0 | 1.13 |
+| NQ_09-25 → NQ_12-25 | 2025-09-17 | 94421.0 → 320651.0 | 3.4 |
+| NQ_12-25 → NQ_03-26 | 2025-12-16 | 241982.0 → 304939.0 | 1.26 |
+| NQ_03-26 → NQ_06-26 | 2026-03-17 | 249341.0 → 280702.0 | 1.13 |
 | NQ_06-26 → NQ_09-26 | 2026-06-16 | 147791.0 → 337967.0 | 2.29 |
 | NQ_09-26 → NQ_12-26 | 2026-09-18 | 31778.0 → 428251.0 | 13.48 |
 
 ### Liquidez y calendario
 
 - **Contratos del ciclo estándar que faltan en los datos (y debieron ser líder en algún momento del rango):** ninguno.
-- Volumen diario mediano del líder en este instrumento: 538,677. **Sesiones del líder por debajo del 25 % de esa mediana** (liquidez baja respecto del resto del instrumento, aunque pasen el filtro relativo): 0; rangos: ninguna.
+- Volumen diario mediano del líder en este instrumento: 538,674. **Sesiones del líder por debajo del 25 % de esa mediana** (liquidez baja respecto del resto del instrumento, aunque pasen el filtro relativo): 0; rangos: ninguna.
 - Sesiones no elegibles por volumen bajo (< 50 % de la mediana del contrato como líder): 55. Rangos: 2025-08-01, 2025-08-03, 2025-08-09, 2025-08-24, 2025-09-01, 2025-09-07, 2025-09-13..2025-09-16, 2025-09-21, 2025-09-28, 2025-10-05, 2025-10-12, 2025-10-18..2025-10-19, 2025-10-26, 2025-11-02, 2025-11-08..2025-11-09 ….
 - Días hábiles sin datos por feriado de EE.UU. o Viernes Santo: 2026-01-01.
 - **Días hábiles sin datos y sin explicación:** ninguno.
@@ -557,13 +567,12 @@ Tick 0.25 = USD 5.0 por contrato. Sesiones con datos 335; elegibles 278; sesione
 
 ## RTY
 
-Tick 0.1 = USD 5.0 por contrato. Sesiones con datos 275; elegibles 1; sesiones desde el holdout formal: 0.
+Tick 0.1 = USD 5.0 por contrato. Sesiones con datos 274; elegibles 182; sesiones desde el holdout formal: 0.
 
 ### Contratos y fuentes
 
 | Contrato | Rango | Sesiones | Trades | Fuente(s): dataset / archivo (libro, agresor) |
 |---|---|---:|---:|---|
-| RTY_09-25 | 2025-09-21 a 2025-09-21 | 1 | 1 | `edgelab-ticks-nt8-canonical` / `RTY/RTY_09-25_ticks_ext.parquet` (2025-09-21..2025-09-21, 1 ses.; libro=sí, agresor=sí) |
 | RTY_12-25 | 2025-10-03 a 2025-12-21 | 67 | 8,512,225 | `edgelab-ticks-nt8-canonical` / `RTY/RTY_12-25_ticks_ext.parquet` (2025-10-03..2025-12-21, 67 ses.; libro=sí, agresor=sí) |
 | RTY_03-26 | 2025-10-02 a 2026-03-20 | 135 | 10,146,896 | `edgelab-ticks-nt8-canonical` / `RTY/RTY_03-26_ticks_ext.parquet` (2025-10-02..2026-03-20, 135 ses.; libro=sí, agresor=sí) |
 | RTY_06-26 | 2025-12-12 a 2026-06-18 | 139 | 10,277,057 | `edgelab-ticks-nt8-canonical` / `RTY/RTY_06-26_ticks_ext.parquet` (2025-12-12..2026-06-18, 139 ses.; libro=sí, agresor=sí) |
@@ -574,16 +583,27 @@ Tick 0.1 = USD 5.0 por contrato. Sesiones con datos 275; elegibles 1; sesiones d
 
 | Contrato líder | Desde | Hasta |
 |---|---|---|
-| RTY_09-25 | 2025-09-21 | 2025-09-21 |
+| RTY_12-25 | 2025-10-03 | 2025-10-05 |
+| RTY_03-26 | 2025-10-06 | 2025-12-28 |
+| RTY_06-26 | 2025-12-29 | 2026-06-15 |
+| RTY_09-26 | 2026-06-16 | 2026-09-14 |
+| RTY_12-26 | 2026-09-15 | 2026-09-28 |
+
+| Roll | Primera sesión del nuevo líder | Volumen previo viejo → nuevo | Razón |
+|---|---|---|---:|
+| RTY_12-25 → RTY_03-26 | 2025-10-06 | 2.0 → 3.0 | 1.5 |
+| RTY_03-26 → RTY_06-26 | 2025-12-29 | 2.0 → 6.0 | 3.0 |
+| RTY_06-26 → RTY_09-26 | 2026-06-16 | 53450.0 → 128113.0 | 2.4 |
+| RTY_09-26 → RTY_12-26 | 2026-09-15 | 63390.0 → 120937.0 | 1.91 |
 
 ### Liquidez y calendario
 
 - **Contratos del ciclo estándar que faltan en los datos (y debieron ser líder en algún momento del rango):** ninguno.
-- Volumen diario mediano del líder en este instrumento: 1. **Sesiones del líder por debajo del 25 % de esa mediana** (liquidez baja respecto del resto del instrumento, aunque pasen el filtro relativo): 0; rangos: ninguna.
-- Sesiones no elegibles por volumen bajo (< 50 % de la mediana del contrato como líder): 0. Rangos: ninguna.
+- Volumen diario mediano del líder en este instrumento: 147,614. **Sesiones del líder por debajo del 25 % de esa mediana** (liquidez baja respecto del resto del instrumento, aunque pasen el filtro relativo): 39; rangos: 2025-10-10, 2025-10-13..2025-10-17, 2025-10-22, 2025-10-24, 2025-10-27, 2025-10-29..2025-10-31, 2025-11-03..2025-11-07, 2025-11-10, 2025-11-12..2025-11-14, 2025-11-17..2025-11-21, 2025-11-24..2025-11-26, 2025-12-01..2025-12-05, 2025-12-08..2025-12-12.
+- Sesiones no elegibles por volumen bajo (< 50 % de la mediana del contrato como líder): 88. Rangos: 2025-10-05..2025-10-09, 2025-10-12, 2025-10-19..2025-10-21, 2025-10-23, 2025-10-26, 2025-10-28, 2025-11-02, 2025-11-09, 2025-11-11, 2025-11-16, 2025-11-23, 2025-11-27..2025-11-28, 2025-12-14, 2025-12-21, 2025-12-28..2025-12-31 ….
 - Días hábiles sin datos por feriado de EE.UU. o Viernes Santo: 2025-12-25, 2026-01-01.
-- **Días hábiles sin datos y sin explicación:** 2025-09-22..2025-09-26, 2025-09-29..2025-10-01.
-- Sesiones del líder con menos de la mitad de los minutos típicos (cierres tempranos o truncadas): ninguna.
+- **Días hábiles sin datos y sin explicación:** ninguno.
+- Sesiones del líder con menos de la mitad de los minutos típicos (cierres tempranos o truncadas): 2025-10-10, 2025-10-13, 2025-10-14, 2025-10-15, 2025-10-16, 2025-10-17, 2025-10-22, 2025-10-24, 2025-10-27, 2025-10-29, 2025-10-30, 2025-10-31, 2025-11-03, 2025-11-04, 2025-11-05, 2025-11-06, 2025-11-07, 2025-11-10, 2025-11-12, 2025-11-13, 2025-11-14, 2025-11-17, 2025-11-18, 2025-11-19, 2025-11-20, 2025-11-21, 2025-11-24, 2025-11-25, 2025-11-26, 2025-12-01, 2025-12-02, 2025-12-03, 2025-12-04, 2025-12-05, 2025-12-08, 2025-12-09, 2025-12-10, 2025-12-11.
 
 ## YM
 
@@ -595,7 +615,7 @@ Tick 1.0 = USD 5.0 por contrato. Sesiones con datos 312; elegibles 260; sesiones
 |---|---|---:|---:|---|
 | YM_09-25 | 2025-08-15 a 2025-09-21 | 30 | 1,551,902 | `edgelab-ticks-nt8-canonical` / `YM/YM_09-25_ticks_ext.parquet` (2025-08-15..2025-09-21, 30 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-ym-preholdout` / `YM_09-25_ticks.parquet` (2025-08-15..2025-09-19, 29 ses.; libro=sí, agresor=sí) |
 | YM_12-25 | 2025-09-11 a 2025-12-21 | 85 | 5,798,136 | `edgelab-ticks-nt8-canonical` / `YM/YM_12-25_ticks_ext.parquet` (2025-09-11..2025-12-21, 82 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-ym-preholdout` / `YM_12-25_ticks.parquet` (2025-09-11..2025-12-21, 85 ses.; libro=sí, agresor=sí) |
-| YM_03-26 | 2025-10-02 a 2026-03-20 | 117 | 6,464,112 | `edgelab-ticks-nt8-canonical` / `YM/YM_03-26_ticks_ext.parquet` (2025-10-02..2026-03-20, 117 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-ym-preholdout` / `YM_03-26_ticks.parquet` (2025-12-11..2026-03-20, 75 ses.; libro=sí, agresor=sí) |
+| YM_03-26 | 2025-10-02 a 2026-03-20 | 117 | 6,464,111 | `edgelab-ticks-nt8-canonical` / `YM/YM_03-26_ticks_ext.parquet` (2025-10-02..2026-03-20, 117 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-ym-preholdout` / `YM_03-26_ticks.parquet` (2025-12-11..2026-03-20, 75 ses.; libro=sí, agresor=sí) |
 | YM_06-26 | 2025-12-15 a 2026-06-18 | 122 | 6,233,087 | `edgelab-ticks-nt8-canonical` / `YM/YM_06-26_ticks_ext.parquet` (2025-12-15..2026-06-18, 121 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-ym-preholdout` / `YM_06-26_ticks.parquet` (2026-03-12..2026-06-18, 72 ses.; libro=sí, agresor=sí) |
 | YM_09-26 | 2026-03-13 a 2026-09-18 | 119 | 4,169,882 | `edgelab-ticks-nt8-canonical` / `YM/YM_09-26_ticks_ext.parquet` (2026-03-13..2026-09-18, 119 ses.; libro=sí, agresor=sí)<br>`edgelab-ticks-ym-preholdout` / `YM_09-26_ticks.parquet` (2026-06-08..2026-06-30, 17 ses.; libro=sí, agresor=sí) |
 | YM_12-26 | 2026-06-12 a 2026-09-28 | 62 | 528,445 | `edgelab-ticks-nt8-canonical` / `YM/YM_12-26_ticks_ext.parquet` (2026-06-12..2026-09-28, 62 ses.; libro=sí, agresor=sí) |

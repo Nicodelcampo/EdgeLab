@@ -1,0 +1,2156 @@
+{
+ "generated_utc": "2026-10-04T23:11:53Z",
+ "rules": "Selecci\u00f3n de datos APROBADOS para an\u00e1lisis: aplica reglas fijas, por sesi\u00f3n, al cat\u00e1logo y escribe docs/data_catalog/{curated.json,CURATED.md,REEXPORT.md}.\nReglas (iguales para todos los instrumentos; se cambian solo en este archivo y se documentan):\n  1. Serie l\u00edder y elegibilidad del cat\u00e1logo (mayor volumen de la sesi\u00f3n anterior; volumen >= 50 % de la mediana del contrato).\n  2. Excluida si el volumen es < 25 % de la mediana de volumen del l\u00edder de TODO el instrumento (liquidez baja respecto del instrumento).\n  3. Excluida si tiene menos de la mitad de los minutos t\u00edpicos (sesi\u00f3n truncada o cierre temprano).\n  4. Con salvedad (no excluida) si el contrato tiene fuentes en conflicto material (> 1 % de diferencia de trades en m\u00e1s del 10 % de los d\u00edas comunes).\n  5. Excluida toda sesi\u00f3n desde 2026-10-01 (holdout formal).\nVeredicto por instrumento: APROBADO (>= 85 % de las sesiones elegibles aprobadas y sin salvedades), CON_SALVEDADES (>= 60 %), NO_RECOMENDADO (< 60 %).",
+ "holdout_first_trade_date": "2026-10-01",
+ "dataset_roles": [
+  {
+   "slug": "edgelab-ticks-nt8-canonical",
+   "role": "PRIMARIO (aporta sesiones aprobadas)",
+   "approved_sessions_supplied": 1045,
+   "instruments": [
+    "MES",
+    "MNQ",
+    "MYM",
+    "RTY",
+    "YM"
+   ],
+   "private": true,
+   "mb": 5264,
+   "note": ""
+  },
+  {
+   "slug": "edgelab-code-20260928",
+   "role": "C\u00d3DIGO del proyecto",
+   "approved_sessions_supplied": 0,
+   "instruments": [],
+   "private": true,
+   "mb": 1,
+   "note": ""
+  },
+  {
+   "slug": "edgelab-ticks-zb-preholdout",
+   "role": "PRIMARIO (aporta sesiones aprobadas)",
+   "approved_sessions_supplied": 144,
+   "instruments": [
+    "ZB"
+   ],
+   "private": true,
+   "mb": 111,
+   "note": ""
+  },
+  {
+   "slug": "edgelab-mgc-nt8-raw-parquet-20261002",
+   "role": "PRIMARIO (aporta sesiones aprobadas)",
+   "approved_sessions_supplied": 213,
+   "instruments": [
+    "MGC"
+   ],
+   "private": true,
+   "mb": 605,
+   "note": ""
+  },
+  {
+   "slug": "edgelab-ticks-nq-preholdout",
+   "role": "PRIMARIO (aporta sesiones aprobadas)",
+   "approved_sessions_supplied": 38,
+   "instruments": [
+    "NQ"
+   ],
+   "private": true,
+   "mb": 1097,
+   "note": ""
+  },
+  {
+   "slug": "edgelab-ticks-es-preholdout",
+   "role": "REDUNDANTE o sin sesiones aprobadas (no usar como fuente; conservar como respaldo)",
+   "approved_sessions_supplied": 0,
+   "instruments": [],
+   "private": true,
+   "mb": 1331,
+   "note": ""
+  },
+  {
+   "slug": "edgelab-ticks-ym-preholdout",
+   "role": "REDUNDANTE o sin sesiones aprobadas (no usar como fuente; conservar como respaldo)",
+   "approved_sessions_supplied": 0,
+   "instruments": [],
+   "private": true,
+   "mb": 220,
+   "note": ""
+  },
+  {
+   "slug": "edgelab-l2-gc-bookmap-audit-20260921",
+   "role": "ARTEFACTOS / EVIDENCIA (no son datos de mercado)",
+   "approved_sessions_supplied": 0,
+   "instruments": [],
+   "private": true,
+   "mb": 37,
+   "note": ""
+  },
+  {
+   "slug": "edgelab-ticks-6j-preholdout",
+   "role": "REDUNDANTE o sin sesiones aprobadas (no usar como fuente; conservar como respaldo)",
+   "approved_sessions_supplied": 0,
+   "instruments": [],
+   "private": true,
+   "mb": 102,
+   "note": ""
+  },
+  {
+   "slug": "edgelab-nq-nt8-2026q3-l2ctx",
+   "role": "REDUNDANTE o sin sesiones aprobadas (no usar como fuente; conservar como respaldo)",
+   "approved_sessions_supplied": 0,
+   "instruments": [],
+   "private": true,
+   "mb": 323,
+   "note": ""
+  },
+  {
+   "slug": "edgelab-ticks-gc-preholdout",
+   "role": "PRIMARIO (aporta sesiones aprobadas)",
+   "approved_sessions_supplied": 225,
+   "instruments": [
+    "GC"
+   ],
+   "private": true,
+   "mb": 378,
+   "note": ""
+  },
+  {
+   "slug": "edgelab-avolcluster-nq-oracle",
+   "role": "ARTEFACTOS / EVIDENCIA (no son datos de mercado)",
+   "approved_sessions_supplied": 0,
+   "instruments": [],
+   "private": true,
+   "mb": 11,
+   "note": ""
+  },
+  {
+   "slug": "edgelab-nq-informal-all5-coordinates",
+   "role": "ARTEFACTOS / EVIDENCIA (no son datos de mercado)",
+   "approved_sessions_supplied": 0,
+   "instruments": [],
+   "private": true,
+   "mb": 8,
+   "note": ""
+  },
+  {
+   "slug": "edgelab-tickbar-diag-nq0626",
+   "role": "ARTEFACTOS / EVIDENCIA (no son datos de mercado)",
+   "approved_sessions_supplied": 0,
+   "instruments": [],
+   "private": true,
+   "mb": 0,
+   "note": ""
+  },
+  {
+   "slug": "edgelab-bt2-v2-nq-artifacts",
+   "role": "ARTEFACTOS / EVIDENCIA (no son datos de mercado)",
+   "approved_sessions_supplied": 0,
+   "instruments": [],
+   "private": true,
+   "mb": 8,
+   "note": ""
+  },
+  {
+   "slug": "edgelab-bt2a-nq-event-store",
+   "role": "ARTEFACTOS / EVIDENCIA (no son datos de mercado)",
+   "approved_sessions_supplied": 0,
+   "instruments": [],
+   "private": true,
+   "mb": 8,
+   "note": ""
+  },
+  {
+   "slug": "edgelab-nq-selection-checkpoints",
+   "role": "ARTEFACTOS / EVIDENCIA (no son datos de mercado)",
+   "approved_sessions_supplied": 0,
+   "instruments": [],
+   "private": true,
+   "mb": 72,
+   "note": ""
+  },
+  {
+   "slug": "edgelab-ticks-mnq-preholdout",
+   "role": "REDUNDANTE o sin sesiones aprobadas (no usar como fuente; conservar como respaldo)",
+   "approved_sessions_supplied": 0,
+   "instruments": [],
+   "private": true,
+   "mb": 2577,
+   "note": ""
+  },
+  {
+   "slug": "edgelab-ticks-mbt-preholdout",
+   "role": "PRIMARIO (aporta sesiones aprobadas)",
+   "approved_sessions_supplied": 83,
+   "instruments": [
+    "MBT"
+   ],
+   "private": true,
+   "mb": 52,
+   "note": ""
+  },
+  {
+   "slug": "edgelab-edge-factory-audit-evidence-20260919",
+   "role": "ARTEFACTOS / EVIDENCIA (no son datos de mercado)",
+   "approved_sessions_supplied": 0,
+   "instruments": [],
+   "private": true,
+   "mb": 0,
+   "note": ""
+  },
+  {
+   "slug": "edgelab-edge-factory-target-free-audited",
+   "role": "ARTEFACTOS / EVIDENCIA (no son datos de mercado)",
+   "approved_sessions_supplied": 0,
+   "instruments": [],
+   "private": true,
+   "mb": 95,
+   "note": ""
+  },
+  {
+   "slug": "edgelab-ticks-mes-preholdout",
+   "role": "REDUNDANTE o sin sesiones aprobadas (no usar como fuente; conservar como respaldo)",
+   "approved_sessions_supplied": 0,
+   "instruments": [],
+   "private": true,
+   "mb": 1187,
+   "note": ""
+  },
+  {
+   "slug": "edgelab-ticks-6e-preholdout",
+   "role": "PRIMARIO (aporta sesiones aprobadas)",
+   "approved_sessions_supplied": 5,
+   "instruments": [
+    "6E"
+   ],
+   "private": true,
+   "mb": 139,
+   "note": ""
+  },
+  {
+   "slug": "edgelab-ticks-6b-preholdout",
+   "role": "REDUNDANTE o sin sesiones aprobadas (no usar como fuente; conservar como respaldo)",
+   "approved_sessions_supplied": 0,
+   "instruments": [],
+   "private": true,
+   "mb": 64,
+   "note": ""
+  },
+  {
+   "slug": "edgelab-ticks-es-nq-2026q3-ext",
+   "role": "PRIMARIO (aporta sesiones aprobadas)",
+   "approved_sessions_supplied": 112,
+   "instruments": [
+    "ES",
+    "NQ"
+   ],
+   "private": true,
+   "mb": 647,
+   "note": ""
+  },
+  {
+   "slug": "edgelab-nt8-historical-missing-20261001",
+   "role": "PRIMARIO (aporta sesiones aprobadas)",
+   "approved_sessions_supplied": 1271,
+   "instruments": [
+    "6B",
+    "6E",
+    "6J",
+    "ES",
+    "NQ",
+    "ZB"
+   ],
+   "private": true,
+   "mb": 1226,
+   "note": ""
+  },
+  {
+   "slug": "mnq-tick-data",
+   "role": "ARTEFACTOS / EVIDENCIA (no son datos de mercado)",
+   "approved_sessions_supplied": 0,
+   "instruments": [],
+   "private": false,
+   "mb": 15,
+   "note": "P\u00daBLICO: pasarlo a privado"
+  },
+  {
+   "slug": "mnq-parquet",
+   "role": "PRIMARIO (aporta sesiones aprobadas)",
+   "approved_sessions_supplied": 30,
+   "instruments": [
+    "MNQ"
+   ],
+   "private": false,
+   "mb": 500,
+   "note": "P\u00daBLICO: pasarlo a privado"
+  },
+  {
+   "slug": "edgelab-discovery-cache",
+   "role": "DERIVADO (cach\u00e9 / inventario)",
+   "approved_sessions_supplied": 0,
+   "instruments": [],
+   "private": true,
+   "mb": 58,
+   "note": ""
+  },
+  {
+   "slug": "edgelab-dukascopy-xauusd-ticks-m1",
+   "role": "SPOT (no es futuro): ver la secci\u00f3n de Dukascopy",
+   "approved_sessions_supplied": 0,
+   "instruments": [],
+   "private": true,
+   "mb": 0,
+   "note": ""
+  }
+ ],
+ "instruments": {
+  "6B": {
+   "verdict": "APROBADO",
+   "tick_size": 0.0001,
+   "tick_value_usd": 6.25,
+   "eligible_sessions": 285,
+   "approved_sessions": 285,
+   "approved_fraction_of_eligible": 1.0,
+   "approved_ranges": [
+    {
+     "first": "2025-08-04",
+     "last": "2025-12-23",
+     "sessions": 99
+    },
+    {
+     "first": "2025-12-29",
+     "last": "2026-09-25",
+     "sessions": 186
+    }
+   ],
+   "excluded": {},
+   "caveat_sessions_source_conflict": {
+    "n": 0,
+    "contracts": []
+   },
+   "primary_source_by_contract": {
+    "6B_09-25": {
+     "dataset": "edgelab-nt8-historical-missing-20261001",
+     "file": "6B_09-25_ticks_nt8.parquet",
+     "approved_sessions": 29,
+     "first": "2025-08-04",
+     "last": "2025-09-11",
+     "other_sources": []
+    },
+    "6B_12-25": {
+     "dataset": "edgelab-nt8-historical-missing-20261001",
+     "file": "6B_12-25_ticks_nt8.parquet",
+     "approved_sessions": 63,
+     "first": "2025-09-15",
+     "last": "2025-12-11",
+     "other_sources": []
+    },
+    "6B_03-26": {
+     "dataset": "edgelab-nt8-historical-missing-20261001",
+     "file": "6B_03-26_ticks_nt8.parquet",
+     "approved_sessions": 59,
+     "first": "2025-12-15",
+     "last": "2026-03-12",
+     "other_sources": []
+    },
+    "6B_06-26": {
+     "dataset": "edgelab-nt8-historical-missing-20261001",
+     "file": "6B_06-26_ticks_nt8.parquet",
+     "approved_sessions": 62,
+     "first": "2026-03-16",
+     "last": "2026-06-11",
+     "other_sources": []
+    },
+    "6B_09-26": {
+     "dataset": "edgelab-nt8-historical-missing-20261001",
+     "file": "6B_09-26_ticks_nt8.parquet",
+     "approved_sessions": 62,
+     "first": "2026-06-15",
+     "last": "2026-09-10",
+     "other_sources": []
+    },
+    "6B_12-26": {
+     "dataset": "edgelab-nt8-historical-missing-20261001",
+     "file": "6B_12-26_ticks_nt8.parquet",
+     "approved_sessions": 10,
+     "first": "2026-09-14",
+     "last": "2026-09-25",
+     "other_sources": []
+    }
+   },
+   "holdout_sessions_present": 0,
+   "last_approved_session": "2026-09-25"
+  },
+  "6E": {
+   "verdict": "CON_SALVEDADES",
+   "tick_size": 5e-05,
+   "tick_value_usd": 6.25,
+   "eligible_sessions": 288,
+   "approved_sessions": 288,
+   "approved_fraction_of_eligible": 1.0,
+   "approved_ranges": [
+    {
+     "first": "2025-07-28",
+     "last": "2025-11-26",
+     "sessions": 87
+    },
+    {
+     "first": "2025-12-01",
+     "last": "2025-12-23",
+     "sessions": 16
+    },
+    {
+     "first": "2025-12-29",
+     "last": "2026-09-25",
+     "sessions": 185
+    }
+   ],
+   "excluded": {},
+   "caveat_sessions_source_conflict": {
+    "n": 61,
+    "contracts": [
+     "6E_09-26"
+    ]
+   },
+   "primary_source_by_contract": {
+    "6E_09-25": {
+     "dataset": "edgelab-nt8-historical-missing-20261001",
+     "file": "6E_09-25_ticks_nt8.parquet",
+     "approved_sessions": 34,
+     "first": "2025-07-28",
+     "last": "2025-09-11",
+     "other_sources": [
+      "edgelab-ticks-6e-preholdout:6E_09-25_ticks.parquet"
+     ]
+    },
+    "6E_12-25": {
+     "dataset": "edgelab-nt8-historical-missing-20261001",
+     "file": "6E_12-25_ticks_nt8.parquet",
+     "approved_sessions": 62,
+     "first": "2025-09-15",
+     "last": "2025-12-11",
+     "other_sources": []
+    },
+    "6E_03-26": {
+     "dataset": "edgelab-nt8-historical-missing-20261001",
+     "file": "6E_03-26_ticks_nt8.parquet",
+     "approved_sessions": 59,
+     "first": "2025-12-15",
+     "last": "2026-03-12",
+     "other_sources": []
+    },
+    "6E_06-26": {
+     "dataset": "edgelab-nt8-historical-missing-20261001",
+     "file": "6E_06-26_ticks_nt8.parquet",
+     "approved_sessions": 62,
+     "first": "2026-03-16",
+     "last": "2026-06-11",
+     "other_sources": []
+    },
+    "6E_09-26": {
+     "dataset": "edgelab-nt8-historical-missing-20261001",
+     "file": "6E_09-26_ticks_nt8.parquet",
+     "approved_sessions": 61,
+     "first": "2026-06-15",
+     "last": "2026-09-10",
+     "other_sources": []
+    },
+    "6E_12-26": {
+     "dataset": "edgelab-nt8-historical-missing-20261001",
+     "file": "6E_12-26_ticks_nt8.parquet",
+     "approved_sessions": 10,
+     "first": "2026-09-14",
+     "last": "2026-09-25",
+     "other_sources": []
+    }
+   },
+   "holdout_sessions_present": 0,
+   "last_approved_session": "2026-09-25"
+  },
+  "6J": {
+   "verdict": "APROBADO",
+   "tick_size": 5e-07,
+   "tick_value_usd": 6.25,
+   "eligible_sessions": 267,
+   "approved_sessions": 267,
+   "approved_fraction_of_eligible": 1.0,
+   "approved_ranges": [
+    {
+     "first": "2025-08-04",
+     "last": "2025-09-11",
+     "sessions": 29
+    },
+    {
+     "first": "2025-09-16",
+     "last": "2025-11-07",
+     "sessions": 39
+    },
+    {
+     "first": "2025-12-12",
+     "last": "2026-09-25",
+     "sessions": 199
+    }
+   ],
+   "excluded": {},
+   "caveat_sessions_source_conflict": {
+    "n": 0,
+    "contracts": []
+   },
+   "primary_source_by_contract": {
+    "6J_09-25": {
+     "dataset": "edgelab-nt8-historical-missing-20261001",
+     "file": "6J_09-25_ticks_nt8.parquet",
+     "approved_sessions": 29,
+     "first": "2025-08-04",
+     "last": "2025-09-11",
+     "other_sources": []
+    },
+    "6J_12-25": {
+     "dataset": "edgelab-nt8-historical-missing-20261001",
+     "file": "6J_12-25_ticks_nt8.parquet",
+     "approved_sessions": 39,
+     "first": "2025-09-16",
+     "last": "2025-11-07",
+     "other_sources": []
+    },
+    "6J_03-26": {
+     "dataset": "edgelab-nt8-historical-missing-20261001",
+     "file": "6J_03-26_ticks_nt8.parquet",
+     "approved_sessions": 63,
+     "first": "2025-12-12",
+     "last": "2026-03-12",
+     "other_sources": []
+    },
+    "6J_06-26": {
+     "dataset": "edgelab-nt8-historical-missing-20261001",
+     "file": "6J_06-26_ticks_nt8.parquet",
+     "approved_sessions": 62,
+     "first": "2026-03-16",
+     "last": "2026-06-11",
+     "other_sources": []
+    },
+    "6J_09-26": {
+     "dataset": "edgelab-nt8-historical-missing-20261001",
+     "file": "6J_09-26_ticks_nt8.parquet",
+     "approved_sessions": 64,
+     "first": "2026-06-15",
+     "last": "2026-09-10",
+     "other_sources": []
+    },
+    "6J_12-26": {
+     "dataset": "edgelab-nt8-historical-missing-20261001",
+     "file": "6J_12-26_ticks_nt8.parquet",
+     "approved_sessions": 10,
+     "first": "2026-09-14",
+     "last": "2026-09-25",
+     "other_sources": []
+    }
+   },
+   "holdout_sessions_present": 0,
+   "last_approved_session": "2026-09-25"
+  },
+  "ES": {
+   "verdict": "CON_SALVEDADES",
+   "tick_size": 0.25,
+   "tick_value_usd": 12.5,
+   "eligible_sessions": 247,
+   "approved_sessions": 242,
+   "approved_fraction_of_eligible": 0.98,
+   "approved_ranges": [
+    {
+     "first": "2025-07-18",
+     "last": "2025-10-03",
+     "sessions": 54
+    },
+    {
+     "first": "2025-12-15",
+     "last": "2026-08-19",
+     "sessions": 168
+    },
+    {
+     "first": "2026-08-24",
+     "last": "2026-09-25",
+     "sessions": 20
+    }
+   ],
+   "excluded": {
+    "liquidez_baja": {
+     "n": 5,
+     "dates_sample": [
+      "2025-12-10",
+      "2025-12-11",
+      "2025-12-12",
+      "2026-01-19",
+      "2026-02-16"
+     ]
+    }
+   },
+   "caveat_sessions_source_conflict": {
+    "n": 57,
+    "contracts": [
+     "ES_09-26"
+    ]
+   },
+   "primary_source_by_contract": {
+    "ES_09-25": {
+     "dataset": "edgelab-nt8-historical-missing-20261001",
+     "file": "ES_09-25_ticks_ext.parquet",
+     "approved_sessions": 40,
+     "first": "2025-07-18",
+     "last": "2025-09-12",
+     "other_sources": []
+    },
+    "ES_12-25": {
+     "dataset": "edgelab-nt8-historical-missing-20261001",
+     "file": "ES_12-25_ticks_ext.parquet",
+     "approved_sessions": 14,
+     "first": "2025-09-16",
+     "last": "2025-10-03",
+     "other_sources": []
+    },
+    "ES_03-26": {
+     "dataset": "edgelab-nt8-historical-missing-20261001",
+     "file": "ES_03-26_ticks_ext.parquet",
+     "approved_sessions": 62,
+     "first": "2025-12-15",
+     "last": "2026-03-16",
+     "other_sources": []
+    },
+    "ES_06-26": {
+     "dataset": "edgelab-nt8-historical-missing-20261001",
+     "file": "ES_06-26_ticks_ext.parquet",
+     "approved_sessions": 62,
+     "first": "2026-03-17",
+     "last": "2026-06-12",
+     "other_sources": []
+    },
+    "ES_09-26": {
+     "dataset": "edgelab-ticks-es-nq-2026q3-ext",
+     "file": "ES_parquet/ES_09-26_ticks_ext.parquet",
+     "approved_sessions": 57,
+     "first": "2026-06-16",
+     "last": "2026-09-14",
+     "other_sources": [
+      "edgelab-nt8-historical-missing-20261001:ES_09-26_ticks_ext.parquet"
+     ]
+    },
+    "ES_12-26": {
+     "dataset": "edgelab-ticks-es-nq-2026q3-ext",
+     "file": "ES_parquet/ES_12-26_ticks_ext.parquet",
+     "approved_sessions": 7,
+     "first": "2026-09-15",
+     "last": "2026-09-25",
+     "other_sources": []
+    }
+   },
+   "holdout_sessions_present": 0,
+   "last_approved_session": "2026-09-25"
+  },
+  "GC": {
+   "verdict": "CON_SALVEDADES",
+   "tick_size": 0.1,
+   "tick_value_usd": 10.0,
+   "eligible_sessions": 225,
+   "approved_sessions": 225,
+   "approved_fraction_of_eligible": 1.0,
+   "approved_ranges": [
+    {
+     "first": "2025-08-04",
+     "last": "2025-11-26",
+     "sessions": 81
+    },
+    {
+     "first": "2025-12-01",
+     "last": "2026-06-30",
+     "sessions": 144
+    }
+   ],
+   "excluded": {},
+   "caveat_sessions_source_conflict": {
+    "n": 0,
+    "contracts": []
+   },
+   "primary_source_by_contract": {
+    "GC_12-25": {
+     "dataset": "edgelab-ticks-gc-preholdout",
+     "file": "GC_12-25_ticks.parquet",
+     "approved_sessions": 80,
+     "first": "2025-08-04",
+     "last": "2025-11-24",
+     "other_sources": []
+    },
+    "GC_02-26": {
+     "dataset": "edgelab-ticks-gc-preholdout",
+     "file": "GC_02-26_ticks.parquet",
+     "approved_sessions": 41,
+     "first": "2025-11-26",
+     "last": "2026-01-27",
+     "other_sources": []
+    },
+    "GC_04-26": {
+     "dataset": "edgelab-ticks-gc-preholdout",
+     "file": "GC_04-26_ticks.parquet",
+     "approved_sessions": 40,
+     "first": "2026-01-29",
+     "last": "2026-03-26",
+     "other_sources": []
+    },
+    "GC_06-26": {
+     "dataset": "edgelab-ticks-gc-preholdout",
+     "file": "GC_06-26_ticks.parquet",
+     "approved_sessions": 40,
+     "first": "2026-03-30",
+     "last": "2026-05-26",
+     "other_sources": []
+    },
+    "GC_08-26": {
+     "dataset": "edgelab-ticks-gc-preholdout",
+     "file": "GC_08-26_ticks.parquet",
+     "approved_sessions": 24,
+     "first": "2026-05-28",
+     "last": "2026-06-30",
+     "other_sources": []
+    }
+   },
+   "holdout_sessions_present": 0,
+   "last_approved_session": "2026-06-30"
+  },
+  "MBT": {
+   "verdict": "CON_SALVEDADES",
+   "tick_size": null,
+   "tick_value_usd": null,
+   "eligible_sessions": 109,
+   "approved_sessions": 83,
+   "approved_fraction_of_eligible": 0.761,
+   "approved_ranges": [
+    {
+     "first": "2025-08-22",
+     "last": "2025-09-05",
+     "sessions": 11
+    },
+    {
+     "first": "2025-09-26",
+     "last": "2025-09-26",
+     "sessions": 1
+    },
+    {
+     "first": "2025-10-02",
+     "last": "2025-10-24",
+     "sessions": 17
+    },
+    {
+     "first": "2025-11-24",
+     "last": "2025-11-24",
+     "sessions": 1
+    },
+    {
+     "first": "2025-12-01",
+     "last": "2025-12-19",
+     "sessions": 15
+    },
+    {
+     "first": "2026-03-31",
+     "last": "2026-03-31",
+     "sessions": 1
+    },
+    {
+     "first": "2026-04-08",
+     "last": "2026-05-29",
+     "sessions": 37
+    }
+   ],
+   "excluded": {
+    "sesion_truncada": {
+     "n": 4,
+     "dates_sample": [
+      "2025-09-29",
+      "2025-10-01",
+      "2026-04-02",
+      "2026-04-06"
+     ]
+    },
+    "liquidez_baja": {
+     "n": 22,
+     "dates_sample": [
+      "2025-09-30",
+      "2025-11-11",
+      "2025-11-12",
+      "2025-11-13",
+      "2025-11-14",
+      "2025-11-17",
+      "2025-11-18",
+      "2025-11-19",
+      "2025-11-20",
+      "2025-11-21",
+      "2025-11-25",
+      "2025-11-26"
+     ]
+    }
+   },
+   "caveat_sessions_source_conflict": {
+    "n": 0,
+    "contracts": []
+   },
+   "primary_source_by_contract": {
+    "MBT_09-25": {
+     "dataset": "edgelab-ticks-mbt-preholdout",
+     "file": "MBT_09-25_ticks.parquet",
+     "approved_sessions": 11,
+     "first": "2025-08-22",
+     "last": "2025-09-05",
+     "other_sources": []
+    },
+    "MBT_11-25": {
+     "dataset": "edgelab-ticks-mbt-preholdout",
+     "file": "MBT_11-25_ticks.parquet",
+     "approved_sessions": 18,
+     "first": "2025-09-26",
+     "last": "2025-10-24",
+     "other_sources": []
+    },
+    "MBT_01-26": {
+     "dataset": "edgelab-ticks-mbt-preholdout",
+     "file": "MBT_01-26_ticks.parquet",
+     "approved_sessions": 16,
+     "first": "2025-11-24",
+     "last": "2025-12-19",
+     "other_sources": []
+    },
+    "MBT_05-26": {
+     "dataset": "edgelab-ticks-mbt-preholdout",
+     "file": "MBT_05-26_ticks.parquet",
+     "approved_sessions": 38,
+     "first": "2026-03-31",
+     "last": "2026-05-29",
+     "other_sources": []
+    }
+   },
+   "holdout_sessions_present": 0,
+   "last_approved_session": "2026-05-29"
+  },
+  "MES": {
+   "verdict": "APROBADO",
+   "tick_size": 0.25,
+   "tick_value_usd": 1.25,
+   "eligible_sessions": 274,
+   "approved_sessions": 274,
+   "approved_fraction_of_eligible": 1.0,
+   "approved_ranges": [
+    {
+     "first": "2025-08-04",
+     "last": "2025-11-26",
+     "sessions": 81
+    },
+    {
+     "first": "2025-12-01",
+     "last": "2025-12-23",
+     "sessions": 17
+    },
+    {
+     "first": "2025-12-29",
+     "last": "2026-09-25",
+     "sessions": 176
+    }
+   ],
+   "excluded": {},
+   "caveat_sessions_source_conflict": {
+    "n": 0,
+    "contracts": []
+   },
+   "primary_source_by_contract": {
+    "MES_09-25": {
+     "dataset": "edgelab-ticks-nt8-canonical",
+     "file": "MES/MES_09-25_ticks_ext.parquet",
+     "approved_sessions": 29,
+     "first": "2025-08-04",
+     "last": "2025-09-12",
+     "other_sources": []
+    },
+    "MES_12-25": {
+     "dataset": "edgelab-ticks-nt8-canonical",
+     "file": "MES/MES_12-25_ticks_ext.parquet",
+     "approved_sessions": 63,
+     "first": "2025-09-16",
+     "last": "2025-12-15",
+     "other_sources": []
+    },
+    "MES_03-26": {
+     "dataset": "edgelab-ticks-nt8-canonical",
+     "file": "MES/MES_03-26_ticks_ext.parquet",
+     "approved_sessions": 58,
+     "first": "2025-12-16",
+     "last": "2026-03-16",
+     "other_sources": []
+    },
+    "MES_06-26": {
+     "dataset": "edgelab-ticks-nt8-canonical",
+     "file": "MES/MES_06-26_ticks_ext.parquet",
+     "approved_sessions": 62,
+     "first": "2026-03-17",
+     "last": "2026-06-12",
+     "other_sources": []
+    },
+    "MES_09-26": {
+     "dataset": "edgelab-ticks-nt8-canonical",
+     "file": "MES/MES_09-26_ticks_ext.parquet",
+     "approved_sessions": 55,
+     "first": "2026-06-16",
+     "last": "2026-09-11",
+     "other_sources": []
+    },
+    "MES_12-26": {
+     "dataset": "edgelab-ticks-nt8-canonical",
+     "file": "MES/MES_12-26_ticks_ext.parquet",
+     "approved_sessions": 7,
+     "first": "2026-09-15",
+     "last": "2026-09-25",
+     "other_sources": []
+    }
+   },
+   "holdout_sessions_present": 0,
+   "last_approved_session": "2026-09-25"
+  },
+  "MGC": {
+   "verdict": "CON_SALVEDADES",
+   "tick_size": 0.1,
+   "tick_value_usd": 1.0,
+   "eligible_sessions": 213,
+   "approved_sessions": 213,
+   "approved_fraction_of_eligible": 1.0,
+   "approved_ranges": [
+    {
+     "first": "2025-10-07",
+     "last": "2025-11-26",
+     "sessions": 36
+    },
+    {
+     "first": "2025-12-01",
+     "last": "2026-01-09",
+     "sessions": 28
+    },
+    {
+     "first": "2026-01-28",
+     "last": "2026-03-31",
+     "sessions": 43
+    },
+    {
+     "first": "2026-04-06",
+     "last": "2026-06-30",
+     "sessions": 55
+    },
+    {
+     "first": "2026-07-06",
+     "last": "2026-07-15",
+     "sessions": 6
+    },
+    {
+     "first": "2026-07-20",
+     "last": "2026-09-09",
+     "sessions": 32
+    },
+    {
+     "first": "2026-09-14",
+     "last": "2026-09-30",
+     "sessions": 13
+    }
+   ],
+   "excluded": {},
+   "caveat_sessions_source_conflict": {
+    "n": 0,
+    "contracts": []
+   },
+   "primary_source_by_contract": {
+    "MGC_12-25": {
+     "dataset": "edgelab-mgc-nt8-raw-parquet-20261002",
+     "file": "MGC_12-25.parquet",
+     "approved_sessions": 35,
+     "first": "2025-10-07",
+     "last": "2025-11-24",
+     "other_sources": []
+    },
+    "MGC_02-26": {
+     "dataset": "edgelab-mgc-nt8-raw-parquet-20261002",
+     "file": "MGC_02-26.parquet",
+     "approved_sessions": 29,
+     "first": "2025-11-26",
+     "last": "2026-01-09",
+     "other_sources": []
+    },
+    "MGC_04-26": {
+     "dataset": "edgelab-mgc-nt8-raw-parquet-20261002",
+     "file": "MGC_04-26.parquet",
+     "approved_sessions": 41,
+     "first": "2026-01-28",
+     "last": "2026-03-26",
+     "other_sources": []
+    },
+    "MGC_06-26": {
+     "dataset": "edgelab-mgc-nt8-raw-parquet-20261002",
+     "file": "MGC_06-26.parquet",
+     "approved_sessions": 38,
+     "first": "2026-03-30",
+     "last": "2026-05-26",
+     "other_sources": []
+    },
+    "MGC_08-26": {
+     "dataset": "edgelab-mgc-nt8-raw-parquet-20261002",
+     "file": "MGC_08-26.parquet",
+     "approved_sessions": 30,
+     "first": "2026-05-28",
+     "last": "2026-07-28",
+     "other_sources": []
+    },
+    "MGC_12-26": {
+     "dataset": "edgelab-mgc-nt8-raw-parquet-20261002",
+     "file": "MGC_12-26.parquet",
+     "approved_sessions": 40,
+     "first": "2026-07-31",
+     "last": "2026-09-30",
+     "other_sources": []
+    }
+   },
+   "holdout_sessions_present": 0,
+   "last_approved_session": "2026-09-30"
+  },
+  "MNQ": {
+   "verdict": "CON_SALVEDADES",
+   "tick_size": 0.25,
+   "tick_value_usd": 0.5,
+   "eligible_sessions": 270,
+   "approved_sessions": 268,
+   "approved_fraction_of_eligible": 1.0,
+   "approved_ranges": [
+    {
+     "first": "2025-08-04",
+     "last": "2025-09-12",
+     "sessions": 29
+    },
+    {
+     "first": "2025-09-17",
+     "last": "2025-11-26",
+     "sessions": 51
+    },
+    {
+     "first": "2025-12-01",
+     "last": "2025-12-22",
+     "sessions": 15
+    },
+    {
+     "first": "2025-12-29",
+     "last": "2026-03-31",
+     "sessions": 59
+    },
+    {
+     "first": "2026-04-06",
+     "last": "2026-08-12",
+     "sessions": 83
+    },
+    {
+     "first": "2026-08-17",
+     "last": "2026-09-30",
+     "sessions": 31
+    }
+   ],
+   "excluded": {
+    "holdout": {
+     "n": 2,
+     "dates_sample": [
+      "2026-10-01",
+      "2026-10-02"
+     ]
+    }
+   },
+   "caveat_sessions_source_conflict": {
+    "n": 67,
+    "contracts": [
+     "MNQ_09-26",
+     "MNQ_12-26"
+    ]
+   },
+   "primary_source_by_contract": {
+    "MNQ_09-25": {
+     "dataset": "edgelab-ticks-nt8-canonical",
+     "file": "MNQ/MNQ_09-25_ticks_ext.parquet",
+     "approved_sessions": 29,
+     "first": "2025-08-04",
+     "last": "2025-09-12",
+     "other_sources": []
+    },
+    "MNQ_12-25": {
+     "dataset": "edgelab-ticks-nt8-canonical",
+     "file": "MNQ/MNQ_12-25_ticks_ext.parquet",
+     "approved_sessions": 62,
+     "first": "2025-09-17",
+     "last": "2025-12-15",
+     "other_sources": []
+    },
+    "MNQ_03-26": {
+     "dataset": "edgelab-ticks-nt8-canonical",
+     "file": "MNQ/MNQ_03-26_ticks_ext.parquet",
+     "approved_sessions": 57,
+     "first": "2025-12-17",
+     "last": "2026-03-16",
+     "other_sources": []
+    },
+    "MNQ_06-26": {
+     "dataset": "edgelab-ticks-nt8-canonical",
+     "file": "MNQ/MNQ_06-26_ticks_ext.parquet",
+     "approved_sessions": 53,
+     "first": "2026-03-20",
+     "last": "2026-06-12",
+     "other_sources": []
+    },
+    "MNQ_09-26": {
+     "dataset": "edgelab-ticks-nt8-canonical",
+     "file": "MNQ/MNQ_09-26_ticks_ext.parquet",
+     "approved_sessions": 56,
+     "first": "2026-06-16",
+     "last": "2026-09-14",
+     "other_sources": [
+      "mnq-parquet:MNQ 09-26.Lasttt.parquet"
+     ]
+    },
+    "MNQ_12-26": {
+     "dataset": "mnq-parquet",
+     "file": "MNQ 12-26.Lasttick.parquet",
+     "approved_sessions": 11,
+     "first": "2026-09-16",
+     "last": "2026-09-30",
+     "other_sources": [
+      "edgelab-ticks-nt8-canonical:MNQ/MNQ_12-26_ticks_ext.parquet"
+     ]
+    }
+   },
+   "holdout_sessions_present": 2,
+   "last_approved_session": "2026-09-30"
+  },
+  "MYM": {
+   "verdict": "CON_SALVEDADES",
+   "tick_size": 1.0,
+   "tick_value_usd": 0.5,
+   "eligible_sessions": 184,
+   "approved_sessions": 130,
+   "approved_fraction_of_eligible": 0.707,
+   "approved_ranges": [
+    {
+     "first": "2025-09-30",
+     "last": "2025-10-03",
+     "sessions": 4
+    },
+    {
+     "first": "2025-12-15",
+     "last": "2026-01-09",
+     "sessions": 18
+    },
+    {
+     "first": "2026-03-16",
+     "last": "2026-08-19",
+     "sessions": 87
+    },
+    {
+     "first": "2026-08-24",
+     "last": "2026-09-25",
+     "sessions": 21
+    }
+   ],
+   "excluded": {
+    "liquidez_baja": {
+     "n": 53,
+     "dates_sample": [
+      "2025-10-09",
+      "2025-10-10",
+      "2025-10-13",
+      "2025-10-14",
+      "2025-10-15",
+      "2025-10-16",
+      "2025-10-17",
+      "2025-10-22",
+      "2025-10-24",
+      "2025-10-28",
+      "2025-10-29",
+      "2025-10-30"
+     ]
+    },
+    "sesion_truncada": {
+     "n": 1,
+     "dates_sample": [
+      "2026-04-08"
+     ]
+    }
+   },
+   "caveat_sessions_source_conflict": {
+    "n": 0,
+    "contracts": []
+   },
+   "primary_source_by_contract": {
+    "MYM_12-25": {
+     "dataset": "edgelab-ticks-nt8-canonical",
+     "file": "MYM/MYM_12-25_ticks_ext.parquet",
+     "approved_sessions": 4,
+     "first": "2025-09-30",
+     "last": "2025-10-03",
+     "other_sources": []
+    },
+    "MYM_03-26": {
+     "dataset": "edgelab-ticks-nt8-canonical",
+     "file": "MYM/MYM_03-26_ticks_ext.parquet",
+     "approved_sessions": 18,
+     "first": "2025-12-15",
+     "last": "2026-01-09",
+     "other_sources": []
+    },
+    "MYM_06-26": {
+     "dataset": "edgelab-ticks-nt8-canonical",
+     "file": "MYM/MYM_06-26_ticks_ext.parquet",
+     "approved_sessions": 52,
+     "first": "2026-03-16",
+     "last": "2026-06-15",
+     "other_sources": []
+    },
+    "MYM_09-26": {
+     "dataset": "edgelab-ticks-nt8-canonical",
+     "file": "MYM/MYM_09-26_ticks_ext.parquet",
+     "approved_sessions": 47,
+     "first": "2026-06-16",
+     "last": "2026-09-11",
+     "other_sources": []
+    },
+    "MYM_12-26": {
+     "dataset": "edgelab-ticks-nt8-canonical",
+     "file": "MYM/MYM_12-26_ticks_ext.parquet",
+     "approved_sessions": 9,
+     "first": "2026-09-15",
+     "last": "2026-09-25",
+     "other_sources": []
+    }
+   },
+   "holdout_sessions_present": 0,
+   "last_approved_session": "2026-09-25"
+  },
+  "NQ": {
+   "verdict": "CON_SALVEDADES",
+   "tick_size": 0.25,
+   "tick_value_usd": 5.0,
+   "eligible_sessions": 278,
+   "approved_sessions": 278,
+   "approved_fraction_of_eligible": 1.0,
+   "approved_ranges": [
+    {
+     "first": "2025-08-04",
+     "last": "2025-09-12",
+     "sessions": 29
+    },
+    {
+     "first": "2025-09-17",
+     "last": "2025-11-26",
+     "sessions": 51
+    },
+    {
+     "first": "2025-12-01",
+     "last": "2025-12-23",
+     "sessions": 16
+    },
+    {
+     "first": "2025-12-29",
+     "last": "2026-09-25",
+     "sessions": 182
+    }
+   ],
+   "excluded": {},
+   "caveat_sessions_source_conflict": {
+    "n": 91,
+    "contracts": [
+     "NQ_06-26",
+     "NQ_09-25"
+    ]
+   },
+   "primary_source_by_contract": {
+    "NQ_09-25": {
+     "dataset": "edgelab-ticks-nq-preholdout",
+     "file": "NQ_09-25_ticks.parquet",
+     "approved_sessions": 29,
+     "first": "2025-08-04",
+     "last": "2025-09-12",
+     "other_sources": [
+      "edgelab-nt8-historical-missing-20261001:NQ_09-25_ticks_ext.parquet"
+     ]
+    },
+    "NQ_12-25": {
+     "dataset": "edgelab-nt8-historical-missing-20261001",
+     "file": "NQ_12-25_ticks_ext.parquet",
+     "approved_sessions": 61,
+     "first": "2025-09-17",
+     "last": "2025-12-12",
+     "other_sources": [
+      "edgelab-ticks-nq-preholdout:NQ_12-25_ticks.parquet"
+     ]
+    },
+    "NQ_03-26": {
+     "dataset": "edgelab-nt8-historical-missing-20261001",
+     "file": "NQ_03-26_ticks_ext.parquet",
+     "approved_sessions": 58,
+     "first": "2025-12-16",
+     "last": "2026-03-13",
+     "other_sources": []
+    },
+    "NQ_06-26": {
+     "dataset": "edgelab-nt8-historical-missing-20261001",
+     "file": "NQ_06-26_ticks_ext.parquet",
+     "approved_sessions": 62,
+     "first": "2026-03-17",
+     "last": "2026-06-12",
+     "other_sources": [
+      "edgelab-ticks-nq-preholdout:NQ_06-26_ticks.parquet"
+     ]
+    },
+    "NQ_09-26": {
+     "dataset": "edgelab-ticks-es-nq-2026q3-ext",
+     "file": "NQ_parquet/NQ_09-26_ticks_ext.parquet",
+     "approved_sessions": 62,
+     "first": "2026-06-16",
+     "last": "2026-09-14",
+     "other_sources": [
+      "edgelab-nt8-historical-missing-20261001:NQ_09-26_ticks_ext.parquet",
+      "edgelab-ticks-nq-preholdout:NQ_09-26_ticks.parquet"
+     ]
+    },
+    "NQ_12-26": {
+     "dataset": "edgelab-ticks-es-nq-2026q3-ext",
+     "file": "NQ_parquet/NQ_12-26_ticks_ext.parquet",
+     "approved_sessions": 6,
+     "first": "2026-09-18",
+     "last": "2026-09-25",
+     "other_sources": []
+    }
+   },
+   "holdout_sessions_present": 0,
+   "last_approved_session": "2026-09-25"
+  },
+  "RTY": {
+   "verdict": "CON_SALVEDADES",
+   "tick_size": 0.1,
+   "tick_value_usd": 5.0,
+   "eligible_sessions": 182,
+   "approved_sessions": 143,
+   "approved_fraction_of_eligible": 0.786,
+   "approved_ranges": [
+    {
+     "first": "2025-10-03",
+     "last": "2025-10-03",
+     "sessions": 1
+    },
+    {
+     "first": "2025-12-15",
+     "last": "2025-12-26",
+     "sessions": 9
+    },
+    {
+     "first": "2026-03-16",
+     "last": "2026-09-25",
+     "sessions": 133
+    }
+   ],
+   "excluded": {
+    "liquidez_baja": {
+     "n": 39,
+     "dates_sample": [
+      "2025-10-10",
+      "2025-10-13",
+      "2025-10-14",
+      "2025-10-15",
+      "2025-10-16",
+      "2025-10-17",
+      "2025-10-22",
+      "2025-10-24",
+      "2025-10-27",
+      "2025-10-29",
+      "2025-10-30",
+      "2025-10-31"
+     ]
+    }
+   },
+   "caveat_sessions_source_conflict": {
+    "n": 0,
+    "contracts": []
+   },
+   "primary_source_by_contract": {
+    "RTY_12-25": {
+     "dataset": "edgelab-ticks-nt8-canonical",
+     "file": "RTY/RTY_12-25_ticks_ext.parquet",
+     "approved_sessions": 1,
+     "first": "2025-10-03",
+     "last": "2025-10-03",
+     "other_sources": []
+    },
+    "RTY_03-26": {
+     "dataset": "edgelab-ticks-nt8-canonical",
+     "file": "RTY/RTY_03-26_ticks_ext.parquet",
+     "approved_sessions": 9,
+     "first": "2025-12-15",
+     "last": "2025-12-26",
+     "other_sources": []
+    },
+    "RTY_06-26": {
+     "dataset": "edgelab-ticks-nt8-canonical",
+     "file": "RTY/RTY_06-26_ticks_ext.parquet",
+     "approved_sessions": 63,
+     "first": "2026-03-16",
+     "last": "2026-06-12",
+     "other_sources": []
+    },
+    "RTY_09-26": {
+     "dataset": "edgelab-ticks-nt8-canonical",
+     "file": "RTY/RTY_09-26_ticks_ext.parquet",
+     "approved_sessions": 61,
+     "first": "2026-06-16",
+     "last": "2026-09-11",
+     "other_sources": []
+    },
+    "RTY_12-26": {
+     "dataset": "edgelab-ticks-nt8-canonical",
+     "file": "RTY/RTY_12-26_ticks_ext.parquet",
+     "approved_sessions": 9,
+     "first": "2026-09-15",
+     "last": "2026-09-25",
+     "other_sources": []
+    }
+   },
+   "holdout_sessions_present": 0,
+   "last_approved_session": "2026-09-25"
+  },
+  "YM": {
+   "verdict": "APROBADO",
+   "tick_size": 1.0,
+   "tick_value_usd": 5.0,
+   "eligible_sessions": 260,
+   "approved_sessions": 260,
+   "approved_fraction_of_eligible": 1.0,
+   "approved_ranges": [
+    {
+     "first": "2025-08-15",
+     "last": "2025-11-26",
+     "sessions": 72
+    },
+    {
+     "first": "2025-12-01",
+     "last": "2025-12-22",
+     "sessions": 15
+    },
+    {
+     "first": "2026-01-02",
+     "last": "2026-08-19",
+     "sessions": 156
+    },
+    {
+     "first": "2026-08-24",
+     "last": "2026-09-04",
+     "sessions": 8
+    },
+    {
+     "first": "2026-09-10",
+     "last": "2026-09-25",
+     "sessions": 9
+    }
+   ],
+   "excluded": {},
+   "caveat_sessions_source_conflict": {
+    "n": 0,
+    "contracts": []
+   },
+   "primary_source_by_contract": {
+    "YM_09-25": {
+     "dataset": "edgelab-ticks-nt8-canonical",
+     "file": "YM/YM_09-25_ticks_ext.parquet",
+     "approved_sessions": 20,
+     "first": "2025-08-15",
+     "last": "2025-09-12",
+     "other_sources": []
+    },
+    "YM_12-25": {
+     "dataset": "edgelab-ticks-nt8-canonical",
+     "file": "YM/YM_12-25_ticks_ext.parquet",
+     "approved_sessions": 62,
+     "first": "2025-09-16",
+     "last": "2025-12-12",
+     "other_sources": []
+    },
+    "YM_03-26": {
+     "dataset": "edgelab-ticks-nt8-canonical",
+     "file": "YM/YM_03-26_ticks_ext.parquet",
+     "approved_sessions": 54,
+     "first": "2025-12-16",
+     "last": "2026-03-13",
+     "other_sources": []
+    },
+    "YM_06-26": {
+     "dataset": "edgelab-ticks-nt8-canonical",
+     "file": "YM/YM_06-26_ticks_ext.parquet",
+     "approved_sessions": 62,
+     "first": "2026-03-17",
+     "last": "2026-06-12",
+     "other_sources": []
+    },
+    "YM_09-26": {
+     "dataset": "edgelab-ticks-nt8-canonical",
+     "file": "YM/YM_09-26_ticks_ext.parquet",
+     "approved_sessions": 55,
+     "first": "2026-06-15",
+     "last": "2026-09-11",
+     "other_sources": []
+    },
+    "YM_12-26": {
+     "dataset": "edgelab-ticks-nt8-canonical",
+     "file": "YM/YM_12-26_ticks_ext.parquet",
+     "approved_sessions": 7,
+     "first": "2026-09-15",
+     "last": "2026-09-25",
+     "other_sources": []
+    }
+   },
+   "holdout_sessions_present": 0,
+   "last_approved_session": "2026-09-25"
+  },
+  "ZB": {
+   "verdict": "APROBADO",
+   "tick_size": 0.03125,
+   "tick_value_usd": 31.25,
+   "eligible_sessions": 211,
+   "approved_sessions": 210,
+   "approved_fraction_of_eligible": 0.995,
+   "approved_ranges": [
+    {
+     "first": "2025-08-18",
+     "last": "2025-08-22",
+     "sessions": 5
+    },
+    {
+     "first": "2025-08-27",
+     "last": "2025-11-26",
+     "sessions": 63
+    },
+    {
+     "first": "2025-12-01",
+     "last": "2026-06-30",
+     "sessions": 142
+    }
+   ],
+   "excluded": {
+    "sesion_truncada": {
+     "n": 1,
+     "dates_sample": [
+      "2025-11-28"
+     ]
+    }
+   },
+   "caveat_sessions_source_conflict": {
+    "n": 0,
+    "contracts": []
+   },
+   "primary_source_by_contract": {
+    "ZB_09-25": {
+     "dataset": "edgelab-nt8-historical-missing-20261001",
+     "file": "ZB_09-25_ticks_nt8.parquet",
+     "approved_sessions": 5,
+     "first": "2025-08-18",
+     "last": "2025-08-22",
+     "other_sources": []
+    },
+    "ZB_12-25": {
+     "dataset": "edgelab-nt8-historical-missing-20261001",
+     "file": "ZB_12-25_ticks_nt8.parquet",
+     "approved_sessions": 61,
+     "first": "2025-08-27",
+     "last": "2025-11-21",
+     "other_sources": []
+    },
+    "ZB_03-26": {
+     "dataset": "edgelab-ticks-zb-preholdout",
+     "file": "ZB_03-26_ticks.parquet",
+     "approved_sessions": 59,
+     "first": "2025-11-25",
+     "last": "2026-02-24",
+     "other_sources": []
+    },
+    "ZB_06-26": {
+     "dataset": "edgelab-ticks-zb-preholdout",
+     "file": "ZB_06-26_ticks.parquet",
+     "approved_sessions": 62,
+     "first": "2026-02-26",
+     "last": "2026-05-26",
+     "other_sources": []
+    },
+    "ZB_09-26": {
+     "dataset": "edgelab-ticks-zb-preholdout",
+     "file": "ZB_09-26_ticks.parquet",
+     "approved_sessions": 23,
+     "first": "2026-05-28",
+     "last": "2026-06-30",
+     "other_sources": []
+    }
+   },
+   "holdout_sessions_present": 0,
+   "last_approved_session": "2026-06-30"
+  }
+ },
+ "spot_series": {
+  "XAUUSD": {
+   "ticks_months": [
+    "2024-01",
+    "2024-02",
+    "2024-03",
+    "2024-04",
+    "2024-05",
+    "2024-06",
+    "2024-07",
+    "2025-03",
+    "2025-04",
+    "2025-05",
+    "2025-06",
+    "2025-07",
+    "2025-08",
+    "2025-10",
+    "2025-11",
+    "2025-12",
+    "2026-01",
+    "2026-02",
+    "2026-03"
+   ],
+   "m1_months": [
+    "2024-01",
+    "2024-02",
+    "2024-03",
+    "2024-04",
+    "2024-05",
+    "2024-06",
+    "2024-07",
+    "2025-03",
+    "2025-04",
+    "2025-05",
+    "2025-06",
+    "2025-07",
+    "2025-08",
+    "2025-10",
+    "2025-11",
+    "2025-12",
+    "2026-01",
+    "2026-02",
+    "2026-03"
+   ],
+   "missing_months_in_range": [
+    "2024-08",
+    "2024-09",
+    "2024-10",
+    "2024-11",
+    "2024-12",
+    "2025-01",
+    "2025-02",
+    "2025-09"
+   ],
+   "files": {
+    "ticks": {
+     "2024-01": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "ticks/XAUUSD_2024-01.parquet",
+      "rows": 3059497,
+      "first_date": "2024-01-02",
+      "last_date": "2024-02-01",
+      "sessions": 23,
+      "events_or_nonzero_bars": 3059497,
+      "unsorted": 0,
+      "price_min": 2001.9050000000002,
+      "price_max": 2078.9849999999997,
+      "post_holdout_sessions": 0
+     },
+     "2024-02": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "ticks/XAUUSD_2024-02.parquet",
+      "rows": 2126396,
+      "first_date": "2024-02-01",
+      "last_date": "2024-03-01",
+      "sessions": 22,
+      "events_or_nonzero_bars": 2126396,
+      "unsorted": 0,
+      "price_min": 1984.3,
+      "price_max": 2065.4865,
+      "post_holdout_sessions": 0
+     },
+     "2024-03": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "ticks/XAUUSD_2024-03.parquet",
+      "rows": 2733576,
+      "first_date": "2024-03-01",
+      "last_date": "2024-04-01",
+      "sessions": 21,
+      "events_or_nonzero_bars": 2733576,
+      "unsorted": 0,
+      "price_min": 2039.0900000000001,
+      "price_max": 2247.4455,
+      "post_holdout_sessions": 0
+     },
+     "2024-04": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "ticks/XAUUSD_2024-04.parquet",
+      "rows": 5252627,
+      "first_date": "2024-04-01",
+      "last_date": "2024-05-01",
+      "sessions": 23,
+      "events_or_nonzero_bars": 5252627,
+      "unsorted": 0,
+      "price_min": 2228.565,
+      "price_max": 2431.5735000000004,
+      "post_holdout_sessions": 0
+     },
+     "2024-05": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "ticks/XAUUSD_2024-05.parquet",
+      "rows": 5054706,
+      "first_date": "2024-05-01",
+      "last_date": "2024-05-31",
+      "sessions": 23,
+      "events_or_nonzero_bars": 5054706,
+      "unsorted": 0,
+      "price_min": 2277.3585000000003,
+      "price_max": 2450.1364999999996,
+      "post_holdout_sessions": 0
+     },
+     "2024-06": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "ticks/XAUUSD_2024-06.parquet",
+      "rows": 4639089,
+      "first_date": "2024-06-03",
+      "last_date": "2024-07-01",
+      "sessions": 21,
+      "events_or_nonzero_bars": 4639089,
+      "unsorted": 0,
+      "price_min": 2286.8365000000003,
+      "price_max": 2387.795,
+      "post_holdout_sessions": 0
+     },
+     "2024-07": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "ticks/XAUUSD_2024-07.parquet",
+      "rows": 5651582,
+      "first_date": "2024-07-01",
+      "last_date": "2024-08-01",
+      "sessions": 24,
+      "events_or_nonzero_bars": 5651582,
+      "unsorted": 0,
+      "price_min": 2318.5985,
+      "price_max": 2483.7415,
+      "post_holdout_sessions": 0
+     },
+     "2025-03": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "ticks/XAUUSD_2025-03.parquet",
+      "rows": 5394235,
+      "first_date": "2025-03-03",
+      "last_date": "2025-04-01",
+      "sessions": 22,
+      "events_or_nonzero_bars": 5394235,
+      "unsorted": 0,
+      "price_min": 2855.705,
+      "price_max": 3128.125,
+      "post_holdout_sessions": 0
+     },
+     "2025-04": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "ticks/XAUUSD_2025-04.parquet",
+      "rows": 6162648,
+      "first_date": "2025-04-01",
+      "last_date": "2025-05-01",
+      "sessions": 22,
+      "events_or_nonzero_bars": 6162648,
+      "unsorted": 0,
+      "price_min": 2956.58,
+      "price_max": 3500.215,
+      "post_holdout_sessions": 0
+     },
+     "2025-05": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "ticks/XAUUSD_2025-05.parquet",
+      "rows": 5325454,
+      "first_date": "2025-05-01",
+      "last_date": "2025-05-30",
+      "sessions": 22,
+      "events_or_nonzero_bars": 5325454,
+      "unsorted": 0,
+      "price_min": 3120.705,
+      "price_max": 3438.475,
+      "post_holdout_sessions": 0
+     },
+     "2025-06": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "ticks/XAUUSD_2025-06.parquet",
+      "rows": 4752206,
+      "first_date": "2025-06-02",
+      "last_date": "2025-07-01",
+      "sessions": 22,
+      "events_or_nonzero_bars": 4752206,
+      "unsorted": 0,
+      "price_min": 3247.8,
+      "price_max": 3451.8900000000003,
+      "post_holdout_sessions": 0
+     },
+     "2025-07": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "ticks/XAUUSD_2025-07.parquet",
+      "rows": 4192283,
+      "first_date": "2025-07-01",
+      "last_date": "2025-08-01",
+      "sessions": 24,
+      "events_or_nonzero_bars": 4192283,
+      "unsorted": 0,
+      "price_min": 3268.165,
+      "price_max": 3439.0285000000003,
+      "post_holdout_sessions": 0
+     },
+     "2025-08": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "ticks/XAUUSD_2025-08.parquet",
+      "rows": 4332294,
+      "first_date": "2025-08-01",
+      "last_date": "2025-09-01",
+      "sessions": 22,
+      "events_or_nonzero_bars": 4332294,
+      "unsorted": 0,
+      "price_min": 3281.6935000000003,
+      "price_max": 3453.8465,
+      "post_holdout_sessions": 0
+     },
+     "2025-10": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "ticks/XAUUSD_2025-10.parquet",
+      "rows": 9296611,
+      "first_date": "2025-10-01",
+      "last_date": "2025-10-31",
+      "sessions": 23,
+      "events_or_nonzero_bars": 9296611,
+      "unsorted": 0,
+      "price_min": 3819.415,
+      "price_max": 4381.5565,
+      "post_holdout_sessions": 0
+     },
+     "2025-11": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "ticks/XAUUSD_2025-11.parquet",
+      "rows": 6537897,
+      "first_date": "2025-11-03",
+      "last_date": "2025-12-01",
+      "sessions": 21,
+      "events_or_nonzero_bars": 6537897,
+      "unsorted": 0,
+      "price_min": 3928.77,
+      "price_max": 4245.1849999999995,
+      "post_holdout_sessions": 0
+     },
+     "2025-12": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "ticks/XAUUSD_2025-12.parquet",
+      "rows": 7972543,
+      "first_date": "2025-12-01",
+      "last_date": "2025-12-31",
+      "sessions": 22,
+      "events_or_nonzero_bars": 7972543,
+      "unsorted": 0,
+      "price_min": 4163.7715,
+      "price_max": 4550.13,
+      "post_holdout_sessions": 0
+     },
+     "2026-01": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "ticks/XAUUSD_2026-01.parquet",
+      "rows": 9135062,
+      "first_date": "2026-01-02",
+      "last_date": "2026-01-30",
+      "sessions": 21,
+      "events_or_nonzero_bars": 9135062,
+      "unsorted": 0,
+      "price_min": 4310.07,
+      "price_max": 5598.26,
+      "post_holdout_sessions": 0
+     },
+     "2026-02": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "ticks/XAUUSD_2026-02.parquet",
+      "rows": 7538317,
+      "first_date": "2026-02-02",
+      "last_date": "2026-02-27",
+      "sessions": 20,
+      "events_or_nonzero_bars": 7538317,
+      "unsorted": 0,
+      "price_min": 4402.4215,
+      "price_max": 5281.41,
+      "post_holdout_sessions": 0
+     },
+     "2026-03": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "ticks/XAUUSD_2026-03.parquet",
+      "rows": 9433371,
+      "first_date": "2026-03-02",
+      "last_date": "2026-04-01",
+      "sessions": 23,
+      "events_or_nonzero_bars": 9433371,
+      "unsorted": 0,
+      "price_min": 4099.0385,
+      "price_max": 5419.245,
+      "post_holdout_sessions": 0
+     }
+    },
+    "m1": {
+     "2024-01": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "m1/XAUUSD_m1_2024-01.parquet",
+      "rows": 38880,
+      "first_date": "2024-01-01",
+      "last_date": "2024-02-01",
+      "sessions": 32,
+      "events_or_nonzero_bars": 30268,
+      "unsorted": 0,
+      "price_min": null,
+      "price_max": null,
+      "post_holdout_sessions": 0
+     },
+     "2024-02": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "m1/XAUUSD_m1_2024-02.parquet",
+      "rows": 36000,
+      "first_date": "2024-02-01",
+      "last_date": "2024-03-01",
+      "sessions": 30,
+      "events_or_nonzero_bars": 28808,
+      "unsorted": 0,
+      "price_min": null,
+      "price_max": null,
+      "post_holdout_sessions": 0
+     },
+     "2024-03": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "m1/XAUUSD_m1_2024-03.parquet",
+      "rows": 36000,
+      "first_date": "2024-03-01",
+      "last_date": "2024-04-01",
+      "sessions": 31,
+      "events_or_nonzero_bars": 27649,
+      "unsorted": 0,
+      "price_min": null,
+      "price_max": null,
+      "post_holdout_sessions": 0
+     },
+     "2024-04": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "m1/XAUUSD_m1_2024-04.parquet",
+      "rows": 37440,
+      "first_date": "2024-04-01",
+      "last_date": "2024-05-01",
+      "sessions": 31,
+      "events_or_nonzero_bars": 30359,
+      "unsorted": 0,
+      "price_min": null,
+      "price_max": null,
+      "post_holdout_sessions": 0
+     },
+     "2024-05": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "m1/XAUUSD_m1_2024-05.parquet",
+      "rows": 38880,
+      "first_date": "2024-05-01",
+      "last_date": "2024-06-01",
+      "sessions": 32,
+      "events_or_nonzero_bars": 31463,
+      "unsorted": 0,
+      "price_min": null,
+      "price_max": null,
+      "post_holdout_sessions": 0
+     },
+     "2024-06": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "m1/XAUUSD_m1_2024-06.parquet",
+      "rows": 36000,
+      "first_date": "2024-06-02",
+      "last_date": "2024-07-01",
+      "sessions": 30,
+      "events_or_nonzero_bars": 27567,
+      "unsorted": 0,
+      "price_min": null,
+      "price_max": null,
+      "post_holdout_sessions": 0
+     },
+     "2024-07": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "m1/XAUUSD_m1_2024-07.parquet",
+      "rows": 38880,
+      "first_date": "2024-07-01",
+      "last_date": "2024-08-01",
+      "sessions": 32,
+      "events_or_nonzero_bars": 31587,
+      "unsorted": 0,
+      "price_min": null,
+      "price_max": null,
+      "post_holdout_sessions": 0
+     },
+     "2025-03": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "m1/XAUUSD_m1_2025-03.parquet",
+      "rows": 37440,
+      "first_date": "2025-03-02",
+      "last_date": "2025-04-01",
+      "sessions": 31,
+      "events_or_nonzero_bars": 29073,
+      "unsorted": 0,
+      "price_min": null,
+      "price_max": null,
+      "post_holdout_sessions": 0
+     },
+     "2025-04": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "m1/XAUUSD_m1_2025-04.parquet",
+      "rows": 36000,
+      "first_date": "2025-04-01",
+      "last_date": "2025-05-01",
+      "sessions": 30,
+      "events_or_nonzero_bars": 28950,
+      "unsorted": 0,
+      "price_min": null,
+      "price_max": null,
+      "post_holdout_sessions": 0
+     },
+     "2025-05": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "m1/XAUUSD_m1_2025-05.parquet",
+      "rows": 37440,
+      "first_date": "2025-05-01",
+      "last_date": "2025-05-31",
+      "sessions": 31,
+      "events_or_nonzero_bars": 30087,
+      "unsorted": 0,
+      "price_min": null,
+      "price_max": null,
+      "post_holdout_sessions": 0
+     },
+     "2025-06": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "m1/XAUUSD_m1_2025-06.parquet",
+      "rows": 37440,
+      "first_date": "2025-06-01",
+      "last_date": "2025-07-01",
+      "sessions": 31,
+      "events_or_nonzero_bars": 28949,
+      "unsorted": 0,
+      "price_min": null,
+      "price_max": null,
+      "post_holdout_sessions": 0
+     },
+     "2025-07": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "m1/XAUUSD_m1_2025-07.parquet",
+      "rows": 38880,
+      "first_date": "2025-07-01",
+      "last_date": "2025-08-01",
+      "sessions": 32,
+      "events_or_nonzero_bars": 31499,
+      "unsorted": 0,
+      "price_min": null,
+      "price_max": null,
+      "post_holdout_sessions": 0
+     },
+     "2025-08": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "m1/XAUUSD_m1_2025-08.parquet",
+      "rows": 37440,
+      "first_date": "2025-08-01",
+      "last_date": "2025-09-01",
+      "sessions": 32,
+      "events_or_nonzero_bars": 28971,
+      "unsorted": 0,
+      "price_min": null,
+      "price_max": null,
+      "post_holdout_sessions": 0
+     },
+     "2025-10": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "m1/XAUUSD_m1_2025-10.parquet",
+      "rows": 38880,
+      "first_date": "2025-10-01",
+      "last_date": "2025-11-01",
+      "sessions": 32,
+      "events_or_nonzero_bars": 31620,
+      "unsorted": 0,
+      "price_min": null,
+      "price_max": null,
+      "post_holdout_sessions": 0
+     },
+     "2025-11": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "m1/XAUUSD_m1_2025-11.parquet",
+      "rows": 36000,
+      "first_date": "2025-11-02",
+      "last_date": "2025-12-01",
+      "sessions": 30,
+      "events_or_nonzero_bars": 27358,
+      "unsorted": 0,
+      "price_min": null,
+      "price_max": null,
+      "post_holdout_sessions": 0
+     },
+     "2025-12": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "m1/XAUUSD_m1_2025-12.parquet",
+      "rows": 38880,
+      "first_date": "2025-12-01",
+      "last_date": "2026-01-01",
+      "sessions": 32,
+      "events_or_nonzero_bars": 30062,
+      "unsorted": 0,
+      "price_min": null,
+      "price_max": null,
+      "post_holdout_sessions": 0
+     },
+     "2026-01": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "m1/XAUUSD_m1_2026-01.parquet",
+      "rows": 37440,
+      "first_date": "2026-01-01",
+      "last_date": "2026-01-31",
+      "sessions": 31,
+      "events_or_nonzero_bars": 28828,
+      "unsorted": 0,
+      "price_min": null,
+      "price_max": null,
+      "post_holdout_sessions": 0
+     },
+     "2026-02": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "m1/XAUUSD_m1_2026-02.parquet",
+      "rows": 34560,
+      "first_date": "2026-02-01",
+      "last_date": "2026-02-28",
+      "sessions": 28,
+      "events_or_nonzero_bars": 27430,
+      "unsorted": 0,
+      "price_min": null,
+      "price_max": null,
+      "post_holdout_sessions": 0
+     },
+     "2026-03": {
+      "dataset": "edgelab-dukascopy-xauusd-ticks-m1",
+      "file": "m1/XAUUSD_m1_2026-03.parquet",
+      "rows": 38880,
+      "first_date": "2026-03-01",
+      "last_date": "2026-04-01",
+      "sessions": 32,
+      "events_or_nonzero_bars": 30476,
+      "unsorted": 0,
+      "price_min": null,
+      "price_max": null,
+      "post_holdout_sessions": 0
+     }
+    }
+   },
+   "timezone": "UTC",
+   "price_fields": "bid/ask (spot cotizado, sin operaciones ni volumen real)",
+   "quality_file_days": 509,
+   "post_holdout_sessions": 0
+  }
+ }
+}

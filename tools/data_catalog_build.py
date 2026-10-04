@@ -9,7 +9,7 @@ from edgelab.catalog.build import build,iso
 def mb(b):return f"{(b or 0)/1e6:,.0f} MB"
 def main():
     ap=argparse.ArgumentParser();ap.add_argument("--scan-root",required=True);ap.add_argument("--out",required=True);a=ap.parse_args();cat=build(Path(a.scan_root));o=Path(a.out);o.mkdir(parents=True,exist_ok=True)
-    (o/"catalog.json").write_text(json.dumps(cat,indent=1,default=float))
+    st=cat.pop("_session_tables");(o/"catalog.json").write_text(json.dumps(cat,indent=1,default=float));(o/"sessions.json").write_text(json.dumps(st,default=float));cat["_session_tables"]=st
     I=cat["instruments"];L=["# Catálogo de instrumentos (generado)","",f"Generado {cat['generated_utc']}. Fuente de verdad: `catalog.json`. Holdout formal: sesiones de trading desde **{cat['holdout_first_trade_date']}** (HOLDOUT-A1): no leer.","",
         "## Índice rápido","","| Instrumento | Tick (USD/tick) | Rango | Sesiones con datos | Sesiones elegibles (líder, liquidez) | Contratos | Datos posteriores al 2026-06-30 | Días hábiles sin explicar | Contratos del ciclo que faltan | Sesiones líder < 25 % del volumen mediano |","|---|---|---|---:|---:|---:|---|---:|---|---:|"]
     for s,v in I.items():
