@@ -3,7 +3,7 @@
 Pre-registro: `PREREGISTRO_EMBUDO.md` (y su enmienda 1, escrita al ver los resultados 1–5 y antes de correr los controles de deriva). Números: `resultados_embudo.json`. Contador de pruebas: `trial_registry.jsonl` (63 pruebas, cadena válida). La lógica de la estrategia no está en este repositorio.
 
 ## Veredicto final
-**`EDGE_NO_CONFIRMADO`.** Antes del holdout la réplica era un candidato (ver abajo); la confirmación única en el holdout de MNQ (jul–sep 2026) **falló** los criterios pre-registrados.
+**`EDGE_NO_CONFIRMADO`.** Antes del holdout la réplica era un candidato (ver abajo); la confirmación única en el holdout de MNQ (jul–sep 2026) **falló** los criterios pre-registrados, y la apertura posterior de la cesta MES+RTY+YM (enmienda 5) tampoco los cumplió (efecto positivo pero IC95 que incluye 0; ver su sección).
 
 | Holdout MNQ, serie correctamente especificada (corrida 3, enmienda 4) | |
 |---|---:|
