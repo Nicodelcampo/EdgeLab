@@ -75,3 +75,29 @@ Autorización: el usuario aprobó explícitamente abrir **una sola vez** el hold
 2. Sesión elegible: volumen total ≥ 50 % de la mediana de volumen de su contrato en el tramo analizado. Las sesiones truncadas se excluyen completas; no se mira ningún resultado para decidirlo.
 3. Todo lo demás (reglas, ejecución, comisión, umbrales, criterios de éxito) sin cambios.
 **Estatus.** Es la tercera lectura del mismo tramo: ya se conoce que las corridas 1 y 2 fueron negativas, así que la corrida 3 no es ciega. Se interpreta como un chequeo de consistencia sobre la serie correctamente especificada, no como una confirmación limpia. Tras esta corrida el holdout de MNQ queda cerrado definitivamente.
+
+## Enmienda 5 — apertura única de los holdouts de MES, RTY y YM como cesta agrupada (escrita antes de calcular ningún resultado de estos activos)
+Autorización: el usuario pidió explícitamente el chequeo de cobertura y, después, abrir los holdouts de los otros activos.
+
+### Cobertura (solo volumen por sesión; no se leyeron precios ni resultados)
+- **ES y NQ: no hay datos posteriores al 2026-06-30 en Kaggle.** `edgelab-ticks-nt8-canonical` solo contiene MES, MNQ, MYM, RTY e YM; los datasets de ES y NQ llegan hasta el corte del holdout. Quedan fuera. MES cubre el S&P 500.
+- **MYM queda fuera** por duplicar el Dow (YM). **MNQ ya fue consumido** (enmiendas 2 a 4); se reporta aparte y no entra en la cesta.
+- Sesiones del 2026-07-01 al 2026-09-18 en el contrato 09-26 (líder hasta el 2026-09-14, según volumen): **RTY** 0 faltantes y 2 de bajo volumen (feriados 07-03 y 09-07); **MES** 3 faltantes (07-29, 08-06, 08-13) y 5 truncadas (<50 % de la mediana: 07-03, 07-28, 08-05, 08-12, 09-07); **YM** 3 faltantes (08-20, 08-21, 08-26), 4 truncadas (07-03, 08-14, 08-25, 09-07) y sin ticks el 09-08 y 09-09. Es el mismo tipo de hueco que tenía la copia de MNQ.
+- Regla de elegibilidad (la de la enmienda 4): una sesión entra solo si su volumen total es ≥ 50 % de la mediana del contrato en julio–septiembre; las sesiones faltantes o truncadas se excluyen completas, sin mirar resultados.
+
+### Especificación (congelada)
+- Calendario de 60 reglas, ejecución de libro (ask/bid en el primer tick) y calendario de feriados exactamente como en la enmienda 2. Comisión ida y vuelta: MES USD 1,90; RTY y YM USD 4,50 (mismos supuestos que la transferencia).
+- Roll: se escanea desde 2026-06-24; el líder pasa de 09-26 a 12-26 solo si, en la sesión previa, el volumen de 12-26 supera al de 09-26, es ≥ 5 % de la mediana de volumen diario del 09-26 en julio–agosto, y el 09-26 tiene volumen > 0. Monótono.
+- Ventana: sesiones con fecha de trading entre 2026-07-01 y 2026-09-28 (último dato disponible).
+- Corrección de un defecto de la corrida 3 de MNQ, declarado: allí el nulo de calendarios placebo se calculó sobre todas las sesiones, sin aplicar el filtro de elegibilidad que sí usaron los demás estadísticos. En esta corrida el filtro se aplica a todos. El resultado de MNQ no se recalcula.
+
+### Cesta y estadísticos
+- Cada oportunidad del calendario es una operación sobre una cesta de **1 MES + 1 RTY + 1 YM**. El resultado de la operación es la suma, en USD netos de comisión, de las patas elegibles de esa regla y sesión (una pata sin dato elegible aporta 0). La cesta se trata como un único activo en todas las pruebas, para preservar la correlación entre activos.
+- Pruebas (las mismas de la enmienda 2, sobre la cesta, con semillas 20261006): IC95 por bootstrap de sesiones (5.000), nulo de dirección por sesión (5.000), nulo que preserva exposición (3.000) y calendarios placebo (2.000); referencia «siempre largo» sobre la cesta.
+- **Éxito** (todas): media neta de la cesta > 0; IC95 excluye 0; los tres p ≤ 0,05; y la media de «siempre largo» < la media de la estrategia.
+- **Fracaso** si falla cualquiera. El fracaso cierra la hipótesis con estos datos. Un éxito sube el estado a «confirmado en una muestra posterior», no a «edge garantizado», porque MNQ ya dio negativo y los activos están correlacionados.
+- Se reportan además, descriptivamente, la media neta de cada activo por separado y el resultado de MNQ.
+
+### Custodia y sesgo declarados
+- Se abre **una sola vez**. No se cambia nada después de ver el resultado. Se guarda una marca de bloqueo que impide repetir.
+- Estos tres mercados se mueven con MNQ en el mismo período, así que no es una prueba independiente: la cesta reduce el ruido propio de cada contrato, no el del mercado.
