@@ -40,3 +40,20 @@ Reproducir: `python tools/mgc_direction_diagnostic.py`, `python tools/mgc_direct
 
 ## Anexo 2: paridad CPU/GPU a escala (Kaggle, Tesla T4, datos sintéticos)
 `artifacts/funnel/parity_20261003/scale_parity_gpu_vs_cpu.json` (descargado directo de la salida del kernel `edgelab-funnel-gpu-scale-parity-20261003`, privado, sin internet, sin datos de mercado; SHA-256 del archivo `5079f120…`). 40.000 señales × 2.048 configuraciones = 81,9 M celdas en la GPU por lotes de 256 MiB; contra la CPU Numba (4 hilos) sobre 5,12 M celdas: **máscaras NaN idénticas, 0 celdas distintas, diferencia máxima 0,0**. Rendimiento: GPU 73 M celdas/s frente a CPU 8,1 M celdas/s (≈9× por celda). Hashes de `device.py` y `screen.py` embebidos y verificados al arrancar. Alcance: sólo este kernel y esta imagen; no prueba otras versiones de CUDA ni datos reales.
+
+## Anexo 3: pruebas de familia e información direccional (2026-10-04, pre-registro `PREREGISTRO_FAMILIA_20261004.md`)
+Solo descubrimiento (`trade_date <= 20260331`); holdout sin abrir. Archivos: `family_t1.json`, `family_t2.json`, `family_t3.json`.
+
+| Prueba | Resultado | Regla (fijada antes) |
+|---|---|---|
+| **T1** media de las 21 celdas normales, dirección sorteada por sesión (2.000 sorteos) | real +2.392 ticks por celda; nulo −3.375 (sd 4.261; q95 +3.531); z = 1,35; **p = 0,093** | umbral 0,05: no pasa |
+| **T2** información direccional sin SL/TP, 1.643 señales, 123 sesiones, máximo de z en 5 horizontes (200.000 sorteos) | z = 1,44 / 0,78 / 0,41 / 0,25 / 0,84 para 15 min / 30 min / 1 h / 2 h / 4 h; **p_max = 0,184** | umbral 0,05: no pasa |
+
+- La predicción registrada para T1 era p ≈ 0,3; salió 0,093, algo más favorable que lo previsto, pero sigue sin cruzar el umbral.
+- El nulo de T1 es negativo (−3.375 por celda): una dirección al azar pierde con estos costos y SL/TP. Que la señal real quede ~5.800 ticks por encima de ese nulo es lo que da z = 1,35.
+- T2: el retorno medio señal×precio es positivo en todos los horizontes (+3 a +14 ticks), pero las señales largas pierden en todos (−1 a −6) y las cortas ganan (+12 a +38). Es la firma de deriva bajista tras las señales, no de que el cruce prediga la dirección.
+- **T3 (descriptivo).** Headline: 623 trades, sd 290 ticks por trade, +15,9 ticks por trade. Descontando la maldición del ganador (3.113 ticks) queda +10,9. Para 80 % de potencia (una cola, α = 0,05) hacen falta ≈ 2.049 trades con el efecto observado (≈ 19 meses al ritmo de la muestra), ≈ 4.351 con el ajustado (≈ 41 meses) y ≈ 17.400 si el efecto real fuera la mitad.
+
+**Regla de decisión aplicada tal como estaba escrita:** T1 p > 0,05 y T2 p_max > 0,05 → no hay información direccional distinguible del azar de selección con los datos disponibles → **DESCARTADO COMO EVIDENCIA**. No equivale a probar que el edge no exista: con 623 trades el diseño no tiene potencia para detectar un efecto de ~11 ticks por trade.
+
+**Consecuencia práctica.** Con MGC solo, el holdout (≈ 250 trades, error estándar ≈ 18 ticks) no podría confirmar ni refutar. Mejorar la evidencia exige más historia o réplica en otros mercados con la señal definida de antemano, no más análisis de esta misma muestra.
