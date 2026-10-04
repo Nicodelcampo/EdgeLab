@@ -69,8 +69,26 @@ Mismo calendario congelado, ejecución de libro, comisión USD 1,90 en micros y 
 
 (p < 0,001 = ningún sorteo igualó el resultado real.) Las predicciones registradas (ES, NQ y MES parecidos a YM) se cumplieron. **Pero estos cinco índices están muy correlacionados con MNQ y comparten el mismo período OOS y el mismo régimen, así que no son confirmaciones independientes**; y el holdout de MNQ, que cubre el período posterior, no confirmó. Oro, bonos y yen siguen sin evidencia (tabla de la sección anterior).
 
+## Holdout de la cesta MES + RTY + YM (enmienda 5, una sola apertura)
+Ventana: sesiones del 2026-07-01 al 2026-09-28 en el contrato líder por volumen (09-26 hasta el 14 de septiembre; 12-26 después). Sesiones faltantes o truncadas excluidas con la regla pre-registrada. ES y NQ no tienen datos posteriores al holdout en Kaggle; MYM se omitió por duplicar el Dow. Cesta de 1 MES + 1 RTY + 1 YM, USD netos de comisión.
+
+| | Operaciones | Sesiones | Media neta por operación (USD) | «Siempre largo» (USD) |
+|---|---:|---:|---:|---:|
+| MES (USD 1,90) | 501 | 53 | −2,70 | −1,92 |
+| RTY (USD 4,50) | 584 | 60 | +6,36 | −1,38 |
+| YM (USD 4,50) | 476 | 52 | +14,05 | −4,38 |
+| **Cesta** | **689** | **60** | **+13,13** (IC95 **−25,8 a +61,3**) | **−5,59** |
+
+Nulos sobre la cesta: dirección por sesión **p = 0,066**; dirección que preserva exposición **p = 0,016**; calendarios placebo **p = 0,015**.
+
+**Criterio pre-registrado: no se cumple.** Exigía IC95 que excluya 0 y los tres p ≤ 0,05. El IC incluye 0 (−25,8 a +61,3) y el nulo de dirección queda en 0,066. Sí se cumplen la media positiva, la superación de «siempre largo» y dos de los tres nulos. Por la regla escrita antes de ver los datos, el resultado es **NO CONFIRMADO**.
+
+**Defecto declarado.** La mediana de volumen de 12-26 se calculó con todos sus días desde julio, incluidos los de contrato lejano (mediana de 149 contratos en RTY), de modo que su umbral de elegibilidad fue casi nulo. Cumple la letra de la enmienda, no su intención. Sensibilidad post hoc con la mediana calculada solo en los días en que cada contrato es líder (`holdout_cesta_sensibilidad_elegibilidad.json`): media +13,44 USD, IC95 −25,6 a +61,7, p = 0,065 / 0,016 / 0,015. El defecto no cambia el resultado. El resultado principal sigue siendo el pre-registrado.
+
+**Cómo leerlo.** El efecto sigue siendo positivo en la cesta y no es deriva de mercado (los dos nulos que fijan la exposición pasan), pero el intervalo es muy ancho (60 sesiones) y el resultado depende de YM y RTY: MES, el contrato con más volumen, fue negativo. MNQ, medido antes con la misma especificación, también fue negativo (−4,4 ticks). El conjunto de los cuatro mercados no es una confirmación ni una refutación limpia.
+
 ## Lectura final
 1. Hay un patrón de calendario que funcionó en 2025-08 a 2026-06 en todos los índices de acciones y que no es deriva ni suerte de una sola regla; es coherente con una estacionalidad intradía real o con un régimen de esos diez meses.
-2. No sobrevivió al período siguiente (jul–sep 2026) en MNQ, aunque ese test tiene cobertura incompleta y es estadísticamente ancho.
+2. En el período siguiente (jul–sep 2026) el resultado es mixto: negativo en MNQ y en MES, positivo en RTY y YM, y +13 USD por operación en la cesta MES+RTY+YM con un intervalo que incluye 0 y un nulo de dirección en 0,066. Ninguno de los dos tests cumple el criterio pre-registrado.
 3. La explicación más parsimoniosa: un calendario minado por el proveedor sobre datos hasta mayo-2026 con sobreajuste parcial más un junio excepcionalmente favorable. No se puede descartar un efecto menor.
 4. Qué haría falta para cerrar: histórico MNQ 1 minuto completo jul–sep desde NinjaTrader (o datos hacia adelante) y, si se quiere seguir, correr el mismo calendario congelado en demo antes de arriesgar capital.
