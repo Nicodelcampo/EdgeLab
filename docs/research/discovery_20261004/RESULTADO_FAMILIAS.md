@@ -49,3 +49,23 @@ Ninguna tenía significación en D0 tras el nulo de máximo (`p_max` 0,0074 en G
 - No se prueba ausencia de edge: la potencia en D0 es baja por debajo de ≈ 0,5 desvíos por operación (ver calibración).
 - El efecto de GC a las 04:30 no es un hallazgo: no replica y no pasa la corrección entre combinaciones.
 - D2 sigue sellado y el holdout formal sigue sin abrirse.
+
+---
+
+# Adenda: grupo IDX (ES + NQ + YM), según la Enmienda 1
+
+Pre-registrado en `ENMIENDA_1_INDICES.md` (commit `c5cc6b3f`) antes de barrer. 235 sesiones, D0 = 117, D1 sellado igual que antes en D2. Holm del punto (i) ahora sobre **20** `p_max`.
+
+| Familia | Celdas probadas (D0) | máx \|z\| real | cuantil 95 % del nulo | `p_max` | Holm sobre 20 |
+|---|---:|---:|---:|---:|---:|
+| f1_momentum | 4.545 | 2,90 | 3,76 | 0,940 | 1 |
+| f2_vwap | 4.577 | 2,99 | 3,77 | 0,849 | 1 |
+| f3_flujo_absorcion | 15.718 | 3,10 | 3,87 | 0,942 | 1 |
+| f4_regimen | 11.997 | 2,99 | 3,83 | 0,949 | 1 |
+| f5_medias | 14.664 | 3,18 | 3,88 | 0,832 | 1 |
+
+- **Nada en índices:** el mayor |z| (3,18) queda por debajo del cuantil 95 % del nulo en las cinco familias, ninguna celda con q de BH < 0,05 y **ninguna réplica en D1 con p de Holm < 0,2**. Los titulares con meseta son pocos y con medias netas de signos mezclados entre ES, NQ e YM.
+- **Con 20 contrastes, Holm endurece a GC:** el menor pasa de 0,112 a **0,149** (GC f1), y los demás de GC a 0,24–0,26. Ningún contraste de los 20 pasa el punto (i). **Veredicto sin cambios: ninguna (familia, grupo) pasa a confirmación.**
+- Lectura: coincide con lo que ya se sabía de la estrategia del proveedor en estos activos. Los `p_max` de 0,83 a 0,95 significan que el máximo real es más bajo que el que daría un nulo típico, sin que eso sea evidencia de nada en sentido contrario: con 117 sesiones en D0 la potencia sigue siendo baja por debajo de ≈ 0,3 desvíos (ver calibración de IDX).
+- Se suman 5 asientos al contador y al libro encadenado (20 en total). Quedan los archivos crudos en `resultados/scan_IDX_*.json`.
+- MNQ no se incluyó (ver enmienda). D2 y el holdout formal siguen sin leerse.
