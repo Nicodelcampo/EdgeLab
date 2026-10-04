@@ -100,3 +100,13 @@ def cell_matrices(T:Tensors,k_sel:slice|np.ndarray|None=None):
     return M,N
 def decode(T:Tensors,cell:int):
     S,H,K=len(T.slots),len(T.holds),len(T.cond_keys);k=cell%K;h=(cell//K)%H;s=cell//(K*H);return {"slot":T.slots[s],"hold":T.holds[h],"cond":T.cond_keys[k]}
+
+def pool_cells(parts):
+    """Combina activos que comparten la misma rejilla: suma por fecha de trading las matrices M y N (cada activo en sus ticks: se usa solo
+    cuando la agrupación se fijó de antemano, p. ej. 6E con 6J, mismo mercado de divisas). parts: lista de (fechas, M, N). Devuelve (fechas, M, N)."""
+    alld=np.unique(np.concatenate([d for d,_,_ in parts]));nc=parts[0][1].shape[1]
+    Mp=np.zeros((len(alld),nc),np.float32);Np=np.zeros((len(alld),nc),np.float32)
+    for d,M,N in parts:
+        if M.shape[1]!=nc:raise ValueError("rejillas distintas")
+        i=np.searchsorted(alld,d);Mp[i]+=M;Np[i]+=N
+    return alld,Mp,Np

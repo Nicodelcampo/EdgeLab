@@ -9,10 +9,19 @@ Tipos (ventana W en minutos, sufijo `_W`):
   absorb   volumen de la ventana / max(rng, 1): esfuerzo por tick de recorrido
   effort   volumen de la ventana / (|mom| + 1): esfuerzo frente a resultado neto
   spread   spread medio de la ventana, en ticks
+  emadev   cierre(b1) - EMA de `W` barras de 1 min (alpha=2/(W+1), solo hacia adelante), en ticks; W son BARRAS, no minutos
 """
 from __future__ import annotations
 import numpy as np
+from numba import njit
 from .data import MIN
+
+@njit(cache=True)
+def _ema(c,alpha):
+    out=np.empty(len(c));acc=c[0] if len(c) else 0.
+    for i in range(len(c)):
+        acc=alpha*c[i]+(1.-alpha)*acc if i>0 else c[0];out[i]=acc
+    return out
 
 def _window_idx(t:np.ndarray,b1:np.ndarray,W:int):
     iend=np.searchsorted(t,b1,"right");ist=np.searchsorted(t,b1-W*MIN,"right");return ist,iend
@@ -29,7 +38,11 @@ def compute(bars:dict,b1:np.ndarray,names:set[str])->tuple[dict[str,np.ndarray],
     t=bars["t"];i1=np.searchsorted(t,b1);has=(i1<len(t))&(t[np.minimum(i1,len(t)-1)]==b1)
     cum={k:np.r_[0.,np.cumsum(bars[k])] for k in("vol","buy","sell","pv","spread","n")};out={}
     for nm in names:
-        kind,W=nm.split("_");W=int(W);ist,iend=_window_idx(t,b1,W);v=np.full(len(b1),np.nan)
+        kind,W=nm.split("_");W=int(W)
+        if kind=="emadev":
+            e=_ema(bars["c"].astype(np.float64),2./(W+1.));ok=has&(i1>=W)    # exige historia de al menos W barras
+            out[nm]=np.where(ok,bars["c"][np.minimum(i1,len(t)-1)]-e[np.minimum(i1,len(t)-1)],np.nan);continue
+        ist,iend=_window_idx(t,b1,W);v=np.full(len(b1),np.nan)
         win=lambda k:cum[k][iend]-cum[k][ist]
         ref=np.searchsorted(t,b1-W*MIN,"right")-1;cb=np.where(iend>0,bars["c"][np.maximum(iend-1,0)],0)
         mom=np.where(ref>=0,cb-bars["c"][np.maximum(ref,0)],np.nan)

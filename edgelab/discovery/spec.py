@@ -4,7 +4,7 @@ from dataclasses import dataclass,field,asdict
 import hashlib,json
 from pathlib import Path
 
-FEATURE_KINDS={"mom","rng","vwapdev","imb","absorb","effort","spread"}
+FEATURE_KINDS={"mom","rng","vwapdev","imb","absorb","effort","spread","emadev"}
 OPS={"gt","lt","zgt","zlt","zabs_lt"}
 
 @dataclass(frozen=True)

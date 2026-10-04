@@ -28,7 +28,7 @@ def test_spec_hash_stable_and_validates():
 def test_features_are_causal():
     """Cambiar los ticks POSTERIORES a la barra de señal no debe alterar ninguna característica de esa barra."""
     tk=synth_ticks(6);bars=Dd.minute_bars(tk);t=bars["t"];b1=t[len(t)//2:len(t)//2+1]
-    names={"mom_15","rng_30","vwapdev_30","imb_15","absorb_30","effort_15","spread_15"};a,_=F.compute(bars,b1,names)
+    names={"mom_15","rng_30","vwapdev_30","imb_15","absorb_30","effort_15","spread_15","emadev_20"};a,_=F.compute(bars,b1,names)
     tk2={k:v.copy() for k,v in tk.items()};cut=int(np.searchsorted(tk["ts_utc_ns"],b1[0]));tk2["price_ticks"][cut:]+=500;tk2["volume"][cut:]*=7
     b,_=F.compute(Dd.minute_bars(tk2),b1,names)
     for n in names:assert np.allclose(a[n],b[n],equal_nan=True),n
@@ -89,3 +89,7 @@ def test_staged_scan_keeps_d2_sealed():
     tk=synth_ticks(45);spec=small_spec();T,_=build_T(tk,spec);M,N=P.cell_matrices(T);split=make_splits(T.dates);r=S.staged_scan(M,N,T.dates,split,spec)
     assert r["D2_sealed"] is True and r["D0_sessions"]+r["D1_sessions"]<len(T.dates) and r["split_hash"]==split.split_hash
     d2=np.isin(T.dates,np.array(split.d2_dates));assert d2.sum()>0 and not r["D0_mask"][d2].any()
+
+def test_pool_cells_aligns_dates_and_sums():
+    a=(np.array([1,2,3]),np.ones((3,4),np.float32),np.ones((3,4),np.float32));b=(np.array([2,3,4]),2*np.ones((3,4),np.float32),np.ones((3,4),np.float32))
+    d,M,N=P.pool_cells([a,b]);assert list(d)==[1,2,3,4] and np.allclose(M[:,0],[1,3,3,2]) and np.allclose(N[:,0],[1,2,2,1])
