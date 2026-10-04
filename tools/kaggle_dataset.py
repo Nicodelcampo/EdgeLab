@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Sube una carpeta como NUEVA VERSIÓN de un dataset PRIVADO existente de Kaggle, con la credencial que el entorno ya inyecta para www.kaggle.com.
   python tools/kaggle_dataset.py version --slug nicolasbuttaro/edgelab-discovery-cache --dir /data/cache/discovery --notes "texto"
-Una versión reemplaza el conjunto de archivos: se suben todos los de la carpeta (recursivo, rutas relativas). No guarda ni imprime credenciales."""
+Una versión reemplaza el conjunto de archivos: se suben todos los de la carpeta (recursivo; Kaggle exige nombres únicos y planos: `ZB/meta.json` queda `ZB__meta.json`). No guarda ni imprime credenciales."""
 import argparse,json,os,subprocess,sys,time
 from pathlib import Path
 
@@ -19,7 +19,7 @@ def main():
     ap=argparse.ArgumentParser();sp=ap.add_subparsers(dest="cmd",required=True);v=sp.add_parser("version");v.add_argument("--slug",required=True);v.add_argument("--dir",required=True);v.add_argument("--notes",default="")
     a=ap.parse_args();owner,slug=a.slug.split("/");root=Path(a.dir);files=sorted(p for p in root.rglob("*") if p.is_file());toks=[]
     for p in files:
-        rel=str(p.relative_to(root));toks.append({"token":upload_blob(p,rel)});print("subido",rel,p.stat().st_size,flush=True)
+        rel=str(p.relative_to(root)).replace("/","__");toks.append({"token":upload_blob(p,rel)});print("subido",rel,p.stat().st_size,flush=True)
     out=json.loads(_curl(["-X","POST",f"https://www.kaggle.com/api/v1/datasets/create/version/{owner}/{slug}","-H","Content-Type: application/json","-d",json.dumps({"versionNotes":a.notes,"files":toks,"deleteOldVersions":False})]))
     print(json.dumps({k:out.get(k) for k in("status","error","url")}))
 if __name__=="__main__":main()
