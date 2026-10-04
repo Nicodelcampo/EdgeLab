@@ -22,6 +22,12 @@ def main():
         rel=str(p.relative_to(root)).replace("/","__");toks.append({"token":upload_blob(p,rel)});print("subido",rel,p.stat().st_size,flush=True)
     import tempfile
     with tempfile.NamedTemporaryFile("w",suffix=".json",delete=False) as tf:json.dump({"versionNotes":a.notes,"files":toks,"deleteOldVersions":False},tf);body=tf.name      # el cuerpo va por archivo: con cientos de archivos no cabe como argumento
-    out=json.loads(_curl(["-X","POST",f"https://www.kaggle.com/api/v1/datasets/create/version/{owner}/{slug}","-H","Content-Type: application/json","--data-binary",f"@{body}"]));os.unlink(body)
+    out=None
+    for k in range(4):
+        try:out=json.loads(_curl(["-X","POST",f"https://www.kaggle.com/api/v1/datasets/create/version/{owner}/{slug}","-H","Content-Type: application/json","--data-binary",f"@{body}"]));break
+        except SystemExit as e:
+            print("reintento",k+1,str(e)[:120],flush=True);time.sleep(10*(k+1))
+    os.unlink(body)
+    if out is None:raise SystemExit("no se pudo crear la versión (los archivos subidos caducan: reintentar el comando completo)")
     print(json.dumps({k:out.get(k) for k in("status","error","url")}))
 if __name__=="__main__":main()
