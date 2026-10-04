@@ -64,6 +64,13 @@ def make_shadow_reader(source_reader,*,calendar,expected_calendar_sha256,cutoff_
                                  s['contract'],s['regime_id']),s['trade_date']))
                 stat['bars']+=1
             for tick in source_reader(permission):
+                if any(k not in tick for k in ('instrument','contract','source_file','source_row')):
+                    raise ValueError('canonical identity/lineage required')
+                if not isinstance(tick['source_file'],str) or not tick['source_file'] or type(tick['source_row'])!=int or tick['source_row']<0:
+                    raise ValueError('invalid original source identity')
+                identity={k:tick[k] for k in ('ts_utc_ns','sequence','source_file','source_row')}
+                if stat['ticks']==0:stat['first_event']=identity
+                stat['last_event']=identity
                 cols={k:[v] for k,v in tick.items()}
                 prior=validate_mnq_tick_batch(cols,expected_contract=s['contract'],previous_key=prior)
                 ts=tick['ts_utc_ns']

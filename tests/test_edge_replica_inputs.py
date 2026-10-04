@@ -15,7 +15,7 @@ class InputTests(unittest.TestCase):
         return reader,p,calls,report
     def tick(self,t,price=100,seq=0):
         return {'ts_utc_ns':t,'sequence':seq,'price_ticks':price,'bid_ticks':price-1,
-            'ask_ticks':price+1,'volume':1,'tick_type':'trade','instrument':'MNQ','contract':'MNQ 03-25'}
+            'ask_ticks':price+1,'volume':1,'tick_type':'trade','instrument':'MNQ','contract':'MNQ 03-25','source_file':'SYNTHETIC.Last.txt','source_row':seq}
     def test_close_belongs_to_session_not_next_day(self):
         end=ns('2025-01-06T22:00:00');r,p,c,a=self.setup_reader([self.tick(end-1)])
         b=list(r([p]))[0][0][0];self.assertEqual(b.end,b.session_end)
@@ -47,3 +47,10 @@ class InputTests(unittest.TestCase):
         self.assertEqual(list(r([p]))[0][0][0].close_ticks,101)
         r,p,c,a=self.setup_reader([self.tick(t,100,0),self.tick(t,101,0)])
         self.assertRaises(ValueError,lambda:list(r([p])))
+
+    def test_missing_instrument_identity_rejected(self):
+        tick=self.tick(ns('2025-01-06T14:00:00'));del tick['instrument']
+        r,p,c,a=self.setup_reader([tick]);self.assertRaises(ValueError,lambda:list(r([p])))
+    def test_missing_source_lineage_rejected(self):
+        tick=self.tick(ns('2025-01-06T14:00:00'));del tick['source_file']
+        r,p,c,a=self.setup_reader([tick]);self.assertRaises(ValueError,lambda:list(r([p])))

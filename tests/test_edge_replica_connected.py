@@ -15,7 +15,8 @@ class ConnectedTests(unittest.TestCase):
             calls.append(permission)
             for i in range(5):
                 yield dict(ts_utc_ns=ns('2025-01-06T14:00:00')+i*60*10**9,sequence=i,
-                    price_ticks=100+i,bid_ticks=99+i,ask_ticks=101+i,volume=1,tick_type='trade')
+                    price_ticks=100+i,bid_ticks=99+i,ask_ticks=101+i,volume=1,tick_type='trade',instrument='MNQ',contract='MNQ 03-25',
+                    source_file='SYNTHETIC.Last.txt',source_row=i)
         reader=make_shadow_reader(source,calendar=cal,expected_calendar_sha256=calendar_digest(cal),
             cutoff_ns=ns('2025-02-01T00:00:00'),report=report)
         def mock_gate(**kwargs):
