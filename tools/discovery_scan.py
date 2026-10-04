@@ -13,27 +13,32 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from edgelab.discovery import load_spec,spec_hash,get_backend
 from edgelab.discovery import data as D,pipeline as P,scan as S,calibrate as C,families as Fm
 
-def build_tensors(asset:dict,spec):
+def build_tensors(asset:dict,spec,cache:str|None=None):
+    sp=spec.__class__(**{**spec.__dict__,"commission_ticks":asset["commission_usd_rt"]/asset["tick_value_usd"]})
+    from edgelab.discovery import cache as CA
+    if cache:
+        if not CA.cache_ok(asset,sp,cache):CA.build_cache(asset,sp,cache)
+        bars,rows,order,segs,elig,_,_=CA.load_cache(asset,cache)
+        T=P.build(sp,None,bars,order,segs,elig,rows=rows);T.meta["segments"]=[(order[r],int(a),int(b)) for r,a,b in segs];T.meta["cache"]=True;return T,sp
     order=asset["order"];ticks={};bars={};daily={}
     for c in order:
         path=asset["path_template"].format(contract=c)
         if not os.path.exists(path):raise FileNotFoundError(path)
         ticks[c]=D.load_ticks(path,asset.get("cut_ns"));bars[c]=D.minute_bars(ticks[c]);daily[c]=D.daily_volume(bars[c])
     segs,elig=D.continuous_segments(daily,order,0.5)
-    sp=spec.__class__(**{**spec.__dict__,"commission_ticks":asset["commission_usd_rt"]/asset["tick_value_usd"]})
     T=P.build(sp,ticks,bars,order,segs,elig);T.meta["segments"]=[(order[r],int(a),int(b)) for r,a,b in segs];return T,sp
 
 def main():
     ap=argparse.ArgumentParser();ap.add_argument("--asset",required=True);ap.add_argument("--group-name",default=None);ap.add_argument("--spec",required=True);ap.add_argument("--out",required=True)
     ap.add_argument("--backend",default="auto");ap.add_argument("--calibrate-only",action="store_true");ap.add_argument("--calib-reps",type=int,default=30)
-    ap.add_argument("--prereg",default=None);ap.add_argument("--registry",default=None);ap.add_argument("--ledger",default=None);ap.add_argument("--export-tensors",default=None);ap.add_argument("--parity-report",default=None);a=ap.parse_args()
+    ap.add_argument("--prereg",default=None);ap.add_argument("--registry",default=None);ap.add_argument("--ledger",default=None);ap.add_argument("--export-tensors",default=None);ap.add_argument("--parity-report",default=None);ap.add_argument("--cache",default=None);a=ap.parse_args()
     assets=[json.loads(Path(x).read_text()) for x in a.asset.split(",")];name=a.group_name or "+".join(x["root"] for x in assets)
     spec=load_spec(a.spec);h=spec_hash(spec);out=Path(a.out);out.mkdir(parents=True,exist_ok=True)
     if not a.calibrate_only:
         if not a.prereg or h not in Path(a.prereg).read_text():raise SystemExit(f"El barrido real exige un pre-registro que contenga el hash de la rejilla ({h}). Use --calibrate-only o escriba el pre-registro antes.")
     t0=time.time();parts=[]
     for asset in assets:
-        T,sp=build_tensors(asset,spec);M,N=P.cell_matrices(T);parts.append((asset["root"],T,M,N))
+        T,sp=build_tensors(asset,spec,a.cache);M,N=P.cell_matrices(T);parts.append((asset["root"],T,M,N))
     if len(parts)==1:_,T,M,N=parts[0];dates=T.dates
     else:dates,M,N=P.pool_cells([(t.dates,m,n) for _,t,m,n in parts]);T=parts[0][1]
     be=get_backend(a.backend,work_items=int(M.shape[0]*M.shape[1]*spec.n_sims))

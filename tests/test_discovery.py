@@ -98,3 +98,43 @@ def test_power_curve_ignores_real_structure_in_base():
     """Si la base real ya contiene una señal fuerte, el efecto plantado 0 NO debe detectarse (la base se neutraliza con signos al azar)."""
     rng=np.random.default_rng(9);D,nc=150,200;M=rng.standard_normal((D,nc)).astype(np.float32);M[:,7]+=2.0;N=np.ones((D,nc),np.float32)
     pc=C.power_curve(M,N,10,[0.0],reps=15,n_sims=500,seed=3);assert pc[0]["detection_rate"]<=0.35
+
+def _write_parquet(tk,path,contract="X_03-26"):
+    import pandas as pd
+    n=len(tk["ts_utc_ns"]);df=pd.DataFrame({"ts_utc_ns":tk["ts_utc_ns"],"ts_local_ns":tk["ts_utc_ns"],"sequence":np.arange(n),"price_ticks":tk["price_ticks"],"bid_ticks":tk["bid_ticks"],"ask_ticks":tk["ask_ticks"],
+        "volume":tk["volume"],"aggressor":np.where(tk["aggressor"]>0,"buy","sell"),"tick_type":"trade","instrument":"X","contract":contract,"source_file":"s","source_row":np.arange(n)})
+    df.to_parquet(path,row_group_size=50_000)
+
+def _asset(tmp_path,contract="X_03-26"):
+    return {"root":"X","order":[contract],"tick_size":0.25,"tick_value_usd":5.0,"commission_usd_rt":0.0,"cut_ns":None,"path_template":str(tmp_path/"{contract}.parquet")}
+
+def test_cache_path_is_identical_to_direct_build(tmp_path):
+    """Armar con filas/barras del caché da exactamente los mismos tensores y máscaras que leer los ticks."""
+    from edgelab.discovery import cache as CA
+    tk=synth_ticks(10,seed=4,start="2026-03-16");spec=small_spec();_write_parquet(tk,tmp_path/"X_03-26.parquet");asset=_asset(tmp_path)
+    T0,_=build_T(tk,spec);assert not CA.cache_ok(asset,spec,tmp_path/"c");CA.build_cache(asset,spec,tmp_path/"c",log=lambda *_:None);assert CA.cache_ok(asset,spec,tmp_path/"c")
+    bars,rows,order,segs,elig,aud,_=CA.load_cache(asset,tmp_path/"c");T1=P.build(spec,None,bars,order,segs,elig,rows=rows)
+    for k in("rt","nl","ns"):assert np.array_equal(getattr(T0,k),getattr(T1,k),equal_nan=True),k
+    assert np.array_equal(T0.masks,T1.masks) and T0.meta["dropped"]==T1.meta["dropped"] and np.array_equal(T0.dates,T1.dates)
+    spec2=GridSpec(**{**spec.__dict__,"commission_ticks":1.0});assert not CA.cache_ok(asset,spec2,tmp_path/"c")      # cambiar un parámetro invalida el caché
+
+def test_cache_reused_across_families_with_different_conditions(tmp_path):
+    """Dos familias con condiciones distintas comparten filas y barras: los tensores de resultado son iguales y solo difieren las máscaras."""
+    from edgelab.discovery import cache as CA
+    tk=synth_ticks(10,seed=5,start="2026-03-16");sA=small_spec();sB=GridSpec(**{**sA.__dict__,"conditions":(Condition("vwapdev_30","gt",0.),Condition("emadev_20","lt",0.)),"pairs":()})
+    _write_parquet(tk,tmp_path/"X_03-26.parquet");asset=_asset(tmp_path);CA.build_cache(asset,sA,tmp_path/"c",log=lambda *_:None);assert CA.cache_ok(asset,sB,tmp_path/"c")
+    bars,rows,order,segs,elig,_,_=CA.load_cache(asset,tmp_path/"c");TA=P.build(sA,None,bars,order,segs,elig,rows=rows);TB=P.build(sB,None,bars,order,segs,elig,rows=rows);TBd,_=build_T(tk,sB)
+    assert np.array_equal(TA.rt,TB.rt,equal_nan=True) and np.array_equal(TB.masks,TBd.masks) and np.array_equal(TB.rt,TBd.rt,equal_nan=True)
+
+def test_audit_flags_planted_defects(tmp_path):
+    """La auditoría cuenta los defectos plantados (libro cruzado, hueco en horario líquido, filas repetidas, sesión que termina temprano) y no cambia los datos."""
+    from edgelab.discovery import audit as A
+    import pandas as pd
+    tk=synth_ticks(8,seed=6);tk={k:v.copy() for k,v in tk.items()};ts=tk["ts_utc_ns"]
+    tk["bid_ticks"][100:105]=tk["ask_ticks"][100:105]+2                                   # 5 libros cruzados
+    d=pd.Timestamp("2026-03-05",tz="America/Chicago")+pd.Timedelta(hours=10);g0=d.tz_convert("UTC").value
+    keep=~((ts>=g0)&(ts<g0+30*60*10**9));tk={k:v[keep] for k,v in tk.items()}                # hueco de 30 min a las 10:00 CT
+    for k in tk:tk[k][2001]=tk[k][2000]                                                    # una fila idéntica a la anterior
+    before={k:v.copy() for k,v in tk.items()};tl=A.tick_level(tk,None);assert tl["crossed_book"]>=5 and tl["consecutive_identical_rows"]>=1
+    bars=Dd.minute_bars(tk);sl=A.session_level(bars);assert any(any(f.startswith("hueco_") for f in x["flags"]) for x in sl["flagged"])
+    assert all(np.array_equal(before[k],tk[k]) for k in tk)                                # descriptiva: no modifica

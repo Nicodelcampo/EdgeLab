@@ -51,46 +51,69 @@ def _apply(c:Condition,raw:dict,z:dict)->np.ndarray:
     if c.op=="zlt":return x<c.threshold
     return np.abs(x)<c.threshold
 
-def build(spec:GridSpec,ticks:dict[str,dict],bars:dict[str,dict],order:list[str],segs,elig:dict[int,int])->Tensors:
-    spec.validate();S=len(spec.slots_hhmm);H=len(spec.holds);dates=np.array(sorted(elig));D=len(dates)
+def contract_rows(spec:GridSpec,tk:dict,bars:dict)->dict:
+    """Parte que lee ticks, independiente de la familia y de la serie continua: para TODAS las franjas de un contrato calcula la entrada
+    y las salidas por libro. Resultado compacto (filas = franjas del calendario del contrato) que se puede guardar y reutilizar.
+    Clave de cada fila: (fecha de trading `td`, índice de franja `sl`). No aplica la máscara de barra ni la serie continua: eso es del ensamblado."""
+    S=len(spec.slots_hhmm);H=len(spec.holds);td_b=tdate_ordinal(bars["t"]);cal=np.arange(int(td_b.min())-1,int(td_b.max())+1,dtype=np.int64)
+    G=slot_grid(cal,spec.slots_hhmm);flat=G.reshape(-1);ok0=flat>0;sl_all=np.tile(np.arange(S),len(cal))
+    b0=flat[ok0];sl=sl_all[ok0];b1=b0+MIN;E=b0+2*MIN;td=tdate_ordinal(b1);send=session_end_ns(td)
+    ts=tk["ts_utc_ns"];bid=tk["bid_ticks"].astype(np.float64);ask=tk["ask_ticks"].astype(np.float64);mid=(bid+ask)/2
+    ie=np.searchsorted(ts,E);ie_c=np.minimum(ie,len(ts)-1);ok_e=(ie<len(ts))&((ts[ie_c]-E)<=spec.max_entry_delay_s*1e9)
+    n=len(b1);rt=np.full((n,H),np.nan,np.float32);nl=np.full_like(rt,np.nan);ns=np.full_like(rt,np.nan);exit_fail=np.zeros((n,H),bool)
+    for hi,h in enumerate(spec.holds):
+        X=E+h*MIN;ix=np.searchsorted(ts,X);ix_c=np.minimum(ix,len(ts)-1)
+        ok_x=(ix<len(ts))&((ts[ix_c]-X)<=spec.max_exit_delay_s*1e9)&(X<=send);exit_fail[:,hi]=ok_e&~ok_x;ok=ok_e&ok_x
+        r=mid[ix_c]-mid[ie_c];L=bid[ix_c]-ask[ie_c]-spec.commission_ticks;Sh=bid[ie_c]-ask[ix_c]-spec.commission_ticks
+        rt[ok,hi]=r[ok];nl[ok,hi]=L[ok];ns[ok,hi]=Sh[ok]
+    has=F.compute(bars,b1,set())[1]
+    return {"td":td,"sl":sl.astype(np.int16),"b1":b1,"has":has,"entry_fail":~ok_e,"exit_fail":exit_fail,"rt":rt,"nl":nl,"ns":ns}
+
+def _mine(rows:dict,elig:dict[int,int],ci:int,dates:np.ndarray):
+    """Filas de un contrato que pertenecen a sesiones elegibles de ese contrato: (máscara de filas, índice de fecha)."""
+    td=rows["td"];di=np.searchsorted(dates,td);inr=(di<len(dates))&(dates[np.minimum(di,len(dates)-1)]==td);m=np.zeros(len(td),bool)
+    if inr.any():m[inr]=np.array([elig[int(dates[k])]==ci for k in di[inr]])
+    return m,di
+
+def assemble(spec:GridSpec,rows:dict[str,dict],order:list[str],elig:dict[int,int])->dict:
+    """Une las filas de cada contrato según la serie continua (`elig`): tensores (sesión, franja, holding) con la media de la sesión restada."""
+    S=len(spec.slots_hhmm);H=len(spec.holds);dates=np.array(sorted(elig));D=len(dates)
     if D==0:raise ValueError("sin sesiones elegibles")
-    rt=np.full((D,S,H),np.nan,np.float32);nl=np.full_like(rt,np.nan);ns=np.full_like(rt,np.nan)
-    names={c.feature for c in spec.conditions};raw={n:np.full((D,S),np.nan) for n in names};has_b1=np.zeros((D,S),bool)
-    send=session_end_ns(dates);drop={"entry_delay":0,"exit_delay":0,"no_b1":0}
-    for ci,cname in enumerate(order):
-        sess_c=[d for d,r in elig.items() if r==ci]
-        if not sess_c:continue
-        cal=np.arange(min(sess_c)-1,max(sess_c)+1,dtype=np.int64);G=slot_grid(cal,spec.slots_hhmm);flat=G.reshape(-1);ok0=flat>0
-        b0=np.where(ok0,flat,0);b1=b0+MIN;E=b0+2*MIN;td=np.where(ok0,tdate_ordinal(np.where(ok0,b1,MIN)),-1)
-        di=np.searchsorted(dates,td);inrange=ok0&(di<D)&(dates[np.minimum(di,D-1)]==td);mine=np.zeros(len(flat),bool)
-        mine[inrange]=np.array([elig[int(dates[k])]==ci for k in di[inrange]]);
-        if not mine.any():continue
-        tk=ticks[cname];ts=tk["ts_utc_ns"];bid=tk["bid_ticks"].astype(np.float64);ask=tk["ask_ticks"].astype(np.float64);mid=(bid+ask)/2
-        sl=np.tile(np.arange(S),len(cal))
-        # características crudas
-        fr,has=F.compute(bars[cname],b1[mine],names) if names else ({},np.ones(mine.sum(),bool))
-        for n in names:raw[n][di[mine],sl[mine]]=fr[n]
-        has_b1[di[mine],sl[mine]]=has
-        ie=np.searchsorted(ts,E[mine]);ie_c=np.minimum(ie,len(ts)-1);ok_e=(ie<len(ts))&((ts[ie_c]-E[mine])<=spec.max_entry_delay_s*1e9)
-        drop["entry_delay"]+=int((~ok_e).sum());dd=di[mine];ss=sl[mine]
-        for hi,h in enumerate(spec.holds):
-            X=E[mine]+h*MIN;ix=np.searchsorted(ts,X);ix_c=np.minimum(ix,len(ts)-1)
-            ok_x=(ix<len(ts))&((ts[ix_c]-X)<=spec.max_exit_delay_s*1e9)&(X<=send[dd])
-            drop["exit_delay"]+=int((ok_e&~ok_x).sum());ok=ok_e&ok_x&has
-            r=mid[ix_c]-mid[ie_c];L=bid[ix_c]-ask[ie_c]-spec.commission_ticks;Sh=bid[ie_c]-ask[ix_c]-spec.commission_ticks
-            rt[dd[ok],ss[ok],hi]=r[ok];nl[dd[ok],ss[ok],hi]=L[ok];ns[dd[ok],ss[ok],hi]=Sh[ok]
-    # quitar la tendencia/volatilidad del día: restar la media de la sesión para cada holding
+    rt=np.full((D,S,H),np.nan,np.float32);nl=np.full_like(rt,np.nan);ns=np.full_like(rt,np.nan);has_b1=np.zeros((D,S),bool);drop={"entry_delay":0,"exit_delay":0,"no_b1":0}
+    for ci,c in enumerate(order):
+        if c not in rows:continue
+        R=rows[c];m,di=_mine(R,elig,ci,dates)
+        if not m.any():continue
+        dd=di[m];ss=R["sl"][m].astype(int);has=R["has"][m];has_b1[dd,ss]=has;drop["entry_delay"]+=int(R["entry_fail"][m].sum());drop["exit_delay"]+=int(R["exit_fail"][m].sum())
+        for hi in range(H):
+            ok=has&np.isfinite(R["rt"][m,hi]);rt[dd[ok],ss[ok],hi]=R["rt"][m,hi][ok];nl[dd[ok],ss[ok],hi]=R["nl"][m,hi][ok];ns[dd[ok],ss[ok],hi]=R["ns"][m,hi][ok]
     import warnings
     with warnings.catch_warnings():
         warnings.simplefilter("ignore",RuntimeWarning);mu=np.nanmean(rt,axis=1,keepdims=True)
-    rt=rt-mu
+    return {"dates":dates,"rt":rt-mu,"nl":nl,"ns":ns,"has_b1":has_b1,"drop":drop}
+
+def build_masks(spec:GridSpec,bars:dict[str,dict],rows:dict[str,dict],order:list[str],elig:dict[int,int],fills:dict)->Tensors:
+    """Características causales (solo con barras) y máscaras de condición de la familia."""
+    S=len(spec.slots_hhmm);dates=fills["dates"];D=len(dates);has_b1=fills["has_b1"];names={c.feature for c in spec.conditions};raw={n:np.full((D,S),np.nan) for n in names}
+    for ci,c in enumerate(order):
+        if c not in rows or not names:continue
+        R=rows[c];m,di=_mine(R,elig,ci,dates)
+        if not m.any():continue
+        fr,_=F.compute(bars[c],R["b1"][m],names)
+        for n in names:raw[n][di[m],R["sl"][m].astype(int)]=fr[n]
     z={n:F.causal_z(raw[n],spec.zscore_lookback,spec.zscore_min_history) for n in names}
     keys=_conditions_list(spec);K=len(keys);masks=np.zeros((D,S,K),bool);k=0
-    if spec.include_none:masks[:,:,0]=has_b1|True;k=1
+    if spec.include_none:masks[:,:,0]=True;k=1
     single=[]
     for c in spec.conditions:m=_apply(c,raw,z)&has_b1;masks[:,:,k]=m;single.append(m);k+=1
     for i,j in spec.pairs:masks[:,:,k]=single[i]&single[j];k+=1
-    return Tensors(dates,rt,nl,ns,masks,keys,spec.slots_hhmm,spec.holds,{"dropped":drop,"sessions":D,"cells":D and S*H*K})
+    return Tensors(dates,fills["rt"],fills["nl"],fills["ns"],masks,keys,spec.slots_hhmm,spec.holds,{"dropped":fills["drop"],"sessions":D,"cells":D and S*len(spec.holds)*K})
+
+def build(spec:GridSpec,ticks:dict[str,dict],bars:dict[str,dict],order:list[str],segs,elig:dict[int,int],rows:dict[str,dict]|None=None)->Tensors:
+    """Camino completo. Con `rows` (precalculadas, p. ej. del caché) no se leen los ticks: `ticks` puede ser None."""
+    spec.validate()
+    if rows is None:rows={c:contract_rows(spec,ticks[c],bars[c]) for c in order if c in ticks}
+    fills=assemble(spec,rows,order,elig);return build_masks(spec,bars,rows,order,elig,fills)
 
 def cell_matrices(T:Tensors,k_sel:slice|np.ndarray|None=None):
     """M[d,cell]=rt*mask (suma de la sesión), N[d,cell]=nº de operaciones. cell=(slot*H+hold)*K+cond."""
