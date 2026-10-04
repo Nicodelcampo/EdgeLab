@@ -31,7 +31,7 @@ def build_tensors(asset:dict,spec,cache:str|None=None):
 def main():
     ap=argparse.ArgumentParser();ap.add_argument("--asset",required=True);ap.add_argument("--group-name",default=None);ap.add_argument("--spec",required=True);ap.add_argument("--out",required=True)
     ap.add_argument("--backend",default="auto");ap.add_argument("--calibrate-only",action="store_true");ap.add_argument("--calib-reps",type=int,default=30)
-    ap.add_argument("--prereg",default=None);ap.add_argument("--registry",default=None);ap.add_argument("--ledger",default=None);ap.add_argument("--export-tensors",default=None);ap.add_argument("--parity-report",default=None);ap.add_argument("--cache",default=None);a=ap.parse_args()
+    ap.add_argument("--prereg",default=None);ap.add_argument("--registry",default="docs/research/TRIAL_REGISTRY_GLOBAL.jsonl");ap.add_argument("--ledger",default=None);ap.add_argument("--export-tensors",default=None);ap.add_argument("--parity-report",default=None);ap.add_argument("--cache",default=None);a=ap.parse_args()
     assets=[json.loads(Path(x).read_text()) for x in a.asset.split(",")];name=a.group_name or "+".join(x["root"] for x in assets)
     spec=load_spec(a.spec);h=spec_hash(spec);out=Path(a.out);out.mkdir(parents=True,exist_ok=True)
     if not a.calibrate_only:
