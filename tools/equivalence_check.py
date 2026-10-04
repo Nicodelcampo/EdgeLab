@@ -13,7 +13,7 @@ ROOT=Path("/data/analysis/mgc")
 
 def load_spot(path:str)->tuple[np.ndarray,np.ndarray]:
     df=pd.read_parquet(path) if path.endswith(".parquet") else pd.read_csv(path)
-    t=df["time"]
+    t=df["time_utc_ns"] if "time_utc_ns" in df.columns else df["time"]
     if np.issubdtype(t.dtype,np.number):
         v=t.to_numpy(np.int64);ts=v*1_000_000 if v[0]<10**14 else v           # ms o ns
     else:ts=pd.to_datetime(t,utc=True).astype("int64").to_numpy()
@@ -34,12 +34,10 @@ def main():
     lo=max(int(bts[0]),int(spot_ts[0]));hi=min(int(bts[-1]),int(spot_ts[-1]));out={"overlap_utc":[str(pd.Timestamp(lo,tz="UTC")),str(pd.Timestamp(hi,tz="UTC"))],"selftest":bool(a.selftest)}
     fm=(np.asarray(fts)>=lo)&(np.asarray(fts)<=hi);m=match_bar_size(np.asarray(fts)[fm],spot_ts[(spot_ts>=lo)&(spot_ts<=hi)],25);out["bar_size_matching"]=m
     # A) sincronizado: precio del sustituto en cada cierre de barra de futuros (mide la equivalencia de PRECIO, sin tocar la formación de barras)
-    bm=(bts>=lo)&(bts<=hi);sync=sync_resample(bts,spot_ts,spot_px);ok=np.isfinite(sync)
-    sa_i,sa_d=ema_cross_signals(np.where(ok,sync,np.nan),200,500,2000,group=bcid) if ok.all() else (np.array([],int),np.array([],np.int8))
+    bm=(bts>=lo)&(bts<=hi);bts_o=bts[bm];sync=sync_resample(bts_o,spot_ts,spot_px);ok=np.isfinite(sync)
+    sa_i,sa_d=ema_cross_signals(sync,200,500,2000,group=bcid[bm]) if ok.all() else (np.array([],int),np.array([],np.int8))
     ref=bm[sig];ri,rd=sig[ref],sdir[ref]
-    if len(sa_i):
-        sm=bm[sa_i];out["A_sincronizado"]={f"tol_{t}s":signal_agreement(bts[ri],rd,bts[sa_i[sm]],sa_d[sm],t) for t in (300,900,3600)}
-    else:out["A_sincronizado"]="el sustituto no cubre todo el período de las barras de futuros: se omite (use solo el tramo cubierto)"
+    out["A_sincronizado"]={f"tol_{t}s":signal_agreement(bts[ri],rd,bts_o[sa_i],sa_d,t) for t in (300,900,3600)} if len(sa_i) else "el sustituto no cubre todo el solape: se omite"
     # B) barras con el N elegido sobre el sustituto: mide la equivalencia de FORMACIÓN de barras
     n=m["best"]["n_spot"];sm_ts=spot_ts[(spot_ts>=lo)&(spot_ts<=hi)];sm_px=spot_px[(spot_ts>=lo)&(spot_ts<=hi)];t2,c2,_=tick_bars(sm_ts,sm_px,n);bi,bd=ema_cross_signals(c2,200,500,2000)
     out["B_barras_equivalentes"]={"n_spot":n,"bars_spot":int(len(t2)),"bars_futures_in_overlap":int(bm.sum()),"signals_spot":int(len(bi)),"signals_futures":int(len(ri)),
