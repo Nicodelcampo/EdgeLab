@@ -111,6 +111,8 @@ namespace NinjaTrader.Gui.NinjaScript
    catch(Exception ex){conns.Add("unknown:"+ex.GetType().Name);}
    feed=conns.Count==0?"NONE":string.Join(" | ",conns);
    Log("Conexiones activas: "+feed);
+   // Sin conexion real no hay servidor historico: BarsRequest solo lee la base local y todo lo que falta sale NO_DATA.
+   if(!probeOnly&&(conns.Count==0||feed.IndexOf("Simulation",StringComparison.OrdinalIgnoreCase)>=0)){Log("ERROR: conectate a un proveedor de datos real (no Simulation). Con Simulation no se descarga nada del servidor.");Running(false);return;}
    if(conns.Count!=1)Log("AVISO: tiene que haber exactamente UNA conexion activa para que la procedencia sea clara. Los dias que ya estan en la base local salen de ahi, sin importar la conexion.");
    Log((probeOnly?"PROBAR ":"DESCARGAR ")+string.Join(";",list)+" "+a.ToString("yyyy-MM-dd")+" -> "+z.ToString("yyyy-MM-dd")+"  (zona de NT8: "+tz.Id+"; las salidas se escriben en UTC)");
    try
