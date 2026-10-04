@@ -233,5 +233,5 @@ Excluidas: sesion_truncada: 1. Sesiones con salvedad por fuentes en conflicto: 0
 | `mnq-tick-data` | ARTEFACTOS / EVIDENCIA (no son datos de mercado) | 0 | - | **NO** | 15 | PÚBLICO: pasarlo a privado |
 | `mnq-parquet` | PRIMARIO (aporta sesiones aprobadas) | 30 | MNQ | **NO** | 500 | PÚBLICO: pasarlo a privado |
 | `edgelab-discovery-cache` | DERIVADO (caché / inventario) | 0 | - | sí | 58 |  |
-| `edgelab-dukascopy-xauusd-ticks-m1` | SPOT (no es futuro): ver la sección de Dukascopy | 0 | - | sí | 0 |  |
+| `edgelab-dukascopy-xauusd-ticks-m1` | SPOT (no es futuro): ver la sección de Dukascopy | 0 | - | sí | 2,611 |  |
 | `edgelab-data-catalog` | DERIVADO (caché / inventario) | 0 | - | sí | 1 |  |

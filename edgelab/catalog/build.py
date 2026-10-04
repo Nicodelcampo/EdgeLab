@@ -67,14 +67,16 @@ def build(root:Path)->dict:
                          "tick_files":[s["file"] for s in tick],"unrecognized_parquet":_group_other(other),"top_level_files":[f["name"] for f in files if "/" not in f["name"]][:40]})
     # --- fuentes por contrato
     files=[];stubs=[];spot=defaultdict(lambda:{"ticks":{},"m1":{}})
-    SPOT_RE=re.compile(r"(?P<sym>[A-Z]{6})_(?:m1_)?(?P<ym>\d{4}-\d{2})")
+    SPOT_RE=re.compile(r"(?P<sym>[A-Z]{6})_(?:m1_|ticks_)?(?P<ym>\d{4}-\d{2}|ticks|m1)")
+    current={d["slug"]:{f["name"] for f in d["files"]} for d in listing}
     for s in scans:
+        if s["file"] not in current.get(s["dataset"],set()):continue      # escaneo de un archivo que ya no está en la versión vigente del dataset
         if s.get("recognized") and s.get("quote_only") and s.get("days"):
             m=SPOT_RE.search(Path(s["file"]).name)
             if m:
                 kind="m1" if s.get("kind")=="m1_bars" else "ticks";d=s["days"]
                 spot[m["sym"]][kind][m["ym"]]={"dataset":s["dataset"],"file":s["file"],"rows":s["rows"],"first_date":iso(d[0]["td"]),"last_date":iso(d[-1]["td"]),"sessions":len(d),"events_or_nonzero_bars":int(sum(x["trades"] for x in d)),
-                    "unsorted":s["unsorted_events"],"price_min":s.get("price_ticks_min"),"price_max":s.get("price_ticks_max"),"post_holdout_sessions":sum(1 for x in d if x["td"]>=HOLDOUT_FIRST)}
+                    "unsorted":s["unsorted_events"],"price_min":s.get("price_ticks_min"),"price_max":s.get("price_ticks_max"),"post_holdout_sessions":sum(1 for x in d if x["td"]>=HOLDOUT_FIRST),"tds":[x["td"] for x in d],"max_events_per_session":max(x["trades"] for x in d)}
             continue
         if not s.get("recognized") or not s.get("days"):continue
         root_sym,exp=parse_contract(s["file"],s);days=s["days"]
@@ -157,6 +159,16 @@ def build(root:Path)->dict:
             "expected_contracts_missing":exp_missing,"leader_median_daily_volume":med_lv,"leader_sessions_below_25pct_of_instrument_median":{"n":len(thin_vs),"ranges":ranges(thin_vs)[:40]},"post_holdout_sessions":sum(1 for t in allt if t>=HOLDOUT_FIRST),"data_after_2026-06-30_present":any(t>CUT_PRE for t in allt)}
     spot_out={}
     for sym,v in spot.items():
+        uni=v["ticks"].get("ticks") or v["m1"].get("m1")
+        if uni is not None:
+            for kind in ("ticks","m1"):
+                x=v[kind].get("ticks" if kind=="ticks" else "m1")
+                if x:
+                    tds=set(x["tds"]);lo,hi=min(tds),max(tds);hol=_holidays(lo,hi);miss=[t for t in range(lo,hi+1) if dt.date.fromordinal(t).weekday()<5 and t not in tds]
+                    x["weekdays_without_data_unexplained"]=ranges([t for t in miss if t not in hol]);x["weekdays_without_data_holidays"]=[iso(t) for t in miss if t in hol];x["unsorted"]=x.get("unsorted",0)
+            for kind in ("ticks","m1"):
+                for x in v[kind].values():x.pop("tds",None)
+            spot_out[sym]={"layout":"unified_file","ticks":v["ticks"].get("ticks"),"m1":v["m1"].get("m1"),"timezone":"UTC","price_fields":"bid/ask (spot cotizado, sin operaciones ni volumen real)","post_holdout_sessions":sum((v[k].get(k,{}) or {}).get("post_holdout_sessions",0) for k in ("ticks","m1"))};continue
         months=sorted(set(v["ticks"])|set(v["m1"]));y0,m0=map(int,months[0].split("-"));y1,m1_=map(int,months[-1].split("-"));allm=[]
         y,m=y0,m0
         while (y,m)<=(y1,m1_):allm.append(f"{y:04d}-{m:02d}");m+=1;y,m=(y+1,1) if m==13 else (y,m)

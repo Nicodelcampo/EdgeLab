@@ -35,6 +35,10 @@ def main():
     if SP:
         L+=["","# Series spot (cotizaciones, no futuros)","","Ticks de cotización bid/ask de Dukascopy: **no son operaciones ejecutadas** y no tienen volumen real ni agresor; sirven para estrategias que dependen solo del precio (ver `edgelab/equivalence`). Costos y ejecución se modelan con el instrumento real."]
         for sym,v in SP.items():
+            if v.get("layout")=="unified_file":
+                t=v["ticks"];m=v["m1"];L+=["",f"## {sym} (spot, UTC, archivo unificado)","",f"- Ticks: `{t['dataset']}` / `{t['file']}`: {t['rows']:,} filas, {t['first_date']}..{t['last_date']}, {t['sessions']} sesiones, precio {t['price_min']:.1f}–{t['price_max']:.1f}, sesiones desde el holdout formal: {t['post_holdout_sessions']} (**no es un dato posterior al 30-sep: son los ticks de la tarde del 30-sep UTC, después de las 22:00 UTC, que por la convención CME pertenecen a la fecha de trading 2026-10-01; no usar esa sesión**).",
+                    f"- M1: `{m['file']}`: {m['rows']:,} barras, {m['first_date']}..{m['last_date']}, {m['sessions']} fechas (incluye minutos de relleno sin volumen en fines de semana: no son sesiones de mercado)." if m else "- M1: no escaneado.",
+                    f"- Días hábiles sin datos y sin explicación (ticks): {', '.join(t['weekdays_without_data_unexplained']) or 'ninguno'}; feriados sin datos: {', '.join(t['weekdays_without_data_holidays']) or 'ninguno'}."];continue
             L+=["",f"## {sym} (spot, UTC)","",f"- Meses de ticks: {', '.join(v['ticks_months'])}.",f"- Meses de M1: {', '.join(v['m1_months'])}.",f"- **Meses faltantes dentro del rango:** {', '.join(v['missing_months_in_range']) or 'ninguno'}.",
                 f"- Sesiones desde el holdout formal: {v['post_holdout_sessions']}.","","| Mes | Ticks: archivo | Filas | Sesiones | Rango | Precio mín–máx |","|---|---|---:|---:|---|---|"]
             for ym,x in sorted(v["files"]["ticks"].items()):L.append(f"| {ym} | `{x['file']}` | {x['rows']:,} | {x['sessions']} | {x['first_date']}..{x['last_date']} | {x['price_min']:.1f}–{x['price_max']:.1f} |")

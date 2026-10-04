@@ -81,6 +81,8 @@ def main():
     st=cat.get("stub_files",[])
     if st:R+=["## ARCHIVOS_VACIOS_O_DE_RELLENO","","Archivos con menos de 1.000 trades (casi vacíos): no se usan y el contrato **debe reexportarse**.","","| Dataset | Archivo | Contrato | Trades | Tamaño (bytes) |","|---|---|---|---:|---:|"]+[f"| `{x['dataset']}` | `{x['file']}` | {x['contract']} | {x['trades']} | {x['bytes']:,} |" for x in st]+[""]
     sp=cat.get("spot_series",{}).get("XAUUSD")
-    if sp:R+=["## DUKASCOPY XAU/USD (spot)","",f"- Meses faltantes dentro del rango ya subido: {', '.join(sp['missing_months_in_range'])}. Se agregarán en el dataset unificado; **este catálogo se regenera cuando se suba**.",""]
+    if sp and sp.get("layout")=="unified_file":
+        t=sp["ticks"];R+=["## DUKASCOPY XAU/USD (spot)","",f"- Dataset unificado vigente: {t['first_date']}..{t['last_date']}, {t['sessions']} sesiones; días hábiles sin datos sin explicación: {', '.join(t['weekdays_without_data_unexplained']) or 'ninguno'}. **No requiere re-subida.**",""]
+    elif sp:R+=["## DUKASCOPY XAU/USD (spot)","",f"- Meses faltantes dentro del rango ya subido: {', '.join(sp['missing_months_in_range'])}.",""]
     (D/"REEXPORT.md").write_text("\n".join(R)+"\n");print(json.dumps({s:(x["verdict"],x["approved_sessions"],x["eligible_sessions"]) for s,x in cur.items()}));print("reexport items",sum(len(l) for l in reexp.values()))
 if __name__=="__main__":main()

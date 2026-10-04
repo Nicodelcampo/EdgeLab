@@ -1,6 +1,6 @@
 # Catálogo de instrumentos (generado)
 
-Generado 2026-10-04T23:30:46Z. Fuente de verdad: `catalog.json`. Holdout formal: sesiones de trading desde **2026-10-01** (HOLDOUT-A1): no leer.
+Generado 2026-10-04T23:48:51Z. Fuente de verdad: `catalog.json`. Holdout formal: sesiones de trading desde **2026-10-01** (HOLDOUT-A1): no leer.
 
 ## Índice rápido
 
@@ -709,31 +709,8 @@ Tick 0.03125 = USD 31.25 por contrato. Sesiones con datos 250; elegibles 211; se
 
 Ticks de cotización bid/ask de Dukascopy: **no son operaciones ejecutadas** y no tienen volumen real ni agresor; sirven para estrategias que dependen solo del precio (ver `edgelab/equivalence`). Costos y ejecución se modelan con el instrumento real.
 
-## XAUUSD (spot, UTC)
+## XAUUSD (spot, UTC, archivo unificado)
 
-- Meses de ticks: 2024-01, 2024-02, 2024-03, 2024-04, 2024-05, 2024-06, 2024-07, 2025-03, 2025-04, 2025-05, 2025-06, 2025-07, 2025-08, 2025-10, 2025-11, 2025-12, 2026-01, 2026-02, 2026-03.
-- Meses de M1: 2024-01, 2024-02, 2024-03, 2024-04, 2024-05, 2024-06, 2024-07, 2025-03, 2025-04, 2025-05, 2025-06, 2025-07, 2025-08, 2025-10, 2025-11, 2025-12, 2026-01, 2026-02, 2026-03.
-- **Meses faltantes dentro del rango:** 2024-08, 2024-09, 2024-10, 2024-11, 2024-12, 2025-01, 2025-02, 2025-09.
-- Sesiones desde el holdout formal: 0.
-
-| Mes | Ticks: archivo | Filas | Sesiones | Rango | Precio mín–máx |
-|---|---|---:|---:|---|---|
-| 2024-01 | `ticks/XAUUSD_2024-01.parquet` | 3,059,497 | 23 | 2024-01-02..2024-02-01 | 2001.9–2079.0 |
-| 2024-02 | `ticks/XAUUSD_2024-02.parquet` | 2,126,396 | 22 | 2024-02-01..2024-03-01 | 1984.3–2065.5 |
-| 2024-03 | `ticks/XAUUSD_2024-03.parquet` | 2,733,576 | 21 | 2024-03-01..2024-04-01 | 2039.1–2247.4 |
-| 2024-04 | `ticks/XAUUSD_2024-04.parquet` | 5,252,627 | 23 | 2024-04-01..2024-05-01 | 2228.6–2431.6 |
-| 2024-05 | `ticks/XAUUSD_2024-05.parquet` | 5,054,706 | 23 | 2024-05-01..2024-05-31 | 2277.4–2450.1 |
-| 2024-06 | `ticks/XAUUSD_2024-06.parquet` | 4,639,089 | 21 | 2024-06-03..2024-07-01 | 2286.8–2387.8 |
-| 2024-07 | `ticks/XAUUSD_2024-07.parquet` | 5,651,582 | 24 | 2024-07-01..2024-08-01 | 2318.6–2483.7 |
-| 2025-03 | `ticks/XAUUSD_2025-03.parquet` | 5,394,235 | 22 | 2025-03-03..2025-04-01 | 2855.7–3128.1 |
-| 2025-04 | `ticks/XAUUSD_2025-04.parquet` | 6,162,648 | 22 | 2025-04-01..2025-05-01 | 2956.6–3500.2 |
-| 2025-05 | `ticks/XAUUSD_2025-05.parquet` | 5,325,454 | 22 | 2025-05-01..2025-05-30 | 3120.7–3438.5 |
-| 2025-06 | `ticks/XAUUSD_2025-06.parquet` | 4,752,206 | 22 | 2025-06-02..2025-07-01 | 3247.8–3451.9 |
-| 2025-07 | `ticks/XAUUSD_2025-07.parquet` | 4,192,283 | 24 | 2025-07-01..2025-08-01 | 3268.2–3439.0 |
-| 2025-08 | `ticks/XAUUSD_2025-08.parquet` | 4,332,294 | 22 | 2025-08-01..2025-09-01 | 3281.7–3453.8 |
-| 2025-10 | `ticks/XAUUSD_2025-10.parquet` | 9,296,611 | 23 | 2025-10-01..2025-10-31 | 3819.4–4381.6 |
-| 2025-11 | `ticks/XAUUSD_2025-11.parquet` | 6,537,897 | 21 | 2025-11-03..2025-12-01 | 3928.8–4245.2 |
-| 2025-12 | `ticks/XAUUSD_2025-12.parquet` | 7,972,543 | 22 | 2025-12-01..2025-12-31 | 4163.8–4550.1 |
-| 2026-01 | `ticks/XAUUSD_2026-01.parquet` | 9,135,062 | 21 | 2026-01-02..2026-01-30 | 4310.1–5598.3 |
-| 2026-02 | `ticks/XAUUSD_2026-02.parquet` | 7,538,317 | 20 | 2026-02-02..2026-02-27 | 4402.4–5281.4 |
-| 2026-03 | `ticks/XAUUSD_2026-03.parquet` | 9,433,371 | 23 | 2026-03-02..2026-04-01 | 4099.0–5419.2 |
+- Ticks: `edgelab-dukascopy-xauusd-ticks-m1` / `XAUUSD_ticks.parquet`: 258,524,416 filas, 2022-07-01..2026-10-01, 1098 sesiones, precio 1614.9–5598.3, sesiones desde el holdout formal: 1 (**no es un dato posterior al 30-sep: son los ticks de la tarde del 30-sep UTC, después de las 22:00 UTC, que por la convención CME pertenecen a la fecha de trading 2026-10-01; no usar esa sesión**).
+- M1: `XAUUSD_m1.parquet`: 1,905,120 barras, 2022-07-01..2026-10-01, 1546 fechas (incluye minutos de relleno sin volumen en fines de semana: no son sesiones de mercado).
+- Días hábiles sin datos y sin explicación (ticks): ninguno; feriados sin datos: 2022-12-26, 2023-01-02, 2023-04-07, 2023-12-25, 2024-01-01, 2024-03-29, 2024-12-25, 2025-01-01, 2025-04-18, 2025-12-25, 2026-01-01, 2026-04-03.

@@ -31,7 +31,7 @@
 | `mnq-tick-data` | artefactos/evidencia | 15 MB | **PÚBLICO** | 1 | 2026-10-03 |
 | `mnq-parquet` | ticks | 500 MB | **PÚBLICO** | 2 | 2026-10-04 |
 | `edgelab-discovery-cache` | artefactos/evidencia | 58 MB | sí | 112 | 2026-10-04 |
-| `edgelab-dukascopy-xauusd-ticks-m1` | ticks | 0 MB | sí | 40 | 2026-10-04 |
+| `edgelab-dukascopy-xauusd-ticks-m1` | ticks | 2,611 MB | sí | 4 | 2026-10-04 |
 | `edgelab-data-catalog` | artefactos/evidencia | 1 MB | sí | 184 | 2026-10-04 |
 
 ## `edgelab-ticks-nt8-canonical`
@@ -52,7 +52,7 @@ Archivos de ticks: `ZB_03-26_ticks.parquet`, `ZB_06-26_ticks.parquet`, `ZB_09-25
 ## `edgelab-mgc-nt8-raw-parquet-20261002`
 
 Tipo: ticks. 605 MB. 10 archivos.
-Archivos de ticks: `MGC_02-26.parquet`, `MGC_04-26.parquet`, `MGC_06-26.parquet`, `MGC_08-26.parquet`, `MGC_12-25.parquet`, `MGC_12-26.parquet`
+Archivos de ticks: `MGC_02-26.parquet`, `MGC_04-26.parquet`, `MGC_06-26.parquet`, `MGC_08-25.parquet`, `MGC_08-26.parquet`, `MGC_12-25.parquet`, `MGC_12-26.parquet`
 
 ## `edgelab-ticks-nq-preholdout`
 
@@ -178,8 +178,8 @@ Parquet que no son ticks (artefactos), agrupados por esquema:
 
 | Archivos | Filas | Ejemplo | Columnas |
 |---:|---:|---|---|
+| 147 | 3,439 | `session_inventory/instrument=6B/contract=6B_03-26/6B_03-26_25T.parquet` | instrument, contract, month, session_id, trade_date, ticks, tick25_bars, candidates, zones, start_utc_ns, end_utc_ns, source_sha256 |
 | 144 | 3,328,710 | `zone_events/instrument=6B/contract=6B_03-26/6B_03-26_25T.parquet` | zone_id, instrument, contract, month, session_id, indicator, indicator_version, config_id, origin_ts, signal_available_ts, executable_fill_ts, fill_status … |
-| 111 | 2,985 | `session_inventory/instrument=6B/contract=6B_03-26/6B_03-26_25T.parquet` | instrument, contract, month, session_id, trade_date, ticks, tick25_bars, candidates, zones, start_utc_ns, end_utc_ns, source_sha256 |
 Archivos (primeros): `HYPOTHESIS_REGISTRY_AUDITED.jsonl`, `README.md`, `files.sha256`, `schema_analysis_dependencies.json`, `schema_corridor_events.json`, `schema_experiment_registry.json`, `schema_hypothesis_registry.json`, `schema_negative_results_registry.json`, `schema_zone_events.json`, `schema_zone_events_exploratory.json`
 
 ## `edgelab-ticks-mes-preholdout`
@@ -224,22 +224,8 @@ Archivos (primeros): `6E__6E_03-26.audit.json`, `6E__6E_03-26.bars.npz`, `6E__6E
 
 ## `edgelab-dukascopy-xauusd-ticks-m1`
 
-Tipo: ticks. 0 MB. 40 archivos.
-Archivos de ticks: `m1/XAUUSD_m1_2024-01.parquet`, `m1/XAUUSD_m1_2024-02.parquet`, `m1/XAUUSD_m1_2024-03.parquet`, `m1/XAUUSD_m1_2024-04.parquet`, `m1/XAUUSD_m1_2024-05.parquet`, `m1/XAUUSD_m1_2024-06.parquet`, `m1/XAUUSD_m1_2024-07.parquet`, `m1/XAUUSD_m1_2025-03.parquet`, `m1/XAUUSD_m1_2025-04.parquet`, `m1/XAUUSD_m1_2025-05.parquet`, `m1/XAUUSD_m1_2025-06.parquet`, `m1/XAUUSD_m1_2025-07.parquet`, `m1/XAUUSD_m1_2025-08.parquet`, `m1/XAUUSD_m1_2025-10.parquet`, `m1/XAUUSD_m1_2025-11.parquet`, `m1/XAUUSD_m1_2025-12.parquet`, `m1/XAUUSD_m1_2026-01.parquet`, `m1/XAUUSD_m1_2026-02.parquet`, `m1/XAUUSD_m1_2026-03.parquet`, `ticks/XAUUSD_2024-01.parquet`, `ticks/XAUUSD_2024-02.parquet`, `ticks/XAUUSD_2024-03.parquet`, `ticks/XAUUSD_2024-04.parquet`, `ticks/XAUUSD_2024-05.parquet`, `ticks/XAUUSD_2024-06.parquet`, `ticks/XAUUSD_2024-07.parquet`, `ticks/XAUUSD_2025-03.parquet`, `ticks/XAUUSD_2025-04.parquet`, `ticks/XAUUSD_2025-05.parquet`, `ticks/XAUUSD_2025-06.parquet`, `ticks/XAUUSD_2025-07.parquet`, `ticks/XAUUSD_2025-08.parquet`, `ticks/XAUUSD_2025-10.parquet`, `ticks/XAUUSD_2025-11.parquet`, `ticks/XAUUSD_2025-12.parquet`, `ticks/XAUUSD_2026-01.parquet`, `ticks/XAUUSD_2026-02.parquet`, `ticks/XAUUSD_2026-03.parquet`
-
-README del dataset (extracto):
-
-```
-# XAU/USD Dukascopy — ticks y M1 (privado, EdgeLab)
-Origen: Dukascopy vía JForex (`IHistory.getTicks` por hora, `getBars` M1 bid/ask), estrategia `tools/jforex/HistDownloader.java`.
-Todo en UTC. Meses COMPLETOS incluidos: 2024-01..07, 2025-03..08, 2025-10..2026-03 (los demás se agregan en versiones nuevas).
-- `ticks/XAUUSD_YYYY-MM.parquet`: time_utc_ns (int64, ascendente), bid, ask (float64), bid_vol, ask_vol (float32).
-- `m1/XAUUSD_m1_YYYY-MM.parquet`: time_utc_ns (inicio de vela, UTC) + bid_/ask_ open, high, low, close, vol.
-- `calidad.json`: ticks por día, huecos > 5 min en horario de mercado, monotonía, bid ≤ ask, precios ≤ 0, M1 derivado vs M1
-  Dukascopy (100 % idénticos en la semana comparada), tiempos de descarga. Datos sin modificar ni filtrar.
-Días sin datos esperables: Viernes Santo (2024-03-29, 2025-04-18, 2026-04-03); domingos con pocos ticks (abre 22:00 UTC);
-pausa diaria 2
-```
+Tipo: ticks. 2,611 MB. 4 archivos.
+Archivos de ticks: `XAUUSD_m1.parquet`, `XAUUSD_ticks.parquet`
 
 ## `edgelab-data-catalog`
 

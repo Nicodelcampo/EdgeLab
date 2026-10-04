@@ -37,10 +37,11 @@ Archivos con menos de 1.000 trades (casi vacíos): no se usan y el contrato **de
 
 | Dataset | Archivo | Contrato | Trades | Tamaño (bytes) |
 |---|---|---|---:|---:|
+| `edgelab-mgc-nt8-raw-parquet-20261002` | `MGC_08-25.parquet` | MGC_08-25 | 3 | 3,188 |
 | `edgelab-ticks-nt8-canonical` | `MYM/MYM_09-25_ticks_ext.parquet` | MYM_09-25 | 2 | 4,355 |
 | `edgelab-ticks-nt8-canonical` | `RTY/RTY_09-25_ticks_ext.parquet` | RTY_09-25 | 1 | 4,268 |
 
 ## DUKASCOPY XAU/USD (spot)
 
-- Meses faltantes dentro del rango ya subido: 2024-08, 2024-09, 2024-10, 2024-11, 2024-12, 2025-01, 2025-02, 2025-09. Se agregarán en el dataset unificado; **este catálogo se regenera cuando se suba**.
+- Dataset unificado vigente: 2022-07-01..2026-10-01, 1098 sesiones; días hábiles sin datos sin explicación: ninguno. **No requiere re-subida.**
 
