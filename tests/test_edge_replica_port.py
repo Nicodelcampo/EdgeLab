@@ -1,7 +1,7 @@
 import unittest,json,re,hashlib
 from pathlib import Path
 from datetime import datetime,timedelta,timezone
-import importlib.util,sys,base64,gzip
+import importlib.util,sys
 ROOT=Path(__file__).resolve().parents[1]
 def load_repo_module(name,path):
     spec=importlib.util.spec_from_file_location(name,ROOT/path)
@@ -9,6 +9,7 @@ def load_repo_module(name,path):
     spec.loader.exec_module(module);return module
 load_repo_module('edge_replica','strategies/edge_replica.py')
 load_repo_module('asset_safety','edgelab/data/asset_safety.py')
+source_snapshot=load_repo_module('source_snapshot','tests/fixtures/edge_replica/source_snapshot.py')
 from edge_replica import Bar,Rule,load_rules,shadow_events
 from asset_safety import AssetSafetyError,safe_group_ids,audited_volume_rows,validate_mnq_tick_batch
 UTC=timezone.utc
@@ -20,7 +21,7 @@ def bars(count=40,start=None,close=1000,session_end=None):
 
 class PortTests(unittest.TestCase):
     def test_source_rules_roundtrip(self):
-        src=gzip.decompress(base64.b64decode((ROOT/'tests/fixtures/edge_replica/EdgeReplica.cs.gz.b64').read_bytes()))
+        src=source_snapshot.source_bytes()
         o=json.loads((ROOT/'config/edge_replica/rules_v1.json').read_text())
         self.assertEqual(hashlib.sha256(src).hexdigest(),o['source_sha256'])
         parsed=[list(map(int,m)) for m in re.findall(r'new RuleDef\((\d+),\s*(\d+),\s*(\d+),\s*(-?\d+),\s*(\d+),\s*(-?\d+)\)',src.decode('utf-8-sig'))]
@@ -98,9 +99,6 @@ class AssetTests(unittest.TestCase):
         s=self.session();s['audit_status']='UNKNOWN';self.assertRaises(AssetSafetyError,audited_volume_rows,[s])
     def test_missing_row_not_invented(self):self.assertEqual(audited_volume_rows([]),[])
     def test_cross_batch_backwards(self):self.assertRaises(AssetSafetyError,validate_mnq_tick_batch,self.tick(),expected_contract='MNQ_03-25',previous_key=(2,1))
-
-
-
 
 class CustodyTests(unittest.TestCase):
     def test_matching_declared_hash(self):
