@@ -37,7 +37,7 @@ BH sobre los p normales de las celdas: 0 celdas con q < 0,05 en las 15 combinaci
 | GC f1 (y f3, misma celda) | 19:30 CT, hold 15, `mom_15 < 0`, largo | 3,25 | 2,35 | 0,036 |
 | FX f1 | 12:45 CT, hold 15, `mom_60 > 0`, corto | −3,14 | 2,57 en la dirección elegida | 0,011 |
 
-Ninguna tenía significación en D0 tras el nulo de máximo (`p_max` 0,0074 en GC con otra celda como máximo; 0,41 en FX), así que por la regla fijada no cuentan. Con 15 combinaciones × 5 celdas replicadas, ver 1 o 2 réplicas con p ≤ 0,05 en D1 es compatible con el azar (esperado ≈ 0,75 por combinación independiente al 5 %, sin ajustar entre combinaciones). **No son candidatas a edge**; si se quisieran seguir, cada una exigiría un pre-registro nuevo y datos posteriores.
+Ninguna tenía significación en D0 tras el nulo de máximo (`p_max` 0,0074 en GC con otra celda como máximo; 0,41 en FX), así que por la regla fijada no cuentan. Con 15 combinaciones × 5 celdas replicadas, ver 1 o 2 réplicas con p ≤ 0,05 en D1 es compatible con el azar (≈ 0,75 esperadas en total si cada combinación tuviera un 5 % de probabilidad de tener alguna, sin ajustar entre combinaciones; las celdas de una misma familia comparten condiciones, así que no son independientes). **No son candidatas a edge**; si se quisieran seguir, cada una exigiría un pre-registro nuevo y datos posteriores.
 
 ## Otras lecturas
 - ZB y FX: nada distinguible del azar en ninguna familia. Titulares con media neta ≈ 0 o negativa en ticks (ZB f1: −0,10; FX 6J mayormente negativo).
