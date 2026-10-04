@@ -55,11 +55,15 @@ class TrialRegistry:
         rows=self._rows();return rows[-1]['hash'] if rows else '0'*64
     def ensure(self,campaign_id,family_id,n_trials,note=''):
         """Register if new; return False if already present with the same count; raise if the count differs."""
-        import fcntl
+        try:
+            import fcntl                                   # Linux/Kaggle: candado exclusivo
+            lock=lambda f:fcntl.flock(f,fcntl.LOCK_EX)
+        except ImportError:                                # Windows: un solo escritor por regla del proyecto
+            lock=lambda f:None
         if n_trials<1:raise ValueError('n_trials must be positive')
         self.path.parent.mkdir(parents=True,exist_ok=True)
         with self.path.open('a+') as f:
-            fcntl.flock(f,fcntl.LOCK_EX);f.seek(0)
+            lock(f);f.seek(0)
             rows=[json.loads(x) for x in f.read().splitlines() if x.strip()]
             for r in rows:
                 if r['campaign_id']==campaign_id and r['family_id']==family_id:

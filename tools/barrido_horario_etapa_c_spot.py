@@ -7,7 +7,16 @@ def read_hour(fn):
     d=lzma.LZMADecompressor(format=lzma.FORMAT_AUTO).decompress(open(fn,'rb').read());n=len(d)//20
     a=np.frombuffer(d[:n*20],dtype=np.dtype([('ms','>u4'),('ask','>u4'),('bid','>u4'),('av','>f4'),('bv','>f4')]))
     return a['ms'].astype(np.int64),a['ask'].astype(np.float64)/1000,a['bid'].astype(np.float64)/1000
+DUKAS_BIN=os.environ.get('DUKAS_BIN')   # carpeta con YYYY-MM-DD.bin de tools/jforex/HistDownloader.java (>q d d f f)
+def session_ticks_bin(d):
+    fn=os.path.join(DUKAS_BIN,f'{d:%Y-%m-%d}.bin')
+    if not os.path.exists(fn) or os.path.getsize(fn)==0:return None
+    a=np.fromfile(fn,dtype=np.dtype([('t','>i8'),('bid','>f8'),('ask','>f8'),('bv','>f4'),('av','>f4')]))
+    base=int(dt.datetime(d.year,d.month,d.day,7,tzinfo=UTC).timestamp())*1000;m=(a['t']>=base)&(a['t']<base+5*3600_000)  # 07–12 UTC, como el feed por horas
+    if not m.any():return None
+    return a['t'][m].astype(np.int64),a['ask'][m].astype(np.float64),a['bid'][m].astype(np.float64)
 def session_ticks(d):
+    if DUKAS_BIN:return session_ticks_bin(d)
     ts=[];ask=[];bid=[]
     for h in (7,8,9,10,11):
         r=read_hour(f'raw/{d:%Y%m%d}_{h:02d}.bi5')
