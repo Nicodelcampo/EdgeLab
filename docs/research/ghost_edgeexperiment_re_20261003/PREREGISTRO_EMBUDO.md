@@ -101,3 +101,26 @@ Autorización: el usuario pidió explícitamente el chequeo de cobertura y, desp
 ### Custodia y sesgo declarados
 - Se abre **una sola vez**. No se cambia nada después de ver el resultado. Se guarda una marca de bloqueo que impide repetir.
 - Estos tres mercados se mueven con MNQ en el mismo período, así que no es una prueba independiente: la cesta reduce el ruido propio de cada contrato, no el del mercado.
+
+## Enmienda 6 — apertura única de ES y NQ de julio a septiembre como cesta (escrita antes de calcular ningún resultado de estos datos)
+Autorización: el usuario pidió explícitamente escribir esta enmienda y abrirlos.
+
+### Datos y custodia
+- Dataset privado de Kaggle `nicolasbuttaro/edgelab-ticks-es-nq-2026q3-ext` (esquema `canonical_tick_v1`, ticks de trade con bid y ask), generado bajo la enmienda HOLDOUT-A1 del proyecto (2026-09-26). Archivos: `ES_09-26`, `ES_12-26`, `NQ_09-26`, `NQ_12-26`. Ventana del dataset: 2026-06-30 22:00 UTC a 2026-09-30 22:00 UTC; las sesiones completas llegan hasta el **2026-09-25**.
+- **Custodia.** La enmienda HOLDOUT-A1 declara los datos de julio a septiembre de 2026 como exploración del proyecto y fija el holdout formal del proyecto a futuro desde el 2026-10-01. Esta apertura consume solo la regla de custodia de este experimento (una apertura por activo en julio a septiembre); **no toca el holdout formal de octubre en adelante**, que sigue sin leerse.
+- **Cobertura, tomada del catálogo de sesiones del propio dataset** (criterio fijado por el generador, sin mirar precios: ≥ 200.000 ticks por sesión y ningún hueco de más de 30 minutos): **NQ 57 sesiones completas y 6 excluidas** (03-jul y 07-sep feriados; 10-sep hueco de más de 30 minutos; 15, 16 y 17-sep pocos ticks). **ES 52 completas y 10 excluidas** (03-jul y 07-sep; 14, 20, 21, 26 y 28-ago; 16, 17 y 18-sep). Contrato y roll: los del catálogo (NQ pasa a 12-26 el 18-sep; ES el 15-sep). Solo entran las sesiones completas del catálogo; las excluidas no se interpolan.
+
+### Especificación (congelada, igual que las enmiendas 2 y 5)
+- Calendario de 60 reglas, ejecución de libro (ask/bid en el primer tick), calendario de feriados y filtro del signo de los 15 minutos previos. Comisión de ida y vuelta de USD 4,50 en ambos (NQ 0,9 ticks; ES 0,36 ticks), el mismo supuesto de la transferencia.
+- Ventana: sesiones del catálogo, del 2026-07-01 al 2026-09-25.
+- Defecto declarado del dataset: no hay ticks antes del 30 de junio a las 22:00 UTC, así que en la primera sesión no hay referencia de 15 minutos para las franjas más tempranas; esas oportunidades no se evalúan (mismo tratamiento que «sin referencia» en las otras pruebas).
+
+### Cesta y estadísticos
+- Cesta de **1 ES + 1 NQ**, resultados en USD netos de comisión, tratada como un único activo, con el mismo procedimiento de la enmienda 5 (suma por regla y sesión; IC95 por bootstrap de sesiones de 5.000; nulo de dirección por sesión de 5.000; nulo que preserva exposición de 3.000; calendarios placebo de 2.000; referencia «siempre largo»). Semillas 20261009.
+- **Éxito** (todas): media neta de la cesta > 0; IC95 excluye 0; los tres p ≤ 0,05; y la media de «siempre largo» < la media de la estrategia. **Fracaso** si falla cualquiera.
+- Se reportan además, descriptivamente, ES y NQ por separado.
+
+### Cómo se interpreta (fijado antes)
+- ES y NQ son los mismos índices que MES y MNQ (S&P 500 y Nasdaq-100) en el mismo período: **no son pruebas independientes de ellos**. Aportan sesiones más completas que MES y MNQ (la lectura de MNQ tenía 41 sesiones y la de MES 53 con huecos).
+- Éxito: sube el estado a «confirmado en una muestra posterior en los dos índices de mayor volumen», no a «edge garantizado». Fracaso: con MNQ y la cesta MES+RTY+YM ya no confirmados, el resultado cierra la hipótesis de calendario con los datos de julio a septiembre.
+- Se abre **una sola vez**, con marca de bloqueo; no se cambia nada después de ver el resultado.
