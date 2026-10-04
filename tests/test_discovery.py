@@ -93,3 +93,8 @@ def test_staged_scan_keeps_d2_sealed():
 def test_pool_cells_aligns_dates_and_sums():
     a=(np.array([1,2,3]),np.ones((3,4),np.float32),np.ones((3,4),np.float32));b=(np.array([2,3,4]),2*np.ones((3,4),np.float32),np.ones((3,4),np.float32))
     d,M,N=P.pool_cells([a,b]);assert list(d)==[1,2,3,4] and np.allclose(M[:,0],[1,3,3,2]) and np.allclose(N[:,0],[1,2,2,1])
+
+def test_power_curve_ignores_real_structure_in_base():
+    """Si la base real ya contiene una señal fuerte, el efecto plantado 0 NO debe detectarse (la base se neutraliza con signos al azar)."""
+    rng=np.random.default_rng(9);D,nc=150,200;M=rng.standard_normal((D,nc)).astype(np.float32);M[:,7]+=2.0;N=np.ones((D,nc),np.float32)
+    pc=C.power_curve(M,N,10,[0.0],reps=15,n_sims=500,seed=3);assert pc[0]["detection_rate"]<=0.35
