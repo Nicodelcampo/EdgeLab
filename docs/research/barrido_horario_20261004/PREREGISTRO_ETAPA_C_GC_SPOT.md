@@ -38,3 +38,10 @@ Se descargan las sesiones de abril a junio de 2026, que ya existen en los ticks 
 
 ## Predicción registrada
 Espero un resultado «inconcluso» o «no replica». Si el efecto de la etapa B fuera mayormente un artefacto de selección, la media neta fuera de muestra estará cerca de cero o será negativa.
+
+## Enmienda C1 — alcance real de los datos (escrita antes de calcular, 2026-10-04)
+- **Ventana.** Por instrucción del usuario («descarga solamente las últimas 3 semanas del oro; pará todo lo demás») se descargaron solo las sesiones del **2026-09-14 al 2026-09-30** (13 días hábiles; no se leen el 1 y 2 de octubre por el holdout formal HOLDOUT-A1). Todo ese tramo es **posterior a la publicación de la estrategia (2026-09-10 12:00 CT**, fecha derivada del ID del reel). No hay período «antes» en esta muestra, así que la comparación antes/después del 10-sep queda **fuera** de esta prueba.
+- **Paso 1 (calibración con abril a junio): no se hace.** Exigía descargar abril a junio de Dukascopy, lo que el usuario descartó, y no existen ticks de GC posteriores a junio para comparar. Consecuencia declarada: el resultado se reporta **sin calibración de fuente** y se lee como descriptivo; no puede declararse réplica ni refutación de la celda de futuros, solo de la hipótesis en oro spot. Se mantienen los controles de calidad de datos (≥ 50 cotizaciones en la ventana de la operación y ≥ 50 en los 15 minutos previos).
+- **Paso 2 (prueba principal).** Sin cambios: celda congelada, nulo de dirección por sesión, 20.000 sorteos, semilla 20261008, unilateral, decisión «Replica / No replica / Inconcluso». Pruebas secundarias descriptivas: «corto sin condición» y «largo tras bajada».
+- **Potencia.** Con 13 sesiones habrá unas 6 a 7 operaciones con la condición. Con +21,3 ticks de efecto y 68 de desvío, el z esperado es ≈ 0,8: la potencia es muy baja. **Inconcluso es el resultado casi seguro** aunque el efecto exista. Una media neta negativa solo se podrá leer como compatible con una mala racha o con ausencia de efecto.
+- Para el contador de pruebas rige lo ya registrado (+2).
