@@ -63,10 +63,25 @@ def validate_mnq_tick_batch(columns, *,expected_contract,previous_key=None):
             raise AssetSafetyError('mixed contract payload')
     return prior
 
-def stream_safe_preholdout(path,*,cutoff_ns,expected_contract):
-    """Read only fully pre-cutoff groups. Caller pins SHA and dates beforehand.
+def verify_file_custody(path,*,expected_file_sha256):
+    """Require a declared, frozen source digest. Never adopt an observed hash silently."""
+    import hashlib,re
+    if not isinstance(expected_file_sha256,str) or not re.fullmatch(r'[0-9a-f]{64}',expected_file_sha256):
+        raise AssetSafetyError('explicit lowercase SHA256 source identity required')
+    h=hashlib.sha256();size=0
+    with open(path,'rb') as f:
+        for chunk in iter(lambda:f.read(8*1024*1024),b''):
+            h.update(chunk);size+=len(chunk)
+    if h.hexdigest()!=expected_file_sha256:
+        raise AssetSafetyError('CUSTODY_HASH_MISMATCH: quarantine, do not rewrite the expected identity')
+    return {'sha256':h.hexdigest(),'bytes':size}
+
+def stream_safe_preholdout(path,*,cutoff_ns,expected_contract,expected_file_sha256):
+    """Require custody before metadata/rows; input must be immutable during the read.
+    Caller pins approved dates and declared source identity, not an observed replacement.
     Omitted mixed groups never prove a session complete.
     """
+    verify_file_custody(path,expected_file_sha256=expected_file_sha256)
     import pyarrow.parquet as pq
     pf=pq.ParquetFile(path)
     idx=pf.schema_arrow.get_field_index('ts_utc_ns')
