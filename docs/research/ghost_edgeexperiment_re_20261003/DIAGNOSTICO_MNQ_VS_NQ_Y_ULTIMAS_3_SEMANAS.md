@@ -36,3 +36,19 @@ Neto en USD por operación tras comisión. MNQ procesado con la exportación de 
 - **Dos días concentran la pérdida.** 14-sep (NQ −9.142, ES −2.621, MNQ −928) y 24-sep (NQ −10.802, ES −4.350, MNQ −1.100): juntos son el 84 % del neto de NQ.
 - Cobertura distinta por activo: NQ y ES no tienen datos más allá del 25-sep y excluyen el 15, 16 y 17-sep (pocos ticks por el roll); MES, RTY e YM terminan el 28-sep. Por eso los activos no cubren las mismas sesiones.
 - Caveat: tres semanas son 7 a 12 sesiones y ~70 a 120 operaciones; un tramo así no distingue una mala racha de un cambio de régimen.
+
+## 3. Antes y después de la publicación de la estrategia (observación del usuario, 2026-10-04)
+Planteamiento: si las reglas se eligieron con datos hasta su publicación (≈ 2026-09-13), solo lo posterior es fuera de muestra respecto de la selección del proveedor; si cae justo después, es coherente con sobreajuste. Puntos de índice netos por operación (neto de comisión), IC95 por bootstrap de sesiones:
+
+| Activo | 1-jul a 11-sep (antes) | 14 a 30-sep (después) |
+|---|---|---|
+| MNQ | +3,97 [−2,52, +11,08], 312 op., 33 ses. | −6,47 [−17,17, +5,37], 123 op., 12 ses. |
+| NQ | +7,36 [+0,95, +14,57], 483 op., 50 ses. | **−15,39 [−25,74, −2,50]**, 77 op., 7 ses. |
+| ES | +0,52 [−0,57, +1,85] | −2,17 [−4,19, +0,20] |
+| MES | −0,28 [−1,09, +0,58] | −1,71 [−4,04, +0,23] |
+| RTY | +0,15 [−0,34, +0,75] | −0,02 [−1,11, +1,07] |
+| YM | +4,45 [−3,10, +13,00] | −7,11 [−14,44, +2,21] |
+
+- Efecto estandarizado medio (en desvíos de cada activo): antes +0,058, después −0,171. En MNQ por sesión, la diferencia después − antes tiene t = −1,40 (no significativa).
+- Solo el IC de NQ excluye 0 en las tres semanas, con 7 sesiones. Los seis activos no son seis pruebas independientes: son el mismo episodio de mercado, y dos días (14 y 24-sep) explican el 84 % de la pérdida de NQ.
+- Consecuencia para la lectura anterior: si el proveedor eligió con datos hasta la publicación, los tramos que aquí se llamaron «OOS» (junio) y «posterior» (julio a septiembre) tampoco eran fuera de muestra para su selección. La única muestra limpia es la posterior a la publicación (las 3 semanas y, sobre todo, el holdout formal desde el 1 de octubre), y por ahora es negativa pero demasiado corta para concluir.
