@@ -1,5 +1,5 @@
 {
- "generated_utc": "2026-10-04T23:11:53Z",
+ "generated_utc": "2026-10-04T23:30:46Z",
  "rules": "Selecci\u00f3n de datos APROBADOS para an\u00e1lisis: aplica reglas fijas, por sesi\u00f3n, al cat\u00e1logo y escribe docs/data_catalog/{curated.json,CURATED.md,REEXPORT.md}.\nReglas (iguales para todos los instrumentos; se cambian solo en este archivo y se documentan):\n  1. Serie l\u00edder y elegibilidad del cat\u00e1logo (mayor volumen de la sesi\u00f3n anterior; volumen >= 50 % de la mediana del contrato).\n  2. Excluida si el volumen es < 25 % de la mediana de volumen del l\u00edder de TODO el instrumento (liquidez baja respecto del instrumento).\n  3. Excluida si tiene menos de la mitad de los minutos t\u00edpicos (sesi\u00f3n truncada o cierre temprano).\n  4. Con salvedad (no excluida) si el contrato tiene fuentes en conflicto material (> 1 % de diferencia de trades en m\u00e1s del 10 % de los d\u00edas comunes).\n  5. Excluida toda sesi\u00f3n desde 2026-10-01 (holdout formal).\nVeredicto por instrumento: APROBADO (>= 85 % de las sesiones elegibles aprobadas y sin salvedades), CON_SALVEDADES (>= 60 %), NO_RECOMENDADO (< 60 %).",
  "holdout_first_trade_date": "2026-10-01",
  "dataset_roles": [
@@ -301,6 +301,15 @@
    "instruments": [],
    "private": true,
    "mb": 0,
+   "note": ""
+  },
+  {
+   "slug": "edgelab-data-catalog",
+   "role": "DERIVADO (cach\u00e9 / inventario)",
+   "approved_sessions_supplied": 0,
+   "instruments": [],
+   "private": true,
+   "mb": 1,
    "note": ""
   }
  ],

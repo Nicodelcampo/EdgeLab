@@ -1,5 +1,5 @@
 {
- "generated_utc": "2026-10-04T23:11:53Z",
+ "generated_utc": "2026-10-04T23:30:46Z",
  "holdout_first_trade_date": "2026-10-01",
  "datasets": [
   {
@@ -209,7 +209,6 @@
    "tick_files": [],
    "unrecognized_parquet": [
     {
-     "file": "l1_quotes/20260615.parquet",
      "columns": [
       "side",
       "price",
@@ -217,10 +216,12 @@
       "source_row",
       "ts_us",
       "price_tick"
-     ]
+     ],
+     "files": 2,
+     "rows": 1641690,
+     "example": "l1_quotes/20260531.parquet"
     },
     {
-     "file": "l2_depth/20260615.parquet",
      "columns": [
       "side",
       "operation",
@@ -230,7 +231,10 @@
       "source_row",
       "ts_us",
       "price_tick"
-     ]
+     ],
+     "files": 2,
+     "rows": 4639648,
+     "example": "l2_depth/20260531.parquet"
     }
    ],
    "top_level_files": []
@@ -275,7 +279,6 @@
    ],
    "unrecognized_parquet": [
     {
-     "file": "l2_contexts_NQ_labels.parquet",
      "columns": [
       "instrument",
       "contract",
@@ -298,7 +301,10 @@
       "flow_toxicity_score",
       "minute_start_utc_us",
       "available_utc_us"
-     ]
+     ],
+     "files": 1,
+     "rows": 83421,
+     "example": "l2_contexts_NQ_labels.parquet"
     }
    ],
    "top_level_files": [
@@ -355,11 +361,29 @@
    "private": true,
    "bytes": 7843034,
    "last_updated": "2026-08-30T03:40:55.733Z",
-   "kind": "artefactos/evidencia",
+   "kind": "tabular/otro",
    "n_files": 8,
    "readme_excerpt": null,
    "tick_files": [],
-   "unrecognized_parquet": [],
+   "unrecognized_parquet": [
+    {
+     "columns": [
+      "config_id",
+      "contract",
+      "cme_session_id",
+      "event_time_ns",
+      "source_row",
+      "direction",
+      "signal_price_ticks",
+      "a_score",
+      "a_threshold",
+      "event_key"
+     ],
+     "files": 5,
+     "rows": 152695,
+     "example": "coordinates/bt2a_nq_7e84981882b0b380/NQ_03-26.parquet"
+    }
+   ],
    "top_level_files": [
     "bt2a_nq_selected_configuration_2026-08-29.json",
     "coordinate_manifest.json",
@@ -391,7 +415,6 @@
    "tick_files": [],
    "unrecognized_parquet": [
     {
-     "file": "tick_25_IMB30_VOL10_coords.parquet",
      "columns": [
       "contract",
       "session_id",
@@ -403,7 +426,10 @@
       "bar_idx",
       "source_row",
       "direction"
-     ]
+     ],
+     "files": 1,
+     "rows": 516971,
+     "example": "tick_25_IMB30_VOL10_coords.parquet"
     }
    ],
    "top_level_files": [
@@ -424,7 +450,6 @@
    "tick_files": [],
    "unrecognized_parquet": [
     {
-     "file": "bt2a_nq_creation_events.parquet",
      "columns": [
       "config_id",
       "contract",
@@ -436,7 +461,10 @@
       "a_score",
       "a_threshold",
       "event_key"
-     ]
+     ],
+     "files": 1,
+     "rows": 152695,
+     "example": "bt2a_nq_creation_events.parquet"
     }
    ],
    "top_level_files": [
@@ -449,11 +477,29 @@
    "private": true,
    "bytes": 72112530,
    "last_updated": "2026-08-29T18:14:52.193Z",
-   "kind": "artefactos/evidencia",
+   "kind": "tabular/otro",
    "n_files": 474,
    "readme_excerpt": null,
    "tick_files": [],
-   "unrecognized_parquet": [],
+   "unrecognized_parquet": [
+    {
+     "columns": [
+      "config_id",
+      "contract",
+      "cme_session_id",
+      "event_time_ns",
+      "source_row",
+      "direction",
+      "signal_price_ticks",
+      "a_score",
+      "a_threshold",
+      "event_key"
+     ],
+     "files": 234,
+     "rows": 1380411,
+     "example": "coordinates/bt2a_nq_03e9678fb202bf82/NQ_09-25.parquet"
+    }
+   ],
    "top_level_files": [
     "contract_status_NQ_09-25.json",
     "contract_status_NQ_12-25.json",
@@ -561,11 +607,67 @@
    "private": true,
    "bytes": 95139764,
    "last_updated": "2026-09-19T13:37:13.25Z",
-   "kind": "artefactos/evidencia",
+   "kind": "tabular/otro",
    "n_files": 301,
    "readme_excerpt": null,
    "tick_files": [],
-   "unrecognized_parquet": [],
+   "unrecognized_parquet": [
+    {
+     "columns": [
+      "zone_id",
+      "instrument",
+      "contract",
+      "month",
+      "session_id",
+      "indicator",
+      "indicator_version",
+      "config_id",
+      "origin_ts",
+      "signal_available_ts",
+      "executable_fill_ts",
+      "fill_status",
+      "bar_key",
+      "side",
+      "bottom",
+      "top",
+      "tick_size",
+      "height_ticks",
+      "total_vol",
+      "vol_rate",
+      "pasos",
+      "formation_duration_ms",
+      "causal_delay_ms",
+      "state",
+      "termination_reason",
+      "availability_quality",
+      "source_sha256",
+      "engine_version",
+      "causal_status"
+     ],
+     "files": 144,
+     "rows": 3328710,
+     "example": "zone_events/instrument=6B/contract=6B_03-26/6B_03-26_25T.parquet"
+    },
+    {
+     "columns": [
+      "instrument",
+      "contract",
+      "month",
+      "session_id",
+      "trade_date",
+      "ticks",
+      "tick25_bars",
+      "candidates",
+      "zones",
+      "start_utc_ns",
+      "end_utc_ns",
+      "source_sha256"
+     ],
+     "files": 111,
+     "rows": 2985,
+     "example": "session_inventory/instrument=6B/contract=6B_03-26/6B_03-26_25T.parquet"
+    }
+   ],
    "top_level_files": [
     "HYPOTHESIS_REGISTRY_AUDITED.jsonl",
     "README.md",
@@ -852,7 +954,7 @@
    "slug": "edgelab-dukascopy-xauusd-ticks-m1",
    "private": true,
    "bytes": 0,
-   "last_updated": "2026-10-04T22:39:37.55Z",
+   "last_updated": "2026-10-04T23:13:41.237Z",
    "kind": "ticks",
    "n_files": 40,
    "readme_excerpt": "# XAU/USD Dukascopy \u2014 ticks y M1 (privado, EdgeLab)\nOrigen: Dukascopy v\u00eda JForex (`IHistory.getTicks` por hora, `getBars` M1 bid/ask), estrategia `tools/jforex/HistDownloader.java`.\nTodo en UTC. Meses COMPLETOS incluidos: 2024-01..07, 2025-03..08, 2025-10..2026-03 (los dem\u00e1s se agregan en versiones nuevas).\n- `ticks/XAUUSD_YYYY-MM.parquet`: time_utc_ns (int64, ascendente), bid, ask (float64), bid_vol, ask_vol (float32).\n- `m1/XAUUSD_m1_YYYY-MM.parquet`: time_utc_ns (inicio de vela, UTC) + bid_/ask_ open, high, low, close, vol.\n- `calidad.json`: ticks por d\u00eda, huecos > 5 min en horario de mercado, monoton\u00eda, bid \u2264 ask, precios \u2264 0, M1 derivado vs M1\n  Dukascopy (100 % id\u00e9nticos en la semana comparada), tiempos de descarga. Datos sin modificar ni filtrar.\nD\u00edas sin datos esperables: Viernes Santo (2024-03-29, 2025-04-18, 2026-04-03); domingos con pocos ticks (abre 22:00 UTC);\npausa diaria 21:00\u201322:00 UTC. Holdout EdgeLab (desde 2026-10-01) NO incluido.\n",
@@ -900,6 +1002,59 @@
    "top_level_files": [
     "README.md",
     "calidad.json"
+   ]
+  },
+  {
+   "slug": "edgelab-data-catalog",
+   "private": true,
+   "bytes": 529551,
+   "last_updated": "2026-10-04T23:16:56.977Z",
+   "kind": "artefactos/evidencia",
+   "n_files": 184,
+   "readme_excerpt": null,
+   "tick_files": [],
+   "unrecognized_parquet": [],
+   "top_level_files": [
+    "CURATED.md",
+    "DATASETS.md",
+    "INSTRUMENTS.md",
+    "ISSUES.md",
+    "README.md",
+    "REEXPORT.md",
+    "TICK_FILES.md",
+    "catalog.json",
+    "curated.json",
+    "datasets.json",
+    "scan__edgelab-bt2-v2-nq-artifacts__tick_25_IMB30_VOL10_coords.parquet.json",
+    "scan__edgelab-bt2a-nq-event-store__bt2a_nq_creation_events.parquet.json",
+    "scan__edgelab-dukascopy-xauusd-ticks-m1__m1__XAUUSD_m1_2024-01.parquet.json",
+    "scan__edgelab-dukascopy-xauusd-ticks-m1__m1__XAUUSD_m1_2024-02.parquet.json",
+    "scan__edgelab-dukascopy-xauusd-ticks-m1__m1__XAUUSD_m1_2024-03.parquet.json",
+    "scan__edgelab-dukascopy-xauusd-ticks-m1__m1__XAUUSD_m1_2024-04.parquet.json",
+    "scan__edgelab-dukascopy-xauusd-ticks-m1__m1__XAUUSD_m1_2024-05.parquet.json",
+    "scan__edgelab-dukascopy-xauusd-ticks-m1__m1__XAUUSD_m1_2024-06.parquet.json",
+    "scan__edgelab-dukascopy-xauusd-ticks-m1__m1__XAUUSD_m1_2024-07.parquet.json",
+    "scan__edgelab-dukascopy-xauusd-ticks-m1__m1__XAUUSD_m1_2025-03.parquet.json",
+    "scan__edgelab-dukascopy-xauusd-ticks-m1__m1__XAUUSD_m1_2025-04.parquet.json",
+    "scan__edgelab-dukascopy-xauusd-ticks-m1__m1__XAUUSD_m1_2025-05.parquet.json",
+    "scan__edgelab-dukascopy-xauusd-ticks-m1__m1__XAUUSD_m1_2025-06.parquet.json",
+    "scan__edgelab-dukascopy-xauusd-ticks-m1__m1__XAUUSD_m1_2025-07.parquet.json",
+    "scan__edgelab-dukascopy-xauusd-ticks-m1__m1__XAUUSD_m1_2025-08.parquet.json",
+    "scan__edgelab-dukascopy-xauusd-ticks-m1__m1__XAUUSD_m1_2025-10.parquet.json",
+    "scan__edgelab-dukascopy-xauusd-ticks-m1__m1__XAUUSD_m1_2025-11.parquet.json",
+    "scan__edgelab-dukascopy-xauusd-ticks-m1__m1__XAUUSD_m1_2025-12.parquet.json",
+    "scan__edgelab-dukascopy-xauusd-ticks-m1__m1__XAUUSD_m1_2026-01.parquet.json",
+    "scan__edgelab-dukascopy-xauusd-ticks-m1__m1__XAUUSD_m1_2026-02.parquet.json",
+    "scan__edgelab-dukascopy-xauusd-ticks-m1__m1__XAUUSD_m1_2026-03.parquet.json",
+    "scan__edgelab-dukascopy-xauusd-ticks-m1__ticks__XAUUSD_2024-01.parquet.json",
+    "scan__edgelab-dukascopy-xauusd-ticks-m1__ticks__XAUUSD_2024-02.parquet.json",
+    "scan__edgelab-dukascopy-xauusd-ticks-m1__ticks__XAUUSD_2024-03.parquet.json",
+    "scan__edgelab-dukascopy-xauusd-ticks-m1__ticks__XAUUSD_2024-04.parquet.json",
+    "scan__edgelab-dukascopy-xauusd-ticks-m1__ticks__XAUUSD_2024-05.parquet.json",
+    "scan__edgelab-dukascopy-xauusd-ticks-m1__ticks__XAUUSD_2024-06.parquet.json",
+    "scan__edgelab-dukascopy-xauusd-ticks-m1__ticks__XAUUSD_2024-07.parquet.json",
+    "scan__edgelab-dukascopy-xauusd-ticks-m1__ticks__XAUUSD_2025-03.parquet.json",
+    "scan__edgelab-dukascopy-xauusd-ticks-m1__ticks__XAUUSD_2025-04.parquet.json"
    ]
   }
  ],

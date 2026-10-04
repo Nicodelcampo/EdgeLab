@@ -44,7 +44,7 @@ def main():
     for d in cat["datasets"]:
         D+=["",f"## `{d['slug']}`","",f"Tipo: {d['kind']}. {mb(d['bytes'])}. {d['n_files']} archivos."]
         if d["tick_files"]:D.append("Archivos de ticks: "+", ".join(f"`{f}`" for f in d["tick_files"]))
-        if d["unrecognized_parquet"]:D.append("Parquet con esquema no reconocido: "+"; ".join(f"`{u['file']}` columnas {u['columns']}" for u in d["unrecognized_parquet"]))
+        if d["unrecognized_parquet"]:D+=["","Parquet que no son ticks (artefactos), agrupados por esquema:","","| Archivos | Filas | Ejemplo | Columnas |","|---:|---:|---|---|"]+[f"| {u['files']} | {u['rows']:,} | `{u['example']}` | {', '.join(u['columns'][:12])}{' …' if len(u['columns'])>12 else ''} |" for u in d["unrecognized_parquet"]]
         if d["top_level_files"] and not d["tick_files"]:D.append("Archivos (primeros): "+", ".join(f"`{f}`" for f in d["top_level_files"][:15]))
         if d["readme_excerpt"]:D+=["","README del dataset (extracto):","","```",d["readme_excerpt"][:900],"```"]
     (o/"DATASETS.md").write_text("\n".join(D)+"\n")

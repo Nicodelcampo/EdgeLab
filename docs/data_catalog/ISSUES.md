@@ -32,7 +32,7 @@ Escrito a mano el 2026-10-04 con cifras de `catalog.json` y notas de la historia
 
 ## 4. Límites de este inventario
 
-- Se escanearon los parquet de ticks y barras (≥ 5 MB o con «ticks» en el nombre, y todo el dataset de Dukascopy); los parquet chicos de artefactos de NQ y los eventos de `edge-factory` se listan en `DATASETS.md` pero **no se escanearon**.
+- Se escanearon **todos** los parquet de los 30 datasets (ticks, barras M1 y artefactos). Los de artefactos (coordenadas de NQ, eventos, `edge-factory`) se agrupan por esquema en `DATASETS.md`; un archivo de `edgelab-nq-selection-checkpoints` (`NQ_09-25.parquet` de un checkpoint) no se pudo bajar.
 - Los README y manifiestos de algunos datasets no se pudieron bajar (límite de tasa 429 o 403 de Kaggle): sus extractos faltan en `DATASETS.md`.
 - Las sesiones se asignan con la convención de fecha de trading CME; los datos spot usan la misma convención para poder compararse con los futuros.
 

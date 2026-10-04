@@ -48,6 +48,13 @@ def load_scans(root:Path)->list[dict]:
     for f in sorted(glob.glob(str(root/"scan"/"*"/"*.json"))):out.append(json.loads(Path(f).read_text()))
     return out
 
+def _group_other(other:list[dict])->list[dict]:
+    """Parquet que no son ticks ni barras M1 (artefactos): agrupados por esquema, con cantidad de archivos, filas y un ejemplo."""
+    g={}
+    for s in other:
+        k=tuple(s["columns"]);e=g.setdefault(k,{"columns":list(k),"files":0,"rows":0,"example":s["file"]});e["files"]+=1;e["rows"]+=s.get("rows",0)
+    return sorted(g.values(),key=lambda e:-e["files"])
+
 def build(root:Path)->dict:
     listing=json.loads((root/"datasets.json").read_text());scans=load_scans(root);by_ds=defaultdict(list)
     for s in scans:by_ds[s["dataset"]].append(s)
@@ -57,7 +64,7 @@ def build(root:Path)->dict:
         kind="ticks" if tick else ("tabular/otro" if other else ("codigo" if "code" in d["slug"] else "artefactos/evidencia"))
         rd=root/"text"/d["slug"]/"README.md";readme=rd.read_text()[:1500] if rd.exists() else None
         datasets.append({"slug":d["slug"],"private":d["private"],"bytes":d["bytes"],"last_updated":d["last_updated"],"kind":kind,"n_files":len(files),"readme_excerpt":readme,
-                         "tick_files":[s["file"] for s in tick],"unrecognized_parquet":[{"file":s["file"],"columns":s["columns"]} for s in other],"top_level_files":[f["name"] for f in files if "/" not in f["name"]][:40]})
+                         "tick_files":[s["file"] for s in tick],"unrecognized_parquet":_group_other(other),"top_level_files":[f["name"] for f in files if "/" not in f["name"]][:40]})
     # --- fuentes por contrato
     files=[];stubs=[];spot=defaultdict(lambda:{"ticks":{},"m1":{}})
     SPOT_RE=re.compile(r"(?P<sym>[A-Z]{6})_(?:m1_)?(?P<ym>\d{4}-\d{2})")

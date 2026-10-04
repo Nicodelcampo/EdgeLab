@@ -234,3 +234,4 @@ Excluidas: sesion_truncada: 1. Sesiones con salvedad por fuentes en conflicto: 0
 | `mnq-parquet` | PRIMARIO (aporta sesiones aprobadas) | 30 | MNQ | **NO** | 500 | PÚBLICO: pasarlo a privado |
 | `edgelab-discovery-cache` | DERIVADO (caché / inventario) | 0 | - | sí | 58 |  |
 | `edgelab-dukascopy-xauusd-ticks-m1` | SPOT (no es futuro): ver la sección de Dukascopy | 0 | - | sí | 0 |  |
+| `edgelab-data-catalog` | DERIVADO (caché / inventario) | 0 | - | sí | 1 |  |

@@ -1,6 +1,6 @@
 # Catálogo de instrumentos (generado)
 
-Generado 2026-10-04T23:11:53Z. Fuente de verdad: `catalog.json`. Holdout formal: sesiones de trading desde **2026-10-01** (HOLDOUT-A1): no leer.
+Generado 2026-10-04T23:30:46Z. Fuente de verdad: `catalog.json`. Holdout formal: sesiones de trading desde **2026-10-01** (HOLDOUT-A1): no leer.
 
 ## Índice rápido
 
