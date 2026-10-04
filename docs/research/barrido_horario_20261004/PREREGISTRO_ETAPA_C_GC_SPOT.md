@@ -1,0 +1,40 @@
+# Etapa C — celda GC 04:15 probada en oro spot, datos posteriores (pre-registro, 2026-10-04)
+
+Estado: escrito ANTES de descargar o calcular ningún resultado con estos datos. Los ticks de COMEX (GC) no existen en Kaggle después del 2026-06-30, así que la prueba fuera de muestra se hace con **XAU/USD spot de Dukascopy** (ticks con bid y ask, gratuitos, `datafeed.dukascopy.com`), que es el mismo activo económico pero otro mercado. Esto es una prueba de la **hipótesis**, no una réplica exacta de la ejecución en futuros.
+
+## Qué se congela
+La celda base de la etapa B: franja 04:15 hora de Chicago, días hábiles, condición «subida de los 15 minutos previos» (estricta, > 0), **corto**, salida por tiempo a 15 minutos, sin stop ni objetivo. No se prueba ninguna otra celda, franja ni salida. Comisión de ida y vuelta equivalente a USD 4,50 por contrato de GC (0,45 ticks).
+
+## Diferencias entre fuentes (declaradas)
+- Dukascopy publica cotizaciones (bid y ask), no operaciones. El precio de referencia de las barras es el **punto medio** `(bid + ask)/2`; la última cotización de cada minuto define el cierre de la barra de 1 minuto. El spread medio en la hora de la muestra fue ≈ USD 0,61, aproximadamente el doble que el spread de COMEX en la ventana (3 ticks = USD 0,30). Es un costo más duro: un resultado positivo en spot es **conservador** respecto al costo de futuros, pero la dinámica puede diferir.
+- Unidades: todo se expresa en «ticks de GC» = USD 0,10 (1 punto de oro = 10 ticks).
+- Horas: 04:15 CT corresponde a 09:15 UTC (horario de verano de EE. UU.) o 10:15 UTC (invierno): siempre 10:15 en Londres. Se descargan solo las horas UTC que cubren desde 17 minutos antes de la franja hasta 18 minutos después.
+
+## Definición operativa
+- `b1 = franja + 1 min`. Condición: `mid(cierre del minuto que termina en b1) − mid(cierre del minuto que termina en b1 − 15 min) > 0`.
+- Entrada: primer tick con sello ≥ `franja + 2 min`, vende al bid. Salida: primer tick con sello ≥ `entrada_referencia + 15 min`, compra al ask.
+- Sesión elegible solo si hay al menos 50 cotizaciones en los 15 minutos de la ventana de la operación y al menos 50 en los 15 minutos previos. No se interpola.
+
+## Paso 1 — Calibración de la fuente (no prueba edge)
+Se descargan las sesiones de abril a junio de 2026, que ya existen en los ticks de GC. Se compara, sesión por sesión, spot contra GC con la misma celda:
+- Concordancia del signo de la condición «subida de los 15 minutos previos»: ≥ 85 % de las sesiones.
+- Correlación del resultado neto de las sesiones en que ambas fuentes disparan la operación: ≥ 0,6.
+- Si no se cumple cualquiera, la fuente spot **no es equivalente** y la prueba fresca se declara no informativa (no se calcula ni se reporta como confirmación o refutación).
+
+## Paso 2 — Prueba principal (sesiones nuevas: 2026-07-01 a 2026-10-02)
+- Estadístico: media neta por operación en ticks de GC para las sesiones que disparan la condición.
+- Prueba: nulo de dirección sorteada por sesión sobre las operaciones de la celda (el mismo estadístico de la etapa B: `z = Σ (neto_corto − neto_largo)/2 / √V`), 20.000 sorteos, semilla 20261008, unilateral.
+- Decisión (una sola vez, sin ajustes posteriores):
+  - **Replica** si la media neta > 0 **y** p ≤ 0,05.
+  - **No replica** si la media neta ≤ 0.
+  - **Inconcluso** si la media neta > 0 pero p > 0,05.
+- Potencia declarada: con ≈ 35 operaciones y desvío de ≈ 68 ticks por operación (medido en los datos de GC), un efecto de +21,3 ticks da un z esperado de ≈ 1,9 (potencia alrededor del 55 %); un efecto de +10, z ≈ 0,9. Un resultado «inconcluso» es el más probable aunque el efecto exista.
+
+## Pruebas secundarias (descriptivas, sin regla de decisión)
+«Corto sin condición» a las 04:15 en las mismas sesiones (≈ 65 operaciones) y «largo tras bajada». También la media por mes.
+
+## Contador de pruebas
++2 pruebas (principal y sin condición), en una campaña nueva.
+
+## Predicción registrada
+Espero un resultado «inconcluso» o «no replica». Si el efecto de la etapa B fuera mayormente un artefacto de selección, la media neta fuera de muestra estará cerca de cero o será negativa.
