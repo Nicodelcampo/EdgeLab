@@ -45,3 +45,9 @@ Espero un resultado «inconcluso» o «no replica». Si el efecto de la etapa B 
 - **Paso 2 (prueba principal).** Sin cambios: celda congelada, nulo de dirección por sesión, 20.000 sorteos, semilla 20261008, unilateral, decisión «Replica / No replica / Inconcluso». Pruebas secundarias descriptivas: «corto sin condición» y «largo tras bajada».
 - **Potencia.** Con 13 sesiones habrá unas 6 a 7 operaciones con la condición. Con +21,3 ticks de efecto y 68 de desvío, el z esperado es ≈ 0,8: la potencia es muy baja. **Inconcluso es el resultado casi seguro** aunque el efecto exista. Una media neta negativa solo se podrá leer como compatible con una mala racha o con ausencia de efecto.
 - Para el contador de pruebas rige lo ya registrado (+2).
+
+## Enmienda C2 — orden de las corridas y qué cuenta como decisión (escrita antes de correr, 2026-10-04)
+- **Corrida R1:** celda congelada sobre las sesiones del **14 al 30 de septiembre** (posteriores a la publicación del 10-sep), una sola vez, como se pidió.
+- **Corrida R2:** R1 más las sesiones del **1 al 9 de julio** que ya estaban descargadas (1, 2, 3, 6, 7, 8 y 9; el 3 de julio es feriado y entra solo si cumple la elegibilidad de cotizaciones). Es una ampliación de la misma prueba.
+- **Qué cuenta como decisión.** R1 y R2 son **miradas intermedias** del mismo contraste. Se reportan como descriptivas, sin declarar «Replica», «No replica» o «Inconcluso». La **regla de decisión de la enmienda C1 se aplica una sola vez, a la ventana completa** del 1 de julio al 30 de septiembre, cuando esté descargado también el tramo del 10 de julio al 10 de septiembre (descarga pedida por el usuario). Así no se acumulan varias pruebas al 5 % sobre las mismas sesiones.
+- Los resultados de R1 se registran tal como salgan; no se modifica ninguna regla de la celda después de verlos.
