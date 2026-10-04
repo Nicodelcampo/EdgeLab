@@ -3,7 +3,7 @@
 Pre-registro: `PREREGISTRO_EMBUDO.md` (y su enmienda 1, escrita al ver los resultados 1–5 y antes de correr los controles de deriva). Números: `resultados_embudo.json`. Contador de pruebas: `trial_registry.jsonl` (63 pruebas, cadena válida). La lógica de la estrategia no está en este repositorio.
 
 ## Veredicto final
-**`EDGE_NO_CONFIRMADO`.** Antes del holdout la réplica era un candidato (ver abajo); la confirmación única en el holdout de MNQ (jul–sep 2026) **falló** los criterios pre-registrados, y la apertura posterior de la cesta MES+RTY+YM (enmienda 5) tampoco los cumplió (efecto positivo pero IC95 que incluye 0; ver su sección).
+**`EDGE_NO_CONFIRMADO`.** Antes del holdout la réplica era un candidato (ver abajo); la confirmación única en el holdout de MNQ (jul–sep 2026) **falló** los criterios pre-registrados, y las aperturas posteriores de las cestas MES+RTY+YM (enmienda 5) y ES+NQ (enmienda 6) tampoco los cumplieron (efecto positivo pero IC95 que incluye 0; ver sus secciones).
 
 | Holdout MNQ, serie correctamente especificada (corrida 3, enmienda 4) | |
 |---|---:|
@@ -86,6 +86,21 @@ Nulos sobre la cesta: dirección por sesión **p = 0,066**; dirección que prese
 **Defecto declarado.** La mediana de volumen de 12-26 se calculó con todos sus días desde julio, incluidos los de contrato lejano (mediana de 149 contratos en RTY), de modo que su umbral de elegibilidad fue casi nulo. Cumple la letra de la enmienda, no su intención. Sensibilidad post hoc con la mediana calculada solo en los días en que cada contrato es líder (`holdout_cesta_sensibilidad_elegibilidad.json`): media +13,44 USD, IC95 −25,6 a +61,7, p = 0,065 / 0,016 / 0,015. El defecto no cambia el resultado. El resultado principal sigue siendo el pre-registrado.
 
 **Cómo leerlo.** El efecto sigue siendo positivo en la cesta y no es deriva de mercado (los dos nulos que fijan la exposición pasan), pero el intervalo es muy ancho (60 sesiones) y el resultado depende de YM y RTY: MES, el contrato con más volumen, fue negativo. MNQ, medido antes con la misma especificación, también fue negativo (−4,4 ticks). El conjunto de los cuatro mercados no es una confirmación ni una refutación limpia.
+
+## Holdout de la cesta ES + NQ (enmienda 6, una sola apertura)
+Datos: `edgelab-ticks-es-nq-2026q3-ext` (generado bajo HOLDOUT-A1). Sesiones completas del catálogo del dataset: ES 52 y NQ 57, del 2026-07-01 al 2026-09-25. Cesta de 1 ES + 1 NQ, USD netos de comisión (USD 4,50 por contrato).
+
+| | Operaciones | Sesiones | Media neta por operación | «Siempre largo» |
+|---|---:|---:|---:|---:|
+| ES | 501 | 52 | +7,98 USD (+0,64 ticks) | −22,54 USD |
+| NQ | 560 | 57 | +84,71 USD (+16,9 ticks) | −14,98 USD |
+| **Cesta** | **622** | **59** | **+82,69 USD** (IC95 **−66,4 a +256,1**) | **−31,64 USD** |
+
+Nulos sobre la cesta: dirección por sesión **p = 0,080**; dirección que preserva exposición **p = 0,024**; calendarios placebo **p = 0,020**.
+
+**Criterio pre-registrado: no se cumple.** El IC95 incluye 0 y el nulo de dirección queda en 0,080. Se cumplen la media positiva, la superación de «siempre largo» y dos de los tres nulos. Resultado: **NO CONFIRMADO**, la misma forma que la cesta MES+RTY+YM.
+
+**Cómo leerlo.** Con las dos cestas, los nulos que fijan la exposición y los calendarios placebo salen significativos (p entre 0,015 y 0,024), pero el IC incluye 0 y el nulo de dirección queda entre 0,066 y 0,080. Es compatible con un efecto de horario real pero pequeño frente al ruido de 60 sesiones; no permite afirmarlo. El resultado de NQ (+16,9 ticks) contrasta con el de MNQ medido antes sobre el mismo índice (−4,4 ticks): conjuntos de sesiones distintos (57 de NQ frente a 41 de MNQ) y un costo por punto distinto (USD 4,50 por NQ frente a USD 1,90 por un MNQ, casi 4 veces más por punto), lo que explica unos 3 ticks del contraste y deja el resto como ruido de muestra. Lecturas posteriores a junio, en ticks netos por operación: MNQ −4,4; MES −2,2; RTY +1,3; YM +2,8; ES +0,6; NQ +16,9. Los índices no son independientes entre sí.
 
 ## Lectura final
 1. Hay un patrón de calendario que funcionó en 2025-08 a 2026-06 en todos los índices de acciones y que no es deriva ni suerte de una sola regla; es coherente con una estacionalidad intradía real o con un régimen de esos diez meses.
