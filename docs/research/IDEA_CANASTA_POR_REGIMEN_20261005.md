@@ -114,6 +114,27 @@ de esas estrategias es rentable en los trades restantes? Es persistencia **dentr
 - **Volatilidad agrupada ≠ P&L agrupado:** los retornos casi no se autocorrelacionan, su magnitud sí. Una canasta
   rachosa suele reflejar régimen de volatilidad/tendencia del mercado, que puede medirse directamente.
 
+## 7. Familia EdgeReplica (celdas horarias) frente a regímenes — veredicto cualitativo (2026-10-05, sin medir)
+Familia: reglas día-de-semana × hora Chicago × dirección × hold (15/30/60) × filtro de 15 min (MNQ; variante oro =
+celda 04:15; NQ quedó "sobreajustada"). Veredicto:
+- **Así como está: útil sólo como banco de pruebas, no como candidata.** Es un universo fijo, con muchos trades por
+  canasta y una historia de fallo conocida (NQ), ideal para probar si un método de régimen distingue "funciona a
+  ratos" de "ruido". Como candidata a operar, no: es una familia minada (~10⁴ celdas) y elegir por régimen encima es
+  una segunda selección; además cada celda individual tiene ~50 trades/año, así que el régimen sólo es medible a
+  nivel canasta o grupo.
+- **Con agregados: sí, con un cambio de base.** Lo que le falta es una razón económica por celda. Agregados que la
+  mejoran: (a) agrupar celdas por mecanismo (apertura de Europa, datos 07:30 CT, apertura cash 08:30, cierre 15:00,
+  reapertura 17:00, fixing LBMA para oro) en vez de celdas sueltas; (b) condicionar a un régimen diario observable
+  antes (volatilidad overnight, gap, día de dato macro, vencimiento); (c) ponderación suave por canasta (pesos
+  multiplicativos) en vez de elegir celdas.
+- **Como inspiración: es su mayor valor.** Su estructura (evento de calendario fijo → ventana corta → salida por
+  tiempo) es la más fácil de condicionar por régimen y de auditar, porque el "cuándo" es exógeno y no depende del
+  precio. Lógicas hermanas a probar con el mismo molde: reacción a datos macro programados, rebalanceo de cierre
+  (momentum de última media hora condicionado a la primera), efecto de reapertura dominical, fixings (LBMA, WM/R
+  16:00 Londres para 6E/6B/6J), vencimientos y rolls.
+Regla de uso: cualquier prueba de régimen sobre esta familia cuenta en `TRIAL_REGISTRY_GLOBAL.jsonl` sumando las
+variantes ya probadas (oro y NQ), y va después del pre-registro de la celda 04:15 para no contaminarlo.
+
 ## Fuentes
 - AQR / Gupta y Kelly, Factor Momentum Everywhere — https://alphaarchitect.com/is-factor-momentum-really-everywhere/
 - Institutional Investor, Factor Momentum Is Real — https://institutionalinvestor.com/article/b1cmczbjjl4qgs/Factor-Momentum-Is-Real-Researchers-Argue
