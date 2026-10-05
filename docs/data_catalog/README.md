@@ -32,7 +32,7 @@ Archivos de este catálogo (todos generados por `tools/data_catalog_build.py`; *
 
 ## Custodia
 - **Holdout formal (HOLDOUT-A1): sesiones de trading desde 2026-10-01. No leer.** Julio a septiembre de 2026 es exploración.
-- Los ticks de NinjaTrader/CME están bajo `ABSTAIN_LICENSE`: mantener los datasets privados. Dos datasets (`mnq-parquet`, `mnq-tick-data`) están públicos temporalmente: ver `ISSUES.md`.
+- Los ticks de NinjaTrader/CME se mantienen **privados**. `ABSTAIN_LICENSE` se levantó el 2026-10-05 sólo para compartir con gonzaloescobar (ver `docs/decisions/DECISION_20261005_RESEARCH_V2_LICENCIA.md`). `mnq-parquet` verificado privado el 2026-10-05; `mnq-tick-data` no existe en la cuenta.
 
 ## Regenerar el catálogo
 ```bash
