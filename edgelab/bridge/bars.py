@@ -227,7 +227,22 @@ def build_footprints(ticks: TickSeries, bars: BarSeries, nt8_subseries: bool = F
     nb = len(bars)
     if nt8_subseries:
         ends = np.asarray(bars.end_ns, dtype=np.int64)
-        assign = np.searchsorted(ends, np.asarray(ticks.ts_ns, dtype=np.int64), side="right")
+        ts_all = np.asarray(ticks.ts_ns, dtype=np.int64)
+        assign = np.searchsorted(ends, ts_all, side="right")
+        # Varias barras primarias que cierran en el MISMO timestamp T (barras de ticks en ráfaga): NT8 intercala
+        # P(T), S(T), P(T), S(T)... → el j-ésimo tick con timestamp T va a la barra L+1+j mientras queden barras en
+        # T; los demás, a la primera barra que cierra después de T (medido 2026-10-05, MNQ 12-26 50t, barras
+        # 175583-175587).
+        L = np.searchsorted(ends, ts_all, side="left")
+        multi = np.flatnonzero((assign - L) > 1)
+        if len(multi):
+            prev_t, j = None, 0
+            for i in multi:
+                t = ts_all[i]
+                j = j + 1 if t == prev_t else 0
+                prev_t = t
+                if j < assign[i] - L[i] - 1:
+                    assign[i] = L[i] + 1 + j
         lo_t = np.asarray(bars.low_t); hi_t = np.asarray(bars.high_t)
     ask = [dict() for _ in range(nb)]
     bid = [dict() for _ in range(nb)]

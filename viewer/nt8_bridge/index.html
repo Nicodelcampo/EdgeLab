@@ -1369,6 +1369,16 @@
     <label class="pop-check"><input type="checkbox" id="chk-show-l2-spoofs" checked> <i class="dot dot-spoof"></i> Liquidez fugaz (✕, orden grande &lt;5 s)</label>
     <label class="pop-check"><input type="checkbox" id="chk-show-l2-absorptions" checked> <i class="dot dot-abs"></i> Absorción (▬)</label>
         </div>
+        <div class="ind-panel" data-ind="avcl" hidden>
+    <!-- EDGELAB_AVCL_LIVE_V1 (2026-10-05): aVolClusterPOI v0.5 calculado por el espejo Python validado (paridad NT8 3408/3408, MNQ 12-26 50t) -->
+    <div id="avcl-form" style="display:flex;flex-direction:column;gap:6px;font-size:10.5px;max-height:52vh;overflow-y:auto;padding-right:6px;"></div>
+    <div style="display:flex;gap:6px;align-items:center;margin-top:6px;">
+      <button class="nt8-dialog-btn sm" id="btn-avcl-run">Calcular</button>
+      <button class="nt8-dialog-btn sm" id="btn-avcl-reset">Valores de NT8</button>
+      <span id="lbl-avcl-status" style="font-size:9.5px;color:#666;"></span>
+    </div>
+    <div style="font-size:9px;color:#888;line-height:1.35;margin-top:4px;">Mismos parámetros, nombres y orden que en NinjaTrader. El cálculo lo hace el servidor del visor (server_avcl.py) con el kernel validado; los exports de diagnóstico sólo existen en NT8. Paridad medida en 50 tick; en 25 tick usa las mismas reglas pero sin oráculo propio.</div>
+        </div>
         <div class="ind-panel" data-ind="lux" hidden>
     <label class="pop-check pop-num">Máx. zonas LUX-IMB (0 = todas) <input type="number" id="inp-lux-max" min="0" max="20000" step="50" value="300"></label>
         </div>
@@ -3092,6 +3102,120 @@
     ctx.restore();
   }
 
+  // aVolClusterPOI en vivo (EDGELAB_AVCL_LIVE_V1): parámetros = los de NT8 (nombre, grupo, orden, rango, default).
+  var AVCL_FIELDS = [
+    ["1. Deteccion", [["window_bars","Window Bars (bloque)","int",10,2,500],["median_multiplier","Median Multiplier","num",2.0,1,100],
+      ["max_gap_ticks","Max Gap Ticks","int",1,0,50],["min_cluster_ticks","Min Cluster Ticks","int",2,1,100]]],
+    ["2. Deteccion", [["use_topk_hot_cells","Usar seleccion robusta (top-K)","bool",false],["hot_fraction","Hot Fraction (solo con top-K)","num",0.17,0.01,1]]],
+    ["2. Perfil horario", [["use_session_buckets","Session Relative Buckets","bool",true],["time_bucket_minutes","Time Bucket (minutos)","int",30,1,1440],
+      ["lookback_sessions","Lookback Sessions","int",20,1,200],["detection_percentile","Detection Percentile","num",98.0,50,100],
+      ["min_samples_per_bucket","Min Samples Per Bucket","int",20,1,100000]]],
+    ["3. Ranking predictivo", [["enable_predictive_filter","Enable Predictive Filter","bool",false],["min_quality_score","Min Quality Score","num",0,0,100],
+      ["max_distance_from_zone_ticks","Max Distance From Zone (ticks, 0=off)","int",80,0,100000],["rejection_full_score_ticks","Rejection Full Score (ticks)","int",12,1,10000],
+      ["reaction_horizon_bars","Reaction Horizon (bars)","int",50,1,100000],["reaction_target_ticks","Reaction Target (ticks)","int",12,1,100000],
+      ["reaction_stop_ticks","Reaction Stop (ticks)","int",8,1,100000]]],
+    ["4. Ciclo de vida", [["invalidation_mode","Invalidation Mode","enum","CloseThrough",["None","FirstTouch","CloseThrough"]],
+      ["max_age_bars","Max Age (barras, 0 = sin expiracion)","int",0,0,100000],["max_touches","Max Touches (0 = ilimitado)","int",0,0,1000]]],
+    ["5. Alerta de rafaga", [["burst_min_zones","Burst Min Zones (0 = off)","int",3,0,100],["burst_window_bars","Burst Window (barras)","int",200,1,100000],
+      ["burst_range_ticks","Burst Range (ticks)","int",40,1,10000]]],
+    ["6. Export y visual", [["opacity","Opacity","int",40,1,100],["visual_extend_bars","Visual Extend Bars","int",500,1,100000],
+      ["max_rendered_zones","Max Rendered Zones","int",500,10,100000],["remove_invalidated_zones","Remove Invalidated Zones","bool",false],
+      ["show_score_label","Show Score Label","bool",true],["show_outcome_labels","Show Outcome Labels","bool",false],["show_dashboard","Show Dashboard","bool",true],
+      ["dashboard_corner","Dashboard Corner","enum","TopRight",["TopRight","TopLeft","BottomRight","BottomLeft"]],
+      ["support_color","Support Color","color","#3CB371"],["resistance_color","Resistance Color","color","#CD5C5C"],["at_price_color","At Price Color","color","#4682B4"]]],
+    ["9. Diagnostico (opcional)", [["event_log_path","Event Log Path (vacio = off)","str",""],["diag_block_export_enabled","Diag Block Export Enabled","bool",false,"nt8"],
+      ["diag_block_export_path","Diag Block Export Path (vacio = off)","str","","nt8"],["bar_profile_log_path","Bar Profile Log Path (vacio = off)","str","","nt8"]]]
+  ];
+  var AVCL_VISUAL = ["opacity","visual_extend_bars","max_rendered_zones","remove_invalidated_zones","show_score_label","show_outcome_labels","show_dashboard","dashboard_corner","support_color","resistance_color","at_price_color"];
+  var avcl = { on: false, p: {}, res: null, busy: false };
+  function avclDefaults() { var o = {}; AVCL_FIELDS.forEach(function (g) { g[1].forEach(function (f) { o[f[0]] = f[3]; }); }); return o; }
+  (function () { var saved = null; try { saved = JSON.parse(localStorage.getItem("edgelab_avcl_params") || "null"); } catch (e) {}
+    avcl.p = Object.assign(avclDefaults(), saved || {}); })();
+  function avclStatus(t) { var e = document.getElementById("lbl-avcl-status"); if (e) e.textContent = t; }
+  function avclForm() {
+    var host = document.getElementById("avcl-form"); if (!host || host.dataset.built) return; host.dataset.built = "1";
+    AVCL_FIELDS.forEach(function (g) {
+      var hd = document.createElement("div"); hd.textContent = "▾ " + g[0]; hd.style.cssText = "font-weight:700;margin-top:4px;"; host.appendChild(hd);
+      g[1].forEach(function (f) {
+        var row = document.createElement("label"); row.style.cssText = "display:flex;align-items:center;gap:6px;justify-content:space-between;";
+        var sp = document.createElement("span"); sp.textContent = f[1]; row.appendChild(sp);
+        var inp;
+        if (f[2] === "bool") { inp = document.createElement("input"); inp.type = "checkbox"; inp.checked = !!avcl.p[f[0]]; }
+        else if (f[2] === "enum") { inp = document.createElement("select"); f[4].forEach(function (o) { var op = document.createElement("option"); op.value = op.textContent = o; inp.appendChild(op); }); inp.value = avcl.p[f[0]]; }
+        else if (f[2] === "color") { inp = document.createElement("input"); inp.type = "color"; inp.value = avcl.p[f[0]]; }
+        else { inp = document.createElement("input"); inp.type = f[2] === "str" ? "text" : "number"; inp.value = avcl.p[f[0]];
+               if (f[2] !== "str") { inp.min = f[4]; inp.max = f[5]; inp.step = f[2] === "int" ? 1 : "any"; } inp.style.width = f[2] === "str" ? "170px" : "80px"; }
+        if (f[4] === "nt8") { inp.disabled = true; inp.title = "Sólo en NT8"; }
+        inp.dataset.key = f[0]; inp.dataset.kind = f[2];
+        inp.addEventListener("change", function () {
+          var k = this.dataset.key, v = this.dataset.kind === "bool" ? this.checked : (this.dataset.kind === "int" ? parseInt(this.value, 10) :
+                  (this.dataset.kind === "num" ? parseFloat(this.value) : this.value));
+          avcl.p[k] = v; try { localStorage.setItem("edgelab_avcl_params", JSON.stringify(avcl.p)); } catch (e) {}
+          if (AVCL_VISUAL.indexOf(k) !== -1) { if (k === "visual_extend_bars") avclRun(); else requestDraw(); }
+          else avclStatus("Parámetros cambiados: tocá Calcular");
+        });
+        row.appendChild(inp); host.appendChild(row);
+      });
+    });
+  }
+  function avclRun() {
+    if (avcl.busy) return; avcl.busy = true; avclStatus("Calculando con el kernel validado…");
+    fetch("/api/avcl/run", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(avcl.p) })
+      .then(function (r) { return r.json(); })
+      .then(function (d) { avcl.busy = false; if (d.error) { avclStatus("Error: " + d.error); return; }
+        avcl.res = d; avclStatus(d.zones.length + " zonas en pantalla · " + d.dashboard.zones_total + " en total · " + d.seconds + " s"); requestDraw(); })
+      .catch(function (e) { avcl.busy = false; avclStatus("Sin servidor de cálculo (abrir con server_avcl.py): " + e); });
+  }
+  document.getElementById("btn-avcl-run").addEventListener("click", avclRun);
+  document.getElementById("btn-avcl-reset").addEventListener("click", function () {
+    avcl.p = avclDefaults(); try { localStorage.removeItem("edgelab_avcl_params"); } catch (e) {}
+    var hf = document.getElementById("avcl-form"); hf.innerHTML = ""; delete hf.dataset.built; avclForm(); avclRun(); });
+  function hexA(hex, a) { var n = parseInt(hex.slice(1), 16); return "rgba(" + ((n >> 16) & 255) + "," + ((n >> 8) & 255) + "," + (n & 255) + "," + a + ")"; }
+  function drawAvcl(ctx, w, h) {
+    if (!avcl.on || !avcl.res || !series) return;
+    var cd = activeCandlesArr(); if (!cd) return;
+    var lr = chart.timeScale().getVisibleLogicalRange(); if (!lr) return;
+    var P = avcl.p, tick = avcl.res.tick_size, op = (P.opacity || 40) / 100;
+    var zs = avcl.res.zones.slice(-Math.max(10, P.max_rendered_zones || 500));
+    var bw = Math.abs((logicalToX(1) || 0) - (logicalToX(0) || 0)) / 2;
+    ctx.save(); ctx.font = "10px -apple-system, Segoe UI, sans-serif";
+    zs.forEach(function (z) {
+      if (P.remove_invalidated_zones && !z.active) return;
+      if (z.b < lr.from - 2 || z.a > lr.to + 2) return;
+      var x1 = logicalToX(Math.max(z.a, Math.floor(lr.from))), x2 = z.extends ? w : logicalToX(Math.min(z.b, Math.ceil(lr.to)));
+      var y1 = series.priceToCoordinate((z.upper_tick + 0.5) * tick), y2 = series.priceToCoordinate((z.lower_tick - 0.5) * tick);
+      if (x1 === null || x2 === null || y1 === null || y2 === null) return;
+      x1 -= bw; if (!z.extends) x2 += bw;
+      var col = z.direction > 0 ? P.support_color : (z.direction < 0 ? P.resistance_color : P.at_price_color);
+      var ym = Math.min(y1, y2), hh = Math.max(1, Math.abs(y2 - y1));
+      ctx.fillStyle = hexA(col, op); ctx.fillRect(x1, ym, Math.max(1, x2 - x1), hh);
+      ctx.strokeStyle = hexA(col, 1); ctx.lineWidth = z.active ? 1.5 : 1; ctx.strokeRect(x1, ym, Math.max(1, x2 - x1), hh);
+      var t = null;
+      if (P.show_score_label && z.label) t = z.label;
+      if (P.show_outcome_labels && z.outcome) t = (t ? t + " | " : "") + z.outcome;
+      if (P.burst_min_zones > 0 && z.burst >= P.burst_min_zones) t = (t ? t + " " : "") + "[R x" + z.burst + "]";
+      if (t) { ctx.fillStyle = "rgba(255,255,255,0.95)"; ctx.fillText(t, Math.max(x1 + 4, 4), ym + 10); }
+    });
+    if (P.show_dashboard) {
+      var d = avcl.res.dashboard, o = d.outcomes, ev = o.target + o.stop, L = ["aVolClusterPOI v0.5 - off-price vs at-price", "---------------------------------------------",
+        d.buckets_ready > 0 ? "ESTADO: ACTIVO - " + d.buckets_ready + " franjas horarias listas" : "ESTADO: CALENTANDO - juntando historial",
+        "Sesiones completas: " + d.sessions_complete + " / " + P.lookback_sessions + " | Muestras: " + d.samples,
+        "Zonas activas: " + d.active + " (" + d.active_support + " soporte / " + d.active_resistance + " resistencia)",
+        "Creadas: " + d.zones_last_session + " en la sesion | " + d.zones_total + " en total",
+        "Reacciones: " + o.target + " target / " + o.stop + " stop / " + o.timeout + " timeout / " + o.ambiguous + " ambiguas"];
+      if (ev > 0) L.push("Aciertos (target vs stop): " + Math.round(100 * o.target / ev) + "% sobre " + ev + " evaluadas");
+      if (d.last_zone) L.push("Ultima zona: " + (d.last_zone.kind === "AT_PRICE" ? "AT-PRICE" : (d.last_zone.direction > 0 ? "SOPORTE" : "RESIST")) +
+        "  Q" + Math.round(d.last_zone.quality) + "  R" + d.last_zone.ratio.toFixed(2) + "  @ " + d.last_zone.mid.toFixed(2));
+      L.push(P.enable_predictive_filter ? "Filtro: solo zonas con Q >= " + P.min_quality_score : "Filtro predictivo: OFF (muestra todo)");
+      L.push("Test tras 1er toque: target " + P.reaction_target_ticks + "t / stop " + P.reaction_stop_ticks + "t / " + P.reaction_horizon_bars + " barras");
+      ctx.font = "11px Consolas, monospace"; var bwid = 0; L.forEach(function (s) { bwid = Math.max(bwid, ctx.measureText(s).width); });
+      var bh = L.length * 14 + 8, c = P.dashboard_corner, bx = c.indexOf("Left") !== -1 ? 8 : w - bwid - 24, by = c.indexOf("Bottom") === 0 ? h - bh - 30 : 8;
+      ctx.fillStyle = "rgba(105,105,105,0.85)"; ctx.fillRect(bx, by, bwid + 16, bh);
+      ctx.fillStyle = "#fff"; L.forEach(function (s, i) { ctx.fillText(s, bx + 8, by + 16 + i * 14); });
+    }
+    ctx.restore();
+  }
+
   // Delta desde bundles/delta/<activo>.json (tools/build_delta_layer.py; agresor válido sólo en NQ). Todo causal.
   var AXF_P = [
     ["lookN", "Extremo: máximo/mínimo de las últimas N velas", 20, 1000, 10, 200],
@@ -3386,7 +3510,7 @@
     // cada capa aislada (27/09): una capa que falla (p. ej. configuración guardada en el navegador para otro activo) no
     // puede impedir que se dibujen las demás; el error queda en la consola con el nombre de la capa
     [["ma_vwap", function () { drawMaVwap(ctx, w, hCanvas); }], ["evx", function () { drawEvx(ctx, w, hCanvas); }],
-     ["axf", function () { drawAxf(ctx, w, hCanvas); }], ["gex", function () { drawGex(ctx, w, hCanvas); }], ["etiquetas", function () { drawLabels(ctx, w, hCanvas); }],
+     ["axf", function () { drawAxf(ctx, w, hCanvas); }], ["avcl", function () { drawAvcl(ctx, w, hCanvas); }], ["gex", function () { drawGex(ctx, w, hCanvas); }], ["etiquetas", function () { drawLabels(ctx, w, hCanvas); }],
      ["tbz", function () { drawTbz(ctx, vr, w, hCanvas); }], ["tbze2", function () { drawTbzE2(ctx, vr, w, hCanvas); }],
      ["tbzx", function () { drawTbzx(ctx, vr, w, hCanvas); }], ["espejo", function () { drawEspejo(ctx, vr, w, hCanvas); }]
     ].forEach(function (L) { try { ctx.save(); L[1](); } catch (err) { console.error("capa " + L[0] + ":", err); } finally { ctx.restore(); } });
@@ -6340,6 +6464,10 @@
       applies: function () { return !!activeCandlesArr() && typeof EspejoImpulsos !== "undefined"; },
       isOn: function () { return espejo.on; },
       set: function (on) { espejo.on = on; } },
+    { id: "avcl", name: "aVolClusterPOI v0.5 (NT8 · cálculo en vivo)",
+      applies: function (d) { return !!(d && d.meta && d.meta.avcl_live); },
+      isOn: function () { return avcl.on; },
+      set: function (on) { avcl.on = on; if (on && !avcl.res) avclRun(); requestDraw(); } },
     { id: "lux", name: "LuxAlgo Imbalance (LUX-IMB)",
       applies: function (d) { return !!(d && d.runs && d.runs.some(function (r) { return (r.zones || []).some(function (z) { return z.source === "luxalgo"; }); })); },
       isOn: function () { return state.srcs.luxalgo !== false; },
@@ -6394,6 +6522,7 @@
   });
   document.getElementById("nt8-props-modal").addEventListener("change", function () { setTimeout(function () { indPersist(); indRender(); }, 0); });
 
+  avclForm();
   document.getElementById("btn-props").addEventListener("click", openPropertiesModal);
   document.getElementById("indicator-tag").addEventListener("dblclick", openPropertiesModal);
   document.getElementById("btn-props-x").addEventListener("click", closePropertiesModal);

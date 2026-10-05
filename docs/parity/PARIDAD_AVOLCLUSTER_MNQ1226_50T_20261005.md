@@ -29,3 +29,20 @@ geometría 0 ticks, estado y fin por MaxAge idénticos).
 
 Alcance: valida creación OFF_PRICE + expiración MaxAge en MNQ 12-26 50t con estos parámetros. No valida AT_PRICE,
 FIRST_TOUCH ni invalidación CloseThrough/FirstTouch (no ejercitadas con invalidación None). Holdout no tocado.
+
+## Ampliación (mismo día): paridad de EVENTOS con el espejo completo `avolclusterpoi_full.run_full`
+Con una 6.ª causa raíz resuelta — **ráfagas de barras primarias con el mismo timestamp**: NT8 intercala
+P(T), S(T), P(T), S(T)…, así que cada barra siguiente con ese timestamp recibe exactamente un tick de la subserie
+(medido en las barras 175583-175587) — el footprint coincide en el **100 %** de las 254.317 barras y:
+- **3.408 / 3.408 eventos idénticos con el mismo zone_id**: 934 ZONE_CREATED, 652 AT_PRICE_CREATED, 888 FIRST_TOUCH,
+  934 ZONE_EXPIRED.
+- Métricas por zona 100 % iguales: score, threshold, anomaly_ratio, cluster_share, density, quality_score,
+  distance_ticks, burst_count, samples.
+- Reacciones iguales al dashboard de NT8: 401 target / 481 stop / 1 timeout / 5 ambiguas; 46 franjas listas.
+Siguen sin ejercitar (invalidación None en el oráculo): CloseThrough, FirstTouch, MaxTouches y filtro predictivo —
+están implementados línea a línea del `.cs` pero sin oráculo propio.
+
+## Visor
+`viewer/nt8_bridge/server_avcl.py` (launch `visor-avcl`, puerto 8099): MNQ 12-26 25t, calibración con toda la historia
+2026-07-14S → 2026-09-30 (sin holdout), últimas 5 sesiones en pantalla. Panel en Indicadores con los 39 parámetros de
+NT8 (mismos nombres, grupos, rangos y defaults); el cálculo lo hace `run_full` en el servidor. 25t sin oráculo propio.
