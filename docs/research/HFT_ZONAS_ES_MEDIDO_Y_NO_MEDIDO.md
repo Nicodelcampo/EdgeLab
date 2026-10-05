@@ -732,3 +732,9 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
   controlar por |retorno| y retorno del día previo antes de atribuir la amplitud al gamma. Walls/flip como soporte,
   resistencia o imán: sin historia causal suficiente (SquawkFlow desde 2026-07-28).
 - Bug corregido antes de interpretar: test con obs NaN recibía p≈0 (MES I2d); ahora p=1 y Holm recalculado.
+
+## aVolClusterPOI v0.5 — paridad MNQ 12-26 50t — 05/10/2026
+- MEDIDO: paridad NT8↔Python **PASS 934/934** (creación al ms, geometría, MaxAge), chart 2026-07-15 → 09-24, Do not
+  merge. Acta `docs/parity/PARIDAD_AVOLCLUSTER_MNQ1226_50T_20261005.md`. Causas raíz: footprint de subserie 1-tick
+  (empate de timestamp → barra siguiente; fuera de rango descartado), tick en pausa CME, ventana, MaxAge.
+- NO MEDIDO: AT_PRICE, FIRST_TOUCH, invalidación CloseThrough/FirstTouch; otros instrumentos/bar_spec con esta regla.

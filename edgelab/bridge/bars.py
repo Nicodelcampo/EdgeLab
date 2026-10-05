@@ -219,8 +219,16 @@ class Footprints:
     has_quotes: bool
 
 
-def build_footprints(ticks: TickSeries, bars: BarSeries) -> Footprints:
+def build_footprints(ticks: TickSeries, bars: BarSeries, nt8_subseries: bool = False) -> Footprints:
+    """Footprint por barra. nt8_subseries=True replica cómo un indicador NT8 arma el perfil desde
+    AddDataSeries(Tick, 1) (medido 2026-10-05, aVolClusterPOI MNQ 12-26 50t, 99,35 % de barras idénticas):
+    un tick con timestamp IGUAL al cierre de una barra primaria se procesa después de ella y cae en la
+    barra SIGUIENTE; y al cerrar la barra se descartan los ticks fuera de [low, high] de esa barra."""
     nb = len(bars)
+    if nt8_subseries:
+        ends = np.asarray(bars.end_ns, dtype=np.int64)
+        assign = np.searchsorted(ends, np.asarray(ticks.ts_ns, dtype=np.int64), side="right")
+        lo_t = np.asarray(bars.low_t); hi_t = np.asarray(bars.high_t)
     ask = [dict() for _ in range(nb)]
     bid = [dict() for _ in range(nb)]
     total = [dict() for _ in range(nb)]
@@ -230,10 +238,12 @@ def build_footprints(ticks: TickSeries, bars: BarSeries) -> Footprints:
     last_price = None
     last_dir = 0
     for i in range(len(ticks)):
-        b = int(bars.tick_bar_idx[i])
+        b = int(assign[i]) if nt8_subseries else int(bars.tick_bar_idx[i])
         if b < 0 or b >= nb:
             continue
         p = int(ticks.price_ticks[i])
+        if nt8_subseries and (p < lo_t[b] or p > hi_t[b]):
+            continue                                      # NT8: fuera del rango de la barra = descartado
         vol = float(ticks.volume[i])
         side, by_quote = 0, False
         if has_ba:

@@ -32,6 +32,7 @@ from __future__ import annotations
 import argparse
 import gzip
 import hashlib
+import numpy as np
 import json
 import pathlib
 import subprocess
@@ -118,6 +119,12 @@ def main(argv=None):
                     help="Ruta al DIAG_BLOCKS CSV de NT8 para alimentar footprints exactos por bloque")
     ap.add_argument("--param", action="append", default=[],
                     help="parametro del kernel k=v (repetible), igual al del chart; p. ej. max_age_bars=500")
+    ap.add_argument("--excluir-pausa-cme", action="store_true",
+                    help="descarta ticks en la pausa diaria 16:00-17:00 CT (la plantilla ETH de NT8 no los incluye en barras)")
+    ap.add_argument("--desde-ns", type=int, default=None, help="recorte de ticks: inicio (ns UTC, inclusive)")
+    ap.add_argument("--hasta-ns", type=int, default=None, help="recorte de ticks: fin (ns UTC, exclusivo)")
+    ap.add_argument("--footprint-nt8-subserie", action="store_true",
+                    help="footprint como lo arma NT8 desde la subserie de 1 tick (empate->barra siguiente, fuera de rango descartado)")
     ap.add_argument("--out", required=True)
     a = ap.parse_args(argv)
 
@@ -147,6 +154,7 @@ def main(argv=None):
         chart_tz=a.chart_tz,
         bar_spec=a.barras,
         kernel_params=kparams,
+        footprint_nt8_subserie=bool(a.footprint_nt8_subserie),
         barprofile=str(a.barprofile) if a.barprofile else None,
         barprofile_sha256=sha256_archivo(a.barprofile) if a.barprofile else None,
         diag_blocks=str(a.diag_blocks) if getattr(a, "diag_blocks", None) else None,
@@ -182,7 +190,18 @@ def main(argv=None):
             a.parquet, start_utc_ns=ini_ns, end_utc_ns=ini_ns + a.dias * 86_400_000_000_000)
         proc["recorte_dias"] = a.dias
     else:
-        tk = ticks_mod.load_canonical_parquet(a.parquet)
+        tk = ticks_mod.load_canonical_parquet(a.parquet, start_utc_ns=a.desde_ns, end_utc_ns=a.hasta_ns)
+    if a.desde_ns or a.hasta_ns:
+        proc["recorte_ns"] = [a.desde_ns, a.hasta_ns]
+    if a.excluir_pausa_cme:
+        import dataclasses
+        import pandas as _pd
+        _ct = _pd.to_datetime(tk.ts_ns, utc=True).tz_convert("America/Chicago")
+        _keep = ~(((_ct.hour * 60 + _ct.minute) >= 960) & ((_ct.hour * 60 + _ct.minute) < 1020))
+        _keep = np.asarray(_keep)
+        proc["ticks_en_pausa_descartados"] = int((~_keep).sum())
+        tk = dataclasses.replace(tk, **{f: (getattr(tk, f)[_keep] if getattr(tk, f) is not None else None)
+                                        for f in ("ts_ns", "price_ticks", "volume", "bid_ticks", "ask_ticks", "sequence")})
     spec_tipo, spec_val = a.barras.split(":")
     if spec_tipo == "time":
         bars = bars_mod.build_time_bars(tk, int(spec_val))
@@ -191,7 +210,7 @@ def main(argv=None):
             bars = bars_mod.build_resolved_tick_bars(tk, a.barprofile, int(spec_val), chart_tz=a.chart_tz)
         else:
             bars = bars_mod.build_tick_bars(tk, int(spec_val))
-    fps = bars_mod.build_footprints(tk, bars) if usa_fp else None
+    fps = bars_mod.build_footprints(tk, bars, nt8_subseries=a.footprint_nt8_subserie) if usa_fp else None
     tick_size = ticks_mod.instrument_spec(tk.instrument).tick_size
     print("  ticks=%d  barras=%d  tick_size=%s" % (len(tk.ts_ns), len(bars.close_t), tick_size))
 

@@ -300,6 +300,14 @@ def run(ticks, bars, footprints, params=None, debug_trace=False):
                     abstain=result.get("abstain"), close_tick=int(bars.close_t[end_bar]),
                     zone_ids=block_zone_ids))
         profile.commit()
+    # Ciclo de vida MaxAge, idéntico a ProcessLifecycle del .cs: en la barra c + MaxAgeBars la zona creada en c
+    # se mata con ZONE_EXPIRED/max_age (sólo OFF_PRICE; con invalidación None es el único fin). 0 = sin expiración.
+    max_age = int(p.get("max_age_bars") or 0)
+    if max_age > 0:
+        for z in all_zones:
+            k = int(z["created_bar"]) + max_age
+            if k < n_bars:
+                z.update(state="EXPIRED", end_reason="max_age", ended_ms=int(bars.end_ns[k]) // 1_000_000)
     out = dict(indicator=NAME, params=p, zones=all_zones)
     if debug_trace:
         out["block_trace"] = block_trace
