@@ -1,4 +1,5 @@
 window.ASSET_CATALOG = [
+  {"id": "ES_09-26_GEX", "name": "ES 09-26 \u00b7 GEX (1m / 5m)", "group": "ES (GEX)", "instrument": "ES", "contract": "ES 09-26", "tick_size": 0.25, "precision": 2, "candles": 76417, "zones": 0, "rolls": 0, "parity_status": "PARITY_ABSTAIN"},
   {
     "id": "GC_04-26_202602_ESPEJO",
     "name": "GC 04-26 · Espejo (25t / 100t) · 2602",

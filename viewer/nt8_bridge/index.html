@@ -982,6 +982,13 @@
   <div style="padding:6px 10px 0;"><a class="nt8-btn" id="btn-spec-review" href="spec_review.html" target="_blank" title="Revisión ciega de especificaciones antes de correr una prueba" style="text-decoration:none"><span>📋 Revisión de spec</span></a></div>
   <div class="pop-body" style="padding: 12px; display: flex; flex-direction: column; gap: 12px;">
     
+    <!-- EDGELAB_GEX_LEVELS_V1 -->
+    <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
+      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px;">Γ Niveles GEX del SPX (SquawkFlow, convertidos a ES)</div>
+      <label style="display:flex;align-items:center;gap:6px;font-size:10.5px;"><input type="checkbox" id="chk-gex"><b>Mostrar</b></label>
+      <div id="lbl-gex-status" style="font-size:9.5px;color:#666;margin-top:4px;"></div>
+      <div style="font-size:9px;color:#888;line-height:1.3;margin-top:4px;">CW = call wall · PW = put wall · Flip = gamma cero · VT = vol trigger. Cada sesión se dibuja desde su publicación (13:31 UTC) hasta las 16:00 CT; antes no existe. Basis ES−SPX del cierre cash del día del OI. GEX naive: modelo, no posición; no ve 0DTE.</div>
+    </div>
     <!-- EDGELAB_AXF_DESIGNER_V1 -->
     <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
       <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px;">🌊 Agotamiento por flujo → barrido → reversión (diseño)</div>
@@ -3049,6 +3056,42 @@
 
   // EDGELAB_AXF_DESIGNER_V1 (2026-09-26): agotamiento por flujo → barrido del último extremo participante → reversión
   // confirmada → recién ahí entrada. Idea de Nico: docs/research/IDEA_AGOTAMIENTO_FLUJO_BARRIDO_20260926.md.
+  // Niveles GEX (bundles/gex/<activo>.json, tools/build_gex_viewer_layer.py). Sólo dibuja: causalidad y basis vienen del builder.
+  var gex = { on: false, d: null };
+  function gexStatus() {
+    var el = document.getElementById("lbl-gex-status"); if (!el) return;
+    if (!gex.d) { el.textContent = "Sin niveles GEX para este activo (tools/build_gex_viewer_layer.py)."; return; }
+    var s = gex.d.sessions; el.textContent = s.length + " sesiones · " + s[0].session + " a " + s[s.length - 1].session + " · fuente " + gex.d.meta.source.split(" ")[0];
+  }
+  function gexLoad(aid) {
+    gex.d = null;
+    fetch("bundles/gex/" + aid + ".json", { cache: "reload" }).then(function (r) { if (!r.ok) throw 0; return r.json(); })
+      .then(function (d) { gex.d = d; gexStatus(); if (gex.on) requestDraw(); }).catch(function () { gexStatus(); });
+  }
+  function drawGex(ctx, w, h) {
+    if (!gex.on || !gex.d || !series) return;
+    var cd = activeCandlesArr(); if (!cd) return;
+    var lr = chart.timeScale().getVisibleLogicalRange(); if (!lr) return;
+    function idx(t, after) { var lo = 0, hi = cd.length - 1; while (lo < hi) { var m = (lo + hi + (after ? 0 : 1)) >> 1; if (after ? cd[m].time < t : cd[m].time > t) { if (after) lo = m + 1; else hi = m - 1; } else { if (after) hi = m; else lo = m; } } return lo; }
+    var COL = { call_wall: "#dc2626", put_wall: "#16a34a", zero_gamma_flip: "#7c3aed", vol_trigger: "#ea580c" };
+    ctx.save(); ctx.font = "10px -apple-system, Segoe UI, sans-serif";
+    gex.d.sessions.forEach(function (s) {
+      if (s.end_utc < cd[0].time || s.available_utc > cd[cd.length - 1].time) return;
+      var i0 = idx(s.available_utc, true), i1 = idx(s.end_utc, false);
+      if (i1 < i0 || i1 < lr.from - 2 || i0 > lr.to + 2) return;
+      var x0 = logicalToX(i0), x1 = logicalToX(i1); if (x0 === null || x1 === null) return;
+      s.levels.forEach(function (L) {
+        var y = series.priceToCoordinate(L.price); if (y === null) return;
+        ctx.strokeStyle = COL[L.id] || "#444"; ctx.lineWidth = L.id === "zero_gamma_flip" ? 1.5 : 1.2;
+        ctx.setLineDash(L.id === "zero_gamma_flip" ? [6, 3] : L.id === "vol_trigger" ? [2, 3] : []);
+        ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle = COL[L.id] || "#444"; var wide = x1 - x0 > 170; ctx.fillText(wide ? L.label + " " + L.price.toFixed(2) + " (SPX " + Math.round(L.spx) + ")" : L.label, x0 + 3, y - 3);
+      });
+      if (x1 - x0 > 230) { ctx.fillStyle = "#555"; ctx.fillText(s.session + " · régimen " + s.regime + " · basis " + s.basis, x0 + 3, 14); }
+    });
+    ctx.restore();
+  }
+
   // Delta desde bundles/delta/<activo>.json (tools/build_delta_layer.py; agresor válido sólo en NQ). Todo causal.
   var AXF_P = [
     ["lookN", "Extremo: máximo/mínimo de las últimas N velas", 20, 1000, 10, 200],
@@ -3343,7 +3386,7 @@
     // cada capa aislada (27/09): una capa que falla (p. ej. configuración guardada en el navegador para otro activo) no
     // puede impedir que se dibujen las demás; el error queda en la consola con el nombre de la capa
     [["ma_vwap", function () { drawMaVwap(ctx, w, hCanvas); }], ["evx", function () { drawEvx(ctx, w, hCanvas); }],
-     ["axf", function () { drawAxf(ctx, w, hCanvas); }], ["etiquetas", function () { drawLabels(ctx, w, hCanvas); }],
+     ["axf", function () { drawAxf(ctx, w, hCanvas); }], ["gex", function () { drawGex(ctx, w, hCanvas); }], ["etiquetas", function () { drawLabels(ctx, w, hCanvas); }],
      ["tbz", function () { drawTbz(ctx, vr, w, hCanvas); }], ["tbze2", function () { drawTbzE2(ctx, vr, w, hCanvas); }],
      ["tbzx", function () { drawTbzx(ctx, vr, w, hCanvas); }], ["espejo", function () { drawEspejo(ctx, vr, w, hCanvas); }]
     ].forEach(function (L) { try { ctx.save(); L[1](); } catch (err) { console.error("capa " + L[0] + ":", err); } finally { ctx.restore(); } });
@@ -5315,6 +5358,7 @@
         box.appendChild(row);
       });
       document.getElementById("chk-axf").addEventListener("change", function () { axf.on = this.checked; if (axf.on) axfCompute(); requestDraw(); });
+      document.getElementById("chk-gex").addEventListener("change", function () { gex.on = this.checked; gexStatus(); requestDraw(); });
       document.addEventListener("keydown", function (ev) { if (ev.key === "Escape" && axf.sel !== null) { axf.sel = null; requestDraw(); } });
       chart.subscribeClick(function (p) {
         if (!axf.on || !p || !p.point) return;
@@ -5853,6 +5897,7 @@
         labLoad(aid);
         peaksDetLoad(aid);
         axfLoadDelta(aid);
+        gexLoad(aid);
       })
       .catch(function(err) {
         console.warn("Fallo fetch para " + aid + ", intentando script tag...", err);
