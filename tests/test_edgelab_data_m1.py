@@ -36,3 +36,8 @@ def test_alternative_source_used_when_primary_is_not_mounted(tmp_path,monkeypatc
     m=ed.load_m1("TST",sd[0],sd[-1]);assert len(m)>0
     for r in rows:r["alts"]=[{"dataset":"dsx","file":"f.parquet","consistent":False}]                      # alternativa inconsistente: no se usa
     with pytest.raises(FileNotFoundError,match="primario-ausente"):ed.load_m1("TST",sd[0],sd[-1])
+
+def test_sessions_without_alternatives_do_not_break_resolution(tmp_path,monkeypatch):
+    monkeypatch.setenv("EDGELAB_M1_CACHE",str(tmp_path/"cache"));sd=sorted(_make(tmp_path));rows=ed.RESOLVER["instruments"]["TST"]["sessions"]
+    rows[0]["alts"]=[{"dataset":"dsx","file":"f.parquet","consistent":True}]                                # solo la primera tiene `alts`: el resto queda NaN en pandas
+    assert len(ed.load_m1("TST",sd[0],sd[-1]))>0

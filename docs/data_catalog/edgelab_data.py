@@ -50,6 +50,12 @@ def _path(dataset: str, file: str) -> Path:
     raise FileNotFoundError(f"agregá el dataset '{dataset}' como input (falta {file}); raíces: {ROOTS}")
 
 
+def _alts(row) -> list:
+    """Alternativas de una sesión (pandas pone NaN en las filas que no tienen)."""
+    v = getattr(row, "alts", None)
+    return v if isinstance(v, list) else []
+
+
 def _exists(ds: str, fl: str) -> bool:
     try:
         _path(ds, fl)
@@ -67,7 +73,7 @@ def resolve_sources(inst: str, start: str, end: str, include_rejected: bool = Fa
         if _exists(r.dataset, r.file):
             ds_out.append(r.dataset); fl_out.append(r.file); note.append("")
             continue
-        alt = next((a for a in (getattr(r, "alts", None) or []) if a.get("consistent") and _exists(a["dataset"], a["file"])), None)
+        alt = next((a for a in _alts(r) if a.get("consistent") and _exists(a["dataset"], a["file"])), None)
         if alt:
             ds_out.append(alt["dataset"]); fl_out.append(alt["file"]); note.append(f"alternativa de {r.dataset}")
         else:
@@ -252,5 +258,5 @@ if __name__ == "__main__":      # python edgelab_data.py MES 2025-07-01 2026-09-
     import sys
     inst, a, b = sys.argv[1:4]
     need = required_files(inst, a, b); sess = sessions(inst, a, b)
-    alts = sorted({x["dataset"] for al in sess.get("alts", pd.Series(dtype=object)).dropna() for x in al if x.get("consistent")} - {d for d, _ in need})
+    alts = sorted({x["dataset"] for al in sess.get("alts", pd.Series(dtype=object)) if isinstance(al, list) for x in al if x.get("consistent")} - {d for d, _ in need})
     print(json.dumps({"adjuntar (primarios)": sorted({d for d, _ in need}), "alternativos consistentes (cubren parte de las sesiones si falta algún primario)": alts}, indent=1, ensure_ascii=False))
