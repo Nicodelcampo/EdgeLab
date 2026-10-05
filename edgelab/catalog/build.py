@@ -13,7 +13,7 @@ SPECS={ # tamaño de tick y valor por tick en USD (por contrato); verificar ante
  "ZB":(1/32,31.25),"6E":(0.00005,6.25),"6J":(0.0000005,6.25),"6B":(0.0001,6.25)}
 CYCLES={"GC":(2,4,6,8,10,12),"MGC":(2,4,6,8,10,12),"ES":(3,6,9,12),"MES":(3,6,9,12),"NQ":(3,6,9,12),"MNQ":(3,6,9,12),"YM":(3,6,9,12),"MYM":(3,6,9,12),"RTY":(3,6,9,12),
         "ZB":(3,6,9,12),"6E":(3,6,9,12),"6J":(3,6,9,12),"6B":(3,6,9,12)}      # meses de vencimiento de la serie estándar
-PRIORITY=("edgelab-ticks-nt8-canonical","edgelab-nt8-historical-missing-20261001","edgelab-ticks-es-nq-2026q3-ext","edgelab-nq-nt8-2026q3-l2ctx","edgelab-mgc-nt8-raw-parquet-20261002")
+PRIORITY=("edgelab-ticks-nt8-reexport-20261005","edgelab-ticks-nt8-canonical","edgelab-nt8-historical-missing-20261001","edgelab-ticks-es-nq-2026q3-ext","edgelab-nq-nt8-2026q3-l2ctx","edgelab-mgc-nt8-raw-parquet-20261002")
 def prio(ds:str)->int:return PRIORITY.index(ds) if ds in PRIORITY else (len(PRIORITY) if ds.endswith("-preholdout") else len(PRIORITY)+1)   # menor = preferida; mnq-parquet y demás al final
 HOLDOUT_FIRST=dt.date(2026,10,1).toordinal()          # HOLDOUT-A1: holdout formal = sesiones de trading desde 2026-10-01
 CUT_PRE=dt.date(2026,6,30).toordinal()

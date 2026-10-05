@@ -33,6 +33,7 @@
 | `edgelab-discovery-cache` | artefactos/evidencia | 58 MB | sí | 112 | 2026-10-04 |
 | `edgelab-dukascopy-xauusd-ticks-m1` | ticks | 2,611 MB | sí | 4 | 2026-10-04 |
 | `edgelab-data-catalog` | artefactos/evidencia | 1 MB | sí | 184 | 2026-10-04 |
+| `edgelab-ticks-nt8-reexport-20261005` | ticks | 5,059 MB | sí | 70 | 2026-10-05 |
 
 ## `edgelab-ticks-nt8-canonical`
 
@@ -231,3 +232,8 @@ Archivos de ticks: `XAUUSD_m1.parquet`, `XAUUSD_ticks.parquet`
 
 Tipo: artefactos/evidencia. 1 MB. 184 archivos.
 Archivos (primeros): `CURATED.md`, `DATASETS.md`, `INSTRUMENTS.md`, `ISSUES.md`, `README.md`, `REEXPORT.md`, `TICK_FILES.md`, `catalog.json`, `curated.json`, `datasets.json`, `scan__edgelab-bt2-v2-nq-artifacts__tick_25_IMB30_VOL10_coords.parquet.json`, `scan__edgelab-bt2a-nq-event-store__bt2a_nq_creation_events.parquet.json`, `scan__edgelab-dukascopy-xauusd-ticks-m1__m1__XAUUSD_m1_2024-01.parquet.json`, `scan__edgelab-dukascopy-xauusd-ticks-m1__m1__XAUUSD_m1_2024-02.parquet.json`, `scan__edgelab-dukascopy-xauusd-ticks-m1__m1__XAUUSD_m1_2024-03.parquet.json`
+
+## `edgelab-ticks-nt8-reexport-20261005`
+
+Tipo: ticks. 5,059 MB. 70 archivos.
+Archivos de ticks: `6E/6E_09-26_ticks_ext.parquet`, `ES/ES_09-26_ticks_ext.parquet`, `GC/GC_08-26_ticks_ext.parquet`, `GC/GC_12-26_ticks_ext.parquet`, `MBT/MBT_06-26_ticks_ext.parquet`, `MBT/MBT_07-26_ticks_ext.parquet`, `MBT/MBT_08-26_ticks_ext.parquet`, `MBT/MBT_09-26_ticks_ext.parquet`, `MBT/MBT_10-26_ticks_ext.parquet`, `MES/MES_09-26_ticks_ext.parquet`, `MGC/MGC_08-26_ticks_ext.parquet`, `MGC/MGC_12-26_ticks_ext.parquet`, `MNQ/MNQ_06-26_ticks_ext.parquet`, `MNQ/MNQ_09-26_ticks_ext.parquet`, `MNQ/MNQ_12-26_ticks_ext.parquet`, `MYM/MYM_09-26_ticks_ext.parquet`, `NQ/NQ_06-26_ticks_ext.parquet`, `NQ/NQ_09-25_ticks_ext.parquet`, `RTY/RTY_12-25_ticks_ext.parquet`, `YM/YM_09-26_ticks_ext.parquet`, `YM/YM_12-26_ticks_ext.parquet`, `ZB/ZB_09-26_ticks_ext.parquet`, `ZB/ZB_12-26_ticks_ext.parquet`
