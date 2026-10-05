@@ -27,3 +27,12 @@ def test_fast_m1_respects_the_session_filter(tmp_path,monkeypatch):
 def test_check_inputs_fails_fast_listing_missing_datasets(tmp_path):
     ed.RESOLVER["instruments"]["TSM"]={"tick_size":1.0,"sessions":[{"date":"2026-01-05","contract":"X","dataset":"falta-este","file":"a.parquet","approved":True,"reason":None,"caveat":None}]};ed.ROOTS=[tmp_path]
     with pytest.raises(FileNotFoundError,match="falta-este"):ed.load_m1("TSM","2026-01-01","2026-01-31")
+
+def test_alternative_source_used_when_primary_is_not_mounted(tmp_path,monkeypatch):
+    monkeypatch.setenv("EDGELAB_M1_CACHE",str(tmp_path/"cache"));sd=sorted(_make(tmp_path))
+    rows=ed.RESOLVER["instruments"]["TST"]["sessions"]
+    for r in rows:r.update(dataset="primario-ausente",file="p.parquet",alts=[{"dataset":"dsx","file":"f.parquet","consistent":True}])
+    s=ed.resolve_sources("TST",sd[0],sd[-1]);assert set(s.dataset)=={"dsx"} and set(s.source_note)=={"alternativa de primario-ausente"}
+    m=ed.load_m1("TST",sd[0],sd[-1]);assert len(m)>0
+    for r in rows:r["alts"]=[{"dataset":"dsx","file":"f.parquet","consistent":False}]                      # alternativa inconsistente: no se usa
+    with pytest.raises(FileNotFoundError,match="primario-ausente"):ed.load_m1("TST",sd[0],sd[-1])

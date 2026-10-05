@@ -2,6 +2,11 @@
 
 Todo lo que hay en Kaggle (cuenta `nicolasbuttaro`), inventariado: qué datasets existen, qué contiene cada archivo, qué contratos y fechas cubre, cuándo hay rolls, qué sesiones tienen liquidez, qué días faltan y dónde dos fuentes se contradicen. **Antes de bajar o usar un dato, consultá acá.**
 
+## Qué usar (tres archivos, en este orden)
+1. `DATASETS_POR_INSTRUMENTO.md`: qué datasets adjuntar a un kernel para cada instrumento.
+2. `edgelab_data.py` + `RESOLVER.json`: **la única puerta de entrada** (una fuente por sesión, sin holdout, con fuente alternativa consistente si falta un primario; `python edgelab_data.py INST DESDE HASTA` lista lo que hay que adjuntar).
+3. `RESOLVER_STATUS.md`: lo que el resolver referencia y **todavía no existe en Kaggle** (qué hay que subir).
+
 ## Regla de oro
 **Antes de analizar, usá solo lo aprobado en `CURATED.md`.** Si necesitás algo que no figura, mirá `REEXPORT.md`. Las reglas son las mismas para todos los instrumentos y están en `tools/data_curate.py`.
 

@@ -50,23 +50,52 @@ def _path(dataset: str, file: str) -> Path:
     raise FileNotFoundError(f"agregá el dataset '{dataset}' como input (falta {file}); raíces: {ROOTS}")
 
 
+def _exists(ds: str, fl: str) -> bool:
+    try:
+        _path(ds, fl)
+        return True
+    except FileNotFoundError:
+        return False
+
+
+def resolve_sources(inst: str, start: str, end: str, include_rejected: bool = False) -> pd.DataFrame:
+    """Sesiones con el archivo que REALMENTE se va a leer: el primario del resolver si está montado; si no, la primera alternativa consistente
+    (mismo contrato y fecha, trades a 1 %) que esté montada; si no hay ninguna, dataset/file quedan en None y `missing_primary` dice qué falta."""
+    s = sessions(inst, start, end, include_rejected).copy()
+    ds_out, fl_out, note = [], [], []
+    for r in s.itertuples(index=False):
+        if _exists(r.dataset, r.file):
+            ds_out.append(r.dataset); fl_out.append(r.file); note.append("")
+            continue
+        alt = next((a for a in (getattr(r, "alts", None) or []) if a.get("consistent") and _exists(a["dataset"], a["file"])), None)
+        if alt:
+            ds_out.append(alt["dataset"]); fl_out.append(alt["file"]); note.append(f"alternativa de {r.dataset}")
+        else:
+            ds_out.append(None); fl_out.append(None); note.append("falta")
+    s["primary_dataset"], s["primary_file"] = s["dataset"], s["file"]
+    s["dataset"], s["file"], s["source_note"] = ds_out, fl_out, note
+    return s
+
+
 def required_files(inst: str, start: str, end: str, include_rejected: bool = False) -> list[tuple[str, str]]:
-    """(dataset, archivo) que hacen falta para esas sesiones. Úsalo ANTES de lanzar un kernel para saber qué datasets adjuntar."""
+    """(dataset, archivo) PRIMARIOS que hacen falta para esas sesiones (lo ideal). Úsalo ANTES de lanzar un kernel para saber qué datasets adjuntar."""
     s = sessions(inst, start, end, include_rejected)
     return sorted({(d, f) for d, f in zip(s.dataset, s.file)})
 
 
 def check_inputs(*requests) -> None:
-    """Falla en segundos (no tras 25 minutos de proceso) si falta algún archivo. requests: tuplas (inst, start, end). Lista TODOS los datasets que faltan."""
-    missing = {}
+    """Falla en segundos (no tras 25 minutos de proceso) si alguna sesión no tiene NINGUNA fuente montada. Avisa si se usan alternativas. requests: (inst, start, end)."""
+    missing = {}; alt = {}
     for inst, a, b in requests:
-        for ds, fl in required_files(inst, a, b):
-            try:
-                _path(ds, fl)
-            except FileNotFoundError:
-                missing.setdefault(ds, []).append(fl)
+        for r in resolve_sources(inst, a, b).itertuples(index=False):
+            if r.source_note == "falta":
+                missing.setdefault(r.primary_dataset, set()).add(r.primary_file)
+            elif r.source_note:
+                alt[r.source_note] = alt.get(r.source_note, 0) + 1
+    for k, n in alt.items():
+        print(f"[edgelab_data] AVISO: {n} sesiones leídas de una fuente alternativa consistente ({k}); adjuntá el primario para evitarlo", flush=True)
     if missing:
-        raise FileNotFoundError("faltan inputs; agregá estos datasets al kernel antes de correr: " + "; ".join(f"{d} ({len(f)} archivos, p. ej. {f[0]})" for d, f in missing.items()))
+        raise FileNotFoundError("faltan inputs (sin alternativa montada); agregá estos datasets al kernel antes de correr: " + "; ".join(f"{d} ({len(f)} archivos, p. ej. {sorted(f)[0]})" for d, f in missing.items()))
 
 
 def _session_date(ts_ns: np.ndarray) -> np.ndarray:
@@ -188,7 +217,7 @@ def load_m1(inst: str, start: str, end: str, include_rejected: bool = False) -> 
     Mismo resultado que `_load_m1_slow` (verificado en tests/test_edgelab_data_m1.py y en tools/m1_speed_check.py), mucho más rápido: agrega por grupo de filas con
     numpy, calcula la fecha de sesión una vez por minuto y guarda el M1 de cada archivo en caché."""
     check_inputs((inst, start, end))
-    s = sessions(inst, start, end, include_rejected)
+    s = resolve_sources(inst, start, end, include_rejected)
     if s.empty:
         return pd.DataFrame()
     out = []
@@ -222,5 +251,6 @@ def load_spot(inst: str, start: str, end: str, kind: str = "m1") -> pd.DataFrame
 if __name__ == "__main__":      # python edgelab_data.py MES 2025-07-01 2026-09-30  -> datasets que hay que adjuntar al kernel
     import sys
     inst, a, b = sys.argv[1:4]
-    need = required_files(inst, a, b)
-    print(json.dumps(sorted({d for d, _ in need}), indent=1))
+    need = required_files(inst, a, b); sess = sessions(inst, a, b)
+    alts = sorted({x["dataset"] for al in sess.get("alts", pd.Series(dtype=object)).dropna() for x in al if x.get("consistent")} - {d for d, _ in need})
+    print(json.dumps({"adjuntar (primarios)": sorted({d for d, _ in need}), "alternativos consistentes (cubren parte de las sesiones si falta algún primario)": alts}, indent=1, ensure_ascii=False))
