@@ -13,7 +13,7 @@ from data_inventory import list_files
 
 def main():
     ap=argparse.ArgumentParser();ap.add_argument("--slug",required=True);ap.add_argument("--script",required=True);ap.add_argument("--title");ap.add_argument("--need",action="append",default=[],help="INST:DESDE:HASTA")
-    ap.add_argument("--extra-dataset",action="append",default=[]);ap.add_argument("--internet",action="store_true");ap.add_argument("--gpu",action="store_true");ap.add_argument("--dry-run",action="store_true");a=ap.parse_args()
+    ap.add_argument("--extra-dataset",action="append",default=[]);ap.add_argument("--internet",action="store_true");ap.add_argument("--gpu",action="store_true");ap.add_argument("--dry-run",action="store_true");ap.add_argument("--allow-missing",action="store_true",help="lanza igual omitiendo las sesiones sin fuente (decisión explícita; el script debe declararlas)");a=ap.parse_args()
     reqs=[tuple(x.split(":")) for x in a.need];live={};used=set();missing={};alt_used={}
     def files(ds):
         if ds not in live:
@@ -27,6 +27,10 @@ def main():
             if alt:used.add(alt["dataset"]);alt_used[(inst,r.dataset)]=alt_used.get((inst,r.dataset),0)+1
             else:missing.setdefault((inst,r.dataset,r.file),[]).append(r.date)
     for (inst,ds),n in alt_used.items():print(f"AVISO {inst}: {n} sesiones saldrán de una alternativa consistente porque `{ds}` no tiene el archivo en Kaggle")
+    if missing and a.allow_missing:
+        print("SE LANZA SIN ESTAS SESIONES (--allow-missing):")
+        for (inst,ds,fl),ds_ in sorted(missing.items()):print(f"  {inst}: {len(ds_)} sesiones de `{ds}` / {fl}: {', '.join(ds_)}")
+        missing={}
     if missing:
         print("NO SE LANZA: sesiones aprobadas sin ninguna fuente en Kaggle (el análisis perdería sesiones o fallaría):")
         for (inst,ds,fl),ds_ in sorted(missing.items()):print(f"  {inst}: {len(ds_)} sesiones de `{ds}` / {fl} ({ds_[0]}..{ds_[-1]})")

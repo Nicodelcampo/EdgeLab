@@ -89,8 +89,16 @@ def required_files(inst: str, start: str, end: str, include_rejected: bool = Fal
     return sorted({(d, f) for d, f in zip(s.dataset, s.file)})
 
 
+DROPPED: list[dict] = []        # sesiones aprobadas que se OMITIERON por no tener ninguna fuente (solo con EDGELAB_ALLOW_MISSING=1); guardalas en tus resultados
+
+
+def _allow_missing() -> bool:
+    return os.environ.get("EDGELAB_ALLOW_MISSING", "") == "1"
+
+
 def check_inputs(*requests) -> None:
-    """Falla en segundos (no tras 25 minutos de proceso) si alguna sesión no tiene NINGUNA fuente montada. Avisa si se usan alternativas. requests: (inst, start, end)."""
+    """Falla en segundos (no tras 25 minutos de proceso) si alguna sesión no tiene NINGUNA fuente montada. Avisa si se usan alternativas. requests: (inst, start, end).
+    Con EDGELAB_ALLOW_MISSING=1 NO falla: omite esas sesiones, las lista en pantalla y las deja en `DROPPED` (decisión explícita del usuario, hay que declararla en el resultado)."""
     missing = {}; alt = {}
     for inst, a, b in requests:
         for r in resolve_sources(inst, a, b).itertuples(index=False):
@@ -100,6 +108,13 @@ def check_inputs(*requests) -> None:
                 alt[r.source_note] = alt.get(r.source_note, 0) + 1
     for k, n in alt.items():
         print(f"[edgelab_data] AVISO: {n} sesiones leídas de una fuente alternativa consistente ({k}); adjuntá el primario para evitarlo", flush=True)
+    if missing and _allow_missing():
+        for inst, a, b in requests:
+            for r in resolve_sources(inst, a, b).itertuples(index=False):
+                if r.source_note == "falta" and not any(d["instrument"] == inst and d["date"] == r.date for d in DROPPED):
+                    DROPPED.append({"instrument": inst, "date": r.date, "dataset": r.primary_dataset, "file": r.primary_file})
+        print(f"[edgelab_data] ATENCIÓN: {len(DROPPED)} sesiones aprobadas OMITIDAS por no tener ninguna fuente (EDGELAB_ALLOW_MISSING=1): " + ", ".join(f"{d['instrument']} {d['date']}" for d in DROPPED), flush=True)
+        return
     if missing:
         raise FileNotFoundError("faltan inputs (sin alternativa montada); agregá estos datasets al kernel antes de correr: " + "; ".join(f"{d} ({len(f)} archivos, p. ej. {sorted(f)[0]})" for d, f in missing.items()))
 
@@ -224,6 +239,7 @@ def load_m1(inst: str, start: str, end: str, include_rejected: bool = False) -> 
     numpy, calcula la fecha de sesión una vez por minuto y guarda el M1 de cada archivo en caché."""
     check_inputs((inst, start, end))
     s = resolve_sources(inst, start, end, include_rejected)
+    s = s[s.source_note != "falta"]
     if s.empty:
         return pd.DataFrame()
     out = []

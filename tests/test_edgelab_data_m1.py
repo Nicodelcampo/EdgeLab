@@ -41,3 +41,10 @@ def test_sessions_without_alternatives_do_not_break_resolution(tmp_path,monkeypa
     monkeypatch.setenv("EDGELAB_M1_CACHE",str(tmp_path/"cache"));sd=sorted(_make(tmp_path));rows=ed.RESOLVER["instruments"]["TST"]["sessions"]
     rows[0]["alts"]=[{"dataset":"dsx","file":"f.parquet","consistent":True}]                                # solo la primera tiene `alts`: el resto queda NaN en pandas
     assert len(ed.load_m1("TST",sd[0],sd[-1]))>0
+
+def test_allow_missing_drops_sessions_and_records_them(tmp_path,monkeypatch):
+    monkeypatch.setenv("EDGELAB_M1_CACHE",str(tmp_path/"cache"));sd=sorted(_make(tmp_path));rows=ed.RESOLVER["instruments"]["TST"]["sessions"]
+    rows[1].update(dataset="ausente",file="x.parquet");ed.DROPPED.clear()
+    with pytest.raises(FileNotFoundError):ed.load_m1("TST",sd[0],sd[-1])                        # por omisión falla
+    monkeypatch.setenv("EDGELAB_ALLOW_MISSING","1");m=ed.load_m1("TST",sd[0],sd[-1])
+    assert sd[1] not in set(m.session_date) and sd[0] in set(m.session_date) and [d["date"] for d in ed.DROPPED]==[sd[1]]
