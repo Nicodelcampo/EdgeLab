@@ -50,6 +50,25 @@ def _path(dataset: str, file: str) -> Path:
     raise FileNotFoundError(f"agregá el dataset '{dataset}' como input (falta {file}); raíces: {ROOTS}")
 
 
+def required_files(inst: str, start: str, end: str, include_rejected: bool = False) -> list[tuple[str, str]]:
+    """(dataset, archivo) que hacen falta para esas sesiones. Úsalo ANTES de lanzar un kernel para saber qué datasets adjuntar."""
+    s = sessions(inst, start, end, include_rejected)
+    return sorted({(d, f) for d, f in zip(s.dataset, s.file)})
+
+
+def check_inputs(*requests) -> None:
+    """Falla en segundos (no tras 25 minutos de proceso) si falta algún archivo. requests: tuplas (inst, start, end). Lista TODOS los datasets que faltan."""
+    missing = {}
+    for inst, a, b in requests:
+        for ds, fl in required_files(inst, a, b):
+            try:
+                _path(ds, fl)
+            except FileNotFoundError:
+                missing.setdefault(ds, []).append(fl)
+    if missing:
+        raise FileNotFoundError("faltan inputs; agregá estos datasets al kernel antes de correr: " + "; ".join(f"{d} ({len(f)} archivos, p. ej. {f[0]})" for d, f in missing.items()))
+
+
 def _session_date(ts_ns: np.ndarray) -> np.ndarray:
     """Fecha de sesión CME (17:00-16:00 CT), idéntica a la del catálogo (edgelab.discovery.data.tdate_ordinal):
     se etiqueta por el fin del minuto, se corre 1 ns atrás y se suman 7 h en hora de Chicago."""
@@ -90,8 +109,8 @@ def load_ticks(inst: str, start: str, end: str, columns=None, include_rejected: 
     return df
 
 
-def load_m1(inst: str, start: str, end: str, include_rejected: bool = False) -> pd.DataFrame:
-    """Barras M1 (inicio de minuto, UTC) desde load_ticks: OHLC en ticks de precio, volumen, trades, compra/venta agresora."""
+def _load_m1_slow(inst: str, start: str, end: str, include_rejected: bool = False) -> pd.DataFrame:
+    """Versión original (tick por tick en pandas). Se conserva SOLO para verificar que `load_m1` da lo mismo; es ~20-50 veces más lenta."""
     t = load_ticks(inst, start, end, ["ts_utc_ns", "price_ticks", "volume", "aggressor", "contract"], include_rejected)
     if t.empty:
         return t
@@ -103,6 +122,81 @@ def load_m1(inst: str, start: str, end: str, include_rejected: bool = False) -> 
     buy = t[t.aggressor == "buy"].groupby(["session_date", "minute"]).volume.sum()
     m1["buy_volume"] = m1.set_index(["session_date", "minute"]).index.map(buy).fillna(0).to_numpy()
     m1.attrs.update(instrument=inst, tick_size=t.attrs["tick_size"], units="price_ticks")
+    return m1
+
+
+_MIN = 60_000_000_000
+
+
+def _minute_session_date(minute_ns: np.ndarray) -> np.ndarray:
+    """Fecha de sesión de cada MINUTO (igual que `_session_date` por tick: depende solo del minuto). Se calcula una vez por minuto, no por tick."""
+    return _session_date(minute_ns)
+
+
+def _file_m1(path: Path) -> pd.DataFrame:
+    """M1 de TODAS las sesiones de un archivo de ticks, en una pasada por grupos de filas con numpy (sin cadenas por tick).
+    Columnas: session_date, minute, open, high, low, close, volume, trades, contract, buy_volume."""
+    pf = pq.ParquetFile(path, read_dictionary=[c for c in ("aggressor", "contract") if c in pq.ParquetFile(path).schema_arrow.names])
+    rows = []; vdt = None
+    for i in range(pf.num_row_groups):
+        t = pf.read_row_group(i, columns=["ts_utc_ns", "price_ticks", "volume", "aggressor", "contract"])
+        vdt = vdt or t.column("volume").type.to_pandas_dtype()
+        ts = t.column("ts_utc_ns").to_numpy(); n = len(ts)
+        if not n:
+            continue
+        px = t.column("price_ticks").to_numpy(); vol = t.column("volume").to_numpy().astype(np.int64)
+        ag = t.column("aggressor").combine_chunks(); ct = t.column("contract").combine_chunks()
+        buy_code = ag.dictionary.to_pylist().index("buy") if "buy" in ag.dictionary.to_pylist() else -1
+        isbuy = (ag.indices.to_numpy(zero_copy_only=False) == buy_code) if buy_code >= 0 else np.zeros(n, bool)
+        minute = (ts // _MIN) * _MIN
+        st = np.r_[0, np.flatnonzero(minute[1:] != minute[:-1]) + 1]; en = np.r_[st[1:], n]
+        cts = np.asarray(ct.dictionary.to_pylist(), dtype=object)[ct.indices.to_numpy(zero_copy_only=False)[st]]
+        rows.append(pd.DataFrame(dict(minute=minute[st], open=px[st], high=np.maximum.reduceat(px, st), low=np.minimum.reduceat(px, st), close=px[en - 1],
+                                      volume=np.add.reduceat(vol, st), trades=(en - st).astype(np.int64), contract=cts, buy_volume=np.add.reduceat(np.where(isbuy, vol, 0), st).astype(np.float64))))
+    if not rows:
+        return pd.DataFrame()
+    m = pd.concat(rows, ignore_index=True)
+    # un minuto puede quedar partido entre dos grupos de filas: se une (primero/último en orden de archivo)
+    g = m.groupby("minute", sort=True)
+    m = g.agg(open=("open", "first"), high=("high", "max"), low=("low", "min"), close=("close", "last"), volume=("volume", "sum"),
+              trades=("trades", "sum"), contract=("contract", "first"), buy_volume=("buy_volume", "sum")).reset_index()
+    m["volume"] = m["volume"].astype(vdt)            # mismo tipo que la versión original (pandas conserva el entero de la columna)
+    m.insert(0, "session_date", _minute_session_date(m["minute"].to_numpy()))
+    return m
+
+
+def _m1_cached(ds: str, fl: str) -> pd.DataFrame:
+    """M1 por archivo con caché en disco (EDGELAB_M1_CACHE, por omisión ~/.cache/edgelab_m1): la primera vez se arma, después se lee en segundos.
+    Si existe el dataset `edgelab-m1-bars` como input, se usa directamente (ver tools/m1_store_build.py)."""
+    key = f"{ds}__{fl.replace('/', '__')}.m1.parquet"
+    for r in ROOTS:
+        for cand in (r / "edgelab-m1-bars" / key, *(r / "edgelab-m1-bars").glob(f"**/{key}")):
+            if cand.exists():
+                return pd.read_parquet(cand)
+    src = _path(ds, fl)
+    cdir = Path(os.environ.get("EDGELAB_M1_CACHE", Path.home() / ".cache" / "edgelab_m1")); cdir.mkdir(parents=True, exist_ok=True)
+    c = cdir / f"{key[:-len('.m1.parquet')]}__{src.stat().st_size}.m1.parquet"
+    if c.exists():
+        return pd.read_parquet(c)
+    m = _file_m1(src)
+    m.to_parquet(c)
+    return m
+
+
+def load_m1(inst: str, start: str, end: str, include_rejected: bool = False) -> pd.DataFrame:
+    """Barras M1 (inicio de minuto, UTC) de las sesiones aprobadas: OHLC en ticks de precio, volumen, trades, volumen comprador agresor.
+    Mismo resultado que `_load_m1_slow` (verificado en tests/test_edgelab_data_m1.py y en tools/m1_speed_check.py), mucho más rápido: agrega por grupo de filas con
+    numpy, calcula la fecha de sesión una vez por minuto y guarda el M1 de cada archivo en caché."""
+    check_inputs((inst, start, end))
+    s = sessions(inst, start, end, include_rejected)
+    if s.empty:
+        return pd.DataFrame()
+    out = []
+    for (ds, fl), g in s.groupby(["dataset", "file"]):
+        m = _m1_cached(ds, fl)
+        out.append(m[m.session_date.isin(set(g.date))])
+    m1 = pd.concat(out, ignore_index=True).sort_values(["session_date", "minute"], kind="stable").reset_index(drop=True)
+    m1.attrs.update(instrument=inst, tick_size=RESOLVER["instruments"][inst]["tick_size"], units="price_ticks")
     return m1
 
 
@@ -123,3 +217,10 @@ def load_spot(inst: str, start: str, end: str, kind: str = "m1") -> pd.DataFrame
             t = t[(t.time_utc_ns < a) | (t.time_utc_ns >= b)]
     t.attrs.update(instrument=inst, spot_dataset=ds, warning=RESOLVER["spot_complement"])
     return t.reset_index(drop=True)
+
+
+if __name__ == "__main__":      # python edgelab_data.py MES 2025-07-01 2026-09-30  -> datasets que hay que adjuntar al kernel
+    import sys
+    inst, a, b = sys.argv[1:4]
+    need = required_files(inst, a, b)
+    print(json.dumps(sorted({d for d, _ in need}), indent=1))
