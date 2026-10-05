@@ -28,8 +28,6 @@
 | `edgelab-ticks-6b-preholdout` | ticks | 64 MB | sí | 7 | 2026-09-19 |
 | `edgelab-ticks-es-nq-2026q3-ext` | ticks | 647 MB | sí | 16 | 2026-09-26 |
 | `edgelab-nt8-historical-missing-20261001` | ticks | 1,226 MB | sí | 73 | 2026-10-01 |
-| `mnq-tick-data` | artefactos/evidencia | 15 MB | **PÚBLICO** | 1 | 2026-10-03 |
-| `mnq-parquet` | ticks | 500 MB | **PÚBLICO** | 2 | 2026-10-04 |
 | `edgelab-discovery-cache` | artefactos/evidencia | 58 MB | sí | 112 | 2026-10-04 |
 | `edgelab-dukascopy-xauusd-ticks-m1` | ticks | 2,611 MB | sí | 4 | 2026-10-04 |
 | `edgelab-data-catalog` | artefactos/evidencia | 1 MB | sí | 184 | 2026-10-04 |
@@ -207,16 +205,6 @@ Archivos de ticks: `ES_parquet/ES_09-26_ticks_ext.parquet`, `ES_parquet/ES_12-26
 
 Tipo: ticks. 1,226 MB. 73 archivos.
 Archivos de ticks: `6B_03-26_ticks_nt8.parquet`, `6B_06-26_ticks_nt8.parquet`, `6B_09-25_ticks_nt8.parquet`, `6B_09-26_ticks_nt8.parquet`, `6B_12-25_ticks_nt8.parquet`, `6B_12-26_ticks_nt8.parquet`, `6E_03-26_ticks_nt8.parquet`, `6E_06-26_ticks_nt8.parquet`, `6E_09-25_ticks_nt8.parquet`, `6E_09-26_ticks_nt8.parquet`, `6E_12-25_ticks_nt8.parquet`, `6E_12-26_ticks_nt8.parquet`, `6J_03-26_ticks_nt8.parquet`, `6J_06-26_ticks_nt8.parquet`, `6J_09-25_ticks_nt8.parquet`, `6J_09-26_ticks_nt8.parquet`, `6J_12-25_ticks_nt8.parquet`, `6J_12-26_ticks_nt8.parquet`, `ES_03-26_ticks_ext.parquet`, `ES_06-26_ticks_ext.parquet`, `ES_09-25_ticks_ext.parquet`, `ES_09-26_ticks_ext.parquet`, `ES_12-25_ticks_ext.parquet`, `NQ_03-26_ticks_ext.parquet`, `NQ_06-26_ticks_ext.parquet`, `NQ_09-25_ticks_ext.parquet`, `NQ_09-26_ticks_ext.parquet`, `NQ_12-25_ticks_ext.parquet`, `ZB_09-25_ticks_nt8.parquet`, `ZB_12-25_ticks_nt8.parquet`
-
-## `mnq-tick-data`
-
-Tipo: artefactos/evidencia. 15 MB. 1 archivos.
-Archivos (primeros): `MNQ 09-26.Lastick.txt`
-
-## `mnq-parquet`
-
-Tipo: ticks. 500 MB. 2 archivos.
-Archivos de ticks: `MNQ 09-26.Lasttt.parquet`, `MNQ 12-26.Lasttick.parquet`
 
 ## `edgelab-discovery-cache`
 

@@ -151,5 +151,3 @@
 | `edgelab-ticks-zb-preholdout` | `ZB_09-25_ticks.parquet` | ZB_09-25 | 2025-08-18 a 2025-09-19 | 28 | 610,102 | sí | sí | 0 | 0 / 0 / 0 |
 | `edgelab-ticks-zb-preholdout` | `ZB_09-26_ticks.parquet` | ZB_09-26 | 2026-05-25 a 2026-06-30 | 27 | 2,569,580 | sí | sí | 0 | 0 / 0 / 0 |
 | `edgelab-ticks-zb-preholdout` | `ZB_12-25_ticks.parquet` | ZB_12-25 | 2025-08-22 a 2025-12-21 | 102 | 7,370,765 | sí | sí | 0 | 0 / 0 / 0 |
-| `mnq-parquet` | `MNQ 09-26.Lasttt.parquet` | MNQ_09-26 | 2026-06-08 a 2026-08-28 | 48 | 101,840,095 | sí | no | 0 | 0 / 0 / 0 |
-| `mnq-parquet` | `MNQ 12-26.Lasttick.parquet` | MNQ_12-26 | 2026-06-12 a 2026-10-02 | 82 | 28,779,037 | sí | no | 2 | 0 / 0 / 0 |

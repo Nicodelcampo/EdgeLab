@@ -13,7 +13,7 @@ Cada punto sale de una regla verificable sobre el catálogo. Orden de prioridad:
 - **ES:** Contratos con fuentes que difieren de forma material: ES_09-26. Reexportar de NinjaTrader y comparar contra las dos.
 - **MBT:** Contratos con fuentes que difieren de forma material: MBT_07-26. Reexportar de NinjaTrader y comparar contra las dos.
 - **MGC:** Contratos con fuentes que difieren de forma material: MGC_08-26, MGC_12-26. Reexportar de NinjaTrader y comparar contra las dos.
-- **MNQ:** Contratos con fuentes que difieren de forma material: MNQ_09-26, MNQ_12-26. Reexportar de NinjaTrader y comparar contra las dos.
+- **MNQ:** Contratos con fuentes que difieren de forma material: MNQ_12-26. Reexportar de NinjaTrader y comparar contra las dos.
 - **NQ:** Contratos con fuentes que difieren de forma material: NQ_06-26, NQ_09-25. Reexportar de NinjaTrader y comparar contra las dos.
 - **YM:** Contratos con fuentes que difieren de forma material: YM_12-26. Reexportar de NinjaTrader y comparar contra las dos.
 

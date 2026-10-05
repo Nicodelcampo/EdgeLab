@@ -14,7 +14,7 @@ Reglas fijas en `tools/data_curate.py` (iguales para todos). **Usar solo lo que 
 | MBT | **CON_SALVEDADES** | 191 | 121 (63%) | 2026-09-30 | 2025-08-22..2025-09-05 (11); 2025-10-14..2025-10-24 (8); 2025-12-01..2025-12-19 (13); 2026-05-26..2026-09-30 (89) |
 | MES | **APROBADO** | 277 | 277 (100%) | 2026-09-25 | 2025-08-04..2025-11-26 (81); 2025-12-01..2025-12-23 (17); 2025-12-29..2026-09-25 (179) |
 | MGC | **CON_SALVEDADES** | 219 | 219 (100%) | 2026-09-30 | 2025-10-07..2025-11-26 (36); 2025-12-01..2026-01-09 (28); 2026-01-28..2026-03-31 (43); 2026-04-06..2026-07-15 (64); 2026-07-20..2026-09-09 (35); 2026-09-14..2026-09-30 (13) |
-| MNQ | **CON_SALVEDADES** | 275 | 273 (100%) | 2026-09-30 | 2025-08-04..2025-09-12 (29); 2025-09-17..2025-11-26 (51); 2025-12-01..2025-12-22 (15); 2025-12-29..2026-08-12 (148); 2026-08-17..2026-09-11 (19); 2026-09-16..2026-09-30 (11) |
+| MNQ | **CON_SALVEDADES** | 261 | 261 (100%) | 2026-09-30 | 2025-08-04..2025-09-12 (29); 2025-09-17..2025-11-26 (51); 2025-12-01..2025-12-22 (15); 2025-12-29..2026-06-16 (111); 2026-06-22..2026-06-30 (6); 2026-07-06..2026-07-14 (6) … |
 | MYM | **CON_SALVEDADES** | 190 | 136 (72%) | 2026-09-25 | 2025-09-30..2025-10-03 (4); 2025-12-15..2026-01-09 (18); 2026-03-16..2026-08-19 (92); 2026-08-24..2026-09-25 (22) |
 | NQ | **CON_SALVEDADES** | 278 | 278 (100%) | 2026-09-25 | 2025-08-04..2025-09-12 (29); 2025-09-17..2025-11-26 (51); 2025-12-01..2025-12-23 (16); 2025-12-29..2026-09-25 (182) |
 | RTY | **CON_SALVEDADES** | 182 | 143 (79%) | 2026-09-25 | 2025-10-03..2025-10-03 (1); 2025-12-15..2025-12-26 (9); 2026-03-16..2026-09-25 (133) |
@@ -138,10 +138,10 @@ Excluidas: ninguna. Sesiones con salvedad por fuentes en conflicto: 76.
 | MNQ_12-25 | `edgelab-ticks-nt8-canonical` | `MNQ/MNQ_12-25_ticks_ext.parquet` | 62 | 2025-09-17..2025-12-15 | - |
 | MNQ_03-26 | `edgelab-ticks-nt8-canonical` | `MNQ/MNQ_03-26_ticks_ext.parquet` | 57 | 2025-12-17..2026-03-16 | - |
 | MNQ_06-26 | `edgelab-ticks-nt8-reexport-20261005` | `MNQ/MNQ_06-26_ticks_ext.parquet` | 57 | 2026-03-19..2026-06-12 | - |
-| MNQ_09-26 | `edgelab-ticks-nt8-reexport-20261005` | `MNQ/MNQ_09-26_ticks_ext.parquet` | 57 | 2026-06-16..2026-09-11 | `mnq-parquet:MNQ 09-26.Lasttt.parquet` |
-| MNQ_12-26 | `edgelab-ticks-nt8-reexport-20261005` | `MNQ/MNQ_12-26_ticks_ext.parquet` | 11 | 2026-09-16..2026-09-30 | `mnq-parquet:MNQ 12-26.Lasttick.parquet` |
+| MNQ_09-26 | `edgelab-ticks-nt8-reexport-20261005` | `MNQ/MNQ_09-26_ticks_ext.parquet` | 46 | 2026-06-16..2026-09-14 | - |
+| MNQ_12-26 | `edgelab-ticks-nt8-reexport-20261005` | `MNQ/MNQ_12-26_ticks_ext.parquet` | 10 | 2026-09-17..2026-09-30 | - |
 
-Excluidas: holdout: 2. Sesiones con salvedad por fuentes en conflicto: 68.
+Excluidas: ninguna. Sesiones con salvedad por fuentes en conflicto: 10.
 
 ### MYM
 
@@ -236,9 +236,7 @@ Excluidas: sesion_truncada: 1. Sesiones con salvedad por fuentes en conflicto: 0
 | `edgelab-ticks-6b-preholdout` | REDUNDANTE o sin sesiones aprobadas (no usar como fuente; conservar como respaldo) | 0 | - | sí | 64 |  |
 | `edgelab-ticks-es-nq-2026q3-ext` | PRIMARIO (aporta sesiones aprobadas) | 65 | ES, NQ | sí | 647 |  |
 | `edgelab-nt8-historical-missing-20261001` | PRIMARIO (aporta sesiones aprobadas) | 1145 | 6B, 6E, 6J, ES, NQ, ZB | sí | 1,226 |  |
-| `mnq-tick-data` | ARTEFACTOS / EVIDENCIA (no son datos de mercado) | 0 | - | **NO** | 15 | PÚBLICO: pasarlo a privado |
-| `mnq-parquet` | PRIMARIO (aporta sesiones aprobadas) | 22 | MNQ | **NO** | 500 | PÚBLICO: pasarlo a privado |
 | `edgelab-discovery-cache` | DERIVADO (caché / inventario) | 0 | - | sí | 58 |  |
 | `edgelab-dukascopy-xauusd-ticks-m1` | SPOT (no es futuro): ver la sección de Dukascopy | 0 | - | sí | 2,611 |  |
 | `edgelab-data-catalog` | DERIVADO (caché / inventario) | 0 | - | sí | 1 |  |
-| `edgelab-ticks-nt8-reexport-20261005` | PRIMARIO (aporta sesiones aprobadas) | 767 | 6E, ES, GC, MBT, MES, MGC, MNQ, MYM, NQ, RTY, YM, ZB | sí | 5,059 |  |
+| `edgelab-ticks-nt8-reexport-20261005` | PRIMARIO (aporta sesiones aprobadas) | 777 | 6E, ES, GC, MBT, MES, MGC, MNQ, MYM, NQ, RTY, YM, ZB | sí | 5,059 |  |

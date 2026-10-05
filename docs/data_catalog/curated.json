@@ -1,5 +1,5 @@
 {
- "generated_utc": "2026-10-05T04:45:59Z",
+ "generated_utc": "2026-10-05T21:36:47Z",
  "rules": "Selecci\u00f3n de datos APROBADOS para an\u00e1lisis: aplica reglas fijas, por sesi\u00f3n, al cat\u00e1logo y escribe docs/data_catalog/{curated.json,CURATED.md,REEXPORT.md}.\nReglas (iguales para todos los instrumentos; se cambian solo en este archivo y se documentan):\n  1. Serie l\u00edder y elegibilidad del cat\u00e1logo (mayor volumen de la sesi\u00f3n anterior; volumen >= 50 % de la mediana del contrato).\n  2. Excluida si el volumen es < 25 % de la mediana de volumen del l\u00edder de TODO el instrumento (liquidez baja respecto del instrumento).\n  3. Excluida si tiene menos de la mitad de los minutos t\u00edpicos (sesi\u00f3n truncada o cierre temprano).\n  4. Con salvedad (no excluida) si el contrato tiene fuentes en conflicto material (> 1 % de diferencia de trades en m\u00e1s del 10 % de los d\u00edas comunes).\n  5. Excluida toda sesi\u00f3n desde 2026-10-01 (holdout formal).\nVeredicto por instrumento: APROBADO (>= 85 % de las sesiones elegibles aprobadas y sin salvedades), CON_SALVEDADES (>= 60 %), NO_RECOMENDADO (< 60 %).",
  "holdout_first_trade_date": "2026-10-01",
  "dataset_roles": [
@@ -266,26 +266,6 @@
    "note": ""
   },
   {
-   "slug": "mnq-tick-data",
-   "role": "ARTEFACTOS / EVIDENCIA (no son datos de mercado)",
-   "approved_sessions_supplied": 0,
-   "instruments": [],
-   "private": false,
-   "mb": 15,
-   "note": "P\u00daBLICO: pasarlo a privado"
-  },
-  {
-   "slug": "mnq-parquet",
-   "role": "PRIMARIO (aporta sesiones aprobadas)",
-   "approved_sessions_supplied": 22,
-   "instruments": [
-    "MNQ"
-   ],
-   "private": false,
-   "mb": 500,
-   "note": "P\u00daBLICO: pasarlo a privado"
-  },
-  {
    "slug": "edgelab-discovery-cache",
    "role": "DERIVADO (cach\u00e9 / inventario)",
    "approved_sessions_supplied": 0,
@@ -315,7 +295,7 @@
   {
    "slug": "edgelab-ticks-nt8-reexport-20261005",
    "role": "PRIMARIO (aporta sesiones aprobadas)",
-   "approved_sessions_supplied": 767,
+   "approved_sessions_supplied": 777,
    "instruments": [
     "6E",
     "ES",
@@ -1083,8 +1063,8 @@
    "verdict": "CON_SALVEDADES",
    "tick_size": 0.25,
    "tick_value_usd": 0.5,
-   "eligible_sessions": 275,
-   "approved_sessions": 273,
+   "eligible_sessions": 261,
+   "approved_sessions": 261,
    "approved_fraction_of_eligible": 1.0,
    "approved_ranges": [
     {
@@ -1104,33 +1084,34 @@
     },
     {
      "first": "2025-12-29",
+     "last": "2026-06-16",
+     "sessions": 111
+    },
+    {
+     "first": "2026-06-22",
+     "last": "2026-06-30",
+     "sessions": 6
+    },
+    {
+     "first": "2026-07-06",
+     "last": "2026-07-14",
+     "sessions": 6
+    },
+    {
+     "first": "2026-07-20",
      "last": "2026-08-12",
-     "sessions": 148
+     "sessions": 15
     },
     {
      "first": "2026-08-17",
-     "last": "2026-09-11",
-     "sessions": 19
-    },
-    {
-     "first": "2026-09-16",
      "last": "2026-09-30",
-     "sessions": 11
+     "sessions": 28
     }
    ],
-   "excluded": {
-    "holdout": {
-     "n": 2,
-     "dates_sample": [
-      "2026-10-01",
-      "2026-10-02"
-     ]
-    }
-   },
+   "excluded": {},
    "caveat_sessions_source_conflict": {
-    "n": 68,
+    "n": 10,
     "contracts": [
-     "MNQ_09-26",
      "MNQ_12-26"
     ]
    },
@@ -1170,25 +1151,21 @@
     "MNQ_09-26": {
      "dataset": "edgelab-ticks-nt8-reexport-20261005",
      "file": "MNQ/MNQ_09-26_ticks_ext.parquet",
-     "approved_sessions": 57,
+     "approved_sessions": 46,
      "first": "2026-06-16",
-     "last": "2026-09-11",
-     "other_sources": [
-      "mnq-parquet:MNQ 09-26.Lasttt.parquet"
-     ]
+     "last": "2026-09-14",
+     "other_sources": []
     },
     "MNQ_12-26": {
      "dataset": "edgelab-ticks-nt8-reexport-20261005",
      "file": "MNQ/MNQ_12-26_ticks_ext.parquet",
-     "approved_sessions": 11,
-     "first": "2026-09-16",
+     "approved_sessions": 10,
+     "first": "2026-09-17",
      "last": "2026-09-30",
-     "other_sources": [
-      "mnq-parquet:MNQ 12-26.Lasttick.parquet"
-     ]
+     "other_sources": []
     }
    },
-   "holdout_sessions_present": 2,
+   "holdout_sessions_present": 0,
    "last_approved_session": "2026-09-30"
   },
   "MYM": {
