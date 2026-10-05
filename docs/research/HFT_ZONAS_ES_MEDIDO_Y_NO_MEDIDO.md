@@ -717,3 +717,18 @@ Quotes abiertas positivas, por registro:ES21.174.154/22.835.655=92,7240930904% d
 **MEDIDO ingeniería target-free:** preflight instrument-neutral con custodia/manifiesto/grilla propia y tape ordenado sinnearest.14testsPASS, fixtureES sintética end-to-endPASS (NO L2ESreal). Semántica NT8 conserva L1 DAILY_VOLUME/otros no-trade y cola level10; solo LAST=2 al tape. GCMay31 13.913printsPASS;Jun15 92.515prints/5timestampsdistintos yprecio/volumenidénticos ABSTAIN. Raw sincorregir.
 
 **NO MEDIDO:** bookESreal/másGC/replaynuevo/predicción/P&L/fills/costos/potencia. ListadoKaggleaccesible sólo2L2GC;noESrawexpuesto. Pedido mínimo local en `ENTREGA_LOCAL_L2_GC_ES_20260930.md`;borradormanifiesto50%vsbaseline precio NO aprobado/noejecutable. Acta `RESULTADO_L2_PAIRING_GC_ES_20260930.md`;evidencia `artifacts/l2_pairing_next_20260930/evidence.json`. Visores/C0/climasSTOP/holdoutintactos.
+
+## GEX-1 — régimen de gamma de dealers (SqueezeMetrics, día previo) — 06/10/2026
+Manifiesto `docs/research/GEX1_REGISTRO_Y_MANIFIESTO_20261006.md` (OK de Nico). Kaggle `edgelab-gex1-20261006`;
+resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo información, sin P&L. Holdout intacto.
+- MEDIDO: spot USA500 2023-01 → 2025-06 (757 sesiones; gex<0 = 39): **amplitud intradía mayor con gex<0** —
+  rango RTH / media previa +0,54 (Holm 0,015, MDE 0,48); vol. realizada / media previa +0,59 (Holm 0,006, MDE 0,46).
+  Control por volatilidad previa débil (sólo 2 quintiles con ambos grupos); allí la diferencia se mantiene.
+- MEDIDO, NO DETECTADO: continuación de última media hora (I2) y autocorrelación intradía (I3), en spot y MES.
+  MDE altos (I2n ≈ 1,9 sd; ac1 ≈ 0,08 spot): el efecto de Baltussen/Barbon-Buraschi no se replica a este poder.
+- SIN POTENCIA: MES NT8 2025-09 → 2026-09 tiene **9** sesiones con gex<0 de 248 (año de gamma positivo casi
+  continuo). Nada interpretable en futuros.
+- NO MEDIDO: confusor "día posterior a caída fuerte" (gex<0 sigue a caídas; la volatilidad se agrupa) — falta
+  controlar por |retorno| y retorno del día previo antes de atribuir la amplitud al gamma. Walls/flip como soporte,
+  resistencia o imán: sin historia causal suficiente (SquawkFlow desde 2026-07-28).
+- Bug corregido antes de interpretar: test con obs NaN recibía p≈0 (MES I2d); ahora p=1 y Holm recalculado.
