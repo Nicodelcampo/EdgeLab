@@ -18,6 +18,8 @@ SPOT_NOTE = ("Spot/CFD Dukascopy (dataset edgelab-dukascopy-*): complemento de P
              "volumen = liquidez cotizada, no trades; spread y costos distintos (oro: ~5,8 ticks GC vs 3 en COMEX); "
              "horario distinto. NO sirve para costos ni ejecución del futuro: el neto se confirma siempre en futuros.")
 
+DELETED_DATASETS = {"mnq-parquet", "mnq-tick-data"}     # borrados por el usuario (estaban públicos, 2026-10-05): sus sesiones quedan NO aprobadas con motivo explícito
+
 SPOT_DATASETS = {  # spot/CFD hermano de cada futuro (no reemplaza al futuro)
     "GC": "edgelab-dukascopy-xauusd-ticks-m1", "MGC": "edgelab-dukascopy-xauusd-ticks-m1",
     "ES": "edgelab-dukascopy-es-usa500", "MES": "edgelab-dukascopy-es-usa500",
@@ -70,7 +72,7 @@ def add_alternatives(instruments, daymaps):
         for r in v["sessions"]:
             alts = []
             for ds, fl, days in sorted(by_contract.get(r["contract"], []), key=lambda t: _alt_rank(t[0])):
-                if (ds, fl) == (r["dataset"], r["file"]) or r["date"] not in days:
+                if (ds, fl) == (r["dataset"], r["file"]) or r["date"] not in days or ds in DELETED_DATASETS:
                     continue
                 tr, vol, mi = days[r["date"]]
                 ok = abs(tr - r["trades"]) <= 0.01 * max(tr, r["trades"], 1) and abs(mi - r["minutes"]) <= 2
@@ -101,6 +103,8 @@ def main():
                 continue                                   # el holdout ni siquiera se lista
             why = ("liquidez_baja" if r["below_25pct_instrument_median"] else
                    "sesion_truncada" if r["thin_minutes"] else None)
+            if r["dataset"] in DELETED_DATASETS:
+                why = "fuente_borrada(" + r["dataset"] + ")"
             lst.append({"date": r["date"], "contract": r["contract"], "dataset": r["dataset"], "file": r["file"],
                         "approved": why is None, "reason": why, "caveat": "fuente_en_conflicto" if r["contract"] in conflict else None,
                         "trades": r["trades"], "volume": r["volume"], "minutes": r["minutes"]})

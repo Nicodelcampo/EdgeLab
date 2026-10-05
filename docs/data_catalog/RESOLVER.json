@@ -1,6 +1,6 @@
 {
 "schema": "EDGELAB_RESOLVER_V1",
-"generated_utc": "2026-10-05T17:49:24+00:00",
+"generated_utc": "2026-10-05T18:30:27+00:00",
 "holdout_first_trade_date": "2026-10-01",
 "rules": "Selección de datos APROBADOS para análisis: aplica reglas fijas, por sesión, al catálogo y escribe docs/data_catalog/{curated.json,CURATED.md,REEXPORT.md}.\nReglas (iguales para todos los instrumentos; se cambian solo en este archivo y se documentan):\n  1. Serie líder y elegibilidad del catálogo (mayor volumen de la sesión anterior; volumen >= 50 % de la mediana del contrato).\n  2. Excluida si el volumen es < 25 % de la mediana de volumen del líder de TODO el instrumento (liquidez baja respecto del instrumento).\n  3. Excluida si tiene menos de la mitad de los minutos típicos (sesión truncada o cierre temprano).\n  4. Con salvedad (no excluida) si el contrato tiene fuentes en conflicto material (> 1 % de diferencia de trades en más del 10 % de los días comunes).\n  5. Excluida toda sesión desde 2026-10-01 (holdout formal).\nVeredicto por instrumento: APROBADO (>= 85 % de las sesiones elegibles aprobadas y sin salvedades), CON_SALVEDADES (>= 60 %), NO_RECOMENDADO (< 60 %).",
 "how_to_use": "import edgelab_data as ed; ed.load_ticks('MNQ','2026-01-01','2026-09-30')  # sólo sesiones aprobadas",
@@ -33939,7 +33939,7 @@
 "verdict": "CON_SALVEDADES",
 "tick_size": 0.25,
 "tick_value_usd": 0.5,
-"approved_sessions": 273,
+"approved_sessions": 251,
 "sessions": [
 {
 "date": "2025-08-04",
@@ -38044,11 +38044,6 @@
 "dataset": "edgelab-ticks-nt8-canonical",
 "file": "MNQ/MNQ_09-26_ticks_ext.parquet",
 "consistent": true
-},
-{
-"dataset": "mnq-parquet",
-"file": "MNQ 09-26.Lasttt.parquet",
-"consistent": true
 }
 ]
 },
@@ -38057,8 +38052,8 @@
 "contract": "MNQ_09-26",
 "dataset": "mnq-parquet",
 "file": "MNQ 09-26.Lasttt.parquet",
-"approved": true,
-"reason": null,
+"approved": false,
+"reason": "fuente_borrada(mnq-parquet)",
 "caveat": "fuente_en_conflicto",
 "trades": 2793426,
 "volume": 3084775.0,
@@ -38081,8 +38076,8 @@
 "contract": "MNQ_09-26",
 "dataset": "mnq-parquet",
 "file": "MNQ 09-26.Lasttt.parquet",
-"approved": true,
-"reason": null,
+"approved": false,
+"reason": "fuente_borrada(mnq-parquet)",
 "caveat": "fuente_en_conflicto",
 "trades": 2352959,
 "volume": 2583836.0,
@@ -38093,8 +38088,8 @@
 "contract": "MNQ_09-26",
 "dataset": "mnq-parquet",
 "file": "MNQ 09-26.Lasttt.parquet",
-"approved": true,
-"reason": null,
+"approved": false,
+"reason": "fuente_borrada(mnq-parquet)",
 "caveat": "fuente_en_conflicto",
 "trades": 2599442,
 "volume": 2826757.0,
@@ -38128,11 +38123,6 @@
 "dataset": "edgelab-ticks-nt8-canonical",
 "file": "MNQ/MNQ_09-26_ticks_ext.parquet",
 "consistent": true
-},
-{
-"dataset": "mnq-parquet",
-"file": "MNQ 09-26.Lasttt.parquet",
-"consistent": true
 }
 ]
 },
@@ -38141,8 +38131,8 @@
 "contract": "MNQ_09-26",
 "dataset": "mnq-parquet",
 "file": "MNQ 09-26.Lasttt.parquet",
-"approved": true,
-"reason": null,
+"approved": false,
+"reason": "fuente_borrada(mnq-parquet)",
 "caveat": "fuente_en_conflicto",
 "trades": 3632170,
 "volume": 3906279.0,
@@ -38165,8 +38155,8 @@
 "contract": "MNQ_09-26",
 "dataset": "mnq-parquet",
 "file": "MNQ 09-26.Lasttt.parquet",
-"approved": true,
-"reason": null,
+"approved": false,
+"reason": "fuente_borrada(mnq-parquet)",
 "caveat": "fuente_en_conflicto",
 "trades": 3638126,
 "volume": 3996599.0,
@@ -38210,11 +38200,6 @@
 "dataset": "edgelab-ticks-mnq-preholdout",
 "file": "MNQ_09-26_ticks.parquet",
 "consistent": true
-},
-{
-"dataset": "mnq-parquet",
-"file": "MNQ 09-26.Lasttt.parquet",
-"consistent": false
 }
 ]
 },
@@ -38223,8 +38208,8 @@
 "contract": "MNQ_09-26",
 "dataset": "mnq-parquet",
 "file": "MNQ 09-26.Lasttt.parquet",
-"approved": true,
-"reason": null,
+"approved": false,
+"reason": "fuente_borrada(mnq-parquet)",
 "caveat": "fuente_en_conflicto",
 "trades": 3043347,
 "volume": 3280972.0,
@@ -38252,8 +38237,8 @@
 "contract": "MNQ_09-26",
 "dataset": "mnq-parquet",
 "file": "MNQ 09-26.Lasttt.parquet",
-"approved": true,
-"reason": null,
+"approved": false,
+"reason": "fuente_borrada(mnq-parquet)",
 "caveat": "fuente_en_conflicto",
 "trades": 2274229,
 "volume": 2529736.0,
@@ -38281,8 +38266,8 @@
 "contract": "MNQ_09-26",
 "dataset": "mnq-parquet",
 "file": "MNQ 09-26.Lasttt.parquet",
-"approved": true,
-"reason": null,
+"approved": false,
+"reason": "fuente_borrada(mnq-parquet)",
 "caveat": "fuente_en_conflicto",
 "trades": 2653966,
 "volume": 2920707.0,
@@ -38305,8 +38290,8 @@
 "contract": "MNQ_09-26",
 "dataset": "mnq-parquet",
 "file": "MNQ 09-26.Lasttt.parquet",
-"approved": true,
-"reason": null,
+"approved": false,
+"reason": "fuente_borrada(mnq-parquet)",
 "caveat": "fuente_en_conflicto",
 "trades": 3807954,
 "volume": 4282899.0,
@@ -38328,11 +38313,6 @@
 "dataset": "edgelab-ticks-nt8-canonical",
 "file": "MNQ/MNQ_09-26_ticks_ext.parquet",
 "consistent": true
-},
-{
-"dataset": "mnq-parquet",
-"file": "MNQ 09-26.Lasttt.parquet",
-"consistent": true
 }
 ]
 },
@@ -38341,8 +38321,8 @@
 "contract": "MNQ_09-26",
 "dataset": "mnq-parquet",
 "file": "MNQ 09-26.Lasttt.parquet",
-"approved": true,
-"reason": null,
+"approved": false,
+"reason": "fuente_borrada(mnq-parquet)",
 "caveat": "fuente_en_conflicto",
 "trades": 2919523,
 "volume": 3230554.0,
@@ -38365,8 +38345,8 @@
 "contract": "MNQ_09-26",
 "dataset": "mnq-parquet",
 "file": "MNQ 09-26.Lasttt.parquet",
-"approved": true,
-"reason": null,
+"approved": false,
+"reason": "fuente_borrada(mnq-parquet)",
 "caveat": "fuente_en_conflicto",
 "trades": 3123858,
 "volume": 3387588.0,
@@ -38395,11 +38375,6 @@
 "dataset": "edgelab-ticks-nt8-canonical",
 "file": "MNQ/MNQ_09-26_ticks_ext.parquet",
 "consistent": false
-},
-{
-"dataset": "mnq-parquet",
-"file": "MNQ 09-26.Lasttt.parquet",
-"consistent": true
 }
 ]
 },
@@ -38418,11 +38393,6 @@
 {
 "dataset": "edgelab-ticks-nt8-canonical",
 "file": "MNQ/MNQ_09-26_ticks_ext.parquet",
-"consistent": true
-},
-{
-"dataset": "mnq-parquet",
-"file": "MNQ 09-26.Lasttt.parquet",
 "consistent": true
 }
 ]
@@ -38443,11 +38413,6 @@
 "dataset": "edgelab-ticks-nt8-canonical",
 "file": "MNQ/MNQ_09-26_ticks_ext.parquet",
 "consistent": true
-},
-{
-"dataset": "mnq-parquet",
-"file": "MNQ 09-26.Lasttt.parquet",
-"consistent": true
 }
 ]
 },
@@ -38467,11 +38432,6 @@
 "dataset": "edgelab-ticks-nt8-canonical",
 "file": "MNQ/MNQ_09-26_ticks_ext.parquet",
 "consistent": true
-},
-{
-"dataset": "mnq-parquet",
-"file": "MNQ 09-26.Lasttt.parquet",
-"consistent": true
 }
 ]
 },
@@ -38480,8 +38440,8 @@
 "contract": "MNQ_09-26",
 "dataset": "mnq-parquet",
 "file": "MNQ 09-26.Lasttt.parquet",
-"approved": true,
-"reason": null,
+"approved": false,
+"reason": "fuente_borrada(mnq-parquet)",
 "caveat": "fuente_en_conflicto",
 "trades": 2588339,
 "volume": 2864453.0,
@@ -38504,8 +38464,8 @@
 "contract": "MNQ_09-26",
 "dataset": "mnq-parquet",
 "file": "MNQ 09-26.Lasttt.parquet",
-"approved": true,
-"reason": null,
+"approved": false,
+"reason": "fuente_borrada(mnq-parquet)",
 "caveat": "fuente_en_conflicto",
 "trades": 2572539,
 "volume": 2798933.0,
@@ -38516,8 +38476,8 @@
 "contract": "MNQ_09-26",
 "dataset": "mnq-parquet",
 "file": "MNQ 09-26.Lasttt.parquet",
-"approved": true,
-"reason": null,
+"approved": false,
+"reason": "fuente_borrada(mnq-parquet)",
 "caveat": "fuente_en_conflicto",
 "trades": 3091009,
 "volume": 3381383.0,
@@ -38539,11 +38499,6 @@
 "dataset": "edgelab-ticks-nt8-canonical",
 "file": "MNQ/MNQ_09-26_ticks_ext.parquet",
 "consistent": true
-},
-{
-"dataset": "mnq-parquet",
-"file": "MNQ 09-26.Lasttt.parquet",
-"consistent": true
 }
 ]
 },
@@ -38552,8 +38507,8 @@
 "contract": "MNQ_09-26",
 "dataset": "mnq-parquet",
 "file": "MNQ 09-26.Lasttt.parquet",
-"approved": true,
-"reason": null,
+"approved": false,
+"reason": "fuente_borrada(mnq-parquet)",
 "caveat": "fuente_en_conflicto",
 "trades": 2085597,
 "volume": 2335747.0,
@@ -38576,8 +38531,8 @@
 "contract": "MNQ_09-26",
 "dataset": "mnq-parquet",
 "file": "MNQ 09-26.Lasttt.parquet",
-"approved": true,
-"reason": null,
+"approved": false,
+"reason": "fuente_borrada(mnq-parquet)",
 "caveat": "fuente_en_conflicto",
 "trades": 2093218,
 "volume": 2334426.0,
@@ -38611,11 +38566,6 @@
 "dataset": "edgelab-ticks-nt8-canonical",
 "file": "MNQ/MNQ_09-26_ticks_ext.parquet",
 "consistent": true
-},
-{
-"dataset": "mnq-parquet",
-"file": "MNQ 09-26.Lasttt.parquet",
-"consistent": true
 }
 ]
 },
@@ -38634,11 +38584,6 @@
 {
 "dataset": "edgelab-ticks-nt8-canonical",
 "file": "MNQ/MNQ_09-26_ticks_ext.parquet",
-"consistent": true
-},
-{
-"dataset": "mnq-parquet",
-"file": "MNQ 09-26.Lasttt.parquet",
 "consistent": true
 }
 ]
@@ -38659,11 +38604,6 @@
 "dataset": "edgelab-ticks-nt8-canonical",
 "file": "MNQ/MNQ_09-26_ticks_ext.parquet",
 "consistent": false
-},
-{
-"dataset": "mnq-parquet",
-"file": "MNQ 09-26.Lasttt.parquet",
-"consistent": true
 }
 ]
 },
@@ -38683,11 +38623,6 @@
 "dataset": "edgelab-ticks-nt8-canonical",
 "file": "MNQ/MNQ_09-26_ticks_ext.parquet",
 "consistent": true
-},
-{
-"dataset": "mnq-parquet",
-"file": "MNQ 09-26.Lasttt.parquet",
-"consistent": false
 }
 ]
 },
@@ -38864,11 +38799,6 @@
 "dataset": "edgelab-ticks-nt8-canonical",
 "file": "MNQ/MNQ_09-26_ticks_ext.parquet",
 "consistent": true
-},
-{
-"dataset": "mnq-parquet",
-"file": "MNQ 09-26.Lasttt.parquet",
-"consistent": true
 }
 ]
 },
@@ -38877,8 +38807,8 @@
 "contract": "MNQ_09-26",
 "dataset": "mnq-parquet",
 "file": "MNQ 09-26.Lasttt.parquet",
-"approved": true,
-"reason": null,
+"approved": false,
+"reason": "fuente_borrada(mnq-parquet)",
 "caveat": "fuente_en_conflicto",
 "trades": 2159058,
 "volume": 2502117.0,
@@ -38901,8 +38831,8 @@
 "contract": "MNQ_09-26",
 "dataset": "mnq-parquet",
 "file": "MNQ 09-26.Lasttt.parquet",
-"approved": true,
-"reason": null,
+"approved": false,
+"reason": "fuente_borrada(mnq-parquet)",
 "caveat": "fuente_en_conflicto",
 "trades": 2347939,
 "volume": 2741650.0,
@@ -38931,11 +38861,6 @@
 "dataset": "edgelab-ticks-nt8-canonical",
 "file": "MNQ/MNQ_09-26_ticks_ext.parquet",
 "consistent": false
-},
-{
-"dataset": "mnq-parquet",
-"file": "MNQ 09-26.Lasttt.parquet",
-"consistent": true
 }
 ]
 },
@@ -38954,11 +38879,6 @@
 {
 "dataset": "edgelab-ticks-nt8-canonical",
 "file": "MNQ/MNQ_09-26_ticks_ext.parquet",
-"consistent": true
-},
-{
-"dataset": "mnq-parquet",
-"file": "MNQ 09-26.Lasttt.parquet",
 "consistent": true
 }
 ]
@@ -38979,11 +38899,6 @@
 "dataset": "edgelab-ticks-nt8-canonical",
 "file": "MNQ/MNQ_09-26_ticks_ext.parquet",
 "consistent": true
-},
-{
-"dataset": "mnq-parquet",
-"file": "MNQ 09-26.Lasttt.parquet",
-"consistent": false
 }
 ]
 },
@@ -39003,11 +38918,6 @@
 "dataset": "edgelab-ticks-nt8-canonical",
 "file": "MNQ/MNQ_09-26_ticks_ext.parquet",
 "consistent": true
-},
-{
-"dataset": "mnq-parquet",
-"file": "MNQ 09-26.Lasttt.parquet",
-"consistent": true
 }
 ]
 },
@@ -39016,8 +38926,8 @@
 "contract": "MNQ_09-26",
 "dataset": "mnq-parquet",
 "file": "MNQ 09-26.Lasttt.parquet",
-"approved": true,
-"reason": null,
+"approved": false,
+"reason": "fuente_borrada(mnq-parquet)",
 "caveat": "fuente_en_conflicto",
 "trades": 1986501,
 "volume": 2443438.0,
@@ -39040,8 +38950,8 @@
 "contract": "MNQ_09-26",
 "dataset": "mnq-parquet",
 "file": "MNQ 09-26.Lasttt.parquet",
-"approved": true,
-"reason": null,
+"approved": false,
+"reason": "fuente_borrada(mnq-parquet)",
 "caveat": "fuente_en_conflicto",
 "trades": 2326102,
 "volume": 2700061.0,
@@ -39070,11 +38980,6 @@
 "dataset": "edgelab-ticks-nt8-canonical",
 "file": "MNQ/MNQ_09-26_ticks_ext.parquet",
 "consistent": false
-},
-{
-"dataset": "mnq-parquet",
-"file": "MNQ 09-26.Lasttt.parquet",
-"consistent": true
 }
 ]
 },
@@ -39254,8 +39159,8 @@
 "contract": "MNQ_12-26",
 "dataset": "mnq-parquet",
 "file": "MNQ 12-26.Lasttick.parquet",
-"approved": true,
-"reason": null,
+"approved": false,
+"reason": "fuente_borrada(mnq-parquet)",
 "caveat": "fuente_en_conflicto",
 "trades": 1803217,
 "volume": 2144009.0,
@@ -39278,8 +39183,8 @@
 "contract": "MNQ_12-26",
 "dataset": "mnq-parquet",
 "file": "MNQ 12-26.Lasttick.parquet",
-"approved": true,
-"reason": null,
+"approved": false,
+"reason": "fuente_borrada(mnq-parquet)",
 "caveat": "fuente_en_conflicto",
 "trades": 1497713,
 "volume": 1829192.0,
@@ -39308,11 +39213,6 @@
 "dataset": "edgelab-ticks-nt8-canonical",
 "file": "MNQ/MNQ_12-26_ticks_ext.parquet",
 "consistent": false
-},
-{
-"dataset": "mnq-parquet",
-"file": "MNQ 12-26.Lasttick.parquet",
-"consistent": true
 }
 ]
 },
@@ -39331,11 +39231,6 @@
 {
 "dataset": "edgelab-ticks-nt8-canonical",
 "file": "MNQ/MNQ_12-26_ticks_ext.parquet",
-"consistent": true
-},
-{
-"dataset": "mnq-parquet",
-"file": "MNQ 12-26.Lasttick.parquet",
 "consistent": true
 }
 ]
@@ -39356,11 +39251,6 @@
 "dataset": "edgelab-ticks-nt8-canonical",
 "file": "MNQ/MNQ_12-26_ticks_ext.parquet",
 "consistent": true
-},
-{
-"dataset": "mnq-parquet",
-"file": "MNQ 12-26.Lasttick.parquet",
-"consistent": true
 }
 ]
 },
@@ -39379,11 +39269,6 @@
 {
 "dataset": "edgelab-ticks-nt8-canonical",
 "file": "MNQ/MNQ_12-26_ticks_ext.parquet",
-"consistent": true
-},
-{
-"dataset": "mnq-parquet",
-"file": "MNQ 12-26.Lasttick.parquet",
 "consistent": true
 }
 ]
@@ -39404,11 +39289,6 @@
 "dataset": "edgelab-ticks-nt8-canonical",
 "file": "MNQ/MNQ_12-26_ticks_ext.parquet",
 "consistent": true
-},
-{
-"dataset": "mnq-parquet",
-"file": "MNQ 12-26.Lasttick.parquet",
-"consistent": true
 }
 ]
 },
@@ -39427,11 +39307,6 @@
 {
 "dataset": "edgelab-ticks-nt8-canonical",
 "file": "MNQ/MNQ_12-26_ticks_ext.parquet",
-"consistent": true
-},
-{
-"dataset": "mnq-parquet",
-"file": "MNQ 12-26.Lasttick.parquet",
 "consistent": true
 }
 ]
@@ -39452,11 +39327,6 @@
 "dataset": "edgelab-ticks-nt8-canonical",
 "file": "MNQ/MNQ_12-26_ticks_ext.parquet",
 "consistent": false
-},
-{
-"dataset": "mnq-parquet",
-"file": "MNQ 12-26.Lasttick.parquet",
-"consistent": true
 }
 ]
 },
@@ -39470,14 +39340,7 @@
 "caveat": "fuente_en_conflicto",
 "trades": 2156543,
 "volume": 2629230.0,
-"minutes": 1380,
-"alts": [
-{
-"dataset": "mnq-parquet",
-"file": "MNQ 12-26.Lasttick.parquet",
-"consistent": true
-}
-]
+"minutes": 1380
 },
 {
 "date": "2026-09-30",
@@ -39489,14 +39352,7 @@
 "caveat": "fuente_en_conflicto",
 "trades": 2172060,
 "volume": 2656105.0,
-"minutes": 1380,
-"alts": [
-{
-"dataset": "mnq-parquet",
-"file": "MNQ 12-26.Lasttick.parquet",
-"consistent": true
-}
-]
+"minutes": 1380
 }
 ]
 },

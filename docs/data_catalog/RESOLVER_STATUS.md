@@ -32,12 +32,3 @@ Sesiones aprobadas cuyo archivo primario **no existe hoy en Kaggle**. «Con alte
 | ZB | `ZB/ZB_09-26_ticks_ext.parquet` | 53 | 23 | 30 |
 | ZB | `ZB/ZB_12-26_ticks_ext.parquet` | 24 | 0 | 24 |
 
-## `mnq-parquet`  — **dataset sin los archivos (re-subir)**
-
-22 sesiones aprobadas dependen de 2 archivos que faltan; 0 tienen alternativa existente y **22 no tienen ninguna (esas fallan hasta que se suba el archivo)**.
-
-| Instrumento | Archivo que falta | Sesiones | Con alternativa | Sin alternativa |
-|---|---|---:|---:|---:|
-| MNQ | `MNQ 09-26.Lasttt.parquet` | 20 | 0 | 20 |
-| MNQ | `MNQ 12-26.Lasttick.parquet` | 2 | 0 | 2 |
-

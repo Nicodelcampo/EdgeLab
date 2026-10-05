@@ -12,7 +12,7 @@ Solo el resolver decide la fuente de cada sesión (`edgelab_data.py`). Para un k
 | MBT | CON_SALVEDADES | 121 | `edgelab-ticks-nt8-reexport-20261005` (89); `edgelab-ticks-mbt-preholdout` (32) | - |
 | MES | APROBADO | 277 | `edgelab-ticks-nt8-canonical` (219); `edgelab-ticks-nt8-reexport-20261005` (58) | edgelab-dukascopy-es-usa500 |
 | MGC | CON_SALVEDADES | 219 | `edgelab-mgc-nt8-raw-parquet-20261002` (160); `edgelab-ticks-nt8-reexport-20261005` (59) | edgelab-dukascopy-xauusd-ticks-m1 |
-| MNQ | CON_SALVEDADES | 273 | `edgelab-ticks-nt8-canonical` (148); `edgelab-ticks-nt8-reexport-20261005` (103); `mnq-parquet` (22) | edgelab-dukascopy-nq-usatech |
+| MNQ | CON_SALVEDADES | 251 | `edgelab-ticks-nt8-canonical` (148); `edgelab-ticks-nt8-reexport-20261005` (103) | edgelab-dukascopy-nq-usatech |
 | MYM | CON_SALVEDADES | 136 | `edgelab-ticks-nt8-canonical` (83); `edgelab-ticks-nt8-reexport-20261005` (53) | edgelab-dukascopy-ym-usa30 |
 | NQ | CON_SALVEDADES | 278 | `edgelab-nt8-historical-missing-20261001` (119); `edgelab-ticks-nt8-reexport-20261005` (67); `edgelab-ticks-es-nq-2026q3-ext` (58); `edgelab-ticks-nq-preholdout` (34) | edgelab-dukascopy-nq-usatech |
 | RTY | CON_SALVEDADES | 143 | `edgelab-ticks-nt8-canonical` (142); `edgelab-ticks-nt8-reexport-20261005` (1) | - |
