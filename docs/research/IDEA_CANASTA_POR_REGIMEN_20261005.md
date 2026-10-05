@@ -66,6 +66,21 @@ régimen diario no es operable. Pregunta 2 (P&L): ¿el rendimiento de cada estra
 difiere, neto de costos? Sigue la cadena del proyecto: información → P&L bruto → neto.
 Trampa principal: usar información del día completo para definir el régimen del mismo día (mirar adelante).
 
+## 4b. Variante intradía a nivel trade (Nico, 2026-10-05) — H-REG-3
+Estrategias generadas que hacen ~10 trades/día. Si ayer fue rentable y hoy los primeros 7 trades también, ¿la canasta
+de esas estrategias es rentable en los trades restantes? Es persistencia **dentro del día** del P&L por trade.
+- Test directo: P(trades k+1…n rentables | trades 1…k rentables, y día previo rentable) vs. la tasa incondicional,
+  por estrategia y para la canasta. Equivale a medir autocorrelación de resultados de trades (rachas).
+- Se puede probar entero en el pasado, sin tocar el holdout: el condicionante usa sólo trades ya cerrados.
+- Trampas: (a) las estrategias de la canasta comparten el mismo movimiento de mercado ese día → los trades no son
+  independientes; la unidad de inferencia es la **sesión**, no el trade (N efectivo = días, no trades); (b) "ganó los
+  primeros 7" puede ser sólo "el mercado fue en tendencia en la mañana": comparar contra un condicionante de mercado
+  puro (ej. retorno/rango de la mañana) para ver si la curva de P&L agrega algo; (c) las estrategias generadas
+  arrastran sesgo de selección: el universo y su fecha de generación tienen que ser anteriores al tramo evaluado;
+  (d) costos por trade, que en 10 trades/día pesan mucho.
+- Refutación: tasa condicional ≈ incondicional (IC por sesión cruza la diferencia cero), o la ventaja desaparece al
+  controlar por el condicionante de mercado puro, o no cubre costos.
+
 ## 5. Diseño del test (cuando haya OK)
 - Universo de estrategias fijado antes de mirar resultados (point-in-time; ninguna agregada después).
 - Walk-forward sobre 2023→2026-09 (holdout desde 2026-10-01 intacto): en cada fecha, ventana W hacia atrás,
