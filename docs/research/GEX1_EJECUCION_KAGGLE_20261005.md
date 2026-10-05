@@ -1,3 +1,5 @@
+> **Corrida provisional, reemplazada por `GEX1_Y_GEX1B_COMPLETO_20261005.md`** (datos completos, sin sesiones omitidas).
+
 # GEX-1 — ejecución en Kaggle (2026-10-05): desvíos y avisos
 
 Resultados crudos: `GEX1_RESULTADOS_20261006.json` (kernel `nicolasbuttaro/edgelab-gex1-20261006`, versión 5, 77 s). El script es el del manifiesto con tres cambios que **no tocan el análisis**: (1) `EDGELAB_ALLOW_MISSING=1`, (2) el JSON declara `dropped_sessions`, (3) marcas de diagnóstico de tiempo y memoria. Fuente de ticks de MES: `edgelab-data-catalog` (`edgelab_data.py` con `load_m1` rápida) sobre `edgelab-ticks-nt8-canonical`.

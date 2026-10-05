@@ -1,3 +1,5 @@
+> **Corrida provisional, reemplazada por `GEX1_Y_GEX1B_COMPLETO_20261005.md`** (datos completos, sin sesiones omitidas).
+
 # GEX-1b — resultado (2026-10-05)
 
 Pre-registro: `GEX1B_PREREGISTRO_20261005.md` (commit `4730ed62`, antes de correr). Resultados crudos: `GEX1B_RESULTADOS_20261005.json` (kernel `nicolasbuttaro/edgelab-gex1b-20261005`, 128 s). Mismas fuentes que GEX-1: MES NT8 (248 sesiones; **8 sesiones omitidas por falta de fuente** y 50 leídas de una alternativa consistente, ver `GEX1_EJECUCION_KAGGLE_20261005.md`) y spot USA500 (757 sesiones). Holm sobre **24** pruebas, 20.000 permutaciones en bloques de 20, semilla 20261007, unilateral. Solo información.
