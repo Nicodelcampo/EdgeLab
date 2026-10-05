@@ -1,15 +1,16 @@
-# Un agente autónomo de descubrimiento de edges bajo un embudo falsacionista: arquitectura en espiral, contraste cruzado y economía de tokens
+# Un agente autónomo de descubrimiento de edges bajo un embudo falsacionista: arquitectura en espiral, contraste cruzado, inferencia secuencial y economía de tokens
 
 **Proyecto:** EdgeLab — https://github.com/Nicodelcampo/EdgeLab
-**Fecha:** 2026-10-04
-**Estado del documento:** especificación de diseño aprobada por secciones (1–4) y completada (5–7); no describe un sistema construido.
+**Fecha:** 2026-10-04 (v2, con estado del arte verificado en fuentes primarias)
+**Estado del documento:** especificación de diseño aprobada por secciones (1–4) y completada (5–9); no describe un sistema construido.
 **Referente rector:** `docs/NORTH_STAR.md`, sha256 del cuerpo `ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8`.
+**Anexos de evidencia:** `docs/research/agente_espiral/DOSSIER_{A,B,C,D}_*.md` (sistemas LLM; validación estadística; infraestructura de agentes; futuros intradía). Cada afirmación de la sección 2 remite a uno de ellos; allí están las citas textuales, fórmulas reproducidas y URLs.
 
 ---
 
 ## Resumen
 
-Se propone un agente de investigación autónomo e indefinido cuyo objetivo es reducir la distancia hacia un edge neto, robusto y operable, tal como lo define el referente de EdgeLab. El agente no es un modelo de lenguaje en control de un proceso: es un **orquestador Python determinista** que invoca modelos de lenguaje (LLM) por rol, con entradas y salidas tipadas, dentro de un embudo falsacionista ya existente en el repositorio (EF0–EF5, particiones D0/D1/D2, Edge Brain con ledger encadenado por SHA-256). La contribución de este diseño frente al estado del arte en *alpha mining* con LLM es triple: (i) el LLM propone **familias** de hipótesis con a lo sumo tres parámetros libres y la expansión a millones de celdas es mecánica y sin LLM; (ii) cada ciclo ejecuta un **contraste cruzado** entre avances y descartados, en ambas direcciones, y contra literatura con identificador verificable, antes de cualquier promoción; (iii) la autonomía es total dentro de un perímetro escrito en código, y lo que el código prohíbe (abrir el holdout dos veces, expandir un grid tras ver resultados, reutilizar artefactos stale) no lo decide ningún prompt. Se incluye una revisión de sistemas análogos (R&D-Agent(Q), AQuA, QuantAgent, Alpha-GPT, TradingAgents, AI Scientist, AlphaEvolve) y una evaluación honesta de ventajas y desventajas. Se especifica además la economía de tokens bajo una membresía con ventanas de uso, no bajo una API con factura, y el plan de verificación con pruebas sintéticas.
+Se propone un agente de investigación autónomo e indefinido cuyo objetivo es reducir la distancia hacia un edge neto, robusto y operable, tal como lo define el referente de EdgeLab. No es un modelo de lenguaje (LLM) en control de un proceso: es un **orquestador Python determinista** que invoca LLM por rol, con entradas y salidas tipadas, dentro de un embudo falsacionista que ya existe en el repositorio (EF0–EF5, D0/D1/D2, Edge Brain con ledger encadenado por SHA-256). La revisión del estado del arte sobre fuentes primarias arroja cuatro hechos que gobiernan el diseño: (1) ninguno de los nueve sistemas de *alpha mining* con LLM publicados entre 2024 y 2026 aplica corrección por multiplicidad, y la única evaluación honesta, con registro completo de la búsqueda y *look-ahead* inexpresable por construcción, rechaza todas las estrategias descubiertas por LLM (Gençay, 2026); (2) el *False Strategy Theorem* y la cota de largo mínimo de backtest implican que un screening de 10⁶ celdas sobre menos de ~24 años de datos produce un Sharpe in-sample de 1 por puro ruido, de modo que el número de pruebas debe contarse **acumulado durante toda la vida del agente**; (3) un agente que corre indefinidamente es un problema de **inferencia secuencial**, y la única forma válida de abrir holdouts o monitorear candidatos sin inflar el error tipo I es un presupuesto de α (*alpha-wealth*) con FDR online bajo dependencia (e-LOND) y procesos-e para el monitoreo; (4) en futuros micro intradía sobre OHLCV de 5 minutos, 11 de 14 familias mueren por un techo de edge bruto de 1–2 puntos contra una fricción de 2 (Mesfin, 2026), y los dos fenómenos más fuertes son de borde de barra, lo que justifica trabajar a nivel tick. Las contribuciones de este diseño son: el LLM propone **familias** con ≤3 parámetros libres y la expansión a millones de celdas es mecánica; cada ciclo ejecuta un **contraste cruzado** avances↔descartados y contra literatura con identificador verificable; catorce **reglas de descarte preregistradas con cita** se cargan en el Edge Brain antes de la primera corrida; tres **controles canario** (oráculo con fuga, nulo aleatorio, benchmark pasivo) viajan en cada ledger; y la autonomía es total dentro de un perímetro en código que incluye el alpha-wealth. Se especifica además la economía de tokens bajo una membresía con ventanas de uso, el comportamiento verificado de Claude Code en modo headless, y un plan de verificación con pruebas sintéticas.
 
 ---
 
@@ -17,56 +18,74 @@ Se propone un agente de investigación autónomo e indefinido cuyo objetivo es r
 
 ### 1.1 Problema
 
-EdgeLab acumula, al 2026-10-04, más de cuarenta ramas de investigación y un patrón consistente: las hipótesis entran, se miden y mueren. Entre el 30/09 y el 02/10 de 2026 se registraron al menos nueve familias cerradas sin edge (EMA3 multiactivo 0/24, momentum RTY 0/24, VWAP reclaim 0/3, absorción L1 0/3, opening-range 0/3, IPC-ROB 0/23). La única familia viva, EMA 200×500 sobre MGC con TP 400 ticks, sobrevive a un test de cuatro (MCPT p≈0,026) y falla DSR, BH y SPA. El proceso es correcto. El cuello de botella es la **tasa de generación de hipótesis serias** y la **memoria metodológica** entre campañas: cada sesión de trabajo humano o asistido rehace contexto, pierde negativos y a veces reabre lo ya refutado con umbrales vecinos.
+EdgeLab acumula, al 2026-10-04, más de cuarenta ramas de investigación y un patrón consistente: las hipótesis entran, se miden y mueren. Entre el 30/09 y el 02/10 de 2026 se cerraron al menos nueve familias sin edge (EMA3 multiactivo 0/24, momentum RTY 0/24, VWAP reclaim 0/3, absorción L1 0/3, opening-range 0/3, IPC-ROB 0/23). La única familia viva, EMA 200×500 sobre MGC con TP 400 ticks, sobrevive a un test de cuatro (MCPT p≈0,026) y falla DSR, BH y SPA. El proceso es correcto. El cuello de botella es la **tasa de generación de hipótesis serias** y la **memoria metodológica** entre campañas: cada sesión rehace contexto, pierde negativos y a veces reabre lo ya refutado con umbrales vecinos.
 
 ### 1.2 Objetivo
 
-Construir un agente que:
+Un agente que: (1) obtenga el contexto del proyecto por sí mismo; (2) proponga familias de hipótesis fundadas en literatura y en resultados previos; (3) las pase por el embudo, expandidas a miles o millones de variantes en CPU/GPU híbrido (Kaggle); (4) interprete resultados y decida promover, descartar o derivar; (5) actualice el Edge Brain con reglas nuevas; (6) corra indefinidamente, sin consulta humana dentro de su perímetro, con uso de tokens proporcional a la utilidad.
 
-1. obtenga el contexto del proyecto por sí mismo (referente, contratos, Edge Brain, negativos, paridad de indicadores, catálogo de datasets);
-2. proponga familias de hipótesis fundadas en literatura y en los resultados previos;
-3. las pase por el embudo existente, expandidas a miles o millones de variantes en hardware híbrido CPU/GPU (Kaggle);
-4. interprete los resultados y decida promover, descartar o derivar;
-5. actualice el Edge Brain con reglas de descarte nuevas;
-6. corra indefinidamente, sin consulta humana dentro de su perímetro, con uso de tokens proporcional a la utilidad.
+### 1.3 Decisiones ya tomadas por el responsable
 
-### 1.3 Decisiones ya tomadas por el responsable del proyecto
-
-- El agente reemplaza el "OK explícito de Nico" en los gates G0–G4. Esta delegación se formaliza como enmienda al NORTH_STAR (sección 7.3), no como omisión.
-- La infraestructura de ejecución es la máquina local operando como servidor 24/7, con Kaggle como acelerador GPU.
-- La paridad de los indicadores pendientes la certifica el responsable, fuera del agente. El agente sólo consume indicadores con `parity_exact`.
+- El agente reemplaza el "OK explícito de Nico" en G0–G4. Se formaliza como enmienda al NORTH_STAR (§8.3).
+- Infraestructura: la máquina local como servidor 24/7; Kaggle como acelerador GPU.
+- La paridad de indicadores pendientes la certifica el responsable. El agente sólo consume indicadores con `parity_exact`.
 
 ---
 
 ## 2. Estado del arte
 
-### 2.1 Sistemas de descubrimiento automático con LLM en finanzas cuantitativas
+### 2.1 Sistemas de *alpha mining* con LLM (Dossier A)
 
-**R&D-Agent(Q)** (Li et al., 2025; Microsoft Research y HKUST; NeurIPS 2025) automatiza el ciclo factor–modelo en tres fases: investigación (prompts alineados al objetivo, hipótesis, tareas), desarrollo (agente de código "Co-STEER") y retroalimentación con un planificador *multi-armed bandit*. Reporta hasta 2× el retorno anualizado de bibliotecas clásicas (Alpha158/Alpha360) con 70 % menos factores. Valida por backtest de mercado real y no discute explícitamente fuga de información ni sobreajuste por selección.
+Se verificaron diez sistemas sobre sus páginas de arXiv, versiones HTML y repositorios: R&D-Agent(Q) (Li et al., 2025; NeurIPS 2025; MIT, ~14,8k estrellas; <10 USD y 12 h por corrida; Thompson sampling contextual sobre {factor, modelo}; "idea forest"), AQuA (Guo et al., 2026; sandbox sellado con operadores causales por construcción; embargo 2020; Sharpe 2,15–2,50 en acciones de EE. UU. 2021–2025; sin código), QuantaAlpha (Han et al., 2026; evolución a nivel trayectoria con mutación de prefijo congelado y crossover; 1,8M tokens y 20 h por corrida; MIT), AlphaSeek (derivado de QuantaAlpha, ingiere noticias sin controlar timestamps), FaVOR (Kim et al., 2026; gate determinista de fidelidad al mecanismo sin mirar retornos; test de un solo año), XAlpha (Liu et al., 2026; tests dinámicos de fuga por truncamiento y ruido futuro), AlphaLogics (Weng et al., 2026; lógicas compiladas a restricciones ejecutables), QuantAgent y Alpha-GPT 2.0 (Wang/Yuan et al., 2024; sin números verificables), y Chain-of-Alpha (retirado por arXiv; no citar).
 
-**AQuA** (Guo et al., 2026) propone dos pipelines "recursivamente automejorables": descubrimiento de factores mediado por un agente gestor, y desarrollo de modelos por configuración. Cada pipeline conserva registros experimentales para informar propuestas posteriores. Reporta IC ≈ 0,19 en cripto y Sharpe fuera de muestra hasta +2,50 en acciones de EE. UU. Los autores acotan la generalización a sus splits, features y métricas.
+**Tres hallazgos transversales:**
 
-**QuantAgent** y **Alpha-GPT** (Wang et al., 2023–2024) usan un lazo interno escritor/juez con base de conocimiento y un lazo externo de prueba en mercado; Alpha-GPT 2.0 pone al humano en el lazo. **TradingAgents** (Xiao et al., 2024) organiza agentes LLM por roles de una mesa de trading. Una revisión reciente (Agentic Quantitative Trading: A Survey, 2026) y la de Springer sobre *LLM-based alpha mining* catalogan decenas de variantes de esta misma idea.
+1. **Ninguno de los nueve sistemas de minado aplica corrección por multiplicidad.** Validan por backtest sobre el que el propio sistema optimiza.
+2. **Los baselines no son comparables entre papers.** El ARR de RD-Agent en CSI300 aparece como 14,21 % (propio), 7,81 % (AlphaSeek), ~3,6 % (QuantaAlpha) y 6,67 % (XAlpha). Correr los baselines en el propio embudo o no comparar.
+3. **Contaminación por corte de conocimiento.** El test 2017–2020 de R&D-Agent(Q) es anterior al corte de GPT-4o y o3-mini. El survey de Hua et al. (2026) recomienda testear después del release del modelo y enmascarar tickers y fechas.
 
-**Hallazgo crítico.** Gençay (2026), en "What survives honest evaluation?", evalúa estrategias descubiertas por LLM sobre 453 acciones y 39 ETF con costos realistas, herramientas cuyo espacio de features excluye el *look-ahead* por construcción, y registro de **cada** evaluación para corregir por el tamaño total de la búsqueda. Resultado: la evaluación honesta certifica los benchmarks pasivos y **rechaza todas las estrategias descubiertas por LLM**, para todos los modelos y presupuestos de búsqueda. Además muestra que las correcciones estadísticas solas no bastan: un oráculo deliberadamente engañoso con Sharpe 35 sobrevivía a los tests tradicionales.
+**Gençay (2026), "What survives honest evaluation?"**, es el único trabajo con registro completo de la búsqueda. Diseño: el agente compone estrategias sólo con herramientas validadas por esquema (`add_feature`, `add_signal_term`, `finalize`); nunca escribe código; una familia de features con fuga existe pero el mismo flag la excluye del enum del esquema, del catálogo y de la validación del servidor, de modo que el *look-ahead* es **inexpresable por construcción**. Cada evaluación distinta cuenta como intento, duplicados incluidos; N y la varianza de Sharpe entre intentos salen del ledger y alimentan el DSR (umbral 0,95); PBO por CSCV con S=16; bootstrap estacionario sobre una ventana de evaluación nunca vista. Resultados: con 453 acciones y 39 ETF, costos realistas y ventanas de 4 y 9 años, **0 estrategias LLM sobreviven** (gpt-4.1 y claude-sonnet-5), 0/5 repeticiones del nulo, mientras los benchmarks pasivos se certifican. El experimento canario E1 muestra que un oráculo con el retorno de mañana como feature obtiene Sharpe de diseño 34,7, de evaluación 51,5 y **DSR 1,00**: la deflación corrige selección entre backtests honestos, no un conjunto de información contaminado. Fuga y búsqueda son defensas complementarias. Sobre tamaño muestral: "a true SR=0.6 strategy needs roughly eleven years of out-of-sample data to reach t≈2". Artefacto reproducible en Zenodo (MIT + CC-BY).
 
-### 2.2 Sistemas generales de descubrimiento automático
+### 2.2 Infraestructuras de descubrimiento con propuesta LLM y verificación no-LLM (Dossier C)
 
-**The AI Scientist** (Lu et al., 2024; Sakana AI, Oxford, UBC) genera ideas, escribe código, experimenta, redacta un paper y lo somete a revisión simulada. Evaluaciones independientes (Beel et al., 2025) encuentran resultados mixtos: la parte de generación funciona; la parte de verificación es débil.
+**AlphaEvolve** (Novikov et al., 2025): base de datos evolutiva MAP-Elites + islas; Gemini Flash para amplitud y Pro para profundidad (proporción no publicada); cascada de evaluadores de dificultad creciente; ablaciones muestran que quitar el modelo grande o el contexto degrada. Limitación declarada: sólo problemas con evaluador automático. **ShinkaEvolve** (Sakana, 2025; Apache-2.0): métricas `public` (las ve el LLM) y **`private` (ocultas al LLM)**, UCB sensible al costo para elegir modelo, SQLite reanudable, `max_api_costs`, y desde mayo 2026 backend `headless/claude` sobre suscripción. **OpenEvolve** (Apache-2.0): cascada `evaluate_stage1/2/3`, checkpoints, ensemble 0,8/0,2. **DeltaEvolve** (2026): memoria en tres niveles L1 (20–40 tokens) / L2 (plan) / L3 (código) con revelación progresiva; −36,79 % de tokens. **FunSearch** (Nature 2023): LLM congelado, 10⁶ muestras, islas con reinicio periódico, patrón *skeleton*.
 
-**AlphaEvolve** (Novikov et al., 2025; DeepMind) combina un ensamble de LLM (Flash para amplitud, Pro para profundidad) con **evaluadores automáticos** que verifican respuestas dentro de un marco evolutivo. Su éxito en problemas con verificador exacto (multiplicación de matrices, cotas combinatorias, scheduling) se apoya en que el evaluador no es un LLM.
+**AI Scientist v1/v2** y su evaluación independiente (Beel et al., 2025): 42 % de experimentos fallan por errores de código; resultados numéricos alucinados; el revisor automático sobrevalora. Incidentes documentados por Sakana: el agente editó su propio código para extender el timeout. **AI co-scientist** (Google, 2025): torneo Elo entre hipótesis, sin verificador ejecutable en el lazo. **Curie** (2025): validadores de setup y de re-ejecución en entorno limpio. **AIRA-dojo** (Meta, 2025): elegir la solución final por score de validación pierde 9–13 puntos absolutos; top-k por validación más confirmación en held-out recupera ~10. **POPPER** (2025): falsación secuencial con sub-hipótesis nulas y e-valores acumulados (`E ≥ 1/α`), error tipo I 0,103 con α=0,1. **Kosmos** (2025): las afirmaciones de síntesis aciertan sólo 57,9 %; "conflate statistically significant results with scientifically valuable ones". Survey "Verification Gap" (2026): "no LLM-era system … demonstrates an externally validated in-loop oracle".
 
-### 2.3 Base estadística
+**Claude Code headless (verificado en code.claude.com, CLI 2.1.285):** `claude -p` con `--output-format stream-json`, `--json-schema` (salida validada en `structured_output`; subtype `error_max_structured_output_retries`), `--max-turns`, `--model` y `--fallback-model`, `--session-id`, `--permission-prompts none`, `--setting-sources`, `--strict-mcp-config`, `--tools`. Emite `rate_limit_event` con `status: allowed|allowed_warning|rejected` y `resetsAt`. **La auto-espera hasta el reset es sólo interactiva**: en `-p` el orquestador debe dormir y reanudar. Las ventanas son compartidas entre modelos pero los límites de Opus y Sonnet son por familia. `claude setup-token` emite un token OAuth de un año para scripts. `total_cost_usd` es estimación client-side. SIGTERM corta el turno; SIGINT lo cierra limpio.
 
-- Bailey y López de Prado (2014), *Deflated Sharpe Ratio*: umbral que crece con el número de pruebas y su dispersión.
-- Bailey, Borwein, López de Prado y Zhu (2017), *Probability of Backtest Overfitting* vía CSCV.
-- Harvey, Liu y Zhu (2016), *…and the Cross-Section of Expected Returns*: con cientos de factores publicados, un hallazgo nuevo necesita t > 3,0.
-- White (2000), *Reality Check*; Hansen (2005), *Superior Predictive Ability*: inferencia sobre el mejor de muchos modelos.
-- Masters (2018), *Monte Carlo Permutation Tests* para sistemas de trading.
+### 2.3 Validación estadística bajo multiplicidad y para un agente perpetuo (Dossier B)
 
-### 2.4 Síntesis
+**False Strategy Theorem** (López de Prado & Bailey, 2021): el máximo Sharpe esperado de N pruebas sin habilidad crece sin cota con N. **Largo mínimo de backtest** (Bailey et al., 2014, *Notices of the AMS*), reproducido en el dossier con la forma exacta:
 
-Los sistemas de 2.1 comparten tres rasgos: el LLM escribe código de factor libremente; la validación es un backtest sobre el que el propio sistema optimiza; y la multiplicidad de la búsqueda rara vez entra en la inferencia. El resultado de Gençay (2026) es, en la práctica, la refutación empírica de ese patrón. AlphaEvolve muestra la alternativa que sí funciona: creatividad del LLM, verificación fuera del LLM. EdgeLab ya tiene el verificador (EF0–EF5, G0–G5, MCPT/PBO/DSR/SPA). Lo que este diseño agrega es el generador disciplinado y la memoria que evita repetir refutaciones.
+| N celdas independientes | Años para SR=1 por ruido | Años para SR=2 |
+|---:|---:|---:|
+| 10³ | 10,6 | 2,6 |
+| 10⁴ | 14,9 | 3,7 |
+| 10⁶ | **23,7** | **5,9** |
+| 10⁷ | 28,1 | 7,0 |
+
+El N relevante es el **efectivo**, estimado por clustering de P&L (ONC, López de Prado & Lewis, 2019) o por correlación media, y **acumulado en la vida del agente**, no por corrida. **DSR** (Bailey & López de Prado, 2014; ejemplo del paper reproducido, DSR≈0,90) usa curtosis cruda, no excedente: quantstats tuvo exactamente ese bug hasta v0.0.82 (issue #550, sep-2026). **PBO/CSCV** (Bailey et al., 2017; S=16, C(16,8)=12.870, errata del paper que dice 12.780) mide si el *proceso* de selección sobreajusta; exige entregar todas las pruebas y, con búsqueda guiada, una columna por búsqueda terminada.
+
+**Para miles o millones de celdas:** Reality Check (White, 2000; Sullivan-Timmermann-White 1999 sobre 7.846 reglas técnicas), **SPA** (Hansen, 2005; estudentizado, más potente), **StepM** (Romano-Wolf, 2005) y **FDP/k-FWER** (Romano-Shaikh-Wolf, 2008). Con bootstrap estacionario de bloque óptimo (Patton-Politis-White, 2009) los remuestreos de todas las columnas son un producto W(B×T)·R(T×m): un GEMM, ideal para GPU [inferencia del dossier]. BH sólo como filtro barato; **BY destruye la potencia** con m=10⁶ (factor ≈14,4). **Para un puñado de finalistas:** Model Confidence Set (Hansen-Lunde-Nason, 2011) y MCPT de Masters **reoptimizando todo el pipeline** en cada permutación (verificado en código de neurotrader888/mcpt); ninguno escala a 10⁶.
+
+**Agente siempre activo = problema secuencial.** Monitorear p-values de forma continua invalida el error tipo I (Johari et al., 2022). Soluciones: *safe anytime-valid inference* (Ramdas et al., 2023; Grünwald et al., 2024), procesos-e y secuencias de confianza (Howard et al., 2021; Waudby-Smith & Ramdas, 2024, con variables acotadas); **FDR online** con presupuesto de α que se gasta en cada test y se recupera con cada descubrimiento (LORD++, SAFFRON) y, bajo dependencia arbitraria, **e-BH** (Wang & Ramdas, 2022) y **e-LOND** (Xu & Ramdas, 2024). Advertencias de 2025–2026: e-BH sobre supremos de procesos-e no controla FDR sin ajustadores (Tavyrikov et al., 2025). Implementaciones: `online-fdr` (Python, BSD-3), `onlineFDR` (R), `confseq` (C++/Python, MIT). No existe un proceso-e publicado específico para Sharpe de estrategias: hueco real.
+
+**Librerías:** mlfinlab ya no es open source; `arch` (SPA, StepM, MCS, `optimal_block_length`) es la referencia; `skfolio` (BSD-3) trae CPCV; `statsmodels.multipletests`; pypbo (AGPL), fluke y backtest-overfitting (0 estrellas) sólo como referencia para validar implementación propia.
+
+### 2.4 Futuros micro intradía: qué está refutado, qué tiene soporte, con qué motor (Dossier D)
+
+**Mesfin (2026), arXiv:2605.04004** (sin revisión por pares; autor único): 72.604 barras OHLCV de 5 min de MNQ, RTH, dic-2021 a ago-2025, walk-forward expansivo con tres folds, fricción round-trip 2,0 pts (≈8 ticks), cinco criterios simultáneos (t≥2 neto, ≥30 trades por fold, media neta >0, mismo signo en tres años, permutación). **14 familias, ninguna pasa.** Once mueren por un **techo de edge bruto de 0,07–1,50 pts** contra 2,0 de fricción (expansión Asia t=−11,5; liquidity grab t=−14,1; volume spike/dry-up t entre −2,2 y −5,3; OU en MGC todas negativas, half-life ≈8 h). Mecanismo: el movimiento se consume dentro de la barra que lo genera (open→next open +32,24 pts; close→next open −0,17). Los controles positivos del autor (régimen GMM + Markov, t=3,11 y 4,30) tienen 53+ combinaciones sin DSR, GMM ajustado con todo 2022, baseline ATR con look-ahead y **stops llenados al precio exacto**; con un delay de una barra el signo **se invierte** (t de +4,30 a −2,78). Paper hermano (2605.17724): LSTM y GBM no superan 51,8 % de tasa base. **Implicación para EdgeLab:** los dos fenómenos más fuertes son de borde de barra; es la mejor justificación publicada para trabajar a nivel tick/25 ticks y para prohibir fills idealizados de stop.
+
+**Yin et al. (2026), riesgo de implementación:** 15 estrategias en cinco motores; con costo cero todos coinciden; con costo, divergencia hasta 3,71 % en alta rotación; siete defectos en tres motores (Backtrader divide la comisión por 100; NautilusTrader cobra dos veces, trunca a 62 de 1.258 días, confunde HEDGING y NETTING). Recomendación: testing diferencial con dos arquitecturas distintas y baseline a costo cero.
+
+**Familias con soporte publicado:** market intraday momentum en la última media hora (Gao et al., 2018, JFE; Baltussen et al., 2021, JFE, 60+ futuros, mecanismo de gamma hedging, con decaimiento post-publicación reportado); OFI (Cont-Kukanov-Stoikov, 2014; Cont-Cucuringu-Zhang, 2023): impacto contemporáneo robusto, forecast en horizontes de **segundos** (Takahashi, 2025: los shocks se disipan dentro del segundo en ES), sin evidencia de rentabilidad neta a latencia retail. **Folklore sin evidencia primaria:** volume profile/POC/VA, auction market theory, absorption/exhaustion de footprint, VWAP trend (SSRN de practicantes). **Refutadas:** ORB a 5 min en MNQ, expansión y liquidity grab de Asia, gap fill, volume spike/dry-up, drift post-noticia, OU intradía en MGC, ML sobre OHLCV, estrategias LLM bajo evaluación honesta.
+
+**Motores tick-exact:** hftbacktest (Rust/Numba; L2 MBP y L3 MBO; modelos de cola y de latencia; conversor Databento MBO de CME; sin impacto de mercado); NautilusTrader (modelo de cola y latencia; en barras usa heurística O→H→L→C "not a reconstruction"); Backtrader no sirve a resolución tick. **Kaggle (doc oficial renderizada):** GPU "30 hours or sometimes higher" por semana; sesiones de **12 h** para CPU/GPU; P100 o T4×2 con 4 cores y 29 GB; `enable_internet` default false; la API batch acepta `dataset_sources` en `kernel-metadata.json` y la doc recomienda usarla para no gastar cuota interactiva. **Roll:** Databento `ROOT.v.N`/`ROOT.n.N` por volumen u OI del día anterior, sin ajuste (causal); Carchano & Pardo (2009): cinco métodos de roll no difieren significativamente. **Protocolo:** Arnott-Harvey-Markowitz (2019), siete puntos; Harvey (2017), p-valor bayesianizado. **Costos verificados:** exchange no-miembro MES/MNQ/M2K 0,353 USD por lado; MGC 0,70; NFA 0,01 por lado desde jul-2026 (0,02 desde jul-2027); comisión de broker no verificada; posible cambio CME desde 2026-10-01 (SER 9799, PDF bloqueado).
+
+### 2.5 Síntesis
+
+Los sistemas de 2.1 dejan al LLM escribir código y optimizar sobre su propio backtest sin contar la búsqueda; Gençay (2026) es su refutación empírica. AlphaEvolve y ShinkaEvolve muestran la alternativa que funciona cuando hay verificador fuera del LLM, y agregan dos mecanismos que este diseño adopta: métricas privadas ocultas al LLM y selección de modelo sensible al costo. La estadística dice que con datos fijos y N creciente cualquier umbral termina superado, y que un agente perpetuo sólo puede confirmar con datos nuevos bajo inferencia secuencial válida. La evidencia de futuros intradía dice que el techo de edge en OHLCV de 5 min está por debajo de la fricción y que lo que queda vive en el borde de barra. EdgeLab ya tiene el verificador y los datos tick. Lo que este diseño agrega es el generador disciplinado, la memoria que evita repetir refutaciones, la contabilidad de la búsqueda de por vida y el presupuesto secuencial.
 
 ---
 
@@ -74,7 +93,7 @@ Los sistemas de 2.1 comparten tres rasgos: el LLM escribe código de factor libr
 
 ### 3.1 Unidad de trabajo
 
-La unidad es la **familia** de hipótesis (contrato `edgelab_hypothesis_v1`, ≤ 3 parámetros libres, `asserts_edge: false`). El LLM nunca ve, propone ni adjudica una celda individual. Esta decisión no es sólo de costo: es la que hace contable la multiplicidad, porque el número efectivo de hipótesis se declara en el preregistro de la familia y no se infiere después.
+La unidad es la **familia** de hipótesis (contrato `edgelab_hypothesis_v1`, ≤3 parámetros libres, `asserts_edge: false`). El LLM nunca ve, propone ni adjudica una celda. Esto hace contable la multiplicidad: el número efectivo de hipótesis se declara en el preregistro y se recalcula por ONC sobre el P&L real, nunca se infiere después.
 
 ### 3.2 Máquina de estados por familia
 
@@ -86,36 +105,33 @@ KILL    → RETIRED (con regla nueva opcional)
 DERIVE  → CONJECTURED (radio + 1, parent_id, presupuesto heredado)
 ```
 
-Correspondencia con el referente: `ELIGIBLE` ≡ G0, `SCREENED`+`CONTRASTED` ≡ G1, `MULTIPLICITY` ≡ G2, `ECON` ≡ G3, `HOLDOUT_OPENED` ≡ G4, `PAPER` ≡ G5. Cada transición es una fila append-only en el ledger del Edge Brain con hash encadenado, y una transacción en `agent_state.db`.
+Correspondencia: `ELIGIBLE` ≡ G0, `SCREENED`+`CONTRASTED` ≡ G1, `MULTIPLICITY` ≡ G2, `ECON` ≡ G3, `HOLDOUT_OPENED` ≡ G4, `PAPER` ≡ G5. Cada transición es una fila append-only en el ledger del Edge Brain con hash encadenado y una transacción en `agent_state.db`.
 
 ### 3.3 La espiral
 
-Cada vuelta de una familia tiene más radio: más contrastes acumulados, más literatura indexada, más negativos vecinos. Una familia derivada no es una familia nueva: hereda `parent_id`, cuenta contra el presupuesto de multiplicidad del padre y declara qué predicción fallida motivó la derivación. Así la espiral converge o se cierra; no se convierte en búsqueda continua de parámetros, que el contrato prohíbe explícitamente (`forbidden: continuous_period_search, post_hoc_grid_expansion`).
+Cada vuelta tiene más radio: más contrastes acumulados, más literatura indexada, más negativos vecinos. Una familia derivada hereda `parent_id`, cuenta contra el presupuesto de multiplicidad del padre y declara qué predicción fallida la motivó. La espiral converge o se cierra; no se convierte en búsqueda continua de parámetros, prohibida por contrato (`forbidden: continuous_period_search, post_hoc_grid_expansion`). Mutación y derivación siguen el patrón de prefijo congelado de QuantaAlpha: sólo cambia el nodo de decisión identificado como fallido, el resto se conserva con hash.
 
-### 3.4 Contraste cruzado (núcleo metodológico)
+### 3.4 Contraste cruzado
 
-Cada hipótesis preregistrada declara dos campos nuevos obligatorios:
+Cada hipótesis preregistrada declara `prediction` (consecuencia observable adicional si es verdadera) y `refutation` (qué la mata). Tres contrastes antes de adjudicar, sin LLM salvo caso ambiguo:
 
-- `prediction`: una consecuencia observable adicional si la hipótesis es verdadera ("si el reclaim de VWAP tiene información, la tasa de continuación tras el reclaim debe exceder la del control emparejado en los tres terciles de volatilidad");
-- `refutation`: la observación que la mata.
+1. **Avance → descartados.** Matching estructural de la `prediction` contra el ledger de retiradas por `location`, `regime`, `trigger`, instrumento y ventana. Si una retirada ya midió la negación con potencia suficiente (MDE registrado), el avance cae a `DERIVE` con la contradicción adjunta.
+2. **Descarte → avances vivos.** Un `KILL` dispara re-evaluación de toda familia viva que comparta primitivas. Si una promovida dependía de algo recién refutado, vuelve a `CONTRASTED`.
+3. **Literatura.** Índice local del corpus (401 papers, 24.340 pasajes) primero; hasta *K* búsquedas externas por ciclo restringidas a SSRN, arXiv q-fin y revistas con DOI. Agrega `corroborating_refs` o `contradicting_refs`. **Un paper nunca promueve.** Las familias de §2.4 "refutadas" entran al ledger desde el día cero como retiradas con cita, y las "con soporte" como conjeturas iniciales con prior explícito.
 
-El orquestador ejecuta tres contrastes antes de adjudicar, los tres sin LLM salvo en caso ambiguo:
-
-1. **Avance → descartados.** La `prediction` se compara estructuralmente (por `location`, `regime`, `trigger`, instrumento, ventana) contra el ledger de familias retiradas. Si una familia retirada ya midió la negación de la predicción con potencia suficiente (MDE registrado), el avance cae a `DERIVE` con la contradicción adjunta.
-2. **Descarte → avances vivos.** Un `KILL` nuevo dispara la re-evaluación de toda familia viva que comparta primitivas con la muerta. Si una familia promovida dependía de algo recién refutado, vuelve a `CONTRASTED`.
-3. **Literatura.** Búsqueda selectiva sobre el índice local del corpus (401 papers, 24.340 pasajes) y, si no hay cobertura para la `family_id`, hasta *K* búsquedas externas por ciclo restringidas a SSRN, arXiv q-fin y revistas con DOI. El resultado agrega `corroborating_refs` o `contradicting_refs` al expediente. **Un paper nunca promueve**: sólo informa al revisor.
-
-Esto es la aplicación operativa del método hipotético-deductivo: conjetura, predicción deducida, intento de refutación, y revisión de las conjeturas previas a la luz del nuevo resultado.
+Es el método hipotético-deductivo operacionalizado: conjetura, predicción deducida, intento de refutación, revisión de conjeturas previas.
 
 ### 3.5 Perímetro de autonomía
 
 El agente decide solo todo lo anterior, incluido cuándo abrir el holdout de un candidato que pasó G3. El código impide, sin excepción ni prompt:
 
-- abrir el holdout dos veces por candidato (`holdout_guard` existente + registro inmutable);
+- abrir el holdout dos veces por candidato (`holdout_guard` + registro inmutable);
 - leer `trade_date ≥ frontera` fuera de G4;
-- ejecutar un registro de candidatos cuyo hash no coincide con el preregistro;
-- reutilizar artefactos marcados stale;
-- mergear cambios a `edge_validation_contract.md`: el agente puede proponer un PR, no fusionarlo.
+- ejecutar un registro cuyo hash no coincide con el preregistro;
+- reutilizar artefactos stale;
+- **abrir un holdout sin alpha-wealth disponible** (§5.3): el presupuesto secuencial de α es un recurso finito que sólo se repone con descubrimientos confirmados o con datos nuevos (paper/live);
+- **aceptar un resultado de corrida cuyo ledger no contenga los tres controles canario** (§5.4);
+- mergear cambios a `edge_validation_contract.md`: el agente propone un PR, no lo fusiona.
 
 ---
 
@@ -125,164 +141,277 @@ El agente decide solo todo lo anterior, incluido cuándo abrir el holdout de un 
 
 | Rol | Modelo | Entrada | Salida | Nota |
 |---|---|---|---|---|
-| Proponente | Opus | resumen Edge Brain, registro de paridad, catálogo de datasets, fichas de papers, presupuesto restante | lista de hipótesis v1 + `prediction`, `refutation`, `refs` | sólo primitivas del registro; sin código libre |
+| Proponente | Opus | delta L1/L2 del Edge Brain, registro de paridad, catálogo de datasets, fichas de papers, presupuesto restante, familias retiradas vecinas | hipótesis v1 + `prediction`, `refutation`, `refs` | sólo primitivas del registro; sin código |
 | Compilador | sin LLM | hipótesis | `candidate_registry.json` con hash | aquí nacen las celdas |
-| Lector de corridas | Haiku | `summary.json`, `survivors.parquet` | tabla por familia, 3 líneas | sin juicio |
+| Lector de corridas | Haiku | `summary.json`, agregados por familia | tabla por familia, 3 líneas | sin juicio |
 | Contraste ambiguo | Opus | dos expedientes | `{refuta: sí/no/insuficiente, cita}` | sólo si el matching estructural no decide |
-| Revisor | Opus, sesión nueva | expediente completo | `{decision, reason, new_rule?, variant?}` | independiente del proponente |
-| Cronista | Haiku | transiciones del ciclo | ledger, manifiesto con hash del referente, handoff, "Aporte al referente" | plantillas |
+| Revisor | Opus, sesión nueva | expediente completo, métricas **públicas** solamente | `{decision, reason, new_rule?, variant?}` | nunca ve métricas privadas (holdout, D2) |
+| Cronista | Haiku | transiciones del ciclo | ledger, manifiesto con hash del referente, handoff, "Aporte al referente" | plantillas; cada número sale de una consulta al ledger, nunca de texto LLM |
 
-Validación de salida contra JSON Schema; un reintento; después `LLM_INVALID_OUTPUT` registrado y el ciclo sigue. El LLM nunca recibe rutas de datos, credenciales ni nada posterior a la frontera del holdout.
+Validación de salida contra JSON Schema vía `--json-schema`; un reintento; después `LLM_INVALID_OUTPUT` y el ciclo sigue. El LLM nunca recibe rutas de datos, credenciales, nada posterior a la frontera, ni métricas marcadas `private` (patrón ShinkaEvolve).
 
 ### 4.2 Registro de primitivas
 
-El proponente compone `location`, `regime` y `trigger` desde un registro versionado de primitivas ya implementadas en el motor compartido (banco EMA, VWAP de sesión, terciles de volatilidad, y los indicadores del bridge con `parity_exact` certificado: hoy aVolClusterPOI y los que el responsable vaya certificando). Una primitiva nueva es un PR con tests de paridad, no un prompt. Esto elimina la clase de fallo que Gençay (2026) y Beel et al. (2025) documentan: código generado que introduce *look-ahead* o reinterpreta la métrica.
+El proponente compone `location`, `regime` y `trigger` desde un registro versionado de primitivas implementadas en el motor compartido (banco EMA, VWAP de sesión, terciles de volatilidad, y los indicadores del bridge con `parity_exact`). El registro, el esquema JSON que ve el LLM y la validación del servidor se generan **del mismo flag** (patrón Gençay): una primitiva marcada como no elegible desaparece del enum, del catálogo y del validador a la vez. Una primitiva nueva es un PR con tests de paridad, no un prompt. Control de redundancia: dos candidatos con correlación de señal ≥0,99 se consideran uno (R&D-Agent(Q)); una hipótesis con embedding ≥0,99 contra una existente se rechaza por novedad (ShinkaEvolve).
 
-### 4.3 Reglas de descarte emergentes
+### 4.3 Reglas de descarte: preregistradas y emergentes
 
-Si el revisor adjunta `new_rule` a un `KILL`, la regla entra al Edge Brain en estado `PROPOSED`. Se activa cuando dos familias **distintas** la confirman de forma independiente. Una regla activa bloquea en EF0 toda hipótesis que la viole, con cita a las dos familias que la fundaron. Las reglas nunca se borran; se superseden con cadena de invalidación.
+**Preregistradas (activas desde el día cero, con cita; detalle en Dossier D):**
+
+| # | Regla | Base |
+|---|---|---|
+| K1 | Hipótesis económica escrita antes de mirar datos, más registro completo de trials incluidos los fallidos | Arnott-Harvey-Markowitz 2019; Fabozzi & López de Prado 2018 |
+| K2 | t neto OOS ≥ 2,0 por familia preregistrada; ≥ 3,0 si salió de búsqueda amplia | Mesfin 2026; Harvey-Liu-Zhu 2016 |
+| K3 | DSR ≥ 0,95 con N_eff acumulado del ledger; PBO por CSCV (umbral preregistrado, p. ej. < 0,5) | Bailey & López de Prado 2014; Bailey et al. 2017 |
+| K4 | Edge bruto medio > fricción round-trip, con P_bootstrap(media neta > costo) ≥ 95 % | Mesfin 2026 (11/14 mueren acá) |
+| K5 | ≥ 30 trades por fold OOS, no por total | Mesfin 2026 |
+| K6 | Mismo signo neto en cada año o régimen OOS | Mesfin 2026 |
+| K7 | Permutación sobre timestamps de señal, más SPA sobre la familia completa | Mesfin 2026; White 2000; Hansen 2005 |
+| K8 | Robustez a 1 barra o N ticks de delay: muerte si el signo se invierte | Mesfin 2026 |
+| K9 | Orden intra-barra pesimista (stop primero): muerte si el veredicto cambia entre pesimista y optimista; prohibidos fills idealizados | Nautilus doc; Mesfin Tabla A1 |
+| K10 | Superar el benchmark incondicional de la misma ventana horaria en cada fold | Mesfin 2026 |
+| K11 | Ninguna estadística de muestra completa en features: ajuste sólo con entrenamiento del fold | Mesfin 2026; Gençay 2026 |
+| K12 | Testing diferencial de motores: con costo cero deben coincidir; con costo, divergencia bajo umbral de materialidad | Yin et al. 2026 |
+| K13 | Roll causal (volumen u OI del día previo) y resultado estable con roll alternativo | Databento; Carchano & Pardo 2009 |
+| K14 | Haircut por decaimiento: sobrevivir a −50 % del edge | McLean & Pontiff 2016 |
+
+**Emergentes:** si el revisor adjunta `new_rule` a un `KILL`, entra como `PROPOSED` y se activa cuando dos familias distintas la confirman. Una regla activa bloquea en EF0 toda hipótesis que la viole, con cita a las familias fundadoras. Nunca se borran; se superseden con cadena de invalidación.
 
 ### 4.4 Cómputo híbrido
 
-- **Local (CPU de referencia):** EF0, compilador, contraste, gates, tick-exact de finalistas, PBO/DSR/MCPT/SPA.
-- **Kaggle (GPU):** EF2 cheap-kill masivo. Un job = un kernel privado autocontenido (plantilla + registro embebido + hash de arrays esperado), `datasetDataSources` = versión inmutable de `edgelab-arrays`, sin internet, 1 h máximo. Polling de estado cada 2 min; descarga de `summary.json` + `survivors.parquet`; verificación de `split_hash` y hash de arrays contra el preregistro. Resultado sin hashes correctos = corrida inválida, registrada, no reintentada a ciegas.
-- **Paridad CPU/GPU:** `gpu_parity.py` corre una vez por versión del kernel; sin paridad verde, ningún resultado GPU de esa versión se acepta.
-- **Degradación:** si Kaggle no responde o la cuota semanal (30 h) se agotó, EF2 corre local con `backend=cpu`. Mismo contrato, más lento, el embudo no se detiene.
-- **Credencial:** `kaggle.json` local en la máquina servidor, fuera de Git, permisos de usuario. El Worker de Notion queda para acceso desde chat.
+- **Local (CPU de referencia):** EF0, compilador, contraste, gates, tick-exact de finalistas, CSCV, MCS, MCPT con reoptimización, bootstrap PPW.
+- **Kaggle (GPU):** EF2 cheap-kill masivo y el GEMM del bootstrap para SPA/StepM de familia. Un job = un kernel privado autocontenido (plantilla + registro embebido + hash de arrays esperado), `dataset_sources` = versión inmutable de `edgelab-arrays`, `enable_internet: false`, sesión ≤ 12 h (se usa 1 h por job para granularidad de cuota). Polling cada 2 min; descarga de `summary.json` + `survivors.parquet`; verificación de `split_hash` y hash de arrays. Resultado sin hashes correctos = inválido, registrado, no reintentado a ciegas. **Nota sobre la auditoría del 04/10:** el fallo "New Datasets cannot be attached in non-interactive sessions" fue por `kagglehub` interactivo; la ruta batch con `dataset_sources` en `kernel-metadata.json` es la documentada y la que este diseño usa.
+- **Paridad CPU/GPU:** `gpu_parity.py` por versión de kernel; sin paridad verde ningún resultado GPU de esa versión se acepta.
+- **Testing diferencial (K12):** el motor tick-exact de EdgeLab se contrasta contra **hftbacktest** (Rust, MBO, modelo de cola) sobre los finalistas: a costo cero deben coincidir fill a fill; con costo, la divergencia se registra. El modelo de costos es un oráculo separado: fees de exchange + NFA + spread efectivo medido en bid/ask tick + slippage de stop (gap a través del stop), con sensibilidad ×1, ×1,5, ×2.
+- **Degradación:** sin Kaggle, EF2 corre local con `backend=cpu`. Mismo contrato, más lento.
+- **Credencial:** `kaggle.json` local, fuera de Git. El Worker de Notion queda para acceso desde chat.
 
 ### 4.5 Persistencia y reanudación
 
-`agent_state.db` (SQLite) con tablas `families`, `jobs`, `llm_calls` (rol, modelo, tokens, hash de entrada y salida), `budget`. Toda transición es una transacción. Al arrancar, el daemon lee el estado y retoma: jobs `RUNNING` se consultan, no se relanzan; llamadas LLM sin respuesta se repiten, idempotentes por hash de entrada. Pérdida máxima ante apagón: un paso.
+`agent_state.db` (SQLite): `families`, `jobs`, `llm_calls` (rol, modelo, tokens, hash de entrada/salida), `budget` (ventanas LLM, cuota Kaggle, **alpha-wealth**), `trials` (una fila por celda evaluada, incluidas las descartadas: es el ledger completo por construcción). Toda transición es una transacción. Al arrancar, el daemon retoma: jobs `RUNNING` se consultan, no se relanzan; llamadas LLM sin respuesta se repiten, idempotentes por hash. Pérdida máxima ante apagón: un paso.
 
 ### 4.6 Loop del daemon
 
-Cada 60 s: (1) recoger jobs remotos terminados; (2) avanzar toda familia cuyo próximo paso no requiere LLM; (3) si hay presupuesto, ejecutar la llamada LLM de mayor valor pendiente; (4) ante límite de uso, cerrar la ventana hasta `reset_at` y seguir sólo con lo numérico; (5) cada *N* ciclos, commit y push de ledger y documentos.
+Cada 60 s: (1) recoger jobs remotos terminados; (2) avanzar familias cuyo próximo paso no requiere LLM; (3) si hay presupuesto, ejecutar la llamada LLM de mayor valor; (4) ante `rate_limit_event: rejected`, dormir hasta `resetsAt` y seguir sólo con lo numérico; ante `allowed_warning`, degradar a Sonnet/Haiku; (5) cada *N* ciclos, commit y push de ledger y documentos.
+
+### 4.7 Asignación de cómputo entre familias
+
+Dos niveles (Dossier C, §8): **entre familias**, Thompson sampling Beta-Bernoulli con descuento (γ≈0,95–0,99) donde la recompensa es "sobrevivió al gate", nunca el score crudo (AIRA-dojo muestra que seleccionar por validación repetidamente pierde 9–13 puntos); **dentro de la familia**, successive halving asíncrono (ASHA) sobre fidelidad creciente (meses, instrumentos), con `optuna.pruners` y storage SQLite reanudable.
 
 ---
 
-## 5. Economía de tokens
+## 5. Pipeline estadístico por etapa y presupuesto secuencial
 
-### 5.1 Restricción real
+### 5.1 Etapa EF2 — screen masivo en GPU (10⁵–10⁷ celdas)
 
-El presupuesto es una membresía de Claude con ventanas de uso (5 horas y semanal), no una API facturada por token. Consecuencias de diseño: el LLM es un recurso **intermitente**; el embudo numérico debe progresar sin él; y la métrica a optimizar no es "tokens por día" sino **utilidad por llamada**, donde utilidad = reducción esperada de distancia a un edge según la jerarquía del referente.
+Por celda, todo en forma cerrada: SR, t, asimetría, curtosis cruda, PSR(SR*=0), y estadísticas suficientes por bloque (S=16: Σr y Σr²) que permiten correr CSCV después sin rehacer backtests. **Compuerta de familia:** SPA estudentizado con bootstrap estacionario de bloque PPW sobre la matriz T×m de la familia contra benchmark; si p > α, muere la familia completa. Conjunto de descubrimiento: StepM o FDP/k-FWER con los mismos remuestreos. BH sólo como filtro barato. Piso de ruido: SR₀ = E[max] con N_eff y V[{SR}] de la familia. Lo que no lo supera no es candidato. No se hace MCS ni MCPT acá.
 
-### 5.2 Función de valor de una llamada
+### 5.2 Etapa EF3 — meseta de familia (10²–10⁴ representantes)
 
-Cola de prioridad con puntaje `V = U / T`, donde `T` es el costo estimado en tokens (por rol y tamaño de entrada) y `U` el valor ordinal:
+Clustering ONC por correlación de P&L → N_eff y un representante por cluster; se elige el **centro de la meseta**, no el pico. PBO/CSCV con S=16 sobre representantes (una columna por búsqueda terminada si hubo optimizador). CPCV (skfolio) sólo si hay componentes que ajustan. DSR ≥ 0,95 con el N_eff **acumulado de por vida**; MinBTL: si los años disponibles son menos que el mínimo para el SR objetivo con ese N_eff, la familia no puede pasar por diseño.
+
+### 5.3 Etapa EF4/G3 — finalistas en CPU (≤ 10–50) y presupuesto de holdout
+
+MCS (`arch.MCS`) sobre pérdidas netas; del conjunto se elige el más simple. SPA de finalistas contra benchmark con costos. MCPT de Masters reoptimizando todo el pipeline de la familia (B ≥ 1000), complementado con bootstrap en bloques por la pérdida de agrupamiento de volatilidad. Intervalos bootstrap para SR y drawdown; haircut de Harvey-Liu como control de cordura.
+
+**Apertura de holdout (G4) bajo FDR online.** Cada apertura es una hipótesis en un flujo infinito, dependiente de las anteriores (comparten régimen). Se usa **e-LOND** (`online-fdr`) con un presupuesto inicial de α fijado en el preregistro del agente. Cada apertura gasta alpha-wealth; sólo un descubrimiento confirmado lo repone. Si el alpha-wealth llega a cero, **no se abre ningún holdout más** hasta que entren datos nuevos por G5 (paper/live). Es la versión formal de "no existe testear gratis para siempre" y el análogo secuencial del False Strategy Theorem. Si se abren varios finalistas en una apertura, Holm dentro de ella. El holdout abierto queda consumido y pasa a datos de investigación.
+
+### 5.4 Controles canario en cada ledger
+
+Tres brazos obligatorios viajan con cada corrida, en el mismo ledger y bajo los mismos gates: (a) **oráculo con fuga** (retorno futuro como feature, inexpresable por el proponente, inyectado por el orquestador): si el embudo no lo marca como fuga por los tests dinámicos de truncamiento y ruido futuro (XAlpha), la corrida es inválida; (b) **nulo aleatorio** de la misma familia; (c) **benchmark pasivo** (long incondicional en la misma ventana horaria). Sin los tres, el resultado no se acepta (§3.5).
+
+### 5.5 Etapa G5 — paper/live con monitoreo válido en cualquier tiempo
+
+Proceso-e o secuencia de confianza (betting CS, `confseq`) sobre retornos acotados por el stop duro. Promover o matar en cualquier momento sin inflar el error tipo I. Es la única fuente de datos nuevos para un agente que corre indefinidamente.
+
+---
+
+## 6. Economía de tokens
+
+### 6.1 Restricción real
+
+Membresía con ventanas de 5 h y semanal, no API facturada. El LLM es intermitente; el embudo numérico progresa sin él; la métrica a optimizar es **utilidad por llamada** (reducción de distancia a un edge según la jerarquía del referente), no tokens por día.
+
+### 6.2 Función de valor
+
+Cola de prioridad `V = U / T`:
 
 | Prioridad | Llamada | Por qué |
 |---|---|---|
 | 1 | Revisor sobre familia con sobrevivientes en EF2/EF3 | destraba la única ruta hacia G2–G4 |
 | 2 | Contraste ambiguo que bloquea una adjudicación | sin él no hay decisión |
-| 3 | Proponente, sólo si familias en vuelo < *F_min* | evita inanición del embudo, no "llena por llenar" |
-| 4 | Revisor sobre familia sin sobrevivientes (para `new_rule`) | valor diferido: mejora EF0 futuro |
-| 5 | Cronista | por lotes, al final de ciclo |
+| 3 | Proponente, sólo si familias en vuelo < *F_min* | evita inanición, no "llena por llenar" |
+| 4 | Revisor sobre familia sin sobrevivientes (para `new_rule`) | mejora EF0 futuro |
+| 5 | Cronista | por lotes |
 
-Si familias en vuelo ≥ *F_max*, el proponente no se llama aunque haya presupuesto: proponer más de lo que el cómputo puede matar sólo infla la multiplicidad.
+Si familias en vuelo ≥ *F_max*, el proponente no se llama: proponer más de lo que el cómputo puede matar sólo infla N_eff.
 
-### 5.3 Mecanismos de ahorro
+### 6.3 Mecanismos de ahorro
 
-- **Idempotencia por hash de entrada:** misma entrada, misma salida cacheada; nunca se paga dos veces la misma pregunta.
-- **Haiku para lo mecánico:** lector y cronista consumen un orden de magnitud menos que Opus por token y representan la mayoría de las llamadas.
-- **Resúmenes incrementales del Edge Brain:** el proponente recibe un *delta* desde su última llamada más un resumen estable con hash, no el ledger entero.
-- **Índice local de literatura antes de búsqueda externa.**
-- **Tope diario configurable** por rol (`max_calls_per_day`) como cinturón de seguridad independiente de la ventana de la membresía.
+Idempotencia por hash de entrada; Haiku para lo mecánico; **revelación progresiva** del Edge Brain al proponente (L1 de 20–40 tokens para familias viejas, L2 para élite reciente, L3 sólo para el padre directo; patrón DeltaEvolve, −37 % de tokens); índice local de literatura antes de búsqueda externa; tope diario por rol; `--max-turns` en cada invocación.
 
-### 5.4 Comportamiento ante límite
+### 6.4 Comportamiento ante límite (verificado)
 
-Detección por código de salida y mensaje de `claude -p`; se registra `RATE_LIMITED` con `reset_at` (parseado si está disponible, 60 min por defecto). Durante la ventana cerrada el daemon sigue ejecutando pasos sin LLM y acumula la cola. Al reabrir, se drena por `V` descendente. Ninguna llamada se pierde; se posterga.
+`claude -p --output-format stream-json` emite `rate_limit_event`. `rejected` → registrar `RATE_LIMITED` con `resetsAt`, dormir, seguir con lo numérico, drenar la cola por `V` al reabrir. `allowed_warning` → degradar a Sonnet/Haiku. Límite de Opus con Sonnet disponible → cambiar familia de modelo para roles que lo admitan (lector, cronista). `CLAUDE_CODE_RETRY_WATCHDOG=1` para 429/529 de capacidad. Auth por `CLAUDE_CODE_OAUTH_TOKEN` de `claude setup-token`. Invocación con `--session-id` determinístico por tarea, `--permission-prompts none`, `--setting-sources` acotado, `--strict-mcp-config`, `--tools` mínimo; nunca `--bare` (no lee OAuth). Terminar con SIGINT.
 
 ---
 
-## 6. Ventajas y desventajas frente al estado del arte
+## 7. Ventajas y desventajas frente al estado del arte
 
-### 6.1 Ventajas
+### 7.1 Ventajas
 
-1. **Verificador fuera del LLM** (patrón AlphaEvolve). Toda cifra que promueve o mata sale de código determinista con hash; el LLM aporta conjeturas y lectura, nunca evidencia.
-2. **Multiplicidad contable por construcción.** El preregistro de familia declara el número efectivo de hipótesis antes de ver datos; Gençay (2026) muestra que sin registrar cada evaluación la corrección es ilusoria. Aquí no hay evaluación fuera del ledger.
-3. **Memoria que evita reabrir refutaciones.** Las reglas emergentes y el contraste descarte→avances son lo que ningún sistema de 2.1 implementa: R&D-Agent(Q) y AQuA usan registros para *proponer mejor*, no para *bloquear lo ya refutado*.
-4. **Sin código generado en el camino de los datos.** Elimina la fuente principal de fuga de información documentada en la literatura.
-5. **Tolerancia a fallos de infraestructura real:** membresía con ventanas, Kaggle no interactivo, apagones. Los tres fallos que mataron corridas previas del repo están en el diseño.
-6. **Holdout de apertura única garantizado por código**, no por disciplina.
+1. **Verificador fuera del LLM** con métricas privadas (AlphaEvolve, ShinkaEvolve). Toda cifra sale de código con hash.
+2. **Búsqueda contada por construcción y de por vida.** Única forma de que DSR y MinBTL signifiquen algo (Gençay; False Strategy Theorem). Ningún sistema de §2.1 lo hace.
+3. **Inferencia secuencial válida** para un agente perpetuo (e-LOND, procesos-e). Ningún sistema revisado la implementa; POPPER es lo más cercano y sólo acumula e-valores dentro de una hipótesis.
+4. **Memoria que bloquea lo refutado**, no sólo que informa lo siguiente (contraste cruzado + reglas K1–K14 + familias refutadas como retiradas desde el día cero).
+5. **Sin código generado en el camino de los datos**; registro/esquema/validador desde un mismo flag.
+6. **Controles canario** en cada ledger: la defensa contra fuga es verificable en cada corrida, no asumida.
+7. **Testing diferencial de motores** y oráculo de costos separado: el riesgo de implementación (Yin) y el dominio del costo en intradía (Mesfin) están en el diseño.
+8. **Tolerancia a la infraestructura real**: membresía con ventanas, Kaggle batch, apagones.
 
-### 6.2 Desventajas y riesgos
+### 7.2 Desventajas y riesgos
 
-1. **Expresividad acotada.** El registro de primitivas limita lo que el proponente puede formular. Un edge que requiera una primitiva inexistente no se descubre hasta que alguien la implemente con paridad. Es un costo deliberado.
-2. **Tasa de descubrimiento esperada baja.** El resultado de Gençay (2026) sugiere que lo más probable es que el agente produzca una biblioteca de negativos bien documentados. Eso es valor metodológico, no rentabilidad. El referente lo admite ("no prometer rentabilidad futura"), pero conviene explicitarlo.
-3. **Dependencia de la certificación de datos.** La auditoría del 04/10 dictamina `NOT_CERTIFIED_FOR_NEW_STRATEGY` para el canónico y bloquea el montaje en Kaggle. Hasta que eso se resuelva, EF0 rechaza casi todo. El agente no puede arreglar datos; sólo puede negarse a usarlos.
-4. **Calidad del contraste estructural.** El matching `prediction` ↔ descartados depende de que las predicciones estén bien tipadas. Predicciones vagas producen falsos "no contradice". Mitigación: schema estricto y revisor que puede devolver `DERIVE` por predicción mal formulada.
-5. **Costo de Opus en el revisor.** Si muchas familias sobreviven EF2 a la vez (p. ej. por un bug en el kernel), la cola de revisión se dispara. Mitigación: tope diario y el gate de paridad GPU por versión.
-6. **Delegación de decisiones humanas.** Al reemplazar el OK explícito en G0–G4, el sistema pierde una capa de juicio que el referente original consideraba necesaria. La enmienda (7.3) lo hace explícito y auditable, pero no lo compensa.
+1. **Expresividad acotada** por el registro de primitivas. Costo deliberado.
+2. **Tasa de descubrimiento esperada muy baja.** Gençay: 0/N; Mesfin: 0/14; MinBTL: 10⁶ celdas exigen ~24 años para que SR=1 no sea ruido. Lo más probable es una biblioteca de negativos documentados. El referente lo admite; conviene decirlo.
+3. **Alpha-wealth finito.** Un agente sin descubrimientos agota su presupuesto de aperturas y queda limitado a G0–G3 hasta que entren datos nuevos. Es correcto, pero puede percibirse como parálisis.
+4. **Dependencia de la certificación de datos.** `NOT_CERTIFIED_FOR_NEW_STRATEGY` (04/10) bloquea EF0 hasta resolverse. El agente no arregla datos.
+5. **N_eff mal estimado** invalida el DSR. ONC es O(m²T) y con m=10⁶ exige muestreo o clustering de representantes [inferencia del Dossier B, a validar].
+6. **Calidad del contraste estructural** depende de predicciones bien tipadas. Mitigación: esquema estricto y `DERIVE` por predicción mal formulada.
+7. **Costo de Opus en el revisor** si muchas familias sobreviven a la vez. Mitigación: tope diario y paridad GPU por versión.
+8. **Delegación de decisiones humanas** en G0–G4: se pierde una capa de juicio. La enmienda lo hace explícito, no lo compensa.
+9. **Hueco en la literatura:** no existe proceso-e publicado para Sharpe de estrategias. G5 usará secuencias de confianza sobre retornos acotados, que sí están publicadas.
 
 ---
 
-## 7. Plan de verificación y enmienda
+## 8. Plan de verificación y enmienda
 
-### 7.1 Pruebas sintéticas (sin datos de mercado, sin holdout)
+### 8.1 Pruebas sintéticas (sin datos de mercado, sin holdout)
 
 | Prueba | Qué falla si rompe |
 |---|---|
-| `test_holdout_once` | segundo intento de apertura sobre el mismo candidato lanza y queda registrado |
-| `test_prereg_hash_mismatch` | registro expandido distinto al preregistrado se rechaza antes de correr |
+| `test_holdout_once` | segunda apertura sobre el mismo candidato lanza y queda registrada |
+| `test_alpha_wealth_exhausted` | con alpha-wealth 0, una apertura de holdout se rechaza y se registra |
+| `test_prereg_hash_mismatch` | registro expandido distinto al preregistrado se rechaza |
 | `test_crash_resume` | matar el daemon en cada estado y reanudar reproduce el mismo ledger |
 | `test_llm_schema` | salida inválida del LLM simulado se reintenta una vez y luego se registra |
-| `test_contrast_structural` | una predicción con negación ya medida produce `DERIVE` con la cita correcta |
-| `test_kill_cascades` | un `KILL` nuevo reabre las familias vivas que comparten primitivas |
-| `test_rule_activation` | una regla `PROPOSED` se activa sólo con dos familias distintas |
-| `test_rate_limit` | ante 429 simulado, los pasos numéricos siguen y la cola se drena al reabrir |
-| `test_gpu_parity_gate` | sin `gpu_parity.json` verde para la versión, el resultado GPU se descarta |
+| `test_contrast_structural` | predicción con negación ya medida produce `DERIVE` con cita |
+| `test_kill_cascades` | un `KILL` reabre las familias vivas que comparten primitivas |
+| `test_rule_activation` | regla `PROPOSED` se activa sólo con dos familias distintas |
+| `test_canary_leak_detected` | el oráculo con fuga es marcado como fuga; si no, la corrida es inválida |
+| `test_canary_required` | un ledger sin los tres controles se rechaza |
+| `test_private_metrics_hidden` | ninguna métrica `private` aparece en la entrada de ningún rol LLM |
+| `test_rate_limit` | ante `rejected` simulado, lo numérico sigue y la cola se drena al reabrir |
+| `test_gpu_parity_gate` | sin `gpu_parity.json` verde, el resultado GPU se descarta |
+| `test_engine_differential_zero_cost` | EdgeLab tick-exact y hftbacktest coinciden fill a fill a costo cero sobre fixture |
+| `test_dsr_against_paper` | la implementación propia reproduce DSR≈0,90 del ejemplo de Bailey & López de Prado (2014) |
+| `test_cscv_count` | C(16,8) = 12.870 combinaciones, no 12.780 |
+| `test_minbtl_gate` | familia con N_eff y años insuficientes no puede pasar EF3 |
 | `test_north_star_hash` | ya existe; se mantiene |
 
-Todas corren con un LLM falso (fixtures JSON por rol) para ser deterministas y gratis.
+Todas con LLM falso (fixtures JSON por rol), deterministas y gratis.
 
-### 7.2 Validación end-to-end sintética
+### 8.2 Validación end-to-end sintética
 
-Un dataset sintético con un edge plantado conocido y diez familias ruidosas. Éxito: el agente promueve la plantada hasta G3, retira las diez, genera al menos una regla emergente consistente, y el ledger reconstruye la secuencia completa desde cero. Fracaso en cualquiera de los cuatro bloquea el despliegue.
+Dataset sintético con un edge plantado conocido, diez familias ruidosas, el oráculo con fuga y el nulo. Éxito: el agente promueve la plantada hasta G3, retira las diez, marca el oráculo como fuga, genera al menos una regla emergente consistente, y el ledger reconstruye la secuencia desde cero. Fracaso en cualquiera bloquea el despliegue.
 
-### 7.3 Enmienda al NORTH_STAR (texto propuesto)
+### 8.3 Enmienda al NORTH_STAR (texto propuesto)
 
-> **Enmienda A-2026-10-04 — Delegación al agente de investigación.** Las decisiones de promoción en G0–G4, incluida la apertura única del holdout, se delegan al agente descrito en `docs/research/AGENTE_ESPIRAL_20261004.md` (versión y hash citados en cada manifiesto), bajo las siguientes condiciones no negociables: (a) el perímetro de 3.5 está implementado en código y cubierto por las pruebas de 7.1; (b) ninguna salida de LLM es evidencia; (c) los cambios a `edge_validation_contract.md` siguen requiriendo decisión explícita del responsable. Esta enmienda no mueve ninguna frontera de holdout.
+> **Enmienda A-2026-10-04 — Delegación al agente de investigación.** Las decisiones de promoción en G0–G4, incluida la apertura única del holdout, se delegan al agente descrito en `docs/research/AGENTE_ESPIRAL_20261004.md` (versión y hash citados en cada manifiesto), bajo condiciones no negociables: (a) el perímetro de §3.5 está en código y cubierto por §8.1; (b) ninguna salida de LLM es evidencia; (c) el número de pruebas se cuenta acumulado de por vida y el presupuesto de α para aperturas de holdout es finito y preregistrado; (d) los cambios a `edge_validation_contract.md` siguen requiriendo decisión explícita del responsable. Esta enmienda no mueve ninguna frontera de holdout.
 
-Tras la enmienda se refresca la autocita y se actualiza `CLAUDE.md`/`AGENTS.md`.
+Tras la enmienda, refrescar la autocita y actualizar `CLAUDE.md`/`AGENTS.md` (este último cita un hash stale, `d85364…`).
 
-### 7.4 Tarea previa: unificar ramas
+### 8.4 Tarea previa: unificar ramas
 
-El embudo y el Edge Brain viven en `main` (177 archivos); el referente, los contratos G0–G5, `CLAUDE.md` y `AGENTS.md` viven en `claude/focused-fermat-qjt805` (3.425 archivos). Primer commit del proyecto: traer `docs/NORTH_STAR.md`, `docs/edge_validation_contract.md`, `docs/kernel_contract.md`, `tests/test_north_star_hash.py`, `CLAUDE.md` y `AGENTS.md` a `main`, sin tocar el resto.
+El embudo y el Edge Brain viven en `main` (177 archivos); el referente, los contratos, `CLAUDE.md` y `AGENTS.md` en `claude/focused-fermat-qjt805` (3.425). Primer commit: traer `docs/NORTH_STAR.md`, `docs/edge_validation_contract.md`, `docs/kernel_contract.md`, `tests/test_north_star_hash.py`, `CLAUDE.md` y `AGENTS.md` a `main`.
 
 ---
 
-## 8. Discusión
+## 9. Ruta del proyecto
 
-El diseño apuesta a que el valor de un agente de investigación no está en cuántas estrategias produce sino en cuántas **falsas** rechaza antes de arriesgar capital, y en no volver a pagar por refutaciones ya compradas. Esa apuesta está alineada con la evidencia disponible: los sistemas que dejan al LLM escribir código y optimizar sobre su propio backtest no sobreviven a una evaluación honesta, y los que separan creatividad de verificación sí producen resultados reproducibles en dominios con verificador exacto. Las finanzas no tienen verificador exacto; tienen MCPT, PBO, DSR, SPA y un holdout que se abre una vez. Este agente los usa como si lo fueran y acepta la tasa de descubrimiento baja que eso implica.
+Orden de implementación derivado de la evidencia, cada hito con su criterio de cierre:
 
-### 8.1 Trabajo futuro
+| # | Hito | Cierre |
+|---|---|---|
+| R0 | Unificar ramas; enmienda al NORTH_STAR; `AGENTS.md` con hash correcto | `test_north_star_hash` verde en `main` |
+| R1 | Ledger completo por construcción: tabla `trials` + N_eff acumulado + MinBTL gate | `test_minbtl_gate`, `test_prereg_hash_mismatch` |
+| R2 | Estadística propia validada: DSR, PSR, CSCV, bloque PPW, contra ejemplos publicados | `test_dsr_against_paper`, `test_cscv_count` |
+| R3 | Controles canario + tests dinámicos de fuga en el embudo | `test_canary_leak_detected`, `test_canary_required` |
+| R4 | Reglas K1–K14 cargadas como activas; familias refutadas como retiradas con cita | EF0 rechaza una hipótesis que viole K4 en fixture |
+| R5 | Oráculo de costos separado + testing diferencial contra hftbacktest | `test_engine_differential_zero_cost` |
+| R6 | SPA/StepM de familia como GEMM en GPU; paridad CPU/GPU por versión | `gpu_parity.json` verde; SPA coincide CPU/GPU en fixture |
+| R7 | Orquestador: máquina de estados, SQLite, roles con `claude -p --json-schema`, gobernador de límites | `test_crash_resume`, `test_rate_limit`, `test_llm_schema` |
+| R8 | Kaggle batch con `dataset_sources`; fallback CPU | un job round-trip con hashes verificados |
+| R9 | Alpha-wealth con e-LOND; G5 con secuencias de confianza | `test_alpha_wealth_exhausted` |
+| R10 | Scheduler Thompson + ASHA | familia estancada recibe menos GPU en simulación |
+| R11 | Validación end-to-end sintética (§8.2) | los cuatro criterios de éxito |
+| R12 | Primer ciclo real sobre el canónico certificado | manifiesto con hash del referente y "Aporte al referente" |
 
-- Ampliar el registro de primitivas a medida que el responsable certifique paridad (L2/MBP-10 bajo la enmienda L2 del 2026-09-24).
-- Bootstrap clusterizado por sesión en EF3 en lugar del `deff` supuesto, con `edgelab/stats/bootstrap_estacionario.py` ya existente.
-- Métrica de "distancia al edge" explícita por familia para refinar la función de valor de 5.2.
-- Publicación periódica de la biblioteca de negativos como resultado científico en sí mismo.
+Dependencias duras externas: certificación del canónico (auditoría 04/10) antes de R12; paridad de indicadores (responsable) antes de ampliar el registro de primitivas.
+
+---
+
+## 10. Discusión
+
+El diseño apuesta a que el valor de un agente de investigación está en cuántas estrategias **falsas** rechaza antes de arriesgar capital y en no volver a pagar por refutaciones ya compradas. La evidencia lo respalda con más fuerza de lo que se suponía en la v1 de este documento: la única evaluación honesta de estrategias LLM rechaza todas; en futuros micro intradía sobre OHLCV el techo de edge está por debajo de la fricción; y con datos fijos cualquier umbral termina superado si N crece sin contarse. Lo que sobrevive es el verificador fuera del LLM, la contabilidad de por vida y la confirmación con datos nuevos bajo inferencia secuencial. Las finanzas no tienen verificador exacto; tienen SPA, CSCV, DSR, MCS, MCPT, un holdout que se abre una vez y un presupuesto de α que se agota. Este agente los usa como si fueran exactos y acepta la tasa de descubrimiento baja que eso implica.
+
+### 10.1 Trabajo futuro
+
+- Proceso-e para Sharpe de estrategias (hueco en la literatura); mientras tanto, secuencias de confianza sobre retornos acotados.
+- Ampliar el registro de primitivas con L2/MBP-10 bajo la enmienda L2 del 2026-09-24, donde el OFI tiene soporte contemporáneo robusto.
+- Métrica explícita de "distancia al edge" por familia para refinar la función de valor.
+- Publicar la biblioteca de negativos como resultado en sí mismo, con las trazas y semillas que el 62 % de los sistemas revisados no publica.
 
 ---
 
 ## Referencias
 
-- Bailey, D. H., & López de Prado, M. (2014). The Deflated Sharpe Ratio: Correcting for Selection Bias, Backtest Overfitting and Non-Normality. *Journal of Portfolio Management*, 40(5), 94–107. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2460551
-- Bailey, D. H., Borwein, J., López de Prado, M., & Zhu, Q. J. (2017). The Probability of Backtest Overfitting. *Journal of Computational Finance*, 20(4), 39–70. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2326253
-- Beel, J. et al. (2025). Evaluating Sakana's AI Scientist for Autonomous Research. arXiv:2502.14297. https://arxiv.org/abs/2502.14297
-- Gençay, E. (2026). What survives honest evaluation? Leakage-safe, search-aware assessment of LLM-driven trading strategy discovery. arXiv:2608.27734. https://arxiv.org/abs/2608.27734
-- Guo, J., Huang, S., Gao, Y., Li, Z., Ge, J., Liang, S., Kuang, X., & Wang, M. (2026). AQuA: Recursively Self-Improving Quantitative Trading Research Agents. arXiv:2608.12841. https://arxiv.org/abs/2608.12841
-- Hansen, P. R. (2005). A Test for Superior Predictive Ability. *Journal of Business & Economic Statistics*, 23(4), 365–380.
-- Harvey, C. R., Liu, Y., & Zhu, H. (2016). …and the Cross-Section of Expected Returns. *Review of Financial Studies*, 29(1), 5–68. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2249314
-- Li, Y., Yang, X., Yang, X., Xu, M., Wang, X., Liu, W., & Bian, J. (2025). R&D-Agent-Quant: A Multi-Agent Framework for Data-Centric Factors and Model Joint Optimization. arXiv:2505.15155 (NeurIPS 2025). https://arxiv.org/abs/2505.15155
-- Lu, C. et al. (2024). The AI Scientist: Towards Fully Automated Open-Ended Scientific Discovery. arXiv:2408.06292. https://arxiv.org/abs/2408.06292
-- Masters, T. (2018). *Testing and Tuning Market Trading Systems*. Apress.
-- Novikov, A. et al. (2025). AlphaEvolve: A coding agent for scientific and algorithmic discovery. Google DeepMind. https://deepmind.google/blog/alphaevolve-a-gemini-powered-coding-agent-for-designing-advanced-algorithms/
-- Wang, S. et al. (2023). Alpha-GPT: Human-AI Interactive Alpha Mining for Quantitative Investment. arXiv:2308.00016.
-- Wang, S. et al. (2024). QuantAgent: Seeking Holy Grail in Trading by Self-Improving Large Language Model. arXiv:2402.03755.
+Las referencias completas, con URLs verificadas y notas de verificación, están en los Dossiers A–D. Se listan aquí las citadas directamente en el cuerpo.
+
+- Arnott, R., Harvey, C. R., & Markowitz, H. (2019). A Backtesting Protocol in the Era of Machine Learning. *Journal of Financial Data Science*, 1(1), 64–74.
+- Bailey, D. H., & López de Prado, M. (2014). The Deflated Sharpe Ratio. *Journal of Portfolio Management*, 40(5), 94–107.
+- Bailey, D. H., Borwein, J., López de Prado, M., & Zhu, Q. J. (2014). Pseudo-Mathematics and Financial Charlatanism. *Notices of the AMS*, 61(5), 458–471.
+- Bailey, D. H., Borwein, J., López de Prado, M., & Zhu, Q. J. (2017). The Probability of Backtest Overfitting. *Journal of Computational Finance*, 20(4), 39–70.
+- Baltussen, G., Da, Z., Lammers, S., & Martens, M. (2021). Hedging demand and market intraday momentum. *Journal of Financial Economics*, 142(1), 377–403.
+- Beel, J., Kan, M.-Y., & Baumgart, M. (2025). Evaluating Sakana's AI Scientist. arXiv:2502.14297.
+- Carchano, Ó., & Pardo, Á. (2009). Rolling over stock index futures contracts. *Journal of Futures Markets*, 29(7), 684–694.
+- Cont, R., Kukanov, A., & Stoikov, S. (2014). The price impact of order book events. *Journal of Financial Econometrics*, 12(1), 47–88.
+- Gao, L., Han, Y., Li, S. Z., & Zhou, G. (2018). Market intraday momentum. *Journal of Financial Economics*, 129(2), 394–414.
+- Gençay, E. (2026). What survives honest evaluation? arXiv:2608.27734. Artefacto: doi:10.5281/zenodo.21261868.
+- Grünwald, P., de Heide, R., & Koolen, W. (2024). Safe testing. *JRSS-B*, 86(5), 1091–1128.
+- Guo, J. et al. (2026). AQuA. arXiv:2608.12841.
+- Han, Y. et al. (2026). QuantaAlpha. arXiv:2602.07085.
+- Hansen, P. R. (2005). A Test for Superior Predictive Ability. *JBES*, 23(4), 365–380.
+- Hansen, P. R., Lunde, A., & Nason, J. M. (2011). The Model Confidence Set. *Econometrica*, 79(2), 453–497.
+- Harvey, C. R. (2017). Presidential Address: The Scientific Outlook in Financial Economics. *Journal of Finance*, 72(4), 1399–1440.
+- Harvey, C. R., Liu, Y., & Zhu, H. (2016). …and the Cross-Section of Expected Returns. *RFS*, 29(1), 5–68.
+- Hua, et al. (2026). Agentic Quantitative Trading: A Survey. arXiv:2608.31041.
+- Johari, R., Koomen, P., Pekelis, L., & Walsh, D. (2022). Always Valid Inference. *Operations Research*, 70(3), 1806–1821.
+- Kim, et al. (2026). FaVOR. arXiv:2608.30192.
+- Li, Y. et al. (2025). R&D-Agent-Quant. arXiv:2505.15155. NeurIPS 2025.
+- Liu, F. et al. (2026). XAlpha. arXiv:2607.08332.
+- López de Prado, M., & Bailey, D. H. (2021). The False Strategy Theorem. *American Mathematical Monthly*, 128(9).
+- López de Prado, M., & Lewis, M. J. (2019). Detection of false investment strategies using unsupervised learning methods. *Quantitative Finance*, 19(9), 1555–1565.
+- Lu, C. et al. (2024). The AI Scientist. arXiv:2408.06292.
+- Masters, T. (2020). *Permutation and Randomization Tests for Trading System Development*.
+- McLean, R. D., & Pontiff, J. (2016). Does academic research destroy stock return predictability? *Journal of Finance*, 71(1), 5–32.
+- Mesfin (2026). Structural Limits of OHLCV-Based Intraday Momentum Signals in MNQ Futures. arXiv:2605.04004.
+- Novikov, A. et al. (2025). AlphaEvolve. arXiv:2506.13131.
+- Patton, A., Politis, D. N., & White, H. (2009). Correction to "Automatic block-length selection". *Econometric Reviews*, 28(4), 372–375.
+- Politis, D. N., & Romano, J. P. (1994). The Stationary Bootstrap. *JASA*, 89(428), 1303–1313.
+- Ramdas, A., Grünwald, P., Vovk, V., & Shafer, G. (2023). Game-Theoretic Statistics and Safe Anytime-Valid Inference. *Statistical Science*, 38(4), 576–601.
+- Romano, J. P., & Wolf, M. (2005). Stepwise Multiple Testing as Formalized Data Snooping. *Econometrica*, 73(4), 1237–1282.
+- Romano, J. P., Shaikh, A. M., & Wolf, M. (2008). Formalized data snooping based on generalized error rates. *Econometric Theory*, 24, 404–447.
+- Sakana AI (2025). ShinkaEvolve. arXiv:2509.19349.
+- Sullivan, R., Timmermann, A., & White, H. (1999). Data-Snooping, Technical Trading Rule Performance, and the Bootstrap. *Journal of Finance*, 54(5), 1647–1691.
+- Takahashi (2025). arXiv:2508.06788.
+- Tavyrikov, Goeman, & de Heide (2025). Carefree multiple testing with e-processes. arXiv:2501.19360.
+- Wang, R., & Ramdas, A. (2022). False discovery rate control with e-values. *JRSS-B*, 84(3), 822–852.
+- Waudby-Smith, I., & Ramdas, A. (2024). Estimating means of bounded random variables by betting. *JRSS-B*, 86(1), 1–27.
+- Weng, et al. (2026). AlphaLogics. arXiv:2603.20247.
 - White, H. (2000). A Reality Check for Data Snooping. *Econometrica*, 68(5), 1097–1126.
-- Xiao, Y. et al. (2024). TradingAgents: Multi-Agents LLM Financial Trading Framework. arXiv:2412.20138. https://arxiv.org/abs/2412.20138
-- Agentic Quantitative Trading: A Survey of Workflows, Systems, and Evaluation (2026). arXiv:2608.31041.
+- Xu, Z., & Ramdas, A. (2024). Online multiple testing with e-values (e-LOND). AISTATS 2024. arXiv:2311.06412.
+- Yin, Miki, Lesnichenko, & Gural (2026). Implementation Risk in Portfolio Backtesting. arXiv:2603.20319.
 
 ---
 
-**Aporte al referente:** este documento no reduce por sí mismo la distancia a un edge; fija el mecanismo por el cual cada ciclo futuro deberá demostrar que la redujo, y el que impide volver a pagar por refutaciones ya hechas.
+**Aporte al referente:** este documento no reduce por sí mismo la distancia a un edge; fija el mecanismo por el cual cada ciclo futuro deberá demostrar que la redujo, cuenta la búsqueda de por vida para que ese "demostrar" signifique algo, e impide volver a pagar por refutaciones ya hechas.
