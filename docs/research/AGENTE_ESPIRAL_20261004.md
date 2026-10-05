@@ -363,6 +363,59 @@ El diseño apuesta a que el valor de un agente de investigación está en cuánt
 
 ---
 
+## 11. Extensión (2026-10-05): apuestas de régimen, propfirms, canasta e ingesta diaria
+
+Decisiones del responsable del 2026-10-05: el payout de propfirm no es la función objetivo principal pero es de igual importancia; "apuesta de régimen" es una vía respetable y distinta del edge; se buscará una canasta del orden de quince apuestas con riesgo ponderado; el humano sumará datos día a día (ticks, L2); el agente registra sus pedidos de datos.
+
+### 11.1 Dos cadenas de estados
+
+| | `EDGE` | `REGIME_BET` |
+|---|---|---|
+| Pregunta | ¿Es real? | ¿Cuánto riesgo le asigno y cuándo la mato? |
+| Validación | G0–G5, N_eff de por vida, alpha-wealth | G0 técnico + costo real + régimen declarado + **calibración de la clase** |
+| Ventana | Toda la historia disponible, MinBTL | Ventana del régimen (meses), sin pretensión de significancia |
+| Promoción a edge | Pasando G0–G5 | **Nunca por acumular meses**; sólo entrando a la cadena `EDGE` |
+| Kill | Falsación en gates | Secuencia de confianza sobre retornos acotados (G5), haircut K14, cambio de régimen detectado |
+| Riesgo | Según G3 | Acotado por apuesta y por canasta; Kelly fraccional con tope |
+
+**Por qué no se puede validar una apuesta de régimen como edge.** Gençay (2026): SR 0,6 necesita ~11 años para t≈2; E4: cinco repeticiones del nulo fueron rentables fuera de muestra y 0/5 sobrevivieron la deflación. MinBTL: con 10⁴ candidatos, 15 años para que SR 1 no sea ruido. Mirar cuál de 50 bots ganó los últimos tres meses garantiza encontrar varios por azar.
+
+**Por qué igual es una vía respetable.** Los mecanismos existen y decaen (McLean & Pontiff, −58 % post-publicación; Baltussen et al., gamma hedging). Una estrategia atada a un mecanismo vigente es una apuesta con prior económico, no una lotería. La diferencia con el edge es que se gestiona como riesgo, no como verdad.
+
+**Calibración de la clase (lo que reemplaza al "probablemente la mayoría funcione").** No se asume la tasa de acierto de las apuestas de régimen; se **mide**. Cada apuesta registra al entrar: régimen declarado, detector (ajustado sólo con datos del fold), ventana observada, N de variantes probadas antes de elegirla, haircut aplicado. Al salir registra: duración real, P&L neto, causa de muerte. El ledger de calibración produce la tasa histórica de la clase y su intervalo; el tamaño de riesgo por apuesta nueva es función de esa tasa medida. Si la tasa cae por debajo del costo del drawdown, la clase entera se pausa. Esto es lo que hace que "quince apuestas" sea una política y no una esperanza.
+
+### 11.2 Motor de reglas de propfirm
+
+Existe en `feat/propfirm-ev-20260926`: `edgelab/propfirm/ev.py` (Monte Carlo del ciclo evaluación → fondeada → retiros, con piso estático/EOD/intradía, límite diario, consistencia, días mínimos, topes y cadencia de payout) y `rules.py` con catálogo de cinco planes 50k (Apex, Tradeify ×2, Topstep, MyFundedFutures) y `admits_algorithms()`. Ya incluye el **control de ventaja cero** (Hall 2026, §2.4): el mismo pipeline con `p_win = sl/(tp+sl)`.
+
+Lo que falta y se agrega:
+
+1. **Entrada empírica.** Hoy el simulador asume un bracket paramétrico (p_win, tp, sl, mae uniforme). Debe aceptar **trayectorias reales** del embudo: bootstrap estacionario por sesión (bloque PPW) del P&L diario y de las secuencias intradía de la estrategia, con sus MAE reales. El bracket queda como caso degenerado.
+2. **Filtro de admisibilidad previo a toda estadística.** `algo_policy` (Apex: prohibido; resto: condicional con reglas de tenencia mínima, HFT, cobertura, noticias). Una estrategia que viola `min_hold_rule` o `news_rule` de una firma no se evalúa contra esa firma.
+3. **Salida por (estrategia, firma, plan):** P(pasar evaluación), P(primer payout), EV por fee pagado, tiempo esperado al payout, distribución de payouts acumulados, y **lo mismo para el nulo**. Regla de lectura: si EV(nulo) > 0, el plan está mal priceado y el mérito es de la firma; si EV(estrategia) − EV(nulo) ≤ 0, la estrategia no aporta en esa firma aunque pague.
+4. **Verificación de reglas.** El catálogo marca `verified: false` y precios de terceros. Cada regla usada en una decisión debe tener `source_url`, `fetched_at` y hash del texto; las reglas cambian (Tradeify cambió topes el 1-sep-2026) y el agente las recrawlea con cadencia y detecta diffs.
+
+Posición en el embudo: etapa **paralela** a G3, no posterior. Una estrategia puede tener EV positivo en propfirm sin pasar G3 real (varianza alta, drawdown acotado por las reglas) y eso es información para la canasta, no para la cadena `EDGE`.
+
+### 11.3 Canasta
+
+Unidad: un **bot** = (estrategia, instrumento, cuenta, tamaño). Cuentas de propfirm y cuentas reales son buckets separados con sus reglas. Asignación: riesgo por bot acotado por su clase (edge vs apuesta de régimen) y por la calibración medida; correlación de P&L entre bots medida sobre ventanas comunes, nunca asumida; drawdown máximo por bucket y total; Kelly fraccional con tope duro. Rebalanceo cuando una apuesta muere, cuando cambia un régimen detectado o cuando una firma cambia reglas. Todo cambio de asignación es una fila del ledger con la razón.
+
+### 11.4 Ingesta diaria y pedidos de datos
+
+- **Ingesta.** Carpeta de entrada con manifiesto por archivo (instrumento, contrato, rango, fuente, hash). El agente valida esquema, orden temporal, identidad de ticks y frontera de holdout antes de anexar al canónico; rechaza y reporta, nunca repara en silencio. Los detectores de régimen se recalculan sólo con datos anteriores a la fecha as-of de cada decisión.
+- **`data_requests`.** Tabla con: qué (p. ej. ticks MGC agosto, L2 MNQ semana X), qué hipótesis o apuesta desbloquea, valor esperado estimado, prioridad, estado (abierto / entregado / rechazado), quién lo cerró. El agente la llena; el humano la lee. Es la única interfaz por la que el agente pide algo a una persona.
+
+### 11.5 Entorno de agentes y Kaggle
+
+Credencial `kaggle.json` en `%USERPROFILE%\.kaggle\` con permisos de usuario, puesta por el responsable; nunca en chat, repo ni prompt. Sólo el orquestador Python la lee; ningún rol LLM recibe credenciales. Capacidades a verificar en el primer arranque: listado de datasets privados, push de un kernel con `enable_gpu`, otro con `enable_tpu`, lectura de cuota. Documentación de referencia: `kaggle-api/docs/kernels_metadata.md`, `kaggle.com/docs/notebooks`, `kaggle.com/docs/efficient-gpu-usage` (ver Dossier D §5).
+
+### 11.6 Primera hipótesis manual
+
+La estrategia "M1 04:15 del oro" probada el 2026-10-04 no está en el repositorio. Entra como primera hipótesis registrada a mano: reglas exactas, instrumento y contrato, horario y huso, qué se observó, cuántas variantes se probaron antes de fijarla, y clase declarada (`EDGE` o `REGIME_BET`). Sin ese registro no es evaluable.
+
+---
+
 ## Referencias
 
 Las referencias completas, con URLs verificadas y notas de verificación, están en los Dossiers A–D. Se listan aquí las citadas directamente en el cuerpo.
