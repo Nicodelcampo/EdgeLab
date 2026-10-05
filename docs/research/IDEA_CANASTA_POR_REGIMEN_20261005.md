@@ -94,6 +94,26 @@ de esas estrategias es rentable en los trades restantes? Es persistencia **dentr
 - Expectativa previa: baja para universos salidos de búsqueda grande (reversión esperable), moderada para estrategias
   simples con lógica económica. El resultado negativo también se registra.
 
+## 6. Research ampliado (2026-10-05, a pedido de Nico, sólo aprendizaje)
+- **Momentum intradía del mercado** (Gao, Han, Li, Zhou): el retorno de la primera media hora del SPY predice el de
+  la última; más fuerte en días volátiles, de alto volumen y con noticias macro. Es la versión "mercado" de H-REG-3:
+  si la canasta gana en la mañana, puede ser sólo esto.
+- **Clasificador de día en MNQ** (arXiv 2605.11423): con condiciones pre-mercado (gap, retorno de 30 min, volumen de
+  apertura) los días marcados se comportan distinto, pero **ninguna estrategia direccional pasó costos y
+  consistencia multianual**. Régimen descriptivo ≠ régimen operable.
+- **Sesgo de rachas** (Miller y Sanjurjo): medir "frecuencia de ganar después de k ganadas" dentro de secuencias
+  finitas **subestima** la probabilidad verdadera; el sesgo crece con k y con secuencias cortas (un día de 10 trades es
+  el peor caso). Hay que comparar contra un nulo por permutación, no contra la tasa base ingenua.
+- **Pesos multiplicativos / online learning (Hedge):** forma canónica de "ponderar estrategias por cómo vienen":
+  garantiza no quedar muy lejos de la mejor en retrospectiva; seguir sólo a la líder (follow-the-leader) puede ser
+  pésimo. Ponderar suave > todo-o-nada.
+- **Meta-labeling** (López de Prado): un segundo modelo predice si la señal del primero va a acertar y dimensiona la
+  posición. Es la versión "con features" de H-REG-3 (el P&L reciente sería una feature más).
+- **Anti-martingala** (aumentar tras ganar): sólo tiene sentido si los resultados de los trades están
+  autocorrelacionados positivamente (tendencia, sistemas siempre-en-mercado). Es exactamente lo que H-REG-3 mide.
+- **Volatilidad agrupada ≠ P&L agrupado:** los retornos casi no se autocorrelacionan, su magnitud sí. Una canasta
+  rachosa suele reflejar régimen de volatilidad/tendencia del mercado, que puede medirse directamente.
+
 ## Fuentes
 - AQR / Gupta y Kelly, Factor Momentum Everywhere — https://alphaarchitect.com/is-factor-momentum-really-everywhere/
 - Institutional Investor, Factor Momentum Is Real — https://institutionalinvestor.com/article/b1cmczbjjl4qgs/Factor-Momentum-Is-Real-Researchers-Argue
