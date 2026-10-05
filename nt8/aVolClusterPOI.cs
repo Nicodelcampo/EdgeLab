@@ -90,7 +90,9 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Windows.Media;
+using System.Xml.Serialization;
 using NinjaTrader.Data;
+using NinjaTrader.Gui;
 using NinjaTrader.Gui.Chart;
 using NinjaTrader.Gui.Tools;
 using NinjaTrader.NinjaScript;
@@ -126,6 +128,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 		{
 			public long Id;
 			public int CreatedBar;
+			public int InvalidatedBar;
 			public long LowerTick;
 			public long UpperTick;
 			public double Score;
@@ -135,6 +138,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 			public bool Active;
 			public string RectTag;
 			public string LabelTag;
+			public string Label;
 			public int Direction;       // +1 LONG/support, -1 SHORT/resistance
 			public double AnomalyRatio;
 			public double ClusterShare;
@@ -152,7 +156,16 @@ namespace NinjaTrader.NinjaScript.Indicators
 			public bool FirstTouchEmitted;
 		}
 		private List<Zone> zones;
+		private List<Zone> renderZones;
 		private long nextZoneId;
+
+		private SharpDX.Direct2D1.Brush _dxSupport;
+		private SharpDX.Direct2D1.Brush _dxResistance;
+		private SharpDX.Direct2D1.Brush _dxAtPrice;
+		private SharpDX.Direct2D1.Brush _dxSupportBorder;
+		private SharpDX.Direct2D1.Brush _dxResistanceBorder;
+		private SharpDX.Direct2D1.Brush _dxAtPriceBorder;
+		private SharpDX.Direct2D1.Brush _dxText;
 
 		private class Creation { public int Bar; public long Center2; } // Center2 = LowerTick + UpperTick (entero siempre)
 		private List<Creation> creations;
@@ -240,6 +253,9 @@ namespace NinjaTrader.NinjaScript.Indicators
 				ShowOutcomeLabels = false;
 				ShowDashboard = true;
 				DashboardCorner = AVCLPDashboardCorner.TopRight;
+				SupportColor = Brushes.MediumSeaGreen;
+				ResistanceColor = Brushes.IndianRed;
+				AtPriceColor = Brushes.SteelBlue;
 			}
 			else if (State == State.Configure)
 			{
@@ -257,6 +273,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 				blockCells = new Dictionary<long, double>();
 				blockBarCount = 0;
 				zones = new List<Zone>();
+				renderZones = new List<Zone>();
+				if (Instrument != null) SharedVolClusterZones.Clear(Instrument.FullName);
 				nextZoneId = 1;
 				creations = new List<Creation>();
 				renderedTags = new Queue<string>();
@@ -292,6 +310,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 					try { barWriter.Flush(); barWriter.Close(); } catch { }
 					barWriter = null;
 				}
+				DisposeDxBrushes();
 			}
 		}
 
@@ -568,37 +587,40 @@ namespace NinjaTrader.NinjaScript.Indicators
 			EmitEvent(kind == "AT_PRICE" ? "AT_PRICE_CREATED" : "ZONE_CREATED",
 				z.Id, lowerTick, upperTick, score, threshold, samples, bucket, 0, kind);
 
-			double lowerPrice = lowerTick * TickSize - TickSize * 0.5;
-			double upperPrice = upperTick * TickSize + TickSize * 0.5;
-			Brush zoneBrush = kind == "AT_PRICE" ? Brushes.SteelBlue
-				: (direction > 0 ? Brushes.SeaGreen : Brushes.IndianRed);
-			z.RectTag = "AVCLP_R" + z.Id.ToString(CultureInfo.InvariantCulture);
-			Draw.Rectangle(this, z.RectTag, false, 0, lowerPrice, -VisualExtendBars, upperPrice,
-				zoneBrush, zoneBrush, Opacity);
-			TrackTag(z.RectTag);
-
-			if (ShowScoreLabel)
+			if (Instrument != null)
 			{
-				z.LabelTag = "AVCLP_L" + z.Id.ToString(CultureInfo.InvariantCulture);
-				string side = kind == "AT_PRICE" ? "OCC" : (direction > 0 ? "SOP" : "RES");
-				string label = side + " Q" + quality.ToString("0", CultureInfo.InvariantCulture)
-					+ " R" + anomalyRatio.ToString("0.00", CultureInfo.InvariantCulture);
-				Draw.Text(this, z.LabelTag, label, 0, upperPrice + TickSize, zoneBrush);
-				TrackTag(z.LabelTag);
+				SharedVolClusterZones.PublishZone(Instrument.FullName, new SharedClusterZone
+				{
+					Id = z.Id,
+					CreatedBar = CurrentBar,
+					InvalidatedBar = -1,
+					LowerTick = lowerTick,
+					UpperTick = upperTick,
+					Direction = direction,
+					Kind = kind,
+					Score = score,
+					Quality = quality,
+					AnomalyRatio = anomalyRatio,
+					Active = true
+				});
+			}
+
+			z.InvalidatedBar = -1;
+			string side = kind == "AT_PRICE" ? "OCC" : (direction > 0 ? "SOP" : "RES");
+			z.Label = side + " Q" + quality.ToString("0", CultureInfo.InvariantCulture)
+				+ " R" + anomalyRatio.ToString("0.00", CultureInfo.InvariantCulture);
+
+			if (renderZones != null)
+			{
+				renderZones.Add(z);
+				if (renderZones.Count > MaxRenderedZones)
+					renderZones.RemoveAt(0);
 			}
 
 			Creation c = new Creation();
 			c.Bar = CurrentBar;
 			c.Center2 = lowerTick + upperTick;
 			creations.Add(c);
-
-			if (BurstMinZones > 0 && burstCount >= BurstMinZones)
-			{
-				string btag = "AVCLP_B" + z.Id.ToString(CultureInfo.InvariantCulture);
-				Draw.Text(this, btag, "RAFAGA x" + burstCount.ToString(CultureInfo.InvariantCulture),
-					0, upperPrice + 3 * TickSize, Brushes.Orange);
-				TrackTag(btag);
-			}
 		}
 
 		private int CountNearbyCreations(long center2)
@@ -726,34 +748,18 @@ namespace NinjaTrader.NinjaScript.Indicators
 			else if (outcome == "STOP") outcomeStop++;
 			else if (outcome == "TIMEOUT") outcomeTimeout++;
 			else outcomeAmbiguous++;
-			if (ShowOutcomeLabels)
-			{
-				string tag = "AVCLP_O" + z.Id.ToString(CultureInfo.InvariantCulture);
-				Brush b = outcome == "TARGET" ? Brushes.LimeGreen : (outcome == "STOP" ? Brushes.Red : Brushes.Gold);
-				Draw.Text(this, tag, outcome, 0, z.UpperTick * TickSize + 2 * TickSize, b);
-				TrackTag(tag);
-			}
 		}
 
 		private void KillZone(Zone z, string type, string reason)
 		{
 			z.Active = false;
+			z.InvalidatedBar = CurrentBar;
 			EmitEvent(type, z.Id, z.LowerTick, z.UpperTick, z.Score, double.NaN, 0, z.Bucket, z.TouchCount, reason);
-			if (RemoveInvalidatedZones)
+			if (Instrument != null)
+				SharedVolClusterZones.InvalidateZone(Instrument.FullName, z.Id, CurrentBar);
+			if (RemoveInvalidatedZones && renderZones != null)
 			{
-				if (z.RectTag != null) RemoveDrawObject(z.RectTag);
-				if (z.LabelTag != null) RemoveDrawObject(z.LabelTag);
-			}
-			else if (z.RectTag != null)
-			{
-				// Redibuja la zona muerta acotada a su vida real, en gris apagado.
-				// Asi el historial de zonas queda auditable en el grafico.
-				double lowerPrice = z.LowerTick * TickSize - TickSize * 0.5;
-				double upperPrice = z.UpperTick * TickSize + TickSize * 0.5;
-				int startAgo = CurrentBar - z.CreatedBar;
-				if (startAgo < 0) startAgo = 0;
-				Draw.Rectangle(this, z.RectTag, false, startAgo, lowerPrice, 0, upperPrice,
-					Brushes.Gray, Brushes.Gray, Math.Max(10, Opacity / 2));
+				renderZones.Remove(z);
 			}
 		}
 
@@ -881,9 +887,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 
 			sb.Append("---------------------------------------------\n");
 			sb.Append("COMO LEERLO:\n");
-			sb.Append("VERDE = soporte esperado (precio cerro ARRIBA de la zona)\n");
-			sb.Append("ROJO  = resistencia esperada (precio cerro DEBAJO)\n");
-			sb.Append("GRIS  = zona ya invalidada (historial auditable)\n");
+			sb.Append("VERDE = soporte (activo o invalidado)\n");
+			sb.Append("ROJO  = resistencia (activa o invalidada)\n");
 			sb.Append("Q = calidad 0-100 (ranking heuristico, NO probabilidad)\n");
 			sb.Append("R = volumen del cluster / umbral historico del horario\n");
 			sb.Append(EnablePredictiveFilter
@@ -1137,6 +1142,164 @@ namespace NinjaTrader.NinjaScript.Indicators
 			}
 		}
 
+		#region SharpDX Direct2D Rendering
+
+		private void DisposeDxBrushes()
+		{
+			if (_dxSupport != null) { _dxSupport.Dispose(); _dxSupport = null; }
+			if (_dxResistance != null) { _dxResistance.Dispose(); _dxResistance = null; }
+			if (_dxAtPrice != null) { _dxAtPrice.Dispose(); _dxAtPrice = null; }
+			if (_dxSupportBorder != null) { _dxSupportBorder.Dispose(); _dxSupportBorder = null; }
+			if (_dxResistanceBorder != null) { _dxResistanceBorder.Dispose(); _dxResistanceBorder = null; }
+			if (_dxAtPriceBorder != null) { _dxAtPriceBorder.Dispose(); _dxAtPriceBorder = null; }
+			if (_dxText != null) { _dxText.Dispose(); _dxText = null; }
+		}
+
+		public override void OnRenderTargetChanged()
+		{
+			DisposeDxBrushes();
+			if (RenderTarget == null) return;
+			try
+			{
+				float op = (float)Opacity / 100f;
+				_dxSupport = (SupportColor ?? Brushes.MediumSeaGreen).ToDxBrush(RenderTarget);
+				_dxResistance = (ResistanceColor ?? Brushes.IndianRed).ToDxBrush(RenderTarget);
+				_dxAtPrice = (AtPriceColor ?? Brushes.SteelBlue).ToDxBrush(RenderTarget);
+
+				_dxSupport.Opacity = op;
+				_dxResistance.Opacity = op;
+				_dxAtPrice.Opacity = op;
+
+				_dxSupportBorder = (SupportColor ?? Brushes.MediumSeaGreen).ToDxBrush(RenderTarget);
+				_dxResistanceBorder = (ResistanceColor ?? Brushes.IndianRed).ToDxBrush(RenderTarget);
+				_dxAtPriceBorder = (AtPriceColor ?? Brushes.SteelBlue).ToDxBrush(RenderTarget);
+
+				_dxSupportBorder.Opacity = Math.Min(1.0f, op * 2.2f);
+				_dxResistanceBorder.Opacity = Math.Min(1.0f, op * 2.2f);
+				_dxAtPriceBorder.Opacity = Math.Min(1.0f, op * 2.2f);
+
+				_dxText = Brushes.WhiteSmoke.ToDxBrush(RenderTarget);
+			}
+			catch { DisposeDxBrushes(); }
+		}
+
+		protected override void OnRender(ChartControl chartControl, ChartScale chartScale)
+		{
+			base.OnRender(chartControl, chartScale);
+			if (Bars == null || ChartBars == null || RenderTarget == null || ChartPanel == null) return;
+			if (renderZones == null || renderZones.Count == 0) return;
+			if (_dxSupport == null) OnRenderTargetChanged();
+			if (_dxSupport == null) return;
+
+			int from = ChartBars.FromIndex;
+			int to = ChartBars.ToIndex;
+
+			SharpDX.Direct2D1.AntialiasMode prev = RenderTarget.AntialiasMode;
+			RenderTarget.AntialiasMode = SharpDX.Direct2D1.AntialiasMode.Aliased;
+
+			float half = (float)chartControl.Properties.BarDistance / 2f;
+			float rightPanelEdge = (float)(ChartPanel.X + ChartPanel.W);
+
+			Gui.Tools.SimpleFont sFont = chartControl.Properties.LabelFont ?? new Gui.Tools.SimpleFont("Arial", 9);
+			SharpDX.DirectWrite.TextFormat textFormat = null;
+			if (ShowScoreLabel || ShowOutcomeLabels)
+			{
+				try { textFormat = sFont.ToDirectWriteTextFormat(); }
+				catch { textFormat = null; }
+			}
+
+			try
+			{
+				for (int i = 0; i < renderZones.Count; i++)
+				{
+					Zone z = renderZones[i];
+					if (RemoveInvalidatedZones && !z.Active) continue;
+
+					int endBar = z.Active ? (z.CreatedBar + VisualExtendBars) : z.InvalidatedBar;
+					if (endBar < 0) endBar = CurrentBar;
+					if (endBar < from || z.CreatedBar > to) continue;
+
+					int a = Math.Max(z.CreatedBar, from);
+					int b = Math.Min(endBar, to);
+
+					float x1 = chartControl.GetXByBarIndex(ChartBars, a) - half;
+					float x2 = chartControl.GetXByBarIndex(ChartBars, b) + half;
+
+					if (z.Active && endBar >= to)
+					{
+						x2 = Math.Max(x2, rightPanelEdge);
+					}
+
+					float y1 = chartScale.GetYByValue((z.UpperTick + 0.5) * TickSize);
+					float y2 = chartScale.GetYByValue((z.LowerTick - 0.5) * TickSize);
+
+					if (float.IsNaN(x1) || float.IsNaN(x2) || float.IsNaN(y1) || float.IsNaN(y2)) continue;
+
+					float xMin = Math.Min(x1, x2);
+					float yMin = Math.Min(y1, y2);
+					float w = Math.Max(1f, Math.Abs(x2 - x1));
+					float h = Math.Max(1f, Math.Abs(y2 - y1));
+
+					SharpDX.Direct2D1.Brush fillBrush;
+					SharpDX.Direct2D1.Brush borderBrush;
+
+					// Soportes SIEMPRE verdes, Resistencias SIEMPRE rojas (tanto activas como invalidadas)
+					if (z.Direction > 0)
+					{
+						fillBrush = _dxSupport;
+						borderBrush = _dxSupportBorder;
+					}
+					else if (z.Direction < 0)
+					{
+						fillBrush = _dxResistance;
+						borderBrush = _dxResistanceBorder;
+					}
+					else
+					{
+						fillBrush = _dxAtPrice;
+						borderBrush = _dxAtPriceBorder;
+					}
+
+					SharpDX.RectangleF rect = new SharpDX.RectangleF(xMin, yMin, w, h);
+					RenderTarget.FillRectangle(rect, fillBrush);
+
+					if (borderBrush != null)
+					{
+						RenderTarget.DrawRectangle(rect, borderBrush, z.Active ? 1.5f : 1.0f);
+					}
+
+					// Etiquetas
+					if (textFormat != null && _dxText != null)
+					{
+						string labelText = null;
+						if (ShowScoreLabel && !string.IsNullOrEmpty(z.Label))
+							labelText = z.Label;
+						if (ShowOutcomeLabels && !string.IsNullOrEmpty(z.Outcome))
+							labelText = (labelText != null ? labelText + " | " : "") + z.Outcome;
+						if (BurstMinZones > 0 && z.BurstCount >= BurstMinZones)
+							labelText = (labelText != null ? labelText + " " : "") + "[R x" + z.BurstCount + "]";
+
+						if (!string.IsNullOrEmpty(labelText) && xMin >= (float)ChartPanel.X - 300f && xMin <= rightPanelEdge)
+						{
+							float textX = Math.Max(xMin + 4f, (float)ChartPanel.X + 4f);
+							using (SharpDX.DirectWrite.TextLayout layout = new SharpDX.DirectWrite.TextLayout(
+								NinjaTrader.Core.Globals.DirectWriteFactory, labelText, textFormat, 350f, textFormat.FontSize + 4f))
+							{
+								RenderTarget.DrawTextLayout(new SharpDX.Vector2(textX, yMin + 1f), layout, _dxText);
+							}
+						}
+					}
+				}
+			}
+			finally
+			{
+				RenderTarget.AntialiasMode = prev;
+				if (textFormat != null) textFormat.Dispose();
+			}
+		}
+
+		#endregion
+
 		#region Properties
 
 		// -------- Grupo 1: Deteccion (bloque) --------
@@ -1342,6 +1505,96 @@ namespace NinjaTrader.NinjaScript.Indicators
 		[Display(Name = "Dashboard Corner", Order = 48, GroupName = "6. Export y visual")]
 		public AVCLPDashboardCorner DashboardCorner { get; set; }
 
+		[XmlIgnore]
+		[Display(Name = "Support Color", Order = 49, GroupName = "6. Export y visual",
+			Description = "Color para zonas de soporte (siempre verde).")]
+		public Brush SupportColor { get; set; }
+		[Browsable(false)]
+		public string SupportColorSerialize
+		{
+			get { return Serialize.BrushToString(SupportColor); }
+			set { SupportColor = Serialize.StringToBrush(value); }
+		}
+
+		[XmlIgnore]
+		[Display(Name = "Resistance Color", Order = 50, GroupName = "6. Export y visual",
+			Description = "Color para zonas de resistencia (siempre rojo).")]
+		public Brush ResistanceColor { get; set; }
+		[Browsable(false)]
+		public string ResistanceColorSerialize
+		{
+			get { return Serialize.BrushToString(ResistanceColor); }
+			set { ResistanceColor = Serialize.StringToBrush(value); }
+		}
+
+		[XmlIgnore]
+		[Display(Name = "At Price Color", Order = 51, GroupName = "6. Export y visual",
+			Description = "Color para zonas dentro del precio.")]
+		public Brush AtPriceColor { get; set; }
+		[Browsable(false)]
+		public string AtPriceColorSerialize
+		{
+			get { return Serialize.BrushToString(AtPriceColor); }
+			set { AtPriceColor = Serialize.StringToBrush(value); }
+		}
+
 		#endregion
 	}
 }
+
+#region NinjaScript generated code. Neither change nor remove.
+
+namespace NinjaTrader.NinjaScript.Indicators
+{
+	public partial class Indicator : NinjaTrader.Gui.NinjaScript.IndicatorRenderBase
+	{
+		private aVolClusterPOI[] cacheaVolClusterPOI;
+		public aVolClusterPOI aVolClusterPOI(int windowBars, double medianMultiplier, int maxGapTicks, int minClusterTicks, bool useSessionBuckets, int timeBucketMinutes, int lookbackSessions, double detectionPercentile, int minSamplesPerBucket, bool enablePredictiveFilter, double minQualityScore, int maxDistanceFromZoneTicks, int rejectionFullScoreTicks, int reactionHorizonBars, int reactionTargetTicks, int reactionStopTicks, AVCLPInvalidationMode invalidationMode, int maxAgeBars, int maxTouches, int burstMinZones, int burstWindowBars, int burstRangeTicks, string eventLogPath, bool diagBlockExportEnabled, string diagBlockExportPath, bool useTopKHotCells, double hotFraction, string barProfileLogPath, int opacity, int visualExtendBars, int maxRenderedZones, bool removeInvalidatedZones, bool showScoreLabel, bool showOutcomeLabels, bool showDashboard, AVCLPDashboardCorner dashboardCorner)
+		{
+			return aVolClusterPOI(Input, windowBars, medianMultiplier, maxGapTicks, minClusterTicks, useSessionBuckets, timeBucketMinutes, lookbackSessions, detectionPercentile, minSamplesPerBucket, enablePredictiveFilter, minQualityScore, maxDistanceFromZoneTicks, rejectionFullScoreTicks, reactionHorizonBars, reactionTargetTicks, reactionStopTicks, invalidationMode, maxAgeBars, maxTouches, burstMinZones, burstWindowBars, burstRangeTicks, eventLogPath, diagBlockExportEnabled, diagBlockExportPath, useTopKHotCells, hotFraction, barProfileLogPath, opacity, visualExtendBars, maxRenderedZones, removeInvalidatedZones, showScoreLabel, showOutcomeLabels, showDashboard, dashboardCorner);
+		}
+
+		public aVolClusterPOI aVolClusterPOI(ISeries<double> input, int windowBars, double medianMultiplier, int maxGapTicks, int minClusterTicks, bool useSessionBuckets, int timeBucketMinutes, int lookbackSessions, double detectionPercentile, int minSamplesPerBucket, bool enablePredictiveFilter, double minQualityScore, int maxDistanceFromZoneTicks, int rejectionFullScoreTicks, int reactionHorizonBars, int reactionTargetTicks, int reactionStopTicks, AVCLPInvalidationMode invalidationMode, int maxAgeBars, int maxTouches, int burstMinZones, int burstWindowBars, int burstRangeTicks, string eventLogPath, bool diagBlockExportEnabled, string diagBlockExportPath, bool useTopKHotCells, double hotFraction, string barProfileLogPath, int opacity, int visualExtendBars, int maxRenderedZones, bool removeInvalidatedZones, bool showScoreLabel, bool showOutcomeLabels, bool showDashboard, AVCLPDashboardCorner dashboardCorner)
+		{
+			if (cacheaVolClusterPOI != null)
+				for (int idx = 0; idx < cacheaVolClusterPOI.Length; idx++)
+					if (cacheaVolClusterPOI[idx] != null && cacheaVolClusterPOI[idx].WindowBars == windowBars && cacheaVolClusterPOI[idx].MedianMultiplier == medianMultiplier && cacheaVolClusterPOI[idx].MaxGapTicks == maxGapTicks && cacheaVolClusterPOI[idx].MinClusterTicks == minClusterTicks && cacheaVolClusterPOI[idx].UseSessionBuckets == useSessionBuckets && cacheaVolClusterPOI[idx].TimeBucketMinutes == timeBucketMinutes && cacheaVolClusterPOI[idx].LookbackSessions == lookbackSessions && cacheaVolClusterPOI[idx].DetectionPercentile == detectionPercentile && cacheaVolClusterPOI[idx].MinSamplesPerBucket == minSamplesPerBucket && cacheaVolClusterPOI[idx].EnablePredictiveFilter == enablePredictiveFilter && cacheaVolClusterPOI[idx].MinQualityScore == minQualityScore && cacheaVolClusterPOI[idx].MaxDistanceFromZoneTicks == maxDistanceFromZoneTicks && cacheaVolClusterPOI[idx].RejectionFullScoreTicks == rejectionFullScoreTicks && cacheaVolClusterPOI[idx].ReactionHorizonBars == reactionHorizonBars && cacheaVolClusterPOI[idx].ReactionTargetTicks == reactionTargetTicks && cacheaVolClusterPOI[idx].ReactionStopTicks == reactionStopTicks && cacheaVolClusterPOI[idx].InvalidationMode == invalidationMode && cacheaVolClusterPOI[idx].MaxAgeBars == maxAgeBars && cacheaVolClusterPOI[idx].MaxTouches == maxTouches && cacheaVolClusterPOI[idx].BurstMinZones == burstMinZones && cacheaVolClusterPOI[idx].BurstWindowBars == burstWindowBars && cacheaVolClusterPOI[idx].BurstRangeTicks == burstRangeTicks && cacheaVolClusterPOI[idx].EventLogPath == eventLogPath && cacheaVolClusterPOI[idx].DiagBlockExportEnabled == diagBlockExportEnabled && cacheaVolClusterPOI[idx].DiagBlockExportPath == diagBlockExportPath && cacheaVolClusterPOI[idx].UseTopKHotCells == useTopKHotCells && cacheaVolClusterPOI[idx].HotFraction == hotFraction && cacheaVolClusterPOI[idx].BarProfileLogPath == barProfileLogPath && cacheaVolClusterPOI[idx].Opacity == opacity && cacheaVolClusterPOI[idx].VisualExtendBars == visualExtendBars && cacheaVolClusterPOI[idx].MaxRenderedZones == maxRenderedZones && cacheaVolClusterPOI[idx].RemoveInvalidatedZones == removeInvalidatedZones && cacheaVolClusterPOI[idx].ShowScoreLabel == showScoreLabel && cacheaVolClusterPOI[idx].ShowOutcomeLabels == showOutcomeLabels && cacheaVolClusterPOI[idx].ShowDashboard == showDashboard && cacheaVolClusterPOI[idx].DashboardCorner == dashboardCorner && cacheaVolClusterPOI[idx].EqualsInput(input))
+						return cacheaVolClusterPOI[idx];
+			return CacheIndicator<aVolClusterPOI>(new aVolClusterPOI(){ WindowBars = windowBars, MedianMultiplier = medianMultiplier, MaxGapTicks = maxGapTicks, MinClusterTicks = minClusterTicks, UseSessionBuckets = useSessionBuckets, TimeBucketMinutes = timeBucketMinutes, LookbackSessions = lookbackSessions, DetectionPercentile = detectionPercentile, MinSamplesPerBucket = minSamplesPerBucket, EnablePredictiveFilter = enablePredictiveFilter, MinQualityScore = minQualityScore, MaxDistanceFromZoneTicks = maxDistanceFromZoneTicks, RejectionFullScoreTicks = rejectionFullScoreTicks, ReactionHorizonBars = reactionHorizonBars, ReactionTargetTicks = reactionTargetTicks, ReactionStopTicks = reactionStopTicks, InvalidationMode = invalidationMode, MaxAgeBars = maxAgeBars, MaxTouches = maxTouches, BurstMinZones = burstMinZones, BurstWindowBars = burstWindowBars, BurstRangeTicks = burstRangeTicks, EventLogPath = eventLogPath, DiagBlockExportEnabled = diagBlockExportEnabled, DiagBlockExportPath = diagBlockExportPath, UseTopKHotCells = useTopKHotCells, HotFraction = hotFraction, BarProfileLogPath = barProfileLogPath, Opacity = opacity, VisualExtendBars = visualExtendBars, MaxRenderedZones = maxRenderedZones, RemoveInvalidatedZones = removeInvalidatedZones, ShowScoreLabel = showScoreLabel, ShowOutcomeLabels = showOutcomeLabels, ShowDashboard = showDashboard, DashboardCorner = dashboardCorner }, input, ref cacheaVolClusterPOI);
+		}
+	}
+}
+
+namespace NinjaTrader.NinjaScript.MarketAnalyzerColumns
+{
+	public partial class MarketAnalyzerColumn : MarketAnalyzerColumnBase
+	{
+		public Indicators.aVolClusterPOI aVolClusterPOI(int windowBars, double medianMultiplier, int maxGapTicks, int minClusterTicks, bool useSessionBuckets, int timeBucketMinutes, int lookbackSessions, double detectionPercentile, int minSamplesPerBucket, bool enablePredictiveFilter, double minQualityScore, int maxDistanceFromZoneTicks, int rejectionFullScoreTicks, int reactionHorizonBars, int reactionTargetTicks, int reactionStopTicks, AVCLPInvalidationMode invalidationMode, int maxAgeBars, int maxTouches, int burstMinZones, int burstWindowBars, int burstRangeTicks, string eventLogPath, bool diagBlockExportEnabled, string diagBlockExportPath, bool useTopKHotCells, double hotFraction, string barProfileLogPath, int opacity, int visualExtendBars, int maxRenderedZones, bool removeInvalidatedZones, bool showScoreLabel, bool showOutcomeLabels, bool showDashboard, AVCLPDashboardCorner dashboardCorner)
+		{
+			return indicator.aVolClusterPOI(Input, windowBars, medianMultiplier, maxGapTicks, minClusterTicks, useSessionBuckets, timeBucketMinutes, lookbackSessions, detectionPercentile, minSamplesPerBucket, enablePredictiveFilter, minQualityScore, maxDistanceFromZoneTicks, rejectionFullScoreTicks, reactionHorizonBars, reactionTargetTicks, reactionStopTicks, invalidationMode, maxAgeBars, maxTouches, burstMinZones, burstWindowBars, burstRangeTicks, eventLogPath, diagBlockExportEnabled, diagBlockExportPath, useTopKHotCells, hotFraction, barProfileLogPath, opacity, visualExtendBars, maxRenderedZones, removeInvalidatedZones, showScoreLabel, showOutcomeLabels, showDashboard, dashboardCorner);
+		}
+
+		public Indicators.aVolClusterPOI aVolClusterPOI(ISeries<double> input , int windowBars, double medianMultiplier, int maxGapTicks, int minClusterTicks, bool useSessionBuckets, int timeBucketMinutes, int lookbackSessions, double detectionPercentile, int minSamplesPerBucket, bool enablePredictiveFilter, double minQualityScore, int maxDistanceFromZoneTicks, int rejectionFullScoreTicks, int reactionHorizonBars, int reactionTargetTicks, int reactionStopTicks, AVCLPInvalidationMode invalidationMode, int maxAgeBars, int maxTouches, int burstMinZones, int burstWindowBars, int burstRangeTicks, string eventLogPath, bool diagBlockExportEnabled, string diagBlockExportPath, bool useTopKHotCells, double hotFraction, string barProfileLogPath, int opacity, int visualExtendBars, int maxRenderedZones, bool removeInvalidatedZones, bool showScoreLabel, bool showOutcomeLabels, bool showDashboard, AVCLPDashboardCorner dashboardCorner)
+		{
+			return indicator.aVolClusterPOI(input, windowBars, medianMultiplier, maxGapTicks, minClusterTicks, useSessionBuckets, timeBucketMinutes, lookbackSessions, detectionPercentile, minSamplesPerBucket, enablePredictiveFilter, minQualityScore, maxDistanceFromZoneTicks, rejectionFullScoreTicks, reactionHorizonBars, reactionTargetTicks, reactionStopTicks, invalidationMode, maxAgeBars, maxTouches, burstMinZones, burstWindowBars, burstRangeTicks, eventLogPath, diagBlockExportEnabled, diagBlockExportPath, useTopKHotCells, hotFraction, barProfileLogPath, opacity, visualExtendBars, maxRenderedZones, removeInvalidatedZones, showScoreLabel, showOutcomeLabels, showDashboard, dashboardCorner);
+		}
+	}
+}
+
+namespace NinjaTrader.NinjaScript.Strategies
+{
+	public partial class Strategy : NinjaTrader.Gui.NinjaScript.StrategyRenderBase
+	{
+		public Indicators.aVolClusterPOI aVolClusterPOI(int windowBars, double medianMultiplier, int maxGapTicks, int minClusterTicks, bool useSessionBuckets, int timeBucketMinutes, int lookbackSessions, double detectionPercentile, int minSamplesPerBucket, bool enablePredictiveFilter, double minQualityScore, int maxDistanceFromZoneTicks, int rejectionFullScoreTicks, int reactionHorizonBars, int reactionTargetTicks, int reactionStopTicks, AVCLPInvalidationMode invalidationMode, int maxAgeBars, int maxTouches, int burstMinZones, int burstWindowBars, int burstRangeTicks, string eventLogPath, bool diagBlockExportEnabled, string diagBlockExportPath, bool useTopKHotCells, double hotFraction, string barProfileLogPath, int opacity, int visualExtendBars, int maxRenderedZones, bool removeInvalidatedZones, bool showScoreLabel, bool showOutcomeLabels, bool showDashboard, AVCLPDashboardCorner dashboardCorner)
+		{
+			return indicator.aVolClusterPOI(Input, windowBars, medianMultiplier, maxGapTicks, minClusterTicks, useSessionBuckets, timeBucketMinutes, lookbackSessions, detectionPercentile, minSamplesPerBucket, enablePredictiveFilter, minQualityScore, maxDistanceFromZoneTicks, rejectionFullScoreTicks, reactionHorizonBars, reactionTargetTicks, reactionStopTicks, invalidationMode, maxAgeBars, maxTouches, burstMinZones, burstWindowBars, burstRangeTicks, eventLogPath, diagBlockExportEnabled, diagBlockExportPath, useTopKHotCells, hotFraction, barProfileLogPath, opacity, visualExtendBars, maxRenderedZones, removeInvalidatedZones, showScoreLabel, showOutcomeLabels, showDashboard, dashboardCorner);
+		}
+
+		public Indicators.aVolClusterPOI aVolClusterPOI(ISeries<double> input , int windowBars, double medianMultiplier, int maxGapTicks, int minClusterTicks, bool useSessionBuckets, int timeBucketMinutes, int lookbackSessions, double detectionPercentile, int minSamplesPerBucket, bool enablePredictiveFilter, double minQualityScore, int maxDistanceFromZoneTicks, int rejectionFullScoreTicks, int reactionHorizonBars, int reactionTargetTicks, int reactionStopTicks, AVCLPInvalidationMode invalidationMode, int maxAgeBars, int maxTouches, int burstMinZones, int burstWindowBars, int burstRangeTicks, string eventLogPath, bool diagBlockExportEnabled, string diagBlockExportPath, bool useTopKHotCells, double hotFraction, string barProfileLogPath, int opacity, int visualExtendBars, int maxRenderedZones, bool removeInvalidatedZones, bool showScoreLabel, bool showOutcomeLabels, bool showDashboard, AVCLPDashboardCorner dashboardCorner)
+		{
+			return indicator.aVolClusterPOI(input, windowBars, medianMultiplier, maxGapTicks, minClusterTicks, useSessionBuckets, timeBucketMinutes, lookbackSessions, detectionPercentile, minSamplesPerBucket, enablePredictiveFilter, minQualityScore, maxDistanceFromZoneTicks, rejectionFullScoreTicks, reactionHorizonBars, reactionTargetTicks, reactionStopTicks, invalidationMode, maxAgeBars, maxTouches, burstMinZones, burstWindowBars, burstRangeTicks, eventLogPath, diagBlockExportEnabled, diagBlockExportPath, useTopKHotCells, hotFraction, barProfileLogPath, opacity, visualExtendBars, maxRenderedZones, removeInvalidatedZones, showScoreLabel, showOutcomeLabels, showDashboard, dashboardCorner);
+		}
+	}
+}
+
+#endregion

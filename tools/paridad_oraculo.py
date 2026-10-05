@@ -116,10 +116,16 @@ def main(argv=None):
                     help="Ruta al BARPROFILE CSV de NT8 para resolver fronteras exactas")
     ap.add_argument("--diag-blocks", default=None,
                     help="Ruta al DIAG_BLOCKS CSV de NT8 para alimentar footprints exactos por bloque")
+    ap.add_argument("--param", action="append", default=[],
+                    help="parametro del kernel k=v (repetible), igual al del chart; p. ej. max_age_bars=500")
     ap.add_argument("--out", required=True)
     a = ap.parse_args(argv)
 
     t0 = time.time()
+    kparams = {}
+    for kv in a.param:                                     # valores declarados = los del chart que produjo el oraculo
+        k, v = kv.split("=", 1)
+        kparams[k] = int(v) if v.lstrip("-").isdigit() else (float(v) if v.replace(".", "", 1).lstrip("-").isdigit() else v)
     mod_name, cs_rel, usa_fp = KERNELS[a.indicador]
     cs_path = REPO / cs_rel
 
@@ -140,6 +146,7 @@ def main(argv=None):
         kernel_blob=blob_git(REPO / (mod_name.replace(".", "/") + ".py")),
         chart_tz=a.chart_tz,
         bar_spec=a.barras,
+        kernel_params=kparams,
         barprofile=str(a.barprofile) if a.barprofile else None,
         barprofile_sha256=sha256_archivo(a.barprofile) if a.barprofile else None,
         diag_blocks=str(a.diag_blocks) if getattr(a, "diag_blocks", None) else None,
@@ -193,9 +200,9 @@ def main(argv=None):
     if getattr(a, "diag_blocks", None) and hasattr(mod, "run_diag_blocks"):
         res = mod.run_diag_blocks(a.diag_blocks, bars, chart_tz=a.chart_tz)
     elif usa_fp:
-        res = mod.run(tk, bars, fps)
+        res = mod.run(tk, bars, fps, params=kparams) if kparams else mod.run(tk, bars, fps)
     else:
-        res = mod.run(tk, bars)
+        res = mod.run(tk, bars, params=kparams) if kparams else mod.run(tk, bars)
     # `run()["zones"]` YA viene con la forma que `match_zones` consume
     # (id/top/bottom/created_ms/ended_ms/state/touches). No se remapea: el remapeo
     # de `build_viewer.py` existe porque ese lee del STORE, que tiene otro esquema
