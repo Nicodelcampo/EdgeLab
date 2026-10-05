@@ -104,3 +104,22 @@ def load_m1(inst: str, start: str, end: str, include_rejected: bool = False) -> 
     m1["buy_volume"] = m1.set_index(["session_date", "minute"]).index.map(buy).fillna(0).to_numpy()
     m1.attrs.update(instrument=inst, tick_size=t.attrs["tick_size"], units="price_ticks")
     return m1
+
+
+def load_spot(inst: str, start: str, end: str, kind: str = "m1") -> pd.DataFrame:
+    """Spot/CFD Dukascopy hermano del futuro `inst` (kind='m1' o 'ticks'). SOLO para potencia en pruebas de información;
+    ver RESOLVER['spot_complement']. Aplica las exclusiones del proveedor y bloquea el holdout. Fechas en UTC."""
+    _check(start, end)
+    ds = RESOLVER["spot_datasets"][inst]
+    files = [p for p in (r / ds for r in ROOTS) if p.exists()]
+    if not files:
+        raise FileNotFoundError(f"agregá el dataset '{ds}' como input")
+    f = next(files[0].glob(f"*_{'m1' if kind == 'm1' else 'ticks'}.parquet"))
+    lo = pd.Timestamp(start, tz="UTC").value; hi = pd.Timestamp(end, tz="UTC").value + 86_400 * 10**9
+    t = pq.read_table(f, filters=[("time_utc_ns", ">=", lo), ("time_utc_ns", "<", hi)]).to_pandas()
+    for x in RESOLVER["spot_exclusions"]:
+        if ds in x["datasets"]:
+            a, b = pd.Timestamp(x["from_utc"]).value, pd.Timestamp(x["to_utc"]).value
+            t = t[(t.time_utc_ns < a) | (t.time_utc_ns >= b)]
+    t.attrs.update(instrument=inst, spot_dataset=ds, warning=RESOLVER["spot_complement"])
+    return t.reset_index(drop=True)

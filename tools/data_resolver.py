@@ -14,6 +14,17 @@ SPOT_NOTE = ("Spot/CFD Dukascopy (dataset edgelab-dukascopy-*): complemento de P
              "volumen = liquidez cotizada, no trades; spread y costos distintos (oro: ~5,8 ticks GC vs 3 en COMEX); "
              "horario distinto. NO sirve para costos ni ejecución del futuro: el neto se confirma siempre en futuros.")
 
+SPOT_DATASETS = {  # spot/CFD hermano de cada futuro (no reemplaza al futuro)
+    "GC": "edgelab-dukascopy-xauusd-ticks-m1", "MGC": "edgelab-dukascopy-xauusd-ticks-m1",
+    "ES": "edgelab-dukascopy-es-usa500", "MES": "edgelab-dukascopy-es-usa500",
+    "NQ": "edgelab-dukascopy-nq-usatech", "MNQ": "edgelab-dukascopy-nq-usatech",
+    "YM": "edgelab-dukascopy-ym-usa30", "MYM": "edgelab-dukascopy-ym-usa30",
+    "6E": "edgelab-dukascopy-6e-eurusd", "6B": "edgelab-dukascopy-6b-gbpusd", "6J": "edgelab-dukascopy-6j-usdjpy"}
+# Intervalos con libro cruzado (bid > ask, volumen 0) en el feed de Dukascopy: falla del proveedor, no se corrige; excluir.
+SPOT_EXCLUSIONS = [
+    {"datasets": ["edgelab-dukascopy-6e-eurusd", "edgelab-dukascopy-6j-usdjpy"], "from_utc": "2024-10-09T23:00:00Z",
+     "to_utc": "2024-10-10T01:00:00Z", "reason": "libro cruzado (bid>ask) EUR/USD 1.620 y USD/JPY 2.576 ticks, volumen 0"}]
+
 
 def main():
     sess = json.loads((D / "sessions.json").read_text(encoding="utf-8"))
@@ -21,7 +32,8 @@ def main():
     out = {"schema": "EDGELAB_RESOLVER_V1", "generated_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
            "holdout_first_trade_date": HOLDOUT_FIRST, "rules": cur.get("rules"),
            "how_to_use": "import edgelab_data as ed; ed.load_ticks('MNQ','2026-01-01','2026-09-30')  # sólo sesiones aprobadas",
-           "spot_complement": SPOT_NOTE, "instruments": {}}
+           "spot_complement": SPOT_NOTE, "spot_datasets": SPOT_DATASETS, "spot_exclusions": SPOT_EXCLUSIONS,
+           "instruments": {}}
     for sym, rows in sess.items():
         conflict = set(cur["instruments"][sym]["caveat_sessions_source_conflict"]["contracts"])
         lst = []

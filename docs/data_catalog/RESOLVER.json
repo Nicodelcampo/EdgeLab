@@ -1,10 +1,34 @@
 {
 "schema": "EDGELAB_RESOLVER_V1",
-"generated_utc": "2026-10-05T04:45:59+00:00",
+"generated_utc": "2026-10-05T05:25:21+00:00",
 "holdout_first_trade_date": "2026-10-01",
 "rules": "Selección de datos APROBADOS para análisis: aplica reglas fijas, por sesión, al catálogo y escribe docs/data_catalog/{curated.json,CURATED.md,REEXPORT.md}.\nReglas (iguales para todos los instrumentos; se cambian solo en este archivo y se documentan):\n  1. Serie líder y elegibilidad del catálogo (mayor volumen de la sesión anterior; volumen >= 50 % de la mediana del contrato).\n  2. Excluida si el volumen es < 25 % de la mediana de volumen del líder de TODO el instrumento (liquidez baja respecto del instrumento).\n  3. Excluida si tiene menos de la mitad de los minutos típicos (sesión truncada o cierre temprano).\n  4. Con salvedad (no excluida) si el contrato tiene fuentes en conflicto material (> 1 % de diferencia de trades en más del 10 % de los días comunes).\n  5. Excluida toda sesión desde 2026-10-01 (holdout formal).\nVeredicto por instrumento: APROBADO (>= 85 % de las sesiones elegibles aprobadas y sin salvedades), CON_SALVEDADES (>= 60 %), NO_RECOMENDADO (< 60 %).",
 "how_to_use": "import edgelab_data as ed; ed.load_ticks('MNQ','2026-01-01','2026-09-30')  # sólo sesiones aprobadas",
 "spot_complement": "Spot/CFD Dukascopy (dataset edgelab-dukascopy-*): complemento de POTENCIA para pruebas de información (dirección, forma) cuando los futuros no alcanzan. Limitaciones: bid/ask de spot/CFD, no libro CME; volumen = liquidez cotizada, no trades; spread y costos distintos (oro: ~5,8 ticks GC vs 3 en COMEX); horario distinto. NO sirve para costos ni ejecución del futuro: el neto se confirma siempre en futuros.",
+"spot_datasets": {
+"GC": "edgelab-dukascopy-xauusd-ticks-m1",
+"MGC": "edgelab-dukascopy-xauusd-ticks-m1",
+"ES": "edgelab-dukascopy-es-usa500",
+"MES": "edgelab-dukascopy-es-usa500",
+"NQ": "edgelab-dukascopy-nq-usatech",
+"MNQ": "edgelab-dukascopy-nq-usatech",
+"YM": "edgelab-dukascopy-ym-usa30",
+"MYM": "edgelab-dukascopy-ym-usa30",
+"6E": "edgelab-dukascopy-6e-eurusd",
+"6B": "edgelab-dukascopy-6b-gbpusd",
+"6J": "edgelab-dukascopy-6j-usdjpy"
+},
+"spot_exclusions": [
+{
+"datasets": [
+"edgelab-dukascopy-6e-eurusd",
+"edgelab-dukascopy-6j-usdjpy"
+],
+"from_utc": "2024-10-09T23:00:00Z",
+"to_utc": "2024-10-10T01:00:00Z",
+"reason": "libro cruzado (bid>ask) EUR/USD 1.620 y USD/JPY 2.576 ticks, volumen 0"
+}
+],
 "instruments": {
 "6B": {
 "verdict": "APROBADO",
