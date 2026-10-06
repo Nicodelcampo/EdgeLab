@@ -211,14 +211,38 @@ def analyze(df, kind, H, ch, rng, formal=True):
     return res
 
 
+_SESS = None
+
+
+def _process_one(c):
+    r = process(c, _SESS)
+    gc.collect()
+    return r
+
+
 def main():
     t0 = time.time()
     sess = ed.sessions("MNQ", DESDE, HASTA)
     print("sesiones aprobadas MNQ", len(sess), "contratos", sorted(sess.contract.unique()), flush=True)
-    parts = []
-    for c in sorted(sess.contract.unique(), key=lambda x: (x[-2:], x[-5:-3])):
-        parts.append(process(c, sess))
-        gc.collect()
+    cs = sorted(sess.contract.unique(), key=lambda x: (x[-2:], x[-5:-3]))
+    parts = None
+    nw = int(os.environ.get("AVCL_WORKERS", "2"))
+    if nw > 1:  # contratos en paralelo (fork); el orden de resultados se conserva; si falla (p.ej. memoria) -> secuencial
+        try:
+            import multiprocessing as mp
+            from concurrent.futures import ProcessPoolExecutor
+            global _SESS
+            _SESS = sess
+            with ProcessPoolExecutor(nw, mp_context=mp.get_context("fork")) as ex:
+                parts = list(ex.map(_process_one, cs))
+        except Exception as e:
+            print("paralelo falló (%r); sigo secuencial" % (e,), flush=True)
+            parts = None
+    if parts is None:
+        parts = []
+        for c in cs:
+            parts.append(process(c, sess))
+            gc.collect()
     df = pd.concat(parts, ignore_index=True)
     df.to_parquet(OUT / "avcl_vol1_eventos_controles.parquet")
     rng = np.random.default_rng(SEED)
