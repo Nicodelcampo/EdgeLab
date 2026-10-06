@@ -822,3 +822,15 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
   Acta `AVCL_EXIT_RESULTADOS_20261006.md`.
 - NO MEDIDO (candidata): **salida tras consolidar** (≥ 5 cierres dentro), c_10 +0,6 ticks, cola de continuación H50
   +2,3 pp; descriptivo, sin potencia. Requiere pre-registro y más datos.
+
+## AVCL-PRE — 06/10/2026 — CORRIGE LAS ENTRADAS AVCL-VOL-1/2/3, DIST, CIERRE y EXIT (expansión)
+- MEDIDO: con la ventana previa **fuera** del bloque creador, la "expansión" de aVolClusterPOI desaparece (AT +0,015,
+  OFF −0,010; antes 0,081 / 0,055). **Era un artefacto**: el bloque creador está comprimido por construcción y era el
+  denominador. La zona AVCL es un **marcador de compresión local** tras el cual el rango se normaliza. Las magnitudes de
+  expansión, la dosis, el efecto del ancho y las colas de DIST/EXIT de las entradas anteriores quedan **reinterpretadas
+  como rebote del rango**, no como expansión.
+- VolTicksDef **sobrevive** (150t +0,049, 50t +0,019).
+- Siguen en pie, porque no dependen del denominador: los nulos de dirección y la asimetría de regreso Q5.
+  Acta `AVCL_PRE_RESULTADOS_20261006.md`.
+- NO MEDIDO: candidatas restantes de AVCL (salida tras consolidar, regreso Q5) con métricas sin el bloque; VTD en
+  profundidad (dirección por vela, combinación, otros instrumentos).
