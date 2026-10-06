@@ -1,6 +1,6 @@
 # EdgeReplica — prueba fuera de muestra posterior a la publicación (protocolo) — 2026-10-06
 
-**Estado: BORRADOR, pendiente de OK de Nico. Nada se descargó ni se abrió.**
+**Estado: SUPERADO 2026-10-06.** Nico decidió tratar esto como exploración, sin custodia de holdout: se prueban EdgeReplica en MNQ y la celda MGC 04:15 con datos del 11-sep a hoy. Consecuencia: las sesiones desde el 1-oct quedan vistas para estas dos familias y ya no sirven como prueba limpia para ellas.
 
 ## Pregunta
 ¿Las 60 reglas publicadas el **2026-09-10 12:00 CT** siguen teniendo expectativa neta positiva en MNQ con datos que
