@@ -803,3 +803,14 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
   Acta `VTD_VOL1_RESULTADOS_20261006.md`.
 - NO MEDIDO: dirección por la vela marcada; señal combinada; toques/estado de las zonas VTD; ancho sin la barra en la
   ventana previa.
+
+## AVCL-CIERRE MNQ — 06/10/2026
+- MEDIDO:
+  - el **delta no orienta** la expansión (media s_d ≈ 0, MDE 0,016–0,019; las colas significativas eran la expansión
+    bidireccional, por un diseño de prueba mal planteado y corregido en el acta);
+  - asimetría de regreso en Q5 de anomalía, +1,7 pp (Holm 0,041);
+  - 200t replica el rango (AT A2 +0,065);
+  - grilla: el efecto depende de k y W (k1,5/p98 más fuerte, k3,0 nulo, W20 anómalo por posible artefacto de ventana).
+  Acta `AVCL_CIERRE_RESULTADOS_20261006.md`.
+- NO MEDIDO: **`y_rg` con la ventana previa fuera del bloque creador** (verificación del artefacto, también para la
+  base); otros instrumentos; contexto por estado.
