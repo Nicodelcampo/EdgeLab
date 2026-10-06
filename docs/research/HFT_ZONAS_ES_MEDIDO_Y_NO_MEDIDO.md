@@ -814,3 +814,11 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
   Acta `AVCL_CIERRE_RESULTADOS_20261006.md`.
 - NO MEDIDO: **`y_rg` con la ventana previa fuera del bloque creador** (verificación del artefacto, también para la
   base); otros instrumentos; contexto por estado.
+
+## AVCL-EXIT MNQ — 06/10/2026
+- MEDIDO: la primera salida de la banda (k 4/8/16) **no continúa más** que la de pseudo-zonas de igual geometría
+  (c_10/c_50 ≈ 0, MDE 0,3–0,8 ticks). Después de la salida hay más rango para k chico, pero bidireccional (la cola de
+  falla sube más que la de continuación). Las salidas son casi todas inmediatas (lag mediano 1–9 barras).
+  Acta `AVCL_EXIT_RESULTADOS_20261006.md`.
+- NO MEDIDO (candidata): **salida tras consolidar** (≥ 5 cierres dentro), c_10 +0,6 ticks, cola de continuación H50
+  +2,3 pp; descriptivo, sin potencia. Requiere pre-registro y más datos.
