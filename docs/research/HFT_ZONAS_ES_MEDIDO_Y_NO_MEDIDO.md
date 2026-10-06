@@ -847,3 +847,8 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
 ## VTD-VELA — 06/10/2026
 - MEDIDO (prueba única pre-registrada, ES/YM/RTY/MGC, 6.495 marcas): la vela de la marca VolTicksDef **no** anticipa el
   lado del tramo largo (−0,013, p 0,93, MDE 0,022; acierto 49,6 %). **Descartada.** Acta `VTD_VELA_RESULTADO_20261006.md`.
+
+## VTD-BRACKET (P&L, OK de Nico) — 06/10/2026
+- MEDIDO: bracket bilateral sobre marcas VTD 150t, MNQ y ES, 4 celdas: **pierde en todas** (MNQ ≈ −3 USD/trade,
+  ES ≈ −38 USD/trade), y **las marcas no superan a barras al azar** (en ES rinden peor, z −3,8). Descartado en el
+  descubrimiento; confirmación no corrida. Acta `VTD_BRACKET_RESULTADOS_20261006.md`.
