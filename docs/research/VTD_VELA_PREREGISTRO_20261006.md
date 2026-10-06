@@ -58,3 +58,4 @@ Media ≈ 0 o negativa, o p > 0,05, con el MDE publicado.
   dato. Ningún cambio de definición, estadístico ni regla de decisión.
 - Por un error del monitor, el análisis corrió una vez con sólo YM + RTY (media +0,002, p 0,47). **No es la prueba
   pre-registrada.** La decisión se toma únicamente con los 4 instrumentos.
+- ES 12-26 necesitaba además `edgelab-ticks-es-nq-2026q3-ext`: agregado.
