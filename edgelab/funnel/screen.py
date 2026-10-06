@@ -21,7 +21,7 @@ def _cpu(sig,dirs,h,l,bid_open,ask_open,sls,tps,mults,max_hold,fees):
             if np.isnan(x):x=-fees
             out[k,q]=x
     return out
-_GPU_SRC=r'''extern "C" __global__ void screen(const long long* sig,const signed char* d,const int* h,const int* l,const int* bo,const int* ao,const int* sl,const int* tp,const signed char* mul,int ns,int nc,int n,int hold,float fee,float* out){int z=blockDim.x*blockIdx.x+threadIdx.x;if(z>=ns*nc)return;int k=z/nc,q=z-k*nc,i=(int)sig[k]+1;if(i>=n){out[z]=NAN;return;}int di=d[k]*mul[q],e=di==1?ao[i]:bo[i],st=e-di*sl[q],tg=e+di*tp[q],end=min(n,i+hold+1);float v=-fee;for(int j=i;j<end;j++){if(di==1&&l[j]<=st){v=-sl[q]-fee;break;}if(di==1&&h[j]>=tg+1){v=tp[q]-fee;break;}if(di==-1&&h[j]>=st){v=-sl[q]-fee;break;}if(di==-1&&l[j]<=tg-1){v=tp[q]-fee;break;}}out[z]=v;}'''
+_GPU_SRC=r'''extern "C" __global__ void screen(const long long* sig,const signed char* d,const int* h,const int* l,const int* bo,const int* ao,const int* sl,const int* tp,const signed char* mul,int ns,int nc,int n,int hold,float fee,float* out){int z=blockDim.x*blockIdx.x+threadIdx.x;if(z>=ns*nc)return;int k=z/nc,q=z-k*nc,i=(int)sig[k]+1;if(i>=n){out[z]=__int_as_float(0x7fc00000);return;}int di=d[k]*mul[q],e=di==1?ao[i]:bo[i],st=e-di*sl[q],tg=e+di*tp[q],end=min(n,i+hold+1);float v=-fee;for(int j=i;j<end;j++){if(di==1&&l[j]<=st){v=-sl[q]-fee;break;}if(di==1&&h[j]>=tg+1){v=tp[q]-fee;break;}if(di==-1&&h[j]>=st){v=-sl[q]-fee;break;}if(di==-1&&l[j]<=tg-1){v=tp[q]-fee;break;}}out[z]=v;}'''
 def cheap_screen(sig,dirs,high,low,bid_open,ask_open,sls,tps,multipliers=None,max_hold_bars=200,fees=.5,backend="auto"):
     ns,nc=len(sig),len(sls);dev=detect_device(backend,ns*nc)
     mult=np.ones(nc,np.int8) if multipliers is None else np.asarray(multipliers,np.int8)
@@ -43,3 +43,13 @@ def iter_screen_batches(sig,dirs,high,low,bid_open,ask_open,sls,tps,multipliers=
                                    np.asarray(sls)[start:end],np.asarray(tps)[start:end],
                                    mult[start:end],max_hold_bars,fees,backend)
         yield start,end,matrix,device
+
+
+def kernel_manifest(backend):
+    """Identity of the screening kernel: id, source hash, precision, determinism. Logged with every run."""
+    import hashlib,inspect
+    if backend=="gpu":
+        src=_GPU_SRC;prec="float32"
+    else:
+        src=inspect.getsource(_cpu.py_func);prec="float64"
+    return {"kernel_id":"edgelab_funnel_screen","kernel_version":"v1","backend":backend,"precision":prec,"deterministic":True,"seeded":False,"source_sha256":hashlib.sha256(src.encode()).hexdigest()}

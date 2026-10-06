@@ -1,0 +1,59 @@
+# MGC EMA 200/500/2000 — veredicto con los datos disponibles (2026-10-03)
+
+**Veredicto: el edge NO se valida. Con las 4 pistas de contrato disponibles (sin MGC_10-25 ni MGC_10-26) no hay evidencia que sobreviva la corrección por selección. Holdout (trade_date >= 20260401) sin abrir.**
+
+## Reproducción
+Raw `nicolasbuttaro/edgelab-mgc-nt8-raw-parquet-20261002` bajado de Kaggle por API. Canónico reproducido: 56.575.239 ticks, SHA-256 `87aac766…3e4`; artefacto de barras `8c52391adf32f82b9c84`; headline tick-exact 623 trades, +9.918,5 ticks (idéntico al registro).
+
+## Qué se midió (pre-registro: DIAGNOSTICO_DIRECCION_PREREGISTRO.md)
+| Prueba | Resultado | Regla |
+|---|---|---|
+| Long / short | +3.645,5 / +6.273 | ambos > 0: pasa |
+| Dirección aleatoria i.i.d. (2000) | p = 0,022 | pasa |
+| Dirección aleatoria por sesión (2000) | p = 0,037 | pasa |
+| Sin mejor mes (marzo, 46 % del neto) | +5.358 | pasa |
+| Sin 5 mejores días | +2.345,5 | pasa |
+| D0 / D1 / D2 del embudo | +3.169,5 / +2.004,5 / +4.744,5 | los tres > 0 |
+| **Máximo de 21 celdas, dirección por sesión (500)** | **p_max = 0,0998** | **> 0,05: NO pasa** |
+
+## Lectura
+- El headline por sí solo luce direccional, pero fue elegido a posteriori como el mejor de 21 celdas. Al compararlo con el mejor de 21 celdas bajo dirección sorteada, el resultado es compatible con azar (p ≈ 0,10). Coincide con DSR 0/42, BH 0/42 y SPA p = 0,342.
+- Hay señal de dirección (las celdas inversas pierden ~9.000 ticks) pero la selección del TP/SL consume la significancia. Un resultado más fuerte exige una celda congelada y datos que no se usaron para elegirla.
+- Aviso de custodia: **el «D2» del embudo (20260217–20260331) ya fue visto** por el OOS 30 % y por la validación de 123 días; no es confirmación limpia. El único tramo no visto es el holdout.
+
+## Holdout: no se abre
+Poder bajo: ~5 trades/día, sd por trade ≈ 291 ticks, efecto en muestra ≈ 16 ticks/trade (sobreestimado por selección). Con n trades el error estándar es 291/√n: con ~250 trades ≈ 18 ticks, t ≈ 1. Una apertura única no podría confirmar ni refutar. Abrirlo sólo tiene sentido con una celda congelada y muestra suficiente (más contratos/regímenes).
+
+## Qué haría falta para cambiar el veredicto
+1. Más historia con el mismo contrato de datos (MGC_10-25 / 10-26 u otro metal/instrumento con la misma señal, definida de antemano).
+2. Celda única congelada (SL 200 / TP 400) y réplica fuera de muestra real; o evaluar el mismo sistema en otros activos sin reoptimizar.
+3. Sólo entonces, apertura única del holdout.
+
+Reproducir: `python tools/mgc_direction_diagnostic.py`, `python tools/mgc_direction_maxnull.py` (PYTHONPATH=raíz; raw en /data/raw/mgc).
+
+## Anexo: etapas nuevas del embudo aplicadas a MGC (misma fecha)
+- **EF0** (`eligibility_ef0.json`): NO elegible. Falla `contract_coverage` (falta MGC_10-25) y `clock_certified` queda UNKNOWN. Evidencia de plausibilidad del reloj (`clock_plausibility.json`): la pausa 16:00–17:00 CT está vacía en los tres regímenes de horario (CDT/CST/CDT), con picos 8–9 CT. No es certificación.
+- **Custodia** (`seen_ledger.jsonl`): D0, D1 y D2 del embudo tienen contaminación 1.0; ninguna partición es virgen.
+- **EF3 plateau** (tick-exact, todo el descubrimiento, `plateau_tickexact_alldata.json`): PLATEAU (5/5 vecinos positivos, mediana 7.119 vs headline 9.918). La región SL≥150 / TP≥350 es consistentemente positiva.
+- **EF4 sólo D0+D1** (screening de barras, criterio del embudo `min(D0,D1)-|D0-D1|`, 5000 sorteos por sesión, `funnel_e4_multiplicity.json`): mejor estadístico −1,64 ticks/trade, **p_max = 0,64**, sin meseta (0/5 vecinos positivos). Veredicto `NOT_REJECTED_NO_DIRECTIONAL_EVIDENCE`. Contador global de pruebas: 42 en 1 campaña (`trial_registry.jsonl`, cabeza `15778988…`).
+- Lectura: la meseta en el período completo coincide con el PnL concentrado en feb–mar (D2 del embudo, +4.745 de los +9.918); con sólo D0+D1 el criterio exigente del embudo no encuentra señal. Las dos lecturas apuntan a que el resultado depende del tramo final y no se sostiene fuera de él. Sigue sin ser edge validado.
+
+## Anexo 2: paridad CPU/GPU a escala (Kaggle, Tesla T4, datos sintéticos)
+`artifacts/funnel/parity_20261003/scale_parity_gpu_vs_cpu.json` (descargado directo de la salida del kernel `edgelab-funnel-gpu-scale-parity-20261003`, privado, sin internet, sin datos de mercado; SHA-256 del archivo `5079f120…`). 40.000 señales × 2.048 configuraciones = 81,9 M celdas en la GPU por lotes de 256 MiB; contra la CPU Numba (4 hilos) sobre 5,12 M celdas: **máscaras NaN idénticas, 0 celdas distintas, diferencia máxima 0,0**. Rendimiento: GPU 73 M celdas/s frente a CPU 8,1 M celdas/s (≈9× por celda). Hashes de `device.py` y `screen.py` embebidos y verificados al arrancar. Alcance: sólo este kernel y esta imagen; no prueba otras versiones de CUDA ni datos reales.
+
+## Anexo 3: pruebas de familia e información direccional (2026-10-04, pre-registro `PREREGISTRO_FAMILIA_20261004.md`)
+Solo descubrimiento (`trade_date <= 20260331`); holdout sin abrir. Archivos: `family_t1.json`, `family_t2.json`, `family_t3.json`.
+
+| Prueba | Resultado | Regla (fijada antes) |
+|---|---|---|
+| **T1** media de las 21 celdas normales, dirección sorteada por sesión (2.000 sorteos) | real +2.392 ticks por celda; nulo −3.375 (sd 4.261; q95 +3.531); z = 1,35; **p = 0,093** | umbral 0,05: no pasa |
+| **T2** información direccional sin SL/TP, 1.643 señales, 123 sesiones, máximo de z en 5 horizontes (200.000 sorteos) | z = 1,44 / 0,78 / 0,41 / 0,25 / 0,84 para 15 min / 30 min / 1 h / 2 h / 4 h; **p_max = 0,184** | umbral 0,05: no pasa |
+
+- La predicción registrada para T1 era p ≈ 0,3; salió 0,093, algo más favorable que lo previsto, pero sigue sin cruzar el umbral.
+- El nulo de T1 es negativo (−3.375 por celda): una dirección al azar pierde con estos costos y SL/TP. Que la señal real quede ~5.800 ticks por encima de ese nulo es lo que da z = 1,35.
+- T2: el retorno medio señal×precio es positivo en todos los horizontes (+3 a +14 ticks), pero las señales largas pierden en todos (−1 a −6) y las cortas ganan (+12 a +38). Es la firma de deriva bajista tras las señales, no de que el cruce prediga la dirección.
+- **T3 (descriptivo).** Headline: 623 trades, sd 290 ticks por trade, +15,9 ticks por trade. Descontando la maldición del ganador (3.113 ticks) queda +10,9. Para 80 % de potencia (una cola, α = 0,05) hacen falta ≈ 2.049 trades con el efecto observado (≈ 19 meses al ritmo de la muestra), ≈ 4.351 con el ajustado (≈ 41 meses) y ≈ 17.400 si el efecto real fuera la mitad.
+
+**Regla de decisión aplicada tal como estaba escrita:** T1 p > 0,05 y T2 p_max > 0,05 → no hay información direccional distinguible del azar de selección con los datos disponibles → **DESCARTADO COMO EVIDENCIA**. No equivale a probar que el edge no exista: con 623 trades el diseño no tiene potencia para detectar un efecto de ~11 ticks por trade.
+
+**Consecuencia práctica.** Con MGC solo, el holdout (≈ 250 trades, error estándar ≈ 18 ticks) no podría confirmar ni refutar. Mejorar la evidencia exige más historia o réplica en otros mercados con la señal definida de antemano, no más análisis de esta misma muestra.
