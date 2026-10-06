@@ -751,3 +751,11 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
   −6,3 USD/op [−25; +13]. Paridad con NT8: el 5-oct coincide al centavo (+145,70). MGC 04:15 corto tras subida:
   12 ops, +16 USD/op [−2; +37]; sin condición rinde igual. Acta `docs/research/explo_edgereplica_mgc_20261006/RESULTADO.md`.
 - NO MEDIDO: prueba limpia para estas familias (el holdout desde el 1-oct quedó visto); MGC con n suficiente.
+
+## AVCL-VOL-1 MNQ (con paridad) — 06/10/2026 — REPLICA LA REFERENCIA
+- MEDIDO: AT H10 expansión de rango +0,081 [0,072; 0,089], Holm 0,0006, MDE 0,012. Replica MYM (+0,067).
+  También sobreviven OFF H10 `y_rg` +0,063, OFF H50 `y_rg` +0,012 y AT H10 `y_rv` +0,047. Después hay compresión
+  (H50/H200 `y_rv` < 0, no testeada). Resistencias > soportes, igual que en MYM (descriptivo).
+  Acta: `docs/research/AVCL_VOL1_RESULTADOS_MNQ_20261006.md`.
+- NO MEDIDO: control de volumen alto sin zona; contexto pre-registrado; P&L; la diferencia de densidad de zonas
+  MYM/MNQ (6 contra 77 por sesión).
