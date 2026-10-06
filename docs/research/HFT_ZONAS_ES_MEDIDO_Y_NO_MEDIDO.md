@@ -781,3 +781,10 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
   3 barras, 95 % de toque). Acta `AVCL_SR_DIR_RESULTADOS_20261006.md`.
 - NO MEDIDO: **revisita** (el precio se aleja k ticks y vuelve), toque n-ésimo, confluencia y delta de la zona.
   Soporte/resistencia NO queda cerrado.
+
+## AVCL-VOL-3 MNQ — 06/10/2026
+- MEDIDO (8/8 Holm): dosis monótona (OFF Q1 0,027 → Q5 0,087); la zona angosta expande más (−0,07 por SD de ancho);
+  compresión posterior confirmada (H50/H200 `y_rv` < 0); efecto en ETH; estable en los 6 contratos y en las franjas.
+  Exceso de unos 2 ticks a H10, contra un costo de 5,8. Acta `AVCL_VOL3_RESULTADOS_20261006.md`.
+- NO MEDIDO: **distribución/colas del desplazamiento con signo** (SR-DIR midió sólo la media; ver pedido de Nico);
+  delta; sensibilidad de parámetros; 200t (paridad en curso).
