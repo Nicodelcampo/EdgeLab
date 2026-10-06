@@ -738,3 +738,10 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
   merge. Acta `docs/parity/PARIDAD_AVOLCLUSTER_MNQ1226_50T_20261005.md`. Causas raíz: footprint de subserie 1-tick
   (empate de timestamp → barra siguiente; fuera de rango descartado), tick en pausa CME, ventana, MaxAge.
 - NO MEDIDO: AT_PRICE, FIRST_TOUCH, invalidación CloseThrough/FirstTouch; otros instrumentos/bar_spec con esta regla.
+
+## AVCL-VOL-1 MYM (exploratorio, sin paridad) — 06/10/2026 — REFERENCIA
+- MEDIDO: información de volatilidad/expansión tras la creación de zonas (RTH, 12 pruebas, Holm). **AT H10 expansión de
+  rango D +0,067 [0,027; 0,106], Holm 0,004** (MDE 0,070), la única que sobrevive. OFF H10 expansión +0,036 (Holm 0,12, no).
+  A H200 hay compresión. Desglose OFF: el efecto H10 viene de las resistencias (+0,047), no de los soportes.
+  Acta: `docs/research/AVCL_VOL1_RESULTADOS_MYM_20261006.md`. Queda como hipótesis de referencia para otros análisis.
+- NO MEDIDO: paridad MYM; P&L; control de volumen alto sin zona; replicación en MNQ (en curso); lado pre-registrado.

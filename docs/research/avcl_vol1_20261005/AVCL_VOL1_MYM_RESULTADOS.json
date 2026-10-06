@@ -1,0 +1,625 @@
+{
+ "campaign": "AVCL-VOL-1 etapa 1",
+ "instrument": "MYM",
+ "parity": "SIN paridad propia: exploratorio",
+ "manifest": "docs/research/AVCL_VOL1_MANIFIESTO_20261005.md",
+ "params": {
+  "window_bars": 10,
+  "median_multiplier": 2.0,
+  "max_gap_ticks": 1,
+  "min_cluster_ticks": 2,
+  "use_session_buckets": true,
+  "time_bucket_minutes": 30,
+  "lookback_sessions": 20,
+  "detection_percentile": 95.0,
+  "min_samples_per_bucket": 20,
+  "enable_predictive_filter": false,
+  "use_topk_hot_cells": false,
+  "invalidation_mode": "None",
+  "max_age_bars": 500
+ },
+ "horizons": [
+  10,
+  50,
+  200
+ ],
+ "seed": 20261005,
+ "nperm": 20000,
+ "nboot": 2000,
+ "n_tests": 12,
+ "desde": "2025-07-01",
+ "hasta": "2026-09-30",
+ "rth": [
+  {
+   "kind": "OFF",
+   "H": 10,
+   "channel": "y_rv",
+   "n_events": 720,
+   "n_controls": 2773,
+   "n_strata": 587,
+   "sessions": 128,
+   "D": 0.005923365544583521,
+   "ci95": [
+    -0.04799395023234929,
+    0.05567083579736106
+   ],
+   "p": 0.3960301984900755,
+   "null_sd": 0.022893611568551107,
+   "mde": 0.07962987095446437,
+   "p_holm": 1.0
+  },
+  {
+   "kind": "OFF",
+   "H": 10,
+   "channel": "y_rg",
+   "n_events": 720,
+   "n_controls": 2773,
+   "n_strata": 587,
+   "sessions": 128,
+   "D": 0.03593863758502302,
+   "ci95": [
+    0.010172149739047745,
+    0.059981539593260254
+   ],
+   "p": 0.011099445027748612,
+   "null_sd": 0.015638116383585598,
+   "mde": 0.05439339205468255,
+   "p_holm": 0.12209389530523473
+  },
+  {
+   "kind": "OFF",
+   "H": 50,
+   "channel": "y_rv",
+   "n_events": 642,
+   "n_controls": 1765,
+   "n_strata": 505,
+   "sessions": 126,
+   "D": -0.0149767417700193,
+   "ci95": [
+    -0.04344120072243579,
+    0.01224945746782367
+   ],
+   "p": 0.8275586220688965,
+   "null_sd": 0.015753610128707164,
+   "mde": 0.05479510901369271,
+   "p_holm": 1.0
+  },
+  {
+   "kind": "OFF",
+   "H": 50,
+   "channel": "y_rg",
+   "n_events": 642,
+   "n_controls": 1765,
+   "n_strata": 505,
+   "sessions": 126,
+   "D": 0.007981290151433831,
+   "ci95": [
+    -0.01987513856798282,
+    0.03406568288174912
+   ],
+   "p": 0.32268386580670966,
+   "null_sd": 0.016889604497904075,
+   "mde": 0.05874638969098049,
+   "p_holm": 1.0
+  },
+  {
+   "kind": "OFF",
+   "H": 200,
+   "channel": "y_rv",
+   "n_events": 143,
+   "n_controls": 189,
+   "n_strata": 101,
+   "sessions": 61,
+   "D": -0.07042014198896741,
+   "ci95": [
+    -0.11790275035381806,
+    -0.021853387006502353
+   ],
+   "p": 0.9987000649967501,
+   "null_sd": 0.024214926064447813,
+   "mde": 0.08422574271036735,
+   "p_holm": 1.0
+  },
+  {
+   "kind": "OFF",
+   "H": 200,
+   "channel": "y_rg",
+   "n_events": 143,
+   "n_controls": 189,
+   "n_strata": 101,
+   "sessions": 61,
+   "D": -0.04167438485593773,
+   "ci95": [
+    -0.12488030881332722,
+    0.051664938237508284
+   ],
+   "p": 0.807959602019899,
+   "null_sd": 0.04703572369863229,
+   "mde": 0.16360234806801055,
+   "p_holm": 1.0
+  },
+  {
+   "kind": "AT",
+   "H": 10,
+   "channel": "y_rv",
+   "n_events": 440,
+   "n_controls": 1664,
+   "n_strata": 396,
+   "sessions": 124,
+   "D": 0.019339331741710937,
+   "ci95": [
+    -0.055877722318294534,
+    0.08454393215767594
+   ],
+   "p": 0.26348682565871706,
+   "null_sd": 0.031213101493068527,
+   "mde": 0.10856719729603363,
+   "p_holm": 1.0
+  },
+  {
+   "kind": "AT",
+   "H": 10,
+   "channel": "y_rg",
+   "n_events": 440,
+   "n_controls": 1664,
+   "n_strata": 396,
+   "sessions": 124,
+   "D": 0.06652032588455892,
+   "ci95": [
+    0.027106773997889657,
+    0.10553057157714897
+   ],
+   "p": 0.00034998250087495624,
+   "null_sd": 0.020192390775700075,
+   "mde": 0.07023433008446363,
+   "p_holm": 0.004199790010499475
+  },
+  {
+   "kind": "AT",
+   "H": 50,
+   "channel": "y_rv",
+   "n_events": 379,
+   "n_controls": 1098,
+   "n_strata": 324,
+   "sessions": 119,
+   "D": -0.009249095192658473,
+   "ci95": [
+    -0.05090680135662302,
+    0.03282349932075628
+   ],
+   "p": 0.6752162391880406,
+   "null_sd": 0.020479319331824022,
+   "mde": 0.07123234142176994,
+   "p_holm": 1.0
+  },
+  {
+   "kind": "AT",
+   "H": 50,
+   "channel": "y_rg",
+   "n_events": 379,
+   "n_controls": 1098,
+   "n_strata": 324,
+   "sessions": 119,
+   "D": 0.008986529770014868,
+   "ci95": [
+    -0.035460717448273865,
+    0.05670353405441011
+   ],
+   "p": 0.3545322733863307,
+   "null_sd": 0.0238680835494983,
+   "mde": 0.08301933520999324,
+   "p_holm": 1.0
+  },
+  {
+   "kind": "AT",
+   "H": 200,
+   "channel": "y_rv",
+   "n_events": 66,
+   "n_controls": 104,
+   "n_strata": 56,
+   "sessions": 49,
+   "D": -0.05045795035981516,
+   "ci95": [
+    -0.11178904938072153,
+    0.012833428783936947
+   ],
+   "p": 0.9413029348532573,
+   "null_sd": 0.032663510056265554,
+   "mde": 0.11361209143048666,
+   "p_holm": 1.0
+  },
+  {
+   "kind": "AT",
+   "H": 200,
+   "channel": "y_rg",
+   "n_events": 66,
+   "n_controls": 104,
+   "n_strata": 56,
+   "sessions": 49,
+   "D": -0.05700556778570386,
+   "ci95": [
+    -0.16620995234729546,
+    0.04843317092530867
+   ],
+   "p": 0.8670066496675166,
+   "null_sd": 0.05117401585251544,
+   "mde": 0.1779963928520264,
+   "p_holm": 1.0
+  }
+ ],
+ "eth_descriptivo": [
+  {
+   "kind": "OFF",
+   "H": 10,
+   "channel": "y_rv",
+   "n_events": 153,
+   "n_controls": 385,
+   "n_strata": 140,
+   "sessions": 80,
+   "D": -0.024371587216429347,
+   "ci95": [
+    -0.1285556557101288,
+    0.08775426161998545
+   ],
+   "sesion": "ETH"
+  },
+  {
+   "kind": "OFF",
+   "H": 10,
+   "channel": "y_rg",
+   "n_events": 153,
+   "n_controls": 385,
+   "n_strata": 140,
+   "sessions": 80,
+   "D": 0.049038128862727605,
+   "ci95": [
+    -0.01580690907207913,
+    0.11128117028131017
+   ],
+   "sesion": "ETH"
+  },
+  {
+   "kind": "OFF",
+   "H": 50,
+   "channel": "y_rv",
+   "n_events": 102,
+   "n_controls": 195,
+   "n_strata": 98,
+   "sessions": 66,
+   "D": -0.04402336171053986,
+   "ci95": [
+    -0.15731270515795595,
+    0.07597169691132856
+   ],
+   "sesion": "ETH"
+  },
+  {
+   "kind": "OFF",
+   "H": 50,
+   "channel": "y_rg",
+   "n_events": 102,
+   "n_controls": 195,
+   "n_strata": 98,
+   "sessions": 66,
+   "D": 0.009278866767588979,
+   "ci95": [
+    -0.10258401548110152,
+    0.11523241524684852
+   ],
+   "sesion": "ETH"
+  },
+  {
+   "kind": "OFF",
+   "H": 200,
+   "channel": "y_rv",
+   "n_events": 19,
+   "n_controls": 25,
+   "n_strata": 17,
+   "sessions": 15,
+   "D": -0.06705690755188527,
+   "ci95": [
+    -0.30126620351049355,
+    0.19391673160474046
+   ],
+   "sesion": "ETH"
+  },
+  {
+   "kind": "OFF",
+   "H": 200,
+   "channel": "y_rg",
+   "n_events": 19,
+   "n_controls": 25,
+   "n_strata": 17,
+   "sessions": 15,
+   "D": 0.10804981895078607,
+   "ci95": [
+    -0.11097994216752838,
+    0.35283626391369466
+   ],
+   "sesion": "ETH"
+  },
+  {
+   "kind": "AT",
+   "H": 10,
+   "channel": "y_rv",
+   "n_events": 68,
+   "n_controls": 198,
+   "n_strata": 66,
+   "sessions": 42,
+   "D": -0.23310275159249735,
+   "ci95": [
+    -0.37921064748641325,
+    -0.07625745118751746
+   ],
+   "sesion": "ETH"
+  },
+  {
+   "kind": "AT",
+   "H": 10,
+   "channel": "y_rg",
+   "n_events": 68,
+   "n_controls": 198,
+   "n_strata": 66,
+   "sessions": 42,
+   "D": -0.021827729445352478,
+   "ci95": [
+    -0.10264289778553957,
+    0.059211860545725074
+   ],
+   "sesion": "ETH"
+  },
+  {
+   "kind": "AT",
+   "H": 50,
+   "channel": "y_rv",
+   "n_events": 44,
+   "n_controls": 83,
+   "n_strata": 41,
+   "sessions": 35,
+   "D": -0.1567138093840223,
+   "ci95": [
+    -0.29634300755481435,
+    -0.007220616900574346
+   ],
+   "sesion": "ETH"
+  },
+  {
+   "kind": "AT",
+   "H": 50,
+   "channel": "y_rg",
+   "n_events": 44,
+   "n_controls": 83,
+   "n_strata": 41,
+   "sessions": 35,
+   "D": -0.15939998991104495,
+   "ci95": [
+    -0.30996474437618715,
+    0.0029523258112526727
+   ],
+   "sesion": "ETH"
+  },
+  {
+   "kind": "AT",
+   "H": 200,
+   "channel": "y_rv",
+   "n_events": 13,
+   "n_controls": 19,
+   "n_strata": 13,
+   "sessions": 10,
+   "D": 0.005506447798032153,
+   "ci95": [
+    -0.24643746587284457,
+    0.2444360496799074
+   ],
+   "sesion": "ETH"
+  },
+  {
+   "kind": "AT",
+   "H": 200,
+   "channel": "y_rg",
+   "n_events": 13,
+   "n_controls": 19,
+   "n_strata": 13,
+   "sessions": 10,
+   "D": 0.07073312473719907,
+   "ci95": [
+    -0.10036556726159042,
+    0.2550181915838416
+   ],
+   "sesion": "ETH"
+  },
+  {
+   "kind": "OFF_SOP",
+   "H": 10,
+   "channel": "y_rv",
+   "n_events": 372,
+   "n_controls": 1479,
+   "n_strata": 323,
+   "sessions": 121,
+   "D": 0.0026602243768040247,
+   "ci95": [
+    -0.06744702520437902,
+    0.07013486113129573
+   ],
+   "sesion": "RTH",
+   "desglose": "lado"
+  },
+  {
+   "kind": "OFF_SOP",
+   "H": 10,
+   "channel": "y_rg",
+   "n_events": 372,
+   "n_controls": 1479,
+   "n_strata": 323,
+   "sessions": 121,
+   "D": 0.030809749658968526,
+   "ci95": [
+    -0.009673505483390757,
+    0.07144073159263643
+   ],
+   "sesion": "RTH",
+   "desglose": "lado"
+  },
+  {
+   "kind": "OFF_SOP",
+   "H": 50,
+   "channel": "y_rv",
+   "n_events": 342,
+   "n_controls": 1015,
+   "n_strata": 306,
+   "sessions": 115,
+   "D": -0.03853502675039904,
+   "ci95": [
+    -0.0765662572275134,
+    0.00032157987733012137
+   ],
+   "sesion": "RTH",
+   "desglose": "lado"
+  },
+  {
+   "kind": "OFF_SOP",
+   "H": 50,
+   "channel": "y_rg",
+   "n_events": 342,
+   "n_controls": 1015,
+   "n_strata": 306,
+   "sessions": 115,
+   "D": 0.022068892931783362,
+   "ci95": [
+    -0.017233937687907635,
+    0.06313587284743896
+   ],
+   "sesion": "RTH",
+   "desglose": "lado"
+  },
+  {
+   "kind": "OFF_SOP",
+   "H": 200,
+   "channel": "y_rv",
+   "n_events": 83,
+   "n_controls": 112,
+   "n_strata": 64,
+   "sessions": 51,
+   "D": -0.09827074662001489,
+   "ci95": [
+    -0.16010879369092146,
+    -0.03637821410246896
+   ],
+   "sesion": "RTH",
+   "desglose": "lado"
+  },
+  {
+   "kind": "OFF_SOP",
+   "H": 200,
+   "channel": "y_rg",
+   "n_events": 83,
+   "n_controls": 112,
+   "n_strata": 64,
+   "sessions": 51,
+   "D": -0.040372268339163915,
+   "ci95": [
+    -0.20259992014898973,
+    0.09600052174092254
+   ],
+   "sesion": "RTH",
+   "desglose": "lado"
+  },
+  {
+   "kind": "OFF_RES",
+   "H": 10,
+   "channel": "y_rv",
+   "n_events": 348,
+   "n_controls": 1422,
+   "n_strata": 320,
+   "sessions": 116,
+   "D": 0.013730505902888619,
+   "ci95": [
+    -0.05041993563536144,
+    0.07775898887325726
+   ],
+   "sesion": "RTH",
+   "desglose": "lado"
+  },
+  {
+   "kind": "OFF_RES",
+   "H": 10,
+   "channel": "y_rg",
+   "n_events": 348,
+   "n_controls": 1422,
+   "n_strata": 320,
+   "sessions": 116,
+   "D": 0.046576040309279025,
+   "ci95": [
+    0.012852256456020845,
+    0.0788814263358467
+   ],
+   "sesion": "RTH",
+   "desglose": "lado"
+  },
+  {
+   "kind": "OFF_RES",
+   "H": 50,
+   "channel": "y_rv",
+   "n_events": 300,
+   "n_controls": 954,
+   "n_strata": 271,
+   "sessions": 107,
+   "D": 0.007663590545354341,
+   "ci95": [
+    -0.03322200749934777,
+    0.04719695422931897
+   ],
+   "sesion": "RTH",
+   "desglose": "lado"
+  },
+  {
+   "kind": "OFF_RES",
+   "H": 50,
+   "channel": "y_rg",
+   "n_events": 300,
+   "n_controls": 954,
+   "n_strata": 271,
+   "sessions": 107,
+   "D": -0.01929374820870203,
+   "ci95": [
+    -0.05953959239962919,
+    0.017438943815959115
+   ],
+   "sesion": "RTH",
+   "desglose": "lado"
+  },
+  {
+   "kind": "OFF_RES",
+   "H": 200,
+   "channel": "y_rv",
+   "n_events": 60,
+   "n_controls": 119,
+   "n_strata": 56,
+   "sessions": 33,
+   "D": -0.03183387811056178,
+   "ci95": [
+    -0.10829554533762975,
+    0.054498489095957926
+   ],
+   "sesion": "RTH",
+   "desglose": "lado"
+  },
+  {
+   "kind": "OFF_RES",
+   "H": 200,
+   "channel": "y_rg",
+   "n_events": 60,
+   "n_controls": 119,
+   "n_strata": 56,
+   "sessions": 33,
+   "D": -0.043898263470366516,
+   "ci95": [
+    -0.17530806518323128,
+    0.09973941799572382
+   ],
+   "sesion": "RTH",
+   "desglose": "lado"
+  }
+ ],
+ "seconds": 164
+}
