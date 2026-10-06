@@ -53,12 +53,18 @@ def _ohlc(ticks: TickSeries, starts, ends):
     lo = np.empty(n, np.int64); c = np.empty(n, np.int64)
     v = np.empty(n, np.float64)
     tbi = np.full(len(ticks), -1, np.int64)
-    for b in range(n):
-        i0, i1 = int(starts[b]), int(ends[b])
-        p = ticks.price_ticks[i0:i1]
-        o[b] = p[0]; c[b] = p[-1]; h[b] = p.max(); lo[b] = p.min()
-        v[b] = ticks.volume[i0:i1].sum()
-        tbi[i0:i1] = b
+    if n == 0:
+        return o, h, lo, c, v, tbi
+    # vectorizado con reduceat (mismo resultado que el bucle por barra; barras contiguas y no vacias)
+    st = np.asarray(starts, dtype=np.int64); en = np.asarray(ends, dtype=np.int64)
+    pr = np.asarray(ticks.price_ticks)
+    o[:] = pr[st]; c[:] = pr[en - 1]
+    h[:] = np.maximum.reduceat(pr, st); lo[:] = np.minimum.reduceat(pr, st)
+    v[:] = np.add.reduceat(np.asarray(ticks.volume, dtype=np.float64), st)
+    cover = np.zeros(len(ticks) + 1, np.int64)
+    np.add.at(cover, st, 1); np.add.at(cover, en, -1)
+    inside = np.cumsum(cover[:-1]) > 0
+    tbi[inside] = np.repeat(np.arange(n), en - st)
     return o, h, lo, c, v, tbi
 
 
@@ -83,13 +89,14 @@ def session_ids(ts_ns) -> np.ndarray:
     llamar `session_key` por tick sobre millones de ticks es inviable.
     """
     import pandas as pd
-    idx = pd.to_datetime(np.asarray(ts_ns, dtype="int64"), unit="ns", utc=True)\
-            .tz_convert("America/Chicago")
-    # trade-date: el día del CIERRE. Un tick a las >= 17:00 pertenece a la sesión
-    # que cierra al día siguiente.
-    # normalize() vuelve a medianoche LOCAL; el entero de dia sale de ahi.
+    ts = np.asarray(ts_ns, dtype="int64")
+    # Una vez por MINUTO unico y se expande: la frontera (17:00:00 CT) cae en el borde de un minuto, asi que todos
+    # los ticks de un mismo minuto tienen la misma sesion. Mismo resultado, mucho mas rapido.
+    um, inv = np.unique(ts // 60_000_000_000, return_inverse=True)
+    idx = pd.to_datetime(um * 60_000_000_000, unit="ns", utc=True).tz_convert("America/Chicago")
+    # trade-date: el dia del CIERRE. Un tick a las >= 17:00 pertenece a la sesion que cierra al dia siguiente.
     dias = np.asarray(idx.normalize().view("int64")) // 86_400_000_000_000
-    return dias + (np.asarray(idx.hour) >= 17).astype(np.int64)
+    return (dias + (np.asarray(idx.hour) >= 17).astype(np.int64))[inv]
 
 
 def build_tick_bars(ticks: TickSeries, ticks_per_bar: int,

@@ -33,7 +33,7 @@ import edgelab_data as ed  # noqa: E402
 from scipy.stats import norm  # noqa: E402
 from edgelab.bridge import bars as B  # noqa: E402
 from edgelab.bridge import ticks as T  # noqa: E402
-from edgelab.bridge.indicators.avolclusterpoi_full import run_full  # noqa: E402
+from edgelab.bridge.indicators.avolclusterpoi_fast import run_full_fast as run_full  # noqa: E402  (idéntico, ~6-10x)
 from edgelab.bridge.sessions import session_end_ns  # noqa: E402
 
 PARAMS = dict(window_bars=10, median_multiplier=2.0, max_gap_ticks=1, min_cluster_ticks=2, use_session_buckets=True,
