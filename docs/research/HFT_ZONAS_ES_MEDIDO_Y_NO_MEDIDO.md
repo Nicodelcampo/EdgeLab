@@ -843,3 +843,7 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
   Acta `VTD_DIR_E1_RESULTADOS_20261006.md`.
 - NO MEDIDO (candidata): **la vela de la marca VTD como predictor del lado** (+0,044 descriptivo sobre los 6 contratos,
   después del fallo formal, sin controlar la deriva). Requiere pre-registro y prueba única en otros instrumentos.
+
+## VTD-VELA — 06/10/2026
+- MEDIDO (prueba única pre-registrada, ES/YM/RTY/MGC, 6.495 marcas): la vela de la marca VolTicksDef **no** anticipa el
+  lado del tramo largo (−0,013, p 0,93, MDE 0,022; acierto 49,6 %). **Descartada.** Acta `VTD_VELA_RESULTADO_20261006.md`.
