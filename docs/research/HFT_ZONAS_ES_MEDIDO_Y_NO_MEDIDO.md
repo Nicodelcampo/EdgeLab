@@ -795,3 +795,11 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
   En zonas angostas, ambas colas suben unos +3,4 pp (+40 % relativo). Q5 de anomalía: regreso > alejamiento
   (descriptivo). Acta `AVCL_DIST_RESULTADOS_20261006.md`.
 - NO MEDIDO: la asimetría de regreso en alta anomalía como prueba pre-registrada; colas en 200t.
+
+## VolTicksDef (familia VTD) — 06/10/2026
+- MEDIDO: paridad NT8 PASS (MNQ 12-26 150t, 547/547, P² exacto). Expansión propia H10: 150t +0,052, 50t +0,037,
+  sobrevive contra volumen alto (A2); cola sin signo +2,4 pp. Cara a cara 50t: AVCL sin VTD +0,065, VTD sin AVCL
+  +0,038; casi no se solapan (5–13 %) → **complementarias**. Ancho al revés que AVCL (barra ancha → más expansión).
+  Acta `VTD_VOL1_RESULTADOS_20261006.md`.
+- NO MEDIDO: dirección por la vela marcada; señal combinada; toques/estado de las zonas VTD; ancho sin la barra en la
+  ventana previa.
