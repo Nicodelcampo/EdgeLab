@@ -71,10 +71,20 @@ def session_end_vec(end_ns):
 def load_ticks(path, a, b, contract):
     """Sólo las columnas que usa el cálculo (ts, precio en ticks, volumen) y sin la pausa CME 16:00-17:00 CT."""
     import pyarrow.parquet as pq
-    t = pq.read_table(str(path), columns=["ts_utc_ns", "price_ticks", "volume", "bid_ticks", "ask_ticks"],
-                      filters=[("ts_utc_ns", ">=", a), ("ts_utc_ns", "<", b)])
-    ts = t.column("ts_utc_ns").to_numpy(); px = t.column("price_ticks").to_numpy(); vol = t.column("volume").to_numpy()
-    bid = t.column("bid_ticks").to_numpy(zero_copy_only=False); ask = t.column("ask_ticks").to_numpy(zero_copy_only=False)
+    names = pq.ParquetFile(str(path)).schema_arrow.names
+    if "price_ticks" in names:
+        t = pq.read_table(str(path), columns=["ts_utc_ns", "price_ticks", "volume", "bid_ticks", "ask_ticks"],
+                          filters=[("ts_utc_ns", ">=", a), ("ts_utc_ns", "<", b)])
+        ts = t.column("ts_utc_ns").to_numpy(); px = t.column("price_ticks").to_numpy(); vol = t.column("volume").to_numpy()
+        bid = t.column("bid_ticks").to_numpy(zero_copy_only=False); ask = t.column("ask_ticks").to_numpy(zero_copy_only=False)
+    else:                                   # archivo raw NT8 (precios, no ticks): mismo dato, otro formato
+        tick0 = float(ed.RESOLVER["instruments"][INST]["tick_size"])
+        t = pq.read_table(str(path), columns=["ts_utc_ns", "last", "volume", "bid", "ask"],
+                          filters=[("ts_utc_ns", ">=", a), ("ts_utc_ns", "<", b)])
+        ts = t.column("ts_utc_ns").to_numpy(); vol = t.column("volume").to_numpy()
+        px = np.round(t.column("last").to_numpy() / tick0).astype(np.int64)
+        bid = np.round(t.column("bid").to_numpy(zero_copy_only=False) / tick0)
+        ask = np.round(t.column("ask").to_numpy(zero_copy_only=False) / tick0)
     del t
     o = np.argsort(ts, kind="stable") if len(ts) > 1 and (np.diff(ts) < 0).any() else None
     if o is not None:

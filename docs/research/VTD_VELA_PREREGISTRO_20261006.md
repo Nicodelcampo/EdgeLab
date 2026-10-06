@@ -50,3 +50,11 @@ Media ≈ 0 o negativa, o p > 0,05, con el MDE publicado.
 
 ## Registro
 1 prueba, familia `VTD_VELA`. Resultado y MEDIDO/NO MEDIDO van en el mismo commit.
+
+## Enmienda técnica 1 (antes de ver cualquier resultado de MGC o ES)
+- Faltaban datasets de entrada en los kernels de ES (ES 09-25 en `edgelab-nt8-historical-missing-20261001`) y de MGC
+  (MGC 12-25 en `edgelab-mgc-nt8-raw-parquet-20261002`). Se agregaron.
+- MGC 12-25 viene en formato raw (precios `last`/`bid`/`ask`, no ticks): se convierte con tick = 0,10. Es el mismo
+  dato. Ningún cambio de definición, estadístico ni regla de decisión.
+- Por un error del monitor, el análisis corrió una vez con sólo YM + RTY (media +0,002, p 0,47). **No es la prueba
+  pre-registrada.** La decisión se toma únicamente con los 4 instrumentos.
