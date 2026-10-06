@@ -788,3 +788,10 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
   Exceso de unos 2 ticks a H10, contra un costo de 5,8. Acta `AVCL_VOL3_RESULTADOS_20261006.md`.
 - NO MEDIDO: **distribución/colas del desplazamiento con signo** (SR-DIR midió sólo la media; ver pedido de Nico);
   delta; sensibilidad de parámetros; 200t (paridad en curso).
+
+## AVCL-DIST MNQ — 06/10/2026
+- MEDIDO: distribución completa del desplazamiento. A H10 las **dos colas suben igual** (alejamiento +1,08 pp,
+  regreso +1,11 pp, Holm <1e-4): la expansión es **bidireccional**, y la media ≈ 0 de SR-DIR no escondía dirección.
+  En zonas angostas, ambas colas suben unos +3,4 pp (+40 % relativo). Q5 de anomalía: regreso > alejamiento
+  (descriptivo). Acta `AVCL_DIST_RESULTADOS_20261006.md`.
+- NO MEDIDO: la asimetría de regreso en alta anomalía como prueba pre-registrada; colas en 200t.
