@@ -131,7 +131,7 @@ namespace NinjaTrader.Gui.NinjaScript
      // nada (un contrato no existe antes de listarse ni despues de vencer) y no se pierden 16 s por mes en reintentos.
      string[] mmyy=contract.Substring(contract.LastIndexOf(' ')+1).Split('-');
      DateTime expM=new DateTime(2000+int.Parse(mmyy[1],CultureInfo.InvariantCulture),int.Parse(mmyy[0],CultureInfo.InvariantCulture),1);
-     DateTime lifeA=expM.AddMonths(-15), lifeZ=expM.AddMonths(1);
+     DateTime lifeA=expM.AddMonths(-9), lifeZ=expM.AddMonths(1);
      DateTime ra=a>lifeA?a:lifeA, rz=zEnd<lifeZ?zEnd:lifeZ;
      if(ra>=rz){Log("== "+contract+": fuera del rango pedido (vida "+lifeA.ToString("yyyy-MM")+" a "+expM.ToString("yyyy-MM")+")");continue;}
      for(DateTime m0=new DateTime(ra.Year,ra.Month,1);m0<rz&&!cancel;m0=m0.AddMonths(step))
