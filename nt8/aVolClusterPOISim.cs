@@ -161,7 +161,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 		private class SimTrade
 		{
 			public long ZoneId; public int Dir; public int EntryBar; public double Entry; public double Sl; public double Tp;
-			public double Risk; public bool BeDone; public bool Open; public int ExitBar; public double Exit; public string Reason;
+			public double Risk; public double SlInit; public bool BeDone; public bool Open; public int ExitBar; public double Exit; public string Reason;
 			public double R;
 		}
 		private List<SimTrade> simTrades;
@@ -244,8 +244,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 				ReactionTargetTicks = 12;
 				ReactionStopTicks = 8;
 
-				InvalidationMode = AVCLPInvalidationMode.CloseThrough;
-				MaxAgeBars = 0;
+				InvalidationMode = AVCLPInvalidationMode.None;
+				MaxAgeBars = 500;
 				MaxTouches = 0;
 
 				BurstMinZones = 3;
@@ -286,6 +286,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				SimOneTradeAtATime = false;
 				SimDrawTrades = true;
 				SimMaxDrawnTrades = 300;
+				SimRectOpacity = 15;
 			}
 			else if (State == State.Configure)
 			{
@@ -1212,7 +1213,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 			if (risk <= TickSize * 0.5) return;          // SL del lado equivocado o nulo: no se opera
 			double tp = SimTpMode == AVCLPSimTpMode.FixedTicks ? entry + dir * SimTpTicks * TickSize : entry + dir * SimTpR * risk;
 			simTrades.Add(new SimTrade { ZoneId = z.Id, Dir = dir, EntryBar = CurrentBar, Entry = entry, Sl = sl, Tp = tp,
-				Risk = risk, Open = true, Reason = "" });
+				Risk = risk, SlInit = sl, Open = true, Reason = "" });
 		}
 
 		private void SimUpdate()
@@ -1263,9 +1264,10 @@ namespace NinjaTrader.NinjaScript.Indicators
 		{
 			int a = CurrentBar - t.EntryBar, b = Math.Max(0, CurrentBar - t.ExitBar);
 			string p = "AVCLPS_T" + t.ZoneId + "_";
+			// zona de TP (verde) y de SL (roja) como rectángulos de baja opacidad, desde la entrada hasta la salida
+			Draw.Rectangle(this, p + "t", false, a, t.Entry, b, t.Tp, Brushes.Transparent, Brushes.LimeGreen, SimRectOpacity);
+			Draw.Rectangle(this, p + "s", false, a, t.Entry, b, t.SlInit, Brushes.Transparent, Brushes.OrangeRed, SimRectOpacity);
 			Draw.Line(this, p + "e", false, a, t.Entry, b, t.Entry, Brushes.Gray, DashStyleHelper.Solid, 1);
-			Draw.Line(this, p + "s", false, a, t.Sl, b, t.Sl, Brushes.OrangeRed, DashStyleHelper.Dash, 1);
-			Draw.Line(this, p + "t", false, a, t.Tp, b, t.Tp, Brushes.LimeGreen, DashStyleHelper.Dash, 1);
 			Draw.Text(this, p + "r", false, t.R.ToString("+0.0;-0.0", CultureInfo.InvariantCulture) + "R " + t.Reason, b, t.Exit,
 				0, t.R > 0 ? Brushes.LimeGreen : Brushes.OrangeRed, dashFont, System.Windows.TextAlignment.Left,
 				Brushes.Transparent, Brushes.Transparent, 0);
@@ -1742,6 +1744,9 @@ namespace NinjaTrader.NinjaScript.Indicators
 		[Range(10, 100000)]
 		[Display(Name = "Max trades dibujados", Order = 16, GroupName = "10. Simulador (exploracion)")]
 		public int SimMaxDrawnTrades { get; set; }
+		[Range(1, 100)]
+		[Display(Name = "Opacidad rectangulos TP/SL (%)", Order = 17, GroupName = "10. Simulador (exploracion)")]
+		public int SimRectOpacity { get; set; }
 
 		#endregion
 	}
