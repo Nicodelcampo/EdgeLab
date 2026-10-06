@@ -834,3 +834,12 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
   Acta `AVCL_PRE_RESULTADOS_20261006.md`.
 - NO MEDIDO: candidatas restantes de AVCL (salida tras consolidar, regreso Q5) con métricas sin el bloque; VTD en
   profundidad (dirección por vela, combinación, otros instrumentos).
+
+## VTD-DIR etapa 1 (lado del tramo largo en marcas VolTicksDef 150t) — 06/10/2026
+- MEDIDO:
+  - **EMA, 100 celdas (10 periodos × 5 distancias × 2 H): ruido** (51/100 positivas, max-T mínimo 0,56);
+  - VWAP, desbalance, vela, momentum y extremos: ninguno pasa el descubrimiento (Holm);
+  - etapa 0: la eficiencia (tendencia/rango) no persiste y la amplitud sí.
+  Acta `VTD_DIR_E1_RESULTADOS_20261006.md`.
+- NO MEDIDO (candidata): **la vela de la marca VTD como predictor del lado** (+0,044 descriptivo sobre los 6 contratos,
+  después del fallo formal, sin controlar la deriva). Requiere pre-registro y prueba única en otros instrumentos.
