@@ -852,3 +852,8 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
 - MEDIDO: bracket bilateral sobre marcas VTD 150t, MNQ y ES, 4 celdas: **pierde en todas** (MNQ ≈ −3 USD/trade,
   ES ≈ −38 USD/trade), y **las marcas no superan a barras al azar** (en ES rinden peor, z −3,8). Descartado en el
   descubrimiento; confirmación no corrida. Acta `VTD_BRACKET_RESULTADOS_20261006.md`.
+
+## Régimen en escala mayor — ES M1 2015–2026 — 06/10/2026
+- MEDIDO (target-free): ni la dirección ni la eficiencia persisten de 30 min a semanas; reversión leve a 3 h (−0,027)
+  y día a día (−0,089); la amplitud es persistente incluso desestacionalizada. Acta `REGIMEN_ESCALA_ES_M1_20261006.md`.
+- NO MEDIDO: otras clases de activo (falta el M1 de GC, 6E y ZB); reversión como hipótesis formal.
