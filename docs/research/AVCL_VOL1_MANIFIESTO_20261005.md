@@ -42,10 +42,14 @@ nulo) o el contexto no separa los lados.
 ## 4. Medición
 - **Unidad:** creación de zona (barra de cierre de bloque, causal). Ventana hacia adelante desde el **cierre** de esa
   barra (la zona no existe antes).
-- **Horizontes:** H ∈ {15, 60} minutos de reloj (las barras de ticks cambian de duración). Se descarta el evento si la
-  ventana cruza el fin de sesión o la pausa CME.
-- **Métrica H1:** `log(RV_adelante / RV_atrás)`, RV = suma de retornos cuadrados de 1 minuto (de los ticks).
-  Canal adicional: `log(rango_adelante / rango_atrás)`.
+- **Horizontes (corregidos 2026-10-05 a pedido de Nico, con medición previa target-free de MNQ 12-26 50t,
+  20→25-sep):** en RTH una barra de 50t dura 0,6 s de mediana (~100 barras/min); un bloque de 10 barras ≈ 6 s;
+  rango mediano 22/52/75 ticks en 10/50/100 barras; ±12 ticks se recorren en ~4 s. Los 15/60 min originales
+  (1.500-6.000 barras) estaban fuera de escala. **H ∈ {10, 50, 200} barras de 50t** (~6 s, ~30 s, ~2,5 min en RTH),
+  reloj de eventos (barras), no de minutos. RTH y ETH se reportan por separado (ETH ~6× más lenta). Se descarta el
+  evento si la ventana cruza el fin de sesión.
+- **Métrica H1:** `log(RV_adelante / RV_atrás)` con ventanas de H barras a cada lado, RV = suma de retornos cuadrados
+  barra a barra. Canal adicional: `log(rango_adelante / rango_atrás)`.
 - **Control emparejado (lo central):** bloques cerrados **sin** CREATE (ABSTAIN_BELOW_THRESHOLD o NO_CLUSTER) del mismo
   contrato, misma franja de 30 min (± 1), mismo decil de volumen total del bloque y mismo decil de RV previa; se
   sortean hasta 5 controles por evento, sin reemplazo, sin solapamiento temporal con el evento. Mide si la
@@ -62,8 +66,8 @@ nulo) o el contexto no separa los lados.
   mirar diferencias.
 
 ## 6. Multiplicidad
-Etapa 1 (H1): 2 tipos × 2 horizontes × 2 canales (RV, rango) = **8 pruebas**, Holm sobre 8.
-Etapa 2 (H2, sólo si alguna H1 pasa para ese tipo): OFF 2 horizontes + AT 2 contextos × 2 horizontes = hasta **6**,
+Etapa 1 (H1): 2 tipos × 3 horizontes × 2 canales (RV, rango) = **12 pruebas**, Holm sobre 12 (RTH; ETH descriptivo).
+Etapa 2 (H2, sólo si alguna H1 pasa para ese tipo): OFF 3 horizontes + AT 2 contextos × 3 horizontes = hasta **9**,
 Holm sobre las que se habiliten. Todo se registra en `TRIAL_REGISTRY_GLOBAL.jsonl`.
 
 ## 7. Riesgos declarados
@@ -71,6 +75,8 @@ Holm sobre las que se habiliten. Todo se registra en `TRIAL_REGISTRY_GLOBAL.json
 - Eventos solapados (ráfagas de zonas) → inferencia por sesión; reporte aparte de eventos con burst ≥ 3.
 - Rolls: las sesiones de roll pueden tener volumen atípico → estrato por contrato; se informa sin ellas también.
 - 50t ≠ lo que Nico mira en 25t: el resultado vale para 50t.
+- Nota: el test de reacción del propio indicador (target 12t / stop 8t / 50 barras) se resuelve en ~4 s en RTH; su
+  "aciertos 44 %" mide sobre todo ruido de microestructura. No se usa como evidencia.
 
 ## 8. Qué NO hace
 No define entradas, salidas ni P&L. Si H1 pasa, el siguiente paso (régimen de volatilidad para dimensionar o filtrar
