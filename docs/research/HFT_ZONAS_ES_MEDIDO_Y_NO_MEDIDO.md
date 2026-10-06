@@ -759,3 +759,10 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
   Acta: `docs/research/AVCL_VOL1_RESULTADOS_MNQ_20261006.md`.
 - NO MEDIDO: control de volumen alto sin zona; contexto pre-registrado; P&L; la diferencia de densidad de zonas
   MYM/MNQ (6 contra 77 por sesión).
+
+## aVolClusterPOI — función de soporte/resistencia — NO MEDIDO (registro 06/10/2026)
+- Nico observa en el chart que las zonas actúan como soporte/resistencia. **Nada de lo medido hasta ahora
+  (AVCL-VOL-1/2, información de volatilidad) evalúa esa función.** Un nulo de VOL-2 no la toca.
+- Necesita un protocolo propio: población de primer toque **y** estado continuo, nulo con zona espejo o desplazada
+  (lección BigTrap2: F2.7–F2.9), MDE y los dos canales.
+- El cache de VOL-2 (zonas con toques/MFE/MAE) se puede reutilizar.
