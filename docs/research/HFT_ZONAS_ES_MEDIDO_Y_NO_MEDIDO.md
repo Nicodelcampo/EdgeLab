@@ -857,3 +857,9 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
 - MEDIDO (target-free): ni la dirección ni la eficiencia persisten de 30 min a semanas; reversión leve a 3 h (−0,027)
   y día a día (−0,089); la amplitud es persistente incluso desestacionalizada. Acta `REGIMEN_ESCALA_ES_M1_20261006.md`.
 - NO MEDIDO: otras clases de activo (falta el M1 de GC, 6E y ZB); reversión como hipótesis formal.
+
+## AVCL-RACIMO — 06/10/2026
+- MEDIDO: el racimo (burst ≥ 3) anticipa **menos rango que antes del racimo** a H50 (−0,06; denso −0,12; 50t y 25t), es
+  decir, consolidación que continúa. Dirección en OFF: **regreso/ruptura** (s < 0): 50t H50 −0,039 (Holm 0,054),
+  25t −0,057 (p 5e-9). Acta `AVCL_RACIMO_RESULTADOS_20261006.md`.
+- NO MEDIDO: réplica en ES/YM/RTY/MGC (prueba única pre-registrada pendiente).
