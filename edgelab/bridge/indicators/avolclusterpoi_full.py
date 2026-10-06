@@ -42,6 +42,7 @@ def run_full(ticks, bars, footprints, params=None, chart_tz="America/Argentina/B
     n = len(bars.close_t)
     tz = ZoneInfo(chart_tz)
     tick_size = float(ticks.tick_size)
+    csr = hasattr(footprints, "bar_cells")
     W = int(p["window_bars"])
     inv = p["invalidation_mode"]
     hist = defaultdict(list)                  # bucket -> [(sesión, score)]
@@ -115,10 +116,15 @@ def run_full(ticks, bars, footprints, params=None, chart_tz="America/Argentina/B
             last_session_first_bar = b
             block, block_n = {}, 0
         lo, hi, cl = int(bars.low_t[b]), int(bars.high_t[b]), int(bars.close_t[b])
-        for t, v in footprints.total[b].items():
-            t = int(t)
-            if lo <= t <= hi:
-                block[t] = block.get(t, 0.0) + float(v)
+        if csr:
+            ta, va = footprints.bar_cells(b)
+            for t, v in zip(ta.tolist(), va.tolist()):     # ya filtrado al [low, high] de la barra
+                block[t] = block.get(t, 0.0) + v
+        else:
+            for t, v in footprints.total[b].items():
+                t = int(t)
+                if lo <= t <= hi:
+                    block[t] = block.get(t, 0.0) + float(v)
         block_n += 1
 
         # ---- ciclo de vida

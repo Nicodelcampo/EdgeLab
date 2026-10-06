@@ -53,6 +53,47 @@ SEED, NPERM, NBOOT, NTESTS, MAXCTRL = 20261005, int(os.environ.get("AVCL_NPERM",
 END_NS = pd.Timestamp("2026-09-30 22:00", tz="UTC").value
 CT = "America/Chicago"
 DESDE, HASTA = os.environ.get("AVCL_DESDE", "2025-07-01"), os.environ.get("AVCL_HASTA", "2026-09-30")
+INST = os.environ.get("AVCL_INST", "MNQ")          # MNQ = paridad validada; MYM = sin paridad propia (exploratorio)
+TICKS_BAR = 50
+
+
+def ct_minute_of_day(ts_ns):
+    """Minuto del día en hora de Chicago; convierte una vez por minuto único (mismo resultado que por tick)."""
+    ts = np.asarray(ts_ns, dtype=np.int64)
+    um, inv = np.unique(ts // 60_000_000_000, return_inverse=True)
+    c = pd.to_datetime(um * 60_000_000_000, utc=True).tz_convert(CT)
+    return np.asarray(c.hour * 60 + c.minute)[inv]
+
+
+def session_end_vec(end_ns):
+    """Igual que session_end_ns(int(x)) por barra (verificado en 200.000 instantes 2025-06 → 2026-09): próximo cierre
+    16:00 CT lun-vie estrictamente posterior."""
+    end = np.asarray(end_ns, dtype=np.int64)
+    d0 = pd.Timestamp(int(end.min()), tz="UTC").tz_convert(CT).normalize() - pd.Timedelta(days=1)
+    d1 = pd.Timestamp(int(end.max()), tz="UTC").tz_convert(CT).normalize() + pd.Timedelta(days=8)
+    days = pd.date_range(d0.tz_localize(None), d1.tz_localize(None), freq="D")
+    days = days[days.weekday < 5]
+    closes = np.sort((days + pd.Timedelta(hours=16)).tz_localize(CT).tz_convert("UTC").asi8)
+    return closes[np.searchsorted(closes, end, side="right")]
+
+
+def load_ticks(path, a, b, contract):
+    """Sólo las columnas que usa el cálculo (ts, precio en ticks, volumen) y sin la pausa CME 16:00-17:00 CT."""
+    import pyarrow.parquet as pq
+    t = pq.read_table(str(path), columns=["ts_utc_ns", "price_ticks", "volume"],
+                      filters=[("ts_utc_ns", ">=", a), ("ts_utc_ns", "<", b)])
+    ts = t.column("ts_utc_ns").to_numpy(); px = t.column("price_ticks").to_numpy(); vol = t.column("volume").to_numpy()
+    del t
+    o = np.argsort(ts, kind="stable") if len(ts) > 1 and (np.diff(ts) < 0).any() else None
+    if o is not None:
+        ts, px, vol = ts[o], px[o], vol[o]
+    mod = ct_minute_of_day(ts)
+    keep = ~((mod >= 960) & (mod < 1020))
+    ts, px, vol = ts[keep], px[keep], vol[keep]
+    tick = float(ed.RESOLVER["instruments"][INST]["tick_size"])
+    return T.TickSeries(ts_ns=ts, price_ticks=px.astype(np.int64), volume=vol.astype(np.int64), bid_ticks=None,
+                        ask_ticks=None, sequence=np.arange(len(ts), dtype=np.int64), tick_size=tick,
+                        instrument=INST, contract=contract)
 
 
 def contract_rows(c, sess):
@@ -67,35 +108,32 @@ def process(c, sess):
     ds, fl, a, b, dates = contract_rows(c, sess)
     path = ed._path(ds, fl)
     t0 = time.time()
-    tk = T.load_canonical_parquet(str(path), start_utc_ns=a, end_utc_ns=b)
-    ctm = pd.to_datetime(tk.ts_ns, utc=True).tz_convert(CT)
-    keep = np.asarray(~(((ctm.hour * 60 + ctm.minute) >= 960) & ((ctm.hour * 60 + ctm.minute) < 1020)))
-    tk = dataclasses.replace(tk, **{f: (getattr(tk, f)[keep] if getattr(tk, f) is not None else None)
-                                    for f in ("ts_ns", "price_ticks", "volume", "bid_ticks", "ask_ticks", "sequence")})
-    del ctm, keep
-    bars = B.build_tick_bars(tk, 50)
-    fps = B.build_footprints(tk, bars, nt8_subseries=True)
+    tk = load_ticks(path, a, b, c)
+    bars = B.build_tick_bars(tk, TICKS_BAR)
+    fps = B.build_total_footprint_csr_nt8(tk, bars)     # mismo contenido que build_footprints(nt8_subseries=True)
     r = run_full(tk, bars, fps, PARAMS)
     del fps, tk
     gc.collect()
     n = len(bars.close_t)
     end = np.asarray(bars.end_ns, dtype=np.int64)
-    send = np.array([session_end_ns(int(x)) for x in end], dtype=np.int64)
-    sdate = pd.to_datetime(send, utc=True).tz_convert(CT).strftime("%Y-%m-%d").to_numpy()
-    tct = pd.to_datetime(end, utc=True).tz_convert(CT)
-    mins = np.asarray(tct.hour * 60 + tct.minute)
+    send = session_end_vec(end)
+    us, uinv = np.unique(send, return_inverse=True)
+    sdate = np.asarray(pd.to_datetime(us, utc=True).tz_convert(CT).strftime("%Y-%m-%d"))[uinv]
+    mins = ct_minute_of_day(end)
     rth = (mins >= 510) & (mins < 900)
     clockb = mins // 30
     hi, lo = np.asarray(bars.high_t, float), np.asarray(bars.low_t, float)
     lc = np.log(np.asarray(bars.close_t, float))
     ret2 = np.r_[0.0, np.diff(lc) ** 2]
     cs = np.cumsum(ret2)
-    created = {}
+    created, side = {}, {}
     for z in r["zones"]:
         created[int(z["created_bar"])] = "OFF" if z["kind"] == "OFF_PRICE" else "AT"
+        side[int(z["created_bar"])] = int(z["direction"])      # +1 soporte (precio arriba), -1 resistencia
     cbar = np.array(sorted(created), dtype=np.int64)
     blk = pd.DataFrame(r["blocks"], columns=["bar", "vol", "bucket"])
     blk["kind"] = blk.bar.map(created).fillna("CTRL")
+    blk["side"] = blk.bar.map(side).fillna(0).astype(int)
     blk = blk[np.isin(sdate[blk.bar], list(dates))]
     blk["voldec"] = pd.qcut(blk.vol.rank(method="first"), 10, labels=False)
     out = []
@@ -125,7 +163,7 @@ def process(c, sess):
         d = d[d.valid & ((d.kind != "CTRL") | d.far)]
         d["rvdec"] = pd.qcut(d.rvb.rank(method="first"), 10, labels=False)
         d["rth"] = rth[d.bar]; d["clock"] = clockb[d.bar]; d["session"] = sdate[d.bar]; d["contract"] = c
-        out.append(d[["contract", "session", "bar", "kind", "H", "rth", "clock", "voldec", "rvdec", "y_rv", "y_rg"]])
+        out.append(d[["contract", "session", "bar", "kind", "side", "H", "rth", "clock", "voldec", "rvdec", "y_rv", "y_rg"]])
     del bars, r
     gc.collect()
     print(c, ds, "eventos OFF/AT", int((blk.kind == "OFF").sum()), int((blk.kind == "AT").sum()), "%.0f s" % (time.time() - t0), flush=True)
@@ -185,14 +223,14 @@ def analyze(df, kind, H, ch, rng, formal=True):
 
 def main():
     t0 = time.time()
-    sess = ed.sessions("MNQ", DESDE, HASTA)
-    print("sesiones aprobadas MNQ", len(sess), "contratos", sorted(sess.contract.unique()), flush=True)
+    sess = ed.sessions(INST, DESDE, HASTA)
+    print("sesiones aprobadas", INST, len(sess), "contratos", sorted(sess.contract.unique()), flush=True)
     parts = []
     for c in sorted(sess.contract.unique(), key=lambda x: (x[-2:], x[-5:-3])):
         parts.append(process(c, sess))
         gc.collect()
     df = pd.concat(parts, ignore_index=True)
-    df.to_parquet(OUT / "avcl_vol1_eventos_controles.parquet")
+    df.to_parquet(OUT / ("avcl_vol1_%s_eventos_controles.parquet" % INST))
     rng = np.random.default_rng(SEED)
     formal, desc = [], []
     for kind in ("OFF", "AT"):
@@ -203,13 +241,22 @@ def main():
                 r2 = analyze(df[~df.rth], kind, H, ch, rng, False)
                 if r2: desc.append(dict(r2, sesion="ETH"))
                 print(kind, H, ch, {k: (round(v, 4) if isinstance(v, float) else v) for k, v in (r or {}).items()}, flush=True)
+    # desglose descriptivo pedido por Nico (no suma pruebas al Holm): OFF soporte vs OFF resistencia
+    for sd, nm in ((1, "OFF_SOP"), (-1, "OFF_RES")):
+        sub = df[df.rth & ((df.kind == "CTRL") | ((df.kind == "OFF") & (df.side == sd)))].copy()
+        sub.loc[sub.kind == "OFF", "kind"] = nm
+        for H in HS:
+            for ch in ("y_rv", "y_rg"):
+                r = analyze(sub, nm, H, ch, rng, False)
+                if r: desc.append(dict(r, sesion="RTH", desglose="lado"))
     ps = [r["p"] for r in formal]; order = np.argsort(ps); mx = 0.0
     for rank, i in enumerate(order):
         mx = max(mx, min(1.0, (len(ps) - rank) * ps[i])); formal[i]["p_holm"] = mx
-    res = dict(campaign="AVCL-VOL-1 etapa 1", manifest="docs/research/AVCL_VOL1_MANIFIESTO_20261005.md", params=PARAMS,
+    res = dict(campaign="AVCL-VOL-1 etapa 1", instrument=INST,
+               parity="validada (MNQ 12-26 50t, 3408/3408)" if INST == "MNQ" else "SIN paridad propia: exploratorio", manifest="docs/research/AVCL_VOL1_MANIFIESTO_20261005.md", params=PARAMS,
                horizons=HS, seed=SEED, nperm=NPERM, nboot=NBOOT, n_tests=len(formal), desde=DESDE, hasta=HASTA,
                rth=formal, eth_descriptivo=desc, seconds=round(time.time() - t0))
-    (OUT / "AVCL_VOL1_RESULTADOS.json").write_text(json.dumps(res, indent=1, default=float), encoding="utf-8")
+    (OUT / ("AVCL_VOL1_%s_RESULTADOS.json" % INST)).write_text(json.dumps(res, indent=1, default=float), encoding="utf-8")
     print("listo en %.0f s" % (time.time() - t0))
 
 

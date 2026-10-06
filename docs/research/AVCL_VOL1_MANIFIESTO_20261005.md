@@ -87,3 +87,12 @@ estrategias, o P&L bruto de una regla única) va en otro manifiesto con otro OK.
   para que un control no contenga el efecto de otra zona (más conservador; a H=200 reduce controles).
 - Prueba de humo de software sobre 5 sesiones (2026-09-21→25, 50 permutaciones) para verificar la cadena; esas cifras
   no se usan ni se interpretan. La corrida formal es en Kaggle con 20.000 permutaciones sobre todo el rango.
+
+## Ampliación pedida por Nico (2026-10-06)
+- **MYM**: misma etapa 1 (12 pruebas, Holm propio sobre 12) como brazo **exploratorio**: aVolClusterPOI no tiene
+  paridad validada en MYM (tick 1,0). Se registra aparte; su resultado no se mezcla con el de MNQ.
+- **Desglose soporte / resistencia** (OFF_PRICE con precio arriba vs abajo de la zona): descriptivo en ambos
+  instrumentos, no suma pruebas al Holm.
+- Rendimiento: footprint vectorizado CSR (idéntico en 254.317/254.317 barras y 3.408/3.408 eventos contra el
+  oráculo), carga sólo de columnas usadas. La corrida previa en Kaggle se canceló a mitad (2 de 6 contratos) y una
+  variante paralela murió por memoria: ninguna produjo resultados.
