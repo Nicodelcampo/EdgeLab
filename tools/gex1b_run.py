@@ -84,7 +84,7 @@ def mes_m1():
 
 
 def spot_m1():
-    t = pq.read_table(SPOT, filters=[("time_utc_ns", ">=", pd.Timestamp("2023-01-01", tz="UTC").value),
+    t = pq.read_table(SPOT, filters=[("time_utc_ns", ">=", pd.Timestamp(os.environ.get("GEX_SPOT_START", "2018-01-01"), tz="UTC").value),
                                      ("time_utc_ns", "<", pd.Timestamp("2025-07-01", tz="UTC").value)]).to_pandas()
     mid = lambda k: (t[f"bid_{k}"] + t[f"ask_{k}"]) / 2
     return pd.DataFrame(dict(ts=t.time_utc_ns, o=mid("open"), h=mid("high"), l=mid("low"), c=mid("close")))
