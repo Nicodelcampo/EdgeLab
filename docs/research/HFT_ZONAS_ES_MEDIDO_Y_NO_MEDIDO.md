@@ -745,3 +745,9 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
   A H200 hay compresión. Desglose OFF: el efecto H10 viene de las resistencias (+0,047), no de los soportes.
   Acta: `docs/research/AVCL_VOL1_RESULTADOS_MYM_20261006.md`. Queda como hipótesis de referencia para otros análisis.
 - NO MEDIDO: paridad MYM; P&L; control de volumen alto sin zona; replicación en MNQ (en curso); lado pre-registrado.
+
+## Exploración EdgeReplica MNQ + MGC 04:15 post-publicación — 06/10/2026
+- MEDIDO (exploración, sin custodia de holdout por decisión de Nico): EdgeReplica MNQ 11-sep → 6-oct, 163 ops,
+  −6,3 USD/op [−25; +13]. Paridad con NT8: el 5-oct coincide al centavo (+145,70). MGC 04:15 corto tras subida:
+  12 ops, +16 USD/op [−2; +37]; sin condición rinde igual. Acta `docs/research/explo_edgereplica_mgc_20261006/RESULTADO.md`.
+- NO MEDIDO: prueba limpia para estas familias (el holdout desde el 1-oct quedó visto); MGC con n suficiente.
