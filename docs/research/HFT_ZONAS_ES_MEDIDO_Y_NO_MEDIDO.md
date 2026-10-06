@@ -766,3 +766,11 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
 - Necesita un protocolo propio: población de primer toque **y** estado continuo, nulo con zona espejo o desplazada
   (lección BigTrap2: F2.7–F2.9), MDE y los dos canales.
 - El cache de VOL-2 (zonas con toques/MFE/MAE) se puede reutilizar.
+
+## AVCL-VOL-2 A+B MNQ — 06/10/2026
+- MEDIDO: la zona agrega información de expansión de rango **más allá del volumen y la intensidad**: AT `y_rg` A1
+  +0,081, **A2 contra volumen alto sin zona +0,054 (Holm 2e-9)**; OFF A2 +0,072. Barra por barra, la volatilidad no
+  difiere del volumen alto (AT `y_rv` A2 ≈ 0). Curva B: el rango por barra sólo sube en 1–3 barras, así que la
+  expansión de 10 barras es **desplazamiento**, no barras más grandes. Acta `AVCL_VOL2_AB_RESULTADOS_20261006.md`.
+- NO MEDIDO: dirección del desplazamiento (C); soporte/resistencia; curva B para volumen alto (muestra de 495,
+  diseño restrictivo).
