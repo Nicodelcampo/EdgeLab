@@ -1,0 +1,1749 @@
+// ============================================================================
+// aVolClusterPOI.cs - Anomaly Volume Cluster POI (v0.5, research freeze)
+// ============================================================================
+//
+// ORIGEN
+//   Reescritura desde cero de aVolZonePOI.cs rescatando sus dos ideas utiles:
+//   1) Deteccion por MASA DE CLUSTER: niveles "hot" (vol >= mediana x mult)
+//      contiguos se agrupan, y la SUMA del cluster se compara contra el
+//      perfil historico del mismo bucket horario. Anomalia a escala de
+//      zona, no de celda individual (complementa a aVolCellPOI2).
+//   2) Alerta de RAFAGA: N zonas creadas en pocas barras dentro de un rango
+//      de ticks acotado (senal de segundo orden: tasa de formacion).
+//
+// QUE SE ELIMINO DEL ORIGINAL (y por que)
+//   - SQLite y "mitigacion" por proceso externo: estado fuera del indicador
+//     = repintado irreproducible. El ciclo de vida ahora es interno.
+//   - Precios double como clave de diccionario y epsilons ad-hoc (+0.01):
+//     TODO el estado usa TICKS ENTEROS (familia de bugs ULP, AUDIT-002).
+//   - Fallback a cola global mezclando horas: reintroducia el sesgo de
+//     estacionalidad intradiaria. Sin historial del bucket => no detecta.
+//   - Bloques anclados al punto de carga del chart: ahora se anclan al
+//     inicio de sesion => deterministas.
+//   - Percentil con interpolacion lineal: cuantil empirico SIN interpolar.
+//
+// CONTRATO (declarado para una futura traduccion a EdgeLab)
+//   1. Calculate = OnBarClose, fijo. Clase de repintado: non_repainting.
+//      Una zona creada al cierre de la barra B esta disponible desde B+1;
+//      la barra creadora nunca toca ni invalida su propia zona.
+//   2. Ticks enteros: tick = round(snap_NT8(precio) / TickSize,
+//      MidpointRounding.AwayFromZero). Limites fisicos de la celda P:
+//      [P - ts/2, P + ts/2] (solo para dibujo). Todas las comparaciones
+//      del ciclo de vida son aritmetica entera: exposicion ULP = 0 por
+//      construccion (verificar con tools/ulp_exposure.py si se traduce).
+//   3. Perfil por barra reconstruido SIEMPRE de la subserie 1-tick
+//      (footprint=reconstructed_1tick_subseries), en cualquier chart.
+//      Ticks fuera de [lowTick, highTick] de la barra primaria se ignoran.
+//   4. Bloques: WindowBars barras primarias, contador reiniciado al inicio
+//      de cada sesion. El bloque parcial al final de la sesion se descarta.
+//   5. Perfil historico por bucket: SOLO sesiones completas anteriores.
+//      La sesion actual acumula aparte y se commitea al iniciar la
+//      siguiente. Los datos previos al primer inicio de sesion visto se
+//      descartan. FIFO por sesion: LookbackSessions. Muestra por bloque =
+//      score del mejor cluster (0 si no hubo clusters).
+//   6. Bucket horario: ancla en (cierre - 1 segundo). SessionRelative
+//      (default): minutos desde ActualSessionBegin / TimeBucketMinutes.
+//      WallClock si UseSessionBuckets = false.
+//   7. Mediana = sorted[n/2] (mediana superior para n par). Cuantil
+//      empirico: menor v tal que count(<= v) >= ceil(p*n). Sin interpolar.
+//   8. Ciclo de vida: TOUCH = [lowTick, highTick] de una barra posterior
+//      interseca [LowerTick, UpperTick]. FirstTouch: primer touch invalida.
+//      CloseThrough: lado de referencia = lado del close al crear (si
+//      cierra dentro, lo fija el primer close externo posterior); invalida
+//      el primer close en el lado opuesto. MaxTouches / MaxAgeBars.
+//   9. Export CSV opcional (EventLogPath): SOBREESCRIBE siempre (nunca
+//      append) para no mezclar corridas. Meta en linea 1.
+//
+// CAPACIDAD PREDICTIVA (hipotesis, no promesa)
+//   - Cada zona recibe direccion causal: LONG si el cierre creador queda arriba
+//     (soporte esperado), SHORT si queda abajo (resistencia esperada).
+//   - QualityScore 0..100 combina SOLO informacion disponible al crear:
+//     anomalia 35%, concentracion 25%, densidad 15%, rechazo 15%, rafaga 10%.
+//     Es un ranking heuristico transparente, NO una probabilidad calibrada.
+//   - Tras el primer touch, un evaluador forward registra TARGET/STOP/TIMEOUT/
+//     AMBIGUOUS, MFE y MAE. Si target y stop ocurren en la misma barra, no
+//     inventa el orden: AMBIGUOUS. Esto permite validar capacidad predictiva.
+//   - Dashboard en una esquina del chart (Draw.TextFixed): estado del perfil,
+//     conteos de zonas y reacciones, ultima zona y leyenda de lectura.
+//     SOLO visual: no afecta deteccion, ciclo de vida ni export.
+//   - Las zonas invalidadas NO se borran (default): quedan en GRIS acotadas
+//     a su vida real (creacion -> invalidacion), para auditar visualmente
+//     todo lo que el indicador marco. RemoveInvalidatedZones=true las borra.
+//
+// DEFAULTS v0.5 = MODO RESEARCH (censo 2026-08-13):
+//   percentil 98, min 20 muestras, filtro predictivo OFF, MaxAge=0,
+//   1 cluster de maxima masa por bloque, at-price separado de off-price.
+//   Export: ZONE_CREATED | FIRST_TOUCH | ZONE_INVALIDATED | AT_PRICE_CREATED.
+//   Sin ZONE_TOUCHED, ZONE_OUTCOME ni BURST en el CSV.
+//
+// ESTADO: DETECTOR CONGELADO para paridad P2 con el kernel Python.
+// No usar sus zonas para operar hasta pasar el pipeline estandar
+// (contrato de paridad, oraculo, ulp_exposure, tests).
+// ============================================================================
+
+#region Using declarations
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
+using System.IO;
+using System.Text;
+using System.Windows.Media;
+using System.Xml.Serialization;
+using NinjaTrader.Data;
+using NinjaTrader.Gui;
+using NinjaTrader.Gui.Chart;
+using NinjaTrader.Gui.Tools;
+using NinjaTrader.NinjaScript;
+using NinjaTrader.NinjaScript.DrawingTools;
+#endregion
+
+// Enums en ambito GLOBAL (fuera del namespace): el codigo autogenerado de
+// NT8 (MarketAnalyzerColumns, Strategies) los referencia sin calificar desde
+// otros namespaces; declararlos dentro de Indicators produce CS0246.
+public enum AVCLPSimSlMode { ZonePercent = 0, FixedTicks = 1 }
+public enum AVCLPSimTpMode { RMultiple = 0, FixedTicks = 1 }
+
+namespace NinjaTrader.NinjaScript.Indicators
+{
+	public class aVolClusterPOISim : Indicator
+	{
+		// ---- sesion y buckets ----
+		private SessionIterator sessionIterator;
+		private DateTime sessionBegin = DateTime.MinValue;
+		private int sessionIndex = -1;
+
+		private class Sample { public int Session; public double Score; }
+		private Dictionary<int, List<Sample>> bucketHistory;   // sesiones completas anteriores
+		private Dictionary<int, List<double>> pendingSession;  // sesion actual, aun no commiteada
+
+		// ---- acumuladores ----
+		private Dictionary<long, double> tickProfile;  // barra primaria en formacion (tick -> vol)
+		private Dictionary<long, double> blockCells;   // bloque actual (tick -> vol)
+		private int blockBarCount;
+
+		// ---- zonas ----
+		private class Zone
+		{
+			public long Id;
+			public int CreatedBar;
+			public int InvalidatedBar;
+			public long LowerTick;
+			public long UpperTick;
+			public double Score;
+			public int Bucket;
+			public int TouchCount;
+			public int RefSide;      // +1 close arriba al crear, -1 abajo, 0 indefinido
+			public bool Active;
+			public string RectTag;
+			public string LabelTag;
+			public string Label;
+			public int Direction;       // +1 LONG/support, -1 SHORT/resistance
+			public double AnomalyRatio;
+			public double ClusterShare;
+			public double Density;
+			public double QualityScore; // heuristic rank, not probability
+			public int DistanceTicks;
+			public int BurstCount;
+			public bool OutcomeStarted;
+			public bool OutcomeDone;
+			public int TouchBar;
+			public int MfeTicks;
+			public int MaeTicks;
+			public string Outcome;
+			public string Kind;          // OFF_PRICE | AT_PRICE
+			public bool FirstTouchEmitted;
+		}
+		private List<Zone> zones;
+
+		// ---- simulador de trades (exploración visual; NO evidencia) ----
+		private class SimTrade
+		{
+			public long ZoneId; public int Dir; public int EntryBar; public double Entry; public double Sl; public double Tp;
+			public double Risk; public bool BeDone; public bool Open; public int ExitBar; public double Exit; public string Reason;
+			public double R;
+		}
+		private List<SimTrade> simTrades;
+		private Queue<string> simTags;
+		private double simEquityR, simPeakR, simMaxDdR, simSumWinR, simSumLossR;
+		private int simWins, simLosses, simBe, simTimeouts, simConsLoss, simMaxConsLoss, simLongN, simShortN;
+		private double simLongR, simShortR, simUsd;
+		private List<Zone> renderZones;
+		private long nextZoneId;
+
+		private SharpDX.Direct2D1.Brush _dxSupport;
+		private SharpDX.Direct2D1.Brush _dxResistance;
+		private SharpDX.Direct2D1.Brush _dxAtPrice;
+		private SharpDX.Direct2D1.Brush _dxSupportBorder;
+		private SharpDX.Direct2D1.Brush _dxResistanceBorder;
+		private SharpDX.Direct2D1.Brush _dxAtPriceBorder;
+		private SharpDX.Direct2D1.Brush _dxText;
+
+		private class Creation { public int Bar; public long Center2; } // Center2 = LowerTick + UpperTick (entero siempre)
+		private List<Creation> creations;
+
+		private Queue<string> renderedTags;
+
+		// ---- export ----
+		private StreamWriter writer;
+		private bool writerFailed;
+		private long eventSeq;
+
+		// ---- export diagnostico por bloque (opcional, off por defecto) ----
+		private StreamWriter diagWriter;
+		private bool diagWriterFailed;
+		private long diagSeq;
+
+		// ---- export diagnostico por BARRA (opcional, off por defecto) ----
+		// P-70: el perfil se acumula en la subserie de 1 tick y se vuelca al cerrar
+		// la barra primaria. El orden de entrega entre las dos series decide de que
+		// barra es cada tick, y el parquet no lo contiene. Este log lo hace dato.
+		private StreamWriter barWriter;
+		private bool barWriterFailed;
+
+		// ---- dashboard (solo visual) ----
+		private int totalZonesCreated;
+		private int sessionZonesCreated;
+		private int outcomeTarget;
+		private int outcomeStop;
+		private int outcomeTimeout;
+		private int outcomeAmbiguous;
+		private string lastZoneInfo;
+		private SimpleFont dashFont;
+
+		protected override void OnStateChange()
+		{
+			if (State == State.SetDefaults)
+			{
+				Description = "[SIM visual, exploracion] Cluster-mass POI v0.5: 1 cluster/bloque, at-price separado, FIRST_TOUCH, MaxAge=0.";
+				Name = "aVolClusterPOISim";
+				Calculate = Calculate.OnBarClose;
+				IsOverlay = true;
+				DisplayInDataBox = false;
+				DrawOnPricePanel = true;
+				PaintPriceMarkers = false;
+				IsSuspendedWhileInactive = true;
+
+				WindowBars = 10;
+				MedianMultiplier = 2.0;
+				MaxGapTicks = 1;
+				MinClusterTicks = 2;
+
+				UseSessionBuckets = true;
+				TimeBucketMinutes = 30;
+				LookbackSessions = 20;
+				DetectionPercentile = 98.0;
+				MinSamplesPerBucket = 20;
+
+				EnablePredictiveFilter = false;
+				MinQualityScore = 0.0;
+				MaxDistanceFromZoneTicks = 80;
+				RejectionFullScoreTicks = 12;
+				ReactionHorizonBars = 50;
+				ReactionTargetTicks = 12;
+				ReactionStopTicks = 8;
+
+				InvalidationMode = AVCLPInvalidationMode.CloseThrough;
+				MaxAgeBars = 0;
+				MaxTouches = 0;
+
+				BurstMinZones = 3;
+				BurstWindowBars = 200;
+				BurstRangeTicks = 40;
+
+				EventLogPath = "";
+				DiagBlockExportEnabled = false;
+				UseTopKHotCells = false;
+				HotFraction = 0.17;
+				DiagBlockExportPath = "";
+				BarProfileLogPath = "";
+				Opacity = 40;
+				VisualExtendBars = 500;
+				MaxRenderedZones = 500;
+				RemoveInvalidatedZones = false;
+				ShowScoreLabel = true;
+				ShowOutcomeLabels = false;
+				ShowDashboard = true;
+				DashboardCorner = AVCLPDashboardCorner.TopRight;
+				SupportColor = Brushes.MediumSeaGreen;
+				ResistanceColor = Brushes.IndianRed;
+				AtPriceColor = Brushes.SteelBlue;
+
+				SimEnabled = true;
+				SimSlMode = AVCLPSimSlMode.ZonePercent;
+				SimSlZonePercent = 50.0;
+				SimSlTicks = 8;
+				SimTpMode = AVCLPSimTpMode.RMultiple;
+				SimTpR = 30.0;
+				SimTpTicks = 80;
+				SimUseBreakEven = false;
+				SimBeTriggerR = 1.0;
+				SimBeOffsetTicks = 0;
+				SimMaxBarsInTrade = 0;
+				SimExitAtSessionEnd = true;
+				SimCommissionTicks = 0.0;
+				SimOneTradeAtATime = false;
+				SimDrawTrades = true;
+				SimMaxDrawnTrades = 300;
+			}
+			else if (State == State.Configure)
+			{
+				// Subserie de 1 tick para reconstruir el perfil por precio en cualquier chart.
+				AddDataSeries(BarsPeriodType.Tick, 1);
+			}
+			else if (State == State.DataLoaded)
+			{
+				sessionIterator = new SessionIterator(Bars);
+				sessionBegin = DateTime.MinValue;
+				sessionIndex = -1;
+				bucketHistory = new Dictionary<int, List<Sample>>();
+				pendingSession = new Dictionary<int, List<double>>();
+				tickProfile = new Dictionary<long, double>();
+				blockCells = new Dictionary<long, double>();
+				blockBarCount = 0;
+				zones = new List<Zone>();
+				renderZones = new List<Zone>();
+				if (Instrument != null) SimSharedNoop.Clear(Instrument.FullName);
+				nextZoneId = 1;
+				creations = new List<Creation>();
+				renderedTags = new Queue<string>();
+				writer = null;
+				writerFailed = false;
+				eventSeq = 0;
+				diagWriter = null;
+				diagWriterFailed = false;
+				diagSeq = 0;
+				totalZonesCreated = 0;
+				sessionZonesCreated = 0;
+				outcomeTarget = 0;
+				outcomeStop = 0;
+				outcomeTimeout = 0;
+				outcomeAmbiguous = 0;
+				lastZoneInfo = "";
+				dashFont = new SimpleFont("Consolas", 12);
+				simTrades = new List<SimTrade>();
+				simTags = new Queue<string>();
+				simEquityR = 0; simPeakR = 0; simMaxDdR = 0; simSumWinR = 0; simSumLossR = 0;
+				simWins = 0; simLosses = 0; simBe = 0; simTimeouts = 0; simConsLoss = 0; simMaxConsLoss = 0;
+				simLongN = 0; simShortN = 0; simLongR = 0; simShortR = 0; simUsd = 0;
+			}
+			else if (State == State.Terminated)
+			{
+				if (writer != null)
+				{
+					try { writer.Flush(); writer.Close(); } catch { }
+					writer = null;
+				}
+				if (diagWriter != null)
+				{
+					try { diagWriter.Flush(); diagWriter.Close(); } catch { }
+					diagWriter = null;
+				}
+				if (barWriter != null)
+				{
+					try { barWriter.Flush(); barWriter.Close(); } catch { }
+					barWriter = null;
+				}
+				DisposeDxBrushes();
+			}
+		}
+
+		protected override void OnBarUpdate()
+		{
+			// === Subserie 1-tick: acumular volumen por precio (tick entero) ===
+			if (BarsInProgress == 1)
+			{
+				if (tickProfile == null) return;
+				if (BarsArray[1] == null || BarsArray[1].Count == 0) return;
+				double tvol = Volumes[1][0];
+				if (tvol <= 0) return;
+				long tick = PriceToTick(Closes[1][0]);
+				double cur;
+				if (tickProfile.TryGetValue(tick, out cur)) tickProfile[tick] = cur + tvol;
+				else tickProfile[tick] = tvol;
+				return;
+			}
+
+			if (BarsInProgress != 0) return;
+			if (CurrentBar < 0) return;
+
+			// === Inicio de sesion: commit del perfil pendiente, reset de bloque ===
+			if (Bars.IsFirstBarOfSession)
+			{
+				if (SimEnabled && SimExitAtSessionEnd && CurrentBar > 0) SimCloseAll(Close[1], CurrentBar - 1, "SESION");
+				CommitSession();
+				sessionIndex++;
+				try
+				{
+					sessionIterator.GetNextSession(Time[0], true);
+					sessionBegin = sessionIterator.ActualSessionBegin;
+				}
+				catch { sessionBegin = DateTime.MinValue; }
+				blockCells.Clear();
+				blockBarCount = 0;
+				sessionZonesCreated = 0;
+			}
+
+			// === Snapshot del perfil de la barra primaria recien cerrada ===
+			long lowTick = PriceToTick(Low[0]);
+			long highTick = PriceToTick(High[0]);
+			WriteBarProfileLog(lowTick, highTick);   // P-70: aditivo, antes de consumir el perfil
+			if (tickProfile.Count > 0)
+			{
+				foreach (KeyValuePair<long, double> kv in tickProfile)
+				{
+					if (kv.Key < lowTick || kv.Key > highTick) continue; // defensa de borde
+					double cur;
+					if (blockCells.TryGetValue(kv.Key, out cur)) blockCells[kv.Key] = cur + kv.Value;
+					else blockCells[kv.Key] = kv.Value;
+				}
+				tickProfile.Clear();
+			}
+			blockBarCount++;
+
+			// === Ciclo de vida: solo zonas creadas en barras ANTERIORES ===
+			ProcessLifecycle(lowTick, highTick, PriceToTick(Close[0]));
+			if (SimEnabled) SimUpdate();
+
+			// === Cierre de bloque ===
+			if (blockBarCount >= WindowBars)
+			{
+				ProcessBlock();
+				blockCells.Clear();
+				blockBarCount = 0;
+				zones.RemoveAll(delegate(Zone z) { return !z.Active && (!z.OutcomeStarted || z.OutcomeDone); });
+			}
+
+			if (ShowDashboard) UpdateDashboard();
+		}
+
+		// ------------------------------------------------------------------
+		// Deteccion
+		// ------------------------------------------------------------------
+		private void ProcessBlock()
+		{
+			int bucket = GetTimeBucket(Time[0]);
+			double bestScore = 0;
+
+			// ---- variables de diagnostico (solo lectura, no alteran la deteccion) ----
+			// Declaradas en el scope de ProcessBlock para que EmitBlockDiag() las vea
+			// sin importar que rama se tomo. DiagBlockExportPath="" => todo esto es
+			// costo cero salvo la asignacion de estos defaults.
+			double diagMedian = double.NaN;
+			double diagHotThreshold = double.NaN;
+			double diagThresh = double.NaN;
+			int diagHistCount = 0;
+			List<List<long>> diagClusters = null;
+			List<long> diagBestCluster = null;
+			double diagBestPassScore = 0;
+			string diagDecision = "ABSTAIN_FEW_CELLS";
+
+			if (blockCells.Count >= 3)
+			{
+				// Mediana (superior para n par) de los volumenes por celda del bloque
+				List<double> vols = new List<double>(blockCells.Values);
+				vols.Sort();
+				double median = vols[vols.Count / 2];
+				double hotThreshold = median * MedianMultiplier;
+				diagMedian = median;
+				diagHotThreshold = hotThreshold;
+
+				// Niveles hot ordenados por tick (entero).
+				// Dos reglas de seleccion; la geometria, el clustering y el umbral
+				// historico de abajo son IDENTICOS en las dos.
+				List<long> hotTicks = new List<long>();
+				if (UseTopKHotCells)
+				{
+					// REGLA ROBUSTA: las K celdas de mayor volumen, K proporcional al
+					// tamano del bloque, empates por tick ascendente. Medido sobre los
+					// 22.507 bloques de NQ 06-26 120t: el 89,60% de los bloques tiene
+					// al menos una celda a UN contrato del umbral de mediana, asi que
+					// un contrato de diferencia contra el parquet cambia el conjunto.
+					// El ranking no tiene ese borde. Turnover de la geometria bajo
+					// ruido de +-1: 30,87% con mediana -> 24,47% con top-K.
+					// HotFraction 0,17 es la mediana empirica de hot/n_celdas (0,1687),
+					// asi que el TAMANO del conjunto se preserva.
+					int kSel = (int)Math.Round(HotFraction * blockCells.Count,
+						MidpointRounding.AwayFromZero);
+					if (kSel < MinClusterTicks) kSel = MinClusterTicks;
+					if (kSel > blockCells.Count) kSel = blockCells.Count;
+					List<long> byVol = new List<long>(blockCells.Keys);
+					byVol.Sort(delegate (long a, long b)
+					{
+						double va = blockCells[a], vb = blockCells[b];
+						if (va != vb) return vb.CompareTo(va);   // mayor volumen primero
+						return a.CompareTo(b);                   // empate: tick ascendente
+					});
+					for (int i = 0; i < kSel; i++) hotTicks.Add(byVol[i]);
+				}
+				else
+				{
+					// REGLA ORIGINAL v0.5: vol >= mediana * multiplicador
+					foreach (KeyValuePair<long, double> kv in blockCells)
+						if (kv.Value >= hotThreshold) hotTicks.Add(kv.Key);
+				}
+				hotTicks.Sort();
+
+				// Clusters por gap entero (sin epsilons)
+				List<List<long>> clusters = new List<List<long>>();
+				List<long> current = new List<long>();
+				for (int i = 0; i < hotTicks.Count; i++)
+				{
+					if (current.Count == 0) { current.Add(hotTicks[i]); continue; }
+					long gap = hotTicks[i] - current[current.Count - 1] - 1;
+					if (gap <= MaxGapTicks) current.Add(hotTicks[i]);
+					else
+					{
+						if (current.Count >= MinClusterTicks) clusters.Add(current);
+						current = new List<long>();
+						current.Add(hotTicks[i]);
+					}
+				}
+				if (current.Count >= MinClusterTicks) clusters.Add(current);
+				diagClusters = clusters;
+				diagDecision = clusters.Count == 0 ? "ABSTAIN_NO_CLUSTER" : diagDecision;
+
+				// Umbral historico del bucket. SIN fallback global: sin historia => sin deteccion.
+				double thresh = double.NaN;
+				int histCount = 0;
+				List<double> hist = HistoryScores(bucket);
+				if (hist != null && hist.Count >= MinSamplesPerBucket)
+				{
+					hist.Sort();
+					histCount = hist.Count;
+					thresh = EmpiricalQuantile(hist, DetectionPercentile / 100.0);
+				}
+				diagThresh = thresh;
+				diagHistCount = histCount;
+				if (double.IsNaN(thresh)) diagDecision = "ABSTAIN_NO_HISTORY";
+
+				double blockTotal = 0;
+				foreach (double v in blockCells.Values) blockTotal += v;
+
+				List<long> bestCluster = null;
+				double bestPassScore = 0;
+				foreach (List<long> cluster in clusters)
+				{
+					double score = 0;
+					for (int i = 0; i < cluster.Count; i++) score += blockCells[cluster[i]];
+					if (score > bestScore) bestScore = score;
+					if (double.IsNaN(thresh) || thresh <= 0 || score < thresh) continue;
+					if (bestCluster == null || score > bestPassScore)
+					{
+						bestCluster = cluster;
+						bestPassScore = score;
+					}
+				}
+				diagBestCluster = bestCluster;
+				diagBestPassScore = bestPassScore;
+				if (bestCluster == null && !double.IsNaN(thresh) && clusters.Count > 0)
+					diagDecision = "ABSTAIN_BELOW_THRESHOLD";
+
+				if (bestCluster != null)
+				{
+					long lower = bestCluster[0];
+					long upper = bestCluster[bestCluster.Count - 1];
+					long closeTick = PriceToTick(Close[0]);
+					int direction = closeTick > upper ? 1 : (closeTick < lower ? -1 : 0);
+					int distance = direction == 1 ? (int)(closeTick - upper)
+						: (direction == -1 ? (int)(lower - closeTick) : 0);
+					int width = (int)(upper - lower + 1);
+					double ratio = bestPassScore / thresh;
+					double share = blockTotal > 0 ? bestPassScore / blockTotal : 0;
+					double density = width > 0 ? (double)bestCluster.Count / width : 0;
+					int burstCount = CountNearbyCreations(lower + upper) + 1;
+					double quality = ComputeQuality(ratio, share, density, distance, burstCount);
+					bool offPrice = direction != 0;
+					bool passes = offPrice && quality >= MinQualityScore;
+					if (MaxDistanceFromZoneTicks > 0 && distance > MaxDistanceFromZoneTicks) passes = false;
+					if (EnablePredictiveFilter && !passes)
+					{
+						/* filtro ON: no crea ni at-price ni off-price que no pase */
+						diagDecision = offPrice ? "ABSTAIN_DISTANCE_OR_QUALITY_FILTER" : "ABSTAIN_AT_PRICE_FILTERED";
+					}
+					else
+					{
+						CreateZone(lower, upper, bestPassScore, bucket, thresh, histCount, direction,
+							ratio, share, density, quality, distance, burstCount,
+							offPrice ? "OFF_PRICE" : "AT_PRICE");
+						diagDecision = "CREATE";
+					}
+				}
+			}
+
+			if (DiagBlockExportEnabled) EmitBlockDiag(bucket, diagMedian, diagHotThreshold,
+				diagThresh, diagHistCount, diagClusters, diagBestCluster, diagBestPassScore, diagDecision);
+
+			// La muestra del bloque entra SIEMPRE al pendiente de la sesion actual
+			// (una muestra por bloque = score del mejor cluster; 0 si no hubo).
+			List<double> pend;
+			if (!pendingSession.TryGetValue(bucket, out pend))
+			{
+				pend = new List<double>();
+				pendingSession[bucket] = pend;
+			}
+			pend.Add(bestScore);
+		}
+
+		private void CreateZone(long lowerTick, long upperTick, double score, int bucket,
+		double threshold, int samples, int direction, double anomalyRatio,
+		double clusterShare, double density, double quality, int distanceTicks, int burstCount,
+		string kind)
+		{
+			Zone z = new Zone();
+			z.Id = nextZoneId++;
+			z.CreatedBar = CurrentBar;
+			z.LowerTick = lowerTick;
+			z.UpperTick = upperTick;
+			z.Score = score;
+			z.Bucket = bucket;
+			z.TouchCount = 0;
+			z.Active = true;
+			z.Direction = direction;
+			z.RefSide = direction;
+			z.AnomalyRatio = anomalyRatio;
+			z.ClusterShare = clusterShare;
+			z.Density = density;
+			z.QualityScore = quality;
+			z.DistanceTicks = distanceTicks;
+			z.BurstCount = burstCount;
+			z.Outcome = "";
+			z.Kind = kind;
+			z.FirstTouchEmitted = false;
+
+			totalZonesCreated++;
+			sessionZonesCreated++;
+			string dirName = kind == "AT_PRICE" ? "AT-PRICE" : (direction > 0 ? "SOPORTE" : "RESIST");
+			double midPrice = ((lowerTick + upperTick) * 0.5) * TickSize;
+			lastZoneInfo = dirName + "  Q" + quality.ToString("0", CultureInfo.InvariantCulture)
+				+ "  R" + anomalyRatio.ToString("0.00", CultureInfo.InvariantCulture)
+				+ "  @ " + Instrument.MasterInstrument.FormatPrice(midPrice);
+
+			zones.Add(z);
+			if (SimEnabled && kind != "AT_PRICE" && direction != 0) SimOpen(z);
+			EmitEvent(kind == "AT_PRICE" ? "AT_PRICE_CREATED" : "ZONE_CREATED",
+				z.Id, lowerTick, upperTick, score, threshold, samples, bucket, 0, kind);
+
+			if (Instrument != null)
+			{
+				SimSharedNoop.PublishZone(Instrument.FullName, new SharedClusterZone
+				{
+					Id = z.Id,
+					CreatedBar = CurrentBar,
+					InvalidatedBar = -1,
+					LowerTick = lowerTick,
+					UpperTick = upperTick,
+					Direction = direction,
+					Kind = kind,
+					Score = score,
+					Quality = quality,
+					AnomalyRatio = anomalyRatio,
+					Active = true
+				});
+			}
+
+			z.InvalidatedBar = -1;
+			string side = kind == "AT_PRICE" ? "OCC" : (direction > 0 ? "SOP" : "RES");
+			z.Label = side + " Q" + quality.ToString("0", CultureInfo.InvariantCulture)
+				+ " R" + anomalyRatio.ToString("0.00", CultureInfo.InvariantCulture);
+
+			if (renderZones != null)
+			{
+				renderZones.Add(z);
+				if (renderZones.Count > MaxRenderedZones)
+					renderZones.RemoveAt(0);
+			}
+
+			Creation c = new Creation();
+			c.Bar = CurrentBar;
+			c.Center2 = lowerTick + upperTick;
+			creations.Add(c);
+		}
+
+		private int CountNearbyCreations(long center2)
+		{
+			while (creations.Count > 0 && CurrentBar - creations[0].Bar > BurstWindowBars)
+				creations.RemoveAt(0);
+			int near = 0;
+			for (int i = 0; i < creations.Count; i++)
+				if (Math.Abs(creations[i].Center2 - center2) <= 2L * BurstRangeTicks) near++;
+			return near;
+		}
+
+		private double ComputeQuality(double ratio, double share, double density, int distance, int burstCount)
+		{
+			double anomaly = Clamp01((ratio - 1.0) / 0.50);
+			double concentration = Clamp01(share / 0.20);
+			double compactness = Clamp01(density);
+			double rejection = Clamp01((double)distance / Math.Max(1, RejectionFullScoreTicks));
+			double burst = BurstMinZones > 0 ? Clamp01((double)burstCount / BurstMinZones) : 0;
+			return 100.0 * (0.35 * anomaly + 0.25 * concentration + 0.15 * compactness
+				+ 0.15 * rejection + 0.10 * burst);
+		}
+
+		private static double Clamp01(double x)
+		{
+			if (x < 0) return 0;
+			if (x > 1) return 1;
+			return x;
+		}
+
+		// ------------------------------------------------------------------
+		// Ciclo de vida (aritmetica entera, cero ULP por construccion)
+		// ------------------------------------------------------------------
+		private void ProcessLifecycle(long lowTick, long highTick, long closeTick)
+		{
+			for (int i = 0; i < zones.Count; i++)
+			{
+				Zone z = zones[i];
+				if (z.CreatedBar >= CurrentBar) continue;
+				if (z.Kind == "AT_PRICE") continue;
+
+				if (z.OutcomeStarted && !z.OutcomeDone) UpdateOutcome(z, lowTick, highTick);
+				if (!z.Active) continue;
+
+				if (MaxAgeBars > 0 && CurrentBar - z.CreatedBar >= MaxAgeBars)
+				{
+					KillZone(z, "ZONE_EXPIRED", "max_age");
+					continue;
+				}
+
+				bool touched = lowTick <= z.UpperTick && highTick >= z.LowerTick;
+				if (touched)
+				{
+					z.TouchCount++;
+					if (!z.FirstTouchEmitted)
+					{
+						z.FirstTouchEmitted = true;
+						EmitEvent("FIRST_TOUCH", z.Id, z.LowerTick, z.UpperTick, z.Score, double.NaN, 0, z.Bucket, 1, "first_touch");
+						if (!z.OutcomeStarted && z.Direction != 0)
+						{
+							z.OutcomeStarted = true;
+							z.TouchBar = CurrentBar;
+							UpdateOutcome(z, lowTick, highTick);
+						}
+					}
+					if (InvalidationMode == AVCLPInvalidationMode.FirstTouch)
+					{
+						KillZone(z, "ZONE_INVALIDATED", "first_touch");
+						continue;
+					}
+					if (MaxTouches > 0 && z.TouchCount >= MaxTouches)
+					{
+						KillZone(z, "ZONE_INVALIDATED", "max_touches");
+						continue;
+					}
+				}
+
+				if (InvalidationMode == AVCLPInvalidationMode.CloseThrough)
+				{
+					if (z.RefSide == 1 && closeTick < z.LowerTick)
+					{
+						KillZone(z, "ZONE_INVALIDATED", "close_through_down");
+						continue;
+					}
+					if (z.RefSide == -1 && closeTick > z.UpperTick)
+					{
+						KillZone(z, "ZONE_INVALIDATED", "close_through_up");
+						continue;
+					}
+				}
+			}
+		}
+
+		private void UpdateOutcome(Zone z, long lowTick, long highTick)
+		{
+			int favorable;
+			int adverse;
+			if (z.Direction > 0)
+			{
+				favorable = (int)Math.Max(0, highTick - z.UpperTick);
+				adverse = (int)Math.Max(0, z.UpperTick - lowTick);
+			}
+			else
+			{
+				favorable = (int)Math.Max(0, z.LowerTick - lowTick);
+				adverse = (int)Math.Max(0, highTick - z.LowerTick);
+			}
+			if (favorable > z.MfeTicks) z.MfeTicks = favorable;
+			if (adverse > z.MaeTicks) z.MaeTicks = adverse;
+
+			bool hitTarget = favorable >= ReactionTargetTicks;
+			bool hitStop = adverse >= ReactionStopTicks;
+			if (hitTarget && hitStop) FinishOutcome(z, "AMBIGUOUS");
+			else if (hitTarget) FinishOutcome(z, "TARGET");
+			else if (hitStop) FinishOutcome(z, "STOP");
+			else if (CurrentBar - z.TouchBar + 1 >= ReactionHorizonBars) FinishOutcome(z, "TIMEOUT");
+		}
+
+		private void FinishOutcome(Zone z, string outcome)
+		{
+			if (z.OutcomeDone) return;
+			z.OutcomeDone = true;
+			z.Outcome = outcome;
+			if (outcome == "TARGET") outcomeTarget++;
+			else if (outcome == "STOP") outcomeStop++;
+			else if (outcome == "TIMEOUT") outcomeTimeout++;
+			else outcomeAmbiguous++;
+		}
+
+		private void KillZone(Zone z, string type, string reason)
+		{
+			z.Active = false;
+			z.InvalidatedBar = CurrentBar;
+			EmitEvent(type, z.Id, z.LowerTick, z.UpperTick, z.Score, double.NaN, 0, z.Bucket, z.TouchCount, reason);
+			if (Instrument != null)
+				SimSharedNoop.InvalidateZone(Instrument.FullName, z.Id, CurrentBar);
+			if (RemoveInvalidatedZones && renderZones != null)
+			{
+				renderZones.Remove(z);
+			}
+		}
+
+		// ------------------------------------------------------------------
+		// Perfil historico por sesiones completas
+		// ------------------------------------------------------------------
+		private void CommitSession()
+		{
+			if (sessionIndex >= 0 && pendingSession.Count > 0)
+			{
+				foreach (KeyValuePair<int, List<double>> kv in pendingSession)
+				{
+					List<Sample> hist;
+					if (!bucketHistory.TryGetValue(kv.Key, out hist))
+					{
+						hist = new List<Sample>();
+						bucketHistory[kv.Key] = hist;
+					}
+					for (int i = 0; i < kv.Value.Count; i++)
+					{
+						Sample s = new Sample();
+						s.Session = sessionIndex;
+						s.Score = kv.Value[i];
+						hist.Add(s);
+					}
+				}
+				// Poda FIFO por sesion
+				int minSession = sessionIndex - LookbackSessions + 1;
+				foreach (KeyValuePair<int, List<Sample>> kv in bucketHistory)
+					kv.Value.RemoveAll(delegate(Sample s) { return s.Session < minSession; });
+			}
+			pendingSession.Clear();
+		}
+
+		private List<double> HistoryScores(int bucket)
+		{
+			List<Sample> hist;
+			if (!bucketHistory.TryGetValue(bucket, out hist) || hist.Count == 0) return null;
+			List<double> outList = new List<double>(hist.Count);
+			for (int i = 0; i < hist.Count; i++) outList.Add(hist[i].Score);
+			return outList;
+		}
+
+		// ------------------------------------------------------------------
+		// Utilidades declaradas en el contrato
+		// ------------------------------------------------------------------
+		private long PriceToTick(double price)
+		{
+			double snapped = Instrument.MasterInstrument.RoundToTickSize(price);
+			return (long)Math.Round(snapped / TickSize, MidpointRounding.AwayFromZero);
+		}
+
+		private int GetTimeBucket(DateTime barCloseTime)
+		{
+			DateTime anchor = barCloseTime.AddSeconds(-1);
+			if (UseSessionBuckets && sessionBegin != DateTime.MinValue && anchor >= sessionBegin)
+			{
+				double mins = (anchor - sessionBegin).TotalMinutes;
+				return (int)(mins / TimeBucketMinutes);
+			}
+			return (anchor.Hour * 60 + anchor.Minute) / TimeBucketMinutes;
+		}
+
+		// Cuantil empirico sin interpolacion: menor v tal que count(<=v) >= ceil(p*n)
+		private static double EmpiricalQuantile(List<double> sortedAsc, double p)
+		{
+			int n = sortedAsc.Count;
+			int k = (int)Math.Ceiling(p * n);
+			if (k < 1) k = 1;
+			if (k > n) k = n;
+			return sortedAsc[k - 1];
+		}
+
+		// ------------------------------------------------------------------
+		// Dashboard explicativo (SOLO visual; no afecta deteccion ni export)
+		// ------------------------------------------------------------------
+		private void UpdateDashboard()
+		{
+			int bucketsReady = 0;
+			int totalSamples = 0;
+			foreach (KeyValuePair<int, List<Sample>> kv in bucketHistory)
+			{
+				totalSamples += kv.Value.Count;
+				if (kv.Value.Count >= MinSamplesPerBucket) bucketsReady++;
+			}
+
+			int activeZones = 0;
+			int activeLong = 0;
+			int activeShort = 0;
+			for (int i = 0; i < zones.Count; i++)
+			{
+				if (!zones[i].Active) continue;
+				activeZones++;
+				if (zones[i].Direction > 0) activeLong++;
+				else if (zones[i].Direction < 0) activeShort++;
+			}
+
+			StringBuilder sb = new StringBuilder(640);
+			sb.Append("aVolClusterPOI v0.5 - off-price vs at-price\n");
+			sb.Append("---------------------------------------------\n");
+
+			if (sessionIndex < 0)
+				sb.Append("ESTADO: ESPERANDO 1ra SESION COMPLETA (aun sin perfil)\n");
+			else if (bucketsReady == 0)
+				sb.Append("ESTADO: CALENTANDO - juntando historial, todavia no detecta\n");
+			else
+				sb.Append("ESTADO: ACTIVO - " + bucketsReady + " franjas horarias listas\n");
+
+			sb.Append("Sesiones completas: " + (sessionIndex < 0 ? 0 : sessionIndex)
+				+ " / " + LookbackSessions + " | Muestras: " + totalSamples + "\n");
+			sb.Append("Zonas activas: " + activeZones + " (" + activeLong + " soporte / "
+				+ activeShort + " resistencia)\n");
+			sb.Append("Creadas: " + sessionZonesCreated + " en la sesion | "
+				+ totalZonesCreated + " en total\n");
+
+			int evaluated = outcomeTarget + outcomeStop;
+			sb.Append("Reacciones: " + outcomeTarget + " target / " + outcomeStop + " stop / "
+				+ outcomeTimeout + " timeout / " + outcomeAmbiguous + " ambiguas\n");
+			if (evaluated > 0)
+				sb.Append("Aciertos (target vs stop): "
+					+ (100.0 * outcomeTarget / evaluated).ToString("0", CultureInfo.InvariantCulture)
+					+ "% sobre " + evaluated + " evaluadas\n");
+			if (!string.IsNullOrEmpty(lastZoneInfo))
+				sb.Append("Ultima zona: " + lastZoneInfo + "\n");
+
+			sb.Append("---------------------------------------------\n");
+			sb.Append("COMO LEERLO:\n");
+			sb.Append("VERDE = soporte (activo o invalidado)\n");
+			sb.Append("ROJO  = resistencia (activa o invalidada)\n");
+			sb.Append("Q = calidad 0-100 (ranking heuristico, NO probabilidad)\n");
+			sb.Append("R = volumen del cluster / umbral historico del horario\n");
+			sb.Append(EnablePredictiveFilter
+				? "Filtro: solo zonas con Q >= " + MinQualityScore.ToString("0", CultureInfo.InvariantCulture) + "\n"
+				: "Filtro predictivo: OFF (muestra todo)\n");
+			sb.Append("Test tras 1er toque: target " + ReactionTargetTicks + "t / stop "
+				+ ReactionStopTicks + "t / " + ReactionHorizonBars + " barras");
+
+			if (SimEnabled) sb.Append(SimDashboard());
+			Draw.TextFixed(this, "AVCLPS_DASH", sb.ToString(), ToTextPosition(DashboardCorner),
+				Brushes.White, dashFont, Brushes.DimGray, Brushes.Black, 60);
+		}
+
+		private TextPosition ToTextPosition(AVCLPDashboardCorner corner)
+		{
+			switch (corner)
+			{
+				case AVCLPDashboardCorner.TopLeft: return TextPosition.TopLeft;
+				case AVCLPDashboardCorner.BottomRight: return TextPosition.BottomRight;
+				case AVCLPDashboardCorner.BottomLeft: return TextPosition.BottomLeft;
+				default: return TextPosition.TopRight;
+			}
+		}
+
+		private void TrackTag(string tag)
+		{
+			renderedTags.Enqueue(tag);
+			while (renderedTags.Count > MaxRenderedZones)
+				RemoveDrawObject(renderedTags.Dequeue());
+		}
+
+		// ------------------------------------------------------------------
+		// Export CSV (sobreescribe siempre; nunca append)
+		// ------------------------------------------------------------------
+		private void EmitEvent(string type, long zoneId, long lowerTick, long upperTick,
+			double score, double threshold, int samples, int bucket, int touchCount, string reason)
+		{
+			if (string.IsNullOrEmpty(EventLogPath) || writerFailed) return;
+			try
+			{
+				if (writer == null)
+				{
+					string dir = Path.GetDirectoryName(EventLogPath);
+					if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
+					writer = new StreamWriter(EventLogPath, false, new UTF8Encoding(false));
+					writer.AutoFlush = true;
+					writer.WriteLine("# meta,indicator=aVolClusterPOI,version=0.5,instrument=" + Instrument.FullName
+						+ ",tick_size=" + TickSize.ToString(CultureInfo.InvariantCulture)
+						+ ",window_bars=" + WindowBars.ToString(CultureInfo.InvariantCulture)
+						+ ",median_mult=" + MedianMultiplier.ToString(CultureInfo.InvariantCulture)
+						+ ",max_gap_ticks=" + MaxGapTicks.ToString(CultureInfo.InvariantCulture)
+						+ ",min_cluster_ticks=" + MinClusterTicks.ToString(CultureInfo.InvariantCulture)
+						+ ",bucket_minutes=" + TimeBucketMinutes.ToString(CultureInfo.InvariantCulture)
+						+ ",percentile=" + DetectionPercentile.ToString(CultureInfo.InvariantCulture)
+						+ ",lookback_sessions=" + LookbackSessions.ToString(CultureInfo.InvariantCulture)
+						+ ",min_samples=" + MinSamplesPerBucket.ToString(CultureInfo.InvariantCulture)
+						+ ",predictive_filter=" + (EnablePredictiveFilter ? "1" : "0")
+						+ ",min_quality=" + MinQualityScore.ToString(CultureInfo.InvariantCulture)
+						+ ",reaction_horizon=" + ReactionHorizonBars.ToString(CultureInfo.InvariantCulture)
+						+ ",reaction_target_ticks=" + ReactionTargetTicks.ToString(CultureInfo.InvariantCulture)
+						+ ",reaction_stop_ticks=" + ReactionStopTicks.ToString(CultureInfo.InvariantCulture)
+						+ ",quality_formula=heuristic_v1_not_probability"
+						+ ",session_buckets=" + (UseSessionBuckets ? "1" : "0")
+						+ ",invalidation=" + InvalidationMode.ToString()
+						+ ",max_age_bars=" + MaxAgeBars.ToString(CultureInfo.InvariantCulture)
+						+ ",max_touches=" + MaxTouches.ToString(CultureInfo.InvariantCulture)
+						+ ",one_cluster_per_block=1,kinds=OFF_PRICE|AT_PRICE,export=ZONE_CREATED|AT_PRICE_CREATED|FIRST_TOUCH|ZONE_INVALIDATED,footprint=reconstructed_1tick_subseries,quantile=empirical_no_interp,write_mode=overwrite");
+					writer.WriteLine("event_seq,event_type,bar_index,bar_close_time,session_index,bucket,"
+						+ "zone_id,lower_tick,upper_tick,score,threshold,samples,touch_count,reason,"
+						+ "direction,anomaly_ratio,cluster_share,density,quality_score,distance_ticks,burst_count,"
+						+ "touch_bar,mfe_ticks,mae_ticks,outcome");
+					Print(Name + " log de eventos: " + EventLogPath);
+				}
+				eventSeq++;
+				Zone ez = null;
+				for (int zi = 0; zi < zones.Count; zi++)
+					if (zones[zi].Id == zoneId) { ez = zones[zi]; break; }
+				string direction = ez == null ? "" : (ez.Direction > 0 ? "LONG" : (ez.Direction < 0 ? "SHORT" : "NEUTRAL"));
+				writer.WriteLine(string.Format(CultureInfo.InvariantCulture,
+					"{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18},{19},{20},{21},{22},{23},{24}",
+					eventSeq, type, CurrentBar,
+					Time[0].ToString("yyyy-MM-ddTHH:mm:ss.fff", CultureInfo.InvariantCulture),
+					sessionIndex, bucket, zoneId, lowerTick, upperTick,
+					score.ToString("0.######", CultureInfo.InvariantCulture),
+					double.IsNaN(threshold) ? "" : threshold.ToString("0.######", CultureInfo.InvariantCulture),
+					samples, touchCount, reason, direction,
+					ez == null ? "" : ez.AnomalyRatio.ToString("0.######", CultureInfo.InvariantCulture),
+					ez == null ? "" : ez.ClusterShare.ToString("0.######", CultureInfo.InvariantCulture),
+					ez == null ? "" : ez.Density.ToString("0.######", CultureInfo.InvariantCulture),
+					ez == null ? "" : ez.QualityScore.ToString("0.##", CultureInfo.InvariantCulture),
+					ez == null ? "" : ez.DistanceTicks.ToString(CultureInfo.InvariantCulture),
+					ez == null ? "" : ez.BurstCount.ToString(CultureInfo.InvariantCulture),
+					ez == null || !ez.OutcomeStarted ? "" : ez.TouchBar.ToString(CultureInfo.InvariantCulture),
+					ez == null ? "" : ez.MfeTicks.ToString(CultureInfo.InvariantCulture),
+					ez == null ? "" : ez.MaeTicks.ToString(CultureInfo.InvariantCulture),
+					ez == null ? "" : ez.Outcome));
+			}
+			catch (Exception ex)
+			{
+				writerFailed = true;
+				Print(Name + " ERROR [event_log]: " + ex.Message);
+			}
+		}
+
+		// === P-70: log por BARRA primaria. Aditivo -- no toca blockCells, ni el filtro,
+		// ni la deteccion. Con BarProfileLogPath vacio el indicador se comporta identico.
+		// Se llama ANTES de volcar tickProfile, para ver el perfil crudo y el filtrado.
+		private void WriteBarProfileLog(long lowTick, long highTick)
+		{
+			if (string.IsNullOrEmpty(BarProfileLogPath) || barWriterFailed) return;
+			try
+			{
+				if (barWriter == null)
+				{
+					string bdir = Path.GetDirectoryName(BarProfileLogPath);
+					if (!string.IsNullOrEmpty(bdir) && !Directory.Exists(bdir)) Directory.CreateDirectory(bdir);
+					barWriter = new StreamWriter(BarProfileLogPath, false, new UTF8Encoding(false));
+					barWriter.AutoFlush = true;
+					barWriter.WriteLine("# meta,indicator=aVolClusterPOI,version=0.5,mode=bar_profile,"
+						+ "instrument=" + Instrument.FullName
+						+ ",tick_size=" + TickSize.ToString(CultureInfo.InvariantCulture)
+						+ ",window_bars=" + WindowBars.ToString(CultureInfo.InvariantCulture)
+						+ ",scope=every_primary_bar,write_mode=overwrite");
+					barWriter.WriteLine("bar_index,bar_close_time,session_index,block_bar_count,"
+						+ "low_tick,high_tick,profile_cells,profile_min_tick,profile_max_tick,"
+						+ "profile_volume,kept_volume,primary_bar_volume");
+					Print(Name + " log de perfil por barra: " + BarProfileLogPath);
+				}
+
+				double profSum = 0.0, keptSum = 0.0;
+				long profMin = long.MaxValue, profMax = long.MinValue;
+				foreach (KeyValuePair<long, double> kv in tickProfile)
+				{
+					profSum += kv.Value;
+					if (kv.Key < profMin) profMin = kv.Key;
+					if (kv.Key > profMax) profMax = kv.Key;
+					if (kv.Key >= lowTick && kv.Key <= highTick) keptSum += kv.Value;
+				}
+
+				barWriter.WriteLine(string.Format(CultureInfo.InvariantCulture,
+					"{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11}",
+					CurrentBar,
+					Time[0].ToString("yyyy-MM-ddTHH:mm:ss.fff", CultureInfo.InvariantCulture),
+					sessionIndex, blockBarCount,
+					lowTick, highTick,
+					tickProfile.Count,
+					tickProfile.Count == 0 ? "" : profMin.ToString(CultureInfo.InvariantCulture),
+					tickProfile.Count == 0 ? "" : profMax.ToString(CultureInfo.InvariantCulture),
+					profSum.ToString("0.######", CultureInfo.InvariantCulture),
+					keptSum.ToString("0.######", CultureInfo.InvariantCulture),
+					Volume[0].ToString("0.######", CultureInfo.InvariantCulture)));
+			}
+			catch (Exception ex)
+			{
+				barWriterFailed = true;
+				Print(Name + " ERROR [bar_profile]: " + ex.Message);
+			}
+		}
+
+		// ------------------------------------------------------------------
+		// Export CSV diagnostico por bloque (opcional, off por defecto).
+		// Un renglon por bloque procesado, CREATE o ABSTAIN, con las celdas
+		// crudas, la mediana/umbral, todos los clusters candidatos y el
+		// elegido. No participa de la deteccion -- solo lectura de variables
+		// ya calculadas en ProcessBlock(). Pensado para research target-free
+		// (paridad Python<->NT8), no para produccion; dejar DiagBlockExportEnabled
+		// en false salvo corrida de auditoria explicita.
+		// ------------------------------------------------------------------
+		private void EmitBlockDiag(int bucket, double median, double hotThreshold,
+			double thresh, int histCount, List<List<long>> clusters, List<long> bestCluster,
+			double bestPassScore, string decision)
+		{
+			if (string.IsNullOrEmpty(DiagBlockExportPath) || diagWriterFailed) return;
+			try
+			{
+				if (diagWriter == null)
+				{
+					string dir = Path.GetDirectoryName(DiagBlockExportPath);
+					if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
+					diagWriter = new StreamWriter(DiagBlockExportPath, false, new UTF8Encoding(false));
+					diagWriter.AutoFlush = true;
+					diagWriter.WriteLine("# meta,indicator=aVolClusterPOI,version=0.5,mode=block_diagnostic,"
+						+ "instrument=" + Instrument.FullName
+						+ ",tick_size=" + TickSize.ToString(CultureInfo.InvariantCulture)
+						+ ",window_bars=" + WindowBars.ToString(CultureInfo.InvariantCulture)
+						+ ",median_mult=" + MedianMultiplier.ToString(CultureInfo.InvariantCulture)
+						+ ",max_gap_ticks=" + MaxGapTicks.ToString(CultureInfo.InvariantCulture)
+						+ ",min_cluster_ticks=" + MinClusterTicks.ToString(CultureInfo.InvariantCulture)
+						+ ",bucket_minutes=" + TimeBucketMinutes.ToString(CultureInfo.InvariantCulture)
+						+ ",percentile=" + DetectionPercentile.ToString(CultureInfo.InvariantCulture)
+						+ ",lookback_sessions=" + LookbackSessions.ToString(CultureInfo.InvariantCulture)
+						+ ",min_samples=" + MinSamplesPerBucket.ToString(CultureInfo.InvariantCulture)
+						+ ",cells_format=tick:vol pipe-separated, sorted by tick asc"
+						+ ",clusters_format=lower:upper:score:count pipe-separated, in discovery order"
+						+ ",write_mode=overwrite,scope=every_block_CREATE_and_ABSTAIN");
+					diagWriter.WriteLine("diag_seq,bar_index,bar_close_time,session_index,bucket,"
+						+ "n_cells,median,hot_threshold,best_score,threshold,hist_samples,decision,"
+						+ "selected_lower_tick,selected_upper_tick,selected_score,selected_count,"
+						+ "n_clusters,clusters,cells");
+					Print(Name + " log diagnostico por bloque: " + DiagBlockExportPath);
+				}
+				diagSeq++;
+
+				List<long> cellTicks = new List<long>(blockCells.Keys);
+				cellTicks.Sort();
+				StringBuilder cellsSb = new StringBuilder();
+				for (int i = 0; i < cellTicks.Count; i++)
+				{
+					if (i > 0) cellsSb.Append('|');
+					cellsSb.Append(cellTicks[i].ToString(CultureInfo.InvariantCulture));
+					cellsSb.Append(':');
+					cellsSb.Append(blockCells[cellTicks[i]].ToString("0.######", CultureInfo.InvariantCulture));
+				}
+
+				StringBuilder clustersSb = new StringBuilder();
+				int nClusters = clusters == null ? 0 : clusters.Count;
+				if (clusters != null)
+				{
+					for (int ci = 0; ci < clusters.Count; ci++)
+					{
+						List<long> c = clusters[ci];
+						double cScore = 0;
+						for (int i = 0; i < c.Count; i++) cScore += blockCells[c[i]];
+						if (ci > 0) clustersSb.Append('|');
+						clustersSb.Append(c[0]).Append(':').Append(c[c.Count - 1]).Append(':')
+							.Append(cScore.ToString("0.######", CultureInfo.InvariantCulture)).Append(':')
+							.Append(c.Count);
+					}
+				}
+
+				diagWriter.WriteLine(string.Format(CultureInfo.InvariantCulture,
+					"{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18}",
+					diagSeq, CurrentBar,
+					Time[0].ToString("yyyy-MM-ddTHH:mm:ss.fff", CultureInfo.InvariantCulture),
+					sessionIndex, bucket,
+					blockCells.Count,
+					double.IsNaN(median) ? "" : median.ToString("0.######", CultureInfo.InvariantCulture),
+					double.IsNaN(hotThreshold) ? "" : hotThreshold.ToString("0.######", CultureInfo.InvariantCulture),
+					bestPassScore.ToString("0.######", CultureInfo.InvariantCulture),
+					double.IsNaN(thresh) ? "" : thresh.ToString("0.######", CultureInfo.InvariantCulture),
+					histCount, decision,
+					bestCluster == null ? "" : bestCluster[0].ToString(CultureInfo.InvariantCulture),
+					bestCluster == null ? "" : bestCluster[bestCluster.Count - 1].ToString(CultureInfo.InvariantCulture),
+					bestCluster == null ? "" : bestPassScore.ToString("0.######", CultureInfo.InvariantCulture),
+					bestCluster == null ? "" : bestCluster.Count.ToString(CultureInfo.InvariantCulture),
+					nClusters, clustersSb.ToString(), cellsSb.ToString()));
+			}
+			catch (Exception ex)
+			{
+				diagWriterFailed = true;
+				Print(Name + " ERROR [block_diag]: " + ex.Message);
+			}
+		}
+
+
+		// ------------------------------------------------------------------
+		// Simulador de trades (exploración visual)
+		// ------------------------------------------------------------------
+		private static class SimSharedNoop
+		{
+			public static void Clear(string a) { }
+			public static void PublishZone(string a, object b) { }
+			public static void InvalidateZone(string a, long b, int c) { }
+		}
+
+		private void SimOpen(Zone z)
+		{
+			if (SimOneTradeAtATime)
+				foreach (SimTrade o in simTrades) if (o.Open) return;
+			double lower = (z.LowerTick - 0.5) * TickSize, upper = (z.UpperTick + 0.5) * TickSize;
+			int dir = z.Direction;                       // +1 soporte (verde) = long, -1 resistencia (roja) = short
+			double entry = Close[0];
+			double sl;
+			if (SimSlMode == AVCLPSimSlMode.FixedTicks)
+				sl = entry - dir * SimSlTicks * TickSize;
+			else
+			{
+				// porcentaje medido desde el borde de la zona más cercano al precio (0 % = borde cercano, 100 % = lejano)
+				double near = dir > 0 ? upper : lower, far = dir > 0 ? lower : upper;
+				sl = near + (far - near) * SimSlZonePercent / 100.0;
+			}
+			double risk = (entry - sl) * dir;
+			if (risk <= TickSize * 0.5) return;          // SL del lado equivocado o nulo: no se opera
+			double tp = SimTpMode == AVCLPSimTpMode.FixedTicks ? entry + dir * SimTpTicks * TickSize : entry + dir * SimTpR * risk;
+			simTrades.Add(new SimTrade { ZoneId = z.Id, Dir = dir, EntryBar = CurrentBar, Entry = entry, Sl = sl, Tp = tp,
+				Risk = risk, Open = true, Reason = "" });
+		}
+
+		private void SimUpdate()
+		{
+			for (int i = simTrades.Count - 1; i >= 0; i--)
+			{
+				SimTrade t = simTrades[i];
+				if (!t.Open || t.EntryBar >= CurrentBar) continue;
+				double hi = High[0], lo = Low[0];
+				// conservador: si en la misma barra se tocan SL y TP, cuenta el SL
+				bool hitSl = t.Dir > 0 ? lo <= t.Sl : hi >= t.Sl;
+				bool hitTp = t.Dir > 0 ? hi >= t.Tp : lo <= t.Tp;
+				if (hitSl) { SimClose(t, t.Sl, CurrentBar, t.BeDone ? "BE" : "SL"); continue; }
+				if (hitTp) { SimClose(t, t.Tp, CurrentBar, "TP"); continue; }
+				if (SimMaxBarsInTrade > 0 && CurrentBar - t.EntryBar >= SimMaxBarsInTrade) { SimClose(t, Close[0], CurrentBar, "TIEMPO"); continue; }
+				// break even al cierre de la barra (no mueve el stop dentro de la misma barra que lo dispara)
+				if (SimUseBreakEven && !t.BeDone)
+				{
+					double fav = t.Dir > 0 ? hi - t.Entry : t.Entry - lo;
+					if (fav >= SimBeTriggerR * t.Risk) { t.Sl = t.Entry + t.Dir * SimBeOffsetTicks * TickSize; t.BeDone = true; }
+				}
+			}
+		}
+
+		private void SimCloseAll(double price, int bar, string reason)
+		{
+			for (int i = simTrades.Count - 1; i >= 0; i--) if (simTrades[i].Open) SimClose(simTrades[i], price, bar, reason);
+		}
+
+		private void SimClose(SimTrade t, double price, int bar, string reason)
+		{
+			t.Open = false; t.Exit = price; t.ExitBar = bar; t.Reason = reason;
+			simTrades.Remove(t);                         // la lista guarda sólo los abiertos
+			if (Instrument != null) simUsd += ((price - t.Entry) * t.Dir - SimCommissionTicks * TickSize) * Instrument.MasterInstrument.PointValue;
+			t.R = ((price - t.Entry) * t.Dir - SimCommissionTicks * TickSize) / t.Risk;
+			simEquityR += t.R;
+			if (simEquityR > simPeakR) simPeakR = simEquityR;
+			if (simPeakR - simEquityR > simMaxDdR) simMaxDdR = simPeakR - simEquityR;
+			if (t.Dir > 0) { simLongN++; simLongR += t.R; } else { simShortN++; simShortR += t.R; }
+			if (reason == "BE" && Math.Abs(t.R) < 0.05) simBe++;
+			else if (t.R > 0) { simWins++; simSumWinR += t.R; simConsLoss = 0; }
+			else { simLosses++; simSumLossR += -t.R; simConsLoss++; if (simConsLoss > simMaxConsLoss) simMaxConsLoss = simConsLoss; }
+			if (reason == "TIEMPO" || reason == "SESION") simTimeouts++;
+			if (SimDrawTrades) SimDraw(t);
+		}
+
+		private void SimDraw(SimTrade t)
+		{
+			int a = CurrentBar - t.EntryBar, b = Math.Max(0, CurrentBar - t.ExitBar);
+			string p = "AVCLPS_T" + t.ZoneId + "_";
+			Draw.Line(this, p + "e", false, a, t.Entry, b, t.Entry, Brushes.Gray, DashStyleHelper.Solid, 1);
+			Draw.Line(this, p + "s", false, a, t.Sl, b, t.Sl, Brushes.OrangeRed, DashStyleHelper.Dash, 1);
+			Draw.Line(this, p + "t", false, a, t.Tp, b, t.Tp, Brushes.LimeGreen, DashStyleHelper.Dash, 1);
+			Draw.Text(this, p + "r", false, t.R.ToString("+0.0;-0.0", CultureInfo.InvariantCulture) + "R " + t.Reason, b, t.Exit,
+				0, t.R > 0 ? Brushes.LimeGreen : Brushes.OrangeRed, dashFont, System.Windows.TextAlignment.Left,
+				Brushes.Transparent, Brushes.Transparent, 0);
+			foreach (string k in new[] { "e", "s", "t", "r" }) simTags.Enqueue(p + k);
+			while (simTags.Count > 4 * Math.Max(10, SimMaxDrawnTrades)) RemoveDrawObject(simTags.Dequeue());
+		}
+
+		private string SimDashboard()
+		{
+			int closed = simWins + simLosses + simBe, open = 0;
+			foreach (SimTrade t in simTrades) if (t.Open) open++;
+			StringBuilder sb = new StringBuilder(600);
+			sb.Append("\n=== SIMULADOR (exploracion visual, NO evidencia) ===\n");
+			sb.Append("SL: " + (SimSlMode == AVCLPSimSlMode.FixedTicks ? SimSlTicks + " ticks" : SimSlZonePercent.ToString("0", CultureInfo.InvariantCulture) + "% de la zona")
+				+ " | TP: " + (SimTpMode == AVCLPSimTpMode.FixedTicks ? SimTpTicks + " ticks" : SimTpR.ToString("0.#", CultureInfo.InvariantCulture) + "R")
+				+ " | BE: " + (SimUseBreakEven ? "a " + SimBeTriggerR.ToString("0.##", CultureInfo.InvariantCulture) + "R (+" + SimBeOffsetTicks + "t)" : "off") + "\n");
+			sb.Append("Trades: " + closed + " cerrados, " + open + " abiertos (long " + simLongN + " / short " + simShortN + ")\n");
+			if (closed > 0)
+			{
+				double wr = 100.0 * simWins / closed;
+				double exp = simEquityR / closed;
+				double pf = simSumLossR > 0 ? simSumWinR / simSumLossR : double.PositiveInfinity;
+				double pointValue = Instrument != null ? Instrument.MasterInstrument.PointValue : 0;
+				sb.Append("Ganadores " + simWins + " | Perdedores " + simLosses + " | BE " + simBe + " | por tiempo/sesion " + simTimeouts + "\n");
+				sb.Append("Win rate: " + wr.ToString("0.0", CultureInfo.InvariantCulture) + "% | Expectativa: "
+					+ exp.ToString("+0.00;-0.00", CultureInfo.InvariantCulture) + "R/trade\n");
+				sb.Append("Total: " + simEquityR.ToString("+0.0;-0.0", CultureInfo.InvariantCulture) + "R | PF: "
+					+ (double.IsInfinity(pf) ? "inf" : pf.ToString("0.00", CultureInfo.InvariantCulture))
+					+ " | Max DD: " + simMaxDdR.ToString("0.0", CultureInfo.InvariantCulture) + "R | Racha perd.: " + simMaxConsLoss + "\n");
+				sb.Append("Long: " + simLongR.ToString("+0.0;-0.0", CultureInfo.InvariantCulture) + "R | Short: "
+					+ simShortR.ToString("+0.0;-0.0", CultureInfo.InvariantCulture) + "R");
+				if (pointValue > 0)
+					sb.Append(" | Neto 1 contrato: " + simUsd.ToString("0", CultureInfo.InvariantCulture) + " USD");
+				sb.Append("\n(SL+TP en la misma barra = SL; sin slippage salvo comision en ticks)");
+			}
+			return sb.ToString();
+		}
+
+		#region SharpDX Direct2D Rendering
+
+		private void DisposeDxBrushes()
+		{
+			if (_dxSupport != null) { _dxSupport.Dispose(); _dxSupport = null; }
+			if (_dxResistance != null) { _dxResistance.Dispose(); _dxResistance = null; }
+			if (_dxAtPrice != null) { _dxAtPrice.Dispose(); _dxAtPrice = null; }
+			if (_dxSupportBorder != null) { _dxSupportBorder.Dispose(); _dxSupportBorder = null; }
+			if (_dxResistanceBorder != null) { _dxResistanceBorder.Dispose(); _dxResistanceBorder = null; }
+			if (_dxAtPriceBorder != null) { _dxAtPriceBorder.Dispose(); _dxAtPriceBorder = null; }
+			if (_dxText != null) { _dxText.Dispose(); _dxText = null; }
+		}
+
+		public override void OnRenderTargetChanged()
+		{
+			DisposeDxBrushes();
+			if (RenderTarget == null) return;
+			try
+			{
+				float op = (float)Opacity / 100f;
+				_dxSupport = (SupportColor ?? Brushes.MediumSeaGreen).ToDxBrush(RenderTarget);
+				_dxResistance = (ResistanceColor ?? Brushes.IndianRed).ToDxBrush(RenderTarget);
+				_dxAtPrice = (AtPriceColor ?? Brushes.SteelBlue).ToDxBrush(RenderTarget);
+
+				_dxSupport.Opacity = op;
+				_dxResistance.Opacity = op;
+				_dxAtPrice.Opacity = op;
+
+				_dxSupportBorder = (SupportColor ?? Brushes.MediumSeaGreen).ToDxBrush(RenderTarget);
+				_dxResistanceBorder = (ResistanceColor ?? Brushes.IndianRed).ToDxBrush(RenderTarget);
+				_dxAtPriceBorder = (AtPriceColor ?? Brushes.SteelBlue).ToDxBrush(RenderTarget);
+
+				_dxSupportBorder.Opacity = Math.Min(1.0f, op * 2.2f);
+				_dxResistanceBorder.Opacity = Math.Min(1.0f, op * 2.2f);
+				_dxAtPriceBorder.Opacity = Math.Min(1.0f, op * 2.2f);
+
+				_dxText = Brushes.WhiteSmoke.ToDxBrush(RenderTarget);
+			}
+			catch { DisposeDxBrushes(); }
+		}
+
+		protected override void OnRender(ChartControl chartControl, ChartScale chartScale)
+		{
+			base.OnRender(chartControl, chartScale);
+			if (Bars == null || ChartBars == null || RenderTarget == null || ChartPanel == null) return;
+			if (renderZones == null || renderZones.Count == 0) return;
+			if (_dxSupport == null) OnRenderTargetChanged();
+			if (_dxSupport == null) return;
+
+			int from = ChartBars.FromIndex;
+			int to = ChartBars.ToIndex;
+
+			SharpDX.Direct2D1.AntialiasMode prev = RenderTarget.AntialiasMode;
+			RenderTarget.AntialiasMode = SharpDX.Direct2D1.AntialiasMode.Aliased;
+
+			float half = (float)chartControl.Properties.BarDistance / 2f;
+			float rightPanelEdge = (float)(ChartPanel.X + ChartPanel.W);
+
+			Gui.Tools.SimpleFont sFont = chartControl.Properties.LabelFont ?? new Gui.Tools.SimpleFont("Arial", 9);
+			SharpDX.DirectWrite.TextFormat textFormat = null;
+			if (ShowScoreLabel || ShowOutcomeLabels)
+			{
+				try { textFormat = sFont.ToDirectWriteTextFormat(); }
+				catch { textFormat = null; }
+			}
+
+			try
+			{
+				for (int i = 0; i < renderZones.Count; i++)
+				{
+					Zone z = renderZones[i];
+					if (RemoveInvalidatedZones && !z.Active) continue;
+
+					int endBar = z.Active ? (z.CreatedBar + VisualExtendBars) : z.InvalidatedBar;
+					if (endBar < 0) endBar = CurrentBar;
+					if (endBar < from || z.CreatedBar > to) continue;
+
+					int a = Math.Max(z.CreatedBar, from);
+					int b = Math.Min(endBar, to);
+
+					float x1 = chartControl.GetXByBarIndex(ChartBars, a) - half;
+					float x2 = chartControl.GetXByBarIndex(ChartBars, b) + half;
+
+					if (z.Active && endBar >= to)
+					{
+						x2 = Math.Max(x2, rightPanelEdge);
+					}
+
+					float y1 = chartScale.GetYByValue((z.UpperTick + 0.5) * TickSize);
+					float y2 = chartScale.GetYByValue((z.LowerTick - 0.5) * TickSize);
+
+					if (float.IsNaN(x1) || float.IsNaN(x2) || float.IsNaN(y1) || float.IsNaN(y2)) continue;
+
+					float xMin = Math.Min(x1, x2);
+					float yMin = Math.Min(y1, y2);
+					float w = Math.Max(1f, Math.Abs(x2 - x1));
+					float h = Math.Max(1f, Math.Abs(y2 - y1));
+
+					SharpDX.Direct2D1.Brush fillBrush;
+					SharpDX.Direct2D1.Brush borderBrush;
+
+					// Soportes SIEMPRE verdes, Resistencias SIEMPRE rojas (tanto activas como invalidadas)
+					if (z.Direction > 0)
+					{
+						fillBrush = _dxSupport;
+						borderBrush = _dxSupportBorder;
+					}
+					else if (z.Direction < 0)
+					{
+						fillBrush = _dxResistance;
+						borderBrush = _dxResistanceBorder;
+					}
+					else
+					{
+						fillBrush = _dxAtPrice;
+						borderBrush = _dxAtPriceBorder;
+					}
+
+					SharpDX.RectangleF rect = new SharpDX.RectangleF(xMin, yMin, w, h);
+					RenderTarget.FillRectangle(rect, fillBrush);
+
+					if (borderBrush != null)
+					{
+						RenderTarget.DrawRectangle(rect, borderBrush, z.Active ? 1.5f : 1.0f);
+					}
+
+					// Etiquetas
+					if (textFormat != null && _dxText != null)
+					{
+						string labelText = null;
+						if (ShowScoreLabel && !string.IsNullOrEmpty(z.Label))
+							labelText = z.Label;
+						if (ShowOutcomeLabels && !string.IsNullOrEmpty(z.Outcome))
+							labelText = (labelText != null ? labelText + " | " : "") + z.Outcome;
+						if (BurstMinZones > 0 && z.BurstCount >= BurstMinZones)
+							labelText = (labelText != null ? labelText + " " : "") + "[R x" + z.BurstCount + "]";
+
+						if (!string.IsNullOrEmpty(labelText) && xMin >= (float)ChartPanel.X - 300f && xMin <= rightPanelEdge)
+						{
+							float textX = Math.Max(xMin + 4f, (float)ChartPanel.X + 4f);
+							using (SharpDX.DirectWrite.TextLayout layout = new SharpDX.DirectWrite.TextLayout(
+								NinjaTrader.Core.Globals.DirectWriteFactory, labelText, textFormat, 350f, textFormat.FontSize + 4f))
+							{
+								RenderTarget.DrawTextLayout(new SharpDX.Vector2(textX, yMin + 1f), layout, _dxText);
+							}
+						}
+					}
+				}
+			}
+			finally
+			{
+				RenderTarget.AntialiasMode = prev;
+				if (textFormat != null) textFormat.Dispose();
+			}
+		}
+
+		#endregion
+
+		#region Properties
+
+		// -------- Grupo 1: Deteccion (bloque) --------
+		[NinjaScriptProperty]
+		[Range(2, 500)]
+		[Display(Name = "Window Bars (bloque)", Order = 1, GroupName = "1. Deteccion",
+			Description = "Barras primarias por bloque. El contador se reinicia al inicio de sesion.")]
+		public int WindowBars { get; set; }
+
+		[NinjaScriptProperty]
+		[Range(1.0, 100.0)]
+		[Display(Name = "Median Multiplier", Order = 2, GroupName = "1. Deteccion",
+			Description = "Un nivel es hot si su volumen >= mediana del bloque x este valor.")]
+		public double MedianMultiplier { get; set; }
+
+		[NinjaScriptProperty]
+		[Range(0, 50)]
+		[Display(Name = "Max Gap Ticks", Order = 3, GroupName = "1. Deteccion",
+			Description = "Separacion maxima (en ticks enteros) entre niveles hot del mismo cluster.")]
+		public int MaxGapTicks { get; set; }
+
+		[NinjaScriptProperty]
+		[Range(1, 100)]
+		[Display(Name = "Min Cluster Ticks", Order = 4, GroupName = "1. Deteccion")]
+		public int MinClusterTicks { get; set; }
+
+		// -------- Grupo 2: Perfil horario --------
+		[NinjaScriptProperty]
+		[Display(Name = "Session Relative Buckets", Order = 10, GroupName = "2. Perfil horario",
+			Description = "true: buckets desde el inicio real de sesion. false: reloj de pared.")]
+		public bool UseSessionBuckets { get; set; }
+
+		[NinjaScriptProperty]
+		[Range(1, 1440)]
+		[Display(Name = "Time Bucket (minutos)", Order = 11, GroupName = "2. Perfil horario")]
+		public int TimeBucketMinutes { get; set; }
+
+		[NinjaScriptProperty]
+		[Range(1, 200)]
+		[Display(Name = "Lookback Sessions", Order = 12, GroupName = "2. Perfil horario",
+			Description = "FIFO por sesion completa. La sesion actual nunca entra al perfil.")]
+		public int LookbackSessions { get; set; }
+
+		[NinjaScriptProperty]
+		[Range(50.0, 100.0)]
+		[Display(Name = "Detection Percentile", Order = 13, GroupName = "2. Perfil horario")]
+		public double DetectionPercentile { get; set; }
+
+		[NinjaScriptProperty]
+		[Range(1, 100000)]
+		[Display(Name = "Min Samples Per Bucket", Order = 14, GroupName = "2. Perfil horario",
+			Description = "Sin esta cantidad de muestras historicas en el bucket, no se detecta (sin fallback global).")]
+		public int MinSamplesPerBucket { get; set; }
+
+		// -------- Grupo 3: Ranking y evaluacion predictiva --------
+		[NinjaScriptProperty]
+		[Display(Name = "Enable Predictive Filter", Order = 20, GroupName = "3. Ranking predictivo",
+			Description = "Solo dibuja zonas direccionales que superan Quality Score y distancia maxima.")]
+		public bool EnablePredictiveFilter { get; set; }
+
+		[NinjaScriptProperty]
+		[Range(0.0, 100.0)]
+		[Display(Name = "Min Quality Score", Order = 21, GroupName = "3. Ranking predictivo",
+			Description = "Ranking heuristico causal, no probabilidad calibrada.")]
+		public double MinQualityScore { get; set; }
+
+		[NinjaScriptProperty]
+		[Range(0, 100000)]
+		[Display(Name = "Max Distance From Zone (ticks, 0=off)", Order = 22, GroupName = "3. Ranking predictivo")]
+		public int MaxDistanceFromZoneTicks { get; set; }
+
+		[NinjaScriptProperty]
+		[Range(1, 10000)]
+		[Display(Name = "Rejection Full Score (ticks)", Order = 23, GroupName = "3. Ranking predictivo")]
+		public int RejectionFullScoreTicks { get; set; }
+
+		[NinjaScriptProperty]
+		[Range(1, 100000)]
+		[Display(Name = "Reaction Horizon (bars)", Order = 24, GroupName = "3. Ranking predictivo")]
+		public int ReactionHorizonBars { get; set; }
+
+		[NinjaScriptProperty]
+		[Range(1, 100000)]
+		[Display(Name = "Reaction Target (ticks)", Order = 25, GroupName = "3. Ranking predictivo")]
+		public int ReactionTargetTicks { get; set; }
+
+		[NinjaScriptProperty]
+		[Range(1, 100000)]
+		[Display(Name = "Reaction Stop (ticks)", Order = 26, GroupName = "3. Ranking predictivo")]
+		public int ReactionStopTicks { get; set; }
+
+		// -------- Grupo 4: Ciclo de vida --------
+		[NinjaScriptProperty]
+		[Display(Name = "Invalidation Mode", Order = 20, GroupName = "4. Ciclo de vida")]
+		public AVCLPInvalidationMode InvalidationMode { get; set; }
+
+		[NinjaScriptProperty]
+		[Range(0, 100000)]
+		[Display(Name = "Max Age (barras, 0 = sin expiracion)", Order = 21, GroupName = "4. Ciclo de vida")]
+		public int MaxAgeBars { get; set; }
+
+		[NinjaScriptProperty]
+		[Range(0, 1000)]
+		[Display(Name = "Max Touches (0 = ilimitado)", Order = 22, GroupName = "4. Ciclo de vida")]
+		public int MaxTouches { get; set; }
+
+		// -------- Grupo 5: Alerta de rafaga --------
+		[NinjaScriptProperty]
+		[Range(0, 100)]
+		[Display(Name = "Burst Min Zones (0 = off)", Order = 30, GroupName = "5. Alerta de rafaga",
+			Description = "Minimo de zonas creadas en la ventana y rango para marcar rafaga.")]
+		public int BurstMinZones { get; set; }
+
+		[NinjaScriptProperty]
+		[Range(1, 100000)]
+		[Display(Name = "Burst Window (barras)", Order = 31, GroupName = "5. Alerta de rafaga")]
+		public int BurstWindowBars { get; set; }
+
+		[NinjaScriptProperty]
+		[Range(1, 10000)]
+		[Display(Name = "Burst Range (ticks)", Order = 32, GroupName = "5. Alerta de rafaga")]
+		public int BurstRangeTicks { get; set; }
+
+		// -------- Grupo 6: Export y visual --------
+		[NinjaScriptProperty]
+		[Display(Name = "Event Log Path (vacio = off)", Order = 40, GroupName = "6. Export y visual",
+			Description = "Ruta completa del CSV. SOBREESCRIBE siempre; usar nombre nuevo por corrida.")]
+		public string EventLogPath { get; set; }
+
+		// -------- Grupo 9: Diagnostico por bloque (opcional, research/paridad) --------
+		[NinjaScriptProperty]
+		[Display(Name = "Diag Block Export Enabled", Order = 90, GroupName = "9. Diagnostico (opcional)",
+			Description = "Exporta un CSV con 1 fila por bloque (CREATE y ABSTAIN), con blockCells crudo, "
+				+ "mediana/umbral y todos los clusters candidatos. Off por defecto -- solo para research "
+				+ "de paridad, no cambia la deteccion en produccion.")]
+		public bool DiagBlockExportEnabled { get; set; }
+
+		[NinjaScriptProperty]
+		[Display(Name = "Diag Block Export Path (vacio = off)", Order = 91, GroupName = "9. Diagnostico (opcional)",
+			Description = "Ruta completa del CSV diagnostico. SOBREESCRIBE siempre; usar nombre nuevo por corrida.")]
+		public string DiagBlockExportPath { get; set; }
+
+		[NinjaScriptProperty]
+		[Display(Name = "Usar seleccion robusta (top-K)", Order = 12, GroupName = "2. Deteccion",
+			Description = "OFF = regla original v0.5 (vol >= mediana * multiplicador). "
+				+ "ON = las K celdas de mayor volumen, K = HotFraction * n_celdas, empates "
+				+ "por tick ascendente. El clustering, el umbral historico y la geometria no "
+				+ "cambian. Reduce el turnover de la zona ante 1 contrato de diferencia con "
+				+ "el parquet de 30,87% a 24,47% (medido sobre 22.507 bloques NQ 06-26 120t).")]
+		public bool UseTopKHotCells { get; set; }
+
+		[NinjaScriptProperty]
+		[Range(0.01, 1.0)]
+		[Display(Name = "Hot Fraction (solo con top-K)", Order = 13, GroupName = "2. Deteccion",
+			Description = "Fraccion de celdas del bloque que se marcan hot. 0,17 es la mediana "
+				+ "empirica de hot/n_celdas con la regla original, para preservar el tamano.")]
+		public double HotFraction { get; set; }
+
+		[NinjaScriptProperty]
+		[Display(Name = "Bar Profile Log Path (vacio = off)", Order = 92, GroupName = "9. Diagnostico (opcional)",
+			Description = "P-70. CSV con 1 fila por BARRA primaria: el perfil de la subserie de 1 tick "
+				+ "ANTES del filtro Low/High, cuanto sobrevive al filtro, y el volumen de la barra "
+				+ "primaria. Aditivo: no toca blockCells, ni el filtro, ni la deteccion. "
+				+ "SOBREESCRIBE siempre; usar nombre nuevo por corrida.")]
+		public string BarProfileLogPath { get; set; }
+
+		[NinjaScriptProperty]
+		[Range(1, 100)]
+		[Display(Name = "Opacity", Order = 41, GroupName = "6. Export y visual")]
+		public int Opacity { get; set; }
+
+		[NinjaScriptProperty]
+		[Range(1, 100000)]
+		[Display(Name = "Visual Extend Bars", Order = 42, GroupName = "6. Export y visual")]
+		public int VisualExtendBars { get; set; }
+
+		[NinjaScriptProperty]
+		[Range(10, 100000)]
+		[Display(Name = "Max Rendered Zones", Order = 43, GroupName = "6. Export y visual",
+			Description = "Limita SOLO el dibujo; nunca borra zonas del estado interno.")]
+		public int MaxRenderedZones { get; set; }
+
+		[NinjaScriptProperty]
+		[Display(Name = "Remove Invalidated Zones", Order = 44, GroupName = "6. Export y visual",
+			Description = "false (default): las zonas muertas quedan en gris acotadas a su vida real. true: se borran del grafico.")]
+		public bool RemoveInvalidatedZones { get; set; }
+
+		[NinjaScriptProperty]
+		[Display(Name = "Show Score Label", Order = 45, GroupName = "6. Export y visual")]
+		public bool ShowScoreLabel { get; set; }
+
+		[NinjaScriptProperty]
+		[Display(Name = "Show Outcome Labels", Order = 46, GroupName = "6. Export y visual",
+			Description = "Muestra TARGET/STOP/TIMEOUT/AMBIGUOUS al completar la evaluacion forward.")]
+		public bool ShowOutcomeLabels { get; set; }
+
+		[NinjaScriptProperty]
+		[Display(Name = "Show Dashboard", Order = 47, GroupName = "6. Export y visual",
+			Description = "Panel fijo en una esquina con estado, conteos y leyenda de lectura.")]
+		public bool ShowDashboard { get; set; }
+
+		[NinjaScriptProperty]
+		[Display(Name = "Dashboard Corner", Order = 48, GroupName = "6. Export y visual")]
+		public AVCLPDashboardCorner DashboardCorner { get; set; }
+
+		[XmlIgnore]
+		[Display(Name = "Support Color", Order = 49, GroupName = "6. Export y visual",
+			Description = "Color para zonas de soporte (siempre verde).")]
+		public Brush SupportColor { get; set; }
+		[Browsable(false)]
+		public string SupportColorSerialize
+		{
+			get { return Serialize.BrushToString(SupportColor); }
+			set { SupportColor = Serialize.StringToBrush(value); }
+		}
+
+		[XmlIgnore]
+		[Display(Name = "Resistance Color", Order = 50, GroupName = "6. Export y visual",
+			Description = "Color para zonas de resistencia (siempre rojo).")]
+		public Brush ResistanceColor { get; set; }
+		[Browsable(false)]
+		public string ResistanceColorSerialize
+		{
+			get { return Serialize.BrushToString(ResistanceColor); }
+			set { ResistanceColor = Serialize.StringToBrush(value); }
+		}
+
+		[XmlIgnore]
+		[Display(Name = "At Price Color", Order = 51, GroupName = "6. Export y visual",
+			Description = "Color para zonas dentro del precio.")]
+		public Brush AtPriceColor { get; set; }
+		[Browsable(false)]
+		public string AtPriceColorSerialize
+		{
+			get { return Serialize.BrushToString(AtPriceColor); }
+			set { AtPriceColor = Serialize.StringToBrush(value); }
+		}
+
+
+		[Display(Name = "Activar simulador", Order = 1, GroupName = "10. Simulador (exploracion)")]
+		public bool SimEnabled { get; set; }
+		[Display(Name = "Modo SL", Order = 2, GroupName = "10. Simulador (exploracion)")]
+		public AVCLPSimSlMode SimSlMode { get; set; }
+		[Range(0.0, 1000.0)]
+		[Display(Name = "SL: % de la zona (0 = borde cercano, 100 = lejano)", Order = 3, GroupName = "10. Simulador (exploracion)")]
+		public double SimSlZonePercent { get; set; }
+		[Range(1, 100000)]
+		[Display(Name = "SL: ticks fijos", Order = 4, GroupName = "10. Simulador (exploracion)")]
+		public int SimSlTicks { get; set; }
+		[Display(Name = "Modo TP", Order = 5, GroupName = "10. Simulador (exploracion)")]
+		public AVCLPSimTpMode SimTpMode { get; set; }
+		[Range(0.1, 1000.0)]
+		[Display(Name = "TP: multiplo de R", Order = 6, GroupName = "10. Simulador (exploracion)")]
+		public double SimTpR { get; set; }
+		[Range(1, 100000)]
+		[Display(Name = "TP: ticks fijos", Order = 7, GroupName = "10. Simulador (exploracion)")]
+		public int SimTpTicks { get; set; }
+		[Display(Name = "Break even", Order = 8, GroupName = "10. Simulador (exploracion)")]
+		public bool SimUseBreakEven { get; set; }
+		[Range(0.1, 1000.0)]
+		[Display(Name = "BE: activar a (R)", Order = 9, GroupName = "10. Simulador (exploracion)")]
+		public double SimBeTriggerR { get; set; }
+		[Range(-1000, 1000)]
+		[Display(Name = "BE: offset (ticks a favor)", Order = 10, GroupName = "10. Simulador (exploracion)")]
+		public int SimBeOffsetTicks { get; set; }
+		[Range(0, 100000)]
+		[Display(Name = "Salida por tiempo (barras, 0 = off)", Order = 11, GroupName = "10. Simulador (exploracion)")]
+		public int SimMaxBarsInTrade { get; set; }
+		[Display(Name = "Cerrar al fin de sesion", Order = 12, GroupName = "10. Simulador (exploracion)")]
+		public bool SimExitAtSessionEnd { get; set; }
+		[Range(0.0, 1000.0)]
+		[Display(Name = "Comision + slippage (ticks por trade)", Order = 13, GroupName = "10. Simulador (exploracion)")]
+		public double SimCommissionTicks { get; set; }
+		[Display(Name = "Un trade a la vez", Order = 14, GroupName = "10. Simulador (exploracion)")]
+		public bool SimOneTradeAtATime { get; set; }
+		[Display(Name = "Dibujar trades", Order = 15, GroupName = "10. Simulador (exploracion)")]
+		public bool SimDrawTrades { get; set; }
+		[Range(10, 100000)]
+		[Display(Name = "Max trades dibujados", Order = 16, GroupName = "10. Simulador (exploracion)")]
+		public int SimMaxDrawnTrades { get; set; }
+
+		#endregion
+	}
+}
+
