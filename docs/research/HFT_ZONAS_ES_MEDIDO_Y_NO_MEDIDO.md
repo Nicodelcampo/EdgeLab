@@ -774,3 +774,10 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
   expansión de 10 barras es **desplazamiento**, no barras más grandes. Acta `AVCL_VOL2_AB_RESULTADOS_20261006.md`.
 - NO MEDIDO: dirección del desplazamiento (C); soporte/resistencia; curva B para volumen alto (muestra de 495,
   diseño restrictivo).
+
+## AVCL-SR-DIR MNQ — 06/10/2026
+- MEDIDO: sin efecto, con potencia alta. Dirección después de la creación (H10/H50, MDE 0,4/0,8 ticks) y respeto en el
+  primer toque contra zona espejo (65,2 % contra 65,7 %, MDE 1,4 pp). El primer toque es **inmediato** (mediana de
+  3 barras, 95 % de toque). Acta `AVCL_SR_DIR_RESULTADOS_20261006.md`.
+- NO MEDIDO: **revisita** (el precio se aleja k ticks y vuelve), toque n-ésimo, confluencia y delta de la zona.
+  Soporte/resistencia NO queda cerrado.
