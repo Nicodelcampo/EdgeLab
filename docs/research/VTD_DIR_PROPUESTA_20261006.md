@@ -82,3 +82,20 @@ información pública de precio/volumen en este horizonte, y VTD queda sólo com
 - OK al diseño.
 - Confirmar la EMA: ¿200 barras de 150t está bien, o preferís otro período? ¿Y por tiempo, por ejemplo 60 minutos?
 - ¿El umbral "no tanto" = 1 ATR te representa?
+
+## Enmienda 1 (2026-10-06, decisión de Nico: "que se prueben distintas", sin fijar período ni umbral de la EMA)
+- **Grilla EMA (P1):**
+  - período en barras de 150t ∈ {20, 50, 100, 200, 500};
+  - período por tiempo ∈ {15, 30, 60, 120, 240} min;
+  - condición de distancia ∈ {< 0,5 ATR, < 1 ATR, < 2 ATR, sin límite}, más "lejos > 2 ATR" con signo **contrario**
+    (agotamiento);
+  - H ∈ {10, 50}.
+  - Total: 10 × 5 × 2 = **100 celdas**.
+- **Control de selección:**
+  1. **Descubrimiento:** contratos MNQ 09-25, 12-25 y 03-26. Cada celda contra el **máximo de las 100** bajo dirección
+     sorteada por sesión (max-T, 2.000 sorteos).
+  2. **Confirmación:** las celdas que pasen (p_maxT ≤ 0,05) se prueban **una sola vez** en 06-26, 09-26 y 12-26, sin
+     cambios, con Holm sobre las que pasaron.
+  3. **Meseta:** se publica el mapa completo. Una celda aislada sin vecinos positivos no se promueve aunque pase.
+- P2–P6 conservan su definición fija, con el mismo esquema de descubrimiento y confirmación (Holm sobre 5 × 2).
+- **El orden no cambia:** primero la Etapa 0 (detector de régimen, target-free).
