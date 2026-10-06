@@ -81,3 +81,9 @@ Holm sobre las que se habiliten. Todo se registra en `TRIAL_REGISTRY_GLOBAL.json
 ## 8. Qué NO hace
 No define entradas, salidas ni P&L. Si H1 pasa, el siguiente paso (régimen de volatilidad para dimensionar o filtrar
 estrategias, o P&L bruto de una regla única) va en otro manifiesto con otro OK.
+
+## Nota de implementación (antes de la corrida completa, 2026-10-05)
+- Controles: además de no solaparse con su evento, se exige que estén a **más de 2H barras de cualquier creación**,
+  para que un control no contenga el efecto de otra zona (más conservador; a H=200 reduce controles).
+- Prueba de humo de software sobre 5 sesiones (2026-09-21→25, 50 permutaciones) para verificar la cadena; esas cifras
+  no se usan ni se interpretan. La corrida formal es en Kaggle con 20.000 permutaciones sobre todo el rango.

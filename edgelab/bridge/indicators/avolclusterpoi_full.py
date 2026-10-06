@@ -49,7 +49,7 @@ def run_full(ticks, bars, footprints, params=None, chart_tz="America/Argentina/B
     session_index, prev_sess, sess_begin = -1, None, None
     last_session_first_bar = 0
     block, block_n = {}, 0
-    zones, events, creations, live = [], [], [], []
+    zones, events, creations, live, blocks = [], [], [], [], []
     next_id = 1
     cnt = dict(target=0, stop=0, timeout=0, ambiguous=0)
 
@@ -222,6 +222,7 @@ def run_full(ticks, bars, footprints, params=None, chart_tz="America/Argentina/B
                     creations.append((b, lower + upper))
                     ev("AT_PRICE_CREATED" if not off else "ZONE_CREATED", z, b, kind)
         pending[bucket].append(best)
+        blocks.append((b, sum(block.values()), bucket))      # registro liviano de cada bloque cerrado (controles)
         block, block_n = {}, 0
         # NT8: zones.RemoveAll(!Active && (!OutcomeStarted || OutcomeDone)) al cerrar bloque (sólo afecta el recorrido)
         live[:] = [z for z in live if z["active"] or (z["outcome_started"] and not z["outcome_done"])]
@@ -229,7 +230,7 @@ def run_full(ticks, bars, footprints, params=None, chart_tz="America/Argentina/B
     ready = sum(1 for v in hist.values() if len(v) >= p["min_samples_per_bucket"])
     last = zones[-1] if zones else None
     act = [z for z in zones if z["active"] and z["kind"] == "OFF_PRICE"]
-    return dict(indicator=NAME, version=VERSION, params=p, zones=zones, events=events,
+    return dict(indicator=NAME, version=VERSION, params=p, zones=zones, events=events, blocks=blocks,
                 dashboard=dict(sessions_complete=max(session_index, 0), buckets_ready=ready,
                                samples=sum(len(v) for v in hist.values()), zones_total=len(zones),
                                zones_last_session=sum(1 for z in zones if z["created_bar"] >= last_session_first_bar),
