@@ -32,3 +32,22 @@ Lo detectó la auditoría que pidió Nico antes de profundizar (`tools/avcl_raci
 ## Lección (regla)
 Los grupos de comparación tampoco pueden definirse con información posterior al evento, igual que las variables. Toda
 definición de "aislado", "sin vecinos", "único", etc. se escribe **sólo con el pasado**.
+
+## Re-medición de la consolidación posterior con la aislada causal (2026-10-06)
+Kernel `edgelab-avcl-racimo-audit-ypre-20261006`; JSON `AVCL_RACIMO_AUDIT_YPRE.json`. `y_pre` H50 = log(rango de las 50
+barras siguientes / rango de las 50 anteriores al primer miembro del racimo). Todas las definiciones usan sólo el pasado.
+
+| y_pre H50 | MNQ AT | MNQ OFF | conf AT | conf OFF |
+|---|---|---|---|---|
+| vs aislada look-ahead (lo publicado) | −0,063 | −0,058 | −0,053 | −0,037 |
+| **vs aislada causal** | −0,019 (z −1,9) | −0,019 (z −2,2) | −0,036 (z −3,9) | −0,027 (z −3,3) |
+| vs aislada causal, con control de movimiento previo | −0,036 | −0,036 | −0,040 | −0,030 |
+| vs todas las no-racimo | 0,000 | −0,005 | −0,016 | −0,011 |
+
+- A H10 el signo **se contradice** entre conjuntos (MNQ +0,03, confirmación −0,02).
+- **Lectura:** queda una consolidación posterior **chica** (−0,02 a −0,04, es decir 2–4 % menos rango) contra la
+  aislada causal, del mismo signo en los dos conjuntos. Contra todas las no-racimo es casi nula. Además, la ventana
+  previa del racimo está más lejos en el tiempo que la de una aislada, lo que puede mover el cociente por la propia
+  persistencia de la volatilidad.
+- **Estado:** `CONSOLIDACIÓN POST-RACIMO: débil y dependiente del grupo de comparación`. No es base para lógicas de
+  entrada/salida. Se cierra la línea de racimos de AVCL.
