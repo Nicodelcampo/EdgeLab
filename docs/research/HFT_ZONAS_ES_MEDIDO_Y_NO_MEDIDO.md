@@ -886,3 +886,8 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
 - MEDIDO: 108 celdas (3 entradas × SL × R × BE × 2 instrumentos), P&L neto tick a tick: **todas negativas**
   (MNQ ≈ −2,6 a −3,2 USD/trade; MGC −3,6 a −5,7). Ninguna supera a la dirección al azar con max-T. Las entradas en el
   pullback a la EMA son peores que al azar. Confirmación no corrida. Acta `EMAALIGN_RESULTADOS_20261007.md`.
+
+## EMA-SEP (contrarian, 3 EMAs separadas, 10t, MNQ/MGC) — 07/10/2026
+- MEDIDO: 972 celdas (pct 90/95/99 × agotamiento × entrada × SL/TP/BE × 2 inst.): **0 pasan max-T**. La reversión
+  supera levemente al azar (z máx 3,2, p max-T 0,16), pero en MNQ el neto es negativo (mediana −2,5 USD/trade). Acta
+  `EMASEP_RESULTADOS_20261007.md`.
