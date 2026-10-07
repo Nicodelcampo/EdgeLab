@@ -132,7 +132,14 @@ def battery(D, flagcol, label, formal=False):
 def main():
     from scipy.stats import norm as _n
     cs = sorted({Path(f).name.replace("_base_zones.parquet", "") for f in files("_base_zones.parquet")})
-    D = pd.concat([build(c, "base", 50) for c in cs], ignore_index=True)
+    parts, vacios = [], []
+    for c in cs:
+        zf = next(f for f in files("_zones.parquet") if Path(f).name == "%s_base_zones.parquet" % c)
+        if len(pd.read_parquet(zf)) == 0 or "created_bar" not in pd.read_parquet(zf).columns:
+            vacios.append(c); continue                      # contrato sin zonas (sin historia para el umbral)
+        parts.append(build(c, "base", 50))
+    print("contratos sin zonas (excluidos):", vacios, flush=True)
+    D = pd.concat(parts, ignore_index=True)
     D["inst"] = D.contract.str.split("_").str[0]
     D = D[D.inst.isin(["ES", "YM", "RTY", "MGC"])].reset_index(drop=True)
     D["prin"] = D.burst >= 3; D["sec"] = D.dense >= 3

@@ -36,3 +36,8 @@ posiciones empuja el precio a través de él.
 
 ## Registro
 1 prueba, familia `AVCL_RACIMO_CONF`. Resultado y MEDIDO/NO MEDIDO van en el mismo commit.
+
+## Enmienda técnica 1 (antes de ver resultados)
+El primer intento del análisis falló porque un contrato no generó ninguna zona (sin historia suficiente para el umbral)
+y su tabla vacía no tenía columnas. Los contratos sin zonas se excluyen y se listan. Ningún cambio de definición, prueba
+ni regla.
