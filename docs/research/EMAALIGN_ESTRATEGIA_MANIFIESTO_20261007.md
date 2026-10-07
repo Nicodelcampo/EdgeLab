@@ -6,7 +6,7 @@ sin OK explícito.** Familia propia `EMAALIGN`: no hereda resultados de VTD-DIR 
 ## Indicador (fuente: `NinjaTrader 8/bin/Custom/Indicators/EdgeLabEmaAlignment.cs`)
 EMA 200 / 500 / 2000 sobre el close. Señal al cierre de barra cuando entra una alineación estricta
 (200>500>2000 = largo; 200<500<2000 = corto), alternada (no repite dirección sin una opuesta en el medio), tras
-2.000 barras de calentamiento. Barras de **2 ticks** como en el chart de Nico (además 50t como sensibilidad, ver abajo).
+2.000 barras de calentamiento. Barras de **2 ticks** como en el chart de Nico.
 
 ## Estrategia
 - **Entrada (3 modos):**
@@ -23,7 +23,6 @@ EMA 200 / 500 / 2000 sobre el close. Señal al cierre de barra cuando entra una 
 - SL ∈ {20, 40, 80} ticks × R ∈ {1, 2, 4} × BE ∈ {no, en +1R} = 18, × 3 modos de entrada = **54 celdas por instrumento**.
 - 2 instrumentos (MNQ, MGC): **108 celdas** en descubrimiento, corregidas con **max-T**. El nulo usa la misma
   estrategia con la dirección de cada señal sorteada al azar (mismos tiempos, mismas EMAs para B/C), 2.000 sorteos.
-- Sensibilidad (no formal): la misma grilla en barras de 50t.
 
 ## Descubrimiento / confirmación
 - Por contratos y dentro de cada instrumento: los contratos más viejos son descubrimiento y los 2 más recientes antes
