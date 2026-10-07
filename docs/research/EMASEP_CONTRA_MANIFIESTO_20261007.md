@@ -62,3 +62,14 @@ a 3 h.
 - **Grilla:** 3 umbrales × 3 filtros × 3 entradas × 18 salidas × 2 instrumentos = **972 celdas**, max-T.
 - **Técnica:** cada señal es un trade independiente (se elimina "una posición a la vez"): la regla dependía de la
   duración de cada trade y rompía el nulo de dirección al azar. Celdas con n < 30 no se evalúan.
+
+## Enmienda 2 — EMASEP-MGC150 (pedido de Nico, 2026-10-07, después de ver el resultado en 10t)
+"probala sólo en el MGC en una escala más alta; si ya tenés velas > 100t usá esa". Se usa **150t**, la escala que ya
+se usó para MGC en VTD-BRACKET.
+- **Es una prueba nueva, con su propio max-T.** Se declara que se eligió después de ver 10t (en MGC hubo celdas
+  positivas que no pasaron). Esto se pondera en la lectura: la elección de instrumento y escala no es ciega.
+- Misma definición (EMAs 200/500/2000 en 150t, percentil causal, filtros, entradas A/B/C).
+- **SL ∈ {40, 80, 160} ticks** (escalado a la barra mayor), R ∈ {1, 2, 4}, BE ∈ {no, sí}. Límite B: +10 ticks.
+- **486 celdas**, sólo MGC, contra el mismo nulo.
+- Confirmación: MGC 08-26 y 12-26, una vez, con Holm.
+- Contador de la familia EMASEP: 972 + 486.

@@ -16,6 +16,8 @@ CONF = {"MNQ": ("MNQ_09-26", "MNQ_12-26"), "MGC": ("MGC_08-26", "MGC_12-26")}
 COMM, TICK = {"MNQ": 1.90, "MGC": 1.90}, {"MNQ": 0.50, "MGC": 1.00}
 PCTS, FILTS, MODES = (90.0, 95.0, 99.0), ("ninguno", "desaceleracion", "climax_vol"), "ABC"
 NDRAW, SEED = 2000, 20261008
+import os
+INSTS = tuple(os.environ.get("SEP_INSTS", "MNQ,MGC").split(","))
 
 
 def load(inst, conf):
@@ -76,7 +78,7 @@ def stats(P, S, ev, rng):
 def main():
     rng = np.random.default_rng(SEED)
     D = {}
-    for inst in ("MNQ", "MGC"):
+    for inst in INSTS:
         X, S, ev, names = load(inst, False)
         D[inst] = (stats(X, S, ev, rng), names)
     maxnull = np.nanmax(np.concatenate([d["zn"] for d, _ in D.values()], axis=1), axis=1)

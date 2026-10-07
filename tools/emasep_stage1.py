@@ -112,11 +112,11 @@ def contract_rows(c, sess):
 
 import numba  # noqa: E402
 
-SPEC = 10
+SPEC = int(os.environ.get("SEP_SPEC", 10))
 PCTS = (90.0, 95.0, 99.0)
 FILTS = ("ninguno", "desaceleracion", "climax_vol")
 MODES = ("A", "B", "C")        # A mercado, B límite 10 ticks más estirado, C vela de giro
-SLS = (20, 40, 80)
+SLS = tuple(int(x) for x in os.environ.get("SEP_SLS", "20,40,80").split(","))
 RS = (1.0, 2.0, 4.0)
 BES = (0, 1)
 EXITS = [(sl, R, be) for sl in SLS for R in RS for be in BES]
@@ -285,8 +285,8 @@ def run_contract(c, sess):
         rows.append(pd.DataFrame(dict(pct=p, bar=sb, session=sdate[sb], clock=clock[sb], trend=trend,
                                       desaceleracion=dec, climax_vol=clim)))
     meta = pd.concat(rows, ignore_index=True)
-    meta.to_parquet(OUT / ("%s_emasep_meta.parquet" % c))
-    np.savez_compressed(OUT / ("%s_emasep.npz" % c), pnl=np.concatenate(allres), exits=exits)
+    meta.to_parquet(OUT / ("%s_emasep%s_meta.parquet" % (c, os.environ.get("SEP_TAG", ""))))
+    np.savez_compressed(OUT / ("%s_emasep%s.npz" % (c, os.environ.get("SEP_TAG", ""))), pnl=np.concatenate(allres), exits=exits)
     print(c, ds, "barras", n, "señales por pct", meta.groupby("pct").size().to_dict(), "desac", int(meta.desaceleracion.sum()),
           "climax", int(meta.climax_vol.sum()), "%.0f s" % (time.time() - t0), flush=True)
 
