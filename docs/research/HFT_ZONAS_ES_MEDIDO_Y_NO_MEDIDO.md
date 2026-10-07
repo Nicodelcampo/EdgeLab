@@ -869,3 +869,9 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
   que en las aisladas: β s_50 = −0,038, p = 0,020. Los 4 instrumentos negativos; ES el más débil. La consolidación
   posterior también replica. Acta `AVCL_RACIMO_CONF_RESULTADO_20261006.md`.
 - NO MEDIDO: P&L con fricción de una regla basada en esto.
+
+## RETRACTACIÓN AVCL-RACIMO / RACIMO-CONF — 06/10/2026
+- La "primera dirección confirmada" era un **artefacto de look-ahead** en la definición de "aislada" (usaba las 200
+  barras posteriores). Con la aislada causal: MNQ −0,006, confirmación −0,007 (z ≈ −0,5). **Sin efecto direccional de
+  los racimos.** La consolidación posterior queda en suspenso (misma comparación sesgada). Acta
+  `AVCL_RACIMO_RETRACTACION_20261006.md`.
