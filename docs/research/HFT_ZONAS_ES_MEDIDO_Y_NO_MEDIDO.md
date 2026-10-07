@@ -875,3 +875,9 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
   barras posteriores). Con la aislada causal: MNQ −0,006, confirmación −0,007 (z ≈ −0,5). **Sin efecto direccional de
   los racimos.** La consolidación posterior queda en suspenso (misma comparación sesgada). Acta
   `AVCL_RACIMO_RETRACTACION_20261006.md`.
+
+## HFTV4-RETORNO (MNQ, flecha de alejamiento) — 06/10/2026
+- MEDIDO: después de alejarse 3 alturas sin recorrerla, el precio vuelve a la zona HFT el 77 % de las veces (≤ 200
+  barras), contra el 75 % de una pseudo-zona con la misma regla. **+0,9 pp**: significativo, pero despreciable. El camino
+  de vuelta es igual al del azar (mediana de 6 alturas de excursión en contra, 27 barras). Acta
+  `HFTV4_RETORNO_RESULTADOS_20261006.md`.
