@@ -863,3 +863,9 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
   decir, consolidación que continúa. Dirección en OFF: **regreso/ruptura** (s < 0): 50t H50 −0,039 (Holm 0,054),
   25t −0,057 (p 5e-9). Acta `AVCL_RACIMO_RESULTADOS_20261006.md`.
 - NO MEDIDO: réplica en ES/YM/RTY/MGC (prueba única pre-registrada pendiente).
+
+## AVCL-RACIMO-CONF — 06/10/2026 — PRIMERA DIRECCIÓN CONFIRMADA
+- MEDIDO (prueba única pre-registrada, ES/YM/RTY/MGC 50t): en zonas OFF en racimo el precio **vuelve/atraviesa** más
+  que en las aisladas: β s_50 = −0,038, p = 0,020. Los 4 instrumentos negativos; ES el más débil. La consolidación
+  posterior también replica. Acta `AVCL_RACIMO_CONF_RESULTADO_20261006.md`.
+- NO MEDIDO: P&L con fricción de una regla basada en esto.
