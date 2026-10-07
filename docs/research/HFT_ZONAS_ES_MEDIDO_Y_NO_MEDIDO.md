@@ -891,3 +891,5 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
 - MEDIDO: 972 celdas (pct 90/95/99 × agotamiento × entrada × SL/TP/BE × 2 inst.): **0 pasan max-T**. La reversión
   supera levemente al azar (z máx 3,2, p max-T 0,16), pero en MNQ el neto es negativo (mediana −2,5 USD/trade). Acta
   `EMASEP_RESULTADOS_20261007.md`.
+- EMASEP-MGC150 (07/10/2026): MGC 150t, 486 celdas. 0 pasan (mejor p max-T 0,53). Neto mediano +1,9 USD, pero con
+  38–98 trades por celda: **no concluyente por N**. Acta `EMASEP_MGC150_RESULTADOS_20261007.md`.
