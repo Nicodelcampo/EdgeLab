@@ -66,6 +66,7 @@ namespace NinjaTrader.NinjaScript.Indicators
             public string Reporte;
             // alejamiento sin comerciar la zona entera (marca visual)
             public bool AwayResolved, TouchedUpper, TouchedLower;
+            public double EndPrice;   // ultimo precio del barrido (para descartar V-shapes)
         }
 
         public sealed class ClusterZone
@@ -173,6 +174,8 @@ namespace NinjaTrader.NinjaScript.Indicators
                 AlejamientoTicks      = 40;
                 AlejamientoMaxBarras  = 0;
                 ColorFlechaAlejamiento = Brushes.DodgerBlue;
+                ExcluirVShape         = true;
+                VShapePct             = 50.0;
                 VoidBinTicks      = 2;
                 VoidMinAltoTicks  = 6;
                 VoidMinAnchoBars  = 10;
@@ -506,7 +509,8 @@ namespace NinjaTrader.NinjaScript.Indicators
                         NoMoveTicks = noMoveTicks, NoMoveVol = noMoveVol, MaxLevelTicks = maxLevelTicks,
                         HeightTicks = sweepTicks,
                         TagRect = tag + "_R", TagText = tag + "_T", Drawn = false,
-                        ColorZ = col, Reporte = txt
+                        ColorZ = col, Reporte = txt,
+                        EndPrice = priceList.Count > 0 ? priceList[priceList.Count - 1] : (dir == 1 ? swH : swL)
                     };
                     zones.Add(z);
                     if (EnableDbLogging) PersistZone(z);
@@ -556,6 +560,13 @@ namespace NinjaTrader.NinjaScript.Indicators
             {
                 Zone z = zones[i];
                 if (!z.Drawn || z.AwayResolved || CurrentBars[0] <= z.DrawnBar) continue;
+                // V-shape: el barrido termino retrocediendo mas del X% de la altura desde su extremo -> no cuenta
+                if (ExcluirVShape && z.Bucket != HFTBucket.Absorb)
+                {
+                    double alt = Math.Max(z.Upper - z.Lower, TickSize);
+                    double retro = z.Direction == 1 ? z.Upper - z.EndPrice : z.EndPrice - z.Lower;
+                    if (retro >= VShapePct / 100.0 * alt) { z.AwayResolved = true; continue; }
+                }
                 if (AlejamientoMaxBarras > 0 && CurrentBars[0] - z.DrawnBar > AlejamientoMaxBarras) { z.AwayResolved = true; continue; }
                 double h = Math.Max(z.Upper - z.Lower, TickSize);
                 double thr = AlejamientoEnAlturas ? AlejamientoAlturas * h : AlejamientoTicks * TickSize;
@@ -1380,6 +1391,13 @@ namespace NinjaTrader.NinjaScript.Indicators
         [Range(0, 1000000)]
         [Display(Name="Buscar durante (barras, 0 = sin limite)", Order=5, GroupName="I. Alejamiento")]
         public int AlejamientoMaxBarras { get; set; }
+
+        [Display(Name="Excluir HFT en V (doble)", Order=7, GroupName="I. Alejamiento", Description="No marcar zonas cuyo barrido termino retrocediendo hacia el otro lado.")]
+        public bool ExcluirVShape { get; set; }
+
+        [Range(1.0, 100.0)]
+        [Display(Name="V: retroceso minimo (% de la altura)", Order=8, GroupName="I. Alejamiento", Description="Si al terminar el barrido el precio retrocedio al menos este % de la altura desde el extremo, la zona es una V y no se marca.")]
+        public double VShapePct { get; set; }
 
         [XmlIgnore]
         [Display(Name="Color flecha", Order=6, GroupName="I. Alejamiento")]
