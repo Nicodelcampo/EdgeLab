@@ -50,3 +50,15 @@ a 3 h.
 - Con el percentil 99 puede haber pocos trades por celda.
 - MNQ ya fue muy usado (no para esta señal).
 - 324 celdas: la corrección es dura y hace falta un efecto grande.
+
+## Enmienda 1 (pedido de Nico, antes de correr): filtro de agotamiento + OK
+"agregale también filtrar entradas según si muestran agotamiento o no. y lanzalo" = **OK**.
+- **Filtro (3 niveles), evaluado en la barra de la señal y sólo con el pasado:**
+  - `ninguno`.
+  - `desaceleracion`: el avance de las últimas 20 barras a favor de la tendencia es menor que el de las 20 anteriores.
+  - `climax_vol`: las últimas 20 barras se formaron en menos de la mitad de su tiempo típico (mediana de las 200
+    previas). En barras de ticks el volumen por barra es casi constante (medido: p99 de la razón = 1,28), así que el
+    clímax se mide como **velocidad**.
+- **Grilla:** 3 umbrales × 3 filtros × 3 entradas × 18 salidas × 2 instrumentos = **972 celdas**, max-T.
+- **Técnica:** cada señal es un trade independiente (se elimina "una posición a la vez"): la regla dependía de la
+  duración de cada trade y rompía el nulo de dirección al azar. Celdas con n < 30 no se evalúan.
