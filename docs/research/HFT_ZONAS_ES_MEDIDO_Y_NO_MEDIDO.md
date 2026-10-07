@@ -881,3 +881,8 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
   barras), contra el 75 % de una pseudo-zona con la misma regla. **+0,9 pp**: significativo, pero despreciable. El camino
   de vuelta es igual al del azar (mediana de 6 alturas de excursión en contra, 27 barras). Acta
   `HFTV4_RETORNO_RESULTADOS_20261006.md`.
+
+## EMA-ALIGN (EMA 200/500/2000, 2t, MNQ y MGC) — 07/10/2026
+- MEDIDO: 108 celdas (3 entradas × SL × R × BE × 2 instrumentos), P&L neto tick a tick: **todas negativas**
+  (MNQ ≈ −2,6 a −3,2 USD/trade; MGC −3,6 a −5,7). Ninguna supera a la dirección al azar con max-T. Las entradas en el
+  pullback a la EMA son peores que al azar. Confirmación no corrida. Acta `EMAALIGN_RESULTADOS_20261007.md`.
