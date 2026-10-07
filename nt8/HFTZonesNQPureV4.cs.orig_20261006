@@ -64,8 +64,6 @@ namespace NinjaTrader.NinjaScript.Indicators
             public bool   Drawn;
             public Brush  ColorZ;
             public string Reporte;
-            // alejamiento sin comerciar la zona entera (marca visual)
-            public bool AwayResolved, TouchedUpper, TouchedLower;
         }
 
         public sealed class ClusterZone
@@ -167,12 +165,6 @@ namespace NinjaTrader.NinjaScript.Indicators
                 FlowBucketSeconds        = 1;
 
                 MostrarVacios     = true;
-                MarcarAlejamiento     = true;
-                AlejamientoEnAlturas  = true;
-                AlejamientoAlturas    = 3.0;
-                AlejamientoTicks      = 40;
-                AlejamientoMaxBarras  = 0;
-                ColorFlechaAlejamiento = Brushes.DodgerBlue;
                 VoidBinTicks      = 2;
                 VoidMinAltoTicks  = 6;
                 VoidMinAnchoBars  = 10;
@@ -241,7 +233,6 @@ namespace NinjaTrader.NinjaScript.Indicators
             if (BarsInProgress != 0) return;
             if (CurrentBars[0] < 2) return;
             DibujarPendientes();
-            if (MarcarAlejamiento) RevisarAlejamiento();
             if (!MostrarClusters && clusterTags.Count > 0)
             {
                 LimpiarClusters();
@@ -542,47 +533,6 @@ namespace NinjaTrader.NinjaScript.Indicators
                 {
                     DetectarSolapamientoCluster(i);
                 }
-            }
-        }
-
-        // ===================== ALEJAMIENTO SIN COMERCIAR LA ZONA ENTERA =====================
-        // Despues de creada (dibujada), si el precio se aleja de la zona una distancia >= umbral ANTES de haber tocado
-        // los DOS bordes (es decir, sin haberla recorrido entera), se marca la zona con una flecha en la direccion del
-        // alejamiento. Solo dibujo: no altera la deteccion ni el log.
-        private void RevisarAlejamiento()
-        {
-            double hi = High[0], lo = Low[0];
-            for (int i = 0; i < zones.Count; i++)
-            {
-                Zone z = zones[i];
-                if (!z.Drawn || z.AwayResolved || CurrentBars[0] <= z.DrawnBar) continue;
-                if (AlejamientoMaxBarras > 0 && CurrentBars[0] - z.DrawnBar > AlejamientoMaxBarras) { z.AwayResolved = true; continue; }
-                double h = Math.Max(z.Upper - z.Lower, TickSize);
-                double thr = AlejamientoEnAlturas ? AlejamientoAlturas * h : AlejamientoTicks * TickSize;
-                double distUp = hi - z.Upper, distDn = z.Lower - lo;
-                bool up = distUp >= thr, dn = distDn >= thr;
-                if (up || dn)
-                {
-                    // si en esta barra no completó el recorrido de la zona, marcar
-                    bool completa = (z.TouchedUpper || hi >= z.Upper) && (z.TouchedLower || lo <= z.Lower);
-                    if (!completa || !(up && dn))
-                    {
-                        int dir = up && !dn ? 1 : (dn && !up ? -1 : 0);
-                        if (dir != 0 && !(z.TouchedUpper && z.TouchedLower))
-                        {
-                            int ba = Math.Max(0, CurrentBars[0] - z.EndBar);
-                            if (dir > 0)
-                                Draw.ArrowUp(this, z.TagRect + "_AW", false, ba, z.Lower - 3 * TickSize, ColorFlechaAlejamiento);
-                            else
-                                Draw.ArrowDown(this, z.TagRect + "_AW", false, ba, z.Upper + 3 * TickSize, ColorFlechaAlejamiento);
-                        }
-                    }
-                    z.AwayResolved = true;
-                    continue;
-                }
-                if (hi >= z.Upper) z.TouchedUpper = true;
-                if (lo <= z.Lower) z.TouchedLower = true;
-                if (z.TouchedUpper && z.TouchedLower) z.AwayResolved = true;   // ya se comercio entera: no se marca
             }
         }
 
@@ -1363,32 +1313,6 @@ namespace NinjaTrader.NinjaScript.Indicators
 
         [Display(Name="Dibujar linea central POC", Order=8, GroupName="H. Clusters", Description="Dibuja la linea discontinua del punto de maxima confluencia gravitacional dentro del cluster.")]
         public bool DibujarPocCluster { get; set; }
-        #endregion
-
-        #region I. Alejamiento sin comerciar la zona
-        [Display(Name="Marcar alejamiento (flecha)", Order=1, GroupName="I. Alejamiento", Description="Flecha en las zonas de las que el precio se alejo la distancia indicada sin haberlas recorrido enteras (sin tocar ambos bordes).")]
-        public bool MarcarAlejamiento { get; set; }
-
-        [Display(Name="Umbral en alturas de zona", Order=2, GroupName="I. Alejamiento", Description="Si esta activo, el umbral es N veces la altura de la zona; si no, ticks fijos.")]
-        public bool AlejamientoEnAlturas { get; set; }
-
-        [Range(0.1, 1000.0)]
-        [Display(Name="Umbral: alturas de zona", Order=3, GroupName="I. Alejamiento")]
-        public double AlejamientoAlturas { get; set; }
-
-        [Range(1, 100000)]
-        [Display(Name="Umbral: ticks", Order=4, GroupName="I. Alejamiento")]
-        public int AlejamientoTicks { get; set; }
-
-        [Range(0, 1000000)]
-        [Display(Name="Buscar durante (barras, 0 = sin limite)", Order=5, GroupName="I. Alejamiento")]
-        public int AlejamientoMaxBarras { get; set; }
-
-        [XmlIgnore]
-        [Display(Name="Color flecha", Order=6, GroupName="I. Alejamiento")]
-        public Brush ColorFlechaAlejamiento { get; set; }
-        [Browsable(false)] public string ColorFlechaAlejamientoSerializable
-        { get { return Serialize.BrushToString(ColorFlechaAlejamiento); } set { ColorFlechaAlejamiento = Serialize.StringToBrush(value); } }
         #endregion
     }
 }
