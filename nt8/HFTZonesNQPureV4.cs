@@ -563,19 +563,16 @@ namespace NinjaTrader.NinjaScript.Indicators
                 bool up = distUp >= thr, dn = distDn >= thr;
                 if (up || dn)
                 {
-                    // si en esta barra no completó el recorrido de la zona, marcar
+                    // la zona cuenta como "comerciada entera" si, contando esta barra, se tocaron los dos bordes
                     bool completa = (z.TouchedUpper || hi >= z.Upper) && (z.TouchedLower || lo <= z.Lower);
-                    if (!completa || !(up && dn))
+                    int dir = up && !dn ? 1 : (dn && !up ? -1 : 0);
+                    if (!completa && dir != 0)
                     {
-                        int dir = up && !dn ? 1 : (dn && !up ? -1 : 0);
-                        if (dir != 0 && !(z.TouchedUpper && z.TouchedLower))
-                        {
-                            int ba = Math.Max(0, CurrentBars[0] - z.EndBar);
-                            if (dir > 0)
-                                Draw.ArrowUp(this, z.TagRect + "_AW", false, ba, z.Lower - 3 * TickSize, ColorFlechaAlejamiento);
-                            else
-                                Draw.ArrowDown(this, z.TagRect + "_AW", false, ba, z.Upper + 3 * TickSize, ColorFlechaAlejamiento);
-                        }
+                        int ba = Math.Max(0, CurrentBars[0] - z.EndBar);
+                        if (dir > 0)
+                            Draw.ArrowUp(this, z.TagRect + "_AW", false, ba, z.Lower - 3 * TickSize, ColorFlechaAlejamiento);
+                        else
+                            Draw.ArrowDown(this, z.TagRect + "_AW", false, ba, z.Upper + 3 * TickSize, ColorFlechaAlejamiento);
                     }
                     z.AwayResolved = true;
                     continue;
