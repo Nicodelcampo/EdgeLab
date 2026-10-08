@@ -46,6 +46,7 @@ namespace NinjaTrader.NinjaScript.Indicators
             public int State;           // 0 = en observación, 1 = normal, 2 = orderblock
             public double InsidePct;
             public int RacimoBar = -1;  // barra en que entró a un racimo (-1 = nunca)
+            public Cluster Rac;         // racimo al que pertenece
         }
 
         private Dictionary<int, double> barProfile;     // ticks de la barra en formación (clave = precio en ticks)
@@ -61,6 +62,8 @@ namespace NinjaTrader.NinjaScript.Indicators
         private System.IO.StreamWriter logw;
         private SharpDX.Direct2D1.Brush dxFill, dxBorder, dxText, dxObFill, dxObBorder;
         private List<Zone> watching;
+        private class Cluster { public int StartBar, LowTick, HighTick; }
+        private List<Cluster> clusters;
         private SharpDX.Direct2D1.Brush dxRacFill, dxRacBorder, dxRacLine;
 
         protected override void OnStateChange()
@@ -116,6 +119,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 sessionIndex = -1;
                 zones = new List<Zone>();
                 watching = new List<Zone>();
+                clusters = new List<Cluster>();
                 try { ctZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"); } catch { ctZone = null; }
                 localZone = Core.Globals.GeneralOptions.TimeZoneInfo;
                 if (!string.IsNullOrWhiteSpace(LogPath))
@@ -332,6 +336,22 @@ namespace NinjaTrader.NinjaScript.Indicators
                 if (best == null || inside.Count > best.Count) best = inside;
             }
             if (best == null || best.Count < RacimoMin) return;
+            // un racimo: si alguna zona ya pertenecía a uno, se amplía ése; si no, se crea
+            Cluster cl = null;
+            foreach (var m in best) if (m.Rac != null) { cl = m.Rac; break; }
+            if (cl == null) { cl = new Cluster { StartBar = int.MaxValue, LowTick = int.MaxValue, HighTick = int.MinValue }; clusters.Add(cl); }
+            foreach (var m in best)
+            {
+                if (m.Rac != null && m.Rac != cl)
+                {
+                    var old = m.Rac;
+                    cl.StartBar = Math.Min(cl.StartBar, old.StartBar); cl.LowTick = Math.Min(cl.LowTick, old.LowTick); cl.HighTick = Math.Max(cl.HighTick, old.HighTick);
+                    foreach (var z2 in zones) if (z2.Rac == old) z2.Rac = cl;
+                    clusters.Remove(old);
+                }
+                m.Rac = cl;
+                cl.StartBar = Math.Min(cl.StartBar, m.Bar); cl.LowTick = Math.Min(cl.LowTick, m.LowTick); cl.HighTick = Math.Max(cl.HighTick, m.HighTick);
+            }
             foreach (var m in best)
                 if (m.RacimoBar < 0)
                 {
@@ -408,27 +428,25 @@ namespace NinjaTrader.NinjaScript.Indicators
             {
                 // las zonas están ordenadas por barra: búsqueda binaria de la primera que puede verse
                 int lo = 0, hi = zones.Count;
-                int minBar = from - Math.Max(ExtendBars, RacimoLineBars);
+                // líneas de cada racimo: borde superior e inferior del racimo completo, RacimoLineBars velas desde su inicio
+                if (RacimoLineBars > 0 && dxRacLine != null)
+                    foreach (var c in clusters)
+                    {
+                        int la = Math.Max(c.StartBar, from), lb = Math.Min(c.StartBar + RacimoLineBars, to);
+                        if (lb < la) continue;
+                        float lx1 = chartControl.GetXByBarIndex(ChartBars, la) - half;
+                        float lx2 = chartControl.GetXByBarIndex(ChartBars, lb) + half;
+                        float ly1 = chartScale.GetYByValue((c.HighTick + 0.5) * TickSize);
+                        float ly2 = chartScale.GetYByValue((c.LowTick - 0.5) * TickSize);
+                        RenderTarget.DrawLine(new SharpDX.Vector2(lx1, ly1), new SharpDX.Vector2(lx2, ly1), dxRacLine, 1.5f);
+                        RenderTarget.DrawLine(new SharpDX.Vector2(lx1, ly2), new SharpDX.Vector2(lx2, ly2), dxRacLine, 1.5f);
+                    }
+                int minBar = from - ExtendBars;
                 while (lo < hi) { int mid = (lo + hi) / 2; if (zones[mid].Bar < minBar) lo = mid + 1; else hi = mid; }
                 for (int i = lo; i < zones.Count; i++)
                 {
                     Zone z = zones[i];
                     if (z.Bar > to) break;
-                    bool racz = z.RacimoBar >= 0 && dxRacBorder != null;
-                    if (racz && RacimoLineBars > 0)
-                    {
-                        // líneas del racimo: borde superior e inferior de la zona, RacimoLineBars velas a la derecha
-                        int la = Math.Max(z.Bar, from), lb = Math.Min(z.Bar + RacimoLineBars, to);
-                        if (lb >= la)
-                        {
-                            float lx1 = chartControl.GetXByBarIndex(ChartBars, la) - half;
-                            float lx2 = chartControl.GetXByBarIndex(ChartBars, lb) + half;
-                            float ly1 = chartScale.GetYByValue((z.HighTick + 0.5) * TickSize);
-                            float ly2 = chartScale.GetYByValue((z.LowTick - 0.5) * TickSize);
-                            RenderTarget.DrawLine(new SharpDX.Vector2(lx1, ly1), new SharpDX.Vector2(lx2, ly1), dxRacLine, 1.5f);
-                            RenderTarget.DrawLine(new SharpDX.Vector2(lx1, ly2), new SharpDX.Vector2(lx2, ly2), dxRacLine, 1.5f);
-                        }
-                    }
                     int a = Math.Max(z.Bar, from), b = Math.Min(z.Bar + ExtendBars, to);
                     if (b < a) continue;
                     float x1 = chartControl.GetXByBarIndex(ChartBars, a) - half;
@@ -555,7 +573,7 @@ namespace NinjaTrader.NinjaScript.Indicators
         public int RacimoBars { get; set; }
 
         [Range(0, 100000)]
-        [Display(Name = "Racimo: largo de las líneas (velas)", Order = 5, GroupName = "5. Racimo", Description = "Líneas en el borde superior e inferior de cada zona del racimo, hacia la derecha (0 = sin líneas).")]
+        [Display(Name = "Racimo: largo de las líneas (velas)", Order = 5, GroupName = "5. Racimo", Description = "Una línea en el borde superior y otra en el inferior del racimo, desde su primera zona hacia la derecha (0 = sin líneas).")]
         public int RacimoLineBars { get; set; }
 
         [Range(1, 100000)]
