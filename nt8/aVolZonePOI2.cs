@@ -336,22 +336,16 @@ namespace NinjaTrader.NinjaScript.Indicators
                 if (best == null || inside.Count > best.Count) best = inside;
             }
             if (best == null || best.Count < RacimoMin) return;
-            // un racimo: si alguna zona ya pertenecía a uno, se amplía ése; si no, se crea
+            // bordes de este racimo (por construcción, <= RacimoAlturaTicks de alto)
+            int cLo = int.MaxValue, cHi = int.MinValue, cStart = int.MaxValue;
+            foreach (var m in best) { cLo = Math.Min(cLo, m.LowTick); cHi = Math.Max(cHi, m.HighTick); cStart = Math.Min(cStart, m.Bar); }
+            // si comparte zonas con un racimo existente y juntos siguen entrando en la altura, se amplía ése; si no, es otro
             Cluster cl = null;
-            foreach (var m in best) if (m.Rac != null) { cl = m.Rac; break; }
-            if (cl == null) { cl = new Cluster { StartBar = int.MaxValue, LowTick = int.MaxValue, HighTick = int.MinValue }; clusters.Add(cl); }
             foreach (var m in best)
-            {
-                if (m.Rac != null && m.Rac != cl)
-                {
-                    var old = m.Rac;
-                    cl.StartBar = Math.Min(cl.StartBar, old.StartBar); cl.LowTick = Math.Min(cl.LowTick, old.LowTick); cl.HighTick = Math.Max(cl.HighTick, old.HighTick);
-                    foreach (var z2 in zones) if (z2.Rac == old) z2.Rac = cl;
-                    clusters.Remove(old);
-                }
-                m.Rac = cl;
-                cl.StartBar = Math.Min(cl.StartBar, m.Bar); cl.LowTick = Math.Min(cl.LowTick, m.LowTick); cl.HighTick = Math.Max(cl.HighTick, m.HighTick);
-            }
+                if (m.Rac != null && Math.Max(cHi, m.Rac.HighTick) - Math.Min(cLo, m.Rac.LowTick) + 1 <= RacimoAlturaTicks) { cl = m.Rac; break; }
+            if (cl == null) { cl = new Cluster { StartBar = cStart, LowTick = cLo, HighTick = cHi }; clusters.Add(cl); }
+            else { cl.StartBar = Math.Min(cl.StartBar, cStart); cl.LowTick = Math.Min(cl.LowTick, cLo); cl.HighTick = Math.Max(cl.HighTick, cHi); }
+            foreach (var m in best) if (m.Rac == null) m.Rac = cl;
             foreach (var m in best)
                 if (m.RacimoBar < 0)
                 {
