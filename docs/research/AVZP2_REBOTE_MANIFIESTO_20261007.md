@@ -87,3 +87,19 @@ cualquiera a la misma distancia.
 11. **Si el color rojo (OB) mejora o empeora el rebote respecto del azul**, como contraste directo entre las dos:
     sólo cada una contra su nulo.
 12. **Las sesiones con datos parciales** (contrato no líder): quedan afuera por el RESOLVER.
+
+## Enmienda 1 (2026-10-08, después de ver los resultados; OK de Nico: "dale") — nulo apareado por la regla OB
+Motivo: el nulo original no copia la condición que define a una roja, así que el efecto rojo podía ser del
+"alejamiento limpio" y no de la zona (punto A del acta de resultados).
+- **Población:** sólo zonas rojas (AVZP2, regla OB por defecto: 100 barras, 3 alturas, 8 ticks, 2 %).
+- **Nulo apareado:** pseudo-zonas con la misma geometría y franja que las rojas (10 candidatas por zona). Se les
+  aplica **la misma regla OB que al indicador**: desde la barra siguiente a la colocación, el precio llega a
+  max(3 × altura, 8 ticks) antes de 100 barras, con ≤ 2 % del volumen operado dentro hasta ese momento. Sólo las
+  que la cumplen entran al nulo.
+- Mismo evento (salida → primer regreso), mismo resultado (rebote de 2 alturas), mismo estimador.
+- **Prueba única en descubrimiento** (09-25 → 06-26). Pasa si p ≤ 0,05 y β > 0. Si pasa, se corre una única
+  confirmación en 09-26 y 12-26; los datos de confirmación ya se miraron una vez para las rojas (contra el nulo
+  simple), y eso queda declarado.
+- Descriptivo: también se mide el canal no direccional.
+- **Cómo podría refutarse:** β ≈ 0 contra el nulo apareado, con el MDE publicado. En ese caso, el rebote de las rojas
+  es del alejamiento limpio y no del cluster de volumen.

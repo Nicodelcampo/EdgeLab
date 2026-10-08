@@ -15,6 +15,8 @@ from scipy.stats import norm
 IN = Path(sys.argv[1])
 OUT = Path(sys.argv[2]) if len(sys.argv) > 2 else IN
 CONF = ("MNQ_09-26", "MNQ_12-26")
+import os
+PAT = os.environ.get("AVZP2_PAT", "*_avzp2.parquet")   # enmienda 1: "*_avzp2ob.parquet"
 
 
 def onehot(codes):
@@ -60,8 +62,11 @@ def prep(t):
 
 
 def fams(e):
-    return {"AVZP2_todas": e[e.fam.isin(["AVZP2_azul", "AVZP2_roja"])], "AVZP2_azul": e[e.fam == "AVZP2_azul"],
-            "AVZP2_roja": e[e.fam == "AVZP2_roja"], "AVCL": e[e.fam == "AVCL"]}
+    f = {"AVZP2_todas": e[e.fam.isin(["AVZP2_azul", "AVZP2_roja"])], "AVZP2_azul": e[e.fam == "AVZP2_azul"],
+         "AVZP2_roja": e[e.fam == "AVZP2_roja"], "AVCL": e[e.fam == "AVCL"]}
+    if PAT != "*_avzp2.parquet":
+        f = {"AVZP2_roja": f["AVZP2_roja"]}
+    return f
 
 
 def excess_boot(dA, dB, rng, nb=1000):
@@ -83,7 +88,7 @@ def excess_boot(dA, dB, rng, nb=1000):
 
 
 def main():
-    t = pd.concat([pd.read_parquet(f) for f in sorted(glob.glob(str(IN / "**" / "*_avzp2.parquet"), recursive=True))], ignore_index=True)
+    t = pd.concat([pd.read_parquet(f) for f in sorted(glob.glob(str(IN / "**" / PAT), recursive=True))], ignore_index=True)
     print("contratos", sorted(t.contract.unique()))
     out = {"descubrimiento": {}, "no_direccional": {}, "confirmacion": {}}
     D = prep(t[~t.contract.isin(CONF)])
@@ -95,8 +100,9 @@ def main():
         mx = max(mx, min(1.0, (len(ps) - r) * out["descubrimiento"][k]["p"])); out["descubrimiento"][k]["p_holm"] = mx
     rng = np.random.default_rng(20261007)
     F = fams(D)
-    out["avzp2_menos_avcl_descriptivo"] = excess_boot(F["AVZP2_todas"], F["AVCL"], rng)
-    out["roja_menos_azul_descriptivo"] = excess_boot(F["AVZP2_roja"], F["AVZP2_azul"], rng)
+    if "AVCL" in F:
+        out["avzp2_menos_avcl_descriptivo"] = excess_boot(F["AVZP2_todas"], F["AVCL"], rng)
+        out["roja_menos_azul_descriptivo"] = excess_boot(F["AVZP2_roja"], F["AVZP2_azul"], rng)
     perfil = {}
     for k, d in F.items():
         for kind, g in d.groupby("kind"):
@@ -114,11 +120,11 @@ def main():
             mx = max(mx, min(1.0, (len(ps) - r) * res[k]["p"])); res[k]["p_holm"] = mx
             res[k]["confirma"] = bool(mx <= 0.05 and res[k]["beta"] > 0)
         out["confirmacion"] = res
-    (OUT / "AVZP2_REBOTE_RESULTADOS.json").write_text(json.dumps(out, indent=1), encoding="utf-8")
+    (OUT / ("AVZP2_REBOTE_RESULTADOS.json" if PAT == "*_avzp2.parquet" else "AVZP2_OB_APAREADO_RESULTADOS.json")).write_text(json.dumps(out, indent=1), encoding="utf-8")
     for sec in ("descubrimiento", "no_direccional", "confirmacion"):
         for k, v in out[sec].items():
             print(sec, k, {a: (round(b, 4) if isinstance(b, float) else b) for a, b in v.items()})
-    print("AVZP2-AVCL", out["avzp2_menos_avcl_descriptivo"], "| roja-azul", out["roja_menos_azul_descriptivo"])
+    print("AVZP2-AVCL", out.get("avzp2_menos_avcl_descriptivo"), "| roja-azul", out.get("roja_menos_azul_descriptivo"))
     print(json.dumps(perfil, indent=0))
 
 
