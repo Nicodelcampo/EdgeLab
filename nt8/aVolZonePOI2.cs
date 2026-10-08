@@ -46,6 +46,7 @@ namespace NinjaTrader.NinjaScript.Indicators
             public int State;           // 0 = en observación, 1 = normal, 2 = orderblock
             public double InsidePct;
             public int RacimoBar = -1;  // barra en que entró a un racimo (-1 = nunca)
+            public List<Zone> Group;    // grupo encadenado (compartido por todos sus miembros)
         }
 
         private Dictionary<int, double> barProfile;     // ticks de la barra en formación (clave = precio en ticks)
@@ -96,7 +97,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 ObColor = Brushes.Red;
                 RacimoMin = 3;
                 RacimoBars = 300;
-                RacimoOverlapPct = 50.0;
+                RacimoOverlapPct = 30.0;
                 RacimoColor = Brushes.MediumPurple;
                 LogPath = "";
             }
@@ -306,33 +307,34 @@ namespace NinjaTrader.NinjaScript.Indicators
             }
         }
 
-        // Racimo: al nacer una zona se buscan zonas creadas en las últimas RacimoBars barras que se SUPERPONGAN en precio con
-        // ella en al menos RacimoOverlapPct % de la altura de la más chica de las dos. Si con la nueva suman >= RacimoMin,
-        // todas se marcan violeta desde esta barra.
-        // Sólo mira el pasado: una zona vieja puede volverse violeta cuando aparece una vecina nueva (se registra la barra).
+        // Racimo ENCADENADO: al nacer una zona se la une con cada zona creada en las últimas RacimoBars barras que se
+        // superponga en precio con ella en al menos RacimoOverlapPct % de la altura de la más chica. Los grupos se encadenan
+        // (A toca a B y B toca a C -> A, B y C son un racimo). Cuando un grupo llega a RacimoMin zonas, todos sus miembros
+        // se pintan violeta desde esta barra. Sólo mira el pasado.
         private void MarkRacimo(Zone nz)
         {
             if (RacimoMin <= 1) return;
-            var near = new List<Zone>();
+            nz.Group = new List<Zone> { nz };
             for (int i = zones.Count - 1; i >= 0; i--)
             {
                 Zone z = zones[i];
                 if (nz.Bar - z.Bar > RacimoBars) break;
+                if (z.Group == nz.Group) continue;
                 int overlap = Math.Min(z.HighTick, nz.HighTick) - Math.Max(z.LowTick, nz.LowTick) + 1;
                 int minH = Math.Min(z.HighTick - z.LowTick + 1, nz.HighTick - nz.LowTick + 1);
-                if (overlap > 0 && overlap >= RacimoOverlapPct / 100.0 * minH) near.Add(z);
+                if (overlap <= 0 || overlap < RacimoOverlapPct / 100.0 * minH) continue;
+                // fusionar el grupo de z en el de la nueva
+                var g = z.Group ?? new List<Zone> { z };
+                foreach (var m in g) { m.Group = nz.Group; nz.Group.Add(m); }
             }
-            if (near.Count + 1 < RacimoMin) return;
-            nz.RacimoBar = CurrentBar;
-            foreach (var z in near)
-                if (z.RacimoBar < 0)
+            if (nz.Group.Count < RacimoMin) return;
+            foreach (var m in nz.Group)
+                if (m.RacimoBar < 0)
                 {
-                    z.RacimoBar = CurrentBar;
+                    m.RacimoBar = CurrentBar;
                     if (logw != null)
-                        logw.WriteLine(string.Format(CultureInfo.InvariantCulture, "R,{0},{1:yyyy-MM-dd HH:mm:ss.fff},{2},{3}", CurrentBar, Time[0], z.Bar, z.LowTick * TickSize));
+                        logw.WriteLine(string.Format(CultureInfo.InvariantCulture, "R,{0},{1:yyyy-MM-dd HH:mm:ss.fff},{2},{3},{4}", CurrentBar, Time[0], m.Bar, m.LowTick * TickSize, nz.Group.Count));
                 }
-            if (logw != null)
-                logw.WriteLine(string.Format(CultureInfo.InvariantCulture, "R,{0},{1:yyyy-MM-dd HH:mm:ss.fff},{2},{3}", CurrentBar, Time[0], nz.Bar, nz.LowTick * TickSize));
         }
 
         private static double Pct(double[] s, double p)
@@ -539,7 +541,7 @@ namespace NinjaTrader.NinjaScript.Indicators
         public int RacimoBars { get; set; }
 
         [Range(1.0, 100.0)]
-        [Display(Name = "Racimo: superposición mín. (%)", Order = 3, GroupName = "5. Racimo", Description = "Porcentaje de la altura de la zona más chica que tiene que superponerse en precio.")]
+        [Display(Name = "Racimo: superposición mín. (%)", Order = 3, GroupName = "5. Racimo", Description = "Porcentaje de la altura de la zona más chica que tiene que superponerse en precio. Las zonas se encadenan.")]
         public double RacimoOverlapPct { get; set; }
 
         [XmlIgnore]
