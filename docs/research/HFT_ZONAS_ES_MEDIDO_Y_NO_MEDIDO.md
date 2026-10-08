@@ -893,3 +893,11 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
   `EMASEP_RESULTADOS_20261007.md`.
 - EMASEP-MGC150 (07/10/2026): MGC 150t, 486 celdas. 0 pasan (mejor p max-T 0,53). Neto mediano +1,9 USD, pero con
   38–98 trades por celda: **no concluyente por N**. Acta `EMASEP_MGC150_RESULTADOS_20261007.md`.
+
+## AVZP2-REBOTE (aVolZonePOI2 y aVolClusterPOI, MNQ 200t, primer regreso) — 07/10/2026
+- MEDIDO: rebote de 2 alturas al primer regreso contra pseudo-zonas. AVZP2 todas −0,1 pp; azules −1,8 pp; AVCL
+  +0,2 pp: **ninguna rebota más que el azar**, y AVZP2 = AVCL. Las rojas (OB) dan +5,8 pp en descubrimiento (Holm
+  0,0001), pero +2,9 pp y p 0,097 en confirmación: **no confirma**.
+- NO MEDIDO: un nulo apareado por la regla OB (el efecto rojo puede ser del "alejamiento limpio", no de la zona);
+  confirmación con potencia; otros D/horizontes; P&L; toque n-ésimo; otras escalas e instrumentos; chart fusionado.
+  Acta `AVZP2_REBOTE_RESULTADOS_20261007.md`.
