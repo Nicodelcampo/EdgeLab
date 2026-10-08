@@ -242,6 +242,7 @@ selecciona por P&L máximo aislado.
 
 - `docs/NORTH_STAR.md` — referente canónico (fuente de verdad).
 - `docs/research/HANDOFF_2026-08-21_ESTADO_COMPLETO.md` — **punto de entrada operativo vigente**.
+- `docs/research/HANDOFF_AVZP2_RACIMOS_20261008.md` — familia aVolZonePOI2 (zonas, OB, racimos): indicador, paridad, estudios, pipeline Kaggle, NO MEDIDO y siguiente paso.
 - `docs/research/HFT_ZONAS_ES_MEDIDO_Y_NO_MEDIDO.md` — registro vivo MEDIDO / NO MEDIDO.
 - `docs/research_funnel_playbook.md` — prácticas transversales ATJ-01…ATJ-16.
 - `docs/research/HANDOFF_AUDITORIA_2026-08-14.md` — histórico, **superado**.
