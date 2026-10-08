@@ -111,6 +111,7 @@ def contract_rows(c, sess):
 
 
 import numba  # noqa: E402
+import zlib  # noqa: E402
 from edgelab.bridge.indicators.avolzonepoi2 import run as zp2_run, _racimo  # noqa: E402
 
 SPEC = 25
@@ -243,7 +244,7 @@ def run_contract(c, sess):
         reals = [k for k in clus if appr[k["bar"]] and k["bar"] < n - 2]
         for k in reals:
             rows.append((cell,) + row("real", k["bar"], k["low0"], k["high0"], k["start0"]))
-        rng = np.random.default_rng((int(abs(hash(c))) + hash(cell)) % (2 ** 31))
+        rng = np.random.default_rng(zlib.crc32((c + "|" + cell).encode()))  # semilla estable (hash() cambia por proceso)
         pool = np.flatnonzero(appr)
         pool = pool[(pool > max(OCC, HPOST) + 600) & (pool < n - 2)]
         pclock = clock[pool]

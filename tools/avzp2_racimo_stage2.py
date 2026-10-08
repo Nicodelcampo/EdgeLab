@@ -20,12 +20,14 @@ OUT = Path(sys.argv[2]) if len(sys.argv) > 2 else IN
 CONF = ("MNQ_09-26", "MNQ_12-26")
 
 
-def beta(d, y):
+def beta(d, y, extra=()):
+    """extra: columnas adicionales de FE (p. ej. deciles de magnitud de tendencia, auditoría de O1)."""
     ok = np.isfinite(y)
     d, y = d[ok], y[ok]
     f = (d.kind == "real").to_numpy()
     Z = absorb(np.column_stack([f.astype(float), y]),
-               [(d.contract + "|" + d.clock.astype(str)).to_numpy(), d.occD.to_numpy(), d.ampT.to_numpy()])
+               [(d.contract + "|" + d.clock.astype(str)).to_numpy(), d.occD.to_numpy(), d.ampT.to_numpy()]
+               + [d[c].to_numpy() for c in extra])
     e, Y = Z[:, 0], Z[:, 1]
     ee = e @ e; b = (e @ Y) / ee; U = Y - e * b
     sid = pd.factorize(d.session.to_numpy())[0]; G = sid.max() + 1
@@ -47,6 +49,9 @@ def prep(t):
     t["y_O3b"] = np.where(t.o3b >= 0, (t.o3b == 1).astype(float), np.nan)
     t["y_O4"] = t.o4
     t["y_O5"] = t.o5
+    if "trend_h" in t:                       # auditoría de O1: magnitud de la tendencia (signo ya está en O1)
+        t["trD"] = pd.qcut(t.trend_h.abs().rank(method="first"), 10, labels=False)
+        t["moD"] = pd.qcut((t.mom100_h * np.sign(t.trend_h).replace(0, 1)).rank(method="first"), 10, labels=False)
     return t
 
 

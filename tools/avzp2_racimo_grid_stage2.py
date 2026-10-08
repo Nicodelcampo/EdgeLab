@@ -56,6 +56,25 @@ def main():
             ref = out["O5"][c]["beta"] if o == "O5" else out["secundarias"][k]["beta"]
             v["confirma"] = bool(v["p_holm"] <= 0.05 and np.sign(v["beta"]) == np.sign(ref))
         out["confirmacion"] = res
+    # Enmienda 1: auditoría de O1 por magnitud de tendencia (500 velas) y momentum (100 velas)
+    if "trend_h" in t:
+        aud = {}
+        for k, v in list(out["secundarias"].items()):
+            c, o = k.split("|")
+            if o != "O1":
+                continue
+            aud[c] = dict(desc_sin_control=v["beta"], desc=beta(P[c], P[c]["y_O1"].to_numpy(float), extra=("trD", "moD")))
+            if len(C) and (C.cell == c).any():
+                cc = prep(C[C.cell == c])
+                aud[c]["conf"] = beta(cc, cc["y_O1"].to_numpy(float), extra=("trD", "moD"))
+        dd = {c: a_["desc"] for c, a_ in aud.items()}; holm(dd)
+        cc_ = {c: a_["conf"] for c, a_ in aud.items() if "conf" in a_}; holm(cc_)
+        out["auditoria_O1"] = aud
+        print("AUDITORIA O1 (FE + magnitud de tendencia y momentum):")
+        for c, a_ in aud.items():
+            d_, k_ = a_["desc"], a_.get("conf", {})
+            print("  %-10s sin control %+.3f | con control desc %+.3f p_holm %.3f | conf %+.3f p_holm %s" % (
+                c, a_["desc_sin_control"], d_["beta"], d_["p_holm"], k_.get("beta", np.nan), round(k_.get("p_holm", np.nan), 3)))
     (OUT / "AVZP2_RACIMO_GRILLA_RESULTADOS.json").write_text(json.dumps(out, indent=1, default=float), encoding="utf-8")
     print("evaluables", len(ev), "de", len(cells))
     for c in ev:
