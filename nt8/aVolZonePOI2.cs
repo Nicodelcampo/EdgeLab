@@ -26,10 +26,11 @@ using NinjaTrader.Gui.Chart;
 using NinjaTrader.NinjaScript;
 #endregion
 
+// enum en el namespace global: el código que genera NT8 (Strategies, MarketAnalyzer) tiene que verlo
+public enum AVolZoneScoreMode { Suma, Densidad }
+
 namespace NinjaTrader.NinjaScript.Indicators
 {
-    public enum AVolZoneScoreMode { Suma, Densidad }
-
     public class aVolZonePOI2 : Indicator
     {
         private class Zone
