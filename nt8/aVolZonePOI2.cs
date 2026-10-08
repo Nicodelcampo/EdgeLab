@@ -418,17 +418,10 @@ namespace NinjaTrader.NinjaScript.Indicators
                     float y1 = chartScale.GetYByValue((z.HighTick + 0.5) * TickSize);
                     float y2 = chartScale.GetYByValue((z.LowTick - 0.5) * TickSize);
                     var rect = new SharpDX.RectangleF(Math.Min(x1, x2), Math.Min(y1, y2), Math.Max(1f, Math.Abs(x2 - x1)), Math.Max(1f, Math.Abs(y2 - y1)));
-                    // violeta (racimo) tiene prioridad sobre rojo (OB) y azul; se pinta violeta desde que la zona entra al racimo
-                    bool rac = z.RacimoBar >= 0 && z.RacimoBar <= to && dxRacFill != null;
+                    // violeta (racimo) tiene prioridad sobre rojo (OB) y azul; se pinta violeta desde el inicio de la zona
+                    // (visual: en tiempo real la zona se vuelve violeta recién cuando se completa el racimo; el log guarda esa barra)
+                    bool rac = z.RacimoBar >= 0 && dxRacFill != null;
                     bool ob = !rac && z.State == 2 && dxObFill != null;
-                    if (rac && z.RacimoBar > a)
-                    {
-                        // tramo previo a entrar al racimo, con su color original
-                        float xr = chartControl.GetXByBarIndex(ChartBars, z.RacimoBar) - half;
-                        var pre = new SharpDX.RectangleF(rect.X, rect.Y, Math.Max(1f, xr - rect.X), rect.Height);
-                        RenderTarget.FillRectangle(pre, z.State == 2 ? dxObFill : dxFill);
-                        rect = new SharpDX.RectangleF(xr, rect.Y, Math.Max(1f, rect.Right - xr), rect.Height);
-                    }
                     RenderTarget.FillRectangle(rect, rac ? dxRacFill : ob ? dxObFill : dxFill);
                     RenderTarget.DrawRectangle(rect, rac ? dxRacBorder : ob ? dxObBorder : dxBorder, 1f);
                     if (tf != null && z.Bar >= from)
