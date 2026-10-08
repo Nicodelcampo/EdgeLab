@@ -346,6 +346,8 @@ namespace NinjaTrader.NinjaScript.Indicators
             if (cl == null) { cl = new Cluster { StartBar = cStart, LowTick = cLo, HighTick = cHi }; clusters.Add(cl); }
             else { cl.StartBar = Math.Min(cl.StartBar, cStart); cl.LowTick = Math.Min(cl.LowTick, cLo); cl.HighTick = Math.Max(cl.HighTick, cHi); }
             foreach (var m in best) if (m.Rac == null) m.Rac = cl;
+            if (logw != null)
+                logw.WriteLine(string.Format(CultureInfo.InvariantCulture, "C,{0},{1:yyyy-MM-dd HH:mm:ss.fff},{2},{3},{4},{5}", CurrentBar, Time[0], cl.StartBar, cl.LowTick * TickSize, cl.HighTick * TickSize, clusters.IndexOf(cl)));
             foreach (var m in best)
                 if (m.RacimoBar < 0)
                 {

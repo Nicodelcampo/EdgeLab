@@ -15,6 +15,11 @@ Por barra primaria, en el orden del .cs:
    - es zona si el umbral es > 0 y el score es >= umbral. El umbral es el percentil, con interpolación lineal, de la
      historia de su franja de `bucket_min` minutos en hora de Chicago, y sólo se calcula si hay >= `min_samples` valores;
    - se encola el mejor score (0 si no hubo clusters) en la sesión en curso.
+5. Racimo (al nacer cada zona, antes de agregarla): candidatas = zonas creadas en las últimas `racimo_bars` barras
+   (recorridas de la más nueva a la más vieja) + la nueva. Para cada candidata como base, franja
+   [low_base, low_base + altura - 1]; tiene que contener a la nueva; se cuentan las candidatas completas adentro; gana
+   la primera franja con más zonas. Si son >= racimo_min: se arma o amplía un racimo (sólo si sigue entrando en la
+   altura) y las zonas sin racimo_bar lo reciben = barra actual.
 """
 from __future__ import annotations
 
@@ -25,7 +30,8 @@ import pandas as pd
 
 DEFAULTS = dict(window_bars=10, median_multiplier=2.0, max_gap_ticks=1, min_cluster_ticks=2, score_mode="Suma",
                 bucket_min=15, detection_percentile=95.0, lookback_sessions=20, min_samples=20,
-                ob_bars=100, ob_away_heights=3.0, ob_min_away_ticks=8, ob_max_inside_pct=2.0)
+                ob_bars=100, ob_away_heights=3.0, ob_min_away_ticks=8, ob_max_inside_pct=2.0,
+                racimo_min=5, racimo_bars=135, racimo_altura_ticks=18)
 
 
 def _pct(s, p):
@@ -57,7 +63,7 @@ def run(bars, footprints, session_id, params=None):
     sess_idx = -1
     blk_t, blk_v = [], []
     cnt = 0
-    zones, blocks, watching = [], [], []
+    zones, blocks, watching, clusters = [], [], [], []
     for b in range(n):
         if b == 0 or session_id[b] != session_id[b - 1]:
             if sess_idx >= 0:
@@ -124,7 +130,8 @@ def run(bars, footprints, session_id, params=None):
                     if thr > 0 and sc >= thr:
                         z = dict(bar=b, end_ns=int(bars.end_ns[b]), low_tick=lk, high_tick=hk, levels=c, score=sc,
                                  thresh=thr, samples=len(srt), state=0, vin=0.0, vall=0.0, max_away=0, seen=0,
-                                 inside_pct=0.0, decided_bar=None)
+                                 inside_pct=0.0, decided_bar=None, racimo_bar=-1, rac=None)
+                        _racimo(z, zones, clusters, b, p)
                         zones.append(z)
                         if p["ob_bars"] > 0:
                             watching.append(z)
@@ -133,4 +140,48 @@ def run(bars, footprints, session_id, params=None):
                 g = e + 1
         pending[bk].append(best)
         blocks.append((b, nl, best, bk, sess_idx))
-    return dict(zones=zones, blocks=blocks)
+    ids = {id(c): i for i, c in enumerate(clusters)}
+    for z in zones:
+        z["racimo_id"] = ids[id(z["rac"])] if z["rac"] is not None else -1
+        del z["rac"]
+    return dict(zones=zones, blocks=blocks, clusters=[dict(c) for c in clusters])
+
+
+def _racimo(nz, zones, clusters, b, p):
+    if p["racimo_min"] <= 1:
+        return
+    cand = []
+    for z in reversed(zones):
+        if nz["bar"] - z["bar"] > p["racimo_bars"]:
+            break
+        cand.append(z)
+    cand.append(nz)
+    A = int(p["racimo_altura_ticks"])
+    best = None
+    for bz in cand:
+        lo, hi = bz["low_tick"], bz["low_tick"] + A - 1
+        if nz["low_tick"] < lo or nz["high_tick"] > hi:
+            continue
+        inside = [z for z in cand if z["low_tick"] >= lo and z["high_tick"] <= hi]
+        if best is None or len(inside) > len(best):
+            best = inside
+    if best is None or len(best) < p["racimo_min"]:
+        return
+    clo = min(m["low_tick"] for m in best); chi = max(m["high_tick"] for m in best); cst = min(m["bar"] for m in best)
+    cl = None
+    for m in best:
+        r = m.get("rac")
+        if r is not None and max(chi, r["high"]) - min(clo, r["low"]) + 1 <= A:
+            cl = r
+            break
+    if cl is None:
+        cl = dict(start=cst, low=clo, high=chi, bar=b)
+        clusters.append(cl)
+    else:
+        cl["start"] = min(cl["start"], cst); cl["low"] = min(cl["low"], clo); cl["high"] = max(cl["high"], chi)
+    for m in best:
+        if m.get("rac") is None:
+            m["rac"] = cl
+    for m in best:
+        if m["racimo_bar"] < 0:
+            m["racimo_bar"] = b
