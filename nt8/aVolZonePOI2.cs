@@ -1,0 +1,399 @@
+// aVolZonePOI2.cs - EdgeLab 2026-10-07. Versión mejorada de aVolZonePOI.
+//
+// Mismo núcleo: bloques de N barras -> perfil por precio -> niveles hot (>= mediana x M) -> clusters adyacentes ->
+// zona si el score del cluster supera el percentil histórico de su franja horaria.
+//
+// Mejoras respecto de aVolZonePOI:
+//  1. El bloque se reinicia al empezar la sesión (no mezcla el cierre de una sesión con la apertura de la siguiente).
+//  2. El umbral usa SÓLO las últimas N sesiones completas (no la sesión en curso, sin cola global que mezcla horas):
+//     las zonas no dependen de cuántos días cargaste en el chart, salvo las primeras N sesiones de calentamiento.
+//  3. Score opcional por densidad (volumen por nivel), para no favorecer zonas anchas.
+//  4. Franjas en hora de Chicago (no se corren con el cambio de horario de EE.UU.).
+//  5. Rápido: perfil con claves enteras, umbral ordenado una vez por sesión, y dibujo propio (SharpDX) sólo de las
+//     zonas visibles, sin miles de objetos Draw.Rectangle. Sin SQLite. Sin grupos de alerta.
+
+#region Using declarations
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
+using System.Windows.Media;
+using System.Xml.Serialization;
+using NinjaTrader.Gui;
+using NinjaTrader.Data;
+using NinjaTrader.Gui.Chart;
+using NinjaTrader.NinjaScript;
+#endregion
+
+namespace NinjaTrader.NinjaScript.Indicators
+{
+    public enum AVolZoneScoreMode { Suma, Densidad }
+
+    public class aVolZonePOI2 : Indicator
+    {
+        private class Zone
+        {
+            public int Bar;
+            public int LowTick;
+            public int HighTick;
+            public double Score;
+        }
+
+        private Dictionary<int, double> barProfile;     // ticks de la barra en formación (clave = precio en ticks)
+        private Dictionary<int, double> blockProfile;   // perfil acumulado del bloque
+        private int blockCount;
+        private Dictionary<int, List<KeyValuePair<int, double>>> hist;   // franja -> (sesión, score)
+        private Dictionary<int, List<double>> pending;                   // franja -> scores de la sesión en curso
+        private Dictionary<int, double[]> sortedCache;
+        private int sessionIndex;
+        private List<Zone> zones;
+        private TimeZoneInfo ctZone;
+        private TimeZoneInfo localZone;
+        private System.IO.StreamWriter logw;
+        private SharpDX.Direct2D1.Brush dxFill, dxBorder, dxText;
+
+        protected override void OnStateChange()
+        {
+            if (State == State.SetDefaults)
+            {
+                Name = "aVolZonePOI2";
+                Description = "Zonas de volumen anómalo (aVolZonePOI mejorado): umbral por sesiones previas, bloque por sesión, render rápido.";
+                Calculate = Calculate.OnBarClose;
+                IsOverlay = true;
+                DrawOnPricePanel = true;
+                IsSuspendedWhileInactive = true;
+                DisplayInDataBox = false;
+                PaintPriceMarkers = false;
+
+                WindowBars = 10;
+                MedianMultiplier = 2.0;
+                MaxGapTicks = 1;
+                MinClusterTicks = 2;
+                ScoreMode = AVolZoneScoreMode.Suma;
+                BucketMinutes = 15;
+                DetectionPercentile = 95.0;
+                LookbackSessions = 20;
+                MinSamplesPerBucket = 20;
+                ExtendBars = 250;
+                ZoneColor = Brushes.DodgerBlue;
+                Opacity = 20;
+                ShowScore = true;
+                LogPath = "";
+            }
+            else if (State == State.Configure)
+            {
+                AddDataSeries(BarsPeriodType.Tick, 1);
+            }
+            else if (State == State.DataLoaded)
+            {
+                barProfile = new Dictionary<int, double>();
+                blockProfile = new Dictionary<int, double>();
+                blockCount = 0;
+                hist = new Dictionary<int, List<KeyValuePair<int, double>>>();
+                pending = new Dictionary<int, List<double>>();
+                sortedCache = new Dictionary<int, double[]>();
+                sessionIndex = -1;
+                zones = new List<Zone>();
+                try { ctZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"); } catch { ctZone = null; }
+                localZone = Core.Globals.GeneralOptions.TimeZoneInfo;
+                if (!string.IsNullOrWhiteSpace(LogPath))
+                {
+                    try
+                    {
+                        logw = new System.IO.StreamWriter(LogPath, false);
+                        logw.WriteLine(string.Format(CultureInfo.InvariantCulture,
+                            "# meta,indicator=aVolZonePOI2,version=1,instrument={0},bars={1},window={2},mult={3},gap={4},minc={5},mode={6},bucket_min={7},pct={8},lookback={9},min_samples={10}",
+                            Instrument != null ? Instrument.FullName : "", BarsPeriod != null ? BarsPeriod.ToString() : "",
+                            WindowBars, MedianMultiplier, MaxGapTicks, MinClusterTicks, ScoreMode, BucketMinutes,
+                            DetectionPercentile, LookbackSessions, MinSamplesPerBucket));
+                        logw.WriteLine("# B,bar,time,levels,best_score,bucket,session | Z,bar,time,low,high,levels,score,thresh,samples");
+                    }
+                    catch (Exception ex) { Print("aVolZonePOI2 log: " + ex.Message); logw = null; }
+                }
+            }
+            else if (State == State.Terminated)
+            {
+                if (logw != null) { try { logw.Flush(); logw.Dispose(); } catch { } logw = null; }
+                DisposeDx();
+            }
+        }
+
+        protected override void OnBarUpdate()
+        {
+            if (BarsInProgress == 1)
+            {
+                double v = Volumes[1][0];
+                if (v <= 0) return;
+                int k = (int)Math.Round(Closes[1][0] / TickSize);
+                double cur;
+                barProfile[k] = barProfile.TryGetValue(k, out cur) ? cur + v : v;
+                return;
+            }
+            if (BarsInProgress != 0) return;
+
+            if (Bars.IsFirstBarOfSession)
+            {
+                CommitSession();
+                blockProfile.Clear();
+                blockCount = 0;
+            }
+
+            // cerrar la barra: sólo ticks dentro del rango de la barra
+            int lo = (int)Math.Round(Low[0] / TickSize), hi = (int)Math.Round(High[0] / TickSize);
+            foreach (var kv in barProfile)
+            {
+                if (kv.Key < lo || kv.Key > hi) continue;
+                double cur;
+                blockProfile[kv.Key] = blockProfile.TryGetValue(kv.Key, out cur) ? cur + kv.Value : kv.Value;
+            }
+            barProfile.Clear();
+            blockCount++;
+            if (blockCount < WindowBars) return;
+            ProcessBlock();
+            blockProfile.Clear();
+            blockCount = 0;
+        }
+
+        private void CommitSession()
+        {
+            if (sessionIndex >= 0)
+            {
+                foreach (var kv in pending)
+                {
+                    List<KeyValuePair<int, double>> l;
+                    if (!hist.TryGetValue(kv.Key, out l)) { l = new List<KeyValuePair<int, double>>(); hist[kv.Key] = l; }
+                    foreach (double s in kv.Value) l.Add(new KeyValuePair<int, double>(sessionIndex, s));
+                }
+                int minS = sessionIndex - LookbackSessions + 1;
+                foreach (var l in hist.Values) l.RemoveAll(x => x.Key < minS);
+                sortedCache.Clear();
+            }
+            pending.Clear();
+            sessionIndex++;
+        }
+
+        private int Bucket()
+        {
+            DateTime t = Time[0];
+            if (ctZone != null && localZone != null)
+            {
+                try { t = TimeZoneInfo.ConvertTime(t, localZone, ctZone); } catch { }
+            }
+            return (t.Hour * 60 + t.Minute) / Math.Max(1, BucketMinutes);
+        }
+
+        private void ProcessBlock()
+        {
+            int bucket = Bucket();
+            double best = 0;
+            int n = blockProfile.Count;
+            if (n >= 3)
+            {
+                var keys = new int[n];
+                var vols = new double[n];
+                blockProfile.Keys.CopyTo(keys, 0);
+                blockProfile.Values.CopyTo(vols, 0);
+                Array.Sort(keys, vols);
+                var sv = (double[])vols.Clone();
+                Array.Sort(sv);
+                double hot = sv[n / 2] * MedianMultiplier;
+
+                double[] sorted;
+                if (!sortedCache.TryGetValue(bucket, out sorted))
+                {
+                    List<KeyValuePair<int, double>> l;
+                    if (hist.TryGetValue(bucket, out l))
+                    {
+                        sorted = new double[l.Count];
+                        for (int i = 0; i < l.Count; i++) sorted[i] = l[i].Value;
+                        Array.Sort(sorted);
+                    }
+                    else sorted = new double[0];
+                    sortedCache[bucket] = sorted;
+                }
+                double thr = sorted.Length >= MinSamplesPerBucket ? Pct(sorted, DetectionPercentile / 100.0) : -1;
+
+                // niveles hot en orden de precio; el hueco se mide en ticks de precio (como el original)
+                var hotIdx = new List<int>();
+                for (int i = 0; i < n; i++) if (vols[i] >= hot) hotIdx.Add(i);
+                int g = 0;
+                while (g < hotIdx.Count)
+                {
+                    int e = g;
+                    while (e + 1 < hotIdx.Count && keys[hotIdx[e + 1]] - keys[hotIdx[e]] - 1 <= MaxGapTicks) e++;
+                    int cnt = e - g + 1;
+                    if (cnt >= MinClusterTicks)
+                    {
+                        double sum = 0;
+                        for (int j = g; j <= e; j++) sum += vols[hotIdx[j]];
+                        int lowK = keys[hotIdx[g]], highK = keys[hotIdx[e]];
+                        double sc = ScoreMode == AVolZoneScoreMode.Suma ? sum : sum / (highK - lowK + 1);
+                        if (sc > best) best = sc;
+                        if (thr > 0 && sc >= thr)
+                        {
+                            zones.Add(new Zone { Bar = CurrentBar, LowTick = lowK, HighTick = highK, Score = sc });
+                            if (logw != null)
+                                logw.WriteLine(string.Format(CultureInfo.InvariantCulture, "Z,{0},{1:yyyy-MM-dd HH:mm:ss.fff},{2},{3},{4},{5},{6},{7}",
+                                    CurrentBar, Time[0], lowK * TickSize, highK * TickSize, cnt, sc, thr, sorted.Length));
+                        }
+                    }
+                    g = e + 1;
+                }
+            }
+            List<double> pl;
+            if (!pending.TryGetValue(bucket, out pl)) { pl = new List<double>(); pending[bucket] = pl; }
+            pl.Add(best);
+            if (logw != null)
+                logw.WriteLine(string.Format(CultureInfo.InvariantCulture, "B,{0},{1:yyyy-MM-dd HH:mm:ss.fff},{2},{3},{4},{5}",
+                    CurrentBar, Time[0], n, best, bucket, sessionIndex));
+        }
+
+        private static double Pct(double[] s, double p)
+        {
+            if (s.Length == 0) return 0;
+            if (s.Length == 1) return s[0];
+            double r = p * (s.Length - 1);
+            int lo = (int)Math.Floor(r);
+            int hi = Math.Min(lo + 1, s.Length - 1);
+            return s[lo] + (r - lo) * (s[hi] - s[lo]);
+        }
+
+        #region Render
+        private void DisposeDx()
+        {
+            if (dxFill != null) { dxFill.Dispose(); dxFill = null; }
+            if (dxBorder != null) { dxBorder.Dispose(); dxBorder = null; }
+            if (dxText != null) { dxText.Dispose(); dxText = null; }
+        }
+
+        public override void OnRenderTargetChanged()
+        {
+            DisposeDx();
+            if (RenderTarget == null) return;
+            try
+            {
+                dxFill = (ZoneColor ?? Brushes.DodgerBlue).ToDxBrush(RenderTarget);
+                dxFill.Opacity = Opacity / 100f;
+                dxBorder = (ZoneColor ?? Brushes.DodgerBlue).ToDxBrush(RenderTarget);
+                dxBorder.Opacity = Math.Min(1f, Opacity / 100f * 2.2f);
+                dxText = (ZoneColor ?? Brushes.DodgerBlue).ToDxBrush(RenderTarget);
+            }
+            catch { DisposeDx(); }
+        }
+
+        protected override void OnRender(ChartControl chartControl, ChartScale chartScale)
+        {
+            base.OnRender(chartControl, chartScale);
+            if (zones == null || zones.Count == 0 || ChartBars == null || RenderTarget == null) return;
+            if (dxFill == null) OnRenderTargetChanged();
+            if (dxFill == null) return;
+            int from = ChartBars.FromIndex, to = ChartBars.ToIndex;
+            float half = (float)chartControl.Properties.BarDistance / 2f;
+            SharpDX.DirectWrite.TextFormat tf = null;
+            if (ShowScore)
+            {
+                try { tf = (chartControl.Properties.LabelFont ?? new Gui.Tools.SimpleFont("Arial", 9)).ToDirectWriteTextFormat(); }
+                catch { tf = null; }
+            }
+            var prev = RenderTarget.AntialiasMode;
+            RenderTarget.AntialiasMode = SharpDX.Direct2D1.AntialiasMode.Aliased;
+            try
+            {
+                // las zonas están ordenadas por barra: búsqueda binaria de la primera que puede verse
+                int lo = 0, hi = zones.Count;
+                int minBar = from - ExtendBars;
+                while (lo < hi) { int mid = (lo + hi) / 2; if (zones[mid].Bar < minBar) lo = mid + 1; else hi = mid; }
+                for (int i = lo; i < zones.Count; i++)
+                {
+                    Zone z = zones[i];
+                    if (z.Bar > to) break;
+                    int a = Math.Max(z.Bar, from), b = Math.Min(z.Bar + ExtendBars, to);
+                    if (b < a) continue;
+                    float x1 = chartControl.GetXByBarIndex(ChartBars, a) - half;
+                    float x2 = chartControl.GetXByBarIndex(ChartBars, b) + half;
+                    float y1 = chartScale.GetYByValue((z.HighTick + 0.5) * TickSize);
+                    float y2 = chartScale.GetYByValue((z.LowTick - 0.5) * TickSize);
+                    var rect = new SharpDX.RectangleF(Math.Min(x1, x2), Math.Min(y1, y2), Math.Max(1f, Math.Abs(x2 - x1)), Math.Max(1f, Math.Abs(y2 - y1)));
+                    RenderTarget.FillRectangle(rect, dxFill);
+                    RenderTarget.DrawRectangle(rect, dxBorder, 1f);
+                    if (tf != null && z.Bar >= from)
+                    {
+                        string s = ScoreMode == AVolZoneScoreMode.Suma ? ((int)z.Score).ToString() : z.Score.ToString("0.0", CultureInfo.InvariantCulture);
+                        using (var layout = new SharpDX.DirectWrite.TextLayout(Core.Globals.DirectWriteFactory, s, tf, 120f, tf.FontSize + 4f))
+                            RenderTarget.DrawTextLayout(new SharpDX.Vector2(rect.X + 2f, rect.Y - tf.FontSize - 4f), layout, dxText);
+                    }
+                }
+            }
+            finally
+            {
+                RenderTarget.AntialiasMode = prev;
+                if (tf != null) tf.Dispose();
+            }
+        }
+        #endregion
+
+        #region Properties
+        [NinjaScriptProperty][Range(2, 200)]
+        [Display(Name = "Window Bars", Order = 1, GroupName = "1. Detección", Description = "Barras por bloque. Se reinicia al empezar la sesión.")]
+        public int WindowBars { get; set; }
+
+        [NinjaScriptProperty][Range(1.0, 10.0)]
+        [Display(Name = "Median Multiplier", Order = 2, GroupName = "1. Detección")]
+        public double MedianMultiplier { get; set; }
+
+        [NinjaScriptProperty][Range(0, 10)]
+        [Display(Name = "Max Gap Ticks", Order = 3, GroupName = "1. Detección")]
+        public int MaxGapTicks { get; set; }
+
+        [NinjaScriptProperty][Range(1, 50)]
+        [Display(Name = "Min Cluster Ticks", Order = 4, GroupName = "1. Detección")]
+        public int MinClusterTicks { get; set; }
+
+        [NinjaScriptProperty]
+        [Display(Name = "Score", Order = 5, GroupName = "1. Detección", Description = "Suma = volumen total del cluster (como el original). Densidad = volumen por nivel (no favorece zonas anchas).")]
+        public AVolZoneScoreMode ScoreMode { get; set; }
+
+        [NinjaScriptProperty][Range(1, 120)]
+        [Display(Name = "Franja (minutos, hora Chicago)", Order = 1, GroupName = "2. Umbral")]
+        public int BucketMinutes { get; set; }
+
+        [NinjaScriptProperty][Range(50.0, 99.99)]
+        [Display(Name = "Percentil", Order = 2, GroupName = "2. Umbral")]
+        public double DetectionPercentile { get; set; }
+
+        [NinjaScriptProperty][Range(1, 250)]
+        [Display(Name = "Sesiones previas", Order = 3, GroupName = "2. Umbral", Description = "El umbral usa sólo estas sesiones completas anteriores.")]
+        public int LookbackSessions { get; set; }
+
+        [NinjaScriptProperty][Range(5, 5000)]
+        [Display(Name = "Mín. muestras por franja", Order = 4, GroupName = "2. Umbral", Description = "Sin esta cantidad de bloques previos en la franja, no se marca zona.")]
+        public int MinSamplesPerBucket { get; set; }
+
+        [NinjaScriptProperty][Range(1, 50000)]
+        [Display(Name = "Extender (barras)", Order = 1, GroupName = "3. Visual")]
+        public int ExtendBars { get; set; }
+
+        [XmlIgnore]
+        [Display(Name = "Color", Order = 2, GroupName = "3. Visual")]
+        public Brush ZoneColor { get; set; }
+
+        [Browsable(false)]
+        public string ZoneColorSerializable
+        {
+            get { return Serialize.BrushToString(ZoneColor); }
+            set { ZoneColor = Serialize.StringToBrush(value); }
+        }
+
+        [Range(1, 100)]
+        [Display(Name = "Opacidad", Order = 3, GroupName = "3. Visual")]
+        public int Opacity { get; set; }
+
+        [Display(Name = "Mostrar score", Order = 4, GroupName = "3. Visual")]
+        public bool ShowScore { get; set; }
+
+        [Display(Name = "Log Path (vacío = off)", Order = 1, GroupName = "9. EdgeLab export")]
+        public string LogPath { get; set; }
+        #endregion
+    }
+}
