@@ -175,7 +175,7 @@ def _racimo(nz, zones, clusters, b, p):
             cl = r
             break
     if cl is None:
-        cl = dict(start=cst, low=clo, high=chi, bar=b)
+        cl = dict(start=cst, low=clo, high=chi, bar=b, start0=cst, low0=clo, high0=chi)   # *0 = snapshot al formarse
         clusters.append(cl)
     else:
         cl["start"] = min(cl["start"], cst); cl["low"] = min(cl["low"], clo); cl["high"] = max(cl["high"], chi)
