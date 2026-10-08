@@ -44,6 +44,7 @@ namespace NinjaTrader.NinjaScript.Indicators
             public double VolIn, VolAll; // volumen operado dentro de la zona / total, en la ventana
             public int MaxAway;         // alejamiento máximo en ticks desde el borde de la zona
             public int State;           // 0 = en observación, 1 = normal, 2 = orderblock
+            public double InsidePct;
         }
 
         private Dictionary<int, double> barProfile;     // ticks de la barra en formación (clave = precio en ticks)
@@ -86,7 +87,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 ZoneColor = Brushes.DodgerBlue;
                 Opacity = 20;
                 ShowScore = true;
-                ObBars = 20;
+                ObBars = 100;
                 ObAwayHeights = 3.0;
                 ObMinAwayTicks = 8;
                 ObMaxInsidePct = 2.0;   // calibrado MNQ 200t sep-2026: 21% de las zonas tiene <1% dentro, despues cae (corte natural)
@@ -265,9 +266,10 @@ namespace NinjaTrader.NinjaScript.Indicators
                     CurrentBar, Time[0], n, best, bucket, sessionIndex));
         }
 
-        // Orderblock: en las ObBars barras siguientes a la creación, el precio se aleja al menos
-        // max(ObAwayHeights x altura, ObMinAwayTicks) ticks del borde, y opera dentro de la zona como mucho
-        // ObMaxInsidePct % del volumen de esas barras. Se decide al cerrar la ventana (sin mirar el futuro más allá).
+        // Orderblock: desde la creación, se acumula el volumen operado dentro de la zona y el total. En la PRIMERA barra
+        // en que el precio queda a max(ObAwayHeights x altura, ObMinAwayTicks) ticks del borde, se decide:
+        // orderblock si el volumen dentro hasta ese momento es <= ObMaxInsidePct %. Si en ObBars barras no se alejó, normal.
+        // Calibrado MNQ 200t sep-2026 (815 zonas): 27% tiene <1% dentro al alejarse; entre 1% y 2% sólo 1% -> corte natural.
         private void UpdateOrderBlocks(int lo, int hi)
         {
             double tot = 0;
@@ -283,14 +285,16 @@ namespace NinjaTrader.NinjaScript.Indicators
                 int away = Math.Max(hi - z.HighTick, z.LowTick - lo);
                 if (away > z.MaxAway) z.MaxAway = away;
                 z.Seen++;
-                if (z.Seen < ObBars) continue;
                 int height = z.HighTick - z.LowTick + 1;
                 double need = Math.Max(ObAwayHeights * height, ObMinAwayTicks);
                 double insidePct = z.VolAll > 0 ? 100.0 * z.VolIn / z.VolAll : 0;
-                z.State = (z.MaxAway >= need && insidePct <= ObMaxInsidePct) ? 2 : 1;
+                z.InsidePct = insidePct;
+                if (z.MaxAway >= need) z.State = insidePct <= ObMaxInsidePct ? 2 : 1;
+                else if (z.Seen >= ObBars) z.State = 1;
+                else continue;
                 if (logw != null)
                     logw.WriteLine(string.Format(CultureInfo.InvariantCulture, "O,{0},{1:yyyy-MM-dd HH:mm:ss.fff},{2},{3},{4},{5:0.###},{6}",
-                        CurrentBar, Time[0], z.Bar, z.LowTick * TickSize, z.MaxAway, insidePct, z.State));
+                        CurrentBar, Time[0], z.Bar, z.LowTick * TickSize, z.Seen, insidePct, z.State));
                 watching.RemoveAt(i);
             }
         }
@@ -373,7 +377,9 @@ namespace NinjaTrader.NinjaScript.Indicators
                     if (tf != null && z.Bar >= from)
                     {
                         string s = ScoreMode == AVolZoneScoreMode.Suma ? ((int)z.Score).ToString() : z.Score.ToString("0.0", CultureInfo.InvariantCulture);
-                        using (var layout = new SharpDX.DirectWrite.TextLayout(Core.Globals.DirectWriteFactory, s, tf, 120f, tf.FontSize + 4f))
+                        if (z.State == 2) s += "  OB " + z.InsidePct.ToString("0.0", CultureInfo.InvariantCulture) + "%";
+                        else if (z.State == 1) s += "  " + z.InsidePct.ToString("0", CultureInfo.InvariantCulture) + "%";
+                        using (var layout = new SharpDX.DirectWrite.TextLayout(Core.Globals.DirectWriteFactory, s, tf, 220f, tf.FontSize + 4f))
                             RenderTarget.DrawTextLayout(new SharpDX.Vector2(rect.X + 2f, rect.Y - tf.FontSize - 4f), layout, dxText);
                     }
                 }
@@ -446,7 +452,7 @@ namespace NinjaTrader.NinjaScript.Indicators
         public bool ShowScore { get; set; }
 
         [Range(0, 5000)]
-        [Display(Name = "OB: barras de observación (0 = off)", Order = 1, GroupName = "4. Orderblock", Description = "Ventana después de crear la zona en la que se decide si es orderblock.")]
+        [Display(Name = "OB: barras de observación (0 = off)", Order = 1, GroupName = "4. Orderblock", Description = "Máximo de barras que se espera a que el precio se aleje. Si no se aleja, la zona queda normal.")]
         public int ObBars { get; set; }
 
         [Range(0.0, 100.0)]
