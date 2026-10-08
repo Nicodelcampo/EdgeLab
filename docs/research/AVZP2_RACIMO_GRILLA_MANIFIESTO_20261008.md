@@ -42,3 +42,14 @@ paisaje.
 - Otros parámetros de detección de zonas (percentil, bloque, franja).
 - Mínimos de zonas mayores que 8 o ventanas mayores que 1.000 (por falta de potencia esperada).
 - Interacción con el lado de formación.
+
+## Enmienda 1 (después de ver la grilla) — auditoría de O1 por magnitud de tendencia
+O1 (salida a favor de la tendencia) pasó y confirmó en varias celdas de ventana grande. El nulo apareaba el **signo**
+de la tendencia de 500 velas pero no su **magnitud**. Si los racimos reales se forman en tendencias más fuertes, la
+continuación puede ser momentum genérico y no efecto del racimo (misma clase de artefacto que el "alejamiento
+limpio" de AVZP2-REBOTE). Auditoría:
+- se re-corre la grilla guardando la magnitud de la tendencia (500 velas) y el momentum de 100 velas, en alturas de
+  la franja;
+- O1 se re-estima agregando FE por decil de cada una;
+- **regla:** O1 se considera efecto del racimo sólo si sobrevive a ese control en descubrimiento **y** en
+  confirmación. Si no, se retracta como momentum.

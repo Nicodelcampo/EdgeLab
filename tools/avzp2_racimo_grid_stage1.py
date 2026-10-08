@@ -233,7 +233,8 @@ def run_contract(c, sess):
         pos = 0 if L <= cl[t0] <= H else (1 if cl[t0] > H else -1)
         return (c, kind, int(t0), int(L), int(H), int(H - L + 1), int(sdate[t0]), int(clock[t0]), occ(t0, L, H),
                 float(rng200[t0]) if t0 >= HPOST else np.nan, int(tr), pos, int(te), int(d), int(o2), int(o3a), int(o3b),
-                float(mx), float(np.log(te - t0)) if te > 0 else np.nan, exp)
+                float(mx), float(np.log(te - t0)) if te > 0 else np.nan, exp,
+                float(cl[t0] - cl[max(0, t0 - TREND)]) / (H - L + 1), float(cl[t0] - cl[max(0, t0 - 100)]) / (H - L + 1))
 
     rows = []
     for (cm, cw, ca) in CELLS:
@@ -264,7 +265,7 @@ def run_contract(c, sess):
                 if got >= NPSEUDO:
                     break
     t = pd.DataFrame(rows, columns=["cell", "contract", "kind", "t0", "L", "H", "h", "session", "clock", "occ", "amp", "trend", "pos",
-                                    "te", "dir", "o2", "o3a", "o3b", "mx_h", "o4", "o5"])
+                                    "te", "dir", "o2", "o3a", "o3b", "mx_h", "o4", "o5", "trend_h", "mom100_h"])
     t.to_parquet(OUT / ("%s_avzp2racgrid.parquet" % c))
     print(c, ds, "velas", n, "zonas", len(r["zones"]), "filas", len(t),
           "%.0f s" % (time.time() - t0_), flush=True)
