@@ -8,7 +8,9 @@ rows = [l.rstrip("\n").split(",") for l in open(O, encoding="utf-8") if not l.st
 Bn = pd.DataFrame([r for r in rows if r[0] == "B"], columns=["k", "bar", "time", "levels", "best", "bucket", "sess"])
 Zn = pd.DataFrame([r for r in rows if r[0] == "Z"], columns=["k", "bar", "time", "low", "high", "levels", "score", "thr", "samples"])
 On = pd.DataFrame([r for r in rows if r[0] == "O"], columns=["k", "bar", "time", "zbar", "low", "seen", "inpct", "state"])
-for d in (Bn, Zn, On):
+Rn = pd.DataFrame([r for r in rows if r[0] == "R"], columns=["k", "bar", "time", "zbar", "low", "n"])
+Cn = pd.DataFrame([r for r in rows if r[0] == "C"], columns=["k", "bar", "time", "start", "low", "high", "idx"])
+for d in (Bn, Zn, On, Rn, Cn):
     for c in d.columns[1:]:
         if c != "time":
             d[c] = pd.to_numeric(d[c])
@@ -36,12 +38,14 @@ del t1; gc.collect()
 z0 = np.zeros(nT, dtype=np.int64)
 tk = dataclasses.replace(t2, bid_ticks=z0, ask_ticks=z0, sequence=np.arange(nT, dtype=np.int64), **cols)
 del t2, cols; gc.collect()
-bars = B.build_tick_bars(tk, 200)
+SPEC = int(os.environ.get("ZP_SPEC", 200))
+PARAMS = __import__("json").loads(os.environ.get("ZP_PARAMS", "{}"))
+bars = B.build_tick_bars(tk, SPEC)
 fp = B.build_total_footprint_csr_nt8(tk, bars)
 sys.path.insert(0, r"E:\EdgeLab-gex\tools")
 from vtd_bracket_stage1 import session_end_vec
 sid = session_end_vec(np.asarray(bars.end_ns, dtype=np.int64))
-r = run(bars, fp, sid)
+r = run(bars, fp, sid, PARAMS)
 ts = lambda b: pd.to_datetime(np.asarray(bars.end_ns)[b], utc=True).tz_convert("America/Argentina/Buenos_Aires").strftime("%Y-%m-%d %H:%M:%S.%f").str[:23]
 Bp = pd.DataFrame(r["blocks"], columns=["bar", "levels", "best", "bucket", "sess"]); Bp["time"] = ts(Bp.bar)
 Bp = Bp[Bp.bar <= Bn.bar.max()]
@@ -78,6 +82,24 @@ print("clasificación OB:", mo._merge.value_counts().to_dict())
 bo = mo[mo._merge == "both"]
 import json
 res = dict(bloques=int(len(b)), bloques_iguales=bool(((b.best_n - b.best_p).abs() < 1e-6).all()), zonas_nt8=int(len(Zn)), zonas_match=int(len(bz)), offset=OFF, ob_nt8=int(len(On)), ob_match=int(len(bo)), estado_igual=float((bo.state_n == bo.state_p).mean()), decision_igual=float((bo.bar_n == bo.decided_bar).mean()))
-open(r"E:/EdgeLab-gex/docs/parity/paridad_avolzonepoi2_MNQ1226_200t_20261007.json", "w").write(json.dumps(res, indent=1))
+open(r"E:/EdgeLab-gex/docs/parity/paridad_avolzonepoi2_MNQ1226_%dt.json" % SPEC, "w").write(json.dumps(res, indent=1))
 print("  estado igual", round((bo.state_n == bo.state_p).mean(), 6), "barra de decisión igual", round((bo.bar_n == bo.decided_bar).mean(), 6),
       "| OB NT8", int((On.state == 2).sum()), "py", int((Zd.state == 2).sum()))
+
+# racimos: barra en que cada zona entra a un racimo
+if len(Rn):
+    Rn["low"] = Rn.low.round(2)
+    Zr = Zp[Zp.racimo_bar >= 0][["bar", "low", "racimo_bar"]].rename(columns={"bar": "zbar"})
+    Zr["low"] = Zr.low.round(2)
+    mr = Rn.merge(Zr, on=["zbar", "low"], how="outer", indicator=True)
+    print("racimo (zona, barra de entrada):", mr._merge.value_counts().to_dict(),
+          "barra igual", round((mr[mr._merge == "both"].bar == mr[mr._merge == "both"].racimo_bar).mean(), 6))
+    Cl = pd.DataFrame(r["clusters"])
+    if len(Cn) and len(Cl):
+        last_c = Cn.groupby("idx").last().reset_index()
+        Cl["idx"] = range(len(Cl))
+        Cl["low_p"] = np.where(Cl.start < roll_bar, Cl.low + OFF / tk_, Cl.low) * tk_
+        Cl["high_p"] = np.where(Cl.start < roll_bar, Cl.high + OFF / tk_, Cl.high) * tk_
+        mc = last_c.merge(Cl, on="idx")
+        print("racimos NT8", len(last_c), "py", len(Cl), "| inicio igual", round((mc.start_x == mc.start_y).mean(), 6),
+              "piso igual", round(((mc.low_x - mc.low_p).abs() < 1e-6).mean(), 6), "techo igual", round(((mc.high - mc.high_p).abs() < 1e-6).mean(), 6))
