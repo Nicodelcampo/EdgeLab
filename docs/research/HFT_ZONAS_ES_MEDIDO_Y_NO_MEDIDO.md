@@ -903,3 +903,10 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
   Acta `AVZP2_REBOTE_RESULTADOS_20261007.md`.
 - AVZP2 rojas contra un **nulo apareado OB** (08/10/2026): +2,5 pp, p 0,068, MDE 3,8 pp. **Más de la mitad del efecto
   era el alejamiento limpio**: sin efecto propio detectado. No se corre la confirmación.
+
+## AVZP2-RACIMO (racimos de aVolZonePOI2, MNQ 25t, config de Nico) — 08/10/2026
+- MEDIDO: contra pseudo-racimos apareados por ocupación previa, **compresión posterior confirmada**: −7 % de rango en
+  200 velas después de la salida (desc. −0,077, Holm 0,0001; conf. −0,067, p 0,010). Sin dirección (O1), sin
+  seguimiento de ruptura (O2: 14 % contra 19 %, n.s.) y sin rebote en el retest (O3b ≈ 46 %).
+- NO MEDIDO: P&L de una lógica de rango; persistencia más allá de 200 velas; líneas en sesiones posteriores;
+  sensibilidad a la configuración; otros instrumentos. Acta `AVZP2_RACIMO_RESULTADOS_20261008.md`.
