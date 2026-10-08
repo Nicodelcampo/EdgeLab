@@ -93,3 +93,9 @@ precio estuvo igual de tiempo.
 9. **Salidas por mecha** (sólo por cierre) y **salidas en otra sesión** (lo que no sale en la misma sesión es NaN).
 10. **El lado de formación** (precio arriba o abajo de la franja en t0) como moderador: queda descriptivo.
 11. **La comparación con los racimos de AVCL.**
+
+## Nota del cerebro SSRN (búsqueda semántica, agregada antes de ver resultados)
+Doc 222 (*Market Dynamics vs. Statistics: Limit Order Book Example*, Malyshkin): un volumen grande en un nivel puede
+actuar como soporte **o como atractor de liquidez**, y el efecto no se puede anticipar desde el volumen solo. Para
+el racimo, eso apunta a medir por separado la **atracción** (O3a, el retest) y el **rebote** (O3b), como ya está
+previsto. No se agregan pruebas formales: O3a sigue siendo descriptiva.
