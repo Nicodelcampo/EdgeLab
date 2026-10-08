@@ -46,7 +46,6 @@ namespace NinjaTrader.NinjaScript.Indicators
             public int State;           // 0 = en observación, 1 = normal, 2 = orderblock
             public double InsidePct;
             public int RacimoBar = -1;  // barra en que entró a un racimo (-1 = nunca)
-            public List<Zone> Group;    // grupo encadenado (compartido por todos sus miembros)
         }
 
         private Dictionary<int, double> barProfile;     // ticks de la barra en formación (clave = precio en ticks)
@@ -95,9 +94,9 @@ namespace NinjaTrader.NinjaScript.Indicators
                 ObMinAwayTicks = 8;
                 ObMaxInsidePct = 2.0;   // calibrado MNQ 200t sep-2026: 21% de las zonas tiene <1% dentro, despues cae (corte natural)
                 ObColor = Brushes.Red;
-                RacimoMin = 3;
+                RacimoMin = 4;
                 RacimoBars = 300;
-                RacimoOverlapPct = 30.0;
+                RacimoAlturaTicks = 40;
                 RacimoColor = Brushes.MediumPurple;
                 LogPath = "";
             }
@@ -307,33 +306,37 @@ namespace NinjaTrader.NinjaScript.Indicators
             }
         }
 
-        // Racimo ENCADENADO: al nacer una zona se la une con cada zona creada en las últimas RacimoBars barras que se
-        // superponga en precio con ella en al menos RacimoOverlapPct % de la altura de la más chica. Los grupos se encadenan
-        // (A toca a B y B toca a C -> A, B y C son un racimo). Cuando un grupo llega a RacimoMin zonas, todos sus miembros
-        // se pintan violeta desde esta barra. Sólo mira el pasado.
+        // Racimo: al nacer una zona, si ella y al menos RacimoMin - 1 zonas creadas en las últimas RacimoBars barras
+        // entran COMPLETAS en una franja de precio de RacimoAlturaTicks de alto, todas se pintan violeta desde esta barra.
+        // Sólo mira el pasado.
         private void MarkRacimo(Zone nz)
         {
             if (RacimoMin <= 1) return;
-            nz.Group = new List<Zone> { nz };
+            var cand = new List<Zone>();
             for (int i = zones.Count - 1; i >= 0; i--)
             {
                 Zone z = zones[i];
                 if (nz.Bar - z.Bar > RacimoBars) break;
-                if (z.Group == nz.Group) continue;
-                int overlap = Math.Min(z.HighTick, nz.HighTick) - Math.Max(z.LowTick, nz.LowTick) + 1;
-                int minH = Math.Min(z.HighTick - z.LowTick + 1, nz.HighTick - nz.LowTick + 1);
-                if (overlap <= 0 || overlap < RacimoOverlapPct / 100.0 * minH) continue;
-                // fusionar el grupo de z en el de la nueva
-                var g = z.Group ?? new List<Zone> { z };
-                foreach (var m in g) { m.Group = nz.Group; nz.Group.Add(m); }
+                cand.Add(z);
             }
-            if (nz.Group.Count < RacimoMin) return;
-            foreach (var m in nz.Group)
+            cand.Add(nz);
+            // franjas posibles: cada una arranca en el piso de alguna zona y tiene que contener a la nueva
+            List<Zone> best = null;
+            foreach (var basez in cand)
+            {
+                int lo = basez.LowTick, hi = lo + RacimoAlturaTicks - 1;
+                if (nz.LowTick < lo || nz.HighTick > hi) continue;
+                var inside = new List<Zone>();
+                foreach (var z in cand) if (z.LowTick >= lo && z.HighTick <= hi) inside.Add(z);
+                if (best == null || inside.Count > best.Count) best = inside;
+            }
+            if (best == null || best.Count < RacimoMin) return;
+            foreach (var m in best)
                 if (m.RacimoBar < 0)
                 {
                     m.RacimoBar = CurrentBar;
                     if (logw != null)
-                        logw.WriteLine(string.Format(CultureInfo.InvariantCulture, "R,{0},{1:yyyy-MM-dd HH:mm:ss.fff},{2},{3},{4}", CurrentBar, Time[0], m.Bar, m.LowTick * TickSize, nz.Group.Count));
+                        logw.WriteLine(string.Format(CultureInfo.InvariantCulture, "R,{0},{1:yyyy-MM-dd HH:mm:ss.fff},{2},{3},{4}", CurrentBar, Time[0], m.Bar, m.LowTick * TickSize, best.Count));
                 }
         }
 
@@ -537,12 +540,12 @@ namespace NinjaTrader.NinjaScript.Indicators
         public int RacimoMin { get; set; }
 
         [Range(1, 100000)]
-        [Display(Name = "Racimo: ventana (barras hacia atrás)", Order = 2, GroupName = "5. Racimo")]
+        [Display(Name = "Racimo: ventana (velas hacia atrás)", Order = 2, GroupName = "5. Racimo")]
         public int RacimoBars { get; set; }
 
-        [Range(1.0, 100.0)]
-        [Display(Name = "Racimo: superposición mín. (%)", Order = 3, GroupName = "5. Racimo", Description = "Porcentaje de la altura de la zona más chica que tiene que superponerse en precio. Las zonas se encadenan.")]
-        public double RacimoOverlapPct { get; set; }
+        [Range(1, 100000)]
+        [Display(Name = "Racimo: altura máx. (ticks)", Order = 3, GroupName = "5. Racimo", Description = "Todas las zonas del racimo tienen que entrar completas en una franja de este alto.")]
+        public int RacimoAlturaTicks { get; set; }
 
         [XmlIgnore]
         [Display(Name = "Racimo: color", Order = 4, GroupName = "5. Racimo")]
