@@ -901,3 +901,5 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
 - NO MEDIDO: un nulo apareado por la regla OB (el efecto rojo puede ser del "alejamiento limpio", no de la zona);
   confirmación con potencia; otros D/horizontes; P&L; toque n-ésimo; otras escalas e instrumentos; chart fusionado.
   Acta `AVZP2_REBOTE_RESULTADOS_20261007.md`.
+- AVZP2 rojas contra un **nulo apareado OB** (08/10/2026): +2,5 pp, p 0,068, MDE 3,8 pp. **Más de la mitad del efecto
+  era el alejamiento limpio**: sin efecto propio detectado. No se corre la confirmación.

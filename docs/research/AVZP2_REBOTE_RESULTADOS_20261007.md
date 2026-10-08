@@ -51,3 +51,21 @@ actividad.
 ## Estado
 - `AVZP2 (todas / azules) Y AVCL: SIN REBOTE MAYOR QUE EL AZAR` (MNQ 200t, primer regreso, D = 2 alturas).
 - `AVZP2 rojas: PROVISIONAL, NO CONFIRMADO`, pendiente del nulo apareado (A) y de más datos (B).
+
+## Enmienda 1 — nulo apareado por la regla OB (2026-10-08)
+Kernels `edgelab-avzpob-k1..k3`: k2 y k3 fallaron al arrancar y se relanzaron sin cambios. El análisis se hizo con
+los 6 contratos; el resultado parcial con un solo kernel no se interpretó. JSON: `avzp2_rebote_20261007/AVZP2_OB_APAREADO_RESULTADOS.json`.
+
+| | real (rojas) | pseudo | β | MDE | p |
+|---|---|---|---|---|---|
+| nulo simple (antes) | 56,0 % | 50,1 % | +5,8 pp | 3,8 pp | 0,0001 |
+| **nulo apareado OB** | 56,0 % | **53,3 %** | **+2,5 pp** | 3,8 pp | **0,068** |
+
+- Con el nulo apareado, las pseudo-zonas que también se alejaron limpio rebotan 53,3 %. **Más de la mitad del efecto
+  rojo (3,3 de 5,8 pp) era del alejamiento limpio**, no del cluster de volumen.
+- Lo que queda (+2,5 pp) **no pasa** (p = 0,068) y está por debajo del MDE (3,8 pp). La confirmación no se corre.
+- Canal no direccional: +1,7 pp (igual que todas las familias, sin lado).
+
+**Estado:** `AVZP2 rojas: SIN EFECTO PROPIO DETECTADO` contra el nulo apareado. El rebote de las rojas es, sobre todo,
+el de cualquier nivel del que el precio se alejó rápido y limpio. Queda abierta una diferencia de ≤ 3,8 pp que esta
+muestra no puede ver (ver NO MEDIDO B: más datos).
