@@ -910,3 +910,12 @@ resultados `docs/research/GEX1_RESULTADOS_20261006.{json,md}`. Sólo informació
   seguimiento de ruptura (O2: 14 % contra 19 %, n.s.) y sin rebote en el retest (O3b ≈ 46 %).
 - NO MEDIDO: P&L de una lógica de rango; persistencia más allá de 200 velas; líneas en sesiones posteriores;
   sensibilidad a la configuración; otros instrumentos. Acta `AVZP2_RACIMO_RESULTADOS_20261008.md`.
+- AVZP2-RACIMO-GRILLA (08/10/2026), 36 definiciones, 23 evaluables:
+  - **Compresión: 23/23 en descubrimiento, 21/23 confirman** (−4 a −10 % de rango). Robusta a la definición.
+  - **Salida a favor de la tendencia: real en ventanas largas** (1.000 velas, 30–45 ticks). +5 a +8 pp sobre una
+    consolidación comparable, **controlando magnitud de tendencia y momentum**, y confirmada. Nula en 250–500/20–30
+    (incluida la config de Nico).
+  - Sin seguimiento ni rebote propios en ninguna celda.
+  - NO MEDIDO: P&L; otros instrumentos; ventanas > 1.000.
+  - Integridad: semilla `hash()` no determinista en scripts previos, corregida en la grilla.
+  - Acta `AVZP2_RACIMO_GRILLA_RESULTADOS_20261008.md`.
