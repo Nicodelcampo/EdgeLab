@@ -88,7 +88,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 ObBars = 20;
                 ObAwayHeights = 3.0;
                 ObMinAwayTicks = 8;
-                ObMaxInsidePct = 10.0;
+                ObMaxInsidePct = 2.0;   // calibrado MNQ 200t sep-2026: 21% de las zonas tiene <1% dentro, despues cae (corte natural)
                 ObColor = Brushes.Red;
                 LogPath = "";
             }
