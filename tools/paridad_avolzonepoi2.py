@@ -70,10 +70,14 @@ print("zonas:", mz._merge.value_counts().to_dict())
 bz = mz[mz._merge == "both"]
 print("  score igual", round(((bz.score_n - bz.score_p).abs() < 1e-6).mean(), 6), "thr igual", round(((bz.thr - bz.thresh).abs() < 1e-6).mean(), 6))
 print(mz[mz._merge != "both"][["bar", "low", "high", "score_n", "score_p", "thr", "thresh", "_merge"]].head(8).to_string())
-Zd = Zp[Zp.decided_bar.notna()].copy()  # ya con offset; Zd["zbar"] = Zd.bar; Zd["low"] = Zd.low.round(2)
+Zd = Zp[Zp.decided_bar.notna()].copy()  # ya con offset
+Zd["zbar"] = Zd.bar; Zd["low"] = Zd.low.round(2)
 On["low"] = On.low.round(2)
 mo = On.merge(Zd, on=["zbar", "low"], how="outer", indicator=True, suffixes=("_n", "_p"))
 print("clasificación OB:", mo._merge.value_counts().to_dict())
 bo = mo[mo._merge == "both"]
+import json
+res = dict(bloques=int(len(b)), bloques_iguales=bool(((b.best_n - b.best_p).abs() < 1e-6).all()), zonas_nt8=int(len(Zn)), zonas_match=int(len(bz)), offset=OFF, ob_nt8=int(len(On)), ob_match=int(len(bo)), estado_igual=float((bo.state_n == bo.state_p).mean()), decision_igual=float((bo.bar_n == bo.decided_bar).mean()))
+open(r"E:/EdgeLab-gex/docs/parity/paridad_avolzonepoi2_MNQ1226_200t_20261007.json", "w").write(json.dumps(res, indent=1))
 print("  estado igual", round((bo.state_n == bo.state_p).mean(), 6), "barra de decisión igual", round((bo.bar_n == bo.decided_bar).mean(), 6),
       "| OB NT8", int((On.state == 2).sum()), "py", int((Zd.state == 2).sum()))
