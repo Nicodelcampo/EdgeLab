@@ -1,0 +1,646 @@
+// aVolZonePOI.cs - Anomaly Volume Zone POI (Cluster Detection + Time-of-Day Profile)
+// EdgeLab 2026-10-07: sin grupos de alerta (naranja); logger de paridad (LogPath); SQLite opcional (off).
+//
+// Detecta ZONAS donde se concentran varios niveles de precio con alto volumen.
+// Agrupa niveles adyacentes "hot" en clusters y los marca si la SUMA
+// del cluster supera el percentil horario historico.
+//
+// FUNCIONA EN CUALQUIER TIPO DE CHART:
+//  - Si el chart ES Volumetric: usa _vbt.Volumes (idÃ©ntico al original)
+//  - Si NO: subscribe a serie de Ticks (1-tick) y reconstruye el perfil
+//    por precio acumulando ticks dentro de cada barra primaria.
+// Las zonas marcadas son matemÃ¡ticamente equivalentes en ambos modos.
+
+#region Using declarations
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
+using System.Windows.Media;
+using NinjaTrader.Data;
+using NinjaTrader.NinjaScript;
+using NinjaTrader.NinjaScript.BarsTypes;
+using NinjaTrader.NinjaScript.DrawingTools;
+using System.Data.SQLite;
+#endregion
+
+namespace NinjaTrader.NinjaScript.Indicators
+{
+    public class aVolZonePOI : Indicator
+    {
+        private const int HeatSteps = 9;
+        private const int MaxSamplesPerBucket = 2000;
+
+        private List<Dictionary<double, double>> blockBars;
+        private Dictionary<int, Queue<double>> bucketQueues;
+        private Queue<double> globalQueue;
+        private readonly List<string> activeTags = new List<string>();
+        private Dictionary<long, List<string>> zoneIdToTags;
+        private int tagCounter;
+        private DateTime lastMitigationCheck = DateTime.MinValue;
+
+        private System.IO.StreamWriter logw;   // EdgeLab: export para paridad (vacío = off)
+
+        private VolumetricBarsType _vbt;
+        private bool _vbtChecked;
+
+        // Tick-stream fallback (when chart is not Volumetric): per-price volume accumulator
+        // for the primary bar currently in formation. Snapshotted on each primary bar close.
+        private Dictionary<double, double> _tickProfile;
+        private bool _tickSeriesAvailable;
+
+        private static readonly Dictionary<int, Brush[]> _brushCache = new Dictionary<int, Brush[]>();
+
+        protected override void OnStateChange()
+        {
+            if (State == State.SetDefaults)
+            {
+                Description     = "Detecta zonas de alto volumen agrupando niveles hot adyacentes. Perfil horario.";
+                Name            = "aVolZonePOI";
+                Calculate       = Calculate.OnBarClose;
+                IsOverlay       = true;
+                DisplayInDataBox = true;
+                DrawOnPricePanel = true;
+                PaintPriceMarkers = true;
+                IsSuspendedWhileInactive = true;
+
+                WindowBars          = 10;
+                MedianMultiplier    = 2.0;
+                MaxGapTicks         = 1;
+                MinClusterTicks     = 2;
+                TimeBucketMinutes   = 5;
+                DetectionPercentile = 95.0;
+                MinSamplesPerBucket = 10;
+                ExtendBars          = 3000;
+                MaxRectangles       = 20000;
+                Opacity             = 20;
+                PriceMarkTicks      = 1;
+            }
+            else if (State == State.Configure)
+            {
+                // Secondary tick series used to rebuild per-price volume profile
+                // when the chart isn't Volumetric. Harmless on volumetric charts too.
+                AddDataSeries(BarsPeriodType.Tick, 1);
+                _tickSeriesAvailable = true;
+            }
+            else if (State == State.DataLoaded)
+            {
+                blockBars    = new List<Dictionary<double, double>>();
+                bucketQueues = new Dictionary<int, Queue<double>>();
+                globalQueue  = new Queue<double>();
+                activeTags.Clear();
+                zoneIdToTags = new Dictionary<long, List<string>>();
+                tagCounter  = 0;
+                _vbt        = null;
+                _vbtChecked = false;
+                _tickProfile = new Dictionary<double, double>();
+                lastMitigationCheck = DateTime.MinValue;
+                if (!string.IsNullOrWhiteSpace(LogPath))
+                {
+                    try
+                    {
+                        logw = new System.IO.StreamWriter(LogPath, false);
+                        logw.WriteLine(string.Format(CultureInfo.InvariantCulture,
+                            "# meta,indicator=aVolZonePOI,version=log1,instrument={0},bars={1},window={2},mult={3},gap={4},minc={5},bucket_min={6},pct={7},min_samples={8}",
+                            Instrument != null ? Instrument.FullName : "", BarsPeriod != null ? BarsPeriod.ToString() : "",
+                            WindowBars, MedianMultiplier, MaxGapTicks, MinClusterTicks, TimeBucketMinutes, DetectionPercentile, MinSamplesPerBucket));
+                        logw.WriteLine("# B,bar,time,profile_levels,best_score,bucket | Z,bar,time,low,high,levels,score,thresh,eval_samples");
+                    }
+                    catch (Exception ex) { Print("aVolZonePOI log: " + ex.Message); logw = null; }
+                }
+            }
+            else if (State == State.Terminated)
+            {
+                if (logw != null) { try { logw.Flush(); logw.Dispose(); } catch { } logw = null; }
+            }
+        }
+
+        protected override void OnBarUpdate()
+        {
+            // === Tick stream (secondary series): accumulate per-price volume ===
+            if (BarsInProgress == 1)
+            {
+                if (_tickProfile == null) return;
+                if (BarsArray[1] == null || BarsArray[1].Count == 0) return;
+
+                double tprice = Closes[1][0];
+                double tvol   = Volumes[1][0];
+                if (tvol <= 0) return;
+
+                double tkey;
+                try { tkey = Instrument.MasterInstrument.RoundToTickSize(tprice); }
+                catch { tkey = tprice; }
+
+                if (_tickProfile.ContainsKey(tkey)) _tickProfile[tkey] += tvol;
+                else                                _tickProfile[tkey]  = tvol;
+                return;
+            }
+
+            // === Primary chart bar ===
+            if (BarsInProgress != 0) return;
+            if (logw != null && CurrentBar == 0)
+                logw.WriteLine(string.Format(CultureInfo.InvariantCulture, "F,0,{0:yyyy-MM-dd HH:mm:ss.fff}", Time[0]));
+            if (CurrentBar < 1) return;
+
+            // Check for mitigated zones in SQLite every 30 seconds (real-time only)
+            if (PersistSqlite && State == State.Realtime && (DateTime.UtcNow - lastMitigationCheck).TotalSeconds >= 30)
+            {
+                CheckAndRemoveMitigatedZones();
+                lastMitigationCheck = DateTime.UtcNow;
+            }
+
+            // Detect bar type once
+            if (!_vbtChecked)
+            {
+                try { _vbt = Bars.BarsType as VolumetricBarsType; } catch { _vbt = null; }
+                _vbtChecked = true;
+                if (_vbt == null)
+                    Print("aVolZonePOI: chart no es Volumetric â€” usando perfil reconstruido desde ticks.");
+            }
+
+            var barCells = new Dictionary<double, double>();
+
+            if (_vbt != null)
+            {
+                // PATH A â€” chart IS volumetric: usar perfil nativo (idÃ©ntico al original).
+                try
+                {
+                    var vol = _vbt.Volumes[CurrentBar];
+                    if (vol == null) return;
+
+                    for (double p = Low[0]; p <= High[0] + TickSize * 0.1; p += TickSize)
+                    {
+                        double exact = Instrument.MasterInstrument.RoundToTickSize(p);
+                        double total = vol.GetTotalVolumeForPrice(exact);
+                        if (total > 0)
+                            barCells[exact] = total;
+                    }
+                }
+                catch { return; }
+            }
+            else
+            {
+                // PATH B â€” chart no volumetric: usar acumulado de ticks de la barra reciÃ©n cerrada.
+                if (_tickProfile != null && _tickProfile.Count > 0)
+                {
+                    foreach (var kv in _tickProfile)
+                    {
+                        // Defensa: ignorar precios fuera del rango high/low de la barra primaria,
+                        // por si entran ticks de borde con timing distinto.
+                        if (kv.Key + 0.5 * TickSize >= Low[0] && kv.Key - 0.5 * TickSize <= High[0])
+                            barCells[kv.Key] = kv.Value;
+                    }
+                    _tickProfile.Clear();
+                }
+                // Si no hay tick data acumulada (historial limitado), barCells queda vacÃ­o y
+                // la barra cuenta como sin volumen â€” esto no rompe nada, sÃ³lo no aporta seÃ±al.
+            }
+
+            blockBars.Add(barCells);
+            if (blockBars.Count < WindowBars) return;
+
+            ProcessBlock();
+            blockBars.Clear();
+        }
+
+        private void ProcessBlock()
+        {
+            // 1. Volume profile combinado
+            var profile = new SortedDictionary<double, double>();
+            foreach (var bar in blockBars)
+            {
+                foreach (var kv in bar)
+                {
+                    if (profile.ContainsKey(kv.Key))
+                        profile[kv.Key] += kv.Value;
+                    else
+                        profile[kv.Key] = kv.Value;
+                }
+            }
+
+            if (profile.Count < 3)
+            {
+                if (logw != null)
+                    logw.WriteLine(string.Format(CultureInfo.InvariantCulture, "B,{0},{1:yyyy-MM-dd HH:mm:ss.fff},{2},0,{3}",
+                        CurrentBar, Time[0], profile.Count, GetTimeBucket(Time[0])));
+                EnqueueScore(0);
+                return;
+            }
+
+            // 2. Mediana
+            var vols = new List<double>(profile.Values);
+            vols.Sort();
+            double median = vols[vols.Count / 2];
+            double hotThreshold = median * MedianMultiplier;
+
+            // 3. Niveles hot
+            var hotLevels = new List<KeyValuePair<double, double>>();
+            foreach (var kv in profile)
+            {
+                if (kv.Value >= hotThreshold)
+                    hotLevels.Add(kv);
+            }
+
+            if (hotLevels.Count < MinClusterTicks)
+            {
+                if (logw != null)
+                    logw.WriteLine(string.Format(CultureInfo.InvariantCulture, "B,{0},{1:yyyy-MM-dd HH:mm:ss.fff},{2},0,{3}",
+                        CurrentBar, Time[0], profile.Count, GetTimeBucket(Time[0])));
+                EnqueueScore(0);
+                return;
+            }
+
+            // 4. Agrupar en clusters
+            var clusters = new List<List<KeyValuePair<double, double>>>();
+            var current = new List<KeyValuePair<double, double>>();
+
+            for (int i = 0; i < hotLevels.Count; i++)
+            {
+                if (current.Count == 0)
+                {
+                    current.Add(hotLevels[i]);
+                }
+                else
+                {
+                    double lastPrice = current[current.Count - 1].Key;
+                    double gap = (hotLevels[i].Key - lastPrice) / TickSize - 1.0;
+
+                    if (gap <= MaxGapTicks + 0.01)
+                        current.Add(hotLevels[i]);
+                    else
+                    {
+                        if (current.Count >= MinClusterTicks)
+                            clusters.Add(current);
+                        current = new List<KeyValuePair<double, double>> { hotLevels[i] };
+                    }
+                }
+            }
+            if (current.Count >= MinClusterTicks)
+                clusters.Add(current);
+
+            // 5. Scoring
+            double bestScore = 0;
+
+            foreach (var cluster in clusters)
+            {
+                double score = 0;
+                foreach (var kv in cluster) score += kv.Value;
+                if (score > bestScore) bestScore = score;
+
+                // Evaluar contra perfil horario (con fallback global)
+                int bucket = GetTimeBucket(Time[0]);
+                if (!bucketQueues.TryGetValue(bucket, out Queue<double> queue))
+                {
+                    queue = new Queue<double>();
+                    bucketQueues[bucket] = queue;
+                }
+
+                Queue<double> evalQueue = (queue.Count >= MinSamplesPerBucket) ? queue :
+                                          (globalQueue.Count >= MinSamplesPerBucket) ? globalQueue : null;
+
+                if (evalQueue == null) continue;
+
+                var sorted = new double[evalQueue.Count];
+                evalQueue.CopyTo(sorted, 0);
+                Array.Sort(sorted);
+                double thresh = CalcPercentile(sorted, DetectionPercentile / 100.0);
+
+                if (score < thresh || thresh <= 0) continue;
+
+                // Persistir la zona en SQLite (AlgoNQ Paso 1.7)
+                long zoneId = PersistSqlite ? PersistZone(cluster, score, DetectionPercentile) : -1;
+
+                // 6. Dibujar cada nivel hot del cluster en azul con opacidad por volumen
+                double maxVol = 0, minVol = double.MaxValue;
+                foreach (var kv in cluster)
+                {
+                    if (kv.Value > maxVol) maxVol = kv.Value;
+                    if (kv.Value < minVol) minVol = kv.Value;
+                }
+
+                double colorDenom = Math.Max(1, maxVol - minVol);
+                bool labelDrawn = false;
+
+                foreach (var kv in cluster)
+                {
+                    // t: 0 = bajo vol (menos opaco), 1 = alto vol (mas opaco)
+                    double t = (colorDenom > 1)
+                        ? Math.Max(0, Math.Min(1, (kv.Value - minVol) / colorDenom))
+                        : 0.5;
+
+                    int opScaled = ScaleOpacity(t);
+                    Brush fill   = GetBlueBrush(opScaled);
+
+                    tagCounter++;
+                    string tag  = "aVZP_" + tagCounter;
+                    double half = Math.Max(1, PriceMarkTicks) * TickSize / 2.0;
+
+                    Draw.Rectangle(this, tag, false,
+                        0,                     kv.Key + half,
+                        -Math.Abs(ExtendBars), kv.Key - half,
+                        Brushes.Transparent, fill, opScaled);
+
+                    activeTags.Add(tag);
+                    if (zoneId > 0)
+                    {
+                        if (!zoneIdToTags.ContainsKey(zoneId))
+                            zoneIdToTags[zoneId] = new List<string>();
+                        zoneIdToTags[zoneId].Add(tag);
+                    }
+
+                    // Cartel de volumen en el primer nivel del cluster
+                    if (!labelDrawn)
+                    {
+                        tagCounter++;
+                        string labelTag = "aVZPL_" + tagCounter;
+                        Draw.Text(this, labelTag, ((int)score).ToString(),
+                            0, kv.Key + half + TickSize,
+                            Brushes.DodgerBlue);
+                        activeTags.Add(labelTag);
+                        if (zoneId > 0)
+                        {
+                            if (!zoneIdToTags.ContainsKey(zoneId))
+                                zoneIdToTags[zoneId] = new List<string>();
+                            zoneIdToTags[zoneId].Add(labelTag);
+                        }
+                        labelDrawn = true;
+                    }
+                }
+
+                if (logw != null)
+                {
+                    double zl = double.MaxValue, zh = double.MinValue;
+                    foreach (var kv in cluster) { if (kv.Key < zl) zl = kv.Key; if (kv.Key > zh) zh = kv.Key; }
+                    logw.WriteLine(string.Format(CultureInfo.InvariantCulture, "Z,{0},{1:yyyy-MM-dd HH:mm:ss.fff},{2},{3},{4},{5},{6},{7}",
+                        CurrentBar, Time[0], zl, zh, cluster.Count, score, thresh, evalQueue.Count));
+                }
+            }
+
+            // SIEMPRE enqueue (incluso 0 si no hubo clusters) para tener distribucion completa
+            if (logw != null)
+                logw.WriteLine(string.Format(CultureInfo.InvariantCulture, "B,{0},{1:yyyy-MM-dd HH:mm:ss.fff},{2},{3},{4}",
+                    CurrentBar, Time[0], profile.Count, bestScore, GetTimeBucket(Time[0])));
+            EnqueueScore(bestScore);
+
+            while (activeTags.Count > Math.Max(10, MaxRectangles))
+            {
+                RemoveDrawObject(activeTags[0]);
+                activeTags.RemoveAt(0);
+            }
+        }
+
+        private void EnqueueScore(double score)
+        {
+            int bucket = GetTimeBucket(Time[0]);
+            if (!bucketQueues.TryGetValue(bucket, out Queue<double> queue))
+            {
+                queue = new Queue<double>();
+                bucketQueues[bucket] = queue;
+            }
+            queue.Enqueue(score);
+            while (queue.Count > MaxSamplesPerBucket) queue.Dequeue();
+
+            globalQueue.Enqueue(score);
+            while (globalQueue.Count > MaxSamplesPerBucket) globalQueue.Dequeue();
+        }
+
+        private int GetTimeBucket(DateTime time)
+        {
+            return (time.Hour * 60 + time.Minute) / Math.Max(1, TimeBucketMinutes);
+        }
+
+        private static double CalcPercentile(double[] sorted, double p)
+        {
+            if (sorted.Length == 0) return 0;
+            if (sorted.Length == 1) return sorted[0];
+            double rank = p * (sorted.Length - 1);
+            int lo = (int)Math.Floor(rank);
+            int hi = Math.Min(lo + 1, sorted.Length - 1);
+            return sorted[lo] + (rank - lo) * (sorted[hi] - sorted[lo]);
+        }
+
+        private int ScaleOpacity(double t)
+        {
+            int maxOp = Math.Max(1, Math.Min(100, Opacity));
+            int minOp = Math.Max(1, (int)Math.Round(maxOp * 0.25));
+            return Math.Max(1, Math.Min(100,
+                (int)Math.Round(minOp + (maxOp - minOp) * Math.Max(0, Math.Min(1, t)))));
+        }
+
+        private Brush GetBlueBrush(int opacity)
+        {
+            int op = Math.Max(1, Math.Min(100, opacity));
+            if (!_brushCache.TryGetValue(op, out Brush[] brushes)
+                || brushes == null || brushes.Length < 1)
+            {
+                var b = new SolidColorBrush(Color.FromArgb(255, 30, 100, 220));
+                b.Freeze();
+                brushes = new Brush[] { b };
+                _brushCache[op] = brushes;
+            }
+            return brushes[0];
+        }
+
+        // === Persistencia SQLite (AlgoNQ Paso 1.7) ===
+        private string dbPath = @"D:\AlgoProject\data\algo_features.sqlite";
+
+        private long PersistZone(List<KeyValuePair<double, double>> cluster, double score, double percentileScore)
+        {
+            try
+            {
+                double low = double.MaxValue, high = double.MinValue;
+                foreach (var kv in cluster)
+                {
+                    if (kv.Key < low) low = kv.Key;
+                    if (kv.Key > high) high = kv.Key;
+                }
+
+                using (var conn = new SQLiteConnection("Data Source=" + dbPath + ";Version=3;Journal Mode=Wal;Synchronous=Off;"))
+                {
+                    conn.Open();
+                    string sql = @"INSERT INTO zone_events (instrument, detected_ts, cluster_low_px, cluster_high_px,
+                                                             cluster_score, cluster_pct_hour, n_hot_levels, hour_bucket, bar_type, bar_value)
+                                   VALUES (@inst, @ts, @low, @high, @score, @pct, @n, @bucket, @bt, @bv);
+                                   SELECT last_insert_rowid();";
+                    using (var cmd = new SQLiteCommand(sql, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@inst", Instrument.FullName);
+                        cmd.Parameters.AddWithValue("@ts", new DateTimeOffset(Time[0].ToUniversalTime()).ToUnixTimeMilliseconds());
+                        cmd.Parameters.AddWithValue("@low", low);
+                        cmd.Parameters.AddWithValue("@high", high);
+                        cmd.Parameters.AddWithValue("@score", score);
+                        cmd.Parameters.AddWithValue("@pct", percentileScore);
+                        cmd.Parameters.AddWithValue("@n", cluster.Count);
+                        cmd.Parameters.AddWithValue("@bucket", GetTimeBucket(Time[0]));
+                        cmd.Parameters.AddWithValue("@bt", (int)BarsArray[0].BarsPeriod.BarsPeriodType);
+                        cmd.Parameters.AddWithValue("@bv", BarsArray[0].BarsPeriod.Value);
+                        object result = cmd.ExecuteScalar();
+                        return Convert.ToInt64(result);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Print("[aVolZonePOI] Error persistiendo zona: " + ex.Message);
+                return -1;
+            }
+        }
+
+        private void CheckAndRemoveMitigatedZones()
+        {
+            if (zoneIdToTags == null || zoneIdToTags.Count == 0) return;
+
+            try
+            {
+                var mitigatedIds = new List<long>();
+                using (var conn = new SQLiteConnection("Data Source=" + dbPath + ";Version=3;Journal Mode=Wal;Synchronous=Off;"))
+                {
+                    conn.Open();
+                    string idsCsv = string.Join(",", zoneIdToTags.Keys);
+                    string sql = string.Format("SELECT zone_id FROM zone_events WHERE zone_id IN ({0}) AND is_mitigated = 1", idsCsv);
+
+                    using (var cmd = new SQLiteCommand(sql, conn))
+                    using (var rd = cmd.ExecuteReader())
+                    {
+                        while (rd.Read())
+                        {
+                            mitigatedIds.Add(rd.GetInt64(0));
+                        }
+                    }
+                }
+
+                foreach (long zoneId in mitigatedIds)
+                {
+                    if (zoneIdToTags.TryGetValue(zoneId, out List<string> tags))
+                    {
+                        foreach (string tag in tags)
+                        {
+                            RemoveDrawObject(tag);
+                            activeTags.Remove(tag);
+                        }
+                        zoneIdToTags.Remove(zoneId);
+                        Print(string.Format("[aVolZonePOI] Se eliminaron los dibujos de la zona mitigada {0}", zoneId));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Print("[aVolZonePOI] Error en CheckAndRemoveMitigatedZones: " + ex.Message);
+            }
+        }
+
+        #region Properties
+
+        [NinjaScriptProperty][Range(2, 100)]
+        [Display(Name="Window Bars", Order=1, GroupName="Deteccion",
+            Description="Cuantas barras volumetricas forman un bloque de analisis.")]
+        public int WindowBars { get; set; }
+
+        [NinjaScriptProperty][Range(1.0, 10.0)]
+        [Display(Name="Median Multiplier", Order=2, GroupName="Deteccion",
+            Description="Un nivel es 'hot' si su vol supera mediana x este valor.")]
+        public double MedianMultiplier { get; set; }
+
+        [NinjaScriptProperty][Range(0, 10)]
+        [Display(Name="Max Gap Ticks", Order=3, GroupName="Deteccion")]
+        public int MaxGapTicks { get; set; }
+
+        [NinjaScriptProperty][Range(1, 50)]
+        [Display(Name="Min Cluster Ticks", Order=4, GroupName="Deteccion")]
+        public int MinClusterTicks { get; set; }
+
+        [NinjaScriptProperty][Range(1, 60)]
+        [Display(Name="Time Bucket (minutos)", Order=5, GroupName="Perfil Horario")]
+        public int TimeBucketMinutes { get; set; }
+
+        [NinjaScriptProperty][Range(80.0, 99.99)]
+        [Display(Name="Detection Percentile", Order=6, GroupName="Perfil Horario")]
+        public double DetectionPercentile { get; set; }
+
+        [NinjaScriptProperty][Range(5, 2000)]
+        [Display(Name="Min Samples Per Bucket", Order=7, GroupName="Perfil Horario")]
+        public int MinSamplesPerBucket { get; set; }
+
+        [NinjaScriptProperty][Range(5, 50000)]
+        [Display(Name="Extend Bars", Order=8, GroupName="Visual")]
+        public int ExtendBars { get; set; }
+
+        [NinjaScriptProperty][Range(10, 20000)]
+        [Display(Name="Max Rectangles", Order=9, GroupName="Visual")]
+        public int MaxRectangles { get; set; }
+
+        [NinjaScriptProperty][Range(1, 100)]
+        [Display(Name="Opacity", Order=10, GroupName="Visual")]
+        public int Opacity { get; set; }
+
+        [NinjaScriptProperty][Range(1, 50)]
+        [Display(Name="Price Mark Ticks", Order=11, GroupName="Visual")]
+        public int PriceMarkTicks { get; set; }
+
+        [Display(Name="Persistir en SQLite", Order=12, GroupName="Persistencia")]
+        public bool PersistSqlite { get; set; } = false;
+
+        [Display(Name="Log Path (vacio = off)", Order=1, GroupName="9. EdgeLab export")]
+        public string LogPath { get; set; } = "";
+
+        #endregion
+    }
+}
+
+#region NinjaScript generated code. Neither change nor remove.
+
+namespace NinjaTrader.NinjaScript.Indicators
+{
+	public partial class Indicator : NinjaTrader.Gui.NinjaScript.IndicatorRenderBase
+	{
+		private aVolZonePOI[] cacheaVolZonePOI;
+		public aVolZonePOI aVolZonePOI(int windowBars, double medianMultiplier, int maxGapTicks, int minClusterTicks, int timeBucketMinutes, double detectionPercentile, int minSamplesPerBucket, int extendBars, int maxRectangles, int opacity, int priceMarkTicks)
+		{
+			return aVolZonePOI(Input, windowBars, medianMultiplier, maxGapTicks, minClusterTicks, timeBucketMinutes, detectionPercentile, minSamplesPerBucket, extendBars, maxRectangles, opacity, priceMarkTicks);
+		}
+
+		public aVolZonePOI aVolZonePOI(ISeries<double> input, int windowBars, double medianMultiplier, int maxGapTicks, int minClusterTicks, int timeBucketMinutes, double detectionPercentile, int minSamplesPerBucket, int extendBars, int maxRectangles, int opacity, int priceMarkTicks)
+		{
+			if (cacheaVolZonePOI != null)
+				for (int idx = 0; idx < cacheaVolZonePOI.Length; idx++)
+					if (cacheaVolZonePOI[idx] != null && cacheaVolZonePOI[idx].WindowBars == windowBars && cacheaVolZonePOI[idx].MedianMultiplier == medianMultiplier && cacheaVolZonePOI[idx].MaxGapTicks == maxGapTicks && cacheaVolZonePOI[idx].MinClusterTicks == minClusterTicks && cacheaVolZonePOI[idx].TimeBucketMinutes == timeBucketMinutes && cacheaVolZonePOI[idx].DetectionPercentile == detectionPercentile && cacheaVolZonePOI[idx].MinSamplesPerBucket == minSamplesPerBucket && cacheaVolZonePOI[idx].ExtendBars == extendBars && cacheaVolZonePOI[idx].MaxRectangles == maxRectangles && cacheaVolZonePOI[idx].Opacity == opacity && cacheaVolZonePOI[idx].PriceMarkTicks == priceMarkTicks && cacheaVolZonePOI[idx].EqualsInput(input))
+						return cacheaVolZonePOI[idx];
+			return CacheIndicator<aVolZonePOI>(new aVolZonePOI(){ WindowBars = windowBars, MedianMultiplier = medianMultiplier, MaxGapTicks = maxGapTicks, MinClusterTicks = minClusterTicks, TimeBucketMinutes = timeBucketMinutes, DetectionPercentile = detectionPercentile, MinSamplesPerBucket = minSamplesPerBucket, ExtendBars = extendBars, MaxRectangles = maxRectangles, Opacity = opacity, PriceMarkTicks = priceMarkTicks }, input, ref cacheaVolZonePOI);
+		}
+	}
+}
+
+namespace NinjaTrader.NinjaScript.MarketAnalyzerColumns
+{
+	public partial class MarketAnalyzerColumn : MarketAnalyzerColumnBase
+	{
+		public Indicators.aVolZonePOI aVolZonePOI(int windowBars, double medianMultiplier, int maxGapTicks, int minClusterTicks, int timeBucketMinutes, double detectionPercentile, int minSamplesPerBucket, int extendBars, int maxRectangles, int opacity, int priceMarkTicks)
+		{
+			return indicator.aVolZonePOI(Input, windowBars, medianMultiplier, maxGapTicks, minClusterTicks, timeBucketMinutes, detectionPercentile, minSamplesPerBucket, extendBars, maxRectangles, opacity, priceMarkTicks);
+		}
+
+		public Indicators.aVolZonePOI aVolZonePOI(ISeries<double> input , int windowBars, double medianMultiplier, int maxGapTicks, int minClusterTicks, int timeBucketMinutes, double detectionPercentile, int minSamplesPerBucket, int extendBars, int maxRectangles, int opacity, int priceMarkTicks)
+		{
+			return indicator.aVolZonePOI(input, windowBars, medianMultiplier, maxGapTicks, minClusterTicks, timeBucketMinutes, detectionPercentile, minSamplesPerBucket, extendBars, maxRectangles, opacity, priceMarkTicks);
+		}
+	}
+}
+
+namespace NinjaTrader.NinjaScript.Strategies
+{
+	public partial class Strategy : NinjaTrader.Gui.NinjaScript.StrategyRenderBase
+	{
+		public Indicators.aVolZonePOI aVolZonePOI(int windowBars, double medianMultiplier, int maxGapTicks, int minClusterTicks, int timeBucketMinutes, double detectionPercentile, int minSamplesPerBucket, int extendBars, int maxRectangles, int opacity, int priceMarkTicks)
+		{
+			return indicator.aVolZonePOI(Input, windowBars, medianMultiplier, maxGapTicks, minClusterTicks, timeBucketMinutes, detectionPercentile, minSamplesPerBucket, extendBars, maxRectangles, opacity, priceMarkTicks);
+		}
+
+		public Indicators.aVolZonePOI aVolZonePOI(ISeries<double> input , int windowBars, double medianMultiplier, int maxGapTicks, int minClusterTicks, int timeBucketMinutes, double detectionPercentile, int minSamplesPerBucket, int extendBars, int maxRectangles, int opacity, int priceMarkTicks)
+		{
+			return indicator.aVolZonePOI(input, windowBars, medianMultiplier, maxGapTicks, minClusterTicks, timeBucketMinutes, detectionPercentile, minSamplesPerBucket, extendBars, maxRectangles, opacity, priceMarkTicks);
+		}
+	}
+}
+
+#endregion
