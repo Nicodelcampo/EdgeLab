@@ -61,7 +61,7 @@ namespace NinjaTrader.NinjaScript.Indicators
         private System.IO.StreamWriter logw;
         private SharpDX.Direct2D1.Brush dxFill, dxBorder, dxText, dxObFill, dxObBorder;
         private List<Zone> watching;
-        private SharpDX.Direct2D1.Brush dxRacFill, dxRacBorder;
+        private SharpDX.Direct2D1.Brush dxRacFill, dxRacBorder, dxRacLine;
 
         protected override void OnStateChange()
         {
@@ -94,9 +94,10 @@ namespace NinjaTrader.NinjaScript.Indicators
                 ObMinAwayTicks = 8;
                 ObMaxInsidePct = 2.0;   // calibrado MNQ 200t sep-2026: 21% de las zonas tiene <1% dentro, despues cae (corte natural)
                 ObColor = Brushes.Red;
-                RacimoMin = 4;
-                RacimoBars = 300;
-                RacimoAlturaTicks = 40;
+                RacimoMin = 5;            // "más de 4"
+                RacimoBars = 135;
+                RacimoAlturaTicks = 18;
+                RacimoLineBars = 500;
                 RacimoColor = Brushes.MediumPurple;
                 LogPath = "";
             }
@@ -306,8 +307,8 @@ namespace NinjaTrader.NinjaScript.Indicators
             }
         }
 
-        // Racimo: al nacer una zona, si ella y al menos RacimoMin - 1 zonas creadas en las últimas RacimoBars barras
-        // entran COMPLETAS en una franja de precio de RacimoAlturaTicks de alto, todas se pintan violeta desde esta barra.
+        // Racimo: una "caja" de RacimoBars velas de ancho y RacimoAlturaTicks de alto. Al nacer una zona, si dentro de
+        // una caja que la contiene nacieron al menos RacimoMin zonas (completas en la caja), todas se pintan violeta.
         // Sólo mira el pasado.
         private void MarkRacimo(Zone nz)
         {
@@ -360,6 +361,7 @@ namespace NinjaTrader.NinjaScript.Indicators
             if (dxObBorder != null) { dxObBorder.Dispose(); dxObBorder = null; }
             if (dxRacFill != null) { dxRacFill.Dispose(); dxRacFill = null; }
             if (dxRacBorder != null) { dxRacBorder.Dispose(); dxRacBorder = null; }
+            if (dxRacLine != null) { dxRacLine.Dispose(); dxRacLine = null; }
         }
 
         public override void OnRenderTargetChanged()
@@ -381,6 +383,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 dxRacFill.Opacity = Opacity / 100f;
                 dxRacBorder = (RacimoColor ?? Brushes.MediumPurple).ToDxBrush(RenderTarget);
                 dxRacBorder.Opacity = Math.Min(1f, Opacity / 100f * 2.2f);
+                dxRacLine = (RacimoColor ?? Brushes.MediumPurple).ToDxBrush(RenderTarget);
             }
             catch { DisposeDx(); }
         }
@@ -405,12 +408,27 @@ namespace NinjaTrader.NinjaScript.Indicators
             {
                 // las zonas están ordenadas por barra: búsqueda binaria de la primera que puede verse
                 int lo = 0, hi = zones.Count;
-                int minBar = from - ExtendBars;
+                int minBar = from - Math.Max(ExtendBars, RacimoLineBars);
                 while (lo < hi) { int mid = (lo + hi) / 2; if (zones[mid].Bar < minBar) lo = mid + 1; else hi = mid; }
                 for (int i = lo; i < zones.Count; i++)
                 {
                     Zone z = zones[i];
                     if (z.Bar > to) break;
+                    bool racz = z.RacimoBar >= 0 && dxRacBorder != null;
+                    if (racz && RacimoLineBars > 0)
+                    {
+                        // líneas del racimo: borde superior e inferior de la zona, RacimoLineBars velas a la derecha
+                        int la = Math.Max(z.Bar, from), lb = Math.Min(z.Bar + RacimoLineBars, to);
+                        if (lb >= la)
+                        {
+                            float lx1 = chartControl.GetXByBarIndex(ChartBars, la) - half;
+                            float lx2 = chartControl.GetXByBarIndex(ChartBars, lb) + half;
+                            float ly1 = chartScale.GetYByValue((z.HighTick + 0.5) * TickSize);
+                            float ly2 = chartScale.GetYByValue((z.LowTick - 0.5) * TickSize);
+                            RenderTarget.DrawLine(new SharpDX.Vector2(lx1, ly1), new SharpDX.Vector2(lx2, ly1), dxRacLine, 1.5f);
+                            RenderTarget.DrawLine(new SharpDX.Vector2(lx1, ly2), new SharpDX.Vector2(lx2, ly2), dxRacLine, 1.5f);
+                        }
+                    }
                     int a = Math.Max(z.Bar, from), b = Math.Min(z.Bar + ExtendBars, to);
                     if (b < a) continue;
                     float x1 = chartControl.GetXByBarIndex(ChartBars, a) - half;
@@ -535,6 +553,10 @@ namespace NinjaTrader.NinjaScript.Indicators
         [Range(1, 100000)]
         [Display(Name = "Racimo: ventana (velas hacia atrás)", Order = 2, GroupName = "5. Racimo")]
         public int RacimoBars { get; set; }
+
+        [Range(0, 100000)]
+        [Display(Name = "Racimo: largo de las líneas (velas)", Order = 5, GroupName = "5. Racimo", Description = "Líneas en el borde superior e inferior de cada zona del racimo, hacia la derecha (0 = sin líneas).")]
+        public int RacimoLineBars { get; set; }
 
         [Range(1, 100000)]
         [Display(Name = "Racimo: altura máx. (ticks)", Order = 3, GroupName = "5. Racimo", Description = "Todas las zonas del racimo tienen que entrar completas en una franja de este alto.")]
