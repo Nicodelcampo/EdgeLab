@@ -38,6 +38,11 @@ namespace NinjaTrader.NinjaScript.Indicators
             public int LowTick;
             public int HighTick;
             public double Score;
+            // clasificación tipo orderblock (se decide al cerrar la ventana de OB Barras después de la creación)
+            public int Seen;            // barras observadas
+            public double VolIn, VolAll; // volumen operado dentro de la zona / total, en la ventana
+            public int MaxAway;         // alejamiento máximo en ticks desde el borde de la zona
+            public int State;           // 0 = en observación, 1 = normal, 2 = orderblock
         }
 
         private Dictionary<int, double> barProfile;     // ticks de la barra en formación (clave = precio en ticks)
@@ -51,7 +56,8 @@ namespace NinjaTrader.NinjaScript.Indicators
         private TimeZoneInfo ctZone;
         private TimeZoneInfo localZone;
         private System.IO.StreamWriter logw;
-        private SharpDX.Direct2D1.Brush dxFill, dxBorder, dxText;
+        private SharpDX.Direct2D1.Brush dxFill, dxBorder, dxText, dxObFill, dxObBorder;
+        private List<Zone> watching;
 
         protected override void OnStateChange()
         {
@@ -79,6 +85,11 @@ namespace NinjaTrader.NinjaScript.Indicators
                 ZoneColor = Brushes.DodgerBlue;
                 Opacity = 20;
                 ShowScore = true;
+                ObBars = 20;
+                ObAwayHeights = 3.0;
+                ObMinAwayTicks = 8;
+                ObMaxInsidePct = 10.0;
+                ObColor = Brushes.Red;
                 LogPath = "";
             }
             else if (State == State.Configure)
@@ -95,6 +106,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 sortedCache = new Dictionary<int, double[]>();
                 sessionIndex = -1;
                 zones = new List<Zone>();
+                watching = new List<Zone>();
                 try { ctZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time"); } catch { ctZone = null; }
                 localZone = Core.Globals.GeneralOptions.TimeZoneInfo;
                 if (!string.IsNullOrWhiteSpace(LogPath))
@@ -147,6 +159,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 double cur;
                 blockProfile[kv.Key] = blockProfile.TryGetValue(kv.Key, out cur) ? cur + kv.Value : kv.Value;
             }
+            if (watching.Count > 0) UpdateOrderBlocks(lo, hi);
             barProfile.Clear();
             blockCount++;
             if (blockCount < WindowBars) return;
@@ -232,7 +245,9 @@ namespace NinjaTrader.NinjaScript.Indicators
                         if (sc > best) best = sc;
                         if (thr > 0 && sc >= thr)
                         {
-                            zones.Add(new Zone { Bar = CurrentBar, LowTick = lowK, HighTick = highK, Score = sc });
+                            var nz = new Zone { Bar = CurrentBar, LowTick = lowK, HighTick = highK, Score = sc };
+                            zones.Add(nz);
+                            if (ObBars > 0) watching.Add(nz); else nz.State = 1;
                             if (logw != null)
                                 logw.WriteLine(string.Format(CultureInfo.InvariantCulture, "Z,{0},{1:yyyy-MM-dd HH:mm:ss.fff},{2},{3},{4},{5},{6},{7}",
                                     CurrentBar, Time[0], lowK * TickSize, highK * TickSize, cnt, sc, thr, sorted.Length));
@@ -247,6 +262,36 @@ namespace NinjaTrader.NinjaScript.Indicators
             if (logw != null)
                 logw.WriteLine(string.Format(CultureInfo.InvariantCulture, "B,{0},{1:yyyy-MM-dd HH:mm:ss.fff},{2},{3},{4},{5}",
                     CurrentBar, Time[0], n, best, bucket, sessionIndex));
+        }
+
+        // Orderblock: en las ObBars barras siguientes a la creación, el precio se aleja al menos
+        // max(ObAwayHeights x altura, ObMinAwayTicks) ticks del borde, y opera dentro de la zona como mucho
+        // ObMaxInsidePct % del volumen de esas barras. Se decide al cerrar la ventana (sin mirar el futuro más allá).
+        private void UpdateOrderBlocks(int lo, int hi)
+        {
+            double tot = 0;
+            foreach (var kv in barProfile) if (kv.Key >= lo && kv.Key <= hi) tot += kv.Value;
+            for (int i = watching.Count - 1; i >= 0; i--)
+            {
+                Zone z = watching[i];
+                double inside = 0;
+                foreach (var kv in barProfile)
+                    if (kv.Key >= lo && kv.Key <= hi && kv.Key >= z.LowTick && kv.Key <= z.HighTick) inside += kv.Value;
+                z.VolIn += inside;
+                z.VolAll += tot;
+                int away = Math.Max(hi - z.HighTick, z.LowTick - lo);
+                if (away > z.MaxAway) z.MaxAway = away;
+                z.Seen++;
+                if (z.Seen < ObBars) continue;
+                int height = z.HighTick - z.LowTick + 1;
+                double need = Math.Max(ObAwayHeights * height, ObMinAwayTicks);
+                double insidePct = z.VolAll > 0 ? 100.0 * z.VolIn / z.VolAll : 0;
+                z.State = (z.MaxAway >= need && insidePct <= ObMaxInsidePct) ? 2 : 1;
+                if (logw != null)
+                    logw.WriteLine(string.Format(CultureInfo.InvariantCulture, "O,{0},{1:yyyy-MM-dd HH:mm:ss.fff},{2},{3},{4},{5:0.###},{6}",
+                        CurrentBar, Time[0], z.Bar, z.LowTick * TickSize, z.MaxAway, insidePct, z.State));
+                watching.RemoveAt(i);
+            }
         }
 
         private static double Pct(double[] s, double p)
@@ -265,6 +310,8 @@ namespace NinjaTrader.NinjaScript.Indicators
             if (dxFill != null) { dxFill.Dispose(); dxFill = null; }
             if (dxBorder != null) { dxBorder.Dispose(); dxBorder = null; }
             if (dxText != null) { dxText.Dispose(); dxText = null; }
+            if (dxObFill != null) { dxObFill.Dispose(); dxObFill = null; }
+            if (dxObBorder != null) { dxObBorder.Dispose(); dxObBorder = null; }
         }
 
         public override void OnRenderTargetChanged()
@@ -278,6 +325,10 @@ namespace NinjaTrader.NinjaScript.Indicators
                 dxBorder = (ZoneColor ?? Brushes.DodgerBlue).ToDxBrush(RenderTarget);
                 dxBorder.Opacity = Math.Min(1f, Opacity / 100f * 2.2f);
                 dxText = (ZoneColor ?? Brushes.DodgerBlue).ToDxBrush(RenderTarget);
+                dxObFill = (ObColor ?? Brushes.Red).ToDxBrush(RenderTarget);
+                dxObFill.Opacity = Opacity / 100f;
+                dxObBorder = (ObColor ?? Brushes.Red).ToDxBrush(RenderTarget);
+                dxObBorder.Opacity = Math.Min(1f, Opacity / 100f * 2.2f);
             }
             catch { DisposeDx(); }
         }
@@ -315,8 +366,9 @@ namespace NinjaTrader.NinjaScript.Indicators
                     float y1 = chartScale.GetYByValue((z.HighTick + 0.5) * TickSize);
                     float y2 = chartScale.GetYByValue((z.LowTick - 0.5) * TickSize);
                     var rect = new SharpDX.RectangleF(Math.Min(x1, x2), Math.Min(y1, y2), Math.Max(1f, Math.Abs(x2 - x1)), Math.Max(1f, Math.Abs(y2 - y1)));
-                    RenderTarget.FillRectangle(rect, dxFill);
-                    RenderTarget.DrawRectangle(rect, dxBorder, 1f);
+                    bool ob = z.State == 2 && dxObFill != null;
+                    RenderTarget.FillRectangle(rect, ob ? dxObFill : dxFill);
+                    RenderTarget.DrawRectangle(rect, ob ? dxObBorder : dxBorder, 1f);
                     if (tf != null && z.Bar >= from)
                     {
                         string s = ScoreMode == AVolZoneScoreMode.Suma ? ((int)z.Score).ToString() : z.Score.ToString("0.0", CultureInfo.InvariantCulture);
@@ -392,8 +444,92 @@ namespace NinjaTrader.NinjaScript.Indicators
         [Display(Name = "Mostrar score", Order = 4, GroupName = "3. Visual")]
         public bool ShowScore { get; set; }
 
+        [Range(0, 5000)]
+        [Display(Name = "OB: barras de observación (0 = off)", Order = 1, GroupName = "4. Orderblock", Description = "Ventana después de crear la zona en la que se decide si es orderblock.")]
+        public int ObBars { get; set; }
+
+        [Range(0.0, 100.0)]
+        [Display(Name = "OB: alejamiento mínimo (alturas)", Order = 2, GroupName = "4. Orderblock")]
+        public double ObAwayHeights { get; set; }
+
+        [Range(0, 10000)]
+        [Display(Name = "OB: alejamiento mínimo (ticks)", Order = 3, GroupName = "4. Orderblock", Description = "Piso en ticks para zonas muy finas.")]
+        public int ObMinAwayTicks { get; set; }
+
+        [Range(0.0, 100.0)]
+        [Display(Name = "OB: volumen máx. dentro (%)", Order = 4, GroupName = "4. Orderblock", Description = "Porcentaje máximo del volumen de la ventana operado dentro de la zona.")]
+        public double ObMaxInsidePct { get; set; }
+
+        [XmlIgnore]
+        [Display(Name = "OB: color", Order = 5, GroupName = "4. Orderblock")]
+        public Brush ObColor { get; set; }
+
+        [Browsable(false)]
+        public string ObColorSerializable
+        {
+            get { return Serialize.BrushToString(ObColor); }
+            set { ObColor = Serialize.StringToBrush(value); }
+        }
+
         [Display(Name = "Log Path (vacío = off)", Order = 1, GroupName = "9. EdgeLab export")]
         public string LogPath { get; set; }
         #endregion
     }
 }
+
+#region NinjaScript generated code. Neither change nor remove.
+
+namespace NinjaTrader.NinjaScript.Indicators
+{
+	public partial class Indicator : NinjaTrader.Gui.NinjaScript.IndicatorRenderBase
+	{
+		private aVolZonePOI2[] cacheaVolZonePOI2;
+		public aVolZonePOI2 aVolZonePOI2(int windowBars, double medianMultiplier, int maxGapTicks, int minClusterTicks, AVolZoneScoreMode scoreMode, int bucketMinutes, double detectionPercentile, int lookbackSessions, int minSamplesPerBucket, int extendBars)
+		{
+			return aVolZonePOI2(Input, windowBars, medianMultiplier, maxGapTicks, minClusterTicks, scoreMode, bucketMinutes, detectionPercentile, lookbackSessions, minSamplesPerBucket, extendBars);
+		}
+
+		public aVolZonePOI2 aVolZonePOI2(ISeries<double> input, int windowBars, double medianMultiplier, int maxGapTicks, int minClusterTicks, AVolZoneScoreMode scoreMode, int bucketMinutes, double detectionPercentile, int lookbackSessions, int minSamplesPerBucket, int extendBars)
+		{
+			if (cacheaVolZonePOI2 != null)
+				for (int idx = 0; idx < cacheaVolZonePOI2.Length; idx++)
+					if (cacheaVolZonePOI2[idx] != null && cacheaVolZonePOI2[idx].WindowBars == windowBars && cacheaVolZonePOI2[idx].MedianMultiplier == medianMultiplier && cacheaVolZonePOI2[idx].MaxGapTicks == maxGapTicks && cacheaVolZonePOI2[idx].MinClusterTicks == minClusterTicks && cacheaVolZonePOI2[idx].ScoreMode == scoreMode && cacheaVolZonePOI2[idx].BucketMinutes == bucketMinutes && cacheaVolZonePOI2[idx].DetectionPercentile == detectionPercentile && cacheaVolZonePOI2[idx].LookbackSessions == lookbackSessions && cacheaVolZonePOI2[idx].MinSamplesPerBucket == minSamplesPerBucket && cacheaVolZonePOI2[idx].ExtendBars == extendBars && cacheaVolZonePOI2[idx].EqualsInput(input))
+						return cacheaVolZonePOI2[idx];
+			return CacheIndicator<aVolZonePOI2>(new aVolZonePOI2(){ WindowBars = windowBars, MedianMultiplier = medianMultiplier, MaxGapTicks = maxGapTicks, MinClusterTicks = minClusterTicks, ScoreMode = scoreMode, BucketMinutes = bucketMinutes, DetectionPercentile = detectionPercentile, LookbackSessions = lookbackSessions, MinSamplesPerBucket = minSamplesPerBucket, ExtendBars = extendBars }, input, ref cacheaVolZonePOI2);
+		}
+	}
+}
+
+namespace NinjaTrader.NinjaScript.MarketAnalyzerColumns
+{
+	public partial class MarketAnalyzerColumn : MarketAnalyzerColumnBase
+	{
+		public Indicators.aVolZonePOI2 aVolZonePOI2(int windowBars, double medianMultiplier, int maxGapTicks, int minClusterTicks, AVolZoneScoreMode scoreMode, int bucketMinutes, double detectionPercentile, int lookbackSessions, int minSamplesPerBucket, int extendBars)
+		{
+			return indicator.aVolZonePOI2(Input, windowBars, medianMultiplier, maxGapTicks, minClusterTicks, scoreMode, bucketMinutes, detectionPercentile, lookbackSessions, minSamplesPerBucket, extendBars);
+		}
+
+		public Indicators.aVolZonePOI2 aVolZonePOI2(ISeries<double> input , int windowBars, double medianMultiplier, int maxGapTicks, int minClusterTicks, AVolZoneScoreMode scoreMode, int bucketMinutes, double detectionPercentile, int lookbackSessions, int minSamplesPerBucket, int extendBars)
+		{
+			return indicator.aVolZonePOI2(input, windowBars, medianMultiplier, maxGapTicks, minClusterTicks, scoreMode, bucketMinutes, detectionPercentile, lookbackSessions, minSamplesPerBucket, extendBars);
+		}
+	}
+}
+
+namespace NinjaTrader.NinjaScript.Strategies
+{
+	public partial class Strategy : NinjaTrader.Gui.NinjaScript.StrategyRenderBase
+	{
+		public Indicators.aVolZonePOI2 aVolZonePOI2(int windowBars, double medianMultiplier, int maxGapTicks, int minClusterTicks, AVolZoneScoreMode scoreMode, int bucketMinutes, double detectionPercentile, int lookbackSessions, int minSamplesPerBucket, int extendBars)
+		{
+			return indicator.aVolZonePOI2(Input, windowBars, medianMultiplier, maxGapTicks, minClusterTicks, scoreMode, bucketMinutes, detectionPercentile, lookbackSessions, minSamplesPerBucket, extendBars);
+		}
+
+		public Indicators.aVolZonePOI2 aVolZonePOI2(ISeries<double> input , int windowBars, double medianMultiplier, int maxGapTicks, int minClusterTicks, AVolZoneScoreMode scoreMode, int bucketMinutes, double detectionPercentile, int lookbackSessions, int minSamplesPerBucket, int extendBars)
+		{
+			return indicator.aVolZonePOI2(input, windowBars, medianMultiplier, maxGapTicks, minClusterTicks, scoreMode, bucketMinutes, detectionPercentile, lookbackSessions, minSamplesPerBucket, extendBars);
+		}
+	}
+}
+
+#endregion
