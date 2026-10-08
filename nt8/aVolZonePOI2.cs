@@ -95,8 +95,8 @@ namespace NinjaTrader.NinjaScript.Indicators
                 ObMaxInsidePct = 2.0;   // calibrado MNQ 200t sep-2026: 21% de las zonas tiene <1% dentro, despues cae (corte natural)
                 ObColor = Brushes.Red;
                 RacimoMin = 3;
-                RacimoBars = 100;
-                RacimoTicks = 20;
+                RacimoBars = 300;
+                RacimoOverlapPct = 50.0;
                 RacimoColor = Brushes.MediumPurple;
                 LogPath = "";
             }
@@ -306,8 +306,9 @@ namespace NinjaTrader.NinjaScript.Indicators
             }
         }
 
-        // Racimo: al nacer una zona se buscan zonas creadas en las últimas RacimoBars barras cuyo rango de precio quede a
-        // <= RacimoTicks del suyo. Si con la nueva suman >= RacimoMin, todas se marcan violeta desde esta barra.
+        // Racimo: al nacer una zona se buscan zonas creadas en las últimas RacimoBars barras que se SUPERPONGAN en precio con
+        // ella en al menos RacimoOverlapPct % de la altura de la más chica de las dos. Si con la nueva suman >= RacimoMin,
+        // todas se marcan violeta desde esta barra.
         // Sólo mira el pasado: una zona vieja puede volverse violeta cuando aparece una vecina nueva (se registra la barra).
         private void MarkRacimo(Zone nz)
         {
@@ -317,8 +318,9 @@ namespace NinjaTrader.NinjaScript.Indicators
             {
                 Zone z = zones[i];
                 if (nz.Bar - z.Bar > RacimoBars) break;
-                int gapTicks = Math.Max(z.LowTick - nz.HighTick, nz.LowTick - z.HighTick);
-                if (gapTicks <= RacimoTicks) near.Add(z);
+                int overlap = Math.Min(z.HighTick, nz.HighTick) - Math.Max(z.LowTick, nz.LowTick) + 1;
+                int minH = Math.Min(z.HighTick - z.LowTick + 1, nz.HighTick - nz.LowTick + 1);
+                if (overlap > 0 && overlap >= RacimoOverlapPct / 100.0 * minH) near.Add(z);
             }
             if (near.Count + 1 < RacimoMin) return;
             nz.RacimoBar = CurrentBar;
@@ -536,9 +538,9 @@ namespace NinjaTrader.NinjaScript.Indicators
         [Display(Name = "Racimo: ventana (barras hacia atrás)", Order = 2, GroupName = "5. Racimo")]
         public int RacimoBars { get; set; }
 
-        [Range(0, 10000)]
-        [Display(Name = "Racimo: distancia máx. en precio (ticks)", Order = 3, GroupName = "5. Racimo", Description = "Separación máxima entre los rangos de precio de dos zonas (0 = tienen que tocarse o superponerse).")]
-        public int RacimoTicks { get; set; }
+        [Range(1.0, 100.0)]
+        [Display(Name = "Racimo: superposición mín. (%)", Order = 3, GroupName = "5. Racimo", Description = "Porcentaje de la altura de la zona más chica que tiene que superponerse en precio.")]
+        public double RacimoOverlapPct { get; set; }
 
         [XmlIgnore]
         [Display(Name = "Racimo: color", Order = 4, GroupName = "5. Racimo")]
