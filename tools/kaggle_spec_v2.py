@@ -150,8 +150,11 @@ def aggregate_frame(t, seconds):
     # Nulls stay null: pandas GroupBy.last would silently replace a missing last quote.
     for q in ('bid_ticks', 'ask_ticks'):
         t[q] = t[q] if q in t else np.nan
-        aggs[q] = (q, lambda x: x.iloc[-1])
+        # Quote selection is vectorized below; GroupBy.last would lose nulls.
     bars = t.groupby(['session_date', 'contract', 'bucket_utc_ns'], sort=True).agg(**aggs).reset_index()
+    keys = ['session_date', 'contract', 'bucket_utc_ns']
+    quotes = t.groupby(keys, sort=False).tail(1)[keys + ['bid_ticks', 'ask_ticks']]
+    bars = bars.merge(quotes, on=keys, how='left', validate='one_to_one')
     bars['signed_volume'] = bars.buy_volume - bars.sell_volume
     bars['available_utc_ns'] = bars.bucket_utc_ns + seconds * 10**9
     return bars
@@ -163,11 +166,12 @@ def combine_partials(frames, seconds):
     keys = ['session_date', 'contract', 'bucket_utc_ns']
     t = t.sort_values(keys + ['first_ts_utc_ns'], kind='stable')
     agg = {'open': 'first', 'high': 'max', 'low': 'min', 'close': 'last',
-           'first_ts_utc_ns': 'first', 'last_ts_utc_ns': 'last',
-           'bid_ticks': lambda x: x.iloc[-1], 'ask_ticks': lambda x: x.iloc[-1]}
+           'first_ts_utc_ns': 'first', 'last_ts_utc_ns': 'last'}
     for col in ('volume', 'trades', 'buy_volume', 'sell_volume', 'unknown_volume', 'signed_volume'):
         agg[col] = 'sum'
     b = t.groupby(keys, sort=True).agg(agg).reset_index()
+    quotes = t.groupby(keys, sort=False).tail(1)[keys + ['bid_ticks', 'ask_ticks']]
+    b = b.merge(quotes, on=keys, how='left', validate='one_to_one')
     b['available_utc_ns'] = b.bucket_utc_ns + seconds * 10**9
     return b
 
@@ -414,7 +418,7 @@ def main():
     p = argparse.ArgumentParser(__doc__); sub = p.add_subparsers(dest='command', required=True)
     a = sub.add_parser('generate'); a.add_argument('--spec', required=True); a.add_argument('--catalog', required=True); a.add_argument('--out', required=True)
     a = sub.add_parser('run'); a.add_argument('--plan', required=True); a.add_argument('--shard', required=True); a.add_argument('--catalog', required=True); a.add_argument('--root', required=True); a.add_argument('--out', required=True)
-    a = sub.add_parser('merge'); a.add_argument('--plan', required=True); a.add_argument('--inputs', nargs='+', required=True); a.add_argument('--out', required=True)
+    a = sub.add_parser('merge'); a.add_argument('--plan', required=True); a.add_argument('--inputs', nargs='+', required=True); a.add_argument('--out', required=True); a.add_argument('--ledger')
     a = p.parse_args()
     if a.command == 'generate':
         spec = json.loads(Path(a.spec).read_text()); generate(make_plan(spec, load_catalog(spec, a.catalog)), a.out)
@@ -422,6 +426,10 @@ def main():
         return execute(json.loads(Path(a.plan).read_text()), a.shard, a.catalog, a.root, a.out)
     else:
         merge(json.loads(Path(a.plan).read_text()), a.inputs, a.out)
+        if a.ledger:
+            from kaggle_hippocampus_ingest import ingest
+            receipt = ingest(a.out, a.ledger)
+            write_json(Path(a.ledger).with_suffix('.receipt.json'), receipt)
     return 0
 
 

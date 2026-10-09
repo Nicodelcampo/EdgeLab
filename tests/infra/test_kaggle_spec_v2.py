@@ -204,3 +204,46 @@ def test_catalog_counts_mismatch(fixture,tmp_path):
     out=tmp_path/'truncated'
     assert f.execute(plan,'k01',catalog,root,out)==2
     assert 'source totals differ' in json.loads((out/'results.json').read_text())['error']
+
+
+def hip_adapter():
+    ms=importlib.util.spec_from_file_location('hip_adapter',RUNNER.with_name('kaggle_hippocampus_ingest.py'))
+    mod=importlib.util.module_from_spec(ms);ms.loader.exec_module(mod)
+    return mod
+
+
+def test_hippocampus_idempotent_verified_ingest(fixture,tmp_path):
+    _,_,plan,catalog,root,_=fixture
+    shard=tmp_path/'shard'; assert f.execute(plan,'k01',catalog,root,shard)==0
+    store=tmp_path/'store';f.merge(plan,[shard],store)
+    adapter=hip_adapter();ledger=tmp_path/'hip/aggregate.jsonl'
+    r=adapter.ingest(store,ledger,recorded_at_utc='2026-10-09T23:00:00Z')
+    assert r['records']==5 and not r['idempotent']
+    before=ledger.read_bytes();again=adapter.ingest(store,ledger)
+    assert again['idempotent'] and again['tip']==r['tip'] and ledger.read_bytes()==before
+    _,sm=adapter.modules();memory=sm.DurableHippocampus(ledger,expected_tip_hash=r['tip'])
+    assert len(memory.memory.episodes)==1 and not memory.trials
+    assert memory.memory.episodes[r['episode_id']].outcomes_inspected is False
+    assert memory.memory.lessons[r['episode_id']][0].confidence=='LOW'
+
+
+def test_hippocampus_bad_evidence_never_writes(fixture,tmp_path):
+    _,_,plan,catalog,root,_=fixture
+    shard=tmp_path/'shard';f.execute(plan,'k01',catalog,root,shard)
+    store=tmp_path/'store';f.merge(plan,[shard],store)
+    adapter=hip_adapter();ledger=tmp_path/'hip.jsonl'
+    (store/'attestation.json').write_text('{}')
+    with pytest.raises(ValueError):adapter.ingest(store,ledger)
+    assert not ledger.exists()
+
+
+def test_hippocampus_existing_ledger_preserved(fixture,tmp_path):
+    _,_,plan,catalog,root,_=fixture
+    shard=tmp_path/'shard';f.execute(plan,'k01',catalog,root,shard)
+    store=tmp_path/'store';f.merge(plan,[shard],store)
+    adapter=hip_adapter();h,sm=adapter.modules();ledger=tmp_path/'hip.jsonl'
+    old=sm.DurableHippocampus(ledger);old.register_episode(h.AnalysisEpisode(episode_id='PREEXISTING',goal='preserve'))
+    original=ledger.read_bytes();receipt=adapter.ingest(store,ledger)
+    assert ledger.read_bytes().startswith(original)
+    assert receipt['records']==6
+    assert sm.DurableHippocampus(ledger).verify()==receipt['tip']
