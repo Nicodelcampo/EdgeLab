@@ -1,0 +1,1157 @@
+ 
+ 
+ 
+PROFITABILITY OF PAIRS TRADING STRATEGY IN AN ILLIQUID 
+MARKET WITH MULTIPLE SHARE CLASSES 
+ 
+ 
+ 
+John Paul Broussard – Mika Vaihekoski* 
+ 
+Comments welcome. 
+ 
+May 31, 2012 
+ 
+ 
+ 
+Abstract 
+ 
+We investigate the practical issues of implementing the self-financing pairs 
+portfolio trading strategy presented by Gatev et al. (2006). We also provide new 
+evidence on the profitability of the pairs trading under different weighting 
+structures and trade initiation conditions. Using data from the Finnish stock 
+market over the period 1987 to 2008, we find pairs trading to be profitable even 
+after allowing for a one day delay in the trade initiation after the signal. On 
+average, the annualized return can be as high as 12.5%, though requiring trading 
+on days a pair is traded lowers the return approximately by three percentage 
+points. On the other hand, lowering the threshold for opening a pair is found to 
+increase returns even after accounting for trading costs, indicating that there 
+might be a more optimal trade initiation threshold available than that presented 
+in earlier literature. The profits are not related to market risk. Pairs trading 
+strategy is found to produce positive alpha during the sample period.  
+ 
+JEL-classification: 
+G10, G11 
+ 
+Keywords: 
+pairs, trading strategy, statistical arbitrage, short-selling, 
+Finland, Helsinki Stock Exchange, Nasdaq OMXH 
+ 
+ 
+ 
+ 
+                                               
+*  Broussard: School of Business – Camden, Rutgers, the State University of New Jersey. Email: 
+john.broussard@rutgers.edu. Vaihekoski: Turku School of Economics, University of Turku (UTU) and School of 
+Business, Lappeenranta University of Technology (LUT). Email: mika.vaihekoski@utu.fi. We are grateful for 
+comments from Vesa Puttonen and Anders Ekholm, Sofia Ramos, Laura Aundreu and other participants of the 
+Portuguese Finance Network 6th Finance Conference 2010, as well as of the EFMA 2011 Annual Conference. 
+The paper also benefited from the comments made by seminar participants at the Auckland University of 
+Technology.  
+Electronic copy available at: https://ssrn.com/abstract=1729182
+
+ 
+2
+1 
+INTRODUCTION 
+ 
+One of the popular trading strategies found in a statistical arbitrageur's toolbox is pairs trading. 
+Not only is pairs trading a popular trading strategy, it is simple to implement. An arbitrageur 
+finds two stocks whose prices move together over an indicated historical time period.  If the pair 
+prices deviate wide enough, the strategy calls for shorting the increasing-price security, while 
+simultaneously buying the declining-price security. The idea behind the pair trade is to profit 
+from convergence forces that eliminate short-term price deviations in favor of long-term 
+historical pricing relationships. In a pricing world that is relatively efficient, simple strategies 
+based on mean-reversion concepts should not generate consistent profits. Gatev, Goetzmann, 
+and Rouwenhorst (2006), however, document pairs trading generates consistent arbitrage profits 
+in the U.S. equity market which is considered the most efficient and liquid in the world.  Do and 
+Faff (2010) extend Gatev et al. and show that although profitability of pairs trading has declined 
+generally, the strategy generates substantial performance during turbulent market horizons, 
+including the recent financial crisis. 
+ 
+Since the publication Gatev et al. (2006) surprisingly few studies have investigated pairs trading in 
+markets other than that of the USA.  A couple of exceptions are Perlin, (2009) who evaluates 
+pairs trading in Brazil, and Andrade, di Pietro and Seasholes (2005), who evaluate pairs trading 
+profitability in Taiwan. This could be due to the computational complexity of estimating profits 
+from the pairs trading despite the prima facie simplicity of the strategy. In this paper we discuss 
+some of issues in the practical implementation of the strategy not mentioned in Gatev et al., as 
+well as analyze the role of the pairs trade initiation criteria and the effect on returns of requiring 
+trading in stocks selected for pairs on days when a pair is opened. Furthermore, we provide 
+computer code for the implementation. Finally, we provide evidence on the profitability of the 
+pairs trading strategy in Finland, a stock market with much less liquidity than that found in the 
+United States. Since the pairs trading strategy requires implementing two trades instead of one, 
+evaluating performance in a less liquid market provides additional evidence regarding the 
+strategy's global implementable efficacy.  
+ 
+There are two additional reasons why evaluating the pairs trading strategy in Finland is 
+interesting. First, the time period evaluated, 1987 to 2008, covers not only the global boom and 
+bust in the technology sector, but also the financial institution crisis of 1990 and 2008 that 
+impacted investors in Finnish equities. Evaluating the pairs trading strategy in such stressed 
+market environments provides information to those evaluating the strategy's potential to act as a 
+Electronic copy available at: https://ssrn.com/abstract=1729182
+
+ 
+3
+risk management alternative to traditional purely directional trading strategies. Secondly, a unique 
+institutional characteristic regarding common and preferred shares in Finland allows a closer 
+examination of potential causes for price deviation offered not only by similar securities, but by 
+securities that have access to the same cash flow source. 
+ 
+The results of this effort show the pairs trading strategy is persistently profitable even in a market 
+with reduced liquidity. Significant profits also seem to be generated by taking advantage of price 
+deviations between common and preferred shares of the same firm. The contribution to the 
+literature of the latter result is important because one of the reasons suggested for profitable 
+trading opportunities due to pair price deviation is trader risk aversion regarding fundamental 
+value calculation uncertainty. If the trader's assessment of fundamental value is highly uncertain, 
+then prices may deviate persistently because trades made to take advantage of mispricing are not 
+undertaken. Trader’s risk aversion, therefore, potentially reduces the profit potential of the pairs 
+trading strategy because lack of trading activity may allow non-convergence of disequilibrium 
+asset prices.  The finding that profits can be made from price deviation between assets with 
+claims on the same cash flow source provides additional support for this naïve investment 
+trading strategy.1 
+ 
+The remainder of this paper is organized as follows. Section 2 provides a brief introduction to the 
+pairs trading strategy as well as the estimation strategy employed in this paper. Section 3 presents 
+the data and Finnish institutional characteristics. Section 4 shows the empirical results. Section 5 
+concludes and offers some suggestions for future research. 
+ 
+ 
+2 
+PAIRS TRADING INVESTMENT STRATEGY 
+ 
+2.1 
+Pairs methodology 
+ 
+Similar to Gatev et al. (2006), our implementation of the pairs trading strategy proceeds in two 
+stages. First, pairs of stocks are selected for trading using a twelve month period of data, termed 
+the formation period. Second, trades are made on the pairs during the six months following the 
+                                               
+1  In addition, one can also view pairs trading as an enhanced index strategy (sometimes called index plus) where an 
+index manager aims to beat the benchmark by taking small active bets on the underlying positions. In this 
+framework, the pairs strategy corresponds to a situation where the manager over-weights some stocks (the long 
+position in the pair) and under-weights others (the short position in the pair). If the pairs strategy is profitable, 
+he/she should beat the benchmark. 
+Electronic copy available at: https://ssrn.com/abstract=1729182
+
+ 
+4
+formation period if trading conditions are met. The six month trading horizon is called the trading 
+period. Only stocks that are listed throughout the 18 month period are included in the analysis.2 
+Using the stocks that are traded throughout the 18 month period, one finds first those pairs of 
+stocks that show similar behavior. As a measure of similarity, we compare normalized price series 
+of all selected stocks against each other. The pairs that are selected for trading have the smallest 
+distance measure, which is defined as the sum of squared deviations between the two normalized 
+price series. Normalized price series are defined to start from one, and then evolve using the 
+return series.  False trading signals due to splits or dividends are avoided by using total return 
+series to construct the series in the manner similar to Gatev et al. 
+ 
+Once the chosen number of pairs of stock series has been determined, the question is whether 
+one can trade profitability on them during the trading period. The trading strategy is based on the 
+idea that if the prices diverge, there is a profit to be made because the prices are expected to 
+converge sooner or later. In practice, the pair is opened if a trading signal is observed. A positive 
+trading signal is indicated if pairs’ normalized prices diverge more than two times the standard 
+deviation of the price differences during the formation period.3  The trade is opened by buying 
+the stock with lower normalized price, and selling (short) the higher priced equity. The long-short 
+transactions are effected to yield a net position of zero. Thus, the trade is considered selffinanced. The pair trade is then closed by reversing the opening transactions once the normalized 
+prices cross the two-standard deviation threshold.  If a pair remains open at the end of the 
+trading period, it is closed whether or not price convergence occurred. 
+ 
+To calculate the return for a pair of stocks over the whole trading period, one needs to 
+accumulate weighted daily returns from the long and short positions. To get daily value-weighted 
+percentage returns for a pair, we use the following equation 
+ 
+ 
+S
+t
+t
+L
+t
+t
+pt
+r
+w
+r
+w
+r
+2
+1
+
+ 
+, 
+(1) 
+ 
+                                               
+2  This produces a small forward looking bias as we only analyze stocks that are listed throughout the formation 
+and trading periods. Gatev et al. excluded stocks with one or more days without trade which requires forward 
+looking information. They do not, however, comment whether or not they used the same look-ahead listing 
+condition. 
+3  Note that it is also possible that a pair is not opened at all during the trading period. 
+Electronic copy available at: https://ssrn.com/abstract=1729182
+
+ 
+5
+where weights w1t and w2t are initially assumed to be one after which they change according to the 
+changes in the value of the stocks, i.e., wit=wit-1(1+rit-1). Gatev et al. used the following equation4 
+ 
+ 
+¦
+¦
+
+
+ 
+p
+i
+it
+p
+i
+it
+it
+pt
+w
+r
+w
+r
+, 
+(2) 
+ 
+which basically gives the same result if the weights are adjusted accordingly.5 As noted in Gatev 
+et al., the (net) return on a pair, 
+, can be also interpreted as the excess return since in equation 
+(1), the risk-free rate is cancelled if one calculates the excess return on both legs of the pair.  
+ 
+Also note that using cumulative percentage gross returns as weights is the most obvious choice as 
+they are simply the result of using percentage returns in the analysis (as opposed to continuously 
+compounded returns). The end result corresponds to a normal buy-and-hold strategy between 
+open/close transactions. Finally, note that the pairs trading strategy is assumed to start as a net 
+zero position i.e. without any investment, but as the weights change in equation (1), the position 
+has either a positive or negative net value during the trading period. Computationally it would be 
+easy to force the weights to stay the same implying a net zero position, but in practice the 
+position would be adjusted every time the price difference changes leading to high trading costs.6 
+ 
+Using the return series for each pair, we can calculate the return for a portfolio of the pairs 
+positions. Following Gatev et al. we use two different weighting schemes. The first weighting 
+scheme is called the committed capital scheme, which essentially commits equal amounts of capital to 
+each one of the pairs. If the pair is not opened, or it is closed during the trading period, the 
+capital is still committed to the pair. Similar to Gatev et al. we assume zero return for non-open 
+pairs, although in practice one could earn returns on idle capital. In our second and main 
+approach, we utilize a fully invested weighting scheme. The fully invested scheme is less conservative as 
+it assumes capital is always divided between the pairs that are open. 
+                                               
+4  Note that there was a minor typographical error in the denominator of equation (2) in Gatev et al. (2006) as wit 
+was included in the subscript of the sum. 
+5  Note that the concept of rate of return on a zero net capital is somewhat problematic and hence no standardized 
+method is available. In the literature, the return has been typically calculated either on the long leg of the position, 
+the margin capital needed to undertake the short position, or on the gross capital exposure. The approach used 
+here (equation 1) implicitly takes into account the gross exposure.  
+6  In practice, this means that the manager sells (long or short) the stock that has generated more returns (or 
+equivalently, buys more of the one that has returned less). This obviously generates costs, but on the other hand, 
+it could be justified by the fact that it keeps the portfolio’s investment as net-zero throughout the investment 
+period or by the fact that the weight on the short-side of the pair cannot exceed 100 percent.  
+Electronic copy available at: https://ssrn.com/abstract=1729182
+
+ 
+6
+ 
+However, contrary to Gatev et al., we utilize two different approaches to changes in the weights 
+in both schemes. The first one is basically similar to theirs.7 Namely, the (unweighted) sum of 
+returns are divided either by the estimated number of pairs (here: five) or the number of pairs 
+that are open (at any given day) for the committed capital and fully invested weighting scheme, 
+respectively. We label this as the equally weighted approach as it implicitly assumes that each of the 
+(open) pairs is given the same weight at any given time. Although computationally convenient, it 
+requires frequent trading to keep the weights in balance, which ultimately raises costs. 
+ 
+Our second approach, labeled as the value-weighted approach, utilizes equation (2) to calculate 
+relative weights for each pair where weights for each pair follows wpt=wpt–1(1+rpt–1) with a starting 
+value of one. In practice, we assume that each pair is given the same weight at the beginning of 
+the trading period. If a pair is not opened, the return is zero, and thus the weight does not 
+change. This implies that for the fully invested weighting scheme, the money from a closed pair is 
+invested in the other pairs that are open (according to their relative shares). If a pair is re-opened, 
+the money is invested back by redistributing the investment between the pairs according to their 
+relative weights, i.e., wpt divided by the sum of the weights. Similarly, if a pair is not opened until 
+later in the trading period, the weight will be one in absolute terms (as for others), but in relative 
+terms the weight has likely changed.  
+ 
+Once one has recorded the returns from the trading period, the sample period is rolled forward 
+and the estimation is redone with the latest set of data. Gatev et al. rolls the time period forward 
+by one month, which allows for parallel formation and trading pairs every month (up to six times 
+the chosen number of pairs). As a result, their technique potentially allows for one stock to be 
+selected in more than one pair (possibly even on opposite sides of the trade). Although this 
+parallel rolling selection technique may be suitable in a marketplace with a vast array of stocks 
+available, a sequential selection approach is more suitable in a marketplace where the number of 
+stocks is limited, as is the case in Finland. As a result, our implementation differs slightly from 
+the previous literature in that the time horizon of formation and trading periods are rolled 
+forward by six months, instead of on a monthly calendar.  Specifically, the pairs are formed using 
+data either for January to December within a calendar year, or from July to June the following 
+                                               
+7  Gatev et al. (2006) are a bit vague in describing their weighting approach. Our best interpretation is that they 
+have used equation (2) as we have used equation (1), and for a portfolio of pairs they have used what we have 
+labeled as equally weighted approach.  
+ 
+Electronic copy available at: https://ssrn.com/abstract=1729182
+
+ 
+7
+year. In addition, the quantity of evaluated pairs is restricted to be five in this paper, whereas 
+Gatev et al. also evaluate the strategy using higher number of pairs, up to 20.8  
+ 
+2.2 
+Case Finland 
+ 
+Finland is one of the Nordic countries that showed high economic growth after the Second 
+World War. As with many other countries around the world, the last couple of decades have been 
+a period of extremely high growth both in terms of economic activity and financial markets. 
+There are, however, several features that differentiate Finland from other countries, especially the 
+US, during the sample period analyzed in this paper, 1987-2008.  
+ 
+First, the Finnish stock market (established in 1912) was in many ways underdeveloped and 
+segmented from international markets until the 1990s.  The first steps in the integration process 
+were taken in the early 1980s, e.g., when foreign interest in Finnish stocks started to increase. As 
+a result, foreigners started to buy Finnish stocks, which led the government to restrict foreign 
+ownership to 20 percent (later raised to 40 percent) of the total equity. The shares that the 
+company made available to all investors (including Finnish investors) were labeled as unrestricted. 
+Those only available to Finnish investors were labeled as restricted stocks. Both instruments were 
+traded and priced separately by the stock exchange from 1984 forward. Unrestricted stocks 
+traded typically with a premium to the restricted ones.  
+ 
+Even though allowed before the 1980s, Finnish companies also started to issue in increasing 
+numbers preference shares – common shares with lower voting rights than normal common stocks, 
+but with often a higher dividend payment (hence the name).9 These stocks were often also 
+available in unrestricted and restricted versions. As a result, some companies (e.g., Nokia) had as 
+many as four listed stock instruments (common and preference, both available as restricted and 
+unrestricted). However, the restrictions on foreign ownership were abolished from the beginning 
+of 1993 and the number of listed stock series was cut almost by half (see Vaihekoski, 2004, for 
+details). In addition to removing the ownership restrictions, the government also removed the 
+one percent of the value tax levied on all trades (i.e., stamp duty) conducted on the stock 
+exchange in an effort to increase on-exchange trading. 
+ 
+                                               
+8  The Matlab-code for the pairs-formation and analysis is provided as an Internet Appendix. 
+9  Preference shares are typically titled as common class B shares in the USA (c.f., e.g. Facebook or Google).  
+Electronic copy available at: https://ssrn.com/abstract=1729182
+
+ 
+8
+Second, liquidity in the Finnish stock market was fairly low, especially in the early 1990s due to 
+the economic crisis as well as the multiple stock series listed. This low level of liquidity generates 
+a substantially thinly-traded market, which is evidenced by low trading volumes and high bid-ask 
+spreads. At times, the value-weighted spread across all stocks listed in the stock exchange was 
+close to ten percent (see Vaihekoski, 2009). Towards the end of the sample period, the spread 
+started to decrease, and ultimately in early 2000s, was even less than one percent for many stocks.  
+ 
+A third differentiating fact that directly relates to the efficacy of pairs trading profitability in 
+Finland is connected to the time span short-selling was officially allowed in the Finnish stock 
+market. Organized short-selling officially began at the Finnish exchange in May 22, 1995 when 
+Suomen Optiomeklarit Ltd (SOM; which later merged with the Helsinki Stock Exchange, HEX) 
+started trading LEX-short-selling instruments. These instruments are formed by combining two 
+zero-priced forward contracts, one of which matures immediately and the other within the next 
+nine months. The quoted price for the contracts was the premium paid by the buyer to the 
+seller.10 In addition, the buyer provided collateral to the exchange (typically 125 % of the value of 
+the loan), which acted as the counterparty between both sides of the trade. These instruments 
+were available for the most liquid stocks. Part of the trading took place outside the exchange, 
+although one had to pay stamp duty on trades outside the exchange.  
+ 
+Initially the trading was partly hurt by unfavorable tax treatment of the dividends for those 
+lending the stocks. The legislation was changed in 1997. At the same time stamp duty on short 
+sales were mostly abolished, although the official organized trading was still favored as the stamp 
+duty on OTC-trades remained if the loan was for more than ten trades (later changed in 2007). 
+HEX set up a lending pool to facilitate lending of the stocks in year 2000 and further 
+enhancements were made later in April 2004. After the merger of the HEX and SOM, the trading 
+of LEX-instruments was moved to Stockholm in 2005, where short selling trading takes places 
+under the name “Finnish Stock Loan”.  
+ 
+Even though the official Finnish short selling time history is much shorter compared to that 
+found in the US market, one has to keep in mind that short-selling could also take place as an 
+OTC-trade (off-exchange) between two parties.11 It was also fairly common that within a bank, 
+                                               
+10  The premium, corresponding to short sales cost, was at first typically between one to two per cent of the value 
+but later the premium levels dropped due to increased number of transactions and automatization.  
+11  Short-selling in the U.S. began in the early 20th century (Burke and Martello, 1997). 
+Electronic copy available at: https://ssrn.com/abstract=1729182
+
+ 
+9
+different departments of the bank could loan stocks back and forth from other departments. In 
+addition, some contemporary commentators estimated that approximately 70-90 percent of the 
+short selling on Finnish securities took place abroad (see Korhonen, 2000).12 In addition, a 
+number of loans took place through the clearing system, especially in the cases of stock delivery 
+failure. Finally, a handful of Finnish stocks were dual-listed abroad as ADRs offering a further 
+opportunity for shorting (c.f., Bris et al., 2007). 
+ 
+Finally, from an economic perspective, Finland suffered an extremely severe economic crisis in 
+the early 1990s. GDP growth was negative for a number of years beginning late 1990 and lasting 
+until late 1993 (see Figure 1). There are several reasons behind this uncommonly deep recession. 
+First, Finnish interest rates were unusually high before the crises began.  Policy makers decided to 
+set high interest rates in order to defend the Finnish currency against devaluation pressures. 
+Ultimately, the currency was allowed to float in the middle of the crisis in September 1991. 
+Second, the Finnish banking sector experienced a severe crisis of its own due to lax lending 
+policies and unpreparedness for the structural changes sweeping the industry in the late 1980s 
+and early 1990s. Third, the collapse of the Russian Empire resulted in a vast reduction in Finnish 
+exports. After the recession, however, the growth in the economy has been especially strong.  
+One company in particular, Nokia, has been credited with the economic turnaround. 
+ 
+ 
+3 
+DATA 
+ 
+We use daily data for Finland from the beginning of 1987 to the end of 2008. All stocks listed in 
+the Official List (later Main List) of the Nasdaq OMX Helsinki Stock Exchange (OMXH) during 
+the sample period are used in the analysis.13 The number of stocks listed on the OMXH varied 
+between 100 and 150 during the sample period. Since the number of available series is limited, no 
+stocks are excluded from the study due to thin trading. Stock returns are calculated from the daily 
+closing prices and they are adjusted for the dividends, issues, and splits (i.e. returns are in effect 
+total returns).14  
+                                               
+12  The number of LEX-contracts traded at the HEX increased from 154,952 in 1996 to 2,004,210 in 2001. 
+13  Prior to October 1998, a number of stocks were also quoted on the OTC and the Brokers’ Lists. The list 
+structure was renewed into Main List, I List and NM List. At the same time the number of companies listed on 
+the Main List increased from 80 to 91. The trading and the market values of the companies traded on I and NM 
+Lists was small compared to that of the Main List (e.g., in 1996: the trading was 0.8, 1.0, and 101 billion FIM for 
+the Brokers’, OTC, and Official Lists, respectively. See Vaihekoski (1997) for more information.  
+14  Prior to 1991, the returns are calculated from the average mid-day price quotations. Data was provided by the 
+Department of Finance and Statistics, Hanken School of Economics. 
+Electronic copy available at: https://ssrn.com/abstract=1729182
+
+ 
+10
+ 
+In addition to the stock returns, we use daily stock prices to identify whether or not a stock is 
+listed throughout the 18 month period. Finally, we utilize monthly risk-free rates of returns as 
+well as return on the market portfolio in the analysis. Monthly risk-free rates of return are 
+generated by the monthly holding period returns calculated from one month Helibor (prior to 
+1998) and Euribor rates (from the beginning of 1998). The return on the market portfolio is the 
+return on the value-weighted stock market index for the HEX. The Finnish stock market returns 
+from 1991 forward are calculated using the value-weighted OMXH yield index (previously HEX 
+index) calculated by the stock exchange. Prior to 1991, we use the WI-index which is calculated 
+by Berglund et al. (1983).15 All returns are measured as percentage returns. All monthly returns 
+are measures from month-end to month-end. 
+ 
+ 
+4 
+EMPIRICAL RESULTS 
+ 
+ 
+4.1 
+Main results 
+ 
+Table 1 shows descriptive statistics for the monthly percentage (net) returns for the TOP 5 pairs 
+trading strategies under two different weighting schemes. Monthly returns are calculated using 
+daily cumulative return indices. The TOP 5 pairs are chosen to be those with the smallest 
+distance measure. Panel A lists the results for the investment scenario allowing same-day 
+investment of the pair as indicated by the distance measure. Panel B lists the results for the 
+investment scenario that allows for a one-day waiting period prior to investment of the various 
+pairs. The reason for evaluating the pairs in a one-day lag is to allow for potential delays with 
+implementing the trade after seeing the trading signal. In addition, it allows one to form a more 
+conservative view on the profitability as the lag allows for one to take into account potential 
+difficulties in executing the trade as well as the effect of bid-ask spread in the market.  
+ 
+As indicated in Table 1, the monthly net returns are positive and significantly different from zero 
+across portfolio formation measures when the pair can be initiated same day. All but one case are 
+significant even when the one day lag approach is evaluated. As expected the results in Panel A 
+are superior to those in Panel B, indicating the importance of rapid execution of the trade. 
+                                               
+15  The WI-index has been frequently used to augment the HEX-index in previous studies. For more details on the 
+indices, see Nyberg and Vaihekoski (2010).  
+Electronic copy available at: https://ssrn.com/abstract=1729182
+
+ 
+11
+Similarly, the more conservative, committed capital approach shows lower returns than the fully 
+invested approach. The fully invested approach yields typically twice the return or more of the 
+committed capital approach, albeit with higher volatility. 
+ 
+In Panel A, the average excess return on the equally weighted fully invested pairs portfolio is 
+4.137 percent which is clearly higher than of what Gatev et al. found (1.308%). On the other 
+hand, after allowing for the one day waiting period, the average drops to 0.989 percent, which is 
+higher but closer to that found in Gatev et al. (0.745%). The higher return result is consistent 
+with an explanation that wider bid-ask spreads and thinner trading exist on the Finnish stock 
+market. As a result of bid-ask spread “bounce,” both characteristics can cause sudden price 
+changes in the recorded closing prices, which may be reversed the next day. 
+ 
+The maximum monthly return from the pairs trading is surprisingly large (e.g., 30.48% and 
+69.37%) for the committed capital and fully invested schema with equal weighting on pairs, 
+respectively, when compared to Gatev et al. (14.72% in the case of committed capital). The same 
+can be seen in Figure 2 which shows the monthly returns from the fully invested equally weighted 
+portfolio of pairs under the one day waiting rule. One can clearly see there are a few months with 
+extremely positive returns. As a result, we decided to analyze this particular characteristic in more 
+detail.  
+ 
+In practice, we analyze months with extremely high returns. The highest return was achieved in 
+April 1990 which took place during a trading period that started in January and ended in June 
+1990. In four out of the five pairs, the stocks selected for trading are multiple share classes of the 
+same company (MIT A restricted and unrestricted, Yhtyneet Paperitehtaat ordinary and 
+preference, Wärtsilä I restricted and unrestricted, Fiskars K restricted and unrestricted). Only one 
+pair consisted of stocks from two different companies (Unitas B and Kymmene). Figure 3 shows 
+the indexed price development for the pair of Yhtyneet Paperitehtaat (currently known as UPM) 
+stocks during this period and whether the pair is open or closed. This pair was the best performer 
+of the five pairs returning a little over 100 percent during April 1990 alone. Analyzing other 
+months with extremely high returns indicates that multiple stock series have provided an 
+excellent opportunity for pairs trading.  
+ 
+However, one should be cautious of analyzing the results with instant execution on the signal 
+without a waiting day as the liquidity is likely to be thin. The average returns from the more 
+Electronic copy available at: https://ssrn.com/abstract=1729182
+
+ 
+12
+realistic trading approach, which requires one day waiting period, suggests an annualized return 
+of 12.53 percent for the equally weighted committed capital pairs, which is a bit higher than what 
+Gatev et al. found in the US market (9.31%). The results confirm the profitability of the pairs 
+trading strategy and suggest there appears to be substantial profit opportunity for using the pairs 
+trading strategy even in a low liquidity providing environment such as that found in Finland. 
+ 
+Table 2 lists additional details on the trades of portfolios formed with a one day lag after the 
+trading signal. Altogether 502 pairs were opened over the time horizon evaluated. Over the 17 
+year sample period, there are 34 trading periods. There are 11 periods when one of the a priori 
+best pairs did not end up being opened at all. The average price deviation trigger for opening the 
+pairs was 0.0694 (the prices are scaled to being from a unity value of 1). The average number of 
+times a pair is opened in any 6-month time period is less than 15 (14.55), and each pair is held 
+open a little more than 23 trading days (23.18) on average.  Each pair also exhibited being traded, 
+in a round-trip fashion, almost three times (2.91) every six months.  This indicates pairs were 
+opened and closed approximately 3 times every six months. 
+ 
+When one adds the data presented in Table 2 to that shown in Table 1, the indication is that not 
+only does pairs trading generate significantly positive profits, the transactions required to generate 
+those profits do not appear to be very frequent. Although the average holding period per pair is 
+not indicative of a long-term “buy and hold” strategy, the frequency of transactions, as well as 
+their commensurate costs, appears low.  This low turnover of the pairs trading strategy, however, 
+may be due to the low liquidity in the Finnish Market, which may induce a spurious stability of 
+the strategy. Figure 4, however, indicates the long-term opportunities inherent in the pairs trading 
+strategy. 
+ 
+4.2 
+Subperiod analysis and CAPM-test 
+ 
+We also conduct a subperiod analysis of the results. Table 3 reports descriptive statistics together 
+with Sharpe ratios for the pairs trading and market portfolio. Panels A-C show the results for the 
+full sample period and two subperiods, respectively. Note that the stock market return series is in 
+excess of the risk-free rate of return, whereas portfolios’ returns are implicitly assumed to be 
+excess returns. 16 
+                                               
+16  Basically, we follow the approach taken in Gatev et al., who analyze the systemic risk in pairs trading strategies 
+using excess returns.  
+Electronic copy available at: https://ssrn.com/abstract=1729182
+
+ 
+13
+ 
+Table 3 shows that on average the returns have been positive and typically higher during the first 
+subperiod with the exception of the case of the committed capital approach. This is somewhat 
+surprising as it appears the strategy is potentially generating higher profits more recently. If the 
+efficiency of the Finnish stock market has improved, as is the case with improved liquidity, lower 
+spreads, and easier short-selling during the second sub-period, one would expect profit 
+opportunities to decrease for both approaches. Since the difference in returns between fully 
+invested and committed capital approaches has narrowed, one can speculate that this is, at least 
+to some degree, due to the improved efficiency, reduction of multiple share series, or both. 
+ 
+Table 3 also shows that in general, the equally weighted approach yields higher returns than the 
+value-weighted approach ceteris paribus. The likely reason for this is that the cumulative returns for 
+the top five pairs have not diverged much during the trading period, giving more weight on 
+highly successful pair(s), or that the cumulative returns converged lowering the weight-induced 
+gains made early in the trading period.  
+ 
+Panel A in Table 3 also shows that the average excess return on pairs trading has been at par or 
+slightly above that of the market portfolio. Similar to Gatev et al., the standard deviation is also 
+lower than that of the market, leading to higher Sharpe ratios. This is the case also in two subperiods, but the committed capital approach provides higher Sharpe ratios than fully invested 
+approach during the latter period, whereas the opposite is true for the first period. This is mostly 
+driven by lower volatility which is not completely offset by the lower returns. Finally, in all cases 
+but one, the pairs trading strategy produces negative first order autocorrelation into the result 
+series, contrary to Gatev et al. The reason for this may be a manifestation of a bid-ask spread 
+bounce in the data.  
+ 
+Finding positive returns using a self-financing trading strategy raises the question whether the 
+returns can be explained solely by the risk taken. To see if the returns are driven by the pair 
+trading strategy’s exposure to market risk, we estimate the risk-adjusted returns (alpha) and 
+systematic market risk (beta) using the CAPM model. The OLS results from the excess return 
+market model regression are also reported in Table 3. The standard errors have been adjusted for 
+heteroscedasticity and autocorrelation using Newey-West adjustment with three lags.  
+ 
+The results show that the returns are not driven by the market risk over the whole sample period. 
+The beta is not found significant in any of the cases at the five percent significance level over the 
+Electronic copy available at: https://ssrn.com/abstract=1729182
+
+ 
+14
+full sample period. This means that over the long term, the pairs strategy has also been market 
+neutral, which is often a desirable property for many hedge funds strategies. Analyzing the 
+subperiods, we can see that the fully invested approach had statistically significant negative betas 
+during the first subperiod, but exhibited insignificant betas in the second subperiod. The strategy 
+appears to have become more ‘market-neutral’ over time.  
+ 
+Analysing risk-adjusted returns (alphas) we can see that they are all positive (even for subperiods) 
+and all but one statistically significant at 5% level for the full sample period. Somewhat 
+surprisingly, alphas for the fully invested approach alphas seem to be clearly lower during the 
+latter period, whereas the alphas for the committed capital approach are slightly higher. This is 
+again consistent with the idea, that the first sub-period may have offered a few extremely good 
+trading opportunities, potentially due to multiple share classes, which did not exist in the second 
+sub-period.  
+ 
+ 
+4.3 
+Additional analysis and robustness checks 
+ 
+We also conduct a number of additional analysis and tests. First, we analyze the stocks selected 
+for the pairs trading in more detail. The results are consistent with our expectation that many 
+pairs are formed between different series or stock classes of a company’s equity. In fact, 55.2 
+percent of the 210 pairs (42 trading periods times five pairs in each portfolio) are formed 
+between company’s different share classes. More detailed analysis shows that 88.1 percent of the 
+best pairs are formed by combining two different share classes for one company, after which 
+their share decrease and only 23.8 percent of the least good pairs in the portfolios are formed in 
+this manner. 
+ 
+Second, we analyze the effect of weighting approach within a pair on the results. Using equal 
+weights for long and short positions in each pair throughout the trading period, which 
+corresponds to a net zero capital position, did not qualitatively change the results if trading costs 
+were not taken into consideration. In all cases, the returns are slightly lower but the difference is 
+not major. Moreover, as stated earlier, keeping the weights equal within a pair requires a lot of 
+trading in practice, which would in effect lower the returns even further. Thus, this approach is 
+likely to have limited interest among traders. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1729182
+
+ 
+15
+Third, we study the effect of different opening criterion (trigger level) on the results. Originally, 
+the pairs trading signal was observed when the normalized prices diverged more than two times 
+the standard deviation of the price differences during the formation period. Here we allow the 
+criterion to vary from 0.5 to three times the standard deviation. We expect the returns to be 
+higher when a lower criterion is used if trading costs are not taken into account. 
+ 
+The results show that the smaller the criterion, the higher the average return. This is consistent 
+with our hypothesis as lower criterion allows one to profit potentially from smaller price 
+divergences. However, it requires potentially more trading costs that might not be offset by the 
+returns generated. Next we re-estimate the model under the assumption that trading costs are 0.2 
+percent per trade.17 The average returns are naturally lower, but somewhat surprisingly, the 
+average return is still highest for the smallest criterion. This suggests that in practice one could be 
+able to find an optimal criterion (trigger level) to initiate pairs trading as a function of trading 
+costs and assumptions of the underlying pricing process.  
+ 
+Gatev et al. (2006) note the similarities in pairs selection by using a cointegration approach and 
+those selected using the squared summation of normalized price deviations (SSD). The idea 
+behind using cointegration in pairs trading is that there is at least one common factor that drives 
+asset prices to move together.  When pair prices diverge, the common factor acts to eliminate the 
+divergence.  One potential problem with using cointegration to select pairs can be found in 
+Hakkio and Rush (1991), who indicate cointegration is a long-run phenomenon that requires long 
+spans of data to make proper common factor inferences.  Since we use daily data, and only over a 
+year span of time to form potential trading pairs, empirical tests may not reveal a cointegrated 
+relationship.  In fact, we find only 54% of the pairs in our sample are cointegrated during the 
+formation period. Pairs appear to be moving together enough to be recognized by the SSD 
+approach, but not moving together enough to be recognized through cointegration tests. 
+ 
+In addition, we find the use of a closely related measure, half-life, to provide trading signals too 
+often.18 Namely, we calculated the half-life to be only two days, on average, for those pairs 
+exhibiting a cointegrated relationship.  Using the half-life as a rule to close the pair, would 
+generate higher transactions costs than those indicated by the SSD framework because the 
+                                               
+17  Note that this cost applies only to trades within a pair, not to weight changes across pairs (c.f., equal vs. valueweighted returns for portfolio of pairs).  
+18  Half-life measures the speed of mean reversion for an autoregressive process, which in this case refers to the 
+convergence of the price series. In the present analysis, half-life indicates the number of days it takes for the price 
+divergence to decay by one half.  
+Electronic copy available at: https://ssrn.com/abstract=1729182
+
+ 
+16
+average time pairs are open is approximately 23 days, as can be seen in Table 2.  Evaluating the 
+differential profit potential from choosing pairs using cointegration versus squared normalized 
+price deviations is an interesting question.  One must always be mindful of spurious correlation 
+in asset prices, so additional research is warranted to investigate the different outcomes of each 
+approach. 
+ 
+Finally, we study whether the profits are driven by the lack of liquidity in the Finnish market. In 
+practice, we estimate the results in Table 1 again under the additional constraint that a pair can be 
+opened only if the trading volume is higher than zero when the pair is opened. Combined with 
+the one day waiting rule before implementing the trade, we find that the average annualized 
+return for equally weighted strategies are 4.203 and 9.521 percent (vs. 6.133 and 12.531) for 
+committed capital and fully invested portfolios, respectively. Both values are statistically 
+significantly different from zero (the first one at ten percent level with t-value equal to 1.90, and 
+the second at five percent level with t-value 2.16). Both averages are clearly lower than those 
+observed in Panel B, but overall they show that the returns from the pairs trading are significant 
+even after accounting for infrequent trading.  
+ 
+ 
+5 
+CONCLUSIONS 
+ 
+In this paper, we reviewed the pairs trading strategy approach in Gatev et al. (2006) and discussed 
+its implementation in detail on the Finnish stock market. Combined with the fact that the Finnish 
+stock market is more inefficient and many companies listed in Finland have multiple stock series 
+offering potential for pairs trading, one may expect ex ante to observe potentially high returns 
+from the strategy.  
+ 
+The pairs trading strategy was tested using a sample period of 21 years from 1988 to 2008. The 
+results show that the pairs trading strategy produces statistically significantly positive returns 
+during the sample period. The results confirm the finding of Gatev et al. that the pairs trading is 
+indeed a profitably strategy, and not specific to the US market. The returns also do not appear to 
+be driven by the systematic market risk factor. The strategies were also able to provide statistically 
+significant alpha during the sample period.  
+ 
+We also conducted additional analysis on the strategy. First, we analyzed periods with extremely 
+high returns in detail. The results indicate that the multiple share class environment in Finland 
+Electronic copy available at: https://ssrn.com/abstract=1729182
+
+ 
+17
+offered a great opportunity for pairs trading. As a result, pairs trading strategy should also work 
+well in countries where multiple share classes are typical, e.g. China. 
+ 
+In addition, using different threshold criteria to initiate the pairs, we found that the two standard 
+deviation trade trigger criterion used in Gatev et al. could be reduced with a commensurate 
+increase in pairs trade profits in theory, although in practice the benefits are partly offset by the 
+costs. Somewhat surprisingly, our results indicate that, even after taking into account trading 
+costs, the average return is higher for lower thresholds.  
+ 
+The results of this paper also indicate high returns to pairs trading may be improved by using 
+lower than traditional trade initiation thresholds. There may be, however, implementation 
+problems that could cause observed returns to be lower than expected if the strategy is actually 
+put into practice in an illiquid market. We analyzed this issue by imposing an ex post requirement 
+that the trading volume be positive when a pair was opened. The results show that the average 
+return was lowered by approximately three percentage points.  
+ 
+The analysis in this paper uses data that ends in 2008, which is six years after that used in Gatev 
+et al.  Further analysis on the subperiods, drivers of the profitability, time series optimality of the 
+trading signal in different market conditions, potential for fine-tuning the trading criteria (e.g., as 
+a function of bid-ask spread and time available until the end of the trading period), a more 
+concentrated effort to detangle the effects of multiple stock series, as well as an additional 
+evaluation of thin trading and transaction costs are left for future research. 
+Electronic copy available at: https://ssrn.com/abstract=1729182
+
+ 
+18
+REFERENCES 
+ 
+Andrade, S., di Pietro, V. and Seasholes, M., 2005. Understanding the Profitability of Pairs 
+Trading, Working paper, University of California Berkeley, and Northwestern 
+University. 
+Bris, A., Goetzmann, W. N., Zhu, N., 2007. Efficiency and the Bear: Short-Sales and Markets 
+around the World, The Journal of Finance, 62(3), 1029-1079. 
+Burke, K., Martello, G., 1997. The evolution of securities lending. In Fabozzi, F. J. (ed.): 
+Securities lending and repurchase agreements. USA: Frank J. Fabozzi Associates. 
+Elliott, R. J., Van Der Hoek, J., Malcolm, W. P., 2005. Pairs trading. Quantitative Finance, 5(3), 271276.  
+Do, B., Faff, R., 2010. Does Simply Pairs Trading Still Work?, Financial Analysts Journal, 66(4), 8395. 
+Gatev, E., Goetzmann, W. N., Rouwenhorst, K. G., 2006. Pairs Trading: Performance of a 
+Relative-Value Arbitrage Rule. The Review of Financial Studies, 19(3), 797-827. 
+Hakkio, C. S, Rush, M. 1991. Cointegration: How Short is the Long Run? Journal of International 
+Money and Finance, 10, 571-581. 
+Korhonen, H., 2000. Arvopaperilainaus. University of Helsinki. Unpublished manuscript. 
+Available on the internet. URN:NBN:fi-fe20001116  
+Nyberg, P., Vaihekoski, M., 2010. A new value-weighted index for the Finnish stock market. 
+Research in International Business and Finance, 24(3), 267-283.  
+Perlin, M., 2009. Evaluation of pairs-trading strategy at the Brazilian financial market. Journal of 
+Derivatives & Hedge Funds, 15(2), 122-136.  
+Vaihekoski, M., 2009. Pricing of Liquidity Risk. Empirical Evidence from Finland. Applied 
+Financial Economics, 19(19), 1547-1557. 
+Electronic copy available at: https://ssrn.com/abstract=1729182
+
+ 
+19
+Vaihekoski, M., 2004. Portfolio Construction for Tests of Asset Pricing Models. Financial Markets, 
+Institutions & Instruments, 2004, 13(1), 1-39. 
+Vaihekoski, M., 1997. The Finnish stock market: Recent trends and important events. The Finnish 
+Journal of Business Economics, 46(4), 526-543. 
+Electronic copy available at: https://ssrn.com/abstract=1729182
+
+ 
+20
+Table 1. Net returns of pairs trading strategies 
+Summary statistics for the monthly percentage excess (net) returns on portfolios of top five pairs between 
+1988 and 2008. Two different weighting schemes have been used. Equally weighted scheme divides the sum 
+of portfolios returns either by the five (committed capital) or by the number of pairs open each day (fully 
+invested). Value-weighting (passive) scheme takes into account the development of the pairs’ relative weights 
+during the trading period. In Panel B, one day waiting period before executing on the pairs-signal is assumed.  
+ 
+TOP 5 
+ 
+Equally weighted 
+Value-weighted 
+ 
+committed cap 
+fully invested
+committed cap
+fully invested
+Panel A: No waiting 
+ 
+ 
+ 
+ 
+ Average excess return
+0.02087
+0.04137
+0.02134 
+0.04282 
+ Standard error
+0.00279
+0.00579
+0.00318 
+0.00663 
+ t-statistic
+7.49
+7.14
+6.71
+6.46
+ Excess return distribution
+ 
+ 
+ 
+ 
+    Median
+0.0180
+0.0263
+0.0177
+0.0253
+    Standard deviation 
+0.0442
+0.0920
+0.0505
+0.1052
+    Skewness
+2.0993
+3.3050
+3.4175
+4.5596
+    Excess kurtosis
+10.8600
+18.9194
+22.9540
+34.2448
+    Minimum
+-0.0851
+-0.1058
+-0.0846
+-0.1145
+    Maximum
+0.3048
+0.6937
+0.4374
+1.0143
+    Share of negative observations
+29.0 %
+31.0 %
+30.6 % 
+31.3 %
+Panel B: One day waiting
+ 
+ 
+Average excess return
+0.00497
+0.00989
+0.00323 
+0.00834 
+ Standard error
+0.00190
+0.00394
+0.00195 
+0.00354 
+ t-statistic
+2.62
+2.51
+1.65
+2.36
+ Excess return distribution
+ 
+ 
+ 
+ 
+    Median
+0.0032
+0.0066
+0.0020
+0.0061
+    Standard deviation 
+0.0302
+0.0625
+0.0310
+0.0562
+    Skewness
+0.1285
+1.8644
+0.5179
+0.7282
+    Excess kurtosis
+1.8787
+11.0201
+2.7893
+2.5046
+    Minimum
+-0.0980
+-0.1216
+-0.0907
+-0.1312
+    Maximum
+0.1239
+0.4441
+0.1413
+0.2744
+    Share of negative observations
+40.9 %
+44.0 %
+44.8 % 
+42.5 %
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1729182
+
+ 
+21
+Table 2. Trading statistics with one day waiting lag  
+Trading statistics for portfolio of top five pairs formed with one day lag. Average 
+price deviation trigger for opening a pair is calculated as the price difference divided 
+by the average of the prices. 
+ 
+Top 5 
+Total number of pairs opened 
+611 
+Periods when at least one pairs opened (out of max)
+198 (210)
+Average price deviation trigger for opening pairs
+0.0694
+Average number of pairs opened per six-month period
+14.5476
+Average number of round-trip trades per pair in months 
+where at least one pair opened 
+3.0859 
+Average number of round-trip trades per pair
+2.9095
+      Standard deviation
+3.3641
+Average time pairs are open in trading days
+23.1784
+      Standard deviation
+34.6977
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1729182
+
+ 
+22
+Table 3. Market risk of pairs trading strategies 
+The market risk exposure of the excess percentage monthly returns of top five portfolios based on pairs trading strategy under the one day waiting 
+rule is tested. Two different weighting schemes have been used to create the portfolios. Market portfolio’s returns are in excess of one month riskfree rate. Market portfolio is proxied by the Finnish stock market index. In panel A, the full sample from 1988 and 2008 is used (252 observations) 
+and in panels B and C, two subsamples have been used (120 and 132 observations, respectively). CAPM-estimates are from the OLS regression 
+analysis. T-values are provided in parenthesis. Standard errors used to calculate t-values are adjusted for autocorrelation (three lags) and 
+heteroscedasticity using Newey-West method. Coefficients significant at the five (ten) percent level are marked with asterisks ** (*). 
+ 
+TOP 5 
+ 
+ 
+Equally-weighted.
+committed cap 
+Equally-weighted. 
+fully invested 
+Value-weighted. 
+committed cap 
+Value-weighted.
+fully invested 
+Market portfolio 
+Panel A: Full sample 
+ 
+ 
+ 
+ 
+ 
+  Mean excess return
+0.00497
+0.00989 
+0.00323
+0.00834
+0.00600
+  Standard deviation 
+0.03015
+0.06252 
+0.03103
+0.05618
+0.08281
+  Sharpe ratio
+0.16
+0.16 
+0.10
+0.15
+0.07 
+  First order serial correlation
+-0.075
+-0.081
+-0.081 
+-0.002
+0.260
+  CAPM alpha 
+0.0050 ** 
+0.010 ** 
+0.0032 
+0.0086 ** 
+ 
+  (t-value) 
+(2.340) 
+(2.447) 
+(1.467) 
+(2.208) 
+ 
+  CAPM beta 
+0.001 
+-0.045 
+0.002 
+-0.047 
+ 
+  (t-value) 
+(0.050) 
+(-0.975) 
+(0.067) 
+(-1.132) 
+ 
+  Adj. R2
+-0.004 
+-0.001 
+-0.004 
+0.001 
+ 
+Panel B: Subsample 1988-1997
+ 
+  Mean excess return
+0.00386
+0.01365 
+0.00218
+0.01241
+0.00428
+  Standard deviation 
+0.03047
+0.07107 
+0.03065
+0.05874
+0.07275
+  Sharpe ratio
+0.13
+0.19 
+0.07
+0.21
+0.06 
+  First order serial correlation
+-0.013
+-0.064
+-0.043 
+0.108
+0.190
+  CAPM alpha 
+0.0041 
+0.0145 **
+0.0025 
+0.0131 *
+ 
+  (t-value) 
+(1.333) 
+(2.033)
+(0.821) 
+(1.967)
+ 
+  CAPM beta 
+-0.055
+-0.196 **
+-0.063 
+-0.172 **
+ 
+  (t-value) 
+(-1.195) 
+(-2.391)
+(-1.486) 
+(-2.555)
+ 
+Electronic copy available at: https://ssrn.com/abstract=1729182
+
+ 
+23
+  Adjusted R2 
+0.002
+0.032
+0.014 
+0.037
+ 
+Electronic copy available at: https://ssrn.com/abstract=1729182
+
+ 
+24
+ 
+Table 3. Continued 
+Panel C: Subsample 1998-2008 
+ 
+ 
+ 
+ 
+ 
+  Mean excess return
+0.00599
+0.00646 
+0.00418
+0.00464
+0.00757
+  Standard deviation 
+0.02994
+0.05362 
+0.03146
+0.05370
+0.09124
+  Sharpe ratio
+0.20
+0.12 
+0.13
+0.09
+0.08 
+  First order serial correlation
+-0.136
+-0.116
+-0.116 
+-0.131
+0.305
+  CAPM alpha 
+0.0057 *
+0.0061
+0.0039 
+0.0044 
+ 
+  (t-value) 
+(1.917)
+(1.396)
+(1.159)
+(1.078)
+ 
+  CAPM beta 
+0.033
+0.044 
+0.039
+0.026
+ 
+  (t-value) 
+(1.317)
+(1.090)
+(1.255)
+(0.631)
+ 
+  Adjusted R2 
+0.003
+-0.002 
+0.005
+-0.006
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1729182
+
+ 
+Figure 1. Year-on-year percentage change in the Finnish GDP. 
+ 
+ 
+Figure 2. Monthly excess (bars, left y-axis) and 12-month cumulative (line, right 
+y-axis) percentage returns of top 5 pairs portfolios from 1988 to 2008. Returns are 
+calculated for the equally weighted fully invested portfolios (i.e. investment is always 
+equally divided to open pairs) with one day waiting. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1729182
+
+ 
+26
+ 
+Figure 3. Example of pairs trading during Jan-June 1990. Standardized prices are 
+provided on the right hand side y-axis. Blue bar indicates an open pair (opening day 
+excluded). 
+ 
+ 
+Figure 4. Cumulative monthly return indices of top 5 pairs (fully invested and 
+committed capital with equal and value-weighting), and market returns in 
+excess of risk-free rate of return.  
+Electronic copy available at: https://ssrn.com/abstract=1729182
