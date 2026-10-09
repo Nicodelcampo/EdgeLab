@@ -1,0 +1,161 @@
+Asymmetric Hidden Markov Modeling 
+of Order Flow Imbalances for 
+Microstructure-Aware Market Regime 
+Detection 
+Authors: Jay Salvi 
+Contact: jay85salvi@gmail.com 
+Abstract 
+This paper introduces an asymmetric Hidden Markov Model (HMM) framework for detecting 
+latent market regimes using order flow imbalance (OFI) data derived from high-frequency equity 
+trades. By incorporating directional asymmetry in the state transition dynamics, we capture 
+realistic microstructural behavior such as regime persistence, skewed liquidity conditions, and 
+abrupt transitions. Unlike conventional HMM applications to asset prices or returns, our model 
+leverages tick-level signed trade volume to infer regimes reflective of liquidity provision, 
+aggressive accumulation, and temporary dislocations. Empirical results using tick data from NSE 
+stocks and US ETFs show enhanced predictive power for breakout identification and passive 
+order placement, suggesting this framework’s potential for intraday alpha extraction and adaptive 
+execution. 
+1. Introduction 
+Market microstructure plays a crucial role in shaping intraday price dynamics, yet traditional 
+statistical models often abstract away from it. In particular, order flow imbalance (OFI) — the 
+difference between buyer-initiated and seller-initiated volume — is a potent indicator of nearterm price pressure. However, interpreting OFI in isolation often leads to noisy or inconsistent 
+signals. This paper proposes a probabilistic framework based on Hidden Markov Models 
+(HMMs) to model the latent regimes that govern the behavior of OFI over time. 
+ 
+Our contributions are threefold: 
+1. We introduce an asymmetric transition structure to capture realistic market phase dynamics. 
+2. We use tick-level signed volume data as observations. 
+3. We propose a regime-aware signal overlay framework for enhancing execution strategies based 
+on inferred market conditions. 
+2. Related Work 
+HMMs have been used extensively in speech recognition, bioinformatics, and more recently, 
+finance. Notable financial applications include return regime classification (Hamilton, 1989), 
+
+volatility state detection (Guidolin & Timmermann, 2005), and credit risk modeling. However, 
+very few studies incorporate order flow-based observations, and fewer still consider structurally 
+asymmetric transitions. 
+ 
+The relevance of OFI to short-term price prediction has been documented (Easley et al., 2012; 
+Cont et al., 2014), yet these studies treat the signal deterministically or via linear filters. This 
+paper builds on the stochastic regime modeling tradition while injecting microstructure realism. 
+3. Data and Preprocessing 
+3.1 Source: We use tick-by-tick data from the NSE (India) and US markets (SPY ETF, QQQ) 
+during high-volume periods (9:30 AM - 12:00 PM). 
+ 
+3.2 Observation Construction: 
+- To derive a more robust and microstructure-consistent observation signal, we enhance the 
+conventional Order Flow Imbalance (OFI) calculation by incorporating a dynamic confidence 
+weight that reflects trade aggressiveness and local spread conditions. 
+At each trade timestamp t, we define the adjusted OFI as:
+                                            OFIt = ∑ δi * sign(pi −mi ) * vi  for i ∈ Tt
+Where: 
+- Tt denotes the set of trades within a fixed short interval (e.g., 10 seconds), 
+- pi is the execution price of trade, 
+- mi is the mid-quote price at the time of trade,  
+- vi is the volume of trade i, 
+- δi ∈(0,1] is a certainty-adjustment factor based on the prevailing bid-ask spread. 
+ 
+The certainty weight δi  is modeled as:
+                                            δi = 1/1+ exp(α * spreadi )
+Where:  
+- spreadi = ai −bi  is the bid-ask spread at trade, 
+- α is a tunable sensitivity parameter controlling the decay of confidence as spreads widen.
+This formulation ensures that trades executed under tight spreads—typically more informative—
+are weighted more heavily, while those in wide spreads—often driven by noise or low-liquidity 
+conditions—are attenuated. 
+To ensure cross-instrument comparability and statistical stationarity, the resulting OFI series is 
+normalized using a rolling z-score window of length L: 
+                                        zOFIt = (OFIt - μt)/ σt 
+
+Where: 
+Here, μt  and σt  denote the rolling mean and standard deviation of OFI, respectively, over the 
+window ending at t. 
+This refined observation signal preserves directional order flow intent while mitigating the 
+noise induced by volatile spreads and low-confidence trades, thereby improving the fidelity 
+of regime inference in the HMM framework.
+4. Model Framework 
+4.1 HMM Overview: 
+An HMM consists of hidden states, a transition matrix, and emission probabilities modeled as 
+Gaussian. 
+ 
+4.2 Asymmetry in Transition Matrix: 
+- Constrained to reflect realistic market flows. 
+- Example: Transition from vacuum to passive market is rare. 
+ 
+4.3 Hidden State Interpretation: 
+- s1: Passive Liquidity Phase 
+- s2: Aggressive Accumulation 
+- s3: Aggressive Distribution 
+- s4: Liquidity Vacuum 
+5. Inference and Learning 
+We use the Baum-Welch algorithm for parameter estimation with regularized EM for asymmetric 
+constraints. Decoding is via the Viterbi algorithm. Posterior state probabilities are used to build 
+confidence bands around regime identification. 
+5.1 Visualizing Inferred Regimes: 
+- Below is an example regime trace over 60 minutes of SPY tick data (colors denote different 
+regimes):
+
+                                 
+                                                Figure 1: Regime-colored plot of OFI over time
+6. Application: Strategy Enhancement 
+6.1 Breakout Filtering: Filter trades to trigger only in s2 or s3. 
+ 
+6.2 Passive Order Placement: s1 enables higher fill probability. 
+ 
+6.3 Entropy-Based Confidence Scaling: 
+ - To adjust position sizing based on confidence in the inferred market regime, we use an   
+entropy-based scaling mechanism. Let γ represent the posterior probability vector over the hidden 
+states at time t, and H(γ) denote its Shannon entropy: 
+                                                       H(γ) = - ∑ (γᵢ * log(γᵢ))  for i = 1 to N 
+Here, N is the number of hidden states. A lower entropy indicates higher confidence in the current 
+regime, allowing for more aggressive position sizing. Thus, we scale position size proportionally 
+to: 
+                                                   Position Size ∝ 1 - H(γ)/log N 
+This normalization ensures the entropy term lies between 0 and 1. When regime uncertainty is 
+high (entropy near maximum), position size is reduced; when confidence is high, it is increased. 
+7. Results and Discussion 
+                                                             Table 1: Comparison Table 
+Metric
+Raw OFI Baseline
+Classic HMM (Zreturns)
+This paper
+Signal Precision 
+(TPR %)
+61.3%
+64.1%
+74.8%
+VWAP Execution 
+Cost
+-21.5bps
+-16.2bps
+-7.4bps
+Avg Regime Duration 
+( s2)
+-
+~2.5 min
+~4.3 min
+Sharpe of Trades
+1.32
+1.71
+2.55
+Entropy Volatility
+-
+-
+Std: 0.12
+
+- Signal precision improved by ~17%. 
+- VWAP execution cost reduced by ~9 bps. 
+- Regime duration: ~4.3 minutes in s2. 
+Case studies show alignment with news and order book events. 
+8. Conclusion 
+We present a novel, microstructure-informed extension of HMMs. By modeling tick-level OFI 
+through asymmetric regime transitions, we offer a tool that aligns with both theoretical finance 
+and practical trading. Future work includes integrating options data and multi-asset regimes. 
+References 
+Hamilton, J. D. (1989). A New Approach to the Economic Analysis of Nonstationary Time Series. 
+Easley, D., Lopez de Prado, M., & O'Hara, M. (2012). Flow Toxicity and Liquidity in a Highfrequency World. 
+Cont, R., Kukanov, A., & Stoikov, S. (2014). The Price Impact of Order Book Events. 
+Rabiner, L. R. (1989). A Tutorial on Hidden Markov Models. 
+Guidolin, M., & Timmermann, A. (2005). Economic Implications of Bull and Bear Regimes. 
+*Implementation code and analysis scripts are available upon request for 
+academic or collaborative review..* 
