@@ -55,10 +55,14 @@ _RECORD_TYPES = {
     "spec_confirmed",
     "partition_declared",
     "observation_recorded",
+    "literature_consulted",
 }
 
 PARTITION_ROLES = frozenset({"EXPLORATION", "CONFIRMATION_RESERVED", "FUTURE"})
 OBSERVATION_KINDS = frozenset({"TARGET_FREE", "RESPONSE_PROFILE"})
+# Literatura consultada (puente brain <-> hipocampo bibliografico SSRN, 2026-10-09): techo de autoridad fijo.
+LITERATURE_AUTHORITY = "LITERATURE_CLAIM_UNVERIFIED"
+LITERATURE_ITEM_KINDS = frozenset({"PASSAGE", "FINDING"})
 
 
 class CampaignBudgetError(ValueError):
@@ -193,6 +197,7 @@ class DurableHippocampus:
         self.specs: dict[str, dict[str, Any]] = {}
         self.partitions: dict[str, dict[str, Any]] = {}
         self.observations: dict[str, dict[str, Any]] = {}
+        self.literature: dict[str, dict[str, Any]] = {}
         if self.ledger_path.exists() and self.ledger_path.stat().st_size > 0:
             self._prev_hash = self._replay_into(self.memory)
             self._offset = self._checked_size()
@@ -496,6 +501,51 @@ class DurableHippocampus:
 
     # -- read path ---------------------------------------------------------
 
+    # -- literatura consultada (hipocampo bibliografico) ----------------------
+
+    def _check_literature(self, row: dict[str, Any], memory: HippocampusMemory | None = None) -> None:
+        """Fail-closed: la literatura nunca entra como evidencia ni por encima de su techo de autoridad."""
+        memory = memory or self.memory
+        cid = str(row.get("consultation_id", ""))
+        if not cid or cid != cid.strip():
+            raise ValueError("consultation_id must be non-empty and without surrounding whitespace")
+        if row.get("episode_id") not in memory.episodes:
+            raise ValueError(f"episode {row.get('episode_id')!r} not registered")
+        if row.get("authority_status") != LITERATURE_AUTHORITY or row.get("claims_are_evidence") is not False:
+            raise ValueError("literature consultations must stay LITERATURE_CLAIM_UNVERIFIED with claims_are_evidence=False")
+        if not str(row.get("query", "")).strip() or not str(row.get("purpose", "")).strip():
+            raise ValueError("query and purpose are required")
+        items = row.get("items")
+        if not isinstance(items, list) or not items:
+            raise ValueError("a consultation must cite at least one literature item")
+        for it in items:
+            if it.get("kind") not in LITERATURE_ITEM_KINDS or not str(it.get("source_id", "")).startswith("SRC-SSRN-"):
+                raise ValueError(f"invalid literature item: {it!r}")
+            if not re.fullmatch(r"[0-9a-f]{64}", str(it.get("text_sha256", ""))):
+                raise ValueError("every literature item needs the sha256 of the text the brain saw")
+
+    def record_literature_consultation(self, row: dict[str, Any]) -> str:
+        """Persiste QUE literatura vio el brain, para que episodio y con que proposito.
+
+        Cada fuente citada queda como dependencia blanda (`consultation SUPPORTED_BY SRC-SSRN-xxxx`): si un paper se
+        invalida, la consulta y todo lo que la cite pasan a REQUIRES_REAUDIT por la cascada existente."""
+        row = dict(row)
+        if row.get("consultation_id") in self.literature:
+            raise ValueError(f"consultation {row['consultation_id']!r} already recorded")
+        self._check_literature(row)
+        digest, written = self._append("literature_consulted", row)
+        self.literature[str(written["consultation_id"])] = written
+        for source_id in sorted({it["source_id"] for it in written["items"]}):
+            self.record_dependency(written["consultation_id"], source_id, "SUPPORTED_BY")
+        return digest
+
+    def _replay_literature(self, memory: HippocampusMemory, payload: dict[str, Any]) -> None:
+        try:
+            self._check_literature(dict(payload), memory)
+        except ValueError as exc:
+            raise LedgerIntegrityError(f"ledger contains an invalid literature consultation: {exc}") from exc
+        self.literature[str(payload["consultation_id"])] = dict(payload)
+
     def _replay_into(self, memory: HippocampusMemory) -> str:
         """Replay the ledger into `memory`; returns the verified tip hash."""
         prev = GENESIS_HASH
@@ -552,6 +602,7 @@ class DurableHippocampus:
             "spec_confirmed": lambda: self._replay_spec(payload),
             "partition_declared": lambda: self.partitions.__setitem__(str(payload["partition_id"]), dict(payload)),
             "observation_recorded": lambda: self._replay_observation(payload),
+            "literature_consulted": lambda: self._replay_literature(memory, payload),
         }
         builders[rtype]()
 
@@ -642,9 +693,9 @@ class DurableHippocampus:
         """
         probe = HippocampusMemory()
         saved = (self.invalidations, self.dependencies, self.campaigns, self.trials, self.specs,
-                 self.partitions, self.observations)
+                 self.partitions, self.observations, self.literature)
         (self.invalidations, self.dependencies, self.campaigns, self.trials, self.specs,
-         self.partitions, self.observations) = {}, [], {}, {}, {}, {}, {}
+         self.partitions, self.observations, self.literature) = {}, [], {}, {}, {}, {}, {}, {}
         try:
             tip = self._replay_into(probe)
             if expected_tip_hash is not None and tip != expected_tip_hash:
@@ -653,4 +704,4 @@ class DurableHippocampus:
             return tip
         finally:
             (self.invalidations, self.dependencies, self.campaigns, self.trials, self.specs,
-             self.partitions, self.observations) = saved
+             self.partitions, self.observations, self.literature) = saved
