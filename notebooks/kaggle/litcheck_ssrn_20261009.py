@@ -67,7 +67,13 @@ def _setup_catalog():
     roots = [Path("/kaggle/input"), *Path("/kaggle/input").glob("datasets/*")] if KAGGLE else \
         [Path(p) for p in os.environ.get("EDGELAB_DATA_ROOTS", "").split(os.pathsep) if p]
     os.environ["EDGELAB_DATA_ROOTS"] = os.pathsep.join(str(r) for r in roots)
-    cat = next(p.parent for r in roots for p in r.glob("**/edgelab_data.py"))
+    # los inputs de Kaggle pueden ser symlinks: Path.glob("**") no los sigue (py3.13), asi que se entra por el nombre
+    cands = [d for r in roots for d in (r / "edgelab-data-catalog", *r.glob("*/edgelab-data-catalog")) if d.exists()]
+    found = [p for d in cands for p in (d / "edgelab_data.py", *d.glob("**/edgelab_data.py")) if p.exists()]
+    if not found:
+        raise FileNotFoundError(f"edgelab-data-catalog no montado; raices {roots}: "
+                                f"{[sorted(x.name for x in r.iterdir())[:20] for r in roots if r.exists()]}")
+    cat = found[0].parent
     sys.path.insert(0, str(cat))
     import edgelab_data as ed
     return ed, cat
