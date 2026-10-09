@@ -1,0 +1,3079 @@
+M of a kind: A Multivariate Approach at 
+Pairs Trading
+Marcelo Scherer Perlin
+ICMA/Reading University
+WORKING PAPER
+Version: December/2007
+Electronic copy available at: https://ssrn.com/abstract=952782
+
+M of a kind: A Multivariate Approach at Pairs Trading
+Abstract: Pairs trading is a popular trading strategy that tries to take advantage of market 
+inefficiencies in order to obtain profit. Such approach, on its classical formulation, uses 
+information of only two stocks (a stock and its pairs) in the formation of the trading signals. The 
+objective of this paper is to suggest a multivariate version of pairs trading, which will try to 
+create an artificial pair for a particular stock based on the information of m assets, instead of just 
+one. The performance of three different versions of the multivariate approach was assessed for 
+the Brazilian financial market using daily data from 2000 to 2006 for 57 assets. Considering 
+realistic transaction costs, the analysis of performance was conducted with the calculation of raw 
+and excessive returns, beta and alpha calculation, and the use of bootstrap methods for comparing 
+performance indicators against portfolios build with random trading signals. The main conclusion 
+of the paper is that the proposed version was able to beat the benchmark returns and random 
+portfolios for the majority of the parameters. The performance is also found superior to the 
+classic version of the strategy, Perlin (2006b). Another information derived from the research is 
+that the proposed strategy picks up volatility from the data, that is, the annualized standard 
+deviations of the returns are quite high. But, such event is “paid” by high positive returns at the 
+long and short positions. This result is also supported by the positive annualized sharpe ratios 
+presented by the strategy. Regarding systematic risk, the results showed that the proposed 
+strategy does have a statistically significant beta, but it isn’t high in value, meaning that the 
+relationship between return and risk for the trading rules is still attractive. 
+1. Introduction
+The market efficiency theory has been tested by different types of research. Such concept 
+postulates, on its weak form, that the past trading information of a stock is reflected on its value, 
+meaning that historical trading data has no potential for predicting future behavior of asset’s 
+prices. The main theorical consequence of this concept is that no logical rules of trading based on 
+historical data should have a significant positive excessive return over some benchmark portfolio.
+In opposition to the market efficiency theory, several papers have showed that past information is 
+able, in some extent, to explain future stock market returns. Such predictability can appear in 
+different ways, including time anomalies (day of the weak effect, French (1980)) and correlation 
+between the asset’s returns and others variables, Fama and French (1992). A substantial review 
+on the market efficiency subject can be found at the papers of Fama (1991) and Dimson e 
+Mussavian (1998). 
+A respectable amount of papers have tried to use quantitative tools in order to model the market 
+and build trading rules. The basic idea of this type of research is to look for some kind of pattern 
+in the historical stock price behavior and, using only historical information, take such pattern into 
+account for the creation of long and short trading positions.
+With the advent of computer power in the late 90’s, more sophisticated mathematical methods 
+could be employed in the case of trading rules. One example is the use of nearest neighbor 
+algorithm in trading strategies, Fernandez-Rodrigues et al (2002), Fernandez-Rodrigues et al 
+(1997), Fernandez-Rodrigues et al (2001) and Perlin (2006a). The NN algorithm is a non 
+parametric method of modelling time series that has an intuitive appealing based on chaos theory. 
+Electronic copy available at: https://ssrn.com/abstract=952782
+
+The main conclusion drawn from the results presented on the predictability potential of this 
+method is that it is able to predict correct market direction for most of the forecasted financial 
+observations. But its important to say that the evidence wasn’t strong in all studies.
+For the case of trading strategies based on parametric models, there is the work of Efetkhari 
+(1997) on stock market and Dueker et al (2006) at currency. Both papers based the forecasts on 
+the regime switching model, where the results indicated that the method can predict the financial 
+time series researched in each case. Others types of strategies using quantitative formulations 
+includes timing the market with fundamentals or statistical models, Brooks at al (2005) and 
+Anderson et al (2006), momentum strategies, Siganos et al (2006) and Balsara et al (2006). The 
+results from these papers are also positive.
+A popular strategy that has made its reputation in the early 80’s is the so called pairs trading. 
+Such methodology was designed by a team of scientists from different areas (mathematics, 
+computer sciences, physics, etc), which were brought together by the Wall Street quant Nunzio 
+Tartaglia. The main objective of such team was to use statistical methods to develop computer 
+based trading platforms, where the human subjectivity had no influence whatsoever in the 
+process of making the decision of buy or sell a particular stock. Such systems were quite 
+successful for a period of time, but the performance wasn’t consistent after a while and the team 
+was dismantled after a couple periods of bad performance. More details about the origins of pairs 
+trading can be found at Vidyamurthy (2004) and Gatev et al (1999). The application of this 
+particular strategy has already been conducted for financial time series. This includes the work of 
+Nath (2003), Gatev et al (1999) and, more recently, Perlin (2006b).
+The main objective of this research is to suggest a multivariate version of pairs trading. Such 
+proposed approach will be executed to the data using three different weighting schemes. The 
+profitability and the risk of such logical rules are going to be assessed based on the Brazilian 
+financial market, with daily prices from 2000 to 2006. The present paper is based on the work of 
+Perlin (2006b) and can naturally be seen as an extension of it since the methodologies used for 
+performance assessment and the researched data is the same.
+The paper is organized as follows; the first part is related to the explanation of the methodology 
+of the research, including performance assessment and the logical rules of trading concerning 
+pairs strategy. Second, the results from the execution of multivariate pairs trading over the 
+researched database are presented. After that, the paper finishes with some concluding remarks.
+2. Methodology
+The methodology of this research is going to be divided in two parts: the first one is the formal 
+definition of classical pairs trading and the suggested multivariate pairs trading. The second part 
+introduces the method used for the calculation of raw and excessive returns. It should be pointed 
+out that the pairs trading strategy can be implemented in many ways. In this particular research 
+the methods chosen for execution of trading rules and performance assessment were selected 
+according to its simplicity.
+Electronic copy available at: https://ssrn.com/abstract=952782
+
+2.1 Classical Pairs Trading
+As said before, the idea of classical pairs trading is simple: find two stocks that move together 
+and take long and short positions in the hope for the stocks’ prices to move to the historical 
+behavior. The first step is to normalize the price series of the assets. The reason for the unit 
+transformation is straightforward; each stock has its own unit. After the normalization, all stocks 
+are brought to the same standard unit and this permits a quantitatively fair formation of pairs.
+The transformation employed is the normalization of the price series based on its mean and 
+standard deviation, 
+i
+it
+it
+it
+P
+E
+P
+P
+
+)
+(
+*
+
+
+. The equation for the univariate pairs is presented next, 
+Equation [1].
+*
+*
+*
+it
+it
+it
+p
+P
+
+
+
+[1]
+For Equation [1], the value of 
+*
+it
+P is the normalized price series of asset i at time t and 
+*
+it
+p is the 
+normalized price of the pair of stock i, which is found by searching over the database using a
+“symmetry rule”. For instance, the pair of stock i can be identified using the squared distance 
+rule, meaning that  
+*
+it
+p is the asset in which the historical normalized price has, among all others, 
+the lowest value of sum of squared error from 
+*
+it
+P . In another words, the asset 
+*
+it
+p has the most 
+symmetric behavior with 
+*
+it
+P .The term 
+*
+it
+ is just the residue from the difference, which, 
+obviously, is in the same unit as 
+*
+it
+P and 
+*
+it
+p . 
+After the pair of each stock is identified, the trading rule is going to create a trading signal at t+1
+every time that the distance between 
+*
+it
+P and 
+*
+it
+p at time t is higher than d. For instance, at a long 
+position, this means that the stock is bought at the closing price at time t and, if d is uncrossed at 
+t+1, then such assets is sold at the closing price of t+1, therefore gaining the return at time t+1.
+The value of d is arbitrary, and it represents the filter for the creation of a trading signals. It can’t 
+be very high, otherwise only a few trading signal are going to be created and it can’t be to low or 
+the rule is going to be too flexible and it will result in too many trades and, consequently, high 
+value of transaction costs.
+After a trading sign is created, the next step is to define the positions taken on the stocks. 
+According to the pairs trading strategy, if the value of 
+*
+it
+ is positive (negative) then a short (long) 
+position is kept for asset i and a long (short) position is made for the pair of asset i. The trading 
+positions are closed when distance between  
+*
+it
+P and 
+*
+it
+p uncrosses d1. Notes that there are two 
+transactions here, the first for asset i and the second for the pair of asset i. Such information is 
+important when addressing transaction costs.
+                                                
+1 This may sound counter intuitive, since, using continuous price behavior, if one buys when the distance is d and 
+sells it when is the distance is again d, there is no profit. But remember that the prices were in discrete time, meaning 
+that the buying price occurs when the distance is higher (and not equal) than d, therefore the expected profit is 
+positive. For the case of pairs trading at approximate continuous time (eg. 5 min quotes), this can be easily adapted
+by setting a gap between the threshold for buying operation and for the sell operation
+Electronic copy available at: https://ssrn.com/abstract=952782
+
+The main logic behind the expected profits of classical pairs trading strategy is: if the movements 
+between the pairs are going to continue in the future, then when the distance between an asset and 
+its pair is higher than a particular threshold value (d), there is a good possibility that such prices 
+are going to converge in the future, and this can be explored for profit purposes. If the distance is 
+positive, then the value of 
+*
+it
+P , according to the logic expressed earlier, probably will reduce in 
+the future (short position for asset i) and the value of 
+*
+it
+p is probably going to increase (long 
+position for the pair of i). The same logic is true for the cases where the distance is negative. 
+As an example, Figure 1 shows the pairs trading strategy for weekly prices of asset TNLP4 and 
+its pair, TNLP3. Notes that Figure 1 is the same as Figure 1 at Perlin (2006b).
+Figure 1 – Example of Pairs Trading with TNLP4 and TNLP3 with d=1
+-3
+-2
+-1
+0
+1
+2
+3
+1
+22
+43
+64
+85 106 127 148 169 190 211 232 253 274 295
+Time
+Normalized Prices
+TNLP4 Normalized Price
+TNLP3 Normalized Price
+Short Position
+Long Position
+In Figure 1, TNLP3 is the pair of TNLP4 based on the maximum correlation criteria2.  It’s 
+possible to see that both normalized prices have a similar behavior. On the points that have a blue
+circle or red triangle the absolute difference in the normalized prices have crossed the value of d, 
+meaning that a trade has taken place. The blue circles (red triangles) are the short (long) positions 
+created. This happens every time the absolute distance is higher than 1 and the value of the 
+analyzed asset is higher (lower) than it’s pair. Every time the absolute difference uncrosses the 
+value of d, the positions are closed. If the assets, after the opening of a position, move back to the 
+historical relationship, then the one with the higher price should have a decrease in the prices and 
+the one with the lower price should have an increase in price. Since a short position was made for 
+the first asset and a long position for the second, then, if both prices revert to the historical 
+behavior, a profit will arise from this trading case, and that’s the whole idea behind pairs trading, 
+making profits out of market reversions to the average behavior.
+The situations where pairs trading fails to achieve profit are: a increase in the distance between 
+*
+it
+P and 
+*
+it
+p , where the market goes the opposite way of the expectation and also a decrease 
+                                                
+2 One could also used the minimun squared distance rule.
+Electronic copy available at: https://ssrn.com/abstract=952782
+
+(increase) on the price of the long (short) position. Given that, one of the expectations in the use 
+of classical pairs trading is that both stocks are behaving abnormally and this may not be true. It’s 
+possible that just one of them isn’t behaving as expected, so the position taken on the other one 
+may not be profitable. But how to know which one is badly priced and which one is not? One 
+possible answer is to find others stocks that also present similar historical behavior with asset i 
+and check, for each time t, if the behavior of i stands out when comparing to the others. This is 
+the framework that motivates the proposed multivariate version of pairs trading, as will be 
+explained next.
+2.2 Multivariate Version of Pairs Trading
+The idea behind this suggested multivariate version of pairs trading is to search a pair for asset i 
+not just with one asset, but with the information of m assets. In other words, the basic approach is 
+to build (and not just find) a pair to asset i. The formal explanation starts with the formula of the 
+classical version, given next: 
+*
+*
+*
+it
+it
+it
+p
+P
+
+
+
+Using last equation its possible to build a conditional mean for 
+*
+it
+p , which gives:
+
+X
+f
+pit 
+*
+For the last formula, the function 
+X
+f
+ is just a generic formulation saying that the pair of asset i
+is a function based on other variables, where X is a matrix with the information of everything that 
+can explain 
+*
+it
+P . The function f(.) can be linear or non-linear. In order to simplify, the rest of the 
+discussion is going to be based on a linear formulation using the information of the prices of 
+other assets3. Such approach produces: 
+*
+*
+4
+4
+*
+3
+3
+*
+2
+2
+*
+1
+1
+*
+.......
+mt
+m
+t
+t
+t
+t
+it
+P
+w
+P
+w
+P
+w
+P
+w
+P
+w
+p
+
+
+
+
+Simplifying:
+
+
+
+m
+k
+kt
+k
+it
+P
+w
+p
+1
+*
+*
+                                                
+3 Any kind of variable can be used in this general formulation, including FF variables, Fama and French (1992).
+Electronic copy available at: https://ssrn.com/abstract=952782
+
+Inserting the last formula in the first equation gives the final result, Equation [3]:
+*
+1
+*
+*
+it
+m
+k
+kt
+k
+it
+P
+w
+P
+
+
+
+
+[3]
+At Equation [3], the value of 
+k
+w is the linear weight that asset k has in explaining i, where k goes 
+from 1 to m. For this particular research, three different approaches are going to be used in the 
+weighting scheme (calculation of 
+k
+w ). More details about the approaches will be given later. For 
+Equation [3], the term 
+*
+kt
+P is the normalized price of asset k. The choice of m may be arbitrary of 
+not. It’s possible to build a dynamic approach, selecting optimal values of m that minimizes a 
+particular objective function, but, for sake of simplicity, the approach at selecting m is arbitrary at 
+this research. After defining the choice of m, the next step is to find the m assets that have highest 
+correlation with i in the normalized price state. The normalized price of such assets are referred 
+as
+*
+kt
+P , where k goes from 1 to m.
+The trading rules of this formulation are similar as in the classical version: create a trading sign 
+when the absolute value of 
+*
+it
+ is higher than d and take long (short) positions for asset i if the 
+value of 
+*
+it
+ is lower (higher) than zero. It’s possible to take trading positions on the formed pair 
+of asset i, which would require the condition that 
+1
+1
+
+
+
+m
+k
+k
+w
+ and 
+0
+
+k
+w
+ in order to form such 
+portfolio, but this is not suggested since it would require the creation of a portfolio with m assets 
+every time that a trading sign is created. Such creation would take a high number of transaction 
+costs, and this can easily eat up the profits from the positions. Given that, the framework tested in 
+this research doesn’t allow for trading positions for the artificial pair.
+It’s important to note that, if some restrictions are made in the formulation given before, it’s 
+possible to reach the same formula as in classical trading. This can be done with m=1 and with 
+the restriction of 
+1
+1
+
+
+
+m
+k
+k
+w
+. With that, Equation [3] becomes 
+*
+*
+*
+it
+kt
+it
+P
+P
+
+
+
+, and, since 
+*
+kt
+P was 
+chosen with the same criteria as in the classical version, it is equal to 
+*
+it
+p , Equation [1].
+As can be seen from the explanation of the trading process, this proposed version can clearly be 
+labeled as a mean reverting strategy, since the idea is to build a conditional mean for the 
+normalized prices of the series and trade when the error is considered abnormal, hoping for a 
+reversion at the historical behavior. As showed before, the heart of the method is at defining the 
+weights in the formation of the artificial pairs. This can be done in many ways, including 
+parametric or non-parametric models. In order to keep everything simple, this research is going to 
+use three accessible weighting schemes in the multivariate framework. The details about each are 
+given next.
+Electronic copy available at: https://ssrn.com/abstract=952782
+
+2.2.1 Using OLS to Estimate 
+k
+w
+As showed before, one of the main issues about this proposed approach at pairs trading is to build 
+a pair for asset i. In a linear framework, it’s possible to use least squares to find the coefficients 
+that present the lowest sum of quadratic error between the asset’s i normalized price series and 
+the normal price series of the artificial pair. In this framework, the conditional mean of the 
+normalized price of asset i (
+*
+it
+P ) is addressed as next formula, Equation [4].
+*
+*
+*
+4
+4
+*
+3
+3
+*
+2
+2
+*
+1
+1
+*
+.......
+it
+mt
+m
+t
+t
+t
+t
+it
+P
+w
+P
+w
+P
+w
+P
+w
+P
+w
+P
+
+
+
+
+
+
+[4]
+As said before, the coefficients 
+k
+w of [4] are going to be estimated with the minimization of the
+sum of quadratic error, 
+
+
+2
+*
+1
+T
+it
+t
+
+
+
+
+
+
+
+
+
+. More details about the least squares method can be found in 
+any undergraduate econometrics textbook, including Maddala (2001). One should notes that, 
+since 
+*
+kt
+P
+are chosen such that the correlation with 
+*
+itP is maximum then there is a substantial 
+multicolinearity problem with the model at [4]. Such problem could be solved by reduction 
+methods but, in order to keep everything simple, no correction for multicolinearity is performed 
+here. Notes that the artificial pair cannot be traded unless some constraints are made to the values 
+of the coefficients, which is not the case for this tested method since the artificial pair will not be
+traded due to the transaction costs involved.
+2.2.2 Using Equal Weights to Estimate 
+k
+w
+In this approach the weighting scheme is the simplest one. Since the choice of k (number of 
+assets to model 
+*
+it
+P ) is arbitrary, the artificial pair of asset i is just the average of the k chosen 
+assets. Such framework produces Equation [5].
+*
+1
+*
+*
+1
+it
+m
+k
+kt
+it
+P
+m
+P
+
+
+
+
+
+[5]
+For Equation [5], it’s possible to see that 
+m
+wk
+1
+
+, where m is the arbitrary number of assets 
+chosen to build
+*
+itp .
+Electronic copy available at: https://ssrn.com/abstract=952782
+
+2.2.3 Using a Correlation Weighting Scheme
+This framework is the most flexible one since it uses the information on the correlation vector. 
+Defining 
+k
+
+as the correlation of the normalized price series k with the normalized price of i, this 
+approach will calculate the weights using 
+
+
+
+m
+k
+k
+k
+k
+w
+1
+
+
+. With this formulation, Equation [3] 
+becomes [6].
+*
+*
+*
+1
+1
+m
+k
+it
+kt
+it
+m
+k
+k
+k
+P
+P
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[6]
+As can be seem from [6], this approach is very flexible, using weights according to the value of 
+correlations between the normalized price series. If the m chosen assets present very similar 
+values of 
+k
+, then this approach will be very close to the last one, which uses equal weights. 
+The main advantage of this framework is that it will be flexible on the weights, giving more 
+values to those normalized prices that have higher values of correlation and less weight to those 
+with low values. This in especially good for the cases where the modeled asset i is not so popular 
+and only a few other stocks present similar behavior. For this particular case, the weighting 
+scheme is going to give more importance to the assets with high correlation, as opposed to the 
+equal weighting scheme.
+2.2 Assessing Performance of the Strategy
+One of the concerns of this study is to evaluate the performance and risk of the multivariate 
+version of pairs trading strategy against a naïve approach. For that purpose, the strategy’s returns 
+are going to be compared against a properly weighted portfolio and also against random trading 
+signals (bootstrap method). The details about the return’s calculations are given in the next 
+topics.
+2.2.1 Calculation of Strategy’s Returns
+The calculation of the strategy’s total return is going to be executed according to the next 
+formula, Equation [7].
+&
+1
+1
+1
+1
+1
+ln 1
+T
+n
+T
+n
+L
+S
+E
+it
+it
+it
+it
+t
+i
+t
+i
+C
+R
+R I
+W
+Tc
+C
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[7]
+Electronic copy available at: https://ssrn.com/abstract=952782
+
+Where: 
+it
+R
+Real return of asset i on time t, calculated by
+
+
+
+
+
+
+1
+ln
+it
+it
+P
+P
+;
+S
+L
+itI
+&   
+Dummy variable that takes value 1 if a long position is created for asset i, value -1 if a 
+short position is created and 0 otherwise. When a long position is made at time t, this 
+variable is going to be addressed as 
+L
+itI and as 
+S
+itI for short positions;
+it
+W   
+Weighting variable that controls for portfolio construction at time t. In this particular 
+paper the simulated portfolio is equal weight, meaning that each trading position will 
+have the same weight at time t, that is  
+
+
+
+n
+i
+S
+L
+it
+it
+I
+W
+1
+&
+1
+. Naturally, the sum of 
+it
+W for all 
+assets is equal to 1 or zero (no trading position at time t);
+it
+Tc   
+Dummy variable that takes value 1 if a transaction is made for asset i on time t and zero 
+otherwise4
+C   
+Transaction cost per operation (in percentage);
+T
+Number of observations on the whole trading period;
+For Equation [7], the basic idea is to calculate the returns from the strategy accounting for 
+transaction costs. The first part of [7],
+&
+1
+1
+T
+n
+L
+S
+it
+it
+it
+t
+i
+R I
+W
+
+
+
+, calculates the total raw return of the 
+strategy. Every time a long and short position is created for asset i, the raw return of the 
+simulated portfolio on time t, is 
+
+n
+i
+it
+S
+L
+it
+it
+W
+I
+R
+1
+&
+, that is, the prospected returns multiplied by their 
+corresponding weight in the portfolio. Since t goes from 1 to T, is necessary to sum such returns, 
+which gives the final result for the first part of [1], 
+&
+1
+1
+T
+n
+L
+S
+it
+it
+it
+t
+i
+R I
+W
+
+
+
+.
+The second part of Equation [7] has the objective of accounting for transaction costs. As an 
+example, suppose that the trading cost of buy and selling one stock is C, which is expressed as a 
+percentage of the transaction price. If a stock is purchased at price 
+B
+P and sold at price 
+S
+P , then 
+the real buy and sell prices, including transaction costs, are 
+)
+1(
+C
+PB
+
+and 
+)
+1(
+C
+PS
+
+. Taking the 
+                                                
+4 It’s important to distinguish the values of 
+S
+L
+itI
+&
+(long and short positions) from 
+it
+Tc (transaction dummy). The 
+values of 
+it
+Tc are derived from the vector
+S
+L
+itI
+& , but they are not equal. For example, suppose a long position is 
+created for asset i on time t-1 and also on time t, only. The vector of 
+L
+itI
+is going to have values of 1 to time t-1 and 
+t, but the vector of 
+it
+Tc has only value 1 for time t-1, since for t, the asset was already in the portfolio, so there is no 
+need to buy it again. The same is true for short positions.
+Electronic copy available at: https://ssrn.com/abstract=952782
+
+logarithm return of the operation results on the formula 
+
+
+
+
+
+
+
+
+
+)
+1(
+)
+1(
+ln
+C
+P
+C
+P
+R
+B
+S
+. Using logarithm 
+properties, the previous equation becomes
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+C
+C
+P
+P
+R
+B
+S
+1
+1
+ln
+ln
+. It’s possible to see from this 
+result that the return for this operation has two separate components, the logarithm return from 
+difference between selling and buying price and also the term 
+
+
+
+
+
+
+
+
+C
+C
+1
+1
+ln
+, which accounts for the 
+transaction cost on the whole operation. This exemplified result basically states that the 
+transaction cost for one operation (buy&sell) is 
+
+
+
+
+
+
+
+
+C
+C
+1
+1
+ln
+.
+Returning to the analysis of the second part of Equation [1], since 
+
+
+
+
+
+
+
+
+C
+C
+1
+1
+ln
+ is the transaction 
+cost of one operation, logically the term 
+1
+1
+T
+n
+it
+t
+i
+Tc
+
+
+
+
+
+
+
+
+
+ is just the number of operations made by 
+the trading strategy. Is important to notes that, since 
+C
+C
+
+
+1
+1
+ is always less than one because C is 
+always positive and higher than zero, then the value of 
+
+
+
+
+
+
+
+
+C
+C
+1
+1
+ln
+ is always negative, meaning 
+that the transaction costs are going to be subtracted from the strategy’ returns, which is an 
+intuitive result.
+2.2.2 Evaluation of Strategy’ Returns
+In order to evaluate the performance of the strategy, it’s necessary to compare it to a naïve 
+approach. If the strategy performs significantly better than an out-of-skill investor, then such 
+trading rule has value. This is the main idea that will conduct both methods used in this research 
+to evaluate the performance of the proposed approach. The approaches described here are 
+computation of excessive return over a naïve buy&hold rule and the more sophisticated bootstrap 
+method of random trading signals.
+2.2.2.1 Computation of Excessive Return of a Naïve Portfolio
+The calculation of excessive return is the simplest approach to evaluate a trading strategy. The 
+idea is quite simple: verify how does the tested strategy exceeds a naïve trading rule in terms of 
+profitability. In this case, the naïve rule is the buy&hold of a properly weighted portfolio for 
+comparison with the long positions and a “sell&unhold” for the short positions.
+The return of the naïve approach, over the whole number of assets, is based on the following 
+formula, Equation [8].
+Electronic copy available at: https://ssrn.com/abstract=952782
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+n
+i
+n
+i
+T
+t
+it
+S
+i
+T
+t
+it
+L
+i
+NE
+C
+C
+n
+R
+P
+R
+P
+R
+1
+1
+1
+1
+1
+1
+ln
+2
+[8]
+For Equation [8], the value of 
+L
+iP and 
+S
+iP is just the proportion of days, related to the whole 
+trading period, that the strategy created long and short positions for asset i. Formally, 
+T
+I
+P
+T
+t
+L
+it
+L
+i
+
+
+
+1
+ and 
+T
+I
+P
+T
+t
+S
+it
+S
+i
+
+
+
+1
+. Notes that, in the calculation of 
+S
+iP , the sum of the short positions 
+is always negative or equal to zero, since 
+S
+itI takes values -1 and 0, only.
+Since pairs trading strategy uses two different types of positions in the stock market, long for the 
+hope of a price increase and short for the hope of a price decrease, it’s necessary to construct a 
+naïve portfolios that also takes use of such positions. This is the function of the terms 
+
+
+
+
+n
+i
+T
+t
+it
+L
+i
+R
+P
+1
+1
+ and 
+
+
+
+n
+i
+T
+t
+it
+S
+i
+R
+P
+1
+1
+, where the first simulates a buy&hold (long positions) of a 
+properly weighted portfolio and the second simulates a “sell&unhold” (short positions) scheme 
+for another properly weighted portfolio. The weights in both terms are derived from the number 
+of long and short positions taken on each asset, as was showed before. The higher the number of 
+long and short signals a strategy makes for asset i, higher the weight that such stock will have on 
+the simulated portfolio. It’s clear to see from Equation [8] that, if 
+L
+i
+S
+i
+P
+P
+
+, which is a perfectly 
+hedged position for asset i in the benchmark portfolio, the terms 
+
+
+
+n
+i
+T
+t
+it
+L
+i
+R
+P
+1
+1
+
+
+
+
+n
+i
+T
+t
+it
+S
+i
+R
+P
+1
+1
+ nulls 
+each other and the contribution of accumulated return for this respective asset in the benchmark 
+portfolio is just the transaction cost for setting up the portfolios.
+It should be notes that the calculation of return at Equation [8] doesn’t include 
+it
+W variable as in 
+Equation [7]. This happens because the refereed equation is calculating the sum of expected 
+returns of a naïve long and short positions for all assets, and not the return of the simulated 
+portfolio over time (Equation [7]).
+As can be seen from Equation [8], one of the premises of the research is that the transaction cost 
+per operation is the same for long and short positions. The last term of [8] is the transaction costs 
+for opening positions (making the portfolio) and trade them at the end of the period. In this case, 
+the number of trades required to form and close the two portfolios is 2n, where n is the number of 
+researched assets.
+The excessive return for the strategy is given by the difference between [7] and [8], which forms 
+the final formula for computing excessive return, Equation [9].
+*
+&
+1
+1
+1
+1
+1
+1
+1
+1
+1
+2
+ln 1
+T
+n
+n
+T
+n
+T
+n
+T
+L
+S
+L
+S
+E
+it
+it
+it
+i
+it
+i
+it
+it
+t
+i
+i
+t
+i
+t
+i
+t
+C
+R
+R I
+W
+P
+R
+P
+R
+Tc
+n
+C
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[9]
+Electronic copy available at: https://ssrn.com/abstract=952782
+
+Analyzing Equation [9], the maximization of
+*
+E
+R , which is the objective of any trading strategy,
+is given by the maximization of 
+&
+1
+1
+T
+n
+L
+S
+it
+it
+it
+t
+i
+R I
+W
+
+
+
+, minimization of 
+
+
+
+n
+i
+T
+t
+it
+L
+i
+R
+P
+1
+1
+and 
+
+
+
+n
+i
+T
+t
+it
+S
+i
+R
+P
+1
+1
+and also minimization of 
+
+
+
+
+
+
+
+
+
+
+n
+i
+T
+t
+it
+n
+Tc
+1
+1
+2
+, since
+
+
+
+
+
+
+
+
+
+
+
+
+C
+C
+1
+1
+ln
+ is a constant. The conclusion 
+about this analysis is intuitive because the strategy is only going to be successful if it efficiently 
+creates long and short positions on the stocks, keeping the transaction costs and the benchmark 
+returns at low values. Short story, make more money with less trades.
+2.2.2.2 Bootstrap Method for Assessing Pairs Trading Performance
+The bootstrap method represents a way to compare the trading signals of the strategy against pure 
+chance. The basic idea is to simulate random entries in the market, save the values of a 
+performance indicator for each simulation and count the percentage number of times that those 
+random entries were worst than the performance obtained in the tested strategy. It should be notes 
+that each trading strategy takes different number of long and short positions and for a different 
+number of days. Such information is also taken in account at the random simulations. Before 
+applying the algorithm, separately, for long and short position, it should be calculated the median 
+number of days (nDays_Long and nDays_Short) that the strategy has been trading in the market 
+and also the median number of assets (nAssets_Long and nDays_Short).
+The steps are:
+1. With the values of the nDays and nAssets for long and short, define nDays random entries 
+in the market for nAssets number of assets. Again, making it clear, this procedure should 
+be repeated for each type of trading position (long and short). The output from this step is 
+a trading matrix which has, only, values 1 (long position), -1 (short position) or zero (no 
+transaction).
+2. Taking as input the trading matrix and the transaction costs, the portfolio is build with 
+equal weights, resulting in a vector with the returns of the trading signals over time, 
+1
+n
+RND
+t
+it
+it
+i
+R
+R W
+
+
+, where 
+it
+R is the return for asset i at time t, 
+RND
+it
+W
+ is corresponding 
+portfolio weight of asset i at time t, which is build with the random trading signals from 
+last step. Such vector is then used for calculation of the performance indicators (eg. 
+annualized raw return, annualized standard deviation, annualized sharpe ratio).
+3. Repeat steps 1 and 2 N number of times, saving the performance indicator value for each 
+simulation.
+After a considerable number of simulations, for example N=5000, the result for the bootstrap 
+method is going to be a distribution of performance indicators. The test here is to verify the 
+percentage of cases that the tested strategy has beaten comparing with the use of random trading.
+The performance indicators used in this particular research are annualized raw return, annualized 
+standard deviation and the annualized sharpe ratio.
+Electronic copy available at: https://ssrn.com/abstract=952782
+
+As an example, the next ilustraton is the histogram of the accumulated returns from the use of 
+bootstrap algorithm5 for the daily database with options: N=5.000, nDays_Long=400, 
+nDays_Long=250, nAssets_Long=5, nAssets_Short=3 and with zero transaction cost (C=0).
+Figure 2 – Histogram of the annualized raw returns from the Random Trading signals
+Figure 2 shows that, considering the options given to the algorithm, an out-of-skill investor 
+would earn, in average, an annualized raw return of approximately 1.5%. The best case for the 
+random trading signals is approximately 15% and the worst is -10%. One can also see that the 
+distribution can be well pictured by a normal likelihood (the line).
+The next step in using this bootstrap approach is to count the number of times that the 
+performance indicator from the tested strategy is better6 than the simulated performance 
+indicators from the random trading signal and divide that by the number of simulations. The 
+result is a percentage showing how many random signals the tested strategy has beaten. If such 
+strategy has value, it would produce percentages close to 80%. If it is just a case of chance, it 
+would give a percentage close to 50% and, if the strategy doesn’t present any value, it would 
+result in a percentage close to 20%, meaning that, in this case, it’s possible to get higher returns 
+                                                
+5 The algorithm used is kindly called monkey trading and can be found at author’s matlab’s exchange site, together 
+with the classical pairs trading algorithm.
+6 Better could mean higher or lower, depending of which performance indicator is being calculated. For instance, a 
+higher annualized return is better, while a lower annualized standard deviation is preferred
+Electronic copy available at: https://ssrn.com/abstract=952782
+
+by just using a random seed to select assets and days to trade. One way of analyzing the result of 
+the bootstrap algorithm is that it compares the selections made by the trading strategy, that is, the 
+days and assets to trade, against an expected value of the indicator for the same days and number 
+of trades over the full researched data.
+2. Database for the Research
+The database for this research is based on the 577 most liquids stocks from the Brazilian financial 
+market between the periods of 2000 and 2006. The training period of the tested strategies is based 
+on a moving window with approximately 2 year of trading data (494 days). The artificial pair for 
+each stock is updated at each 10 days.
+As an example, for trading at time t=495 is going to be used all information from 1 to 494 in 
+order to find and build each stock’s pairs. For time t=496 the distances are recalculated, but the 
+weights of the pairs are the same ones used at t=495. At time t=505 the pairs of each asset are 
+updated and the weights at Equation [3] are recalculated and by using the window from 
+observation 11 to 504. This process is repeated for the whole data. The normalization of the price 
+series is also made using this moving windows structure, that is, at each arrival of a new 
+observation, for each stock, a new mean and standard deviation of the prices is obtained and used 
+for calculating the normalized prices.
+It should be pointed out that no future information is used to construct the trading signs. For each 
+trading decision at time t, the information used is based, only, on t-window+1 to t-1. The only 
+future information used for this research is in the data used since it was searched the most liquid 
+stocks from 2000 to 2006. This was a necessary procedure to avoid illiquid stocks. A possible 
+approach for avoiding this would be to have a time varying research database, where the stocks 
+are selected according to its liquidity from t-window+1 to t-1. But, this is not the method used in 
+this paper.
+3. Results
+The three weighting schemes of the proposed multivariate pairs trading were executed8 for the 
+equity database, forming a dynamic portfolio which changes its composition over time (long and 
+short positions). Next, Table 1, the results from the profitability point of view are presented. The 
+values were calculated with fixed C=0.1%9, m=5 and for each value of the threshold d (d=0.5 … 
+2).
+                                                
+7 The choice for 57 assets was that those were the most liquid among the firstly screened 100 that presented 98% of 
+valid closing prices.
+8 All the calculations needed for this research were performed using MatLab.
+9 The trading cost of 0.1% per operation is a realistic value for the Brazilian market. It can be easily achieved with a 
+relatively small amount of 20.000 R$, which, today (November 2006), is something close to 9.000 USD. 
+Electronic copy available at: https://ssrn.com/abstract=952782
+
+Table 1 – Profitability Analysis for the Three Versions of Multivariate Pairs Trading Strategy
+Panel A - Multivariate Pairs Trading with OLS (Ordinary Least Squares)
+Total Raw Return (with transaction 
+costs)
+Total Excessive Returns (over 
+Benchmark)
+% of 
+Random 
+Portfolios 
+Beaten**
+Value of 
+d
+Long 
+Positions
+Short 
+Positions
+Total
+Long 
+Positions
+Short 
+Positions
+Total
+% of days 
+in the 
+Market
+Annualized 
+Raw Return* Annualized 
+Raw 
+Return***
+0.50
+53.10%
+-135.48%
+-130.74% -118.46%
+164.09%
+-2.74%
+73.62%
+-32.78%
+0.00%
+0.60
+88.63%
+-137.57%
+-103.59%
+-15.56%
+76.99%
+6.78%
+60.38%
+-25.98%
+0.00%
+0.70
+27.67%
+-122.24%
+-122.23%
+-36.48%
+28.87%
+-35.27%
+49.75%
+-30.65%
+0.00%
+0.80
+-21.39%
+-105.24%
+-110.61%
+-64.30%
+3.97%
+-44.30%
+40.62%
+-27.74%
+0.00%
+0.90
+-59.20%
+-68.13%
+-115.98%
+-89.56%
+17.51%
+-60.71%
+32.70%
+-29.08%
+0.00%
+1.00
+-15.40%
+-73.26%
+-69.42%
+-37.96%
+-6.21%
+-24.92%
+26.98%
+-17.41%
+0.00%
+1.10
+5.57%
+-62.76%
+-45.05%
+-12.49%
+-9.06%
+-9.40%
+21.97%
+-11.30%
+0.00%
+1.20
+31.95%
+-0.53%
+27.39%
+17.55%
+41.31%
+54.83%
+17.05%
+6.87%
+100.00%
+1.30
+40.03%
+-18.04%
+9.59%
+27.37%
+17.61%
+32.57%
+14.64%
+2.40%
+99.60%
+1.40
+3.56%
+15.58%
+14.37%
+-7.79%
+44.82%
+32.27%
+11.03%
+3.60%
+100.00%
+1.50
+11.59%
+33.03%
+38.45%
+1.24%
+57.41%
+52.48%
+9.53%
+9.64%
+100.00%
+1.60
+16.52%
+27.74%
+41.93%
+7.88%
+48.74%
+54.28%
+7.72%
+10.51%
+100.00%
+1.70
+23.34%
+25.69%
+43.79%
+15.44%
+44.52%
+54.72%
+6.02%
+10.98%
+100.00%
+1.80
+24.08%
+20.03%
+38.02%
+17.78%
+38.00%
+49.69%
+5.52%
+9.53%
+100.00%
+1.90
+14.27%
+33.71%
+41.18%
+8.83%
+50.07%
+52.10%
+5.02%
+10.33%
+100.00%
+2.00
+4.89%
+38.08%
+39.67%
+0.09%
+53.54%
+50.33%
+4.31%
+9.95%
+100.00%
+Panel B -Multivariate Pairs Trading with Equal Weigths
+Total Raw Return (with transaction 
+costs)
+Total Excessive Returns (over 
+Benchmark)
+% of 
+Random 
+Portfolios 
+Beaten**
+Value of 
+d
+Long 
+Positions
+Short 
+Positions
+Total
+Long 
+Positions
+Short 
+Positions
+Total
+% of days 
+in the 
+Market
+Annualized 
+Raw Return* Annualized 
+Raw 
+Return***
+0.50
+5.17%
+-135.38%
+-112.56% -689.62%
+733.41%
+61.45%
+88.16%
+-28.23%
+0.00%
+0.60
+23.31%
+-112.59%
+-95.39%
+-478.27%
+559.19%
+74.82%
+82.85%
+-23.92%
+0.00%
+0.70
+67.16%
+-112.24%
+-63.52%
+-302.11%
+408.43%
+87.88%
+78.84%
+-15.93%
+0.00%
+0.80
+74.69%
+-113.40%
+-64.33%
+-190.39%
+288.23%
+72.21%
+69.61%
+-16.13%
+0.00%
+0.90
+73.62%
+-75.30%
+-39.87%
+-121.19%
+232.68%
+73.31%
+58.58%
+-10.00%
+0.10%
+1.00
+115.82%
+-55.65%
+37.34%
+-29.57%
+172.30%
+119.90%
+46.94%
+9.36%
+100.00%
+1.10
+65.13%
+-50.25%
+21.61%
+-40.54%
+121.76%
+87.95%
+41.42%
+5.42%
+100.00%
+1.20
+80.36%
+-58.54%
+61.04%
+0.99%
+71.69%
+111.90%
+35.01%
+15.31%
+100.00%
+1.30
+97.41%
+-7.19%
+96.65%
+41.77%
+89.52%
+137.72%
+29.59%
+24.24%
+100.00%
+1.40
+31.37%
+-8.32%
+56.33%
+-13.43%
+65.30%
+85.16%
+22.67%
+14.12%
+100.00%
+1.50
+63.17%
+-30.13%
+33.37%
+26.89%
+24.90%
+52.11%
+18.96%
+8.37%
+100.00%
+1.60
+30.78%
+-36.96%
+10.17%
+4.02%
+7.80%
+28.18%
+15.85%
+2.55%
+98.90%
+1.70
+38.16%
+-28.29%
+22.57%
+19.15%
+7.69%
+39.53%
+11.74%
+5.66%
+99.90%
+1.80
+46.16%
+17.78%
+42.57%
+30.72%
+45.56%
+54.91%
+10.43%
+10.67%
+100.00%
+1.90
+75.83%
+1.68%
+57.34%
+64.99%
+23.32%
+68.13%
+8.02%
+14.38%
+100.00%
+2.00
+63.42%
+0.03%
+49.81%
+55.43%
+16.29%
+58.08%
+5.62%
+12.49%
+100.00%
+Electronic copy available at: https://ssrn.com/abstract=952782
+
+Panel C - Multivariate Pairs Trading using a Correlation Weighting Scheme
+Total Raw Return (with transaction 
+costs)
+Total Excessive Returns (over 
+Benchmark)
+% of 
+Random 
+Portfolios 
+Beaten**
+Value of 
+d
+Long 
+Positions
+Short 
+Positions
+Total
+Long 
+Positions
+Short 
+Positions
+Total
+% of days 
+in the 
+Market
+Annualized 
+Raw Return* Annualized 
+Raw 
+Return***
+0.50
+-6.73%
+-138.74%
+-113.56% -624.19%
+788.78%
+196.50%
+86.36%
+-28.48%
+0.00%
+0.60
+-1.43%
+-121.17%
+-103.43% -429.57%
+603.81%
+193.41%
+82.85%
+-25.94%
+0.00%
+0.70
+44.75%
+-127.84%
+-76.00%
+-259.83%
+439.51%
+186.76%
+79.54%
+-19.06%
+0.00%
+0.80
+42.39%
+-117.61%
+-66.33%
+-165.46%
+325.94%
+169.37%
+69.21%
+-16.63%
+0.00%
+0.90
+23.88%
+-92.72%
+-59.04%
+-116.39%
+247.20%
+140.60%
+58.68%
+-14.80%
+0.00%
+1.00
+43.87%
+-81.08%
+-14.01%
+-50.03%
+177.48%
+150.64%
+50.05%
+-3.51%
+16.50%
+1.10
+46.04%
+-79.41%
+-5.44%
+-13.85%
+121.63%
+135.70%
+43.23%
+-1.36%
+54.70%
+1.20
+70.03%
+-46.93%
+40.78%
+30.34%
+107.21%
+155.22%
+37.81%
+10.22%
+100.00%
+1.30
+93.41%
+-25.82%
+50.79%
+71.53%
+93.46%
+148.20%
+31.09%
+12.74%
+100.00%
+1.40
+60.12%
+-25.30%
+57.52%
+48.25%
+71.41%
+142.36%
+24.67%
+14.42%
+100.00%
+1.50
+37.88%
+-19.81%
+23.50%
+33.28%
+57.41%
+96.12%
+21.16%
+5.89%
+99.80%
+1.60
+47.41%
+-35.28%
+19.86%
+49.08%
+28.96%
+85.77%
+17.55%
+4.98%
+99.50%
+1.70
+82.56%
+-14.78%
+65.62%
+88.04%
+39.09%
+124.98%
+14.24%
+16.45%
+100.00%
+1.80
+93.39%
+24.63%
+86.67%
+101.55%
+68.85%
+139.06%
+12.24%
+21.73%
+100.00%
+1.90
+84.87%
+-2.38%
+59.95%
+94.44%
+33.57%
+105.47%
+9.03%
+15.03%
+100.00%
+2.00
+87.02%
+9.95%
+72.33%
+98.20%
+38.25%
+111.81%
+8.12%
+18.14%
+100.00%
+* The annualized raw return is calculated by taking the total raw return, divide it by the total number of days in the 
+trading sample (in this case 997) and then multiplying the result by 250 (average number of business days in one 
+year).
+** The bootstrap method was conducted with 1000 simulations for each value of d. Simple experiments showed that 
+this is a reasonable number of simulations (an increase in N didn’t changed significantly the results).  
+*** The percentage showed at this column is the number of beated portfolios given the specific performance statistic 
+(in this case annualized raw return).
+**** This column is calculated by counting the number of days where there was at least one trading position (long or 
+short) and dividing the result by the total number of trading days at the sample (in this case 997).
+The values presented at Table 1 were constructed using the equation described at earlier topics of 
+this paper. For instance, the raw returns column is calculated according to Equation [2]. The 
+excessive returns columns are calculated with Equation [4]. The last column is calculated using 
+the bootstrap procedure described at the past section of the paper.
+The first values to be analyzed at Table 1 are the raw returns obtained from the different 
+approaches (panels) of multivariate pairs trading. For d=1.2 to d=2, most of the values at Panels 
+A, B and C are positive, meaning that the returns of the strategy after transaction costs are mostly 
+positive. For the excessive returns column, the values are all positive for Panels B and C but not 
+for Panel A. One should also notes that the excessive returns for short positions were in great 
+majority positive and high in value. Partly, this is happening because the benchmark portfolio is 
+underperforming significantly since the data used for the research is particularly bullish10. Given 
+that the benchmark underperforms brutally, the positions from the short signals yields a high 
+excessive return. One should be careful when concluding performance based only on the static 
+benchmark method given here.
+                                                
+10 From the period of 2001 to 2006, Ibovespa, which is the broad market index for Brazilian Market, grew from 
+17.672 to 38.382 points.
+Electronic copy available at: https://ssrn.com/abstract=952782
+
+Another important information in Table 1 is the number of days that the strategy was trading in 
+the market for each approach. For all panels, it’s possible to see that the percentage of days in the 
+market decreases as d grows. This is expected since d controls for abnormal behavior and, when 
+the threshold for such case increases, less and less cases are found. Comparing the percentage of 
+days in the market for the different approaches (panels), it’s clear that the OLS method, Panel 1, 
+had much less trades then the other ones. This is explained by the fact that the weighting scheme 
+used in Panel A is concerned in statistically replicating the modeled series within a calibration 
+framework, meaning that finding abnormal behavior, which is the core of pairs trading, should 
+occur less than a non calibration type of framework, Panels B and C.
+Comparing the results for the different panels, one can see that the panel B (equal weight scheme) 
+and C (correlation weight scheme) yielded higher raw and excessive return than Panel A (OLS 
+weight scheme). But, at the same time, the OLS method produced less trading signals (stayed less 
+days in the market), therefore produced less risk. A greater view of the risk of the strategies is 
+given in the next section of the paper.
+When comparing the results at Table 1 for Panel B against Panel C, the values for percentage of 
+days in the market and total raw returns are, for the different values of d, quite similar. But, when 
+looking at the total excessive return at Panel C, the results for long and short positions (and both 
+combined) are higher than Panel B, therefore showing that, when it comes to excess profitability, 
+a higher performance is found for the correlation weighting scheme.
+The main conclusion after the profitability analysis from the trading strategies is that the 
+proposed version of pairs trading performs significantly better than chance and provides positive 
+raw and excessive returns after transactions costs. Such evidence is consistently found over the 
+different versions tested in this research and over different values of the threshold parameter (d). 
+The best case, as stated before, is for the correlation weighting scheme (Panel C).
+The risks provided from the trading signals at the different methods are assessed next. The 
+analysis will cover the systematic risk (beta), jensen’s alphas, annualized standard deviation of 
+the returns and annualized sharpe ratio. The analysis will also cover the bootstrap method for the 
+performance indicators.
+Table 2 – Risk Analysis for Multivariate Pairs Trading
+Panel A - Multivariate Pairs Trading with OLS (Ordinary Least Squares)
+Beta****
+Jensen's 
+Alpha****
+% of Random Portfolios 
+Beaten***
+Value of d
+Value
+Prob
+Value
+Prob
+Annualized 
+Standard 
+Deviation*
+Annualized 
+Sharpe**
+Annualized 
+Standard 
+Deviation
+Annualized 
+Sharpe
+0.5
+-0.066
+0.011
+-0.001
+0.006
+0.227
+-1.446
+0.00%
+7.40%
+0.6
+-0.076
+0.012
+-0.001
+0.070
+0.267
+-0.973
+0.00%
+18.80%
+0.7
+-0.072
+0.040
+-0.001
+0.058
+0.306
+-1.003
+0.00%
+11.70%
+0.8
+-0.051
+0.160
+-0.001
+0.093
+0.315
+-0.880
+0.00%
+15.10%
+0.9
+-0.066
+0.075
+-0.001
+0.089
+0.323
+-0.899
+0.00%
+12.40%
+1.0
+-0.047
+0.216
+-0.001
+0.326
+0.332
+-0.524
+0.00%
+30.60%
+1.1
+-0.060
+0.121
+0.000
+0.561
+0.341
+-0.332
+0.00%
+45.40%
+1.2
+-0.058
+0.144
+0.000
+0.638
+0.346
+0.198
+0.00%
+74.40%
+1.3
+-0.063
+0.121
+0.000
+0.829
+0.353
+0.068
+0.00%
+66.00%
+1.4
+-0.065
+0.104
+0.000
+0.772
+0.349
+0.103
+0.00%
+70.60%
+Electronic copy available at: https://ssrn.com/abstract=952782
+
+1.5
+-0.067
+0.089
+0.000
+0.518
+0.344
+0.280
+0.00%
+77.20%
+1.6
+-0.069
+0.079
+0.000
+0.482
+0.343
+0.307
+0.00%
+74.60%
+1.7
+-0.077
+0.046
+0.001
+0.453
+0.338
+0.325
+0.00%
+78.40%
+1.8
+-0.034
+0.333
+0.000
+0.506
+0.309
+0.309
+0.00%
+76.80%
+1.9
+-0.034
+0.290
+0.000
+0.437
+0.285
+0.362
+0.00%
+77.40%
+2.0
+-0.025
+0.439
+0.000
+0.458
+0.282
+0.353
+0.00%
+96.70%
+Panel B -Multivariate Pairs Trading with Equal Weigths
+Beta****
+Jensen's 
+Alpha****
+% of Random Portfolios 
+Beaten***
+Value of d
+Value
+Prob
+Value
+Prob
+Annualized 
+Standard 
+Deviation*
+Annualized 
+Sharpe**
+Annualized 
+Standard 
+Deviation
+Annualized 
+Sharpe
+0.5
+0.220
+0.000
+-0.001
+0.000
+0.149
+-1.895
+0.00%
+7.10%
+0.6
+0.212
+0.000
+-0.001
+0.000
+0.165
+-1.446
+0.00%
+26.30%
+0.7
+0.195
+0.000
+-0.001
+0.026
+0.190
+-0.838
+0.00%
+53.20%
+0.8
+0.173
+0.000
+-0.001
+0.069
+0.225
+-0.717
+0.00%
+52.60%
+0.9
+0.183
+0.000
+-0.001
+0.266
+0.258
+-0.388
+0.00%
+73.10%
+1.0
+0.156
+0.000
+0.000
+0.714
+0.319
+0.293
+0.00%
+93.70%
+1.1
+0.178
+0.000
+0.000
+0.936
+0.352
+0.154
+0.00%
+89.10%
+1.2
+0.193
+0.000
+0.000
+0.562
+0.380
+0.403
+0.00%
+95.70%
+1.3
+0.236
+0.000
+0.001
+0.321
+0.385
+0.630
+0.00%
+97.30%
+1.4
+0.197
+0.000
+0.000
+0.604
+0.375
+0.376
+0.00%
+86.70%
+1.5
+0.175
+0.000
+0.000
+0.804
+0.357
+0.234
+0.00%
+82.60%
+1.6
+0.126
+0.002
+0.000
+0.986
+0.355
+0.072
+0.00%
+69.20%
+1.7
+0.078
+0.048
+0.000
+0.822
+0.346
+0.164
+0.00%
+76.60%
+1.8
+0.063
+0.107
+0.000
+0.592
+0.344
+0.310
+0.00%
+78.80%
+1.9
+0.023
+0.533
+0.001
+0.389
+0.321
+0.448
+0.00%
+87.50%
+2.0
+-0.009
+0.799
+0.001
+0.392
+0.295
+0.423
+0.00%
+81.30%
+Panel C - Multivariate Pairs Trading using a Correlation Scheme
+Beta****
+Jensen's 
+Alpha****
+% of Random Portfolios 
+Beaten***
+Value of d
+Value
+Prob
+Value
+Prob
+Annualized 
+Standard 
+Deviation*
+Annualized 
+Sharpe**
+Annualized 
+Standard 
+Deviation
+Annualized 
+Sharpe
+0.5
+0.245
+0.000
+-0.001
+0.000
+0.150
+-1.895
+0.00%
+14.80%
+0.6
+0.245
+0.000
+-0.001
+0.000
+0.167
+-1.556
+0.00%
+21.60%
+0.7
+0.244
+0.000
+-0.001
+0.005
+0.189
+-1.010
+0.00%
+54.00%
+0.8
+0.243
+0.000
+-0.001
+0.037
+0.222
+-0.750
+0.00%
+59.20%
+0.9
+0.252
+0.000
+-0.001
+0.090
+0.251
+-0.591
+0.00%
+58.30%
+1.0
+0.252
+0.000
+0.000
+0.523
+0.296
+-0.119
+0.00%
+80.80%
+1.1
+0.249
+0.000
+0.000
+0.657
+0.322
+-0.042
+0.00%
+80.00%
+1.2
+0.256
+0.000
+0.000
+0.795
+0.348
+0.294
+0.00%
+89.50%
+1.3
+0.251
+0.000
+0.000
+0.694
+0.364
+0.350
+0.00%
+90.00%
+1.4
+0.219
+0.000
+0.000
+0.602
+0.367
+0.393
+0.00%
+90.90%
+1.5
+0.174
+0.000
+0.000
+0.913
+0.359
+0.164
+0.00%
+77.60%
+1.6
+0.152
+0.000
+0.000
+0.931
+0.361
+0.138
+0.00%
+82.70%
+1.7
+0.143
+0.001
+0.001
+0.467
+0.365
+0.451
+0.00%
+92.50%
+1.8
+0.078
+0.052
+0.001
+0.260
+0.354
+0.614
+0.00%
+96.80%
+1.9
+0.080
+0.032
+0.001
+0.416
+0.325
+0.462
+0.00%
+93.90%
+2.0
+0.088
+0.014
+0.001
+0.308
+0.316
+0.574
+0.00%
+94.90%
+* The annualized standard deviation is calculated by the multiplication of the standard deviation of the return series 
+over time with the square root of 250. This calculation is based on constant volatility assumption.
+Electronic copy available at: https://ssrn.com/abstract=952782
+
+** The annualized sharpe is calculated by dividing the annualized return (Table 1) by the annualized standard 
+deviation (Table 2)
+*** The bootstrap method simulated 1000 random portfolios given the method describe in previous section of the 
+paper. For each simulated portfolio, the annualized standard deviation and the annualized sharpe were calculated. 
+The percentage in the two columns shows the number of cases beated by the strategy (percentage of random cases 
+with lower annualized sharpe and percentage with higher annualized standard deviation).
+**** The betas and alphas are obtained with a linear regression of the vector with the strategies returns over time
+against the returns from Ibovespa (Broad Brazilian Market Index).
+Regarding the values of systematic risk (beta) at Table 2, for all panels, it’s possible to see that 
+most of them are relatively small in absolute value, but statistically significant. For Panel A, the 
+betas are mostly negatives, meaning that the OLS method usually presents returns in the opposite 
+direction than the overall market (in this case the Ibovespa index). Also, Panel A shows lower 
+absolute values of beta when comparing against Panels B and C, therefore less systematic risk for 
+the OLS method.
+For Panels B and C, again is found symmetry in the results, where the betas are positive and close 
+in value. It’s also clear for all panels that as d grows, the absolute value of beta decreases, which 
+is expected since the number of trades also has a negative relation with d, meaning that less 
+trades is presenting less systematic risk, which is an intuitive result. But, one should also notes 
+that the annualized standard deviation (unsystematic risk) is not decreasing as d grows. Such 
+event will be explained next.
+Looking at the value of jensen’s alpha at Table 2, it’s possible to see that most of them are 
+positive, which corroborates with the profitability analysis at Table 1. But, it’s important to notes 
+that the values of alphas aren’t statistically significant, meaning that the tested framework wasn’t 
+able to produce significant positive returns after filtering for market conditions. Such information 
+should be taken into account for the conclusions of this paper.
+The results from the bootstrap method serve as a way of assessing how good the values of 
+annualized standard deviations and the annualized sharpe ratio are against pure chance. A clear 
+information is that, independent of the value of d, the strategy is picking up large volatility from 
+the data, therefore the values of annualized standard deviation aren’t decreasing with the increase 
+of the threshold parameter. This conclusion is drawed from the fact that in all simulated cases, 
+for all panels, the strategy presented higher annualized standard deviation than all the simulated 
+random portfolios, meaning that the proposed trading framework is peculiarly good at trading in 
+days with high volatility. This peculiar characteristic of the strategy could be explained by the 
+fact that the core of the trading strategy is to pick up abnormal cases and trade for the hope of a 
+price reversion. What the results at table 2 are suggesting is that the abnormal cases are 
+happening at high volatile days, therefore increasing the volatility of the resulting portfolio.
+When looking at the results of the bootstrap method for the sharpe ratio, the values of beated 
+random portfolios are all close to 80%, meaning that the strategy, on average, presents higher 
+relation of return and risk than a naïve approach of random trading signals. The best results on 
+this indicator for all panels also lies between the interval d=1.2 to d=2, which is the same for the 
+best results at Table 1. Such information contributes to the positive performance of the strategies 
+over the data since the risk and return relationship given by the strategies are better than the 
+expected sharpe ratio for an out-of-skill investor, therefore the positive performance is given by 
+skill of the method, and not pure chance.
+Electronic copy available at: https://ssrn.com/abstract=952782
+
+Since the proposed method is derived from the classical pairs trading framework, a natural 
+analysis to be pursued here is to compare the performance indicators for each case. That is done 
+next, Table 3, where the classical pairs trading framework is compared against the multivariate 
+version in the correlation weighting scheme.
+Table 3 – Multivariate Pairs Trading (Correlation Weighting) X Classical Pairs Trading
+% of Random Portfolios Beaten****
+Annualized Raw 
+Return*
+Annualized 
+Standard 
+Deviation**
+Annualized 
+Sharpe Ratio***
+Annualized Raw 
+Return
+Annualized 
+Standard 
+Deviation Return
+Annualized 
+Sharpe Ratio
+Value of 
+d
+MPT
+UPT
+MPT
+UPT
+MPT
+UPT
+MPT
+UPT
+MPT
+UPT
+MPT
+UPT
+0.5
+-28.48% -59.84% 15.03% 14.22%
+-1.895
+-4.207
+0.00%
+0.00%
+0.00%
+0.00%
+13.30%
+0.60%
+0.6
+-25.94% -56.25% 16.67% 16.39%
+-1.556
+-3.432
+0.00%
+0.00%
+0.00%
+0.00%
+23.30%
+2.70%
+0.7
+-19.06% -46.65% 18.86% 19.15%
+-1.010
+-2.436
+0.00%
+0.00%
+0.00%
+0.00%
+55.10% 33.40%
+0.8
+-16.63% -24.61% 22.19% 26.10%
+-0.750
+-0.943
+0.00%
+0.00%
+0.00%
+0.00%
+61.80% 94.30%
+0.9
+-14.80% -21.77% 25.06% 28.40%
+-0.591
+-0.766
+0.00%
+0.00%
+0.00%
+0.00%
+62.60% 89.20%
+1.0
+-3.51% -36.43% 29.61% 31.48%
+-0.119
+-1.157
+19.20%
+0.00%
+0.00%
+0.00%
+80.50% 52.20%
+1.1
+-1.36% -24.89% 32.22% 33.55%
+-0.042
+-0.742
+54.40%
+0.00%
+0.00%
+0.00%
+82.30% 65.50%
+1.2
+10.22% -29.63% 34.77% 33.23%
+0.294
+-0.892 100.00% 0.00%
+0.00%
+0.00%
+89.00% 36.70%
+1.3
+12.74% -19.06% 36.38% 35.71%
+0.350
+-0.534 100.00% 0.00%
+0.00%
+0.00%
+90.60% 55.50%
+1.4
+14.42% -9.51% 36.72% 36.35%
+0.393
+-0.262 100.00% 0.00%
+0.00%
+0.00%
+91.20% 70.00%
+1.5
+5.89%
+6.46%
+35.91% 37.83%
+0.164
+0.171
+99.90% 100.00% 0.00%
+0.00%
+79.00% 86.70%
+1.6
+4.98%
+8.25%
+36.11% 37.19%
+0.138
+0.222
+99.50% 100.00% 0.00%
+0.00%
+79.80% 86.30%
+1.7
+16.45% 12.94% 36.47% 38.43%
+0.451
+0.337
+100.00%100.00% 0.00%
+0.00%
+92.50% 88.30%
+1.8
+21.73% 25.39% 35.37% 37.80%
+0.614
+0.672
+100.00%100.00% 0.00%
+0.00%
+96.40% 95.30%
+1.9
+15.03% 22.50% 32.51% 36.12%
+0.462
+0.623
+100.00%100.00% 0.00%
+0.00%
+92.80% 95.90%
+2.0
+18.14%
+4.80%
+31.62% 32.90%
+0.574
+0.146
+100.00%100.00% 0.00%
+0.00%
+94.60% 74.40%
+2.1
+16.94% -5.02% 30.53% 31.33%
+0.555
+-0.160 100.00% 0.00%
+0.00%
+0.00%
+94.40% 53.80%
+2.2
+4.09%
+-9.93% 26.87% 30.32%
+0.152
+-0.328
+99.50%
+0.00%
+0.00%
+0.00%
+80.50% 40.50%
+2.3
+7.31% -24.11% 27.05% 28.83%
+0.270
+-0.836 100.00% 0.00%
+0.00%
+0.00%
+85.90% 13.10%
+2.4
+8.31% -21.16% 24.12% 28.72%
+0.345
+-0.737 100.00% 0.00%
+0.00%
+0.00%
+89.80% 20.70%
+2.5
+6.77% -24.14% 23.58% 29.59%
+0.287
+-0.816 100.00% 0.00%
+0.00%
+0.00%
+85.60% 12.90%
+2.6
+7.05% -21.92% 22.64% 29.32%
+0.311
+-0.748 100.00% 0.00%
+0.00%
+0.00%
+85.70% 18.80%
+2.7
+10.48% -12.58% 23.40% 28.04%
+0.448
+-0.448 100.00% 0.00%
+0.00%
+0.00%
+89.60% 36.50%
+2.8
+10.87% -7.73% 23.13% 27.28%
+0.470
+-0.283 100.00% 0.00%
+0.00%
+0.00%
+91.80% 50.40%
+2.9
+15.68% -9.60% 21.88% 26.49%
+0.717
+-0.362 100.00% 0.00%
+0.00%
+0.00%
+97.60% 41.70%
+3.0
+13.85% -10.70% 23.98% 24.62%
+0.578
+-0.435 100.00% 0.00%
+0.00%
+0.00%
+95.60% 37.30%
+* The annualized raw return is calculated by taking the total raw return, divide it by the total number of days in the 
+trading sample (in this case 997 (1491 – 494)) and then multiplying the result by 250 (average number of business 
+days in one year).
+** The annualized standard deviation is calculated by the multiplication between the standard deviation of the return 
+series over time and the square root of 250. This calculation is based on constant volatility assumption.
+*** The annualized sharpe is calculated by dividing the annualized return by the annualized standard deviation
+**** The bootstrap method simulated 1000 random portfolios given the method describe in previous section of the 
+paper. At each simulation it was calculated the raw return, standard deviation and sharpe ratio (all in annualized 
+unit). Those 1000 values are them compared against the values from the univariate and multivariate versions of the 
+strategy, which produced the percentages showed at this column
+Electronic copy available at: https://ssrn.com/abstract=952782
+
+For Table 3, MPT means multivariate pairs trading and UPT means univariate pairs trading. For 
+the multivariate case, the values showed at Table 3 are for the correlation weighting scheme, 
+which was the one with best performance over the competing methods. The values of the UPT 
+case at Table 3 were calculated with the same algorithm as in Perlin (2006b). It should be also 
+pointed out that Table 3 is dealing with values of d between .5 and 3, which is a range higher than 
+for the rest of the tables of the papers. 
+From Table 3 it’s clear that the multivariate version is more profitable than the Univariate 
+version. Such conclusion is based on the annualized returns, where the MPV case presented a 
+higher number of positive values over the full spectrum of d. Such conclusion is also supported
+by the bootstrap method, where the MPT cases presented a higher number of percentage of 
+beated portfolios when it comes to annualized return. This result is more explicit for high values 
+of d.
+When analyzing the results for the annualized standard deviation at Table 3, it’s possible to see 
+that the risk of the different strategies isn’t that different from one another. The simulation of 
+random portfolios also shows that both versions have a tendency to pick up volatility from the 
+data, where in all cases, for the MPT and UPT, there was no simulated portfolio with volatility 
+higher than the volatility from the trading rules. In the bootstrap method for the sharpe ratios at 
+Table 3, it’s also clear that the multivariate version presents higher ratio of expected return to 
+risk. Such evidence is supported by the bootstrap method, where the MPT case presented a large 
+number of beated portfolios and the UPT only presented such evidence for a smaller region of the 
+threshold d. This means that the MPT version, for this particular research, delivered higher units 
+of return per risk than the UPT version, which is a positive result towards the performance of the 
+model.
+The results obtained at this research shows that the proposed approach at pairs trading strategy 
+presented a significant performance regarding return and risk. The values at Table 1 and 2 shows 
+that the proposed version of the strategy performs better than a benchmark portfolio and such 
+result is not given by chance, as one can for see for the results of the bootstrap method. When 
+comparing against the classical pairs trading, the superiority of the performance indicators of the 
+suggested method over the univariate case was also clear. The multivariate case delivered higher 
+returns and higher sharpe ratios. But, not all the results were positive. For Table 2, it should be 
+pointed out that the Jensen’s alphas aren’t statistically significant for the different cases, meaning 
+that, even though the quantitative trading rules performs better than chance, it still doesn’t present 
+significant excess return after filtering for market conditions. It’s important to remember that the 
+whole analysis of Tables 1 and 2 was made with the arbitrary choice of m=5. The same tests 
+showed before were conducted for values of m between 2 and 10. The results for each value of m 
+are very similar to those reported here. The tables regarding this investigation are not presented in 
+order to save space in the paper.
+Electronic copy available at: https://ssrn.com/abstract=952782
+
+Conclusions
+The objective of this paper was to extend the work of Perlin (200b) by suggesting a multivariate 
+version of the classical pairs trading strategy. The basic idea of this proposed approach is to build 
+a pair for each stock based on information of others stocks, instead of just finding one, as was 
+done in the univariate method. Such framework is carefully exposed and tested for the Brazilian 
+financial market by applying the trading algorithm over the researched data. The performance of 
+the method regarding return and risk was assessed with the execution of the trading rules to daily 
+observations of 57 assets of the Brazilian financial market using a database from the period of 
+2000 to 2006.
+Using three versions of a linear framework in the multivariate approach, the main evidence of 
+this paper is that the trading rules from the multivariate pairs trading strategy had a respectable 
+performance when applied to the Brazilian Equity market, especially with the use of a correlation 
+weighting scheme. The evidence of positive excessive return was found at different values of the 
+threshold parameter, showing consistency of the performance. For the case of risk, most of the 
+calculated betas were statistically significant, meaning that the strategy does present systematic 
+risk, but, at the same time, the betas coefficients were not so high in value. It was also found that 
+the strategy is particularly good at picking up volatility from the data. When analyzing the return 
+and risk relationship (sharpe ratio) the strategies still performed better than chance, meaning that 
+the rules provided high volatility in the return vector, but this is compensated by high raw returns 
+over time. 
+The results found at this study motivates the application of such quantitative formulation to other 
+financial markets in order to check if such positive results can be replicated in a different
+database. It should be pointed out that the method used here can be shaped in many different 
+ways in order to accommodate more complex models. For instance, instead of using thresholds 
+(parameter d), one can use markov switching models in order to capture an “abnormal” state at 
+the normalized distance vectors. The use of kalman filter also seems to be a promising research 
+path for modeling the time varying weights of the artificial pairs. Those are interesting paths for 
+future research.
+References
+ALEXANDER, C., DIMITRIU, A (2000) ‘The Cointegration Alpha: Enhanced Index Tracking 
+and Long-Short Market Strategies’ ICMA Discussion Paper in Finance.
+ALMEIDA, N., M., PEREIRA, P., V. (2000) ‘Mudança de regime para séries financeiras: Um
+estudo empírico destes modelos para a realização de regras de mercado’ Finance Lab Working 
+Paper, n. 03.
+BROOKS, C., KATSARIS, A., PERSAND, G. (2005) ‘Timing is Everything: A Comparison and 
+Evaluation 
+of 
+Market 
+Timing 
+Strategies’
+Working 
+Paper, 
+Available 
+at 
+SSRN: 
+http://ssrn.com/abstract=834485.
+CARVALHAL DA SILVA, A. L., RIBEIRO, T. L. (2002) ‘Estimating and Forecasting Latin 
+American Indexes Using Artificial Neural Networks’ Proceedings of BALAS.
+Electronic copy available at: https://ssrn.com/abstract=952782
+
+CHEN, A., LEUNG, M. T., DAOUK, H. (2003) ‘Application of Neural Networks to an 
+Emerging Financial Market: Forecasting and Trading the Taiwan Stock Index’ Computers & 
+Operations Research, v. 30, p. 901–923.
+DIMSON, E., MUSSAVIAN, M. (1998) ‘A brief history of market efficiency’ European 
+Financial Management, v. 4, p. 91-193.
+DUEKER, M. J., NEELY, C. J. (2006) ‘Can Markov Switching Models Predict Excess Foreign 
+Exchange Returns?’ Working Paper, Federal Reserve Bank of St. Louis.
+EFETKHARI, B. (1997) ‘The Markov Regime Switching model as Trading Tool’ Working 
+Paper, University of Cambridge.
+FAMA, E. (1991) ‘Efficient Capital Markets: II’ Journal of Finance, v. 46, p. 1575-1617.
+FAMA, E., FRENCH, K. (1992) ‘The cross-section of expected stock returns’ Journal of 
+Finance, v. 47 (2), p. 427-465.
+FERNÁNDEZ-RODRÍGUEZ, F., RIVERO, S. S., FELIX, J. A. (2002) ‘Nearest Neighbor 
+Predictions in Foreign Exchange Markets’ Working Paper, n. 05, FEDEA.
+FERNÁNDEZ-RODRÍGUEZ, F., SOSVILLA-RIVERO, S., GARCÍA-ARTILES, M. (1997)
+‘Using nearest neighbor predictors to forecast the Spanish Stock Market’ Investigaciones 
+Económicas, v. 21, p. 75-91.
+FERNÁNDEZ-RODRÍGUEZ, F., SOSVILLA-RIVERO, S., GARCÍA-ARTILES, M. (2001) 
+‘An empirical evaluation of non-linear trading rules’ Working paper, n. 16, FEDEA. 
+FRENCH, K. (1980) ‘Stock Returns and the Weekend Effect’ Journal of Financial Economics, 
+March, p. 55-69.
+GATEV, E., GOETZMANN, W. N., ROUWENHORST, K. G. (1999) ‘Pairs Trading: 
+Performance of a Relative Value Arbitrage Rule’ Working Paper, Yale School of Management. 
+Available at SSRN: http://ssrn.com/abstract=141615.
+MADDALA, G. S. (2001) ‘Introduction to Econometrics’ John Wiley & Sons.
+MURPHY, J. (2001) ‘Technical Analysis of the Financial Markets’. New York Institute of 
+Finance.
+PARK, C., IRWIN. (2004) ‘The Profitability of Technical Analysis: A Review’. AgMAS Project 
+Research Report, n 04.
+PERLIN, M S. (2006b) Evaluation of Pairs Trading Strategy at Brazilian Financial Market, 
+Working Paper, http://ssrn.com/abstract=952242.
+PERLIN, M. S. (2006a) ‘Non Parametric Modelling in Major Latin America Market Indexes: An 
+Analysis of the Performance from the Nearest Neighbor Algorithm in Trading Strategies’. 
+BALAS Conference, Lima, Peru.
+VIDYAMURTHY, G. (2004) ‘Pairs Trading: Quantitative Methods and Analysis’ John Wiley & 
+Sons, 2004.
+NATH, P. (2003) ‘High Frequency Pairs Trading with U.S. Treasury Securities: Risks and 
+Rewards for Hedge Funds’, Working Paper, London Business School.
+Electronic copy available at: https://ssrn.com/abstract=952782
+
+GATEV, E., GOETZMANN, W. N., ROUWENHORST, K. G. (1999) ‘Pairs Trading: 
+Performance of a Relative Value Arbitrage Rule’, Working Paper, Yale School of Management. 
+Available at SSRN: http://ssrn.com/abstract=141615.
+Electronic copy available at: https://ssrn.com/abstract=952782
