@@ -1,0 +1,126 @@
+{
+  "doc_id": 5,
+  "titulo": "A Comparative Study of Active Algorithmic Trading and Passive Investing",
+  "resumen_operativo": "Compara una estrategia algorítmica de trading (modelo de ML con componentes cuantitativo y de sentimiento, votación de submodelos) contra buy-and-hold en SPY, AAPL, KO y JPM entre 2020-2025. Reporta que la estrategia activa supera consistentemente a la pasiva en retorno acumulado y Sharpe ratio anualizado. El paper es de alcance muy limitado (4 tickers, descripción metodológica inconsistente, sin detalle de features ni arquitectura), útil solo como referencia anecdótica de que ML con voting + sentiment puede batir buy-and-hold en un backtest simplificado con position sizing fijo.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "algorithmic trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia activa basada en un modelo de machine learning que decide diariamente comprar, vender o mantener, comparada contra buy-and-hold.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "buy-and-hold"},
+        {"tipo": "USA", "objeto": "walk-forward validation"},
+        {"tipo": "MEJORA_A", "objeto": "buy-and-hold"}
+      ],
+      "cita_textual": "This study compares an active algorithmic trading strategy, a machine learning model comprising both quantitative and sentiment components, with a traditional passive buy-and-hold investment strategy"
+    },
+    {
+      "nombre": "buy-and-hold",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia pasiva de referencia que compra la acción al inicio y la mantiene hasta el final de la simulación, usada como benchmark.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "algorithmic trading"}
+      ],
+      "cita_textual": "The passive strategy immediately purchases the stock at market open and holds it until the simulation concludes."
+    },
+    {
+      "nombre": "sentiment analysis",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Componente basado en procesamiento de lenguaje natural que analiza datos textuales para capturar el sentimiento de mercado, integrado con el componente cuantitativo mediante un modelo de fusión.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "algorithmic trading"},
+        {"tipo": "USA", "objeto": "natural language processing"}
+      ],
+      "cita_textual": "The sentiment-based component uses natural language processing techniques, based on previous work (Kraack, 2024), as a conceptual foundation for analyzing textual data to capture market sentiment."
+    },
+    {
+      "nombre": "walk-forward validation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Enfoque de entrenamiento y predicción en el que el modelo se entrena con una ventana móvil de diez años de datos históricos y se reentrena diariamente para predecir la acción del día siguiente.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"},
+        {"tipo": "USA", "objeto": "algorithmic trading"}
+      ],
+      "cita_textual": "The training and prediction process follows a walk-forward validation approach."
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Comisión de bróker de al menos tres euros o 0.10% por operación aplicada a cada transacción para simular condiciones reales de mercado.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "algorithmic trading"}
+      ],
+      "cita_textual": "A broker commission of at least three euros or 0.10% per trade is applied to mimic real-world transaction costs."
+    },
+    {
+      "nombre": "Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica de retorno ajustado por riesgo calculada de forma anualizada para comparar las carteras algorítmica y pasiva en cada benchmark.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "algorithmic trading"}
+      ],
+      "cita_textual": "It also demonstrated higher Sharpe ratio values across all benchmarks, indicating better risk-adjusted returns."
+    },
+    {
+      "nombre": "position sizing",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "El tamaño de posición se fija en una acción por operación para eliminar el compounding y así asegurar comparabilidad entre estrategias, lo cual limita la representatividad de los resultados frente a un uso realista de capital.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "algorithmic trading"}
+      ],
+      "cita_textual": "The fixed position size of one share per trade was deliberately chosen to eliminate compounding to ensure comparability of the strategies across benchmarks."
+    },
+    {
+      "nombre": "data snooping",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "El paper reporta accuracy de clasificación en un split de validación entrenado con datos consecutivos 2012-2022 sin walk-forward ni reentrenamiento, lo que el propio autor reconoce como menos riguroso que el enfoque walk-forward usado en el resto del estudio.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "walk-forward validation"}
+      ],
+      "cita_textual": "The model does not employ walk-forward validation, daily retraining, or a knowledge base. Instead, the model was trained using consecutive historical stock data from 2012 to 2022, with 20% of the data reserved for validation."
+    },
+    {
+      "nombre": "market volatility",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Periodos de incertidumbre con alta volatilidad que, según el paper, suelen generar oportunidades de trading exitosas para el enfoque algorítmico frente al pasivo.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "algorithmic trading"}
+      ],
+      "cita_textual": "Notably, periods of uncertainty with high volatility often lead to successful trading opportunities for the algorithmic approach."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El modelo de clasificación (buy/sell) alcanza una tasa de acierto agregada de aproximadamente 81% sobre el set de validación de los cuatro benchmarks, entrenado con datos consecutivos 2012-2022 (sin walk-forward).",
+      "mercado": "US equities (SPY, AAPL, KO, JPM)",
+      "periodo": "2012-2022",
+      "magnitud": "overall prediction rate ~81%; precision/recall/F1 por benchmark entre 0.73 y 0.87 (weighted avg 0.76-0.84)",
+      "condiciones": "in-sample/holdout de 20% consecutivo, sin walk-forward validation, sin reentrenamiento diario, no se especifica si incluye costos de transacción",
+      "robustez": "baja",
+      "cita_textual": "the results demonstrate good prediction capability, with an overall prediction rate of approximately 81%"
+    },
+    {
+      "afirmacion": "La estrategia algorítmica supera consistentemente a la estrategia pasiva buy-and-hold en retorno acumulado para los cuatro benchmarks, con la excepción de JPMorgan en el primer trimestre de 2024 y 2025.",
+      "mercado": "US equities (SPY, AAPL, KO, JPM)",
+      "periodo": "2020-2025 (primer semestre)",
+      "magnitud": "no se reportan valores numéricos de retorno acumulado, solo comparación gráfica",
+      "condiciones": "walk-forward validation con reentrenamiento diario, comisión de al menos 3 euros o 0.10% por operación, position sizing fijo de una acción",
+      "robustez": "media",
+      "cita_textual": "For each benchmark comparison, the algorithmic strategy consistently outperforms the passive investment."
+    },
+    {
+      "afirmacion": "El retorno diario promedio, el Sharpe ratio anualizado promedio y el factor de multiplicación de la cartera algorítmica superan a los de la cartera pasiva en los cuatro benchmarks entre 2020 y 2025 (ej. Sharpe SPY 6.54 vs 1.07; AAPL 6.21 vs 0.87; KO 6.91 vs 0.64; JPM 6.10 vs 0.93).",
+      "mercado": "US equities (SPY, AAPL, KO, JPM)",
+      "periodo": "2020-2025",
+      "magnitud": "Sharpe anualizado algorítmico 6.10-6.91 vs pasivo 0.64-1.07; multiplication factor algorítmico 1.74-2.27 vs pasivo 1.08-1.28; daily return promedio algorítmico 0.18%-1.33% vs pasivo 0.02%-0.24%",
+      "condiciones": "position sizing fijo de una acción sin reinversión de ganancias, sin compounding, comisión de al menos 3 euros o 0.10% por operación; no se especifica metodología de cálculo del Sharpe ni si es out-of-sample puro",
+      "robustez": "baja",
+      "cita_textual": "The results demonstrate that, for each metric, the algorithmic strategy outperforms passive investing."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El paper opera en equities con horizonte diario (no intradía), sin descripción reproducible del modelo ni de features, y con Sharpe ratios (6+) sospechosamente altos sin desglose de metodología, por lo que aporta poco directamente aplicable al ecosistema de futuros ES intradía más allá de la idea genérica de walk-forward retraining."
+  }
+}

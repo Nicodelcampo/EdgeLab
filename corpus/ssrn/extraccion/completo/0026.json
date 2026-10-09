@@ -1,0 +1,264 @@
+{
+  "doc_id": 26,
+  "titulo": "A stochastic model for order book dynamics",
+  "resumen_operativo": "Cont, Stoikov y Talreja proponen un modelo de Markov de tiempo continuo para la dinámica del libro de órdenes límite, basado en procesos de Poisson independientes para llegadas de órdenes límite, órdenes de mercado y cancelaciones. El modelo es tratable analíticamente vía transformadas de Laplace, permitiendo calcular probabilidades condicionales (dirección del próximo movimiento de precio, ejecución antes de que se mueva el precio, 'hacer el spread') a partir del estado actual del book. Se calibra con datos Level II de la Bolsa de Tokio y se ilustra con una estrategia de arbitraje estadístico intradía basada en la configuración de colas bid/ask.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "limit order book",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Estado de las órdenes límite pendientes resumido por las cantidades publicadas en cada nivel de precio; el paper lo modela como un proceso de Markov de tiempo continuo Zn.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "queue position"},
+        {"tipo": "USA", "objeto": "Hawkes process"}
+      ],
+      "cita_textual": "Limit orders are posted to a electronic trading system and the state of outstanding limit orders can be summarized by stating the quantities posted at each price level: this is known as the limit order book."
+    },
+    {
+      "nombre": "order book dynamics model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo estocástico continuo del libro de órdenes que balancea facilidad de estimación, realismo empírico y tratabilidad analítica, modelando eventos de mercado como procesos de Poisson independientes.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "limit order book"},
+        {"tipo": "MEJORA_A", "objeto": "equilibrium models of limit order books"},
+        {"tipo": "PREDICE", "objeto": "direction of price moves"}
+      ],
+      "cita_textual": "We propose a continuous-time stochastic model for the dynamics of a limit order book. The model strikes a balance between three desirable features: it can be estimated easily from data, it captures key empirical properties of order book dynamics and its analytical tractability allows for fast computation"
+    },
+    {
+      "nombre": "queue position",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Número de órdenes pendientes a una distancia i ticks de la cotización opuesta (QA_i, QB_i), usado para representar la forma del book cerca del bid/ask, donde se concentra la mayor parte de la actividad.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"},
+        {"tipo": "PREDICE", "objeto": "direction of price moves"}
+      ],
+      "cita_textual": "Since most of the trading activity takes place in the vicinity of the bid and ask prices, it is useful to keep track of the number of outstanding orders at a given distance from the bid/ask."
+    },
+    {
+      "nombre": "power law order arrival rate",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Especificación empírica de la tasa de llegada de órdenes límite λ(i)=k/i^α en función de la distancia i al mejor bid/ask, ajustada por mínimos cuadrados.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "order book dynamics model"},
+        {"tipo": "MIDE", "objeto": "queue position"}
+      ],
+      "cita_textual": "Empirical studies (Zovko and Farmer (2002) or Bouchaud et al. (2002)) suggest a power law, λ(i) = k iα, as a plausible speciﬁcation."
+    },
+    {
+      "nombre": "cancellation rate",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Tasa de cancelación de órdenes límite proporcional al número de órdenes pendientes en un nivel de precio dado, con parámetro θ(i) que decrece con la distancia al bid/ask.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "order book dynamics model"}
+      ],
+      "cita_textual": "Cancellations of limit orders at a distance of i ticks from the opposite best quote occur at a rate proportional to the number of outstanding orders: if the number of outstanding orders at that level is x then the cancellation rate is θ(i)x."
+    },
+    {
+      "nombre": "birth-death process",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Proceso estocástico usado para modelar la evolución de la cola en el bid o ask (número de órdenes) con tasas de nacimiento y muerte constantes/dependientes del estado, base para el cálculo de tiempos de primer paso.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "order book dynamics model"},
+        {"tipo": "PARTE_DE", "objeto": "Laplace transform inversion"}
+      ],
+      "cita_textual": "Consider now a birth-death process with constant birth rate λ and death rates µi in state i ≥1, and let σb denote the ﬁrst-passage time of this process to 0 given it begins in state b."
+    },
+    {
+      "nombre": "Laplace transform inversion",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de la literatura de colas usada para calcular semi-analíticamente probabilidades condicionales de eventos del book (movimiento de precio, ejecución) sin recurrir a simulación de Monte Carlo.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Monte Carlo simulation"},
+        {"tipo": "PREDICE", "objeto": "direction of price moves"},
+        {"tipo": "REQUIERE", "objeto": "birth-death process"}
+      ],
+      "cita_textual": "Using simple matrix computations and Laplace transform methods, we are able to eﬃciently compute probabilities of various events, conditional on the state of the order book"
+    },
+    {
+      "nombre": "direction of price moves",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Probabilidad de que el próximo cambio en el mid-price sea un incremento, condicional a la configuración del book (cantidades en bid/ask y spread), calculable con el modelo.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "queue position"},
+        {"tipo": "PARTE_DE", "objeto": "order book dynamics model"}
+      ],
+      "cita_textual": "We now compute the probability that the mid-price increases at its next move."
+    },
+    {
+      "nombre": "making the spread",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de arbitraje estadístico que consiste en colocar órdenes límite simultáneas en bid y ask y esperar a que ambas se ejecuten antes de que el mid-price se mueva, capturando el spread bid-ask.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "bid-ask spread"},
+        {"tipo": "USA", "objeto": "Laplace transform inversion"},
+        {"tipo": "APLICA_A", "objeto": "market making"}
+      ],
+      "cita_textual": "If the probability of executing both a buy and a sell limit order before the price moves is high, a statistical arbitrage strategy can be designed by submitting limit orders at the bid and the ask and wait for both orders to execute."
+    },
+    {
+      "nombre": "bid-ask spread",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Diferencia entre precio ask y bid, pS(t) = pA(t) - pB(t); condiciona las probabilidades de dirección del precio y de ejecución en el modelo.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "limit order book"}
+      ],
+      "cita_textual": "pS(t) ≡pA(t) −pB(t)."
+    },
+    {
+      "nombre": "mid-price",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Promedio del bid y ask, pM(t) = (pB(t)+pA(t))/2, cuyo cambio (T) es el evento objetivo de las probabilidades condicionales calculadas en el paper.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"}
+      ],
+      "cita_textual": "T ≡inf{t ≥0, pM(t)̸ = pM(0)}."
+    },
+    {
+      "nombre": "high-frequency trading",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Contexto de aplicación del modelo: usar el estado actual del book para predecir su comportamiento de corto plazo y diseñar estrategias sistemáticas de ejecución y trading.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "order book dynamics model"},
+        {"tipo": "APLICA_A", "objeto": "making the spread"}
+      ],
+      "cita_textual": "An important motivation for modelling high-frequency dynamics of order books is to use the information on the current state of the order book to predict its short-term behavior."
+    },
+    {
+      "nombre": "steady-state shape of the book",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Perfil promedio del número de órdenes en función de la distancia al bid/ask en régimen estacionario, que exhibe una 'joroba' (hump) característica observada empíricamente y reproducida por el modelo sin ajuste fino.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "market impact"},
+        {"tipo": "PARTE_DE", "objeto": "order book dynamics model"}
+      ],
+      "cita_textual": "Figure 2 shows that the average proﬁle of the order book displays a hump (in this case, at two ticks from the bid/ask), as observed in empirical studies"
+    },
+    {
+      "nombre": "market impact",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Efecto de las transacciones sobre el precio, cuyo promedio se describe mediante el perfil de forma estacionaria del book.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"}
+      ],
+      "cita_textual": "The steady-state proﬁle of the order book describes the average market impact of trades"
+    },
+    {
+      "nombre": "realized volatility",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de volatilidad diaria del mid-price calculada como raíz de la suma de retornos logarítmicos al cuadrado entre cotizaciones sucesivas; el paper la compara con la generada por simulaciones del modelo.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "mid-price"},
+        {"tipo": "USA", "objeto": "order book dynamics model"}
+      ],
+      "cita_textual": "RVn = v u u t n X i=1  log Pi+1 Pi 2"
+    },
+    {
+      "nombre": "conditional probability of execution",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Probabilidad de que una orden límite colocada en el bid se ejecute antes de que la cotización ask se mueva, dado el estado inicial del book; base para decidir si conviene colocar límite o mercado.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Laplace transform inversion"},
+        {"tipo": "PARTE_DE", "objeto": "making the spread"}
+      ],
+      "cita_textual": "the probability of executing a limit order at the bid before the ask quote moves"
+    },
+    {
+      "nombre": "statistical arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Familia de estrategias basadas en probabilidades condicionales del book que no garantizan ganancia pero generan trades con retorno esperado positivo y pérdidas acotadas.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "direction of price moves"},
+        {"tipo": "APLICA_A", "objeto": "high-frequency trading"}
+      ],
+      "cita_textual": "Such strategies fall into the realm of statistical arbitrage since they do not guarantee a proﬁt, but lead to trades with positive expected returns and bounded losses."
+    },
+    {
+      "nombre": "queueing systems",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Analogía y arsenal matemático (colas M/M/∞, procesos de nacimiento-muerte) de la que el paper toma inspiración para modelar el book, considerando las órdenes límite como clientes esperando ejecución o cancelación.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "order book dynamics model"}
+      ],
+      "cita_textual": "The dynamics of a limit order book resembles in many aspects that of a queuing system. Limit orders wait in a queue to be executed against market orders (or canceled)."
+    },
+    {
+      "nombre": "equilibrium models of limit order books",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Modelos alternativos (Parlour 1998, Foucault et al. 2005) que aportan insight sobre formación de precios pero contienen parámetros no observables de preferencias de agentes, difíciles de estimar.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "order book dynamics model"}
+      ],
+      "cita_textual": "These models provide interesting insights into the price formation process but contain unobservable parameters that govern agent preferences. Thus, they are diﬃcult to estimate and use in applications."
+    },
+    {
+      "nombre": "unobservable behavioral parameters",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Limitación de los modelos de microestructura basados en teoría de juegos que introducen parámetros de preferencias de agentes no observables, dificultando estimación y uso práctico; el paper evita esto.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "order book dynamics model"}
+      ],
+      "cita_textual": "One by-product of this study is to show how far a stochastic model can go in reproducing the dynamic properties of a limit order book without resorting to detailed behavioral assumptions about market participants or introducing unobservable parameters describing agent preferences"
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Costos de transacción que el paper reconoce no haber incorporado en el backtest de la estrategia de trading intradía, aunque afirma que podrían incluirse fácilmente.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "statistical arbitrage"}
+      ],
+      "cita_textual": "The analysis of the above trading strategy does not take into account transaction costs, but these can be easily included in the analysis."
+    },
+    {
+      "nombre": "level II order book data",
+      "tipo": "dato",
+      "definicion_en_contexto": "Conjunto de datos de trades y cotizaciones a los 5 mejores niveles de precio a cada lado del book, más detallado que TAQ, usado para estimar los parámetros del modelo.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "order book dynamics model"}
+      ],
+      "cita_textual": "This data set, referred to as Level II order book data, provides a more detailed view of price dynamics than the Trade and Quotes (TAQ) data often used for high frequency data analysis"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El modelo estocástico calibrado reproduce con precisión la volatilidad realizada diaria observada en datos reales usando solo parámetros de intensidad de flujo de órdenes (λ, µ, θ).",
+      "mercado": "acción Sky Perfect Communications, Tokyo Stock Exchange",
+      "periodo": "Ago-Dic 2006 (125 días), primer día de la muestra para el test de volatilidad",
+      "magnitud": "volatilidad realizada empírica 0.0219 (370 trades) vs intervalo de confianza 95% simulado 0.0228 ± 0.0003",
+      "condiciones": "estimación in-sample con parámetros calibrados en la misma muestra; solo un día de datos comparado; sin costos de transacción",
+      "robustez": "baja",
+      "cita_textual": "In the ﬁrst day of the sample, we compute a realized volatility of 0.0219 after a total of 370 trades. After repeatedly simulating our model for 370 trades we obtained a 95% conﬁdence interval for realized volatility of 0.0228 ± 0.0003."
+    },
+    {
+      "afirmacion": "Las probabilidades condicionales de dirección del próximo movimiento de precio (calculadas por transformada de Laplace) coinciden estrechamente con las frecuencias empíricas observadas y con simulación Monte Carlo, para distintas configuraciones de colas bid/ask.",
+      "mercado": "acción Sky Perfect Communications, Tokyo Stock Exchange",
+      "periodo": "125 días, Ago-Dic 2006",
+      "magnitud": "ejemplo a=1,b=1: empírico .512, simulación .499±.006, Laplace .500; a=5,b=5: empírico .822 (con posible anomalía en tabla), simulación .811±.004, Laplace .812",
+      "condiciones": "in-sample (mismos datos usados para estimar parámetros y comparar frecuencias); 30,000 réplicas Monte Carlo; sin costos de transacción; un solo activo",
+      "robustez": "media",
+      "cita_textual": "The simulation results, reported as 95% conﬁdence intervals, agree with the Laplace transform computations and show that the probability of an increase in the mid-price is well captured by the model."
+    },
+    {
+      "afirmacion": "Una estrategia de trading intradía basada en la probabilidad condicional de aumento del mid-price (0.62 bajo cierta configuración del book) genera un profit promedio positivo pero pequeño por roundtrip, con probabilidad de éxito por trade inferior al 50%.",
+      "mercado": "acción Sky Perfect Communications, Tokyo Stock Exchange",
+      "periodo": "simulación equivalente a ~30 días de trading, 15,788 trades, 2,376 roundtrips",
+      "magnitud": "profit promedio por trade de 0.068 ticks (6.8 yenes); probabilidad de éxito por roundtrip <0.5; probabilidad condicional de entrada de 0.62",
+      "condiciones": "resultado obtenido por simulación del propio modelo (no backtest sobre datos reales de ejecución); sin incluir costos de transacción; un solo activo, sin OOS respecto a otros mercados/períodos",
+      "robustez": "baja",
+      "cita_textual": "the average proﬁt of each trade was 0.068 ticks, or 6.8 yen. The analysis of the above trading strategy does not take into account transaction costs, but these can be easily included in the analysis."
+    },
+    {
+      "afirmacion": "El perfil promedio de profundidad del libro de órdenes simulado por el modelo reproduce la forma de 'joroba' (hump) observada empíricamente en estudios previos, sin necesidad de ajuste fino de parámetros ni ingredientes adicionales.",
+      "mercado": "acción Sky Perfect Communications, Tokyo Stock Exchange",
+      "periodo": "simulación de 10^6 eventos",
+      "magnitud": "hump ubicado a 2 ticks del bid/ask",
+      "condiciones": "resultado de simulación del modelo calibrado, comparado cualitativamente con literatura previa (Bouchaud et al. 2008), no cuantificado con test estadístico",
+      "robustez": "media",
+      "cita_textual": "Note that this hump feature does not result from any ﬁne-tuning of model parameters or additional ingredients such as correlation between order ﬂow and past price moves."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "El marco de probabilidades condicionales sobre colas bid/ask (dirección de precio, prob. de ejecución antes del movimiento) es conceptualmente aplicable a microestructura de ES si se dispone de datos L2/L3 de alta frecuencia, pero el paper es de 2010, en una acción single-name de baja liquidez relativa y sin costos ni validación OOS robusta, por lo que su aporte es más metodológico (cómo construir señales desde queue imbalance) que un edge directamente transferible."
+  }
+}

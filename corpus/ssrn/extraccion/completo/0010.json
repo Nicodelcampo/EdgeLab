@@ -1,0 +1,296 @@
+{
+  "doc_id": 10,
+  "titulo": "A Journey into the Dark Arts of Quantitative Finance",
+  "resumen_operativo": "Tesis doctoral de finanzas cuantitativas centrada en pricing de derivados: expansiones cerradas de precios de opciones y de la sonrisa de volatilidad implícita alrededor de Black-Scholes, el impacto de la distribución de saltos en la volatilidad de la varianza, y un marco de valuación de OTC con CVA/DVA/FVA y colateral resuelto por Monte Carlo de mínimos cuadrados. Es trabajo de pricing/valuación teórica de derivados y riesgo de contraparte/funding, no de trading sistemático ni de microestructura intradía, por lo que su aporte directo a un ecosistema de backtesting de futuros ES es marginal (a lo sumo como referencia para modelar volatilidad estocástica con saltos o el costo de funding de coberturas).",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Black-Scholes model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo de referencia clásico alrededor del cual el paper expande el precio verdadero de una opción como una serie de primas de riesgos de orden superior no valuados bajo sus supuestos.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "option pricing expansion"},
+        {"tipo": "MEJORA_A", "objeto": "Black-Scholes model"}
+      ],
+      "cita_textual": "we expand the true option price around the Black-Scholes price"
+    },
+    {
+      "nombre": "option pricing expansion",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Expansión cerrada del precio de una opción en términos del precio Black-Scholes y Greeks de orden superior, aplicable a modelos con dinámicas gobernadas por movimientos Brownianos con cambio de tiempo (saltos y volatilidad estocástica).",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "stochastic volatility"},
+        {"tipo": "APLICA_A", "objeto": "jump-diffusion model"},
+        {"tipo": "USA", "objeto": "Taylor series expansion"}
+      ],
+      "cita_textual": "We show how the true price of an option less its Black-Scholes price is given by a series of premiums on higher-order risks that are not priced under the Black-Scholes model assumptions."
+    },
+    {
+      "nombre": "Taylor series expansion",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de expansión bidimensional en Taylor del precio de la opción respecto al precio del subyacente y la varianza total, truncada a orden n, usada para derivar la aproximación cerrada.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "option pricing expansion"}
+      ],
+      "cita_textual": "we apply a two-dimensional Taylor series to expand (1.10) in the underlying asset price and total variance around the point (S0, EVT )"
+    },
+    {
+      "nombre": "time-changed Brownian motion",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Construcción del proceso de precio X mediante subordinación de Bochner de un movimiento Browniano por un proceso de varianza total, que permite generar saltos y skewness en los retornos.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "option pricing expansion"},
+        {"tipo": "PARTE_DE", "objeto": "jump-diffusion model"}
+      ],
+      "cita_textual": "X is obtained by Bochner's subordination of a Brownian motion with drift to V which can be interpreted either as the stochastic clock or the cumulative random variance"
+    },
+    {
+      "nombre": "Variance Gamma model",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Modelo exponencial Lévy puro de saltos al que se aplica la expansión de precios y de volatilidad implícita, usado también en los experimentos de calibración numérica.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "jump-diffusion model"},
+        {"tipo": "USA", "objeto": "option pricing expansion"}
+      ],
+      "cita_textual": "we study expansions for exponential Lévy models such as the Variance Gamma and the Normal Inverse Gaussian models"
+    },
+    {
+      "nombre": "Heston stochastic volatility model",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Modelo canónico de volatilidad estocástica affine (dinámica CIR) que el paper generaliza añadiendo saltos en la varianza instantánea para estudiar la sonrisa de volatilidad de la varianza.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "jump-diffusion model"},
+        {"tipo": "MEJORA_A", "objeto": "Heston stochastic volatility model"}
+      ],
+      "cita_textual": "We consider a tractable affine stochastic volatility model that generalizes the seminal Heston (1993) model by augmenting it to jumps in the instantaneous variance."
+    },
+    {
+      "nombre": "implied volatility",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Cotización estándar de mercado de opciones que el paper expande en forma cerrada como función de los mismos riesgos de orden superior que el precio, incluyendo el skew at-the-money.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "option pricing expansion"},
+        {"tipo": "USA", "objeto": "mixing representation"}
+      ],
+      "cita_textual": "In this paper we derive a closed-form expansion of the implied volatility surface."
+    },
+    {
+      "nombre": "mixing representation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Representación del precio de una call europea como esperanza risk-neutral del precio Black-Scholes evaluado en el spot corregido y la varianza total, base analítica de las expansiones del paper.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "option pricing expansion"},
+        {"tipo": "REQUIERE", "objeto": "Laplace transform"}
+      ],
+      "cita_textual": "we obtain the following mixing representation for its price C(S0, T ) at time t = 0"
+    },
+    {
+      "nombre": "Laplace transform",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Transformada conjunta de la varianza total y su proceso cumulante, motor computacional de la aproximación de precios y condición de existencia de momentos requeridos.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "affine jump-diffusion model"}
+      ],
+      "cita_textual": "the Laplace transform LT is also the computational engine for the option price approximation that we develop"
+    },
+    {
+      "nombre": "affine jump-diffusion model",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Subclase general de modelos con dinámicas de salto-difusión affine para los cuales la transformada de pricing puede no conocerse en forma cerrada, extensión más amplia estudiada en el paper.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "jump-diffusion model"},
+        {"tipo": "REQUIERE", "objeto": "Laplace transform"}
+      ],
+      "cita_textual": "we consider extensions of the expansion to a more general subclass of affine jump-diffusion models for which the pricing transform may not be known in closed form"
+    },
+    {
+      "nombre": "jump-diffusion model",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Clase general de modelos con saltos y volatilidad estocástica en la dinámica del subyacente, necesaria para generar suficiente asimetría en retornos de corto plazo y así calzar los skews de volatilidad implícita.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "implied volatility"},
+        {"tipo": "CAUSA", "objeto": "volatility skew"}
+      ],
+      "cita_textual": "to generate sufficient variability and asymmetry in short-term returns to match implied volatility skews, we need to allow for jumps"
+    },
+    {
+      "nombre": "volatility skew",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Asimetría negativa observada empíricamente en la superficie de volatilidad de acciones, que el modelo captura permitiendo saltos en la varianza total y un parámetro de skewness negativo.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "implied volatility"},
+        {"tipo": "SE_OPONE_A", "objeto": "volatility of variance smile"}
+      ],
+      "cita_textual": "allowing for the presence of jumps in V and letting c < 0 enables the model to capture the empirically-observed negative volatility skew"
+    },
+    {
+      "nombre": "volatility of variance smile",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Sonrisa de volatilidad implícita de opciones sobre varianza realizada, que a diferencia del equity muestra pendiente ascendente (upward-sloping); el paper muestra que su forma depende críticamente de la distribución de los saltos en varianza.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "jump distribution"},
+        {"tipo": "SE_OPONE_A", "objeto": "volatility skew"}
+      ],
+      "cita_textual": "the particular distribution of jumps does, in fact, have a profound impact on the behavior of the implied volatility smile of variance"
+    },
+    {
+      "nombre": "jump distribution",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Distribución de probabilidad de los saltos en la varianza instantánea; el paper demuestra que su elección específica determina la forma asintótica (para strikes chicos y grandes) de la sonrisa de volatilidad de la varianza, un aspecto ausente de la literatura previa.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "volatility of variance smile"}
+      ],
+      "cita_textual": "an examination of the distribution of jumps and its financial implications appear – to the best of our knowledge – curiously absent from the literature"
+    },
+    {
+      "nombre": "realized variance",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Objeto subyacente de los derivados de varianza estudiados (opciones sobre varianza realizada, ligadas al índice VIX de CBOE), cuya dinámica de volatilidad estocástica affine con saltos se modela explícitamente.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Heston stochastic volatility model"},
+        {"tipo": "APLICA_A", "objeto": "volatility of variance smile"}
+      ],
+      "cita_textual": "options on CBOE's VIX index"
+    },
+    {
+      "nombre": "credit valuation adjustment",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Ajuste que corrige el precio de un derivado por el costo esperado para el dealer derivado de la posibilidad de que la contraparte incumpla.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "OTC derivative valuation"},
+        {"tipo": "MITIGA", "objeto": "counterparty credit risk"}
+      ],
+      "cita_textual": "The credit valuation adjustment (CVA) corrects the price for the expected costs to the dealer due to the possibility that the counterparty may default"
+    },
+    {
+      "nombre": "debit valuation adjustment",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Ajuste que corrige el precio por el beneficio esperado del dealer derivado de su propio riesgo de default; tiene el efecto perverso de generar ganancias contables cuando el propio riesgo de crédito aumenta.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "OTC derivative valuation"}
+      ],
+      "cita_textual": "the so-called debit valuation adjustment (DVA) is a correction for the expected benefits to the dealer due to his own default risk. The latter adjustment has the perverse effect that the dealer can book a profit as his default risk increases"
+    },
+    {
+      "nombre": "funding valuation adjustment",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Ajuste (controvertido en la industria) del precio de un derivado por los costos de financiar la operación de cobertura; el paper demuestra que no es en general un ajuste aditivo sino que rompe la naturaleza bilateral del precio del trato.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "OTC derivative valuation"},
+        {"tipo": "CAUSA", "objeto": "funding risk"}
+      ],
+      "cita_textual": "Funding risk breaks the bilateral nature of the deal price and makes the pricing problem a highly non-linear and recursive one. This means that FVA is not generally an additive adjustment as commonly assumed by market participants."
+    },
+    {
+      "nombre": "funding risk",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo derivado de que el dealer deba pedir prestado o prestar efectivo a tasas distintas de la tasa libre de riesgo (LIBOR ya no es un buen proxy tras la crisis) para financiar la cobertura de un trato de derivados.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "funding valuation adjustment"},
+        {"tipo": "MITIGA", "objeto": "collateralization"}
+      ],
+      "cita_textual": "the spread between the rate on overnight indexed swaps (OISs) and the LIBOR rate blew up making it apparent that LIBOR is contaminated by credit risk"
+    },
+    {
+      "nombre": "collateralization",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Práctica de posteo de colateral bajo acuerdos ISDA/CSA que mitiga el impacto del riesgo de crédito y de funding en el precio del derivado, incorporada en el marco de valuación general del paper.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "counterparty credit risk"},
+        {"tipo": "MITIGA", "objeto": "funding risk"}
+      ],
+      "cita_textual": "our numerical results confirm that funding risk does have a non-trivial impact on the deal price"
+    },
+    {
+      "nombre": "counterparty credit risk",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo de incumplimiento de la contraparte en un trato OTC, ignorado por dealers antes de la crisis financiera para contrapartes de alta calidad crediticia, lo que resultó ser un supuesto peligroso.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "credit valuation adjustment"}
+      ],
+      "cita_textual": "dealers tended to ignore the credit risk of high-quality rated counterparties, but the lesson of history has shown that this was a particular dangerous assumption"
+    },
+    {
+      "nombre": "OTC derivative valuation",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Marco de valuación general (arbitrage-free) para tratos OTC bajo colateralización, riesgo de crédito de contraparte y costos de funding, derivado a partir del principio de pricing risk-neutral.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "least-squares Monte Carlo"},
+        {"tipo": "REQUIERE", "objeto": "collateralization"}
+      ],
+      "cita_textual": "we derive a general pricing equation where CVA, DVA, and FVA are introduced by simply modifying the payout cash-flows of the deal"
+    },
+    {
+      "nombre": "least-squares Monte Carlo",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Algoritmo de simulación (inspirado en Longstaff-Schwartz) usado para resolver recursivamente el sistema de ecuaciones backward-iterativas de la ecuación general de pricing con funding, mediante regresiones across-path.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "OTC derivative valuation"},
+        {"tipo": "MITIGA", "objeto": "funding risk"}
+      ],
+      "cita_textual": "These equations can be solved recursively by means of least-squares Monte Carlo and we propose such a simulation algorithm."
+    },
+    {
+      "nombre": "rehypothecation",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Práctica de reutilizar el colateral posteado como fuente de financiamiento para la estrategia de cobertura; el paper muestra que la asimetría de funding importa incluso bajo colateralización plena cuando se permite rehypothecation.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "collateralization"},
+        {"tipo": "CAUSA", "objeto": "funding risk"}
+      ],
+      "cita_textual": "This shows that funding asymmetry matters even under full collateralization when"
+    },
+    {
+      "nombre": "delta hedging",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de cobertura de una posición en opción tomando una posición delta en el subyacente, usada en el algoritmo de simulación y cuyo costo de financiamiento afecta el precio final del trato.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "least-squares Monte Carlo"},
+        {"tipo": "REQUIERE", "objeto": "funding risk"}
+      ],
+      "cita_textual": "we assume that the investor delta-hedges the deal according to (4.22)"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La aproximación de expansión de precios de opciones (orden 2) alcanza precisión submilimétrica frente al precio verdadero (Fourier), dentro de un punto de volatilidad implícita, comparable al bid-ask spread típico at-the-money de subyacentes líquidos.",
+      "mercado": "opciones sobre equity (modelos VG, NIG, VGSV, NIGSV, affine)",
+      "periodo": "no especificado (experimento numérico, no datos de mercado)",
+      "magnitud": "error de la aproximación dentro de 1 punto de volatilidad implícita",
+      "condiciones": "in-sample, experimento numérico con parámetros simulados, no backtest de trading, sin costos de transacción",
+      "robustez": "baja",
+      "cita_textual": "the accuracy of the expansion is well within one volatility point which is usually the bid-ask spread around at-the-money for even liquid equity underlyings"
+    },
+    {
+      "afirmacion": "Calibrar el modelo VGSV usando la expansión en vez de inversión de Fourier produce un ahorro de tiempo de cómputo de entre ~50x y ~178x según el escenario y los valores iniciales usados en la optimización.",
+      "mercado": "opciones sintéticas (modelo VGSV, no datos de mercado reales)",
+      "periodo": "no especificado (experimento en MatLab, PC estándar 2.53GHz/4GB RAM)",
+      "magnitud": "speed-up relativo de CPU entre 50.8x y 177.8x (caso sin función característica explícita) y entre 54.0x y 80.4x (con función característica explícita)",
+      "condiciones": "datos simulados (146 precios de calls generados por el propio modelo), sin OOS, sin costos, un solo experimento",
+      "robustez": "baja",
+      "cita_textual": "Table 1.6: Calibration speed-up by using the approximation compared to Fourier inversion"
+    },
+    {
+      "afirmacion": "Distintas distribuciones de saltos en la varianza instantánea generan formas cualitativamente distintas de la sonrisa de volatilidad de la varianza, y algunas producen comportamientos inconsistentes con el skew ascendente observado empíricamente en mercados de varianza (p.ej. VIX).",
+      "mercado": "opciones sobre varianza realizada / VIX",
+      "periodo": "no especificado (resultado analítico/asintótico, no calibrado a datos de mercado)",
+      "magnitud": "sin magnitud numérica única; resultado cualitativo sobre formas asintóticas para strikes chicos y grandes",
+      "condiciones": "resultado teórico-asintótico dentro de un modelo affine con saltos, no validado contra datos de mercado reales",
+      "robustez": "baja",
+      "cita_textual": "some jump distributions predict implied volatilities that are clearly at odds with the upward-sloping volatility skew observed in variance markets"
+    },
+    {
+      "afirmacion": "El riesgo de funding (tasas asimétricas de préstamo/endeudamiento) tiene un impacto no trivial y asimétrico en el precio de un trato de derivados, incluso bajo colateralización total, y ese impacto se amplifica con la rehypothecation del colateral.",
+      "mercado": "call europea in-the-money sobre acción sintética (GBM), S0=100, K=80, T=3 años",
+      "periodo": "no especificado (simulación Monte Carlo con 1000 trayectorias)",
+      "magnitud": "precio Black-Scholes base=28.9; con borrowing rate de 0 a 400bps el precio de la posición larga sin default varía de 29.92 a 27.61, y la posición corta de -26.89 a -35.79 (errores estándar 0.23-0.51); con colateralización y rehypothecation el rango se amplía levemente (p.ej. larga 29.39 a 28.16, corta -25.70 a -35.71)",
+      "condiciones": "simulación Monte Carlo de mínimos cuadrados con solo 1000 trayectorias por limitaciones computacionales, dos escenarios de dependencia de default (Kendall's tau 0.21 y 0.83), sin datos de mercado real, sin costos de transacción del subyacente",
+      "robustez": "media",
+      "cita_textual": "Our numerical results confirm that funding risk does have a non-trivial impact on the deal price."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "nula",
+    "nota": "Es teoría de pricing de derivados OTC (expansiones de opciones, ajustes CVA/DVA/FVA) sin relación con order flow, microestructura o ejecución intradía en futuros ES; no aporta técnicas directamente testeables en el ecosistema de backtesting descrito."
+  }
+}
