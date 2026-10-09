@@ -92,6 +92,18 @@ class TestRankedSearchBenchmark(unittest.TestCase):
         self.assertGreaterEqual(score, 0.85)
         self.assertRegex(self.cortex.search_findings_ranked("VWAP", limit=1)[0]["claim_id"], r"CLAIM-SSRN-FINDING-\d{4}")
 
+    def test_planner_proposes_measurable_claims(self):
+        from edgelab.edge_brain.literature_planner import propose_tests
+        props = propose_tests(self.cortex, ["agrupamiento de volumen en horas redondas",
+                                            "continuidad del flujo de órdenes comprador vendedor"], limit=10)
+        ids = [p.claim_id for p in props]
+        self.assertIn("CLAIM-SSRN-FINDING-0439", ids)
+        self.assertTrue(all(not p.blockers for p in props))
+        done = propose_tests(self.cortex, "agrupamiento de volumen en horas redondas", limit=10,
+                             claim_status=lambda c: "TESTED_PENDING_ADJUDICATION" if c.endswith("0439") else
+                             "AUTHOR_REPORTED_RESULT")
+        self.assertNotIn("CLAIM-SSRN-FINDING-0439", [p.claim_id for p in done])
+
     def test_index_is_deterministic_and_versioned(self):
         self.assertEqual(self.cortex.fts_status(), "READY")
         a = self.cortex.find_papers("order flow imbalance", limit=5)

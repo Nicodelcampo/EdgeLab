@@ -139,13 +139,13 @@ class EdgeBrainMemory:
         if ranked:
             for f in self.cortex.search_findings_ranked(query, limit=k_findings):
                 out.findings.append(MemoryHit("FINDING", f["claim_id"], "finding", f["score"], f["text"],
-                                              authority_status=FINDING_AUTHORITY,
+                                              authority_status=self._finding_authority(f["claim_id"]),
                                               source_id=f"SRC-SSRN-{f['doc_id']:04d}", title=f["title"]))
         else:
             for r in self._findings_index.query(query, k=k_findings, expand=True):
                 doc_id = self._finding_doc[r.record_id]
                 out.findings.append(MemoryHit("FINDING", r.record_id, "finding", round(r.score, 6), r.text,
-                                              authority_status=FINDING_AUTHORITY, source_id=f"SRC-SSRN-{doc_id:04d}",
+                                              authority_status=self._finding_authority(r.record_id), source_id=f"SRC-SSRN-{doc_id:04d}",
                                               title=self._titles.get(doc_id, "")))
         if k_passages > 0:
             try:
@@ -158,6 +158,21 @@ class EdgeBrainMemory:
                                               authority_status=LITERATURE_AUTHORITY,
                                               source_id=f"SRC-SSRN-{h.doc_id:04d}", title=h.title))
         return out
+
+    def _finding_authority(self, claim_id: str) -> str:
+        """Techo del autor + lo que EdgeLab contrasto (p. ej. 'AUTHOR_REPORTED_RESULT+EDGELAB:TESTED_PENDING_ADJUDICATION')."""
+        status = self.store.claim_status(claim_id)
+        return FINDING_AUTHORITY if status == FINDING_AUTHORITY else f"{FINDING_AUTHORITY}+EDGELAB:{status}"
+
+    def claim_status(self, claim_id: str) -> str:
+        return self.store.claim_status(claim_id)
+
+    def propose_tests(self, queries, *, limit: int = 10, include_blocked: bool = False):
+        """Hallazgos que vale la pena contrastar con datos de EdgeLab (no contrastados aun), por prioridad.
+        Ver ``literature_planner``: es una propuesta para que un humano apruebe; no corre nada."""
+        from .literature_planner import propose_tests
+        return propose_tests(self.cortex, queries, limit=limit, claim_status=self.store.claim_status,
+                             include_blocked=include_blocked)
 
     # -- escritura (deja rastro en el ledger del brain) ---------------------------
 
@@ -189,6 +204,13 @@ class EdgeBrainMemory:
         if consultation_id not in self.store.literature:
             raise ValueError(f"unknown consultation {consultation_id!r}")
         self.store.record_dependency(artifact_id, consultation_id, "SUPPORTED_BY")
+
+    def record_claim_test(self, row: dict) -> str:
+        """Resultado de contrastar un hallazgo (queda PROPOSED hasta que un humano lo adjudique)."""
+        return self.store.record_claim_test(row)
+
+    def adjudicate(self, test_id: str, decision: str, adjudicated_by: str, recorded_by: str, notes: str = "") -> str:
+        return self.store.adjudicate_claim_test(test_id, decision, adjudicated_by, recorded_by, notes)
 
     def invalidate_source(self, source_id: str) -> dict[str, str]:
         """Un paper resulta invalido (retractado, error de datos, duplicado): propaga REQUIRES_REAUDIT."""
