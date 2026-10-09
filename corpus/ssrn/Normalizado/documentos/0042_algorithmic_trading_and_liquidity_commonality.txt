@@ -1,0 +1,1452 @@
+ Electronic copy available at: http://ssrn.com/abstract=2337523 
+Algorithmic Trading and Liquidity Commonality
+Yesol Huh ∗
+Stanford Graduate School of Business
+December 2011
+Abstract
+Although previous research has documented a low intraday liquidity commonality across stocks, it
+has grown over the past decade. Using the introduction of hybrid market in the New York Stock Exchange, I show that at least a part of this growth can be attributed to an increase in algorithmic trading;
+hybridization increases the 5-minute liquidity comovement by 30 to 50%. Moreover, the eﬀect is stronger
+at daily frequencies: hybridization induces a 90% higher daily liquidity comovement. These results are
+due to both an increase in market liquidity risk and a decrease in idiosyncratic liquidity volatility.
+∗I would like to thank Stefan Nagel, Arthur Korteweg, and Paul Pﬂeiderer for guidance and feedback on this paper.
+I
+would also like to thank Darrell Duﬃe, Dirk Jenter, Charles Lee, Francisco Perez-Gonzalez, Martin Schneider, ﬁnance seminar participants at Stanford GSB and Korea University, and fellow PhD students for helpful discussions and suggestions,
+and Terrence Hendershott and Pamela Moulton for the NYSE hybrid activation schedule.
+All errors are my own.
+email:
+yesol.huh@stanford.edu
+1
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+ Electronic copy available at: http://ssrn.com/abstract=2337523 
+1
+Introduction
+For the past decade, we have seen a huge increase in algorithmic trading, and more recently, in high frequency
+trading. Algorithms are used in trading strategies ranging from statistical arbitrage to market making, not
+only in equity markets but also in foreign exchange markets and many others.
+This prominent use of
+algorithms raises a question about whether they pose systematic risk. Since algorithmic strategies generally
+involve buying and selling across many diﬀerent stocks in a short period of time, it is possible that algorithmic
+trading induces a higher correlation risk or ampliﬁes signals, right or wrong, and causes higher volatility (for
+an example of “algos gone wild” following an incorrect news release, see Donefer (2010)). What I focus on
+in this paper is more speciﬁc: whether algorithmic trading induces a higher correlation in liquidity, in both
+low and high frequency, and if so, whether this higher correlation is due to an increase in liquidity risk.
+Liquidity comovement has been documented in numerous papers, although whether it exists during
+calm market conditions or in short intervals is debatable (for example, see Hasbrouck and Seppi (2001)).
+Liquidity commonality is important because high liquidity commonality implies a high liquidity risk, which
+in turn has pricing implications. Holding all else equal, if commonality is higher, an average stock is less
+desirable, and more stocks are illiquid during bad times, which causes higher losses for those who have to
+liquidate.
+Because algorithmic trading usually involves buying and selling across many diﬀerent stocks simultaneously and allows similar strategies to be applied easily across a wide range of stocks, algorithmic trading
+may induce a higher liquidity comovement. There are many possible mechanisms that might increase liquidity comovement, which I classify using two criteria. One criterion is whether the mechanism works through a
+liquidity supply or a demand channel. Statistical arbitrage algorithms are an example of a liquidity demand
+channel. Statistical arbitrage algorithms must transact all legs of the strategy before prices move against
+them. This involves taking liquidity in many stocks at once, and if the algorithms are more active at some
+times than at others, comovement in liquidity demand causes comovement in liquidity.
+Market-making high frequency traders (HFTs) can induce a higher liquidity comovement over short
+horizons through a liquidity supply channel. Generally, as long as the market making sector is not perfectly
+competitive and some traders make markets in multiple securities, inventory concerns and funding constraints
+make liquidity comove across stocks. HFTs, which have now eﬀectively replaced traditional market makers
+and specialists,1 have a much shorter holding period of couple milliseconds to couple hours at most compared
+1For example, high frequency trading ﬁrm Getco has been added to oﬃcial DMM (Designated Market Maker) of NYSE,
+and LaBranche Specialists, one of the oldest specialists on NYSE, exited the business in 2010 because “[a]s new rules and
+technology have changed at the NYSE, LaBranche’s ability to compete with more nimble and less encumbered peers proved
+2
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+to the traditional market makers who hold their inventory for couple days or even weeks.2 This decrease in
+holding period together with inventory concerns can increase the short-term liquidity comovement.
+Liquidity supply and demand channels are by no means mutually exclusive. A possible combination
+of the two mechanisms would be that sometimes liquidity-taking statistical arbitrage algorithms are more
+active and at other times market-making liquidity-providing algorithms are more active. This leads to order
+ﬂow correlations across stocks, as documented by Domowitz et al. (2005), and increases liquidity comovement
+through both of the mechanisms, as described in the preceding paragraph.
+One can also classify the mechanisms of how algorithmic trading might increase liquidity commonality
+according to whether the volatility of the common liquidity factor increases or the volatility of the idiosyncratic liquidity component decreases. These two channels are not mutually exclusive either, and many of the
+channels mentioned above can fall into either camp. If there are algorithms that monitor market conditions
+carefully and take liquidity from the stocks with relatively cheap liquidity and supply liquidity to those with
+large spreads (Hendershott and Riordan (2009)), the idiosyncratic components of liquidity will shrink in
+magnitude, thus inducing a higher commonality. An increase in the common liquidity factor is the more
+concerning one, since it means an increase in liquidity risk.
+Many of these mechanisms probably existed before algorithmic trading became popular, but within
+longer time frames. Thus, one possibility is that liquidity became more correlated at the intraday level with
+algorithmic trading but did not change at lower frequencies. However, it may also be the case that now with
+a higher fraction of trades and more capital devoted to these strategies, liquidity comovement has become
+stronger at the daily level as well.
+In this paper, I ﬁrst show that the intraday liquidity comovement among the components of the Dow 30
+Index has increased over the past decade. It is hard to cleanly dissect how much of the overall increase is due
+to indexation (including ETF) and how much is due to algorithmic trading, and among algorithmic trading,
+diﬀerent types of algorithmic trading (such as high frequency trading, agency algorithms, and statistical
+arbitrage algorithms) because the growth of these are inter-related. Moreover, it is diﬃcult to conclude
+causality from the time-series trends — some other changes that happened gradually over the last decade
+could have caused it.
+To focus directly on whether algorithmic trading has increased liquidity commonality, I use a natural
+experiment of the introduction of hybrid markets in the New York Stock Exchange (NYSE). When the
+NYSE moved from specialist-based auction markets to hybrid markets in late 2006, various restrictions on
+diﬃcult” (http://www.marketwatch.com/story/barclays-to-buy-us-market-maker-labranche-co-2010-01-14).
+2See Hasbrouck and Soﬁanos (1993) and Hendershott and Menkveld (2010) for an empirical evidence of the latter point.
+3
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+automatic executions were lifted, thereby making algorithmic trading easier. I ﬁnd that when a stock goes
+hybrid, the correlation in the 5-minute spreads with the broad NASDAQ market spreads (as measured by
+the average of NASDAQ) increases by 30–50%.
+These eﬀects also occur in daily data. Controlling for stock and date ﬁxed eﬀects, I ﬁnd that the
+correlation between the spread of an average NYSE stock in the S&P 500 Index with the average spread of
+the NASDAQ-100 Index increases by more than 90%.
+Lastly, I study how the volatility of the systematic liquidity and idiosyncratic liquidity changes with
+algorithmic trading. My results show that with hybridization, the volatility of the systematic liquidity factor
+increases by 0.2 standard deviation, or by 4%. Individual stock liquidity, however, becomes less volatile;
+therefore, idiosyncratic liquidity volatility decreases even further to oﬀset the increase in the volatility of the
+systematic liquidity.
+Rest of the paper is organized as follows. Section 2 reviews the relevant literature on liquidity comovement and algorithmic trading. I describe the data in Section 3 and study the time trend in liquidity
+comovement in Section 4. The main test using introduction of hybrid markets is presented in Section 5, and
+the question of whether liquidity risk increases is answered in Section 6. Section 7 concludes.
+2
+Literature Review
+This paper draws from two distinct literatures: studies on liquidity comovement and empirical papers on
+algorithmic trading.
+2.1
+Liquidity Comovement
+Starting from Chordia et al. (2000) and Huberman and Halka (2001), multiple empirical studies have shown
+comovement of liquidity using various liquidity proxies and tried to explain them. Popular explanations have
+been in the liquidity supply camp: inventory concern or commonality in information asymmetry. Former
+argument says that there are either common liquidity providers across diﬀerent securities that face inventory
+concern or a funding constraint (for a formal model, see Brunnermeier and Pedersen (2009), for empirical
+evidence, see Coughenour and Saad (2004) and Comerton-Forde et al. (2010)), or liquidity providers across
+diﬀerent securities are subject to similar inventory concerns (see Hameed et al. (2010) and Nagel (2011) for
+empirical evidence). Perhaps slightly less studied are ideas based on liquidity demand. For example, Koch
+et al. (2011) ﬁnds that stocks with high mutual fund ownership have higher comovement in liquidity, and
+4
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+concludes that correlated mutual fund trading plays a signiﬁcant role.
+Commonality of liquidity supply and demand may be related if we think of a limit book order setting
+rather then having pre-determined liquidity providers and takers. If a trader arrives and submits either a
+market order (thus being a liquidity taker) or a limit order (being a liquidity provider), and if order type
+choices are correlated across stocks, this may lead to liquidity commonality. Domowitz et al. (2005) show
+using simulation and the limit order book data from the Australian Stock Exchange that this is true. Corwin
+and Lipson (2011) conﬁrms their results using order level data by trader type from NYSE. They ﬁnd that
+both the common order ﬂows and the common order types by trader types matter for liquidity. They do
+not separately include the common factor of order types in the regressions, so it is not possible to determine
+what the incremental explanatory power is for disaggregating trader types are, or whether the comovement
+of order types are mainly due to a speciﬁc group of traders. For order ﬂows, they show that comovement is
+mainly due to program traders3, so the common factor of order type might as well be. Also, because order
+ﬂow factors explain some fraction of liquidity (albeit mild), program traders play a role. These evidence
+suggests that algorithmic traders might have a signiﬁcant inﬂuence on liquidity commonality, as they usually
+operate across many diﬀerent stocks and have correlated strategies, or their strategies involve buying and
+selling many diﬀerent stocks at the same time (statistical arbitrage), therefore taking liquidity across many
+diﬀerent stocks at once.
+Most empirical papers looking at liquidity at intraday timescale report a mild or economically insignificant level of commonality. Using principal components analysis on 1994 Dow30 data at 15 minute intervals,
+Hasbrouck and Seppi (2001) ﬁnds that the level of liquidity comovement is mild. Corwin and Lipson (2011)
+conﬁrms the above result using NYSE data from 1998-9, but also ﬁnds that if limit order book depth is
+used as a liquidity measure, commonality is stronger. Harford and Kaul (2005) uses intraday sample from
+1986 and 1996, and ﬁnds that commonality in eﬀective spreads are low. Commonality is somewhat higher
+in 1996 than 1986 for the stocks in the S&P500 index, but they conclude that the levels are still negligibly
+low. Most of these papers use data from the 1990’s or earlier. Therefore, it is possible that with the changes
+in market structure and especially the increase in algorithmic trading and high frequency trading, liquidity
+commonality became stronger at shorter intervals than it did before.
+Liquidity commonality is important because it poses systematic risk. An investor that faces some
+3According to www.nyxdata.com (data products of New York Stock Exchange), “Program trading is deﬁned as a wide range
+of portfolio trading strategies involving the purchase or sale of 15 or more stocks having a total market value of $1 million or
+more. One example is index arbitrage. Index arbitrage is deﬁned as the purchase or sale of a basket of stocks in conjunction with
+the sale or purchase of a derivative product, such as index futures. In addition to index arbitrage, other program trading activity
+includes customer facilitations, liquidation of facilitations, index substitutions, liquidation of error accounts, risk modiﬁcations,
+and liquidation of exchange-for-physicals stock positions.”
+5
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+probability of liquidity shock, thus a forced liquidation risk, will be worse oﬀif liquidity commonality is
+higher. Most models and empirical studies on this, however, is cross-sectional by nature. For example,
+Acharya and Pedersen (2005) and Stambaugh and P´astor (2003) ﬁnds that stocks with return that comoves
+higher with the market liquidity have higher expected return than those with lower correlation. Acharya
+and Pedersen (2005) also ﬁnds that stocks with liquidity that comove higher with market liquidity also have
+higher expected returns. Acharya and Schaefer (2006) argues that liquidity risk and correlation risk are
+related, and they suggest the link between the two to be the ﬁnancial intermediaries.
+In terms of idea, this paper is closest to Kamara et al. (2008). They ﬁnd that the ‘beta’ (sensitivity)
+on marketwide liquidity increases over the years for high institutional ownership stocks and for index stocks.
+They attribute this to the increase in institutional ownership and indexation. I focus more speciﬁcally on
+algorithmic trading, but there deﬁnitely is a strong connection as institutions are usually the ones employing
+algorithms, and statistical arbitrage activity is especially high between the index and the underlying components. They use daily data, but I look at both the intraday and daily variance. Moreover, beta only picks
+up cross-sectional variance as they have an average of one by construction. Methodology used in this paper
+allows me to measure the change in average correlation.
+2.2
+Algorithmic trading
+Although the use of algorithms have greatly increased over the past decade and the eﬀects are subjects of
+much public speculation (especially with high frequency trading), there is not much academic works that
+explore this empirically. One reason is that measuring the level of algorithmic trading or detecting whether
+a particular trade was originated by an algorithm is diﬃcult.
+Moreover, ﬁnding appropriate exogenous
+instruments or natural experiments are not easy. There are a handful of papers that overcome these problems
+in various ways.
+Most of the empirical papers on algorithmic trading focuses on the impact of algorithmic trading on
+market quality such as bid-ask spreads, level of liquidity, adverse selection, and volatility. German stock
+market (Deutsche Boerse) data identify whether each order was generated by an algorithm. Using this data,
+Hendershott and Riordan (2009) ﬁnds that algorithms take liquidity when it is cheap and supply liquidity
+when it is expensive.
+They also ﬁnd that algorithms contribute more to price discovery.
+Overall, their
+ﬁnding suggests that algorithms watch liquidity and information actively and act quickly on it. Hendershott
+et al. (2011) uses the introduction of autoquote as an exogenous instrument and the number of electronic
+messages as a measure of algorithmic trading, and ﬁnds that algorithmic trading narrowed bid-ask spreads
+6
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+and reduced adverse selection.
+Couple papers focus on high frequency trading (HFT), which is a subset of algorithmic trading.
+Riordan and Storkenmaier (2011) uses the system upgrade of Deutsche Boerse, and Jovanovic and Menkveld
+(2010) uses Chi-X entry in the Dutch stock market. Hasbrouck and Saar (2012) proxies HFT activity by
+“strategic run”. These papers generally ﬁnd that HFT introduction decreases spreads and volatility.
+3
+Data
+Many of the often used liquidity proxies are unfortunately not suitable to use in intraday analysis. Amihud
+measure involves dividing return by volume, and this will generate too much noise and huge outliers in high
+frequency. Price impact measure based on Kyle’s λ or liquidity measure based on reversal (as in Stambaugh
+and P´astor (2003)) have to be estimated via regressions, and is therefore diﬃcult to calculate in 5 minute
+intervals. Therefore, I use spreads and depth; while this may not be the best measure for liquidity, it is best
+for the purposes of this paper.
+3.1
+Level or ﬁrst diﬀerence?
+One issue that arises is whether looking at comovement in levels or ﬁrst diﬀerence is more appropriate.
+In the literature, diﬀerent studies have taken diﬀerent approaches. For example, Chordia et al. (2000) uses
+ﬁrst diﬀerence in spreads, but Hasbrouck and Seppi (2001) uses levels, arguing that “overdiﬀerencing induces
+autocorrelation in computed residuals”. Simple statistical tests show that spreads are not a unit-root process,
+but does have a signiﬁcant positive autocorrelation. In my regression analysis, using levels leads to positively
+autocorrelated residuals and using ﬁrst diﬀerences leads to negatively autocorrelated residuals. The absolute
+level of autocorrelation is similar, leading to approximately same eﬃciency.
+(Figure 1 here)
+I choose to use ﬁrst diﬀerences because it better captures the eﬀect that I would like to capture. Take
+an extreme example presented in Figure 1 where we are interested in the comovement of spreads of two
+stocks, A and B. If A and B used to move one-to-one, but B lagged changes in A by one period as in the
+ﬁrst graph, then correlation in levels is close to 1 and correlation in ﬁrst diﬀerences is 0. Now assume that
+with more algorithmic trading, they became more synchronized and the relationship looks like the second
+graph where they move in lockstep. Then correlation in both levels and ﬁrst diﬀerences are 1. Therefore,
+using ﬁrst diﬀerences capture this change much more sharply, and because my ex ante expectation is that
+7
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+this is partially what is happening, I use ﬁrst diﬀerences. (Of course, in this extreme example, one has to
+use ﬁrst diﬀerences in a regression setting because levels follow a unit root process.)
+3.2
+Data construction
+Couple diﬀerent samples are used throughout the paper. For all of them, I restrict the stocks to have a
+price between $3 and $999, and to be traded throughout the month without splitting. For the principal
+components analysis, I use the components of the Dow 30 Index.
+Sample period for the natural experiment using hybridization is June 1, 2006–May 31, 2007, which
+covers the hybrid introduction period (October 2006 to January 2007). For most of the tests, I use the components of the NASDAQ-100 Index (referred to as ‘NASDAQ 100 sample’ from now on) and the components
+of the S&P500 Index that are listed on NYSE (from now, this will simply be referred to as ‘S&P 500 sample’,
+but are the stocks listed on NYSE only). Because all of these index components are very actively traded,
+we do not need to impose additional trading minimum.
+For robustness checks and to calculate summary statistics, I construct a expanded sample. I include
+all stocks that are traded on more than 75% of the 5 minute interval for more than 75% of the trading days
+of the sample period. The resulting samples I will refer to as “full hybrid sample” thoughout the paper.
+I obtain the quoted spread and depth data from TAQ. I use only the quotes from the exchange that
+the stock is listed on (NYSE for NYSE-listed stocks, NASDAQ for NASDAQ-listed stocks). An alternative
+method is to create NBBO from all prevailing quotes from the 14 or so market centers. However, there is
+much more room for error in doing this, while there is not much improvement as there is not much activity
+happening oﬀ-exchange for NYSE-listed stocks during these periods, and NASDAQ oﬀers best prices for
+NASDAQ-listed stocks most of the time during these sample periods. I employ the usual data cleaning
+criterion:
+• Delete quotes with dollar bid-ask spread $0 or smaller, or $5 or larger.
+• Delete quotes with proportional spread of 0.2 or larger
+• Delete days where the main trading system (NASDAQ and NYSE) close early
+Dollar spread is the diﬀerence between the best bid and the best ask, and proportional spread is the
+dollar spread divided by the bid-ask midpoint. I take the average of the quantity at best ask and at best
+bid for depth. While also adding depth away from the best bid and ask may be informative, TAQ does not
+have information on those quotes. After constructing spreads and depth for all traded stocks, for each time
+8
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+period, I winsorize the data at 1% level (over all stocks in TAQ) for potential outliers. It should also be
+noted that I use 5 minute snapshot data instead of the time-weighted average that some papers use. This
+was mainly for the ease of data construction, and since the sampling interval is short, it should not have a
+material impact.
+One issue with using intraday bid-ask spread data is that it exhibits a distinct time-of-the-day pattern
+as documented in McInish and Wood (1992) and others. Because bid-ask spread generally exhibits a steep
+reverse J-shape, it may be the case that the ﬁrst 30 minutes of the trading day unduly drives most of the
+results. Therefore, I follow Hasbrouck and Seppi (2001) and Corwin and Lipson (2011), and normalize the
+spreads by the time-of-the-day mean and standard deviation. Speciﬁcally, for security i on day τ and time
+t, denote ∆spreadi,τ,t as the ﬁrst-diﬀerenced quoted proportional spread, µi,t as the monthly average of
+∆spreadi,τ,t (to prevent notational clutter, will omit month variable unless necessary), σi,t as the monthly
+standard deviation. Then the standardized ∆spread is calculated as
+∆si,τ,t = ∆spreadi,τ,t −µi,t
+σi,t
+(1)
+(Figure 2 here)
+For example, Figure 2 is the 5 minute ﬁrst-diﬀerenced proportional bid-ask spread of the New York
+Times stock graphed over six days. Blue dotted vertical lines mark beginning of each trading day. As is
+evident in the graph, ∆spread has higher variance towards beginning and end of the day. If we are interested
+in the ∆spread on day 3 at 9:45AM, for example, then we take all 9:45AM ∆spreads (red dots in the plot)
+for the stock in that month, and use the mean and the standard deviation to normalize the day 3, 9:45AM
+∆spread.
+A slightly diﬀerent version calculated using 20 day rolling mean and standard deviation (without
+including day τ’s data) is notated as ∆s2i,τ,t. Because standardizing occasionally produces extreme outliers
+when the standard deviation is small, all standardized spreads are winsorized at 1% level.
+Daily bid-ask spread data are constructed fairly similarly. First, I take the daily mean of the 5 minute
+spreads, which we will denote spreadi,τ. To standardize ∆spreadi,τ, I use the 20 day rolling mean and
+standard deviation, from day (τ −20) to (τ −1), and will denote the standardized ∆spread as ∆s2i,τ. I also
+construct data similarly for dollar spreads and depth.
+Standardizing the spreads serve another role as well. Because less liquid, smaller stocks in general
+have larger spreads and therefore larger volatility in ∆spread, standardizing them by stock to have standard
+9
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+deviation of 1 forces all stocks to have the same amount of inﬂuence.
+Eﬀective spread is calculated as the diﬀerence between the traded price and the prevailing midpoint.
+I follow Bessembinder (2003) and use contemporaneous quotes to match trades with quotes, and otherwise
+follow Lee and Ready (1991) methodology to infer trade direction. I take size-weighted average over each 5
+minute interval. All standardization of daily and intraday data are done as before.
+For the Dow 30 principal component analysis, I calculate the standardized non-diﬀerenced 5 minute
+spreads using the same methodology as calculating ∆si,τ,t in (1). I call this si,τ,t for ease of notation, but
+one should note that taking ﬁrst diﬀerence of this does not lead to ∆si,τ,t in (1).
+Market capitalization and trading volume are taken from CRSP, and trade size and number of trades
+are calculated from trade data on TAQ. For trade size, I take the stock-by-stock daily mean and median of
+the number of stocks in each trade. Number of trades are counted daily at a stock-by-stock basis. As with
+the spread data, I only use the trades done on the platform that the stock is listed on.
+4
+Intraday comovement of Dow 30 Components
+I do a principal component analysis on the Dow30 stocks. I follow Hasbrouck and Seppi (2001) quite closely
+in methodology for ease of comparison and use levels instead of ﬁrst diﬀerences. (I use 5 minute interval
+instead of 15 minute intervals, and do the analysis monthly as opposed to the annual, but the analysis is
+same otherwise.) Because the standardized spread si,τ,t has mean of 0 and standard deviation of 1 for each
+stock i calculated over the month, results are straightforward to interpret and will not be driven by a few
+stocks.
+For each month, I do a principal components analysis on the 5 minute standardized spreads si,τ,t and
+calculate the fraction of the variance that the ﬁrst two principal components explain.
+(Figure 3 here)
+Figure 3 plots the results. The ﬁrst two PCs explain approximately 13% of the total variation in
+2002-4 period, 15% in 2006-7 period, 22% in 2008-9.
+Looking at long-term trends are suggestive but does not say much about whether algorithmic trading
+causes it. It may be the turbulent market conditions in late 2000’s that are driving the increase in the later
+part of the sample rather than algorithmic trading. Therefore, I now turn to the tests using hybrid market
+introduction and autoquote introduction.
+10
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+5
+NYSE Hybridization
+5.1
+Background and Institutional Details
+By late 1990’s in NYSE, there were electronic trading via SuperDOT and traditional ﬂoor trading. Orders
+entered in SuperDOT were sent directly to the specialist, skipping the ﬂoor brokers, but were not automatically transacted. In 1999, the fraction of ﬂoor trading and electronic trading were about equal (Hendershott
+and Moulton (2011)).
+In 2000, NYSE introduced Direct+, a system for automatic execution. Orders designated as “auto
+ex” were automatically executed against the outstanding limit order book, therefore giving speed advantage
+and anonymity. The main restrictions on this were
+1. Order has to be 1,099 shares or smaller
+2. 30-second rule: Same beneﬁcial owner cannot enter another order in the same stock within 30 seconds
+of an order entry.
+3. All orders had to be priced, i.e., submitted as an limit order. (Marketable limit orders were allowed.)
+4. Orders were not allowed to walk up the limit order book.
+In response to Regulation NMS, NYSE announced the implementation of the hybrid market to qualify
+as a “fast” market under Reg. NMS. This was because under the new rule, only the “fast” markets were
+protected against trade-through. The main change was expanding the automatic execution by lifting the
+restrictions mentioned above.
+Transition was done in four phases, with Phase III being the critical step where the major changes
+mentioned above were made: restrictions on automatic execution were removed starting from October 2006
+and ending on January 2007.
+This move was phased in over time, with about 50 each going hybrid in
+October and November, and the majority going hybrid in December and January. According to news release
+by NYSE Group, Inc.,4 the percentage of volume through Direct+ has increased from 18.8% pre-hybrid (30
+days prior to Phase III enablement) to 80.0%, and the percentage of trades via Direct+ have increased from
+28.8% to 90.9%. Execuction time decreased from 12 seconds to less than 1 second for market orders, and
+was cut in half for limit orders (Hendershott and Moulton (2011)).
+Hendershott and Moulton (2011) ﬁnds that adverse selection costs increased permanently with hybridization, and realized spreads increased initially but decreased back by 4 months after hybridization. They
+4www.nyse.com/pdfs/HybridPhaseIV1.24.07.pdf
+11
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+attribute this to liquidity suppliers initially having some market power but losing it as competition increased
+or as new liquidity providers entered. (For more institutional details on hybridization, see Hendershott and
+Moulton (2011), and for eﬀects on market quality, see Hendershott and Moulton (2011) and Storkenmaier
+and Riordan (2009).)
+5.2
+Data
+Hybridization was mostly on expanding the automatic execution functionalities; therefore, it would have
+beneﬁtted the algorithmic traders the most, increasing their participation. Because Phase III introduction
+was phased in over couple months, this provides an excellent opportunity for a natural experiment.
+Hybrid activation dates are from Terrence Hendershott’s website, and is the same data used in Hendershott and Moulton (2011). Sample period is June 2006 to May 2007, and full hybrid sample is selected as
+outlined in Section 3.2, for both NYSE-listed and NASDAQ-listed stocks. Hybridization was phased in from
+October 2006 to January 2007, with 65 (in the full hybrid test sample) going hybrid in October, another 45
+going hybrid in November, and majority of stocks phasing in during December and January.
+For most of the analysis, I use the S&P 500 and NASDAQ-100 sample. I do this mainly because the
+daily correlation tests are somewhat computationally intense, and I use the same for the intraday correlation
+test to be consistent. I will show later as a robustness check that using the full hybrid test sample does not
+change the results much. Figure 5 shows the phase-in schedule for the S&P 500 sample, and Table 1 shows
+summary statistics by hybrid activation date for both samples. As we can see from Table 1, stocks that went
+hybrid early were larger, more active stocks
+(Figure 5 here)
+(Table 1 here)
+5.3
+Did hybridization increase algorithmic trading?
+Hybridization increased automatic execution capacity, and thus, I conjecture that it would have beneﬁtted
+algorithmic traders the most. Therefore, algorithmic trading would have increased, either as a fraction of
+orders placed or as a fraction of trades. Because we cannot observe whether an individual trade comes from
+an algorithm or not, I cannot directly test whether algorithmic trading increased. Instead I look at average
+trade size and number of trades; average trade size would decrease and number of trades would increase with
+more algorithmic trading. We cannot completely rule out the possibility that this may be caused by other
+reasons such as increase in retail trading, but increase in algorithmic trading seems to be the most plausible
+12
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+one.
+For all stocks in the S&P 500 and NASDAQ 100 sample, I calculate the average of the variable of
+interest (number of trades, mean trade size, and median trade size) during June 2006. Then for rest of the
+sample period (July 2006 to May 2007), I measure each variable relative to that number:
+yj,τ =
+var of interesti,τ
+mean of var of interest in June ’06
+To take out time eﬀects, for each NYSE stock i on day τ, I subtract the mean of yj,τ of NASDAQ stocks
+from yi,τ, and denote it zi,τ
+zi,τ = yi,τ −1
+M
+X
+j∈Q
+yj,τ
+Figure ?? present the average zi,τ by event date (days from hybridization) for all three variables. The
+number of trade jumps up by 30% on the hybridization date and has a slight drift upwards, and the mean
+and median trade size jumps down by 30% and has a slight drift down. This points at a sharp increase in
+algorithmic trading with hybridization.
+To formally test this, I also employ a regression using raw data of variables of interest. I instead
+control for stock and date ﬁxed eﬀects.
+xi,τ = Ai + Bτ + C hybridi,τ
+(2)
+Table 2 presents the results. Changes are signiﬁcant both statistically and economically, and similar
+in magnitude to the graph above.
+5.4
+Intraday Correlations
+Using the hybridization schedule, I show that once a stock goes hybrid, its spreads exhibit a higher comovement with the portfolio spread of the ‘base’ portfolio. If all NYSE stocks see their liquidity comove more
+with that of the base portfolio when they go hybrid, they will comove higher with each other. While it
+is possible that this may be caused by some other changes induced by hybridization, algorithmic trading
+seems to be the only reasonable explanation. For example, higher comovement in spreads may be induced
+by higher comovement in information asymmetry, but except for algorithmic trading, it is not clear what
+change would cause the higher commonality in information asymmetry.
+Here I set the base portfolio as the NASDAQ-100 sample. Then, for every NYSE-listed stock i on day
+13
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+τ, I calculate
+corri,τ = corr(∆s2i,τ,t, ∆s2base,τ,t)
+∆s2base,τ,t is the cross-sectional mean or median of all ∆s2j,τ,t where stock j is in the base portfolio. I use
+∆s2 instead of ∆s to eliminate the potential look-ahead bias in case the distribution of spreads change with
+hybridization. Then I run the regression
+corri,τ =
+X
+Ai +
+X
+Bτ + C hybridi,τ
+(3)
+where Ai’s are stock ﬁxed eﬀects, Bτ’s are date ﬁxed eﬀects, and hybrid is 1 if stock has gone hybrid, 0
+otherwise.
+Results using cross-sectional mean to calculate portfolio spreads are presented in Table 3. C is positive
+and signiﬁcant in all speciﬁcations. Using proportional spreads, the mean correlation between an average
+NYSE stock and the NASDAQ market increases by 85% without controlling for date ﬁxed eﬀects, or by 45%
+after controlling for date ﬁxed eﬀects. Given that the correlation before hybrid is quite small (about 0.025),
+the absolute eﬀect of hybridization is still small, but the relative magnitude is quite large.
+(Table 3 here)
+Because spreads are discrete, they tend to move around less than prices, at least intraday. One concern
+may be that the results can be driven by price movement, as proportional spread is dollar spread divided
+by the bid-ask midpoint. To address this, I also run the same test using dollar spreads, and the results are
+presented in the ﬁrst two columns of Table 3. Results are very similar, and thus, are not driven by price
+movement but by movement in spreads.
+One issue that might worry us is that the hybridization schedule was not set completely randomly;
+as we can see in Table 1, stocks that went hybrid early were large, active stocks. It might then be the
+case that the results are somehow driven by this, or somehow might be plagued by endogeneity problem.
+Regression with stock and date ﬁxed eﬀects is essentially a diﬀerence-in-diﬀerence test. Let us assume for a
+moment that stocks go hybrid in two batches; say, one batch on day 1 and the other on day 50. Then, for
+the regression to be yielding a positive C when there are none in reality, it has to be the case that between
+day 1 and 50, the ﬁrst batch of stocks that are already hybridized experience an increase in correlation with
+the NASDAQ market while the second batch do not. While this is possible, it is diﬃcult to come up with
+a plausible story that might lead to this. Another test against this possibility is running the analysis with
+only the December and January hybridization stocks: as most stocks go hybrid during these two months, it
+14
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+seems to be much more random. Results are similar.
+5.5
+Daily Correlation
+There are two possibilities for the above result: liquidity movement might have gotten more synchronized
+intraday while remaining about the same in longer intervals, or the increase might have also happened in
+longer intervals. To test this, I turn to daily bid-ask spreads. The basic idea behind the test is similar to
+the intraday correlation analysis, but taking the correlation as above will now require overlapping data or
+otherwise would result in a very few observations per stock. Therefore, I run the following regression
+∆s2i,τ = Bτ + (Di + E hybridi,τ)∆s3base,τ + ϵi,t
+(4)
+∆s3base,τ is the cross-sectional mean of ∆s2j,τ for all stock j in the base portfolio, divided by its sample
+standard deviation. In other words, deﬁne
+∆s2base,τ = 1
+N
+X
+j∈base
+∆s2j,τ
+∆s3base,τ =
+∆s2base,τ
+std(∆s2base,τ)
+Using ∆s3base instead of ∆s2base is only to make interpretation easier. If ∆spread for all stocks in the
+base portfolio increase by one standard deviation, then ∆s2j,τ increases by 1 for all j’s, thereby increasing
+∆s2base by 1. However, note that this is diﬀerent from a one standard deviation change in ∆s2base. ∆s2base
+has a standard deviation smaller than 1 (will be 1 if and only if all s2j’s are perfectly correlated), so I scale
+∆s2base by its standard deviation. Because it is only scaling by a constant, there are no qualitative changes.
+As mentioned before, I use the NASDAQ-100 sample for the base portfolio, and the S&P 500 for the NYSE
+sample.
+For intuition, I ﬁrst strip (4) to leave only the necessary components.
+∆s2i,τ = (Di + E hybridi,τ)∆s3base,τ + ϵi,t
+(5)
+Since both ∆s2i and ∆s3base have an expected mean of 0 and a standard deviation of 1 (for ∆s2i, it is
+an expected standard deviation of 1, for ∆s3base, it is an sample standard deviation of 1), Di is approximately
+the correlation between ∆s2i and ∆s3base before stock i goes hybrid. E is the average change in correlation
+15
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+when a stock goes hybrid, where E > 0 corresponds to an increase in correlation with hybridization.
+One concern, however, may be that there is a time trend unrelated to hybridization that is driving a
+positive E. If the correlation increases over the sample period, that can result in E > 0 even if it is not due
+to hybridization. To control for this, we can include time dummies as follows:
+s2i,τ = (Di + E hybridi,τ + Fτ)s3base,τ + ϵi,t
+(6)
+Time trend in correlation should be picked up by Fτ.
+Above regression is same as (4) if we set Bτ =
+Fτ s3base,τ. I run the regression in this speciﬁcation, but it is identical to using (6).
+Including the time dummies does pose one issue, however. In (4), mean(Di) + mean(Fτ) is the mean
+correlation before hybridization, so we can look at the average Di + Fτ and compare it to the estimate of E
+to gauge the relative magnitude of E. It seems to be the case that Fτ’s are not well estimated and sometimes
+lead to estimate of mean(Di) + mean(Fτ) varying widely depending on small changes in speciﬁcation (need
+to investigate further why). Thus, I look at average Di from (5) to gauge the magnitude of E.
+Hendershott and Moulton (2011) and others ﬁnd that quoted spreads increase with hybridization.
+Imagine an extreme case where the spread was i.i.d. with mean 1 and standard deviation 0.5 before hybridization, and on hybrid date, it jumps to a distribution of mean 2 and standard deviation 0.5 (still i.i.d.).
+Denote the hybrid date by T. Then E[s2i,T ] = 2−1
+0.5 = 2, and then will decrease gradually back to 0 by
+T + 21. For dates from T to T + 20, s2i,t will be signiﬁcantly diﬀerent from 0 and be much larger than all
+others due to this jump on hybrid date. Figure 6 illustrates this eﬀect. I graph the mean and median of
+s2i,τ −s2NASDAQ,τ by event date, where the diﬀerence with the NASDAQ market is taken to control for time
+trends. (I use the original full sample used in the 5 minute correlation tests, but the results are similar when
+restricted to the S&P 500 and NASDAQ sample.) We can see that there is an signiﬁcant increase on hybrid
+date and it decreases back by 20 days, as we use the 20 day rolling mean and standard deviation to calculate
+the standardized spreads. Because this eﬀect is large compared to the level of s2, it will signiﬁcantly bias
+the regression results. Therefore, I exclude observations from hybrid date 0 to 20.
+(Include Figure 6 here)
+Results of the main regression (4) and (5) are presented in Table 4.
+Average correlation before
+hybridization (mean(Di) or mean(Di) + mean(Fτ)) are not presented in speciﬁcations with date dummies
+for the reasons mentioned before. Before hybridization, correlation in quoted % spreads between a NYSE
+stock and the NASDAQ market is 0.16 on average, and it increases by 0.14 when the stock goes hybrid. This
+16
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+is an increase of more than 90%. Without controlling for date dummies, the eﬀect is slightly larger (0.16).
+These results are robust to diﬀerent speciﬁcations such as using dollar spreads (column (1) and (2)) or using
+the cross-sectional median instead of mean (results not reported).
+(Table 4 here)
+5.6
+Depth and Eﬀective Spread
+Results for daily correlation test using eﬀective spreads are presented in Table 5.
+In both relative and
+absolute levels, the increase is smaller than for quoted spreads, but is still statistically and economically
+signiﬁcant when we control for date ﬁxed eﬀects. It is not entirely clear why results are signiﬁcantly diﬀerent
+when date ﬁxed eﬀects are not included.
+(Table 5 here)
+Using depth requires taking out data from October 30 to November 30, 2006. NASDAQ merged their
+platform with Brut and INET, two large ECNs on October 30, 2006.5 Depth jumped up by about 6 standard
+deviations on this date, and because I use 20 trading days for standardization, I have to take out 20 days of
+data. Spreads do seem to decrease a bit on this date as well, but results do not change much when I take
+out Oct 30-Nov 30.
+Results are presented in Table 6.
+After controlling for date ﬁxed eﬀects, increase is positive but
+statistically insigniﬁcant and also quite small. This may be partially due to loss of data mentioned above.
+In either case, at least we can be assured that depth does not undo the increase in correlation of spreads.
+(Table 6 here)
+5.7
+Is the eﬀect of hybridization diﬀerent by size?
+Next, I turn to see whether eﬀects are diﬀerent by market capitalization. It is not entirely clear ex ante
+whether smaller or larger stocks will have a stronger eﬀect. Large, active stocks are more attractive to
+algorithmic traders, and thus may experience a higher increase in algorithmic trading and subsequently a
+higher increase in correlation. Another possibility, however, may be that while algorithmic trading increases
+more in large stocks, smaller stocks may see a higher eﬀect because they had less algorithmic trading to
+begin with, so may be more sensitive to increase in algorithmic trading.
+5NASDAQ bought both Brut and INET before this date, but the platforms were operated separately from NASDAQ’s
+platform until late October when they were integrated. They were integrated before October 30 for some stocks, but great
+majority were integrated on October 30.
+17
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+I divide the S&P 500 sample into quartiles by market capitalization as of August 31, 2006. Quartile 1
+is the smallest quartile and 4 is the largest. To look at whether the eﬀect of hybridization on daily liquidity
+comovement is diﬀerent by size, I run the regression
+∆s2i,τ = Bτ + (Di + (E + E2 G2 + E3 G3 + E4 G4) hybridi,τ)∆s3Q,τ + ϵi,t
+(7)
+where Gk is a dummy variable that is equal to 1 if stock i is in quartile k, and 0 otherwise. This regression
+is similar to (4), but allowing for E to be diﬀerent for each size quartile. Quartile 1 is taken to be the base
+quartile, and E2, E3, and E4 picks up the diﬀerence between quartile 1 and all other quartiles. Results are
+presented in Table 7. E is positive and signiﬁcant for all speciﬁcations, and Ek’s are all positive but not
+statistically signiﬁcant. Thus, the eﬀect of hybridization on daily liquidity comovement is about the same
+across all size groups.
+(Table 7 here)
+Similarly, to look at intraday correlation, I run the regression
+corri,τ = Ai + Bτ + (C + C2 G2 + C3 G3 + C4 G4) hybridi,τ + ϵi,τ
+(8)
+Results are presented in Table 8. Across all speciﬁcations, larger stocks see a smaller increase in correlation.
+This may be due to the sensitivity of the smaller stocks mentioned above. The increase is still positive for
+all quartiles.
+(Table 8 here)
+6
+Increase in liquidity risk or decrease in idiosyncratic liquidity?
+So far, I have shown that algorithmic trading increases liquidity commonality. As mentioned before, this
+can come from two diﬀerent mechanisms: systematic factor becoming more volatile, or idiosyncratic part
+becoming less volatile.
+While they are not mutually exclusive, they do have diﬀerent implications.
+If
+the systematic liquidity factor becomes more volatile, it means that liquidity risk increases. Decrease of
+idiosyncratic volatility can mean that markets are becoming more eﬃcient while the level of liquidity risk
+remains the same.
+18
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+6.1
+Does market liquidity factor become more volatile?
+In this section, I test whether market liquidity factor becomes more volatile with hybridization. I divide
+NYSE stocks into ﬁve portfolios by hybridization date, and construct portfolio liquidity factor for each of
+them. Then I look at whether the portfolio liquidity factor becomes more volatile when the entire portfolio
+goes hybrid.
+I divide the S&P 500 sample into ﬁve portfolios by hybridization date. They are divided as: 12/5/06
+and before, 12/6/06 to 12/11/06, 12/12/06 to 12/17/06, 12/18/06 to 1/3/07, 1/4/07 and later. As we can
+see in Figure 7, the windows are uneven but created to have similar number of stocks in the portfolio.
+(Figure 7 here)
+For each portfolio, I construct portfolio spreads in 5 minute intervals by taking the equal-weighted
+mean or median of raw spreads. I use raw spreads rather than standardized spread because standardized
+spreads set each stock’s spread to have an expected mean of 0 and standard deviation of 1. This will make
+the volatility of the portfolio spreads to depend solely on the correlation. In other words, taking standardized
+spreads sets the total liquidity volatility (systematic+idiosyncratic volatility) to be a constant, so the market
+factor will pick up the relative magnitude of the systematic component. Because here we are interested in
+absolute magnitude of the systematic volatility, I use raw spreads.
+For each portfolio l on day τ, I calculate the daily volatility of the 5 minute portfolio spreads, which
+I will denote as stdl,τ(spreadl,τ,t).
+I divide this by the sample standard deviation (over all τ) to make
+interpretation easier, and denote this stdl,τ. In other words,
+stdl,τ =
+stdl,τ(spreadl,τ,t)
+stdl(stdτ(spreadl,τ))
+(9)
+Results are virtually same without this normalization but it makes it easier for us to understand what the
+magnitudes in the results mean.
+I exclude the period from when the ﬁrst stock in the portfolio goes hybrid until the day before the last
+stock in the portfolio goes hybrid. Therefore, in the regression, all stocks in the portfolio are either hybrid
+or not, so hybridl,τ is a binary variable. Main test is as follows:
+stdl,τ = Al + Bτ + C hybridl,τ
+(10)
+where Al is the portfolio ﬁxed eﬀect and Bτ is the date ﬁxed eﬀect.
+19
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+(Table 9 here)
+Table 9 provides the results for the above regression. C are signiﬁcant and positive for most speciﬁcations. Using proportional spreads and using median to calculate portfolio liquidity, for example, portfolio
+liquidity volatility increases 0.2 standard deviation, or by 5.5% (0.20÷3.66 = 0.055) when the portfolio goes
+hybrid.
+6.2
+Does idiosyncratic liquidity volatility decrease?
+Holding the volatility of idiosyncratic liquidity ﬁxed, the increase of the volatility of systematic liquidity
+shown in the above section will lead to increase in liquidity commonality. If idiosyncratic volatility also
+increased, it will have opposite eﬀects on liquidity commonality, whereas if idiosyncratic volatility decreased,
+it will further increase liquidity commonality. An interesting question is, how much of the increase in liquidity
+commonality is due to the increase in systematic volatility and how much is due to the change in idiosyncratic
+volatility?
+Instead of directly constructing idiosyncratic liquidity, I look at the volatility of individual stock
+liquidity to answer this question. If, for example, individual stock liquidity did not become any more or
+less volatile with hybridization, it must have been the case that idiosyncratic volatility decreased exactly to
+oﬀset the increase in systematic volatility.
+For each stock i and day τ, I calculate the volatility of 5 minute spreads, and normalize that by the
+sample standard deviation as before.
+stdi,τ =
+stdi,τ(spreadi,τ,t)
+stdi(stdτ(spreadi,τ))
+(11)
+Then I look at whether stdi,τ increases when stock i goes hybrid, after controlling for stock and date ﬁxed
+eﬀects.
+stdi,τ = Ai + Bτ + C hybridi,τ
+(12)
+Results are presented in Table 10. Individual stock liquidity becomes less volatile with hybridization,
+and this is both statistically and economically signiﬁcant. It decreases approximately 0.2 standard deviation,
+or by 5 to 7%. Since systematic liquidity became more volatile, it must be the case that idiosyncratic liquidity
+volatility decreased even further.
+To think about the relative magnitude of diﬀerent changes, it is informative to know how much of the
+variation in individual liquidity can be explained by systematic liquidity. If it is very small (for example,
+20
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+1%), then 5% increase in systematic liquidity volatility will barely aﬀect individual liquidity volatility. For
+each stock i, I regress its 5 minute spreads on the spread of the portfolio that it belongs in.
+spreadi,τ,t = Ai + Bispreadl,τ,t + ϵl,τ,t
+(13)
+This regression is done stock-by-stock. Mean R2 is between 10 to 20%; it is not huge, but substantial. Backof-the-envolpe calculation suggests that roughly 10% of the increase in correlation is due to the increase in
+systematic volatility.
+7
+Conclusion
+I show that liquidity comovement in intraday levels have increased over the past decade, and at least a part
+of it can be contributed to the growth of algorithmic trading. Natural experiment using the introduction
+of hybrid markets shows signiﬁcant increase in the magnitude of liquidity comovement. This has important
+implications as the markets are moving more and more electronic, and becoming faster. With algorithms
+now operating at a millisecond level, it might be the case that now liquidity commonality exists at even ﬁner
+intervals, such as seconds.
+This paper also shows that the increase in comovement due to algorithmic trading is not only true at
+intraday levels, but also in daily frequencies. Thus, it is not merely that algorithmic trading have synchronized
+intraday lead-lag movements in liquidity, but have actually induced higher comovement in longer intervals.
+Eﬀects are large both in absolute and relative magnitudes.
+Higher correlation is induced by both the decrease in idiosyncratic volatility and the increase in
+systematic volatility. This has important implications as it implies higher liquidity risk. Currently I look at
+the volatility of 5 minute spreads. Studying how the volatility of daily spreads change with hybridization
+will also be an interesting question. Given that the increase in liquidity comovement were stronger for daily
+spreads than for 5 minute spreads, volatility changes may also be stronger for daily data. It is unfortunately
+not straightforward to test this as measuring volatility of daily liquidity will only leave us with a few
+observations per stock.
+There are couple diﬀerent possible channels that will lead to our results. In this paper, I do not try to
+distinguish between them. While it would be interesting to study whether the changes are due to liquidity
+supply, liquidity demand, or both, this will require decomposing the spread into diﬀerent components or
+21
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+using other measures such as return reversals. Using any type of estimated liquidity measure in the current
+setup is troublesome because the inherent noise from estimating makes all regressions too noisy. It would
+interesting to ﬁgure out a diﬀerent method and study this question.
+22
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+References
+Acharya, V. and Pedersen, L. (2005), ‘Asset pricing with liquidity risk’, Journal of Financial Economics
+77(2), 375–410.
+Acharya, V. and Schaefer, S. (2006), ‘Liquidity risk and correlation risk: Implications for risk management’,
+Working Paper .
+Bessembinder, H. (2003), ‘Issues in assessing trade execution costs’, Journal of Financial Markets 6(3), 233–
+257.
+Brunnermeier, M. and Pedersen, L. (2009), ‘Market liquidity and funding liquidity’, Review of Financial
+Studies 22(6), 2201.
+Chordia, T., Roll, R. and Subrahmanyam, A. (2000), ‘Commonality in liquidity’, Journal of Financial
+Economics 56(1), 3–28.
+Comerton-Forde, C., Hendershott, T., Jones, C., Moulton, P. and Seasholes, M. (2010), ‘Time variation in
+liquidity: The role of market-maker inventories and revenues’, Journal of Finance 65(1), 295–331.
+Corwin, S. and Lipson, M. (2011), ‘Order characteristics and the sources of commonality in prices and
+liquidity’, Journal of Financial Markets 14(1), 47–81.
+Coughenour, J. and Saad, M. (2004), ‘Common market makers and commonality in liquidity’, Journal of
+Financial Economics 73(1), 37–69.
+Domowitz, I., Hansch, O. and Wang, X. (2005), ‘Liquidity commonality and return co-movement’, Journal
+of Financial Markets 8(4), 351–376.
+Donefer, B. (2010), ‘Algos gone wild: Risk in the world of automated trading strategies’, Journal of Trading
+5(2), 31–34.
+Hameed, A., Kang, W. and Viswanathan, S. (2010), ‘Stock market declines and liquidity’, Journal of Finance
+65(1), 257–293.
+Harford, J. and Kaul, A. (2005), ‘Correlated order ﬂow: Pervasiveness, sources, and pricing eﬀects’, Journal
+of Financial and Quantitative Analysis 40(01), 29–55.
+Hasbrouck, J. and Saar, G. (2012), ‘Low-latency trading’, Working Paper .
+23
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+Hasbrouck, J. and Seppi, D. (2001), ‘Common factors in prices, order ﬂows, and liquidity’, Journal of
+Financial Economics 59(3), 383–411.
+Hasbrouck, J. and Soﬁanos, G. (1993), ‘The trades of market makers: An empirical analysis of NYSE
+specialists’, Journal of Finance 48(5), 1565–1593.
+Hendershott, T., Jones, C. and Menkveld, A. (2011), ‘Does algorithmic trading improve liquidity?’, Journal
+of Finance 66(1), 1–33.
+Hendershott, T. and Menkveld, A. (2010), ‘Price pressures’, Working Paper .
+Hendershott, T. and Moulton, P. (2011), ‘Automation, speed, and stock market quality: The NYSE’s hybrid’,
+Journal of Financial Markets 14(4), 568–604.
+Hendershott, T. and Riordan, R. (2009), ‘Algorithmic trading and information’, Working Paper .
+Huberman, G. and Halka, D. (2001), ‘Systematic liquidity’, Journal of Financial Research 24(2), 161–178.
+Jovanovic, B. and Menkveld, A. (2010), ‘Middlemen in limit order markets’, Manuscript, VU University
+Amsterdam .
+Kamara, A., Lou, X. and Sadka, R. (2008), ‘The divergence of liquidity commonality in the cross-section of
+stocks’, Journal of Financial Economics 89(3), 444–466.
+Koch, A., Ruenzi, S. and Starks, L. (2011), ‘Commonality in liquidity: A demand-side explanation’, Working
+Paper .
+Lee, C. and Ready, M. (1991), ‘Inferring trade direction from intraday data’, Journal of Finance 46(2), 733–
+746.
+McInish, T. and Wood, R. (1992), ‘An analysis of intraday patterns in bid/ask spreads for NYSE stocks’,
+The Journal of Finance 47(2), 753–764.
+Nagel, S. (2011), ‘Evaporating Liquidity’, Working Paper .
+Riordan, R. and Storkenmaier, A. (2011), ‘Latency, liquidity and price discovery’, Working Paper .
+Stambaugh, R. and P´astor, L. (2003), ‘Liquidity risk and expected stock returns’, Journal of Political
+Economy 111(3).
+24
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+Storkenmaier, A. and Riordan, R. (2009), ‘The eﬀect of automated trading on market quality: Evidence
+from the New York Stock Exchange’, 23, 11–30.
+25
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+Table 1: Summary Statistics for Hybrid Test
+This table presents summary statistics for the stocks in the hybrid test sample by hybrid activation month. Time period is June 2006 to May 2007, which
+covers the Phase III of NYSE hybridization (Oct 2006 - Jan 2007). Market capitalization and monthly volume are calculated from the month-end CRSP
+data, and both are in unit of $1,000. Dollar spreads and proportional spreads are calculated from TAQ data in 5 minute intervals, and averaged over the
+sample period. Proportional spread (% spread) is measured as dollar spread divided by the bid-ask midpoint. For all variables, mean and median of each
+group are presented. Panel A presents the statistics for the full hybrid test sample, and Panel B presents the statistics for the S&P 500 sample.
+Panel A. Full hybrid sample
+hybridization month
+10
+11
+12
+1
+All
+# of stocks
+65
+45
+667
+448
+1225
+market cap (mean)
+17,726,786
+31,560,597
+9,840,390
+6,430,442
+9,809,670
+market cap (median)
+4,038,677
+5,691,639
+2,734,136
+2,085,660
+2,559,841
+volume (mean)
+768,328
+713,869
+333,936
+245,907
+338,749
+volume (median)
+237,773
+251,288
+151,807
+115,171
+138,244
+$ spread (mean)
+0.0234
+0.0212
+0.0261
+0.0278
+0.0264
+$ spread (median)
+0.0186
+0.0177
+0.0218
+0.0235
+0.0223
+% spread (mean)
+0.0008
+0.0007
+0.0009
+0.0010
+0.0009
+% spread (median)
+0.0006
+0.0005
+0.0007
+0.0009
+0.0007
+Panel B. S&P 500 sample
+hybridization month
+10
+11
+12
+1
+All
+# of stocks
+28
+22
+236
+106
+392
+market cap (mean)
+38,035,133
+61,636,502
+24,217,388
+20,142,885
+26,202,643
+market cap (median)
+17,719,322
+22,288,303
+12,932,437
+10,865,499
+13,292,748
+volume (mean)
+1,531,655
+1,295,200
+723,728
+621,943
+785,986
+volume (median)
+1,024,824
+719,303
+462,307
+347,035
+432,336
+$ spread (mean)
+0.0154
+0.0152
+0.0181
+0.0182
+0.0178
+$ spread (median)
+0.0134
+0.0134
+0.0166
+0.0170
+0.0162
+% spread (mean)
+0.0005
+0.0003
+0.0004
+0.0005
+0.0004
+% spread (median)
+0.0004
+0.0003
+0.0004
+0.0004
+0.0004
+26
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+Table 2: Eﬀect of Hybridization on Algorithmic Trading
+This table shows the eﬀect of hybridization on trade size and number of trades.
+I run the following regression
+xi,τ = Ai + Bτ + C hybridi,τ
+where xi,τ is one of the following:
+mean trade size, median trade size, and the number of trades.
+For each
+stock i in the S&P 500 sample on day τ, mean (median) trade size are calculated as the mean (median) number
+of stocks in each trade. All three are calculated from TAQ. t statistics are provided in parantheses using double
+clustered standard errors by stock and date.
+mean size
+med size
+# of trades
+hybrid
+-153.8033∗∗
+-83.7428∗∗
+1439.4038∗∗
+(-32.81)
+(-79.29)
+(45.06)
+mean(Ai) + mean(Bτ)
+546.8274
+237.1376
+3314.1219
+ﬁrm f.e.
+Yes
+Yes
+Yes
+date f.e.
+Yes
+Yes
+Yes
+Adj. R sq
+0.737
+0.733
+0.714
+N
+94751
+94751
+94751
+t statistics in parentheses, std errors double clustered
++ p < 0.10, ∗p < 0.05, ∗∗p < 0.01
+27
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+Table 3: Impact of Hybridization on 5 minute Liquidity Comovement
+This table shows the eﬀect of hybridization on intraday bid-ask spread comovement.
+For all stock i in the
+S&P 500 sample, I calculate
+corri,τ = corr(∆s2i,τ,t, ∆s2NASDAQ,τ,t)
+∆s2NASDAQ,τ,t is the cross-sectional mean of ∆s2j,τ,t where stock j is in the NASDAQ 100 sample.
+∆s2 is
+the standardized ∆spread using the 20 day rolling time-speciﬁc mean and standard deviation. Results below show
+the regression coeﬃcients of
+corri,τ = P Ai + P Bτ + C hybridi,τ
+where Ai’s are stock ﬁxed eﬀects, Bτ’s are date ﬁxed eﬀects, and hybridi,τ is a dummy variable that is 1 if
+stock i is hybrid at day τ. Column (1) and (2) are for dollar spreads, and (3) and (4) uses proportional spreads. t
+values are provided in paranthesis. All standard errors are two-way clustered by date and stock.
+(1)
+(2)
+(3)
+(4)
+$ spread
+$ spread
+% spread
+% spread
+hybrid
+0.0139∗∗
+0.0084∗∗
+0.0218∗∗
+0.0136∗∗
+(5.63)
+(2.61)
+(7.53)
+(3.95)
+mean(Ai) + mean(Bτ)
+0.0248
+0.0273
+0.0245
+0.0284
+ﬁrm f.e.
+Yes
+Yes
+Yes
+Yes
+date f.e.
+No
+Yes
+No
+Yes
+Adj. R sq
+0.007
+0.023
+0.008
+0.024
+N
+85976
+85976
+85976
+85976
+t statistics in parentheses, std. errors double clustered
++ p < 0.10, ∗p < 0.05, ∗∗p < 0.01
+28
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+Table 4: Eﬀect of Hybridization on Daily Correlation
+Below table presents the results of the regression
+∆s2i,τ = Bτ + (Di + E hybridi,τ)∆s3NASDAQ,τ + ϵi,τ
+∆s2i,τ is the daily standardized ∆spread using rolling mean and standard deviation of last 20 days. ∆s3NASDAQ,τ
+is the cross-sectional mean of ∆s2j,τ where j are all stocks in NASDAQ-100 sample, adjusted by its standard
+deviation. Bτ’s are date ﬁxed eﬀects, and hybridi,τ is a dummy variable that is 1 if stock i is hybrid at day τ. ‘Date
+f.e.’ indicate whether Bτ’s were included or not. Column (1) and (2) are for dollar spreads, and (3) and (4) uses
+proportional spreads. t values are provided in parentheses, and all standard errors are double clustered by stock and
+date.
+(1)
+(2)
+(3)
+(4)
+$ spread
+$ spread
+% spread
+% spread
+mean(Di)
+0.1526
+0.1583
+hybrid × ∆s3Q
+0.1370∗∗
+0.1344∗∗
+0.1630∗∗
+0.1425∗∗
+(2.69)
+(3.78)
+(3.33)
+(4.52)
+ﬁrm interaction
+Yes
+Yes
+Yes
+Yes
+date f.e.
+No
+Yes
+No
+Yes
+Adj. R sq
+0.057
+0.140
+0.069
+0.150
+N
+78004
+78004
+78004
+78004
+t statistics in parentheses, std. errors double clustered
++ p < 0.10, ∗p < 0.05, ∗∗p < 0.01
+29
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+Table 5: Eﬀect of Hybridization on Daily Correlation: Eﬀective Spreads
+Below table presents the results of the regression
+∆s2i,τ = Bτ + (Di + E hybridi,τ)∆s3NASDAQ,τ + ϵi,τ
+∆s2i,τ is the daily standardized ∆eﬀective spread using rolling mean and standard deviation of last 20 days.
+∆s3NASDAQ,τ is the cross-sectional mean of ∆s2j,τ where j are all stocks in NASDAQ-100 sample, adjusted by its
+standard deviation. Bτ’s are date ﬁxed eﬀects, and hybridi,τ is a dummy variable that is 1 if stock i is hybrid at
+day τ. ‘Date f.e.’ indicate whether Bτ’s were included or not. Column (1) and (2) are for dollar eﬀective spreads,
+and (3) and (4) uses proportional eﬀective spreads. t values are provided in parentheses, and all standard errors are
+double clustered by stock and date.
+(1)
+(2)
+(3)
+(4)
+$ spread
+$ spread
+% spread
+% spread
+mean(Di
+0.2172
+0.2123
+hybrid × ∆s3Q
+0.0211
+0.0800∗
+0.0469
+0.0992∗
+(0.25)
+(2.01)
+(0.55)
+(2.48)
+ﬁrm interaction
+Yes
+Yes
+Yes
+Yes
+date dummies
+No
+Yes
+No
+Yes
+Adj. R sq
+0.055
+0.178
+0.057
+0.176
+N
+78135
+78135
+78135
+78135
+t statistics in parentheses
++ p < 0.10, ∗p < 0.05, ∗∗p < 0.01
+Table 6: Eﬀect of Hybridization on Daily Correlation: Depth
+Below table presents the results of the regression
+∆s2i,τ = Bτ + (Di + E hybridi,τ)∆s3NASDAQ,τ + ϵi,τ
+∆s2i,τ is the daily standardized ∆depth using rolling mean and standard deviation of last 20 days. ∆s3NASDAQ,τ
+is the cross-sectional mean or median of ∆s2j,τ where j are all stocks in NASDAQ-100 sample, adjusted by its
+standard deviation. Bτ’s are date ﬁxed eﬀects, and hybridi,τ is a dummy variable that is 1 if stock i is hybrid at day
+τ. ‘Date f.e.’ indicate whether Bτ’s were included or not. Column (1) and (2) use cross-sectional mean, and (3) and
+(4) use median. t values are provided in parentheses, and all standard errors are double clustered by stock and date
+(1)
+(2)
+(3)
+(4)
+mean
+mean
+median
+median
+mean(Di)
+0.1189
+0.0617
+0.1189
+0.0617
+hybrid × ∆s3Q
+0.0493∗
+0.0031
+0.0493∗
+0.0031
+(2.08)
+(0.07)
+(2.08)
+(0.07)
+date f.e.
+No
+Yes
+No
+Yes
+Adj. R sq
+0.022
+0.040
+0.022
+0.040
+N
+70387
+70387
+70387
+70387
+t statistics in parentheses, std errors double clustered
++ p < 0.10, ∗p < 0.05, ∗∗p < 0.01
+30
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+Table 7: Eﬀect of Hybridization on Daily Correlation by Size
+Below table presents the results of the regression
+∆s2i,τ = Bτ + (Di + (E + E2 G2 + E3 G3 + E4 G4) hybridi,τ)∆s3Q,τ + ϵi,t
+by size quantiles.
+∆s2i,τ are adjusted daily spreads using rolling mean and standard deviation of last 20
+days. ∆s3NASDAQ,τ is the cross-sectional mean of ∆s2j,τ where j are all stocks in NASDAQ-100 sample, adjusted
+by its standard deviation. hybridi,τ is a dummy variable that is 1 if stock i is hybrid at day τ. I sort all stocks in
+the S&P 500 sample into quantile by market capitalization as of August 31, 2006. Quantile 1 is the smallest stock
+group, and quantile 4 is the largest. Gk is a dummy variable that equals 1 if stock i is in quantile k, and 0 otherwise.
+t statistics are provided in parentheses, and all standard errors are double clustered by stock and date.
+$ spread
+$ spread
+% spread
+% spread
+hybrid ∆s3Q,τ
+0.1200∗
+0.1218∗∗
+0.1427∗∗
+0.1230∗∗
+(2.50)
+(2.87)
+(2.92)
+(3.25)
+G2 hybrid ∆s3Q,τ
+0.0326
+0.0323
+0.0353
+0.0365
+(1.37)
+(1.28)
+(1.47)
+(1.43)
+G3 hybrid ∆s3Q,τ
+0.0031
+0.0034
+0.0091
+0.0104
+(0.13)
+(0.13)
+(0.40)
+(0.43)
+G4 hybrid ∆s3Q,τ
+0.0272
+0.0293
+0.0322
+0.0389
+(0.73)
+(0.77)
+(0.99)
+(1.18)
+mean(Di)
+0.1540
+0.1985
+0.1608
+0.2186
+date f.e.
+No
+Yes
+No
+Yes
+Adj. R sq
+0.056
+0.139
+0.068
+0.149
+N
+75435
+75435
+75435
+75435
+t statistics in parentheses, std errors double standardized
++ p < 0.10, ∗p < 0.05, ∗∗p < 0.01
+31
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+Table 8: Impact of Hybridization on 5 minute Liquidity Comovement by Size
+This table shows the eﬀect of hybridization and size on intraday bid-ask spread comovement.
+For all stock i
+in the S&P 500 sample, I calculate
+corri,τ = corr(∆s2i,τ,t, ∆s2NASDAQ,τ,t)
+∆s2NASDAQ,τ,t is the cross-sectional mean of ∆s2j,τ,t where stock j is in the NASDAQ 100 sample.
+∆s2 is
+the standardized ∆spread using the 20 day rolling time-speciﬁc mean and standard deviation. Results below show
+the regression coeﬃcients of
+corri,τ = Ai + Bτ + (C + C2 G2 + C3 G3 + C4 G4) hybridi,τ + ϵi,τ
+where Ai’s are stock ﬁxed eﬀects, Bτ’s are date ﬁxed eﬀects, and hybridi,τ is a dummy variable that is 1 if
+stock i is hybrid at day τ. I sort all stocks in the S&P 500 sample into quantile by market capitalization as of
+August 31, 2006. Quantile 1 is the smallest stock group, and quantile 4 is the largest. Gk is a dummy variable that
+equals 1 if stock i is in quantile k, and 0 otherwise. Column (1) and (2) are for dollar spreads, and (3) and (4) uses
+proportional spreads. t values are provided in paranthesis. All standard errors are two-way clustered by date and
+stock.
+$ spread
+$ spread
+% spread
+% spread
+mean(Ai) + mean(Bτ)
+0.0242
+0.0268
+0.0241
+0.0281
+hybrid
+0.0190∗∗
+0.0138∗∗
+0.0243∗∗
+0.0162∗∗
+(6.80)
+(3.89)
+(7.45)
+(4.39)
+G2 hybrid
+-0.0021
+-0.0020
+-0.0001
+-0.0001
+(-0.68)
+(-0.66)
+(-0.03)
+(-0.02)
+G3 hybrid
+-0.0056+
+-0.0055+
+-0.0020
+-0.0020
+(-1.83)
+(-1.80)
+(-0.59)
+(-0.58)
+G4 hybrid
+-0.0129∗∗
+-0.0123∗∗
+-0.0082∗
+-0.0077+
+(-3.72)
+(-3.58)
+(-2.04)
+(-1.91)
+date f.e.
+No
+Yes
+No
+Yes
+Adj. R sq
+0.008
+0.024
+0.008
+0.024
+N
+83222
+83222
+83222
+83222
+t statistics in parentheses, std errors double standardized
++ p < 0.10, ∗p < 0.05, ∗∗p < 0.01
+32
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+Table 9: Impact of Hybridization on the Volatility of the Portfolio Liquidity Factor
+I divide the S&P 500 sample into ﬁve portfolios by hybridization date.
+For each portfolio, I take the mean
+and the median raw spread as the portfolio spread, and construct this at 5 minute intervals. For each portfolio l
+(l = 1, 2, · · · , 5), I calculate stdl,τ(spreadl,τ,t) the daily volatility of the portfolio spread on day τ, and divide it by
+the sample standard deviation, and call this normalized volatility stdl,τ. Below table presents the regression results
+from
+stdl,τ = Al + Bτ + C hybridl,τ
+where Al’s are portfolio ﬁxed eﬀects, Bτ’s are date ﬁxed eﬀects, and hybridl,τ is a dummy variable that is 1
+if all stocks in portfolio l are hybrid at day τ, and 0 if all stocks are not yet hybrid. I take out all observations from
+when the ﬁrst stock in the portfolio goes hybrid to the day before when the last stock in the portfolio goes hybrid,
+so hybridl,τ is always either 0 or 1. (1) and (2) uses dollar spreads, (3) and (4) uses proportional spreads. (1) and
+(3) uses cross-sectional mean for portfolio spreads, (2) and (4) uses median. All t statistics are calculated using
+standard errors clustered by date.
+(1)
+(2)
+(3)
+(4)
+mean $
+med $
+mean %
+med %
+hybrid
+0.2359+
+0.2789+
+0.0932
+0.2032+
+(1.82)
+(1.78)
+(0.86)
+(1.90)
+mean(Ai) + mean(Bτ)
+5.6728
+5.5764
+4.6675
+3.6618
+portfolio f.e.
+Yes
+Yes
+Yes
+Yes
+date f.e.
+Yes
+Yes
+Yes
+Yes
+Adj. R sq
+0.888
+0.813
+0.918
+0.859
+N
+1179
+1179
+1179
+1179
+t statistics in parentheses, std errors clustered by dates
++ p < 0.10, ∗p < 0.05, ∗∗p < 0.01
+33
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+Table 10: Impact of Hybridization on Idiosyncratic Liquidity
+For each stock i on day τ, I calculate stdi,τ(spreadi,τ,t), the daily volatility of the individual stock spread
+spread, and divide it by the sample standard deviation, and call this normalized volatility stdi,τ.
+Below table
+presents the regression results from
+stdi,τ = Ai + Bτ + C hybridi,τ
+where Ai’s are stock ﬁxed eﬀects, Bτ’s are date ﬁxed eﬀects, and hybridi,τ is a dummy variable that is 1 if
+stock i is hybrid at day τ. All t statistics are calculated using standard errors clustered by stock and date.
+(1)
+(2)
+$ spread
+% spread
+hybrid
+-0.1813∗∗
+-0.2093∗∗
+(-4.92)
+(-6.31)
+mean(Ai) + mean(Bτ)
+3.5057
+3.1109
+Adj. R sq
+0.799
+0.668
+N
+88630
+88391
+t statistics in parentheses, std. errors double clustered
++ p < 0.10, ∗p < 0.05, ∗∗p < 0.01
+34
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+Figure 1: Level vs. First Diﬀerence: An Example
+35
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+Figure 2: Standardizing intraday spreads: an example of NYT
+36
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+Figure 3: Monthly Principal Components Analysis of Dow 30 stocks
+This ﬁgure graphs the fraction of the variance in si,τ,t that the ﬁrst two principal components explain. Analysis is
+done monthly on the Dow 30 Index components.
+37
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+Figure 4: Hybridization test sample: Raw proportional spread
+Daily mean proportional spread for the S&P 500 and NASDAQ 100 sample is plotted for the hybridization test
+period.
+38
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+Figure 5: Hybrid Activation Schedule
+This plot shows the staggering introduction of hybridization for the S&P 500 sample. For each date, the number of
+stocks that have gone hybrid up to that date is plotted.
+39
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+Figure 6: Standardized Spreads and Hybridization
+Mean and median of s2i,τ −s2NASDAQ,τ is plotted by number of days from hybrid activation. Here I use the full
+hybridization sample.
+40
+Electronic copy available at: https://ssrn.com/abstract=2337523
+
+Figure 7: Portfolio Construction for Volatility Test
+This plot shows how I constructed the portfolios for the volatility test. Red dotted lines are the cutoﬀdates, and
+all stocks in the S&P 500 sample that go hybrid between two consecutive cutoﬀdates belong in the same portfolio.
+Each matching NASDAQ stock belongs in the matching NASDAQ portfolio. Thus, there are ﬁve NYSE portfolios
+and ﬁve NASDAQ portfolios.
+41
+Electronic copy available at: https://ssrn.com/abstract=2337523
