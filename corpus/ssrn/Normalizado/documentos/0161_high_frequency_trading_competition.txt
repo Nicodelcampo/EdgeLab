@@ -1,0 +1,2675 @@
+High-Frequency Trading Competition∗
+Jonathan Brogaard†
+Corey Garriott‡
+February 16, 2018
+ABSTRACT
+Theory on high-frequency traders (HFT) predicts that market liquidity for a security decreases in the number of HFT trading the security. We test this prediction by
+studying a new Canadian stock exchange, Alpha, that experienced the entry of 11 HFT
+ﬁrms over four years. Bid-ask spreads on Alpha converge to those at the Toronto Stock
+Exchange as more HFT trade on Alpha. Eﬀective and realized spreads for nonHFT
+improve as HFT ﬁrms enter the market. To explain the contrast with theory, which
+models HFT as a price competitor, we provide evidence more consistent with HFT
+ﬁtting a quantity competitor framework.
+JEL classiﬁcation: G20, G14, L10
+Internet Appendix
+∗We are grateful to Michael Brolley, David Cimon, Thierry Foucault, Bjorn Hagstromer, Terry Hendershott, Albert Menkveld, Pamela Moulton, Christopher Parsons, Talis Putnins, Ryan Riordan, Gideon Saar,
+and Joshua Slive for advice and suggestions; to seminar participants at the Canadian Economic Association,
+Canadian Imperial Bank of Commerce, Financial Risks International Forum, Ontario Securities Commission, SFS Cavalcade, Stockholm Business School, Vienna HFT: Curse or Blessing, and the Western Financial
+Association; and to Adrian Eng and Faith Chin for their research assistance. This article is an extension of
+the Bank of Canada working paper by the same name. All errors are our own.
+†Foster School of Business, University of Washington. E-mail: jbrogaard@uw.edu.
+‡Bank of Canada, Financial Markets Department. E-mail: cgarriott@bankofcanada.ca.
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+Competition in equity markets was once quite restricted. In the past, traders could access
+markets such as the NYSE only by purchasing seat membership, a privilege that has cost
+millions of dollars. Membership allowed a trader to work on the exchange ﬂoor, watching
+the market directly and reacting immediately. As Ho and Stoll (1980) put it: “Because of
+his proximity to the market, the dealer would generally be expected to oﬀer better prices
+than an ordinary investor faced with higher communication, waiting, and transfer cost.”
+Membership thus limited competition to those who could pay.
+Exchanges had to limit competition because they could accommodate only so many
+people on the premises. With the development of low-cost microelectronics, physical space
+is no longer a binding constraint. Space near a computer server is far less scarce than space
+on a trading ﬂoor, and accordingly many exchanges oﬀer electronic access to markets at much
+lower prices.1 The chief beneﬁciaries of this democratization of competition have been the
+community of high-frequency traders (HFT), private trading companies that now compete
+with major ﬁnancial institutions (Jones 2013).
+One might expect fanfare associated with a decline in costs that opened markets to a new
+kind of trader. Instead, ﬁnancial institutions have expressed concern about HFT, in part
+due to frequent “ﬂash crash” events.2 In the academic literature as well, existing theory has
+negative conclusions on high-frequency competition in markets. A common concern is that
+HFT trade mostly to “snipe” other market participants before they can remove stale prices.
+Menkveld and Zoican (2017) and Budish et al. (2015) predict that as the number of HFT
+rises, bid-ask spreads get no better or worse.3
+In this paper we test the theoretical predictions using a sample of data uniquely suited to
+document what happens as the number of HFT increases. The dataset comes from Alpha, a
+new Canadian stock market that started the sample with no HFT presence and experienced
+1For example, NYSE charges an initial co-location fee of $5,000 per cabinet with a monthly fee depending
+on electricity usage. See the current NYSE price list, page 21.
+2See “Market Participants’ Concerns” in remarks by Fischer (2016).
+3Proposition 2.2 of Menkveld and Zoican (2017) predicts that bid-ask spreads get worse in the number
+of HFT; proposition 1.i of Budish et al. (2015) predicts that HFT competition creates a nonzero spread but
+one invariant to the number of HFT.
+1
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+the arrival of multiple HFT ﬁrms over four years. The scenario enables us to observe the
+impact on liquidity at a market as its industrial organization transitions from no HFT to
+many HFT. The datasest includes complete order-book data with counterparty information.
+To identify the impact of competition on liquidity, we use a diﬀerence-in-diﬀerences event
+study on markets for 279 stocks that saw a steady, staggered entry of 11 HFT ﬁrms during
+the four-year sample.
+We ﬁnd HFT competition improves liquidity. For the ﬁrst ﬁve months of the sample,
+bid-ask spreads on Alpha were worse than its larger rival, the Toronto Stock Exchange.
+Then, a series of HFT ﬁrms began trading on Alpha and brought its spreads in line with the
+larger market. Using the event study, we ﬁnd HFT entry leads to better liquidity metrics for
+nonHFT trading on Alpha. The result contrasts with theory, and we explain the contrast
+by showing the data are not easy to reconcile with an assumption underpinning the theory,
+which is that HFT is a price competitor. We conclude that wider electronic access to equity
+markets is good for liquidity, whereas barriers to entry could limit the beneﬁt.
+Our data come from Alpha, one of the ﬁrst equity alternative trading systems (ATS)
+in Canada. As an ATS founded in 2008, Alpha was a member of the wave of new trading
+venues that launched in the 2000s in the United States, Europe, and Canada after regulatory
+changes allowed for more trading outside of the primary stock exchange. Alpha was the most
+successful Canadian ATS by volume, exceeding a 20% volume share in January 2010. Since
+Alpha was a successful ATS, its data can provide a good test of the importance of industrial
+organization within a single market.
+The data contain complete order-book information and an anonymous counterparty code
+that distinguishes unique direct-access members. The counterparty codes on Alpha enable
+the empirical identiﬁcation of HFT ﬁrms using the ﬁrms’ inventory and trading behaviour.
+The ﬁrms in the sample have an advantageous sequence of entry for the study. There were
+no HFT ﬁrms during the ﬁrst ﬁve months, and then 11 ﬁrms steadily enter during the time
+period, November 2008 to September 2012.
+2
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+The essence of our results can be seen in Figure 1, which compares bid-ask spreads on
+Alpha to the TSX as sequential HFT ﬁrms start trading stocks on Alpha. In the ﬁgure, if
+a ﬁrm is the second to arrive, bid-ask spreads on Alpha tighten but do not reach the level
+of the TSX. The same is true if the ﬁrm is the third to arrive. It takes four ﬁrms before
+Alpha bid-ask spreads resemble the TSX. We interpret the graph as prima facie evidence
+that liquidity improves in the number of HFT ﬁrms trading at a market.
+FIGURE 1 ABOUT HERE
+To establish identiﬁcation, we run a diﬀerence-in-diﬀerences event study on HFT entry
+events. An HFT entry event is the ﬁrst day an HFT ﬁrm trades material volume (1,000
+shares) of a stock. To focus on permanent changes in the industrial organization, we select
+entry events in which the entrant continues trading the stock through a three-month study
+window. To control for any liquidity trends on Alpha, given it was a growing stock market,
+we match Alpha stocks to other Alpha stocks.
+Event-study methodology requires the events to be exogenous to the variables of interest
+during the event window of the study. This is likely in our scenario as HFT ﬁrms were
+attracted to Alpha because of the wide spreads and low competition compared to other markets, meaning they were attracted by long-term proﬁt opportunities. Indeed, we can predict
+how many HFT eventually enter a stock on Alpha using the stock’s long-term characteristics.
+However, we ﬁnd little evidence that the timing of entry can be explained during the event
+windows of the study, meaning that HFTs are not apparently timing their entry based on
+short-term market conditions. Entry cannot be predicted using daily, weekly and monthly
+levels and diﬀerences of spreads, volatility and volumes from Alpha and the TSX. While
+entry is endogenous to the long-term industrial organization, the evidence does not suggest
+HFTs enter due to temporary variation in liquidity conditions.
+We evaluate passive and aggressive HFT separately so we can distinguish between the
+eﬀect we expect each type to have. Passive HFT strategies, those that use primarily limit or3
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+ders, are associated with liquidity supply strategies (A¨ıt-Sahalia and Saglam 2013; Hoﬀmann
+2014). Therefore we expect that as passive HFTs enter and compete with each other liquidity
+will improve. Aggressive HFT strategies, those that use primarily marketable orders, are
+associated with short-lived arbitrage opportunities (Biais et al. 2015). If liquidity takers are
+merely aggravating frictions associated with delays in information dissemination, we expect
+liquidity to deteriorate.
+Our highlighted results are as follows. We begin with graphical evidence. In Figure 1,
+shown above, spreads on Alpha converge to those at the TSX as more HFT trade. In a
+second graph, spreads also improve in the Herﬁndahl-Hirschman index of HFT competition.
+Having presented graphical evidence, we next use the event study to estimate the impact
+of HFT entry on execution costs for nonHFT traders. For entrants who use mostly passive
+orders we ﬁnd costs improve. For entrants who use mostly aggressive orders we ﬁnd minor
+evidence of improvement. Unlike with dealers in Ellis et al. (2002), HFT competition has
+meaningful long-term impact. In separate regressions on the ﬁrst, second and third months
+after entry, entrants who use passive orders improve liquidity through time.
+Our results use data from the Canadian Alpha exchange and an empirical deﬁnition of
+HFT, so we cannot infer they apply universally. Still, the ﬁndings contrast with models
+of HFT competition. In the models, HFT ﬁrms who use passive orders have no impact on
+liquidity, and HFT ﬁrms who use aggressive orders make liquidity worse. We ﬁnd instead that
+passive HFT entry improves liquidity and that aggressive HFT entry leads to no identiﬁable
+harm.
+In our view, the models make predictions contrasting with the data because of their
+assumptions on the industrial organization. Liquidity supply is assumed to be price competitive, meaning that successive HFT entrants have nothing to contribute to liquidity by
+deﬁnition. An alternative tradition in market microstructure assumes that competition can
+have a positive role because the industry is quantity competitive (Kyle 1989; Subrahmanyam
+1991; Biais et al. 2000; Bondarenko 2001). We ﬁnd the data are more consistent with HFT
+4
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+being a quantity competitor. The data support three predictions about ﬁrm entry that are
+typical of quantity competition but that are inconsistent with simple price competition: entry
+enlarges the market; entrants seize market share from incumbents; and entry leads incumbents to lower prices. Since we lack data on costs at HFTs, we cannot reject conclusively
+the assumption of price competition, but we can show the data are easier to explain from a
+perspective of quantity competition.
+The ﬁndings contribute to empirical work on HFT and competition. Breckenfelder (2013)
+and Boehmer et al. (2016) study variation in HFT presence in an equilibrium setting, in markets that have the equilibrium number of HFT. We diﬀer by focusing on long-term changes
+to the market structure, which allows us to focus on conclusions regarding industrial organization rather than those on HFT’s response to market conditions. Our paper compliments
+Menkveld (2013), who studies a single HFT entry event in detail. While Menkveld (2013)
+focuses on liquidity supply following the entrant of one HFT, we investigate how existing
+HFT respond as new HFT entrants arrive to the market.
+A related study by Baron et al. (2016) also studies the implications of HFT competition.
+While our paper argues that HFT competition is good for market liquidity, Baron et al.
+(2016) argues that the environment that generates HFT competition is fragile.
+In this
+paper, we conclude that HFT competition can reduce HFT revenues, whereas Baron et al.
+(2016) argues that competition among HFT is limited by relative speed, and as a result
+HFT proﬁts remain high. Baron et al. (2016) would suggest that when the Alpha market
+has matured that HFT proﬁts would still be higher than one would predict if Alpha were a
+perfectly competitive marketplace.
+I.
+Data
+The data for this study come from the Canadian stock exchange Alpha. Alpha opened
+for trade November 2008. In January 2009, Alpha grew to host the second-largest share of
+trading volume in Canada, and in January 2010, it hosted 20% of Canadian trading volume.
+5
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+Alpha was an ATS until April 2012, when it became a listing exchange. It was independently
+operated until merging with the TMX Group as part of the Maple transaction in August
+2012.
+Alpha provided order-book data from its ﬁrst day of business, 7 November 2008, to 25
+September 2012. The data contain all limit-order inserts, updates, ﬁlls, and cancels with
+millisecond timestamp, side, and initiation. To focus on larger stocks we sample only stocks
+that have both more trading volume and a higher market capitalization than the least-traded
+and least-capitalized stock in the S&P TSX 60 index as of September 2012. Figure 2 displays
+the time-series distribution of overall equity trading volume for the 279 stocks sampled in
+this study.
+FIGURE 2 ABOUT HERE
+Each order contains an anonymous counterparty ﬁeld populated by an Alpha employee on
+an ad hoc basis based on Alpha’s internal knowledge of its customer base. The ﬁeld consists
+of numerical codes giving three pieces of counterparty information: a code identifying orders
+from known smart-order routers, a code identifying the known brand of order-management
+system used to disseminate an order, and an anonymous code identifying a known unique
+direct-access market participant (distinguished from its broker).
+The code allows us to
+identify the date each direct-access market participant begins trading.
+Our counterparty identiﬁcation is conﬁned to Alpha, so we do not track the activities
+of an HFT ﬁrm across markets. Although questions about cross-market competition are
+interesting, the instrument of increasing HFT participation in one market is suﬃcient for
+our research question. In equity markets, the trading platform is the basic market structure
+at which open trading occurs. To provide a market-wide view, we draw additional data
+on TSX prices, volumes and bid-ask spreads from Bloomberg, and we compare liquidity
+conditions on Alpha to the TSX as HFT ﬁrms enter.
+6
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+A.
+Identifying HFT ﬁrms
+To identify HFT ﬁrms we ﬁrst exclude smart-order routers and ﬁrms that use ordermanagement systems. For the remainder we use criteria from the literature to distinguish
+HFT ﬁrms from other algorithmic traders (Kirilenko et al. 2017). An HFT ﬁrm must carry
+less than 15% of its daily volume overnight and must switch sign at least 40% of the time for a
+contiguous two weeks of trading days. The ﬁrst criterion distinguishes HFT from algorithmic
+execution, as HFT ﬁrms should not build a position. The second criterion distinguishes HFT
+from strategies that bear substantial price risk overnight. A ﬁrm code marked as an HFT
+for any stock is marked as an HFT for every stock. The criteria identify 11 HFT ﬁrms.
+The inventory threshold is above 0% because there are multiple markets for the stocks
+traded on Alpha. An HFT ﬁrm may open a position on one venue and close it on another,
+resulting in what would appear to be an inventory position from the researcher’s perspective
+even if the trader is net neutral.
+Theory on HFT competition distinguishes between HFTs that trade passively and HFTs
+that trade aggressively. In the models, at most one HFT engages in a price-competitive
+strategy of market making, and the others choose to adversely select market makers using
+aggressive trades. To address the theory, we study both strategies separately. Passive HFT
+strategies, namely those that use primarily limit orders, are associated with liquidity supply
+strategies (A¨ıt-Sahalia and Saglam 2013; Hoﬀmann 2014). We identify an entrant as passive if
+it trades passively two-thirds of the time. We expect that as passive HFTs enter and compete
+with each other that liquidity will improve. Aggressive HFT strategies, namely those that use
+primarily marketable orders, are associated with short-lived arbitrage opportunities (Biais
+et al. 2015).
+We identify an entrant as aggressive if it trades aggressively two-thirds of
+the time. If liquidity takers merely aggravate frictions associated with delays in information
+dissemination, we expect liquidity to deteriorate. The identiﬁcation of passive and aggressive
+is done on a stock-entry basis, so the same ﬁrm can be a diﬀerent type on two diﬀerent stocks.
+7
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+B.
+Identifying HFT entry dates
+An HFT ﬁrm stock-entry date is the calendar date on which a ﬁrm ﬁrst trades at least
+ten lots (1,000 shares) on Alpha and does not stop trading for three months, the size of
+our post-period treatment window. The threshold of 10 lots is greater than the trade-size
+minimum of one lot to exclude days on which the participant is merely testing its connection.
+HFT ﬁrms in the data that delay their next day of trade in a stock do so by a median of six
+days; of the ﬁrms that delay, all of them trade only 100 shares on their ﬁrst day. We study
+only ﬁrst entries.
+Entry events are speciﬁc to the stock and HFT ﬁrm, so the same HFT ﬁrm can have
+diﬀerent entry dates for diﬀerent stocks. There is variation in how many stocks an entrant
+begins trading or stops trading at a time. Most entrants start trading several stocks on the
+same day. The day a HFT ﬁrm begins trading it starts trading a median of seven stocks and
+a mean of 20.6 stocks. The largest number of stocks a ﬁrm begins trading on the same day
+is 81. Figure 3 gives more information on variation in HFT presence in the sample.
+FIGURE 3 ABOUT HERE
+Panel A of the ﬁgure plots the average number of HFT per stock during the sample. The
+statistic remains at zero during the ﬁrst ﬁve months and then increases at a linear rate to
+the sample end. We interpret this as evidence that the industrial organization on Alpha is
+evolving during the sample, and the number of HFT does not reach an equilibrium during
+the sample period. Panel B of the ﬁgure gives a histogram of the entry dates in bins of
+one day. Entries are distributed throughout the four-year window, providing a time-series
+control. Some HFT ﬁrms choose to enter multiple stocks on the same day, whereas others
+stagger their entries to a few stocks at a time.
+8
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+C.
+Summary statistics
+Table 1 provides summary statistics for the HFT entries. Each row of the table gives the
+average, standard deviation, 25th percentile, median and 75th percentile statistics of various
+measures. Daily volume is the average number of shares the entrant traded daily. Daily
+trades is the average number of trades the entrant executed daily. Percent daily volume is
+the average percent of total daily volume the entrant contributed. Percent volume overnight
+is the average percent of its own daily volume the entrant held at the end of day. Switching
+rate is the percentage of the entrant’s trades for which the entrant switched the direction
+of its trade—the percent of the time it bought after it had sold or sold after it had bought.
+Percent passive is the percentage of the entrant’s trades for which the entrant initiated the
+trade. Events is the number of HFT events.
+TABLE 1 ABOUT HERE
+There are 1121 HFT entries, of which 641 are passive and 368 are aggressive. 112 HFT
+entries ﬁt neither the passive nor the aggressive deﬁnition. During the month after entry,
+entrants trade on average 20,991 shares a day, which is 6.7% of daily volume. Passive HFT
+trades more than aggressive, with 24,208 shares (9.1% of volume) compared to 12,135 shares
+(3.8%).
+This ﬁts the nature of aggressive strategies, which are more opportunistic than
+continuous. A majority of entrants hold less than 16% of their volume overnight and switch
+their trade sign at least 41% of the time.
+Table 2 reports summary statistics by the number of incumbents present at entry. The
+columns report means and standard deviations of various statistics, and the rows segment
+the measures by the number of incumbents present at entry. Events are grouped by the
+median daily number of HFTs incumbent during the month before entry.
+TABLE 2 ABOUT HERE
+9
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+Entrants to stocks with few incumbents generate more daily volume than entrants to
+stocks with many incumbents. Entrants to stocks with no incumbents trade on average
+31,023 shares (16.9% of daily volume), while entrants to stocks with six or more incumbents
+trade on average 10,365 shares (1.5%). The statistics are consistent with a market growing
+crowded. Entrants become more aggressive in the number of incumbents, though stocks with
+six or more HFTs still experience passive entrants. The table shows a contrast with theory,
+in which one HFT acts as a market maker and all subsequent HFT are aggressive.
+II.
+Methodology
+This paper uses the diﬀerence-in-diﬀerences (DiD) event study methodology. For each
+HFT event we collect daily averages of data for variables of interest for the treatment stock
+during a pre-event window of one month before the event and during three successive onemonth windows after the event. These are the treatment stock observations.
+For each treatment stock observation we include contemporaneous observations from a
+matched control stock not experiencing an HFT event. The eligible control stocks are other
+stocks trading at Alpha. We match Alpha stocks to Alpha stocks rather than to the same
+stocks at the TSX because it might be argued there are trends on Alpha, a growing exchange.
+When matching controls to treatments, we remove candidate controls that experience an
+HFT event in a one-month centered window around the treatment-stock event date. This
+excludes stocks experiencing a contemporaneous HFT entry by any HFT ﬁrm. Since there
+are so many entries we do not exclude control stocks experiencing HFT entry in the second or
+third month after the treatment-stock event date as it would eliminate all candidate control
+stocks for certain events. This renders our results more conservative.
+The control observations are selected by the Mahalanobis distance from the treatment
+stock’s log average market capitalization, log average trading volume, average closing price,
+average 10-day daily price volatility and average absolute bid-ask spread, all measured during
+the month preceding the entry event date. Any match assignments in which the same control
+10
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+would be assigned to more than one treatment stock with the same event date are resolved
+using the Gale-Shapley algorithm. To eliminate outliers, observations are winsorized within
+each one-month window at three standard deviations from the window average.
+The DiD regression model is:
+measurei,j,t = βHFTi,j,t + γafteri,t + δXi,j,t + θFEi,j + ϵi,j,t.
+(1)
+where i is an index marking the HFT event, j is an index marking the treatment stock
+or the control stock for that event, t is the index for the date in event time (days before or
+after the event), HFT is the variable of interest and is an indicator variable equaling one
+for treatment stock-dates after the new HFT ﬁrm entered and zero otherwise, after is an
+indicator variable equaling one after the date of the HFT entry for HFT event i, X is a
+vector of control variates, and FE is a vector of stock-event level ﬁxed eﬀects. There is a
+unique ﬁxed eﬀect for each event-stock interacted, not one for each event and each stock.
+The ﬁrst diﬀerence is time, before and after the entry, and is captured by the after
+variable. The second diﬀerence is treatment versus control stock. The interaction, which
+is the liquidity change in the treatment stock after HFT entry, is captured by HFT. The
+control variates are known determinants of liquidity: Market capitalization is the number of
+shares outstanding for the stock multiplied by its share price. TSX volume is the stock’s
+daily trading volume on the Toronto Stock Exchange obtained from Bloomberg. Price is the
+average daily midquote for the stock on Alpha. Volatility is the 10-day moving average of
+the standard deviation of the closing price, also obtained from Bloomberg.
+To distinguish the entry eﬀect of an HFT ﬁrm from the entry eﬀect of any ﬁrm unconditionally, we include a control for the industrial organization (O’Hara et al. 2015). In each
+regression speciﬁcation we include the variable Number of traders, which captures the number
+of unique participants trading stock j on day t. By including the variable we disentangle the
+impact of an HFT entrant from the unconditional eﬀect of adding any participant.
+11
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+As this is a study on HFT competition we do not study what happens when an HFT
+begins trading a stock that is otherwise devoid of HFT on the Alpha exchange (and hence
+exhibits no HFT competition). This has the beneﬁt of eliminating entry events from the
+early part of our sample period, the ﬁrst half of 2009, during which Alpha was growing
+quickly. The emphasis on competition distinguishes this study from Menkveld (2013), which
+focuses on how the market as a whole responds to a a single HFT entrant.
+The regression is conducted two ways. First it is carried out using ordinary least squares.
+Second we use a weighted least squares regression speciﬁcation. The latter choice is because
+we expect more active entrants to have a greater eﬀect. The weight is based on the ex-ante
+expected size of the entrant. The ex-ante weighted approach predicts HFT volume share
+using the levels of the stock characteristics before entry. The predictive model is a regression
+of the log HFT percentage share on the average log volume, stock volatility and a stock
+ﬁxed eﬀect, and it achieves an R-squared of 0.384. We use the predicted HFT percentage
+share from this model as the observation weight. The weighting diminishes the inﬂuence of
+HFT events for which the HFT is not expected to contribute much volume and therefore
+would have a weaker inﬂuence on stock liquidity. Standard errors are double-clustered by
+stock-event and by calendar date (Bertrand et al. 2004; Petersen 2009; Thompson 2011).
+We estimate three treatment eﬀects, one for each month after the entry: the immediate
+month after, the time period one to two months after, and the time period two to three
+months after. The diﬀerent periods of time provide evidence on whether the observed ﬁnding
+is transitory or permanent.
+III.
+Does HFT competition improve liquidity?
+A.
+Suggestive evidence
+We begin with graphical evidence that HFT competition is positively associated with
+liquidity. In two charts, greater competition is associated with tighter Alpha bid-ask spreads,
+12
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+which converge to contemporaneous levels at the TSX. We interpret this as prima facie
+evidence that HFT competition beneﬁts liquidity.
+Figure 1, from the introduction, compares the average bid-ask spreads of Alpha stocks
+to the same stocks trading on the TSX during a two-month window centered on HFT entry
+events. In the ﬁrst two columns, the entry of a second HFT liquidity supplier tightens spreads
+on Alpha but not to the levels of the more liquid TSX. In the second two columns, spreads
+on Alpha after the third ﬁrm enters are still on the order of 175 basis points, compared to
+100 basis points at the TSX. The third set of columns shows it takes three HFTs before
+bid-ask spreads on Alpha converge to the TSX, averaging around 50 basis points.
+If HFT competition did not beneﬁt liquidity one would expect that a second HFT on
+Alpha would have no eﬀect on Alpha’s spreads. Instead, we ﬁnd many are necessary. To
+conﬁrm the observed positive relationship between competition and liquidity, in Figure 4 we
+plot average Alpha spreads in the deciles of an HFT competitiveness measure. The measure
+is the Herﬁndahl-Hirschman index, the sum of the squared volume share of each HFT ﬁrm. A
+smaller index value implies greater competition. As in the previous ﬁgure, each competition
+decile is associated with tighter Alpha spreads.
+FIGURE 4 ABOUT HERE
+B.
+Identiﬁcation conditions of the DiD event study
+To identify the eﬀect of competition on liquidity we implement a DiD event study using
+the HFT entry dates as the events. Event-study methodology requires that the events are
+exogenous to the variables of interest within the time frame of the event study. We test
+this condition by attempting to explain the timing of HFT entry using variables that are
+empirically related to HFT entry decisions.
+While HFT presence in our sample can be
+explained in the long term by variables related to the proﬁtability of market making, the
+timing of entry cannot be explained at time frames relevant to the study. This reduces
+13
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+concerns that a latent trend during the event window is co-determining both HFT entry and
+shifts in market quality.
+HFT entry is not random, as HFT choose to trade stocks because they expect to make
+a proﬁt. Using an Ordered Probit model we show that variables related to the proﬁtability
+of market making can be used to predict the number of HFT trading a stock.
+We use
+variables on volume, liquidity, and price volatility, as HFT proﬁts are related to the amount
+of round-trip trades they expect to complete, their ability to enter and exit positions, and
+the movement in the price. To ensure we are measuring the long-term or permanent characteristics of a stock, we model the number of HFT trading an Alpha stock at the end of the
+sample (in either 2011 or 2012) as a function of the averages of the variables on the TSX at
+the beginning of the sample (in either 2009 or 2010), using the Ordered Probit model:
+Pr (NumHFTi,t = i|Xi,t) = Pr (αi−1 < βXi,t + ϵi ≤αi)
+(2)
+where i indexes the stock; t indexes the year; NumHFT is the median number of HFT
+trading the stock on Alpha in year t; Xt are the predictive variables, namely the stock’s
+average TSX Volume, average TSX Relative Bid-Ask Spread, and daily return Volatility in
+year t; and are assumed to be normally distributed. We truncate NumHFT at three HFT
+ﬁrms to reduce the size of the reported table. Therefore the dependent variable can take the
+values 0, 1, 2 and 3; statistical signiﬁcance improves if NumHFT is untruncated. Variables
+are scaled by multiples of 10 so that the coeﬃcients of regression are of order one. The
+results are reported in Table 3.
+TABLE 3 ABOUT HERE
+We ﬁnd HFT entry to Alpha is not random. Levels of volume, liquidity and price volatility
+on the TSX in 2009 can predict 23.9% of the variation in the number of HFT on Alpha stocks
+in 2012 with statistical signiﬁcance; in the best speciﬁcation, 40.6% of the variation in 2011
+can be explained using the variables from 2010. The results are consistent with ﬁndings from
+14
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+other markets, in which HFT are found to trade higher-volume stocks that have frequent
+price movements (Brogaard et al. 2014). When HFT expand to Alpha, they most frequently
+enter stocks that have the long-term characteristics known to be good for HFT proﬁtability.
+We apply an expanded set of variables at higher frequencies to try to predict the timing of
+the HFT entry dates. If HFT time their entry to take advantage of short-term opportunities
+or as a response to recent changes in markets, then the experimental design would be less
+able to distinguish an entry eﬀect from related trends. We model the timing of entry using
+a Probit model, and we attempt to predict the entry events three ways: with daily, weekly
+and monthly variation in predictive variables. We enlarge the set of predictive variables to
+include both levels and ﬁrst diﬀerences, and we include values both from Alpha and from
+the TSX. The model is:
+Pr (Eventi,t = 1|Xi,t−1) = Φ (βXi,t−1 + ϵi,t)
+(3)
+where i is the stock index, t is the time index, Φ is the normal CDF, X is the matrix of
+predictive variables, and ϵ is the error term. Entry takes the value one for a stock-period in
+which at least one HFT enters, and zero otherwise. We use both one-period lagged levels as
+well as one-period lagged ﬁrst diﬀerences of each variable. The level variables are averaged
+over the previous day, week or month. The ﬁrst diﬀerences subtract the average value of the
+level variable from the previous average level.
+The variables are: Canadian volume, the log daily Canadian trading volume for the stock
+(divided by 100) obtained from Compustat; Alpha volume, the log daily trading volume for
+a stock on Alpha (divided by 100); Volatility, a 10-day moving average of the standard deviation of a stock’s closing price obtained from Bloomberg; Alpha relative bid-ask spread, the
+time-weighted average diﬀerence between the best bid and ask price divided by the midquote
+on Alpha (multiplied by 10,000); and TSX relative bid-ask spread, the time-weighted average
+diﬀerence between the best bid and ask price divided by the midquote on TSX (multiplied
+by 10,000). The results are reported in Table 4.
+15
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+TABLE 4 ABOUT HERE
+HFT entry in our sample is not apparently driven by the predictive variables at frequencies relevant to the study window (which compares the one month before entry to one
+of three months after entry). The best speciﬁcation predicts just 4% of the variation in
+HFT entry dates. A few speciﬁc estimates stand out. The level of the TSX relative bid-ask
+spread is predictive, with HFT more likely to enter lower-spread stocks. The ﬁrst diﬀerence
+of volatility is predictive for entries at a monthly frequency, meaning entry to stocks that
+have increasing volatility is less likely. Since the R-squared is so low we regard the model
+as failing to oﬀer a material explanation of the timing of entry. In our interpretation this
+is because ﬁrms are entering for long-term reasons and not short-term reasons. The sample
+begins with no HFT ﬁrms, and ﬁrms enter to take advantage of a relatively less-developed
+industrial organization.4
+The lack of time-series predictability reduces concerns that entry is driven by a trend in
+a latent variable that at the same time inﬂuences stock liquidity. Of course, the evidence
+cannot eliminate every concern as it is challenging to prove a negative. However, by ruling
+out likely sources of endogeneity we make the set of alternatives more implausible. For a
+trend in an omitted variable to be consistent with our evidence it would have to cause both
+HFT entry and a liquidity change during HFT entry; cause them via movements that bear
+a poor relation to levels and ﬁrst diﬀerences in spreads, volume and volatility at a daily,
+weekly or monthly frequency; bear poor relation to the control variables in the DiD model;
+and be present during a four-year sample of 1121 entry events over 279 stocks on Alpha.
+C.
+Results of the DiD event study on market liquidity
+In this section we present results on the change in market liquidity after a new HFT
+entrant begins trading a stock, by the number of HFT incumbents already in the stock, and
+4In the internet appendix we perform a similar analysis using a hazard model. One disadvantage of the
+tradition of hazard models is that it does not easily permit use of the time series to predict entry.
+16
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+for the ﬁrst, second, and third months after entry. We use the DiD event study speciﬁcation
+deﬁned in Part II. We run the event study on three liquidity measures: Eﬀective spread for
+nonHFT trades, Realized spread for nonHFT trades, and Price impact for nonHFT trades.
+We choose to measure eﬀective and realized spreads since we are interested in realized trading
+costs, and we choose to measure liquidity for nonHFTs to ensure the nonHFT clients of
+Alpha beneﬁt. We choose to include the third measure of price impacts to check whether
+the change in the realized spread, which is partially a function of price impact, can be
+explained by changes in the price impact.
+Eﬀective spread for nonHFT trades is twice the volume-weighted, signed diﬀerence between a trade’s price and the prevailing midquote, in basis points, for aggressive trades
+not initiated by an HFT. It represents the transaction costs incurred by a nonHFT when
+trading aggressively. Realized spread for nonHFT trades is twice the volume-weighted, signed
+diﬀerence between a trade’s price and the midquote in ﬁve seconds in basis points from the
+prevailing midquote for aggressive trades not initiated by an HFT. It is a proxy for marketmaker proﬁts net of price impact to providing liquidity to a nonHFT. Markets with lower
+eﬀective spreads and lower realized spreads indicate greater realized liquidity. Price impact
+for nonHFT trades is the volume-weighted, signed diﬀerence between the midquote prevailing contemporaneous to a trade and the midquote in ﬁve seconds, in basis points from the
+original midquote, for aggressive trades not initiated by an HFT. Price impact represents the
+informational and inventory-bearing costs of a trade that are loaded on liquidity suppliers,
+and markets with lower price impact indicate fewer of these costs.
+Figure 5 graphs the time series for the treatment and control stocks in a ﬁgure of parallel
+trends. This is useful to verify visually that the control stocks do not exhibit trends that
+distinguish them from the treatments.
+FIGURE 5 ABOUT HERE
+17
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+A dotted line shows the daily metric average, and a solid line presents the window average
+before and after the event. A black line is for treated stocks, and a gray line is for control
+stocks. The x-axis represents days relative to the event. The y-axis is the level of the spread
+in basis points. The graph of each average shows there is virtually no change in the liquidity
+of the control stocks, whereas liquidity improves for the treatment stocks following entry.
+Next, we present the event-study results. The following tables report impacts on spread
+metrics as the second, third, and fourth and later HFT ﬁrms enter a market, and they report
+the impacts during the ﬁrst, second and third month after entry. Events for the second and
+third entrant are reported separately; events for the fourth or greater entrants are combined.
+The immediate one-month entry results are reported in the full table; the second-month
+entry HFT coeﬃcient is reported in Panel B and the third-month entry HFT coeﬃcient is
+reported in Panel C. The OLS results are in the ﬁrst three columns. The WLS results are
+in columns 4 - 6.
+Table 5 reports the estimated impact of passive HFT entry on nonHFT eﬀective spreads.
+TABLE 5 ABOUT HERE
+So as to avoid redundant discussion, we discuss the OLS ﬁndings for this and all remaining
+tables. We note that the WLS results are economically similar. In fact, they are consistently
+stronger, which is consistent with (ex-ante) larger HFT entries having a larger impact. Table
+5 shows that a second HFT leads to tighter spreads by 38 basis points during the ﬁrst month
+after entry, and the third HFT does the same by 4 basis points, both statistically signiﬁcant.
+The second HFT has a long-lived impact on liquidity: the eﬀects retain their order and
+signiﬁcance during the second and third month after entry. In every month, the impact is
+largest for the market with the fewest incumbents, and smallest for the market with the most
+incumbents. The fourth and later HFT ﬁrms do not have a signiﬁcant eﬀect in any month,
+which is consistent with limits to price competition on an order book due to the minimum
+tick size.
+18
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+Table 6 reports the estimated impact of aggressive HFT entry on nonHFT eﬀective
+spreads.
+TABLE 6 ABOUT HERE
+Out of the nine OLS speciﬁcations, only three give a statistically signiﬁcant impact. For
+stocks with three or more incumbents, aggressive entry decreases the nonHFT eﬀective spread
+by 2 basis points in the second month and 4 basis points in the third month; for stocks with
+one incumbent, aggressive entry improves it by 11 basis points in the second month. Our
+interpretation is that there is either no impact or perhaps a minor improvement in liquidity.
+Neither interpretation is consistent with aggressive HFT competition harming liquidity by
+trading only to adversely select market makers. The results are more consistent with aggressive HFT pursuing many strategies that are on average neutral or slightly beneﬁcial to
+the market. Aggressive HFT may be competing to contribute to price eﬃciency, for example
+by using news arbitrage or by monitoring market conditions.
+The results are consistent
+with Brogaard et al. (2014), which ﬁnds that aggressive HFT trading contributes to price
+discovery. As the results for aggressive HFT entry are nearly all statistically insigniﬁcant we
+report them in the internet appendix and focus on the passive HFT entries for the remainder
+of the paper.
+Table 7 reports the estimated impact of passive HFT entry on nonHFT realized spreads.
+TABLE 7 ABOUT HERE
+For the ﬁrst month after entry, the second HFT leads to tighter spreads by 27 basis points,
+and the third HFT by 5 basis points. Both results are statistically signiﬁcant. The second
+HFT has a long-lived impact on liquidity: the eﬀects retain their order and signiﬁcance
+during the second and third month after entry. In each month the impact is largest for the
+market with the fewest incumbents and smallest for the market with the most incumbents.
+19
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+The fourth and later HFT ﬁrms do not have a signiﬁcant eﬀect in any month, which is
+consistent with limits to price competition on an order book due to the minimum tick size.5
+One circumstance that could confound the result in Table 7 is if price impacts are increasing contemporaneous to HFT entry. The realized spread is composed of the eﬀective
+spread minus the price impact, so it is possible the observed decrease in realized spreads
+could derive from a contemporaneous increase in price impacts. Such an increase in price
+impacts could be the result of an increase in the informational content of trading on Alpha
+that is unrelated to HFT, or it could even be due to HFT. To check for the possibility, we
+estimate the change in price impacts around HFT entry events.
+TABLE 8 ABOUT HERE
+We fail to ﬁnd much evidence of a change in price impacts. There are only two statistically
+signiﬁcant eﬀects, and rather than increases they are both decreases: Price impacts decrease
+after the second entrant by 10 basis points in the ﬁrst month and by 13 basis points in the
+third month. The evidence is consistent with the decline in realized spreads being driven
+by lower spreads, not by larger price impacts on Alpha. The observed decreases in price
+impacts can be explained by the known tendency for HFT to trade against price movements,
+as in Brogaard et al. 2014.
+Table 9 reports the estimated impact of passive HFT entry on the inside depth.
+TABLE 9 ABOUT HERE
+Unlike the spread measures, the depth results are nearly all statistically signiﬁcantly no
+diﬀerent than zero. The results suggest the role of competition among HFTs on the Alpha
+exchange is on the bid-ask spread, not on the number of shares available.
+5Another measure of liquidity we can evaluate is the quoted spread. We report the quoted spread results
+in the internet appendix. They are qualitatively similar to the eﬀective and realized spreads.
+20
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+In summary, Section III shows that HFT competition improves liquidity. If HFT competition did not beneﬁt liquidity, one would expect the entrance of a second or third passive
+HFT would have no eﬀect on spreads. However, we ﬁnd the second and third passive HFTs
+do improve spreads. Moreover, we ﬁnd the impact of competition is long-lived, that the
+relationship is strongest when there are fewer incumbents, and that the eﬀect diminishes
+as the number of incumbents grows, consistent with intuition about diminishing returns to
+competition. In general, the result is consistent with nonHFTs beneﬁting by accessing the
+lower spreads induced by HFT competition.
+IV.
+Is HFT competition consistent with price or quantity
+competition?
+In the previous section, we presented evidence that HFT competition on Alpha improves
+liquidity. In this section, we give an explanation for why. We argue it is because HFT
+competition is a form of quantity competition, an industrial organization that is characteristic
+of many markets (Bresnahan 1989).6 Under quantity competition, ﬁrms use their market
+power to raise prices, but competition can erode their market power. Many microstructure
+models use a basis of quantity competition, such as Kyle (1989), Subrahmanyam (1991),
+Biais et al. (2000) and Bondarenko (2001). Although these models were not written with
+HFT speciﬁcally in mind, we see this as an advantage. The consistency of the data suggests
+it can be useful to model HFT with the assumptions found in these traditional models.
+In recent theory, HFT competition instead is assumed to be price competition (Budish
+et al. 2015; Menkveld and Zoican 2017). Under price competition, ﬁrms lack market power,
+so they bid prices down to marginal cost. Price competition is a tractable assumption for
+theorists because it ﬁxes the quantity output. However, since ﬁrms have no market power,
+price competition has the strong consequence that increased competition among similar ﬁrms
+brings no beneﬁt (though it can still have costs). While we cannot test for price competition
+6For more on the role of competition in industrial organization, see Tirole (1988).
+21
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+directly, since we lack data on the ﬁrms’ marginal costs, we can show that the Alpha market
+responds to ﬁrm entry in ways that are diﬃcult to explain via price competition but that
+are natural outcomes of quantity competition.
+Speciﬁcally, we draw three hypotheses inspired by Kyle (1989) that are also identical
+with the predictions for the Cournot model, the classic model of quantity competition, with
+the standard features of linear cost, linear demand, and identical ﬁrms.7 As the number of
+ﬁrms N increases:
+1. Market size: total volume increases in N/(N + 1),
+2. Market share: the volume of incumbents decreases in 1/N,
+3. Liquidity: the price of liquidity decreases in 1/N.
+These predictions are implausible in a model that assumes price competition—particularly
+the ﬁrst. The ﬁrst is implausible because, in price competition, the quantity output is ﬁxed.
+The second and third are also diﬃcult for price competition because, under that assumption, only the ﬁrms with the lowest marginal cost produce. However, for predictions two
+and three, it is possible that strictly cost-improving ﬁrms could progressively enter Alpha
+in increasing numbers, which could generate the same observable consequences. We cannot
+test this because we lack data on ﬁrms’ marginal costs.
+To demonstrate robustness, we also study how the magnitude of each result changes in
+the number of ﬁrms. We ﬁnd the magnitude of the results on volume, incumbent volume, and
+liquidity all attenuate in the number of ﬁrms N. This is consistent with our interpretation
+that the HFT environment is characterized by quantity competition, as a diminishing return
+in the number of ﬁrms N is also implausible in a model with price competition.
+To test the hypotheses, we compute one data series for each of the three predictions and
+run the event study on the variable. For the ﬁrst prediction, we compute the volume share of
+7Prediction 3 is equation (40) in Kyle (1989). Prediction 2 draws from equation (44) in Kyle (1989), in
+which the residual supply curves attenuate in the number of like participants, and prediction 3 is the same
+equation summed over the participants.
+22
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+all HFT ﬁrms as a proportion of total volume. For the second, we compute the volume share
+of only the HFT incumbents as a proportion of total volume. For the third, we compute
+the eﬀective spreads of trades on which an HFT incumbent was the passive counterparty.
+We estimate the treatment eﬀects on these three variables using the same DiD event-study
+methodology described in Part II. Events for the second and third entrant are reported in
+separate columns, and events for the fourth or greater entrant are combined. The immediate
+one-month entry results are reported in the full table in Panel A; the second-month entry
+HFT coeﬃcient is reported in Panel B and the third-month entry HFT coeﬃcient is reported
+in Panel C. The OLS results are in the ﬁrst three columns. The WLS results are in columns
+4–6.
+A.
+Market share of the industry and of incumbents
+To test the predictions of quantity competition on total output and incumbent output
+we compute volume shares of HFT trading Alpha stocks. HFT volume share is the percent
+of trading volume (HFT shares traded / 2x total shares traded) executed by HFT ﬁrms for
+stock i on day t. HFT incumbent volume share is the percent of trading volume (incumbent
+HFT shares traded / 2x total shares traded) executed by incumbent HFT ﬁrms (i.e. all
+HFTs except the entrant) for stock i on day t. The treatment coeﬃcient is the percentage
+point change in HFT activity in stock i following a new HFT entry.
+Table 10 reports the results of the DiD event study on the volume share of the HFT
+industry.
+TABLE 10 ABOUT HERE
+Consistent with quantity competition, HFT entry increases the HFT share of volumes.
+After the second HFT arrives the impact is largest: ﬁve percentage points. The impact of
+entry lasts through the event window of three months and retains its magnitude. As with
+the one-month results, the largest impact in the third month is after the second HFT arrives,
+23
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+still at ﬁve percentage points. Consistent with quantity competition, there are diminishing
+returns in the number of ﬁrms.
+The entry impact is smallest after the fourth or later
+entrant, at two percentage points. In each of the three separate months we study the impact
+decreases in the number of HFT incumbents. The results on volume share are some of the
+most statistically signiﬁcant in our study; quantity competition holds even in the case of
+four or more HFTs.
+Table 11 reports the results of the DiD event study on the volume share of incumbent
+HFT ﬁrms only.
+TABLE 11 ABOUT HERE
+HFT entry has the reverse eﬀect on incumbent volume share as it does on total volume
+share. Consistent with quantity competition, entry decreases incumbent volumes. In the
+ﬁrst month the second HFT to arrive takes ﬁve percentage points of volume share from
+incumbents.
+As before, the impact of entry for the second entrant is long-lived, being
+statistically signiﬁcant in each month of the event study. In the third month the second
+HFT to arrive takes six percentage points from incumbents. The impacts decline in the
+number of HFT incumbents. The second entrant is more successful at capturing market
+share than the third entrant, and the third entrant is more successful than the fourth and
+later entrants. The third and higher entrants do not exhibit statistical signiﬁcance after the
+ﬁrst month.
+Overall, the results on volume shares are consistent with an increasing competitiveness of
+HFT in markets with more ﬁrms. Based on Tables 10 and 11, HFT entry tends to increase
+total HFT volumes and at a decreasing rate. It seizes trading volume from incumbents, again
+at a decreasing rate. Output increases more in markets with few HFTs; losses to incumbents
+are larger for stocks with few HFTs. The results and their diminishing returns are consistent
+with quantity competition as in quantity competition, as ﬁrms produce diﬀerent amounts
+24
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+of quantity depending on the industrial organization. They are not consistent with price
+competition, in which output does not increase in the number of ﬁrms.
+B.
+Prices quoted by incumbents
+To further test the predictions of quantity competition on prices we compute the eﬀective
+spread oﬀered by HFT incumbents. This measure is not the market eﬀective spread but
+the eﬀective spread for trades in which incumbent HFTs take the passive side. We do not
+compute the measure for all trades for two reasons—we have already studied a similar metric
+in Tables 5 and 6, and moreover we wish to verify speciﬁcally that incumbents react in a
+way consistent with quantity competition. Incumbent HFT eﬀective spread equals twice the
+distance from the midquote to the execution price in which an HFT incumbent ﬁrm is the
+passive counterparty, divided by the midquote and multiplied by 10,000 so that the measure
+is in basis points.
+Table 12 reports the impact of passive HFT entry on the eﬀective spreads oﬀered by
+incumbent HFT ﬁrms only (not the entrant).
+TABLE 12 ABOUT HERE
+Consistent with quantity competition, after a passive entry event HFT incumbents supply
+tighter eﬀective spreads. They do so after the second and after the third entrant: they tighten
+their spreads by 37 basis points after the second and by 3 basis points after the third. There
+is no statistically signiﬁcant impact for the fourth and later entrants, which is consistent
+with limits to price competition on an order book due to the minimum tick size. These
+impacts are long-lived during the three months of the study. In fact, the impact intensiﬁes
+in the third month for the second and third entrants.
+The results on incumbent pricing are consistent with beneﬁcial competitive pressure in
+markets with more HFT ﬁrms. Entry tends to lead incumbents to improve prices. As Table
+25
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+10 shows entrants seize trading volume from incumbents, the behavior of incumbents is
+consistent with a competitive response to losses in market share.
+V.
+Conclusions
+This paper presents three streams of evidence that HFT competition improves liquidity
+on stocks. First, we provide graphical evidence that suggests the eﬀect. As competition
+intensiﬁes, the bid-ask spread at an alternative equity market improves and converges to the
+spread at the national stock market. Second, we use a diﬀerence-in-diﬀerences event-study
+methodology to identify the treatment eﬀect of HFT competition. The event study compares
+liquidity metrics on the stock market before and after dates on which HFT ﬁrms begin trading
+a stock, and for control observations we use contemporaneous stocks that experienced no
+HFT entry. We ﬁnd the eﬀective and realized spreads for nonHFT participants (the “clients”
+of HFT) improve after passive HFT entry dates and weakly improve after aggressive HFT
+entry dates.
+Our results are based on the Canadian Alpha exchange and our empirical
+deﬁnition of HFT; we leave it to future research to determine whether the results hold true
+in other settings.
+The evidence contrasts with some predictions found in theoretical models that feature
+HFT competition. For instance, some models predict that HFT competition creates illiquidity (Menkveld and Zoican 2017; Budish et al. 2015). To explain the contrast, we examine
+the models’ assumptions on competition. A tractability assumption of these models is that
+HFT is a price competitor. The assumption is key to model results because it eliminates
+beneﬁts to competition beyond the second ﬁrm, leaving to additonal HFT ﬁrms only costs to
+contribute. We ﬁnd that quantity competition is a better assumption for HFT competition
+by testing three predictions of quantity competition that are implausible outcomes from the
+perspective of a model assuming price competition.
+26
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+REFERENCES
+A¨ıt-Sahalia, Y. and M. Saglam (2013). High frequency traders: Taking advantage of speed.
+Working Paper.
+Baron, M. D., J. Brogaard, B. Hagstr¨omer, and A. A. Kirilenko (2016). Risk and return in
+high-frequency trading.
+Bertrand, M., E. Duﬂo, and S. Mullainathan (2004). How much should we trust diﬀerencesin-diﬀerences estimates? Quarterly Journal of Economics 119(1), 249–275.
+Biais, B., T. Foucault, and S. Moinas (2015). Equilibrium fast trading. Journal of Financial
+Economics 116(2), 292–313.
+Biais, B., D. Martimort, and J. C. Rochet (2000). Competing mechanisms in a common
+value environment. Econometrica 68(4), 799–837.
+Boehmer, E., D. Li, and G. Saar (2016). Correlated high-frequency trading. Working Paper.
+Bondarenko, O. (2001). Competing market makers, liquidity provision, and bid–ask spreads.
+Journal of Financial Markets 4(3), 269–308.
+Breckenfelder, J. H. (2013). Competition between high-frequency traders, and market quality.
+Working Paper.
+Bresnahan, T. F. (1989). Empirical studies of industries with market power. Handbook of
+industrial organization 2, 1011–1057.
+Brogaard, J., T. Hendershott, and R. Riordan (2014). High-frequency trading and price
+discovery. Review of Financial Studies 27(8), 2267–2306.
+Budish, E. B., P. Cramton, and J. J. Shim (2015). The high-frequency trading arms race: Frequent batch auctions as a market design response. Quarterly Journal of Economics 130(4),
+1547–1621.
+Ellis, K., R. Michaely, and M. O’Hara (2002). The making of a dealer market: From entry
+to equilibrium in the trading of nasdaq stocks. Journal of Finance 57(5), 2289–2316.
+Fischer, S. (November 15, 2016). “is there a liquidity problem post-crisis?”. Speech at the
+Initiative on Business and Public Policy at the Brookings Institution, Washington, DC.
+Ho, T. and H. R. Stoll (1980).
+On dealer markets under competition.
+Journal of Finance 35(2), 259–267.
+Hoﬀmann, P. (2014). A dynamic limit order market with fast and slow traders. Journal of
+Financial Economics 113(1), 156–169.
+Jones, C. M. (2013). What do we know about high-frequency trading? Working Paper.
+27
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+Kirilenko, A., A. S. Kyle, M. Samadi, and T. Tuzun (2017). The ﬂash crash: The impact of
+high frequency trading on an electronic market. Journal of Finance, forthcoming.
+Kyle, A. S. (1989). Informed speculation with imperfect competition. Review of Economic
+Studies 56(3), 317–355.
+Menkveld, A. and M. Zoican (2017). Need for speed: Exchange latency and liquidity. Review
+of Financial Studies, forthcoming.
+Menkveld, A. J. (2013). High frequency trading and the new market makers. Journal of
+Financial Markets 16(4), 712–740.
+O’Hara, M., G. Saar, and Z. Zhong (2015). Relative tick size and the trading environment.
+Working Paper.
+Petersen, M. A. (2009). Estimating standard errors in ﬁnance panel data sets: Comparing
+approaches. Review of Financial Studies 22(1), 435–480.
+Subrahmanyam, A. (1991). Risk aversion, market liquidity, and price eﬃciency. Review of
+Financial Studies 4(3), 417–441.
+Thompson, S. B. (2011). Simple formulas for standard errors that cluster by both ﬁrm and
+time. Journal of Financial Economics 99(1), 1–10.
+Tirole, J. (1988). The theory of industrial organization. MIT press.
+28
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+Figure 1: Bid-ask spreads on Alpha and the TSX, before and after HFT entry
+This ﬁgure compares the average bid-ask spreads for stocks on Alpha and the TSX averaged during the one
+month before and after HFT entry dates for the stocks. An HFT entry date for a stock is the ﬁrst day an
+HFT trades at least 1000 shares of the stock on Alpha. Bid-ask spreads for Alpha stocks were computed
+using order-book data granted by Alpha; for the same stocks, TSX bid-ask spreads were computed using
+Thomson Reuters Tick History. The chart shows the stock-event averages before and after the second HFT
+to enter the market enters; before and after the third; and before and after the fourth or greater.
+29
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+Figure 2: Trading volume in Canada and Alpha’s share
+This ﬁgure plots the monthly dollar-volume market share of Alpha for the sample stocks during the sample
+period and, on the same ﬁgure, the total dollar volume of the sample stocks on all Canadian exhanges
+including Alpha. The data were computed using Bloomberg daily trading volumes for the stocks.
+30
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+Figure 3: HFT presence on Alpha
+The panels of this ﬁgure show two measures of HFT presence on Alpha: the average number of HFT per
+stock in the sample, and a histogram of entry dates. Panel A plots the average number of HFT ﬁrms that
+traded a stock per stock, for each day in the sample. Panel B plots a histogram of the number of HFT entry
+dates with bins of size one day. There are 1121 entry events, of which there were 1008 events in which there
+was at least one incumbent HFT ﬁrm.
+Panel A: Average number of HFT ﬁrms per stock
+Panel B: Distribution of HFT entry events
+31
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+Figure 4: Herﬁndahl-Hirschman index and bid-ask spreads
+This ﬁgure plots the average daily bid-ask spread prevailing on Alpha stocks by sample deciles of the
+Herﬁndahl-Hirschman index for HFT ﬁrms trading the stocks. The Herﬁndahl-Hirschman index is a measure
+of competition and is equal to the sum of the ﬁrms’ squared market shares of daily trading volume (double
+counted). Bid-ask spreads were computed using order-book data granted by Alpha and were computed once
+per calendar date and averaged by decile.
+32
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+Figure 5: Parallel trends
+This ﬁgure plots two liquidity metrics for treatment and control stocks, averaged daily over all treatments
+and controls during the one month before the HFT entry dates and the three months after the entry dates.
+Dashed lines are daily metrics, and solid lines are pre- and post-period averages. Treated stocks are in
+black, and control stocks are in gray. Eﬀective spread for nonHFT trades is twice the volume-weighted,
+signed diﬀerence between a trade’s price and the prevailing midquote in basis points for aggressive trades
+not initiated by an HFT. Realized spread for nonHFT trades is twice the volume-weighted, signed diﬀerence
+between a trade’s price and the midquote in ﬁve seconds in basis points from the midquote for aggressive
+trades not initiated by an HFT.
+Panel A: Eﬀective spread for nonHFT trades
+Panel B: Realized spread for nonHFT trades
+33
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+Table 1: Summary statistics for HFT events
+This table gives sample summary trading data for the entrants during the month after their entry. Daily
+volume is the average number of shares the entrant traded daily. Daily trades is the average number of trades
+the entrant executed daily. Percent daily volume is the average percent of total daily volume the entrant
+contributed. Percent volume overnight is the average percent of its own daily volume the entrant held at
+the end of day.
+Switching rate is the percentage of the entrant’s trades for which the entrant switched
+the direction of its trade—buying after it had sold or selling after it had bought. Percent passive is the
+percentage of the entrant’s trades for which the entrant initiated the trade (either through a market order
+or a marketable limit order).
+All HFT entries
+Mean
+Std.
+25%
+Med.
+75%
+Daily volume
+20,991
+80,761
+1100
+4200
+16,300
+Daily trades
+79
+153
+7
+24
+79
+% daily volume
+6.7
+10
+0.8
+2.6
+7.5
+% volume overnight
+30
+34
+3.4
+16
+45
+Switching rate
+39
+23
+25
+41
+52
+% passive
+55
+45
+0
+75
+100
+Events
+1121
+Passive HFT entries
+Daily volume
+24,208
+90,876
+1100
+4100
+17,700
+Daily trades
+72
+144
+7
+21
+68
+% daily volume
+9.1
+13
+0.9
+3.3
+11
+% volume overnight
+30
+32
+5.9
+17
+42
+Switching rate
+37
+20
+26
+41
+50
+% passive
+93
+16
+93
+100
+100
+Events
+641
+Aggressive HFT entries
+Daily volume
+12,135
+26,139
+1200
+3900
+12,000
+Daily trades
+74
+134
+8
+27
+79
+% daily volume
+3.8
+4.9
+0.7
+2.1
+5.1
+% volume overnight
+30
+35
+1.4
+12
+50
+Switching rate
+42
+27
+23
+43
+59
+% passive
+3.4
+15
+0
+0
+0
+Events
+368
+34
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+Table 2: Summary statistics for HFT events, by number of incumbents
+This table gives summary trading statistics for the entrants during the month after their entry, grouped by the number of incumbent HFT ﬁrms
+trading the stock when the entrant arrived. Daily volume is the average number of shares the entrant traded daily. Daily trades is the average number
+of trades the entrant executed daily. Percent daily volume is the average percent of total daily volume the entrant contributed. Percent volume held
+at end of day is the average percent of its own daily volume that the entrant held at the end of day. Switching rate is the percentage of the entrant’s
+trades for which the entrant switched the direction of its trade—the percent of the time it bought after it had sold or sold after it had bought. %
+passive is the percentage of the entrant’s trades for which the entrant initiated the trade (either through a market order or marketable limit order).
+Daily volume
+Daily trades
+% daily volume
+% volume overnight
+Switching rate
+% passive
+#HFT
+Events
+Mean
+Std.
+Mean
+Std.
+Mean
+Std.
+Mean
+Std.
+Mean
+Std.
+Mean
+Std.
+0
+113
+31,023
+125,785
+74
+165
+16.9
+17.7
+25.1
+28.7
+37.7
+17.8
+69.7
+41.9
+1
+189
+24,938
+123,910
+56
+140
+7.9
+11.0
+29.2
+30.2
+36.8
+18.2
+69.6
+41.2
+2
+176
+9445
+26,619
+26
+58
+3.2
+5.6
+34.4
+34.1
+32.0
+20.9
+67.0
+41.7
+3
+188
+11,347
+35,708
+43
+92
+2.6
+4.3
+34.4
+35.6
+34.9
+22.5
+53.4
+43.7
+4
+135
+10,748
+25,448
+53
+126
+2.6
+4.3
+27.4
+34.6
+43.4
+24.2
+51.9
+44.4
+5
+139
+12,352
+23,284
+91
+178
+3.0
+3.9
+29.2
+35.0
+41.0
+24.0
+50.5
+45.2
+6+
+181
+10,365
+23,533
+68
+156
+1.5
+2.6
+30.0
+35.7
+45.8
+26.8
+29.8
+43.4
+35
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+Table 3: Prediction of number of HFT ﬁrms
+This table gives the coeﬃcients obtained from an Ordered Probit regression of the number of HFT ﬁrms
+trading an Alpha stock in 2011 or 2012 on its characteristics in 2009 or 2010. The dependent variable takes
+the value zero for zero HFT ﬁrms trading the stock, one for one, two for two, and three for three or more
+HFT ﬁrms. TSX volume is the daily average trading volume for a stock trading on the TSX (divided by ten
+million so that the coeﬃcient has order one) obtained from Bloomberg. TSX spread is the daily average bidask spread for a stock trading on the TSX (divided by 1000) obtained from Thomson Reuters Tick History.
+Volatility is daily average return volatility for a stock trading on the TSX (multiplied by 10) obtained from
+Bloomberg. *, **, *** represent statistical signiﬁcance at the 10%, 5%, and 1% level, respectively.
+Number of HFT in
+2011
+2012
+2011
+2012
+2009 TSX volume
+17.98***
+8.74***
+(5.01)
+(3.00)
+2009 TSX rel. bid-ask spread
+-0.757***
+-1.10***
+(2.73)
+(3.77)
+2009 volatility
+2.04**
+1.89**
+(2.55)
+(2.23)
+2010 TSX volume
+29.15***
+10.00***
+(6.07)
+(3.39)
+2010 TSX rel. bid-ask spread
+-5.72***
+-5.14***
+(7.46)
+(7.59)
+2010 volatility
+0.08
+-0.11
+(0.37)
+(0.49)
+Threshold 1
+-1.47
+-1.66
+-2.31
+-2.53
+Threshold 2
+-0.44
+-0.99
+-0.86
+-1.56
+Threshold 3
+0.36
+-0.37
+0.11
+-0.89
+Observations
+212
+212
+244
+244
+Pseudo-R2
+0.289
+0.239
+0.406
+0.306
+36
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+Table 4: Prediction of timing of HFT entry
+The columns of this table give the coeﬃcients and one-standard deviation marginal eﬀects obtained from
+Probit regressions. The dependent variables take the value one for an HFT and zero otherwise. Column 1
+uses stock-day observations; column 2 uses stock-week observations; column 3 uses stock-month observations.
+The level variables are averaged over the previous day, week or month. The ﬁrst diﬀerences subtract the
+average twice-lagged value of the level variable from the ﬁrst-lagged value. Canadian volume is the log daily
+Canadian trading volume for the stock (divided by 100) obtained from Compustat. Alpha volume is the log
+daily trading volume for a stock on Alpha (divided by 100). Volatility is a 10-day moving average of the
+standard deviation of a stock’s closing price obtained from Bloomberg. Alpha Relative spread is the timeweighted average diﬀerence between the best bid and ask price divided by the midquote on Alpha (multiplied
+by 10,000). TSX Relative spread is the time-weighted average diﬀerence between the best bid and ask price
+divided by the midquote on TSX (multiplied by 10,000). First diﬀerence variables are denoted with a ∆. *,
+**, *** represent statistical signiﬁcance at the 10%, 5%, and 1% level, respectively. The marginal eﬀect is
+reported below the t-statistic.
+HFT entry events
+Daily
+Weekly
+Monthly
+Canadian volume
+5.841***
+4.772**
+4.263
+(3.70)
+(3.07)
+(1.81)
+0.097
+0.289
+0.732
+Alpha volume
+1.424
+0.718
+0.689
+(1.15)
+0.63)
+(0.41)
+0.024
+0.044
+0.119
+Volatility
+-2.134
+0.368
+5.301**
+(-1.86)
+(0.30)
+(2.73)
+-0.035
+0.022
+0.911
+Alpha rel. bid-ask spread
+0.751
+-0.224
+-0.301
+(1.27)
+(-0.33)
+(-0.30)
+0.012
+-0.014
+-0.052
+TSX rel. bid-ask spread
+-11.99***
+-18.04***
+-34.02
+(-4.82)
+(-6.77)
+(-7.61)
+-0.199
+-1.094
+-5.847
+∆Canadian volume
+-0.043
+8.709**
+9.086
+(-0.02)
+(2.42)
+(1.48)
+-0.001
+0.528
+1.562
+∆Alpha volume
+3.448
+-3.227
+7.270
+(1.42)
+(-1.05)
+(1.86)
+0.057
+-0.196
+1.250
+∆Volatility
+9.422**
+-2.323
+-6.558**
+(2.59)
+(-1.20)
+(-2.73)
+0.157
+-0.141
+-1.127
+∆Alpha rel. bid-ask spread
+-1.079
+-0.447
+2.250
+(-1.00)
+(-0.40)
+(1.72)
+-0.018
+-0.027
+0.387
+∆TSX rel. bid-ask spread
+2.776
+5.991
+-0.953
+(1.21)
+(1.55)
+(-0.12)
+0.046
+0.363
+-0.164
+Constant
+-3.315***
+-2.480***
+-1.722***
+(-21.67)
+(-15.80)
+(-7.21)
+Observations
+97,970
+36,204
+7597
+Pseudo-R2
+0.019
+0.023
+0.044
+Events
+1121
+1121
+1121
+37
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+Table 5: Passive HFT competition and nonHFT eﬀective spreads
+The table reports a diﬀerence-in-diﬀerences event study on nonHFT eﬀective spreads comparing the month
+before a stock-entry date of a passive HFT to the ﬁrst, second and third months after the date, run separately
+for the second, third and fourth-and-greater HFT ﬁrms to begin trade. The eﬀective spread for nonHFT
+trades is twice the volume-weighted, signed diﬀerence between a trade’s price and the prevailing midquote in
+basis points for aggressive trades not initiated by an HFT. Passive HFT is an HFT that uses predominantly
+limit orders to trade. For each treatment stock, a control is matched by Mahalanobis ranking on log market
+cap, log TSX volume, price, 10-day price volatility and absolute bid-ask spread during the month before the
+event. The regressors are HFT, the treatment dummy; after, the post-period dummy; controls for log market
+cap, log TSX volume, price, 10-day price volatility, and number of traders; and stock-event ﬁxed eﬀects. The
+event study is ﬁt once using OLS and once using WLS in which the weighting is the HFT entrant’s volume
+share during the month. The immediate one-month entry results are reported in the full table; the secondmonth entry HFT coeﬃcient is reported in Panel B and the third-month entry HFT coeﬃcient is reported
+in Panel C. The *, **, *** represent statistical signiﬁcance at the 10%, 5%, and 1% level. Standard errors
+are double-clustered by stock-event and calendar date.
+OLS
+WLS
+2nd HFT
+3rd HFT
+4th+
+2nd HFT
+3rd HFT
+4th+
+Panel A: Treatment eﬀect, month 1
+HFT
+-38.39***
+-4.49***
+-0.83
+-53.54***
+-6.27**
+-0.24
+(-5.19)
+(-2.60)
+(-1.04)
+(-4.61)
+(-2.23)
+(-0.20)
+Trend
+7.77
+1.7
+1.73**
+10.04
+1.6
+1.35
+(1.26)
+(1.39)
+(2.10)
+(1.23)
+(0.90)
+(1.10)
+Market cap
+40.47
+-37.94
+-19.53
+64.54
+-19.46
+-11.93
+(0.85)
+(-1.01)
+(-0.95)
+(0.91)
+(-0.93)
+(-0.77)
+TSX volume
+2.56
+-0.46
+-3.83***
+4.02
+-0.02
+-4.17***
+(0.69)
+(-0.64)
+(-2.90)
+(0.82)
+(-0.02)
+(-2.65)
+Price
+-0.56
+-0.63***
+-0.24**
+-1.55
+-0.63**
+-0.19*
+(-0.62)
+(-2.61)
+(-2.06)
+(-1.07)
+(-2.24)
+(-1.77)
+Volatility
+-3.02**
+1.38
+1.37**
+-4.62**
+1.21
+1.80**
+(-2.10)
+(1.58)
+(2.31)
+(-2.01)
+(1.05)
+(2.42)
+# ﬁrms
+-2.20***
+-0.18
+0.06
+-2.87***
+-0.16
+-0.04
+(-4.21)
+(-1.39)
+(0.99)
+(-4.21)
+(-0.70)
+(-0.32)
+FEs
+Y
+Y
+Y
+Y
+Y
+Y
+R2
+0.295
+0.582
+0.636
+0.274
+0.487
+0.640
+Events
+140
+122
+298
+140
+122
+298
+Panel B: Treatment eﬀect, month 2
+HFT
+-42.22***
+-4.01*
+-1.02
+-59.44***
+-5.39**
+-0.13
+(-3.85)
+(-1.89)
+(-0.69)
+(-3.61)
+(-2.21)
+(-0.07)
+Panel C: Treatment eﬀect, month 3
+HFT
+-34.54***
+-4.47
+-1.35
+-44.76***
+-7.96*
+0.36
+(-4.06)
+(-1.45)
+(-1.20)
+(-3.30)
+(-1.89)
+(0.21)
+38
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+Table 6: Aggressive HFT competition and nonHFT eﬀective spreads
+The table reports a diﬀerence-in-diﬀerences event study on nonHFT eﬀective spreads comparing the month
+before a stock-entry date of an aggressive HFT to the ﬁrst, second and third months after the date, run
+separately for the second, third and fourth-and-greater HFT ﬁrms to begin trade. The eﬀective spread for
+nonHFT trades is twice the volume-weighted, signed diﬀerence between a trade’s price and the prevailing
+midquote in basis points for aggressive trades not initiated by an HFT. Aggressive HFT is an HFT that uses
+predominantly marketable orders to trade. For each treatment stock, a control is matched by Mahalanobis
+ranking on log market cap, log TSX volume, price, 10-day price volatility and absolute bid-ask spread during
+the month before the event. The regressors are HFT, the treatment dummy; after, the post-period dummy;
+controls for log market cap, log TSX volume, price, 10-day price volatility, and number of traders; and
+stock-event ﬁxed eﬀects. The event study is ﬁt once using OLS and once using WLS in which the weighting
+is the HFT entrant’s volume share during the month. The immediate one-month entry results are reported
+in the full table; the second-month entry HFT coeﬃcient is reported in Panel B and the third-month entry
+HFT coeﬃcient is reported in Panel C. The *, **, *** represent statistical signiﬁcance at the 10%, 5%, and
+1% level. Standard errors are double-clustered by stock-event and calendar date.
+OLS
+WLS
+2nd HFT
+3rd HFT
+4th+
+2nd HFT
+3rd HFT
+4th+
+Panel A: Treatment eﬀect, month 1
+HFT
+-0.14
+1.83
+-0.95
+2.15
+2.55
+-0.22
+(-0.05)
+(1.05)
+(-1.15)
+(0.29)
+(1.18)
+(-0.21)
+Trend
+0.6
+-1.5
+2.20**
+3.33
+-2.98*
+1.55
+(0.22)
+(-1.00)
+(2.43)
+(0.84)
+(-1.73)
+(1.34)
+Market cap
+-5.62
+-87.56***
+7.69
+-20.04
+-90.36***
+-2.45
+(-0.33)
+(-2.66)
+(0.83)
+(-0.88)
+(-3.04)
+(-0.17)
+TSX volume
+-1.17
+1.17
+-1.76
+-1.57
+0.7
+-2.27**
+(-1.11)
+(1.08)
+(-1.54)
+(-1.11)
+(0.41)
+(-1.97)
+Price
+(0.93)
+(-1.70)
+(0.15)
+(-0.40)
+(-1.08)
+(-0.49)
+(-0.62)
+(-2.61)
+(-2.06)
+(-1.07)
+(-2.24)
+(-1.77)
+Volatility
+3.13
+0.61
+0.31
+3.26
+1.06
+0.26
+(1.02)
+(0.86)
+(1.38)
+(0.88)
+(1.38)
+(0.97)
+# ﬁrms
+-0.75***
+-0.16*
+0.10*
+-0.85***
+-0.16
+0.13**
+(-2.74)
+(-1.93)
+(1.73)
+(-2.70)
+(-1.34)
+(1.99)
+FEs
+Y
+Y
+Y
+Y
+Y
+Y
+R2
+0.303
+0.451
+0.682
+0.261
+0.408
+0.667
+Events
+39
+35
+267
+39
+35
+267
+Panel B: Treatment eﬀect, month 2
+HFT
+-11.29*
+0.46
+-2.33*
+-18.48*
+0.52
+-2.29
+(-1.92)
+(0.18)
+(-1.96)
+(-1.94)
+(0.13)
+(-1.57)
+Panel C: Treatment eﬀect, month 3
+HFT
+-7.49
+-3.56
+-4.10**
+-7.95
+-5.76
+-3.74*
+(-1.48)
+(-1.18)
+(-2.37)
+(-1.01)
+(-1.35)
+(-1.95)
+39
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+Table 7: Passive HFT competition and nonHFT realized spreads
+The table reports a diﬀerence-in-diﬀerences event study on nonHFT eﬀective spreads comparing the month
+before a stock-entry date of a passive HFT to the ﬁrst, second and third months after the date, run separately
+for the second, third and fourth-and-greater HFT ﬁrms to begin trade. The realized spread for nonHFT trades
+is twice the volume-weighted, signed diﬀerence between a trade’s price and the midquote in ﬁve seconds in
+basis points from the midquote for aggressive trades not initiated by an HFT. Passive HFT is an HFT that
+uses predominantly limit orders to trade. For each treatment stock, a control is matched by Mahalanobis
+ranking on log market cap, log TSX volume, price, 10-day price volatility and absolute bid-ask spread during
+the month before the event. The regressors are HFT, the treatment dummy; after, the post-period dummy;
+controls for log market cap, log TSX volume, price, 10-day price volatility, and number of traders; and
+stock-event ﬁxed eﬀects. The event study is ﬁt once using OLS and once using WLS in which the weighting
+is the HFT entrant’s volume share during the month. The immediate one-month entry results are reported
+in the full table; the second-month entry HFT coeﬃcient is reported in Panel B and the third-month entry
+HFT coeﬃcient is reported in Panel C. The *, **, *** represent statistical signiﬁcance at the 10%, 5%, and
+1% level. Standard errors are double-clustered by stock-event and calendar date.
+OLS
+WLS
+2nd HFT
+3rd HFT
+4th+
+2nd HFT
+3rd HFT
+4th+
+Panel A: Treatment eﬀect, month 1
+HFT
+-26.62***
+-5.16**
+0.02
+-36.20***
+-7.58*
+-0.22
+(-4.61)
+(-2.11)
+(0.02)
+(-4.44)
+(-1.81)
+(-0.19)
+Trend
+5.07
+3.86
+1.69*
+5.7
+6.49
+2.49**
+(0.94)
+(1.50)
+(1.90)
+(0.79)
+(1.48)
+(2.01)
+Market cap
+21.73
+-34.35
+-11.18
+38.11
+-38.14
+-5.4
+(0.70)
+(-1.21)
+(-0.54)
+(0.79)
+(-1.47)
+(-0.32)
+TSX volume
+-2.12
+-3.83***
+-7.13***
+-1.41
+-4.49**
+-7.16***
+(-0.55)
+(-3.56)
+(-4.93)
+(-0.29)
+(-2.57)
+(-4.50)
+Price
+-0.74
+-0.49*
+-0.1
+-1.52
+-0.45
+-0.03
+(-0.98)
+(-1.76)
+(-0.82)
+(-1.31)
+(-1.20)
+(-0.30)
+Volatility
+-2.59*
+0.25
+1.11**
+-3.83*
+0.62
+1.49**
+(-1.90)
+(0.14)
+(2.32)
+(-1.74)
+(0.24)
+(2.48)
+# ﬁrms
+-1.21**
+-0.01
+0.09
+-1.64**
+0.26
+0.05
+(-2.56)
+(-0.05)
+(1.10)
+(-2.57)
+(0.66)
+(0.63)
+FEs
+Y
+Y
+Y
+Y
+Y
+Y
+R2
+0.165
+0.18
+0.404
+0.146
+0.108
+0.402
+Events
+140
+122
+298
+140
+122
+298
+Panel B: Treatment eﬀect, month 2
+HFT
+-32.99***
+-3.88**
+0.85
+-44.47***
+-3.91*
+1.61
+(-3.78)
+(-2.03)
+(0.67)
+(-3.62)
+(-1.70)
+(1.01)
+Panel C: Treatment eﬀect, month 3
+HFT
+-23.22***
+-4.38
+0.1
+-27.35***
+-7.5
+2.31
+(-3.79)
+(-1.22)
+(0.08)
+(-3.09)
+(-1.32)
+(1.17)
+40
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+Table 8: Passive HFT competition and nonHFT price impacts
+The table reports a diﬀerence-in-diﬀerences event study on nonHFT price impacts comparing the month
+before a stock-entry date of a passive HFT to the ﬁrst, second and third months after the date, run separately
+for the second, third and fourth-and-greater HFT ﬁrms to begin trade. The price impact of nonHFT trades
+is the volume-weighted, signed diﬀerence between the midquote prevailing contemporaneous to a trade and
+the midquote in ﬁve seconds, in basis points from the original midquote, for aggressive trades not initiated by
+an HFT. Passive HFT is an HFT that uses predominantly limit orders to trade. For each treatment stock, a
+control is matched by Mahalanobis ranking on log market cap, log TSX volume, price, 10-day price volatility
+and absolute bid-ask spread during the month before the event. The regressors are HFT, the treatment
+dummy; after, the post-period dummy; controls for log market cap, log TSX volume, price, 10-day price
+volatility, and number of traders; and stock-event ﬁxed eﬀects. The event study is ﬁt once using OLS and
+once using WLS in which the weighting is the HFT entrant’s volume share during the month. The immediate
+one-month entry results are reported in the full table; the second-month entry HFT coeﬃcient is reported
+in Panel B and the third-month entry HFT coeﬃcient is reported in Panel C. The *, **, *** represent
+statistical signiﬁcance at the 10%, 5%, and 1% level. Standard errors are double-clustered by stock-event
+and calendar date.
+OLS
+WLS
+2nd HFT
+3rd HFT
+4th+
+2nd HFT
+3rd HFT
+4th+
+Panel A: Treatment eﬀect, month 1
+HFT
+-10.03**
+0.31
+-0.83
+-15.09**
+0.13
+-0.01
+(-2.18)
+(0.11)
+(-1.09)
+(-2.01)
+(0.03)
+(-0.01)
+Trend
+1.40
+-0.96
+0.15
+2.42
+-2.54
+-0.84
+(0.44)
+(-0.54)
+(0.18)
+(0.60)
+(-0.83)
+(-0.68)
+Market cap
+37.52
+-7.53
+-15.75
+56.95
+8.43
+-17.03
+(1.20)
+(-0.36)
+(-1.22)
+(1.30)
+(0.37)
+(-1.05)
+TSX volume
+3.32*
+2.12*
+4.46***
+3.25
+2.49
+4.34***
+(1.71)
+(1.70)
+(4.46)
+(1.04)
+(1.20)
+(4.31)
+Price
+0.15
+-0.25
+-0.27***
+0.17
+-0.21
+-0.28**
+(0.32)
+(-1.14)
+(-2.85)
+(0.23)
+(-0.71)
+(-2.47)
+Volatility
+-0.37
+2.18**
+-0.11
+-0.84
+2.14*
+-0.13
+(-0.42)
+(2.38)
+(-0.39)
+(-0.70)
+(1.76)
+(-0.31)
+# ﬁrms
+-0.82***
+-0.10
+-0.11
+-0.95***
+-0.23
+-0.20*
+(-3.56)
+(-0.54)
+(-1.57)
+(-3.03)
+(-0.65)
+(-1.66)
+FEs
+Y
+Y
+Y
+Y
+Y
+Y
+R2
+0.156
+0.161
+0.287
+0.165
+0.139
+0.275
+Events
+140
+122
+298
+140
+122
+298
+Panel B: Treatment eﬀect, month 2
+HFT
+-7.25
+-2.17
+-1.40
+-10.91
+-5.53
+-1.52
+(-1.29)
+(-0.96)
+(-1.15)
+(-1.23)
+(-1.46)
+(-0.81)
+Panel C: Treatment eﬀect, month 3
+HFT
+-13.30**
+-2.43
+-2.05
+-17.09*
+-4.91
+-4.02
+(-2.20)
+(-1.17)
+(-1.52)
+(-1.88)
+(-1.53)
+(-1.46)
+41
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+Table 9: Passive HFT competition and inside depth
+The table reports a diﬀerence-in-diﬀerences event study on inside depth comparing the month before a
+stock-entry date of a passive HFT to the ﬁrst, second and third months after the date, run separately for the
+second, third and fourth-and-greater HFT ﬁrms to begin trade. Inside depth is the sum of the quantity of
+limit orders outstanding at the best-bid and best-ask prices. Passive HFT is an HFT that uses predominantly
+limit orders to trade. For each treatment stock, a control is matched by Mahalanobis ranking on log market
+cap, log TSX volume, price, 10-day price volatility and absolute bid-ask spread during the month before the
+event. The regressors are HFT, the treatment dummy; after, the post-period dummy; controls for log market
+cap, log TSX volume, price, 10-day price volatility, and number of traders; and stock-event ﬁxed eﬀects. The
+event study is ﬁt once using OLS and once using WLS in which the weighting is the HFT entrant’s volume
+share during the month. The immediate one-month entry results are reported in the full table; the secondmonth entry HFT coeﬃcient is reported in Panel B and the third-month entry HFT coeﬃcient is reported
+in Panel C. The *, **, *** represent statistical signiﬁcance at the 10%, 5%, and 1% level. Standard errors
+are double-clustered by stock-event and calendar date.
+OLS
+WLS
+2nd HFT
+3rd HFT
+4th+
+2nd HFT
+3rd HFT
+4th+
+Panel A: Treatment eﬀect, month 1
+HFT
+1958.67
+-1066.41
+1393.02
+1028.23
+40
+840.55
+(1.49)
+(-0.61)
+(1.16)
+(1.46)
+(0.06)
+(1.04)
+Trend
+781.51
+-835.27
+682.95
+492.91
+-509.01
+1167.07**
+(1.13)
+(-0.94)
+(0.87)
+(0.93)
+(-1.14)
+(2.05)
+Market cap
+1354.63
+4981.1
+2988.86
+310.33
+2768.64
+-4232.02
+(0.35)
+(0.52)
+(0.14)
+(0.09)
+(0.32)
+(-0.22)
+TSX volume
+1160.30***
+1948.67***
+2963.25***
+1059.66***
+1252.84***
+2380.02***
+(2.88)
+(4.28)
+(8.07)
+(2.89)
+(4.74)
+(7.09)
+Price
+204.7
+-132.48
+137.05
+223.79*
+32.25
+59.22
+(1.29)
+(-0.30)
+(0.79)
+(1.77)
+(0.24)
+(0.62)
+Volatility
+64.57
+-1247.13***
+434.79
+158.42
+-681.27***
+209.23
+(0.16)
+(-2.95)
+(1.45)
+(0.60)
+(-3.29)
+(0.83)
+# ﬁrms
+232.16***
+47.95
+-15.43
+238.16***
+64.61*
+31.19
+(3.70)
+(0.67)
+(-0.25)
+(4.26)
+(1.80)
+(0.60)
+FEs
+Y
+Y
+Y
+Y
+Y
+Y
+R2
+0.81
+0.842
+0.861
+0.798
+0.838
+0.844
+Events
+140
+122
+298
+140
+122
+298
+Panel B: Treatment eﬀect, month 2
+HFT
+4143.81*
+1133.56
+-150.12
+2095.66
+831.35
+16.63
+(1.77)
+(0.54)
+(-0.14)
+(1.18)
+(0.81)
+(0.02)
+Panel C: Treatment eﬀect, month 3
+HFT
+3191.03
+2177.86
+393.82
+166.92
+1336.19
+882.9
+(1.22)
+(1.39)
+(0.34)
+(0.11)
+(1.26)
+(1.05)
+42
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+Table 10: HFT competition and HFT’s share of volume
+The table reports a diﬀerence-in-diﬀerences event study on HFT’s volume share comparing the month before
+a stock-entry date of an HFT to the ﬁrst, second and third months after the date, run separately for the
+second, third and fourth-and-greater HFT ﬁrms to begin trade. HFT share of volume is the percentage of
+daily volume for which an HFT ﬁrm is one counterparty. For each treatment stock, a control is matched
+by Mahalanobis ranking on log market cap, log TSX volume, price, 10-day price volatility and absolute
+bid-ask spread during the month before the event. The regressors are HFT, the treatment dummy; after, the
+post-period dummy; controls for log market cap, log TSX volume, price, 10-day price volatility, and number
+of traders; and stock-event ﬁxed eﬀects. The event study is ﬁt once using OLS and once using WLS in
+which the weighting is the HFT entrant’s volume share during the month. The immediate one-month entry
+results are reported in the full table; the second-month entry HFT coeﬃcient is reported in Panel B and the
+third-month entry HFT coeﬃcient is reported in Panel C. The *, **, *** represent statistical signiﬁcance at
+the 10%, 5%, and 1% level. Standard errors are double-clustered by stock-event and calendar date.
+OLS
+WLS
+2nd HFT
+3rd HFT
+4th+
+2nd HFT
+3rd HFT
+4th+
+Panel A: Treatment eﬀect, month 1
+HFT
+4.94***
+3.30***
+2.36***
+6.19***
+3.72***
+2.33***
+(5.77)
+(6.22)
+(9.92)
+(5.22)
+(5.65)
+(8.29)
+Trend
+-0.57
+-0.25
+-0.23
+-0.94*
+-0.22
+0.05
+(-1.26)
+(-0.67)
+(-1.16)
+(-1.65)
+(-0.51)
+(0.20)
+Market cap
+6.47
+21.26***
+-0.47
+9.97
+20.31***
+0.37
+(1.00)
+(6.95)
+(-0.31)
+(1.58)
+(6.12)
+(0.18)
+TSX volume
+0.31
+-0.07
+-0.62***
+0.45*
+0.17
+-0.39**
+(1.51)
+(-0.29)
+(-3.60)
+(1.85)
+(0.71)
+(-2.03)
+Price
+0.1
+0.15
+-0.08**
+0.1
+0.2
+-0.05
+(0.82)
+(1.21)
+(-2.10)
+(0.69)
+(1.47)
+(-0.86)
+Volatility
+-0.27*
+-0.46**
+-0.17***
+-0.17
+-0.67**
+-0.13**
+(-1.70)
+(-2.11)
+(-3.61)
+(-0.99)
+(-2.52)
+(-2.29)
+# ﬁrms
+-0.02
+0.13***
+0.18***
+-0.01
+0.06
+0.10***
+(-0.55)
+(2.59)
+(6.10)
+(-0.15)
+(1.46)
+(3.72)
+FEs
+Y
+Y
+Y
+Y
+Y
+Y
+R2
+0.679
+0.707
+0.66
+0.657
+0.703
+0.664
+Events
+189
+176
+643
+189
+176
+643
+Panel B: Treatment eﬀect, month 2
+HFT
+4.52***
+3.78***
+2.60***
+4.43***
+3.87***
+2.50***
+(4.78)
+(5.82)
+(8.70)
+(3.68)
+(5.25)
+(7.31)
+Panel C: Treatment eﬀect, month 3
+HFT
+5.31***
+4.51***
+2.77***
+6.03***
+5.14***
+2.67***
+(5.63)
+(6.17)
+(7.96)
+(4.81)
+(5.92)
+(6.37)
+43
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+Table 11: HFT competition and HFT incumbents’ share of volume
+The table reports a diﬀerence-in-diﬀerences event study on the volume share of HFT incumbents comparing
+the month before a stock-entry date of an HFT to the ﬁrst, second and third months after the date, run
+separately for the second, third and fourth-and-greater HFT ﬁrms to begin trade. HFT incumbents’ share
+of volume is the percentage of daily volume for which an incumbent HFT ﬁrm (i.e. not the entrant in the
+treatment stock) is one counterparty. For each treatment stock, a control is matched by Mahalanobis ranking
+on log market cap, log TSX volume, price, 10-day price volatility and absolute bid-ask spread during the
+month before the event. The regressors are HFT, the treatment dummy; after, the post-period dummy;
+controls for log market cap, log TSX volume, price, 10-day price volatility, and number of traders; and
+stock-event ﬁxed eﬀects. The event study is ﬁt once using OLS and once using WLS in which the weighting
+is the HFT entrant’s volume share during the month. The immediate one-month entry results are reported
+in the full table; the second-month entry HFT coeﬃcient is reported in Panel B and the third-month entry
+HFT coeﬃcient is reported in Panel C. The *, **, *** represent statistical signiﬁcance at the 10%, 5%, and
+1% level. Standard errors are double-clustered by stock-event and calendar date.
+OLS
+WLS
+2nd HFT
+3rd HFT
+4th+
+2nd HFT
+3rd HFT
+4th+
+Panel A: Treatment eﬀect, month 1
+HFT
+-5.13***
+-0.93*
+-0.41*
+-5.89***
+-1.10*
+-0.71***
+(-6.78)
+(-1.91)
+(-1.82)
+(-6.18)
+(-1.84)
+(-2.74)
+Trend
+-0.52
+-0.76**
+-0.50**
+-0.68
+-1.04***
+-0.2
+(-1.22)
+(-2.11)
+(-2.56)
+(-1.23)
+(-2.71)
+(-0.87)
+Market cap
+2.05
+20.26***
+-0.3
+5.71
+20.39***
+-0.18
+(0.35)
+(6.32)
+(-0.18)
+(0.99)
+(6.09)
+(-0.09)
+TSX volume
+0.60***
+0.18
+-0.62***
+0.86***
+0.49*
+-0.35*
+(2.88)
+(0.76)
+(-3.63)
+(3.45)
+(1.95)
+(-1.81)
+Price
+0.08
+0.09
+-0.04
+0.06
+0.1
+-0.04
+(0.61)
+(0.79)
+(-0.82)
+(0.34)
+(0.88)
+(-0.89)
+Volatility
+-0.12
+-0.36*
+-0.18***
+-0.07
+-0.42*
+-0.16***
+(-0.80)
+(-1.72)
+(-3.03)
+(-0.43)
+(-1.72)
+(-2.72)
+# ﬁrms
+-0.01
+0.13**
+0.18***
+0
+0.05
+0.10***
+(-0.37)
+(2.52)
+(5.89)
+(-0.04)
+(1.19)
+(3.65)
+FEs
+Y
+Y
+Y
+Y
+Y
+Y
+R2
+0.704
+0.698
+0.665
+0.681
+0.701
+0.673
+Events
+189
+176
+643
+189
+176
+643
+Panel B: Treatment eﬀect, month 2
+HFT
+-6.64***
+0.14
+-0.27
+-8.56***
+-0.05
+-0.53
+(-6.20)
+(0.22)
+(-0.93)
+(-6.23)
+(-0.06)
+(-1.57)
+Panel C: Treatment eﬀect, month 3
+HFT
+-6.01***
+0.45
+-0.41
+-7.54***
+0.78
+-0.69*
+(-5.17)
+(0.64)
+(-1.24)
+(-5.17)
+(0.92)
+(-1.74)
+44
+Electronic copy available at: https://ssrn.com/abstract=2435999
+
+Table 12: Passive HFT competition and HFT incumbent eﬀective spreads
+The table reports a diﬀerence-in-diﬀerences event study on the eﬀective spreads of HFT incumbents comparing the month before a stock-entry date of a passive HFT to the ﬁrst, second and third months after the
+date, run separately for the second, third and fourth-and-greater HFT ﬁrms to begin trade. HFT incumbent
+eﬀective spread is the eﬀective spread of trades in which an incumbent HFT ﬁrm (i.e. not the entrant in the
+treatment stock) is the passive counterparty. Passive HFT is an HFT that uses predominantly limit orders
+to trade. For each treatment stock, a control is matched by Mahalanobis ranking on log market cap, log
+TSX volume, price, 10-day price volatility and absolute bid-ask spread during the month before the event.
+The regressors are HFT, the treatment dummy; after, the post-period dummy; controls for log market cap,
+log TSX volume, price, 10-day price volatility, and number of traders; and stock-event ﬁxed eﬀects. The
+event study is ﬁt once using OLS and once using WLS in which the weighting is the HFT entrant’s volume
+share during the month. The immediate one-month entry results are reported in the full table; the secondmonth entry HFT coeﬃcient is reported in Panel B and the third-month entry HFT coeﬃcient is reported
+in Panel C. The *, **, *** represent statistical signiﬁcance at the 10%, 5%, and 1% level. Standard errors
+are double-clustered by stock-event and calendar date.
+OLS
+WLS
+2nd HFT
+3rd HFT
+4th+
+2nd HFT
+3rd HFT
+4th+
+Panel A: Treatment eﬀect, month 1
+HFT
+-36.61***
+-3.02**
+-0.2
+-52.81***
+-4.04*
+0.62
+(-4.52)
+(-2.14)
+(-0.31)
+(-4.53)
+(-1.84)
+(0.61)
+Trend
+5.93
+1.17
+0.62
+8.28
+0.75
+0.4
+(0.73)
+(0.91)
+(0.88)
+(0.76)
+(0.40)
+(0.38)
+Market cap
+-12.67
+-38.71
+-3.62
+-25.4
+-23.18
+-3.99
+(-0.52)
+(-1.08)
+(-0.82)
+(-0.53)
+(-1.13)
+(-0.82)
+TSX volume
+1.14
+1.65
+-0.46
+0.44
+2.17
+0.38
+(0.41)
+(1.32)
+(-0.40)
+(0.10)
+(1.05)
+(0.24)
+Price
+-1.07
+-0.60***
+-0.14**
+-2.09
+-0.66**
+-0.07
+(-1.06)
+(-2.87)
+(-2.07)
+(-1.48)
+(-2.50)
+(-0.71)
+Volatility
+-1.84
+2.37***
+0.77**
+-2.31
+2.45**
+1.36**
+(-1.32)
+(2.65)
+(2.07)
+(-1.06)
+(2.14)
+(2.27)
+# ﬁrms
+-2.43***
+-0.37**
+-0.21***
+-3.25***
+-0.43*
+-0.39***
+(-4.39)
+(-2.52)
+(-3.51)
+(-4.21)
+(-1.83)
+(-2.94)
+FEs
+Y
+Y
+Y
+Y
+Y
+Y
+R2
+0.364
+0.605
+0.607
+0.35
+0.527
+0.608
+Events
+140
+122
+298
+140
+122
+298
+Panel B: Treatment eﬀect, month 2
+HFT
+-38.20***
+-5.14**
+-1.66
+-52.08***
+-7.85**
+-1.29
+(-3.30)
+(-2.33)
+(-0.97)
+(-3.13)
+(-2.44)
+(-0.58)
+Panel C: Treatment eﬀect, month 3
+HFT
+-30.83***
+-4.70*
+-1.11
+-44.32***
+-7.00**
+-0.97
+(-3.61)
+(-1.89)
+(-0.99)
+(-3.13)
+(-2.41)
+(-0.66)
+45
+Electronic copy available at: https://ssrn.com/abstract=2435999
