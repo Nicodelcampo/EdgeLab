@@ -1,0 +1,2794 @@
+Electronic copy available at: http://ssrn.com/abstract=1594066
+Electronic copy available at: http://ssrn.com/abstract=1594066
+Electronic copy available at: http://ssrn.com/abstract=1594066
+Implementation of Pairs Trading Strategies
+Øyvind Foshaug
+Faculty of Science
+Koortweg- de Vries Institute for Mathematics
+Master of Science Thesis
+Abstract
+In this paper we outline two previously suggested methods for quantitative motivated trading in pairs. We focus on the method of cointegration and
+a unobserved mean reversion model called the stochastic spread model. The
+methods are used to implement a search procedure that aims to reveal profitable pairs among all possible pairs available on the German, French and
+Dutch stock exchanges. The intended user of this application is the trading
+desk at Amsterdams Eﬀektenkantoor for which this investigation has been
+done.
+1
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+Electronic copy available at: http://ssrn.com/abstract=1594066
+Electronic copy available at: http://ssrn.com/abstract=1594066
+Electronic copy available at: http://ssrn.com/abstract=1594066
+Contents
+1
+Internship assignment
+3
+1.1
+The company . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+3
+1.2
+Internship project aim and deliverables . . . . . . . . . . . . . . .
+3
+1.3
+Developing a search procedure for proﬁtable spreads
+. . . . . . .
+3
+1.4
+Deﬁnition of the investment and its return . . . . . . . . . . . . .
+4
+1.5
+Structure of the thesis . . . . . . . . . . . . . . . . . . . . . . . .
+4
+2
+Cointegration in time series
+4
+2.1
+Deﬁnition and properties of time series
+. . . . . . . . . . . . . .
+5
+2.2
+Characterization of cointegration for a VAR system . . . . . . . .
+6
+2.2.1
+An alternative representation for the VAR(p) process. . . .
+8
+2.3
+Maximum likelihood estimate of ζ0 under the restriction of h cointegrated vectors.
+. . . . . . . . . . . . . . . . . . . . . . . . . .
+9
+2.4
+Hypothesis testing
+. . . . . . . . . . . . . . . . . . . . . . . . .
+16
+2.5
+Limiting distribution of the test statistic
+. . . . . . . . . . . . . .
+17
+2.6
+Estimating the cointegrating vectors . . . . . . . . . . . . . . . .
+20
+3
+The hidden Ohrnstein-Uhlenbeck model
+20
+3.1
+Ornstein-Uhlenbeck process
+. . . . . . . . . . . . . . . . . . . .
+21
+3.2
+Asset pricing theory (APT
+. . . . . . . . . . . . . . . . . . . . .
+23
+3.3
+The state-space representation of a dynamic system . . . . . . . .
+23
+3.3.1
+Derivation of the Kalman Filter
+. . . . . . . . . . . . . .
+24
+3.3.2
+Kalman smoothing estimates
+. . . . . . . . . . . . . . .
+27
+3.3.3
+The maximum likelihood estimates
+. . . . . . . . . . . .
+28
+4
+A proﬁtability measure for a mean reverting spread
+29
+5
+Applying the search procedure
+29
+5.1
+Treating historical and new information in the search procedure . .
+29
+5.2
+Search criteria and results for the co-integration method
+. . . . .
+30
+5.3
+Search criteria and results for the stochastic spread method . . . .
+30
+6
+The software user interface
+30
+7
+References
+35
+8
+Appendix A - further results
+35
+8.1
+Cointegration . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+35
+8.2
+Stochastic spread . . . . . . . . . . . . . . . . . . . . . . . . . .
+37
+2
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+1
+Internship assignment
+1.1
+The company
+Amsterdams Eﬀectenkantoor (AEK) operates as an intermediary in transactions in
+stocks, bonds, real estate shares and derivatives focusing on domestic and foreign
+institutional investors as well as aﬄuent private clients who appreciate the dedication and service of a personal approach. Within AEK, the research department
+provides valuable information for clients about movements in ﬁnancial markets
+and investigates statistical trading strategies.
+1.2
+Internship project aim and deliverables
+Pairs trading is a trading strategy used to exploit markets that are out of equilibrium
+assuming that over time they will move to a rational equilibrium. Pairs trading is
+performed by taking a long position (buying) one security and taking a short position (borrowing) another security. This relative position is called a spread. The
+proﬁt is made by taking the position in the spread when it is out of equilibrium
+and unwind the position and make a proﬁt when the spread is at its equilibrium.
+A spread that has this quality is called mean reverting, with mean indicating equilibrium. AEK is familiar to pairs trading, and pairs trading is carried out on a
+experimental level based on their industry knowledge. The internship project was
+initiated to ﬁnd out if there exist a systematic approach to identify pairs that would
+make proﬁt for AEK. In order to achieve this it was decided to develop a search
+procedure for proﬁtable spreads. This search procedure uses available information
+on securities at stock exchanges in the Netherlands, Germany and France. The
+search procedure is implemented as as software application with a user interface
+that give the trader enough ﬂexibility to continuously search for mean reverting
+spreads and administer the search results. The project was limited to 6 months.
+1.3
+Developing a search procedure for proﬁtable spreads
+Some information on pairs trading is available in the literature and the book by
+Vidyamurthy (2004) gives the most elaborate discussion on pairs trading. The
+method of cointegration, Johansen (1991), and the stochastic spread method described in Do, Faﬀand Hamza (2006) and Elliot, vd Hoek and Malcolm (2004)
+were chosen as the most promising ones for the search procedure. Johansen (1991)
+provides an eﬃcient estimation technique of cointegrated vectors given full information of a stochastic processes. The stochastic spread method veriﬁes the existence of a well-known stochastic model for mean reversion called the OhrnsteinUhlenbeck process. Statistical tests are used as search criteria for the search pro3
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+cedure to identify a spread as proﬁtable. Furthermore a optimal distance from the
+equilibrium is calculated in order to give the trader a signal on when to enter the
+position in the spread. This distance is also used to calculate a historical proﬁt for
+a given spread.
+1.4
+Deﬁnition of the investment and its return
+Pairs trading can be summarized as follows; the trader invests an equal amount
+in asset A and asset B, αpA
+t = pB
+t , provided that it is impossible to buy fraction
+of assets. This can be done without funding by borrowing a number of shares of
+assets B, immediately sell these and invest the amount in α shares of asset A. This
+is called shorting of asset B. We deﬁne the investment equation as follows:
+0 = log(α) + log(pA
+t ) −log(pB
+t ).
+(1)
+The minus sign reﬂects the fact that asset B is shorted. We express the investment
+equation in a logarithmic transformation since this will ease the calculation of the
+returns on the investment. The return on this investment expressed in percentage
+of the invested amount in asset A over a small horizon (t −1, t] is
+log( αpA
+t
+αpA
+t−1
+) −log( pB
+t
+pB
+t−1
+) = log( pA
+t
+pB
+t
+) −log(
+pA
+t−1
+pB
+t−1
+).
+(2)
+This is justiﬁed by the fact that log(st/st−1) ≈(st −st−1)/st−1 . The largest accumulated return is obtained from the largest number of consecutive positive returns.
+This means that if the behavior of log(pA
+t ) −log(pB
+t ) could be predicted, the investor could enter the trade when this value is low and make proﬁt when then value
+is high.
+1.5
+Structure of the thesis
+Section 2 describes the method of cointegration and Section 3 the method of stochastic spread. Both methods are described with the aim to develop statistical tests to
+be used as search criteria, found in section 5. Section 4 describes the optimal trading points and proﬁtability calculations. Section 6 shows the user interface of the
+software application.
+2
+Cointegration in time series
+This section will focus on the stationary properties of the investment (1) as from
+Deﬁnition 3, any mean reverting process is stationary. Engle and Granger (1987)
+4
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+and Johansen (1988) developed a theoretical framework for a particular class of
+non stationary VAR(p) processes called cointegrated processes. This class of processes has the property that there may exists stationary linear combinations called
+cointegrated vectors. If we assume that {log(pA
+t ), log(pB
+t )} in (1) is a non-stationary
+VAR(p) process, this framework will enable us in some cases to determine γ such
+that log(pA
+t ) −γ log(pB
+t ) is stationary with mean −log(α). The investment equation
+will then become
+0 = log(α) + log(pA
+t ) −γ log(pB
+t ).
+The value of γ will be determined by the cointegration method, and the long run
+relationship between the assets determines α. The return on the investment will be
+log( αpA
+t
+αpA
+t−1
+) −γ log( pB
+t
+pB
+t−1
+).
+The investor is still able to proﬁt from the trade, but the investment may have not
+have an initial value of 0 and the proﬁt will for this method be dependent on γ. A
+γ close to zero requires funds to invest in A. A large γ exposes the investor to risk
+in going short on B. The preferable γ would be around 1, which then again reduces
+the cointegration method to a test for stationarity in the investment. Section 2.2
+characterizes a cointegrated system. Section 2.3 describes maximum likelihood
+estimation under the restriction of h cointegrated vectors, section 2.4 describes
+hypothesis testing of h cointegrated vectors using the likelihood ratio test and 2.5
+describes the asymptotic distribution of the likelihood ratio test statistics. Section
+2.6 describes the estimation of the cointegration vectors.
+2.1
+Deﬁnition and properties of time series
+Deﬁnition 1. Timeseries. A time series is an inﬁnite sequence
+y1, y2, . . .
+(3)
+of random variables or random vectors. These random variables are deﬁned as
+measurable maps on some underlying probability space. Normally the variables
+are observed in time and then the index t denotes a real valued date of the observed
+y.
+Deﬁnition 2. Covariance stationary time series. The time series yt is (covariance)
+stationary if E(yt) and E(ytyt+h) exists and are ﬁnite and do not depend on t, for
+every h ∈N.
+Deﬁnition 3. Mean reverting time series. A time series is considered mean reverting if
+5
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+i. The time series is stationary, and
+ii. E(yt −yt−1|Yt−1) < 0 if yt−1 > E(yt)
+E(yt −yt−1|Yt−1) > 0 if yt−1 < E(yt),
+where Yt denotes the history of observation through date t, formally deﬁned
+as the sigma algebra
+Yt = σ{y1, y2, . . . , yt}.
+2.2
+Characterization of cointegration for a VAR system
+Consider the VAR(p) equation for yt the (n × 1) collection of random variables
+yt = α + Φ1yt−1 + Φ2yt−2, · · · Φt−pyt−p + εt
+(4)
+or
+Φ(L)yt = α + εt
+(5)
+with
+Φ(L) = [In −Φ1L −Φ2L2 −· · · −ΦpLp].
+We assume
+E(εt) = 0
+E(εtε′
+τ) =
+n Ω
+for
+t = τ
+0
+otherwise,
+where Ωis a (n × n) positive deﬁnite matrix. We note that εt is a strictly stationary
+process and it is called a white noise process. We will use the fact that a VAR(p)
+process is non stationary if the determinantal equation
+|In −Φ1z −Φ2z2 −· · · −Φpzp| = 0
+(6)
+has at least one solution for z on or inside the unit circle.
+Deﬁnition 4. A (n × 1) vector yt time series is cointegrated if
+i. each of its elements individually are non-stationary and
+ii. there exists a nonzero vector a′ such that a′yt is stationary.
+The vector a is not unique. There may be h < n linearly independent vectors
+(a1, a2, · · · , ah), since if there were n independent vectors, yt is itself stationary and
+6
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+the concept of a cointegration will have no meaning. For a cointegrated system, we
+have that A′yt is stationary where A′ is the following (h × n) matrix:
+A′ ≡
+
+a′
+1
+a′
+2...
+ah
+
+Suppose that ∆yt = (1 −L)yt has the Wold representation
+(1 −L)yt = δ + Ψ(L)εt,
+(7)
+where Ψ(L) = P∞
+j=0 Ψjεt−j. The Wold representation is stationary when the determinantal equation in (6) has a single solution for z = 1. Necessary conditions for
+cointegration with cointegrated vectors in A can be found in Engle and Yoo (1987)
+or Ogaki and Park (1992). Following these papers, stationarity for A′yt requires
+that
+A′Ψ(1) = 0
+and
+(8)
+A′δ = 0.
+(9)
+Premultiplying (7) by Φ(L) results in :
+(1 −L)Φ(L)yt = Φ(1)δ + Φ(L)Ψ(L)εt.
+(10)
+Substituting (5) into (10) we have
+(1 −L)εt = Φ(1)δ + Φ(L)Ψ(L)εt.
+(11)
+This relation has to hold for all realizations of εt which requires that
+Φ(1)δ = 0
+(12)
+and then
+(1 −z)In = Φ(z)Ψ(z)
+(13)
+for all values of z. For z = 1, equation (13) implies that
+Φ(1)Ψ(1) = 0
+(14)
+Let π′ denote any row of Φ(1). Then (12) and (14) state that π′Ψ(1) = 0′ and
+π′δ = 0. By (8) and (9) , π is a cointegrating vector. But by the discussion leading
+7
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+to (7), it must be possible to express π as a linear combination of a1, . . . , ah, i.e. it
+exists an (h × 1) vector b such that
+π = [a1
+a2
+· · ·
+ah]b
+or
+π′ = b′A′.
+Applying this reasoning to each of the rows of Φ(1), it follows that there exists an
+n × h, h < n matrix B such that
+Φ(1) = BA′.
+(15)
+The h linear independent rows of BA′ forms the basis of the space of cointegrating
+vectors. Note that (14) implies that Φ(1) is a singular (n × n) matrix; linear combinations of the columns of Φ(1) of the form Φ(1)x are zero for x any column of
+Ψ(1). Thus the determinant |Φ(z)| contains a unit root:
+|In −Φ1z −Φ2z2 −· · · −Φpzp| = 0
+at
+z = 1.
+In the following section we will develop another representation of the matrix Φ(1),
+but with opposite signs. This representation will prove useful in developing the
+maximum likelihood estimator and the likelihood ratio test.
+2.2.1
+An alternative representation for the VAR(p) process.
+First we consider representation (4):
+(In −Φ1L −Φ2L2 −· · · −ΦpLp)yt = α + εt
+The polynomial on the left side can be rewritten as:
+(In −Φ1L−Φ2L2 −· · · −ΦpLp)
+= (In −ρL) −(ζ1L + ζ2L2 + · · · + ζp−1Lp−1)(1 −L),
+where
+ρ ≡Φ1 + Φ2 + · · · + Φp
+ζs ≡−[Φs+1 + Φs+2 + · · · + Φp]
+for
+s = 1, 2, . . . , p −1.
+It follows that any VAR(p) process can be written as:
+(In −ρL)yt −(ζ1L −ζ2L2 −· · · −ζp−1Lp−1)(1 −L)yt = α + εt
+8
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+or
+yt = ζ1∆yt−1 + ζ2∆yt−2 + · · · + ζp−1∆yt−p+1 + α + ρyt−1 + εt
+(16)
+Subtracting yt−1 from both sides of (16) produces:
+∆yt = ζ1∆yt−1 + ζ2∆yt−2 + · · · + ζp−1∆yt−p+1 + α + ζ0yt−1 + εt
+(17)
+where
+ζ0 = ρ −In = −(In −Φ1 −Φ2 −· · · −Φp) = −Φ(1).
+It follows from (15) that
+ζ0 = −BA′
+(18)
+also forms the basis of the space of cointegrated vectors.
+2.3
+Maximum likelihood estimate of ζ0 under the restriction of h cointegrated vectors.
+Consider a sample of T + p observations on yt, denoted (y−p+1, y−p+2, · · · , yT).
+Assuming Gaussian errors εt, the log likelihood of the equation (17) conditional
+on the p ﬁrst observations is
+L(Ω, ζ1, ζ2, · · · , ζp−1, α, ζ0)
+= (−Tn/2) log(2π) −(T/2) log |Ω|
+−(1/2)
+T
+X
+t=1
+h
+(∆yt −ζ1∆yt−1 −ζ2∆yt−2 −· · · −ζp−1∆yt−p+1 −α −ζ0yt−1)′
+× Ω−1(∆yt −ζ1∆yt−1 −ζ2∆yt−2 −· · · −ζp−1∆yt−p+1 −α −ζ0yt−1)
+i
+,
+(19)
+with |·|, the determinantal operator. Consider on one hand the OLS regression of the
+elements of the (n×1) vector ∆yt−ζ0yt−1 on a constant and (∆yt−1, ∆yt−2, · · · , ∆yt−p+1).
+The noise term vector is
+[∆yt −ζ0yt−1] −
+n
+α(ζ0) + ζ1(ζ0)∆yt−1 + ζ2(ζ0)∆yt−2 + · · · + ζp−1(ζ0)∆yt−p+1
+o
+(20)
+and has mean zero and is orthogonal to (∆yt−1, ∆yt−2, · · · , ∆yt−p+1). Here we treat
+ζ0 as given. On the other hand consider the result of 2 × n OLS regressions
+∆yt = π0 + Π1∆yt−1 + Π2∆yt−2 + · · · + Πp−1∆yt−p+1 + ut
+(21)
+from regressing ∆yit on (∆yt−1, ∆yt−2, · · · , ∆yt−p+1) and
+yt−1 = θ + A1∆yt−1 + A2∆yt−2 + · · · + Ap−1∆yt−p+1 + vt
+(22)
+9
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+from regressing yi,t−1 on (∆yt−1, ∆yt−2, · · · , ∆yt−p+1). The error terms ut and vt are
+orthogonal to (∆yt−1, ∆yt−2, · · · , ∆yt−p+1) and with mean zero. Therefore
+ut −ζ0vt
+also has these properties. Setting
+α(ζ0) = π0 −ζ0θ
+ζi(ζ0) = Πi −ζ0Ai
+for i = 1, 2, · · · , p −1,
+we can conclude that (20) is equal to:
+ut −ζ0vt.
+Equation (19) becomes for given ζ0 and Ω.
+M(Ω, ζ0) ≡L{Ω, α(ζ0), ζ1(ζ0), · · · , ζp−1(ζ0), ζ0}
+= (−Tn/2) log(2π) −(T/2) log |Ω|−
+−(1/2)
+T
+X
+t=1
+[(ut −ζ0vt)′Ω−1(ut −ζ0vt)].
+If we can ﬁnd the values ζ0 and Ωfor which M is maximized, then we will ﬁnd the
+value that maximizes (19). We can express the estimator of Ωin the well known
+way as
+Ω(ζ0) = (1/T)
+T
+X
+t=1
+[(ut −ζ0vt)(ut −ζ0vt)′],
+still treating ζ0 as given. The likelihood function becomes
+N(ζ0) ≡M{Ω(ζ0), ζ0}
+= (−Tn/2) log(2π) −(T/2) log |Ω(ζ0)| −(Tn/2)
+= (−Tn/2) log(2π) −(Tn/2)
+−(T/2) log
+(1/T)
+T
+X
+t=1
+[(ut −ζ0vt)(ut −ζ0vt)′]
+
+(23)
+To maximize N, me must chose ζ0 that minimizes
+(1/T)
+T
+X
+t=1
+[(ut −ζ0vt)(ut −ζ0vt)′]
+
+(24)
+This will now be our main objective. First we deﬁne canonical correlation for
+random vectors.
+10
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+Deﬁnition 5. We say that the n-dimensional random vectors ηt and ξt are in canonical form if
+i.
+E(ηtη′
+t) = In
+(25)
+E(ξtξ′
+t) = In
+(26)
+E(ηtξ′
+t) = R
+(27)
+where
+R =
+
+r1
+0
+· · ·
+0
+0
+r2
+· · ·
+0
+...
+...
+· · ·
+...
+0
+0
+· · ·
+rn
+
+.
+ii. The elements of ηt and ηt are ordered in such a way that
+(1 ≥r1 ≥r2 ≥· · · ≥rn ≥0)
+(28)
+For now we suppose for simplicity that ut and vt are in a canonical form as the
+generalization to (21) and (22) will follow after having obtained some result in this
+simple case. Let
+ut = ηt
+vt = ξt
+We would like to choose ζ0 to minimize the expression of the form (24)
+(1/T)
+T
+X
+t=1
+[(ηt −ζ0ξt)(ηt −ζ0ξt)′]
+
+(29)
+subject to the constraint that ζ0ξt could make use of only h linear combinations
+of ξt. No restrictions on ζ0 would mean that (29) would be minimized by OLS
+regressions of
+ηit
+on
+ξt
+for i = 1, 2, ..., n. The estimation error ηit −ζ0,iξt is uncorrelated with ξt :
+E[(ηit −ζ0,iξt)ξ′
+t] = 0′.
+(30)
+Then
+ζ0,i = E(ξtξ′
+t)−1E(ξtηit).
+(31)
+11
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+Conditions (26) and (27) establish that the ith regression will satisfy
+n
+Eξtξ′
+t
+o−1n
+Eξtηit
+o
+= ri · ei,
+where ei denotes the ith column of In Thus, the ith diagonal element in the matrix
+in (29) becomes:
+n
+Eη2
+it
+o
+−
+n
+Eηitξ′
+t
+on
+Eξtξ′
+t
+o−1n
+Eξtηit
+o
+= 1 −ri · e′
+i · In · ei · ri
+= 1 −r2
+i
+So for an unrestricted ζ0 the optimal value for the matrix in (29) would have 1 −r2
+i
+on the diagonal and 0 elsewhere. If we were restricted to only use h linear combinations of ξt, the minimal value of (29) will appear by using only the h elements in
+ξt that have the highest correlations. See Johansen (1988) for a reference:
+
+1 −r2
+1
+0
+· · ·
+0
+0
+· · ·
+0
+0
+1 −r2
+2
+· · ·
+0
+0
+· · ·
+0
+...
+...
+· · ·
+...
+...
+· · ·
+...
+0
+0
+· · ·
+1 −r2
+h
+0
+· · ·
+0
+0
+0
+· · ·
+0
+1
+· · ·
+0
+...
+...
+· · ·
+...
+...
+· · ·
+...
+0
+0
+· · ·
+0
+0
+· · ·
+1
+
+(32)
+=
+h
+Y
+i=1
+(1 −r2
+i ).
+This method of ﬁnding the maximizer for ζ0 is convenient but assumes canonical
+error terms. The vectors ut and vt from (21) and (22) are not canonical. However,
+we will ﬁnd matrices K and A such that
+ηt = K′ut
+(33)
+ξt = A′vt
+(34)
+and ηt and ξt are in canonical form. The conditions (25) to (27) becomes:
+E(ηtη′
+t) =K′ΣVVK = In
+(35)
+E(ξtξ′
+t) =A′ΣUUA = In
+(36)
+E(ξtη′
+t) =A′ΣUVK = R
+(37)
+12
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+where
+R =
+
+r1
+0
+· · ·
+0
+0
+r2
+· · ·
+0
+...
+...
+· · ·
+...
+0
+0
+· · ·
+rn
+
+.
+and ΣUU is the covariance matrix of the white noise process ut deﬁned in (21), ΣUV
+is the covariance matrix of ut and vt and vt is the white noise process deﬁned in
+(22).
+We will show that the eigenvalues of two known matrices fully characterizes K
+and A. The following proposition must be satisﬁed.
+Proposition 1. Let λ1 ≥λ2 ≥· · · ≥λn ≥0 be the ordered eigenvalues of the
+matrix
+ΣVV−1ΣVUΣUU−1ΣUV.
+Let {k1, · · · , kn} be the associated eigenvectors normalized by k′
+iΣVVki = 1. Let
+µ1 ≥µ2 ≥· · · ≥µn ≥0 be the eigenvalues of
+ΣUU−1ΣUVΣVV−1ΣVU.
+with the associated eigenvectors {a1, · · · , an} normalized by a′
+iΣUUai = 1. Let
+A
+≡[a1 · · · an]
+K
+≡[k1 · · · kn].
+Assuming that λ1, λ2, . . . , λn are distinct, then
+a. 0 ≤λi < 1 for i = 1, 2, . . . , n;
+b. λi = µ j for i = 1, 2, . . . , n;
+c. K′ΣVVK = In and A′ΣUUA = In:
+d. A′ΣUVK = R, where
+R2 =
+
+λ1
+0
+· · ·
+0
+0
+λ2
+· · ·
+0
+...
+...
+· · ·
+...
+0
+0
+· · ·
+λn
+
+.
+13
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+Proof of a. The eigenvalues solves the equation
+|λΣVV −ΣVUΣUU−1ΣUV| = 0.
+(38)
+If we assume on the contrary that any of these eigenvalues is negative, then since
+ΣVV is positive deﬁnite, λΣVV is also negative which means that ΣVV−ΣVUΣUU−1ΣUV
+is negative. Hence the determinant of (38) could not be zero for any value λ < 0.
+□
+Proof of c. The eigenvalue-eigenvector pair (λi, ki) satisﬁes
+ΣVV−1ΣVUΣUU−1ΣUVki = λiki.
+(39)
+We pre multiply expression (39) by k′
+jΣVV:
+k′
+jΣVVΣVUΣUU−1ΣUVki = λik′
+jΣVVki
+(40)
+Similarly, replace i with j in (39) and pre multiply by k′
+iΣVV:
+k′
+iΣVUΣUU−1ΣUVk j = λ jk′
+iΣVVk j
+(41)
+Subtracting (41) from (40) we see that:
+0 = (λi −λj)k′
+jΣVVki
+(42)
+If i , j and λi , λ j then (42) establishes that k′
+jΣVVki = 0 for i , j. Also
+for i = j, the normalization concludes that for distinct eigenvalues, relation (35)
+holds. Virtually identical calculations show that if we choose the columns of A,
+the eigenvectors [a1, a2, . . . , an] such that
+ΣUU−1ΣUVΣVV−1ΣVUai = λiai,
+(43)
+condition (36) holds.
+□
+Proof of d. First we transpose (43) and postmultiply by ΣUVki:
+a′
+iΣUU−1ΣUVΣVV−1ΣVUΣUVki = λia′
+iΣUVki
+(44)
+Similarly, pre multiply (39) by a′
+iΣUV
+a′
+iΣUU−1ΣUVΣVV−1ΣVUΣUVki = λja′
+iΣUVki
+(45)
+Subtracting (45) from (44) results in
+0 = (λi −λj)a′
+iΣVVk j
+14
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+This shows that a′
+iΣVVk j = 0 for λi , λj as required in (37) To ﬁnd the value of
+a′
+iΣVVk j for λi = λj premultiply (43) by a′
+iΣUV and using the normalization:
+a′
+iΣUVΣVV−1ΣVUai = λi
+(46)
+For nonsingular K (35) implies that:
+ΣVV = [K]−1K−1
+(47)
+or taking inverses:
+ΣVV−1 = KK′
+Substituting (47) into (46), we ﬁnd that:
+a′
+iΣUVKK′ΣVUai = λi
+(48)
+Now
+a′
+iΣUVK = a′
+iΣUV[k1
+k2
+· · ·
+kn]
+= [a′
+iΣUVk1
+· · ·
+a′
+iΣUVki
+· · ·
+a′
+iΣUVkn
+]
+= [0
+0
+· · ·
+a′
+iΣUVki
+· · ·
+0]
+(49)
+Substituting (49) into (48), it follows that
+(a′
+iΣUVki)2 = λi.
+So ri from (37) is given by the square root of the eigenvalue λi,
+r2
+i = λi.
+(50)
+□
+Having characterized K and A, we assume that they are nonsingular. Then
+equations (33) and (34) allow (24) to be written as
+(1/T)
+T
+X
+t=1
+h
+(ut −ξ0vt)(ut −ξ0vt)′i
+=
+(1/T)
+T
+X
+t=1
+h
+[(K′)−1ηt −ζ0(A′)−1ξt][(K′)−1ηt −ζ0(A′)−1ξt]′i
+=
+(K′)−1(1/T)
+T
+X
+t=1
+h
+[ηt −K′ζ0(A′)−1ξt][(K′)−1ηt −K′ζ0(A′)−1ξt]′i
+(K)−1
+= |(K′)−1|
+
+T
+X
+t=1
+h
+[ηt −Πξt][ηt −Πξt]′i|(K)−1|
+=
+
+T
+X
+t=1
+h
+[ηt −Πξt][ηt −Πξt]′i ÷ |K|2
+15
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+where
+Π ≡K′ζ0(A′)−1ξt
+The method of minimizing (24) is to use the regressors of the ﬁrst h elements of ξt
+and the value at the optimum is
+h
+Y
+i=1
+(1 −r2
+i ) ÷ |K|2
+Moreover, the matrix K satisﬁes
+In = (1/T)
+T
+X
+t=1
+ηtη′
+t = (1/T)
+T
+X
+t=1
+K′ηtη′
+tK = K′ΣUUK
+Taking determinants on both sides establish that
+1/|K|2 = |ΣUU|.
+The optimizing value is then
+|ΣUU| ×
+h
+Y
+i=1
+(1 −r2
+i ).
+The maximum of the log likelihood function of (23) is given by :
+L = N(ζ0) = (−Tn/2) log(2π)−(Tn/2)−(T/2) log |ΣUU|−(T/2)
+h
+X
+i=1
+(1−λi), (51)
+using (50).
+2.4
+Hypothesis testing
+We have seen in that under the restriction of h linear combination of the elements
+of yt, the maximum log likelihood is given by (51). This forms the hypothesis H0:
+h < n contegrating vectors against the alternative hypothesis HA: n cointegrating
+vectors. The maximum log likelihood in the absence of constraints where h = n is:
+LA = (−Tn/2) log(2π) −(Tn/2) −(T/2) log |ΣUU| −(T/2)
+h
+X
+i=1
+log(1 −λi)
+(52)
+A likelihood ratio test of H0 against HA can be based on
+LA −L0 = (−T/2)
+n
+X
+i=h+1
+log(1 −λi)
+(53)
+16
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+To test if the bivariate VAR(p) series described in the introduction to this section
+contains one cointegration relation means ﬁrst testing the null hypothesis: h = 0
+cointegrating relation against the alternative HA: n cointegrating relations. Then
+we need to test the null hypothesis of h = 1 cointegrating relation against the same
+alternative as for the ﬁrst test; if the ﬁrst test is rejected and the second is accepted,
+we have statistical evidence of a single cointegrating relation. Johansen (1988)
+developed the asymptotic properties distribution of the test statistic as we will see
+in the next section.
+2.5
+Limiting distribution of the test statistic
+This section is only illustrative in the sense that the asymptotic distribution of the
+test statistic (53) is developed under the restriction that there is no constant term α
+in (16). In our application this may very well be the case. Without this restriction
+other critical values will emerge, but the development of the asymptotic distribution
+is similar. Consider the Wold representation of ∆yt as in (7)
+∆yt =
+∞
+X
+j=0
+Ψ jεt−j.
+The null space of Ψ′ = P∞
+j=0 Ψ′ j given by {ξ|Ψ′ξ = 0} is exactly the range space of
+ζ0. We have the two representations
+ζ0 = −BA′
+and
+Ψ′ = EFG′,
+(54)
+Where E′A = G′B = 0, and E, G are n × (n −h) and G is (n −h) × (n −h), and all
+three matrices are of full rank. See Granger and Engle (1981) for details on these
+results.
+Deﬁnition 6. The following deﬁnitions will prove useful:
+i. Let PB be the projection of Rp onto the column space spanned by B with
+respect to Ω−1, i.e., PB(Ω) = B(B′Ω−1B)−1B′Ω−1
+ii. Let G be a matrix that ﬁt the description in (54) and such that GG′ = Ω−1(I−
+PB(Ω))
+iii. A result from regression on random coeﬃcients found in Johansen (1984)
+concludes that PB(Ω) = PB(ΣUU)
+The following proposition derived by Johansen (1988) and Phillips and Durlauf
+(1986) describing stochastic limit results in terms of stochastic integrals will help
+us establish the limit distribution.
+17
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+Proposition 2. Let W be a Brownian motion in n dimensions with covariance
+matrix Ω. For T →∞it holds that
+ˆΣUU
+a.s.
+→ΣUU,
+(55)
+G′ ˆΣUV
+w→G′
+Z 1
+0
+W(r)dW(r)′drΨ′
+(56)
+A′ ˆΣUV
+a.s.
+→A′ΣUV
+(57)
+T −1 ˆΣVV
+w→Ψ′
+Z 1
+0
+W(r)W(r)′drΨ′
+(58)
+A′ ˆΣVVA
+a.s.
+→A′ΣVVA′.
+(59)
+Consider the eigenvalues that solves the maximum likelihood problem (23)
+| ˆΣ−1
+VV ˆΣVU ˆΣ−1
+UU ˆΣUV −λIn| = 0
+(60)
+Since ˆΣVV is positive deﬁnite, this will be true if and only if
+|λ ˆΣVV −ˆΣVU ˆΣ−1
+UU ˆΣUV| = 0
+We multiply the matrix inside the determinant in (60) by (A, E) and its transposed
+on both sides and obtain:
+λ
+"A′ ˆΣVVA
+A′ ˆΣVVE
+E′ ˆΣVVA
+E ˆΣVVE
+#
+−
+
+A′ ˆΣVU ˆΣUU
+−1 ˆΣUVA
+A′ ˆΣVU ˆΣUU
+−1 ˆΣUVE
+E′ ˆΣVU ˆΣUU
+−1 ˆΣUVA
+E′ ˆΣVU ˆΣUU
+−1 ˆΣUVE
+
+ = 0 (61)
+Which is the same as
+
+"A′ ˆΣVVA/T
+A′ ˆΣVVE/T
+E′ ˆΣVVA/T
+E′ ˆΣVVE/T
+#
+−µ
+
+A′ ˆΣVU ˆΣUU
+−1 ˆΣUVA
+A′ ˆΣVU ˆΣUU
+−1 ˆΣUVE
+E′ ˆΣVU ˆΣUU
+−1 ˆΣUVA
+E′ ˆΣVU ˆΣUU
+−1 ˆΣUVE
+
+ = 0
+(62)
+where
+ˆµ1 = (T ˆλn)−1, . . . , ˆµn = (T ˆλ1)−1
+In this way the distributions of largest µ’s are given as continuous functions of the
+ordered eigenvalues of (61). From (57), ˆΣUVE
+a.s
+→ΣUVE ≡Q and (62) converges
+in distribution to the ordered eigenvalues 1/µ1, . . . , 1/µn of the equation
+
+
+0
+0
+0
+E′Ψ
+R 1
+0 W(r)W′(r)drΨ′E
+−µ
+"A′ΣUVΣUU−1ΣUVA
+A′ΣUVΣUU−1Q
+Q′ΣUU−1ΣUVA
+Q′ΣUU−1Q
+# = 0
+18
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+for which the left side is identical to
+|µA′ΣUVΣUU
+−1ΣUVA|
+E′Ψ
+Z 1
+0
+W(r)W′(r)drΨ′E −µQ′h
+ΣUU−1
+−ΣUU−1ΣUVA(A′ΣUVΣUU
+−1ΣUVA)−1A′ΣUVΣUU
+−1i
+Q
+.
+(63)
+Now we use deﬁnition (6). The term in the square brackets is then equal to
+ΣUU−1(I −PB(ΣUU)) = Ω−1(I −PB(Ω)) = GG′.
+(64)
+Also using (56) on the second term, equation (63) becomes, when eliminating the
+ﬁrst factor,
+E′Ψ
+Z 1
+0
+W(r)W(r)′drΨ′E −µE′Ψ
+Z 1
+0
+W(r)dW(r)′GG′
+Z 1
+0
+W(r)dW(r)′Ψ′G
+ = 0.
+(65)
+We rewrite this equation using the second relation in (54), |FF′| , 0 and |D| , 0.
+We then get
+G′
+Z 1
+0
+W(r)W′(r)drG −µG′
+Z 1
+0
+W(r)dW(r)′GG′
+Z 1
+0
+W(r)dW(r)′G
+ = 0.
+But B = G′W is also a Brownian motion and has variance G′ΩG = I. So the we
+can conclude that the eigenvalues T ˆλh+1, . . . , T ˆλn converge in distribution to the
+eigenvalues that solves the equation
+λ
+Z 1
+0
+W(r)W′(r)dr −
+Z 1
+0
+W(r)dW(r)′
+Z 1
+0
+dW(r)W(r)′
+ = 0.
+as T →∞. Then the sum of the eigenvalues ˆλh+1, . . . , ˆλn is given by:
+tr
+
+Z 1
+0
+dW(r)W(r)′
+ Z 1
+0
+W(r)W′(r)dr
+!−1 Z 1
+0
+W(r)dW(r)′
+.
+(66)
+Now consider (53) :
+LA −L0 = (−T/2)
+n
+X
+i=h+1
+log(1 −λi).
+We rewrite and obtain
+2(LA −L0) = (−T)
+n
+X
+i=h+1
+log(1 −λi) =
+n
+X
+i=h+1
+Tλi + op(1).
+We conclude that this expression converge in distribution to (66) and the critical
+values for this statistic can be found in Johansen (1988).
+19
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+2.6
+Estimating the cointegrating vectors
+The log likelihood function is maximized by selecting as regressors the ﬁrst h elements of ξt. Since from (34) ξt = A′vt, this means using A′vt as regressors, where
+the (n × h) matrix A denotes the ﬁrst h columns of the (n × n) matrix A. Thus
+ζ0vt = −BA′vt
+(67)
+The matrix A is found using the normalized eigenvectors from (43). Let w ≡A′vt
+we have that the value of B that maximizes the likelihood is given by regressing ut
+on wt, obtaining the OLS estimate of B as
+B = −
+h
+(1/T)
+T
+X
+t=1
+utw′
+t
+ih
+(1/T)
+T
+X
+t=1
+wtw′
+t
+i
+(68)
+But wt is composed of h canonical covariates from (35) so
+h
+(1/T)
+T
+X
+t=1
+wtw′
+t
+i
+= Ih
+(69)
+Also
+h
+(1/T)
+T
+X
+t=1
+utw′
+t
+i
+=
+h
+(1/T)
+T
+X
+t=1
+utv′
+tA
+i
+= ΣUVA
+(70)
+We get by substituting (69) and (70) into (68)
+B = −ΣUVA,
+and so, from (18), ζ0 is given by
+ζ0 = ΣUVAA′.
+3
+The hidden Ohrnstein-Uhlenbeck model
+In this section we will formulate a model for the investment in equation (1). The
+model assumes that the true mean reverting process can be described as a discrete
+version of the Ohrstein-Uhlenbeck continuous stochastic process. Elliot, Hoek
+and Malcolm (2004) suggest to use this process to model mean reverting pairs
+and Do, Faﬀand Hamza (2006) carry this idea further by combining it with the
+20
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+Arbitrage Pricing Theory, Ross (1976). They claim that if the two stocks that
+form a pair belong to the same industry sector and are inﬂuenced by the same
+set of risk factors, the APT-theory will explain the diﬀerence between the prices
+returns, leaving the ’true’ mean reversion to be modeled by the OU-process. The
+APT operates on return of assets instead of the prices themselves as in (1), and the
+investment expressed in returns becomes
+log(αrA
+t ) −log(rB
+t ) −ω log(rX
+t ) = 0
+The ﬁrst two terms are explained by the OU-process and the third by APT. Let
+rA
+t be the logarithmic return of asset A and likewise for asset B. Let rX
+t be the
+excess return of a single risk factor described by the APT. Then we can derive
+log(pA
+t ) = log(pA
+0) + Pi=t
+i=0 log(rA
+i ) and likewise for X and B. The investment (1)
+becomes
+log(αpA
+t ) −log(pB
+t ) −ω log(pX
+t ) = 0.
+The value of ω is determined by the stochastic spread method. Depending on the
+sign of the estimated ω, the investor must invest or borrow an asset reﬂecting the
+index with this portion of its value. Both papers mentioned above assume that
+the OU-process is observed only with model noise and uses a state-space model
+to represent this as a dynamical system, described in section 3.3. The state-space
+representation is a form that can be analyzed with the Kalman ﬁlter introduced by
+R.E. Kalman (1960). Section 3.3.2 describes the maximum likelihood estimates
+of the state-space representation using the Kalman ﬁlter. The unobserved OUprocess, i.e. the process path with highest probability given the observed data, is
+reconstructed using the Kalman smoothing procedure described in 3.3.1.
+Section 3.1 describes the Ohrnstein-Uhlenbeck process, the following section 3.2
+describes the APT theory and how it is applied to mean reverting pairs.
+3.1
+Ornstein-Uhlenbeck process
+In this section we consider the one dimensional stochastic process given by the
+stochastic diﬀerential equation (SDE)
+drt = −θ(rt −µ)dt + σdWt,
+θ > 0
+(71)
+known as the Ornstein-Uhlenbeck continuous time process. We will show that
+there exists a stationary solution to this SDE that could be used to model our
+spread. For the purpose of intuition about mean reversion, we compare (71) to
+the geometric Brownian motion SDE
+dS t = αS tdt + σS tdWt
+(72)
+21
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+with drift α and volatility σ. For the Ornstein-Uhlenbeck process, the drift is negative for rt > µ and positive for rt > µ, causing the process to revert to the mean µ
+with speed θ. Applying Ito’s lemma to the function f(rt, t) = rteθt, we get
+d f(rt, t) = θrteθtdt + eθtdrt
+= eθtθµdt + σeθtdWt.
+Integrating from 0 to t, we get
+rteθt = r0 +
+Z t
+0
+eθsθµds +
+Z t
+0
+σeθsdWs
+(73)
+And so
+rt = r0e−θt + µ(1 −e−θt) +
+Z t
+0
+σeθ(s−t)dWs
+(74)
+Firstly we see
+E(rt) = r0e−θt + µ(1 −e−θt).
+Consequently,
+lim
+t→∞E(rt) = µ
+We let s ∧t = min(s, t) and we get
+cov(rt, rs) = E[(rs −E[rs])(rt −E[rt])]
+(75)
+= E[
+Z t
+0
+σeθ(u−s)dWu
+Z s
+0
+σeθ(v−t)dWv]
+= σ2e−θ(t+s)E[
+Z s
+0
+eθudWu
+Z t
+0
+eθvdWv]
+= σ2
+2θ e−θ(t+s)(e2θ(s∧t) −1),
+using the Ito isometry in the second last line of the calculation. Setting s = t, we
+get:
+VAR(rt) = σ2
+2θ (1 −e−2θt).
+Consequently,
+lim
+t→∞VAR(rt) = σ2
+2θ .
+22
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+If we set r0 ∼N(µ, σ2
+2θ ), the solution in (74) is stationary according to Deﬁnition 2.
+We rewrite equation (74) with ∆t = ti −ti−1, keeping ∆t small to obtain the discrete
+version of this process:
+rt = µ(1 −e−θ∆t) + e−θ∆trt−1 + εt,
+(76)
+with εt a white noise process. This version is necessary for applying the Kalman
+ﬁlter as we will see in the following sections.
+3.2
+Asset pricing theory
+Ross (1976) assumed that the return of a single asset can be formulated as
+at = rt + βbt + εt,
+(77)
+where rt is the deterministic risk free return, bt = [( f 1
+t −rt), (f 2
+t −rt), . . . , (f n
+t −rt)] is
+the return above the risk free return from some factors f 1, . . . , f n and the prediction
+error εt that is uncorrelated with at . We assume that the these factors have mean
+zero and that their variance exists. The APT says that the expected return is linear
+in the factor weights:
+E(at) = rt + βE(bt).
+(78)
+with β = [β1, β1, . . . βn]. We apply this theory to the diﬀerence between two assets
+returns at, bt which then can be formulated as
+at −bt = αbt + ˜εt,
+with α = [(βa
+1 −βb
+1), . . . , (βa
+n −βb
+n)]′. We assume that ˜εt is independent of εt and that
+two assets can be explained by the same factors f 1, . . . , f n. In our numerical experiments we will use an industry index as a single factor to this purpose, explaining
+two assets in the same industry.
+3.3
+The state-space representation of a dynamic system
+A model of the observed variable y can be described in terms of the possibly unobserved ξt known as the state variable. We consider the following deﬁnition:
+Deﬁnition 7. The state-space representation of the dynamics of y is given by the
+following system of equations.
+ξt+1 = Fξt + vt+1
+(79)
+yt = Axt + H′ξt + wt,
+(80)
+23
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+where the matrices F and H are assumed to be known of dimensions (2 × 2) and
+(2 × 1), and A is a scalar. The errors vt and wt are white noise processes with
+assumed known parameters Q and R :
+E(vtv′
+τ) =
+n Q
+for
+t = τ
+0
+otherwise
+(81)
+E(wtwτ) =
+n R
+for
+t = τ
+0
+otherwise ,
+(82)
+and are assumed to be uncorrelated at all lags:
+E(vtwτ) = 0
+for all t and τ.
+(83)
+We also assume that xt is predetermined which implies that xt is independent of
+ξt+1 and wt+s for s = 0, 1, 2, . . . .
+We will keep in mind that the discretized OU-process of equation (76) is here
+represented as the state variable with the constant term set to ξt,1, and the predetermined variable xt represent the risk factor excess return described in section 3.2.
+The system of equations (79) through (83) is typically used to describe a ﬁnite
+series of observations {y1, y2, . . . , yT}. Initial conditions are needed for ξ1:
+E(vtξ′
+1) = 0
+for all t and τ.
+(84)
+E(wtξ′
+1) = 0
+for all t and τ.
+(85)
+The state equation (79) implies that ξt can be written as a linear function of
+(ξ1, v2, v3, . . . , vt):
+ξt = vt + Fvt−1+F2vt−2 + · · · + Ft−2v2 + Ft−1ξ1
+(86)
+for t = 2, 3, . . . , T.
+Thus (84) and (81) imply that vt is uncorrelated with lagged values of ξ:
+E(vtξ′
+τ) = 0
+for t = t −1, t −2, . . . , 1.
+(87)
+Similarily
+E(wtξ′
+τ) = 0
+for τ = t −1, t −2, . . . , 1.
+3.3.1
+Derivation of the Kalman Filter
+This section aims at deriving the Kalman ﬁlter or the linear least square forecast of
+the state vector on the basis of data observed through date t:
+ˆξt+1|t ≡ˆE(ξt+1|Yt),
+24
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+where
+Yt ≡(yt, yt−1, · · · , y1, xt, xt−1, . . . , x1)
+and ˆE(ξt+1|Yt) is the linear projection on Yt and a constant. The Kalman procedure
+calculates these forecasts recursively, generating ˆξ1|0, ˆξ2|1, . . . , ˆξT|T−1 in succession,
+thus improving the estimate with the added information. Associated with each of
+these forecasts is the mean squared error (MSE)
+Pt+1|t ≡E[(ξt+1 −ˆξt+1|t)(ξt+1 −ˆξt+1|t)′].
+(88)
+The recursion begins with ˆξ1|0 which is the unconditional mean of ξ1,
+ˆξ1|0 = E(ξ1)
+Since by (86), ξt is stationary and the unconditional mean of ξt can be found by
+taking expectations of (79) producing
+E(ξt+1) = FE(ξt).
+The matrix F has no singular eigenvalues if we assume stationarity in equation
+(79). This equation therefore has one unique solution in E(ξt) = 0. Similarly the
+unconditional variance P can be found by:
+E[(ξt+1ξ′
+t+1)] = E[(Fξt + vt+1)(ξ′
+tF′ + v′
+t+1)] = FE[ξtξ′
+t]F′ + E[vt+1v′
+t+1].
+The cross product has disappeared in the light of (87). Then
+P1|0 = FP1|0F′ + Q.
+Given the values of ˆξ1|0 and P1|0 the next step is to calculate the magnitudes for the
+following date, ˆξ2|1 and P2|1. Since we have assumed that xt contains no information on ξt beyond that contained in Yt−1 ,
+ˆE(ξt|xt, Yt−1) = ˆE(ξt|Yt−1) = ˆξt|t−1.
+Next consider forecasting the value of yt:
+ˆyt|t−1 ≡ˆE(ξt|xt, Yt−1).
+From (80) we have that
+ˆE(ξt|xt, Yt−1) = Axt + H′ξt,
+and so, from the law of iterated projections,
+ˆyt|t−1 = Axt + H′ ˆE(ξt|xt, Yt) = Axt + H′ ˆξt|t−1.
+(89)
+25
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+Its forecast error is
+yt −ˆyt|t−1 = Axt + H′ξt + wt −Axt −H′ ˆξt|t−1 = H(ξt −ˆξt|t−1) + wt.
+with MSE
+E[(yt −ˆyt|t−1)2] = E[H′(ξt −ˆξt|t−1)(ξt −ˆξt|t−1)H] + E(w2
+t ).
+(90)
+Cross-product terms have disappeared, since
+E[wt(ξt −ˆξt|t−1)′] = 0
+(91)
+To justify this, recall from by (85) that wt and ξt are uncorrelated and ˆξt|t−1 is a
+linear function of Yt−1 so it too must be uncorrelated with wt. Using (82) and (88),
+(90) can be written
+E[(ξt −ˆξt|t−1)(ξt −ˆξt|t−1)′] = HPt|t−1H′ + R.
+(92)
+The inference about the current value of ξt based on the observation of yt is given
+by:
+ˆξt|t = ˆE(ξt|yt, xt, Yt−1) = ˆE(ξt|yt)
+This is evaluated using the formula for updating a linear projection as described in
+Hamilton (1994):
+ˆξt|t = ˆξt|t−1 + E[(ξt −ˆξt|t−1)(yt −ˆyt|t−1)] × E[(yt −ˆyt|t−1)2]−1 × (yt −ˆyt|t−1).
+(93)
+But
+E{(ξt −ˆξt|t−1)(yt −ˆyt|t−1)}
+= E{[ξt −ˆξt|t−1][H′(ξt −ˆξt|t−1) + wt]}
+= E[(ξt −ˆξt|t−1)(ξt −ˆξt|t−1)′H]
+= Pt|t−1H
+(94)
+using (91) and (88). Substituting (94), (92) and (89) into (93) gives
+ˆξt|t = ˆξt|t−1 + Pt|t−1H′(H′Pt|t−1H + R)−1(yt −Axt −H′ ˆξt|t−1).
+(95)
+Its MSE is:
+Pt|t ≡E[(ξt −ˆξt|t)(ξt −ˆξt|t)′] = E[(ξt −ˆξt|t−1)(ξt −ˆξt|t−1)′]
+−{E[(ξt −ˆξt|t−1)(yt −ˆyt|t−1)]}
+× E[(yt −ˆyt|t−1)2]−1
+× {E[(yt −ˆyt|t−1)(ξt −ˆξt|t−1)′]}
+= Pt|t−1 −Pt|t−1H′(HPt|t−1H + R)−1H′Pt|t−1
+(96)
+26
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+The state equation (79) is used to forecast ξt+1:
+ˆξt+1|t = ˆE(ξt+1|Yt)
+= F ˆE(ξt|Yt) + ˆE(vt|Yt)
+= Fˆξt|t + 0.
+(97)
+Substituting (95) into (97),
+ˆξt+1|t = Fˆξt|t−1
++ FPt|t−1H(H′Pt|t−1H + R)−1(yt −Axt −H′ ˆξt|t−1).
+Its MSE is found from (97) and (79) :
+Pt+1|t = E[(ξt −ˆξt|t−1)(ξt −ˆξt|t−1)′]
+= E[(Fξt + vt −Fˆξt|t)(Fξt + vt −Fˆξt|t)′]
+= FE[(ξt −ˆξt|t)(ξt −ˆξt|t)′]F′ + E[vt+1v′
+t+1]
+= FPt|tF′ + Q,
+(98)
+with cross-products again clearly zero. Substituting (96) into (98) produces:
+Pt+1|t = F[Pt|t−1 −Pt|t−1H(HPt|t−1H′ + R)−1H′Pt|t−1]F + Q.
+This completes one iteration step.
+3.3.2
+Kalman smoothing estimates
+Suppose we were told the true value of ξt+1 at t. Then the estimate of ξt can be
+expressed as follows:
+ˆE(ξt|ξt+1, Yt) =
+ˆξt|t + {E[(ξt −ˆξt|t)(ξt+1 −ˆξt|t)′]}
+×{E[(ξt+1 −ˆξt+1|t)(ξt+1 −ˆξt|t)′]}−1
+×(ξt+1 −ˆξt+1|t),
+(99)
+by the law for updating a linear projection. Using (79) and (97), the ﬁrst term in
+the product on the right side of (99) can be written
+E[(ξt −ˆξt|t)(ξt+1 −ˆξt|t)′] = E[(ξt −ˆξt|t)(Fξt + vt+1 −Fˆξt|t)′].
+Since vt+1 is uncorrelated with ξt and ˆξt|t, we have:
+E[(ξt −ˆξt|t)(ξt+1 −ˆξt|t)′] = E[(ξt −ˆξt|t)(ξt −ˆξt|t)′F′] = Pt|tF′
+(100)
+27
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+Substituting (100) and (88) into (99) produces:
+ˆE(ξt|ξt+1, Yt) = ˆξt|t + Pt|tF′P−1
+t+1|t(ξt+1 −ˆξt+1|t)
+Deﬁning
+Jt ≡Pt|tF′P−1
+t+1|t,
+(101)
+we have
+ˆE(ξt|ξt+1, Yt) = ˆξt|t + Jt(ξt+1 −ˆξt+1|t)
+We claim that
+ˆE(ξt|ξt+1, Yt) = ˆE(ξt|ξt+1, YT)
+To verify this it is suﬃcient to use the fact that the error ξt+1 −ˆE(ξt|ξt+1, Yt) is
+uncorrelated with yt+ j and xt+j for j > 0. Taking conditional expectation w.r.t YT,
+we get
+ˆE(ξt|YT) = ˆξt|t + Jt( ˆE(ξt+1|YT) −ˆξt+1|t),
+or
+ˆξt|T = ˆξt|t + Jt(ˆξt+1 −ˆξt+1|t).
+(102)
+We proceed as follows; ﬁrst the Kalman ﬁlter in section 3.3.1 is calculated and
+sequences {ˆξt|t}T
+t=1, {ˆξt+1|t}T−1
+t=0 , {Pt|t}T
+t=1 and {Pt+1|t}T
+t=1 are stored. Then (101) is used
+to generate {Jt|t}T−1
+t=1 . From this (102) is used to for t = T −1 to calculate
+ˆξT−1|T = ˆξT−1|T−1 + JT−1(ˆξT|T −ˆξT|T−1).
+Proceeding the same way for T −2, the whole sequence of smoothed estimates
+{ˆξt|T}T
+t=1 is calculated.
+3.3.3
+The maximum likelihood estimates
+The forecasts ˆξt+1|t and ˆyt+1|t are optimal within the set of forecasts that are linear in
+(xt, Yt−1). If the initial state ξ1 and the innovations {vt, wt} are multivariate Gaussian, then these forecasts are optimal among any functions of (xt, Yt−1). Moreover,
+the conditional distribution of yt on (xt, Yt−1) is:
+yt|xt, Yt−1 ∼N(Axt + Hˆξt|t−1, H′Pt|t−1H + R),
+(103)
+that is
+fyt|xt,Yt−1(yt|xt, Yt−1)
+= (2π)−1/2|(H′Pt|t−1H + R|−1/2
+× exp{−1
+2(yt −Axt + Hˆξt|t−1)2(H′Pt|t−1H + R)−1}
+for t = 1, 2, . . . , T.
+(104)
+28
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+The maximum likelihood is constructed by:
+T
+X
+t=1
+log fyt|xt,Yt−1(yt|xt, Yt−1).
+This expression is then maximized numerically with respect to F, A, H, R and Q:
+See Burmeister and Wall (1982) for an illustrative application. Statistical inference
+of these estimates will be important in assessing the ﬁt of the model and will be
+discussed in Section 6.
+4
+A proﬁtability measure for a mean reverting spread
+Let f(0), f(δk), . . . , f(δn) be the limiting density of pt ≡log(α)+log(pA
+t )−log(pB
+t )
+at values 0 ≤δk ≤. . . δn. The value of δk that maximizes the proﬁt is given by
+δmax = arg max
+δk {δk f(δk)},
+where n is chosen is suﬃciently large. The expected proﬁt for one trade is given
+that a position is entered where the spread is zero is:
+E(pt|pt ≥δmax) =
+P
+δk≥δmax δk f(δk)
+P
+δk≥δmax f(δk)
+(105)
+.
+5
+Applying the search procedure
+5.1
+Treating historical and new information in the search procedure
+At a given date the trader possesses practically inﬁnite historical information on
+potential spreads on which the search procedure can be applied. However the most
+interesting spreads are those who show mean reversion up to the current date and
+therefore possibly would continue to show mean reversion in the future. The search
+procedure is initiated with 40 days of historical data. If the statistical tests for mean
+reversion are signiﬁcant, the spread is extended with 20 days. This step is repeated
+until there is no signiﬁcant evidence for mean reversion. The resulting spreads are
+then stored. When new information for these spreads becomes available, the tests
+are performed again to verify the mean reversion. Typically the trader would like
+to follow a self chosen set of spreads by excluding some spreads that are for some
+reasons not reliable. This subset is stored separately as Favorites in the search
+application.
+29
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+5.2
+Search criteria and results for the co-integration method
+We must verify the existence of one stationary cointegrating relation described in
+the introduction to Section 2. The assumption of non-stationarity for the individual
+price series is veriﬁed if a unit-root test is not rejected. See Dickey, Said (1984)
+for a reference on unit root tests. The test described in section 2.4 is used to verify
+the hypothesis of zero cointegration relations against the alternative of 2. If this
+hypothesis is rejected at a 0.05 signiﬁcance level, we must verify the hypothesis
+of 1 cointegration relation against the alternative of 2 relations. If this hypothesis
+cannot be rejected, we have evidence of one cointegration relation. Furthermore
+we must assess the second characteristic in Deﬁnition 3, Section 2, and thus reject
+a unit root in the series formed by the cointegrating relation. This is merely a
+veriﬁcation of the cointegrating theory. Some of the results are found in Table 1.
+below, and the complete result table is found in appendix A.
+5.3
+Search criteria and results for the stochastic spread method
+Besides information on the value of the spread, this method uses information from
+an industry index acting as a risk factor in the APT model, and the short (3 months)
+eurolib interest rate acting as the risk free rate. For this model to be evident, the
+OU model represented by the state equation (79) should show signiﬁcance it its
+parameters, especially F1,2. This is also the AR-parameter of the equation (79).
+If this parameter has a value very close to 0, the stationarity for the accumulated
+series is questionable, and therefore the hypothesis of a unit root has to be rejected
+at a signiﬁcance level of 0.05 to verify the claim of stationarity. The table below
+show some of the pairs found under these criteria.
+6
+The software user interface
+The images below show the user interface of the software application. It has three
+elementary functions:
+i. Get new pairs - all available historical data is searched for potential pairs.
+ii. Update Favorites - this function updates the Favorites subset of pairs with
+new data
+iii. Update pairs - this function updates all previously found pairs with new data
+30
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+Spread name
+AR.parameter
+Length
+Delta
+RT
+γ
+dte gy /man gy
+0.621
+81
+0.03
+0.07
+-1.02
+dbk gy /man gy
+0.812
+171
+0.02
+0.05
+-0.58
+alv gy /man gy
+0.765
+171
+0.02
+0.06
+-0.81
+fp fp /muv2 gy
+1
+81
+0.20
+0.60
+-3.33
+fp fp /con gy
+0.931
+81
+0.08
+0.22
+1.91
+stm fp /man gy
+0.713
+81
+0.03
+0.07
+-0.45
+gle fp /bmw gy
+0.703
+81
+0.02
+0.04
+-0.48
+ml fp /vow gy
+0.72
+81
+0.02
+0.04
+-0.84
+fte fp /man gy
+0.639
+81
+0.03
+0.06
+-1.11
+dx fp /bay gy
+0.736
+111
+0.03
+0.06
+-1.94
+bn fp /vow gy
+0.706
+111
+0.01
+0.04
+-0.38
+bn fp /man gy
+0.854
+141
+0.04
+0.11
+-0.71
+bn fp /alv gy
+0.678
+111
+0.01
+0.04
+-0.71
+bn fp /fte fp
+0.735
+81
+0.02
+0.06
+-0.47
+agf fp /man gy
+0.663
+81
+0.03
+0.08
+-1.02
+wlsnc na /man gy
+0.774
+171
+0.02
+0.05
+-0.71
+wlsnc na /bn fp
+0.632
+111
+0.02
+0.06
+-1.38
+una na /man gy
+0.655
+81
+0.01
+0.03
+-0.45
+Table 1: The table shows some of the spreads where all criteria are met for the
+cointegration method. The ﬁrst column shows the name of the spread with a three
+letter asset code and a two letter stock exchange code. The AR-parameter is shown
+verifying the stationarity of the spread. Its p-value of the standard t-test is given
+in parentheses, with 0 meaning negligible. The column Length shows the length
+in days for the spread. The column Delta shows the optimal trading point and R
+shows the expected proﬁt of the spread in percentages of the exposed amount.
+31
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+Spread name
+AR.parameter
+Length
+Delta
+R
+ω
+con gy /man gy
+-0.086(0.067)
+229
+0.03
+0.08
+0.11(0.38)
+con gy /dcx gy
+0.867(0)
+199
+0.02
+0.05
+0.004(0.957)
+bmw gy /dcx gy
+-0.958(0)
+259
+0.00
+0.00
+-0.221(0)
+rno fp /man gy
+-0.073(0.098)
+139
+0.04
+0.10
+0.196(0.168)
+rno fp /dcx gy
+0.941(0)
+169
+0.02
+0.05
+0.01(0.874)
+rno fp /con gy
+-0.66(0.039)
+79
+0.01
+0.01
+0.286(0.066)
+ug fp /vow gy
+0.753(0.01)
+349
+0.06
+0.24
+-0.243(0)
+ug fp /man gy
+-1(0)
+79
+0.00
+0.00
+0.694(0.048)
+ug fp /dcx gy
+0.846(0.017)
+259
+0.05
+0.14
+-0.241(0.002)
+ug fp /con gy
+-0.992(0)
+259
+0.00
+0.00
+-0.15(0.138)
+ug fp /bmw gy
+-0.984(0)
+199
+0.00
+0.00
+-0.114(0.188)
+ug fp /rno fp
+-0.985(0)
+229
+0.00
+0.00
+-0.161(0.043)
+ml fp /vow gy
+-0.992(0)
+379
+0.00
+0.00
+-0.178(0.002)
+ml fp /man gy
+-0.935(0)
+139
+0.00
+0.01
+0.145(0.4)
+ml fp /dcx gy
+-0.624(0.073)
+169
+0.00
+0.01
+-0.009(0.897)
+ml fp /bmw gy
+-0.893(0)
+379
+0.00
+0.00
+0.076(0.137)
+ml fp /rno fp
+-0.583(0.052)
+229
+0.01
+0.02
+0.007(0.918)
+ml fp /ug fp
+-0.695(0.075)
+319
+0.00
+0.01
+0.061(0.397)
+Table 2: The table shows spread where all criteria are met for the stochastic spread
+method. The columns in this table are identical to the columns in Table 2, except
+from ω that represent the weight of the risk factor. The AR-parameter now reﬂects
+the stationarity of the returns of the spread in equation (79).
+32
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+Figure 1: The user interface when using the stochastic spread method.
+33
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+Figure 2: The user interface when using the stochastic spread method and selecting
+another plot view.
+34
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+7
+References
+Do B., FaﬀR. and Hamza K. 2006. "A New Approach to Modeling and Estimation
+for Pairs Trading", Monash University, Working Paper.
+Elliott, R., van der Hoek, J. and Malcolm, W. 2005. "Pairs Trading", Quantitative
+Finance, Vol. 5(3), pp. 271-276.
+Engle, R. and Granger, C. 1987. "Co-integration and Error Correction: Representation, Estimation, and Testing", Econometrica, Vol. 55(2), pp. 251-276.
+Hamilton, J. D. 1994. "Time Series Analysis". Princeton: Princeton University
+Press.
+Johansen, S. 1984, "Functional Relations, Random Coeﬃcients and Non-Linear
+Regression with Applications to Kinetic Data". Springer Verlag (125 pp).
+Johansen, S. 1988, "Statistical Analysis of Cointegration Vectors", Journal of Economic Dynamics and Control (v. 12, 1988), pp. 231-54.
+Johansen, S. 1991. "Estimation and Hypothesis Testing of Cointegration Vectors
+in Gaussian Vector Autoregressive Models," Econometrica, Econometric Society,
+vol. 59(6), pages 1551-80, November.
+Kalman, R.E. 1960. "A New Approach to Linear Filtering and Prediction Problems", Journal of Basic Engineering, Vol. 82, pp.35-45.
+Phillips, P C B and Durlauf, S N, 1986. "Multiple Time Series Regression with Integrated Processes," Review of Economic Studies, Blackwell Publishing, vol. 53(4),
+pages 473-95, August.
+Ross, S. 1976, "The arbitrage theory of capital pricing", Journal of Economic Theory, v13, p341.
+Said, S.E. and Dickey, D. A. 1984, "Testing for unit roots in autoregressive-moving
+average models of unknown order." Biometrika.; 71 (3) : 599-607
+Vidyamurthy, G. 2004. Pairs Trading, Quantitative Methods and Analysis, John
+Wiley & Sons, Canada.
+8
+Appendix A - further results
+8.1
+Cointegration
+Pair
+AR.parameter
+Length
+R
+Delta
+γ
+dte gy /man gy
+0.621
+81
+0.03
+0.07
+-1.02
+dbk gy /man gy
+0.812
+171
+0.02
+0.05
+-0.58
+alv gy /man gy
+0.765
+171
+0.02
+0.06
+-0.81
+fp fp /muv2 gy
+1
+81
+0.20
+0.60
+-3.33
+fp fp /con gy
+0.931
+81
+0.08
+0.22
+1.91
+35
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+Pair
+AR.parameter
+Length
+R
+Delta
+γ
+stm fp /man gy
+0.713
+81
+0.03
+0.07
+-0.45
+gle fp /bmw gy
+0.703
+81
+0.02
+0.04
+-0.48
+ml fp /vow gy
+0.72
+81
+0.02
+0.04
+-0.84
+fte fp /man gy
+0.639
+81
+0.03
+0.06
+-1.11
+dx fp /bay gy
+0.736
+111
+0.03
+0.06
+-1.94
+bn fp /vow gy
+0.706
+111
+0.01
+0.04
+-0.38
+bn fp /man gy
+0.854
+141
+0.04
+0.11
+-0.71
+bn fp /alv gy
+0.678
+111
+0.01
+0.04
+-0.71
+bn fp /fte fp
+0.735
+81
+0.02
+0.06
+-0.47
+agf fp /man gy
+0.663
+81
+0.03
+0.08
+-1.02
+wlsnc na /man gy
+0.774
+171
+0.02
+0.05
+-0.71
+wlsnc na /bn fp
+0.632
+111
+0.02
+0.06
+-1.38
+una na /man gy
+0.655
+81
+0.01
+0.03
+-0.45
+una na /stm fp
+0.72
+81
+0.02
+0.05
+-1.11
+tnt na /alv gy
+0.806
+171
+0.04
+0.15
+-0.61
+tnt na /bn fp
+0.767
+111
+0.02
+0.05
+-0.99
+sbmo na /man gy
+0.896
+81
+0.09
+0.24
+-1.33
+sbmo na /bas gy
+0.751
+141
+0.02
+0.06
+-1.36
+rdsa na /muv2 gy
+0.978
+81
+0.16
+0.43
+-2.50
+rdsa na /eoa gy
+0.948
+81
+0.10
+0.30
+2.26
+rdsa na /con gy
+0.907
+81
+0.05
+0.12
+1.50
+rdsa na /cbk gy
+0.937
+81
+0.02
+0.05
+-1.19
+rdsa na /gle fp
+0.911
+81
+0.04
+0.10
+-1.84
+phia na /stm fp
+0.954
+111
+0.02
+0.08
+-0.60
+phia na /una na
+0.95
+111
+0.02
+0.05
+-0.84
+kpn na /man gy
+0.769
+141
+0.02
+0.06
+-0.67
+kpn na /dte gy
+0.787
+81
+0.01
+0.04
+-0.52
+kpn na /alv gy
+0.68
+111
+0.02
+0.06
+-0.84
+kpn na /bn fp
+0.607
+111
+0.02
+0.05
+-1.17
+kpn na /wlsnc na
+0.775
+141
+0.02
+0.04
+-0.95
+heia na /stm fp
+0.836
+81
+0.01
+0.02
+-0.35
+heia na /rno fp
+0.939
+111
+0.02
+0.05
+-0.15
+heia na /cs fp
+0.956
+111
+0.02
+0.04
+-0.05
+heia na /una na
+0.87
+81
+0.02
+0.06
+-0.08
+gtn na /cbk gy
+0.724
+81
+0.03
+0.08
+-2.11
+36
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+Pair
+AR.parameter
+Length
+R
+Delta
+γ
+fora na /gle fp
+0.857
+111
+0.05
+0.17
+-1.66
+fora na /rdsa na
+0.995
+81
+0.05
+0.13
+-0.40
+dsm na /man gy
+0.555
+81
+0.02
+0.06
+-0.98
+dsm na /dbk gy
+0.546
+81
+0.01
+0.04
+-1.64
+dsm na /bay gy
+0.807
+81
+0.04
+0.11
+-3.29
+dsm na /stm fp
+0.737
+81
+0.04
+0.11
+-2.37
+dsm na /kpn na
+0.717
+81
+0.04
+0.11
+-1.99
+buhr na /su fp
+0.817
+81
+0.07
+0.22
+-1.77
+buhr na /ca fp
+0.862
+111
+0.06
+0.16
+-3.83
+asml na /ifx gy
+0.915
+81
+0.11
+0.28
+-3.43
+asml na /stm fp
+0.826
+141
+0.02
+0.05
+-1.47
+asml na /una na
+0.852
+81
+0.02
+0.05
+-0.96
+akza na /sap gy
+0.925
+81
+0.12
+0.46
+1.72
+akza na /bmw gy
+0.894
+81
+0.06
+0.19
+0.64
+akza na /gle fp
+0.871
+81
+0.05
+0.13
+2.20
+akza na /dx fp
+0.909
+81
+0.06
+0.17
+0.82
+akza na /cs fp
+0.912
+81
+0.05
+0.14
+2.41
+akza na /heia na
+0.847
+81
+0.10
+0.27
+4.67
+akza na /fora na
+0.916
+81
+0.06
+0.18
+0.15
+ah na /eoa gy
+0.811
+81
+0.09
+0.60
+1.87
+agn na /ah na
+0.711
+141
+0.02
+0.06
+-0.58
+aaba na /bay gy
+0.709
+81
+0.02
+0.05
+-1.26
+8.2
+Stochastic spread
+Spread name
+AR.parameter
+Length
+Delta
+R
+ω
+con gy /man gy
+-0.086(0.067)
+229
+0.03
+0.08
+0.11(0.38)
+con gy /dcx gy
+0.867(0)
+199
+0.02
+0.05
+0.004(0.957)
+bmw gy /dcx gy
+-0.958(0)
+259
+0.00
+0.00
+-0.221(0)
+rno fp /man gy
+-0.073(0.098)
+139
+0.04
+0.10
+0.196(0.168)
+rno fp /dcx gy
+0.941(0)
+169
+0.02
+0.05
+0.01(0.874)
+rno fp /con gy
+-0.66(0.039)
+79
+0.01
+0.01
+0.286(0.066)
+ug fp /vow gy
+0.753(0.01)
+349
+0.06
+0.24
+-0.243(0)
+ug fp /man gy
+-1(0)
+79
+0.00
+0.00
+0.694(0.048)
+ug fp /dcx gy
+0.846(0.017)
+259
+0.05
+0.14
+-0.241(0.002)
+ug fp /con gy
+-0.992(0)
+259
+0.00
+0.00
+-0.15(0.138)
+ug fp /bmw gy
+-0.984(0)
+199
+0.00
+0.00
+-0.114(0.188)
+37
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+Spread name
+AR.parameter
+Length
+Delta
+R
+ω
+ug fp /rno fp
+-0.985(0)
+229
+0.00
+0.00
+-0.161(0.043)
+ml fp /vow gy
+-0.992(0)
+379
+0.00
+0.00
+-0.178(0.002)
+ml fp /man gy
+-0.935(0)
+139
+0.00
+0.01
+0.145(0.4)
+ml fp /dcx gy
+-0.624(0.073)
+169
+0.00
+0.01
+-0.009(0.897)
+ml fp /bmw gy
+-0.893(0)
+379
+0.00
+0.00
+0.076(0.137)
+ml fp /rno fp
+-0.583(0.052)
+229
+0.01
+0.02
+0.007(0.918)
+ml fp /ug fp
+-0.695(0.075)
+319
+0.00
+0.01
+0.061(0.397)
+vie fp /rwe gy
+0.675(0.092)
+79
+0.01
+0.03
+-0.16(0.378)
+rdsa na /sbmo na
+-0.096(0.026)
+319
+0.05
+0.12
+-0.295(0)
+ren na /wlsnc na
+-0.197(0.073)
+79
+0.03
+0.08
+-0.014(0.96)
+fte fp /dte gy
+-1(0)
+79
+0.00
+0.00
+-0.201(0.035)
+kpn na /dte gy
+-1(0)
+79
+0.00
+0.00
+-0.643(0)
+buhr na /tnt na
+0.932(0.001)
+79
+0.03
+0.09
+0.556(0.054)
+buhr na /hgm na
+0.885(0)
+79
+0.04
+0.11
+-0.282(0.451)
+tms fp /sie gy
+-0.122(0.049)
+199
+0.11
+0.34
+-0.082(0.274)
+tms fp /sap gy
+0.861(0.001)
+289
+0.07
+0.22
+-0.243(0.001)
+tms fp /ifx gy
+-0.76(0.034)
+139
+0.00
+0.00
+-0.286(0.01)
+stm fp /tms fp
+-0.788(0.099)
+169
+0.00
+0.00
+0.25(0.005)
+su fp /tms fp
+0.917(0)
+349
+0.03
+0.09
+-0.017(0.852)
+cap fp /sap gy
+-0.994(0)
+319
+0.00
+0.00
+0.143(0.023)
+phia na /sie gy
+0.893(0)
+109
+0.02
+0.06
+0.119(0.166)
+phia na /dpw gy
+0.815(0)
+109
+0.05
+0.14
+0.285(0.001)
+phia na /tms fp
+-0.639(0.001)
+139
+0.01
+0.02
+0.129(0.144)
+phia na /stm fp
+-0.999(0)
+79
+0.00
+0.00
+-0.512(0.001)
+gtn na /su fp
+0.68(0.001)
+379
+0.07
+0.20
+-0.122(0.365)
+asml na /sap gy
+-0.948(0)
+349
+0.00
+0.00
+0.026(0.638)
+asml na /tms fp
+-0.867(0.002)
+199
+0.00
+0.00
+0.255(0.002)
+asml na /su fp
+-0.984(0)
+319
+0.00
+0.00
+0.251(0.002)
+ai fp /bay gy
+-0.716(0.047)
+319
+0.00
+0.00
+-0.363(0)
+dsm na /bay gy
+0.9(0)
+379
+0.03
+0.09
+-0.482(0)
+dsm na /ai fp
+0.913(0)
+109
+0.04
+0.10
+-0.297(0.256)
+akza na /bay gy
+-0.614(0.065)
+169
+0.00
+0.01
+-0.094(0.377)
+akza na /bas gy
+-0.646(0.069)
+319
+0.00
+0.00
+-0.02(0.812)
+akza na /dsm na
+0.866(0)
+319
+0.05
+0.23
+0.147(0.114)
+bn fp /meo gy
+-0.884(0)
+289
+0.00
+0.00
+-0.109(0.182)
+38
+Electronic copy available at: https://ssrn.com/abstract=1594066
+
+Spread name
+AR.parameter
+Length
+Delta
+R
+ω
+una na /bn fp
+-0.852(0)
+319
+0.00
+0.00
+-0.102(0.154)
+num na /meo gy
+-0.83(0.013)
+79
+0.00
+0.00
+-0.486(0.119)
+num na /una na
+-0.116(0.006)
+289
+0.04
+0.09
+-0.077(0.44)
+heia na /una na
+-0.877(0)
+79
+0.00
+0.00
+-0.34(0.012)
+heia na /num na
+-0.91(0)
+349
+0.00
+0.00
+-0.165(0.123)
+ah na /bn fp
+-0.686(0)
+379
+0.00
+0.01
+0.432(0)
+ah na /num na
+-0.701(0.089)
+319
+0.00
+0.01
+0.576(0)
+cs fp /dx fp
+0.744(0.034)
+199
+0.02
+0.05
+0.602(0)
+agf fp /muv2 gy
+-1(0)
+109
+0.00
+0.00
+-0.265(0.009)
+inga na /agf fp
+-1(0)
+79
+0.00
+0.00
+0.576(0)
+fora na /agf fp
+-0.992(0)
+139
+0.00
+0.00
+0.198(0.025)
+agn na /gle fp
+0.108(0.04)
+199
+0.04
+0.12
+0.158(0.041)
+agn na /cs fp
+0.765(0.005)
+199
+0.03
+0.07
+-0.038(0.594)
+cbk gy /dbk gy
+-0.996(0)
+379
+0.00
+0.00
+0.158(0.068)
+aca fp /cbk gy
+-0.981(0)
+349
+0.00
+0.00
+-0.168(0.104)
+bnp fp /dbk gy
+0.742(0.042)
+169
+0.04
+0.14
+0.009(0.878)
+inga na /dbk gy
+-0.992(0)
+79
+0.00
+0.00
+0.078(0.662)
+inga na /cbk gy
+-1(0)
+349
+0.00
+0.00
+-0.313(0.003)
+fora na /cbk gy
+-0.978(0)
+289
+0.00
+0.01
+-0.324(0.003)
+aaba na /cbk gy
+-0.979(0)
+259
+0.00
+0.01
+-0.51(0)
+aaba na /dx fp
+0.659(0.01)
+229
+0.03
+0.06
+0.121(0.049)
+39
+Electronic copy available at: https://ssrn.com/abstract=1594066
