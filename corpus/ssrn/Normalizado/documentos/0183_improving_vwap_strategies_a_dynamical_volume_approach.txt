@@ -1,0 +1,7107 @@
+Improving VWAP strategies : A dynamical volume
+approach
+J˛edrzej Białkowski∗
+Serge Darolles†
+Gaëlle Le Fol‡
+June 2006
+Abstract
+In this paper, we present a new methodology for modeling intraday volume which allows for a reduction of the execution risk in VWAP (Volume Weighted Average Price)
+orders. The results are obtained for the all stocks included in the CAC40 index at the beginning of September 2004. The idea of considered models is based on the decomposition
+of traded volume into two parts: one reﬂects volume changes due to market evolutions, the
+second describes the stock speciﬁc volume pattern. The dynamics of the speciﬁc part of volume is depicted by ARMA, and SETAR models. The implementation of VWAP strategies
+imposes some dynamical adjustments within the day.
+Keywords: Intraday Volume, VWAP Strategies, Principal Component Analysis, Arbitrage.
+∗Corresponding author: Department of Finance, Faculty of Business, Auckland University of Technology,
+Private Bag 92006, Auckland 1020, New Zealand, E-mail: jedrzej.bialkowski@aut.ac.nz, Phone: ++64 9 921
+9999-5401, Fax: ++64 9 921 9629
+†Société Générale Asset Management AI, Center for Research in Economics and Statistics (CREST), France,
+E-mail: serge.darolles@sgam.com.
+‡Department of Economics, University of Evry, Center for Research in Economics and Statistics (CREST), and
+Europlace Institute of Finance, France, E-mail: Gaelle.Le-Fol@ensae.fr.
+1
+
+1
+Introduction
+In ﬁnancial literature, when considering perfect markets, volume is often ignored. But it is
+an important market characteristic for practitioners who aim at lowering the market impact
+of their trades. This impact can be measured by comparing the execution price of an order
+to a benchmark. The larger this price difference, the higher the market impact. One such
+benchmark is known as the Volume Weighted Average Price, or VWAP. Informally, the
+VWAP of a stock over a period of time is just the average price paid per share during that
+period. The VWAP benchmark is then the sum of every transaction price paid, weighted by
+its volume. The goal of any trader, tracking VWAP benchmark, is to ﬁnd and deﬁne ex ante
+strategies, which ex post lead to an average trading price being as close as possible to the
+VWAP price. Hence, VWAP strategies are deﬁned as buying and selling a ﬁxed number of
+shares at an average price that tracks the VWAP.
+VWAP execution orders represent around 50% of all the institutional investors’ trading.
+The simplicity of such strategies explain its growing success. First, investors who ask for
+VWAP execution accept they will postpone or sequence their trades in order to reduce their
+trading cost when selling or buying large amounts of shares. Doing so, they reduce their
+market impact, and thus increase the proﬁtability of their transactions by accepting a risk in
+time. Likewise, VWAP orders allow foreign investors to avoid the high risk related to the
+fact that their orders have to be placed before the market opens. Secondly, it is a common
+practice to evaluate the performance of trades based on their ability to execute the orders at
+a price better or equal to VWAP. In this case, VWAP can be seen as an optimal benchmark1.
+Finally, VWAP is a better benchmark than any price at a ﬁxed time in the future as it cannot
+be manipulated. Consequently, it improves both market transparency and efﬁciency [see
+Cuching and Madhavan (2001)].
+To implement VWAP strategies, we ﬁrst need to model the intraday evolution of the
+relative volume and as we will see below, we don’t need to model the intraday price evolution. It is now common knowledge that intraday volume moves around a U-shape seasonal
+1Berkowitz, Logue and Noser (1988) show that VWAP is a good proxy for the optimal price attainable by
+passive traders.
+2
+
+pattern [see for example Biais, al. (1995), Gouriéroux et al. (1999) for the French stock
+market.]. These seasonal ﬂuctuations have hampered volume modeling. One way to circumvent this problem is to work on a transaction or market time scale instead of calendar
+time scale [see Engle (2000), Gouriéroux and Le Fol (1998) for example]. However, this
+transformation is useless when working on strategies which are deﬁned on a calendar time
+scale [Le Fol and Mercier (1998) suppose that the time transformation is ﬁxed and use this
+hypothesis to pass from one time scale to the other]. Other approaches correct volume on
+a stock by stock time varying average volume [Engle (1998), Easley, O’Hara (1987)], and
+others take the time varying across stock and average volume [See Mc Culloch (2004)]. In
+all this work, seasonal variation is just a problem that they adequately and empirically dispose. On the contrary, in our work we do not have to eliminate seasonal considerations as
+we use it to arrive at the common component and thus, to construct our volume benchmark
+for VWAP strategies. Here, we want to discriminate between the seasonal and static part
+of volume from the dynamic one. The identiﬁcation of such components of volume comes
+from the observation that seasonal ﬂuctuation is common across stocks whereas dynamics
+is a stock by stock feature.
+If volume has been analyzed in the ﬁnancial market literature, it has often been used for
+a better understanding of other ﬁnancial variables, like price [Easley, O’Hara (1987), Foster, Wisvanathan (1990) for example] or volatility [Tauchen, Pitts (1983), Karpoff (1987),
+Anderson (1996) and Manganelli (2002) for example]. Moreover most of these studies use
+daily or even lower data frequency [one exception is Darrat, Rahman, and Zhong (2003)
+who examine intraday data of stocks from Dow Jones index, and reported signiﬁcant leadlag relations between volume and volatility]. The rare papers that concentrate on volume
+are Kaastra and Boyd (1995), Darolles and Le Fol (2003).
+This paper is in the line with the methodology proposed by Darolles and Le Fol (2003)
+for volume decomposition. The main contributions are ﬁrst to work on intraday data, second to propose some dynamically updated predictions of volume and ﬁnally to use VWAP
+strategies to test the accuracy of the approach. Basically, volume is decomposed into two
+components: the ﬁrst describes the size of volume on ordinary days and is extracted from
+3
+
+the stocks included in the CAC40 index. The second component measures the abnormal or
+unexpected changes of volume.
+The CAPM is one of the most famous models for returns that is based on such techniques. Lo and Wang (2000) were the ﬁrst ones to transpose this model to volumes, also
+used by Darolles and Le Fol (2003). This study is a natural extension of this work on high
+frequency data relating to the problem of optimal executions of VWAP orders. Furthermore, it is worth highlighting that, by separating the market part from observed volume,
+two additional goals were obtained. First, the speciﬁc component, as a measure of liquidity
+for a particular company, is a much more reliable indicator of arbitrage activity than the
+observed volume. Secondly, this decomposition allows us to accurately remove seasonal
+variations, without imposing any particular form.
+The paper is organized as follows: Section 2 starts with a simple example showing why
+volume is the only important variable when tracking VWAP. We then provide a description
+of the models for a market component, and a speciﬁc component of volume. Section 3
+contains data description and summary statistics of the data, as well as in and out sample
+estimations results. Applications to VWAP strategies are presented in section 4. Section 5
+concludes the paper.
+2
+The volume trading model
+In this section, we explain why we don’t need to predict price to achieve the goal of tracking
+VWAP. We then introduce the volume statistical model which includes the decomposition
+of volume method and the intraday volume dynamics. As mentioned before, the major
+problem of intraday volume is its high intraday seasonal variation. Two approaches have
+been considered to deal with this problem. The ﬁrst takes an historical average of volume
+for any stock as its seasonal pattern or normal volume [Easley, O’Hara (1987)]. The second takes the average volume across stocks to get this normal volume [McCulloch (2004)].
+Here, we propose another method to extract the seasonal, or normal, volume based on principal component analysis. Such a method allows us to get a normal non stationary volume
+4
+
+component, which is common across stocks, and a speciﬁc stationary component. Next, we
+propose to model the dynamics of the aforementioned components taken separately.
+2.1
+Predicting volume to track the VWAP
+As we said before, the goal of any trader tracking the VWAP is to deﬁne ex ante strategies,
+which ex post lead to an average trading price as close as possible to the VWAP. In fact,
+as soon as we know the future sequence of intra day trading volume and we can adapt
+our trading scheme accordingly, we are good. As a consequence, the problem resumes to
+adequately forecast the intra day volume. To see this, let us consider a simple ﬁnancial
+market where trades can only occur every hour i = 1, ..., 9, and a broker who wants to
+trade 100 000 shares at the VWAP. If she knows what will be the hourly pattern of volume
+(Vi) or equivalently the hourly turnover2, xi =
+Vi
+Ni , she can calculate the hourly traded
+volume percentage
+
+xi =
+xi
+ xi =
+Vi
+ Vi
+
+and trade her 100 000 shares accordingly, V i =
+100000xi, at price Pi.
+We give in table 1 the hourly traded volume (column 5) which give the hourly percentage traded volume (column 6). Applying this splitting scheme to 100 000 shares, we get the
+hourly volume to trade (column 7). At the end of the day, we collect the hourly price and
+calculate, for three different price evolutions, the true VWAP of the day and of the portfolio.
+The VWAP of this speciﬁc day is:
+V WAP
+=
+9
+i=1 PiVi
+9
+i=1 Vi
+= 161.7070 =
+9
+
+i=1
+Pi
+
+Vi
+9
+i=1 Vi
+
+=
+9
+
+i=1
+Pi
+
+xi
+9
+i=1 xi
+
+=
+9
+
+i=1
+Pixi.
+2The turnover is the number of traded shares Vi divided by the number of ﬂoated shares Ni.
+5
+
+The VWAP of the portfolio is:
+V WAP =
+9
+i=1 PiV i
+9
+i=1 V i
+= 161.7070
+=
+9
+
+i=1
+Pi
+
+V i
+9
+i=1 V i
+
+=
+9
+
+i=1
+Pi
+
+100.000xi
+100.000 9
+i=1 xi
+
+=
+9
+
+i=1
+Pixi.
+As we can see with this simple example, the only need when tracking the VWAP is the
+volume shape. Up to here, we have considered that the hourly volume was know. When
+this is not the case, one needs to predict the turnover time series xi at the very beginning
+of the day, and of course, the better the prediction, the closer we get to the VWAP. We
+consider that a prediction of the hourly volume is given in column 8, which leads to the
+hourly percentage of traded volume in column 9. Applying this percentage to the same 100
+000 shares portfolio as before, we get the strategy to implement. Here again, we collect
+the hourly price at the end of the day and calculate ex post VWAP of the day and of the
+portfolio. As we can see, the only case where we reach the VWAP we were tracking is the
+one where price are constants where the error is 0.4% to compare with 16% when it is not
+the case. As a consequence, errors in the volume predictions are negligible when prices are
+stable but can really become dramatic during trendy price periods. These prediction errors
+represent an execution risk which cannot be ignored particularly since volume surprises are
+usually linked to price surprises. This example stresses the importance in ﬁnding a good
+volume trading model which is the aim of the following sections.
+2.2
+Intraday volume decomposition section
+The chosen methodology comes from asset management practices, where any portfolio can
+be decomposed into a market and arbitrage portfolios. A similar process can be applied
+to intraday volume: the trading volume has a market and a speciﬁc components [Darolles
+and Le Fol (2003) propose a theoretical model to explain such a decomposition of volume
+as well as a link with market practices]. Any stock volume or stock turnover, at any date,
+6
+
+depends on an average term and a deviation term. The average part corresponds to trading
+volume coming from market portfolio adjustments. Our interpretation is that the deviation
+element is due to the opening and closure of arbitrage positions. In order to get the two
+components of volume, we conduct a principal component analysis.
+Let xit = Vit
+Ni , i = 1, . . . , I, t = 1, . . . , T denotes the turnover series for stock i at
+date t, i.e. the number of traded shares Vit divided by the number of ﬂoated shares Nit. As
+shown in Darolles and Le Fol (2003), the market turnover xI
+t can be written as:
+xI
+t =
+
+i PitVit
+
+k PktNk
+=
+
+i PitNi Vin
+Ni
+
+k PktNk
+=
+
+i
+witxit,
+(1)
+where Pit is the transaction price for stock i at date t, and wit is the stock relative capitalization. In fact, all the series should also be indexed by day. It would become xj
+it, denoting
+the turnover for stock i and date t, and day j. However, we will ignore this last index,
+unless explicitly needed, for ease of the demonstration. Since the aim of principal component analysis is to explain the variance-covariance structure of the data through a few
+linear combinations of the original data, the ﬁrst step is to calculate the I × I dimension
+variance-covariance matrix of the data. The spectral decomposition of this matrix leads to I
+orthogonal vectors, Ck
+t = x′
+ituk, with dimension T, where uk is the kth eigenvector. Each
+eigenvector is associated with a positive eigenvalue λk such that:
+Cov(Ck
+t , Cl
+t) = λkδkl,
+(2)
+where δkl stands for Kroneker symbol. The standardized turnover times series can be decomposed as:
+xit −xi
+σi
+=
+
+k
+ui
+kCk
+t .
+7
+
+Since the correlation is corr(xit, Ck
+t ) = √λkui
+k, the previous equation can be rewritten as:
+xit −xi
+=
+σi
+
+k
+corr(xit, Ck
+t )
+√λk
+Ck
+t ,
+=
+σi
+
+k
+corr(xit, Ck
+t )
+
+var
+	
+Ck
+t
+
+ Ck
+t ,
+=
+
+k
+Cov(xit, Ck
+t )
+var
+	
+Ck
+t
+
+Ck
+t .
+Finally, we get the centered turnovers :
+xit −xi
+=
+
+k
+Cov(xit, Ck
+t )
+var
+	
+Ck
+t
+
+Ck
+t ,
+(3)
+=
+
+k
+1
+λk
+Cov(xit, Ck
+t )Ck
+t .
+(4)
+Isolating the ﬁrst factor, we get:
+xit −xi = 1
+λ1
+Cov(xit, C1
+t )C1
+t +
+
+k>1
+1
+λk
+Cov(xit, Ck
+t )Ck
+t .
+(5)
+The ﬁrst component is the larger variant and captures the seasonal changes. The others
+are stationary. In the following, we use this decomposition to predict future volume.
+From equation (5), we get :
+xit = ci,t + yi,t,
+where
+ci,t
+=
+xi + 1
+λ1
+Cov(xit, C1
+t )C1
+t ,
+yi,t
+=
+
+k>1
+1
+λk
+Cov(xit, Ck
+t )Ck
+t .
+The volume turnover xi,t at time t, is the sum of a common - or market - turnover ci,t
+and a speciﬁc turnover yi,t. On the one hand, the market component of intraday volume is
+expected to capture all volume seasonal ﬂuctuations and represents the long term volume
+8
+
+of the stock. On the other hand, the speciﬁc component should feature no seasonal pattern
+and represents the short term volume of the stock. It depends on the inﬂow of information
+about important events for the company’s shareholders.
+2.3
+Intraday volume dynamics
+In order to incorporate the features mentioned above into the model for intraday volume
+xi,t where t = 1, . . . , T, we proposed the following framework:
+ˆxi,t = ¯ci,t + yi,t,
+(6)
+¯ci,t represents the common component historical average of intraday volume over the last
+L-trading days. As said above, ci,t depends on the trading day and should be written as cj
+i,t
+for day j. Hence, ¯ci,t is equal to:
+¯ci,t = 1
+L
+L
+
+l=1
+cj−l
+i,t .
+(7)
+This modeling choice seems accurate as the common component for short period (no longer
+than 3 months) is assumed to be static. Note that, in our empirical study, the size of the interval δt is equal to 20 minutes. The second term yi,t represents intraday speciﬁc volume for
+each equity and is modeled considering two speciﬁcations. The ﬁrst on is an ARMA(1, 1)
+with white noise, deﬁned as:
+yt,i = ψ1yt−1,i + ψ2 + ϵt,i.
+(8)
+The alternative considered speciﬁcation is a SETAR (self-extracting threshold autoregressive model) which allows for changes in regime in the dynamics. We get :
+yt,i =
+	
+φ11yt−1,i + φ12
+
+I(yt−1,i) +
+	
+φ21yt−1,i + φ22
+
+
+1 −I(yt−1,i)
+
++ ϵt,i.
+(9)
+9
+
+where
+I(x) =
+⎧
+⎪
+⎨
+⎪
+⎩
+1
+x ≤τ,
+0
+x > τ.
+Therefore, we assume that when the speciﬁc part of intraday volume exceeds a threshold
+value of τ its dynamics is described by a different set of parameters.
+In contrast to the above framework, the classical approach takes the simple volume
+average over the past L-trading days. Hence, intraday volume xi,t is approximated by:
+ˆxi,t = 1
+L
+L
+
+l=1
+xj−l
+i,t .
+(10)
+Undoubtedly, the advantage of this classical approach is its simplicity. However, it
+ignores the dynamics of intraday volume, what has a negative impact on the quality of
+volume forecast.
+3
+Empirical analysis
+3.1
+The data
+The empirical results are based on the analysis of the all securities included in CAC40 index
+at the beginning of September 2004. We use the turnover as a measure of (relative) volume.
+The turnover is deﬁned as the traded volume divided by the outstanding number of shares.
+A similar measure was used by Lo and Wang (2000). Tick-by-tick volume and prices were
+obtained from the Euronext historical data base. We consider one year sample, ranging
+from the beginning of September 2003 to the end of August 2004. The data is adjusted for
+the stock’s splits and dividends. The 24 and 31 of December 2003 were excluded from the
+sample. For any 20 minute interval, volume is the sum of the traded volumes whereas the
+price is the average price, both over that period.
+This study focuses on modeling volume during the day with continuous trading, therefore we consider transaction between 9 : 20 and 17 : 20, and exclude pre-opening trades. As
+the result, there are twenty ﬁve 20-minute intervals per day. In addition to high-frequency
+10
+
+data from EURONEXT, volume weighted average prices, with a daily horizon for each
+company, were used.
+We give in table 2, intraday volume summary statistics for securities from the CAC40
+index. The comparison of the mean with the 5% and 95% quantiles, gives clear indications
+of the large dispersion of volume stock by stock. For companies like SODEXHO ALLIANCE, SANOFI-AVENTIS, and CREDIT AGRICOLE, the mean is around three times
+lower than the 95%-quantile. On average this ratio is equal to 2.7. In turn, 5%-quantiles
+are ﬁve to nine times smaller than the mean. This strong dispersion comes from the strong
+intraday seasonal variation. It is worth noting that the table also shows large dispersion
+across equities, where the average volume is ranging from 0.006 for DEXIA up to 0.438
+for CAP GEMINI. The explanation comes from equities’ particular events such as earning
+announcements, dividend payments, changes in management board etc., which have direct
+inﬂuence on the price and volume of their stock. These observations encourage the application of a model such as the one we propose, which is based on volume decomposition in
+the market and its speciﬁc components.
+3.2
+Estimation results
+The ﬁrst step of our methodology is to run a principal component analysis (PCA) on the
+intraday volumes for all companies included in CAC40. Table 3 shows that the longer
+the period the lower the dispersion explained by the ﬁrst three components. For a one
+month period these components explain 48.5% of the dispersion. It falls to 35.6% when
+we extend the decomposition to a one year period. Since principal component analysis is a
+static method, it has to be applied to short periods of time. Over long periods PCA fails to
+capture the dynamical links which prevail. Therefore, we choose to work on a one month
+period to decompose volume. Next, we calculate the autocorrelation (ACF) and partial
+autocorrelation functions (PACF) for common and speciﬁc parts which are plotted in Figure
+1 for TOTAL equity. The upper graphs in the Figure show typical characteristics of the
+intraday volume, namely seasonal variations. From the middle ﬁgures, one recognizes the
+ability of common component to capture seasonal variations. The last graphs illustrate ACF
+11
+
+and PACF for the speciﬁc part of volume. The fast decay of the autocorrelation suggests
+that the ARMA type model is suitable to depict this time series. The results of stationarity
+tests are presented in Table 4. The null hypothesis of unit root is rejected by the Augmented
+Dickey-Fuller and Philips-Perron tests, for the speciﬁc volume. Finally, the inspection of
+residuals conﬁrmed that ARMA and SETAR models are accurate to describe the dynamics
+of the speciﬁc volume. Figure 2 shows classical white noise properties. The conclusions
+drawn from these autocorrelation function plots are conﬁrmed by the results of Portmanteau
+tests.
+Figure 3 shows the result of our decomposition for two succeeding days, for TOTAL
+company. The upper graphs give the intraday evolution of volume where we can see a
+stochastic evolution around a seasonal U-shape pattern. The middle graphs give the intraday
+evolution of the common component. This part of the volume is the same for any day of
+the sample. Finally, the lower graph represents the evolution of the speciﬁc component.
+This component is responsible for the stochastic behavior around the seasonal pattern and
+changes from day to day.
+The ﬁnal stage to evaluate the accuracy of the models is to use two error measures,
+such as the mean absolute percentage error (MAPE) and mean squared percentage error
+(MSPE) for the daily horizon. Tables from 5 to 10 show the outcome of this analysis for
+all equities, for the classical approach, ARMA and SETAR model respectively. The results
+reported in the tables are obtained by calculating the MAPE and MSPE for each day. Note
+that the statistics have been computed over all trading days for the period from September 2 to December 16, 2003. The summary for all examined companies is given in Table
+11. The outcomes indicate that both models based on principal component decomposition outperform the classical approach to predict the daily U-shape of volume. Moreover,
+the SETAR model better ﬁts the daily volume dynamics than the ARMA model. In fact,
+there are three of the thirty nine companies for which ARMA slightly surpasses SETAR
+model. Further arguments in favor of the decomposition concept comes from the fact that
+the standard deviation for both models is signiﬁcantly smaller than the one observed in the
+classical approach. The same applies to the maximum, and the 95%-quantile, that conﬁrms
+12
+
+the dominance of our approach.
+To summarize, we have demonstrated that models based on decomposition are better
+in modeling intraday volume than those assuming the calculation of simple averages from
+historical data. The importance of this outcome will be discussed in the next section which
+focus on the problem of reducing the cost of VWAP orders.
+4
+Application to VWAP strategies
+VWAP analysis works best under particular conditions. As we explain in the following
+section, VWAP analysis may be misleading and self-fulﬁlling under every day institutional
+trading conditions, such as rapidly changing market conditions, trades motivated by current
+news and recommendations, trade dominating daily volume, principal trades and trades
+whose execution stretches out over several days. We detail these below and argue the set of
+assumptions used to ensure the accuracy of VWAP benchmarking.
+4.1
+VWAP strategies : an overview
+Trends in algorithmic trading
+An actual trend observed in ﬁnancial markets is the
+increasing use of computer trading, or, shortly speaking, electronic trading versus a speciﬁc
+benchmark. Measurability is one of the more obvious beneﬁts of benchmarking. Indeed,
+when trading performance is measured in comparison to a benchmark (meaning that if my
+benchmark is an index, the performance of a portfolio is the extra performance compared
+to the index), you easily obtain an execution quality measure. Two main factors explain
+this phenomena. On the one hand, the computer trading offer is now easily accessible.
+If sell-side ﬁrms execution systems have been used internally by traders for years, these
+systems become recently available directly to clients via electronic platforms. A steady
+drop in transaction rates is forcing sell-side ﬁrms to become more efﬁcient in processing
+trades and more reliant on automation and computer power to cut costs. At the same time,
+ﬁrms are looking for ways to outsource their trading desks to increase their capacity to
+execute more volume. Major brokerage houses are then franchising their computer trading
+13
+
+strategies to smaller ﬁrms which in turn are pressured to offer the service. Small and midsize
+broker-dealers that lack resources and time to invest in developing VWAP engines and other
+quantitative strategies can then offer the proprietary benchmark trading to their buy-side
+customers. In return, the source ﬁrms are paid a percentile per share based on the volume
+that is pumped through their models. Even if the franchisee broker puts it own name on
+the algorithm strategy, the execution occurs on major brokerage houses, virtually invisible
+to the institutional ﬁrm. The originating broker-dealer gets credit for the volume since it
+represents the order at the exchange and still preserves the execution clearing relationship
+with the buy-side client.
+On the other hand, buy-side customers are asking for the algorithms. There are numerous reasons for buy-side ﬁrms to ask for this type of trading. The buy side is being more
+closely monitored and scrutinized for its execution quality. Algorithmic trading offers a less
+expensive option to full service brokers, while providing a way to complete a complex order
+type. In general, pre- trade analytic tools are readily and easily available. The execution
+environment allows clients to obtain analysis relevant to the context in which they make
+trades. Moreover, market fragmentation drives traders to use electronic tools to access the
+market in different ways. Quant fund traders began to have more to be a larger part of the
+market liquidity and need ﬂexible and easy access to the market. For small brokers, access
+to big brothers’ algorithms is far from cheap. But if a customer needs better execution, it’s
+incumbent on them to provide it.
+VWAP benchmark
+Several benchmarks are proposed in the ﬁeld of algorithmic trading
+(These prices are based on market close, percentage of volume, opportunistic model for
+small-cap stocks, ....), but the most common and popular one is VWAP. The main reason
+is obvious: the computation of daily VWAP is straightforward for anyone with access to
+daily stock transactions records. Moreover the use of VWAP is simple in itself: if the
+price of a buy trade is lower than VWAP, it is a good trade; if the price is higher, it is
+a bad trade (and conversely for sell trades). In general, brokers propose several ways to
+reach VWAP benchmark. Agency and guaranteed VWAP execution services are the two
+main possibilities. In the guaranteed case, the execution is guaranteed at VWAP for a ﬁxed
+14
+
+commission per share, and the broker dealer ensures the entire risk of failing to meet the
+benchmark. In the agency trading case, the order is sent to a broker-dealer, to trade on an
+agency basis, with the aim of obtaining the VWAP or better. Obviously, the transaction
+costs are not the same depending on the chosen method and the larger the client residual
+risk, the smaller the cost.
+Timing dimension
+VWAP strategies introduce a time dimension in the order execution
+process. If the trader loses control of whether the trade will be executed during the day,
+VWAP strategies allow it to dilute the impact of orders through the day. To understand
+the immediacy and good price trade-off, let’s take the two examples of action and investor
+traders. Action traders go where the action is, meaning that they don’t care about the ﬁrm
+stock they are trading. Investor traders lack that ﬂexibility. Since their job represents the
+ﬁnal task in a sequential decision process, they are expected to trade speciﬁc stocks, even
+if the action is over. Of course, trade information cannot remain proprietary for long and
+trade delays resulting in trade process that can defer greatly from the manager’s original
+decision price. VWAP strategies ensure investor traders’ good participation during the day,
+and then trade completion at the closing time.
+Size effect
+Under particular conditions VWAP evaluation may be misleading and even
+harmful to portfolio performance. Most institutional trading occurs ﬁlling orders that exceed the daily volume. When large numbers of shares must be traded, liquidity concerns
+are against price goals. Then trade evaluation becomes more complicated. Action traders
+watch the market for this reason and try to beneﬁt from those trades. A naive investor could
+indiscreetly reveal her interest for the market or a particular stock. Action traders can then
+cut themselves in by capturing available liquidity and reselling it to an unskilled trader. On
+the other hand, skilled traders will deal amounts below or beyond the action trader’s radar
+screen to avoid such behavior. Using automatic participation strategies as VWAP may be
+dangerous in these cases. Since it pays no attention to the full size of the trade, trading costs
+are biased by VWAP benchmark since the benchmark itself depends on the trades.
+For this reason, some ﬁrms offer multi-days VWAP strategies to respond to customers
+15
+
+requests. To further reduce the market impact of large orders, customers can specify their
+own volume participation by limiting the volume of their orders on days when a low volume
+is expected. As a ﬁrst step each order is spread over several days and then sent to the VWAP
+engine for the corresponding days.
+To avoid this ﬁrst limitation, we make the assumption concerning the order size sent to
+VWAP engine. We assume that any considered VWAP execution order is low compared to
+the daily volume.
+Trade motivation
+Most trading observed on the market, such as balancing or inﬂow
+trading, is not price sensitive and evaluation by a VWAP analysis will not be misleading.
+However, some trades and hence trading prices reﬂect objectives that cannot be captured
+by a VWAP analysis. To see this, we must look deeper into trading motivations to discriminate whether a particular price represents a good or bad execution. Let us consider two
+types of traders: value and growth managers. Value managers are looking for under priced
+situations. They buy the stock and wait to sell it until good news raises its price. Growth
+managers react to good news and hope that it portends to more good news. Thus, while
+growth managers buy on good news value managers sell. Consequently growth managers
+have a clear trading disadvantage because they buy when the buying interest dominates the
+market. They are frequently lower ranked than value traders. If the skilled traders can
+understand the motivations beyond the decisions, they will try to adjust their strategy accordingly. Automatic participation algorithms cannot take into account such a dimension
+in trading.
+The second assumption we make in our empirical study is to only consider low motivation trading. In such a case the VWAP benchmark can be used without bias.
+Benchmarking arbitrage
+In the case of VWAP trading, any price is a good price if the
+size of the trade dominates the daily volume implying that the trading price dominates the
+VWAP. Trading dominating VWAP is evaluated as good trade, no matter how expensive the
+price might be, compared to a manager’s decision targets. Hence, VWAP makes the trader
+insensitive to price since any price becomes as good as any other price. This denigrates
+16
+
+trader’s skills and can destroy the value of research. Moreover, VWAP is very beneﬁcial for
+screening people who don’t know that it is used to evaluate them. Anyone who knew they
+were going to be evaluated by this measure would be a combination of stupid, incompetent,
+or corrupt, depending on how they behaved. Even though you know you can play this
+method as a game you don’t.
+As third assumption, we assume that traders have no strategic behavior.
+4.2
+VWAP dynamic implementation
+In this section, we propose implementation of VWAP strategies. The main issue here is to
+use the dynamic model to enhance execution. Implementation can happen in one of three
+ways depending on the volume shape predictions that we make. The ﬁrst one, is called
+VWAP execution and, is based on one-step ahead predictions of the speciﬁc part of the
+volume. In the second one, the prediction of the speciﬁc part of the volume is predicted in
+one go for the entire day (1 to 25 steps ahead predictions). As the predictions are only done
+once and never revised during the day, we call this static execution. The last one involves
+ﬁrstly predicting the speciﬁc part of the volume for the entire day and then adjusting the
+predictions as the day goes on and the information increases. We call this dynamic VWAP
+execution as predictions are dynamically adjusted during the day.
+4.2.1
+Theoretical VWAP execution
+Please be aware that the time series model is based on 20mn by 20mn speciﬁc turnovers,
+which are our way of measuring intraday volumes. For any interval i = 1, ..., 25 during the
+day, we can easily predict that ˆxi+1 forms the observation of xi. However, from a practical
+point of view, in addition to this prediction we need to know the total volume for the day to
+know for sure which part should be traded at time i + 1,
+ˆxi+1
+K
+k=1 xk . Hence, such a strategy is
+just impossible to implement without knowing the K turnovers of the day or the equivalent
+total volume for the day. Obviously, this value is unknown before the market closes.
+Implementation is therefore theoretical as it takes the unknown daily volume as already
+clear. However, it remains interesting to test such a strategy as it results in improvement of
+17
+
+the method for upper VWAP execution.
+4.2.2
+Static VWAP execution
+As mentioned above, traders cannot use the theoretical execution since they don’t know the
+daily volume, at the beginning of the day. However, they can use the dynamic model of xi
+to predict ˆx1, ˆx2, ..., ˆx25 and calculate the proportions to trade at each i interval
+ˆxi
+25
+i=1 xi .
+The simplicity of such a strategy is offset by the poor quality of the long term estimates
+given by the ARMA models. Quickly, the speciﬁc volume prediction will become zero
+and the dynamic part of the model will have no effect on VWAP implementation. In such
+a scheme, we add just one step to the classical approach, where we do a rolling crosssectional decomposition before taking a historical average. This strategy will certainly be
+worse than the classical approach since the speciﬁc volume plays almost no part and the
+average common volume contains less than the average volume.
+4.2.3
+Dynamic VWAP execution
+However, our decomposition can help to improve execution by taking advantage of the dynamic part of the model even when the daily volume is unknown. The idea is to incorporate,
+all the available information about volume after each step.
+The prediction ˆxi+1, i = 1, ..., 25, is still the one-step ahead prediction of the dynamic
+model as with theoretical execution. We also use the same model to get all the ˆxi+l, l ≥1
+until the end of the day. The proportion
+ˆxi+1
+25−i
+l=1 xi+l is only applied on the remaining volume
+to trade after interval i.
+As a consequence, at the very beginning of the day, we trade without information and
+we are in the static execution case. Then, at each new interval, we improve our prediction
+about future volume to trade including the intraday achieved past volume. Finally, the last
+trade corresponds to the theoretical case.
+18
+
+4.3
+Empirical results
+In this section, the question about the usefulness of the above discussed models for the
+prediction of volume weight average price (VWAP) is addressed. Obviously, the answer
+has an important meaning for brokers, who are supposed to execute VWAP orders, and
+whose trades are evaluated according to benchmarks based on VWAP.
+This empirical study focuses on VWAP orders with a one day horizon. The examination
+is organized as follows: the proxy of volume weighted price is computed based on twenty
+ﬁve time points during a trading day. The ﬁrst point corresponds to the time 9:20 a.m. and
+the last to the time 5:20 p.m. The time interval between two succeeding time points is 20
+minutes. The equity price for each of the twenty ﬁve points were computed as an arithmetic
+average of the price of the transaction which took place in the previous twenty minutes. The
+prediction of volume is carried out using on the one hand, our models based on principal
+component decomposition and an ARMA or a SETAR model, and using, on the other one,
+the classical approach to describe daily pattern of intraday volume.
+We examine VWAP prediction errors in three different ways. Firstly, we make insample stock-by-stock VWAP predictions for a period between September 2nd and December 16th, 2003 (75 trading days) and we subtract the true VWAP to get the in-sample
+prediction errors for each day. Secondly, we examine the out-sample case. Each time, we
+make a one-day out-sample prediction. For example, estimating from September 2nd 2003
+to October 7th 2003 (25 trading days), we get the ﬁrst VWAP prediction for the following
+day, namely October 8th 2003. Again, the true VWAP is subtracted from the predicted one
+to show the ﬁrst out-sample error. Then, we move our estimation window by one day, thus
+estimating from September 3rd 2003 to October 8th 2003 and predicting for October 9th
+2003 and so forth. As a result, for out-sample predictions, we obtain VWAP predictions
+errors for 50 days for all stocks included in the CAC40.
+Finally, we calculate the cost of VWAP execution of a portfolio made of all stocks
+within the CAC40 index.
+19
+
+4.3.1
+Single stock in-sample results
+Tables from 12 to 17 are comparisons of in-sample performances for all models based on
+mean absolute percentage error (MAPE) and mean square percentage error (MSPE). The
+examination is carried out for the period ranging from September 2 to December, 16 2003.
+As we are in-sample, we only have to focus on theoretical VWAP execution.
+In all cases, the PCA-ARMA model out-performs the classical approach. In 25 cases,
+this decomposition model reduces the margin of error (MAPE) by more than 3 basis points
+or bips (1 bp = 0.01%). For 8 equities the reduction exceeds 5 bp in comparison with the
+classical approach. The largest decrease in the margin for error is observed for ALCATEL,
+where it reaches 9 bp. On average, this reduction is around 4 bp and there are only 2 cases
+where the reduction can be considered as negligible, since it is below 1 bp. These two cases
+are DANONE (0.6 bp) and TF1 (0.6 bp).
+The modelling of the speciﬁc part by a SETAR allows further decline of the mean
+absolute prediction error in comparison with the classical approach. In fact, a reduction of
+more than 3 bp is observed for 33 equities. For 13 equities the reduction exceeds 5 bp. The
+most substantial decrease in the prediction error is again obtained for the Alcatel equity
+where it is around 10 bp. On average, application of the decomposition model allows for
+improvement in the quality of VWAP forecasts by almost 5 bp. The only exception is TF1,
+where the SETAR model fails to improve the risk reduction and the classical approach beats
+the PCA-SETAR by just 0.4 bp and can hence be considered as non-signiﬁcant.
+Overall, the decomposition models outperform the classical approach. If the PCAARMA model is already doing a very good job, the PCA-SETAR model allows for an
+additional reduction of more than 1 bp on average for 29 stocks. For 8 of the stocks, the
+ARMA model is better but the improvement is lower than 1 bp and hence negligible. For the
+last 2 stocks, the ARMA model out-perform the SETAR model by almost 1 bp: LAFARGE
+and TF1.
+From a broker’s perspective the 95%-quantile contains important informations about
+the risk of applying one particular model. The 95% quantile has much smaller value for
+the decomposition models than for the classical approach. Furthermore, the SETAR model
+20
+
+seems to be better than ARMA to describe the speciﬁc part of the intraday volume. This
+is due the SETAR ability to discriminate between turbulent and ﬂat periods in the market.
+The 95% quantiles for the classical approach and the model with an ARMA speciﬁc part
+are ranging from 19 bp to 78 bp, and from 11 bp to 49 bp respectively. In the SETAR case,
+the 95% for all companies range from 8 bp to 39 bp.
+As result of in-sample performance comparisons, we show that decomposition models
+can be successfully used to predict the volume weight of average price (VWAP). Furthermore, a broker who exploits our approach to forecast VWAP, compared to the classical one,
+is lowering his risk.
+Moreover, the in-sample results are conﬁrmed by out-of-sample ones. This analysis is
+carried out by applying a twenty days moving window. Thus, the decomposition is performed using the twenty trading days preceeding the day where the execution of the VWAP
+order takes place. The average common part of intraday volume is computed and known in
+the evening of the day preceding VWAP trade. In turn, the speciﬁc part is forecasted with a
+twenty minute delay, on the considered day.
+4.3.2
+Single stock out-sample results
+The out-of-sample performance of models under consideration for the period from September 2 to December 16, 2003 is summarized in tables 18 to 25.
+Before starting to analyse the results, two comments must be made. Firstly, it is fundamental here, and unlike the in-sample part, to present the results of the models based on
+the volume decomposition for static, dynamic and theoretical VWAP execution algorithms
+(See section 4.2 for a description). If this distinction is useless within the in-sample study,
+you cannot escape it for the out-sample analysis. In fact, all approaches need a prediction
+of the intra-daily and daily volumes to implement the strategies except the theoretical one
+which takes the most recent one. As a consequence, the theoretical approach cannot be implemented but the results are still interesting as they give an idea of the upper improvement
+limit of our approach. As expected, the static method gives very poor results and these are
+not presented in the paper for succinctness, but are available upon request. Secondly, again
+21
+
+for succinctness, we only comment on the SETAR speciﬁcation results which out-perform
+the ARMA ones.
+We start by analysing the results of the theoretical approach comparing tables 18- 19
+to tables 26- 25 and tables 31 and 32 create a summary. Of the 39 stocks of our sample,
+the decomposition model outperforms the classical approach. For all companies, use of the
+classical approach results in a higher risk of execution of VWAP orders. The gains in basis
+points are greater than 1 bp for 30 of the 39 stocks of the sample (77% of stocks). CAP
+GEMINI and THOMSON are the stocks with the most important gain with a mean absolute
+percentage error (MAPE) falling from 23 bp to 14 bp (−9 bp) and from 15 bp to 8 bp (−7
+bp), respectively. Conversely, for 9 stocks, the gain is below 1 bp and can be considered
+as non-signiﬁcant. If these results are promising, remember that these gains are theoretical
+since they correspond to a non-realistic VWAP execution in practical terms.
+Analysis of the dynamic VWAP execution is a version of the theoretical VWAP execution that can be implemented and this allows us to check if the above theoretical situation
+can be reached. The results (tables 22 - 27 to be compared to tables 18 - 19 and tables
+31 and 32 for a summary) are, of courses more mitigated. We see in tables tables 31 and
+32, that from our sample, only 30 stocks shows a lower execution error when the classical
+algorithm is replaced by the dynamic VWAP one. However, over these 9 stocks presenting a deteriorated execution, 7 correspond to a deterioration smaller than 1 bp, hence nonsigniﬁcant. Only two, LAGADERE (1.3 bp) and SCHNEIDER (1.6 bp), present signiﬁcant,
+although limited, deterioration. Conversely, for the 30 well-behaving stocks, improvements
+can reach high levels: −8 bp for CAP GEMINI, −5 bp for EADS. All in all, 14 stocks show
+a decrease in the VWAP execution risk larger than 1 bp.
+Comparison of the theoretical and dynamic executions provides some insight concerning the loss we bear due to the fact that we don’t have access to the overall information at
+the very beginning of the day nor can we erase or modify the trades we have already made
+even if information received over time shows us that we made a mistake. In fact, we can
+update our strategy as we receive more information about volume by adapting the rest of the
+day’s strategy, but we cannot modify past trades. This loss is calculated as the difference in
+22
+
+MAPE between the theoretical and the dynamic VWAP execution models. As we can see
+in tables 31 and 32, the loss can vary a lot from one stock to another. It is not signiﬁcant
+(lower than 10%) for 13 stocks whereas it can be greater than 50% for two stocks. In fact,
+the error for ARCELOR increases from 6.6 bp to 10.6 bp (60%) and from 8 bp to 14 bp for
+THOMSON (78%). On average, the loss is larger than 1 bp.
+Finally, we can conduct one more analysis of our method by studying the link between
+the improvement seen by using our method and the classical approach error. The idea here
+is to see if our method is able or unable to correct the largest errors made when applying
+the classical approach. To do this, Figure 4 shows the scatter plot of the classical approach
+tracking error on the x-axis against the gain or loss observed by applying our dynamical
+strategy on the y-axis. Here again, the gain or loss of our strategy is measured in terms
+of the difference between the mean of MAPE between the dynamic PCA-SETAR model
+and the classical approach. When this difference is positive, we suffer a loss, when it is
+negative we gain by applying our strategy instead of the classical one. Having a look to
+the scatter plot and the regression line, we can see that the larger the error, the larger the
+gain. In fact, when the classical approach is efﬁcient (the tracking error is below 10%), the
+incorporation of the intraday volume dynamic has a limited impact (or no impact). On the
+contrary, in cases where the classical approach tracks worse than the VWAP (CAP GEMINI
+and EADS), the improvement is the largest. This result conﬁrms that our dynamic VWAP
+execution is a real improvement since if it is efﬁcient on average, the worse the execution
+provided by the classical approach, the larger the correction allowed by our model.
+4.3.3
+Portfolio in and out-sample results
+The results obtained advocate the approach based on principal component decomposition.
+In order to summarise the results, we estimate the cost of the VWAP order execution when
+the subject of transaction are all stocks included in the CAC40 index. Therefore, we compute the VWAP for the whole index based on the average of VWAP over equities. We use
+the same weights as used for construction of the index at the beginning of September 2004.
+Tables 28 present the summary of the model’s performance in comparison with the VWAP
+23
+
+order for the whole index.
+Application of the decomposition model with the speciﬁc part described by SETAR results in a portfolio risk fall greater than 4 bp (a drop of around 40%) in the in-sample comparison. The out-sample results conﬁrm the superiority of our method. In fact, the trading
+tracking error of the CAC basket using the classical approach is on average 10 bp which
+equates to approximately 8 bp when using the theoretical VWAP execution, diminishing
+the error by 20%. Bear in mind that this is the upper improvement limit of our method.
+To compare with a strategy that can be implemented, we need to focus on dynamic VWAP
+execution results. Here again, the tracking error is lower (8 bp) and use of our method
+allows for a reduction of the error by 10%. Note that use of our methodology in practical
+terms implies that we should not use means of MAPE but rather calculate the errors in the
+basket and then calculate the MAPE of the error. However, this remark does not question
+our conclusions as the results would be even better in that case. In fact, individual stock
+errors could then compensate which is not possible using the average MAPE.
+The above outcomes show that use of the decomposition of volume into market and
+speciﬁc parts reduces the cost of execution of VWAP orders. From the perspective of
+brokerage houses, which are directly engaged in the process of executing VWAP orders, an
+additional issue of ”beating the VWAP” seems crucial. It is clear, that the primary aim of
+a broker is to keep the execution price of orders as close as possible to the VWAP price,
+and in this manner, to generate proﬁts from commissions paid by investors who asked for
+execution of VWAP orders. Nevertheless, there is another potential source of proﬁt. An
+additional gain can be made when brokers manage to execute the sale of a VWAP-order
+at a higher price, higher than the observed end of day volume weighed against average
+price. The same applies to a buy VWAP order at a lower price than the observed volume
+weighed average price. To verify the possibility of beating the VWAP by applying our
+methodology,please see table 30, where we show separate statistics for situations, where
+the predicted VWAP is lower and higher than observed at the end of the day. The results
+indicate that the difference between the predicted VWAP and the actual one can either be
+positive or negative with the same probability. Roughly speaking, the averages of the mean
+24
+
+absolute percentage error average over the period ranging from September 2nd to December
+16th, 2003, for the SETAR, the ARMA and the classical approach are equal to 7 bp, 8 bp,
+and 11 bp respectively.
+4.3.4
+Robustness check
+To check of our results, we conduct the same analysis for two other time periods running
+from January 2nd to April 20th, and from April 21st to August 3rd 2004. For succinctness
+of the presentation3, we only report the summary results of the comparison of VWAP predictions in table 29 to be compared with table 28 which gives the same summary results for
+the period from September 2nd, to December 16th 2003. In both periods, the decomposition models beat the classical approach by more than 1 bp. Moreover, this method allows
+for a reduction of the larger error when tracking the VWAP by more than 10 bp, in either
+period.
+5
+Conclusion
+In this paper, we present a new methodology for modelling the dynamics of intraday volume
+which allows for a signiﬁcant reduction of the execution risk in VWAP (Volume Weighted
+Average Price) orders. The models are based on the decomposition of traded volume into
+two parts: one reﬂecting volume changes due to market evolutions, the second describing
+the stock-speciﬁc volume pattern. The ﬁrst component of volume is taken as a static crosshistorical average whereas the dynamics of the speciﬁc part of volume are depicted by
+ARMA and SETAR models.
+This methodology allows us to propose an accurate statistical method of volume predictions. These predictions are then used in a benchmark tracking price framework.
+The following results are obtained through our analysis. Not only do we get round the
+problem of seasonal ﬂuctuations but we use it to propose a new price benchmark. We also
+show that some simple time-series models give good volume predictions. Also, applications
+3The detailed results are available upon request from the authors.
+25
+
+of our methodology to VWAP strategies reduce the VWAP tracking error, and thus the
+execution risk due to the use of such order type and so the associated cost. On average, and
+depending on the retained strategy, the reduction is greater than 10% and can even reach
+50% for some stocks.
+However, in order to beat the VWAP, our price adjusted-volume model is not sufﬁcient
+and it is essential to derive a bivariate model for volume and price.
+References
+[1] Andersen, T., 1996, Return volatility and trading volume: An information ﬂow interpretation of stochatic volatility, Journal of Finance 51(1), 169-204.
+[2] Berkowitz, S., D., Logue, and E. Noser, 1988, The Total Cost of Transactions on the
+NYSE, Journal of Finance 41, 97-112.
+[3] Biais, B., Hillion, P. and C. Spatt, 1995, An empirical analysis of the limit order book
+and the order ﬂow in the Paris bourse, Journal of Finance 50(5), 1655-1689.
+[4] Cuching, D., and Madhavan, A., 2000, Stock Returns and Institutional Trading at the
+Close, Journal of Financial Markets 3, 45-67.
+[5] Darolles, S., and G., Le Fol, 2003, Trading volume and Arbitrage, Working paper,
+CREST.
+[6] Darat, A.,Rahman, S., and, M. Zhong, 2003, Intraday Trading Volume and Return
+Volatility of the DJIA Stocks: A Note, Journal of Banking and Finance 27(10), 20352043.
+[7] Easley, D., and M., O’Hara, 1987, Price; Trade Size, and Information in Securities
+Markets , Journal of Financial Economics 19, 69-90.
+[8] Engle, R. and J. Russel, 1998, Autoregressive Conditional Duration: A New Model
+for Irregularly Spaced Transaction Data, Econometrica (1998) 66: 1127-1162.
+[9] Engle, R., 2000, The Econometrics of Ultra High Frequency Data, Econometrica,
+(2000) 68: 1-22.
+[10] Foster, D., and S. Viswanathan, 1990, A Theory of Intraday Variations in volume,
+variance and trading costs in securities market, Review of Financial Studies 3, 593624.
+[11] Gouriéroux, C., Jasiak, J., and G. Le Fol, 1999, Intra-day market activity, Journal of
+Financial Markets 2, 193-226.
+[12] Gouriéroux, C. And G. Le Fol, 1998, Effet des Modes de Négociation sur les
+Echanges, Revue Economique, Vol. 49, 3, 795-808.
+[13] Kaastra, I., Boyd, M., 1995, Forecasting Futures Trading Volume Using Neural Networks, Journal of Futures Markets 15, 953-970.
+[14] Karpoff, J., Boyd, M., 1987, The Relationship between Price Changes and Trading
+volume: a Survey, Journal of Financial and Quantitative Analysis 22(1), 109-126.
+26
+
+[15] Le Fol, G. and L. Mercier, 1998, Time Deformation : Deﬁnition and Comparisons,
+Journal of Computational Intelligence in Finance 6, 5, 19-33.
+[16] Lo, A., Wang J., 2000, Trading Volume: Deﬁnition, Data Analysis, and Implication of
+Portfolio Theory, Review of Financial Studies 13, 257-300.
+[17] Madhavan, A., 2002, VWAP strategies, Transaction Performance: The Changing Face
+of Trading Investment Guides Series, Institutional Investor Inc., 32-38.
+[18] Manganelli, S., 2002, Duration, Volume, and Volatility Impact of Trades, European
+Central Bank Working Papers Series No. 125.
+[19] McCulloch, J., 2004, Relative Volume as a Doubly Stochastic Binomial Point Process,
+Working Papers Series.
+[20] Tauchen, G., Pitts, M.,1983,The Price Variability-Volume Relationship on Speculative
+Markets, Econometrica 51, 485-505.
+27
+
+Table 1: Hourly VWAP and VWAP strategies for a 100000 shares portfolio when the volume is known or predicted, with
+different (unknown) price evolutions (increasing, decreasing or constant).
+Price evolution
+Known volume
+Predicted volume
+Decreasing
+Increasing
+Constant
+Traded
+% of traded
+Volume
+Traded
+% of traded
+Volume
+Hours
+Price Pi
+Price Pi
+Price Pi
+volume Vi
+volume xi
+to trade V i
+volume Vi
+volume xi
+to trade V i
+09:00
+162.84
+159.17
+162.84
+164 ·104
+0.0905
+9050
+1207 ·103
+0.0695
+6950
+10:00
+163.02
+160.54
+162.83
+220 ·104
+0.1214
+12140
+181 ·104
+0.1042
+10420
+11:00
+162.93
+161.66
+162.83
+250 ·104
+0.1380
+13800
+210 ·104
+0.1209
+12090
+12:00
+162.69
+161.57
+162.85
+180 ·104
+0.0993
+9930
+160 ·104
+0.0921
+9210
+13:00
+162.09
+162.09
+162.87
+140 ·104
+0.0773
+7730
+120 ·104
+0.0691
+6910
+14:00
+161.57
+162.69
+162.85
+148 ·104
+0.0817
+8170
+150 ·104
+0.0864
+8640
+15:00
+161.66
+162.93
+162.84
+210 ·104
+0.1159
+11590
+240 ·104
+0.1382
+13820
+16:00
+160.54
+163.02
+162.86
+210 ·104
+0.1159
+11590
+235 ·104
+0.1353
+13530
+17:00
+159.17
+162.84
+162.84
+290 ·104
+0.1600
+16000
+320 ·104
+0.1843
+18430
+Sum
+1812·104
+1.0000
+100000
+17367·103
+1.0000
+100000
+Decreasing price
+161.7070
+161.5436
+VWAP
+Increasing price
+161.9007
+162.0577
+Constant price
+162.8439
+162.8443
+28
+
+Table 2: Summary statistics for the intraday aggregated volume
+over 20 minute intervals, September 2, 2003 to August 31, 2004
+Companies
+Mean
+Std
+Q5
+Q95
+ACCOR
+0.0191
+0.0273
+0.0028
+0.0523
+AGF-ASS.GEN.FRANCE
+0.0076
+0.0087
+0.0010
+0.0212
+AIR LIQUIDE
+0.0120
+0.0182
+0.0022
+0.0314
+ALCATEL
+0.0381
+0.0383
+0.0062
+0.1064
+ARCELOR
+0.0234
+0.0241
+0.0034
+0.0648
+AXA
+0.0166
+0.0220
+0.0034
+0.0404
+BNP PARIBAS
+0.0147
+0.0350
+0.0034
+0.0338
+BOUYGUES
+0.0129
+0.0264
+0.0019
+0.0344
+CAP GEMINI
+0.0438
+0.0514
+0.0058
+0.1241
+CARREFOUR
+0.0132
+0.0232
+0.0025
+0.0317
+CASINO GUICHARD
+0.0106
+0.0118
+0.0013
+0.0312
+CREDIT AGRICOLE
+0.0083
+0.0120
+0.0012
+0.0233
+DANONE
+0.0149
+0.0310
+0.0024
+0.0381
+DEXIA
+0.0055
+0.0069
+0.0006
+0.0164
+EADS
+0.0092
+0.0092
+0.0015
+0.0265
+FRANCE TELECOM
+0.0123
+0.0115
+0.0025
+0.0312
+L’OREAL
+0.0069
+0.0120
+0.0014
+0.0177
+LAFARGE
+0.0188
+0.0307
+0.0035
+0.0477
+LAGARDERE S.C.A.
+0.0163
+0.0385
+0.0020
+0.0423
+LVMH
+0.0105
+0.0185
+0.0018
+0.0276
+MICHELIN
+0.0167
+0.0238
+0.0024
+0.0450
+PERNOD-RICARD
+0.0157
+0.0303
+0.0022
+0.0427
+PEUGEOT
+0.0205
+0.0454
+0.0035
+0.0515
+PIN.-PRINT.REDOUTE
+0.0149
+0.0210
+0.0020
+0.0426
+RENAULT
+0.0165
+0.0414
+0.0024
+0.0412
+SAINT GOBAIN
+0.0154
+0.0332
+0.0030
+0.0382
+SANOFI-AVENTIS
+0.0151
+0.0228
+0.0020
+0.0444
+SCHNEIDER ELECTRIC
+0.0145
+0.0264
+0.0021
+0.0378
+SOCIETE GENERALE
+0.0155
+0.0205
+0.0031
+0.0390
+SODEXHO ALLIANCE
+0.0172
+0.0318
+0.0016
+0.0518
+STMICROELECTRONICS
+0.0223
+0.0230
+0.0030
+0.0604
+SUEZ
+0.0162
+0.0182
+0.0032
+0.0418
+TF1
+0.0198
+0.0449
+0.0026
+0.0531
+THALES
+0.0120
+0.0134
+0.0016
+0.0336
+THOMSON (EX:TMM)
+0.0270
+0.0465
+0.0035
+0.0776
+TOTAL
+0.0150
+0.0277
+0.0031
+0.0373
+VEOLIA ENVIRON.
+0.0120
+0.0158
+0.0017
+0.0333
+VINCI (EX.SGE)
+0.0261
+0.0687
+0.0034
+0.0689
+VIVENDI UNIVERSAL
+0.0215
+0.0203
+0.0044
+0.0543
+Overall
+0.0166
+0.0265
+0.0026
+0.0445
+29
+
+Table 3: Correlation matrix decomposition of intraday volume for CAC40 index stocks.
+Est.period
+Rank
+Eigenvalue
+Difference
+Proportion
+Cumulative
+from 1 September to 30 September 2003
+1
+12.93
+10.96
+0.392
+0.392
+2
+1.967
+0.281
+0.050
+0.442
+3
+1.686
+0.256
+0.043
+0.485
+from 1 September to 31 October 2003
+1
+12.95
+11.21
+0.371
+0.371
+2
+1.740
+0.197
+0.044
+0.411
+3
+1.543
+0.243
+0.039
+0.450
+from 1 September to 30 November 2003
+1
+12.41
+10.93
+0.358
+0.358
+2
+1.484
+0.151
+0.038
+0.396
+3
+1.333
+0.052
+0.034
+0.430
+from 1 September to 28 February 2003
+1
+11.16
+9.893
+0.286
+0.286
+2
+1.267
+0.126
+0.032
+0.318
+3
+1.141
+0.027
+0.029
+0.347
+from 1 September 2003 to 31 August 2004
+1
+8.614
+5.737
+0.221
+0.221
+2
+2.877
+0.502
+0.074
+0.295
+3
+2.375
+0.868
+0.061
+0.356
+Table contains the highest eigenvalues of the correlation matrix, differences between successive eigenvalues, the
+portion of variance explained by each eigenvalue, and the cumulative proportion of the variance.
+Table 4: Results of test on unit root for series deﬁned as difference between intraday volume and its common component obtained from principal component analysis.
+ADF
+PP
+Mean
+Min
+Max
+Mean
+Min
+Max
+Zero mean
+-7.98
+-11.14
+-5.18
+-10.83
+-16.37
+-6.53
+Single mean
+-15.92
+-19.66
+-11.37
+-22.28
+-28.59
+-14.93
+Trend
+-16.14
+-19.71
+-11.45
+-22.57
+-28.66
+-15.80
+Outcomes of Augmented Dickey-Fuller (ADF), Philips-Perron (PP). For all
+examined time series the null hypothesis was rejected at 1%.
+30
+
+Table 5: Comparison of intraday volume models performance, for period September 2, 2003 to October 6, 2003, classical approach.
+MAPE
+MSPE
+Company
+Mean
+Std
+Min
+Max
+Q95
+Mean
+Std
+Min
+Max
+Q95
+ACCOR
+1.15E-02
+1.64E-02
+3.69E-06
+1.98E-01
+2.88E-02
+4.01E-04
+2.40E-03
+1.36E-11
+3.93E-02
+8.27E-04
+AGF-ASS.GEN.FRANCE
+3.78E-03
+4.35E-03
+1.07E-06
+5.09E-02
+1.01E-02
+3.32E-05
+1.45E-04
+1.15E-12
+2.59E-03
+1.02E-04
+AIR LIQUIDE
+6.99E-03
+7.75E-03
+4.80E-06
+6.66E-02
+1.86E-02
+1.09E-04
+3.60E-04
+2.31E-11
+4.44E-03
+3.47E-04
+ALCATEL
+2.30E-02
+2.39E-02
+2.85E-05
+2.88E-01
+6.13E-02
+1.10E-03
+4.01E-03
+8.14E-10
+8.32E-02
+3.76E-03
+ARCELOR
+1.18E-02
+1.18E-02
+2.54E-05
+8.71E-02
+3.39E-02
+2.78E-04
+7.10E-04
+6.48E-10
+7.59E-03
+1.15E-03
+AXA
+9.97E-03
+9.97E-03
+3.14E-05
+8.33E-02
+2.69E-02
+1.99E-04
+5.35E-04
+9.86E-10
+6.94E-03
+7.23E-04
+BNP PARIBAS
+6.59E-03
+7.06E-03
+1.98E-06
+6.65E-02
+1.68E-02
+9.32E-05
+3.22E-04
+3.90E-12
+4.42E-03
+2.83E-04
+BOUYGUES
+5.50E-03
+6.67E-03
+1.33E-05
+9.57E-02
+1.63E-02
+7.46E-05
+4.11E-04
+1.77E-10
+9.15E-03
+2.65E-04
+CAP GEMINI
+2.40E-02
+2.40E-02
+4.35E-05
+2.55E-01
+6.56E-02
+1.16E-03
+3.62E-03
+1.89E-09
+6.51E-02
+4.31E-03
+CARREFOUR
+4.70E-03
+5.36E-03
+1.58E-06
+6.17E-02
+1.29E-02
+5.08E-05
+2.15E-04
+2.49E-12
+3.81E-03
+1.65E-04
+CASINO GUICHARD
+8.25E-03
+8.69E-03
+7.70E-06
+9.99E-02
+2.12E-02
+1.43E-04
+5.08E-04
+5.93E-11
+9.97E-03
+4.50E-04
+CREDIT AGRICOLE
+5.35E-03
+5.20E-03
+1.26E-05
+4.39E-02
+1.44E-02
+5.56E-05
+1.49E-04
+1.60E-10
+1.93E-03
+2.06E-04
+DANONE
+1.16E-02
+1.45E-02
+1.67E-06
+1.25E-01
+3.66E-02
+3.43E-04
+1.27E-03
+2.78E-12
+1.55E-02
+1.34E-03
+DEXIA
+4.88E-03
+8.25E-03
+2.15E-05
+9.77E-02
+1.23E-02
+9.18E-05
+6.52E-04
+4.64E-10
+9.54E-03
+1.52E-04
+EADS
+4.82E-03
+5.02E-03
+3.33E-05
+5.77E-02
+1.29E-02
+4.84E-05
+1.75E-04
+1.11E-09
+3.32E-03
+1.66E-04
+FRANCE TELECOM
+7.81E-03
+7.93E-03
+2.60E-05
+6.53E-02
+2.07E-02
+1.24E-04
+3.33E-04
+6.76E-10
+4.27E-03
+4.27E-04
+L’OREAL
+3.73E-03
+5.10E-03
+2.88E-06
+6.79E-02
+1.03E-02
+3.99E-05
+2.18E-04
+8.30E-12
+4.61E-03
+1.07E-04
+LAFARGE
+1.16E-02
+1.33E-02
+3.49E-06
+1.40E-01
+2.93E-02
+3.11E-04
+1.20E-03
+1.22E-11
+1.95E-02
+8.57E-04
+LAGARDERE S.C.A.
+1.05E-02
+1.34E-02
+1.97E-05
+1.34E-01
+2.68E-02
+2.89E-04
+1.35E-03
+3.87E-10
+1.79E-02
+7.20E-04
+LVMH
+6.17E-03
+7.55E-03
+4.19E-06
+9.06E-02
+1.62E-02
+9.49E-05
+4.39E-04
+1.75E-11
+8.22E-03
+2.61E-04
+MICHELIN
+9.35E-03
+1.02E-02
+2.17E-05
+1.31E-01
+2.76E-02
+1.92E-04
+8.00E-04
+4.71E-10
+1.71E-02
+7.62E-04
+PERNOD-RICARD
+9.15E-03
+1.16E-02
+6.30E-06
+1.81E-01
+2.37E-02
+2.19E-04
+1.39E-03
+3.97E-11
+3.26E-02
+5.60E-04
+31
+
+Table 6: (Continued) Comparison of intraday volume models performance, for period September 2, 2003 to October 6, 2003, classical
+approach.
+MAPE
+MSPE
+Company
+Mean
+Std
+Min
+Max
+Q95
+Mean
+Std
+Min
+Max
+Q95
+PEUGEOT
+1.28E-02
+1.51E-02
+3.28E-05
+1.66E-01
+3.71E-02
+3.89E-04
+1.55E-03
+1.08E-09
+2.76E-02
+1.38E-03
+PIN.-PRINT.REDOUTE
+1.09E-02
+1.16E-02
+2.94E-06
+1.14E-01
+3.03E-02
+2.53E-04
+8.26E-04
+8.65E-12
+1.29E-02
+9.15E-04
+RENAULT
+1.14E-02
+1.36E-02
+5.40E-06
+1.31E-01
+3.31E-02
+3.16E-04
+1.21E-03
+2.92E-11
+1.73E-02
+1.09E-03
+SAINT GOBAIN
+8.29E-03
+9.26E-03
+1.51E-06
+9.11E-02
+2.42E-02
+1.54E-04
+5.28E-04
+2.27E-12
+8.30E-03
+5.84E-04
+SANOFI-AVENTIS
+4.95E-03
+6.21E-03
+1.32E-06
+7.96E-02
+1.43E-02
+6.29E-05
+3.12E-04
+1.75E-12
+6.33E-03
+2.04E-04
+SCHNEIDER ELECTRIC
+7.43E-03
+1.02E-02
+9.83E-06
+1.56E-01
+1.84E-02
+1.59E-04
+1.12E-03
+9.66E-11
+2.43E-02
+3.38E-04
+SOCIETE GENERALE
+7.33E-03
+7.52E-03
+2.65E-05
+6.03E-02
+2.10E-02
+1.10E-04
+3.15E-04
+7.05E-10
+3.63E-03
+4.42E-04
+SODEXHO ALLIANCE
+9.11E-03
+1.89E-02
+8.60E-06
+3.89E-01
+2.29E-02
+4.40E-04
+6.25E-03
+7.40E-11
+1.51E-01
+5.23E-04
+STMICROELECTRONICS
+1.23E-02
+1.34E-02
+1.87E-06
+1.61E-01
+3.40E-02
+3.31E-04
+1.30E-03
+3.49E-12
+2.61E-02
+1.16E-03
+SUEZ
+8.87E-03
+1.05E-02
+3.08E-05
+1.41E-01
+2.74E-02
+1.89E-04
+9.28E-04
+9.51E-10
+2.00E-02
+7.48E-04
+TF1
+1.12E-02
+1.41E-02
+1.29E-05
+2.13E-01
+3.05E-02
+3.23E-04
+1.98E-03
+1.68E-10
+4.52E-02
+9.33E-04
+THALES
+9.45E-03
+1.28E-02
+3.07E-06
+1.18E-01
+2.75E-02
+2.54E-04
+1.09E-03
+9.44E-12
+1.40E-02
+7.57E-04
+THOMSON (EX:TMM)
+1.13E-02
+1.33E-02
+1.06E-05
+1.97E-01
+3.21E-02
+3.04E-04
+1.69E-03
+1.12E-10
+3.87E-02
+1.03E-03
+TOTAL
+6.12E-03
+7.17E-03
+4.71E-06
+8.42E-02
+1.75E-02
+8.88E-05
+3.70E-04
+2.22E-11
+7.09E-03
+3.06E-04
+VEOLIA ENVIRON.
+1.19E-02
+1.95E-02
+1.22E-05
+2.83E-01
+3.45E-02
+5.20E-04
+3.61E-03
+1.49E-10
+8.01E-02
+1.19E-03
+VINCI (EX.SGE)
+1.38E-02
+1.57E-02
+1.87E-05
+1.71E-01
+3.65E-02
+4.34E-04
+1.71E-03
+3.50E-10
+2.93E-02
+1.33E-03
+VIVENDI UNIVERSAL
+1.26E-02
+1.89E-02
+2.27E-05
+2.14E-01
+3.20E-02
+5.13E-04
+2.92E-03
+5.16E-10
+4.59E-02
+1.03E-03
+32
+
+Table 7: Comparison of intraday volume models performance, for period September 2, 2003 to October 6, 2003, theoretical PCA-ARMA
+model.
+MAPE
+MSPE
+Company
+Mean
+Std
+Min
+Max
+Q95
+Mean
+Std
+Min
+Max
+Q95
+ACCOR
+1.08E-02
+1.61E-02
+1.97E-05
+1.99E-01
+2.83E-02
+3.76E-04
+2.40E-03
+3.87E-10
+3.94E-02
+8.01E-04
+AGF-ASS.GEN.FRANCE
+3.59E-03
+3.93E-03
+4.73E-07
+4.17E-02
+9.79E-03
+2.83E-05
+1.06E-04
+2.24E-13
+1.73E-03
+9.58E-05
+AIR LIQUIDE
+6.62E-03
+7.49E-03
+1.1E-05
+6.33E-02
+2.05E-02
+1.00E-04
+3.21E-04
+1.21E-10
+4.01E-03
+4.19E-04
+ALCATEL
+2.10E-02
+2.31E-02
+9.71E-05
+2.84E-01
+6.19E-02
+9.72E-04
+3.85E-03
+9.43E-09
+8.05E-02
+3.83E-03
+ARCELOR
+1.08E-02
+1.10E-02
+1.51E-06
+9.74E-02
+3.26E-02
+2.38E-04
+6.43E-04
+2.28E-12
+9.49E-03
+1.06E-03
+AXA
+8.97E-03
+9.29E-03
+7.87E-06
+7.48E-02
+2.38E-02
+1.67E-04
+4.75E-04
+6.19E-11
+5.59E-03
+5.68E-04
+BNP PARIBAS
+6.35E-03
+7.04E-03
+2.69E-05
+6.87E-02
+1.67E-02
+8.97E-05
+3.39E-04
+7.24E-10
+4.72E-03
+2.80E-04
+BOUYGUES
+5.23E-03
+6.91E-03
+4.13E-06
+1.02E-01
+1.43E-02
+7.49E-05
+4.65E-04
+1.71E-11
+1.04E-02
+2.05E-04
+CAP GEMINI
+2.17E-02
+2.19E-02
+3.7E-05
+2.49E-01
+5.86E-02
+9.51E-04
+3.20E-03
+1.37E-09
+6.20E-02
+3.43E-03
+CARREFOUR
+4.48E-03
+5.48E-03
+3.61E-05
+6.14E-02
+1.21E-02
+5.00E-05
+2.20E-04
+1.31E-09
+3.77E-03
+1.46E-04
+CASINO GUICHARD
+7.63E-03
+8.46E-03
+9.75E-06
+9.57E-02
+2.31E-02
+1.30E-04
+4.64E-04
+9.50E-11
+9.16E-03
+5.33E-04
+CREDIT AGRICOLE
+4.89E-03
+4.99E-03
+5.7E-06
+3.90E-02
+1.40E-02
+4.88E-05
+1.33E-04
+3.25E-11
+1.52E-03
+1.95E-04
+DANONE
+1.01E-02
+1.24E-02
+1.79E-05
+1.08E-01
+3.00E-02
+2.55E-04
+8.85E-04
+3.19E-10
+1.17E-02
+8.97E-04
+DEXIA
+4.18E-03
+5.72E-03
+4.48E-06
+6.69E-02
+1.11E-02
+5.01E-05
+2.62E-04
+2.00E-11
+4.48E-03
+1.23E-04
+EADS
+4.63E-03
+4.97E-03
+1.82E-05
+5.95E-02
+1.21E-02
+4.60E-05
+1.78E-04
+3.31E-10
+3.54E-03
+1.45E-04
+FRANCE TELECOM
+6.76E-03
+6.98E-03
+2.36E-05
+6.55E-02
+1.71E-02
+9.43E-05
+2.88E-04
+5.55E-10
+4.29E-03
+2.92E-04
+L’OREAL
+3.38E-03
+4.84E-03
+1E-05
+6.88E-02
+9.20E-03
+3.48E-05
+2.14E-04
+1.01E-10
+4.74E-03
+8.46E-05
+LAFARGE
+1.04E-02
+1.27E-02
+4.05E-05
+1.35E-01
+2.95E-02
+2.70E-04
+1.08E-03
+1.64E-09
+1.81E-02
+8.71E-04
+LAGARDERE S.C.A.
+9.64E-03
+1.33E-02
+2.6E-05
+1.42E-01
+2.86E-02
+2.71E-04
+1.39E-03
+6.75E-10
+2.01E-02
+8.18E-04
+LVMH
+5.80E-03
+7.30E-03
+3.94E-06
+9.12E-02
+1.63E-02
+8.69E-05
+4.18E-04
+1.55E-11
+8.32E-03
+2.67E-04
+MICHELIN
+8.69E-03
+1.02E-02
+9.86E-05
+1.37E-01
+2.53E-02
+1.80E-04
+8.63E-04
+9.72E-09
+1.88E-02
+6.42E-04
+PERNOD-RICARD
+8.49E-03
+1.07E-02
+2.02E-05
+1.66E-01
+2.40E-02
+1.87E-04
+1.17E-03
+4.09E-10
+2.74E-02
+5.75E-04
+33
+
+Table 8: (Continued) Comparison of intraday volume models performance, for period September 2, 2003 to October 6, 2003, theoretical
+PCA-ARMA model.
+MAPE
+MSPE
+Company
+Mean
+Std
+Min
+Max
+Q95
+Mean
+Std
+Min
+Max
+Q95
+PEUGEOT
+1.18E-02
+1.40E-02
+7.18E-06
+1.66E-01
+3.27E-02
+3.34E-04
+1.48E-03
+5.15E-11
+2.77E-02
+1.07E-03
+PIN.-PRINT.REDOUTE
+8.76E-03
+9.68E-03
+2.08E-05
+9.08E-02
+2.62E-02
+1.70E-04
+5.48E-04
+4.34E-10
+8.24E-03
+6.89E-04
+RENAULT
+1.03E-02
+1.23E-02
+6.54E-05
+1.39E-01
+3.07E-02
+2.56E-04
+1.05E-03
+4.27E-09
+1.92E-02
+9.44E-04
+SAINT GOBAIN
+7.77E-03
+9.11E-03
+2.92E-05
+9.39E-02
+2.42E-02
+1.43E-04
+5.27E-04
+8.55E-10
+8.81E-03
+5.88E-04
+SANOFI-AVENTIS
+4.73E-03
+6.13E-03
+5.43E-06
+8.27E-02
+1.35E-02
+5.99E-05
+3.23E-04
+2.95E-11
+6.85E-03
+1.82E-04
+SCHNEIDER ELECTRIC
+7.24E-03
+1.02E-02
+5.27E-06
+1.55E-01
+1.90E-02
+1.56E-04
+1.12E-03
+2.78E-11
+2.39E-02
+3.59E-04
+SOCIETE GENERALE
+7.05E-03
+7.45E-03
+2.38E-05
+6.29E-02
+2.13E-02
+1.05E-04
+3.22E-04
+5.64E-10
+3.96E-03
+4.56E-04
+SODEXHO ALLIANCE
+7.90E-03
+1.75E-02
+1.17E-05
+4.01E-01
+2.06E-02
+3.67E-04
+6.45E-03
+1.38E-10
+1.61E-01
+4.25E-04
+STMICROELECTRONICS
+1.18E-02
+1.26E-02
+1E-05
+1.23E-01
+3.24E-02
+2.98E-04
+1.01E-03
+1.00E-10
+1.52E-02
+1.05E-03
+SUEZ
+7.88E-03
+1.00E-02
+8.84E-06
+1.31E-01
+2.05E-02
+1.63E-04
+8.47E-04
+7.82E-11
+1.72E-02
+4.21E-04
+TF1
+1.09E-02
+1.43E-02
+5.99E-07
+2.23E-01
+3.04E-02
+3.23E-04
+2.17E-03
+3.58E-13
+4.99E-02
+9.23E-04
+THALES
+8.85E-03
+1.27E-02
+1.59E-05
+1.23E-01
+2.69E-02
+2.40E-04
+1.11E-03
+2.51E-10
+1.50E-02
+7.25E-04
+THOMSON (EX:TMM)
+1.06E-02
+1.30E-02
+2.09E-05
+1.84E-01
+2.91E-02
+2.83E-04
+1.51E-03
+4.37E-10
+3.38E-02
+8.49E-04
+TOTAL
+5.93E-03
+7.01E-03
+1.82E-05
+8.51E-02
+1.67E-02
+8.42E-05
+3.73E-04
+3.32E-10
+7.25E-03
+2.78E-04
+VEOLIA ENVIRON.
+8.15E-03
+1.40E-02
+5.2E-06
+2.12E-01
+2.66E-02
+2.62E-04
+2.03E-03
+2.70E-11
+4.51E-02
+7.07E-04
+VINCI (EX.SGE)
+1.22E-02
+1.42E-02
+3.68E-06
+1.42E-01
+3.46E-02
+3.49E-04
+1.32E-03
+1.36E-11
+2.01E-02
+1.20E-03
+VIVENDI UNIVERSAL
+1.11E-02
+1.51E-02
+1.49E-05
+1.51E-01
+2.88E-02
+3.50E-04
+1.74E-03
+2.23E-10
+2.29E-02
+8.30E-04
+34
+
+Table 9: Comparison of intraday volume models performance, for period September 2, 2003 to October 6, 2003, theoretical PCA-SETAR
+model.
+MAPE
+MSPE
+Company
+Mean
+Std
+Min
+Max
+Q95
+Mean
+Std
+Min
+Max
+Q95
+ACCOR
+1.04E-02
+1.46E-02
+5.08E-05
+1.96E-01
+2.63E-02
+3.21E-04
+2.22E-03
+2.58E-09
+3.85E-02
+6.91E-04
+AGF-ASS.GEN.FRANCE
+2.77E-03
+3.21E-03
+1.39E-05
+3.85E-02
+7.44E-03
+1.80E-05
+8.21E-05
+1.93E-10
+1.48E-03
+5.53E-05
+AIR LIQUIDE
+6.57E-03
+7.25E-03
+7.41E-06
+6.40E-02
+2.00E-02
+9.56E-05
+3.04E-04
+5.49E-11
+4.10E-03
+4.00E-04
+ALCATEL
+1.85E-02
+2.13E-02
+4.30E-05
+2.70E-01
+5.35E-02
+7.94E-04
+3.41E-03
+1.85E-09
+7.29E-02
+2.86E-03
+ARCELOR
+7.32E-03
+7.14E-03
+5.44E-06
+6.70E-02
+1.98E-02
+1.04E-04
+2.77E-04
+2.96E-11
+4.49E-03
+3.91E-04
+AXA
+9.12E-03
+9.08E-03
+1.97E-05
+7.54E-02
+2.41E-02
+1.66E-04
+4.66E-04
+3.88E-10
+5.69E-03
+5.81E-04
+BNP PARIBAS
+5.17E-03
+6.24E-03
+2.00E-07
+6.11E-02
+1.41E-02
+6.55E-05
+2.61E-04
+3.99E-14
+3.74E-03
+1.99E-04
+BOUYGUES
+4.18E-03
+5.84E-03
+7.67E-06
+9.43E-02
+1.10E-02
+5.16E-05
+3.83E-04
+5.88E-11
+8.88E-03
+1.22E-04
+CAP GEMINI
+2.08E-02
+2.14E-02
+4.99E-05
+2.43E-01
+5.48E-02
+8.87E-04
+3.06E-03
+2.49E-09
+5.93E-02
+3.00E-03
+CARREFOUR
+3.85E-03
+5.07E-03
+3.32E-07
+6.23E-02
+9.98E-03
+4.05E-05
+2.10E-04
+1.10E-13
+3.89E-03
+9.96E-05
+CASINO GUICHARD
+5.36E-03
+5.79E-03
+7.21E-06
+7.45E-02
+1.43E-02
+6.22E-05
+2.57E-04
+5.19E-11
+5.56E-03
+2.04E-04
+CREDIT AGRICOLE
+3.64E-03
+4.14E-03
+1.77E-06
+3.48E-02
+1.07E-02
+3.04E-05
+9.31E-05
+3.15E-12
+1.21E-03
+1.15E-04
+DANONE
+7.17E-03
+8.60E-03
+6.18E-06
+8.67E-02
+2.28E-02
+1.25E-04
+4.80E-04
+3.82E-11
+7.52E-03
+5.20E-04
+DEXIA
+3.85E-03
+4.73E-03
+1.06E-06
+5.57E-02
+1.05E-02
+3.72E-05
+1.86E-04
+1.12E-12
+3.10E-03
+1.09E-04
+EADS
+3.29E-03
+4.07E-03
+5.04E-06
+5.49E-02
+9.23E-03
+2.73E-05
+1.40E-04
+2.54E-11
+3.01E-03
+8.51E-05
+FRANCE TELECOM
+6.53E-03
+6.43E-03
+1.27E-05
+6.49E-02
+1.59E-02
+8.38E-05
+2.56E-04
+1.60E-10
+4.22E-03
+2.53E-04
+L’OREAL
+3.30E-03
+4.03E-03
+1.59E-06
+3.25E-02
+9.13E-03
+2.71E-05
+9.88E-05
+2.54E-12
+1.06E-03
+8.34E-05
+LAFARGE
+8.34E-03
+9.96E-03
+1.93E-06
+1.12E-01
+2.18E-02
+1.69E-04
+7.23E-04
+3.74E-12
+1.26E-02
+4.75E-04
+LAGARDERE S.C.A.
+7.14E-03
+1.07E-02
+3.30E-05
+1.23E-01
+1.99E-02
+1.64E-04
+9.90E-04
+1.09E-09
+1.51E-02
+3.98E-04
+LVMH
+4.72E-03
+5.60E-03
+7.24E-07
+7.43E-02
+1.23E-02
+5.35E-05
+2.59E-04
+5.24E-13
+5.52E-03
+1.52E-04
+MICHELIN
+8.34E-03
+9.82E-03
+2.72E-06
+1.34E-01
+2.36E-02
+1.66E-04
+8.13E-04
+7.40E-12
+1.79E-02
+5.55E-04
+PERNOD-RICARD
+7.48E-03
+1.03E-02
+1.54E-05
+1.63E-01
+2.09E-02
+1.62E-04
+1.13E-03
+2.36E-10
+2.67E-02
+4.36E-04
+35
+
+Table 10: (Continued) Comparison of intraday volume models performance, for period September 2, 2003 to October 6, 2003, theoretical
+PCA-SETAR model.
+MAPE
+MSPE
+Company
+Mean
+Std
+Min
+Max
+Q95
+Mean
+Std
+Min
+Max
+Q95
+PEUGEOT
+8.80E-03
+1.13E-02
+9.78E-06
+1.42E-01
+2.30E-02
+2.05E-04
+1.04E-03
+9.57E-11
+2.03E-02
+5.27E-04
+PIN.-PRINT.REDOUTE
+6.67E-03
+7.83E-03
+2.17E-05
+8.96E-02
+1.82E-02
+1.06E-04
+4.31E-04
+4.71E-10
+8.03E-03
+3.30E-04
+RENAULT
+8.18E-03
+7.64E-03
+4.01E-05
+8.32E-02
+2.19E-02
+1.25E-04
+3.55E-04
+1.61E-09
+6.93E-03
+4.81E-04
+SAINT GOBAIN
+7.74E-03
+8.73E-03
+1.03E-05
+9.21E-02
+2.34E-02
+1.36E-04
+4.99E-04
+1.05E-10
+8.49E-03
+5.47E-04
+SANOFI-AVENTIS
+4.21E-03
+5.53E-03
+6.97E-07
+7.89E-02
+1.10E-02
+4.83E-05
+2.86E-04
+4.85E-13
+6.23E-03
+1.22E-04
+SCHNEIDER ELECTRIC
+6.89E-03
+9.80E-03
+1.61E-05
+1.56E-01
+1.62E-02
+1.43E-04
+1.12E-03
+2.59E-10
+2.45E-02
+2.64E-04
+SOCIETE GENERALE
+6.99E-03
+7.24E-03
+4.30E-06
+6.28E-02
+2.02E-02
+1.01E-04
+3.12E-04
+1.85E-11
+3.94E-03
+4.07E-04
+SODEXHO ALLIANCE
+7.55E-03
+1.00E-02
+2.83E-05
+1.47E-01
+2.08E-02
+1.58E-04
+9.88E-04
+8.02E-10
+2.15E-02
+4.31E-04
+STMICROELECTRONICS
+1.12E-02
+1.19E-02
+5.85E-05
+1.20E-01
+2.82E-02
+2.67E-04
+9.17E-04
+3.42E-09
+1.44E-02
+7.97E-04
+SUEZ
+7.93E-03
+1.00E-02
+5.01E-05
+1.40E-01
+2.00E-02
+1.64E-04
+9.11E-04
+2.51E-09
+1.96E-02
+4.01E-04
+TF1
+8.10E-03
+1.23E-02
+5.71E-06
+2.07E-01
+2.05E-02
+2.16E-04
+1.84E-03
+3.26E-11
+4.29E-02
+4.21E-04
+THALES
+6.46E-03
+8.03E-03
+2.89E-06
+8.61E-02
+1.87E-02
+1.06E-04
+4.58E-04
+8.38E-12
+7.42E-03
+3.49E-04
+THOMSON (EX:TMM)
+8.04E-03
+8.70E-03
+2.38E-06
+1.37E-01
+2.02E-02
+1.40E-04
+7.93E-04
+5.66E-12
+1.88E-02
+4.10E-04
+TOTAL
+6.21E-03
+6.93E-03
+1.19E-05
+8.47E-02
+1.58E-02
+8.65E-05
+3.65E-04
+1.41E-10
+7.18E-03
+2.51E-04
+VEOLIA ENVIRON.
+7.90E-03
+1.44E-02
+2.72E-05
+2.27E-01
+2.18E-02
+2.69E-04
+2.28E-03
+7.37E-10
+5.15E-02
+4.75E-04
+VINCI (EX.SGE)
+9.35E-03
+1.28E-02
+1.70E-06
+1.48E-01
+2.66E-02
+2.51E-04
+1.22E-03
+2.90E-12
+2.19E-02
+7.09E-04
+VIVENDI UNIVERSAL
+1.10E-02
+1.47E-02
+1.02E-06
+1.48E-01
+3.00E-02
+3.37E-04
+1.69E-03
+1.04E-12
+2.19E-02
+9.00E-04
+36
+
+Table 11: Summary of comparison for intraday volume model performance for period September 2, 2003 to October 6,
+2003.
+MAPE
+MSPE
+Mean
+Std
+Min
+Max
+Q95
+Mean
+Std
+Min
+Max
+Q95
+SETAR
+7.52E-3
+8.69E-3
+1.43E-6
+1.00E-1
+2.01E-2
+1.59E-4
+6.88E-4
+4.26E-10
+1.25E-2
+4.95E-4
+ARMA
+8.29E-3
+9.73E-3
+1.78E-6
+1.08E-1
+2.33E-2
+1.94E-4
+8.17E-4
+5.56E-10
+1.46E-2
+6.53E-4
+Classical approach
+9.05E-3
+1.05E-2
+1.45E-5
+1.14E-1
+2.49E-2
+2.32E-4
+9.48E-4
+3.69E-10
+1.66E-2
+7.58E-4
+Note:The volume is deﬁned as percentage of total number of shares on the stock market. The values presented in Table are calculated as
+weight averages of values reported in Tables 5 - 10. The used weights are equal to those for composition of CAC40 index in September 2004
+37
+
+Table 12: Summary of in-sample estimated costs of execution on VWAP order for period from September 2, 2003 to
+December 16, 2003, classical approach
+MAPE
+MSPE
+Company
+Mean
+Std
+Min
+Max
+Q95
+Mean
+Std
+Min
+Max
+Q95
+ACCOR
+0.1161
+0.1024
+2.23E-03
+0.4429
+0.3618
+0.0080
+0.0134
+1.72E-06
+0.0656
+0.0447
+AGF-ASS.GEN.FRANCE
+0.1305
+0.1270
+1.78E-03
+0.5670
+0.387263
+0.0144
+0.0272
+1.27E-06
+0.1417
+0.0693
+AIR LIQUIDE
+0.0878
+0.0973
+8.95E-04
+0.4966
+0.301276
+0.0214
+0.0506
+1.06E-06
+0.3028
+0.1142
+ALCATEL
+0.1800
+0.1813
+1.28E-03
+0.7605
+0.546576
+0.0071
+0.0134
+1.87E-07
+0.0659
+0.0309
+ARCELOR
+0.1443
+0.1545
+1.22E-03
+0.6068
+0.531083
+0.0051
+0.0099
+1.85E-07
+0.0421
+0.0341
+AXA
+0.1425
+0.2487
+1.38E-03
+1.5999
+0.513325
+0.0132
+0.0606
+3.00E-07
+0.4251
+0.0411
+BNP PARIBAS
+0.0952
+0.1138
+1.57E-03
+0.5683
+0.32196
+0.0096
+0.0235
+1.11E-06
+0.1366
+0.0472
+BOUYGUES
+0.1767
+0.1454
+5.23E-03
+0.7857
+0.486319
+0.0126
+0.0239
+6.56E-06
+0.1470
+0.0570
+CAP GEMINI
+0.1964
+0.2767
+2.21E-03
+1.2944
+0.775938
+0.0444
+0.1295
+2.06E-06
+0.6666
+0.2291
+CARREFOUR
+0.0876
+0.1119
+8.65E-04
+0.6629
+0.252594
+0.0088
+0.0275
+3.36E-07
+0.1906
+0.0290
+CASINO GUICHARD
+0.1023
+0.0849
+3.31E-03
+0.4390
+0.241523
+0.0137
+0.0255
+8.48E-06
+0.1520
+0.0450
+CREDIT AGRICOLE
+0.1650
+0.1843
+3.70E-04
+1.1034
+0.453169
+0.0106
+0.0314
+2.37E-08
+0.2167
+0.0347
+DANONE
+0.0763
+0.0657
+3.52E-03
+0.3286
+0.190152
+0.0133
+0.0247
+1.60E-05
+0.1439
+0.0484
+DEXIA
+0.1291
+0.2939
+5.02E-04
+2.0266
+0.388591
+0.0124
+0.0701
+3.30E-08
+0.4956
+0.0201
+EADS
+0.1745
+0.1858
+1.33E-04
+1.0620
+0.507217
+0.0097
+0.0263
+2.72E-09
+0.1760
+0.0359
+FRANCE TELECOM
+0.1139
+0.1657
+1.91E-03
+0.9721
+0.345296
+0.0084
+0.0300
+7.85E-07
+0.2011
+0.0254
+L’OREAL
+0.0980
+0.1044
+1.90E-03
+0.4776
+0.31271
+0.0124
+0.0269
+2.27E-06
+0.1375
+0.0632
+LAFARGE
+0.1461
+0.1767
+1.61E-04
+0.7172
+0.665107
+0.0306
+0.0730
+1.60E-08
+0.3159
+0.2544
+LAGARDERE S.C.A.
+0.1263
+0.1245
+6.82E-03
+0.7049
+0.348792
+0.0133
+0.0329
+1.97E-05
+0.2181
+0.0498
+LVMH
+0.0893
+0.1075
+2.41E-03
+0.4778
+0.319032
+0.0110
+0.0259
+3.23E-06
+0.1320
+0.0579
+MICHELIN
+0.1401
+0.1266
+4.09E-03
+0.5544
+0.442438
+0.0118
+0.0208
+5.55E-06
+0.0991
+0.0653
+PERNOD-RICARD
+0.0920
+0.1151
+2.44E-03
+0.6983
+0.291567
+0.0177
+0.0584
+4.82E-06
+0.4041
+0.0688
+38
+
+Table 13: (Continued) Summary of in-sample estimated costs of execution on VWAP order for period from September 2,
+2003 to December 16, 2003, classical approach.
+MAPE
+MSPE
+Company
+Mean
+Std
+Min
+Max
+Q95
+Mean
+Std
+Min
+Max
+Q95
+PEUGEOT
+0.1035
+0.1084
+9.21E-04
+0.5013
+0.287562
+0.0083
+0.0171
+3.13E-07
+0.0914
+0.0300
+PIN.-PRINT.REDOUTE
+0.1373
+0.1394
+2.99E-03
+0.7602
+0.424165
+0.0295
+0.0676
+6.55E-06
+0.4099
+0.1397
+RENAULT
+0.1497
+0.1301
+1.63E-03
+0.5811
+0.39367
+0.0213
+0.0366
+1.43E-06
+0.1921
+0.0832
+SAINT GOBAIN
+0.1238
+0.1338
+1.83E-03
+0.7419
+0.319529
+0.0110
+0.0276
+1.14E-06
+0.1745
+0.0361
+SANOFI-AVENTIS
+0.1063
+0.1420
+1.31E-04
+0.8494
+0.352434
+0.0165
+0.0563
+8.88E-09
+0.3864
+0.0657
+SCHNEIDER ELECTRIC
+0.0991
+0.0943
+3.00E-03
+0.5345
+0.234314
+0.0088
+0.0196
+4.41E-06
+0.1293
+0.0281
+SOCIETE GENERALE
+0.0939
+0.0981
+2.61E-03
+0.4271
+0.393898
+0.0112
+0.0250
+4.17E-06
+0.1100
+0.0897
+SODEXHO ALLIANCE
+0.1386
+0.1733
+6.83E-04
+0.9847
+0.472744
+0.0117
+0.0339
+1.17E-07
+0.2283
+0.0522
+STMICROELECTRONICS
+0.0989
+0.1176
+2.00E-03
+0.5661
+0.350686
+0.0052
+0.0123
+8.79E-07
+0.0674
+0.0286
+SUEZ
+0.1365
+0.1143
+9.01E-04
+0.5169
+0.338701
+0.0045
+0.0068
+1.22E-07
+0.0369
+0.0172
+TF1
+0.1070
+0.1009
+1.53E-03
+0.5220
+0.272837
+0.0058
+0.0129
+6.06E-07
+0.0792
+0.0197
+THALES
+0.1320
+0.1724
+1.62E-03
+0.7725
+0.621652
+0.0115
+0.0285
+6.62E-07
+0.1432
+0.0942
+THOMSON (EX:TMM)
+0.1762
+0.2763
+9.81E-04
+1.6851
+0.562888
+0.0172
+0.0671
+1.65E-07
+0.4518
+0.0510
+TOTAL
+0.0683
+0.0753
+6.82E-04
+0.3208
+0.208425
+0.0137
+0.0284
+6.22E-07
+0.1380
+0.0588
+VEOLIA ENVIRON.
+0.1071
+0.1001
+1.43E-04
+0.4116
+0.297758
+0.0040
+0.0067
+3.88E-09
+0.0321
+0.0162
+VINCI (EX.SGE)
+0.0720
+0.0744
+2.38E-03
+0.3527
+0.219507
+0.0066
+0.0136
+3.59E-06
+0.0777
+0.0298
+VIVENDI UNIVERSAL
+0.1529
+0.1523
+6.51E-04
+0.7945
+0.448559
+0.0076
+0.0161
+6.69E-08
+0.1015
+0.0315
+39
+
+Table 14: Summary of in-sample estimated costs of execution of VWAP order for period from September 2, 2003, theoretical PCA-ARMA model.
+MAPE
+MSPE
+Company
+Mean
+Std
+Min
+Max
+Q95
+Mean
+Std
+Min
+Max
+Q95
+ACCOR
+0.0952
+0.0871
+1.78E-03
+0.3792
+0.2903
+0.0056
+0.0103
+1.06E-06
+0.0522
+0.0282
+AGF-ASS.GEN.FRANCE
+0.0985
+0.0922
+6.84E-04
+0.5101
+0.2351
+0.0078
+0.0168
+2.05E-07
+0.1126
+0.0244
+AIR LIQUIDE
+0.0668
+0.0706
+7.07E-05
+0.3700
+0.2162
+0.0118
+0.0285
+6.34E-09
+0.1681
+0.0596
+ALCATEL
+0.0919
+0.0939
+4.56E-04
+0.4378
+0.3043
+0.0019
+0.0042
+2.18E-08
+0.0204
+0.0100
+ARCELOR
+0.1142
+0.1261
+1.49E-03
+0.4826
+0.4629
+0.0033
+0.0066
+2.73E-07
+0.0276
+0.0245
+AXA
+0.1014
+0.2357
+1.98E-03
+1.6533
+0.2720
+0.0107
+0.0640
+6.51E-07
+0.4540
+0.0121
+BNP PARIBAS
+0.0599
+0.0487
+4.06E-04
+0.2168
+0.1553
+0.0026
+0.0040
+7.40E-08
+0.0209
+0.0105
+BOUYGUES
+0.1296
+0.1026
+9.17E-03
+0.5991
+0.3062
+0.0067
+0.0135
+2.03E-05
+0.0920
+0.0228
+CAP GEMINI
+0.1403
+0.1833
+4.80E-03
+1.1443
+0.3913
+0.0205
+0.0714
+9.94E-06
+0.4989
+0.0564
+CARREFOUR
+0.0639
+0.0605
+8.30E-04
+0.2468
+0.2276
+0.0034
+0.0062
+3.05E-07
+0.0274
+0.0224
+CASINO GUICHARD
+0.0732
+0.0483
+4.38E-05
+0.2164
+0.1646
+0.0060
+0.0078
+1.39E-09
+0.0370
+0.0217
+CREDIT AGRICOLE
+0.1059
+0.1300
+6.26E-03
+0.8630
+0.2361
+0.0049
+0.0187
+6.95E-06
+0.1326
+0.0102
+DANONE
+0.0700
+0.0712
+1.45E-03
+0.4283
+0.1724
+0.0130
+0.0354
+2.77E-06
+0.2432
+0.0393
+DEXIA
+0.0810
+0.0677
+4.23E-03
+0.3215
+0.2471
+0.0014
+0.0026
+2.46E-06
+0.0133
+0.0082
+EADS
+0.1433
+0.1478
+4.94E-03
+0.7029
+0.4665
+0.0062
+0.0133
+3.83E-06
+0.0710
+0.0304
+FRANCE TELECOM
+0.0781
+0.1430
+7.28E-03
+0.9949
+0.2501
+0.0055
+0.0297
+1.16E-05
+0.2107
+0.0126
+L’OREAL
+0.0553
+0.0399
+2.87E-03
+0.1985
+0.1214
+0.0028
+0.0041
+5.17E-06
+0.0234
+0.0089
+LAFARGE
+0.0863
+0.0788
+1.38E-03
+0.3153
+0.2573
+0.0080
+0.0126
+1.11E-06
+0.0585
+0.0381
+LAGARDERE S.C.A.
+0.0956
+0.0876
+4.11E-04
+0.4197
+0.2609
+0.0071
+0.0135
+7.36E-08
+0.0773
+0.0292
+LVMH
+0.0518
+0.0538
+2.26E-03
+0.2684
+0.1527
+0.0031
+0.0069
+2.82E-06
+0.0416
+0.0126
+MICHELIN
+0.1172
+0.0816
+1.33E-03
+0.4158
+0.2416
+0.0069
+0.0095
+6.28E-07
+0.0576
+0.0194
+PERNOD-RICARD
+0.0784
+0.0809
+2.54E-03
+0.4079
+0.2096
+0.0104
+0.0233
+5.35E-06
+0.1379
+0.0356
+40
+
+Table 15: (Continued) Summary of in-sample estimated costs of execution of VWAP order for period from September 2,
+2003 to December 16, 2003, theoretical PCA-ARMA model.
+MAPE
+MSPE
+Company
+Mean
+Std
+Min
+Max
+Q95
+Mean
+Std
+Min
+Max
+Q95
+PEUGEOT
+0.0731
+0.0652
+2.42E-03
+0.2749
+0.2085
+0.0036
+0.0059
+2.15E-06
+0.0274
+0.0169
+PIN.-PRINT.REDOUTE
+0.0793
+0.0813
+3.62E-03
+0.3642
+0.2589
+0.0102
+0.0209
+1.08E-05
+0.1163
+0.0543
+RENAULT
+0.0753
+0.0597
+1.29E-03
+0.2633
+0.2319
+0.0051
+0.0082
+8.95E-07
+0.0394
+0.0312
+SAINT GOBAIN
+0.1002
+0.0815
+4.90E-04
+0.3259
+0.2651
+0.0057
+0.0081
+8.37E-08
+0.0337
+0.0234
+SANOFI-AVENTIS
+0.0749
+0.0877
+1.02E-03
+0.5433
+0.1974
+0.0070
+0.0226
+5.67E-07
+0.1581
+0.0204
+SCHNEIDER ELECTRIC
+0.0877
+0.0721
+4.73E-04
+0.2982
+0.2661
+0.0062
+0.0098
+1.00E-07
+0.0402
+0.0362
+SOCIETE GENERALE
+0.0466
+0.0367
+1.31E-03
+0.1637
+0.1023
+0.0022
+0.0032
+1.16E-06
+0.0177
+0.0066
+SODEXHO ALLIANCE
+0.0953
+0.1012
+6.09E-04
+0.5330
+0.3103
+0.0047
+0.0115
+9.01E-08
+0.0743
+0.0216
+STMICROELECTRONICS
+0.0612
+0.0540
+9.73E-04
+0.2394
+0.1562
+0.0015
+0.0024
+2.22E-07
+0.0121
+0.0054
+SUEZ
+0.0911
+0.0765
+3.57E-03
+0.3406
+0.2312
+0.0020
+0.0032
+1.92E-06
+0.0162
+0.0081
+TF1
+0.1011
+0.0967
+2.38E-03
+0.6163
+0.2082
+0.0053
+0.0156
+1.67E-06
+0.1104
+0.0112
+THALES
+0.1175
+0.1395
+8.50E-03
+0.5471
+0.4870
+0.0082
+0.0177
+1.82E-05
+0.0718
+0.0586
+THOMSON (EX:TMM)
+0.0908
+0.0990
+2.79E-04
+0.6205
+0.2116
+0.0029
+0.0087
+1.31E-08
+0.0613
+0.0075
+TOTAL
+0.0388
+0.0368
+8.22E-04
+0.1533
+0.1138
+0.0038
+0.0063
+8.99E-07
+0.0308
+0.0176
+VEOLIA ENVIRON.
+0.0772
+0.0707
+9.98E-04
+0.2832
+0.2202
+0.0020
+0.0033
+1.91E-07
+0.0146
+0.0091
+VINCI (EX.SGE)
+0.0492
+0.0390
+1.20E-04
+0.1833
+0.1233
+0.0024
+0.0037
+9.12E-09
+0.0210
+0.0094
+VIVENDI UNIVERSAL
+0.0818
+0.0708
+3.17E-03
+0.3719
+0.1927
+0.0019
+0.0036
+1.66E-06
+0.0228
+0.0069
+41
+
+Table 16: Summary of in-sample estimated costs of execution of VWAP order for period from September 2, 2003 to
+December 16, 2003, theoretical PCA-SETAR model.
+MAPE
+MSPE
+Company
+Mean
+Std
+Min
+Max
+Q95
+Mean
+Std
+Min
+Max
+Q95
+ACCOR
+0.0777
+0.0823
+4.36E-03
+0.4442
+0.2359
+0.0042
+0.0104
+6.79E-06
+0.0660
+0.0180
+AGF-ASS.GEN.FRANCE
+0.0841
+0.0977
+8.45E-06
+0.5449
+0.2490
+0.0072
+0.0197
+3.06E-11
+0.1285
+0.0288
+AIR LIQUIDE
+0.0666
+0.0705
+1.49E-04
+0.4144
+0.1771
+0.0117
+0.0316
+2.85E-08
+0.2108
+0.0393
+ALCATEL
+0.0811
+0.0980
+3.48E-03
+0.5847
+0.2432
+0.0018
+0.0059
+1.39E-06
+0.0390
+0.0064
+ARCELOR
+0.0900
+0.0797
+1.43E-04
+0.3147
+0.2459
+0.0017
+0.0026
+2.45E-09
+0.0113
+0.0074
+AXA
+0.1030
+0.2367
+5.16E-04
+1.6533
+0.2823
+0.0108
+0.0641
+4.19E-08
+0.4540
+0.0131
+BNP PARIBAS
+0.0601
+0.0534
+1.04E-03
+0.2265
+0.1663
+0.0029
+0.0045
+4.86E-07
+0.0228
+0.0125
+BOUYGUES
+0.1240
+0.0970
+5.16E-03
+0.4038
+0.2876
+0.0060
+0.0086
+6.20E-06
+0.0393
+0.0201
+CAP GEMINI
+0.1047
+0.1732
+1.59E-03
+1.0626
+0.3224
+0.0157
+0.0643
+9.84E-07
+0.4302
+0.0383
+CARREFOUR
+0.0492
+0.0464
+4.39E-05
+0.2017
+0.1352
+0.0020
+0.0035
+8.93E-10
+0.0176
+0.0084
+CASINO GUICHARD
+0.0646
+0.0439
+3.38E-04
+0.1611
+0.1530
+0.0047
+0.0055
+8.33E-08
+0.0200
+0.0181
+CREDIT AGRICOLE
+0.0939
+0.1032
+9.31E-04
+0.6922
+0.1817
+0.0034
+0.0120
+1.47E-07
+0.0853
+0.0056
+DANONE
+0.0536
+0.0336
+1.22E-03
+0.1683
+0.1135
+0.0052
+0.0066
+1.91E-06
+0.0373
+0.0172
+DEXIA
+0.0763
+0.0784
+8.44E-04
+0.3936
+0.2565
+0.0015
+0.0035
+9.00E-08
+0.0205
+0.0087
+EADS
+0.1265
+0.1324
+3.12E-03
+0.6988
+0.3869
+0.0049
+0.0110
+1.44E-06
+0.0701
+0.0234
+FRANCE TELECOM
+0.0792
+0.1502
+6.01E-03
+1.0195
+0.2927
+0.0060
+0.0313
+7.80E-06
+0.2212
+0.0172
+L’OREAL
+0.0463
+0.0432
+2.51E-04
+0.2178
+0.1425
+0.0025
+0.0051
+3.91E-08
+0.0305
+0.0127
+LAFARGE
+0.1001
+0.1033
+6.04E-03
+0.4688
+0.2875
+0.0120
+0.0257
+2.10E-05
+0.1293
+0.0467
+LAGARDERE S.C.A.
+0.0765
+0.0647
+2.03E-03
+0.3079
+0.2157
+0.0042
+0.0073
+1.66E-06
+0.0407
+0.0197
+LVMH
+0.0517
+0.0473
+8.40E-04
+0.2438
+0.1348
+0.0027
+0.0053
+4.03E-07
+0.0344
+0.0101
+MICHELIN
+0.1101
+0.0830
+2.75E-03
+0.3588
+0.2658
+0.0064
+0.0084
+2.75E-06
+0.0429
+0.0235
+PERNOD-RICARD
+0.0707
+0.0678
+8.53E-04
+0.3101
+0.2397
+0.0078
+0.0151
+6.02E-07
+0.0797
+0.0465
+42
+
+Table 17: (Continued)Summary of in-sample estimated costs of execution of VWAP order for period from September 2,
+2003 to December 16, 2003, theoretical PCA-SETAR model.
+MAPE
+MSPE
+Company
+Mean
+Std
+Min
+Max
+Q95
+Mean
+Std
+Min
+Max
+Q95
+PEUGEOT
+0.0610
+0.0500
+1.79E-04
+0.2504
+0.1407
+0.0023
+0.0038
+1.16E-08
+0.0236
+0.0072
+PIN.-PRINT.REDOUTE
+0.0782
+0.0785
+2.76E-03
+0.3978
+0.2471
+0.0096
+0.0209
+6.65E-06
+0.1283
+0.0433
+RENAULT
+0.0808
+0.0616
+2.21E-03
+0.2286
+0.2133
+0.0057
+0.0076
+2.65E-06
+0.0297
+0.0240
+SAINT GOBAIN
+0.0701
+0.0521
+2.33E-03
+0.2509
+0.1623
+0.0026
+0.0038
+1.90E-06
+0.0215
+0.0095
+SANOFI-AVENTIS
+0.0640
+0.0697
+5.67E-04
+0.3293
+0.2291
+0.0047
+0.0110
+1.71E-07
+0.0562
+0.0278
+SCHNEIDER ELECTRIC
+0.0844
+0.0790
+3.19E-03
+0.3975
+0.2287
+0.0064
+0.0124
+4.80E-06
+0.0715
+0.0262
+SOCIETE GENERALE
+0.0526
+0.0451
+3.12E-03
+0.1870
+0.1459
+0.0029
+0.0044
+6.38E-06
+0.0203
+0.0127
+SODEXHO ALLIANCE
+0.0852
+0.1020
+3.29E-03
+0.5126
+0.3249
+0.0042
+0.0115
+2.80E-06
+0.0687
+0.0237
+STMICROELECTRONICS
+0.0597
+0.0546
+3.59E-04
+0.2058
+0.1929
+0.0015
+0.0024
+2.94E-08
+0.0091
+0.0086
+SUEZ
+0.0976
+0.0827
+4.54E-03
+0.3293
+0.2602
+0.0023
+0.0036
+2.90E-06
+0.0150
+0.0095
+TF1
+0.1109
+0.1204
+1.09E-02
+0.7697
+0.2645
+0.0073
+0.0244
+3.51E-05
+0.1723
+0.0185
+THALES
+0.0961
+0.1098
+2.34E-03
+0.4640
+0.3503
+0.0053
+0.0114
+1.30E-06
+0.0517
+0.0305
+THOMSON (EX:TMM)
+0.0941
+0.0899
+5.36E-03
+0.4480
+0.2728
+0.0028
+0.0054
+5.38E-06
+0.0319
+0.0126
+TOTAL
+0.0397
+0.0371
+4.12E-04
+0.1627
+0.1164
+0.0039
+0.0067
+2.35E-07
+0.0347
+0.0179
+VEOLIA ENVIRON.
+0.0723
+0.0656
+1.26E-04
+0.3145
+0.2007
+0.0018
+0.0032
+2.84E-09
+0.0180
+0.0079
+VINCI (EX.SGE)
+0.0355
+0.0259
+2.49E-03
+0.1209
+0.0830
+0.0012
+0.0018
+3.87E-06
+0.0093
+0.0043
+VIVENDI UNIVERSAL
+0.0661
+0.0685
+2.85E-03
+0.3587
+0.1749
+0.0015
+0.0033
+1.27E-06
+0.0212
+0.0059
+43
+
+Table 18: Summary of out-sample estimated costs of execution of VWAP order for period from September 2, 2003 to December 16, 2003,
+classical approach.
+MAPE
+MSPE
+Company
+Mean
+Std
+Min
+Max
+Q95
+Mean
+Std
+Min
+Max
+Q95
+ACCOR
+0.10473
+0.120887
+9.63E-05
+0.551475
+0.364007
+0.008667
+0.019298
+3.31E-09
+0.106835
+0.047337
+AGF-ASS.GEN.FRANCE
+0.131635
+0.143419
+0.004299
+0.780154
+0.420724
+0.016356
+0.040833
+7.97E-06
+0.257852
+0.081774
+AIR LIQUIDE
+0.080098
+0.07862
+0.000213
+0.347809
+0.267794
+0.016298
+0.030737
+6.04E-08
+0.151459
+0.096209
+ALCATEL
+0.13355
+0.121244
+0.00334
+0.470753
+0.436743
+0.003573
+0.005914
+1.17E-06
+0.024805
+0.020877
+ARCELOR
+0.117065
+0.133359
+0.001586
+0.613585
+0.351661
+0.003782
+0.008209
+2.95E-07
+0.042996
+0.014443
+AXA
+0.092991
+0.134509
+0.00521
+0.672537
+0.386335
+0.004239
+0.013041
+4.34E-06
+0.073352
+0.024652
+BNP PARIBAS
+0.078249
+0.06503
+0.000919
+0.312203
+0.208593
+0.004732
+0.007629
+3.81E-07
+0.04441
+0.019698
+BOUYGUES
+0.171501
+0.100734
+0.000489
+0.503438
+0.308118
+0.009813
+0.011386
+5.6E-08
+0.061117
+0.025105
+CAP GEMINI
+0.23231
+0.295336
+0.003557
+1.30021
+1.138396
+0.054896
+0.141549
+4.96E-06
+0.672608
+0.479306
+CARREFOUR
+0.062836
+0.059824
+0.000457
+0.249051
+0.191973
+0.003346
+0.005899
+8.99E-08
+0.028191
+0.016761
+CASINO GUICHARD
+0.146471
+0.219818
+0.005503
+1.472293
+0.439929
+0.053252
+0.236859
+2.41E-05
+1.675549
+0.152666
+CREDIT AGRICOLE
+0.138865
+0.197163
+0.002775
+1.078061
+0.542391
+0.010325
+0.032196
+1.44E-06
+0.206887
+0.050779
+DANONE
+0.054773
+0.049043
+1.06E-05
+0.200395
+0.156687
+0.006984
+0.011398
+1.45E-10
+0.051469
+0.032055
+DEXIA
+0.109919
+0.224349
+0.001054
+1.443772
+0.536146
+0.008178
+0.039745
+1.45E-07
+0.277381
+0.038698
+EADS
+0.194675
+0.23971
+0.007875
+1.266802
+0.593885
+0.016546
+0.04886
+9.58E-06
+0.29084
+0.068889
+FRANCE TELECOM
+0.139777
+0.211803
+0.001373
+1.138462
+0.502473
+0.013507
+0.047594
+4.05E-07
+0.27759
+0.051672
+L’OREAL
+0.086626
+0.092238
+0.004831
+0.460046
+0.276497
+0.009811
+0.0224
+1.5E-05
+0.130733
+0.045345
+LAFARGE
+0.107592
+0.137086
+0.001946
+0.659896
+0.425454
+0.018543
+0.050934
+2.36E-06
+0.26746
+0.120901
+LAGARDERE S.C.A.
+0.100285
+0.083665
+0.008624
+0.394801
+0.275215
+0.00736
+0.013494
+3.25E-05
+0.068864
+0.033642
+LVMH
+0.113146
+0.115475
+0.001387
+0.571628
+0.325866
+0.01497
+0.034401
+1.11E-06
+0.18723
+0.060437
+MICHELIN
+0.154091
+0.206228
+0.004786
+1.109848
+0.556597
+0.022093
+0.067374
+7.74E-06
+0.40964
+0.103156
+PERNOD-RICARD
+0.077535
+0.074666
+0.003623
+0.292375
+0.245627
+0.009856
+0.016423
+1.09E-05
+0.072868
+0.051538
+44
+
+Table 19: (Continued) Summary of out-sample estimated costs of execution of VWAP order for period from September 2, 2003 to December
+16, 2003, classical approach.
+MAPE
+MSPE
+Company
+Mean
+Std
+Min
+Max
+Q95
+Mean
+Std
+Min
+Max
+Q95
+PEUGEOT
+0.07616
+0.091633
+0.001125
+0.448031
+0.292859
+0.00534
+0.013486
+5.03E-07
+0.074993
+0.031624
+PIN.-PRINT.REDOUTE
+0.138913
+0.127963
+0.000861
+0.455642
+0.416876
+0.029041
+0.045141
+6.11E-07
+0.174501
+0.14263
+RENAULT
+0.140574
+0.12552
+0.001126
+0.561398
+0.364709
+0.019575
+0.031702
+7.29E-07
+0.179263
+0.075486
+SAINT GOBAIN
+0.097856
+0.085823
+0.000143
+0.291448
+0.252967
+0.006039
+0.008351
+7.75E-09
+0.03071
+0.023002
+SANOFI-AVENTIS
+0.099893
+0.108369
+0.000635
+0.477165
+0.379653
+0.011763
+0.025023
+2.26E-07
+0.128397
+0.080006
+SCHNEIDER ELECTRIC
+0.086546
+0.131574
+0.003445
+0.873692
+0.225114
+0.012561
+0.055929
+6.17E-06
+0.394043
+0.025897
+SOCIETE GENERALE
+0.069867
+0.068663
+0.000897
+0.41165
+0.208138
+0.006245
+0.016314
+5.25E-07
+0.108959
+0.030047
+SODEXHO ALLIANCE
+0.123303
+0.13401
+0.001181
+0.589764
+0.414888
+0.007619
+0.016537
+3.19E-07
+0.08303
+0.039809
+STMICROELECTRONICS
+0.090614
+0.090484
+0.001886
+0.381984
+0.258905
+0.003741
+0.006951
+7.77E-07
+0.033773
+0.015468
+SUEZ
+0.096785
+0.098772
+0.004347
+0.530998
+0.28356
+0.002744
+0.006571
+2.63E-06
+0.043443
+0.01122
+TF1
+0.110343
+0.100563
+0.002831
+0.475552
+0.290891
+0.005941
+0.010768
+2.2E-06
+0.060747
+0.022388
+THALES
+0.09586
+0.139949
+0.000712
+0.67571
+0.45149
+0.007064
+0.02128
+1.26E-07
+0.112826
+0.051969
+THOMSON (EX:TMM)
+0.145994
+0.158754
+0.013218
+0.790626
+0.424288
+0.007884
+0.016793
+3.22E-05
+0.104628
+0.031645
+TOTAL
+0.052786
+0.053217
+0.001484
+0.211851
+0.163156
+0.00753
+0.013916
+2.9E-06
+0.060592
+0.037718
+VEOLIA ENVIRON.
+0.12997
+0.162395
+0.000275
+0.822174
+0.408336
+0.00836
+0.023107
+1.46E-08
+0.138172
+0.032558
+VINCI (EX.SGE)
+0.077354
+0.108837
+0.000834
+0.595414
+0.250262
+0.011363
+0.035806
+4.46E-07
+0.229369
+0.039174
+VIVENDI UNIVERSAL
+0.109508
+0.101303
+0.00145
+0.491998
+0.288309
+0.004099
+0.007506
+4.02E-07
+0.047049
+0.013952
+45
+
+Table 20: Summary of out-sample estimated costs of execution of VWAP order for period from September 2, 2003 to December 16, 2003,
+theoretical PCA-ARMA model.
+MAPE
+MSPE
+Company
+Mean
+Std
+Min
+Max
+Q95
+Mean
+Std
+Min
+Max
+Q95
+ACCOR
+0.101032
+0.125263
+3.65E-05
+0.656141
+0.406081
+0.008812
+0.023944
+4.76E-10
+0.151236
+0.055117
+AGF-ASS.GEN.FRANCE
+0.100311
+0.133961
+7.15E-05
+0.780385
+0.260686
+0.012014
+0.038906
+2.13E-09
+0.258005
+0.030916
+AIR LIQUIDE
+0.073266
+0.073724
+0.003349
+0.339292
+0.256931
+0.01399
+0.027697
+1.4E-05
+0.144132
+0.087253
+ALCATEL
+0.098674
+0.096642
+0.001016
+0.435166
+0.25912
+0.002094
+0.004222
+1.19E-07
+0.020726
+0.007399
+ARCELOR
+0.090767
+0.090891
+0.000691
+0.382858
+0.30878
+0.00199
+0.003707
+5.71E-08
+0.017965
+0.011092
+AXA
+0.069464
+0.091932
+0.001602
+0.472202
+0.250792
+0.002106
+0.006311
+4.1E-07
+0.036161
+0.010481
+BNP PARIBAS
+0.070067
+0.059323
+0.000462
+0.297555
+0.187281
+0.003848
+0.006829
+9.54E-08
+0.040341
+0.015806
+BOUYGUES
+0.165915
+0.082428
+0.023921
+0.41475
+0.318636
+0.008515
+0.008201
+0.000152
+0.041817
+0.025001
+CAP GEMINI
+0.178651
+0.219114
+0.002489
+1.174109
+0.561131
+0.031315
+0.081067
+2.41E-06
+0.52526
+0.116454
+CARREFOUR
+0.06174
+0.059977
+0.000472
+0.245889
+0.193687
+0.003294
+0.00584
+1.02E-07
+0.027479
+0.017062
+CASINO GUICHARD
+0.123652
+0.179234
+0.008428
+1.247152
+0.240706
+0.036171
+0.169248
+5.37E-05
+1.202284
+0.043829
+CREDIT AGRICOLE
+0.104677
+0.15018
+0.001983
+0.937612
+0.327376
+0.005932
+0.022765
+7.2E-07
+0.156492
+0.019785
+DANONE
+0.051885
+0.04278
+0.001511
+0.184403
+0.141413
+0.005841
+0.009211
+2.94E-06
+0.044261
+0.02611
+DEXIA
+0.094336
+0.199633
+0.003382
+1.415669
+0.237838
+0.006381
+0.03761
+1.51E-06
+0.266688
+0.007577
+EADS
+0.157575
+0.206163
+0.004654
+1.316431
+0.430686
+0.011847
+0.044937
+3.2E-06
+0.314075
+0.033562
+FRANCE TELECOM
+0.107563
+0.18937
+0.002274
+1.114558
+0.252288
+0.009981
+0.041812
+1.09E-06
+0.266055
+0.013434
+L’OREAL
+0.078233
+0.087448
+0.000789
+0.431261
+0.255377
+0.008444
+0.020237
+3.82E-07
+0.114885
+0.041165
+LAFARGE
+0.083574
+0.099491
+0.000576
+0.46409
+0.347965
+0.010337
+0.024396
+2.11E-07
+0.132285
+0.079173
+LAGARDERE S.C.A.
+0.100623
+0.085864
+0.00189
+0.393571
+0.316833
+0.007572
+0.013574
+1.49E-06
+0.06343
+0.045744
+LVMH
+0.087971
+0.095328
+0.000482
+0.510107
+0.281609
+0.009605
+0.023348
+1.36E-07
+0.149097
+0.045984
+MICHELIN
+0.141631
+0.182732
+0.002296
+0.997271
+0.423821
+0.017847
+0.05263
+1.82E-06
+0.330751
+0.059811
+PERNOD-RICARD
+0.074763
+0.073995
+0.001046
+0.342696
+0.194887
+0.00934
+0.018008
+8.97E-07
+0.095102
+0.034075
+46
+
+Table 21: (Continued) Summary of out-sample estimated costs of execution of VWAP order for period from September 2, 2003 to December
+16, 2003, theoretical PCA-ARMA model.
+MAPE
+MSPE
+Company
+Mean
+Std
+Min
+Max
+Q95
+Mean
+Std
+Min
+Max
+Q95
+PEUGEOT
+0.065013
+0.076633
+0.00058
+0.363543
+0.246957
+0.003806
+0.009907
+1.24E-07
+0.049376
+0.022488
+PIN.-PRINT.REDOUTE
+0.093109
+0.093481
+0.000849
+0.3926
+0.241447
+0.014251
+0.024458
+6.17E-07
+0.135122
+0.048965
+RENAULT
+0.109862
+0.096077
+0.003059
+0.45923
+0.284489
+0.011809
+0.019894
+5.01E-06
+0.119953
+0.043966
+SAINT GOBAIN
+0.09635
+0.073971
+0.00505
+0.311034
+0.246172
+0.005266
+0.007628
+9.65E-06
+0.034976
+0.021783
+SANOFI-AVENTIS
+0.080981
+0.085475
+0.000925
+0.470069
+0.234014
+0.007541
+0.018552
+4.61E-07
+0.124607
+0.029378
+SCHNEIDER ELECTRIC
+0.089963
+0.137223
+0.000771
+0.919957
+0.276185
+0.013613
+0.061775
+2.83E-07
+0.43688
+0.038981
+SOCIETE GENERALE
+0.05898
+0.059823
+0.000929
+0.329148
+0.191882
+0.004573
+0.011581
+5.4E-07
+0.069661
+0.024269
+SODEXHO ALLIANCE
+0.090263
+0.085281
+0.006608
+0.386401
+0.333731
+0.003547
+0.007206
+1E-05
+0.03453
+0.026587
+STMICROELECTRONICS
+0.077424
+0.082216
+0.0011
+0.354715
+0.258909
+0.002905
+0.006086
+2.83E-07
+0.029251
+0.015468
+SUEZ
+0.081059
+0.066647
+0.0007
+0.265047
+0.225211
+0.001557
+0.002317
+6.74E-08
+0.009764
+0.00749
+TF1
+0.100125
+0.08724
+0.000237
+0.411404
+0.261296
+0.00469
+0.008132
+1.45E-08
+0.045463
+0.018064
+THALES
+0.090614
+0.119713
+0.001196
+0.544583
+0.373197
+0.00555
+0.015036
+3.57E-07
+0.073285
+0.035508
+THOMSON (EX:TMM)
+0.088386
+0.098192
+0.001182
+0.577237
+0.260797
+0.002953
+0.008321
+2.38E-07
+0.055772
+0.01154
+TOTAL
+0.046162
+0.048694
+0.001695
+0.216688
+0.145632
+0.006017
+0.011929
+3.84E-06
+0.06339
+0.02866
+VEOLIA ENVIRON.
+0.107108
+0.097232
+0.000563
+0.437048
+0.306249
+0.004014
+0.007298
+6.09E-08
+0.035858
+0.019171
+VINCI (EX.SGE)
+0.069448
+0.082488
+0.000468
+0.413568
+0.195252
+0.007453
+0.019448
+1.48E-07
+0.11066
+0.023845
+VIVENDI UNIVERSAL
+0.082903
+0.064668
+6.57E-05
+0.235136
+0.209637
+0.002027
+0.002635
+8.05E-10
+0.010507
+0.007376
+47
+
+Table 22: Summary of out-sample estimated costs of execution of VWAP order for period from September 2, 2003 to December 16, 2003,
+theoretical PCA-SETAR model.
+MAPE
+MSPE
+Company
+Mean
+Std
+Min
+Max
+Q95
+Mean
+Std
+Min
+Max
+Q95
+ACCOR
+0.090626
+0.137886
+0.002348
+0.649917
+0.536377
+0.009189
+0.029316
+1.93E-06
+0.144187
+0.096162
+AGF-ASS.GEN.FRANCE
+0.102291
+0.133633
+0.000582
+0.779412
+0.286914
+0.012129
+0.039268
+1.41E-07
+0.257362
+0.03677
+AIR LIQUIDE
+0.072565
+0.066163
+0.000213
+0.300349
+0.176441
+0.012488
+0.021743
+6.07E-08
+0.112945
+0.041765
+ALCATEL
+0.084513
+0.090354
+0.000423
+0.457669
+0.278512
+0.00167
+0.003795
+2.06E-08
+0.022925
+0.008392
+ARCELOR
+0.066488
+0.062096
+0.005302
+0.275934
+0.179569
+0.001007
+0.001882
+3.76E-06
+0.008858
+0.003864
+AXA
+0.072036
+0.105963
+0.001963
+0.634953
+0.220673
+0.002605
+0.009807
+5.93E-07
+0.065383
+0.007983
+BNP PARIBAS
+0.07099
+0.058753
+0.001241
+0.324374
+0.184274
+0.003878
+0.007371
+6.93E-07
+0.04794
+0.015302
+BOUYGUES
+0.162325
+0.083088
+0.015894
+0.362491
+0.310375
+0.008194
+0.007476
+5.86E-05
+0.031943
+0.023393
+CAP GEMINI
+0.144827
+0.195543
+0.001048
+1.066173
+0.573595
+0.023025
+0.068357
+4.88E-07
+0.433125
+0.121685
+CARREFOUR
+0.053692
+0.04869
+0.000588
+0.173051
+0.162094
+0.00233
+0.003645
+1.57E-07
+0.013611
+0.01148
+CASINO GUICHARD
+0.105362
+0.187273
+0.001999
+1.319837
+0.205416
+0.035152
+0.189768
+3.02E-06
+1.346507
+0.032469
+CREDIT AGRICOLE
+0.090236
+0.132885
+2.55E-05
+0.838342
+0.186043
+0.004565
+0.01835
+1.18E-10
+0.125109
+0.005974
+DANONE
+0.045923
+0.040887
+0.003067
+0.200447
+0.122816
+0.00486
+0.009038
+1.21E-05
+0.052298
+0.019593
+DEXIA
+0.084817
+0.184903
+0.001923
+1.320052
+0.207549
+0.005415
+0.032714
+4.86E-07
+0.231879
+0.00577
+EADS
+0.143373
+0.197349
+0.003053
+1.31882
+0.353095
+0.010522
+0.044449
+1.52E-06
+0.315216
+0.024352
+FRANCE TELECOM
+0.100619
+0.190161
+0.001971
+1.098809
+0.2805
+0.009736
+0.041666
+8.27E-07
+0.25859
+0.01709
+L’OREAL
+0.0698
+0.084434
+0.002911
+0.428982
+0.208267
+0.007348
+0.020075
+5.27E-06
+0.113674
+0.027378
+LAFARGE
+0.096378
+0.13112
+7.31E-05
+0.637217
+0.473039
+0.016177
+0.044913
+3.48E-09
+0.249392
+0.131625
+LAGARDERE S.C.A.
+0.081552
+0.070788
+0.001943
+0.307987
+0.254365
+0.005055
+0.008835
+1.57E-06
+0.038843
+0.028124
+LVMH
+0.091313
+0.12251
+0.000786
+0.766689
+0.285854
+0.013293
+0.048341
+3.72E-07
+0.336811
+0.048951
+MICHELIN
+0.13799
+0.174418
+0.002542
+0.914142
+0.573479
+0.016481
+0.047011
+2.17E-06
+0.277909
+0.109736
+PERNOD-RICARD
+0.053228
+0.055811
+0.000956
+0.281365
+0.182382
+0.004956
+0.010665
+7.61E-07
+0.064108
+0.026978
+48
+
+Table 23: (Continued) Summary of out-sample estimated costs of execution of VWAP order for period from September 2, 2003 to December
+16, 2003, theoretical PCA-SETAR model.
+MAPE
+MSPE
+Company
+Mean
+Std
+Min
+Max
+Q95
+Mean
+Std
+Min
+Max
+Q95
+PEUGEOT
+0.059045
+0.06552
+0.000591
+0.31294
+0.225685
+0.002938
+0.007139
+1.35E-07
+0.036587
+0.019138
+PIN.-PRINT.REDOUTE
+0.077759
+0.077514
+0.000343
+0.237852
+0.223485
+0.009731
+0.014472
+9.18E-08
+0.045605
+0.04205
+RENAULT
+0.107648
+0.093682
+0.001188
+0.41558
+0.266571
+0.011348
+0.017524
+7.85E-07
+0.098234
+0.040327
+SAINT GOBAIN
+0.089499
+0.064233
+0.001668
+0.305529
+0.225959
+0.004355
+0.006521
+9.98E-07
+0.034689
+0.018459
+SANOFI-AVENTIS
+0.070683
+0.081308
+0.000302
+0.468029
+0.21672
+0.006318
+0.018496
+4.91E-08
+0.123527
+0.025925
+SCHNEIDER ELECTRIC
+0.078796
+0.128382
+0.003367
+0.863407
+0.219359
+0.011501
+0.05438
+5.79E-06
+0.38482
+0.024058
+SOCIETE GENERALE
+0.065305
+0.068449
+0.009275
+0.37611
+0.199134
+0.005834
+0.014646
+5.41E-05
+0.090957
+0.027321
+SODEXHO ALLIANCE
+0.080608
+0.085728
+0.001775
+0.380575
+0.323014
+0.003182
+0.007198
+7.18E-07
+0.033497
+0.02476
+STMICROELECTRONICS
+0.080173
+0.099279
+0.002199
+0.585146
+0.246765
+0.003717
+0.011863
+1.11E-06
+0.079598
+0.014051
+SUEZ
+0.072454
+0.066261
+0.00277
+0.325311
+0.206004
+0.001351
+0.002569
+1.06E-06
+0.014708
+0.005891
+TF1
+0.089901
+0.080429
+0.001446
+0.370885
+0.260495
+0.003856
+0.006832
+5.38E-07
+0.036949
+0.018702
+THALES
+0.078236
+0.086654
+0.000947
+0.364021
+0.333167
+0.003388
+0.007474
+2.24E-07
+0.032745
+0.027787
+THOMSON (EX:TMM)
+0.078428
+0.062133
+0.003129
+0.26672
+0.218878
+0.001717
+0.002593
+1.54E-06
+0.01207
+0.008421
+TOTAL
+0.049591
+0.05375
+0.000242
+0.222192
+0.178904
+0.007152
+0.01504
+7.68E-08
+0.066651
+0.04288
+VEOLIA ENVIRON.
+0.089907
+0.092122
+0.000975
+0.416781
+0.309455
+0.003187
+0.006369
+1.76E-07
+0.033918
+0.019574
+VINCI (EX.SGE)
+0.055948
+0.0706
+0.000422
+0.376909
+0.147256
+0.005221
+0.016464
+1.21E-07
+0.091912
+0.014218
+VIVENDI UNIVERSAL
+0.074614
+0.06696
+0.002236
+0.270463
+0.22277
+0.001851
+0.002939
+9.75E-07
+0.013901
+0.009113
+49
+
+Table 24: Summary of out-sample estimated costs of execution of VWAP order for period from September 2, 2003 to
+December 16, 2003, dynamical PCA-ARMA model.
+MAPE
+MSPE
+Company
+Mean
+Std
+Min
+Max
+Q95
+Mean
+Std
+Min
+Max
+Q95
+ACCOR
+0.1124
+0.1254
+0.0002
+0.5893
+0.3713
+0.0096
+0.0214
+2.04E-08
+0.1220
+0.0471
+AGF-ASS.GEN.FRANCE
+0.1315
+0.1508
+0.0019
+0.7841
+0.4689
+0.0173
+0.0421
+1.63E-06
+0.2605
+0.0966
+AIR LIQUIDE
+0.0774
+0.0713
+0.0031
+0.2963
+0.2691
+0.0144
+0.0258
+1.28E-05
+0.1104
+0.0971
+ALCATEL
+0.1050
+0.0996
+0.0005
+0.4260
+0.3157
+0.0023
+0.0040
+3.28E-08
+0.0205
+0.0109
+ARCELOR
+0.1084
+0.1136
+0.0002
+0.6382
+0.2736
+0.0030
+0.0074
+5.32E-09
+0.0499
+0.0099
+AXA
+0.0860
+0.1147
+0.0001
+0.5745
+0.3761
+0.0033
+0.0091
+1.41E-09
+0.0535
+0.0232
+BNP PARIBAS
+0.0746
+0.0591
+0.0030
+0.2228
+0.2123
+0.0041
+0.0059
+4.13E-06
+0.0226
+0.0203
+BOUYGUES
+0.1784
+0.0998
+0.0111
+0.4831
+0.3712
+0.0104
+0.0113
+2.85E-05
+0.0563
+0.0362
+CAP GEMINI
+0.1542
+0.1534
+0.0004
+0.7424
+0.3671
+0.0191
+0.0369
+5.89E-08
+0.2112
+0.0559
+CARREFOUR
+0.0658
+0.0541
+0.0034
+0.1954
+0.1877
+0.0032
+0.0048
+5.23E-06
+0.0174
+0.0154
+CASINO GUICHARD
+0.1175
+0.1085
+0.0007
+0.5122
+0.3049
+0.0197
+0.0349
+3.25E-07
+0.2070
+0.0708
+CREDIT AGRICOLE
+0.1361
+0.1877
+0.0022
+0.9664
+0.4518
+0.0096
+0.0283
+9.05E-07
+0.1662
+0.0371
+DANONE
+0.0461
+0.0401
+0.0020
+0.1680
+0.1155
+0.0048
+0.0078
+5.14E-06
+0.0377
+0.0178
+DEXIA
+0.0808
+0.1070
+0.0024
+0.5401
+0.1958
+0.0024
+0.0077
+7.84E-07
+0.0393
+0.0051
+EADS
+0.1821
+0.1915
+0.0093
+0.8733
+0.5076
+0.0123
+0.0267
+1.33E-05
+0.1380
+0.0466
+FRANCE TELECOM
+0.1120
+0.1305
+0.0036
+0.7202
+0.3245
+0.0062
+0.0169
+2.76E-06
+0.1104
+0.0219
+L’OREAL
+0.0841
+0.0922
+0.0014
+0.4330
+0.2550
+0.0096
+0.0212
+1.19E-06
+0.1158
+0.0410
+LAFARGE
+0.1003
+0.1272
+0.0030
+0.5902
+0.4237
+0.0161
+0.0408
+5.15E-06
+0.2049
+0.1199
+LAGARDERE S.C.A.
+0.1197
+0.1074
+0.0032
+0.5779
+0.3270
+0.0112
+0.0232
+4.51E-06
+0.1476
+0.0475
+LVMH
+0.1011
+0.1017
+0.0026
+0.5089
+0.3093
+0.0118
+0.0269
+3.91E-06
+0.1484
+0.0545
+MICHELIN
+0.1473
+0.1557
+0.0029
+0.8255
+0.4773
+0.0155
+0.0373
+2.96E-06
+0.2382
+0.0760
+PERNOD-RICARD
+0.0801
+0.0762
+0.0027
+0.2958
+0.2333
+0.0103
+0.0168
+6.21E-06
+0.0747
+0.0441
+50
+
+Table 25: (Continued)Summary of out-sample estimated costs of execution of VWAP order for period from September
+2, 2003 to December 16, 2003, dynamical PCA-ARMA model.
+MAPE
+MSPE
+Company
+Mean
+Std
+Min
+Max
+Q95
+Mean
+Std
+Min
+Max
+Q95
+PEUGEOT
+0.0803
+0.1156
+0.0003
+0.5650
+0.3176
+0.0074
+0.0213
+4.49E-08
+0.1193
+0.0400
+PIN.-PRINT.REDOUTE
+0.1178
+0.1230
+0.0007
+0.4889
+0.3461
+0.0238
+0.0433
+4.07E-07
+0.2096
+0.1007
+RENAULT
+0.1324
+0.1300
+0.0097
+0.5451
+0.4259
+0.0189
+0.0355
+5.15E-05
+0.1690
+0.0957
+SAINT GOBAIN
+0.0986
+0.0901
+0.0034
+0.4038
+0.3256
+0.0064
+0.0114
+4.43E-06
+0.0582
+0.0381
+SANOFI-AVENTIS
+0.0964
+0.0920
+0.0019
+0.4874
+0.2485
+0.0097
+0.0208
+2.03E-06
+0.1339
+0.0326
+SCHNEIDER ELECTRIC
+0.1020
+0.1386
+0.0003
+0.8831
+0.3116
+0.0150
+0.0574
+5.83E-08
+0.4026
+0.0496
+SOCIETE GENERALE
+0.0600
+0.0565
+0.0057
+0.3377
+0.1262
+0.0044
+0.0114
+2.08E-05
+0.0733
+0.0106
+SODEXHO ALLIANCE
+0.1245
+0.1277
+0.0017
+0.6786
+0.4180
+0.0073
+0.0169
+6.43E-07
+0.1047
+0.0417
+STMICROELECTRONICS
+0.0765
+0.0861
+0.0001
+0.3577
+0.2893
+0.0030
+0.0064
+3.85E-09
+0.0296
+0.0193
+SUEZ
+0.0948
+0.1034
+0.0002
+0.5106
+0.2787
+0.0028
+0.0066
+4.85E-09
+0.0402
+0.0109
+TF1
+0.1187
+0.1022
+0.0006
+0.3841
+0.3648
+0.0065
+0.0100
+8.44E-08
+0.0396
+0.0367
+THALES
+0.0991
+0.1170
+0.0022
+0.5874
+0.4063
+0.0058
+0.0150
+1.3E-06
+0.0853
+0.0402
+THOMSON (EX:TMM)
+0.1677
+0.2161
+0.0098
+0.9597
+0.7623
+0.0129
+0.0335
+1.62E-05
+0.1667
+0.1032
+TOTAL
+0.0498
+0.0528
+0.0002
+0.2104
+0.1627
+0.0071
+0.0131
+5.47E-08
+0.0598
+0.0375
+VEOLIA ENVIRON.
+0.1353
+0.1575
+0.0058
+0.7708
+0.5241
+0.0083
+0.0210
+6.43E-06
+0.1214
+0.0507
+VINCI (EX.SGE)
+0.0787
+0.1067
+0.0011
+0.5503
+0.2740
+0.0112
+0.0324
+8.45E-07
+0.1959
+0.0470
+VIVENDI UNIVERSAL
+0.1066
+0.1223
+0.0006
+0.6139
+0.3406
+0.0048
+0.0119
+6.95E-08
+0.0733
+0.0195
+51
+
+Table 26: Summary of out-sample estimated costs of execution of VWAP order for period from September 2, 2003 to
+December 16, 2003, dynamical PCA-SETAR model.
+MAPE
+MSPE
+Company
+Mean
+Std
+Min
+Max
+Q95
+Mean
+Std
+Min
+Max
+Q95
+ACCOR
+0.1121
+0.1244
+0.0021
+0.6061
+0.3671
+0.0095
+0.0211
+1.6E-06
+0.1291
+0.0455
+AGF-ASS.GEN.FRANCE
+0.1209
+0.1413
+0.0015
+0.7887
+0.3503
+0.0149
+0.0411
+1.03E-06
+0.2636
+0.0539
+AIR LIQUIDE
+0.0818
+0.0757
+0.0005
+0.3143
+0.2707
+0.0161
+0.0285
+2.66E-07
+0.1325
+0.0969
+ALCATEL
+0.1079
+0.0955
+0.0005
+0.3944
+0.3420
+0.0023
+0.0038
+2.75E-08
+0.0176
+0.0130
+ARCELOR
+0.1062
+0.1146
+0.0007
+0.4960
+0.3214
+0.0030
+0.0058
+6.91E-08
+0.0302
+0.0136
+AXA
+0.0889
+0.1234
+0.0032
+0.6210
+0.4045
+0.0037
+0.0105
+1.61E-06
+0.0625
+0.0258
+BNP PARIBAS
+0.0742
+0.0590
+0.0006
+0.2568
+0.2068
+0.0041
+0.0062
+1.49E-07
+0.0301
+0.0193
+BOUYGUES
+0.1773
+0.0978
+0.0099
+0.5087
+0.3608
+0.0102
+0.0114
+2.27E-05
+0.0624
+0.0342
+CAP GEMINI
+0.1491
+0.1322
+0.0024
+0.4774
+0.3913
+0.0161
+0.0224
+2.54E-06
+0.0873
+0.0627
+CARREFOUR
+0.0638
+0.0562
+0.0019
+0.2193
+0.2154
+0.0032
+0.0054
+1.61E-06
+0.0219
+0.0207
+CASINO GUICHARD
+0.1129
+0.1076
+0.0021
+0.5265
+0.3595
+0.0187
+0.0377
+3.46E-06
+0.2186
+0.0979
+CREDIT AGRICOLE
+0.1102
+0.1375
+0.0001
+0.6769
+0.4637
+0.0056
+0.0143
+2.44E-09
+0.0848
+0.0371
+DANONE
+0.0531
+0.0441
+0.0023
+0.1751
+0.1611
+0.0062
+0.0095
+7.06E-06
+0.0393
+0.0347
+DEXIA
+0.0779
+0.1018
+0.0002
+0.5367
+0.1759
+0.0022
+0.0070
+6.57E-09
+0.0388
+0.0041
+EADS
+0.1404
+0.1359
+0.0070
+0.6248
+0.4196
+0.0070
+0.0138
+7.54E-06
+0.0762
+0.0314
+FRANCE TELECOM
+0.1080
+0.1257
+0.0028
+0.7210
+0.3492
+0.0058
+0.0168
+1.73E-06
+0.1106
+0.0257
+L’OREAL
+0.0832
+0.0888
+0.0004
+0.4281
+0.2448
+0.0091
+0.0203
+1.08E-07
+0.1132
+0.0355
+LAFARGE
+0.1075
+0.1358
+0.0068
+0.6370
+0.4483
+0.0184
+0.0480
+3.15E-05
+0.2492
+0.1343
+LAGARDERE S.C.A.
+0.1141
+0.1003
+0.0048
+0.4333
+0.3482
+0.0099
+0.0169
+1.06E-05
+0.0769
+0.0538
+LVMH
+0.0959
+0.1001
+0.0007
+0.5160
+0.2879
+0.0110
+0.0255
+2.92E-07
+0.1526
+0.0472
+MICHELIN
+0.1513
+0.1653
+0.0021
+0.8349
+0.5016
+0.0170
+0.0398
+1.48E-06
+0.2436
+0.0838
+PERNOD-RICARD
+0.0745
+0.0706
+0.0010
+0.2963
+0.2182
+0.0089
+0.0154
+9.04E-07
+0.0711
+0.0417
+52
+
+Table 27: (Continued)Summary of out-sample estimated costs of execution of VWAP order for period from September
+2, 2003 to December 16, 2003, dynamical PCA-SETAR model.
+MAPE
+MSPE
+Company
+Mean
+Std
+Min
+Max
+Q95
+Mean
+Std
+Min
+Max
+Q95
+PEUGEOT
+0.0801
+0.0960
+0.0000
+0.4719
+0.3046
+0.0059
+0.0144
+6.12E-12
+0.0832
+0.0367
+PIN.-PRINT.REDOUTE
+0.0998
+0.1119
+0.0013
+0.4484
+0.3359
+0.0184
+0.0352
+1.33E-06
+0.1762
+0.0893
+RENAULT
+0.1287
+0.1138
+0.0001
+0.5084
+0.3845
+0.0163
+0.0279
+3.7E-09
+0.1470
+0.0859
+SAINT GOBAIN
+0.0952
+0.0775
+0.0027
+0.3280
+0.2713
+0.0054
+0.0082
+2.71E-06
+0.0389
+0.0265
+SANOFI-AVENTIS
+0.0897
+0.0944
+0.0027
+0.4746
+0.2861
+0.0092
+0.0211
+4.12E-06
+0.1270
+0.0433
+SCHNEIDER ELECTRIC
+0.1027
+0.1417
+0.0023
+0.8921
+0.3239
+0.0155
+0.0588
+2.89E-06
+0.4108
+0.0536
+SOCIETE GENERALE
+0.0617
+0.0600
+0.0009
+0.3533
+0.1601
+0.0048
+0.0124
+4.59E-07
+0.0803
+0.0178
+SODEXHO ALLIANCE
+0.1182
+0.1280
+0.0030
+0.6053
+0.3861
+0.0070
+0.0163
+2E-06
+0.0833
+0.0345
+STMICROELECTRONICS
+0.0768
+0.0867
+0.0025
+0.3791
+0.2882
+0.0031
+0.0065
+1.5E-06
+0.0333
+0.0192
+SUEZ
+0.0908
+0.0970
+0.0011
+0.4763
+0.3022
+0.0025
+0.0057
+1.76E-07
+0.0350
+0.0128
+TF1
+0.1118
+0.1040
+0.0009
+0.4264
+0.3402
+0.0062
+0.0103
+1.9E-07
+0.0488
+0.0306
+THALES
+0.1027
+0.1270
+0.0042
+0.6337
+0.3967
+0.0066
+0.0178
+4.71E-06
+0.0992
+0.0401
+THOMSON (EX:TMM)
+0.1398
+0.1780
+0.0014
+0.8393
+0.4116
+0.0087
+0.0232
+3.2E-07
+0.1275
+0.0273
+TOTAL
+0.0508
+0.0515
+0.0017
+0.2184
+0.1594
+0.0070
+0.0138
+4.09E-06
+0.0644
+0.0343
+VEOLIA ENVIRON.
+0.1286
+0.1511
+0.0005
+0.7291
+0.4065
+0.0076
+0.0188
+4.99E-08
+0.1087
+0.0323
+VINCI (EX.SGE)
+0.0755
+0.0969
+0.0009
+0.4896
+0.2544
+0.0096
+0.0267
+4.68E-07
+0.1551
+0.0405
+VIVENDI UNIVERSAL
+0.1020
+0.1012
+0.0017
+0.4977
+0.2591
+0.0038
+0.0080
+4.6E-07
+0.0481
+0.0128
+53
+
+Table 28: Comparison of VWAP predictions, based on mean absolute percentage error (MAPE),
+for period from September 2 to December 16, 2003.
+Models
+Mean
+STD
+Min
+Max
+Q95
+Result of in-sample estimation
+PC-SETAR
+0.0706
+0.0825
+0.0017
+0.4526
+0.2030
+PC-ARMA
+0.0772
+0.0877
+0.0019
+0.4813
+0.2173
+Classical approach
+0.1140
+0.1358
+0.0017
+0.7054
+0.3702
+Result of out-sample estimation
+PC-SETAR theoretical
+0.0770
+0.0942
+0.0020
+0.5070
+0.2432
+PC-ARMA theoretical
+0.0833
+0.0956
+0.0017
+0.5009
+0.2498
+PC-SETAR with dynamical adjustment of forecast
+0.0898
+0.0954
+0.0020
+0.4560
+0.2854
+PC-ARMA with dynamical adjustment of forecast
+0.0922
+0.0994
+0.0018
+0.4866
+0.2854
+Classical approach
+0.1006
+0.1171
+0.0025
+0.5787
+0.3427
+Note:The cost is expressed in as a percentage of the end of day volume weighted price. The classical approach is
+based on calculating averages from historical volume data.
+54
+
+Table 29: Robustness check: Comparison of VWAP predictions, based on mean absolute percentage error (MAPE), for period from January 2 to April 20, 2004.
+Models
+Mean
+STD
+Min
+Max
+Q95
+Result of in-sample estimation
+PC-SETAR
+0.0679
+0.0681
+0.0010
+0.3792
+0.1908
+PC-ARMA
+0.0742
+0.0786
+0.0011
+0.4560
+0.2207
+Classical approach
+0.1099
+0.1290
+0.0010
+0.7363
+0.3442
+Result of out-sample estimation
+PC-SETAR theoretical
+0.0978
+0.1047
+0.0018
+0.5303
+0.2997
+PC-ARMA theoretical
+0.1043
+0.1110
+0.0034
+0.5462
+0.3145
+PC-SETAR with dynamical adjustment of forecast
+0.1116
+0.1177
+0.0027
+0.5430
+0.3495
+PC-ARMA with dynamical adjustment of forecast
+0.1142
+0.1209
+0.0026
+0.5681
+0.3505
+Classical approach
+0.1200
+0.1345
+0.0021
+0.6523
+0.3780
+Note:The cost is expressed in as a percentage of the end of day volume weighted price. The classical approach is
+based on calculating averages from historical volume data.
+Table 30: Summary of estimated costs of execution of the VWAP order for
+different intraday volume models. The panels present summary in cases when
+estimated volume weighed prices are smaller or higher from observed ones,
+upper and lower panel respectively.
+Models
+Mean
+Frequency
+STD
+Min
+Max
+Q95
+SETAR
+0.0751
+49.2
+0.0924
+0.0016
+0.5681
+0.2032
+ARMA
+0.0824
+49.9
+0.0915
+0.0016
+0.5291
+0.2300
+Classical approach
+0.1122
+52.0
+0.1358
+0.00158
+0.7661
+0.3527
+SETAR
+0.0795
+50.8
+0.0881
+0.0013
+0.5023
+0.2340
+ARMA
+0.0856
+50.1
+0.0910
+0.0020
+0.5040
+0.2471
+Classical approach
+0.1147
+48.0
+0.1310
+0.0019
+0.7231
+0.3390
+Note:The cost is expressed in as a percentage of the end of day volume weighted price. The
+classical approach is based on calculating averages from historical volume data.
+55
+
+Table 31: Comparison of execution risk exposure.
+Companies
+Classical
+Theoretical
+Dynamical
+Difference
+approach
+PCA-SETAR
+PCA-SETAR
+Theo. SETAR
+Dyn. SETAR
+Theo. SETAR
+(in %)
+(in %)
+(in %)
+Class. approach
+Class. approach
+Dyn. SETAR
+ACCOR
+0.1047
+0.0906
+0.1121
+-0.0141
+0.0074
+-0.0215
+AGF-ASS.GEN.FRANCE
+0.1316
+0.1023
+0.1209
+-0.0293
+-0.0107
+-0.0186
+AIR LIQUIDE
+0.0801
+0.0726
+0.0818
+-0.0075
+0.0017
+-0.0092
+ALCATEL
+0.1336
+0.0845
+0.1079
+-0.0491
+-0.0257
+-0.0234
+ARCELOR
+0.1171
+0.0665
+0.1062
+-0.0506
+-0.0109
+-0.0397
+AXA
+0.0930
+0.0720
+0.0889
+-0.0210
+-0.0041
+-0.0169
+BNP PARIBAS
+0.0782
+0.0710
+0.0742
+-0.0072
+-0.0040
+-0.0032
+BOUYGUES
+0.1715
+0.1623
+0.1773
+-0.0092
+0.0058
+-0.0150
+CAP GEMINI
+0.2323
+0.1448
+0.1491
+-0.0875
+-0.0832
+-0.0043
+CARREFOUR
+0.0628
+0.0537
+0.0638
+-0.0091
+0.0010
+-0.0101
+CASINO GUICHARD
+0.1465
+0.1054
+0.1129
+-0.0411
+-0.0336
+-0.0075
+CREDIT AGRICOLE
+0.1389
+0.0902
+0.1102
+-0.0487
+-0.0287
+-0.0200
+DANONE
+0.0548
+0.0459
+0.0531
+-0.0089
+-0.0017
+-0.0072
+DEXIA
+0.1099
+0.0848
+0.0779
+-0.0251
+-0.0320
+0.0069
+EADS
+0.1947
+0.1434
+0.1404
+-0.0513
+-0.0543
+0.0030
+FRANCE TELECOM
+0.1398
+0.1006
+0.108
+-0.0392
+-0.0318
+-0.0074
+L’OREAL
+0.0866
+0.0698
+0.0832
+-0.0168
+-0.0034
+-0.0134
+LAFARGE
+0.1076
+0.0964
+0.1075
+-0.0112
+-0.0001
+-0.0111
+LAGARDERE S.C.A.
+0.1003
+0.0816
+0.1141
+-0.0187
+0.0138
+-0.0325
+LVMH
+0.1131
+0.0913
+0.0959
+-0.0218
+-0.0172
+-0.0046
+MICHELIN
+0.1541
+0.138
+0.1513
+-0.0161
+-0.0028
+-0.0133
+PERNOD-RICARD
+0.0775
+0.0532
+0.0745
+-0.0243
+-0.0030
+-0.0213
+Means of MAPE and drops in the execution risk measured by the difference of means of MAPE. The ﬁrst column, named Difference ,
+is the difference between the theoretical implementation PCA-SETAR model and the classical approach. A negative value means that
+the theoretical implementation PCA-SETAR model out-performs the classical approach since it reduces the execution risk to use the
+ﬁrst approach instead of the latter one. The second column, is the difference between the dynamic implementation PCA-SETAR and
+the classical and the last one is the difference between theoretical and dynamic implementation.
+56
+
+Table 32: (Continued) Comparison of execution risk exposure.
+Companies
+Classical
+Theoretical
+Dynamical
+Difference
+approach
+PCA-SETAR
+PCA-SETAR
+Theo. SETAR
+Dyn. SETAR
+Theo. SETAR
+(in %)
+(in %)
+(in %)
+Class. approach
+Class. approach
+Dyn. SETAR
+PEUGEOT
+0.0762
+0.059
+0.0801
+-0.0172
+0.0039
+-0.0211
+PIN.-PRINT.REDOUTE
+0.1389
+0.0778
+0.0998
+-0.0611
+-0.0391
+-0.0220
+RENAULT
+0.1406
+0.1076
+0.1287
+-0.0330
+-0.0119
+-0.0211
+SAINT GOBAIN
+0.0979
+0.0895
+0.0952
+-0.0084
+-0.0027
+-0.0057
+SANOFI-AVENTIS
+0.0999
+0.0707
+0.0897
+-0.0292
+-0.0102
+-0.0190
+SCHNEIDER ELECTRIC
+0.0865
+0.0788
+0.1027
+-0.0077
+0.0162
+-0.0239
+SOCIETE GENERALE
+0.0699
+0.0653
+0.0617
+-0.0046
+-0.0082
+0.0036
+SODEXHO ALLIANCE
+0.1233
+0.0806
+0.1182
+-0.0427
+-0.0051
+-0.0376
+STMICROELECTRONICS
+0.0906
+0.0802
+0.0768
+-0.0104
+-0.0138
+0.0034
+SUEZ
+0.0968
+0.0725
+0.0908
+-0.0243
+-0.0060
+-0.0183
+TF1
+0.1103
+0.0899
+0.1118
+-0.0204
+0.0015
+-0.0219
+THALES
+0.0959
+0.0782
+0.1027
+-0.0177
+0.0068
+-0.0245
+THOMSON (EX:TMM)
+0.1460
+0.0784
+0.1398
+-0.0676
+-0.0062
+-0.0614
+TOTAL
+0.0528
+0.0496
+0.0508
+-0.0032
+-0.0020
+-0.0012
+VEOLIA ENVIRON.
+0.1300
+0.0899
+0.1286
+-0.0401
+-0.0014
+-0.0387
+VINCI (EX.SGE)
+0.0774
+0.0559
+0.0755
+-0.0215
+-0.0019
+-0.0196
+VIVENDI UNIVERSAL
+0.1095
+0.0746
+0.102
+-0.0349
+-0.0075
+-0.0274
+Note:Means of MAPE and drops in the execution risk measured by the difference of means of MAPE. The ﬁrst column, named
+Difference , is the difference between the theoretical implementation PCA-SETAR model and the classical approach. A negative value
+means that the theoretical implementation PCA-SETAR model out-performs the classical approach since it reduces the execution risk to
+use the ﬁrst approach instead of the latter one. The second column, is the difference between the dynamic implementation PCA-SETAR
+and the classical and the last one is the difference between theoretical and dynamic implementation.
+57
+
+Figure 1: Autocorrelation and partial autocorrelation functions of the two components, TOTAL
+stock.
+58
+
+Figure 2: Autocorrelation functions of ARMA (left graph) and SETAR (right graph) residuals
+for speciﬁc component of EADS, SANOFI-AVENTIS and TOTAL stock.
+59
+
+Figure 3: TOTAL stock daily volume patterns on September 9 and 10, 2003, left and right
+respectively. The ﬁrst two graphs represent the intraday turnover evolution. The next two give
+the common component evolution and the ﬁnal two, the speciﬁc component evolution.
+60
+
+Figure 4: The dependence between classical approach tracking error and gain and loss for
+dynamical strategy.
+   
+    
+
+   
+   
+   
+   
+   
+   
+   
+ 
+       	 
+  	                   	 
+          
+    	   
+
+ 	       
+               	 
+  	                 
+	 
+   
+                   	 
+          
+    	   
+
+  	 
+      
+  
+61
