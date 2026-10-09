@@ -1,0 +1,1711 @@
+A Regime-Aware Hybrid Pairs Trading System with
+Sentiment-Driven Intelligence
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+A Regime-Aware Hybrid Pairs Trading System with
+Sentiment-Driven Intelligence
+Abstract
+Pairs trading, a widely used statistical arbitrage strategy, is often constrained
+by static pair selection mechanisms and limited adaptability to evolving market conditions. Existing approaches predominantly rely on numerical indicators, overlooking sentiment-driven behavioral dynamics that influence market
+regimes. From an artificial intelligence perspective, this paper proposes a hybrid decision-making framework that fuses numerical market indicators with
+sentiment-derived textual information to enable adaptive and context-aware
+learning. From an engineering perspective, the proposed framework is applied to
+the design of an intelligent pairs trading system for equity markets. The system
+integrates financial news sentiment analysis using the VADER model, a Random Forest–based pair selection mechanism guided by correlation and volatility
+features, and a regime-aware sector rotation module that dynamically aligns
+trading actions with bullish, bearish, and neutral market states. By embedding
+social sentiment into an engineered learning framework, the proposed approach
+enhances robustness and adaptability in trading decisions. Experimental evaluation on historical equity datasets demonstrates consistent outperformance over
+conventional pairs trading methods in terms of regime responsiveness, trade selection quality, and risk-adjusted returns. These results highlight the effectiveness of hybrid artificial intelligence systems that combine numerical and textual
+data for resilient financial decision intelligence.
+Keywords:
+Statistical arbitrage, sentiment analysis, market regime detection,
+sector rotation, artificial intelligence
+Preprint submitted to Engineering Applications of Artificial Intelligence
+February 2, 2026
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+1. Introduction
+The financial markets are complex socio-technical systems where collective
+behaviors, investor sentiment, and macroeconomic shifts jointly influence asset
+dynamics. Among quantitative strategies, the pairs trading strategy (PTS) is
+widely used, exploiting the mean-reverting behavior of correlated stock pairs
+(Gatev et al., 2006; Vidyamurthy, 2004). However, traditional approaches such
+as correlation- and cointegration-based methods (Rad et al., 2016) suffer from
+static pair selection, limited adaptability to market regime changes (Do & Faff,
+2010), and overreliance on numerical indicators while neglecting sentimentdriven signals (Chang et al., 2021; Tetlock, 2007). These shortcomings reduce
+resilience, especially during crises such as the COVID-19 crash (Krauss, 2017).
+Recent advancements in sentiment analysis and machine learning have highlighted the significant impact of unstructured textual data, including financial
+news, analyst reports, and social media sentiment, on asset price dynamics and
+market behavior (Lemmon & Portniaguina, 2006)-(Schmeling, 2009).
+These
+textual signals capture the psychological and emotional states of market participants, often serving as early indicators of market movements that traditional
+numerical indicators may fail to detect. Prior studies have demonstrated that
+integrating textual sentiment with quantitative factors can enhance stock return predictability and risk management (Liagkouras & Metaxiotis, 2025)(Chen,
+2023).
+Despite this, most conventional pair selection methodologies in pairs
+trading continue to rely solely on numerical measures such as price correlation, cointegration, or volatility, thereby overlooking valuable sentiment-based
+insights. This gap motivates the development of hybrid frameworks that combine numerical and textual features to improve pair selection robustness and
+adaptability in dynamic market conditions.
+To address this gap, this paper introduces a Hybrid pairs trading system
+(HPTS), a hybrid pairs trading strategy that integrates multi-source data,
+sentiment-driven analytics, market regime detection, and sector rotation into
+a unified framework. By combining numerical indicators with textual sentiment
+2
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+scores via machine learning models, HPTS enhances the robustness and precision of pair selection. The regime detection module adapts trading decisions to
+macroeconomic shifts (bull, bear, volatile), while sector rotation systematically
+reallocates capital toward resilient sectors to improve risk-adjusted returns. Empirical evaluations on real-world data show that HPTS consistently outperforms
+baseline strategies in profitability, adaptability, and drawdown control. Benchmark comparisons further demonstrate that hybrid feature fusion yields clear
+advantages over approaches relying solely on returns, volatility, or sentiment.
+The rest of this paper is structured as follows: Section 2 presents a literature survey on existing pairs trading methods and their limitations. Section
+3 illustrates the different key terms and methods used in the existing trading
+strategies. Section 4 describes the proposed HPTS framework, including data
+processing, pair selection, and trading rules. Section 5 details the experimental setup, dataset and discusses the results, comparing HPTS with traditional
+strategies. Finally, Section 6 concludes the paper and outlines potential future
+enhancements.
+2. Related survey
+Pairs trading, a statistical arbitrage strategy introduced by Gatev et al.
+(Gatev et al., 2006), exploits the mean-reverting behavior of historically correlated stock pairs. Traditional approaches, such as correlation- and cointegrationbased methods, lack adaptability to market shifts, leading to suboptimal trades
+and higher risks (Vidyamurthy, 2004). This section provides a structured review of existing pairs trading strategies, various pair selection methods, regimeswitching techniques, and sector rotation strategies, highlighting their strengths,
+limitations, and sector-dependence parameters.
+PTS traditionally rely on numerical data, such as stock prices, returns,
+volatility, and cointegration, using Pearson correlation and statistical tests to
+identify optimal pairs (Rad et al., 2016)-(Sarmento & Horta, 2020). Several
+studies have proposed refinements, such as Kalman filters and machine learning3
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+based approaches, but they often focus solely on numerical data (Lemmon &
+Portniaguina, 2006; Figueira & Horta, 2023). Unlike traditional numerical approaches, textual data captures market sentiment, investor behavior, and news
+impact, enhancing adaptability in dynamic market conditions (Chang et al.,
+2021)-(Bollen et al., 2011).
+Studies leveraging NLP, lexicon-based methods,
+and machine learning models (BERT, LSTMs) demonstrate their effectiveness
+in predicting stock returns by capturing market sentiment and investor behavior
+(Lee, 2025)-(Abednego et al., 2022).
+Despite the success of numerical and textual data in trading, their integration for pairs trading remains largely unexplored (Schumaker et al., 2012)-
+(Christodoulaki & Kampouridis, 2023). Previous studies combined technical
+indicators with sentiment analysis for stock prediction but overlooked pair selection. Others focused on market timing using sentiment data but did not address
+pair formation (Picasso et al., 2019; Bing et al., 2014). Recent studies explore
+deep learning and transformer-based models for pairs trading.
+LSTM-based
+models capture temporal dependencies in spreads (Gurzu, 2024), FinBERT integrates sentiment for improved responsiveness (Man & Lin, 2022), and transformer fusion models combine textual and numerical signals (Yang et al., 2022)-
+(Yadav, 2024), offering higher robustness and predictive accuracy. These approaches highlight the potential of hybrid architectures to handle non-linearities
+and high-dimensional dependencies beyond traditional statistical methods.
+However, market conditions fluctuate, requiring adaptive strategies. Studies
+(Chiarello et al., 2020; Bekaert & Harvey, 2003) show that the rolling statistical
+measures, volatility clustering, and Markov-switching models aid in regime classification. Techniques like Hidden Markov Models (HMM) (Bing et al., 2014),
+rolling volatility indicators (Haase & Neuenkirch, 2023), and machine learning models (Random Forest, SVMs, Neural Networks) enhance market state
+detection (Montoya & Gonzalez, 2019).
+Also, the sector rotation strategies
+leverage market trends to identify top-performing sectors, with studies highlighting dynamic allocation based on momentum and fundamental indicators
+(Su´arez-Cetrulo et al., 2023; Black, 2006).
+However, both regime shifts and
+4
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+sector rotation remain underutilized in pairs trading, highlighting the need for
+their integration to improve adaptability and profitability. This paper proposes
+an HPTS that integrates multi-modal data pair selection using the Random Forest algorithm, dynamic market regime detection for adaptive shifts, and sector
+rotation for optimized capital allocation.
+3. Key concepts and methods
+This subsection provides an overview of the foundational concepts and methodologies used in pairs trading, including the process of identifying correlated pairs.
+3.1. Numerical indicators for pair selection
+Pairs of stocks with a strong correlation are identified using methods such
+as Pearson correlation (Krauss, 2017), Dynamic Cross-Correlation (Alexiou &
+Tyagi, 2020), machine learning algorithms (Sarmento & Horta, 2020), deep
+learning techniques (Lemmon & Portniaguina, 2006), and reinforcement learning
+algorithms (Gupta & Chatterjee, 2020). In this paper, the pair considered for
+PTS is selected using the Pearson correlation distance measure. Let X be the set
+of N normalized and preprocessed stock files, where X = {x1, x2, x3, . . . , xN}.
+The Pearson correlation coefficient, denoted by ρxi,xj(t) for all xi, xj ∈X is
+calculated as:
+ρxi,xj(t) =
+TP
+t=1
+(Pxi,t −¯Pxi)(Pxj,t −¯Pxj)
+s
+TP
+t=1
+(Pxi,t −¯Pxi)2 ·
+s
+TP
+t=1
+(Pxj,t −¯Pxj)2
+,
+(1)
+where Pxi,t and Pxj,t represent the prices of stocks xi and xj at time t, respectively. Similarly, ¯Pxi and ¯Pxj denote the mean prices of stocks xi and xj over
+the given period.
+If ρxi,xj(t) ≈+1, it indicates a strong positive correlation, where an increase
+in one stock’s price likely corresponds to an increase in the other. Conversely,
+if ρxi,xj(t) ≈−1, it suggests a strong negative correlation, where an increase
+in one stock’s price likely corresponds to a decrease in the other. If ρxi,xj(t)
+5
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+is close to −0 (ρxi,xj(t) ≈0), it implies that the price movements of the two
+stocks are independent and not linearly related.
+3.2. Sentiment Analysis Integration
+Sentiment analysis, a key component in modern financial modeling, quantifies investor sentiment using textual data sources such as financial news and
+social media (Tetlock, 2007)-(Bollen et al., 2011).
+It plays a crucial role in
+pairs trading by identifying market sentiment shifts that influence stock prices.
+Traditional approaches often rely on numerical data alone, thereby overlooking
+valuable sentiment-driven signals (Lee, 2025)-(Schumaker et al., 2012). Mathematically, sentiment scores St for a given stock at time t can be computed using
+Natural Language Processing (NLP) models. The aggregated sentiment score
+over a period is expressed as:
+¯St = 1
+N
+N
+X
+i=1
+wi · si,
+(2)
+where si represents the sentiment polarity of article i, and wi is its relevance
+weight. The integration of sentiment analysis with quantitative factors enables
+a hybrid model that enhances stock pair selection by filtering signals based on
+sentiment trends (Chen et al., 2022)-(Bing et al., 2014). The proposed framework employs the VADER sentiment analyzer, as discussed in Section 4.1.3.
+While various sentiment tools exist, their suitability for financial applications varies. VADER, though widely used for general sentiment analysis, often
+overlooks finance-specific nuances, whereas Finnhub provides market-oriented
+sentiment scores but with limited transparency in its proprietary model.
+In
+this study, we adopt Finnhub sentiment scores to ensure practical integration
+with quantitative factors. Although this choice may introduce some noise due
+to the absence of benchmarking against domain-specific datasets such as FinancialPhraseBank, it offers a feasible balance between accessibility and applicability, enabling the proposed hybrid framework to effectively incorporate sentiment
+trends into stock pair selection.
+6
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+3.3. Market regime switching models
+The regime-switching model is a critical tool in financial modeling that captures structural shifts in market behavior (Bekaert & Harvey, 2003)-(Haase
+& Neuenkirch, 2023). Traditional pairs trading strategies assume static relationships between stocks, often failing to adapt to dynamic market conditions.
+Regime-switching models address this limitation by classifying market states
+into distinct regimes, such as bullish, bearish, and neutral phases, allowing
+trading strategies to adjust accordingly (Montoya & Gonzalez, 2019). Mathematically, a regime-switching model can be represented using a HMM, where
+the latent state variable Lt follows a Markov process:
+P(Lt = k|Lt−1 = m) = πmk,
+X
+k
+πmk = 1,
+(3)
+where πmk denotes the transition probability from regime m to regime k. The
+model estimates regime-dependent parameters for volatility, correlation, and
+mean-reversion strength (Su´arez-Cetrulo et al., 2023)-(Alexiou & Tyagi, 2020),
+enhancing the adaptability of pairs trading strategies. By incorporating regimeswitching, pairs trading models can dynamically allocate positions based on
+evolving market conditions, thereby improving performance and risk management.
+The classic HMM is adopted for regime detection as it offers an effective
+balance of interpretability, computational efficiency, and robustness. Although
+more advanced techniques such as hierarchical HMMs, Bayesian change-point
+models, or LSTM-based predictors can capture richer dynamics, they typically
+require larger datasets, introduce higher complexity, and reduce transparency.
+Considering these trade-offs, HMM remains a reliable and widely accepted choice
+for integrating regime-switching into pairs trading.
+3.4. Pairs trading model
+After identifying correlated pairs, the trading model is implemented by first
+calculating the spread, δt (Christodoulaki & Kampouridis, 2023). This spread,
+7
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+which represents the price difference between the two stocks at time t, is computed as:
+δt = Pxi,t −Pxj,t,
+for all si, sj ∈S,
+(4)
+where Pxi,t and Pxj,t are the adjusted closing price of stocks xi and xj at time
+t respectively. Next, setting appropriate window size, entry, and exit thresholds
+is essential for the effectiveness of a pairs trading strategy. The z-score Zt is
+computed using the spread as
+Zt = δt −µt
+σt
+,
+(5)
+where µt and σt denote the moving average and standard deviation of the spread
+over a defined rolling window. Based on these values, trading signals are generated using both the spread and its Z-score (Bekaert & Harvey, 2003). The
+strategy applies entry and exit thresholds, θentry and θexit, to guide trading
+actions. A long position in xi and short in xj is initiated when Zt < −θentry,
+while the reverse (short xi, long xj) is taken when Zt > θentry. Positions are
+closed when |Zt| < θexit, indicating that the spread has reverted to its mean.
+The final step in the pairs trading strategy is to calculate the cumulative
+returns from the trades. Cumulative returns track the overall performance of
+the strategy by aggregating the profits and losses over time, factoring in transaction costs (Guidolin, 2011). It measures the investment’s growth or decline
+by compounding each daily return, providing an overall view of the strategy’s
+effectiveness. It is calculated as:
+Rxi,t = Pxi,t −Pxi,(t−1)
+Pxi,(t−1)
+,
+for all xi ∈X,
+(6)
+where Rsi,t is the daily return for stock si at time t. The cumulative return, Rc
+is over the historical period T is calculated as:
+Rc =
+ T
+Y
+t=1
+(1 + Rxi,t)
+!
+−1,
+xi ∈X.
+(7)
+This formula progressively accumulates returns for each period, yielding the
+total return across the entire trading horizon.
+8
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+These concepts form the basis for evaluating HPTS in terms of profitability, risk-adjusted returns, stability, and success rate. A backtesting framework
+simulates trades on historical data, enabling rigorous assessment across varying
+market conditions and validating its advantages over conventional pairs trading.
+4. Proposed Approach
+This paper introduces HPTS, a hybrid framework integrating multi-modal
+data, regime detection, and sector rotation to enhance adaptability and profitability. As shown in Fig. 1, the framework operates in four sequential phases,
+each processing information and feeding into the next to enable dynamic, datadriven pairs trading decisions.
+Figure 1: Architecture of the proposed HPTS, incorporating volatility and return computation, sentiment analysis, composite score generation via random forest, market regime detection, and dynamic sector rotation for optimal pair selection and trading
+4.1. Phase 1: Hybrid data processing for pair selection
+This phase collects historical stock prices and financial news, processes numerical and textual data, and integrates them for hybrid analysis through
+return-volatility computation, sentiment extraction, and data fusion.
+9
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+4.1.1. Data collection
+In the first stage, both numerical stock data and textual sentiment data from
+various sources are gathered to form a comprehensive dataset for analysis. Let
+X = {x1, x2, . . . , xN} denote the set of N input stock files, where each xi ∈X
+includes the historical price and sentiment data for the ith stock under analysis.
+The stock data for all N stocks over T days is fetched from the YFinance API,
+with Pxi,t representing the closing price of stock xi on day t. This data is then
+organized into a matrix DN as shown below:
+DN =
+
+
+Px1,t1
+Px2,t1
+· · ·
+PxN,t1
+Px1,t2
+Px2,t2
+· · ·
+PxN,t2
+...
+...
+...
+...
+Px1,tT
+Px2,tT
+· · ·
+PxN,tT
+
+
+(8)
+The sentiment data DS for each stock is retrieved from the Finnhub API. For
+each news headline, sentiment analysis is performed using the Valence Aware
+Dictionary and sEntiment Reasoner (VADER) sentiment analyzer, which generates sentiment scores Sxi,t ranging from -1 (indicating negative sentiment) to
++1 (indicating positive sentiment). This DS is represented as:
+DS =
+
+
+Sx1,t1
+Sx2,t1
+· · ·
+SxN,t1
+Sx1,t2
+Sx2,t2
+· · ·
+SxN,t2
+...
+...
+...
+...
+Sx1,tT
+Sx2,tT
+· · ·
+SxN,tT
+
+
+(9)
+Data preprocessing and normalization have been applied to both numerical
+stock data and textual news data. As a result, both datasets are now structured
+and aligned, enabling their integrated use in the subsequent stages of the hybrid
+trading strategy.
+4.1.2. Calculating returns and volatility
+After collecting the stock data for the set X, key parameters are calculated to
+evaluate the volatility and sentiment of each stock. The first step is to compute
+the volatility βxi for each stock xi ∈X. This is done by calculating the standard
+10
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+deviation of the daily returns Rxi,t. The average return Rxi for each stock is
+then calculated over the T days as follows:
+Rxi = 1
+T
+T
+X
+t=1
+Rxi,t,
+∀xi ∈X.
+(10)
+The volatility βxi of each stock is calculated by determining the standard deviation of the daily returns around the average return:
+βxi =
+v
+u
+u
+t
+1
+T −1
+T
+X
+t=1
+(Rxi,t −Rxi)2,
+∀xi ∈X,
+(11)
+which quantifies the stock’s price fluctuations over time. The standard deviation measures the risk or uncertainty associated with the stock’s daily price
+movements.
+4.1.3. Sentiment Analysis Using VADER
+To incorporate sentiment into HPTS framework, we employ the VADER
+sentiment analyzer, a lexicon and rule-based model well-suited for short financial
+news headlines. For each stock xi, news headlines are processed to generate
+sentiment scores Sxi,h, where values range from -1 (most negative) to +1 (most
+positive). The average sentiment score Sxi for stock xi is then computed by
+aggregating across all H headlines related to that stock:
+Sxi = 1
+H
+H
+X
+h=1
+Sxi,h,
+∀xi ∈X,
+(12)
+where H is the total number of headlines associated with stock xi. This produces
+a sentiment indicator that reflects the overall news sentiment surrounding each
+stock and serves as an additional input to our pair selection process.
+4.1.4. Feature extraction and merging
+In this stage, key features are extracted from both numerical and sentimentbased data to rank stocks effectively.
+The numerical data includes financial
+metrics such as βi and Ri, while Sxi are derived from news and market sentiment analysis. Combining these two data types provides a more comprehensive
+11
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+view of a stock’s behavior, integrating both its historical performance and the
+prevailing market sentiment. The hybrid dataset Dhybrid is structured as follows, where each stock xi is represented by its volatility, return, and sentiment:
+Dhybrid =
+
+
+x1 :
+βx1
+Rx1
+Sx1
+x2 :
+βx2
+Rx2
+Sx2
+...
+...
+...
+...
+xN :
+βxN
+RxN
+SxN
+
+
+(13)
+This hybrid dataset forms the foundation for the next stages of feature extraction and pair selection. The data for each stock xi is represented as:
+xi = [βi, Ri, Si],
+∀xi ∈X.
+(14)
+The composite score Cxi for each stock is then calculated by taking a
+weighted sum of volatility, return, and sentiment, as given by the formula:
+Cxi = wβ · βi + wR · Ri + wS · Si,
+∀xi ∈X,
+(15)
+where weights wβ, wR, and wS, corresponding to volatility, return, and sentiment, respectively, are determined based on their historical reliability and predictive strength in financial markets. These weights are normalized such that
+their sum equals 1, i.e., wβ + wR + wS = 1, ensuring a balanced contribution
+to the composite score. A hierarchical weighting scheme is adopted, expressed
+as |wβ| > |wR| > |wS|, to prioritize more robust and statistically reliable indicators over relatively noisy and unstructured sentiment data. Typically, βi is
+given the highest weight due to its strong reflection of market risk and stability,
+followed by Ri, and then Si, which incorporates qualitative market perception.
+Stocks are then ranked based on their composite scores, with higher scores indicating stocks that are more favorable for further analysis and decision-making
+in trading strategies.
+To ensure that the weighting scheme is not arbitrarily determined, we further incorporate a data-driven optimization process. The optimal weights are
+obtained by solving:
+{w∗
+β, w∗
+R, w∗
+S} = arg
+max
+wβ+wR+wS=1 F(C),
+(16)
+12
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+where F(C) represents a performance criterion such as backtest return, Sharpe
+ratio, or prediction accuracy. Moreover, feature importance values Ij from the
+Random Forest model in Phase 3 are employed to refine these weights:
+wj =
+Ij
+P
+k∈{β,R,S} Ik
+,
+j ∈{β, R, S}.
+(17)
+This ensures that the final weighting of volatility, return, and sentiment reflects
+empirical predictive strength rather than heuristic assumptions, enhancing robustness and adaptability across market regimes.
+Unlike conventional pairs trading approaches that rely solely on price comovement, this proposed framework integrates volatility, returns, and sentiment
+into a unified composite score. This fusion captures not only quantitative market risk but also qualitative market perceptions, addressing short-term mispricings driven by news and investor sentiment. Such integration has been shown
+to enhance predictive power in regime-aware strategies (Elliott & Bradrania,
+2018). The ranked hybrid feature set generated in Phase 1 forms the input to
+regime detection (Phase 2) and supervised pair selection (Phase 3). This alignment ensures that hybrid signals are directly tested through market adaptability
+and backtesting (Phase 4), strengthening empirical validation of the proposed
+framework.
+4.2. Phase 2: Market regime detection and sector rotation
+This phase focuses on dynamically detecting prevailing market conditions
+and adapting the trading strategy accordingly through regime-aware sector rotation. A two-step approach is adopted: (1) identifying market regimes using
+a data-driven classification technique, and (2) rotating sectors based on the
+detected regime to optimize exposure and mitigate risk.
+4.2.1. Market regime detection and classification
+Market regime detection and classification form a foundational layer of the
+proposed strategy to dynamically identify prevailing market phases. This datadriven approach enables the classification of each time step into bullish, bearish,
+13
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+or neutral regimes, thereby guiding both sector rotation and pair selection in
+alignment with current market conditions. A regime-switching model using an
+HMM (explained in 3), where each time step is classified into one of three market
+regimes: bullish, bearish, or neutral.
+The parameters associated with each
+regime include mean returns (µR), mean-reversion strength (µS), and volatility
+(β). These parameters are regime-dependent, meaning they vary according to
+the state of the market.
+(µR, µS, β) =
+
+
+
+
+
+
+
+
+
+
+
+(µR
+bull>0, µS
+bull>0, βbull↓),
+Bullish
+(µR
+bear<0, µS
+bear<0, βbear↑),
+Bearish
+(µR
+neu≈0, µS
+neu≈0, βneu∼),
+Neutral
+(18)
+In a bullish regime, expected returns and mean-reversion strength are positive with low volatility, indicating sustained upward movement. Conversely,
+bearish markets exhibit negative returns and reversion strength with high volatility. Neutral regimes represent consolidating or sideways trends with minimal
+returns and moderate volatility. This regime-based modeling enables an adaptive strategy that dynamically aligns with underlying market conditions. This
+regime-aware classification captures transitional shifts in market sentiment and
+guides strategic decision-making in subsequent phases.
+4.2.2. Walk-forward sector rotation strategy
+Once the market regime is identified, a walk-forward sector rotation (WFSR)
+strategy is applied to reallocate capital across sectors that historically perform
+well under the prevailing regime. This dynamic allocation improves adaptability
+and return optimization. As outlined in algorithm 1, the strategy selects topK high-scoring intra-sector stock pairs from the best-performing sector in each
+rolling train-test period and simulates trading to assess performance. Let E =
+{e1, e2, ..., eE} represent the set of all market sectors (e.g., Technology, Energy,
+Healthcare). The datasets DN and DS are used respectively for training the
+HMM and simulating the pair trading strategy. The algorithm proceeds over a
+total time horizon T, using a rolling step size τ, with each iteration involving
+14
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+a training window Wtrain and a test window Wtest. The market regime at time
+t, denoted by Mt, is inferred using HMM and categorized as Bullish, Bearish,
+or Neutral. Based on the identified regime Mt, a corresponding preferred sector
+subset Epreferred
+t
+⊆E is selected for instance, defensive sectors during bearish
+periods. For each preferred sector ei, all intra-sector stock pairs Pei are formed,
+and a composite score Cp is computed for each pair p, based on factors such as
+correlation, cointegration, and volatility. The return Rp for each pair is used to
+compute the sector’s average return Rei. The sector e∗with the highest Rei is
+selected, and from it, the top-K ranked pairs P∗⊆Pe∗are used for simulation.
+The actual return Ractual is obtained through test-window trading, and the
+dictionary R stores all outcomes per window. Finally, cumulative performance
+is captured as Rc across all walk-forward iterations.
+The WFSR algorithm enhances sector selection and pair trading strategies,
+promoting better performance and adaptability over time. Through the walkforward validation process, the strategy undergoes continuous testing and refinement, ensuring robust decision-making and the generation of consistent, cumulative returns.
+4.3. Phase 3: Pair selection using hybrid approach
+After identifying preferred sectors through regime detection, pair selection
+is limited to stocks within these sectors.
+This phase improves the selection
+process by integrating machine learning with traditional statistical methods,
+allowing for the identification of highly correlated pairs that align with current
+market conditions and trends. To this end, a Random Forest Regressor (RFR) is
+employed to model the composite score of each stock based on volatility, return,
+and sentiment features.
+The choice of RFR is motivated by its robustness against overfitting, its
+ability to capture complex nonlinear feature interactions, and the interpretability offered through feature importance analysis. Unlike linear regression, which
+assumes strict linearity, or deep learning models such as LSTMs that demand
+larger datasets and extensive tuning, RFR provides a balanced trade-off between
+15
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+Algorithm 1 WFSR algorithm using HMM and Cxi
+1: Input: Sectors E, data DN, DS, T, τ
+2: Initialize: Results R = {}
+3: for Wtrain ∈[Tstart, Tend −τ] do
+4:
+Extract training data Dtrain
+5:
+Detect regime Mt = HMM(Dtrain) ∈{Bullish, Bearish, Neutral}
+6:
+Assign Epreferred
+t
+:
+Epreferred
+t
+=
+
+
+
+
+
+
+
+
+
+
+
+Ebullish,
+if Mt = Bullish
+Ebearish,
+if Mt = Bearish
+Eneutral,
+otherwise
+7:
+for each ei ∈Epreferred
+t
+do
+8:
+Identify pairs Pei
+9:
+Compute Cp ∀p ∈Pei
+10:
+Rei =
+1
+|Pei|
+P Rp
+11:
+end for
+12:
+Select best-performing sector e∗= arg max Rei
+13:
+Select top-K pairs P∗⊆Pe∗
+14:
+Extract Dtest, simulate trading on P∗, get Ractual
+15:
+Store result: R[Wtest] = (Mt, e∗, P∗, Ractual)
+16: end for
+17: Compute cumulative returns Rcumulative (refer equation 7)
+18: Output: Returns R, cumulative return Rc
+16
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+predictive power and practical applicability in noisy financial environments. Its
+empirical success in financial prediction tasks and reduced sensitivity to hyperparameters further strengthen its suitability for this framework. Formally, the
+trained model predicts the composite score ˆCi for stock xi as:
+ˆCi = fRFR(βi, Ri, Si),
+∀xi ∈X,
+(19)
+where fRFR denotes the Random Forest mapping of volatility (βi), average
+return (Ri), and sentiment score (Si) into a predicted composite score. These
+predicted scores serve as the basis for ranking and selecting candidate stock
+pairs within the identified sectors. The model’s performance is evaluated using
+Mean Squared Error (MSE) and R-squared (R2) metrics. The MSE and R2 are
+calculated as:
+MSE = 1
+N
+N
+X
+i=1
+
+Cxi −ˆCxi
+2
+∀xi ∈X,
+(20)
+R2 = 1 −
+PN
+i=1
+
+Cxi −ˆCxi
+2
+PN
+i=1
+
+Cxi −1
+N
+PN
+j=1 Cxj
+2
+∀xi ∈X,
+(21)
+where N is the total number of stocks. The stocks are then ranked according
+to their predicted composite scores: ˆCx1 > ˆCx2 > · · · > ˆCN. Finally, pairs are
+selected based on their correlation and the sum of the composite scores. Select
+a pair (xi, xj) based on the following criteria, where σ is the correlation between
+the assets, and Csum is the sum of their composite scores. Here, Cthresh denotes
+the minimum required combined score for a pair to qualify as fundamentally
+strong. In the experimentation, a fixed threshold of Cthresh = 0.5 was employed,
+consistent with prior literature, to ensure methodological uniformity and to
+provide a controlled baseline for highlighting the effectiveness of the proposed
+approach.
+Select a pair (xi, xj) such that:
+Case 1: Ideal pair selection
+A pair is selected if:
+σ ≥σthresh AND Csum ≥Cthresh
+17
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+This implies high volatility and a strong composite score, indicating a good
+statistical fit and fundamentals.
+Case 2: Statistically strong, weak composite score
+A pair is considered with caution if:
+σ ≥σthresh AND Csum < Cthresh
+Here, volatility meets the threshold, but the composite score is weak.
+Case 3: Weak correlation, strong composite score
+A pair is rejected if:
+σ < σthresh AND Csum ≥Cthresh
+The pair fails statistical requirements, despite a strong composite score.
+Case 4: Weak in both metrics
+A pair is discarded if:
+σ < σthresh AND Csum < Cthresh
+Both volatility and composite score fail to meet the thresholds, making it unsuitable.
+This hybrid pair selection approach improves selection accuracy by integrating machine learning predictions with correlation-based filtering, ensuring more
+profitable and stable trading pairs.
+4.4. Phase 4:Trading execution and backtesting
+This phase builds on the pair selection from Phase 3, focusing on executing
+the strategy by calculating spread and Z-score to identify entry and exit points.
+The strategy is backtested to assess historical performance, optimized using risk
+metrics such as the Sharpe ratio and maximum drawdown, and dynamically
+adjusts sector exposure based on market conditions. The strategy uses sector
+rotation, detecting market regimes (bull, bear, or neutral) with an HMM to
+select the most profitable sectors. By compounding sector returns and adjusting
+18
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+exposure based on prevailing market conditions, it maximizes adaptability and
+profitability.
+The trading execution and backtesting of the proposed pairs trading strategy are jointly outlined in Table 1.
+Trading signals are generated from the
+spread and Z-score of selected pairs, with entry and exit decisions triggered by
+predefined thresholds. Backtesting evaluates the strategy’s performance across
+market regimes, providing insights into profitability, risk-adjusted returns, and
+robustness before real-world deployment.
+Table 1: Overview of trading execution and backtesting in HPTS
+Step
+Description
+1
+Select a stock pair based on selection criteria (e.g., correlation, cointegration, volatility, or hybrid method).
+2
+Define parameters: Entry threshold = 1.0, Exit threshold = 0.5, and
+moving window size = 30 days.
+3
+Calculate spread (δt) (refer equation 4) and z-score (Z) of the spread at
+time t (refer equation 5.
+4
+Generate trading signals based on z-score (explained in section 3.4).
+5
+Exit condition: If the z-score crosses the exit threshold (e.g., returns to
+within ±0.5), the position is closed (= 0).
+6
+Calculate daily strategy returns ((refer equation 6)).
+7
+Compute cumulative returns of the strategy (refer equation 7).
+8
+Evaluate the performance using risk metrics such as the Sharpe Ratio,
+Maximum Drawdown, and Win Ratio (see equations 22, 23, 24 for detailed formulations).
+To comprehensively evaluate the performance of the proposed pairs trading
+strategy, standard risk-adjusted metrics are computed to quantify both profitability and stability beyond raw returns (Sukma & Namahoot, 2024). Various
+metrics are utilized to evaluate the proposed approach, some of which are listed
+below. The Sharpe Ratio (ϕ), a measure of risk-adjusted return, is calculated
+19
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+as:
+ϕ =
+¯
+Rt −Rf
+σRt
+,
+(22)
+where ¯
+Rt is the average daily return of the strategy, σRt is the standard deviation
+of daily returns, and Rf is the risk-free rate, typically assumed to be zero for
+daily computations. Maximum Drawdown (∆MDD) is another crucial metric
+used to assess downside risk. It is defined as the maximum observed loss from
+a peak to a trough in cumulative returns over the strategy period:
+∆MDD = max
+t∈[1,T ]
+Peakt −Valleyt
+Peakt
+
+,
+(23)
+where Peakt = maxs≤t Rc,u and Valleyt = mins≥t Rc,u. This provides an estimate of the maximum capital erosion encountered during the backtesting period.
+To measure consistency, calculate the win ratio (Φ), defined as the ratio of the
+number of trading days with positive returns to the total number of trading
+days:
+Φ = Number of Positive Return Days
+Total Trading Days
+(24)
+The overall effectiveness of the trading strategy can be evaluated using a logical
+condition that incorporates key risk-adjusted performance metrics:
+Strategy is deemed effective if:
+ϕ > θϕ
+∧
+∆MDD < θ∆MDD
+∧
+Φ > θΦ
+where θϕ, ∆MDD, and ∆MDD represent the predefined acceptable thresholds
+for Sharpe ratio, maximum drawdown, and win ratio, respectively. The evaluation of risk-adjusted performance metrics provides a deeper insight into the
+robustness and reliability of the proposed pairs trading strategy.
+5. Performance evaluation and result Analysis
+The dataset comprises 22 stock tickers from Yahoo Finance, spanning January 1, 2020, to December 31, 2023. To capture sector-specific dynamics under
+volatile conditions, particular emphasis is placed on technology and healthcare
+stocks, which experienced heightened turbulence and structural shifts during
+20
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+the COVID-19 period. Attributes include daily closing prices, volatility, and
+returns, reflecting both crisis and recovery phases. Sentiment data is obtained
+from financial news headlines via the Finnhub API, with scores computed using VADER’s compound polarity metric.
+While VADER is widely applied
+in sentiment classification (Hutto & Gilbert, 2014), it is not finance-specific
+and may misinterpret domain terms (e.g., “downgrade,” “liquidity tightening”) (Loughran & McDonald, 2011); similarly, Finnhub’s proprietary sentiment
+scores lack transparent validation. Nonetheless, prior studies show that hybrid
+trading frameworks remain robust despite moderate sentiment noise (Nassirtoussi et al., 2014), supporting the reliability of HPTS. This combined use of
+numerical and textual data enhances the adaptability and robustness of pair
+selection and trading decisions.
+5.1. Feature importance and predictive power
+To further assess the contribution of sentiment alongside numerical indicators, we identified key features influencing stock behavior using a Random
+Forest Regressor. The analysis, as shown in Table 2, revealed average sentiment
+as the most significant factor, followed by volatility and return. While additional
+indicators such as the 50-day moving average, trading volume, and RSI were
+considered, they showed lower importance. Integrating the top three features
+into the composite scoring framework improved interpretability and predictive
+accuracy by effectively capturing critical market signals.
+Table 2: Feature importance scores from random forest regressor
+Feature
+Importance score
+Average sentiment (Sxi)
+0.382706
+Volatility(β)
+0.547603
+Return (Rxi)
+0.446895
+Moving average (50)
+0.146524
+Trading volume
+0.098409
+Relative strength index (RSI)
+0.071921
+21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+5.2. Impact of dataset size on RFR performance
+The performance of the Random Forest Regressor (RFR) model within the
+HPTS framework is influenced by the size of the historical dataset used for
+training. To evaluate this effect, a sensitivity analysis was conducted by varying
+the training data window and assessing predictive accuracy and cumulative
+returns. As shown in Table 3, the performance of HPTS improves as the dataset
+size increases, particularly when trained on data spanning three or more years.
+This is expected, as larger datasets provide more diverse market regimes and
+sentiment shifts, allowing the RFR to capture richer patterns. However, after a
+certain point (around four years of data), the improvement plateaus, suggesting
+that while sufficient data is critical, excessively large datasets may not yield
+proportionally higher benefits due to market non-stationarity.
+Table 3: Impact of Training Data Size on RFR Performance in HPTS
+Training data window
+RFR pred. accuracy (%)
+Rcum (%)
+Sharpe ratio
+1 Year (2023 only)
+61.4
+12.5
+0.89
+2 Years (2022–2023)
+67.8
+18.3
+1.12
+3 Years (2021–2023)
+72.6
+23.7
+1.28
+4 Years (2020–2023)
+73.1
+24.1
+1.30
+To further strengthen the performance evaluation, we analyzed the sensitivity of the RFR model to dataset size. Since RFR learns patterns from historical
+stock and sentiment data, its predictive accuracy improves with larger and more
+diverse samples. Our experiments confirmed that smaller datasets reduced generalization capability, while performance consistently stabilized with broader
+data coverage. This aligns with our framework’s design, where incorporating
+extended stock price histories and sentiment inputs enhances the robustness of
+regime detection and trading outcomes within HPTS. This sensitivity analysis
+confirms that the RFR model within HPTS remains robust once sufficient historical data is available. Building on this, we compute composite scores (Cxi) by
+integrating sentiment, volatility, and return, enabling the ranking of individual
+22
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+stocks for pair formation.
+The analysis begins by computing key stock indicators: β, Rxi, and Sxi.
+These metrics are combined to calculate the composite score (Cxi) for each
+stock. Table 4 presents the derived values for the randomly selected 22 stocks,
+which are ranked based on their Cxi scores. Stocks like JNJ, PFA, and AAPL,
+which exhibit a strong combination of volatility, return, and sentiment, rank
+highest, indicating their strong potential for profitable pair formations in the
+trading strategy.
+Building on the composite score computation, the strategy transitions into
+Phase 2, where market regime detection and sector rotation are applied to enhance adaptability. A HMM model is employed to classify each time step into
+bullish or bearish regimes based on historical market dynamics. Fig. 2 illustrates
+this classification, overlaying cumulative returns (red line) with sector-specific
+performance (green squares) under each regime. This regime-aware framework
+allows the model to dynamically align sector preferences with prevailing market conditions, thereby guiding the selection of high-scoring stock pairs in a
+context-sensitive manner.
+Figure 2: Sector returns and market regime classification, with bullish and bearish periods
+highlighted.
+The red line represents cumulative returns, while the green squares indicate
+sector returns
+23
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+Table 4: Stock performance data including rank
+Stock(xi)
+β
+Rxi
+Sxi
+Cxi
+Rank
+AAPL
+79.48
+0.0036
+0.0825
+37.98
+3
+AMZN
+17.44
+0.0017
+0.1975
+8.68
+11
+TSLA
+25.99
+0.0009
+0.0466
+12.98
+6
+GOOGL
+15.73
+0.0014
+0.1005
+7.84
+14
+MSFT
+15.58
+0.0005
+0.1363
+7.76
+15
+NVDA
+24.87
+0.0041
+0.0697
+12.42
+8
+NFLX
+108.81
+0.0024
+0.1344
+54.37
+1
+AEP
+19.44
+-0.0007
+0.0993
+9.70
+9
+JPM
+8.70
+-0.0025
+0.0274
+4.34
+17
+ORCL
+25.35
+0.0018
+0.0814
+12.65
+7
+CRM
+32.26
+0.0010
+0.1713
+16.09
+4
+MS
+4.81
+0.0009
+0.1629
+2.37
+19
+BAC
+10.44
+0.0018
+0.1081
+5.19
+16
+LLY
+17.67
+0.0009
+0.0671
+8.82
+10
+GLID
+16.41
+0.0008
+0.0175
+8.20
+12
+SPOT
+16.32
+0.0017
+0.2108
+8.11
+13
+ZM
+8.65
+0.0008
+0.1909
+4.28
+18
+PFE
+31.81
+0.0002
+0.2545
+15.85
+5
+JNJ
+76.04
+0.0037
+0.1872
+39.71
+2
+DUK
+56.04
+0.0037
+0.1872
+2.10
+20
+NEE
+46.04
+0.0032
+0.1725
+1.95
+21
+HD
+736.04
+0.0028
+0.1650
+1.73
+22
+After identifying the prevailing market regime, the sector with the highest
+returns is selected as the best-performing sector, as shown in Fig. 3. This sector
+is then used for pair selection within its constituent stocks.
+24
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+Figure 3: Best performing sector based on average returns of constituent stocks
+Pair selection is a key element of the PTS. To enhance this process, the
+RFR model is used to predict composite scores, which are then leveraged for
+selecting the optimal pairs. Fig. 4 shows the predicted composite scores for the
+stocks generated by the RFR model. The model demonstrates strong performance, with a Mean Squared Error (MSE) of 36.7735 and an R-squared value
+of 0.8194, reflecting a substantial proportion of the variance being explained by
+the input features. This high level of consistency underscores the model’s ability
+to effectively capture the relative performance of the stocks, providing valuable
+insights for pair selection in PTS.
+To further validate the reliability of the RFR model in pair selection, outof-sample testing was conducted. Fig. 5 compares the actual composite scores
+for unseen data (illustrated by the blue dashed line) with the predicted scores
+generated by the model (represented by the red solid line). The close alignment
+between the two curves confirms that the RFR model generalizes well beyond
+the training data, effectively capturing stock performance during new market
+conditions.
+This reinforces the model’s suitability for generating stable and
+25
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+Figure 4: Predicted composite scores for stocks using the RFR model
+informative composite scores, which are critical for robust pair selection in the
+HPTS.
+The overall performance of phase 3 is summarized in Table 5, which reports
+the inferred market regimes, the top-performing sectors, and the corresponding
+stock pairs selected between January 2020 and January 2023. Sector rotation
+was implemented quarterly, resulting in 13 rotations over the three years. During bullish regimes, the Technology sector consistently outperformed, leading
+to the selection of high-return pairs such as (AAPL, MSFT) and (GOOGL,
+AMZN), particularly during 2020–2021 and early 2023.
+Conversely, during
+bearish regimes, defensive sectors—such as Healthcare and Utilities—exhibited
+stronger performance, resulting in the selection of stable pairs like (JNJ, PFE)
+and (NEE, DUK). This table highlights how the quarterly sector rotation, when
+aligned with prevailing market conditions, significantly influenced the effectiveness and consistency of pair selection. Thresholds were chosen to balance reliability and pair diversity. Correlation cutoffs in prior studies typically range
+from 0.6 to 0.9; here, ρthreshold = 0.8 ensures strong co-movement. Composite
+score thresholds are often set between 0.3 and 0.7; adopting Cthreshold = 0.5
+provides a balanced trade-off between robustness and the number of candidate
+26
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+Figure 5: Comparison of true (blue dashed) and predicted (red solid) out-of-sample composite
+scores, highlighting the model’s accuracy in estimating stock performance
+pairs.
+The HPTS strategy was evaluated across multiple timeframes to assess its
+robustness. Table 6 highlights the top-ranked stock pairs identified during sector
+rotation 1 under different temporal resolutions. The frequent selection of pairs
+like JNJ–PFE illustrates the stability and persistence of their statistical relationship across time. This reinforces the effectiveness of the proposed method
+in consistently identifying strong trading opportunities. The ability to maintain performance across both short- and long-term horizons further validates
+the strategy’s adaptability and reliability in diverse market environments.
+27
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+Table 5: Market regimes, best sectors, and selected pairs (2020–2023)
+Duration
+Rotation Market
+regime
+Best Sector
+Sector returns (Top 2)
+Number
+of
+selected
+pairs
+Top
+ranked
+pair
+2020-01-31
+1
+Bearish
+Healthcare
+Healthcare: 1.0413
+Utilities: 1.0394
+3
+(JNJ,
+PFE)
+2020-04-30
+2
+Bullish
+Technology
+Technology: 0.9713
+Financials: 0
+66
+(AAPL,
+MSFT)
+2020-07-31
+3
+Bullish
+Technology
+Technology: 1.0020
+Financials: 0
+66
+(AAPL,
+MSFT)
+2020-10-31
+4
+Bullish
+Technology
+Technology: 1.0035
+Financials: 0
+66
+(AAPL,
+MSFT)
+2021-01-31
+5
+Bullish
+Technology
+Technology: 1.0044
+Financials: 0
+66
+(AAPL,
+MSFT)
+2021-04-30
+6
+Bullish
+Technology
+Technology: 1.0002
+Financials: 0
+–
+(AAPL,
+MSFT)
+2021-07-31
+7
+Bullish
+Technology
+Technology: 0.9949
+Financials: 0
+66
+(AAPL,
+MSFT)
+2021-10-31
+8
+Bearish
+Healthcare
+Healthcare: 1.0061
+Utilities: 0.9753
+3
+(JNJ,
+PFE)
+2022-01-31
+9
+Bearish
+Healthcare
+Healthcare: 1.0212
+Utilities: 0.9324
+3
+(JNJ,
+PFE)
+2022-04-30
+10
+Bearish
+Utilities
+Utilities: 1.0228
+Healthcare: 1.0160
+3
+(NEE,
+DUK)
+2022-07-31
+11
+Bearish
+Utilities
+Utilities: 0.9787
+Healthcare: 0.9660
+3
+(NEE,
+DUK)
+2022-10-31
+12
+Bullish
+Technology
+Technology: 1.0058
+Financials: 0
+66
+(AAPL,
+MSFT)
+2023-01-31
+13
+Bullish
+Technology
+Technology: 0.9993
+Financials: 0
+66
+(AAPL,
+MSFT)
+Table 6: Top ranked pairs based on different timeframes
+Timeframe
+xi
+xj
+ρ
+Csum
+Daily
+JNJ
+PFE
+0.9063
+56.4487
+HD
+MCD
+0.9600
+55.4581
+TSLA
+HD
+0.8664
+46.6203
+AAPL
+GOOGL
+0.6490
+42.4032
+AAPL
+COST
+-0.2030
+42.0869
+Weekly
+JNJ
+PFE
+0.9063
+58.3552
+AAPL
+NVDA
+0.9600
+57.1410
+TSLA
+GOOGL
+0.8664
+48.1664
+JNJ
+NVDA
+0.6490
+43.5023
+PFE
+COST
+-0.2030
+43.2875
+Monthly
+JNJ
+PFE
+0.9063
+61.4151
+GOOGL
+HD
+0.9600
+61.2772
+TSLA
+MCD
+0.8664
+51.7396
+KO
+PEP
+0.6490
+45.2441
+AAPL
+MSFT
+0.8123
+43.8122
+Yearly
+JNJ
+PFE
+0.9600
+15.1639
+TSLA
+NKE
+0.8664
+12.9304
+AAPL
+HD
+0.8083
+12.4906
+TSLA
+HD
+0.9063
+11.8234
+PEP
+XOM
+-0.3085
+11.5632
+28
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+Table 7 compares various pair selection methods, from traditional numerical
+approaches to textual, hybrid, regime-aware, and deep learning-based strategies, culminating with the proposed HPTS. Cumulative returns (Rcum) are reported with 95% bootstrap confidence intervals. Textual sentiment baselines
+were validated on 150 annotated headlines (Cohen’s κ = 0.72, VADER accuracy 71.5%), and HMM-based regime detection showed
+78% agreement with
+market benchmarks. Numerical approaches like Pearson Correlation and SSD
+provide moderate returns, while return-based and ML methods perform better.
+Textual sentiment methods improve performance, particularly with social media
+inputs. Hybrid methods that combine numerical and textual features outperform individual approaches, with News–Returns fusion achieving the highest
+baseline return. Regime detection-based methods adapt well to market shifts.
+The proposed HPTS, integrating sentiment, regime detection, and sector rotation, achieves the highest cumulative return (1940.0) and superior risk-adjusted
+return (15.2), demonstrating robustness in volatile markets. Ablation studies
+confirm the contributions of sentiment and regime detection: removing sentiment reduces profitability, while omitting regime detection increases volatility,
+underscoring the effectiveness of the full HPTS framework.
+29
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+Table 7: Comparative analysis using traditional, modern, and proposed methods
+Method
+Selected Pair
+Rcum [95% CI]
+ϕ
+∆MDD RA
+Pair selection using numerical input
+Pearson Correlation (Krauss,
+2017)
+AAPL–MSFT
+204.3 [198.1–210.5]
+7.1
+3.1%
+0.068
+SSD (Suzuki, 2018)
+MSFT–GOOGL
+192.0 [186.4–197.8]
+6.6
+2.5%
+0.065
+DCCT (Gupta & Chatterjee,
+2020)
+AMZN–NVDA
+218.4 [211.0–224.5]
+7.5
+3.8%
+2.072
+Random Forest (Sarmento &
+Horta, 2020)
+TSLA–AMZN
+234.1 [227.9–240.6]
+8.7
+4.9%
+1.080
+Return-Based (Kolapwar et al.,
+2024)
+ORCL–NVDA
+289.3 [282.5–296.2]
+6.3
+2.1%
+6.033
+Pair selection using textual input
+News Sentiment (Dave, 2024)
+GOOGL–AMZN
+183.0 [177.0–188.2]
+6.0
+1.5%
+1.063
+Financial Reports (Lee, 2025)
+TSLA–NVDA
+198.7 [192.6–205.3]
+6.7
+2.3%
+1.067
+Social Media (Duz Tan & Tas,
+2021)
+AAPL–TSLA
+194.1 [187.9–200.5]
+6.5
+2.6%
+2.066
+Pair selection using numerical + textual input
+Hybrid Num+Text (Dave, 2024) NFLX–TSLA
+563.2 [552.0–574.4]
+9.3
+-6.8%
+3.090
+Sentiment-Adjusted Corr. (Yao
+et al., 2017)
+AMZN–GOOGL
+421.4 [410.8–431.9]
+7.9
+-4.1%
+4.075
+Sentiment-Weighted Vol. (Xie
+et al., 2023)
+AAPL–TSLA
+643.5 [632.4–654.9]
+8.5
+-5.0%
+2.083
+News–Return Fusion (Li et al.,
+2014)
+MSFT–NVDA
+752.7 [741.5–763.4]
+9.0
+-1.5%
+4.087
+Regime detection-based PTS
+Markov Switching (Elliott &
+Bradrania, 2018)
+AAPL–GOOGL
+256.3 [248.2–263.4]
+8.4
+-1.3%
+5.086
+iDC + Regime (Kuo et al.,
+2022)
+AMZN–NVDA
+268.2 [260.1–276.3]
+8.8
+-5.9%
+7.089
+iDC + RCD (Hu et al., 2023)
+GOOGL–MSFT
+271.1 [263.0–279.2]
+9.1
+1.1%
+4.090
+Deep learning / transformer-based PTS
+LSTM (Gurzu, 2024; Yadav,
+2024)
+TSLA–NVDA
+812.4 [798.3–826.4]
+9.2
+-7.1%
+8.112
+FinBERT (Man & Lin, 2022)
+AAPL–AMZN
+910.2 [894.6–925.8]
+9.4
+-6.4%
+8.542
+Transformer Fusion (Yang et al.,
+2022)
+GOOGL–MSFT
+975.6 [959.1–991.4]
+9.4
+-6.2%
+9.021
+Proposed HPTS and ablation variants
+HPTS w/o Sentiment
+AAPL–MSFT
+1345.2
+[1320.4–
+1370.5]
+9.0
+-13.2%
+10.4
+HPTS w/o Regime
+AMZN–GOOGL
+1523.8
+[1498.1–
+1549.4]
+9.1
+-12.6%
+12.1
+HPTS w/o Sector Rotation
+NVDA–TSLA
+1637.5
+[1610.2–
+1665.3]
+9.2
+-12.2%
+13.7
+Full HPTS (proposed)
+Total HPTS Performance
+Multiple (13
+rotations)
+1940.0
+[1905.2–
+1976.3]
+9.55
+-11.9%
+15.2
+30
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+To evaluate the robustness and real-world applicability of HPTS, out-ofsample backtesting was conducted using the Backtrader Python framework
+with Alpaca API. Alpaca supplied historical market data for realistic simulations, while Backtrader handled signal generation, trade execution, and portfolio
+management. The dataset was split into training and testing periods to assess
+generalizability. With a 0.1% transaction cost per trade, the strategy showed
+strong performance: starting from $100,000, the portfolio rose to $117,983.25
+in training (net profit $17,983.25; +17.98%) and further to $125,239.87 in testing (additional profit $7,256.62; +7.26%). These results demonstrate consistent
+profitability and confirm the effectiveness of the RFR-based pair selection and
+trade execution mechanism, with sustained gains on unseen data underscoring
+HPTS’s adaptability and reliability.
+6. Conclusion
+This paper presented HPTS, a hybrid pairs trading framework that integrates numerical indicators with sentiment signals, employs an RFR-based
+composite score for robust pair selection, and combines HMM-driven regime
+detection with sector rotation for adaptive exposure management. Comprehensive backtesting and out-of-sample evaluation, conducted using the Backtrader
+package and inclusive of transaction costs, confirmed consistent profitability
+with a portfolio gain of 25.57%. HPTS not only delivered superior cumulative
+and risk-adjusted returns compared to traditional and machine learning-based
+baselines, but also demonstrated resilience, adaptability, and scalability, underscoring its potential as a practical and intelligent strategy for navigating
+volatile market environments. While the use of general sentiment inputs and
+fixed thresholds introduces certain constraints, the results demonstrate HPTS’s
+robustness, adaptability, and scalability, establishing it as a resilient and intelligent trading strategy for volatile market environments. To further enhance
+its generalizability and realism, future work will focus on leveraging domainspecific sentiment benchmarks (e.g., FinancialPhraseBank), extending evalua31
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+tion beyond U.S. technology and healthcare stocks to include diverse sectors and
+geographies, exploring advanced regime detectors (hierarchical HMMs, changepoint models, deep learning), and adopting adaptive, learning-driven thresholds
+with realistic execution cost modeling.
+Declaration of Competing Interest
+The authors declare that they have no known competing financial interests or
+personal relationships that could have appeared to influence the work reported
+in this paper.
+Acknowledgements
+This research was carried out independently and did not receive any financial
+support from public, commercial, or not-for-profit funding agencies.
+References
+Abednego, L., Nugraheni, C. E., & Fedora, A. (2022). Forex sentiment analysis
+with python. International Journal of Advanced Research in Economics
+and Finance, .
+Alexiou, C., & Tyagi, A. (2020). Gauging the effectiveness of sector rotation
+strategies: Evidence from the usa and europe. Journal of Asset Management, 21, 239–260.
+Bekaert, G., & Harvey, C. R. (2003). Emerging markets finance. Journal of
+Empirical Finance, 10, 3–55.
+Bing, L., Chan, K. C. C., & Ou, C. (2014). Public sentiment analysis in twitter
+data for prediction of a company’s stock price movements. In 2014 IEEE
+11th International Conference on e-Business Engineering (pp. 232–239).
+Guangzhou, China: IEEE. doi:10.1109/ICEBE.2014.47.
+32
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+Black, A. J. (2006).
+Macroeconomic risk and the fama–french three-factor
+model. Managerial Finance, 32, 505–517.
+Bollen, J., Mao, H., & Zeng, X. (2011). Twitter mood predicts the stock market.
+Journal of Computational Science, 2, 1–8.
+Chang, V. et al. (2021). Pairs trading on different portfolios based on machine
+learning. Expert Systems, 38, e12649.
+Chen, C.-H., Chen, P.-Y., & Lin, J. C.-W. (2022). An ensemble classifier for
+stock trend prediction using sentence-level chinese news sentiment and technical indicators. Preprint.
+Chen, Z. N. (2023). Use of nlp-powered sentiment analysis in trading strategy. In
+Proceedings of the 2nd International Academic Conference on Blockchain,
+Information Technology and Smart Finance (ICBIS). Atlantis Press.
+Chiarello, F., Bonaccorsi, A., & Fantoni, G. (2020). Technical sentiment analysis: Measuring the advantages and drawbacks of new products using social
+media. Computers in Industry, 123, 103299.
+Christodoulaki, E., & Kampouridis, M. (2023). Fundamental, technical and sentiment analysis for algorithmic trading with genetic programming. In 2023
+IEEE Symposium Series on Computational Intelligence (SSCI). IEEE.
+Dave, Y. (2024). Predicting forex pair movements: Integrating sentiment analysis, technical, and fundamental indicators using machine learning and deep
+learning models. Unpublished manuscript.
+Do, B., & Faff, R. (2010). Does simple pairs trading still work?
+Financial
+Analysts Journal, 66, 83–95.
+Duz Tan, S., & Tas, O. (2021). Social media sentiment in international stock
+returns and trading activity. Journal of Behavioral Finance, 22, 221–234.
+Elliott, R. J., & Bradrania, R. (2018).
+Estimating a regime switching pairs
+trading model. Quantitative Finance, 18, 877–883.
+33
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+Figueira, M., & Horta, N. (2023). Machine learning-based pairs trading strategy
+with multivariate. Available at SSRN: 4295303.
+Gatev, E., Goetzmann, W. N., & Rouwenhorst, K. G. (2006). Pairs trading:
+Performance of a relative-value arbitrage rule. The Review of Financial
+Studies, 19, 797–827.
+Guidolin, M. (2011). Markov switching models in empirical finance.
+Gupta, K., & Chatterjee, N. (2020). Selecting stock pairs for pairs trading while
+incorporating lead–lag relationship. Physica A: Statistical Mechanics and
+its Applications, 551, 124103.
+Gurzu, R. A. (2024). Pairs Trading Strategy with a Machine Learning Approach:
+A Comparison Between Traditional Statistical Models and LSTM Neural
+Networks. Master’s thesis Universidade NOVA de Lisboa.
+Haase, F., & Neuenkirch, M. (2023). Predictability of bull and bear markets:
+A new look at forecasting stock market regimes (and returns) in the us.
+International Journal of Forecasting, 39, 587–605.
+Hu, S. et al. (2023).
+Incorporating improved directional change and regime
+change detection to formulate trading strategies in foreign exchange markets. Physica A: Statistical Mechanics and its Applications, 622, 128810.
+Hutto, C. J., & Gilbert, E. (2014). Vader: A parsimonious rule-based model for
+sentiment analysis of social media text. In Proceedings of the International
+AAAI Conference on Web and Social Media. volume 8.
+Kolapwar, P. G., Kulkarni, U. V., & Waghmare, J. M. (2024). Sector-based pairs
+trading strategy with novel pair selection technique. IEEE Transactions on
+Artificial Intelligence, .
+Krauss, C. (2017). Statistical arbitrage pairs trading strategies: Review and
+outlook. Journal of Economic Surveys, 31, 513–545.
+34
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+Kuo, W.-L. et al. (2022). Improving pairs trading strategies using two-stage
+deep learning methods and analyses of time (in)variant inputs for trading
+performance. IEEE Access, 10, 97030–97046.
+Lee, W. F. (2025).
+The Influence of News Sentiment on Stock Price Ratio
+Movement and its Utilisation for Pairs Trading Strategies. Master’s thesis
+University of Twente.
+Lemmon, M., & Portniaguina, E. (2006). Consumer confidence and asset prices:
+Some empirical evidence. The Review of Financial Studies, 19, 1499–1529.
+Li, X. et al. (2014). News impact on stock price return via sentiment analysis.
+Knowledge-Based Systems, 69, 14–23.
+Liagkouras, K., & Metaxiotis, K. (2025). A hybrid long short-term memory
+with a sentiment analysis system for stock market forecasting. Electronics,
+14, 2753.
+Loughran, T., & McDonald, B. (2011). When is a liability not a liability? textual
+analysis, dictionaries, and 10-ks. The Journal of Finance, 66, 35–65.
+Man, X., & Lin, J. (2022). Enhancement learning on financial text data. Personal and Ubiquitous Computing, 26, 1011–1021.
+Montoya, R., & Gonzalez, C. (2019). A hidden markov model to detect on-shelf
+out-of-stocks using point-of-sale data. Manufacturing & Service Operations
+Management, 21, 932–948.
+Nassirtoussi, A. K. et al. (2014). Text mining for market prediction: A systematic review. Expert Systems with Applications, 41, 7653–7670.
+Picasso, A., Merello, S., Ma, Y., Oneto, L., & Cambria, E. (2019). Technical
+analysis and sentiment embeddings for market trend prediction.
+Expert
+Systems with Applications, 135, 60–70.
+35
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+Rad, H., Low, R. K. Y., & Faff, R. (2016).
+The profitability of pairs trading strategies: Distance, cointegration and copula methods. Quantitative
+Finance, 16, 1541–1558.
+Sarmento, S. M., & Horta, N. (2020). Enhancing a pairs trading strategy with
+the application of machine learning. Expert Systems with Applications, 158,
+113490.
+Schmeling, M. (2009). Investor sentiment and stock returns: Some international
+evidence. Journal of Empirical Finance, 16, 394–408.
+Schumaker, R. P., Zhang, Y., Huang, C.-H., & Chen, H. (2012). Evaluating
+sentiment in financial news articles. Decision Support Systems, 53, 458–
+464.
+Su´arez-Cetrulo, A. L., Quintana, D., & Cervantes, A. (2023). Machine learning
+for financial prediction under regime change using technical analysis: A
+systematic review. Systematic review.
+Sukma, N., & Namahoot, C. S. (2024). Enhancing trading strategies: A multiindicator analysis for profitable algorithmic trading. Computational Economics, (pp. 1–34).
+Suzuki, K. (2018). Optimal pair-trading strategy over long/short/square positions—empirical study. Quantitative Finance, 18, 97–119.
+Tetlock, P. C. (2007). Giving content to investor sentiment: The role of media
+in the stock market. The Journal of Finance, 62, 1139–1168.
+Vidyamurthy, G. (2004). Pairs Trading: Quantitative Methods and Analysis
+volume 217. John Wiley & Sons.
+Xie, D., Cui, Y., & Liu, Y. (2023). How does investor sentiment impact stock
+volatility? new evidence from shanghai a-shares market. China Finance
+Review International, 13, 102–120.
+36
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+Yadav, S. (2024).
+Enhanced sentiment analysis for financial markets using transformer-based models and multi-modal data fusion. Unpublished
+manuscript.
+Yang, L. et al. (2022). Numhtml: Numeric-oriented hierarchical transformer
+model for multi-task financial forecasting.
+In Proceedings of the AAAI
+Conference on Artificial Intelligence. volume 36.
+Yao, C. Z., Sun, B. Y., & Lin, J. N. (2017). A study of correlation between
+investor sentiment and stock market based on copula model. Kybernetes,
+46, 550–571.
+37
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+Figure 1: Architecture of the proposed HPTS, incorporating volatility and return 
+computation, sentiment analysis, composite score generation via random forest, market 
+regime detection, and dynamic sector rotation for optimal pair selection and trading
+Figure 2: Sector returns and market regime classification, with bullish and bearish 
+periods highlighted. The red line represents cumulative returns, while the green squares 
+indicate sector returns
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+Figure 3: Best performing sector based on average returns of constituent stocks
+Figure 4: Predicted composite scores for stocks using the RFR model
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
+
+Figure 5: Comparison of true (blue dashed) and predicted (red solid) out-of-sample 
+composite scores, highlighting the model's accuracy in estimating stock performance
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6450750
+Preprint not peer reviewed
