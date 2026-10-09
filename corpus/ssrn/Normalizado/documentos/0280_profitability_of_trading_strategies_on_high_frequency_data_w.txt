@@ -1,0 +1,2153 @@
+Proﬁtability of Trading Strategies on High-Frequency data, with
+Trading Costs
+Tirthankar Patnaik∗
+Susan Thomas
+April 28, 2004
+Abstract
+This paper tests for the proﬁtability of contrarian and momentum trading strategies in the Indian equity
+markets, in the period 1996-2002, explicitly accounting for transaction costs. Using raw intraday data for orderbook from the National Stock Exchange (NSE), we calculate the actual prices at which trades would take place
+for an orider of INR 10,000, using the price impact of each of the stocks studied. We ﬁnd that for the Indian
+market, momentum strategies are proﬁtable in the short-run, but proﬁts fall as the formation period increases.
+Our methodology eliminates market-microstructure biases, like the bid-ask bounce. We ﬁnd that proﬁts persist
+in some strategies even after these eﬀects are taken care of.
+Keywords: Contrarian, and momentum trading strategies, Transaction costs, High Frequency Data, Market
+Liquidity
+∗Research Student, IGIDR. tir@igidr.ac.in
+
+Contents
+1
+Introduction
+1
+2
+Methodology
+2
+2.1
+Portfolio Selection
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+3
+2.2
+Trading costs . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+4
+2.3
+Trading strategies: Loser-Winner analysis . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+6
+2.4
+Trading Strategies: Size-eﬀect, and other causes . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+7
+2.5
+Decomposition of MIS proﬁts. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+9
+3
+Data
+10
+4
+Results
+12
+4.1
+Analyzing causes of proﬁts . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+15
+5
+Conclusion
+17
+ii
+
+1
+Introduction
+Expand
+The proﬁtability of contrarian and momentum strategies has been an issue of continuing debate in the Eﬃciency
+Market Hypothesis (EMH) literature. Proﬁtability of trading strategies implies predictability of stock returns, and
+thus goes against the EMH, which, if true, would imply that no trading strategy can be proﬁtable for sustained
+periods.
+However, trading strategies have been found to be proﬁtable in numerous markets over the years, even after
+adjusting for microstructure and time-varying risk, calendar and size eﬀects.1Contrarian and momentum strategies
+have long been studied in the literature, starting from Bondt and Thaler (1985). 2
+Include a
+stantial sur
+of the litt.
+If changes in stock prices are persistent, then a strategy which advises going long when stock prices are high, and
+going short when they are low, in other words, buying winners, and selling losers, will prove to be proﬁtable. Such
+strategies are called momentum strategies, in that they aim to capitalize on the persistence of returns. On the
+other hand, if there’s signiﬁcant mean-reversion in stock prices, then contrarian strategy would be proﬁtable. This
+strategy would take a contrarian view to the market, on the assumption that current losers would become winners
+later.
+Indian Equity Markets
+India, has a higher trading and turnover ratio than most other emerging stock markets. Since the liberalization
+process was started in 1992, trading has boomed, and investor participation in the stock markets has increased.
+From an average of 60,000 trades per day in 1996, NSE, recorded almost a million trades each day on an average
+in 2002. Market capitalization has increased ten-fold in the last decade.3 However, the primary market has been
+on a decline, since the mid-ninties. A spate of ﬁnancial scams, and crises, together with declining interest rates in
+recent years have led to most ﬁrms forsaking IPOs in favour of cheaper debt-ﬁnancing.4 This means there’s scant
+fresh capital in the equity market.. Investor composition has changed from the past, when a few brokers dominated
+Cite Saura
+thesis
+the market, to a large proportion now being retail investors, and Financial Institutional Investors (FII)s. The total
+number of investors in the capital markets has gone up from about nine million in the early 1990’s to about 20 million
+by 1997. This growth is higher among rural households than urban, and there’s an increasing institutionalization
+in the markets. There has also been a change in the market microstructure of stock exchanges in India, from openoutcry systems to continuous limit-order book markets, like the NSE Exchange for Automated Trading (NEAT)
+system of the NSE, and the BSE Online Trading (BOLT) system of the Bombay Stock Exchange (BSE). Banks
+have been allowed to ﬁnance margin trading, and short-selling has been allowed to a limited extent NSE (2002, pp.
+147). These systems have facilitated higher trading intensities than was possible earlier.
+In this paper, we examine if CIS/MIS trading strategies have been proﬁtable in the Indian markets in the last several
+years, examine their causes, and also how proﬁtability has changes over variations in the return horizon.As Conrad
+and Kaul (1998) point out, the fact two “diametrically opposite” strategies have been found to be successful
+in the literature seems ’perplexing’, albeit over diﬀerent return horizons. We evaluate a set of contrarian, and
+momentum trading strategies on intraday stocks buy/sell prices, and calculate their proﬁts. Since transaction costs
+1Bondt and Thaler (1985) ﬁnd that loser portfolios of 35 stocks outperform the market by 19.6% on an average, three years after
+portfolio formation, and loser’s outperform winners by about 24% in that period.
+2See Conrad and Kaul (1998), Hameed and Kusnadi (2002), Jegadeesh and Titman (2002) and Kang et al. (2002), among others.
+3NSE (2002, pp. 18)
+4The composition of debt-equity ﬁnancing has changed from 27.61-72.39 in 1995-96 to about 83.12-16.88 in 2001-02.NSE (2002, pp.
+59)
+1
+
+are important in deciding if gains from a trading strategy are tanglible, proﬁts from trading strategies are not
+scale-invariant. As trade sizes increase, costs to trade rise as well, eliminating the gains to a trading strategy.
+Analyses of the proﬁtability of trading strategies do not include costs of trading that are non-proportional. We have
+considered the price impact of a trade in order to explicitly incorporate trading costs in this paper. Statistically
+signiﬁcant returns from our strategies are thus economically viable. We have used the limit-order book of the NSE
+to calculate exact buy/sell prices for a given size of trade, and used them in evaluating our strategies.
+We next try and ﬁnd out if the causes behind the proﬁtability of contrarian, and momentum trading strategies. We
+implement zero-cost momentum trading strategies, and determine their proﬁt components. Initially we ﬁnd out if
+there’s a size eﬀect in the proﬁtability of our strategies. We then determine if proﬁts are due to common-factor
+realizations, or due to stock-speciﬁc causes. Proﬁts from the strategies tested are then decomposed into components
+due to cross-covariances, serial-covariances, and mean variation in expected returns (Lo and MacKinlay (1990)).
+This paper is structured as follows: In section 2, we provide the details of the procedure we’ve followed in this
+paper. This includes discussion on Loser-Winner analysis, trading costs, and the decomposition of momentum
+proﬁts. Section 3 explains the data we’ve used, and intial exploratory analysis on it. Section 4 discusses the results,
+and key ﬁndings. Section 5 concludes.
+2
+Methodology
+Various causes have been ascribed to the proﬁtability of contrarian and momentum trading strategies.
+These
+range from hypotheses abut investor behaviour, like overreaction, underreaction, herd behaviour, etc to temporary
+departures from market eﬃciency, and unaccounted factors in asset-pricing models.
+If investors over-react to ﬁrm-speciﬁc news about earnings, and dividends, then prices would always tend to correct
+themselves to their fundamentals, after the intial euphoria is over. A strategy that goes contrarian to the market
+view, in other words, buying losers, and selling winners, would be proﬁtable in such a case. Bondt and Thaler
+(1985) ﬁnd that loser portfolios outperfomed the market about 19.6% on average on monthly returns in the period
+1965-82. On the other hand, if investors underreact to news, then winners today will remain winners tomorrow,
+and may improve performance. The ’price-ratio’ and the ’price-earnings’ anomalies belong to this category. In the
+price-earning anomaly, ﬁrms with low P/E ratios are undervalued.5 Once future earnings are higher than expected,
+the stock price adjusts, but the market takes longer. Basu (1977) shows that ﬁrms with extremely small P/E ratios
+earn higher risk-adjusted returns than high P/Es. 6 Another strand of the literature attributes this phenomenon
+to the change in ’Winner’ and ’Loser’ stocks’ risk premia over time. While returns to losers are higher, so is their
+risk. And while winners ’lose’, their risk goes down. Accounting for time-varying risk premia could account for
+CIS/MIS proﬁts.7.
+Irrational behaviour, and herding are some of the other reported causes.
+In a portfolio, if the returns of two stock are serially independent, but are positively cross-correlated, then a
+Contrarian Investment Strategy (CIS) would still be proﬁtable. Lo and MacKinlay (1990) ﬁnd this to be the major
+5since after a low earnings the outlook on the ﬁrm is gloomy.
+6Some behavioural studies attribute overreaction to the presence of quasi-rational agents in the economy, who do not revise their
+expectations according to the Bayes’ rule, and of agents with heterogenous expectations. See Bondt and Thaler (1985).Lehmann (1990)
+avers that due to the cognitive misperception of investors, there are ’fads’ that result in return-reversals, and predictibility.
+7See Chan (1988) for more details.
+2
+
+cause of CIS proﬁts, rather than investor overreaction. Further they ﬁnd that large stocks lead smaller stocks in
+assimilation of news, and that this lead-lag related size-eﬀect is the major cause of the positive cross-correlation
+across stocks. Jegadeesh and Titman (1995) however ﬁnd that it’s not the lead-lag structure that causes contrarian
+and momentum proﬁts, but overreactions to certain common factors in the economy. They test their hypothesis
+using a single-factor asset-pricing model.
+Since stocks with a large market capitalization would tend to be more liquid, one would expect that ”large” stocks
+would ’lead’ smaller stocks, in the assimilation of news. The lead-lag structure in correlations of stock returns has
+a deﬁnite link with the size eﬀect. But it’s interesting to note that the direction of the linkage could be either way.
+For instance, it’s been found that small stocks lead larger stocks in some markets.
+At the transaction level, prices ﬂuctuate between the lowest ask, and the highest bid. This leads to the familiar
+negative ﬁrst-order correlation in stock returns at that level. Proﬁts of a trading strategy that tends to capitalize
+on this phenomenon would be spurious.
+2.1
+Portfolio Selection
+Trading strategies are usually tested on portfolios. Portfolio selection can be implemented in terms of what’s called
+the F/S/H framework. Stocks are ranked into groups on the basis of their mean returns during a formation period
+F in the past. The top group of stocks constitutes the ’winner’ portfolio, and the bottom group, the ’loser’ portfolio.
+After a ’skip’period S, buy/sell positions are taken depending on the strategy employed, and are held for a holding
+period H. And returns on these positions are calculated on evaluation during F and holding period H. This cycle
+is repeated till the end of the sampling period.
+Portfolios are typically equally weighted. Ranks of stocks within a portfolio have no bearing on the performance of
+a strategy. (See Kang et al. (2002); Korajczyk and Sadka (2002) for more details. For the analysis formation and
+holding periods of 25, 50, 75, 150, and 250 days, and skip period of a day. Our parameters for the strategy could
+be summarised as follows
+Formation
+Skip
+Holding
+25
+1
+25
+50
+1
+50
+75
+1
+75
+150
+1
+150
+250
+1
+250
+Table 1: Formation and Holding periods used as the strategy parameters.
+Hence our strategies are based on sets (25/1/25) to (250/1/250) (25). For instance, a (100/1/25) returns strategy
+would be implemented by selecting stocks on the basis of their mean returns over the last 100 days. After a skip
+period of 1 day, either buy/sell positions would be taken, and held for 25 days, and reversed thereafter, and the
+cycle repeated. A key point to be noted in this process is that the composition of the portfolios may easily change
+during the implementation of the strategy over the entire period, since it’s reviewed every 100+25 days.
+Choice of overlapping vs.
+non-overlapping data
+When returns are calculated, we pay special attention to trading costs as follows.
+3
+
+2.2
+Trading costs
+Proﬁts in a trading strategy are usually assumed to be scale-invariant. However, today we know from the market
+microstructure literature that transaction costs play a very important role in determining whether proﬁts from
+these trading strategies translate into tangible economic proﬁts, and are not just ’paper-proﬁts’. Earlier analyses
+of proﬁts assume that transactions take place at the bid-ask, or the best price prevalent in the market. However,
+returns to trading strategies depend on transaction costs, and thus the size of the trades involved. In this section
+we present a short sketch of the transaction costs involved in trading, with paricular reference to India.
+Transaction costs could be explicit, implicit and also include missed opportunities to trade (Harris (2003)). Explicit
+trading costs comprise the brokerage fees that traders pay to trade, payments to the exchange, commissions paid
+by traders to brokers, stamp duties, registration fees, and capital gains taxes. Aside from some ﬁxed costs explicit
+trading costs are usually proportional to the size of the trade involved. For instance, a buy-sell round trip at the
+ECN ICICI-Direct is about 1.77%. Capital gains tax in India is about 30% if the gains are realized within a year.8
+Fixed costs include the INR 5,000 that every broker has to pay to the exchange every year, if his turnover in the
+year is less than INR 10 million. For larger volumes, the registration fee becomes proportional, and equals 1 basis
+point of the value over INR 10 million. Traders pay transaction charges to the exchange at 0.004% of the turnover.
+Brokerages range from 0.15% to 2.5%, pegged by the Securities and Exchange Board of India (SEBI). In addition,
+the brokers also pay stamp duty, turnover fee, servie tax, and stamp duty. They also pay service charges to the
+depositories.9 However, explicit transaction costs have been steadily reduced over the years by the SEBI10.
+Implicit costs are intangible costs that traders pay when they trade. These include the price impact of trades,
+also called the impact cost, and the bid-ask spread. For instance, a buyer may have to pay more than the price
+prevailing in the market, if the order is large, and a seller may realize less than the market price. Price impacts are
+usually calculated as being over and above a speciﬁed benchmark price, or estimated using econometric models.
+While costs rise with the size of trades, they’re non-proportional.
+Econometric models estimate the spread that exists between the trading price, and the benchmark, and it’s components, based on the absolute transaction price, the price reversals caused when traders trade, and order ﬂows.
+These include Roll’s serial covariance estimator (Roll (1984)), the Glosten-Harris (Glosten and Harris (1988)), and
+the Glosten-Milgrom (Glosten and Milgrom (1985)) non-proportional trading cost models.See O’Hara (1995) for a
+detailed survey. For a trade of size Q, price impacts IC based on pre-speciﬁed benchmark prices P ∗are usually
+calculated as
+IC = Q ∗sgn(trade) ∗(P −P ∗),
+sgn(trade) =
+
+
+
++1
+Buy Trade
+−1
+Sell Trade
+(1)
+There are various benchmarks used in practice. The gap between the trade price, and the benchmark gives the
+spread in the trade. The eﬀective spread is calculated as twice the gap between the trade price, and the midquote
+at the time-of-trade. The realized spread is twice the gap between the trade price, and the price after a speciﬁed
+time interval, usually the closing price.
+Sometimes opening prices are also used as the benchmark11 In other
+cases, the volume-weighted average price is the preferred benchmark. The sign of the trade, (buy/sell), is done
+8Currently equity held for periods longer than one year is considered investment and is exempted from capital gains tax.
+9More than 99} of trading takes place in the demat form.
+10See NSE (2002) for more details.
+11These are called ’Perold’s implementation shortfalls’.
+4
+
+using the Lee and Ready algorithm (Lee and Ready (1991)).12 Other than these, there’s the opportunity cost of
+missing otherwise proﬁtable trades. These occur when traders don’t execute their trades on time. Costs of trading
+diﬀer across agents in the market. For instance, the average transaction cost for retail investors is higher than for
+institutional investors, as the latter don’t pay mark-to-margins. Further, among the institutional investors, mutual
+funds, and ﬁnancial institutions pay lower brokerages than foreign institutional investors (NSE (2002, pp. 135)).
+While proportional costs have been included in studying trading proﬁts since Keim (1983), Lehmann (1990), and
+many others, the studies on the eﬀect of non-proportional costs on trading strategies are relatively recent in nature.c
+Ball et al. (1995), Grundy and Martin (2001), and others have shown that microstructure eﬀects could signiﬁcantly
+Add
+s
+more
+his
+here.
+reduce the proﬁts of a strategy. Korajczyk and Sadka (2002) have tried to quantify the limits to which gains could
+be made from momentum-based strategies before transaction costs ﬁrst make proﬁts statistically signiﬁcant, and
+then drive them down to zero. They consider proportional and non-proportional models of price imapct in their
+paper.
+In this paper, we consider control for one measure of non-proportional trading costs, the price impact while studying
+trading proﬁts. We calculate the price impact of a trade in a give stock, using the entire market by price for that
+stock. We use snapshots of the entire limit-order book of the NSE for this purpose. In this way, we do not have
+to use the Lee and Ready algorithm to identify the trades. We don’t also have to use any econometric model to
+estimate the price impact, since we have the actual values.
+Impact cost is the price that a buyer pays over and above the ideal buying price of stock, or the seller forfeits when
+he sells the stock. We can calculate this cost for any ’reasonably-sized’ trade for a stock, and for this we have the
+order-book. This cost is proportional to the size of the order, but the relationship is nonlinear. Since the buy and
+sell prices in a strategy are dependent on the size of the trade, so are our proﬁts.
+For a buy-order of quantity QBuy
+k,t
+in stock k at time t, the benchmark price at which the trade should ideally occur
+is
+P ∗
+k,t = 1
+2
+h
+(max
+i
+P Buy
+i,t
+) + (min
+i
+P Buy
+i,t
+)
+i
+(2)
+The total buying cost is
+P Buy
+k,t
+=
+m
+X
+i=1
+qi,k,t · pBuy
+i,k,t
+∋
+m
+X
+i=1
+qi,t = QBuy
+k,t
+(3)
+and p1,k,t > p2,k,t > · · · > pm,k,t. The price impact is for stock k at time t for a buy-order QBuy
+k,t
+is then given by
+ICQBuy
+k,t
+= 100
+"
+P Buy
+k,t
+P ∗
+k,t · QBuy
+k,t
+−1
+#
+(4)
+Here pi,k,t i = 1, . . . , m, are the limit-orders on the buy side in the LOB, for stock k, at time t and qi,k,t i = 1, . . . , m
+are the quantities available at those prices that progressively clear the order. The impact cost on the sell side can be
+similarly calculated. We avoid market-orders, and stop-loss orders in this calculation.13 Since we have the Market
+By Price (MBP) each hour, we’re able to calculate the actual buy/sell prices of a stock, for an order of INR 10,000.
+12The Lee and Ready (1991) algorithm assumes that traders trade to satisfy their demands for liquidity. Hence if the trade took
+place near the bid then, then it’s a buy, and if it’s near the ask, then it’s a sell. If the trade is on the midquote, then the algorithm
+checks for the last price change. There’s no way of knowing if the order gets executed over multiple trades. Further, traders may not
+always trade for liquidity.
+13Potentially, these strategies could be implemented on both overlapping and non-overlapping data—we stick to overlapping data to
+for it’s improved power properties.
+5
+
+Alongwith with the ’skip’ period introduced in our strategies, this ensures that we avoid potential discrepancies
+that could ensue with the bid-ask bounce in intraday returns. Assuming that trading takes place once a day, the
+best time to trade would then be at the point where the spreads are the lowest. It has been found that for the
+NSE spreads come down signiﬁcantly during the course of the day (NSE (2002)). Accordingly, we have based our
+analysis on the prices calculated out the last snapshot available of the day, at 1400 hrs.
+2.3
+Trading strategies: Loser-Winner analysis
+In this paper, we focus on four diﬀerent contrarian and momentum strategies. framework, and calculate their
+proﬁts. These strategies are described below:
+1. Contrarian-Loser This strategy involves buying a loser selected at the end of the formation period F,
+waiting for the skip period S, and then entering into positions. At the end of the holding period H, positions
+are reversed. This strategy assumes that the market has overreacted, and expects these losers, to become
+winners by the end of the holding period. The returns from such a strategy are given by
+RL
+t,CIS =
+PN
+i=1 P L,Sell
+i,t
+−PN
+i=1 P L,Buy
+i,t−H
+PN
+i=1 P L,Buy
+i,t−H
+(5)
+2. Contrarian-Winner The contrarian winner strategy involves selling a winner portfolio over the formation
+period, entering into positions at the start of the holding period, and then buying it back at the end of the
+holding period.14 Returns for this strategy are given by
+RW
+t,CIS = −PN
+i=1 P W,Buy
+t
++ PN
+i=1 P W,Sell
+t−H
+PN
+i=1 P W,Sell
+t−H
+(6)
+3. Momentum-Loser This strategy short-sells losers, and then buys them back, at the end of the holding
+period. Returns for this strategy are given by
+RL
+t,MIS =
+−PN
+i=1 P L,Buy
+i,t
++ PN
+i=1 P L,Sell
+i,t−H
+PN
+i=1 P L,Sell
+i,t−H
+(7)
+4. Momentum-Winner This strategy assumes that winners chosen over the formation period shall remain
+winners, and buys them. Positions are reversed at the end of the holding period.
+RW
+t,MIS =
+PN
+i=1 P W,Sell
+i,t
+−PN
+i=1 P W,Buy
+i,t−H
+PN
+i=1 P W,Buy
+i,t−H
+(8)
+All the strategies used so far are ’costly’ in the sense that they need some initial capital to get started. Since costs
+of borrowing funds are non-zero, returns from such strategies must be at least be more than the risk-free rate of
+return, to make them viable. Hence we also implemented zero-cost momentum strategies, where winners are bought
+and losers are sold simultaneously, and zero-cost contrarian strategies, where losers, are bought, and winners are
+14We assume that short-selling is allowed for this strategy.
+6
+
+sold simultaneously. No assumption about initial available capital is made for such strategies. Note that these are
+zero-cost strictly in the case where buying and selling costs are identical. Returns from these strategies are given
+by
+Rt,ZC,Contra =
+N
+X
+i=1
+
+−P W,Buy
+i,t
++ P W,Sell
+i,t−H
+
++
+N
+X
+i=1
+
+P L,Sell
+i,t
+−P L,Buy
+i,t−H
+
+(9)
+Rt,ZC,Moment =
+N
+X
+i=1
+
+P W,Sell
+i,t
+−P W,Buy
+i,t−H
+
++
+N
+X
+i=1
+
+P L,Buy
+i,t
+−P L,Sell
+i,t−H
+
+(10)
+Here, for instance, P L,Sell
+i,t
+implies the selling price of the ith stock in the loser portfolio. Returns to zero-cost trading
+strategies could also be scale-adjusted. In this case, we normalize the each of the components in the expressions
+(See Eqns 5, 6) by the entering prices, like in Eqns. 1-4. Another advantage of using a zero-cost momentum strategy
+is that it’s been well-studied in the literature, for establishing the causes behind proﬁts from such strategies.
+2.4
+Trading Strategies: Size-eﬀect, and other causes
+Once we estimate the proﬁts and if they’re signiﬁcant, we formally examine the causes behind proﬁtability of the
+contrarian, and momentum strategies tested.
+We consider a zero-cost momentum trading strategy on an arbitrage portfolio, as in Lehmann (1990). This strategy
+buys ’winners’ and sells ’losers’ simultaneously. Proﬁts could also be due to what’s called the size-eﬀect, as described
+in section 1. The size eﬀect has been extensively documented in the literature. Stocks with relatively small market
+Will
+desc
+the size-eﬀe
+detail there
+capitalizations tend to outperform those with larger market capitalization. Therefore, to study the causes behind
+proﬁts of momentum strategies in India, and to control for the size eﬀect, we divide the set of stocks we study
+into quintiles based on their market capitalization in the middle of the sampling period ﬁrst, and then calculate
+the returns of the strategy on each of the size-sorted quintiles. Within each quintile portfolio, we calculate the
+deviations of the returns of stocks from the portfolio mean return. Stocks with positive deviations are then ’bought’,
+in that they are assigned positive weights in the portfolio, and stocks with negative deviations are similarly ’sold’.
+We test this strategy on holding periods ranging from 100 to 1000. We initially use the Jegadeesh and Titman
+(1995) factor model to ﬁnd out if returns from the strategy being tested come from common market, or from
+stock-speciﬁc factors. We then use the Lo and MacKinlay (1990) decomposition to ﬁnd out if these proﬁts are
+due to investor overreaction, underreaction, or due to the lead-lag structure of stock returns, shown as serial, and
+cross-correlation.
+Let Rit, ı, . . . , N be the returns of the N stocks in this portfolio, at time t. The weights are given by
+wit = ± 1
+N
+
+Ri,t−k −Rm,t−k
+
+,
+i, . . . , N.
+(11)
+A contrarian strategy in this setup would imply a negative sign for the weights, and would imply we sell stocks
+which give higher returns than the index (Winners), and buy those which don’t (Losers). A momentum strategy
+would imply precisely the opposite positions to take.
+7
+
+The scale-invariant proﬁts from such a strategy are
+πt(k) =
+N
+X
+i=1
+wit(k) · Rit
+(12)
+As we’d done in the previous section, we can view this strategy in terms of the F/S/H framework. For a trading
+strategy that squares up at time t, we take positions at time t −F + H.
+wit(F + H) = −1
+N
+
+Ri,t−F +H −Rm,t−F +H
+
+(13)
+Hence the value of the portfolio at time t −H is
+Vt−H =
+N
+X
+i=1
+wit(F + H)Pi,t−H
+(14)
+At time t, we square oﬀour positions,
+Vt =
+N
+X
+i=1
+wit(F + H)Pi,t
+(15)
+And the portfolio proﬁts over the period H are
+πt =
+N
+X
+i=1
+wit(F + H)
+Pi,t −Pi,t−H
+Pi,t−H
+
+(16)
+The availability of the order book snapshots of this data enables us to generate actual buy/sell prices, free from
+bid-ask bounce, as detailed in Section 2.2. With buy/sell prices being diﬀerent (and allowing for short-selling),
+portfolio returns are dependent on the sign of the weights, and are not scale-invariant. A key diﬀerence between the
+portfolio formation process this time is that while the composition of the portfolio remains unchanged, the weights
+attached to the components change. In eﬀect, there are ’winners’ and ’losers’ in each portfolio. The weights of
+the stocks in the portfolio are dependent on the trade being a buy or a sell. This strategy is implemented on
+overlapping periods, to increase the power of our results.
+wi,t−F > 0
+⇒
+rit =
+P Sell
+it
+−P Buy
+i,t−1
+P Buy
+i,t−1
+(17a)
+wi,t−F ≤0
+⇒
+rit = P Buy
+it
+−P Sell
+i,t−1
+P Sell
+i,t−1
+(17b)
+Lo and MacKinlay (1990) posit that instead of investor overreaction, a majority of contrarian proﬁts could be
+attributed to the ’lead-lag’ structure between stocks, in which prices of one stock ’follow’ another. There exists
+empirical evidence of the link between the lead-lag structure, and the size-eﬀect, wherein if prices of small stocks
+go up, prices of large stocks follow. Kang et al. (2002) ﬁnd that in the Chinese market, small stocks follow large
+stocks, and in the opposite direction. This is tested using the sample autocorrelation matrices of each of the ﬁve
+size-sorted sample cross-correlation matrices. Consider ﬁrst the asymmetric cross-correlation matrices ΥK of the
+ﬁve size-sorted quintiles and the Equally Weighted Market Index (EWMI), given by
+8
+
+Υk = D−1/2E[(Zt−k −µ)(Zt −µ)′]D−1/2
+(18)
+where Zt = [R1t R2t R3t R4t R5t Rmt]′ is the vector of returns from the size-sorted quintiles, and the equallyweighted market index. D is given by diag[σ2
+1, σ2
+2, σ2
+3, σ2
+4, σ2
+5, σ2
+m, ], and µ = E[Zt]. R1t is the smallest quintile,
+and R5t is the largest. The last vector is the equally weighted market index. These matrices convey the lead-lag
+relations, if any, between the size-sorted quintiles. If the covariance between current returns of a small stock and
+lagged returns of a large stock is more than that between the lagged returns of the small stock, and the current
+returns of the large stock, then events impact the large stock before the small stock, and the smaller stock ’lags’.
+2.5
+Decomposition of Momentum Investment Strategy (MIS) proﬁts.
+itemize
+Jegadeesh and Titman (1995) estimate a one-factor model of stock returns, to access CIS/MIS proﬁtability, their
+assumption being that the lead-lag structure in stock returns arises due to the response period of the stock prices
+to common factors, and not due to over- or underreactions.
+The model is given by
+rit = µi + b0,ift + b1,ift−1 + eit
+(19)
+CIS/MIS proﬁts are then given by 15
+E(πc) = −σ2
+µ −Ω−δσ2
+f
+(20a)
+E(πm) = σ2
+µ + Ω+ δσ2
+f
+(20b)
+σ2
+µ = 1
+N
+N
+X
+i=1
+(µi −µ)2
+(21a)
+Ω= 1
+N
+N
+X
+i=1
+cov(ei,t, ei,t−1)
+(21b)
+δ = 1
+N
+N
+X
+i=1
+(b0,i −b0)(b1,i −b1)
+(21c)
+Here σ2
+µ is the cross-sectional variation in expected returns, Ωis the mean serial covariance of the idiosyncratic
+component of returns, and δ denotes the response to common factors. Ωmeasures the reaction of stock returns to
+ﬁrm-speciﬁc factors, and thus contributes +ve(-ve) to momentum(contrarian) proﬁts. δ measures the reaction of
+stock returns to common-factor realizations. We have chosen the market index NIFTY as the common factor in
+Will add m
+detail here
+this model. We ﬁrst used this decomposition to get prima facie evidence of whether returns to trading strategies
+are due to common factor realizations, or due to stock-speciﬁc factors.
+itemize
+The Lo and MacKinlay (1990) decomposition of proﬁts to trading strategies diﬀerentiates between the crosssectional dependence across stock returns and the serial depenence in individual stock returns.
+15(See Kang et al. (2002) for more details.)
+9
+
+MIS proﬁts can be decomposed thus:
+E [πt(k)]
+=
+−Ck −Ok + σ2(µ)
+(22)
+Ck
+=
+1
+N 2
+
+e′Γke −tr(Γk)
+
+Ok
+=
+−
+N −1
+N 2
+
+tr(Γk)
+σ2(µ)
+=
+1
+N
+N
+X
+i=1
+(µi −µm)2
+µm
+=
+µ′e/N.
+Here Ck depends only on the cross-covariance terms of the auto-covariance matrix Γk, Ok depends on the serial
+covariance terms, and σ2
+µ depends on the cross-sectional variation between the unconditional means of the stocks.
+For an MIS strategy to be proﬁtable, we expect Ck, Ok < 0.
+If there’s strong positive autocorrelation in the EWMI returns, and weak negative autocorrelation among individual
+stock returns, then there must be signiﬁcant positive autocorrelation across securities. Ck depends only on the
+oﬀ-diagonal elements of the autocovariance matrix Γk, Ok depends only on the diagonal elements of Γk, and σ2(µ) is
+a constant, independent of k, and is the cross-sectional variance of mean-returns. We ran both the decompositions
+on each of the size-sorted quintiles generated. Our estimates are robust to heteroscedasticity, and autocorrelation.
+This completes the methodology followed. We next describe the data used in the paper.
+3
+Data
+We utilize snapshots of the limit order book of the NSE, which is available four times viz., at 1100, 1200, 1300,
+and 1400 hours a day.16. Details on the NSE Release A CD The NSE Release A CD comes once a month from
+the NSE. It contains information and raw data about each and every trade that took place in the month, in each
+stock. It contains the daily open, high, low, and close prices for all the stocks traded in the exchange, and all
+the important announcements by the NSE. Alongwith this data, it contains the all the intraday values taken by
+the major indices S & P CNX Nifty (NIFTY), DEFTY, and MIDCAP. It also contains snapshots of the entire
+limit-order book, the market by price, about four times during the day, and the trade master, whcih contain the
+stock masters for each scrip traded. We use the trades ﬁles to calculate the stock returns for the portfolios. Table
+2 gives a sample of the raw trades ﬁle. The ﬁrst column denotes the serial number of the trade that day. NSE
+records more than 900,000 trades per day on average. The second and the third columns denote the stock, and it’s
+series, where ’EQ’ denotes common stock. Timestamp records the time at which the trade occurred, to the nearest
+second. This naturally gives rise to multiple timestamps per second. We discretize this data to get the returns for
+the stocks we’re interested in.
+The order book ﬁles provide the bid and asks for all the stocks trading at that point in time. Figure 3 gives a
+sample of the order-book. Here the ﬁrst column gives the order ID no. The second and the third columns indicate
+the stock for which the order is given, and it’s series—EQ means a common stock. Q implies the quantity of the
+limit-order submitted, and P denotes the price at which it’s to be executed. Time is the timestamp at which the
+16There have been periods in the interim where only two-three of the snapshots were available. We have thus presented our analyses
+on the ﬁnal snapshot of the day, at 1400.
+10
+
+Trade
+Stock
+Series
+Timestamp
+Price
+Quantity
+9991
+BANKBARODA
+EQ
+09:59:10
+57.50
+250
+9992
+KPIT
+EQ
+09:59:11
+179.70
+190
+9993
+BPCL
+EQ
+09:59:11
+266.50
+50
+9994
+GEOMETRIC
+EQ
+09:59:11
+521.70
+20
+9995
+HUGHESSOFT
+EQ
+09:59:11
+234.05
+40
+9996
+HINDPETRO
+EQ
+09:59:11
+278.50
+400
+9997
+HINDPETRO
+EQ
+09:59:11
+278.50
+250
+9998
+HINDPETRO
+EQ
+09:59:11
+278.50
+4500
+9999
+HINDPETRO
+EQ
+09:59:11
+278.25
+20
+10000
+HINDPETRO
+EQ
+09:59:11
+278.20
+1000
+Table 2: Sample trades ﬁle from the NSE Release A CD for June 11, 2002.
+limit-order was submitted, or last modiﬁed. B/S denote if the order is buy or a sell. F1-F3 are ﬂags that accompany
+the order. F1 is called the day-ﬂag, and the four characters denote (1) Day order, (2) Good till date, (3) Cancel,
+(4) Immediate/Cancel. The most common values are “ynnn”. F2 denotes the quantity ﬂags (1) Minimum ﬁll, (2)
+All or none, (3) Disclosed quantity. Usually this ﬂag is “nnn”. F3 denotes the price ﬂags, viz., (1) At the open
+(ATO) price, (2) Market price, (3) Stop loss order.17 A typical order-book snapshot contains more than 200,000
+entries. We restricted our analysis to those stocks that had non-missing orders at least 5200 times in the sample
+period of about 1618 days (at the four snapshots considered) which ranged from March 1996 until October 2002.
+This implied that any stock had to be traded at least 80% of times, to get selected in our portfolios. This selection
+gave us 200 stocks. The list of stocks is provided in the appendix.
+Order ID
+Stock
+Series
+Q
+P
+Time
+B/S
+F1
+F2
+F3
+Book
+MinFill
+Disc
+GTD
+200206115271013
+RELIANCE
+EQ
+50
+227.15
+11:03:31
+B
+ynnn
+nnn
+nnn
+RL
+0
+0
+.
+200206115009106
+RELIANCE
+EQ
+100
+228.60
+09:56:27
+B
+ynnn
+nnn
+nnn
+RL
+0
+0
+.
+200206115009187
+RELIANCE
+EQ
+100
+233.60
+09:56:27
+B
+ynnn
+nnn
+nnn
+RL
+0
+0
+.
+200206115128316
+RELIANCE
+EQ
+10
+234.10
+10:17:47
+B
+ynnn
+nnn
+nnn
+RL
+0
+0
+.
+200206115128036
+RELIANCE
+EQ
+10
+237.10
+10:17:44
+B
+ynnn
+nnn
+nnn
+RL
+0
+0
+.
+Table 3: A sample of the limit-orders for RELIANCE at 1400 hours on June 11, 2002.
+Using the snapshots available, we calculated the price impacts of all the 200 stocks under study on the buy and the
+sell sides, for an order of INR 10,000. 18 for all 1618 days under study, at all times the snapshots were available.
+Using these costs we were able to calculate the exact buy and sell prices, inclusive of the price impact, for a trade,
+as detailed in Section 2.2. Our choice of the frequency of the data depends on the fact that correlation structure
+in daily, and HF data is much stronger than in weekly, or monthly data. Further, daily data suﬀers the least from
+spurious correlations resulting from non-synchronous trading.
+17Information is from the NSE Release A CD, for December 2002.
+18A sample portfolio with 40 stocks thus is worth about INR 400,000. We have chosen the size of the portfolio to be about double
+the size of minimum lot-size required to trade on the derivatives segment of the NSE.
+11
+
+Date
+Time
+Shares
+Purchase
+Ideal
+Bought
+Buy
+Sold
+Sell
+20021001
+110000
+39
+10000.00
+254.00
+39
+254.10
+39
+253.90
+20021001
+120000
+39
+10000.00
+253.57
+39
+253.65
+39
+253.50
+20021001
+130000
+39
+10000.00
+252.50
+39
+252.60
+39
+252.40
+20021001
+140000
+39
+10000.00
+252.45
+39
+252.59
+39
+252.40
+20021003
+110000
+41
+10000.00
+243.80
+41
+243.85
+41
+243.75
+20021003
+120000
+41
+10000.00
+243.32
+41
+243.35
+41
+243.30
+20021003
+130000
+41
+10000.00
+242.70
+41
+242.75
+41
+242.65
+20021003
+140000
+41
+10000.00
+241.38
+41
+241.45
+41
+241.30
+20021004
+110000
+41
+10000.00
+239.00
+41
+239.10
+41
+238.90
+20021004
+120000
+41
+10000.00
+238.70
+41
+238.75
+41
+238.65
+20021004
+130000
+42
+10000.00
+236.82
+42
+236.90
+42
+236.71
+20021004
+140000
+42
+10000.00
+236.88
+42
+236.95
+42
+236.80
+Table 4: Sample order-book data for RELIANCE in October 2002, for a buy/sell order of Rs. 10,000.
+4
+Results
+Here we present the results of testing the four trading strategies. Returns are arranged across multiple holding
+periods, for each formation period. Table 5 provides the results for each of the ’costly’ as well as the zero-cost
+strategies.
+The contrarian loser (CL) strategy buys losers over the formation period, and sells them after the holding period.
+This strategy is found to be proﬁtable in the short-run, in the sense that if stocks are chosen over the last 25 days,
+then the strategy gives positive returns. However, proﬁts come down as the holding period increases. Proﬁts from
+this strategy for the shortest formation period are statistically signiﬁcant. The contrarian winner strategy and the
+momentum loser strategies’s returns are also provided for the purposes of illustration. If the CL strategy makes
+money, one expects the ML strategy to make losses.For the shortest formation period therefore, (25) we ﬁnd that
+the MW strategy clearly makes money, and that the proﬁts rise as the holding period increases. The momentumwinner MW strategy buys winners, hoping that they’ll continue to be winners. For the shortest formation period,
+the MW strategy is proﬁtable, and proﬁts are more than in the CL strategy, but not statistically signiﬁcant.
+In ideal circumstances one would have expected returns from the contrarian loser strategy to be exactly opposite the
+returns from the momentum loser strategy. But since we have diﬀerent buy/sell prices as the buy/sell impacts from
+the trades are diﬀerent, returns from these strategies do not cancel out. This makes testing the zero-cost contrarian
+and momentum strategies all the more relevant. Returns from the zero-cost strategies have been calculated in two
+ways, adjusted wherein the returns are normalized by the entering positions19, to help compare with the rest of
+the strategies, and the unadjusted returns. We ﬁrst discuss returns from the adjusted zero-cost strategies ﬁrst.
+The zero-cost momentum strategy is proﬁtable for the shortest formation period, with proﬁts rising from 0.263 to
+0.353, as the holding period rises from 25 days to 250 days. The strategy proves to be proﬁtable in for almost
+all the formation periods, from 25 to 250 days, except for the 50-day formation period. However, proﬁts come
+down as the the formation period increases, from 0.353 to about 0.031, for the holding period set at 250 days.
+The CL strategy is also proﬁtable but far lesser than the MW. The CW, and the ML strategies incur losses. The
+zero-cost momentum strategy is proﬁtable, and proﬁts rise as positions are held for longer periods. Returns to the
+scale-adjusted zero-cost strategies are statistically signiﬁcant at 10%.
+19Details on the calculations of adjusted returns
+12
+
+Form
+Hold
+CL
+CW
+ML
+MW
+ZCC
+ZCM
+25
+25
+0.050
+(0.033)
+-0.391
+(0.340)
+-0.072
+(0.034)
+0.335
+(0.307)
+-0.341
+0.263
+25
+50
+0.046
+(0.032)
+-0.388
+(0.327)
+-0.068
+(0.034)
+0.333
+(0.297)
+-0.342
+0.265
+25
+75
+0.046
+(0.036)
+-0.365
+(0.304)
+-0.068
+(0.038)
+0.312
+(0.275)
+-0.319
+0.244
+25
+150
+0.041
+(0.034)
+-0.397
+(0.335)
+-0.062
+(0.036)
+0.341
+(0.302)
+-0.356
+0.278
+25
+250
+0.038
+(0.040)
+-0.476
+(0.411)
+-0.061
+(0.042)
+0.414
+(0.373)
+-0.437
+0.353
+50
+25
+0.186
+(0.169)
+-0.045
+(0.017)
+-0.219
+(0.182)
+0.023
+(0.016)
+0.140
+-0.196
+50
+50
+0.183
+(0.161)
+-0.062
+(0.025)
+-0.216
+(0.173)
+0.036
+(0.022)
+0.120
+-0.179
+50
+75
+0.237
+(0.216)
+-0.060
+(0.026)
+-0.273
+(0.232)
+0.034
+(0.023)
+0.176
+-0.239
+50
+150
+0.217
+(0.206)
+-0.051
+(0.021)
+-0.253
+(0.222)
+0.026
+(0.019)
+0.166
+-0.226
+50
+250
+0.234
+(0.232)
+-0.061
+(0.028)
+-0.273
+(0.251)
+0.035
+(0.025)
+0.172
+-0.238
+75
+25
+0.016
+(0.016)
+-0.106
+(0.055)
+-0.037
+(0.017)
+0.078
+(0.050)
+-0.089
+0.041
+75
+50
+0.019
+(0.017)
+-0.125
+(0.057)
+-0.040
+(0.018)
+0.093
+(0.051)
+-0.105
+0.053
+75
+75
+0.006
+(0.015)
+-0.122
+(0.056)
+-0.027
+(0.016)
+0.090
+(0.050)
+-0.115
+0.063
+75
+150
+-0.001
+(0.016)
+-0.119
+(0.060)
+-0.019
+(0.017)
+0.089
+(0.054)
+-0.120
+0.069
+75
+250
+-0.004
+(0.019)
+-0.139
+(0.070)
+-0.017
+(0.021)
+0.105
+(0.063)
+-0.143
+0.088
+150
+25
+0.021
+(0.017)
+-0.060
+(0.020)
+-0.041
+(0.018)
+0.037
+(0.019)
+-0.039
+-0.004
+150
+50
+0.016
+(0.017)
+-0.076
+(0.028)
+-0.036
+(0.019)
+0.050
+(0.025)
+-0.060
+0.013
+150
+75
+0.014
+(0.017)
+-0.077
+(0.029)
+-0.035
+(0.018)
+0.050
+(0.025)
+-0.062
+0.015
+150
+150
+0.006
+(0.017)
+-0.070
+(0.024)
+-0.026
+(0.018)
+0.045
+(0.022)
+-0.064
+0.018
+150
+250
+0.002
+(0.020)
+-0.082
+(0.033)
+-0.023
+(0.021)
+0.055
+(0.030)
+-0.080
+0.032
+250
+25
+0.028
+(0.020)
+-0.080
+(0.034)
+-0.049
+(0.021)
+0.055
+(0.032)
+-0.051
+0.005
+250
+50
+0.025
+(0.020)
+-0.097
+(0.040)
+-0.046
+(0.021)
+0.069
+(0.036)
+-0.072
+0.023
+250
+75
+0.024
+(0.024)
+-0.098
+(0.043)
+-0.046
+(0.025)
+0.070
+(0.039)
+-0.073
+0.024
+250
+150
+0.013
+(0.021)
+-0.086
+(0.038)
+-0.034
+(0.022)
+0.060
+(0.035)
+-0.072
+0.025
+250
+250
+0.009
+(0.026)
+-0.091
+(0.044)
+-0.031
+(0.028)
+0.063
+(0.040)
+-0.082
+0.031
+Table 5: Returns from CIS/MIS strategies evaluated on multiple F/S/H portfolios, using HF buy/sell data from
+March 1996, till October 2002. Here CL ⇒Contrarian-Loser, and so on. Figures in parentheses are standard
+errors. ZCC and ZCM are the scale-adjusted zero-cost contrarian and momentum strategies respectively.
+Returns from the unadjusted zero-cost momentum trading strategies are in table 6.
+We ﬁnd that momentum
+strategies are proﬁtable at 250-day holding periods, almost independent of the formation period used.20 Proﬁts
+from these strategies are statistically signiﬁcant at 10%. The magnitudes of proﬁts to the strategies fall as the
+formation period increases. Proﬁts in the F=25 strategies are almost three-four times the proﬁts in the F=250 set,
+independent of the holding period. This shows the preponderance of the momentum eﬀect in the market. Proﬁts to
+contrarian strategies fall as the positions are held for longer periods, but they rise for momentum strategies. Proﬁts
+for the momentum-winner strategy are highest when the formation period is 25 days. On average, momentum
+proﬁts are higher than contrarian proﬁts, even after factoring in transaction costs. However, these proﬁts are
+proportional to the trading costs involved, which in this case are based on orders of INR 10,000 for each stock.
+We thus ﬁnd that momentum strategies are proﬁtable in the Indian markets, at least in the short term, even after
+adjustments for non-proportional costs like the price impact, are made. Proﬁts rise as positions are held for longer
+periods. But formation periods are to be kept small for the strategies to make money. The Indian market is driven
+by momentum.
+Having established that momentum strategies are proﬁtable in our analysis, we now examine the causes behind
+20The strategy is proﬁtable for at (25/1/250), (50/1/150), (50/1/250), (75/1/150), (75/1/250), (150/1/250), (250/1/150), and
+(250/1/250).
+13
+
+their proﬁtability. Consider the sample cross-correlation matrices Υ0, Υ1, and Υ2.
+These matrices give the correlation between the current and the lagged values of all the size-sorted quintiles, and
+the equally-weighted market index. The correlation structure between these quintiles provides an initial idea about
+the lead-lag eﬀect, and it’s linkage with size. In the US markets, Lo and MacKinlay (1990) ﬁnd that large stocks
+lead smaller stocks, and in the same direction, that is, a rise in the large stocks is followed by a rise in the smaller
+stocks. In the Chinese markets, small stocks lead large stocks, in the opposite direction.Kang et al. (2002).
+Υ0 =
+
+
+100.00
+81.45
+77.66
+71.02
+65.23
+86.79
+81.45
+100.00
+88.27
+82.58
+77.07
+94.13
+77.66
+88.27
+100.00
+86.48
+81.91
+95.01
+71.02
+82.58
+86.48
+100.00
+83.73
+92.27
+65.23
+77.07
+81.91
+83.73
+100.00
+89.02
+86.79
+94.13
+95.01
+92.27
+89.02
+100.00
+
+
+Symmetric.
+Υ1 =
+
+
+8.897
+11.18
+10.81
+9.678
+9.993
+11.07
+9.392
+8.475
+9.950
+9.688
+9.793
+10.33
+7.230
+7.887
+7.857
+8.325
+8.577
+8.708
+3.605
+4.686
+5.169
+5.555
+6.294
+5.512
+2.380
+2.631
+3.194
+4.341
+4.402
+3.671
+7.003
+7.719
+8.188
+8.304
+8.615
+8.696
+
+
+Asymmetric.
+Υ2 =
+
+
+8.469
+8.526
+8.457
+8.728
+7.163
+9.038
+8.167
+6.488
+6.818
+7.562
+5.782
+7.604
+6.136
+6.498
+6.287
+7.303
+5.742
+6.972
+4.902
+5.236
+5.491
+5.678
+5.334
+5.816
+3.378
+3.495
+3.661
+5.315
+3.820
+4.264
+6.856
+6.654
+6.754
+7.611
+6.107
+7.414
+
+
+We see that the above-diagonal entries are almost always larger than the below-diagonal entries:
+e.g., Corr(R5,t−1, R1t) < Corr(R1,t−1, R5t)
+Correlation between lagged values of smallest quintile and current values of the largest quintile is 2.38% but that
+between the current values of the smallest quintile, and the lagged values of the largest quintile is 9.99%. To get
+this idea clear, consider the diﬀerence matrices
+Υ1 −Υ′
+1 =
+
+
+0.000
+1.786
+3.579
+6.074
+7.613
+4.071
+−1.79
+0.000
+2.063
+5.002
+7.162
+2.611
+−3.58
+−2.06
+0.000
+3.156
+5.383
+0.520
+−6.07
+−5.00
+−3.16
+0.000
+1.953
+−2.79
+−7.61
+−7.16
+−5.38
+−1.95
+0.000
+−4.94
+−4.07
+−2.61
+−.520
+2.792
+4.944
+0.000
+
+
+14
+
+Υ2 −Υ′
+2 =
+
+
+0.000
+0.359
+2.321
+3.826
+3.785
+2.182
+−.359
+0.000
+0.320
+2.327
+2.287
+0.950
+−2.32
+−.320
+0.000
+1.813
+2.080
+0.218
+−3.83
+−2.33
+−1.81
+0.000
+0.020
+−1.79
+−3.78
+−2.29
+−2.08
+−.020
+0.000
+−1.84
+−2.18
+−.950
+−.218
+1.794
+1.843
+0.000
+
+
+Υ3 −Υ′
+3 =
+
+
+0.000
+1.253
+3.025
+4.781
+3.999
+2.780
+−1.25
+0.000
+1.146
+3.464
+3.992
+1.530
+−3.03
+−1.15
+0.000
+2.478
+3.579
+0.328
+−4.78
+−3.46
+−2.48
+0.000
+2.046
+−1.98
+−4.00
+−3.99
+−3.58
+−2.05
+0.000
+−3.02
+−2.78
+−1.53
+−.328
+1.976
+3.018
+0.000
+
+
+The above-diagonal entries are almost uniformly positive, while the below-diagonal entries are negative. This
+implies large stocks have higher correlation with lagged values of small stocks, than small stocks have with lagged
+values of large stocks. Large stocks thus ‘follow’ small stocks and in the same direction. In other words, a rise in
+a small-cap stock may lead to a rise in a large-cap one too!21 This shows conﬂicting results between the Indian,
+Chinese, and the American markets about the transmission of news between large, and small stocks. Also, the
+fact that serial correlations are positive (since, trΥn > 0) means that the eﬀect of bid-ask bounce on the returns is
+negligible.
+4.1
+Analyzing causes of proﬁts
+Results from the Jegadeesh and Titman (1995) decomposition on each of the the size-sorted quintiles, in table 7
+show that almost all the momentum proﬁts are due to ﬁrm-speciﬁc factors, rather than common factor realizations,
+or due to the cross-sectional variance of expected returns. Expected proﬁts go down with size, from 7.15 for the
+smallest quintile, to 4.78 for the largest quintile.
+It would now be interesting to know how these proﬁts are divided across cross-sectional and serial dependences in
+the stocks in each portfolio. Also, since the contribution of the lead-lag structure δσ2
+f is positive, apriori we expect
+that an MIS strategy would be proﬁtable.
+Results in table 8 show that the momentum strategy is clearly proﬁtable, for all the portfolios, but proﬁts die
+down as size increases. Investor underreaction, and overreaction to large, liquid stocks is typically much lower
+than for small, relatively illiquid stocks, and this is borne out by the expected proﬁts which fall from 46.249 to
+0.312, between the smallest, and the largest quintiles, for a holding period of 100. Proﬁts also come down as the
+holding period increases, from 100, to 1000. However, what’s important here is that proﬁts come down as we trade
+in portfolios comprising larger stocks. The required investment in a portfolio also falls with size, and with longer
+holding periods. It’s thus cheaper to hold a portfolio of large stocks, than one with smaller stocks. Further, there
+are tangible proﬁts in holding small stocks, though as the cost of holding the portfolio rises. We ﬁnd that Ck, and
+Ok are signiﬁcantly negative, for all the portfolios considered, and thus contribute positively to MIS proﬁts. The
+fall in MIS proﬁts is reﬂected in the values of Ck, and Ok. The mean cross-sectional variation σ2
+µ falls with size
+from 7.547 to about 0.03.
+21The fact that large stocks follow small stocks and in the same direction need not imply contrarian proﬁtability, since the lags of
+the strategies tested here (100 to 1000), are much more than that of the ACF matrices (0 to 4).
+15
+
+Form
+Hold
+ZCM
+p-value
+25
+25
+-96.81
+0.069
+25
+50
+-11.21
+0.847
+25
+75
+-8.74
+0.897
+25
+150
+74.71
+0.377
+25
+250
+266.81
+0.009
+50
+25
+-52.47
+0.321
+50
+50
+-37.44
+0.528
+50
+75
+32.65
+0.632
+50
+150
+152.28
+0.082
+50
+250
+403.81
+0.000
+75
+25
+-53.39
+0.288
+75
+50
+-54.76
+0.358
+75
+75
+30.71
+0.639
+75
+150
+190.84
+0.020
+75
+250
+358.69
+0.000
+150
+25
+-100.91
+0.050
+150
+50
+-59.13
+0.310
+150
+75
+-41.75
+0.526
+150
+150
+116.53
+0.173
+150
+250
+259.89
+0.011
+250
+25
+-157.83
+0.001
+250
+50
+-64.57
+0.267
+250
+75
+8.60
+0.891
+250
+150
+144.29
+0.080
+250
+250
+244.85
+0.014
+Table 6: Unadjusted Returns from zero-cost momentum strategies evaluated on multiple F/S/H portfolios, using
+HF buy/sell data from March 1996, till October 2002.
+From the percentage contributions, we ﬁnd that cross-sectional correlation across stocks accounts for at least 50%
+Will
+fur
+discuss
+results
+of MIS proﬁts in a portfolio. This percentage ranges between 53 and 80%. Percentage contribution of Ck rises with
+size, and holding period, except at k=1000 for the largest portfolio. Percentage contribution of serial covariance
+ranges from 32% to about 1%, and falls with size and the number of lags. One would expect that serial correlations
+in the larger stocks would be practically absent, but would be present in the smaller stocks, and this is the case
+here. Though the third component, σ2
+µ falls across portfolios, it’s contribution remains around 16%, owing to the
+falls in it’s proﬁts. This disproves the Conrad and Kaul (1998) hypothesis that the DGPs of stocks are basically
+random walks with drifts, and that proﬁts in CIS/MIS are due to variation in this drift rates. For the largest
+quintile, the serial correlation component in MIS proﬁts nearly dies down. We get Ok = −N−1
+N tr(Γk) < 0, for
+all portfolios examined. ⇒tr(Γk) > 0. Returns are thus +ve correlated, for the portfolio, but the correlations
+become insigniﬁcant with size. We also have Ck =
+1
+N 2 [e′Γke −tr(Γk)] < 0. This implies e′Γke < 0. Stocks are
+thus negatively cross-correlated within a portfolio. With buy/sell data, problems of bid-ask bounce, and nonsynchronous data do not arise. Proﬁtability of MIS proﬁts varies from 60% over a 100-day horizon in the smallest
+quintiles to about 0.77% over the same horizon, in the largest.
+To summarize, we ﬁnd that cross-correlation across stocks accounts for almost 50% of momentum proﬁts in the
+Indian markets. Proﬁts due to own serial-correlation, i.e., due to Ok do not account for more than 30-35% of
+momentum proﬁts, in any portfolio, over any time horizon. In other words, overreaction, while important, is not
+16
+
+Portfolio
+σ2
+µ
+Ω
+δσ2
+f
+E(πm)
+%-σ2
+µ
+%-Ω
+%-δσ2
+f
+0
+0.000452
+7.083398
+0.072699
+7.156550
+0.006313
+98.977842
+1.015845
+1
+0.000409
+4.671060
+0.014889
+4.686358
+0.008718
+99.673570
+0.317712
+2
+0.000623
+4.166040
+0.019849
+4.186513
+0.014891
+99.510983
+0.474127
+3
+0.000349
+4.074910
+0.098978
+4.174237
+0.008372
+97.620468
+2.371160
+4
+0.000442
+4.782805
+0.000660
+4.783908
+0.009247
+99.976958
+0.013795
+Table 7: Jegadeesh and Titman (1995) decomposition of MIS proﬁts.
+the major driver of proﬁts.
+5
+Conclusion
+We have tested a set of contrarian, and momentum trading strategies for the Indian equity markets in the period
+1996-2002. We ﬁnd that momentum strategies make statistically signiﬁcant proﬁts at long holding periods. But
+proﬁts fall as the formation period over which stocks were chosen increases. Costs to trade play an important role in
+determining economic proﬁtability.x Traditional analyses of contrarian, and momentum proﬁts have either omitted
+trading costs, or have included poportional costs alone. Prportional costs, do not provide an accurate picture of
+trading proﬁts. We have accounted for the price impact on trading while calculating our returns.
+17
+
+Portfolio
+k
+ˆ
+Ck
+ˆ
+Ok
+σ2
+µ
+E[ˆπt]
+I
+%- ˆ
+Ck
+%- ˆ
+Ok
+%-σ2
+µ
+0
+100
+-23.510
+-15.192
+7.547
+46.249
+69.571
+50.83
+32.84
+16.31
+0
+200
+-23.122
+-12.694
+7.508
+43.324
+68.819
+53.37
+29.30
+17.33
+0
+300
+-22.549
+-10.877
+7.479
+40.905
+67.832
+55.12
+26.59
+18.28
+0
+500
+-21.541
+-8.650
+7.396
+37.587
+65.104
+57.31
+23.01
+19.67
+0
+1000
+-19.555
+-7.996
+7.152
+34.702
+59.374
+56.35
+23.04
+20.60
+1
+100
+-3.937
+-2.575
+1.602
+8.113
+54.775
+48.52
+31.73
+19.73
+1
+200
+-3.862
+-1.997
+1.596
+7.455
+54.194
+51.79
+26.79
+21.41
+1
+300
+-3.725
+-1.636
+1.589
+6.950
+53.356
+53.59
+23.54
+22.86
+1
+500
+-3.433
+-1.046
+1.568
+6.048
+51.231
+56.76
+17.29
+25.93
+1
+1000
+-2.915
+-0.715
+1.507
+5.138
+46.709
+56.74
+13.92
+29.33
+2
+100
+-2.118
+-0.562
+0.522
+3.201
+49.512
+66.14
+17.55
+16.29
+2
+200
+-2.124
+-0.427
+0.516
+3.068
+49.001
+69.24
+13.91
+16.83
+2
+300
+-2.004
+-0.443
+0.508
+2.955
+48.254
+67.82
+14.99
+17.18
+2
+500
+-1.844
+-0.410
+0.496
+2.750
+46.482
+67.04
+14.91
+18.04
+2
+1000
+-1.546
+-0.420
+0.466
+2.432
+42.187
+63.58
+17.26
+19.14
+3
+100
+-0.884
+-0.204
+0.148
+1.236
+41.118
+71.54
+16.50
+11.94
+3
+200
+-0.856
+-0.150
+0.148
+1.154
+40.779
+74.19
+12.98
+12.82
+3
+300
+-0.801
+-0.104
+0.142
+1.048
+40.272
+76.44
+9.96
+13.58
+3
+500
+-0.720
+-0.123
+0.131
+0.974
+39.158
+73.90
+12.67
+13.42
+3
+1000
+-0.556
+-0.108
+0.105
+0.769
+36.299
+72.34
+14.00
+13.65
+4
+100
+-0.212
+-0.055
+0.045
+0.312
+40.179
+68.05
+17.53
+14.41
+4
+200
+-0.214
+-0.020
+0.045
+0.279
+39.711
+76.68
+7.14
+16.17
+4
+300
+-0.186
+-0.004
+0.042
+0.232
+39.202
+80.10
+1.54
+18.35
+4
+500
+-0.174
+-0.004
+0.039
+0.217
+38.158
+80.23
+1.80
+17.95
+4
+1000
+-0.114
+-0.037
+0.030
+0.181
+35.167
+62.93
+20.24
+16.81
+Table 8: Lo and MacKinlay (1990) Proﬁt Decomposition of an MIS strategy over multiple lag-lengths, and over
+diﬀerent size-sorted quintile portfolios. The strategy is implemented over HF buy/sell data over the period 19962002.
+References
+Ball, R., Kothari, S. P., and Shanken, J. (1995). Problems in measuring portfolio performance: An application to
+contrarian investment strategies. Journal of Financial Economics, 38(1):79–107.
+Basu, S. (1977). The investment performance of common stocks in relation to their price-earnings ratios: A test of
+the eﬃcient market hypothesis. Journal of Finance, 32:632–682.
+Bondt, W. D. and Thaler, R. (1985). Does the stock market overreact? Journal of Finance, 40:793–808.
+Chan, K. (1988). On the contrarian investment strategy. Journal of Business, 61:147–163.
+Conrad, J. and Kaul, G. (1998). An anatomy of trading strategies. Review of Financial Studies, 11(3):489–519.
+Glosten, L. R. and Harris, L. (1988). Estimating the components of the bid-ask spread. Journal of Financial
+Economics, 14:123–142.
+Glosten, L. R. and Milgrom, P. R. (1985). Bid, ask and transaction prices in a specialist market with heterogenously
+informed traders. Journal of Financial Economics, 14:71–100.
+18
+
+Grundy, B. and Martin, J. S. (2001). Understanding the nature of the risks and the source of the rewards to
+momentum investing. Review of Financial Studies, 14(1):29–78.
+Hameed, A. and Kusnadi, Y. (2002). Momentum strategies: Evidence from paciﬁc basin stock markets. Journal
+of Financial Research, 25(3):383–397.
+Harris, L. (2003). Trading and Exchanges: Market Microstructure for Practitioners. Financial Management Association: Survey and Synthesis Series. Oxford University Press, New York.
+Jegadeesh, N. and Titman, S. (1995). Overreaction, delayed reaction and contrarian proﬁts. Review of Financial
+Studies, 8(4):973–993.
+Jegadeesh, N. and Titman, S. (2002). Cross-sectional and time-series determinants of momentum returns. Review
+of Financial Studies, 15(1):143–157.
+Kang, J., Liu, M.-H., and Ni, S. X. (2002).
+Contrarian and momentum strategies in the china stock market:
+1993-2000. Paciﬁc Basin Finance Journal, 10:243–265.
+Keim, D. B. (1983). Stock return seasonality and the size eﬀect. Journal of Financial Economics, 12:33–56.
+Korajczyk, R. and Sadka, R. (2002). Are momentum proﬁts robust to trading costs? Technical report, Department
+of Finance, Kellogg Graduate School of Management, Northwestern University.
+Lee, C. M. C. and Ready, M. J. (1991). Inferring trade direction from intraday data. Journal of Finance, 46:733–746.
+Lehmann, B. N. (1990). Fads, martingales and market eﬃciency. Quarterly Journal of Economics, 60:1–28.
+Lo, A. W. and MacKinlay, A. C. (1990). When are contrarian proﬁts due to stock market overreaction? Review of
+Financial Studies, 3(2):175–205.
+NSE (2002). Indian securities market - a review: 2002. Technical Report V, National Stock Exchange of India
+Limited., Exchange Plaza, Bandra Kurla Complex, Mumbai 400 051.
+O’Hara, M. (1995). Market Microstructure Theory. Basil Blackwell, Oxford.
+Roll, R. (1984).
+A simple measure of the implicit bid-ask spread in an eﬃcient market.
+Journal of Finance,
+39:1127–1139.
+19
